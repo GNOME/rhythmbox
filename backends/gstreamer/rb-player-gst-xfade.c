@@ -141,6 +141,10 @@
 #include <gst/controller/gstcontroller.h>
 #include <gst/base/gstbasetransform.h>
 
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+#include <gst/pbutils/pbutils.h>
+#endif /* HAVE_GSTREAMER_0_10_MISSING_PLUGINS */
+
 #include "rb-player.h"
 #include "rb-player-gst-xfade.h"
 #include "rb-debug.h"
@@ -218,6 +222,7 @@ enum
 {
 	CAN_REUSE_STREAM,
 	REUSE_STREAM,
+	MISSING_PLUGINS,
 	LAST_SIGNAL
 };
 
@@ -298,6 +303,10 @@ typedef struct
 	gboolean emitted_error;
 	gulong error_idle_id;
 	GError *error;
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	GSList *missing_plugins;
+	gulong  emit_missing_plugins_id;
+#endif
 } RBXFadeStream;
 
 #define RB_TYPE_XFADE_STREAM 	(rb_xfade_stream_get_type ())
@@ -636,6 +645,18 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_STRING, G_TYPE_STRING, GST_TYPE_ELEMENT);
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	signals[MISSING_PLUGINS] =
+		g_signal_new ("missing-plugins",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,	/* no point handling this internally */
+			      NULL, NULL,
+			      rb_marshal_VOID__POINTER_POINTER_POINTER,
+			      G_TYPE_NONE,
+			      3,
+			      G_TYPE_POINTER, G_TYPE_STRV, G_TYPE_STRV);
+#endif
 
 	g_type_class_add_private (klass, sizeof (RBPlayerGstXFadePrivate));
 }
@@ -1362,6 +1383,84 @@ process_tag (const GstTagList *list, const gchar *tag, RBXFadeStream *stream)
 	g_value_unset (&newval);
 }
 
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+
+static gboolean
+emit_missing_plugins (RBXFadeStream *stream)
+{
+	char **details;
+	char **descriptions;
+	int count;
+	GSList *t;
+	int i;
+
+	stream->emit_missing_plugins_id = 0;
+	count = g_slist_length (stream->missing_plugins);
+
+	details = g_new0 (char *, count + 1);
+	descriptions = g_new0 (char *, count + 1);
+	i = 0;
+	for (t = stream->missing_plugins; t != NULL; t = t->next) {
+		GstMessage *msg = GST_MESSAGE (t->data);
+		char *detail;
+		char *description;
+
+		detail = gst_missing_plugin_message_get_installer_detail (msg);
+		description = gst_missing_plugin_message_get_description (msg);
+		details[i] = g_strdup (detail);
+		descriptions[i] = g_strdup (description);
+		i++;
+
+		gst_message_unref (msg);
+	}
+
+	g_signal_emit (stream->player, signals[MISSING_PLUGINS], 0, stream->stream_data, details, descriptions);
+	g_strfreev (details);
+	g_strfreev (descriptions);
+
+	g_slist_free (stream->missing_plugins);
+	stream->missing_plugins = NULL;
+
+	return FALSE;
+}
+
+
+static void
+rb_player_gst_xfade_handle_missing_plugin_message (RBPlayerGstXFade *player, RBXFadeStream *stream, GstMessage *message)
+{
+	if (stream == NULL) {
+		rb_debug ("got missing-plugin message from unknown stream");
+		return;
+	}
+
+	rb_debug ("got missing-plugin message from %s: %s",
+		  stream->uri,
+		  gst_missing_plugin_message_get_installer_detail (message));
+
+	/* can only handle missing-plugins while prerolling */
+	switch (stream->state) {
+	case PREROLLING:
+	case PREROLL_PLAY:
+		stream->missing_plugins = g_slist_prepend (stream->missing_plugins,
+							   gst_message_ref (message));
+		if (stream->emit_missing_plugins_id == 0) {
+			stream->emit_missing_plugins_id =
+				g_idle_add ((GSourceFunc) emit_missing_plugins,
+					    g_object_ref (stream));
+		}
+
+		/* what do we do now?  if we're missing the decoder
+		 * or something, it'll never preroll..
+		 */
+		break;
+
+	default:
+		rb_debug ("can't process missing-plugin messages for this stream now");
+		break;
+	}
+}
+#endif
+
 /* gstreamer message bus callback */
 static gboolean
 rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *player)
@@ -1504,25 +1603,29 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 	}
 	case GST_MESSAGE_ELEMENT:
 	{
-		/* currently only used to report imperfect stream messages */
 		const GstStructure *s;
 		const char *name;
+
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+		if (gst_is_missing_plugin_message (message)) {
+			rb_player_gst_xfade_handle_missing_plugin_message (player, stream, message);
+			break;
+		}
+#endif
 
 		s = gst_message_get_structure (message);
 		name = gst_structure_get_name (s);
 		if ((strcmp (name, "imperfect-timestamp") == 0) ||
 		    (strcmp (name, "imperfect-offset") == 0)) {
 			char *details;
-			RBXFadeStream *stream;
-			const char *uri = "unknown stream";;
+			const char *uri = "unknown-stream";
 
-			stream = find_stream_by_element (player, GST_ELEMENT (GST_MESSAGE_SRC (message)));
 			if (stream != NULL) {
 				uri = stream->uri;
 			}
 
 			details = gst_structure_to_string (s);
-			rb_debug_real ("check-imperfect", __FILE__, __LINE__, TRUE, "%s: %s", uri, details);
+			rb_debug_real ("check-imperfect", __FILE__, __LINE__, TRUE, "%s: %s", stream->uri, details);
 			g_free (details);
 		}
 		break;

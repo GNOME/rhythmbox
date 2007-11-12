@@ -52,14 +52,22 @@ typedef struct {
 	gboolean external;
 } ServiceData;
 
+enum {
+	ERROR_FLAG = 1,
+	MISSING_PLUGINS = 2
+};
+
 static DBusHandlerResult
 _send_error (DBusConnection *connection,
 	     DBusMessage *request,
-	     gboolean include_flag,
+	     int details,
+	     char **missing_plugins,
+	     char **plugin_descriptions,
 	     gint error_type,
 	     const char *message)
 {
 	DBusMessage *reply = dbus_message_new_method_return (request);
+	DBusMessageIter iter;
 
 	if (!message) {
 		message = "";
@@ -68,18 +76,29 @@ _send_error (DBusConnection *connection,
 		rb_debug ("attempting to return error: %s", message);
 	}
 
-	if (include_flag) {
+	dbus_message_iter_init_append (reply, &iter);
+	
+	if (details & MISSING_PLUGINS) {
+		if (!rb_metadata_dbus_add_strv (&iter, missing_plugins)) {
+			rb_debug ("couldn't append missing plugins data");
+			return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+		}
+		if (!rb_metadata_dbus_add_strv (&iter, plugin_descriptions)) {
+			rb_debug ("couldn't append missing plugin descriptions");
+			return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+		}
+	}
+
+	if (details & ERROR_FLAG) {
 		gboolean ok = FALSE;
-		if (!dbus_message_append_args (reply, DBUS_TYPE_BOOLEAN, &ok, DBUS_TYPE_INVALID)) {
+		if (!dbus_message_iter_append_basic (&iter, DBUS_TYPE_BOOLEAN, &ok)) {
 			rb_debug ("couldn't append error flag");
 			return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 		}
 	}
 
-	if (!dbus_message_append_args (reply,
-				       DBUS_TYPE_UINT32, &error_type,
-				       DBUS_TYPE_STRING, &message,
-				       DBUS_TYPE_INVALID)) {
+	if (!dbus_message_iter_append_basic (&iter, DBUS_TYPE_UINT32, &error_type) ||
+	    !dbus_message_iter_append_basic (&iter, DBUS_TYPE_STRING, &message)) {
 		rb_debug ("couldn't append error data");
 		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 	}
@@ -100,6 +119,8 @@ rb_metadata_dbus_load (DBusConnection *connection,
 	GError *error = NULL;
 	gboolean ok = TRUE;
 	const char *mimetype = NULL;
+	char **missing_plugins = NULL;
+	char **plugin_descriptions = NULL;
 
 	if (!dbus_message_iter_init (message, &iter)) {
 		return DBUS_HANDLER_RESULT_NEED_MEMORY;
@@ -107,21 +128,29 @@ rb_metadata_dbus_load (DBusConnection *connection,
 
 	if (!rb_metadata_dbus_get_string (&iter, &uri)) {
 		/* make translatable? */
-		return _send_error (connection, message, TRUE,
+		return _send_error (connection, message,
+				    ERROR_FLAG | MISSING_PLUGINS,
+				    NULL, NULL,
 				    RB_METADATA_ERROR_INTERNAL,
 				    "Unable to read URI from request");
 	}
 
 	rb_debug ("loading metadata from %s", uri);
-
 	rb_metadata_load (svc->metadata, uri, &error);
 	g_free (uri);
+
+	rb_metadata_get_missing_plugins (svc->metadata, &missing_plugins, &plugin_descriptions);
+
 	if (error != NULL) {
 		DBusHandlerResult r;
 		rb_debug ("metadata error: %s", error->message);
 
-		r = _send_error (connection, message, TRUE, error->code, error->message);
+		r = _send_error (connection, message, 
+				 ERROR_FLAG | MISSING_PLUGINS,
+				 missing_plugins, plugin_descriptions,
+				 error->code, error->message);
 		g_clear_error (&error);
+		g_strfreev (missing_plugins);
 		return r;
 	}
 	rb_debug ("metadata load finished; mimetype = %s", rb_metadata_get_mime (svc->metadata));
@@ -135,6 +164,15 @@ rb_metadata_dbus_load (DBusConnection *connection,
 
 	mimetype = rb_metadata_get_mime (svc->metadata);
 	dbus_message_iter_init_append (reply, &iter);
+	
+	if (!rb_metadata_dbus_add_strv (&iter, missing_plugins)) {
+		rb_debug ("out of memory adding data to return message");
+		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+	}
+	if (!rb_metadata_dbus_add_strv (&iter, plugin_descriptions)) {
+		rb_debug ("out of memory adding data to return message");
+		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+	}
 
 	if (!dbus_message_iter_append_basic (&iter, DBUS_TYPE_BOOLEAN, &ok) ||
 	    !dbus_message_iter_append_basic (&iter, DBUS_TYPE_STRING, &mimetype)) {
@@ -144,7 +182,9 @@ rb_metadata_dbus_load (DBusConnection *connection,
 
 	if (!rb_metadata_dbus_add_to_message (svc->metadata, &iter)) {
 		/* make translatable? */
-		return _send_error (connection, message, TRUE,
+		return _send_error (connection, message,
+				    ERROR_FLAG | MISSING_PLUGINS,
+				    missing_plugins, plugin_descriptions,
 				    RB_METADATA_ERROR_INTERNAL,
 				    "Unable to add metadata to return message");
 	}
@@ -175,7 +215,8 @@ rb_metadata_dbus_can_save (DBusConnection *connection,
 
 	if (!rb_metadata_dbus_get_string (&iter, &mimetype)) {
 		/* make translatable? */
-		return _send_error (connection, message, TRUE,
+		return _send_error (connection, message, ERROR_FLAG,
+				    NULL, NULL,
 				    RB_METADATA_ERROR_INTERNAL,
 				    "Unable to read MIME type from request");
 	}
@@ -233,7 +274,7 @@ rb_metadata_dbus_save (DBusConnection *connection,
 						 data,
 						 &iter)) {
 		/* make translatable? */
-		return _send_error (connection, message, FALSE,
+		return _send_error (connection, message, 0, NULL, NULL,
 				    RB_METADATA_ERROR_INTERNAL,
 				    "Unable to read metadata from message");
 	}
@@ -248,7 +289,7 @@ rb_metadata_dbus_save (DBusConnection *connection,
 		DBusHandlerResult r;
 		rb_debug ("metadata error: %s", error->message);
 
-		r = _send_error (connection, message, FALSE, error->code, error->message);
+		r = _send_error (connection, message, 0, NULL, NULL, error->code, error->message);
 		g_clear_error (&error);
 		return r;
 	}
@@ -385,6 +426,8 @@ test_load (const char *uri)
 	RBMetaData *md;
 	GError *error = NULL;
 	int rv = 0;
+	char **missing_plugins;
+	char **plugin_descriptions;
 
 	md = rb_metadata_new ();
 	rb_metadata_load (md, uri, &error);
@@ -415,6 +458,17 @@ test_load (const char *uri)
 			}
 		}
 	}
+
+	if (rb_metadata_get_missing_plugins (md, &missing_plugins, &plugin_descriptions)) {
+		int i = 0;
+		g_print ("missing plugins:\n");
+		while (missing_plugins[i] != NULL) {
+			g_print ("\t%s (%s)\n", missing_plugins[i], plugin_descriptions[i]);
+			i++;
+		}
+		g_strfreev (missing_plugins);
+	}
+
 	g_object_unref (G_OBJECT (md));
 	return rv;
 }

@@ -75,6 +75,8 @@ static gboolean
 load_metadata_cb (gpointer file)
 {
 	char *uri = (char *)file;
+	char **missing_plugins;
+	char **plugin_descriptions;
 	GError *error = NULL;
 
 	if (strncmp (uri, "file://", 7)) {
@@ -111,6 +113,15 @@ load_metadata_cb (gpointer file)
 		printf ("type: %s\n", rb_metadata_get_mime (md));
 		for (f =(RBMetaDataField)0; f < RB_METADATA_FIELD_LAST; f++)
 			print_metadata_string (md, f, rb_metadata_get_field_name (f));
+	}
+	if (rb_metadata_get_missing_plugins (md, &missing_plugins, &plugin_descriptions)) {
+		int i = 0;
+		g_print ("missing plugins:\n");
+		while (missing_plugins[i] != NULL) {
+			g_print ("\t%s (%s)\n", missing_plugins[i], plugin_descriptions[i]);
+			i++;
+		}
+		g_strfreev (missing_plugins);
 	}
 	printf ("---\n");
 	return FALSE;

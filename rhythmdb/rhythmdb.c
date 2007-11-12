@@ -156,6 +156,7 @@ enum
 	SAVE_COMPLETE,
 	SAVE_ERROR,
 	READ_ONLY,
+	MISSING_PLUGINS,
 	LAST_SIGNAL
 };
 
@@ -317,6 +318,19 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      1,
 			      G_TYPE_BOOLEAN);
 
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	rhythmdb_signals[MISSING_PLUGINS] =
+		g_signal_new ("missing-plugins",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,		/* no need for an internal handler */
+			      NULL, NULL,
+			      rb_marshal_BOOLEAN__POINTER_POINTER_POINTER,
+			      G_TYPE_BOOLEAN,
+			      3,
+			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);
+#endif
+
 	g_type_class_add_private (klass, sizeof (RhythmDBPrivate));
 }
 
@@ -447,6 +461,7 @@ rhythmdb_init (RhythmDB *db)
 
 	db->priv->action_queue = g_async_queue_new ();
 	db->priv->event_queue = g_async_queue_new ();
+	db->priv->delayed_write_queue = g_async_queue_new ();
 	db->priv->event_queue_watch_id = rb_async_queue_watch_new (db->priv->event_queue,
 								   G_PRIORITY_LOW,		/* really? */
 								   (RBAsyncQueueWatchFunc) rhythmdb_process_one_event,
@@ -461,6 +476,9 @@ rhythmdb_init (RhythmDB *db)
 							 -1, FALSE, NULL);
 
 	db->priv->metadata = rb_metadata_new ();
+	db->priv->metadata_blocked = FALSE;
+	db->priv->metadata_cond = g_cond_new ();
+	db->priv->metadata_lock = g_mutex_new ();
 
 	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP_TYPE);
 
@@ -721,6 +739,8 @@ rhythmdb_shutdown (RhythmDB *db)
 	/* FIXME */
 	while ((result = g_async_queue_try_pop (db->priv->event_queue)) != NULL)
 		rhythmdb_event_free (db, result);
+	while ((result = g_async_queue_try_pop (db->priv->delayed_write_queue)) != NULL)
+		rhythmdb_event_free (db, result);
 
 	while ((action = g_async_queue_try_pop (db->priv->action_queue)) != NULL) {
 		rhythmdb_action_free (db, action);
@@ -794,6 +814,7 @@ rhythmdb_finalize (GObject *object)
 	g_async_queue_unref (db->priv->action_queue);
 	g_async_queue_unref (db->priv->event_queue);
 	g_async_queue_unref (db->priv->restored_queue);
+	g_async_queue_unref (db->priv->delayed_write_queue);
 
 	g_mutex_free (db->priv->saving_mutex);
 	g_cond_free (db->priv->saving_condition);
@@ -923,9 +944,21 @@ rhythmdb_read_leave (RhythmDB *db)
 
 	count = g_atomic_int_exchange_and_add (&db->priv->read_counter, -1);
 	rb_debug ("counter: %d", count-1);
-	if (count == 1)
+	if (count == 1) {
+
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[READ_ONLY],
 			       0, FALSE);
+
+		/* move any delayed writes back to the main event queue */
+		if (g_async_queue_length (db->priv->delayed_write_queue) > 0) {
+			RhythmDBEvent *event;
+			while ((event = g_async_queue_try_pop (db->priv->delayed_write_queue)) != NULL)
+				g_async_queue_push (db->priv->event_queue, event);
+
+			g_main_context_wakeup (g_main_context_default ());
+		}
+
+	}
 }
 
 static gboolean
@@ -1847,8 +1880,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 }
 
 static gboolean
-rhythmdb_process_metadata_load (RhythmDB *db,
-				RhythmDBEvent *event)
+rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry;
 	GValue value = {0,};
@@ -1856,7 +1888,7 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 	GTimeVal time;
 
 	if (event->error) {
-		rhythmdb_add_import_error_entry (db, event);
+		rhythmdb_add_import_error_entry (event->db, event);
 		return TRUE;
 	}
 
@@ -1869,14 +1901,14 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 
 	g_get_current_time (&time);
 
-	entry = rhythmdb_entry_lookup_by_location_refstring (db, event->real_uri);
+	entry = rhythmdb_entry_lookup_by_location_refstring (event->db, event->real_uri);
 
 	if (entry != NULL) {
 		if ((event->entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) &&
 		    (rhythmdb_entry_get_entry_type (entry) != event->entry_type)) {
 			/* switching from IGNORE to SONG or vice versa, recreate the entry */
-			rhythmdb_entry_delete (db, entry);
-			rhythmdb_add_timeout_commit (db, FALSE);
+			rhythmdb_entry_delete (event->db, entry);
+			rhythmdb_add_timeout_commit (event->db, FALSE);
 			entry = NULL;
 		}
 	}
@@ -1885,7 +1917,7 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 		if (event->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID)
 			event->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 
-		entry = rhythmdb_entry_new (db, event->entry_type, rb_refstring_get (event->real_uri));
+		entry = rhythmdb_entry_new (event->db, event->entry_type, rb_refstring_get (event->real_uri));
 		if (entry == NULL) {
 			rb_debug ("entry already exists");
 			return TRUE;
@@ -1894,20 +1926,20 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 		/* initialize the last played date to 0=never */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, 0);
-		rhythmdb_entry_set (db, entry,
+		rhythmdb_entry_set (event->db, entry,
 				    RHYTHMDB_PROP_LAST_PLAYED, &value);
 		g_value_unset (&value);
 
 		/* initialize the rating */
 		g_value_init (&value, G_TYPE_DOUBLE);
 		g_value_set_double (&value, 0);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &value);
+		rhythmdb_entry_set (event->db, entry, RHYTHMDB_PROP_RATING, &value);
 		g_value_unset (&value);
 
 	        /* first seen */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, time.tv_sec);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &value);
+		rhythmdb_entry_set (event->db, entry, RHYTHMDB_PROP_FIRST_SEEN, &value);
 		g_value_unset (&value);
 	}
 
@@ -1918,35 +1950,118 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 	if (event->vfsinfo) {
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, event->vfsinfo->mtime);
-		rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_MTIME, &value);
+		rhythmdb_entry_set_internal (event->db, entry, TRUE, RHYTHMDB_PROP_MTIME, &value);
 		g_value_unset (&value);
 	}
 
 	if (event->entry_type != event->ignore_type &&
 	    event->entry_type != event->error_type) {
-		set_props_from_metadata (db, entry, event->vfsinfo, event->metadata);
+		set_props_from_metadata (event->db, entry, event->vfsinfo, event->metadata);
 	}
 
 	/* we've seen this entry */
-	rhythmdb_entry_set_visibility (db, entry, TRUE);
+	rhythmdb_entry_set_visibility (event->db, entry, TRUE);
 
 	g_value_init (&value, G_TYPE_ULONG);
 	g_value_set_ulong (&value, time.tv_sec);
-	rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_LAST_SEEN, &value);
+	rhythmdb_entry_set_internal (event->db, entry, TRUE, RHYTHMDB_PROP_LAST_SEEN, &value);
 	g_value_unset (&value);
 
 	/* Remember the mount point of the volume the song is on */
-	rhythmdb_entry_set_mount_point (db, entry, rb_refstring_get (event->real_uri));
+	rhythmdb_entry_set_mount_point (event->db, entry, rb_refstring_get (event->real_uri));
 
 	/* monitor the file for changes */
 	/* FIXME: watch for errors */
 	if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY) && event->entry_type == RHYTHMDB_ENTRY_TYPE_SONG)
-		rhythmdb_monitor_uri_path (db, rb_refstring_get (entry->location), NULL);
+		rhythmdb_monitor_uri_path (event->db, rb_refstring_get (entry->location), NULL);
 
-	rhythmdb_add_timeout_commit (db, FALSE);
+	rhythmdb_add_timeout_commit (event->db, FALSE);
 
 	return TRUE;
 }
+
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+
+static void
+rhythmdb_missing_plugins_cb (gpointer duh, gboolean should_retry, RhythmDBEvent *event)
+{
+	rb_debug ("missing-plugin retry closure called: event %p, retry %d", event, should_retry);
+
+	if (should_retry) {
+		RhythmDBAction *load_action;
+
+		rb_debug ("retrying RHYTHMDB_ACTION_LOAD for %s", rb_refstring_get (event->real_uri));
+		load_action = g_new0 (RhythmDBAction, 1);
+		load_action->type = RHYTHMDB_ACTION_LOAD;
+		load_action->uri = rb_refstring_ref (event->real_uri);
+		load_action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		g_async_queue_push (event->db->priv->action_queue, load_action);
+	} else {
+		/* TODO replace event->error with something like
+		 * "Additional GStreamer plugins are required to play this file: %s"
+		 */
+
+		rb_debug ("not retrying RHYTHMDB_ACTION_LOAD for %s", rb_refstring_get (event->real_uri));
+		rhythmdb_process_metadata_load_real (event);
+	}
+}
+
+static void
+rhythmdb_missing_plugin_event_cleanup (RhythmDBEvent *event)
+{
+	rb_debug ("cleaning up missing plugin event %p", event);
+
+	event->db->priv->metadata_blocked = FALSE;
+	g_cond_signal (event->db->priv->metadata_cond);
+
+	g_mutex_unlock (event->db->priv->metadata_lock);
+	rhythmdb_event_free (event->db, event);
+}
+
+#endif /* HAVE_GSTREAMER_0_10_MISSING_PLUGINS */
+
+static gboolean
+rhythmdb_process_metadata_load (RhythmDB *db,
+				RhythmDBEvent *event)
+{
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	char **missing_plugins;
+	char **plugin_descriptions;
+
+	/* don't process missing plugin messages for files we're ignoring */
+	if (g_error_matches (event->error,
+			     RB_METADATA_ERROR,
+			     RB_METADATA_ERROR_NOT_AUDIO_IGNORE)) {
+		return rhythmdb_process_metadata_load_real (event);
+	} else if (rb_metadata_get_missing_plugins (event->metadata,
+					     &missing_plugins,
+					     &plugin_descriptions)) {
+		GClosure *closure;
+		gboolean processing;
+		
+		rb_debug ("missing plugins during metadata load for %s (event = %p)", rb_refstring_get (event->real_uri), event);
+
+		g_mutex_lock (event->db->priv->metadata_lock);
+
+		closure = g_cclosure_new ((GCallback) rhythmdb_missing_plugins_cb,
+					  event,
+					  (GClosureNotify) rhythmdb_missing_plugin_event_cleanup);
+		g_closure_set_marshal (closure, g_cclosure_marshal_VOID__BOOLEAN);
+		g_signal_emit (db, rhythmdb_signals[MISSING_PLUGINS], 0, missing_plugins, plugin_descriptions, closure, &processing);
+		if (processing) {
+			rb_debug ("processing missing plugins");
+		} else {
+			rhythmdb_process_metadata_load_real (event);
+		}
+
+		g_closure_sink (closure);
+		return FALSE;
+	}
+#endif /* HAVE_GSTREAMER_0_10_MISSING_PLUGINS */
+
+	return rhythmdb_process_metadata_load_real (event);
+}
+
 
 static void
 rhythmdb_process_queued_entry_set_event (RhythmDB *db,
@@ -2008,8 +2123,8 @@ rhythmdb_process_one_event (RhythmDBEvent *event, RhythmDB *db)
 	    ((event->type == RHYTHMDB_EVENT_STAT)
 	     || (event->type == RHYTHMDB_EVENT_METADATA_LOAD)
 	     || (event->type == RHYTHMDB_EVENT_ENTRY_SET))) {
-		rb_debug ("Database is read-only, delaying event processing\n");
-		g_async_queue_push (db->priv->event_queue, event);
+		rb_debug ("Database is read-only, delaying event processing");
+		g_async_queue_push (db->priv->delayed_write_queue, event);
 		return;
 	}
 
@@ -2217,9 +2332,26 @@ rhythmdb_execute_load (RhythmDB *db,
 		event->vfsinfo = NULL;
 	} else {
 		if (event->type == RHYTHMDB_EVENT_METADATA_LOAD) {
+			g_mutex_lock (event->db->priv->metadata_lock);
+			while (event->db->priv->metadata_blocked) {
+				g_cond_wait (event->db->priv->metadata_cond, event->db->priv->metadata_lock);
+			}
+
 			event->metadata = rb_metadata_new ();
 			rb_metadata_load (event->metadata, rb_refstring_get (event->real_uri),
 					  &event->error);
+
+			/* if we're missing some plugins, block further attempts to
+			 * read metadata until we've processed them.
+			 */
+			if (!g_error_matches (event->error,
+					     RB_METADATA_ERROR,
+					     RB_METADATA_ERROR_NOT_AUDIO_IGNORE) &&
+			    rb_metadata_has_missing_plugins (event->metadata)) {
+				event->db->priv->metadata_blocked = TRUE;
+			}
+
+			g_mutex_unlock (event->db->priv->metadata_lock);
 		}
 	}
 

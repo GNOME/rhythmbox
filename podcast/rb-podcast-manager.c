@@ -70,6 +70,9 @@ enum
 	FINISH_DOWNLOAD,
 	PROCESS_ERROR,
 	FEED_UPDATES_AVAILABLE,
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	MISSING_PLUGINS,
+#endif
 	LAST_SIGNAL
 };
 
@@ -150,7 +153,7 @@ static gboolean rb_podcast_manager_head_query_cb 	(GtkTreeModel *query_model,
 						   	 GtkTreePath *path,
 							 GtkTreeIter *iter,
 						   	 RBPodcastManager *data);
-static gboolean rb_podcast_manager_save_metadata	(RhythmDB *db,
+static void rb_podcast_manager_save_metadata		(RBPodcastManager *pd,
 						  	 RhythmDBEntry *entry,
 						  	 const char *uri);
 static void rb_podcast_manager_db_entry_added_cb 	(RBPodcastManager *pd,
@@ -205,7 +208,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 	rb_podcast_manager_signals[STATUS_CHANGED] =
 	       g_signal_new ("status_changed",
 		       		G_OBJECT_CLASS_TYPE (object_class),
-		 		GTK_RUN_LAST,
+		 		G_SIGNAL_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, status_changed),
 				NULL, NULL,
 				rb_marshal_VOID__BOXED_ULONG,
@@ -217,7 +220,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 	rb_podcast_manager_signals[START_DOWNLOAD] =
 	       g_signal_new ("start_download",
 		       		G_OBJECT_CLASS_TYPE (object_class),
-		 		GTK_RUN_LAST,
+		 		G_SIGNAL_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, start_download),
 				NULL, NULL,
 				g_cclosure_marshal_VOID__BOXED,
@@ -228,7 +231,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 	rb_podcast_manager_signals[FINISH_DOWNLOAD] =
 	       g_signal_new ("finish_download",
 		       		G_OBJECT_CLASS_TYPE (object_class),
-		 		GTK_RUN_LAST,
+		 		G_SIGNAL_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, finish_download),
 				NULL, NULL,
 				g_cclosure_marshal_VOID__BOXED,
@@ -239,7 +242,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 	rb_podcast_manager_signals[FEED_UPDATES_AVAILABLE] =
 	       g_signal_new ("feed_updates_available",
 		       		G_OBJECT_CLASS_TYPE (object_class),
-		 		GTK_RUN_LAST,
+		 		G_SIGNAL_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, feed_updates_available),
 				NULL, NULL,
 				g_cclosure_marshal_VOID__BOXED,
@@ -250,13 +253,27 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 	rb_podcast_manager_signals[PROCESS_ERROR] =
 	       g_signal_new ("process_error",
 		       		G_OBJECT_CLASS_TYPE (object_class),
-				GTK_RUN_LAST,
+				G_SIGNAL_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, process_error),
 				NULL, NULL,
 				g_cclosure_marshal_VOID__STRING,
 				G_TYPE_NONE,
 				1,
 				G_TYPE_STRING);
+
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	rb_podcast_manager_signals[MISSING_PLUGINS] =
+		g_signal_new ("missing-plugins",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,		/* no internal handler */
+			      NULL, NULL,
+			      rb_marshal_BOOLEAN__POINTER_POINTER_POINTER,
+			      G_TYPE_BOOLEAN,
+			      3,
+			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);
+#endif
+
 
 	g_type_class_add_private (klass, sizeof (RBPodcastManagerPrivate));
 }
@@ -772,7 +789,7 @@ rb_podcast_manager_download_file_info_cb (GnomeVFSAsyncHandle *handle,
 			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
 			g_value_unset (&val);
 
-			rb_podcast_manager_save_metadata (data->pd->priv->db, data->entry, canon_uri);
+			rb_podcast_manager_save_metadata (data->pd, data->entry, canon_uri);
 
 			g_free (canon_uri);
 
@@ -1021,63 +1038,118 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	return entry;
 }
 
-static gboolean
-rb_podcast_manager_save_metadata (RhythmDB *db, RhythmDBEntry *entry, const char *uri)
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+typedef struct {
+	RhythmDBEntry *entry;
+	RBPodcastManager *mgr;
+} MissingPluginRetryData;
+
+static void
+missing_plugins_retry_cb (gpointer inst, gboolean retry, MissingPluginRetryData *retry_data)
+{
+	const char *uri;
+	if (retry == FALSE)
+		return;
+
+	uri = rhythmdb_entry_get_string (retry_data->entry, RHYTHMDB_PROP_MOUNTPOINT);
+	rb_podcast_manager_save_metadata (retry_data->mgr, retry_data->entry, uri);
+}
+
+static void
+missing_plugins_retry_cleanup (MissingPluginRetryData *retry)
+{
+	g_object_unref (retry->mgr);
+	rhythmdb_entry_unref (retry->entry);
+	g_free (retry);
+}
+
+#endif
+
+static void
+rb_podcast_manager_save_metadata (RBPodcastManager *pd, RhythmDBEntry *entry, const char *uri)
 {
 	RBMetaData *md = rb_metadata_new ();
 	GError *error = NULL;
 	GValue val = { 0, };
 	const char *mime;
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	char **missing_plugins;
+	char **plugin_descriptions;
+#endif
 
-	rb_debug ("Loading podcast metadata from %s", uri);
+	rb_debug ("loading podcast metadata from %s", uri);
         rb_metadata_load (md, uri, &error);
+
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	if (rb_metadata_get_missing_plugins (md, &missing_plugins, &plugin_descriptions)) {
+		GClosure *closure;
+		gboolean processing;
+		MissingPluginRetryData *data;
+
+		rb_debug ("missing plugins during podcast metadata load for %s", uri);
+		data = g_new0 (MissingPluginRetryData, 1);
+		data->mgr = g_object_ref (pd);
+		data->entry = rhythmdb_entry_ref (entry);
+
+		closure = g_cclosure_new ((GCallback) missing_plugins_retry_cb,
+					  data,
+					  (GClosureNotify) missing_plugins_retry_cleanup);
+		g_closure_set_marshal (closure, g_cclosure_marshal_VOID__BOOLEAN);
+		g_signal_emit (pd, rb_podcast_manager_signals[MISSING_PLUGINS], 0, missing_plugins, plugin_descriptions, closure, &processing);
+		g_closure_sink (closure);
+
+		if (processing) {
+			/* when processing is complete, we'll retry */
+			return;
+		}
+	}
+#endif
 
 	if (error != NULL) {
 		/* this probably isn't an audio enclosure. or some other error */
 		g_value_init (&val, G_TYPE_ULONG);
 		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &val);
+		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
 		g_value_unset (&val);
 
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, error->message);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
+		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
 		g_value_unset (&val);
 
-		rhythmdb_commit (db);
+		rhythmdb_commit (pd->priv->db);
 
 		g_object_unref (md);
 		g_error_free (error);
 
-		return FALSE;
+		return;
 	}
 
 	mime = rb_metadata_get_mime (md);
 	if (mime) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, mime);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MIMETYPE, &val);
+		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_MIMETYPE, &val);
 		g_value_unset (&val);
 	}
 
 	if (rb_metadata_get (md,
 			     RB_METADATA_FIELD_DURATION,
 			     &val)) {
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &val);
+		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_DURATION, &val);
 		g_value_unset (&val);
 	}
 
 	if (rb_metadata_get (md,
 			     RB_METADATA_FIELD_BITRATE,
 			     &val)) {
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_BITRATE, &val);
+		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_BITRATE, &val);
 		g_value_unset (&val);
 	}
 
-	rhythmdb_commit (db);
+	rhythmdb_commit (pd->priv->db);
 
 	g_object_unref (md);
-	return TRUE;
 }
 
 static void
@@ -1265,7 +1337,7 @@ download_progress_cb (GnomeVFSXferProgressInfo *info, gpointer cb_data)
 			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
 			g_value_unset (&val);
 
-			rb_podcast_manager_save_metadata (data->pd->priv->db,
+			rb_podcast_manager_save_metadata (data->pd,
 							  data->entry,
 							  canon_uri);
 			g_free (canon_uri);

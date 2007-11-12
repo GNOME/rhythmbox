@@ -27,6 +27,7 @@ AC_CHECK_SIZEOF(long)
 DBUS_MIN_REQS=0.35
 GST_0_10_REQS=0.10.4
 GST_0_10_XFADE_REQS=0.10.11
+GST_0_10_MISSING_PLUGIN_REQS=0.10.12
 GTK_REQS=2.8.0
 GNOME_MEDIA_PROFILES_REQS=2.8
 GNOME_VFS_REQS=2.8.0
@@ -272,6 +273,14 @@ if test x"$have_gstreamer_0_10_xfade" = xyes; then
 	AC_DEFINE(HAVE_GSTREAMER_0_10_XFADE,1,[Define if you want to use the crossfading GStreamer 0.10 backend])
 fi
 AM_CONDITIONAL(USE_GSTREAMER_0_10_XFADE, test x"$have_gstreamer_0_10_xfade" = xyes)
+
+PKG_CHECK_MODULES(GSTREAMER_0_10_MISSING_PLUGINS, \
+		  gstreamer-plugins-base-0.10 >= $GST_0_10_MISSING_PLUGIN_REQS,
+		  have_gstreamer_0_10_missing_plugins=yes,have_gstreamer_0_10_missing_plugins=no)
+if test x"$have_gstreamer_0_10_missing_plugins" = xyes; then
+	AC_DEFINE(HAVE_GSTREAMER_0_10_MISSING_PLUGINS,1,[Define if you want to enable GStreamer plugin installation])
+fi
+AM_CONDITIONAL(USE_GSTREAMER_0_10_MISSING_PLUGINS, test x"$have_gstreamer_0_10_missing_plugins" = xyes)
 
 dnl Tag writing
 AC_ARG_ENABLE(tag-writing,

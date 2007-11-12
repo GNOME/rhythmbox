@@ -32,6 +32,10 @@
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+#include <gst/pbutils/pbutils.h>
+#endif /* HAVE_GSTREAMER_0_10_MISSING_PLUGINS */
+
 #include "rb-debug.h"
 #include "rb-marshal.h"
 #include "rb-util.h"
@@ -89,6 +93,16 @@ enum
 	PROP_0,
 	PROP_PLAYBIN
 };
+
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+enum
+{
+	MISSING_PLUGINS,
+	LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL] = { 0 };
+#endif
 
 struct _RBPlayerGstPrivate
 {
@@ -160,6 +174,19 @@ rb_player_gst_class_init (RBPlayerGstClass *klass)
 							      "playbin element",
 							      GST_TYPE_ELEMENT,
 							      G_PARAM_READABLE));
+	
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	signals[MISSING_PLUGINS] =
+		g_signal_new ("missing-plugins",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,	/* no point handling this internally */
+			      NULL, NULL,
+			      rb_marshal_VOID__POINTER_POINTER_POINTER,
+			      G_TYPE_NONE,
+			      3,
+			      G_TYPE_POINTER, G_TYPE_STRV, G_TYPE_STRV);
+#endif
 
 	g_type_class_add_private (klass, sizeof (RBPlayerGstPrivate));
 }
@@ -389,6 +416,42 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 	g_hash_table_insert (player->priv->idle_info_ids, GUINT_TO_POINTER (signal->id), NULL);
 }
 
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+static void
+rb_player_gst_handle_missing_plugin_message (RBPlayerGst *player, GstMessage *message)
+{
+	char **details;
+	char **descriptions;
+	char *detail;
+	char *description;
+	int count;
+
+	rb_debug ("got missing-plugin message from %s: %s",
+		  GST_OBJECT_NAME (GST_MESSAGE_SRC (message)),
+		  gst_missing_plugin_message_get_installer_detail (message));
+
+	/* probably need to wait to collect any subsequent missing-plugin
+	 * messages, but I think we'd need to wait for state changes to do
+	 * that.  for now, we can only handle a single message.
+	 */
+	count = 1;
+
+	details = g_new0 (char *, count + 1);
+	descriptions = g_new0 (char *, count + 1);
+
+	detail = gst_missing_plugin_message_get_installer_detail (message);
+	description = gst_missing_plugin_message_get_description (message);
+	details[0] = g_strdup (detail);
+	descriptions[0] = g_strdup (description);
+
+	g_signal_emit (player, signals[MISSING_PLUGINS], 0, player->priv->stream_data, details, descriptions);
+	g_strfreev (details);
+	g_strfreev (descriptions);
+
+	gst_message_unref (message);
+}
+#endif
+
 static gboolean
 rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
 {
@@ -504,6 +567,14 @@ rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
 		g_value_set_string (signal->info, gst_structure_get_name (structure));
 		g_idle_add ((GSourceFunc) emit_signal_idle, signal);
 	}
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	case GST_MESSAGE_ELEMENT: {
+		if (gst_is_missing_plugin_message (message)) {
+			rb_player_gst_handle_missing_plugin_message (mp, message);
+		}
+		break;
+	}
+#endif
 	default:
 		break;
 	}
@@ -662,6 +733,7 @@ rb_player_gst_sync_pipeline (RBPlayerGst *mp)
 			return FALSE;
 		}
 	}
+
 	/* FIXME: Set up a timeout to watch if the pipeline doesn't
 	 * go to PAUSED/PLAYING within some time (5 secs maybe?)
 	 */
@@ -694,6 +766,7 @@ end_gstreamer_operation (RBPlayerGst *mp, gboolean op_failed, GError **error)
 			     RB_PLAYER_ERROR_GENERAL,
 			     _("Unknown playback error"));
 	}
+
 }
 
 static void

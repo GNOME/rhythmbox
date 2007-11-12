@@ -52,6 +52,7 @@ rhythmbox_metadata_LDADD = 				\
 	librbmetadatasvc.la				\
 	$(top_builddir)/lib/librb.la			\
 	$(RHYTHMBOX_LIBS)				\
+	-lgstpbutils-0.10				\
 	$(DBUS_LIBS)
 
 # test program?
@@ -63,6 +64,7 @@ test_metadata_LDADD =					\
 	librbmetadata.la				\
 	$(top_builddir)/lib/librb.la			\
 	$(RHYTHMBOX_LIBS)				\
+	-lgstpbutils-0.10				\
 	$(DBUS_LIBS)
 
 else

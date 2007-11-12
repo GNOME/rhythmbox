@@ -64,6 +64,55 @@ rb_metadata_dbus_get_string (DBusMessageIter *iter, gchar **value)
 }
 
 gboolean
+rb_metadata_dbus_get_strv (DBusMessageIter *iter, char ***strv)
+{
+	guint32 count;
+	guint32 i;
+
+	/* strv is stored as a count followed by that many strings */
+	if (rb_metadata_dbus_get_uint32 (iter, &count) == FALSE) {
+		return FALSE;
+	}
+
+	if (count == 0) {
+		*strv = NULL;
+		return TRUE;
+	}
+
+	*strv = g_new0 (char *, count+1);
+	for (i = 0; i < count; i++) {
+		if (rb_metadata_dbus_get_string (iter, (*strv)+i) == FALSE) {
+			return FALSE;
+		}
+	}
+	return TRUE;
+}
+
+gboolean
+rb_metadata_dbus_add_strv (DBusMessageIter *iter, char **strv)
+{
+	guint32 count;
+	guint32 i;
+
+	if (strv == NULL) {
+		count = 0;
+	} else {
+		count = g_strv_length ((char **)strv);
+	}
+
+	if (!dbus_message_iter_append_basic (iter, DBUS_TYPE_UINT32, &count)) {
+		return FALSE;
+	}
+
+	for (i=0; i < count; i++) {
+		if (!dbus_message_iter_append_basic (iter, DBUS_TYPE_STRING, &strv[i])) {
+			return FALSE;
+		}
+	}
+	return TRUE;
+}
+
+gboolean
 rb_metadata_dbus_add_to_message (RBMetaData *md, DBusMessageIter *iter)
 {
 	DBusMessageIter a_iter;

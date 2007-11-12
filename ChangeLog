@@ -1,3 +1,84 @@
+2007-11-12  Jonathan Matthew  <jonathan@d14n.org>
+
+	* configure.ac:
+	* metadata/Makefile.am:
+	* metadata/rb-metadata-dbus-client.c: (rb_metadata_load),
+	(rb_metadata_has_missing_plugins),
+	(rb_metadata_get_missing_plugins):
+	* metadata/rb-metadata-dbus-service.c: (_send_error),
+	(rb_metadata_dbus_load), (rb_metadata_dbus_can_save),
+	(rb_metadata_dbus_save), (test_load):
+	* metadata/rb-metadata-dbus.c: (rb_metadata_dbus_get_strv),
+	(rb_metadata_dbus_add_strv):
+	* metadata/rb-metadata-dbus.h:
+	* metadata/rb-metadata-gst.c: (rb_metadata_gst_new_decoded_pad_cb),
+	(rb_metadata_gst_unknown_type_cb),
+	(rb_metadata_handle_missing_plugin_message),
+	(rb_metadata_bus_handler), (rb_metadata_load),
+	(rb_metadata_has_missing_plugins),
+	(rb_metadata_get_missing_plugins):
+	* metadata/rb-metadata.h:
+	* metadata/test-metadata.c: (load_metadata_cb):
+	Process GStreamer missing-plugin messages.  This requires a slightly
+	newer version of GStreamer than we otherwise require, so it's
+	conditional.  Missing plugin information is available to callers of
+	the RBMetadata interface.
+
+	* shell/Makefile.am:
+	* lib/rb-marshal.list:
+	* shell/rb-shell.c: (rb_shell_constructor):
+	* shell/rb-missing-plugins.c:
+	(rb_plugin_install_plugin_is_blacklisted),
+	(rb_plugin_install_blacklist_plugin),
+	(rb_plugin_install_context_free), (rb_plugin_install_done),
+	(on_plugin_installation_done), (missing_plugins_event),
+	(missing_plugins_cb), (rb_missing_plugins_init):
+	* shell/rb-missing-plugins.h:
+	Add some machinery for calling GStreamer plugin installation helpers
+	and then retrying the original operation.
+
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init), (rhythmdb_init),
+	(rhythmdb_shutdown), (rhythmdb_finalize), (rhythmdb_read_leave),
+	(rhythmdb_process_metadata_load_real),
+	(rhythmdb_missing_plugins_cb),
+	(rhythmdb_missing_plugin_event_cleanup),
+	(rhythmdb_process_metadata_load), (rhythmdb_process_one_event),
+	(rhythmdb_execute_load):
+	Add missing plugin handling for file importing.  Requires some
+	interesting locking to block further import attempts while installing
+	plugins.  We don't process missing plugins for files we're going to
+	ignore anyway.
+
+	Also, while the database is read-only, add write operations to a
+	separate queue rather than requeueing them endlessly until the
+	database is writeable again.
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_class_init),
+	(rb_podcast_manager_download_file_info_cb),
+	(missing_plugins_retry_cb), (missing_plugins_retry_cleanup),
+	(rb_podcast_manager_save_metadata), (download_progress_cb):
+	Add missing plugin handling for podcast downloads.  When installation
+	is complete, retry the metadata load operation.
+
+	* backends/gstreamer/Makefile.am:
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(rb_player_gst_xfade_class_init), (emit_missing_plugins),
+	(rb_player_gst_xfade_handle_missing_plugin_message),
+	(rb_player_gst_xfade_bus_cb):
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_class_init),
+	(rb_player_gst_handle_missing_plugin_message),
+	(rb_player_gst_bus_cb), (rb_player_gst_sync_pipeline),
+	(end_gstreamer_operation):
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_init), (missing_plugins_retry_cb),
+	(missing_plugins_retry_cleanup), (missing_plugins_cb):
+	Add missing plugin handling for playback.  When GStreamer complains
+	about missing plugins, stop playback, request installation, then retry
+	playback when it's done.
+
+	Fixes #338308.
+
 2007-11-11  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  louisfrancis.rb@gmail.com

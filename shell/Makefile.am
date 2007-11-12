@@ -89,7 +89,9 @@ librbshell_la_SOURCES =              			\
 	rb-play-order-random-by-rating.c		\
 	rb-play-order-random-by-rating.h		\
 	rb-tray-icon.c					\
-	rb-tray-icon.h
+	rb-tray-icon.h					\
+	rb-missing-plugins.c				\
+	rb-missing-plugins.h
 
 rhythmbox_LDADD =					\
 	librbshell.la					\
@@ -118,6 +120,10 @@ rhythmbox_LDADD += $(GNOME_MEDIA_PROFILES_LIBS)
 INCLUDES += $(GNOME_MEDIA_PROFILES_CFLAGS)
 endif
 
+if USE_GSTREAMER_0_10_MISSING_PLUGINS
+rhythmbox_LDADD +=					\
+	-lgstpbutils-0.10
+endif
 
 rb-shell-glue.h: rb-shell.xml Makefile
 	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell --mode=glib-server --output=$@ $<

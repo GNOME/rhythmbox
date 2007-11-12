@@ -129,6 +129,9 @@ static void rb_shell_player_sync_replaygain (RBShellPlayer *player,
                                              RhythmDBEntry *entry);
 static void tick_cb (RBPlayer *player, RhythmDBEntry *entry, long elapsed, long duration, gpointer data);
 static void error_cb (RBPlayer *player, RhythmDBEntry *entry, const GError *err, gpointer data);
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+static void missing_plugins_cb (RBPlayer *player, RhythmDBEntry *entry, const char **details, const char **descriptions, RBShellPlayer *sp);
+#endif
 static void playing_stream_cb (RBPlayer *player, RhythmDBEntry *entry, RBShellPlayer *shell_player);
 static void rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err);
 
@@ -277,6 +280,7 @@ enum
 	PLAYING_SONG_CHANGED,
 	PLAYING_URI_CHANGED,
 	PLAYING_SONG_PROPERTY_CHANGED,
+	MISSING_PLUGINS,
 	LAST_SIGNAL
 };
 
@@ -502,6 +506,20 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      4,
 			      G_TYPE_STRING, G_TYPE_STRING,
 			      G_TYPE_VALUE, G_TYPE_VALUE);
+
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	rb_shell_player_signals[MISSING_PLUGINS] =
+		g_signal_new ("missing-plugins",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,	/* no need for an internal handler */
+			      NULL, NULL,
+			      rb_marshal_BOOLEAN__POINTER_POINTER_POINTER,
+			      G_TYPE_BOOLEAN,
+			      3,
+			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);
+#endif
+
 
 	g_type_class_add_private (klass, sizeof (RBShellPlayerPrivate));
 }
@@ -834,6 +852,13 @@ rb_shell_player_init (RBShellPlayer *player)
 				 "playing-stream",
 				 G_CALLBACK (playing_stream_cb),
 				 player, 0);
+
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	g_signal_connect_object (player->priv->mmplayer,
+				 "missing-plugins",
+				 G_CALLBACK (missing_plugins_cb),
+				 player, 0);
+#endif
 
 	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()),
 			  "volume-pre-unmount",
@@ -3179,6 +3204,87 @@ tick_cb (RBPlayer *mmplayer,
 
 	GDK_THREADS_LEAVE ();
 }
+
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+
+typedef struct {
+	RhythmDBEntry *entry;
+	RBShellPlayer *player;
+} MissingPluginRetryData;
+
+static void
+missing_plugins_retry_cb (gpointer inst,
+			  gboolean retry,
+			  MissingPluginRetryData *retry_data)
+{
+	GError *error = NULL;
+	if (retry == FALSE) {
+		/* next?  or stop playback? */
+		rb_debug ("not retrying playback; stopping player");
+		rb_player_close (retry_data->player->priv->mmplayer, NULL, NULL);
+		return;
+	}
+
+	rb_debug ("retrying playback");
+	rb_shell_player_set_playing_entry (retry_data->player,
+					   retry_data->entry,
+					   FALSE, FALSE,
+					   &error);
+	if (error != NULL) {
+		rb_shell_player_error (retry_data->player, FALSE, error);
+		g_clear_error (&error);
+	}
+}
+
+static void
+missing_plugins_retry_cleanup (MissingPluginRetryData *retry)
+{
+	retry->player->priv->handling_error = FALSE;
+
+	g_object_unref (retry->player);
+	rhythmdb_entry_unref (retry->entry);
+	g_free (retry);
+}
+
+
+static void
+missing_plugins_cb (RBPlayer *player,
+		    RhythmDBEntry *entry,
+		    const char **details,
+		    const char **descriptions,
+		    RBShellPlayer *sp)
+{
+	gboolean processing;
+	GClosure *retry;
+	MissingPluginRetryData *retry_data;
+
+	retry_data = g_new0 (MissingPluginRetryData, 1);
+	retry_data->player = g_object_ref (sp);
+	retry_data->entry = rhythmdb_entry_ref (entry);
+
+	retry = g_cclosure_new ((GCallback) missing_plugins_retry_cb,
+				retry_data,
+				(GClosureNotify) missing_plugins_retry_cleanup);
+	g_closure_set_marshal (retry, g_cclosure_marshal_VOID__BOOLEAN);
+	g_signal_emit (sp,
+		       rb_shell_player_signals[MISSING_PLUGINS], 0,
+		       details, descriptions, retry,
+		       &processing);
+	if (processing) {
+		/* don't handle any further errors */
+		sp->priv->handling_error = TRUE;
+
+		/* probably specify the URI here.. */
+		rb_debug ("stopping player while processing missing plugins");
+		rb_player_close (retry_data->player->priv->mmplayer, NULL, NULL);
+	} else {
+		rb_debug ("not processing missing plugins; simulating EOS");
+		rb_shell_player_handle_eos (NULL, NULL, retry_data->player);
+	}
+
+	g_closure_sink (retry);
+}
+#endif
 
 gboolean
 rb_shell_player_get_playing_path (RBShellPlayer *shell_player,

@@ -122,6 +122,12 @@ void		rb_metadata_save	(RBMetaData *md,
 
 const char *	rb_metadata_get_mime	(RBMetaData *md);
 
+gboolean	rb_metadata_has_missing_plugins (RBMetaData *md);
+
+gboolean	rb_metadata_get_missing_plugins (RBMetaData *md,
+					 char ***missing_plugins,
+					 char ***plugin_descriptions);
+
 gboolean	rb_metadata_get		(RBMetaData *md, RBMetaDataField field,
 					 GValue *val);
 

@@ -84,6 +84,7 @@
 #include "rb-sourcelist-model.h"
 #include "rb-song-info.h"
 #include "rb-marshal.h"
+#include "rb-missing-plugins.h"
 
 #define PLAYING_ENTRY_NOTIFY_TIME 4
 
@@ -1371,6 +1372,8 @@ rb_shell_constructor (GType type,
 	rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
 
 	rb_plugins_engine_init (shell);
+
+	rb_missing_plugins_init (shell);
 
 	g_idle_add ((GSourceFunc)_scan_idle, shell);
 

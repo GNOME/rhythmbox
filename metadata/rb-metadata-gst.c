@@ -29,6 +29,9 @@
 #include <gst/tag/tag.h>
 #include <gst/gsturi.h>
 
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+#include <gst/pbutils/pbutils.h>
+#endif /* HAVE_GSTREAMER_0_10_MISSING_PLUGINS */
 
 #include "rb-metadata.h"
 #include "rb-debug.h"
@@ -49,7 +52,8 @@ const char * ignore_mime_types[] = {
 	"image/",
 	"text/",
 	"application/xml",
-	"application/zip"
+	"application/zip",
+	"application/x-executable"
 };
 
 /*
@@ -83,8 +87,10 @@ struct RBMetaDataPrivate
 	char *type;
 	gboolean handoff;
 	gboolean eos;
-	gboolean non_audio;
+	gboolean has_audio;
+	gboolean has_non_audio;
 	gboolean has_video;
+	GSList *missing_plugins;
 	GError *error;
 };
 
@@ -713,7 +719,7 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 	/* we get "ANY" caps for text/plain files etc. */
 	if (gst_caps_is_empty (caps) || gst_caps_is_any (caps)) {
 		rb_debug ("decoded pad with no caps or any caps.  this file is boring.");
-		md->priv->non_audio = TRUE;
+		md->priv->has_non_audio = TRUE;
 		cancel = TRUE;
 	} else {
 		GstPad *sink_pad;
@@ -727,16 +733,17 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 
 		if (g_str_has_prefix (mimetype, "audio/x-raw")) {
 			rb_debug ("got decoded audio pad of type %s", mimetype);
+			md->priv->has_audio = TRUE;
 		} else if (g_str_has_prefix (mimetype, "video/")) {
 			rb_debug ("got decoded video pad of type %s", mimetype);
-			md->priv->non_audio = TRUE;
+			md->priv->has_non_audio = TRUE;
 			md->priv->has_video = TRUE;
 		} else {
 			/* assume anything we can get a video or text stream out of is
 			 * something that should be fed to totem rather than rhythmbox.
 			 */
 			rb_debug ("got decoded pad of non-audio type %s", mimetype);
-			md->priv->non_audio = TRUE;
+			md->priv->has_non_audio = TRUE;
 		}
 	}
 
@@ -753,9 +760,6 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 static void
 rb_metadata_gst_unknown_type_cb (GstElement *decodebin, GstPad *pad, GstCaps *caps, RBMetaData *md)
 {
-	/* try to shortcut it a bit */
-	md->priv->non_audio = TRUE;
-
 	if (!gst_caps_is_empty (caps) && !gst_caps_is_any (caps)) {
 		GstStructure *structure;
 		const gchar *mimetype;
@@ -771,6 +775,9 @@ rb_metadata_gst_unknown_type_cb (GstElement *decodebin, GstPad *pad, GstCaps *ca
 		rb_debug ("decodebin emitted unknown type signal");
 	}
 
+	md->priv->has_non_audio = TRUE;
+#ifndef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	/* try to shortcut it a bit */
 	{
 		char *msg;
 
@@ -778,6 +785,7 @@ rb_metadata_gst_unknown_type_cb (GstElement *decodebin, GstPad *pad, GstCaps *ca
 		GST_ELEMENT_ERROR (md->priv->pipeline, STREAM, CODEC_NOT_FOUND, ("%s", msg), (NULL));
 		g_free (msg);
 	}
+#endif
 }
 
 static GstElement *make_pipeline_element (GstElement *pipeline, const char *element, GError **error)
@@ -796,6 +804,17 @@ static GstElement *make_pipeline_element (GstElement *pipeline, const char *elem
 	return elem;
 }
 
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+static void
+rb_metadata_handle_missing_plugin_message (RBMetaData *md, GstMessage *message)
+{
+	rb_debug ("got missing-plugin message from %s: %s",
+		  GST_OBJECT_NAME (GST_MESSAGE_SRC (message)),
+		  gst_missing_plugin_message_get_installer_detail (message));
+	md->priv->missing_plugins = g_slist_prepend (md->priv->missing_plugins, gst_message_ref (message));
+}
+#endif
+
 static gboolean
 rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 {
@@ -809,6 +828,11 @@ rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 	{
 		GError *gerror;
 		gchar *debug;
+		char *src;
+
+		src = gst_element_get_name (GST_MESSAGE_SRC (message));
+		rb_debug ("got error message from %s", src);
+		g_free (src);
 
 		gst_message_parse_error (message, &gerror, &debug);
 		if (gerror->domain == GST_STREAM_ERROR &&
@@ -819,7 +843,7 @@ rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 			   md->priv->type != NULL &&
 			   strcmp (md->priv->type, "text/plain") == 0) {
 			rb_debug ("got WRONG_TYPE error for text/plain: setting non-audio flag");
-			md->priv->non_audio = TRUE;
+			md->priv->has_non_audio = TRUE;
 		} else if (md->priv->error) {
 			rb_debug ("caught error: %s, but we've already got one", gerror->message);
 		} else {
@@ -856,9 +880,25 @@ rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 		}
 		break;
 	}
-	default:
-		rb_debug ("message of type %d", GST_MESSAGE_TYPE (message));
+	case GST_MESSAGE_ELEMENT:
+	{
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+		if (gst_is_missing_plugin_message (message)) {
+			rb_metadata_handle_missing_plugin_message (md, message);
+		}
+#endif
 		break;
+	}
+	default:
+	{
+		char *src;
+
+		src = gst_element_get_name (GST_MESSAGE_SRC (message));
+		rb_debug ("message of type %s from %s",
+			  GST_MESSAGE_TYPE_NAME (message), src);
+		g_free (src);
+		break;
+	}
 	}
 
 	return FALSE;
@@ -914,8 +954,10 @@ rb_metadata_load (RBMetaData *md,
 	md->priv->error = NULL;
 	md->priv->eos = FALSE;
 	md->priv->handoff = FALSE;
-	md->priv->non_audio = FALSE;
+	md->priv->has_audio = FALSE;
+	md->priv->has_non_audio = FALSE;
 	md->priv->has_video = FALSE;
+	md->priv->missing_plugins = NULL;
 
 	if (md->priv->pipeline) {
 		gst_object_unref (GST_OBJECT (md->priv->pipeline));
@@ -988,7 +1030,6 @@ rb_metadata_load (RBMetaData *md,
 	change_timeout = 0;
 	while (state_ret == GST_STATE_CHANGE_ASYNC &&
 	       !md->priv->eos &&
-	       !md->priv->non_audio &&
 	       change_timeout < 5) {
 		GstMessage *msg;
 
@@ -1009,7 +1050,7 @@ rb_metadata_load (RBMetaData *md,
 
 	if (state_ret != GST_STATE_CHANGE_SUCCESS) {
 		rb_debug ("failed to go to PAUSED for %s", uri);
-		if (!md->priv->non_audio && md->priv->error == NULL)
+		if (!md->priv->has_non_audio && md->priv->error == NULL)
 			g_set_error (error,
 				     RB_METADATA_ERROR,
 				     RB_METADATA_ERROR_INTERNAL,
@@ -1061,7 +1102,8 @@ rb_metadata_load (RBMetaData *md,
 	 * these don't include the URI as the import errors source
 	 * already displays it.
 	 */
-	if (md->priv->non_audio || !md->priv->handoff) {
+	if ((md->priv->has_video || !md->priv->has_audio) &&
+	    (md->priv->has_non_audio || !md->priv->handoff)) {
 		gboolean ignore = FALSE;
 		int i;
 
@@ -1375,3 +1417,59 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 			     newval);
 	return TRUE;
 }
+
+gboolean
+rb_metadata_has_missing_plugins (RBMetaData *md)
+{
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	return (g_slist_length (md->priv->missing_plugins) > 0);
+#else
+	return FALSE;
+#endif
+}
+
+gboolean
+rb_metadata_get_missing_plugins (RBMetaData *md,
+				 char ***missing_plugins,
+				 char ***plugin_descriptions)
+{
+#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	char **mp;
+	char **pd;
+	int count;
+	int i;
+	GSList *t;
+
+	count = g_slist_length (md->priv->missing_plugins);
+	if (count == 0) {
+		return FALSE;
+	}
+
+	mp = g_new0 (char *, count + 1);
+	pd = g_new0 (char *, count + 1);
+	i = 0;
+	for (t = md->priv->missing_plugins; t != NULL; t = t->next) {
+		GstMessage *msg = GST_MESSAGE (t->data);
+		char *detail;
+		char *description;
+
+		detail = gst_missing_plugin_message_get_installer_detail (msg);
+		description = gst_missing_plugin_message_get_description (msg);
+		rb_debug ("adding [%s,%s] to return data", detail, description);
+		mp[i] = g_strdup (detail);
+		pd[i] = g_strdup (description);
+		i++;
+
+		gst_message_unref (msg);
+	}
+	g_slist_free (md->priv->missing_plugins);
+	md->priv->missing_plugins = NULL;
+
+	*missing_plugins = mp;
+	*plugin_descriptions = pd;
+	return TRUE;
+#else
+	return FALSE;
+#endif
+}
+

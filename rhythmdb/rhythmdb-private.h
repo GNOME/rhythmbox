@@ -127,6 +127,9 @@ struct RhythmDBPrivate
 	gint read_counter;
 
 	RBMetaData *metadata;
+	gboolean metadata_blocked;
+	GMutex *metadata_lock;
+	GCond *metadata_cond;
 
 	xmlChar **column_xml_names;
 
@@ -138,6 +141,7 @@ struct RhythmDBPrivate
 	GAsyncQueue *action_queue;
 	GAsyncQueue *event_queue;
 	GAsyncQueue *restored_queue;
+	GAsyncQueue *delayed_write_queue;
 	GThreadPool *query_thread_pool;
 
 	GList *stat_list;

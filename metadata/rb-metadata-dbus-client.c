@@ -71,6 +71,8 @@ struct RBMetaDataPrivate
 {
 	char       *uri;
 	char       *mimetype;
+	char      **missing_plugins;
+	char      **plugin_descriptions;
 	GHashTable *metadata;
 };
 
@@ -389,6 +391,35 @@ rb_metadata_load (RBMetaData *md,
 			rb_debug ("couldn't read response message");
 		}
 	}
+	
+	if (*error == NULL) {
+		if (!rb_metadata_dbus_get_strv (&iter, &md->priv->missing_plugins)) {
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_INTERNAL,
+				     _("D-BUS communication error"));
+			rb_debug ("couldn't get missing plugin data from response message");
+		}
+	}
+
+	if (*error == NULL) {
+		if (!rb_metadata_dbus_get_strv (&iter, &md->priv->plugin_descriptions)) {
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_INTERNAL,
+				     _("D-BUS communication error"));
+			rb_debug ("couldn't get missing plugin descriptions from response message");
+		}
+	}
+
+	/* if we're missing some plugins, we'll need to make sure the
+	 * metadata helper rereads the registry before the next load.
+	 * the easiest way to do this is to kill it.
+	 */
+	if (*error == NULL && md->priv->missing_plugins != NULL) {
+		rb_debug ("missing plugins; killing metadata service to force registry reload");
+		kill_metadata_service ();
+	}
 
 	if (*error == NULL) {
 		if (!rb_metadata_dbus_get_boolean (&iter, &ok)) {
@@ -397,21 +428,24 @@ rb_metadata_load (RBMetaData *md,
 				     RB_METADATA_ERROR_INTERNAL,
 				     _("D-BUS communication error"));
 			rb_debug ("couldn't get success flag from response message");
-		} else if (ok) {
-			/* get mime type */
-			if (!rb_metadata_dbus_get_string (&iter, &md->priv->mimetype)) {
-				g_set_error (error,
-					     RB_METADATA_ERROR,
-					     RB_METADATA_ERROR_INTERNAL,
-					     _("D-BUS communication error"));
-			} else {
-				/* get metadata */
-				rb_debug ("got mimetype: %s", md->priv->mimetype);
-				rb_metadata_dbus_read_from_message (md, md->priv->metadata, &iter);
-			}
-		} else {
+		} else if (ok == FALSE) {
 			read_error_from_message (md, &iter, error);
 		}
+	}
+
+	if (ok && *error == NULL) {
+		if (!rb_metadata_dbus_get_string (&iter, &md->priv->mimetype)) {
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_INTERNAL,
+				     _("D-BUS communication error"));
+		} else {
+			rb_debug ("got mimetype: %s", md->priv->mimetype);
+		}
+	}
+
+	if (ok && *error == NULL) {
+		rb_metadata_dbus_read_from_message (md, md->priv->metadata, &iter);
 	}
 
 	if (message)
@@ -429,6 +463,27 @@ rb_metadata_get_mime (RBMetaData *md)
 {
 	return md->priv->mimetype;
 }
+
+gboolean
+rb_metadata_has_missing_plugins (RBMetaData *md)
+{
+	return (md->priv->missing_plugins != NULL);
+}
+
+gboolean
+rb_metadata_get_missing_plugins (RBMetaData *md,
+				 char ***missing_plugins,
+				 char ***plugin_descriptions)
+{
+	if (md->priv->missing_plugins == NULL) {
+		return FALSE;
+	}
+
+	*missing_plugins = g_strdupv (md->priv->missing_plugins);
+	*plugin_descriptions = g_strdupv (md->priv->plugin_descriptions);
+	return TRUE;
+}
+
 
 gboolean
 rb_metadata_get (RBMetaData *md, RBMetaDataField field,

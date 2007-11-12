@@ -43,6 +43,11 @@ gboolean	rb_metadata_dbus_get_uint32 (DBusMessageIter *iter,
 					     guint32 *value);
 gboolean	rb_metadata_dbus_get_string (DBusMessageIter *iter,
 					     gchar **value);
+gboolean	rb_metadata_dbus_get_strv (DBusMessageIter *iter,
+					   char ***strv);
+
+gboolean	rb_metadata_dbus_add_strv (DBusMessageIter *iter,
+					   char **strv);
 
 gboolean	rb_metadata_dbus_add_to_message (RBMetaData *md,
 						 DBusMessageIter *iter);
