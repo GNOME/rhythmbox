@@ -318,7 +318,10 @@ class JamendoSource(rb.BrowserSource):
 						self.__db.set(entry, rhythmdb.PROP_ARTIST, artist['dispname'])
 						self.__db.set(entry, rhythmdb.PROP_GENRE, artist['genre'])
 					self.__db.set(entry, rhythmdb.PROP_ALBUM, album['dispname'])
-					self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, int(track['trackno']))
+
+					trackno = int(track['trackno'])
+					if trackno >= 0:
+						self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, trackno)
 					self.__db.set(entry, rhythmdb.PROP_DURATION, int(track['lengths']))
 
 					self.__p2plinks[stream] = album['P2PLinks']

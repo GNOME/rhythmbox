@@ -1,3 +1,10 @@
+2007-11-12  Bastien Nocera  <hadess@hadess.net>
+
+	* README: remove mention of gst-launch-0.8
+	* plugins/jamendo/jamendo/JamendoSource.py:
+	Backport fix from the devel branch to avoid crashing when
+	we hit negative track numbers
+
 2007-10-10  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/rb-python-module.c: (rb_python_module_init_python):
