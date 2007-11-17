@@ -1055,7 +1055,7 @@ handle_song_listing (RBDAAPConnection *connection,
 		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_GENRE, genre);
 
 		/* stream URI property is stored as a mountpoint for get_playback_uri */
-		if (streamURI) {
+		if (streamURI && *streamURI != '\0') {
 			entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_MOUNTPOINT, streamURI);
 		}
 
