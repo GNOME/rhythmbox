@@ -166,25 +166,27 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 
 	rb_mtp_plugin_setup_dbus_hal_connection (plugin);
 
+	rb_profile_start ("scanning for MTP devices");
 	devices = libhal_get_all_devices (plugin->hal_context, &num, NULL);
 	ret = LIBMTP_Get_Supported_Devices_List (&entries, &numentries);
 	if (ret == 0) {
-		int  p;
 
-		for (p = 0; p < numentries; p++) {
-			for (i = 0; i < num; i++) {
-				int vendor_id;
-				int product_id;
-				const char *tmpudi;
+		for (i = 0; i < num; i++) {
+			int vendor_id;
+			int product_id;
+			const char *tmpudi;
+			int  p;
 
-				tmpudi = devices[i];
-				vendor_id = libhal_device_get_property_int (plugin->hal_context, tmpudi, "usb.vendor_id", NULL);
-				product_id = libhal_device_get_property_int (plugin->hal_context, tmpudi, "usb.product_id", NULL);
+			tmpudi = devices[i];
+			vendor_id = libhal_device_get_property_int (plugin->hal_context, tmpudi, "usb.vendor_id", NULL);
+			product_id = libhal_device_get_property_int (plugin->hal_context, tmpudi, "usb.product_id", NULL);
+			for (p = 0; p < numentries; p++) {
 
 				if (entries[p].vendor_id == vendor_id && entries[p].product_id == product_id) {
 					LIBMTP_mtpdevice_t *device = LIBMTP_Get_First_Device ();
 					if (device != NULL) {
 						create_source_cb (plugin, device, tmpudi);
+						break;
 					} else {
 						rb_debug ("error, could not get a hold on the device. Reset and Restart");
 					}
@@ -195,6 +197,7 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 		rb_debug ("Couldn't list mtp devices");
 	}
 	libhal_free_string_array (devices);
+	rb_profile_end ("scanning for MTP devices");
 
 	g_object_unref (G_OBJECT (uimanager));
 }
@@ -326,7 +329,7 @@ rb_mtp_plugin_device_added (LibHalContext *context, const char *udi)
 				/*
 				 * FIXME:
 				 *
-				 * It usualy takes a while for the device o set itself up.
+				 * It usualy takes a while for the device to set itself up.
 				 * Solving that by trying 10 times with some sleep in between.
 				 * There is probably a better solution, but this works.
 				 */
@@ -340,8 +343,8 @@ rb_mtp_plugin_device_added (LibHalContext *context, const char *udi)
 					usleep (200000);
 				}
 			}
+		}
 	}
-    }
 }
 
 static void

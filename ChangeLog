@@ -1,5 +1,14 @@
 2007-11-20  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/mtpdevice/rb-mtp-plugin.c: (impl_activate),
+	(rb_mtp_plugin_device_added):  Rearrange the device scanning loops so
+	we only get the device/vendor IDs for each connected device (which
+	involves dbus requests) once, rather than once per device type libmtp
+	knows about.  Makes the mtp plugin's device scan about 100 times
+	faster, fixing #498198.
+
+2007-11-20  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/mtpdevice/mtp-ui.xml:
 	* plugins/mtpdevice/rb-mtp-plugin.c:
 	Don't use the same name for the MTP eject action as the generic one.
