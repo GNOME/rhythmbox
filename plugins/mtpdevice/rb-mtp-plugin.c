@@ -96,7 +96,7 @@ RB_PLUGIN_REGISTER(RBMtpPlugin, rb_mtp_plugin)
 
 static GtkActionEntry rb_mtp_plugin_actions [] =
 {
-	{ "RemovableSourceEject", GNOME_MEDIA_EJECT, N_("_Eject"), NULL,
+	{ "MTPSourceEject", GNOME_MEDIA_EJECT, N_("_Eject"), NULL,
 	  N_("Eject MTP-device"),
 	  G_CALLBACK (rb_mtp_plugin_eject) },
 	{ "MTPSourceRename", NULL, N_("_Rename"), NULL,
