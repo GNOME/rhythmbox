@@ -1323,7 +1323,7 @@ rhythmdb_query_model_emit_reorder (RhythmDBQueryModel *model,
 	}
 
 	length = g_sequence_get_length (model->priv->entries);
-	reorder_map = malloc (length * sizeof(gint));
+	reorder_map = g_malloc (length * sizeof(gint));
 
 	if (new_pos > old_pos) {
 		/* it has mover further down the list */
@@ -1352,7 +1352,7 @@ rhythmdb_query_model_emit_reorder (RhythmDBQueryModel *model,
 				       path, &iter,
 				       reorder_map);
 	gtk_tree_path_free (path);
-	free (reorder_map);
+	g_free (reorder_map);
 	return TRUE;
 }
 
@@ -2152,7 +2152,7 @@ apply_updated_entry_sequence (RhythmDBQueryModel *model,
 
 	length = g_sequence_get_length (new_entries);
 	/* generate resort map and rebuild reverse map */
-	reorder_map = malloc (length * sizeof(gint));
+	reorder_map = g_malloc (length * sizeof(gint));
 
 	ptr = g_sequence_get_begin_iter (new_entries);
 	for (i = 0; i < length; i++) {
@@ -2176,7 +2176,7 @@ apply_updated_entry_sequence (RhythmDBQueryModel *model,
 				       reorder_map);
 
 	gtk_tree_path_free (path);
-	free (reorder_map);
+	g_free (reorder_map);
 }
 
 void

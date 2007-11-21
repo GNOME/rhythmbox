@@ -1,3 +1,10 @@
+2007-11-21  Jonathan Matthew  <jonathan@d14n.org>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_emit_reorder),
+	(apply_updated_entry_sequence):
+	Use g_malloc/g_free instead of malloc/free.
+
 2007-11-20  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/mtpdevice/rb-mtp-plugin.c: (impl_activate),
