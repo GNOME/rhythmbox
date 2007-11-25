@@ -1,3 +1,20 @@
+2007-11-25  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (dump_stream_list),
+	(volume_changed_cb), (start_stream_fade), (link_unblocked_cb),
+	(link_and_unblock_stream), (unlink_blocked_cb),
+	(unlink_and_dispose_stream), (rb_player_gst_xfade_bus_cb),
+	(actually_start_stream), (get_times_and_stream), (stop_sink),
+	(rb_player_gst_xfade_open), (stop_sink_later), (maybe_stop_sink),
+	(rb_player_gst_xfade_close), (rb_player_gst_xfade_play),
+	(rb_player_gst_xfade_pause), (rb_player_gst_xfade_set_replaygain),
+	(rb_player_gst_xfade_set_time):
+	Use a short (half second) fade when pausing and unpausing streams.
+	Don't pause the sink; instead, stop it when there are no playing
+	streams.
+
+	Fixes #434142, #465482, #484883, and parts of #427244 and #452226.
+
 2007-11-21  Jonathan Matthew  <jonathan@d14n.org>
 
 	* rhythmdb/rhythmdb-query-model.c:
