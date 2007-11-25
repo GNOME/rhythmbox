@@ -155,6 +155,7 @@ rb_plugins_engine_load (const gchar *file)
 #ifndef ENABLE_PYTHON
 		rb_debug ("Cannot load python extension '%s', Rhythmbox was not "
 					"compiled with python support", file);
+		g_free (str);
 		goto error;
 #endif
 	} else {
@@ -266,11 +267,14 @@ rb_plugins_engine_load_cb (const char *uri, gboolean dir, gpointer userdata)
 	 */
 	if (dir && (g_str_has_prefix (sep, "_darcs") || g_str_has_prefix (sep, "CVS"))) {
 		rb_debug ("not loading plugin from hidden/VCS directory %s", plugin_file);
+		g_free (plugin_file);
 		return FALSE;
 	}
 
-	if (dir || !g_str_has_suffix (uri, PLUGIN_EXT))
+	if (dir || !g_str_has_suffix (uri, PLUGIN_EXT)) {
+		g_free (plugin_file);
 		return TRUE;
+	}
 
 	info = rb_plugins_engine_load (plugin_file);
 	g_free (plugin_file);

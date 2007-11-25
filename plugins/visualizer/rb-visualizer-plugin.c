@@ -1898,6 +1898,7 @@ get_vis_plugin_list (RBVisualizerPlugin *pi)
 
 		plugin_info = g_list_prepend (plugin_info, plugin);
 	}
+	gst_plugin_feature_list_free (features);
 	plugin_info = g_list_reverse (plugin_info);
 
 	pi->vis_plugin_list = plugin_info;

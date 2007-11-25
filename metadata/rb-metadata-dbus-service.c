@@ -560,6 +560,9 @@ main (int argc, char **argv)
 		dbus_connection_unref (svc.connection);
 	}
 
+	g_object_unref (svc.metadata);
+	g_main_loop_unref (svc.loop);
+
 	dbus_server_disconnect (svc.server);
 	dbus_server_unref (svc.server);
 	gst_deinit ();

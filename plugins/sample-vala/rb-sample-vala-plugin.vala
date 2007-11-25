@@ -1,5 +1,6 @@
 using GLib;
 using RB;
+using RhythmDB;
 
 class SampleValaPlugin: RB.Plugin {
 	public override void activate (RB.Shell shell) {

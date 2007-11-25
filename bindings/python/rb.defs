@@ -1488,7 +1488,7 @@
 (define-method get_sorting_type
   (of-object "RBEntryView")
   (c-name "rb_entry_view_get_sorting_type")
-  (return-type "const-char*")
+  (return-type "char*")
 )
 
 (define-method set_sorting_type

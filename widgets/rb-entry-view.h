@@ -163,8 +163,8 @@ void		rb_entry_view_set_sorting_order		(RBEntryView *view,
                                                          const char  *column_name,
                                                          gint         sort_order);
 /* deal with the sorting order as a composite string */
-const char *	rb_entry_view_get_sorting_type		(RBEntryView *view);
- void		rb_entry_view_set_sorting_type		(RBEntryView *view,
+char *		rb_entry_view_get_sorting_type		(RBEntryView *view);
+void		rb_entry_view_set_sorting_type		(RBEntryView *view,
                                                          const char  *sorttype);
 
 void		rb_entry_view_set_fixed_column_width	(RBEntryView *view,

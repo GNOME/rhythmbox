@@ -1,3 +1,18 @@
+2007-11-25  James Livingston  <doclivingston@gmail.com>
+
+	* bindings/python/rb.defs:
+	* metadata/rb-metadata-dbus-service.c: (main):
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_load),
+	(rb_plugins_engine_load_cb):
+	* plugins/sample-vala/rb-sample-vala-plugin.vala:
+	* plugins/visualizer/rb-visualizer-plugin.c: (get_vis_plugin_list):
+	* shell/rb-shell.c: (rb_shell_finalize), (construct_widgets):
+	* shell/rb-tray-icon.c: (rb_tray_icon_init):
+	* tools/massif.sh:
+	* widgets/rb-entry-view.c: (rb_entry_view_get_sorting_type):
+	* widgets/rb-entry-view.h: fix some memory leaks. patch partially by
+	John Daiker.
+
 2007-11-25  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c: (dump_stream_list),

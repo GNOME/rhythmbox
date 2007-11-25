@@ -884,6 +884,8 @@ rb_shell_finalize (GObject *object)
 	g_free (shell->priv->cached_notify_primary);
 	g_free (shell->priv->cached_notify_secondary);
 
+	g_free (shell->priv->cached_title);
+
 	if (shell->priv->cached_art_icon != NULL)
 		g_object_unref (shell->priv->cached_art_icon);
 
@@ -920,7 +922,7 @@ rb_shell_finalize (GObject *object)
 		gtk_widget_destroy (shell->priv->prefs);
 
 	rb_debug ("destroying tooltips");
-	gtk_object_destroy (GTK_OBJECT (shell->priv->tooltips));
+	g_object_unref (shell->priv->tooltips);
 
 	g_free (shell->priv->rhythmdb_file);
 
@@ -1064,8 +1066,6 @@ construct_widgets (RBShell *shell)
 	shell->priv->source_header = rb_source_header_new (shell->priv->ui_manager,
 							   shell->priv->actiongroup);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->source_header));
-
-	shell->priv->paned = gtk_hpaned_new ();
 
 	shell->priv->sourcelist = rb_sourcelist_new (shell);
 	gtk_widget_show_all (shell->priv->sourcelist);
