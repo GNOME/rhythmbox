@@ -23,7 +23,7 @@ import rb
 import gobject
 
 IMAGE_NAMES = ["cover", "album", "albumart", ".folder", "folder"]
-LOAD_DIRECTORY_FLAGS = gnomevfs.FILE_INFO_GET_MIME_TYPE | gnomevfs.FILE_INFO_FORCE_FAST_MIME_TYPE
+LOAD_DIRECTORY_FLAGS = gnomevfs.FILE_INFO_GET_MIME_TYPE | gnomevfs.FILE_INFO_FORCE_FAST_MIME_TYPE | gnomevfs.FILE_INFO_FOLLOW_LINKS
 ITEMS_PER_NOTIFICATION = 10
 ART_SAVE_NAME = 'Cover.jpg'
 ART_SAVE_FORMAT = 'jpeg'
