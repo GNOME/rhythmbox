@@ -218,7 +218,6 @@ rb_tray_icon_init (RBTrayIcon *icon)
 	g_object_ref (icon->priv->playing_image);
 	g_object_ref (icon->priv->not_playing_image);
 
-	gtk_container_add (GTK_CONTAINER (icon->priv->ebox), icon->priv->playing_image);
 	gtk_container_add (GTK_CONTAINER (icon->priv->ebox), icon->priv->not_playing_image);
 
 	gtk_container_add (GTK_CONTAINER (icon), icon->priv->ebox);

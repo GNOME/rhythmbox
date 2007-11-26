@@ -1,3 +1,9 @@
+2007-11-26  Jonathan Matthew  <jonathan@d14n.org>
+
+	* shell/rb-tray-icon.c: (rb_tray_icon_init):
+	Revert change from previous commit as it causes gtk warnings on
+	startup.
+
 2007-11-25  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/rb.defs:
