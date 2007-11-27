@@ -1,3 +1,10 @@
+2007-11-28  Jonathan Matthew  <jonathan@d14n.org>
+
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
+	(rb_podcast_source_load_finish_cb):
+	Use g_signal_connect_object instead of _after, and g_idle_add
+	instead of gtk_idle_add.  Probably fixes #463950?
+
 2007-11-27  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/ipod/rb-ipod-source.c: (impl_move_to_trash),

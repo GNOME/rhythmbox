@@ -546,7 +546,7 @@ rb_podcast_source_constructor (GType type,
 
 	source->priv->paned = gtk_vpaned_new ();
 
-	gtk_idle_add ((GtkFunction) rb_podcast_source_load_finish_cb, source);
+	g_idle_add ((GSourceFunc) rb_podcast_source_load_finish_cb, source);
 
 	source->priv->podcast_mgr = rb_podcast_manager_new (source->priv->db);
 
@@ -1656,20 +1656,20 @@ rb_podcast_source_load_finish_cb  (gpointer cb_data)
 
 	rb_podcast_manager_start_sync (source->priv->podcast_mgr);
 
-	g_signal_connect_after (G_OBJECT (source->priv->podcast_mgr),
+	g_signal_connect_object (G_OBJECT (source->priv->podcast_mgr),
 	 		        "start_download",
 			  	G_CALLBACK (rb_podcast_source_start_download_cb),
-			  	source);
+			  	source, 0);
 
-	g_signal_connect_after (G_OBJECT (source->priv->podcast_mgr),
+	g_signal_connect_object (G_OBJECT (source->priv->podcast_mgr),
 			  	"finish_download",
 			  	G_CALLBACK (rb_podcast_source_finish_download_cb),
-			  	source);
+			  	source, 0);
 
-	g_signal_connect_after (G_OBJECT (source->priv->podcast_mgr),
+	g_signal_connect_object (G_OBJECT (source->priv->podcast_mgr),
 			  	"feed_updates_available",
  			  	G_CALLBACK (rb_podcast_source_feed_updates_available_cb),
-			  	source);
+			  	source, 0);
 
 	return FALSE;
 }
