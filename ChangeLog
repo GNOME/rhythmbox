@@ -1,3 +1,10 @@
+2007-11-27  Bastien Nocera  <hadess@hadess.net>
+
+	* plugins/ipod/rb-ipod-source.c: (impl_move_to_trash),
+	(impl_build_dest_uri), (request_artwork): Don't put iPod tracks in
+	the wastebasket when deleting them, they lost their database entry
+	so they're unrecoverable (Closes: #346434)
+
 2007-11-26  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/artdisplay/artdisplay/LocalCoverArtSearch.py:

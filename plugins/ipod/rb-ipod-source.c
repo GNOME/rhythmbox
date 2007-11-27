@@ -1064,6 +1064,7 @@ impl_move_to_trash (RBSource *asource)
 	for (tem = sel; tem != NULL; tem = tem->next) {
 		RhythmDBEntry *entry;
 		const gchar *uri;
+		gchar *file;
 		Itdb_Track *track;
 
 		entry = (RhythmDBEntry *)tem->data;
@@ -1077,7 +1078,11 @@ impl_move_to_trash (RBSource *asource)
 
 		rb_ipod_db_remove_track (priv->ipod_db, track);
 		g_hash_table_remove (priv->entry_map, entry);
-		rhythmdb_entry_move_to_trash (db, entry);
+		file = g_filename_from_uri (uri, NULL, NULL);
+		if (file != NULL)
+			g_unlink (file);
+		g_free (file);
+		rhythmdb_entry_delete (db, entry);
 		rhythmdb_commit (db);
 	}
 
