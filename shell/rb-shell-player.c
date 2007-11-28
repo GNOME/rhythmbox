@@ -250,6 +250,7 @@ struct RBShellPlayerPrivate
 	guint emit_playing_id;
 	guint unblock_play_id;
 	guint jump_to_current_id;
+	guint notify_playing_id;
 };
 
 #define RB_SHELL_PLAYER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL_PLAYER, RBShellPlayerPrivate))
@@ -627,6 +628,7 @@ notify_playing_idle (RBShellPlayer *player)
 	g_object_notify (G_OBJECT (player), "playing");
 	rb_shell_player_sync_buttons (player);
 
+	player->priv->notify_playing_id = 0;
 	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
@@ -674,7 +676,10 @@ rb_shell_player_open_playlist_url (RBShellPlayer *player,
 		g_error_free (error);
 		GDK_THREADS_LEAVE ();
 	}
-	g_idle_add ((GSourceFunc) notify_playing_idle, player);
+	if (player->priv->notify_playing_id == 0) {
+		player->priv->notify_playing_id = g_idle_add ((GSourceFunc) notify_playing_idle,
+							      player);
+	}
 }
 
 static void
@@ -1086,6 +1091,11 @@ rb_shell_player_dispose (GObject *object)
 	if (player->priv->jump_to_current_id != 0) {
 		g_source_remove (player->priv->jump_to_current_id);
 		player->priv->jump_to_current_id = 0;
+	}
+
+	if (player->priv->notify_playing_id != 0) {
+		g_source_remove (player->priv->notify_playing_id);
+		player->priv->notify_playing_id = 0;
 	}
 
 	G_OBJECT_CLASS (rb_shell_player_parent_class)->dispose (object);
