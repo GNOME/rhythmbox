@@ -1,5 +1,12 @@
 2007-11-28  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_metadata_cb):
+	Don't crash if we get a blank line in the metadata response, as we
+	apparently do sometimes.  Should fix #465271.
+
+2007-11-28  Jonathan Matthew  <jonathan@d14n.org>
+
 	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
 	(rb_podcast_source_load_finish_cb):
 	Use g_signal_connect_object instead of _after, and g_idle_add

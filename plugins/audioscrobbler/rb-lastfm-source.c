@@ -1190,7 +1190,9 @@ rb_lastfm_source_metadata_cb (SoupMessage *req, RBLastfmSource *source)
 		gchar **values;
 
 		values = g_strsplit (pieces[p], "=", 2);
-		if (strcmp (values[0], "station") == 0) {
+		if (values[0] == NULL) {
+			rb_debug ("empty line in response body?");
+		} else if (strcmp (values[0], "station") == 0) {
 		} else if (strcmp (values[0], "station_url") == 0) {
 		} else if (strcmp (values[0], "stationfeed") == 0) {
 		} else if (strcmp (values[0], "stationfeed_url") == 0) {
