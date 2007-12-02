@@ -1,3 +1,13 @@
+2007-12-02  Jonathan Matthew  <jonathan@d14n.org>
+
+	* shell/rb-playlist-manager.c: (save_playlist_cb),
+	(rb_playlist_manager_save_playlists), (list_playlists_cb),
+	(rb_playlist_manager_get_playlists),
+	(rb_playlist_manager_get_playlist_names),
+	(find_playlist_by_name_cb), (_get_playlist_by_name):
+	Fix various playlist manager methods that have been broken since 
+	the introduction of source list groups.
+
 2007-11-29  Jonathan Matthew  <jonathan@d14n.org>
 
 	* shell/rb-shell-player.c: (notify_playing_idle),

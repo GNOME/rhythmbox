@@ -821,10 +821,10 @@ rb_playlist_manager_save_data (struct RBPlaylistManagerSaveData *data)
 }
 
 static gboolean
-model_foreach_func (GtkTreeModel *model,
-		    GtkTreePath  *path,
-		    GtkTreeIter  *iter,
-		    xmlNodePtr    root)
+save_playlist_cb (GtkTreeModel *model,
+		  GtkTreePath  *path,
+		  GtkTreeIter  *iter,
+		  xmlNodePtr    root)
 {
 	RBSource *source;
 	gboolean  local;
@@ -895,7 +895,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
 	g_object_unref (fmodel);
 
-	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)model_foreach_func, root);
+	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)save_playlist_cb, root);
 
 	/* mark clean here.  if the save fails, we'll mark it dirty again */
 	rb_playlist_manager_set_dirty (data->mgr, FALSE);
@@ -1502,6 +1502,35 @@ rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 	g_object_unref (xml);
 }
 
+static gboolean
+list_playlists_cb (GtkTreeModel *model,
+		   GtkTreePath  *path,
+		   GtkTreeIter  *iter,
+		   GList **playlists)
+{
+	RBSource *source;
+	gboolean  local;
+
+	gtk_tree_model_get (model,
+			    iter,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
+			    -1);
+	if (source != NULL) {
+		if (RB_IS_PLAYLIST_SOURCE (source) && !RB_IS_PLAY_QUEUE_SOURCE (source)) {
+			
+			g_object_get (source, "is-local", &local, NULL);
+			if (local) {
+				*playlists = g_list_prepend (*playlists, source);
+			}
+		}
+		
+		g_object_unref (source);
+	}
+
+	return FALSE;
+}
+
+
 /**
  * rb_playlist_manager_get_playlists
  * @mgr: the #RBPlaylistManager
@@ -1512,7 +1541,6 @@ GList *
 rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 {
 	GList *playlists = NULL;
-	GtkTreeIter iter;
 	GtkTreeModel *fmodel;
 	GtkTreeModel *model;
 
@@ -1520,36 +1548,8 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
 	g_object_unref (fmodel);
 
-	if (gtk_tree_model_get_iter_first (model, &iter)) {
-		do {
-			RBSource *source;
-			gboolean local;
-
-			gtk_tree_model_get (model,
-					    &iter,
-					    RB_SOURCELIST_MODEL_COLUMN_SOURCE,
-					    &source,
-					    -1);
-			if (source == NULL) {
-				continue;
-			}
-			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE
-			    || RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE) {
-				g_object_unref (source);
-				continue;
-			}
-
-			g_object_get (source, "is-local", &local,
-				      NULL);
-			if (local) {
-				playlists = g_list_prepend (playlists, source);
-			}
-
-			g_object_unref (source);
-		} while (gtk_tree_model_iter_next (model, &iter));
-	}
-
-	return playlists;
+	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)list_playlists_cb, &playlists);
+	return g_list_reverse (playlists);
 }
 
 /**
@@ -1568,92 +1568,78 @@ rb_playlist_manager_get_playlist_names (RBPlaylistManager *mgr,
 					gchar ***playlists,
 					GError **error)
 {
-	GtkTreeIter iter;
-	GtkTreeModel *fmodel;
-	GtkTreeModel *model;
+	GList *pl;
+	GList *t;
 	int i;
-
-	g_object_get (mgr->priv->sourcelist, "model", &fmodel, NULL);
-	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
-	g_object_unref (fmodel);
-
-	if (!gtk_tree_model_get_iter_first (model, &iter)) {
-		*playlists = NULL;
-		return TRUE;
-	}
-
-	*playlists = g_new0 (char *, gtk_tree_model_iter_n_children (model, NULL) + 1);
+	
+	pl = rb_playlist_manager_get_playlists (mgr);
+	*playlists = g_new0 (char *, g_list_length (pl) + 1);
 	if (!*playlists)
 		return FALSE;
 
 	i = 0;
-	do {
-		RBSource *source;
-		char *source_name;
+	for (t = pl; t != NULL; t = t->next, i++) {
+		const char *name;
+		RBSource *source = (RBSource *)t->data;
 
-		gtk_tree_model_get (model, &iter,
-				    RB_SOURCELIST_MODEL_COLUMN_SOURCE,
-				    &source,
-				    -1);
-		if (source == NULL) {
-			continue;
-		}
-		if (RB_IS_PLAYLIST_SOURCE (source) == FALSE
-		    || RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE) {
-			g_object_unref (source);
-			continue;
-		}
-
-		g_object_get (source, "name", &source_name, NULL);
-		(*playlists)[i++] = source_name;
-
-		g_object_unref (source);
-
-	} while (gtk_tree_model_iter_next (model, &iter));
+		g_object_get (source, "name", &name, NULL);
+		(*playlists)[i] = g_strdup (name);
+	}
 
 	return TRUE;
+}
+
+typedef struct {
+	const char *name;
+	RBSource *source;
+} FindPlaylistData;
+
+static gboolean
+find_playlist_by_name_cb (GtkTreeModel *model,
+			  GtkTreePath  *path,
+			  GtkTreeIter  *iter,
+			  FindPlaylistData *data)
+{
+	RBSource *source;
+
+	gtk_tree_model_get (model,
+			    iter,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
+			    -1);
+	if (source != NULL) {
+		if (RB_IS_PLAYLIST_SOURCE (source) && !RB_IS_PLAY_QUEUE_SOURCE (source)) {
+			char *name;
+			
+			g_object_get (source, "name", &name, NULL);
+			if (strcmp (name, data->name) == 0) {
+				data->source = source;
+			}
+			g_free (name);
+		}
+		
+		g_object_unref (source);
+	}
+
+	return (data->source != NULL);
 }
 
 static RBSource *
 _get_playlist_by_name (RBPlaylistManager *mgr,
 		       const char *name)
 {
-	GtkTreeIter iter;
 	GtkTreeModel *fmodel;
 	GtkTreeModel *model;
-	RBSource *playlist = NULL;
+	FindPlaylistData d;
 
 	g_object_get (mgr->priv->sourcelist, "model", &fmodel, NULL);
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
 	g_object_unref (fmodel);
 
-	if (!gtk_tree_model_get_iter_first (model, &iter))
-		return NULL;
+	d.name = name;
+	d.source = NULL;
 
-	do {
-		RBSource *source;
-		char *source_name;
-
-		gtk_tree_model_get (model, &iter,
-				    RB_SOURCELIST_MODEL_COLUMN_SOURCE,
-				    &source,
-				    -1);
-		if (source == NULL) {
-			continue;
-		}
-		if (RB_IS_PLAYLIST_SOURCE (source) == FALSE) {
-			g_object_unref (source);
-			continue;
-		}
-		g_object_get (source, "name", &source_name, NULL);
-		if (strcmp (name, source_name) == 0)
-			playlist = source;
-
-		g_free (source_name);
-		g_object_unref (source);
-	} while (gtk_tree_model_iter_next (model, &iter) && playlist == NULL);
-
-	return playlist;
+	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)find_playlist_by_name_cb, &d);
+	return d.source;
 }
 
 /**
