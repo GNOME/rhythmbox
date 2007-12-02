@@ -64,6 +64,13 @@
   (gtype-id "RB_TYPE_AUTO_PLAYLIST_SOURCE")
 )
 
+(define-object StreamingSource
+  (in-module "RB")
+  (parent "RBSource")
+  (c-name "RBStreamingSource")
+  (gtype-id "RB_TYPE_STREAMING_SOURCE")
+)
+
 (define-object RemovableMediaManager
   (in-module "RB")
   (parent "GObject")
@@ -1830,6 +1837,50 @@
     '("GList*" "mime_types")
     '("RBTranferCompleteCallback" "callback")
     '("gpointer" "userdata")
+  )
+)
+
+;; From rb-streaming-source.h
+
+(define-function rb_streaming_source_get_type
+  (c-name "rb_streaming_source_get_type")
+  (return-type "GType")
+)
+
+(define-method get_progress
+  (of-object "RBStreamingSource")
+  (c-name "rb_streaming_source_get_progress")
+  (return-type "none")
+  (parameters
+    '("char**" "progress_text")
+    '("float*" "progress")
+  )
+)
+
+(define-method set_streaming_title
+  (of-object "RBStreamingSource")
+  (c-name "rb_streaming_source_set_streaming_title")
+  (return-type "none")
+  (parameters
+    '("const-char*" "title")
+  )
+)
+
+(define-method set_streaming_artist
+  (of-object "RBStreamingSource")
+  (c-name "rb_streaming_source_set_streaming_artist")
+  (return-type "none")
+  (parameters
+    '("const-char*" "artist")
+  )
+)
+
+(define-method set_streaming_album
+  (of-object "RBStreamingSource")
+  (c-name "rb_streaming_source_set_streaming_album")
+  (return-type "none")
+  (parameters
+    '("const-char*" "album")
   )
 )
 

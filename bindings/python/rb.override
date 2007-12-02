@@ -32,6 +32,7 @@ headers
 #include "rb-sourcelist.h"
 #include "rb-sourcelist-model.h"
 #include "rb-static-playlist-source.h"
+#include "rb-streaming-source.h"
 #include "rb-uri-dialog.h"
 
 void pyrb_register_classes (PyObject *d);
@@ -1347,5 +1348,20 @@ _wrap_rb_removable_media_manager_queue_transfer(PyGObject *self, PyObject *args,
 	PyErr_SetString(PyExc_NotImplementedError, "Track transfer is disabled in this build of Rhythmbox");
 	return NULL;
 #endif
+}
+
+%%
+override rb_streaming_source_get_progress noargs
+static PyObject *
+_wrap_rb_streaming_source_get_progress(PyGObject *self)
+{
+    char *progress_text = NULL;
+    float progress = 0.0f;
+    PyObject *tuple;
+
+    rb_streaming_source_get_progress (RB_STREAMING_SOURCE (self->obj), &progress_text, &progress);
+    tuple = Py_BuildValue ("sf", progress_text, progress);
+    g_free (progress_text);
+    return tuple;
 }
 
