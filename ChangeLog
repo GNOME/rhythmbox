@@ -1,5 +1,12 @@
 2007-12-02  Jonathan Matthew  <jonathan@d14n.org>
 
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_move_entry):
+	Move entries in the base query model, not the displayed query model.
+	Otherwise, the order change is lost when saving the playlist.
+
+2007-12-02  Jonathan Matthew  <jonathan@d14n.org>
+
 	* bindings/python/Makefile.am:
 	* bindings/python/rb.defs:
 	* bindings/python/rb.override:

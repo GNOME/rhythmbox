@@ -757,8 +757,9 @@ rb_static_playlist_source_move_entry (RBStaticPlaylistSource *source,
 				      gint index)
 {
 	RBPlaylistSource *psource = RB_PLAYLIST_SOURCE (source);
-	RhythmDBQueryModel *model = rb_playlist_source_get_query_model (psource);
-	rhythmdb_query_model_move_entry (model, entry, index);
+	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
+
+	rhythmdb_query_model_move_entry (priv->base_model, entry, index);
 
 	rb_playlist_source_mark_dirty (psource);
 }
