@@ -38,6 +38,7 @@
 typedef struct
 {
 	char *playlist_path;
+	char *device_root;
 	gint save_playlist_id;
 	RBGenericPlayerSource *player_source;
 	gboolean loading;
@@ -52,6 +53,7 @@ RB_PLUGIN_DEFINE_TYPE(RBGenericPlayerPlaylistSource,
 enum {
 	PROP_0,
 	PROP_PLAYLIST_PATH,
+	PROP_DEVICE_ROOT,
 	PROP_PLAYER_SOURCE
 };
 
@@ -266,6 +268,7 @@ load_playlist (RBGenericPlayerPlaylistSource *source)
 	path = g_filename_from_uri (priv->playlist_path, NULL, NULL);
 	if (path != NULL) {
 		char *name = g_path_get_basename (path);
+
 		g_object_set (source, "name", name, NULL);
 		g_free (name);
 		g_free (path);
@@ -292,7 +295,7 @@ load_playlist (RBGenericPlayerPlaylistSource *source)
 	if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
 		g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
 
-	switch (totem_pl_parser_parse (parser, priv->playlist_path, FALSE)) {
+	switch (totem_pl_parser_parse_with_base (parser, priv->playlist_path, priv->device_root, FALSE)) {
 	case TOTEM_PL_PARSER_RESULT_SUCCESS:
 		rb_debug ("playlist parsed successfully");
 		result = TRUE;
@@ -342,6 +345,7 @@ RBSource *
 rb_generic_player_playlist_source_new (RBShell *shell,
 				       RBGenericPlayerSource *source,
 				       const char *playlist_file,
+				       const char *device_root,
 				       RhythmDBEntryType entry_type)
 {
 	return RB_SOURCE (g_object_new (RB_TYPE_GENERIC_PLAYER_PLAYLIST_SOURCE,
@@ -351,6 +355,7 @@ rb_generic_player_playlist_source_new (RBShell *shell,
 					"source-group", RB_SOURCE_GROUP_DEVICES,
 					"player-source", source,
 					"playlist-path", playlist_file,
+					"device-root", device_root,
 					NULL));
 }
 
@@ -434,6 +439,9 @@ rb_generic_player_playlist_source_get_property (GObject *object, guint prop_id, 
 	case PROP_PLAYLIST_PATH:
 		g_value_set_string (value, priv->playlist_path);
 		break;
+	case PROP_DEVICE_ROOT:
+		g_value_set_string (value, priv->device_root);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -451,6 +459,9 @@ rb_generic_player_playlist_source_set_property (GObject *object, guint prop_id, 
 		break;
 	case PROP_PLAYLIST_PATH:
 		priv->playlist_path = g_value_dup_string (value);
+		break;
+	case PROP_DEVICE_ROOT:
+		priv->device_root = g_value_dup_string (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -495,6 +506,14 @@ rb_generic_player_playlist_source_class_init (RBGenericPlayerPlaylistSourceClass
 					 g_param_spec_string ("playlist-path",
 						 	      "playlist-path",
 							      "path to playlist file",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+
+	g_object_class_install_property (object_class,
+					 PROP_DEVICE_ROOT,
+					 g_param_spec_string ("device-root",
+						 	      "device-root",
+							      "path to root of the device",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 

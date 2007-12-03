@@ -153,7 +153,7 @@ rb_generic_player_plugin_new_playlist (GtkAction *action, RBGenericPlayerPlugin 
 
 		g_object_get (source, "entry-type", &entry_type, NULL);
 
-		playlist = rb_generic_player_playlist_source_new (plugin->shell, RB_GENERIC_PLAYER_SOURCE (source), NULL, entry_type);
+		playlist = rb_generic_player_playlist_source_new (plugin->shell, RB_GENERIC_PLAYER_SOURCE (source), NULL, NULL, entry_type);
 		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 		rb_generic_player_source_add_playlist (RB_GENERIC_PLAYER_SOURCE (source),

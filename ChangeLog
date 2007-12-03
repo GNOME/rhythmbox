@@ -1,5 +1,21 @@
 2007-12-03  Bastien Nocera  <hadess@hadess.net>
 
+	* plugins/generic-player/rb-generic-player-playlist-source.c:
+	(save_playlist), (handle_playlist_start_cb), (load_playlist),
+	(rb_generic_player_playlist_source_new),
+	(rb_generic_player_playlist_source_get_property),
+	(rb_generic_player_playlist_source_set_property),
+	(rb_generic_player_playlist_source_class_init):
+	* plugins/generic-player/rb-generic-player-playlist-source.h:
+	* plugins/generic-player/rb-generic-player-plugin.c:
+	(rb_generic_player_plugin_new_playlist):
+	* plugins/generic-player/rb-generic-player-source.c:
+	(load_playlist_file), (default_load_playlists): Pass the device_root
+	when parsing a playlist on a removable device, to allow drive letters
+	in playlists (Helps: #427975)
+
+2007-12-03  Bastien Nocera  <hadess@hadess.net>
+
 	* plugins/mmkeys/rb-mmkeys-plugin.c: (media_player_key_pressed),
 	(filter_mmkeys), (mmkeys_grab), (impl_activate): Handle the Stop
 	key from the control-center D-Bus interface as we used to handle

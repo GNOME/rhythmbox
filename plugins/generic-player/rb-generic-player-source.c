@@ -932,6 +932,7 @@ load_playlist_file (RBGenericPlayerSource *source,
 {
 	RhythmDBEntryType entry_type;
 	RBGenericPlayerPlaylistSource *playlist;
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 	RBShell *shell;
 
 	g_object_get (G_OBJECT (source),
@@ -944,6 +945,7 @@ load_playlist_file (RBGenericPlayerSource *source,
 			rb_generic_player_playlist_source_new (shell,
 							       source,
 							       playlist_path,
+							       priv->mount_path,
 							       entry_type));
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
