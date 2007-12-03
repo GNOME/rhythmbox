@@ -1,3 +1,9 @@
+2007-12-03  Jonathan Matthew  <jonathan@d14n.org>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_save_thread_main):
+	When we've decided not to save the database, it would be a good idea
+	to actually not save the database.  Fixes #501125.
+
 2007-12-02  Jonathan Matthew  <jonathan@d14n.org>
 
 	* sources/rb-static-playlist-source.c:

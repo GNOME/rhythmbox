@@ -2696,7 +2696,7 @@ rhythmdb_save_thread_main (RhythmDB *db)
 	db->priv->save_count++;
 	g_cond_broadcast (db->priv->saving_condition);
 
-	if (!db->priv->dirty && !db->priv->can_save) {
+	if (!(db->priv->dirty && db->priv->can_save)) {
 		rb_debug ("no save needed, ignoring");
 		g_mutex_unlock (db->priv->saving_mutex);
 		goto out;
