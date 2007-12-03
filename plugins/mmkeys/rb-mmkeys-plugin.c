@@ -99,9 +99,10 @@ media_player_key_pressed (DBusGProxy *proxy,
 
 	if (strcmp (key, "Play") == 0) {
 		rb_shell_player_playpause (plugin->shell_player, FALSE, NULL);
-	} else if (strcmp (key, "Pause") == 0 ||
-		   strcmp (key, "Stop") == 0) {
+	} else if (strcmp (key, "Pause") == 0) {
 		rb_shell_player_pause (plugin->shell_player, NULL);
+	} else if (strcmp (key, "Stop") == 0) {
+		rb_shell_player_stop (plugin->shell_player);
 	} else if (strcmp (key, "Previous") == 0) {
 		rb_shell_player_do_previous (plugin->shell_player, NULL);
 	} else if (strcmp (key, "Next") == 0) {
