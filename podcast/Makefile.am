@@ -45,3 +45,20 @@ AM_CFLAGS =						\
 
 librbpodcast_la_LDFLAGS = -export-dynamic
 
+if ENABLE_BROWSER_PLUGIN
+plugindir = ${libdir}/mozilla/plugins
+plugin_LTLIBRARIES = librhythmbox-itms-detection-plugin.la
+librhythmbox_itms_detection_plugin_la_SOURCES = rhythmbox-itms-plugin.cpp
+librhythmbox_itms_detection_plugin_la_CXXFLAGS = $(BROWSER_PLUGIN_CFLAGS)
+librhythmbox_itms_detection_plugin_la_LIBADD = $(BROWSER_PLUGIN_LIBS)
+
+librhythmbox_itms_detection_plugin_la_LDFLAGS = \
+	-avoid-version	\
+	-export-symbols $(srcdir)/plugin.symbols \
+	-module		\
+	$(AM_LDFLAGS)
+
+endif
+
+EXTRA_DIST = rhythmbox-itms-plugin.cpp plugin.symbols
+

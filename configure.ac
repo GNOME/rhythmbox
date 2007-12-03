@@ -968,6 +968,57 @@ dnl check, for unit tests
 AM_PATH_CHECK([], have_check=yes, have_check=no)
 AM_CONDITIONAL([HAVE_CHECK],[test "x$have_check" = "xyes"])
 
+dnl ================================================================
+dnl Browser plugin
+dnl ================================================================
+
+AC_ARG_ENABLE([browser-plugin],
+	[AS_HELP_STRING([--enable-browser-plugin],[compile the iTunes detection browser plugin])],
+	[],[enable_browser_plugin=autodetect])
+
+if test "$enable_browser_plugin" != "no" ; then
+	AC_MSG_CHECKING([which gecko to use])
+
+	AC_ARG_WITH([gecko],
+		[AS_HELP_STRING([--with-gecko],[Which gecko engine to use (default: autodetect)])])
+
+	GECKOS="xulrunner firefox mozilla-firefox seamonkey mozilla"
+	gecko=$with_gecko
+
+	if test -z "$with_gecko"; then
+		dnl Autodetect gecko
+		for g in $GECKOS; do
+			if $PKG_CONFIG --exists $g-plugin; then
+				gecko=$g
+				break;
+			fi
+		done
+	elif ! $PKG_CONFIG --exists $gecko-plugin; then
+		AC_MSG_ERROR([Gecko "$gecko" not found])
+	fi
+
+	if test -z "$gecko" -a "$enable_browser_plugin" = "autodetect"; then
+		dnl No gecko found, disable plugin
+		AC_MSG_WARN([No gecko found, disabling plugin])
+		enable_browser_plugin=no
+	elif test -z "$gecko"; then
+		AC_MSG_ERROR([No gecko found])
+	elif ! ( echo "$GECKOS" | egrep "(^| )$gecko(\$| )" > /dev/null); then
+		AC_MSG_ERROR([Unknown gecko "$gecko" specified])
+	else
+		enable_browser_plugin=yes
+	fi
+
+	AC_MSG_RESULT([$gecko])
+fi
+
+if test "$enable_browser_plugin" = "yes" ; then
+	PKG_CHECK_MODULES([BROWSER_PLUGIN],
+		[glib-2.0 $gecko-plugin],
+		[],[enable_browser_plugins=no])
+fi
+
+AM_CONDITIONAL([ENABLE_BROWSER_PLUGIN], test x$enable_browser_plugin = xyes)
 
 dnl ================================================================
 dnl end-game
@@ -1167,6 +1218,12 @@ if test "x$enable_fm_radio" != xno; then
 	AC_MSG_NOTICE([** FM radio support enabled])
 else
 	AC_MSG_NOTICE([   FM radio support disabled])
+fi
+
+if test "x$enable_browser_plugin" != xno; then
+	AC_MSG_NOTICE([** iTunes detection browser plugin (for podcasts) enabled])
+else
+	AC_MSG_NOTICE([   iTunes detection browser plugin (for podcasts) disabled])
 fi
 
 AC_MSG_NOTICE([End options])

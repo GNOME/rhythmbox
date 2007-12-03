@@ -1,5 +1,14 @@
 2007-12-03  Bastien Nocera  <hadess@hadess.net>
 
+	* configure.ac:
+	* podcast/Makefile.am:
+	* podcast/plugin.symbols:
+	* podcast/rhythmbox-itms-plugin.cpp: Add a Mozilla plugin
+	to allow the iTMS pages to detect that we can handle itms:// URIs
+	(Closes: #489874)
+
+2007-12-03  Bastien Nocera  <hadess@hadess.net>
+
 	* configure.ac: Require totem-pl-parser 2.21.4
 
 	* lib/rb-file-helpers.c: (rb_uri_could_be_podcast):
