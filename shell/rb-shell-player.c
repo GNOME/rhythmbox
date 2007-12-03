@@ -1401,7 +1401,7 @@ rb_shell_player_open_location (RBShellPlayer *player,
 
 		crossfade = rb_shell_player_get_crossfade (player, play_type);
 
-		g_object_ref (entry);
+		rhythmdb_entry_ref (entry);
 		ret = ret && rb_player_open (player->priv->mmplayer, location, entry, (GDestroyNotify) rhythmdb_entry_unref, error);
 
 		ret = ret && rb_player_play (player->priv->mmplayer, crossfade, error);
