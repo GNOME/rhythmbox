@@ -502,20 +502,11 @@ rb_playlist_manager_error_quark (void)
 	return quark;
 }
 
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
 static void
 handle_playlist_entry_cb (TotemPlParser *playlist,
 			  const char *uri_maybe,
 			  GHashTable *metadata,
 			  RBPlaylistManager *mgr)
-#else
-static void
-handle_playlist_entry_cb (TotemPlParser *playlist,
-			  const char *uri_maybe,
-			  const char *title,
-			  const char *genre,
-			  RBPlaylistManager *mgr)
-#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 {
 	char *uri;
 #if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
@@ -550,18 +541,28 @@ handle_playlist_entry_cb (TotemPlParser *playlist,
 }
 
 static void
-playlist_load_start_cb (TotemPlParser *parser, const char *title, RBPlaylistManager *mgr)
+playlist_load_started_cb (TotemPlParser *parser, const char *uri, GHashTable *metadata, RBPlaylistManager *mgr)
 {
-	rb_debug ("loading new playlist %s", title);
+	const char *title;
+
+	rb_debug ("loading new playlist %s", uri);
+
+	title = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_TITLE);
+	if (title == NULL)
+		title = _("Unnamed playlist");
 
 	mgr->priv->loading_playlist =
 			RB_STATIC_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, title, FALSE));
 }
 
 static void
-playlist_load_end_cb (TotemPlParser *parser, const char *title, RBPlaylistManager *mgr)
+playlist_load_ended_cb (TotemPlParser *parser, const char *uri, GHashTable *metadata, RBPlaylistManager *mgr)
 {
-	rb_debug ("finished loading playlist %s", title);
+	const char *title;
+
+	rb_debug ("finished loading playlist %s", uri);
+
+	title = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_TITLE);
 
 	if (title) {
 		g_object_set (mgr->priv->loading_playlist, "name", title, NULL);
@@ -591,22 +592,16 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri, GError 
 	{
 		TotemPlParser *parser = totem_pl_parser_new ();
 
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
 		g_signal_connect_object (parser, "entry-parsed",
 					 G_CALLBACK (handle_playlist_entry_cb),
 					 mgr, 0);
-#else
-		g_signal_connect_object (parser, "entry",
-					 G_CALLBACK (handle_playlist_entry_cb),
-					 mgr, 0);
-#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 
-		g_signal_connect_object (parser, "playlist-start",
-					 G_CALLBACK (playlist_load_start_cb),
+		g_signal_connect_object (parser, "playlist-started",
+					 G_CALLBACK (playlist_load_started_cb),
 					 mgr, 0);
 
-		g_signal_connect_object (parser, "playlist-end",
-					 G_CALLBACK (playlist_load_end_cb),
+		g_signal_connect_object (parser, "playlist-ended",
+					 G_CALLBACK (playlist_load_ended_cb),
 					 mgr, 0);
 
 		if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))

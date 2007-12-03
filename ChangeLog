@@ -1,3 +1,47 @@
+2007-12-03  Bastien Nocera  <hadess@hadess.net>
+
+	* configure.ac: Require totem-pl-parser 2.21.4
+
+	* lib/rb-file-helpers.c: (rb_uri_could_be_podcast):
+	* lib/rb-file-helpers.h: Add helper function to detect
+	whether it could be a podcast from the URI passed
+
+	* data/rhythmbox.schemas: Handle feed://, itpc:// and itms:// URIs
+
+	* podcast/Makefile.am:
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_subscribe_feed),
+	(rb_podcast_manager_parse_complete_cb),
+	(rb_podcast_manager_thread_parse_feed),
+	(rb_podcast_manager_save_metadata),
+	(rb_podcast_manager_insert_feed):
+	* podcast/rb-podcast-parse.c: (playlist_metadata_foreach),
+	(playlist_started), (playlist_ended), (entry_metadata_foreach),
+	(entry_parsed), (rb_podcast_parse_load_feed),
+	(rb_podcast_parse_channel_free):
+	* podcast/rb-podcast-parse.h: Use totem-pl-parser to parse Podcast
+	files (including Atom files) (Closes: #355984), as well as OPML files
+
+	* shell/rb-playlist-manager.c: (handle_playlist_entry_cb),
+	(playlist_load_started_cb), (playlist_load_ended_cb),
+	(rb_playlist_manager_parse_file), (_is_dirty_playlist),
+	(rb_playlist_manager_save_playlists):
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_handle_eos_unlocked), (rb_shell_player_init),
+	(playlist_entry_cb), (open_location_thread),
+	(rb_shell_player_open_location), (rb_shell_player_sync_play_order),
+	(rb_shell_player_do_previous), (rb_shell_player_do_next_internal),
+	(rb_shell_player_entry_activated_cb):
+	* shell/rb-shell.c: (handle_playlist_entry_cb),
+	(rb_shell_load_uri): Update API to totem-pl-parser 2.21.4, detect
+	podcasts and OPML files (Closes: #489520) and add them to the
+	podcast source
+
+	* podcast/test-podcast-parse.c: (main): Call setlocale
+	so we print UTF-8 characters
+
+	(Closes: #484768)
+
 2007-12-03  Jonathan Matthew  <jonathan@d14n.org>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_save_thread_main):

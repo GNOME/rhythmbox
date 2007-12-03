@@ -6,6 +6,9 @@ librbpodcast_parse_la_SOURCES = 			\
 	rb-podcast-parse.c				\
 	rb-podcast-parse.h
 
+librbpodcast_parse_la_LIBADD =				\
+	$(top_builddir)/lib/librb.la
+
 librbpodcast_la_SOURCES =				\
 	rb-feed-podcast-properties-dialog.c		\
 	rb-feed-podcast-properties-dialog.h		\
@@ -23,9 +26,10 @@ test_podcast_parse_SOURCES =				\
 	test-podcast-parse.c
 test_podcast_parse_LDADD =				\
 	librbpodcast_parse.la				\
-	$(RHYTHMBOX_LIBS)
+	$(RHYTHMBOX_LIBS)				\
+	$(TOTEM_PLPARSER_LIBS)
 
-INCLUDES =						\
+AM_CFLAGS =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\
@@ -36,7 +40,8 @@ INCLUDES =						\
 	-I$(top_srcdir)/metadata			\
 	-I$(top_srcdir)/library				\
 	-I$(top_builddir)/lib 				\
-	$(RHYTHMBOX_CFLAGS)
+	$(RHYTHMBOX_CFLAGS)				\
+	$(TOTEM_PLPARSER_CFLAGS)
 
 librbpodcast_la_LDFLAGS = -export-dynamic
 

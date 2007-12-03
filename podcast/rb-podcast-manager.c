@@ -833,7 +833,7 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url)
 	RBPodcastThreadInfo *info;
 	gchar *valid_url;
 
-	if (g_str_has_prefix (url, "feed://")) {
+	if (g_str_has_prefix (url, "feed://") || g_str_has_prefix (url, "itpc://")) {
 		char *tmp;
 
 		tmp = g_strdup_printf ("http://%s", url + strlen ("feed://"));
@@ -915,7 +915,7 @@ rb_podcast_manager_thread_parse_feed (RBPodcastThreadInfo *info)
 {
 	RBPodcastChannel *feed = g_new0 (RBPodcastChannel, 1);
 
-	if (rb_podcast_parse_load_feed (feed, info->url)) {
+	if (rb_podcast_parse_load_feed (feed, info->url) && (feed->is_opml == FALSE)) {
 		RBPodcastManagerParseResult *result;
 
 		result = g_new0 (RBPodcastManagerParseResult, 1);
@@ -927,6 +927,16 @@ rb_podcast_manager_thread_parse_feed (RBPodcastThreadInfo *info)
 				 (GSourceFunc) rb_podcast_manager_parse_complete_cb,
 				 result,
 				 (GDestroyNotify) rb_podcast_manager_free_parse_result);
+	} else if (feed->is_opml) {
+		GList *l;
+
+		rb_debug ("Loading OPML feeds from %s", info->url);
+
+		for (l = feed->posts; l != NULL; l = l->next) {
+			RBPodcastItem *item = l->data;
+			rb_podcast_manager_subscribe_feed (info->pd, item->url);
+		}
+		rb_podcast_parse_channel_free (feed);
 	}
 
 	g_object_unref (info->pd);
@@ -1568,8 +1578,6 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 {
 	GValue description_val = { 0, };
 	GValue title_val = { 0, };
-	GValue subtitle_val = { 0, };
-	GValue summary_val = { 0, };
 	GValue lang_val = { 0, };
 	GValue copyright_val = { 0, };
 	GValue image_val = { 0, };
@@ -1587,7 +1595,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 
 	GList *lst_songs;
 
-	if (data->title	== NULL) {
+	if (data->title == NULL) {
 		g_list_free (data->posts);
 		g_free (data);
 		return;
@@ -1640,25 +1648,11 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &author_val);
 	g_value_unset (&author_val);
 
-	if (data->subtitle) {
-		g_value_init (&subtitle_val, G_TYPE_STRING);
-		g_value_set_string (&subtitle_val, (gchar *) data->subtitle);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_SUBTITLE, &subtitle_val);
-		g_value_unset (&subtitle_val);
-	}
-
 	if (data->description) {
 		g_value_init (&description_val, G_TYPE_STRING);
 		g_value_set_string (&description_val, (gchar *) data->description);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DESCRIPTION, &description_val);
 		g_value_unset (&description_val);
-	}
-
-	if (data->summary) {
-		g_value_init (&summary_val, G_TYPE_STRING);
-		g_value_set_string (&summary_val, (gchar *) data->summary);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_SUMMARY, &summary_val);
-		g_value_unset (&summary_val);
 	}
 
 	if (data->lang) {

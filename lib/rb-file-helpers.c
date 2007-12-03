@@ -774,6 +774,65 @@ rb_uri_is_hidden (const char *text_uri)
 	return g_utf8_strrchr (text_uri, -1, GNOME_VFS_URI_PATH_CHR)[1] == '.';
 }
 
+gboolean
+rb_uri_could_be_podcast (const char *uri, gboolean *is_opml)
+{
+	const char *query_string;
+
+	if (is_opml != NULL)
+		*is_opml = FALSE;
+
+	/* Check the scheme is a possible one first */
+	if (g_str_has_prefix (uri, "http") == FALSE &&
+	    g_str_has_prefix (uri, "itpc:") == FALSE &&
+	    g_str_has_prefix (uri, "itms:") == FALSE) {
+	    	rb_debug ("'%s' can't be a Podcast or OPML file, not the right scheme", uri);
+	    	return FALSE;
+	}
+
+	/* Now, check whether the iTunes Music Store link
+	 * is a podcast */
+	if (g_str_has_prefix (uri, "itms:") != FALSE
+	    && strstr (uri, "phobos.apple.com") != NULL
+	    && strstr (uri, "viewPodcast") != NULL)
+		return TRUE;
+
+	query_string = strchr (uri, '?');
+	if (query_string == NULL) {
+		query_string = uri + strlen (uri);
+	}
+
+	/* FIXME hacks */
+	if (strstr (uri, "rss") != NULL ||
+	    strstr (uri, "atom") != NULL ||
+	    strstr (uri, "feed") != NULL) {
+	    	rb_debug ("'%s' should be Podcast file, HACK", uri);
+	    	return TRUE;
+	} else if (strstr (uri, "opml") != NULL) {
+		rb_debug ("'%s' should be an OPML file, HACK", uri);
+		if (is_opml != NULL)
+			*is_opml = TRUE;
+		return TRUE;
+	}
+
+	if (strncmp (query_string - 4, ".rss", 4) == 0 ||
+	    strncmp (query_string - 4, ".xml", 4) == 0 ||
+	    strncmp (query_string - 5, ".atom", 5) == 0 ||
+	    strncmp (uri, "itpc", 4) == 0 ||
+	    (strstr (uri, "phobos.apple.com/") != NULL && strstr (uri, "viewPodcast") != NULL) ||
+	    strstr (uri, "itunes.com/podcast") != NULL) {
+	    	rb_debug ("'%s' should be Podcast file", uri);
+	    	return TRUE;
+	} else if (strncmp (query_string - 5, ".opml", 5) == 0) {
+		rb_debug ("'%s' should be an OPML file", uri);
+		if (is_opml != NULL)
+			*is_opml = TRUE;
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 char *
 rb_uri_make_hidden (const char *text_uri)
 {

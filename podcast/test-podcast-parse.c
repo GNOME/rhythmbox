@@ -1,6 +1,7 @@
 
 #include "config.h"
 
+#include <locale.h>
 #include <glib.h>
 #include <glib/gi18n.h>
 
@@ -47,6 +48,7 @@ int main (int argc, char **argv)
 	GDate date = {0,};
 	char datebuf[1024];
 
+	setlocale (LC_ALL, "");
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
@@ -66,7 +68,6 @@ int main (int argc, char **argv)
 	g_date_strftime (datebuf, 1024, "%F %T", &date);
 
 	g_print ("Podcast title: %s\n", data->title);
-	g_print ("Summary: %s\n", data->summary);
 	g_print ("Description: %s\n", data->description);
 	g_print ("Author: %s\n", data->author);
 	g_print ("Date: %s\n", datebuf);

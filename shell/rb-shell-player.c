@@ -120,10 +120,10 @@ static void rb_shell_player_entry_changed_cb (RhythmDB *db,
 
 static void rb_shell_player_entry_activated_cb (RBEntryView *view,
 						RhythmDBEntry *entry,
-						RBShellPlayer *playa);
+						RBShellPlayer *player);
 static void rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 						       const char *name,
-						       RBShellPlayer *playa);
+						       RBShellPlayer *player);
 static void rb_shell_player_sync_volume (RBShellPlayer *player, gboolean notify);
 static void rb_shell_player_sync_replaygain (RBShellPlayer *player,
                                              RhythmDBEntry *entry);
@@ -1299,20 +1299,11 @@ typedef struct {
 	PlaybackStartType play_type;
 } OpenLocationThreadData;
 
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
 static void
 playlist_entry_cb (TotemPlParser *playlist,
 		   const char *uri,
 		   GHashTable *metadata,
 		   RBShellPlayer *player)
-#else
-static void
-playlist_entry_cb (TotemPlParser *playlist,
-		   const char *uri,
-		   const char *title,
-		   const char *genre,
-		   RBShellPlayer *player)
-#endif
 {
 	rb_debug ("adding stream url %s", uri);
 	g_queue_push_tail (player->priv->playlist_urls, g_strdup (uri));
@@ -1326,15 +1317,9 @@ open_location_thread (OpenLocationThreadData *data)
 
 	playlist = totem_pl_parser_new ();
 
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
 	g_signal_connect_data (G_OBJECT (playlist), "entry-parsed",
 			       G_CALLBACK (playlist_entry_cb),
 			       data->player, NULL, 0);
-#else
-	g_signal_connect_data (G_OBJECT (playlist), "entry",
-			       G_CALLBACK (playlist_entry_cb),
-			       data->player, NULL, 0);
-#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 
 	totem_pl_parser_add_ignored_mimetype (playlist, "x-directory/normal");
 
@@ -1415,6 +1400,8 @@ rb_shell_player_open_location (RBShellPlayer *player,
 		gboolean ret = TRUE;
 
 		crossfade = rb_shell_player_get_crossfade (player, play_type);
+
+		g_object_ref (entry);
 		ret = ret && rb_player_open (player->priv->mmplayer, location, entry, (GDestroyNotify) rhythmdb_entry_unref, error);
 
 		ret = ret && rb_player_play (player->priv->mmplayer, crossfade, error);
@@ -2340,7 +2327,7 @@ rb_shell_player_view_song_position_slider_changed_cb (GtkAction *action,
 static void
 rb_shell_player_entry_activated_cb (RBEntryView *view,
 				    RhythmDBEntry *entry,
-				    RBShellPlayer *playa)
+				    RBShellPlayer *player)
 {
 	gboolean was_from_queue = FALSE;
 	RhythmDBEntry *prev_entry = NULL;
@@ -2359,44 +2346,44 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 
 	/* skip entries with no playback uri */
 	playback_uri = rhythmdb_entry_get_playback_uri (entry);
-	if (playback_uri == NULL) {
+	if (playback_uri == NULL)
 		return;
-	}
+
 	g_free (playback_uri);
 
 	/* figure out where the previous entry came from */
-	if ((playa->priv->queue_source != NULL) &&
-	    (playa->priv->current_playing_source == RB_SOURCE (playa->priv->queue_source))) {
-		prev_entry = rb_shell_player_get_playing_entry (playa);
+	if ((player->priv->queue_source != NULL) &&
+	    (player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source))) {
+		prev_entry = rb_shell_player_get_playing_entry (player);
 		was_from_queue = TRUE;
 	}
 
-	if (playa->priv->queue_source) {
+	if (player->priv->queue_source) {
 		RBEntryView *queue_sidebar;
 
-		g_object_get (playa->priv->queue_source, "sidebar", &queue_sidebar, NULL);
+		g_object_get (player->priv->queue_source, "sidebar", &queue_sidebar, NULL);
 
-		if (view == queue_sidebar || view == rb_source_get_entry_view (RB_SOURCE (playa->priv->queue_source))) {
+		if (view == queue_sidebar || view == rb_source_get_entry_view (RB_SOURCE (player->priv->queue_source))) {
 
 			/* fall back to the current selected source once the queue is empty */
-			if (view == queue_sidebar && playa->priv->source == NULL) {
-				rb_play_order_playing_source_changed (playa->priv->play_order,
-								      playa->priv->selected_source);
-				playa->priv->source = playa->priv->selected_source;
+			if (view == queue_sidebar && player->priv->source == NULL) {
+				rb_play_order_playing_source_changed (player->priv->play_order,
+								      player->priv->selected_source);
+				player->priv->source = player->priv->selected_source;
 			}
 
 			/* queue entry activated: move it to the start of the queue */
-			rb_static_playlist_source_move_entry (RB_STATIC_PLAYLIST_SOURCE (playa->priv->queue_source), entry, 0);
-			rb_shell_player_set_playing_source (playa, RB_SOURCE (playa->priv->queue_source));
+			rb_static_playlist_source_move_entry (RB_STATIC_PLAYLIST_SOURCE (player->priv->queue_source), entry, 0);
+			rb_shell_player_set_playing_source (player, RB_SOURCE (player->priv->queue_source));
 
 			was_from_queue = FALSE;
 			source_set = TRUE;
 			jump_to_entry = TRUE;
 		} else {
-			if (playa->priv->queue_only) {
-				rb_source_add_to_queue (playa->priv->selected_source,
-							RB_SOURCE (playa->priv->queue_source));
-				rb_shell_player_set_playing_source (playa, RB_SOURCE (playa->priv->queue_source));
+			if (player->priv->queue_only) {
+				rb_source_add_to_queue (player->priv->selected_source,
+							RB_SOURCE (player->priv->queue_source));
+				rb_shell_player_set_playing_source (player, RB_SOURCE (player->priv->queue_source));
 				source_set = TRUE;
 			}
 		}
@@ -2405,18 +2392,18 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 	}
 
 	/* bail out if queue only */
-	if (playa->priv->queue_only) {
+	if (player->priv->queue_only) {
 		return;
 	}
 
 	if (!source_set) {
-		rb_shell_player_set_playing_source (playa, playa->priv->selected_source);
+		rb_shell_player_set_playing_source (player, player->priv->selected_source);
 		source_set = TRUE;
 	}
 
-	playa->priv->jump_to_playing_entry = jump_to_entry;
-	if (!rb_shell_player_set_playing_entry (playa, entry, TRUE, FALSE, &error)) {
-		rb_shell_player_error (playa, FALSE, error);
+	player->priv->jump_to_playing_entry = jump_to_entry;
+	if (!rb_shell_player_set_playing_entry (player, entry, TRUE, FALSE, &error)) {
+		rb_shell_player_error (player, FALSE, error);
 		g_clear_error (&error);
 	}
 
@@ -2424,7 +2411,7 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 	 * so we'll start again from the start.
 	 */
 	if (was_from_queue && prev_entry != NULL) {
-		rb_play_order_set_playing_entry (playa->priv->queue_play_order, NULL);
+		rb_play_order_set_playing_entry (player->priv->queue_play_order, NULL);
 	}
 
 	if (prev_entry != NULL) {

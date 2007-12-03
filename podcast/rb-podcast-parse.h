@@ -23,36 +23,34 @@
 #define RB_PODCAST_PARSE_H
 
 #include <glib.h>
-#include <libxml/xmlstring.h>
-#include <inttypes.h>
 
 typedef struct
 {
-	xmlChar* title;
-	xmlChar* url;
-	xmlChar* description;
-	xmlChar* author;
-	uintmax_t pub_date;
+	char* title;
+	char* url;
+	char* description;
+	char* author;
+	guint64 pub_date;
 	gulong duration;
 	guint64 filesize;
-}RBPodcastItem;
+} RBPodcastItem;
 
 typedef struct
 {
-	xmlChar* url;
-	xmlChar* title;
-	xmlChar* lang;
-    	xmlChar* subtitle;
-    	xmlChar* summary;
-	xmlChar* description;
-	xmlChar* author;
-	xmlChar* contact;
-	xmlChar* img;
-	uintmax_t pub_date;
-    	xmlChar* copyright;
+	char* url;
+	char* title;
+	char* lang;
+    	char* description;
+	char* author;
+	char* contact;
+	char* img;
+	guint64 pub_date;
+    	char* copyright;
+
+    	gboolean is_opml;
 
 	GList *posts;
-}RBPodcastChannel;
+} RBPodcastChannel;
 
 gboolean rb_podcast_parse_load_feed	(RBPodcastChannel *data, const char *file_name);
 void rb_podcast_parse_channel_free 	(RBPodcastChannel *data);

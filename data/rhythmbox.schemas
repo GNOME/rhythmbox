@@ -136,9 +136,9 @@
 	<long>Main window X position.</long>
         </locale>
       </schema>
- 
 
-<schema>
+
+      <schema>
         <key>/schemas/apps/rhythmbox/state/window_position_y</key>
         <applyto>/apps/rhythmbox/state/window_position_y</applyto>
         <owner>rhythmbox</owner>
@@ -150,10 +150,7 @@
         </locale>
       </schema>
  
-
-
-
-<schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/window_height</key>
         <applyto>/apps/rhythmbox/state/window_height</applyto>
         <owner>rhythmbox</owner>
@@ -438,6 +435,106 @@
 	column to sort on, the second is the sort type.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/itpc/command</key>
+	<applyto>/desktop/gnome/url-handlers/itpc/command</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>rhythmbox "%s"</default>
+        <locale name="C">
+	  <short>The command to handle ITPC scheme URLs</short>
+	  <long>The command to handle ITPC scheme URLs.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/itpc/needs_terminal</key>
+	<applyto>/desktop/gnome/url-handlers/itpc/needs_terminal</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+	  <short>Whether command to handle ITPC scheme URLs needs a terminal</short>
+	  <long>Whether command to handle ITPC scheme URLs needs a terminal.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/itpc/enabled</key>
+	<applyto>/desktop/gnome/url-handlers/itpc/enabled</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>true</default>
+        <locale name="C">
+	  <short>Whether command to handle ITPC scheme URLs is enabled</short>
+	  <long>Whether command to handle ITPC scheme URLs is enabled.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/itms/command</key>
+	<applyto>/desktop/gnome/url-handlers/itms/command</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>rhythmbox "%s"</default>
+        <locale name="C">
+	  <short>The command to handle ITMS scheme URLs</short>
+	  <long>The command to handle ITMS scheme URLs.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/itms/needs_terminal</key>
+	<applyto>/desktop/gnome/url-handlers/itms/needs_terminal</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+	  <short>Whether command to handle ITMS scheme URLs needs a terminal</short>
+	  <long>Whether command to handle ITMS scheme URLs needs a terminal.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/itms/enabled</key>
+	<applyto>/desktop/gnome/url-handlers/itms/enabled</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>true</default>
+        <locale name="C">
+	  <short>Whether command to handle ITMS scheme URLs is enabled</short>
+	  <long>Whether command to handle ITMS scheme URLs is enabled.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/feed/command</key>
+	<applyto>/desktop/gnome/url-handlers/feed/command</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>rhythmbox "%s"</default>
+        <locale name="C">
+	  <short>The command to handle FEED scheme URLs</short>
+	  <long>The command to handle FEED scheme URLs.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/feed/needs_terminal</key>
+	<applyto>/desktop/gnome/url-handlers/feed/needs_terminal</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+	  <short>Whether command to handle FEED scheme URLs needs a terminal</short>
+	  <long>Whether command to handle FEED scheme URLs needs a terminal.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/feed/enabled</key>
+	<applyto>/desktop/gnome/url-handlers/feed/enabled</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>true</default>
+        <locale name="C">
+	  <short>Whether command to handle FEED scheme URLs is enabled</short>
+	  <long>Whether command to handle FEED scheme URLs is enabled.</long>
+        </locale>
+      </schema>
+
       <schema>
         <key>/schemas/apps/rhythmbox/state/podcast/show_browser</key>
         <applyto>/apps/rhythmbox/state/podcast/show_browser</applyto>
