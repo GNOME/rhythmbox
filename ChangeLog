@@ -1,5 +1,11 @@
 2007-12-03  Bastien Nocera  <hadess@hadess.net>
 
+	* plugins/generic-player/rb-psp-source.c: (impl_get_mount_path),
+	(rb_psp_is_volume_player): Handle PSPs with firmware >= 2.80
+	(Closes: #369222)
+
+2007-12-03  Bastien Nocera  <hadess@hadess.net>
+
 	* configure.ac:
 	* podcast/Makefile.am:
 	* podcast/plugin.symbols:

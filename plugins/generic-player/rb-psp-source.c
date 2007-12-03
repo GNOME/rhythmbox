@@ -120,6 +120,11 @@ impl_get_mount_path (RBGenericPlayerSource *source)
 	g_object_unref (volume);
 
 	path = rb_uri_append_path (uri, "PSP/MUSIC");
+	/* For Firmware versions 2.80+ */
+	if (!rb_uri_exists(path)) {
+		g_free (path);
+		path = rb_uri_append_path(uri, "MUSIC");
+	}
 
 	g_free (uri);
 
@@ -283,6 +288,11 @@ rb_psp_is_volume_player (GnomeVFSVolume *volume)
 		path = rb_uri_append_path (str, "PSP/MUSIC");
 		g_free (str);
 		result = rb_uri_exists (path);
+		if (!result) {
+			g_free (path);
+			path = rb_uri_append_path (str, "MUSIC");
+			result = rb_uri_exists (path);
+		}
 		g_free (path);
 		return result;
 	}
