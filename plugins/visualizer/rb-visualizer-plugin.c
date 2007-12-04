@@ -102,8 +102,8 @@ extern GType rb_fake_vis_get_type (void);
 
 
 typedef struct {
-	const char *name;
-	const char *displayname;
+	char *name;
+	char *displayname;
 } VisPluginInfo;
 
 typedef struct {
@@ -315,12 +315,20 @@ rb_visualizer_plugin_dispose (GObject *object)
 }
 
 static void
+free_vis_plugin_info (VisPluginInfo *vpi)
+{
+	g_free (vpi->name);
+	g_free (vpi->displayname);
+	g_free (vpi);
+}
+
+static void
 rb_visualizer_plugin_finalize (GObject *object)
 {
 	RBVisualizerPlugin *plugin = RB_VISUALIZER_PLUGIN (object);
 	rb_debug ("RBVisualizerPlugin finalising");
 
-	g_list_foreach (plugin->vis_plugin_list, (GFunc)g_free, NULL);
+	g_list_foreach (plugin->vis_plugin_list, (GFunc)free_vis_plugin_info, NULL);
 	g_list_free (plugin->vis_plugin_list);
 
 	G_OBJECT_CLASS (rb_visualizer_plugin_parent_class)->finalize (object);
@@ -1892,8 +1900,8 @@ get_vis_plugin_list (RBVisualizerPlugin *pi)
 		f = GST_ELEMENT_FACTORY (t->data);
 
 		plugin = g_new0 (VisPluginInfo, 1);
-		plugin->displayname = gst_element_factory_get_longname (f);
-		plugin->name = gst_plugin_feature_get_name (GST_PLUGIN_FEATURE (f));
+		plugin->displayname = g_strdup (gst_element_factory_get_longname (f));
+		plugin->name = g_strdup (gst_plugin_feature_get_name (GST_PLUGIN_FEATURE (f)));
 		rb_debug ("adding visualizer element: %s (%s)", plugin->displayname, plugin->name);
 
 		plugin_info = g_list_prepend (plugin_info, plugin);

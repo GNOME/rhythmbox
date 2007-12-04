@@ -1,5 +1,13 @@
 2007-12-04  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/visualizer/rb-visualizer-plugin.c:
+	(free_vis_plugin_info), (rb_visualizer_plugin_finalize),
+	(get_vis_plugin_list):  If we're going to free the GStreamer feature
+	list that we get the visualization plugin strings from, we'll need to
+	copy the strings..
+
+2007-12-04  Jonathan Matthew  <jonathan@d14n.org>
+
 	* INSTALL.quick: make this somewhat less horribly out of date.
 
 2007-12-04  Jonathan Matthew  <jonathan@d14n.org>
