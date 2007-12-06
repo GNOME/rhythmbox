@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD.es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-11-08 13:34+0000\n"
-"PO-Revision-Date: 2007-11-13 20:24+0100\n"
+"POT-Creation-Date: 2007-12-03 13:16+0000\n"
+"PO-Revision-Date: 2007-12-06 16:59+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -29,55 +29,55 @@ msgstr ""
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "¿Quiere sobreescribir el archivo «%s»?"
 
-#: ../backends/gstreamer/rb-player-gst.c:628 ../metadata/rb-metadata-gst.c:790
-#: ../metadata/rb-metadata-gst.c:1318
+#: ../backends/gstreamer/rb-player-gst.c:699 ../metadata/rb-metadata-gst.c:798
+#: ../metadata/rb-metadata-gst.c:1360
 #: ../plugins/cd-recorder/rb-recorder-gst.c:507
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Ha ocurrido un error al crear el elemento %s; compruebe su instalación"
 
-#: ../backends/gstreamer/rb-player-gst.c:695
+#: ../backends/gstreamer/rb-player-gst.c:767
 msgid "Unknown playback error"
 msgstr "Error de reproducción desconocido"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1056
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1070
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1100
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1114
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr ""
 "Ha ocurrido un error al enlazar un nuevo flujo dentro del pipeline de "
 "GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1094
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1141
 msgid "Failed to start new stream"
 msgstr "Ha ocurrido un error al inicializar un nuevo flujo"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2546
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2634
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2718
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2806
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Ha ocurrido un error al crear el elemento GStreamer; compruebe su instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2559
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2731
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear un elemento de salida de audio; compruebe su "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2608
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2650
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2676
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2685
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2694
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2780
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2822
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2848
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2857
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2866
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Ha ocurrido un error al enlazar la tubería de GStreamer; compruebe su "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2784
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2957
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Ha ocurrido un error al crear una tubería de GStreamer para reproducir %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2805
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2978
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "No se ha podido iniciar la reproducción de %s"
@@ -503,8 +503,8 @@ msgstr "Reproducidos recientemente"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:199
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1478
-#: ../shell/rb-shell-player.c:2604 ../shell/rb-shell.c:1015
-#: ../shell/rb-shell.c:2104 ../shell/rb-tray-icon.c:43
+#: ../shell/rb-shell-player.c:2626 ../shell/rb-shell.c:1018
+#: ../shell/rb-shell.c:2107 ../shell/rb-tray-icon.c:43
 msgid "Music Player"
 msgstr "Reproductor de música"
 
@@ -580,13 +580,13 @@ msgstr "%d %b %Y"
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
 #: ../plugins/mtpdevice/rb-mtp-source.c:237
 #: ../podcast/rb-feed-podcast-properties-dialog.c:311
-#: ../podcast/rb-podcast-manager.c:1567
+#: ../podcast/rb-podcast-manager.c:1647
 #: ../podcast/rb-podcast-properties-dialog.c:467
 #: ../podcast/rb-podcast-properties-dialog.c:520
 #: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1237
 #: ../rhythmdb/rhythmdb-tree.c:1241 ../rhythmdb/rhythmdb-tree.c:1245
-#: ../rhythmdb/rhythmdb-tree.c:1249 ../rhythmdb/rhythmdb.c:1427
-#: ../shell/rb-shell-player.c:1493 ../shell/rb-shell.c:3020
+#: ../rhythmdb/rhythmdb-tree.c:1249 ../rhythmdb/rhythmdb.c:1460
+#: ../shell/rb-shell-player.c:1515 ../shell/rb-shell.c:3023
 #: ../sources/rb-podcast-source.c:1631 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:862 ../widgets/rb-entry-view.c:1146
 #: ../widgets/rb-entry-view.c:1158 ../widgets/rb-entry-view.c:1170
@@ -633,63 +633,65 @@ msgstr "%d:%02d de %d:%02d"
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d de %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-dbus-client.c:295
+#: ../metadata/rb-metadata-dbus-client.c:297
 msgid "Internal GStreamer problem; file a bug"
 msgstr "Problema interno de GStreamer, archive un error"
 
-#: ../metadata/rb-metadata-dbus-client.c:313
-#: ../metadata/rb-metadata-dbus-client.c:363
-#: ../metadata/rb-metadata-dbus-client.c:368
-#: ../metadata/rb-metadata-dbus-client.c:388
-#: ../metadata/rb-metadata-dbus-client.c:398
-#: ../metadata/rb-metadata-dbus-client.c:406
-#: ../metadata/rb-metadata-dbus-client.c:546
-#: ../metadata/rb-metadata-dbus-client.c:556
+#: ../metadata/rb-metadata-dbus-client.c:315
+#: ../metadata/rb-metadata-dbus-client.c:365
+#: ../metadata/rb-metadata-dbus-client.c:370
+#: ../metadata/rb-metadata-dbus-client.c:390
+#: ../metadata/rb-metadata-dbus-client.c:400
+#: ../metadata/rb-metadata-dbus-client.c:410
+#: ../metadata/rb-metadata-dbus-client.c:429
+#: ../metadata/rb-metadata-dbus-client.c:441
+#: ../metadata/rb-metadata-dbus-client.c:601
+#: ../metadata/rb-metadata-dbus-client.c:611
 msgid "D-BUS communication error"
 msgstr "Error de comunicación de D-BUS"
 
-#: ../metadata/rb-metadata-gst.c:579
+#: ../metadata/rb-metadata-gst.c:585
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr ""
 "No se pudieron encontrar los complementos de GStreamer para decodificar "
 "archivos «%s»"
 
-#: ../metadata/rb-metadata-gst.c:582
+#: ../metadata/rb-metadata-gst.c:588
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "El archivo contiene un flujo de tipo %s, que no es decodificable"
 
-#: ../metadata/rb-metadata-gst.c:952
+#: ../metadata/rb-metadata-gst.c:994
 msgid "Failed to create a source element; check your installation"
 msgstr "Ha ocurrido un error al crear un elemento de origen; compruebe su instalación"
 
-#: ../metadata/rb-metadata-gst.c:1016
+#: ../metadata/rb-metadata-gst.c:1057
 msgid "GStreamer error: failed to change state"
 msgstr "Error de GStreamer: falló al cambiar el estado"
 
-#: ../metadata/rb-metadata-gst.c:1111
+#: ../metadata/rb-metadata-gst.c:1153
 msgid "Empty file"
 msgstr "Archivo vacío"
 
-#: ../metadata/rb-metadata-gst.c:1119
+#: ../metadata/rb-metadata-gst.c:1161
 msgid "The MIME type of the file could not be identified"
 msgstr "El tipo MIME del archivo no se pudo identificar"
 
-#: ../metadata/rb-metadata-gst.c:1255
+#: ../metadata/rb-metadata-gst.c:1297
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Tipo de archivo no soportado: %s"
 
-#: ../metadata/rb-metadata-gst.c:1264
+#: ../metadata/rb-metadata-gst.c:1306
 msgid "Unable to create tag-writing elements"
 msgstr "No se pueden crear elementos tag-writing"
 
-#: ../metadata/rb-metadata-gst.c:1279
+#: ../metadata/rb-metadata-gst.c:1321
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Tiempo cumplido mientras se ponía el conducto en NULO"
 
-#: ../metadata/rb-metadata-gst.c:1298
+#: ../metadata/rb-metadata-gst.c:1340
 msgid "File corrupted during write"
 msgstr "El archivo ha sido corrompido mientras se grababa"
 
@@ -881,7 +883,7 @@ msgstr "Perfil de Last.fm"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1094
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../rhythmdb/rhythmdb.c:3009 ../widgets/rb-entry-view.c:785
+#: ../rhythmdb/rhythmdb.c:3141 ../widgets/rb-entry-view.c:785
 #: ../widgets/rb-entry-view.c:1204 ../widgets/rb-entry-view.c:1217
 #: ../widgets/rb-song-info.c:1209
 msgid "Never"
@@ -1760,7 +1762,7 @@ msgstr "_Renombrar"
 msgid "Rename iPod"
 msgstr "Renombrar iPod"
 
-#: ../plugins/ipod/rb-ipod-source.c:1174 ../sources/rb-podcast-source.c:806
+#: ../plugins/ipod/rb-ipod-source.c:1179 ../sources/rb-podcast-source.c:806
 msgid "Podcasts"
 msgstr "Podcasts"
 
@@ -2639,11 +2641,11 @@ msgstr "Complemento"
 msgid "Enabled"
 msgstr "Activado"
 
-#: ../plugins/rb-plugins-engine.c:531
+#: ../plugins/rb-plugins-engine.c:535
 msgid "Plugin Error"
 msgstr "Error del complemento"
 
-#: ../plugins/rb-plugins-engine.c:531
+#: ../plugins/rb-plugins-engine.c:535
 #, c-format
 msgid "Unable to activate plugin %s"
 msgstr "No se pudo activar el complemento %s"
@@ -2771,21 +2773,21 @@ msgstr "Visualización:"
 msgid "Displays visualizations"
 msgstr "Mostrar las visualizaciones"
 
-#: ../podcast/rb-podcast-manager.c:830
+#: ../podcast/rb-podcast-manager.c:847
 msgid "Invalid URL"
 msgstr "URL inválido"
 
-#: ../podcast/rb-podcast-manager.c:831
+#: ../podcast/rb-podcast-manager.c:848
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "La URL «%s» no es válida, compruébelo."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:839
+#: ../podcast/rb-podcast-manager.c:856
 msgid "URL already added"
 msgstr "La URL ya se ha añadido"
 
-#: ../podcast/rb-podcast-manager.c:840
+#: ../podcast/rb-podcast-manager.c:857
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2794,16 +2796,16 @@ msgstr ""
 "La URL «%s» ya se ha añadido como estación de radio. Si esto es un proveedor "
 "de Podcast, elimine la estación de radio."
 
-#: ../podcast/rb-podcast-manager.c:881
+#: ../podcast/rb-podcast-manager.c:898
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgstr "Hubo un problema al añadir este Podcast. Compruebe la URL: %s"
 
-#: ../podcast/rb-podcast-manager.c:959
+#: ../podcast/rb-podcast-manager.c:986
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-parse.c:477
+#: ../podcast/rb-podcast-parse.c:177
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2907,7 +2909,7 @@ msgstr "Silenciar la reproducción"
 msgid "Unmute playback"
 msgstr "Dar voz a la reproducción"
 
-#: ../remote/dbus/rb-client.c:395 ../shell/rb-shell.c:2079
+#: ../remote/dbus/rb-client.c:395 ../shell/rb-shell.c:2082
 msgid "Not playing"
 msgstr "No se está reproduciendo nada"
 
@@ -2940,38 +2942,38 @@ msgstr ""
 "La base de datos fue creada por un versión posterior de Rhythmbox. Esta "
 "versión de Rhythmbox no puede leer la base de datos."
 
-#: ../rhythmdb/rhythmdb.c:549
+#: ../rhythmdb/rhythmdb.c:567
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "No se ha podido acceder a %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:1569
+#: ../rhythmdb/rhythmdb.c:1602
 msgid "<invalid filename>"
 msgstr "<nombre de archivo inválido>"
 
-#: ../rhythmdb/rhythmdb.c:1827
+#: ../rhythmdb/rhythmdb.c:1860
 msgid "invalid unicode in error message"
 msgstr "Unicode inválido en el mensaje de error"
 
-#: ../rhythmdb/rhythmdb.c:2498
+#: ../rhythmdb/rhythmdb.c:2630
 msgid "Could not load the music database"
 msgstr "No se ha podido cargar la base de datos de música"
 
-#: ../rhythmdb/rhythmdb.c:3947
+#: ../rhythmdb/rhythmdb.c:4079
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minutos"
 
-#: ../rhythmdb/rhythmdb.c:3948
+#: ../rhythmdb/rhythmdb.c:4080
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hora"
 msgstr[1] "%ld horas"
 
-#: ../rhythmdb/rhythmdb.c:3949
+#: ../rhythmdb/rhythmdb.c:4081
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -2979,7 +2981,7 @@ msgstr[0] "%ld día"
 msgstr[1] "%ld días"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3955
+#: ../rhythmdb/rhythmdb.c:4087
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s y %s"
@@ -2987,8 +2989,8 @@ msgstr "%s, %s y %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3961 ../rhythmdb/rhythmdb.c:3969
-#: ../rhythmdb/rhythmdb.c:3980
+#: ../rhythmdb/rhythmdb.c:4093 ../rhythmdb/rhythmdb.c:4101
+#: ../rhythmdb/rhythmdb.c:4112
 #, c-format
 msgid "%s and %s"
 msgstr "%s y %s"
@@ -3090,52 +3092,56 @@ msgstr "_Poner en cola todas las pistas"
 msgid "Add all tracks in this playlist to the queue"
 msgstr "Añadir todas las pistas en esta lista de reproducción a la cola"
 
-#: ../shell/rb-playlist-manager.c:620
+#: ../shell/rb-playlist-manager.c:552
+msgid "Unnamed playlist"
+msgstr "Lista de reproducción sin nombre"
+
+#: ../shell/rb-playlist-manager.c:615
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr ""
 "El archivo de lista de reproducción puede estar en un formato desconocido o "
 "corrompido."
 
-#: ../shell/rb-playlist-manager.c:1036
+#: ../shell/rb-playlist-manager.c:1031
 msgid "Untitled Playlist"
 msgstr "Lista de reproducción sin título"
 
-#: ../shell/rb-playlist-manager.c:1297
+#: ../shell/rb-playlist-manager.c:1292
 msgid "Couldn't read playlist"
 msgstr "No se ha podido leer la lista de reproducción"
 
-#: ../shell/rb-playlist-manager.c:1312
+#: ../shell/rb-playlist-manager.c:1307
 msgid "Load Playlist"
 msgstr "Cargar lista de reproducción"
 
-#: ../shell/rb-playlist-manager.c:1333
+#: ../shell/rb-playlist-manager.c:1328
 msgid "MPEG Version 3.0 URL"
 msgstr "MPEG Versión 3.0 URL"
 
-#: ../shell/rb-playlist-manager.c:1334
+#: ../shell/rb-playlist-manager.c:1329
 msgid "Shoutcast playlist"
 msgstr "Lista de reproducción de Shoutcast"
 
-#: ../shell/rb-playlist-manager.c:1379 ../sources/rb-playlist-source.c:549
+#: ../shell/rb-playlist-manager.c:1374 ../sources/rb-playlist-source.c:549
 msgid "Couldn't save playlist"
 msgstr "No se ha podido guardar la lista de reproducción"
 
-#: ../shell/rb-playlist-manager.c:1379
+#: ../shell/rb-playlist-manager.c:1374
 msgid "Unsupported file extension given."
 msgstr "Extensión de archivo dada no soportada."
 
-#: ../shell/rb-playlist-manager.c:1680
+#: ../shell/rb-playlist-manager.c:1661
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "La lista %s ya existe"
 
-#: ../shell/rb-playlist-manager.c:1710 ../shell/rb-playlist-manager.c:1743
-#: ../shell/rb-playlist-manager.c:1783 ../shell/rb-playlist-manager.c:1826
+#: ../shell/rb-playlist-manager.c:1691 ../shell/rb-playlist-manager.c:1724
+#: ../shell/rb-playlist-manager.c:1764 ../shell/rb-playlist-manager.c:1807
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Lista desconocida: %s"
 
-#: ../shell/rb-playlist-manager.c:1751 ../shell/rb-playlist-manager.c:1791
+#: ../shell/rb-playlist-manager.c:1732 ../shell/rb-playlist-manager.c:1772
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "La lista %s es de reproducción automática"
@@ -3253,150 +3259,150 @@ msgstr "_Propiedades"
 msgid "Show information on the selected song"
 msgstr "Mostrar información sobre la canción seleccionada"
 
-#: ../shell/rb-shell-player.c:285
+#: ../shell/rb-shell-player.c:290
 msgid "P_revious"
 msgstr "_Anterior"
 
-#: ../shell/rb-shell-player.c:286
+#: ../shell/rb-shell-player.c:291
 msgid "Start playing the previous song"
 msgstr "Comenzar la reproducción de la canción anterior"
 
-#: ../shell/rb-shell-player.c:288
+#: ../shell/rb-shell-player.c:293
 msgid "_Next"
 msgstr "_Siguiente"
 
-#: ../shell/rb-shell-player.c:289
+#: ../shell/rb-shell-player.c:294
 msgid "Start playing the next song"
 msgstr "Comenzar la reproducción de la siguiente canción"
 
-#: ../shell/rb-shell-player.c:291
+#: ../shell/rb-shell-player.c:296
 msgid "_Increase Volume"
 msgstr "_Subir volumen"
 
-#: ../shell/rb-shell-player.c:292
+#: ../shell/rb-shell-player.c:297
 msgid "Increase playback volume"
 msgstr "Incrementa el volumen de reproducción"
 
-#: ../shell/rb-shell-player.c:294
+#: ../shell/rb-shell-player.c:299
 msgid "_Decrease Volume"
 msgstr "_Bajar volumen"
 
-#: ../shell/rb-shell-player.c:295
+#: ../shell/rb-shell-player.c:300
 msgid "Decrease playback volume"
 msgstr "Decrementa el volumen de reproducción"
 
-#: ../shell/rb-shell-player.c:302
+#: ../shell/rb-shell-player.c:307
 msgid "_Play"
 msgstr "_Reproducir"
 
-#: ../shell/rb-shell-player.c:303 ../shell/rb-shell-player.c:3243
+#: ../shell/rb-shell-player.c:308 ../shell/rb-shell-player.c:3346
 msgid "Start playback"
 msgstr "Iniciar reproducción"
 
-#: ../shell/rb-shell-player.c:305
+#: ../shell/rb-shell-player.c:310
 msgid "Sh_uffle"
 msgstr "_Aleatorio"
 
-#: ../shell/rb-shell-player.c:306
+#: ../shell/rb-shell-player.c:311
 msgid "Play songs in a random order"
 msgstr "Reproduce las canciones en orden aleatorio"
 
-#: ../shell/rb-shell-player.c:308
+#: ../shell/rb-shell-player.c:313
 msgid "_Repeat"
 msgstr "_Repetir"
 
-#: ../shell/rb-shell-player.c:309
+#: ../shell/rb-shell-player.c:314
 msgid "Play first song again after all songs are played"
 msgstr ""
 "Reproduce la primera canción otra vez después de reproducir todas las "
 "canciones"
 
-#: ../shell/rb-shell-player.c:311
+#: ../shell/rb-shell-player.c:316
 msgid "_Song Position Slider"
 msgstr "Marcador deslizante de posición de la _canción"
 
-#: ../shell/rb-shell-player.c:312
+#: ../shell/rb-shell-player.c:317
 msgid "Change the visibility of the song position slider"
 msgstr "Cambiar la visibilidad del deslizador de la canción"
 
-#: ../shell/rb-shell-player.c:691
+#: ../shell/rb-shell-player.c:714
 msgid "Stream error"
 msgstr "Error de flujo"
 
-#: ../shell/rb-shell-player.c:692
+#: ../shell/rb-shell-player.c:715
 msgid "Unexpected end of stream!"
 msgstr "¡Fin de flujo inesperado!"
 
-#: ../shell/rb-shell-player.c:785
+#: ../shell/rb-shell-player.c:808
 msgid "Linear"
 msgstr "Lineal"
 
-#: ../shell/rb-shell-player.c:787
+#: ../shell/rb-shell-player.c:810
 msgid "Linear looping"
 msgstr "Bucle lineal"
 
-#: ../shell/rb-shell-player.c:789
+#: ../shell/rb-shell-player.c:812
 msgid "Shuffle"
 msgstr "Aleatorio"
 
-#: ../shell/rb-shell-player.c:791
+#: ../shell/rb-shell-player.c:814
 msgid "Random with equal weights"
 msgstr "Aleatorio con pesos iguales"
 
-#: ../shell/rb-shell-player.c:793
+#: ../shell/rb-shell-player.c:816
 msgid "Random by time since last play"
 msgstr "Aleatorio por última vez desde que se reprodujo"
 
-#: ../shell/rb-shell-player.c:795
+#: ../shell/rb-shell-player.c:818
 msgid "Random by rating"
 msgstr "Aleatorio por puntuación"
 
-#: ../shell/rb-shell-player.c:797
+#: ../shell/rb-shell-player.c:820
 msgid "Random by time since last play and rating"
 msgstr "Aleatorio por tiempo desde la última reproducción y puntuación"
 
-#: ../shell/rb-shell-player.c:799
+#: ../shell/rb-shell-player.c:822
 msgid "Linear, removing entries once played"
 msgstr "Lineal, quitando las entradas una vez reproducida"
 
-#: ../shell/rb-shell-player.c:809
+#: ../shell/rb-shell-player.c:832
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Ha ocurrido un error al crear el reproductor: %s"
 
-#: ../shell/rb-shell-player.c:1313
+#: ../shell/rb-shell-player.c:1333
 msgid "Playlist was empty"
 msgstr "La lista de reproducción estaba vacía"
 
-#: ../shell/rb-shell-player.c:1770
+#: ../shell/rb-shell-player.c:1792
 msgid "Not currently playing"
 msgstr "Ahora no se está reproduciendo nada"
 
-#: ../shell/rb-shell-player.c:1808
+#: ../shell/rb-shell-player.c:1830
 msgid "No previous song"
 msgstr "No hay canción anterior"
 
-#: ../shell/rb-shell-player.c:1885
+#: ../shell/rb-shell-player.c:1907
 msgid "No next song"
 msgstr "No hay siguiente canción"
 
-#: ../shell/rb-shell-player.c:1997 ../shell/rb-shell-player.c:2969
+#: ../shell/rb-shell-player.c:2019 ../shell/rb-shell-player.c:2991
 msgid "Couldn't start playback"
 msgstr "No se ha podido iniciar la reproducción"
 
-#: ../shell/rb-shell-player.c:2800
+#: ../shell/rb-shell-player.c:2822
 msgid "Couldn't stop playback"
 msgstr "No se ha podido detener la reproducción"
 
-#: ../shell/rb-shell-player.c:2889
+#: ../shell/rb-shell-player.c:2911
 msgid "Current song is not seekable"
 msgstr "La canción actual no se puede buscar"
 
-#: ../shell/rb-shell-player.c:3241
+#: ../shell/rb-shell-player.c:3344
 msgid "Stop playback"
 msgstr "Detener reproducción"
 
-#: ../shell/rb-shell-preferences.c:137 ../shell/rb-shell.c:2308
+#: ../shell/rb-shell-preferences.c:137 ../shell/rb-shell.c:2311
 msgid "Couldn't display help"
 msgstr "No se ha podido mostrar la ayuda"
 
@@ -3412,189 +3418,189 @@ msgstr "General"
 msgid "Playback"
 msgstr "Reproducción"
 
-#: ../shell/rb-shell.c:408
+#: ../shell/rb-shell.c:409
 msgid "_Music"
 msgstr "_Música"
 
-#: ../shell/rb-shell.c:409
+#: ../shell/rb-shell.c:410
 msgid "_Edit"
 msgstr "_Editar"
 
-#: ../shell/rb-shell.c:410
+#: ../shell/rb-shell.c:411
 msgid "_View"
 msgstr "_Ver"
 
-#: ../shell/rb-shell.c:411
+#: ../shell/rb-shell.c:412
 msgid "_Control"
 msgstr "_Control"
 
-#: ../shell/rb-shell.c:412
+#: ../shell/rb-shell.c:413
 msgid "_Tools"
 msgstr "_Herramientas"
 
-#: ../shell/rb-shell.c:413
+#: ../shell/rb-shell.c:414
 msgid "_Help"
 msgstr "Ay_uda"
 
-#: ../shell/rb-shell.c:415
+#: ../shell/rb-shell.c:416
 msgid "_Import Folder..."
 msgstr "_Importar carpeta…"
 
-#: ../shell/rb-shell.c:416
+#: ../shell/rb-shell.c:417
 msgid "Choose folder to be added to the Library"
 msgstr "Elija la carpeta para añadirla a la fonoteca"
 
-#: ../shell/rb-shell.c:418
+#: ../shell/rb-shell.c:419
 msgid "Import _File..."
 msgstr "Importar _archivo…"
 
-#: ../shell/rb-shell.c:419
+#: ../shell/rb-shell.c:420
 msgid "Choose file to be added to the Library"
 msgstr "Elija el archivo para añadirlo a la fonoteca"
 
-#: ../shell/rb-shell.c:421
+#: ../shell/rb-shell.c:422
 msgid "_About"
 msgstr "_Acerca de"
 
-#: ../shell/rb-shell.c:422
+#: ../shell/rb-shell.c:423
 msgid "Show information about the music player"
 msgstr "Mostrar información sobre el reproductor de música"
 
-#: ../shell/rb-shell.c:424
+#: ../shell/rb-shell.c:425
 msgid "_Contents"
 msgstr "_Contenido"
 
-#: ../shell/rb-shell.c:425
+#: ../shell/rb-shell.c:426
 msgid "Display music player help"
 msgstr "Mostrar la ayuda del reproductor de música"
 
-#: ../shell/rb-shell.c:427
+#: ../shell/rb-shell.c:428
 msgid "_Close"
 msgstr "_Cerrar"
 
-#: ../shell/rb-shell.c:428
+#: ../shell/rb-shell.c:429
 msgid "Hide the music player window"
 msgstr "Oculta la ventana del reproductor de música"
 
-#: ../shell/rb-shell.c:430
+#: ../shell/rb-shell.c:431
 msgid "_Quit"
 msgstr "_Salir"
 
-#: ../shell/rb-shell.c:431
+#: ../shell/rb-shell.c:432
 msgid "Quit the music player"
 msgstr "Sale del reproductor de música"
 
-#: ../shell/rb-shell.c:433
+#: ../shell/rb-shell.c:434
 msgid "Prefere_nces"
 msgstr "Prefere_ncias"
 
-#: ../shell/rb-shell.c:434
+#: ../shell/rb-shell.c:435
 msgid "Edit music player preferences"
 msgstr "Preferencias del editor del reproductor de música"
 
-#: ../shell/rb-shell.c:436
+#: ../shell/rb-shell.c:437
 msgid "Plu_gins"
 msgstr "Com_plementos"
 
-#: ../shell/rb-shell.c:437
+#: ../shell/rb-shell.c:438
 msgid "Change and configure plugins"
 msgstr "Cambia y configura los complementos"
 
-#: ../shell/rb-shell.c:439
+#: ../shell/rb-shell.c:440
 msgid "Show _All Tracks"
 msgstr "Mostrar _todas las pistas"
 
-#: ../shell/rb-shell.c:440
+#: ../shell/rb-shell.c:441
 msgid "Show all tracks in this music source"
 msgstr "Mostrar todas las pistas de esta fuente de música"
 
-#: ../shell/rb-shell.c:442
+#: ../shell/rb-shell.c:443
 msgid "_Jump to Playing Song"
 msgstr "_Saltar a la canción en reproducción"
 
-#: ../shell/rb-shell.c:443
+#: ../shell/rb-shell.c:444
 msgid "Scroll the view to the currently playing song"
 msgstr "Desplazar la vista a la canción en reproducción"
 
-#: ../shell/rb-shell.c:450
+#: ../shell/rb-shell.c:451
 msgid "Side _Pane"
 msgstr "Panel _lateral"
 
-#: ../shell/rb-shell.c:451
+#: ../shell/rb-shell.c:452
 msgid "Change the visibility of the side pane"
 msgstr "Cambiar la visibilidad del panel lateral"
 
-#: ../shell/rb-shell.c:453
+#: ../shell/rb-shell.c:454
 msgid "_Toolbar"
 msgstr "Barra de _herramientas"
 
-#: ../shell/rb-shell.c:454
+#: ../shell/rb-shell.c:455
 msgid "Change the visibility of the toolbar"
 msgstr "Cambiar la visibilidad de la barra de herramientas"
 
-#: ../shell/rb-shell.c:456
+#: ../shell/rb-shell.c:457
 msgid "_Small Display"
 msgstr "Visor _pequeño"
 
-#: ../shell/rb-shell.c:457
+#: ../shell/rb-shell.c:458
 msgid "Make the main window smaller"
 msgstr "Hace la ventana principal más pequeña"
 
-#: ../shell/rb-shell.c:459
+#: ../shell/rb-shell.c:460
 msgid "_Party Mode"
 msgstr "Modo _fiesta"
 
-#: ../shell/rb-shell.c:460
+#: ../shell/rb-shell.c:461
 msgid "Change the status of the party mode"
 msgstr "Cambiar el estado del modo fiesta"
 
-#: ../shell/rb-shell.c:462
+#: ../shell/rb-shell.c:463
 msgid "Play _Queue as Side Pane"
 msgstr "_Cola de reproducción como panel lateral"
 
-#: ../shell/rb-shell.c:463
+#: ../shell/rb-shell.c:464
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Cambia si la cola es visible como una fuente o una barra lateral"
 
-#: ../shell/rb-shell.c:465
+#: ../shell/rb-shell.c:466
 msgid "S_tatusbar"
 msgstr "Barra de es_tado"
 
-#: ../shell/rb-shell.c:466
+#: ../shell/rb-shell.c:467
 msgid "Change the visibility of the statusbar"
 msgstr "Cambiar la visibilidad de la barra de estado"
 
-#: ../shell/rb-shell.c:1263
+#: ../shell/rb-shell.c:1264
 msgid "Change the music volume"
 msgstr "Cambiar el volumen de la música"
 
-#: ../shell/rb-shell.c:1697
+#: ../shell/rb-shell.c:1700
 msgid "Error while saving song information"
 msgstr "Error al guardar la información de la canción"
 
-#: ../shell/rb-shell.c:1853
+#: ../shell/rb-shell.c:1856
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "Transfiriendo pista %d de %d (%.0f%%)"
 
-#: ../shell/rb-shell.c:1856
+#: ../shell/rb-shell.c:1859
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Transfiriendo pista %d de %d"
 
 #. Translators: the %s is the elapsed and total time
-#: ../shell/rb-shell.c:2082
+#: ../shell/rb-shell.c:2085
 #, c-format
 msgid "Paused, %s"
 msgstr "Pausado, %s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2124
+#: ../shell/rb-shell.c:2127
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausado)"
 
-#: ../shell/rb-shell.c:2228
+#: ../shell/rb-shell.c:2231
 msgid "translator-credits"
 msgstr ""
 "Jorge González <jorgegonz@svn.gnome.org>\n"
@@ -3605,7 +3611,7 @@ msgstr ""
 "Germán Poo-Caamaño <gpoo@ubiobio.cl>\n"
 "Carlos Perelló Marín <carlos@gnome.org>"
 
-#: ../shell/rb-shell.c:2231
+#: ../shell/rb-shell.c:2234
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3617,7 +3623,7 @@ msgstr ""
 "la Free Software Foundation; ya sea en la versión 2 de la Licencia, o\n"
 "(a su elección) cualquier versión posterior.\n"
 
-#: ../shell/rb-shell.c:2235
+#: ../shell/rb-shell.c:2238
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3629,7 +3635,7 @@ msgstr ""
 "MERCANTILIDAD o IDONEIDAD PARA UN PROPÓSITO PARTICULAR. Vea\n"
 "la Licencia Pública General de GNU para más detalles.\n"
 
-#: ../shell/rb-shell.c:2239
+#: ../shell/rb-shell.c:2242
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3639,66 +3645,66 @@ msgstr ""
 "junto con Rhythmbox; si no, escriba a la Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2246
+#: ../shell/rb-shell.c:2249
 msgid "Maintainers:"
 msgstr "Desarrolladores:"
 
-#: ../shell/rb-shell.c:2249
+#: ../shell/rb-shell.c:2252
 msgid "Former Maintainers:"
 msgstr "Desarrolladores anteriores:"
 
-#: ../shell/rb-shell.c:2252
+#: ../shell/rb-shell.c:2255
 msgid "Contributors:"
 msgstr "Colaboradores:"
 
-#: ../shell/rb-shell.c:2254
+#: ../shell/rb-shell.c:2257
 msgid "Music management and playback software for GNOME."
 msgstr "Software de organización y reproducción de música para GNOME."
 
-#: ../shell/rb-shell.c:2263
+#: ../shell/rb-shell.c:2266
 msgid "Rhythmbox Website"
 msgstr "Página web de Rhythmbox"
 
-#: ../shell/rb-shell.c:2355
+#: ../shell/rb-shell.c:2358
 msgid "Configure Plugins"
 msgstr "Configurar complementos"
 
-#: ../shell/rb-shell.c:2426
+#: ../shell/rb-shell.c:2429
 msgid "Import Folder into Library"
 msgstr "Importar carpeta en la fonoteca"
 
-#: ../shell/rb-shell.c:2448
+#: ../shell/rb-shell.c:2451
 msgid "Import File into Library"
 msgstr "Importar archivo en la fonoteca"
 
 #. Translators: by Artist
-#: ../shell/rb-shell.c:2963
+#: ../shell/rb-shell.c:2966
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "por <i>%s</i>"
 
 #. Translators: from Album
-#: ../shell/rb-shell.c:2984
+#: ../shell/rb-shell.c:2987
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
 
-#: ../shell/rb-shell.c:3192
+#: ../shell/rb-shell.c:3195
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ninguna fuente registrada puede manejar URIs %s"
 
-#: ../shell/rb-shell.c:3453 ../shell/rb-shell.c:3482
+#: ../shell/rb-shell.c:3449 ../shell/rb-shell.c:3478
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI de la canción desconocida: %s"
 
-#: ../shell/rb-shell.c:3491
+#: ../shell/rb-shell.c:3487
 #, c-format
 msgid "Unknown property %s"
 msgstr "Propiedad %s desconocida"
 
-#: ../shell/rb-shell.c:3501
+#: ../shell/rb-shell.c:3497
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "El tipo de la propiedad %s es inválido para la propiedad %s"
