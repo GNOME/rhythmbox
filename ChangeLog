@@ -1,5 +1,12 @@
 2007-12-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_download_file_info_cb):
+	Use rb_uri_exists() to check if the podcast has already been
+	downloaded, as we've converted the local path into a URI here.
+
+2007-12-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/audioscrobbler/rb-audioscrobbler.c:
 	(rb_audioscrobbler_dispose), (rb_audioscrobbler_is_queueable),
 	(rb_audioscrobbler_song_changed_cb):

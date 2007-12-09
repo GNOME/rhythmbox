@@ -750,7 +750,7 @@ rb_podcast_manager_download_file_info_cb (GnomeVFSAsyncHandle *handle,
 		return;
 	}
 
-	if (g_file_test (local_file_path, G_FILE_TEST_EXISTS)) {
+	if (rb_uri_exists (local_file_path)) {
 		guint64 local_size;
 		GnomeVFSFileInfo *local_info;
 		GnomeVFSResult local_result;
@@ -761,6 +761,9 @@ rb_podcast_manager_download_file_info_cb (GnomeVFSAsyncHandle *handle,
 							GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
 		local_size = local_info->size;
 		gnome_vfs_file_info_unref (local_info);
+
+		rb_debug ("local file %s already exists: size is %u vs remote size %u",
+			  local_file_path, (guint) local_size, (guint)result->file_info->size);
 
 		if (local_result != GNOME_VFS_OK) {
 			g_warning ("Could not get info on downloaded podcast file %s",
