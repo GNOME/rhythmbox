@@ -339,6 +339,8 @@ rb_audioscrobbler_dispose (GObject *object)
 	g_return_if_fail (RB_IS_AUDIOSCROBBLER (object));
 
 	audioscrobbler = RB_AUDIOSCROBBLER (object);
+	
+	rb_debug ("disposing audioscrobbler");
 
 	if (audioscrobbler->priv->offline_play_notify_id != 0) {
 		RhythmDB *db;
@@ -499,12 +501,17 @@ rb_audioscrobbler_is_queueable (RhythmDBEntry *entry)
 	 */
 	type = rhythmdb_entry_get_entry_type (entry);
 	if (type->category != RHYTHMDB_ENTRY_NORMAL) {
+		rb_debug ("entry %s is not queueable: category not NORMAL", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 		return FALSE;
 	}
 	if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
+		rb_debug ("entry %s is not queueable: is a podcast post", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 		return FALSE;
 	}
 	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR)) {
+		rb_debug ("entry %s is not queueable: has playback error (%s)",
+			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
+			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR));
 		return FALSE;
 	}
 
@@ -512,12 +519,24 @@ rb_audioscrobbler_is_queueable (RhythmDBEntry *entry)
 	artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
 	duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 
-	/* The specification (v1.1) tells us to ignore entries which do not
-	 * verify those conditions
+	/* The specification (v1.1) tells us to ignore entries that do not
+	 * meet these conditions
 	 */
-	return 	((duration >= 30) &&
-		 (strcmp (artist, _("Unknown")) != 0) &&
-		 (strcmp (title, _("Unknown")) != 0));
+	if (duration < 30) {
+		rb_debug ("entry %s not queueable: shorter than 30 seconds", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+		return FALSE;
+	}
+	if (strcmp (artist, _("Unknown")) == 0) {
+		rb_debug ("entry %s not queueable: artist is %s (unknown)", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), artist);
+		return FALSE;
+	}
+	if (strcmp (title, _("Unknown")) == 0) {
+		rb_debug ("entry %s not queueable: title is %s (unknown)", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), title);
+		return FALSE;
+	}
+
+	rb_debug ("entry %s is queueable", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+	return TRUE;
 }
 
 static AudioscrobblerEntry *
@@ -573,13 +592,12 @@ maybe_add_current_song_to_queue (RBAudioscrobbler *audioscrobbler)
 		return;
 	}
 
-	rb_debug ("Adding currently playing song to queue");
-
 	rb_shell_player_get_playing_time (audioscrobbler->priv->shell_player, &elapsed, NULL);
 	elapsed_delta = elapsed - audioscrobbler->priv->current_elapsed;
 	audioscrobbler->priv->current_elapsed = elapsed;
 	
 	if ((elapsed >= cur_entry->length / 2 || elapsed >= 240) && elapsed_delta < 20) {
+		rb_debug ("Adding currently playing song to queue");
 		time (&cur_entry->play_time);
 		if (rb_audioscrobbler_add_to_queue (audioscrobbler, cur_entry)){
 			audioscrobbler->priv->currently_playing = NULL;
@@ -814,7 +832,6 @@ rb_audioscrobbler_should_handshake (RBAudioscrobbler *audioscrobbler)
 	 *   - we have a non-empty username
 	 */
 	if (audioscrobbler->priv->handshake) {
-		rb_debug ("Not doing handshake; we already have one");
 		return FALSE;
 	}
 
@@ -1282,8 +1299,10 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 	}
 
 	if (entry == NULL) {
+		rb_debug ("called with no playing entry");
 		return;
 	}
+	rb_debug ("new entry: %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 
 	rb_shell_player_get_playing_time (audioscrobbler->priv->shell_player,
 					  &time, NULL);
