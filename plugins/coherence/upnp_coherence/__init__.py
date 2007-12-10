@@ -1,6 +1,8 @@
 import rhythmdb, rb
 import gobject, gtk
 import louie
+# For the icon
+import os.path, urllib, gnomevfs, gtk.gdk
 
 
 class CoherencePlugin(rb.Plugin):
@@ -32,10 +34,32 @@ class CoherencePlugin(rb.Plugin):
 				'Coherence.UPnP.ControlPoint.MediaServer.removed',
 				louie.Any)
 
+		# Set up our icon
+		face_path = os.path.join(os.path.expanduser('~'), ".face")
+		if os.path.exists(face_path):
+			url = "file://" + urllib.pathname2url(face_path)
+
+		if url:
+			mimetype = gnomevfs.get_mime_type(url)
+			pixbuf = gtk.gdk.pixbuf_new_from_file(face_path)
+			width = "%s" % pixbuf.get_width()
+			height = "%s" % pixbuf.get_height()
+			depth = '24'
+			the_icon = {
+				'url':url,
+				'mimetype':mimetype,
+				'width':width,
+				'height':height,
+				'depth':depth
+				}
+
 		# create our own media server
 		from coherence.upnp.devices.media_server import MediaServer
 		from MediaStore import MediaStore
-		server = MediaServer(self.coherence, MediaStore, no_thread_needed=True, db=self.shell.props.db, plugin=self)
+		if the_icon:
+			server = MediaServer(self.coherence, MediaStore, no_thread_needed=True, db=self.shell.props.db, plugin=self, icon=the_icon)
+		else:
+			server = MediaServer(self.coherence, MediaStore, no_thread_needed=True, db=self.shell.props.db, plugin=self)
 
 	def deactivate(self, shell):
 		print "coherence UPnP plugin deactivated"
