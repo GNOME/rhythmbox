@@ -335,14 +335,18 @@ rb_audiocd_scan_songs (RBAudioCdSource *source,
 		ret = gst_element_get_state (priv->pipeline, NULL, NULL, 3 * GST_SECOND);
 	}
         if (ret == GST_STATE_CHANGE_FAILURE) {
+		gdk_threads_enter ();
 		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
 					_("Rhythmbox couldn't access the CD."));
+		gdk_threads_leave ();
 		ok = FALSE;
 	}
 
 	if (ok && !rb_audiocd_get_cd_info (source, &num_tracks)) {
+		gdk_threads_enter ();
 		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
 					_("Rhythmbox couldn't read the CD information."));
+		gdk_threads_leave ();
 		ok = FALSE;
 	}
 
@@ -665,8 +669,10 @@ rb_audiocd_load_songs (RBAudioCdSource *source)
 	/* create a cdda gstreamer element, to get cd info from */
 	priv->cdda = gst_element_make_from_uri (GST_URI_SRC, "cdda://", NULL);
 	if (!priv->cdda) {
+		gdk_threads_enter ();
 		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
 					_("Rhythmbox could not get access to the CD device."));
+		gdk_threads_leave ();
 		goto error_out;
 	}
 

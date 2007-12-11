@@ -1,3 +1,11 @@
+2007-12-11  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by: Irene Huang  <Irene.Huang@sun.com>
+
+	* plugins/audiocd/rb-audiocd-source.c: (rb_audiocd_scan_songs),
+	(rb_audiocd_load_songs):  Take GDK lock when showing error dialogs
+	during audio CD reading.  Fixes #502265.
+
 2007-12-10  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/coherence/upnp_coherence/__init__.py: Export the
