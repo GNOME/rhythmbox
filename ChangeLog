@@ -1,3 +1,11 @@
+2007-12-12  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/generic-player/rb-generic-player-playlist-source.c:
+	(playlist_format_extension), (handle_playlist_start_cb),
+	(handle_playlist_entry_cb), (load_playlist):
+	Remove playlist parser API backwards compatibility stuff, use current
+	signal names and parameters.
+
 2007-12-11  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by: Irene Huang  <Irene.Huang@sun.com>

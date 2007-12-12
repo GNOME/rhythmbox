@@ -29,10 +29,6 @@
 #include "rb-plugin.h"
 #include "rb-file-helpers.h"
 
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,6)
-#define HAVE_TOTEM_PL_PARSER_IRIVER_PLA
-#endif
-
 #define PLAYLIST_SAVE_TIMEOUT	1000
 
 typedef struct
@@ -98,11 +94,9 @@ playlist_format_extension (TotemPlParserType playlist_type)
 	case TOTEM_PL_PARSER_M3U_DOS:
 		return ".m3u";
 		break;
-#if defined(HAVE_TOTEM_PL_PARSER_IRIVER_PLA)
 	case TOTEM_PL_PARSER_IRIVER_PLA:
 		return ".pla";
 		break;
-#endif
 	case TOTEM_PL_PARSER_XSPF:
 		return ".xspf";
 		break;
@@ -204,29 +198,23 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 
 static void
 handle_playlist_start_cb (TotemPlParser *playlist,
-			  const char *title,
+			  const char *uri,
+			  GHashTable *metadata,
 			  RBGenericPlayerPlaylistSource *source)
 {
+	const char *title;
+	title = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_TITLE);
 	if (title != NULL) {
 		rb_debug ("got name '%s' for playlist", title);
 		g_object_set (source, "name", title, NULL);
 	}
 }
 
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
 static void
 handle_playlist_entry_cb (TotemPlParser *playlist,
 			  const char *uri,
 			  GHashTable *metadata,
 			  RBGenericPlayerPlaylistSource *source)
-#else
-static void
-handle_playlist_entry_cb (TotemPlParser *playlist,
-			  const char *uri,
-			  const char *title,
-			  const char *genre,
-			  RBGenericPlayerPlaylistSource *source)
-#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 {
 	char *local_uri;
 	char *name;
@@ -280,17 +268,11 @@ load_playlist (RBGenericPlayerPlaylistSource *source)
 	}
 
 	rb_generic_player_source_set_supported_formats (priv->player_source, parser);
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
 	g_signal_connect (parser,
 			  "entry-parsed", G_CALLBACK (handle_playlist_entry_cb),
 			  source);
-#else
 	g_signal_connect (parser,
-			  "entry", G_CALLBACK (handle_playlist_entry_cb),
-			  source);
-#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
-	g_signal_connect (parser,
-			  "playlist-start", G_CALLBACK (handle_playlist_start_cb),
+			  "playlist-started", G_CALLBACK (handle_playlist_start_cb),
 			  source);
 	if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
 		g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
