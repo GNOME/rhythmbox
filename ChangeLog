@@ -1,5 +1,19 @@
 2007-12-16  Jonathan Matthew  <jonathan@d14n.org>
 
+	* shell/rb-shell-player.c: (rb_shell_player_get_playing_time),
+	(rb_shell_player_error_get_type):
+	* shell/rb-shell-player.h:
+	Make rb_shell_player_get_playing_time fail if the player can't figure
+	out the playback position.
+
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(maybe_add_current_song_to_queue),
+	(rb_audioscrobbler_song_changed_cb):
+	If we don't get a playback position, assume we're at the start of the
+	track.  From #499745.
+
+2007-12-16  Jonathan Matthew  <jonathan@d14n.org>
+
 	* HACKING: Now less heinously out of date.  Fixes #482767.
 
 2007-12-13  Jonathan Matthew  <jonathan@d14n.org>

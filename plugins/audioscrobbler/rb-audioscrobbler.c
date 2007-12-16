@@ -583,8 +583,8 @@ rb_audioscrobbler_add_to_queue (RBAudioscrobbler *audioscrobbler,
 static void
 maybe_add_current_song_to_queue (RBAudioscrobbler *audioscrobbler)
 {
+	gboolean got_elapsed;
 	guint elapsed;
-	int elapsed_delta;
 	AudioscrobblerEntry *cur_entry;
 
 	cur_entry = audioscrobbler->priv->currently_playing;
@@ -592,26 +592,30 @@ maybe_add_current_song_to_queue (RBAudioscrobbler *audioscrobbler)
 		return;
 	}
 
-	rb_shell_player_get_playing_time (audioscrobbler->priv->shell_player, &elapsed, NULL);
-	elapsed_delta = elapsed - audioscrobbler->priv->current_elapsed;
-	audioscrobbler->priv->current_elapsed = elapsed;
-	
-	if ((elapsed >= cur_entry->length / 2 || elapsed >= 240) && elapsed_delta < 20) {
-		rb_debug ("Adding currently playing song to queue");
-		time (&cur_entry->play_time);
-		if (rb_audioscrobbler_add_to_queue (audioscrobbler, cur_entry)){
-			audioscrobbler->priv->currently_playing = NULL;
-		}
+	got_elapsed = rb_shell_player_get_playing_time (audioscrobbler->priv->shell_player,
+							&elapsed,
+							NULL);
+	if (got_elapsed) {
+		int elapsed_delta = elapsed - audioscrobbler->priv->current_elapsed;
+		audioscrobbler->priv->current_elapsed = elapsed;
 		
-		rb_audioscrobbler_preferences_sync (audioscrobbler);
-	} else if (elapsed_delta > 20) {
-		rb_debug ("Skipping detected; not submitting current song");
-		/* not sure about this - what if I skip to somewhere towards
-		 * the end, but then go back and listen to the whole song?
-		 */
-		audioscrobbler_entry_free (audioscrobbler->priv->currently_playing);
-		audioscrobbler->priv->currently_playing = NULL;
+		if ((elapsed >= cur_entry->length / 2 || elapsed >= 240) && elapsed_delta < 20) {
+			rb_debug ("Adding currently playing song to queue");
+			time (&cur_entry->play_time);
+			if (rb_audioscrobbler_add_to_queue (audioscrobbler, cur_entry)){
+				audioscrobbler->priv->currently_playing = NULL;
+			}
+			
+			rb_audioscrobbler_preferences_sync (audioscrobbler);
+		} else if (elapsed_delta > 20) {
+			rb_debug ("Skipping detected; not submitting current song");
+			/* not sure about this - what if I skip to somewhere towards
+			 * the end, but then go back and listen to the whole song?
+			 */
+			audioscrobbler_entry_free (audioscrobbler->priv->currently_playing);
+			audioscrobbler->priv->currently_playing = NULL;
 
+		}
 	}
 }
 
@@ -1291,6 +1295,7 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 				   RhythmDBEntry *entry,
 				   RBAudioscrobbler *audioscrobbler)
 {
+	gboolean got_time;
 	guint time;
 
 	if (audioscrobbler->priv->currently_playing != NULL) {
@@ -1304,11 +1309,17 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 	}
 	rb_debug ("new entry: %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 
-	rb_shell_player_get_playing_time (audioscrobbler->priv->shell_player,
-					  &time, NULL);
-	audioscrobbler->priv->current_elapsed = (int) time;
+	got_time = rb_shell_player_get_playing_time (audioscrobbler->priv->shell_player,
+						     &time,
+						     NULL);
+	if (got_time) {
+		audioscrobbler->priv->current_elapsed = (int) time;
+	} else {
+		rb_debug ("didn't get playing time; assuming 0");
+		audioscrobbler->priv->current_elapsed = 0;
+	}
 
-	if (rb_audioscrobbler_is_queueable (entry) && (time < 15)) {
+	if (rb_audioscrobbler_is_queueable (entry) && (got_time == FALSE || time < 15)) {
 		AudioscrobblerEntry *as_entry;
 		
 		/* even if it's the same song, it's being played again from

@@ -2890,10 +2890,21 @@ rb_shell_player_get_playing_time (RBShellPlayer *player,
 				  guint *time,
 				  GError **error)
 {
-	if (time != NULL)
-		*time = (guint) rb_player_get_time (player->priv->mmplayer);
+	int ptime;
 
-	return TRUE;
+	ptime = rb_player_get_time (player->priv->mmplayer);
+	if (ptime >= 0) {
+		if (time != NULL) {
+			*time = (guint)ptime;
+		}
+		return TRUE;
+	} else {
+		g_set_error (error,
+			     RB_SHELL_PLAYER_ERROR,
+			     RB_SHELL_PLAYER_ERROR_POSITION_NOT_AVAILABLE,
+			     _("Playback position not available"));
+		return FALSE;
+	}
 }
 
 gboolean
@@ -3376,6 +3387,7 @@ rb_shell_player_error_get_type (void)
 			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST, "End of playlist reached"),
 			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_NOT_PLAYING, "Not playing"),
 			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE, "Not seekable"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_POSITION_NOT_AVAILABLE, "Playback position not available"),
 			{ 0, 0, 0 }
 		};
 
