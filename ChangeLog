@@ -1,3 +1,11 @@
+2007-12-18  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(rb_player_gst_xfade_dispose), (start_sink), (stop_sink),
+	(rb_player_gst_xfade_close), (rb_player_gst_xfade_play):
+	Remove obsolete stuff relating to pausing the sink, which we never do
+	any more.
+
 2007-12-16  Jonathan Matthew  <jonathan@d14n.org>
 
 	* shell/rb-shell-player.c: (rb_shell_player_get_playing_time),

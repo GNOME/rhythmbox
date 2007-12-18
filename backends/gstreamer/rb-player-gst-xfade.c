@@ -346,7 +346,6 @@ struct _RBPlayerGstXFadePrivate
 	enum {
 		SINK_NULL,
 		SINK_STOPPED,
-		SINK_PAUSED,
 		SINK_PLAYING
 	} sink_state;
 	GStaticRecMutex sink_lock;
@@ -723,14 +722,6 @@ rb_player_gst_xfade_dispose (GObject *object)
 
 	g_return_if_fail (RB_IS_PLAYER_GST_XFADE (object));
 	player = RB_PLAYER_GST_XFADE (object);
-
-	/* if the sink is paused, unpause it while we clean up streams */
-	g_static_rec_mutex_lock (&player->priv->sink_lock);
-	if (player->priv->sink_state == SINK_PAUSED) {
-		rb_debug ("unpausing sink for shutdown");
-		start_sink (player);
-	}
-	g_static_rec_mutex_unlock (&player->priv->sink_lock);
 
 	/* clean up streams */
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
@@ -2480,7 +2471,6 @@ start_sink (RBPlayerGstXFade *player)
 {
 	GstStateChangeReturn sr;
 	GstState state;
-	gboolean wait = TRUE;
 
 	switch (player->priv->sink_state) {
 	case SINK_NULL:
@@ -2534,11 +2524,6 @@ start_sink (RBPlayerGstXFade *player)
 		}
 		rb_debug ("output bin is now in state %s", gst_element_state_get_name (state));
 
-		wait = FALSE;
-		/* fall through */
-	case SINK_PAUSED:
-		rb_debug ("unpausing sink");
-
 		sr = gst_element_set_state (player->priv->silencebin, GST_STATE_PLAYING);
 		if (sr == GST_STATE_CHANGE_FAILURE) {
 			rb_debug ("silence bin state change failed");
@@ -2555,26 +2540,6 @@ start_sink (RBPlayerGstXFade *player)
 		if (sr == GST_STATE_CHANGE_FAILURE) {
 			rb_debug ("output bin state change failed");
 			return FALSE;
-		}
-
-		if (wait) {
-			sr = gst_element_get_state (player->priv->silencebin, &state, NULL, GST_CLOCK_TIME_NONE);
-			if (sr == GST_STATE_CHANGE_FAILURE) {
-				rb_debug ("silence bin state change failed (async)");
-				return FALSE;
-			}
-
-			sr = gst_element_get_state (player->priv->adder, &state, NULL, GST_CLOCK_TIME_NONE);
-			if (sr == GST_STATE_CHANGE_FAILURE) {
-				rb_debug ("adder state change failed (async)");
-				return FALSE;
-			}
-
-			sr = gst_element_get_state (player->priv->outputbin, &state, NULL, GST_CLOCK_TIME_NONE);
-			if (sr == GST_STATE_CHANGE_FAILURE) {
-				rb_debug ("output bin state change failed (async)");
-				return FALSE;
-			}
 		}
 
 		rb_debug ("sink playing");
@@ -2607,7 +2572,6 @@ stop_sink (RBPlayerGstXFade *player)
 
 	switch (player->priv->sink_state) {
 	case SINK_PLAYING:
-	case SINK_PAUSED:
 		rb_debug ("stopping sink");
 
 		if (player->priv->tick_timeout_id != 0) {
@@ -3022,12 +2986,6 @@ rb_player_gst_xfade_close (RBPlayer *iplayer, const char *uri, GError **error)
 		GList *list;
 		GList *l;
 
-		g_static_rec_mutex_lock (&player->priv->sink_lock);
-		if (player->priv->sink_state == SINK_PAUSED) {
-			start_sink (player);
-		}
-		g_static_rec_mutex_unlock (&player->priv->sink_lock);
-
 		/* need to copy the list as unlink_and_dispose_stream modifies it */
 		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 		list = g_list_copy (player->priv->streams);
@@ -3093,11 +3051,6 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 	RBXFadeStream *stream;
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
 	gboolean ret = TRUE;
-
-	/* if we were paused, always replace existing streams */
-	if (player->priv->sink_state == SINK_PAUSED) {
-		crossfade = -1;
-	}
 
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 
