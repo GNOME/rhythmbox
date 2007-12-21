@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-11-28 23:29-0700\n"
-"PO-Revision-Date: 2007-11-28 23:28-0700\n"
+"POT-Creation-Date: 2007-12-21 00:08-0700\n"
+"PO-Revision-Date: 2007-12-21 00:08-0700\n"
 "Last-Translator: Seán de Búrca <leftmostcat@gmail.com>\n"
 "Language-Team: Irish <gaeilge-gnulinux@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -35,39 +35,39 @@ msgstr ""
 msgid "Unknown playback error"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1100
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1114
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1091
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1105
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1141
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1132
 #, fuzzy
 msgid "Failed to start new stream"
 msgstr "Ní raibh %s ar fáil"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2718
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2806
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2682
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2770
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2731
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2695
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2780
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2822
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2848
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2857
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2866
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2744
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2786
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2812
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2821
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2830
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2957
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2921
 #, fuzzy, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Níorbh fhéidir comhadlann %s a cruthaigh"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2978
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2942
 #, fuzzy, c-format
 msgid "Failed to start playback of %s"
 msgstr "Níorbh fhéidir comhadlann %s a cruthaigh"
@@ -90,7 +90,7 @@ msgstr "MB"
 
 #: ../data/glade/create-playlist.glade.h:5
 msgid "Minutes"
-msgstr ""
+msgstr "Nóiméid"
 
 #: ../data/glade/create-playlist.glade.h:6
 msgid "_Limit to: "
@@ -188,11 +188,11 @@ msgstr "_Bliain"
 #: ../data/glade/library-prefs.glade.h:1
 #: ../data/glade/playback-prefs.glade.h:1
 msgid "    "
-msgstr ""
+msgstr "    "
 
 #: ../data/glade/library-prefs.glade.h:2
 msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
-msgstr ""
+msgstr "Ealaíontóir/Ealaíontóir - Albam/Ealaíontóir (Albam) - 01 - Teideal.ogg"
 
 #: ../data/glade/library-prefs.glade.h:3
 msgid "F_older hierarchy:"
@@ -371,7 +371,7 @@ msgstr "_Áit:"
 #: ../data/glade/song-info.glade.h:2
 #: ../plugins/iradio/station-properties.glade.h:2
 msgid "Bitrate:"
-msgstr ""
+msgstr "Ráta giotán:"
 
 #: ../data/glade/podcast-properties.glade.h:4
 msgid "Date:"
@@ -389,19 +389,19 @@ msgstr "Aga:"
 
 #: ../data/glade/podcast-properties.glade.h:9
 msgid "Feed:"
-msgstr ""
+msgstr "Fotha:"
 
 #: ../data/glade/podcast-properties.glade.h:10
 #: ../data/glade/song-info.glade.h:9
 #: ../plugins/iradio/station-properties.glade.h:6
 msgid "Last played:"
-msgstr "Seinm roimh ré:"
+msgstr "Seinm is déanaí:"
 
 #: ../data/glade/podcast-properties.glade.h:11
 #: ../data/glade/song-info.glade.h:11
 #: ../plugins/iradio/station-properties.glade.h:7
 msgid "Play count:"
-msgstr "Cuntas seinm:"
+msgstr "Líon a seinneadh:"
 
 #: ../data/glade/podcast-properties.glade.h:14
 #: ../data/glade/song-info-multiple.glade.h:5
@@ -422,9 +422,8 @@ msgstr "_Ealaíontóir:"
 
 #: ../data/glade/song-info-multiple.glade.h:3
 #: ../data/glade/song-info.glade.h:14
-#, fuzzy
 msgid "_Disc number:"
-msgstr "_Uimhir an rian:"
+msgstr "Uimhir _diosca:"
 
 #: ../data/glade/song-info-multiple.glade.h:4
 #: ../data/glade/song-info.glade.h:15
@@ -439,9 +438,8 @@ msgid "_Year:"
 msgstr "_Bliain:"
 
 #: ../data/glade/song-info.glade.h:3
-#, fuzzy
 msgid "Date added:"
-msgstr "Seinm roimh ré:"
+msgstr "Dáta curtha leis:"
 
 #: ../data/glade/song-info.glade.h:6
 #: ../plugins/iradio/station-properties.glade.h:4
@@ -453,9 +451,8 @@ msgid "File name:"
 msgstr "Ainm comhaid:"
 
 #: ../data/glade/song-info.glade.h:8
-#, fuzzy
 msgid "File size:"
-msgstr "Ainm comhaid:"
+msgstr "Méid chomhaid:"
 
 #: ../data/glade/song-info.glade.h:10
 msgid "Location:"
@@ -484,7 +481,7 @@ msgstr "Oscail ó URI"
 
 #: ../data/playlists.xml.in.h:1
 msgid "My Top Rated"
-msgstr "Mo Bharrghrádaithe"
+msgstr "Mo Mheas is Airde"
 
 #: ../data/playlists.xml.in.h:2
 msgid "Recently Added"
@@ -496,15 +493,15 @@ msgstr "Seinnte le Déanaí"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:199
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1478
-#: ../shell/rb-shell-player.c:2639 ../shell/rb-shell.c:1018
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1486
+#: ../shell/rb-shell-player.c:2626 ../shell/rb-shell.c:1018
 #: ../shell/rb-shell.c:2107 ../shell/rb-tray-icon.c:43
 msgid "Music Player"
 msgstr "Seinnteoir Ceoil"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 msgid "Play and organize your music collection"
-msgstr "Seinn agus eagraigh do chuid bailiú ceoil"
+msgstr "Seinn agus eagraigh do bhailiúchán ceoil"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
@@ -513,35 +510,35 @@ msgstr "Seinnteoir Ceoil Rhythmbox"
 #. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
 #: ../lib/rb-cut-and-paste-code.c:269
 msgid "Today %I:%M %p"
-msgstr ""
+msgstr "Inniu %I:%M %p"
 
 #. Translators: "friendly time" string for the previous day,
 #. * strftime format. e.g. "Yesterday 12:34 am"
 #.
 #: ../lib/rb-cut-and-paste-code.c:282
 msgid "Yesterday %I:%M %p"
-msgstr ""
+msgstr "Inné %I:%M %p"
 
 #. Translators: "friendly time" string for a day in the current week,
 #. * strftime format. e.g. "Wed 12:34 am"
 #.
 #: ../lib/rb-cut-and-paste-code.c:298
 msgid "%a %I:%M %p"
-msgstr ""
+msgstr "%a %I:%M %p"
 
 #. Translators: "friendly time" string for a day in the current year,
 #. * strftime format. e.g. "Feb 12 12:34 am"
 #.
 #: ../lib/rb-cut-and-paste-code.c:310
 msgid "%b %d %I:%M %p"
-msgstr ""
+msgstr "%d %b %I:%M %p"
 
 #. Translators: "friendly time" string for a day in a different year,
 #. * strftime format. e.g. "Feb 12 1997"
 #.
 #: ../lib/rb-cut-and-paste-code.c:315
 msgid "%b %d %Y"
-msgstr ""
+msgstr "%d %b %Y"
 
 #. impossible time or broken locale settings
 #. TODO: Improve to decrease wrong cover downloads, maybe add severity?
@@ -563,24 +560,24 @@ msgstr ""
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:124
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:125
 #: ../plugins/audiocd/rb-audiocd-source.c:220
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:519
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:520
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:529
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:533
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:553
 #: ../plugins/daap/rb-daap-connection.c:677
-#: ../plugins/generic-player/rb-generic-player-source.c:1099
+#: ../plugins/generic-player/rb-generic-player-source.c:1101
 #: ../plugins/ipod/rb-ipod-source.c:275
 #: ../plugins/iradio/rb-iradio-source.c:501
 #: ../plugins/iradio/rb-iradio-source.c:1119
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
 #: ../plugins/mtpdevice/rb-mtp-source.c:237
 #: ../podcast/rb-feed-podcast-properties-dialog.c:311
-#: ../podcast/rb-podcast-manager.c:1639
+#: ../podcast/rb-podcast-manager.c:1650
 #: ../podcast/rb-podcast-properties-dialog.c:467
 #: ../podcast/rb-podcast-properties-dialog.c:520
 #: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1237
 #: ../rhythmdb/rhythmdb-tree.c:1241 ../rhythmdb/rhythmdb-tree.c:1245
 #: ../rhythmdb/rhythmdb-tree.c:1249 ../rhythmdb/rhythmdb.c:1460
-#: ../shell/rb-shell-player.c:1528 ../shell/rb-shell.c:3023
+#: ../shell/rb-shell-player.c:1515 ../shell/rb-shell.c:3023
 #: ../sources/rb-podcast-source.c:1631 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:862 ../widgets/rb-entry-view.c:1146
 #: ../widgets/rb-entry-view.c:1158 ../widgets/rb-entry-view.c:1170
@@ -724,39 +721,39 @@ msgstr ""
 
 #: ../plugins/audiocd/multiple-album.glade.h:3
 msgid "_Continue"
-msgstr ""
+msgstr "_Ar Aghaidh"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:224
 msgid "<Invalid unicode>"
-msgstr ""
+msgstr "<Unicode neamhbhailí>"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:269
-#, fuzzy, c-format
+#, c-format
 msgid "Track %u"
-msgstr "Rian %.2d"
+msgstr "Amhrán %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:338
-#: ../plugins/audiocd/rb-audiocd-source.c:344
-#: ../plugins/audiocd/rb-audiocd-source.c:668
+#: ../plugins/audiocd/rb-audiocd-source.c:339
+#: ../plugins/audiocd/rb-audiocd-source.c:347
+#: ../plugins/audiocd/rb-audiocd-source.c:673
 msgid "Couldn't load Audio CD"
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:339
+#: ../plugins/audiocd/rb-audiocd-source.c:340
 msgid "Rhythmbox couldn't access the CD."
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:345
+#: ../plugins/audiocd/rb-audiocd-source.c:348
 msgid "Rhythmbox couldn't read the CD information."
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:446
+#: ../plugins/audiocd/rb-audiocd-source.c:450
 #: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1102
 #: ../widgets/rb-query-creator-properties.c:67
 #: ../widgets/rb-query-creator-properties.c:97
 msgid "Title"
 msgstr "Teideal"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:453
+#: ../plugins/audiocd/rb-audiocd-source.c:457
 #: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1112
 #: ../widgets/rb-library-browser.c:109
 #: ../widgets/rb-query-creator-properties.c:68
@@ -764,7 +761,7 @@ msgstr "Teideal"
 msgid "Artist"
 msgstr "Ealaíontóir"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:669
+#: ../plugins/audiocd/rb-audiocd-source.c:674
 msgid "Rhythmbox could not get access to the CD device."
 msgstr ""
 
@@ -780,20 +777,18 @@ msgstr ""
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:248
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:580
-#, fuzzy
 msgid "Unknown Artist"
-msgstr "Anaithnid"
+msgstr "Ealaíontóir Anaithnid"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:249
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:591
-#, fuzzy
 msgid "Unknown Title"
-msgstr "Saghas comhaid anaithnid"
+msgstr "Teideal Anaithnid"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:255
-#, fuzzy, c-format
+#, c-format
 msgid "Track %d"
-msgstr "Rian %.2d"
+msgstr "Amhrán %d"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:283
 msgid ""
@@ -870,7 +865,7 @@ msgid "Last.fm Profile"
 msgstr "Próifíl Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1094
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1115
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
 #: ../rhythmdb/rhythmdb.c:3141 ../widgets/rb-entry-view.c:785
 #: ../widgets/rb-entry-view.c:1204 ../widgets/rb-entry-view.c:1217
@@ -883,9 +878,8 @@ msgid "Queued tracks:"
 msgstr ""
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:10
-#, fuzzy
 msgid "Status:"
-msgstr "Barra s_tádas"
+msgstr "Stádas:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:11
 #, fuzzy
@@ -897,9 +891,8 @@ msgid "_Password:"
 msgstr "_Focal Faire:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:13
-#, fuzzy
 msgid "_Username:"
-msgstr "Ainm comhaid:"
+msgstr "_Ainm úsáideora:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:14
 msgid "http://last.fm"
@@ -918,44 +911,44 @@ msgstr "http://last.fm/group/Rhythmbox"
 msgid "Audioscrobbler preferences"
 msgstr "Eagar ábaltachtaí an seinnteoir ceoil"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1117
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1138
 msgid "OK"
-msgstr ""
+msgstr "Tá go Maith"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1120
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1141
 msgid "Logging in"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1123
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1144
 msgid "Request failed"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1126
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1147
 msgid "Incorrect username"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1129
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1150
 msgid "Incorrect password"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1132
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1153
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:583
 msgid "Handshake failed"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1135
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1156
 msgid "Client update required"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1138
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1159
 msgid "Track submission failed"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1141
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1162
 msgid "Queue is too long"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1144
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1165
 msgid "Track submission failed too many times"
 msgstr ""
 
@@ -1263,9 +1256,8 @@ msgid "Couldn't open media"
 msgstr ""
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:624
-#, fuzzy
 msgid "Unknown Media"
-msgstr "Anaithnid"
+msgstr "Meáin Anaithnid"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:626
 msgid "Commercial CD or Audio CD"
@@ -1355,7 +1347,7 @@ msgstr "_Cealaigh"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:958
 msgid "_Interrupt"
-msgstr ""
+msgstr "_Idirbhriseadh"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:980
 msgid "Could not create audio CD"
@@ -1637,7 +1629,7 @@ msgstr ""
 
 #: ../plugins/daap/rb-daap-plugin.c:112
 msgid "Connect to DAAP share"
-msgstr ""
+msgstr "Nasc le Comhroinn DAAP"
 
 #: ../plugins/daap/rb-daap-plugin.c:113
 msgid "Connect to a new DAAP share"
@@ -1654,7 +1646,7 @@ msgstr ""
 
 #: ../plugins/daap/rb-daap-plugin.c:660
 msgid "New DAAP share"
-msgstr ""
+msgstr "Comhroinn DAAP nua"
 
 #: ../plugins/daap/rb-daap-plugin.c:660
 msgid "Host:port of DAAP share:"
@@ -1730,9 +1722,8 @@ msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr ""
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:90
-#, fuzzy
 msgid "New Playlist"
-msgstr "Ag Seinm Anois"
+msgstr "Seinnliosta Nua"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:91
 msgid "Create a new playlist on this device"
@@ -1921,9 +1912,8 @@ msgid "Error looking up artist %s on jamendo.com"
 msgstr ""
 
 #: ../plugins/iradio/rb-iradio-source.c:167
-#, fuzzy
 msgid "New Internet _Radio Station..."
-msgstr "Stáisiún Raidió Idirlín Nua"
+msgstr "Stáisiún _Raidió Idirlín Nua..."
 
 #: ../plugins/iradio/rb-iradio-source.c:168
 msgid "Create a new Internet Radio station"
@@ -1959,9 +1949,9 @@ msgstr "Airíonna %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:481
 #: ../podcast/rb-podcast-properties-dialog.c:465 ../widgets/rb-song-info.c:964
-#, fuzzy, c-format
+#, c-format
 msgid "%lu kbps"
-msgstr "%d kps"
+msgstr "%lu kbps"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:572
 msgid "Unable to change station property"
@@ -2495,9 +2485,8 @@ msgid "Power Manager"
 msgstr ""
 
 #: ../plugins/power-manager/rb-power-manager-plugin.c:200
-#, fuzzy
 msgid "Playing"
-msgstr "Ag Seinm Anois"
+msgstr "Á Seinm"
 
 #: ../plugins/pythonconsole/pythonconsole.py:67
 msgid "_Python Console"
@@ -2546,9 +2535,8 @@ msgid "Unable to activate plugin %s"
 msgstr ""
 
 #: ../plugins/sample-python/sample-python.py:14
-#, fuzzy
 msgid "Python Source"
-msgstr "_Foinse"
+msgstr "Foinse Python"
 
 #: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:1
 msgid "A sample plugin in Python with no features"
@@ -2617,29 +2605,29 @@ msgstr ""
 msgid "Window"
 msgstr "Fuinneog"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:698
+#: ../plugins/visualizer/rb-visualizer-plugin.c:706
 msgid "Unable to start video output"
 msgstr ""
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:733
+#: ../plugins/visualizer/rb-visualizer-plugin.c:741
 msgid "Failed to link new visual effect into the GStreamer pipeline"
 msgstr ""
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:781
+#: ../plugins/visualizer/rb-visualizer-plugin.c:789
 msgid "Unable to start visualization"
 msgstr ""
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1344
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1352
 msgid "Enable visual effects?"
 msgstr ""
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1346
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1354
 msgid ""
 "It seems you are running Rhythmbox remotely.\n"
 "Are you sure you want to enable the visual effects?"
 msgstr ""
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1678
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1686
 msgid "Music Player Visualization"
 msgstr "Amharcléiriú Sheinnteoir Ceoil"
 
@@ -2667,37 +2655,37 @@ msgstr "Amharcléiriú:"
 msgid "Displays visualizations"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:847
+#: ../podcast/rb-podcast-manager.c:850
 msgid "Invalid URL"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:848
+#: ../podcast/rb-podcast-manager.c:851
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr ""
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:856
+#: ../podcast/rb-podcast-manager.c:859
 msgid "URL already added"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:857
+#: ../podcast/rb-podcast-manager.c:860
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:898
+#: ../podcast/rb-podcast-manager.c:901
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:976
+#: ../podcast/rb-podcast-manager.c:989
 msgid "Podcast"
 msgstr "Podchraoladh"
 
-#: ../podcast/rb-podcast-parse.c:477
+#: ../podcast/rb-podcast-parse.c:177
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2923,7 +2911,7 @@ msgstr ""
 
 #: ../shell/main.c:115
 msgid "[URI...]"
-msgstr ""
+msgstr "[URI...]"
 
 #: ../shell/main.c:140 ../shell/main.c:146 ../shell/main.c:155
 msgid "Rhythmbox"
@@ -2936,7 +2924,7 @@ msgstr "_Seinnliosta"
 
 #: ../shell/rb-playlist-manager.c:133
 msgid "_New Playlist..."
-msgstr ""
+msgstr "Seinnliosta _Nua..."
 
 #: ../shell/rb-playlist-manager.c:134
 msgid "Create a new playlist"
@@ -2944,16 +2932,15 @@ msgstr ""
 
 #: ../shell/rb-playlist-manager.c:136
 msgid "New _Automatic Playlist..."
-msgstr ""
+msgstr "Seinnliosta _Uathoibríoch Nua..."
 
 #: ../shell/rb-playlist-manager.c:137
 msgid "Create a new automatically updating playlist"
 msgstr ""
 
 #: ../shell/rb-playlist-manager.c:139
-#, fuzzy
 msgid "_Load from File..."
-msgstr "_Lódáil ó comhad..."
+msgstr "_Luchtaigh ó Comhad..."
 
 #: ../shell/rb-playlist-manager.c:140
 msgid "Choose a playlist to be loaded"
@@ -2991,51 +2978,55 @@ msgstr ""
 msgid "Add all tracks in this playlist to the queue"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:620
+#: ../shell/rb-playlist-manager.c:552
+msgid "Unnamed playlist"
+msgstr "Seinnliosta gan ainm"
+
+#: ../shell/rb-playlist-manager.c:615
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1036
+#: ../shell/rb-playlist-manager.c:1031
 msgid "Untitled Playlist"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1297
+#: ../shell/rb-playlist-manager.c:1292
 msgid "Couldn't read playlist"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1312
+#: ../shell/rb-playlist-manager.c:1307
 msgid "Load Playlist"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1333
+#: ../shell/rb-playlist-manager.c:1328
 msgid "MPEG Version 3.0 URL"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1334
+#: ../shell/rb-playlist-manager.c:1329
 #, fuzzy
 msgid "Shoutcast playlist"
 msgstr "Cuir tús le seinm"
 
-#: ../shell/rb-playlist-manager.c:1379 ../sources/rb-playlist-source.c:549
+#: ../shell/rb-playlist-manager.c:1374 ../sources/rb-playlist-source.c:549
 msgid "Couldn't save playlist"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1379
+#: ../shell/rb-playlist-manager.c:1374
 msgid "Unsupported file extension given."
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1680
+#: ../shell/rb-playlist-manager.c:1661
 #, c-format
 msgid "Playlist %s already exists"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1710 ../shell/rb-playlist-manager.c:1743
-#: ../shell/rb-playlist-manager.c:1783 ../shell/rb-playlist-manager.c:1826
+#: ../shell/rb-playlist-manager.c:1691 ../shell/rb-playlist-manager.c:1724
+#: ../shell/rb-playlist-manager.c:1764 ../shell/rb-playlist-manager.c:1807
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1751 ../shell/rb-playlist-manager.c:1791
+#: ../shell/rb-playlist-manager.c:1732 ../shell/rb-playlist-manager.c:1772
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr ""
@@ -3054,7 +3045,7 @@ msgstr ""
 
 #: ../shell/rb-removable-media-manager.c:139
 msgid "_Scan Removable Media"
-msgstr ""
+msgstr "Scan _Meáin Inbhainte"
 
 #: ../shell/rb-removable-media-manager.c:140
 msgid "Scan for new Removable Media"
@@ -3115,7 +3106,7 @@ msgstr "Scrios toghadh"
 
 #: ../shell/rb-shell-clipboard.c:146
 msgid "_Move to Trash"
-msgstr ""
+msgstr "_Bog go Bruscar"
 
 #: ../shell/rb-shell-clipboard.c:147
 msgid "Move selection to the trash"
@@ -3123,7 +3114,7 @@ msgstr ""
 
 #: ../shell/rb-shell-clipboard.c:150
 msgid "Add to P_laylist"
-msgstr ""
+msgstr "Cuir le Seinn_liosta"
 
 #: ../shell/rb-shell-clipboard.c:151
 msgid "_New Playlist"
@@ -3135,7 +3126,7 @@ msgstr ""
 
 #: ../shell/rb-shell-clipboard.c:154
 msgid "Add _to Play Queue"
-msgstr ""
+msgstr "Cui_r le Ciú Seanma"
 
 #: ../shell/rb-shell-clipboard.c:155
 msgid "Add the selected songs to the play queue"
@@ -3190,7 +3181,7 @@ msgstr ""
 msgid "_Play"
 msgstr "_Seinn"
 
-#: ../shell/rb-shell-player.c:308 ../shell/rb-shell-player.c:3359
+#: ../shell/rb-shell-player.c:308 ../shell/rb-shell-player.c:3357
 #, fuzzy
 msgid "Start playback"
 msgstr "Cuir tús le seinm"
@@ -3229,9 +3220,8 @@ msgid "Unexpected end of stream!"
 msgstr ""
 
 #: ../shell/rb-shell-player.c:808
-#, fuzzy
 msgid "Linear"
-msgstr "Leabharlann"
+msgstr "Líneach"
 
 #: ../shell/rb-shell-player.c:810
 msgid "Linear looping"
@@ -3266,38 +3256,42 @@ msgstr ""
 msgid "Failed to create the player: %s"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:1348
+#: ../shell/rb-shell-player.c:1333
 msgid "Playlist was empty"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:1805
+#: ../shell/rb-shell-player.c:1792
 #, fuzzy
 msgid "Not currently playing"
 msgstr "Cuir tús le seinm"
 
-#: ../shell/rb-shell-player.c:1843
+#: ../shell/rb-shell-player.c:1830
 #, fuzzy
 msgid "No previous song"
 msgstr "Téigh go dtí an amhrán roimh ré"
 
-#: ../shell/rb-shell-player.c:1920
+#: ../shell/rb-shell-player.c:1907
 #, fuzzy
 msgid "No next song"
 msgstr "Téigh go dtí an céad amhrán eile"
 
-#: ../shell/rb-shell-player.c:2032 ../shell/rb-shell-player.c:3004
+#: ../shell/rb-shell-player.c:2019 ../shell/rb-shell-player.c:3002
 msgid "Couldn't start playback"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:2835
+#: ../shell/rb-shell-player.c:2822
 msgid "Couldn't stop playback"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:2924
+#: ../shell/rb-shell-player.c:2905
+msgid "Playback position not available"
+msgstr ""
+
+#: ../shell/rb-shell-player.c:2922
 msgid "Current song is not seekable"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:3357
+#: ../shell/rb-shell-player.c:3355
 msgid "Stop playback"
 msgstr ""
 
@@ -3583,17 +3577,17 @@ msgstr "ó <i>%s</i>"
 msgid "No registered source can handle URI %s"
 msgstr ""
 
-#: ../shell/rb-shell.c:3456 ../shell/rb-shell.c:3485
+#: ../shell/rb-shell.c:3449 ../shell/rb-shell.c:3478
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr ""
 
-#: ../shell/rb-shell.c:3494
+#: ../shell/rb-shell.c:3487
 #, fuzzy, c-format
 msgid "Unknown property %s"
 msgstr "Saghas comhaid anaithnid"
 
-#: ../shell/rb-shell.c:3504
+#: ../shell/rb-shell.c:3497
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr ""
@@ -3611,14 +3605,12 @@ msgid "Filter music display by genre, artist, album, or title"
 msgstr "Scag taispeántas ceoil mar sórt, ealaíontóir, albam nó teideal"
 
 #: ../shell/rb-statusbar.c:160
-#, fuzzy
 msgid "Loading..."
-msgstr "Ag lódail amhráin..."
+msgstr "Á Luchtú..."
 
 #: ../shell/rb-tray-icon.c:134
-#, fuzzy
 msgid "_Show Music Player"
-msgstr "Seinnteoir Ceoil"
+msgstr "_Taispeáin Seinnteoir Ceoil"
 
 #: ../shell/rb-tray-icon.c:135
 #, fuzzy
@@ -3672,7 +3664,7 @@ msgstr ""
 
 #: ../sources/rb-browser-source.c:140
 msgid "Browse This _Genre"
-msgstr ""
+msgstr "Brabhsáil an _Seánra Seo"
 
 #: ../sources/rb-browser-source.c:141
 msgid "Set the browser to view only this genre"
@@ -3680,7 +3672,7 @@ msgstr ""
 
 #: ../sources/rb-browser-source.c:143
 msgid "Browse This _Artist"
-msgstr ""
+msgstr "Brabhsáil an t-_Ealaíontóir Seo"
 
 #: ../sources/rb-browser-source.c:144
 msgid "Set the browser to view only this artist"
@@ -3688,7 +3680,7 @@ msgstr ""
 
 #: ../sources/rb-browser-source.c:146
 msgid "Browse This A_lbum"
-msgstr ""
+msgstr "Brabhsáil an t-_Albam Seo"
 
 #: ../sources/rb-browser-source.c:147
 msgid "Set the browser to view only this album"
@@ -3707,19 +3699,16 @@ msgstr[1] ""
 msgstr[2] ""
 
 #: ../sources/rb-library-source.c:120
-#, fuzzy
 msgid "Artist/Artist - Album"
-msgstr "Ealaíontóirí agus albaim"
+msgstr "Ealaíontóir/Ealaíontóir - Albam"
 
 #: ../sources/rb-library-source.c:121
-#, fuzzy
 msgid "Artist/Album"
-msgstr "Ealaíontóirí agus albaim"
+msgstr "Ealaíontóir/Albam"
 
 #: ../sources/rb-library-source.c:122
-#, fuzzy
 msgid "Artist - Album"
-msgstr "Ealaíontóirí agus albaim"
+msgstr "Ealaíontóir - Albam"
 
 #: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1122
 #: ../widgets/rb-library-browser.c:110
@@ -3730,24 +3719,23 @@ msgstr "Albam"
 
 #: ../sources/rb-library-source.c:129
 msgid "Number - Title"
-msgstr ""
+msgstr "Uimhir - Teideal"
 
 #: ../sources/rb-library-source.c:130
-#, fuzzy
 msgid "Artist - Title"
-msgstr "Ealaíontóir"
+msgstr "Ealaíontóir - Teideal"
 
 #: ../sources/rb-library-source.c:131
 msgid "Artist - Number - Title"
-msgstr ""
+msgstr "Ealaíontóir - Uimhir - Teideal"
 
 #: ../sources/rb-library-source.c:132
 msgid "Artist (Album) - Number - Title"
-msgstr ""
+msgstr "Ealaíontóir (Albam) - Uimhir - Teideal"
 
 #: ../sources/rb-library-source.c:134
 msgid "Number. Artist - Title"
-msgstr ""
+msgstr "Uimhir. Ealaíontóir - Teideal"
 
 #: ../sources/rb-library-source.c:339
 msgid "Music"
@@ -3804,7 +3792,7 @@ msgstr "le"
 
 #: ../sources/rb-podcast-source.c:284
 msgid "_New Podcast Feed..."
-msgstr ""
+msgstr "_Fotha Podchraolta Nua..."
 
 #: ../sources/rb-podcast-source.c:285
 msgid "Subscribe to a new Podcast Feed"
@@ -3896,9 +3884,8 @@ msgid "Waiting"
 msgstr "_Grádú"
 
 #: ../sources/rb-podcast-source.c:631 ../sources/rb-podcast-source.c:1486
-#, fuzzy
 msgid "Failed"
-msgstr "_Comhad"
+msgstr "Theip"
 
 #: ../sources/rb-podcast-source.c:890
 msgid "Delete the podcast episode and downloaded file?"
@@ -4091,9 +4078,8 @@ msgstr "_Grádú"
 
 #: ../widgets/rb-entry-view.c:1201 ../widgets/rb-query-creator-properties.c:75
 #: ../widgets/rb-query-creator-properties.c:99
-#, fuzzy
 msgid "Play Count"
-msgstr "Cuntas Seinm:"
+msgstr "Líon a Seinneadh"
 
 #: ../widgets/rb-entry-view.c:1213
 #: ../widgets/rb-query-creator-properties.c:103
@@ -4104,7 +4090,7 @@ msgstr "Seinm _Roimh Ré"
 #: ../widgets/rb-entry-view.c:1225
 #: ../widgets/rb-query-creator-properties.c:104
 msgid "Date Added"
-msgstr ""
+msgstr "Dáta Curtha Leis"
 
 #: ../widgets/rb-entry-view.c:1236
 msgid "Last Seen"
@@ -4169,17 +4155,16 @@ msgstr "Conair"
 
 #: ../widgets/rb-query-creator-properties.c:76
 #: ../widgets/rb-query-creator-properties.c:102
-#, fuzzy
 msgid "Track Number"
-msgstr "_Uimhir an rian"
+msgstr "Uimhir Amhráin"
 
 #: ../widgets/rb-query-creator-properties.c:77
 msgid "Disc Number"
-msgstr ""
+msgstr "Uimhir diosca"
 
 #: ../widgets/rb-query-creator-properties.c:78
 msgid "Bitrate"
-msgstr ""
+msgstr "Ráta Giotán"
 
 #: ../widgets/rb-query-creator-properties.c:80
 #: ../widgets/rb-query-creator-properties.c:101
@@ -4337,9 +4322,8 @@ msgid "Multiple Song Properties"
 msgstr "Ábaltachtaí Amhráin"
 
 #: ../widgets/rb-song-info.c:1020
-#, fuzzy
 msgid "Unknown file name"
-msgstr "Saghas comhaid anaithnid"
+msgstr "Ainm comhaid anaithnid"
 
 #: ../widgets/rb-song-info.c:1039
 msgid "On the desktop"
