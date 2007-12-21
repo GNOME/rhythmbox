@@ -1,3 +1,13 @@
+============ Version 0.11.4
+2007-12-21  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-shell.c: (rb_shell_finalize): revert a change which was
+	causing nasty warnings when exiting.
+
+	* configure.ac: bump version to 0.11.4
+
+	* NEWS: update with 0.11.4
+
 2007-12-18  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c:

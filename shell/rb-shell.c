@@ -922,7 +922,7 @@ rb_shell_finalize (GObject *object)
 		gtk_widget_destroy (shell->priv->prefs);
 
 	rb_debug ("destroying tooltips");
-	g_object_unref (shell->priv->tooltips);
+	gtk_object_destroy (GTK_OBJECT (shell->priv->tooltips));
 
 	g_free (shell->priv->rhythmdb_file);
 
