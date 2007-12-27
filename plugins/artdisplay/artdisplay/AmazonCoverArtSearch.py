@@ -50,6 +50,10 @@ class AmazonCoverArtSearch (object):
 		if default[0] is not None:
 			if self._supportedLocales.has_key (default[0]):
 				lc_id = default[0]
+			else:
+				lang = default[0].split("_")[0]
+				if self._supportedLocales.has_key (lang):
+					lc_id = lang
 
 		lc_host = self._supportedLocales[lc_id][1]
 		lc_name = self._supportedLocales[lc_id][0]
