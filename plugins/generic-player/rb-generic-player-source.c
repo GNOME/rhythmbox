@@ -220,9 +220,9 @@ impl_constructor (GType type,
 	priv->folder_depth = -1;	/* 0 is a possible value, I guess */
 	priv->playlist_format_unknown = TRUE;
 
-	load_songs (source);
-
 	get_device_info (source);
+
+	load_songs (source);
 
 	return G_OBJECT (source);
 }
@@ -727,10 +727,12 @@ load_songs (RBGenericPlayerSource *source)
 		for (af=0; priv->audio_folders[af] != NULL; af++) {
 			char *path;
 			path = rb_uri_append_path (priv->mount_path, priv->audio_folders[af]);
+			rb_debug ("loading songs from device audio folder %s", path);
 			rhythmdb_import_job_add_uri (priv->import_job, path);
 			g_free (path);
 		}
 	} else {
+		rb_debug ("loading songs from device mount path %s", priv->mount_path);
 		rhythmdb_import_job_add_uri (priv->import_job, priv->mount_path);
 	}
 

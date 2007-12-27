@@ -1,3 +1,11 @@
+2007-12-27  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by: Karol Krizka  <kkrizka@gmail.com>
+
+	* plugins/generic-player/rb-generic-player-source.c:
+	(impl_constructor), (load_songs):
+	Get device information before trying to load songs.  Fixes #505340.
+
 ============ Version 0.11.4
 2007-12-21  James Livingston  <doclivingston@gmail.com>
 
