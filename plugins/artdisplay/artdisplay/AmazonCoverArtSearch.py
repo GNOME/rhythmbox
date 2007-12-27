@@ -36,10 +36,10 @@ class AmazonCoverArtSearch (object):
 		self.cancel = False
 		self.loader = loader
 		self._supportedLocales = {
-			"en_US" : ("us", "xml.amazon.com"),
-			"en_GB" : ("uk", "xml-eu.amazon.com"),
-			"de" : ("de", "xml-eu.amazon.com"),
-			"ja" : ("jp", "xml.amazon.co.jp")
+			"en_US" : ("us", "xml.amazon.com", "music"),
+			"en_GB" : ("uk", "xml-eu.amazon.com", "music"),
+			"de" : ("de", "xml-eu.amazon.com", "music"),
+			"ja" : ("jp", "xml.amazon.co.jp", "music-jp")
 		}
 		self.db = None
 		self.entry = None
@@ -57,7 +57,8 @@ class AmazonCoverArtSearch (object):
 
 		lc_host = self._supportedLocales[lc_id][1]
 		lc_name = self._supportedLocales[lc_id][0]
-		return ((lc_host, lc_name))
+		lc_mode = self._supportedLocales[lc_id][2]
+		return ((lc_host, lc_name, lc_mode))
 
 	def search (self, db, entry, on_search_completed_callback, *args):
 		self.searching = True
@@ -126,14 +127,14 @@ class AmazonCoverArtSearch (object):
 		self.search_next ();
 
 	def __build_url (self, keyword):
-		(lc_host, lc_name) = self.__get_locale ()
+		(lc_host, lc_name, lc_mode) = self.__get_locale ()
 
 		url = "http://" + lc_host + "/onca/xml3?f=xml"
 		url += "&t=%s" % ASSOCIATE
 		url += "&dev-t=%s" % LICENSE_KEY
 		url += "&type=%s" % 'lite'
 		url += "&locale=%s" % lc_name
-		url += "&mode=%s" % 'music'
+		url += "&mode=%s" % lc_mode
 		url += "&%s=%s" % ('KeywordSearch', urllib.quote (keyword))
 
 		return url

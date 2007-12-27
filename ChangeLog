@@ -3,6 +3,14 @@
 	patch by: Kouhei Sutou <kou@cozmixng.org>
 
 	* plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:
+	Specify 'mode=music-jp' when searching Amazon in Japanese.
+	I'm sure this makes sense to someone.  Fixes #347818.
+
+2007-12-27  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by: Kouhei Sutou <kou@cozmixng.org>
+
+	* plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:
 	If we don't have an Amazon search locale mapping for the user's
 	locale, try stripping off the _TERRITORY part and look again with just
 	the language.  Fixes #495771.
