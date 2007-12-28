@@ -219,7 +219,7 @@ gboolean rb_visualizer_stop_remote (RBVisualizerPlugin *plugin, GError **error);
 
 static GtkToggleActionEntry rb_visualizer_plugin_toggle_actions [] =
 {
-	{ "ToggleVisualizer", VISUALIZATION_ICON_NAME, N_("Visualization"), NULL,
+	{ "ToggleVisualizer", VISUALIZATION_ICON_NAME, N_("_Visualization"), NULL,
 	  N_("Start or stop visualization"),
 	  G_CALLBACK (rb_visualizer_plugin_cmd_toggle) },
 };

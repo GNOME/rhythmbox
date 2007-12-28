@@ -287,7 +287,7 @@ enum
 
 static GtkActionEntry rb_shell_player_actions [] =
 {
-	{ "ControlPrevious", GTK_STOCK_MEDIA_PREVIOUS, N_("P_revious"), "<alt>Left",
+	{ "ControlPrevious", GTK_STOCK_MEDIA_PREVIOUS, N_("Pre_vious"), "<alt>Left",
 	  N_("Start playing the previous song"),
 	  G_CALLBACK (rb_shell_player_cmd_previous) },
 	{ "ControlNext", GTK_STOCK_MEDIA_NEXT, N_("_Next"), "<alt>Right",

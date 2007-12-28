@@ -158,7 +158,7 @@ static GtkActionEntry rb_shell_clipboard_actions [] =
 	  N_("Remove selection"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_queue_delete) },
 
-	{ "MusicProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), "<Alt>Return",
+	{ "MusicProperties", GTK_STOCK_PROPERTIES, N_("Pr_operties"), "<Alt>Return",
 	  N_("Show information on the selected song"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_song_info) },
 	{ "QueueMusicProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), NULL,
