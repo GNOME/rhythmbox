@@ -1,3 +1,11 @@
+2007-12-28  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Jay Cornwall  <jay@jcornwall.me.uk>
+
+	* plugins/daap/rb-daap-source.c: (rb_daap_source_disconnect):
+	Clear the 'disconnecting' flag when we've finished disconnecting.
+	Fixes crashes on shutdown, #504556.
+
 2007-12-27  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by: Kouhei Sutou <kou@cozmixng.org>

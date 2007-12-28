@@ -672,6 +672,8 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 		rb_debug ("Waiting for DAAP connection to finish...");
 		gtk_main_iteration ();
 	}
+
+	daap_source->priv->disconnecting = FALSE;
 	rb_debug ("DAAP connection finished");
 }
 
