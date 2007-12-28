@@ -168,6 +168,7 @@ static void rb_shell_player_extra_metadata_cb (RhythmDB *db,
 
 static gboolean rb_shell_player_do_next_internal (RBShellPlayer *player,
 						  gboolean from_eos,
+						  gboolean allow_stop,
 						  GError **error);
 
 
@@ -683,7 +684,7 @@ rb_shell_player_open_playlist_url (RBShellPlayer *player,
 }
 
 static void
-rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry)
+rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry, gboolean allow_stop)
 {
 	RhythmDBEntry *playing_entry;
 	RBSource *source;
@@ -707,16 +708,21 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 		rb_debug ("playing entry has already EOS'd");
 		return;
 	}
-	player->priv->playing_entry_eos = TRUE;
 
 	switch (rb_source_handle_eos (source)) {
 	case RB_SOURCE_EOF_ERROR:
-		rb_error_dialog (NULL, _("Stream error"),
-				 _("Unexpected end of stream!"));
-		rb_shell_player_set_playing_source (player, NULL);
+		if (allow_stop) {
+			rb_error_dialog (NULL, _("Stream error"),
+					 _("Unexpected end of stream!"));
+			rb_shell_player_set_playing_source (player, NULL);
+			player->priv->playing_entry_eos = TRUE;
+		}
 		break;
 	case RB_SOURCE_EOF_STOP:
-		rb_shell_player_set_playing_source (player, NULL);
+		if (allow_stop) {
+			rb_shell_player_set_playing_source (player, NULL);
+			player->priv->playing_entry_eos = TRUE;
+		}
 		break;
 	case RB_SOURCE_EOF_RETRY: {
 		GTimeVal current;
@@ -739,11 +745,14 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 			break;
 		}
 
-		if (diff < 4) {
-			rb_debug ("Last retry was less than 4 seconds ago...aborting retry playback");
-			rb_shell_player_set_playing_source (player, NULL);
-		} else {
-			rb_shell_player_play_entry (player, entry, NULL);
+		if (allow_stop) {
+			if (diff < 4) {
+				rb_debug ("Last retry was less than 4 seconds ago...aborting retry playback");
+				rb_shell_player_set_playing_source (player, NULL);
+			} else {
+				rb_shell_player_play_entry (player, entry, NULL);
+			}
+			player->priv->playing_entry_eos = TRUE;
 		}
 	}
 		break;
@@ -751,18 +760,22 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 		{
 			GError *error = NULL;
 
-			if (!rb_shell_player_do_next_internal (player, TRUE, &error)) {
+			player->priv->playing_entry_eos = TRUE;
+			if (!rb_shell_player_do_next_internal (player, TRUE, allow_stop, &error)) {
 				if (error->domain != RB_SHELL_PLAYER_ERROR ||
-				    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
+				    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST) {
 					g_warning ("Unhandled error: %s", error->message);
-				else if (error->code == RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
-					rb_shell_player_set_playing_source (player, NULL);
+				} else if (allow_stop == FALSE) {
+					/* handle the real EOS when it happens */
+					player->priv->playing_entry_eos = FALSE;
+				}
 			}
 		}
 		break;
 	}
 
-	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR) == NULL) {
+	if (player->priv->playing_entry_eos &&
+	    rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR) == NULL) {
 		rb_debug ("updating play statistics");
 		rb_source_update_play_statistics (source,
 						  player->priv->db,
@@ -790,7 +803,7 @@ rb_shell_player_handle_eos (RBPlayer *player,
 		rb_debug ("got unexpected eos for %s", location);
 	} else {
 		rb_debug ("handling eos for %s", location);
-		rb_shell_player_handle_eos_unlocked (shell_player, entry);
+		rb_shell_player_handle_eos_unlocked (shell_player, entry, TRUE);
 	}
 
 	GDK_THREADS_LEAVE ();
@@ -1836,7 +1849,7 @@ rb_shell_player_do_previous (RBShellPlayer *player,
 }
 
 static gboolean
-rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, GError **error)
+rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, gboolean allow_stop, GError **error)
 {
 	RBSource *new_source = NULL;
 	RhythmDBEntry *entry = NULL;
@@ -1905,11 +1918,14 @@ rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, GErr
 			     RB_SHELL_PLAYER_ERROR,
 			     RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST,
 			     _("No next song"));
-		rb_debug ("No next entry, stopping playback");
-		rb_shell_player_set_playing_source (player, NULL);
-		rb_play_order_set_playing_entry (player->priv->play_order, NULL);
-		g_object_notify (G_OBJECT (player), "playing");
 		rv = FALSE;
+
+		if (allow_stop) {
+			rb_debug ("No next entry, stopping playback");
+			rb_shell_player_set_playing_source (player, NULL);
+			rb_play_order_set_playing_entry (player->priv->play_order, NULL);
+			g_object_notify (G_OBJECT (player), "playing");
+		}
 	}
 
 	if (entry != NULL) {
@@ -1923,7 +1939,7 @@ gboolean
 rb_shell_player_do_next (RBShellPlayer *player,
 			 GError **error)
 {
-	return rb_shell_player_do_next_internal (player, FALSE, error);
+	return rb_shell_player_do_next_internal (player, FALSE, TRUE, error);
 }
 
 static gboolean
@@ -3207,7 +3223,7 @@ tick_cb (RBPlayer *mmplayer,
 	    elapsed > 0 &&
 	    ((duration - elapsed) <= remaining_check)) {
 		rb_debug ("%ld seconds remaining in stream %s; need %d for transition", duration - elapsed, uri, remaining_check);
-		rb_shell_player_handle_eos_unlocked (player, entry);
+		rb_shell_player_handle_eos_unlocked (player, entry, FALSE);
 	}
 
 	GDK_THREADS_LEAVE ();

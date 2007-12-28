@@ -1,3 +1,11 @@
+2007-12-28  Jonathan Matthew  <jonathan@d14n.org>
+
+	* shell/rb-shell-player.c: (rb_shell_player_handle_eos_unlocked),
+	(rb_shell_player_handle_eos), (rb_shell_player_do_next_internal),
+	(rb_shell_player_do_next), (tick_cb):
+	When handling fake EOS events for crossfading, don't stop playback if
+	there's nothing else to play.  Fixes #434143.
+
 2007-12-28  Alex Kloss  <alexkloss@att.net>
 
 	* plugins/daap/rb-daap-plugin.c:
