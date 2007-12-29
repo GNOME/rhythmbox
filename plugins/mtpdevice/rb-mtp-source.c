@@ -343,10 +343,17 @@ static void
 rb_mtp_source_load_tracks (RBMtpSource *source)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	char* name = NULL;
+	char *name = NULL;
 
 	if ((priv->device != NULL) && (priv->entry_map != NULL)) {
 		name = LIBMTP_Get_Friendlyname (priv->device);
+		if (name == NULL) {
+			name = LIBMTP_Get_Modelname (priv->device);
+		}
+		if (name == NULL) {
+			name = g_strdup (_("Digital Audio Player"));
+		}
+
 		g_object_set (RB_SOURCE (source),
 			      "name", name,
 			      NULL);

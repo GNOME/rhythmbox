@@ -1,5 +1,14 @@
 2007-12-29  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch mostly by:  Sam Solon  <ssolon@usa.net>
+
+	* plugins/mtpdevice/rb-mtp-source.c: (rb_mtp_source_load_tracks):
+	If the MTP device doesn't have a friendly name, use the model name; if
+	it doesn't have that, use a generic fallback device name.  
+	Fixes #490918.
+
+2007-12-29  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/gstreamer/rb-player-gst-xfade.c: (preroll_stream),
 	(rb_player_gst_xfade_open):
 	Fix some broken error message formatting.  Don't try to unblock the
