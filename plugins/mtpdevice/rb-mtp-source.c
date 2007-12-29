@@ -399,7 +399,7 @@ impl_delete_thyself (RBSource *asource)
 static char *
 gdate_to_char (GDate* date)
 {
-	return g_strdup_printf ("%2i%2i%2iT0000.0",
+	return g_strdup_printf ("%04i%02i%02iT0000.0",
 				g_date_get_year (date),
 				g_date_get_month (date),
 				g_date_get_day (date));
