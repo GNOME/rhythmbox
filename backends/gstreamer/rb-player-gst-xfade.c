@@ -2325,7 +2325,7 @@ preroll_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 	case GST_STATE_CHANGE_FAILURE:
 		rb_debug ("preroll for stream %s failed (state change failed)", stream->uri);
 		ret = FALSE;
-		unblock = TRUE;
+		/* attempting to unblock here causes deadlock */
 		break;
 	case GST_STATE_CHANGE_NO_PREROLL:
 		rb_debug ("no preroll for stream %s -> WAITING", stream->uri);
@@ -2917,14 +2917,12 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 	/* construct new stream */
 	stream = create_stream (player, uri, stream_data, stream_data_destroy);
 	if (stream == NULL) {
-		char *err;
-		err = g_strdup_printf (_("Failed to create GStreamer pipeline to play %s"),
-				       uri);
+		rb_debug ("unable to create pipeline to play %s", uri);
 		g_set_error (error,
 			     RB_PLAYER_ERROR,
 			     RB_PLAYER_ERROR_GENERAL,
-			     err);
-		g_free (err);
+			     _("Failed to create GStreamer pipeline to play %s"),
+			     uri);
 		return FALSE;
 	}
 
@@ -2935,17 +2933,12 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 
 	/* start prerolling it */
 	if (preroll_stream (player, stream) == FALSE) {
-		char *err;
-
 		rb_debug ("unable to preroll stream %s", uri);
-
-		err = g_strdup_printf (_("Failed to start playback of %s"),
-				       uri);
 		g_set_error (error,
 			     RB_PLAYER_ERROR,
 			     RB_PLAYER_ERROR_GENERAL,
-			     err);
-		g_free (err);
+			     _("Failed to start playback of %s"),
+			     uri);
 		return FALSE;
 	}
 

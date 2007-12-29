@@ -1410,8 +1410,6 @@ rb_shell_player_open_location (RBShellPlayer *player,
 		g_thread_create ((GThreadFunc)open_location_thread, data, FALSE, NULL);
 	} else {
 		gint crossfade;
-		gboolean ret = TRUE;
-
 		crossfade = rb_shell_player_get_crossfade (player, play_type);
 
 		rhythmdb_entry_ref (entry);
@@ -1535,7 +1533,7 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 		}
 	}
 
-	if (rb_shell_player_open_location (player, entry, play_type, error) == FALSE) {
+	if (rb_shell_player_open_location (player, entry, play_type, &tmp_error) == FALSE) {
 		goto lose;
 	}
 
@@ -1553,11 +1551,12 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 	/* Ignore errors, shutdown the player */
 	rb_player_close (player->priv->mmplayer, NULL /* XXX specify uri? */, NULL);
 
-	if (tmp_error == NULL)
+	if (tmp_error == NULL) {
 		tmp_error = g_error_new (RB_SHELL_PLAYER_ERROR,
 					 RB_SHELL_PLAYER_ERROR_NOT_PLAYING,
 					 "Problem occurred without error being set. "
 					 "This is a bug in Rhythmbox or GStreamer.");
+	}
 	/* Mark this song as failed */
 	rb_shell_player_set_entry_playback_error (player, entry, tmp_error->message);
 	g_propagate_error (error, tmp_error);
