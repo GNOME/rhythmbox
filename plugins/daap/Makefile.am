@@ -81,12 +81,12 @@ glade_DATA = daap-prefs.glade
 uixmldir = $(plugindir)
 uixml_DATA = daap-ui.xml
 
-plugin_in_files = daap.rb-plugin.desktop.in
+plugin_in_files = daap.rb-plugin.in
 
-%.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
 BUILT_SOURCES =							\
-	$(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin) 	\
+	$(plugin_in_files:.rb-plugin.in=.rb-plugin) 		\
 	$(NULL)
 
 plugin_DATA = 			\

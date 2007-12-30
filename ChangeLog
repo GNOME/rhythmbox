@@ -1,5 +1,14 @@
 2007-12-30  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Claude Paroz  <claude@2xlibre.net>
+
+	* po/POTFILES.in:
+	* plugins/*/Makefile.am:
+	* plugins/*/*.rb-plugin.desktop.in:
+	Rename .rb-plugin.desktop.in files to .rb-plugin.in.  Fixes #432770.
+
+2007-12-30  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch mostly by:  Sam Solon  <ssolon@usa.net>
 
 	* plugins/mtpdevice/rb-mtp-source.c: (gdate_to_char):
