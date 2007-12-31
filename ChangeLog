@@ -1,3 +1,9 @@
+2007-12-31  Jonathan Matthew  <jonathan@d14n.org>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_process_metadata_load):
+	event->metadata can be NULL in certain error cases, so don't assume
+	that it isn't.  Fixes #506440.
+
 2007-12-30  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Claude Paroz  <claude@2xlibre.net>

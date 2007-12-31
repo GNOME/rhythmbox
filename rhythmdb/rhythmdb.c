@@ -2033,9 +2033,10 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 			     RB_METADATA_ERROR,
 			     RB_METADATA_ERROR_NOT_AUDIO_IGNORE)) {
 		return rhythmdb_process_metadata_load_real (event);
-	} else if (rb_metadata_get_missing_plugins (event->metadata,
-					     &missing_plugins,
-					     &plugin_descriptions)) {
+	} else if (event->metadata != NULL &&
+		   rb_metadata_get_missing_plugins (event->metadata,
+			   			    &missing_plugins,
+						    &plugin_descriptions)) {
 		GClosure *closure;
 		gboolean processing;
 		
