@@ -1074,6 +1074,15 @@ handle_song_listing (RBDAAPConnection *connection,
 	rb_daap_connection_state_done (connection, TRUE);
 }
 
+static int
+compare_playlists_by_name(gconstpointer a, gconstpointer b)
+{
+	const RBDAAPPlaylist *playlist1 = a;
+	const RBDAAPPlaylist *playlist2 = b;
+
+	return strcmp(playlist1->name, playlist2->name);
+}
+
 /* FIXME
  * what we really should do is only get a list of playlists and their ids
  * then when they are clicked on ('activate'd) by the user, get a list of
@@ -1139,6 +1148,10 @@ handle_playlists (RBDAAPConnection *connection,
 		priv->playlists = g_slist_prepend (priv->playlists, playlist);
 	}
 	priv->playlists = g_slist_reverse (priv->playlists);
+
+	/* Sort the playlists into lexical order. Established DAAP clients already
+	 * do this leading to an absence of sorting functionality in DAAP servers. */
+	priv->playlists = g_slist_sort (priv->playlists, compare_playlists_by_name);
 
 	rb_daap_connection_state_done (connection, TRUE);
 }

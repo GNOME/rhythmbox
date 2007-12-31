@@ -1,5 +1,13 @@
 2007-12-31  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Jay Cornwall  <jay@jcornwall.me.uk>
+
+	* plugins/daap/rb-daap-connection.c: (compare_playlists_by_name),
+	(handle_playlists):  Sort playlists on DAAP shares into alphabetical
+	order.  Fixes #504551.
+
+2007-12-31  Jonathan Matthew  <jonathan@d14n.org>
+
 	* rhythmdb/rhythmdb.c: (rhythmdb_process_metadata_load):
 	event->metadata can be NULL in certain error cases, so don't assume
 	that it isn't.  Fixes #506440.
