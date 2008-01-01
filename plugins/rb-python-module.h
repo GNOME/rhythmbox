@@ -50,6 +50,8 @@ GObject			*rb_python_module_new_object		(RBPythonModule *module);
 
 /* --- python utils --- */
 
+void			rb_python_module_init_python		(void);
+
 void			rb_python_garbage_collect		(void);
 
 void			rb_python_shutdown			(void);

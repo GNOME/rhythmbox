@@ -355,6 +355,9 @@ rb_plugins_engine_init (RBShell *shell)
 
 	rb_plugins_shell = shell;
 	g_object_ref (G_OBJECT (rb_plugins_shell));
+#ifdef ENABLE_PYTHON
+	rb_python_module_init_python ();
+#endif
 
 	rb_plugins_engine_load_all ();
 

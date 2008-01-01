@@ -1,5 +1,13 @@
 2008-01-01  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_init):
+	* plugins/rb-python-module.c: (rb_python_module_class_init):
+	* plugins/rb-python-module.h:
+	Always initialize python if python plugins are enabled.
+	Fixes #499208, probably wastes a bit of memory for a few people.
+
+2008-01-01  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_gst_class_init),
 	(rb_encoder_gst_encode):
 	* sources/rb-removable-media-source.c: (impl_paste):

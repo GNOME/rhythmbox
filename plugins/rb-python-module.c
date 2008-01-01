@@ -103,7 +103,7 @@ static PyTypeObject *PyRBPlugin_Type;
 
 G_DEFINE_TYPE (RBPythonModule, rb_python_module, G_TYPE_TYPE_MODULE);
 
-static void
+void
 rb_python_module_init_python (void)
 {
 	PyObject *pygtk, *mdict, *require;
@@ -462,11 +462,6 @@ rb_python_module_class_init (RBPythonModuleClass *class)
 
 	module_class->load = rb_python_module_load_with_gil;
 	module_class->unload = rb_python_module_unload;
-
-	/* Init python subsystem, this should happen only once
-	 * in the process lifetime, and doing it here is ok since
-	 * class_init is called once */
-	rb_python_module_init_python ();
 }
 
 RBPythonModule *
