@@ -593,8 +593,6 @@ slider_release_callback (GtkWidget *widget,
 
 	header->priv->slider_dragging = FALSE;
 
-	rb_header_sync_time (header);
-
 	if (header->priv->slider_moved_timeout != 0) {
 		g_source_remove (header->priv->slider_moved_timeout);
 		header->priv->slider_moved_timeout = 0;

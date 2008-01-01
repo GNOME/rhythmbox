@@ -1,3 +1,11 @@
+2008-01-01  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Jay Cornwall  <jay@jcornwall.me.uk>
+
+	* widgets/rb-header.c: (slider_release_callback):
+	Remove superfluous call to rb_header_sync_time that will mostly move
+	the slider to the wrong place.  Fixes #506641.
+
 2007-12-31  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Jay Cornwall  <jay@jcornwall.me.uk>
