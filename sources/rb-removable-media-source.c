@@ -312,6 +312,8 @@ impl_paste (RBSource *source, GList *entries)
 				entry_mime = "audio/mpeg";
 		} else if (strcmp (entry_mime, "application/x-id3") == 0) {
 			entry_mime = "audio/mpeg";
+		} else if (strcmp (entry_mime, "audio/x-flac") == 0) {
+			entry_mime = "audio/flac";
 		}
 
 		mime_types = rb_removable_media_source_get_mime_types (RB_REMOVABLE_MEDIA_SOURCE (source));

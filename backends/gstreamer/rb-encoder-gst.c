@@ -116,6 +116,10 @@ rb_encoder_gst_class_init (RBEncoderGstClass *klass)
 	caps = gst_caps_new_simple ("audio/x-vorbis",
 				    NULL);
 	g_hash_table_insert (klass->mime_caps_table, "application/ogg", caps);
+
+	/* FLAC */
+	caps = gst_caps_new_simple ("audio/x-flac", NULL);
+	g_hash_table_insert (klass->mime_caps_table, "audio/flac", caps);
 }
 
 static void
@@ -981,6 +985,8 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 			entry_mime_type = "audio/mpeg";
 	} else if (rb_safe_strcmp (entry_mime_type, "application/x-id3") == 0) {
 		entry_mime_type = "audio/mpeg";
+	} else if (rb_safe_strcmp (entry_mime_type, "audio/x-flac") == 0) {
+		entry_mime_type = "audio/flac";
 	}
 
 	vfsresult = create_parent_dirs (dest);

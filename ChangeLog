@@ -1,5 +1,13 @@
 2008-01-01  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_gst_class_init),
+	(rb_encoder_gst_encode):
+	* sources/rb-removable-media-source.c: (impl_paste):
+	Add mappings for FLAC (audio/flac <-> audio/x-flac) so FLAC files can
+	be transferred to devices.  Fixes #486049.
+
+2008-01-01  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Jay Cornwall  <jay@jcornwall.me.uk>
 
 	* widgets/rb-header.c: (slider_release_callback):
