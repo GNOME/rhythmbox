@@ -106,6 +106,8 @@ void			rhythmdb_query_model_add_entry		(RhythmDBQueryModel *model,
 gboolean		rhythmdb_query_model_remove_entry	(RhythmDBQueryModel *model,
 								 RhythmDBEntry *entry);
 
+void			rhythmdb_query_model_shuffle_entries 	(RhythmDBQueryModel *model);
+
 void			rhythmdb_query_model_move_entry 	(RhythmDBQueryModel *model,
 								 RhythmDBEntry *entry,
 								 gint index);

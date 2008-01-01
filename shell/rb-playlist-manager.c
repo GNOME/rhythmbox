@@ -74,6 +74,8 @@ static void rb_playlist_manager_cmd_new_playlist (GtkAction *action,
 						  RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
 							    RBPlaylistManager *mgr);
+static void rb_playlist_manager_cmd_shuffle_playlist (GtkAction *action,
+						      RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_rename_playlist (GtkAction *action,
 						     RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_delete_playlist (GtkAction *action,
@@ -154,6 +156,9 @@ static GtkActionEntry rb_playlist_manager_actions [] =
 	{ "QueuePlaylist", NULL, N_("_Queue All Tracks"), NULL,
 	  N_("Add all tracks in this playlist to the queue"),
 	  G_CALLBACK (rb_playlist_manager_cmd_queue_playlist) },
+	{ "ShufflePlaylist", NULL, N_("_Shuffle Playlist"), NULL,
+	  N_("Shuffle the tracks in this playlist"),
+	  G_CALLBACK (rb_playlist_manager_cmd_shuffle_playlist) },
 };
 static guint rb_playlist_manager_n_actions = G_N_ELEMENTS (rb_playlist_manager_actions);
 
@@ -362,6 +367,7 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 	gboolean can_delete;
 	gboolean can_edit;
 	gboolean can_rename;
+	gboolean can_shuffle;
 	GtkAction *action;
 
 	party_mode = rb_shell_get_party_mode (mgr->priv->shell);
@@ -397,6 +403,11 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 	action = gtk_action_group_get_action (mgr->priv->actiongroup,
 					      "MusicPlaylistRenamePlaylist");
 	gtk_action_set_visible (action, can_rename);
+
+	can_shuffle = RB_IS_STATIC_PLAYLIST_SOURCE (mgr->priv->selected_source);
+	action = gtk_action_group_get_action (mgr->priv->actiongroup,
+					      "ShufflePlaylist");
+	gtk_action_set_sensitive (action, can_shuffle);
 }
 
 static void
@@ -1246,6 +1257,18 @@ rb_playlist_manager_cmd_queue_playlist (GtkAction *action,
 
 	g_object_unref (queue_source);
 	g_object_unref (model);
+}
+
+static void
+rb_playlist_manager_cmd_shuffle_playlist (GtkAction *action,
+					RBPlaylistManager *mgr)
+{
+	RBStaticPlaylistSource *psource;
+
+	if (RB_IS_STATIC_PLAYLIST_SOURCE (mgr->priv->selected_source)) {
+		psource = RB_STATIC_PLAYLIST_SOURCE (mgr->priv->selected_source);
+		rb_static_playlist_source_shuffle_playlist (psource);
+	}
 }
 
 static void

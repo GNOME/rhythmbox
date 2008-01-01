@@ -1,5 +1,27 @@
 2008-01-01  Jonathan Matthew  <jonathan@d14n.org>
 
+	Patch by:  Ryan Hughes  <ryan@iheartryan.com>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_shuffle_entries):
+	* rhythmdb/rhythmdb-query-model.h:
+	* bindings/python/rhythmdb.defs:
+	Add a method to shuffle the entries in a query model.
+	
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_shuffle_playlist):
+	* sources/rb-static-playlist-source.h:
+	Add a method to shuffle the entries in the playlist's base model (so
+	the changes persist)
+
+	* data/ui/rhythmbox-ui.xml:
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_set_source),
+	(rb_playlist_manager_cmd_shuffle_playlist):
+	Use the above to add a 'shuffle playlist' menu item for static
+	playlists.  Fixes #165863.
+
+2008-01-01  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/rb-plugins-engine.c: (rb_plugins_engine_init):
 	* plugins/rb-python-module.c: (rb_python_module_class_init):
 	* plugins/rb-python-module.h:

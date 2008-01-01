@@ -883,3 +883,13 @@ impl_want_uri (RBSource *source, const char *uri)
 
 	return 0;
 }
+
+void
+rb_static_playlist_source_shuffle_playlist(RBStaticPlaylistSource *source) 
+{
+	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
+
+	rhythmdb_query_model_shuffle_entries (priv->base_model);
+
+	rb_playlist_source_mark_dirty (RB_PLAYLIST_SOURCE (source));
+}

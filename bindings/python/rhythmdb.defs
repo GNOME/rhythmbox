@@ -843,6 +843,12 @@
   )
 )
 
+(define-method shuffle_entries
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_shuffle_entries")
+  (return-type "none")
+)
+
 (define-method move_entry
   (of-object "RhythmDBQueryModel")
   (c-name "rhythmdb_query_model_move_entry")

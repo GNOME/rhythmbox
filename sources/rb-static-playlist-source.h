@@ -79,6 +79,7 @@ void		rb_static_playlist_source_remove_location(RBStaticPlaylistSource *source,
 void		rb_static_playlist_source_move_entry	(RBStaticPlaylistSource *source,
 							 RhythmDBEntry *entry,
 							 gint index);
+void		rb_static_playlist_source_shuffle_playlist (RBStaticPlaylistSource *source);
 G_END_DECLS
 
 #endif /* __RB_STATIC_PLAYLIST_SOURCE_H */

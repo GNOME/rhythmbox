@@ -1490,6 +1490,63 @@ rhythmdb_query_model_filter_out_entry (RhythmDBQueryModel *model,
 }
 
 void
+rhythmdb_query_model_shuffle_entries (RhythmDBQueryModel *model)
+{
+	RhythmDBEntry **entries;
+	int listsize;
+	int i;
+	int swapwith;
+	RhythmDBEntry *entry;
+	GSequenceIter *iter;
+	GtkTreePath *path;
+	GtkTreeIter tree_iter;
+	int *map_new_old;
+
+	/* Convert the entries list to an array, for fast lookups. */
+	listsize = g_sequence_get_length (model->priv->entries);
+	entries = (RhythmDBEntry **)g_malloc (sizeof(RhythmDBEntry *) * listsize);
+	map_new_old = (int *)g_malloc (sizeof(int) * listsize);
+
+	iter = g_sequence_get_begin_iter (model->priv->entries);
+	i = 0;
+	while (!g_sequence_iter_is_end (iter)) {
+		entries[i++] = g_sequence_get (iter);
+		iter = g_sequence_iter_next (iter);
+	}
+
+	/* Shuffle the array. */
+	for (i=0; i<listsize; i++) {
+		swapwith = g_random_int_range (i, listsize);
+		map_new_old[swapwith] = i;
+		entry = entries[swapwith];
+		entries[swapwith] = entries[i];
+		entries[i] = entry;
+	}
+
+	/* Convert the array back into a sequence, rebuilding the reverse map. */
+	iter = g_sequence_get_begin_iter (model->priv->entries);
+	i = 0;
+	while (!g_sequence_iter_is_end (iter)) {
+		g_sequence_set (iter, (gpointer)entries[i]);
+		rhythmdb_entry_ref (entries[i]);
+		g_hash_table_remove (model->priv->reverse_map, entries[i]);
+		g_hash_table_insert (model->priv->reverse_map, entries[i], iter);
+
+		iter = g_sequence_iter_next (iter);
+		i++;
+	}
+
+	/* Emit reorder signals. */
+	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &tree_iter);
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (model), &tree_iter);
+	gtk_tree_model_rows_reordered (GTK_TREE_MODEL (model), path, &tree_iter, map_new_old);
+	gtk_tree_path_free (path);
+
+	g_free (map_new_old);
+	g_free (entries);
+}
+
+void
 rhythmdb_query_model_move_entry (RhythmDBQueryModel *model,
 				 RhythmDBEntry *entry,
 				 gint index)
