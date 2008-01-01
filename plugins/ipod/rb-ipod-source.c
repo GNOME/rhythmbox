@@ -1173,6 +1173,12 @@ add_to_podcasts (RBiPodSource *source, Itdb_Track *song)
 	gchar *filename;
 	const gchar *mount_path;
 
+        /* Set various flags indicating the Itdb_Track is a podcast */
+        song->skip_when_shuffling = 0x01;
+        song->remember_playback_position = 0x01;
+        song->mark_unplayed = 0x02;
+        song->flag4 = 0x03;
+
 	if (priv->podcast_pl == NULL) {
 		/* No Podcast playlist on the iPod, create a new one */
 		Itdb_Playlist *ipod_playlist;
