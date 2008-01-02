@@ -1169,7 +1169,8 @@ rb_add_artwork_whole_album_cb (GtkTreeModel *query_model,
 	entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (query_model), iter);
 
 	song = g_hash_table_lookup (artwork_data->priv->entry_map, entry);
-		
+	g_return_val_if_fail (song != NULL, FALSE);
+
 	if (song->has_artwork == 0x01) {		   
 		return FALSE;				
 	}
@@ -1192,7 +1193,8 @@ rb_ipod_song_artwork_add_cb (RhythmDB *db,
 	GdkPixbuf *pixbuf;
 	GtkTreeModel *query_model;
 	RBiPodSongArtworkAddData artwork_data;
-		
+        RhythmDBEntryType entry_type;
+
 	if (metadata == NULL) {
 		return FALSE;
         }
@@ -1210,12 +1212,16 @@ rb_ipod_song_artwork_add_cb (RhythmDB *db,
 	if (device == NULL || itdb_device_supports_artwork (device) == FALSE) {
 		return FALSE;
 	}
-	
+
+        g_object_get (G_OBJECT (isource), "entry-type", &entry_type, NULL);
+ 
 	pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
 	
 	query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (db));
 	
 	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (query_model),
+                                RHYTHMDB_QUERY_PROP_EQUALS,
+                                RHYTHMDB_PROP_ENTRY_ID, entry_type,
 				RHYTHMDB_QUERY_PROP_EQUALS,
 				RHYTHMDB_PROP_ARTIST, song->artist,
 				RHYTHMDB_QUERY_PROP_EQUALS,
@@ -1228,7 +1234,7 @@ rb_ipod_song_artwork_add_cb (RhythmDB *db,
 	gtk_tree_model_foreach (query_model,
 				(GtkTreeModelForeachFunc) rb_add_artwork_whole_album_cb,
 				&artwork_data);
-				
+        g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);	
 	g_object_unref(query_model);
 	return FALSE;
 }

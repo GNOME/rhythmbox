@@ -1,6 +1,12 @@
+2008-01-02  Christophe Fergeau <teuf@gnome.org>
+
+	* plugins/ipod/rb-ipod-source.c: make sure we are only processing
+	entries from the iPod in rb_add_artwork_whole_album_cb to avoid a
+	crash, fixes bug #493996.
+
 2008-01-02  Ross Burton  <ross@burtonini.com>
 
-	Patch by: Christophe Fergeau.
+	Patch by: Kern Handa
 	
 	* plugins/ipod/rb-ipod-source.c:
 	Save downloaded artwork onto iPod (#493996).
