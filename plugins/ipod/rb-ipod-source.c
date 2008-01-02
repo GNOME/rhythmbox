@@ -48,13 +48,9 @@
 #include "rhythmdb.h"
 #include "rb-cut-and-paste-code.h"
 
-static GObject *rb_ipod_source_constructor (GType type,
+static GObject *rb_ipod_source_constructor (GType type, 
 					    guint n_construct_properties,
 					    GObjectConstructParam *construct_properties);
-static void rb_ipod_source_dispose (GObject *object);
-
-static GObject *rb_ipod_source_constructor (GType type, guint n_construct_properties,
-			       GObjectConstructParam *construct_properties);
 static void rb_ipod_source_dispose (GObject *object);
 
 static gboolean impl_show_popup (RBSource *source);
@@ -82,6 +78,11 @@ static gchar* ipod_get_filename_for_uri (const gchar *mount_point,
 					 const gchar *extension);
 static gchar* ipod_path_from_unix_path (const gchar *mount_point,
 					const gchar *unix_path);
+static gboolean rb_ipod_song_artwork_add_cb (RhythmDB *db,
+                                             RhythmDBEntry *entry,
+                                             const gchar *property_name,
+                                             const GValue *metadata,
+                                             RBiPodSource *isource);
 #endif
 static RhythmDB *get_db_for_source (RBiPodSource *source);
 
@@ -107,6 +108,13 @@ typedef struct
 
 	GQueue *offline_plays;
 } RBiPodSourcePrivate;
+
+#ifdef ENABLE_IPOD_WRITING
+typedef struct {
+	RBiPodSourcePrivate *priv;
+	GdkPixbuf *pixbuf;
+} RBiPodSongArtworkAddData;
+#endif
 
 RB_PLUGIN_DEFINE_TYPE(RBiPodSource,
 		      rb_ipod_source,
@@ -185,6 +193,15 @@ rb_ipod_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
 
 	rb_ipod_load_songs (source);
+
+#ifdef ENABLE_IPOD_WRITING                                      
+        RhythmDB *db = get_db_for_source (RB_IPOD_SOURCE (source));
+        g_signal_connect_object (db,
+                                 "entry-extra-metadata-notify::rb:coverArt",
+                                 G_CALLBACK (rb_ipod_song_artwork_add_cb),
+                                 RB_IPOD_SOURCE(source), 0);
+        g_object_unref (G_OBJECT (db));
+#endif
 
 	return G_OBJECT (source);
 }
@@ -1140,6 +1157,82 @@ artwork_notify_cb (RhythmDB *db,
 	g_hash_table_remove (priv->artwork_request_map, entry);
 }
 
+static gboolean
+rb_add_artwork_whole_album_cb (GtkTreeModel *query_model,
+			       GtkTreePath *path,
+			       GtkTreeIter *iter,
+			       RBiPodSongArtworkAddData *artwork_data)
+{
+	RhythmDBEntry *entry;
+	Itdb_Track *song;	
+	
+	entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (query_model), iter);
+
+	song = g_hash_table_lookup (artwork_data->priv->entry_map, entry);
+		
+	if (song->has_artwork == 0x01) {		   
+		return FALSE;				
+	}
+	
+	rb_ipod_db_set_thumbnail (artwork_data->priv->ipod_db, song, artwork_data->pixbuf);
+	
+	return FALSE;	
+}			     
+
+static gboolean 
+rb_ipod_song_artwork_add_cb (RhythmDB *db,
+			     RhythmDBEntry *entry,
+			     const gchar *property_name,
+			     const GValue *metadata,
+			     RBiPodSource *isource)			     
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (isource);
+	Itdb_Device *device;
+	Itdb_Track *song;
+	GdkPixbuf *pixbuf;
+	GtkTreeModel *query_model;
+	RBiPodSongArtworkAddData artwork_data;
+		
+	if (metadata == NULL) {
+		return FALSE;
+        }
+
+        if (G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF) == FALSE) {
+		return FALSE;
+	}
+
+	song = g_hash_table_lookup (priv->entry_map, entry);		
+        if (song == NULL) {
+                return FALSE;
+        }
+
+	device = rb_ipod_db_get_device (priv->ipod_db);
+	if (device == NULL || itdb_device_supports_artwork (device) == FALSE) {
+		return FALSE;
+	}
+	
+	pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
+	
+	query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (db));
+	
+	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (query_model),
+				RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_ARTIST, song->artist,
+				RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_ALBUM, song->album,
+				RHYTHMDB_QUERY_END);
+				
+	artwork_data.priv = priv;
+	artwork_data.pixbuf = pixbuf;
+				
+	gtk_tree_model_foreach (query_model,
+				(GtkTreeModelForeachFunc) rb_add_artwork_whole_album_cb,
+				&artwork_data);
+				
+	g_object_unref(query_model);
+	return FALSE;
+}
+												
 static void
 request_artwork (RBiPodSource *isource,
 		 RhythmDBEntry *entry,
