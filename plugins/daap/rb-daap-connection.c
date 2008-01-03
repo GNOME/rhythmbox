@@ -1147,7 +1147,6 @@ handle_playlists (RBDAAPConnection *connection,
 
 		priv->playlists = g_slist_prepend (priv->playlists, playlist);
 	}
-	priv->playlists = g_slist_reverse (priv->playlists);
 
 	/* Sort the playlists into lexical order. Established DAAP clients already
 	 * do this leading to an absence of sorting functionality in DAAP servers. */
@@ -1209,7 +1208,7 @@ handle_playlist_entries (RBDAAPConnection *connection,
 	}
 	rb_profile_end ("handling playlist entries");
 
-	playlist->uris = playlist_uris;
+	playlist->uris = g_list_reverse (playlist_uris);
 	rb_daap_connection_state_done (connection, TRUE);
 }
 

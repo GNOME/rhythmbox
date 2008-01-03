@@ -1,3 +1,11 @@
+2008-01-03  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/daap/rb-daap-connection.c: (handle_playlists),
+	(handle_playlist_entries):
+	Don't bother reversing the playlist list when we're going 
+	to sort it anyway.  Reverse the playlist entry list, though, 
+	since we build it backwards.
+
 2008-01-02  Christophe Fergeau <teuf@gnome.org>
 
 	* plugins/ipod/rb-ipod-source.c: make sure we are only processing
