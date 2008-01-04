@@ -171,6 +171,7 @@ visit_playlist_dirs (const gchar *rel_path,
 				      RHYTHMDB_QUERY_PROP_PREFIX, RHYTHMDB_PROP_LOCATION, playlist_path,
 				      RHYTHMDB_QUERY_END);
 	g_free (playlist_path);
+        g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	playlist = rb_auto_playlist_source_new (shell, rel_path, FALSE);
 	rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (playlist), query,

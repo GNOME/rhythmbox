@@ -572,6 +572,7 @@ rb_daap_source_activate (RBSource *source)
 								daap_source->priv->password_protected,
 								db,
 								type);
+        g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, type);
 	g_object_add_weak_pointer (G_OBJECT (daap_source->priv->connection), (gpointer *)&daap_source->priv->connection);
 
 	g_free (name);
@@ -634,6 +635,7 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 	g_object_unref (shell);
 
 	rhythmdb_entry_delete_by_type (db, type);
+        g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, type);
 	rhythmdb_commit (db);
 
 	g_object_unref (db);

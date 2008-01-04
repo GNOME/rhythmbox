@@ -259,6 +259,7 @@ add_mtp_track_to_db (RBMtpSource *source,
 	name = g_strdup_printf ("rb-mtp-%i", track->item_id);
 	entry = rhythmdb_entry_new (RHYTHMDB (db), entry_type, name);
 	g_free (name);
+        g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	if (entry == NULL) {
 		rb_debug ("cannot create entry %i", track->item_id);

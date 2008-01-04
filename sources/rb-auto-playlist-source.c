@@ -531,6 +531,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 
 		rhythmdb_query_free (subquery);
 		rhythmdb_query_free (query);
+                g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, qtype);
 	}
 
 	g_object_unref (db);

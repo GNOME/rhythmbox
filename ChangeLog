@@ -1,3 +1,12 @@
+2008-01-04  Christophe Fergeau <teuf@gnome.org>
+
+	* plugins/daap/rb-daap-source.c:
+	* plugins/generic-player/rb-psp-source.c: 
+	* plugins/ipod/rb-ipod-source.c:
+	* plugins/mtpdevice/rb-mtp-source.c:
+	* sources/rb-auto-playlist-source.c: add missing g_boxed_free when
+	manipulating the entry-type of a source, fixes bug #506858
+
 2008-01-03  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/daap/rb-daap-connection.c: (handle_playlists),
