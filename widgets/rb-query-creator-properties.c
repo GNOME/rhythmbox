@@ -418,7 +418,7 @@ durationCriteriaCreateWidget (gboolean *constrain)
 	/* the widget for Duration is set out like the following [ 2] : [30] */
 	box = GTK_BOX (gtk_hbox_new (FALSE, 3));
 
-	minutesSpin = gtk_spin_button_new_with_range (0.0, G_MAXINT, 1.0);
+	minutesSpin = gtk_spin_button_new_with_range (0.0, (double)((G_MAXINT - 59) / 60), 1.0);
 	gtk_box_pack_start (box, minutesSpin, FALSE, FALSE, 0);
 
 	minutesLabel = gtk_label_new (":");
@@ -460,6 +460,16 @@ durationCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
  * Implementation for the relative time properties, using a spin button and a menu.
  */
 
+static void
+update_time_unit_limits (GtkOptionMenu *menu, GtkWidget *spin_button)
+{
+	/* set the range on the spin button so it can't overflow when
+	 * converted to seconds when we're constructing the query
+	 */
+	gulong mult = time_unit_options [gtk_option_menu_get_history (menu)].timeMultiplier;
+	gtk_spin_button_set_range (GTK_SPIN_BUTTON (spin_button), 1, G_MAXINT / mult);
+}
+
 static GtkWidget*
 create_time_unit_option_menu (const RBQueryCreatorTimeUnitOption *options,
 			     int length)
@@ -493,8 +503,12 @@ relativeTimeCriteriaCreateWidget (gboolean *constrain)
 	gtk_box_pack_start_defaults (box, timeSpin);
 
 	timeOption = create_time_unit_option_menu (time_unit_options, G_N_ELEMENTS (time_unit_options));
-	gtk_option_menu_set_history(GTK_OPTION_MENU (timeOption), time_unit_options_default);
+	gtk_option_menu_set_history (GTK_OPTION_MENU (timeOption), time_unit_options_default);
 	gtk_box_pack_start_defaults (box, timeOption);
+	
+	g_signal_connect_object (timeOption, "changed",
+				 G_CALLBACK (update_time_unit_limits),
+				 timeSpin, 0);
 
 	gtk_widget_show_all (GTK_WIDGET (box));
 	return GTK_WIDGET (box);
@@ -522,8 +536,8 @@ relativeTimeCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 	time = time / time_unit_options[unit].timeMultiplier;
 	g_assert (time < G_MAXINT);
 	/* set the time value and unit*/
-	gtk_option_menu_set_history(unitMenu, unit);
-	gtk_spin_button_set_value(timeSpin, time);
+	gtk_option_menu_set_history (unitMenu, unit);
+	gtk_spin_button_set_value (timeSpin, time);
 }
 
 static void

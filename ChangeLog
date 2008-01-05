@@ -1,3 +1,13 @@
+2008-01-05  Jonathan Matthew  <jonathan@d14n.org>
+
+	* widgets/rb-query-creator-properties.c:
+	(durationCriteriaCreateWidget), (update_time_unit_limits),
+	(relativeTimeCriteriaCreateWidget),
+	(relativeTimeCriteriaSetWidgetData):
+	Set limits on the spin buttons used in the query creator so the input
+	values can't cause integer overflow when converted to seconds.
+	Fixes #456110.
+
 2008-01-04  Christophe Fergeau <teuf@gnome.org>
 
 	* plugins/daap/rb-daap-source.c:
