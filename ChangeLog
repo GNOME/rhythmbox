@@ -1,3 +1,12 @@
+2008-01-06  Jonathan Matthew  <jonathan@d14n.org>
+
+	* bindings/python/rb.defs:
+	* lib/rb-util.c: (rb_set_tree_view_column_fixed_width):
+	* lib/rb-util.h:
+	* widgets/rb-entry-view.c: (rb_entry_view_set_fixed_column_width):
+	Move the tree view column fixed width setting code out to rb-util so
+	it can be used elsewhere.
+
 2008-01-05  Jonathan Matthew  <jonathan@d14n.org>
 
 	* widgets/rb-query-creator-properties.c:

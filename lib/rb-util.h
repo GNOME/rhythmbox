@@ -26,6 +26,7 @@
 #include <glib.h>
 #include <gtk/gtkimage.h>
 #include <gtk/gtkuimanager.h>
+#include <gtk/gtktreeview.h>
 
 G_BEGIN_DECLS
 
@@ -79,6 +80,12 @@ void rb_value_array_append_data (GValueArray *array, GType type, ...);
 void rb_value_free (GValue *val); /* g_value_unset, g_slice_free */
 
 void rb_assert_locked (GMutex *mutex);
+
+void rb_set_tree_view_column_fixed_width (GtkWidget *treeview,
+					  GtkTreeViewColumn *column,
+					  GtkCellRenderer *renderer,
+					  const char **strings,
+					  int padding);
 
 G_END_DECLS
 

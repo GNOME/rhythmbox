@@ -1518,6 +1518,18 @@
   )
 )
 
+(define-function rb_set_tree_view_column_fixed_width
+  (c-name "rb_set_tree_view_column_fixed_width")
+  (return-type "none")
+  (parameters
+    '("GtkTreeView*" "treeview")
+    '("GtkTreeViewColumn*" "column")
+    '("GtkCellRenderer*" "renderer")
+    '("const-gchar**" "strings")
+    '("int" "padding")
+  )
+)
+
 (define-function rb_entry_view_get_time_date_column_sample
   (c-name "rb_entry_view_get_time_date_column_sample")
   (return-type "const-char*")

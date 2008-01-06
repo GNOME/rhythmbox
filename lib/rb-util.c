@@ -950,3 +950,44 @@ rb_str_in_strv (const char *needle, char **haystack)
 
 	return FALSE;
 }
+
+/**
+ * rb_set_tree_view_column_fixed_width:
+ *
+ * Sets a fixed size for a tree view column based on
+ * a set of strings to be displayed in the column.
+ *
+ * @treeview: the #GtkTreeView containing the column
+ * @column: the #GtkTreeViewColumn to size
+ * @renderer: the #GtkCellRenderer used in the column
+ * @strings: a NULL-terminated set of strings to base the size on
+ * @padding: a small amount of extra padding for the column
+ */
+void
+rb_set_tree_view_column_fixed_width (GtkWidget  *treeview,
+				     GtkTreeViewColumn *column,
+				     GtkCellRenderer *renderer,
+				     const char **strings,
+				     int padding)
+{
+	int max_width = 0;
+	int i = 0;
+
+	while (strings[i] != NULL) {
+		gint width;
+		g_object_set (renderer, "text", strings[i], NULL);
+		gtk_cell_renderer_get_size (renderer,
+					    GTK_WIDGET (treeview),
+					    NULL,
+					    NULL, NULL,
+					    &width, NULL);
+
+		if (width > max_width)
+			max_width = width;
+
+		i++;
+	}
+
+	gtk_tree_view_column_set_fixed_width (column, max_width + padding);
+}
+

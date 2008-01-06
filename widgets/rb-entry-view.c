@@ -2061,26 +2061,11 @@ rb_entry_view_set_fixed_column_width (RBEntryView *view,
 				      GtkCellRenderer *renderer,
 				      const gchar **strings)
 {
-	gint max_width = 0;
-	int i = 0;
-
-	while (strings[i] != NULL) {
-		gint width;
-		g_object_set (renderer, "text", strings[i], NULL);
-		gtk_cell_renderer_get_size (renderer,
-					    view->priv->treeview,
-					    NULL,
-					    NULL, NULL,
-					    &width, NULL);
-
-		if (width > max_width)
-			max_width = width;
-
-		i++;
-	}
-
-	/* include some arbitrary amount of padding, just to be safeish */
-	gtk_tree_view_column_set_fixed_width (column, max_width + 5);
+	rb_set_tree_view_column_fixed_width (view->priv->treeview,
+					     column,
+					     renderer,
+					     strings,
+					     5);
 }
 
 const char *
