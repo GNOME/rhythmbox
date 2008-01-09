@@ -38,6 +38,8 @@ class CoherencePlugin(rb.Plugin):
 		face_path = os.path.join(os.path.expanduser('~'), ".face")
 		if os.path.exists(face_path):
 			url = "file://" + urllib.pathname2url(face_path)
+		else:
+			url = None
 
 		if url:
 			mimetype = gnomevfs.get_mime_type(url)
@@ -52,6 +54,8 @@ class CoherencePlugin(rb.Plugin):
 				'height':height,
 				'depth':depth
 				}
+		else:
+			the_icon = None
 
 		# create our own media server
 		from coherence.upnp.devices.media_server import MediaServer
