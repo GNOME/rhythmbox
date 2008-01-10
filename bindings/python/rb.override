@@ -309,7 +309,11 @@ _wrap_rb_shell_player_get_playing_path(PyGObject *self)
     if (pyg_error_check(&error))
         return NULL;
 
-    return PyString_FromString (path);
+    if (path == NULL) {
+        Py_RETURN_NONE;
+    } else {
+        return PyString_FromString (path);
+    }
 }
 %%
 override RBSource__do_impl_cut

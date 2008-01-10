@@ -1,3 +1,9 @@
+2008-01-11  Jonathan Matthew  <jonathan@d14n.org>
+
+	* bindings/python/rb.override:
+	Don't crash in RBShellPlayer.get_playing_path() if the playing path is
+	NULL.  Fixes #508573.
+
 2008-01-09  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/coherence/upnp_coherence/__init__.py:
