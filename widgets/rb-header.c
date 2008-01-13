@@ -400,6 +400,11 @@ rb_header_sync (RBHeader *header)
 
 		label_str = g_string_sized_new (100);
 
+		/* stick a right-to-left mark in the string for RTL display */
+		if (gtk_widget_get_direction (GTK_WIDGET (header->priv->song)) == GTK_TEXT_DIR_RTL) {
+			g_string_append (label_str, "\xE2\x80\x8F");
+		}
+
 		append_and_free (label_str, TITLE_MARKUP (title));
 
 		if (artist != NULL && artist[0] != '\0')
