@@ -1,3 +1,10 @@
+2008-01-13  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (create_stream):
+	For audio CD playback, try to disable paranoia mode and reduce read
+	speed, and extract the device path from the URI fragment.  Fixes
+	#507538.
+
 2008-01-13  Djihed Afifi  <djihed@gmail.com>
 
 	* widgets/rb-header.c: (rb_header_sync):
