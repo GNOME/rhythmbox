@@ -1,3 +1,9 @@
+2008-01-15  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/coherence/upnp_coherence/MediaStore.py:
+	* plugins/daap/rb-daap-share.c: (add_entry_to_mlcl):
+	Don't send hidden entries to DAAP or UPnP clients.  Fixes #509148.
+
 2008-01-13  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c: (create_stream):

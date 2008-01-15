@@ -206,6 +206,8 @@ class MediaStore:
 		tracks = []
 
 		def track_cb (entry):
+			if self.db.entry_get (entry, rhythmdb.PROP_HIDDEN):
+				return
 			id = self.db.entry_get (entry, rhythmdb.PROP_ENTRY_ID)
 			tracks.append(Track(self, id))
 		self.db.entry_foreach_by_type (self.db.entry_type_get_by_name('song'), track_cb)

@@ -993,6 +993,9 @@ add_entry_to_mlcl (RhythmDBEntry *entry,
 	GNode *mlit;
 	gint id;
 
+	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
+		return;
+
 	id = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID);
 	mlit = rb_daap_structure_add (mb->mlcl, RB_DAAP_CC_MLIT);
 
