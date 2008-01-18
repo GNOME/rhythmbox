@@ -910,7 +910,8 @@ rhythmdb_property_model_iter_nth_child (GtkTreeModel *tree_model,
 		return FALSE;
 
 	if (n != 0) {
-		child = g_sequence_get_iter_at_pos (model->priv->properties, n);
+		/* -1 to account for the 'all' property at position 0 */
+		child = g_sequence_get_iter_at_pos (model->priv->properties, n-1);
 
 		if (g_sequence_iter_is_end (child))
 			return FALSE;
