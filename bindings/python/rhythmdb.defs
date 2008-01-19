@@ -753,6 +753,23 @@
   )
 )
 
+(define-method nice_elt_name_from_propid
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_nice_elt_name_from_propid")
+  (return-type "const-char*")
+  (parameters
+    '("RhythmDBPropType" "propid")
+  )
+)
+
+(define-method propid_from_nice_elt_name
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_propid_from_nice_elt_name")
+  (return-type "RhythmDBPropType")
+  (parameters
+    '("const-char*" "name")
+  )
+)
 
 ;; From ../../rhythmdb/rhythmdb-property-model.h
 
