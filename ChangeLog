@@ -1,3 +1,22 @@
+2008-01-20  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-encoder-gst.c: (add_tags_from_entry):
+	* metadata/rb-metadata-common.c:
+	* metadata/rb-metadata-gst.c: (rb_metadata_gst_tag_to_field),
+	(rb_metadata_gst_field_to_gst_tag):
+	* metadata/rb-metadata.h:
+	* plugins/audiocd/rb-audiocd-source.c: (metadata_cb):
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-tree.c: (save_entry):
+	* rhythmdb/rhythmdb.c: (metadata_field_from_prop),
+	(rhythmdb_entry_allocate), (rhythmdb_entry_finalize),
+	(set_props_from_metadata), (rhythmdb_entry_set_internal),
+	(rhythmdb_prop_type_get_type), (rhythmdb_entry_get_string),
+	(rhythmdb_entry_get_refstring):
+	* rhythmdb/rhythmdb.h:
+	As far as possible, rename musicbrainz_artistsortname to
+	artist_sortname.  It's not musicbrainz-specific.
+
 2008-01-19  Jonathan Matthew  <jonathan@d14n.org>
 
 	* bindings/python/rhythmdb.defs:

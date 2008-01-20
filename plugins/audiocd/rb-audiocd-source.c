@@ -558,7 +558,7 @@ metadata_cb (SjMetadata *metadata,
 		rb_debug ("musicbrainz_artistid: %s", track->artist_id);
 		rb_debug ("musicbrainz_albumid: %s", album->album_id);
 		rb_debug ("musicbrainz_albumartistid: %s", album->artist_id);
-		rb_debug ("musicbrainz_sortname: %s", album->artist_sortname);
+		rb_debug ("album sortname: %s", album->artist_sortname);
 
 		/* record track info in entry*/
 		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_TITLE, track->title);
@@ -569,7 +569,7 @@ metadata_cb (SjMetadata *metadata,
 		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, track->artist_id);
 		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, album->album_id);
 		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, album->artist_id);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTSORTNAME, album->artist_sortname);
+		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ARTIST_SORTNAME, album->artist_sortname);
 
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, track->duration);

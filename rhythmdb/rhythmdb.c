@@ -391,8 +391,8 @@ metadata_field_from_prop (RhythmDBPropType prop,
 	case RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID:
 		*field = RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID;
 		return TRUE;
-	case RHYTHMDB_PROP_MUSICBRAINZ_ARTISTSORTNAME:
-		*field = RB_METADATA_FIELD_MUSICBRAINZ_ARTISTSORTNAME;
+	case RHYTHMDB_PROP_ARTIST_SORTNAME:
+		*field = RB_METADATA_FIELD_ARTIST_SORTNAME;
 		return TRUE;
 	default:
 		return FALSE;
@@ -1218,7 +1218,7 @@ rhythmdb_entry_allocate (RhythmDB *db,
 	ret->musicbrainz_artistid = rb_refstring_ref (db->priv->empty_string);
 	ret->musicbrainz_albumid = rb_refstring_ref (db->priv->empty_string);
 	ret->musicbrainz_albumartistid = rb_refstring_ref (db->priv->empty_string);
-	ret->musicbrainz_artistsortname = rb_refstring_ref (db->priv->empty_string);
+	ret->artist_sortname = rb_refstring_ref (db->priv->empty_string);
 	ret->mimetype = rb_refstring_ref (db->priv->octet_stream_str);
 
 	ret->flags |= RHYTHMDB_ENTRY_LAST_PLAYED_DIRTY |
@@ -1397,7 +1397,7 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 	rb_refstring_unref (entry->musicbrainz_artistid);
 	rb_refstring_unref (entry->musicbrainz_albumid);
 	rb_refstring_unref (entry->musicbrainz_albumartistid);
-	rb_refstring_unref (entry->musicbrainz_artistsortname);
+	rb_refstring_unref (entry->artist_sortname);
 	rb_refstring_unref (entry->mimetype);
 
 	g_free (entry);
@@ -1577,12 +1577,12 @@ set_props_from_metadata (RhythmDB *db,
 		g_value_unset (&val);
 	}
 
-	/* musicbrainz artistsortname */
+	/* artist sortname */
 	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_MUSICBRAINZ_ARTISTSORTNAME,
+			     RB_METADATA_FIELD_ARTIST_SORTNAME,
 			     &val)) {
 		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_MUSICBRAINZ_ARTISTSORTNAME, &val);
+					     RHYTHMDB_PROP_ARTIST_SORTNAME, &val);
 		g_value_unset (&val);
 	}
 
@@ -3052,9 +3052,9 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 			rb_refstring_unref (entry->musicbrainz_albumartistid);
 			entry->musicbrainz_albumartistid = rb_refstring_new (g_value_get_string (value));
 			break;
-		case RHYTHMDB_PROP_MUSICBRAINZ_ARTISTSORTNAME:
-			rb_refstring_unref (entry->musicbrainz_artistsortname);
-			entry->musicbrainz_artistsortname = rb_refstring_new (g_value_get_string (value));
+		case RHYTHMDB_PROP_ARTIST_SORTNAME:
+			rb_refstring_unref (entry->artist_sortname);
+			entry->artist_sortname = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_HIDDEN:
 			if (g_value_get_boolean (value)) {
@@ -3809,7 +3809,7 @@ rhythmdb_prop_type_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, "Musicbrainz Artist ID (gchararray) [mb-artistid]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, "Musicbrainz Album ID (gchararray) [mb-albumid]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, "Musicbrainz Album Artist ID (gchararray) [mb-albumartistid]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_MUSICBRAINZ_ARTISTSORTNAME, "Musicbrainz Artist Sortname (gchararray) [mb-artistsortname]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORTNAME, "Artist Sortname (gchararray) [mb-artistsortname]"),
 
 			ENUM_ENTRY (RHYTHMDB_PROP_DURATION, "Duration (gulong) [duration]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_FILE_SIZE, "File Size (guint64) [file-size]"),
@@ -4561,8 +4561,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get (entry->musicbrainz_albumid);
 	case RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID:
 		return rb_refstring_get (entry->musicbrainz_albumartistid);
-	case RHYTHMDB_PROP_MUSICBRAINZ_ARTISTSORTNAME:
-		return rb_refstring_get (entry->musicbrainz_artistsortname);
+	case RHYTHMDB_PROP_ARTIST_SORTNAME:
+		return rb_refstring_get (entry->artist_sortname);
 	case RHYTHMDB_PROP_MIMETYPE:
 		return rb_refstring_get (entry->mimetype);
 	case RHYTHMDB_PROP_TITLE_SORT_KEY:
@@ -4664,8 +4664,8 @@ rhythmdb_entry_get_refstring (RhythmDBEntry *entry,
 		return rb_refstring_ref (entry->musicbrainz_albumid);
 	case RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID:
 		return rb_refstring_ref (entry->musicbrainz_albumartistid);
-	case RHYTHMDB_PROP_MUSICBRAINZ_ARTISTSORTNAME:
-		return rb_refstring_ref (entry->musicbrainz_artistsortname);
+	case RHYTHMDB_PROP_ARTIST_SORTNAME:
+		return rb_refstring_ref (entry->artist_sortname);
 	case RHYTHMDB_PROP_MIMETYPE:
 		return rb_refstring_ref (entry->mimetype);
 	case RHYTHMDB_PROP_MOUNTPOINT:
