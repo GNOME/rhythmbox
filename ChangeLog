@@ -1,3 +1,12 @@
+2008-01-21  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (start_stream_fade),
+	Record the fade end point before touching the controller so if we're
+	already fading, we don't misinterpret the resulting volume change.
+
+	(rb_player_gst_xfade_pause):  If the stream is still fading in,
+	calculate the fade start point and length based on its current volume.
+
 2008-01-20  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-encoder-gst.c: (add_tags_from_entry):

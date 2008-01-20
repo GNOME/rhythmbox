@@ -986,6 +986,7 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time,
 	}
 
 	/* apparently we need to set the starting volume, otherwise fading in doesn't work. */
+	stream->fade_end = end;
 	g_object_set (stream->volume, "volume", start, NULL);
 
 	gst_controller_unset_all (stream->fader, "volume");
@@ -1012,7 +1013,6 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time,
 		g_object_unref (stream);
 	}
 
-	stream->fade_end = end;
 	stream->fading = TRUE;
 
 	/* tiny hack:  if the controlled element is in passthrough mode, the
@@ -3143,6 +3143,8 @@ rb_player_gst_xfade_pause (RBPlayer *iplayer)
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
 	GList *l;
 	gboolean done = FALSE;
+	double fade_out_start = 1.0f;
+	gint64 fade_out_time = PAUSE_FADE_LENGTH;
 
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 
@@ -3171,12 +3173,14 @@ rb_player_gst_xfade_pause (RBPlayer *iplayer)
 			done = TRUE;
 			break;
 
-		case PLAYING:
 		case FADING_IN:
+			g_object_get (stream->volume, "volume", &fade_out_start, NULL);
+			fade_out_time = (gint64)(((double) PAUSE_FADE_LENGTH) * fade_out_start);
+		case PLAYING:
 			rb_debug ("pausing stream %s -> FADING_OUT_PAUSED", stream->uri);
 
 			stream->state = FADING_OUT_PAUSED;
-			start_stream_fade (stream, 1.0f, 0.0f, PAUSE_FADE_LENGTH, TRUE);
+			start_stream_fade (stream, fade_out_start, 0.0f, fade_out_time, TRUE);
 			done = TRUE;
 			break;
 
