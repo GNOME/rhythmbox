@@ -32,9 +32,12 @@ from urllib import unquote
 ART_SEARCHES_LOCAL = [LocalCoverArtSearch]
 ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, AmazonCoverArtSearch]
 ART_FOLDER = '~/.gnome2/rhythmbox/covers'
-ART_CACHE_EXTENSION = 'jpg'
-ART_CACHE_FORMAT = 'jpeg'
-ART_CACHE_SETTINGS = {"quality": "100"}
+ART_CACHE_EXTENSION_JPG = 'jpg'
+ART_CACHE_EXTENSION_PNG = 'png'
+ART_CACHE_FORMAT_JPG = 'jpeg'
+ART_CACHE_FORMAT_PNG = 'png'
+ART_CACHE_SETTINGS_JPG = {"quality": "100"}
+ART_CACHE_SETTINGS_PNG = {"compression": "9"}
 
 class TicketSystem:
 	def __init__ (self):
@@ -103,9 +106,16 @@ class CoverArtDatabase (object):
 	def set_pixbuf (self, db, entry, pixbuf, callback):
 		if entry is None or pixbuf is None:
 			return
-		art_location = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION)
+		if pixbuf.get_has_alpha():
+			art_location = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_PNG)
+			art_cache_format = ART_CACHE_FORMAT_PNG
+			art_cache_settings = ART_CACHE_SETTINGS_PNG
+		else:
+			art_location = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_JPG)
+			art_cache_format = ART_CACHE_FORMAT_JPG
+			art_cache_settings = ART_CACHE_SETTINGS_JPG
 		self.ticket.purge (entry)
-		pixbuf.save (art_location, ART_CACHE_FORMAT, ART_CACHE_SETTINGS)
+		pixbuf.save (art_location, art_cache_format, art_cache_settings)
 		callback (entry, pixbuf, art_location)
 		for Engine in ART_SEARCHES_LOCAL:
 			try:
@@ -133,11 +143,18 @@ class CoverArtDatabase (object):
 		rb.Coroutine (self.image_search, db, st_album, st_artist, entry, callback).begin ()
 
 	def image_search (self, plexer, db, st_album, st_artist, entry, callback):
-		art_location = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION)
+		art_location_jpg = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_JPG)
+		art_location_png = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_PNG)
 		blist_location = self.build_art_cache_filename (db, entry, "rb-blist")
 
+		art_location = None
+		if os.path.exists (art_location_jpg):
+			art_location = art_location_jpg
+		if os.path.exists (art_location_png):
+			art_location = art_location_png
+
 		# Check local cache
-		if os.path.exists (art_location):
+		if art_location:
 			self.ticket.purge (entry)
 			pixbuf = gtk.gdk.pixbuf_new_from_file (art_location)	
 			callback (entry, pixbuf, art_location)
@@ -164,7 +181,10 @@ class CoverArtDatabase (object):
 					if pixbuf:
 						if self.ticket.release (entry, ticket):
 							if engine_remote:
-								pixbuf.save (art_location, ART_CACHE_FORMAT, ART_CACHE_SETTINGS)
+								if pixbuf.get_has_alpha ():
+									pixbuf.save (art_location_png, ART_CACHE_FORMAT_PNG, ART_CACHE_SETTINGS_PNG)
+								else:
+									pixbuf.save (art_location_jpg, ART_CACHE_FORMAT_JPG, ART_CACHE_SETTINGS_JPG)
 								uri = art_location
 							else:
 								uri = unquote (str (url))
