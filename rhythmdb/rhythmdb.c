@@ -1809,6 +1809,9 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 			return;
 
 		error_entry_type = event->ignore_type;
+	} else if (event->error_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
+		/* we don't have an error entry type, so we can't add an import error */
+		return;
 	}
 
 	entry = rhythmdb_entry_lookup_by_location_refstring (db, event->real_uri);
@@ -1995,6 +1998,8 @@ rhythmdb_missing_plugins_cb (gpointer duh, gboolean should_retry, RhythmDBEvent 
 		load_action->type = RHYTHMDB_ACTION_LOAD;
 		load_action->uri = rb_refstring_ref (event->real_uri);
 		load_action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 		g_async_queue_push (event->db->priv->action_queue, load_action);
 	} else {
 		/* TODO replace event->error with something like
@@ -4165,6 +4170,9 @@ default_sync_metadata (RhythmDB *db,
 		RhythmDBAction *load_action;
 
 		/* reload the metadata, to revert the db changes */
+		rb_debug ("error saving metadata for %s: %s; reloading metadata to revert",
+			  rb_refstring_get (entry->location),
+			  local_error->message);
 		load_action = g_new0 (RhythmDBAction, 1);
 		load_action->type = RHYTHMDB_ACTION_LOAD;
 		load_action->uri = rb_refstring_ref (entry->location);

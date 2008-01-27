@@ -1,3 +1,11 @@
+2008-01-27  Jonathan Matthew  <jonathan@d14n.org>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_add_import_error_entry),
+	(rhythmdb_missing_plugins_cb), (default_sync_metadata):
+	Don't pass in NULL for error/ignore entry types, and if we don't have
+	a valid entry type for error entries, don't create one.  Probably
+	fixes #510236.
+
 2008-01-24  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Mirco Müller  <macslow@bangang.de>
