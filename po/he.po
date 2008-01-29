@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-01 14:05+0000\n"
-"PO-Revision-Date: 2007-09-23 10:17+0000\n"
-"Last-Translator: Revan <mark125@gmail.com>\n"
+"POT-Creation-Date: 2008-01-07 15:36+0000\n"
+"PO-Revision-Date: 2008-01-28 16:37+0200\n"
+"Last-Translator: Mark Krapivner <mark125@gmail.com>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,6 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Launchpad-Export-Date: 2007-10-10 15:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
+"X-Poedit-Language: Hebrew\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:476
 #, c-format
@@ -194,7 +195,7 @@ msgstr "    "
 
 #: ../data/glade/library-prefs.glade.h:2
 msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
-msgstr "אומן/אומן - אלבום/אומן (אלבום) - 01 - כותרת.ogg"
+msgstr "אומן/אומן - אלבום/אומן (אלבום) - 01 - שם.ogg"
 
 #: ../data/glade/library-prefs.glade.h:3
 msgid "F_older hierarchy:"
@@ -339,7 +340,7 @@ msgstr "מקור:‏"
 #: ../data/glade/podcast-feed-properties.glade.h:11
 #: ../data/glade/podcast-properties.glade.h:13
 msgid "Title:"
-msgstr "כותרת:‏"
+msgstr "שם:‏"
 
 #: ../data/glade/podcast-prefs.glade.h:1
 msgid "<b>Download Manager</b>"
@@ -435,9 +436,8 @@ msgid "_Year:"
 msgstr "_שנה:"
 
 #: ../data/glade/song-info.glade.h:3
-#, fuzzy
 msgid "Date added:"
-msgstr "הושמע לאחרונה:"
+msgstr "תאריך הוספה:"
 
 #: ../data/glade/song-info.glade.h:6
 #: ../plugins/iradio/station-properties.glade.h:4
@@ -563,7 +563,7 @@ msgstr "%b %d %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:553
 #: ../plugins/daap/rb-daap-connection.c:677
 #: ../plugins/generic-player/rb-generic-player-source.c:1103
-#: ../plugins/ipod/rb-ipod-source.c:275
+#: ../plugins/ipod/rb-ipod-source.c:293
 #: ../plugins/iradio/rb-iradio-source.c:501
 #: ../plugins/iradio/rb-iradio-source.c:1119
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
@@ -991,9 +991,8 @@ msgid "Tracks liked by the %s group"
 msgstr ""
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:214
-#, fuzzy
 msgid "Next Song"
-msgstr "שיר הבא"
+msgstr "השיר הבא"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:215
 msgid "Skip the current track"
@@ -1680,9 +1679,8 @@ msgstr ""
 
 #: ../plugins/fmradio/fmradio.rb-plugin.in.h:1
 #: ../plugins/fmradio/rb-fm-radio-source.c:195
-#, fuzzy
 msgid "FM Radio"
-msgstr "רדיו"
+msgstr "רדיו FM"
 
 #: ../plugins/fmradio/fmradio.rb-plugin.in.h:2
 msgid "Support for FM radio broadcasting services"
@@ -1716,9 +1714,8 @@ msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr ""
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:90
-#, fuzzy
 msgid "New Playlist"
-msgstr "_רשימת השמעה חדשה..."
+msgstr "רשימת השמעה חדשה"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:91
 #, fuzzy
@@ -1726,14 +1723,12 @@ msgid "Create a new playlist on this device"
 msgstr "יצירת רשימת השמעה חדשה"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:93
-#, fuzzy
 msgid "Delete Playlist"
-msgstr "רשימת השמעה"
+msgstr "מחיקת רשימת השמעה"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:94
-#, fuzzy
 msgid "Delete this playlist"
-msgstr "יצירת רשימת השמעה חדשה"
+msgstr "מחק את רשימת ההשמעה"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:844
 #, c-format
@@ -1757,7 +1752,7 @@ msgstr "_שינוי שם"
 msgid "Rename iPod"
 msgstr ""
 
-#: ../plugins/ipod/rb-ipod-source.c:1179 ../sources/rb-podcast-source.c:806
+#: ../plugins/ipod/rb-ipod-source.c:1285 ../sources/rb-podcast-source.c:806
 msgid "Podcasts"
 msgstr "פודקסטים"
 
@@ -1775,15 +1770,16 @@ msgid "<b>Download</b>"
 msgstr "<b>הורדה</b>"
 
 #: ../plugins/jamendo/jamendo-prefs.glade.h:2
-#, fuzzy
 msgid "Jamendo Preferences"
-msgstr "ה_עדפות"
+msgstr "העדפות Jamendo"
 
 #: ../plugins/jamendo/jamendo-prefs.glade.h:3
 msgid ""
 "Ogg Vorbis (300Kbps)\n"
 "MP3 (200Kbps)"
 msgstr ""
+"Ogg Vorbis (300Kbps)\n"
+"MP3 (200Kbps)"
 
 #: ../plugins/jamendo/jamendo-prefs.glade.h:5
 msgid "Visit Jamendo at "
@@ -1825,7 +1821,7 @@ msgstr ""
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:8
 msgid "<b>Jamendo</b>"
-msgstr ""
+msgstr "<b>Jamendo</b>"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:9
 msgid ""
@@ -1836,6 +1832,9 @@ msgid ""
 "It's a \"Some rights reserved\" agreement, perfectly suited for the new "
 "century."
 msgstr ""
+"ב-jamendo, האומנים מפיצים את המוזיקה שלהם תחת רישיון Creative Commons.\n"
+"בקיצור, הם מאפשרים לך להוריד, לערוך מחדש ולשתף את המוזיקה שלהם בחופשיות.\n"
+"זה הסכם של \"חלק מהזכויות שמורות\", מתאים בדיוק למאה החדשה."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:12
 msgid ""
@@ -1844,10 +1843,14 @@ msgid ""
 "Peer-to-Peer networks such as BitTorrent or eMule to legally distribute "
 "albums at near-zero cost."
 msgstr ""
+"החוקים החדשים האלו מאפשרים ל-jamendo להשתמש בשיטות הפצה דיגיטלית חדשות "
+"ומתקדמות כמו\n"
+"שיתוף קבצים בעזרת ביטורנט או אימיול כדי להפיץ את האלבומים שלהם בצורה חוקית "
+"במחיר כמעט אפסי."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:14
 msgid "You can find more information at http://www.jamendo.com/"
-msgstr ""
+msgstr "ניתן למצוא מידע נוסף בכתובת http://www.jamendo.com/"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:15
 msgid ""
@@ -1875,7 +1878,7 @@ msgstr ""
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:2
 #: ../plugins/jamendo/jamendo/JamendoSource.py:52
 msgid "Jamendo"
-msgstr ""
+msgstr "Jamendo"
 
 #: ../plugins/jamendo/jamendo/__init__.py:67
 #: ../plugins/magnatune/magnatune/__init__.py:88
@@ -1885,16 +1888,16 @@ msgstr "_מקור"
 
 #: ../plugins/jamendo/jamendo/__init__.py:87
 msgid "_Download Album"
-msgstr ""
+msgstr "_הורדת אלבום"
 
 #: ../plugins/jamendo/jamendo/__init__.py:88
 msgid "Download this album using BitTorrent"
-msgstr ""
+msgstr "הורדת האלבום בעזרת ביטורנט"
 
 #. Add Button for Donate
 #: ../plugins/jamendo/jamendo/__init__.py:95
 msgid "_Donate to Artist"
-msgstr ""
+msgstr "_תרומה לאומן"
 
 #: ../plugins/jamendo/jamendo/__init__.py:96
 msgid "Donate Money to this Artist"
@@ -1910,9 +1913,8 @@ msgid "Error looking up artist %s on jamendo.com"
 msgstr ""
 
 #: ../plugins/iradio/rb-iradio-source.c:167
-#, fuzzy
 msgid "New Internet _Radio Station..."
-msgstr "תחנת רדיו אינטרנט חדשה"
+msgstr "תחנת _רדיו אינטרנט חדשה..."
 
 #: ../plugins/iradio/rb-iradio-source.c:168
 msgid "Create a new Internet Radio station"
@@ -1948,9 +1950,9 @@ msgstr "מאפייני %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:481
 #: ../podcast/rb-podcast-properties-dialog.c:465 ../widgets/rb-song-info.c:964
-#, fuzzy, c-format
+#, c-format
 msgid "%lu kbps"
-msgstr "%d קסל\"ש"
+msgstr "%lu kbps"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:572
 msgid "Unable to change station property"
@@ -2212,7 +2214,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:28
 msgid "C_redit Card:"
-msgstr ""
+msgstr "כרטיס א_שראי:"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:29
 msgid "Default _amount to pay:"
@@ -2260,7 +2262,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:41
 msgid "Remember my credit card details"
-msgstr ""
+msgstr "זכור את פרטי כרטיס האשראי שלי"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:42
 msgid "Visit Magnatune at "
@@ -2268,7 +2270,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:43
 msgid "_Email:"
-msgstr ""
+msgstr "_דוא\"ל:"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:44
 msgid "_Month:"
@@ -2307,6 +2309,20 @@ msgid ""
 "$17\n"
 "$18 (We love you!)"
 msgstr ""
+"$5\n"
+"$6\n"
+"$7\n"
+"$8 (טיפוסי)\n"
+"$9\n"
+"$10 (טוב מהממוצע)\n"
+"$11\n"
+"$12 (נדיב)\n"
+"$13\n"
+"$14\n"
+"$15 (נדיב מאוד!)\n"
+"$16\n"
+"$17\n"
+"$18 (אנחנו אוהבים אותכם!)"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:15
 msgid "Audio _format:"
@@ -2319,7 +2335,7 @@ msgstr "מספר _רצועה:"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:17
 msgid "Credit Card"
-msgstr ""
+msgstr "כרטיס אשראי"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:18
 msgid "Expiry _month:"
@@ -2352,6 +2368,18 @@ msgid ""
 "November (11)\n"
 "December (12)"
 msgstr ""
+"ינואר (01)\n"
+"פברואר (02)\n"
+"מרץ (03)\n"
+"אפריל (04)\n"
+"מאי (05)\n"
+"יוני (06)\n"
+"יולי (07)\n"
+"אוגוסט (08)\n"
+"ספטמבר (09)\n"
+"אוקטובר (10)\n"
+"נובמבר (11)\n"
+"דצמבר (12)"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:39
 msgid "Purchase Magnatune Tracks"
@@ -2370,9 +2398,8 @@ msgid "_Name (as printed on card):"
 msgstr ""
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:43
-#, fuzzy
 msgid "_Purchase"
-msgstr "ה_דבקה"
+msgstr "_רכישה"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:44
 msgid "_Remember my credit card details"
@@ -2421,7 +2448,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:505
 msgid "Purchase Error"
-msgstr ""
+msgstr "שגיאת רכישה"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:506
 #, python-format
@@ -2447,7 +2474,7 @@ msgstr ""
 #. Add the popup menu actions
 #: ../plugins/magnatune/magnatune/__init__.py:115
 msgid "Purchase Album"
-msgstr ""
+msgstr "רכישת אלבום"
 
 #: ../plugins/magnatune/magnatune/__init__.py:116
 msgid "Purchase this album from Magnatune"
@@ -2508,7 +2535,7 @@ msgstr ""
 msgid "Rename MTP-device"
 msgstr ""
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:354
+#: ../plugins/mtpdevice/rb-mtp-source.c:355
 msgid "Digital Audio Player"
 msgstr ""
 
@@ -2556,7 +2583,7 @@ msgstr ""
 
 #: ../plugins/rb-plugin-manager.c:47
 msgid "Plugin"
-msgstr ""
+msgstr "תוסף"
 
 #: ../plugins/rb-plugin-manager.c:48
 msgid "Enabled"
@@ -2564,7 +2591,7 @@ msgstr "זמין"
 
 #: ../plugins/rb-plugins-engine.c:538
 msgid "Plugin Error"
-msgstr ""
+msgstr "שגיאת תוסף"
 
 #: ../plugins/rb-plugins-engine.c:538
 #, fuzzy, c-format
@@ -2627,7 +2654,7 @@ msgstr "גדול"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:232
 msgid "Extra Large"
-msgstr ""
+msgstr "גדול במיוחד"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:243
 msgid "Embedded"
@@ -2635,7 +2662,7 @@ msgstr ""
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:244
 msgid "Fullscreen"
-msgstr ""
+msgstr "מסך מלא"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:245
 msgid "Desktop"
@@ -2699,7 +2726,7 @@ msgstr ""
 
 #: ../plugins/visualizer/visualizer.rb-plugin.in.h:2
 msgid "Visualization"
-msgstr ""
+msgstr "ויזואליזציה"
 
 #: ../podcast/rb-podcast-manager.c:850
 msgid "Invalid URL"
@@ -2904,8 +2931,8 @@ msgstr[1] "%ld שעות"
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%ld ימים"
+msgstr[1] "%ld ימים"
 
 #. Translators: the format is "X days, X hours and X minutes"
 #: ../rhythmdb/rhythmdb.c:4088
@@ -2980,9 +3007,8 @@ msgid "Create a new automatically updating playlist"
 msgstr "יצירת רשימת השמעה חדשה עם עדכון אוטומטי"
 
 #: ../shell/rb-playlist-manager.c:141
-#, fuzzy
 msgid "_Load from File..."
-msgstr "_טעינה מקובץ..."
+msgstr "_טען מקובץ..."
 
 #: ../shell/rb-playlist-manager.c:142
 msgid "Choose a playlist to be loaded"
@@ -3169,14 +3195,12 @@ msgid "Move selection to the trash"
 msgstr "כיוון מגש המערכת."
 
 #: ../shell/rb-shell-clipboard.c:150
-#, fuzzy
 msgid "Add to P_laylist"
-msgstr "_רשימת השמעה"
+msgstr "הוסף לרשימת _השמעה"
 
 #: ../shell/rb-shell-clipboard.c:151
-#, fuzzy
 msgid "_New Playlist"
-msgstr "_רשימת השמעה חדשה..."
+msgstr "רשימת השמעה _חדשה"
 
 #: ../shell/rb-shell-clipboard.c:152
 msgid "Add the selected songs to a new playlist"
@@ -3195,9 +3219,8 @@ msgid "Remove"
 msgstr "הסר"
 
 #: ../shell/rb-shell-clipboard.c:161
-#, fuzzy
 msgid "Pr_operties"
-msgstr "_מאפיינים"
+msgstr "מ_אפיינים"
 
 #: ../shell/rb-shell-clipboard.c:162 ../shell/rb-shell-clipboard.c:165
 msgid "Show information on the selected song"
@@ -3208,7 +3231,6 @@ msgid "_Properties"
 msgstr "_מאפיינים"
 
 #: ../shell/rb-shell-player.c:291
-#, fuzzy
 msgid "Pre_vious"
 msgstr "ה_קודם"
 
@@ -3252,9 +3274,8 @@ msgid "Start playback"
 msgstr "הפסקת השמעה"
 
 #: ../shell/rb-shell-player.c:311
-#, fuzzy
 msgid "Sh_uffle"
-msgstr "ערבוב"
+msgstr "ער_בוב"
 
 #: ../shell/rb-shell-player.c:312
 msgid "Play songs in a random order"
@@ -3399,7 +3420,7 @@ msgstr "_בקרה"
 
 #: ../shell/rb-shell.c:424
 msgid "_Tools"
-msgstr ""
+msgstr "_כלים"
 
 #: ../shell/rb-shell.c:425
 msgid "_Help"
@@ -3466,7 +3487,7 @@ msgstr "עריכת העדפות נגן המוזיקה"
 
 #: ../shell/rb-shell.c:448
 msgid "Plu_gins"
-msgstr ""
+msgstr "תו_ספים"
 
 #: ../shell/rb-shell.c:449
 msgid "Change and configure plugins"
@@ -3578,8 +3599,7 @@ msgstr ""
 "‏Oren Segal https://launchpad.net/~tintys\n"
 "‏Revan https://launchpad.net/~mark125\n"
 "‏Yaniv Abir https://launchpad.net/~yanivabir\n"
-"‏liatM https://launchpad.net/~liat-malul"
-"\n"
+"‏liatM https://launchpad.net/~liat-malul\n"
 "פרוייקט תרגום GNOME לעברית:\n"
 "‏http://gnome-il.berlios.de"
 
@@ -3701,9 +3721,8 @@ msgid "Loading..."
 msgstr "טוען..."
 
 #: ../shell/rb-tray-icon.c:134
-#, fuzzy
 msgid "_Show Music Player"
-msgstr "נגן המוזיקה"
+msgstr "_הצג נגן מוזיקה"
 
 #: ../shell/rb-tray-icon.c:135
 #, fuzzy
@@ -3742,13 +3761,12 @@ msgstr "אלבומים"
 #: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:155
 #: ../sources/rb-static-playlist-source.c:97
 msgid "Search albums"
-msgstr ""
+msgstr "חיפוש אלבומים"
 
 #: ../sources/rb-auto-playlist-source.c:76 ../sources/rb-browser-source.c:156
 #: ../sources/rb-static-playlist-source.c:98
-#, fuzzy
 msgid "Titles"
-msgstr "שם"
+msgstr "שמות"
 
 #: ../sources/rb-auto-playlist-source.c:76 ../sources/rb-browser-source.c:156
 #: ../sources/rb-static-playlist-source.c:98
@@ -3781,9 +3799,8 @@ msgid "Set the browser to view only this album"
 msgstr "עיון באלבום זה בלבד"
 
 #: ../sources/rb-import-errors-source.c:191
-#, fuzzy
 msgid "Import Errors"
-msgstr "ייבוא _תיקייה..."
+msgstr "שגיאות ייבוא"
 
 #: ../sources/rb-import-errors-source.c:227
 #, c-format
@@ -3816,15 +3833,15 @@ msgstr "אלבום"
 
 #: ../sources/rb-library-source.c:129
 msgid "Number - Title"
-msgstr ""
+msgstr "מספר - שם"
 
 #: ../sources/rb-library-source.c:130
 msgid "Artist - Title"
-msgstr "אומן - כותרת"
+msgstr "אומן - שם"
 
 #: ../sources/rb-library-source.c:131
 msgid "Artist - Number - Title"
-msgstr "אומן  - מספר - כותרת"
+msgstr "אומן  - מספר - שם"
 
 #: ../sources/rb-library-source.c:132
 msgid "Artist (Album) - Number - Title"
@@ -3857,14 +3874,14 @@ msgstr "נתיב לדוגמה:"
 
 #: ../sources/rb-missing-files-source.c:259
 msgid "Missing Files"
-msgstr ""
+msgstr "קבצים חסרים"
 
 #: ../sources/rb-missing-files-source.c:327
 #, c-format
 msgid "%d missing file"
 msgid_plural "%d missing files"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d קבצים חסרים"
+msgstr[1] "%d קבצים חסרים"
 
 #: ../sources/rb-play-queue-source.c:89
 msgid "Clear _Queue"
@@ -4074,9 +4091,8 @@ msgid "Library"
 msgstr "ספריה"
 
 #: ../sources/rb-source-group.c:45
-#, fuzzy
 msgid "Playlists"
-msgstr "רשימת השמעה"
+msgstr "רשימות השמעה"
 
 #: ../sources/rb-source-group.c:46
 msgid "Devices"
@@ -4137,29 +4153,25 @@ msgid "The pixbuf to render."
 msgstr "ה־Pixbuf לרנדור."
 
 #: ../widgets/rb-entry-view.c:858
-#, fuzzy, c-format
+#, c-format
 msgid "%u kbps"
-msgstr "%d קסל\"ש"
+msgstr "%u kbps"
 
 #: ../widgets/rb-entry-view.c:1091
 msgid "Track"
 msgstr "רצועה"
 
 #: ../widgets/rb-entry-view.c:1142
-#, fuzzy
 msgid "Time"
-msgstr "_זמן"
+msgstr "זמן"
 
-#: ../widgets/rb-entry-view.c:1154 ../widgets/rb-query-creator-properties.c:71
 #: ../widgets/rb-query-creator-properties.c:100
-#, fuzzy
 msgid "Year"
-msgstr "קווי"
+msgstr "שנה"
 
 #: ../widgets/rb-entry-view.c:1166
-#, fuzzy
 msgid "Quality"
-msgstr "_איכות"
+msgstr "איכות"
 
 #: ../widgets/rb-entry-view.c:1169
 #, fuzzy
@@ -4173,9 +4185,8 @@ msgstr "דירוג"
 
 #: ../widgets/rb-entry-view.c:1201 ../widgets/rb-query-creator-properties.c:75
 #: ../widgets/rb-query-creator-properties.c:99
-#, fuzzy
 msgid "Play Count"
-msgstr "מספר השמעות:"
+msgstr "מספר השמעות"
 
 #: ../widgets/rb-entry-view.c:1213
 #: ../widgets/rb-query-creator-properties.c:103
@@ -4395,9 +4406,8 @@ msgid "Create Automatic Playlist"
 msgstr "יצירת רשימת שמע אוטומטית"
 
 #: ../widgets/rb-query-creator.c:180
-#, fuzzy
 msgid "Edit Automatic Playlist"
-msgstr "יצירת רשימת שמע אוטומטית"
+msgstr "ערוך רשימת שמע אוטומטית"
 
 #. this string can only be so long, or there wont be a search entry :)
 #: ../widgets/rb-search-entry.c:115
@@ -4421,9 +4431,8 @@ msgid "On the desktop"
 msgstr "על שולחן העבודה"
 
 #: ../widgets/rb-song-info.c:1048
-#, fuzzy
 msgid "Unknown location"
-msgstr "לא ידוע"
+msgstr "מיקום לא ידוע"
 
 #~ msgid "Add to Music Library"
 #~ msgstr "הוסף לספרית מוזיקה "
