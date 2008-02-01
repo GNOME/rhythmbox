@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-12-08 10:39+0200\n"
-"PO-Revision-Date: 2007-12-08 10:40+0200\n"
+"POT-Creation-Date: 2008-02-01 13:05+0200\n"
+"PO-Revision-Date: 2008-02-01 13:07+0200\n"
 "Last-Translator: Ihar Hrachyshka <ihar.hrachyshka@gmail.com>\n"
 "Language-Team: Belarusian Latin <i18n@mova.org>\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
 "10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:472
+#: ../backends/gstreamer/rb-encoder-gst.c:476
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Chočaš nadpisać fajł \"%s\"?"
@@ -30,47 +30,41 @@ msgid "Failed to create %s element; check your installation"
 msgstr "Pamyłka stvareńnia elementu %s; pravier instalacyju"
 
 #: ../backends/gstreamer/rb-player-gst.c:767
-#, c-format
 msgid "Unknown playback error"
 msgstr "Nieviadomaja pamyłka hrańnia"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1100
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1114
-#, c-format
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1091
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1105
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Pamyłka ŭłučeńnia novaj płyni ŭ kanvejer GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1141
-#, c-format
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1132
 msgid "Failed to start new stream"
 msgstr "Pamyłka ŭruchamleńnia novaj płyni"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2718
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2806
-#, c-format
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2703
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2791
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Pamyłka stvareńnia elementu GStreamer; pravier instalacyju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2731
-#, c-format
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2716
 msgid "Failed to create audio output element; check your installation"
 msgstr "Pamyłka stvareńnia elementu aŭdyjovyjścia; pravier instalacyju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2780
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2822
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2848
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2857
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2866
-#, c-format
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2765
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2807
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2833
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2842
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2851
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Pamyłka ŭłučeńnia ŭ kanvejer GStreamer; pravier instalacyju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2957
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2945
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Pamyłka stvareńnia kanvejera GStreamer, kab vykanać %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2978
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2961
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Pamyłka pačatku vykanańnia %s"
@@ -212,7 +206,7 @@ msgstr "Struktura biblijateki"
 msgid "_Browse..."
 msgstr "_Ahladaj..."
 
-#: ../data/glade/library-prefs.glade.h:6 ../shell/rb-playlist-manager.c:151
+#: ../data/glade/library-prefs.glade.h:6 ../shell/rb-playlist-manager.c:153
 msgid "_Edit..."
 msgstr "_Redahuj..."
 
@@ -496,8 +490,8 @@ msgstr "Niadaŭna vykananyja"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:199
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1486
-#: ../shell/rb-shell-player.c:2626 ../shell/rb-shell.c:1018
-#: ../shell/rb-shell.c:2107 ../shell/rb-tray-icon.c:43
+#: ../shell/rb-shell-player.c:2641 ../shell/rb-shell.c:1029
+#: ../shell/rb-shell.c:2122 ../shell/rb-tray-icon.c:43
 msgid "Music Player"
 msgstr "Muzyčny player"
 
@@ -552,34 +546,34 @@ msgstr "%b %d %Y"
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:325 ../lib/rb-util.c:648
 #: ../lib/rb-util.c:888
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:67
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:68
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:101
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:107
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:117
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:233
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:253
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:124
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:125
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:72
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:73
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:106
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:112
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:122
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:238
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:258
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:134
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:135
 #: ../plugins/audiocd/rb-audiocd-source.c:220
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:519
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:520
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:529
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:533
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:553
 #: ../plugins/daap/rb-daap-connection.c:677
-#: ../plugins/generic-player/rb-generic-player-source.c:1101
-#: ../plugins/ipod/rb-ipod-source.c:275
+#: ../plugins/generic-player/rb-generic-player-source.c:1103
+#: ../plugins/ipod/rb-ipod-source.c:293
 #: ../plugins/iradio/rb-iradio-source.c:501
 #: ../plugins/iradio/rb-iradio-source.c:1119
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
 #: ../plugins/mtpdevice/rb-mtp-source.c:237
 #: ../podcast/rb-feed-podcast-properties-dialog.c:311
-#: ../podcast/rb-podcast-manager.c:1647
+#: ../podcast/rb-podcast-manager.c:1650
 #: ../podcast/rb-podcast-properties-dialog.c:467
 #: ../podcast/rb-podcast-properties-dialog.c:520
 #: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1237
 #: ../rhythmdb/rhythmdb-tree.c:1241 ../rhythmdb/rhythmdb-tree.c:1245
 #: ../rhythmdb/rhythmdb-tree.c:1249 ../rhythmdb/rhythmdb.c:1460
-#: ../shell/rb-shell-player.c:1515 ../shell/rb-shell.c:3023
+#: ../shell/rb-shell-player.c:1526 ../shell/rb-shell.c:3038
 #: ../sources/rb-podcast-source.c:1631 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:862 ../widgets/rb-entry-view.c:1146
 #: ../widgets/rb-entry-view.c:1158 ../widgets/rb-entry-view.c:1170
@@ -627,7 +621,6 @@ msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d z %d:%02d:%02d"
 
 #: ../metadata/rb-metadata-dbus-client.c:297
-#, c-format
 msgid "Internal GStreamer problem; file a bug"
 msgstr "Unutranaja pamyłka GStreamer; paviedam ab joj"
 
@@ -641,7 +634,6 @@ msgstr "Unutranaja pamyłka GStreamer; paviedam ab joj"
 #: ../metadata/rb-metadata-dbus-client.c:441
 #: ../metadata/rb-metadata-dbus-client.c:601
 #: ../metadata/rb-metadata-dbus-client.c:611
-#, c-format
 msgid "D-BUS communication error"
 msgstr "Pamyłka suviazi z D-BUS"
 
@@ -656,22 +648,18 @@ msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "Fajł źmiaščaje płyń typu %s, jakuju niemahčyma dekadavać"
 
 #: ../metadata/rb-metadata-gst.c:994
-#, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Pamyłka stvareńnia kryničnaha elementu; pravier instalacyju"
 
 #: ../metadata/rb-metadata-gst.c:1057
-#, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Pamyłka GStreamer: pamyłka źmianieńnia stanu"
 
 #: ../metadata/rb-metadata-gst.c:1153
-#, c-format
 msgid "Empty file"
 msgstr "Pusty fajł"
 
 #: ../metadata/rb-metadata-gst.c:1161
-#, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "Niemahčyma vaznačyć typ MIME dla fajłu"
 
@@ -681,25 +669,22 @@ msgid "Unsupported file type: %s"
 msgstr "Niepadtrymany typ fajłu: %s"
 
 #: ../metadata/rb-metadata-gst.c:1306
-#, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "Niemahčyma stvaryć elementy dla zapisu tagaŭ"
 
 #: ../metadata/rb-metadata-gst.c:1321
-#, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Skončyŭsia termin čakańnia pry akreśleńni kanvejera jak NULL"
 
 #: ../metadata/rb-metadata-gst.c:1340
-#, c-format
 msgid "File corrupted during write"
 msgstr "Fajł paškodžany padčas zapisu"
 
-#: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:1
+#: ../plugins/artdisplay/artdisplay.rb-plugin.in.h:1
 msgid "Cover art"
 msgstr "Azdoba vokładki"
 
-#: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
+#: ../plugins/artdisplay/artdisplay.rb-plugin.in.h:2
 msgid "Fetch album covers from the Internet"
 msgstr "Zahružaj vokładki albomaŭ z Internetu"
 
@@ -711,11 +696,11 @@ msgstr "Pošuk... pieraniasi siudy vokładku"
 msgid "Drop artwork here"
 msgstr "Pieraniasi siudy vokładku"
 
-#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
+#: ../plugins/audiocd/audiocd.rb-plugin.in.h:1
 msgid "Audio CD Player"
 msgstr "Player dla Aŭdyjo CD"
 
-#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:2
+#: ../plugins/audiocd/audiocd.rb-plugin.in.h:2
 msgid "Support for playing of audio CDs as music source"
 msgstr "Padtrymka vykanańnia aŭdyjo CD"
 
@@ -744,28 +729,28 @@ msgstr "<Niapravilny Unikod>"
 msgid "Track %u"
 msgstr "Ściežka %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:338
-#: ../plugins/audiocd/rb-audiocd-source.c:344
-#: ../plugins/audiocd/rb-audiocd-source.c:668
+#: ../plugins/audiocd/rb-audiocd-source.c:339
+#: ../plugins/audiocd/rb-audiocd-source.c:347
+#: ../plugins/audiocd/rb-audiocd-source.c:673
 msgid "Couldn't load Audio CD"
 msgstr "Niemahčyma zahruzić aŭdyjo CD"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:339
+#: ../plugins/audiocd/rb-audiocd-source.c:340
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox nia moža atrymać dostup da CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:345
+#: ../plugins/audiocd/rb-audiocd-source.c:348
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox nia moža pračytać źviestki CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:446
+#: ../plugins/audiocd/rb-audiocd-source.c:450
 #: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1102
 #: ../widgets/rb-query-creator-properties.c:67
 #: ../widgets/rb-query-creator-properties.c:97
 msgid "Title"
 msgstr "Nazva"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:453
+#: ../plugins/audiocd/rb-audiocd-source.c:457
 #: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1112
 #: ../widgets/rb-library-browser.c:109
 #: ../widgets/rb-query-creator-properties.c:68
@@ -773,12 +758,11 @@ msgstr "Nazva"
 msgid "Artist"
 msgstr "Vykanaŭca"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:669
+#: ../plugins/audiocd/rb-audiocd-source.c:674
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox nia moža atrymać dostup da pryvodu CD."
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:116
-#, c-format
 msgid "Cannot create MusicBrainz client"
 msgstr "Niemahčyma stvaryć klijenta MusicBrainz"
 
@@ -804,7 +788,6 @@ msgid "Track %d"
 msgstr "Ściežka %d"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:283
-#, c-format
 msgid ""
 "MusicBrainz metadata object is not valid. This is bad, check your console "
 "for errors."
@@ -839,16 +822,15 @@ msgid "Incomplete metadata for this CD"
 msgstr "Niapoŭnyja metaźviestki dla hetaha CD"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:707
-#, c-format
 msgid "Could not create CD lookup thread"
 msgstr "Niemahčyma stvaryć nić pošuku CD"
 
-#: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
+#: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:521
 msgid "Last.fm"
 msgstr "Last.fm"
 
-#: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:2
+#: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:2
 msgid "Submits song information to last.fm and plays last.fm radio streams"
 msgstr ""
 "Dasyłaje źviestki ab pieśniach na last.fm i hraje radyjopłyni z last.fm"
@@ -882,9 +864,9 @@ msgid "Last.fm Profile"
 msgstr "Profil Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1094
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1115
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../rhythmdb/rhythmdb.c:3141 ../widgets/rb-entry-view.c:785
+#: ../rhythmdb/rhythmdb.c:3147 ../widgets/rb-entry-view.c:785
 #: ../widgets/rb-entry-view.c:1204 ../widgets/rb-entry-view.c:1217
 #: ../widgets/rb-song-info.c:1209
 msgid "Never"
@@ -926,44 +908,44 @@ msgstr "http://last.fm/group/Rhythmbox"
 msgid "Audioscrobbler preferences"
 msgstr "Nałady dla Audioscrobbler"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1117
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1138
 msgid "OK"
 msgstr "OK"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1120
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1141
 msgid "Logging in"
 msgstr "Uvachod"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1123
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1144
 msgid "Request failed"
 msgstr "Pamyłka zapytu"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1126
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1147
 msgid "Incorrect username"
 msgstr "Niapravilnaja nazva karystalnika"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1129
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1150
 msgid "Incorrect password"
 msgstr "Niapravilny parol"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1132
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1153
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:583
 msgid "Handshake failed"
 msgstr "Pamyłka pocisku ruki"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1135
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1156
 msgid "Client update required"
 msgstr "Vymahaje aktualizacyi klijenta"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1138
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1159
 msgid "Track submission failed"
 msgstr "Pamyłka dasyłańnia ściežki"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1141
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1162
 msgid "Queue is too long"
 msgstr "Čarha nadta daŭhaja"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1144
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1165
 msgid "Track submission failed too many times"
 msgstr "Pamyłka dasyłańnia ściežki adbyłasia nadta šmat razoŭ"
 
@@ -1100,11 +1082,11 @@ msgstr "Radyjo dla %s, %s"
 msgid "%s Group Radio"
 msgstr "Hrupavoje radyjo %s"
 
-#: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:1
+#: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:1
 msgid "Audio CD Recorder"
 msgstr "Zapis aŭdyjo CD"
 
-#: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:2
+#: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:2
 msgid "Support for recording audio CDs from playlists"
 msgstr "Padtrymka zapisu aŭdyjo CD sa śpisaŭ"
 
@@ -1121,7 +1103,6 @@ msgid "Unable to create audio CD"
 msgstr "Niemahčyma stvaryć aŭdyjo CD"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:429
-#, c-format
 msgid "Failed to create pipeline"
 msgstr "Pamyłka stvareńnia kanvejera"
 
@@ -1140,17 +1121,14 @@ msgid "Could not get current track position"
 msgstr "Niemahčyma atrymać źviestki ab pałažeńni dziejnaje ściežki"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:648
-#, c-format
 msgid "Could not start pipeline playing"
 msgstr "Niemahčyma pačać vykanańnie kanvejera"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:659
-#, c-format
 msgid "Could not pause playback"
 msgstr "Niemahčyma prypynić vykanańnie"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:856
-#, c-format
 msgid "Cannot find drive"
 msgstr "Niemahčyma znajści pryvod"
 
@@ -1166,7 +1144,6 @@ msgstr "Pryvod %s nie źjaŭlajecca zapisvalnym"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1094
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1287
-#, c-format
 msgid "No writable drives found."
 msgstr "Zapisvalnyja pryvody nia znojdzienyja."
 
@@ -1176,7 +1153,6 @@ msgid "Could not get track time for file: %s"
 msgstr "Niemahčyma atrymać źviestki ab praciahłaści ściežki dla fajłu: %s"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1296
-#, c-format
 msgid "Could not determine audio track durations."
 msgstr "Niemahčyma vyznačyć praciahłaść aŭdyjo ściežak."
 
@@ -1468,12 +1444,10 @@ msgstr "Stvaryć aŭdyjo CD z \"%s\"?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1568
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1586
-#, c-format
 msgid "Unable to build an audio track list."
 msgstr "Niemahčyma stvaryć śpis aŭdyjo ściežak."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1596
-#, c-format
 msgid "This playlist is too long to write to an audio CD."
 msgstr "Hety śpis nadta daŭhi, kab zapisvać jaho na aŭdyjo CD."
 
@@ -1535,7 +1509,7 @@ msgstr "Zapišy dysk _na:"
 msgid "_Make multiple copies"
 msgstr "_Zrabi niekalki kopij"
 
-#: ../plugins/coherence/coherence.rb-plugin.desktop.in.h:1
+#: ../plugins/coherence/coherence.rb-plugin.in.h:1
 msgid ""
 "Adds support for playing media from, and sending media to UPnP/DLNA network "
 "devices"
@@ -1543,15 +1517,15 @@ msgstr ""
 "Dadaje padtrymku vykanańnia medyjaŭ ź sietkavych pryładaŭ UPnP/DLNA i ich "
 "dasyłańnie tudy"
 
-#: ../plugins/coherence/coherence.rb-plugin.desktop.in.h:2
+#: ../plugins/coherence/coherence.rb-plugin.in.h:2
 msgid "UPnP sharing support"
 msgstr "Padtrymka supolnaha UPnP"
 
-#: ../plugins/daap/daap.rb-plugin.desktop.in.h:1
+#: ../plugins/daap/daap.rb-plugin.in.h:1
 msgid "DAAP Music Sharing"
 msgstr "Supolnaja muzyka DAAP"
 
-#: ../plugins/daap/daap.rb-plugin.desktop.in.h:2
+#: ../plugins/daap/daap.rb-plugin.in.h:2
 msgid "Share music and play shared music on your local network"
 msgstr ""
 "Davaj supolny dostup da muzyki ŭ lakalnaj sietcy i vykonvaj takuju muzyku"
@@ -1644,8 +1618,8 @@ msgid "Disconnect from DAAP share"
 msgstr "Adłučy ad resursu DAAP"
 
 #: ../plugins/daap/rb-daap-plugin.c:112
-msgid "Connect to DAAP share"
-msgstr "Spałučy z resursam DAAP"
+msgid "Connect to _DAAP share"
+msgstr "Spałučy z resursam _DAAP"
 
 #: ../plugins/daap/rb-daap-plugin.c:113
 msgid "Connect to a new DAAP share"
@@ -1699,12 +1673,12 @@ msgstr "Atrymańnie piesień z muzyčnaha resursu"
 msgid "Connection to %s:%d refused."
 msgstr "Spałučeńnie z %s:%d admoŭlena."
 
-#: ../plugins/fmradio/fmradio.rb-plugin.desktop.in.h:1
+#: ../plugins/fmradio/fmradio.rb-plugin.in.h:1
 #: ../plugins/fmradio/rb-fm-radio-source.c:195
 msgid "FM Radio"
 msgstr "Radyjo FM"
 
-#: ../plugins/fmradio/fmradio.rb-plugin.desktop.in.h:2
+#: ../plugins/fmradio/fmradio.rb-plugin.in.h:2
 msgid "Support for FM radio broadcasting services"
 msgstr "Padtrymka tranślavanych stancyj FM"
 
@@ -1724,11 +1698,11 @@ msgstr "Novaja FM radyjostancyja"
 msgid "Frequency of radio station"
 msgstr "Častata radyjostancyi"
 
-#: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:1
+#: ../plugins/generic-player/generic-player.rb-plugin.in.h:1
 msgid "Portable Players"
 msgstr "Pieranosnyja playery"
 
-#: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:2
+#: ../plugins/generic-player/generic-player.rb-plugin.in.h:2
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr ""
 "Padtrymka standartnych aparatnych aŭdyjo playeraŭ (a taksama PSP i Nokia 770"
@@ -1749,21 +1723,21 @@ msgstr "Vydal śpis"
 msgid "Delete this playlist"
 msgstr "Vydal hety śpis"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:842
+#: ../plugins/generic-player/rb-generic-player-source.c:844
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Impartavańnie (%d/%d)"
 
-#: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:1
+#: ../plugins/ipod/ipod.rb-plugin.in.h:1
 msgid "Portable Players - iPod"
 msgstr "Pieranosnyja playery - iPod"
 
-#: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:2
+#: ../plugins/ipod/ipod.rb-plugin.in.h:2
 msgid "Support for Apple iPod devices (show the content, play from device)"
 msgstr "Padtrymka pryładaŭ Apple iPod (pakazvaj źmieściva, hraj z pryłady)"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:86
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:102 ../shell/rb-playlist-manager.c:145
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:102 ../shell/rb-playlist-manager.c:147
 msgid "_Rename"
 msgstr "_Źmiani nazvu"
 
@@ -1771,15 +1745,15 @@ msgstr "_Źmiani nazvu"
 msgid "Rename iPod"
 msgstr "Źmiani nazvu iPodu"
 
-#: ../plugins/ipod/rb-ipod-source.c:1179 ../sources/rb-podcast-source.c:806
+#: ../plugins/ipod/rb-ipod-source.c:1285 ../sources/rb-podcast-source.c:806
 msgid "Podcasts"
 msgstr "Podcasty"
 
-#: ../plugins/iradio/iradio.rb-plugin.desktop.in.h:1
+#: ../plugins/iradio/iradio.rb-plugin.in.h:1
 msgid "Internet Radio"
 msgstr "Internet radyjo"
 
-#: ../plugins/iradio/iradio.rb-plugin.desktop.in.h:2
+#: ../plugins/iradio/iradio.rb-plugin.in.h:2
 msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "Padtrymka tranślavanych praz Internet pasłuh"
 
@@ -1903,12 +1877,12 @@ msgstr ""
 "Albomam vydajecca rejtynh zhodna z acenami naviednikaŭ.\n"
 "Kali jany ŭpadabali vykanaŭcu, jany mohuć materyjalna addziačyć jamu."
 
-#: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:1
+#: ../plugins/jamendo/jamendo.rb-plugin.in.h:1
 msgid ""
 "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
 msgstr "Dadaje padtrymku vykanańnia j zahruzki albomaŭ z Jamendo"
 
-#: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:2
+#: ../plugins/jamendo/jamendo.rb-plugin.in.h:2
 #: ../plugins/jamendo/jamendo/JamendoSource.py:52
 msgid "Jamendo"
 msgstr "Jamendo"
@@ -1999,11 +1973,11 @@ msgstr ""
 msgid "L_ocation:"
 msgstr "_Pałažeńnie:"
 
-#: ../plugins/lirc/lirc.rb-plugin.desktop.in.h:1
+#: ../plugins/lirc/lirc.rb-plugin.in.h:1
 msgid "Control Rhythmbox using an infrared remote control"
 msgstr "Kiruj prahramaj Rhythmbox praź infračyrvony port"
 
-#: ../plugins/lirc/lirc.rb-plugin.desktop.in.h:2
+#: ../plugins/lirc/lirc.rb-plugin.in.h:2
 msgid "LIRC "
 msgstr "LIRC "
 
@@ -2032,11 +2006,11 @@ msgstr "Pakažy tekst hranaj pieśni"
 msgid "Choose lyrics folder..."
 msgstr "Abiary kataloh dla tekstaŭ..."
 
-#: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:1
+#: ../plugins/lyrics/lyrics.rb-plugin.in.h:1
 msgid "Fetch song lyrics from the Internet"
 msgstr "Zahružaj tekst pieśni z Internetu"
 
-#: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:2
+#: ../plugins/lyrics/lyrics.rb-plugin.in.h:2
 msgid "Song Lyrics"
 msgstr "Tekst pieśni"
 
@@ -2460,7 +2434,7 @@ msgstr "_Kuplaj"
 msgid "_Remember my credit card details"
 msgstr "_Zapomni detali ab majoj kredytnaj kartcy"
 
-#: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:1
+#: ../plugins/magnatune/magnatune.rb-plugin.in.h:1
 msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
 "online music store"
@@ -2468,7 +2442,7 @@ msgstr ""
 "Dadaje padtrymku sieciŭnaj muzyčnaj kramy Magnatune, kab słuchać pieśni j "
 "kuplać ich"
 
-#: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:2
+#: ../plugins/magnatune/magnatune.rb-plugin.in.h:2
 msgid "Magnatune Store"
 msgstr "Krama Magnatune"
 
@@ -2568,19 +2542,19 @@ msgstr "Anuluj zahruzki"
 msgid "Stop downloading purchased albums"
 msgstr "Spyni zahruzku kuplenych albomaŭ"
 
-#: ../plugins/mmkeys/mmkeys.rb-plugin.desktop.in.h:1
+#: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
 msgstr "Kiruj prahramaj Rhythmbox z dapamohaj klavijaturnych skarotaŭ"
 
-#: ../plugins/mmkeys/mmkeys.rb-plugin.desktop.in.h:2
+#: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:2
 msgid "Media Player Keys"
 msgstr "Klavišy medyja playera"
 
-#: ../plugins/mtpdevice/mtpdevice.rb-plugin.desktop.in.h:1
+#: ../plugins/mtpdevice/mtpdevice.rb-plugin.in.h:1
 msgid "Portable Players - MTP"
 msgstr "Pieranosnyja playery - MTP"
 
-#: ../plugins/mtpdevice/mtpdevice.rb-plugin.desktop.in.h:2
+#: ../plugins/mtpdevice/mtpdevice.rb-plugin.in.h:2
 msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr ""
 "Padtrymka pryładaŭ MTP (pakazvaj źmieściva, pieradavaj fajły, hraj z pryłady)"
@@ -2598,11 +2572,15 @@ msgstr "Vysuń pryładu MTP"
 msgid "Rename MTP-device"
 msgstr "Źmiani nazvu pryłady MTP"
 
-#: ../plugins/power-manager/power-manager.rb-plugin.desktop.in.h:1
+#: ../plugins/mtpdevice/rb-mtp-source.c:355
+msgid "Digital Audio Player"
+msgstr "Ličbavy hukavy player"
+
+#: ../plugins/power-manager/power-manager.rb-plugin.in.h:1
 msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr "Zabarani kiraŭniku enerhii usyplać kamputar pry hrańni"
 
-#: ../plugins/power-manager/power-manager.rb-plugin.desktop.in.h:2
+#: ../plugins/power-manager/power-manager.rb-plugin.in.h:2
 msgid "Power Manager"
 msgstr "Kiraŭnik enerhii"
 
@@ -2631,11 +2609,11 @@ msgid "You can access the main window through the 'shell' variable :"
 msgstr "Ty možaš atrymać dostup da hałoŭnaha vakna praź źmiennuju \"shell\":"
 
 #. ex:noet:ts=8:
-#: ../plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in.h:1
+#: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:1
 msgid "Interactive python console"
 msgstr "Interaktyŭnaja kansol python"
 
-#: ../plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in.h:2
+#: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:2
 msgid "Python Console"
 msgstr "Kansol Python"
 
@@ -2647,11 +2625,11 @@ msgstr "Plugin"
 msgid "Enabled"
 msgstr "Uklučany"
 
-#: ../plugins/rb-plugins-engine.c:535
+#: ../plugins/rb-plugins-engine.c:538
 msgid "Plugin Error"
 msgstr "Pamyłka plugina"
 
-#: ../plugins/rb-plugins-engine.c:535
+#: ../plugins/rb-plugins-engine.c:538
 #, c-format
 msgid "Unable to activate plugin %s"
 msgstr "Niemahčyma ŭklučyć plugin %s"
@@ -2660,36 +2638,35 @@ msgstr "Niemahčyma ŭklučyć plugin %s"
 msgid "Python Source"
 msgstr "Krynica Python"
 
-#: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:1
+#: ../plugins/sample-python/sample-python.rb-plugin.in.h:1
 msgid "A sample plugin in Python with no features"
 msgstr "Uzorny plugin na Pythonie biaz zdolnaściaŭ"
 
-#: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:2
+#: ../plugins/sample-python/sample-python.rb-plugin.in.h:2
 msgid "Python Sample Plugin"
 msgstr "Uzorny plugin Python"
 
 #: ../plugins/sample/rb-sample-plugin.c:115
 #: ../plugins/sample/rb-sample-plugin.c:122
-#: ../plugins/sample/sample.rb-plugin.desktop.in.h:2
+#: ../plugins/sample/sample.rb-plugin.in.h:2
 msgid "Sample Plugin"
 msgstr "Uzorny plugin"
 
-#: ../plugins/sample/sample.rb-plugin.desktop.in.h:1
+#: ../plugins/sample/sample.rb-plugin.in.h:1
 msgid "A sample plugin in C with no features"
 msgstr "Uzorny plugin na C biaz zdolnaściaŭ"
 
-#: ../plugins/sample-vala/sample-vala.rb-plugin.desktop.in.h:1
+#: ../plugins/sample-vala/sample-vala.rb-plugin.in.h:1
 msgid "A sample plugin in Vala with no features"
 msgstr "Uzorny plugin na Vala biaz zdolnaściaŭ"
 
-#: ../plugins/sample-vala/sample-vala.rb-plugin.desktop.in.h:2
+#: ../plugins/sample-vala/sample-vala.rb-plugin.in.h:2
 msgid "Vala Sample Plugin"
 msgstr "Uzorny plugin Vala"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:222
-#: ../plugins/visualizer/visualizer.rb-plugin.desktop.in.h:2
-msgid "Visualization"
-msgstr "Vizualizacyja"
+msgid "_Visualization"
+msgstr "_Vizualizacyja"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:223
 msgid "Start or stop visualization"
@@ -2728,12 +2705,10 @@ msgid "Window"
 msgstr "Vakno"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:706
-#, c-format
 msgid "Unable to start video output"
 msgstr "Niemahčyma pačać videavyvad"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:741
-#, c-format
 msgid "Failed to link new visual effect into the GStreamer pipeline"
 msgstr "Pamyłka ŭłučeńnia novaha vizualnaha efektu ŭ kanvejer GStreamer"
 
@@ -2777,25 +2752,29 @@ msgstr "Ekran:"
 msgid "Visualization:"
 msgstr "Vizualizacyja:"
 
-#: ../plugins/visualizer/visualizer.rb-plugin.desktop.in.h:1
+#: ../plugins/visualizer/visualizer.rb-plugin.in.h:1
 msgid "Displays visualizations"
 msgstr "Pakazvaje vizualizacyi"
 
-#: ../podcast/rb-podcast-manager.c:847
+#: ../plugins/visualizer/visualizer.rb-plugin.in.h:2
+msgid "Visualization"
+msgstr "Vizualizacyja"
+
+#: ../podcast/rb-podcast-manager.c:850
 msgid "Invalid URL"
 msgstr "Niapravilny adras"
 
-#: ../podcast/rb-podcast-manager.c:848
+#: ../podcast/rb-podcast-manager.c:851
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "Adras \"%s\" niapravilny, pravier jaho."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:856
+#: ../podcast/rb-podcast-manager.c:859
 msgid "URL already added"
 msgstr "Adras užo dadadzieny"
 
-#: ../podcast/rb-podcast-manager.c:857
+#: ../podcast/rb-podcast-manager.c:860
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2804,12 +2783,12 @@ msgstr ""
 "Adras \"%s\" užo byŭ dadadzieny jak radyjostancyja. Kali heta kanał "
 "podcastu, vydal radyjostancyju."
 
-#: ../podcast/rb-podcast-manager.c:898
+#: ../podcast/rb-podcast-manager.c:901
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgstr "Pry dadańni hetaha podcastu ŭźnikła prablema. Pravier adras: %s"
 
-#: ../podcast/rb-podcast-manager.c:986
+#: ../podcast/rb-podcast-manager.c:989
 msgid "Podcast"
 msgstr "Podcast"
 
@@ -2917,12 +2896,11 @@ msgstr "Abiazhuč vykanańnie"
 msgid "Unmute playback"
 msgstr "Ahuč vykanańnie"
 
-#: ../remote/dbus/rb-client.c:395 ../shell/rb-shell.c:2082
+#: ../remote/dbus/rb-client.c:395 ../shell/rb-shell.c:2097
 msgid "Not playing"
 msgstr "Nie vykonvajecca"
 
 #: ../remote/dbus/rb-client.c:616
-#, c-format
 msgid "Playback is muted.\n"
 msgstr "Vykanańnie abiazhučana.\n"
 
@@ -2944,7 +2922,6 @@ msgid "All"
 msgstr "Usie"
 
 #: ../rhythmdb/rhythmdb-tree.c:392
-#, c-format
 msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
 "rhythmbox cannot read the database."
@@ -2961,15 +2938,15 @@ msgstr "Niemahčyma atrymać dostup da %s: %s"
 msgid "<invalid filename>"
 msgstr "<niapravilnaja nazva fajłu>"
 
-#: ../rhythmdb/rhythmdb.c:1860
+#: ../rhythmdb/rhythmdb.c:1863
 msgid "invalid unicode in error message"
 msgstr "niapravilny unikod u paviedamleńni pamyłki"
 
-#: ../rhythmdb/rhythmdb.c:2630
+#: ../rhythmdb/rhythmdb.c:2636
 msgid "Could not load the music database"
 msgstr "Niemahčyma zahruzić muzyčnuju bazu źviestak"
 
-#: ../rhythmdb/rhythmdb.c:4079
+#: ../rhythmdb/rhythmdb.c:4085
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -2977,7 +2954,7 @@ msgstr[0] "%ld chvilina"
 msgstr[1] "%ld chviliny"
 msgstr[2] "%ld chvilin"
 
-#: ../rhythmdb/rhythmdb.c:4080
+#: ../rhythmdb/rhythmdb.c:4086
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -2985,7 +2962,7 @@ msgstr[0] "%ld hadzina"
 msgstr[1] "%ld hadziny"
 msgstr[2] "%ld hadzin"
 
-#: ../rhythmdb/rhythmdb.c:4081
+#: ../rhythmdb/rhythmdb.c:4087
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -2994,7 +2971,7 @@ msgstr[1] "%ld dni"
 msgstr[2] "%ld dzion"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4087
+#: ../rhythmdb/rhythmdb.c:4093
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s i %s"
@@ -3002,8 +2979,8 @@ msgstr "%s, %s i %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4093 ../rhythmdb/rhythmdb.c:4101
-#: ../rhythmdb/rhythmdb.c:4112
+#: ../rhythmdb/rhythmdb.c:4099 ../rhythmdb/rhythmdb.c:4107
+#: ../rhythmdb/rhythmdb.c:4118
 #, c-format
 msgid "%s and %s"
 msgstr "%s i %s"
@@ -3045,114 +3022,122 @@ msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
 #. Submenu of Music
-#: ../shell/rb-playlist-manager.c:131
+#: ../shell/rb-playlist-manager.c:133
 msgid "_Playlist"
 msgstr "_Śpis"
 
-#: ../shell/rb-playlist-manager.c:133
+#: ../shell/rb-playlist-manager.c:135
 msgid "_New Playlist..."
 msgstr "_Novy śpis..."
 
-#: ../shell/rb-playlist-manager.c:134
+#: ../shell/rb-playlist-manager.c:136
 msgid "Create a new playlist"
 msgstr "Stvary novy śpis"
 
-#: ../shell/rb-playlist-manager.c:136
+#: ../shell/rb-playlist-manager.c:138
 msgid "New _Automatic Playlist..."
 msgstr "Novy _aŭtamatyčny śpis..."
 
-#: ../shell/rb-playlist-manager.c:137
+#: ../shell/rb-playlist-manager.c:139
 msgid "Create a new automatically updating playlist"
 msgstr "Stvary novy aŭtamatyčna aktualizavany śpis"
 
-#: ../shell/rb-playlist-manager.c:139
+#: ../shell/rb-playlist-manager.c:141
 msgid "_Load from File..."
 msgstr "_Pračytaj z fajłu..."
 
-#: ../shell/rb-playlist-manager.c:140
+#: ../shell/rb-playlist-manager.c:142
 msgid "Choose a playlist to be loaded"
 msgstr "Abiary śpis dla zahruzki"
 
-#: ../shell/rb-playlist-manager.c:142
+#: ../shell/rb-playlist-manager.c:144
 msgid "_Save to File..."
 msgstr "_Zapišy ŭ fajł..."
 
-#: ../shell/rb-playlist-manager.c:143
+#: ../shell/rb-playlist-manager.c:145
 msgid "Save a playlist to a file"
 msgstr "Zapišy śpis u fajł"
 
-#: ../shell/rb-playlist-manager.c:146
+#: ../shell/rb-playlist-manager.c:148
 msgid "Rename playlist"
 msgstr "Źmiani nazvu śpisu"
 
-#: ../shell/rb-playlist-manager.c:148
+#: ../shell/rb-playlist-manager.c:150
 msgid "_Delete"
 msgstr "_Vydal"
 
-#: ../shell/rb-playlist-manager.c:149
+#: ../shell/rb-playlist-manager.c:151
 msgid "Delete playlist"
 msgstr "Vydal śpis"
 
-#: ../shell/rb-playlist-manager.c:152
+#: ../shell/rb-playlist-manager.c:154
 msgid "Change this automatic playlist"
 msgstr "Źmiani hety aŭtamatyčny śpis"
 
-#: ../shell/rb-playlist-manager.c:154
+#: ../shell/rb-playlist-manager.c:156
 msgid "_Queue All Tracks"
 msgstr "_Dadaj u čarhu ŭsie ściežki"
 
-#: ../shell/rb-playlist-manager.c:155
+#: ../shell/rb-playlist-manager.c:157
 msgid "Add all tracks in this playlist to the queue"
 msgstr "Dadaj usie ściežki z hetaha śpisu ŭ čarhu"
 
-#: ../shell/rb-playlist-manager.c:552
+#: ../shell/rb-playlist-manager.c:159
+msgid "_Shuffle Playlist"
+msgstr "_Tasuj śpis"
+
+#: ../shell/rb-playlist-manager.c:160
+msgid "Shuffle the tracks in this playlist"
+msgstr "Tasuj pieśni ŭ hetym śpisie"
+
+#: ../shell/rb-playlist-manager.c:563
 msgid "Unnamed playlist"
 msgstr "Nienazvany śpis"
 
-#: ../shell/rb-playlist-manager.c:615
+#: ../shell/rb-playlist-manager.c:626
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "Fajł śpisu moža mieć nieviadomy farmat ci być paškodžanym."
 
-#: ../shell/rb-playlist-manager.c:1031
+#: ../shell/rb-playlist-manager.c:1042
 msgid "Untitled Playlist"
 msgstr "Bieznazoŭny śpis"
 
-#: ../shell/rb-playlist-manager.c:1292
+#: ../shell/rb-playlist-manager.c:1315
 msgid "Couldn't read playlist"
 msgstr "Niemahčyma pračytać śpis"
 
-#: ../shell/rb-playlist-manager.c:1307
+#: ../shell/rb-playlist-manager.c:1330
 msgid "Load Playlist"
 msgstr "Zahruzi śpis"
 
-#: ../shell/rb-playlist-manager.c:1328
+#: ../shell/rb-playlist-manager.c:1351
 msgid "MPEG Version 3.0 URL"
 msgstr "Adras MPEG versii 3.0"
 
-#: ../shell/rb-playlist-manager.c:1329
+#: ../shell/rb-playlist-manager.c:1352
 msgid "Shoutcast playlist"
 msgstr "Tranśluj śpis"
 
-#: ../shell/rb-playlist-manager.c:1374 ../sources/rb-playlist-source.c:549
+#: ../shell/rb-playlist-manager.c:1397 ../sources/rb-playlist-source.c:549
 msgid "Couldn't save playlist"
 msgstr "Niemahčyma zapisać śpis"
 
-#: ../shell/rb-playlist-manager.c:1374
+#: ../shell/rb-playlist-manager.c:1397
 msgid "Unsupported file extension given."
 msgstr "Padadzienaje niepadtrymanaje pašyreńnie fajłu."
 
-#: ../shell/rb-playlist-manager.c:1661
+#: ../shell/rb-playlist-manager.c:1684
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "Śpis %s užo isnuje"
 
-#: ../shell/rb-playlist-manager.c:1691 ../shell/rb-playlist-manager.c:1724
-#: ../shell/rb-playlist-manager.c:1764 ../shell/rb-playlist-manager.c:1807
+#: ../shell/rb-playlist-manager.c:1714 ../shell/rb-playlist-manager.c:1747
+#: ../shell/rb-playlist-manager.c:1787 ../shell/rb-playlist-manager.c:1830
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Nieviadomy śpis: %s"
 
-#: ../shell/rb-playlist-manager.c:1732 ../shell/rb-playlist-manager.c:1772
+#: ../shell/rb-playlist-manager.c:1755 ../shell/rb-playlist-manager.c:1795
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "Śpis %s źjaŭlajecca aŭtamatyčnym"
@@ -3261,162 +3246,164 @@ msgstr "Dadaj zaznačanyja pieśni da čarhi vykanańnia"
 msgid "Remove"
 msgstr "Vydal"
 
-#: ../shell/rb-shell-clipboard.c:161 ../shell/rb-shell-clipboard.c:164
-#: ../sources/rb-podcast-source.c:294
-msgid "_Properties"
+#: ../shell/rb-shell-clipboard.c:161
+msgid "Pr_operties"
 msgstr "_Ułaścivaści"
 
 #: ../shell/rb-shell-clipboard.c:162 ../shell/rb-shell-clipboard.c:165
 msgid "Show information on the selected song"
 msgstr "Pakažy źviestki ab zaznačanaj pieśni"
 
-#: ../shell/rb-shell-player.c:290
-msgid "P_revious"
-msgstr "_Papiaredniaja"
+#: ../shell/rb-shell-clipboard.c:164 ../sources/rb-podcast-source.c:294
+msgid "_Properties"
+msgstr "_Ułaścivaści"
 
 #: ../shell/rb-shell-player.c:291
+msgid "Pre_vious"
+msgstr "_Papiaredniaja"
+
+#: ../shell/rb-shell-player.c:292
 msgid "Start playing the previous song"
 msgstr "Pačni hrać papiaredniuju pieśniu"
 
-#: ../shell/rb-shell-player.c:293
+#: ../shell/rb-shell-player.c:294
 msgid "_Next"
 msgstr "_Nastupnaja"
 
-#: ../shell/rb-shell-player.c:294
+#: ../shell/rb-shell-player.c:295
 msgid "Start playing the next song"
 msgstr "Pačni hrać nastupnuju pieśniu"
 
-#: ../shell/rb-shell-player.c:296
+#: ../shell/rb-shell-player.c:297
 msgid "_Increase Volume"
 msgstr "Pa_vialič hučnaść"
 
-#: ../shell/rb-shell-player.c:297
+#: ../shell/rb-shell-player.c:298
 msgid "Increase playback volume"
 msgstr "Pavialič hučnaść vykanańnia"
 
-#: ../shell/rb-shell-player.c:299
+#: ../shell/rb-shell-player.c:300
 msgid "_Decrease Volume"
 msgstr "Pa_mienš hučnaść"
 
-#: ../shell/rb-shell-player.c:300
+#: ../shell/rb-shell-player.c:301
 msgid "Decrease playback volume"
 msgstr "Pamienš hučnaść vykanańnia"
 
-#: ../shell/rb-shell-player.c:307
+#: ../shell/rb-shell-player.c:308
 msgid "_Play"
 msgstr "_Hraj"
 
-#: ../shell/rb-shell-player.c:308 ../shell/rb-shell-player.c:3346
+#: ../shell/rb-shell-player.c:309 ../shell/rb-shell-player.c:3372
 msgid "Start playback"
 msgstr "Pačni vykanańnie"
 
-#: ../shell/rb-shell-player.c:310
+#: ../shell/rb-shell-player.c:311
 msgid "Sh_uffle"
 msgstr "_Tasuj"
 
-#: ../shell/rb-shell-player.c:311
+#: ../shell/rb-shell-player.c:312
 msgid "Play songs in a random order"
 msgstr "Hraj pieśni ŭ advolnym paradku"
 
-#: ../shell/rb-shell-player.c:313
+#: ../shell/rb-shell-player.c:314
 msgid "_Repeat"
 msgstr "_Paŭtaraj"
 
-#: ../shell/rb-shell-player.c:314
+#: ../shell/rb-shell-player.c:315
 msgid "Play first song again after all songs are played"
 msgstr "Znoŭ hraj pieršuju pieśniu paśla zakančeńnia ŭsich pieśniaŭ"
 
-#: ../shell/rb-shell-player.c:316
+#: ../shell/rb-shell-player.c:317
 msgid "_Song Position Slider"
 msgstr "_Paŭzunok pałažeńnia pieśni"
 
-#: ../shell/rb-shell-player.c:317
+#: ../shell/rb-shell-player.c:318
 msgid "Change the visibility of the song position slider"
 msgstr "Źmiani bačnaść paŭzunka pałažeńnia pieśni"
 
-#: ../shell/rb-shell-player.c:714
+#: ../shell/rb-shell-player.c:715
 msgid "Stream error"
 msgstr "Pamyłka płyni"
 
-#: ../shell/rb-shell-player.c:715
+#: ../shell/rb-shell-player.c:716
 msgid "Unexpected end of stream!"
 msgstr "Niečakany kaniec płyni!"
 
-#: ../shell/rb-shell-player.c:808
+#: ../shell/rb-shell-player.c:821
 msgid "Linear"
 msgstr "Paśladoŭny"
 
-#: ../shell/rb-shell-player.c:810
+#: ../shell/rb-shell-player.c:823
 msgid "Linear looping"
 msgstr "Paśladoŭny cykl"
 
-#: ../shell/rb-shell-player.c:812
+#: ../shell/rb-shell-player.c:825
 msgid "Shuffle"
 msgstr "Tasuj"
 
-#: ../shell/rb-shell-player.c:814
+#: ../shell/rb-shell-player.c:827
 msgid "Random with equal weights"
 msgstr "Vypadkova z roŭnaj vahoju "
 
-#: ../shell/rb-shell-player.c:816
+#: ../shell/rb-shell-player.c:829
 msgid "Random by time since last play"
 msgstr "Vypadkova pa časie ad apošniaha vykanańnia"
 
-#: ../shell/rb-shell-player.c:818
+#: ../shell/rb-shell-player.c:831
 msgid "Random by rating"
 msgstr "Vypadkova pa rejtynhu"
 
-#: ../shell/rb-shell-player.c:820
+#: ../shell/rb-shell-player.c:833
 msgid "Random by time since last play and rating"
 msgstr "Vypadkova pa časie ad apošniaha vykanańnia j rejtynhu"
 
-#: ../shell/rb-shell-player.c:822
+#: ../shell/rb-shell-player.c:835
 msgid "Linear, removing entries once played"
 msgstr "Paśladoŭna, vydalajučy ściežki paśla vykanańnia"
 
-#: ../shell/rb-shell-player.c:832
+#: ../shell/rb-shell-player.c:845
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Pamyłka stvareńnia playera: %s"
 
-#: ../shell/rb-shell-player.c:1333
-#, c-format
+#: ../shell/rb-shell-player.c:1346
 msgid "Playlist was empty"
 msgstr "Śpis byŭ pustym"
 
-#: ../shell/rb-shell-player.c:1792
-#, c-format
+#: ../shell/rb-shell-player.c:1804
 msgid "Not currently playing"
 msgstr "Dziejna nie vykonvajecca"
 
-#: ../shell/rb-shell-player.c:1830
-#, c-format
+#: ../shell/rb-shell-player.c:1842
 msgid "No previous song"
 msgstr "Niama papiaredniaj pieśni"
 
-#: ../shell/rb-shell-player.c:1907
-#, c-format
+#: ../shell/rb-shell-player.c:1919
 msgid "No next song"
 msgstr "Niama nastupnaj pieśni"
 
-#: ../shell/rb-shell-player.c:2019 ../shell/rb-shell-player.c:2991
+#: ../shell/rb-shell-player.c:2034 ../shell/rb-shell-player.c:3017
 msgid "Couldn't start playback"
 msgstr "Niemahčyma pačać vykanańnie"
 
-#: ../shell/rb-shell-player.c:2822
+#: ../shell/rb-shell-player.c:2837
 msgid "Couldn't stop playback"
 msgstr "Niemahčyma spynić vykanańnie"
 
-#: ../shell/rb-shell-player.c:2911
-#, c-format
+#: ../shell/rb-shell-player.c:2920
+msgid "Playback position not available"
+msgstr "Pazycyja ŭ pieśni nieviadomaja"
+
+#: ../shell/rb-shell-player.c:2937
 msgid "Current song is not seekable"
 msgstr "Niemahčyma skakać pa dziejnaj pieśni"
 
-#: ../shell/rb-shell-player.c:3344
+#: ../shell/rb-shell-player.c:3370
 msgid "Stop playback"
 msgstr "Spyni vykanańnie"
 
-#: ../shell/rb-shell-preferences.c:137 ../shell/rb-shell.c:2311
+#: ../shell/rb-shell-preferences.c:137 ../shell/rb-shell.c:2326
 msgid "Couldn't display help"
 msgstr "Niemahčyma pakazać dapamohu"
 
@@ -3432,193 +3419,193 @@ msgstr "Ahulnaje"
 msgid "Playback"
 msgstr "Vykanańnie"
 
-#: ../shell/rb-shell.c:409
+#: ../shell/rb-shell.c:420
 msgid "_Music"
 msgstr "_Muzyka"
 
-#: ../shell/rb-shell.c:410
+#: ../shell/rb-shell.c:421
 msgid "_Edit"
 msgstr "_Redahuj"
 
-#: ../shell/rb-shell.c:411
+#: ../shell/rb-shell.c:422
 msgid "_View"
 msgstr "_Vyhlad"
 
-#: ../shell/rb-shell.c:412
+#: ../shell/rb-shell.c:423
 msgid "_Control"
 msgstr "_Kiruj"
 
-#: ../shell/rb-shell.c:413
+#: ../shell/rb-shell.c:424
 msgid "_Tools"
 msgstr "_Pryładździe"
 
-#: ../shell/rb-shell.c:414
+#: ../shell/rb-shell.c:425
 msgid "_Help"
 msgstr "_Dapamoha"
 
-#: ../shell/rb-shell.c:416
+#: ../shell/rb-shell.c:427
 msgid "_Import Folder..."
 msgstr "_Impartuj kataloh..."
 
-#: ../shell/rb-shell.c:417
+#: ../shell/rb-shell.c:428
 msgid "Choose folder to be added to the Library"
 msgstr "Abiary kataloh, kab dadać da biblijateki"
 
-#: ../shell/rb-shell.c:419
+#: ../shell/rb-shell.c:430
 msgid "Import _File..."
 msgstr "Impartuj _fajł..."
 
-#: ../shell/rb-shell.c:420
+#: ../shell/rb-shell.c:431
 msgid "Choose file to be added to the Library"
 msgstr "Abiary fajł, kab dadać da biblijateki"
 
-#: ../shell/rb-shell.c:422
+#: ../shell/rb-shell.c:433
 msgid "_About"
 msgstr "_Ab prahramie"
 
-#: ../shell/rb-shell.c:423
+#: ../shell/rb-shell.c:434
 msgid "Show information about the music player"
 msgstr "Pakažy źviestki ab muzyčnym playery"
 
-#: ../shell/rb-shell.c:425
+#: ../shell/rb-shell.c:436
 msgid "_Contents"
 msgstr "_Źmieściva"
 
-#: ../shell/rb-shell.c:426
+#: ../shell/rb-shell.c:437
 msgid "Display music player help"
 msgstr "Pakažy dapamohu dla muzyčnaha playera"
 
-#: ../shell/rb-shell.c:428
+#: ../shell/rb-shell.c:439
 msgid "_Close"
 msgstr "_Začyni"
 
-#: ../shell/rb-shell.c:429
+#: ../shell/rb-shell.c:440
 msgid "Hide the music player window"
 msgstr "Schavaj vakno muzyčnaha playera"
 
-#: ../shell/rb-shell.c:431
+#: ../shell/rb-shell.c:442
 msgid "_Quit"
 msgstr "_Vyjdzi"
 
-#: ../shell/rb-shell.c:432
+#: ../shell/rb-shell.c:443
 msgid "Quit the music player"
 msgstr "Vyjdzi z muzyčnaha playera"
 
-#: ../shell/rb-shell.c:434
+#: ../shell/rb-shell.c:445
 msgid "Prefere_nces"
 msgstr "_Nałady"
 
-#: ../shell/rb-shell.c:435
+#: ../shell/rb-shell.c:446
 msgid "Edit music player preferences"
 msgstr "Źmianiaj nałady muzyčnaha playera"
 
-#: ../shell/rb-shell.c:437
+#: ../shell/rb-shell.c:448
 msgid "Plu_gins"
 msgstr "_Pluginy"
 
-#: ../shell/rb-shell.c:438
+#: ../shell/rb-shell.c:449
 msgid "Change and configure plugins"
 msgstr "Źmianiaj i kanfihuruj pluginy"
 
-#: ../shell/rb-shell.c:440
+#: ../shell/rb-shell.c:451
 msgid "Show _All Tracks"
 msgstr "Pakažy _ŭsie ściežki"
 
-#: ../shell/rb-shell.c:441
+#: ../shell/rb-shell.c:452
 msgid "Show all tracks in this music source"
 msgstr "Pakažy ŭsie ściežki ŭ hetaj muzyčnaj krynicy"
 
-#: ../shell/rb-shell.c:443
+#: ../shell/rb-shell.c:454
 msgid "_Jump to Playing Song"
 msgstr "_Pieraskoč da hranaj pieśni"
 
-#: ../shell/rb-shell.c:444
+#: ../shell/rb-shell.c:455
 msgid "Scroll the view to the currently playing song"
 msgstr "Pieraskoč vyhlad da dziejna hranaj pieśni"
 
-#: ../shell/rb-shell.c:451
+#: ../shell/rb-shell.c:462
 msgid "Side _Pane"
 msgstr "Schavaj _panel"
 
-#: ../shell/rb-shell.c:452
+#: ../shell/rb-shell.c:463
 msgid "Change the visibility of the side pane"
 msgstr "Źmiani bačnaść bakavoj paneli"
 
-#: ../shell/rb-shell.c:454
-msgid "_Toolbar"
+#: ../shell/rb-shell.c:465
+msgid "T_oolbar"
 msgstr "_Panel pryładździa"
 
-#: ../shell/rb-shell.c:455
+#: ../shell/rb-shell.c:466
 msgid "Change the visibility of the toolbar"
 msgstr "Źmiani bačnaść paneli pryładździa"
 
-#: ../shell/rb-shell.c:457
+#: ../shell/rb-shell.c:468
 msgid "_Small Display"
 msgstr "_Mały dyspłej"
 
-#: ../shell/rb-shell.c:458
+#: ../shell/rb-shell.c:469
 msgid "Make the main window smaller"
 msgstr "Zrabi hałoŭnaje vakno mienšym"
 
-#: ../shell/rb-shell.c:460
-msgid "_Party Mode"
+#: ../shell/rb-shell.c:471
+msgid "Party _Mode"
 msgstr "Režym _viečaryny"
 
-#: ../shell/rb-shell.c:461
+#: ../shell/rb-shell.c:472
 msgid "Change the status of the party mode"
 msgstr "Źmiani status na režym viečaryny"
 
-#: ../shell/rb-shell.c:463
+#: ../shell/rb-shell.c:474
 msgid "Play _Queue as Side Pane"
 msgstr "Čarha dziela vykanańnia ŭ bakavoj paneli"
 
-#: ../shell/rb-shell.c:464
+#: ../shell/rb-shell.c:475
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Źmianiaj, dzie bačnaja čarha: jak krynica ci jak bakavaja panel"
 
-#: ../shell/rb-shell.c:466
+#: ../shell/rb-shell.c:477
 msgid "S_tatusbar"
 msgstr "Panel _statusu"
 
-#: ../shell/rb-shell.c:467
+#: ../shell/rb-shell.c:478
 msgid "Change the visibility of the statusbar"
 msgstr "Źmiani bačnaść paneli statusu"
 
-#: ../shell/rb-shell.c:1264
+#: ../shell/rb-shell.c:1279
 msgid "Change the music volume"
 msgstr "Źmiani hučnaść muzyki"
 
-#: ../shell/rb-shell.c:1700
+#: ../shell/rb-shell.c:1715
 msgid "Error while saving song information"
 msgstr "Pamyłka padčas zapisu źviestak pieśni"
 
-#: ../shell/rb-shell.c:1856
+#: ../shell/rb-shell.c:1871
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "Pieradača ściežki %d z %d (%.0f%%)"
 
-#: ../shell/rb-shell.c:1859
+#: ../shell/rb-shell.c:1874
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Pieradača ściežki %d z %d"
 
 #. Translators: the %s is the elapsed and total time
-#: ../shell/rb-shell.c:2085
+#: ../shell/rb-shell.c:2100
 #, c-format
 msgid "Paused, %s"
 msgstr "Prypyniena, %s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2127
+#: ../shell/rb-shell.c:2142
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Prypyniena)"
 
-#: ../shell/rb-shell.c:2231
+#: ../shell/rb-shell.c:2246
 msgid "translator-credits"
 msgstr "Ihar Hračyška <ihar.hrachyshka@gmail.com>"
 
-#: ../shell/rb-shell.c:2234
+#: ../shell/rb-shell.c:2249
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3630,7 +3617,7 @@ msgstr ""
 "apublikavanaj Fundacyjaj svabodnych prahramaŭ (Free Software Foundation), u "
 "versii 2 albo (pry žadańni) luboj paźniejšaj.\n"
 
-#: ../shell/rb-shell.c:2238
+#: ../shell/rb-shell.c:2253
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3642,7 +3629,7 @@ msgstr ""
 "DA KANKRETNAHA VYKARYSTAŃNIA. Padrabiaznaści možna pračytać u Ahulnaj "
 "hramadzkaj licenzii GNU (GNU GPL).\n"
 
-#: ../shell/rb-shell.c:2242
+#: ../shell/rb-shell.c:2257
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3653,67 +3640,67 @@ msgstr ""
 "adras: Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, "
 "MA  02111-1307 USA\n"
 
-#: ../shell/rb-shell.c:2249
+#: ../shell/rb-shell.c:2264
 msgid "Maintainers:"
 msgstr "Dahladčyki:"
 
-#: ../shell/rb-shell.c:2252
+#: ../shell/rb-shell.c:2267
 msgid "Former Maintainers:"
 msgstr "Byłyja dahladčyki:"
 
-#: ../shell/rb-shell.c:2255
+#: ../shell/rb-shell.c:2270
 msgid "Contributors:"
 msgstr "Udzielniki:"
 
-#: ../shell/rb-shell.c:2257
+#: ../shell/rb-shell.c:2272
 msgid "Music management and playback software for GNOME."
 msgstr "Prahrama dla kiravańnia j vykanańnia muzyki dla GNOME."
 
-#: ../shell/rb-shell.c:2266
+#: ../shell/rb-shell.c:2281
 msgid "Rhythmbox Website"
 msgstr "Sajt Rhythmbox"
 
-#: ../shell/rb-shell.c:2358
+#: ../shell/rb-shell.c:2373
 msgid "Configure Plugins"
 msgstr "Kanfihuruj pluginy"
 
-#: ../shell/rb-shell.c:2429
+#: ../shell/rb-shell.c:2444
 msgid "Import Folder into Library"
 msgstr "Impartuj kataloh u biblijateku"
 
-#: ../shell/rb-shell.c:2451
+#: ../shell/rb-shell.c:2466
 msgid "Import File into Library"
 msgstr "Impartuj fajł u biblijateku"
 
 #. Translators: by Artist
-#: ../shell/rb-shell.c:2966
+#: ../shell/rb-shell.c:2981
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "ad <i>%s</i>"
 
 #. Translators: from Album
-#: ../shell/rb-shell.c:2987
+#: ../shell/rb-shell.c:3002
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "z <i>%s</i>"
 
-#: ../shell/rb-shell.c:3195
+#: ../shell/rb-shell.c:3210
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr ""
 "Nivodnaja z zarehistravanych krynic nia moža pracavać z adrasam (URI) %s"
 
-#: ../shell/rb-shell.c:3449 ../shell/rb-shell.c:3478
+#: ../shell/rb-shell.c:3464 ../shell/rb-shell.c:3493
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Nieviadomy adras (URI) pieśni: %s"
 
-#: ../shell/rb-shell.c:3487
+#: ../shell/rb-shell.c:3502
 #, c-format
 msgid "Unknown property %s"
 msgstr "Nieviadomaja ŭłaścivaść %s"
 
-#: ../shell/rb-shell.c:3497
+#: ../shell/rb-shell.c:3512
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Niapravilny typ %s ułaścivaści %s"
@@ -4225,7 +4212,7 @@ msgstr "Ciapier hrajecca"
 msgid "Playback Error"
 msgstr "Pamyłka vykanańnia"
 
-#: ../widgets/rb-header.c:427
+#: ../widgets/rb-header.c:432
 msgid "Not Playing"
 msgstr "Nia hrajecca"
 
