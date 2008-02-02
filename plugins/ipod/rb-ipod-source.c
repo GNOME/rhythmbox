@@ -626,6 +626,17 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 		g_value_unset (&value);
 	}
 
+	/* Set last added time */
+	if (song->time_added != 0) {
+		GValue value = {0, };
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, itdb_time_mac_to_host (song->time_added));
+		rhythmdb_entry_set (RHYTHMDB (db), entry,
+					       RHYTHMDB_PROP_FIRST_SEEN,
+					       &value);
+		g_value_unset (&value);
+	}
+
 	/* Set last played */
 	if (song->time_played != 0) {
 		GValue value = {0, };
