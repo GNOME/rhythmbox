@@ -1,3 +1,12 @@
+2008-02-03  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by: Ed Catmur  <ed@catmur.co.uk>
+
+	* configure.ac: Use pkg-config to find check, so it doesn't always
+	need to be installed.  Fixes #507368.
+	Don't use our pygobject GValue marshaller if pygobject is new enough
+	to have one of its own.
+
 2008-02-02  Christophe Fergeau  <teuf@gnome.org>
 
 	* plugins/ipod/rb-ipod-source.c: (add_ipod_song_to_db): set

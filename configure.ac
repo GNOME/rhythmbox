@@ -904,9 +904,8 @@ if test "x$have_python" != "xno"; then
 	AC_SUBST([PYGTK_CODEGEN])
 	AC_SUBST([PYGTK_H2DEF])
 
-dnl	uncomment when http://bugzilla.gnome.org/show_bug.cgi?id=351072 fixed
-dnl	PKG_CHECK_EXISTS([pygobject-2.0 >= X.XX.X],
-dnl			 AC_DEFINE([PYGOBJECT_CAN_MARSHAL_GVALUE]))
+	PKG_CHECK_EXISTS([pygobject-2.0 >= 2.13.2],
+			 AC_DEFINE([PYGOBJECT_CAN_MARSHAL_GVALUE], [1], [Define if pygobject can marshal GValues]))
 
 	dnl Check for -fno-strict-aliasing
 	FLAGS="-fno-strict-aliasing"
@@ -965,7 +964,7 @@ AM_CONDITIONAL(ENABLE_FM_RADIO, test "x$enable_fm_radio" != xno)
 
 
 dnl check, for unit tests
-AM_PATH_CHECK([], have_check=yes, have_check=no)
+PKG_CHECK_MODULES(CHECK, check, have_check=yes, have_check=no)
 AM_CONDITIONAL([HAVE_CHECK],[test "x$have_check" = "xyes"])
 
 dnl ================================================================
