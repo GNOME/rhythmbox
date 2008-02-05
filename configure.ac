@@ -1016,6 +1016,8 @@ if test "$enable_browser_plugin" = "yes" ; then
 		[glib-2.0 $gecko-plugin],
 		[],[enable_browser_plugins=no])
 fi
+MOZILLA_PLUGINDIR="${MOZILLA_PLUGINDIR:="\${libdir}/mozilla/plugins"}"
+AC_ARG_VAR([MOZILLA_PLUGINDIR],[Where to install the browser plugin to])
 
 AM_CONDITIONAL([ENABLE_BROWSER_PLUGIN], test x$enable_browser_plugin = xyes)
 

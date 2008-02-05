@@ -46,7 +46,7 @@ AM_CFLAGS =						\
 librbpodcast_la_LDFLAGS = -export-dynamic
 
 if ENABLE_BROWSER_PLUGIN
-plugindir = ${libdir}/mozilla/plugins
+plugindir = $(MOZILLA_PLUGINDIR)
 plugin_LTLIBRARIES = librhythmbox-itms-detection-plugin.la
 librhythmbox_itms_detection_plugin_la_SOURCES = rhythmbox-itms-plugin.cpp
 librhythmbox_itms_detection_plugin_la_CXXFLAGS = $(BROWSER_PLUGIN_CFLAGS)
