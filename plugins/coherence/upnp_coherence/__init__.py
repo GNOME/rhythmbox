@@ -1,144 +1,165 @@
 import rhythmdb, rb
 import gobject, gtk
+
 import louie
+
+from coherence import log
+
 # For the icon
 import os.path, urllib, gnomevfs, gtk.gdk
 
+class CoherencePlugin(rb.Plugin,log.Loggable):
 
-class CoherencePlugin(rb.Plugin):
-	def __init__(self):
-		rb.Plugin.__init__(self)
-			
-	def activate(self, shell):
-		from twisted.internet import gtk2reactor
-		try:
-			gtk2reactor.install()
-		except AssertionError, e:
-			# sometimes it's already installed
-			print e
+    logCategory = 'rb_coherence_plugin'
 
-		self.coherence = self.get_coherence()
-		if self.coherence is None:
-			print "Coherence is not installed or too old, aborting"
-			return
+    def __init__(self):
+        rb.Plugin.__init__(self)
 
-		print "coherence UPnP plugin activated"
-		self.shell = shell
-		self.sources = {}
+    def activate(self, shell):
+        from twisted.internet import gtk2reactor
+        try:
+            gtk2reactor.install()
+        except AssertionError, e:
+            # sometimes it's already installed
+            print e
 
-		# watch for media servers
-		louie.connect(self.detected_media_server,
-				'Coherence.UPnP.ControlPoint.MediaServer.detected',
-				louie.Any)
-		louie.connect(self.removed_media_server,
-				'Coherence.UPnP.ControlPoint.MediaServer.removed',
-				louie.Any)
+        self.coherence = self.get_coherence()
+        if self.coherence is None:
+            print "Coherence is not installed or too old, aborting"
+            return
 
-		# Set up our icon
-		face_path = os.path.join(os.path.expanduser('~'), ".face")
-		if os.path.exists(face_path):
-			url = "file://" + urllib.pathname2url(face_path)
-		else:
-			url = None
+        print "coherence UPnP plugin activated"
+        self.shell = shell
+        self.sources = {}
 
-		if url:
-			mimetype = gnomevfs.get_mime_type(url)
-			pixbuf = gtk.gdk.pixbuf_new_from_file(face_path)
-			width = "%s" % pixbuf.get_width()
-			height = "%s" % pixbuf.get_height()
-			depth = '24'
-			the_icon = {
-				'url':url,
-				'mimetype':mimetype,
-				'width':width,
-				'height':height,
-				'depth':depth
-				}
-		else:
-			the_icon = None
+        # Set up our icon
+        the_icon = None
+        face_path = os.path.join(os.path.expanduser('~'), ".face")
+        if os.path.exists(face_path):
+            url = "file://" + urllib.pathname2url(face_path)
+            mimetype = gnomevfs.get_mime_type(url)
+            pixbuf = gtk.gdk.pixbuf_new_from_file(face_path)
+            width = "%s" % pixbuf.get_width()
+            height = "%s" % pixbuf.get_height()
+            depth = '24'
+            the_icon = {
+                'url':url,
+                'mimetype':mimetype,
+                'width':width,
+                'height':height,
+                'depth':depth
+                }
+        else:
+            the_icon = None
 
-		# create our own media server
-		from coherence.upnp.devices.media_server import MediaServer
-		from MediaStore import MediaStore
-		if the_icon:
-			server = MediaServer(self.coherence, MediaStore, no_thread_needed=True, db=self.shell.props.db, plugin=self, icon=the_icon)
-		else:
-			server = MediaServer(self.coherence, MediaStore, no_thread_needed=True, db=self.shell.props.db, plugin=self)
+        # create our own media server
+        from coherence.upnp.devices.media_server import MediaServer
+        from MediaStore import MediaStore
+        if the_icon:
+            server = MediaServer(self.coherence, MediaStore, no_thread_needed=True, db=self.shell.props.db, plugin=self, icon=the_icon)
+        else:
+            server = MediaServer(self.coherence, MediaStore, no_thread_needed=True, db=self.shell.props.db, plugin=self)
 
-	def deactivate(self, shell):
-		print "coherence UPnP plugin deactivated"
-		if self.coherence is None:
-			return
+        self.uuid = str(server.uuid)
 
-		self.coherence.shutdown()
+        if self.coherence_version >= (0,5,2):
+            # create our own media renderer
+            # but only if we have a matching Coherence package installed
+            from coherence.upnp.devices.media_renderer import MediaRenderer
+            from MediaPlayer import RhythmboxPlayer
+            if the_icon:
+                MediaRenderer(self.coherence, RhythmboxPlayer, no_thread_needed=True, shell=self.shell, icon=the_icon)
+            else:
+                MediaRenderer(self.coherence, RhythmboxPlayer, no_thread_needed=True, shell=self.shell)
 
-		louie.disconnect(self.detected_media_server,
-				'Coherence.UPnP.ControlPoint.MediaServer.detected',
-				louie.Any)
-		louie.disconnect(self.removed_media_server,
-				'Coherence.UPnP.ControlPoint.MediaServer.removed',
-				louie.Any)
-
-		del self.shell
-		del self.coherence
-
-		for usn, source in self.sources.iteritems():
-			source.delete_thyself()
-		del self.sources
-
-		# uninstall twisted reactor? probably not, since other thigngs may have used it
+        # watch for media servers
+        louie.connect(self.detected_media_server,
+                'Coherence.UPnP.ControlPoint.MediaServer.detected',
+                louie.Any)
+        louie.connect(self.removed_media_server,
+                'Coherence.UPnP.ControlPoint.MediaServer.removed',
+                louie.Any)
 
 
-	def get_coherence (self):
-		coherence_instance = None
-		required_version = (0, 3, 2)
+    def deactivate(self, shell):
+        print "coherence UPnP plugin deactivated"
+        if self.coherence is None:
+            return
 
-		try:
-			from coherence.base import Coherence
-			from coherence import __version_info__
-		except ImportError, e:
-			print "Coherence not found"
-			return None
+        self.coherence.shutdown()
 
-		if __version_info__ < required_version:
-			required = '.'.join([str(i) for i in required_version])
-			found = '.'.join([str(i) for i in __version_info__])
-			print "Coherence %s required. %s found. Please upgrade" % (required, found)
-			return None
+        louie.disconnect(self.detected_media_server,
+                'Coherence.UPnP.ControlPoint.MediaServer.detected',
+                louie.Any)
+        louie.disconnect(self.removed_media_server,
+                'Coherence.UPnP.ControlPoint.MediaServer.removed',
+                louie.Any)
 
-		coherence_config = {
-			#'logmode': 'info',
-			'controlpoint': 'yes',
-			'plugins':{}
-		}
-		coherence_instance = Coherence(coherence_config)
+        del self.shell
+        del self.coherence
 
-		return coherence_instance
+        for usn, source in self.sources.iteritems():
+            source.delete_thyself()
+        del self.sources
+
+        # uninstall twisted reactor? probably not, since other thigngs may have used it
 
 
-	def removed_media_server(self, usn):
-		print "upnp server went away %s" % usn
-		if self.sources.has_key(usn):
-			self.sources[usn].delete_thyself()
-			del self.sources[usn]
+    def get_coherence (self):
+        coherence_instance = None
+        required_version = (0, 3, 2)
 
-	def detected_media_server(self, client, usn):
-		print "found upnp server %s (%s)"  %  (client.device.get_friendly_name(), usn)
+        try:
+            from coherence.base import Coherence
+            from coherence import __version_info__
+        except ImportError, e:
+            print "Coherence not found"
+            return None
 
-		db = self.shell.props.db
-		group = rb.rb_source_group_get_by_name ("shared")
-		entry_type = db.entry_register_type("CoherenceUpnp:" + usn)
+        if __version_info__ < required_version:
+            required = '.'.join([str(i) for i in required_version])
+            found = '.'.join([str(i) for i in __version_info__])
+            print "Coherence %s required. %s found. Please upgrade" % (required, found)
+            return None
 
-		from UpnpSource import UpnpSource
-		source = gobject.new (UpnpSource,
-					shell=self.shell,
-					entry_type=entry_type,
-					source_group=group,
-					plugin=self,
-					client=client,
-					usn=usn)
+        self.coherence_version = __version_info__
 
-		self.sources[usn] = source
+        coherence_config = {
+            #'logmode': 'info',
+            'controlpoint': 'yes',
+            'plugins': {},
+            'interface': 'eth0',
+        }
+        coherence_instance = Coherence(coherence_config)
 
-		self.shell.append_source (source, None)
+        return coherence_instance
 
+    def removed_media_server(self, usn):
+        print "upnp server went away %s" % usn
+        if self.sources.has_key(usn):
+            self.sources[usn].delete_thyself()
+            del self.sources[usn]
+
+    def detected_media_server(self, client, usn):
+        print "found upnp server %s (%s)"  %  (client.device.get_friendly_name(), usn)
+        self.warning("found upnp server %s (%s)"  %  (client.device.get_friendly_name(), usn))
+        if client.device.get_id() == self.uuid:
+            """ don't react on our own MediaServer"""
+            return
+
+        db = self.shell.props.db
+        group = rb.rb_source_group_get_by_name ("shared")
+        entry_type = db.entry_register_type("CoherenceUpnp:" + client.device.get_id()[5:])
+
+        from UpnpSource import UpnpSource
+        source = gobject.new (UpnpSource,
+                    shell=self.shell,
+                    entry_type=entry_type,
+                    source_group=group,
+                    plugin=self,
+                    client=client,
+                    usn=usn)
+
+        self.sources[usn] = source
+
+        self.shell.append_source (source, None)

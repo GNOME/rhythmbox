@@ -1,3 +1,17 @@
+2008-02-05  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Frank Scholz  <dev@netzflocken.de>
+
+
+	* plugins/coherence/coherence.rb-plugin.in:
+	* plugins/coherence/upnp_coherence/Makefile.am:
+	* plugins/coherence/upnp_coherence/MediaPlayer.py:
+	* plugins/coherence/upnp_coherence/MediaStore.py:
+	* plugins/coherence/upnp_coherence/UpnpSource.py:
+	* plugins/coherence/upnp_coherence/__init__.py: Improved the UPnP plugin
+	by making us act as a Renderer, exporting artist/album lists and the
+	like. Closes #512870
+
 2008-02-05  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/audioscrobbler/rb-audioscrobbler.c:
