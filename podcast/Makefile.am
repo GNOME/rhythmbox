@@ -55,8 +55,7 @@ librhythmbox_itms_detection_plugin_la_LIBADD = $(BROWSER_PLUGIN_LIBS)
 librhythmbox_itms_detection_plugin_la_LDFLAGS = \
 	-avoid-version	\
 	-export-symbols $(srcdir)/plugin.symbols \
-	-module		\
-	$(AM_LDFLAGS)
+	-module
 
 endif
 
