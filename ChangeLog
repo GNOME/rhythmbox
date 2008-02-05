@@ -1,3 +1,11 @@
+2008-02-05  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_perform):
+	* plugins/audioscrobbler/rb-lastfm-source.c: (rb_lastfm_perform):
+	Add a user-agent header to our HTTP requests.  Some proxies behave
+	badly without one.  Fixes #514254.
+
 2008-02-03  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by: Ed Catmur  <ed@catmur.co.uk>

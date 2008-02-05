@@ -61,6 +61,8 @@
 #define SCROBBLER_URL "http://post.audioscrobbler.com/"
 #define SCROBBLER_VERSION "1.1"
 
+#define USER_AGENT	"Rhythmbox/" VERSION
+
 #define SCROBBLER_DATE_FORMAT "%Y%%2D%m%%2D%d%%20%H%%3A%M%%3A%S"
 
 #define EXTRA_URI_ENCODE_CHARS	"&+"
@@ -798,6 +800,7 @@ rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 	SoupMessage *msg;
 
 	msg = soup_message_new (post_data == NULL ? "GET" : "POST", url);
+	soup_message_add_header (msg->request_headers, "User-Agent", USER_AGENT);
 
 	if (post_data != NULL) {
 		rb_debug ("Submitting to Audioscrobbler: %s", post_data);

@@ -75,6 +75,7 @@
 
 #define LAST_FM_NO_COVER_IMAGE "http://static.last.fm/depth/catalogue/noimage/cover_med.gif"
 
+#define USER_AGENT "Rhythmbox/" VERSION
 
 static void rb_lastfm_source_class_init (RBLastfmSourceClass *klass);
 static void rb_lastfm_source_init (RBLastfmSource *source);
@@ -728,6 +729,7 @@ rb_lastfm_perform (RBLastfmSource *source,
 {
 	SoupMessage *msg;
 	msg = soup_message_new ("GET", url);
+	soup_message_add_header (msg->request_headers, "User-Agent", USER_AGENT);
 
 	if (msg == NULL)
 		return;
