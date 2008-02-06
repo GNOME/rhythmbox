@@ -128,7 +128,6 @@ class CoherencePlugin(rb.Plugin,log.Loggable):
             #'logmode': 'info',
             'controlpoint': 'yes',
             'plugins': {},
-            'interface': 'eth0',
         }
         coherence_instance = Coherence(coherence_config)
 
