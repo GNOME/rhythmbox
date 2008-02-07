@@ -10,6 +10,7 @@
     </method>
 
     <method name="getPlayer">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_get_player_path"/>
       <arg type="o" direction="out">
 	<annotation name="org.freedesktop.DBus.GLib.ReturnVal" value=""/>
 	<annotation name="org.freedesktop.DBus.GLib.Const" value=""/>
@@ -17,6 +18,7 @@
     </method>
 
     <method name="getPlaylistManager">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_get_playlist_manager_path"/>
       <arg type="o" direction="out">
 	<annotation name="org.freedesktop.DBus.GLib.ReturnVal" value=""/>
 	<annotation name="org.freedesktop.DBus.GLib.Const" value=""/>
