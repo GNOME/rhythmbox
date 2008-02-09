@@ -294,21 +294,49 @@ impl_activate (RBPlugin *bplugin,
 	if (plugin->grab_type == NONE && bus != NULL) {
 		GError *error = NULL;
 
-		plugin->proxy = dbus_g_proxy_new_for_name (bus,
-				"org.gnome.SettingsDaemon",
-				"/org/gnome/SettingsDaemon",
-				"org.gnome.SettingsDaemon");
-		if (plugin->proxy != NULL) {
+		plugin->proxy = dbus_g_proxy_new_for_name_owner (bus,
+								 "org.gnome.SettingsDaemon",
+								 "/org/gnome/SettingsDaemon/MediaKeys",
+								 "org.gnome.SettingsDaemon.MediaKeys",
+								 &error);
+		if (plugin->proxy == NULL) {
+			g_warning ("Unable to grab media player keys: %s", error->message);
+			g_error_free (error);
+		} else {
 			dbus_g_proxy_call (plugin->proxy,
 					   "GrabMediaPlayerKeys", &error,
 					   G_TYPE_STRING, "Rhythmbox",
 					   G_TYPE_UINT, 0,
 					   G_TYPE_INVALID,
 					   G_TYPE_INVALID);
+
+			/* if the method doesn't exist, try the old interface/path */
+			if (error != NULL &&
+			    error->domain == DBUS_GERROR &&
+			    error->code == DBUS_GERROR_UNKNOWN_METHOD) {
+				g_clear_error (&error);
+				g_object_unref (plugin->proxy);
+
+				rb_debug ("trying old dbus interface/path");
+				plugin->proxy = dbus_g_proxy_new_for_name_owner (bus,
+										 "org.gnome.SettingsDaemon",
+										 "/org/gnome/SettingsDaemon",
+										 "org.gnome.SettingsDaemon",
+										 &error);
+				if (plugin->proxy != NULL) {
+					dbus_g_proxy_call (plugin->proxy,
+							   "GrabMediaPlayerKeys", &error,
+							   G_TYPE_STRING, "Rhythmbox",
+							   G_TYPE_UINT, 0,
+							   G_TYPE_INVALID,
+							   G_TYPE_INVALID);
+				}
+			}
+
 			if (error == NULL) {
 				GtkWindow *window;
 
-				rb_debug ("created dbus proxy for org.gnome.SettingsDaemon; grabbing keys");
+				rb_debug ("created dbus proxy for org.gnome.SettingsDaemon.MediaKeys; grabbing keys");
 				dbus_g_object_register_marshaller (rb_marshal_VOID__STRING_STRING,
 						G_TYPE_NONE, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INVALID);
 
@@ -329,15 +357,6 @@ impl_activate (RBPlugin *bplugin,
 				g_object_unref (window);
 
 				plugin->grab_type = SETTINGS_DAEMON;
-
-			} else if (error->domain == DBUS_GERROR &&
-				   (error->code != DBUS_GERROR_NAME_HAS_NO_OWNER ||
-				   error->code != DBUS_GERROR_SERVICE_UNKNOWN)) {
-				/* settings daemon dbus service doesn't exist.
-				 * just silently fail.
-				 */
-				rb_debug ("org.gnome.SettingsDaemon dbus service not found");
-				g_error_free (error);
 			} else {
 				g_warning ("Unable to grab media player keys: %s", error->message);
 				g_error_free (error);

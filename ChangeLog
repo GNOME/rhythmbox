@@ -1,3 +1,9 @@
+2008-02-10  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/mmkeys/rb-mmkeys-plugin.c: (impl_activate):
+	Try the new interface/path names for the media player keys interface
+	first, falling back if that doesn't work.  Fixes #510406.
+
 2008-02-08  Jonathan Matthew  <jonathan@d14n.org>
 
 	* shell/rb-shell.xml:
