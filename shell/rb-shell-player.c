@@ -688,6 +688,7 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 {
 	RhythmDBEntry *playing_entry;
 	RBSource *source;
+	gboolean update_stats;
 
 	source = player->priv->current_playing_source;
 
@@ -709,6 +710,7 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 		return;
 	}
 
+	update_stats = TRUE;
 	switch (rb_source_handle_eos (source)) {
 	case RB_SOURCE_EOF_ERROR:
 		if (allow_stop) {
@@ -768,13 +770,14 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 				} else if (allow_stop == FALSE) {
 					/* handle the real EOS when it happens */
 					player->priv->playing_entry_eos = FALSE;
+					update_stats = FALSE;
 				}
 			}
 		}
 		break;
 	}
 
-	if (player->priv->playing_entry_eos &&
+	if (update_stats &&
 	    rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR) == NULL) {
 		rb_debug ("updating play statistics");
 		rb_source_update_play_statistics (source,
