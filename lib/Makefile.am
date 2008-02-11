@@ -34,7 +34,8 @@ librb_la_SOURCES =					\
 	rb-string-value-map.c				\
 	rb-string-value-map.h				\
 	rb-async-queue-watch.c				\
-	rb-async-queue-watch.h
+	rb-async-queue-watch.h				\
+	rb-soup-compat.h
 
 if WITH_INTERNAL_GSEQUENCE
 librb_la_SOURCES += gsequence.c gsequence.h
@@ -49,6 +50,8 @@ INCLUDES =						\
 	-I$(top_srcdir)/widgets				\
 	$(SOUP_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
+
+librb_la_LIBADD = $(SOUP_LIBS)
 
 BUILT_SOURCES=
 

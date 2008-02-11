@@ -231,7 +231,28 @@ get_proxy_config (RBProxyConfig *config)
 	}
 }
 
-#if defined(HAVE_LIBSOUP)
+#if defined(HAVE_LIBSOUP_2_4)
+SoupURI *
+rb_proxy_config_get_libsoup_uri (RBProxyConfig *config)
+{
+	SoupURI *uri = NULL;
+
+	if (!config->enabled)
+		return NULL;
+
+	uri = soup_uri_new (NULL);
+	soup_uri_set_scheme (uri, SOUP_URI_SCHEME_HTTP);
+	soup_uri_set_host (uri, config->host);
+	soup_uri_set_port (uri, config->port);
+
+	if (config->auth_enabled) {
+		soup_uri_set_user (uri, config->username);
+		soup_uri_set_password (uri, config->password);
+	}
+
+	return uri;
+}
+#elif defined(HAVE_LIBSOUP_2_2)
 SoupUri *
 rb_proxy_config_get_libsoup_uri (RBProxyConfig *config)
 {

@@ -441,17 +441,24 @@ fi
 dnl Check for libsoup, needed for DAAP and audioscrobbler
 if test "x$enable_daap" = "xyes" || test "x$enable_audioscrobbler" != "xno"; then
 	PKG_CHECK_MODULES(SOUP,                            \
-		libsoup-2.2,
-		have_libsoup=yes,
-		have_libsoup=no)
-	if test x"$have_libsoup" = "xno"; then
+		libsoup-2.4,
+		have_libsoup24=yes,
+		have_libsoup24=no)
+	if test x"$have_libsoup24" = "xno"; then
 		PKG_CHECK_MODULES(SOUP,
-			libsoup-2.4,
-			have_libsoup=yes,
-			have_libsoup=no)
+			libsoup-2.2,
+			have_libsoup22=yes,
+			have_libsoup22=no)
 	fi
-	if test x"$have_libsoup" = "xyes"; then
+	if test x"$have_libsoup24" = "xyes" || test x"$have_libsoup22" = "xyes"; then
+		have_libsoup=yes
 		AC_DEFINE(HAVE_LIBSOUP, 1, [Define if libsoup support is enabled])
+	fi
+	if test x"$have_libsoup24" = "xyes"; then
+		AC_DEFINE(HAVE_LIBSOUP_2_4, 1, [Define if libsoup 2.4 support is enabled])
+	fi
+	if test x"$have_libsoup22" = "xyes"; then
+		AC_DEFINE(HAVE_LIBSOUP_2_2, 1, [Define if libsoup 2.2 support is enabled])
 	fi
 fi
 
@@ -513,27 +520,9 @@ AM_CONDITIONAL(HAVE_MUSICBRAINZ, test "x$enable_musicbrainz" = "xyes")
 
 
 
-AC_PATH_X
-
-if test x"$x_includes" != x"NONE" && test -n "$x_includes" ; then
-	CFLAGS=$CFLAGS -I`echo $x_includes | sed -e "s/:/ -I/g"`
-fi
-if test x"$x_libraries" != x"NONE" && test -n "$x_libraries" ; then
-	LIBS=-L`echo $x_libraries | sed -e "s/:/ -L/g"`
-fi
-
-have_xidle=no
-AC_COMPILE_IFELSE([
-	#include <X11/extensions/xidle.h>
-int main(int argc,char **argv) {
-  return 0;
-}
-], have_xidle=yes)
-AC_MSG_CHECKING(for XIDLE extension)
-AC_MSG_RESULT($have_xidle)
-if test x"$have_xidle" = "xyes" ; then
-	AC_DEFINE(HAVE_XIDLE_EXTENSION, 1, [defined if you have X11/extensions/xidle.h])
-fi
+AC_PATH_XTRA
+CFLAGS="$CFLAGS $X_CFLAGS"
+#LIBS=$X_LIBS
 
 dnl Multimedia keys
 have_xfree=no
@@ -1168,7 +1157,11 @@ else
 	AC_MSG_NOTICE([   CD burning support disabled])
 fi
 if test x"$enable_daap" = xyes; then
-	AC_MSG_NOTICE([** DAAP (music sharing) support is enabled])
+	if test x"$have_libsoup24" = "xyes"; then
+		AC_MSG_NOTICE([** DAAP (music sharing) support is enabled (using libsoup 2.4)])
+	elif test x"$have_libsoup22" = "xyes"; then
+		AC_MSG_NOTICE([** DAAP (music sharing) support is enabled (using libsoup 2.2)])
+	fi
 else
 	AC_MSG_NOTICE([   DAAP (music sharing) support is disabled])
 fi
@@ -1198,7 +1191,11 @@ else
 	AC_MSG_NOTICE([   gnome-keyring support disabled])
 fi
 if test x"$enable_audioscrobbler" != xno; then
-	AC_MSG_NOTICE([** Audioscrobbler support enabled])
+	if test x"$have_libsoup24" = "xyes"; then
+		AC_MSG_NOTICE([** Audioscrobbler support enabled (using libsoup 2.4)])
+	elif test x"$have_libsoup22" = "xyes"; then
+		AC_MSG_NOTICE([** Audioscrobbler support enabled (using libsoup 2.2)])
+	fi
 else
 	AC_MSG_NOTICE([   Audioscrobbler support disabled])
 fi

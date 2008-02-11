@@ -27,13 +27,9 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+
+#include "rb-soup-compat.h"
 #include <libsoup/soup.h>
-#include <libsoup/soup-address.h>
-#include <libsoup/soup-message.h>
-#include <libsoup/soup-uri.h>
-#include <libsoup/soup-server.h>
-#include <libsoup/soup-server-auth.h>
-#include <libsoup/soup-server-message.h>
 #include <libgnomevfs/gnome-vfs.h>
 
 #include "rb-daap-share.h"
@@ -513,20 +509,22 @@ rb_daap_share_new (const char *name,
 static void
 message_add_standard_headers (SoupMessage *message)
 {
+#if defined(HAVE_LIBSOUP_2_2)
 	gchar *s;
 	time_t t;
 	struct tm *tm;
-
-	soup_message_add_header (message->response_headers, "DAAP-Server", "Rhythmbox " VERSION);
-
-	soup_message_add_header (message->response_headers, "Content-Type", "application/x-dmap-tagged");
 
 	t = time (NULL);
 	tm = gmtime (&t);
 	s = g_new (gchar, 100);
 	strftime (s, 100, "%a, %d %b %Y %T GMT", tm);
-	soup_message_add_header (message->response_headers, "Date", s);
+	soup_message_headers_append (message->response_headers, "Date", s);
 	g_free (s);
+#endif
+	
+	soup_message_headers_append (message->response_headers, "DAAP-Server", "Rhythmbox " VERSION);
+
+	soup_message_headers_append (message->response_headers, "Content-Type", "application/x-dmap-tagged");
 }
 
 static void
@@ -543,14 +541,15 @@ message_set_from_rb_daap_structure (SoupMessage *message,
 		return;
 	}
 
-	message->response.owner = SOUP_BUFFER_SYSTEM_OWNED;
-	message->response.length = length;
-	message->response.body = resp;
+	soup_message_set_response (message, "application/x-dmap-tagged", SOUP_MEMORY_TAKE, resp, length);
+
+#if defined(HAVE_LIBSOUP_2_2)
+	soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CONTENT_LENGTH);
+#endif
 
 	message_add_standard_headers (message);
 
 	soup_message_set_status (message, SOUP_STATUS_OK);
-	soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CONTENT_LENGTH);
 }
 
 #define DMAP_STATUS_OK 200
@@ -559,10 +558,20 @@ message_set_from_rb_daap_structure (SoupMessage *message,
 #define DAAP_VERSION 3.0
 #define DMAP_TIMEOUT 1800
 
+#if defined(HAVE_LIBSOUP_2_4)
+static void
+server_info_cb (SoupServer        *server,
+		SoupMessage       *message,
+		const char        *path,
+		GHashTable        *query,
+		SoupClientContext *context,
+		RBDAAPShare       *share)
+#else
 static void
 server_info_cb (RBDAAPShare *share,
 		SoupServerContext *context,
 		SoupMessage *message)
+#endif
 {
 /* MSRV	server info response
  * 	MSTT status
@@ -619,10 +628,20 @@ server_info_cb (RBDAAPShare *share,
 	rb_daap_structure_destroy (msrv);
 }
 
+#if defined(HAVE_LIBSOUP_2_4)
+static void
+content_codes_cb (SoupServer        *server,
+		  SoupMessage       *message,
+		  const char        *path,
+		  GHashTable        *query,
+		  SoupClientContext *context,
+		  RBDAAPShare       *share)
+#else
 static void
 content_codes_cb (RBDAAPShare *share,
 		  SoupServerContext *context,
 		  SoupMessage *message)
+#endif
 {
 /* MCCR content codes response
  * 	MSTT status
@@ -656,6 +675,48 @@ content_codes_cb (RBDAAPShare *share,
 	rb_daap_structure_destroy (mccr);
 }
 
+#if defined(HAVE_LIBSOUP_2_4)
+static gboolean
+get_session_id (GHashTable *query,
+		guint32    *id)
+{
+	char *session_id_str;
+	guint32 session_id;
+
+	session_id_str = g_hash_table_lookup (query, "session-id");
+	if (session_id_str == NULL) {
+		rb_debug ("session id not found");
+		return FALSE;
+	}
+
+	session_id = (guint32) strtoul (session_id_str, NULL, 10);
+	if (id != NULL) {
+		*id = session_id;
+	}
+	return TRUE;
+}
+
+static gboolean
+get_revision_number (GHashTable *query,
+		     guint *number)
+{
+	char *revision_number_str;
+	guint revision_number;
+
+	revision_number_str = g_hash_table_lookup (query, "revision-number");
+	if (revision_number_str == NULL) {
+		rb_debug ("client asked for an update without a revision number?!?");
+		return FALSE;
+	}
+
+	revision_number = strtoul (revision_number_str, NULL, 10);
+	if (number != NULL) {
+		*number = revision_number;
+	}
+	return TRUE;
+}
+
+#else
 static gboolean
 message_get_session_id (SoupMessage *message,
 			guint32     *id)
@@ -729,11 +790,13 @@ message_get_revision_number (SoupMessage *message,
 
 	return TRUE;
 }
+#endif
 
 static gboolean
 session_id_validate (RBDAAPShare       *share,
-		     SoupServerContext *context,
+		     SoupClientContext *context,
 		     SoupMessage       *message,
+		     GHashTable        *query,		/* NULL w/ libsoup 2.2 */
 		     guint32           *id)
 {
 	guint32     session_id;
@@ -745,7 +808,11 @@ session_id_validate (RBDAAPShare       *share,
 		*id = 0;
 	}
 
+#if defined(HAVE_LIBSOUP_2_4)
+	res = get_session_id (query, &session_id);
+#else
 	res = message_get_session_id (message, &session_id);
+#endif
 	if (! res) {
 		rb_debug ("Validation failed: Unable to parse session id from message");
 		return FALSE;
@@ -758,7 +825,7 @@ session_id_validate (RBDAAPShare       *share,
 		return FALSE;
 	}
 
-	remote_address = soup_server_context_get_client_host (context);
+	remote_address = soup_client_context_get_host (context);
 	rb_debug ("Validating session id %u from %s matches %s",
 		  session_id, remote_address, addr);
 	if (remote_address == NULL || strcmp (addr, remote_address) != 0) {
@@ -775,7 +842,7 @@ session_id_validate (RBDAAPShare       *share,
 
 static guint32
 session_id_generate (RBDAAPShare       *share,
-		     SoupServerContext *context)
+		     SoupClientContext *context)
 {
 	guint32 id;
 
@@ -786,7 +853,7 @@ session_id_generate (RBDAAPShare       *share,
 
 static guint32
 session_id_create (RBDAAPShare       *share,
-		   SoupServerContext *context)
+		   SoupClientContext *context)
 {
 	guint32     id;
 	const char *addr;
@@ -802,7 +869,7 @@ session_id_create (RBDAAPShare       *share,
 	} while	(addr != NULL);
 
 	/* store session id and remote address */
-	remote_address = g_strdup (soup_server_context_get_client_host (context));
+	remote_address = g_strdup (soup_client_context_get_host (context));
 	g_hash_table_insert (share->priv->session_ids, GUINT_TO_POINTER (id), remote_address);
 
 	return id;
@@ -810,16 +877,26 @@ session_id_create (RBDAAPShare       *share,
 
 static void
 session_id_remove (RBDAAPShare       *share,
-		   SoupServerContext *context,
+		   SoupClientContext *context,
 		   guint32            id)
 {
 	g_hash_table_remove (share->priv->session_ids, GUINT_TO_POINTER (id));
 }
 
+#if defined(HAVE_LIBSOUP_2_4)
 static void
-login_cb (RBDAAPShare *share,
+login_cb (SoupServer        *server,
+	  SoupMessage       *message,
+	  const char        *path,
+	  GHashTable        *query,
+	  SoupClientContext *context,
+	  RBDAAPShare       *share)
+#else
+static void
+login_cb (RBDAAPShare       *share,
 	  SoupServerContext *context,
-	  SoupMessage *message)
+	  SoupMessage       *message)
+#endif
 {
 /* MLOG login response
  * 	MSTT status
@@ -840,15 +917,28 @@ login_cb (RBDAAPShare *share,
 	rb_daap_structure_destroy (mlog);
 }
 
+#if defined(HAVE_LIBSOUP_2_4)
+static void
+logout_cb (SoupServer        *server,
+	   SoupMessage       *message,
+	   const char        *path,
+	   GHashTable        *query,
+	   SoupClientContext *context,
+	   RBDAAPShare       *share)
+#else
 static void
 logout_cb (RBDAAPShare *share,
 	   SoupServerContext *context,
 	   SoupMessage *message)
+#endif
 {
 	int     status;
 	guint32 id;
+#if defined(HAVE_LIBSOUP_2_2)
+	GHashTable *query = NULL;
+#endif
 
-	if (session_id_validate (share, context, message, &id)) {
+	if (session_id_validate (share, context, message, query, &id)) {
 		rb_debug ("Handling logout session id %u", id);
 		session_id_remove (share, context, id);
 
@@ -858,18 +948,34 @@ logout_cb (RBDAAPShare *share,
 	}
 
 	soup_message_set_status (message, status);
+#if defined(HAVE_LIBSOUP_2_2)
 	soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CONTENT_LENGTH);
+#endif
 }
 
+#if defined(HAVE_LIBSOUP_2_4)
+static void
+update_cb (SoupServer        *server,
+	   SoupMessage       *message,
+	   const char        *path,
+	   GHashTable        *query,
+	   SoupClientContext *context,
+	   RBDAAPShare       *share)
+#else
 static void
 update_cb (RBDAAPShare *share,
 	   SoupServerContext *context,
 	   SoupMessage *message)
+#endif
 {
 	guint    revision_number;
 	gboolean res;
 
+#if defined(HAVE_LIBSOUP_2_4)
+	res = get_revision_number (query, &revision_number);
+#else
 	res = message_get_revision_number (message, &revision_number);
+#endif
 
 	if (res && revision_number != share->priv->revision_number) {
 		/* MUPD update response
@@ -885,8 +991,15 @@ update_cb (RBDAAPShare *share,
 		message_set_from_rb_daap_structure (message, mupd);
 		rb_daap_structure_destroy (mupd);
 	} else {
+		/* FIXME: This seems like a bug. It just leaks the
+		 * message (and socket) without ever replying.
+		 */
 		g_object_ref (message);
+#if defined(HAVE_LIBSOUP_2_4)
+		soup_server_pause_message (server, message);
+#else
 		soup_message_io_pause (message);
+#endif
 	}
 }
 
@@ -1151,14 +1264,47 @@ add_playlist_entry_to_mlcl (GtkTreeModel *model,
 }
 
 static bitwise
-parse_meta (const gchar *s)
+parse_meta_str (const char *attrs)
 {
-	gchar *start_of_attrs;
-	gchar *end_of_attrs;
-	gchar *attrs;
 	gchar **attrsv;
 	guint i;
 	bitwise bits = 0;
+	
+	attrsv = g_strsplit (attrs, ",", -1);
+
+	for (i = 0; attrsv[i]; i++) {
+		guint j;
+
+		for (j = 0; j < G_N_ELEMENTS (meta_data_map); j++) {
+			if (strcmp (meta_data_map[j].tag, attrsv[i]) == 0) {
+				bits |= (((bitwise) 1) << meta_data_map[j].md);
+			}
+		}
+	}
+	
+	g_strfreev (attrsv);
+
+	return bits;
+}
+
+#if defined(HAVE_LIBSOUP_2_4)
+static bitwise
+parse_meta (GHashTable *query)
+{
+	const gchar *attrs;
+
+	attrs = g_hash_table_lookup (query, "meta");
+	return parse_meta_str (attrs);
+}
+
+#else
+static bitwise
+parse_meta (const gchar *s)
+{
+	bitwise bits;
+	gchar *start_of_attrs;
+	gchar *end_of_attrs;
+	gchar *attrs;
 
 	start_of_attrs = strstr (s, "meta=");
 	if (start_of_attrs == NULL) {
@@ -1173,23 +1319,12 @@ parse_meta (const gchar *s)
 		attrs = g_strdup (start_of_attrs);
 	}
 
-	attrsv = g_strsplit (attrs,",",-1);
-
-	for (i = 0; attrsv[i]; i++) {
-		guint j;
-
-		for (j = 0; j < G_N_ELEMENTS (meta_data_map); j++) {
-			if (strcmp (meta_data_map[j].tag, attrsv[i]) == 0) {
-				bits |= (((bitwise) 1) << meta_data_map[j].md);
-			}
-		}
-	}
-
+	bits = parse_meta_str (attrs);
 	g_free (attrs);
-	g_strfreev (attrsv);
 
 	return bits;
 }
+#endif
 
 static void
 write_next_chunk (SoupMessage *message, GnomeVFSHandle *handle)
@@ -1200,10 +1335,18 @@ write_next_chunk (SoupMessage *message, GnomeVFSHandle *handle)
 
 	result = gnome_vfs_read (handle, chunk, DAAP_SHARE_CHUNK_SIZE, &read_size);
 	if (result == GNOME_VFS_OK && read_size > 0) {
+#if defined(HAVE_LIBSOUP_2_4)
+		soup_message_body_append (message->response_body, SOUP_MEMORY_TAKE, chunk, read_size);
+#else
 		soup_message_add_chunk (message, SOUP_BUFFER_SYSTEM_OWNED, chunk, read_size);
+#endif
 	} else {
 		g_free (chunk);
+#if defined(HAVE_LIBSOUP_2_4)
+		soup_message_body_complete (message->response_body);
+#else
 		soup_message_add_final_chunk (message);
+#endif
 	}
 }
 
@@ -1241,7 +1384,11 @@ send_chunked_file (SoupMessage *message, RhythmDBEntry *entry, guint64 file_size
 		file_size -= offset;
 	}
 
+#if defined(HAVE_LIBSOUP_2_4)
+	soup_message_headers_set_encoding (message->response_headers, SOUP_ENCODING_CHUNKED);
+#else
 	soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CHUNKED);
+#endif
 
 	g_signal_connect (message, "wrote_chunk", G_CALLBACK (write_next_chunk), handle);
 	g_signal_connect (message, "finished", G_CALLBACK (chunked_message_finished), handle);
@@ -1271,11 +1418,14 @@ send_mapped_file (SoupMessage *message, RhythmDBEntry *entry, guint64 file_size,
 		g_warning ("Unable to map file %s: %s", path, error->message);
 		soup_message_set_status (message, SOUP_STATUS_INTERNAL_SERVER_ERROR);
 	} else {
-		message->response.owner = SOUP_BUFFER_USER_OWNED;
-		message->response.length = file_size;
-		message->response.body = g_mapped_file_get_contents (mapped_file) + offset;
+		soup_message_set_response (message, "application/x-dmap-tagged",
+					   SOUP_MEMORY_TEMPORARY,
+					   g_mapped_file_get_contents (mapped_file) + offset,
+					   file_size);
+#if defined(HAVE_LIBSOUP_2_2)
 		soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message),
 						  SOUP_TRANSFER_CONTENT_LENGTH);
+#endif
 
 		g_signal_connect (message,
 				  "finished",
@@ -1286,22 +1436,40 @@ send_mapped_file (SoupMessage *message, RhythmDBEntry *entry, guint64 file_size,
 }
 #endif
 
+#if defined(HAVE_LIBSOUP_2_4)
+static void
+databases_cb (SoupServer        *server,
+	      SoupMessage       *message,
+	      const char        *path,
+	      GHashTable        *query,
+	      SoupClientContext *context,
+	      RBDAAPShare       *share)
+
+#else
 static void
 databases_cb (RBDAAPShare *share,
 	      SoupServerContext *context,
 	      SoupMessage *message)
+#endif
 {
-	gchar *path;
-	gchar *rest_of_path;
+	const char *rest_of_path;
 	/*guint revision_number;*/
+#if defined(HAVE_LIBSOUP_2_2)
+	GHashTable *query = NULL;
+	gchar *path;
+#endif
 
-	if (! session_id_validate (share, context, message, NULL)) {
+	if (! session_id_validate (share, context, message, query, NULL)) {
 		soup_message_set_status (message, SOUP_STATUS_FORBIDDEN);
+#if defined(HAVE_LIBSOUP_2_2)
 		soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CONTENT_LENGTH);
+#endif
 		return;
 	}
 
+#if defined(HAVE_LIBSOUP_2_2)
 	path = soup_uri_to_string (soup_message_get_uri (message), TRUE);
+#endif
 
 	rest_of_path = strchr (path + 1, '/');
 
@@ -1338,7 +1506,11 @@ databases_cb (RBDAAPShare *share,
 
 		message_set_from_rb_daap_structure (message, avdb);
 		rb_daap_structure_destroy (avdb);
+#if defined(HAVE_LIBSOUP_2_4)
+	} else if (g_ascii_strcasecmp ("/1/items", rest_of_path) == 0) {
+#else
 	} else if (g_ascii_strncasecmp ("/1/items?", rest_of_path, 9) == 0) {
+#endif
 	/* ADBS database songs
 	 * 	MSTT status
 	 * 	MUTY update type
@@ -1354,7 +1526,11 @@ databases_cb (RBDAAPShare *share,
 		gint32 num_songs = rhythmdb_entry_count_by_type (share->priv->db, share->priv->entry_type);
 		struct MLCL_Bits mb = {NULL,0};
 
+#if defined(HAVE_LIBSOUP_2_4)
+		mb.bits = parse_meta (query);
+#else
 		mb.bits = parse_meta (rest_of_path);
+#endif
 
 		adbs = rb_daap_structure_add (NULL, RB_DAAP_CC_ADBS);
 		rb_daap_structure_add (adbs, RB_DAAP_CC_MSTT, (gint32) DMAP_STATUS_OK);
@@ -1368,7 +1544,11 @@ databases_cb (RBDAAPShare *share,
 		message_set_from_rb_daap_structure (message, adbs);
 		rb_daap_structure_destroy (adbs);
 		adbs = NULL;
+#if defined(HAVE_LIBSOUP_2_4)
+	} else if (g_ascii_strcasecmp ("/1/containers", rest_of_path) == 0) {
+#else
 	} else if (g_ascii_strncasecmp ("/1/containers?", rest_of_path, 14) == 0) {
+#endif
 	/* APLY database playlists
 	 * 	MSTT status
 	 * 	MUTY update type
@@ -1405,6 +1585,7 @@ databases_cb (RBDAAPShare *share,
 
 		message_set_from_rb_daap_structure (message, aply);
 		rb_daap_structure_destroy (aply);
+
 	} else if (g_ascii_strncasecmp ("/1/containers/", rest_of_path, 14) == 0) {
 	/* APSO playlist songs
 	 * 	MSTT status
@@ -1423,7 +1604,11 @@ databases_cb (RBDAAPShare *share,
 		struct MLCL_Bits mb = {NULL,0};
 		gint pl_id = atoi (rest_of_path + 14);
 
+#if defined(HAVE_LIBSOUP_2_4)
+		mb.bits = parse_meta (query);
+#else
 		mb.bits = parse_meta (rest_of_path);
+#endif
 
 		apso = rb_daap_structure_add (NULL, RB_DAAP_CC_APSO);
 		rb_daap_structure_add (apso, RB_DAAP_CC_MSTT, (gint32) DMAP_STATUS_OK);
@@ -1450,9 +1635,11 @@ databases_cb (RBDAAPShare *share,
 						  _find_by_id);
 			if (idl == NULL) {
 				soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
+#if defined(HAVE_LIBSOUP_2_2)
 				soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message),
 								  SOUP_TRANSFER_CONTENT_LENGTH);
 				soup_message_set_response (message, "text/plain", SOUP_BUFFER_USER_OWNED, "", 0);
+#endif
 				goto out;
 			}
 			id = (RBPlaylistID *)idl->data;
@@ -1473,7 +1660,7 @@ databases_cb (RBDAAPShare *share,
 		rb_daap_structure_destroy (apso);
 	} else if (g_ascii_strncasecmp ("/1/items/", rest_of_path, 9) == 0) {
 	/* just the file :) */
-		gchar *id_str;
+		const gchar *id_str;
 		gint id;
 		RhythmDBEntry *entry;
 		const gchar *location;
@@ -1489,9 +1676,9 @@ databases_cb (RBDAAPShare *share,
 		file_size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
 
 		message_add_standard_headers (message);
-		soup_message_add_header (message->response_headers, "Accept-Ranges", "bytes");
+		soup_message_headers_append (message->response_headers, "Accept-Ranges", "bytes");
 
-		range_header = soup_message_get_header (message->request_headers, "Range");
+		range_header = soup_message_headers_get (message->request_headers, "Range");
 		if (range_header) {
 			const gchar *s;
 			gchar *content_range;
@@ -1500,7 +1687,7 @@ databases_cb (RBDAAPShare *share,
 			offset = atoll (s);
 
 			content_range = g_strdup_printf ("bytes %" G_GUINT64_FORMAT "-%" G_GUINT64_FORMAT "/%" G_GUINT64_FORMAT, offset, file_size, file_size);
-			soup_message_add_header (message->response_headers, "Content-Range", content_range);
+			soup_message_headers_append (message->response_headers, "Content-Range", content_range);
 			g_free (content_range);
 
 			soup_message_set_status (message, SOUP_STATUS_PARTIAL_CONTENT);
@@ -1525,9 +1712,92 @@ databases_cb (RBDAAPShare *share,
 	}
 
 out:
+#if defined(HAVE_LIBSOUP_2_2)
 	g_free (path);
+#else
+	;
+#endif
 }
 
+static void
+db_entry_added_cb (RhythmDB *db,
+		   RhythmDBEntry *entry,
+		   RBDAAPShare *share)
+{
+	/* TODO: update our db version number? */
+}
+
+static void
+add_db_entry (RhythmDBEntry *entry,
+	      RBDAAPShare *share)
+{
+	db_entry_added_cb (share->priv->db, entry, share);
+}
+
+static void
+db_entry_deleted_cb (RhythmDB *db,
+		     RhythmDBEntry *entry,
+		     RBDAAPShare *share)
+{
+	/* TODO: update our db version number? */
+}
+
+static void
+db_entry_changed_cb (RhythmDB *db,
+		     RhythmDBEntry *entry,
+		     GSList *changes,
+		     RBDAAPShare *share)
+{
+	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN)) {
+		db_entry_deleted_cb (db, entry, share);
+	} else {
+		db_entry_added_cb (db, entry, share);
+	}
+}
+
+#if defined(HAVE_LIBSOUP_2_4)
+
+static gboolean
+soup_auth_filter (SoupAuthDomain *auth_domain,
+		  SoupMessage    *msg,
+		  gpointer        user_data)
+{
+	const char *path;
+
+	path = soup_message_get_uri (msg)->path;
+	if (g_str_has_prefix (path, "/databases/")) {
+		/* Subdirectories of /databases don't actually require
+		 * authentication
+		 */
+		return FALSE;
+	} else {
+		/* Everything else in auth_domain's paths, including
+		 * /databases itself, does require auth.
+		 */
+		return TRUE;
+	}
+}
+
+static gboolean
+soup_auth_callback (SoupAuthDomain *auth_domain,
+		    SoupMessage    *msg,
+		    const char     *username,
+		    gpointer        password,
+		    RBDAAPShare    *share)
+{
+	gboolean    allowed;
+	const char *path;
+
+	path = soup_message_get_uri (msg)->path;
+	rb_debug ("Auth request for %s, user %s", path, username);
+
+	allowed = !strcmp (password, share->priv->password);
+	rb_debug ("Auth request: %s", allowed ? "ALLOWED" : "DENIED");
+
+	return allowed;
+}
+
+#else
 typedef void (* DAAPPathFunction) (RBDAAPShare       *share,
 				   SoupServerContext *context,
 				   SoupMessage       *message);
@@ -1570,42 +1840,6 @@ server_cb (SoupServerContext *context,
 	g_free (path);
 }
 
-static void
-db_entry_added_cb (RhythmDB *db,
-		   RhythmDBEntry *entry,
-		   RBDAAPShare *share)
-{
-	/* TODO: update our db version number? */
-}
-
-static void
-add_db_entry (RhythmDBEntry *entry,
-	      RBDAAPShare *share)
-{
-	db_entry_added_cb (share->priv->db, entry, share);
-}
-
-static void
-db_entry_deleted_cb (RhythmDB *db,
-		     RhythmDBEntry *entry,
-		     RBDAAPShare *share)
-{
-	/* TODO: update our db version number? */
-}
-
-static void
-db_entry_changed_cb (RhythmDB *db,
-		     RhythmDBEntry *entry,
-		     GSList *changes,
-		     RBDAAPShare *share)
-{
-	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN)) {
-		db_entry_deleted_cb (db, entry, share);
-	} else {
-		db_entry_added_cb (db, entry, share);
-	}
-}
-
 static gboolean
 soup_auth_callback (SoupServerAuthContext *auth_ctx,
                     SoupServerAuth        *auth,
@@ -1645,12 +1879,14 @@ soup_auth_callback (SoupServerAuthContext *auth_ctx,
 	return allowed;
 }
 
+#endif
+
+
 static gboolean
 rb_daap_share_server_start (RBDAAPShare *share)
 {
 	int                   port = STANDARD_DAAP_PORT;
 	gboolean              password_required;
-	SoupServerAuthContext auth_ctx = { 0 };
 
 	share->priv->server = soup_server_new (SOUP_SERVER_PORT, port, NULL);
 	if (share->priv->server == NULL) {
@@ -1669,6 +1905,22 @@ rb_daap_share_server_start (RBDAAPShare *share)
 	password_required = (share->priv->auth_method != RB_DAAP_SHARE_AUTH_METHOD_NONE);
 
 	if (password_required) {
+#if defined(HAVE_LIBSOUP_2_4)
+		SoupAuthDomain *auth_domain;
+
+		auth_domain = soup_auth_domain_basic_new (SOUP_AUTH_DOMAIN_REALM, "Music Sharing",
+							  SOUP_AUTH_DOMAIN_ADD_PATH, "/login",
+							  SOUP_AUTH_DOMAIN_ADD_PATH, "/update",
+							  SOUP_AUTH_DOMAIN_ADD_PATH, "/database",
+							  SOUP_AUTH_DOMAIN_FILTER, soup_auth_filter,
+							  NULL);
+		soup_auth_domain_basic_set_auth_callback (auth_domain,
+							  (SoupAuthDomainBasicAuthCallback)soup_auth_callback,
+							  g_object_ref (share),
+							  g_object_unref);
+		soup_server_add_auth_domain (share->priv->server, auth_domain);
+#else
+		SoupServerAuthContext auth_ctx = { 0 };
 		auth_ctx.types = SOUP_AUTH_TYPE_BASIC;
 		auth_ctx.callback = (SoupServerAuthCallbackFn)soup_auth_callback;
 		auth_ctx.user_data = share;
@@ -1692,14 +1944,36 @@ rb_daap_share_server_start (RBDAAPShare *share)
 					 (SoupServerCallbackFn)server_cb,
 					 NULL,
 					 share);
+#endif
 	}
 
+#if defined(HAVE_LIBSOUP_2_4)
+	soup_server_add_handler (share->priv->server, "/server-info",
+				 (SoupServerCallback) server_info_cb,
+				 share, NULL);
+	soup_server_add_handler (share->priv->server, "/content-codes",
+				 (SoupServerCallback) content_codes_cb,
+				 share, NULL);
+	soup_server_add_handler (share->priv->server, "/login",
+				 (SoupServerCallback) login_cb,
+				 share, NULL);
+	soup_server_add_handler (share->priv->server, "/logout",
+				 (SoupServerCallback) logout_cb,
+				 share, NULL);
+	soup_server_add_handler (share->priv->server, "/update",
+				 (SoupServerCallback) update_cb,
+				 share, NULL);
+	soup_server_add_handler (share->priv->server, "/databases",
+				 (SoupServerCallback) databases_cb,
+				 share, NULL);
+#else
 	soup_server_add_handler (share->priv->server,
 				 NULL,
 				 NULL,
 				 (SoupServerCallbackFn)server_cb,
 				 NULL,
 				 share);
+#endif
 	soup_server_run_async (share->priv->server);
 
 	/* using direct since there is no g_uint_hash or g_uint_equal */

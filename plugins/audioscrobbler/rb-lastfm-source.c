@@ -42,8 +42,8 @@
 
 #include <gconf/gconf-value.h>
 
+#include "rb-soup-compat.h"
 #include <libsoup/soup.h>
-#include <libsoup/soup-uri.h>
 
 #include "md5.h"
 
@@ -101,8 +101,12 @@ static char* rb_lastfm_source_get_playback_uri (RhythmDBEntry *entry, gpointer d
 static void rb_lastfm_perform (RBLastfmSource *lastfm,
 			       const char *url,
 			       char *post_data, /* this takes ownership */
-			       SoupMessageCallbackFn response_handler);
+			       SoupSessionCallback response_handler);
+#if defined(HAVE_LIBSOUP_2_4)
+static void rb_lastfm_message_cb (SoupSession *session, SoupMessage *req, gpointer user_data);
+#else
 static void rb_lastfm_message_cb (SoupMessage *req, gpointer user_data);
+#endif
 static void rb_lastfm_change_station (RBLastfmSource *source, const char *station);
 
 static void rb_lastfm_proxy_config_changed_cb (RBProxyConfig *config,
@@ -725,16 +729,14 @@ static void
 rb_lastfm_perform (RBLastfmSource *source,
 		   const char *url,
 		   char *post_data,
-		   SoupMessageCallbackFn response_handler)
+		   SoupSessionCallback response_handler)
 {
 	SoupMessage *msg;
 	msg = soup_message_new ("GET", url);
-	soup_message_add_header (msg->request_headers, "User-Agent", USER_AGENT);
+	soup_message_headers_append (msg->request_headers, "User-Agent", USER_AGENT);
 
 	if (msg == NULL)
 		return;
-
-	soup_message_set_http_version (msg, SOUP_HTTP_1_1);
 
 	rb_debug ("Last.fm communicating with %s", url);
 
@@ -742,14 +744,14 @@ rb_lastfm_perform (RBLastfmSource *source,
 		rb_debug ("POST data: %s", post_data);
 		soup_message_set_request (msg,
 					  "application/x-www-form-urlencoded",
-					  SOUP_BUFFER_SYSTEM_OWNED,
+					  SOUP_MEMORY_TAKE,
 					  post_data,
 					  strlen (post_data));
 	}
 
 	/* create soup session, if we haven't got one yet */
 	if (!source->priv->soup_session) {
-		SoupUri *uri;
+		SoupURI *uri;
 
 		uri = rb_proxy_config_get_libsoup_uri (source->priv->proxy_config);
 		source->priv->soup_session = soup_session_async_new_with_options (
@@ -761,27 +763,45 @@ rb_lastfm_perform (RBLastfmSource *source,
 
 	soup_session_queue_message (source->priv->soup_session,
 				    msg,
-				    (SoupMessageCallbackFn) response_handler,
+				    response_handler,
 				    source);
 	source->priv->status = COMMUNICATING;
 	rb_source_notify_status_changed (RB_SOURCE(source));
 }
 
+#if defined(HAVE_LIBSOUP_2_4)
+static void
+rb_lastfm_message_cb (SoupSession *session, SoupMessage *req, gpointer user_data)
+#else
 static void
 rb_lastfm_message_cb (SoupMessage *req, gpointer user_data)
+#endif
 {
 	RBLastfmSource *source = RB_LASTFM_SOURCE (user_data);
-	char *body;
 	char **pieces;
 	int i;
+	const char *body;
+
+#if defined(HAVE_LIBSOUP_2_2)
+	char *free_body;
 
 	if ((req->response).body == NULL) {
 		rb_debug ("Lastfm: Server failed to respond");
 		return;
 	}
 
-	body = g_malloc0 ((req->response).length + 1);
-	memcpy (body, (req->response).body, (req->response).length);
+	free_body = g_malloc0 ((req->response).length + 1);
+	memcpy (free_body, (req->response).body, (req->response).length);
+	g_strstrip (free_body);
+
+	body = free_body;
+#else
+	if (req->response_body->length == 0) {
+		rb_debug ("Lastfm: Server failed to respond");
+		return;
+	}
+	body = req->response_body->data;
+#endif
 
 	rb_debug ("response body: %s", body);
 
@@ -789,7 +809,6 @@ rb_lastfm_message_cb (SoupMessage *req, gpointer user_data)
 		source->priv->status = NO_ARTIST;
 	}
 
-	g_strstrip (body);
 	pieces = g_strsplit (body, "\n", 0);
 	for (i = 0; pieces[i] != NULL; i++) {
 		gchar **values = g_strsplit (pieces[i], "=", 2);
@@ -858,10 +877,14 @@ rb_lastfm_message_cb (SoupMessage *req, gpointer user_data)
 			rhythmdb_commit (source->priv->db);
 
 		}
+
+		g_strfreev (values);
 	}
 
 	g_strfreev (pieces);
-	g_free (body);
+#if defined(HAVE_LIBSOUP_2_2)
+	g_free (free_body);
+#endif
 
 	/* doesn't work yet
 	if (source->priv->pending_entry) {
@@ -900,7 +923,7 @@ static void
 rb_lastfm_proxy_config_changed_cb (RBProxyConfig *config,
 					   RBLastfmSource *source)
 {
-	SoupUri *uri;
+	SoupURI *uri;
 
 	if (source->priv->soup_session) {
 		uri = rb_proxy_config_get_libsoup_uri (config);
@@ -1165,10 +1188,16 @@ rb_lastfm_source_add_station_cb (GtkButton *button, gpointer *data)
 	g_free(title);
 }
 
+#if defined(HAVE_LIBSOUP_2_4)
+static void
+rb_lastfm_source_metadata_cb (SoupSession *session, SoupMessage *req, RBLastfmSource *source)
+#else
 static void
 rb_lastfm_source_metadata_cb (SoupMessage *req, RBLastfmSource *source)
+#endif
 {
-	char *body;
+	const char *body;
+	char *free_body;
 	char **pieces;
 	int p;
 	RhythmDBEntry *entry;
@@ -1181,10 +1210,16 @@ rb_lastfm_source_metadata_cb (SoupMessage *req, RBLastfmSource *source)
 	}
 
 	rb_debug ("got response to metadata request");
-	body = g_malloc0 ((req->response).length + 1);
-	memcpy (body, (req->response).body, (req->response).length);
+#if defined(HAVE_LIBSOUP_2_4)
+	body = req->response_body->data;
+	free_body = NULL;
+#else
+	free_body = g_malloc0 ((req->response).length + 1);
+	memcpy (free_body, (req->response).body, (req->response).length);
+	g_strstrip (free_body);
+	body = free_body;
+#endif
 
-	g_strstrip (body);
 	pieces = g_strsplit (body, "\n", 0);
 	found_cover = FALSE;
 
@@ -1240,7 +1275,9 @@ rb_lastfm_source_metadata_cb (SoupMessage *req, RBLastfmSource *source)
 	}
 
 	g_strfreev (pieces);
-	g_free (body);
+#if defined(HAVE_LIBSOUP_2_2)
+	g_free (free_body);
+#endif
 
 	if (found_cover == FALSE) {
 		GValue v = {0,};
@@ -1273,7 +1310,7 @@ rb_lastfm_source_new_song_cb (GObject *player_backend,
 			       source->priv->base_url,
 			       source->priv->base_path,
 			       source->priv->session);
-	rb_lastfm_perform (source, uri, NULL, (SoupMessageCallbackFn) rb_lastfm_source_metadata_cb);
+	rb_lastfm_perform (source, uri, NULL, (SoupSessionCallback) rb_lastfm_source_metadata_cb);
 	g_free (uri);
 
 	/* re-enable actions */

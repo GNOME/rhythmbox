@@ -34,8 +34,8 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#include <libsoup/soup-headers.h>
-#include <libsoup/soup-misc.h>
+#include "rb-soup-compat.h"
+#include <libsoup/soup.h>
 
 #include <glib/gi18n.h>
 #include <gst/gst.h>
@@ -432,7 +432,12 @@ rb_daap_src_open (RBDAAPSrc *src)
 	gchar *host;
 	guint port;
 	gchar *path;
+#if defined(HAVE_LIBSOUP_2_4)
+	SoupMessageHeaders *header_table;
+#else
 	GHashTable *header_table;
+	char *dup_headers;
+#endif
 	gchar *request;
 	gchar *response;
 	gchar *end_headers;
@@ -441,7 +446,6 @@ rb_daap_src_open (RBDAAPSrc *src)
 	guint http_status;
 	gchar *http_status_phrase = NULL;
 	gboolean parse_result;
-	char *dup_headers;
 
 	if (src->buffer_base) {
 		g_free (src->buffer_base);
@@ -536,6 +540,15 @@ rb_daap_src_open (RBDAAPSrc *src)
 		return FALSE;
 	}
 
+#if defined(HAVE_LIBSOUP_2_4)
+	header_table = soup_message_headers_new (SOUP_MESSAGE_HEADERS_RESPONSE);
+	parse_result = soup_headers_parse_response (response,
+						    ((end_headers+2) - response),
+						    header_table,
+						    NULL,
+						    &http_status,
+						    &http_status_phrase);
+#else
 	/* for compatibility with older versions of libsoup, we may need to retry
 	 * the soup_headers_parse_response call with slightly different arguments.
 	 * since this function modifies the string passed in, we need to copy it
@@ -567,28 +580,42 @@ rb_daap_src_open (RBDAAPSrc *src)
 							    &http_status,
 							    &http_status_phrase);
 	}
+#endif
 
 	if (parse_result) {
 		if (http_status == 200 || http_status == 206) {
+			const char *enc_str = NULL;
+			const char *len_str = NULL;
+#if defined(HAVE_LIBSOUP_2_4)
+			enc_str = soup_message_headers_get (header_table, "Transfer-Encoding");
+			len_str = soup_message_headers_get (header_table, "Content-Length");
+#else
 			GSList *val;
-
 			val = g_hash_table_lookup (header_table, "Transfer-Encoding");
 			if (val) {
-				if (g_strcasecmp ((gchar *)val->data, "chunked") == 0) {
+				enc_str = ((const char *)val->data);
+			}
+			val = g_hash_table_lookup (header_table, "Content-Length");
+			if (val) {
+				len_str = ((const char *)val->data);
+			}
+#endif
+
+			if (enc_str) {
+				if (g_strcasecmp (enc_str, "chunked") == 0) {
 					src->chunked = TRUE;
 				} else {
 					GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
-							   ("Unknown HTTP transfer encoding \"%s\"", val->data));
+							   ("Unknown HTTP transfer encoding \"%s\"", enc_str));
 				}
 			} else {
 				src->chunked = FALSE;
-				val = g_hash_table_lookup (header_table, "Content-Length");
-				if (val) {
+				if (len_str) {
 					char *e;
-					src->size = strtoul ((char *)val->data, &e, 10);
-					if (e == val->data) {
+					src->size = strtoul (len_str, &e, 10);
+					if (e == len_str) {
 						GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
-								   ("Couldn't read HTTP content length \"%s\"", val->data));
+								   ("Couldn't read HTTP content length \"%s\"", len_str));
 						ok = FALSE;
 					}
 				} else {
@@ -609,8 +636,13 @@ rb_daap_src_open (RBDAAPSrc *src)
 		ok = FALSE;
 	}
 	g_free (http_status_phrase);
+
+#if defined(HAVE_LIBSOUP_2_4)
+	soup_message_headers_free (header_table);
+#else
 	soup_message_clear_headers (header_table);
 	g_hash_table_destroy (header_table);
+#endif
 
 	end_headers += 4;
 

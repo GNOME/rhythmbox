@@ -33,10 +33,8 @@
 #include <glib/gi18n.h>
 #include <gdk/gdk.h>
 
+#include "rb-soup-compat.h"
 #include <libsoup/soup.h>
-#include <libsoup/soup-connection.h>
-#include <libsoup/soup-session-sync.h>
-#include <libsoup/soup-uri.h>
 
 #include "rb-daap-hash.h"
 #include "rb-daap-connection.h"
@@ -84,7 +82,7 @@ struct RBDAAPConnectionPrivate {
 	gboolean is_connecting;
 
 	SoupSession *session;
-	SoupUri *base_uri;
+	SoupURI *base_uri;
 	gchar *daap_base_uri;
 
 	gdouble daap_version;
@@ -329,7 +327,7 @@ build_message (RBDAAPConnection *connection,
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	SoupMessage *message = NULL;
-	SoupUri *uri = NULL;
+	SoupURI *uri = NULL;
 
 	uri = soup_uri_new_with_base (priv->base_uri, path);
 	if (uri == NULL) {
@@ -337,14 +335,13 @@ build_message (RBDAAPConnection *connection,
 	}
 
 	message = soup_message_new_from_uri (SOUP_METHOD_GET, uri);
-	soup_message_set_http_version (message, SOUP_HTTP_1_1);
 
-	soup_message_add_header (message->request_headers, "Client-DAAP-Version", 	"3.0");
-	soup_message_add_header (message->request_headers, "Accept-Language", 		"en-us, en;q=5.0");
+	soup_message_headers_append (message->request_headers, "Client-DAAP-Version", 		"3.0");
+	soup_message_headers_append (message->request_headers, "Accept-Language", 		"en-us, en;q=5.0");
 #ifdef HAVE_LIBZ
-	soup_message_add_header (message->request_headers, "Accept-Encoding",		"gzip");
+	soup_message_headers_append (message->request_headers, "Accept-Encoding",		"gzip");
 #endif
-	soup_message_add_header (message->request_headers, "Client-DAAP-Access-Index", 	"2");
+	soup_message_headers_append (message->request_headers, "Client-DAAP-Access-Index", 	"2");
 
 	if (priv->password_protected) {
 		char *h;
@@ -352,13 +349,17 @@ build_message (RBDAAPConnection *connection,
 		char *token;
 
 		user_pass = g_strdup_printf ("%s:%s", priv->username, priv->password);
+#if defined(HAVE_LIBSOUP_2_4)
+		token = g_base64_encode ((guchar *)user_pass, strlen (user_pass));
+#else
 		token = soup_base64_encode (user_pass, strlen (user_pass));
+#endif
 		h = g_strdup_printf ("Basic %s", token);
 
 		g_free (token);
 		g_free (user_pass);
 
-		soup_message_add_header (message->request_headers, "Authorization", h);
+		soup_message_headers_append (message->request_headers, "Authorization", h);
 		g_free (h);
 	}
 
@@ -372,10 +373,10 @@ build_message (RBDAAPConnection *connection,
 
 		rb_daap_hash_generate ((short)floor (version), (const guchar*)no_daap_path, 2, (guchar*)hash, req_id);
 
-		soup_message_add_header (message->request_headers, "Client-DAAP-Validation", hash);
+		soup_message_headers_append (message->request_headers, "Client-DAAP-Validation", hash);
 	}
 	if (send_close) {
-		soup_message_add_header (message->request_headers, "Connection", "close");
+		soup_message_headers_append (message->request_headers, "Connection", "close");
 	}
 
 	soup_uri_free (uri);
@@ -425,16 +426,22 @@ actual_http_response_handler (DAAPResponseData *data)
 {
 	RBDAAPConnectionPrivate *priv;
 	GNode *structure;
-	char *response;
+	char *new_response = NULL;
+	const char *response;
 	const char *encoding_header;
 	char *message_path;
 	int response_length;
 
 	priv = data->connection->priv;
 	structure = NULL;
-	response = data->message->response.body;
 	encoding_header = NULL;
+#if defined(HAVE_LIBSOUP_2_4)
+	response = data->message->response_body->data;
+	response_length = data->message->response_body->length;
+#else
+	response = data->message->response.body;
 	response_length = data->message->response.length;
+#endif
 
 	message_path = soup_uri_to_string (soup_message_get_uri (data->message), FALSE);
 
@@ -444,13 +451,12 @@ actual_http_response_handler (DAAPResponseData *data)
 		  data->message->reason_phrase);
 
 	if (data->message->response_headers) {
-		encoding_header = soup_message_get_header (data->message->response_headers, "Content-Encoding");
+		encoding_header = soup_message_headers_get (data->message->response_headers, "Content-Encoding");
 	}
 
 	if (SOUP_STATUS_IS_SUCCESSFUL (data->status) && encoding_header && strcmp (encoding_header, "gzip") == 0) {
 #ifdef HAVE_LIBZ
 		z_stream stream;
-		char *new_response;
 		unsigned int factor = 4;
 		unsigned int unc_size = response_length * factor;
 
@@ -575,19 +581,23 @@ actual_http_response_handler (DAAPResponseData *data)
 		rb_daap_structure_destroy (structure);
 	}
 
-	if (response != data->message->response.body) {
-		g_free (response);
-	}
-
+	g_free (new_response);
 	g_free (message_path);
 	g_object_unref (G_OBJECT (data->connection));
 	g_object_unref (G_OBJECT (data->message));
 	g_free (data);
 }
 
+#if defined(HAVE_LIBSOUP_2_4)
+static void
+http_response_handler (SoupSession      *session,
+		       SoupMessage      *message,
+		       RBDAAPConnection *connection)
+#else
 static void
 http_response_handler (SoupMessage      *message,
 		       RBDAAPConnection *connection)
+#endif
 {
 	DAAPResponseData *data;
 	int response_length;
@@ -599,7 +609,11 @@ http_response_handler (SoupMessage      *message,
 
 	data = g_new0 (DAAPResponseData, 1);
 	data->status = message->status_code;
+#if defined(HAVE_LIBSOUP_2_4)
+	response_length = message->response_body->length;
+#else
 	response_length = message->response.length;
+#endif
 
 	g_object_ref (G_OBJECT (connection));
 	data->connection = connection;
@@ -655,7 +669,7 @@ http_get (RBDAAPConnection     *connection,
 	priv->use_response_handler_thread = use_thread;
 	priv->response_handler = handler;
 	soup_session_queue_message (priv->session, message,
-				    (SoupMessageCallbackFn) http_response_handler,
+				    (SoupSessionCallback) http_response_handler,
 				    connection);
 	rb_debug ("Queued message for http://%s:%d/%s",
 		  priv->base_uri->host,
@@ -1674,7 +1688,11 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 		char *token;
 
 		user_pass = g_strdup_printf ("%s:%s", priv->username, priv->password);
+#if defined(HAVE_LIBSOUP_2_4)
+		token = g_base64_encode ((guchar *)user_pass, strlen (user_pass));
+#else
 		token = soup_base64_encode (user_pass, strlen (user_pass));
+#endif
 		g_string_append_printf (headers, "Authentication: Basic %s\r\n", token);
 		g_free (token);
 		g_free (user_pass);

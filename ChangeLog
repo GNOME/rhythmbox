@@ -1,5 +1,25 @@
 2008-02-11  Jonathan Matthew  <jonathan@d14n.org>
 
+	interesting parts of patch by:  Dan Winship  <danw@gnome.org>
+
+	* configure.ac:
+	* lib/Makefile.am:
+	* lib/rb-proxy-config.c: (rb_proxy_config_get_libsoup_uri):
+	* lib/rb-proxy-config.h:
+	* lib/rb-soup-compat.h:
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	* plugins/audioscrobbler/rb-lastfm-gst-src.c:
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	* plugins/daap/rb-daap-connection.c:
+	* plugins/daap/rb-daap-plugin.c:
+	* plugins/daap/rb-daap-share.c:
+	* plugins/daap/rb-daap-src.c:
+	Add support for libsoup 2.4, keeping libsoup 2.2 compatibility.
+	libsoup 2.2 stuff is pretty ugly, but can be dropped fairly easily.
+	Fixes #509701.
+
+2008-02-11  Jonathan Matthew  <jonathan@d14n.org>
+
 	* shell/rb-shell-player.c: (rb_shell_player_handle_eos_unlocked):
 	Don't use the playing_entry_eos flag to figure out whether to update
 	stats, as it gets reset if the new stream is started synchronously.

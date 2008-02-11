@@ -25,7 +25,6 @@
 
 #include "rb-debug.h"
 
-#include <libsoup/soup.h>
 #include <gst/gst.h>
 
 #define RB_TYPE_LASTFM_SRC (rb_lastfm_src_get_type())

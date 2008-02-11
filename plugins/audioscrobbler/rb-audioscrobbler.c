@@ -24,6 +24,8 @@
 
 #define __EXTENSIONS__
 
+#include "config.h"
+
 #include <errno.h>
 
 #include <string.h>
@@ -35,10 +37,9 @@
 #include <gtk/gtk.h>
 #include <gconf/gconf-value.h>
 
+#include "rb-soup-compat.h"
 #include <libsoup/soup.h>
-#include <libsoup/soup-uri.h>
 
-#include "config.h"
 #include "eel-gconf-extensions.h"
 #include "rb-audioscrobbler.h"
 #include "rb-debug.h"
@@ -195,14 +196,20 @@ static gboolean	     rb_audioscrobbler_timeout_cb (RBAudioscrobbler *audioscrobb
 
 static gchar *	     mkmd5 (char *string);
 static void	     rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage *msg);
-static void	     rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
-					       char *url,
-					       char *post_data,
-						   SoupMessageCallbackFn response_handler);
+
 static void	     rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler);
-static void	     rb_audioscrobbler_do_handshake_cb (SoupMessage *msg, gpointer user_data);
 static void	     rb_audioscrobbler_submit_queue (RBAudioscrobbler *audioscrobbler);
+static void	     rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
+						char *url,
+						char *post_data,
+						SoupSessionCallback response_handler);
+#if defined(HAVE_LIBSOUP_2_4)
+static void	     rb_audioscrobbler_do_handshake_cb (SoupSession *session, SoupMessage *msg, gpointer user_data);
+static void	     rb_audioscrobbler_submit_queue_cb (SoupSession *session, SoupMessage *msg, gpointer user_data);
+#else
+static void	     rb_audioscrobbler_do_handshake_cb (SoupMessage *msg, gpointer user_data);
 static void	     rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data);
+#endif
 
 static void	     rb_audioscrobbler_import_settings (RBAudioscrobbler *audioscrobbler);
 static void	     rb_audioscrobbler_preferences_sync (RBAudioscrobbler *audioscrobbler);
@@ -690,18 +697,31 @@ mkmd5 (char *string)
 static void
 rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage *msg)
 {
+	gboolean successful;
 	rb_debug ("Parsing response, status=%d", msg->status_code);
-
-	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && (msg->response).body != NULL) {
-		gchar *body;
+	
+	successful = FALSE;
+#if defined(HAVE_LIBSOUP_2_4)
+	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && msg->response_body->length != 0)
+		successful = TRUE;
+#else
+	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && (msg->response).body != NULL)
+		successful = TRUE;
+#endif
+	if (successful) {
 		gchar **breaks;
+		int i;
+#if defined(HAVE_LIBSOUP_2_2)
+		gchar *body;
 
 		body = g_malloc0 ((msg->response).length + 1);
 		memcpy (body, (msg->response).body, (msg->response).length);
 
 		g_strstrip (body);
 		breaks = g_strsplit (body, "\n", 4);
-		int i;
+#else
+		breaks = g_strsplit (msg->response_body->data, "\n", 4);
+#endif
 
 		g_free (audioscrobbler->priv->status_msg);
 		audioscrobbler->priv->status = STATUS_OK;
@@ -773,10 +793,12 @@ rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage 
 			audioscrobbler->priv->submit_next = time(NULL) + audioscrobbler->priv->submit_interval;
 
 		g_strfreev (breaks);
+#if defined(HAVE_LIBSOUP_2_2)
 		g_free (body);
+#endif
 	} else {
 		audioscrobbler->priv->status = REQUEST_FAILED;
-		audioscrobbler->priv->status_msg = g_strdup (soup_status_get_phrase (msg->status_code));
+		audioscrobbler->priv->status_msg = g_strdup (msg->reason_phrase);
 	}
 }
 
@@ -795,25 +817,25 @@ static void
 rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 			   char *url,
 			   char *post_data,
-			   SoupMessageCallbackFn response_handler)
+			   SoupSessionCallback response_handler)
 {
 	SoupMessage *msg;
 
 	msg = soup_message_new (post_data == NULL ? "GET" : "POST", url);
-	soup_message_add_header (msg->request_headers, "User-Agent", USER_AGENT);
+	soup_message_headers_append (msg->request_headers, "User-Agent", USER_AGENT);
 
 	if (post_data != NULL) {
 		rb_debug ("Submitting to Audioscrobbler: %s", post_data);
 		soup_message_set_request (msg,
 					  "application/x-www-form-urlencoded",
-					  SOUP_BUFFER_SYSTEM_OWNED,
+					  SOUP_MEMORY_TAKE,
 					  post_data,
 					  strlen (post_data));
 	}
 
 	/* create soup session, if we haven't got one yet */
 	if (!audioscrobbler->priv->soup_session) {
-		SoupUri *uri;
+		SoupURI *uri;
 
 		uri = rb_proxy_config_get_libsoup_uri (audioscrobbler->priv->proxy_config);
 		audioscrobbler->priv->soup_session = soup_session_async_new_with_options (
@@ -894,8 +916,13 @@ rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 }
 
 
+#if defined(HAVE_LIBSOUP_2_4)
+static void
+rb_audioscrobbler_do_handshake_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
+#else
 static void
 rb_audioscrobbler_do_handshake_cb (SoupMessage *msg, gpointer user_data)
+#endif
 {
 	RBAudioscrobbler *audioscrobbler = RB_AUDIOSCROBBLER(user_data);
 
@@ -1052,8 +1079,13 @@ rb_g_queue_concat (GQueue *q1, GQueue *q2)
 	}
 }
 
+#if defined(HAVE_LIBSOUP_2_4)
+static void
+rb_audioscrobbler_submit_queue_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
+#else
 static void
 rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data)
+#endif
 {
 	RBAudioscrobbler *audioscrobbler = RB_AUDIOSCROBBLER (user_data);
 
@@ -1235,7 +1267,7 @@ static void
 rb_audioscrobbler_proxy_config_changed_cb (RBProxyConfig *config,
 					   RBAudioscrobbler *audioscrobbler)
 {
-	SoupUri *uri;
+	SoupURI *uri;
 
 	if (audioscrobbler->priv->soup_session) {
 		uri = rb_proxy_config_get_libsoup_uri (config);

@@ -24,8 +24,8 @@
 #include <glib-object.h>
 
 #if defined(HAVE_LIBSOUP)
+#include "rb-soup-compat.h"
 #include <libsoup/soup.h>
-#include <libsoup/soup-uri.h>
 #endif
 
 G_BEGIN_DECLS
@@ -65,9 +65,7 @@ GType		rb_proxy_config_get_type (void);
 
 RBProxyConfig *	rb_proxy_config_new (void);
 
-#if defined(HAVE_LIBSOUP)
-SoupUri *	rb_proxy_config_get_libsoup_uri (RBProxyConfig *config);
-#endif
+SoupURI *	rb_proxy_config_get_libsoup_uri (RBProxyConfig *config);
 
 #endif	/* RB_PROXY_CONFIG_H */
 
