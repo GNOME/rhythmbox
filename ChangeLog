@@ -1,3 +1,9 @@
+2008-02-13  Jonathan Matthew  <jonathan@d14n.org>
+
+	* widgets/rb-search-entry.c: (rb_search_entry_check_style):
+	Make the text in the search box black, regardless of theme colour,
+	since we make the background yellow the same way.  Fixes #414699.
+
 2008-02-11  Jonathan Matthew  <jonathan@d14n.org>
 
 	interesting parts of patch by:  Dan Winship  <danw@gnome.org>

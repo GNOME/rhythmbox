@@ -192,23 +192,19 @@ rb_search_entry_set_text (RBSearchEntry *entry, const char *text)
 static void
 rb_search_entry_check_style (RBSearchEntry *entry)
 {
-	/*GdkColor fg_colour;*/
-	GdkColor bg_colour;
-	static const GdkColor fallback_bg_colour = { 0, 0xf7f7, 0xf7f7, 0xbebe }; /* yellow-ish */
+	static const GdkColor bg_colour = { 0, 0xf7f7, 0xf7f7, 0xbebe }; /* yellow-ish */
+	static const GdkColor fg_colour = { 0, 0, 0, 0 }; /* black. */
 	const gchar* text;
 
 	if (entry->priv->is_a11y_theme)
 		return;
 
-	/*fg_colour = GTK_WIDGET(entry)->style->text[GTK_STATE_NORMAL];*/
-	bg_colour = fallback_bg_colour;
-
 	text = gtk_entry_get_text (GTK_ENTRY (entry->priv->entry));
 	if (text && *text) {
-		/*gtk_widget_modify_text (entry->priv->entry, GTK_STATE_NORMAL, &fg_colour);*/
+		gtk_widget_modify_text (entry->priv->entry, GTK_STATE_NORMAL, &fg_colour);
 		gtk_widget_modify_base (entry->priv->entry, GTK_STATE_NORMAL, &bg_colour);
 	} else {
-		/*gtk_widget_modify_text (entry->priv->entry, GTK_STATE_NORMAL, NULL);*/
+		gtk_widget_modify_text (entry->priv->entry, GTK_STATE_NORMAL, NULL);
 		gtk_widget_modify_base (entry->priv->entry, GTK_STATE_NORMAL, NULL);
 	}
 
