@@ -1,3 +1,8 @@
+2008-02-15  Jonathan Matthew  <jonathan@d14n.org>
+
+	* lib/rb-proxy-config.h:  Add missing #if defined(HAVE_LIBSOUP) so
+	people can build without libsoup if they really really want to.
+
 2008-02-13  Jonathan Matthew  <jonathan@d14n.org>
 
 	* widgets/rb-search-entry.c: (rb_search_entry_check_style):

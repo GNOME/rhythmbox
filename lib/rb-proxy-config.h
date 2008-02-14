@@ -65,7 +65,9 @@ GType		rb_proxy_config_get_type (void);
 
 RBProxyConfig *	rb_proxy_config_new (void);
 
+#if defined(HAVE_LIBSOUP)
 SoupURI *	rb_proxy_config_get_libsoup_uri (RBProxyConfig *config);
+#endif
 
 #endif	/* RB_PROXY_CONFIG_H */
 
