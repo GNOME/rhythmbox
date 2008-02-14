@@ -1233,7 +1233,7 @@ rb_ipod_song_artwork_add_cb (RhythmDB *db,
 	
 	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (query_model),
                                 RHYTHMDB_QUERY_PROP_EQUALS,
-                                RHYTHMDB_PROP_ENTRY_ID, entry_type,
+                                RHYTHMDB_PROP_TYPE, entry_type,
 				RHYTHMDB_QUERY_PROP_EQUALS,
 				RHYTHMDB_PROP_ARTIST, song->artist,
 				RHYTHMDB_QUERY_PROP_EQUALS,

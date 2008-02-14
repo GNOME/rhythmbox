@@ -1,5 +1,10 @@
 2008-02-15  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/ipod/rb-ipod-source.c: (rb_ipod_song_artwork_add_cb):
+	Fix subtly broken DB query so it has a chance of working now.
+
+2008-02-15  Jonathan Matthew  <jonathan@d14n.org>
+
 	* lib/rb-proxy-config.h:  Add missing #if defined(HAVE_LIBSOUP) so
 	people can build without libsoup if they really really want to.
 
