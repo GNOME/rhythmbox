@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-01 13:05+0200\n"
-"PO-Revision-Date: 2008-02-01 13:07+0200\n"
+"POT-Creation-Date: 2008-02-18 01:29+0200\n"
+"PO-Revision-Date: 2008-02-18 01:30+0200\n"
 "Last-Translator: Ihar Hrachyshka <ihar.hrachyshka@gmail.com>\n"
 "Language-Team: Belarusian Latin <i18n@mova.org>\n"
 "MIME-Version: 1.0\n"
@@ -490,7 +490,7 @@ msgstr "Niadaŭna vykananyja"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:199
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1486
-#: ../shell/rb-shell-player.c:2641 ../shell/rb-shell.c:1029
+#: ../shell/rb-shell-player.c:2644 ../shell/rb-shell.c:1029
 #: ../shell/rb-shell.c:2122 ../shell/rb-tray-icon.c:43
 msgid "Music Player"
 msgstr "Muzyčny player"
@@ -556,10 +556,10 @@ msgstr "%b %d %Y"
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:134
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:135
 #: ../plugins/audiocd/rb-audiocd-source.c:220
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:529
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:533
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:553
-#: ../plugins/daap/rb-daap-connection.c:677
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:538
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:542
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:562
+#: ../plugins/daap/rb-daap-connection.c:691
 #: ../plugins/generic-player/rb-generic-player-source.c:1103
 #: ../plugins/ipod/rb-ipod-source.c:293
 #: ../plugins/iradio/rb-iradio-source.c:501
@@ -573,7 +573,7 @@ msgstr "%b %d %Y"
 #: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1237
 #: ../rhythmdb/rhythmdb-tree.c:1241 ../rhythmdb/rhythmdb-tree.c:1245
 #: ../rhythmdb/rhythmdb-tree.c:1249 ../rhythmdb/rhythmdb.c:1460
-#: ../shell/rb-shell-player.c:1526 ../shell/rb-shell.c:3038
+#: ../shell/rb-shell-player.c:1529 ../shell/rb-shell.c:3038
 #: ../sources/rb-podcast-source.c:1631 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:862 ../widgets/rb-entry-view.c:1146
 #: ../widgets/rb-entry-view.c:1158 ../widgets/rb-entry-view.c:1170
@@ -826,7 +826,7 @@ msgid "Could not create CD lookup thread"
 msgstr "Niemahčyma stvaryć nić pošuku CD"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:521
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:526
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -864,7 +864,7 @@ msgid "Last.fm Profile"
 msgstr "Profil Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1115
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1150
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
 #: ../rhythmdb/rhythmdb.c:3147 ../widgets/rb-entry-view.c:785
 #: ../widgets/rb-entry-view.c:1204 ../widgets/rb-entry-view.c:1217
@@ -908,130 +908,130 @@ msgstr "http://last.fm/group/Rhythmbox"
 msgid "Audioscrobbler preferences"
 msgstr "Nałady dla Audioscrobbler"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1138
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1173
 msgid "OK"
 msgstr "OK"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1141
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1176
 msgid "Logging in"
 msgstr "Uvachod"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1144
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1179
 msgid "Request failed"
 msgstr "Pamyłka zapytu"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1147
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1182
 msgid "Incorrect username"
 msgstr "Niapravilnaja nazva karystalnika"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1150
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1185
 msgid "Incorrect password"
 msgstr "Niapravilny parol"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1153
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:583
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1188
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:588
 msgid "Handshake failed"
 msgstr "Pamyłka pocisku ruki"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1156
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1191
 msgid "Client update required"
 msgstr "Vymahaje aktualizacyi klijenta"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1159
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1194
 msgid "Track submission failed"
 msgstr "Pamyłka dasyłańnia ściežki"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1162
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1197
 msgid "Queue is too long"
 msgstr "Čarha nadta daŭhaja"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1165
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1200
 msgid "Track submission failed too many times"
 msgstr "Pamyłka dasyłańnia ściežki adbyłasia nadta šmat razoŭ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:151
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:156
 msgid "Similar Artists radio"
 msgstr "Radyjo z padobnymi vykanaŭcami"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:151
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1068
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:156
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1093
 #, c-format
 msgid "Artists similar to %s"
 msgstr "Vykanaŭcy, padobnyja da %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:152
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:157
 msgid "Tag radio"
 msgstr "Radyjo tagaŭ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:152
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:157
 #, c-format
 msgid "Tracks tagged with %s"
 msgstr "Ściežki, paznačanyja jak %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:153
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:158
 msgid "Artist Fan radio"
 msgstr "Radyjo dla amataraŭ vykanaŭcy"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:153
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1070
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:158
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1095
 #, c-format
 msgid "Artists liked by fans of %s"
 msgstr "Vykanaŭcy, jakija padabajucca amataram %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:154
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:159
 msgid "Group radio"
 msgstr "Hrupavoje radyjo"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:154
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:159
 #, c-format
 msgid "Tracks liked by the %s group"
 msgstr "Ściežki, jakija padabajucca hrupie %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:214
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:219
 msgid "Next Song"
 msgstr "Nastupnaja pieśnia"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:215
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:220
 msgid "Skip the current track"
 msgstr "Prapuści dziejnuju ściežku"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:217
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:222
 msgid "Love Song"
 msgstr "Ulubionaja pieśnia"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:218
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:223
 msgid "Mark this song as loved"
 msgstr "Paznač hetuju pieśniu ŭlubionaj"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:220
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:225
 msgid "Ban Song"
 msgstr "Zabarani pieśniu"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:221
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:226
 msgid "Ban the current track from being played again"
 msgstr "Zabarani vykanańnie dziejnaj ściežki nadalej"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:341
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:346
 msgid "Enter the item to build a Last.fm station out of:"
 msgstr "Akreśl element, ź jakoha stvaryć stancyju Last.fm:"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:344
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:349
 msgid "Add"
 msgstr "Dadaj"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:539
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:544
 msgid "Neighbour Radio"
 msgstr "Susiedzkaje radyjo"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:579
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:584
 msgid "No such artist.  Check your spelling"
 msgstr "Niama takoha vykanaŭcy. Pravier pravapis"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:587
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:592
 msgid "The server marked you as banned"
 msgstr "Server zabaniŭ ciabie"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:600
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:605
 #: ../plugins/iradio/rb-iradio-source.c:570
 #, c-format
 msgid "%d station"
@@ -1040,44 +1040,44 @@ msgstr[0] "%d stancyja"
 msgstr[1] "%d stancyi"
 msgstr[2] "%d stancyj"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:980
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1005
 msgid "Marking song loved..."
 msgstr "Paznačeńnie pieśni jak ŭlubionaj..."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:994
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1019
 msgid "Skipping song..."
 msgstr "Propusk pieśni..."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1010
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1035
 msgid "Banning song..."
 msgstr "Zabarona pieśni..."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1059
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1084
 #, c-format
 msgid "Global Tag %s"
 msgstr "Hlabalny tag %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1078
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1103
 #, c-format
 msgid "%s's Neighbour Radio"
 msgstr "Susiedzkaje radyjo dla %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1080
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1105
 #, c-format
 msgid "%s's Recommended Radio: %s percent"
 msgstr "Rekamendavanaje radyjo dla %s: %s pracentaŭ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1082
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1107
 #, c-format
 msgid "%s's Personal Radio"
 msgstr "Persanalnaje radyjo %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1088
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1113
 #, c-format
 msgid "%s's %s Radio"
 msgstr "Radyjo dla %s, %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1092
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1117
 #, c-format
 msgid "%s Group Radio"
 msgstr "Hrupavoje radyjo %s"
@@ -1511,15 +1511,16 @@ msgstr "_Zrabi niekalki kopij"
 
 #: ../plugins/coherence/coherence.rb-plugin.in.h:1
 msgid ""
-"Adds support for playing media from, and sending media to UPnP/DLNA network "
-"devices"
+"Adds support for playing media from and sending media to DLNA/UPnP network "
+"devices, and enables Rhythmbox to be controlled by a DLNA/UPnP ControlPoint"
 msgstr ""
-"Dadaje padtrymku vykanańnia medyjaŭ ź sietkavych pryładaŭ UPnP/DLNA i ich "
-"dasyłańnie tudy"
+"Dadaje padtrymku vykanańnia medyjaŭ ź sietkavych pryładaŭ DLNA/UPnP i ich "
+"dasyłańnie tudy, i dadaje mahčymaść kiravańnia Rhythmboksam praz DLNA/UPnP "
+"ControlPoint"
 
 #: ../plugins/coherence/coherence.rb-plugin.in.h:2
-msgid "UPnP sharing support"
-msgstr "Padtrymka supolnaha UPnP"
+msgid "DLNA/UPnP sharing and control support"
+msgstr "Padtrymka supolnych resursaŭ i kiravańnia praz DLNA/UPnP"
 
 #: ../plugins/daap/daap.rb-plugin.in.h:1
 msgid "DAAP Music Sharing"
@@ -1634,15 +1635,15 @@ msgstr "Niemahčyma spałučycca z supolnaj muzykaj"
 msgid "Unable to resolve hostname %s"
 msgstr "Niemahčyma vyjaśnić nazvu kamputara %s"
 
-#: ../plugins/daap/rb-daap-plugin.c:660
+#: ../plugins/daap/rb-daap-plugin.c:663
 msgid "New DAAP share"
 msgstr "Novy resurs DAAP"
 
-#: ../plugins/daap/rb-daap-plugin.c:660
+#: ../plugins/daap/rb-daap-plugin.c:663
 msgid "Host:port of DAAP share:"
 msgstr "Host:port dla resursu DAAP:"
 
-#: ../plugins/daap/rb-daap-plugin.c:885
+#: ../plugins/daap/rb-daap-plugin.c:888
 msgid "DAAP Music Sharing Preferences"
 msgstr "Nałady supolnaj muzyki DAAP"
 
@@ -1668,7 +1669,7 @@ msgstr "Uruchamleńnie spałučeńnia z muzyčnym resursam"
 msgid "Retrieving songs from music share"
 msgstr "Atrymańnie piesień z muzyčnaha resursu"
 
-#: ../plugins/daap/rb-daap-src.c:474
+#: ../plugins/daap/rb-daap-src.c:478
 #, c-format
 msgid "Connection to %s:%d refused."
 msgstr "Spałučeńnie z %s:%d admoŭlena."
@@ -1745,7 +1746,7 @@ msgstr "_Źmiani nazvu"
 msgid "Rename iPod"
 msgstr "Źmiani nazvu iPodu"
 
-#: ../plugins/ipod/rb-ipod-source.c:1285 ../sources/rb-podcast-source.c:806
+#: ../plugins/ipod/rb-ipod-source.c:1296 ../sources/rb-podcast-source.c:806
 msgid "Podcasts"
 msgstr "Podcasty"
 
@@ -3294,7 +3295,7 @@ msgstr "Pamienš hučnaść vykanańnia"
 msgid "_Play"
 msgstr "_Hraj"
 
-#: ../shell/rb-shell-player.c:309 ../shell/rb-shell-player.c:3372
+#: ../shell/rb-shell-player.c:309 ../shell/rb-shell-player.c:3375
 msgid "Start playback"
 msgstr "Pačni vykanańnie"
 
@@ -3322,84 +3323,84 @@ msgstr "_Paŭzunok pałažeńnia pieśni"
 msgid "Change the visibility of the song position slider"
 msgstr "Źmiani bačnaść paŭzunka pałažeńnia pieśni"
 
-#: ../shell/rb-shell-player.c:715
+#: ../shell/rb-shell-player.c:717
 msgid "Stream error"
 msgstr "Pamyłka płyni"
 
-#: ../shell/rb-shell-player.c:716
+#: ../shell/rb-shell-player.c:718
 msgid "Unexpected end of stream!"
 msgstr "Niečakany kaniec płyni!"
 
-#: ../shell/rb-shell-player.c:821
+#: ../shell/rb-shell-player.c:824
 msgid "Linear"
 msgstr "Paśladoŭny"
 
-#: ../shell/rb-shell-player.c:823
+#: ../shell/rb-shell-player.c:826
 msgid "Linear looping"
 msgstr "Paśladoŭny cykl"
 
-#: ../shell/rb-shell-player.c:825
+#: ../shell/rb-shell-player.c:828
 msgid "Shuffle"
 msgstr "Tasuj"
 
-#: ../shell/rb-shell-player.c:827
+#: ../shell/rb-shell-player.c:830
 msgid "Random with equal weights"
 msgstr "Vypadkova z roŭnaj vahoju "
 
-#: ../shell/rb-shell-player.c:829
+#: ../shell/rb-shell-player.c:832
 msgid "Random by time since last play"
 msgstr "Vypadkova pa časie ad apošniaha vykanańnia"
 
-#: ../shell/rb-shell-player.c:831
+#: ../shell/rb-shell-player.c:834
 msgid "Random by rating"
 msgstr "Vypadkova pa rejtynhu"
 
-#: ../shell/rb-shell-player.c:833
+#: ../shell/rb-shell-player.c:836
 msgid "Random by time since last play and rating"
 msgstr "Vypadkova pa časie ad apošniaha vykanańnia j rejtynhu"
 
-#: ../shell/rb-shell-player.c:835
+#: ../shell/rb-shell-player.c:838
 msgid "Linear, removing entries once played"
 msgstr "Paśladoŭna, vydalajučy ściežki paśla vykanańnia"
 
-#: ../shell/rb-shell-player.c:845
+#: ../shell/rb-shell-player.c:848
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Pamyłka stvareńnia playera: %s"
 
-#: ../shell/rb-shell-player.c:1346
+#: ../shell/rb-shell-player.c:1349
 msgid "Playlist was empty"
 msgstr "Śpis byŭ pustym"
 
-#: ../shell/rb-shell-player.c:1804
+#: ../shell/rb-shell-player.c:1807
 msgid "Not currently playing"
 msgstr "Dziejna nie vykonvajecca"
 
-#: ../shell/rb-shell-player.c:1842
+#: ../shell/rb-shell-player.c:1845
 msgid "No previous song"
 msgstr "Niama papiaredniaj pieśni"
 
-#: ../shell/rb-shell-player.c:1919
+#: ../shell/rb-shell-player.c:1922
 msgid "No next song"
 msgstr "Niama nastupnaj pieśni"
 
-#: ../shell/rb-shell-player.c:2034 ../shell/rb-shell-player.c:3017
+#: ../shell/rb-shell-player.c:2037 ../shell/rb-shell-player.c:3020
 msgid "Couldn't start playback"
 msgstr "Niemahčyma pačać vykanańnie"
 
-#: ../shell/rb-shell-player.c:2837
+#: ../shell/rb-shell-player.c:2840
 msgid "Couldn't stop playback"
 msgstr "Niemahčyma spynić vykanańnie"
 
-#: ../shell/rb-shell-player.c:2920
+#: ../shell/rb-shell-player.c:2923
 msgid "Playback position not available"
 msgstr "Pazycyja ŭ pieśni nieviadomaja"
 
-#: ../shell/rb-shell-player.c:2937
+#: ../shell/rb-shell-player.c:2940
 msgid "Current song is not seekable"
 msgstr "Niemahčyma skakać pa dziejnaj pieśni"
 
-#: ../shell/rb-shell-player.c:3370
+#: ../shell/rb-shell-player.c:3373
 msgid "Stop playback"
 msgstr "Spyni vykanańnie"
 
