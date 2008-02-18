@@ -710,7 +710,7 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 		return;
 	}
 
-	update_stats = TRUE;
+	update_stats = FALSE;
 	switch (rb_source_handle_eos (source)) {
 	case RB_SOURCE_EOF_ERROR:
 		if (allow_stop) {
@@ -718,12 +718,14 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 					 _("Unexpected end of stream!"));
 			rb_shell_player_set_playing_source (player, NULL);
 			player->priv->playing_entry_eos = TRUE;
+			update_stats = TRUE;
 		}
 		break;
 	case RB_SOURCE_EOF_STOP:
 		if (allow_stop) {
 			rb_shell_player_set_playing_source (player, NULL);
 			player->priv->playing_entry_eos = TRUE;
+			update_stats = TRUE;
 		}
 		break;
 	case RB_SOURCE_EOF_RETRY: {
@@ -755,6 +757,7 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 				rb_shell_player_play_entry (player, entry, NULL);
 			}
 			player->priv->playing_entry_eos = TRUE;
+			update_stats = TRUE;
 		}
 	}
 		break;
@@ -763,6 +766,7 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 			GError *error = NULL;
 
 			player->priv->playing_entry_eos = TRUE;
+			update_stats = TRUE;
 			if (!rb_shell_player_do_next_internal (player, TRUE, allow_stop, &error)) {
 				if (error->domain != RB_SHELL_PLAYER_ERROR ||
 				    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST) {

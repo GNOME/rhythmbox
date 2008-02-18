@@ -1,3 +1,9 @@
+2008-02-18  Jonathan Matthew  <jonathan@d14n.org>
+
+	* shell/rb-shell-player.c: (rb_shell_player_handle_eos_unlocked):
+	Fix stats update for ERROR, STOP and RETRY EOS actions so stats are
+	only updated once.
+
 2008-02-15  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/ipod/rb-ipod-source.c: (rb_ipod_song_artwork_add_cb):
