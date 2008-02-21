@@ -10,7 +10,7 @@ namespace RB {
 	}
 
 	[CCode (cheader_filename = "rb-plugin.h")]
-	public class Plugin : GLib.Object {
+	public abstract class Plugin : GLib.Object {
 		[NoArrayLength]
 		[CCode (cname = "rb_plugin_get_type")]
 		public static GLib.Type get_type ();
