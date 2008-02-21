@@ -54,7 +54,7 @@ In the bug report please include:
 
   If you have troubles importing a specific file to your library, try running:
 
-  $ gst-launch-0.10 -t urisrc location=/path/to/my/musicfile.ogg ! decodebin ! fakesink
+  $ gst-launch-0.10 -t uridecodebin uri=file:///path/to/my/musicfile.ogg  ! fakesink
  
   Just replace /path/to/my/musicfile.ogg with some sound file in the 2 commands
   above.
