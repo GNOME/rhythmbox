@@ -767,6 +767,40 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/desktop/gnome/url-handlers/lastfm/command</key>
+	<applyto>/desktop/gnome/url-handlers/lastfm/command</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>rhythmbox "%s"</default>
+        <locale name="C">
+	  <short>The command to handle LASTFM scheme URLs</short>
+	  <long>The command to handle LASTFM scheme URLs.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/lastfm/needs_terminal</key>
+	<applyto>/desktop/gnome/url-handlers/lastfm/needs_terminal</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+	  <short>Whether command to handle LASTFM scheme URLs needs a terminal</short>
+	  <long>Whether command to handle LASTFM scheme URLs needs a terminal.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/lastfm/enabled</key>
+	<applyto>/desktop/gnome/url-handlers/lastfm/enabled</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>true</default>
+        <locale name="C">
+	  <short>Whether command to handle LASTFM scheme URLs is enabled</short>
+	  <long>Whether command to handle LASTFM scheme URLs is enabled.</long>
+        </locale>
+      </schema>
+
+      <schema>
         <key>/schemas/apps/rhythmbox/plugins/pythonconsole/active</key>
         <applyto>/apps/rhythmbox/plugins/pythonconsole/active</applyto>
         <owner>rhythmbox</owner>
