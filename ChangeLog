@@ -1,3 +1,9 @@
+2008-02-24  Jonathan Matthew  <jonathan@d14n.org>
+
+	* shell/rb-shell-player.c: (rb_shell_player_open_location):
+	When switching to a new entry, always clear out the playlist URL
+	queue, and create a new one if appropriate.  From #490122.
+
 2008-02-21  Bastien Nocera  <hadess@hadess.net>
 
 	* README: Fix command to debug imports, don't know how that ever

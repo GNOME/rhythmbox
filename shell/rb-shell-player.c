@@ -1383,6 +1383,18 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	gboolean was_playing;
 	gboolean ret = TRUE;
 
+	/* dispose of any existing playlist urls */
+	if (player->priv->playlist_urls) {
+		g_queue_foreach (player->priv->playlist_urls,
+				 (GFunc) g_free,
+				 NULL);
+		g_queue_free (player->priv->playlist_urls);
+		player->priv->playlist_urls = NULL;
+	}
+	if (rb_source_try_playlist (player->priv->source)) {
+		player->priv->playlist_urls = g_queue_new ();
+	}
+
 	location = rhythmdb_entry_get_playback_uri (entry);
 	if (location == NULL) {
 		return FALSE;
@@ -1397,16 +1409,6 @@ rb_shell_player_open_location (RBShellPlayer *player,
 		data->player = player;
 		data->play_type = play_type;
 		data->entry = entry;
-
-		/* dispose of any existing playlist urls */
-		if (player->priv->playlist_urls) {
-			g_queue_foreach (player->priv->playlist_urls,
-					 (GFunc) g_free,
-					 NULL);
-			g_queue_free (player->priv->playlist_urls);
-			player->priv->playlist_urls = NULL;
-		}
-		player->priv->playlist_urls = g_queue_new ();
 
 		/* add http:// as a prefix, if it doesn't have a URI scheme */
 		if (strstr (location, "://"))
