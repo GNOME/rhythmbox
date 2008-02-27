@@ -1,3 +1,11 @@
+2008-02-27  Jonathan Matthew  <jonathan@d14n.org>
+
+	* sources/rb-streaming-source.c: (rb_streaming_source_class_init):
+	This class shouldn't return TRUE from impl_can_search, as it knows
+	nothing about whether its subclasses can search.  This removes the
+	search bar from the last.fm source, which is OK because it didn't work
+	anyway.  See bug #430995.
+
 2008-02-23  Bastien Nocera  <hadess@hadess.net>
 
 	* data/rhythmbox.schemas: Add handlers for lastfm:// URIs,
