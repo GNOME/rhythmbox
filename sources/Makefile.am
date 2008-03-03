@@ -60,7 +60,8 @@ INCLUDES =						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(HAL_CFLAGS)					\
-	$(RHYTHMBOX_CFLAGS)
+	$(RHYTHMBOX_CFLAGS)				\
+	$(NO_STRICT_ALIASING_CFLAGS)
 
 libsources_la_LDFLAGS = -export-dynamic
 libsourcesimpl_la_LDFLAGS = -export-dynamic

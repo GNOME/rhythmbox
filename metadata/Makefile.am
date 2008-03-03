@@ -8,7 +8,8 @@ INCLUDES = 						\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
 	-I$(top_srcdir)/widgets				\
-	$(RHYTHMBOX_CFLAGS)
+	$(RHYTHMBOX_CFLAGS)				\
+	$(NO_STRICT_ALIASING_CFLAGS)
 
 if WITH_METADATA_HELPER
 

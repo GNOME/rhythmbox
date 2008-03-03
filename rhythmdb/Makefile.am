@@ -15,7 +15,8 @@ INCLUDES = 						\
 	-I$(top_srcdir)/metadata			\
 	-I$(top_builddir)/lib                           \
 	$(GDA_CFLAGS)					\
-	$(RHYTHMBOX_CFLAGS)
+	$(RHYTHMBOX_CFLAGS)				\
+	$(NO_STRICT_ALIASING_CFLAGS)
 
 librhythmdb_la_SOURCES =				\
 	rb-refstring.c					\

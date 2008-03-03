@@ -1,3 +1,10 @@
+2008-03-03  Bastien Nocera  <hadess@hadess.net>
+
+	* metadata/Makefile.am:
+	* rhythmdb/Makefile.am:
+	* sources/Makefile.am: Use -fno-strict-aliasing for those
+	directories when the compiler supports it
+
 2008-02-27  Jonathan Matthew  <jonathan@d14n.org>
 
 	* sources/rb-streaming-source.c: (rb_streaming_source_class_init):
