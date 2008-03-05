@@ -7,7 +7,7 @@
 # Christophe Fergeau <teuf@users.sourceforge.net>, 2002.
 # Gildas Guillemot <g.guillemot@laposte.net>, 2003.
 # Laurent Richard <laurent.richard@ael.be>, 2003.
-# Stéphane Raimbault <stephane.raimbault@gmail.com>, 2004-2005, 2007.
+# Stéphane Raimbault <stephane.raimbault@gmail.com>, 2004-2005, 2007-2008.
 # Christophe Bliard <christophe.bliard@trux.info>, 2005, 2007.
 # Haïkel Guémar <karlthered@gmail.com>, 2006.
 # Damien Durand <splinux@fedoraproject.org>, 2006.
@@ -20,9 +20,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-26 22:02+0100\n"
-"PO-Revision-Date: 2008-01-26 22:21+0100\n"
-"Last-Translator: Claude Paroz <claude@2xlibre.net>\n"
+"POT-Creation-Date: 2008-03-06 00:15+0100\n"
+"PO-Revision-Date: 2008-03-06 00:17+0100\n"
+"Last-Translator: Stéphane Raimbault <stephane.raimbault@gmail.com>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -514,14 +514,15 @@ msgstr "Récemment lu"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:199
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1486
-#: ../shell/rb-shell-player.c:2641 ../shell/rb-shell.c:1029
+#: ../shell/rb-shell-player.c:2650 ../shell/rb-shell.c:1029
 #: ../shell/rb-shell.c:2122 ../shell/rb-tray-icon.c:43
 msgid "Music Player"
 msgstr "Lecteur de musique"
 
+# Utilisation de l'infinitif dans les infobulles du Bureau
 #: ../data/rhythmbox.desktop.in.in.h:2
 msgid "Play and organize your music collection"
-msgstr "Joue et organise votre collection musicale"
+msgstr "Lire et organiser votre collection musicale"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
@@ -580,10 +581,10 @@ msgstr "%d %b %Y"
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:134
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:135
 #: ../plugins/audiocd/rb-audiocd-source.c:220
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:529
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:533
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:553
-#: ../plugins/daap/rb-daap-connection.c:677
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:538
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:542
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:562
+#: ../plugins/daap/rb-daap-connection.c:691
 #: ../plugins/generic-player/rb-generic-player-source.c:1103
 #: ../plugins/ipod/rb-ipod-source.c:293
 #: ../plugins/iradio/rb-iradio-source.c:501
@@ -597,7 +598,7 @@ msgstr "%d %b %Y"
 #: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1237
 #: ../rhythmdb/rhythmdb-tree.c:1241 ../rhythmdb/rhythmdb-tree.c:1245
 #: ../rhythmdb/rhythmdb-tree.c:1249 ../rhythmdb/rhythmdb.c:1460
-#: ../shell/rb-shell-player.c:1526 ../shell/rb-shell.c:3038
+#: ../shell/rb-shell-player.c:1535 ../shell/rb-shell.c:3038
 #: ../sources/rb-podcast-source.c:1631 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:862 ../widgets/rb-entry-view.c:1146
 #: ../widgets/rb-entry-view.c:1158 ../widgets/rb-entry-view.c:1170
@@ -869,7 +870,7 @@ msgid "Could not create CD lookup thread"
 msgstr "Impossible de créer le thread de recherche de CD"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:521
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:526
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -907,9 +908,9 @@ msgid "Last.fm Profile"
 msgstr "Profil Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1115
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1150
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../rhythmdb/rhythmdb.c:3142 ../widgets/rb-entry-view.c:785
+#: ../rhythmdb/rhythmdb.c:3147 ../widgets/rb-entry-view.c:785
 #: ../widgets/rb-entry-view.c:1204 ../widgets/rb-entry-view.c:1217
 #: ../widgets/rb-song-info.c:1209
 msgid "Never"
@@ -951,130 +952,130 @@ msgstr "http://last.fm/group/Rhythmbox"
 msgid "Audioscrobbler preferences"
 msgstr "Préférences Audioscrobbler"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1138
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1173
 msgid "OK"
 msgstr "OK"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1141
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1176
 msgid "Logging in"
 msgstr "Connecté"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1144
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1179
 msgid "Request failed"
 msgstr "La requête a échoué"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1147
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1182
 msgid "Incorrect username"
 msgstr "Nom d'utilisateur incorrect"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1150
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1185
 msgid "Incorrect password"
 msgstr "Mot de passe incorrect"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1153
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:583
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1188
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:588
 msgid "Handshake failed"
 msgstr "La poignée de main a échoué"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1156
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1191
 msgid "Client update required"
 msgstr "Mise à jour du client requise"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1159
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1194
 msgid "Track submission failed"
 msgstr "La soumission du morceau a échoué"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1162
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1197
 msgid "Queue is too long"
 msgstr "La file d'attente est trop longue"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1165
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1200
 msgid "Track submission failed too many times"
 msgstr "La soumission du morceau a échoué à trop de reprises"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:151
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:156
 msgid "Similar Artists radio"
 msgstr "Radio d'artistes similaires"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:151
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1068
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:156
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1093
 #, c-format
 msgid "Artists similar to %s"
 msgstr "Artistes similaires à %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:152
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:157
 msgid "Tag radio"
 msgstr "Étiqueter la radio"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:152
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:157
 #, c-format
 msgid "Tracks tagged with %s"
 msgstr "Titres étiquetés avec %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:153
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:158
 msgid "Artist Fan radio"
 msgstr "Radio des fans de l'artiste"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:153
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1070
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:158
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1095
 #, c-format
 msgid "Artists liked by fans of %s"
 msgstr "Artistes appréciés par les fans de %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:154
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:159
 msgid "Group radio"
 msgstr "Radio du groupe"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:154
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:159
 #, c-format
 msgid "Tracks liked by the %s group"
 msgstr "Morceaux appréciés par le groupe %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:214
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:219
 msgid "Next Song"
 msgstr "Prochain morceau"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:215
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:220
 msgid "Skip the current track"
 msgstr "Saute le morceau actuel"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:217
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:222
 msgid "Love Song"
 msgstr "Morceau apprécié"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:218
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:223
 msgid "Mark this song as loved"
 msgstr "Marque ce morceau comme apprécié"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:220
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:225
 msgid "Ban Song"
 msgstr "Bannir le morceau"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:221
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:226
 msgid "Ban the current track from being played again"
 msgstr "Bannit le morceau actuel pour qu'il ne soit pas lu à l'avenir"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:341
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:346
 msgid "Enter the item to build a Last.fm station out of:"
 msgstr "Saisissez l'élément à partir duquel créer une station Last.fm :"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:344
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:349
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:539
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:544
 msgid "Neighbour Radio"
 msgstr "Radio voisine"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:579
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:584
 msgid "No such artist.  Check your spelling"
 msgstr "Aucun artiste trouvé. Vérifiez l'orthographe."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:587
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:592
 msgid "The server marked you as banned"
 msgstr "Le serveur vous a banni"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:600
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:605
 #: ../plugins/iradio/rb-iradio-source.c:570
 #, c-format
 msgid "%d station"
@@ -1082,44 +1083,44 @@ msgid_plural "%d stations"
 msgstr[0] "%d station"
 msgstr[1] "%d stations"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:980
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1005
 msgid "Marking song loved..."
 msgstr "Marque le morceau comme apprécié..."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:994
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1019
 msgid "Skipping song..."
 msgstr "Saute le morceau..."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1010
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1035
 msgid "Banning song..."
 msgstr "Bannissement du morceau..."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1059
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1084
 #, c-format
 msgid "Global Tag %s"
 msgstr "Étiquette globale %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1078
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1103
 #, c-format
 msgid "%s's Neighbour Radio"
 msgstr "Radio voisine de %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1080
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1105
 #, c-format
 msgid "%s's Recommended Radio: %s percent"
 msgstr "Radio recommandée par %s : %s pourcent"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1082
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1107
 #, c-format
 msgid "%s's Personal Radio"
 msgstr "Radio personnelle de %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1088
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1113
 #, c-format
 msgid "%s's %s Radio"
 msgstr "Radio %2$s de %1$s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1092
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1117
 #, c-format
 msgid "%s Group Radio"
 msgstr "Radio du groupe %s"
@@ -1564,19 +1565,19 @@ msgstr "Gravure avec le _périphérique :"
 
 #: ../plugins/cd-recorder/recorder.glade.h:6
 msgid "_Make multiple copies"
-msgstr "Effectuer des p_lusieurs copies"
+msgstr "Effectuer p_lusieurs copies"
 
 #: ../plugins/coherence/coherence.rb-plugin.in.h:1
 msgid ""
-"Adds support for playing media from, and sending media to UPnP/DLNA network "
-"devices"
+"Adds support for playing media from and sending media to DLNA/UPnP network "
+"devices, and enables Rhythmbox to be controlled by a DLNA/UPnP ControlPoint"
 msgstr ""
 "Ajoute la prise en charge de la lecture et de l'envoi de fichiers médias à "
 "des périphériques réseau UPnP/DLNA"
 
 #: ../plugins/coherence/coherence.rb-plugin.in.h:2
-msgid "UPnP sharing support"
-msgstr "Prise en charge du partage UPnP"
+msgid "DLNA/UPnP sharing and control support"
+msgstr "Prise en charge du partage DLNA/UPnP"
 
 #: ../plugins/daap/daap.rb-plugin.in.h:1
 msgid "DAAP Music Sharing"
@@ -1693,15 +1694,15 @@ msgstr "Impossible de se connecter au partage de musique"
 msgid "Unable to resolve hostname %s"
 msgstr "Impossible de résoudre le nom d'hôte « %s »"
 
-#: ../plugins/daap/rb-daap-plugin.c:660
+#: ../plugins/daap/rb-daap-plugin.c:663
 msgid "New DAAP share"
 msgstr "Nouveau partage DAAP"
 
-#: ../plugins/daap/rb-daap-plugin.c:660
+#: ../plugins/daap/rb-daap-plugin.c:663
 msgid "Host:port of DAAP share:"
 msgstr "Hôte:port du partage DAAP :"
 
-#: ../plugins/daap/rb-daap-plugin.c:885
+#: ../plugins/daap/rb-daap-plugin.c:888
 msgid "DAAP Music Sharing Preferences"
 msgstr "Préférences du partage de musique DAAP"
 
@@ -1728,7 +1729,7 @@ msgstr "Connexion au partage de musique"
 msgid "Retrieving songs from music share"
 msgstr "Récupération des morceaux depuis le partage de musique"
 
-#: ../plugins/daap/rb-daap-src.c:474
+#: ../plugins/daap/rb-daap-src.c:478
 #, c-format
 msgid "Connection to %s:%d refused."
 msgstr "Connexion refusée sur %s:%d."
@@ -1808,7 +1809,7 @@ msgstr "_Renommer"
 msgid "Rename iPod"
 msgstr "Renommer l'iPod"
 
-#: ../plugins/ipod/rb-ipod-source.c:1285 ../sources/rb-podcast-source.c:806
+#: ../plugins/ipod/rb-ipod-source.c:1296 ../sources/rb-podcast-source.c:806
 msgid "Podcasts"
 msgstr "Podcasts"
 
@@ -3025,29 +3026,29 @@ msgstr "Impossible d'accéder à %s : %s"
 msgid "<invalid filename>"
 msgstr "<nom de fichier non valide>"
 
-#: ../rhythmdb/rhythmdb.c:1860
+#: ../rhythmdb/rhythmdb.c:1863
 msgid "invalid unicode in error message"
 msgstr "Unicode non valide dans le message d'erreur"
 
-#: ../rhythmdb/rhythmdb.c:2631
+#: ../rhythmdb/rhythmdb.c:2636
 msgid "Could not load the music database"
 msgstr "Impossible de charger la base de données musicale."
 
-#: ../rhythmdb/rhythmdb.c:4080
+#: ../rhythmdb/rhythmdb.c:4085
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minute"
 msgstr[1] "%ld minutes"
 
-#: ../rhythmdb/rhythmdb.c:4081
+#: ../rhythmdb/rhythmdb.c:4086
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld heure"
 msgstr[1] "%ld heures"
 
-#: ../rhythmdb/rhythmdb.c:4082
+#: ../rhythmdb/rhythmdb.c:4087
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3055,7 +3056,7 @@ msgstr[0] "%ld jour"
 msgstr[1] "%ld jours"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4088
+#: ../rhythmdb/rhythmdb.c:4093
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s et %s"
@@ -3063,8 +3064,8 @@ msgstr "%s, %s et %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4094 ../rhythmdb/rhythmdb.c:4102
-#: ../rhythmdb/rhythmdb.c:4113
+#: ../rhythmdb/rhythmdb.c:4099 ../rhythmdb/rhythmdb.c:4107
+#: ../rhythmdb/rhythmdb.c:4118
 #, c-format
 msgid "%s and %s"
 msgstr "%s et %s"
@@ -3382,7 +3383,7 @@ msgstr "Diminue le volume de lecture"
 msgid "_Play"
 msgstr "_Lire"
 
-#: ../shell/rb-shell-player.c:309 ../shell/rb-shell-player.c:3372
+#: ../shell/rb-shell-player.c:309 ../shell/rb-shell-player.c:3381
 msgid "Start playback"
 msgstr "Démarre la lecture"
 
@@ -3412,90 +3413,90 @@ msgstr "Glissière de position du _morceau"
 msgid "Change the visibility of the song position slider"
 msgstr "Modifie la visibilité de la glissière de position du morceau"
 
-#: ../shell/rb-shell-player.c:715
+#: ../shell/rb-shell-player.c:717
 msgid "Stream error"
 msgstr "Erreur de flux"
 
-#: ../shell/rb-shell-player.c:716
+#: ../shell/rb-shell-player.c:718
 msgid "Unexpected end of stream!"
 msgstr "Fin inattendue du flux."
 
-#: ../shell/rb-shell-player.c:821
+#: ../shell/rb-shell-player.c:828
 msgid "Linear"
 msgstr "Linéaire"
 
-#: ../shell/rb-shell-player.c:823
+#: ../shell/rb-shell-player.c:830
 msgid "Linear looping"
 msgstr "Boucle linéaire"
 
-#: ../shell/rb-shell-player.c:825
+#: ../shell/rb-shell-player.c:832
 msgid "Shuffle"
 msgstr "Aléatoire"
 
-#: ../shell/rb-shell-player.c:827
+#: ../shell/rb-shell-player.c:834
 msgid "Random with equal weights"
 msgstr "Aléatoire avec équiprobabilité"
 
-#: ../shell/rb-shell-player.c:829
+#: ../shell/rb-shell-player.c:836
 msgid "Random by time since last play"
 msgstr "Aléatoire en fonction de la date de dernière écoute"
 
-#: ../shell/rb-shell-player.c:831
+#: ../shell/rb-shell-player.c:838
 msgid "Random by rating"
 msgstr "Aléatoire en fonction de la notation"
 
-#: ../shell/rb-shell-player.c:833
+#: ../shell/rb-shell-player.c:840
 msgid "Random by time since last play and rating"
 msgstr "Aléatoire en fonction de la date de dernière écoute et de la notation"
 
-#: ../shell/rb-shell-player.c:835
+#: ../shell/rb-shell-player.c:842
 msgid "Linear, removing entries once played"
 msgstr "Linéaire, enlève les entrées une fois jouées"
 
-#: ../shell/rb-shell-player.c:845
+#: ../shell/rb-shell-player.c:852
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "La création du lecteur a échoué : %s"
 
-#: ../shell/rb-shell-player.c:1346
+#: ../shell/rb-shell-player.c:1353
 #, c-format
 msgid "Playlist was empty"
 msgstr "La liste de lecture est vide"
 
-#: ../shell/rb-shell-player.c:1804
+#: ../shell/rb-shell-player.c:1813
 #, c-format
 msgid "Not currently playing"
 msgstr "Ne joue pas"
 
-#: ../shell/rb-shell-player.c:1842
+#: ../shell/rb-shell-player.c:1851
 #, c-format
 msgid "No previous song"
 msgstr "Aucun morceau précédent"
 
-#: ../shell/rb-shell-player.c:1919
+#: ../shell/rb-shell-player.c:1928
 #, c-format
 msgid "No next song"
 msgstr "Aucun morceau suivant"
 
-#: ../shell/rb-shell-player.c:2034 ../shell/rb-shell-player.c:3017
+#: ../shell/rb-shell-player.c:2043 ../shell/rb-shell-player.c:3026
 msgid "Couldn't start playback"
 msgstr "Impossible de démarrer la lecture"
 
-#: ../shell/rb-shell-player.c:2837
+#: ../shell/rb-shell-player.c:2846
 msgid "Couldn't stop playback"
 msgstr "Impossible d'arrêter la lecture"
 
-#: ../shell/rb-shell-player.c:2920
+#: ../shell/rb-shell-player.c:2929
 #, c-format
 msgid "Playback position not available"
 msgstr "La position de lecture n'est pas disponible"
 
-#: ../shell/rb-shell-player.c:2937
+#: ../shell/rb-shell-player.c:2946
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Le morceau actuel ne peut pas être parcouru"
 
-#: ../shell/rb-shell-player.c:3370
+#: ../shell/rb-shell-player.c:3379
 msgid "Stop playback"
 msgstr "Arrête la lecture"
 
@@ -4212,11 +4213,11 @@ msgstr "Partagé"
 msgid "S_ource"
 msgstr "Sou_rce"
 
-#: ../sources/rb-streaming-source.c:209
+#: ../sources/rb-streaming-source.c:208
 msgid "Connecting"
 msgstr "Connexion en cours"
 
-#: ../sources/rb-streaming-source.c:212
+#: ../sources/rb-streaming-source.c:211
 msgid "Buffering"
 msgstr "Chargement"
 
