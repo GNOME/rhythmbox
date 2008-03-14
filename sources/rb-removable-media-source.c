@@ -62,6 +62,8 @@ static void impl_delete_thyself (RBSource *source);
 static void impl_paste (RBSource *source, GList *entries);
 #endif
 static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
+static guint impl_want_uri (RBSource *source, const char *uri);
+static gboolean impl_uri_is_source (RBSource *source, const char *uri);
 
 typedef struct
 {
@@ -102,6 +104,8 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	source_class->impl_delete = NULL;
 	source_class->impl_get_config_widget = NULL;
 	source_class->impl_show_popup = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_want_uri = impl_want_uri;
+	source_class->impl_uri_is_source = impl_uri_is_source;
 
 	browser_source_class->impl_get_paned_key = NULL;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
@@ -366,6 +370,50 @@ impl_paste_end:
 }
 
 #endif
+
+static guint
+impl_want_uri (RBSource *source, const char *uri)
+{
+	GnomeVFSVolume *volume;
+	char *activation_uri;
+	int retval, len;
+
+	retval = 0;
+
+	/* A default version for use with the audio players
+	 * that use mass storage */
+	if (g_str_has_prefix (uri, "file://") == FALSE)
+		return 0;
+
+	g_object_get (G_OBJECT (source),
+		      "volume", &volume,
+		      NULL);
+	if (volume == NULL)
+		return 0;
+
+	activation_uri = gnome_vfs_volume_get_activation_uri (volume);
+	if (activation_uri == NULL)
+		return 0;
+
+	len = strlen (uri);
+	if (uri[len - 1] == '/') {
+		if (strncmp (uri, activation_uri, len - 1) == 0)
+			retval = 100;
+	} else if (strcmp (uri, activation_uri) == 0)
+		retval = 100;
+
+	g_free (activation_uri);
+
+	return retval;
+}
+
+static gboolean
+impl_uri_is_source (RBSource *source, const char *uri)
+{
+	if (impl_want_uri (source, uri) == 100)
+		return TRUE;
+	return FALSE;
+}
 
 static RhythmDB *
 get_db_for_source (RBSource *source)

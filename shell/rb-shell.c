@@ -3327,6 +3327,14 @@ rb_shell_load_uri (RBShell *shell,
 								     uri, error))
 					return FALSE;
 			}
+		} else if (result == TOTEM_PL_PARSER_RESULT_IGNORED && rb_uri_is_local (uri)) {
+			/* That happens for directories */
+			playlist_source = rb_shell_guess_source_for_uri (shell, uri);
+			if (playlist_source == NULL || rb_source_uri_is_source (playlist_source, uri) == FALSE) {
+				rb_debug ("%s is a directory, but doesn't have a source, adding as a dir", uri);
+				if (!rb_shell_add_uri (shell, uri, NULL, NULL, error))
+					return FALSE;
+			}
 		} else {
 			rb_debug ("%s didn't parse as a playlist", uri);
 			if (!rb_shell_add_uri (shell, uri, NULL, NULL, error))

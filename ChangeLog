@@ -1,3 +1,13 @@
+2008-03-14  Bastien Nocera  <hadess@hadess.net>
+
+	* shell/rb-shell.c (rb_shell_load_uri):
+	* sources/rb-removable-media-source.c
+	(rb_removable_media_source_class_init), (impl_want_uri),
+	(impl_uri_is_source): Fix files from removable devices
+	being imported in the main library instead of staying in
+	their own source when Rhythmbox is activated from nautilus
+	(Closes: #519737)
+
 2008-03-13  Bastien Nocera  <hadess@hadess.net>
 
 	* data/rhythmbox.schemas: Change the default window size and
