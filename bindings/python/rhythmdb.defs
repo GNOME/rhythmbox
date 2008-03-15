@@ -64,6 +64,13 @@
   (gtype-id "RB_TYPE_STRING_VALUE_MAP")
 )
 
+(define-object ImportJob
+  (in-module "RhythmDB")
+  (parent "GObject")
+  (c-name "RhythmDBImportJob")
+  (gtype-id "RHYTHMDB_TYPE_IMPORT_JOB")
+)
+
 
 ;; Enumerations and flags ...
 
@@ -1148,9 +1155,9 @@
   (c-name "rhythmdb_import_job_new")
   (return-type "RhythmDBImportJob*")
   (parameters
-    '("RhythmDBEntryType" "entry_type")
-    '("RhythmDBEntryType" "ignore_type")
-    '("RhythmDBEntryType" "error_type")
+    '("RhythmDBEntryType_*" "entry_type")
+    '("RhythmDBEntryType_*" "ignore_type")
+    '("RhythmDBEntryType_*" "error_type")
   )
 )
 
