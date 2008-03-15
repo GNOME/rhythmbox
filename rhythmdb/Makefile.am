@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = librhythmdb.la
 
 librhythmdb_la_LDFLAGS = -export-dynamic
 librhythmdb_la_LIBADD = 				\
+	$(GIO_LIBS)					\
 	$(GDA_LIBS)
 
 INCLUDES = 						\
@@ -16,6 +17,7 @@ INCLUDES = 						\
 	-I$(top_builddir)/lib                           \
 	$(GDA_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
+	$(GIO_CFLAGS)					\
 	$(NO_STRICT_ALIASING_CFLAGS)
 
 librhythmdb_la_SOURCES =				\

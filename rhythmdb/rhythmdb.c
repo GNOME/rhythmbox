@@ -36,6 +36,10 @@
 #include <gdk/gdk.h>
 #include <gconf/gconf-client.h>
 
+#if defined(HAVE_GIO)
+#include <gio/gio.h>
+#endif
+
 #include "rb-marshal.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
@@ -3264,6 +3268,40 @@ rhythmdb_entry_delete (RhythmDB *db,
 	db->priv->dirty = TRUE;
 }
 
+#if defined(HAVE_GIO)
+
+void
+rhythmdb_entry_move_to_trash (RhythmDB *db,
+			      RhythmDBEntry *entry)
+{
+	const char *uri;
+	GFile *file;
+	GError *error = NULL;
+
+	uri = rb_refstring_get (entry->location);
+	file = g_file_new_for_uri (uri);
+
+	g_file_trash (file, NULL, &error);
+	if (error != NULL) {
+		GValue value = {0,};
+
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, error->message);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
+		g_value_unset (&value);
+
+		rb_debug ("trashing %s failed: %s",
+			  uri, error->message);
+		g_error_free (error);
+	} else {
+		rhythmdb_entry_set_visibility (db, entry, FALSE);
+	}
+
+	g_object_unref (file);
+}
+
+#else
+
 static gint
 rhythmdb_entry_move_to_trash_cb (GnomeVFSXferProgressInfo *info,
 				 gpointer data)
@@ -3380,6 +3418,8 @@ rhythmdb_entry_move_to_trash (RhythmDB *db,
 	gnome_vfs_uri_unref (dest);
 	gnome_vfs_uri_unref (uri);
 }
+
+#endif
 
 /**
  * rhythmdb_entry_delete_by_type:

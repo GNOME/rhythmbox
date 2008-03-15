@@ -86,6 +86,11 @@ if test x$have_totem_plparser != xyes; then
    AC_MSG_ERROR([totem playlist parsing library not found or too old])
 fi
 
+PKG_CHECK_MODULES(GIO, gio-2.0, have_gio=yes, have_gio=no)
+if test x$have_gio == "xyes"; then
+  AC_DEFINE(HAVE_GIO, 1, [Define to use gio instead of gnome-vfs (for trash only)])
+fi
+
 AC_ARG_WITH(hal,
 	      AC_HELP_STRING([--without-hal],
 			     [Disable HAL support]))
