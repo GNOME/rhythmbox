@@ -39,17 +39,23 @@ INCLUDES=\
 	$(IPOD_CFLAGS) \
 	$(RHYTHMBOX_CFLAGS)
 	
+if ENABLE_PYTHON
+BINDING_LIBS = $(top_builddir)/bindings/python/rb.la
+MORE_GTKDOC_LIBS = $(PYTHON_LIBS)
+endif
+
 GTKDOC_LIBS=\
 	$(top_builddir)/shell/librbshell.la	        \
 	$(top_builddir)/sources/libsources.la	        \
 	$(top_builddir)/sources/libsourcesimpl.la	\
-	$(top_builddir)/rhythmdb/librhythmdb.la         \
 	$(top_builddir)/podcast/librbpodcast.la		\
 	$(top_builddir)/metadata/librbmetadata.la	\
 	$(top_builddir)/widgets/librbwidgets.la         \
-	$(top_builddir)/lib/librb.la	                \
 	$(top_builddir)/plugins/librbplugins.la		\
+	$(BINDING_LIBS)					\
+	$(top_builddir)/rhythmdb/librhythmdb.la         \
 	$(top_builddir)/backends/librbbackends.la	\
+	$(top_builddir)/lib/librb.la	                \
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)					\
 	$(LIBNAUTILUS_BURN_LIBS)			\
@@ -58,15 +64,13 @@ GTKDOC_LIBS=\
 	$(MDNS_LIBS)					\
 	$(IPOD_LIBS)					\
 	$(NOTIFY_LIBS)					\
-	$(RHYTHMBOX_LIBS)
+	$(RHYTHMBOX_LIBS)				\
+	$(MORE_GTKDOC_LIBS)
 
 if ENABLE_TRACK_TRANSFER
 GTKDOC_LIBS +=	$(GNOME_MEDIA_PROFILES_LIBS) 
 endif
 
-if ENABLE_PYTHON
-GTKDOC_LIBS += $(PYTHON_LIBS) $(top_builddir)/bindings/python/rb.la
-endif
 
 content_files =
 HTML_IMAGES =
