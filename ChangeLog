@@ -1,3 +1,10 @@
+2008-03-17  Bastien Nocera  <hadess@hadess.net>
+
+	* shell/rb-shell.c (rb_shell_load_uri): Fix possible
+	crasher (and probable with the device activation for 
+	removable devices), as the source list isn't ref'ed,
+	we shouldn't unref it ourselves
+
 2008-03-17  Jonathan Matthew  <jonathan@d14n.org>
 
 	* doc/reference/Makefile.am:

@@ -3351,7 +3351,6 @@ rb_shell_load_uri (RBShell *shell,
 	if (play) {
 		if (playlist_source != NULL) {
 			rb_shell_activate_source (shell, playlist_source);
-			g_object_unref (playlist_source);
 			return TRUE;
 		}
 
