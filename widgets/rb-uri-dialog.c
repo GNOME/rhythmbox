@@ -35,6 +35,14 @@
 #include "rb-dialog.h"
 #include "rb-debug.h"
 
+/**
+ * SECTION:rb-uri-dialog
+ * @short_description: simple URI entry dialog
+ * @include: rb-uri-dialog.h
+ *
+ * A simple dialog used to request a single URI from the user.
+ */
+
 static void rb_uri_dialog_class_init (RBURIDialogClass *klass);
 static void rb_uri_dialog_init (RBURIDialog *dialog);
 static void rb_uri_dialog_finalize (GObject *object);
@@ -87,6 +95,11 @@ rb_uri_dialog_class_init (RBURIDialogClass *klass)
 	object_class->set_property = rb_uri_dialog_set_property;
 	object_class->get_property = rb_uri_dialog_get_property;
 
+	/**
+	 * rb-uri-dialog:label:
+	 *
+	 * The label displayed in the dialog.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_LABEL,
 					 g_param_spec_string ("label",
@@ -95,6 +108,12 @@ rb_uri_dialog_class_init (RBURIDialogClass *klass)
 							      "",
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * rb-uri-dialog::location-added:
+	 * @uri: URI entered
+	 *
+	 * Emitted when the user has entered a URI into the dialog.
+	 */
 	rb_uri_dialog_signals [LOCATION_ADDED] =
 		g_signal_new ("location-added",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -211,6 +230,15 @@ rb_uri_dialog_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_uri_dialog_new:
+ * @title: Window title for the dialog
+ * @label: Label to display in the dialog
+ *
+ * Creates a URI entry dialog.
+ *
+ * Returns: URI dialog instance.
+ */
 GtkWidget *
 rb_uri_dialog_new (const char *title, const char *label)
 {
