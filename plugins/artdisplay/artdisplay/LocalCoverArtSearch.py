@@ -68,7 +68,7 @@ class LocalCoverArtSearch:
 		for name in [file_root (self.uri.short_name)] + IMAGE_NAMES:
 			for f_name in results:
 				if file_root (f_name) == name:
-					yield self.uri.parent.append_file_name (f_name).path
+					yield self.uri.parent.append_file_name (f_name)
 
 	def pixbuf_save (self, plexer, pixbuf, uri):
 		gnomevfs.async.create (uri, plexer.send (), gnomevfs.OPEN_WRITE | gnomevfs.OPEN_TRUNCATE, False, 0644, gnomevfs.PRIORITY_DEFAULT)

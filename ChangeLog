@@ -1,3 +1,9 @@
+2008-03-18  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/artdisplay/artdisplay/LocalCoverArtSearch.py:
+	Return the full URI, rather than just the path.  Allows local cover
+	art searches to work on SMB shares.  Fixes #517103.
+
 2008-03-17  Bastien Nocera  <hadess@hadess.net>
 
 	* shell/rb-shell.c (rb_shell_load_uri): Fix possible
