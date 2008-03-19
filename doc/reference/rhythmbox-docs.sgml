@@ -6,15 +6,26 @@
 		<title>Rhythmbox Development Reference Manual</title>
 	</bookinfo>
 
+	<chapter>  	
+		<title>Backends</title>
+		<xi:include href="xml/rb-player.xml"/>
+		<xi:include href="xml/rb-player-gst-data-tee.xml"/>
+		<xi:include href="xml/rb-player-gst-filter.xml"/>
+		<xi:include href="xml/rb-player-gst-tee.xml"/>
+		<xi:include href="xml/rb-encoder.xml"/>
+	</chapter>
+
 	<chapter>  
 		<title>Lib</title>
+		<xi:include href="xml/eel-gconf-extensions.xml"/>
+		<xi:include href="xml/rb-async-queue-watch.xml"/>
 		<xi:include href="xml/rb-debug.xml"/>
-		<xi:include href="xml/rb-enums.xml"/>
 		<xi:include href="xml/rb-file-helpers.xml"/>
 		<xi:include href="xml/rb-glade-helpers.xml"/>
 		<xi:include href="xml/rb-preferences.xml"/>
+		<xi:include href="xml/rb-proxy-config.xml"/>
 		<xi:include href="xml/rb-stock-icons.xml"/>
-		<xi:include href="xml/rb-string-helpers.xml"/>
+		<xi:include href="xml/rb-string-value-map.xml"/>
 		<xi:include href="xml/rb-tree-dnd.xml"/>
 		<xi:include href="xml/rb-util.xml"/>
 	</chapter>
@@ -25,15 +36,11 @@
 	</chapter>
 
 	<chapter>  	
-		<title>Player</title>
-		<xi:include href="xml/rb-player.xml"/>
-		<xi:include href="xml/rb-recorder.xml"/>
-	</chapter>
-
-	<chapter>  	
 		<title>RhythmDB</title>
+		<xi:include href="xml/rhythmdb-import-job.xml"/>
 		<xi:include href="xml/rhythmdb-property-model.xml"/>
 		<xi:include href="xml/rhythmdb-query-model.xml"/>
+		<xi:include href="xml/rhythmdb-query-results.xml"/>
 		<xi:include href="xml/rhythmdb-tree.xml"/>
 		<xi:include href="xml/rhythmdb.xml"/>
 	</chapter>
@@ -41,53 +48,52 @@
 	<chapter>  	
 		<title>Shell</title>
 		<xi:include href="xml/rb-history.xml"/>
-		<xi:include href="xml/rb-playlist-manager.xml"/>
-		<xi:include href="xml/rb-play-order-linear-loop.xml"/>
-		<xi:include href="xml/rb-play-order-linear.xml"/>
-		<xi:include href="xml/rb-play-order-random-by-age-and-rating.xml"/>
-		<xi:include href="xml/rb-play-order-random-by-age.xml"/>
-		<xi:include href="xml/rb-play-order-random-by-rating.xml"/>
-		<xi:include href="xml/rb-play-order-random-equal-weights.xml"/>
-		<xi:include href="xml/rb-play-order-random.xml"/>
-		<xi:include href="xml/rb-play-order-shuffle.xml"/>
+		<xi:include href="xml/rb-missing-plugins.xml"/>
 		<xi:include href="xml/rb-play-order.xml"/>
+		<xi:include href="xml/rb-playlist-manager.xml"/>
+		<xi:include href="xml/rb-removable-media-manager.xml"/>
 		<xi:include href="xml/rb-shell-clipboard.xml"/>
 		<xi:include href="xml/rb-shell-player.xml"/>
 		<xi:include href="xml/rb-shell-preferences.xml"/>
 		<xi:include href="xml/rb-shell.xml"/>
 		<xi:include href="xml/rb-source-header.xml"/>
+		<xi:include href="xml/rb-statusbar.xml"/>
+		<xi:include href="xml/rb-tray-icon.xml"/>
 	</chapter>
 
 	<chapter>  	
 		<title>Sources</title>
-		<xi:include href="xml/rb-iradio-source.xml"/>
+		<xi:include href="xml/rb-auto-playlist-source.xml"/>
+		<xi:include href="xml/rb-browser-source.xml"/>
+		<xi:include href="xml/rb-import-errors-source.xml"/>
 		<xi:include href="xml/rb-library-source.xml"/>
-		<xi:include href="xml/rb-playlist-source-recorder.xml"/>
+		<xi:include href="xml/rb-missing-files-source.xml"/>
+		<xi:include href="xml/rb-play-queue-source.xml"/>
 		<xi:include href="xml/rb-playlist-source.xml"/>
+		<xi:include href="xml/rb-podcast-source.xml"/>
+		<xi:include href="xml/rb-removable-media-source.xml"/>
+		<xi:include href="xml/rb-source-group.xml"/>
+		<xi:include href="xml/rb-source.xml"/>
 		<xi:include href="xml/rb-sourcelist-model.xml"/>
 		<xi:include href="xml/rb-sourcelist.xml"/>
-		<xi:include href="xml/rb-source.xml"/>
+		<xi:include href="xml/rb-static-playlist-source.xml"/>
+		<xi:include href="xml/rb-streaming-source.xml"/>
 	</chapter>
 
 	<chapter>
 		<title>Widgets</title>
-		<xi:include href="xml/eel-gconf-extensions.xml"/>
 		<xi:include href="xml/rb-cell-renderer-pixbuf.xml"/>
 		<xi:include href="xml/rb-cell-renderer-rating.xml"/>
 		<xi:include href="xml/rb-dialog.xml"/>
-		<xi:include href="xml/rb-druid.xml"/>
 		<xi:include href="xml/rb-entry-view.xml"/>
 		<xi:include href="xml/rb-header.xml"/>
-		<xi:include href="xml/rb-load-failure-dialog.xml"/>
+		<xi:include href="xml/rb-library-browser.xml"/>
 		<xi:include href="xml/rb-property-view.xml"/>
 		<xi:include href="xml/rb-query-creator.xml"/>
 		<xi:include href="xml/rb-rating-helper.xml"/>
 		<xi:include href="xml/rb-rating.xml"/>
 		<xi:include href="xml/rb-search-entry.xml"/>
-		<xi:include href="xml/rb-song-display-box.xml"/>
 		<xi:include href="xml/rb-song-info.xml"/>
-		<xi:include href="xml/rb-statusbar.xml"/>
-		<xi:include href="xml/rb-tray-icon.xml"/>
-		<xi:include href="xml/rb-tree-model-sort.xml"/>
+		<xi:include href="xml/rb-uri-dialog.xml"/>
 	</chapter>
 </book>
