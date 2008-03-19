@@ -70,6 +70,32 @@ struct _RhythmDBImportJobPrivate
 
 G_DEFINE_TYPE (RhythmDBImportJob, rhythmdb_import_job, G_TYPE_OBJECT)
 
+/**
+ * SECTION:rhythmdb-import-job
+ * @short_description: batch import job
+ *
+ * Tracks the addition to the database of files under a set of 
+ * directories, providing status information.
+ *
+ * The entry types to use for the database entries added by the import
+ * job are specified on creation.
+ */
+
+/**
+ * rhythmdb_import_job_new:
+ * @db: the #RhythmDB object
+ * @entry_type: the #RhythmDBEntryType to use for normal entries
+ * @ignore_type: the #RhythmDBEntryType to use for ignored files
+ *   (or RHYTHMDB_ENTRY_TYPE_INVALID to not create ignore entries)
+ * @error_type: the #RhythmDBEntryType to use for import error
+ *   entries (or RHYTHMDB_ENTRY_TYPE_INVALID for none)
+ *
+ * Creates a new import job with the specified entry types.
+ * Before starting the job, the caller must add one or more
+ * paths to import.
+ *
+ * Return value: new #RhythmDBImportJob object.
+ */
 RhythmDBImportJob *
 rhythmdb_import_job_new (RhythmDB *db,
 			 RhythmDBEntryType entry_type,
@@ -87,6 +113,14 @@ rhythmdb_import_job_new (RhythmDB *db,
 	return RHYTHMDB_IMPORT_JOB (obj);
 }
 
+/**
+ * rhythmdb_import_job_add_uri:
+ * @job: a #RhythmDBImportJob
+ * @uri: the URI to import
+ *
+ * Adds a URI to import.  All files under the specified
+ * URI will be imported.
+ */
 void
 rhythmdb_import_job_add_uri (RhythmDBImportJob *job, const char *uri)
 {
@@ -187,6 +221,14 @@ next_uri (RhythmDBImportJob *job)
 	g_static_mutex_unlock (&job->priv->lock);
 }
 
+/**
+ * rhythmdb_import_job_start:
+ * @job: the #RhythmDBImportJob
+ *
+ * Starts the import job.  After this method has been called,
+ * no more URIs may be added to the import job.  May only be
+ * called once for a given import job.
+ */
 void
 rhythmdb_import_job_start (RhythmDBImportJob *job)
 {
@@ -202,30 +244,67 @@ rhythmdb_import_job_start (RhythmDBImportJob *job)
 	next_uri (g_object_ref (job));
 }
 
+/**
+ * rhythmdb_import_job_get_total:
+ * @job: the #RhythmDBImportJob
+ *
+ * Returns the total number of files that will be processed by
+ * this import job.  This increases as the import directories are
+ * scanned.
+ *
+ * Return value: the total number of files to be processed
+ */
 int
 rhythmdb_import_job_get_total (RhythmDBImportJob *job)
 {
 	return job->priv->total;
 }
 
+/**
+ * rhythmdb_import_job_get_imported:
+ * @job: the #RhythmDBImportJob
+ *
+ * Return value: the number of files processed so far 
+ */
 int
 rhythmdb_import_job_get_imported (RhythmDBImportJob *job)
 {
 	return job->priv->imported;
 }
 
+/**
+ * rhythmdb_import_job_scan_complete:
+ * @job: the #RhythmDBImportJob
+ *
+ * Return value: TRUE if the directory scan is complete
+ */
 gboolean
 rhythmdb_import_job_scan_complete (RhythmDBImportJob *job)
 {
 	return job->priv->scan_complete;
 }
 
+/**
+ * rhythmdb_import_job_complete:
+ * @job: the #RhythmDBImportJob
+ *
+ * Return value: TRUE if the import job is complete.
+ */
 gboolean
 rhythmdb_import_job_complete (RhythmDBImportJob *job)
 {
 	return job->priv->complete;
 }
 
+/**
+ * rhythmdb_import_job_cancel:
+ * @job: the #RhythmDBImportJob
+ *
+ * Cancels the import job.  The job will cease as soon
+ * as possible.  More directories may be scanned and 
+ * more files may be imported before the job actually
+ * ceases.
+ */
 void
 rhythmdb_import_job_cancel (RhythmDBImportJob *job)
 {
@@ -398,6 +477,14 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 							     RHYTHMDB_TYPE_ENTRY_TYPE,
 							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RhythmDBImportJob::entry-added:
+	 * @job: the #RhythmDBImportJob
+	 * @entry: the newly added #RhythmDBEntry
+	 *
+	 * Emitted when an entry has been added to the database by the
+	 * import job.
+	 */
 	signals [ENTRY_ADDED] =
 		g_signal_new ("entry-added",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -407,6 +494,14 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 			      g_cclosure_marshal_VOID__BOXED,
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
+	/**
+	 * RhythmDBImportJob::status-changed:
+	 * @job: the #RhythmDBImportJob
+	 * @total: the current total number of files to process
+	 * @imported: the current count of files imported
+	 *
+	 * Emitted when the status of the import job has changed.
+	 */
 	signals [STATUS_CHANGED] =
 		g_signal_new ("status-changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -416,6 +511,14 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 			      rb_marshal_VOID__INT_INT,
 			      G_TYPE_NONE,
 			      2, G_TYPE_INT, G_TYPE_INT);
+	/**
+	 * RhythmDBImportJob::scan-complete:
+	 * @job: the #RhythmDBImportJob
+	 *
+	 * Emitted when the directory scan is complete.  Once
+	 * the scan is complete, the total number of files to
+	 * be processed will not change.
+	 */
 	signals[SCAN_COMPLETE] =
 		g_signal_new ("scan-complete",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -425,6 +528,12 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 			      g_cclosure_marshal_VOID__INT,
 			      G_TYPE_NONE,
 			      1, G_TYPE_INT);
+	/**
+	 * RhythmDBImportJob::complete:
+	 * @job: the #RhythmDBImportJob
+	 *
+	 * Emitted when the whole import job is complete.
+	 */
 	signals[COMPLETE] =
 		g_signal_new ("complete",
 			      G_OBJECT_CLASS_TYPE (object_class),

@@ -50,21 +50,23 @@ typedef enum
 GType rhythmdb_property_model_column_get_type (void);
 #define RHYTHMDB_TYPE_PROPERTY_MODEL_COLUMN (rhythmdb_property_model_column_get_type ())
 
+typedef struct _RhythmDBPropertyModel RhythmDBPropertyModel;
+typedef struct _RhythmDBPropertyModelClass RhythmDBPropertyModelClass;
 typedef struct RhythmDBPropertyModelPrivate RhythmDBPropertyModelPrivate;
 
-typedef struct
+struct _RhythmDBPropertyModel
 {
 	GObject parent;
 
 	RhythmDBPropertyModelPrivate *priv;
-} RhythmDBPropertyModel;
+};
 
-typedef struct
+struct _RhythmDBPropertyModelClass
 {
 	GObjectClass parent;
 
 	void (*pre_row_deletion) (RhythmDBPropertyModel *model);
-} RhythmDBPropertyModelClass;
+};
 
 GType			rhythmdb_property_model_get_type	(void);
 

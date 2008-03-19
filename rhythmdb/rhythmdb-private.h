@@ -120,7 +120,7 @@ struct RhythmDBEntry_ {
 	RBRefString *playback_error;
 };
 
-struct RhythmDBPrivate
+struct _RhythmDBPrivate
 {
 	char *name;
 

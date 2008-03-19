@@ -621,6 +621,9 @@ RB_PLAYER_GET_CLASS
 
 <SECTION>
 <FILE>rhythmdb-property-model</FILE>
+<TITLE>RhythmDBPropertyModel</TITLE>
+RHythmDBPropertyModel
+RhythmDBPropertyModelClass
 RhythmDBPropertyModelColumn
 RhythmDBPropertyModelPrivate
 rhythmdb_property_model_new
@@ -1291,3 +1294,43 @@ rb_rating_pixbufs_free
 rb_rating_install_rating_property
 </SECTION>
 
+<SECTION>
+<FILE>rhythmdb-import-job</FILE>
+<TITLE>RhythmDBImportJob</TITLE>
+RhythmDBImportJob
+RhythmDBImportJobClass
+RhythmDBImportJobPrivate
+rhythmdb_import_job_new
+rhythmdb_import_job_add_uri
+rhythmdb_import_job_start
+rhythmdb_import_job_cancel
+rhythmdb_import_job_complete
+rhythmdb_import_job_scan_complete
+rhythmdb_import_job_get_total
+rhythmdb_import_job_get_imported
+<SUBSECTION Standard>
+RHYTHMDB_IMPORT_JOB
+RHYTHMDB_IS_IMPORT_JOB
+RHYTHMDB_TYPE_IMPORT_JOB
+rhythmdb_import_job_get_type
+RHYTHMDB_IMPORT_JOB_CLASS
+RHYTHMDB_IS_IMPORT_JOB_CLASS
+RHYTHMDB_IMPORT_JOB_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>rb-uri-dialog</FILE>
+<TITLE>RBURIDialog</TITLE>
+RBURIDialog
+RBURIDialogClass
+RBURIDialogPrivate
+rb_uri_dialog_new
+<SUBSECTION Standard>
+RB_URI_DIALOG
+RB_IS_URI_DIALOG
+RB_TYPE_URI_DIALOG
+rb_uri_dialog_get_type
+RB_URI_DIALOG_CLASS
+RB_IS_URI_DIALOG_CLASS
+RB_URI_DIALOG_GET_CLASS
+</SECTION>

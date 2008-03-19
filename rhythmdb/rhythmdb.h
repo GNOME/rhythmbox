@@ -34,8 +34,8 @@
 
 G_BEGIN_DECLS
 
-struct RhythmDB_;
-typedef struct RhythmDB_ RhythmDB;
+typedef struct _RhythmDB RhythmDB;
+typedef struct _RhythmDBClass RhythmDBClass;
 
 #define RHYTHMDB_TYPE      (rhythmdb_get_type ())
 #define RHYTHMDB(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE, RhythmDB))
@@ -258,16 +258,16 @@ typedef enum
 
 GQuark rhythmdb_error_quark (void);
 
-typedef struct RhythmDBPrivate RhythmDBPrivate;
+typedef struct _RhythmDBPrivate RhythmDBPrivate;
 
-struct RhythmDB_
+struct _RhythmDB
 {
 	GObject parent;
 
 	RhythmDBPrivate *priv;
 };
 
-typedef struct
+struct _RhythmDBClass
 {
 	GObjectClass parent;
 
@@ -336,7 +336,7 @@ typedef struct
 							 RBRefString *keyword);
 	GList*		(*impl_entry_keywords_get)	(RhythmDB *db,
 							 RhythmDBEntry *entry);
-} RhythmDBClass;
+};
 
 GType		rhythmdb_get_type	(void);
 

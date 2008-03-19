@@ -34,15 +34,18 @@ G_BEGIN_DECLS
 #define RHYTHMDB_IS_IMPORT_JOB_CLASS(k)		(G_TYPE_CHECK_CLASS_TYPE ((k), RHYTHMDB_TYPE_IMPORT_JOB))
 #define RHYTHMDB_IMPORT_JOB_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RHYTHMDB_TYPE_IMPORT_JOB, RhythmDBImportJobClass))
 
+typedef struct _RhythmDBImportJob 	RhythmDBImportJob;
+typedef struct _RhythmDBImportJobClass 	RhythmDBImportJobClass;
+
 typedef struct _RhythmDBImportJobPrivate RhythmDBImportJobPrivate;
 
-typedef struct
+struct _RhythmDBImportJob
 {
 	GObject parent;
 	RhythmDBImportJobPrivate *priv;
-} RhythmDBImportJob;
+};
 
-typedef struct
+struct _RhythmDBImportJobClass
 {
 	GObjectClass parent_class;
 
@@ -51,7 +54,7 @@ typedef struct
 	void (*status_changed) (RhythmDBImportJob *job, int total, int imported);
 	void (*scan_complete) (RhythmDBImportJob *job, int total);
 	void (*complete) (RhythmDBImportJob *job, int total);
-} RhythmDBImportJobClass;
+};
 
 GType		rhythmdb_import_job_get_type		(void);
 

@@ -34,22 +34,24 @@ G_BEGIN_DECLS
 #define RB_IS_URI_DIALOG_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_URI_DIALOG))
 #define RB_URI_DIALOG_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_URI_DIALOG, RBURIDialogClass))
 
+typedef struct _RBURIDialog RBURIDialog;
+typedef struct _RBURIDialogClass RBURIDialogClass;
 typedef struct RBURIDialogPrivate RBURIDialogPrivate;
 
-typedef struct
+struct _RBURIDialog
 {
 	GtkDialog parent;
 
 	RBURIDialogPrivate *priv;
-} RBURIDialog;
+};
 
-typedef struct
+struct _RBURIDialogClass
 {
 	GtkDialogClass parent_class;
 
         void (*location_added) (RBURIDialog *dialog,
 				const char  *uri);
-} RBURIDialogClass;
+};
 
 GType      rb_uri_dialog_get_type (void);
 GtkWidget* rb_uri_dialog_new      (const char *title,

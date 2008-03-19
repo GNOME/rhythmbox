@@ -1,3 +1,20 @@
+2008-03-19  Jonathan Matthew  <jonathan@d14n.org>
+
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb-import-job.h:
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-property-model.h:
+	* widgets/rb-uri-dialog.h:
+	Rearrange struct/typedef bits so gtk-doc likes them
+	(I'll probably end up doing this for every single class..)
+
+	* rhythmdb/rhythmdb-import-job.c:
+	* rhythmdb/rhythmdb-property-model.c:
+	Add gtk-doc stuff for RhythmDBImportJob and RhythmDBPropertyModel
+
+	* doc/reference/rhythmbox-sections.txt:
+	Update this a bit
+
 2008-03-18  Jonathan Matthew  <jonathan@d14n.org>
 
 	* widgets/rb-uri-dialog.c: (rb_uri_dialog_class_init):

@@ -182,6 +182,19 @@ enum
 
 static guint rhythmdb_property_model_signals[LAST_SIGNAL] = { 0 };
 
+/**
+ * SECTION:rhythmdb-property-model
+ * @short_description:  tree model grouping entries from a query model by property values
+ *
+ * A RhythmDBPropertyModel groups the entries in a #RhythmDBQueryModel by
+ * the value of a property.  For example, a RhythmDBPropertyModel using
+ * the RHYTHMDB_PROP_ARTIST property can be used as the model for a 
+ * #GtkTreeView that will list the artists present in the query model.
+ *
+ * The album/artist/genre browsers displayed in the library and other sources are
+ * populated using a RhythmDBPropertyModel for each property.
+ */
+
 static void
 rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 {
@@ -210,6 +223,11 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 	object_class->dispose = rhythmdb_property_model_dispose;
 	object_class->finalize = rhythmdb_property_model_finalize;
 
+	/**
+	 * RhythmDBPropertyModel::pre-row-deletion:
+	 *
+	 * Emitted just before a row is deleted from the model.
+	 */
 	rhythmdb_property_model_signals[PRE_ROW_DELETION] =
 		g_signal_new ("pre-row-deletion",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -220,6 +238,11 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 			      G_TYPE_NONE,
 			      0);
 
+	/**
+	 * RhythmDBPropertyModel:db:
+	 *
+	 * The #RhythmDB object the model is associated with.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_RHYTHMDB,
 					 g_param_spec_object ("db",
@@ -228,6 +251,11 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RhythmDBPropertyModel:prop:
+	 *
+	 * The property that this property model indexes.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PROP,
 					 g_param_spec_int ("prop",
@@ -236,6 +264,12 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 							   0, RHYTHMDB_NUM_PROPERTIES,
 							   RHYTHMDB_PROP_TYPE,
 							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	/**
+	 * RhythmDBPropertyModel:query-model:
+	 *
+	 * The query model that this property model indexes.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_QUERY_MODEL,
 					 g_param_spec_object ("query-model",
@@ -491,6 +525,15 @@ rhythmdb_property_model_finalize (GObject *object)
 	G_OBJECT_CLASS (rhythmdb_property_model_parent_class)->finalize (object);
 }
 
+/**
+ * rhythmdb_property_model_new:
+ * @db: the #RhythmDB object
+ * @propid: the property to index
+ *
+ * Creates a new property model for the specified property ID.
+ *
+ * Return value: the new #RhythmDBPropertyModel
+ */
 RhythmDBPropertyModel *
 rhythmdb_property_model_new (RhythmDB *db,
 			     RhythmDBPropType propid)
@@ -680,6 +723,16 @@ rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 	g_free (prop);
 }
 
+/**
+ * rhythmdb_property_model_iter_from_string:
+ * @model: the #RhythmDBPropertyModel
+ * @name: the property value to find
+ * @iter: a #GtkTreeIter to point to the row
+ *
+ * Locates the row in the model for a property value.
+ *
+ * Return value: TRUE if the value was found.
+ */
 gboolean
 rhythmdb_property_model_iter_from_string (RhythmDBPropertyModel *model,
 					  const char *name,
@@ -1136,6 +1189,15 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 	return TRUE;
 }
 
+/**
+ * rhythmdb_property_model_enable_drag:
+ * @model: the #RhythmDBPropertyModel.
+ * @view: the #GtkTreeView from which to enable drag and drop
+ *
+ * Enables drag and drop from a specified #GtkTreeView that is
+ * backed by the #RhythmDBPropertyModel.  Drag targets are
+ * determined by the indexed property.
+ */
 void
 rhythmdb_property_model_enable_drag (RhythmDBPropertyModel *model,
 				     GtkTreeView *view)
