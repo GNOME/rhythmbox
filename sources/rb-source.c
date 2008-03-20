@@ -81,6 +81,26 @@ static void rb_source_row_inserted_cb (GtkTreeModel *model,
 G_DEFINE_ABSTRACT_TYPE (RBSource, rb_source, GTK_TYPE_HBOX)
 #define RB_SOURCE_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_SOURCE, RBSourcePrivate))
 
+/**
+ * SECTION:rb-source
+ * @short_description: base class for sources
+ *
+ * This class provides methods for requesting information
+ * about the UI capabilities of the source, and defines the
+ * expectations that apply to all sources - that they will
+ * provide #RBEntryView and #RhythmDBQueryModel objects, mostly.
+ *
+ * Many of the methods on this class come in can_do_x and do_x
+ * pairs.  When can_do_x always returns FALSE, the class does not
+ * need to implement the do_x method.
+ *
+ * Useful subclasses include #RBBrowserSource, which includes a #RBLibraryBrowser
+ * and takes care of constructing an #RBEntryView too; #RBRemovableMediaSource,
+ * which takes care of many aspects of implementing a source that represents a
+ * removable device; and #RBPlaylistSource, which provides functionality for
+ * playlist-like sources.
+ */
+
 struct _RBSourcePrivate
 {
 	char *name;
@@ -162,6 +182,11 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_get_search_actions = default_get_search_actions;
 	klass->impl_move_to_trash = default_move_to_trash;
 
+	/**
+	 * RBSource:name:
+	 *
+	 * Source name as displayed in the source list
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_NAME,
 					 g_param_spec_string ("name",
@@ -169,6 +194,11 @@ rb_source_class_init (RBSourceClass *klass)
 							      "Interface name",
 							      NULL,
 							      G_PARAM_READWRITE));
+	/**
+	 * RBSource:icon:
+	 *
+	 * Icon to display in the source list
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_ICON,
 					 g_param_spec_object ("icon",
@@ -177,6 +207,11 @@ rb_source_class_init (RBSourceClass *klass)
 							      GDK_TYPE_PIXBUF,
 							      G_PARAM_READWRITE));
 
+	/**
+	 * RBSource:shell:
+	 *
+	 * The rhythmbox shell object
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SHELL,
 					 g_param_spec_object ("shell",
@@ -184,7 +219,11 @@ rb_source_class_init (RBSourceClass *klass)
 							       "RBShell object",
 							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
+	/**
+	 * RBSource:ui-manager:
+	 *
+	 * The Gtk UIManager object
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_UI_MANAGER,
 					 g_param_spec_object ("ui-manager",
@@ -193,6 +232,11 @@ rb_source_class_init (RBSourceClass *klass)
 							      GTK_TYPE_UI_MANAGER,
 							      G_PARAM_READABLE));
 
+	/**
+	 * RBSource:visibility:
+	 *
+	 * If FALSE, the source will not be displayed in the source list
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_VISIBLE,
 					 /* FIXME: This property could probably
@@ -207,6 +251,12 @@ rb_source_class_init (RBSourceClass *klass)
 							       TRUE,
 							       G_PARAM_READWRITE));
 
+	/**
+	 * RBSource:hidden-when-empty:
+	 *
+	 * If TRUE, the source will not be displayed in the source list
+	 * when it contains no entries.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_HIDDEN_WHEN_EMPTY,
 					 g_param_spec_boolean ("hidden-when-empty",
@@ -215,6 +265,13 @@ rb_source_class_init (RBSourceClass *klass)
 							       FALSE,
 							       G_PARAM_READWRITE));
 
+	/**
+	 * RBSource:query-model:
+	 *
+	 * The current query model for the source.  This is used in
+	 * various places, including the play order, to find the
+	 * set of entries within the source.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_QUERY_MODEL,
 					 g_param_spec_object ("query-model",
@@ -222,6 +279,11 @@ rb_source_class_init (RBSourceClass *klass)
 							      "RhythmDBQueryModel object",
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READWRITE));
+	/**
+	 * RBSource:source-group:
+	 *
+	 * Source group in which to display the source
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SOURCE_GROUP,
 					 g_param_spec_boxed ("source-group",
@@ -229,6 +291,11 @@ rb_source_class_init (RBSourceClass *klass)
 							     "Source group",
 							     RB_TYPE_SOURCE_GROUP,
 							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBSource:entry-type:
+	 *
+	 * Entry type for entries in this source.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
 					 g_param_spec_boxed ("entry-type",
@@ -236,6 +303,11 @@ rb_source_class_init (RBSourceClass *klass)
 							     "Type of the entries which should be displayed by this source",
 							     RHYTHMDB_TYPE_ENTRY_TYPE,
 							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBSource:plugin:
+	 *
+	 * The plugin that created this source.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLUGIN,
 					 g_param_spec_object ("plugin",
@@ -244,6 +316,11 @@ rb_source_class_init (RBSourceClass *klass)
 							      RB_TYPE_PLUGIN,
 							      G_PARAM_READWRITE));
 
+	/**
+	 * RBSource::deleted:
+	 *
+	 * Emitted when the source is being deleted.
+	 */
 	rb_source_signals[DELETED] =
 		g_signal_new ("deleted",
 			      RB_TYPE_SOURCE,
@@ -254,6 +331,11 @@ rb_source_class_init (RBSourceClass *klass)
 			      G_TYPE_NONE,
 			      0);
 
+	/**
+	 * RBSource::status_changed:
+	 *
+	 * Emitted when the source's status changes.
+	 */
 	rb_source_signals[STATUS_CHANGED] =
 		g_signal_new ("status_changed",
 			      RB_TYPE_SOURCE,
@@ -264,7 +346,9 @@ rb_source_class_init (RBSourceClass *klass)
 			      G_TYPE_NONE,
 			      0);
 
-	/*
+	/**
+	 * RBSource::filter_changed:
+	 *
 	 * Fires when the user changes the filter, either by changing the
 	 * contents of the search box or by selecting a different browser
 	 * entry.
@@ -344,6 +428,13 @@ rb_source_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_source_parent_class)->finalize (object);
 }
 
+/**
+ * rb_source_set_pixbuf:
+ * @source: a #RBSource
+ * @pixbuf: new GdkPixbuf for the source
+ *
+ * Sets the pixbuf for the source.
+ */
 void
 rb_source_set_pixbuf (RBSource  *source,
 		      GdkPixbuf *pixbuf)
@@ -395,6 +486,12 @@ queue_update_visibility (RBSource *source)
 	priv->update_visibility_id = g_idle_add ((GSourceFunc) update_visibility_idle, source);
 }
 
+/**
+ * rb_source_set_hidden_when_empty:
+ * @source: a #RBSource
+ * @hidden: if TRUE, the source should not be displayed in
+ *   the source list when there are no entries in it
+ */
 void
 rb_source_set_hidden_when_empty (RBSource *source,
 				 gboolean  hidden)
@@ -566,7 +663,7 @@ default_get_status (RBSource *source,
 
 /**
  * rb_source_get_status:
- * @status: a #RBSource
+ * @source: a #RBSource
  * @text: holds the returned status text (allocated)
  * @progress_text: holds the returned text for the progress bar (allocated)
  * @progress: holds the progress value
@@ -593,6 +690,13 @@ default_get_browser_key (RBSource *source)
 	return NULL;
 }
 
+/**
+ * rb_source_get_browser_key:
+ * @source: a #RBSource
+ *
+ * Return value: the GConf key that determines browser visibility
+ * for this source (allocated)
+ */
 char *
 rb_source_get_browser_key (RBSource *source)
 {
@@ -601,6 +705,12 @@ rb_source_get_browser_key (RBSource *source)
 	return klass->impl_get_browser_key (source);
 }
 
+/**
+ * rb_source_can_browse:
+ * @source: a #RBSource
+ *
+ * Return value: TRUE if this source has a browser
+ */
 gboolean
 rb_source_can_browse (RBSource *source)
 {
@@ -609,6 +719,13 @@ rb_source_can_browse (RBSource *source)
 	return klass->impl_can_browse (source);
 }
 
+/**
+ * rb_source_browser_toggled:
+ * @source: a #RBSource
+ * @enabled: TRUE if the browser should be visible
+ *
+ * Called when the visibility of the browser changes.
+ */
 void
 rb_source_browser_toggled (RBSource *source,
 			   gboolean enabled)
@@ -619,18 +736,41 @@ rb_source_browser_toggled (RBSource *source,
 		klass->impl_browser_toggled (source, enabled);
 }
 
+/**
+ * rb_source_notify_status_changed:
+ * @source: a #RBSource
+ *
+ * Source implementations call this when their status bar information
+ * changes.
+ */
 void
 rb_source_notify_status_changed (RBSource *source)
 {
 	g_signal_emit (G_OBJECT (source), rb_source_signals[STATUS_CHANGED], 0);
 }
 
+/**
+ * rb_source_notify_filter_changed:
+ * @source: a #RBSource
+ *
+ * Source implementations call this when their filter state changes
+ */
 void
 rb_source_notify_filter_changed (RBSource *source)
 {
 	g_signal_emit (G_OBJECT (source), rb_source_signals[FILTER_CHANGED], 0);
 }
 
+/**
+ * rb_source_update_play_statistics:
+ * @source: a #RBSource
+ * @db: the #RhythmDB instance
+ * @entry: the #RhythmDBEntry to update
+ *
+ * Updates play count and play time statistics for a database entry.
+ * Sources containing entries that do not normally reach EOS should
+ * call this for an entry when it is no longer being played.
+ */
 void
 rb_source_update_play_statistics (RBSource *source,
 				  RhythmDB *db,
@@ -661,6 +801,12 @@ rb_source_update_play_statistics (RBSource *source,
 	rhythmdb_commit (db);
 }
 
+/**
+ * rb_source_get_entry_view:
+ * @source: a #RBSource
+ *
+ * Returns the #RBEntryView instance for the source
+ */
 RBEntryView *
 rb_source_get_entry_view (RBSource *source)
 {
@@ -675,6 +821,13 @@ default_get_property_views (RBSource *source)
 	return NULL;
 }
 
+/**
+ * rb_source_get_property_views:
+ * @source: a #RBSource
+ *
+ * Returns a list containing the #RBPropertyView<!-- -->s that
+ * make up the browser for this source, if any.
+ */
 GList *
 rb_source_get_property_views (RBSource *source)
 {
@@ -689,6 +842,12 @@ default_can_rename (RBSource *source)
 	return FALSE;
 }
 
+/**
+ * rb_source_can_rename:
+ * @source: a #RBSource.
+ *
+ * Return value: TRUE if this source can be renamed
+ */
 gboolean
 rb_source_can_rename (RBSource *source)
 {
@@ -708,6 +867,13 @@ default_can_search (RBSource *source)
 	return FALSE;
 }
 
+/**
+ * rb_source_can_search:
+ * @source: a #RBSource
+ *
+ * Return value: TRUE if the source can be searched using
+ * the search box
+ */
 gboolean
 rb_source_can_search (RBSource *source)
 {
@@ -716,6 +882,15 @@ rb_source_can_search (RBSource *source)
 	return klass->impl_can_search (source);
 }
 
+/**
+ * rb_source_search:
+ * @source: a #RBSource
+ * @text: new search text
+ *
+ * Updates the source with new search text.  The source
+ * should recreate the database query that feeds into the
+ * browser (if any).
+ */
 void
 rb_source_search (RBSource *source,
 		  const char *text)
@@ -727,6 +902,15 @@ rb_source_search (RBSource *source,
 		klass->impl_search (source, text);
 }
 
+/**
+ * rb_source_get_config_widget:
+ * @source: a #RBSource
+ * @prefs: the #RBShellPreferences object
+ *
+ * Returns an optional configuration widget for this source.
+ * The widget will be displayed in a pane in the preferences
+ * dialog.
+ */
 GtkWidget *
 rb_source_get_config_widget (RBSource *source,
 			     RBShellPreferences *prefs)
@@ -740,6 +924,13 @@ rb_source_get_config_widget (RBSource *source,
 	}
 }
 
+/**
+ * rb_source_can_cut:
+ * @source: a #RBSource
+ *
+ * Return value: TRUE if the source supports the typical cut
+ * (as in cut-and-paste) operation.
+ */
 gboolean
 rb_source_can_cut (RBSource *source)
 {
@@ -748,6 +939,13 @@ rb_source_can_cut (RBSource *source)
 	return klass->impl_can_cut (source);
 }
 
+/**
+ * rb_source_can_paste:
+ * @source: a #RBSource
+ *
+ * Return value: TRUE if the source supports the typical paste
+ * (as in cut-and-paste) operation.
+ */
 gboolean
 rb_source_can_paste (RBSource *source)
 {
@@ -756,6 +954,13 @@ rb_source_can_paste (RBSource *source)
 	return klass->impl_can_paste (source);
 }
 
+/**
+ * rb_source_can_delete:
+ * @source: a #RBSource
+ *
+ * Return value: TRUE if the source allows the user to delete
+ * a selected set of entries.
+ */
 gboolean
 rb_source_can_delete (RBSource *source)
 {
@@ -769,6 +974,13 @@ rb_source_can_delete (RBSource *source)
 	return klass->impl_can_delete (source);
 }
 
+/**
+ * rb_source_can_move_to_trash:
+ * @source: a #RBSource
+ *
+ * Return value: TRUE if the source allows the user to trash
+ * the files backing a selected set of entries.
+ */
 gboolean
 rb_source_can_move_to_trash (RBSource *source)
 {
@@ -782,6 +994,13 @@ rb_source_can_move_to_trash (RBSource *source)
 	return klass->impl_can_move_to_trash (source);
 }
 
+/**
+ * rb_source_can_copy:
+ * @source: a #RBSource
+ *
+ * Return value: TRUE if the source supports the copy part
+ * of a copy-and-paste operation.
+ */
 gboolean
 rb_source_can_copy (RBSource *source)
 {
@@ -790,6 +1009,16 @@ rb_source_can_copy (RBSource *source)
 	return klass->impl_can_copy (source);
 }
 
+/**
+ * rb_source_cut:
+ * @source: a #RBSource
+ *
+ * Removes the currently selected entries from the source and
+ * returns them so they can be pasted into another source.
+ *
+ * Return value: a list of #RhythmDBEntry objects cut from
+ * the source.
+ */
 GList *
 rb_source_cut (RBSource *source)
 {
@@ -804,6 +1033,13 @@ default_copy (RBSource *source)
 	return rb_entry_view_get_selected_entries (rb_source_get_entry_view (source));
 }
 
+/**
+ * rb_source_copy:
+ * @source: a #RBSource
+ *
+ * Return value: a list containing the currently selected entries from
+ * the source.
+ */
 GList *
 rb_source_copy (RBSource *source)
 {
@@ -812,14 +1048,29 @@ rb_source_copy (RBSource *source)
 	return klass->impl_copy (source);
 }
 
+/**
+ * rb_source_paste:
+ * @source: a #RBSource
+ * @entries: a list of #RhythmDBEntry objects to paste in
+ *
+ * Adds a list of entries previously cut or copied from another
+ * source.
+ */
 void
-rb_source_paste (RBSource *source, GList *nodes)
+rb_source_paste (RBSource *source, GList *entries)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
-	klass->impl_paste (source, nodes);
+	klass->impl_paste (source, entries);
 }
 
+/**
+ * rb_source_can_add_to_queue:
+ * @source: a #RBSource
+ *
+ * Return value: TRUE if this source can add the current selected
+ * set of entries to the play queue
+ */
 gboolean
 rb_source_can_add_to_queue (RBSource *source)
 {
@@ -847,6 +1098,14 @@ default_add_to_queue (RBSource *source,
 	g_list_free (selection);
 }
 
+/**
+ * rb_source_add_to_queue:
+ * @source: a #RBSource
+ * @queue: the #RBSource for the play queue
+ *
+ * Adds the currently selected entries to the end of the
+ * play queue.
+ */
 void
 rb_source_add_to_queue (RBSource *source,
 			RBSource *queue)
@@ -855,6 +1114,12 @@ rb_source_add_to_queue (RBSource *source,
 	klass->impl_add_to_queue (source, queue);
 }
 
+/**
+ * rb_source_delete:
+ * @source: a #RBSource
+ *
+ * Deletes the currently selected entries from the source.
+ */
 void
 rb_source_delete (RBSource *source)
 {
@@ -886,6 +1151,14 @@ default_move_to_trash (RBSource *source)
 	g_object_unref (db);
 }
 
+/**
+ * rb_source_move_to_trash:
+ * @source: a #RBSource
+ *
+ * Trashes the files backing the currently selected set of entries.
+ * In general, this should use #rhythmdb_entry_move_to_trash to
+ * perform the actual trash operation.
+ */
 void
 rb_source_move_to_trash (RBSource *source)
 {
@@ -900,6 +1173,12 @@ default_reset_filters (RBSource *source)
 	rb_debug ("no implementation of reset_filters for this source");
 }
 
+/**
+ * rb_source_reset_filters:
+ * @source: a #RBSource
+ *
+ * Clears all filters (browser selections, etc.) in this source.
+ */
 void
 rb_source_reset_filters (RBSource *source)
 {
@@ -908,6 +1187,12 @@ rb_source_reset_filters (RBSource *source)
 	klass->impl_reset_filters (source);
 }
 
+/**
+ * rb_source_can_show_properties:
+ * @source: a #RBSource
+ * Return value: TRUE if the source can display a properties
+ * window for the currently selected entry (or set of entries)
+ */
 gboolean
 rb_source_can_show_properties (RBSource *source)
 {
@@ -916,6 +1201,12 @@ rb_source_can_show_properties (RBSource *source)
 	return (klass->impl_song_properties != NULL);
 }
 
+/**
+ * rb_source_song_properties:
+ * @source: a #RBSource
+ *
+ * Displays a properties window for the currently selected entries.
+ */
 void
 rb_source_song_properties (RBSource *source)
 {
@@ -925,6 +1216,13 @@ rb_source_song_properties (RBSource *source)
 	klass->impl_song_properties (source);
 }
 
+/**
+ * rb_source_try_playlist:
+ * @source: a #RBSource
+ *
+ * Return value: TRUE if the playback URIs for entries in the source
+ *  should be parsed as playlists, rather than just played.
+ */
 gboolean
 rb_source_try_playlist (RBSource *source)
 {
@@ -933,6 +1231,19 @@ rb_source_try_playlist (RBSource *source)
 	return klass->impl_try_playlist (source);
 }
 
+/**
+ * rb_source_want_uri:
+ * @source: a #RBSource
+ * @uri: a URI for the source to consider
+ *
+ * Returns an indication of how much the source wants to handle
+ * the specified URI.  100 is the highest usual value, and should
+ * only be used when the URI can only be associated with this source.
+ * 0 should be used when the URI does not match the source at all.
+ *
+ * Return value: value from 0 to 100 indicating how much the
+ *  source wants this URI.
+ */
 guint
 rb_source_want_uri (RBSource *source, const char *uri)
 {
@@ -942,6 +1253,17 @@ rb_source_want_uri (RBSource *source, const char *uri)
 	return 0;
 }
 
+/**
+ * rb_source_uri_is_source:
+ * @source: a #RBSource
+ * @uri: a URI for the source to consider
+ *
+ * Checks if the URI matches the source itself.  A source
+ * should return TRUE here if the URI points to the device that
+ * the source represents, for example.
+ *
+ * Return value: TRUE if the URI identifies the source itself.
+ */
 gboolean
 rb_source_uri_is_source (RBSource *source, const char *uri)
 {
@@ -951,6 +1273,18 @@ rb_source_uri_is_source (RBSource *source, const char *uri)
 	return FALSE;
 }
 
+/**
+ * rb_source_add_uri:
+ * @source: a #RBSource
+ * @uri: a URI to add
+ * @title: theoretically, the title of the entity the URI points to
+ * @genre: theoretically, the genre of the entity the URI points to
+ *
+ * Adds an entry corresponding to the URI to the source.  The
+ * @title and @genre parameters are not really used.
+ *
+ * Return value: TRUE if the URI was successfully added to the source
+ */
 gboolean
 rb_source_add_uri (RBSource *source, const char *uri, const char *title, const char *genre)
 {
@@ -960,6 +1294,12 @@ rb_source_add_uri (RBSource *source, const char *uri, const char *title, const c
 	return FALSE;
 }
 
+/**
+ * rb_source_can_pause:
+ * @source: a #RBSource
+ *
+ * Return value: TRUE if playback of entries from the source can be paused.
+ */
 gboolean
 rb_source_can_pause (RBSource *source)
 {
@@ -980,6 +1320,12 @@ default_handle_eos (RBSource *source)
 	return RB_SOURCE_EOF_NEXT;
 }
 
+/**
+ * rb_source_handle_eos:
+ * @source: a #RBSource
+ *
+ * Return value: how EOS events should be handled for entries from this source
+ */
 RBSourceEOFType
 rb_source_handle_eos (RBSource *source)
 {
@@ -988,6 +1334,18 @@ rb_source_handle_eos (RBSource *source)
 	return klass->impl_handle_eos (source);
 }
 
+/**
+ * rb_source_receive_drag:
+ * @source: a #RBSource
+ * @data: the selection data
+ *
+ * This is called when the user drags something to the source.
+ * Depending on the drag data type, the data might be a list of
+ * #RhythmDBEntry objects, a list of URIs, or a list of album
+ * or artist or genre names.
+ *
+ * Return value: TRUE if the source accepted the drag data
+ */
 gboolean
 rb_source_receive_drag (RBSource *source,
 			GtkSelectionData *data)
@@ -1000,6 +1358,14 @@ rb_source_receive_drag (RBSource *source,
 		return FALSE;
 }
 
+/**
+ * _rb_source_show_popup:
+ * @source: a #RBSource
+ * @ui_path: UI path to the popup to show
+ *
+ * Source implementations can use this as a shortcut to
+ * display a popup that has been loaded into the UI manager.
+ */
 void
 _rb_source_show_popup (RBSource *source, const char *ui_path)
 {
@@ -1018,6 +1384,15 @@ default_show_popup  (RBSource *source)
 	return FALSE;
 }
 
+/**
+ * rb_source_show_popup:
+ * @source: a #RBSource
+ *
+ * Called when the user performs an action (such as right-clicking)
+ * that should result in a popup menu being displayed for the source.
+ *
+ * Return value: TRUE if the source managed to display a popup
+ */
 gboolean
 rb_source_show_popup (RBSource *source)
 {
@@ -1031,6 +1406,16 @@ default_delete_thyself (RBSource *source)
 {
 }
 
+/**
+ * rb_source_delete_thyself:
+ * @source: a #RBSource
+ *
+ * This is called when the source should delete itself.
+ * The 'deleted' signal will be emitted, which removes the source
+ * from the source list.  This will not actually dispose of the
+ * source object, so reference counting must still be handled
+ * correctly.
+ */
 void
 rb_source_delete_thyself (RBSource *source)
 {
@@ -1048,32 +1433,44 @@ default_get_entry_view (RBSource *source)
 	return NULL;
 }
 
-static void default_activate (RBSource *source)
+static void
+default_activate (RBSource *source)
 {
 	return;
 }
 
-static void default_deactivate (RBSource *source)
+static void
+default_deactivate (RBSource *source)
 {
 	return;
 }
 
-void rb_source_activate (RBSource *source)
+/**
+ * rb_source_activate:
+ * @source: a #RBSource
+ *
+ * Called when the source is selected in the source list.
+ */
+void
+rb_source_activate (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	klass->impl_activate (source);
-
-	return;
 }
 
-void rb_source_deactivate (RBSource *source)
+/**
+ * rb_source_deactivate:
+ * @source: a #RBSource
+ *
+ * Called when the source is deselected in the source list.
+ */
+void
+rb_source_deactivate (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	klass->impl_deactivate (source);
-
-	return;
 }
 
 static GList *
@@ -1082,6 +1479,15 @@ default_get_ui_actions (RBSource *source)
 	return NULL;
 }
 
+/**
+ * rb_source_get_ui_actions:
+ * @source: a #RBSource
+ *
+ * Returns a list of UI action names.  Items for
+ * these actions will be added to the toolbar.
+ *
+ * Return value: list of action names
+ */
 GList *
 rb_source_get_ui_actions (RBSource *source)
 {
@@ -1096,6 +1502,17 @@ default_get_search_actions (RBSource *source)
 	return NULL;
 }
 
+/**
+ * rb_source_get_search_actions:
+ * @source: a #RBSource
+ *
+ * Returns a list of UI action names. Buttons for these
+ * actions will be added to the search bar.  The source
+ * must identify the selected search action when constructing
+ * a database query for searching
+ *
+ * Return value: list of search actions
+ */
 GList *
 rb_source_get_search_actions (RBSource *source)
 {
@@ -1149,6 +1566,18 @@ rb_source_gather_hash_keys (char *key,
 	*data = g_list_prepend (*data, key);
 }
 
+/**
+ * rb_source_gather_selected_properties:
+ * @source: a #RBSource
+ * @prop: property for which to gather selection
+ *
+ * Returns a list containing the values of the specified
+ * property from the selected entries in the source.
+ * This is used to implement the 'browse this artist' (etc.)
+ * actions.
+ *
+ * Return value: list of property values
+ */
 GList *
 rb_source_gather_selected_properties (RBSource *source,
 				      RhythmDBPropType prop)
@@ -1175,6 +1604,18 @@ rb_source_gather_selected_properties (RBSource *source,
 	return tem;
 }
 
+/**
+ * _rb_source_register_action_group:
+ * @source: a #RBSource
+ * @group_name: action group name
+ * @actions: array of GtkActionEntry structures for the action group
+ * @num_actions: number of actions in the @actions array
+ * @user_data: user data to use for action signal handlers
+ *
+ * Creates and registers a GtkActionGroup for the source.
+ *
+ * Return value: the created action group
+ */
 GtkActionGroup *
 _rb_source_register_action_group (RBSource *source,
 				  const char *group_name,

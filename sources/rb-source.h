@@ -51,8 +51,8 @@ GType rb_source_eof_type_get_type (void);
 
 #define RB_SOURCE_ICON_SIZE	GTK_ICON_SIZE_LARGE_TOOLBAR
 
+typedef struct _RBSource	RBSource;
 typedef struct _RBSourceClass	RBSourceClass;
-typedef struct _RBSource		RBSource;
 typedef struct _RBSourcePrivate	RBSourcePrivate;
 
 typedef gboolean (*RBSourceFeatureFunc) (RBSource *source);
@@ -130,7 +130,7 @@ GType		rb_source_get_type		(void);
 
 void		rb_source_notify_filter_changed	(RBSource *source);
 
-void		rb_source_notify_status_changed (RBSource *status);
+void		rb_source_notify_status_changed (RBSource *source);
 
 void		rb_source_update_play_statistics(RBSource *source, RhythmDB *db,
 						 RhythmDBEntry *entry);
