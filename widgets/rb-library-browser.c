@@ -67,6 +67,27 @@ static void rb_library_browser_views_changed (GConfClient *client,
 G_DEFINE_TYPE (RBLibraryBrowser, rb_library_browser, GTK_TYPE_HBOX)
 #define RB_LIBRARY_BROWSER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LIBRARY_BROWSER, RBLibraryBrowserPrivate))
 
+/**
+ * SECTION:rb-library-browser
+ * @short_description: album/artist/genre browser widget
+ * @include: rb-library-browser.h
+ *
+ * This widget contains a set of #RBPropertyView<!-- -->s backed by
+ * #RhythmDBPropertyModel<!-- -->s and constructs a chain of
+ * #RhythmDBQueryModel<!-- -->s to perform filtering of the entries
+ * in a source.
+ *
+ * It operates on an input query model, containing the full set of
+ * entries that may be displayed in the source, and produces an
+ * output query model containing those entries that match the current
+ * selection.
+ *
+ * When the selection in any of the property views changes, or when
+ * #rb_library_browser_reset or #rb_library_browser_set_selection are
+ * called to manipulate the selection, the query chain is rebuilt
+ * asynchronously to update the property views.
+ */
+
 typedef struct
 {
 	RBLibraryBrowser *widget;
@@ -121,6 +142,11 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 	object_class->set_property = rb_library_browser_set_property;
 	object_class->get_property = rb_library_browser_get_property;
 
+	/**
+	 * RBLibraryBrowser:db:
+	 *
+	 * #RhythmDB instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DB,
 					 g_param_spec_object ("db",
@@ -128,6 +154,14 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 							      "RhythmDB instance",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBLibraryBrowser:input-model:
+	 *
+	 * This #RhythmDBQueryModel defines the set of entries that
+	 * the browser filters.  This property is not writeable.
+	 * To set a new input query model, use 
+	 * #rb_library_browser_set_model.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_INPUT_MODEL,
 					 g_param_spec_object ("input-model",
@@ -135,6 +169,18 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 							      "input RhythmDBQueryModel instance",
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READABLE));
+	/**
+	 * RBLibraryBrowser:output-model:
+	 *
+	 * This #RhythmDBQueryModel contains the filtered set of
+	 * entries.  It is a subset of the entries contained in the
+	 * input model.  This should be used as the model backing
+	 * the source's entry view.
+	 *
+	 * Sources using this widget should connect to the notify
+	 * signal for this property, updating their entry view when
+	 * it changes.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_OUTPUT_MODEL,
 					 g_param_spec_object ("output-model",
@@ -142,6 +188,10 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 							      "output RhythmDBQueryModel instance",
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READABLE));
+	/**
+	 * RBLibraryBrowser:entry-type:
+	 * The type of entries to use in the browser.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
 					 g_param_spec_boxed ("entry-type",
@@ -287,6 +337,13 @@ rb_library_browser_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_library_browser_new:
+ * @db: the #RhythmDB instance
+ * @entry_type: the entry type to use in the browser
+ *
+ * Return value: a new RBLibraryBrowser
+ */
 RBLibraryBrowser *
 rb_library_browser_new (RhythmDB *db,
 			RhythmDBEntryType entry_type)
@@ -378,6 +435,14 @@ reset_view_cb (RhythmDBPropType prop,
 	rb_property_view_set_selection (view, NULL);
 }
 
+/**
+ * rb_library_browser_reset:
+ * @widget: a #RBLibraryBrowser
+ *
+ * Clears all selections in the browser.
+ *
+ * Return value: TRUE if anything was changed
+ */
 gboolean
 rb_library_browser_reset (RBLibraryBrowser *widget)
 {
@@ -408,6 +473,14 @@ construct_query_cb (RhythmDBPropType type,
 					     selections);
 }
 
+/**
+ * rb_library_browser_construct_query:
+ * @widget: a #RBLibraryBrowser
+ *
+ * Constructs a #RhythmDBQuery from the current selections in the browser.
+ *
+ * Return value: a #RhythmDBQuery constructed from the current selection.
+ */
 RhythmDBQuery *
 rb_library_browser_construct_query (RBLibraryBrowser *widget)
 {
@@ -427,6 +500,12 @@ rb_library_browser_construct_query (RBLibraryBrowser *widget)
 	return query;
 }
 
+/**
+ * rb_library_browser_has_selection:
+ * @widget: a #RBLibraryBrowser
+ *
+ * Return value: TRUE if any items in the browser are selected.
+ */
 gboolean
 rb_library_browser_has_selection (RBLibraryBrowser *widget)
 {
@@ -634,6 +713,14 @@ destroy_idle_rebuild_model (RBLibraryBrowserRebuildData *data)
 	g_free (data);
 }
 
+/**
+ * rb_library_browser_set_selection:
+ * @widget: a #RBLibraryBrowser
+ * @type: the property for which to set the selection
+ * @selection: a list of strings to select
+ *
+ * Replaces any current selection for the specified property.
+ */
 void
 rb_library_browser_set_selection (RBLibraryBrowser *widget,
 				  RhythmDBPropType type,
@@ -684,6 +771,13 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget,
 	priv->rebuild_data = rebuild_data;
 }
 
+/**
+ * rb_library_browser_get_property_views:
+ * @widget: a #RBLibraryBrowser
+ *
+ * Return value: a GList containing the #RBPropertyView<!-- -->s
+ *  in the browser.
+ */
 GList*
 rb_library_browser_get_property_views (RBLibraryBrowser *widget)
 {
@@ -692,6 +786,14 @@ rb_library_browser_get_property_views (RBLibraryBrowser *widget)
 	return rb_collate_hash_table_values (priv->property_views);
 }
 
+/**
+ * rb_library_browser_get_property_view:
+ * @widget: a #RBLibraryBrowser
+ * @type: the property
+ *
+ * Return value: the #RBPropertyView for the specified property, or
+ *  NULL if there isn't one
+ */
 RBPropertyView *
 rb_library_browser_get_property_view (RBLibraryBrowser *widget,
 				      RhythmDBPropType type)
@@ -703,6 +805,18 @@ rb_library_browser_get_property_view (RBLibraryBrowser *widget,
 	return view;
 }
 
+/**
+ * rb_library_browser_set_model:
+ * @widget: a #RBLibraryBrowser
+ * @model: the new input #RhythmDBQueryModel
+ * @query_pending: if TRUE, the caller promises to run a
+ *  query to populate the input query model.
+ *
+ * Specifies a new input query model for the browser.
+ * This should be the query model constructed from the 
+ * current search text, or the basic query model for the 
+ * source if there is no search text.
+ */
 void
 rb_library_browser_set_model (RBLibraryBrowser *widget,
 			      RhythmDBQueryModel *model,

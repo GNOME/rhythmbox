@@ -96,7 +96,7 @@ rb_uri_dialog_class_init (RBURIDialogClass *klass)
 	object_class->get_property = rb_uri_dialog_get_property;
 
 	/**
-	 * rb-uri-dialog:label:
+	 * RBURIDialog:label:
 	 *
 	 * The label displayed in the dialog.
 	 */
@@ -109,7 +109,7 @@ rb_uri_dialog_class_init (RBURIDialogClass *klass)
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	/**
-	 * rb-uri-dialog::location-added:
+	 * RBURIDialog::location-added:
 	 * @uri: URI entered
 	 *
 	 * Emitted when the user has entered a URI into the dialog.

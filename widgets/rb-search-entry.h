@@ -33,22 +33,25 @@ G_BEGIN_DECLS
 #define RB_IS_SEARCH_ENTRY_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_SEARCH_ENTRY))
 #define RB_SEARCH_ENTRY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SEARCH_ENTRY, RBSearchEntryClass))
 
+typedef struct _RBSearchEntry RBSearchEntry;
+typedef struct _RBSearchEntryClass RBSearchEntryClass;
+
 typedef struct RBSearchEntryPrivate RBSearchEntryPrivate;
 
-typedef struct
+struct _RBSearchEntry
 {
 	GtkHBox parent;
 
 	RBSearchEntryPrivate *priv;
-} RBSearchEntry;
+};
 
-typedef struct
+struct _RBSearchEntryClass
 {
 	GtkHBoxClass parent;
 
 	void (*search) (RBSearchEntry *view, const char *text);
 	void (*activate) (RBSearchEntry *entry);
-} RBSearchEntryClass;
+};
 
 GType		rb_search_entry_get_type (void);
 

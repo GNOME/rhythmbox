@@ -37,15 +37,18 @@ G_BEGIN_DECLS
 #define RB_IS_LIBRARY_BROWSER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_LIBRARY_BROWSER))
 #define RB_LIBRARY_BROWSER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_LIBRARY_BROWSER, RBLibraryBrowserClass))
 
-typedef struct
+typedef struct _RBLibraryBrowser RBLibraryBrowser;
+typedef struct _RBLibraryBrowserClass RBLibraryBrowserClass;
+
+struct _RBLibraryBrowser
 {
 	GtkHBox parent;
-} RBLibraryBrowser;
+};
 
-typedef struct
+struct _RBLibraryBrowserClass
 {
 	GtkHBoxClass parent;
-} RBLibraryBrowserClass;
+};
 
 GType			rb_library_browser_get_type (void);
 RBLibraryBrowser *	rb_library_browser_new      (RhythmDB *db,
@@ -64,7 +67,7 @@ RBPropertyView*		rb_library_browser_get_property_view (RBLibraryBrowser *widget,
 gboolean 		rb_library_browser_has_selection (RBLibraryBrowser *widget);
 void 			rb_library_browser_set_selection (RBLibraryBrowser *widget,
 							  RhythmDBPropType type,
-							  GList *list);
+							  GList *selection);
 
 G_END_DECLS
 

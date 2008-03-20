@@ -57,6 +57,21 @@ struct RBSearchEntryPrivate
 G_DEFINE_TYPE (RBSearchEntry, rb_search_entry, GTK_TYPE_HBOX)
 #define RB_SEARCH_ENTRY_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SEARCH_ENTRY, RBSearchEntryPrivate))
 
+/**
+ * SECTION:RBSearchEntry:
+ * @short_description: text entry widget for the search box
+ *
+ * The search entry contains a label and a text entry box.
+ * The text entry box (a SexyIconEntry) contains an icon
+ * that acts as a 'clear' button.
+ *
+ * Signals are emitted when the search text changes,
+ * arbitrarily rate-limited to one every 300ms.
+ *
+ * When the text entry widget is non-empty, its colours are
+ * changed to display the text in black on yellow.
+ */
+
 enum
 {
 	SEARCH,
@@ -73,6 +88,14 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 
 	object_class->finalize = rb_search_entry_finalize;
 
+	/**
+	 * RBSearchEntry::search:
+	 * @text: search text
+	 *
+	 * Emitted when the search text changes.  A signal
+	 * handler must initiate a search on the current
+	 * source.
+	 */
 	rb_search_entry_signals[SEARCH] =
 		g_signal_new ("search",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -83,6 +106,12 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
+
+	/**
+	 * RBSearchEntry::activate:
+	 *
+	 * Emitted when the entry is activated.
+	 */
 	rb_search_entry_signals[ACTIVATE] =
 		g_signal_new ("activate",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -153,6 +182,11 @@ rb_search_entry_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_search_entry_parent_class)->finalize (object);
 }
 
+/**
+ * rb_search_entry_new:
+ *
+ * Return value: new search entry widget.
+ */
 RBSearchEntry *
 rb_search_entry_new (void)
 {
@@ -167,6 +201,13 @@ rb_search_entry_new (void)
 	return entry;
 }
 
+/**
+ * rb_search_entry_clear:
+ * @entry: a #RBSearchEntry
+ *
+ * Clears the search entry text.  The 'search' signal will
+ * be emitted.
+ */
 void
 rb_search_entry_clear (RBSearchEntry *entry)
 {
@@ -182,6 +223,14 @@ rb_search_entry_clear (RBSearchEntry *entry)
 	entry->priv->clearing = FALSE;
 }
 
+/**
+ * rb_search_entry_set_text:
+ * @entry: a #RBSearchEntry
+ * @text: new search text
+ *
+ * Sets the text in the search entry box.
+ * The 'search' signal will be emitted.
+ */
 void
 rb_search_entry_set_text (RBSearchEntry *entry, const char *text)
 {
@@ -263,8 +312,14 @@ rb_search_entry_focus_out_event_cb (GtkWidget *widget,
 	return FALSE;
 }
 
+/**
+ * rb_search_entry_searching:
+ * @entry: a #RBSearchEntry
+ *
+ * Return value: TRUE if there is search text
+ */
 gboolean
-rb_search_entry_searching(RBSearchEntry *entry)
+rb_search_entry_searching (RBSearchEntry *entry)
 {
 	return strcmp ("", gtk_entry_get_text (GTK_ENTRY (entry->priv->entry))) != 0;
 }
@@ -276,6 +331,12 @@ rb_search_entry_activate_cb (GtkEntry *gtkentry,
 	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[ACTIVATE], 0);
 }
 
+/**
+ * rb_search_entry_grab_focus:
+ * @entry: a #RBSearchEntry
+ *
+ * Grabs input focus for the text entry widget.
+ */
 void
 rb_search_entry_grab_focus (RBSearchEntry *entry)
 {

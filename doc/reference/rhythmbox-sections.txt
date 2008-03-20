@@ -774,11 +774,15 @@ RB_SONG_INFO_GET_CLASS
 
 <SECTION>
 <FILE>rb-search-entry</FILE>
+<TITLE>RBSearchEntry</TITLE>
+RBSearchEntry
+RBSearchEntryClass
 RBSearchEntryPrivate
 rb_search_entry_new
 rb_search_entry_clear
 rb_search_entry_set_text
 rb_search_entry_searching
+rb_search_entry_grab_focus
 <SUBSECTION Standard>
 RB_SEARCH_ENTRY
 RB_IS_SEARCH_ENTRY
@@ -1334,3 +1338,28 @@ RB_URI_DIALOG_CLASS
 RB_IS_URI_DIALOG_CLASS
 RB_URI_DIALOG_GET_CLASS
 </SECTION>
+
+<SECTION>
+<FILE>rb-library-browser</FILE>
+<TITLE>RBLibraryBrowser</TITLE>
+RBLibraryBrowser
+RBLibraryBrowserClass
+rb_library_browser_new
+rb_library_browser_set_model
+rb_library_browser_reset
+rb_library_browser_construct_query
+rb_library_browser_get_property_views
+rb_library_browser_get_property_view
+rb_library_browser_has_selection
+rb_library_browser_set_selection
+<SUBSECTION Standard>
+RB_LIBRARY_BROWSER
+RB_IS_LIBRARY_BROWSER
+RB_TYPE_LIBRARY_BROWSER
+rb_library_browser_get_type
+RB_LIBRARY_BROWSER_CLASS
+RB_IS_LIBRARY_BROWSER_CLASS
+RB_LIBRARY_BROWSER_GET_CLASS
+</SECTION>
+
+
