@@ -22,7 +22,7 @@
 
 #include <glib.h>
 
-typedef void (*RBAsyncQueueWatchFunc) (gpointer event, gpointer data);
+typedef void (*RBAsyncQueueWatchFunc) (gpointer item, gpointer data);
 
 guint rb_async_queue_watch_new (GAsyncQueue *queue,
 				gint priority,

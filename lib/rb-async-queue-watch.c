@@ -27,6 +27,14 @@
  * @short_description: GSource for watching a GAsyncQueue in the main loop
  */
 
+/**
+ * RBAsyncQueueWatchFunc:
+ * @item: the item found in the queue
+ * @data: user data specified when creating the watch
+ *
+ * Callback to call when an item is found in the queue.
+ */
+
 typedef struct {
 	GSource source;
 	GAsyncQueue *queue;
@@ -52,10 +60,10 @@ rb_async_queue_watch_dispatch (GSource *source, GSourceFunc callback, gpointer u
 {
 	RBAsyncQueueWatch *watch = (RBAsyncQueueWatch *)source;
 	RBAsyncQueueWatchFunc cb = (RBAsyncQueueWatchFunc)callback;
-	gpointer event;
+	gpointer item;
 
-	event = g_async_queue_try_pop (watch->queue);
-	if (event == NULL) {
+	item = g_async_queue_try_pop (watch->queue);
+	if (item == NULL) {
 		return TRUE;
 	}
 
@@ -63,7 +71,7 @@ rb_async_queue_watch_dispatch (GSource *source, GSourceFunc callback, gpointer u
 		return FALSE;
 	}
 
-	cb (event, user_data);
+	cb (item, user_data);
 	return TRUE;
 }
 

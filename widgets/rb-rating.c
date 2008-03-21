@@ -116,6 +116,7 @@ rb_rating_class_init (RBRatingClass *klass)
 
 	/**
 	 * RBRating::rated:
+	 * @rating: the #RBRating
 	 * @score: the new rating
 	 *
 	 * Emitted when the user changes the rating.

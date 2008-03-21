@@ -36,22 +36,24 @@ G_BEGIN_DECLS
 #define RB_IS_SONG_INFO_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_SONG_INFO))
 #define RB_SONG_INFO_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SONG_INFO, RBSongInfoClass))
 
+typedef struct _RBSongInfo RBSongInfo;
+typedef struct _RBSongInfoClass RBSongInfoClass;
 typedef struct RBSongInfoPrivate RBSongInfoPrivate;
 
-typedef struct
+struct _RBSongInfo
 {
 	GtkDialog parent;
 
 	RBSongInfoPrivate *priv;
-} RBSongInfo;
+};
 
-typedef struct
+struct _RBSongInfoClass
 {
 	GtkDialogClass parent_class;
 
 	void (*pre_metadata_change) (RBSongInfo *info, RhythmDBEntry *entry);
 	void (*post_metadata_change) (RBSongInfo *info, RhythmDBEntry *entry);
-} RBSongInfoClass;
+};
 
 GType      rb_song_info_get_type (void);
 

@@ -90,6 +90,7 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 
 	/**
 	 * RBSearchEntry::search:
+	 * @entry: the #RBSearchEntry
 	 * @text: search text
 	 *
 	 * Emitted when the search text changes.  A signal
@@ -109,6 +110,7 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 
 	/**
 	 * RBSearchEntry::activate:
+	 * @entry: the #RBSearchEntry
 	 *
 	 * Emitted when the entry is activated.
 	 */

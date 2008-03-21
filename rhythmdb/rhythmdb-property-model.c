@@ -225,6 +225,7 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 
 	/**
 	 * RhythmDBPropertyModel::pre-row-deletion:
+	 * @model: the #RhythmDBPropertyModel
 	 *
 	 * Emitted just before a row is deleted from the model.
 	 */

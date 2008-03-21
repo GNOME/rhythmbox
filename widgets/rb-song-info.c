@@ -141,6 +141,35 @@ struct RBSongInfoPrivate
 
 #define RB_SONG_INFO_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SONG_INFO, RBSongInfoPrivate))
 
+/**
+ * SECTION:rb-song-info
+ * @short_description: song properties dialog
+ *
+ * Displays song properties and, if we know how to edit tags in the file,
+ * allows the user to edit them.
+ *
+ * This class has two modes.  It can display and edit properties of a single
+ * entry, in which case it uses a #GtkNotebook to split the properties across
+ * 'basic' and 'details' pages, and it can display and edit properties of
+ * multiple entries at a time, in which case a smaller set of properties is
+ * displayed in a single set.
+ *
+ * In single-entry mode, it is possible to add extra pages to the #GtkNotebook
+ * widget in the dialog.  The 'create-song-info' signal is emitted by the #RBShell
+ * object, allowing signal handlers to add pages by calling #rb_song_info_append_page.
+ * The lyrics plugin is currently the only place where this ability is used.
+ * In this mode, the dialog features 'back' and 'forward' buttons that move to the
+ * next or previous entries from the currently displayed track list.
+ *
+ * In multiple-entry mode, only the set of properties that can usefully be set
+ * across multiple entries at once are displayed.
+ *
+ * When the dialog is closed, any changes made will be applied to the entry (or entries)
+ * that were displayed in the dialog.  For songs in the library, this will result
+ * in the song tags being updated on disk.  For other entry types, this only updates
+ * the data store in the database.
+ */
+
 enum
 {
 	PRE_METADATA_CHANGE,
@@ -173,6 +202,13 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 
 	widget_class->show = rb_song_info_show;
 
+	/**
+	 * RBSongInfo:source:
+	 *
+	 * The #RBSource that created the song properties window.  Used to update
+	 * for track list changes, and to find the sets of albums, artist, and genres
+	 * to use for tag edit completion.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SOURCE,
 					 g_param_spec_object ("source",
@@ -180,6 +216,13 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 					                      "RBSource object",
 					                      RB_TYPE_SOURCE,
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBSongInfo:entry-view:
+	 *
+	 * The #RBEntryView for the source that created the song properties window.  Used
+	 * find the set of selected entries, and to change the selection when the 'back' and
+	 * 'forward' buttons are pressed.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_VIEW,
 					 g_param_spec_object ("entry-view",
@@ -187,6 +230,12 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 					                      "RBEntryView object",
 					                      RB_TYPE_ENTRY_VIEW,
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBSongInfo:current-entry:
+	 *
+	 * The #RhythmDBEntry that is currently being displayed.  Will be NULL for
+	 * multiple-entry song properties windows.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_CURRENT_ENTRY,
 					 g_param_spec_boxed ("current-entry",
@@ -195,6 +244,12 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 							     RHYTHMDB_TYPE_ENTRY,
 					                     G_PARAM_READABLE));
 
+	/**
+	 * RBSongInfo:selected-entries:
+	 *
+	 * The set of #RhythmDBEntry objects currently being displayed.  Valid for both
+	 * single-entry and multiple-entry song properties windows.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SELECTED_ENTRIES,
 					 g_param_spec_value_array ("selected-entries",
@@ -210,6 +265,15 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 	object_class->dispose = rb_song_info_dispose;
 	object_class->finalize = rb_song_info_finalize;
 
+	/**
+	 * RBSongInfo::pre-metadata-change:
+	 * @song_info: the #RBSongInfo instance
+	 * @entry: the #RhythmDBEntry being changed
+	 *
+	 * Emitted just before the changes made in the song properties window
+	 * are applied to the database.  This is only emitted in the single-entry
+	 * case.
+	 */
 	rb_song_info_signals[PRE_METADATA_CHANGE] =
 		g_signal_new ("pre-metadata-change",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -221,6 +285,14 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);
 
+	/**
+	 * RBSongInfo::post-metadata-change:
+	 * @song_info: the #RBSongInfo instance
+	 * @entry: the #RhythmDBEntry that was changed
+	 *
+	 * Emitted just after changes have been applied to the database.
+	 * Probably useless.
+	 */
 	rb_song_info_signals[POST_METADATA_CHANGE] =
 		g_signal_new ("post-metadata-change",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -677,6 +749,16 @@ rb_song_info_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_song_info_new:
+ * @source: #RBSource creating the song properties window
+ * @entry_view: the #RBEntryView to get selection data from
+ *
+ * Creates a new #RBSongInfo for the selected entry or entries in
+ * the specified entry view.
+ *
+ * Return value: the new song properties window
+ */
 GtkWidget *
 rb_song_info_new (RBSource *source, RBEntryView *entry_view)
 {
@@ -700,6 +782,17 @@ rb_song_info_new (RBSource *source, RBEntryView *entry_view)
 	return GTK_WIDGET (song_info);
 }
 
+/**
+ * rb_song_info_append_page:
+ * @info: a #RBSongInfo
+ * @title: the title of the new page
+ * @page: the page #GtkWidget
+ *
+ * Adds a new page to the song properties window.  Should be called
+ * in a handler connected to the #RBShell 'create-song-info' signal.
+ *
+ * Return value: the page number
+ */
 guint
 rb_song_info_append_page (RBSongInfo *info, const char *title, GtkWidget *page)
 {

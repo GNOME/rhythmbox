@@ -1,5 +1,28 @@
 2008-03-21  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/rb-player-gst-data-tee.c:
+	(rb_player_gst_data_tee_interface_init):
+	* backends/rb-player.c: (rb_player_interface_init):
+	* lib/rb-async-queue-watch.c: (rb_async_queue_watch_dispatch):
+	* lib/rb-async-queue-watch.h:
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_class_init):
+	* sources/rb-source.c: (rb_source_class_init):
+	* widgets/rb-cell-renderer-rating.c:
+	(rb_cell_renderer_rating_class_init):
+	* widgets/rb-rating.c: (rb_rating_class_init):
+	* widgets/rb-search-entry.c: (rb_search_entry_class_init):
+	* widgets/rb-uri-dialog.c: (rb_uri_dialog_class_init):
+	Fix signal argument descriptions.  Forgot to include the object
+	emitting the signals..
+	
+	* widgets/rb-song-info.c: (rb_song_info_class_init):
+	* widgets/rb-song-info.h:
+	* doc/reference/rhythmbox-sections.txt:
+	gtk-doc for RBSongInfo.
+
+2008-03-21  Jonathan Matthew  <jonathan@d14n.org>
+
 	* doc/reference/rhythmbox-sections.txt:
 	* widgets/rb-dialog.c:
 	* widgets/rb-dialog.h:

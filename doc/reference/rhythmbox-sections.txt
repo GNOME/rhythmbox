@@ -693,10 +693,9 @@ RB_PLAYER_GET_IFACE
 <SECTION>
 <FILE>rhythmdb-property-model</FILE>
 <TITLE>RhythmDBPropertyModel</TITLE>
-RHythmDBPropertyModel
+RhythmDBPropertyModel
 RhythmDBPropertyModelClass
 RhythmDBPropertyModelColumn
-RhythmDBPropertyModelPrivate
 rhythmdb_property_model_new
 rhythmdb_property_model_iter_from_string
 rhythmdb_property_model_enable_drag
@@ -709,6 +708,7 @@ RHYTHMDB_PROPERTY_MODEL_CLASS
 RHYTHMDB_IS_PROPERTY_MODEL_CLASS
 RHYTHMDB_PROPERTY_MODEL_GET_CLASS
 RHYTHMDB_TYPE_PROPERTY_MODEL_COLUMN
+RhythmDBPropertyModelPrivate
 </SECTION>
 
 <SECTION>
@@ -904,7 +904,9 @@ rhythmdb_get_type
 
 <SECTION>
 <FILE>rb-song-info</FILE>
-RBSongInfoPrivate
+<TITLE>RBSongInfo</TITLE>
+RBSongInfo
+RBSongInfoClass
 rb_song_info_new
 rb_song_info_append_page
 <SUBSECTION Standard>
@@ -915,6 +917,7 @@ rb_song_info_get_type
 RB_SONG_INFO_CLASS
 RB_IS_SONG_INFO_CLASS
 RB_SONG_INFO_GET_CLASS
+RBSongInfoPrivate
 </SECTION>
 
 <SECTION>

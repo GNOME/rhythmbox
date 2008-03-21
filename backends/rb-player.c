@@ -80,6 +80,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 {
 	/**
 	 * RBPlayer::eos:
+	 * @player: the #RBPlayer
 	 * @stream_data: the data associated with the stream that finished
 	 *
 	 * The 'eos' signal is emitted when a stream finishes.
@@ -96,6 +97,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 
 	/**
 	 * RBPlayer::info:
+	 * @player: the #RBPlayer
 	 * @stream_data: the data associated with the stream
 	 * @field: the #RBMetaDataField corresponding to the stream info
 	 * @value: the value of the stream info field
@@ -115,6 +117,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 
 	/**
 	 * RBPlayer::error:
+	 * @player: the #RBPlayer
 	 * @stream_data: the data associated with the stream
 	 * @error: description of the error
 	 *
@@ -134,6 +137,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 
 	/**
 	 * RBPlayer::tick:
+	 * @player: the #RBPlayer
 	 * @stream_data: the data associated with the stream
 	 * @elapsed: playback position in the stream
 	 * @duration: current estimate of the duration of the stream
@@ -155,6 +159,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 
 	/**
 	 * RBPlayer::buffering:
+	 * @player: the #RBPlayer
 	 * @stream_data: the data associated with the buffering stream
 	 * @progress: buffering percentage
 	 *
@@ -175,6 +180,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 
 	/**
 	 * RBPlayer::event:
+	 * @player: the #RBPlayer
 	 * @stream_data: data associated with the stream
 	 * @data: event data
 	 *
@@ -198,6 +204,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 
 	/**
 	 * RBPlayer::playing-stream:
+	 * @player: the #RBPlayer
 	 * @stream_data: data associated with the stream
 	 *
 	 * The 'playing-stream' signal is emitted when the main playing stream

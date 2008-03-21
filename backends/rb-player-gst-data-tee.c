@@ -49,6 +49,7 @@ rb_player_gst_data_tee_interface_init (RBPlayerGstDataTeeIface *iface)
 {
 	/**
 	 * RBPlayerGstDataTee::data-tee-inserted:
+	 * @player: the #RBPlayerGstDataTee implementation
 	 * @data_tee: the element which has been inserted
 	 *
 	 * The 'data_tee-inserted' signal is emitted when the tee element has been
@@ -66,6 +67,7 @@ rb_player_gst_data_tee_interface_init (RBPlayerGstDataTeeIface *iface)
 
 	/**
 	 * RBPlayerGstDataTee::data-tee-pre-remove:
+	 * @player: the #RBPlayerGstDataTee implementation
 	 * @data_tee: the element which is about to be removed
 	 *
 	 * The 'data_tee-pre-remove' signal is emitted immediately before the element

@@ -318,6 +318,7 @@ rb_source_class_init (RBSourceClass *klass)
 
 	/**
 	 * RBSource::deleted:
+	 * @source: the #RBSource
 	 *
 	 * Emitted when the source is being deleted.
 	 */
@@ -333,6 +334,7 @@ rb_source_class_init (RBSourceClass *klass)
 
 	/**
 	 * RBSource::status_changed:
+	 * @source: the #RBSource
 	 *
 	 * Emitted when the source's status changes.
 	 */
@@ -348,6 +350,7 @@ rb_source_class_init (RBSourceClass *klass)
 
 	/**
 	 * RBSource::filter_changed:
+	 * @source: the #RBSource
 	 *
 	 * Fires when the user changes the filter, either by changing the
 	 * contents of the search box or by selecting a different browser

@@ -145,6 +145,7 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 
 	/**
 	 * RBCellRendererRating::rated:
+	 * @renderer: the #RBCellRendererRating
 	 * @score: the new rating
 	 * @path: string form of the #GtkTreePath to the row that was changed
 	 *

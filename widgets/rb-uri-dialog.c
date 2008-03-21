@@ -110,6 +110,7 @@ rb_uri_dialog_class_init (RBURIDialogClass *klass)
 
 	/**
 	 * RBURIDialog::location-added:
+	 * @dialog: the #RBURIDialog
 	 * @uri: URI entered
 	 *
 	 * Emitted when the user has entered a URI into the dialog.
