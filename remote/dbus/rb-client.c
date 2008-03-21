@@ -140,7 +140,7 @@ rb_make_duration_string (guint duration)
 	return str;
 }
 
-/**
+/*
  * Parse a filename pattern and replace markers with values from a TrackDetails
  * structure.
  *

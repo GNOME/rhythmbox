@@ -778,7 +778,7 @@ sexy_icon_entry_button_release(GtkWidget *widget, GdkEventButton *event)
  *
  * Creates a new SexyIconEntry widget.
  *
- * Returns a new #SexyIconEntry.
+ * Return value: a new #SexyIconEntry.
  */
 GtkWidget *
 sexy_icon_entry_new(void)

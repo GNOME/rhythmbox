@@ -149,7 +149,7 @@ rb_header_class_init (RBHeaderClass *klass)
 static void
 rb_header_init (RBHeader *header)
 {
-	/**
+	/*
 	 * The children in this widget look like this:
 	 * RBHeader
 	 *   GtkHBox

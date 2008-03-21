@@ -953,15 +953,14 @@ rb_str_in_strv (const char *needle, char **haystack)
 
 /**
  * rb_set_tree_view_column_fixed_width:
- *
- * Sets a fixed size for a tree view column based on
- * a set of strings to be displayed in the column.
- *
  * @treeview: the #GtkTreeView containing the column
  * @column: the #GtkTreeViewColumn to size
  * @renderer: the #GtkCellRenderer used in the column
  * @strings: a NULL-terminated set of strings to base the size on
  * @padding: a small amount of extra padding for the column
+ *
+ * Sets a fixed size for a tree view column based on
+ * a set of strings to be displayed in the column.
  */
 void
 rb_set_tree_view_column_fixed_width (GtkWidget  *treeview,

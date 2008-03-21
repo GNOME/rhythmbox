@@ -385,7 +385,7 @@ get_db_for_source (RBAudioCdSource *source)
 
 #ifdef HAVE_MUSICBRAINZ
 
-/**
+/*
  * Called by the Multiple Album dialog when the user hits return in
  * the list view
  */
@@ -400,7 +400,7 @@ album_row_activated (GtkTreeView *treeview,
 	gtk_dialog_response (dialog, GTK_RESPONSE_OK);
 }
 
-/**
+/*
  * Utility function for when there are more than one albums
  * available. Borrowed from Sound Juicer.
  */

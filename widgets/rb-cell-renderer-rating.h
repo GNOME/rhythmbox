@@ -37,15 +37,17 @@ G_BEGIN_DECLS
 
 typedef struct RBCellRendererRatingPrivate RBCellRendererRatingPrivate;
 typedef struct RBCellRendererRatingClassPrivate RBCellRendererRatingClassPrivate;
+typedef struct _RBCellRendererRating RBCellRendererRating;
+typedef struct _RBCellRendererRatingClass RBCellRendererRatingClass;
 
-typedef struct
+struct _RBCellRendererRating
 {
 	GtkCellRenderer parent;
 
 	RBCellRendererRatingPrivate *priv;
-} RBCellRendererRating;
+};
 
-typedef struct
+struct _RBCellRendererRatingClass
 {
 	GtkCellRendererClass parent_class;
 
@@ -53,7 +55,7 @@ typedef struct
 
 	RBCellRendererRatingClassPrivate *priv;
 
-} RBCellRendererRatingClass;
+};
 
 GtkType          rb_cell_renderer_rating_get_type (void);
 

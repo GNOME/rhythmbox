@@ -652,6 +652,7 @@ has_valid_scheme (const char *uri)
 
 /**
  * eel_make_uri_from_shell_arg:
+ * @location: a possibly mangled "uri"
  *
  * Similar to eel_make_uri_from_input, except that:
  * 
@@ -659,10 +660,7 @@ has_valid_scheme (const char *uri)
  * 2) doesn't bother stripping leading/trailing white space
  * 3) doesn't bother with ~ expansion--that's done by the shell
  *
- * @location: a possibly mangled "uri"
- *
- * returns a newly allocated uri
- *
+ * Return value: a newly allocated uri
  **/
 char *
 rb_uri_resolve_relative (const char *location)

@@ -591,7 +591,7 @@ playlist_load_ended_cb (TotemPlParser *parser, const char *uri, GHashTable *meta
  * static playlist.  If the playlist file includes a title, the static
  * playlist created will have the same title.
  *
- * Returns TRUE on success
+ * Return value: TRUE on success
  **/
 gboolean
 rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri, GError **error)
@@ -869,7 +869,7 @@ save_playlist_cb (GtkTreeModel *model,
  * since the last time the playlists were saved, and no save operation is
  * currently taking place.
  *
- * Returns TRUE if a playlist save operation has been started
+ * Return value: TRUE if a playlist save operation has been started
  **/
 gboolean
 rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
@@ -922,7 +922,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
  *
  * Creates a new playlist and adds it to the source list.
  *
- * Returns the new playlist object.
+ * Return value: the new playlist object.
  **/
 RBSource *
 rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
@@ -1054,7 +1054,7 @@ create_name_from_selection_data (RBPlaylistManager *mgr,
  * Used to implement playlist creation through drag and drop
  * to the source list.
  *
- * Returns the new playlist.
+ * Return value: the new playlist.
  **/
 RBSource *
 rb_playlist_manager_new_playlist_from_selection_data (RBPlaylistManager *mgr,
@@ -1553,7 +1553,7 @@ list_playlists_cb (GtkTreeModel *model,
  * rb_playlist_manager_get_playlists
  * @mgr: the #RBPlaylistManager
  *
- * Returns a #GList containing all local playlist source objects.
+ * Return value: a #GList containing all local playlist source objects.
  **/
 GList *
 rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
@@ -1579,7 +1579,7 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
  * Allocates and returns an array containing the names of all local
  * playlists.  This is part of the playlist manager dbus interface.
  *
- * Returns TRUE if successful.
+ * Return value: TRUE if successful.
  **/
 gboolean
 rb_playlist_manager_get_playlist_names (RBPlaylistManager *mgr,
@@ -1670,7 +1670,7 @@ _get_playlist_by_name (RBPlaylistManager *mgr,
  * Will fail if a playlist with that name already exists.
  * This is part of the playlist manager dbus interface.
  *
- * Returns TRUE if successful.
+ * Return value: TRUE if successful.
  **/
 gboolean
 rb_playlist_manager_create_static_playlist (RBPlaylistManager *mgr,
@@ -1699,7 +1699,7 @@ rb_playlist_manager_create_static_playlist (RBPlaylistManager *mgr,
  * Deletes the specified playlist.  Will fail if no playlist with
  * that name exists. This is part of the playlist manager dbus interface.
  *
- * Returns TRUE if successful.
+ * Return vaule: TRUE if successful.
  */
 gboolean
 rb_playlist_manager_delete_playlist (RBPlaylistManager *mgr,
@@ -1731,7 +1731,7 @@ rb_playlist_manager_delete_playlist (RBPlaylistManager *mgr,
  * Fails if no playlist with that name exists.
  * This is part of the playlist manager dbus interface.
  *
- * Returns TRUE if successful.
+ * Return value: TRUE if successful.
  **/
 gboolean
 rb_playlist_manager_add_to_playlist (RBPlaylistManager *mgr,
@@ -1771,7 +1771,7 @@ rb_playlist_manager_add_to_playlist (RBPlaylistManager *mgr,
  * Fails if no playlist with that name exists.
  * This is part of the playlist manager dbus interface.
  *
- * Returns TRUE if successful.
+ * Return value: TRUE if successful.
  **/
 gboolean
 rb_playlist_manager_remove_from_playlist (RBPlaylistManager *mgr,
@@ -1813,7 +1813,7 @@ rb_playlist_manager_remove_from_playlist (RBPlaylistManager *mgr,
  * Saves the specified playlist to a file in either M3U or PLS format.
  * This is part of the playlist manager dbus interface.
  *
- * Returns TRUE if successful.
+ * Return value: TRUE if successful.
  **/
 gboolean
 rb_playlist_manager_export_playlist (RBPlaylistManager *mgr,

@@ -1243,10 +1243,12 @@ rhythmdb_entry_allocate (RhythmDB *db,
  * @entry: a #RhythmDBEntry
  * @expected_size: expected size of the type-specific data.
  *
- * Returns a pointer to the entry's type-specific data, checking that
+ * Retrieves a pointer to the entry's type-specific data, checking that
  * the size of the data structure matches what is expected.
  * Callers should use the RHYTHMDB_ENTRY_GET_TYPE_DATA macro for
  * a slightly more friendly interface to this functionality.
+ *
+ * Return value: type-specific data pointer
  */
 gpointer
 rhythmdb_entry_get_type_data (RhythmDBEntry *entry,
@@ -1365,7 +1367,6 @@ rhythmdb_entry_example_new (RhythmDB *db,
 
 /**
  * rhythmdb_entry_ref:
- * @db: a #RhythmDB.
  * @entry: a #RhythmDBEntry.
  *
  * Increase the reference count of the entry.
@@ -1409,7 +1410,6 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 
 /**
  * rhythmdb_entry_unref:
- * @db: a #RhythmDB.
  * @entry: a #RhythmDBEntry.
  *
  * Decrease the reference count of the entry, and destroy it if there are

@@ -19,7 +19,7 @@
  *
  */
 
-/**
+/*
  * RBPlayOrder defines the interface for classes which can control the order
  * songs play.
  *
@@ -78,7 +78,7 @@ typedef struct
 	void (*playing_entry_removed) (RBPlayOrder *porder, RhythmDBEntry *entry);
 
 	/* QUERIES */
-	/**
+	/*
 	 * Returns whether there is a next song. This controls the next
 	 * button's sensitivity. If not implemented, defaults to
 	 * get_next()!=NULL.
@@ -86,7 +86,7 @@ typedef struct
 	 * Must not change any visible state.
 	 */
 	gboolean (*has_next) (RBPlayOrder* porder);
-	/**
+	/*
 	 * get_next() must return the next song to play. It's called when a
 	 * song finishes, when the user clicks the next button, and when the
 	 * user clicks play after playback is stopped.
@@ -98,13 +98,13 @@ typedef struct
 	 * Must not change any visible state.
 	 */
 	RhythmDBEntry* (*get_next) (RBPlayOrder* porder);
-	/**
+	/*
 	 * Tells the play order that the user has moved to the next song.
 	 * Should be called before the EntryView::playing-entry property is
 	 * changed.
 	 */
 	void (*go_next) (RBPlayOrder* porder);
-	/**
+	/*
 	 * Returns whether there is a previous song. This controls the previous
 	 * button's sensitivity. If not implemented, defaults to
 	 * get_previous()!=NULL.
@@ -112,7 +112,7 @@ typedef struct
 	 * Must not change any visible state.
 	 */
 	gboolean (*has_previous) (RBPlayOrder* porder);
-	/**
+	/*
 	 * get_previous() must return the previous song to play. It's called
 	 * when the user clicks the previous button within 2 seconds of the
 	 * beginning of a song.
@@ -120,7 +120,7 @@ typedef struct
 	 * Must not change any visible state.
 	 */
 	RhythmDBEntry* (*get_previous) (RBPlayOrder* porder);
-	/**
+	/*
 	 * Tells the play order that the user has moved to the previous song.
 	 * Should be called before the EntryView::playing-entry property is
 	 * changed.

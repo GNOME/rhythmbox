@@ -418,7 +418,7 @@ rb_history_insert_at_index (RBHistory *hist, RhythmDBEntry *entry, guint index)
 	rb_history_limit_size (hist, TRUE);
 }
 
-/**
+/*
  * Cuts nodes off of the history from the desired end until it is smaller than max_size.
  * Never cuts off the current node.
  */

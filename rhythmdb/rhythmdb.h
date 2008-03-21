@@ -413,7 +413,7 @@ gboolean	rhythmdb_entry_keyword_has	(RhythmDB *db,
 GList* /*<RBRefString>*/ rhythmdb_entry_keywords_get	(RhythmDB *db,
 							 RhythmDBEntry *entry);
 
-/**
+/*
  * Returns a freshly allocated GtkTreeModel which represents the query.
  * The extended arguments alternate between RhythmDBQueryType args
  * and their values. Items are prioritized like algebraic expressions, and

@@ -47,10 +47,11 @@ GQuark rb_player_error_quark (void);
 #define RB_PLAYER_GET_IFACE(o) (G_TYPE_INSTANCE_GET_INTERFACE ((o), RB_TYPE_PLAYER, RBPlayerIface))
 
 typedef struct _RBPlayer RBPlayer;
+typedef struct _RBPlayerIface RBPlayerIface;
 
 typedef gboolean (*RBPlayerFeatureFunc) (RBPlayer *player);
 
-typedef struct
+struct _RBPlayerIface
 {
 	GTypeInterface	g_iface;
 
@@ -110,7 +111,7 @@ typedef struct
 	void		(*event)		(RBPlayer *player,
 						 gpointer stream_data,
 						 gpointer data);
-} RBPlayerIface;
+};
 
 GType		rb_player_get_type   (void);
 RBPlayer *	rb_player_new        (gboolean want_crossfade,

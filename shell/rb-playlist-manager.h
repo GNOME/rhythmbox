@@ -95,27 +95,27 @@ RBSource *		rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 RBSource *		rb_playlist_manager_new_playlist_from_selection_data (RBPlaylistManager *mgr,
                                                                               GtkSelectionData *data);
 
-GList *			rb_playlist_manager_get_playlists (RBPlaylistManager *manager);
+GList *			rb_playlist_manager_get_playlists (RBPlaylistManager *mgr);
 
-gboolean		rb_playlist_manager_get_playlist_names (RBPlaylistManager *manager,
+gboolean		rb_playlist_manager_get_playlist_names (RBPlaylistManager *mgr,
 								gchar ***playlists,
 								GError **error);
-gboolean		rb_playlist_manager_create_static_playlist (RBPlaylistManager *manager,
+gboolean		rb_playlist_manager_create_static_playlist (RBPlaylistManager *mgr,
 								    const gchar *name,
 								    GError **error);
-gboolean		rb_playlist_manager_delete_playlist (RBPlaylistManager *manager,
+gboolean		rb_playlist_manager_delete_playlist (RBPlaylistManager *mgr,
 							     const gchar *name,
 							     GError **error);
-gboolean		rb_playlist_manager_add_to_playlist (RBPlaylistManager *manager,
-							     const gchar *playlist,
+gboolean		rb_playlist_manager_add_to_playlist (RBPlaylistManager *mgr,
+							     const gchar *name,
 							     const gchar *uri,
 							     GError **error);
-gboolean		rb_playlist_manager_remove_from_playlist (RBPlaylistManager *manager,
-								  const gchar *playlist,
+gboolean		rb_playlist_manager_remove_from_playlist (RBPlaylistManager *mgr,
+								  const gchar *name,
 								  const gchar *uri,
 								  GError **error);
-gboolean		rb_playlist_manager_export_playlist (RBPlaylistManager *manager,
-							     const gchar *playlist,
+gboolean		rb_playlist_manager_export_playlist (RBPlaylistManager *mgr,
+							     const gchar *name,
 							     const gchar *uri,
 							     gboolean m3u_format,
 							     GError **error);

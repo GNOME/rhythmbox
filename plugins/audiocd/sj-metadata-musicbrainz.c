@@ -385,7 +385,7 @@ cache_rdf (musicbrainz_t mb, const char *filename)
   g_free (rdf);
 }
 
-/**
+/*
  * Load into the MusicBrainz object the RDF from the specified cache file if it
  * exists and is valid then return TRUE, otherwise return FALSE.
  */
@@ -428,7 +428,7 @@ cache_rdf (musicbrainz_t mb, const char *filename) {
 }
 #endif
 
-/**
+/*
  * Fill the MusicBrainz object with RDF.  Basically get the CD Index and check
  * the local cache, if that fails then lookup the data online.
  */

@@ -156,7 +156,7 @@ begin:
 
 	db = rhythmdb_tree_new ("test");
 
-	/**
+	/*
 	 *  TEST 1: Entry creation with album
 	 */
 	g_print ("Test %d\n", testnum);
@@ -169,7 +169,7 @@ begin:
 	g_print ("Test %d\n", testnum);
 	
 	testnum++;
-	/**
+	/*
 	 *  TEST 2: Do a query for all songs, verify our single song is in it
 	 */
 	g_print ("Test %d\n", testnum);
@@ -194,7 +194,7 @@ begin:
 	g_print ("Test %d\n", testnum);
 
 	testnum++;
-	/**
+	/*
 	 *  TEST 3: Do a query for songs named "Sin"
 	 */
 	g_print ("Test %d\n", testnum);
@@ -219,7 +219,7 @@ begin:
 	g_print ("Test %d\n", testnum);
 
 	testnum++;
-	/**
+	/*
 	 *  TEST 4: Do a query for songs named "Cow", should be empty
 	 */
 	g_print ("Test %d\n", testnum);
@@ -240,7 +240,7 @@ begin:
 	g_print ("Test %d\n", testnum);
 
 	testnum++;
-	/**
+	/*
 	 *  TEST 5
 	 *  Do a query for songs named "Cow" and "Sin", should be empty.
 	 */
@@ -263,7 +263,7 @@ begin:
 	g_print ("Test %d\n", testnum);
 
 	testnum++;
-	/**
+	/*
 	 *  TEST 6
 	 *  Do a query for songs named "Cow" or "Sin", should have our song.
 	 */
@@ -292,7 +292,7 @@ begin:
 	g_print ("Test %d\n", testnum);
 
 	testnum++;
-	/**
+	/*
 	 *  TEST 7
 	 *  Do a query for songs with Genre "Rock", should have our song.
 	 */
@@ -318,7 +318,7 @@ begin:
 	g_print ("Test %d\n", testnum);
 
 	testnum++;
-	/**
+	/*
 	 *  TEST 8
 	 *  Do a query for songs with Genre "Nine Inch Nails",
 	 *  should be empty.
@@ -341,7 +341,7 @@ begin:
 	g_print ("Test %d\n", testnum);
 	
 	testnum++;
-	/**
+	/*
 	 *  TEST 9
 	 *  Do a query for songs with album "Pretty Hate Machine",
 	 *  should have our song.
@@ -368,7 +368,7 @@ begin:
 	g_print ("Test %d\n", testnum);
 
 	testnum++;
-	/**
+	/*
 	 *  TEST 10
 	 *  Do a query for songs with artist "Nine Inch Nails",
 	 *  should have our song.
@@ -540,7 +540,7 @@ begin:
 		goto begin;
 	}
 
-	/**
+	/*
 	 * THE END
 	 */
 	rhythmdb_shutdown (db);

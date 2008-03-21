@@ -104,7 +104,7 @@ rb_tree_drag_source_get_type (void)
 /**
  * rb_tree_drag_source_row_draggable:
  * @drag_source: a #EggTreeMultiDragSource
- * @path: row on which user is initiating a drag
+ * @path_list: row on which user is initiating a drag
  *
  * Asks the #EggTreeMultiDragSource whether a particular row can be used as
  * the source of a DND operation. If the source doesn't implement
@@ -132,7 +132,7 @@ rb_tree_drag_source_row_draggable (RbTreeDragSource *drag_source,
 /**
  * rb_tree_drag_source_drag_data_delete:
  * @drag_source: a #EggTreeMultiDragSource
- * @path: row that was being dragged
+ * @path_list: row that was being dragged
  *
  * Asks the #EggTreeMultiDragSource to delete the row at @path, because
  * it was moved somewhere else via drag-and-drop. Returns %FALSE
@@ -158,7 +158,7 @@ rb_tree_drag_source_drag_data_delete (RbTreeDragSource *drag_source,
 /**
  * rb_tree_drag_source_drag_data_get:
  * @drag_source: a #EggTreeMultiDragSource
- * @path: row that was dragged
+ * @path_list: row that was dragged
  * @selection_data: a #EggSelectionData to fill with data from the dragged row
  *
  * Asks the #EggTreeMultiDragSource to fill in @selection_data with a

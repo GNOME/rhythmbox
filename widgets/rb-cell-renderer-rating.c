@@ -192,13 +192,14 @@ rb_cell_renderer_rating_set_property (GObject *object,
 }
 
 /**
- * rb_cell_renderer_rating_new: create a cell renderer that will
+ * rb_cell_renderer_rating_new:
+ *
+ * create a cell renderer that will
  * display some pixbufs for representing the rating of a song.
  * It is also able to update the rating.
  *
  * Return value: the new cell renderer
  **/
-
 GtkCellRenderer *
 rb_cell_renderer_rating_new ()
 {

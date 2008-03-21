@@ -839,7 +839,7 @@ sanitize_pattern (const char *pat)
 	}
 }
 
-/**
+/*
  * Parse a filename pattern and replace markers with values from a TrackDetails
  * structure.
  *

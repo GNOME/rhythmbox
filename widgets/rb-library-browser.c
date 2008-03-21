@@ -190,6 +190,7 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 							      G_PARAM_READABLE));
 	/**
 	 * RBLibraryBrowser:entry-type:
+	 *
 	 * The type of entries to use in the browser.
 	 */
 	g_object_class_install_property (object_class,
