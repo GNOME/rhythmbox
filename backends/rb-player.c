@@ -43,7 +43,7 @@ static void
 rb_player_interface_init (RBPlayerIface *iface)
 {
 	/**
-	 * RBPlayer::eos
+	 * RBPlayer::eos:
 	 * @stream_data: the data associated with the stream that finished
 	 *
 	 * The 'eos' signal is emitted when a stream finishes.
@@ -59,7 +59,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      1, G_TYPE_POINTER);
 
 	/**
-	 * RBPlayer::info
+	 * RBPlayer::info:
 	 * @stream_data: the data associated with the stream
 	 * @field: the #RBMetaDataField corresponding to the stream info
 	 * @value: the value of the stream info field
@@ -78,7 +78,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      3, G_TYPE_POINTER, G_TYPE_INT, G_TYPE_VALUE);
 
 	/**
-	 * RBPlayer::error
+	 * RBPlayer::error:
 	 * @stream_data: the data associated with the stream
 	 * @error: description of the error
 	 *
@@ -97,7 +97,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_TYPE_POINTER, G_TYPE_POINTER);
 
 	/**
-	 * RBPlayer::tick
+	 * RBPlayer::tick:
 	 * @stream_data: the data associated with the stream
 	 * @elapsed: playback position in the stream
 	 * @duration: current estimate of the duration of the stream
@@ -118,7 +118,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_TYPE_POINTER, G_TYPE_LONG, G_TYPE_LONG);
 
 	/**
-	 * RBPlayer::buffering
+	 * RBPlayer::buffering:
 	 * @stream_data: the data associated with the buffering stream
 	 * @progress: buffering percentage
 	 *
@@ -138,7 +138,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_TYPE_POINTER, G_TYPE_UINT);
 
 	/**
-	 * RBPlayer::event
+	 * RBPlayer::event:
 	 * @stream_data: data associated with the stream
 	 * @data: event data
 	 *
@@ -161,7 +161,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_TYPE_POINTER, G_TYPE_POINTER);
 
 	/**
-	 * RBPlayer::playing-stream
+	 * RBPlayer::playing-stream:
 	 * @stream_data: data associated with the stream
 	 *
 	 * The 'playing-stream' signal is emitted when the main playing stream
@@ -219,7 +219,7 @@ rb_player_get_type (void)
  * asynchronously, in which case errors may be reported from
  * rb_player_play or using the 'error' signal.
  *
- * @returns TRUE if the stream preparation was not unsuccessful
+ * Return value: TRUE if the stream preparation was not unsuccessful
  */
 gboolean
 rb_player_open (RBPlayer *player, const char *uri, gpointer stream_data, GDestroyNotify stream_data_destroy, GError **error)
@@ -232,7 +232,8 @@ rb_player_open (RBPlayer *player, const char *uri, gpointer stream_data, GDestro
 /**
  * rb_player_opened:
  * @player: 	a #RBPlayer
- * @returns TRUE if a stream is prepared for playback
+ *
+ * Return value: TRUE if a stream is prepared for playback
  */
 gboolean
 rb_player_opened (RBPlayer *player)
@@ -255,7 +256,7 @@ rb_player_opened (RBPlayer *player)
  * If no streams remain open after this call, the audio device will
  * be released.
  *
- * @returns TRUE if a stream was found and closed
+ * Return value: TRUE if a stream was found and closed
  */
 gboolean
 rb_player_close (RBPlayer *player, const char *uri, GError **error)
@@ -288,7 +289,7 @@ rb_player_close (RBPlayer *player, const char *uri, GError **error)
  * is actually playing. This may be before or after control returns
  * to the caller.
  *
- * @returns: TRUE if playback started successfully
+ * Return value: TRUE if playback started successfully
  */
 gboolean
 rb_player_play (RBPlayer *player, gint crossfade, GError **error)
@@ -316,8 +317,9 @@ rb_player_pause (RBPlayer *player)
 
 /**
  * rb_player_playing:
- * @player:	a #RBPlayer
- * @returns:	TRUE if a stream is currently being played (not paused
+ * @player:	a #RBPlayer.
+ *
+ * Return value: TRUE if a stream is currently being played (not paused
  *  or being faded out).
  */
 gboolean
@@ -348,7 +350,8 @@ rb_player_set_volume (RBPlayer *player, float volume)
 /**
  * rb_player_get_volume:
  * @player:	a #RBPlayer
- * @returns:	current output volume level
+ *
+ * Return value: current output volume level
  */
 float
 rb_player_get_volume (RBPlayer *player)
@@ -383,7 +386,8 @@ rb_player_set_replaygain (RBPlayer *player,
 /**
  * rb_player_seekable:
  * @player:	a #RBPlayer
- * @returns:	TRUE if the current stream is seekable
+ *
+ * Return value: TRUE if the current stream is seekable
  */
 gboolean
 rb_player_seekable (RBPlayer *player)
@@ -396,24 +400,25 @@ rb_player_seekable (RBPlayer *player)
 /**
  * rb_player_set_time:
  * @player:	a #RBPlayer
- * @time:	seek target position in seconds
+ * @newtime:	seek target position in seconds
  *
  * Attempts to seek in the current stream.  The player
  * may ignore this if the stream is not seekable.
  * The seek may take place asynchronously.
  */
 void
-rb_player_set_time (RBPlayer *player, long time)
+rb_player_set_time (RBPlayer *player, long newtime)
 {
 	RBPlayerIface *iface = RB_PLAYER_GET_IFACE (player);
 
-	iface->set_time (player, time);
+	iface->set_time (player, newtime);
 }
 
 /**
  * rb_player_get_time:
  * @player:	a #RBPlayer
- * @returns:	the current playback position in the current stream
+ *
+ * Return value: the current playback position in the current stream
  */
 long
 rb_player_get_time (RBPlayer *player)
@@ -426,7 +431,8 @@ rb_player_get_time (RBPlayer *player)
 /**
  * rb_player_multiple_open:
  * @player:	a #RBPlayer
- * @returns:	TRUE if the player supports multiple open streams
+ *
+ * Return value: TRUE if the player supports multiple open streams
  * 		(not necessarily multiple playing streams, though)
  */
 gboolean
@@ -447,6 +453,8 @@ rb_player_multiple_open (RBPlayer *player)
  * @error:	returns error information
  *
  * Creates a new player object.
+ *
+ * Return value: new player object.
  */
 RBPlayer*
 rb_player_new (gboolean want_crossfade, GError **error)
@@ -459,12 +467,30 @@ rb_player_new (gboolean want_crossfade, GError **error)
 		return rb_player_gst_new (error);
 }
 
+/**
+ * _rb_player_emit_eos:
+ * @player: a #RBPlayer implementation
+ * @stream_data: data associated with the stream
+ *
+ * Emits the 'eos' signal for a stream.  To be used by
+ * implementations only.
+ */
 void
 _rb_player_emit_eos (RBPlayer *player, gpointer stream_data)
 {
 	g_signal_emit (player, signals[EOS], 0, stream_data);
 }
 
+/**
+ * _rb_player_emit_info:
+ * @player: a #RBPlayer implementation
+ * @stream_data: data associated with the stream
+ * @field: updated metadata field
+ * @value: metadata field value
+ *
+ * Emits the 'info' signal for a stream.  To be used by
+ * implementations only.
+ */
 void
 _rb_player_emit_info (RBPlayer *player,
 		      gpointer stream_data,
@@ -474,30 +500,76 @@ _rb_player_emit_info (RBPlayer *player,
 	g_signal_emit (player, signals[INFO], 0, stream_data, field, value);
 }
 
+/**
+ * _rb_player_emit_buffering:
+ * @player: a #RBPlayer implementation
+ * @stream_data: data associated with the stream
+ * @progress: current buffering progress.
+ *
+ * Emits the 'buffering' signal for a stream.
+ * To be used by implementations only.
+ */
 void
 _rb_player_emit_buffering (RBPlayer *player, gpointer stream_data, guint progress)
 {
 	g_signal_emit (player, signals[BUFFERING], 0, stream_data, progress);
 }
 
+/**
+ * _rb_player_emit_error:
+ * @player: a #RBPlayer implementation
+ * @stream_data: data associated with the stream
+ * @error: playback error
+ *
+ * Emits the 'error' signal for a stream.
+ * To be used by implementations only.
+ */
 void
 _rb_player_emit_error (RBPlayer *player, gpointer stream_data, GError *error)
 {
 	g_signal_emit (player, signals[ERROR], 0, stream_data, error);
 }
 
+/**
+ * _rb_player_emit_tick:
+ * @player: a #RBPlayer implementation
+ * @stream_data: data associated with the stream
+ * @elapsed: current playback position
+ * @duration: current perception of the duration of the stream (-1 if not applicable)
+ *
+ * Emits the 'tick' signal for a stream.
+ * To be used by implementations only.
+ */
 void
 _rb_player_emit_tick (RBPlayer *player, gpointer stream_data, long elapsed, long duration)
 {
 	g_signal_emit (player, signals[TICK], 0, stream_data, elapsed, duration);
 }
 
+/**
+ * _rb_player_emit_event:
+ * @player: a #RBPlayer implementation
+ * @stream_data: data associated with the stream
+ * @name: event name
+ * @data: event data
+ *
+ * Emits the 'event' signal for a stream.
+ * To be used by implementations only.
+ */
 void
 _rb_player_emit_event (RBPlayer *player, gpointer stream_data, const char *name, gpointer data)
 {
 	g_signal_emit (player, signals[EVENT], g_quark_from_string (name), stream_data, data);
 }
 
+/**
+ * _rb_player_emit_playing_stream:
+ * @player: a #RBPlayer implementation
+ * @stream_data: data associated with the new playing stream
+ *
+ * Emits the 'playing-stream' signal to indicate the current
+ * playing stream has changed.  To be used by implementations only.
+ */
 void
 _rb_player_emit_playing_stream (RBPlayer *player, gpointer stream_data)
 {

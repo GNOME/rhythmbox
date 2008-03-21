@@ -607,11 +607,10 @@ RB_SOURCE_GET_CLASS
 
 <SECTION>
 <FILE>rb-player</FILE>
+<TITLE>RBPlayer</TITLE>
+RBPlayer
+RBPlayerIface
 RBPlayerError
-RB_PLAYER_TICK_HZ
-RB_PLAYER_ERROR
-rb_player_error_quark
-RBPlayerPrivate
 rb_player_new
 rb_player_open
 rb_player_opened
@@ -625,14 +624,17 @@ rb_player_set_replaygain
 rb_player_seekable
 rb_player_set_time
 rb_player_get_time
+rb_player_multiple_open
 <SUBSECTION Standard>
+rb_player_error_quark
+rb_player_get_type
+RB_TYPE_PLAYER_ERROR
+RB_PLAYER_ERROR
 RB_PLAYER
 RB_IS_PLAYER
 RB_TYPE_PLAYER
-rb_player_get_type
-RB_PLAYER_CLASS
-RB_IS_PLAYER_CLASS
-RB_PLAYER_GET_CLASS
+rb_player_error_get_type
+RB_PLAYER_GET_IFACE
 </SECTION>
 
 <SECTION>

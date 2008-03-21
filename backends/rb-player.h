@@ -138,7 +138,7 @@ void		rb_player_set_replaygain (RBPlayer *player,
 					  double album_gain, double album_peak);
 
 gboolean	rb_player_seekable   (RBPlayer *player);
-void		rb_player_set_time   (RBPlayer *player, long time);
+void		rb_player_set_time   (RBPlayer *player, long newtime);
 long		rb_player_get_time   (RBPlayer *player);
 
 gboolean	rb_player_multiple_open (RBPlayer *player);

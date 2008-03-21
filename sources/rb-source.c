@@ -668,7 +668,7 @@ default_get_status (RBSource *source,
  * @progress_text: holds the returned text for the progress bar (allocated)
  * @progress: holds the progress value
  *
- * Returns the details to display in the status bar for the source.
+ * Retrieves the details to display in the status bar for the source.
  * If the progress value returned is less than zero, the progress bar
  * will pulse.  If the progress value is greater than or equal to 1,
  * the progress bar will be hidden.
@@ -805,7 +805,7 @@ rb_source_update_play_statistics (RBSource *source,
  * rb_source_get_entry_view:
  * @source: a #RBSource
  *
- * Returns the #RBEntryView instance for the source
+ * Return value: the #RBEntryView instance for the source
  */
 RBEntryView *
 rb_source_get_entry_view (RBSource *source)
@@ -825,7 +825,7 @@ default_get_property_views (RBSource *source)
  * rb_source_get_property_views:
  * @source: a #RBSource
  *
- * Returns a list containing the #RBPropertyView<!-- -->s that
+ * Return value:  a list containing the #RBPropertyView<!-- -->s that
  * make up the browser for this source, if any.
  */
 GList *
@@ -907,9 +907,11 @@ rb_source_search (RBSource *source,
  * @source: a #RBSource
  * @prefs: the #RBShellPreferences object
  *
- * Returns an optional configuration widget for this source.
- * The widget will be displayed in a pane in the preferences
- * dialog.
+ * Source implementations can use this to return an optional
+ * configuration widget. The widget will be displayed in a 
+ * page in the preferences dialog.
+ *
+ * Return value: configuration widget
  */
 GtkWidget *
 rb_source_get_config_widget (RBSource *source,
@@ -1190,6 +1192,7 @@ rb_source_reset_filters (RBSource *source)
 /**
  * rb_source_can_show_properties:
  * @source: a #RBSource
+ *
  * Return value: TRUE if the source can display a properties
  * window for the currently selected entry (or set of entries)
  */
