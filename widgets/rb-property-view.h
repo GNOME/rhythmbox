@@ -39,16 +39,19 @@ G_BEGIN_DECLS
 #define RB_IS_PROPERTY_VIEW_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_PROPERTY_VIEW))
 #define RB_PROPERTY_VIEW_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_PROPERTY_VIEW, RBPropertyViewClass))
 
+typedef struct _RBPropertyView RBPropertyView;
+typedef struct _RBPropertyViewClass RBPropertyViewClass;
+
 typedef struct RBPropertyViewPrivate RBPropertyViewPrivate;
 
-typedef struct
+struct _RBPropertyView
 {
 	GtkScrolledWindow parent;
 
 	RBPropertyViewPrivate *priv;
-} RBPropertyView;
+};
 
-typedef struct
+struct _RBPropertyViewClass
 {
 	GtkScrolledWindowClass parent;
 
@@ -57,7 +60,7 @@ typedef struct
 	void (*property_activated)	(RBPropertyView *view, const char *name);
 	void (*selection_reset)		(RBPropertyView *view);
 	void (*show_popup)		(RBPropertyView *view);
-} RBPropertyViewClass;
+};
 
 GType		rb_property_view_get_type		(void);
 

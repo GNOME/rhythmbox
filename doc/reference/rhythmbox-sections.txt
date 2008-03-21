@@ -943,7 +943,9 @@ RB_SEARCH_ENTRY_GET_CLASS
 
 <SECTION>
 <FILE>rb-property-view</FILE>
-RBPropertyViewPrivate
+<TITLE>RBPropertyView</TITLE>
+RBPropertyView
+RBPropertyViewClass
 rb_property_view_new
 rb_property_view_append_column_custom
 rb_property_view_set_selection_mode
@@ -962,6 +964,7 @@ rb_property_view_get_type
 RB_PROPERTY_VIEW_CLASS
 RB_IS_PROPERTY_VIEW_CLASS
 RB_PROPERTY_VIEW_GET_CLASS
+RBPropertyViewPrivate
 </SECTION>
 
 <SECTION>
@@ -1014,6 +1017,9 @@ RB_CELL_RENDERER_PIXBUF_GET_CLASS
 
 <SECTION>
 <FILE>rb-query-creator</FILE>
+<TITLE>RBQueryCreator</TITLE>
+RBQueryCreator
+RBQueryCreatorClass
 RBQueryCreatorLimitType
 rb_query_creator_new
 rb_query_creator_new_from_query

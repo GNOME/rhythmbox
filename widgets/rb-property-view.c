@@ -89,6 +89,20 @@ struct RBPropertyViewPrivate
 
 #define RB_PROPERTY_VIEW_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PROPERTY_VIEW, RBPropertyViewPrivate))
 
+/**
+ * SECTION:rb-property-view
+ * @short_description: a #GtkTreeView backed by a #RhythmDBPropertyModel
+ *
+ * A simple #GtkTreeView that displays the contents of a #RhythmDBPropertyModel.
+ * The first row in the tree view displays the total number of properties and entries,
+ * in the form "All 473 artists (6241)".  Each subsequent row in the tree view 
+ * displays a property value and the number of entries from the #RhythmDBQueryModel
+ * with that value.
+ *
+ * The property view itself creates a single column, but additional columns can be
+ * added.
+ */
+
 enum
 {
 	PROPERTY_SELECTED,
@@ -125,6 +139,11 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 	object_class->set_property = rb_property_view_set_property;
 	object_class->get_property = rb_property_view_get_property;
 
+	/**
+	 * RBPropertyView:db:
+	 *
+	 * #RhythmDB instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DB,
 					 g_param_spec_object ("db",
@@ -133,6 +152,11 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RBPropertyView:prop:
+	 *
+	 * The property that is displayed in this view
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PROP,
 					 g_param_spec_enum ("prop",
@@ -142,6 +166,11 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 							    RHYTHMDB_PROP_TYPE,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RBPropertyView:title:
+	 * 
+	 * The title displayed in the header of the property view
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_TITLE,
 					 g_param_spec_string ("title",
@@ -149,6 +178,11 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 							      "title",
 							      "",
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBPropertyView:property-model:
+	 *
+	 * The #RhythmDBProperyModel backing the view.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_MODEL,
 					 g_param_spec_object ("property-model",
@@ -156,6 +190,11 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 							      "RhythmDBPropertyModel",
 							      RHYTHMDB_TYPE_PROPERTY_MODEL,
 							      G_PARAM_READWRITE));
+	/**
+	 * RBPropertyView:draggable:
+	 *
+	 * Whether the property view acts as a data source for drag and drop operations.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DRAGGABLE,
 					 g_param_spec_boolean ("draggable",
@@ -164,6 +203,13 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 							       TRUE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RBPropertyView::property-activated:
+	 * @view: the #RBPropertyView
+	 * @name: the property value that was activated
+	 *
+	 * Emitted when a row in a property view is activated by double clicking.
+	 */
 	rb_property_view_signals[PROPERTY_ACTIVATED] =
 		g_signal_new ("property-activated",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -175,6 +221,13 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      1,
 			      G_TYPE_STRING);
 
+	/**
+	 * RBPropertyView::property-selected:
+	 * @view: the #RBPropertyView
+	 * @name: the property value that has been selected
+	 *
+	 * Emitted when an individual property value becomes selected.
+	 */
 	rb_property_view_signals[PROPERTY_SELECTED] =
 		g_signal_new ("property-selected",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -186,6 +239,13 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      1,
 			      G_TYPE_STRING);
 
+	/**
+	 * RBPropertyView::properties-selected:
+	 * @view: the #RBPropertyView
+	 * @properties: a list containing the selected property values
+	 *
+	 * Emitted when the set of selected property values changes.
+	 */
 	rb_property_view_signals[PROPERTIES_SELECTED] =
 		g_signal_new ("properties-selected",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -197,6 +257,13 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      1,
 			      G_TYPE_POINTER);
 
+	/**
+	 * RBPropertyView::property-selection-reset:
+	 * @view: the #RBPropertyView
+	 *
+	 * Emitted when the selection is reset.  At this point, no property values
+	 * are selected.
+	 */
 	rb_property_view_signals[SELECTION_RESET] =
 		g_signal_new ("property-selection-reset",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -206,6 +273,15 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+
+	/**
+	 * RBPropertyView::show-popup:
+	 * @view: the #RBPropertyView
+	 *
+	 * Emitted when a popup menu should be displayed for the property view.
+	 * The source containing the property view should connect a handler to
+	 * this signal that * displays an appropriate popup.
+	 */
 	rb_property_view_signals[SHOW_POPUP] =
 		g_signal_new ("show_popup",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -365,6 +441,16 @@ rb_property_view_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_property_view_new:
+ * @db: #RhythmDB instance
+ * @propid: property ID to be displayed in the property view
+ * @title: title of the property view
+ *
+ * Creates a new #RBPropertyView displaying the specified property.
+ *
+ * Return value: new property view instance
+ */
 RBPropertyView *
 rb_property_view_new (RhythmDB *db,
 		      guint propid,
@@ -389,6 +475,14 @@ rb_property_view_new (RhythmDB *db,
 	return view;
 }
 
+/**
+ * rb_property_view_set_selection_mode:
+ * @view: a #RBPropertyView
+ * @mode: the new #GtkSelectionMode for the property view
+ *
+ * Sets the selection mode (single or multiple) for the property view>
+ * The default selection mode is single.
+ */
 void
 rb_property_view_set_selection_mode (RBPropertyView *view,
 				     GtkSelectionMode mode)
@@ -400,6 +494,12 @@ rb_property_view_set_selection_mode (RBPropertyView *view,
 				     mode);
 }
 
+/**
+ * rb_property_view_reset:
+ * @view: a #RBPropertyView
+ *
+ * Clears the selection in the property view.
+ */
 void
 rb_property_view_reset (RBPropertyView *view)
 {
@@ -413,6 +513,12 @@ rb_property_view_reset (RBPropertyView *view)
 	g_object_unref (model);
 }
 
+/**
+ * rb_property_view_get_model:
+ * @view: a #RBPropertyView
+ * 
+ * Return value: the #RhythmDBPropertyModel backing the view; no reference is taken
+ */
 RhythmDBPropertyModel *
 rb_property_view_get_model (RBPropertyView *view)
 {
@@ -425,6 +531,13 @@ rb_property_view_get_model (RBPropertyView *view)
 	return model;
 }
 
+/**
+ * rb_property_view_set_model:
+ * @view: a #RBPropertyView
+ * @model: the new #RhythmDBPropertyModel for the property view
+ *
+ * Replaces the model backing the property view.
+ */
 void
 rb_property_view_set_model (RBPropertyView *view,
 			    RhythmDBPropertyModel *model)
@@ -465,6 +578,12 @@ rb_property_view_post_row_deleted_cb (GtkTreeModel *model,
 	}
 }
 
+/**
+ * rb_property_view_get_num_properties
+ * @view: a #RBPropertyView
+ *
+ * Return value: the number of property values present in the view
+ */
 guint
 rb_property_view_get_num_properties (RBPropertyView *view)
 {
@@ -617,6 +736,15 @@ rb_property_view_row_activated_cb (GtkTreeView *treeview,
 	g_free (val);
 }
 
+/**
+ * rb_property_view_set_selection:
+ * @view: a #RBPropertyView
+ * @vals: the values to be selected
+ *
+ * Replaces the selection in the property view.  All values in the list
+ * that are present in the view will be selected, and the view will be
+ * scrolled to show the last value selected.
+ */
 void
 rb_property_view_set_selection (RBPropertyView *view,
 				const GList *vals)
@@ -649,6 +777,13 @@ rb_property_view_set_selection (RBPropertyView *view,
 	rb_property_view_selection_changed_cb (view->priv->selection, view);
 }
 
+/**
+ * rb_property_view_get_selection:
+ * @view: a #RBPropertyView
+ *
+ * Return value: a #GList containing the selected property values.  The list must
+ * be freed by the caller.
+ */
 GList *
 rb_property_view_get_selection (RBPropertyView *view)
 {
@@ -751,6 +886,13 @@ rb_property_view_popup_menu_cb (GtkTreeView *treeview,
 	return TRUE;
 }
 
+/**
+ * rb_property_view_append_column_custom:
+ * @view: a #RBPropertyView
+ * @column: a #GtkTreeViewColumn to append to the view
+ *
+ * Appends a custom created column to the view.
+ */
 void
 rb_property_view_append_column_custom (RBPropertyView *view,
 				       GtkTreeViewColumn *column)
@@ -797,6 +939,17 @@ rb_property_view_button_press_cb (GtkTreeView *tree,
 	return FALSE;
 }
 
+/**
+ * rb_property_view_set_search_func:
+ * @view: a #RBPropertyView
+ * @func: tree view search function to use for this view
+ * @func_data: data to pass to the search function
+ * @notify: function to call to dispose of the data
+ *
+ * Sets the compare function for the interactive search capabilities.
+ * The function must return FALSE when the search key string matches
+ * the row it is passed.
+ */
 void
 rb_property_view_set_search_func (RBPropertyView *view,
 				  GtkTreeViewSearchEqualFunc func,
@@ -809,3 +962,4 @@ rb_property_view_set_search_func (RBPropertyView *view,
 					     func, func_data,
 					     notify);
 }
+

@@ -98,6 +98,24 @@ typedef struct
 G_DEFINE_TYPE (RBQueryCreator, rb_query_creator, GTK_TYPE_DIALOG)
 #define QUERY_CREATOR_GET_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), rb_query_creator_get_type(), RBQueryCreatorPrivate))
 
+/**
+ * SECTION:rb-query-creator
+ * @short_description: database query creator widget
+ *
+ * The query creator is used to create and edit automatic playlists.
+ * It is only capable of constructing queries that consist of a flat
+ * list of criteria.  It cannot nested criteria or represent full 
+ * boolean logic expressions.
+ *
+ * In addition to query criteria, the query creator also allows the user
+ * to specify limits on the size of the result set, in terms of the number
+ * of entries, the total duration, or the total file size; and also the
+ * order in which the results are to be sorted.
+ *
+ * The structure of the query creator is defined in the glade file 
+ * create-playlist.xml.
+ */
+
 enum
 {
 	PROP_0,
@@ -115,6 +133,11 @@ rb_query_creator_class_init (RBQueryCreatorClass *klass)
 	object_class->set_property = rb_query_creator_set_property;
 	object_class->get_property = rb_query_creator_get_property;
 
+	/**
+	 * RBQueryCreator:db:
+	 *
+	 * The #RhythmDB instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DB,
 					 g_param_spec_object ("db",
@@ -123,6 +146,11 @@ rb_query_creator_class_init (RBQueryCreatorClass *klass)
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RBQueryCreator:creating:
+	 *
+	 * TRUE if a new playlist is being created.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_CREATING,
 					 g_param_spec_boolean ("creating",
@@ -295,6 +323,12 @@ rb_query_creator_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_query_creator_new:
+ * @db: the #RhythmDB instance
+ *
+ * Return value: new query creator widget
+ */
 GtkWidget *
 rb_query_creator_new (RhythmDB *db)
 {
@@ -433,6 +467,20 @@ rb_query_creator_set_sorting (RBQueryCreator *creator,
 	return TRUE;
 }
 
+/**
+ * rb_query_creator_new_from_query:
+ * @db: the #RhythmDB instance
+ * @query: an existing query to start from
+ * @limit_type: the type of result set limit
+ * @limit_value: the result set limit value
+ * @sort_column: the column on which to sort query results
+ * @sort_direction: the direction in which to sort query results
+ *
+ * Constructs a new query creator with an existing query and limit and sort
+ * settings.
+ *
+ * Return value: new query creator widget
+ */
 GtkWidget *
 rb_query_creator_new_from_query (RhythmDB *db,
                                  GPtrArray *query,
@@ -455,6 +503,15 @@ rb_query_creator_new_from_query (RhythmDB *db,
 	return GTK_WIDGET (creator);
 }
 
+/**
+ * get_box_widget_at_pos:
+ * @box: #GtkBox to extract child from
+ * @pos: index of the child to retrieve
+ *
+ * Extracts a child widget from a #GtkBox.
+ *
+ * Return value: child widget from the box
+ */
 GtkWidget *
 get_box_widget_at_pos (GtkBox *box, guint pos)
 {
@@ -491,6 +548,14 @@ get_entry_for_property (RBQueryCreator *creator,
 	return property_type->criteria_create_widget (constrain);
 }
 
+/**
+ * rb_query_creator_get_query:
+ * @creator: #RBQueryCreator instance
+ *
+ * Constructs a database query that represents the criteria in the query creator.
+ *
+ * Return value: database query array
+ */
 GPtrArray *
 rb_query_creator_get_query (RBQueryCreator *creator)
 {
@@ -550,6 +615,16 @@ rb_query_creator_get_query (RBQueryCreator *creator)
 	return query;
 }
 
+/**
+ * rb_query_creator_get_limit:
+ * @creator: #RBQueryCreator instance
+ * @type: used to return the limit type
+ * @limit: used to return the limit value
+ *
+ * Retrieves the limit type and value from the query creator.
+ * The limit value is returned as the first element in a
+ * #GValueArray.
+ */
 void
 rb_query_creator_get_limit (RBQueryCreator *creator,
 			    RhythmDBQueryModelLimitType *type,
@@ -596,9 +671,18 @@ rb_query_creator_get_limit (RBQueryCreator *creator,
 	}
 }
 
+/**
+ * rb_query_creator_get_sort_order:
+ * @creator: #RBQueryCreator instance
+ * @sort_key: returns the sort key name
+ * @sort_direction: returns the sort direction
+ *
+ * Retrieves the sort settings from the query creator.
+ * The sort direction is returned as a #GtkSortType value.
+ */
 void
 rb_query_creator_get_sort_order (RBQueryCreator *creator,
-                                 const char **sort_column,
+                                 const char **sort_key,
                                  gint *sort_direction)
 {
 	RBQueryCreatorPrivate *priv;
@@ -614,10 +698,10 @@ rb_query_creator_get_sort_order (RBQueryCreator *creator,
 			*sort_direction = GTK_SORT_ASCENDING;
 	}
 
-	if (sort_column != NULL) {
+	if (sort_key != NULL) {
 		int i;
 		i = gtk_option_menu_get_history (GTK_OPTION_MENU (priv->sort_menu));
-		*sort_column = sort_options[i].sort_key;
+		*sort_key = sort_options[i].sort_key;
 	}
 }
 

@@ -36,15 +36,18 @@ G_BEGIN_DECLS
 #define RB_IS_QUERY_CREATOR_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_QUERY_CREATOR))
 #define RB_QUERY_CREATOR_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_QUERY_CREATOR, RBQueryCreatorClass))
 
-typedef struct
+typedef struct _RBQueryCreator RBQueryCreator;
+typedef struct _RBQueryCreatorClass RBQueryCreatorClass;
+
+struct _RBQueryCreator
 {
 	GtkDialog parent;
-} RBQueryCreator;
+};
 
-typedef struct
+struct _RBQueryCreatorClass
 {
 	GtkDialogClass parent_class;
-} RBQueryCreatorClass;
+};
 
 GType		rb_query_creator_get_type	(void);
 
@@ -57,8 +60,8 @@ GtkWidget *	rb_query_creator_new_from_query	(RhythmDB *db, GPtrArray *query,
 GPtrArray *	rb_query_creator_get_query	(RBQueryCreator *creator);
 
 void		rb_query_creator_get_limit	(RBQueryCreator *creator,
-						 RhythmDBQueryModelLimitType *limit_type,
-						 GValueArray **limit_value);
+						 RhythmDBQueryModelLimitType *type,
+						 GValueArray **limit);
 
 void		rb_query_creator_get_sort_order (RBQueryCreator *creator, const char **sort_key, gint *sort_direction);
 
