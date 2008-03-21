@@ -18,10 +18,6 @@
  *
  */
 
-/*
- * This source lists files rhythmbox failed to import.
- */
-
 #include <config.h>
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -44,13 +40,36 @@ static void rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
 							 gboolean over_entry,
 							 RBImportErrorsSource *source);
 
-struct RBImportErrorsSourcePrivate
+struct _RBImportErrorsSourcePrivate
 {
 	RhythmDB *db;
 	RBEntryView *view;
 };
 
 G_DEFINE_TYPE (RBImportErrorsSource, rb_import_errors_source, RB_TYPE_SOURCE);
+
+/**
+ * SECTION:rb-import-errors-source
+ * @short_description: source for displaying import errors
+ *
+ * This source is used to display the names of files that could not
+ * be imported into the library, along with any error messages from
+ * the import process.  When there are no import errors to display,
+ * the source is hidden.
+ *
+ * The source allows the user to delete the import error entries,
+ * and to move the files to the trash.
+ *
+ * When a file import fails, a #RhythmDBEntry is created with a
+ * specific entry type for import errors.  This source uses a query
+ * model that matches all such import error entries.
+ *
+ * To keep import errors from removable devices separate from those
+ * from the main library, multiple import error sources can be created,
+ * with separate entry types.  The generic audio player plugin, for
+ * example, creates an import error source for each device and inserts
+ * it into the source list as a child of the main source for the device.
+ */
 
 static void
 rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
@@ -181,6 +200,16 @@ impl_get_entry_view (RBSource *asource)
 	return source->priv->view;
 }
 
+/**
+ * rb_import_errors_source_new:
+ * @shell: the #RBShell instance
+ * @entry_type: the entry type to display in the source
+ *
+ * Creates a new source for displaying import errors of the
+ * specified type.
+ *
+ * Return value: a new import error source
+ */
 RBSource *
 rb_import_errors_source_new (RBShell *shell,
 			     RhythmDBEntryType entry_type)

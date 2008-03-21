@@ -35,6 +35,14 @@
 
 #include "rb-debug.h"
 
+/**
+ * SECTION:rb-debug
+ * @short_description: debugging support functions
+ *
+ * In addition to a simple debug output system, we have two distinct
+ * profiling mechanisms for timing sections of code.
+ */
+
 static void log_handler (const char *domain,
 	                 GLogLevelFlags level,
 	                 const char *message,
@@ -43,6 +51,14 @@ static void log_handler (const char *domain,
 static const char *debug_everything = "everything";
 static const char *debug_match = NULL;
 
+/**
+ * rb_debug_matches:
+ * @func: function to check
+ * @file: filename to check
+ *
+ * Return value: TRUE if @func or @file match the current
+ * debug output settings.
+ */
 gboolean
 rb_debug_matches (const char *func,
 		  const char *file)
@@ -56,8 +72,27 @@ rb_debug_matches (const char *func,
 	return TRUE;
 }
 
-/* Our own funky debugging function, should only be used when something
- * is not going wrong, if something *is* wrong use g_warning.
+/**
+ * rb_debug:
+ * @...: printf-style format string followed by any substitution values
+ *
+ * If the call site function or file name matches the current debug output
+ * settings, the message will be formatted and printed to standard error,
+ * including a timestamp, the thread ID, the file and function names, and
+ * the line number.  A newline will be appended, so the format string shouldn't
+ * include one.
+ */
+
+/**
+ * rb_debug_real:
+ * @func: function name
+ * @file: file name
+ * @line: line number
+ * @newline: if TRUE, add a newline to the output
+ * @format: printf style format specifier
+ *
+ * If the debug output settings match the function or file names,
+ * the debug message will be formatted and written to standard error.
  */
 void
 rb_debug_real (const char *func,
@@ -87,12 +122,30 @@ rb_debug_real (const char *func,
 		    str_time, g_thread_self (), func, file, line, buffer);
 }
 
+/**
+ * rb_debug_init:
+ * @debug: if TRUE, enable all debug output
+ *
+ * Sets up debug output, with either all debug enabled
+ * or none.
+ */
 void
 rb_debug_init (gboolean debug)
 {
 	rb_debug_init_match (debug ? debug_everything : NULL);
 }
 
+/**
+ * rb_debug_init_match:
+ * @match: string to match functions and filenames against
+ *
+ * Sets up debug output, enabling debug output from file and function
+ * names that contain the specified match string.
+ *
+ * Also sets up a GLib log handler that will trigger a debugger
+ * break for critical or warning level output if any debug output
+ * at all is enabled.
+ */
 void
 rb_debug_init_match (const char *match)
 {
@@ -153,6 +206,15 @@ rb_debug_init_match (const char *match)
 	rb_debug ("Debugging enabled");
 }
 
+/**
+ * rb_debug_get_args:
+ *
+ * Constructs arguments to pass to another process using
+ * this debug output code that will produce the same debug output
+ * settings.
+ *
+ * Return value: debug output arguments, must be freed with #g_strfreev()
+ */
 char **
 rb_debug_get_args (void)
 {
@@ -170,7 +232,10 @@ rb_debug_get_args (void)
 	return args;
 }
 
-/* Raise a SIGINT signal to get the attention of the debugger.
+/**
+ * rb_debug_stop_in_debugger:
+ *
+ * Raises a SIGINT signal to get the attention of the debugger.
  * When not running under the debugger, we don't want to stop,
  * so we ignore the signal for just the moment that we raise it.
  */
@@ -207,6 +272,15 @@ struct RBProfiler
 	char *name;
 };
 
+/**
+ * rb_profiler_new:
+ * @name: profiler name
+ *
+ * Creates a new profiler instance.  This can be used to
+ * time certain sections of code.
+ *
+ * Return value: profiler instance
+ */
 RBProfiler *
 rb_profiler_new (const char *name)
 {
@@ -224,6 +298,13 @@ rb_profiler_new (const char *name)
 	return profiler;
 }
 
+/**
+ * rb_profiler_dump:
+ * @profiler: profiler instance
+ *
+ * Produces debug output for the profiler instance,
+ * showing the elapsed time.
+ */
 void
 rb_profiler_dump (RBProfiler *profiler)
 {
@@ -241,6 +322,12 @@ rb_profiler_dump (RBProfiler *profiler)
 		  elapsed / (G_USEC_PER_SEC / 1000), seconds);
 }
 
+/**
+ * rb_profiler_reset:
+ * @profiler: profiler instance
+ *
+ * Resets the elapsed time for the profiler
+ */
 void
 rb_profiler_reset (RBProfiler *profiler)
 {
@@ -252,6 +339,12 @@ rb_profiler_reset (RBProfiler *profiler)
 	g_timer_start (profiler->timer);
 }
 
+/**
+ * rb_profiler_free:
+ * @profiler: profiler instance to destroy
+ *
+ * Frees the memory associated with a profiler instance.
+ */
 void
 rb_profiler_free (RBProfiler *profiler)
 {
@@ -278,6 +371,36 @@ profile_add_indent (int indent)
 	}
 }
 
+/**
+ * rb_profile_start:
+ * @msg: profile point message
+ *
+ * Records a start point for profiling.
+ * This profile mechanism operates by issuing file access
+ * requests with filenames indicating the profile points.
+ * Use 'strace -e access' to gather this information.
+ */
+
+/**
+ * rb_profile_end:
+ * @msg: profile point message
+ *
+ * Records an end point for profiling.  See @rb_profile_start.
+ */
+
+/**
+ * _rb_profile_log:
+ * @func: call site function name
+ * @file: call site file name
+ * @line: call site line number
+ * @indent: indent level for output
+ * @msg1: message part 1
+ * @msg2: message part 2
+ *
+ * Issues a file access request with a constructed filename.
+ * Run rhythmbox under 'strace -ttt -e access' to show these profile
+ * points.
+ */
 void
 _rb_profile_log (const char *func,
 		 const char *file,

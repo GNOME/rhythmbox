@@ -39,6 +39,42 @@ enum {
 
 static guint signals[LAST_SIGNAL] = { 0 };
 
+/**
+ * SECTION:rb-player
+ * @short_description: playback backend interface
+ * @include: rb-player.h
+ *
+ * This is the interface implemented by the rhythmbox playback backends.
+ * It allows the caller to control playback (open, play, pause, close), 
+ * seek (set_time), control volume (get_volume, set_volume, set_replaygain)
+ * and receive playback state information (get_time, various signals).
+ *
+ * The playback interface allows for multiple streams to be playing (or at
+ * least open) concurrently. The caller associates some data with each stream
+ * it opens (#rb_player_open), which is included in the paramters with each
+ * signal emitted. The caller should not assume that the new stream is playing
+ * immediately upon returning from #rb_player_play. Instead, it should use
+ * the 'playing-stream' signal to determine that.
+ *
+ * The player implementation should emit signals for metadata extracted from the
+ * stream using the 'info' signal
+ *
+ * While playing, the player implementation should emit 'tick' signals frequently
+ * enough to update an elapsed/remaining time display consistently.  The duration
+ * value included in tick signal emissions is used to prepare the next stream before
+ * the current stream reaches EOS, so it should be updated for each emission to account
+ * for variable bitrate streams that produce inaccurate duration estimates early on.
+ *
+ * When playing a stream from the network, the player can report buffering status
+ * using the 'buffering' signal.  The value included in the signal indicates the
+ * percentage of the buffer that has been filled.
+ *
+ * The 'event' signal can be used to communicate events from the player to the application.
+ * For GStreamer-based player implementations, events are triggered by elements in the
+ * pipeline posting application messages.  The name of the message becomes the name of the
+ * event.
+ */
+
 static void
 rb_player_interface_init (RBPlayerIface *iface)
 {
@@ -166,7 +202,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 	 *
 	 * The 'playing-stream' signal is emitted when the main playing stream
 	 * changes. It should be used to update the UI to show the new
-	 * stream. It can either be emitted before or after rb_player_play returns,
+	 * stream. It can either be emitted before or after #rb_player_play returns,
 	 * depending on the player backend.
 	 */
 	signals[PLAYING_STREAM] =
@@ -217,7 +253,7 @@ rb_player_get_type (void)
  * implementation, this may stop any existing stream being
  * played.  The stream preparation process may continue
  * asynchronously, in which case errors may be reported from
- * rb_player_play or using the 'error' signal.
+ * #rb_player_play or using the 'error' signal.
  *
  * Return value: TRUE if the stream preparation was not unsuccessful
  */

@@ -22,6 +22,11 @@
 
 #include <rb-async-queue-watch.h>
 
+/**
+ * SECTION:rb-async-queue-watch
+ * @short_description: GSource for watching a GAsyncQueue in the main loop
+ */
+
 typedef struct {
 	GSource source;
 	GAsyncQueue *queue;
@@ -80,6 +85,21 @@ static GSourceFuncs rb_async_queue_watch_funcs = {
 	rb_async_queue_watch_finalize
 };
 
+/**
+ * rb_async_queue_watch_new:
+ * @queue:	the #GAsyncQueue to watch
+ * @priority:	priority value for the #GSource
+ * @callback:	callback to invoke when the queue is non-empty
+ * @user_data:	user data to pass to the callback
+ * @notify:	function to call to clean up the user data for the callback
+ * @context:	the #GMainContext to attach the source to
+ *
+ * Creates a new #GSource that triggers when the #GAsyncQueue is
+ * non-empty.  This is used in rhythmbox to process queues within
+ * #RhythmDB in the main thread without polling.
+ *
+ * Return value: the ID of the new #GSource
+ */
 guint rb_async_queue_watch_new (GAsyncQueue *queue,
 				gint priority,
 				RBAsyncQueueWatchFunc callback,

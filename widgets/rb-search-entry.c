@@ -58,7 +58,7 @@ G_DEFINE_TYPE (RBSearchEntry, rb_search_entry, GTK_TYPE_HBOX)
 #define RB_SEARCH_ENTRY_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SEARCH_ENTRY, RBSearchEntryPrivate))
 
 /**
- * SECTION:RBSearchEntry:
+ * SECTION:rb-search-entry
  * @short_description: text entry widget for the search box
  *
  * The search entry contains a label and a text entry box.

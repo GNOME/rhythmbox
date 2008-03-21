@@ -32,11 +32,23 @@ enum {
 
 static guint signals[LAST_SIGNAL] = { 0 };
 
+/**
+ * SECTION:rb-player-gst-data-tee
+ * @short_description: player interface for processing raw data
+ * @include: rb-player-gst-data-tee.h
+ *
+ * This interface allows a caller to add a branch to the GStreamer playback
+ * pipeline that receives a copy of the raw data from the playback source
+ * element.
+ *
+ * This interface is not currently implemented by either playback backend.
+ */
+
 static void
 rb_player_gst_data_tee_interface_init (RBPlayerGstDataTeeIface *iface)
 {
 	/**
-	 * RBPlayerGstDataTee::tee-inserted
+	 * RBPlayerGstDataTee::data-tee-inserted:
 	 * @data_tee: the element which has been inserted
 	 *
 	 * The 'data_tee-inserted' signal is emitted when the tee element has been
@@ -53,7 +65,7 @@ rb_player_gst_data_tee_interface_init (RBPlayerGstDataTeeIface *iface)
 			      1, G_TYPE_OBJECT);
 
 	/**
-	 * RBPlayerGstDataTee::tee-pre-remove
+	 * RBPlayerGstDataTee::data-tee-pre-remove:
 	 * @data_tee: the element which is about to be removed
 	 *
 	 * The 'data_tee-pre-remove' signal is emitted immediately before the element
@@ -94,6 +106,15 @@ rb_player_gst_data_tee_get_type (void)
 	return our_type;
 }
 
+/**
+ * rb_player_gst_data_tee_add_data_tee:
+ * @player: a #RBPlayerGstDataTee implementation
+ * @element: data tee branch to add
+ *
+ * Adds a raw data tee branch to the playback pipeline.
+ *
+ * Return value: TRUE if the tee branch was added successfully
+ */
 gboolean
 rb_player_gst_data_tee_add_data_tee (RBPlayerGstDataTee *player, GstElement *element)
 {
@@ -102,6 +123,15 @@ rb_player_gst_data_tee_add_data_tee (RBPlayerGstDataTee *player, GstElement *ele
 	return iface->add_data_tee (player, element);
 }
 
+/**
+ * rb_player_gst_data_tee_remove_data_tee:
+ * @player: a #RBPlayerGstDataTee implementation
+ * @element: data tee branch to add
+ *
+ * Removes a raw data tee branch.
+ * 
+ * Return value: TRUE if the tee branch was found and removed
+ */
 gboolean
 rb_player_gst_data_tee_remove_data_tee (RBPlayerGstDataTee *player, GstElement *element)
 {

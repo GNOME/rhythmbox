@@ -1111,7 +1111,6 @@ rb_debug
 rb_debug_init
 rb_debug_init_match
 rb_debug_matches
-rb_debug_real
 rb_debug_get_args
 rb_debug_stop_in_debugger
 RBProfiler
@@ -1121,6 +1120,8 @@ rb_profiler_reset
 rb_profiler_free
 rb_profile_start
 rb_profile_end
+<SUBSECTION Standard>
+rb_debug_real
 </SECTION>
 
 <SECTION>
@@ -2039,7 +2040,9 @@ rb_encoder_error_quark
 
 <SECTION>
 <FILE>rb-player-gst-data-tee</FILE>
+<TITLE>RBPlayerGstDataTee</TITLE>
 RBPlayerGstDataTee
+RBPlayerGstDataTeeIface
 rb_player_gst_data_tee_add_data_tee
 rb_player_gst_data_tee_remove_data_tee
 <SUBSECTION Standard>
@@ -2249,6 +2252,9 @@ RB_PODCAST_MANAGER_GET_CLASS
 
 <SECTION>
 <FILE>rb-import-errors-source</FILE>
+<TITLE>RBImportErrorsSource</TITLE>
+RBImportErrorsSource
+RBImportErrorsSourceClass
 RBImportErrorsSourcePrivate
 rb_import_errors_source_new
 <SUBSECTION Standard>

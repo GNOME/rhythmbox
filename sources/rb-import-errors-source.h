@@ -33,19 +33,21 @@ G_BEGIN_DECLS
 #define RB_IS_IMPORT_ERRORS_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_IMPORT_ERRORS_SOURCE))
 #define RB_IMPORT_ERRORS_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_IMPORT_ERRORS_SOURCE, RBImportErrorsSourceClass))
 
-typedef struct RBImportErrorsSourcePrivate RBImportErrorsSourcePrivate;
+typedef struct _RBImportErrorsSource RBImportErrorsSource;
+typedef struct _RBImportErrorsSourceClass RBImportErrorsSourceClass;
+typedef struct _RBImportErrorsSourcePrivate RBImportErrorsSourcePrivate;
 
-typedef struct
+struct _RBImportErrorsSource
 {
 	RBSource parent;
 
 	RBImportErrorsSourcePrivate *priv;
-} RBImportErrorsSource;
+};
 
-typedef struct
+struct _RBImportErrorsSourceClass
 {
 	RBSourceClass parent;
-} RBImportErrorsSourceClass;
+};
 
 GType		rb_import_errors_source_get_type		(void);
 
