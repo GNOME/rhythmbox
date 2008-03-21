@@ -32,21 +32,23 @@ G_BEGIN_DECLS
 #define RB_IS_RATING(obj)         (GTK_CHECK_TYPE ((obj), RB_TYPE_RATING))
 #define RB_IS_RATING_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), RB_TYPE_RATING))
 
-typedef struct RBRatingPrivate RBRatingPrivate;
+typedef struct _RBRating RBRating;
+typedef struct _RBRatingClass RBRatingClass;
+typedef struct _RBRatingPrivate RBRatingPrivate;
 
-typedef struct
+struct _RBRating
 {
 	GtkEventBox parent;
 
 	RBRatingPrivate *priv;
-} RBRating;
+};
 
-typedef struct
+struct _RBRatingClass
 {
 	GtkEventBoxClass parent;
 
 	void (*rated) (RBRating *rating, double score);
-} RBRatingClass;
+};
 
 GtkType    rb_rating_get_type (void);
 

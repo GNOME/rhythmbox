@@ -60,7 +60,7 @@ static gboolean rb_rating_button_press_cb (GtkWidget *widget,
 					   GdkEventButton *event,
 					   RBRating *rating);
 
-struct RBRatingPrivate
+struct _RBRatingPrivate
 {
 	double rating;
 	RBRatingPixbufs *pixbufs;
@@ -68,6 +68,14 @@ struct RBRatingPrivate
 
 G_DEFINE_TYPE (RBRating, rb_rating, GTK_TYPE_EVENT_BOX)
 #define RB_RATING_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_RATING, RBRatingPrivate))
+
+/**
+ * SECTION:rb-rating
+ * @short_description: widget for displaying song ratings
+ *
+ * This widget displays a rating (0-5 stars) and allows the user to
+ * alter the rating by clicking.
+ */
 
 enum
 {
@@ -98,8 +106,20 @@ rb_rating_class_init (RBRatingClass *klass)
 	widget_class->expose_event = rb_rating_expose;
 	widget_class->size_request = rb_rating_size_request;
 
+	/**
+	 * RBRating:rating:
+	 *
+	 * The rating displayed in the widget, as a floating point value
+	 * between 0.0 and 5.0.
+	 */
 	rb_rating_install_rating_property (object_class, PROP_RATING);
 
+	/**
+	 * RBRating::rated:
+	 * @score: the new rating
+	 *
+	 * Emitted when the user changes the rating.
+	 */
 	rb_rating_signals[RATED] =
 		g_signal_new ("rated",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -180,6 +200,11 @@ rb_rating_set_property (GObject *object,
 	}
 }
 
+/**
+ * rb_rating_new:
+ *
+ * Return value: a new #RBRating widget.
+ */
 RBRating *
 rb_rating_new ()
 {

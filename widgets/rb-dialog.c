@@ -36,6 +36,27 @@
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
 
+/**
+ * SECTION:rb-dialog
+ * @short_description: helper functions for creating gtk+ dialog windows
+ */
+
+/**
+ * rb_error_dialog:
+ * @parent: parent #GtkWindow for the dialog
+ * @primary: main error message
+ * @secondary: secondary error message (printf-style format string)
+ * @...: any substitution values for the secondary message
+ *
+ * Creates and displays a simple error dialog box containing a primary
+ * message in bold, larger type and a secondary message in the regular
+ * font.  Both the primary and secondary message strings should be
+ * translated.
+ *
+ * Care should be taken to avoid opening multiple error dialog boxes
+ * when a single error message (such as 'out of disk space') affects
+ * multiple items.
+ */
 void
 rb_error_dialog (GtkWindow *parent,
 		 const char *primary,
@@ -70,6 +91,24 @@ rb_error_dialog (GtkWindow *parent,
 	g_free (text);
 }
 
+/**
+ * rb_file_chooser_new:
+ * @title: title for the file chooser
+ * @parent: parent #GtkWindow for the file chooser
+ * @action: the #GtkFileChooserAction
+ * @local_only: if TRUE, don't show network locations
+ *
+ * Creates and shows a regular gtk+ file chooser dialog with
+ * a given title.  The user's music directory (typically ~/Music) is
+ * added as a shortcut.
+ * 
+ * For consistency, this should be used anywhere a file chooser is required.
+ *
+ * After creating the dialog, the caller should connect a handler to its 
+ * 'response' signal to process the user's selected files or folders.
+ *
+ * Return value: the file chooser #GtkWidget
+ */
 GtkWidget *
 rb_file_chooser_new (const char *title,
 		     GtkWindow *parent,

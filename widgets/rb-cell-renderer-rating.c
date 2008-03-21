@@ -82,6 +82,15 @@ G_DEFINE_TYPE (RBCellRendererRating, rb_cell_renderer_rating, GTK_TYPE_CELL_REND
 						RB_TYPE_CELL_RENDERER_RATING, \
 						RBCellRendererRatingPrivate))
 
+
+/**
+ * SECTION:rb-cell-renderer-rating
+ * @short_description: a #GtkCellRenderer for displaying song ratings
+ *
+ * This cell renderer is used to display song ratings in the #RBEntryView,
+ * and allows the user to modify ratings directly in the track listing.
+ */
+
 enum
 {
 	PROP_0,
@@ -126,8 +135,21 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 	class->priv = g_new0 (RBCellRendererRatingClassPrivate, 1);
 	class->priv->pixbufs = rb_rating_pixbufs_new ();
 
+	/**
+	 * RBCellRendererRating:rating:
+	 *
+	 * The rating displayed by the renderer, as a floating point value
+	 * between 0.0 and 5.0.
+	 */
 	rb_rating_install_rating_property (object_class, PROP_RATING);
 
+	/**
+	 * RBCellRendererRating::rated:
+	 * @score: the new rating
+	 * @path: string form of the #GtkTreePath to the row that was changed
+	 *
+	 * Emitted when the user changes the rating.
+	 */
 	rb_cell_renderer_rating_signals[RATED] =
 		g_signal_new ("rated",
 			      G_OBJECT_CLASS_TYPE (object_class),

@@ -29,13 +29,6 @@
 
 G_BEGIN_DECLS
 
-void		rb_error_dialog_full	(GtkWindow *parent,
-					 gboolean modal,
-					 const char *primary,
-					 const char *secondary,
-					 const char *first_button,
-					 ...) G_GNUC_PRINTF (4, 6);
-
 void		rb_error_dialog		(GtkWindow *parent,
 					 const char *primary,
 					 const char *secondary,

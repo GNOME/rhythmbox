@@ -51,7 +51,7 @@ struct _RBCellRendererRatingClass
 {
 	GtkCellRendererClass parent_class;
 
-	void (*rated) (RBCellRendererRating *renderer, GtkTreePath *path, double rating);
+	void (*rated) (RBCellRendererRating *renderer, const char *path, double rating);
 
 	RBCellRendererRatingClassPrivate *priv;
 

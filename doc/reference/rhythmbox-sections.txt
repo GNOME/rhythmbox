@@ -963,6 +963,9 @@ RB_PROPERTY_VIEW_GET_CLASS
 
 <SECTION>
 <FILE>rb-rating</FILE>
+<TITLE>RBRating</TITLE>
+RBRating
+RBRatingClass
 RBRatingPrivate
 rb_rating_new
 <SUBSECTION Standard>
@@ -976,8 +979,9 @@ RB_IS_RATING_CLASS
 
 <SECTION>
 <FILE>rb-cell-renderer-rating</FILE>
-RBCellRendererRatingPrivate
-RBCellRendererRatingClassPrivate
+<TITLE>RBCellRendererRating</TITLE>
+RBCellRendererRating
+RBCellRendererRatingClass
 rb_cell_renderer_rating_new
 <SUBSECTION Standard>
 RB_CELL_RENDERER_RATING
@@ -987,6 +991,8 @@ rb_cell_renderer_rating_get_type
 RB_CELL_RENDERER_RATING_CLASS
 RB_IS_CELL_RENDERER_RATING_CLASS
 RB_CELL_RENDERER_RATING_GET_CLASS
+RBCellRendererRatingPrivate
+RBCellRendererRatingClassPrivate
 </SECTION>
 
 <SECTION>
@@ -1386,7 +1392,6 @@ get_box_widget_at_pos
 
 <SECTION>
 <FILE>rb-dialog</FILE>
-rb_error_dialog_full
 rb_error_dialog
 rb_file_chooser_new
 </SECTION>

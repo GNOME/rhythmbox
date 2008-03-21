@@ -1,5 +1,19 @@
 2008-03-21  Jonathan Matthew  <jonathan@d14n.org>
 
+	* doc/reference/rhythmbox-sections.txt:
+	* widgets/rb-dialog.c:
+	* widgets/rb-dialog.h:
+	* widgets/rb-rating-helper.c:
+	* widgets/rb-rating.c: (rb_rating_class_init):
+	* widgets/rb-rating.h:
+	* widgets/rb-cell-renderer-rating.c:
+	* widgets/rb-cell-renderer-rating.h:
+	More gtk-doc additions (15%!).
+	Remove declaration of rb_error_dialog_full, which never existed.
+	Fix declaration of 'rated' signal on RBCellRendererRating.
+
+2008-03-21  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/rb-player-gst-data-tee.c:
 	(rb_player_gst_data_tee_interface_init):
 	* backends/rb-player-gst-data-tee.h:

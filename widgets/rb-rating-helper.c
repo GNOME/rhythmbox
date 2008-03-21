@@ -26,12 +26,26 @@
 #include "rb-rating-helper.h"
 #include "rb-stock-icons.h"
 
+/**
+ * SECTION:rb-rating-helper
+ * @short_description: helper functions for displaying song ratings
+ *
+ * A few helper functions for dealing with ratings.  These are shared
+ * between #RBRating and #RBCellRendererRating.
+ */
+
 struct _RBRatingPixbufs {
 	GdkPixbuf *pix_star;
 	GdkPixbuf *pix_dot;
 	GdkPixbuf *pix_blank;
 };
 
+/**
+ * rb_rating_pixbufs_free:
+ * @pixbufs: #RBRatingPixbufs instance
+ *
+ * Frees a set of rating pixbufs.
+ */
 void
 rb_rating_pixbufs_free (RBRatingPixbufs *pixbufs)
 {
@@ -43,6 +57,13 @@ rb_rating_pixbufs_free (RBRatingPixbufs *pixbufs)
 		g_object_unref (pixbufs->pix_blank);
 }
 
+/**
+ * rb_rating_install_rating_property:
+ * @klass: a #GObjectClass to add the property to
+ * @prop: property index to use
+ *
+ * Installs a 'rating' property in the specified class.
+ */
 void
 rb_rating_install_rating_property (GObjectClass *klass, gulong prop)
 {
@@ -56,6 +77,15 @@ rb_rating_install_rating_property (GObjectClass *klass, gulong prop)
 
 }
 
+/**
+ * rb_rating_pixbufs_new:
+ *
+ * Creates and returns a structure holding a set of pixbufs
+ * to use to display ratings.
+ *
+ * Return value: #RBRatingPixbufs structure, or NULL if not all of
+ * the pixbufs could be loaded.
+ */
 RBRatingPixbufs *
 rb_rating_pixbufs_new (void)
 {
@@ -97,6 +127,23 @@ rb_rating_pixbufs_new (void)
 	return NULL;
 }
 
+/**
+ * rb_rating_render_stars:
+ * @widget: a #GtkWidget to render on behalf of
+ * @window: the #GdkWindow being rendered to
+ * @pixbufs: a #RBRatingPixbufs structure
+ * @x: source X coordinate within the rating pixbufs (usually 0)
+ * @y: source Y coordinate within the rating pixbufs (usually 0)
+ * @x_offset: destination X coordinate within the window
+ * @y_offset: destination Y coordinate within the window
+ * @rating: the rating to display (between 0.0 and 5.0)
+ * @selected: TRUE if the widget is currently selected for input
+ *
+ * Renders a rating as a row of stars.  floor(@rating) large stars
+ * are drawn, followed by 5-floor(@rating) small stars.
+ *
+ * Return value: TRUE if the stars were drawn successfully
+ */
 gboolean
 rb_rating_render_stars (GtkWidget *widget,
 			GdkWindow *window,
@@ -176,6 +223,20 @@ rb_rating_render_stars (GtkWidget *widget,
 	return TRUE;
 }
 
+/**
+ * rb_rating_get_rating_from_widget:
+ * @widget: the #GtkWidget displaying the rating
+ * @widget_x: 
+ * @widget_width: width of the widget
+ * @current_rating: the current rating displayed in the widget
+ *
+ * Updates the rating for a widget after the user clicks on the
+ * rating.  If the user clicks on the Nth star, the rating is set
+ * to N, unless the rating is already N, in which case the rating is
+ * set to N-1.  This allows the user to set the rating to 0.
+ *
+ * Return value: the updated rating
+ */
 double
 rb_rating_get_rating_from_widget (GtkWidget *widget,
 				  gint widget_x,
