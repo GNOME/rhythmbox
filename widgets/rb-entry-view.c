@@ -20,6 +20,41 @@
  *
  */
 
+/**
+ * SECTION:rb-entry-view
+ * @short_description: a #GtkTreeView for displaying track listings
+ *
+ * This class provides a predefined set of columns for displaying the
+ * common set of #RhythmDBEntry properties, but also allows custom columns
+ * to be appended.  The 'playing' column is always created as the first
+ * column in the tree view, displaying a playing or paused image next to
+ * the currently playing entry, and also an error image next to entries for
+ * which a playback error message has been set.  Clicking on the error
+ * image opens a dialog displaying the full message.
+ *
+ * All columns added to entry view columns should be expandable, or have a fixed
+ * minimum width set.  Otherwise, the tree view must measure the contents of each
+ * row to assign sizes, which is very slow for large track lists.  All the predefined
+ * column types handle this correctly.
+ *
+ * The set of visible columns is controlled by a (single) GConf key, which
+ * contains a comma-delimited list of property names for which the associated
+ * columns are visible.  The entry view object tracks this automatically.
+ *
+ * If a GConf key for sorting is provided when constructing the entry view,
+ * it is watched and updated.  The sort settings consist of a column name
+ * and an order (ascending or descending).
+ */
+
+/**
+ * RBEntryViewColumn:
+ *
+ * Predefined column types to use in #RBEntryView<!-- -->s.  Use
+ * #rb_entry_view_append_column to add these to an entry view.
+ * The predefined column names map directly to the #RhythmDBEntry properties
+ * the columns display.
+ */
+
 #include "config.h"
 
 #include <string.h>
@@ -238,6 +273,11 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 
 	widget_class->grab_focus = rb_entry_view_grab_focus;
 
+	/**
+	 * RBEntryView:db:
+	 *
+	 * #RhythmDB instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DB,
 					 g_param_spec_object ("db",
@@ -245,6 +285,11 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							      "RhythmDB database",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBEntryView:shell-player:
+	 *
+	 * #RBShellPlayer instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SHELL_PLAYER,
 					 g_param_spec_object ("shell-player",
@@ -252,6 +297,11 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							      "RBShellPlayer object",
 							      RB_TYPE_SHELL_PLAYER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBEntryView:model:
+	 *
+	 * The #RhythmDBQueryModel backing the view
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_MODEL,
 					 g_param_spec_object ("model",
@@ -259,6 +309,11 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							      "RhythmDBQueryModel",
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READWRITE));
+	/**
+	 * RBEntryView:sort-key:
+	 *
+	 * The GConf key that controls the sort order for the view
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SORTING_KEY,
 					 g_param_spec_string ("sort-key",
@@ -266,6 +321,11 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							      "sorting key",
 							      "",
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBEntryView:is-drag-source:
+	 *
+	 * If TRUE, the view acts as a data source for drag and drop operations.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_IS_DRAG_SOURCE,
 					 g_param_spec_boolean ("is-drag-source",
@@ -273,6 +333,11 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							       "whether or not this is a drag source",
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBEntryView:is-drag-dest:
+	 *
+	 * If TRUE, the view acts as a destination for drag and drop operations.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_IS_DRAG_DEST,
 					 g_param_spec_boolean ("is-drag-dest",
@@ -280,6 +345,12 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							       "whether or not this is a drag dest",
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBEntryView:playing-state:
+	 *
+	 * Determines the icon to show in the 'playing' column next to the current
+	 * playing entry.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLAYING_STATE,
 					 g_param_spec_int ("playing-state",
@@ -289,6 +360,13 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							   RB_ENTRY_VIEW_PAUSED,
 							   RB_ENTRY_VIEW_NOT_PLAYING,
 							   G_PARAM_READWRITE));
+	/**
+	 * RBEntryView::entry-added
+	 * @view: the #RBEntryView
+	 * @entry: the #RhythmDBEntry that was added
+	 *
+	 * Emitted when an entry is added to the view
+	 */
 	rb_entry_view_signals[ENTRY_ADDED] =
 		g_signal_new ("entry-added",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -299,6 +377,13 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);
+	/**
+	 * RBEntryView::entry-deleted:
+	 * @view: the #RBEntryView
+	 * @entry: the #RhythmDBEntry that was removed
+	 *
+	 * Emitted when an entry has been removed from the view
+	 */
 	rb_entry_view_signals[ENTRY_DELETED] =
 		g_signal_new ("entry-deleted",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -309,6 +394,12 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);
+	/**
+	 * RBEntryView::entries-replaced:
+	 * @view: the #RBEntryView
+	 *
+	 * Emitted when the model backing the entry view is replaced.
+	 */
 	rb_entry_view_signals[ENTRIES_REPLACED] =
 		g_signal_new ("entries-replaced",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -318,6 +409,14 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+	/**
+	 * RBEntryView::entry-activated:
+	 * @view: the #RBEntryView
+	 * @entry: the #RhythmDBEntry that was activated
+	 *
+	 * Emitted when an entry in the view is activated (by double clicking
+	 * or by various key presses)
+	 */
 	rb_entry_view_signals[ENTRY_ACTIVATED] =
 		g_signal_new ("entry-activated",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -328,6 +427,12 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);
+	/**
+	 * RBEntryView::selection-changed:
+	 * @view: the #RBEntryView
+	 *
+	 * Emitted when the set of selected entries changes
+	 */
 	rb_entry_view_signals[SELECTION_CHANGED] =
 		g_signal_new ("selection-changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -337,6 +442,18 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+	/**
+	 * RBEntryView::show-popup
+	 * @view: the #RBEntryView
+	 * @over_entry: if TRUE, the popup request was made while pointing
+	 * at an entry in the view
+	 *
+	 * Emitted when the user performs an action that should result in a
+	 * popup menu appearing.  If the action was a mouse button click, 
+	 * over_entry is FALSE if the mouse pointer was in the blank space after
+	 * the last row in the view.  If the action was a key press, over_entry
+	 * is FALSE if no rows in the view are selected.
+	 */
 	rb_entry_view_signals[SHOW_POPUP] =
 		g_signal_new ("show_popup",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -347,6 +464,14 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
+	/**
+	 * RBEntryView::have-selection-changed:
+	 * @view: the #RBEntryView
+	 * @have_selection: TRUE if one or more rows are selected
+	 *
+	 * Emitted when the user first selects a row, or when no rows are selected
+	 * any more.
+	 */
 	rb_entry_view_signals[HAVE_SEL_CHANGED] =
 		g_signal_new ("have_selection_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -357,6 +482,12 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
+	/**
+	 * RBEntryView::sort-order-changed:
+	 * @view: the #RBEntryView
+	 *
+	 * Emitted when the user changes the sort order for the view
+	 */
 	rb_entry_view_signals[SORT_ORDER_CHANGED] =
 		g_signal_new ("sort-order-changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -645,6 +776,23 @@ rb_entry_view_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_entry_view_new:
+ * @db: the #RhythmDB instance
+ * @shell_player: the #RBShellPlayer instance
+ * @sort_key: the GConf key controlling the sort order for the view
+ * @is_drag_source: if TRUE, the view should act as a drag and drop data source
+ * @is_drag_dest: if TRUE, the view should act as a drag and drop destination
+ *
+ * Creates a new entry view.  If it makes sense to allow the user to drag entries
+ * from this entry view to other sources, @is_drag_source should be TRUE.  If it
+ * makes sense to allow the user to drag entries from other sources to this view,
+ * @is_drag_dest should be TRUE.  Drag and drop in this sense is used for two purposes:
+ * to transfer tracks between the filesystem and removable devices, and to add tracks
+ * to playlists.
+ *
+ * Return value: the new entry view
+ */
 RBEntryView *
 rb_entry_view_new (RhythmDB *db,
 		   GObject *shell_player,
@@ -672,6 +820,13 @@ rb_entry_view_new (RhythmDB *db,
 	return view;
 }
 
+/**
+ * rb_entry_view_set_model:
+ * @view: the #RBEntryView
+ * @model: the new #RhythmDBQueryModel to use for the view
+ *
+ * Replaces the model backing the entry view.
+ */
 void
 rb_entry_view_set_model (RBEntryView *view,
 			 RhythmDBQueryModel *model)
@@ -945,6 +1100,16 @@ rb_entry_view_sync_sorting (RBEntryView *view)
 	g_free (column_name);
 }
 
+/**
+ * rb_entry_view_get_sorting_type:
+ * @view: an #RBEntryView
+ *
+ * Constructs a string that describes the sort settings for the entry view.
+ * This consists of a column name and an order ('ascending' or 'descending')
+ * separated by a comma.
+ *
+ * Return value: sort order description (must be freed)
+ */
 char *
 rb_entry_view_get_sorting_type (RBEntryView *view)
 {
@@ -971,6 +1136,15 @@ rb_entry_view_get_sorting_type (RBEntryView *view)
 	return sorttype;
 }
 
+/**
+ * rb_entry_view_set_sorting_type:
+ * @view: a #RBEntryView
+ * @sorttype: sort order description
+ *
+ * Changes the sort order for the entry view.  The sort order
+ * description must be a column name, followed by a comma, followed
+ * by an order description ('ascending' or 'descending').
+ */
 void
 rb_entry_view_set_sorting_type (RBEntryView *view,
 				const char *sorttype)
@@ -1001,6 +1175,14 @@ rb_entry_view_set_sorting_type (RBEntryView *view,
 	rb_entry_view_sync_sorting (view);
 }
 
+/**
+ * rb_entry_view_get_sorting_order:
+ * @view: a #RBEntryView
+ * @column_name: returns the sort column name
+ * @sort_order: returns the sort ordering as a #GtkSortType value
+ *
+ * Retrieves the sort settings for the view.
+ */
 void
 rb_entry_view_get_sorting_order (RBEntryView *view,
 				 char **column_name,
@@ -1017,6 +1199,14 @@ rb_entry_view_get_sorting_order (RBEntryView *view,
 	}
 }
 
+/**
+ * rb_entry_view_set_sorting_order:
+ * @view: a #RBEntryView
+ * @column_name: name of the column to sort on
+ * @sort_order: order to sort in, as a #GtkSortOrder
+ *
+ * Sets the sort order for the entry view.
+ */
 void
 rb_entry_view_set_sorting_order (RBEntryView *view,
 				 const char *column_name,
@@ -1058,6 +1248,18 @@ rb_entry_view_column_clicked_cb (GtkTreeViewColumn *column, RBEntryView *view)
 		eel_gconf_set_string (view->priv->sorting_key, rb_entry_view_get_sorting_type(view));
 }
 
+/**
+ * rb_entry_view_append_column:
+ * @view: a #RBEntryView
+ * @coltype: type of column to append
+ * @always_visible: if TRUE, ignore the user's column visibility settings
+ *
+ * Appends a predefined column type to the set of columns already present
+ * in the entry view.  If @always_visible is TRUE, the column will ignore
+ * the user's coulmn visibility settings and will always be visible.
+ * This should only be used when it is vital for the purpose of the 
+ * source that the column be visible.
+ */
 void
 rb_entry_view_append_column (RBEntryView *view,
 			     RBEntryViewColumn coltype,
@@ -1304,6 +1506,18 @@ rb_entry_view_append_column (RBEntryView *view,
 	rb_entry_view_append_column_custom (view, column, title, key, sort_func, GINT_TO_POINTER (sort_propid), NULL);
 }
 
+/**
+ * rb_entry_view_append_column_custom:
+ * @view: a #RBEntryView
+ * @column: a #GtkTreeViewColumn to append
+ * @title: title for the column (translated)
+ * @key: sort key for the column (not translated)
+ * @sort_func: comparison function to use for sorting on the column
+ * @data: data to pass to the sort function
+ * @data_destroy: function to use to destroy the sort data
+ *
+ * Appends a custom column to the entry view.  
+ */
 void
 rb_entry_view_append_column_custom (RBEntryView *view,
 				    GtkTreeViewColumn *column,
@@ -1316,6 +1530,19 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 	rb_entry_view_insert_column_custom (view, column, title, key, sort_func, data, data_destroy, -1);
 }
 
+/**
+ * rb_entry_view_insert_column_custom:
+ * @view: a #RBEntryView
+ * @column: a #GtkTreeViewColumn to append
+ * @title: title for the column (translated)
+ * @key: sort key for the column (not translated)
+ * @sort_func: comparison function to use for sorting on the column
+ * @data: data to pass to the sort function
+ * @data_destroy: function to use to destroy the sort data
+ * @position: position at which to insert the column (-1 to insert at the end)
+ *
+ * Inserts a custom column at the specified position.
+ */
 void
 rb_entry_view_insert_column_custom (RBEntryView *view,
 				    GtkTreeViewColumn *column,
@@ -1355,6 +1582,14 @@ rb_entry_view_insert_column_custom (RBEntryView *view,
 	rb_entry_view_sync_sorting (view);
 }
 
+/**
+ * rb_entry_view_set_columns_clickable:
+ * @view: a #RBEntryView
+ * @clickable: if TRUE, sortable columns will be made clickable
+ *
+ * Makes the headers for sortable columns (those for which a sort function was
+ * provided) clickable, so the user can set the sort order.
+ */
 void
 rb_entry_view_set_columns_clickable (RBEntryView *view,
 				     gboolean clickable)
@@ -1600,6 +1835,13 @@ harvest_entries (GtkTreeModel *model,
 	return FALSE;
 }
 
+/**
+ * rb_entry_view_get_selected_entries:
+ * @view: a #RBEntryView
+ *
+ * Return value: a #GList containing the currently selected entries in the view
+ *  (must be freed)
+ */
 GList *
 rb_entry_view_get_selected_entries (RBEntryView *view)
 {
@@ -1690,12 +1932,24 @@ rb_entry_view_selection_changed_cb (GtkTreeSelection *selection,
 		view->priv->selection_changed_id = g_idle_add ((GSourceFunc)rb_entry_view_emit_selection_changed, view);
 }
 
+/**
+ * rb_entry_view_have_selection:
+ * @view: a #RBEntryView
+ *
+ * Return value: TRUE if one or more rows are selected in the view
+ */
 gboolean
 rb_entry_view_have_selection (RBEntryView *view)
 {
 	return view->priv->have_selection;
 }
 
+/**
+ * rb_entry_view_have_complete_selection:
+ * @view: a #RBEntryView
+ *
+ * Return value: TRUE if all rows in the view are selected
+ */
 gboolean
 rb_entry_view_have_complete_selection (RBEntryView *view)
 {
@@ -1800,18 +2054,38 @@ rb_entry_view_rows_reordered_cb (GtkTreeModel *model,
 	gtk_widget_queue_draw (GTK_WIDGET (view));
 }
 
+/**
+ * rb_entry_view_select_all:
+ * @view: a #RBEntryView
+ *
+ * Selects all rows in the view
+ */
 void
 rb_entry_view_select_all (RBEntryView *view)
 {
 	gtk_tree_selection_select_all (view->priv->selection);
 }
 
+/**
+ * rb_entry_view_select_none:
+ * @view: a #RBEntryView
+ *
+ * Deselects all rows in the view.
+ */
 void
 rb_entry_view_select_none (RBEntryView *view)
 {
 	gtk_tree_selection_unselect_all (view->priv->selection);
 }
 
+/**
+ * rb_entry_view_select_entry:
+ * @view: a #RBEntryView
+ * @entry: a #RhythmDBEntry to select
+ *
+ * If the specified entry is present in the view, it is added
+ * to the selection.
+ */
 void
 rb_entry_view_select_entry (RBEntryView *view,
 			    RhythmDBEntry *entry)
@@ -1829,6 +2103,14 @@ rb_entry_view_select_entry (RBEntryView *view,
 	}
 }
 
+/**
+ * rb_entry_view_scroll_to_entry:
+ * @view: a #RBEntryView
+ * @entry: a #RhythmDBEntry to scroll to
+ *
+ * If the specified entry is present in the view, the view will be
+ * scrolled so that the entry is visible.
+ */
 void
 rb_entry_view_scroll_to_entry (RBEntryView *view,
 			       RhythmDBEntry *entry)
@@ -1864,6 +2146,13 @@ rb_entry_view_scroll_to_iter (RBEntryView *view,
 	gtk_tree_path_free (path);
 }
 
+/**
+ * rb_entry_view_get_entry_visible:
+ * @view: a #RBEntryView
+ * @entry: a #RhythmDBEntry to check
+ *
+ * Return value: TRUE if the entry is present in the view and is currently visible
+ */
 gboolean
 rb_entry_view_get_entry_visible (RBEntryView *view,
 				 RhythmDBEntry *entry)
@@ -1879,6 +2168,13 @@ rb_entry_view_get_entry_visible (RBEntryView *view,
 	return realized && visible;
 }
 
+/**
+ * rb_entry_view_get_entry_contained:
+ * @view: a #RBEntryView
+ * @entry: a #RhythmDBEntry to check
+ *
+ * Return value: TRUE if the entry is present in the view
+ */
 gboolean
 rb_entry_view_get_entry_contained (RBEntryView *view,
 				   RhythmDBEntry *entry)
@@ -1924,6 +2220,15 @@ rb_entry_view_entry_is_visible (RBEntryView *view,
 	*visible = (rect.y != 0 && rect.height != 0);
 }
 
+/**
+ * rb_entry_view_enable_drag_source:
+ * @view: a #RBEntryView
+ * @targets: an array of #GtkTargetEntry structures defining the drag data targets
+ * @n_targets: the number of entries in the target array
+ *
+ * Enables the entry view to act as a data source for drag an drop operations,
+ * using a specified set of data targets.
+ */
 void
 rb_entry_view_enable_drag_source (RBEntryView *view,
 				 const GtkTargetEntry *targets,
@@ -2021,6 +2326,16 @@ rb_entry_view_sync_columns_visible (RBEntryView *view)
 	g_free (config);
 }
 
+/**
+ * rb_entry_view_set_state:
+ * @view: a #RBEntryView
+ * @state: the new playing entry state
+ *
+ * Sets the icon to be drawn in the 'playing' column next to the
+ * current playing entry.  RB_ENTRY_VIEW_PLAYING and RB_ENTRY_VIEW_PAUSED
+ * should be used when the source containing the entry view is playing,
+ * and RB_ENTRY_VIEW_NOT_PLAYING otherwise.
+ */
 void
 rb_entry_view_set_state (RBEntryView *view,
 			 RBEntryViewState state)
@@ -2055,6 +2370,17 @@ rb_entry_view_emit_row_changed (RBEntryView *view,
 	return TRUE;
 }
 
+/**
+ * rb_entry_view_set_fixed_column_width:
+ * @view: a #RBEntryView
+ * @column: the column to set the width for
+ * @renderer: a temporary cell renderer to use
+ * @strings: a NULL-terminated array of strings that will be displayed in the column
+ *
+ * Helper function for calling @rb_set_tree_view_column_fixed_width on
+ * a column.  This is important for performance reasons, as having the
+ * tree view measure the strings in each of 20000 rows is very slow.
+ */
 void
 rb_entry_view_set_fixed_column_width (RBEntryView *view,
 				      GtkTreeViewColumn *column,
@@ -2068,22 +2394,19 @@ rb_entry_view_set_fixed_column_width (RBEntryView *view,
 					     5);
 }
 
+/**
+ * rb_entry_view_get_time_date_column_sample:
+ *
+ * Returns a sample string for use in columns displaying times
+ * and dates in 'friendly' form (see @rb_utf_friendly_time).
+ * For use with @rb_entry_view_set_fixed_column_width.
+ *
+ * Return value: sample date string
+ */
 const char *
 rb_entry_view_get_time_date_column_sample ()
 {
 	static const char *sample = NULL;
-	/*
-	 * Currently, Japanese is the only translation that uses
-	 * anything other than %Y, %m ,%d, %H, and %M to format dates.
-	 * It uses %B (month name) and %e (days), and the values for
-	 * the month name appear to all consist of the month number
-	 * followed by a single character, so they're of consistent
-	 * width.  So, this approach should work for every locale.
-	 *
-	 * Midnight on September 30th, 2000 is the widest date/time I
-	 * can think of.  2000-09-30 00:00.
-	 */
-
 	if (sample == NULL) {
  		time_t then;
 
@@ -2096,6 +2419,13 @@ rb_entry_view_get_time_date_column_sample ()
 	return sample;
 }
 
+/**
+ * rb_entry_view_resort_model:
+ * @view: a #RBEntryView to resort
+ *
+ * Resorts the entries in the entry view.  Mostly to be used
+ * when a new model is associated with the view.
+ */
 void
 rb_entry_view_resort_model (RBEntryView *view)
 {

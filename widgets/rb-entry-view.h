@@ -70,16 +70,19 @@ typedef enum {
 GType rb_entry_view_state_get_type (void);
 #define RB_TYPE_ENTRY_VIEW_STATE	(rb_entry_view_state_get_type())
 
+typedef struct _RBEntryView RBEntryView;
+typedef struct _RBEntryViewClass RBEntryViewClass;
+
 typedef struct RBEntryViewPrivate RBEntryViewPrivate;
 
-typedef struct
+struct _RBEntryView
 {
 	GtkScrolledWindow parent;
 
 	RBEntryViewPrivate *priv;
-} RBEntryView;
+};
 
-typedef struct
+struct _RBEntryViewClass
 {
 	GtkScrolledWindowClass parent;
 
@@ -94,7 +97,7 @@ typedef struct
 	void (*sort_order_changed)     (RBEntryView *view);
 
 	void (*show_popup)             (RBEntryView *view, gboolean over_entry);
-} RBEntryViewClass;
+};
 
 GType		rb_entry_view_get_type			(void);
 

@@ -38,6 +38,20 @@
 #include "rb-util.h"
 #include "rhythmdb.h"
 
+/**
+ * SECTION:rb-header
+ * @short_description: playback area widgetry
+ *
+ * The RBHeader widget displays information about the current playing track
+ * (title, album, artist), the elapsed or remaining playback time, and a
+ * position slider indicating the playback position.  It translates slider
+ * move and drag events into seek requests for the player backend.
+ *
+ * For shoutcast-style streams, the title/artist/album display is supplemented
+ * by metadata extracted from the stream.  See #RBStreamingSource for more information
+ * on how the metadata is reported.
+ */
+
 static void rb_header_class_init (RBHeaderClass *klass);
 static void rb_header_init (RBHeader *header);
 static void rb_header_finalize (GObject *object);
@@ -113,6 +127,11 @@ rb_header_class_init (RBHeaderClass *klass)
 	object_class->set_property = rb_header_set_property;
 	object_class->get_property = rb_header_get_property;
 
+	/**
+	 * RBHeader:db:
+	 *
+	 * #RhythmDB instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DB,
 					 g_param_spec_object ("db",
@@ -121,6 +140,11 @@ rb_header_class_init (RBHeaderClass *klass)
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE));
 
+	/**
+	 * RBHeader:entry:
+	 *
+	 * The #RhythmDBEntry to display
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY,
 					 g_param_spec_boxed ("entry",
@@ -128,6 +152,11 @@ rb_header_class_init (RBHeaderClass *klass)
 							     "RhythmDBEntry pointer",
 							     RHYTHMDB_TYPE_ENTRY,
 							     G_PARAM_READWRITE));
+	/**
+	 * RBHeader:shell-player:
+	 *
+	 * The #RBShellPlayer instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SHELL_PLAYER,
 					 g_param_spec_object ("shell-player",
@@ -135,6 +164,11 @@ rb_header_class_init (RBHeaderClass *klass)
 							      "RBShellPlayer object",
 							      RB_TYPE_SHELL_PLAYER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBHeader:seekable:
+	 *
+	 * If TRUE, the header should allow seeking by dragging the playback position slider
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SEEKABLE,
 					 g_param_spec_boolean ("seekable",
@@ -298,6 +332,13 @@ rb_header_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_header_new:
+ * @shell_player: the #RBShellPlayer instance
+ * @db: the #RhythmDB instance
+ *
+ * Return value: the header widget
+ */
 RBHeader *
 rb_header_new (RBShellPlayer *shell_player, RhythmDB *db)
 {
@@ -313,6 +354,14 @@ rb_header_new (RBShellPlayer *shell_player, RhythmDB *db)
 	return header;
 }
 
+/**
+ * rb_header_set_playing_entry:
+ * @header: the #RBHeader
+ * @entry: the new playing #RhythmDBEntry
+ * @seekable: whether the new playing entry is seekable
+ *
+ * Sets a new playing entry to be displayed in the header.
+ */
 void
 rb_header_set_playing_entry (RBHeader *header,
 			     RhythmDBEntry *entry,
@@ -347,6 +396,13 @@ get_extra_metadata (RhythmDB *db, RhythmDBEntry *entry, const char *field, char 
 	}
 }
 
+/**
+ * rb_header_sync:
+ * @header: the #RBHeader
+ *
+ * Updates the header widget to be consistent with the current playing entry
+ * including all streaming metadata.
+ */
 void
 rb_header_sync (RBHeader *header)
 {
@@ -444,6 +500,14 @@ rb_header_sync (RBHeader *header)
 	}
 }
 
+/**
+ * rb_header_set_show_position_slider:
+ * @header: the #RBHeader
+ * @show: whether the position slider should be shown
+ *
+ * Sets the visibility of the position slider.  This is not currently
+ * used properly.
+ */
 void
 rb_header_set_show_position_slider (RBHeader *header,
 				    gboolean show)
@@ -468,17 +532,27 @@ rb_header_set_show_timeline (RBHeader *header,
 	gtk_widget_set_sensitive (header->priv->scaleline, show);
 }
 
-gboolean
+/**
+ * rb_header_sync_time:
+ * @header: the #RBHeader
+ *
+ * Updates the time display components of the header.
+ * If the position slider is being dragged, the display is not updated.
+ * If the duration of the playing entry is known, the position slider is
+ * updated along with the elapsed/remaining time display.  Otherwise,
+ * the slider is made insensitive.
+ */
+void
 rb_header_sync_time (RBHeader *header)
 {
 	guint seconds;
 
 	if (header->priv->shell_player == NULL)
-		return TRUE;
+		return;
 
 	if (header->priv->slider_dragging == TRUE) {
 		rb_debug ("slider is dragging, not syncing");
-		return TRUE;
+		return;
 	}
 
 	seconds = header->priv->elapsed_time;
@@ -505,8 +579,6 @@ rb_header_sync_time (RBHeader *header)
 	}
 
 	rb_header_update_elapsed (header);
-
-	return TRUE;
 }
 
 static gboolean

@@ -76,6 +76,14 @@ enum
 
 G_DEFINE_TYPE (RBCellRendererPixbuf, rb_cell_renderer_pixbuf, GTK_TYPE_CELL_RENDERER)
 
+/**
+ * SECTION:rb-cell-renderer-pixbuf
+ * @short_description: #GtkCellRenderer for displaying pixbufs in tree views
+ *
+ * This is similar to #GtkCellRendererPixbuf, except that it also emits a signal
+ * when the pixbuf is clicked on, and it can only use pixbuf objects.
+ */
+
 static guint rb_cell_renderer_pixbuf_signals [LAST_SIGNAL] = { 0 };
 
 static void
@@ -99,6 +107,11 @@ rb_cell_renderer_pixbuf_class_init (RBCellRendererPixbufClass *class)
 	cell_class->render = rb_cell_renderer_pixbuf_render;
 	cell_class->activate = rb_cell_renderer_pixbuf_activate;
 
+	/**
+	 * RBCellRendererPixbuf:pixbuf:
+	 *
+	 * The pixbuf to render in the cell.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PIXBUF,
 					 g_param_spec_object ("pixbuf",
@@ -108,6 +121,13 @@ rb_cell_renderer_pixbuf_class_init (RBCellRendererPixbufClass *class)
 							      G_PARAM_READABLE |
 							      G_PARAM_WRITABLE));
 
+	/**
+	 * RBCellRendererPixbuf::pixbuf-clicked:
+	 * @renderer: the #RBCellRendererPixbuf
+	 * @path: the #GtkTreePath to the row that was clicked
+	 *
+	 * Emitted when the user clicks on the pixbuf cell.
+	 */
 	rb_cell_renderer_pixbuf_signals[PIXBUF_CLICKED] =
 		g_signal_new ("pixbuf-clicked",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -168,13 +188,7 @@ rb_cell_renderer_pixbuf_set_property (GObject      *object,
 /**
  * rb_cell_renderer_pixbuf_new:
  *
- * Creates a new #RBCellRendererPixbuf. Adjust rendering
- * parameters using object properties. Object properties can be set
- * globally (with g_object_set()). Also, with #RBTreeViewColumn, you
- * can bind a property to a value in a #RBTreeModel. For example, you
- * can bind the "pixbuf" property on the cell renderer to a pixbuf value
- * in the model, thus rendering a different image in each row of the
- * #RBTreeView.
+ * Creates a new #RBCellRendererPixbuf.
  *
  * Return value: the new cell renderer
  **/

@@ -37,19 +37,22 @@ G_BEGIN_DECLS
 #define RB_IS_HEADER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_HEADER))
 #define RB_HEADER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_HEADER, RBHeaderClass))
 
+typedef struct _RBHeader RBHeader;
+typedef struct _RBHeaderClass RBHeaderClass;
+
 typedef struct RBHeaderPrivate RBHeaderPrivate;
 
-typedef struct
+struct _RBHeader
 {
 	GtkHBox parent;
 
 	RBHeaderPrivate *priv;
-} RBHeader;
+};
 
-typedef struct
+struct _RBHeaderClass
 {
 	GtkHBoxClass parent;
-} RBHeaderClass;
+};
 
 GType		rb_header_get_type		(void);
 
@@ -65,7 +68,7 @@ void		rb_header_set_show_position_slider (RBHeader *header,
 
 void		rb_header_sync			(RBHeader *header);
 
-gboolean	rb_header_sync_time		(RBHeader *header);
+void		rb_header_sync_time		(RBHeader *header);
 
 char *		rb_header_get_elapsed_string	(RBHeader *header);
 
