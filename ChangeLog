@@ -1,3 +1,10 @@
+2008-03-22  Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/audioscrobbler/rb-audioscrobbler.c: with libsoup 2.4,
+	soup_uri_decode no longer works in place as it used to, this is quite
+	likely the cause for some songs being submitted as 'An%20Artist' to
+	audioscrobbler instead of 'An Artist'
+
 2008-03-22  Jonathan Matthew  <jonathan@d14n.org>
 
 	* doc/reference/rhythmbox-sections.txt:

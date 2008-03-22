@@ -1458,6 +1458,17 @@ void audioscrobbler_encoded_entry_free (AudioscrobblerEncodedEntry *entry)
 
 
 /* Queue functions: */
+static char *rb_uri_decode (const char *uri)
+{
+#if defined(HAVE_LIBSOUP_2_4)
+    return soup_uri_decode (uri);
+#else 
+    char *decoded;
+    decoded = g_strdup (uri);
+    soup_uri_decode (decoded);
+    return decoded;
+#endif
+}
 
 static AudioscrobblerEntry*
 rb_audioscrobbler_load_entry_from_string (const char *string)
@@ -1477,23 +1488,19 @@ rb_audioscrobbler_load_entry_from_string (const char *string)
 		if (breaks2[0] != NULL && breaks2[1] != NULL) {
 			if (g_str_has_prefix (breaks2[0], "a")) {
 				g_free (entry->artist);
-				entry->artist = g_strdup (breaks2[1]);
-				soup_uri_decode (entry->artist);
+				entry->artist = rb_uri_decode (breaks2[1]);
 			}
 			if (g_str_has_prefix (breaks2[0], "t")) {
 				g_free (entry->title);
-				entry->title = g_strdup (breaks2[1]);
-				soup_uri_decode (entry->title);
+				entry->title = rb_uri_decode (breaks2[1]);
 			}
 			if (g_str_has_prefix (breaks2[0], "b")) {
 				g_free (entry->album);
-				entry->album = g_strdup (breaks2[1]);
-				soup_uri_decode (entry->album);
+				entry->album = rb_uri_decode (breaks2[1]);
 			}
 			if (g_str_has_prefix (breaks2[0], "m")) {
 				g_free (entry->mbid);
-				entry->mbid = g_strdup (breaks2[1]);
-				soup_uri_decode (entry->mbid);
+				entry->mbid = rb_uri_decode (breaks2[1]);
 			}
 			if (g_str_has_prefix (breaks2[0], "l")) {
 				entry->length = atoi (breaks2[1]);
