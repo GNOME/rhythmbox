@@ -35,8 +35,9 @@ G_BEGIN_DECLS
 #define RB_PLAYER_GST_TEE_GET_IFACE(o) (G_TYPE_INSTANCE_GET_INTERFACE ((o), RB_TYPE_PLAYER_GST_TEE, RBPlayerGstTeeIface))
 
 typedef struct _RBPlayerGstTee RBPlayerGstTee;
+typedef struct _RBPlayerGstTeeIface RBPlayerGstTeeIface;
 
-typedef struct
+struct _RBPlayerGstTeeIface
 {
 	GTypeInterface	g_iface;
 
@@ -47,7 +48,7 @@ typedef struct
 	/* signals */
 	void		(*tee_inserted)		(RBPlayerGstTee *player, GstElement *tee);
 	void		(*tee_pre_remove)	(RBPlayerGstTee *player, GstElement *tee);
-} RBPlayerGstTeeIface;
+};
 
 GType		rb_player_gst_tee_get_type   (void);
 

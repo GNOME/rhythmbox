@@ -23,6 +23,15 @@
 #include "rb-player-gst-filter.h"
 #include "rb-marshal.h"
 
+/**
+ * SECTION:rb-player-gst-filter
+ * @short_description: player interface for inserting filter elements
+ * @include: rb-player-gst-filter.h
+ *
+ * This interface allows a caller to add filter elements to the GStreamer playback
+ * pipeline.
+ */
+
 enum {
 	FILTER_INSERTED,
 	FILTER_PRE_REMOVE,
@@ -35,7 +44,8 @@ static void
 rb_player_gst_filter_interface_init (RBPlayerGstFilterIface *iface)
 {
 	/**
-	 * RBPlayerGstFilter::tee-inserted
+	 * RBPlayerGstFilter::filter-inserted:
+	 * @player: the #RBPlayerGstFilter implementation
 	 * @filter: the element which has been inserted
 	 *
 	 * The 'filter-inserted' signal is emitted when the tee element has been
@@ -52,7 +62,8 @@ rb_player_gst_filter_interface_init (RBPlayerGstFilterIface *iface)
 			      1, G_TYPE_OBJECT);
 
 	/**
-	 * RBPlayerGstFilter::tee-pre-remove
+	 * RBPlayerGstFilter::filter-pre-remove:
+	 * @player: the #RBPlayerGstFilter implementation
 	 * @filter: the element which is about to be removed
 	 *
 	 * The 'filter-pre-remove' signal is emitted immediately before the element
@@ -94,6 +105,17 @@ rb_player_gst_filter_get_type (void)
 	return our_type;
 }
 
+/**
+ * rb_player_gst_filter_add_filter:
+ * @player: #RBPlayerGstFilter implementation
+ * @element: new filter element (or bin) to add
+ *
+ * Adds a new filter to the playback pipeline.  The filter may not be
+ * inserted immediately.  The 'filter-inserted' signal will be emitted
+ * when this actually happens.
+ *
+ * Return value: TRUE if the filter will be added
+ */
 gboolean
 rb_player_gst_filter_add_filter (RBPlayerGstFilter *player, GstElement *element)
 {
@@ -102,6 +124,17 @@ rb_player_gst_filter_add_filter (RBPlayerGstFilter *player, GstElement *element)
 	return iface->add_filter (player, element);
 }
 
+/**
+ * rb_player_gst_filter_remove_filter:
+ * @player: #RBPlayerGstFilter implementation
+ * @element: the filter element (or bin) to remove
+ *
+ * Removes a filter from the playback pipeline.  The filter may not be
+ * removed immediately.  The 'filter-pre-remove' signal will be emitted
+ * immediately before this actually happens.
+ *
+ * Return value: TRUE if the filter was found and will be removed
+ */
 gboolean
 rb_player_gst_filter_remove_filter (RBPlayerGstFilter *player, GstElement *element)
 {

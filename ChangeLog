@@ -1,3 +1,19 @@
+2008-03-23  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/rb-player-gst-filter.c:
+	(rb_player_gst_filter_interface_init):
+	* backends/rb-player-gst-tee.c: (rb_player_gst_tee_interface_init):
+	* backends/rb-player-gst-tee.h:
+	* sources/rb-auto-playlist-source.c:
+	* sources/rb-auto-playlist-source.h:
+	* doc/reference/rhythmbox-sections.txt:
+	Add docs for RBPlayerGstTee, RBPlayerGstFilter, RBAutoPlaylistSource
+
+	* widgets/rb-entry-view.h:
+	* widgets/rb-header.h:
+	* widgets/rb-property-view.h:
+	Rename some args to match the code.
+
 2008-03-22  Christophe Fergeau  <teuf@gnome.org>
 
 	* plugins/audioscrobbler/rb-audioscrobbler.c: with libsoup 2.4,

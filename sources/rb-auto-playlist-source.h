@@ -36,15 +36,18 @@ G_BEGIN_DECLS
 #define RB_IS_AUTO_PLAYLIST_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_AUTO_PLAYLIST_SOURCE))
 #define RB_AUTO_PLAYLIST_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_AUTO_PLAYLIST_SOURCE, RBAutoPlaylistSourceClass))
 
-typedef struct
+typedef struct _RBAutoPlaylistSource RBAutoPlaylistSource;
+typedef struct _RBAutoPlaylistSourceClass RBAutoPlaylistSourceClass;
+
+struct _RBAutoPlaylistSource
 {
 	RBPlaylistSource parent;
-} RBAutoPlaylistSource;
+};
 
-typedef struct
+struct _RBAutoPlaylistSourceClass
 {
 	RBPlaylistSourceClass parent;
-} RBAutoPlaylistSourceClass;
+};
 
 GType		rb_auto_playlist_source_get_type 	(void);
 

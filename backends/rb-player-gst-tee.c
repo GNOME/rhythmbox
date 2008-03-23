@@ -23,6 +23,14 @@
 #include "rb-player-gst-tee.h"
 #include "rb-marshal.h"
 
+/**
+ * SECTION:rb-player-gst-tee
+ * @short_description: player interface for inserting additional sinks
+ * @include: rb-player-gst-tee.h
+ *
+ * This interface allows a caller to add a new sink to the GStreamer playback
+ * pipeline.
+ */
 
 enum {
 	TEE_INSERTED,
@@ -36,7 +44,8 @@ static void
 rb_player_gst_tee_interface_init (RBPlayerGstTeeIface *iface)
 {
 	/**
-	 * RBPlayerGstTee::tee-inserted
+	 * RBPlayerGstTee::tee-inserted:
+	 * @player: the #RBPlayerGstTee implementation
 	 * @tee: the element which has been inserted
 	 *
 	 * The 'tee-inserted' signal is emitted when the tee element has been
@@ -54,6 +63,7 @@ rb_player_gst_tee_interface_init (RBPlayerGstTeeIface *iface)
 
 	/**
 	 * RBPlayerGstTee::tee-pre-remove
+	 * @player: the #RBPlayerGstTee implementation
 	 * @tee: the element which is about to be removed
 	 *
 	 * The 'tee-pre-remove' signal is emitted immediately before the element
@@ -94,6 +104,17 @@ rb_player_gst_tee_get_type (void)
 	return our_type;
 }
 
+/**
+ * rb_player_gst_tee_add_tee:
+ * @player: #RBPlayerGstTee implementation
+ * @element: new sink element (or bin) to add
+ *
+ * Adds a new sink to the playback pipeline.  The sink may not be
+ * inserted immediately.  The 'tee-inserted' signal will be emitted
+ * when this actually happens.
+ *
+ * Return value: TRUE if the sink will be added
+ */
 gboolean
 rb_player_gst_tee_add_tee (RBPlayerGstTee *player, GstElement *element)
 {
@@ -102,6 +123,17 @@ rb_player_gst_tee_add_tee (RBPlayerGstTee *player, GstElement *element)
 	return iface->add_tee (player, element);
 }
 
+/**
+ * rb_player_gst_tee_remove_tee:
+ * @player: #RBPlayerGstTee implementation
+ * @element: the sink element (or bin) to remove
+ *
+ * Removes a sink from the playback pipeline.  The sink may not be
+ * removed immediately.  The 'tee-pre-remove' signal will be emitted
+ * immediately before this actually happens.
+ *
+ * Return value: TRUE if the sink was found and will be removed
+ */
 gboolean
 rb_player_gst_tee_remove_tee (RBPlayerGstTee *player, GstElement *element)
 {

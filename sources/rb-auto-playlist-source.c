@@ -35,6 +35,25 @@
 #include "rb-stock-icons.h"
 #include "rb-playlist-xml.h"
 
+/**
+ * SECTION:rb-auto-playlist-source
+ * @short_description: automatic playlist source, based on a database query
+ *
+ * A playlist populated with the results of a database query.
+ *
+ * The query, limit, and sort settings are saved to the playlists file, so
+ * they are persistent.
+ *
+ * Searching is implemented by appending the query criteria generated from
+ * the search text to the query.  Browsing is implemented by using the base
+ * query model (or a query model using the query generated from the search text,
+ * there is some) as the input to a #RBLibraryBrowser.
+ *
+ * If the user has not set a sort order as part of the playlist definition,
+ * the entry view columns are made clickable to allow the user to sort the
+ * results.
+ */
+
 static GObject *rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 						      GObjectConstructParam *construct_properties);
 static void rb_auto_playlist_source_dispose (GObject *object);
@@ -256,6 +275,16 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 	return G_OBJECT (source);
 }
 
+/**
+ * rb_auto_playlist_source_new:
+ * @shell: the #RBShell instance
+ * @name: the name of the new playlist
+ * @local: if TRUE, the playlist will be considered local
+ *
+ * Creates a new automatic playlist source, initially with an empty query.
+ *
+ * Return value: the new source
+ */
 RBSource *
 rb_auto_playlist_source_new (RBShell *shell, const char *name, gboolean local)
 {
@@ -271,6 +300,15 @@ rb_auto_playlist_source_new (RBShell *shell, const char *name, gboolean local)
 					NULL));
 }
 
+/**
+ * rb_auto_playlist_source_new_from_xml:
+ * @shell: the #RBShell instance
+ * @node: libxml node containing the playlist
+ *
+ * Creates a new auto playlist source by parsing an XML-encoded query.
+ *
+ * Return value: the new source
+ */
 RBSource *
 rb_auto_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
 {
@@ -691,6 +729,18 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 	rhythmdb_query_free (query);
 }
 
+/**
+ * rb_auto_playlist_source_set_query:
+ * @source: the #RBAutoPlaylistSource
+ * @query: the new database query
+ * @limit_type: the playlist limit type
+ * @limit_value: the playlist limit value
+ * @sort_key: the sorting key
+ * @sort_direction: the sorting direction (as a #GtkSortType)
+ *
+ * Sets the database query used to populate the playlist, and also the limit on
+ * playlist size, and the sorting type used.
+ */
 void
 rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 				   GPtrArray *query,
@@ -737,6 +787,17 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 	priv->query_resetting = FALSE;
 }
 
+/**
+ * rb_auto_playlist_source_get_query:
+ * @source: the #RBAutoPlaylistSource
+ * @query: returns the database query for the playlist
+ * @limit_type: returns the playlist limit type
+ * @limit_value: returns the playlist limit value
+ * @sort_key: returns the playlist sorting key
+ * @sort_direction: returns the playlist sorting direction (as a GtkSortOrder)
+ *
+ * Extracts the current query, playlist limit, and sorting settings for the playlist.
+ */
 void
 rb_auto_playlist_source_get_query (RBAutoPlaylistSource *source,
 				   GPtrArray **query,

@@ -2016,7 +2016,9 @@ RB_IPOD_SOURCE_GET_CLASS
 
 <SECTION>
 <FILE>rb-player-gst-filter</FILE>
+<TITLE>RBPlayerGstFilter</TITLE>
 RBPlayerGstFilter
+RBPlayerGstFilterIface
 rb_player_gst_filter_add_filter
 rb_player_gst_filter_remove_filter
 <SUBSECTION Standard>
@@ -2029,7 +2031,9 @@ RB_PLAYER_GST_FILTER_GET_IFACE
 
 <SECTION>
 <FILE>rb-player-gst-tee</FILE>
+<TITLE>RBPlayerGstTee</TITLE>
 RBPlayerGstTee
+RBPlayerGstTeeIface
 rb_player_gst_tee_add_tee
 rb_player_gst_tee_remove_tee
 <SUBSECTION Standard>
@@ -2321,6 +2325,9 @@ RB_PODCAST_SOURCE_GET_CLASS
 
 <SECTION>
 <FILE>rb-auto-playlist-source</FILE>
+<TITLE>RBAutoPlaylistSource</TITLE>
+RBAutoPlaylistSource
+RBAutoPlaylistSourceClass
 rb_auto_playlist_source_new
 rb_auto_playlist_source_new_from_xml
 rb_auto_playlist_source_set_query
