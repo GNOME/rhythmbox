@@ -23,6 +23,20 @@
 #include "rb-encoder.h"
 #include "rb-encoder-gst.h"
 
+/**
+ * SECTION:rb-encoder
+ * @short_description: audio transcoder interface
+ *
+ * The RBEncoder interface provides transcoding between audio formats based on
+ * MIME types.
+ *
+ * The encoder picks the output format from a list provided by the caller,
+ * limited by the available codecs.  It operatees asynchronously and provides
+ * status updates in the form of signals.
+ *
+ * A new encoder instance should be created for each file that is transcoded.
+ */
+
 /* Signals */
 enum {
 	PROGRESS,
@@ -36,6 +50,13 @@ static guint signals[LAST_SIGNAL] = { 0 };
 static void
 rb_encoder_interface_init (RBEncoderIface *iface)
 {
+	/**
+	 * RBEncoder::progress:
+	 * @encoder: the #RBEncoder instance
+	 * @fraction: progress as a fraction (0..1)
+	 *
+	 * Emitted regularly during the encoding process to provide progress updates.
+	 */
 	signals[PROGRESS] =
 		g_signal_new ("progress",
 			      G_TYPE_FROM_INTERFACE (iface),
@@ -45,6 +66,13 @@ rb_encoder_interface_init (RBEncoderIface *iface)
 			      g_cclosure_marshal_VOID__DOUBLE,
 			      G_TYPE_NONE,
 			      1, G_TYPE_DOUBLE);
+	/**
+	 * RBEncoder::completed:
+	 * @encoder: the #RBEncoder instance
+	 * 
+	 * Emitted when the encoding process is complete.  The destination file
+	 * will be closed and flushed to disk when this occurs.
+	 */
 	signals[COMPLETED] =
 		g_signal_new ("completed",
 			      G_TYPE_FROM_INTERFACE (iface),
@@ -54,6 +82,13 @@ rb_encoder_interface_init (RBEncoderIface *iface)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+	/**
+	 * RBEncoder::error:
+	 * @encoder: the #RBEncoder instance
+	 * @error: a #GError describing the error
+	 *
+	 * Emitted when an error occurs during encoding.
+	 */
 	signals[ERROR] =
 		g_signal_new ("error",
 			      G_TYPE_FROM_INTERFACE (iface),
@@ -90,6 +125,23 @@ rb_encoder_get_type (void)
 	return our_type;
 }
 
+/**
+ * rb_encoder_encode:
+ * @encoder: the #RBEncoder
+ * @entry: the #RhythmDBEntry to transcode
+ * @dest: destination file URI
+ * @mime_types: a #GList of target MIME types in order of preference
+ *
+ * Initiates encoding.  A target MIME type will be selected from the list
+ * given.  If the source format is in the list, that will be chosen regardless
+ * of order.  Otherwise, the first type in the list that the encoder can produce
+ * will be selected.
+ *
+ * Encoding takes places asynchronously.  If the return value is TRUE, the caller
+ * should wait for a 'completed' or 'error' signal to indicate that it has finished.
+ *
+ * Return value: TRUE if encoding has started
+ */
 gboolean
 rb_encoder_encode (RBEncoder *encoder,
 		   RhythmDBEntry *entry,
@@ -101,6 +153,13 @@ rb_encoder_encode (RBEncoder *encoder,
 	return iface->encode (encoder, entry, dest, mime_types);
 }
 
+/**
+ * rb_encoder_cancel:
+ * @encoder: a #RBEncoder
+ *
+ * Attempts to cancel any in progress encoding.  The encoder should
+ * delete the destination file, if it created one.
+ */
 void
 rb_encoder_cancel (RBEncoder *encoder)
 {
@@ -109,6 +168,19 @@ rb_encoder_cancel (RBEncoder *encoder)
 	iface->cancel (encoder);
 }
 
+/**
+ * rb_encoder_get_preferred_mimetype:
+ * @encoder: a #RBEncoder
+ * @mime_types: a #GList of MIME type strings in order of preference
+ * @mime: returns the selected MIME type, if any
+ * @extension: returns the file extension associated with the selected MIME type, if any
+ *
+ * Identifies the first MIME type in the list that the encoder can actually encode to.
+ * The file extension (eg. '.mp3' for audio/mpeg) associated with the selected type is
+ * also returned.
+ *
+ * Return value: TRUE if a format was identified
+ */
 gboolean
 rb_encoder_get_preferred_mimetype (RBEncoder *encoder,
 				   GList *mime_types,
@@ -120,6 +192,13 @@ rb_encoder_get_preferred_mimetype (RBEncoder *encoder,
 	return iface->get_preferred_mimetype (encoder, mime_types, mime, extension);
 }
 
+/**
+ * rb_encoder_new:
+ *
+ * Creates a new #RBEncoder instance.
+ *
+ * Return value: the new #RBEncoder
+ */
 RBEncoder*
 rb_encoder_new (void)
 {
