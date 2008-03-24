@@ -33,24 +33,26 @@ G_BEGIN_DECLS
 #define RB_IS_MISSING_FILES_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_MISSING_FILES_SOURCE))
 #define RB_MISSING_FILES_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_MISSING_FILES_SOURCE, RBMissingFilesSourceClass))
 
+typedef struct _RBMissingFilesSource RBMissingFilesSource;
+typedef struct _RBMissingFilesSourceClass RBMissingFilesSourceClass;
 typedef struct RBMissingFilesSourcePrivate RBMissingFilesSourcePrivate;
 
-typedef struct
+struct _RBMissingFilesSource
 {
 	RBSource parent;
 
 	RBMissingFilesSourcePrivate *priv;
-} RBMissingFilesSource;
+};
 
-typedef struct
+struct _RBMissingFilesSourceClass
 {
 	RBSourceClass parent;
-} RBMissingFilesSourceClass;
+};
 
 GType		rb_missing_files_source_get_type		(void);
 
 RBSource *      rb_missing_files_source_new			(RBShell *shell,
-								 RBLibrarySource *library_source);
+								 RBLibrarySource *library);
 
 G_END_DECLS
 

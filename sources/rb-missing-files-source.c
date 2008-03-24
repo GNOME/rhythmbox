@@ -18,11 +18,6 @@
  *
  */
 
-/*
- * This source lists files rhythmbox cannot find, and maybe tries to stop
- * you from trying to play them.
- */
-
 #include "config.h"
 
 #include <gtk/gtk.h>
@@ -33,6 +28,20 @@
 #include "rb-song-info.h"
 #include "rb-util.h"
 #include "rb-debug.h"
+
+/**
+ * SECTION:rb-missing-files-source
+ * @short_description: source displaying files missing from the library
+ *
+ * This source displays files that rhythmbox cannot find at the expected
+ * locations.  On startup, it does a file access check for every file
+ * in the library, hiding those that fail.  This source sets up a
+ * query model that matches only hidden entries.  It displays the file
+ * location and the last time the file was successfully accessed.
+ *
+ * The source only displayed in the source list when there are hidden
+ * entries to show.
+ */
 
 static void rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass);
 static void rb_missing_files_source_init (RBMissingFilesSource *source);
@@ -247,6 +256,19 @@ rb_missing_files_source_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_missing_files_source_new:
+ * @shell: the #RBShell instance
+ * @library: the #RBLibrarySource instance
+ *
+ * Creates the missing files source.  It extracts the
+ * entry type from the library source instance, so it
+ * currently only works for files in the library, but
+ * it would be trivial to make it use any source type
+ * that did file access checks for its contents.
+ * 
+ * Return value: the #RBMissingFiles source
+ */
 RBSource *
 rb_missing_files_source_new (RBShell *shell,
 			     RBLibrarySource *library)

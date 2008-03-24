@@ -36,15 +36,18 @@ G_BEGIN_DECLS
 #define RB_IS_PLAY_QUEUE_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_PLAY_QUEUE_SOURCE))
 #define RB_PLAY_QUEUE_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_PLAY_QUEUE_SOURCE, RBPlayQueueSourceClass))
 
-typedef struct
+typedef struct _RBPlayQueueSource RBPlayQueueSource;
+typedef struct _RBPlayQueueSourceClass RBPlayQueueSourceClass;
+
+struct _RBPlayQueueSource
 {
 	RBStaticPlaylistSource parent;
-} RBPlayQueueSource;
+};
 
-typedef struct
+struct _RBPlayQueueSourceClass
 {
 	RBStaticPlaylistSourceClass parent;
-} RBPlayQueueSourceClass;
+};
 
 GType		rb_play_queue_source_get_type 		(void);
 

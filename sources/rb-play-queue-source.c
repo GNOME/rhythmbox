@@ -31,6 +31,19 @@
 #include "rb-util.h"
 #include "rb-debug.h"
 
+/**
+ * SECTION:rb-play-queue-source
+ * @short_description: source object for the play queue
+ *
+ * The main interesting thing about this source is that is
+ * contains a second #RBEntryView to be displayed in the side
+ * pane (beneath the source list).  This entry view displays
+ * the track title, artist, and album in a single column,
+ * split across three lines so the information mostly fits in
+ * the usual horizontal space allowed for the side bar.
+ */
+
+
 static GObject *rb_play_queue_source_constructor (GType type, guint n_construct_properties,
 						  GObjectConstructParam *construct_properties);
 static void rb_play_queue_source_get_property (GObject *object,
@@ -145,6 +158,11 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 	playlist_class->impl_show_entry_view_popup = impl_show_entry_view_popup;
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
 
+	/**
+	 * RBPlayQueueSource:sidebar:
+	 *
+	 * The #RBEntryView for the play queue side pane.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SIDEBAR,
 					 g_param_spec_object ("sidebar",
@@ -246,6 +264,14 @@ rb_play_queue_source_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_play_queue_source_new:
+ * @shell: the #RBShell instance
+ *
+ * Creates the play queue source object.
+ * 
+ * Return value: the play queue source
+ */
 RBSource *
 rb_play_queue_source_new (RBShell *shell)
 {
@@ -258,6 +284,13 @@ rb_play_queue_source_new (RBShell *shell)
 					NULL));
 }
 
+/**
+ * rb_play_queue_source_sidebar_song_info:
+ * @source: the #RBPlayQueueSource
+ *
+ * Creates and displays a #RBSongInfo for the currently selected
+ * entry in the side pane play queue view
+ */
 void
 rb_play_queue_source_sidebar_song_info (RBPlayQueueSource *source)
 {
@@ -273,6 +306,13 @@ rb_play_queue_source_sidebar_song_info (RBPlayQueueSource *source)
 		rb_debug ("failed to create dialog, or no selection!");
 }
 
+/**
+ * rb_play_queue_source_sidebar_delete:
+ * @source: the #RBPlayQueueSource
+ *
+ * Deletes the selected entries from the play queue side pane.
+ * This is called by the #RBShellClipboard.
+ */
 void
 rb_play_queue_source_sidebar_delete (RBPlayQueueSource *source)
 {
@@ -287,6 +327,12 @@ rb_play_queue_source_sidebar_delete (RBPlayQueueSource *source)
 	g_list_free (sel);
 }
 
+/**
+ * rb_play_queue_source_clear_queue:
+ * @source: the #RBPlayQueueSource
+ *
+ * Clears the play queue.
+ */
 void
 rb_play_queue_source_clear_queue (RBPlayQueueSource *source)
 {
