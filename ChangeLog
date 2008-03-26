@@ -1,3 +1,11 @@
+2008-03-26  Bastien Nocera  <hadess@hadess.net>
+
+	* plugins/generic-player/rb-generic-player-source.c
+	(set_playlist_formats), (debug_device_info),
+	(rb_generic_player_source_get_playlist_format):
+	Remove the checks for PLA support in totem-pl-parser, we
+	depend on a version that's got support
+
 2008-03-26  Jonathan Matthew  <jonathan@d14n.org>
 
 	* sources/rb-auto-playlist-source.c:

@@ -50,10 +50,6 @@
 #include "rhythmdb-import-job.h"
 #include "rb-import-errors-source.h"
 
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,6)
-#define HAVE_TOTEM_PL_PARSER_IRIVER_PLA
-#endif
-
 static GObject *impl_constructor (GType type,
 				  guint n_construct_properties,
 				  GObjectConstructParam *construct_properties);
@@ -324,11 +320,9 @@ set_playlist_formats (RBGenericPlayerSource *source, char **formats)
 		} else if (strcmp (stripped, "audio/x-scpls") == 0) {
 			priv->playlist_format_unknown = FALSE;
 			priv->playlist_format_pls = TRUE;
-#if defined(HAVE_TOTEM_PL_PARSER_IRIVER_PLA)
 		} else if (strcmp (stripped, "audio/x-iriver-pla") == 0) {
 			priv->playlist_format_unknown = FALSE;
 			priv->playlist_format_iriver_pla = TRUE;
-#endif
 		} else {
 			rb_debug ("unrecognized playlist format: %s", stripped);
 		}
@@ -375,10 +369,8 @@ debug_device_info (RBGenericPlayerSource *source, GnomeVFSVolume *volume, const 
 			rb_debug ("M3U playlist format is supported");
 		if (priv->playlist_format_pls)
 			rb_debug ("PLS playlist format is supported");
-#if defined(HAVE_TOTEM_PL_PARSER_IRIVER_PLA)
 		if (priv->playlist_format_iriver_pla)
 			rb_debug ("iRiver PLA playlist format is supported");
-#endif
 	}
 
 	if (priv->playlist_path != NULL) {
@@ -1197,11 +1189,9 @@ rb_generic_player_source_get_playlist_format (RBGenericPlayerSource *source)
 		return TOTEM_PL_PARSER_M3U;
 	}
 
-#if defined(HAVE_TOTEM_PL_PARSER_IRIVER_PLA)
 	if (priv->playlist_format_iriver_pla) {
 		return TOTEM_PL_PARSER_IRIVER_PLA;
 	}
-#endif
 
 	/* now what? */
 	return TOTEM_PL_PARSER_PLS;
