@@ -58,6 +58,14 @@ static GObject *rb_auto_playlist_source_constructor (GType type, guint n_constru
 						      GObjectConstructParam *construct_properties);
 static void rb_auto_playlist_source_dispose (GObject *object);
 static void rb_auto_playlist_source_finalize (GObject *object);
+static void rb_auto_playlist_source_set_property (GObject *object,
+						  guint prop_id,
+						  const GValue *value,
+						  GParamSpec *pspec);
+static void rb_auto_playlist_source_get_property (GObject *object,
+						  guint prop_id,
+						  GValue *value,
+						  GParamSpec *pspec);
 
 /* source methods */
 static gboolean impl_show_popup (RBSource *source);
@@ -93,6 +101,12 @@ static GtkRadioActionEntry rb_auto_playlist_source_radio_actions [] =
 	{ "AutoPlaylistSearchArtists", NULL, N_("Artists"), NULL, N_("Search artists"), 1 },
 	{ "AutoPlaylistSearchAlbums", NULL, N_("Albums"), NULL, N_("Search albums"), 2 },
 	{ "AutoPlaylistSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), 3 }
+};
+
+enum
+{
+	PROP_0,
+	PROP_BASE_QUERY_MODEL
 };
 
 #define AUTO_PLAYLIST_SOURCE_POPUP_PATH "/AutoPlaylistSourcePopup"
@@ -135,6 +149,8 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 	object_class->constructor = rb_auto_playlist_source_constructor;
 	object_class->dispose = rb_auto_playlist_source_dispose;
 	object_class->finalize = rb_auto_playlist_source_finalize;
+	object_class->set_property = rb_auto_playlist_source_set_property;
+	object_class->get_property = rb_auto_playlist_source_get_property;
 
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
@@ -298,6 +314,39 @@ rb_auto_playlist_source_new (RBShell *shell, const char *name, gboolean local)
 					"entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
 					"source-group", RB_SOURCE_GROUP_PLAYLISTS,
 					NULL));
+}
+
+static void
+rb_auto_playlist_source_set_property (GObject *object,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *pspec)
+{
+	/*RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);*/
+
+	switch (prop_id) {
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_auto_playlist_source_get_property (GObject *object,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *pspec)
+{
+	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (object);
+
+	switch (prop_id) {
+	case PROP_BASE_QUERY_MODEL:
+		g_value_set_object (value, priv->cached_all_query);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 /**

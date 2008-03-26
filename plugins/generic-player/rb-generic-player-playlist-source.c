@@ -121,7 +121,7 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 
 	g_object_get (source,
 		      "name", &name,
-		      "query-model", &query_model,
+		      "base-query-model", &query_model,
 		      NULL);
 
 	/* if we don't already have a name for this playlist, make one now */

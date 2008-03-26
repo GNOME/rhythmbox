@@ -1646,7 +1646,7 @@ databases_cb (RBDAAPShare *share,
 
 			mb.mlcl = rb_daap_structure_add (apso, RB_DAAP_CC_MLCL);
 
-			g_object_get (id->source, "query-model", &model, NULL);
+			g_object_get (id->source, "base-query-model", &model, NULL);
 			num_songs = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 
 			rb_daap_structure_add (apso, RB_DAAP_CC_MTCO, (gint32) num_songs);

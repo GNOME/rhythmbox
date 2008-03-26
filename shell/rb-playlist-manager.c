@@ -1263,12 +1263,11 @@ static void
 rb_playlist_manager_cmd_shuffle_playlist (GtkAction *action,
 					RBPlaylistManager *mgr)
 {
-	RBStaticPlaylistSource *psource;
+	RhythmDBQueryModel *base_model;
 
-	if (RB_IS_STATIC_PLAYLIST_SOURCE (mgr->priv->selected_source)) {
-		psource = RB_STATIC_PLAYLIST_SOURCE (mgr->priv->selected_source);
-		rb_static_playlist_source_shuffle_playlist (psource);
-	}
+	g_object_get (mgr->priv->selected_source, "base-query-model", &base_model, NULL);
+	rhythmdb_query_model_shuffle_entries (base_model);
+	g_object_unref (base_model);
 }
 
 static void

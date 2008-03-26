@@ -129,7 +129,8 @@ enum
 	PROP_HIDDEN_WHEN_EMPTY,
 	PROP_SOURCE_GROUP,
 	PROP_ENTRY_TYPE,
-	PROP_PLUGIN
+	PROP_PLUGIN,
+	PROP_BASE_QUERY_MODEL
 };
 
 enum
@@ -315,6 +316,13 @@ rb_source_class_init (RBSourceClass *klass)
 							      "RBPlugin instance for the plugin that created the source",
 							      RB_TYPE_PLUGIN,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_BASE_QUERY_MODEL,
+					 g_param_spec_object ("base-query-model",
+						 	      "RhythmDBQueryModel",
+							      "RhythmDBQueryModel object (unfiltered)",
+							      RHYTHMDB_TYPE_QUERY_MODEL,
+							      G_PARAM_READABLE));
 
 	/**
 	 * RBSource::deleted:
@@ -633,6 +641,12 @@ rb_source_get_property (GObject *object,
 		break;
 	case PROP_PLUGIN:
 		g_value_set_object (value, priv->plugin);
+		break;
+	case PROP_BASE_QUERY_MODEL:
+		/* unless the subclass overrides it, just assume the
+		 * current query model is the base model.
+		 */
+		g_value_set_object (value, priv->query_model);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

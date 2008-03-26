@@ -164,7 +164,8 @@ static const GtkTargetEntry songs_view_drag_types[] = {
 enum
 {
 	PROP_0,
-	PROP_SORTING_KEY
+	PROP_SORTING_KEY,
+	PROP_BASE_QUERY_MODEL
 };
 
 G_DEFINE_ABSTRACT_TYPE (RBBrowserSource, rb_browser_source, RB_TYPE_SOURCE)
@@ -211,6 +212,10 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 							      "GConf key for storing sort-order",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_override_property (object_class,
+					  PROP_BASE_QUERY_MODEL,
+					  "base-query-model");
 
 	g_type_class_add_private (klass, sizeof (RBBrowserSourcePrivate));
 }
@@ -525,6 +530,9 @@ rb_browser_source_get_property (GObject *object,
 	switch (prop_id) {
 	case PROP_SORTING_KEY:
 		g_value_set_string (value, source->priv->sorting_key);
+		break;
+	case PROP_BASE_QUERY_MODEL:
+		g_value_set_object (value, source->priv->cached_all_query);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

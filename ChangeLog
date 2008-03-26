@@ -1,5 +1,34 @@
 2008-03-26  Jonathan Matthew  <jonathan@d14n.org>
 
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_class_init),
+	(rb_auto_playlist_source_set_property),
+	(rb_auto_playlist_source_get_property):
+	* sources/rb-browser-source.c: (rb_browser_source_class_init),
+	(rb_browser_source_get_property):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_get_property):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_class_init),
+	(rb_static_playlist_source_set_property),
+	(rb_static_playlist_source_get_property):
+	* sources/rb-static-playlist-source.h:
+	Add new base-query-model property to RBSource to provide access to the
+	unfiltered query model containing all entries for the source.
+	Override this in a few places where that's actually different to the
+	query-model property.
+	
+	* plugins/daap/rb-daap-share.c: (databases_cb):
+	* plugins/generic-player/rb-generic-player-playlist-source.c:
+	(save_playlist):
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_cmd_shuffle_playlist):
+	Use base-query-model in a few places: sharing playlist contents,
+	saving playlists to generic audio players, and shuffling playlists.
+	Fixes #382980.
+
+2008-03-26  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by: Nikolai Luthman  <nikolai.luthman@gmail.com>
 
 	* configure.ac:  Move check for -fno-strict-aliasing outside the check

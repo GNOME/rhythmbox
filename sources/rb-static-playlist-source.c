@@ -40,6 +40,14 @@ static GObject *rb_static_playlist_source_constructor (GType type, guint n_const
 						       GObjectConstructParam *construct_properties);
 static void rb_static_playlist_source_dispose (GObject *object);
 static void rb_static_playlist_source_finalize (GObject *object);
+static void rb_static_playlist_source_set_property (GObject *object,
+						    guint prop_id,
+						    const GValue *value,
+						    GParamSpec *pspec);
+static void rb_static_playlist_source_get_property (GObject *object,
+						    guint prop_id,
+						    GValue *value,
+						    GParamSpec *pspec);
 
 /* source methods */
 static GList * impl_cut (RBSource *source);
@@ -98,6 +106,12 @@ static GtkRadioActionEntry rb_static_playlist_source_radio_actions [] =
 	{ "StaticPlaylistSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), 3 }
 };
 
+enum
+{
+	PROP_0,
+	PROP_BASE_QUERY_MODEL
+};
+
 G_DEFINE_TYPE (RBStaticPlaylistSource, rb_static_playlist_source, RB_TYPE_PLAYLIST_SOURCE)
 #define RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), \
 								RB_TYPE_STATIC_PLAYLIST_SOURCE, \
@@ -131,6 +145,8 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	object_class->constructor = rb_static_playlist_source_constructor;
 	object_class->dispose = rb_static_playlist_source_dispose;
 	object_class->finalize = rb_static_playlist_source_finalize;
+	object_class->set_property = rb_static_playlist_source_set_property;
+	object_class->get_property = rb_static_playlist_source_get_property;
 
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
@@ -149,6 +165,10 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	source_class->impl_want_uri = impl_want_uri;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
+
+	g_object_class_override_property (object_class,
+					  PROP_BASE_QUERY_MODEL,
+					  "base-query-model");
 
 	g_type_class_add_private (klass, sizeof (RBStaticPlaylistSourcePrivate));
 }
@@ -309,6 +329,39 @@ rb_static_playlist_source_new (RBShell *shell, const char *name, gboolean local,
 					"entry-type", entry_type,
 					"source-group", RB_SOURCE_GROUP_PLAYLISTS,
 					NULL));
+}
+
+static void
+rb_static_playlist_source_set_property (GObject *object,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *pspec)
+{
+	/*RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (object);*/
+
+	switch (prop_id) {
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_static_playlist_source_get_property (GObject *object,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *pspec)
+{
+	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (object);
+
+	switch (prop_id) {
+	case PROP_BASE_QUERY_MODEL:
+		g_value_set_object (value, priv->base_model);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 void
@@ -884,12 +937,3 @@ impl_want_uri (RBSource *source, const char *uri)
 	return 0;
 }
 
-void
-rb_static_playlist_source_shuffle_playlist(RBStaticPlaylistSource *source) 
-{
-	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
-
-	rhythmdb_query_model_shuffle_entries (priv->base_model);
-
-	rb_playlist_source_mark_dirty (RB_PLAYLIST_SOURCE (source));
-}
