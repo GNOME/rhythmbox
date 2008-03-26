@@ -39,10 +39,16 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 	def endElement(self, name):
 		if name == "Track":
 			try:
+				# prefer ogg streams to mp3
+				if 'oggurl' in self.__track:
+					trackurl = self.__track['oggurl']
+				else:
+					trackurl = self.__track['url']
+	
 				# add the track to the source
-				entry = self.__db.entry_lookup_by_location (self.__track['url'])
+				entry = self.__db.entry_lookup_by_location (trackurl)
 				if entry == None:
-					entry = self.__db.entry_new(self.__entry_type, self.__track['url'])
+					entry = self.__db.entry_new(self.__entry_type, trackurl)
 
 				# if year is not set, use launch date instead
 				try:
@@ -70,7 +76,7 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 				self.__db.set(entry, rhythmdb.PROP_GENRE, self.__track['mp3genre'])
 				self.__db.set(entry, rhythmdb.PROP_DURATION, duration)
 
-				key = str(self.__track['url'])
+				key = str(trackurl)
 				sku = intern(str(self.__track['albumsku']))
 				self.__sku_dict[key] = sku
 				self.__home_dict[sku] = str(self.__track['home'])
