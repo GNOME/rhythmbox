@@ -767,6 +767,20 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+
+dnl Check for -fno-strict-aliasing
+FLAGS="-fno-strict-aliasing"
+save_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS $FLAGS"
+AC_MSG_CHECKING([whether [$]CC understands $FLAGS])
+AC_TRY_COMPILE([], [], [compiler_has_option=yes], [compiler_has_option=no])
+CFLAGS="$save_CFLAGS"
+AC_MSG_RESULT($compiler_has_option)
+if test $compiler_has_option = yes; then
+	NO_STRICT_ALIASING_CFLAGS="$FLAGS"
+fi
+AC_SUBST([NO_STRICT_ALIASING_CFLAGS])
+
 dnl Enable gtk-doc
 GTK_DOC_CHECK(1.4)
 
@@ -900,19 +914,6 @@ if test "x$have_python" != "xno"; then
 
 	PKG_CHECK_EXISTS([pygobject-2.0 >= 2.13.2],
 			 AC_DEFINE([PYGOBJECT_CAN_MARSHAL_GVALUE], [1], [Define if pygobject can marshal GValues]))
-
-	dnl Check for -fno-strict-aliasing
-	FLAGS="-fno-strict-aliasing"
-	save_CFLAGS="$CFLAGS"
-	CFLAGS="$CFLAGS $FLAGS"
-	AC_MSG_CHECKING([whether [$]CC understands $FLAGS])
-	AC_TRY_COMPILE([], [], [compiler_has_option=yes], [compiler_has_option=no])
-	CFLAGS="$save_CFLAGS"
-	AC_MSG_RESULT($compiler_has_option)
-	if test $compiler_has_option = yes; then
-		NO_STRICT_ALIASING_CFLAGS="$FLAGS"
-	fi
-	AC_SUBST([NO_STRICT_ALIASING_CFLAGS])
 fi
 
 if test "x$have_python" != "xno" -a "x$enable_python" != "xno"; then

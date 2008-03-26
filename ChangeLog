@@ -1,5 +1,12 @@
 2008-03-26  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by: Nikolai Luthman  <nikolai.luthman@gmail.com>
+
+	* configure.ac:  Move check for -fno-strict-aliasing outside the check
+	for python, since we use it elsewhere.  Fixes #524302.
+
+2008-03-26  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/magnatune/magnatune/TrackListHandler.py:
 	Use ogg previews in preference to mp3.  Fixes #397097.
 
