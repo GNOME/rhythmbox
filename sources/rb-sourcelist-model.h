@@ -51,23 +51,25 @@ typedef enum {
 GType rb_sourcelist_model_column_get_type (void);
 #define RB_TYPE_SOURCELIST_MODEL_COLUMN (rb_sourcelist_model_column_get_type ())
 
+typedef struct _RBSourceListModel RBSourceListModel;
+typedef struct _RBSourceListModelClass RBSourceListModelClass;
 
 typedef struct RBSourceListModelPrivate RBSourceListModelPrivate;
 
-typedef struct RBSourceListModel
+struct _RBSourceListModel
 {
 	GtkTreeModelFilter parent;
 
 	RBSourceListModelPrivate *priv;
-} RBSourceListModel;
+};
 
-typedef struct RBSourceListModelClass
+struct _RBSourceListModelClass
 {
 	GtkTreeModelFilterClass parent_class;
 
 	void (*drop_received) (RBSourceListModel *model, RBSource *target, GtkTreeViewDropPosition pos, GtkSelectionData *data);
 
-} RBSourceListModelClass;
+};
 
 GType		rb_sourcelist_model_get_type	(void);
 

@@ -39,16 +39,19 @@ G_BEGIN_DECLS
 #define RB_IS_PLAYLIST_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_PLAYLIST_SOURCE))
 #define RB_PLAYLIST_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_PLAYLIST_SOURCE, RBPlaylistSourceClass))
 
+typedef struct _RBPlaylistSource RBPlaylistSource;
+typedef struct _RBPlaylistSourceClass RBPlaylistSourceClass;
+
 typedef struct RBPlaylistSourcePrivate RBPlaylistSourcePrivate;
 
-typedef struct
+struct _RBPlaylistSource
 {
 	RBSource parent;
 
 	RBPlaylistSourcePrivate *priv;
-} RBPlaylistSource;
+};
 
-typedef struct
+struct _RBPlaylistSourceClass
 {
 	RBSourceClass parent;
 
@@ -56,8 +59,7 @@ typedef struct
 	void	(*impl_show_entry_view_popup)	(RBPlaylistSource *source, RBEntryView *view, gboolean over_entry);
 	void	(*impl_save_contents_to_xml)	(RBPlaylistSource *source, xmlNodePtr node);
 	void	(*impl_mark_dirty)		(RBPlaylistSource *source);
-
-} RBPlaylistSourceClass;
+};
 
 GType		rb_playlist_source_get_type	(void);
 
@@ -69,7 +71,7 @@ void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
 						 gboolean m3u_format);
 
 void		rb_playlist_source_save_to_xml	(RBPlaylistSource *source,
-						 xmlNodePtr node);
+						 xmlNodePtr parent_node);
 
 /* methods for subclasses to call */
 

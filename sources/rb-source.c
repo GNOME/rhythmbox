@@ -316,6 +316,13 @@ rb_source_class_init (RBSourceClass *klass)
 							      "RBPlugin instance for the plugin that created the source",
 							      RB_TYPE_PLUGIN,
 							      G_PARAM_READWRITE));
+	/**
+	 * RBSource:base-query-model:
+	 *
+	 * The unfiltered query model for the source, containing all entries in the source.
+	 * Source classes should override this if they perform filtering based on the search
+	 * box or a browser.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_BASE_QUERY_MODEL,
 					 g_param_spec_object ("base-query-model",

@@ -35,6 +35,29 @@
 #include "rb-marshal.h"
 #include "rb-playlist-source.h"
 
+/**
+ * SECTION:rb-sourcelist-model
+ * @short_description: models backing the source list widget
+ *
+ * The #RBSourceList widget is backed by a #GtkTreeStore containing
+ * the sources and a set of attributes used to structure and display
+ * them, and a #GtkTreeModelFilter that hides sources with the
+ * visibility property set to FALSE.  This class implements the filter
+ * model and also creates the actual model.
+ *
+ * The source list model supports drag and drop in a variety of formats.
+ * The simplest of these are text/uri-list and application/x-rhythmbox-entry,
+ * which convey URIs and IDs of existing database entries.  When dragged
+ * to an existing source, these just add the URIs or entries to the target
+ * source.  When dragged to an empty space in the source list, this results
+ * in the creation of a static playlist.
+ *
+ * text/x-rhythmbox-artist, text/x-rhythmbox-album, and text/x-rhythmbox-genre
+ * are used when dragging items from the library browser.  When dragged to
+ * the source list, these result in the creation of a new auto playlist with
+ * the dragged items as criteria.
+ */
+
 struct RBSourceListModelPrivate
 {
 	gpointer dummy;
@@ -128,6 +151,15 @@ rb_sourcelist_model_class_init (RBSourceListModelClass *class)
 
 	o_class->finalize = rb_sourcelist_model_finalize;
 
+	/**
+	 * RBSourceListModel::drop-received:
+	 * @model: the #RBSourceListModel
+	 * @target: the #RBSource receiving the drop
+	 * @pos: the drop position
+	 * @data: the drop data
+	 *
+	 * Emitted when a drag and drop operation to the source list completes.
+	 */
 	rb_sourcelist_model_signals[DROP_RECEIVED] =
 		g_signal_new ("drop_received",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -164,6 +196,13 @@ rb_sourcelist_model_drag_source_init (RbTreeDragSourceIface *iface)
   iface->rb_drag_data_delete = rb_sourcelist_model_drag_data_delete;
 }
 
+/**
+ * rb_sourcelist_model_set_dnd_targets:
+ * @sourcelist: the #RBSourceListModel
+ * @treeview: the sourcel ist #GtkTreeView
+ *
+ * Sets up the drag and drop targets for the source list.
+ */
 void
 rb_sourcelist_model_set_dnd_targets (RBSourceListModel *sourcelist,
 				     GtkTreeView *treeview)
@@ -199,6 +238,14 @@ rb_sourcelist_model_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_sourcelist_model_parent_class)->finalize (object);
 }
 
+/**
+ * rb_sourcelist_model_new:
+ *
+ * This constructs both the GtkTreeStore holding the source
+ * data and the filter model that hides invisible sources.
+ * 
+ * Return value: the #RBSourceListModel
+ */
 GtkTreeModel *
 rb_sourcelist_model_new (void)
 {
@@ -546,6 +593,20 @@ rb_sourcelist_model_row_deleted_cb (GtkTreeModel *model,
 	gtk_tree_model_filter_refilter (GTK_TREE_MODEL_FILTER (sourcelist));
 }
 
+/**
+ * RBSourceListModelColumn:
+ * @RB_SOURCELIST_MODEL_COLUMN_PLAYING: TRUE if the source is playing
+ * @RB_SOURCELIST_MODEL_COLUMN_PIXBUF: the source's icon as a pixbuf
+ * @RB_SOURCELIST_MODEL_COLUMN_NAME: the source name
+ * @RB_SOURCELIST_MODEL_COLUMN_SOURCE: the #RBSource object
+ * @RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES: Pango attributes used to render the source name
+ * @RB_SOURCELIST_MODEL_COLUMN_VISIBILITY: the source's visibility
+ * @RB_SOURCELIST_MODEL_COLUMN_IS_GROUP: whether the row identifies a group or a source
+ * @RB_SOURCELIST_MODEL_COLUMN_GROUP_CATEGORY: if the row is a group, the category for the group
+ *
+ * Columns present in the source list model.
+ */
+
 /* This should really be standard. */
 #define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
 
@@ -562,6 +623,8 @@ rb_sourcelist_model_column_get_type (void)
 			ENUM_ENTRY (RB_SOURCELIST_MODEL_COLUMN_SOURCE, "Source"),
 			ENUM_ENTRY (RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES, "Attributes"),
 			ENUM_ENTRY (RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, "Visibility"),
+			ENUM_ENTRY (RB_SOURCELIST_MODEL_COLUMN_IS_GROUP, "Is group"),
+			ENUM_ENTRY (RB_SOURCELIST_MODEL_COLUMN_GROUP_CATEGORY, "Source group category"),
 			{ 0, 0, 0 }
 		};
 

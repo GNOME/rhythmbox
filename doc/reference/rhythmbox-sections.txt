@@ -223,7 +223,6 @@ RB_RANDOM_PLAY_ORDER_BY_AGE_GET_CLASS
 <TITLE>RBSourceHeader</TITLE>
 RBSourceHeader
 RBSourceHeaderClass
-RBSourceHeaderPrivate
 rb_source_header_new
 rb_source_header_set_source
 rb_source_header_get_source
@@ -231,6 +230,7 @@ rb_source_header_clear_search
 rb_source_header_sync_control_state
 rb_source_header_focus_search_box
 <SUBSECTION Standard>
+RBSourceHeaderPrivate
 RB_SOURCE_HEADER
 RB_IS_SOURCE_HEADER
 RB_TYPE_SOURCE_HEADER
@@ -512,7 +512,9 @@ RB_LIBRARY_SOURCE_GET_CLASS
 
 <SECTION>
 <FILE>rb-sourcelist</FILE>
-RBSourceListPriv
+<TITLE>RBSourceList</TITLE>
+RBSourceList
+RBSourceListClass
 rb_sourcelist_new
 rb_sourcelist_append
 rb_sourcelist_set_playing_source
@@ -520,6 +522,7 @@ rb_sourcelist_edit_source_name
 rb_sourcelist_remove
 rb_sourcelist_select
 <SUBSECTION Standard>
+RBSourceListPriv
 RB_SOURCELIST
 RB_IS_SOURCELIST
 RB_TYPE_SOURCELIST
@@ -531,7 +534,10 @@ RB_SOURCELIST_GET_CLASS
 
 <SECTION>
 <FILE>rb-sourcelist-model</FILE>
-RBSourceListModelPriv
+<TITLE>RBSourceListModel</TITLE>
+RBSourceListModel
+RBSourceListModelClass
+RBSourceListModelColumn
 rb_sourcelist_model_new
 rb_sourcelist_model_set_dnd_targets
 <SUBSECTION Standard>
@@ -563,7 +569,9 @@ RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS
 
 <SECTION>
 <FILE>rb-playlist-source</FILE>
-RBPlaylistSourcePrivate
+<TITLE>RBPlaylistSource</TITLE>
+RBPlaylistSource
+RBPlaylistSourceClass
 rb_playlist_source_new
 rb_playlist_source_new_from_xml
 rb_playlist_source_save_playlist
@@ -576,6 +584,7 @@ rb_playlist_source_mark_dirty
 rb_playlist_source_location_in_map
 rb_playlist_source_add_to_map
 <SUBSECTION Standard>
+RBPlaylistSourcePrivate
 RB_PLAYLIST_SOURCE
 RB_IS_PLAYLIST_SOURCE
 RB_TYPE_PLAYLIST_SOURCE
@@ -592,7 +601,6 @@ RBSource
 RBSourceClass
 RBSourceEOFType
 RB_SOURCE_ICON_SIZE
-RBSourcePrivate
 rb_source_notify_filter_changed
 rb_source_notify_status_changed
 rb_source_update_play_statistics
@@ -925,13 +933,13 @@ RBSongInfoPrivate
 <TITLE>RBSearchEntry</TITLE>
 RBSearchEntry
 RBSearchEntryClass
-RBSearchEntryPrivate
 rb_search_entry_new
 rb_search_entry_clear
 rb_search_entry_set_text
 rb_search_entry_searching
 rb_search_entry_grab_focus
 <SUBSECTION Standard>
+RBSearchEntryPrivate
 RB_SEARCH_ENTRY
 RB_IS_SEARCH_ENTRY
 RB_TYPE_SEARCH_ENTRY
@@ -972,9 +980,9 @@ RBPropertyViewPrivate
 <TITLE>RBRating</TITLE>
 RBRating
 RBRatingClass
-RBRatingPrivate
 rb_rating_new
 <SUBSECTION Standard>
+RBRatingPrivate
 RB_RATING
 RB_IS_RATING
 RB_TYPE_RATING
@@ -1101,7 +1109,8 @@ EGG_TRAY_ICON_GET_CLASS
 
 <SECTION>
 <FILE>rb-header</FILE>
-RBHeaderPrivate
+RBHeader
+RBHeaderClass
 rb_header_new
 rb_header_set_playing_entry
 rb_header_show_position_slider
@@ -1109,6 +1118,7 @@ rb_header_sync
 rb_header_sync_time
 rb_header_get_elapsed_string
 <SUBSECTION Standard>
+RBHeaderPrivate
 RB_HEADER
 RB_IS_HEADER
 RB_TYPE_HEADER
@@ -1426,7 +1436,6 @@ rb_rating_install_rating_property
 <TITLE>RhythmDBImportJob</TITLE>
 RhythmDBImportJob
 RhythmDBImportJobClass
-RhythmDBImportJobPrivate
 rhythmdb_import_job_new
 rhythmdb_import_job_add_uri
 rhythmdb_import_job_start
@@ -1436,6 +1445,7 @@ rhythmdb_import_job_scan_complete
 rhythmdb_import_job_get_total
 rhythmdb_import_job_get_imported
 <SUBSECTION Standard>
+RhythmDBImportJobPrivate
 RHYTHMDB_IMPORT_JOB
 RHYTHMDB_IS_IMPORT_JOB
 RHYTHMDB_TYPE_IMPORT_JOB
@@ -1450,9 +1460,9 @@ RHYTHMDB_IMPORT_JOB_GET_CLASS
 <TITLE>RBURIDialog</TITLE>
 RBURIDialog
 RBURIDialogClass
-RBURIDialogPrivate
 rb_uri_dialog_new
 <SUBSECTION Standard>
+RBURIDialogPrivate
 RB_URI_DIALOG
 RB_IS_URI_DIALOG
 RB_TYPE_URI_DIALOG
@@ -2280,9 +2290,9 @@ RB_PODCAST_MANAGER_GET_CLASS
 <TITLE>RBImportErrorsSource</TITLE>
 RBImportErrorsSource
 RBImportErrorsSourceClass
-RBImportErrorsSourcePrivate
 rb_import_errors_source_new
 <SUBSECTION Standard>
+RBImportErrorsSourcePrivate
 RB_IMPORT_ERRORS_SOURCE
 RB_IS_IMPORT_ERRORS_SOURCE
 RB_TYPE_IMPORT_ERRORS_SOURCE
@@ -2414,9 +2424,9 @@ RB_PLAY_QUEUE_SOURCE_GET_CLASS
 <TITLE>RBMissingFilesSource</TITLE>
 RBMissingFilesSource
 RBMissingFilesSourceClass
-RBMissingFilesSourcePrivate
 rb_missing_files_source_new
 <SUBSECTION Standard>
+RBMissingFilesSourcePrivate
 RB_MISSING_FILES_SOURCE
 RB_IS_MISSING_FILES_SOURCE
 RB_TYPE_MISSING_FILES_SOURCE

@@ -47,6 +47,22 @@
 #include "rb-static-playlist-source.h"
 #include "rb-auto-playlist-source.h"
 
+/**
+ * SECTION:rb-playlist-source
+ * @short_description: Base class for playlist sources
+ *
+ * This class provides some common infrastructure for playlist
+ * sources.  A playlist, in this context, is a persistent user-defined
+ * selection from a set of songs.  Playlists (static and auto) based 
+ * on the main library are saved to the playlists.xml file stored
+ * alongside the rhythmdb.xml file.  Playlists on portable music players
+ * are saved on the device in the format the player itself supports.
+ *
+ * This class provides most of the source UI (excluding the search bar),
+ * holds some of the framework for loading and saving the playlists.xml
+ * file, and records which playlists need to be saved.
+ */
+
 static void rb_playlist_source_class_init (RBPlaylistSourceClass *klass);
 static void rb_playlist_source_init (RBPlaylistSource *source);
 static GObject *rb_playlist_source_constructor (GType type,
@@ -157,6 +173,11 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	klass->impl_show_entry_view_popup = default_show_entry_view_popup;
 	klass->impl_mark_dirty = default_mark_dirty;
 
+	/**
+	 * RBPlaylistSource:db:
+	 *
+	 * The #RhythmDB instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DB,
 					 g_param_spec_object ("db",
@@ -164,6 +185,12 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 							      "rhythmdb instance",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READABLE));
+	/**
+	 * RBPlaylistSource:dirty:
+	 *
+	 * Whether the playlist has been changed since it was last saved
+	 * to disk.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DIRTY,
 					 g_param_spec_boolean ("dirty",
@@ -171,6 +198,12 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 							       "whether this playlist should be saved",
 							       FALSE,
 							       G_PARAM_READABLE));
+	/**
+	 * RBPlaylistSource:is-local:
+	 *
+	 * Whether the playlist is attached to the local library.
+	 * Remote DAAP playlists, for example, are not local.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_LOCAL,
 					 g_param_spec_boolean ("is-local",
@@ -523,6 +556,15 @@ playlist_iter_func (GtkTreeModel *model,
 }
 #endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 
+/**
+ * rb_playlist_source_save_playlist:
+ * @source: a #RBPlaylistSource
+ * @uri: destination URI
+ * @m3u_format: if TRUE, save as .m3u, otherwise .pls
+ *
+ * Saves the playlist to an external file in a standard
+ * format (M3U or PLS).
+ */
 void
 rb_playlist_source_save_playlist (RBPlaylistSource *source,
 				  const char *uri,
@@ -633,6 +675,19 @@ get_playlist_name_from_xml (xmlNodePtr node)
 	return name;
 }
 
+/**
+ * rb_playlist_source_new_from_xml:
+ * @shell: the #RBShell instance
+ * @node: libxml node containing the playlist
+ *
+ * Constructs a playlist source instance from the XML serialized
+ * format.  This function knows about all the playlist types that
+ * can be saved to disk, and it hands off the XML node to the
+ * appropriate constructor based on the 'type' attribute of
+ * the root node of the playlist.
+ *
+ * Return value: the playlist
+ */
 RBSource *
 rb_playlist_source_new_from_xml	(RBShell *shell,
 				 xmlNodePtr node)
@@ -672,6 +727,14 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 	return source;
 }
 
+/**
+ * rb_playlist_source_save_to_xml:
+ * @source: the playlist source to save
+ * @parent_node: libxml node below which to save the playlist
+ *
+ * Converts the playlist to XML format, below the specified
+ * parent node.
+ */
 void
 rb_playlist_source_save_to_xml (RBPlaylistSource *source,
 				xmlNodePtr parent_node)
@@ -749,6 +812,15 @@ rb_playlist_source_track_cell_data_func (GtkTreeViewColumn *column,
 	g_free (str);
 }
 
+/**
+ * rb_playlist_source_setup_entry_view:
+ * @source: the #RBPlaylistSource
+ * @entry_view: the new #RBEntryView to set up
+ *
+ * Connects signal handlers and sets up drag and drop support for
+ * an entry view to be used by a playlist source.  This only needs
+ * to be called if the playlist subclass is creating a new entry view.
+ */
 void
 rb_playlist_source_setup_entry_view (RBPlaylistSource *source,
 				     RBEntryView *entry_view)
@@ -766,6 +838,18 @@ rb_playlist_source_setup_entry_view (RBPlaylistSource *source,
 			   GDK_ACTION_COPY);
 }
 
+/**
+ * rb_playlist_source_set_query_model:
+ * @source: the #RBPlaylistSource
+ * @model: the new #RhythmDBQueryModel
+ *
+ * Sets a new query model for the playlist.  This updates the
+ * entry view to use the new query model and also updates the
+ * source query-model property.
+ *
+ * This needs to be called when the playlist subclass
+ * creates a new query model.
+ */
 void
 rb_playlist_source_set_query_model (RBPlaylistSource *source,
 				    RhythmDBQueryModel *model)
@@ -796,6 +880,15 @@ rb_playlist_source_set_query_model (RBPlaylistSource *source,
 	g_object_set (source, "query-model", source->priv->model, NULL);
 }
 
+/**
+ * rb_playlist_source_get_db:
+ * @source: a #RBPlaylistSource
+ *
+ * Returns the #RhythmDB instance.  The caller must not
+ * unref the object once finished with it.
+ *
+ * Return value: the #RhythmDB instance
+ */
 RhythmDB *
 rb_playlist_source_get_db (RBPlaylistSource *source)
 {
@@ -804,6 +897,15 @@ rb_playlist_source_get_db (RBPlaylistSource *source)
 	return source->priv->db;
 }
 
+/**
+ * rb_playlist_source_get_query_model:
+ * @source: a #RBPlaylistSource
+ *
+ * Returns the current #RhythmDBQueryModel for the playlist.
+ * The caller must not unref the object once finished with it.
+ *
+ * Return value: the current #RhythmDBQueryModel
+ */
 RhythmDBQueryModel *
 rb_playlist_source_get_query_model (RBPlaylistSource *source)
 {
@@ -818,6 +920,14 @@ default_mark_dirty (RBPlaylistSource *source)
 	source->priv->dirty = TRUE;
 }
 
+/**
+ * rb_playlist_source_mark_dirty:
+ * @source: a #RBPlaylistSource
+ *
+ * Marks the playlist dirty.  This generally means that the playlist
+ * will be saved to disk fairly soon, but the exact meaning can vary
+ * between playlist types.
+ */
 void
 rb_playlist_source_mark_dirty (RBPlaylistSource *source)
 {
@@ -828,6 +938,13 @@ rb_playlist_source_mark_dirty (RBPlaylistSource *source)
 	klass->impl_mark_dirty (source);
 }
 
+/**
+ * rb_playlist_source_location_in_map:
+ * @source: a #RBPlaylistSource
+ * @location: a URI to check
+ *
+ * Return value: TRUE if the specified URI is in the playlist entry map
+ */
 gboolean
 rb_playlist_source_location_in_map (RBPlaylistSource *source,
 				    const char *location)
@@ -848,6 +965,18 @@ rb_playlist_source_location_in_map (RBPlaylistSource *source,
 	return found;
 }
 
+/**
+ * rb_playlist_source_add_to_map:
+ * @source: a #RBPlaylistSource
+ * @location: a URI to add
+ *
+ * Adds a URI to the playlist's entry map.  This is useful when the
+ * URI is being added to the database, but no entry exists for it yet.
+ * When the entry is created, it will be added to the query model.
+ *
+ * Return value: TRUE if the URI was added to the entry map,
+ *  FALSE if it was already there.
+ */
 gboolean
 rb_playlist_source_add_to_map (RBPlaylistSource *source,
 			       const char *location)

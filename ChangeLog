@@ -1,5 +1,19 @@
 2008-03-27  Jonathan Matthew  <jonathan@d14n.org>
 
+	* doc/reference/rhythmbox-sections.txt:
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init):
+	* sources/rb-playlist-source.h:
+	* sources/rb-source.c: (rb_source_class_init):
+	* sources/rb-sourcelist-model.c: (rb_sourcelist_model_class_init),
+	(rb_sourcelist_model_column_get_type):
+	* sources/rb-sourcelist-model.h:
+	* sources/rb-sourcelist.c: (rb_sourcelist_class_init):
+	* sources/rb-sourcelist.h:
+	Add gtk-doc for RBPlaylistSource, RBSourceList, RBSourceListModel.
+	Add gtk-doc for the new base-query-model property.
+
+2008-03-27  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Sebastien Bacher  <seb128@debian.org>
 
 	* data/rhythmbox.desktop.in.in:

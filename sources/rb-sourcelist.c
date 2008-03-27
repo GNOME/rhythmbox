@@ -43,6 +43,24 @@
 #include "rb-auto-playlist-source.h"
 #include "rb-static-playlist-source.h"
 
+/**
+ * SECTION:rb-sourcelist
+ * @short_description: source list widget
+ *
+ * The source list widget is a GtkTreeView backed by a GtkListStore
+ * containing the sources and some extra data used to structure the
+ * tree view.
+ *
+ * The source list widget displays the available sources.  Sources are divided into
+ * groups - library, stores, playlists, devices, network shares.  Groups are
+ * displayed as headers, with expanders for hiding and showing the sources in 
+ * the group.  Sources themselves may also have child sources, such as playlists
+ * on portable audio players.
+ *
+ * Sources are displayed with an icon and a name.  If the source is currently
+ * playing, the name is displayed in bold.
+ */
+
 struct RBSourceListPrivate
 {
 	GtkWidget *treeview;
@@ -120,6 +138,11 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 	o_class->set_property = rb_sourcelist_set_property;
 	o_class->get_property = rb_sourcelist_get_property;
 
+	/**
+	 * RBSourceList:shell:
+	 *
+	 * The #RBShell instance
+	 */
 	g_object_class_install_property (o_class,
 					 PROP_SHELL,
 					 g_param_spec_object ("shell",
@@ -128,6 +151,11 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RBSourceList:model:
+	 *
+	 * The #GtkTreeModel for the source list
+	 */
 	g_object_class_install_property (o_class,
 					 PROP_MODEL,
 					 g_param_spec_object ("model",
@@ -135,6 +163,13 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 							      "GtkTreeModel object",
 							      GTK_TYPE_TREE_MODEL,
 							      G_PARAM_READABLE));
+	/**
+	 * RBSourceList::selected:
+	 * @list: the #RBSourceList
+	 * @source: the newly selected #RBSource
+	 *
+	 * Emitted when a source is selected from the source list
+	 */
 	rb_sourcelist_signals[SELECTED] =
 		g_signal_new ("selected",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -146,6 +181,14 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 			      1,
 			      G_TYPE_OBJECT);
 
+	/**
+	 * RBSourceList::drop-received:
+	 * @list: the #RBSourceList
+	 * @target: the #RBSource receiving the drop
+	 * @data: the drop data
+	 *
+	 * Emitted when a drag and drop to the source list completes.
+	 */
 	rb_sourcelist_signals[DROP_RECEIVED] =
 		g_signal_new ("drop_received",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -157,6 +200,14 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 			      2,
 			      G_TYPE_POINTER, G_TYPE_POINTER);
 
+	/**
+	 * RBSourceList::source-activated:
+	 * @list: the #RBSourceList
+	 * @target: the activated #RBSource
+	 *
+	 * Emitted when a source is activated (by double clicking or hitting
+	 * the enter key)
+	 */
 	rb_sourcelist_signals[SOURCE_ACTIVATED] =
 		g_signal_new ("source_activated",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -168,6 +219,14 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 			      1,
 			      G_TYPE_OBJECT);
 
+	/**
+	 * RBSourceList::show-popup:
+	 * @list: the #RBSourceList
+	 * @target: the #RBSource for which a popup menu should be shown
+	 *
+	 * Emitted when a source should display a popup menu in response to some
+	 * user action, such as right clicking or pressing shift-f10.
+	 */
 	rb_sourcelist_signals[SHOW_POPUP] =
 		g_signal_new ("show_popup",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -800,6 +859,12 @@ rb_sourcelist_get_property (GObject    *object,
 	}
 }
 
+/**
+ * rb_sourcelist_new:
+ * @shell: the #RBShell instance
+ *
+ * Return value: the source list widget.
+ */
 GtkWidget *
 rb_sourcelist_new (RBShell *shell)
 {
@@ -1007,6 +1072,16 @@ rb_sourcelist_group_update_visibility (RBSourceList  *sourcelist,
 	}
 }
 
+/**
+ * rb_sourcelist_append:
+ * @sourcelist: the #RBSourceList
+ * @source: the #RBSource to add
+ * @parent: the #RBSource below which to add the new source, or NULL
+ *
+ * Adds a new source to the source list.  If @parent is not NULL, the new
+ * source is added beneath it.  Otherwise, it is added to the end of the
+ * source group specified by the source's source-group property.
+ */
 void
 rb_sourcelist_append (RBSourceList *sourcelist,
 		      RBSource     *source,
@@ -1178,6 +1253,15 @@ rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist,
 	return ret;
 }
 
+/**
+ * rb_sourcelist_edit_source_name:
+ * @sourcelist: the #RBSourceList
+ * @source: the #RBSource to edit
+ *
+ * Initiates editing of the name of the specified source.  The row for the source 
+ * is selected and given input focus, allowing the user to edit the name.
+ * source_name_edited_cb is called when the user finishes editing.
+ */
 void
 rb_sourcelist_edit_source_name (RBSourceList *sourcelist,
 				RBSource     *source)
@@ -1213,6 +1297,15 @@ set_source_playing (RBSourceList *sourcelist,
 			    RB_SOURCELIST_MODEL_COLUMN_PLAYING, playing, -1);
 }
 
+/**
+ * rb_sourcelist_set_playing_source:
+ * @sourcelist: the #RBSourceList
+ * @source: the new playing #RBSource
+ *
+ * Updates the source list with the new playing source.
+ * The source list tracks which source is playing in order to display
+ * the name of the playing source in bold type.
+ */
 void
 rb_sourcelist_set_playing_source (RBSourceList *sourcelist,
 				  RBSource     *source)
@@ -1225,6 +1318,15 @@ rb_sourcelist_set_playing_source (RBSourceList *sourcelist,
 		set_source_playing (sourcelist, source, TRUE);
 }
 
+/**
+ * rb_sourcelist_remove:
+ * @sourcelist: the #RBSourceList
+ * @source: the #RBSource being removed
+ *
+ * Removes a source from the source list.  Disconnects signal handlers,
+ * removes the source from the underlying model, and updates the visibility
+ * of the group containing the source.
+ */
 void
 rb_sourcelist_remove (RBSourceList *sourcelist,
 		      RBSource     *source)
@@ -1256,6 +1358,14 @@ rb_sourcelist_remove (RBSourceList *sourcelist,
 	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
 }
 
+/**
+ * rb_sourcelist_select:
+ * @sourcelist: the #RBSourceList
+ * @source: the #RBSource to select
+ *
+ * Selects the specified source in the source list.  This will result in the 'selected'
+ * signal being emitted.
+ */
 void
 rb_sourcelist_select (RBSourceList *sourcelist,
 		      RBSource     *source)
