@@ -499,7 +499,7 @@ impl_get_ui_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
-	actions = g_list_prepend (actions, g_strdup ("RemovableSourceEject"));
+	actions = g_list_prepend (actions, g_strdup ("MTPSourceEject"));
 
 	return actions;
 }

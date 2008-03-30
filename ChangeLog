@@ -1,3 +1,9 @@
+2008-03-31  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/mtpdevice/rb-mtp-source.c: (impl_get_ui_actions):
+	Add the MTP source eject action to the toolbar, not the removable
+	source eject action.  Fixes #525163.
+
 2008-03-30  Jonathan Matthew  <jonathan@d14n.org>
 
 	* lib/rb-tree-dnd.c: (remove_select_on_drag_timeout),
