@@ -20,10 +20,6 @@ RB_THREAD_GET_CLASS
 
 <SECTION>
 <FILE>rb-tree-dnd</FILE>
-RB_TYPE_TREE_DRAG_DEST
-RB_TREE_DRAG_DEST
-RB_IS_TREE_DRAG_DEST
-RB_TREE_DRAG_DEST_GET_IFACE
 RbTreeDragSource
 RbTreeDragSourceIface
 RbTreeDragDest
@@ -32,7 +28,6 @@ RbTreeDestFlag
 rb_tree_drag_source_row_draggable
 rb_tree_drag_source_drag_data_delete
 rb_tree_drag_source_drag_data_get
-rb_tree_drag_dest_get_type
 rb_tree_drag_dest_drag_data_received
 rb_tree_drag_dest_row_drop_possible
 rb_tree_drag_dest_row_drop_position
@@ -44,13 +39,20 @@ RB_IS_TREE_DRAG_SOURCE
 RB_TYPE_TREE_DRAG_SOURCE
 rb_tree_drag_source_get_type
 RB_TREE_DRAG_SOURCE_GET_IFACE
+RB_TYPE_TREE_DRAG_DEST
+RB_TREE_DRAG_DEST
+RB_IS_TREE_DRAG_DEST
+RB_TREE_DRAG_DEST_GET_IFACE
+rb_tree_drag_dest_get_type
 </SECTION>
 
 <SECTION>
 <FILE>rb-metadata</FILE>
+<TITLE>RBMetaData</TITLE>
+RBMetaData
+RBMetaDataClass
 RBMetaDataField
 RBMetaDataError
-RBMetaDataPrivate
 rb_metadata_new
 rb_metadata_get_field_type
 rb_metadata_get_field_name
@@ -73,6 +75,7 @@ RB_IS_METADATA_CLASS
 RB_METADATA_GET_CLASS
 RB_METADATA_ERROR
 rb_metadata_error_quark
+RBMetaDataPrivate
 </SECTION>
 
 <SECTION>
@@ -648,6 +651,7 @@ rb_source_set_hidden_when_empty
 _rb_source_show_popup
 _rb_source_register_action_group
 <SUBSECTION Standard>
+RBSourcePrivate
 RB_SOURCE
 RB_IS_SOURCE
 RB_TYPE_SOURCE
@@ -2126,6 +2130,7 @@ rb_player_gst_xfade_get_type
 
 <SECTION>
 <FILE>rhythmdb-query-results</FILE>
+<TITLE>RhythmDBQueryResults</TITLE>
 RhythmDBQueryResults
 RhythmDBQueryResultsIface
 rhythmdb_query_results_set_query
@@ -2378,10 +2383,9 @@ RB_STATIC_PLAYLIST_SOURCE_GET_CLASS
 
 <SECTION>
 <FILE>rb-source-group</FILE>
+<TITLE>RBSourceGroup</TITLE>
 RBSourceGroupCategory
-RB_TYPE_SOURCE_GROUP_CATEGORY
 RBSourceGroup
-rb_source_group_get_type
 RB_SOURCE_GROUP_LIBRARY
 RB_SOURCE_GROUP_PLAYLISTS
 RB_SOURCE_GROUP_DEVICES
@@ -2397,6 +2401,8 @@ rb_source_group_shared_get_type
 RB_SOURCE_GROUP
 RB_IS_SOURCE_GROUP
 RB_TYPE_SOURCE_GROUP
+rb_source_group_get_type
+RB_TYPE_SOURCE_GROUP_CATEGORY
 rb_source_group_category_get_type
 </SECTION>
 

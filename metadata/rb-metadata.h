@@ -89,19 +89,22 @@ GQuark rb_metadata_error_quark (void);
 #define RB_IS_METADATA_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_METADATA))
 #define RB_METADATA_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_METADATA, RBMetaDataClass))
 
+typedef struct _RBMetaData RBMetaData;
+typedef struct _RBMetaDataClass RBMetaDataClass;
+
 typedef struct RBMetaDataPrivate RBMetaDataPrivate;
 
-typedef struct
+struct _RBMetaData
 {
 	GObject parent;
 
 	RBMetaDataPrivate *priv;
-} RBMetaData;
+};
 
-typedef struct
+struct _RBMetaDataClass
 {
 	GObjectClass parent_class;
-} RBMetaDataClass;
+};
 
 GType		rb_metadata_get_type	(void);
 

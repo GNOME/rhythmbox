@@ -33,6 +33,26 @@
 /* must be the same value as in gtk_tree_view.c */
 #define SCROLL_EDGE_SIZE 15
 
+
+/**
+ * SECTION:rb-tree-dnd
+ * @short_description: multi-row drag and drop support for GtkTreeViews
+ *
+ * Provides support for drag and drop operations to and from GtkTreeView
+ * widgets that can include multiple rows.  The model backing the tree view
+ * widgets must implement the #RbTreeDragSource and #RbTreeDragDest interfaces.
+ */
+
+/**
+ * RbTreeDestFlag:
+ * @RB_TREE_DEST_EMPTY_VIEW_DROP: If set, drops into empty spaces in the view are accepted
+ * @RB_TREE_DEST_CAN_DROP_INTO: If set, drops into existing rows are accepted
+ * @RB_TREE_DEST_CAN_DROP_BETWEEN: If set, drops between existing rows are accepted
+ * @RB_TREE_DEST_SELECT_ON_DRAG_TIMEOUT: If set, update the drag selection using a timeout
+ *
+ * Flags controlling drag destination behaviour.
+ */
+
 typedef struct
 {
   guint pressed_button;
@@ -66,8 +86,8 @@ typedef struct
   guint select_on_drag_timeout;
 } RbTreeDndData;
 
-RbTreeDndData *init_rb_tree_dnd_data (GtkWidget *widget);
-GList * get_context_data (GdkDragContext *context);
+static RbTreeDndData *init_rb_tree_dnd_data (GtkWidget *widget);
+static GList * get_context_data (GdkDragContext *context);
 static gboolean filter_drop_position (GtkWidget *widget, GdkDragContext *context, GtkTreePath *path, GtkTreeViewDropPosition *pos);
 static gint scroll_row_timeout (gpointer data);
 static gboolean select_on_drag_timeout (gpointer data);
@@ -103,10 +123,10 @@ rb_tree_drag_source_get_type (void)
 
 /**
  * rb_tree_drag_source_row_draggable:
- * @drag_source: a #EggTreeMultiDragSource
+ * @drag_source: a #RbTreeDragSource
  * @path_list: row on which user is initiating a drag
  *
- * Asks the #EggTreeMultiDragSource whether a particular row can be used as
+ * Asks the #RbTreeDragSource whether a particular row can be used as
  * the source of a DND operation. If the source doesn't implement
  * this interface, the row is assumed draggable.
  *
@@ -114,7 +134,7 @@ rb_tree_drag_source_get_type (void)
  **/
 gboolean
 rb_tree_drag_source_row_draggable (RbTreeDragSource *drag_source,
-				   GList                  *path_list)
+				   GList            *path_list)
 {
   RbTreeDragSourceIface *iface = RB_TREE_DRAG_SOURCE_GET_IFACE (drag_source);
 
@@ -131,10 +151,10 @@ rb_tree_drag_source_row_draggable (RbTreeDragSource *drag_source,
 
 /**
  * rb_tree_drag_source_drag_data_delete:
- * @drag_source: a #EggTreeMultiDragSource
+ * @drag_source: a #RbTreeDragSource
  * @path_list: row that was being dragged
  *
- * Asks the #EggTreeMultiDragSource to delete the row at @path, because
+ * Asks the #RbTreeDragSource to delete the row at @path, because
  * it was moved somewhere else via drag-and-drop. Returns %FALSE
  * if the deletion fails because @path no longer exists, or for
  * some model-specific reason. Should robustly handle a @path no
@@ -144,7 +164,7 @@ rb_tree_drag_source_row_draggable (RbTreeDragSource *drag_source,
  **/
 gboolean
 rb_tree_drag_source_drag_data_delete (RbTreeDragSource *drag_source,
-					     GList                  *path_list)
+				      GList            *path_list)
 {
   RbTreeDragSourceIface *iface = RB_TREE_DRAG_SOURCE_GET_IFACE (drag_source);
 
@@ -157,11 +177,11 @@ rb_tree_drag_source_drag_data_delete (RbTreeDragSource *drag_source,
 
 /**
  * rb_tree_drag_source_drag_data_get:
- * @drag_source: a #EggTreeMultiDragSource
+ * @drag_source: a #RbTreeDragSource
  * @path_list: row that was dragged
- * @selection_data: a #EggSelectionData to fill with data from the dragged row
+ * @selection_data: a #GtkSelectionData to fill with data from the dragged row
  *
- * Asks the #EggTreeMultiDragSource to fill in @selection_data with a
+ * Asks the #RbTreeDragSource to fill in @selection_data with a
  * representation of the row at @path. @selection_data->target gives
  * the required type of the data.  Should robustly handle a @path no
  * longer found in the model!
@@ -170,8 +190,8 @@ rb_tree_drag_source_drag_data_delete (RbTreeDragSource *drag_source,
  **/
 gboolean
 rb_tree_drag_source_drag_data_get    (RbTreeDragSource *drag_source,
-					     GList                  *path_list,
-					     GtkSelectionData  *selection_data)
+				      GList            *path_list,
+				      GtkSelectionData *selection_data)
 {
   RbTreeDragSourceIface *iface = RB_TREE_DRAG_SOURCE_GET_IFACE (drag_source);
 
@@ -212,7 +232,17 @@ rb_tree_drag_dest_get_type (void)
 }
 
 
-
+/**
+ * rb_tree_drag_dest_drag_data_received:
+ * @drag_dest: a #RbTreeDragDest
+ * @dest: the #GtkTreePath on which the data was dropped
+ * @pos: the drop position relative to the row identified by @dest
+ * @selection_data: a #GtkSelectionData containing the drag data
+ *
+ * Asks a #RbTreeDragDest to accept some drag and drop data.
+ *
+ * Return value: %TRUE if the data was accepted, %FALSE otherwise
+ */
 gboolean
 rb_tree_drag_dest_drag_data_received (RbTreeDragDest   *drag_dest,
 				      GtkTreePath       *dest,
@@ -229,7 +259,18 @@ rb_tree_drag_dest_drag_data_received (RbTreeDragDest   *drag_dest,
 }
 
 
-
+/**
+ * rb_tree_drag_dest_row_drop_possible:
+ * @drag_dest: a #RbTreeDragDest
+ * @dest_path: the #GtkTreePath on which the data may be dropped
+ * @pos: the drop position relative to the row identified by @dest
+ * @selection_data: a #GtkSelectionData containing the drag data
+ *
+ * Asks the #RbTreeDragDest whether data can be dropped on a particular
+ * row.  This should probably check based on the format and the row.
+ *
+ * Return value: %TRUE if the data can be dropped there
+ */
 gboolean
 rb_tree_drag_dest_row_drop_possible (RbTreeDragDest   *drag_dest,
 				     GtkTreePath       *dest_path,
@@ -246,6 +287,20 @@ rb_tree_drag_dest_row_drop_possible (RbTreeDragDest   *drag_dest,
 }
 
 
+/**
+ * rb_tree_drag_dest_row_drop_position:
+ * @drag_dest: a #RbTreeDragDest
+ * @dest_path: a #GtkTreePath describing a possible drop row
+ * @targets: a #GList containing possible drop target types
+ * @pos: returns the #GtkTreeViewDropPosition to use relative to the row
+ *
+ * Asks the #RbTreeDragDest which drop position to use relative to the specified row.
+ * The drag destination should decide which drop position to use based on the 
+ * target row and the list of drag targets.
+ *
+ * Return value: %TRUE if a drop position has been set, %FALSE if a drop should not be
+ *   allowed in the specified row
+ */
 gboolean
 rb_tree_drag_dest_row_drop_position (RbTreeDragDest   *drag_dest,
 				     GtkTreePath       *dest_path,
@@ -277,7 +332,7 @@ rb_tree_dnd_data_free (gpointer data)
   g_free (priv_data);
 }
 
-RbTreeDndData *
+static RbTreeDndData *
 init_rb_tree_dnd_data (GtkWidget *widget)
 {
 	RbTreeDndData *priv_data;
@@ -369,13 +424,13 @@ set_context_data (GdkDragContext *context,
 	rb_debug ("Setting path_list: index=%i", gtk_tree_path_get_indices(path_list->data)[0]);
 }
 
-GList *
+static GList *
 get_context_data (GdkDragContext *context)
 {
 	return g_object_get_data (G_OBJECT (context), "rb-tree-view-multi-source-row");
 }
 
-gboolean
+static gboolean
 filter_drop_position (GtkWidget *widget, GdkDragContext *context, GtkTreePath *path, GtkTreeViewDropPosition *pos)
 {
 	GtkTreeView *tree_view = GTK_TREE_VIEW (widget);
@@ -506,7 +561,7 @@ remove_scroll_timeout (GtkTreeView *tree_view)
 
 static void
 remove_select_on_drag_timeout (GtkTreeView *tree_view)
- {
+{
 	RbTreeDndData *priv_data;
 
 	priv_data = g_object_get_data (G_OBJECT (tree_view), RB_TREE_DND_STRING);
@@ -904,13 +959,25 @@ rb_tree_dnd_button_press_event_cb (GtkWidget      *widget,
 	return FALSE;
 }
 
-
+/**
+ * rb_tree_dnd_add_drag_source_support:
+ * @tree_view: a #GtkTreeView that wants to be a drag source
+ * @start_button_mask: a mask describing modifier keys to handle when dragging
+ * @targets: an array of #GtkTargetEntry structures describing drag data types
+ * @n_targets: the number of elements in @targets
+ * @actions: a mask describing drag actions that are allowed from this source
+ *
+ * Adds event handlers to perform multi-row drag and drop operations from the
+ * specified #GtkTreeView widget.  The model backing the #GtkTreeView must
+ * implement the #RbTreeDragSource interface.  This should be called immediately
+ * after the tree view is created.
+ */
 void
 rb_tree_dnd_add_drag_source_support (GtkTreeView *tree_view,
-				 GdkModifierType start_button_mask,
-				 const GtkTargetEntry *targets,
-				 gint n_targets,
-				 GdkDragAction actions)
+				     GdkModifierType start_button_mask,
+				     const GtkTargetEntry *targets,
+				     gint n_targets,
+				     GdkDragAction actions)
 {
 	RbTreeDndData *priv_data = NULL;
  	g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
@@ -938,16 +1005,24 @@ rb_tree_dnd_add_drag_source_support (GtkTreeView *tree_view,
 	}
 }
 
-
-
-
-
+/**
+ * rb_tree_dnd_add_drag_dest_support:
+ * @tree_view: a #GtkTreeView that wants to be a drag destination
+ * @flags: #RbTreeDestFlags for this drag destination
+ * @targets: an array of #GtkTargetEntry structures describing the allowed drag targets
+ * @n_targets: the number of elements in @targets
+ * @actions: the allowable drag actions for this destination
+ *
+ * Adds event handlers to perform multi-row drag and drop operations to the specified
+ * #GtkTreeView.  The model backing the tree view should implement the #RbTreeDragDest
+ * interface.  This should be called immediately after the tree view is created.
+ */
 void
 rb_tree_dnd_add_drag_dest_support (GtkTreeView *tree_view,
-			       RbTreeDestFlag flags,
-			       const GtkTargetEntry *targets,
-			       gint n_targets,
-			       GdkDragAction actions)
+				   RbTreeDestFlag flags,
+				   const GtkTargetEntry *targets,
+				   gint n_targets,
+				   GdkDragAction actions)
 {
 	RbTreeDndData *priv_data = NULL;
 	g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
@@ -980,7 +1055,8 @@ rb_tree_dnd_add_drag_dest_support (GtkTreeView *tree_view,
 								 NULL);
 	  	priv_data->drag_data_received_handler = g_signal_connect (G_OBJECT (tree_view),
 									  "drag_data_received",
-									  G_CALLBACK (rb_tree_dnd_drag_data_received_cb), 										  NULL);
+									  G_CALLBACK (rb_tree_dnd_drag_data_received_cb),
+									  NULL);
 	}
-
 }
+

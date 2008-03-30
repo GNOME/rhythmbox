@@ -29,6 +29,16 @@
 
 #include "rb-source-group.h"
 
+/**
+ * SECTION:rb-source-group
+ * @short_description: Source list grouping
+ *
+ * Source groups define sections of the source list.  A source group
+ * consists of an internal name, a display name, and a category.
+ * The internal name can be used to locate a registered source group.
+ * The category is used to sort the source groups.
+ */
+
 G_LOCK_DEFINE_STATIC (source_groups);
 
 static GHashTable *source_groups_map;
@@ -47,6 +57,11 @@ register_core_source_groups (void)
 	shared_group = rb_source_group_register ("shared", _("Shared"), RB_SOURCE_GROUP_CATEGORY_TRANSIENT);
 }
 
+/**
+ * rb_source_group_init:
+ *
+ * Initializes source groups.
+ */
 void
 rb_source_group_init (void)
 {
@@ -73,6 +88,17 @@ rb_source_group_get_type (void)
 	return type;
 }
 
+/**
+ * RBSourcelistGroupType:
+ * @RB_SOURCE_GROUP_CATEGORY_FIXED: Fixed single instance sources (e.g., library)
+ * @RB_SOURCE_GROUP_CATEGORY_PERSISTENT: Persistent multiple-instance sources (e.g. playlists)
+ * @RB_SOURCE_GROUP_CATEGORY_REMOVABLE: Sources representing removable devices
+ * @RB_SOURCE_GROUP_CATEGORY_TRANSIENT: Transient sources (e.g. network shares)
+ *
+ * Predefined categories of source group. The order they're defined here is the order they
+ * appear in the source list.
+ */
+
 #define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
 GType
 rb_source_group_category_get_type (void)
@@ -94,6 +120,15 @@ rb_source_group_category_get_type (void)
 	return etype;
 }
 
+/**
+ * rb_source_group_get_by_name:
+ * @name: name of source group to find
+ *
+ * Locates a source group by name.  If the source group has not been registered yet,
+ * returns NULL instead.
+ *
+ * Return value: existing source group, or NULL.
+ */
 RBSourceGroup *
 rb_source_group_get_by_name (const char *name)
 {
@@ -110,6 +145,17 @@ rb_source_group_get_by_name (const char *name)
 	return group;
 }
 
+/**
+ * rb_source_group_register:
+ * @name: name of the source group (untranslated, used in code)
+ * @display_name: display name of the source group (translated)
+ * @category: category for the source group
+ *
+ * Registers and returns a new source group.  Registering a source group
+ * that already exists will probably do bad things.
+ *
+ * Return value: new source group
+ */
 RBSourceGroup *
 rb_source_group_register (const char           *name,
 			  const char           *display_name,
@@ -132,24 +178,44 @@ rb_source_group_register (const char           *name,
 	return group;
 }
 
+/**
+ * rb_source_group_library_get_type:
+ *
+ * Return value: the predefined library source group
+ */
 RBSourceGroup *
 rb_source_group_library_get_type (void)
 {
 	return library_group;
 }
 
+/**
+ * rb_source_group_playlists_get_type:
+ *
+ * Return value: the predefined playlists source group
+ */
 RBSourceGroup *
 rb_source_group_playlists_get_type (void)
 {
 	return playlists_group;
 }
 
+/**
+ * rb_source_group_devices_get_type:
+ *
+ * Return value: the predefined devices source group
+ */
 RBSourceGroup *
 rb_source_group_devices_get_type (void)
 {
 	return devices_group;
 }
 
+/**
+ * rb_source_group_shared_get_type:
+ *
+ * Return value: the predefined shared source group
+ */
 RBSourceGroup *
 rb_source_group_shared_get_type (void)
 {

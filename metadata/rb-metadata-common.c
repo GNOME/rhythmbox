@@ -69,6 +69,50 @@ static struct RBMetaDataFieldInfo field_info[RB_METADATA_FIELD_LAST] = {
 
 };
 
+/**
+ * RBMetaDataField:
+ * @RB_METADATA_FIELD_TITLE: Title of the recording
+ * @RB_METADATA_FIELD_ARTIST: Person(s) responsible for the recording
+ * @RB_METADATA_FIELD_ALBUM: Album containing the recording
+ * @RB_METADATA_FIELD_DATE: Release date of the album
+ * @RB_METADATA_FIELD_GENRE: Genre of the recording
+ * @RB_METADATA_FIELD_COMMENT: Free form comment on the recording
+ * @RB_METADATA_FIELD_TRACK_NUMBER: Track number inside a collection
+ * @RB_METADATA_FIELD_MAX_TRACK_NUMBER: Count of tracks inside the collection
+ * @RB_METADATA_FIELD_DISC_NUMBER: Disc number inside a collection
+ * @RB_METADATA_FIELD_MAX_DISC_NUMBER: Count of discs inside the collection
+ * @RB_METADATA_FIELD_DESCRIPTION: Short text describing the recording
+ * @RB_METADATA_FIELD_VERSION: Version of the recording
+ * @RB_METADATA_FIELD_ISRC: International Standard Recording Code
+ * @RB_METADATA_FIELD_ORGANIZATION: Organization responsible for the recording
+ * @RB_METADATA_FIELD_COPYRIGHT: Copyright notice on the recording
+ * @RB_METADATA_FIELD_CONTACT: Contact information
+ * @RB_METADATA_FIELD_LICENSE: License of the recording
+ * @RB_METADATA_FIELD_PERFORMER: Person(s) performing in the recording
+ * @RB_METADATA_FIELD_DURATION: Duration of the recording
+ * @RB_METADATA_FIELD_CODEC: Codec used to store the recording
+ * @RB_METADATA_FIELD_BITRATE: Exact or average encoding bitrate in bits/s
+ * @RB_METADATA_FIELD_TRACK_GAIN: Track gain in dB for replaygain
+ * @RB_METADATA_FIELD_TRACK_PEAK: Track peak volume level
+ * @RB_METADATA_FIELD_ALBUM_GAIN: Album gain in dB for replaygain
+ * @RB_METADATA_FIELD_ALBUM_PEAK: Album peak volume level
+ * @RB_METADATA_FIELD_LANGUAGE_CODE: Language code (ISO-639-1)
+ * @RB_METADATA_FIELD_MUSICBRAINZ_TRACKID: MusicBrainz track ID
+ * @RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID: MusicBrainz artist ID
+ * @RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID: MusicBrainz album ID
+ * @RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID: MusicBrainz album artist ID
+ * @RB_METADATA_FIELD_ARTIST_SORTNAME: Person(s) responsible for the recording, as used for sorting
+ * @RB_METADATA_FIELD_LAST:  invalid field
+ *
+ * Metadata fields that can be read from and written to files.
+ */
+
+/**
+ * rb_metadata_get_field_type:
+ * @field: a #RBMetaDataField
+ *
+ * Return value: the #GType of the value for the metadata field
+ */
 GType
 rb_metadata_get_field_type (RBMetaDataField field)
 {
@@ -76,6 +120,12 @@ rb_metadata_get_field_type (RBMetaDataField field)
 	return field_info[field].type;
 }
 
+/**
+ * rb_metadata_get_field_name:
+ * @field: a #RBMetaDataField
+ *
+ * Return value: the name of the metadata field
+ */
 const char *
 rb_metadata_get_field_name (RBMetaDataField field)
 {

@@ -38,6 +38,14 @@
  * we actually send it the request.
  */
 
+/**
+ * SECTION:rb-metadata
+ * @short_description: metadata reader and writer interface
+ *
+ * Provides a simple synchronous interface for metadata extraction and updating.
+ *
+ */
+
 #include <config.h>
 
 #include "rb-metadata.h"
@@ -111,6 +119,11 @@ rb_metadata_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_metadata_parent_class)->finalize (object);
 }
 
+/**
+ * rb_metadata_new:
+ *
+ * Return value: new #RBMetaData instance
+ */
 RBMetaData *
 rb_metadata_new (void)
 {
@@ -322,6 +335,17 @@ read_error_from_message (RBMetaData *md, DBusMessageIter *iter, GError **error)
 	g_free (error_message);
 }
 
+/**
+ * rb_metadata_load:
+ * @md: a #RBMetaData
+ * @uri: URI from which to load metadata
+ * @error: returns error information
+ *
+ * Reads metadata information from the specified URI.
+ * Once this has returned successfully (with *error == NULL),
+ * rb_metadata_get, rb_metadata_get_mime, rb_metadata_has_missing_plugins,
+ * and rb_metadata_get_missing_plugins can usefully be called.
+ */
 void
 rb_metadata_load (RBMetaData *md,
 		  const char *uri,
@@ -458,18 +482,50 @@ rb_metadata_load (RBMetaData *md,
 	g_static_mutex_unlock (&conn_mutex);
 }
 
+/**
+ * rb_metadata_get_mime:
+ * @md: a #RBMetaData
+ *
+ * Returns the type of the file from which metadata was read.
+ * This isn't really a MIME type, but it looks like one.
+ *
+ * Return value: MIME type-ish string
+ */
 const char *
 rb_metadata_get_mime (RBMetaData *md)
 {
 	return md->priv->mimetype;
 }
 
+/**
+ * rb_metadata_has_missing_plugins:
+ * @md: a #RBMetaData
+ *
+ * If the metadata reader could not decode the file it was asked to
+ * because one or more media framework plugins (specifically, for the
+ * existing implementations, GStreamer plugins) required are missing,
+ * this will return TRUE.
+ *
+ * Return value: TRUE if required plugins are missing
+ */
 gboolean
 rb_metadata_has_missing_plugins (RBMetaData *md)
 {
 	return (md->priv->missing_plugins != NULL);
 }
 
+/**
+ * rb_metadata_get_missing_plugins:
+ * @md: a #RBMetaData
+ * @missing_plugins: returns machine-readable missing plugin information
+ * @plugin_descriptions: returns human-readable missing plugin descriptions
+ *
+ * This function returns the information used to request automatic
+ * installation of media framework plugins required to decode the target URI.
+ * Use g_strfreev() to free the returned information arrays.
+ *
+ * Return value: TRUE if missing plugin information was returned
+ */
 gboolean
 rb_metadata_get_missing_plugins (RBMetaData *md,
 				 char ***missing_plugins,
@@ -485,9 +541,19 @@ rb_metadata_get_missing_plugins (RBMetaData *md,
 }
 
 
+/**
+ * rb_metadata_get:
+ * @md: a #RBMetaData
+ * @field: the #RBMetaDataField to retrieve
+ * @val: returns the field value
+ *
+ * Retrieves the value of a metadata field extracted from the target URI.
+ * If the target URI contained no value for the field, returns FALSE.
+ *
+ * Return value: TRUE if a value was returned
+ */
 gboolean
-rb_metadata_get (RBMetaData *md, RBMetaDataField field,
-		 GValue *ret)
+rb_metadata_get (RBMetaData *md, RBMetaDataField field, GValue *ret)
 {
 	GValue *val;
 	if (!md->priv->metadata)
@@ -502,6 +568,17 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field,
 	return FALSE;
 }
 
+/**
+ * rb_metadata_set:
+ * @md: a #RBMetaData
+ * @field: the #RBMetaDataField to set
+ * @val: the vaule to set
+ *
+ * Sets a metadata field value.  The value is only stored inside the
+ * #RBMetaData object until rb_metadata_save is called.
+ *
+ * Return value: TRUE if the field is valid
+ */
 gboolean
 rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 		 const GValue *val)
@@ -521,6 +598,16 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 	return TRUE;
 }
 
+/**
+ * rb_metadata_can_save:
+ * @md: a #RBMetaData
+ * @mimetype: the MIME type-ish string to check
+ *
+ * Checks if the metadata writer is capable of updating file metadata
+ * for a given media type.
+ *
+ * Return value: TRUE if the file metadata for the given media type can be updated
+ */
 gboolean
 rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 {
@@ -573,6 +660,14 @@ rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 	return can_save;
 }
 
+/**
+ * rb_metadata_save:
+ * @md: a #RBMetaData
+ * @error: returns error information
+ *
+ * Saves all metadata changes made with rb_metadata_set to the
+ * target URI.
+ */
 void
 rb_metadata_save (RBMetaData *md, GError **error)
 {

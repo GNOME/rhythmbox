@@ -22,6 +22,17 @@
 
 #include "rhythmdb-query-results.h"
 
+/**
+ * SECTION:rhythmdb-query-results
+ * @short_description: interface for receiving query results from RhythmDB
+ *
+ * This is the interface that #RhythmDB uses to report results of database
+ * queries.  When running a query, it first calls rhythmdb_query_results_set_query,
+ * then passes entries matching the query to rhythmdb_query_results_add_results
+ * in batches, and finally calls rhythmdb_query_results_query_complete.
+ * There are no guarantees as to which threads the calls are made from.
+ */
+
 GType
 rhythmdb_query_results_get_type (void)
 {
@@ -46,6 +57,16 @@ rhythmdb_query_results_get_type (void)
 	return our_type;
 }
 
+/**
+ * rhythmdb_query_results_set_query:
+ * @results: the #RhythmDBQueryResults implementation
+ * @query: the new query
+ *
+ * When a new query is run, this method is invoked to give the
+ * object implementing this interface a chance to take a copy of the
+ * query criteria, so that it can evaluate the query for newly added
+ * or changed entries once the query is complete.
+ */
 void
 rhythmdb_query_results_set_query (RhythmDBQueryResults *results,
 				  GPtrArray *query)
@@ -55,6 +76,14 @@ rhythmdb_query_results_set_query (RhythmDBQueryResults *results,
 		iface->set_query (results, query);
 }
 
+/**
+ * rhythmdb_query_results_add_results:
+ * @results: the #RhythmDBQueryResults implementation
+ * @entries: #GPtrArray containing #RhythmDBEntry results
+ *
+ * Provides a new set of query results.  References must be taken on the
+ * entries.
+ */
 void
 rhythmdb_query_results_add_results (RhythmDBQueryResults *results,
 				    GPtrArray *entries)
@@ -64,6 +93,16 @@ rhythmdb_query_results_add_results (RhythmDBQueryResults *results,
 		iface->add_results (results, entries);
 }
 
+/**
+ * rhythmdb_query_results_query_complete:
+ * @results: the #RhythmDBQueryResults
+ *
+ * Called when the query is complete and all entries that match the query
+ * have been supplied to rhythmdb_query_results_add_results.  If the object
+ * implementing this interface needs to identify newly added or changed entries
+ * that match the query, it needs to use the entry-added, entry-deleted and
+ * entry-changed signals from #RhythmDB.
+ */
 void
 rhythmdb_query_results_query_complete (RhythmDBQueryResults *results)
 {
