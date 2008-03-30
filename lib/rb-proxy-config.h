@@ -37,9 +37,11 @@ G_BEGIN_DECLS
 #define RB_IS_PROXY_CONFIG_CLASS(k)		(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_PROXY_CONFIG))
 #define RB_PROXY_CONFIG_GET_CLASS(o)		(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_PROXY_CONFIG, RBProxyConfigClass))
 
+typedef struct _RBProxyConfig RBProxyConfig;
+typedef struct _RBProxyConfigClass RBProxyConfigClass;
 typedef struct _RBProxyConfigPrivate RBProxyConfigPrivate;
 
-typedef struct
+struct _RBProxyConfig
 {
 	GObject parent;
 	gboolean enabled;
@@ -51,14 +53,14 @@ typedef struct
 	char *password;
 
 	RBProxyConfigPrivate *priv;
-} RBProxyConfig;
+};
 
-typedef struct
+struct _RBProxyConfigClass
 {
 	GObjectClass parent_class;
 
 	void (*config_changed) (RBProxyConfig *config);
-} RBProxyConfigClass;
+};
 
 
 GType		rb_proxy_config_get_type (void);

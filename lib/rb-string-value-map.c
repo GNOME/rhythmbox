@@ -23,6 +23,15 @@
 
 #include "rb-util.h"
 
+/**
+ * SECTION:rb-string-value-map
+ * @short_description: specialized hash table for storing string to GValue mappings
+ *
+ * Simplifies the use of string:GValue maps with respect to copying of the values
+ * inserted into the map.  Except for rb_string_value_map_peek, the caller retains
+ * ownership of values passed in, and assumes ownership of all values returned.
+ */
+
 static void rb_string_value_map_finalize (GObject *obj);
 
 
@@ -64,6 +73,11 @@ rb_string_value_map_finalize (GObject *obj)
 	G_OBJECT_CLASS(rb_string_value_map_parent_class)->finalize (obj);
 }
 
+/**
+ * rb_string_value_map_new:
+ *
+ * Return value: new empty #RBStringValueMap
+ */
 RBStringValueMap*
 rb_string_value_map_new (void)
 {
@@ -71,6 +85,14 @@ rb_string_value_map_new (void)
 }
 
 
+/**
+ * rb_string_value_map_set:
+ * @map: a #RBStringValueMap
+ * @key: key to set
+ * @value: value to store
+ *
+ * Inserts a value into the map.  The value is copied.
+ */
 void
 rb_string_value_map_set (RBStringValueMap *map,
 			 const char *key,
@@ -84,6 +106,15 @@ rb_string_value_map_set (RBStringValueMap *map,
 	g_hash_table_insert (map->priv->map, g_strdup(key), val);
 }
 
+/**
+ * rb_string_value_map_remove:
+ * @map: a #RBStringValueMap
+ * @key: key to remove
+ *
+ * Removes a value from the map.
+ *
+ * Return value: %TRUE if the value was found and removed
+ */
 gboolean
 rb_string_value_map_remove (RBStringValueMap *map,
 			    const char *key)
@@ -91,12 +122,28 @@ rb_string_value_map_remove (RBStringValueMap *map,
 	return g_hash_table_remove (map->priv->map, key);
 }
 
+/**
+ * rb_string_value_map_size:
+ * @map: a #RBStringValueMap
+ *
+ * Return value: the number of entries in the map
+ */
 guint
 rb_string_value_map_size (RBStringValueMap *map)
 {
 	return g_hash_table_size (map->priv->map);
 }
 
+/**
+ * rb_string_value_map_get:
+ * @map: a #RBStringValueMap
+ * @key: key to retrieve
+ * @out: returns a copy of the value in the map
+ *
+ * Locates and copies the value associated with the key.
+ *
+ * Return value: %TRUE if the value was found
+ */
 gboolean
 rb_string_value_map_get (RBStringValueMap *map,
 			 const char *key,
@@ -114,6 +161,16 @@ rb_string_value_map_get (RBStringValueMap *map,
 	return TRUE;
 }
 
+/**
+ * rb_string_value_map_peek:
+ * @map: a #RBStringValueMap
+ * @key: key to retrieve
+ *
+ * Locates the value associated with the key.  This returns the
+ * GValue stored in the map, so it cannot be modified.
+ *
+ * Return value: the GValue associated with the key
+ */
 const GValue*
 rb_string_value_map_peek (RBStringValueMap *map,
 			  const char *key)
@@ -121,6 +178,15 @@ rb_string_value_map_peek (RBStringValueMap *map,
 	return g_hash_table_lookup (map->priv->map, key);
 }
 
+/**
+ * rb_string_value_map_steal_hashtable:
+ * @map: a #RBStringValueMap
+ *
+ * Extracts and returns the underlying hash table from the map,
+ * and creates a new empty map.
+ *
+ * Return value: #GHashTable from the map
+ */
 GHashTable*
 rb_string_value_map_steal_hashtable (RBStringValueMap *map)
 {

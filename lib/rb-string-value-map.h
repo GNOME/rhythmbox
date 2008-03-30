@@ -30,19 +30,22 @@ G_BEGIN_DECLS
 #define RB_IS_STRING_VALUE_MAP(obj)         (GTK_CHECK_TYPE ((obj), RB_TYPE_STRING_VALUE_MAP))
 #define RB_IS_STRING_VALUE_MAP_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), RB_TYPE_STRING_VALUE_MAP))
 
+typedef struct _RBStringValueMap RBStringValueMap;
+typedef struct _RBStringValueMapClass RBStringValueMapClass;
+
 typedef struct RBStringValueMapPrivate RBStringValueMapPrivate;
 
-typedef struct
+struct _RBStringValueMap
 {
 	GObject parent;
 
 	RBStringValueMapPrivate *priv;
-} RBStringValueMap;
+};
 
-typedef struct
+struct _RBStringValueMapClass
 {
 	GObjectClass parent;
-} RBStringValueMapClass;
+};
 
 GType    rb_string_value_map_get_type (void);
 

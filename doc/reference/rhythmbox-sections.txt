@@ -2202,7 +2202,9 @@ SEXY_ICON_ENTRY_GET_CLASS
 
 <SECTION>
 <FILE>rb-string-value-map</FILE>
-RBStringValueMapPrivate
+<TITLE>RBStringValueMap</TITLE>
+RBStringValueMap
+RBStringValueMapClass
 rb_string_value_map_new
 rb_string_value_map_set
 rb_string_value_map_get
@@ -2217,12 +2219,14 @@ RB_TYPE_STRING_VALUE_MAP
 rb_string_value_map_get_type
 RB_STRING_VALUE_MAP_CLASS
 RB_IS_STRING_VALUE_MAP_CLASS
+RBStringValueMapPrivate
 </SECTION>
 
 <SECTION>
 <FILE>rb-proxy-config</FILE>
-RBProxyConfigPrivate
-config_changed
+<TITLE>RBProxyConfig</TITLE>
+RBProxyConfig
+RBProxyConfigClass
 rb_proxy_config_new
 rb_proxy_config_get_libsoup_uri
 <SUBSECTION Standard>
@@ -2233,6 +2237,7 @@ rb_proxy_config_get_type
 RB_PROXY_CONFIG_CLASS
 RB_IS_PROXY_CONFIG_CLASS
 RB_PROXY_CONFIG_GET_CLASS
+RBProxyConfigPrivate
 </SECTION>
 
 <SECTION>

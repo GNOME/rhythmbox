@@ -29,6 +29,16 @@
 #include "rb-debug.h"
 #include "rb-dialog.h"
 
+/**
+ * SECTION:rb-proxy-config
+ * @short_description: GConf HTTP proxy retriever
+ *
+ * This class knows how to retrieve the current HTTP proxy configuration
+ * from GConf, and also emits signals when the configuration is changed.
+ * It only supports manual proxy configuration (with authentication).  It
+ * does not support any of the various automatic proxy configuration schemes.
+ */
+
 enum
 {
 	CONFIG_CHANGED,
@@ -69,6 +79,12 @@ rb_proxy_config_class_init (RBProxyConfigClass *klass)
 	object_class->dispose = rb_proxy_config_dispose;
 	object_class->finalize = rb_proxy_config_finalize;
 
+	/**
+	 * RBProxyConfig::config-changed:
+	 * @config: the #RBProxyConfig
+	 *
+	 * Emitted when the HTTP proxy configuration is changed.
+	 */
 	rb_proxy_config_signals [CONFIG_CHANGED] =
 		g_signal_new ("config-changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -159,6 +175,11 @@ rb_proxy_config_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_proxy_config_parent_class)->finalize (object);
 }
 
+/**
+ * rb_proxy_config_new:
+ *
+ * Return value: new proxy configuration retriever
+ */
 RBProxyConfig *
 rb_proxy_config_new ()
 {
@@ -231,6 +252,12 @@ get_proxy_config (RBProxyConfig *config)
 	}
 }
 
+/**
+ * rb_proxy_config_get_libsoup_uri:
+ * @config: a #RBProxyConfig
+ *
+ * Return value: a libsoup URI object containing the current HTTP proxy configuration.
+ */
 #if defined(HAVE_LIBSOUP_2_4)
 SoupURI *
 rb_proxy_config_get_libsoup_uri (RBProxyConfig *config)
