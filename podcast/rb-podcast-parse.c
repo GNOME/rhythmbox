@@ -193,7 +193,7 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 	}
 
 	plparser = totem_pl_parser_new ();
-	g_object_set (plparser, "recurse", FALSE, NULL);
+	g_object_set (plparser, "recurse", FALSE, "force", TRUE, NULL);
 	g_signal_connect (G_OBJECT (plparser), "entry-parsed", G_CALLBACK (entry_parsed), data);
 	g_signal_connect (G_OBJECT (plparser), "playlist-started", G_CALLBACK (playlist_started), data);
 	g_signal_connect (G_OBJECT (plparser), "playlist-ended", G_CALLBACK (playlist_ended), data);
