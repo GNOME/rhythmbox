@@ -3302,8 +3302,8 @@ rb_shell_load_uri (RBShell *shell,
 				       &data, NULL, 0);
 
 		totem_pl_parser_add_ignored_mimetype (parser, "x-directory/normal");
-		if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
-			g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
+		totem_pl_parser_add_ignored_mimetype (parser, "inode/directory");
+		g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
 
 		result = totem_pl_parser_parse (parser, uri, FALSE);
 		g_object_unref (parser);

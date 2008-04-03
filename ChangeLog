@@ -1,3 +1,18 @@
+2008-04-03  Bastien Nocera  <hadess@hadess.net>
+
+	* plugins/generic-player/rb-generic-player-playlist-source.c
+	(load_playlist):
+	* plugins/iradio/rb-iradio-source.c (handle_playlist_entry_cb),
+	(rb_iradio_source_add_from_playlist):
+	* shell/rb-playlist-manager.c (handle_playlist_entry_cb),
+	(rb_playlist_manager_parse_file):
+	* shell/rb-shell-player.c (open_location_thread):
+	* shell/rb-shell.c (rb_shell_load_uri):
+	* sources/rb-playlist-source.c (playlist_iter_func):
+	Remove support for older versions of totem-pl-parser than what we
+	require in configure.in, ignore inode/directory as well as
+	x-directory/normal as the former is used by gvfs
+
 2008-04-03  Jonathan Matthew  <jonathan@d14n.org>
 
 	* shell/rb-playlist-manager.c: (rb_playlist_manager_parse_file):

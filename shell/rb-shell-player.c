@@ -1342,6 +1342,7 @@ open_location_thread (OpenLocationThreadData *data)
 			       data->player, NULL, 0);
 
 	totem_pl_parser_add_ignored_mimetype (playlist, "x-directory/normal");
+	totem_pl_parser_add_ignored_mimetype (parser, "inode/directory");
 
 	playlist_result = totem_pl_parser_parse (playlist, data->location, FALSE);
 	g_object_unref (playlist);

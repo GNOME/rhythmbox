@@ -274,8 +274,7 @@ load_playlist (RBGenericPlayerPlaylistSource *source)
 	g_signal_connect (parser,
 			  "playlist-started", G_CALLBACK (handle_playlist_start_cb),
 			  source);
-	if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
-		g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
+	g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
 
 	switch (totem_pl_parser_parse_with_base (parser, priv->playlist_path, priv->device_root, FALSE)) {
 	case TOTEM_PL_PARSER_RESULT_SUCCESS:

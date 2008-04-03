@@ -504,30 +504,6 @@ rb_playlist_source_drop_cb (GtkWidget *widget,
 	gtk_drag_finish (context, TRUE, FALSE, time);
 }
 
-#ifndef TOTEM_PL_PARSER_CHECK_VERSION
-static void
-playlist_iter_func (GtkTreeModel *model,
-		    GtkTreeIter *iter,
-		    char **uri,
-		    char **title,
-		    gpointer user_data)
-{
-	RhythmDBEntry *entry;
-
-	gtk_tree_model_get (model, iter, 0, &entry, -1);
-
-	if (uri != NULL) {
-		*uri = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
-	}
-	if (title != NULL) {
-		*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
-	}
-
-	if (entry != NULL) {
-		rhythmdb_entry_unref (entry);
-	}
-}
-#else
 static void
 playlist_iter_func (GtkTreeModel *model,
 		    GtkTreeIter *iter,
@@ -554,7 +530,6 @@ playlist_iter_func (GtkTreeModel *model,
 		rhythmdb_entry_unref (entry);
 	}
 }
-#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 
 /**
  * rb_playlist_source_save_playlist:
