@@ -566,21 +566,6 @@ playlist_load_started_cb (TotemPlParser *parser, const char *uri, GHashTable *me
 			RB_STATIC_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, title, FALSE));
 }
 
-static void
-playlist_load_ended_cb (TotemPlParser *parser, const char *uri, GHashTable *metadata, RBPlaylistManager *mgr)
-{
-	const char *title;
-
-	rb_debug ("finished loading playlist %s", uri);
-
-	title = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_TITLE);
-
-	if (title) {
-		g_object_set (mgr->priv->loading_playlist, "name", title, NULL);
-		mgr->priv->loading_playlist = NULL;
-	}
-}
-
 /**
  * rb_playlist_manager_parse_file:
  * @mgr: the #RBPlaylistManager
@@ -611,10 +596,6 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri, GError 
 					 G_CALLBACK (playlist_load_started_cb),
 					 mgr, 0);
 
-		g_signal_connect_object (parser, "playlist-ended",
-					 G_CALLBACK (playlist_load_ended_cb),
-					 mgr, 0);
-
 		if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
 			g_object_set (parser, "recurse", FALSE, NULL);
 
@@ -626,6 +607,7 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri, GError 
 				     _("The playlist file may be in an unknown format or corrupted."));
 			return FALSE;
 		}
+
 		if (mgr->priv->loading_playlist != NULL) {
 			char *name = NULL;
 
