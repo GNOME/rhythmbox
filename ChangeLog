@@ -1,3 +1,25 @@
+2008-04-04  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/audioscrobbler/rb-audioscrobbler-entry.c:
+	* plugins/audioscrobbler/rb-audioscrobbler-entry.h:
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_finalize), (maybe_add_current_song_to_queue),
+	(rb_audioscrobbler_build_post_data),
+	(rb_audioscrobbler_song_changed_cb),
+	(rb_audioscrobbler_load_queue), (rb_audioscrobbler_save_queue),
+	(rb_audioscrobbler_print_queue),
+	(rb_audioscrobbler_free_queue_entries):
+	Split code for dealing with audioscrobbler queue entries out to a
+	separate file.  Instead of formatting the timestamp when saving to
+	disk, just save the time_t as an integer.  Fixes #508895.
+
+	* tests/Makefile.am:
+	* tests/test-audioscrobbler.c: (START_TEST),
+	(rb_audioscrobbler_suite), (main):
+	Add a few simple tests to make sure queue entries survive being saved.
+	Would have caught this and the soup_uri_decode thing.
+
 2008-04-03  Jonathan Matthew  <jonathan@d14n.org>
 
 	* shell/rb-shell-player.c: (open_location_thread):

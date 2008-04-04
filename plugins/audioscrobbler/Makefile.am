@@ -5,6 +5,8 @@ plugin_LTLIBRARIES = libaudioscrobbler.la
 
 libaudioscrobbler_la_SOURCES = \
 	rb-audioscrobbler-plugin.c			\
+	rb-audioscrobbler-entry.h			\
+	rb-audioscrobbler-entry.c			\
 	rb-audioscrobbler.c				\
 	rb-audioscrobbler.h				\
 	rb-lastfm-gst-src.c				\

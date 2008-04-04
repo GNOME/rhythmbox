@@ -32,7 +32,12 @@ test_file_helpers_SOURCES = \
 	$(test_utils)
 
 test_rb_lib_SOURCES = \
-	test-rb-lib.c					\
+	test-rb-lib.c						\
+	$(test_utils)
+
+test_audioscrobbler_SOURCES = \
+	test-audioscrobbler.c					\
+	$(top_srcdir)/plugins/audioscrobbler/rb-audioscrobbler-entry.c \
 	$(test_utils)
 
 bench_rhythmdb_load_SOURCES = bench-rhythmdb-load.c
@@ -42,11 +47,13 @@ INCLUDES = 							\
 	-DG_LOG_DOMAIN=\"Rhythmbox-tests\"			\
 	-I$(top_srcdir) 					\
 	$(RHYTHMBOX_CFLAGS)					\
+	$(SOUP_CFLAGS)						\
 	-I$(top_srcdir)/lib					\
 	-I$(top_srcdir)/metadata				\
 	-I$(top_srcdir)/widgets					\
-	-I$(top_srcdir)/rhythmdb
-
+	-I$(top_srcdir)/rhythmdb				\
+	-I$(top_srcdir)/plugins/audioscrobbler			\
+	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 if HAVE_CHECK
 TESTS += \
@@ -54,7 +61,8 @@ TESTS += \
 	test-rhythmdb						\
 	test-rhythmdb-query-model				\
 	test-rhythmdb-property-model				\
-	test-file-helpers
+	test-file-helpers					\
+	test-audioscrobbler
 endif
 
 OLD_TESTS = \
