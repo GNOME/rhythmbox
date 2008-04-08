@@ -1815,6 +1815,18 @@ rb_shell_player_do_previous (RBShellPlayer *player,
 		return FALSE;
 	}
 
+	/* If we're in the first 3 seconds go to the previous song,
+	 * else restart the current one.
+	 */
+	if (player->priv->current_playing_source != NULL
+	    && rb_source_can_pause (player->priv->source)
+	    && rb_player_get_time (player->priv->mmplayer) > 3) {
+		rb_debug ("after 3 second previous, restarting song");
+		rb_player_set_time (player->priv->mmplayer, 0);
+		rb_header_sync_time (player->priv->header_widget);
+		return TRUE;
+	}
+
 	rb_debug ("going to previous");
 
 	if (player->priv->queue_play_order) {
@@ -1951,33 +1963,13 @@ rb_shell_player_do_next (RBShellPlayer *player,
 	return rb_shell_player_do_next_internal (player, FALSE, TRUE, error);
 }
 
-static gboolean
-rb_shell_player_do_previous_or_seek (RBShellPlayer *player,
-				     GError **error)
-{
-	rb_debug ("previous");
-	/* If we're in the first 3 seconds go to the previous song,
-	 * else restart the current one.
-	 */
-	if (player->priv->current_playing_source != NULL
-	    && rb_source_can_pause (player->priv->source)
-	    && rb_player_get_time (player->priv->mmplayer) > 3) {
-		rb_debug ("after 3 second previous, restarting song");
-		rb_player_set_time (player->priv->mmplayer, 0);
-		rb_header_sync_time (player->priv->header_widget);
-		return TRUE;
-	}
-
-	return rb_shell_player_do_previous (player, error);
-}
-
 static void
 rb_shell_player_cmd_previous (GtkAction *action,
 			      RBShellPlayer *player)
 {
 	GError *error = NULL;
 
-	if (!rb_shell_player_do_previous_or_seek (player, &error)) {
+	if (!rb_shell_player_do_previous (player, &error)) {
 		if (error->domain != RB_SHELL_PLAYER_ERROR ||
 		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
 			g_warning ("cmd_previous: Unhandled error: %s", error->message);

@@ -1,3 +1,15 @@
+2008-04-08  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Thomas Zander  <thomas.e.zander@googlemail.com>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (emit_stream_error),
+	(actually_start_stream):
+	* shell/rb-shell-player.c: (rb_shell_player_do_previous),
+	(rb_shell_player_cmd_previous):
+	Apply the same logic used for the 'previous' action (restart the
+	current track if more than 3s in) any time we're asked to go to
+	the previous track.  Fixes #521329.
+
 2008-04-05  Jonathan Matthew  <jonathan@d14n.org>
 
 	* doc/reference/rhythmbox-sections.txt:
