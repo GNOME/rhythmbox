@@ -1,3 +1,13 @@
+2008-04-09  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (emit_stream_error),
+	(reap_streams), (schedule_stream_reap), (actually_start_stream):
+	Hold the stream list lock while setting and clearing idle handler IDs,
+	since we're doing this from gstreamer threads as well as the main
+	thread.  Don't clean up streams we're replacing in
+	actually_start_stream directly, as that can lead to deadlock.
+	Fixes #512226.
+
 2008-04-08  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by: Frank Scholz  <dev@netzflocken.de>

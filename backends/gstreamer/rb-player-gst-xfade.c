@@ -515,14 +515,6 @@ dump_stream_list (RBPlayerGstXFade *player)
 	}
 }
 
-static void
-dump_stream_list_lock (RBPlayerGstXFade *player)
-{
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
-	dump_stream_list (player);
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
-}
-
 /* caller must hold stream list lock */
 static RBXFadeStream *
 find_stream_by_uri (RBPlayerGstXFade *player, const char *uri)
@@ -797,14 +789,17 @@ emit_stream_error_cb (RBXFadeStream *stream)
 static void
 emit_stream_error (RBXFadeStream *stream, GError *error)
 {
+	g_static_rec_mutex_lock (&stream->player->priv->stream_list_lock);
+
 	if (stream->error_idle_id != 0) {
 		g_error_free (error);
-		return;
+	} else {
+		stream->error = error;
+		stream->error_idle_id = g_idle_add ((GSourceFunc) emit_stream_error_cb,
+						    stream);
 	}
 
-	stream->error = error;
-	stream->error_idle_id = g_idle_add ((GSourceFunc) emit_stream_error_cb,
-					    stream);
+	g_static_rec_mutex_unlock (&stream->player->priv->stream_list_lock);
 }
 
 static void
@@ -1332,8 +1327,8 @@ reap_streams (RBPlayerGstXFade *player)
 	GList *t;
 	GList *reap = NULL;
 
-	player->priv->stream_reap_id = 0;
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	player->priv->stream_reap_id = 0;
 	dump_stream_list (player);
 	for (t = player->priv->streams; t != NULL; t = t->next) {
 		RBXFadeStream *stream = (RBXFadeStream *)t->data;
@@ -1358,11 +1353,14 @@ reap_streams (RBPlayerGstXFade *player)
 static void
 schedule_stream_reap (RBPlayerGstXFade *player)
 {
-	if (player->priv->stream_reap_id != 0)
-		return;
+	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 
-	dump_stream_list_lock (player);
-	player->priv->stream_reap_id = g_idle_add ((GSourceFunc) reap_streams, player);
+	if (player->priv->stream_reap_id == 0) {
+		dump_stream_list (player);
+		player->priv->stream_reap_id = g_idle_add ((GSourceFunc) reap_streams, player);
+	}
+	
+	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 }
 
 /* emits a tag signal from the player, maybe */
@@ -2161,6 +2159,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 {
 	RBPlayerGstXFade *player = stream->player;
 	gboolean ret = TRUE;
+	gboolean need_reap = FALSE;
 
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 
@@ -2198,7 +2197,8 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			case PREROLLING:
 			case PREROLL_PLAY:
 				rb_debug ("stream %s is paused; replacing it", pstream->uri);
-				unlink_and_dispose_stream (player, pstream);
+				pstream->state = PENDING_REMOVE;
+				need_reap = TRUE;
 				break;
 
 			default:
@@ -2236,13 +2236,14 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 				break;
 			case PAUSED:
 				rb_debug ("stream %s is paused; replacing it", pstream->uri);
-				unlink_and_dispose_stream (player, pstream);
+				pstream->state = PENDING_REMOVE;
+				need_reap = TRUE;
 				break;
 			default:
 				break;
 			}
 		}
-
+	
 		if (playing) {
 			/* wait for current stream's EOS */
 			rb_debug ("existing playing stream found; waiting for its EOS -> WAITING_EOS");
@@ -2252,11 +2253,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			ret = link_and_unblock_stream (stream, error);
 		}
 	} else {
-		/* replace any existing playing stream.
-		 * might need to use schedule_stream_reap instead of
-		 * doing it directly, since we can get in here on a streaming
-		 * thread..  hmm.
-		 */
+		/* replace any existing playing stream */
 		GList *l;
 		for (l = player->priv->streams; l != NULL; l = l->next) {
 			RBXFadeStream *pstream = (RBXFadeStream *)l->data;
@@ -2269,7 +2266,8 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			case FADING_IN:
 				/* kill this one */
 				rb_debug ("stopping stream %s (replaced by new stream)", pstream->uri);
-				unlink_and_dispose_stream (player, pstream);
+				need_reap = TRUE;
+				pstream->state = PENDING_REMOVE;
 				break;
 
 			default:
@@ -2279,6 +2277,10 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 		}
 
 		ret = link_and_unblock_stream (stream, error);
+	}
+
+	if (need_reap) {
+		schedule_stream_reap (player);
 	}
 
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
