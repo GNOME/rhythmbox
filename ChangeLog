@@ -1,5 +1,13 @@
 2008-04-08  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by: Frank Scholz  <dev@netzflocken.de>
+
+	* plugins/coherence/upnp_coherence/__init__.py:
+	initialize self.coherence in the constructor so deactivate() works
+	when coherence init fails.  Fixes #514760.
+
+2008-04-08  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Thomas Zander  <thomas.e.zander@googlemail.com>
 
 	* backends/gstreamer/rb-player-gst-xfade.c: (emit_stream_error),

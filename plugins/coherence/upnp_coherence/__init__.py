@@ -14,6 +14,7 @@ class CoherencePlugin(rb.Plugin,log.Loggable):
 
     def __init__(self):
         rb.Plugin.__init__(self)
+        self.coherence = None
 
     def activate(self, shell):
         from twisted.internet import gtk2reactor
@@ -102,7 +103,7 @@ class CoherencePlugin(rb.Plugin,log.Loggable):
             source.delete_thyself()
         del self.sources
 
-        # uninstall twisted reactor? probably not, since other thigngs may have used it
+        # uninstall twisted reactor? probably not, since other things may have used it
 
 
     def get_coherence (self):
