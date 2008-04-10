@@ -52,6 +52,7 @@ def create_lyrics_view():
 	tview = gtk.TextView()
 	tview.set_wrap_mode(gtk.WRAP_WORD)
 	tview.set_editable(False)
+	tview.set_left_margin(6)
 
 	sw = gtk.ScrolledWindow()
 	sw.add(tview)
