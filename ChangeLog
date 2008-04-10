@@ -1,3 +1,13 @@
+2008-04-11  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Maximilian Grothusmann <maxi@own-hero.net>
+
+	* plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:
+	Use Amazon ECS 4.0 instead of the older discontinued service.
+	Use batch searches to reduce the number of requests.  Don't do the
+	search when we don't have an artist name or an album name.
+	Fixes #513851.
+
 2008-04-10  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Thomas Andersen  <phomes@gmail.com>

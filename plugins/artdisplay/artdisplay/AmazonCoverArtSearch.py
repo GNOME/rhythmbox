@@ -27,6 +27,10 @@ LICENSE_KEY = "18C3VZN9HCECM5G3HQG2"
 DEFAULT_LOCALE = "en_US"
 ASSOCIATE = "webservices-20"
 
+# We are not allowed to batch more than 2 requests at once
+# http://docs.amazonwebservices.com/AWSEcommerceService/4-0/PgCombiningOperations.html
+MAX_BATCH_JOBS = 2
+
 
 class Bag: pass
 
@@ -35,30 +39,31 @@ class AmazonCoverArtSearch (object):
 		self.searching = False
 		self.cancel = False
 		self.loader = loader
-		self._supportedLocales = {
-			"en_US" : ("us", "xml.amazon.com", "music"),
-			"en_GB" : ("uk", "xml-eu.amazon.com", "music"),
-			"de" : ("de", "xml-eu.amazon.com", "music"),
-			"ja" : ("jp", "xml.amazon.co.jp", "music-jp")
-		}
 		self.db = None
 		self.entry = None
+		(self.tld, self.encoding) = self.__get_locale ()
 
 	def __get_locale (self):
-		default = locale.getdefaultlocale ()
+		# "JP is the only locale that correctly takes UTF8 input. All other locales use LATIN1."
+		# http://developer.amazonwebservices.com/connect/entry.jspa?externalID=1295&categoryID=117
+		supported_locales = {
+			"en_US" : ("com", "latin1"),
+			"en_GB" : ("co.uk", "latin1"),
+			"de" : ("de", "latin1"),
+			"ja" : ("jp", "utf8")
+		}
+
 		lc_id = DEFAULT_LOCALE
-		if default[0] is not None:
-			if self._supportedLocales.has_key (default[0]):
-				lc_id = default[0]
+		default = locale.getdefaultlocale ()[0]
+		if default:
+			if supported_locales.has_key (default):
+				lc_id = default
 			else:
-				lang = default[0].split("_")[0]
-				if self._supportedLocales.has_key (lang):
+				lang = default.split("_")[0]
+				if supported_locales.has_key (lang):
 					lc_id = lang
 
-		lc_host = self._supportedLocales[lc_id][1]
-		lc_name = self._supportedLocales[lc_id][0]
-		lc_mode = self._supportedLocales[lc_id][2]
-		return ((lc_host, lc_name, lc_mode))
+		return supported_locales[lc_id]
 
 	def search (self, db, entry, on_search_completed_callback, *args):
 		self.searching = True
@@ -71,6 +76,10 @@ class AmazonCoverArtSearch (object):
 
 		st_artist = db.entry_get (entry, rhythmdb.PROP_ARTIST) or _("Unknown")
 		st_album = db.entry_get (entry, rhythmdb.PROP_ALBUM) or _("Unknown")
+
+		if st_artist == st_album == _("Unknown"):
+			self.on_search_completed (None)
+			return
 
 		# Tidy up
 
@@ -119,68 +128,58 @@ class AmazonCoverArtSearch (object):
 				self.keywords.append ("%s %s" % (st_artist, st_album))
 				if st_album_no_vol != st_album:
 					self.keywords.append ("%s %s" % (st_artist, st_album_no_vol))
-				if (st_album != _("Unknown")):
-					self.keywords.append ("Various %s" % (st_album))
+				self.keywords.append ("Various %s" % (st_album))
 			self.keywords.append ("%s" % (st_artist))
 
 		# Initiate asynchronous search
-		self.search_next ();
-
-	def __build_url (self, keyword):
-		(lc_host, lc_name, lc_mode) = self.__get_locale ()
-
-		url = "http://" + lc_host + "/onca/xml3?f=xml"
-		url += "&t=%s" % ASSOCIATE
-		url += "&dev-t=%s" % LICENSE_KEY
-		url += "&type=%s" % 'lite'
-		url += "&locale=%s" % lc_name
-		url += "&mode=%s" % lc_mode
-		url += "&%s=%s" % ('KeywordSearch', urllib.quote (keyword))
-
-		return url
+		self.search_next ()
 
 	def search_next (self):
-		self.searching = True
-		
-		if len (self.keywords)==0:
-			keyword = None
-		else:
-			keyword = self.keywords.pop (0)
-
-		if keyword is None:
+		if len (self.keywords) == 0:
 			# No keywords left to search -> no results
 			self.on_search_completed (None)
-			ret = False
-		else:
-			# Retrieve search for keyword
-			url = self.__build_url (keyword.strip ())
-			self.loader.get_url (url, self.on_search_response)
-			ret = True
+			return False
 
-		return ret
+		self.searching = True
+
+		url = "http://ecs.amazonaws." + self.tld + "/onca/xml" \
+		      "?Service=AWSECommerceService"                   \
+		      "&AWSAccessKeyId=" + LICENSE_KEY +               \
+		      "&AssociateTag=" + ASSOCIATE +                   \
+		      "&ResponseGroup=Images,ItemAttributes"           \
+		      "&Operation=ItemSearch"                          \
+		      "&ItemSearch.Shared.SearchIndex=Music"
+
+		job = 1
+		while job <= MAX_BATCH_JOBS and len (self.keywords) > 0:
+			keyword = self.keywords.pop (0)
+			keyword = keyword.encode (self.encoding, "ignore")
+			keyword = keyword.strip ()
+			keyword = urllib.quote (keyword)
+			url += "&ItemSearch.%d.Keywords=%s" % (job, keyword)
+			job += 1
+
+		# Retrieve search for keyword
+		self.loader.get_url (url, self.on_search_response)
+		return True
 
 	def __unmarshal (self, element):
 		rc = Bag ()
-		if isinstance (element, minidom.Element) and (element.tagName == 'Details'):
-			rc.URL = element.attributes["url"].value
-		childElements = [e for e in element.childNodes if isinstance (e, minidom.Element)]
-		if childElements:
-			for child in childElements:
+		child_elements = [e for e in element.childNodes if isinstance (e, minidom.Element)]
+		if child_elements:
+			for child in child_elements:
 				key = child.tagName
 				if hasattr (rc, key):
-					if type (getattr (rc, key)) <> type ([]):
+					if not isinstance (getattr (rc, key), list):
 						setattr (rc, key, [getattr (rc, key)])
-					setattr (rc, key, getattr (rc, key) + [self.__unmarshal (child)])
-				elif isinstance(child, minidom.Element) and (child.tagName == 'Details'):
-					setattr (rc,key,[self.__unmarshal(child)])
+					getattr (rc, key).append (self.__unmarshal (child))
+				# get_best_match_urls() wants a list, even if there is only one item/artist
+				elif child.tagName in ("Items", "Item", "Artist"):
+					setattr (rc, key, [self.__unmarshal(child)])
 				else:
 					setattr (rc, key, self.__unmarshal(child))
 		else:
 			rc = "".join ([e.data for e in element.childNodes if isinstance (e, minidom.Text)])
-			if element.tagName == 'SalesRank':
-				rc = rc.replace ('.', '')
-				rc = rc.replace (',', '')
-				rc = int (rc)
 		return rc
 
 	def on_search_response (self, result_data):
@@ -194,14 +193,14 @@ class AmazonCoverArtSearch (object):
 			self.search_next()
 			return
 		
-		data = self.__unmarshal (xmldoc).ProductInfo
-
-		if hasattr(data, 'ErrorMsg'):
-			# Search was unsuccessful, try next keyword
+		data = self.__unmarshal (xmldoc)
+		if not hasattr (data, "ItemSearchResponse") or \
+		   not hasattr (data.ItemSearchResponse, "Items"):
+			# Something went wrong ...
 			self.search_next ()
 		else:
 			# We got some search results
-			self.on_search_results (data.Details)
+			self.on_search_results (data.ItemSearchResponse.Items)
 
 	def on_search_results (self, results):
 		self.on_search_completed (results)
@@ -224,25 +223,27 @@ class AmazonCoverArtSearch (object):
 		return s
 
 	def __valid_match (self, item):
-		if item.ImageUrlLarge == "" and item.ImageUrlMedium == "":
-			print "%s doesn't have image URLs; ignoring" % (item.URL)
-			return False
-		return True
+		return (hasattr (item, "LargeImage") or hasattr (item, "MediumImage")) \
+		       and hasattr (item, "ItemAttributes")
 
 	def get_best_match_urls (self, search_results):
 		# Default to "no match", our results must match our criteria
 		best_match = None
 
-		search_results = filter(self.__valid_match, search_results)
-		try:
+		for result in search_results:
+			if not hasattr (result, "Item"):
+				# Search was unsuccessful, try next batch job
+				continue
+
+			items = filter(self.__valid_match, result.Item)
 			if self.search_album != _("Unknown"):
 				album_check = self.__tidy_up_string (self.search_album)
-				for item in search_results:
+				for item in items:
+					if not hasattr (item.ItemAttributes, "Title"):
+						continue
 
-					# Check for album name in ProductName
-					product_name = self.__tidy_up_string (item.ProductName)
-
-					if product_name == album_check:
+					album = self.__tidy_up_string (item.ItemAttributes.Title)
+					if album == album_check:
 						# Found exact album, can not get better than that
 						best_match = item
 						break
@@ -250,8 +251,9 @@ class AmazonCoverArtSearch (object):
 					# Check the results for both an album name that contains the name
 					# we're searching for, and an album name that's a substring of the
 					# name we're searching for
-					elif (best_match is None) and (product_name.find (album_check) != -1 
-                                                                  or album_check.find (product_name) != -1):
+					elif (best_match is None) and \
+					     (album.find (album_check) != -1 or
+					      album_check.find (album) != -1):
 						best_match = item
 
 			# If we still have no definite hit, use first result where artist matches
@@ -260,14 +262,11 @@ class AmazonCoverArtSearch (object):
 				if best_match is None:
 					# Check if artist appears in the Artists list
 					hit = False
-					for item in search_results:
+					for item in items:
+						if not hasattr (item.ItemAttributes, "Artist"):
+							continue
 
-						if type (item.Artists.Artist) <> type ([]):
-							artists = [item.Artists.Artist]
-						else:
-							artists = item.Artists.Artist
-
-						for artist in artists:
+						for artist in item.ItemAttributes.Artist:
 							artist = self.__tidy_up_string (artist)
 							if artist.find (artist_check) != -1:
 								best_match = item
@@ -276,10 +275,10 @@ class AmazonCoverArtSearch (object):
 						if hit:
 							break
 
-			if best_match:
-				return filter(lambda x: x != "", [item.ImageUrlLarge, item.ImageUrlMedium])
-			else:
-				return []
+			urls = [getattr (best_match, size).URL for size in ("LargeImage", "MediumImage")
+			        if hasattr (best_match, size)]
+			if urls:
+				return urls
 
-		except TypeError:
-			return []
+		# No search was successful
+		return []
