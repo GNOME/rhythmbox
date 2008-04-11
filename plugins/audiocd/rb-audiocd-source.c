@@ -768,6 +768,28 @@ impl_get_ui_actions (RBSource *source)
 	return actions;
 }
 
+static char *
+_gnome_vfs_to_gvfs_cdda_uri (const char *gnome_vfs_uri)
+{
+	GString *retval;
+	guint i;
+
+	if (strstr (gnome_vfs_uri, "/dev/") == NULL)
+		return NULL;
+
+	retval = g_string_new ("");
+	for (i = 0; gnome_vfs_uri[i] != '\0' ;) {
+		if (strncmp (gnome_vfs_uri + i, "/dev/", 5) == 0)
+			i += 5;
+		else {
+			g_string_append_c (retval, gnome_vfs_uri[i]);
+			i++;
+		}
+	}
+
+	return g_string_free (retval, FALSE);
+}
+
 static guint
 impl_want_uri (RBSource *source, const char *uri)
 {
@@ -792,6 +814,16 @@ impl_want_uri (RBSource *source, const char *uri)
 
 	if (strcmp (activation_uri, uri) == 0)
 		retval = 100;
+	else {
+		char *gvfs_uri;
+
+		/* FIXME work-around "new" gvfs style URLs:
+		 * cdda://sr0/ instead of cdda:///dev/sr0 */
+		gvfs_uri = _gnome_vfs_to_gvfs_cdda_uri (activation_uri);
+		if (strncmp (gvfs_uri, uri, strlen (gvfs_uri - 1)) == 0)
+			retval = 100;
+		g_free (gvfs_uri);
+	}
 
 	g_free (activation_uri);
 

@@ -1,3 +1,17 @@
+2008-04-11  Bastien Nocera  <hadess@hadess.net>
+
+	* data/rhythmbox.desktop.in.in: Say that we handle URLs,
+	otherwise only local filenames are passed
+	* plugins/audiocd/rb-audiocd-source.c
+	(_gnome_vfs_to_gvfs_cdda_uri), (impl_want_uri):
+	Handle new-style gvfs cdda URIs
+	* shell/rb-shell.c (rb_shell_load_uri): When passing URIs that
+	are ignored by the playlist parser, try to find a source that
+	it could match.
+
+	Fixes starting Rhythmbox from a CDDA nautilus window, or autostarted
+	on insertion (Closes: #526139)
+
 2008-04-11  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Maximilian Grothusmann <maxi@own-hero.net>

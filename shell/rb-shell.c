@@ -3327,13 +3327,21 @@ rb_shell_load_uri (RBShell *shell,
 								     uri, error))
 					return FALSE;
 			}
-		} else if (result == TOTEM_PL_PARSER_RESULT_IGNORED && rb_uri_is_local (uri)) {
-			/* That happens for directories */
+		} else if ((result == TOTEM_PL_PARSER_RESULT_IGNORED && rb_uri_is_local (uri))
+			   || result == TOTEM_PL_PARSER_RESULT_UNHANDLED) {
+			/* That happens for directories and unhandled schemes, such as CDDA */
 			playlist_source = rb_shell_guess_source_for_uri (shell, uri);
 			if (playlist_source == NULL || rb_source_uri_is_source (playlist_source, uri) == FALSE) {
-				rb_debug ("%s is a directory, but doesn't have a source, adding as a dir", uri);
-				if (!rb_shell_add_uri (shell, uri, NULL, NULL, error))
+				/* Do we have a directory? */
+				if (rb_uri_is_local (uri)) {
+					rb_debug ("%s is a directory, but doesn't have a source, adding as a dir", uri);
+					if (!rb_shell_add_uri (shell, uri, NULL, NULL, error))
+						return FALSE;
+				} else {
+					/* Or something else? */
+					rb_debug ("%s is not handled as a playlist, isn't local, and doesn't have a source, doing nothing", uri);
 					return FALSE;
+				}
 			}
 		} else {
 			rb_debug ("%s didn't parse as a playlist", uri);
@@ -3350,7 +3358,14 @@ rb_shell_load_uri (RBShell *shell,
 
 	if (play) {
 		if (playlist_source != NULL) {
+			char *name;
+
 			rb_shell_activate_source (shell, playlist_source);
+
+			g_object_get (playlist_source, "name", &name, NULL);
+			rb_debug ("Activated source '%s' for uri %s", name, uri);
+			g_free (name);
+
 			return TRUE;
 		}
 
