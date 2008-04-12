@@ -54,6 +54,7 @@ def create_lyrics_view():
 	tview.set_editable(False)
 	tview.set_left_margin(6)
 
+	tview.set_size_request (0, 0)
 	sw = gtk.ScrolledWindow()
 	sw.add(tview)
 	sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
@@ -189,14 +190,17 @@ class LyricPane(object):
 		self.discard.connect('clicked', discard_callback)
 		self.clear = gtk.Button(stock=gtk.STOCK_CLEAR)
 		self.clear.connect('clicked', clear_callback)
-		self.hbox = gtk.HBox()
-		self.hbox.pack_end(self.edit, expand=False)
-		self.hbox.pack_end(self.clear, expand=False)
-		self.hbox.pack_start(self.discard, expand=False)
-		
+		self.hbox = gtk.HButtonBox()
+		self.hbox.set_spacing (6)
+		self.hbox.set_layout(gtk.BUTTONBOX_END)
+		self.hbox.add(self.edit)
+		self.hbox.add(self.clear)
+		self.hbox.add(self.discard)
+		self.hbox.set_child_secondary (self.clear, is_secondary=True)
+
 		(self.view, self.buffer, self.tview) = create_lyrics_view()
 
-		self.view.pack_start(self.hbox, expand=False, fill=False)
+		self.view.pack_start(self.hbox, expand=False, fill=False, padding=6)
 		self.view.set_spacing(2)
 	
 		self.view.show_all()
