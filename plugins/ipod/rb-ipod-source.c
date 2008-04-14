@@ -48,10 +48,16 @@
 #include "rhythmdb.h"
 #include "rb-cut-and-paste-code.h"
 
+#define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/ipod/paned_position"
+#define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/ipod/show_browser"
+
 static GObject *rb_ipod_source_constructor (GType type, 
 					    guint n_construct_properties,
 					    GObjectConstructParam *construct_properties);
 static void rb_ipod_source_dispose (GObject *object);
+
+static char *impl_get_browser_key (RBSource *source);
+static char *impl_get_paned_key (RBBrowserSource *source);
 
 static gboolean impl_show_popup (RBSource *source);
 static void impl_move_to_trash (RBSource *asource);
@@ -128,10 +134,13 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
+	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
 	object_class->constructor = rb_ipod_source_constructor;
 	object_class->dispose = rb_ipod_source_dispose;
 
+	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
@@ -148,6 +157,8 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
 	rms_class->impl_track_added = NULL;
 #endif
+
+	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 
 	g_type_class_add_private (klass, sizeof (RBiPodSourcePrivate));
 }
@@ -1068,6 +1079,18 @@ impl_get_ui_actions (RBSource *source)
 	actions = g_list_prepend (actions, g_strdup ("RemovableSourceEject"));
 
 	return actions;
+}
+
+static char *
+impl_get_browser_key (RBSource *source)
+{
+	return g_strdup (CONF_STATE_SHOW_BROWSER);
+}
+
+static char *
+impl_get_paned_key (RBBrowserSource *source)
+{
+	return g_strdup (CONF_STATE_PANED_POSITION);
 }
 
 static gboolean

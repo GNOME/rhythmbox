@@ -42,11 +42,16 @@
 
 #include "rb-mtp-source.h"
 
+#define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/mtp/paned_position"
+#define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/mtp/show_browser"
+
 static GObject *rb_mtp_source_constructor (GType type,
 					   guint n_construct_properties,
 					   GObjectConstructParam *construct_properties);
 static void rb_mtp_source_finalize (GObject *object);
 
+static char *impl_get_browser_key (RBSource *source);
+static char *impl_get_paned_key (RBBrowserSource *source);
 
 static void rb_mtp_source_load_tracks (RBMtpSource*);
 static gboolean rb_mtp_source_transfer_track_to_disk (LIBMTP_mtpdevice_t *device,
@@ -92,9 +97,13 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
+	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
 	object_class->constructor = rb_mtp_source_constructor;
 	object_class->finalize = rb_mtp_source_finalize;
+
+	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_get_browser_key = impl_get_browser_key;
 
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -110,6 +119,8 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	source_class->impl_delete_thyself = impl_delete_thyself;
 	source_class->impl_delete = impl_delete;
 	source_class->impl_copy = impl_copy;
+
+	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 
 	rms_class->impl_track_added = impl_track_added;
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
@@ -180,6 +191,18 @@ static void
 rb_mtp_source_finalize (GObject *object)
 {
 	G_OBJECT_CLASS (rb_mtp_source_parent_class)->finalize (object);
+}
+
+static char *
+impl_get_browser_key (RBSource *source)
+{
+	return g_strdup (CONF_STATE_SHOW_BROWSER);
+}
+
+static char *
+impl_get_paned_key (RBBrowserSource *source)
+{
+	return g_strdup (CONF_STATE_PANED_POSITION);
 }
 
 RBBrowserSource *

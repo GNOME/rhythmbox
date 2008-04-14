@@ -12,6 +12,28 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/state/ipod/show_browser</key>
+        <applyto>/apps/rhythmbox/state/ipod/show_browser</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>TRUE</default>
+        <locale name="C">
+	<short>Show browser in for iPods</short>
+	<long>Show the artist and album browser for an iPod.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/mtp/show_browser</key>
+        <applyto>/apps/rhythmbox/state/mtp/show_browser</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>TRUE</default>
+        <locale name="C">
+	<short>Show browser in for MTP-devices</short>
+	<long>Show the artist and album browser for an MTP-device.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/grace_period</key>
         <applyto>/apps/rhythmbox/grace_period</applyto>
         <owner>rhythmbox</owner>

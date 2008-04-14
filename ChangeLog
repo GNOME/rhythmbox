@@ -1,3 +1,15 @@
+2008-04-14  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Mirco Müller  <macslow@bangang.de>
+
+	* data/rhythmbox.schemas:
+	* plugins/ipod/rb-ipod-source.c: (rb_ipod_source_class_init),
+	(impl_get_browser_key), (impl_get_paned_key):
+	* plugins/mtpdevice/rb-mtp-source.c: (rb_mtp_source_class_init),
+	(impl_get_browser_key), (impl_get_paned_key):
+	Add gconf keys for tracking the browser state for ipod and mtp
+	devices, showing the browser by default.  From #508555.
+
 2008-04-13  Jonathan Matthew  <jonathan@d14n.org>
 
 	* podcast/rb-podcast-manager.c: (remove_if_not_downloaded),
