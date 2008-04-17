@@ -1,6 +1,5 @@
 # -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
 #
-# Copyright (C) 2005 Eduardo Gonzalez
 # Copyright (C) 2006 Jonathan Matthew
 # Copyright (C) 2007 James Livingston
 #
@@ -8,6 +7,15 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2, or (at your option)
 # any later version.
+#
+# The Rhythmbox authors hereby grants permission for non-GPL compatible
+# GStreamer plugins to be used and distributed together with GStreamer
+# and Rhythmbox. This permission is above and beyond the permissions granted
+# by the GPL license by which Rhythmbox is covered. If you modify this code
+# you may extend this exception to your version of the code, but you are not
+# obligated to do so. If you do not wish to do so, delete this exception
+# statement from your version.
+#
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,7 +30,9 @@
 import urllib
 import re
 import rb
-from xml.dom import minidom
+
+from xml.etree import cElementTree
+
 
 
 class LeoslyricsParser(object):
@@ -44,64 +54,31 @@ class LeoslyricsParser(object):
 			callback (None, *data)
 			return
 
-		try:
-			xmldoc = minidom.parseString(lyrics).documentElement
-		except e:
-			print e
+		element = cElementTree.fromstring(lyrics)
+		if element.find("response").attrib['code'] is not '0':
+			print "got failed response:" + lyrics
 			callback (None, *data)
 			return
 
-		result_code = xmldoc.getElementsByTagName('response')[0].getAttribute('code')
-		if result_code != '0':
-			xmldoc.unlink()
-			callback (None, *data)
-			return
-		
-		matches = xmldoc.getElementsByTagName('result')[:10]
-		
-		i = 0
-		for match in matches:
-			title = match.getElementsByTagName('title')[0].firstChild.data
-			artist = match.getElementsByTagName('name')[0].firstChild.data
-			
-			if (re.search(self.title.lower().strip(), title.lower().strip()) and
-					re.search(self.artist.lower().strip(), artist.lower().strip())):
-				continue
-
-			matches = matches[i:]
-			i += 1
-		
-		hids = map(lambda x: x.getAttribute('hid'), matches)
-
-		if len(hids) == 0:
-			xmldoc.unlink()
+		#FIXME: check non-exact matches
+		match = element.find("searchResults").find("result")
+		if match.attrib["exactMatch"] is None:
+			print "no exact match:" + lyrics
 			callback (None, *data)
 			return
 
-		xmldoc.unlink()
-
-		lurl = "http://api.leoslyrics.com/api_lyrics.php?auth=Rhythmbox&hid=%s" % (urllib.quote(hids[0].encode('utf-8')))
+		lurl = "http://api.leoslyrics.com/api_lyrics.php?auth=Rhythmbox&hid=%s" % (urllib.quote(match.attrib["hid"].encode('utf-8')))
 		loader = rb.Loader()
 		loader.get_url (lurl, self.parse_lyrics, callback, *data)
-
-
+			
 	def parse_lyrics(self, result, callback, *data):
 		if result is None:
 			callback (None, *data)
 			return
 
-		try:
-			xmldoc = minidom.parseString(result).documentElement
-		except e:
-			print e
-			callback (None, *data)
-			return
+		element = cElementTree.fromstring(result)
 
-		lyrics = xmldoc.getElementsByTagName('title')[0].firstChild.nodeValue
-		lyrics += ' - ' + xmldoc.getElementsByTagName('artist')[0].getElementsByTagName('name')[0].firstChild.nodeValue + '\n\n'
-		lyrics += xmldoc.getElementsByTagName('text')[0].firstChild.nodeValue
-		xmldoc.unlink()
-
+		lyrics = element.find('lyric').find('text').text
 		lyrics += "\n\nLyrics provided by leoslyrics.com"
 
 		callback (lyrics, *data)

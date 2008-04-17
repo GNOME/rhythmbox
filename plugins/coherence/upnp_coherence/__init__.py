@@ -1,3 +1,12 @@
+# -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
+#
+# Copyright 2008, Frank Scholz <coherence@beebits.net>
+# Copyright 2008, James Livingston <doclivingston@gmail.com>
+#
+# Licensed under the MIT license
+# http://opensource.org/licenses/mit-license.php
+
+
 import rhythmdb, rb
 import gobject, gtk
 
