@@ -248,7 +248,9 @@ RB_SOURCE_HEADER_GET_CLASS
 
 <SECTION>
 <FILE>rb-play-order-random</FILE>
-RBRandomPlayOrderPrivate
+<TITLE>RBRandomPlayOrder</TITLE>
+RBRandomPlayOrder
+RBRandomPlayOrderClass
 <SUBSECTION Standard>
 RB_RANDOM_PLAY_ORDER
 RB_IS_RANDOM_PLAY_ORDER
@@ -257,6 +259,7 @@ rb_random_play_order_get_type
 RB_RANDOM_PLAY_ORDER_CLASS
 RB_IS_RANDOM_PLAY_ORDER_CLASS
 RB_RANDOM_PLAY_ORDER_GET_CLASS
+RBRandomPlayOrderPrivate
 </SECTION>
 
 <SECTION>
@@ -336,7 +339,9 @@ rb_shell_error_quark
 
 <SECTION>
 <FILE>rb-play-order</FILE>
-RBPlayOrderPrivate
+<TITLE>RBPlayOrder</TITLE>
+RBPlayOrder
+RBPlayOrderClass
 rb_play_order_new
 RBPlayOrderDescription
 rb_play_order_playing_source_changed
@@ -354,10 +359,6 @@ rb_play_order_get_source
 rb_play_order_get_db
 rb_play_order_get_query_model
 rb_play_order_model_not_empty
-rb_play_order_have_next_changed
-rb_play_order_have_previous_changed
-rb_play_order_player_is_playing
-rb_play_order_check_if_empty
 <SUBSECTION Standard>
 RB_PLAY_ORDER
 RB_IS_PLAY_ORDER

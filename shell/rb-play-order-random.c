@@ -28,9 +28,12 @@
  *
  */
 
-/* This class is a base case for weighted random play orders. Subclasses only
- * need to override get_entry_weight() to return the right weight for a given
- * entry.
+/**
+ * SECTION:rb-play-order-random
+ * @short_description: base class for weighted random play orders
+ *
+ * Subclasses only need to override get_entry_weight() to return the
+ * right weight for a given entry.
  *
  * This class also delays committing any changes until the user moves to the
  * next or previous song. So if the user changes the entry-view to contain

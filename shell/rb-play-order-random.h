@@ -43,16 +43,19 @@ G_BEGIN_DECLS
 #define RB_IS_RANDOM_PLAY_ORDER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_RANDOM_PLAY_ORDER))
 #define RB_RANDOM_PLAY_ORDER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_RANDOM_PLAY_ORDER, RBRandomPlayOrderClass))
 
+typedef struct _RBRandomPlayOrder RBRandomPlayOrder;
+typedef struct _RBRandomPlayOrderClass RBRandomPlayOrderClass;
+
 typedef struct RBRandomPlayOrderPrivate RBRandomPlayOrderPrivate;
 
-typedef struct
+struct _RBRandomPlayOrder
 {
 	RBPlayOrder parent;
 
 	RBRandomPlayOrderPrivate *priv;
-} RBRandomPlayOrder;
+};
 
-typedef struct
+struct _RBRandomPlayOrderClass
 {
 	RBPlayOrderClass parent_class;
 
@@ -62,7 +65,7 @@ typedef struct
 	 * The @db will be locked when this method is called.
 	 */
 	double (*get_entry_weight) (RBRandomPlayOrder *rorder, RhythmDB *db, RhythmDBEntry *entry);
-} RBRandomPlayOrderClass;
+};
 
 GType				rb_random_play_order_get_type		(void);
 
