@@ -44,19 +44,22 @@ G_BEGIN_DECLS
 #define RB_IS_SOURCE_HEADER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_SOURCE_HEADER))
 #define RB_SOURCE_HEADER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SOURCE_HEADER, RBSourceHeaderClass))
 
+typedef struct _RBSourceHeader RBSourceHeader;
+typedef struct _RBSourceHeaderClass RBSourceHeaderClass;
+
 typedef struct RBSourceHeaderPrivate RBSourceHeaderPrivate;
 
-typedef struct
+struct _RBSourceHeader
 {
 	GtkTable parent;
 
 	RBSourceHeaderPrivate *priv;
-} RBSourceHeader;
+};
 
-typedef struct
+struct _RBSourceHeaderClass
 {
 	GtkTableClass parent_class;
-} RBSourceHeaderClass;
+};
 
 GType			rb_source_header_get_type	(void);
 
@@ -64,9 +67,7 @@ RBSourceHeader *	rb_source_header_new		(GtkUIManager   *mgr,
                                                          GtkActionGroup *actiongroup);
 
 void			rb_source_header_set_source	(RBSourceHeader *header,
-							 RBSource *player);
-
-RBSource *		rb_source_header_get_source	(RBSourceHeader *shell_player);
+							 RBSource *source);
 
 void			rb_source_header_clear_search	(RBSourceHeader *header);
 void			rb_source_header_sync_control_state (RBSourceHeader *header);

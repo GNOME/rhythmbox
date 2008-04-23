@@ -46,6 +46,20 @@
 #include "eel-gconf-extensions.h"
 #include "rb-util.h"
 
+/**
+ * SECTION:rb-source-header
+ * @short_description: container for search box and toolbar
+ *
+ * The source header contains the search box and the search
+ * action toolbar.  It remembers the search text and browser
+ * visibility state for each source, applying the stored state
+ * for the newly selected source when the source selection changes.
+ *
+ * The search bar contains a set of actions determined by the
+ * selected source.  The source is responsible for tracking
+ * which search action is active.
+ */
+
 static void rb_source_header_class_init (RBSourceHeaderClass *klass);
 static void rb_source_header_init (RBSourceHeader *shell_player);
 static void rb_source_header_finalize (GObject *object);
@@ -201,6 +215,11 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 	object_class->set_property = rb_source_header_set_property;
 	object_class->get_property = rb_source_header_get_property;
 
+	/**
+	 * RBSourceHeader:source:
+	 *
+	 * The currently selected #RBSource.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SOURCE,
 					 g_param_spec_object ("source",
@@ -208,6 +227,11 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 							      "RBSource object",
 							      RB_TYPE_SOURCE,
 							      G_PARAM_READWRITE));
+	/**
+	 * RBSourceHeader:action-group:
+	 *
+	 * The #GtkActionGroup to add actions to.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_ACTION_GROUP,
 					 g_param_spec_object ("action-group",
@@ -215,6 +239,11 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 							      "GtkActionGroup object",
 							      GTK_TYPE_ACTION_GROUP,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBSourceHeader:ui-manager:
+	 *
+	 * The #GtkUIManager instance.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_UI_MANAGER,
 					 g_param_spec_object ("ui-manager",
@@ -432,6 +461,13 @@ rb_source_header_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_source_header_set_source:
+ * @header: the #RBSourceHeader
+ * @source: the new selected #RBSource
+ *
+ * Updates the source header when a new source is selected.
+ */
 void
 rb_source_header_set_source (RBSourceHeader *header,
 			     RBSource *source)
@@ -444,6 +480,15 @@ rb_source_header_set_source (RBSourceHeader *header,
 		      NULL);
 }
 
+/**
+ * rb_source_header_new:
+ * @mgr: the #GtkUIManager
+ * @actiongroup: the #GtkActionGroup to add actions to
+ *
+ * Creates the #RBSourceHeader.
+ *
+ * Return value: the #RBSourceHeader instance
+ */
 RBSourceHeader *
 rb_source_header_new (GtkUIManager   *mgr,
 		      GtkActionGroup *actiongroup)
@@ -525,6 +570,13 @@ rb_source_header_search_cb (RBSearchEntry *search,
 	rb_source_header_sync_control_state (header);
 }
 
+/**
+ * rb_source_header_clear_search:
+ * @header: the #RBSourceHeader
+ *
+ * Clears the search box and resets all search state for the
+ * current selected source.
+ */
 void
 rb_source_header_clear_search (RBSourceHeader *header)
 {
@@ -561,6 +613,13 @@ rb_source_header_view_browser_changed_cb (GtkAction *action,
 	rb_source_header_sync_control_state (header);
 }
 
+/**
+ * rb_source_header_sync_control_state:
+ * @header: the #RBSourceHeader
+ *
+ * Updates the sensitivity and active state of various actions
+ * related to the source header.
+ */
 void
 rb_source_header_sync_control_state (RBSourceHeader *header)
 {
@@ -596,6 +655,12 @@ rb_source_header_search_activate_cb (RBSearchEntry *search,
 	gtk_widget_grab_focus (GTK_WIDGET (header->priv->selected_source));
 }
 
+/**
+ * rb_source_header_focus_search_box:
+ * @header: the #RBSourceHeader
+ *
+ * Grabs input focus for the search box.
+ */
 void
 rb_source_header_focus_search_box (RBSourceHeader *header)
 {
