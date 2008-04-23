@@ -53,6 +53,32 @@
 #define TOOLTIPS_DELAY 500
 #define TOOLTIPS_STICKY_REVERT_DELAY 1000
 
+/**
+ * SECTION:rb-tray-icon
+ * @short_description: Notification area icon
+ *
+ * The tray icon handles a few different forms of input:
+ * <itemizedlist>
+ *   <listitem>left clicking hides and shows the main window</listitem>
+ *   <listitem>right clicking brings up a popup menu</listitem>
+ *   <listitem>dropping files on the icon adds them to the library</listitem>
+ *   <listitem>scroll events change the playback volume</listitem>
+ * </itemizedlist>
+ *
+ * The tooltip for the tray icon consists of an image, the primary text 
+ * (displayed in bold large type), and the secondary text (which can
+ * contain markup).
+ *
+ * The tooltip is shown after the mouse pointer has been within the tray
+ * icon area for half a second.  This delay is only reset once the pointer
+ * has been outside the tray icon area for more than one second.
+ *
+ * The tray icon can also display notification bubbles (using libnotify).
+ * These contain the same set of elements as the tooltip.  The tooltip is
+ * suppressed while a notification bubble is being displayed.  A GConf setting
+ * allows the user to disable notification bubbles.
+ */
+
 static void rb_tray_icon_class_init (RBTrayIconClass *klass);
 static void rb_tray_icon_init (RBTrayIcon *shell_player);
 static GObject *rb_tray_icon_constructor (GType type, guint n_construct_properties,
@@ -164,6 +190,11 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 	object_class->set_property = rb_tray_icon_set_property;
 	object_class->get_property = rb_tray_icon_get_property;
 
+	/**
+	 * RBTrayIcon:shell:
+	 *
+	 * #RBShell instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SHELL,
 					 g_param_spec_object ("shell",
@@ -171,6 +202,11 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 							      "RBShell object",
 							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBTrayIcon:ui-manager:
+	 *
+	 * #GtkUIManager instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_UI_MANAGER,
 					 g_param_spec_object ("ui-manager",
@@ -178,6 +214,11 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 							      "GtkUIManager object",
 							      GTK_TYPE_UI_MANAGER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBTrayIcon:action-group:
+	 *
+	 * The #GtkActionGroup containing action specific to the tray icon
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_ACTION_GROUP,
 					 g_param_spec_object ("action-group",
@@ -424,6 +465,13 @@ rb_tray_icon_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_tray_icon_new:
+ * @mgr: the #GtkUIManager
+ * @shell: the #RBShell
+ * 
+ * Return value: the #RBTrayIcon
+ */
 RBTrayIcon *
 rb_tray_icon_new (GtkUIManager *mgr,
 		  RBShell *shell)
@@ -588,6 +636,16 @@ rb_tray_icon_show_notifications_changed_cb (GtkAction *action,
 	eel_gconf_set_boolean (CONF_UI_SHOW_NOTIFICATIONS, icon->priv->show_notifications);
 }
 
+/**
+ * rb_tray_icon_get_geom:
+ * @icon: the #RBTrayIcon
+ * @x: returns the x position of the tray icon
+ * @y: returns the y position of the tray icon
+ * @width: returns the width of the tray icon
+ * @height: returns the height of the tray icon
+ *
+ * Retrieves the current position and size of the tray icon.
+ */
 void
 rb_tray_icon_get_geom (RBTrayIcon *icon, int *x, int *y, int *width, int *height)
 {
@@ -647,6 +705,15 @@ rb_tray_icon_unhide_cb (RBTrayIcon *icon)
 	return FALSE;
 }
 
+/**
+ * rb_tray_icon_set_tooltip_primary_text:
+ * @icon: the #RBTrayIcon
+ * @primary_text: New primary text for the tooltip
+ *
+ * Updates the tooltip's primary text and updates the tooltip's
+ * visibility.  The primary text cannot contain markup.  It is
+ * always displayed in bold large type.
+ */
 void
 rb_tray_icon_set_tooltip_primary_text (RBTrayIcon *icon,
 				       const char *primary_text)
@@ -664,6 +731,13 @@ rb_tray_icon_set_tooltip_primary_text (RBTrayIcon *icon,
 	icon->priv->tooltip_unhide_id = g_idle_add ((GSourceFunc) rb_tray_icon_unhide_cb, icon);
 }
 
+/**
+ * rb_tray_icon_set_tooltip_icon:
+ * @icon: the #RBTrayIcon
+ * @msgicon: a #GtkWidget to display as the icon in the tooltip
+ *
+ * Updates the icon in the tooltip.
+ */
 void
 rb_tray_icon_set_tooltip_icon (RBTrayIcon *icon, GtkWidget *msgicon)
 {
@@ -682,9 +756,16 @@ rb_tray_icon_set_tooltip_icon (RBTrayIcon *icon, GtkWidget *msgicon)
 		gtk_box_pack_start (GTK_BOX (image_box), msgicon, FALSE, FALSE, 0);
 		gtk_widget_show (msgicon);
 	}
-
 }
 
+/**
+ * rb_tray_icon_set_tooltip_secondary_markup:
+ * @icon: the #RBTrayIcon
+ * @secondary_markup: markup text to display as the secondary text in the toolip
+ *
+ * Updates the secondary text in the tooltip.  The secondary text can contain
+ * simple markup.
+ */
 void
 rb_tray_icon_set_tooltip_secondary_markup (RBTrayIcon *icon,
 					   const char *secondary_markup)
@@ -693,11 +774,24 @@ rb_tray_icon_set_tooltip_secondary_markup (RBTrayIcon *icon,
 		gtk_label_set_markup (GTK_LABEL (icon->priv->tooltip_secondary),
 				      secondary_markup);
 		gtk_widget_show (icon->priv->tooltip_secondary);
-	} else
+	} else {
 		gtk_widget_hide (icon->priv->tooltip_secondary);
-
+	}
 }
 
+/**
+ * rb_tray_icon_notify:
+ * @icon: the #RBTrayIcon
+ * @timeout: how long the notification should be displayed (in milliseconds)
+ * @primary_markup: primary markup to display in the notification
+ * @msgicon: #GtkWidget to display as the image in the notification
+ * @secondary_markup: secondary markup to display in the notification
+ * @requested: if %TRUE, the notification was directly requested by the user
+ *
+ * Displays a notification bubble attached to the tray icon.  If the user has
+ * disabled notifications, the notification is only displayed if @requested
+ * is %TRUE.
+ */
 void
 rb_tray_icon_notify (RBTrayIcon *icon,
 		     guint timeout,
@@ -724,6 +818,12 @@ rb_tray_icon_notify (RBTrayIcon *icon,
 			      primary_markup, msgicon, secondary_markup);
 }
 
+/**
+ * rb_tray_icon_cancel_notify:
+ * @icon: the #RBTrayIcon
+ *
+ * Cancels any existing notification bubble.
+ */
 void
 rb_tray_icon_cancel_notify (RBTrayIcon *icon)
 {

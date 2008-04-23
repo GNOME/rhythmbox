@@ -45,19 +45,22 @@ G_BEGIN_DECLS
 #define RB_IS_TRAY_ICON_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_TRAY_ICON))
 #define RB_TRAY_ICON_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_TRAY_ICON, RBTrayIconClass))
 
+typedef struct _RBTrayIcon RBTrayIcon;
+typedef struct _RBTrayIconClass RBTrayIconClass;
+
 typedef struct RBTrayIconPrivate RBTrayIconPrivate;
 
-typedef struct
+struct _RBTrayIcon
 {
 	EggTrayIcon parent;
 
 	RBTrayIconPrivate *priv;
-} RBTrayIcon;
+};
 
-typedef struct
+struct _RBTrayIconClass
 {
 	EggTrayIconClass parent_class;
-} RBTrayIconClass;
+};
 
 GType			rb_tray_icon_get_type	(void);
 
