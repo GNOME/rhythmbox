@@ -41,6 +41,24 @@
 #include "rb-statusbar.h"
 #include "rb-debug.h"
 
+/**
+ * SECTION:rb-statusbar
+ * @short_description: status bar widget
+ *
+ * The status bar is displayed at the bottom of the main window.  It consists of some
+ * status text and a progress bar.
+ *
+ * The status text usually comes from the selected source, and typically shows the number
+ * of songs, the total duration and the total file size.  When a menu is open, however, 
+ * the status text shows the description of the currently selected menu item.
+ *
+ * The progress bar shows progress information from a variety of sources.  The source that
+ * is currently selected in the source list can provide progress information, such as buffering
+ * feedback, track transfer status, or progress for updating a song catalog.  If the source
+ * does not provide status information and the database is busy (loading the database from disk,
+ * processing a query, etc.) the progress bar will be pulsed periodically.
+ */
+
 #define EPSILON		(0.00001)
 
 static GObject* rb_statusbar_construct (GType type,
@@ -105,6 +123,11 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
         object_class->set_property = rb_statusbar_set_property;
         object_class->get_property = rb_statusbar_get_property;
 
+	/**
+	 * RBStatusbar:db:
+	 *
+	 * The #RhythmDB instance
+	 */
         g_object_class_install_property (object_class,
                                          PROP_DB,
                                          g_param_spec_object ("db",
@@ -112,6 +135,11 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
                                                               "RhythmDB object",
                                                               RHYTHMDB_TYPE,
                                                               G_PARAM_READWRITE));
+	/**
+	 * RBStatusbar:source:
+	 *
+	 * The currently selected #RBSource
+	 */
         g_object_class_install_property (object_class,
                                          PROP_SOURCE,
                                          g_param_spec_object ("source",
@@ -119,6 +147,11 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
                                                               "RBSource object",
                                                               RB_TYPE_SOURCE,
                                                               G_PARAM_READWRITE));
+	/**
+	 * RBStatusbar:ui-manager:
+	 *
+	 * The #GtkUIManager instance
+	 */
         g_object_class_install_property (object_class,
                                          PROP_UI_MANAGER,
                                          g_param_spec_object ("ui-manager",
@@ -377,9 +410,15 @@ rb_statusbar_get_property (GObject *object,
         }
 }
 
+/**
+ * rb_statusbar_set_source:
+ * @statusbar: the #RBStatusbar
+ * @source: the new selected #RBSource
+ *
+ * Updates the status bar for a newly selected source.
+ */
 void
-rb_statusbar_set_source (RBStatusbar *statusbar,
-                            RBSource *source)
+rb_statusbar_set_source (RBStatusbar *statusbar, RBSource *source)
 {
         g_return_if_fail (RB_IS_STATUSBAR (statusbar));
         g_return_if_fail (RB_IS_SOURCE (source));
@@ -475,6 +514,15 @@ rb_statusbar_sync_status (RBStatusbar *status)
                 status->priv->status_poll_id = g_timeout_add (250, (GSourceFunc) poll_status, status);
 }
 
+/**
+ * rb_statusbar_new:
+ * @db: the #RhythmDB instance
+ * @ui_manager: the #GtkUIManager
+ *
+ * Creates the status bar widget.
+ *
+ * Return value: the status bar widget
+ */
 RBStatusbar *
 rb_statusbar_new (RhythmDB *db,
                   GtkUIManager *ui_manager)
@@ -489,6 +537,15 @@ rb_statusbar_new (RhythmDB *db,
         return statusbar;
 }
 
+/**
+ * rb_statusbar_set_progress:
+ * @statusbar: the #RBStatusbar
+ * @progress: progress fraction
+ * @text: text to display on the progress bar
+ *
+ * Updates the progress bar widget.  If the progress fraction is less than zero,
+ * the progress bar is hidden.
+ */
 void
 rb_statusbar_set_progress (RBStatusbar *statusbar, double progress, const char *text)
 {

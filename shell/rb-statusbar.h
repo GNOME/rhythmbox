@@ -45,29 +45,32 @@ G_BEGIN_DECLS
 #define RB_IS_STATUSBAR_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_STATUSBAR))
 #define RB_STATUSBAR_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_STATUSBAR, RBStatusbarClass))
 
+typedef struct _RBStatusbar RBStatusbar;
+typedef struct _RBStatusbarClass RBStatusbarClass;
+
 typedef struct RBStatusbarPrivate RBStatusbarPrivate;
 
-typedef struct
+struct _RBStatusbar
 {
 	GtkStatusbar parent;
 
 	RBStatusbarPrivate *priv;
-} RBStatusbar;
+};
 
-typedef struct
+struct _RBStatusbarClass
 {
 	GtkStatusbarClass parent_class;
-} RBStatusbarClass;
+};
 
 GType			rb_statusbar_get_type	(void);
 
 RBStatusbar *		rb_statusbar_new	(RhythmDB *db,
-						 GtkUIManager *uimanager);
+						 GtkUIManager *ui_manager);
 
-void			rb_statusbar_set_source	(RBStatusbar *bar,
-						 RBSource *player);
+void			rb_statusbar_set_source	(RBStatusbar *statusbar,
+						 RBSource *source);
 
-void			rb_statusbar_set_progress(RBStatusbar *bar,
+void			rb_statusbar_set_progress(RBStatusbar *statusbar,
 						  double progress,
 						  const char *text);
 
