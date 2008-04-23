@@ -36,11 +36,32 @@
 #include "rb-glade-helpers.h"
 #include "rb-file-helpers.h"
 
+/**
+ * SECTION:rb-glade-helpers
+ * @short_description: helper functions for dealing with glade XML files
+ *
+ * Some simple helper functions to make it a bit easier to deal with
+ * widgets built from glade XML files.
+ */
+
 static void glade_signal_connect_func (const gchar *cb_name, GObject *obj, 
 			               const gchar *signal_name, const gchar *signal_data,
 			               GObject *conn_obj, gboolean conn_after,
 			               gpointer user_data);
 
+/**
+ * rb_glade_xml_new:
+ * @file: filename, either absolute or relative to the data directory
+ * @root: the widget node in the file to start building from (or NULL)
+ * @user_data: user data to pass to autoconnected signal handlers
+ *
+ * Locates and reads a glade xml file, automatically connecting
+ * signal handlers where possible.  The caller can specify a path
+ * relative to the shared data directory, or its 'glade' or 'art'
+ * subdirectories.
+ *
+ * Return value: #GladeXML object built from the file
+ */
 GladeXML *
 rb_glade_xml_new (const char *file,
 	          const char *root,
@@ -51,7 +72,7 @@ rb_glade_xml_new (const char *file,
 
 	g_return_val_if_fail (file != NULL, NULL);
 
-	/* is the first characters is /, it's an absolute path, otherwise locate it */
+	/* if the first character is /, it's an absolute path, otherwise locate it */
 	if (file[0] == G_DIR_SEPARATOR)
 		name = file;
 	else
@@ -130,6 +151,13 @@ glade_signal_connect_func (const gchar *cb_name, GObject *obj,
 	}
 }
 
+/**
+ * rb_glade_boldify_label:
+ * @xml: GladeXML instance
+ * @name: name of the label to boldify
+ *
+ * Makes a label built from a glade xml file bold.
+ */
 void
 rb_glade_boldify_label (GladeXML *xml, const char *name)
 {
@@ -164,6 +192,19 @@ rb_glade_boldify_label (GladeXML *xml, const char *name)
 	g_free (str_final);
 }
 
+/**
+ * rb_combo_box_hyphen_separator_func:
+ * @model: a #GtkTreeModel
+ * @iter: a #GtkTreeIter
+ * @data: nothing
+ *
+ * A row separator function to use for GtkComboBox widgets.
+ * It expects the model to contain a string in its first column,
+ * and interprets a string containing a single hyphen character
+ * as a separator.
+ *
+ * Return value: %TRUE if the row pointed to by @iter is a separator
+ */
 gboolean
 rb_combo_box_hyphen_separator_func (GtkTreeModel *model,
 				    GtkTreeIter *iter,
