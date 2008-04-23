@@ -41,6 +41,26 @@
 #include "rb-preferences.h"
 #include "rb-marshal.h"
 
+/**
+ * SECTION:rb-play-order
+ * @short_description: base class for play order implementations
+ *
+ * A play order defines an ordering of the entries from a #RhythmDBQueryModel that
+ * the #RBShellPlayer uses to get the next or previous entry to play.
+ *
+ * Play order methods are invoked when changes are made to the query model, when
+ * the query model is replaced, the playing source is changed, or a new playing
+ * entry is selected.
+ *
+ * The play order must implement methods to check for, retrieve, and move to the
+ * next and previous entries in the play order.  Only the go_next and go_previous
+ * methods actually change anything.
+ *
+ * The play order should also emit the have-next-previous-changed signal to hint that
+ * the availability of either a next or previous entry in the order may have changed.
+ * This information is used to update the sensitivity of the next and previous buttons.
+ */
+
 static void rb_play_order_class_init (RBPlayOrderClass *klass);
 static void rb_play_order_init (RBPlayOrder *porder);
 static GObject *rb_play_order_constructor (GType type, guint n_construct_properties,
@@ -119,6 +139,11 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 	klass->has_previous = default_has_previous;
 	klass->playing_entry_removed = default_playing_entry_removed;
 
+	/**
+	 * RBPlayOrder:player:
+	 *
+	 * The #RBShellPlayer instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLAYER,
 					 g_param_spec_object ("player",
@@ -127,6 +152,11 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 						 	      RB_TYPE_SHELL_PLAYER,
 						 	      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RBPlayOrder:playing-entry:
+	 *
+	 * The current playing #RhythmDBEntry
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLAYING_ENTRY,
 					 g_param_spec_boxed ("playing-entry",
@@ -135,6 +165,16 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 							     RHYTHMDB_TYPE_ENTRY,
 						 	     G_PARAM_READWRITE));
 
+	/**
+	 * RBPlayOrder::have-next-previous-changed:
+	 * @porder: the #RBPlayOrder
+	 * @have_next: if %TRUE, the play order has at least one more entry
+	 * @have_previous: if %TRUE, the play order has at least one entry
+	 *    before the current entry
+	 *
+	 * Emitted as a hint to suggest that the sensitivity of next/previous
+	 * buttons may need to be updated.
+	 */
 	rb_play_order_signals[HAVE_NEXT_PREVIOUS_CHANGED] =
 		g_signal_new ("have_next_previous_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),

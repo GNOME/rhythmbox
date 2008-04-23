@@ -60,18 +60,21 @@ G_BEGIN_DECLS
 #define RB_IS_PLAY_ORDER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_PLAY_ORDER))
 #define RB_PLAY_ORDER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_PLAY_ORDER, RBPlayOrderClass))
 
+typedef struct _RBPlayOrder RBPlayOrder;
+typedef struct _RBPlayOrderClass RBPlayOrderClass;
+
 typedef struct RBPlayOrderPrivate RBPlayOrderPrivate;
 
-typedef struct
+struct _RBPlayOrder
 {
 	GObject parent;
 
 	RBPlayOrderPrivate *priv;
-} RBPlayOrder;
+};
 
 typedef gboolean (*RBPlayOrderQueryFunc) (RBPlayOrder *porder);
 
-typedef struct
+struct _RBPlayOrderClass
 {
 	GObjectClass parent_class;
 
@@ -137,7 +140,7 @@ typedef struct
 
 	/* SIGNALS */
 	void (*have_next_previous_changed) (RBPlayOrder *porder, gboolean have_next, gboolean have_previous);
-} RBPlayOrderClass;
+};
 
 GType			rb_play_order_get_type		(void);
 
@@ -165,12 +168,7 @@ RhythmDB *		rb_play_order_get_db		(RBPlayOrder *porder);
 RhythmDBQueryModel *    rb_play_order_get_query_model   (RBPlayOrder *porder);
 gboolean		rb_play_order_model_not_empty	(RBPlayOrder *porder);
 
-void			rb_play_order_have_next_changed (RBPlayOrder *porder, gboolean have_next);
-void			rb_play_order_have_previous_changed (RBPlayOrder *porder, gboolean have_previous);
-
 gboolean		rb_play_order_player_is_playing	(RBPlayOrder *porder);
-
-void			rb_play_order_check_if_empty (RBPlayOrder *porder, RhythmDBEntry *entry);
 
 G_END_DECLS
 
