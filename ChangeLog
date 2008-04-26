@@ -1,3 +1,55 @@
+2008-04-26  Jonathan Matthew  <jonathan@d14n.org>
+
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_error_quark),
+	(rb_podcast_parse_load_feed):
+	* podcast/rb-podcast-parse.h:
+	* podcast/test-podcast-parse.c: (main):
+	In rb_podcast_parse_load_feed, add a flag indicating that the feed
+	already exists, and return a GError indicating what actually went
+	wrong when we can't parse it.  If the feed already exists, skip the
+	MIME type check, as the user has already confirmed that they want to
+	use the feed.
+
+	* lib/rb-marshal.list:
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_class_init),
+	(rb_podcast_manager_head_query_cb),
+	(rb_podcast_manager_subscribe_feed),
+	(rb_podcast_manager_free_parse_result),
+	(rb_podcast_manager_parse_complete_cb), (confirm_bad_mime_type),
+	(rb_podcast_manager_thread_parse_feed),
+	(rb_podcast_manager_update_synctime),
+	(rb_podcast_manager_insert_feed),
+	(rb_podcast_manager_handle_feed_error):
+	* podcast/rb-podcast-manager.h:
+	Add two new bits of information when parsing feeds: whether the user
+	directly requested the feed be parsed (by adding a new feed, or
+	updating a single existing feed), used to decide whether to show error
+	dialogs; and whether the feed already exists in the database, which
+	controls whether the MIME type check is performed.
+
+	When the MIME type check fails for a new feed, ask the user to confirm
+	they want to use the feed anyway, and if they do, set the existing
+	feed flag and try again.
+
+	* sources/rb-podcast-source.c: (rb_podcast_source_init),
+	(rb_podcast_source_dispose), (rb_podcast_source_constructor),
+	(rb_podcast_source_add_feed), (rb_podcast_source_cmd_update_feed),
+	(rb_podcast_source_feed_error_cell_data_func),
+	(rb_podcast_source_download_process_error_cb),
+	(rb_podcast_source_entry_activated_cb),
+	(rb_podcast_source_location_added_cb), (impl_add_uri),
+	(rb_podcast_source_entry_changed_cb),
+	(rb_podcast_source_pixbuf_clicked_cb):
+	Add a column that displays the error icon for podcasts that had errors
+	last time they were updated.
+
+	The effect of all this is that you don't get error dialogs resulting
+	from periodic podcast updates any more.  Instead, the error icon
+	indicates which feeds had problems, and provides access to the error
+	information.
+
+	Fixes #352493.
+
 2008-04-23  Jonathan Matthew  <jonathan@d14n.org>
 
 	* doc/reference/rhythmbox.types:

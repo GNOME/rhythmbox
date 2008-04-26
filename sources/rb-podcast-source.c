@@ -42,6 +42,7 @@
 
 #include "rb-podcast-source.h"
 
+#include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
 #include "rb-statusbar.h"
 #include "rb-glade-helpers.h"
@@ -61,6 +62,7 @@
 #include "rb-podcast-manager.h"
 #include "rb-static-playlist-source.h"
 #include "rb-cut-and-paste-code.h"
+#include "rb-cell-renderer-pixbuf.h"
 
 typedef enum
 {
@@ -189,6 +191,11 @@ static void rb_podcast_source_feed_title_cell_data_func (GtkTreeViewColumn *colu
 						     	 GtkTreeModel *tree_model,
 							 GtkTreeIter *iter,
 						     	 RBPodcastSource *source);
+static void rb_podcast_source_feed_error_cell_data_func (GtkTreeViewColumn *column,
+							 GtkCellRenderer *renderer,
+						     	 GtkTreeModel *tree_model,
+							 GtkTreeIter *iter,
+						     	 RBPodcastSource *source);
 
 static void rb_podcast_source_start_download_cb 	(RBPodcastManager *pd,
 							 RhythmDBEntry *entry,
@@ -202,8 +209,9 @@ static void rb_podcast_source_feed_updates_available_cb (RBPodcastManager *pd,
 							 RhythmDBEntry *entry,
 							 RBPodcastSource *source);
 
-static void rb_podcast_source_download_process_error_cb (RBPodcastManager *pd,
+static gboolean rb_podcast_source_download_process_error_cb (RBPodcastManager *pd,
 							 const char *error,
+							 gboolean existing,
 					  		 RBPodcastSource *source);
 
 static void rb_podcast_source_cb_interval_changed_cb 	(GtkComboBox *box, gpointer cb_data);
@@ -215,6 +223,13 @@ static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
 						  RBPodcastSource *source);
 static void rb_podcast_source_cmd_new_podcast	 (GtkAction *action,
 						  RBPodcastSource *source);
+static void rb_podcast_source_entry_changed_cb	(RhythmDB *db,
+						 RhythmDBEntry *entry,
+						 GSList *changes,
+						 RBPodcastSource *source);
+static void rb_podcast_source_pixbuf_clicked_cb	(RBCellRendererPixbuf *renderer,
+						 const char *path,
+						 RBPodcastSource *source);
 
 /* source methods */
 static char *impl_get_browser_key	 		(RBSource *source);
@@ -268,6 +283,7 @@ struct RBPodcastSourcePrivate
 	GtkWidget *config_widget;
 	GtkWidget *paned;
 
+	RhythmDBPropertyModel *feed_model;
 	RBPropertyView *feeds;
 	RBEntryView *posts;
 	GtkActionGroup *action_group;
@@ -279,8 +295,9 @@ struct RBPodcastSourcePrivate
 
 	gboolean initialized;
 
-	RhythmDBEntryType entry_type;
 	RBPodcastManager *podcast_mgr;
+
+	GdkPixbuf *error_pixbuf;
 
 	gboolean dispose_has_run;
 };
@@ -329,7 +346,6 @@ static const GtkTargetEntry posts_view_drag_types[] = {
 enum
 {
 	PROP_0,
-	PROP_ENTRY_TYPE,
 	PROP_PODCAST_MANAGER
 };
 
@@ -386,6 +402,7 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 static void
 rb_podcast_source_init (RBPodcastSource *source)
 {
+	GtkIconTheme *icon_theme;
 	GdkPixbuf *pixbuf;
 	gint       size;
 
@@ -407,6 +424,13 @@ rb_podcast_source_init (RBPodcastSource *source)
 		rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
 		g_object_unref (pixbuf);
 	}
+
+	icon_theme = gtk_icon_theme_get_default ();
+	source->priv->error_pixbuf = gtk_icon_theme_load_icon (icon_theme,
+							       "stock_dialog-error",
+							       16,
+							       0,
+							       NULL);
 }
 
 static void
@@ -442,6 +466,11 @@ rb_podcast_source_dispose (GObject *object)
 	if (source->priv->podcast_mgr != NULL) {
 		g_object_unref (source->priv->podcast_mgr);
 		source->priv->podcast_mgr = NULL;
+	}
+
+	if (source->priv->error_pixbuf != NULL) {
+		g_object_unref (source->priv->error_pixbuf);
+		source->priv->error_pixbuf = NULL;
 	}
 
 	eel_gconf_notification_remove (source->priv->prefs_notify_id);
@@ -527,7 +556,6 @@ rb_podcast_source_constructor (GType type,
 	RBPodcastSourceClass *klass;
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer;
-	RhythmDBPropertyModel *feed_model;
 	RBShell *shell;
 	RhythmDBQueryModel *query_model;
 	GPtrArray *query;
@@ -566,7 +594,7 @@ rb_podcast_source_constructor (GType type,
 						 CONF_STATE_PODCAST_SORTING_POSTS,
 						 TRUE, FALSE);
 
-	g_signal_connect_object (G_OBJECT (source->priv->posts),
+	g_signal_connect_object (source->priv->posts,
 				 "entry-activated",
 				 G_CALLBACK (rb_podcast_source_entry_activated_cb),
 				 source, 0);
@@ -654,36 +682,41 @@ rb_podcast_source_constructor (GType type,
 					    _("Status"), "Status",
 					    (GCompareDataFunc) rb_podcast_source_post_status_cell_sort_func, 0, NULL);
 
-	g_signal_connect_object (G_OBJECT (source->priv->posts),
+	g_signal_connect_object (source->priv->posts,
 				 "sort-order-changed",
 				 G_CALLBACK (rb_podcast_source_posts_view_sort_order_changed_cb),
 				 source, 0);
 
-	g_signal_connect (G_OBJECT (source->priv->podcast_mgr),
+	g_signal_connect (source->priv->podcast_mgr,
 			  "status_changed",
 			  G_CALLBACK (rb_podcast_source_download_status_changed_cb),
 			  source);
 
-	g_signal_connect_object (G_OBJECT (source->priv->podcast_mgr),
+	g_signal_connect_object (source->priv->podcast_mgr,
 			  	 "process_error",
 			 	 G_CALLBACK (rb_podcast_source_download_process_error_cb),
 			  	 source, 0);
 
-	g_signal_connect_object (G_OBJECT (source->priv->posts),
+	g_signal_connect_object (source->priv->posts,
 				 "size_allocate",
 				 G_CALLBACK (paned_size_allocate_cb),
 				 source, 0);
 
-	g_signal_connect_object (G_OBJECT (source->priv->posts), "show_popup",
-				 G_CALLBACK (rb_podcast_source_songs_show_popup_cb), source, 0);
+	g_signal_connect_object (source->priv->posts,
+				 "show_popup",
+				 G_CALLBACK (rb_podcast_source_songs_show_popup_cb),
+				 source, 0);
 
 	/* configure feed view */
-	source->priv->feeds = rb_property_view_new (source->priv->db,  RHYTHMDB_PROP_LOCATION, _("Feed"));
-	rb_property_view_set_selection_mode (RB_PROPERTY_VIEW (source->priv->feeds), GTK_SELECTION_MULTIPLE);
+	source->priv->feeds = rb_property_view_new (source->priv->db,
+						    RHYTHMDB_PROP_LOCATION,
+						    _("Feed"));
+	rb_property_view_set_selection_mode (RB_PROPERTY_VIEW (source->priv->feeds),
+					     GTK_SELECTION_MULTIPLE);
 
 	query_model = rhythmdb_query_model_new_empty (source->priv->db);
-	feed_model = rb_property_view_get_model (RB_PROPERTY_VIEW (source->priv->feeds));
-	g_object_set (feed_model, "query-model", query_model, NULL);
+	source->priv->feed_model = rb_property_view_get_model (RB_PROPERTY_VIEW (source->priv->feeds));
+	g_object_set (source->priv->feed_model, "query-model", query_model, NULL);
 
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
@@ -697,7 +730,30 @@ rb_podcast_source_constructor (GType type,
 	rhythmdb_query_free (query);
 	g_object_unref (query_model);
 
-	/* column title */
+	/* error indicator column */
+	column = gtk_tree_view_column_new ();
+	renderer = rb_cell_renderer_pixbuf_new ();
+	gtk_tree_view_column_pack_start (column, renderer, TRUE);
+	gtk_tree_view_column_set_cell_data_func (column, renderer,
+						 (GtkTreeCellDataFunc) rb_podcast_source_feed_error_cell_data_func,
+						 source, NULL);
+	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+	gtk_tree_view_column_set_fixed_width (column, gdk_pixbuf_get_width (source->priv->error_pixbuf) + 5);
+	gtk_tree_view_column_set_reorderable (column, FALSE);
+	gtk_tree_view_column_set_visible (column, TRUE);
+	rb_property_view_append_column_custom (source->priv->feeds, column);
+	g_signal_connect_object (renderer,
+				 "pixbuf-clicked",
+				 G_CALLBACK (rb_podcast_source_pixbuf_clicked_cb),
+				 source, 0);
+
+	/* redraw error indicator when errors are set or cleared */
+	g_signal_connect_object (source->priv->db,
+				 "entry_changed",
+				 G_CALLBACK (rb_podcast_source_entry_changed_cb),
+				 source, 0);
+
+	/* title column */
 	column = gtk_tree_view_column_new ();
 	renderer = gtk_cell_renderer_text_new ();
 
@@ -1289,7 +1345,7 @@ posts_view_drag_data_received_cb (GtkWidget *widget,
 void
 rb_podcast_source_add_feed (RBPodcastSource *source, const char *uri)
 {
-	rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr, uri);
+	rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr, uri, FALSE);
 }
 
 static void
@@ -1460,7 +1516,8 @@ rb_podcast_source_cmd_update_feed (GtkAction *action,
 		const char *location = l->data;
 
 		rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr,
-						   location);
+						   location,
+						   FALSE);
 	}
 
 	rb_list_deep_free (feeds);
@@ -1619,6 +1676,32 @@ rb_podcast_source_feed_title_cell_data_func (GtkTreeViewColumn *column,
 
 	g_free (str);
 	g_free (title);
+}
+
+static void
+rb_podcast_source_feed_error_cell_data_func (GtkTreeViewColumn *column,
+					     GtkCellRenderer *renderer,
+					     GtkTreeModel *tree_model,
+					     GtkTreeIter *iter,
+					     RBPodcastSource *source)
+{
+	char *title;
+	RhythmDBEntry *entry = NULL;
+	GdkPixbuf *pixbuf = NULL;
+
+	gtk_tree_model_get (tree_model, iter,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &title,
+			    -1);
+
+	entry = rhythmdb_entry_lookup_by_location (source->priv->db, title);
+	g_free (title);
+
+	if (entry != NULL) {
+		if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR)) {
+			pixbuf = source->priv->error_pixbuf;
+		}
+	}
+	g_object_set (renderer, "pixbuf", pixbuf, NULL);
 }
 
 static void
@@ -1869,17 +1952,49 @@ rb_podcast_source_post_feed_cell_sort_func (RhythmDBEntry *a,
 	return ret;
 }
 
-static void
+static gboolean
 rb_podcast_source_download_process_error_cb (RBPodcastManager *pd,
 					     const char *error,
+					     gboolean existing,
 					     RBPodcastSource *source)
 {
-	rb_error_dialog (NULL, _("Error in podcast"), "%s", error);
+	GtkWidget *dialog;
+	int result;
+
+	/* if the podcast feed doesn't already exist in the db,
+	 * ask if the user wants to add it anyway; if it already
+	 * exists, there's nothing to do besides reporting the error.
+	 */
+	dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source))),
+					 GTK_DIALOG_DESTROY_WITH_PARENT,
+					 GTK_MESSAGE_ERROR,
+					 existing ? GTK_BUTTONS_OK : GTK_BUTTONS_YES_NO,
+					 _("Error in podcast"));
+
+	if (existing) {
+		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+							  "%s", error);
+	} else {
+		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+							  _("%s. Would you like to add the podcast feed anyway?"), error);
+	}
+
+	gtk_window_set_title (GTK_WINDOW (dialog), "");
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
+
+	result = gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
+
+	/* in the existing feed case, the response will be _OK or _NONE.
+	 * we want to return FALSE here in this case, so this check works.
+	 */
+	return (result == GTK_RESPONSE_YES);
 }
 
-static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
-						  RhythmDBEntry *entry,
-						  RBPodcastSource *source)
+static void
+rb_podcast_source_entry_activated_cb (RBEntryView *view,
+				      RhythmDBEntry *entry,
+				      RBPodcastSource *source)
 {
 	GValue val = {0,};
 
@@ -1977,7 +2092,7 @@ rb_podcast_source_location_added_cb (RBURIDialog *dialog,
 				     const char *location,
 				     RBPodcastSource *source)
 {
-	rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr, location);
+	rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr, location, FALSE);
 }
 
 static void
@@ -2038,7 +2153,87 @@ static gboolean
 impl_add_uri (RBSource *asource, const char *uri, const char *title, const char *genre)
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
-	rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr, uri);
+	rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr, uri, FALSE);
 	return TRUE;
+}
+
+static void
+rb_podcast_source_entry_changed_cb (RhythmDB *db,
+				    RhythmDBEntry *entry,
+				    GSList *changes,
+				    RBPodcastSource *source)
+{
+	RhythmDBEntryType entry_type;
+	gboolean feed_changed;
+	GSList *t;
+
+	entry_type = rhythmdb_entry_get_entry_type (entry);
+	if (entry_type != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
+		return;
+
+	feed_changed = FALSE;
+	for (t = changes; t; t = t->next) {
+		RhythmDBEntryChange *change = t->data;
+
+		if (change->prop == RHYTHMDB_PROP_PLAYBACK_ERROR) {
+			feed_changed = TRUE;
+			break;
+		}
+	}
+
+	if (feed_changed) {
+		const char *loc;
+		GtkTreeIter iter;
+
+		loc = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		if (rhythmdb_property_model_iter_from_string (source->priv->feed_model,
+							      loc,
+							      &iter)) {
+			GtkTreePath *path;
+
+			path = gtk_tree_model_get_path (GTK_TREE_MODEL (source->priv->feed_model),
+						        &iter);
+			gtk_tree_model_row_changed (GTK_TREE_MODEL (source->priv->feed_model),
+						    path,
+						    &iter);
+			gtk_tree_path_free (path);
+		}
+	}
+}
+
+static void
+rb_podcast_source_pixbuf_clicked_cb (RBCellRendererPixbuf *renderer,
+				     const char *path_string,
+				     RBPodcastSource *source)
+{
+	GtkTreePath *path;
+	GtkTreeIter iter;
+
+	g_return_if_fail (path_string != NULL);
+
+	path = gtk_tree_path_new_from_string (path_string);
+	if (gtk_tree_model_get_iter (GTK_TREE_MODEL (source->priv->feed_model), &iter, path)) {
+		RhythmDBEntry *entry;
+		char *feed_url;
+
+		gtk_tree_model_get (GTK_TREE_MODEL (source->priv->feed_model),
+				    &iter,
+				    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &feed_url,
+				    -1);
+
+		entry = rhythmdb_entry_lookup_by_location (source->priv->db, feed_url);
+		if (entry != NULL) {
+			const gchar *error;
+
+			error = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR);
+			if (error) {
+				rb_error_dialog (NULL, _("Podcast Error"), "%s", error);
+			}
+		}
+
+		g_free (feed_url);
+	}
+
+	gtk_tree_path_free (path);
 }
 

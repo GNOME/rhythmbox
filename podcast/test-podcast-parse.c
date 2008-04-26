@@ -73,6 +73,7 @@ int main (int argc, char **argv)
 	GList *l;
 	GDate date = {0,};
 	char datebuf[1024];
+	GError *error = NULL;
 
 	setlocale (LC_ALL, "");
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
@@ -85,8 +86,9 @@ int main (int argc, char **argv)
 	}
 
 	data = g_new0 (RBPodcastChannel, 1);
-	if (rb_podcast_parse_load_feed (data, argv[1]) == FALSE) {
-		g_warning ("Couldn't parse %s", argv[1]);
+	if (rb_podcast_parse_load_feed (data, argv[1], FALSE, &error) == FALSE) {
+		g_warning ("Couldn't parse %s: %s", argv[1], error->message);
+		g_clear_error (&error);
 		return 1;
 	}
 

@@ -32,6 +32,16 @@
 
 #include <glib.h>
 
+typedef enum
+{
+	RB_PODCAST_PARSE_ERROR_FILE_INFO,		/* error getting podcast file info */
+	RB_PODCAST_PARSE_ERROR_MIME_TYPE,		/* podcast has unexpected mime type */
+	RB_PODCAST_PARSE_ERROR_XML_PARSE		/* error parsing podcast xml */
+} RBPodcastParseError;
+
+#define RB_PODCAST_PARSE_ERROR rb_podcast_parse_error_quark ()
+GQuark rb_podcast_parse_error_quark (void);
+
 typedef struct
 {
 	char* title;
@@ -60,7 +70,10 @@ typedef struct
 	GList *posts;
 } RBPodcastChannel;
 
-gboolean rb_podcast_parse_load_feed	(RBPodcastChannel *data, const char *file_name);
+gboolean rb_podcast_parse_load_feed	(RBPodcastChannel *data,
+					 const char *url,
+					 gboolean existing_feed,
+					 GError **error);
 void rb_podcast_parse_channel_free 	(RBPodcastChannel *data);
 void rb_podcast_parse_item_free 	(RBPodcastItem *data);
 

@@ -35,11 +35,22 @@
 #include <totem-pl-parser.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
+#include <glib.h>
+#include <glib/gprintf.h>
 
 #include "rb-debug.h"
 #include "rb-podcast-parse.h"
 #include "rb-file-helpers.h"
+
+GQuark
+rb_podcast_parse_error_quark (void)
+{
+	static GQuark quark = 0;
+	if (!quark)
+		quark = g_quark_from_static_string ("rb_podcast_parse_error");
+
+	return quark;
+}
 
 static void
 playlist_metadata_foreach (const char *key,
@@ -126,7 +137,9 @@ entry_parsed (TotemPlParser *parser,
 
 gboolean
 rb_podcast_parse_load_feed (RBPodcastChannel *data,
-			    const char *file_name)
+			    const char *file_name,
+			    gboolean existing_feed,
+			    GError **error)
 {
 	GnomeVFSResult result;
 	GnomeVFSFileInfo *info;
@@ -137,67 +150,41 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 	/* if the URL has a .rss, .xml or .atom extension (before the query string),
 	 * don't bother checking the MIME type.
 	 */
-	if (rb_uri_could_be_podcast (file_name, &data->is_opml)) {
+	if (rb_uri_could_be_podcast (file_name, &data->is_opml) || existing_feed) {
 		rb_debug ("not checking mime type for %s (should be %s file)", file_name,
 			  data->is_opml ? "OPML" : "Podcast");
 	} else {
-		gboolean invalid_mime_type;
-
 		rb_debug ("checking mime type for %s", file_name);
 		info = gnome_vfs_file_info_new ();
 
 		result = gnome_vfs_get_file_info (file_name, info, GNOME_VFS_FILE_INFO_DEFAULT);
-
-		if ((result != GNOME_VFS_OK)) {
-			if (info->mime_type != NULL) {
-				rb_debug ("Invalid mime-type in podcast feed %s", info->mime_type);
-			} else {
-				rb_debug ("Couldn't get mime type for %s: %s", file_name,
-					  gnome_vfs_result_to_string (result));
-			}
+		if (result != GNOME_VFS_OK) {
+			g_set_error (error,
+				     RB_PODCAST_PARSE_ERROR,
+				     RB_PODCAST_PARSE_ERROR_FILE_INFO,
+				     _("Unable to check file type: %s"),
+				     gnome_vfs_result_to_string (result));
 			gnome_vfs_file_info_unref (info);
-			return TRUE;
+			return FALSE;
 		}
 
-		if (info != NULL
-		    && info->mime_type != NULL
+		if (info->mime_type != NULL
 		    && strstr (info->mime_type, "html") == NULL
 		    && strstr (info->mime_type, "xml") == NULL
 		    && strstr (info->mime_type, "rss") == NULL
 		    && strstr (info->mime_type, "opml") == NULL) {
-			invalid_mime_type = TRUE;
-		} else if (info != NULL
-			   && info->mime_type != NULL
+			g_set_error (error,
+				     RB_PODCAST_PARSE_ERROR,
+				     RB_PODCAST_PARSE_ERROR_MIME_TYPE,
+				     _("Unexpected file type: %s"),
+				     info->mime_type);
+			gnome_vfs_file_info_unref (info);
+			return FALSE;
+		} else if (info->mime_type != NULL
 			   && strstr (info->mime_type, "opml") != NULL) {
 			data->is_opml = TRUE;
-			invalid_mime_type = FALSE;
-		} else {
-			invalid_mime_type = FALSE;
 		}
-
-		if (invalid_mime_type) {
-			GtkWidget *dialog;
-
-			GDK_THREADS_ENTER ();
-			dialog = gtk_message_dialog_new (NULL, 0,
-							 GTK_MESSAGE_QUESTION,
-							 GTK_BUTTONS_YES_NO,
-							 _("The URL '%s' does not appear to be a podcast feed. "
-							 "It may be the wrong URL, or the feed may be broken. "
-							 "Would you like Rhythmbox to attempt to use it anyway?"),
-							 file_name);
-
-			if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_YES)
-				invalid_mime_type = FALSE;
-
-			gtk_widget_destroy (dialog);
-			GDK_THREADS_LEAVE ();
-		}
-
 		gnome_vfs_file_info_unref (info);
-
-		if (invalid_mime_type)
-			return FALSE;
 	}
 
 	plparser = totem_pl_parser_new ();
@@ -208,11 +195,15 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 
 	if (totem_pl_parser_parse (plparser, file_name, FALSE) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
 		rb_debug ("Parsing %s as a Podcast failed", file_name);
+		g_set_error (error,
+			     RB_PODCAST_PARSE_ERROR,
+			     RB_PODCAST_PARSE_ERROR_XML_PARSE,
+			     _("Unable to parse the feed contents"));
 		g_object_unref (plparser);
 		return FALSE;
 	}
-	rb_debug ("Parsing %s as a Podcast succeeded", file_name);
 
+	rb_debug ("Parsing %s as a Podcast succeeded", file_name);
 	return TRUE;
 }
 
