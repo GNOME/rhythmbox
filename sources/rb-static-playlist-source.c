@@ -325,13 +325,17 @@ rb_static_playlist_source_constructor (GType type,
 }
 
 RBSource *
-rb_static_playlist_source_new (RBShell *shell, const char *name, gboolean local, RhythmDBEntryType entry_type)
+rb_static_playlist_source_new (RBShell *shell, const char *name, const char *sorting_name, gboolean local, RhythmDBEntryType entry_type)
 {
 	if (name == NULL)
 		name = "";
 
+	if (sorting_name == NULL)
+		sorting_name = "";
+
 	return RB_SOURCE (g_object_new (RB_TYPE_STATIC_PLAYLIST_SOURCE,
 					"name", name,
+					"sorting-name", sorting_name,
 					"shell", shell,
 					"is-local", local,
 					"entry-type", entry_type,
@@ -397,6 +401,7 @@ RBSource *
 rb_static_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
 {
 	RBSource *psource = rb_static_playlist_source_new (shell,
+							   NULL,
 							   NULL,
 							   TRUE,
 							   RHYTHMDB_ENTRY_TYPE_SONG);

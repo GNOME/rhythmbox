@@ -390,6 +390,7 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 
 	playlist_source = rb_static_playlist_source_new (shell,
 							 playlist->name,
+							 NULL,
 							 FALSE,
 							 entry_type);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);

@@ -117,7 +117,11 @@ static void rb_playlist_source_track_cell_data_func (GtkTreeViewColumn *column, 
 						     GtkTreeModel *tree_model, GtkTreeIter *iter,
 						     RBPlaylistSource *source);
 static void default_mark_dirty (RBPlaylistSource *source);
+static void rb_playlist_source_songs_sort_order_changed_cb (RBEntryView *view,
+						RBStaticPlaylistSource *source);
+static char *rb_playlist_source_make_sorting_key (RBPlaylistSource *source);
 
+#define CONF_STATE_SORTING_PREFIX CONF_PREFIX "/state/sorting/"
 #define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/PlaylistViewPopup"
 #define PLAYLIST_SOURCE_POPUP_PATH "/PlaylistSourcePopup"
 
@@ -136,6 +140,7 @@ struct RBPlaylistSourcePrivate
 	gboolean dispose_has_run;
 
 	char *title;
+	char *sorting_name;
 };
 
 #define RB_PLAYLIST_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAYLIST_SOURCE, RBPlaylistSourcePrivate))
@@ -146,6 +151,7 @@ enum
 	PROP_DB,
 	PROP_DIRTY,
 	PROP_LOCAL,
+	PROP_SORTING_NAME
 };
 
 static const GtkTargetEntry target_uri [] = { { "text/uri-list", 0, 0 } };
@@ -219,6 +225,19 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 							       "whether this playlist is attached to the local library",
 							       TRUE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBPlaylistSource:sorting-name:
+	 *
+	 * A unique-ish name for the playlist, used to construct gconf keys
+	 * to store information relating to the playlist.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SORTING_NAME,
+					 g_param_spec_string ("sorting-name",
+					 		      "sorting-name",
+							      "globally unique name for storing sort-order",
+					 		      NULL,
+							      G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBPlaylistSourcePrivate));
 }
@@ -263,6 +282,7 @@ rb_playlist_source_constructor (GType type,
 	RBShell *shell;
 	RhythmDB *db;
 	RhythmDBQueryModel *query_model;
+	char *sorting_key;
 
 	klass = RB_PLAYLIST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PLAYLIST_SOURCE));
 
@@ -279,9 +299,18 @@ rb_playlist_source_constructor (GType type,
 	source->priv->entries = g_hash_table_new_full (rb_refstring_hash, rb_refstring_equal,
 						       (GDestroyNotify)rb_refstring_unref, NULL);
 
+	/* If a sorting key is available at construction time, use it. This may be
+	 * NULL in which case a key may be assigned later through a set property. */
+	sorting_key = rb_playlist_source_make_sorting_key (source);
 	source->priv->songs = rb_entry_view_new (source->priv->db,
 						 shell_player,
-					 	 NULL, TRUE, TRUE);
+					 	 sorting_key, TRUE, TRUE);
+	g_free (sorting_key);
+
+	g_signal_connect_object (source->priv->songs,
+				 "sort-order-changed",
+				 G_CALLBACK (rb_playlist_source_songs_sort_order_changed_cb),
+				 source, 0);
 
 	query_model = rhythmdb_query_model_new_empty (source->priv->db);
 	rb_playlist_source_set_query_model (source, query_model);
@@ -396,10 +425,20 @@ rb_playlist_source_set_property (GObject *object,
 				 GParamSpec *pspec)
 {
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (object);
+	char *sorting_key;
 
 	switch (prop_id) {
 	case PROP_LOCAL:
 		source->priv->is_local = g_value_get_boolean (value);
+		break;
+	case PROP_SORTING_NAME:
+		g_free (source->priv->sorting_name);
+		source->priv->sorting_name = g_value_dup_string (value);
+
+		/* propagate sorting key to the entry view */
+		sorting_key = rb_playlist_source_make_sorting_key (source);
+		g_object_set (source->priv->songs, "sort-key", sorting_key, NULL);
+		g_free (sorting_key);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -424,6 +463,9 @@ rb_playlist_source_get_property (GObject *object,
 		break;
 	case PROP_LOCAL:
 		g_value_set_boolean (value, source->priv->is_local);
+		break;
+	case PROP_SORTING_NAME:
+		g_value_set_string (value, source->priv->sorting_name);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -978,5 +1020,41 @@ rb_playlist_source_add_to_map (RBPlaylistSource *source,
 			     refstr, GINT_TO_POINTER (1));
 
 	return TRUE;
+}
+
+static void
+rb_playlist_source_songs_sort_order_changed_cb (RBEntryView *view,
+						RBStaticPlaylistSource *source)
+{
+	rb_debug ("sort order changed");
+	rb_entry_view_resort_model (view);
+}
+
+/* takes the 'sorting-name' property and produces a full GConf key for storing
+ * the playlist's column sort order
+ */
+static char *
+rb_playlist_source_make_sorting_key (RBPlaylistSource *source)
+{
+	char *sorting_name;
+	char *sorting_key;
+	char *sorting_key_tail;
+	g_object_get (source, "sorting-name", &sorting_name, NULL);
+
+	if (sorting_name && sorting_name[0] != '\0') {
+		/* escape invalid characters in the key name */
+		sorting_key_tail = gconf_escape_key (sorting_name, -1);
+
+		/* bind column sort order to a full gconf key */
+		sorting_key = g_strjoin (NULL, CONF_STATE_SORTING_PREFIX, 
+					sorting_key_tail, NULL);
+
+		g_free (sorting_key_tail);
+	} else {
+		sorting_key = NULL;
+	}
+	g_free (sorting_name);
+
+	return sorting_key;
 }
 

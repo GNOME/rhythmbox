@@ -924,6 +924,7 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 	else
 		playlist = rb_static_playlist_source_new (mgr->priv->shell,
 							  suggested_name,
+							  NULL,
 							  TRUE,
 							  RHYTHMDB_ENTRY_TYPE_SONG);
 

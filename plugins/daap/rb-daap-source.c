@@ -542,8 +542,14 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 	for (l = playlists; l != NULL; l = g_slist_next (l)) {
 		RBDAAPPlaylist *playlist = l->data;
 		RBSource *playlist_source;
+		char *sorting_name;
 
-		playlist_source = rb_static_playlist_source_new (shell, playlist->name, FALSE, entry_type);
+		/* Construct a unique sorting name for this playlist, as <Share Name>_<Playlist> */
+		sorting_name = g_strjoin (NULL, daap_source->priv->service_name, "_", playlist->name, NULL);
+
+		playlist_source = rb_static_playlist_source_new (shell, playlist->name, sorting_name, FALSE, entry_type);
+		g_free (sorting_name);
+
 		g_list_foreach (playlist->uris, (GFunc)_add_location_to_playlist, playlist_source);
 
 		rb_shell_append_source (shell, playlist_source, RB_SOURCE (daap_source));

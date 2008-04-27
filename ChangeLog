@@ -1,3 +1,37 @@
+2008-04-28  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Jay Cornwall  <jay@jcornwall.me.uk>
+
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init),
+	(rb_playlist_source_constructor),
+	(rb_playlist_source_set_property),
+	(rb_playlist_source_get_property),
+	(rb_playlist_source_songs_sort_order_changed_cb),
+	(rb_playlist_source_make_sorting_key):
+	Add a 'sorting-name' property that is used to construct the GConf key
+	in which to store the playlist sort order.
+
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_new),
+	(rb_static_playlist_source_new_from_xml):
+	* sources/rb-static-playlist-source.h:
+	Add sorting name as a parameter when creating new static playlists.
+
+	* widgets/rb-entry-view.c: (rb_entry_view_class_init),
+	(rb_entry_view_set_property), (rb_entry_view_constructor):
+	Allow the sort order GConf key to be changed after the widget is
+	constructed.
+	
+	* plugins/daap/rb-daap-source.c: (rb_daap_source_connection_cb):
+	Construct sorting names for DAAP playlist based on the DAAP share name
+	combined with the playlist name.
+
+	* plugins/ipod/rb-ipod-source.c: (add_rb_playlist):
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_new_playlist):
+	Don't provide sorting keys for playlists created here.
+
+	This allows DAAP playlists to be sorted by the user.  From #327042.
+
 2008-04-26  Jonathan Matthew  <jonathan@d14n.org>
 
 	* podcast/rb-podcast-parse.c: (rb_podcast_parse_error_quark),

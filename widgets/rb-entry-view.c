@@ -328,7 +328,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							      "sorting key",
 							      "sorting key",
 							      "",
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							      G_PARAM_READWRITE));
 	/**
 	 * RBEntryView:is-drag-source:
 	 *
@@ -712,6 +712,7 @@ rb_entry_view_set_property (GObject *object,
 			    const GValue *value,
 			    GParamSpec *pspec)
 {
+	char *old_sorting_key;
 	RBEntryView *view = RB_ENTRY_VIEW (object);
 
 	switch (prop_id) {
@@ -722,8 +723,42 @@ rb_entry_view_set_property (GObject *object,
 		rb_entry_view_set_shell_player_internal (view, g_value_get_object (value));
 		break;
 	case PROP_SORTING_KEY:
-		g_free (view->priv->sorting_key);
+		/* Remove notification on old key, if any. */
+		if (view->priv->sorting_key) {
+			eel_gconf_notification_remove (view->priv->sorting_gconf_notification_id);
+			view->priv->sorting_gconf_notification_id = 0;
+		}
+
+		old_sorting_key = view->priv->sorting_key;
 		view->priv->sorting_key = g_value_dup_string (value);
+
+		if (view->priv->sorting_key && view->priv->sorting_key[0] != '\0') {
+			char *new_sorting_type;
+
+			/* Set up notification on the new key. */
+			view->priv->sorting_gconf_notification_id =
+				eel_gconf_notification_add (view->priv->sorting_key,
+							    rb_entry_view_sort_key_changed_cb,
+							    view);
+
+			rb_entry_view_set_columns_clickable (view, TRUE);
+
+			/* If there was already a sorting key, assume this is a rename. */
+			if (old_sorting_key && old_sorting_key[0] != '\0') {
+				/* Propagate existing sort order into the new GConf key. */
+				eel_gconf_set_string (view->priv->sorting_key,
+						      rb_entry_view_get_sorting_type (view));
+
+				eel_gconf_unset (old_sorting_key);
+			}
+
+			/* Synchronise UI sorting order with the new key. */
+			new_sorting_type = eel_gconf_get_string (view->priv->sorting_key);
+			rb_entry_view_set_sorting_type (view, new_sorting_type);
+			g_free (new_sorting_type);
+		}
+
+		g_free (old_sorting_key);
 		break;
 	case PROP_MODEL:
 		rb_entry_view_set_model_internal (view, g_value_get_object (value));
@@ -1718,18 +1753,6 @@ rb_entry_view_constructor (GType type,
 		eel_gconf_notification_add (CONF_UI_COLUMNS_SETUP,
 					    rb_entry_view_columns_config_changed_cb,
 					    view);
-	if (view->priv->sorting_key) {
-		view->priv->sorting_gconf_notification_id =
-			eel_gconf_notification_add (view->priv->sorting_key,
-						    rb_entry_view_sort_key_changed_cb,
-						    view);
-	}
-
-	if (view->priv->sorting_key) {
-		char *s = eel_gconf_get_string (view->priv->sorting_key);
-		rb_entry_view_set_sorting_type (view, s);
-		g_free (s);
-	}
 
 	{
 		RhythmDBQueryModel *query_model;
