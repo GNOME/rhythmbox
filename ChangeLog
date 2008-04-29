@@ -1,5 +1,14 @@
 2008-04-29  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(post_stream_playing_message), (post_buffering_message),
+	(link_unblocked_cb), (link_and_unblock_stream):
+	If we emit a stream-playing signal to make buffering work, emit
+	another when the stream actually starts playing, so the UI updates see
+	that the player is actually playing.  Fixes #482506.
+
+2008-04-29  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by: Paul Drain  <paul@operationaldynamics.com>
 
 	* configure.ac:

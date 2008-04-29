@@ -295,6 +295,7 @@ typedef struct
 	GstElement *preroll;
 	gboolean decoder_linked;
 	gboolean emitted_playing;
+	gboolean emitted_fake_playing;
 
 	GstPad *src_pad;
 	GstPad *ghost_pad;
@@ -811,20 +812,23 @@ emit_stream_error (RBXFadeStream *stream, GError *error)
 }
 
 static void
-post_stream_playing_message (RBXFadeStream *stream)
+post_stream_playing_message (RBXFadeStream *stream, gboolean fake)
 {
 	GstMessage *msg;
 	GstStructure *s;
 
-	if (stream->emitted_playing)
+	if (stream->emitted_playing) {
 		return;
+	}
 
 	rb_debug ("posting " STREAM_PLAYING_MESSAGE " message for stream %s", stream->uri);
 	s = gst_structure_new (STREAM_PLAYING_MESSAGE, NULL);
 	msg = gst_message_new_application (GST_OBJECT (stream->bin), s);
 	gst_element_post_message (stream->bin, msg);
 
-	stream->emitted_playing = TRUE;
+	if (fake == FALSE) {
+		stream->emitted_playing = TRUE;
+	}
 }
 
 static void
@@ -836,7 +840,10 @@ post_buffering_message (RBXFadeStream *stream, guint64 level)
 	 * so that everything above handles the buffering messages
 	 * correctly.
 	 */
-	post_stream_playing_message (stream);
+	if (stream->emitted_fake_playing == FALSE) {
+		post_stream_playing_message (stream, TRUE);
+		stream->emitted_fake_playing = TRUE;
+	}
 
 	message = gst_message_new_buffering (GST_OBJECT_CAST (stream->queue), level);
 	gst_element_post_message (stream->queue, message);
@@ -1051,7 +1058,7 @@ link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	rb_debug ("stream %s state change returned: %s", stream->uri,
 		  gst_element_state_change_return_get_name (state_ret));
 
-	post_stream_playing_message (stream);
+	post_stream_playing_message (stream, FALSE);
 	g_static_rec_mutex_unlock (&stream->player->priv->stream_list_lock);
 	g_object_unref (stream);
 }
@@ -1126,7 +1133,7 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 
 		scr = gst_element_set_state (stream->bin, GST_STATE_PLAYING);
 
-		post_stream_playing_message (stream);
+		post_stream_playing_message (stream, FALSE);
 
 		if (scr == GST_STATE_CHANGE_FAILURE) {
 			g_set_error (error,
