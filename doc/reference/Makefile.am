@@ -36,7 +36,6 @@ IGNORE_HFILES= \
 	mkdtemp.h \
 	rb-cut-and-paste-code.h \
 	rb-marshal.h \
-	rhythmdb-gda.h \
 	rhythmdb-private.h \
 	sexy-tooltip.h \
 	sexy-icon-entry.h \

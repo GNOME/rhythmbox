@@ -228,29 +228,19 @@ AM_CONDITIONAL(USE_GNOME_KEYRING, test x"$use_gnome_keyring" = xyes)
 
 dnl Database
 AC_ARG_WITH(database,
-              AC_HELP_STRING([--with-database=tree|libgda],
+              AC_HELP_STRING([--with-database=tree],
 			     [Select the database to use (default tree)]),,
 	      with_database=tree)
 AM_CONDITIONAL(USE_TREEDB, test x"$with_database" = xtree)
-AM_CONDITIONAL(USE_GDADB, test x"$with_database" = xlibgda)
 
-GDA_CFLAGS=""
-GDA_LIBS=""
 case "x$with_database" in
   "xtree")
     AC_DEFINE(WITH_RHYTHMDB_TREE, 1, [Define if you are using the RhythmDB tree database])
-    ;;
-  "xlibgda")
-    AC_DEFINE(WITH_RHYTHMDB_GDA, 1, [Define if you are using the RhythmDB sqlite/libgda database])
-    dnl FIXME: check for sqlite, too?
-    PKG_CHECK_MODULES(GDA, libgda > 1.0.3)
     ;;
   *)
     AC_MSG_ERROR([Unknown database selected])
     ;;
 esac
-AC_SUBST(GDA_CFLAGS)
-AC_SUBST(GDA_LIBS)
 
 dnl Database debugging
 AC_ARG_WITH(rhythmdb-debug,
@@ -1106,8 +1096,6 @@ remote/dbus/Makefile
 AC_MSG_NOTICE([Rhythmbox was configured with the following options:])
 if test x"$with_database" = xtree; then
 	AC_MSG_NOTICE([** Tree database is enabled])
-elif test x"$with_database" = xlibgda; then
-	AC_MSG_NOTICE([** libgda/sqlite database is enabled])
 else
 	AC_MSG_ERROR([Unknown database!])
 fi

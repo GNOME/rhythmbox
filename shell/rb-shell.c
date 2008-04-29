@@ -56,8 +56,6 @@
 #include "rb-dialog.h"
 #ifdef WITH_RHYTHMDB_TREE
 #include "rhythmdb-tree.h"
-#elif defined(WITH_RHYTHMDB_GDA)
-#include "rhythmdb-gda.h"
 #else
 #error "no database specified. configure broken?"
 #endif

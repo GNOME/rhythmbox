@@ -4,8 +4,7 @@ noinst_LTLIBRARIES = librhythmdb.la
 
 librhythmdb_la_LDFLAGS = -export-dynamic
 librhythmdb_la_LIBADD = 				\
-	$(GIO_LIBS)					\
-	$(GDA_LIBS)
+	$(GIO_LIBS)					
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -15,7 +14,6 @@ INCLUDES = 						\
 	-I$(top_srcdir)/widgets				\
 	-I$(top_srcdir)/metadata			\
 	-I$(top_builddir)/lib                           \
-	$(GDA_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(GIO_CFLAGS)					\
 	$(NO_STRICT_ALIASING_CFLAGS)
@@ -41,8 +39,3 @@ librhythmdb_la_SOURCES =				\
 if USE_TREEDB
 librhythmdb_la_SOURCES += rhythmdb-tree.h rhythmdb-tree.c
 endif
-
-if USE_GDADB
-librhythmdb_la_SOURCES += rhythmdb-gda.h rhythmdb-gda.c
-endif
-
