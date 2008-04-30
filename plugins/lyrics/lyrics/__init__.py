@@ -174,12 +174,12 @@ class LyricPane(object):
 		def edit_callback(widget):
 			if self.edit.get_active() == 1:
 				self.tview.set_editable(True)
-				self.edit.set_label("_Save")
+				self.edit.set_label(_("_Save"))
 			else:
 				if self.cache_path is not None:
 					save_callback()
 				self.tview.set_editable(False)
-				self.edit.set_label("_Edit")
+				self.edit.set_label(_("_Edit"))
 
 		def discard_callback(widget):
 			if self.cache_path is not None and os.path.exists(self.cache_path):
@@ -192,9 +192,9 @@ class LyricPane(object):
 			self.get_lyrics()
 	   
 
-		self.edit = gtk.ToggleButton("_Edit")
+		self.edit = gtk.ToggleButton(_("_Edit"))
 		self.edit.connect('toggled', edit_callback)
-		self.discard = gtk.Button("_Search again")
+		self.discard = gtk.Button(_("_Search again"))
 		self.discard.connect('clicked', discard_callback)
 		self.clear = gtk.Button(stock=gtk.STOCK_CLEAR)
 		self.clear.connect('clicked', clear_callback)
@@ -278,7 +278,7 @@ class LyricWindow (gtk.Window):
 		self.show_all()
 
 	def s_title(self, title, artist):
-		self.set_title(title + " - " + artist + " - Lyrics")
+		self.set_title(title + " - " + artist + " - " + _("Lyrics")
 
 class LyricsDisplayPlugin(rb.Plugin):
 
