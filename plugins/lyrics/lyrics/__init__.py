@@ -278,7 +278,7 @@ class LyricWindow (gtk.Window):
 		self.show_all()
 
 	def s_title(self, title, artist):
-		self.set_title(title + " - " + artist + " - " + _("Lyrics")
+		self.set_title(title + " - " + artist + " - " + _("Lyrics"))
 
 class LyricsDisplayPlugin(rb.Plugin):
 
