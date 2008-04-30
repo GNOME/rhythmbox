@@ -36,6 +36,7 @@
 #include "rb-play-queue-source.h"
 #include "rb-playlist-xml.h"
 #include "rb-song-info.h"
+#include "rb-stock-icons.h"
 #include "rb-util.h"
 #include "rb-debug.h"
 
@@ -80,6 +81,8 @@ static void impl_save_contents_to_xml (RBPlaylistSource *source,
 				       xmlNodePtr node);
 static void rb_play_queue_source_cmd_clear (GtkAction *action,
 					    RBPlayQueueSource *source);
+static void rb_play_queue_source_cmd_shuffle (GtkAction *action,
+					      RBPlayQueueSource *source);
 static GList *impl_get_ui_actions (RBSource *source);
 static gboolean impl_show_popup (RBSource *asource);
 
@@ -109,7 +112,10 @@ static GtkActionEntry rb_play_queue_source_actions [] =
 {
 	{ "ClearQueue", GTK_STOCK_CLEAR, N_("Clear _Queue"), NULL,
 	  N_("Remove all songs from the play queue"),
-	  G_CALLBACK (rb_play_queue_source_cmd_clear) }
+	  G_CALLBACK (rb_play_queue_source_cmd_clear) },
+	{ "ShuffleQueue", GNOME_MEDIA_SHUFFLE, N_("Shuffle Queue"), NULL,
+	  N_("Shuffle the tracks in the play queue"),
+	  G_CALLBACK (rb_play_queue_source_cmd_shuffle) }
 };
 
 static void
@@ -439,9 +445,12 @@ rb_play_queue_source_update_count (RBPlayQueueSource *source,
 	if (count > 0)
 		g_free (name);
 
-	/* make 'clear queue' action sensitive when there are entries in the queue */
+	/* make 'clear queue' and 'shuffle queue' actions sensitive when there are entries in the queue */
 	action = gtk_action_group_get_action (priv->action_group,
 					      "ClearQueue");
+	g_object_set (G_OBJECT (action), "sensitive", (count > 0), NULL);
+
+	action = gtk_action_group_get_action (priv->action_group, "ShuffleQueue");
 	g_object_set (G_OBJECT (action), "sensitive", (count > 0), NULL);
 }
 
@@ -458,6 +467,16 @@ rb_play_queue_source_cmd_clear (GtkAction *action,
 				RBPlayQueueSource *source)
 {
 	rb_play_queue_source_clear_queue (source);
+}
+
+static void
+rb_play_queue_source_cmd_shuffle (GtkAction *action,
+				  RBPlayQueueSource *source)
+{
+	RhythmDBQueryModel *model;
+
+	model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (source));
+	rhythmdb_query_model_shuffle_entries (model);
 }
 
 static gboolean

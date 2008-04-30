@@ -165,6 +165,7 @@
 
   <popup name="QueuePlaylistViewPopup">
     <menuitem name="DeletePlaylistPopup" action="EditDelete"/>
+    <menuitem name="ShufflePlaylistPopup" action="ShuffleQueue"/>
     <separator/>
     <menuitem name="PropertiesPlaylistPopup" action="MusicProperties"/>
   </popup>
@@ -172,12 +173,14 @@
   <popup name="QueueSidebarViewPopup">
     <menuitem name="DeletePlaylistPopup" action="QueueDelete"/>
     <menuitem name="ClearPlaylistPopup" action="ClearQueue"/>
+    <menuitem name="ShufflePlaylistPopup" action="ShuffleQueue"/>
     <separator/>
     <menuitem name="PropertiesPlaylistPopup" action="QueueMusicProperties"/>
   </popup>
 
   <popup name="QueueSourcePopup">
     <menuitem name="ClearPlaylistPopup" action="ClearQueue"/>
+    <menuitem name="ShufflePlaylistPopup" action="ShuffleQueue"/>
     <placeholder name="QueueSourcePopupPluginPlaceholder" />
     <separator/>
   </popup>
