@@ -1257,6 +1257,10 @@ rb_ipod_song_artwork_add_cb (RhythmDB *db,
 		return FALSE;
 	}
 
+	if (song->album == NULL || song->artist == NULL) {
+		return FALSE;
+	}
+
         g_object_get (G_OBJECT (isource), "entry-type", &entry_type, NULL);
  
 	pixbuf = GDK_PIXBUF (g_value_get_object (metadata));

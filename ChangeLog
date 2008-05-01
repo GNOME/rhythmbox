@@ -1,5 +1,11 @@
 2008-05-01  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/ipod/rb-ipod-source.c: (rb_ipod_song_artwork_add_cb):
+	Don't query for artwork if either the album or artist name is NULL.
+	Fixes #525324.
+
+2008-05-01  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/lyrics/lyrics/__init__.py:
 	oops
 
