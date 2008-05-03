@@ -1328,7 +1328,7 @@ totem_display_is_local (void)
 
 	/* Get to the character after the colon */
 	work++;
-	if (work == NULL)
+	if (*work == '\0')
 		return TRUE;
 
 	if (sscanf (work, "%d.%d", &display, &screen) != 2)
