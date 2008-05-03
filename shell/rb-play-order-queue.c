@@ -90,6 +90,8 @@ rb_queue_play_order_get_next (RBPlayOrder* porder)
 {
 	RhythmDBQueryModel *model;
 	RhythmDBEntry *entry;
+	RhythmDBEntry *first;
+	GtkTreeIter iter;
 
 	g_return_val_if_fail (porder != NULL, NULL);
 	g_return_val_if_fail (RB_IS_QUEUE_PLAY_ORDER (porder), NULL);
@@ -98,17 +100,33 @@ rb_queue_play_order_get_next (RBPlayOrder* porder)
 	if (model == NULL)
 		return NULL;
 
+	/* the play queue should try to play the earliest entry in the
+	 * query model that it can.  so there are three possible cases here:
+	 *
+	 * - we have no current playing entry, so return the first
+	 * - the current playing entry is the first, so return the next
+	 * - the current playing entry is not the first, so return the first
+	 */
+
 	g_object_get (porder, "playing-entry", &entry, NULL);
+
+	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter)) {
+		first = NULL;
+	} else {
+		first = rhythmdb_query_model_iter_to_entry (model, &iter);
+	}
+
 	if (entry == NULL) {
-		GtkTreeIter iter;
-		if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter))
-			return NULL;
-		return rhythmdb_query_model_iter_to_entry (model, &iter);
+		return first;
+	} else if (entry != first) {
+		rhythmdb_entry_unref (entry);
+		return first;
 	} else {
 		RhythmDBEntry *next;
 
 		next = rhythmdb_query_model_get_next_from_entry (model, entry);
 		rhythmdb_entry_unref (entry);
+		rhythmdb_entry_unref (first);
 		return next;
 	}
 }

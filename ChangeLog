@@ -1,3 +1,16 @@
+2008-05-04  Jonathan Matthew  <jonathan@d14n.org>
+
+	* shell/rb-play-order-queue.c: (rb_queue_play_order_get_next):
+	Rather than returning the entry after the current playing entry,
+	return the earliest entry in the query model that isn't already
+	playing.  This makes the queue behave a little better when it gets
+	shuffled or otherwise played out of order.
+
+	* shell/rb-shell-player.c: (rb_shell_player_entry_activated_cb):
+	When an entry in the queue is activated, don't move it to the start of
+	the queue; the above change makes this work properly without looking
+	weird.
+
 2008-05-01  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/ipod/rb-ipod-source.c: (rb_ipod_song_artwork_add_cb):

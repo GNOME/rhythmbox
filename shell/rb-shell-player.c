@@ -2397,8 +2397,6 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 				player->priv->source = player->priv->selected_source;
 			}
 
-			/* queue entry activated: move it to the start of the queue */
-			rb_static_playlist_source_move_entry (RB_STATIC_PLAYLIST_SOURCE (player->priv->queue_source), entry, 0);
 			rb_shell_player_set_playing_source (player, RB_SOURCE (player->priv->queue_source));
 
 			was_from_queue = FALSE;
