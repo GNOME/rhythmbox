@@ -1,3 +1,11 @@
+2008-05-08  Bastien Nocera  <hadess@hadess.net>
+
+	* rhythmdb/rhythmdb-query-model.c (query_model_chain_can_reorder),
+	(rhythmdb_query_model_row_drop_possible),
+	(rhythmdb_query_model_row_drop_position): Patch from Jonathan Matthew
+	<jonathan@d14n.org> to not make sorted queries look like drag
+	destinations (Closes: #531759)
+
 2008-05-04  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/visualizer/rb-visualizer-plugin.c

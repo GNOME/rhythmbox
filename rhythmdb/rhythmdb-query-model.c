@@ -1937,14 +1937,13 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 	return FALSE;
 }
 
+/* 
+ * determines whether reordering is possible by checking up
+ * the chain for a model with a sort function set.
+ */
 static gboolean
-rhythmdb_query_model_row_drop_possible (RbTreeDragDest *drag_dest,
-					GtkTreePath *dest,
-					GtkTreeViewDropPosition pos,
-					GtkSelectionData *selection_data)
+query_model_chain_can_reorder (RhythmDBQueryModel *model)
 {
-	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (drag_dest);
-
 	while (model) {
 		if (model->priv->sort_func != NULL)
 			return FALSE;
@@ -1955,12 +1954,23 @@ rhythmdb_query_model_row_drop_possible (RbTreeDragDest *drag_dest,
 }
 
 static gboolean
+rhythmdb_query_model_row_drop_possible (RbTreeDragDest *drag_dest,
+					GtkTreePath *dest,
+					GtkTreeViewDropPosition pos,
+					GtkSelectionData *selection_data)
+{
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (drag_dest);
+	return query_model_chain_can_reorder (model);
+}
+
+static gboolean
 rhythmdb_query_model_row_drop_position (RbTreeDragDest *drag_dest,
 					GtkTreePath *dest_path,
 					GList *targets,
 					GtkTreeViewDropPosition *pos)
 {
-	return TRUE;
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (drag_dest);
+	return query_model_chain_can_reorder (model);
 }
 
 static void
