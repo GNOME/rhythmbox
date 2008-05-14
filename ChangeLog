@@ -1,3 +1,12 @@
+2008-05-14  Jonathan Matthew  <jmatthew@clown>
+
+	* backends/gstreamer/rb-player-gst-xfade.c (create_stream),
+	(stream_src_blocked_cb):
+	Increase the maximum buffer count of the preroll queue to 1000 (from
+	200) while prerolling, as a tiny fraction of all ogg vorbis files produce
+	more than 200 buffers in the first second of decoded output.  This
+	allows prerolling to complete for these files.  From #484210.
+
 2008-05-08  Bastien Nocera  <hadess@hadess.net>
 
 	* rhythmdb/rhythmdb-query-model.c (query_model_chain_can_reorder),

@@ -2048,9 +2048,14 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		return NULL;
 	}
 	/* decode at least a second during prerolling, to hopefully avoid underruns.
-	 * we clear this when prerolling is finished.
+	 * we clear this when prerolling is finished.  bump the max buffer count up
+	 * a bit (from 200) as with some formats it often takes more buffers to
+	 * make up a whole second.  don't really want to remove it altogether, though.
 	 */
-	g_object_set (stream->preroll, "min-threshold-time", GST_SECOND, NULL);
+	g_object_set (stream->preroll,
+		      "min-threshold-time", GST_SECOND,
+		      "max-size-buffers", 1000,
+		      NULL);
 
 	/* probably could stand to make this check a bit smarter..
 	 */
@@ -2314,7 +2319,10 @@ stream_src_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	GError *error = NULL;
 	stream->src_blocked = TRUE;
 
-	g_object_set (stream->preroll, "min-threshold-time", G_GINT64_CONSTANT (0), NULL);
+	g_object_set (stream->preroll,
+		      "min-threshold-time", G_GINT64_CONSTANT (0),
+		      "max-size-buffers", 200,		/* back to normal value */
+		      NULL);
 
 	/* update stream state */
 	switch (stream->state) {
