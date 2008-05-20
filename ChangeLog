@@ -1,4 +1,24 @@
-2008-05-14  Jonathan Matthew  <jmatthew@clown>
+2008-05-20  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c (dump_stream_list),
+	(adjust_stream_base_time), (volume_changed_cb),
+	(link_and_unblock_stream), (perform_seek),
+	(post_eos_seek_blocked_cb), (rb_player_gst_xfade_bus_cb),
+	(actually_start_stream), (get_times_and_stream), (start_sink),
+	(rb_player_gst_xfade_open), (rb_player_gst_xfade_play),
+	(rb_player_gst_xfade_pause), (rb_player_gst_xfade_set_replaygain),
+	(rb_player_gst_xfade_set_time):
+	* configure.ac:
+	When starting the sink, process bus messages rather than just waiting
+	for the state changes to complete.  With this change, we require
+	GStreamer 0.10.12 to build the crossfading player backend.
+	Fixes #532434.
+
+	Don't immediately remove streams that have ended, and allow seeking
+	in such streams.  There's no way to actually do this yet, but it's
+	coming..  (#140020)
+
+2008-05-14  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c (create_stream),
 	(stream_src_blocked_cb):

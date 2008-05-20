@@ -140,8 +140,12 @@
  * - rb_player_set_time():  -> SEEKING_PAUSED, block, unlink
  *
  * from PENDING_REMOVE:
- *
+ * - rb_player_set_time():  -> block, seek, -> SEEKING_EOS
  * - reap_streams idle handler called:  -> unlink from adder, stream destroyed
+ *
+ * from SEEKING_EOS:
+ * - block completes -> link, unblock, -> PLAYING
+ * - rb_player_pause() -> SEEKING_PAUSED
  *
  * from REUSING:
  *
@@ -200,7 +204,7 @@ static gboolean rb_player_gst_xfade_remove_tee (RBPlayerGstTee *player, GstEleme
 static gboolean rb_player_gst_xfade_remove_filter (RBPlayerGstFilter *player, GstElement *element);
 
 static gboolean create_sink (RBPlayerGstXFade *player, GError **error);
-static gboolean start_sink (RBPlayerGstXFade *player);
+static gboolean start_sink (RBPlayerGstXFade *player, GError **error);
 static gboolean stop_sink (RBPlayerGstXFade *player);
 static void maybe_stop_sink (RBPlayerGstXFade *player);
 
@@ -261,10 +265,11 @@ typedef enum
 	FADING_IN = 64,
 	SEEKING = 128,
 	SEEKING_PAUSED = 256,
-	WAITING_EOS = 512,
-	FADING_OUT = 1024,
-	FADING_OUT_PAUSED = 2048,
-	PENDING_REMOVE = 4096
+	SEEKING_EOS = 512, 
+	WAITING_EOS = 1024,
+	FADING_OUT = 2048,
+	FADING_OUT_PAUSED = 4096,
+	PENDING_REMOVE = 8192
 } StreamState;
 
 typedef struct
@@ -512,6 +517,7 @@ dump_stream_list (RBPlayerGstXFade *player)
 			case FADING_IN: 	statename = "fading in"; 	break;
 			case SEEKING:		statename = "seeking";		break;
 			case SEEKING_PAUSED:	statename = "seeking->paused";	break;
+			case SEEKING_EOS:	statename = "seeking post EOS"; break;
 			case WAITING_EOS: 	statename = "waiting for EOS"; 	break;
 			case FADING_OUT: 	statename = "fading out"; 	break;
 			case FADING_OUT_PAUSED: statename = "fading->paused";   break;
@@ -857,6 +863,11 @@ adjust_stream_base_time (RBXFadeStream *stream)
 	gint64 output_pos = -1;
 	gint64 stream_pos = -1;
 
+	if (stream->adder_pad == NULL) {
+		rb_debug ("stream isn't linked, can't adjust base time");
+		return;
+	}
+
 	format = GST_FORMAT_TIME;
 	gst_element_query_position (GST_PAD_PARENT (stream->adder_pad), &format, &output_pos);
 	if (output_pos != -1) {
@@ -928,7 +939,7 @@ volume_changed_cb (GObject *object, GParamSpec *pspec, RBPlayerGstXFade *player)
 		}
 		break;
 	default:
-		rb_debug ("unexpectedly got a volume change for stream %s to %f (not fading)", stream->uri, (float)vol);
+		/*rb_debug ("unexpectedly got a volume change for stream %s to %f (not fading)", stream->uri, (float)vol);*/
 		break;
 	}
 
@@ -1067,8 +1078,6 @@ link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
  * - adds the bin to the pipeline
  * - links to a new adder pad
  * - unblocks the stream if it's blocked
- *
- * how should this signal errors?  post bus messages?
  */
 static gboolean
 link_and_unblock_stream (RBXFadeStream *stream, GError **error)
@@ -1076,18 +1085,22 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 	GstPadLinkReturn plr;
 	GstStateChangeReturn scr;
 	RBPlayerGstXFade *player = stream->player;
+	gboolean ret;
 
 	if (stream->adder_pad != NULL) {
 		rb_debug ("stream %s is already linked", stream->uri);
 		return TRUE;
 	}
 
-	rb_debug ("linking stream %s", stream->uri);
-
 	g_static_rec_mutex_lock (&player->priv->sink_lock);
-	start_sink (player);
+	ret = start_sink (player, error);
 	g_static_rec_mutex_unlock (&player->priv->sink_lock);
+	if (ret == FALSE) {
+		rb_debug ("sink didn't start, so we're not going to link the stream");
+		return FALSE;
+	}
 
+	rb_debug ("linking stream %s", stream->uri);
 	if (GST_ELEMENT_PARENT (stream->bin) == NULL)
 		gst_bin_add (GST_BIN (player->priv->pipeline), stream->bin);
 
@@ -1184,7 +1197,7 @@ reuse_stream (RBXFadeStream *stream)
 static void
 perform_seek (RBXFadeStream *stream)
 {
-	GError *error;
+	GError *error = NULL;
 	rb_debug ("sending seek event..");
 	gst_element_seek (stream->volume, 1.0,
 			  GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
@@ -1204,8 +1217,28 @@ perform_seek (RBXFadeStream *stream)
 		rb_debug ("leaving paused stream %s unlinked", stream->uri);
 		stream->state = PAUSED;
 		break;
+	case SEEKING_EOS:
+		rb_debug ("waiting for pad block to complete for %s before unlinking", stream->uri);
+		break;
 	default:
 		break;
+	}
+}
+
+/*
+ * called when a stream doing a post-EOS seek is blocked.  this indicates
+ * that the seek has completed (that's the only way data can flow out of
+ * the stream bin), so the stream can be linked and unblocked.
+ */
+static void
+post_eos_seek_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
+{
+	GError *error = NULL;
+
+	rb_debug ("stream %s is blocked; linking and unblocking", stream->uri);
+	stream->src_blocked = TRUE;
+	if (link_and_unblock_stream (stream, &error) == FALSE) {
+		emit_stream_error (stream, error);
 	}
 }
 
@@ -1653,13 +1686,16 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				g_assert_not_reached ();
 			}
 		} else if (strcmp (name, STREAM_EOS_MESSAGE) == 0) {
-			/* emit EOS, dispose of the stream, and start any
-			 * streams we had waiting for an EOS.
+			/* emit EOS, unlink the stream, and start any
+			 * streams we had waiting for an EOS.  if we don't
+			 * start a new stream, we keep the old stream around
+			 * so that we can still seek back in it.
 			 */
 			rb_debug ("got EOS message for stream %s -> PENDING_REMOVE", stream->uri);
 			_rb_player_emit_eos (RB_PLAYER (player), stream->stream_data);
 			stream->state = PENDING_REMOVE;
-			schedule_stream_reap (player);
+
+			unlink_blocked_cb (stream->src_pad, TRUE, stream);
 		} else {
 			_rb_player_emit_event (RB_PLAYER (player), stream->stream_data, name, NULL);
 		}
@@ -2218,6 +2254,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			case PREROLL_PLAY:
 				rb_debug ("stream %s is paused; replacing it", pstream->uri);
 				pstream->state = PENDING_REMOVE;
+			case PENDING_REMOVE:
 				need_reap = TRUE;
 				break;
 
@@ -2257,6 +2294,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			case PAUSED:
 				rb_debug ("stream %s is paused; replacing it", pstream->uri);
 				pstream->state = PENDING_REMOVE;
+			case PENDING_REMOVE:
 				need_reap = TRUE;
 				break;
 			default:
@@ -2284,6 +2322,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			case PLAYING:
 			case PAUSED:
 			case FADING_IN:
+			case PENDING_REMOVE:
 				/* kill this one */
 				rb_debug ("stopping stream %s (replaced by new stream)", pstream->uri);
 				need_reap = TRUE;
@@ -2422,7 +2461,7 @@ get_times_and_stream (RBPlayerGstXFade *player, RBXFadeStream **pstream, gint64 
 		return FALSE;
 
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
-	stream = find_stream_by_state (player, FADING_IN | PLAYING | FADING_OUT_PAUSED | PAUSED);
+	stream = find_stream_by_state (player, FADING_IN | PLAYING | FADING_OUT_PAUSED | PAUSED | PENDING_REMOVE);
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	if (stream != NULL) {
@@ -2513,10 +2552,15 @@ tick_timeout (RBPlayerGstXFade *player)
  */
 
 static gboolean
-start_sink (RBPlayerGstXFade *player)
+start_sink (RBPlayerGstXFade *player, GError **error)
 {
 	GstStateChangeReturn sr;
-	GstState state;
+	gboolean waiting;
+	GError *generic_error = NULL;
+	g_set_error (&generic_error,
+		     RB_PLAYER_ERROR,
+		     RB_PLAYER_ERROR_INTERNAL,		/* ? */
+		     _("Failed to open output device"));
 
 	switch (player->priv->sink_state) {
 	case SINK_NULL:
@@ -2531,6 +2575,7 @@ start_sink (RBPlayerGstXFade *player)
 		sr = gst_element_set_state (player->priv->outputbin, GST_STATE_PAUSED);
 		if (sr == GST_STATE_CHANGE_FAILURE) {
 			rb_debug ("output bin state change failed");
+			g_propagate_error (error, generic_error);
 			return FALSE;
 		}
 
@@ -2538,6 +2583,7 @@ start_sink (RBPlayerGstXFade *player)
 		sr = gst_element_set_state (player->priv->adder, GST_STATE_PAUSED);
 		if (sr == GST_STATE_CHANGE_FAILURE) {
 			rb_debug ("adder state change failed");
+			g_propagate_error (error, generic_error);
 			return FALSE;
 		}
 
@@ -2545,46 +2591,95 @@ start_sink (RBPlayerGstXFade *player)
 		sr = gst_element_set_state (player->priv->silencebin, GST_STATE_PAUSED);
 		if (sr == GST_STATE_CHANGE_FAILURE) {
 			rb_debug ("silence bin state change failed");
+			g_propagate_error (error, generic_error);
 			return FALSE;
 		}
 
 		/* now wait for everything to finish */
-		sr = gst_element_get_state (player->priv->silencebin, &state, NULL, GST_CLOCK_TIME_NONE);
-		if (sr == GST_STATE_CHANGE_FAILURE) {
-			rb_debug ("silence bin state change failed (async)");
-			return FALSE;
-		}
-		rb_debug ("silence bin is now in state %s", gst_element_state_get_name (state));
+		waiting = TRUE;
+		while (waiting) {
+			GstMessage *message;
+			GstState oldstate;
+			GstState newstate;
+			GstState pending;
 
-		sr = gst_element_get_state (player->priv->adder, &state, NULL, GST_CLOCK_TIME_NONE);
-		if (sr == GST_STATE_CHANGE_FAILURE) {
-			rb_debug ("adder state change failed (async)");
-			return FALSE;
-		}
-		rb_debug ("adder is now in state %s", gst_element_state_get_name (state));
+			message = gst_bus_timed_pop (gst_element_get_bus (GST_ELEMENT (player->priv->pipeline)),
+						     GST_SECOND * 5);
+			if (message == NULL) {
+				rb_debug ("sink is taking too long to start..");
+				g_propagate_error (error, generic_error);
+				return FALSE;
+			}
 
-		sr = gst_element_get_state (player->priv->outputbin, &state, NULL, GST_CLOCK_TIME_NONE);
-		if (sr == GST_STATE_CHANGE_FAILURE) {
-			rb_debug ("output bin state change failed (async)");
-			return FALSE;
+			switch (GST_MESSAGE_TYPE (message)) {
+			case GST_MESSAGE_ERROR:
+				{
+					char *debug;
+					GError *gst_error = NULL;
+
+					gst_message_parse_error (message, &gst_error, &debug);
+					rb_debug ("got error message: %s (%s)", gst_error->message, debug);
+					gst_message_unref (message);
+					g_free (debug);
+
+					if (error != NULL && *error == NULL) {
+						g_set_error (error,
+							     RB_PLAYER_ERROR,
+							     RB_PLAYER_ERROR_INTERNAL,		/* ? */
+							     _("Failed to open output device: %s"),
+							     gst_error->message);
+					}
+					g_error_free (gst_error);
+					g_error_free (generic_error);
+
+					gst_element_set_state (player->priv->outputbin, GST_STATE_NULL);
+					gst_element_set_state (player->priv->adder, GST_STATE_NULL);
+					gst_element_set_state (player->priv->silencebin, GST_STATE_NULL);
+					return FALSE;
+				}
+				break;
+
+			case GST_MESSAGE_STATE_CHANGED:
+				{
+					gst_message_parse_state_changed (message, &oldstate, &newstate, &pending);
+					if (newstate == GST_STATE_PAUSED && pending == GST_STATE_VOID_PENDING) {
+						if (GST_MESSAGE_SRC (message) == GST_OBJECT (player->priv->outputbin)) {
+							rb_debug ("outputbin is now PAUSED");
+							waiting = FALSE;
+						} else if (GST_MESSAGE_SRC (message) == GST_OBJECT (player->priv->adder)) {
+							rb_debug ("adder is now PAUSED");
+						} else if (GST_MESSAGE_SRC (message) == GST_OBJECT (player->priv->silencebin)) {
+							rb_debug ("silencebin is now PAUSED");
+						}
+					}
+				}
+				break;
+
+			default:
+				break;
+			}
+
+			gst_message_unref (message);
 		}
-		rb_debug ("output bin is now in state %s", gst_element_state_get_name (state));
 
 		sr = gst_element_set_state (player->priv->silencebin, GST_STATE_PLAYING);
 		if (sr == GST_STATE_CHANGE_FAILURE) {
 			rb_debug ("silence bin state change failed");
+			g_propagate_error (error, generic_error);
 			return FALSE;
 		}
 
 		sr = gst_element_set_state (player->priv->adder, GST_STATE_PLAYING);
 		if (sr == GST_STATE_CHANGE_FAILURE) {
 			rb_debug ("adder state change failed");
+			g_propagate_error (error, generic_error);
 			return FALSE;
 		}
 
 		sr = gst_element_set_state (player->priv->outputbin, GST_STATE_PLAYING);
 		if (sr == GST_STATE_CHANGE_FAILURE) {
 			rb_debug ("output bin state change failed");
+			g_propagate_error (error, generic_error);
 			return FALSE;
 		}
 
@@ -2923,6 +3018,7 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 		case REUSING:
 		case SEEKING:
 		case SEEKING_PAUSED:
+		case SEEKING_EOS:
 		case PREROLLING:
 		case PREROLL_PLAY:
 			break;
@@ -3095,15 +3191,20 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 
 	/* is there anything to play? */
 	if (player->priv->streams == NULL) {
-		/* XXX set error */
+		g_set_error (error,
+			     RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_GENERAL,
+			     "Nothing to play");		/* should never happen */
+
 		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 		return FALSE;
 	}
 
 	/* make sure the sink is playing */
 	g_static_rec_mutex_lock (&player->priv->sink_lock);
-	if (start_sink (player) == FALSE) {
-		ret = FALSE;
+	if (start_sink (player, error) == FALSE) {
+		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+		return FALSE;
 	}
 	g_static_rec_mutex_unlock (&player->priv->sink_lock);
 
@@ -3120,6 +3221,7 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 	case FADING_OUT_PAUSED:
 	case PLAYING:
 	case SEEKING:
+	case SEEKING_EOS:
 		rb_debug ("stream %s is already playing", stream->uri);
 		_rb_player_emit_playing_stream (RB_PLAYER (player), stream->stream_data);
 		break;
@@ -3211,6 +3313,11 @@ rb_player_gst_xfade_pause (RBPlayer *iplayer)
 
 		case SEEKING:
 			rb_debug ("pausing seeking stream %s -> SEEKING_PAUSED", stream->uri);
+			stream->state = SEEKING_PAUSED;
+			done = TRUE;
+			break;
+		case SEEKING_EOS:
+			rb_debug ("stream %s is seeking after EOS -> SEEKING_PAUSED", stream->uri);
 			stream->state = SEEKING_PAUSED;
 			done = TRUE;
 			break;
@@ -3310,6 +3417,7 @@ rb_player_gst_xfade_set_replaygain (RBPlayer *iplayer,
 	case PAUSED:
 	case SEEKING:
 	case SEEKING_PAUSED:
+	case SEEKING_EOS:
 	case REUSING:
 	case WAITING:
 	case WAITING_EOS:
@@ -3398,7 +3506,7 @@ rb_player_gst_xfade_set_time (RBPlayer *iplayer, long time)
 	StreamState seeking_state = SEEKING;
 
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
-	stream = find_stream_by_state (player, FADING_IN | PLAYING | PAUSED | FADING_OUT_PAUSED);
+	stream = find_stream_by_state (player, FADING_IN | PLAYING | PAUSED | FADING_OUT_PAUSED | PENDING_REMOVE);
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	if (stream == NULL) {
@@ -3425,6 +3533,21 @@ rb_player_gst_xfade_set_time (RBPlayer *iplayer, long time)
 		unlink_and_block_stream (stream);
 		break;
 
+	case PENDING_REMOVE:
+		/* this should only happen when the stream has ended,
+		 * which means we can't wait for the src pad to be blocked
+		 * before we seek.  we unlink the stream when it reaches EOS,
+		 * so now we just perform the seek and relink.
+		 */
+		rb_debug ("seeking in EOS stream %s; target %"
+			  G_GINT64_FORMAT, stream->uri, stream->seek_target);
+		stream->state = SEEKING_EOS;
+		gst_pad_set_blocked_async (stream->src_pad,
+					   TRUE,
+					   (GstPadBlockCallback) post_eos_seek_blocked_cb,
+					   stream);
+		perform_seek (stream);
+		break;
 	default:
 		g_assert_not_reached ();
 	}
