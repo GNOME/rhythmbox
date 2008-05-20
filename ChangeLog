@@ -1,3 +1,12 @@
+2008-05-20  Christophe Fergeaui  <teuf@gnome.org>
+
+	* plugins/ipod/rb-ipod-source.c: don't connect to notify::name too
+	soon during RbIpodSource instanciation since 
+	RbIpodSource::priv::ipod_db must be set before the notify::name
+	callback can be safely used, this fixes bug #524985. In
+	impl_delete_thyself, don't try to use priv->ipod_db if it's NULL
+	(which can happen with empty ipods)
+
 2008-05-20  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c (dump_stream_list),

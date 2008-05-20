@@ -194,8 +194,6 @@ rb_ipod_source_name_changed_cb (RBiPodSource *source, GParamSpec *spec,
 static void
 rb_ipod_source_init (RBiPodSource *source)
 {	
-	g_signal_connect (G_OBJECT (source), "notify::name",
-			  (GCallback)rb_ipod_source_name_changed_cb, NULL);
 }
 
 static GObject *
@@ -936,6 +934,9 @@ rb_ipod_load_songs (RBiPodSource *source)
 				      "name", name,
 				      NULL);
 		}
+                g_signal_connect (G_OBJECT (source), "notify::name",
+		  	          (GCallback)rb_ipod_source_name_changed_cb,
+                                  NULL);
 		priv->load_idle_id = g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
 	}
 	g_object_unref (volume);
@@ -1625,6 +1626,11 @@ impl_delete_thyself (RBSource *source)
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	GList *p;
 
+        if (priv->ipod_db == NULL) {
+            RB_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_delete_thyself (source);
+            return;
+        }
+
 	for (p = rb_ipod_db_get_playlists (priv->ipod_db);
 	     p != NULL;
 	     p = p->next) {
@@ -1647,10 +1653,8 @@ impl_delete_thyself (RBSource *source)
 		}
 	}
 
-	if (priv->ipod_db != NULL) {
-		g_object_unref (G_OBJECT (priv->ipod_db));
-		priv->ipod_db = NULL;
-	}
+        g_object_unref (G_OBJECT (priv->ipod_db));
+        priv->ipod_db = NULL;
 
 	RB_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_delete_thyself (source);
 }
