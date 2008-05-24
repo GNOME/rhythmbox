@@ -707,7 +707,7 @@ default_playing_entry_removed (RBPlayOrder *porder,
 		case RB_SOURCE_EOF_STOP:
 		case RB_SOURCE_EOF_RETRY:
 			/* stop playing */
-			rb_shell_player_set_playing_source (player, NULL);
+			rb_shell_player_stop (player);
 			break;
 		case RB_SOURCE_EOF_NEXT:
 			{

@@ -1,3 +1,25 @@
+2008-05-24  Jonathan Matthew  <jonathan@d14n.org>
+
+	* shell/rb-play-order.c (default_playing_entry_removed):
+	* shell/rb-shell-player.c (rb_shell_player_constructor),
+	(rb_shell_player_handle_eos_unlocked),
+	(rb_shell_player_slider_dragging_cb), (rb_shell_player_handle_eos),
+	(rb_shell_player_get_playing_entry), (rb_shell_player_play),
+	(rb_shell_player_do_previous), (rb_shell_player_do_next_internal),
+	(rb_shell_player_cmd_previous), (rb_shell_player_cmd_next),
+	(rb_shell_player_playpause),
+	(rb_shell_player_set_playing_source_internal),
+	(rb_shell_player_stop), (rb_shell_player_set_playing_time),
+	(rb_shell_player_error), (new_playing_stream_idle_cb):
+	* shell/rb-shell.c (rb_shell_activate_source),
+	(rb_shell_source_deleted_cb), (rb_shell_quit):
+	Use rb_shell_player_stop() instead of 
+	rb_shell_player_set_playing_source (player, NULL) to stop playback.
+	When stopping playback, clear the playing source and the playing
+	entry, and remove and idle callbacks for new playing streams.
+	Incorporates patches by Sjoerd Simons and Jay Cornwall; fixes #498397,
+	#529287, and probably #443425, #474569, and #451593.
+
 2008-05-20  Christophe Fergeaui  <teuf@gnome.org>
 
 	* plugins/ipod/rb-ipod-source.c: don't connect to notify::name too

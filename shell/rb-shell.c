@@ -1702,8 +1702,14 @@ source_activated_cb (RBSourceList *sourcelist,
 static void
 rb_shell_activate_source (RBShell *shell, RBSource *source)
 {
-	/* Stop the playing source, if any */
-	rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);
+	/* FIXME
+	 *
+	 * this doesn't work correctly yet, but it's still an improvement on the
+	 * previous behaviour.
+	 *
+	 * with crossfading enabled, this fades out the current song, but
+	 * doesn't start the new one.
+	 */
 
 	/* Select the new one, and start it playing */
 	rb_shell_select_source (shell, source);
@@ -1906,7 +1912,7 @@ rb_shell_source_deleted_cb (RBSource *source,
 
 
 	if (source == rb_shell_player_get_playing_source (shell->priv->player_shell)) {
-		rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);
+		rb_shell_player_stop (shell->priv->player_shell);
 	}
 	if (source == shell->priv->selected_source) {
 		if (source != RB_SOURCE (shell->priv->library_source))
@@ -2500,7 +2506,7 @@ rb_shell_quit (RBShell *shell,
 	rb_debug ("Quitting");
 
 	/* Stop the playing source, if any */
-	rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);
+	rb_shell_player_stop (shell->priv->player_shell);
 
 	rb_plugins_engine_shutdown ();
 
