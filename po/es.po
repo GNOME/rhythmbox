@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-30 12:21+0000\n"
-"PO-Revision-Date: 2008-05-04 21:44+0200\n"
+"POT-Creation-Date: 2008-05-20 07:33+0000\n"
+"PO-Revision-Date: 2008-05-24 10:21+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -42,49 +42,61 @@ msgstr "Ha ocurrido un error al crear el elemento %s; compruebe su instalación"
 msgid "Unknown playback error"
 msgstr "Error de reproducción desconocido"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1101
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1115
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1114
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1128
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr ""
 "Ha ocurrido un error al enlazar un nuevo flujo dentro del pipeline de "
 "GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1142
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1155
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Ha ocurrido un error al inicializar un nuevo flujo"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2720
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2808
+#. ?
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2563
+#, c-format
+msgid "Failed to open output device"
+msgstr "Falló al abrir el dispositivo de salida"
+
+#. ?
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2629
+#, c-format
+msgid "Failed to open output device: %s"
+msgstr "Falló al abrir el dispositivo de salida: %s"
+
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2823
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2911
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Ha ocurrido un error al crear el elemento GStreamer; compruebe su instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2733
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2836
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear un elemento de salida de audio; compruebe su "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2782
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2824
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2850
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2859
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2868
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2885
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2927
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2953
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2962
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2971
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Ha ocurrido un error al enlazar la tubería de GStreamer; compruebe su "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2962
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3066
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Ha ocurrido un error al crear una tubería de GStreamer para reproducir %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2978
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3082
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "No se ha podido iniciar la reproducción de %s"
@@ -510,7 +522,7 @@ msgstr "Reproducidos recientemente"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:207
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1494
-#: ../shell/rb-shell-player.c:2651 ../shell/rb-shell.c:1035
+#: ../shell/rb-shell-player.c:2649 ../shell/rb-shell.c:1035
 #: ../shell/rb-shell.c:2128 ../shell/rb-tray-icon.c:51
 msgid "Music Player"
 msgstr "Reproductor de música"
@@ -1791,7 +1803,7 @@ msgstr "_Renombrar"
 msgid "Rename iPod"
 msgstr "Renombrar iPod"
 
-#: ../plugins/ipod/rb-ipod-source.c:1328 ../sources/rb-podcast-source.c:870
+#: ../plugins/ipod/rb-ipod-source.c:1332 ../sources/rb-podcast-source.c:870
 msgid "Podcasts"
 msgstr "Podcasts"
 
@@ -2857,8 +2869,8 @@ msgid ""
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
 msgstr ""
-"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el "
-"URL, o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
+"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el URL, "
+"o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
 "todas formas?"
 
 #: ../podcast/rb-podcast-manager.c:1050
@@ -3377,7 +3389,7 @@ msgstr "Decrementa el volumen de reproducción"
 msgid "_Play"
 msgstr "_Reproducir"
 
-#: ../shell/rb-shell-player.c:317 ../shell/rb-shell-player.c:3382
+#: ../shell/rb-shell-player.c:317 ../shell/rb-shell-player.c:3380
 msgid "Start playback"
 msgstr "Iniciar reproducción"
 
@@ -3472,25 +3484,25 @@ msgstr "No hay canción anterior"
 msgid "No next song"
 msgstr "No hay siguiente canción"
 
-#: ../shell/rb-shell-player.c:2044 ../shell/rb-shell-player.c:3027
+#: ../shell/rb-shell-player.c:2044 ../shell/rb-shell-player.c:3025
 msgid "Couldn't start playback"
 msgstr "No se ha podido iniciar la reproducción"
 
-#: ../shell/rb-shell-player.c:2847
+#: ../shell/rb-shell-player.c:2845
 msgid "Couldn't stop playback"
 msgstr "No se ha podido detener la reproducción"
 
-#: ../shell/rb-shell-player.c:2930
+#: ../shell/rb-shell-player.c:2928
 #, c-format
 msgid "Playback position not available"
 msgstr "La posición de la reproducción no está disponible"
 
-#: ../shell/rb-shell-player.c:2947
+#: ../shell/rb-shell-player.c:2945
 #, c-format
 msgid "Current song is not seekable"
 msgstr "La canción actual no se puede buscar"
 
-#: ../shell/rb-shell-player.c:3380
+#: ../shell/rb-shell-player.c:3378
 msgid "Stop playback"
 msgstr "Detener reproducción"
 
