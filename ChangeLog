@@ -1,3 +1,10 @@
+2008-05-26  Jonathan Matthew  <jonathan@d14n.org>
+
+	* metadata/rb-metadata-dbus-client.c (kill_metadata_service),
+	(start_metadata_service):
+	Close the metadata helper process stdout pipe when cleaning up.
+	Fixes #534582.
+
 2008-05-24  Jonathan Matthew  <jonathan@d14n.org>
 
 	* shell/rb-play-order.c (default_playing_entry_removed):

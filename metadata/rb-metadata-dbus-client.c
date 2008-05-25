@@ -80,6 +80,7 @@ static void rb_metadata_finalize (GObject *object);
 static gboolean tried_env_address = FALSE;
 static DBusConnection *dbus_connection = NULL;
 static GPid metadata_child = 0;
+static int metadata_stdout = -1;
 static GMainContext *main_context = NULL;
 static GStaticMutex conn_mutex = G_STATIC_MUTEX_INIT;
 
@@ -158,6 +159,12 @@ kill_metadata_service (void)
 		g_spawn_close_pid (metadata_child);
 		metadata_child = 0;
 	}
+
+	if (metadata_stdout != -1) {
+		rb_debug ("closing metadata child process stdout pipe");
+		close (metadata_stdout);
+		metadata_stdout = -1;
+	}
 }
 
 static gboolean
@@ -225,7 +232,6 @@ start_metadata_service (GError **error)
 	}
 
 	if (dbus_address == NULL) {
-		gint metadata_stdout;
 		GPtrArray *argv;
 		gboolean res;
 		char **debug_args;
