@@ -302,8 +302,13 @@ rb_library_source_constructor (GType type,
 	/* Set up the default library location if there's no library location set */
 	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 	if (g_slist_length (list) == 0) {
-		list = g_slist_prepend (list, g_strdup (rb_music_dir ()));
-		eel_gconf_set_string_list (CONF_LIBRARY_LOCATION, list);
+		char *music_dir_uri;
+
+		music_dir_uri = g_filename_to_uri (rb_music_dir (), NULL, NULL);
+		if (music_dir_uri != NULL) {
+			list = g_slist_prepend (list, music_dir_uri);
+			eel_gconf_set_string_list (CONF_LIBRARY_LOCATION, list);
+		}
 	}
 	rb_slist_deep_free (list);
 

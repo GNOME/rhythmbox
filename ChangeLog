@@ -1,3 +1,9 @@
+2008-05-30  Jonathan Matthew  <jonathan@d14n.org>
+
+	* sources/rb-library-source.c (rb_library_source_constructor):
+	Convert default music directory to a URI before setting it in gconf.
+	Fixes #487415.  Patch more or less by Alexander Gitter.
+
 2008-05-26  Jonathan Matthew  <jonathan@d14n.org>
 
 	* shell/rb-shell-player.c: (rb_shell_player_constructor),
