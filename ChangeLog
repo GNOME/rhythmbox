@@ -1,3 +1,8 @@
+2008-05-30  Bastien Nocera  <hadess@hadess.net>
+
+	* shell/main.c (local_load_uri): Don't crash when passing a
+	non-local URI, and there's no errors to report (Closes: #532396)
+
 2008-05-30  Jonathan Matthew  <jonathan@d14n.org>
 
 	* sources/rb-library-source.c (rb_library_source_constructor):

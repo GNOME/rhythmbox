@@ -420,9 +420,11 @@ local_load_uri (const char *filename, RBShell *shell)
 	GError *error = NULL;
 	rb_debug ("Using load_uri for %s", filename);
 	if (!rb_shell_load_uri (shell, filename, TRUE, &error)) {
-		g_printerr ("Failed to load %s: %s",
-			    filename, error->message);
-		g_error_free (error);
+		if (error != NULL) {
+			g_printerr ("Failed to load %s: %s",
+				    filename, error->message);
+			g_error_free (error);
+		}
 	}
 }
 
