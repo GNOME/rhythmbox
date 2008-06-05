@@ -20,8 +20,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-29 14:10+0200\n"
-"PO-Revision-Date: 2008-05-29 14:30+0200\n"
+"POT-Creation-Date: 2008-06-05 17:27+0200\n"
+"PO-Revision-Date: 2008-06-05 16:00+0200\n"
 "Last-Translator: Claude Paroz <claude@2xlibre.net>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -42,20 +42,24 @@ msgid "Failed to create %s element; check your installation"
 msgstr "La création de l'élément %s a échoué ; vérifiez votre installation."
 
 #: ../backends/gstreamer/rb-player-gst.c:775
+#, c-format
 msgid "Unknown playback error"
 msgstr "Erreur de lecture inconnue"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1114
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1128
+#, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "La liaison du nouveau flux dans le pipeline GStreamer a échoué"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1155
+#, c-format
 msgid "Failed to start new stream"
 msgstr "Le démarrage d'un nouveau flux a échoué"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2563
+#, c-format
 msgid "Failed to open output device"
 msgstr "L'ouverture du périphérique de sortie a échoué"
 
@@ -67,11 +71,13 @@ msgstr "L'ouverture du périphérique de sortie a échoué : %s"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2823
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2911
+#, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "La création d'un élément GStreamer a échoué ; vérifiez votre installation."
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2836
+#, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "La création d'un élément de sortie audio a échoué ; vérifiez votre "
@@ -82,6 +88,7 @@ msgstr ""
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2953
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2962
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2971
+#, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "La liaison au pipeline GStreamer a échoué ; vérifiez votre installation."
@@ -654,6 +661,7 @@ msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d sur %d:%02d:%02d"
 
 #: ../metadata/rb-metadata-dbus-client.c:324
+#, c-format
 msgid "Internal GStreamer problem; file a bug"
 msgstr "Problème interne à GStreamer ; veuillez soumettre un rapport de bogue"
 
@@ -667,6 +675,7 @@ msgstr "Problème interne à GStreamer ; veuillez soumettre un rapport de bogue
 #: ../metadata/rb-metadata-dbus-client.c:479
 #: ../metadata/rb-metadata-dbus-client.c:710
 #: ../metadata/rb-metadata-dbus-client.c:720
+#, c-format
 msgid "D-BUS communication error"
 msgstr "Erreur de communication D-BUS"
 
@@ -683,19 +692,23 @@ msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "Le fichier contient un flux de type %s qui n'est pas déchiffrable"
 
 #: ../metadata/rb-metadata-gst.c:1002
+#, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr ""
 "La création de l'élément source a échoué ; vérifiez votre installation."
 
 #: ../metadata/rb-metadata-gst.c:1065
+#, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Erreur GStreamer : le changement d'état a échoué"
 
 #: ../metadata/rb-metadata-gst.c:1161
+#, c-format
 msgid "Empty file"
 msgstr "Fichier vide"
 
 #: ../metadata/rb-metadata-gst.c:1169
+#, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "Le type MIME du fichier n'a pas pu être reconnu"
 
@@ -705,14 +718,17 @@ msgid "Unsupported file type: %s"
 msgstr "Type de fichier non pris en charge : %s"
 
 #: ../metadata/rb-metadata-gst.c:1314
+#, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "Impossible de créer les éléments d'écriture des tags"
 
 #: ../metadata/rb-metadata-gst.c:1329
+#, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Expiration du délai lors de la définition du pipeline à NULL"
 
 #: ../metadata/rb-metadata-gst.c:1348
+#, c-format
 msgid "File corrupted during write"
 msgstr "Fichier corrompu au cours de la gravure"
 
@@ -799,6 +815,7 @@ msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox ne parvient pas à obtenir l'accès au périphérique CD."
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:124
+#, c-format
 msgid "Cannot create MusicBrainz client"
 msgstr "Impossible de créer le client MusicBrainz"
 
@@ -824,6 +841,7 @@ msgid "Track %d"
 msgstr "Piste %d"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:291
+#, c-format
 msgid ""
 "MusicBrainz metadata object is not valid. This is bad, check your console "
 "for errors."
@@ -860,6 +878,7 @@ msgid "Incomplete metadata for this CD"
 msgstr "Metadonnées incomplètes pour ce CD"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:715
+#, c-format
 msgid "Could not create CD lookup thread"
 msgstr "Impossible de créer le thread de recherche de CD"
 
@@ -1141,6 +1160,7 @@ msgid "Unable to create audio CD"
 msgstr "Impossible de créer le CD audio"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:437
+#, c-format
 msgid "Failed to create pipeline"
 msgstr "La création du tube a échoué"
 
@@ -1159,14 +1179,17 @@ msgid "Could not get current track position"
 msgstr "Impossible de lire la position actuelle"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:656
+#, c-format
 msgid "Could not start pipeline playing"
 msgstr "Impossible de démarrer la lecture"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:667
+#, c-format
 msgid "Could not pause playback"
 msgstr "Impossible de suspendre la lecture"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:864
+#, c-format
 msgid "Cannot find drive"
 msgstr "Le lecteur est introuvable"
 
@@ -1182,6 +1205,7 @@ msgstr "Le lecteur %s n'est pas un graveur"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1102
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1295
+#, c-format
 msgid "No writable drives found."
 msgstr "Aucun disque inscriptible trouvé."
 
@@ -1191,6 +1215,7 @@ msgid "Could not get track time for file: %s"
 msgstr "La durée du fichier %s ne peut être lue"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1304
+#, c-format
 msgid "Could not determine audio track durations."
 msgstr "Impossible de trouver la durée des pistes audio."
 
@@ -1487,10 +1512,12 @@ msgstr "Créer un CD audio à partir de « %s » ?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1576
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1594
+#, c-format
 msgid "Unable to build an audio track list."
 msgstr "Impossible de construire une liste de pistes audio."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1604
+#, c-format
 msgid "This playlist is too long to write to an audio CD."
 msgstr ""
 "Cette liste de lecture est trop longue pour être gravée sur un CD audio."
@@ -2788,10 +2815,12 @@ msgid "Window"
 msgstr "Fenêtre"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:714
+#, c-format
 msgid "Unable to start video output"
 msgstr "Impossible de démarrer la sortie vidéo"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:749
+#, c-format
 msgid "Failed to link new visual effect into the GStreamer pipeline"
 msgstr "La liaison du nouvel effet visuel dans le pipeline GStreamer a échoué"
 
@@ -2899,6 +2928,7 @@ msgid "Unexpected file type: %s"
 msgstr "Type de fichier inattendu : %s"
 
 #: ../podcast/rb-podcast-parse.c:201
+#, c-format
 msgid "Unable to parse the feed contents"
 msgstr "Impossible d'analyser le contenu du flux"
 
@@ -3000,6 +3030,7 @@ msgid "Not playing"
 msgstr "Pas de lecture en cours"
 
 #: ../remote/dbus/rb-client.c:624
+#, c-format
 msgid "Playback is muted.\n"
 msgstr "La lecture est mise en sourdine.\n"
 
@@ -3021,6 +3052,7 @@ msgid "All"
 msgstr "Tout"
 
 #: ../rhythmdb/rhythmdb-tree.c:400
+#, c-format
 msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
 "rhythmbox cannot read the database."
@@ -3308,11 +3340,11 @@ msgstr "Colle la sélection"
 
 #: ../shell/rb-shell-clipboard.c:151
 msgid "_Remove"
-msgstr "_Supprimer"
+msgstr "_Enlever"
 
 #: ../shell/rb-shell-clipboard.c:152 ../shell/rb-shell-clipboard.c:166
 msgid "Remove selection"
-msgstr "Supprime la sélection"
+msgstr "Enlève la sélection"
 
 #: ../shell/rb-shell-clipboard.c:154
 msgid "_Move to Trash"
@@ -3470,18 +3502,22 @@ msgid "Failed to create the player: %s"
 msgstr "La création du lecteur a échoué : %s"
 
 #: ../shell/rb-shell-player.c:1371
+#, c-format
 msgid "Playlist was empty"
 msgstr "La liste de lecture est vide"
 
 #: ../shell/rb-shell-player.c:1835
+#, c-format
 msgid "Not currently playing"
 msgstr "Ne joue pas"
 
 #: ../shell/rb-shell-player.c:1885
+#, c-format
 msgid "No previous song"
 msgstr "Aucun morceau précédent"
 
 #: ../shell/rb-shell-player.c:1962
+#, c-format
 msgid "No next song"
 msgstr "Aucun morceau suivant"
 
@@ -3494,10 +3530,12 @@ msgid "Couldn't stop playback"
 msgstr "Impossible d'arrêter la lecture"
 
 #: ../shell/rb-shell-player.c:2948
+#, c-format
 msgid "Playback position not available"
 msgstr "La position de lecture n'est pas disponible"
 
 #: ../shell/rb-shell-player.c:2965
+#, c-format
 msgid "Current song is not seekable"
 msgstr "Le morceau actuel ne peut pas être parcouru"
 
@@ -3958,23 +3996,23 @@ msgstr "Artiste (album) - Piste - Morceau"
 msgid "Number. Artist - Title"
 msgstr "Piste. Artiste - Morceau"
 
-#: ../sources/rb-library-source.c:347
+#: ../sources/rb-library-source.c:352
 msgid "Music"
 msgstr "Musique"
 
-#: ../sources/rb-library-source.c:382
+#: ../sources/rb-library-source.c:387
 msgid "Choose Library Location"
 msgstr "Emplacement de la _bibliothèque"
 
-#: ../sources/rb-library-source.c:569
+#: ../sources/rb-library-source.c:574
 msgid "Multiple locations set"
 msgstr "Ensemble d'emplacements multiples"
 
-#: ../sources/rb-library-source.c:666
+#: ../sources/rb-library-source.c:671
 msgid "Add Location"
 msgstr "Ajouter un emplacement"
 
-#: ../sources/rb-library-source.c:1032
+#: ../sources/rb-library-source.c:1037
 msgid "Example Path:"
 msgstr "Chemin d'exemple :"
 
