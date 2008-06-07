@@ -44,7 +44,7 @@ has_gnome_keyring = False
 #	pass
 
 
-magnatune_partner_id = "zimmerman"
+magnatune_partner_id = "rhythmbox"
 
 # URIs
 magnatune_dir = gnome.user_dir_get() + "rhythmbox/magnatune/"
