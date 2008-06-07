@@ -31,7 +31,11 @@ import urllib
 import re
 import rb
 
-from xml.etree import cElementTree
+# Python 2.4 compatibility
+try:
+	from xml.etree import cElementTree
+except:
+	import cElementTree
 
 
 
