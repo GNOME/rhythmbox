@@ -72,7 +72,7 @@ typedef struct
 
 	/* signals */
 	void (*progress) (RBEncoder *encoder,  double fraction);
-	void (*completed) (RBEncoder *encoder);
+	void (*completed) (RBEncoder *encoder, guint64 dest_size);
 	void (*error) (RBEncoder *encoder, GError *error);
 } RBEncoderIface;
 
@@ -92,7 +92,7 @@ gboolean	rb_encoder_get_preferred_mimetype (RBEncoder *encoder,
 
 /* only to be used by subclasses */
 void	_rb_encoder_emit_progress (RBEncoder *encoder, double fraction);
-void	_rb_encoder_emit_completed (RBEncoder *encoder);
+void	_rb_encoder_emit_completed (RBEncoder *encoder, guint64 dest_size);
 void	_rb_encoder_emit_error (RBEncoder *encoder, GError *error);
 
 G_END_DECLS

@@ -628,6 +628,7 @@ typedef struct {
 	RBRemovableMediaManager *manager;
 	RhythmDBEntry *entry;
 	char *dest;
+	guint64 dest_size;
 	GList *mime_types;
 	gboolean failed;
 	RBTranferCompleteCallback callback;
@@ -666,13 +667,13 @@ progress_cb (RBEncoder *encoder, double fraction, TransferData *data)
 }
 
 static void
-completed_cb (RBEncoder *encoder, TransferData *data)
+completed_cb (RBEncoder *encoder, guint64 dest_size, TransferData *data)
 {
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (data->manager);
 
-	rb_debug ("completed transferring track to %s", data->dest);
+	rb_debug ("completed transferring track to %s (%" G_GUINT64_FORMAT " bytes)", data->dest, dest_size);
 	if (!data->failed)
-		(data->callback) (data->entry, data->dest, data->userdata);
+		(data->callback) (data->entry, data->dest, dest_size, data->userdata);
 
 	priv->transfer_running = FALSE;
 	priv->transfer_done++;

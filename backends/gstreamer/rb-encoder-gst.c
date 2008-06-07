@@ -70,6 +70,7 @@ struct _RBEncoderGstPrivate {
 	GstFormat position_format;
 	gint64 total_length;
 	guint progress_id;
+	char *dest_uri;
 };
 
 G_DEFINE_TYPE_WITH_CODE(RBEncoderGst, rb_encoder_gst, G_TYPE_OBJECT,
@@ -158,6 +159,8 @@ rb_encoder_gst_finalize (GObject *object)
 		encoder->priv->pipeline = NULL;
 	}
 
+	g_free (encoder->priv->dest_uri);
+
         G_OBJECT_CLASS (rb_encoder_gst_parent_class)->finalize (object);
 }
 
@@ -178,6 +181,9 @@ static void
 rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 {
 	GError *error = NULL;
+	guint64 dest_size;
+	GnomeVFSFileInfo *file_info;
+	GnomeVFSResult result;
 
 	g_return_if_fail (encoder->priv->completion_emitted == FALSE);
 
@@ -199,8 +205,22 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 		g_error_free (error);
 	}
 
+	/* find the size of the output file, assuming we can get at it with gnome-vfs */
+	dest_size = 0;
+	file_info = gnome_vfs_file_info_new ();
+	result = gnome_vfs_get_file_info (encoder->priv->dest_uri, file_info, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+	if (result == GNOME_VFS_OK && (file_info->valid_fields & GNOME_VFS_FILE_INFO_FIELDS_SIZE)) {
+		dest_size = file_info->size;
+		rb_debug ("destination file size: %" G_GUINT64_FORMAT, dest_size);
+	} else {
+		rb_debug ("couldn't get size of destination %s: %s",
+			  encoder->priv->dest_uri,
+			  gnome_vfs_result_to_string (result));
+	}
+	gnome_vfs_file_info_unref (file_info);
+
 	encoder->priv->completion_emitted = TRUE;
-	_rb_encoder_emit_completed (RB_ENCODER (encoder));
+	_rb_encoder_emit_completed (RB_ENCODER (encoder), dest_size);
 }
 
 static gboolean
@@ -1004,7 +1024,7 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 					     gnome_vfs_result_to_string (vfsresult));
 
 		_rb_encoder_emit_error (encoder, error);
-		_rb_encoder_emit_completed (encoder);
+		_rb_encoder_emit_completed (encoder, 0);
 		g_error_free (error);
 		return FALSE;
 	}
@@ -1028,6 +1048,7 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 		}
 	}
 
+	priv->dest_uri = g_strdup (dest);
 	if (copy) {
 		priv->total_length = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
 		priv->position_format = GST_FORMAT_BYTES;
@@ -1049,12 +1070,13 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 
 		rb_encoder_gst_emit_error (enc, error);
 		g_error_free (error);
-		if (enc->priv->pipeline == NULL)
+		if (enc->priv->pipeline == NULL) {
 			rb_encoder_gst_emit_completed (enc);
-		else
+		} else {
 			/* this will unref the pipeline and call emit_completed
 			 */
 			rb_encoder_gst_cancel (encoder);
+		}
 	}
 
 	return result;

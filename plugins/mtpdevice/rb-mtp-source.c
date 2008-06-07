@@ -78,6 +78,7 @@ static GList * impl_get_mime_types (RBRemovableMediaSource *source);
 static gboolean impl_track_added (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
 				  const char *dest,
+				  guint64 filesize,
 				  const char *mimetype);
 static char* impl_build_dest_uri (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
@@ -688,6 +689,7 @@ transfer_track (RBMtpSource *source,
 		LIBMTP_mtpdevice_t *device,
 		RhythmDBEntry *entry,
 		const char *filename,
+		guint64 filesize,
 		const char *mimetype)
 {
 	LIBMTP_track_t *trackmeta = LIBMTP_new_track_t ();
@@ -705,7 +707,7 @@ transfer_track (RBMtpSource *source,
 	}
 	trackmeta->tracknumber = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
 	trackmeta->duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION) * 1000;
-	trackmeta->filesize = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
+	trackmeta->filesize = filesize;
 	if (mimetype == NULL) {
 		trackmeta->filetype = mimetype_to_filetype (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE));
 	} else {
@@ -749,6 +751,7 @@ static gboolean
 impl_track_added (RBRemovableMediaSource *isource,
 		  RhythmDBEntry *entry,
 		  const char *dest,
+		  guint64 filesize,
 		  const char *mimetype)
 {
 	RBMtpSource *source = RB_MTP_SOURCE (isource);
@@ -757,7 +760,7 @@ impl_track_added (RBRemovableMediaSource *isource,
 	LIBMTP_track_t *track = NULL;
 
 	filename = g_filename_from_uri (dest, NULL, NULL);
-	track = transfer_track (source, priv->device, entry, filename, mimetype);
+	track = transfer_track (source, priv->device, entry, filename, filesize, mimetype);
 	gnome_vfs_unlink (filename);
 	g_free (filename);
 

@@ -81,6 +81,7 @@ static GList * impl_get_mime_types (RBRemovableMediaSource *source);
 static gboolean impl_track_added (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
 				  const char *dest,
+				  guint64 filesize,
 				  const char *mimetype);
 static char* impl_build_dest_uri (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
@@ -1346,6 +1347,7 @@ static gboolean
 impl_track_added (RBRemovableMediaSource *source,
 		  RhythmDBEntry *entry,
 		  const char *dest,
+		  guint64 filesize,
 		  const char *mimetype)
 {
 	RBiPodSource *isource = RB_IPOD_SOURCE (source);

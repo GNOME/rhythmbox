@@ -264,9 +264,9 @@ struct _TrackAddedData {
 };
 
 static void
-_track_added_cb (RhythmDBEntry *entry, const char *uri, struct _TrackAddedData *data)
+_track_added_cb (RhythmDBEntry *entry, const char *uri, gint64 dest_size, struct _TrackAddedData *data)
 {
-	rb_removable_media_source_track_added (data->source, entry, uri, data->mimetype);
+	rb_removable_media_source_track_added (data->source, entry, uri, dest_size, data->mimetype);
 	g_free (data->mimetype);
 	g_free (data);
 }
@@ -546,13 +546,14 @@ void
 rb_removable_media_source_track_added (RBRemovableMediaSource *source,
 				       RhythmDBEntry *entry,
 				       const char *uri,
+				       guint64 filesize,
 				       const char *mimetype)
 {
 	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
 	gboolean add_to_db = TRUE;
 
 	if (klass->impl_track_added)
-		add_to_db = klass->impl_track_added (source, entry, uri, mimetype);
+		add_to_db = klass->impl_track_added (source, entry, uri, filesize, mimetype);
 
 	if (add_to_db) {
 		RhythmDBEntryType entry_type;

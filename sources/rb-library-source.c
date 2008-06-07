@@ -1243,7 +1243,7 @@ impl_can_paste (RBSource *asource)
 
 #ifdef ENABLE_TRACK_TRANSFER
 static void
-completed_cb (RhythmDBEntry *entry, const char *dest, RBLibrarySource *source)
+completed_cb (RhythmDBEntry *entry, const char *dest, guint64 dest_size, RBLibrarySource *source)
 {
 	rhythmdb_add_uri (source->priv->db, dest);
 }

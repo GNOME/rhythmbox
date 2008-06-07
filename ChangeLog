@@ -1,5 +1,28 @@
 2008-06-07  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_gst_finalize),
+	(rb_encoder_gst_emit_completed), (rb_encoder_gst_encode):
+	* backends/rb-encoder.c: (rb_encoder_interface_init),
+	(_rb_encoder_emit_completed):
+	* backends/rb-encoder.h:
+	* bindings/python/rb.defs:
+	* lib/rb-marshal.list:
+	* shell/rb-removable-media-manager.c: (completed_cb):
+	* shell/rb-removable-media-manager.h:
+	* sources/rb-library-source.c: (completed_cb):
+	* sources/rb-removable-media-source.h:
+	* sources/rb-removable-media-source.c: (_track_added_cb),
+	(rb_removable_media_source_track_added):
+	* plugins/ipod/rb-ipod-source.c: (impl_track_added):
+	Add a file size argument to the encoder's 'completed' signal.
+
+	* plugins/mtpdevice/rb-mtp-source.c: (transfer_track),
+	(impl_track_added):
+	Use it for libmtp transfers, rather than the size of the original
+	file.  Fixes #502771, hopefully.
+
+2008-06-07  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/gstreamer/rb-player-gst-xfade.c: (preroll_stream):
 	Don't set stream->state after starting the state change; we already
 	set it to PREROLLING beforehand, and it creates a race condition.
