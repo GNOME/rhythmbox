@@ -2430,7 +2430,6 @@ preroll_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 		}
 		break;
 	case GST_STATE_CHANGE_ASYNC:
-		stream->state = PREROLLING;
 		break;
 	default:
 		g_assert_not_reached();

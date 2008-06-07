@@ -1,5 +1,12 @@
 2008-06-07  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-player-gst-xfade.c: (preroll_stream):
+	Don't set stream->state after starting the state change; we already
+	set it to PREROLLING beforehand, and it creates a race condition.
+	From #484210.
+
+2008-06-07  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  F. Steinel
 	* plugins/lyrics/lyrics/LeoslyricsParser.py:
 	Python 2.4 compatibility.  Fixes #531052.
