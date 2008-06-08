@@ -39,7 +39,12 @@ from urllib import unquote
 
 ART_SEARCHES_LOCAL = [LocalCoverArtSearch]
 ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, AmazonCoverArtSearch]
-ART_FOLDER = '~/.gnome2/rhythmbox/covers'
+OLD_ART_FOLDER = '~/.gnome2/rhythmbox/covers'
+# complicated way of saying ~/.cache/rhythmbox/covers
+ART_FOLDER = os.path.join(os.environ.get('XDG_CACHE_HOME',
+		os.path.join(os.environ.get('XDG_HOME_DIR',
+				os.environ.get('HOME','~')),
+				'.cache')), 'rhythmbox/covers')
 ART_CACHE_EXTENSION_JPG = 'jpg'
 ART_CACHE_EXTENSION_PNG = 'png'
 ART_CACHE_FORMAT_JPG = 'jpeg'
@@ -93,8 +98,14 @@ class CoverArtDatabase (object):
 		artist = db.entry_get (entry, rhythmdb.PROP_ARTIST)
 		album = db.entry_get (entry, rhythmdb.PROP_ALBUM)
 		art_folder = os.path.expanduser (ART_FOLDER)
+		old_art_folder = os.path.expanduser (OLD_ART_FOLDER)
+		if not os.path.exists (art_folder) and os.path.exists (old_art_folder):
+			parent = os.path.dirname(os.path.abspath(art_folder))
+			if not os.path.exists (parent):
+				os.makedirs (parent)
+			os.rename (old_art_folder, art_folder)
 		if not os.path.exists (art_folder):
-			os.mkdir (art_folder)
+			os.makedirs (art_folder)
 
 		# FIXME: the following block of code is messy and needs to be redone ASAP
 		return art_folder + '/%s - %s.%s' % (artist.replace ('/', '-'), album.replace ('/', '-'), extension)	
