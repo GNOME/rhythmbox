@@ -613,6 +613,51 @@ _wrap_rhythmdb_entry_type__set_sync_metadata (PyGBoxed *self, PyObject *value, v
 
 	return 0;
 }
+
+%%
+override-attr  RhythmDBEntryType_.save_to_disk
+
+static PyObject *
+_wrap_rhythmdb_entry_type__get_save_to_disk(PyGBoxed *self, void *closure)
+{
+    RhythmDBEntryType et;
+
+    if (pyg_boxed_check(self, RHYTHMDB_TYPE_ENTRY_TYPE))
+	    et = pyg_boxed_get(self, RhythmDBEntryType_);
+    else {
+	    char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
+	    PyErr_SetString(PyExc_TypeError, s);
+	    g_free (s);
+	    return NULL;
+    }
+
+    return py_return_boolean (et->save_to_disk);
+}
+
+static int
+_wrap_rhythmdb_entry_type__set_save_to_disk(PyGBoxed *self, PyObject *value)
+{
+	RhythmDBEntryType et;
+	gboolean save_to_disk;
+	int ret;
+
+	if (pyg_boxed_check(self, RHYTHMDB_TYPE_ENTRY_TYPE)) {
+		et = pyg_boxed_get(self, RhythmDBEntryType_);
+	} else {
+		char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
+		PyErr_SetString(PyExc_TypeError, s);
+		g_free (s);
+		return -1;
+	}
+
+	if (value == Py_True) {
+	    et->save_to_disk = TRUE;
+	} else {
+	    et->save_to_disk = FALSE;
+	}
+	return 0;
+}
+
 %%
 override-attr  RhythmDBEntryType_.can_sync_metadata
 
