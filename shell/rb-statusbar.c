@@ -196,6 +196,7 @@ rb_statusbar_init (RBStatusbar *statusbar)
         gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (statusbar), TRUE);
 
         statusbar->priv->progress = gtk_progress_bar_new ();
+	gtk_widget_set_size_request (statusbar->priv->progress, -1, 10);
         statusbar->priv->progress_fraction = 1.0;
 
         statusbar->priv->loading_text = g_strdup (_("Loading..."));

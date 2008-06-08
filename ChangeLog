@@ -1,5 +1,12 @@
 2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	* shell/rb-statusbar.c: (rb_statusbar_init):
+	Set the size request height on the progress bar so it doesn't cause
+	the status bar to expand when visible.  Hopefully fixes #368757 
+	forever.
+
+2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	* rhythmdb/rhythmdb-query-model.c:
 	(rhythmdb_query_model_class_init),
 	(rhythmdb_query_model_drag_data_received):
