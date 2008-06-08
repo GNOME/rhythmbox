@@ -1695,6 +1695,30 @@ _rb_source_register_action_group (RBSource *source,
 	return group;
 }
 
+/**
+ * _rb_source_check_entry_type:
+ * @source: a #RBSource
+ * @entry: a #RhythmDBEntry
+ *
+ * Checks if a database entry matches the entry type for the source.
+ *
+ * Return value: %TRUE if the entry matches the source's entry type.
+ */
+gboolean
+_rb_source_check_entry_type (RBSource *source, RhythmDBEntry *entry)
+{
+	RhythmDBEntryType entry_type;
+	gboolean ret = TRUE;
+
+	g_object_get (source, "entry-type", &entry_type, NULL);
+	if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID &&
+	    rhythmdb_entry_get_entry_type (entry) != entry_type) {
+		ret = FALSE;
+	}
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	return ret;
+}
+
 /* This should really be standard. */
 #define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
 

@@ -215,6 +215,8 @@ GtkActionGroup *_rb_source_register_action_group (RBSource *source,
 						  GtkActionEntry *actions,
 						  int num_actions,
 						  gpointer user_data);
+gboolean	_rb_source_check_entry_type	(RBSource *source,
+						 RhythmDBEntry *entry);
 
 G_END_DECLS
 

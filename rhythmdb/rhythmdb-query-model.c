@@ -270,6 +270,7 @@ enum
 	ENTRY_REMOVED,
 	NON_ENTRY_DROPPED,
 	POST_ENTRY_DELETE,
+	FILTER_ENTRY_DROP,
 	LAST_SIGNAL
 };
 
@@ -402,6 +403,25 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__BOXED,
 			      G_TYPE_NONE,
+			      1, RHYTHMDB_TYPE_ENTRY);
+	/**
+	 * RhythmDBQueryModel::filter-entry-drop:
+	 * @model: the #RhythmDBQueryModel
+	 * @entry: the #RhythmDBEntry being dropped
+	 *
+	 * Emitted when an entry is being added to a model by drag-and-drop.
+	 * This allows the owner of the model to filter out entries that should
+	 * not be added to the model (based on entry type, for instance).
+	 * If the signal handler returns %FALSE, the entry will not be added.
+	 */
+	rhythmdb_query_model_signals[FILTER_ENTRY_DROP] =
+		g_signal_new ("filter-entry-drop",
+			      RHYTHMDB_TYPE_QUERY_MODEL,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, filter_entry_drop),
+			      NULL, NULL,
+			      rb_marshal_BOOLEAN__BOXED,
+			      G_TYPE_BOOLEAN,
 			      1, RHYTHMDB_TYPE_ENTRY);
 
 	g_type_class_add_private (klass, sizeof (RhythmDBQueryModelPrivate));
@@ -1889,8 +1909,20 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 
 				old_ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 				/* trying to drag drop an entry on itself ! */
-				if (old_ptr == ptr)
+				if (old_ptr == ptr) {
 					continue;
+				} else if (old_ptr == NULL) {
+					gboolean allow;
+
+					g_signal_emit (G_OBJECT (model),
+						       rhythmdb_query_model_signals[FILTER_ENTRY_DROP],
+						       0, entry, &allow);
+					if (allow == FALSE) {
+						rb_debug ("dropping of entry %s disallowed by filter",
+							  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+						continue;
+					}
+				}
 
 				/* take temporary ref */
 				rhythmdb_entry_ref (entry);

@@ -809,8 +809,12 @@ rb_playlist_source_entry_added_cb (RhythmDB *db,
 	location = rhythmdb_entry_get_refstring (entry, RHYTHMDB_PROP_LOCATION);
 
 	if (g_hash_table_lookup (source->priv->entries, location)) {
-		rhythmdb_query_model_add_entry (source->priv->model, entry, -1);
-		source->priv->dirty = TRUE;
+		if (_rb_source_check_entry_type (RB_SOURCE (source), entry)) {
+			rhythmdb_query_model_add_entry (source->priv->model, entry, -1);
+			source->priv->dirty = TRUE;
+		} else {
+			g_hash_table_remove (source->priv->entries, location);
+		}
 	}
 
 	rb_refstring_unref (location);

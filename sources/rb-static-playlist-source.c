@@ -92,6 +92,9 @@ static void rb_static_playlist_source_row_inserted (GtkTreeModel *model,
 						    GtkTreePath *path,
 						    GtkTreeIter *iter,
 						    RBStaticPlaylistSource *source);
+static gboolean rb_static_playlist_source_filter_entry_drop (RhythmDBQueryModel *model,
+							     RhythmDBEntry *entry,
+							     RBStaticPlaylistSource *source);
 static void rb_static_playlist_source_non_entry_dropped (GtkTreeModel *model,
 							 const char *uri,
 							 int position,
@@ -267,6 +270,10 @@ rb_static_playlist_source_constructor (GType type,
 	priv->base_model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (psource));
 	g_object_set (priv->base_model, "show-hidden", TRUE, NULL);
 	g_object_ref (priv->base_model);
+	g_signal_connect_object (priv->base_model,
+				 "filter-entry-drop",
+				 G_CALLBACK (rb_static_playlist_source_filter_entry_drop),
+				 source, 0);
 
 	priv->paned = gtk_vpaned_new ();
 
@@ -708,21 +715,12 @@ rb_static_playlist_source_add_location_internal (RBStaticPlaylistSource *source,
 	entry = rhythmdb_entry_lookup_by_location (db, location);
 	if (entry) {
 		RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
-		RhythmDBEntryType entry_type;
 
-		g_object_get (source, "entry-type", &entry_type, NULL);
-		if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID &&
-		    rhythmdb_entry_get_entry_type (entry) != entry_type) {
-			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
-			rb_debug ("attempting to add an entry of the wrong type to playlist");
-			return;
+		if (_rb_source_check_entry_type (RB_SOURCE (source), entry)) {
+			rhythmdb_entry_ref (entry);
+			rhythmdb_query_model_add_entry (priv->base_model, entry, index);
+			rhythmdb_entry_unref (entry);
 		}
-
-		rhythmdb_entry_ref (entry);
-		rhythmdb_query_model_add_entry (priv->base_model, entry, index);
-		rhythmdb_entry_unref (entry);
-
-		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	}
 
 	rb_playlist_source_add_to_map (psource, location);
@@ -867,6 +865,18 @@ rb_static_playlist_source_rows_reordered (GtkTreeModel *model,
 	rb_playlist_source_mark_dirty (RB_PLAYLIST_SOURCE (source));
 }
 
+static gboolean
+rb_static_playlist_source_filter_entry_drop (RhythmDBQueryModel *model,
+					     RhythmDBEntry *entry, 
+					     RBStaticPlaylistSource *source)
+{
+	if (_rb_source_check_entry_type (RB_SOURCE (source), entry)) {
+		rb_debug ("allowing drop of entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+		return TRUE;
+	}
+	rb_debug ("preventing drop of entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+	return FALSE;
+}
 
 static GList *
 impl_get_search_actions (RBSource *source)

@@ -86,6 +86,8 @@ typedef struct
 					 RhythmDBEntry *entry);
 	void	(*post_entry_delete)	(RhythmDBQueryModel *model,
 					 RhythmDBEntry *entry);
+	gboolean (*filter_entry_drop)	(RhythmDBQueryModel *model,
+					 RhythmDBEntry *entry);
 
 } RhythmDBQueryModelClass;
 

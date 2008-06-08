@@ -1,5 +1,32 @@
 2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init),
+	(rhythmdb_query_model_drag_data_received):
+	* rhythmdb/rhythmdb-query-model.h:
+	Add a new signal, 'filter-entry-drop', allowing model owners (sources,
+	mostly) to filter out existing entries being dropped in.
+
+	* sources/rb-source.c: (_rb_source_check_entry_type):
+	* sources/rb-source.h:
+	Add a helper function for checking entry types against a source's
+	entry type.
+
+	* sources/rb-playlist-source.c:
+	(rb_playlist_source_entry_added_cb):
+	Filter out newly added entries that don't match the playlist's entry
+	type, but were in the location map (drag and drop from outside
+	rhythmbox).
+
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_constructor),
+	(rb_static_playlist_source_add_location_internal),
+	(rb_static_playlist_source_filter_entry_drop):
+	Use the query model filter-entry-drop signal to filter out drops of
+	entries that don't match the playlist entry type.  Fixes #508267.
+
+2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch partly by:  David Turner  <cillian64@googlemail.com>
 
 	* data/glade/library-prefs.glade:
