@@ -1,5 +1,13 @@
 2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_gconf_changed_cb):
+	Check if the username/password actually changes, and if it has, reset
+	the handshake timer as well as forgetting if we have a handshake.
+	Fixes #499745 I guess.
+
+2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/artdisplay/artdisplay/LocalCoverArtSearch.py:
 	Look for images with filenames containing the artist and album name
 	from the track we're looking for, and failing that, the longest shared

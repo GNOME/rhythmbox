@@ -61,6 +61,7 @@
 #include "rb-proxy-config.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-plugin.h"
+#include "rb-util.h"
 
 #include "rb-audioscrobbler-entry.h"
 
@@ -1264,12 +1265,17 @@ rb_audioscrobbler_gconf_changed_cb (GConfClient *client,
 {
 	rb_debug ("GConf key updated: \"%s\"", entry->key);
 	if (strcmp (entry->key, CONF_AUDIOSCROBBLER_USERNAME) == 0) {
-		const gchar *username;
+		const char *username;
+
+		username = gconf_value_get_string (entry->value);
+		if (rb_safe_strcmp (username, audioscrobbler->priv->username) == 0) {
+			rb_debug ("username not modified");
+			return;
+		}
 
 		g_free (audioscrobbler->priv->username);
 		audioscrobbler->priv->username = NULL;
 
-		username = gconf_value_get_string (entry->value);
 		if (username != NULL) {
 			audioscrobbler->priv->username = g_strdup (username);
 		}
@@ -1281,13 +1287,19 @@ rb_audioscrobbler_gconf_changed_cb (GConfClient *client,
 		}
 
 		audioscrobbler->priv->handshake = FALSE;
+		audioscrobbler->priv->handshake_next = 0;
 	} else if (strcmp (entry->key, CONF_AUDIOSCROBBLER_PASSWORD) == 0) {
-		const gchar *password;
+		const char *password;
+
+		password = gconf_value_get_string (entry->value);
+		if (rb_safe_strcmp (password, audioscrobbler->priv->password) == 0) {
+			rb_debug ("password not modified");
+			return;
+		}
 
 		g_free (audioscrobbler->priv->password);
 		audioscrobbler->priv->password = NULL;
 
-		password = gconf_value_get_string (entry->value);
 		if (password != NULL) {
 			audioscrobbler->priv->password = g_strdup (password);
 		}
@@ -1297,6 +1309,9 @@ rb_audioscrobbler_gconf_changed_cb (GConfClient *client,
 			gtk_entry_set_text (GTK_ENTRY (audioscrobbler->priv->password_entry),
 					    v ? v : "");
 		}
+
+		audioscrobbler->priv->handshake = FALSE;
+		audioscrobbler->priv->handshake_next = 0;
 	} else {
 		rb_debug ("Unhandled GConf key updated: \"%s\"", entry->key);
 	}
