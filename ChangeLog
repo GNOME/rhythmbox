@@ -1,7 +1,15 @@
 2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/artdisplay/artdisplay/LocalCoverArtSearch.py:
+	Look for images with filenames containing the artist and album name
+	from the track we're looking for, and failing that, the longest shared
+	prefix with the track's file name.  Should help us find covers from
+	jamendo downloads, and various other things.  Fixes #414609.
+
+2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	* lib/rb-marshal.list:
-	Add missing marshaller from the fix for $508267.
+	Add missing marshaller from the fix for #508267.
 
 2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
 

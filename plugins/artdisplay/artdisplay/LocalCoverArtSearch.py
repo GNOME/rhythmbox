@@ -40,6 +40,13 @@ ART_SAVE_SETTINGS = {"quality": "100"}
 def file_root (f_name):
 	return os.path.splitext (f_name)[0].lower ()
 
+def shared_prefix_length (a, b):
+	l = 0
+	while a[l] == b[l]:
+		l = l+1
+	return l
+
+
 class LocalCoverArtSearch:
 	def __init__ (self, loader):
 		self.loader = loader
@@ -65,6 +72,9 @@ class LocalCoverArtSearch:
 			on_search_completed_cb (self, entry, [], *args)
 			return
 
+		self.artist = db.entry_get (entry, rhythmdb.PROP_ARTIST)
+		self.album = db.entry_get (entry, rhythmdb.PROP_ALBUM)
+
 		print 'searching for local art for %s' % (self.uri)
 		gnomevfs.async.load_directory (self.uri.parent, self._load_dir_cb, LOAD_DIRECTORY_FLAGS, ITEMS_PER_NOTIFICATION, data=([], on_search_completed_cb, entry, args))
 
@@ -77,6 +87,26 @@ class LocalCoverArtSearch:
 			for f_name in results:
 				if file_root (f_name) == name:
 					yield self.uri.parent.append_file_name (f_name)
+
+		# look for file names containing the artist and album (case-insensitive)
+		# (mostly for jamendo downloads)
+		artist = self.artist.lower()
+		album = self.album.lower()
+		for f_name in results:
+			f_root = file_root (f_name).lower()
+			if f_root.find (artist) != -1 and f_root.find (album) != -1:
+				yield self.uri.parent.append_file_name (f_name).path
+
+		# if that didn't work, look for the longest shared prefix
+		# only accept matches longer than 2 to avoid weird false positives
+		match = (2, None)
+		for f_name in results:
+			pl = shared_prefix_length(f_name, self.uri.short_name)
+			if pl > match[0]:
+				match = (pl, f_name)
+
+		if match[1] is not None:
+			yield self.uri.parent.append_file_name (match[1]).path
 
 	def pixbuf_save (self, plexer, pixbuf, uri):
 		gnomevfs.async.create (uri, plexer.send (), gnomevfs.OPEN_WRITE | gnomevfs.OPEN_TRUNCATE, False, 0644, gnomevfs.PRIORITY_DEFAULT)
