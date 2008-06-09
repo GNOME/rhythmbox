@@ -90,6 +90,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/library_strip_chars</key>
+	<applyto>/apps/rhythmbox/library_strip_chars</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>FALSE</default>
+	<locale name="C">
+	  <short>Strip special characters</short>
+	  <long>Whether to replace punctuation and spaces in filenames with underscores when transferring to the library</long>
+	</locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/monitor_library</key>
         <applyto>/apps/rhythmbox/monitor_library</applyto>
         <owner>rhythmbox</owner>

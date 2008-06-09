@@ -1,5 +1,12 @@
 2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Jeremy Katz  <katzj@redhat.com>
+
+	* data/rhythmbox.schemas:  Add schema for library_strip_chars.
+	From #535313.
+
+2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/audioscrobbler/rb-audioscrobbler.c:
 	(rb_audioscrobbler_gconf_changed_cb):
 	Check if the username/password actually changes, and if it has, reset
