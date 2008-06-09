@@ -1,5 +1,10 @@
 2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	* lib/rb-marshal.list:
+	Add missing marshaller from the fix for $508267.
+
+2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	* shell/rb-statusbar.c: (rb_statusbar_init):
 	Set the size request height on the progress bar so it doesn't cause
 	the status bar to expand when visible.  Hopefully fixes #368757 
