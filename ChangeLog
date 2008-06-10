@@ -1,3 +1,10 @@
+2008-06-10  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (start_sink):
+	While waiting for the sink to start, pass messages that aren't related
+	to the sink back to the regular bus callback.  Fixes buffering status
+	not being reported for streaming, and possibly other stuff.
+
 2008-06-09  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Jeremy Katz  <katzj@redhat.com>

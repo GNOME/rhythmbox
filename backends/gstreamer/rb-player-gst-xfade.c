@@ -2556,6 +2556,8 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 	GstStateChangeReturn sr;
 	gboolean waiting;
 	GError *generic_error = NULL;
+	GstBus *bus;
+
 	g_set_error (&generic_error,
 		     RB_PLAYER_ERROR,
 		     RB_PLAYER_ERROR_INTERNAL,		/* ? */
@@ -2596,14 +2598,14 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 
 		/* now wait for everything to finish */
 		waiting = TRUE;
+		bus = gst_element_get_bus (GST_ELEMENT (player->priv->pipeline));
 		while (waiting) {
 			GstMessage *message;
 			GstState oldstate;
 			GstState newstate;
 			GstState pending;
 
-			message = gst_bus_timed_pop (gst_element_get_bus (GST_ELEMENT (player->priv->pipeline)),
-						     GST_SECOND * 5);
+			message = gst_bus_timed_pop (bus, GST_SECOND * 5);
 			if (message == NULL) {
 				rb_debug ("sink is taking too long to start..");
 				g_propagate_error (error, generic_error);
@@ -2655,6 +2657,8 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 				break;
 
 			default:
+				rb_debug ("passing message to bus callback");
+				rb_player_gst_xfade_bus_cb (bus, message, player);
 				break;
 			}
 
