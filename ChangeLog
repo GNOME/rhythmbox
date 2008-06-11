@@ -1,3 +1,10 @@
+2008-06-12  Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/ipod/rb-ipod-source.c: (create_ipod_song_from_entry):
+	properly extract the year from the time_t we get from a
+	PROP_DURATION, this fixes bug #536194, before that patch, the year
+	on songs transferred to an ipod was set to a bogus value
+
 2008-06-11  Christophe Fergeau  <teuf@gnome.org>
 
 	Patch by Philippe Troin

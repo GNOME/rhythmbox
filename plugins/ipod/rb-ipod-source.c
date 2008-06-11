@@ -465,6 +465,8 @@ static Itdb_Track *
 create_ipod_song_from_entry (RhythmDBEntry *entry, const char *mimetype)
 {
 	Itdb_Track *track;
+        gulong julian;
+        GDate *date;
 
 	track = itdb_track_new ();
 
@@ -479,7 +481,14 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, const char *mimetype)
 	track->cd_nr = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
 	track->track_nr = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
 	track->bitrate = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE);
-	track->year = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE);
+        julian = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE);
+        date = g_date_new_julian (julian);
+        if (date != NULL) {
+                track->year = g_date_get_year (date);
+                g_date_free (date);
+        } else {
+                track->year = 0;
+        }
 	track->time_added = itdb_time_get_mac_time ();
 	track->time_played = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_LAST_PLAYED);
 	track->time_played = itdb_time_host_to_mac (track->time_played);
