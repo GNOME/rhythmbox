@@ -348,7 +348,7 @@ get_mount_points (void)
 		mount_points = g_list_prepend (mount_points, uri);
 	}
 
-	g_list_foreach (volumes, (GFunc)gnome_vfs_volume_ref, NULL);
+	g_list_foreach (volumes, (GFunc)gnome_vfs_volume_unref, NULL);
 	g_list_free (volumes);
 
 	return mount_points;
