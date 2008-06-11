@@ -682,7 +682,9 @@ static gboolean rb_ipod_db_load (RbIpodDb *ipod_db, GnomeVFSVolume *volume)
 
 	info = itdb_device_get_ipod_info(priv->itdb->device);
 	if (info->ipod_generation == ITDB_IPOD_GENERATION_UNKNOWN ||
-	    info->ipod_model == ITDB_IPOD_MODEL_SHUFFLE) {
+	    info->ipod_generation == ITDB_IPOD_GENERATION_SHUFFLE_1 ||
+	    info->ipod_generation == ITDB_IPOD_GENERATION_SHUFFLE_2 ||
+	    info->ipod_generation == ITDB_IPOD_GENERATION_SHUFFLE_3) {
 		priv->needs_shuffle_db = TRUE;
 	} else {
 		priv->needs_shuffle_db = FALSE;

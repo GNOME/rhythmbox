@@ -1,3 +1,10 @@
+2008-06-11  Christophe Fergeau  <teuf@gnome.org>
+
+	Patch by Philippe Troin
+
+	* plugins/ipod/rb-ipod-db.c: (rb_ipod_db_load): properly detect
+	shuffles 2g and 3g as ipod shuffles, fixes bug #528301
+
 2008-04-08  Christophe Fergeau  <teuf@gnome.org>
 
 	* plugins/ipod/rb-ipod-source.c: add the 'first added' column to the
