@@ -322,6 +322,8 @@ impl_paste (RBSource *source, GList *entries)
 			/* if it has a bitrate, assume it's mp3-in-wav */
 			if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE) != 0)
 				entry_mime = "audio/mpeg";
+		} else if (strcmp (entry_mime, "audio/x-m4a") == 0) {
+			entry_mime = "audio/aac";
 		} else if (strcmp (entry_mime, "application/x-id3") == 0) {
 			entry_mime = "audio/mpeg";
 		} else if (strcmp (entry_mime, "audio/x-flac") == 0) {

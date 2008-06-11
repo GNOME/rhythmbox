@@ -1669,8 +1669,8 @@ impl_get_mime_types (RBRemovableMediaSource *source)
 	GList *ret = NULL;
 
 	/* FIXME: we should really query HAL for this */
-	ret = g_list_prepend (ret, g_strdup ("audio/aac"));
 	ret = g_list_prepend (ret, g_strdup ("audio/mpeg"));
+	ret = g_list_prepend (ret, g_strdup ("audio/aac"));
 
 	return ret;
 }

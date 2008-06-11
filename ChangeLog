@@ -1,3 +1,13 @@
+2008-06-11  Christophe Fergeau  <teuf@gnome.org>
+
+	Patch by Shogun <shogun713 at gmail dot com>
+
+	* plugins/ipod/rb-ipod-source.c: (impl_get_mime_types): favour aac
+	over mp3s when transferring to an ipod
+	* sources/rb-removable-media-source.c: (impl_paste): audio/x-m4a
+	files are to be handled as audio/mpeg files
+	Fixes bug #508537
+
 2008-06-10  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c: (start_sink):
