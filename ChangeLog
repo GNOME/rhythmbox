@@ -1,5 +1,13 @@
 2008-06-12  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by: Marcin Galazka  <mrc@post.pl>
+
+	* widgets/rb-entry-view.c: (rb_entry_view_new):
+	* widgets/rb-property-view.c: (rb_property_view_new):
+	Set vertical scrollbar policy to automatic.  Fixes #516742.
+
+2008-06-12  Jonathan Matthew  <jonathan@d14n.org>
+
 	* lib/rb-util.c: (get_mount_points):
 	Unref volumes, rather than re-refing them.  Spotted by Colin Leroy,
 	#537786.
