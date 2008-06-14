@@ -33,7 +33,7 @@ GTK_REQS=2.8.0
 GNOME_MEDIA_PROFILES_REQS=2.8
 GNOME_VFS_REQS=2.8.0
 LIBNOTIFY_REQS=0.3.2
-LIBGPOD_REQS=0.4
+LIBGPOD_REQS=0.6
 MUSICBRAINZ_REQS=2.1.0
 NCB_MIN_REQS=2.9.0
 TOTEM_PLPARSER_REQS=2.21.4
@@ -148,9 +148,6 @@ if test "x$with_ipod" != "xno"; then
 	     AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
 	     use_ipod=yes
 	  fi
-	  AC_CHECK_LIB(gpod, itdb_track_set_thumbnails_from_pixbuf,
-		       [AC_DEFINE([HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF], 1, [Have libgpod function to set thumbnails from a GdkPixbuf])],
-		       ,[$IPOD_LIBS $IPOD_CFLAGS])
 	  AC_SUBST(IPOD_CFLAGS)
 	  AC_SUBST(IPOD_LIBS)
 	fi

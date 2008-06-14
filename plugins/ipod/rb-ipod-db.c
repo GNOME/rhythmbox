@@ -318,36 +318,10 @@ static void
 rb_ipod_db_set_thumbnail_internal (RbIpodDb *ipod_db, Itdb_Track *track, 
 				   GdkPixbuf *pixbuf)
 {
-#ifndef HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF
-	gchar *image_data;
-	gsize image_data_len;
-	GError *err = NULL;
-	gboolean success;
-#endif /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
-
 	g_return_if_fail (track != NULL);
 	g_return_if_fail (pixbuf != NULL);
 
-#ifdef HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF
 	itdb_track_set_thumbnails_from_pixbuf (track, pixbuf);
-#else /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
-
-	success = gdk_pixbuf_save_to_buffer (pixbuf,
-					     &image_data, &image_data_len,
-					     "jpeg", &err,
-					     "quality", "100",
-					     NULL);
-	if (!success) {
-		g_assert (image_data == NULL);
-		g_warning ("Failed to save pixbuf to buffer %s", err->message);
-		g_error_free (err);
-		return;
-	}
-
-	itdb_track_set_thumbnails_from_data (track, (guchar *) image_data, 
-					     image_data_len);
-	g_free (image_data);
-#endif /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
 
 	rb_ipod_db_save_async (ipod_db);
 }

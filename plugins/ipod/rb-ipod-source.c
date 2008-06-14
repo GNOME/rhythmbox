@@ -1371,6 +1371,7 @@ impl_track_added (RBRemovableMediaSource *source,
 		RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 		char *filename;
 		const char *mount_path;
+		Itdb_Device *device;
 
 		filename = g_filename_from_uri (dest, NULL, NULL);
 		mount_path = rb_ipod_db_get_mount_path (priv->ipod_db);
@@ -1381,18 +1382,10 @@ impl_track_added (RBRemovableMediaSource *source,
 		if (song->mediatype == MEDIATYPE_PODCAST) {
 			add_to_podcasts (isource, song);
 		}
-#ifdef HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF
-		/* reuse that #define since both functions were added to 
-		 * libgpod CVS HEAD around the same time
-		 */
-		Itdb_Device *device;
 		device = rb_ipod_db_get_device (priv->ipod_db);		
 		if (device && itdb_device_supports_artwork (device)) {
 			request_artwork (isource, entry, db, song);
 		}
-#else 
-		request_artwork (isource, entry, db, song);
-#endif
 		add_ipod_song_to_db (isource, db, song);
 		rb_ipod_db_add_track (priv->ipod_db, song);
 	}
