@@ -1,3 +1,9 @@
+2008-06-14  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (link_unblocked_cb):
+	Remove extra stream unref, and only check the stream state while
+	holding the stream list lock, just for safety.  Fixes #529427.
+
 2008-06-12  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by: Marcin Galazka  <mrc@post.pl>

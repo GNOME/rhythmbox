@@ -1047,15 +1047,15 @@ static void
 link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 {
 	GstStateChangeReturn state_ret;
+	g_static_rec_mutex_lock (&stream->player->priv->stream_list_lock);
 
 	/* sometimes we seem to get called twice */
 	if (stream->state == FADING_IN || stream->state == PLAYING) {
-		g_object_unref (stream);
+		g_static_rec_mutex_unlock (&stream->player->priv->stream_list_lock);
 		return;
 	}
 
 	rb_debug ("stream %s is unblocked -> FADING_IN | PLAYING", stream->uri);
-	g_static_rec_mutex_lock (&stream->player->priv->stream_list_lock);
 	stream->src_blocked = FALSE;
 	if (stream->fading)
 		stream->state = FADING_IN;
