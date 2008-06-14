@@ -4,9 +4,11 @@ plugin_LTLIBRARIES = libipod.la
 libipod_la_SOURCES = \
 	rb-ipod-db.c				\
 	rb-ipod-db.h				\
-	rb-ipod-plugin.c			\
+	rb-ipod-static-playlist-source.c	\
+	rb-ipod-static-playlist-source.h	\
 	rb-ipod-source.c			\
-	rb-ipod-source.h
+	rb-ipod-source.h			\
+	rb-ipod-plugin.c
 
 libipod_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libipod_la_LIBADD = 					\

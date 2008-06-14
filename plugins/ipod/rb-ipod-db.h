@@ -63,6 +63,8 @@ void rb_ipod_db_set_thumbnail (RbIpodDb* ipod_db, Itdb_Track *track,
 			       GdkPixbuf *pixbuf);
 void rb_ipod_db_add_track (RbIpodDb* ipod_db, Itdb_Track *track);
 void rb_ipod_db_add_playlist (RbIpodDb* ipod_db, Itdb_Playlist *playlist);
+void rb_ipod_db_remove_playlist (RbIpodDb* ipod_db, Itdb_Playlist *playlist);
+void rb_ipod_db_rename_playlist (RbIpodDb* ipod_db, Itdb_Playlist *playlist, const char *name);
 void rb_ipod_db_add_to_playlist (RbIpodDb* ipod_db, Itdb_Playlist *playlist,
 				 Itdb_Track *track);
 void rb_ipod_db_remove_from_playlist (RbIpodDb* ipod_db, 

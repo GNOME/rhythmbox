@@ -51,7 +51,7 @@
 #include "rb-file-helpers.h"
 #include "rb-plugin.h"
 #include "rb-removable-media-manager.h"
-#include "rb-static-playlist-source.h"
+#include "rb-ipod-static-playlist-source.h"
 #include "rb-util.h"
 #include "rhythmdb.h"
 #include "rb-cut-and-paste-code.h"
@@ -114,7 +114,7 @@ typedef struct
 	GHashTable *entry_map;
 
 	gboolean needs_shuffle_db;
-	RBStaticPlaylistSource *podcast_pl;
+	RBIpodStaticPlaylistSource *podcast_pl;
 
 	guint load_idle_id;
 
@@ -206,6 +206,7 @@ rb_ipod_source_constructor (GType type, guint n_construct_properties,
 
 	source = RB_IPOD_SOURCE (G_OBJECT_CLASS (rb_ipod_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
+
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
@@ -338,16 +339,16 @@ playlist_track_removed (RhythmDBQueryModel *m,
 			RhythmDBEntry *entry,
 			gpointer data)
 {
-	RBStaticPlaylistSource *playlist = RB_STATIC_PLAYLIST_SOURCE (data);
-	Itdb_Playlist *ipod_pl = g_object_get_data (G_OBJECT (playlist), "itdb-playlist");
-	RBiPodSource *ipod = g_object_get_data (G_OBJECT (playlist), "ipod-source");
+	RBIpodStaticPlaylistSource *playlist = RB_IPOD_STATIC_PLAYLIST_SOURCE (data);
+	Itdb_Playlist *ipod_pl = rb_ipod_static_playlist_source_get_itdb_playlist (playlist);
+	RBiPodSource *ipod = rb_ipod_static_playlist_source_get_ipod_source (playlist);
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
 	Itdb_Track *track;
 
 	g_return_if_fail (ipod != NULL);
 	g_return_if_fail (ipod_pl != NULL);
 
-        track = g_hash_table_lookup (priv->entry_map, entry);
+	track = g_hash_table_lookup (priv->entry_map, entry);
 	g_return_if_fail (track != NULL);
 	rb_ipod_db_remove_from_playlist (priv->ipod_db, ipod_pl, track);
 }
@@ -356,9 +357,9 @@ static void
 playlist_track_added (GtkTreeModel *model, GtkTreePath *path,
 		      GtkTreeIter *iter, gpointer data)
 {
-	RBStaticPlaylistSource *playlist = RB_STATIC_PLAYLIST_SOURCE (data);
-	Itdb_Playlist *ipod_pl = g_object_get_data (G_OBJECT (playlist), "itdb-playlist");
-	RBiPodSource *ipod = g_object_get_data (G_OBJECT (playlist), "ipod-source");
+	RBIpodStaticPlaylistSource *playlist = RB_IPOD_STATIC_PLAYLIST_SOURCE (data);
+	Itdb_Playlist *ipod_pl = rb_ipod_static_playlist_source_get_itdb_playlist (playlist);
+	RBiPodSource *ipod = rb_ipod_static_playlist_source_get_ipod_source (playlist);
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
 	Itdb_Track *track;
 	RhythmDBEntry *entry;
@@ -377,7 +378,7 @@ static void
 add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 {
 	RBShell *shell;
-	RBSource *playlist_source;
+	RBIpodStaticPlaylistSource *playlist_source;
 	GList *it;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	RhythmDBEntryType entry_type;
@@ -388,11 +389,11 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 			  "entry-type", &entry_type,
 			  NULL);
 
-	playlist_source = rb_static_playlist_source_new (shell,
-							 playlist->name,
-							 NULL,
-							 FALSE,
-							 entry_type);
+	playlist_source = rb_ipod_static_playlist_source_new (shell,
+                                                              source,
+                                                              priv->ipod_db,
+                                                              playlist,
+                                                              entry_type);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	for (it = playlist->members; it != NULL; it = it->next) {
@@ -421,13 +422,9 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 			          G_CALLBACK (playlist_track_removed),
 			          playlist_source);
 
-	g_object_set_data (G_OBJECT (playlist_source),
-			           "ipod-source", source);
-	g_object_set_data (G_OBJECT (playlist_source),
-			           "itdb-playlist", playlist);
 	if (itdb_playlist_is_podcasts(playlist))
-			priv->podcast_pl = RB_STATIC_PLAYLIST_SOURCE (playlist_source);
-	rb_shell_append_source (shell, playlist_source, RB_SOURCE (source));
+		priv->podcast_pl = playlist_source;
+	rb_shell_append_source (shell, RB_SOURCE (playlist_source), RB_SOURCE (source));
 	g_object_unref (shell);
 }
 
@@ -445,8 +442,7 @@ load_ipod_playlists (RBiPodSource *source)
 		playlist = (Itdb_Playlist *)it->data;
 		if (itdb_playlist_is_mpl (playlist)) {
 			continue;
-		}
-		if (playlist->is_spl) {
+		} else if (playlist->is_spl) {
 			continue;
 		}
 
@@ -1349,7 +1345,7 @@ add_to_podcasts (RBiPodSource *source, Itdb_Track *song)
 
 	mount_path = rb_ipod_db_get_mount_path (priv->ipod_db);
   	filename = ipod_path_to_uri (mount_path, song->ipod_path);
- 	rb_static_playlist_source_add_location (priv->podcast_pl, filename, -1);
+ 	rb_static_playlist_source_add_location (RB_STATIC_PLAYLIST_SOURCE (priv->podcast_pl), filename, -1);
 	g_free (filename);
 }
 
@@ -1679,3 +1675,27 @@ impl_get_mime_types (RBRemovableMediaSource *source)
 }
 
 #endif
+
+
+void
+rb_ipod_source_new_playlist (RBiPodSource *source)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	Itdb_Playlist *ipod_playlist;
+
+	ipod_playlist = itdb_playlist_new (_("New playlist"), FALSE);
+	rb_ipod_db_add_playlist (priv->ipod_db, ipod_playlist);
+	add_rb_playlist (source, ipod_playlist);
+}
+
+void
+rb_ipod_source_remove_playlist (RBiPodSource *ipod_source,
+				RBSource *source)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod_source);
+	RBIpodStaticPlaylistSource *playlist_source = RB_IPOD_STATIC_PLAYLIST_SOURCE (source);
+
+	rb_source_delete_thyself (source);
+	rb_ipod_db_remove_playlist (priv->ipod_db, rb_ipod_static_playlist_source_get_itdb_playlist (playlist_source));
+}
+

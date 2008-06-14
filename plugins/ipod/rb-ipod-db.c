@@ -79,11 +79,16 @@ static void rb_ipod_db_queue_set_ipod_name (RbIpodDb *db,
 static void rb_ipod_db_queue_add_track (RbIpodDb *db, Itdb_Track *track);
 static void rb_ipod_db_queue_add_playlist (RbIpodDb *db, 
 					   Itdb_Playlist *playlist);
+static void rb_ipod_db_queue_remove_playlist (RbIpodDb *db, 
+					   Itdb_Playlist *playlist);
+static void rb_ipod_db_queue_rename_playlist (RbIpodDb *db, 
+					   Itdb_Playlist *playlist,
+					   const char *name);
 static void rb_ipod_db_queue_add_to_playlist (RbIpodDb *ipod_db, 
 					      Itdb_Playlist *playlist,
 					      Itdb_Track *track);
 static void rb_ipod_db_queue_remove_from_playlist (RbIpodDb *ipod_db, 
-						   Itdb_Playlist *playlist,
+						  Itdb_Playlist *playlist,
 						   Itdb_Track *track);
 static void rb_ipod_db_queue_set_thumbnail (RbIpodDb *db,
 					    Itdb_Track *track,
@@ -115,7 +120,8 @@ G_DEFINE_TYPE (RbIpodDb, rb_ipod_db, G_TYPE_OBJECT)
 
 #define IPOD_DB_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IPOD_DB, RbIpodDbPrivate))
 
-static void rb_itdb_save (RbIpodDb *ipod_db, GError **error)
+static void
+rb_itdb_save (RbIpodDb *ipod_db, GError **error)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
@@ -205,8 +211,10 @@ rb_ipod_db_class_init (RbIpodDbClass *klass)
 enum _RbIpodDelayedActionType {
 	RB_IPOD_ACTION_SET_NAME,
 	RB_IPOD_ACTION_ADD_TRACK,
-	RB_IPOD_ACTION_ADD_PLAYLIST,
 	RB_IPOD_ACTION_REMOVE_TRACK,
+	RB_IPOD_ACTION_ADD_PLAYLIST,
+	RB_IPOD_ACTION_REMOVE_PLAYLIST,
+	RB_IPOD_ACTION_RENAME_PLAYLIST,
 	RB_IPOD_ACTION_SET_THUMBNAIL,
 	RB_IPOD_ACTION_ADD_TO_PLAYLIST,
 	RB_IPOD_ACTION_REMOVE_FROM_PLAYLIST
@@ -236,7 +244,8 @@ struct _RbIpodDelayedAction {
 	};
 };
 
-static void rb_ipod_free_delayed_action (RbIpodDelayedAction *action) 
+static void
+rb_ipod_free_delayed_action (RbIpodDelayedAction *action) 
 {
 	switch (action->type) {
 	case RB_IPOD_ACTION_SET_NAME:
@@ -249,7 +258,13 @@ static void rb_ipod_free_delayed_action (RbIpodDelayedAction *action)
 		itdb_track_free (action->track);
 		break;
 	case RB_IPOD_ACTION_ADD_PLAYLIST:
-		itdb_playlist_free (action->playlist);
+		/* Do nothing */
+		break;
+	case RB_IPOD_ACTION_REMOVE_PLAYLIST:
+		/* Do nothing */
+		break;
+	case RB_IPOD_ACTION_RENAME_PLAYLIST:
+		g_free (action->name);
 		break;
 	case RB_IPOD_ACTION_REMOVE_TRACK:
 		/* Do nothing */
@@ -264,7 +279,8 @@ static void rb_ipod_free_delayed_action (RbIpodDelayedAction *action)
 	g_free (action);
 }
 
-const char *rb_ipod_db_get_ipod_name (RbIpodDb *db)
+const char *
+rb_ipod_db_get_ipod_name (RbIpodDb *db)
 {
 	Itdb_Playlist *mpl;
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (db);
@@ -315,7 +331,8 @@ rb_ipod_db_remove_track_internal (RbIpodDb *ipod_db, Itdb_Track *track)
 }
 
 static void
-rb_ipod_db_set_thumbnail_internal (RbIpodDb *ipod_db, Itdb_Track *track, 
+rb_ipod_db_set_thumbnail_internal (RbIpodDb *ipod_db,
+				   Itdb_Track *track, 
 				   GdkPixbuf *pixbuf)
 {
 	g_return_if_fail (track != NULL);
@@ -335,6 +352,24 @@ rb_ipod_db_add_playlist_internal (RbIpodDb *ipod_db,
 
 	itdb_playlist_add (priv->itdb, playlist, -1);
 
+	rb_ipod_db_save_async (ipod_db);
+}
+
+static void
+rb_ipod_db_remove_playlist_internal (RbIpodDb *ipod_db, 
+				     Itdb_Playlist *playlist)
+{
+	itdb_playlist_remove (playlist);
+	rb_ipod_db_save_async (ipod_db);
+}
+
+static void
+rb_ipod_db_rename_playlist_internal (RbIpodDb *ipod_db, 
+				     Itdb_Playlist *playlist,
+				     const char *name)
+{
+	g_free (playlist->name);
+	playlist->name = g_strdup (name);
 	rb_ipod_db_save_async (ipod_db);
 }
 
@@ -369,8 +404,10 @@ rb_ipod_db_remove_from_playlist_internal (RbIpodDb* ipod_db,
 }
 
 
-void rb_ipod_db_set_thumbnail (RbIpodDb* ipod_db, Itdb_Track *track, 
-			       GdkPixbuf *pixbuf)
+void
+rb_ipod_db_set_thumbnail (RbIpodDb* ipod_db,
+			  Itdb_Track *track, 
+			  GdkPixbuf *pixbuf)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
@@ -381,7 +418,8 @@ void rb_ipod_db_set_thumbnail (RbIpodDb* ipod_db, Itdb_Track *track,
 	}
 }
 
-void rb_ipod_db_add_track (RbIpodDb* ipod_db, Itdb_Track *track)
+void
+rb_ipod_db_add_track (RbIpodDb* ipod_db, Itdb_Track *track)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
@@ -392,7 +430,8 @@ void rb_ipod_db_add_track (RbIpodDb* ipod_db, Itdb_Track *track)
 	}
 }
 
-void rb_ipod_db_add_playlist (RbIpodDb* ipod_db, Itdb_Playlist *playlist)
+void
+rb_ipod_db_add_playlist (RbIpodDb* ipod_db, Itdb_Playlist *playlist)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
@@ -403,7 +442,33 @@ void rb_ipod_db_add_playlist (RbIpodDb* ipod_db, Itdb_Playlist *playlist)
 	}
 }
 
-void rb_ipod_db_remove_track (RbIpodDb* ipod_db, Itdb_Track *track)
+void
+rb_ipod_db_remove_playlist (RbIpodDb* ipod_db, Itdb_Playlist *playlist)
+{
+	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
+
+	if (priv->read_only) {
+		rb_ipod_db_queue_remove_playlist (ipod_db, playlist);
+	} else {
+		rb_ipod_db_remove_playlist_internal (ipod_db, playlist);
+	}
+}
+
+void
+rb_ipod_db_rename_playlist (RbIpodDb* ipod_db, Itdb_Playlist *playlist, const char *name)
+{
+	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
+
+	if (priv->read_only) {
+		rb_ipod_db_queue_rename_playlist (ipod_db, playlist, name);
+	} else {
+		rb_ipod_db_rename_playlist_internal (ipod_db, playlist, name);
+	}
+}
+
+
+void
+rb_ipod_db_remove_track (RbIpodDb* ipod_db, Itdb_Track *track)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
@@ -414,7 +479,8 @@ void rb_ipod_db_remove_track (RbIpodDb* ipod_db, Itdb_Track *track)
 	}
 }
 
-void rb_ipod_db_set_ipod_name (RbIpodDb *ipod_db, const char *name)
+void
+rb_ipod_db_set_ipod_name (RbIpodDb *ipod_db, const char *name)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
@@ -425,7 +491,8 @@ void rb_ipod_db_set_ipod_name (RbIpodDb *ipod_db, const char *name)
 	}
 }
 
-void rb_ipod_db_add_to_playlist (RbIpodDb* ipod_db, Itdb_Playlist *playlist,
+void
+rb_ipod_db_add_to_playlist (RbIpodDb* ipod_db, Itdb_Playlist *playlist,
 				 Itdb_Track *track)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
@@ -437,9 +504,10 @@ void rb_ipod_db_add_to_playlist (RbIpodDb* ipod_db, Itdb_Playlist *playlist,
 	}	
 }
 
-void rb_ipod_db_remove_from_playlist (RbIpodDb* ipod_db, 
-				      Itdb_Playlist *playlist,
-				      Itdb_Track *track)
+void
+rb_ipod_db_remove_from_playlist (RbIpodDb* ipod_db, 
+				 Itdb_Playlist *playlist,
+				 Itdb_Track *track)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
@@ -499,11 +567,17 @@ rb_ipod_db_process_delayed_actions (RbIpodDb *ipod_db)
 			rb_debug ("IPOD_ACTION_ADD_PLAYLIST");
 			rb_ipod_db_add_playlist_internal (ipod_db, 
 							  action->playlist);
-			/* The playlist was added to the iPod database, 
-			 * 'action' is no longer responsible for its memory 
-			 * handling
-			 */
-			action->playlist = NULL;
+			break;
+		case RB_IPOD_ACTION_REMOVE_PLAYLIST:
+			rb_debug ("IPOD_ACTION_REMOVE_PLAYLIST");
+			rb_ipod_db_remove_playlist_internal (ipod_db, 
+							     action->playlist);
+			break;
+		case RB_IPOD_ACTION_RENAME_PLAYLIST:
+			rb_debug ("IPOD_ACTION_RENAME_PLAYLIST");
+			rb_ipod_db_rename_playlist_internal (ipod_db, 
+							     action->playlist,
+							     action->name);
 			break;
 		case RB_IPOD_ACTION_ADD_TO_PLAYLIST:
 			rb_debug ("IPOD_ACTION_ADD_TO_PLAYLIST");
@@ -523,8 +597,9 @@ rb_ipod_db_process_delayed_actions (RbIpodDb *ipod_db)
 	}
 }
 
-static void rb_ipod_db_queue_remove_track (RbIpodDb *ipod_db,
-					   Itdb_Track *track)
+static void
+rb_ipod_db_queue_remove_track (RbIpodDb *ipod_db,
+			       Itdb_Track *track)
 {
 	RbIpodDelayedAction *action;
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
@@ -537,8 +612,9 @@ static void rb_ipod_db_queue_remove_track (RbIpodDb *ipod_db,
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
-static void rb_ipod_db_queue_set_ipod_name (RbIpodDb *ipod_db, 
-					    const char *new_name)
+static void
+rb_ipod_db_queue_set_ipod_name (RbIpodDb *ipod_db, 
+				const char *new_name)
 {
 	RbIpodDelayedAction *action;
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
@@ -551,21 +627,55 @@ static void rb_ipod_db_queue_set_ipod_name (RbIpodDb *ipod_db,
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
-static void rb_ipod_db_queue_add_playlist (RbIpodDb *ipod_db,
-					   Itdb_Playlist *playlist)
+static void
+rb_ipod_db_queue_add_playlist (RbIpodDb *ipod_db,
+			       Itdb_Playlist *playlist)
 {
 	RbIpodDelayedAction *action;
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 	
 	g_assert (priv->read_only);
-	rb_debug ("Queueing add track action since the iPod database is currently read-only");
+	rb_debug ("Queueing add playlist action since the iPod database is currently read-only");
 	action = g_new0 (RbIpodDelayedAction, 1);
 	action->type = RB_IPOD_ACTION_ADD_PLAYLIST;
 	action->playlist = playlist;
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
-static void rb_ipod_db_queue_add_track (RbIpodDb *ipod_db, Itdb_Track *track)
+static void
+rb_ipod_db_queue_remove_playlist (RbIpodDb *ipod_db,
+				  Itdb_Playlist *playlist)
+{
+	RbIpodDelayedAction *action;
+	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
+	
+	g_assert (priv->read_only);
+	rb_debug ("Queueing remove playlist action since the iPod database is currently read-only");
+	action = g_new0 (RbIpodDelayedAction, 1);
+	action->type = RB_IPOD_ACTION_REMOVE_PLAYLIST;
+	action->playlist = playlist;
+	g_queue_push_tail (priv->delayed_actions, action);
+}
+
+static void
+rb_ipod_db_queue_rename_playlist (RbIpodDb *ipod_db,
+				  Itdb_Playlist *playlist,
+				  const char *name)
+{
+	RbIpodDelayedAction *action;
+	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
+	
+	g_assert (priv->read_only);
+	rb_debug ("Queueing rename playlist action since the iPod database is currently read-only");
+	action = g_new0 (RbIpodDelayedAction, 1);
+	action->type = RB_IPOD_ACTION_RENAME_PLAYLIST;
+	action->playlist = playlist;
+	action->name = g_strdup (name);
+	g_queue_push_tail (priv->delayed_actions, action);
+}
+
+static void
+rb_ipod_db_queue_add_track (RbIpodDb *ipod_db, Itdb_Track *track)
 {
 	RbIpodDelayedAction *action;
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
@@ -578,9 +688,10 @@ static void rb_ipod_db_queue_add_track (RbIpodDb *ipod_db, Itdb_Track *track)
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
-static void rb_ipod_db_queue_add_to_playlist (RbIpodDb *ipod_db, 
-					      Itdb_Playlist *playlist,
-					      Itdb_Track *track)
+static void
+rb_ipod_db_queue_add_to_playlist (RbIpodDb *ipod_db, 
+				  Itdb_Playlist *playlist,
+				  Itdb_Track *track)
 {
 	RbIpodDelayedAction *action;
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
@@ -594,9 +705,10 @@ static void rb_ipod_db_queue_add_to_playlist (RbIpodDb *ipod_db,
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
-static void rb_ipod_db_queue_remove_from_playlist (RbIpodDb *ipod_db, 
-						   Itdb_Playlist *playlist,
-						   Itdb_Track *track)
+static void
+rb_ipod_db_queue_remove_from_playlist (RbIpodDb *ipod_db, 
+				       Itdb_Playlist *playlist,
+				       Itdb_Track *track)
 {
 	RbIpodDelayedAction *action;
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
@@ -610,9 +722,10 @@ static void rb_ipod_db_queue_remove_from_playlist (RbIpodDb *ipod_db,
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
-static void rb_ipod_db_queue_set_thumbnail (RbIpodDb *ipod_db,
-					    Itdb_Track *track,
-					    GdkPixbuf *pixbuf)
+static void
+rb_ipod_db_queue_set_thumbnail (RbIpodDb *ipod_db,
+				Itdb_Track *track,
+				GdkPixbuf *pixbuf)
 {
 	RbIpodDelayedAction *action;
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
@@ -640,7 +753,8 @@ rb_ipod_db_get_volume_path (GnomeVFSVolume *volume)
 	return path;
 }
 
-static gboolean rb_ipod_db_load (RbIpodDb *ipod_db, GnomeVFSVolume *volume)
+static gboolean
+rb_ipod_db_load (RbIpodDb *ipod_db, GnomeVFSVolume *volume)
 {
 	char *mount_path;
 	const Itdb_IpodInfo *info;
@@ -667,7 +781,8 @@ static gboolean rb_ipod_db_load (RbIpodDb *ipod_db, GnomeVFSVolume *volume)
         return TRUE;
 }
 
-RbIpodDb *rb_ipod_db_new (GnomeVFSVolume *volume)
+RbIpodDb *
+rb_ipod_db_new (GnomeVFSVolume *volume)
 {
 	RbIpodDb *db;
         gboolean success;
@@ -709,7 +824,8 @@ ipod_db_saved_idle_cb (RbIpodDb *ipod_db)
 	return FALSE;
 }
 
-static gpointer saving_thread (RbIpodDb *ipod_db)
+static gpointer
+saving_thread (RbIpodDb *ipod_db)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
@@ -757,28 +873,32 @@ rb_ipod_db_save_async (RbIpodDb *ipod_db)
 	}
 }
 
-GList *rb_ipod_db_get_playlists (RbIpodDb *ipod_db)
+GList *
+rb_ipod_db_get_playlists (RbIpodDb *ipod_db)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
 	return priv->itdb->playlists;
 }
 
-GList *rb_ipod_db_get_tracks (RbIpodDb *ipod_db)
+GList *
+rb_ipod_db_get_tracks (RbIpodDb *ipod_db)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
 	return priv->itdb->tracks;
 }
 
-const char *rb_ipod_db_get_mount_path (RbIpodDb *ipod_db)
+const char *
+rb_ipod_db_get_mount_path (RbIpodDb *ipod_db)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
 	return itdb_get_mountpoint (priv->itdb);
 }
 
-Itdb_Device *rb_ipod_db_get_device (RbIpodDb *ipod_db)
+Itdb_Device *
+rb_ipod_db_get_device (RbIpodDb *ipod_db)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 	if (priv->itdb == NULL) {
@@ -787,3 +907,4 @@ Itdb_Device *rb_ipod_db_get_device (RbIpodDb *ipod_db)
 
 	return priv->itdb->device;
 }
+

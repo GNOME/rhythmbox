@@ -2,5 +2,11 @@
   <popup name="iPodSourcePopup">
     <menuitem name="iPodSrcPopupRename" action="iPodSourceRename"/>
     <menuitem name="iPodSrcPopupEject" action="RemovableSourceEject"/>
+    <separator />
+    <menuitem name="iPodSrcPopupPlaylistNew" action="iPodSourcePlaylistNew"/>
+  </popup>
+  <popup name="iPodPlaylistSourcePopup">
+    <menuitem name="iPodPlaylistSrcPopupRename" action="iPodPlaylistSourceRename"/>
+    <menuitem name="iPodPlaylistSrcPopupDelete" action="iPodPlaylistSourceDelete"/>
   </popup>
 </ui>

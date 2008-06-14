@@ -41,6 +41,7 @@
 #include "rb-sourcelist.h"
 #include "rb-source.h"
 #include "rb-ipod-source.h"
+#include "rb-ipod-static-playlist-source.h"
 #include "rb-plugin.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
@@ -85,6 +86,12 @@ static RBSource * create_source_cb (RBRemovableMediaManager *rmm,
 				    RBIpodPlugin *plugin);
 static void  rb_ipod_plugin_cmd_rename (GtkAction *action,
 					RBIpodPlugin *plugin);
+static void  rb_ipod_plugin_cmd_playlist_new (GtkAction *action,
+					RBIpodPlugin *plugin);
+static void  rb_ipod_plugin_cmd_playlist_rename (GtkAction *action,
+					RBIpodPlugin *plugin);
+static void  rb_ipod_plugin_cmd_playlist_delete (GtkAction *action,
+					RBIpodPlugin *plugin);
 
 RB_PLUGIN_REGISTER(RBIpodPlugin, rb_ipod_plugin)
 
@@ -93,7 +100,16 @@ static GtkActionEntry rb_ipod_plugin_actions [] =
 {
 	{ "iPodSourceRename", NULL, N_("_Rename"), NULL,
 	  N_("Rename iPod"),
-	  G_CALLBACK (rb_ipod_plugin_cmd_rename) }
+	  G_CALLBACK (rb_ipod_plugin_cmd_rename) },
+	{ "iPodSourcePlaylistNew", NULL, N_("_New Playlist"), NULL,
+	  N_("Add new playlist to iPod"),
+	  G_CALLBACK (rb_ipod_plugin_cmd_playlist_new) },
+	{ "iPodPlaylistSourceRename", NULL, N_("_Rename"), NULL,
+	  N_("Rename playlist"),
+	  G_CALLBACK (rb_ipod_plugin_cmd_playlist_rename) },
+	{ "iPodPlaylistSourceDelete", GTK_STOCK_REMOVE, N_("_Delete"), NULL,
+	  N_("Delete playlist"),
+	  G_CALLBACK (rb_ipod_plugin_cmd_playlist_delete) },
 };
 
 
@@ -109,7 +125,8 @@ rb_ipod_plugin_class_init (RBIpodPluginClass *klass)
 	plugin_class->deactivate = impl_deactivate;
 
 	/* register types used by the plugin */
-	RB_PLUGIN_REGISTER_TYPE(rb_ipod_source);
+	RB_PLUGIN_REGISTER_TYPE (rb_ipod_source);
+	RB_PLUGIN_REGISTER_TYPE (rb_ipod_static_playlist_source);
 }
 
 static void
@@ -252,6 +269,79 @@ rb_ipod_plugin_cmd_rename (GtkAction *action,
 	 * we'll catch that in our rename callback
 	 */
 	g_object_unref (sourcelist);
+	g_object_unref (source);
+}
+
+static void
+rb_ipod_plugin_cmd_playlist_rename (GtkAction *action,
+			   RBIpodPlugin *plugin)
+{
+	RBSource *source = NULL;
+	RBSourceList *sourcelist = NULL;
+
+	g_object_get (G_OBJECT (plugin->shell),
+		      "selected-source", &source,
+		      "sourcelist", &sourcelist,
+		      NULL);
+
+	if ((source == NULL) || !RB_IS_IPOD_STATIC_PLAYLIST_SOURCE (source)) {
+		g_critical ("got iPodPlaylistSourceRename action for non-ipod playlist source");
+		g_object_unref (sourcelist);
+		if (source != NULL)
+			g_object_unref (source);
+		return;
+	}
+
+	rb_sourcelist_edit_source_name (sourcelist, source);
+
+	g_object_unref (sourcelist);
+	g_object_unref (source);
+}
+
+static void
+rb_ipod_plugin_cmd_playlist_delete (GtkAction *action,
+			   RBIpodPlugin *plugin)
+{
+	RBIpodStaticPlaylistSource *source = NULL;
+	RBiPodSource *ipod_source;
+
+	g_object_get (G_OBJECT (plugin->shell),
+		      "selected-source", &source,
+		      NULL);
+
+	if ((source == NULL) || !RB_IS_IPOD_STATIC_PLAYLIST_SOURCE (source)) {
+		g_critical ("got iPodPlaylistSourceDelete action for non-ipod playlist source");
+		if (source != NULL)
+			g_object_unref (source);
+		return;
+	}
+
+	/* delete playlist*/
+	ipod_source = rb_ipod_static_playlist_source_get_ipod_source (source);
+	rb_ipod_source_remove_playlist (ipod_source, RB_SOURCE (source));
+
+	g_object_unref (source);
+}
+
+static void
+rb_ipod_plugin_cmd_playlist_new (GtkAction *action,
+			   RBIpodPlugin *plugin)
+{
+	RBSource *source = NULL;
+
+	g_object_get (G_OBJECT (plugin->shell),
+		      "selected-source", &source,
+		      NULL);
+
+	if ((source == NULL) || !RB_IS_IPOD_SOURCE (source)) {
+		g_critical ("got iPodSourceRename action for non-ipod source");
+		if (source != NULL)
+			g_object_unref (source);
+		return;
+	}
+
+	rb_ipod_source_new_playlist (RB_IPOD_SOURCE (source));
+
 	g_object_unref (source);
 }
 
