@@ -1,3 +1,19 @@
+2008-06-15  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by: Luca Ferretti  <elle.uca@libero.it>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	* plugins/cd-recorder/rb-cd-recorder-plugin.c: (impl_activate):
+	* plugins/iradio/rb-iradio-source.c:
+	(rb_iradio_source_constructor):
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_set_uimanager):
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_constructor):
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor):
+	Use short labels for toolbar buttons actions to avoid wasting space
+	when the subject of the action is clear from context.  From #516846.
+
 2008-06-15  Christophe Fergeau  <teuf@gnome.org>
 
 	patch by: Colin Leroy <colin at colino.net>

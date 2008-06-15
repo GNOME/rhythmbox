@@ -141,7 +141,7 @@ static GtkActionEntry rb_removable_media_manager_actions [] =
 	{ "RemovableSourceEject", GNOME_MEDIA_EJECT, N_("_Eject"), NULL,
 	  N_("Eject this medium"),
 	  G_CALLBACK (rb_removable_media_manager_cmd_eject_medium) },
-	{ "RemovableSourceCopyAllTracks", GTK_STOCK_CDROM, N_("_Copy to library"), NULL,
+	{ "RemovableSourceCopyAllTracks", GTK_STOCK_CDROM, N_("_Extract to Library"), NULL,
 	  N_("Copy all tracks to the library"),
 	  G_CALLBACK (rb_removable_media_manager_cmd_copy_tracks) },
 	{ "MusicScanMedia", NULL, N_("_Scan Removable Media"), NULL,
@@ -493,6 +493,7 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 					  GtkUIManager *uimanager)
 {
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	GtkAction *action;
 
 	if (priv->uimanager != NULL) {
 		if (priv->actiongroup != NULL) {
@@ -531,6 +532,13 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 	gtk_ui_manager_insert_action_group (priv->uimanager,
 					    priv->actiongroup,
 					    0);
+
+	action = gtk_action_group_get_action (priv->actiongroup,
+					      "RemovableSourceCopyAllTracks");
+	/* Translators: this is the toolbar button label
+	   for Copy to Library action. */
+	g_object_set (G_OBJECT (action), "short-label", _("Extract"), NULL);
+
 }
 
 static void

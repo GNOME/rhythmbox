@@ -326,6 +326,7 @@ impl_activate (RBPlugin *plugin,
 {
 	RBCdRecorderPlugin *pi = RB_CD_RECORDER_PLUGIN (plugin);
 	GtkUIManager       *uimanager = NULL;
+	GtkAction          *action;
 	int                 i;
 
 	pi->enabled = TRUE;
@@ -363,6 +364,13 @@ impl_activate (RBPlugin *plugin,
 				       GTK_UI_MANAGER_AUTO,
 				       FALSE);
 	}
+
+        action = gtk_action_group_get_action (pi->action_group,
+					      "MusicPlaylistBurnPlaylist");
+	/* Translators: this is the toolbar button label for */
+	/* Create Audio CD action                            */
+	g_object_set (action, "short-label", _("Burn"), NULL);
+
 
 	update_source (pi, shell);
 }

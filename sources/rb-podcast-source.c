@@ -559,6 +559,7 @@ rb_podcast_source_constructor (GType type,
 	RBShell *shell;
 	RhythmDBQueryModel *query_model;
 	GPtrArray *query;
+	GtkAction *action;
 
 	klass = RB_PODCAST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PODCAST_SOURCE));
 
@@ -573,6 +574,20 @@ rb_podcast_source_constructor (GType type,
 								       rb_podcast_source_actions,
 								       G_N_ELEMENTS (rb_podcast_source_actions),
 								       source);
+
+	action = gtk_action_group_get_action (source->priv->action_group,
+					      "MusicNewPodcast");
+	/* Translators: this is the toolbar button label
+	   for New Podcast Feed action.
+	   Don't include the prefix "podcast|" in the translation. */
+	g_object_set (G_OBJECT (action), "short-label", Q_("podcast|New"), NULL);
+
+	action = gtk_action_group_get_action (source->priv->action_group,
+					      "PodcastUpdateAllFeeds");
+	/* Translators: this is the toolbar button label
+	   for Update All Feeds action. */
+	g_object_set (G_OBJECT (action), "short-label", _("Update"), NULL);
+
 	gtk_action_group_add_radio_actions (source->priv->action_group,
 					    rb_podcast_source_radio_actions,
 					    G_N_ELEMENTS (rb_podcast_source_radio_actions),

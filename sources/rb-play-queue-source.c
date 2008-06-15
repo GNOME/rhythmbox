@@ -224,6 +224,7 @@ rb_play_queue_source_constructor (GType type,
 	RhythmDB *db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
 	GtkCellRenderer *renderer;
 	RhythmDBQueryModel *model;
+	GtkAction *action;
 
 	g_object_get (source, "shell", &shell, NULL);
 	shell_player = rb_shell_get_player (shell);
@@ -236,6 +237,10 @@ rb_play_queue_source_constructor (GType type,
 							       rb_play_queue_source_actions,
 							       G_N_ELEMENTS (rb_play_queue_source_actions),
 							       source);
+	action = gtk_action_group_get_action (priv->action_group,
+					      "ClearQueue");
+	/* Translators: this is the toolbutton label for Clear Queue action */
+	g_object_set (G_OBJECT (action), "short-label", _("Clear"), NULL);
 
 	priv->sidebar = rb_entry_view_new (db, shell_player, NULL, TRUE, TRUE);
 

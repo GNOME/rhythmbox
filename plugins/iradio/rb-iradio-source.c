@@ -280,6 +280,7 @@ rb_iradio_source_constructor (GType type,
 {
 	RBIRadioSource *source;
 	RBShell *shell;
+	GtkAction *action;
 
 	source = RB_IRADIO_SOURCE (G_OBJECT_CLASS (rb_iradio_source_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
@@ -298,6 +299,14 @@ rb_iradio_source_constructor (GType type,
 								       rb_iradio_source_actions,
 								       G_N_ELEMENTS (rb_iradio_source_actions),
 								       source);
+
+	action = gtk_action_group_get_action (source->priv->action_group,
+                                              "MusicNewInternetRadioStation");
+        /* Translators: this is the toolbar button label for 
+           New Interner Radio Station action.
+           Don't include the prefix "radio|" in the translation. */
+        g_object_set (action, "short-label", Q_("radio|New"), NULL);
+
 
 	/* set up stations view */
 	source->priv->stations = rb_entry_view_new (source->priv->db, G_OBJECT (source->priv->player),
