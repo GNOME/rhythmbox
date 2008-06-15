@@ -46,6 +46,7 @@
 #include "rb-static-playlist-source.h"
 #include "rb-source-group.h"
 #include "rb-plugin.h"
+#include "rb-play-order.h"
 
 static void rb_source_class_init (RBSourceClass *klass);
 static void rb_source_init (RBSource *source);
@@ -138,7 +139,8 @@ enum
 	PROP_SOURCE_GROUP,
 	PROP_ENTRY_TYPE,
 	PROP_PLUGIN,
-	PROP_BASE_QUERY_MODEL
+	PROP_BASE_QUERY_MODEL,
+	PROP_PLAY_ORDER
 };
 
 enum
@@ -337,6 +339,18 @@ rb_source_class_init (RBSourceClass *klass)
 						 	      "RhythmDBQueryModel",
 							      "RhythmDBQueryModel object (unfiltered)",
 							      RHYTHMDB_TYPE_QUERY_MODEL,
+							      G_PARAM_READABLE));
+	/**
+	 * RBSource:play-order:
+	 *
+	 * If the source provides its own play order, it can override this property.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_PLAY_ORDER,
+					 g_param_spec_object ("play-order",
+						 	      "play order",
+							      "optional play order specific to the source",
+							      RB_TYPE_PLAY_ORDER,
 							      G_PARAM_READABLE));
 
 	/**
@@ -662,6 +676,9 @@ rb_source_get_property (GObject *object,
 		 * current query model is the base model.
 		 */
 		g_value_set_object (value, priv->query_model);
+		break;
+	case PROP_PLAY_ORDER:
+		g_value_set_object (value, NULL);		/* ? */
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

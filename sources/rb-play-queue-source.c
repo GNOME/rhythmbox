@@ -39,6 +39,7 @@
 #include "rb-stock-icons.h"
 #include "rb-util.h"
 #include "rb-debug.h"
+#include "rb-play-order-queue.h"
 
 /**
  * SECTION:rb-play-queue-source
@@ -97,12 +98,14 @@ struct _RBPlayQueueSourcePrivate
 	RBEntryView *sidebar;
 	GtkTreeViewColumn *sidebar_column;
 	GtkActionGroup *action_group;
+	RBPlayOrder *queue_play_order;
 };
 
 enum
 {
 	PROP_0,
-	PROP_SIDEBAR
+	PROP_SIDEBAR,
+	PROP_PLAY_ORDER
 };
 
 G_DEFINE_TYPE (RBPlayQueueSource, rb_play_queue_source, RB_TYPE_STATIC_PLAYLIST_SOURCE)
@@ -137,6 +140,11 @@ rb_play_queue_source_dispose (GObject *object)
 	if (priv->action_group != NULL) {
 		g_object_unref (priv->action_group);
 		priv->action_group = NULL;
+	}
+
+	if (priv->queue_play_order != NULL) {
+		g_object_unref (priv->queue_play_order);
+		priv->queue_play_order = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_play_queue_source_parent_class)->dispose (object);
@@ -185,6 +193,15 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 							      RB_TYPE_ENTRY_VIEW,
 							      G_PARAM_READABLE));
 
+	/**
+	 * RBPlayQueueSource:play-order:
+	 *
+	 * Overrides the play-order property from #RBSource
+	 */
+	g_object_class_override_property (object_class,
+					  PROP_PLAY_ORDER,
+					  "play-order");
+
 	g_type_class_add_private (klass, sizeof (RBPlayQueueSourcePrivate));
 }
 
@@ -211,6 +228,8 @@ rb_play_queue_source_constructor (GType type,
 	g_object_get (source, "shell", &shell, NULL);
 	shell_player = rb_shell_get_player (shell);
 	g_object_unref (shell);
+
+	priv->queue_play_order = rb_queue_play_order_new (RB_SHELL_PLAYER (shell_player));
 
 	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 							       "PlayQueueActions",
@@ -271,6 +290,9 @@ rb_play_queue_source_get_property (GObject *object,
 	{
 	case PROP_SIDEBAR:
 		g_value_set_object (value, priv->sidebar);
+		break;
+	case PROP_PLAY_ORDER:
+		g_value_set_object (value, priv->queue_play_order);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -494,3 +516,4 @@ impl_get_ui_actions (RBSource *source)
 	actions = g_list_prepend (actions, g_strdup ("ClearQueue"));
 	return actions;
 }
+

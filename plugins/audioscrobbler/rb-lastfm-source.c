@@ -3,6 +3,7 @@
  *  arch-tag: Implementation of last.fm station source object
  *
  *  Copyright (C) 2006 Matt Novenstern <fisxoj@gmail.com>
+ *  Copyright (C) 2008 Jonathan Matthew <jonathan@d14n.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,13 +29,12 @@
  *
  */
 
-/*  The author would like to extend thanks to Ian Holmes, author of Last Exit,
+/*  The author would like to extend thanks to Iain Holmes, author of Last Exit,
  *   an alternative last.fm player written in C#, the code of which was
  *   extraordinarily useful in the creation of this code
  */
 
 /* TODO List
- * - if subscriber, make user radio (low priority)
  * - "recommendation radio" with percentage setting (0=obscure, 100=popular)
  * - watch username gconf entries, create/update neighbour station
 */
@@ -43,12 +43,16 @@
 #include <config.h>
 
 #include <string.h>
+#include <math.h>
 
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 
 #include <gconf/gconf-value.h>
+
+#include <totem-pl-parser.h>
 
 #include "rb-soup-compat.h"
 #include <libsoup/soup.h>
@@ -75,15 +79,49 @@
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-shell-player.h"
+#include "rb-play-order.h"
+#include "rb-lastfm-play-order.h"
 
-#define LASTFM_URL "http://ws.audioscrobbler.com"
-#define PLATFORM_STRING "linux"
-#define RB_LASTFM_VERSION "1.1.1"
-#define EXTRA_URI_ENCODE_CHARS	"&+"
-
-#define LAST_FM_NO_COVER_IMAGE "http://static.last.fm/depth/catalogue/noimage/cover_med.gif"
+#define LASTFM_URL "ws.audioscrobbler.com"
+#define RB_LASTFM_PLATFORM "linux"
+#define RB_LASTFM_VERSION "1.3.1.1"
 
 #define USER_AGENT "Rhythmbox/" VERSION
+
+#define LASTFM_NO_COVER_IMAGE "http://cdn.last.fm/depth/catalogue/noimage/cover_med.gif"
+
+#define EPSILON (0.0001f)
+
+/* request queue stuff */
+
+typedef SoupMessage *(*CreateRequestFunc) (RBLastfmSource *source, RhythmDBEntry *entry);
+typedef void (*HandleResponseFunc) (RBLastfmSource *source, const char *body, RhythmDBEntry *entry);
+
+typedef struct
+{
+	RBLastfmSource *source;
+	RhythmDBEntry *entry;
+
+	CreateRequestFunc create_request;
+	HandleResponseFunc handle_response;
+
+	const char *description;
+} RBLastfmAction;
+
+static void free_action (RBLastfmAction *action);
+static void queue_action (RBLastfmSource *source,
+			  CreateRequestFunc create_request,
+			  HandleResponseFunc handle_response,
+			  RhythmDBEntry *entry,
+			  const char *description);
+
+static void process_queue (RBLastfmSource *source);
+static void queue_handshake (RBLastfmSource *source);
+static void queue_change_station (RBLastfmSource *source, RhythmDBEntry *station); 
+static void queue_get_playlist (RBLastfmSource *source, RhythmDBEntry *station);
+static void queue_love_track (RBLastfmSource *source);
+static void queue_ban_track (RBLastfmSource *source);
+
 
 static void rb_lastfm_source_class_init (RBLastfmSourceClass *klass);
 static void rb_lastfm_source_init (RBLastfmSource *source);
@@ -101,30 +139,15 @@ static void rb_lastfm_source_get_property (GObject *object,
 
 static void rb_lastfm_source_songs_view_sort_order_changed_cb (RBEntryView *view,
 							       RBLastfmSource *source);
-static void rb_lastfm_source_do_query (RBLastfmSource *source);
 
-/* source-specific methods */
-static void rb_lastfm_source_do_handshake (RBLastfmSource *source);
-static char* rb_lastfm_source_get_playback_uri (RhythmDBEntry *entry, gpointer data);
-static void rb_lastfm_perform (RBLastfmSource *lastfm,
-			       const char *url,
-			       char *post_data, /* this takes ownership */
-			       SoupSessionCallback response_handler);
-#if defined(HAVE_LIBSOUP_2_4)
-static void rb_lastfm_message_cb (SoupSession *session, SoupMessage *req, gpointer user_data);
-#else
-static void rb_lastfm_message_cb (SoupMessage *req, gpointer user_data);
-#endif
-static void rb_lastfm_change_station (RBLastfmSource *source, const char *station);
-
-static void rb_lastfm_proxy_config_changed_cb (RBProxyConfig *config,
-					       RBLastfmSource *source);
 static void rb_lastfm_source_drag_cb (GtkWidget *widget,
 				      GdkDragContext *dc,
 				      gint x, gint y,
 				      GtkSelectionData *selection_data,
 				      guint info, guint time,
 				      RBLastfmSource *source);
+static void rb_lastfm_source_station_selection_cb (RBEntryView *stations,
+						   RBLastfmSource *source);
 
 static void rb_lastfm_source_dispose (GObject *object);
 
@@ -138,27 +161,30 @@ static void impl_activate (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
 static guint impl_want_uri (RBSource *source, const char *uri);
 static gboolean impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre);
+static RBSourceEOFType impl_handle_eos (RBSource *asource);
 
 static void rb_lastfm_source_new_station (const char *uri, const char *title, RBLastfmSource *source);
-static void rb_lastfm_source_skip_track (GtkAction *action, RBLastfmSource *source);
 static void rb_lastfm_source_love_track (GtkAction *action, RBLastfmSource *source);
 static void rb_lastfm_source_ban_track (GtkAction *action, RBLastfmSource *source);
+static void rb_lastfm_source_download_track (GtkAction *action, RBLastfmSource *source);
+static void rb_lastfm_source_delete_station (GtkAction *action, RBLastfmSource *source);
 static char *rb_lastfm_source_title_from_uri (const char *uri);
 static void rb_lastfm_source_add_station_cb (GtkButton *button, gpointer *data);
 static void rb_lastfm_source_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry, RBLastfmSource *source);
 
-static void rb_lastfm_source_new_song_cb (GObject *player_backend,
-					  gpointer stream_data,
-					  gpointer data,
-					  RBLastfmSource *source);
-static void rb_lastfm_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBLastfmSource *source);
-
 static void show_entry_popup (RBEntryView *view,
 			      gboolean over_entry,
 			      RBSource *source);
-
-/* can't be bothered creating a whole header file just for this: */
-GType rb_lastfm_src_get_type (void);
+static void playing_song_changed_cb (RBShellPlayer *player,
+				     RhythmDBEntry *entry,
+				     RBLastfmSource *source);
+static GValue * coverart_uri_request (RhythmDB *db,
+				      RhythmDBEntry *entry,
+				      RBLastfmSource *source);
+static void extra_metadata_gather_cb (RhythmDB *db,
+				      RhythmDBEntry *entry,
+				      RBStringValueMap *map,
+				      RBLastfmSource *source);
 
 static const char* const radio_options[][3] = {
 	{N_("Similar Artists radio"), "lastfm://artist/%s/similarartists", N_("Artists similar to %s")},
@@ -168,71 +194,97 @@ static const char* const radio_options[][3] = {
 	{NULL, NULL, NULL}
 };
 
+typedef struct
+{
+	RhythmDBQueryModel *playlist;
+	int tracks_remaining;
+} RBLastfmStationEntryData;
+
+typedef struct 
+{
+	gboolean played;		/* tracks can only be played once */
+	char *image_url;
+	char *track_auth;		/* not used yet; for submission protocol 1.2 */
+	char *download_url;
+} RBLastfmTrackEntryData;
+
+
 struct RBLastfmSourcePrivate
 {
-	GtkWidget *vbox;
 	GtkWidget *paned;
-	GtkWidget *vbox2;
-	GtkWidget *hbox;
-	/*GtkWidget *tuner;*/
 	GtkWidget *txtbox;
-	GtkWidget *gobutton;
 	GtkWidget *typecombo;
-	GtkWidget *label;
 	RhythmDB *db;
 
 	GtkActionGroup *action_group;
 
 	RBEntryView *stations;
+	RBEntryView *tracks;
 
 	RBShellPlayer *shell_player;
-	RhythmDBEntryType entry_type;
-	char *session;
+	RhythmDBEntryType station_entry_type;
+	RhythmDBEntryType track_entry_type;
+	char *session_id;
+	RhythmDBEntry *current_station;		/* refcounting probably busted still? */
+	RBPlayOrder *play_order;
 
 	gboolean subscriber;
 	char *base_url;
 	char *base_path;
-	char *stream_url;
-	gboolean framehack;
-	char *update_url;
-	gboolean banned;
-	gboolean connected;
-
-	/*RhythmDBEntry *pending_entry;*/
 
 	enum {
-		OK = 0,
-		COMMUNICATING,
-		FAILED,
-		NO_ARTIST,
-		BANNED
-	} status;
+		NOT_CONNECTED = 0,
+		CONNECTED,
+		BANNED,
+		LOGIN_FAILED,
+		STATION_FAILED
+	} state;
+
+	GQueue *action_queue;
+	gboolean request_outstanding;
+	const char *request_description;
+	const char *station_failed_reason;
 
 	SoupSession *soup_session;
 	RBProxyConfig *proxy_config;
+
+	guint emit_coverart_id;
+};
+
+/* these are just for debug output */
+static const char *state_name[] = {
+	"not logged in",
+	"connected",
+	"client is banned",
+	"login failed",
+	"station unavailable"
 };
 
 G_DEFINE_TYPE (RBLastfmSource, rb_lastfm_source, RB_TYPE_STREAMING_SOURCE);
-#define RB_LASTFM_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LASTFM_SOURCE, RBLastfmSourcePrivate))
 
 enum
 {
 	PROP_0,
 	PROP_ENTRY_TYPE,
-	PROP_PROXY_CONFIG
+	PROP_TRACK_ENTRY_TYPE,
+	PROP_PROXY_CONFIG,
+	PROP_PLAY_ORDER
 };
 
 static GtkActionEntry rb_lastfm_source_actions [] =
 {
-	{ "LastfmSkipSong", GTK_STOCK_MEDIA_FORWARD, N_("Next Song"), NULL,
-	  N_("Skip the current track"),
-	  G_CALLBACK (rb_lastfm_source_skip_track) },
 	{ "LastfmLoveSong", GTK_STOCK_ADD, N_("Love Song"), NULL,
 	  N_("Mark this song as loved"),
 	  G_CALLBACK (rb_lastfm_source_love_track) },
 	{ "LastfmBanSong", GTK_STOCK_CANCEL, N_("Ban Song"), NULL,
 	  N_("Ban the current track from being played again"),
-	  G_CALLBACK (rb_lastfm_source_ban_track) }
+	  G_CALLBACK (rb_lastfm_source_ban_track) },
+	{ "LastfmStationDelete", GTK_STOCK_DELETE, N_("Delete Station"), NULL,
+	  N_("Delete the selected station"),
+	  G_CALLBACK (rb_lastfm_source_delete_station) },
+	{ "LastfmDownloadSong", NULL, N_("Download song"), NULL,
+	  N_("Download this song"),
+	  G_CALLBACK (rb_lastfm_source_download_track) }
 };
 
 static const GtkTargetEntry lastfm_drag_types[] = {
@@ -265,12 +317,21 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
+	source_class->impl_handle_eos = impl_handle_eos;
+	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_false_function;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
 					 g_param_spec_boxed ("entry-type",
 							     "Entry type",
-							     "Type of the entries which should be displayed by this source",
+							     "Entry type for last.fm stations",
+							     RHYTHMDB_TYPE_ENTRY_TYPE,
+							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_TRACK_ENTRY_TYPE,
+					 g_param_spec_boxed ("track-entry-type",
+							     "Entry type",
+							     "Entry type for last.fm tracks",
 							     RHYTHMDB_TYPE_ENTRY_TYPE,
 							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
@@ -280,41 +341,69 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 							      "RBProxyConfig object",
 							      RB_TYPE_PROXY_CONFIG,
 							      G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
-	g_type_class_add_private (klass, sizeof (RBLastfmSourcePrivate));
 
-	rb_lastfm_src_get_type ();
+	g_object_class_override_property (object_class,
+					  PROP_PLAY_ORDER,
+					  "play-order");
+
+
+	g_type_class_add_private (klass, sizeof (RBLastfmSourcePrivate));
 }
 
 static void
 rb_lastfm_source_init (RBLastfmSource *source)
 {
-	source->priv = RB_LASTFM_SOURCE_GET_PRIVATE (source);
+	source->priv = G_TYPE_INSTANCE_GET_PRIVATE ((source), RB_TYPE_LASTFM_SOURCE,  RBLastfmSourcePrivate);
 
-	source->priv->vbox = gtk_vbox_new (FALSE, 5);
-
-	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
+	source->priv->action_queue = g_queue_new ();
 }
 
 static void
-rb_lastfm_source_finalize (GObject *object)
+rb_lastfm_source_dispose (GObject *object)
 {
 	RBLastfmSource *source;
 
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_LASTFM_SOURCE (object));
-
 	source = RB_LASTFM_SOURCE (object);
-
-	g_return_if_fail (source->priv != NULL);
-
-	rb_debug ("finalizing lastfm source");
 
 	if (source->priv->db) {
 		g_object_unref (source->priv->db);
 		source->priv->db = NULL;
 	}
 
-	g_object_unref (G_OBJECT (source->priv->proxy_config));
+	if (source->priv->proxy_config != NULL) {
+		g_object_unref (source->priv->proxy_config);
+		source->priv->proxy_config = NULL;
+	}
+
+	if (source->priv->soup_session != NULL) {
+		soup_session_abort (source->priv->soup_session);
+		g_object_unref (source->priv->soup_session);
+		source->priv->soup_session = NULL;
+	}
+
+	if (source->priv->play_order != NULL) {
+		g_object_unref (source->priv->play_order);
+		source->priv->play_order = NULL;
+	}
+
+	/* kill entries here? */
+
+	G_OBJECT_CLASS (rb_lastfm_source_parent_class)->dispose (object);
+}
+
+static void
+rb_lastfm_source_finalize (GObject *object)
+{
+	RBLastfmSource *source;
+	source = RB_LASTFM_SOURCE (object);
+
+	/* get rid of any pending actions */
+	g_queue_foreach (source->priv->action_queue,
+			 (GFunc) free_action,
+			 NULL);
+	g_queue_free (source->priv->action_queue);
+
+	g_free (source->priv->session_id);
 
 	G_OBJECT_CLASS (rb_lastfm_source_parent_class)->finalize (object);
 }
@@ -326,7 +415,13 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 	RBLastfmSource *source;
 	RBLastfmSourceClass *klass;
 	RBShell *shell;
-	GObject *player_backend;
+	GtkWidget *editor_vbox;
+	GtkWidget *main_box;
+	GtkWidget *editor_box;
+	GtkWidget *add_button;
+	GtkWidget *instructions;
+	GPtrArray *query;
+	RhythmDBQueryModel *station_query_model;
 	int i;
 
 	klass = RB_LASTFM_SOURCE_CLASS (g_type_class_peek (RB_TYPE_LASTFM_SOURCE));
@@ -345,17 +440,29 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 				 "entry-added",
 				 G_CALLBACK (rb_lastfm_source_entry_added_cb),
 				 source, 0);
+	g_signal_connect_object (source->priv->db,
+				 "entry-extra-metadata-request::" RHYTHMDB_PROP_COVER_ART_URI,
+				 G_CALLBACK (coverart_uri_request),
+				 source, 0);
+	g_signal_connect_object (source->priv->db,
+				 "entry-extra-metadata-gather",
+				 G_CALLBACK (extra_metadata_gather_cb),
+				 source, 0);
+	g_signal_connect_object (source->priv->shell_player,
+				 "playing-song-changed",
+				 G_CALLBACK (playing_song_changed_cb),
+				 source, 0);
 
-	/* Set up station tuner */
-	/*source->priv->tuner = gtk_vbox_new (FALSE, 5); */
-	source->priv->vbox2 = gtk_vbox_new (FALSE, 5);
-	source->priv->hbox = gtk_hbox_new (FALSE, 5);
+	/* set up station tuner */
+	editor_vbox = gtk_vbox_new (FALSE, 5);
+	editor_box = gtk_hbox_new (FALSE, 5);
 
-	source->priv->label = gtk_label_new (_("Enter the item to build a Last.fm station out of:"));
-	g_object_set (source->priv->label, "xalign", 0.0, NULL);
+	/* awful */
+	instructions = gtk_label_new (_("Enter the item to build a Last.fm station out of:"));
+	g_object_set (instructions, "xalign", 0.0, NULL);
 
-	source->priv->gobutton = gtk_button_new_with_label (_("Add"));
-	g_signal_connect_object (G_OBJECT (source->priv->gobutton),
+	add_button = gtk_button_new_with_label (_("Add"));
+	g_signal_connect_object (G_OBJECT (add_button),
 				 "clicked",
 				 G_CALLBACK (rb_lastfm_source_add_station_cb),
 				 source, 0);
@@ -368,35 +475,37 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 
 	source->priv->txtbox = gtk_entry_new ();
 
-	gtk_box_pack_end_defaults (GTK_BOX (source->priv->hbox), GTK_WIDGET (source->priv->gobutton));
-	gtk_box_pack_end_defaults (GTK_BOX (source->priv->hbox), GTK_WIDGET (source->priv->txtbox));
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->hbox), GTK_WIDGET (source->priv->typecombo));
-	gtk_box_pack_end_defaults (GTK_BOX (source->priv->vbox2), GTK_WIDGET (source->priv->hbox));
-	gtk_box_pack_end_defaults (GTK_BOX (source->priv->vbox2), GTK_WIDGET (source->priv->label));
+	gtk_box_pack_end_defaults (GTK_BOX (editor_box), add_button);
+	gtk_box_pack_end_defaults (GTK_BOX (editor_box), source->priv->txtbox);
+	gtk_box_pack_start_defaults (GTK_BOX (editor_box), source->priv->typecombo);
+	gtk_box_pack_end_defaults (GTK_BOX (editor_vbox), editor_box);
+	gtk_box_pack_end_defaults (GTK_BOX (editor_vbox), instructions);
+
+	source->priv->paned = gtk_vpaned_new ();
 
 	/* set up stations view */
 	source->priv->stations = rb_entry_view_new (source->priv->db,
 						    G_OBJECT (source->priv->shell_player),
-						    NULL,
+						    NULL,		/* sort key? */
 						    FALSE, FALSE);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_TITLE, TRUE);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_RATING, TRUE);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_LAST_PLAYED, TRUE);
-	g_signal_connect_object (G_OBJECT (source->priv->stations),
+	g_signal_connect_object (source->priv->stations,
 				 "sort-order-changed",
 				 G_CALLBACK (rb_lastfm_source_songs_view_sort_order_changed_cb),
 				 source, 0);
-	g_signal_connect_object (G_OBJECT (source->priv->stations), "show_popup",
-				 G_CALLBACK (show_entry_popup), source, 0);
-
-	/* Drag and drop URIs */
-	g_signal_connect_object (G_OBJECT (source->priv->stations),
+	g_signal_connect_object (source->priv->stations,
+				 "show_popup",
+				 G_CALLBACK (show_entry_popup),
+				 source, 0);
+	g_signal_connect_object (source->priv->stations,
 				 "drag_data_received",
 				 G_CALLBACK (rb_lastfm_source_drag_cb),
 				 source, 0);
-	g_signal_connect_object (G_OBJECT (source->priv->shell_player),
-				 "playing-song-changed",
-				 G_CALLBACK (rb_lastfm_song_changed_cb),
+	g_signal_connect_object (source->priv->stations,
+				 "selection-changed",
+				 G_CALLBACK (rb_lastfm_source_station_selection_cb),
 				 source, 0);
 
 	gtk_drag_dest_set (GTK_WIDGET (source->priv->stations),
@@ -404,20 +513,26 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 			   lastfm_drag_types, 2,
 			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 
-	/* Pack the vbox */
-	/*gtk_paned_pack1 (GTK_PANED (source->priv->paned),
-					 GTK_WIDGET (source->priv->tuner), FALSE, FALSE); */
+	/* tracklist view */
+	source->priv->tracks = rb_entry_view_new (source->priv->db,
+						  G_OBJECT (source->priv->shell_player),
+						  NULL,
+						  FALSE, FALSE);
+	rb_entry_view_append_column (source->priv->tracks, RB_ENTRY_VIEW_COL_TITLE, TRUE);
+	rb_entry_view_append_column (source->priv->tracks, RB_ENTRY_VIEW_COL_ARTIST, FALSE);
+	rb_entry_view_append_column (source->priv->tracks, RB_ENTRY_VIEW_COL_ALBUM, FALSE);
+	rb_entry_view_append_column (source->priv->tracks, RB_ENTRY_VIEW_COL_DURATION, FALSE);
+	rb_entry_view_set_columns_clickable (source->priv->tracks, FALSE);
 
-	/*source->priv->paned = gtk_vpaned_new ();
-	gtk_paned_pack2 (GTK_PANED (source->priv->paned),
-			 GTK_WIDGET (source->priv->stations), TRUE, FALSE); */
+	gtk_paned_pack1 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->stations), TRUE, TRUE);
+	gtk_paned_pack2 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->tracks), TRUE, TRUE);
 
-	gtk_box_pack_start (GTK_BOX (source->priv->vbox), GTK_WIDGET (source->priv->vbox2), FALSE, FALSE, 5);
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), GTK_WIDGET (source->priv->stations));
-
+	main_box = gtk_vbox_new (FALSE, 5);
+	gtk_box_pack_start (GTK_BOX (main_box), editor_vbox, FALSE, FALSE, 5);
+	gtk_box_pack_start_defaults (GTK_BOX (main_box), source->priv->paned);
+	gtk_container_add (GTK_CONTAINER (source), main_box);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
-
 
 	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 								       "LastfmActions",
@@ -425,14 +540,25 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 								       G_N_ELEMENTS (rb_lastfm_source_actions),
 								       source);
 
-	rb_lastfm_source_do_query (source);
+	/* play order */
+	source->priv->play_order = rb_lastfm_play_order_new (source->priv->shell_player);
 
-	g_object_get (source->priv->shell_player, "player", &player_backend, NULL);
-	g_signal_connect_object (player_backend,
-				 "event::rb-lastfm-new-song",
-				 G_CALLBACK (rb_lastfm_source_new_song_cb),
-				 source,
-				 0);
+	/* set up station query model */
+	query = rhythmdb_query_parse (source->priv->db,
+				      RHYTHMDB_QUERY_PROP_EQUALS,
+				      RHYTHMDB_PROP_TYPE,
+				      source->priv->station_entry_type,
+				      RHYTHMDB_QUERY_END);
+	station_query_model = rhythmdb_query_model_new_empty (source->priv->db);
+	rhythmdb_do_full_query_parsed (source->priv->db,
+				       RHYTHMDB_QUERY_RESULTS (station_query_model),
+				       query);
+
+	rhythmdb_query_free (query);
+
+	rb_entry_view_set_model (source->priv->stations, station_query_model);
+	g_object_set (source, "query-model", station_query_model, NULL);
+	g_object_unref (station_query_model);
 
 	return G_OBJECT (source);
 }
@@ -447,15 +573,14 @@ rb_lastfm_source_set_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
-		source->priv->entry_type = g_value_get_boxed (value);
+		source->priv->station_entry_type = g_value_get_boxed (value);
+		break;
+	case PROP_TRACK_ENTRY_TYPE:
+		source->priv->track_entry_type = g_value_get_boxed (value);
 		break;
 	case PROP_PROXY_CONFIG:
 		source->priv->proxy_config = g_value_get_object (value);
 		g_object_ref (G_OBJECT (source->priv->proxy_config));
-		g_signal_connect_object (G_OBJECT (source->priv->proxy_config),
-					 "config-changed",
-					 G_CALLBACK (rb_lastfm_proxy_config_changed_cb),
-					 source, 0);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -473,7 +598,13 @@ rb_lastfm_source_get_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
-		g_value_set_boxed (value, source->priv->entry_type);
+		g_value_set_boxed (value, source->priv->station_entry_type);
+		break;
+	case PROP_TRACK_ENTRY_TYPE:
+		g_value_set_boxed (value, source->priv->track_entry_type);
+		break;
+	case PROP_PLAY_ORDER:
+		g_value_set_object (value, source->priv->play_order);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -481,51 +612,79 @@ rb_lastfm_source_get_property (GObject *object,
 	}
 }
 
-static gchar *
-mkmd5 (char *string)
+/* entry data stuff */
+
+static void
+create_station_data (RhythmDBEntry *entry, RhythmDB *db)
 {
-	md5_state_t md5state;
-	guchar md5pword[16];
-	gchar md5_response[33];
+	RBLastfmStationEntryData *data;
 
-	int j = 0;
-
-	memset (md5_response, 0, sizeof (md5_response));
-
-	md5_init (&md5state);
-	md5_append (&md5state, (unsigned char*)string, strlen (string));
-	md5_finish (&md5state, md5pword);
-
-	for (j = 0; j < 16; j++) {
-		char a[3];
-		sprintf (a, "%02x", md5pword[j]);
-		md5_response[2*j] = a[0];
-		md5_response[2*j+1] = a[1];
-	}
-
-	return (g_strdup (md5_response));
+	data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBLastfmStationEntryData);
+	data->playlist = rhythmdb_query_model_new_empty (db);
 }
+
+static void
+destroy_station_data (RhythmDBEntry *entry, gpointer meh)
+{
+	RBLastfmStationEntryData *data;
+
+	data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBLastfmStationEntryData);
+	if (data->playlist != NULL) {
+		g_object_unref (data->playlist);
+		data->playlist = NULL;
+	}
+}
+
+static void
+destroy_track_data (RhythmDBEntry *entry, gpointer meh)
+{
+	RBLastfmTrackEntryData *data;
+
+	data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBLastfmTrackEntryData);
+	g_free (data->image_url);
+	g_free (data->track_auth);
+	g_free (data->download_url);
+}
+
 
 RBSource *
 rb_lastfm_source_new (RBShell *shell)
 {
 	RBSource *source;
 	RBProxyConfig *proxy_config;
-	RhythmDBEntryType entry_type;
-	char *uri;
+	RhythmDBEntryType station_entry_type;
+	RhythmDBEntryType track_entry_type;
 	RhythmDB *db;
-	char *username;
 
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
 
-	/* register entry type if it's not already registered */
-	entry_type = rhythmdb_entry_type_get_by_name (db, "lastfm-station");
-	if (entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		entry_type = rhythmdb_entry_register_type (db, "lastfm-station");
-		entry_type->save_to_disk = TRUE;
-		entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc) rb_true_function;
-		entry_type->sync_metadata = (RhythmDBEntrySyncFunc) rb_null_function;
-		entry_type->get_playback_uri = (RhythmDBEntryStringFunc) rb_lastfm_source_get_playback_uri;
+	/* register entry types if they're not already registered */
+	station_entry_type = rhythmdb_entry_type_get_by_name (db, "lastfm-station");
+	if (station_entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
+		station_entry_type = rhythmdb_entry_register_type (db, "lastfm-station");
+		station_entry_type->save_to_disk = TRUE;
+		station_entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc) rb_true_function;
+		station_entry_type->sync_metadata = (RhythmDBEntrySyncFunc) rb_null_function;
+		station_entry_type->get_playback_uri = (RhythmDBEntryStringFunc) rb_null_function;	/* can't play stations, exactly */
+		station_entry_type->category = RHYTHMDB_ENTRY_CONTAINER;
+
+		/* track the station playlist */
+		station_entry_type->entry_type_data_size = sizeof (RBLastfmStationEntryData);
+		station_entry_type->post_entry_create = (RhythmDBEntryActionFunc) create_station_data;
+		station_entry_type->post_entry_create_data = g_object_ref (db);
+		station_entry_type->post_entry_create_destroy = g_object_unref;
+		station_entry_type->pre_entry_destroy = destroy_station_data;
+
+	}
+
+	track_entry_type = rhythmdb_entry_type_get_by_name (db, "lastfm-track");
+	if (track_entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
+		track_entry_type = rhythmdb_entry_register_type (db, "lastfm-track");
+		track_entry_type->save_to_disk = FALSE;
+		track_entry_type->category = RHYTHMDB_ENTRY_STREAM;		/* hrm, maybe normal? */
+
+		track_entry_type->entry_type_data_size = sizeof (RBLastfmTrackEntryData);
+		track_entry_type->pre_entry_destroy = destroy_track_data;
 	}
 
 	g_object_get (G_OBJECT (shell), "proxy-config", &proxy_config, NULL);
@@ -533,29 +692,13 @@ rb_lastfm_source_new (RBShell *shell)
 	source = RB_SOURCE (g_object_new (RB_TYPE_LASTFM_SOURCE,
 					  "name", _("Last.fm"),
 					  "shell", shell,
-					  "entry-type", entry_type,
+					  "entry-type", station_entry_type,
+					  "track-entry-type", track_entry_type,
 					  "proxy-config", proxy_config,
 					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  NULL));
-	rb_shell_register_entry_type_for_source (shell, source, entry_type);
-
-	entry_type->get_playback_uri_data = source;
-
-	/* create default neighbour radio station */
-	username = eel_gconf_get_string (CONF_AUDIOSCROBBLER_USERNAME);
-	if (username != NULL) {
-		RhythmDBEntry *entry;
-
-		uri = g_strdup_printf ("lastfm://user/%s/neighbours", username);
-		entry = rhythmdb_entry_lookup_by_location (db, uri);
-		if (entry == NULL) {
-			rb_lastfm_source_new_station (uri, _("Neighbour Radio"), RB_LASTFM_SOURCE (source));
-		} else {
-			rhythmdb_entry_unref (entry);
-		}
-		g_free (uri);
-		g_free (username);
-	}
+	rb_shell_register_entry_type_for_source (shell, source, station_entry_type);
+	rb_shell_register_entry_type_for_source (shell, source, track_entry_type);
 
 	g_object_unref (db);
 	g_object_unref (proxy_config);
@@ -569,7 +712,6 @@ impl_get_ui_actions (RBSource *source)
 
 	actions = g_list_prepend (actions, g_strdup ("LastfmLoveSong"));
 	actions = g_list_prepend (actions, g_strdup ("LastfmBanSong"));
-	actions = g_list_prepend (actions, g_strdup ("LastfmSkipSong"));
 
 	return actions;
 }
@@ -579,55 +721,62 @@ impl_get_entry_view (RBSource *asource)
 {
 	RBLastfmSource *source = RB_LASTFM_SOURCE (asource);
 
-	return source->priv->stations;
+	return source->priv->tracks;
 }
 
 static void
 impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress)
 {
 	RBLastfmSource *source = RB_LASTFM_SOURCE (asource);
+	RhythmDBQueryModel *model;
 
-	switch (source->priv->status) {
-	case NO_ARTIST:
-		*text = g_strdup (_("No such artist.  Check your spelling"));
-		break;
-
-	case FAILED:
-		*text = g_strdup (_("Handshake failed"));
+	switch (source->priv->state) {
+	case LOGIN_FAILED:
+		*text = g_strdup (_("Could not log in to Last.fm.  Check your username and password."));
 		break;
 
 	case BANNED:
-		*text = g_strdup (_("The server marked you as banned"));
+		*text = g_strdup (_("This version of Rhythmbox has been banned from Last.fm."));
 		break;
 
-	case COMMUNICATING:
-	case OK:
-		{
-			RhythmDBQueryModel *model;
-			guint num_entries;
+	case STATION_FAILED:
+		*text = g_strdup (source->priv->station_failed_reason);
+		break;
 
-			g_object_get (asource, "query-model", &model, NULL);
-			num_entries = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
-			g_object_unref (model);
-
-			*text = g_strdup_printf (ngettext ("%d station", "%d stations", num_entries), num_entries);
-			break;
-		}
+	case NOT_CONNECTED:
+	case CONNECTED:
+		g_object_get (asource, "query-model", &model, NULL);
+		*text = rhythmdb_query_model_compute_status_normal (model, "%d songs", "%d songs");
+		g_object_unref (model);
+		break;
 	}
+
 	rb_streaming_source_get_progress (RB_STREAMING_SOURCE (source), progress_text, progress);
+	
+	/* pulse progressbar if there's something going on */
+	if (source->priv->request_outstanding && fabsf (*progress) < EPSILON) {
+		*progress_text = g_strdup (source->priv->request_description);
+		*progress = -1.0f;
+	}
 }
 
 static void
 impl_delete (RBSource *asource)
 {
 	RBLastfmSource *source = RB_LASTFM_SOURCE (asource);
+	GList *sel;
 	GList *l;
 
-	for (l = rb_entry_view_get_selected_entries (source->priv->stations); l != NULL; l = g_list_next (l)) {
+	/* this one is meant to delete tracks.. but maybe that shouldn't be possible? */
+
+	sel = rb_entry_view_get_selected_entries (source->priv->tracks);
+	for (l = sel; l != NULL; l = g_list_next (l)) {
 		rhythmdb_entry_delete (source->priv->db, l->data);
 	}
-
 	rhythmdb_commit (source->priv->db);
+
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (sel);
 }
 
 static void
@@ -637,310 +786,6 @@ rb_lastfm_source_songs_view_sort_order_changed_cb (RBEntryView *view,
 	rb_debug ("sort order changed");
 
 	rb_entry_view_resort_model (view);
-}
-
-static void
-rb_lastfm_source_do_query (RBLastfmSource *source)
-{
-	RhythmDBQueryModel *station_query_model;
-	GPtrArray *query;
-
-	query = rhythmdb_query_parse (source->priv->db,
-				      RHYTHMDB_QUERY_PROP_EQUALS,
-				      RHYTHMDB_PROP_TYPE,
-				      source->priv->entry_type,
-				      RHYTHMDB_QUERY_END);
-	station_query_model = rhythmdb_query_model_new_empty (source->priv->db);
-	rhythmdb_do_full_query_parsed (source->priv->db,
-				       RHYTHMDB_QUERY_RESULTS (station_query_model),
-				       query);
-
-	rhythmdb_query_free (query);
-	query = NULL;
-
-	rb_entry_view_set_model (source->priv->stations, station_query_model);
-	g_object_set (G_OBJECT (source), "query-model", station_query_model, NULL);
-
-	g_object_unref (G_OBJECT (station_query_model));
-}
-
-static void
-rb_lastfm_source_do_handshake (RBLastfmSource *source)
-{
-	char *password;
-	char *username;
-	char *md5password;
-	char *handshake_url;
-
-	if (source->priv->connected) {
-		return;
-	}
-
-	username = eel_gconf_get_string (CONF_AUDIOSCROBBLER_USERNAME);
-	if (username == NULL) {
-		rb_debug ("no last.fm username");
-		return;
-	}
-
-	password = eel_gconf_get_string (CONF_AUDIOSCROBBLER_PASSWORD);
-	if (password == NULL) {
-		rb_debug ("no last.fm password");
-		return;
-	}
-
-	md5password = mkmd5 (password);
-	g_free (password);
-
-	handshake_url = g_strdup_printf ("%s/radio/handshake.php?version=1.1.1&platform=linux&"
-					 "username=%s&passwordmd5=%s&debug=0&partner=",
-					 LASTFM_URL,
-					 username,
-					 md5password);
-	rb_debug ("Last.fm sending handshake");
-	g_object_ref (source);
-	rb_lastfm_perform (source, handshake_url, NULL, rb_lastfm_message_cb);
-	g_free (handshake_url);
-	g_free (username);
-	g_free (md5password);
-}
-
-static char *
-rb_lastfm_source_get_playback_uri (RhythmDBEntry *entry, gpointer data)
-{
-	char *location;
-	RBLastfmSource *source;
-
-	if (entry == NULL) {
-		rb_debug ("NULL entry");
-		return NULL;
-	}
-
-	source = RB_LASTFM_SOURCE (data);
-	if (source == NULL) {
-		rb_debug ("NULL source pointer");
-		return NULL;
-	}
-
-
-	if (!source->priv->connected) {
-		rb_debug ("not connected");
-		return NULL;
-	}
-	source = RB_LASTFM_SOURCE (data);
-
-	location = g_strdup_printf ("xrblastfm://%s", source->priv->stream_url + strlen("http://"));
-	rb_debug ("playback uri: %s", location);
-	return location;
-}
-
-static void
-rb_lastfm_perform (RBLastfmSource *source,
-		   const char *url,
-		   char *post_data,
-		   SoupSessionCallback response_handler)
-{
-	SoupMessage *msg;
-	msg = soup_message_new ("GET", url);
-	soup_message_headers_append (msg->request_headers, "User-Agent", USER_AGENT);
-
-	if (msg == NULL)
-		return;
-
-	rb_debug ("Last.fm communicating with %s", url);
-
-	if (post_data != NULL) {
-		rb_debug ("POST data: %s", post_data);
-		soup_message_set_request (msg,
-					  "application/x-www-form-urlencoded",
-					  SOUP_MEMORY_TAKE,
-					  post_data,
-					  strlen (post_data));
-	}
-
-	/* create soup session, if we haven't got one yet */
-	if (!source->priv->soup_session) {
-		SoupURI *uri;
-
-		uri = rb_proxy_config_get_libsoup_uri (source->priv->proxy_config);
-		source->priv->soup_session = soup_session_async_new_with_options (
-					"proxy-uri", uri,
-					NULL);
-		if (uri)
-			soup_uri_free (uri);
-	}
-
-	soup_session_queue_message (source->priv->soup_session,
-				    msg,
-				    response_handler,
-				    source);
-	source->priv->status = COMMUNICATING;
-	rb_source_notify_status_changed (RB_SOURCE(source));
-}
-
-#if defined(HAVE_LIBSOUP_2_4)
-static void
-rb_lastfm_message_cb (SoupSession *session, SoupMessage *req, gpointer user_data)
-#else
-static void
-rb_lastfm_message_cb (SoupMessage *req, gpointer user_data)
-#endif
-{
-	RBLastfmSource *source = RB_LASTFM_SOURCE (user_data);
-	char **pieces;
-	int i;
-	const char *body;
-
-#if defined(HAVE_LIBSOUP_2_2)
-	char *free_body;
-
-	if ((req->response).body == NULL) {
-		rb_debug ("Lastfm: Server failed to respond");
-		return;
-	}
-
-	free_body = g_malloc0 ((req->response).length + 1);
-	memcpy (free_body, (req->response).body, (req->response).length);
-	g_strstrip (free_body);
-
-	body = free_body;
-#else
-	if (req->response_body->length == 0) {
-		rb_debug ("Lastfm: Server failed to respond");
-		return;
-	}
-	body = req->response_body->data;
-#endif
-
-	rb_debug ("response body: %s", body);
-
-	if (strstr (body, "ERROR - no such artist") != NULL) {
-		source->priv->status = NO_ARTIST;
-	}
-
-	pieces = g_strsplit (body, "\n", 0);
-	for (i = 0; pieces[i] != NULL; i++) {
-		gchar **values = g_strsplit (pieces[i], "=", 2);
-		if (strcmp (values[0], "session") == 0) {
-			if (strcmp (values[1], "FAILED") == 0) {
-				source->priv->status = FAILED;
-				rb_debug ("Lastfm failed to connect to the server");
-				break;
-			}
-			source->priv->status = OK;
-			source->priv->session = g_strdup (values[1]);
-			rb_debug ("session ID: %s", source->priv->session);
-			source->priv->connected = TRUE;
-		} else if (strcmp (values[0], "stream_url") == 0) {
-			source->priv->stream_url = g_strdup (values[1]);
-			rb_debug ("stream url: %s", source->priv->stream_url);
-		} else if (strcmp (values[0], "subscriber") == 0) {
-			if (strcmp (values[1], "0") == 0) {
-				source->priv->subscriber = FALSE;
-			} else {
-				source->priv->subscriber = TRUE;
-			}
-		} else if (strcmp (values[0], "framehack") ==0 ) {
-			if (strcmp (values[1], "0") == 0) {
-				source->priv->framehack = FALSE;
-			} else {
-				source->priv->framehack = TRUE;
-			}
-		} else if (strcmp (values[0], "base_url") ==0) {
-			source->priv->base_url = g_strdup (values[1]);
-		} else if (strcmp (values[0], "base_path") ==0) {
-			source->priv->base_path = g_strdup (values[1]);
-		} else if (strcmp (values[0], "update_url") ==0) {
-			source->priv->update_url = g_strdup (values[1]);
-		} else if (strcmp (values[0], "banned") ==0) {
-			if (strcmp (values[1], "0") ==0) {
-				source->priv->banned = FALSE;
-			} else {
-				source->priv->status = BANNED;
-				source->priv->banned = TRUE;
-				source->priv->connected = FALSE;
-			}
-		} else if (strcmp (values[0], "response") == 0) {
-			if (strcmp (values[1], "OK") == 0) {
-				source->priv->status = OK;
-				rb_debug ("Successfully communicated");
-				source->priv->connected = TRUE;
-			} else {
-				source->priv->connected = FALSE;
-			}
-		} else if (strcmp (values[0], "stationname") == 0) {
-			gchar **data = g_strsplit (g_strdown(pieces[i - 1]), "=",2);
-			RhythmDBEntry *entry;
-			GValue titlestring = {0,};
-
-			rb_debug ("Received station name from server: %s", values[1]);
-			entry = rhythmdb_entry_lookup_by_location (source->priv->db, data[1]);
-			g_value_init (&titlestring, G_TYPE_STRING);
-			g_value_set_string (&titlestring, values[1]);
-
-			if (entry == NULL) {
-				entry = rhythmdb_entry_new (source->priv->db, source->priv->entry_type, data[1]);
-			}
-			rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_TITLE, &titlestring);
-			g_value_unset (&titlestring);
-			rhythmdb_commit (source->priv->db);
-
-		}
-
-		g_strfreev (values);
-	}
-
-	g_strfreev (pieces);
-#if defined(HAVE_LIBSOUP_2_2)
-	g_free (free_body);
-#endif
-
-	/* doesn't work yet
-	if (source->priv->pending_entry) {
-		rb_shell_player_play_entry (source->priv->shell_player,
-					    source->priv->pending_entry,
-					    NULL);
-		rhythmdb_entry_unref (source->priv->pending_entry);
-		source->priv->pending_entry = NULL;
-	}
-	*/
-
-	rb_source_notify_status_changed (RB_SOURCE (source));
-	g_object_unref (source);
-}
-
-static void
-rb_lastfm_change_station (RBLastfmSource *source, const char *station)
-{
-	char *url;
-	if (!source->priv->connected) {
-		rb_lastfm_source_do_handshake (source);
-		return;
-	}
-
-	url = g_strdup_printf("%s/radio/adjust.php?session=%s&url=%s&debug=0",
-			      LASTFM_URL,
-			      source->priv->session,
-			      station);
-
-	g_object_ref (source);
-	rb_lastfm_perform (source, url, NULL, rb_lastfm_message_cb);
-	g_free (url);
-}
-
-static void
-rb_lastfm_proxy_config_changed_cb (RBProxyConfig *config,
-					   RBLastfmSource *source)
-{
-	SoupURI *uri;
-
-	if (source->priv->soup_session) {
-		uri = rb_proxy_config_get_libsoup_uri (config);
-		g_object_set (G_OBJECT (source->priv->soup_session),
-					"proxy-uri", uri,
-					NULL);
-		if (uri)
-			soup_uri_free (uri);
-	}
 }
 
 static void
@@ -957,7 +802,7 @@ rb_lastfm_source_new_station (const char *uri, const char *title, RBLastfmSource
 		return;
 	}
 
-	entry = rhythmdb_entry_new (source->priv->db, source->priv->entry_type, uri);
+	entry = rhythmdb_entry_new (source->priv->db, source->priv->station_entry_type, uri);
 	g_value_init (&v, G_TYPE_STRING);
 	g_value_set_string (&v, title);
 	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_TITLE, &v);
@@ -970,39 +815,126 @@ rb_lastfm_source_new_station (const char *uri, const char *title, RBLastfmSource
 	rhythmdb_commit (source->priv->db);
 }
 
-static void
-rb_lastfm_source_dispose (GObject *object)
+/* cover art bits */
+
+static const char *
+get_image_url_for_entry (RBLastfmSource *source, RhythmDBEntry *entry)
 {
-	RBLastfmSource *source;
+	RBLastfmTrackEntryData *data;
 
-	source = RB_LASTFM_SOURCE (object);
-
-	if (source->priv->db) {
-		g_object_unref (source->priv->db);
-		source->priv->db = NULL;
+	if (entry == NULL) {
+		return NULL;
 	}
 
-	G_OBJECT_CLASS (rb_lastfm_source_parent_class)->dispose (object);
+	if (rhythmdb_entry_get_entry_type (entry) != source->priv->track_entry_type) {
+		return NULL;
+	}
+
+	data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBLastfmTrackEntryData);
+	return data->image_url;
+}
+
+static GValue *
+coverart_uri_request (RhythmDB *db, RhythmDBEntry *entry, RBLastfmSource *source)
+{
+	const char *image_url;
+
+	image_url = get_image_url_for_entry (source, entry);
+	if (image_url != NULL) {
+		GValue *v;
+		v = g_new0 (GValue, 1);
+		g_value_init (v, G_TYPE_STRING);
+		rb_debug ("requested cover image %s", image_url);
+		g_value_set_string (v, image_url);
+		return v;
+	}
+
+	return NULL;
 }
 
 static void
-rb_lastfm_source_command (RBLastfmSource *source, const char *query_string, const char *status)
+extra_metadata_gather_cb (RhythmDB *db, RhythmDBEntry *entry, RBStringValueMap *map, RBLastfmSource *source)
 {
-	char *url;
-	if (!source->priv->connected) {
-		rb_lastfm_source_do_handshake (source);
-		return;
+	const char *image_url;
+
+	image_url = get_image_url_for_entry (source, entry);
+	if (image_url != NULL) {
+		GValue v = {0,};
+		g_value_init (&v, G_TYPE_STRING);
+		g_value_set_string (&v, image_url);
+
+		rb_debug ("gathered cover image %s", image_url);
+		rb_string_value_map_set (map, "rb:coverArt-uri", &v);
+		g_value_unset (&v);
+	}
+}
+
+static gboolean
+emit_coverart_uri_cb (RBLastfmSource *source)
+{
+	RhythmDBEntry *entry;
+	const char *image_url;
+
+	source->priv->emit_coverart_id = 0;
+
+	entry = rb_shell_player_get_playing_entry (source->priv->shell_player);
+	image_url = get_image_url_for_entry (source, entry);
+	if (image_url != NULL) {
+		GValue v = {0,};
+		g_value_init (&v, G_TYPE_STRING);
+		g_value_set_string (&v, image_url);
+		rhythmdb_emit_entry_extra_metadata_notify (source->priv->db,
+							   entry,
+							   "rb:coverArt-uri",
+							   &v);
+		g_value_unset (&v);
 	}
 
-	url = g_strdup_printf ("%s/radio/control.php?session=%s&debug=0&%s",
-			       LASTFM_URL,
-			       source->priv->session,
-			       query_string);
-	g_object_ref (source);
-	rb_lastfm_perform (source, url, NULL, rb_lastfm_message_cb);
-	g_free (url);
+	return FALSE;
+}
 
-	rb_source_notify_status_changed (RB_SOURCE (source));
+static void
+playing_song_changed_cb (RBShellPlayer *player,
+			 RhythmDBEntry *entry,
+			 RBLastfmSource *source)
+{
+	GtkAction *action;
+
+	/* re-enable love/ban */
+	action = gtk_action_group_get_action (source->priv->action_group, "LastfmLoveSong");
+	gtk_action_set_sensitive (action, TRUE);
+	action = gtk_action_group_get_action (source->priv->action_group, "LastfmBanSong");
+	gtk_action_set_sensitive (action, TRUE);
+
+	if (source->priv->emit_coverart_id != 0) {
+		g_source_remove (source->priv->emit_coverart_id);
+		source->priv->emit_coverart_id = 0;
+	}
+
+	if (entry != NULL && rhythmdb_entry_get_entry_type (entry) == source->priv->track_entry_type) {
+		/* look through the playlist for the current station.
+		 * if all tracks have been played, update the playlist.
+		 */
+		RBLastfmTrackEntryData *track_data;
+		RBLastfmStationEntryData *station_data;
+
+		track_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBLastfmTrackEntryData);
+		if (track_data->played == FALSE) {
+
+			if (source->priv->current_station != NULL) {
+				station_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (source->priv->current_station, RBLastfmStationEntryData);
+				station_data->tracks_remaining--;
+				if (station_data->tracks_remaining < 1) {
+					queue_change_station (source, source->priv->current_station);
+					queue_get_playlist (source, source->priv->current_station);
+				}
+			}
+			track_data->played = TRUE;
+		}
+
+		/* emit cover art notification */
+		source->priv->emit_coverart_id = g_idle_add ((GSourceFunc) emit_coverart_uri_cb, source);
+	}
 }
 
 static void
@@ -1010,25 +942,9 @@ rb_lastfm_source_love_track (GtkAction *run_action, RBLastfmSource *source)
 {
 	GtkAction *action;
 
-	rb_lastfm_source_command (source, "command=love", _("Marking song loved..."));
+	queue_love_track (source);
 
 	/* disable love/ban */
-	action = gtk_action_group_get_action (source->priv->action_group, "LastfmLoveSong");
-	gtk_action_set_sensitive (action, FALSE);
-	action = gtk_action_group_get_action (source->priv->action_group, "LastfmBanSong");
-	gtk_action_set_sensitive (action, FALSE);
-}
-
-static void
-rb_lastfm_source_skip_track (GtkAction *run_action, RBLastfmSource *source)
-{
-	GtkAction *action;
-
-	rb_lastfm_source_command (source, "command=skip", _("Skipping song..."));
-
-	/* disable love/ban and skip */
-	action = gtk_action_group_get_action (source->priv->action_group, "LastfmSkipSong");
-	gtk_action_set_sensitive (action, FALSE);
 	action = gtk_action_group_get_action (source->priv->action_group, "LastfmLoveSong");
 	gtk_action_set_sensitive (action, FALSE);
 	action = gtk_action_group_get_action (source->priv->action_group, "LastfmBanSong");
@@ -1040,7 +956,7 @@ rb_lastfm_source_ban_track (GtkAction *run_action, RBLastfmSource *source)
 {
 	GtkAction *action;
 
-	rb_lastfm_source_command (source, "command=ban", _("Banning song..."));
+	queue_ban_track (source);
 
 	/* disable love/ban */
 	action = gtk_action_group_get_action (source->priv->action_group, "LastfmLoveSong");
@@ -1049,16 +965,38 @@ rb_lastfm_source_ban_track (GtkAction *run_action, RBLastfmSource *source)
 	gtk_action_set_sensitive (action, FALSE);
 }
 
+static void
+rb_lastfm_source_delete_station (GtkAction *run_action, RBLastfmSource *asource)
+{
+	RBLastfmSource *source = RB_LASTFM_SOURCE (asource);
+	GList *sel;
+	GList *l;
+
+	sel = rb_entry_view_get_selected_entries (source->priv->stations);
+	for (l = sel; l != NULL; l = g_list_next (l)) {
+		rhythmdb_entry_delete (source->priv->db, l->data);
+	}
+	rhythmdb_commit (source->priv->db);
+
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (sel);
+}
+
+static void
+rb_lastfm_source_download_track (GtkAction *action, RBLastfmSource *source)
+{
+	/* etc. */
+}
 
 static void
 rb_lastfm_source_drag_cb (GtkWidget *widget,
-				     GdkDragContext *dc,
-				     gint x, gint y,
-				     GtkSelectionData *selection_data,
-				     guint info, guint time,
-				     RBLastfmSource *source)
+			  GdkDragContext *dc,
+			  gint x, gint y,
+			  GtkSelectionData *selection_data,
+			  guint info, guint time,
+			  RBLastfmSource *source)
 {
-	impl_receive_drag (RB_SOURCE (source) , selection_data);
+	impl_receive_drag (RB_SOURCE (source), selection_data);
 }
 
 static gboolean
@@ -1080,6 +1018,49 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *selection_data)
 	return TRUE;
 }
 
+static void
+rb_lastfm_source_station_selection_cb (RBEntryView *stations,
+				       RBLastfmSource *source)
+{
+	GList *sel;
+	RhythmDBEntry *selected;
+
+	sel = rb_entry_view_get_selected_entries (stations);
+	if (sel == NULL) {
+		return;
+	}
+
+	selected = (RhythmDBEntry *)sel->data;
+
+	if (source->priv->current_station == selected) {
+		rb_debug ("station %s already selected",
+			  rhythmdb_entry_get_string (selected, RHYTHMDB_PROP_LOCATION));
+	} else {
+		RBLastfmStationEntryData *data;
+
+		rb_debug ("station %s selected",
+			  rhythmdb_entry_get_string (selected, RHYTHMDB_PROP_LOCATION));
+
+		/* hmm, maybe this shouldn't change the station immediately.
+		 * if i'm trying to delete the station, i still need to select it..
+		 */
+
+		queue_change_station (source, selected);
+		queue_get_playlist (source, selected);
+
+		/* update the track view */
+		data = RHYTHMDB_ENTRY_GET_TYPE_DATA(selected, RBLastfmStationEntryData);
+		if (data->playlist == NULL) {
+			data->playlist = rhythmdb_query_model_new_empty (source->priv->db);
+		}
+
+		rb_entry_view_set_model (source->priv->tracks, data->playlist);
+		g_object_set (source, "query-model", data->playlist, NULL);
+	}
+	
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (sel);
+}
 
 static char *
 rb_lastfm_source_title_from_uri (const char *uri)
@@ -1113,8 +1094,11 @@ rb_lastfm_source_title_from_uri (const char *uri)
 			title = g_strdup_printf (_("%s's Recommended Radio: %s percent"), data[3], data[5]);
 		} else if (strcmp (data[4], "personal") == 0) {
 			title = g_strdup_printf (_("%s's Personal Radio"), data[3]);
+		} else if (strcmp (data[4], "loved") == 0) {
+			title = g_strdup_printf (_("%s's Loved Tracks"), data[3]);
+		} else if (strcmp (data[4], "playlist") == 0) {
+			title = g_strdup_printf (_("%s's Playlist"), data[3]);
 		}
-		/* subscriber? */
 	}
 
 	if (title == NULL && strcmp (data[2], "usertags") == 0) {
@@ -1144,7 +1128,7 @@ rb_lastfm_source_entry_added_cb (RhythmDB *db,
 	const char *genre;
 	GValue v = {0,};
 
-	if (rhythmdb_entry_get_entry_type (entry) != source->priv->entry_type)
+	if (rhythmdb_entry_get_entry_type (entry) != source->priv->station_entry_type)
 		return;
 
 	/* move station name from genre to title */
@@ -1196,184 +1180,10 @@ rb_lastfm_source_add_station_cb (GtkButton *button, gpointer *data)
 	g_free(title);
 }
 
-#if defined(HAVE_LIBSOUP_2_4)
-static void
-rb_lastfm_source_metadata_cb (SoupSession *session, SoupMessage *req, RBLastfmSource *source)
-#else
-static void
-rb_lastfm_source_metadata_cb (SoupMessage *req, RBLastfmSource *source)
-#endif
-{
-	const char *body;
-	char *free_body;
-	char **pieces;
-	int p;
-	RhythmDBEntry *entry;
-	gboolean found_cover;
-
-	entry = rb_shell_player_get_playing_entry (source->priv->shell_player);
-	if (entry == NULL || rhythmdb_entry_get_entry_type (entry) != source->priv->entry_type) {
-		rb_debug ("got response to metadata request, but not playing from this source");
-		return;
-	}
-
-	rb_debug ("got response to metadata request");
-#if defined(HAVE_LIBSOUP_2_4)
-	body = req->response_body->data;
-	free_body = NULL;
-#else
-	free_body = g_malloc0 ((req->response).length + 1);
-	memcpy (free_body, (req->response).body, (req->response).length);
-	g_strstrip (free_body);
-	body = free_body;
-#endif
-
-	pieces = g_strsplit (body, "\n", 0);
-	found_cover = FALSE;
-
-	for (p = 0; pieces[p] != NULL; p++) {
-		gchar **values;
-
-		values = g_strsplit (pieces[p], "=", 2);
-		if (values[0] == NULL) {
-			rb_debug ("empty line in response body?");
-		} else if (strcmp (values[0], "station") == 0) {
-		} else if (strcmp (values[0], "station_url") == 0) {
-		} else if (strcmp (values[0], "stationfeed") == 0) {
-		} else if (strcmp (values[0], "stationfeed_url") == 0) {
-		} else if (strcmp (values[0], "artist") == 0) {
-			rb_debug ("artist -> %s", values[1]);
-			rb_streaming_source_set_streaming_artist (RB_STREAMING_SOURCE (source), values[1]);
-		} else if (strcmp (values[0], "album") == 0) {
-			rb_debug ("album -> %s", values[1]);
-			rb_streaming_source_set_streaming_album (RB_STREAMING_SOURCE (source), values[1]);
-		} else if (strcmp (values[0], "track") == 0) {
-			rb_debug ("track -> %s", values[1]);
-			rb_streaming_source_set_streaming_title (RB_STREAMING_SOURCE (source), values[1]);
-		} else if (strcmp (values[0], "albumcover_small") == 0) {
-		} else if (strcmp (values[0], "albumcover_medium") == 0) {
-			GValue v = {0,};
-
-			rb_debug ("albumcover -> %s", values[1]);
-			if (strcmp (values[1], LAST_FM_NO_COVER_IMAGE) == 0) {
-				rb_debug ("ignoring last.fm's no cover image");
-			} else {
-				g_value_init (&v, G_TYPE_STRING);
-				g_value_set_string (&v, values[1]);
-				rhythmdb_emit_entry_extra_metadata_notify (source->priv->db,
-									   entry,
-									   "rb:coverArt-uri",
-									   &v);
-				g_value_unset (&v);
-				found_cover = TRUE;
-			}
-
-		} else if (strcmp (values[0], "albumcover_large") == 0) {
-		} else if (strcmp (values[0], "trackprogress") == 0) {
-		} else if (strcmp (values[0], "trackduration") == 0) {
-		} else if (strcmp (values[0], "artist_url") == 0) {
-		} else if (strcmp (values[0], "album_url") == 0) {
-		} else if (strcmp (values[0], "track_url") == 0) {
-		} else if (strcmp (values[0], "discovery") == 0) {
-		} else {
-			rb_debug ("got unknown value: %s", values[0]);
-		}
-
-		g_strfreev (values);
-	}
-
-	g_strfreev (pieces);
-#if defined(HAVE_LIBSOUP_2_2)
-	g_free (free_body);
-#endif
-
-	if (found_cover == FALSE) {
-		GValue v = {0,};
-
-		/* art display plugin treats an empty URI as meaning 'no cover art' */
-		g_value_init (&v, G_TYPE_STRING);
-		g_value_set_string (&v, "");
-		rhythmdb_emit_entry_extra_metadata_notify (source->priv->db,
-							   entry,
-							   "rb:coverArt-uri",
-							   &v);
-		g_value_unset (&v);
-	}
-
-	source->priv->status = OK;
-	rb_source_notify_status_changed (RB_SOURCE (source));
-}
-
-static void
-rb_lastfm_source_new_song_cb (GObject *player_backend,
-			      gpointer stream_data,
-			      gpointer data,
-			      RBLastfmSource *source)
-{
-	GtkAction *action;
-	char *uri;
-
-	rb_debug ("got new song");
-	uri = g_strdup_printf ("http://%s%s/np.php?session=%s&debug=0",
-			       source->priv->base_url,
-			       source->priv->base_path,
-			       source->priv->session);
-	rb_lastfm_perform (source, uri, NULL, (SoupSessionCallback) rb_lastfm_source_metadata_cb);
-	g_free (uri);
-
-	/* re-enable actions */
-	action = gtk_action_group_get_action (source->priv->action_group, "LastfmSkipSong");
-	gtk_action_set_sensitive (action, TRUE);
-	action = gtk_action_group_get_action (source->priv->action_group, "LastfmLoveSong");
-	gtk_action_set_sensitive (action, TRUE);
-	action = gtk_action_group_get_action (source->priv->action_group, "LastfmBanSong");
-	gtk_action_set_sensitive (action, TRUE);
-}
-
-static gboolean
-check_entry_type (RBLastfmSource *source, RhythmDBEntry *entry)
-{
-	RhythmDBEntryType entry_type;
-	gboolean matches = FALSE;
-
-	g_object_get (source, "entry-type", &entry_type, NULL);
-	if (entry != NULL && rhythmdb_entry_get_entry_type (entry) == entry_type)
-		matches = TRUE;
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
-
-	return matches;
-}
-
-static void
-rb_lastfm_song_changed_cb (RBShellPlayer *player,
-			   RhythmDBEntry *entry,
-			   RBLastfmSource *source)
-{
-	const char *location;
-
-	if (check_entry_type (source, entry)) {
-		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-		/* this bit doesn't work */
-		/*
-		if (!source->priv->connected) {
-			rb_lastfm_source_do_handshake (source);
-			source->priv->pending_entry = rhythmdb_entry_ref (entry);
-			rb_debug ("will play station %s once connected", location);
-		} else {
-			rb_debug ("switching to station %s", location);
-			rb_lastfm_change_station (source, location);
-		}
-		*/
-		rb_lastfm_change_station (source, location);
-	} else {
-		rb_debug ("non-lastfm entry being played");
-	}
-}
-
 static void
 impl_activate (RBSource *source)
 {
-	rb_lastfm_source_do_handshake (RB_LASTFM_SOURCE (source));
+	queue_handshake (RB_LASTFM_SOURCE (source));
 }
 
 static gboolean
@@ -1389,7 +1199,7 @@ show_entry_popup (RBEntryView *view,
 		  RBSource *source)
 {
 	if (over_entry) {
-		_rb_source_show_popup (source, "/LastfmSourceViewPopup");
+		_rb_source_show_popup (source, "/LastfmStationViewPopup");
 	} else {
 		rb_source_show_popup (source);
 	}
@@ -1417,4 +1227,908 @@ impl_add_uri (RBSource *source, const char *uri, const char *title, const char *
 	rb_lastfm_source_new_station (uri, name, RB_LASTFM_SOURCE (source));
 	return TRUE;
 }
+
+static RBSourceEOFType
+impl_handle_eos (RBSource *asource)
+{
+	return RB_SOURCE_EOF_NEXT;
+}
+
+/* request queue */
+
+static void
+free_action (RBLastfmAction *action)
+{
+	if (action->entry != NULL) {
+		rhythmdb_entry_unref (action->entry);
+	}
+
+	g_free (action);
+}
+
+#if defined(HAVE_LIBSOUP_2_4)
+static void
+http_response_cb (SoupSession *session, SoupMessage *req, gpointer user_data)
+#else
+static void
+http_response_cb (SoupMessage *req, gpointer user_data)
+#endif
+{
+	RBLastfmAction *action = (RBLastfmAction *)user_data;
+	RBLastfmSource *source = action->source;
+	char *free_body;
+	const char *body;
+
+#if defined(HAVE_LIBSOUP_2_2)
+
+	if ((req->response).body == NULL) {
+		body = NULL;
+		free_body = NULL;
+		rb_debug ("server failed to respond");
+	} else {
+		free_body = g_malloc0 ((req->response).length + 1);
+		memcpy (free_body, (req->response).body, (req->response).length);
+		g_strstrip (free_body);
+
+		body = free_body;
+	}
+#else
+	free_body = NULL;
+	if (req->response_body->length == 0) {
+		rb_debug ("server failed to respond");
+		body = NULL;
+	} else {
+		body = req->response_body->data;
+	}
+#endif
+
+	/* call the action's response handler */
+	if (action->handle_response != NULL) {
+		(*action->handle_response) (source, body, action->entry);
+	}
+	g_free (free_body);
+
+	free_action (action);
+
+	source->priv->request_outstanding = FALSE;
+	process_queue (source);
+}
+
+static void
+proxy_config_changed_cb (RBProxyConfig *config,
+			 RBLastfmSource *source)
+{
+	SoupURI *uri;
+
+	if (source->priv->soup_session) {
+		uri = rb_proxy_config_get_libsoup_uri (config);
+		g_object_set (G_OBJECT (source->priv->soup_session),
+					"proxy-uri", uri,
+					NULL);
+		if (uri)
+			soup_uri_free (uri);
+	}
+}
+
+static void
+process_queue (RBLastfmSource *source)
+{
+	RBLastfmAction *action;
+	SoupMessage *msg;
+
+	if (source->priv->request_outstanding) {
+		rb_debug ("request already in progress");
+		return;
+	}
+
+	msg = NULL;
+	while (msg == NULL) {
+		/* grab an action to perform */
+		action = g_queue_pop_head (source->priv->action_queue);
+		if (action == NULL) {
+			/* ran out */
+			break;
+		}
+
+		/* create the HTTP request */
+		msg = (*action->create_request) (source, action->entry);
+		if (msg == NULL) {
+			rb_debug ("action didn't want to create a message..");
+			free_action (action);
+		}
+
+	}
+
+	if (msg == NULL) {
+		rb_debug ("request queue is empty");
+		return;
+	}
+
+	if (source->priv->soup_session == NULL) {
+		SoupURI *uri;
+
+		uri = rb_proxy_config_get_libsoup_uri (source->priv->proxy_config);
+		source->priv->soup_session = soup_session_async_new_with_options ("proxy-uri", uri, NULL);
+		if (uri)
+			soup_uri_free (uri);
+		
+		g_signal_connect_object (G_OBJECT (source->priv->proxy_config),
+					 "config-changed",
+					 G_CALLBACK (proxy_config_changed_cb),
+					 source, 0);
+	}
+
+
+	soup_message_headers_append (msg->request_headers, "User-Agent", USER_AGENT);
+
+	soup_session_queue_message (source->priv->soup_session,
+				    msg,
+				    http_response_cb,
+				    action);
+	source->priv->request_outstanding = TRUE;
+	source->priv->request_description = action->description;
+	
+	rb_source_notify_status_changed (RB_SOURCE(source));
+}
+
+static void
+queue_action (RBLastfmSource *source,
+	      CreateRequestFunc create_request,
+	      HandleResponseFunc handle_response,
+	      RhythmDBEntry *entry,
+	      const char *description)
+{
+	RBLastfmAction *action;
+
+	action = g_new0 (RBLastfmAction, 1);
+	action->source = source;		/* hmm, needs a ref? */
+	action->create_request = create_request;
+	action->handle_response = handle_response;
+	action->entry = entry;			/* must already have been ref'd */
+	action->description = description;
+
+	g_queue_push_tail (source->priv->action_queue, action);
+
+	process_queue (source);
+}
+
+
+/* common protocol utility stuff */
+
+#if defined(HAVE_LIBSOUP_2_4)
+static char *
+auth_challenge (RBLastfmSource *source)
+{
+	/* um, yeah, having the client generate the auth challenge
+	 * seems a bit dumb, unless they've got some replay
+	 * protection on the server side..
+	 */
+	return g_strdup_printf ("%ld", time (NULL));
+}
+#endif
+
+static gchar *
+mkmd5 (char *string, char *string2)
+{
+	md5_state_t md5state;
+	guchar md5pword[16];
+	gchar md5_response[33];
+
+	int j = 0;
+
+	memset (md5_response, 0, sizeof (md5_response));
+
+	md5_init (&md5state);
+	md5_append (&md5state, (unsigned char*)string, strlen (string));
+	if (string2 != NULL) {
+		md5_append (&md5state, (unsigned char*)string2, strlen (string2));
+	}
+	md5_finish (&md5state, md5pword);
+
+	for (j = 0; j < 16; j++) {
+		char a[3];
+		sprintf (a, "%02x", md5pword[j]);
+		md5_response[2*j] = a[0];
+		md5_response[2*j+1] = a[1];
+	}
+
+	return (g_strdup (md5_response));
+}
+
+static gboolean
+station_is_subscriber_only (const char *uri)
+{
+	/* personal and loved-tracks radio */
+	if (g_str_has_prefix (uri, "lastfm://user/")) {
+		if (g_str_has_suffix (uri, "/personal"))
+			return TRUE;
+
+		if (g_str_has_suffix (uri, "/loved"))
+			return TRUE;
+	}
+
+	/* user tag radio */
+	if (g_str_has_prefix (uri, "lastfm://usertags/"))
+		return TRUE;
+
+	/* anything else? */
+
+	return FALSE;
+}
+
+/* handshake request */
+
+static SoupMessage *
+create_handshake_request (RBLastfmSource *source, RhythmDBEntry *entry)
+{
+	SoupMessage *req;
+	char *password;
+	char *username;
+	char *md5password;
+	char *handshake_url;
+	
+	switch (source->priv->state) {
+	case NOT_CONNECTED:
+		rb_debug ("logging in");
+		break;
+
+	case CONNECTED:
+		rb_debug ("already logged in");
+		return NULL;
+
+	default:
+		rb_debug ("can't log in: %s",
+			  state_name[source->priv->state]);
+		return NULL;
+	}
+
+	username = eel_gconf_get_string (CONF_AUDIOSCROBBLER_USERNAME);
+	if (username == NULL) {
+		rb_debug ("no last.fm username");
+		source->priv->state = LOGIN_FAILED;
+		return NULL;
+	}
+
+	password = eel_gconf_get_string (CONF_AUDIOSCROBBLER_PASSWORD);
+	if (password == NULL) {
+		rb_debug ("no last.fm password");
+		source->priv->state = LOGIN_FAILED;
+		return NULL;
+	}
+
+	md5password = mkmd5 (password, NULL);
+	g_free (password);
+
+	handshake_url = g_strdup_printf ("http://%s/radio/handshake.php?"
+					 "version=" RB_LASTFM_VERSION "&"
+					 "platform=" RB_LASTFM_PLATFORM "&"
+					 "username=%s&"
+					 "passwordmd5=%s&"
+					 "debug=0&"
+					 "partner=",
+					 LASTFM_URL,
+					 username,
+					 md5password);
+	g_free (username);
+	g_free (md5password);
+
+	req = soup_message_new ("GET", handshake_url);
+	g_free (handshake_url);
+	return req;
+}
+
+static void
+_subscriber_station_visibility_cb (RhythmDBEntry *entry, RBLastfmSource *source)
+{
+	gboolean hidden;
+	const char *uri;
+	GValue v = {0,};
+
+	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	if (source->priv->subscriber) {
+		hidden = FALSE;
+	} else {
+		hidden = station_is_subscriber_only (uri);
+	}
+
+	g_value_init (&v, G_TYPE_BOOLEAN);
+	g_value_set_boolean (&v, hidden);
+	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_HIDDEN, &v);
+	g_value_unset (&v);
+}
+
+static void
+handle_handshake_response (RBLastfmSource *source, const char *body, RhythmDBEntry *entry)
+{
+	char *username;
+	char **pieces;
+	int i;
+
+	if (body == NULL) {
+		rb_debug ("login failed: no response");
+		source->priv->state = NOT_CONNECTED;
+		return;
+	}
+
+	rb_debug ("response body: %s", body);
+
+	pieces = g_strsplit (body, "\n", 0);
+	for (i = 0; pieces[i] != NULL; i++) {
+		gchar **values = g_strsplit (pieces[i], "=", 2);
+		if (strcmp (values[0], "session") == 0) {
+			if (strcmp (values[1], "FAILED") == 0) {
+				source->priv->state = LOGIN_FAILED;
+				rb_debug ("login failed");
+			} else {
+				source->priv->state = CONNECTED;
+				g_free (source->priv->session_id);
+				source->priv->session_id = g_strdup (values[1]);
+				rb_debug ("session ID: %s", source->priv->session_id);
+			}
+		} else if (strcmp (values[0], "stream_url") == 0) {
+			/* don't really care about the stream url now */
+			/*source->priv->stream_url = g_strdup (values[1]);*/
+			rb_debug ("stream url: %s", values[1]);
+		} else if (strcmp (values[0], "subscriber") == 0) {
+			if (strcmp (values[1], "0") == 0) {
+				source->priv->subscriber = FALSE;
+			} else {
+				source->priv->subscriber = TRUE;
+			}
+		} else if (strcmp (values[0], "base_url") ==0) {
+			source->priv->base_url = g_strdup (values[1]);
+		} else if (strcmp (values[0], "base_path") ==0) {
+			source->priv->base_path = g_strdup (values[1]);
+		} else if (strcmp (values[0], "banned") ==0) {
+			if (strcmp (values[1], "0") != 0) {
+				source->priv->state = BANNED;
+			}
+		}
+
+		g_strfreev (values);
+	}
+
+	g_strfreev (pieces);
+
+	/* create default stations */
+	username = eel_gconf_get_string (CONF_AUDIOSCROBBLER_USERNAME);
+	if (username != NULL) {
+		char *uri;
+		RhythmDBEntry *entry;
+
+		/* neighbour radio */
+		uri = g_strdup_printf ("lastfm://user/%s/neighbours", username);
+		entry = rhythmdb_entry_lookup_by_location (source->priv->db, uri);
+		if (entry == NULL) {
+			rb_lastfm_source_new_station (uri, _("Neighbour Radio"), RB_LASTFM_SOURCE (source));
+		}
+		g_free (uri);
+
+		/* personal radio (subscriber only) */
+		uri = g_strdup_printf ("lastfm://user/%s/personal", username);
+		entry = rhythmdb_entry_lookup_by_location (source->priv->db, uri);
+		if (entry == NULL) {
+			rb_lastfm_source_new_station (uri, _("Personal Radio"), RB_LASTFM_SOURCE (source));
+		}
+		g_free (uri);
+
+		g_free (username);
+	}
+
+	/* update subscriber-only station visibility */
+	rhythmdb_entry_foreach_by_type (source->priv->db,
+					source->priv->station_entry_type,
+					(GFunc) _subscriber_station_visibility_cb,
+					source);
+	rhythmdb_commit (source->priv->db);
+}
+
+static void
+queue_handshake (RBLastfmSource *source)
+{
+	queue_action (source,
+		      create_handshake_request,
+		      handle_handshake_response,
+		      NULL,
+		      _("Logging in"));
+}
+
+/* change station */
+
+static SoupMessage *
+create_station_request (RBLastfmSource *source, RhythmDBEntry *entry)
+{
+	SoupMessage *req;
+	char *url;
+	char *lastfm_url;
+	
+	if (source->priv->state != CONNECTED &&
+	    source->priv->state != STATION_FAILED) {
+		rb_debug ("can't change station: %s",
+			  state_name[source->priv->state]);
+		return NULL;
+	}
+
+	if (source->priv->current_station == entry) {
+		rb_debug ("already on station %s",
+			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+		return NULL;
+	}
+
+	lastfm_url = gnome_vfs_escape_string (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+
+	url = g_strdup_printf("http://%s%s/adjust.php?session=%s&url=%s&debug=0",
+			      source->priv->base_url ? source->priv->base_url : LASTFM_URL,
+			      source->priv->base_path,
+			      source->priv->session_id,
+			      lastfm_url);
+	rb_debug ("change station request: %s", url);
+
+	req = soup_message_new ("GET", url);
+	g_free (url);
+	g_free (lastfm_url);
+	return req;
+}
+
+static void
+set_station_failed_reason (RBLastfmSource *source, RhythmDBEntry *station, const char *reason)
+{
+	GValue v = {0,};
+
+	/* set playback error on the station entry */
+	g_value_init (&v, G_TYPE_STRING);
+	g_value_set_string (&v, reason);
+	rhythmdb_entry_set (source->priv->db, station, RHYTHMDB_PROP_PLAYBACK_ERROR, &v);
+	g_value_unset (&v);
+
+	/* set our status */
+	source->priv->state = STATION_FAILED;
+	source->priv->station_failed_reason = reason;
+
+	rb_source_notify_status_changed (RB_SOURCE (source));
+}
+
+static void
+handle_station_response (RBLastfmSource *source, const char *body, RhythmDBEntry *entry)
+{
+	char **pieces;
+	int i;
+
+	if (body == NULL) {
+		rb_debug ("couldn't change session: no response");
+		set_station_failed_reason (source, entry, _("Server did not respond"));	/* crap message */
+		return;
+	}
+
+	rb_debug ("response body: %s", body);
+
+	pieces = g_strsplit (body, "\n", 0);
+	for (i = 0; pieces[i] != NULL; i++) {
+		gchar **values = g_strsplit (pieces[i], "=", 2);
+
+		if (strcmp (values[0], "response") == 0) {
+			if (source->priv->current_station != NULL) {
+				rhythmdb_entry_unref (source->priv->current_station);
+				source->priv->current_station = NULL;
+			}
+
+			if (strcmp (values[1], "OK") == 0) {
+				RBLastfmStationEntryData *station_data;
+				GtkTreeIter iter;
+
+				source->priv->state = CONNECTED;
+
+				/* could remove entries from current station 
+				 * here, except the current playing entry.. */
+
+				source->priv->current_station = rhythmdb_entry_ref (entry);
+
+				/* remove existing entries from the new station, as those
+				 * will have been invalidated when we switched away from it.
+				 */
+				station_data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBLastfmStationEntryData);
+				while (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (station_data->playlist), &iter)) {
+					RhythmDBEntry *track;
+					track = rhythmdb_query_model_iter_to_entry (station_data->playlist, &iter);
+					if (track != NULL) {
+						rhythmdb_query_model_remove_entry (station_data->playlist, track);
+						rhythmdb_entry_unref (track);
+					}
+				}
+			}
+		} else if (strcmp (values[0], "error") == 0) {
+			int errorcode;
+
+			errorcode = strtoul (values[1], NULL, 0);
+			switch (errorcode) {
+			case 1:		/* not enough content */
+			case 2:		/* not enough members in group */
+			case 3:		/* not enough fans of artist */
+			case 4:		/* unavailable */
+			case 6:		/* too few neighbours */
+				set_station_failed_reason (source, entry,
+					_("There is not enough content available to play this station."));
+				break;
+
+			case 5:		/* subscriber only */
+				set_station_failed_reason (source, entry,
+					_("This station is available to subscribers only."));
+				break;
+
+			case 7:
+			case 8:
+			default:
+				set_station_failed_reason (source, entry,
+					_("The streaming system is offline for maintenance, please try again later."));
+				break;
+			}
+
+		} else if (strcmp (values[0], "url") == 0) {
+			/* might have some use for this, I guess? */
+		} else if (strcmp (values[0], "stationname") == 0) {
+			/* um, might want to use this stuff at some point, I guess
+			gchar **data = g_strsplit (g_strdown(pieces[i - 1]), "=",2);
+			RhythmDBEntry *entry;
+			GValue titlestring = {0,};
+
+			rb_debug ("Received station name from server: %s", values[1]);
+			entry = rhythmdb_entry_lookup_by_location (source->priv->db, data[1]);
+			g_value_init (&titlestring, G_TYPE_STRING);
+			g_value_set_string (&titlestring, values[1]);
+
+			if (entry == NULL) {
+				entry = rhythmdb_entry_new (source->priv->db, source->priv->station_entry_type, data[1]);
+			}
+			rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_TITLE, &titlestring);
+			g_value_unset (&titlestring);
+			rhythmdb_commit (source->priv->db);
+			*/
+		}
+
+		g_strfreev (values);
+	}
+
+	g_strfreev (pieces);
+}
+
+static void
+queue_change_station (RBLastfmSource *source, RhythmDBEntry *station)
+{
+	queue_action (source,
+		      create_station_request,
+		      handle_station_response,
+		      rhythmdb_entry_ref (station),
+		      _("Changing station"));
+}
+
+/* get playlist */
+
+static SoupMessage *
+create_playlist_request (RBLastfmSource *source, RhythmDBEntry *entry)
+{
+	SoupMessage *req;
+	char *xspf_url;
+	
+	if (source->priv->state != CONNECTED &&
+	    source->priv->state != STATION_FAILED) {
+		rb_debug ("can't get playlist: %s",
+			  state_name[source->priv->state]);
+		return NULL;
+	}
+
+	if (source->priv->current_station != entry) {
+		rb_debug ("can't get playlist: station not selected");
+		return NULL;
+	}
+
+	xspf_url = g_strdup_printf ("http://%s%s/xspf.php?sk=%s&discovery=0&desktop=%s",
+				    source->priv->base_url ? source->priv->base_url : LASTFM_URL,
+				    source->priv->base_path,
+				    source->priv->session_id,
+				    RB_LASTFM_VERSION);
+
+	rb_debug ("playlist request: %s", xspf_url);
+	req = soup_message_new ("GET", xspf_url);
+	g_free (xspf_url);
+
+	return req;
+}
+
+typedef struct {
+	RBLastfmSource *source;
+	RBLastfmStationEntryData *station_data;
+} XSPFParseData;
+
+static void
+xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata, XSPFParseData *data)
+{
+	RhythmDBEntry *track_entry;
+	RBLastfmTrackEntryData *track_data;
+	const char *value;
+	GValue v = {0,};
+	int i;
+	struct {
+		const char *field;
+		RhythmDBPropType prop;
+	} field_mapping[] = {
+		{ TOTEM_PL_PARSER_FIELD_TITLE, RHYTHMDB_PROP_TITLE },
+		{ TOTEM_PL_PARSER_FIELD_AUTHOR, RHYTHMDB_PROP_ARTIST },
+		{ TOTEM_PL_PARSER_FIELD_ALBUM, RHYTHMDB_PROP_ALBUM },
+	};
+
+	rb_debug ("adding entry %s", uri);
+
+	/* create db entry if it doesn't already exist */
+	track_entry = rhythmdb_entry_lookup_by_location (data->source->priv->db, uri);
+	if (track_entry == NULL) {
+		rb_debug ("creating new track entry for %s", uri);
+		track_entry = rhythmdb_entry_new (data->source->priv->db, 
+						  data->source->priv->track_entry_type,
+						  uri);
+	} else {
+		rb_debug ("track entry %s already exists", uri);
+	}
+	track_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (track_entry, RBLastfmTrackEntryData);
+
+	/* straightforward string copying */
+	for (i = 0; i < G_N_ELEMENTS (field_mapping); i++) {
+		value = g_hash_table_lookup (metadata, field_mapping[i].field);
+		if (value != NULL) {
+			g_value_init (&v, G_TYPE_STRING);
+			g_value_set_string (&v, value);
+			rhythmdb_entry_set (data->source->priv->db, track_entry, field_mapping[i].prop, &v);
+			g_value_unset (&v);
+		}
+	}
+	
+	/* duration needs some conversion */
+	value = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_DURATION_MS);
+	if (value != NULL) {
+		gint64 duration;
+
+		duration = totem_pl_parser_parse_duration (value, FALSE);
+		if (duration > 0) {
+			g_value_init (&v, G_TYPE_ULONG);
+			g_value_set_ulong (&v, (gulong) duration / 1000);		/* ms -> s */
+			rhythmdb_entry_set (data->source->priv->db, track_entry, RHYTHMDB_PROP_DURATION, &v);
+			g_value_unset (&v);
+		}
+	}
+
+	/* image URL and track auth ID are stored in entry type specific data */
+	value = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_IMAGE_URL);
+	if (value != NULL && (strcmp (value, LASTFM_NO_COVER_IMAGE) != 0)) {
+		track_data->image_url = g_strdup (value);
+	}
+
+	value = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_ID);
+	if (value != NULL) {
+		track_data->track_auth = g_strdup (value);
+	}
+
+	value = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_DOWNLOAD_URL);
+	if (value != NULL) {
+		track_data->download_url = g_strdup (value);
+		rb_debug ("track %s has a download url: %s", uri, track_data->download_url);
+	}
+
+	/* what happens if it's already in there? need to use move_entry instead? */
+	rhythmdb_query_model_add_entry (data->station_data->playlist, track_entry, -1);
+	data->station_data->tracks_remaining++;
+}
+
+static void
+handle_playlist_response (RBLastfmSource *source, const char *body, RhythmDBEntry *station)
+{
+	RBLastfmStationEntryData *station_data;
+	int tmp_fd;
+	char *tmp_name;
+	char *tmp_uri = NULL;
+	GIOChannel *channel = NULL;
+	TotemPlParser *parser = NULL;
+	TotemPlParserResult result;
+	GError *error = NULL;
+	XSPFParseData parse_data;
+	
+	station_data = RHYTHMDB_ENTRY_GET_TYPE_DATA(station, RBLastfmStationEntryData);
+	if (station_data->playlist == NULL) {
+		station_data->playlist = rhythmdb_query_model_new_empty (source->priv->db);
+	}
+	
+	/* until totem-pl-parser can parse playlists from in-memory data, we save it to a
+	 * temporary file.
+	 */
+
+	tmp_fd = g_file_open_tmp ("rb-lastfm-playlist-XXXXXX.xspf", &tmp_name, &error);
+	if (error != NULL) {
+		rb_debug ("unable to save playlist: %s", error->message);
+		goto cleanup;
+	}
+
+	channel = g_io_channel_unix_new (tmp_fd);
+	g_io_channel_write_chars (channel, body, strlen (body), NULL, &error);
+	if (error != NULL) {
+		rb_debug ("unable to save playlist: %s", error->message);
+		goto cleanup;
+	}
+	g_io_channel_flush (channel, NULL);		/* ignore errors.. */
+
+	tmp_uri = g_filename_to_uri (tmp_name, NULL, &error);
+	if (error != NULL) {
+		rb_debug ("unable to parse playlist: %s", error->message);
+		goto cleanup;
+	}
+
+	rb_debug ("parsing playlist %s", tmp_uri);
+
+	parser = totem_pl_parser_new ();
+	parse_data.source = source;
+	parse_data.station_data = station_data;
+	g_signal_connect_data (parser, "entry-parsed", G_CALLBACK (xspf_entry_parsed), &parse_data, NULL, 0);
+	result = totem_pl_parser_parse (parser, tmp_uri, FALSE);
+
+	switch (result) {
+	case TOTEM_PL_PARSER_RESULT_UNHANDLED:
+	case TOTEM_PL_PARSER_RESULT_IGNORED:
+	case TOTEM_PL_PARSER_RESULT_ERROR:
+		rb_debug ("playlist didn't parse");
+		break;
+
+	case TOTEM_PL_PARSER_RESULT_SUCCESS:
+		break;
+	}
+
+ cleanup:
+	if (channel != NULL) {
+		g_io_channel_unref (channel);
+	}
+	if (parser != NULL) {
+		g_object_unref (parser);
+	}
+	if (error != NULL) {
+		g_error_free (error);
+	}
+	close (tmp_fd);
+	g_unlink (tmp_name);
+	g_free (tmp_name);
+	g_free (tmp_uri);
+}
+
+static void
+queue_get_playlist (RBLastfmSource *source, RhythmDBEntry *station)
+{
+	queue_action (source,
+		      create_playlist_request,
+		      handle_playlist_response,
+		      rhythmdb_entry_ref (station),
+		      _("Retrieving playlist"));
+}
+
+/* XMLRPC requests */
+
+/* can't be bothered implementing this stuff for libsoup 2.2. */
+#if defined(HAVE_LIBSOUP_2_2)
+
+static SoupMessage *
+create_action_request (RBLastfmSource *source, RhythmDBEntry *entry, const char *action)
+{
+	g_warning ("xmlrpc stuff not implemented for libsoup 2.2");
+	return NULL;
+}
+
+static void
+handle_xmlrpc_response (RBLastfmSource *source, const char *body, RhythmDBEntry *entry)
+{
+	/* nothing */
+}
+
+#else
+
+static SoupMessage *
+create_action_request (RBLastfmSource *source, RhythmDBEntry *entry, const char *action)
+{
+	SoupMessage *req;
+	char *url;
+	char *username;
+	char *password;
+	char *md5password;
+	char *challenge;
+	char *md5challenge;
+
+	if (source->priv->state != CONNECTED) {
+		rb_debug ("can't perform %s action: %s",
+			  action, state_name[source->priv->state]);
+		return NULL;
+	}
+	
+	username = eel_gconf_get_string (CONF_AUDIOSCROBBLER_USERNAME);
+	if (username == NULL) {
+		rb_debug ("no last.fm username");
+		return NULL;
+	}
+
+	password = eel_gconf_get_string (CONF_AUDIOSCROBBLER_PASSWORD);
+	if (password == NULL) {
+		rb_debug ("no last.fm password");
+		return NULL;
+	}
+	md5password = mkmd5 (password, NULL);
+
+	challenge = auth_challenge (source);
+	md5challenge = mkmd5 (md5password, challenge);
+
+	url = g_strdup_printf ("http://%s/1.0/rw/xmlrpc.php",
+			       source->priv->base_url ? source->priv->base_url : LASTFM_URL);
+
+	req = soup_xmlrpc_request_new (url, action,
+				       G_TYPE_STRING, username,
+				       G_TYPE_STRING, challenge,
+				       G_TYPE_STRING, md5challenge,
+				       G_TYPE_STRING, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
+				       G_TYPE_STRING, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
+				       G_TYPE_INVALID);
+
+	g_free (username);
+	g_free (password);
+	g_free (md5password);
+	g_free (md5challenge);
+	g_free (url);
+	return req;
+}
+
+static void
+handle_xmlrpc_response (RBLastfmSource *source, const char *body, RhythmDBEntry *entry)
+{
+	GError *error = NULL;
+	GValue v = {0,};
+
+	soup_xmlrpc_parse_method_response (body, strlen (body), &v, &error);
+	if (error != NULL) {
+		rb_debug ("got error in xmlrpc response: %s", error->message);
+		g_error_free (error);
+	}
+
+	/* do something with the return value? */
+
+	g_value_unset (&v);
+}
+#endif
+
+/* XMLRPC: banTrack */
+
+static SoupMessage *
+create_ban_request (RBLastfmSource *source, RhythmDBEntry *track)
+{
+	return create_action_request (source, track, "banTrack");
+}
+
+static void
+queue_ban_track (RBLastfmSource *source)
+{
+	queue_action (source,
+		      create_ban_request,
+		      handle_xmlrpc_response,
+		      rb_shell_player_get_playing_entry (source->priv->shell_player),
+		      _("Banning song"));
+}
+
+/* XMLRPC: loveTrack */
+
+static SoupMessage *
+create_love_request (RBLastfmSource *source, RhythmDBEntry *track)
+{
+	return create_action_request (source, track, "loveTrack");
+}
+
+static void
+queue_love_track (RBLastfmSource *source)
+{
+	queue_action (source,
+		      create_love_request,
+		      handle_xmlrpc_response,
+		      rb_shell_player_get_playing_entry (source->priv->shell_player),
+		      _("Adding song to your Loved tracks"));		/* ugh */
+}
+
+/* and maybe some more */
 

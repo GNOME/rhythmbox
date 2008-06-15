@@ -213,9 +213,11 @@ rb_streaming_source_get_progress (RBStreamingSource *source, char **text, float 
 {
 	*progress = 0.0;
 	if (source->priv->buffering == -1) {
+		g_free (*text);
 		*text = g_strdup (_("Connecting"));
 	} else if (source->priv->buffering > 0) {
 		*progress = ((float)source->priv->buffering)/100;
+		g_free (*text);
 		*text = g_strdup (_("Buffering"));
 	}
 }

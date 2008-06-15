@@ -1,3 +1,46 @@
+2008-06-15  Jonathan Matthew  <jonathan@d14n.org>
+
+	* shell/rb-shell-player.c: (rb_shell_player_set_source_internal),
+	(rb_shell_player_set_queue_source_internal),
+	(rb_shell_player_get_playing_entry),
+	(rb_shell_player_set_playing_entry),
+	(rb_shell_player_play_order_update_cb),
+	(rb_shell_player_do_previous), (rb_shell_player_do_next_internal),
+	(rb_shell_player_playpause), (rb_shell_player_entry_activated_cb),
+	(rb_shell_player_property_row_activated_cb),
+	(actually_set_playing_source):
+	* sources/rb-play-queue-source.c: (rb_play_queue_source_dispose),
+	(rb_play_queue_source_class_init),
+	(rb_play_queue_source_constructor),
+	(rb_play_queue_source_get_property):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_get_property):
+	Allow the current playing source to provide its own play order,
+	overriding the user's selected play order.  Rework some bits of the
+	play queue code to use this.
+	
+	* rhythmdb/rhythmdb.h:
+	Add #defines for cover art extra metadata items.
+
+	* sources/rb-streaming-source.c:
+	(rb_streaming_source_get_progress):
+	Fix some tiny leaks.
+
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/audioscrobbler/audioscrobbler-ui.xml:
+	* plugins/audioscrobbler/rb-lastfm-gst-src.c:
+	* plugins/audioscrobbler/rb-lastfm-play-order.c:
+	* plugins/audioscrobbler/rb-lastfm-play-order.h:
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	Massive rewrite for the ̇(not-so-̈̈) new streaming system, based on
+	XSPF playlists containing ind̬ividual tracks.  No custom GStreamer
+	source element required.  As the playlist entries can only be played
+	once, and seemingly have to be played in order, use a play order that
+	tries to enforce these restrictions.
+
+	Fixes #518231, and consequently #373615, #451893, #462595, #466276,
+	#500214, and #532399.
+
 2008-06-14  Christophe Fergeau  <teuf@gnome.org>
 
 	Patch by James "Doc" Livingston

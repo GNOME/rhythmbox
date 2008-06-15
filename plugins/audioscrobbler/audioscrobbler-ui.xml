@@ -1,6 +1,12 @@
 <ui>
-  <popup name="LastfmSourceViewPopup">
-    <menuitem name="DeleteLibraryPopup" action="EditDelete"/>
+  <popup name="LastfmStationViewPopup">
+    <menuitem name="DeleteLibraryPopup" action="LastfmStationDelete"/>
+  </popup>
+
+  <popup name="LastfmTrackVieWPopup">
+    <menuitem name="Ban" action="LastfmBanSong"/>
+    <menuitem name="Love" action="LastfmLoveSong"/>
+    <menuitem name="Download" action="LastfmDownloadSong"/>
   </popup>
 
   <popup name="LastfmSourcePopup">

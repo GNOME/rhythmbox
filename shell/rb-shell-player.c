@@ -994,11 +994,19 @@ rb_shell_player_set_source_internal (RBShellPlayer *player,
 	 * once the queue is empty.
 	 */
 	if (player->priv->current_playing_source == NULL) {
+		RBPlayOrder *porder = NULL;
 		RBSource *source = player->priv->selected_source;
-		if (source == RB_SOURCE (player->priv->queue_source))
+		if (source == RB_SOURCE (player->priv->queue_source)) {
 			source = NULL;
+		} else {
+			g_object_get (source, "play-order", &porder, NULL);
+		}
 
-		rb_play_order_playing_source_changed (player->priv->play_order, source);
+		if (porder == NULL)
+			porder = g_object_ref (player->priv->play_order);
+
+		rb_play_order_playing_source_changed (porder, source);
+		g_object_unref (porder);
 	}
 }
 
@@ -1057,7 +1065,8 @@ rb_shell_player_set_queue_source_internal (RBShellPlayer     *player,
 	if (player->priv->queue_source != NULL) {
 		RBEntryView *sidebar;
 
-		player->priv->queue_play_order = rb_play_order_new (player, "queue");
+		g_object_get (player->priv->queue_source, "play-order", &player->priv->queue_play_order, NULL);
+
 		g_signal_connect_object (G_OBJECT (player->priv->queue_play_order),
 					 "have_next_previous_changed",
 					 G_CALLBACK (rb_shell_player_play_order_update_cb),
@@ -1315,16 +1324,12 @@ rb_shell_player_get_playing_entry (RBShellPlayer *player)
 		return NULL;
 	}
 
-	if (player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source))
-		porder = player->priv->queue_play_order;
-	else
-		porder = player->priv->play_order;
-
-	if (porder == NULL) {
-		return NULL;
-	}
+	g_object_get (player->priv->current_playing_source, "play-order", &porder, NULL);
+	if (porder == NULL)
+		porder = g_object_ref (player->priv->play_order);
 
 	entry = rb_play_order_get_playing_entry (porder);
+	g_object_unref (porder);
 
 	return entry;
 }
@@ -1534,12 +1539,11 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 	if (out_of_order) {
 		RBPlayOrder *porder;
 
-		if (player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source)) {
-			porder = player->priv->queue_play_order;
-		} else {
-			porder = player->priv->play_order;
-		}
+		g_object_get (player->priv->current_playing_source, "play-order", &porder, NULL);
+		if (porder == NULL)
+			porder = g_object_ref (player->priv->play_order);
 		rb_play_order_set_playing_entry (porder, entry);
+		g_object_unref (porder);
 	}
 
 	if (player->priv->playing_entry != NULL &&
@@ -1733,7 +1737,12 @@ rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 	} else {
 		if (player->priv->current_playing_source &&
 		    (rb_source_handle_eos (player->priv->current_playing_source) == RB_SOURCE_EOF_NEXT)) {
-			have_next = rb_play_order_has_next (player->priv->play_order);
+			RBPlayOrder *porder;
+			g_object_get (player->priv->current_playing_source, "play-order", &porder, NULL);
+			if (porder == NULL)
+				porder = g_object_ref (player->priv->play_order);
+			have_next = rb_play_order_has_next (porder);
+			g_object_unref (porder);
 		}
 		if (player->priv->queue_play_order) {
 			have_next |= rb_play_order_has_next (player->priv->queue_play_order);
@@ -1850,6 +1859,7 @@ rb_shell_player_do_previous (RBShellPlayer *player,
 
 	rb_debug ("going to previous");
 
+	/* hrm, does this actually do anything at all? */
 	if (player->priv->queue_play_order) {
 		entry = rb_play_order_get_previous (player->priv->queue_play_order);
 		if (entry != NULL) {
@@ -1859,10 +1869,17 @@ rb_shell_player_do_previous (RBShellPlayer *player,
 	}
 
 	if (entry == NULL) {
+		RBPlayOrder *porder;
+
 		new_source = player->priv->source;
-		entry = rb_play_order_get_previous (player->priv->play_order);
+		g_object_get (new_source, "play-order", &porder, NULL);
+		if (porder == NULL)
+			porder = g_object_ref (player->priv->play_order);
+
+		entry = rb_play_order_get_previous (porder);
 		if (entry)
-			rb_play_order_go_previous (player->priv->play_order);
+			rb_play_order_go_previous (porder);
+		g_object_unref (porder);
 	}
 
 	if (entry != NULL) {
@@ -1878,7 +1895,7 @@ rb_shell_player_do_previous (RBShellPlayer *player,
 
 		rhythmdb_entry_unref (entry);
 	} else {
-		rb_debug ("no previous song found, signaling error");
+		rb_debug ("no previous song found, signalling error");
 		g_set_error (error,
 			     RB_SHELL_PLAYER_ERROR,
 			     RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST,
@@ -1900,49 +1917,64 @@ rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, gboo
 	if (player->priv->source == NULL)
 		return TRUE;
 
-	if (player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source)) {
-		/* Look for another entry in the queue, and fall back to the playing
-		 * source if there isn't one.  Always call _get_next on the queue
-		 * so the current entry is removed.
+
+	/* try the current playing source's play order, if it has one */
+	if (player->priv->current_playing_source != NULL) {
+		RBPlayOrder *porder;
+		g_object_get (player->priv->current_playing_source, "play-order", &porder, NULL);
+		if (porder != NULL) {
+			entry = rb_play_order_get_next (porder);
+			rb_play_order_go_next (porder);
+			if (entry != NULL) {
+				new_source = player->priv->current_playing_source;
+			}
+			g_object_unref (porder);
+		}
+	}
+
+	/* if that's different to the playing source that the user selected
+	 * (ie we're playing from the queue), try that too
+	 */
+	if (entry == NULL) {
+		RBPlayOrder *porder;
+		g_object_get (player->priv->source, "play-order", &porder, NULL);
+		if (porder == NULL)
+			porder = g_object_ref (player->priv->play_order);
+
+		/*
+		 * If we interrupted this source to play from something else,
+		 * we should go back to whatever it wanted to play before.
 		 */
-		entry = rb_play_order_get_next (player->priv->queue_play_order);
-		rb_play_order_go_next (player->priv->queue_play_order);
+		if (player->priv->source != player->priv->current_playing_source)
+			entry = rb_play_order_get_playing_entry (porder);
 
-		if (entry != NULL) {
+		/* if that didn't help, advance the play order */
+		if (entry == NULL) {
+			entry = rb_play_order_get_next (porder);
+			rb_play_order_go_next (porder);
+		}
+
+		if (entry != NULL)
+			new_source = player->priv->source;
+		
+		g_object_unref (porder);
+	}
+
+	/* if the new entry isn't from the play queue anyway, let the play queue
+	 * override the regular play order.
+	 */
+	if (player->priv->queue_play_order &&
+	    new_source != RB_SOURCE (player->priv->queue_source)) {
+		RhythmDBEntry *queue_entry;
+
+		queue_entry = rb_play_order_get_next (player->priv->queue_play_order);
+		if (queue_entry != NULL) {
+			if (entry != NULL) {
+				rhythmdb_entry_unref (entry);
+			}
+			entry = queue_entry;
 			new_source = RB_SOURCE (player->priv->queue_source);
-		} else {
-			/* If we haven't played anything from the playing source yet,
-			 * _get_playing_entry will return NULL, so we'll have to advance
-			 * the play order to get an entry to play.
-			 */
-			entry = rb_play_order_get_playing_entry (player->priv->play_order);
-			if (entry == NULL) {
-				entry = rb_play_order_get_next (player->priv->play_order);
-				rb_play_order_go_next (player->priv->play_order);
-			}
-
-			new_source = player->priv->source;
-		}
-	} else {
-		/* Advance the play order, and then let the queue override it. */
-		entry = rb_play_order_get_next (player->priv->play_order);
-		if (entry != NULL) {
-			new_source = player->priv->source;
-			rb_play_order_go_next (player->priv->play_order);
-		}
-
-		if (player->priv->queue_play_order) {
-			RhythmDBEntry *queue_entry;
-
-			queue_entry = rb_play_order_get_next (player->priv->queue_play_order);
-			if (queue_entry != NULL) {
-				if (entry != NULL) {
-					rhythmdb_entry_unref (entry);
-				}
-				entry = queue_entry;
-				new_source = RB_SOURCE (player->priv->queue_source);
-				rb_play_order_go_next (player->priv->queue_play_order);
-			}
+			rb_play_order_go_next (player->priv->queue_play_order);
 		}
 	}
 
@@ -1964,7 +1996,12 @@ rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, gboo
 
 		if (allow_stop) {
 			rb_debug ("No next entry, stopping playback");
-			rb_shell_player_stop (player);
+
+			/* hmm, need to set playing entry on the playing source's
+			 * play order if it has one?
+			 */
+
+			rb_shell_player_set_playing_source (player, NULL);
 			rb_play_order_set_playing_entry (player->priv->play_order, NULL);
 		}
 	}
@@ -2136,10 +2173,17 @@ rb_shell_player_playpause (RBShellPlayer *player,
 
 			/* play order is last */
 			if (entry == NULL) {
+				RBPlayOrder *porder;
+
 				rb_debug ("getting entry from play order");
-				entry = rb_play_order_get_next (player->priv->play_order);
+				g_object_get (player->priv->source, "play-order", &porder, NULL);
+				if (porder == NULL)
+					porder = g_object_ref (player->priv->play_order);
+
+				entry = rb_play_order_get_next (porder);
 				if (entry != NULL)
-					rb_play_order_go_next (player->priv->play_order);
+					rb_play_order_go_next (porder);
+				g_object_unref (porder);
 			}
 
 			if (entry != NULL) {
@@ -2404,6 +2448,7 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 
 			/* fall back to the current selected source once the queue is empty */
 			if (view == queue_sidebar && player->priv->source == NULL) {
+				/* XXX only do this if the selected source doesn't have its own play order? */
 				rb_play_order_playing_source_changed (player->priv->play_order,
 								      player->priv->selected_source);
 				player->priv->source = player->priv->selected_source;
@@ -2459,6 +2504,7 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 					   const char *name,
 					   RBShellPlayer *player)
 {
+	RBPlayOrder *porder;
 	RhythmDBEntry *entry = NULL;
 	GError *error = NULL;
 
@@ -2473,22 +2519,23 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 	 * the time we get in here.
 	 */
 
-	entry = rb_play_order_get_next (player->priv->play_order);
-	if (entry == NULL) {
-		return;
-	}
+	g_object_get (player->priv->selected_source, "play-order", &porder, NULL);
+	if (porder == NULL)
+		porder = g_object_ref (player->priv->play_order);
 
-	rb_play_order_go_next (player->priv->play_order);
-
-	player->priv->jump_to_playing_entry = TRUE;	/* ? */
-	if (!rb_shell_player_set_playing_entry (player, entry, TRUE, FALSE, &error)) {
-		rb_shell_player_error (player, FALSE, error);
-		g_clear_error (&error);
-	}
-
+	entry = rb_play_order_get_next (porder);
 	if (entry != NULL) {
-		rhythmdb_entry_unref (entry);
+		rb_play_order_go_next (porder);
+
+		player->priv->jump_to_playing_entry = TRUE;	/* ? */
+		if (!rb_shell_player_set_playing_entry (player, entry, TRUE, FALSE, &error)) {
+			rb_shell_player_error (player, FALSE, error);
+			g_clear_error (&error);
+		}
 	}
+
+	rhythmdb_entry_unref (entry);
+	g_object_unref (porder);
 }
 
 static void
@@ -2743,6 +2790,8 @@ actually_set_playing_source (RBShellPlayer *player,
 			     RBSource *source,
 			     gboolean sync_entry_view)
 {
+	RBPlayOrder *porder;
+
 	player->priv->source = source;
 	player->priv->current_playing_source = source;
 
@@ -2753,10 +2802,16 @@ actually_set_playing_source (RBShellPlayer *player,
 		}
 	}
 
-	if (player->priv->play_order && source != RB_SOURCE (player->priv->queue_source)) {
+	if (source != RB_SOURCE (player->priv->queue_source)) {
 		if (source == NULL)
 			source = player->priv->selected_source;
-		rb_play_order_playing_source_changed (player->priv->play_order, source);
+
+		g_object_get (source, "play-order", &porder, NULL);
+		if (porder == NULL)
+			porder = g_object_ref (player->priv->play_order);
+
+		rb_play_order_playing_source_changed (porder, source);
+		g_object_unref (porder);
 	}
 
 	rb_shell_player_play_order_update_cb (player->priv->play_order,
