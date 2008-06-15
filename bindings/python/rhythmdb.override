@@ -362,12 +362,51 @@ _wrap_rhythmdb_entry_keyword_has (PyGObject *self, PyObject *args, PyObject *kwa
 	}
 }
 %%
+override rhythmdb_entry_keywords_get kwargs
+static PyObject *
+_wrap_rhythmdb_entry_keywords_get (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = { "entry", NULL };
+	PyObject *py_entry = NULL, *retval;
+	RhythmDBEntry *entry;
+	GList *keywords, *keyword;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RhythmDB.entry_keywords_get", kwlist, &py_entry))
+		return NULL;
+	if (pyg_boxed_check(py_entry, RHYTHMDB_TYPE_ENTRY)) {
+		entry = pyg_boxed_get(py_entry, RhythmDBEntry);
+	} else {
+		char *s = g_strdup_printf ("entry should be a RhythmDBEntry, is a %s", g_type_name (pyg_type_from_object (py_entry)));
+		PyErr_SetString(PyExc_TypeError, s);
+		g_free (s);
+		return NULL;
+	}
+
+	keywords = rhythmdb_entry_keywords_get (RHYTHMDB (self->obj), entry);
+	keyword = keywords;
+	retval = PyList_New (0);
+	while (keyword)
+	{
+		PyObject *pystring;
+		RBRefString *refstring;
+		
+		refstring = keyword->data;
+		pystring = PyString_FromString (rb_refstring_get (refstring));
+		rb_refstring_unref (refstring);
+		PyList_Append (retval, pystring);
+		Py_DECREF (pystring);
+		keyword = keyword->next;
+	}
+	g_list_free (keywords);
+	return retval;
+}
+%%
 override rhythmdb_entry_keyword_add kwargs
 static PyObject *
 _wrap_rhythmdb_entry_keyword_add (PyGObject *self, PyObject *args, PyObject *kwargs)
 {
 	static char *kwlist[] = { "entry", "keyword", NULL };
-	PyObject *py_entry = NULL;
+	PyObject *py_entry = NULL, *retval;
 	const char *string = NULL;
 	RhythmDBEntry *entry;
 	RBRefString *refstring;
@@ -388,9 +427,11 @@ _wrap_rhythmdb_entry_keyword_add (PyGObject *self, PyObject *args, PyObject *kwa
 		return NULL;
 	}
 
-	refstring = rb_refstring_find (string);
+	refstring = rb_refstring_new (string);
 	if (refstring != NULL) {
-		return py_return_boolean (rhythmdb_entry_keyword_add (RHYTHMDB (self->obj), entry, refstring));
+		retval = py_return_boolean (rhythmdb_entry_keyword_add (RHYTHMDB (self->obj), entry, refstring));
+		rb_refstring_unref (refstring);
+		return retval;
 	} else {
 		Py_RETURN_FALSE;
 	}
