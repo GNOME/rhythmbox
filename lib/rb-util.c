@@ -376,6 +376,56 @@ rb_uri_get_mount_point (const char *uri)
 	return mount_point;
 }
 
+gchar *
+rb_uri_get_filesystem_type(const char *uri)
+{
+	GnomeVFSVolume *volume = NULL;
+	GnomeVFSVolumeMonitor *monitor = NULL;
+	gchar *mount_point_uri = NULL, *mount_point_path = NULL;
+	gchar *fstype = NULL;
+	GError *error = NULL;
+	
+	g_return_val_if_fail(uri != NULL, NULL);
+
+	monitor = gnome_vfs_get_volume_monitor ();
+	if (monitor == NULL) {
+		goto error;
+	}
+
+	mount_point_uri = rb_uri_get_mount_point(uri);
+	if (mount_point_uri == NULL) {
+		goto error;
+	}
+	
+	mount_point_path = g_filename_from_uri(mount_point_uri, NULL, &error);
+	if (error) {
+		g_warning("%s", error->message);
+		g_error_free(error);
+		goto error;
+	}
+
+	volume = gnome_vfs_volume_monitor_get_volume_for_path(monitor, mount_point_path);
+	if (volume  == NULL) {
+ 		goto error;
+	}
+	g_free(mount_point_path);
+	g_free(mount_point_uri);
+
+	fstype = gnome_vfs_volume_get_filesystem_type(volume);
+	
+	gnome_vfs_volume_unref(volume);
+	
+	return fstype;
+
+ error:
+	if (volume != NULL) {
+		gnome_vfs_volume_unref(volume);
+	}
+	g_free(mount_point_path);
+	g_free(mount_point_uri);
+	return NULL;
+}
+
 gboolean
 rb_uri_is_mounted (const char *uri)
 {

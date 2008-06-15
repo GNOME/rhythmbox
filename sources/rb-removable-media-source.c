@@ -517,13 +517,19 @@ rb_removable_media_source_build_dest_uri (RBRemovableMediaSource *source,
 					  const char *extension)
 {
 	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
-	char *uri;
+	char *uri = NULL;
+	char *sane_uri = NULL;
 
 	if (klass->impl_build_dest_uri) {
 		uri = klass->impl_build_dest_uri (source, entry, mimetype, extension);
 	} else {
 		uri = NULL;
 	}
+
+	sane_uri = rb_sanitize_uri_for_filesystem(uri);
+	g_return_val_if_fail(sane_uri != NULL, NULL);
+	g_free(uri);
+	uri = sane_uri;
 
 	rb_debug ("Built dest URI for mime='%s', extension='%s': '%s'",
 		  mimetype,

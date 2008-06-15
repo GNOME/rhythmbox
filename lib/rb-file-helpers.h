@@ -79,6 +79,8 @@ char*		rb_uri_append_uri	(const char *uri,
 void		rb_file_helpers_init	(void);
 void		rb_file_helpers_shutdown(void);
 
+char *		rb_sanitize_uri_for_filesystem(gchar *uri);
+
 G_END_DECLS
 
 #endif /* __RB_FILE_HELPERS_H */

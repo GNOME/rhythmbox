@@ -43,6 +43,7 @@
 
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
+#include "rb-util.h"
 
 static GHashTable *files = NULL;
 
@@ -1269,3 +1270,46 @@ rb_uri_get_short_path_name (const char *uri)
 	}
 }
 
+char *
+rb_sanitize_uri_for_filesystem(gchar *uri)
+{
+	gchar *filesystem = rb_uri_get_filesystem_type(uri);
+	gchar *sane_uri = NULL;
+
+	if (!filesystem)
+		return g_strdup(uri);
+
+	if (!strcmp(filesystem, "fat") ||
+	    !strcmp(filesystem, "vfat") ) {
+	    	gchar *hostname = NULL;
+		GError *error = NULL;
+	    	gchar *full_path = g_filename_from_uri(uri, &hostname, &error);
+
+		if (error) {
+			g_error_free(error);
+			g_free(filesystem);
+			g_free(full_path);
+			return g_strdup(uri);
+		}
+
+		g_strdelimit (full_path, "\"", '\'');
+		g_strdelimit (full_path, ":|<>*?\\", '_');
+
+		/* create a new uri from this */
+		sane_uri = g_filename_to_uri(full_path, hostname, &error);
+
+		g_free(hostname);
+		g_free(full_path);
+
+		if (error) {
+			g_error_free(error);
+			g_free(filesystem);
+			return g_strdup(uri);
+		}
+	}
+
+	/* add workarounds for other filesystems limitations here */
+
+	g_free(filesystem);
+	return sane_uri ? sane_uri : g_strdup(uri);
+}

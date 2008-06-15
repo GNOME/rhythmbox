@@ -1,3 +1,18 @@
+2008-06-15  Christophe Fergeau  <teuf@gnome.org>
+
+	patch by: Colin Leroy <colin at colino.net>
+
+	* lib/rb-file-helpers.h:
+	* lib/rb-file-helpers.c: add rb_sanitize_uri_for_filesystem which 
+	filters out chars which are invalid on fat/vfat partitions
+	* lib/rb-util.h:
+	* lib/rb-util.c: add function to get the filesystem type given an
+	uri
+	* sources/rb-removable-media-source.c: sanitize filenames (ie strip
+	invalid characters on the destination filename) before transferring
+	a track to a removable device
+	Fixes bug #374078
+
 2008-06-15  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by: John Millikin  <jmillikin@gmail.com>
