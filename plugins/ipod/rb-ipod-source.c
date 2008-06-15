@@ -495,6 +495,8 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, const char *mimetype)
 
 	if (rhythmdb_entry_get_pointer (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
 		track->mediatype = MEDIATYPE_PODCAST;
+		track->time_released = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_POST_TIME);
+		track->time_released = itdb_time_host_to_mac (track->time_released);
 	} else {
 		track->mediatype = MEDIATYPE_AUDIO;
 	}
