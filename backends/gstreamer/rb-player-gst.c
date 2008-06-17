@@ -407,6 +407,7 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 		rb_debug ("Could not transform tag value type %s into %s",
 			  g_type_name (G_VALUE_TYPE (val)),
 			  g_type_name (G_VALUE_TYPE (newval)));
+		g_free (newval);
 		return;
 	}
 

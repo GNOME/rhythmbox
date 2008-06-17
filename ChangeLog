@@ -1,3 +1,10 @@
+2008-06-17  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by: John Millikin  <jmillikin@gmail.com>
+
+	* backends/gstreamer/rb-player-gst.c: (process_tag):
+	Fix a leak when we can't transform the tag value.  Fixes #538690.
+
 2008-06-15  Christophe Fergeau  <teuf@gnome.org>
 
 	patch by:  Niels Vorgaard Christensen <vorgaard.c@math.ku.dk>
