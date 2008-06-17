@@ -1102,6 +1102,7 @@ rb_lastfm_source_title_from_uri (const char *uri)
 	}
 
 	if (title == NULL && strcmp (data[2], "usertags") == 0) {
+		/* Translators: variables are 1: user name, 2: tag name; for user tag radio */
 		title = g_strdup_printf (_("%s's %s Radio"), data[3], data[4]);
 	}
 
