@@ -409,7 +409,6 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 		g_free (filename);
 	}
 
-	g_object_ref (G_OBJECT(playlist_source));
 	playlist->userdata = playlist_source;
 	playlist->userdata_destroy = g_object_unref;
 	playlist->userdata_duplicate = g_object_ref;

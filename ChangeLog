@@ -1,3 +1,13 @@
+2008-06-18  Christophe Fergeau  <teuf@gnome.org>
+
+	patch by: Colin Leroy <colin at colino.net>
+
+	* plugins/ipod/rb-ipod-source.c: (add_rb_playlist): remove extra
+	g_object_ref when creating a new playlist. This extra ref prevented
+	RbIpodSource and RbIpodDB objects from being disposed on
+	RbIpodSource::delete_thyself, which prevented proper saving of the
+	ipod database on ipod ejection. Fixes bug #451265
+
 2008-06-18  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/audioscrobbler/rb-lastfm-source.c:
