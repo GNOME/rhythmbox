@@ -473,6 +473,8 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, const char *mimetype)
 	track->title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
 	track->album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
 	track->artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
+	track->sort_artist = rhythmdb_entry_dup_string (entry,
+	                                                RHYTHMDB_PROP_ARTIST_SORTNAME);
 	track->genre = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_GENRE);
 	track->filetype = g_strdup (mimetype);
 	track->size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
@@ -686,6 +688,12 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 	/* Set album, artist and genre from iTunesDB */
 	entry_set_string_prop (RHYTHMDB (db), entry,
 			       RHYTHMDB_PROP_ARTIST, song->artist);
+
+        if (song->sort_artist != NULL) {
+                entry_set_string_prop (RHYTHMDB (db), entry,
+                                       RHYTHMDB_PROP_ARTIST_SORTNAME,
+                                       song->sort_artist);
+        }
 
 	entry_set_string_prop (RHYTHMDB (db), entry,
 			       RHYTHMDB_PROP_ALBUM, song->album);
