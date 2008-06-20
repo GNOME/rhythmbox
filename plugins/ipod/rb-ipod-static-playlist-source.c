@@ -46,6 +46,7 @@ static void rb_ipod_static_playlist_source_get_property (GObject *object,
 			                  GParamSpec *pspec);
 
 static gboolean impl_show_popup (RBSource *source);
+static void impl_delete_thyself (RBSource *source);
 
 
 static void source_name_changed_cb (RBIpodStaticPlaylistSource *source,
@@ -85,6 +86,7 @@ rb_ipod_static_playlist_source_class_init (RBIpodStaticPlaylistSourceClass *klas
 	object_class->set_property = rb_ipod_static_playlist_source_set_property;
 
 	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_delete_thyself = impl_delete_thyself;
 
 	g_object_class_install_property (object_class,
 					 PROP_IPOD_SOURCE,
@@ -136,19 +138,24 @@ rb_ipod_static_playlist_source_constructor (GType type, guint n_construct_proper
 static void
 rb_ipod_static_playlist_source_dispose (GObject *object)
 {
-	RBIpodStaticPlaylistSourcePrivate *priv = IPOD_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (object);
+	G_OBJECT_CLASS (rb_ipod_static_playlist_source_parent_class)->dispose (object);
+}
+
+static void
+impl_delete_thyself (RBSource *source)
+{
+	RBIpodStaticPlaylistSourcePrivate *priv = IPOD_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
 
 	if (priv->ipod_source) {
 		g_object_unref (priv->ipod_source);
 		priv->ipod_source = NULL;
 	}
-
 	if (priv->ipod_db) {
 		g_object_unref (priv->ipod_db);
 		priv->ipod_db = NULL;
 	}
-
-	G_OBJECT_CLASS (rb_ipod_static_playlist_source_parent_class)->dispose (object);
+	
+	RB_SOURCE_CLASS (rb_ipod_static_playlist_source_parent_class)->impl_delete_thyself (source);
 }
 
 RBIpodStaticPlaylistSource *

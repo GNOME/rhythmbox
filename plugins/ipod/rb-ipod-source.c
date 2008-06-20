@@ -409,6 +409,7 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 		g_free (filename);
 	}
 
+	g_object_ref (G_OBJECT(playlist_source));
 	playlist->userdata = playlist_source;
 	playlist->userdata_destroy = g_object_unref;
 	playlist->userdata_duplicate = g_object_ref;
@@ -1655,8 +1656,8 @@ impl_delete_thyself (RBSource *source)
 		}
 	}
 
-        g_object_unref (G_OBJECT (priv->ipod_db));
-        priv->ipod_db = NULL;
+	g_object_unref (G_OBJECT (priv->ipod_db));
+	priv->ipod_db = NULL;
 
 	RB_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_delete_thyself (source);
 }
