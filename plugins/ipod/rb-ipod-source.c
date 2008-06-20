@@ -409,7 +409,11 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 		g_free (filename);
 	}
 
-	g_object_ref (G_OBJECT(playlist_source));
+        /* RBSource derives from GtkWidget so its initial reference is
+         * floating. Since we need a ref for ourselves and we don't want it to
+         * be stolen by a GtkContainer, we sink the floating reference.
+         */
+	g_object_ref_sink (G_OBJECT(playlist_source));
 	playlist->userdata = playlist_source;
 	playlist->userdata_destroy = g_object_unref;
 	playlist->userdata_duplicate = g_object_ref;

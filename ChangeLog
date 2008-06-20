@@ -1,9 +1,15 @@
-2008-06-18  Christophe Fergeau  <teuf@gnome.org>
+2008-06-20  Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/ipod/rb-ipod-source.c: add an explanation about why we
+	need a g_object_ref(_sink) in add_rb_playlist
+
+2008-06-20  Christophe Fergeau  <teuf@gnome.org>
 
 	patch by: Colin Leroy <colin at colino.net>
 
-	* plugins/ipod/rb-ipod-source.c: revert previous commit which was
-	wrong, really fix bug #451265 by releasing the iPodDB and
+	* plugins/ipod/rb-ipod-source.c: 
+	* plugins/ipod/rb-ipod-static-playlist-source.c: revert previous commit 
+	which was wrong, really fix bug #451265 by releasing the iPodDB and
 	RbIpodSource references in
 	RbIpodStaticPlaylistSource::delete_thyself instead of doing it in
 	RbIpodStaticPlaylistSource::dispose
