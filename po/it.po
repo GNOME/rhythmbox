@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox trunk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-15 16:22+0200\n"
-"PO-Revision-Date: 2008-06-15 16:46+0200\n"
+"POT-Creation-Date: 2008-06-21 11:26+0200\n"
+"PO-Revision-Date: 2008-06-21 11:29+0200\n"
 "Last-Translator: Luca Ferretti <elle.uca@libero.it>\n"
 "Language-Team: Italiano <tp@lists.linux.it>\n"
 "MIME-Version: 1.0\n"
@@ -28,68 +28,76 @@ msgstr ""
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Sovrascrivere il file «%s»?"
 
-#: ../backends/gstreamer/rb-player-gst.c:707 ../metadata/rb-metadata-gst.c:806
+#: ../backends/gstreamer/rb-player-gst.c:708 ../metadata/rb-metadata-gst.c:806
 #: ../metadata/rb-metadata-gst.c:1368
 #: ../plugins/cd-recorder/rb-recorder-gst.c:515
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to create %s element; check your installation"
-msgstr "Creazione dell'elemento «%s» non riuscita; controllare la propria installazione"
+msgstr ""
+"Creazione dell'elemento «%s» non riuscita; controllare la propria "
+"installazione"
 
-#: ../backends/gstreamer/rb-player-gst.c:775
+#: ../backends/gstreamer/rb-player-gst.c:776
 #, c-format
 msgid "Unknown playback error"
 msgstr "Errore di riproduzione sconosciuto"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1114
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1128
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Collegamento del nuovo stream nella pipeline di GStreamer non riuscito"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1155
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to start new stream"
 msgstr "Avvio del nuovo stream non riuscito"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2564
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to open output device"
 msgstr "Apertura del device di output non riuscita"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2630
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to open output device: %s"
 msgstr "Apertura del device di output non riuscita: %s"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2826
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2914
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to create GStreamer element; check your installation"
-msgstr "Creazione dell'elemento GStreamer non riuscita; controllare la propria installazione"
+msgstr ""
+"Creazione dell'elemento GStreamer non riuscita; controllare la propria "
+"installazione"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2839
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to create audio output element; check your installation"
-msgstr "Creazione dell'elemento uscita audio non riuscita; controllare la propria installazione"
+msgstr ""
+"Creazione dell'elemento uscita audio non riuscita; controllare la propria "
+"installazione"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2888
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2930
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2956
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2965
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2974
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
-msgstr "Collegamento alla pipeline GStreamer non riuscita; controllare la propria installazione"
+msgstr ""
+"Collegamento alla pipeline GStreamer non riuscita; controllare la propria "
+"installazione"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3069
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Creazione della pipeline GStreamer per riprodurre %s non riuscita"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3085
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to start playback of %s"
 msgstr "Avvio della riproduzione di %s non riuscito"
 
@@ -681,12 +689,14 @@ msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "Il file contiene uno stream di tipo %s, che non è decodificabile"
 
 #: ../metadata/rb-metadata-gst.c:1002
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to create a source element; check your installation"
-msgstr "Creazione di un elemento sorgente non riuscito; controllare la propria installazione"
+msgstr ""
+"Creazione di un elemento sorgente non riuscito; controllare la propria "
+"installazione"
 
 #: ../metadata/rb-metadata-gst.c:1065
-#, c-format, fuzzy
+#, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Errore di GStreamer: cambio di stato non riuscito"
 
@@ -967,12 +977,11 @@ msgid "OK"
 msgstr "OK"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1154
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1633
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1634
 msgid "Logging in"
 msgstr "Login in corso"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1157
-#, fuzzy
 msgid "Request failed"
 msgstr "Richiesta non riuscita"
 
@@ -985,7 +994,6 @@ msgid "Incorrect password"
 msgstr "Password non corretta"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1166
-#, fuzzy
 msgid "Handshake failed"
 msgstr "Handshake non riuscito"
 
@@ -994,7 +1002,6 @@ msgid "Client update required"
 msgstr "Richiesto aggiornamento del client"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1172
-#, fuzzy
 msgid "Track submission failed"
 msgstr "Invio del brano non riuscito"
 
@@ -1003,7 +1010,6 @@ msgid "Queue is too long"
 msgstr "La coda è troppo lunga"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1178
-#, fuzzy
 msgid "Track submission failed too many times"
 msgstr "Invio del brano non riuscito troppe volte"
 
@@ -1087,14 +1093,14 @@ msgid "Add"
 msgstr "Aggiungi"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:735
-#, fuzzy
 msgid "Could not log in to Last.fm.  Check your username and password."
-msgstr "Impossibile accedere a Last.fm. Controllare il proprio nome utente e la propria password."
+msgstr ""
+"Impossibile accedere a Last.fm. Controllare il proprio nome utente e la "
+"propria password."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:739
-#, fuzzy
 msgid "This version of Rhythmbox has been banned from Last.fm."
-msgstr "Questa versione di Rhythmbox è stata badita da Last.fm."
+msgstr "Questa versione di Rhythmbox è stata bandita da Last.fm."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1073
 #, c-format
@@ -1127,59 +1133,58 @@ msgid "%s's Playlist"
 msgstr "Scaletta di %s"
 
 # invertire i due %s
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1105
+#. Translators: variables are 1: user name, 2: tag name; for user tag radio
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1106
 #, c-format
 msgid "%s's %s Radio"
 msgstr "Radio %2$s di %1$s"
 
 # non so se è corretto, sarebbe da verificare...
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1109
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1110
 #, c-format
 msgid "%s Group Radio"
 msgstr "Radio per gruppo %s"
 
 # boh!!! Non so proprio se è corretto....
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1603
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1604
 msgid "Neighbour Radio"
 msgstr "Radio del vicinato"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1611
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1612
 msgid "Personal Radio"
 msgstr "Radio personale"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1699
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1700
 msgid "Server did not respond"
 msgstr "Il server non ha risposto"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1750
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1751
 msgid "There is not enough content available to play this station."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1755
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1756
 #, fuzzy
 msgid "This station is available to subscribers only."
 msgstr "Questa stazione è disponibile solo per i XXXXXXXXXXX."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1762
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1763
 msgid ""
 "The streaming system is offline for maintenance, please try again later."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1801
-#, fuzzy
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1802
 msgid "Changing station"
 msgstr "Cambio della stazione"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2004
-#, fuzzy
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2005
 msgid "Retrieving playlist"
 msgstr "Ricezione della scaletta"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2112
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2113
 msgid "Banning song"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2130
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2131
 #, fuzzy
 msgid "Adding song to your Loved tracks"
 msgstr "Aggiunta della canzone ai propri brani preferiti"
@@ -1212,7 +1217,7 @@ msgid "Burn"
 msgstr "Masterizza"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:437
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to create pipeline"
 msgstr "Creazione della pipeline non riuscita"
 
@@ -1412,7 +1417,6 @@ msgstr ""
 "Creare un'altra copia?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:706
-#, fuzzy
 msgid "Writing failed.  Try again?"
 msgstr "Scrittura non riuscita. Provare di nuovo?"
 
@@ -1539,7 +1543,7 @@ msgid "C_reate"
 msgstr "C_rea"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1368
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to create the recorder: %s"
 msgstr "Creazione del recorder non riuscita: %s"
 
@@ -1887,11 +1891,11 @@ msgstr "Eli_mina"
 msgid "Delete playlist"
 msgstr "Elimina scaletta"
 
-#: ../plugins/ipod/rb-ipod-source.c:1342 ../sources/rb-podcast-source.c:885
+#: ../plugins/ipod/rb-ipod-source.c:1354 ../sources/rb-podcast-source.c:885
 msgid "Podcasts"
 msgstr "Podcast"
 
-#: ../plugins/ipod/rb-ipod-source.c:1688
+#: ../plugins/ipod/rb-ipod-source.c:1700
 msgid "New playlist"
 msgstr "Nuova scaletta"
 
@@ -2781,11 +2785,10 @@ msgstr "Debugger python"
 msgid "Enable remote python debugging with rpdb2"
 msgstr "Abilita il debug remoto di python con rpdb2"
 
+# costretto a usare '' perché "" creano problemi con python stesso...
 #: ../plugins/pythonconsole/pythonconsole.py:119
 msgid "You can access the main window through the 'shell' variable :"
-msgstr ""
-"È possibile accedere alla finestra principale per mezzo della variabile "
-"\"shell\":"
+msgstr "È possibile accedere alla finestra principale per mezzo della variabile 'shell':"
 
 #. ex:noet:ts=8:
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:1
@@ -2892,9 +2895,11 @@ msgid "Unable to start video output"
 msgstr "Impossibile avviare l'uscita video"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:749
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to link new visual effect into the GStreamer pipeline"
-msgstr "Collegamento del nuovo effetto visivo nella pipeline di GStreamer non riuscito"
+msgstr ""
+"Collegamento del nuovo effetto visivo nella pipeline di GStreamer non "
+"riuscito"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:797
 msgid "Unable to start visualization"
@@ -2985,22 +2990,24 @@ msgid "Podcast"
 msgstr "Podcast"
 
 #: ../podcast/rb-podcast-manager.c:1905
-#, fuzzy, c-format
+#, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
-msgstr "Si è verificato un problema nell'aggiungere questo podcast: %s. Verificare l'URL: %s"
+msgstr ""
+"Si è verificato un problema nell'aggiungere questo podcast: %s. Verificare "
+"l'URL: %s"
 
 #: ../podcast/rb-podcast-parse.c:165
-#, c-format, fuzzy
+#, c-format
 msgid "Unable to check file type: %s"
 msgstr "Impossibile controllare il tipo di file: %s"
 
 #: ../podcast/rb-podcast-parse.c:179
-#, c-format, fuzzy
+#, c-format
 msgid "Unexpected file type: %s"
 msgstr "Tipo di file inatteso: %s"
 
 #: ../podcast/rb-podcast-parse.c:201
-#, c-format, fuzzy
+#, c-format
 msgid "Unable to parse the feed contents"
 msgstr "Impossibile analizzare i contenuti del feed"
 
@@ -3558,7 +3565,7 @@ msgid "Linear, removing entries once played"
 msgstr "Lineare, rimuovendo le voci una volta riprodotte"
 
 #: ../shell/rb-shell-player.c:868
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to create the player: %s"
 msgstr "Creazione del riproduttore non riuscita: %s"
 
@@ -4293,7 +4300,7 @@ msgid "Error in podcast"
 msgstr "Errore nel podcast"
 
 #: ../sources/rb-podcast-source.c:1994
-#, c-format, fuzzy
+#, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Aggiungere lo stesso il feed del podcast?"
 
@@ -4313,7 +4320,6 @@ msgstr[0] "%d episodio"
 msgstr[1] "%d episodi"
 
 #: ../sources/rb-podcast-source.c:2245
-#, fuzzy
 msgid "Podcast Error"
 msgstr "Errore nel podcast"
 
