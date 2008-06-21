@@ -11,13 +11,14 @@
 # Francisco Javier F. Serrador <serrador@tecknolabs.com>, 2004, 2005, 2006.
 # Claudio Saavedra <csaavedra@alumnos.utalca.cl>, 2007.
 # Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008.
+# Jorge Gonzalez <jorgegonz@svn.gnome.org>, 2008.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-15 12:34+0000\n"
-"PO-Revision-Date: 2008-06-17 22:23+0200\n"
-"Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
+"POT-Creation-Date: 2008-06-17 20:26+0000\n"
+"PO-Revision-Date: 2008-06-18 11:14+0200\n"
+"Last-Translator: Jorge Gonzalez <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,14 +31,14 @@ msgstr ""
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "¿Quiere sobreescribir el archivo «%s»?"
 
-#: ../backends/gstreamer/rb-player-gst.c:707 ../metadata/rb-metadata-gst.c:806
+#: ../backends/gstreamer/rb-player-gst.c:708 ../metadata/rb-metadata-gst.c:806
 #: ../metadata/rb-metadata-gst.c:1368
 #: ../plugins/cd-recorder/rb-recorder-gst.c:515
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Ha ocurrido un error al crear el elemento %s; compruebe su instalación"
 
-#: ../backends/gstreamer/rb-player-gst.c:775
+#: ../backends/gstreamer/rb-player-gst.c:776
 #, c-format
 msgid "Unknown playback error"
 msgstr "Error de reproducción desconocido"
@@ -1122,7 +1123,7 @@ msgstr "Listas de reproducción de %s"
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1105
 #, c-format
 msgid "%s's %s Radio"
-msgstr ""
+msgstr "Emisora de %s con la etiqueta %s"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1109
 #, c-format
@@ -1151,7 +1152,9 @@ msgstr "Esta emisora sólo está disponible para suscriptores."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1762
 msgid "The streaming system is offline for maintenance, please try again later."
-msgstr "El sistema de flujo está desconectado por mantenimiento, inténtelo de nuevo más tarde."
+msgstr ""
+"El sistema de flujo está desconectado por mantenimiento, inténtelo de nuevo "
+"más tarde."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1801
 msgid "Changing station"
@@ -1869,11 +1872,11 @@ msgstr "_Borrar"
 msgid "Delete playlist"
 msgstr "Borrar lista de reproducción"
 
-#: ../plugins/ipod/rb-ipod-source.c:1340 ../sources/rb-podcast-source.c:885
+#: ../plugins/ipod/rb-ipod-source.c:1342 ../sources/rb-podcast-source.c:885
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../plugins/ipod/rb-ipod-source.c:1686
+#: ../plugins/ipod/rb-ipod-source.c:1688
 msgid "New playlist"
 msgstr "Lista de reproducción nueva"
 
@@ -4074,9 +4077,8 @@ msgstr "Pistas aleatorias para esta cola de reproducción"
 
 #. Translators: this is the toolbutton label for Clear Queue action
 #: ../sources/rb-play-queue-source.c:243
-#, fuzzy
 msgid "Clear"
-msgstr "Año"
+msgstr "Limpiar"
 
 #: ../sources/rb-play-queue-source.c:260 ../sources/rb-play-queue-source.c:320
 #: ../sources/rb-play-queue-source.c:462
@@ -4163,16 +4165,14 @@ msgstr "Buscar episodios Podcast"
 #. for New Podcast Feed action.
 #. Don't include the prefix "podcast|" in the translation.
 #: ../sources/rb-podcast-source.c:583
-#, fuzzy
 msgid "podcast|New"
-msgstr "Podcast"
+msgstr "Nuevo"
 
 #. Translators: this is the toolbar button label
 #. for Update All Feeds action.
 #: ../sources/rb-podcast-source.c:589
-#, fuzzy
 msgid "Update"
-msgstr "Actualizar proveedor"
+msgstr "Actualizar"
 
 #: ../sources/rb-podcast-source.c:628 ../sources/rb-podcast-source.c:639
 msgid "Date"
