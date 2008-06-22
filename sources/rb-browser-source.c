@@ -29,6 +29,18 @@
  *
  */
 
+/**
+ * SECTION:rb-browser-source
+ * @short_description: base class for sources that include genre/artist/album browsers
+ *
+ * This class simplifies implementation of sources that include genre/artist/album browsers.
+ * It also handles searching (using the search box) and a few other UI niceties.
+ * 
+ * Instances of browser sources will use a query that will match all entries of
+ * the entry type assigned to the source, so it's mostly suited for sources that
+ * have an entry type of their own.
+ */
+
 #include "config.h"
 
 #include <string.h>
@@ -801,6 +813,15 @@ impl_browser_toggled (RBSource *asource, gboolean disclosed)
 	}
 }
 
+/**
+ * rb_browser_source_get_paned_key:
+ * @source: a #RBBrowserSource
+ *
+ * Retrieves the GConf key that stores the height of the browser pane for the source.
+ * This is a virtual method that should be implemented by subclasses.
+ *
+ * Return value: allocated string containing the GConf key name
+ */
 char *
 rb_browser_source_get_paned_key (RBBrowserSource *source)
 {
@@ -812,6 +833,15 @@ rb_browser_source_get_paned_key (RBBrowserSource *source)
 		return NULL;
 }
 
+/**
+ * rb_browser_source_has_drop_support:
+ * @source: a #RBBrowser
+ *
+ * This is a virtual method that should be implemented by subclasses.  It returns %TRUE
+ * if drag and drop target support for the source should be activated.
+ *
+ * Return value: %TRUE if drop support should be activated
+ */
 gboolean
 rb_browser_source_has_drop_support (RBBrowserSource *source)
 {

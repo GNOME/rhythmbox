@@ -42,19 +42,21 @@ G_BEGIN_DECLS
 #define RB_IS_SHELL_PREFERENCES_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_SHELL_PREFERENCES))
 #define RB_SHELL_PREFERENCES_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SHELL_PREFERENCES, RBShellPreferencesClass))
 
+typedef struct _RBShellPreferences RBShellPreferences;
+typedef struct _RBShellPreferencesClass RBShellPreferencesClass;
 typedef struct RBShellPreferencesPrivate RBShellPreferencesPrivate;
 
-typedef struct
+struct _RBShellPreferences
 {
 	GtkDialog parent;
 
 	RBShellPreferencesPrivate *priv;
-} RBShellPreferences;
+};
 
-typedef struct
+struct _RBShellPreferencesClass
 {
 	GtkDialogClass parent_class;
-} RBShellPreferencesClass;
+};
 
 GType		rb_shell_preferences_get_type		(void);
 

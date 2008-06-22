@@ -46,16 +46,18 @@ G_BEGIN_DECLS
 #define RB_IS_BROWSER_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_BROWSER_SOURCE))
 #define RB_BROWSER_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_BROWSER_SOURCE, RBBrowserSourceClass))
 
+typedef struct _RBBrowserSource RBBrowserSource;
+typedef struct _RBBrowserSourceClass RBBrowserSourceClass;
 typedef struct RBBrowserSourcePrivate RBBrowserSourcePrivate;
 
-typedef struct
+struct _RBBrowserSource
 {
 	RBSource parent;
 
 	RBBrowserSourcePrivate *priv;
-} RBBrowserSource;
+};
 
-typedef struct
+struct _RBBrowserSourceClass
 {
 	RBSourceClass parent;
 
@@ -63,7 +65,7 @@ typedef struct
 	char *		(*impl_get_paned_key)		(RBBrowserSource *source);
 	gboolean	(*impl_has_drop_support)	(RBBrowserSource *source);
 	void		(*impl_show_entry_popup)	(RBBrowserSource *source);
-} RBBrowserSourceClass;
+};
 
 typedef gboolean	(*RBBrowserSourceFeatureFunc)	(RBBrowserSource *source);
 typedef char*		(*RBBrowserSourceStringFunc)	(RBBrowserSource *source);

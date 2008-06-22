@@ -264,10 +264,13 @@ RBRandomPlayOrderPrivate
 
 <SECTION>
 <FILE>rb-shell-preferences</FILE>
-RBShellPreferencesPrivate
+<TITLE>RBShellPreferences</TITLE>
+RBShellPreferences
+RBShellPreferencesClass
 rb_shell_preferences_new
 rb_shell_preferences_append_page
 <SUBSECTION Standard>
+RBShellPreferencesPrivate
 RB_SHELL_PREFERENCES
 RB_IS_SHELL_PREFERENCES
 RB_TYPE_SHELL_PREFERENCES
@@ -424,8 +427,10 @@ RB_RANDOM_PLAY_ORDER_BY_AGE_AND_RATING_GET_CLASS
 
 <SECTION>
 <FILE>rb-shell-player</FILE>
+<TITLE>RBShellPlayer</TITLE>
+RBShellPlayer
+RBShellPlayerClass
 RBShellPlayerError
-RBShellPlayerPrivate
 rb_shell_player_new
 rb_shell_player_set_selected_source
 rb_shell_player_set_playing_source
@@ -467,6 +472,7 @@ RB_IS_SHELL_PLAYER_CLASS
 RB_SHELL_PLAYER_GET_CLASS
 RB_SHELL_PLAYER_ERROR
 rb_shell_player_error_quark
+RBShellPlayerPrivate
 </SECTION>
 
 <SECTION>
@@ -2453,12 +2459,15 @@ RB_MISSING_FILES_SOURCE_GET_CLASS
 
 <SECTION>
 <FILE>rb-browser-source</FILE>
-RBBrowserSourcePrivate
-RBBrowserSourceFeatureFunc
-RBBrowserSourceStringFunc
+<TITLE>RBBrowserSource</TITLE>
+RBBrowserSource
+RBBrowserSourceClass
 rb_browser_source_get_paned_key
 rb_browser_source_has_drop_support
 <SUBSECTION Standard>
+RBBrowserSourcePrivate
+RBBrowserSourceFeatureFunc
+RBBrowserSourceStringFunc
 RB_BROWSER_SOURCE
 RB_IS_BROWSER_SOURCE
 RB_TYPE_BROWSER_SOURCE

@@ -29,6 +29,25 @@
  *
  */
 
+/**
+ * SECTION:rb-shell-preferences
+ * @short_description: preferences dialog
+ *
+ * The preferences dialog is built around a #GtkNotebook widget, with two built-in
+ * pages and additional pages for various sources.
+ *
+ * The 'general' preferences page controls the set of browser views that are visible
+ * (artist and album; genre and artist; or genre, artist, and album), the columns
+ * that are visible, and the appearance of buttons in the main toolbar.  The browser
+ * and column settings apply to all sources.
+ *
+ * The 'playback' preferences page controls whether the crossfading player backend is used,
+ * and if enabled, the crossfade duration and network buffer size.
+ *
+ * Currently, the library and podcast sources add pages to the notebook, for configuring the
+ * location and layout of the library and the podcast download location and update frequency.
+ */
+
 #include <config.h>
 
 #include <string.h>
@@ -316,6 +335,14 @@ rb_shell_preferences_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_shell_preferences_parent_class)->finalize (object);
 }
 
+/**
+ * rb_shell_preferences_append_page:
+ * @prefs: the #RBShellPreferences instance
+ * @name: name of the page to append
+ * @widget: the #GtkWidget to use as the contents of the page
+ *
+ * Appends a new page to the preferences dialog notebook.
+ */
 void
 rb_shell_preferences_append_page (RBShellPreferences *prefs,
 				  const char *name,
@@ -346,6 +373,15 @@ rb_shell_preferences_append_view_page (RBShellPreferences *prefs,
 	rb_shell_preferences_append_page (prefs, name, widget);
 }
 
+/**
+ * rb_shell_preferences_new:
+ * @views: list of #RBSource objects to check for preferences pages
+ *
+ * Creates the #RBShellPreferences instance, populating it with the
+ * preferences pages for the sources in the list.
+ *
+ * Return value: the #RBShellPreferences instance
+ */
 GtkWidget *
 rb_shell_preferences_new (GList *views)
 {
@@ -406,6 +442,14 @@ rb_shell_preferences_ui_pref_changed (GConfClient *client,
 	rb_shell_preferences_sync (shell_preferences);
 }
 
+/**
+ * rb_shell_preferences_column_check_changed_cb:
+ * @butt: the #GtkCheckButton that was changed
+ * @shell_preferences: the #RBShellPreferences instance
+ *
+ * Signal handler used for the checkboxes used to configure the set of visible columns.
+ * This updates the GConf key that contains the list of visible columns.
+ */
 void
 rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 					      RBShellPreferences *shell_preferences)
@@ -590,6 +634,14 @@ rb_shell_preferences_toolbar_style_cb (GtkComboBox *box, RBShellPreferences *pre
 	eel_gconf_set_integer (CONF_UI_TOOLBAR_STYLE, selection);
 }
 
+/**
+ * rb_shell_preferences_browser_views_activated_cb:
+ * @widget: the radio button that was selected
+ * @shell_preferences: the #RBShellPreferences instance
+ *
+ * Signal handler used for the radio buttons used to configure the
+ * visible browser views.
+ */
 void
 rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
 						 RBShellPreferences *shell_preferences)
