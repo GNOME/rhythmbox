@@ -62,17 +62,18 @@ GType rb_shell_player_error_get_type (void);
 #define RB_SHELL_PLAYER_ERROR rb_shell_player_error_quark ()
 
 GQuark rb_shell_player_error_quark (void);
-
+typedef struct _RBShellPlayer RBShellPlayer;
+typedef struct _RBShellPlayerClass RBShellPlayerClass;
 typedef struct RBShellPlayerPrivate RBShellPlayerPrivate;
 
-typedef struct
+struct _RBShellPlayer
 {
 	GtkHBox parent;
 
 	RBShellPlayerPrivate *priv;
-} RBShellPlayer;
+};
 
-typedef struct
+struct _RBShellPlayerClass
 {
 	GtkHBoxClass parent_class;
 
@@ -87,7 +88,7 @@ typedef struct
 					       const char *property,
 					       GValue *old,
 					       GValue *newValue);
-} RBShellPlayerClass;
+};
 
 GType			rb_shell_player_get_type   (void);
 
@@ -95,13 +96,13 @@ RBShellPlayer *		rb_shell_player_new		(RhythmDB *db,
 							 GtkUIManager *mgr,
 							 GtkActionGroup *actiongroup);
 
-void			rb_shell_player_set_selected_source	(RBShellPlayer *shell_player,
-								 RBSource *player);
+void			rb_shell_player_set_selected_source	(RBShellPlayer *player,
+								 RBSource *source);
 void			rb_shell_player_set_playing_source (RBShellPlayer *player,
 							    RBSource *source);
 
-RBSource *		rb_shell_player_get_playing_source (RBShellPlayer *shell_player);
-RBSource *		rb_shell_player_get_active_source (RBShellPlayer *shell_player);
+RBSource *		rb_shell_player_get_playing_source (RBShellPlayer *player);
+RBSource *		rb_shell_player_get_active_source (RBShellPlayer *player);
 
 void			rb_shell_player_jump_to_current (RBShellPlayer *player);
 
@@ -125,11 +126,11 @@ gboolean		rb_shell_player_set_playing_time(RBShellPlayer *player,
 void			rb_shell_player_seek		(RBShellPlayer *player, long offset);
 long			rb_shell_player_get_playing_song_duration (RBShellPlayer *player);
 
-gboolean		rb_shell_player_get_playing	(RBShellPlayer *shell_player,
+gboolean		rb_shell_player_get_playing	(RBShellPlayer *player,
 							 gboolean *playing,
 							 GError **error);
 
-gboolean		rb_shell_player_get_playing_path(RBShellPlayer *shell_player,
+gboolean		rb_shell_player_get_playing_path(RBShellPlayer *player,
 							 const gchar **path,
 							 GError **error);
 
@@ -153,7 +154,7 @@ gboolean		rb_shell_player_get_volume	(RBShellPlayer *player,
 							 GError **error);
 
 gboolean		rb_shell_player_set_volume_relative (RBShellPlayer *player,
-							 gdouble volume,
+							 gdouble delta,
 							 GError **error);
 
 gboolean		rb_shell_player_set_mute	(RBShellPlayer *player,

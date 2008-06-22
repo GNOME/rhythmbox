@@ -29,6 +29,30 @@
  *
  */
 
+/**
+ * SECTION:rb-shell-player
+ * @short_description: playback state management
+ *
+ * The shell player (or player shell, depending on who you're talking to)
+ * manages the #RBPlayer instance, tracks the current playing #RhythmDBEntry,
+ * and manages the various #RBPlayOrder instances.  It provides simple operations
+ * such as next, previous, play/pause, and seek.
+ *
+ * When playing internet radio streams, it first attempts to read the straem URL
+ * as a playlist.  If this succeeds, the URLs from the playlist are stored in a
+ * list and tried in turn in case of errors.  If the playlist parsing fails, the
+ * stream URL is played directly.
+ *
+ * The mapping from the separate shuffle and repeat settings to an #RBPlayOrder
+ * instance occurs in here.  The play order logic can also support a number of
+ * additional play orders not accessible via the shuffle and repeat buttons.
+ *
+ * If the player backend supports multiple streams, the shell player crossfades
+ * between streams by watching the elapsed time of the current stream and simulating
+ * an end-of-stream event when it gets within the crossfade duration of the actual
+ * end.
+ */
+
 #include "config.h"
 
 #include <unistd.h>
@@ -439,6 +463,13 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      RB_TYPE_STATUSBAR,
 							      G_PARAM_READWRITE));
 
+	/**
+	 * RBShellPlayer::window-title-changed:
+	 * @player: the #RBShellPlayer
+	 * @title: the new window title
+	 *
+	 * Emitted when the main window title text should be changed
+	 */
 	rb_shell_player_signals[WINDOW_TITLE_CHANGED] =
 		g_signal_new ("window_title_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -450,6 +481,13 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      1,
 			      G_TYPE_STRING);
 
+	/**
+	 * RBShellPlayer::elapsed-changed:
+	 * @player: the #RBShellPlayer
+	 * @elapsed: the new playback position in seconds
+	 *
+	 * Emitted when the playback position changes.
+	 */
 	rb_shell_player_signals[ELAPSED_CHANGED] =
 		g_signal_new ("elapsed_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -461,6 +499,13 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      1,
 			      G_TYPE_UINT);
 
+	/**
+	 * RBShellPlayer::playing-source-changed:
+	 * @player: the #RBShellPlayer
+	 * @source: the #RBSource that is now playing
+	 *
+	 * Emitted when a new #RBSource instance starts playing
+	 */
 	rb_shell_player_signals[PLAYING_SOURCE_CHANGED] =
 		g_signal_new ("playing-source-changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -472,6 +517,13 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      1,
 			      RB_TYPE_SOURCE);
 
+	/**
+	 * RBShellPlayer::playing-changed:
+	 * @player: the #RBShellPlayer
+	 * @playing: flag indicating playback state
+	 *
+	 * Emitted when playback either stops or starts.
+	 */
 	rb_shell_player_signals[PLAYING_CHANGED] =
 		g_signal_new ("playing-changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -483,6 +535,13 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      1,
 			      G_TYPE_BOOLEAN);
 
+	/**
+	 * RBShellPlayer::playing-song-changed:
+	 * @player: the #RBShellPlayer
+	 * @entry: the new playing #RhythmDBEntry
+	 *
+	 * Emitted when the playing database entry changes
+	 */
 	rb_shell_player_signals[PLAYING_SONG_CHANGED] =
 		g_signal_new ("playing-song-changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -494,6 +553,14 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);
 
+	/**
+	 * RBShellPlayer::playing-uri-changed:
+	 * @player: the #RBShellPlayer
+	 * @uri: the URI of the new playing entry
+	 *
+	 * Emitted when the playing database entry changes, providing the
+	 * URI of the entry.
+	 */
 	rb_shell_player_signals[PLAYING_URI_CHANGED] =
 		g_signal_new ("playing-uri-changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -505,6 +572,16 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      1,
 			      G_TYPE_STRING);
 
+	/**
+	 * RBShellPlayer::playing-song-property-changed:
+	 * @player: the #RBShellPlayer
+	 * @uri: the URI of the playing entry
+	 * @property: the name of the property that changed
+	 * @old: the previous value for the property
+	 * @newvalue: the new value of the property
+	 *
+	 * Emitted when a property of the playing database entry changes.
+	 */
 	rb_shell_player_signals[PLAYING_SONG_PROPERTY_CHANGED] =
 		g_signal_new ("playing-song-property-changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -518,6 +595,17 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_TYPE_VALUE, G_TYPE_VALUE);
 
 #ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	/**
+	 * RBShellPlayer::missing-plugins:
+	 * @player: the #RBShellPlayer
+	 * @details: the list of plugin detail strings describing the missing plugins
+	 * @descriptions: the list of descriptions for the missing plugins
+	 * @closure: a #GClosure to be called when the plugin installation is complete
+	 *
+	 * Emitted when the player backend requires some plugins to be installed in
+	 * order to play the current playing song.  When the closure included in the
+	 * signal args is called, playback will be attempted again.
+	 */
 	rb_shell_player_signals[MISSING_PLUGINS] =
 		g_signal_new ("missing-plugins",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -1278,6 +1366,13 @@ rb_shell_player_error_quark (void)
 	return quark;
 }
 
+/**
+ * rb_shell_player_set_selected_source:
+ * @player: the #RBShellPlayer
+ * @source: the #RBSource to select
+ *
+ * Updates the player to reflect a new source being selected.
+ */
 void
 rb_shell_player_set_selected_source (RBShellPlayer *player,
 				     RBSource *source)
@@ -1290,18 +1385,48 @@ rb_shell_player_set_selected_source (RBShellPlayer *player,
 		      NULL);
 }
 
+/**
+ * rb_shell_player_get_playing_source:
+ * @player: the #RBShellPlayer
+ *
+ * Retrieves the current playing source.  That is, the source from
+ * which the current song was drawn.  This differs from 
+ * #rb_shell_player_get_active_source when the current song came
+ * from the play queue.
+ *
+ * Return value: the current playing #RBSource
+ */
 RBSource *
 rb_shell_player_get_playing_source (RBShellPlayer *player)
 {
 	return player->priv->current_playing_source;
 }
 
+/**
+ * rb_shell_player_get_active_source:
+ * @player: the #RBShellPlayer
+ *
+ * Retrieves the active source.  This is the source that the user
+ * selected for playback.
+ *
+ * Return value: the active #RBSource
+ */
 RBSource *
 rb_shell_player_get_active_source (RBShellPlayer *player)
 {
 	return player->priv->source;
 }
 
+/**
+ * rb_shell_player_new:
+ * @db: the #RhythmDB
+ * @mgr: the #GtkUIManager
+ * @actiongroup: the #GtkActionGroup to use
+ *
+ * Creates the #RBShellPlayer
+ * 
+ * Return value: the #RBShellPlayer instance
+ */
 RBShellPlayer *
 rb_shell_player_new (RhythmDB *db,
 		     GtkUIManager *mgr,
@@ -1314,6 +1439,16 @@ rb_shell_player_new (RhythmDB *db,
 			     NULL);
 }
 
+/**
+ * rb_shell_player_get_playing_entry:
+ * @player: the #RBShellPlayer
+ *
+ * Retrieves the currently playing #RhythmDBEntry, or NULL if
+ * nothing is playing.  The caller must unref the entry
+ * (using #rhythmdb_entry_unref) when it is no longer needed.
+ *
+ * Return value: the currently playing #RhythmDBEntry, or NULL
+ */
 RhythmDBEntry *
 rb_shell_player_get_playing_entry (RBShellPlayer *player)
 {
@@ -1461,7 +1596,7 @@ rb_shell_player_open_location (RBShellPlayer *player,
  *
  * Starts playback, if it is not already playing.
  *
- * @return: whether playback is now occurring (TRUE when successfully started
+ * Return value: whether playback is now occurring (TRUE when successfully started
  * or already playing).
  **/
 gboolean
@@ -1618,6 +1753,16 @@ gconf_play_order_changed (GConfClient *client,
 	player->priv->syncing_state = FALSE;
 }
 
+/**
+ * rb_shell_player_get_playback_state:
+ * @player: the #RBShellPlayer
+ * @shuffle: returns the current shuffle setting
+ * @repeat: returns the current repeat setting
+ *
+ * Retrieves the current state of the shuffle and repeat settings.
+ *
+ * Return value: %TRUE if successful.
+ */
 gboolean
 rb_shell_player_get_playback_state (RBShellPlayer *player,
 				    gboolean *shuffle,
@@ -1661,6 +1806,14 @@ rb_shell_player_set_play_order (RBShellPlayer *player,
 	g_free (old_val);
 }
 
+/**
+ * rb_shell_player_set_playback_state:
+ * @player: the #RBShellPlayer
+ * @shuffle: whether to enable the shuffle setting
+ * @repeat: whether to enable the repeat setting
+ *
+ * Sets the state of the shuffle and repeat settings.
+ */
 void
 rb_shell_player_set_playback_state (RBShellPlayer *player,
 				    gboolean shuffle,
@@ -1785,6 +1938,15 @@ rb_shell_player_sync_song_position_slider_visibility (RBShellPlayer *player)
 				      visible);
 }
 
+/**
+ * rb_shell_player_jump_to_current:
+ * @player: the #RBShellPlayer
+ *
+ * Scrolls the #RBEntryView for the current playing source so that
+ * the current playing entry is visible and selects the row for the
+ * entry.  If there is no current playing entry, the selection is
+ * cleared instead.
+ */
 void
 rb_shell_player_jump_to_current (RBShellPlayer *player)
 {
@@ -1830,6 +1992,18 @@ swap_playing_source (RBShellPlayer *player,
 	}
 }
 
+/**
+ * rb_shell_player_do_previous:
+ * @player: the #RBShellPlayer
+ * @error: returns any error information
+ *
+ * If the current song has been playing for more than 3 seconds,
+ * restarts it, otherwise, goes back to the previous song.
+ * Fails if there is no current song, or if inside the first
+ * 3 seconds of the first song in the play order.
+ *
+ * Return value: %TRUE if successful
+ */
 gboolean
 rb_shell_player_do_previous (RBShellPlayer *player,
 			     GError **error)
@@ -2013,6 +2187,17 @@ rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, gboo
 	return rv;
 }
 
+/**
+ * rb_shell_player_do_next:
+ * @player: the #RBShellPlayer
+ * @error: returns error information
+ *
+ * Skips to the next song.  Consults the play queue and handles
+ * transitions between the play queue and the active source.
+ * Fails if there is no entry to play after the current one.
+ *
+ * Return value: %TRUE if successful
+ */
 gboolean
 rb_shell_player_do_next (RBShellPlayer *player,
 			 GError **error)
@@ -2052,6 +2237,15 @@ rb_shell_player_cmd_next (GtkAction *action,
 	}
 }
 
+/**
+ * rb_shell_player_play_entry:
+ * @player: the #RBShellPlayer
+ * @entry: the #RhythmDBEntry to play
+ * @source: the new #RBSource to set as playing (or NULL to use the
+ *   selected source)
+ *
+ * Plays a specified entry.
+ */
 void
 rb_shell_player_play_entry (RBShellPlayer *player,
 			    RhythmDBEntry *entry,
@@ -2098,6 +2292,18 @@ rb_shell_player_cmd_play (GtkAction *action,
 }
 
 /* unused parameter can't be removed without breaking dbus interface compatibility */
+/**
+ * rb_shell_player_playpause:
+ * @player: the #RBShellPlayer
+ * @unused: nothing
+ * @error: returns error information
+ *
+ * Toggles between playing and paused state.  If there is no playing
+ * entry, chooses an entry from (in order of preference) the play queue,
+ * the selection in the current source, or the play order.
+ *
+ * Return value: %TRUE if successful
+ */
 gboolean
 rb_shell_player_playpause (RBShellPlayer *player,
 			   gboolean unused,
@@ -2269,6 +2475,12 @@ rb_shell_player_sync_volume (RBShellPlayer *player,
 		g_object_notify (G_OBJECT (player), "volume");
 }
 
+/**
+ * rb_shell_player_toggle_mute:
+ * @player: the #RBShellPlayer
+ *
+ * Toggles the mute setting on the player.
+ */
 void
 rb_shell_player_toggle_mute (RBShellPlayer *player)
 {
@@ -2299,6 +2511,16 @@ rb_shell_player_sync_replaygain (RBShellPlayer *player,
 	}
 }
 
+/**
+ * rb_shell_player_set_volume:
+ * @player: the #RBShellPlayer
+ * @volume: the volume level (between 0 and 1)
+ * @error: returns the error information
+ *
+ * Sets the playback volume level.
+ *
+ * Return value: %TRUE on success
+ */
 gboolean
 rb_shell_player_set_volume (RBShellPlayer *player,
 			    gdouble volume,
@@ -2309,6 +2531,16 @@ rb_shell_player_set_volume (RBShellPlayer *player,
 	return TRUE;
 }
 
+/**
+ * rb_shell_player_set_volume_relative:
+ * @player: the #RBShellPlayer
+ * @delta: difference to apply to the volume level (between -1 and 1)
+ * @error: returns error information
+ *
+ * Adds the specified value to the current volume level.
+ *
+ * Return value: %TRUE on success
+ */
 gboolean
 rb_shell_player_set_volume_relative (RBShellPlayer *player,
 				     gdouble delta,
@@ -2320,6 +2552,14 @@ rb_shell_player_set_volume_relative (RBShellPlayer *player,
 	return TRUE;
 }
 
+/**
+ * rb_shell_player_get_volume:
+ * @player: the #RBShellPlayer
+ * @volume: returns the volume level
+ * @error: returns error information
+ *
+ * Return value: the current volume level.
+ */
 gboolean
 rb_shell_player_get_volume (RBShellPlayer *player,
 			    gdouble *volume,
@@ -2329,6 +2569,16 @@ rb_shell_player_get_volume (RBShellPlayer *player,
 	return TRUE;
 }
 
+/**
+ * rb_shell_player_set_mute
+ * @player: the #RBShellPlayer
+ * @mute: %TRUE to mute playback
+ * @error: returns error information
+ *
+ * Updates the mute setting on the player.
+ *
+ * Return value: %TRUE if successful
+ */
 gboolean
 rb_shell_player_set_mute (RBShellPlayer *player,
 			  gboolean mute,
@@ -2339,6 +2589,14 @@ rb_shell_player_set_mute (RBShellPlayer *player,
 	return TRUE;
 }
 
+/**
+ * rb_shell_player_get_mute:
+ * @player: the #RBShellPlayer
+ * @mute: returns the current mute setting
+ * @error: returns error information
+ *
+ * Return value: %TRUE if currently muted
+ */
 gboolean
 rb_shell_player_get_mute (RBShellPlayer *player,
 			  gboolean *mute,
@@ -2778,6 +3036,13 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	}
 }
 
+/**
+ * rb_shell_player_set_playing_source:
+ * @player: the #RBShellPlayer
+ * @source: the new playing #RBSource
+ *
+ * Replaces the current playing source.
+ */
 void
 rb_shell_player_set_playing_source (RBShellPlayer *player,
 				    RBSource *source)
@@ -2940,7 +3205,7 @@ rb_shell_player_stop (RBShellPlayer *player)
  *
  * Pauses playback if possible, completely stopping if not.
  *
- * @return: whether playback is not occurring (TRUE when successfully
+ * Return value: whether playback is not occurring (TRUE when successfully
  * paused/stopped or playback was not occurring).
  **/
 
@@ -2960,9 +3225,9 @@ rb_shell_player_pause (RBShellPlayer *player,
  * @playing: playback state return
  * @error: error return
  *
- * Reports whether playback is occuring by setting playing.
+ * Reports whether playback is occuring by setting #playing.
  *
- * @return: whether the playback state could be reported successfully.
+ * Return value: %TRUE if successful
  **/
 gboolean
 rb_shell_player_get_playing (RBShellPlayer *player,
@@ -2975,6 +3240,15 @@ rb_shell_player_get_playing (RBShellPlayer *player,
 	return TRUE;
 }
 
+/**
+ * rb_shell_player_get_playing_time_string:
+ * @player: the #RBShellPlayer
+ * 
+ * Constructs a string showing the current playback position,
+ * taking the time display settings into account.
+ *
+ * Return value: allocated playing time string
+ */
 char *
 rb_shell_player_get_playing_time_string (RBShellPlayer *player)
 {
@@ -2983,6 +3257,18 @@ rb_shell_player_get_playing_time_string (RBShellPlayer *player)
 					    !eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY));
 }
 
+/**
+ * rb_shell_player_get_playing_time:
+ * @player: the #RBShellPlayer
+ * @time: returns the current playback position
+ * @error: returns error information
+ *
+ * Retrieves the current playback position.  Fails if
+ * the player currently cannot provide the playback
+ * position.
+ *
+ * Return value: %TRUE if successful
+ */
 gboolean
 rb_shell_player_get_playing_time (RBShellPlayer *player,
 				  guint *time,
@@ -3005,6 +3291,17 @@ rb_shell_player_get_playing_time (RBShellPlayer *player,
 	}
 }
 
+/**
+ * rb_shell_player_set_playing_time:
+ * @player: the #RBShellPlayer
+ * @time: the target playback position (in seconds)
+ * @error: returns error information
+ *
+ * Attempts to set the playback position.  Fails if the
+ * current song is not seekable.
+ *
+ * Return value: %TRUE if successful
+ */
 gboolean
 rb_shell_player_set_playing_time (RBShellPlayer *player,
 				  guint time,
@@ -3022,6 +3319,14 @@ rb_shell_player_set_playing_time (RBShellPlayer *player,
 	}
 }
 
+/**
+ * rb_shell_player_seek:
+ * @player: the #RBShellPlayer
+ * @offset: relative seek target (in seconds)
+ *
+ * Seeks forwards or backwards in the current playing song.
+ * Does not return error information.
+ */
 void
 rb_shell_player_seek (RBShellPlayer *player, long offset)
 {
@@ -3035,6 +3340,14 @@ rb_shell_player_seek (RBShellPlayer *player, long offset)
 	}
 }
 
+/**
+ * rb_shell_player_get_playing_song_duration:
+ * @player: the #RBShellPlayer
+ *
+ * Retrieves the duration of the current playing song.
+ *
+ * Return value: duration, or -1 if not playing
+ */
 long
 rb_shell_player_get_playing_song_duration (RBShellPlayer *player)
 {
@@ -3398,14 +3711,25 @@ missing_plugins_cb (RBPlayer *player,
 }
 #endif
 
+/**
+ * rb_shell_player_get_playing_path:
+ * @player: the #RBShellPlayer
+ * @path: returns the URI of the current playing entry
+ * @error: returns error information
+ *
+ * Retrieves the URI of the current playing entry.  The
+ * caller must not free the returned string.
+ *
+ * Return value: %TRUE if successful
+ */
 gboolean
-rb_shell_player_get_playing_path (RBShellPlayer *shell_player,
+rb_shell_player_get_playing_path (RBShellPlayer *player,
 				  const gchar **path,
 				  GError **error)
 {
 	RhythmDBEntry *entry;
 
-	entry = rb_shell_player_get_playing_entry (shell_player);
+	entry = rb_shell_player_get_playing_entry (player);
 	if (entry != NULL) {
 		*path = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	} else {
@@ -3583,6 +3907,16 @@ rb_play_order_new (RBShellPlayer *player, const char* porder_name)
 	return RB_PLAY_ORDER (g_object_new (order->order_type, "player", player, NULL));
 }
 
+/**
+ * rb_shell_player_add_play_order:
+ * @player: the #RBShellPlayer
+ * @name: name of the new play order
+ * @description: description of the new play order
+ * @order_type: the #GType of the play order class
+ * @hidden: if %TRUE, don't display the play order in the UI
+ *
+ * Adds a new play order to the set of available play orders.
+ */
 void
 rb_shell_player_add_play_order (RBShellPlayer *player, const char *name,
 				const char *description, GType order_type, gboolean hidden)
@@ -3600,6 +3934,14 @@ rb_shell_player_add_play_order (RBShellPlayer *player, const char *name,
 	g_hash_table_insert (player->priv->play_orders, order->name, order);
 }
 
+/**
+ * rb_shell_player_remove_play_order:
+ * @player: the #RBShellPlayer
+ * @name: name of the play order to remove
+ *
+ * Removes a play order previously added with #rb_shell_player_add_play_order
+ * from the set of available play orders.
+ */
 void
 rb_shell_player_remove_play_order (RBShellPlayer *player, const char *name)
 {
