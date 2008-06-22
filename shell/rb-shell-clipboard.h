@@ -43,19 +43,22 @@ G_BEGIN_DECLS
 #define RB_IS_SHELL_CLIPBOARD_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_SHELL_CLIPBOARD))
 #define RB_SHELL_CLIPBOARD_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SHELL_CLIPBOARD, RBShellClipboardClass))
 
+typedef struct _RBShellClipboard RBShellClipboard;
+typedef struct _RBShellClipboardClass RBShellClipboardClass;
+
 typedef struct RBShellClipboardPrivate RBShellClipboardPrivate;
 
-typedef struct
+struct _RBShellClipboard
 {
 	GObject parent;
 
 	RBShellClipboardPrivate *priv;
-} RBShellClipboard;
+};
 
-typedef struct
+struct _RBShellClipboardClass
 {
 	GObjectClass parent_class;
-} RBShellClipboardClass;
+};
 
 GType             rb_shell_clipboard_get_type		(void);
 
@@ -63,7 +66,7 @@ RBShellClipboard *rb_shell_clipboard_new		(GtkActionGroup *actiongroup,
 							 GtkUIManager *ui_mgr,
 							 RhythmDB *db);
 
-void              rb_shell_clipboard_set_source		(RBShellClipboard *shell_clipboard,
+void              rb_shell_clipboard_set_source		(RBShellClipboard *clipboard,
 							 RBSource *source);
 
 G_END_DECLS

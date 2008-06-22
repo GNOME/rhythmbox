@@ -29,6 +29,23 @@
  *
  */
 
+/**
+ * SECTION:rb-shell-clipboard
+ * @short_description: cut and paste handling
+ *
+ * The clipboard is primarily responsible for handling cut and paste actions,
+ * as well as various other actions that relate to a selected set of entries
+ * from a source, such as move to trash, delete, and add to playlist.
+ *
+ * It updates the sensitivity of the various actions it handles when the selected
+ * source changes, and when the track list selection changes.  The actual action
+ * handlers are fairly simple, mostly calling #RBSource methods.
+ *
+ * For the 'add to playlist' action, the clipboard builds a menu containing
+ * the available playlists that entries can be added to from the current selected
+ * source.
+ */
+
 #include <config.h>
 
 #include <glib/gi18n.h>
@@ -482,6 +499,13 @@ rb_shell_clipboard_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_shell_clipboard_set_source:
+ * @clipboard: the #RBShellClipboard
+ * @source: the new selected #RBSource
+ *
+ * Updates the clipboard to reflect a newly selected source.
+ */
 void
 rb_shell_clipboard_set_source (RBShellClipboard *clipboard,
 			       RBSource *source)
@@ -493,6 +517,16 @@ rb_shell_clipboard_set_source (RBShellClipboard *clipboard,
 	g_object_set (G_OBJECT (clipboard), "source", source, NULL);
 }
 
+/**
+ * rb_shell_clipboard_new:
+ * @actiongroup: the #GtkActionGroup to use
+ * @ui_mgr: the #GtkUIManager instance
+ * @db: the #RhythmDB instance
+ *
+ * Creates the #RBShellClipboard instance
+ *
+ * Return value: the #RBShellClipboard
+ */
 RBShellClipboard *
 rb_shell_clipboard_new (GtkActionGroup *actiongroup,
 			GtkUIManager *ui_mgr,
