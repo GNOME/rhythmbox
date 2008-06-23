@@ -1,5 +1,22 @@
 2008-06-23  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_dispose), (rb_lastfm_source_constructor),
+	(rb_lastfm_source_new), (impl_delete), (playing_song_changed_cb),
+	(rb_lastfm_source_station_activated_cb),
+	(rb_lastfm_source_station_selection_cb), (handle_station_response),
+	(xspf_entry_parsed), (handle_playlist_response),
+	(handle_playlist_response_and_skip), (queue_get_playlist),
+	(queue_get_playlist_and_skip):
+	Use a single query model to store our last.fm playlist; we don't
+	really have per-station playlists anyway, so it was stupid to pretend
+	we did.  Instead of changing station when the selection changes, just
+	use the selected station when we need to refresh the playlist.  If the
+	station is activated, however, refresh the playlist and then skip to
+	the first track.
+
+2008-06-23  Jonathan Matthew  <jonathan@d14n.org>
+
 	* doc/reference/rhythmbox-sections.txt:
 	* shell/rb-playlist-manager.c: (rb_playlist_manager_class_init):
 	* shell/rb-playlist-manager.h:

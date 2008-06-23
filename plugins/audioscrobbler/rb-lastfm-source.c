@@ -119,6 +119,7 @@ static void process_queue (RBLastfmSource *source);
 static void queue_handshake (RBLastfmSource *source);
 static void queue_change_station (RBLastfmSource *source, RhythmDBEntry *station); 
 static void queue_get_playlist (RBLastfmSource *source, RhythmDBEntry *station);
+static void queue_get_playlist_and_skip (RBLastfmSource *source, RhythmDBEntry *station);
 static void queue_love_track (RBLastfmSource *source);
 static void queue_ban_track (RBLastfmSource *source);
 
@@ -147,6 +148,9 @@ static void rb_lastfm_source_drag_cb (GtkWidget *widget,
 				      guint info, guint time,
 				      RBLastfmSource *source);
 static void rb_lastfm_source_station_selection_cb (RBEntryView *stations,
+						   RBLastfmSource *source);
+static void rb_lastfm_source_station_activated_cb (RBEntryView *stations,
+						   RhythmDBEntry *station,
 						   RBLastfmSource *source);
 
 static void rb_lastfm_source_dispose (GObject *object);
@@ -194,12 +198,6 @@ static const char* const radio_options[][3] = {
 	{NULL, NULL, NULL}
 };
 
-typedef struct
-{
-	RhythmDBQueryModel *playlist;
-	int tracks_remaining;
-} RBLastfmStationEntryData;
-
 typedef struct 
 {
 	gboolean played;		/* tracks can only be played once */
@@ -225,8 +223,11 @@ struct RBLastfmSourcePrivate
 	RhythmDBEntryType station_entry_type;
 	RhythmDBEntryType track_entry_type;
 	char *session_id;
-	RhythmDBEntry *current_station;		/* refcounting probably busted still? */
+	RhythmDBEntry *current_station;
 	RBPlayOrder *play_order;
+
+	RhythmDBQueryModel *query_model;
+	int tracks_remaining;
 
 	gboolean subscriber;
 	char *base_url;
@@ -386,6 +387,11 @@ rb_lastfm_source_dispose (GObject *object)
 		source->priv->play_order = NULL;
 	}
 
+	if (source->priv->query_model != NULL) {
+		g_object_unref (source->priv->query_model);
+		source->priv->query_model = NULL;
+	}
+
 	/* kill entries here? */
 
 	G_OBJECT_CLASS (rb_lastfm_source_parent_class)->dispose (object);
@@ -504,6 +510,10 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 				 G_CALLBACK (rb_lastfm_source_drag_cb),
 				 source, 0);
 	g_signal_connect_object (source->priv->stations,
+				 "entry-activated",
+				 G_CALLBACK (rb_lastfm_source_station_activated_cb),
+				 source, 0);
+	g_signal_connect_object (source->priv->stations,
 				 "selection-changed",
 				 G_CALLBACK (rb_lastfm_source_station_selection_cb),
 				 source, 0);
@@ -557,8 +567,13 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 	rhythmdb_query_free (query);
 
 	rb_entry_view_set_model (source->priv->stations, station_query_model);
-	g_object_set (source, "query-model", station_query_model, NULL);
 	g_object_unref (station_query_model);
+
+	source->priv->query_model = rhythmdb_query_model_new_empty (source->priv->db);
+	source->priv->tracks_remaining = 0;
+	rb_entry_view_set_model (source->priv->tracks, source->priv->query_model);
+	
+	g_object_set (source, "query-model", source->priv->query_model, NULL);
 
 	return G_OBJECT (source);
 }
@@ -615,27 +630,6 @@ rb_lastfm_source_get_property (GObject *object,
 /* entry data stuff */
 
 static void
-create_station_data (RhythmDBEntry *entry, RhythmDB *db)
-{
-	RBLastfmStationEntryData *data;
-
-	data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBLastfmStationEntryData);
-	data->playlist = rhythmdb_query_model_new_empty (db);
-}
-
-static void
-destroy_station_data (RhythmDBEntry *entry, gpointer meh)
-{
-	RBLastfmStationEntryData *data;
-
-	data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBLastfmStationEntryData);
-	if (data->playlist != NULL) {
-		g_object_unref (data->playlist);
-		data->playlist = NULL;
-	}
-}
-
-static void
 destroy_track_data (RhythmDBEntry *entry, gpointer meh)
 {
 	RBLastfmTrackEntryData *data;
@@ -667,14 +661,6 @@ rb_lastfm_source_new (RBShell *shell)
 		station_entry_type->sync_metadata = (RhythmDBEntrySyncFunc) rb_null_function;
 		station_entry_type->get_playback_uri = (RhythmDBEntryStringFunc) rb_null_function;	/* can't play stations, exactly */
 		station_entry_type->category = RHYTHMDB_ENTRY_CONTAINER;
-
-		/* track the station playlist */
-		station_entry_type->entry_type_data_size = sizeof (RBLastfmStationEntryData);
-		station_entry_type->post_entry_create = (RhythmDBEntryActionFunc) create_station_data;
-		station_entry_type->post_entry_create_data = g_object_ref (db);
-		station_entry_type->post_entry_create_destroy = g_object_unref;
-		station_entry_type->pre_entry_destroy = destroy_station_data;
-
 	}
 
 	track_entry_type = rhythmdb_entry_type_get_by_name (db, "lastfm-track");
@@ -771,7 +757,16 @@ impl_delete (RBSource *asource)
 
 	sel = rb_entry_view_get_selected_entries (source->priv->tracks);
 	for (l = sel; l != NULL; l = g_list_next (l)) {
-		rhythmdb_entry_delete (source->priv->db, l->data);
+		RhythmDBEntry *track;
+		RBLastfmTrackEntryData *track_data;
+
+		track = (RhythmDBEntry *)l->data;
+		track_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (track, RBLastfmTrackEntryData);
+
+		if (track_data->played == FALSE) {
+			source->priv->tracks_remaining--;
+		}
+		rhythmdb_entry_delete (source->priv->db, track);
 	}
 	rhythmdb_commit (source->priv->db);
 
@@ -916,17 +911,34 @@ playing_song_changed_cb (RBShellPlayer *player,
 		 * if all tracks have been played, update the playlist.
 		 */
 		RBLastfmTrackEntryData *track_data;
-		RBLastfmStationEntryData *station_data;
 
 		track_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBLastfmTrackEntryData);
 		if (track_data->played == FALSE) {
 
 			if (source->priv->current_station != NULL) {
-				station_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (source->priv->current_station, RBLastfmStationEntryData);
-				station_data->tracks_remaining--;
-				if (station_data->tracks_remaining < 1) {
-					queue_change_station (source, source->priv->current_station);
-					queue_get_playlist (source, source->priv->current_station);
+				source->priv->tracks_remaining--;
+				if (source->priv->tracks_remaining < 1) {
+
+					GList *sel;
+					RhythmDBEntry *selected_station = NULL;
+					/* if a new station has been selected, change station before
+					 * refreshing the playlist.
+					 */
+					sel = rb_entry_view_get_selected_entries (source->priv->stations);
+					if (sel != NULL) {
+						selected_station = (RhythmDBEntry *)sel->data;
+						if (selected_station != source->priv->current_station) {
+							rb_debug ("changing to station %s",
+								  rhythmdb_entry_get_string (selected_station, RHYTHMDB_PROP_LOCATION));
+							queue_change_station (source, selected_station);
+						}
+						queue_get_playlist (source, selected_station);
+					} else {
+						queue_get_playlist (source, source->priv->current_station);
+					}
+					g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
+					g_list_free (sel);
+
 				}
 			}
 			track_data->played = TRUE;
@@ -1019,6 +1031,15 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *selection_data)
 }
 
 static void
+rb_lastfm_source_station_activated_cb (RBEntryView *stations, RhythmDBEntry *station, RBLastfmSource *source)
+{
+	queue_change_station (source, station);
+	queue_get_playlist_and_skip (source, station);
+
+	/* probably need a return value here to indicate no further processing should occur.. */
+}
+
+static void
 rb_lastfm_source_station_selection_cb (RBEntryView *stations,
 				       RBLastfmSource *source)
 {
@@ -1036,26 +1057,16 @@ rb_lastfm_source_station_selection_cb (RBEntryView *stations,
 		rb_debug ("station %s already selected",
 			  rhythmdb_entry_get_string (selected, RHYTHMDB_PROP_LOCATION));
 	} else {
-		RBLastfmStationEntryData *data;
-
 		rb_debug ("station %s selected",
 			  rhythmdb_entry_get_string (selected, RHYTHMDB_PROP_LOCATION));
 
-		/* hmm, maybe this shouldn't change the station immediately.
-		 * if i'm trying to delete the station, i still need to select it..
+		/* if we don't have any more tracks to play, or this is the first station
+		 * selection, update the playlist.
 		 */
-
-		queue_change_station (source, selected);
-		queue_get_playlist (source, selected);
-
-		/* update the track view */
-		data = RHYTHMDB_ENTRY_GET_TYPE_DATA(selected, RBLastfmStationEntryData);
-		if (data->playlist == NULL) {
-			data->playlist = rhythmdb_query_model_new_empty (source->priv->db);
+		if (source->priv->tracks_remaining < 1) {
+			queue_change_station (source, selected);
+			queue_get_playlist (source, selected);
 		}
-
-		rb_entry_view_set_model (source->priv->tracks, data->playlist);
-		g_object_set (source, "query-model", data->playlist, NULL);
 	}
 	
 	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
@@ -1714,28 +1725,46 @@ handle_station_response (RBLastfmSource *source, const char *body, RhythmDBEntry
 			}
 
 			if (strcmp (values[1], "OK") == 0) {
-				RBLastfmStationEntryData *station_data;
+				RhythmDBEntry *playing_entry;
 				GtkTreeIter iter;
+				GList *remove = NULL;
+				GList *i;
 
 				source->priv->state = CONNECTED;
-
-				/* could remove entries from current station 
-				 * here, except the current playing entry.. */
 
 				source->priv->current_station = rhythmdb_entry_ref (entry);
 
 				/* remove existing entries from the new station, as those
 				 * will have been invalidated when we switched away from it.
 				 */
-				station_data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBLastfmStationEntryData);
-				while (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (station_data->playlist), &iter)) {
-					RhythmDBEntry *track;
-					track = rhythmdb_query_model_iter_to_entry (station_data->playlist, &iter);
-					if (track != NULL) {
-						rhythmdb_query_model_remove_entry (station_data->playlist, track);
-						rhythmdb_entry_unref (track);
-					}
+				playing_entry = rb_shell_player_get_playing_entry (source->priv->shell_player);
+				if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->query_model), &iter)) {
+					do {
+						RhythmDBEntry *track;
+						track = rhythmdb_query_model_iter_to_entry (source->priv->query_model, &iter);
+						if (track == playing_entry) {
+							rhythmdb_entry_unref (track);
+						} else if (track != NULL) {
+							remove = g_list_prepend (remove, track);
+						}
+					} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (source->priv->query_model), &iter));
 				}
+
+				for (i = remove; i != NULL; i = i->next) {
+					RhythmDBEntry *track;
+					RBLastfmTrackEntryData *track_data;
+
+					track = (RhythmDBEntry *)i->data;
+					track_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (track, RBLastfmTrackEntryData);
+
+					if (track_data->played == FALSE) {
+						source->priv->tracks_remaining--;
+					}
+
+					rhythmdb_entry_delete (source->priv->db, track);
+					rhythmdb_entry_unref (track);
+				}
+				rhythmdb_commit (source->priv->db);
 			}
 		} else if (strcmp (values[0], "error") == 0) {
 			int errorcode;
@@ -1835,13 +1864,8 @@ create_playlist_request (RBLastfmSource *source, RhythmDBEntry *entry)
 	return req;
 }
 
-typedef struct {
-	RBLastfmSource *source;
-	RBLastfmStationEntryData *station_data;
-} XSPFParseData;
-
 static void
-xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata, XSPFParseData *data)
+xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata, RBLastfmSource *source)
 {
 	RhythmDBEntry *track_entry;
 	RBLastfmTrackEntryData *track_data;
@@ -1857,14 +1881,12 @@ xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata,
 		{ TOTEM_PL_PARSER_FIELD_ALBUM, RHYTHMDB_PROP_ALBUM },
 	};
 
-	rb_debug ("adding entry %s", uri);
-
 	/* create db entry if it doesn't already exist */
-	track_entry = rhythmdb_entry_lookup_by_location (data->source->priv->db, uri);
+	track_entry = rhythmdb_entry_lookup_by_location (source->priv->db, uri);
 	if (track_entry == NULL) {
 		rb_debug ("creating new track entry for %s", uri);
-		track_entry = rhythmdb_entry_new (data->source->priv->db, 
-						  data->source->priv->track_entry_type,
+		track_entry = rhythmdb_entry_new (source->priv->db, 
+						  source->priv->track_entry_type,
 						  uri);
 	} else {
 		rb_debug ("track entry %s already exists", uri);
@@ -1877,7 +1899,7 @@ xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata,
 		if (value != NULL) {
 			g_value_init (&v, G_TYPE_STRING);
 			g_value_set_string (&v, value);
-			rhythmdb_entry_set (data->source->priv->db, track_entry, field_mapping[i].prop, &v);
+			rhythmdb_entry_set (source->priv->db, track_entry, field_mapping[i].prop, &v);
 			g_value_unset (&v);
 		}
 	}
@@ -1891,7 +1913,7 @@ xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata,
 		if (duration > 0) {
 			g_value_init (&v, G_TYPE_ULONG);
 			g_value_set_ulong (&v, (gulong) duration / 1000);		/* ms -> s */
-			rhythmdb_entry_set (data->source->priv->db, track_entry, RHYTHMDB_PROP_DURATION, &v);
+			rhythmdb_entry_set (source->priv->db, track_entry, RHYTHMDB_PROP_DURATION, &v);
 			g_value_unset (&v);
 		}
 	}
@@ -1914,14 +1936,13 @@ xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata,
 	}
 
 	/* what happens if it's already in there? need to use move_entry instead? */
-	rhythmdb_query_model_add_entry (data->station_data->playlist, track_entry, -1);
-	data->station_data->tracks_remaining++;
+	rhythmdb_query_model_add_entry (source->priv->query_model, track_entry, -1);
+	source->priv->tracks_remaining++;
 }
 
-static void
+static gboolean
 handle_playlist_response (RBLastfmSource *source, const char *body, RhythmDBEntry *station)
 {
-	RBLastfmStationEntryData *station_data;
 	int tmp_fd;
 	char *tmp_name;
 	char *tmp_uri = NULL;
@@ -1929,12 +1950,7 @@ handle_playlist_response (RBLastfmSource *source, const char *body, RhythmDBEntr
 	TotemPlParser *parser = NULL;
 	TotemPlParserResult result;
 	GError *error = NULL;
-	XSPFParseData parse_data;
-	
-	station_data = RHYTHMDB_ENTRY_GET_TYPE_DATA(station, RBLastfmStationEntryData);
-	if (station_data->playlist == NULL) {
-		station_data->playlist = rhythmdb_query_model_new_empty (source->priv->db);
-	}
+	gboolean ret = FALSE;
 	
 	/* until totem-pl-parser can parse playlists from in-memory data, we save it to a
 	 * temporary file.
@@ -1963,9 +1979,7 @@ handle_playlist_response (RBLastfmSource *source, const char *body, RhythmDBEntr
 	rb_debug ("parsing playlist %s", tmp_uri);
 
 	parser = totem_pl_parser_new ();
-	parse_data.source = source;
-	parse_data.station_data = station_data;
-	g_signal_connect_data (parser, "entry-parsed", G_CALLBACK (xspf_entry_parsed), &parse_data, NULL, 0);
+	g_signal_connect_data (parser, "entry-parsed", G_CALLBACK (xspf_entry_parsed), source, NULL, 0);
 	result = totem_pl_parser_parse (parser, tmp_uri, FALSE);
 
 	switch (result) {
@@ -1976,6 +1990,7 @@ handle_playlist_response (RBLastfmSource *source, const char *body, RhythmDBEntr
 		break;
 
 	case TOTEM_PL_PARSER_RESULT_SUCCESS:
+		ret = TRUE;
 		break;
 	}
 
@@ -1993,14 +2008,35 @@ handle_playlist_response (RBLastfmSource *source, const char *body, RhythmDBEntr
 	g_unlink (tmp_name);
 	g_free (tmp_name);
 	g_free (tmp_uri);
+	return ret;
 }
+
+static void
+handle_playlist_response_and_skip (RBLastfmSource *source, const char *body, RhythmDBEntry *station)
+{
+	if (handle_playlist_response (source, body, station)) {
+		/* ignore errors, sadly */
+		rb_shell_player_do_next (source->priv->shell_player, NULL);
+	}
+}
+
 
 static void
 queue_get_playlist (RBLastfmSource *source, RhythmDBEntry *station)
 {
 	queue_action (source,
 		      create_playlist_request,
-		      handle_playlist_response,
+		      (HandleResponseFunc) handle_playlist_response,
+		      rhythmdb_entry_ref (station),
+		      _("Retrieving playlist"));
+}
+
+static void
+queue_get_playlist_and_skip (RBLastfmSource *source, RhythmDBEntry *station)
+{
+	queue_action (source,
+		      create_playlist_request,
+		      handle_playlist_response_and_skip,
 		      rhythmdb_entry_ref (station),
 		      _("Retrieving playlist"));
 }
