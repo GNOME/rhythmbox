@@ -29,6 +29,23 @@
  *
  */
 
+/**
+ * SECTION:rb-library-source
+ * @short_description: main library source, containing all local songs
+ *
+ * The library source contains all local songs that have been imported
+ * into the database.
+ *
+ * It provides a preferences page for configuring the library location,
+ * the directory structure to use when transferring new files into
+ * the library from another source, and the preferred audio encoding
+ * to use.
+ *
+ * If multiple library locations are set in GConf, the library source
+ * creates a child source for each location, which will only show
+ * files found under that location.
+ */
+
 #include "config.h"
 
 #include <string.h>
@@ -333,6 +350,14 @@ rb_library_source_constructor (GType type,
 	return G_OBJECT (source);
 }
 
+/**
+ * rb_library_source_new:
+ * @shell: the #RBShell
+ *
+ * Creates and returns the #RBLibrarySource instance
+ *
+ * Return value: the #RBLibrarySource
+ */
 RBSource *
 rb_library_source_new (RBShell *shell)
 {
@@ -652,75 +677,6 @@ static char *
 impl_get_paned_key (RBBrowserSource *status)
 {
 	return g_strdup (CONF_STATE_PANED_POSITION);
-}
-
-static void
-rb_library_source_add_location_entry_changed_cb (GtkEntry *entry,
-						 GtkWidget *target)
-{
-	gtk_widget_set_sensitive (target, g_utf8_strlen (gtk_entry_get_text (GTK_ENTRY (entry)), -1) > 0);
-}
-
-void
-rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)
-{
-	GladeXML *xml = rb_glade_xml_new ("uri.glade",
-					  "open_uri_dialog_content",
-					  source);
-	GtkWidget *content, *uri_widget, *open_button;
-	GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Add Location"),
-							 win,
-							 GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR,
-							 GTK_STOCK_CANCEL,
-							 GTK_RESPONSE_CANCEL,
-							 NULL);
-
-	g_return_if_fail (dialog != NULL);
-
-	open_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
-					     GTK_STOCK_OPEN,
-					     GTK_RESPONSE_OK);
-	gtk_widget_set_sensitive (open_button, FALSE);
-
-	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
-					 GTK_RESPONSE_OK);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
-	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
-
-	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
-
-	content = glade_xml_get_widget (xml, "open_uri_dialog_content");
-
-	g_return_if_fail (content != NULL);
-
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
-			    content, FALSE, FALSE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (content), 5);
-
-	uri_widget = glade_xml_get_widget (xml, "uri");
-
-	g_return_if_fail (uri_widget != NULL);
-
-	g_signal_connect_object (G_OBJECT (uri_widget),
-				 "changed",
-				 G_CALLBACK (rb_library_source_add_location_entry_changed_cb),
-				 open_button, 0);
-
-	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK) {
-		char *uri = gtk_editable_get_chars (GTK_EDITABLE (uri_widget), 0, -1);
-		if (uri != NULL) {
-			GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
-			if (vfsuri != NULL) {
-				rhythmdb_add_uri (source->priv->db, uri);
-				gnome_vfs_uri_unref (vfsuri);
-			} else {
-				rb_debug ("invalid uri: \"%s\"", uri);
-			}
-
-		}
-	}
-	gtk_widget_destroy (GTK_WIDGET (dialog));
-
 }
 
 static gboolean

@@ -54,16 +54,19 @@ typedef enum
 
 GQuark rb_playlist_manager_error_quark (void);
 
+typedef struct _RBPlaylistManager RBPlaylistManager;
+typedef struct _RBPlaylistManagerClass RBPlaylistManagerClass;
+
 typedef struct RBPlaylistManagerPrivate RBPlaylistManagerPrivate;
 
-typedef struct
+struct _RBPlaylistManager
 {
 	GObject parent;
 
 	RBPlaylistManagerPrivate *priv;
-} RBPlaylistManager;
+};
 
-typedef struct
+struct _RBPlaylistManagerClass
 {
 	GObjectClass parent_class;
 
@@ -72,7 +75,7 @@ typedef struct
 	void	(*playlist_created) (RBPlaylistManager *manager, RBSource *source);
 	void	(*load_start) (RBPlaylistManager *manager);
 	void	(*load_finish) (RBPlaylistManager *manager);
-} RBPlaylistManagerClass;
+};
 
 typedef enum
 {

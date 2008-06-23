@@ -171,10 +171,10 @@ RBHistoryPrivate
 
 <SECTION>
 <FILE>rb-playlist-manager</FILE>
+<TITLE>RBPlaylistManager</TITLE>
 RBPlaylistManager
 RBPlaylistManagerClass
 RBPlaylistManagerError
-RBPlaylistManagerPrivate
 rb_playlist_manager_new
 rb_playlist_manager_shutdown
 rb_playlist_manager_parse_file
@@ -190,6 +190,7 @@ rb_playlist_manager_add_to_playlist
 rb_playlist_manager_remove_from_playlist
 rb_playlist_manager_export_playlist
 <SUBSECTION Standard>
+RBPlaylistManagerPrivate
 RB_PLAYLIST_MANAGER
 RB_IS_PLAYLIST_MANAGER
 RB_TYPE_PLAYLIST_MANAGER
@@ -493,10 +494,12 @@ RB_LINEAR_PLAY_ORDER_GET_CLASS
 
 <SECTION>
 <FILE>rb-library-source</FILE>
-RBLibrarySourcePrivate
+<TITLE>RBLibrarySource</TITLE>
+RBLibrarySource
+RBLibrarySourceClass
 rb_library_source_new
-rb_library_source_add_location
 <SUBSECTION Standard>
+RBLibrarySourcePrivate
 RB_LIBRARY_SOURCE
 RB_IS_LIBRARY_SOURCE
 RB_TYPE_LIBRARY_SOURCE

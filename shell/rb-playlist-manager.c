@@ -28,6 +28,15 @@
  *
  */
 
+/**
+ * SECTION:rb-playlist-manager
+ * @short_description: Playlist management object
+ *
+ * The playlist manager loads and saves the on-disk playlist file, provides
+ * UI actions and a DBus interface for dealing with playlists, and internal
+ * interfaces for creating playlists.
+ */
+
 #include "config.h"
 
 #include <string.h>
@@ -214,6 +223,14 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 							      "RBSourceList",
 							      RB_TYPE_SOURCELIST,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBPlaylistManager::playlist-added:
+	 * @manager: the #RBPlaylistManager
+	 * @source: the new #RBSource
+	 *
+	 * Emitted when a playlist is added, including when being loaded
+	 * from the user's playlist file.
+	 */
 	rb_playlist_manager_signals[PLAYLIST_ADDED] =
 		g_signal_new ("playlist_added",
 			      RB_TYPE_PLAYLIST_MANAGER,
@@ -224,6 +241,13 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 			      G_TYPE_NONE,
 			      1, G_TYPE_OBJECT);
 
+	/**
+	 * RBPlaylistManager::playlist-created:
+	 * @manager: the #RBPlaylistManager
+	 * @source: the newly created playlist #RBSource
+	 *
+	 * Emitted when a new playlist is created.
+	 */
 	rb_playlist_manager_signals[PLAYLIST_CREATED] =
 		g_signal_new ("playlist_created",
 			      RB_TYPE_PLAYLIST_MANAGER,
@@ -234,6 +258,13 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 			      G_TYPE_NONE,
 			      1, G_TYPE_OBJECT);
 
+	/**
+	 * RBPlaylistManager::load-start:
+	 * @manager: the #RBPlaylistManager
+	 *
+	 * Emitted when the playlist manager starts loading the user's
+	 * playlist file.
+	 */
 	rb_playlist_manager_signals[PLAYLIST_LOAD_START] =
 		g_signal_new ("load_start",
 			      RB_TYPE_PLAYLIST_MANAGER,
@@ -243,6 +274,13 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0, G_TYPE_NONE);
+	/**
+	 * RBPlaylistManager::load-finish
+	 * @manager: the #RBPlaylistManager
+	 *
+	 * Emitted when the playlist manager finishes loading the user's
+	 * playlist file.
+	 */
 	rb_playlist_manager_signals[PLAYLIST_LOAD_FINISH] =
 		g_signal_new ("load_finish",
 			      RB_TYPE_PLAYLIST_MANAGER,
@@ -268,6 +306,13 @@ rb_playlist_manager_init (RBPlaylistManager *mgr)
 	mgr->priv->saving = 0;
 }
 
+/**
+ * rb_playlist_manager_shutdown:
+ * @mgr: the #RBPlaylistManager
+ *
+ * Shuts down the playlist manager, making sure any outstanding playlist save
+ * operation finishes.
+ */
 void
 rb_playlist_manager_shutdown (RBPlaylistManager *mgr)
 {
@@ -499,6 +544,16 @@ rb_playlist_manager_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_playlist_manager_new:
+ * @shell: the #RBShell
+ * @sourcelist: the #RBSourceList
+ * @playlists_file: the full path to the playlist file to load
+ *
+ * Creates the #RBPlaylistManager instance
+ *
+ * Return value: the #RBPlaylistManager
+ */
 RBPlaylistManager *
 rb_playlist_manager_new (RBShell *shell,
 			 RBSourceList *sourcelist,
@@ -1686,7 +1741,7 @@ rb_playlist_manager_create_static_playlist (RBPlaylistManager *mgr,
  * Deletes the specified playlist.  Will fail if no playlist with
  * that name exists. This is part of the playlist manager dbus interface.
  *
- * Return vaule: TRUE if successful.
+ * Return value: TRUE if successful.
  */
 gboolean
 rb_playlist_manager_delete_playlist (RBPlaylistManager *mgr,
