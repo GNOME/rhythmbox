@@ -1346,6 +1346,15 @@
   )
 )
 
+(define-method get_column
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_get_column")
+  (return-type "GtkTreeViewColumn*")
+  (parameters
+    '("RBEntryViewColumn" "coltype")
+  )
+)
+
 (define-method append_column
   (of-object "RBEntryView")
   (c-name "rb_entry_view_append_column")

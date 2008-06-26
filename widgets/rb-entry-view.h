@@ -115,6 +115,9 @@ RBEntryView *	rb_entry_view_new			(RhythmDB *db,
                                                          gboolean is_drag_source,
 							 gboolean is_drag_dest);
 
+GtkTreeViewColumn *rb_entry_view_get_column		(RBEntryView *view,
+							 RBEntryViewColumn coltype);
+
 void		rb_entry_view_append_column		(RBEntryView *view,
 							 RBEntryViewColumn coltype,
                                                          gboolean always_visible);

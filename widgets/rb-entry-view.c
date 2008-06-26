@@ -1292,6 +1292,78 @@ rb_entry_view_column_clicked_cb (GtkTreeViewColumn *column, RBEntryView *view)
 }
 
 /**
+ * rb_entry_view_get_column:
+ * @view: a #RBEntryView
+ * @coltype: type of column to retrieve
+ *
+ * Retrieves a predefined column from the entry view.  This can be used
+ * to insert additional cell renderers into the column.
+ *
+ * Return value: a #GtkTreeViewColumn instance, or NULL
+ */
+GtkTreeViewColumn *
+rb_entry_view_get_column (RBEntryView *view, RBEntryViewColumn coltype)
+{
+	RhythmDBPropType propid;
+
+	/* convert column type to property ID */
+	switch (coltype) {
+	case RB_ENTRY_VIEW_COL_TRACK_NUMBER:
+		propid = RHYTHMDB_PROP_TRACK_NUMBER;
+		break;
+	case RB_ENTRY_VIEW_COL_TITLE:
+		propid = RHYTHMDB_PROP_TITLE;
+		break;
+	case RB_ENTRY_VIEW_COL_ARTIST:
+		propid = RHYTHMDB_PROP_ARTIST;
+		break;
+	case RB_ENTRY_VIEW_COL_ALBUM:
+		propid = RHYTHMDB_PROP_ALBUM;
+		break;
+	case RB_ENTRY_VIEW_COL_GENRE:
+		propid = RHYTHMDB_PROP_GENRE;
+		break;
+	case RB_ENTRY_VIEW_COL_DURATION:
+		propid = RHYTHMDB_PROP_DURATION;
+		break;
+	case RB_ENTRY_VIEW_COL_YEAR:
+		propid = RHYTHMDB_PROP_DATE;
+		break;
+	case RB_ENTRY_VIEW_COL_QUALITY:
+		propid = RHYTHMDB_PROP_BITRATE;
+		break;
+	case RB_ENTRY_VIEW_COL_RATING:
+		propid = RHYTHMDB_PROP_RATING;
+		break;
+	case RB_ENTRY_VIEW_COL_PLAY_COUNT:
+		propid = RHYTHMDB_PROP_PLAY_COUNT;
+		break;
+	case RB_ENTRY_VIEW_COL_LAST_PLAYED:
+		propid = RHYTHMDB_PROP_LAST_PLAYED;
+		break;
+	case RB_ENTRY_VIEW_COL_FIRST_SEEN:
+		propid = RHYTHMDB_PROP_FIRST_SEEN;
+		break;
+	case RB_ENTRY_VIEW_COL_LAST_SEEN:
+		propid = RHYTHMDB_PROP_LAST_SEEN;
+		break;
+	case RB_ENTRY_VIEW_COL_LOCATION:
+		propid = RHYTHMDB_PROP_LOCATION;
+		break;
+	case RB_ENTRY_VIEW_COL_ERROR:
+		propid = RHYTHMDB_PROP_PLAYBACK_ERROR;
+		break;
+	default:
+		g_assert_not_reached ();
+		propid = -1;
+		break;
+	}
+
+	/* find the column */
+	return (GtkTreeViewColumn *)g_hash_table_lookup (view->priv->propid_column_map, GINT_TO_POINTER (propid));
+}
+
+/**
  * rb_entry_view_append_column:
  * @view: a #RBEntryView
  * @coltype: type of column to append
