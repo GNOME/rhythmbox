@@ -667,7 +667,7 @@ rb_lastfm_source_new (RBShell *shell)
 	if (track_entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		track_entry_type = rhythmdb_entry_register_type (db, "lastfm-track");
 		track_entry_type->save_to_disk = FALSE;
-		track_entry_type->category = RHYTHMDB_ENTRY_STREAM;		/* hrm, maybe normal? */
+		track_entry_type->category = RHYTHMDB_ENTRY_NORMAL;
 
 		track_entry_type->entry_type_data_size = sizeof (RBLastfmTrackEntryData);
 		track_entry_type->pre_entry_destroy = destroy_track_data;

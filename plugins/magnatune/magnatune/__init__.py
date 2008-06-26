@@ -100,7 +100,6 @@ class Magnatune(rb.Plugin):
 		# allow changes which don't do anything
 		self.entry_type.can_sync_metadata = True
 		self.entry_type.sync_metadata = None
-		self.entry_type.category = rhythmdb.ENTRY_STREAM
 
 		theme = gtk.icon_theme_get_default()
 		rb.append_plugin_source_path(theme, "/icons")

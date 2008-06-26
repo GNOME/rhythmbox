@@ -1,5 +1,13 @@
 2008-06-26  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_new):
+	* plugins/magnatune/magnatune/__init__.py:
+	Don't use RHYTHMDB_ENTRY_STREAM category for magnatune or last.fm
+	tracks.  Fixes #515337, also related to #518231.
+
+2008-06-26  Jonathan Matthew  <jonathan@d14n.org>
+
 	* bindings/python/rb.defs:
 	* widgets/rb-entry-view.c: (rb_entry_view_get_column):
 	* widgets/rb-entry-view.h:
