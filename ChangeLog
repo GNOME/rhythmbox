@@ -1,6 +1,14 @@
 2008-06-26  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_station_activated_cb), (handle_station_response),
+	(handle_playlist_response):
+	Update last.fm station last-played time when we successfully parse a
+	playlist.
+
+2008-06-26  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
 	(rb_lastfm_source_new):
 	* plugins/magnatune/magnatune/__init__.py:
 	Don't use RHYTHMDB_ENTRY_STREAM category for magnatune or last.fm

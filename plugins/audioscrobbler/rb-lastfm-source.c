@@ -1035,8 +1035,6 @@ rb_lastfm_source_station_activated_cb (RBEntryView *stations, RhythmDBEntry *sta
 {
 	queue_change_station (source, station);
 	queue_get_playlist_and_skip (source, station);
-
-	/* probably need a return value here to indicate no further processing should occur.. */
 }
 
 static void
@@ -1734,8 +1732,9 @@ handle_station_response (RBLastfmSource *source, const char *body, RhythmDBEntry
 
 				source->priv->current_station = rhythmdb_entry_ref (entry);
 
-				/* remove existing entries from the new station, as those
+				/* remove existing unplayed entries, as they
 				 * will have been invalidated when we switched away from it.
+				 * (it sort of seems like this is no longer true, actually)
 				 */
 				playing_entry = rb_shell_player_get_playing_entry (source->priv->shell_player);
 				if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->query_model), &iter)) {
@@ -1951,6 +1950,8 @@ handle_playlist_response (RBLastfmSource *source, const char *body, RhythmDBEntr
 	TotemPlParserResult result;
 	GError *error = NULL;
 	gboolean ret = FALSE;
+	time_t now;
+	GValue value = {0,};
 	
 	/* until totem-pl-parser can parse playlists from in-memory data, we save it to a
 	 * temporary file.
@@ -1990,6 +1991,18 @@ handle_playlist_response (RBLastfmSource *source, const char *body, RhythmDBEntr
 		break;
 
 	case TOTEM_PL_PARSER_RESULT_SUCCESS:
+		/* update the station's last played time */
+		g_value_init (&value, G_TYPE_ULONG);
+		time (&now);
+		g_value_set_ulong (&value, now);
+		rhythmdb_entry_set (source->priv->db,
+				    source->priv->current_station,
+				    RHYTHMDB_PROP_LAST_PLAYED,
+				    &value);
+		g_value_unset (&value);
+
+		rhythmdb_commit (source->priv->db);
+		
 		ret = TRUE;
 		break;
 	}
