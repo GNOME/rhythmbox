@@ -1302,6 +1302,9 @@ parse_meta (GHashTable *query)
 	const gchar *attrs;
 
 	attrs = g_hash_table_lookup (query, "meta");
+	if (attrs == NULL) {
+		return 0;
+	}
 	return parse_meta_str (attrs);
 }
 

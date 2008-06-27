@@ -1,3 +1,9 @@
+2008-06-27  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/daap/rb-daap-share.c: (parse_meta):
+	Don't crash if there's no 'meta=' query arg in the request.
+	Probably fixes #540391.
+
 2008-06-26  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/audioscrobbler/rb-lastfm-source.c:
