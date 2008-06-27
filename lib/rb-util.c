@@ -1048,3 +1048,37 @@ rb_set_tree_view_column_fixed_width (GtkWidget  *treeview,
 	gtk_tree_view_column_set_fixed_width (column, max_width + padding);
 }
 
+/**
+ * rb_scale_pixbuf_to_size:
+ * @pixbuf: the #GdkPixbuf containing the original image
+ * @size: a stock icon size
+ *
+ * Creates a new #GdkPixbuf from the original one, for a target of
+ * size, respecting the aspect ratio of the image.
+ */
+GdkPixbuf *
+rb_scale_pixbuf_to_size (GdkPixbuf *pixbuf, GtkIconSize size)
+{
+	int icon_size;
+	int width, height;
+	int d_width, d_height;
+
+	g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), NULL);
+
+	if (gtk_icon_size_lookup (size, &icon_size, NULL) == FALSE)
+		return NULL;
+
+	width = gdk_pixbuf_get_width (pixbuf);
+	height = gdk_pixbuf_get_height (pixbuf);
+
+	if (width > height) {
+		d_width = icon_size;
+		d_height = d_width * height / width;
+	} else {
+		d_height = icon_size;
+		d_width = d_height * width / height;
+	}
+
+	return gdk_pixbuf_scale_simple (pixbuf, d_width, d_height, GDK_INTERP_BILINEAR);
+}
+

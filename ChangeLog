@@ -1,3 +1,11 @@
+2008-06-27  Bastien Nocera  <hadess@hadess.net>
+
+	* lib/rb-util.c (rb_scale_pixbuf_to_size):
+	* lib/rb-util.h:
+	* shell/rb-shell.c (rb_shell_db_metadata_art_cb): Add
+	rb_scale_pixbuf_to_size to scale to a specific GtkIconSize,
+	respecting the scale ratio (Closes: #528231)
+
 2008-06-27  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/daap/rb-daap-share.c: (parse_meta):

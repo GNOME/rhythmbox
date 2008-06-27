@@ -1758,7 +1758,6 @@ rb_shell_db_metadata_art_cb (RhythmDB *db,
 	GdkPixbuf *pixbuf = NULL;
 	GdkPixbuf *my_pixbuf;
 	RhythmDBEntry *playing_entry;
-	gint icon_size;
 	guint time;
 
 	playing_entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
@@ -1778,11 +1777,7 @@ rb_shell_db_metadata_art_cb (RhythmDB *db,
 	if (G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF)) {
 		pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
 		if (pixbuf != NULL) {
-			gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &icon_size, NULL);
-			my_pixbuf = gdk_pixbuf_scale_simple (pixbuf,
-					icon_size, icon_size,
-					GDK_INTERP_BILINEAR);
-
+			my_pixbuf = rb_scale_pixbuf_to_size (pixbuf, GTK_ICON_SIZE_DIALOG);
 			shell->priv->cached_art_icon = g_object_ref_sink (gtk_image_new_from_pixbuf (my_pixbuf));
 			g_object_unref (my_pixbuf);
 		}
