@@ -202,6 +202,9 @@ static gboolean rb_shell_player_do_next_internal (RBShellPlayer *player,
 						  gboolean from_eos,
 						  gboolean allow_stop,
 						  GError **error);
+static void rb_shell_player_slider_dragging_cb (GObject *header,
+						GParamSpec *pspec,
+						RBShellPlayer *player);
 
 
 
@@ -639,6 +642,10 @@ rb_shell_player_constructor (GType type,
 	player->priv->header_widget = rb_header_new (player, player->priv->db);
 	gtk_widget_show (GTK_WIDGET (player->priv->header_widget));
 	gtk_box_pack_start (GTK_BOX (player), GTK_WIDGET (player->priv->header_widget), TRUE, TRUE, 0);
+	g_signal_connect_object (player->priv->header_widget,
+				 "notify::slider-dragging",
+				 G_CALLBACK (rb_shell_player_slider_dragging_cb),
+				 player, 0);
 
 	gtk_action_group_add_actions (player->priv->actiongroup,
 				      rb_shell_player_actions,
@@ -785,6 +792,7 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 	RhythmDBEntry *playing_entry;
 	RBSource *source;
 	gboolean update_stats;
+	gboolean dragging;
 
 	source = player->priv->current_playing_source;
 
@@ -803,6 +811,14 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 
 	if (player->priv->playing_entry_eos) {
 		rb_debug ("playing entry has already EOS'd");
+		return;
+	}
+
+	/* defer EOS handling while the position slider is being dragged */
+	g_object_get (player->priv->header_widget, "slider-dragging", &dragging, NULL);
+	if (dragging) {
+		rb_debug ("slider is dragging, will handle EOS (if applicable) on release");
+		player->priv->playing_entry_eos = TRUE;
 		return;
 	}
 
@@ -887,6 +903,22 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 
 	if (entry != NULL) {
 		rhythmdb_entry_unref (entry);
+	}
+}
+
+static void
+rb_shell_player_slider_dragging_cb (GObject *header, GParamSpec *pspec, RBShellPlayer *player)
+{
+	gboolean drag;
+
+	g_object_get (player->priv->header_widget, "slider-dragging", &drag, NULL);
+	rb_debug ("slider dragging? %d", drag);
+
+	/* if an EOS occurred while dragging, process it now */
+	if (drag == FALSE && player->priv->playing_entry_eos) {
+		rb_debug ("processing EOS delayed due to slider dragging");
+		player->priv->playing_entry_eos = FALSE;
+		rb_shell_player_handle_eos_unlocked (player, rb_shell_player_get_playing_entry (player), FALSE);
 	}
 }
 
@@ -3308,6 +3340,10 @@ rb_shell_player_set_playing_time (RBShellPlayer *player,
 				  GError **error)
 {
 	if (rb_player_seekable (player->priv->mmplayer)) {
+		if (player->priv->playing_entry_eos) {
+			rb_debug ("forgetting that playing entry had EOS'd due to seek");
+			player->priv->playing_entry_eos = FALSE;
+		}
 		rb_player_set_time (player->priv->mmplayer, (long) time);
 		return TRUE;
 	} else {
@@ -3589,7 +3625,7 @@ tick_cb (RBPlayer *mmplayer,
 		  duration,
 		  duration_from_player);
 
-	if (rb_player_playing (mmplayer)) {
+	if (TRUE /* rb_player_playing (mmplayer)*/) {		/* why do we care whether it's playing or not? */
 		if (elapsed < 0)
 			elapsed = 0;
 

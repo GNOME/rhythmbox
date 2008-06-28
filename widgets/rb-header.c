@@ -74,6 +74,7 @@ static void rb_header_get_property (GObject *object,
 static void rb_header_set_show_timeline (RBHeader *header,
 			                 gboolean show);
 static void rb_header_update_elapsed (RBHeader *header);
+static void apply_slider_position (RBHeader *header);
 static gboolean slider_press_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *header);
 static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event, RBHeader *header);
 static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *header);
@@ -101,7 +102,6 @@ struct RBHeaderPrivate
 	gboolean slider_locked;
 	guint slider_moved_timeout;
 	long latest_set_time;
-	guint value_changed_update_handler;
 	GtkWidget *elapsed;
 
 	guint elapsed_time;
@@ -116,6 +116,7 @@ enum
 	PROP_SHELL_PLAYER,
 	PROP_ENTRY,
 	PROP_SEEKABLE,
+	PROP_SLIDER_DRAGGING
 };
 
 #define TITLE_MARKUP(xTITLE) g_markup_printf_escaped ("<big><b>%s</b></big>", xTITLE)
@@ -184,6 +185,19 @@ rb_header_class_init (RBHeaderClass *klass)
 							       "seekable",
 							       TRUE,
 							       G_PARAM_READWRITE));
+
+	/**
+	 * RBHeader:slider-dragging:
+	 *
+	 * Whether the song position slider is currently being dragged.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SLIDER_DRAGGING,
+					 g_param_spec_boolean ("slider-dragging",
+						 	       "slider dragging",
+							       "slider dragging",
+							       FALSE,
+							       G_PARAM_READABLE));
 
 	g_type_class_add_private (klass, sizeof (RBHeaderPrivate));
 }
@@ -277,6 +291,24 @@ rb_header_finalize (GObject *object)
 }
 
 static void
+rb_header_set_playing_entry_internal (RBHeader *header, RhythmDBEntry *entry)
+{
+	if (header->priv->entry == entry)
+		return;
+
+	header->priv->entry = entry;
+	if (header->priv->entry) {
+		header->priv->duration = rhythmdb_entry_get_ulong (header->priv->entry,
+								   RHYTHMDB_PROP_DURATION);
+	} else {
+		header->priv->duration = 0;
+	}
+
+	header->priv->adjustment->upper = header->priv->duration;
+	gtk_adjustment_changed (header->priv->adjustment);
+}
+
+static void
 rb_header_set_property (GObject *object,
 			guint prop_id,
 			const GValue *value,
@@ -289,13 +321,7 @@ rb_header_set_property (GObject *object,
 		header->priv->db = g_value_get_object (value);
 		break;
 	case PROP_ENTRY:
-		header->priv->entry = g_value_get_boxed (value);
-		if (header->priv->entry) {
-			header->priv->duration = rhythmdb_entry_get_ulong (header->priv->entry,
-									   RHYTHMDB_PROP_DURATION);
-		} else {
-			header->priv->duration = 0;
-		}
+		rb_header_set_playing_entry_internal (header, g_value_get_boxed (value));
 		break;
 	case PROP_SHELL_PLAYER:
 		header->priv->shell_player = g_value_get_object (value);
@@ -333,6 +359,9 @@ rb_header_get_property (GObject *object,
 		break;
 	case PROP_SEEKABLE:
 		g_value_set_boolean (value, header->priv->seekable);
+		break;
+	case PROP_SLIDER_DRAGGING:
+		g_value_set_boolean (value, header->priv->slider_dragging);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -415,8 +444,12 @@ void
 rb_header_sync (RBHeader *header)
 {
 	char *label_text;
+	const char *location = "<null>";
 
-	rb_debug ("syncing with entry = %p", header->priv->entry);
+	if (header->priv->entry != NULL) {
+		location = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_LOCATION);
+	}
+	rb_debug ("syncing with entry = %s", location);
 
 	if (header->priv->entry != NULL) {
 		const char *title;
@@ -566,14 +599,7 @@ rb_header_sync_time (RBHeader *header)
 	seconds = header->priv->elapsed_time;
 
 	if (header->priv->duration > 0) {
-		double progress = 0.0;
-
-		if (seconds > 0) {
-			progress = (double) seconds;
-		} else {
-			header->priv->adjustment->upper = header->priv->duration;
-			g_signal_emit_by_name (G_OBJECT (header->priv->adjustment), "changed");
-		}
+		double progress = (double) seconds;
 
 		header->priv->slider_locked = TRUE;
 		gtk_adjustment_set_value (header->priv->adjustment, progress);
@@ -596,24 +622,25 @@ slider_press_callback (GtkWidget *widget,
 {
 	header->priv->slider_dragging = TRUE;
 	header->priv->latest_set_time = -1;
+	g_object_notify (G_OBJECT (header), "slider-dragging");
+
+	/* HACK: we want the behaviour you get with the middle button, so we
+	 * mangle the event.  clicking with other buttons moves the slider in
+	 * step increments, clicking with the middle button moves the slider to
+	 * the location of the click.
+	 */
+	event->button = 2;
+
+
 	return FALSE;
 }
 
 static gboolean
 slider_moved_timeout (RBHeader *header)
 {
-	double progress;
-	long new;
-
 	GDK_THREADS_ENTER ();
 
-	progress = gtk_adjustment_get_value (gtk_range_get_adjustment (GTK_RANGE (header->priv->scale)));
-	new = (long) (progress+0.5);
-
-	rb_debug ("setting time to %ld", new);
-	rb_shell_player_set_playing_time (header->priv->shell_player, new, NULL);
-
-	header->priv->latest_set_time = new;
+	apply_slider_position (header);
 	header->priv->slider_moved_timeout = 0;
 
 	GDK_THREADS_LEAVE ();
@@ -626,7 +653,6 @@ slider_moved_callback (GtkWidget *widget,
 		       GdkEventMotion *event,
 		       RBHeader *header)
 {
-	GtkAdjustment *adjustment;
 	double progress;
 
 	if (header->priv->slider_dragging == FALSE) {
@@ -634,9 +660,7 @@ slider_moved_callback (GtkWidget *widget,
 		return FALSE;
 	}
 
-	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
-
-	progress = gtk_adjustment_get_value (adjustment);
+	progress = gtk_adjustment_get_value (header->priv->adjustment);
 	header->priv->elapsed_time = (guint) (progress+0.5);
 
 	rb_header_update_elapsed (header);
@@ -652,52 +676,43 @@ slider_moved_callback (GtkWidget *widget,
 	return FALSE;
 }
 
+static void
+apply_slider_position (RBHeader *header)
+{
+	double progress;
+	long new;
+
+	progress = gtk_adjustment_get_value (header->priv->adjustment);
+	new = (long) (progress+0.5);
+
+	if (new != header->priv->latest_set_time) {
+		rb_debug ("setting time to %ld", new);
+		rb_shell_player_set_playing_time (header->priv->shell_player, new, NULL);
+		header->priv->latest_set_time = new;
+	}
+}
+
 static gboolean
 slider_release_callback (GtkWidget *widget,
 			 GdkEventButton *event,
 			 RBHeader *header)
 {
-	double progress;
-	long new;
-	GtkAdjustment *adjustment;
+	/* HACK: see slider_press_callback */
+	event->button = 2;
 
 	if (header->priv->slider_dragging == FALSE) {
 		rb_debug ("slider is not dragging");
 		return FALSE;
 	}
 
-	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
-
-	progress = gtk_adjustment_get_value (adjustment);
-	new = (long) (progress+0.5);
-
-	if (new != header->priv->latest_set_time) {
-		rb_debug ("setting time to %ld", new);
-		rb_shell_player_set_playing_time (header->priv->shell_player, new, NULL);
-	}
-
-	header->priv->slider_dragging = FALSE;
-
 	if (header->priv->slider_moved_timeout != 0) {
 		g_source_remove (header->priv->slider_moved_timeout);
 		header->priv->slider_moved_timeout = 0;
 	}
 
-	return FALSE;
-}
-
-static gboolean
-changed_idle_callback (RBHeader *header)
-{
-	GDK_THREADS_ENTER ();
-
-	slider_release_callback (header->priv->scale, NULL, header);
-
-	header->priv->value_changed_update_handler = 0;
-	rb_debug ("in changed_idle_callback");
-
-	GDK_THREADS_LEAVE ();
-
+	apply_slider_position (header);
+	header->priv->slider_dragging = FALSE;
+	g_object_notify (G_OBJECT (header), "slider-dragging");
 	return FALSE;
 }
 
@@ -705,12 +720,13 @@ static void
 slider_changed_callback (GtkWidget *widget,
 		         RBHeader *header)
 {
+	/* if the slider isn't being dragged, and nothing else is happening,
+	 * this indicates the position was adjusted with a keypress (page up/page down etc.),
+	 * so we should directly apply the change.
+	 */
 	if (header->priv->slider_dragging == FALSE &&
-	    header->priv->slider_locked == FALSE &&
-	    header->priv->value_changed_update_handler == 0) {
-		header->priv->slider_dragging = TRUE;
-		header->priv->value_changed_update_handler =
-			g_idle_add ((GSourceFunc) changed_idle_callback, header);
+	    header->priv->slider_locked == FALSE) {
+		apply_slider_position (header);
 	}
 }
 
