@@ -64,10 +64,12 @@
 #define RB_IR_COMMAND_VOLUME_UP "volume_up"
 #define RB_IR_COMMAND_VOLUME_DOWN "volume_down"
 #define RB_IR_COMMAND_MUTE "mute"
+#define RB_IR_COMMAND_QUIT "quit"
 
 typedef struct
 {
 	RBPlugin parent;
+	RBShell *shell;
 	RBShellPlayer *shell_player;
 	struct lirc_config *lirc_config;
 	GIOChannel *lirc_channel;
@@ -172,6 +174,10 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 			if (rb_shell_player_get_mute (plugin->shell_player, &mute, NULL)) {
 				rb_shell_player_set_mute (plugin->shell_player, !mute, NULL);
 			}
+		} else if (strcmp (str,RB_IR_COMMAND_QUIT) == 0) {
+			rb_shell_quit (plugin->shell, NULL);
+			/* the plugin will have been deactivated, so we can't continue the loop */
+			break;
 		}
 		processed = TRUE;
 	} while (ok == 0);
@@ -186,6 +192,8 @@ impl_activate (RBPlugin *rbplugin,
 {
 	int fd;
 	RBLircPlugin *plugin = RB_LIRC_PLUGIN (rbplugin);
+
+	plugin->shell = g_object_ref (shell);
 
 	g_object_get (G_OBJECT (shell), "shell-player", &plugin->shell_player, NULL);
 
@@ -239,6 +247,11 @@ impl_deactivate	(RBPlugin *rbplugin,
 	if (plugin->shell_player) {
 		g_object_unref (G_OBJECT (plugin->shell_player));
 		plugin->shell_player = NULL;
+	}
+
+	if (plugin->shell) {
+		g_object_unref (G_OBJECT (plugin->shell));
+		plugin->shell = NULL;
 	}
 }
 
