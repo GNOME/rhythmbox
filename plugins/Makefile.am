@@ -25,6 +25,7 @@ SUBDIRS += 						\
 	magnatune					\
 	jamendo						\
 	coherence					\
+	dontreallyclose					\
 	rb
 endif
 

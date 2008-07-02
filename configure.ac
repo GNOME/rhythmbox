@@ -1067,6 +1067,7 @@ plugins/sample-vala/Makefile
 plugins/pythonconsole/Makefile
 plugins/artdisplay/Makefile
 plugins/artdisplay/artdisplay/Makefile
+plugins/dontreallyclose/Makefile
 plugins/magnatune/Makefile
 plugins/magnatune/magnatune/Makefile
 plugins/jamendo/Makefile
