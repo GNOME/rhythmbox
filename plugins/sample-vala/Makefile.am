@@ -42,7 +42,7 @@ plugin_in_files = sample-vala.rb-plugin.in
 %.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po); $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
 %.c %.h: %.vala
-	$(VALAC) --vapidir=$(top_srcdir)/bindings/vala --pkg=rhythmdb --pkg=rb $^
+	$(VALAC) -C --vapidir=$(top_srcdir)/bindings/vala --pkg=rhythmdb --pkg=rb $^
 	
 plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 

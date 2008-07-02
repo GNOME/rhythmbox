@@ -1,3 +1,10 @@
+2008-07-02  Jonathan Matthew  <jonathan@d14n.org>
+
+	* configure.ac:
+	* plugins/sample-vala/Makefile.am:
+	Use valac -C so it doesn't try to compile the code itself.
+	Apparently requires vala 0.1.0, but maybe I'm wrong.  Fixes #537338.
+
 2008-07-01  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Alfredo Pironti  <alfredio@fastwebnet.it>
