@@ -1,3 +1,9 @@
+2008-07-02  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/ipod/rb-ipod-source.c: (impl_get_mime_types):
+	Revert half of the fix for #508537, as we can't encode ipod-compatible
+	AAC files yet.
+
 2008-07-02  Bastien Nocera  <hadess@hadess.net>
 
 	* configure.ac:
