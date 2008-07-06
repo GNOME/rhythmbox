@@ -202,7 +202,7 @@ rb_daap_structure_add (GNode *parent,
 	if (rb_daap_type != RB_DAAP_TYPE_STRING && rb_daap_type != RB_DAAP_TYPE_CONTAINER) {
 		G_VALUE_COLLECT (&(item->content), list, G_VALUE_NOCOPY_CONTENTS, &error);
 		if (error) {
-			g_warning (error);
+			g_warning ("%s", error);
 			g_free (error);
 		}
 	}
