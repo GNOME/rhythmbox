@@ -4,7 +4,7 @@ AC_PREREQ(2.53)
 AC_INIT(shell)
 AC_CONFIG_MACRO_DIR(macros)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(rhythmbox, 0.11.5)
+AM_INIT_AUTOMAKE(rhythmbox, 0.11.6)
 
 AC_SUBST(ACLOCAL_AMFLAGS, "-I macros")
 
