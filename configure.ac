@@ -15,7 +15,7 @@ dnl it isn't like we are using C++ or Fortran.
 m4_define([_LT_AC_TAGCONFIG],[])
 
 
-IT_PROG_INTLTOOL([0.35.0])
+IT_PROG_INTLTOOL([0.40.0])
 
 AC_ISC_POSIX
 AC_PROG_CC

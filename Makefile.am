@@ -12,9 +12,6 @@ EXTRA_DIST = 			\
 	autogen.sh		\
 	config.h.in		\
 	gnome-doc-utils.make	\
-	intltool-merge.in	\
-	intltool-update.in	\
-	intltool-extract.in	\
 	MAINTAINERS		\
 	MAINTAINERS.old		\
 	DOCUMENTERS		\
