@@ -172,6 +172,7 @@ rb_make_duration_string (guint duration)
  * %tS -- track artist sortname (lowercase)
  * %td -- track duration
  * %te -- track elapsed time
+ * %st -- stream title
  */
 static char *
 parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
@@ -333,6 +334,23 @@ parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
  			}
 
 			break;
+
+		case 's':
+			/*
+			 * Stream tag
+			 */
+			switch (*++p) {
+			case 't':
+				value = g_hash_table_lookup (properties, "rb:stream-song-title");
+				if (value)
+					string = g_value_dup_string (value);
+				break;
+			default:
+				string = g_strdup_printf ("%%s%c", *p);
+ 			}
+
+			break;
+
 
 		default:
 			string = g_strdup_printf ("%%%c", *p);
