@@ -552,10 +552,10 @@ rb_tray_icon_scroll_event_cb (GtkWidget *ebox, GdkEvent *event,
 
 	switch (event->scroll.direction) {
 	case GDK_SCROLL_UP:
-		adjust = 0.1;
+		adjust = 0.02;
 		break;
 	case GDK_SCROLL_DOWN:
-		adjust = -0.1;
+		adjust = -0.02;
 		break;
 	default:
 		return;

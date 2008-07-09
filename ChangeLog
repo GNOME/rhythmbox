@@ -1,5 +1,13 @@
 2008-07-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Dereck Wonnacott  <dereck@gmail.com>
+
+	* shell/rb-tray-icon.c: (rb_tray_icon_scroll_event_cb):
+	Make the volume adjustment performed when scrolling over the tray icon
+	the same as that of the volume control button.  Fixes #454951.
+
+2008-07-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Raul Soriano  <GatoLoko@gmail.com>
 
 	* remote/dbus/rb-client.c: (parse_pattern):
