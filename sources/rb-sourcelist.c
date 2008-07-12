@@ -203,7 +203,7 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBSourceListClass, drop_received),
 			      NULL, NULL,
-			      gtk_marshal_VOID__POINTER_POINTER,
+			      rb_marshal_VOID__POINTER_POINTER,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_POINTER, G_TYPE_POINTER);
