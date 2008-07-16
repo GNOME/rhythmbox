@@ -17,7 +17,7 @@ libaudioscrobbler_la_SOURCES = \
 libaudioscrobbler_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libaudioscrobbler_la_LIBADD = 				\
 	$(top_builddir)/corelib/librhythmbox-core.la	\
-	$(SOUP_LIBS)					\				
+	$(SOUP_LIBS)					\
 	$(TOTEM_PLPARSER_LIBS)
 
 INCLUDES = 						\
