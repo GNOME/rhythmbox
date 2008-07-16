@@ -1,7 +1,5 @@
 # Don't Really Close Python Plugin
 
-plugindir = $(PLUGINDIR)/dontreallyclose
-
 plugin_in_files = dontreallyclose.rb-plugin.in
 %.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
