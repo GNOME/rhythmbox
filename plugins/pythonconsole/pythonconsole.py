@@ -130,9 +130,17 @@ class PythonConsolePlugin(rb.Plugin):
 		self.window.grab_focus()
 
 	def enable_debugging(self, action, shell):
-		gconfclient = gconf.client_get_default()
-		password = gconfclient.get_string('/apps/rhythmbox/plugins/pythonconsole/rpdb2_password')
-		rpdb2.start_embedded_debugger(password)
+		msg = _("After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in GConf, it will use the default password ('rhythmbox').")
+		dialog = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO, gtk.BUTTONS_OK_CANCEL, msg)
+		if dialog.run() == gtk.RESPONSE_OK:
+			gconfclient = gconf.client_get_default()
+			password = gconfclient.get_string('/apps/rhythmbox/plugins/pythonconsole/rpdb2_password') or "rhythmbox"
+			def start_debugger(password):
+				rpdb2.start_embedded_debugger(password)
+				return False
+
+			gobject.idle_add(start_debugger, password)
+		dialog.destroy()
 	
 	def destroy_console(self, *args):
 		self.window.destroy()
