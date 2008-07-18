@@ -1,3 +1,13 @@
+2008-07-19  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(stream_queue_probe_cb), (stream_queue_threshold_cb),
+	(stream_queue_underrun_cb), (get_times_and_stream):
+	If we're pretending a stream is playing in order to display buffering
+	status, then we should also use its position (0) and duration for tick
+	events etc.  Fixes last.fm submission of songs played from last.fm
+	streams, oddly enough.
+
 2008-07-16  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/pythonconsole/pythonconsole.py:

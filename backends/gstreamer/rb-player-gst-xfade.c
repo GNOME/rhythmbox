@@ -1777,8 +1777,8 @@ stream_queue_probe_cb (GstPad *pad, GstBuffer *data, RBXFadeStream *stream)
 	} else {
 		progress = 99;
 	}
-	rb_debug ("current network buffer level: %u; threshold %u - %u%%",
-		  level, stream->queue_threshold, progress);
+	rb_debug ("%s: buffer level: %u; threshold %u - %u%%",
+		  stream->uri, level, stream->queue_threshold, progress);
 
 	post_buffering_message (stream, progress);
 
@@ -1790,7 +1790,7 @@ stream_queue_threshold_cb (GstElement *queue, RBXFadeStream *stream)
 {
 	GstPad *sinkpad;
 
-	rb_debug ("queue running - removing pad probe, running signal handler");
+	rb_debug ("%s: queue running", stream->uri);
 
 	/* detach pad probe */
 	sinkpad = gst_element_get_pad (stream->queue, "sink");
@@ -1811,7 +1811,7 @@ stream_queue_threshold_cb (GstElement *queue, RBXFadeStream *stream)
 static void
 stream_queue_underrun_cb (GstElement *queue, RBXFadeStream *stream)
 {
-	rb_debug ("queue underrun - attaching pad probe, running signal handler");
+	rb_debug ("%s: queue underrun", stream->uri);
 	GstPad *sinkpad;
 
 	g_object_set (stream->queue, "min-threshold-bytes", stream->queue_threshold, NULL);
@@ -2454,13 +2454,30 @@ static gboolean
 get_times_and_stream (RBPlayerGstXFade *player, RBXFadeStream **pstream, gint64 *pos, gint64 *duration)
 {
 	gboolean got_time = FALSE;
+	gboolean buffering = FALSE;
 	RBXFadeStream *stream;
 
 	if (player->priv->pipeline == NULL)
 		return FALSE;
 
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
-	stream = find_stream_by_state (player, FADING_IN | PLAYING | FADING_OUT_PAUSED | PAUSED | PENDING_REMOVE);
+	
+	/* first look for a network stream that is buffering during preroll */
+	stream = find_stream_by_state (player, PREROLLING | PREROLL_PLAY);
+	if (stream != NULL) {
+		if (stream->emitted_fake_playing == FALSE) {
+			g_object_unref (stream);
+			stream = NULL;
+		} else {
+			rb_debug ("found buffering stream %s as current", stream->uri);
+			buffering = TRUE;
+		}
+	}
+
+	/* otherwise, the stream that is playing */
+	if (stream == NULL) {
+		stream = find_stream_by_state (player, FADING_IN | PLAYING | FADING_OUT_PAUSED | PAUSED | PENDING_REMOVE);
+	}
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	if (stream != NULL) {
@@ -2469,7 +2486,9 @@ get_times_and_stream (RBPlayerGstXFade *player, RBXFadeStream **pstream, gint64 
 		}
 
 		if (pos != NULL) {
-			if (stream->state == PAUSED) {
+			if (buffering) {
+				*pos = 0;
+			} else if (stream->state == PAUSED) {
 				GstFormat format = GST_FORMAT_TIME;
 				*pos = -1;
 
