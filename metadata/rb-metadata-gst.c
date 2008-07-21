@@ -61,7 +61,8 @@ const char * ignore_mime_types[] = {
 	"text/",
 	"application/xml",
 	"application/zip",
-	"application/x-executable"
+	"application/x-executable",
+	"application/x-bzip"
 };
 
 /*
