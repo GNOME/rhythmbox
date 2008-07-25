@@ -2059,7 +2059,7 @@ rb_shell_player_do_previous (RBShellPlayer *player,
 	    && rb_player_get_time (player->priv->mmplayer) > 3) {
 		rb_debug ("after 3 second previous, restarting song");
 		rb_player_set_time (player->priv->mmplayer, 0);
-		rb_header_sync_time (player->priv->header_widget);
+		rb_shell_player_sync_with_source (player);
 		return TRUE;
 	}
 
