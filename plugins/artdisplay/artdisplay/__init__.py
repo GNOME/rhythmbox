@@ -342,7 +342,9 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.art_widget = ArtDisplayWidget (self.find_file (ART_MISSING_ICON + ".svg"))
 		self.art_widget.connect ('pixbuf-dropped', self.on_set_pixbuf)
 		self.art_widget.connect ('uri-dropped', self.on_set_uri)
-		shell.add_widget (self.art_widget, rb.SHELL_UI_LOCATION_SIDEBAR)
+		self.art_container = gtk.VBox ()
+		self.art_container.pack_start (self.art_widget, padding=6)
+		shell.add_widget (self.art_container, rb.SHELL_UI_LOCATION_SIDEBAR)
 		self.art_db = CoverArtDatabase ()
 		self.current_entry, self.current_pixbuf = None, None
 		self.playing_entry_changed (sp, sp.get_playing_entry ())
@@ -377,7 +379,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		db = self.shell.get_property ("db")
 
 		self.art_widget.set (entry, None, None, True)
-		self.art_widget.show ()
+		self.art_container.show_all ()
 		# Intitates search in the database (which checks art cache, internet etc.)
 		self.current_entry = entry
 		self.current_pixbuf = None
