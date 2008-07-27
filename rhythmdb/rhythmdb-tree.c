@@ -41,6 +41,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <math.h>
 #include <glib/gprintf.h>
 #include <glib/gatomic.h>
 #include <glib/gi18n.h>
@@ -347,7 +348,7 @@ version_to_int (const char *version)
 		return (int) (1.0 * 100);
 	}
 
-	return ver * 100;
+	return ceil(ver * 100);
 }
 
 static void
