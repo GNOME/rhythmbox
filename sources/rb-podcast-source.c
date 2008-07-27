@@ -28,6 +28,16 @@
  *
  */
 
+/**
+ * SECTION:rb-podcast-source
+ * @short_description: source displaying podcast feeds and episodes
+ *
+ * The podcast source displays podcast episodes in its entry view
+ * and podcast feeds in a property view.  It uses a few custom columns
+ * to display podcast-specific information: episode download status
+ * and an indication of feed parsing errors.
+ */
+
 #include "config.h"
 
 #include <string.h>
@@ -877,6 +887,14 @@ rb_podcast_source_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_podcast_source_new:
+ * @shell: the #RBShell instance
+ *
+ * Creates the #RBPodcastSource instance
+ *
+ * Return value: the #RBPodcastSource
+ */
 RBSource *
 rb_podcast_source_new (RBShell *shell)
 {
@@ -1357,6 +1375,14 @@ posts_view_drag_data_received_cb (GtkWidget *widget,
 	impl_receive_drag (RB_SOURCE (source), selection_data);
 }
 
+/**
+ * rb_podcast_source_add_feed:
+ * @source: the #RBPodcastSource
+ * @uri: the new feed to add
+ *
+ * Adds a new podcast feed.
+ * Simply calls #rb_podcast_manager_subscribe_feed.
+ */
 void
 rb_podcast_source_add_feed (RBPodcastSource *source, const char *uri)
 {
