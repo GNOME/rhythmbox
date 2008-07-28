@@ -1,3 +1,9 @@
+2008-07-29  Christophe Fergeau  <teuf@gnome.org>
+
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_construct):
+	* rhythmdb/rhythmdb.c: (rhythmdb_load_error_cb): really fix format
+	strings warning, the previous commit was wrong
+
 2008-07-28  Christophe Fergeau  <teuf@gnome.org>
 
 	* rhythmdb/rhythmdb.c: add missing %s in format string

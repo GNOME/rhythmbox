@@ -710,7 +710,7 @@ missing_element:
 		g_set_error (error,
 			     RB_PLAYER_ERROR,
 			     RB_PLAYER_ERROR_GENERAL,
-			     err);
+			     "%s", err);
 		g_free (err);
 		rb_player_gst_gst_free_playbin (mp);
 		return FALSE;

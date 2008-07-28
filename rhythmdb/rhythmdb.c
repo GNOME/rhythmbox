@@ -2645,8 +2645,8 @@ rhythmdb_load_error_cb (GError *error)
 {
 	GDK_THREADS_ENTER ();
 	rb_error_dialog (NULL,
-			 _("Could not load the music database: %s"),
-			 error->message);
+			 _("Could not load the music database:"),
+			 "%s", error->message);
 	g_error_free (error);
 
 	GDK_THREADS_LEAVE ();
