@@ -260,6 +260,7 @@ get_proxy_config (RBProxyConfig *config)
 	}
 }
 
+#if defined(HAVE_LIBSOUP)
 /**
  * rb_proxy_config_get_libsoup_uri:
  * @config: a #RBProxyConfig
@@ -286,4 +287,5 @@ rb_proxy_config_get_libsoup_uri (RBProxyConfig *config)
 
 	return uri;
 }
+#endif
 
