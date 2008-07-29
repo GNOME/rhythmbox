@@ -34,8 +34,6 @@
 
 G_BEGIN_DECLS
 
-#define RB_METADATA_NUM_FIELDS 23
-
 typedef enum
 {
 	RB_METADATA_FIELD_TITLE,                   /* string */
