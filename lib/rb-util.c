@@ -34,10 +34,9 @@
 #include <stdlib.h>
 
 #include <gtk/gtk.h>
-#include <libgnome/gnome-i18n.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnomevfs/gnome-vfs-mime-handlers.h>
+#include <glib/gi18n.h>
 #include <gobject/gvaluecollector.h>
+#include <gio/gio.h>
 
 #include "rb-util.h"
 #include "rb-debug.h"
@@ -324,133 +323,21 @@ rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path)
 	}
 }
 
-static GList *
-get_mount_points (void)
-{
-	GnomeVFSVolumeMonitor *monitor;
-	GList *volumes;
-	GList *it;
-	GList *mount_points = NULL;
-
-	monitor = gnome_vfs_get_volume_monitor ();
-	/* FIXME: should also get the list of connected drivers (network
-	 * shares I assume)
-	 */
-	volumes = gnome_vfs_volume_monitor_get_mounted_volumes (monitor);
-
-	for (it = volumes; it != NULL; it = it->next) {
-		gchar *uri;
-		GnomeVFSVolume *volume;
-
-		volume = GNOME_VFS_VOLUME (it->data);
-		uri = gnome_vfs_volume_get_activation_uri (volume);
-		g_assert (uri != NULL);
-		mount_points = g_list_prepend (mount_points, uri);
-	}
-
-	g_list_foreach (volumes, (GFunc)gnome_vfs_volume_unref, NULL);
-	g_list_free (volumes);
-
-	return mount_points;
-}
-
-
-gchar *
-rb_uri_get_mount_point (const char *uri)
-{
-	GList *mount_points = get_mount_points ();
-	GList *it;
-	gchar *mount_point = NULL;
-
-	for (it = mount_points; it != NULL; it = it->next) {
-		if (g_str_has_prefix (uri, it->data)) {
-			if ((mount_point == NULL) || (strlen (mount_point) < strlen (it->data))) {
-				g_free (mount_point);
-				mount_point = g_strdup (it->data);
-			}
-		}
-	}
-	g_list_foreach (mount_points, (GFunc)g_free, NULL);
-	g_list_free (mount_points);
-
-	return mount_point;
-}
-
-gchar *
+char *
 rb_uri_get_filesystem_type(const char *uri)
 {
-	GnomeVFSVolume *volume = NULL;
-	GnomeVFSVolumeMonitor *monitor = NULL;
-	gchar *mount_point_uri = NULL, *mount_point_path = NULL;
-	gchar *fstype = NULL;
-	GError *error = NULL;
-	
-	g_return_val_if_fail(uri != NULL, NULL);
+	GFile *file;
+	GFileInfo *info;
+	char *fstype = NULL;
 
-	monitor = gnome_vfs_get_volume_monitor ();
-	if (monitor == NULL) {
-		goto error;
+	file = g_file_new_for_uri (uri);
+	info = g_file_query_filesystem_info (file, G_FILE_ATTRIBUTE_FILESYSTEM_TYPE, NULL, NULL);
+	if (info != NULL) {
+		fstype = g_file_info_get_attribute_as_string (info, G_FILE_ATTRIBUTE_FILESYSTEM_TYPE);
+		g_object_unref (info);
 	}
-
-	mount_point_uri = rb_uri_get_mount_point(uri);
-	if (mount_point_uri == NULL) {
-		goto error;
-	}
-	
-	mount_point_path = g_filename_from_uri(mount_point_uri, NULL, &error);
-	if (error) {
-		g_warning("%s", error->message);
-		g_error_free(error);
-		goto error;
-	}
-
-	volume = gnome_vfs_volume_monitor_get_volume_for_path(monitor, mount_point_path);
-	if (volume  == NULL) {
- 		goto error;
-	}
-	g_free(mount_point_path);
-	g_free(mount_point_uri);
-
-	fstype = gnome_vfs_volume_get_filesystem_type(volume);
-	
-	gnome_vfs_volume_unref(volume);
-	
+	g_object_unref (file);
 	return fstype;
-
- error:
-	if (volume != NULL) {
-		gnome_vfs_volume_unref(volume);
-	}
-	g_free(mount_point_path);
-	g_free(mount_point_uri);
-	return NULL;
-}
-
-gboolean
-rb_uri_is_mounted (const char *uri)
-{
-	GList *mount_points = get_mount_points ();
-	GList *it;
-	gboolean found = FALSE;
-
-	if ((uri == NULL) || (*uri == '\0')) {
-		return TRUE;
-	}
-
-	for (it = mount_points; it != NULL; it = it->next) {
-		if (strcmp (it->data, uri) == 0) {
-			found = TRUE;
-			break;
-		}
-	}
-	g_list_foreach (mount_points, (GFunc)g_free, NULL);
-	g_list_free (mount_points);
-
-/*	if (found == FALSE) {
-		g_print ("%s not mounted\n", uri);
-		}*/
-
-	return found;
 }
 
 gboolean
@@ -935,13 +822,13 @@ rb_uri_list_parse (const char *uri_list)
 	return g_list_reverse (result);
 }
 
-const gchar*
-rb_mime_get_friendly_name (const gchar *mime_type)
+char*
+rb_mime_get_friendly_name (const char *mime_type)
 {
-	const gchar *name = NULL;
+	gchar *name = NULL;
 	
 	if (name == NULL && mime_type)
-		name = gnome_vfs_mime_get_description (mime_type);
+		name = g_content_type_get_description (mime_type);
 	if (name == NULL)
 		name = _("Unknown");
 

@@ -31,8 +31,6 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 
-#include <libgnomevfs/gnome-vfs.h>
-
 #include "rb-podcast-parse.h"
 
 #include <string.h>
@@ -78,8 +76,6 @@ int main (int argc, char **argv)
 	setlocale (LC_ALL, "");
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-
-	gnome_vfs_init ();
 
 	if (argv[2] != NULL && strcmp (argv[2], "--debug") == 0) {
 		debug = TRUE;

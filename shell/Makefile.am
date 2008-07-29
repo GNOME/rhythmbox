@@ -98,7 +98,8 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/corelib/librhythmbox-core.la	\
 	$(top_builddir)/sources/libsourcesimpl.la	\
 	$(top_builddir)/podcast/librbpodcast.la	        \
-	$(top_builddir)/plugins/librbplugins.la	
+	$(top_builddir)/plugins/librbplugins.la		\
+	-lgstpbutils-0.10
 
 if USE_LIBSOUP
 rhythmbox_LDADD += $(SOUP_LIBS)
@@ -118,11 +119,6 @@ endif
 if ENABLE_TRACK_TRANSFER
 rhythmbox_LDADD += $(GNOME_MEDIA_PROFILES_LIBS)
 INCLUDES += $(GNOME_MEDIA_PROFILES_CFLAGS)
-endif
-
-if USE_GSTREAMER_0_10_MISSING_PLUGINS
-rhythmbox_LDADD +=					\
-	-lgstpbutils-0.10
 endif
 
 rb-shell-glue.h: rb-shell.xml Makefile

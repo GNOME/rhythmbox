@@ -35,7 +35,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <gsequence.h>
+#include <glib/gsequence.h>
 
 #include <gtk/gtktreednd.h>
 

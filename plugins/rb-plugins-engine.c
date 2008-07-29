@@ -254,19 +254,19 @@ error:
 }
 
 static gboolean
-rb_plugins_engine_load_cb (const char *uri, gboolean dir, gpointer userdata)
+rb_plugins_engine_load_cb (GFile *file, gboolean dir, gpointer userdata)
 {
-	gchar *plugin_file;
+	char *plugin_path;
 	RBPluginInfo *info;
 	char *key_name;
 	gboolean activate;
 	const char *sep;
 
-	plugin_file = gnome_vfs_get_local_path_from_uri (uri);
+	plugin_path = g_file_get_path (file);
 
-	sep = strrchr (plugin_file, G_DIR_SEPARATOR);
+	sep = strrchr (plugin_path, G_DIR_SEPARATOR);
 	if (sep == NULL)
-		sep = plugin_file;
+		sep = plugin_path;
 	else
 		sep += 1;
 	
@@ -274,18 +274,18 @@ rb_plugins_engine_load_cb (const char *uri, gboolean dir, gpointer userdata)
 	 * most are already covered by excluding hidden files/directories.
 	 */
 	if (dir && (g_str_has_prefix (sep, "_darcs") || g_str_has_prefix (sep, "CVS"))) {
-		rb_debug ("not loading plugin from hidden/VCS directory %s", plugin_file);
-		g_free (plugin_file);
+		rb_debug ("not loading plugin from hidden/VCS directory %s", plugin_path);
+		g_free (plugin_path);
 		return FALSE;
 	}
 
-	if (dir || !g_str_has_suffix (uri, PLUGIN_EXT)) {
-		g_free (plugin_file);
+	if (dir || !g_str_has_suffix (plugin_path, PLUGIN_EXT)) {
+		g_free (plugin_path);
 		return TRUE;
 	}
 
-	info = rb_plugins_engine_load (plugin_file);
-	g_free (plugin_file);
+	info = rb_plugins_engine_load (plugin_path);
+	g_free (plugin_path);
 
 	if (info == NULL)
 		return TRUE;
@@ -318,13 +318,18 @@ rb_plugins_engine_load_cb (const char *uri, gboolean dir, gpointer userdata)
 }
 
 static void
-rb_plugins_engine_load_dir (const gchar *path)
+rb_plugins_engine_load_dir (const char *path)
 {
-	char *uri;
+	GFile *plugindir;
+	char *plugin_uri;
 
-	uri = rb_uri_resolve_relative (path);
-	rb_uri_handle_recursively (uri, rb_plugins_engine_load_cb, NULL, NULL);
-	g_free (uri);
+	plugindir = g_file_new_for_commandline_arg (path);
+	plugin_uri = g_file_get_uri (plugindir);
+
+	rb_uri_handle_recursively (plugin_uri, NULL, (RBUriRecurseFunc) rb_plugins_engine_load_cb, NULL);
+
+	g_object_unref (plugindir);
+	g_free (plugin_uri);
 }
 
 static void

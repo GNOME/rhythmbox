@@ -33,7 +33,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs.h>
+#include <gio/gio.h>
 
 #include "rb-removable-media-manager.h"
 #include "rb-library-source.h"
@@ -69,22 +69,22 @@ static void rb_removable_media_manager_cmd_scan_media (GtkAction *action,
 						       RBRemovableMediaManager *manager);
 static void rb_removable_media_manager_cmd_eject_medium (GtkAction *action,
 					       RBRemovableMediaManager *mgr);
+static gboolean rb_removable_media_manager_source_can_eject (RBRemovableMediaManager *mgr);
 static void rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 					     GtkUIManager *uimanager);
 
 static void rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RBRemovableMediaSource *source);
 
-static void rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr,
-				GnomeVFSVolume *volume);
-static void rb_removable_media_manager_unmount_volume (RBRemovableMediaManager *mgr,
-				GnomeVFSVolume *volume);
+static void rb_removable_media_manager_add_volume (RBRemovableMediaManager *mgr, GVolume *volume);
+static void rb_removable_media_manager_remove_volume (RBRemovableMediaManager *mgr, GVolume *volume);
+static void rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *mount);
+static void rb_removable_media_manager_remove_mount (RBRemovableMediaManager *mgr, GMount *mount);
 
-static void  rb_removable_media_manager_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
-				GnomeVFSVolume *volume,
-				gpointer data);
-static void  rb_removable_media_manager_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
-				GnomeVFSVolume *volume,
-				gpointer data);
+static void volume_added_cb (GVolumeMonitor *monitor, GVolume *volume, RBRemovableMediaManager *manager);
+static void volume_removed_cb (GVolumeMonitor *monitor, GVolume *volume, RBRemovableMediaManager *manager);
+static void mount_added_cb (GVolumeMonitor *monitor, GMount *mount, RBRemovableMediaManager *manager);
+static void mount_removed_cb (GVolumeMonitor *monitor, GMount *mount, RBRemovableMediaManager *manager);
+
 static gboolean rb_removable_media_manager_load_media (RBRemovableMediaManager *manager);
 
 #ifdef ENABLE_TRACK_TRANSFER
@@ -96,7 +96,6 @@ static void rb_removable_media_manager_cmd_copy_tracks (GtkAction *action,
 typedef struct
 {
 	RBShell *shell;
-	gboolean disposed;
 
 	RBSource *selected_source;
 
@@ -105,7 +104,7 @@ typedef struct
 
 	GList *sources;
 	GHashTable *volume_mapping;
-	GList *cur_volume_list;
+	GHashTable *mount_mapping;
 	gboolean scanned;
 
 	GAsyncQueue *transfer_queue;
@@ -113,10 +112,17 @@ typedef struct
 	gint transfer_total;
 	gint transfer_done;
 	double transfer_fraction;
+
+	GVolumeMonitor *volume_monitor;
+	guint mount_added_id;
+	guint mount_pre_unmount_id;
+	guint mount_removed_id;
+	guint volume_added_id;
+	guint volume_removed_id;
 } RBRemovableMediaManagerPrivate;
 
 G_DEFINE_TYPE (RBRemovableMediaManager, rb_removable_media_manager, G_TYPE_OBJECT)
-#define REMOVABLE_MEDIA_MANAGER_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_REMOVABLE_MEDIA_MANAGER, RBRemovableMediaManagerPrivate))
+#define GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_REMOVABLE_MEDIA_MANAGER, RBRemovableMediaManagerPrivate))
 
 enum
 {
@@ -130,7 +136,8 @@ enum
 {
 	MEDIUM_ADDED,
 	TRANSFER_PROGRESS,
-	CREATE_SOURCE,
+	CREATE_SOURCE_VOLUME,
+	CREATE_SOURCE_MOUNT,
 	LAST_SIGNAL
 };
 
@@ -203,15 +210,24 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      G_TYPE_NONE,
 			      3, G_TYPE_INT, G_TYPE_INT, G_TYPE_DOUBLE);
 
-	rb_removable_media_manager_signals[CREATE_SOURCE] =
-		g_signal_new ("create-source",
+	rb_removable_media_manager_signals[CREATE_SOURCE_VOLUME] =
+		g_signal_new ("create-source-volume",
 			      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBRemovableMediaManagerClass, create_source),
+			      G_STRUCT_OFFSET (RBRemovableMediaManagerClass, create_source_volume),
 			      rb_signal_accumulator_object_handled, NULL,
 			      rb_marshal_OBJECT__OBJECT,
 			      RB_TYPE_SOURCE,
-			      1, GNOME_VFS_TYPE_VOLUME);
+			      1, G_TYPE_VOLUME);
+	rb_removable_media_manager_signals[CREATE_SOURCE_MOUNT] =
+		g_signal_new ("create-source-mount",
+			      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBRemovableMediaManagerClass, create_source_mount),
+			      rb_signal_accumulator_object_handled, NULL,
+			      rb_marshal_OBJECT__OBJECT,
+			      RB_TYPE_SOURCE,
+			      1, G_TYPE_MOUNT);
 
 	g_type_class_add_private (klass, sizeof (RBRemovableMediaManagerPrivate));
 }
@@ -219,9 +235,10 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 static void
 rb_removable_media_manager_init (RBRemovableMediaManager *mgr)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 
 	priv->volume_mapping = g_hash_table_new (NULL, NULL);
+	priv->mount_mapping = g_hash_table_new (NULL, NULL);
 	priv->transfer_queue = g_async_queue_new ();
 
 	g_idle_add ((GSourceFunc)rb_removable_media_manager_load_media, mgr);
@@ -231,18 +248,28 @@ static void
 rb_removable_media_manager_dispose (GObject *object)
 {
 	RBRemovableMediaManager *mgr = RB_REMOVABLE_MEDIA_MANAGER (object);
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 
-	if (!priv->disposed)
-	{
-		GnomeVFSVolumeMonitor *monitor = gnome_vfs_get_volume_monitor ();
+	if (priv->volume_monitor != NULL) {
+		g_signal_handler_disconnect (priv->volume_monitor,
+					     priv->mount_added_id);
+		g_signal_handler_disconnect (priv->volume_monitor,
+					     priv->mount_pre_unmount_id);
+		g_signal_handler_disconnect (priv->volume_monitor,
+					     priv->mount_removed_id);
+		g_signal_handler_disconnect (priv->volume_monitor,
+					     priv->volume_added_id);
+		g_signal_handler_disconnect (priv->volume_monitor,
+					     priv->volume_removed_id);
 
-		g_signal_handlers_disconnect_by_func (G_OBJECT (monitor),
-						      G_CALLBACK (rb_removable_media_manager_volume_mounted_cb),
-						      mgr);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (monitor),
-						      G_CALLBACK (rb_removable_media_manager_volume_unmounted_cb),
-						      mgr);
+		priv->mount_added_id = 0;
+		priv->mount_pre_unmount_id = 0;
+		priv->mount_removed_id = 0;
+		priv->volume_added_id = 0;
+		priv->volume_removed_id = 0;
+
+		g_object_unref (priv->volume_monitor);
+		priv->volume_monitor = NULL;
 	}
 
 	if (priv->sources) {
@@ -250,17 +277,16 @@ rb_removable_media_manager_dispose (GObject *object)
 		priv->sources = NULL;
 	}
 
-	priv->disposed = TRUE;
-
 	G_OBJECT_CLASS (rb_removable_media_manager_parent_class)->dispose (object);
 }
 
 static void
 rb_removable_media_manager_finalize (GObject *object)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (object);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (object);
 
 	g_hash_table_destroy (priv->volume_mapping);
+	g_hash_table_destroy (priv->mount_mapping);
 	g_async_queue_unref (priv->transfer_queue);
 
 	G_OBJECT_CLASS (rb_removable_media_manager_parent_class)->finalize (object);
@@ -272,13 +298,20 @@ rb_removable_media_manager_set_property (GObject *object,
 				  const GValue *value,
 				  GParamSpec *pspec)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (object);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (object);
 
 	switch (prop_id)
 	{
 	case PROP_SOURCE:
 	{
+		GtkAction *action;
+		gboolean can_eject;
+
 		priv->selected_source = g_value_get_object (value);
+		/* make 'eject' command sensitive if the source can be ejected. */
+		action = gtk_action_group_get_action (priv->actiongroup, "RemovableSourceEject");
+		can_eject = rb_removable_media_manager_source_can_eject (RB_REMOVABLE_MEDIA_MANAGER (object));
+		gtk_action_set_sensitive (action, can_eject);
 		break;
 	}
 	case PROP_SHELL:
@@ -304,7 +337,7 @@ rb_removable_media_manager_get_property (GObject *object,
 			      GValue *value,
 			      GParamSpec *pspec)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (object);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (object);
 
 	switch (prop_id)
 	{
@@ -334,45 +367,82 @@ rb_removable_media_manager_new (RBShell *shell)
 static gboolean
 rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 {
-	GnomeVFSVolumeMonitor *monitor = gnome_vfs_get_volume_monitor ();
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (manager);
 
 	GDK_THREADS_ENTER ();
 	
 	/*
-	 * Monitor new (un)mounted file systems to look for new media
+	 * Monitor new (un)mounted file systems to look for new media;
+	 * we watch for both volumes and mounts because for some devices,
+	 * we don't require the volume to actually be mounted.
 	 *
 	 * both pre-unmount and unmounted callbacks are registered because it is
 	 * better to do it before the unmount, but sometimes we don't get those
 	 * (e.g. someone pressing the eject button on a cd drive). If we get the
-	 * pre-unmount signal, the corrosponding unmounted signal is ignored
+	 * pre-unmount signal, the corresponding unmounted signal is ignored
 	 */
-	g_signal_connect (G_OBJECT (monitor), "volume-mounted",
-			  G_CALLBACK (rb_removable_media_manager_volume_mounted_cb),
-			  manager);
-	g_signal_connect (G_OBJECT (monitor), "volume-pre-unmount",
-			  G_CALLBACK (rb_removable_media_manager_volume_unmounted_cb),
-			  manager);
-	g_signal_connect (G_OBJECT (monitor), "volume-unmounted",
-			  G_CALLBACK (rb_removable_media_manager_volume_unmounted_cb),
-			  manager);
+	priv->volume_monitor = g_object_ref (g_volume_monitor_get ());
+
+	priv->volume_added_id = g_signal_connect_object (priv->volume_monitor,
+							 "volume-added",
+							 G_CALLBACK (volume_added_cb),
+							 manager, 0);
+	priv->volume_removed_id = g_signal_connect_object (priv->volume_monitor,
+							   "volume-removed",
+							   G_CALLBACK (volume_removed_cb),
+							   manager, 0);
+	priv->mount_added_id = g_signal_connect_object (priv->volume_monitor,
+							"mount-added",
+							G_CALLBACK (mount_added_cb),
+							manager, 0);
+	priv->mount_pre_unmount_id = g_signal_connect_object (priv->volume_monitor,
+							      "mount-pre-unmount",
+							      G_CALLBACK (mount_removed_cb),
+							      manager, 0);
+	priv->mount_removed_id = g_signal_connect_object (G_OBJECT (priv->volume_monitor),
+							  "mount-removed",
+							  G_CALLBACK (mount_removed_cb),
+							  manager, 0);
 
 	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
 static void
-rb_removable_media_manager_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
-			   GnomeVFSVolume *volume,
-			   gpointer data)
+volume_added_cb (GVolumeMonitor *monitor,
+		 GVolume *volume,
+		 RBRemovableMediaManager *mgr)
 {
-	RBRemovableMediaManager *mgr = RB_REMOVABLE_MEDIA_MANAGER (data);
-
-	rb_removable_media_manager_mount_volume (mgr, volume);
+	rb_removable_media_manager_add_volume (mgr, volume);
 }
 
+static void
+volume_removed_cb (GVolumeMonitor *monitor,
+		   GVolume *volume,
+		   RBRemovableMediaManager *mgr)
+{
+	rb_removable_media_manager_remove_volume (mgr, volume);
+}
+
+static void
+mount_added_cb (GVolumeMonitor *monitor,
+		GMount *mount,
+		RBRemovableMediaManager *mgr)
+{
+	rb_removable_media_manager_add_mount (mgr, mount);
+}
+
+static void
+mount_removed_cb (GVolumeMonitor *monitor,
+		  GMount *mount,
+		  RBRemovableMediaManager *mgr)
+{
+	rb_removable_media_manager_remove_mount (mgr, mount);
+}
+
+
 static gboolean
-remove_volume_by_source (GnomeVFSVolume *volume, RBSource *source,
-			 RBSource *ref_source)
+remove_by_source (gpointer thing, RBSource *source, RBSource *ref_source)
 {
 	return (ref_source == source);
 }
@@ -380,71 +450,69 @@ remove_volume_by_source (GnomeVFSVolume *volume, RBSource *source,
 static void
 rb_removable_media_manager_source_deleted_cb (RBSource *source, RBRemovableMediaManager *mgr)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 
 	rb_debug ("removing source %p", source);
 	g_hash_table_foreach_remove (priv->volume_mapping,
-				     (GHRFunc)remove_volume_by_source,
+				     (GHRFunc)remove_by_source,
+				     source);
+	g_hash_table_foreach_remove (priv->mount_mapping,
+				     (GHRFunc)remove_by_source,
 				     source);
 	priv->sources = g_list_remove (priv->sources, source);
 }
 
 static void
-rb_removable_media_manager_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
-			     GnomeVFSVolume *volume,
-			     gpointer data)
+dump_volume_identifiers (GVolume *volume)
 {
-	RBRemovableMediaManager *mgr = RB_REMOVABLE_MEDIA_MANAGER (data);
+	char **identifiers;
+	int i;
 
-	g_assert (volume != NULL);
-	rb_removable_media_manager_unmount_volume (mgr, volume);
+	if (volume == NULL) {
+		rb_debug ("mount has no volume");
+		return;
+	}
+
+	/* dump all volume identifiers in debug output */
+	identifiers = g_volume_enumerate_identifiers (volume);
+	if (identifiers != NULL) {
+		for (i = 0; identifiers[i] != NULL; i++) {
+			char *ident;
+
+			ident = g_volume_get_identifier (volume, identifiers[i]);
+			rb_debug ("%s = %s", identifiers[i], ident);
+		}
+		g_strfreev (identifiers);
+	}
 }
 
 static void
-rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSVolume *volume)
+rb_removable_media_manager_add_volume (RBRemovableMediaManager *mgr, GVolume *volume)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 	RBRemovableMediaSource *source = NULL;
-	char *fs_type, *device_path, *display_name, *hal_udi, *icon_name;
-	GnomeVFSDeviceType device_type;
+	GMount *mount;
 
 	g_assert (volume != NULL);
 
-	if (g_hash_table_lookup (priv->volume_mapping, volume) != NULL)
+	if (g_hash_table_lookup (priv->volume_mapping, volume) != NULL) {
 		return;
+	}
 
-	if (!gnome_vfs_volume_is_mounted (volume))
-		return;
+	mount = g_volume_get_mount (volume);
+	if (mount != NULL) {
+		if (g_hash_table_lookup (priv->mount_mapping, mount) != NULL) {
+			/* this can probably never happen, but it's OK */
+			rb_debug ("already created a source for the mount, so ignoring the volume");
+			g_object_unref (mount);
+			return;
+		}
+		g_object_unref (mount);
+	}
 
-	/* ignore network volumes */
-	device_type = gnome_vfs_volume_get_device_type (volume);
-	if (device_type == GNOME_VFS_DEVICE_TYPE_NFS ||
-	    device_type == GNOME_VFS_DEVICE_TYPE_AUTOFS ||
-	    device_type == GNOME_VFS_DEVICE_TYPE_SMB ||
-	    device_type == GNOME_VFS_DEVICE_TYPE_NETWORK)
-		return;
+	dump_volume_identifiers (volume);
 
-	fs_type = gnome_vfs_volume_get_filesystem_type (volume);
-	device_path = gnome_vfs_volume_get_device_path (volume);
-	display_name = gnome_vfs_volume_get_display_name (volume);
-	hal_udi = gnome_vfs_volume_get_hal_udi (volume);
-	icon_name = gnome_vfs_volume_get_icon (volume);
-	rb_debug ("detecting new media - device type=%d", device_type);
-	rb_debug ("detecting new media - volume type=%d", gnome_vfs_volume_get_volume_type (volume));
-	rb_debug ("detecting new media - fs type=%s", fs_type);
-	rb_debug ("detecting new media - device path=%s", device_path);
-	rb_debug ("detecting new media - display name=%s", display_name);
-	rb_debug ("detecting new media - hal udi=%s", hal_udi);
-	rb_debug ("detecting new media - icon=%s", icon_name);
-
-	/* rb_xxx_source_new first checks if the 'volume' parameter corresponds
-	 * to a medium of type 'xxx', and returns NULL if it doesn't.
-	 * When volume is of the appropriate type, it creates a new source
-	 * to handle this volume
-	 */
-
-	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[CREATE_SOURCE], 0,
-		       volume, &source);
+	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[CREATE_SOURCE_VOLUME], 0, volume, &source);
 
 	if (source) {
 		g_hash_table_insert (priv->volume_mapping, volume, source);
@@ -453,23 +521,78 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 		rb_debug ("Unhandled media");
 	}
 
-	g_free (fs_type);
-	g_free (device_path);
-	g_free (display_name);
-	g_free (hal_udi);
-	g_free (icon_name);
 }
 
 static void
-rb_removable_media_manager_unmount_volume (RBRemovableMediaManager *mgr, GnomeVFSVolume *volume)
+rb_removable_media_manager_remove_volume (RBRemovableMediaManager *mgr, GVolume *volume)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 	RBRemovableMediaSource *source;
 
 	g_assert (volume != NULL);
 
-	rb_debug ("media removed");
+	rb_debug ("volume removed");
 	source = g_hash_table_lookup (priv->volume_mapping, volume);
+	if (source) {
+		rb_source_delete_thyself (RB_SOURCE (source));
+	}
+}
+
+static void
+rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *mount)
+{
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
+	RBRemovableMediaSource *source = NULL;
+	GVolume *volume;
+
+	g_assert (mount != NULL);
+
+	if (g_hash_table_lookup (priv->mount_mapping, mount) != NULL) {
+		return;
+	}
+
+	volume = g_mount_get_volume (mount);
+
+	/* if we've already created a source for the volume,
+	 * don't do anything with the mount.
+	 */
+	if (g_hash_table_lookup (priv->volume_mapping, volume) != NULL) {
+		rb_debug ("already created a source for the volume, so ignoring the mount");
+		g_object_unref (volume);
+		return;
+	}
+
+	dump_volume_identifiers (volume);
+
+	/* might be worth trying to create a source for the volume again,
+	 * in case something wants to, but requires a mount to exist first.
+	 */
+
+
+	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[CREATE_SOURCE_MOUNT], 0, mount, &source);
+
+	if (source) {
+		g_hash_table_insert (priv->mount_mapping, mount, source);
+		rb_removable_media_manager_append_media_source (mgr, source);
+	} else {
+		rb_debug ("Unhandled media");
+	}
+
+	if (volume != NULL) {
+		g_object_unref (volume);
+	}
+}
+
+static void
+rb_removable_media_manager_remove_mount (RBRemovableMediaManager *mgr, GMount *mount)
+{
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
+	RBRemovableMediaSource *source;
+
+	g_assert (mount != NULL);
+
+	rb_debug ("mount removed");
+	source = g_hash_table_lookup (priv->mount_mapping, mount);
 	if (source) {
 		rb_source_delete_thyself (RB_SOURCE (source));
 	}
@@ -478,7 +601,7 @@ rb_removable_media_manager_unmount_volume (RBRemovableMediaManager *mgr, GnomeVF
 static void
 rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RBRemovableMediaSource *source)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 
 	priv->sources = g_list_prepend (priv->sources, source);
 	g_signal_connect_object (G_OBJECT (source), "deleted",
@@ -492,7 +615,7 @@ static void
 rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 					  GtkUIManager *uimanager)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 	GtkAction *action;
 
 	if (priv->uimanager != NULL) {
@@ -522,8 +645,6 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 
 #ifndef ENABLE_TRACK_TRANSFER
 	{
-		GtkAction *action;
-
 		action = gtk_action_group_get_action (priv->actiongroup, "RemovableSourceCopyAllTracks");
 		gtk_action_set_visible (action, FALSE);
 	}
@@ -542,28 +663,148 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 }
 
 static void
-rb_removable_media_manager_eject_medium_cb (gboolean succeeded,
-					   const char *error,
-					   const char *detailed_error,
-					   gpointer *data)
+rb_removable_media_manager_eject_cb (GObject *object,
+				     GAsyncResult *result,
+				     RBRemovableMediaManager *mgr)
 {
-	if (succeeded)
-		return;
+	GError *error = NULL;
 
-	rb_error_dialog (NULL, error, "%s", detailed_error);
+	if (G_IS_VOLUME (object)) {
+		GVolume *volume = G_VOLUME (object);
+
+		rb_debug ("finishing ejection of volume");
+		g_volume_eject_finish (volume, result, &error);
+		if (error == NULL) {
+			rb_removable_media_manager_remove_volume (mgr, volume);
+		}
+	} else if (G_IS_MOUNT (object)) {
+		GMount *mount = G_MOUNT (object);
+
+		rb_debug ("finishing ejection of mount");
+		g_mount_eject_finish (mount, result, &error);
+		if (error == NULL) {
+			rb_removable_media_manager_remove_mount (mgr, mount);
+		}
+	}
+
+	if (error != NULL) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_FAILED_HANDLED)) {
+			rb_error_dialog (NULL, _("Unable to eject"), "%s", error->message);
+		} else {
+			rb_debug ("eject failure has already been handled");
+		}
+		g_error_free (error);
+	}
+	g_object_unref (mgr);
+}
+
+static void
+rb_removable_media_manager_unmount_cb (GObject *object,
+				       GAsyncResult *result,
+				       RBRemovableMediaManager *mgr)
+{
+	GMount *mount = G_MOUNT (object);
+	GError *error = NULL;
+
+	rb_debug ("finishing unmount of mount");
+	g_mount_unmount_finish (mount, result, &error);
+	if (error != NULL) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_FAILED_HANDLED)) {
+			rb_error_dialog (NULL, _("Unable to unmount"), "%s", error->message);
+		} else {
+			rb_debug ("unmount failure has already been handled");
+		}
+		g_error_free (error);
+	} else {
+		rb_removable_media_manager_remove_mount (mgr, mount);
+	}
+	g_object_unref (mgr);
+}
+
+static gboolean
+rb_removable_media_manager_source_can_eject (RBRemovableMediaManager *mgr)
+{
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
+	GVolume *volume;
+	GMount *mount;
+	gboolean result;
+
+	if (RB_IS_REMOVABLE_MEDIA_SOURCE (priv->selected_source) == FALSE) {
+		return FALSE;
+	}
+
+	g_object_get (priv->selected_source, "volume", &volume, NULL);
+	if (volume != NULL) {
+		result = g_volume_can_eject (volume);
+		g_object_unref (volume);
+		return result;
+	}
+
+	g_object_get (priv->selected_source, "mount", &mount, NULL);
+	if (mount != NULL) {
+		result = g_mount_can_eject (mount) || g_mount_can_unmount (mount);
+		g_object_unref (mount);
+		return result;
+	}
+
+	return FALSE;
 }
 
 static void
 rb_removable_media_manager_cmd_eject_medium (GtkAction *action, RBRemovableMediaManager *mgr)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 	RBRemovableMediaSource *source = RB_REMOVABLE_MEDIA_SOURCE (priv->selected_source);
-	GnomeVFSVolume *volume;
+	GVolume *volume;
+	GMount *mount;
+
+	/* try ejecting based on volume first, then based on the mount,
+	 * and finally try unmounting.
+	 */
 
 	g_object_get (source, "volume", &volume, NULL);
-	rb_removable_media_manager_unmount_volume (mgr, volume);
-	gnome_vfs_volume_eject (volume, (GnomeVFSVolumeOpCallback)rb_removable_media_manager_eject_medium_cb, mgr);
-	gnome_vfs_volume_unref (volume);
+	if (volume != NULL) {
+		if (g_volume_can_eject (volume)) {
+			rb_debug ("ejecting volume");
+			g_volume_eject (volume,
+					G_MOUNT_UNMOUNT_NONE,
+					NULL,
+					(GAsyncReadyCallback) rb_removable_media_manager_eject_cb,
+					g_object_ref (mgr));
+		} else {
+			/* this should never happen; the eject command will be
+			 * insensitive if the selected source cannot be ejected.
+			 */
+			rb_debug ("don't know what to do with this volume");
+		}
+		g_object_unref (volume);
+		return;
+	}
+
+	g_object_get (source, "mount", &mount, NULL);
+	if (mount != NULL) {
+		if (g_mount_can_eject (mount)) {
+			rb_debug ("ejecting mount");
+			g_mount_eject (mount,
+				       G_MOUNT_UNMOUNT_NONE,
+				       NULL,
+				       (GAsyncReadyCallback) rb_removable_media_manager_eject_cb,
+				       g_object_ref (mgr));
+		} else if (g_mount_can_unmount (mount)) {
+			rb_debug ("unmounting mount");
+			g_mount_unmount (mount,
+					 G_MOUNT_UNMOUNT_NONE,
+					 NULL,
+					 (GAsyncReadyCallback) rb_removable_media_manager_unmount_cb,
+					 g_object_ref (mgr));
+		} else {
+			/* this should never happen; the eject command will be
+			 * insensitive if the selected source cannot be ejected.
+			 */
+			rb_debug ("don't know what to do with this mount");
+		}
+		g_object_unref (mount);
+	}
 }
 
 static void
@@ -572,59 +813,56 @@ rb_removable_media_manager_cmd_scan_media (GtkAction *action, RBRemovableMediaMa
 	rb_removable_media_manager_scan (manager);
 }
 
-struct VolumeCheckData
-{
-	RBRemovableMediaManager *manager;
-	GList *volume_list;
-	GList *volumes_to_remove;
-};
-
-static void
-rb_removable_media_manager_check_volume (GnomeVFSVolume *volume,
-					 RBRemovableMediaSource *source,
-					 struct VolumeCheckData *check_data)
-{
-	/* if the volume is no longer present, queue it for removal */
-	if (g_list_find (check_data->volume_list, volume) == NULL)
-		check_data->volumes_to_remove = g_list_prepend (check_data->volumes_to_remove, volume);
-}
-
-static void
-rb_removable_media_manager_unmount_volume_swap (GnomeVFSVolume *volume, RBRemovableMediaManager *manager)
-{
-	rb_removable_media_manager_unmount_volume (manager, volume);
-}
-
 void
 rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
-	GnomeVFSVolumeMonitor *monitor = gnome_vfs_get_volume_monitor ();
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (manager);
+	GHashTableIter iter;
 	GList *list, *it;
-	GnomeVFSVolume *volume;
-	struct VolumeCheckData check_data;
+	gpointer hkey, hvalue;
 
 	priv->scanned = TRUE;
 
-	list = gnome_vfs_volume_monitor_get_mounted_volumes (monitor);
+	/* check volumes first */
+	list = g_volume_monitor_get_volumes (priv->volume_monitor);
 
-	/* see if any removable media has gone */
-	check_data.volume_list = list;
-	check_data.manager = manager;
-	check_data.volumes_to_remove = NULL;
-	g_hash_table_foreach (priv->volume_mapping,
-			      (GHFunc) rb_removable_media_manager_check_volume,
-			      &check_data);
-	g_list_foreach (check_data.volumes_to_remove,
-			(GFunc) rb_removable_media_manager_unmount_volume_swap,
-			manager);
-	g_list_free (check_data.volumes_to_remove);
+	/* - check for volumes that have disappeared */
+	g_hash_table_iter_init (&iter, priv->volume_mapping);
+	while (g_hash_table_iter_next (&iter, &hkey, &hvalue)) {
+		GVolume *volume = G_VOLUME (hkey);
 
-	/* look for new volume media */
+		if (g_list_index (list, volume) == -1) {
+			/* volume has vanished */
+			rb_removable_media_manager_remove_volume (manager, volume);
+		}
+	}
+
+	/* - check for newly added volumes */
 	for (it = list; it != NULL; it = g_list_next (it)) {
-		volume = GNOME_VFS_VOLUME (it->data);
-		rb_removable_media_manager_mount_volume (manager, volume);
-		gnome_vfs_volume_unref (volume);
+		GVolume *volume = G_VOLUME (it->data);
+		rb_removable_media_manager_add_volume (manager, volume);
+		g_object_unref (volume);
+	}
+	g_list_free (list);
+
+	/* check mounts */
+	list = g_volume_monitor_get_mounts (priv->volume_monitor);
+
+	/* - check for mounts that have disappeared */
+	g_hash_table_iter_init (&iter, priv->mount_mapping);
+	while (g_hash_table_iter_next (&iter, &hkey, &hvalue)) {
+		GMount *mount = G_MOUNT (hkey);
+
+		if (g_list_index (list, mount) == -1) {
+			rb_removable_media_manager_remove_mount (manager, mount);
+		}
+	}
+
+	/* - check for newly added mounts */
+	for (it = list; it != NULL; it = g_list_next (it)) {
+		GMount *mount = G_MOUNT (it->data);
+		rb_removable_media_manager_add_mount (manager, mount);
+		g_object_unref (mount);
 	}
 	g_list_free (list);
 }
@@ -639,14 +877,14 @@ typedef struct {
 	guint64 dest_size;
 	GList *mime_types;
 	gboolean failed;
-	RBTranferCompleteCallback callback;
+	RBTransferCompleteCallback callback;
 	gpointer userdata;
 } TransferData;
 
 static void
 emit_progress (RBRemovableMediaManager *mgr)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 
 	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[TRANSFER_PROGRESS], 0,
 		       priv->transfer_done,
@@ -667,7 +905,7 @@ error_cb (RBEncoder *encoder, GError *error, TransferData *data)
 static void
 progress_cb (RBEncoder *encoder, double fraction, TransferData *data)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (data->manager);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (data->manager);
 
 	rb_debug ("transfer progress %f", (float)fraction);
 	priv->transfer_fraction = fraction;
@@ -677,7 +915,7 @@ progress_cb (RBEncoder *encoder, double fraction, TransferData *data)
 static void
 completed_cb (RBEncoder *encoder, guint64 dest_size, TransferData *data)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (data->manager);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (data->manager);
 
 	rb_debug ("completed transferring track to %s (%" G_GUINT64_FORMAT " bytes)", data->dest, dest_size);
 	if (!data->failed)
@@ -697,7 +935,7 @@ completed_cb (RBEncoder *encoder, guint64 dest_size, TransferData *data)
 static void
 do_transfer (RBRemovableMediaManager *manager)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (manager);
 	TransferData *data;
 	RBEncoder *encoder;
 
@@ -737,10 +975,10 @@ rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *manager,
 					  RhythmDBEntry *entry,
 					  const char *dest,
 					  GList *mime_types,
-					  RBTranferCompleteCallback callback,
+					  RBTransferCompleteCallback callback,
 					  gpointer userdata)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (manager);
 	TransferData *data;
 
 	g_assert (rb_is_main_thread ());
@@ -775,7 +1013,7 @@ static void
 rb_removable_media_manager_cmd_copy_tracks (GtkAction *action, RBRemovableMediaManager *mgr)
 {
 #ifdef ENABLE_TRACK_TRANSFER
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 	RBRemovableMediaSource *source;
 	RBLibrarySource *library;
 	RhythmDBQueryModel *model;

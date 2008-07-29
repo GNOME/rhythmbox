@@ -36,11 +36,6 @@
 #include "rb-refstring.h"
 #include "rb-metadata.h"
 
-#include <libgnomevfs/gnome-vfs-utils.h>
-#include <libgnomevfs/gnome-vfs-file-info.h>
-#include <libgnomevfs/gnome-vfs-ops.h>
-#include <libgnomevfs/gnome-vfs-async-ops.h>
-
 G_BEGIN_DECLS
 
 RhythmDBEntry * rhythmdb_entry_allocate		(RhythmDB *db, RhythmDBEntryType type);
@@ -153,11 +148,11 @@ struct _RhythmDBPrivate
 	GThreadPool *query_thread_pool;
 
 	GList *stat_list;
-	GHashTable *stat_events;
-	GnomeVFSAsyncHandle *stat_handle;
 	GList *outstanding_stats;
 	GMutex *stat_mutex;
+	gboolean stat_thread_running;
 
+	GVolumeMonitor *volume_monitor;
 	GHashTable *monitored_directories;
 	GHashTable *changed_files;
 	guint library_location_notify_id;
@@ -176,7 +171,7 @@ struct _RhythmDBPrivate
 	GHashTable *propname_map;
 
 	GMutex *exit_mutex;
-	gboolean exiting;
+	GCancellable *exiting;		/* hrm, name? */
 
 	GCond *saving_condition;
 	GMutex *saving_mutex;
@@ -224,8 +219,7 @@ typedef struct
 	RhythmDB *db;
 
 	/* STAT */
-	GnomeVFSFileInfo *vfsinfo;
-	GnomeVFSAsyncHandle *handle;
+	GFileInfo *file_info;
 	/* LOAD */
 	RBMetaData *metadata;
 	/* QUERY_COMPLETE */
@@ -238,7 +232,6 @@ typedef struct
 } RhythmDBEvent;
 
 /* from rhythmdb.c */
-void queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type, RhythmDBEntryType ignore_type, RhythmDBEntryType error_type);
 void rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 				    gboolean visibility);
 void rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,

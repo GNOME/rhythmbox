@@ -34,7 +34,7 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <gconf/gconf-client.h>
-#include <libgnomevfs/gnome-vfs-volume-monitor.h>
+#include <gio/gio.h>
 
 #include "rb-debug.h"
 #include "rb-util.h"
@@ -46,36 +46,42 @@
 
 #define RHYTHMDB_FILE_MODIFY_PROCESS_TIME 2
 
-static void rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
- 					GnomeVFSVolume *volume,
- 					gpointer data);
-static void rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
- 					  GnomeVFSVolume *volume,
- 					  gpointer data);
+static void rhythmdb_directory_change_cb (GFileMonitor *monitor,
+					  GFile *file,
+					  GFile *other_file,
+					  GFileMonitorEvent event_type,
+					  RhythmDB *db);
+static void rhythmdb_mount_added_cb (GVolumeMonitor *monitor,
+				     GMount *mount,
+				     RhythmDB *db);
+static void rhythmdb_mount_removed_cb (GVolumeMonitor *monitor,
+				       GMount *mount,
+				       RhythmDB *db);
 
 void
 rhythmdb_init_monitoring (RhythmDB *db)
 {
-	db->priv->monitored_directories = g_hash_table_new_full (g_str_hash, g_str_equal,
-								 (GDestroyNotify) g_free,
-								 (GDestroyNotify)gnome_vfs_monitor_cancel);
+	db->priv->monitored_directories = g_hash_table_new_full (g_file_hash, (GEqualFunc) g_file_equal,
+								 (GDestroyNotify) g_object_unref,
+								 (GDestroyNotify)g_file_monitor_cancel);
 
 	db->priv->changed_files = g_hash_table_new_full (rb_refstring_hash, rb_refstring_equal,
 							 (GDestroyNotify) rb_refstring_unref,
 							 NULL);
 
-	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()),
-			  "volume-mounted",
-			  G_CALLBACK (rhythmdb_volume_mounted_cb),
+	db->priv->volume_monitor = g_volume_monitor_get ();
+	g_signal_connect (G_OBJECT (db->priv->volume_monitor),
+			  "mount-added",
+			  G_CALLBACK (rhythmdb_mount_added_cb),
 			  db);
 
-	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()),
-			  "volume-pre-unmount",
-			  G_CALLBACK (rhythmdb_volume_unmounted_cb),
+	g_signal_connect (G_OBJECT (db->priv->volume_monitor),
+			  "mount-removed",
+			  G_CALLBACK (rhythmdb_mount_removed_cb),
 			  db);
-	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()),
-			  "volume-unmounted",
-			  G_CALLBACK (rhythmdb_volume_unmounted_cb),
+	g_signal_connect (G_OBJECT (db->priv->volume_monitor),
+			  "mount-pre-unmount",
+			  G_CALLBACK (rhythmdb_mount_removed_cb),
 			  db);
 }
 
@@ -85,6 +91,11 @@ rhythmdb_dispose_monitoring (RhythmDB *db)
 	if (db->priv->changed_files_id != 0) {
 		g_source_remove (db->priv->changed_files_id);
 		db->priv->changed_files_id = 0;
+	}
+
+	if (db->priv->volume_monitor != NULL) {
+		g_object_unref (db->priv->volume_monitor);
+		db->priv->volume_monitor = NULL;
 	}
 }
 
@@ -106,6 +117,33 @@ rhythmdb_stop_monitoring (RhythmDB *db)
 }
 
 static void
+actually_add_monitor (RhythmDB *db, GFile *directory, GError **error)
+{
+	GFileMonitor *monitor;
+	char *uri;
+
+	if (directory == NULL) {
+		return;
+	}
+
+	if (g_hash_table_lookup (db->priv->monitored_directories, directory)) {
+		return;
+	}
+
+	uri = g_file_get_uri (directory);
+	monitor = g_file_monitor_directory (directory, 0, db->priv->exiting, error);
+	if (monitor != NULL) {
+		g_signal_connect_object (G_OBJECT (monitor),
+					 "changed",
+					 G_CALLBACK (rhythmdb_directory_change_cb),
+					 db, 0);
+		g_hash_table_insert (db->priv->monitored_directories,
+				     g_object_ref (directory),
+				     monitor);
+	}
+}
+
+static void
 monitor_entry_file (RhythmDBEntry *entry, RhythmDB *db)
 {
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
@@ -114,7 +152,7 @@ monitor_entry_file (RhythmDBEntry *entry, RhythmDB *db)
 
 		loc = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 
-		/* don't add add monitor if it's in the library path*/
+		/* don't add add monitor if it's in the library path */
 		for (l = db->priv->library_locations; l != NULL; l = g_slist_next (l)) {
 			if (g_str_has_prefix (loc, (const char*)l->data))
 				return;
@@ -125,12 +163,23 @@ monitor_entry_file (RhythmDBEntry *entry, RhythmDB *db)
 }
 
 static gboolean
-monitor_subdirectory (const char *uri, gboolean dir, RhythmDB *db)
+monitor_subdirectory (GFile *file, gboolean dir, RhythmDB *db)
 {
-	if (dir)
-		rhythmdb_monitor_uri_path (db, uri, NULL);
-	else
-		rhythmdb_add_uri (db, uri);
+	char *uri;
+
+	uri = g_file_get_uri (file);
+	if (dir) {
+		actually_add_monitor (db, file, NULL);
+	} else {
+		/* add the file to the database if it's not already there */
+		RhythmDBEntry *entry;
+
+		entry = rhythmdb_entry_lookup_by_location (db, uri);
+		if (entry == NULL) {
+			rhythmdb_add_uri (db, uri);
+		}
+	}
+	g_free (uri);
 	return TRUE;	
 }
 
@@ -145,8 +194,11 @@ monitor_library_directory (const char *uri, RhythmDB *db)
 
 	rb_debug ("beginning monitor of the library directory %s", uri);
 	rhythmdb_monitor_uri_path (db, uri, NULL);
-	rb_uri_handle_recursively_async (uri, (RBUriRecurseFunc) monitor_subdirectory, NULL,
-					 g_object_ref (db), (GDestroyNotify)g_object_unref);
+	rb_uri_handle_recursively_async (uri,
+					 NULL,
+					 (RBUriRecurseFunc) monitor_subdirectory,
+					 g_object_ref (db),
+					 (GDestroyNotify)g_object_unref);
 }
 
 static gboolean
@@ -158,7 +210,7 @@ rhythmdb_check_changed_file (RBRefString *uri, gpointer data, RhythmDB *db)
 	g_get_current_time (&time);
 	if (time.tv_sec >= time_sec + RHYTHMDB_FILE_MODIFY_PROCESS_TIME) {
 		/* process and remove from table */
-		RhythmDBEvent *event = g_new0 (RhythmDBEvent, 1);
+		RhythmDBEvent *event = g_slice_new0 (RhythmDBEvent);
 		event->db = db;
 		event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
 		event->uri = rb_refstring_ref (uri);
@@ -219,20 +271,18 @@ add_changed_file (RhythmDB *db, const char *uri)
 }
 
 static void
-rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
-			      const char *monitor_uri,
-			      const char *info_uri,
-			      GnomeVFSMonitorEventType vfsevent,
+rhythmdb_directory_change_cb (GFileMonitor *monitor,
+			      GFile *file,
+			      GFile *other_file,
+			      GFileMonitorEvent event_type,
 			      RhythmDB *db)
 {
 	char *canon_uri;
+	canon_uri = g_file_get_uri (file);
+	rb_debug ("directory event %d for %s", event_type, canon_uri);
 
-	canon_uri = rb_canonicalise_uri (info_uri);
-	rb_debug ("directory event %d for %s: %s", (int) vfsevent,
-		  monitor_uri, canon_uri);
-
-	switch (vfsevent) {
-        case GNOME_VFS_MONITOR_EVENT_CREATED:
+	switch (event_type) {
+        case G_FILE_MONITOR_EVENT_CREATED:
 		{
 			GSList *cur;
 			gboolean in_library = FALSE;
@@ -257,29 +307,32 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 
 		/* process directories immediately */
 		if (rb_uri_is_directory (canon_uri)) {
-			rhythmdb_monitor_uri_path (db, canon_uri, NULL);
+			actually_add_monitor (db, file, NULL);
 			rhythmdb_add_uri (db, canon_uri);
 		} else {
 			add_changed_file (db, canon_uri);
 		}
 		break;
-	case GNOME_VFS_MONITOR_EVENT_CHANGED:
-        case GNOME_VFS_MONITOR_EVENT_METADATA_CHANGED:
+	case G_FILE_MONITOR_EVENT_CHANGED:
+        case G_FILE_MONITOR_EVENT_ATTRIBUTE_CHANGED:
 		if (rhythmdb_entry_lookup_by_location (db, canon_uri)) {
 			add_changed_file (db, canon_uri);
 		}
 		break;
-	case GNOME_VFS_MONITOR_EVENT_DELETED:
+	case G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT:
+		/* hmm.. */
+		break;
+	case G_FILE_MONITOR_EVENT_DELETED:
 		if (rhythmdb_entry_lookup_by_location (db, canon_uri)) {
-			RhythmDBEvent *event = g_new0 (RhythmDBEvent, 1);
+			RhythmDBEvent *event = g_slice_new0 (RhythmDBEvent);
 			event->db = db;
 			event->type = RHYTHMDB_EVENT_FILE_DELETED;
 			event->uri = rb_refstring_new (canon_uri);
 			g_async_queue_push (db->priv->event_queue, event);
 		}
 		break;
-	case GNOME_VFS_MONITOR_EVENT_STARTEXECUTING:
-	case GNOME_VFS_MONITOR_EVENT_STOPEXECUTING:
+	case G_FILE_MONITOR_EVENT_PRE_UNMOUNT:
+	case G_FILE_MONITOR_EVENT_UNMOUNTED:
 		break;
 	}
 
@@ -289,54 +342,27 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 void
 rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 {
-	char *directory;
-	GnomeVFSResult vfsresult;
-	GnomeVFSMonitorHandle *handle;
+	GFile *directory;
 
 	if (rb_uri_is_directory (uri)) {
+		char *dir;
 		if (g_str_has_suffix(uri, G_DIR_SEPARATOR_S)) {
-			directory = g_strdup (uri);
+			dir = g_strdup (uri);
 		} else {
-			directory = g_strconcat (uri, G_DIR_SEPARATOR_S, NULL);
-		}
-	} else {
-		GnomeVFSURI *vfsuri, *parent;
-
-		vfsuri = gnome_vfs_uri_new (uri);
-		if (vfsuri == NULL) {
-			rb_debug ("failed to monitor %s: couldn't create GnomeVFSURI", uri);
-			return;
+			dir = g_strconcat (uri, G_DIR_SEPARATOR_S, NULL);
 		}
 
-		parent = gnome_vfs_uri_get_parent (vfsuri);
-		directory = gnome_vfs_uri_to_string (parent, GNOME_VFS_URI_HIDE_NONE);
-		gnome_vfs_uri_unref (vfsuri);
-		gnome_vfs_uri_unref (parent);
-	}
-
-	if (directory == NULL || g_hash_table_lookup (db->priv->monitored_directories, directory)) {
-		g_free (directory);
-		return;
-	}
-
-	vfsresult = gnome_vfs_monitor_add (&handle, directory,
-					   GNOME_VFS_MONITOR_DIRECTORY,
-					   (GnomeVFSMonitorCallback) rhythmdb_directory_change_cb,
-					   db);
-	if (vfsresult == GNOME_VFS_OK) {
-		rb_debug ("monitoring: %s", directory);
-		g_hash_table_insert (db->priv->monitored_directories,
-				     directory, handle);
+		directory = g_file_new_for_uri (dir);
+		g_free (dir);
 	} else {
-		g_set_error (error,
-			     RHYTHMDB_ERROR,
-			     RHYTHMDB_ERROR_ACCESS_FAILED,
-			     _("Couldn't monitor %s: %s"),
-			     directory,
-			     gnome_vfs_result_to_string (vfsresult));
-		rb_debug ("failed to monitor %s", directory);
-		g_free (directory);
+		GFile *file;
+
+		file = g_file_new_for_uri (uri);
+		directory = g_file_get_parent (file);
+		g_object_unref (file);
 	}
+
+	actually_add_monitor (db, directory, error);
 }
 
 typedef struct
@@ -372,11 +398,11 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 			 * then hide any that turn out to be missing.
 			 */
 			rhythmdb_entry_set_visibility (ctxt->db, entry, TRUE);
-			queue_stat_uri (location,
-					ctxt->db,
-					RHYTHMDB_ENTRY_TYPE_SONG,
-					RHYTHMDB_ENTRY_TYPE_IGNORE,
-					RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+			rhythmdb_add_uri_with_types (ctxt->db,
+						     location,
+						     RHYTHMDB_ENTRY_TYPE_SONG,
+						     RHYTHMDB_ENTRY_TYPE_IGNORE,
+						     RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
 		} else {
 			GTimeVal time;
 			GValue val = {0, };
@@ -402,45 +428,53 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 }
 
 static void
-rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
-			    GnomeVFSVolume *volume,
-			    gpointer data)
+rhythmdb_mount_added_cb (GVolumeMonitor *monitor,
+			 GMount *mount,
+			 RhythmDB *db)
 {
 	MountCtxt ctxt;
 	char *mp;
+	GFile *root;
 
-	mp = gnome_vfs_volume_get_activation_uri (volume); 
+	root = g_mount_get_root (mount);
+	mp = g_file_get_uri (root);
+	g_object_unref (root);
+
 	ctxt.mount_point = rb_refstring_new (mp);
 	g_free (mp);
 
-	ctxt.db = RHYTHMDB (data);
+	ctxt.db = db;
 	ctxt.mounted = TRUE;
 	rb_debug ("volume %s mounted", rb_refstring_get (ctxt.mount_point));
-	rhythmdb_entry_foreach (RHYTHMDB (data),
+	rhythmdb_entry_foreach (db,
 				(GFunc)entry_volume_mounted_or_unmounted,
 				&ctxt);
-	rhythmdb_commit (RHYTHMDB (data));
+	rhythmdb_commit (db);
 	rb_refstring_unref (ctxt.mount_point);
 }
 
 static void
-rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
-			      GnomeVFSVolume *volume,
-			      gpointer data)
+rhythmdb_mount_removed_cb (GVolumeMonitor *monitor,
+			   GMount *mount,
+			   RhythmDB *db)
 {
 	MountCtxt ctxt;
 	char *mp;
+	GFile *root;
 
-	mp = gnome_vfs_volume_get_activation_uri (volume); 
+	root = g_mount_get_root (mount);
+	mp = g_file_get_uri (root);
+	g_object_unref (root);
+
 	ctxt.mount_point = rb_refstring_new (mp);
 	g_free (mp);
 
-	ctxt.db = RHYTHMDB (data);
+	ctxt.db = db;
 	ctxt.mounted = FALSE;
 	rb_debug ("volume %s unmounted", rb_refstring_get (ctxt.mount_point));
-	rhythmdb_entry_foreach (RHYTHMDB (data),
+	rhythmdb_entry_foreach (db,
 				(GFunc)entry_volume_mounted_or_unmounted,
 				&ctxt);
-	rhythmdb_commit (RHYTHMDB (data));
+	rhythmdb_commit (db);
 	rb_refstring_unref (ctxt.mount_point);
 }

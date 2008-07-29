@@ -36,7 +36,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
-#include <libgnomevfs/gnome-vfs.h>
 
 #include "rb-uri-dialog.h"
 #include "rb-glade-helpers.h"

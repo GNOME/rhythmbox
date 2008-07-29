@@ -3,8 +3,7 @@
 noinst_LTLIBRARIES = librhythmdb.la
 
 librhythmdb_la_LDFLAGS = -export-dynamic
-librhythmdb_la_LIBADD = 				\
-	$(GIO_LIBS)					
+librhythmdb_la_LIBADD =
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -15,7 +14,6 @@ INCLUDES = 						\
 	-I$(top_srcdir)/metadata			\
 	-I$(top_builddir)/lib                           \
 	$(RHYTHMBOX_CFLAGS)				\
-	$(GIO_CFLAGS)					\
 	$(NO_STRICT_ALIASING_CFLAGS)
 
 librhythmdb_la_SOURCES =				\

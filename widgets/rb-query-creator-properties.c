@@ -30,9 +30,9 @@
 
 #include "config.h"
 
-#include <libgnome/gnome-i18n.h>
+#include <glib/gi18n.h>
+#include <glib/gurifuncs.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rhythmdb.h"
 #include "rb-query-creator-private.h"
@@ -283,7 +283,7 @@ stringCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 static void
 escapedStringCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 {
-	char *text = gnome_vfs_unescape_string (g_value_get_string (val), NULL);
+	char *text = g_uri_unescape_string (g_value_get_string (val), G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 	gtk_entry_set_text (GTK_ENTRY (widget), text);
 	g_free (text);
 }
@@ -291,7 +291,7 @@ escapedStringCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 static void
 escapedStringCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 {
-	char *text = gnome_vfs_escape_host_and_path_string (gtk_entry_get_text (GTK_ENTRY (widget)));
+	char *text = g_uri_escape_string (gtk_entry_get_text (GTK_ENTRY (widget)), G_URI_RESERVED_CHARS_ALLOWED_IN_PATH, TRUE);
 
 	g_value_init (val, G_TYPE_STRING);
 	g_value_set_string (val, text);

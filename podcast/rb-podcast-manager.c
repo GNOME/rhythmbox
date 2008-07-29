@@ -36,8 +36,8 @@
 
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
+#include <gio/gio.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
 
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
@@ -78,9 +78,7 @@ enum
 	FINISH_DOWNLOAD,
 	PROCESS_ERROR,
 	FEED_UPDATES_AVAILABLE,
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	MISSING_PLUGINS,
-#endif
 	LAST_SIGNAL
 };
 
@@ -96,15 +94,21 @@ typedef struct
 typedef struct
 {
 	RBPodcastManager *pd;
+
 	RhythmDBEntry *entry;
-	GnomeVFSAsyncHandle *read_handle;
-	GnomeVFSURI *write_uri;
-	GnomeVFSURI *read_uri;
 	char *query_string;
 
-	guint total_size;
+	GFile *source;
+	GFile *destination;
+	GFileInputStream *in_stream;
+	GFileOutputStream *out_stream;
+
+	guint64 download_offset;
+	guint64 download_size;
 	guint progress;
-	gboolean cancelled;
+
+	GCancellable *cancel;
+	GThread *thread;
 } RBPodcastManagerInfo;
 
 typedef struct
@@ -149,8 +153,8 @@ static void rb_podcast_manager_get_property 		(GObject *object,
 							 guint prop_id,
 		                                	 GValue *value,
                 		                	 GParamSpec *pspec);
-static void rb_podcast_manager_download_file_info_cb	(GnomeVFSAsyncHandle *handle,
-							 GList *results,
+static void download_file_info_cb			(GFile *source,
+							 GAsyncResult *result,
 							 RBPodcastManagerInfo *data);
 static void rb_podcast_manager_abort_download		(RBPodcastManagerInfo *data);
 static gboolean rb_podcast_manager_sync_head_cb 	(gpointer data);
@@ -159,8 +163,7 @@ static gboolean rb_podcast_manager_head_query_cb 	(GtkTreeModel *query_model,
 							 GtkTreeIter *iter,
 						   	 RBPodcastManager *data);
 static void rb_podcast_manager_save_metadata		(RBPodcastManager *pd,
-						  	 RhythmDBEntry *entry,
-						  	 const char *uri);
+						  	 RhythmDBEntry *entry);
 static void rb_podcast_manager_db_entry_added_cb 	(RBPodcastManager *pd,
 							 RhythmDBEntry *entry);
 static void rb_podcast_manager_db_entry_deleted_cb 	(RBPodcastManager *pd,
@@ -174,16 +177,9 @@ static gboolean rb_podcast_manager_handle_feed_error	(RBPodcastManager *mgr,
 
 static gpointer rb_podcast_manager_thread_parse_feed	(RBPodcastThreadInfo *info);
 
-/* async read file functions */
-static guint download_progress_cb			(GnomeVFSXferProgressInfo *info,
-							 gpointer data);
-static guint download_progress_update_cb		(GnomeVFSAsyncHandle *handle,
-							 GnomeVFSXferProgressInfo *info,
-							 gpointer data);
-
 /* internal functions */
 static void download_info_free				(RBPodcastManagerInfo *data);
-static void start_job					(RBPodcastManagerInfo *data);
+static gpointer podcast_download_thread			(RBPodcastManagerInfo *data);
 static gboolean end_job					(RBPodcastManagerInfo *data);
 static void cancel_job					(RBPodcastManagerInfo *pd);
 static void rb_podcast_manager_update_synctime		(RBPodcastManager *pd);
@@ -271,7 +267,6 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				G_TYPE_STRING,
 				G_TYPE_BOOLEAN);
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	rb_podcast_manager_signals[MISSING_PLUGINS] =
 		g_signal_new ("missing-plugins",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -282,8 +277,6 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 			      G_TYPE_BOOLEAN,
 			      3,
 			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);
-#endif
-
 
 	g_type_class_add_private (klass, sizeof (RBPodcastManagerPrivate));
 }
@@ -582,12 +575,35 @@ rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
         return FALSE;
 }
 
+static void
+download_error (RBPodcastManagerInfo *data, GError *error)
+{
+	GValue val = {0,};
+	rb_debug ("error downloading %s: %s",
+		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION),
+		  error->message);
+
+	g_value_init (&val, G_TYPE_ULONG);
+	g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
+	rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, error->message);
+	rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
+	g_value_unset (&val);
+
+	rhythmdb_commit (data->pd->priv->db);
+	g_idle_add ((GSourceFunc)end_job, data);
+}
+
 static gboolean
 rb_podcast_manager_next_file (RBPodcastManager * pd)
 {
 	const char *location;
 	RBPodcastManagerInfo *data;
 	char *query_string;
+	const char *attrs;
 	GList *d;
 
 	g_assert (rb_is_main_thread ());
@@ -620,66 +636,39 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 	location = rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION);
 	rb_debug ("processing %s", location);
 
-	/* gnome-vfs currently doesn't handle HTTP query strings correctly.
-	 * so we do it ourselves.
+	/* extract the query string so we can remove it later if it appears
+	 * in download URLs
 	 */
 	query_string = strchr (location, '?');
 	if (query_string != NULL) {
-		char *base_uri;
-
-		base_uri = g_strdup (location);
-		query_string = strchr (base_uri, '?');
-		*query_string++ = '\0';
-		rb_debug ("hiding query string %s from gnome-vfs", query_string);
-
-		data->read_uri = gnome_vfs_uri_new (base_uri);
-		if (data->read_uri != NULL) {
-			char *full_uri;
-
-			full_uri = g_strdup_printf ("%s?%s",
-						    data->read_uri->text,
-						    query_string);
-			g_free (data->read_uri->text);
-			data->read_uri->text = full_uri;
-
-			/* include the question mark in data->query_string to make
-			 * the later check easier.
-			 */
-			query_string--;
-			*query_string = '?';
-			data->query_string = g_strdup (query_string);
-		}
-		g_free (base_uri);
-	} else {
-		data->read_uri = gnome_vfs_uri_new (location);
+		query_string--;
+		data->query_string = g_strdup (query_string);
 	}
 
-	if (data->read_uri == NULL) {
-		rb_debug ("Error downloading podcast: could not create remote uri");
-		rb_podcast_manager_abort_download (data);
-	} else {
-		GList *l;
+	data->source = g_file_new_for_uri (location);
 
-		l = g_list_prepend (NULL, data->read_uri);
-		gnome_vfs_async_get_file_info (&data->read_handle,
-					       l,
-					       GNOME_VFS_FILE_INFO_FOLLOW_LINKS,
-					       GNOME_VFS_PRIORITY_DEFAULT,
-					       (GnomeVFSAsyncGetFileInfoCallback) rb_podcast_manager_download_file_info_cb,
-					       data);
-		g_list_free (l);
-	}
+	attrs = G_FILE_ATTRIBUTE_STANDARD_SIZE ","
+		G_FILE_ATTRIBUTE_STANDARD_COPY_NAME ","
+		G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME;
+	g_file_query_info_async (data->source,
+				 attrs,
+				 G_FILE_QUERY_INFO_NONE,
+				 0,
+				 data->cancel,
+				 (GAsyncReadyCallback) download_file_info_cb,
+				 data);
 
 	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
 static void
-rb_podcast_manager_download_file_info_cb (GnomeVFSAsyncHandle *handle,
-					  GList *results,
-					  RBPodcastManagerInfo *data)
+download_file_info_cb (GFile *source,
+		       GAsyncResult *result,
+		       RBPodcastManagerInfo *data)
 {
-	GnomeVFSGetFileInfoResult *result = results->data;
+	GError *error = NULL;
+	GFileInfo *src_info;
 	char *local_file_name;
 	char *local_file_path;
 	char *dir_name;
@@ -690,9 +679,11 @@ rb_podcast_manager_download_file_info_cb (GnomeVFSAsyncHandle *handle,
 	rb_debug ("got file info results for %s",
 		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION));
 
-	if (result->result != GNOME_VFS_OK) {
-
+	src_info = g_file_query_info_finish (source, result, &error);
+	if (error != NULL) {
 		GValue val = {0,};
+
+		rb_debug ("file info query failed: %s", error->message);
 
 		g_value_init (&val, G_TYPE_ULONG);
 		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
@@ -700,16 +691,18 @@ rb_podcast_manager_download_file_info_cb (GnomeVFSAsyncHandle *handle,
 		g_value_unset (&val);
 
 		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val, gnome_vfs_result_to_string (result->result));
+		g_value_set_string (&val, error->message);
 		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
 		g_value_unset (&val);
 
 		rhythmdb_commit (data->pd->priv->db);
 
-		rb_debug ("get_file_info request failed");
+		g_error_free (error);
 		rb_podcast_manager_abort_download (data);
 		return;
 	}
+
+	data->download_size = g_file_info_get_attribute_uint64 (src_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
 
 	/* construct download directory */
 	conf_dir_name = rb_podcast_manager_get_podcast_dir (data->pd);
@@ -726,16 +719,26 @@ rb_podcast_manager_download_file_info_cb (GnomeVFSAsyncHandle *handle,
 		return;
 	}
 
+	/* this should probably be the target of any redirects.  hmm. */
+	local_file_name = g_file_info_get_attribute_as_string (src_info, G_FILE_ATTRIBUTE_STANDARD_COPY_NAME);
+	if (local_file_name == NULL) {
+		/* probably shouldn't be using this, but the gvfs http backend doesn't
+		 * set the copy name (yet)
+		 */
+		local_file_name = g_strdup (g_file_info_get_edit_name (src_info));
+		if (local_file_name == NULL) {
+			/* um, grab the original filename? */
+			local_file_name = g_strdup ("mysterious podcast download.mp3");
+		}
+	}
+
 	/* if the filename ends with the query string from the original URI,
 	 * remove it.
 	 */
 	if (data->query_string &&
-	    g_str_has_suffix (result->file_info->name, data->query_string)) {
-		local_file_name = g_strdup (result->file_info->name);
+	    g_str_has_suffix (local_file_name, data->query_string)) {
 		local_file_name[strlen (local_file_name) - strlen (data->query_string)] = '\0';
 		rb_debug ("removing query string \"%s\" -> local file name \"%s\"", data->query_string, local_file_name);
-	} else {
-		local_file_name = result->file_info->name;
 	}
 
 	/* construct local filename */
@@ -743,54 +746,39 @@ rb_podcast_manager_download_file_info_cb (GnomeVFSAsyncHandle *handle,
 					    local_file_name,
 					    NULL);
 
-	if (local_file_name != result->file_info->name)
-		g_free (local_file_name);
+	g_free (local_file_name);
 
 	g_free (dir_name);
 	rb_debug ("creating file %s", local_file_path);
 
-	local_file_name = g_filename_to_uri (local_file_path, NULL, NULL);
-	g_free (local_file_path);
-	local_file_path = local_file_name;
-
-	data->write_uri = gnome_vfs_uri_new (local_file_path);
-	if (data->write_uri == NULL) {
-		g_warning ("Could not create local podcast URI for %s", local_file_path);
-		rb_podcast_manager_abort_download (data);
-		return;
-	}
-
-	if (rb_uri_exists (local_file_path)) {
+	data->destination = g_file_new_for_path (local_file_path);
+	if (g_file_query_exists (data->destination, NULL)) {
+		GFileInfo *dest_info;
 		guint64 local_size;
-		GnomeVFSFileInfo *local_info;
-		GnomeVFSResult local_result;
-
-		local_info = gnome_vfs_file_info_new ();
-		local_result = gnome_vfs_get_file_info (local_file_path,
-							local_info,
-							GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
-		local_size = local_info->size;
-		gnome_vfs_file_info_unref (local_info);
-
-		rb_debug ("local file %s already exists: size is %u vs remote size %u",
-			  local_file_path, (guint) local_size, (guint)result->file_info->size);
-
-		if (local_result != GNOME_VFS_OK) {
-			g_warning ("Could not get info on downloaded podcast file %s",
-				   local_file_path);
+	
+		dest_info = g_file_query_info (data->destination,
+					       G_FILE_ATTRIBUTE_STANDARD_SIZE,
+					       G_FILE_QUERY_INFO_NONE,
+					       NULL,
+					       &error);
+		if (error != NULL) {
+			/* hrm */
+			g_warning ("Looking at downloaded podcast file %s: %s",
+				   local_file_path, error->message);
+			g_error_free (error);
 			rb_podcast_manager_abort_download (data);
 			return;
-		} else if (result->file_info->size == local_size) {
+		}
+
+		/* check size */
+		local_size = g_file_info_get_attribute_uint64 (dest_info,
+							       G_FILE_ATTRIBUTE_STANDARD_SIZE);
+		g_object_unref (dest_info);
+		if (local_size == data->download_size) {
 			GValue val = {0,};
-			char *uri;
-			char *canon_uri;
 
-			uri = gnome_vfs_uri_to_string (data->write_uri, GNOME_VFS_URI_HIDE_NONE);
-			canon_uri = rb_canonicalise_uri (uri);
-			g_free (uri);
-
-			rb_debug ("podcast %s already downloaded",
-				  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION));
+			rb_debug ("local file is the same size as the download (%" G_GUINT64_FORMAT ")",
+				  local_size);
 
 			g_value_init (&val, G_TYPE_ULONG);
 			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_COMPLETE);
@@ -798,27 +786,40 @@ rb_podcast_manager_download_file_info_cb (GnomeVFSAsyncHandle *handle,
 			g_value_unset (&val);
 
 			g_value_init (&val, G_TYPE_STRING);
-			g_value_set_string (&val, canon_uri);
+			g_value_take_string (&val, g_file_get_uri (data->destination));
 			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
 			g_value_unset (&val);
 
-			rb_podcast_manager_save_metadata (data->pd, data->entry, canon_uri);
-
-			g_free (canon_uri);
+			rb_podcast_manager_save_metadata (data->pd, data->entry);
 
 			rb_podcast_manager_abort_download (data);
+			g_free (local_file_path);
 			return;
-		} else if (result->file_info->size > local_size) {
-			/* TODO: support resume file */
-			rb_debug ("podcast episode already partially downloaded, but we can't resume downloads");
+		} else if (local_size < data->download_size) {
+			rb_debug ("podcast partly downloaded (%" G_GUINT64_FORMAT " of %" G_GUINT64_FORMAT ")",
+				  local_size, data->download_size);
+			data->download_offset = local_size;
 		} else {
-			/* the local file is larger. replace it */
+			rb_debug ("replacing local file as it's larger than the download");
 		}
 	}
 
 	g_free (local_file_path);
-	start_job (data);
 
+	GDK_THREADS_ENTER ();
+	g_signal_emit (data->pd, rb_podcast_manager_signals[START_DOWNLOAD],
+		       0, data->entry);
+	GDK_THREADS_LEAVE ();
+
+	data->cancel = g_cancellable_new ();
+	data->thread = g_thread_create ((GThreadFunc) podcast_download_thread,
+					data,
+					TRUE,
+					&error);
+	if (error != NULL) {
+		download_error (data, error);
+		g_error_free (error);
+	}
 }
 
 static void
@@ -844,26 +845,31 @@ gboolean
 rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboolean automatic)
 {
 	RBPodcastThreadInfo *info;
-	gchar *valid_url;
+	GFile *feed;
+	char *feed_url;
 	gboolean existing_feed;
 
 	if (g_str_has_prefix (url, "feed://") || g_str_has_prefix (url, "itpc://")) {
 		char *tmp;
 
 		tmp = g_strdup_printf ("http://%s", url + strlen ("feed://"));
-		valid_url = gnome_vfs_make_uri_from_input (tmp);
+		feed = g_file_new_for_uri (tmp);
 		g_free (tmp);
 	} else {
-		valid_url = gnome_vfs_make_uri_from_input (url);
+		feed = g_file_new_for_uri (url);
 	}
 
+	/* hmm.  can we check if the GFile we got is something useful? */
+#if 0
 	if (valid_url == NULL) {
 		rb_error_dialog (NULL, _("Invalid URL"),
 				 _("The URL \"%s\" is not valid, please check it."), url);
 		return FALSE;
 	}
+#endif
 
-	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (pd->priv->db, valid_url);
+	feed_url = g_file_get_uri (feed);		/* not sure this buys us anything at all */
+	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (pd->priv->db, feed_url);
 	if (entry) {
 		if (rhythmdb_entry_get_entry_type (entry) != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
 			/* added as something else, probably iradio */
@@ -879,7 +885,7 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 
 	info = g_new0 (RBPodcastThreadInfo, 1);
 	info->pd = g_object_ref (pd);
-	info->url = valid_url;
+	info->url = feed_url;
 	info->automatic = automatic;
 	info->existing_feed = existing_feed;
 
@@ -1112,7 +1118,6 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	return entry;
 }
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 typedef struct {
 	RhythmDBEntry *entry;
 	RBPodcastManager *mgr;
@@ -1121,12 +1126,10 @@ typedef struct {
 static void
 missing_plugins_retry_cb (gpointer inst, gboolean retry, MissingPluginRetryData *retry_data)
 {
-	const char *uri;
 	if (retry == FALSE)
 		return;
 
-	uri = rhythmdb_entry_get_string (retry_data->entry, RHYTHMDB_PROP_MOUNTPOINT);
-	rb_podcast_manager_save_metadata (retry_data->mgr, retry_data->entry, uri);
+	rb_podcast_manager_save_metadata (retry_data->mgr, retry_data->entry);
 }
 
 static void
@@ -1137,24 +1140,22 @@ missing_plugins_retry_cleanup (MissingPluginRetryData *retry)
 	g_free (retry);
 }
 
-#endif
 
 static void
-rb_podcast_manager_save_metadata (RBPodcastManager *pd, RhythmDBEntry *entry, const char *uri)
+rb_podcast_manager_save_metadata (RBPodcastManager *pd, RhythmDBEntry *entry)
 {
 	RBMetaData *md = rb_metadata_new ();
 	GError *error = NULL;
 	GValue val = { 0, };
 	const char *mime;
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+	const char *uri;
 	char **missing_plugins;
 	char **plugin_descriptions;
-#endif
 
+	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
 	rb_debug ("loading podcast metadata from %s", uri);
         rb_metadata_load (md, uri, &error);
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	if (rb_metadata_get_missing_plugins (md, &missing_plugins, &plugin_descriptions)) {
 		GClosure *closure;
 		gboolean processing;
@@ -1177,7 +1178,6 @@ rb_podcast_manager_save_metadata (RBPodcastManager *pd, RhythmDBEntry *entry, co
 			return;
 		}
 	}
-#endif
 
 	if (error != NULL) {
 		/* this probably isn't an audio enclosure. or some other error */
@@ -1240,15 +1240,23 @@ rb_podcast_manager_db_entry_added_cb (RBPodcastManager *pd, RhythmDBEntry *entry
 static void
 download_info_free (RBPodcastManagerInfo *data)
 {
-	if (data->write_uri) {
-		gnome_vfs_uri_unref (data->write_uri);
-		data->write_uri = NULL;
+	/* what should this do about the thread and etc.? */
+
+	if (data->cancel != NULL) {
+		g_object_unref (data->cancel);
+		data->cancel = NULL;
 	}
 
-	if (data->read_uri) {
-		gnome_vfs_uri_unref (data->read_uri);
-		data->read_uri = NULL;
+	if (data->source) {
+		g_object_unref (data->source);
+		data->source = NULL;
 	}
+
+	if (data->destination) {
+		g_object_unref (data->destination);
+		data->destination = NULL;
+	}
+
 	if (data->query_string) {
 		g_free (data->query_string);
 		data->query_string = NULL;
@@ -1262,33 +1270,176 @@ download_info_free (RBPodcastManagerInfo *data)
 }
 
 static void
-start_job (RBPodcastManagerInfo *data)
+download_progress (RBPodcastManagerInfo *data, gsize downloaded, guint64 total, gboolean complete)
 {
-	GList *source_uri_list;
-	GList *target_uri_list;
+	guint local_progress = 0;
 
-	GDK_THREADS_ENTER ();
-	g_signal_emit (data->pd, rb_podcast_manager_signals[START_DOWNLOAD],
-		       0, data->entry);
-	GDK_THREADS_LEAVE ();
+	rb_debug ("%s: %lu / %" G_GUINT64_FORMAT,
+		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION),
+		  (gulong)downloaded, total);
 
-	source_uri_list = g_list_prepend (NULL, data->read_uri);
-	target_uri_list = g_list_prepend (NULL, data->write_uri);
+	if (downloaded > 0 && total > 0)
+		local_progress = (gint) (100 * downloaded) / total;
 
-	gnome_vfs_async_xfer (&data->read_handle,
-			      source_uri_list,
-			      target_uri_list,
-			      GNOME_VFS_XFER_DEFAULT ,
-			      GNOME_VFS_XFER_ERROR_MODE_ABORT,
-			      GNOME_VFS_XFER_OVERWRITE_MODE_REPLACE,
-			      GNOME_VFS_PRIORITY_DEFAULT,
-			      (GnomeVFSAsyncXferProgressCallback) download_progress_update_cb,
-			      data,
-			      (GnomeVFSXferProgressCallback) download_progress_cb,
-			      data);
+	if (local_progress != data->progress) {
+		GValue val = {0,};
 
-	g_list_free (source_uri_list);
-	g_list_free (target_uri_list);
+		GDK_THREADS_ENTER ();
+
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, local_progress);
+		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
+		g_value_unset (&val);
+
+		rhythmdb_commit (data->pd->priv->db);
+
+		g_signal_emit (data->pd, rb_podcast_manager_signals[STATUS_CHANGED],
+			       0, data->entry, local_progress);
+
+		GDK_THREADS_LEAVE ();
+
+		data->progress = local_progress;
+	}
+
+	if (complete) {
+		if (g_cancellable_is_cancelled (data->cancel) == FALSE) {
+			GValue val = {0,};
+			rb_debug ("download of %s completed",
+				  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION));
+
+			g_value_init (&val, G_TYPE_UINT64);
+			g_value_set_uint64 (&val, downloaded);
+			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_FILE_SIZE, &val);
+			g_value_unset (&val);
+
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_COMPLETE);
+			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
+			g_value_unset (&val);
+
+			rb_podcast_manager_save_metadata (data->pd,
+							  data->entry);
+		}
+		g_idle_add ((GSourceFunc)end_job, data);
+	}
+}
+
+static gpointer
+podcast_download_thread (RBPodcastManagerInfo *data)
+{
+	GError *error = NULL;
+	char buf[8192];
+	gssize n_read;
+	gssize n_written;
+	gsize downloaded;
+	
+	/* open remote file */
+	data->in_stream = g_file_read (data->source, data->cancel, &error);
+	if (error != NULL) {
+		download_error (data, error);
+		g_error_free (error);
+		return NULL;
+	}
+
+	/* if we have an offset to download from, try the seek
+	 * before anything else.  if we can't seek, we'll have to
+	 * grab the whole thing.
+	 */
+	downloaded = 0;
+	if (data->download_offset != 0) {
+		g_seekable_seek (G_SEEKABLE (data->in_stream),
+				 data->download_offset,
+				 G_SEEK_SET,
+				 data->cancel,
+				 &error);
+		if (error == NULL) {
+			/* ok, now we can open the output file for appending */
+			rb_debug ("seek to offset %" G_GUINT64_FORMAT " successful", data->download_offset);
+			data->out_stream = g_file_append_to (data->destination,
+							     G_FILE_CREATE_NONE,
+							     data->cancel,
+							     &error);
+			downloaded = data->download_offset;
+		} else if (error->domain == G_IO_ERROR &&
+			   error->code == G_IO_ERROR_NOT_SUPPORTED) {
+			/* can't seek, download the whole thing */
+			rb_debug ("seeking failed: %s", error->message);
+			g_clear_error (&error);
+		}
+	}
+	if (error != NULL) {
+		download_error (data, error);
+		g_error_free (error);
+		return NULL;
+	}
+
+	/* open local file */
+	if (data->out_stream == NULL) {
+		data->out_stream = g_file_create (data->destination,
+						  G_FILE_CREATE_NONE,
+						  data->cancel,
+						  &error);
+		if (error != NULL) {
+			download_error (data, error);
+			g_error_free (error);
+			return NULL;
+		}
+	}
+	
+	/* set the downloaded location for the episode */
+	if (rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_MOUNTPOINT) == NULL) {
+		GValue val = {0,};
+		char *uri = g_file_get_uri (data->destination);
+
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, uri);
+		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
+		g_value_unset (&val);
+
+		rhythmdb_commit (data->pd->priv->db);
+		g_free (uri);
+	}
+
+	/* loop, copying from input stream to output stream */
+	while (TRUE) {
+		char *p;
+		n_read = g_input_stream_read (G_INPUT_STREAM (data->in_stream),
+					      buf, sizeof (buf),
+					      data->cancel,
+					      &error);
+		if (n_read < 1) {
+			break;
+		}
+
+		p = buf;
+		while (n_read > 0) {
+			n_written = g_output_stream_write (G_OUTPUT_STREAM (data->out_stream),
+							   p, n_read,
+							   data->cancel,
+							   &error);
+			if (n_written == -1) {
+				break;
+			}
+			p += n_written;
+			n_read -= n_written;
+			downloaded += n_written;
+		}
+
+		download_progress (data, downloaded, data->download_size, FALSE);
+	}
+
+	if (error != NULL) {
+		download_error (data, error);
+	} else {
+		download_progress (data, downloaded, data->download_size, TRUE);
+	}
+
+	/* close everything */
+	g_input_stream_close (G_INPUT_STREAM (data->in_stream), data->cancel, NULL);
+	/* probably should actually care about this.. */
+	g_output_stream_close (G_OUTPUT_STREAM (data->out_stream), data->cancel, NULL);
+
+	return NULL;
 }
 
 static gboolean
@@ -1329,11 +1480,7 @@ cancel_job (RBPodcastManagerInfo *data)
 
 	/* is this the active download? */
 	if (data == data->pd->priv->active_download) {
-		data->cancelled = TRUE;
-		if (data->read_handle != NULL) {
-			gnome_vfs_async_cancel (data->read_handle);
-			data->read_handle = NULL;
-		}
+		g_cancellable_cancel (data->cancel);
 
 		/* download data will be cleaned up after next progress callback */
 	} else {
@@ -1343,123 +1490,6 @@ cancel_job (RBPodcastManagerInfo *data)
 	}
 }
 
-static guint
-download_progress_cb (GnomeVFSXferProgressInfo *info, gpointer cb_data)
-{
-	GValue val = {0, };
-	RBPodcastManagerInfo *data = (RBPodcastManagerInfo *) cb_data;
-
-	if (data == NULL) {
-		return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
-	}
-
-	if (info->status != GNOME_VFS_XFER_PROGRESS_STATUS_OK ||
-	    ((info->phase == GNOME_VFS_XFER_PHASE_COMPLETED) && (info->file_size == 0))) {
-
-		rb_debug ("error downloading %s",
-			  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION));
-
-		g_value_init (&val, G_TYPE_ULONG);
-		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
-		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
-		g_value_unset (&val);
-
-		if (info->vfs_status != GNOME_VFS_OK) {
-			g_value_init (&val, G_TYPE_STRING);
-			g_value_set_string (&val, gnome_vfs_result_to_string (info->vfs_status));
-			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
-			g_value_unset (&val);
-		}
-
-		rhythmdb_commit (data->pd->priv->db);
-		g_idle_add ((GSourceFunc)end_job, data);
-		return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
-	}
-
-	if (rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_MOUNTPOINT) == NULL) {
-		char *uri = gnome_vfs_uri_to_string (data->write_uri, GNOME_VFS_URI_HIDE_NONE);
-		char *canon_uri = rb_canonicalise_uri (uri);
-		g_free (uri);
-
-		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val, canon_uri);
-		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
-		g_value_unset (&val);
-
-		rhythmdb_commit (data->pd->priv->db);
-		g_free (canon_uri);
-	}
-
-	if (info->phase == GNOME_VFS_XFER_PHASE_COMPLETED) {
-		if (data->cancelled == FALSE) {
-			char *uri;
-			char *canon_uri;
-
-			uri = gnome_vfs_uri_to_string (data->write_uri,
-						       GNOME_VFS_URI_HIDE_NONE);
-			canon_uri = rb_canonicalise_uri (uri);
-			g_free (uri);
-			rb_debug ("download of %s completed", canon_uri);
-
-			g_value_init (&val, G_TYPE_UINT64);
-			g_value_set_uint64 (&val, info->file_size);
-			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_FILE_SIZE, &val);
-			g_value_unset (&val);
-
-			g_value_init (&val, G_TYPE_ULONG);
-			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_COMPLETE);
-			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
-			g_value_unset (&val);
-
-			rb_podcast_manager_save_metadata (data->pd,
-							  data->entry,
-							  canon_uri);
-			g_free (canon_uri);
-		}
-		g_idle_add ((GSourceFunc)end_job, data);
-		return GNOME_VFS_XFER_ERROR_ACTION_SKIP;
-	}
-
-	return 1;
-}
-
-static guint
-download_progress_update_cb (GnomeVFSAsyncHandle *handle, GnomeVFSXferProgressInfo *info, gpointer cb_data)
-{
-	RBPodcastManagerInfo *data = (RBPodcastManagerInfo *) cb_data;
-
-	if (data == NULL) {
-		return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
-	}
-
-	if ((info->phase == GNOME_VFS_XFER_PHASE_COPYING) &&
-	    (data->entry != NULL)) {
-		guint local_progress = 0;
-
-		if (info->file_size > 0)
-			local_progress = (gint) 100 * info->total_bytes_copied / info->file_size;
-
-		if (local_progress != data->progress) {
-			GValue val = {0,};
-
-			GDK_THREADS_ENTER ();
-
-			g_value_init (&val, G_TYPE_ULONG);
-			g_value_set_ulong (&val, local_progress);
-			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
-			g_value_unset (&val);
-
-			g_signal_emit (data->pd, rb_podcast_manager_signals[STATUS_CHANGED],
-				       0, data->entry, local_progress);
-
-			GDK_THREADS_LEAVE ();
-
-			data->progress = local_progress;
-		}
-	}
-
-	return GNOME_VFS_XFER_ERROR_ACTION_SKIP;
-}
 
 void
 rb_podcast_manager_unsubscribe_feed (RhythmDB *db, const char *url)
@@ -1502,7 +1532,8 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 		const char *file_name;
 		const char *dir_name;
 		const char *conf_dir_name;
-		GnomeVFSResult result;
+		GFile *file;
+		GError *error = NULL;
 
 		rb_debug ("Handling entry deleted");
 
@@ -1516,20 +1547,30 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 			return;
 		}
 
-		result = gnome_vfs_unlink (file_name);
-		if (result != GNOME_VFS_OK) {
-			rb_debug ("Removing episode failed: %s", gnome_vfs_result_to_string (result));
-			return;
+		file = g_file_new_for_uri (file_name);
+		g_file_delete (file, NULL, &error);
+		if (error != NULL) {
+			rb_debug ("Removing episode failed: %s", error->message);
+			g_clear_error (&error);
+		} else {
+			/* try to remove the directory
+			 * (will only work once it's empty)
+			 */
+			rb_debug ("removing dir");
+			conf_dir_name = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
+
+			dir_name = g_build_filename (conf_dir_name,
+						     rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM),
+						     NULL);
+			file = g_file_new_for_uri (conf_dir_name);
+			g_file_delete (file, NULL, &error);
+			if (error != NULL) {
+				rb_debug ("couldn't remove podcast feed directory: %s",
+					  error->message);
+				g_clear_error (&error);
+			}
 		}
-
-		/* remove dir */
-		rb_debug ("removing dir");
-		conf_dir_name = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
-
-		dir_name = g_build_filename (conf_dir_name,
-					     rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM),
-					     NULL);
-		gnome_vfs_remove_directory (dir_name);
+		g_object_unref (file);
 
 	} else if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
 		GtkTreeModel *query_model;

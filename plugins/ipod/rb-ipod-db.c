@@ -739,36 +739,29 @@ rb_ipod_db_queue_set_thumbnail (RbIpodDb *ipod_db,
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
-static gchar *
-rb_ipod_db_get_volume_path (GnomeVFSVolume *volume)
-{
-	gchar *path;
-	gchar *uri;
-
-	uri = gnome_vfs_volume_get_activation_uri (volume);
-	path = g_filename_from_uri (uri, NULL, NULL);
-	g_assert (path != NULL);
-	g_free (uri);
-
-	return path;
-}
-
 static gboolean
-rb_ipod_db_load (RbIpodDb *ipod_db, GnomeVFSVolume *volume)
+rb_ipod_db_load (RbIpodDb *ipod_db, GMount *mount)
 {
+	GFile *mount_root;
 	char *mount_path;
 	const Itdb_IpodInfo *info;
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
-	mount_path = rb_ipod_db_get_volume_path (volume);
+	mount_root = g_mount_get_root (mount);
+	if (mount_root == NULL) {
+		return FALSE;
+	}
+	mount_path = g_file_get_path (mount_root);
+	g_object_unref (mount_root);
+
  	priv->itdb = itdb_parse (mount_path, NULL);
 	g_free (mount_path);
 
         if (priv->itdb == NULL) {
-            return FALSE;
+		return FALSE;
         }
 
-	info = itdb_device_get_ipod_info(priv->itdb->device);
+	info = itdb_device_get_ipod_info (priv->itdb->device);
 	if (info->ipod_generation == ITDB_IPOD_GENERATION_UNKNOWN ||
 	    info->ipod_generation == ITDB_IPOD_GENERATION_SHUFFLE_1 ||
 	    info->ipod_generation == ITDB_IPOD_GENERATION_SHUFFLE_2 ||
@@ -781,26 +774,25 @@ rb_ipod_db_load (RbIpodDb *ipod_db, GnomeVFSVolume *volume)
         return TRUE;
 }
 
-RbIpodDb *
-rb_ipod_db_new (GnomeVFSVolume *volume)
+RbIpodDb *rb_ipod_db_new (GMount *mount)
 {
 	RbIpodDb *db;
         gboolean success;
 
-	g_return_val_if_fail (volume != NULL, NULL);
+	g_return_val_if_fail (mount != NULL, NULL);
 
 	db = g_object_new (RB_TYPE_IPOD_DB, NULL);
 	if (db == NULL) {
 		return NULL;
 	}
 
-	success = rb_ipod_db_load (db, volume);
+	success = rb_ipod_db_load (db, mount);
 
-        if (success == FALSE) {
-            return NULL;
-        } else {
-	return db;
-}
+	if (success == FALSE) {
+		return NULL;
+	} else {
+		return db;
+	}
 }
 
 

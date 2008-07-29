@@ -34,7 +34,7 @@
 #include <glib/gi18n.h>
 #include <glib-object.h>
 #include <dbus/dbus-glib.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
+#include <gio/gio.h>
 
 #include "rb-debug.h"
 #include "rb-shell-binding.h"
@@ -101,9 +101,7 @@ static GOptionEntry args[] = {
 	{ "print-playing", 0, 0, G_OPTION_ARG_NONE, &print_playing, N_("Print the title and artist of the playing song"), NULL },
 	{ "print-playing-format", 0, 0, G_OPTION_ARG_STRING, &print_playing_format, N_("Print formatted details of the song"), NULL },
 
-#if GLIB_CHECK_VERSION(2,12,0)
 	{ "set-volume", 0, 0, G_OPTION_ARG_DOUBLE, &set_volume, N_("Set the playback volume"), NULL },
-#endif
 	{ "volume-up", 0, 0, G_OPTION_ARG_NONE, &volume_up, N_("Increase the playback volume"), NULL },
 	{ "volume-down", 0, 0, G_OPTION_ARG_NONE, &volume_down, N_("Decrease the playback volume"), NULL },
 	{ "print-volume", 0, 0, G_OPTION_ARG_NONE, &print_volume, N_("Print the current playback volume"), NULL },
@@ -566,35 +564,45 @@ main (int argc, char **argv)
 	if (other_stuff) {
 		int i;
 		for (i = 0; other_stuff[i] != NULL; i++) {
-			char *uri = gnome_vfs_make_uri_from_shell_arg (other_stuff[i]);
-			if (uri == NULL) {
+			GFile *file;
+			char *fileuri;
+
+			file = g_file_new_for_commandline_arg (other_stuff[i]);
+			fileuri = g_file_get_uri (file);
+			if (fileuri == NULL) {
 				g_warning ("couldn't convert \"%s\" to a URI", other_stuff[i]);
 				continue;
 			}
 
 			if (enqueue) {
-				rb_debug ("enqueueing %s", uri);
-				org_gnome_Rhythmbox_Shell_add_to_queue (shell_proxy, uri, &error);
+				rb_debug ("enqueueing %s", fileuri);
+				org_gnome_Rhythmbox_Shell_add_to_queue (shell_proxy, fileuri, &error);
 			} else {
-				rb_debug ("importing %s", uri);
-				org_gnome_Rhythmbox_Shell_load_ur_i (shell_proxy, uri, FALSE, &error);
+				rb_debug ("importing %s", fileuri);
+				org_gnome_Rhythmbox_Shell_load_ur_i (shell_proxy, fileuri, FALSE, &error);
 			}
 			annoy (&error);
-			g_free (uri);
+			g_free (fileuri);
+			g_object_unref (file);
 		}
 	}
 
 	/* play uri */
 	if (play_uri) {
-		char *uri = gnome_vfs_make_uri_from_shell_arg (play_uri);
-		if (uri == NULL) {
+		GFile *file;
+		char *fileuri;
+
+		file = g_file_new_for_commandline_arg (play_uri);
+		fileuri = g_file_get_uri (file);
+		if (fileuri == NULL) {
 			g_warning ("couldn't convert \"%s\" to a URI", play_uri);
 		} else {
-			rb_debug ("loading and playing %s", uri);
-			org_gnome_Rhythmbox_Shell_load_ur_i (shell_proxy, uri, TRUE, &error);
+			rb_debug ("loading and playing %s", fileuri);
+			org_gnome_Rhythmbox_Shell_load_ur_i (shell_proxy, fileuri, TRUE, &error);
 			annoy (&error);
 		}
-		g_free (uri);
+		g_free (fileuri);
+		g_object_unref (file);
 	}
 
 	/* 5. play/pause/stop */
@@ -615,13 +623,10 @@ main (int argc, char **argv)
 	}
 
 	/* 6. get/set volume, mute/unmute */
-#if GLIB_CHECK_VERSION(2,12,0)
 	if (set_volume > -0.01) {
 		org_gnome_Rhythmbox_Player_set_volume (player_proxy, set_volume, &error);
 		annoy (&error);
-	} else
-#endif
-	if (volume_up || volume_down) {
+	} else if (volume_up || volume_down) {
 		org_gnome_Rhythmbox_Player_set_volume_relative (player_proxy, volume_up ? 0.1 : -0.1, &error);
 		annoy (&error);
 	} else if (unmute || mute) {

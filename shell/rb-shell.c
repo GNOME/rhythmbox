@@ -43,13 +43,10 @@
 
 #include <X11/Xatom.h>
 
+#if !GTK_CHECK_VERSION(2,13,1)
 #include <libgnome/libgnome.h>
-#include <libgnome/gnome-init.h>
-#include <libgnome/gnome-program.h>
+#endif
 #include <libgnomeui/gnome-client.h>
-
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnomevfs/gnome-vfs-mime-utils.h>
 
 #include "rb-shell.h"
 #include "rb-debug.h"
@@ -990,6 +987,17 @@ rb_shell_new (gboolean no_registration,
 	return s;
 }
 
+static GMountOperation *
+rb_shell_create_mount_op_cb (RhythmDB *db, RBShell *shell)
+{
+	/* create a gtk mount operation if possible, otherwise don't use one at all */
+#if GTK_CHECK_VERSION(2,13,1)
+	return gtk_mount_operation_new (shell->priv->window);
+#else
+	return NULL;
+#endif
+}
+
 static void
 construct_db (RBShell *shell)
 {
@@ -1018,6 +1026,9 @@ construct_db (RBShell *shell)
 
 	g_signal_connect_object (G_OBJECT (shell->priv->db), "load-complete",
 				 G_CALLBACK (rb_shell_load_complete_cb), shell,
+				 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->db), "create-mount-op",
+				 G_CALLBACK (rb_shell_create_mount_op_cb), shell,
 				 0);
 
 	rb_profile_end ("creating database object");
@@ -2327,7 +2338,14 @@ rb_shell_cmd_contents (GtkAction *action,
 {
 	GError *error = NULL;
 
+#if GTK_CHECK_VERSION(2,13,1)
+	gtk_show_uri (gtk_widget_get_screen (shell->priv->window),
+		      "ghelp:rhythmbox",
+		      gtk_get_current_event_time (),
+		      &error);
+#else
 	gnome_help_display ("rhythmbox.xml", NULL, &error);
+#endif
 
 	if (error != NULL) {
 		rb_error_dialog (NULL, _("Couldn't display help"),
@@ -3339,16 +3357,9 @@ rb_shell_load_uri (RBShell *shell,
 			/* That happens for directories and unhandled schemes, such as CDDA */
 			playlist_source = rb_shell_guess_source_for_uri (shell, uri);
 			if (playlist_source == NULL || rb_source_uri_is_source (playlist_source, uri) == FALSE) {
-				/* Do we have a directory? */
-				if (rb_uri_is_local (uri)) {
-					rb_debug ("%s is a directory, but doesn't have a source, adding as a dir", uri);
-					if (!rb_shell_add_uri (shell, uri, NULL, NULL, error))
-						return FALSE;
-				} else {
-					/* Or something else? */
-					rb_debug ("%s is not handled as a playlist, isn't local, and doesn't have a source, doing nothing", uri);
+				rb_debug ("%s doesn't have a source, adding", uri);
+				if (!rb_shell_add_uri (shell, uri, NULL, NULL, error))
 					return FALSE;
-				}
 			}
 		} else {
 			rb_debug ("%s didn't parse as a playlist", uri);

@@ -35,7 +35,6 @@
 #include "rhythmdb.h"
 
 #include <totem-pl-parser.h>
-#include <libgnomevfs/gnome-vfs-volume.h>
 
 G_BEGIN_DECLS
 
@@ -68,7 +67,7 @@ typedef struct
 #endif
 } RBGenericPlayerSourceClass;
 
-RBRemovableMediaSource *rb_generic_player_source_new			(RBShell *shell, GnomeVFSVolume *volume);
+RBRemovableMediaSource *rb_generic_player_source_new			(RBShell *shell, GMount *mount);
 GType			rb_generic_player_source_get_type		(void);
 GType			rb_generic_player_source_register_type		(GTypeModule *module);
 
@@ -82,7 +81,7 @@ void			rb_generic_player_source_set_supported_formats  (RBGenericPlayerSource *s
 TotemPlParserType	rb_generic_player_source_get_playlist_format	(RBGenericPlayerSource *source);
 char *			rb_generic_player_source_get_playlist_path	(RBGenericPlayerSource *source);
 
-gboolean		rb_generic_player_is_volume_player		(GnomeVFSVolume *volume);
+gboolean		rb_generic_player_is_mount_player		(GMount *mount);
 
 
 /* for subclasses */

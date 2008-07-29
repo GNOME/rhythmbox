@@ -53,11 +53,11 @@ typedef struct
 	RBGenericPlayerSourceClass parent;
 } RBPspSourceClass;
 
-RBRemovableMediaSource *	rb_psp_source_new		(RBShell *shell, GnomeVFSVolume *volume);
+RBRemovableMediaSource *	rb_psp_source_new		(RBShell *shell, GMount *mount);
 GType			rb_psp_source_get_type		(void);
 GType			rb_psp_source_register_type	(GTypeModule *module);
 
-gboolean		rb_psp_is_volume_player		(GnomeVFSVolume *volume);
+gboolean		rb_psp_is_mount_player		(GMount *mount);
 
 G_END_DECLS
 

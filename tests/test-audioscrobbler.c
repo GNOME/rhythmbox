@@ -40,7 +40,7 @@ START_TEST (test_rb_audioscrobbler_entry)
 {
 	AudioscrobblerEntry *entry;
 	AudioscrobblerEntry *reload;
-	char *as_string;
+	GString *as_gstring;
 
 	entry = g_new0(AudioscrobblerEntry, 1);
 	entry->title = g_strdup ("something or other");
@@ -50,11 +50,12 @@ START_TEST (test_rb_audioscrobbler_entry)
 	entry->mbid = g_strdup ("");		/* ? */
 	entry->play_time = time (0);
 
-	as_string = rb_audioscrobbler_entry_save_to_string (entry);
-	rb_debug ("string form: %s", as_string);
-	fail_unless (strlen (as_string) != 0, "entry saved as string should not be empty");
+	as_gstring = g_string_new ("");
+	rb_audioscrobbler_entry_save_to_string (as_gstring, entry);
+	rb_debug ("string form: %s", as_gstring->str);
+	fail_unless (as_gstring->len != 0, "entry saved as string should not be empty");
 
-	reload = rb_audioscrobbler_entry_load_from_string (as_string);
+	reload = rb_audioscrobbler_entry_load_from_string (as_gstring->str);
 	fail_unless (reload != NULL, "entry-as-string can be converted back to an entry");
 
 	rb_audioscrobbler_entry_debug (entry, 0);
@@ -68,7 +69,7 @@ START_TEST (test_rb_audioscrobbler_entry)
 
 	rb_audioscrobbler_entry_free (entry);
 	rb_audioscrobbler_entry_free (reload);
-	g_free (as_string);
+	g_string_free (as_gstring, TRUE);
 }
 END_TEST
 

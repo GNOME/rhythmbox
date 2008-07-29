@@ -33,7 +33,6 @@
 #include <libxml/tree.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
 
 #include "rb-auto-playlist-source.h"
 #include "rb-library-browser.h"

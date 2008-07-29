@@ -32,7 +32,6 @@
 #include <glib-object.h>
 
 #if defined(HAVE_LIBSOUP)
-#include "rb-soup-compat.h"
 #include <libsoup/soup.h>
 #endif
 

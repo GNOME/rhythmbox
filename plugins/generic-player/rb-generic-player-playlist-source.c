@@ -41,7 +41,7 @@
 
 typedef struct
 {
-	char *playlist_path;
+	char *playlist_path;		/* hmm, replace with GFile? */
 	char *device_root;
 	gint save_playlist_id;
 	RBGenericPlayerSource *player_source;
@@ -138,7 +138,8 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 		char *mount_uri;
 		char *filename;
 		const char *ext;
-		GnomeVFSURI *uri, *nuri;
+		GFile *dir;
+		GFile *playlist;
 
 		ext = playlist_format_extension (playlist_type);
 
@@ -152,21 +153,22 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 		playlist_dir = rb_generic_player_source_get_playlist_path (priv->player_source);
 		mount_uri = rb_generic_player_source_get_mount_path (priv->player_source);
 
-		uri = gnome_vfs_uri_new (mount_uri);
+		dir = g_file_new_for_uri (mount_uri);
 		if (playlist_dir != NULL) {
-			nuri = gnome_vfs_uri_append_path (uri, playlist_dir);
-			gnome_vfs_uri_unref (uri);
-			uri = nuri;
+			GFile *pdir;
+
+			pdir = g_file_resolve_relative_path (dir, playlist_dir);
+			g_object_unref (dir);
+			dir = pdir;
 		}
 
-		nuri = gnome_vfs_uri_append_path (uri, filename);
-		gnome_vfs_uri_unref (uri);
+		playlist = g_file_resolve_relative_path (dir, filename);
+		priv->playlist_path = g_file_get_path (playlist);
 		
 		g_free (mount_uri);
 		g_free (playlist_dir);
 
-		priv->playlist_path = gnome_vfs_uri_to_string (nuri, GNOME_VFS_URI_HIDE_NONE);
-		gnome_vfs_uri_unref (nuri);
+		g_object_unref (dir);
 	}
 
 	temp_uri = g_strdup_printf ("%s%06X", priv->playlist_path, g_random_int_range (0, 0xFFFFFF));
@@ -186,14 +188,19 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 		/* XXX report this more usefully */
 		g_warning ("Playlist save failed: %s", error->message);
 	} else {
-		/* rename the new file over the old one */
-		GnomeVFSResult result;
+		GFile *dest;
+		GFile *src;
 
-		result = gnome_vfs_move (temp_uri, priv->playlist_path, TRUE);
-		if (result != GNOME_VFS_OK) {
+		dest = g_file_new_for_path (priv->playlist_path);
+		src = g_file_new_for_path (temp_uri);
+		g_file_move (src, dest, G_FILE_COPY_OVERWRITE | G_FILE_COPY_NO_FALLBACK_FOR_MOVE, NULL, NULL, NULL, &error);
+		if (error != NULL) {
 			/* XXX report this more usefully */
-			g_warning ("Replacing playlist failed: %s", gnome_vfs_result_to_string (result));
+			g_warning ("Replacing playlist failed: %s", error->message);
 		}
+
+		g_object_unref (dest);
+		g_object_unref (src);
 	}
 
 	g_clear_error (&error);
@@ -249,7 +256,9 @@ load_playlist (RBGenericPlayerPlaylistSource *source)
 	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 	TotemPlParser *parser;
 	gboolean result;
-	char *path;
+	GFile *file;
+	char *name;
+	char *uri;
 
 	if (priv->playlist_path == NULL) {
 		/* this happens when we're creating a new playlist */
@@ -259,16 +268,12 @@ load_playlist (RBGenericPlayerPlaylistSource *source)
 	}
 
 	priv->loading = TRUE;
+	file = g_file_new_for_path (priv->playlist_path);
 
 	/* make a default name for the playlist based on the filename */
-	path = g_filename_from_uri (priv->playlist_path, NULL, NULL);
-	if (path != NULL) {
-		char *name = g_path_get_basename (path);
-
-		g_object_set (source, "name", name, NULL);
-		g_free (name);
-		g_free (path);
-	}
+	name = g_file_get_basename (file);
+	g_object_set (source, "name", name, NULL);
+	g_free (name);
 
 	parser = totem_pl_parser_new ();
 	if (rb_debug_matches ("totem_pl_parser_parse", "totem-pl-parser.c")) {
@@ -284,7 +289,8 @@ load_playlist (RBGenericPlayerPlaylistSource *source)
 			  source);
 	g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
 
-	switch (totem_pl_parser_parse_with_base (parser, priv->playlist_path, priv->device_root, FALSE)) {
+	uri = g_file_get_uri (file);
+	switch (totem_pl_parser_parse_with_base (parser, uri, priv->device_root, FALSE)) {
 	case TOTEM_PL_PARSER_RESULT_SUCCESS:
 		rb_debug ("playlist parsed successfully");
 		result = TRUE;
@@ -307,6 +313,8 @@ load_playlist (RBGenericPlayerPlaylistSource *source)
 	default:
 		g_assert_not_reached ();
 	}
+	g_free (uri);
+	g_object_unref (file);
 
 	priv->loading = FALSE;
 	return result;
@@ -354,12 +362,16 @@ rb_generic_player_playlist_delete_from_player (RBGenericPlayerPlaylistSource *so
 	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 
 	if (priv->playlist_path != NULL) {
-		GnomeVFSResult result;
-		result = gnome_vfs_unlink (priv->playlist_path);
+		GError *error = NULL;
+		GFile *playlist;
 
-		if (result != GNOME_VFS_OK) {
-			/* now what? */
+		playlist = g_file_new_for_uri (priv->playlist_path);
+		g_file_delete (playlist, NULL, &error);
+		if (error != NULL) {
+			g_warning ("Deleting playlist failed: %s", error->message);
+			g_clear_error (&error);
 		}
+		g_object_unref (playlist);
 	} else {
 		rb_debug ("playlist was never saved: nothing to delete");
 	}

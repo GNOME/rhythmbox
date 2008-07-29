@@ -47,14 +47,7 @@
 #include "rb-recorder.h"
 #include "rb-playlist-source-recorder.h"
 
-#include <nautilus-burn-drive.h>
-#ifndef NAUTILUS_BURN_CHECK_VERSION
-#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
-#endif
-
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
 #include <nautilus-burn.h>
-#endif
 
 #define RB_TYPE_CD_RECORDER_PLUGIN		(rb_cd_recorder_plugin_get_type ())
 #define RB_CD_RECORDER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_CD_RECORDER_PLUGIN, RBCdRecorderPlugin))
@@ -115,9 +108,7 @@ rb_cd_recorder_plugin_init (RBCdRecorderPlugin *plugin)
 {
 	rb_debug ("RBCdRecorderPlugin initializing");
 
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
 	nautilus_burn_init ();
-#endif
 }
 
 static void
@@ -128,9 +119,7 @@ rb_cd_recorder_plugin_finalize (GObject *object)
 */
 	rb_debug ("RBCdRecorderPlugin finalizing");
 
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
 	nautilus_burn_shutdown ();
-#endif
 
 	G_OBJECT_CLASS (rb_cd_recorder_plugin_parent_class)->finalize (object);
 }

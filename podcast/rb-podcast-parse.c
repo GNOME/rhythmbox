@@ -33,8 +33,8 @@
 #include <string.h>
 
 #include <totem-pl-parser.h>
-#include <libgnomevfs/gnome-vfs.h>
 #include <glib/gi18n.h>
+#include <gio/gio.h>
 #include <glib.h>
 #include <glib/gprintf.h>
 
@@ -141,8 +141,8 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 			    gboolean existing_feed,
 			    GError **error)
 {
-	GnomeVFSResult result;
-	GnomeVFSFileInfo *info;
+	GFile *file;
+	GFileInfo *fileinfo;
 	TotemPlParser *plparser;
 
 	data->url = g_strdup (file_name);
@@ -154,37 +154,46 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 		rb_debug ("not checking mime type for %s (should be %s file)", file_name,
 			  data->is_opml ? "OPML" : "Podcast");
 	} else {
-		rb_debug ("checking mime type for %s", file_name);
-		info = gnome_vfs_file_info_new ();
+		GError *ferror = NULL;
+		char *content_type;
 
-		result = gnome_vfs_get_file_info (file_name, info, GNOME_VFS_FILE_INFO_DEFAULT);
-		if (result != GNOME_VFS_OK) {
+		rb_debug ("checking mime type for %s", file_name);
+
+		file = g_file_new_for_uri (file_name);
+		fileinfo = g_file_query_info (file, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE, 0, NULL, &ferror);
+		if (ferror != NULL) {
 			g_set_error (error,
 				     RB_PODCAST_PARSE_ERROR,
 				     RB_PODCAST_PARSE_ERROR_FILE_INFO,
 				     _("Unable to check file type: %s"),
-				     gnome_vfs_result_to_string (result));
-			gnome_vfs_file_info_unref (info);
+				     ferror->message);
+			g_object_unref (file);
+			g_clear_error (&ferror);
 			return FALSE;
 		}
 
-		if (info->mime_type != NULL
-		    && strstr (info->mime_type, "html") == NULL
-		    && strstr (info->mime_type, "xml") == NULL
-		    && strstr (info->mime_type, "rss") == NULL
-		    && strstr (info->mime_type, "opml") == NULL) {
+		content_type = g_file_info_get_attribute_as_string (fileinfo, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
+		g_object_unref (file);
+		g_object_unref (fileinfo);
+
+		if (content_type != NULL
+		    && strstr (content_type, "html") == NULL
+		    && strstr (content_type, "xml") == NULL
+		    && strstr (content_type, "rss") == NULL
+		    && strstr (content_type, "opml") == NULL) {
 			g_set_error (error,
 				     RB_PODCAST_PARSE_ERROR,
 				     RB_PODCAST_PARSE_ERROR_MIME_TYPE,
 				     _("Unexpected file type: %s"),
-				     info->mime_type);
-			gnome_vfs_file_info_unref (info);
+				     content_type);
+			g_free (content_type);
 			return FALSE;
-		} else if (info->mime_type != NULL
-			   && strstr (info->mime_type, "opml") != NULL) {
+		} else if (content_type != NULL
+			   && strstr (content_type, "opml") != NULL) {
 			data->is_opml = TRUE;
 		}
-		gnome_vfs_file_info_unref (info);
+
+		g_free (content_type);
 	}
 
 	plparser = totem_pl_parser_new ();

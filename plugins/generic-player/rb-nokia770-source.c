@@ -38,8 +38,6 @@
 #include <gtk/gtk.h>
 #include <dbus/dbus.h>
 #include <libhal.h>
-#include <libgnomevfs/gnome-vfs-volume.h>
-#include <libgnomevfs/gnome-vfs-volume-monitor.h>
 
 #include "eel-gconf-extensions.h"
 #include "rb-nokia770-source.h"
@@ -82,27 +80,31 @@ rb_nokia770_source_init (RBNokia770Source *source)
 }
 
 RBRemovableMediaSource *
-rb_nokia770_source_new (RBShell *shell, GnomeVFSVolume *volume)
+rb_nokia770_source_new (RBShell *shell, GMount *mount)
 {
 	RBNokia770Source *source;
 	RhythmDBEntryType entry_type;
 	RhythmDB *db;
+	GVolume *volume;
 	char *name;
 	char *path;
 
-	g_assert (rb_nokia770_is_volume_player (volume));
+	g_assert (rb_nokia770_is_mount_player (mount));
+
+	volume = g_mount_get_volume (mount);
 
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	path = gnome_vfs_volume_get_device_path (volume);
+	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 	name = g_strdup_printf ("nokia770: %s", path);
 	entry_type = rhythmdb_entry_register_type (db, name);
-	g_object_unref (G_OBJECT (db));
+	g_object_unref (db);
 	g_free (name);
 	g_free (path);
+	g_object_unref (volume);
 
 	source = RB_NOKIA770_SOURCE (g_object_new (RB_TYPE_NOKIA770_SOURCE,
 						   "entry-type", entry_type,
-						   "volume", volume,
+						   "mount", mount,
 						   "shell", shell,
 						   "source-group", RB_SOURCE_GROUP_DEVICES,
 						   NULL));
@@ -224,22 +226,20 @@ end:
 #endif
 
 gboolean
-rb_nokia770_is_volume_player (GnomeVFSVolume *volume)
+rb_nokia770_is_mount_player (GMount *mount)
 {
 	gboolean result = FALSE;
 	gchar *str;
+	GVolume *volume;
 
-	if (gnome_vfs_volume_get_volume_type (volume) != GNOME_VFS_VOLUME_TYPE_MOUNTPOINT) {
-		return FALSE;
-	}
-
-	str = gnome_vfs_volume_get_hal_udi (volume);
-	if (str != NULL) {
-		gboolean result;
-
-		result = hal_udi_is_nokia770 (str);
-		g_free (str);
-		return result;
+	volume = g_mount_get_volume (mount);
+	if (volume != NULL) {
+		str = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
+		if (str != NULL) {
+			result = hal_udi_is_nokia770 (str);
+			g_free (str);
+		}
+		g_object_unref (volume);
 	}
 
 	return result;

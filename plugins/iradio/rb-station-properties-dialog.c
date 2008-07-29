@@ -36,7 +36,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
-#include <libgnomevfs/gnome-vfs.h>
 
 #include "rb-station-properties-dialog.h"
 #include "rb-file-helpers.h"
@@ -427,7 +426,7 @@ rb_station_properties_dialog_update_location (RBStationPropertiesDialog *dialog)
 	char *unescaped;
 
 	location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION);
-	unescaped = gnome_vfs_unescape_string_for_display (location);
+	unescaped = g_uri_unescape_string (location, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 	gtk_entry_set_text (GTK_ENTRY (dialog->priv->location), unescaped);
 	g_free (unescaped);
 }

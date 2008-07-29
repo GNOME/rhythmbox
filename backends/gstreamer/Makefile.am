@@ -5,10 +5,13 @@ noinst_LTLIBRARIES = librbbackendsgstreamer.la
 librbbackendsgstreamer_la_SOURCES =			\
 	rb-player-gst.h					\
 	rb-player-gst.c					\
+	rb-player-gst-xfade.h				\
+	rb-player-gst-xfade.c				\
 	$(NULL)
 
 librbbackendsgstreamer_la_LIBADD =			\
 	-lgstpbutils-0.10				\
+	-lgstcontroller-0.10
 	$(RHYTHMBOX_LIBS)
 
 librbbackendsgstreamer_la_LDFLAGS = -export-dynamic
@@ -31,9 +34,3 @@ librbbackendsgstreamer_la_SOURCES +=	\
 	rb-encoder-gst.c
 endif
 
-if USE_GSTREAMER_0_10_XFADE
-librbbackendsgstreamer_la_SOURCES +=	\
-	rb-player-gst-xfade.h		\
-	rb-player-gst-xfade.c
-librbbackendsgstreamer_la_LIBADD += -lgstcontroller-0.10
-endif

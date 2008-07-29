@@ -36,7 +36,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
-#include <libgnomevfs/gnome-vfs.h>
+#include <glib/gurifuncs.h>
 
 #include "rb-podcast-properties-dialog.h"
 #include "rb-file-helpers.h"
@@ -403,7 +403,7 @@ rb_podcast_properties_dialog_update_location (RBPodcastPropertiesDialog *dialog)
 	char *display;
 
 	location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION);
-	display = gnome_vfs_format_uri_for_display (location);
+	display = g_uri_unescape_string (location, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 	gtk_label_set_text (GTK_LABEL (dialog->priv->location), display);
 	g_free (display);
 }
@@ -416,7 +416,7 @@ rb_podcast_properties_dialog_update_download_location (RBPodcastPropertiesDialog
 	location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_MOUNTPOINT);
 	if (location != NULL && location[0] != '\0') {
 		char *display;
-		display = gnome_vfs_format_uri_for_display (location);
+		display = g_uri_unescape_string (location, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 		gtk_label_set_text (GTK_LABEL (dialog->priv->download_location), display);
 		g_free (display);
 	} else {

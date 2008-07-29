@@ -41,8 +41,6 @@
 #include <libhal.h>
 #include <dbus/dbus.h>
 #endif
-#include <libgnomevfs/gnome-vfs-volume.h>
-#include <libgnomevfs/gnome-vfs-volume-monitor.h>
 #include <totem-pl-parser.h>
 
 #include "eel-gconf-extensions.h"
@@ -87,7 +85,7 @@ static char* impl_build_dest_uri (RBRemovableMediaSource *source,
 				  const char *mimetype,
 				  const char *extension);
 
-static gchar *default_get_mount_path (RBGenericPlayerSource *source);
+static char *default_get_mount_path (RBGenericPlayerSource *source);
 static void default_load_playlists (RBGenericPlayerSource *source);
 static char * default_uri_from_playlist_uri (RBGenericPlayerSource *source,
 					     const char *uri);
@@ -97,7 +95,7 @@ static char * default_uri_to_playlist_uri (RBGenericPlayerSource *source,
 #if HAVE_HAL
 static LibHalContext *get_hal_context (void);
 static void cleanup_hal_context (LibHalContext *ctx);
-static char * get_hal_udi_for_player (LibHalContext *ctx, GnomeVFSVolume *volume);
+static char * get_hal_udi_for_player (LibHalContext *ctx, GMount *mount);
 static void free_dbus_error (const char *what, DBusError *error);
 #endif
 
@@ -123,7 +121,7 @@ typedef struct
 	RhythmDBEntryType ignore_type;
 	RhythmDBEntryType error_type;
 
-	/* information derived from gnome-vfs volume */
+	/* information derived from volume */
 	gboolean read_only;
 	gboolean handles_trash;
 
@@ -200,8 +198,12 @@ impl_constructor (GType type,
 {
 	RBGenericPlayerSource *source;
 	RBGenericPlayerSourcePrivate *priv;
-	GnomeVFSVolume *volume;
+	GMount *mount;
+	char *mount_name;
 	RBShell *shell;
+	GFile *root;
+	GFileInfo *info;
+	GError *error = NULL;
 
 	source = RB_GENERIC_PLAYER_SOURCE (G_OBJECT_CLASS (rb_generic_player_source_parent_class)->
 					   constructor (type, n_construct_properties, construct_properties));
@@ -216,10 +218,34 @@ impl_constructor (GType type,
 
 	g_object_unref (shell);
 
-	g_object_get (source, "volume", &volume, NULL);
-	priv->handles_trash = gnome_vfs_volume_handles_trash (volume);
-	priv->read_only = gnome_vfs_volume_is_read_only (volume);
-	g_object_unref (volume);
+	g_object_get (source, "mount", &mount, NULL);
+
+	root = g_mount_get_root (mount);
+	mount_name = g_mount_get_name (mount);
+
+	info = g_file_query_filesystem_info (root, G_FILE_ATTRIBUTE_FILESYSTEM_READONLY, NULL, &error);
+	if (error != NULL) {
+		rb_debug ("error querying filesystem info for %s: %s", mount_name, error->message);
+		g_error_free (error);
+		priv->read_only = FALSE;
+	} else {
+		priv->read_only = g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_FILESYSTEM_READONLY);
+		g_object_unref (info);
+	}
+
+	info = g_file_query_info (root, G_FILE_ATTRIBUTE_ACCESS_CAN_TRASH, G_FILE_QUERY_INFO_NONE, NULL, &error);
+	if (error != NULL) {
+		rb_debug ("error querying file info for %s: %s", mount_name, error->message);
+		g_error_free (error);
+		priv->handles_trash = FALSE;		/* hmm */
+	} else {
+		priv->handles_trash = g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_ACCESS_CAN_TRASH);
+		g_object_unref (info);
+	}
+
+	g_free (mount_name);
+	g_object_unref (root);
+	g_object_unref (mount);
 
 	priv->folder_depth = -1;	/* 0 is a possible value, I guess */
 	priv->playlist_format_unknown = TRUE;
@@ -267,19 +293,22 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 	}
 }
 
-static char *
-get_is_audio_player_path (GnomeVFSVolume *volume)
+static GFile *
+get_is_audio_player_file (GMount *mount)
 {
-	char *path = gnome_vfs_volume_get_activation_uri (volume);
-	char *file = g_build_filename (path, ".is_audio_player", NULL);
-	g_free (path);
+	GFile *root;
+	GFile *is_audio_player;
 
-	if (rb_uri_is_local (file) && rb_uri_exists (file)) {
-		return file;
+	root = g_mount_get_root (mount);
+	is_audio_player = g_file_resolve_relative_path (root, ".is_audio_player");
+
+	if (g_file_query_exists (is_audio_player, NULL) == FALSE) {
+		g_object_unref (is_audio_player);
+		is_audio_player = NULL;
 	}
 
-	g_free (file);
-	return NULL;
+	g_object_unref (root);
+	return is_audio_player;
 }
 
 static void
@@ -344,15 +373,18 @@ set_playlist_formats (RBGenericPlayerSource *source, char **formats)
 }
 
 static void
-debug_device_info (RBGenericPlayerSource *source, GnomeVFSVolume *volume, const char *what)
+debug_device_info (RBGenericPlayerSource *source, GMount *mount, const char *what)
 {
 	char *dbg;
 	char *path;
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	GVolume *volume;
 
-	path = gnome_vfs_volume_get_activation_uri (volume);
+	volume = g_mount_get_volume (mount);
+	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 	rb_debug ("device information for %s from %s", path, what);
 	g_free (path);
+	g_object_unref (volume);
 
 	if (priv->audio_folders != NULL) {
 		dbg = g_strjoinv (", ", priv->audio_folders);
@@ -398,19 +430,20 @@ static void
 get_device_info (RBGenericPlayerSource *source)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	GnomeVFSVolume *volume;
-	char *is_audio_player;
+	GMount *mount;
+	GFile *is_audio_player;
+	GError *error = NULL;
 #ifdef HAVE_HAL
 	LibHalContext *ctx;
 #endif
-	g_object_get (source, "volume", &volume, NULL);
+	g_object_get (source, "mount", &mount, NULL);
 
 #ifdef HAVE_HAL
 	ctx = get_hal_context ();
 	if (ctx != NULL) {
-		gchar *udi;
+		char *udi;
 
-		udi = get_hal_udi_for_player (ctx, volume);
+		udi = get_hal_udi_for_player (ctx, mount);
 
 		if (udi != NULL) {
 			DBusError error;
@@ -468,7 +501,7 @@ get_device_info (RBGenericPlayerSource *source)
 			}
 			free_dbus_error ("getting max folder depth", &error);
 
-			debug_device_info (source, volume, "HAL");
+			debug_device_info (source, mount, "HAL");
 		} else {
 			rb_debug ("no player info available (HAL doesn't recognise it as a player");
 		}
@@ -478,17 +511,18 @@ get_device_info (RBGenericPlayerSource *source)
 #endif
 
 	/* allow HAL info to be overridden with .is_audio_player file */
-	is_audio_player = get_is_audio_player_path (volume);
+	is_audio_player = get_is_audio_player_file (mount);
 	if (is_audio_player != NULL) {
 		char *data = NULL;
-		int data_size = 0;
-		GnomeVFSResult result;
+		gsize data_size = 0;
 
-		rb_debug ("reading .is_audio_player file %s", is_audio_player);
-		result = gnome_vfs_read_entire_file (is_audio_player, &data_size, &data);
-		if (result != GNOME_VFS_OK) {
+		rb_debug ("reading .is_audio_player file");
+
+		g_file_load_contents (is_audio_player, NULL, &data, &data_size, NULL, &error);
+		if (error != NULL) {
 			/* can we sensibly report this anywhere? */
-			rb_debug ("error reading .is_audio_player file: %s", gnome_vfs_result_to_string (result));
+			rb_debug ("error reading .is_audio_player file: %s", error->message);
+			g_clear_error (&error);
 		} else {
 			GKeyFile *keyfile;
 			GError *error = NULL;
@@ -548,16 +582,16 @@ get_device_info (RBGenericPlayerSource *source)
 			g_key_file_free (keyfile);
 			g_free (munged);
 			
-			debug_device_info (source, volume, ".is_audio_player file");
+			debug_device_info (source, mount, ".is_audio_player file");
 		}
 		g_free (data);
 
-		g_free (is_audio_player);
+		g_object_unref (is_audio_player);
 	} else {
 		rb_debug ("no .is_audio_player file found on this device");
 	}
 
-	g_object_unref (volume);
+	g_object_unref (mount);
 }
 
 static void
@@ -610,20 +644,23 @@ impl_finalize (GObject *object)
 }
 
 RBRemovableMediaSource *
-rb_generic_player_source_new (RBShell *shell, GnomeVFSVolume *volume)
+rb_generic_player_source_new (RBShell *shell, GMount *mount)
 {
 	RBGenericPlayerSource *source;
 	RhythmDBEntryType entry_type;
 	RhythmDBEntryType error_type;
 	RhythmDBEntryType ignore_type;
 	RhythmDB *db;
+	GVolume *volume;
 	char *name;
 	char *path;
 
-	g_assert (rb_generic_player_is_volume_player (volume));
+	g_assert (rb_generic_player_is_mount_player (mount));
+
+	volume = g_mount_get_volume (mount);
 
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	path = gnome_vfs_volume_get_device_path (volume);
+	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 
 	name = g_strdup_printf ("generic audio player: %s", path);
 	entry_type = rhythmdb_entry_register_type (db, name);
@@ -638,13 +675,14 @@ rb_generic_player_source_new (RBShell *shell, GnomeVFSVolume *volume)
 	g_free (name);
 
 	g_object_unref (db);
+	g_object_unref (volume);
 	g_free (path);
 
 	source = RB_GENERIC_PLAYER_SOURCE (g_object_new (RB_TYPE_GENERIC_PLAYER_SOURCE,
 							 "entry-type", entry_type,
 							 "ignore-entry-type", ignore_type,
 							 "error-entry-type", error_type,
-							 "volume", volume,
+							 "mount", mount,
 							 "shell", shell,
 							 "source-group", RB_SOURCE_GROUP_DEVICES,
 							 NULL));
@@ -710,8 +748,9 @@ load_songs (RBGenericPlayerSource *source)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 	RhythmDBEntryType entry_type;
+	char *mount_path;
 
-	priv->mount_path = rb_generic_player_source_get_mount_path (source);
+	mount_path = rb_generic_player_source_get_mount_path (source);
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 
 	/* if HAL gives us a set of folders on the device containing audio files,
@@ -726,19 +765,20 @@ load_songs (RBGenericPlayerSource *source)
 		int af;
 		for (af=0; priv->audio_folders[af] != NULL; af++) {
 			char *path;
-			path = rb_uri_append_path (priv->mount_path, priv->audio_folders[af]);
+			path = rb_uri_append_path (mount_path, priv->audio_folders[af]);
 			rb_debug ("loading songs from device audio folder %s", path);
 			rhythmdb_import_job_add_uri (priv->import_job, path);
 			g_free (path);
 		}
 	} else {
-		rb_debug ("loading songs from device mount path %s", priv->mount_path);
-		rhythmdb_import_job_add_uri (priv->import_job, priv->mount_path);
+		rb_debug ("loading songs from device mount path %s", mount_path);
+		rhythmdb_import_job_add_uri (priv->import_job, mount_path);
 	}
 
 	rhythmdb_import_job_start (priv->import_job);
 
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_free (mount_path);
 }
 
 char *
@@ -749,21 +789,31 @@ rb_generic_player_source_get_mount_path (RBGenericPlayerSource *source)
 	return klass->impl_get_mount_path (source);
 }
 
-static gchar *
+static char *
 default_get_mount_path (RBGenericPlayerSource *source)
 {
-	gchar *uri;
-	GnomeVFSVolume *volume;
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 
-	g_object_get (source, "volume", &volume, NULL);
-	uri = gnome_vfs_volume_get_activation_uri (volume);
-	g_object_unref (volume);
+	if (priv->mount_path == NULL) {
+		GMount *mount;
+		GFile *root;
 
-	return uri;
+		g_object_get (source, "mount", &mount, NULL);
+
+		root = g_mount_get_root (mount);
+		if (root != NULL) {
+			priv->mount_path = g_file_get_uri (root);
+			g_object_unref (root);
+		}
+
+		g_object_unref (mount);
+	}
+
+	return g_strdup (priv->mount_path);
 }
 
 gboolean
-rb_generic_player_is_volume_player (GnomeVFSVolume *volume)
+rb_generic_player_is_mount_player (GMount *mount)
 {
 	gboolean result = FALSE;
 #ifdef HAVE_HAL
@@ -771,7 +821,7 @@ rb_generic_player_is_volume_player (GnomeVFSVolume *volume)
 
 	ctx = get_hal_context ();
 	if (ctx != NULL) {
-		gchar *udi = get_hal_udi_for_player (ctx, volume);
+		char *udi = get_hal_udi_for_player (ctx, mount);
 		if (udi != NULL) {
 			DBusError error;
 			char *prop;
@@ -800,11 +850,12 @@ rb_generic_player_is_volume_player (GnomeVFSVolume *volume)
 
 	/* treat as audio player if ".is_audio_player" exists in the root of the volume  */
 	if (!result) {
-		char *path;
-		path = get_is_audio_player_path (volume);
-		result = (path != NULL);
-
-		g_free (path);
+		GFile *is_audio_player;
+		is_audio_player = get_is_audio_player_file (mount);
+		if (is_audio_player != NULL) {
+			result = TRUE;
+			g_object_unref (is_audio_player);
+		}
 	}
 
 	return result;
@@ -934,50 +985,78 @@ load_playlist_file (RBGenericPlayerSource *source,
 {
 	RhythmDBEntryType entry_type;
 	RBGenericPlayerPlaylistSource *playlist;
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 	RBShell *shell;
+	char *mount_path;
 
 	g_object_get (G_OBJECT (source),
 		      "shell", &shell,
 		      "entry-type", &entry_type,
 		      NULL);
 
+	mount_path = rb_generic_player_source_get_mount_path (source);
 	rb_debug ("loading playlist %s", playlist_path);
 	playlist = RB_GENERIC_PLAYER_PLAYLIST_SOURCE (
 			rb_generic_player_playlist_source_new (shell,
 							       source,
 							       playlist_path,
-							       priv->mount_path,
+							       mount_path,
 							       entry_type));
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	if (playlist != NULL) {
 		rb_generic_player_source_add_playlist (source, shell, RB_SOURCE (playlist));
 	}
 
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	g_object_unref (shell);
+	g_free (mount_path);
 }
 
 static gboolean
-visit_playlist_dirs (const gchar *rel_path,
-		     GnomeVFSFileInfo *info,
-		     gboolean recursing_will_loop,
-		     RBGenericPlayerSource *source,
-		     gboolean *recurse)
+visit_playlist_dirs (GFile *file,
+		     gboolean dir,
+		     RBGenericPlayerSource *source)
 {
-	char *main_path;
-	char *playlist_path;
+	char *basename;
+	char *uri;
+	RhythmDBEntry *entry;
+	RhythmDBEntryType entry_type;
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 
-	*recurse = TRUE;
-	if (strcmp (rel_path, ".is_audio_player") == 0)
+	if (dir) {
 		return TRUE;
+	}
 
-	main_path = rb_generic_player_source_get_mount_path (source);
-	playlist_path = rb_uri_append_path (main_path, rel_path);
-	g_free (main_path);
+	/* check if we've already got an entry 
+	 * for this file, just to save some i/o.
+	 */
+	uri = g_file_get_uri (file);
+	entry = rhythmdb_entry_lookup_by_location (priv->db, uri);
+	g_free (uri);
+	if (entry != NULL) {
+		gboolean is_song;
 
-	load_playlist_file (source, playlist_path, rel_path);
-	g_free (playlist_path);
+		is_song = FALSE;
+
+		g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+		is_song = (rhythmdb_entry_get_entry_type (entry) == entry_type);
+		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+
+		if (is_song) {
+			rb_debug ("%s was loaded as a song",
+				  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+			return TRUE;
+		}
+	}
+
+	basename = g_file_get_basename (file);
+	if (strcmp (basename, ".is_audio_player") != 0) {
+		char *playlist_path;
+		playlist_path = g_file_get_path (file);
+		load_playlist_file (source, playlist_path, basename);
+		g_free (playlist_path);
+	}
+
+	g_free (basename);
 
 	return TRUE;
 }
@@ -1011,10 +1090,9 @@ default_load_playlists (RBGenericPlayerSource *source)
 
 	}
 
-	gnome_vfs_directory_visit (playlist_path ? playlist_path : mount_path,
-				   GNOME_VFS_FILE_INFO_DEFAULT,
-				   GNOME_VFS_DIRECTORY_VISIT_DEFAULT,
-				   (GnomeVFSDirectoryVisitFunc) visit_playlist_dirs,
+	rb_uri_handle_recursively (playlist_path ? playlist_path : mount_path,
+				   NULL,
+				   (RBUriRecurseFunc) visit_playlist_dirs,
 				   source);
 
 	g_free (playlist_path);
@@ -1033,8 +1111,8 @@ impl_can_paste (RBSource *source)
 static char *
 sanitize_path (const char *str)
 {
-	gchar *res = NULL;
-	gchar *s;
+	char *res = NULL;
+	char *s;
 
 	/* Skip leading periods, otherwise files disappear... */
 	while (*str == '.')
@@ -1080,6 +1158,7 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	char *artist, *album, *title;
 	gulong track_number, disc_number;
 	const char *folders;
+	char *mount_path;
 	char *number;
 	char *file = NULL;
 	char *path;
@@ -1156,8 +1235,10 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	else
 		folders = "";
 
-	path = g_build_filename (priv->mount_path, folders, file, NULL);
+	mount_path = rb_generic_player_source_get_mount_path (RB_GENERIC_PLAYER_SOURCE (source));
+	path = g_build_filename (mount_path, folders, file, NULL);
 	g_free (file);
+	g_free (mount_path);
 
 	/* TODO: check for duplicates, or just overwrite by default? */
 	rb_debug ("dest file is %s", path);
@@ -1263,15 +1344,23 @@ cleanup_hal_context (LibHalContext *ctx)
 }
 
 static char *
-get_hal_udi_for_player (LibHalContext *ctx, GnomeVFSVolume *volume)
+get_hal_udi_for_player (LibHalContext *ctx, GMount *mount)
 {
 	DBusError error;
-	gchar *udi;
+	char *udi;
+	GVolume *volume;
 
-	udi = gnome_vfs_volume_get_hal_udi (volume);
-
-	if (udi == NULL)
+	volume = g_mount_get_volume (mount);
+	if (volume == NULL) {
 		return NULL;
+	}
+
+	udi = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
+
+	if (udi == NULL) {
+		g_object_unref (volume);
+		return NULL;
+	}
 
 	dbus_error_init (&error);
 	/* find the udi of the player itself */
@@ -1306,6 +1395,7 @@ get_hal_udi_for_player (LibHalContext *ctx, GnomeVFSVolume *volume)
 		free_dbus_error ("finding audio player udi", &error);
 	}
 
+	g_object_unref (volume);
 	return udi;
 }
 

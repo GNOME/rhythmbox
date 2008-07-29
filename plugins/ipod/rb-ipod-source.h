@@ -30,8 +30,6 @@
 #ifndef __RB_IPOD_SOURCE_H
 #define __RB_IPOD_SOURCE_H
 
-#include <libgnomevfs/gnome-vfs.h>
-
 #include "rb-shell.h"
 #include "rb-removable-media-source.h"
 #include "rhythmdb.h"
@@ -55,11 +53,11 @@ typedef struct
 	RBRemovableMediaSourceClass parent;
 } RBiPodSourceClass;
 
-RBRemovableMediaSource *	rb_ipod_source_new		(RBShell *shell, GnomeVFSVolume *volume);
+RBRemovableMediaSource *	rb_ipod_source_new		(RBShell *shell, GMount *mount);
 GType			rb_ipod_source_get_type		(void);
 GType                   rb_ipod_source_register_type    (GTypeModule *module);
 
-gboolean		rb_ipod_is_volume_ipod		(GnomeVFSVolume *volume);
+gboolean		rb_ipod_is_mount_ipod		(GMount *mount);
 
 void			rb_ipod_source_new_playlist	(RBiPodSource *source);
 void			rb_ipod_source_remove_playlist	(RBiPodSource *ipod_source,

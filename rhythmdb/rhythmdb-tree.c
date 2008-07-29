@@ -72,7 +72,7 @@ G_DEFINE_TYPE(RhythmDBTree, rhythmdb_tree, RHYTHMDB_TYPE)
 
 static void rhythmdb_tree_finalize (GObject *object);
 
-static gboolean rhythmdb_tree_load (RhythmDB *rdb, gboolean *die, GError **error);
+static gboolean rhythmdb_tree_load (RhythmDB *rdb, GCancellable *cancel, GError **error);
 static void rhythmdb_tree_save (RhythmDB *rdb);
 static void rhythmdb_tree_entry_new (RhythmDB *db, RhythmDBEntry *entry);
 static void rhythmdb_tree_entry_new_internal (RhythmDB *db, RhythmDBEntry *entry);
@@ -117,8 +117,8 @@ static void rhythmdb_hash_tree_foreach (RhythmDB *adb,
 					gpointer data);
 
 /* Update both of those! */
-#define RHYTHMDB_TREE_XML_VERSION "1.4"
-#define RHYTHMDB_TREE_XML_VERSION_INT 140
+#define RHYTHMDB_TREE_XML_VERSION "1.5"
+#define RHYTHMDB_TREE_XML_VERSION_INT 150
 
 static void destroy_tree_property (RhythmDBTreeProperty *prop);
 static RhythmDBTreeProperty *get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
@@ -312,7 +312,7 @@ struct RhythmDBTreeLoadContext
 {
 	RhythmDBTree *db;
 	xmlParserCtxtPtr xmlctx;
-	gboolean *die;
+	GCancellable *cancel;
 	enum {
 		RHYTHMDB_TREE_PARSER_STATE_START,
 		RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB,
@@ -356,7 +356,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 				    const char *name,
 				    const char **attrs)
 {
-	if (*ctx->die == TRUE) {
+	if (g_cancellable_is_cancelled (ctx->cancel)) {
 		xmlStopParser (ctx->xmlctx);
 		return;
 	}
@@ -376,6 +376,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 				if (!strcmp (*attrs, "version")) {
 					const char *version = *(attrs+1);
 
+					rb_debug ("loading database version %s (%d)", version, version_to_int (version));
 					switch (version_to_int (version)) {
 					case 100:
 					case 110:
@@ -385,9 +386,10 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 						rb_debug ("reloading all file metadata to get MusicBrainz tags (DB version 1.2)");
 						ctx->reload_all_metadata = TRUE;
 					case 130:
+					case 140:
 						/* Avoid being warned twice for very old DBs */
 						if (ctx->canonicalise_uris == FALSE) {
-							rb_debug ("old version of rhythmdb, performing URI canonicalisation for all entries (DB version 1.3)");
+							rb_debug ("old version of rhythmdb, performing URI canonicalisation for all entries (DB version %s)", version);
 							ctx->canonicalise_uris = TRUE;
 						}
 					case RHYTHMDB_TREE_XML_VERSION_INT:
@@ -483,7 +485,7 @@ static void
 rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 				  const char *name)
 {
-	if (*ctx->die == TRUE) {
+	if (g_cancellable_is_cancelled (ctx->cancel)) {
 		xmlStopParser (ctx->xmlctx);
 		return;
 	}
@@ -654,7 +656,7 @@ rhythmdb_tree_parser_characters (struct RhythmDBTreeLoadContext *ctx,
 				 const char *data,
 				 guint len)
 {
-	if (*ctx->die == TRUE) {
+	if (g_cancellable_is_cancelled (ctx->cancel)) {
 		xmlStopParser (ctx->xmlctx);
 		return;
 	}
@@ -677,7 +679,7 @@ rhythmdb_tree_parser_characters (struct RhythmDBTreeLoadContext *ctx,
 
 static gboolean
 rhythmdb_tree_load (RhythmDB *rdb,
-		    gboolean *die,
+		    GCancellable *cancel,
 		    GError **error)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
@@ -699,7 +701,7 @@ rhythmdb_tree_load (RhythmDB *rdb,
 
 	ctx->state = RHYTHMDB_TREE_PARSER_STATE_START;
 	ctx->db = db;
-	ctx->die = die;
+	ctx->cancel = cancel;
 	ctx->buf = g_string_sized_new (RHYTHMDB_TREE_PARSER_INITIAL_BUFFER_SIZE);
 	ctx->error = &local_error;
 

@@ -31,7 +31,6 @@
 #include <libxml/tree.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
 
 #include "rb-play-queue-source.h"
 #include "rb-playlist-xml.h"

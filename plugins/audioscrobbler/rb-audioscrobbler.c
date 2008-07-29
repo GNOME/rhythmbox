@@ -45,7 +45,6 @@
 #include <gtk/gtk.h>
 #include <gconf/gconf-value.h>
 
-#include "rb-soup-compat.h"
 #include <libsoup/soup.h>
 
 #include "eel-gconf-extensions.h"
@@ -181,13 +180,8 @@ static void	     rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 						char *url,
 						char *post_data,
 						SoupSessionCallback response_handler);
-#if defined(HAVE_LIBSOUP_2_4)
 static void	     rb_audioscrobbler_do_handshake_cb (SoupSession *session, SoupMessage *msg, gpointer user_data);
 static void	     rb_audioscrobbler_submit_queue_cb (SoupSession *session, SoupMessage *msg, gpointer user_data);
-#else
-static void	     rb_audioscrobbler_do_handshake_cb (SoupMessage *msg, gpointer user_data);
-static void	     rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data);
-#endif
 
 static void	     rb_audioscrobbler_import_settings (RBAudioscrobbler *audioscrobbler);
 static void	     rb_audioscrobbler_preferences_sync (RBAudioscrobbler *audioscrobbler);
@@ -679,27 +673,12 @@ rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage 
 	rb_debug ("Parsing response, status=%d", msg->status_code);
 	
 	successful = FALSE;
-#if defined(HAVE_LIBSOUP_2_4)
 	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && msg->response_body->length != 0)
 		successful = TRUE;
-#else
-	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && (msg->response).body != NULL)
-		successful = TRUE;
-#endif
 	if (successful) {
 		gchar **breaks;
 		int i;
-#if defined(HAVE_LIBSOUP_2_2)
-		gchar *body;
-
-		body = g_malloc0 ((msg->response).length + 1);
-		memcpy (body, (msg->response).body, (msg->response).length);
-
-		g_strstrip (body);
-		breaks = g_strsplit (body, "\n", 4);
-#else
 		breaks = g_strsplit (msg->response_body->data, "\n", 4);
-#endif
 
 		g_free (audioscrobbler->priv->status_msg);
 		audioscrobbler->priv->status = STATUS_OK;
@@ -771,9 +750,6 @@ rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage 
 			audioscrobbler->priv->submit_next = time(NULL) + audioscrobbler->priv->submit_interval;
 
 		g_strfreev (breaks);
-#if defined(HAVE_LIBSOUP_2_2)
-		g_free (body);
-#endif
 	} else {
 		audioscrobbler->priv->status = REQUEST_FAILED;
 		audioscrobbler->priv->status_msg = g_strdup (msg->reason_phrase);
@@ -894,13 +870,8 @@ rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 }
 
 
-#if defined(HAVE_LIBSOUP_2_4)
 static void
 rb_audioscrobbler_do_handshake_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
-#else
-static void
-rb_audioscrobbler_do_handshake_cb (SoupMessage *msg, gpointer user_data)
-#endif
 {
 	RBAudioscrobbler *audioscrobbler = RB_AUDIOSCROBBLER(user_data);
 
@@ -1057,13 +1028,8 @@ rb_g_queue_concat (GQueue *q1, GQueue *q2)
 	}
 }
 
-#if defined(HAVE_LIBSOUP_2_4)
 static void
 rb_audioscrobbler_submit_queue_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
-#else
-static void
-rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data)
-#endif
 {
 	RBAudioscrobbler *audioscrobbler = RB_AUDIOSCROBBLER (user_data);
 
@@ -1394,101 +1360,95 @@ rb_audioscrobbler_password_entry_activate_cb (GtkEntry *entry,
 static gboolean
 rb_audioscrobbler_load_queue (RBAudioscrobbler *audioscrobbler)
 {
-	char *pathname, *uri;
-	GnomeVFSResult result;
+	char *pathname;
+	GFile *file;
+	GError *error = NULL;
 	char *data;
-	int size;
+	char *start;
+	char *end;
+	gsize size;
 
 	pathname = g_build_filename (rb_dot_dir (), "audioscrobbler.queue", NULL);
-	uri = g_filename_to_uri (pathname, NULL, NULL);
+	file = g_file_new_for_path (pathname);
+	rb_debug ("loading Audioscrobbler queue from \"%s\"", pathname);
 	g_free (pathname);
-	rb_debug ("Loading Audioscrobbler queue from \"%s\"", uri);
 
-	result = gnome_vfs_read_entire_file (uri, &size, &data);
-	g_free (uri);
-
-	/* do stuff */
-	if (result == GNOME_VFS_OK) {
-		char *start = data, *end;
-
-		/* scan along the file's data, turning each line into a string */
-		while (start < (data + size)) {
-			AudioscrobblerEntry *entry;
-
-			/* find the end of the line, to terminate the string */
-			end = g_utf8_strchr (start, -1, '\n');
-			if (end == NULL)
-				break;
-			*end = 0;
-
-			entry = rb_audioscrobbler_entry_load_from_string (start);
-			if (entry) {
-				g_queue_push_tail (audioscrobbler->priv->queue,
-						   entry);
-				audioscrobbler->priv->queue_count++;
-			}
-
-			start = end + 1;
-		}
+	if (g_file_load_contents (file, NULL, &data, &size, NULL, &error) == FALSE) {
+		rb_debug ("unable to load audioscrobbler queue: %s", error->message);
+		g_error_free (error);
+		return FALSE;
 	}
 
-	if (result != GNOME_VFS_OK) {
-		rb_debug ("Unable to load Audioscrobbler queue from disk: %s",
-			  gnome_vfs_result_to_string (result));
+	start = data;
+	while (start < (data + size)) {
+		AudioscrobblerEntry *entry;
+
+		/* find the end of the line, to terminate the string */
+		end = g_utf8_strchr (start, -1, '\n');
+		if (end == NULL)
+			break;
+		*end = 0;
+
+		entry = rb_audioscrobbler_entry_load_from_string (start);
+		if (entry) {
+			g_queue_push_tail (audioscrobbler->priv->queue,
+					   entry);
+			audioscrobbler->priv->queue_count++;
+		}
+
+		start = end + 1;
 	}
 
 	g_free (data);
-	return (result == GNOME_VFS_OK);
+	return TRUE;
 }
-
 
 static gboolean
 rb_audioscrobbler_save_queue (RBAudioscrobbler *audioscrobbler)
 {
 	char *pathname;
-	GnomeVFSHandle *handle = NULL;
-	GnomeVFSResult result;
+	GFile *file;
+	GError *error = NULL;
+	GList *l;
+	GString *str;
 
 	if (!audioscrobbler->priv->queue_changed) {
 		return TRUE;
 	}
 
+	str = g_string_new ("");
+	for (l = audioscrobbler->priv->queue->head; l != NULL; l = g_list_next (l)) {
+		AudioscrobblerEntry *entry;
+
+		entry = (AudioscrobblerEntry *) l->data;
+		rb_audioscrobbler_entry_save_to_string (str, entry);
+	}
+
 	pathname = g_build_filename (rb_dot_dir (), "audioscrobbler.queue", NULL);
 	rb_debug ("Saving Audioscrobbler queue to \"%s\"", pathname);
 
-	result = gnome_vfs_create (&handle, pathname, GNOME_VFS_OPEN_WRITE, FALSE, 0600);
+	file = g_file_new_for_path (pathname);
 	g_free (pathname);
 
-	if (result == GNOME_VFS_OK) {
-		GString *s = g_string_new (NULL);
-		GList *l;
+	g_file_replace_contents (file,
+				 str->str, str->len,
+				 NULL,
+				 FALSE,
+				 G_FILE_CREATE_NONE,
+				 NULL,
+				 NULL,
+				 &error);
+	g_string_free (str, TRUE);
 
-		for (l = audioscrobbler->priv->queue->head;
-		     l != NULL;
-		     l = g_list_next (l)) {
-			AudioscrobblerEntry *entry;
-			char *str;
-			entry = (AudioscrobblerEntry *) l->data;
-			str = rb_audioscrobbler_entry_save_to_string (entry);
-			result = gnome_vfs_write (handle, str, strlen (str), 
-						  NULL);
-			g_free (str);
-			if (result != GNOME_VFS_OK)
-				break;
-		}
-		g_string_free (s, TRUE);
-	}
-
-	if (result != GNOME_VFS_OK) {
-		rb_debug ("Unable to save Audioscrobbler queue to disk: %s",
-			  gnome_vfs_result_to_string (result));
-	} else {
+	if (error == NULL) {
 		audioscrobbler->priv->queue_changed = FALSE;
+		return TRUE;
+	} else {
+		rb_debug ("error saving audioscrobbler queue: %s",
+			  error->message);
+		g_error_free (error);
+		return FALSE;
 	}
-
-	if (handle)
-		gnome_vfs_close (handle);
-	return (result == GNOME_VFS_OK);
 }
 
 static void

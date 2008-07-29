@@ -36,8 +36,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnomevfs/gnome-vfs-mime-utils.h>
 #include <libsexy/sexy-tooltip.h>
 
 #include "rb-tray-icon.h"
@@ -47,6 +45,7 @@
 #include "rb-preferences.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
+#include "rb-util.h"
 
 #define TRAY_ICON_DEFAULT_TOOLTIP _("Music Player")
 #define DEFAULT_TOOLTIP_ICON "" /*"gnome-media-player"*/
@@ -574,7 +573,7 @@ rb_tray_icon_drop_cb (GtkWidget *widget,
 		      guint time,
 		      RBTrayIcon *icon)
 {
-	GList *list, *uri_list, *i;
+	GList *list, *i;
 	GtkTargetList *tlist;
 	gboolean ret;
 
@@ -585,26 +584,14 @@ rb_tray_icon_drop_cb (GtkWidget *widget,
 	if (ret == FALSE)
 		return;
 
-	list = gnome_vfs_uri_list_parse ((char *) data->data);
+	list = rb_uri_list_parse ((char *) data->data);
 
 	if (list == NULL) {
 		gtk_drag_finish (context, FALSE, FALSE, time);
 		return;
 	}
 
-	uri_list = NULL;
-
-	for (i = list; i != NULL; i = g_list_next (i))
-		uri_list = g_list_prepend (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
-
-	gnome_vfs_uri_list_free (list);
-
-	if (uri_list == NULL) {
-		gtk_drag_finish (context, FALSE, FALSE, time);
-		return;
-	}
-
-	for (i = uri_list; i != NULL; i = i->next) {
+	for (i = list; i != NULL; i = i->next) {
 		char *uri = i->data;
 		if (uri != NULL)
 			rb_shell_load_uri (icon->priv->shell, uri, FALSE, NULL);
@@ -612,7 +599,7 @@ rb_tray_icon_drop_cb (GtkWidget *widget,
 		g_free (uri);
 	}
 
-	g_list_free (uri_list);
+	g_list_free (list);
 
 	gtk_drag_finish (context, TRUE, FALSE, time);
 }

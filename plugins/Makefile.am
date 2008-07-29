@@ -1,6 +1,7 @@
 ## arch-tag: Automake rules for Rhythmbox's plugin system
 
 SUBDIRS = 						\
+	audiocd						\
 	generic-player					\
 	iradio						\
 	mmkeys						\
@@ -40,7 +41,6 @@ endif
 
 if USE_CD_BURNING
 SUBDIRS += 						\
-	audiocd						\
 	cd-recorder
 endif
 

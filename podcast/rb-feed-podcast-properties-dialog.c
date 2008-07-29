@@ -36,7 +36,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
-#include <libgnomevfs/gnome-vfs.h>
+#include <glib/gurifuncs.h>
 
 #include "rb-feed-podcast-properties-dialog.h"
 #include "rb-file-helpers.h"
@@ -244,7 +244,7 @@ rb_feed_podcast_properties_dialog_update_location (RBFeedPodcastPropertiesDialog
 	char *unescaped;
 
 	location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION);
-	unescaped = gnome_vfs_unescape_string_for_display (location);
+	unescaped = g_uri_unescape_string (location, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 	gtk_label_set_text (GTK_LABEL (dialog->priv->location), unescaped);
 	g_free (unescaped);
 }

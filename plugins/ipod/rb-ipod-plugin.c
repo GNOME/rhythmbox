@@ -35,7 +35,6 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib-object.h>
-#include <libgnomevfs/gnome-vfs.h>
 
 #include "rb-removable-media-manager.h"
 #include "rb-sourcelist.h"
@@ -82,7 +81,7 @@ static void impl_activate (RBPlugin *plugin, RBShell *shell);
 static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
 static RBSource * create_source_cb (RBRemovableMediaManager *rmm,
-				    GnomeVFSVolume *volume,
+				    GMount *mount,
 				    RBIpodPlugin *plugin);
 static void  rb_ipod_plugin_cmd_rename (GtkAction *action,
 					RBIpodPlugin *plugin);
@@ -178,7 +177,7 @@ impl_activate (RBPlugin *bplugin,
 
 	/* watch for new removable media, and cause a rescan */
 	g_signal_connect (G_OBJECT (rmm),
-			  "create-source", G_CALLBACK (create_source_cb),
+			  "create-source-mount", G_CALLBACK (create_source_cb),
 			  plugin);
 
 	/* only scan if we're being loaded after the initial scan has been done */
@@ -223,11 +222,11 @@ rb_ipod_plugin_source_deleted (RBiPodSource *source, RBIpodPlugin *plugin)
 }
 
 static RBSource *
-create_source_cb (RBRemovableMediaManager *rmm, GnomeVFSVolume *volume, RBIpodPlugin *plugin)
+create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, RBIpodPlugin *plugin)
 {
-	if (rb_ipod_is_volume_ipod (volume)) {
+	if (rb_ipod_is_mount_ipod (mount)) {
 		RBSource *src;
-		src = RB_SOURCE (rb_ipod_source_new (plugin->shell, volume));
+		src = RB_SOURCE (rb_ipod_source_new (plugin->shell, mount));
 
 		plugin->ipod_sources = g_list_prepend (plugin->ipod_sources, src);
 		g_signal_connect_object (G_OBJECT (src),

@@ -39,9 +39,6 @@
 #include <libhal.h>
 #include <dbus/dbus.h>
 #endif
-#include <libgnomevfs/gnome-vfs-utils.h>
-#include <libgnomevfs/gnome-vfs-volume.h>
-#include <libgnomevfs/gnome-vfs-volume-monitor.h>
 #include <gpod/itdb.h>
 
 #include "eel-gconf-extensions.h"
@@ -270,18 +267,22 @@ rb_ipod_source_dispose (GObject *object)
 
 RBRemovableMediaSource *
 rb_ipod_source_new (RBShell *shell,
-		    GnomeVFSVolume *volume)
+		    GMount *mount)
 {
 	RBiPodSource *source;
 	RhythmDBEntryType entry_type;
 	RhythmDB *db;
+	GVolume *volume;
 	char *name;
 	char *path;
 
-	g_assert (rb_ipod_is_volume_ipod (volume));
+	g_assert (rb_ipod_is_mount_ipod (mount));
 
+	volume = g_mount_get_volume (mount);
+	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+	g_object_unref (volume);
+	
 	g_object_get (shell, "db", &db, NULL);
-	path = gnome_vfs_volume_get_device_path (volume);
 	name = g_strdup_printf ("ipod: %s", path);
 	entry_type =  rhythmdb_entry_register_type (db, name);
 	entry_type->save_to_disk = FALSE;
@@ -292,7 +293,7 @@ rb_ipod_source_new (RBShell *shell,
 
 	source = RB_IPOD_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
 					       "entry-type", entry_type,
-					       "volume", volume,
+					       "mount", mount,
 					       "shell", shell,
 					       "source-group", RB_SOURCE_GROUP_DEVICES,
 					       NULL));
@@ -932,10 +933,10 @@ static void
 rb_ipod_load_songs (RBiPodSource *source)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
-	GnomeVFSVolume *volume;
+	GMount *mount;
 
-	g_object_get (source, "volume", &volume, NULL);
- 	priv->ipod_db = rb_ipod_db_new (volume);
+	g_object_get (source, "mount", &mount, NULL);
+ 	priv->ipod_db = rb_ipod_db_new (mount);
 	priv->entry_map = g_hash_table_new (g_direct_hash, g_direct_equal);
 
 	if ((priv->ipod_db != NULL) && (priv->entry_map != NULL)) {
@@ -951,39 +952,37 @@ rb_ipod_load_songs (RBiPodSource *source)
                                   NULL);
 		priv->load_idle_id = g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
 	}
-	g_object_unref (volume);
+	g_object_unref (mount);
 }
 
 static gchar *
-rb_ipod_get_itunesdb_path (GnomeVFSVolume *volume)
+rb_ipod_get_itunesdb_path (GMount *mount)
 {
-	gchar *mount_point_uri;
+	GFile *root;
 	gchar *mount_point;
-	gchar *result;
+	gchar *result = NULL;
 
-	mount_point_uri = gnome_vfs_volume_get_activation_uri (volume);
-	if (mount_point_uri == NULL) {
-		return NULL;
+	root = g_mount_get_root (mount);
+	if (root != NULL) {
+		mount_point = g_file_get_path (root);
+		if (mount_point != NULL) {
+			result = itdb_get_itunes_dir (mount_point);
+		}
+
+		g_free (mount_point);
+		g_object_unref (root);
 	}
-	mount_point = g_filename_from_uri (mount_point_uri, NULL, NULL);
-	g_free (mount_point_uri);
-	if (mount_point == NULL) {
-		return NULL;
-	}
 
-	result = itdb_get_itunes_dir(mount_point);
-
-	g_free (mount_point);
 	return result;
 }
 
 static gboolean
-rb_ipod_volume_has_ipod_db (GnomeVFSVolume *volume)
+rb_ipod_mount_has_ipod_db (GMount *mount)
 {
 	char *itunesdb_path;
 	gboolean result;
 
-	itunesdb_path = rb_ipod_get_itunesdb_path (volume);
+	itunesdb_path = rb_ipod_get_itunesdb_path (mount);
 
 	if (itunesdb_path != NULL) {
 		result = g_file_test (itunesdb_path, G_FILE_TEST_EXISTS);
@@ -996,17 +995,16 @@ rb_ipod_volume_has_ipod_db (GnomeVFSVolume *volume)
 }
 
 gboolean
-rb_ipod_is_volume_ipod (GnomeVFSVolume *volume)
+rb_ipod_is_mount_ipod (GMount *mount)
 {
 #ifdef HAVE_HAL
 	gchar *udi;
-#endif
-	if (gnome_vfs_volume_get_volume_type (volume) != GNOME_VFS_VOLUME_TYPE_MOUNTPOINT) {
-		return FALSE;
-	}
+	GVolume *volume;
 
-#ifdef HAVE_HAL
-	udi = gnome_vfs_volume_get_hal_udi (volume);
+	volume = g_mount_get_volume (mount);
+	udi = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
+	g_object_unref (volume);
+
 	if (udi != NULL) {
 		gboolean result;
 
@@ -1018,7 +1016,7 @@ rb_ipod_is_volume_ipod (GnomeVFSVolume *volume)
 	}
 #endif
 
-	return rb_ipod_volume_has_ipod_db (volume);
+	return rb_ipod_mount_has_ipod_db (mount);
 }
 
 #ifdef HAVE_HAL
@@ -1571,7 +1569,7 @@ ipod_get_filename_for_uri (const gchar *mount_point,
 	if (escaped == NULL) {
 		return NULL;
 	}
-	filename = gnome_vfs_unescape_string (escaped, G_DIR_SEPARATOR_S);
+	filename = g_uri_unescape_string (escaped, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 	g_free (escaped);
 	if (filename == NULL) {
 		return NULL;

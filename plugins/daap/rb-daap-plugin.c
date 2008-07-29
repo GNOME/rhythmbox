@@ -37,7 +37,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "rb-soup-compat.h"
 #include <libsoup/soup.h>
 
 #include "rb-daap-plugin.h"
@@ -655,9 +654,7 @@ new_daap_share_location_added_cb (RBURIDialog *dialog,
 	g_free (host);
 
 	soup_address_resolve_async (addr,
-#if defined(HAVE_LIBSOUP_2_4)
 				    NULL, NULL,
-#endif
 				    (SoupAddressCallback) new_daap_share_resolve_cb,
 				    data);
 }

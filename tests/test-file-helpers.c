@@ -112,7 +112,6 @@ main (int argc, char **argv)
 	rb_threads_init ();
 	gtk_set_locale ();
 	gtk_init (&argc, &argv);
-	gnome_vfs_init ();
 	rb_debug_init (TRUE);
 	rb_file_helpers_init ();
 
@@ -126,7 +125,6 @@ main (int argc, char **argv)
 	srunner_free (sr);
 
 	rb_file_helpers_shutdown ();
-	gnome_vfs_shutdown ();
 
 	rb_profile_end ("rb-file-helpers test suite");
 	return ret;

@@ -25,8 +25,6 @@
 
 #include "rb-missing-plugins.h"
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
-
 #include "rhythmdb.h"
 #include "rb-shell-player.h"
 #include "rb-debug.h"
@@ -263,12 +261,9 @@ missing_plugins_cb (gpointer instance,
 	return missing_plugins_event (shell, ctx);
 }
 
-#endif /* HAVE_GSTREAMER_0_10_MISSING_PLUGINS */
-
 void
 rb_missing_plugins_init (RBShell *shell)
 {
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	RhythmDB *db;
 	RBShellPlayer *player;
 	RBSource *podcast_source;
@@ -304,6 +299,5 @@ rb_missing_plugins_init (RBShell *shell)
 	gst_pb_utils_init ();
 
 	GST_INFO ("Set up support for automatic missing plugin installation");
-#endif
 }
 

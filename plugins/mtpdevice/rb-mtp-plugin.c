@@ -36,7 +36,6 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib-object.h>
-#include <libgnomevfs/gnome-vfs.h>
 #include <libmtp.h>
 #include <hal/libhal.h>
 #include <dbus/dbus.h>
@@ -95,7 +94,7 @@ static void rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin);
 
 static RBSource* create_source_cb (RBMtpPlugin *plugin, LIBMTP_mtpdevice_t *device, const char *udi);
 /*static RBSource * create_source_cb (RBRemovableMediaManager *rmm,
-				    GnomeVFSVolume *volume,
+				    GVolume *volume,
 				    RBMtpPlugin *plugin);*/
 static void rb_mtp_plugin_eject  (GtkAction *action, RBMtpPlugin *plugin);
 static void rb_mtp_plugin_rename (GtkAction *action, RBMtpPlugin *plugin);

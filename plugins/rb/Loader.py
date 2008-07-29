@@ -25,13 +25,32 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import gobject
-
 try:
-	import gnomevfs
-	use_gnomevfs = True
+	import gio
+	use_gio = True
 except:
-	import urllib
-	use_gnomevfs = False
+	import gnomevfs
+	use_gio = False
+	# meh
+
+class GioSrc(object):
+	def __init__ (self):
+		self.chunk = 4096
+
+	def _contents_cb(self, result, (callback, args)):
+		try:
+			(contents, etag) = self.file.read_contents_finish(result)
+			# should actually use etag.. hrm.
+			callback(contents, args)
+		except:
+			callback(None, args)
+
+	def get_url (self, url, callback, *args):
+		try:
+			self.file = gio.file_new_for_uri(url)
+			self.file.read_contents_async(callback = self._contents_cb, user_data=(callback, args))
+		except:
+			callback(None, *args)
 
 
 class GnomeVFSAsyncSrc (object):  
@@ -61,21 +80,9 @@ class GnomeVFSAsyncSrc (object):
 	def get_url (self, url, callback, *args):
 		gnomevfs.async.open (url, self.open_cb, data=("", callback, args))
 
-
-class URLLibSrc (object):
-    def get_url (self, url, callback, *args):
-			try:
-				sock = urllib.urlopen (url)
-				data = sock.read ()
-				sock.close ()
-				callback (data, *args)
-			except:
-				callback (None, *args)
-				raise
-
-
 def Loader ():
-	if use_gnomevfs:
-		return GnomeVFSAsyncSrc ()
+	if use_gio:
+		return GioSrc()
 	else:
-		return URLLibSrc ()
+		return GnomeVFSAsyncSrc()
+

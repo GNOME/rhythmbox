@@ -1343,7 +1343,7 @@ _wrap_rb_removable_media_manager_queue_transfer(PyGObject *self, PyObject *args,
    	mimes = _helper_unwrap_string_pylist (py_mimes, FALSE);
 
 	rb_removable_media_manager_queue_transfer(RB_REMOVABLE_MEDIA_MANAGER(self->obj), entry, dest, mimes,
-		(RBTranferCompleteCallback)_rb_removable_media_manager_queue_transfer_func, data);
+		(RBTransferCompleteCallback)_rb_removable_media_manager_queue_transfer_func, data);
 
 	g_list_free (mimes);
 	Py_INCREF(Py_None);

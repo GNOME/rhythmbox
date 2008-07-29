@@ -69,7 +69,7 @@ struct _RhythmDBImportJobPrivate
 	GStaticMutex    lock;
 	GSList		*uri_list;
 	gboolean	started;
-	gboolean	cancel;
+	GCancellable    *cancel;
 
 	int		status_changed_id;
 	gboolean	scan_complete;
@@ -163,13 +163,16 @@ emit_status_changed (RhythmDBImportJob *job)
 }
 
 static void
-uri_recurse_func (const char *uri, gboolean dir, RhythmDBImportJob *job)
+uri_recurse_func (GFile *file, gboolean dir, RhythmDBImportJob *job)
 {
 	RhythmDBEntry *entry;
+	char *uri;
 
 	if (dir) {
 		return;
 	}
+
+	uri = g_file_get_uri (file);
 
 	/* only add the entry to the map of entries we're waiting for
 	 * if it's not already in the db.
@@ -193,6 +196,7 @@ uri_recurse_func (const char *uri, gboolean dir, RhythmDBImportJob *job)
 				     job->priv->entry_type,
 				     job->priv->ignore_type,
 				     job->priv->error_type);
+	g_free (uri);
 }
 
 static gboolean
@@ -219,8 +223,8 @@ next_uri (RhythmDBImportJob *job)
 
 		rb_debug ("scanning uri %s", uri);
 		rb_uri_handle_recursively_async (uri,
+						 job->priv->cancel,
 						 (RBUriRecurseFunc) uri_recurse_func,
-						 &job->priv->cancel,
 						 job,
 						 (GDestroyNotify) next_uri);
 
@@ -317,7 +321,7 @@ void
 rhythmdb_import_job_cancel (RhythmDBImportJob *job)
 {
 	g_static_mutex_lock (&job->priv->lock);
-	job->priv->cancel = TRUE;
+	g_cancellable_cancel (job->priv->cancel);
 	g_static_mutex_unlock (&job->priv->lock);
 }
 
@@ -355,6 +359,8 @@ rhythmdb_import_job_init (RhythmDBImportJob *job)
 
 	g_static_mutex_init (&job->priv->lock);
 	job->priv->outstanding = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+
+	job->priv->cancel = g_cancellable_new ();
 }
 
 static void
@@ -422,6 +428,11 @@ impl_dispose (GObject *object)
 	if (job->priv->db != NULL) {
 		g_object_unref (job->priv->db);
 		job->priv->db = NULL;
+	}
+
+	if (job->priv->cancel != NULL) {
+		g_object_unref (job->priv->cancel);
+		job->priv->cancel = NULL;
 	}
 	
 	G_OBJECT_CLASS (rhythmdb_import_job_parent_class)->dispose (object);

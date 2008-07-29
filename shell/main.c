@@ -56,7 +56,6 @@
 #include <libgnome/gnome-program.h>
 #include <libgnomeui/gnome-ui-init.h>
 #include <libgnomeui/gnome-app-helper.h>
-#include <libgnomeui/gnome-authentication-manager.h>
 
 #include <gst/gst.h>
 
@@ -166,10 +165,6 @@ main (int argc, char **argv)
 #endif
 
 	rb_profile_end ("initializing gnome program");
-
-	rb_profile_start ("initializing gnome auth manager");
-	gnome_authentication_manager_init ();
-	rb_profile_end ("initializing gnome auth manager");
 
 	g_random_set_seed (time (0));
 
@@ -343,8 +338,6 @@ main (int argc, char **argv)
 		rb_file_helpers_shutdown ();
 		rb_stock_icons_shutdown ();
 		rb_refstring_system_shutdown ();
-
-		gnome_vfs_shutdown ();
 	}
 
 	gst_deinit ();
@@ -369,16 +362,24 @@ load_uri_args (const char **args, GFunc handler, gpointer user_data)
 
 	handled = FALSE;
 	for (i = 0; args && args[i]; i++) {
+		GFile *file;
 		char *uri;
 
 		rb_debug ("examining argument %s", args[i]);
 
-		uri = gnome_vfs_make_uri_from_shell_arg (args[i]);
+		file = g_file_new_for_commandline_arg (args[i]);
+		uri = g_file_get_uri (file);
 
+		/*
+		 * rb_uri_exists won't work if the location isn't mounted.
+		 * however, things that are interesting to mount are generally
+		 * non-local, so we'll process them anyway.
+		 */
 		if (rb_uri_is_local (uri) == FALSE || rb_uri_exists (uri)) {
 			handler (uri, user_data);
 		}
 		g_free (uri);
+		g_object_unref (file);
 
 		handled = TRUE;
 	}

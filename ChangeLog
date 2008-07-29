@@ -1,3 +1,255 @@
+2008-07-29  Jonathan Matthew  <jonathan@d14n.org>
+
+	GIO port, 6+ months in the making.
+	magnatune and jamendo plugins still need to be ported, and something
+	still needs to happen with the mtp plugin too.
+
+	* configure.ac:
+	* backends/gstreamer/Makefile.am:
+	* lib/Makefile.am:
+	Increase required versions of glib and nautilus-cd-burner (for gio),
+	and libsoup and gstreamer.  Drop howl mdns support.
+
+	* lib/gsequence.c:
+	* lib/gsequence.h:
+	* shell/rb-history.c:
+	* rhythmdb/rhythmdb-property-model.c:
+	* rhythmdb/rhythmdb-query-model.c:
+	Drop our internal copy of gsequence.  It was added to glib in 2.14, we
+	require 2.16 now.
+
+	* shell/Makefile.am:
+	* backends/rb-player.c: (rb_player_new):
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(rb_player_gst_xfade_class_init),
+	(rb_player_gst_xfade_handle_missing_plugin_message),
+	(rb_player_gst_xfade_bus_cb):
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_class_init),
+	(rb_player_gst_handle_missing_plugin_message),
+	(rb_player_gst_bus_cb):
+	Always compile in the crossfading player backend and GStreamer missing
+	plugin support.
+
+	* lib/rb-proxy-config.c: (rb_proxy_config_get_libsoup_uri):
+	* lib/rb-proxy-config.h:
+	* lib/rb-soup-compat.h:
+	Drop libsoup 2.2.
+
+	* backends/gstreamer/rb-encoder-gst.c:
+	(rb_encoder_gst_emit_completed), (new_decoded_pad_cb),
+	(prompt_for_overwrite), (attach_output_pipeline),
+	(rb_encoder_gst_encode):
+	Where possible, use giostreamsink.  When creating the output stream,
+	prompt for overwriting if the target file already exists.  If
+	giostreamsink can't write to the target location, use whatever sink
+	gstreamer wants to use, without the overwrite prompt.
+
+	* lib/eel-gconf-extensions.c:
+	* lib/rb-file-helpers.c:
+	* lib/rb-file-helpers.h:
+	* lib/rb-util.c:
+	* lib/rb-util.h:
+	Rewrite file helper functions using gio, dropping some we don't need
+	any more (rb_uri_resolve_relative, mostly).  rb_uri_handle_recursively
+	and rb_uri_handle_recursively_async are now mostly our own
+	implementation, as gio doesn't provide anything like these functions.
+	Add some functions to check for free space on the drive containing a
+	directory, and something like g_file_make_directory_with_parents.
+
+	Leave URI canonicalisation up to gio entirely - just create a GFile
+	from the URI (or whatever) and extract the URI from it.
+
+	* metadata/rb-metadata-dbus-service.c: (main):
+	* metadata/rb-metadata-gst.c: (rb_metadata_init),
+	(make_undecodable_error), (rb_metadata_gst_unknown_type_cb),
+	(rb_metadata_handle_missing_plugin_message),
+	(rb_metadata_bus_handler), (rb_metadata_load), (rb_metadata_save),
+	(rb_metadata_has_missing_plugins),
+	(rb_metadata_get_missing_plugins):
+	* metadata/rb-metadata.h:
+	Remove gnome-vfs and gnome-authentication calls, remove #ifdefs for
+	missing plugin support, and use giostreamsink to create temporary
+	tag-writing output files and rename them over the original file.
+
+	* plugins/Makefile.am:
+	* plugins/audiocd/rb-audiocd-plugin.c:
+	* plugins/audiocd/rb-audiocd-source.c:
+	* plugins/audiocd/rb-audiocd-source.h:
+	* plugins/audiocd/sj-metadata-musicbrainz.c:
+	Instead of nautilus-cd-burner, ask HAL to identify audio CDs for us.
+	n-c-b wasn't really helping us much here.
+
+	* plugins/audioscrobbler/rb-audioscrobbler-entry.c:
+	* plugins/audioscrobbler/rb-audioscrobbler-entry.h:
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	Drop libsoup 2.2 compatibility, use gio to load and save the queue
+	file.
+
+	* plugins/cd-recorder/rb-cd-recorder-plugin.c:
+	* plugins/cd-recorder/rb-playlist-source-recorder.c:
+	* plugins/cd-recorder/rb-recorder-gst.c:
+	Drop heaps of #ifdefs for old n-c-b versions, move free space checks
+	to rb-util.
+
+	* plugins/daap/Makefile.am:
+	* plugins/daap/rb-daap-connection.c:
+	* plugins/daap/rb-daap-plugin.c:
+	* plugins/daap/rb-daap-share.c:
+	* plugins/daap/rb-daap-src.c:
+	* plugins/daap/rb-daap-mdns-browser-howl.c:
+	* plugins/daap/rb-daap-mdns-publisher-howl.c:
+	Drop howl mdns and libsoup 2.2 support.  Use gio to send files to
+	clients.
+
+	* plugins/generic-player/rb-generic-player-playlist-source.c:
+	* plugins/generic-player/rb-generic-player-plugin.c:
+	* plugins/generic-player/rb-generic-player-source.c:
+	* plugins/generic-player/rb-generic-player-source.h:
+	* plugins/generic-player/rb-nokia770-source.c:
+	* plugins/generic-player/rb-nokia770-source.h:
+	* plugins/generic-player/rb-psp-source.c:
+	* plugins/generic-player/rb-psp-source.h:
+	Rewrite all file handling code with gio, create sources based off
+	GMounts.  Probably not using the right drive/volume name yet.
+	PSP and nokia770 sources are completely untested.
+
+	* plugins/ipod/rb-ipod-db.c:
+	* plugins/ipod/rb-ipod-db.h:
+	* plugins/ipod/rb-ipod-plugin.c:
+	* plugins/ipod/rb-ipod-source.c:
+	* plugins/ipod/rb-ipod-source.h:
+	Rewrite file/path handling code with gio.
+
+	* plugins/iradio/rb-iradio-source.c:
+	* plugins/iradio/rb-station-properties-dialog.c:
+	Use gio URI/file functions, replace gnome_vfs_uri_list_parse with
+	rb_uri_list_parse.
+
+	* plugins/magnatune/magnatune/BuyAlbumHandler.py:
+	* plugins/magnatune/magnatune/__init__.py:
+	Remove unnecessary gnomevfs imports
+
+	* plugins/mtpdevice/rb-mtp-plugin.c:
+	* plugins/mtpdevice/rb-mtp-source.c:
+	Rewrite some file handling code using gio, use new free space checking
+	function in rb-file-helpers.
+
+	* plugins/rb-plugins-engine.c:
+	Rewrite plugin scanning code with gio.
+
+	* plugins/rb/Loader.py:
+	Add a gio loader implementation that probably doesn't work, drop the
+	urllib implementation (we'll require a new enough version of pygobject
+	to allow us to just use the gio implementation soon)
+
+	* podcast/rb-feed-podcast-properties-dialog.c:
+	* podcast/rb-podcast-manager.c:
+	* podcast/rb-podcast-parse.c:
+	* podcast/rb-podcast-properties-dialog.c:
+	* podcast/test-podcast-parse.c: (main):
+	gio doesn't provide anything like gnome_vfs_async_xfer (thankfully!),
+	so add our own simple download thread.  Implement simple easily-fooled
+	download resume by seeking to an offset equal to the current size of
+	the local file.  Rewrite content type checking and URI display code
+	with gio.
+
+	* remote/dbus/Makefile.am:
+	* remote/dbus/rb-client.c: (main):
+	Remove glib version checks, rewrite argument handling using gio.
+
+	* rhythmdb/rhythmdb-import-job.c:
+	Update for rb_uri_handle_recursively_async changes, use a GCancellable
+	to cancel the import.
+	
+	* rhythmdb/rhythmdb-monitor.c:
+	Use gio file/directory monitoring.  Not quite using it fully yet -
+	G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT is probably useful.
+
+	* rhythmdb/rhythmdb-tree.c:
+	Bump database format number, as URIs need to be canonicalised yet
+	again.  Use a GCancellable to cancel loading.
+
+	* rhythmdb/Makefile.am:
+	* rhythmdb/rhythmdb-private.h:
+	* lib/rb-marshal.list:
+	* rhythmdb/rhythmdb.c:
+	* rhythmdb/rhythmdb.h:
+	gio doesn't have a 'stat 10000 files' function, so implement it ourselves
+	with a thread.  Attempt to mount volumes as required, emitting a
+	signal to create a mount operation (rhythmdb theoretically shouldn't
+	use gtk).  Move directory recursion into the action thread, rather
+	than creating a new thread each time.  Use GSlice to allocate
+	RhythmDBEvent and RhythmDBAction structures; we often have quite a lot
+	of them.  Remove the gnome-vfs trash code, leaving the gio code added
+	before 0.11.5.
+
+	* shell/main.c: (main), (load_uri_args):
+	Remove gnome authentication manager calls.  Use gio to process
+	commandline args.
+
+	* shell/rb-missing-plugins.c: (rb_missing_plugins_init):
+	* shell/rb-playlist-manager.c:
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(volume_pre_unmount_cb), (rb_shell_player_init),
+	(missing_plugins_cb):
+	* shell/rb-shell-preferences.c: (help_cb),
+	(rb_shell_preferences_init), (rb_shell_preferences_sync):
+	* shell/rb-shell.c: (rb_shell_create_mount_op_cb), (construct_db),
+	(rb_shell_cmd_contents), (rb_shell_load_uri):
+	* shell/rb-tray-icon.c: (rb_tray_icon_drop_cb):
+	Various bits of rewriting for gio.  With new enough gtk+, use
+	gtk_show_uri to display help rather than gnome_help_display, and
+	create gtk mount operations when requested by rhythmdb.
+
+	* bindings/python/rb.override:
+	* shell/rb-removable-media-manager.c:
+	* shell/rb-removable-media-manager.h:
+	* sources/rb-removable-media-source.c:
+	Use gio's drive/volume/mount monitor.  Handle both mounts and volumes
+	because in some cases (audio CDs, mostly) we don't require the volume
+	to be mounted, but mostly we do.  If a source is created for a volume,
+	don't allow one to be created for the corresponding mount, and vice
+	versa.  When asked to 'eject', first try ejecting the volume, then the
+	mount, and then unmount instead.  If eject or unmount fails, don't
+	remove the corresponding source.
+
+	* sources/rb-auto-playlist-source.c:
+	* sources/rb-browser-source.c:
+	* sources/rb-library-source.c:
+	* sources/rb-play-queue-source.c:
+	* sources/rb-playlist-source.c:
+	* sources/rb-podcast-source.c:
+	* sources/rb-static-playlist-source.c:
+	Rewrite file handling, URI formatting, list parsing, etc. code with
+	gio equivalents.
+
+	* widgets/rb-entry-view.c: (rb_entry_view_location_cell_data_func):
+	* widgets/rb-entry-view.h:
+	* widgets/rb-property-view.c:
+	* widgets/rb-query-creator-properties.c:
+	(escapedStringCriteriaSetWidgetData),
+	(escapedStringCriteriaGetWidgetData):
+	* widgets/rb-song-info.c: (rb_song_info_update_filesize),
+	(rb_song_info_update_location):
+	* widgets/rb-uri-dialog.c:
+	Replace gnome-vfs URI formatting and unescaping functions with gio
+	equivalents.
+
+	* tests/bench-rhythmdb-load.c: (main):
+	* tests/test-audioscrobbler.c: (START_TEST):
+	* tests/test-file-helpers.c: (main):
+	* tests/test-rhythmdb-property-model.c: (main):
+	* tests/test-rhythmdb-query-model.c: (main):
+	* tests/test-rhythmdb.c: (main):
+	Update test programs, mostly removing gnome_vfs_init() and
+	gnome_vfs_shutdown().
+
+	* lib/rb-debug.c: (rb_debug_init_match):
+	Add gio log domain to the set we handle to interrupt debuggers.
+
+	From #510392, fixes #319758.
+
 2008-07-29  Christophe Fergeau  <teuf@gnome.org>
 
 	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_construct):

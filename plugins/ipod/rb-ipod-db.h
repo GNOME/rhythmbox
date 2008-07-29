@@ -29,10 +29,9 @@
 #ifndef __RB_IPOD_DB_H
 #define __RB_IPOD_DB_H
 
+#include <gio/gio.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gpod/itdb.h>
-#include <libgnomevfs/gnome-vfs-volume.h>
-#include <libgnomevfs/gnome-vfs-volume-monitor.h>
 
 
 G_BEGIN_DECLS
@@ -54,7 +53,7 @@ typedef struct
 	GObjectClass parent;
 } RbIpodDbClass;
 
-RbIpodDb *rb_ipod_db_new (GnomeVFSVolume *volume);
+RbIpodDb *rb_ipod_db_new (GMount *mount);
 GType rb_ipod_db_get_type (void);
 
 void rb_ipod_db_save_async (RbIpodDb *db);

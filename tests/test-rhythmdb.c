@@ -450,7 +450,6 @@ main (int argc, char **argv)
 	rb_threads_init ();
 	gtk_set_locale ();
 	gtk_init (&argc, &argv);
-	gnome_vfs_init ();
 	rb_debug_init (TRUE);
 	rb_refstring_system_init ();
 	rb_file_helpers_init ();
@@ -468,7 +467,6 @@ main (int argc, char **argv)
 
 	rb_file_helpers_shutdown ();
 	rb_refstring_system_shutdown ();
-	gnome_vfs_shutdown ();
 
 	rb_profile_end ("rhythmbox test suite");
 	return ret;

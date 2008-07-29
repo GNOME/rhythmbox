@@ -30,7 +30,7 @@
 #ifndef __RB_REMOVABLE_MEDIA_MANAGER_H
 #define __RB_REMOVABLE_MEDIA_MANAGER_H
 
-#include <libgnomevfs/gnome-vfs.h>
+#include <gio/gio.h>
 
 #include "rb-source.h"
 #include "rhythmdb.h"
@@ -45,10 +45,10 @@ G_BEGIN_DECLS
 #define RB_IS_REMOVABLE_MEDIA_MANAGER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_REMOVABLE_MEDIA_MANAGER))
 #define RB_REMOVABLE_MEDIA_MANAGER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_REMOVABLE_MEDIA_MANAGER, RBRemovableMediaManagerClass))
 
-typedef void (*RBTranferCompleteCallback) (RhythmDBEntry *entry,
-					   const char *dest,
-					   guint64 dest_size,
-					   gpointer userdata);
+typedef void (*RBTransferCompleteCallback) (RhythmDBEntry *entry,
+					    const char *dest,
+					    guint64 dest_size,
+					    gpointer userdata);
 
 typedef struct
 {
@@ -66,8 +66,10 @@ typedef struct
 					 gint done,
 					 gint total,
 					 double fraction);
-	RBSource * (*create_source)	(RBRemovableMediaManager *mgr,
-					 GnomeVFSVolume *volume);
+	RBSource * (*create_source_mount) (RBRemovableMediaManager *mgr,
+					 GMount *mount);
+	RBSource * (*create_source_volume) (RBRemovableMediaManager *mgr,
+					 GVolume *volume);
 } RBRemovableMediaManagerClass;
 
 RBRemovableMediaManager* rb_removable_media_manager_new		(RBShell *shell);
@@ -80,7 +82,7 @@ void	rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *mgr,
 						   RhythmDBEntry *entry,
 						   const char *dest,
 						   GList *mime_types,
-						   RBTranferCompleteCallback callback,
+						   RBTransferCompleteCallback callback,
 						   gpointer userdata);
 #endif
 

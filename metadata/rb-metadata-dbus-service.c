@@ -35,8 +35,6 @@
 #include <unistd.h>
 
 #include <glib/gi18n.h>
-#include <libgnomeui/gnome-authentication-manager.h>
-#include <libgnomevfs/gnome-vfs.h>
 #include <gst/gst.h>
 
 #include <dbus/dbus.h>
@@ -495,8 +493,6 @@ main (int argc, char **argv)
 	textdomain (GETTEXT_PACKAGE);
 #endif
 	g_type_init ();
-	gnome_vfs_init ();
-	gnome_authentication_manager_init ();
 	gst_init (NULL, NULL);
 	g_set_prgname ("rhythmbox-metadata");
 

@@ -26,16 +26,14 @@ AC_C_BIGENDIAN
 AC_CHECK_SIZEOF(long)
 
 DBUS_MIN_REQS=0.35
-GST_0_10_REQS=0.10.4
-GST_0_10_XFADE_REQS=0.10.12
-GST_0_10_MISSING_PLUGIN_REQS=0.10.12
+GST_0_10_REQS=0.10.12
 GTK_REQS=2.8.0
+GLIB_REQS=2.15.5
 GNOME_MEDIA_PROFILES_REQS=2.8
-GNOME_VFS_REQS=2.8.0
 LIBNOTIFY_REQS=0.3.2
 LIBGPOD_REQS=0.6
 MUSICBRAINZ_REQS=2.1.0
-NCB_MIN_REQS=2.9.0
+NCB_MIN_REQS=2.21.6
 TOTEM_PLPARSER_REQS=2.22.0
 VALA_REQS=0.1.0
 
@@ -59,36 +57,20 @@ AC_CHECK_FUNC(mkdtemp,
     mkdtemp_missing=true)
 AM_CONDITIONAL(MKDTEMP_MISSING, test x$mkdtemp_missing = xtrue)
 
-PKG_CHECK_MODULES(GLIB_TESTS, glib-2.0)
-AC_CHECK_LIB(glib-2.0, g_utf8_collate_key_for_filename,
-    [AC_DEFINE([HAVE_COLLATE_KEY_FILENAME], 1, [Have glib function to collate filename sort keys])],
-    ,[$GLIB_TESTS_LIBS $GLIB_TESTS_CFLAGS])
-AC_CHECK_LIB(glib-2.0, g_mapped_file_new,
-    [AC_DEFINE([HAVE_G_MAPPED_FILE], 1, [Have glib mmap wrapper])],
-    ,[$GLIB_TESTS_LIBS $GLIB_TESTS_CFLAGS])
-AC_CHECK_LIB(glib-2.0, g_get_user_special_dir,
-    [AC_DEFINE([HAVE_G_GET_USER_SPECIAL_DIR], 1, [Have glib function to find user special dirs])],
-    ,[$GLIB_TESTS_LIBS $GLIB_TESTS_CFLAGS])
-
 PKG_PROG_PKG_CONFIG
 
-PKG_CHECK_MODULES(RB_CLIENT, gnome-vfs-2.0 >= $GNOME_VFS_REQS)
+PKG_CHECK_MODULES(RB_CLIENT, glib-2.0 >= $GLIB_REQS gio-2.0 >= $GLIB_REQS)
 
 PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  gtk+-2.0 >= $GTK_REQS			\
+		  glib-2.0 >= $GLIB_REQS		\
+		  gio-2.0 >= $GLIB_REQS			\
 		  libgnomeui-2.0			\
-		  libglade-2.0				\
-		  gnome-vfs-2.0 >= $GNOME_VFS_REQS	\
-		  gnome-vfs-module-2.0)
+		  libglade-2.0)
 
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
 if test x$have_totem_plparser != xyes; then
    AC_MSG_ERROR([totem playlist parsing library not found or too old])
-fi
-
-PKG_CHECK_MODULES(GIO, gio-2.0, have_gio=yes, have_gio=no)
-if test x$have_gio == "xyes"; then
-  AC_DEFINE(HAVE_GIO, 1, [Define to use gio instead of gnome-vfs (for trash only)])
 fi
 
 AC_ARG_WITH(hal,
@@ -258,23 +240,6 @@ PKG_CHECK_MODULES(GSTREAMER_0_10, \
 RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $GSTREAMER_0_10_CFLAGS"
 RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $GSTREAMER_0_10_LIBS"
 
-PKG_CHECK_MODULES(GSTREAMER_0_10_XFADE, \
-	gstreamer-0.10 >= $GST_0_10_XFADE_REQS,
-	have_gstreamer_0_10_xfade=yes,have_gstreamer_0_10_xfade=no)
-
-if test x"$have_gstreamer_0_10_xfade" = xyes; then
-	AC_DEFINE(HAVE_GSTREAMER_0_10_XFADE,1,[Define if you want to use the crossfading GStreamer 0.10 backend])
-fi
-AM_CONDITIONAL(USE_GSTREAMER_0_10_XFADE, test x"$have_gstreamer_0_10_xfade" = xyes)
-
-PKG_CHECK_MODULES(GSTREAMER_0_10_MISSING_PLUGINS, \
-		  gstreamer-plugins-base-0.10 >= $GST_0_10_MISSING_PLUGIN_REQS,
-		  have_gstreamer_0_10_missing_plugins=yes,have_gstreamer_0_10_missing_plugins=no)
-if test x"$have_gstreamer_0_10_missing_plugins" = xyes; then
-	AC_DEFINE(HAVE_GSTREAMER_0_10_MISSING_PLUGINS,1,[Define if you want to enable GStreamer plugin installation])
-fi
-AM_CONDITIONAL(USE_GSTREAMER_0_10_MISSING_PLUGINS, test x"$have_gstreamer_0_10_missing_plugins" = xyes)
-
 dnl Tag writing
 AC_ARG_ENABLE(tag-writing,
 	      AC_HELP_STRING([--disable-tag-writing],
@@ -294,14 +259,14 @@ AC_ARG_ENABLE(daap,
 			     [Disable Digital Audio Access Protocol (music sharing) in rhythmbox]))
 
 AC_ARG_WITH(mdns,
-   AC_HELP_STRING([--with-mdns=auto|howl|avahi],
+   AC_HELP_STRING([--with-mdns=auto|avahi],
    [Select the mDNS/DNS-SD implementation to use (default auto)]),,
    with_mdns=auto)
 
-have_howl=no
+#have_howl=no
 have_avahi=no
 have_mdns=no
-use_howl=no
+#use_howl=no
 use_avahi=no
 
 PKG_CHECK_MODULES(AVAHI,
@@ -322,11 +287,6 @@ else
    have_avahi=no
 fi
 
-PKG_CHECK_MODULES(HOWL,
-   howl,
-   have_howl=yes,
-   have_howl=no)
-
 if test x"$with_mdns" = xauto; then
    if test x"$have_avahi" = xyes; then
       MDNS_CFLAGS=$AVAHI_CFLAGS
@@ -341,33 +301,12 @@ if test x"$with_mdns" = xauto; then
       fi
 
       have_mdns=yes
-   elif test x"$have_howl" = xyes; then
-      MDNS_CFLAGS=$HOWL_CFLAGS
-      MDNS_LIBS=$HOWL_LIBS
-      AC_DEFINE(WITH_HOWL, 1, [Define if mDNS/DNS-SD implementation uses Howl])
-      use_howl=yes
-      AC_MSG_NOTICE([Detected Howl, using it for mDNS/DNS-SD])
-
-      have_mdns=yes
    fi
-fi
-
-if test x"$with_mdns" = xhowl; then
-   if test x"$have_howl" = xno; then
-      AC_MSG_ERROR([Howl explicitly requested but not found.  Install Howl or try --with-mdns=avahi])
-   fi
-
-   MDNS_CFLAGS=$HOWL_CFLAGS
-   MDNS_LIBS=$HOWL_LIBS
-   AC_DEFINE(WITH_HOWL, 1, [Define if mDNS/DNS-SD implementation uses Howl])
-   use_howl=yes
-   AC_MSG_NOTICE([Using Howl for mDNS/DNS-SD])
-   have_mdns=yes
 fi
 
 if test x"$with_mdns" = xavahi; then
    if test x"$have_avahi" = xno; then
-      AC_MSG_ERROR([Avahi explicitly requested but not found.  Install Avahi or try --with-mdns=howl])
+      AC_MSG_ERROR([Avahi explicitly requested but not found.])
    fi
 
    MDNS_CFLAGS=$AVAHI_CFLAGS
@@ -385,7 +324,6 @@ if test x"$with_mdns" = xavahi; then
    have_mdns=yes
 fi
 
-AM_CONDITIONAL(USE_HOWL, test "x$use_howl" = "xyes")
 AM_CONDITIONAL(USE_AVAHI, test "x$use_avahi" = "xyes")
 
 AC_ARG_ENABLE(libnotify,
@@ -436,21 +374,9 @@ if test "x$enable_daap" = "xyes" || test "x$enable_audioscrobbler" != "xno"; the
 		libsoup-2.4,
 		have_libsoup24=yes,
 		have_libsoup24=no)
-	if test x"$have_libsoup24" = "xno"; then
-		PKG_CHECK_MODULES(SOUP,
-			libsoup-2.2,
-			have_libsoup22=yes,
-			have_libsoup22=no)
-	fi
-	if test x"$have_libsoup24" = "xyes" || test x"$have_libsoup22" = "xyes"; then
+	if test x"$have_libsoup24" = "xyes"; then
 		have_libsoup=yes
 		AC_DEFINE(HAVE_LIBSOUP, 1, [Define if libsoup support is enabled])
-	fi
-	if test x"$have_libsoup24" = "xyes"; then
-		AC_DEFINE(HAVE_LIBSOUP_2_4, 1, [Define if libsoup 2.4 support is enabled])
-	fi
-	if test x"$have_libsoup22" = "xyes"; then
-		AC_DEFINE(HAVE_LIBSOUP_2_2, 1, [Define if libsoup 2.2 support is enabled])
 	fi
 fi
 
@@ -480,7 +406,7 @@ if test "x$enable_daap" != "xno"; then
 		enable_daap=no
 	elif test x"$have_mdns" = xno; then
 		if test "x$enable_daap" = "xyes"; then
-			AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implementation found.  Install Howl or Avahi])
+			AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implementation found.  Install Avahi])
 		fi
 		enable_daap=no
 	else
@@ -553,19 +479,6 @@ if test x"$with_libnautilus_burn" != "xno"; then
     PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_MIN_REQS], have_libnautilus_burn=yes, have_libnautilus_burn=no)
 fi
 if test "x$have_libnautilus_burn" = xyes; then
-    AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_door_is_open,
-       [AC_DEFINE([HAVE_BURN_DRIVE_DOOR], 1, [Have nautilus-burn function to check drive door state])],
-       ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
-    AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_unref,
-       [AC_DEFINE([HAVE_BURN_DRIVE_UNREF], 1, [Have nautilus-burn 2.13 drive unref function])],
-       ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
-    AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_new_from_path,
-       [AC_DEFINE([HAVE_BURN_DRIVE_NEW_FROM_PATH], 1, [Have nautilus-burn 2.13 drive new_from_path function])],
-       ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
-    AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_get_write_speeds,
-       [AC_DEFINE([HAVE_BURN_DRIVE_GET_WRITE_SPEEDS], 1, [Have nautilus-burn 2.13 drive get_write_speeds])],
-       ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
-
     AC_DEFINE([HAVE_NAUTILUS_BURN], 1, [Have nautilus-burn])
 fi
 AM_CONDITIONAL(HAVE_NAUTILUS_BURN, test x$have_libnautilus_burn = xyes)
@@ -591,8 +504,6 @@ AC_PATH_PROG(GCONFTOOL, gconftool-2)
 
 AC_SUBST(RHYTHMBOX_CFLAGS)
 AC_SUBST(RHYTHMBOX_LIBS)
-AC_SUBST(RB_CLIENT_CFLAGS)
-AC_SUBST(RB_CLIENT_LIBS)
 
 AC_TRY_RUN([#include <time.h>
                 int main ()
@@ -681,18 +592,6 @@ AC_SUBST(LIBSEXY_CFLAGS)
 AC_SUBST(LIBSEXY_LIBS)
 AM_CONDITIONAL(WITH_INTERNAL_LIBSEXY, test "x$with_internal_libsexy" = "xyes")
 
-
-dnl we've copies gsequence from glib 2.13, and should just link to that
-dnl if the system version has it
-AC_ARG_WITH(internal-gsequence,
-            AC_HELP_STRING([--with-internal-gsequence],
-			   [Build using internal cope of gsequence]),,
-	      with_internal_gsequence=no)
-if test "x$with_internal_gsequence" = "xno"; then
-	PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.13.0, with_internal_gsequence=no,
-		          with_internal_gsequence=yes)
-fi
-AM_CONDITIONAL(WITH_INTERNAL_GSEQUENCE, test "x$with_internal_gsequence" = "xyes")
 
 dnl warnings bits, copied from gnome-keyring configure.in
 dnl Turn on the additional warnings last, so -Werror doesn't affect other tests.
@@ -1123,12 +1022,6 @@ else
 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
 fi
 
-if test x"$have_gstreamer_0_10_xfade" != xyes; then
-	AC_MSG_NOTICE([   Crossfading player is disabled])
-else
-	AC_MSG_NOTICE([** Crossfading player is enabled])
-fi
-
 if test x"$use_ipod" = xyes; then
 	if test x"$enable_ipod_writing" != xno; then
 		AC_MSG_NOTICE([** iPod integration enabled])
@@ -1149,11 +1042,7 @@ else
 	AC_MSG_NOTICE([   CD burning support disabled])
 fi
 if test x"$enable_daap" = xyes; then
-	if test x"$have_libsoup24" = "xyes"; then
-		AC_MSG_NOTICE([** DAAP (music sharing) support is enabled (using libsoup 2.4)])
-	elif test x"$have_libsoup22" = "xyes"; then
-		AC_MSG_NOTICE([** DAAP (music sharing) support is enabled (using libsoup 2.2)])
-	fi
+	AC_MSG_NOTICE([** DAAP (music sharing) support is enabled])
 else
 	AC_MSG_NOTICE([   DAAP (music sharing) support is disabled])
 fi
@@ -1183,11 +1072,7 @@ else
 	AC_MSG_NOTICE([   gnome-keyring support disabled])
 fi
 if test x"$enable_audioscrobbler" != xno; then
-	if test x"$have_libsoup24" = "xyes"; then
-		AC_MSG_NOTICE([** Audioscrobbler support enabled (using libsoup 2.4)])
-	elif test x"$have_libsoup22" = "xyes"; then
-		AC_MSG_NOTICE([** Audioscrobbler support enabled (using libsoup 2.2)])
-	fi
+	AC_MSG_NOTICE([** Audioscrobbler support enabled])
 else
 	AC_MSG_NOTICE([   Audioscrobbler support disabled])
 fi
@@ -1200,11 +1085,6 @@ if test x"$with_internal_libsexy" = xyes; then
 	AC_MSG_NOTICE([   using internal libsexy])
 else
 	AC_MSG_NOTICE([** using system-wide libsexy])
-fi
-if test x"$with_internal_gsequence" = xyes; then
-	AC_MSG_NOTICE([   using internal copy of gsequence])
-else
-	AC_MSG_NOTICE([** using glib 2.13 version of gsequence])
 fi
 if test "x$enable_fm_radio" != xno; then
 	AC_MSG_NOTICE([** FM radio support enabled])

@@ -31,7 +31,7 @@
 #define __RB_FILE_HELPERS_H
 
 #include <glib.h>
-#include <libgnomevfs/gnome-vfs.h>
+#include <gio/gio.h>
 
 G_BEGIN_DECLS
 
@@ -41,13 +41,12 @@ const char *	rb_music_dir		(void);
 
 char *		rb_canonicalise_uri	(const char *uri);
 
-GnomeVFSResult	rb_uri_mkstemp		(const char *prefix, char **uri,
-					 GnomeVFSHandle **handle);
+gboolean	rb_uri_mkstemp		(const char *prefix, char **uri,
+					 GOutputStream **handle, GError **error);
 
-char *		rb_uri_resolve_symlink	(const char *uri);
+char *		rb_uri_resolve_symlink	(const char *uri, GError **error);
 gboolean	rb_uri_is_directory	(const char *uri);
 gboolean	rb_uri_exists		(const char *uri);
-char *		rb_uri_resolve_relative	(const char *uri);
 gboolean	rb_uri_is_readable	(const char *uri);
 gboolean	rb_uri_is_writable	(const char *uri);
 gboolean	rb_uri_is_local		(const char *uri);
@@ -56,18 +55,19 @@ gboolean	rb_uri_could_be_podcast (const char *uri, gboolean *is_opml);
 char *		rb_uri_make_hidden      (const char *uri);
 char *		rb_uri_get_dir_name	(const char *uri);
 char *		rb_uri_get_short_path_name (const char *uri);
+char *		rb_uri_get_mount_point  (const char *uri);
 
 /* return TRUE to recurse further, FALSE to stop */
-typedef gboolean (*RBUriRecurseFunc) (const char *uri, gboolean dir, gpointer data);
+typedef gboolean (*RBUriRecurseFunc) (GFile *file, gboolean dir, gpointer data);
 
 void		rb_uri_handle_recursively(const char *uri,
+					  GCancellable *cancel,
 					  RBUriRecurseFunc func,
-					  gboolean *cancelflag,
 					  gpointer user_data);
 
 void		rb_uri_handle_recursively_async(const char *uri,
+						GCancellable *cancel,
 						RBUriRecurseFunc func,
-						gboolean *cancelflag,
 						gpointer user_data,
 						GDestroyNotify data_destroy);
 
@@ -75,6 +75,11 @@ char*		rb_uri_append_path	(const char *uri,
 					 const char *path);
 char*		rb_uri_append_uri	(const char *uri,
 					 const char *fragment);
+
+gboolean	rb_check_dir_has_space	(GFile *dir, guint64 bytes_needed);
+gboolean	rb_check_dir_has_space_uri (const char *uri, guint64 bytes_needed);
+
+gboolean	rb_uri_create_parent_dirs (const char *uri, GError **error);
 
 void		rb_file_helpers_init	(void);
 void		rb_file_helpers_shutdown(void);

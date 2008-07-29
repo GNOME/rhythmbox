@@ -159,10 +159,7 @@
 #include <gst/gst.h>
 #include <gst/controller/gstcontroller.h>
 #include <gst/base/gstbasetransform.h>
-
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 #include <gst/pbutils/pbutils.h>
-#endif /* HAVE_GSTREAMER_0_10_MISSING_PLUGINS */
 
 #include "rb-player.h"
 #include "rb-player-gst-xfade.h"
@@ -326,10 +323,9 @@ typedef struct
 	gboolean emitted_error;
 	gulong error_idle_id;
 	GError *error;
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+
 	GSList *missing_plugins;
 	gulong  emit_missing_plugins_id;
-#endif
 } RBXFadeStream;
 
 #define RB_TYPE_XFADE_STREAM 	(rb_xfade_stream_get_type ())
@@ -662,7 +658,6 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_STRING, G_TYPE_STRING, GST_TYPE_ELEMENT);
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	signals[MISSING_PLUGINS] =
 		g_signal_new ("missing-plugins",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -673,7 +668,6 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_POINTER, G_TYPE_STRV, G_TYPE_STRV);
-#endif
 
 	g_type_class_add_private (klass, sizeof (RBPlayerGstXFadePrivate));
 }
@@ -1472,7 +1466,6 @@ process_tag (const GstTagList *list, const gchar *tag, RBXFadeStream *stream)
 	g_value_unset (&newval);
 }
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 
 static gboolean
 emit_missing_plugins (RBXFadeStream *stream)
@@ -1548,7 +1541,6 @@ rb_player_gst_xfade_handle_missing_plugin_message (RBPlayerGstXFade *player, RBX
 		break;
 	}
 }
-#endif
 
 /* gstreamer message bus callback */
 static gboolean
@@ -1725,12 +1717,10 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 		const GstStructure *s;
 		const char *name;
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 		if (gst_is_missing_plugin_message (message)) {
 			rb_player_gst_xfade_handle_missing_plugin_message (player, stream, message);
 			break;
 		}
-#endif
 
 		s = gst_message_get_structure (message);
 		name = gst_structure_get_name (s);

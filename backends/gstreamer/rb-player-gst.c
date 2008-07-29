@@ -37,12 +37,7 @@
 #include <glib/gi18n.h>
 #include <gdk/gdk.h>
 #include <gst/tag/tag.h>
-#include <libgnomevfs/gnome-vfs-ops.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
-
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 #include <gst/pbutils/pbutils.h>
-#endif /* HAVE_GSTREAMER_0_10_MISSING_PLUGINS */
 
 #include "rb-debug.h"
 #include "rb-marshal.h"
@@ -102,7 +97,6 @@ enum
 	PROP_PLAYBIN
 };
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 enum
 {
 	MISSING_PLUGINS,
@@ -110,7 +104,6 @@ enum
 };
 
 static guint signals[LAST_SIGNAL] = { 0 };
-#endif
 
 struct _RBPlayerGstPrivate
 {
@@ -183,7 +176,6 @@ rb_player_gst_class_init (RBPlayerGstClass *klass)
 							      GST_TYPE_ELEMENT,
 							      G_PARAM_READABLE));
 	
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	signals[MISSING_PLUGINS] =
 		g_signal_new ("missing-plugins",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -194,7 +186,6 @@ rb_player_gst_class_init (RBPlayerGstClass *klass)
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_POINTER, G_TYPE_STRV, G_TYPE_STRV);
-#endif
 
 	g_type_class_add_private (klass, sizeof (RBPlayerGstPrivate));
 }
@@ -425,7 +416,6 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 	g_hash_table_insert (player->priv->idle_info_ids, GUINT_TO_POINTER (signal->id), NULL);
 }
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 static void
 rb_player_gst_handle_missing_plugin_message (RBPlayerGst *player, GstMessage *message)
 {
@@ -459,7 +449,6 @@ rb_player_gst_handle_missing_plugin_message (RBPlayerGst *player, GstMessage *me
 
 	gst_message_unref (message);
 }
-#endif
 
 static gboolean
 rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
@@ -576,14 +565,12 @@ rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
 		g_value_set_string (signal->info, gst_structure_get_name (structure));
 		g_idle_add ((GSourceFunc) emit_signal_idle, signal);
 	}
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	case GST_MESSAGE_ELEMENT: {
 		if (gst_is_missing_plugin_message (message)) {
 			rb_player_gst_handle_missing_plugin_message (mp, message);
 		}
 		break;
 	}
-#endif
 	default:
 		break;
 	}

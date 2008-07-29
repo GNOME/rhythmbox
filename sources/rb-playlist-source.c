@@ -37,7 +37,6 @@
 #include <libxml/tree.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
 #include <totem-pl-parser.h>
 
 #include "rb-entry-view.h"

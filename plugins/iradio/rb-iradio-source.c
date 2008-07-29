@@ -35,7 +35,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
 #include <libxml/tree.h>
 
 #include "rb-iradio-source.h"
@@ -507,7 +506,7 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 	if (title) {
 		fixed_title = rb_make_valid_utf8 (title, '?');
 	} else {
-		fixed_title = gnome_vfs_format_uri_for_display (uri);
+		fixed_title = g_uri_unescape_string (uri, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 	}
 	g_value_take_string (&val, fixed_title);
 
@@ -927,8 +926,14 @@ rb_iradio_source_first_time_changed (GConfClient *client,
 	g_object_get (source, "plugin", &plugin, NULL);
 	file = rb_plugin_find_file (plugin, "iradio-initial.pls");
 	if (file != NULL) {
-		uri = gnome_vfs_get_uri_from_local_path (file);
+		GFile *f;
+
+		f = g_file_new_for_path (file);
+		uri = g_file_get_uri (f);
+
 		rb_iradio_source_add_from_playlist (source, uri);
+
+		g_object_unref (f);
 		g_free (uri);
 	}
 	g_free (file);
@@ -946,25 +951,12 @@ stations_view_drag_data_received_cb (GtkWidget *widget,
 				     guint time,
 				     RBIRadioSource *source)
 {
-	GList *list, *uri_list, *i;
+	GList *uri_list, *i;
 
 	rb_debug ("parsing uri list");
-	list = gnome_vfs_uri_list_parse ((char *)selection_data->data);
-
-	if (list == NULL)
-		return;
-
-	uri_list = NULL;
-
-	for (i = list; i != NULL; i = g_list_next (i))
-		uri_list = g_list_prepend (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
-
-	gnome_vfs_uri_list_free (list);
-
+	uri_list = rb_uri_list_parse ((char *)selection_data->data);
 	if (uri_list == NULL)
 		return;
-
-	rb_debug ("adding uris");
 
 	i = uri_list;
 	while (i != NULL) {

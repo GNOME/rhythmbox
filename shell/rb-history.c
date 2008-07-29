@@ -31,7 +31,7 @@
 #include "config.h"
 
 #include <string.h>
-#include <gsequence.h>
+#include <glib/gsequence.h>
 
 #include "rb-history.h"
 

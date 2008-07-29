@@ -24,20 +24,9 @@ libdaap_la_SOURCES = \
 	rb-daap-src.h				\
 	rb-daap-dialog.c			\
 	rb-daap-dialog.h			\
-	$(NULL)
-
-if USE_HOWL
-libdaap_la_SOURCES += \
-	rb-daap-mdns-publisher-howl.c		\
-	rb-daap-mdns-browser-howl.c		\
-	$(NULL)
-else
-libdaap_la_SOURCES += \
 	rb-daap-mdns-publisher-avahi.c		\
 	rb-daap-mdns-browser-avahi.c		\
 	$(NULL)
-endif
-
 
 libdaap_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libdaap_la_LIBADD = 					\

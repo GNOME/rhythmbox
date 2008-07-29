@@ -36,7 +36,6 @@
 #include <glib/gi18n.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rb-property-view.h"
 #include "rb-dialog.h"

@@ -41,7 +41,6 @@
 #include <glib/gi18n.h>
 #include <gdk/gdk.h>
 
-#include "rb-soup-compat.h"
 #include <libsoup/soup.h>
 
 #include "rb-daap-hash.h"
@@ -357,11 +356,7 @@ build_message (RBDAAPConnection *connection,
 		char *token;
 
 		user_pass = g_strdup_printf ("%s:%s", priv->username, priv->password);
-#if defined(HAVE_LIBSOUP_2_4)
 		token = g_base64_encode ((guchar *)user_pass, strlen (user_pass));
-#else
-		token = soup_base64_encode (user_pass, strlen (user_pass));
-#endif
 		h = g_strdup_printf ("Basic %s", token);
 
 		g_free (token);
@@ -443,13 +438,8 @@ actual_http_response_handler (DAAPResponseData *data)
 	priv = data->connection->priv;
 	structure = NULL;
 	encoding_header = NULL;
-#if defined(HAVE_LIBSOUP_2_4)
 	response = data->message->response_body->data;
 	response_length = data->message->response_body->length;
-#else
-	response = data->message->response.body;
-	response_length = data->message->response.length;
-#endif
 
 	message_path = soup_uri_to_string (soup_message_get_uri (data->message), FALSE);
 
@@ -596,16 +586,10 @@ actual_http_response_handler (DAAPResponseData *data)
 	g_free (data);
 }
 
-#if defined(HAVE_LIBSOUP_2_4)
 static void
 http_response_handler (SoupSession      *session,
 		       SoupMessage      *message,
 		       RBDAAPConnection *connection)
-#else
-static void
-http_response_handler (SoupMessage      *message,
-		       RBDAAPConnection *connection)
-#endif
 {
 	DAAPResponseData *data;
 	int response_length;
@@ -617,11 +601,7 @@ http_response_handler (SoupMessage      *message,
 
 	data = g_new0 (DAAPResponseData, 1);
 	data->status = message->status_code;
-#if defined(HAVE_LIBSOUP_2_4)
 	response_length = message->response_body->length;
-#else
-	response_length = message->response.length;
-#endif
 
 	g_object_ref (G_OBJECT (connection));
 	data->connection = connection;
@@ -1696,11 +1676,7 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 		char *token;
 
 		user_pass = g_strdup_printf ("%s:%s", priv->username, priv->password);
-#if defined(HAVE_LIBSOUP_2_4)
 		token = g_base64_encode ((guchar *)user_pass, strlen (user_pass));
-#else
-		token = soup_base64_encode (user_pass, strlen (user_pass));
-#endif
 		g_string_append_printf (headers, "Authentication: Basic %s\r\n", token);
 		g_free (token);
 		g_free (user_pass);

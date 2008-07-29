@@ -28,7 +28,7 @@
 import rhythmdb, rb
 import gobject
 import gtk, gtk.glade
-import gconf, gnomevfs, gnome
+import gconf, gnome
 
 import urllib
 import zipfile

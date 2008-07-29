@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <gconf/gconf-client.h>
 #include <gconf/gconf.h>
-#include <libgnome/gnome-i18n.h>
+#include <glib/gi18n.h>
 
 #include "eel-gconf-extensions.h"
 #include "rb-dialog.h"

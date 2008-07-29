@@ -63,7 +63,7 @@ AudioscrobblerEncodedEntry *	rb_audioscrobbler_entry_encode (AudioscrobblerEntry
 AudioscrobblerEntry *		rb_audioscrobbler_entry_create (RhythmDBEntry *rb_entry);
 
 AudioscrobblerEntry *		rb_audioscrobbler_entry_load_from_string (const char *string);
-char *				rb_audioscrobbler_entry_save_to_string (AudioscrobblerEntry *entry);
+void				rb_audioscrobbler_entry_save_to_string (GString *string, AudioscrobblerEntry *entry);
 
 void				rb_audioscrobbler_entry_debug (AudioscrobblerEntry *entry, int index);
 

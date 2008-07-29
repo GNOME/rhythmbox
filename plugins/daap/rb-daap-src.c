@@ -42,7 +42,6 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#include "rb-soup-compat.h"
 #include <libsoup/soup.h>
 
 #include <glib/gi18n.h>
@@ -440,12 +439,7 @@ rb_daap_src_open (RBDAAPSrc *src)
 	gchar *host;
 	guint port;
 	gchar *path;
-#if defined(HAVE_LIBSOUP_2_4)
 	SoupMessageHeaders *header_table;
-#else
-	GHashTable *header_table;
-	char *dup_headers;
-#endif
 	gchar *request;
 	gchar *response;
 	gchar *end_headers;
@@ -548,7 +542,6 @@ rb_daap_src_open (RBDAAPSrc *src)
 		return FALSE;
 	}
 
-#if defined(HAVE_LIBSOUP_2_4)
 	header_table = soup_message_headers_new (SOUP_MESSAGE_HEADERS_RESPONSE);
 	parse_result = soup_headers_parse_response (response,
 						    ((end_headers+2) - response),
@@ -556,58 +549,13 @@ rb_daap_src_open (RBDAAPSrc *src)
 						    NULL,
 						    &http_status,
 						    &http_status_phrase);
-#else
-	/* for compatibility with older versions of libsoup, we may need to retry
-	 * the soup_headers_parse_response call with slightly different arguments.
-	 * since this function modifies the string passed in, we need to copy it
-	 * before the first call.
-	 *
-	 * > 2.2.99 wants the full response header, including the trailing blank line,
-	 * with the length passed in up to the start of the start of the trailing
-	 * blank line.
-	 */
-	dup_headers = g_strndup (response, (end_headers + 4) - response);
-
-	header_table = g_hash_table_new (soup_str_case_hash, soup_str_case_equal);
-	parse_result = soup_headers_parse_response (dup_headers,
-						    ((end_headers+2) - response),
-						    header_table,
-						    NULL,
-						    &http_status,
-						    &http_status_phrase);
-	g_free (dup_headers);
-	if (parse_result == FALSE) {
-		/*
-		 * < 2.2.98 wants the headers terminated before the trailing blank line.
-		 */
-		end_headers[2] = '\0';
-		parse_result = soup_headers_parse_response (response,
-							    (end_headers+2 - response),
-							    header_table,
-							    NULL,
-							    &http_status,
-							    &http_status_phrase);
-	}
-#endif
 
 	if (parse_result) {
 		if (http_status == 200 || http_status == 206) {
 			const char *enc_str = NULL;
 			const char *len_str = NULL;
-#if defined(HAVE_LIBSOUP_2_4)
 			enc_str = soup_message_headers_get (header_table, "Transfer-Encoding");
 			len_str = soup_message_headers_get (header_table, "Content-Length");
-#else
-			GSList *val;
-			val = g_hash_table_lookup (header_table, "Transfer-Encoding");
-			if (val) {
-				enc_str = ((const char *)val->data);
-			}
-			val = g_hash_table_lookup (header_table, "Content-Length");
-			if (val) {
-				len_str = ((const char *)val->data);
-			}
-#endif
 
 			if (enc_str) {
 				if (g_strcasecmp (enc_str, "chunked") == 0) {
@@ -645,12 +593,7 @@ rb_daap_src_open (RBDAAPSrc *src)
 	}
 	g_free (http_status_phrase);
 
-#if defined(HAVE_LIBSOUP_2_4)
 	soup_message_headers_free (header_table);
-#else
-	soup_message_clear_headers (header_table);
-	g_hash_table_destroy (header_table);
-#endif
 
 	end_headers += 4;
 

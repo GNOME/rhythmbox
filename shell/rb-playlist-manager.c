@@ -46,8 +46,6 @@
 #include <libxml/tree.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnomevfs/gnome-vfs-mime-utils.h>
 
 #include "rb-playlist-manager.h"
 #include "rb-playlist-source.h"

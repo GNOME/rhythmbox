@@ -40,13 +40,11 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
+#include <gio/gio.h>
 #include <gobject/gvaluecollector.h>
 #include <gdk/gdk.h>
 #include <gconf/gconf-client.h>
 
-#if defined(HAVE_GIO)
-#include <gio/gio.h>
-#endif
 
 #include "rb-marshal.h"
 #include "rb-file-helpers.h"
@@ -70,6 +68,18 @@ GType rhythmdb_property_type_map[RHYTHMDB_NUM_PROPERTIES];
 #define RHYTHMDB_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE, RhythmDBPrivate))
 G_DEFINE_ABSTRACT_TYPE(RhythmDB, rhythmdb, G_TYPE_OBJECT)
 
+/* file attributes requested in RHYTHMDB_ACTION_STAT and RHYTHMDB_ACTION_LOAD */
+#define RHYTHMDB_FILE_INFO_ATTRIBUTES			\
+	G_FILE_ATTRIBUTE_STANDARD_SIZE ","		\
+	G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME ","	\
+	G_FILE_ATTRIBUTE_STANDARD_TYPE ","		\
+	G_FILE_ATTRIBUTE_TIME_MODIFIED
+
+/* file attributes requested in RHYTHMDB_ACTION_ENUM_DIR */
+#define RHYTHMDB_FILE_CHILD_INFO_ATTRIBUTES		\
+	RHYTHMDB_FILE_INFO_ATTRIBUTES ","		\
+	G_FILE_ATTRIBUTE_STANDARD_NAME
+
 typedef struct
 {
 	RhythmDB *db;
@@ -92,6 +102,7 @@ typedef struct
 	enum {
 		RHYTHMDB_ACTION_STAT,
 		RHYTHMDB_ACTION_LOAD,
+		RHYTHMDB_ACTION_ENUM_DIR,
 		RHYTHMDB_ACTION_SYNC,
 		RHYTHMDB_ACTION_QUIT,
 	} type;
@@ -145,6 +156,13 @@ static void rhythmdb_monitor_library_changed_cb (GConfClient *client,
 						 guint cnxn_id,
 						 GConfEntry *entry,
 						 RhythmDB *db);
+static void rhythmdb_event_free (RhythmDB *db, RhythmDBEvent *event);
+static void rhythmdb_add_to_stat_list (RhythmDB *db,
+				       const char *uri,
+				       RhythmDBEntry *entry,
+				       RhythmDBEntryType type,
+				       RhythmDBEntryType ignore_type,
+				       RhythmDBEntryType error_type);
 
 enum
 {
@@ -169,6 +187,7 @@ enum
 	SAVE_ERROR,
 	READ_ONLY,
 	MISSING_PLUGINS,
+	CREATE_MOUNT_OP,
 	LAST_SIGNAL
 };
 
@@ -330,7 +349,6 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      1,
 			      G_TYPE_BOOLEAN);
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	rhythmdb_signals[MISSING_PLUGINS] =
 		g_signal_new ("missing-plugins",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -341,7 +359,15 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_BOOLEAN,
 			      3,
 			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);
-#endif
+	rhythmdb_signals[CREATE_MOUNT_OP] =
+		g_signal_new ("create-mount-op",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,		/* no need for an internal handler */
+			      rb_signal_accumulator_object_handled, NULL,
+			      rb_marshal_OBJECT__VOID,
+			      G_TYPE_MOUNT_OPERATION,
+			      0);
 
 	g_type_class_add_private (klass, sizeof (RhythmDBPrivate));
 }
@@ -521,10 +547,6 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->entry_type_mutex = g_mutex_new ();
 	rhythmdb_register_core_entry_types (db);
 
- 	db->priv->stat_events = g_hash_table_new_full (gnome_vfs_uri_hash,
-						       (GEqualFunc) gnome_vfs_uri_equal,
- 						       (GDestroyNotify) gnome_vfs_uri_unref,
- 						       NULL);
  	db->priv->stat_mutex = g_mutex_new ();
 
 	db->priv->change_mutex = g_mutex_new ();
@@ -546,7 +568,7 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->saving_mutex = g_mutex_new ();
 
 	db->priv->can_save = TRUE;
-	db->priv->exiting = FALSE;
+	db->priv->exiting = g_cancellable_new ();
 	db->priv->saving = FALSE;
 	db->priv->dirty = FALSE;
 
@@ -564,66 +586,163 @@ rhythmdb_init (RhythmDB *db)
 }
 
 static GError *
-make_access_failed_error (const char *uri, GnomeVFSResult result)
+make_access_failed_error (const char *uri, GError *access_error)
 {
 	char *unescaped;
 	char *utf8ised;
 	GError *error;
 
 	/* make sure the URI we put in the error message is valid utf8 */
-	unescaped = gnome_vfs_unescape_string_for_display (uri);
+	unescaped = g_uri_unescape_string (uri, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 	utf8ised = rb_make_valid_utf8 (unescaped, '?');
 
 	error = g_error_new (RHYTHMDB_ERROR,
 			     RHYTHMDB_ERROR_ACCESS_FAILED,
 			     _("Couldn't access %s: %s"),
 			     utf8ised,
-			     gnome_vfs_result_to_string (result));
+			     access_error->message);
 	rb_debug ("got error on %s: %s", uri, error->message);
 	g_free (unescaped);
 	g_free (utf8ised);
 	return error;
 }
 
-static void
-rhythmdb_execute_multi_stat_info_cb (GnomeVFSAsyncHandle *handle,
-				     GList *results,
-				     /* GnomeVFSGetFileInfoResult* items */
-				     RhythmDB *db)
-{
-	g_mutex_lock (db->priv->stat_mutex);
-	while (results != NULL) {
-		GnomeVFSGetFileInfoResult *info_result = results->data;
-		RhythmDBEvent *event;
+typedef struct {
+	RhythmDBEvent *event;
+	GMutex *mutex;
+	GCond *cond;
+	GError **error;
+} RhythmDBStatThreadMountData;
 
-		event = g_hash_table_lookup (db->priv->stat_events, info_result->uri);
-		if (event == NULL) {
-			char *uri_string;
-			uri_string = gnome_vfs_uri_to_string (info_result->uri, GNOME_VFS_URI_HIDE_NONE);
-			rb_debug ("ignoring unexpected uri in gnome_vfs_async_get_file_info response: %s",
-				  uri_string);
-			g_free (uri_string);
-			results = results->next;
+static void
+stat_thread_mount_done_cb (GObject *source, GAsyncResult *result, RhythmDBStatThreadMountData *data)
+{
+	g_mutex_lock (data->mutex);
+	g_file_mount_enclosing_volume_finish (G_FILE (source), result, data->error);
+
+	g_cond_signal (data->cond);
+	g_mutex_unlock (data->mutex);
+}
+
+typedef struct {
+	RhythmDB *db;
+	GList *stat_list;
+} RhythmDBStatThreadData;
+
+static gpointer
+stat_thread_main (RhythmDBStatThreadData *data)
+{
+	GList *i;
+	GError *error = NULL;
+	RhythmDBEvent *result;
+	int count = 0;
+
+	rb_debug ("entering stat thread: %d to process", g_list_length (data->stat_list));
+	for (i = data->stat_list; i != NULL; i = i->next) {
+		RhythmDBEvent *event = (RhythmDBEvent *)i->data;
+		GFile *file;
+
+		/* if we've been cancelled, just free the event.  this will
+		 * clean up the list and then we'll exit the thread.
+		 */
+		if (g_cancellable_is_cancelled (data->db->priv->exiting)) {
+			rhythmdb_event_free (data->db, event);
+			count = 0;
 			continue;
 		}
-		g_hash_table_remove (db->priv->stat_events, info_result->uri);
 
-		if (info_result->result == GNOME_VFS_OK) {
-			event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
-		} else {
-			event->error = make_access_failed_error (rb_refstring_get (event->real_uri),
-								 info_result->result);
-			event->vfsinfo = NULL;
+		if (count > 0 && count % 1000 == 0) {
+			rb_debug ("%d file info queries done", count);
 		}
-		g_async_queue_push (db->priv->event_queue, event);
 
-		results = results->next;
+		file = g_file_new_for_uri (rb_refstring_get (event->uri));
+		event->real_uri = rb_refstring_ref (event->uri);		/* what? */
+		event->file_info = g_file_query_info (file,
+						      G_FILE_ATTRIBUTE_TIME_MODIFIED,	/* anything else? */
+						      G_FILE_QUERY_INFO_NONE,
+						      data->db->priv->exiting,
+						      &error);
+		if (error != NULL) {
+			if (g_error_matches (error,
+					     G_IO_ERROR,
+					     G_IO_ERROR_NOT_MOUNTED)) {
+				GMountOperation *mount_op = NULL;
+
+				rb_debug ("got not-mounted error for %s", rb_refstring_get (event->uri));
+
+				/* check if we've tried and failed to mount this location before */
+
+				g_signal_emit (event->db, rhythmdb_signals[CREATE_MOUNT_OP], 0, &mount_op);
+				if (mount_op != NULL) {
+					RhythmDBStatThreadMountData mount_data;
+
+					mount_data.event = event;
+					mount_data.cond = g_cond_new ();
+					mount_data.mutex = g_mutex_new ();
+					mount_data.error = &error;
+
+					g_mutex_lock (mount_data.mutex);
+
+					g_file_mount_enclosing_volume (file,
+								       G_MOUNT_MOUNT_NONE,
+								       mount_op,
+								       data->db->priv->exiting,
+								       (GAsyncReadyCallback) stat_thread_mount_done_cb,
+								       &mount_data);
+					g_clear_error (&error);
+
+					/* wait for the mount to complete.  the callback occurs on the main
+					 * thread (not this thread), so we can just block until it is called.
+					 */
+					g_cond_wait (mount_data.cond, mount_data.mutex);
+					g_mutex_unlock (mount_data.mutex);
+
+					g_mutex_free (mount_data.mutex);
+					g_cond_free (mount_data.cond);
+
+					if (error == NULL) {
+						rb_debug ("mount op successful, retrying stat");
+						event->file_info = g_file_query_info (file,
+										      G_FILE_ATTRIBUTE_TIME_MODIFIED,
+										      G_FILE_QUERY_INFO_NONE,
+										      data->db->priv->exiting,
+										      &error);
+					}
+				} else {
+					rb_debug ("but couldn't create a mount op.");
+				}
+			}
+
+			if (error != NULL) {
+				event->error = make_access_failed_error (rb_refstring_get (event->uri), error);
+				g_clear_error (&error);
+			}
+		}
+
+		if (event->error != NULL) {
+			if (event->file_info != NULL) {
+				g_object_unref (event->file_info);
+				event->file_info = NULL;
+			}
+		}
+
+		g_async_queue_push (data->db->priv->event_queue, event);
+		g_object_unref (file);
+		count++;
 	}
 
-	db->priv->stat_handle = NULL;
-	g_mutex_unlock (db->priv->stat_mutex);
+	g_list_free (data->stat_list);
 
-	g_main_context_wakeup (g_main_context_default ());
+	data->db->priv->stat_thread_running = FALSE;
+	
+	rb_debug ("exiting stat thread");
+	result = g_slice_new0 (RhythmDBEvent);
+	result->db = data->db;			/* need to unref? */
+	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
+	rhythmdb_push_event (data->db, result);
+
+	g_free (data);
+	return NULL;
 }
 
 void
@@ -634,13 +753,14 @@ rhythmdb_start_action_thread (RhythmDB *db)
 	rhythmdb_thread_create (db, NULL, (GThreadFunc) action_thread_main, db);
 
 	if (db->priv->stat_list != NULL) {
-		gnome_vfs_async_get_file_info (&db->priv->stat_handle, db->priv->stat_list,
-					       GNOME_VFS_FILE_INFO_FOLLOW_LINKS,
-					       GNOME_VFS_PRIORITY_MIN,
-					       (GnomeVFSAsyncGetFileInfoCallback) rhythmdb_execute_multi_stat_info_cb,
-					       db);
-		g_list_free (db->priv->stat_list);
+		RhythmDBStatThreadData *data;
+		data = g_new0 (RhythmDBStatThreadData, 1);
+		data->db = g_object_ref (db);
+		data->stat_list = db->priv->stat_list;
 		db->priv->stat_list = NULL;
+
+		db->priv->stat_thread_running = TRUE;
+		rhythmdb_thread_create (db, NULL, (GThreadFunc) stat_thread_main, data);
 	}
 
 	g_mutex_unlock (db->priv->stat_mutex);
@@ -651,7 +771,7 @@ rhythmdb_action_free (RhythmDB *db,
 		      RhythmDBAction *action)
 {
 	rb_refstring_unref (action->uri);
-	g_free (action);
+	g_slice_free (RhythmDBAction, action);
 }
 
 static void
@@ -681,18 +801,22 @@ rhythmdb_event_free (RhythmDB *db,
 		g_error_free (result->error);
 	rb_refstring_unref (result->uri);
 	rb_refstring_unref (result->real_uri);
-	if (result->vfsinfo)
-		gnome_vfs_file_info_unref (result->vfsinfo);
+	if (result->file_info)
+		g_object_unref (result->file_info);
 	if (result->metadata)
 		g_object_unref (result->metadata);
 	if (result->results)
 		g_object_unref (result->results);
-	if (result->handle)
-		gnome_vfs_async_cancel (result->handle);
 	if (result->entry != NULL) {
 		rhythmdb_entry_unref (result->entry);
 	}
-	g_free (result);
+	g_slice_free (RhythmDBEvent, result);
+}
+
+static void
+_shutdown_foreach_swapped (RhythmDBEvent *event, RhythmDB *db)
+{
+	rhythmdb_event_free (db, event);
 }
 
 /**
@@ -701,12 +825,6 @@ rhythmdb_event_free (RhythmDB *db,
  * Ceases all #RhythmDB operations, including stopping all directory monitoring, and
  * removing all actions and events currently queued.
  **/
-static void
-_shutdown_foreach_swapped (RhythmDBEvent *event, RhythmDB *db)
-{
-	rhythmdb_event_free (db, event);
-}
-
 void
 rhythmdb_shutdown (RhythmDB *db)
 {
@@ -715,10 +833,10 @@ rhythmdb_shutdown (RhythmDB *db)
 
 	g_return_if_fail (RHYTHMDB_IS (db));
 
-	db->priv->exiting = TRUE;
+	g_cancellable_cancel (db->priv->exiting);
 
 	/* force the action thread to wake up and exit */
-	action = g_new0 (RhythmDBAction, 1);
+	action = g_slice_new0 (RhythmDBAction);
 	action->type = RHYTHMDB_ACTION_QUIT;
 	g_async_queue_push (db->priv->action_queue, action);
 
@@ -731,12 +849,8 @@ rhythmdb_shutdown (RhythmDB *db)
 	eel_gconf_notification_remove (db->priv->monitor_notify_id);
 	db->priv->monitor_notify_id = 0;
 
-	/* abort all async vfs operations */
+	/* abort all async io operations */
 	g_mutex_lock (db->priv->stat_mutex);
-	if (db->priv->stat_handle) {
-		gnome_vfs_async_cancel (db->priv->stat_handle);
-		db->priv->stat_handle = NULL;
-	}
 	g_list_foreach (db->priv->outstanding_stats, (GFunc)_shutdown_foreach_swapped, db);
 	g_list_free (db->priv->outstanding_stats);
 	db->priv->outstanding_stats = NULL;
@@ -757,12 +871,8 @@ rhythmdb_shutdown (RhythmDB *db)
 	while ((action = g_async_queue_try_pop (db->priv->action_queue)) != NULL) {
 		rhythmdb_action_free (db, action);
 	}
-}
 
-static void
-_shutdown_foreach_hash (gpointer uri, RhythmDBEvent *event, RhythmDB *db)
-{
-	rhythmdb_event_free (db, event);
+	g_object_unref (db->priv->exiting);
 }
 
 static void
@@ -832,8 +942,6 @@ rhythmdb_finalize (GObject *object)
 	g_cond_free (db->priv->saving_condition);
 
 	g_list_free (db->priv->stat_list);
-	g_hash_table_foreach (db->priv->stat_events, (GHFunc)_shutdown_foreach_hash, db);
-	g_hash_table_destroy (db->priv->stat_events);
  	g_mutex_free (db->priv->stat_mutex);
 
 	g_mutex_free (db->priv->change_mutex);
@@ -983,7 +1091,7 @@ free_entry_changes (RhythmDBEntry *entry,
 		RhythmDBEntryChange *change = t->data;
 		g_value_unset (&change->old);
 		g_value_unset (&change->new);
-		g_free (change);
+		g_slice_free (RhythmDBEntryChange, change);
 	}
 	g_slist_free (changes);
 
@@ -1017,7 +1125,7 @@ sync_entry_changed (RhythmDBEntry *entry,
 				break;
 			}
 
-			action = g_new0 (RhythmDBAction, 1);
+			action = g_slice_new0 (RhythmDBAction);
 			action->type = RHYTHMDB_ACTION_SYNC;
 			action->uri = rb_refstring_ref (entry->location);
 			g_async_queue_push (db->priv->action_queue, action);
@@ -1080,11 +1188,30 @@ process_added_entries_cb (RhythmDBEntry *entry,
 		if (uri == NULL)
 			return TRUE;
 
-		queue_stat_uri (uri,
-				db,
-				RHYTHMDB_ENTRY_TYPE_INVALID,
-				RHYTHMDB_ENTRY_TYPE_IGNORE,
-				RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+		/* something to think about: only do the stat if the mountpoint is
+		 * NULL.  other things are likely to be removable disks and network
+		 * shares, where getting file info for a large number of files is going
+		 * to be slow.  on the other hand, we'd want to mount those on startup
+		 * rather than on first access, which may not be predictable.  hmm..
+		 *
+		 * we'd probably have to improve handling of the particular 'file not found'
+		 * playback error, though.  or perhaps stat immediately before playback?
+		 * what about crawling the filesystem to find new files?
+		 *
+		 * further: this should only be done for entries loaded from the database file,
+		 * not for newly added entries.  cripes.
+		 *
+		 * hmm, do we really need to take the stat mutex to check if the action thread is running?
+		 * maybe it should be atomicised?
+		 */
+		g_mutex_lock (db->priv->stat_mutex);
+		if (db->priv->action_thread_running == FALSE) {
+			rhythmdb_add_to_stat_list (db, uri, entry,
+						   RHYTHMDB_ENTRY_TYPE_INVALID,
+						   RHYTHMDB_ENTRY_TYPE_IGNORE,
+						   RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+		}
+		g_mutex_unlock (db->priv->stat_mutex);
 	}
 
 	g_assert ((entry->flags & RHYTHMDB_ENTRY_INSERTED) == 0);
@@ -1489,7 +1616,7 @@ set_metadata_string_default_unknown (RhythmDB *db,
 static void
 set_props_from_metadata (RhythmDB *db,
 			 RhythmDBEntry *entry,
-			 GnomeVFSFileInfo *vfsinfo,
+			 GFileInfo *fileinfo,
 			 RBMetaData *metadata)
 {
 	const char *mime;
@@ -1600,7 +1727,7 @@ set_props_from_metadata (RhythmDB *db,
 
 	/* filesize */
 	g_value_init (&val, G_TYPE_UINT64);
-	g_value_set_uint64 (&val, vfsinfo->size);
+	g_value_set_uint64 (&val, g_file_info_get_attribute_uint64 (fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE));
 	rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_FILE_SIZE, &val);
 	g_value_unset (&val);
 
@@ -1608,17 +1735,13 @@ set_props_from_metadata (RhythmDB *db,
 	if (!rb_metadata_get (metadata,
 			      RB_METADATA_FIELD_TITLE,
 			      &val) || g_value_get_string (&val)[0] == '\0') {
-		char *utf8name;
-		utf8name = g_filename_to_utf8 (vfsinfo->name, -1, NULL, NULL, NULL);
-		if (!utf8name) {
-			utf8name = g_strdup (_("<invalid filename>"));
-		}
+		const char *fname;
+		fname = g_file_info_get_display_name (fileinfo);
 		if (G_VALUE_HOLDS_STRING (&val))
 			g_value_reset (&val);
 		else
 			g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val, utf8name);
-		g_free (utf8name);
+		g_value_set_string (&val, fname);
 	}
 	rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_TITLE, &val);
 	g_value_unset (&val);
@@ -1717,18 +1840,20 @@ rhythmdb_process_stat_event (RhythmDB *db,
 {
 	RhythmDBEntry *entry;
 	RhythmDBAction *action;
+	GFileType file_type;
+	
+	if (event->entry != NULL) {
+		entry = event->entry;
+	} else {
+		entry = rhythmdb_entry_lookup_by_location_refstring (db, event->real_uri);
+	}
 
-	entry = rhythmdb_entry_lookup_by_location_refstring (db, event->real_uri);
-	if (entry) {
-		time_t mtime = (time_t) entry->mtime;
-
-		if ((event->entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) && (entry->type != event->entry_type))
-			g_warning ("attempt to use same location in multiple entry types");
-
-		if (entry->type == event->ignore_type)
-			rb_debug ("ignoring %p", entry);
-
-		if (event->error) {
+	/* handle errors:
+	 * - if a non-ignore entry exists, process ghostliness (hide/delete)
+	 * - otherwise, create an import error entry?  hmm.
+	 */
+	if (event->error) {
+		if (entry != NULL) {
 			if (!is_ghost_entry (entry)) {
 				rhythmdb_entry_set_visibility (db, entry, FALSE);
 			} else {
@@ -1737,24 +1862,37 @@ rhythmdb_process_stat_event (RhythmDB *db,
 				rhythmdb_entry_delete (db, entry);
 			}
 		} else {
+			/* erm.. */
+		}
+
+		return;
+	}
+
+	g_assert (event->file_info != NULL);
+
+	/* figure out what to do based on the file type */
+	file_type = g_file_info_get_attribute_uint32 (event->file_info,
+						      G_FILE_ATTRIBUTE_STANDARD_TYPE);
+	switch (file_type) {
+	case G_FILE_TYPE_UNKNOWN:
+	case G_FILE_TYPE_REGULAR:
+		if (entry != NULL) {
 			GValue val = {0, };
 			GTimeVal time;
-			const char *mount_point;
+			guint64 new_mtime;
+			guint64 new_size;
+
+			/* update the existing entry, as long as the entry type matches */
+			if ((event->entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) && (entry->type != event->entry_type))
+				g_warning ("attempt to use same location in multiple entry types");
+
+			if (entry->type == event->ignore_type)
+				rb_debug ("ignoring %p", entry);
 
 			rhythmdb_entry_set_visibility (db, entry, TRUE);
 
-			/* Update mount point if necessary (main reason is
-			 * that we want to set the mount point in legacy
-			 * rhythmdb that doesn't have it already
-			 */
-			mount_point = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
-			if (mount_point == NULL) {
-				rhythmdb_entry_set_mount_point (db, entry,
-								rb_refstring_get (event->real_uri));
-			}
-
 			/* Update last seen time. It will also be updated
-			 * upon saving and when a volume is unmounted
+			 * upon saving and when a volume is unmounted.
 			 */
 			g_get_current_time (&time);
 			g_value_init (&val, G_TYPE_ULONG);
@@ -1762,41 +1900,64 @@ rhythmdb_process_stat_event (RhythmDB *db,
 			rhythmdb_entry_set_internal (db, entry, TRUE,
 						     RHYTHMDB_PROP_LAST_SEEN,
 						     &val);
-			/* Old rhythmdb.xml files won't have a value for
-			 * FIRST_SEEN, so set it here
-			 */
-			if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_FIRST_SEEN) == 0) {
-				rhythmdb_entry_set_internal (db, entry, TRUE,
-							     RHYTHMDB_PROP_FIRST_SEEN,
-							     &val);
-			}
 			g_value_unset (&val);
 
-			if (mtime == event->vfsinfo->mtime) {
+			/* compare modification time and size to the values in the database.
+			 * if either has changed, we'll re-read the file.
+			 */
+			new_mtime = g_file_info_get_attribute_uint64 (event->file_info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+			new_size = g_file_info_get_attribute_uint64 (event->file_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+			if (entry->mtime == new_mtime && (new_size == 0 || entry->file_size == new_size)) {
 				rb_debug ("not modified: %s", rb_refstring_get (event->real_uri));
 			} else {
 				RhythmDBEvent *new_event;
 
 				rb_debug ("changed: %s", rb_refstring_get (event->real_uri));
-				new_event = g_new0 (RhythmDBEvent, 1);
+				new_event = g_slice_new0 (RhythmDBEvent);
 				new_event->db = db;
 				new_event->uri = rb_refstring_ref (event->real_uri);
 				new_event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
 				rhythmdb_push_event (db, new_event);
 			}
+		} else {
+			/* push a LOAD action */
+			action = g_slice_new0 (RhythmDBAction);
+			action->type = RHYTHMDB_ACTION_LOAD;
+			action->uri = rb_refstring_ref (event->real_uri);
+			action->entry_type = event->entry_type;
+			action->ignore_type = event->ignore_type;
+			action->error_type = event->error_type;
+			rb_debug ("queuing a RHYTHMDB_ACTION_LOAD: %s", rb_refstring_get (action->uri));
+			g_async_queue_push (db->priv->action_queue, action);
 		}
+		break;
 
-		rhythmdb_commit (db);
-	} else {
-		action = g_new0 (RhythmDBAction, 1);
-		action->type = RHYTHMDB_ACTION_LOAD;
+	case G_FILE_TYPE_DIRECTORY:
+		rb_debug ("processing directory %s", rb_refstring_get (event->real_uri));
+		/* push an ENUM_DIR action */
+		action = g_slice_new0 (RhythmDBAction);
+		action->type = RHYTHMDB_ACTION_ENUM_DIR;
 		action->uri = rb_refstring_ref (event->real_uri);
 		action->entry_type = event->entry_type;
 		action->ignore_type = event->ignore_type;
 		action->error_type = event->error_type;
-		rb_debug ("queuing a RHYTHMDB_ACTION_LOAD: %s", rb_refstring_get (action->uri));
+		rb_debug ("queuing a RHYTHMDB_ACTION_ENUM_DIR: %s", rb_refstring_get (action->uri));
 		g_async_queue_push (db->priv->action_queue, action);
+		break;
+
+	case G_FILE_TYPE_SYMBOLIC_LINK:
+	case G_FILE_TYPE_SHORTCUT:
+		/* this shouldn't happen, but maybe we should handle it anyway? */
+		rb_debug ("ignoring stat results for %s: is link", rb_refstring_get (event->real_uri));
+		break;
+
+	case G_FILE_TYPE_SPECIAL:
+	case G_FILE_TYPE_MOUNTABLE:		/* hmm. */
+		rb_debug ("ignoring stat results for %s: is special", rb_refstring_get (event->real_uri));
+		break;
 	}
+
+	rhythmdb_commit (db);
 }
 
 typedef struct
@@ -1850,10 +2011,11 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 			/* no need to update the ignored file entry */
 		}
 
-		if (entry && event->vfsinfo) {
+		if (entry && event->file_info) {
 			/* mtime */
+			guint64 new_mtime = g_file_info_get_attribute_uint64 (event->file_info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
 			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, event->vfsinfo->mtime);
+			g_value_set_ulong (&value, new_mtime);		/* hmm, cast */
 			rhythmdb_entry_set(db, entry, RHYTHMDB_PROP_MTIME, &value);
 			g_value_unset (&value);
 		}
@@ -1878,10 +2040,11 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 		}
 
 		/* mtime */
-		if (event->vfsinfo) {
+		if (event->file_info) {
+			guint64 new_mtime = g_file_info_get_attribute_uint64 (event->file_info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
 			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, event->vfsinfo->mtime);
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MTIME, &value);
+			g_value_set_ulong (&value, new_mtime);		/* hmm, cast */
+			rhythmdb_entry_set(db, entry, RHYTHMDB_PROP_MTIME, &value);
 			g_value_unset (&value);
 		}
 
@@ -1962,16 +2125,20 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 		g_warning ("attempt to use same location in multiple entry types");
 
 	/* mtime */
-	if (event->vfsinfo) {
+	if (event->file_info) {
+		guint64 mtime;
+
+		mtime = g_file_info_get_attribute_uint64 (event->file_info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+
 		g_value_init (&value, G_TYPE_ULONG);
-		g_value_set_ulong (&value, event->vfsinfo->mtime);
+		g_value_set_ulong (&value, (gulong)mtime);
 		rhythmdb_entry_set_internal (event->db, entry, TRUE, RHYTHMDB_PROP_MTIME, &value);
 		g_value_unset (&value);
 	}
 
 	if (event->entry_type != event->ignore_type &&
 	    event->entry_type != event->error_type) {
-		set_props_from_metadata (event->db, entry, event->vfsinfo, event->metadata);
+		set_props_from_metadata (event->db, entry, event->file_info, event->metadata);
 	}
 
 	/* we've seen this entry */
@@ -1995,8 +2162,6 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 	return TRUE;
 }
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
-
 static void
 rhythmdb_missing_plugins_cb (gpointer duh, gboolean should_retry, RhythmDBEvent *event)
 {
@@ -2006,7 +2171,7 @@ rhythmdb_missing_plugins_cb (gpointer duh, gboolean should_retry, RhythmDBEvent 
 		RhythmDBAction *load_action;
 
 		rb_debug ("retrying RHYTHMDB_ACTION_LOAD for %s", rb_refstring_get (event->real_uri));
-		load_action = g_new0 (RhythmDBAction, 1);
+		load_action = g_slice_new0 (RhythmDBAction);
 		load_action->type = RHYTHMDB_ACTION_LOAD;
 		load_action->uri = rb_refstring_ref (event->real_uri);
 		load_action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
@@ -2035,13 +2200,10 @@ rhythmdb_missing_plugin_event_cleanup (RhythmDBEvent *event)
 	rhythmdb_event_free (event->db, event);
 }
 
-#endif /* HAVE_GSTREAMER_0_10_MISSING_PLUGINS */
-
 static gboolean
 rhythmdb_process_metadata_load (RhythmDB *db,
 				RhythmDBEvent *event)
 {
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	char **missing_plugins;
 	char **plugin_descriptions;
 
@@ -2075,7 +2237,6 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 		g_closure_sink (closure);
 		return FALSE;
 	}
-#endif /* HAVE_GSTREAMER_0_10_MISSING_PLUGINS */
 
 	return rhythmdb_process_metadata_load_real (event);
 }
@@ -2102,7 +2263,7 @@ rhythmdb_process_file_created_or_modified (RhythmDB *db,
 {
 	RhythmDBAction *action;
 
-	action = g_new0 (RhythmDBAction, 1);
+	action = g_slice_new0 (RhythmDBAction);
 	action->type = RHYTHMDB_ACTION_LOAD;
 	action->uri = rb_refstring_ref (event->uri);
 	action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
@@ -2197,128 +2358,108 @@ rhythmdb_process_one_event (RhythmDBEvent *event, RhythmDB *db)
 		rhythmdb_event_free (db, event);
 }
 
+
 static void
-rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
-			       GList *results,
-			       /* GnomeVFSGetFileInfoResult* items */
-			       RhythmDBEvent *event)
+rhythmdb_file_info_query (RhythmDB *db, GFile *file, RhythmDBEvent *event)
 {
-	/* this is in the main thread, so we can't do any long operation here */
-	GnomeVFSGetFileInfoResult *info_result = results->data;
+	event->file_info = g_file_query_info (file,
+					      RHYTHMDB_FILE_INFO_ATTRIBUTES,
+					      G_FILE_QUERY_INFO_NONE,
+					      db->priv->exiting,
+					      &event->error);
+}
+
+static void
+wrap_access_failed_error (RhythmDBEvent *event)
+{
+	GError *wrapped;
+
+	wrapped = make_access_failed_error (rb_refstring_get (event->real_uri), event->error);
+	g_error_free (event->error);
+	event->error = wrapped;
+}
+
+static void
+rhythmdb_execute_stat_mount_ready_cb (GObject *source, GAsyncResult *result, RhythmDBEvent *event)
+{
+	GError *error = NULL;
+	
+	g_file_mount_enclosing_volume_finish (G_FILE (source), result, &error);
+	if (error != NULL) {
+		event->error = make_access_failed_error (rb_refstring_get (event->real_uri), error);
+		g_print ("not doing file info query; error %s\n", error->message);
+		g_error_free (error);
+
+		g_object_unref (event->file_info);
+		event->file_info = NULL;
+	} else {
+		g_print ("retrying file info query after mount completed\n");
+		rhythmdb_file_info_query (event->db, G_FILE (source), event);
+	}
 
 	g_mutex_lock (event->db->priv->stat_mutex);
 	event->db->priv->outstanding_stats = g_list_remove (event->db->priv->outstanding_stats, event);
-	event->handle = NULL;
 	g_mutex_unlock (event->db->priv->stat_mutex);
 
-	if (info_result->result == GNOME_VFS_OK) {
-		event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
-	} else {
-		event->error = make_access_failed_error (rb_refstring_get (event->real_uri),
-							 info_result->result);
-		event->vfsinfo = NULL;
-	}
+	g_object_unref (source);
 	rhythmdb_push_event (event->db, event);
 }
+
 
 static void
 rhythmdb_execute_stat (RhythmDB *db,
 		       const char *uri,
 		       RhythmDBEvent *event)
 {
-	GList *uri_list;
-	GnomeVFSURI *vfs_uri;
+	GFile *file;
 
 	event->real_uri = rb_refstring_new (uri);
-
-	vfs_uri = gnome_vfs_uri_new (uri);
-	if (vfs_uri == NULL) {
-		event->error = make_access_failed_error (uri, GNOME_VFS_ERROR_INVALID_URI);
-		rhythmdb_push_event (db, event);
-		return;
-	}
-
-	uri_list = g_list_append (NULL, vfs_uri);
-
+	file = g_file_new_for_uri (uri);
+	
 	g_mutex_lock (db->priv->stat_mutex);
 	db->priv->outstanding_stats = g_list_prepend (db->priv->outstanding_stats, event);
 	g_mutex_unlock (db->priv->stat_mutex);
 
-	gnome_vfs_async_get_file_info (&event->handle, uri_list,
-			       GNOME_VFS_FILE_INFO_FOLLOW_LINKS,
-			       GNOME_VFS_PRIORITY_MIN,
-			       (GnomeVFSAsyncGetFileInfoCallback) rhythmdb_execute_stat_info_cb,
-			       event);
-	gnome_vfs_uri_unref (vfs_uri);
-	g_list_free (uri_list);
-}
+	rhythmdb_file_info_query (db, file, event);
 
-void
-queue_stat_uri (const char *uri,
-		RhythmDB *db,
-		RhythmDBEntryType type,
-		RhythmDBEntryType ignore_type,
-		RhythmDBEntryType error_type)
-{
-	RhythmDBEvent *result;
+	if (event->error != NULL) {
+		/* if we can't get at it because the location isn't mounted, mount it and try again */
+	       	if (g_error_matches (event->error, G_IO_ERROR, G_IO_ERROR_NOT_MOUNTED)) {
+			GMountOperation *mount_op = NULL;
 
-	rb_debug ("queueing stat for \"%s\"", uri);
-	g_assert (uri && *uri);
+			g_error_free (event->error);
+			event->error = NULL;
 
-	result = g_new0 (RhythmDBEvent, 1);
-	result->db = db;
-	result->type = RHYTHMDB_EVENT_STAT;
-	result->entry_type = type;
-	result->ignore_type = ignore_type;
-	result->error_type = error_type;
-
-	/*
-	 * before the action thread is started, we queue up stat events,
-	 * as we're still creating and running queries, as well as loading
-	 * the database.  when we start the action thread, we'll kick off
-	 * a gnome-vfs job to run all the stat events too.
-	 *
-	 * when the action thread is already running, we can start the
-	 * async_get_file_info job directly.
-	 */
-	g_mutex_lock (db->priv->stat_mutex);
-	if (db->priv->action_thread_running) {
-		g_mutex_unlock (db->priv->stat_mutex);
-		rhythmdb_execute_stat (db, uri, result);
-	} else {
-		GnomeVFSURI *vfs_uri;
-
-		vfs_uri = gnome_vfs_uri_new (uri);
-		if (vfs_uri == NULL) {
-			result->real_uri = rb_refstring_new (uri);
-			result->error = make_access_failed_error (uri, GNOME_VFS_ERROR_INVALID_URI);
-			rhythmdb_push_event (db, result);
-		} else {
-			/* construct a list of URIs and a hash table containing
-			 * stat events to fill in and post on the event queue.
-			 */
-			if (g_hash_table_lookup (db->priv->stat_events, vfs_uri)) {
-				g_free (result);
-				gnome_vfs_uri_unref (vfs_uri);
-			} else {
-				result->real_uri = rb_refstring_new (uri);
-				g_hash_table_insert (db->priv->stat_events, vfs_uri, result);
-				db->priv->stat_list = g_list_prepend (db->priv->stat_list, vfs_uri);
+			g_signal_emit (G_OBJECT (event->db), rhythmdb_signals[CREATE_MOUNT_OP], 0, &mount_op);
+			if (mount_op != NULL) {
+				g_print ("created mount op %p\n", mount_op);
+				g_file_mount_enclosing_volume (file,
+							       G_MOUNT_MOUNT_NONE,
+							       mount_op,
+							       event->db->priv->exiting,
+							       (GAsyncReadyCallback)rhythmdb_execute_stat_mount_ready_cb,
+							       event);
+				return;
 			}
 		}
 
-		g_mutex_unlock (db->priv->stat_mutex);
-	}
-}
+		/* if it's some other error, or we couldn't attempt to mount the location, report the error */
+		wrap_access_failed_error (event);
 
-static gboolean
-queue_stat_uri_tad (const char *uri,
-		    gboolean dir,
-		    RhythmDBAddThreadData *data)
-{
-	if (!dir)
-		queue_stat_uri (uri, data->db, data->type, data->ignore_type, data->error_type);
-	return TRUE;	
+		if (event->file_info != NULL) {
+			g_object_unref (event->file_info);
+			event->file_info = NULL;
+		}
+	}
+       
+	/* either way, we're done now */
+
+	g_mutex_lock (event->db->priv->stat_mutex);
+	event->db->priv->outstanding_stats = g_list_remove (event->db->priv->outstanding_stats, event);
+	g_mutex_unlock (event->db->priv->stat_mutex);
+	
+	rhythmdb_push_event (event->db, event);
+	g_object_unref (file);
 }
 
 static void
@@ -2326,54 +2467,126 @@ rhythmdb_execute_load (RhythmDB *db,
 		       const char *uri,
 		       RhythmDBEvent *event)
 {
-	GnomeVFSResult vfsresult;
+	GError *error = NULL;
 	char *resolved;
 
-	resolved = rb_uri_resolve_symlink (uri);
+	resolved = rb_uri_resolve_symlink (uri, &error);
 	if (resolved != NULL) {
+		GFile *file;
+	
+		file = g_file_new_for_uri (uri);
+		event->file_info = g_file_query_info (file,
+						      RHYTHMDB_FILE_INFO_ATTRIBUTES,
+						      G_FILE_QUERY_INFO_NONE,
+						      NULL,
+						      &error);
 		event->real_uri = rb_refstring_new (resolved);
-		event->vfsinfo = gnome_vfs_file_info_new ();
 
-		vfsresult = gnome_vfs_get_file_info (uri,
-						     event->vfsinfo,
-						     GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
 		g_free (resolved);
+		g_object_unref (file);
 	} else {
 		event->real_uri = rb_refstring_new (uri);
-		vfsresult = GNOME_VFS_ERROR_LOOP;
 	}
 
-	if (vfsresult != GNOME_VFS_OK) {
-		event->error = make_access_failed_error (uri, vfsresult);
-		if (event->vfsinfo)
-			gnome_vfs_file_info_unref (event->vfsinfo);
-		event->vfsinfo = NULL;
-	} else {
-		if (event->type == RHYTHMDB_EVENT_METADATA_LOAD) {
-			g_mutex_lock (event->db->priv->metadata_lock);
-			while (event->db->priv->metadata_blocked) {
-				g_cond_wait (event->db->priv->metadata_cond, event->db->priv->metadata_lock);
-			}
-
-			event->metadata = rb_metadata_new ();
-			rb_metadata_load (event->metadata, rb_refstring_get (event->real_uri),
-					  &event->error);
-
-			/* if we're missing some plugins, block further attempts to
-			 * read metadata until we've processed them.
-			 */
-			if (!g_error_matches (event->error,
-					     RB_METADATA_ERROR,
-					     RB_METADATA_ERROR_NOT_AUDIO_IGNORE) &&
-			    rb_metadata_has_missing_plugins (event->metadata)) {
-				event->db->priv->metadata_blocked = TRUE;
-			}
-
-			g_mutex_unlock (event->db->priv->metadata_lock);
+	if (error != NULL) {
+		event->error = make_access_failed_error (uri, error);
+		if (event->file_info) {
+			g_object_unref (event->file_info);
+			event->file_info = NULL;
 		}
+	} else if (event->type == RHYTHMDB_EVENT_METADATA_LOAD) {
+		g_mutex_lock (event->db->priv->metadata_lock);
+		while (event->db->priv->metadata_blocked) {
+			g_cond_wait (event->db->priv->metadata_cond, event->db->priv->metadata_lock);
+		}
+
+		event->metadata = rb_metadata_new ();
+		rb_metadata_load (event->metadata,
+				  rb_refstring_get (event->real_uri),
+				  &event->error);
+
+		/* if we're missing some plugins, block further attempts to
+		 * read metadata until we've processed them.
+		 */
+		if (!g_error_matches (event->error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_NOT_AUDIO_IGNORE) &&
+		    rb_metadata_has_missing_plugins (event->metadata)) {
+			event->db->priv->metadata_blocked = TRUE;
+		}
+
+		g_mutex_unlock (event->db->priv->metadata_lock);
 	}
 
 	rhythmdb_push_event (db, event);
+}
+
+static void
+rhythmdb_execute_enum_dir (RhythmDB *db,
+			   RhythmDBAction *action)
+{
+	GFile *dir;
+	GFileEnumerator *dir_enum;
+	GError *error = NULL;
+
+	dir = g_file_new_for_uri (rb_refstring_get (action->uri));
+	dir_enum = g_file_enumerate_children (dir,
+					      RHYTHMDB_FILE_CHILD_INFO_ATTRIBUTES,
+					      G_FILE_QUERY_INFO_NONE,
+					      db->priv->exiting,
+					      &error);
+	if (error != NULL) {
+		/* don't need to worry about mounting here, as the mount should have
+		 * occurred on the stat.
+		 */
+
+		/* um.. what now? */
+		rb_debug ("unable to enumerate children of %s: %s",
+			  rb_refstring_get (action->uri),
+			  error->message);
+		g_error_free (error);
+		g_object_unref (dir);
+		return;
+	}
+
+	while (1) {
+		RhythmDBEvent *result;
+		GFileInfo *file_info;
+		GFile *child;
+		char *child_uri;
+
+		file_info = g_file_enumerator_next_file (dir_enum, db->priv->exiting, &error);
+		if (file_info == NULL && error == NULL) {
+			/* done */
+			break;
+		}
+
+		child = g_file_get_child (dir, g_file_info_get_name (file_info));
+		child_uri = g_file_get_uri (child);
+
+		result = g_slice_new0 (RhythmDBEvent);
+		result->db = db;
+		result->type = RHYTHMDB_EVENT_STAT;
+		result->entry_type = action->entry_type;
+		result->error_type = action->error_type;
+		result->ignore_type = action->ignore_type;
+		result->real_uri = rb_refstring_new (child_uri);
+		result->file_info = file_info;
+		result->error = error;
+
+		rhythmdb_push_event (db, result);
+		g_free (child_uri);
+	}
+
+	g_file_enumerator_close (dir_enum, db->priv->exiting, &error);
+	if (error != NULL) {
+		/* hmm.. */
+		rb_debug ("error closing file enumerator: %s", error->message);
+		g_error_free (error);
+	}
+
+	g_object_unref (dir);
+	g_object_unref (dir_enum);
 }
 
 /**
@@ -2469,15 +2682,16 @@ action_thread_main (RhythmDB *db)
 {
 	RhythmDBEvent *result;
 
-	while (!db->priv->exiting) {
+	while (!g_cancellable_is_cancelled (db->priv->exiting)) {
 		RhythmDBAction *action;
 
 		action = g_async_queue_pop (db->priv->action_queue);
 
-		if (!db->priv->exiting) {
+		/* hrm, do we need this check at all? */
+		if (!g_cancellable_is_cancelled (db->priv->exiting)) {
 			switch (action->type) {
 			case RHYTHMDB_ACTION_STAT:
-				result = g_new0 (RhythmDBEvent, 1);
+				result = g_slice_new0 (RhythmDBEvent);
 				result->db = db;
 				result->type = RHYTHMDB_EVENT_STAT;
 				result->entry_type = action->entry_type;
@@ -2490,7 +2704,7 @@ action_thread_main (RhythmDB *db)
 				break;
 
 			case RHYTHMDB_ACTION_LOAD:
-				result = g_new0 (RhythmDBEvent, 1);
+				result = g_slice_new0 (RhythmDBEvent);
 				result->db = db;
 				result->type = RHYTHMDB_EVENT_METADATA_LOAD;
 				result->entry_type = action->entry_type;
@@ -2500,6 +2714,11 @@ action_thread_main (RhythmDB *db)
 				rb_debug ("executing RHYTHMDB_ACTION_LOAD for \"%s\"", rb_refstring_get (action->uri));
 
 				rhythmdb_execute_load (db, rb_refstring_get (action->uri), result);
+				break;
+
+			case RHYTHMDB_ACTION_ENUM_DIR:
+				rb_debug ("executing RHYTHMDB_ACTION_ENUM_DIR for \"%s\"", rb_refstring_get (action->uri));
+				rhythmdb_execute_enum_dir (db, action);
 				break;
 
 			case RHYTHMDB_ACTION_SYNC:
@@ -2549,7 +2768,7 @@ action_thread_main (RhythmDB *db)
 	}
 
 	rb_debug ("exiting action thread");
-	result = g_new0 (RhythmDBEvent, 1);
+	result = g_slice_new0 (RhythmDBEvent);
 	result->db = db;
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	rhythmdb_push_event (db, result);
@@ -2577,6 +2796,35 @@ rhythmdb_add_uri (RhythmDB *db,
 				     RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
 }
 
+static void
+rhythmdb_add_to_stat_list (RhythmDB *db,
+			   const char *uri,
+			   RhythmDBEntry *entry,
+			   RhythmDBEntryType type,
+			   RhythmDBEntryType ignore_type,
+			   RhythmDBEntryType error_type)
+{
+	RhythmDBEvent *result;
+
+	result = g_slice_new0 (RhythmDBEvent);
+	result->db = db;
+	result->type = RHYTHMDB_EVENT_STAT;
+	result->entry_type = type;
+	result->ignore_type = ignore_type;
+	result->error_type = error_type;
+		
+	if (entry != NULL) {
+		result->entry = rhythmdb_entry_ref (entry);
+	}
+
+	/* do we really need to check for duplicate requests here?  .. nah. */
+	result->uri = rb_refstring_new (uri);
+	db->priv->stat_list = g_list_prepend (db->priv->stat_list, result);
+
+	g_mutex_unlock (db->priv->stat_mutex);
+}
+
+
 /**
  * rhythmdb_add_uri_with_types:
  * @db: a #RhythmDB.
@@ -2597,40 +2845,39 @@ rhythmdb_add_uri_with_types (RhythmDB *db,
 			     RhythmDBEntryType ignore_type,
 			     RhythmDBEntryType error_type)
 {
-	char *realuri;
-	char *canon_uri;
+	rb_debug ("queueing stat for \"%s\"", uri);
+	g_assert (uri && *uri);
 
-	canon_uri = rb_canonicalise_uri (uri);
-	realuri = rb_uri_resolve_symlink (canon_uri);
+	/*
+	 * before the action thread is started, we queue up stat actions,
+	 * as we're still creating and running queries, as well as loading
+	 * the database.  when we start the action thread, we'll kick off
+	 * a thread to process all the stat events too.
+	 *
+	 * when the action thread is already running, stat actions go through
+	 * the normal action queue and are processed by the action thread.
+	 */
+	g_mutex_lock (db->priv->stat_mutex);
+	if (db->priv->action_thread_running) {
+		RhythmDBAction *action;
+		g_mutex_unlock (db->priv->stat_mutex);
 
-	if (realuri == NULL) {
-		/* create import error entry */
-		RhythmDBEvent *event = g_new0 (RhythmDBEvent, 1);
+		action = g_slice_new0 (RhythmDBAction);
+		action->type = RHYTHMDB_ACTION_STAT;
+		action->uri = rb_refstring_new (uri);
+		action->entry_type = type;
+		action->ignore_type = ignore_type;
+		action->error_type = error_type;
 
-		event->db = db;
-		event->real_uri = rb_refstring_new (canon_uri);
-		event->error = make_access_failed_error (canon_uri, GNOME_VFS_ERROR_LOOP);
-		event->ignore_type = ignore_type;
-		event->error_type = error_type;
-		rhythmdb_add_import_error_entry (db, event);
-		g_free (event);
-
-	} else if (rb_uri_is_directory (realuri)) {
-		RhythmDBAddThreadData *data = g_new0 (RhythmDBAddThreadData, 1);
-		data->db = db;
-		data->type = type;
-		data->ignore_type = ignore_type;
-		data->error_type = error_type;
-
-		rb_uri_handle_recursively_async (realuri, (RBUriRecurseFunc)queue_stat_uri_tad,
-						 &data->db->priv->exiting, data, (GDestroyNotify)g_free);
+		g_async_queue_push (db->priv->action_queue, action);
 	} else {
-		queue_stat_uri (realuri, db, type, ignore_type, error_type);
-	}
+		RhythmDBEntry *entry;
 
-	g_free (canon_uri);
-	g_free (realuri);
+		entry = rhythmdb_entry_lookup_by_location (db, uri);
+		rhythmdb_add_to_stat_list (db, uri, entry, type, ignore_type, error_type);
+	}
 }
+
 
 static gboolean
 rhythmdb_sync_library_idle (RhythmDB *db)
@@ -2662,7 +2909,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 
 	rb_profile_start ("loading db");
 	g_mutex_lock (db->priv->saving_mutex);
-	if (klass->impl_load (db, &db->priv->exiting, &error) == FALSE) {
+	if (klass->impl_load (db, db->priv->exiting, &error) == FALSE) {
 		rb_debug ("db load failed: disabling saving");
 		db->priv->can_save = FALSE;
 
@@ -2676,12 +2923,12 @@ rhythmdb_load_thread_main (RhythmDB *db)
 	g_timeout_add (10000, (GSourceFunc) rhythmdb_sync_library_idle, db);
 
 	rb_debug ("queuing db load complete signal");
-	result = g_new0 (RhythmDBEvent, 1);
+	result = g_slice_new0 (RhythmDBEvent);
 	result->type = RHYTHMDB_EVENT_DB_LOAD;
 	g_async_queue_push (db->priv->event_queue, result);
 
 	rb_debug ("exiting");
-	result = g_new0 (RhythmDBEvent, 1);
+	result = g_slice_new0 (RhythmDBEvent);
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	rhythmdb_push_event (db, result);
 
@@ -2738,12 +2985,12 @@ rhythmdb_save_thread_main (RhythmDB *db)
 	g_cond_broadcast (db->priv->saving_condition);
 
 out:
-	result = g_new0 (RhythmDBEvent, 1);
+	result = g_slice_new0 (RhythmDBEvent);
 	result->db = db;
 	result->type = RHYTHMDB_EVENT_DB_SAVED;
 	g_async_queue_push (db->priv->event_queue, result);
 
-	result = g_new0 (RhythmDBEvent, 1);
+	result = g_slice_new0 (RhythmDBEvent);
 	result->db = db;
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	rhythmdb_push_event (db, result);
@@ -2835,7 +3082,7 @@ rhythmdb_entry_set (RhythmDB *db,
 		} else {
 			RhythmDBEvent *result;
 
-			result = g_new0 (RhythmDBEvent, 1);
+			result = g_slice_new0 (RhythmDBEvent);
 			result->db = db;
 			result->type = RHYTHMDB_EVENT_ENTRY_SET;
 
@@ -2863,7 +3110,7 @@ record_entry_change (RhythmDB *db,
 	RhythmDBEntryChange *changedata;
 	GSList *changelist;
 
-	changedata = g_new0 (RhythmDBEntryChange, 1);
+	changedata = g_slice_new0 (RhythmDBEntryChange);
 	changedata->prop = propid;
 
 	g_value_init (&changedata->old, G_VALUE_TYPE (old_value));
@@ -3248,7 +3495,7 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
  * @db: a #RhythmDB.
  * @entry: a #RhythmDBEntry.
  *
- * Delete entry @entry from the database, sending notification of it's deletion.
+ * Delete entry @entry from the database, sending notification of its deletion.
  * This is usually used by sources where entries can disappear randomly, such
  * as a network source.
  **/
@@ -3276,8 +3523,6 @@ rhythmdb_entry_delete (RhythmDB *db,
 	db->priv->dirty = TRUE;
 }
 
-#if defined(HAVE_GIO)
-
 void
 rhythmdb_entry_move_to_trash (RhythmDB *db,
 			      RhythmDBEntry *entry)
@@ -3291,7 +3536,7 @@ rhythmdb_entry_move_to_trash (RhythmDB *db,
 
 	g_file_trash (file, NULL, &error);
 	if (error != NULL) {
-		GValue value = {0,};
+		GValue value = { 0, };
 
 		g_value_init (&value, G_TYPE_STRING);
 		g_value_set_string (&value, error->message);
@@ -3299,135 +3544,15 @@ rhythmdb_entry_move_to_trash (RhythmDB *db,
 		g_value_unset (&value);
 
 		rb_debug ("trashing %s failed: %s",
-			  uri, error->message);
+			  uri,
+			  error->message);
 		g_error_free (error);
+				
 	} else {
 		rhythmdb_entry_set_visibility (db, entry, FALSE);
 	}
-
 	g_object_unref (file);
 }
-
-#else
-
-static gint
-rhythmdb_entry_move_to_trash_cb (GnomeVFSXferProgressInfo *info,
-				 gpointer data)
-{
-	/* Abort immediately if anything happens */
-	if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_VFSERROR)
-		return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
-	/* Don't overwrite files */
-	if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_OVERWRITE)
-		return GNOME_VFS_XFER_OVERWRITE_ACTION_ABORT; /* abort */
-	return 1; /* continue */
-}
-
-static void
-rhythmdb_entry_move_to_trash_set_error (RhythmDB *db,
-					RhythmDBEntry *entry,
-				        GnomeVFSResult res)
-{
-	GValue value = { 0, };
-
-	if (res == -1)
-		res = GNOME_VFS_ERROR_INTERNAL;
-
-	g_value_init (&value, G_TYPE_STRING);
-	g_value_set_string (&value, gnome_vfs_result_to_string (res));
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
-	g_value_unset (&value);
-
-	rb_debug ("Deleting %s failed: %s", rb_refstring_get (entry->location),
-			gnome_vfs_result_to_string (res));
-}
-
-void
-rhythmdb_entry_move_to_trash (RhythmDB *db,
-			      RhythmDBEntry *entry)
-{
-	GnomeVFSResult res;
-	GnomeVFSURI *uri, *trash, *dest;
-	char *shortname;
-
-	uri = gnome_vfs_uri_new (rb_refstring_get (entry->location));
-	if (uri == NULL) {
-		rhythmdb_entry_move_to_trash_set_error (db, entry, -1);
-		return;
-	}
-
-	res = gnome_vfs_find_directory (uri,
-					GNOME_VFS_DIRECTORY_KIND_TRASH,
-					&trash,
-					TRUE, TRUE,
-					0);
-	if (res != GNOME_VFS_OK || trash == NULL) {
-		/* If the file doesn't exist, or trash isn't support,
-		 * remove it from the db */
-		if (res == GNOME_VFS_ERROR_NOT_FOUND ||
-		    res == GNOME_VFS_ERROR_NOT_SUPPORTED) {
-			rhythmdb_entry_set_visibility (db, entry, FALSE);
-		} else {
-			rhythmdb_entry_move_to_trash_set_error (db, entry, -1);
-		}
-
-		gnome_vfs_uri_unref (uri);
-		return;
-	}
-
-	/* Is the file already in the Trash? If so it should be hidden */
-	if (gnome_vfs_uri_is_parent (trash, uri, TRUE)) {
-		GValue value = { 0, };
-		g_value_init (&value, G_TYPE_BOOLEAN);
-		g_value_set_boolean (&value, TRUE);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_HIDDEN, &value);
-		rhythmdb_commit (db);
-
-		gnome_vfs_uri_unref (trash);
-		gnome_vfs_uri_unref (uri);
-		return;
-	}
-
-	shortname = gnome_vfs_uri_extract_short_name (uri);
-	if (shortname == NULL) {
-		rhythmdb_entry_move_to_trash_set_error (db, entry, -1);
-		rhythmdb_commit (db);
-		gnome_vfs_uri_unref (uri);
-		gnome_vfs_uri_unref (trash);
-		return;
-	}
-
-	/* Compute the destination URI */
-	dest = gnome_vfs_uri_append_path (trash, shortname);
-	gnome_vfs_uri_unref (trash);
-	g_free (shortname);
-	if (dest == NULL) {
-		rhythmdb_entry_move_to_trash_set_error (db, entry, -1);
-		rhythmdb_commit (db);
-		gnome_vfs_uri_unref (uri);
-		return;
-	}
-
-	/* RB can't tell that a file's moved, so no unique names */
-	res = gnome_vfs_xfer_uri (uri, dest,
-				  GNOME_VFS_XFER_REMOVESOURCE,
-				  GNOME_VFS_XFER_ERROR_MODE_ABORT,
-				  GNOME_VFS_XFER_OVERWRITE_MODE_SKIP,
-				  rhythmdb_entry_move_to_trash_cb,
-				  entry);
-
-	if (res == GNOME_VFS_OK) {
-		rhythmdb_entry_set_visibility (db, entry, FALSE);
-	} else {
-		rhythmdb_entry_move_to_trash_set_error (db, entry, res);
-	}
-	rhythmdb_commit (db);
-
-	gnome_vfs_uri_unref (dest);
-	gnome_vfs_uri_unref (uri);
-}
-
-#endif
 
 /**
  * rhythmdb_entry_delete_by_type:
@@ -3656,7 +3781,7 @@ rhythmdb_query_internal (RhythmDBQueryThreadData *data)
 	rb_debug ("completed");
 	rhythmdb_query_results_query_complete (data->results);
 
-	result = g_new0 (RhythmDBEvent, 1);
+	result = g_slice_new0 (RhythmDBEvent);
 	result->db = data->db;
 	result->type = RHYTHMDB_EVENT_QUERY_COMPLETE;
 	result->results = data->results;
@@ -3674,7 +3799,7 @@ query_thread_main (RhythmDBQueryThreadData *data)
 
 	rhythmdb_query_internal (data);
 
-	result = g_new0 (RhythmDBEvent, 1);
+	result = g_slice_new0 (RhythmDBEvent);
 	result->db = data->db;
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	rhythmdb_push_event (data->db, result);
@@ -4087,9 +4212,9 @@ gboolean
 rhythmdb_is_busy (RhythmDB *db)
 {
 	return (!db->priv->action_thread_running ||
+		db->priv->stat_thread_running ||
 		!queue_is_empty (db->priv->event_queue) ||
 		!queue_is_empty (db->priv->action_queue) ||
-		(db->priv->stat_handle != NULL) ||
 		(db->priv->outstanding_stats != NULL));
 }
 
@@ -4175,7 +4300,7 @@ rhythmdb_compute_status_normal (gint n_songs,
 		}
 	}
 
-	size_str = gnome_vfs_format_file_size_for_display (size);
+	size_str = g_format_size_for_display (size);
 
 	if (size > 0 && duration > 0) {
 		ret = g_strdup_printf ("%s, %s, %s", songcount, time, size_str);
@@ -4221,7 +4346,7 @@ default_sync_metadata (RhythmDB *db,
 		rb_debug ("error saving metadata for %s: %s; reloading metadata to revert",
 			  rb_refstring_get (entry->location),
 			  local_error->message);
-		load_action = g_new0 (RhythmDBAction, 1);
+		load_action = g_slice_new0 (RhythmDBAction);
 		load_action->type = RHYTHMDB_ACTION_LOAD;
 		load_action->uri = rb_refstring_ref (entry->location);
 		load_action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;

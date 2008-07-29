@@ -45,8 +45,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rhythmdb.h"
 #include "rhythmdb-property-model.h"
@@ -58,6 +56,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-source.h"
 #include "rb-shell.h"
+#include "rb-file-helpers.h"
 
 static void rb_song_info_class_init (RBSongInfoClass *klass);
 static void rb_song_info_init (RBSongInfo *song_info);
@@ -1091,7 +1090,7 @@ rb_song_info_update_filesize (RBSongInfo *song_info)
 	char *text = NULL;
 	guint64 filesize = 0;
 	filesize = rhythmdb_entry_get_uint64 (song_info->priv->current_entry, RHYTHMDB_PROP_FILE_SIZE);
-	text = gnome_vfs_format_file_size_for_display (filesize);
+	text = g_format_size_for_display (filesize);
 	gtk_label_set_text (GTK_LABEL (song_info->priv->filesize), text);
 	g_free (text);
 }
@@ -1110,10 +1109,12 @@ rb_song_info_update_location (RBSongInfo *song_info)
 		char *basename, *dir, *desktopdir;
 
 		basename = g_path_get_basename (text);
-		tmp = gnome_vfs_unescape_string_for_display (basename);
+		tmp = g_uri_unescape_string (basename, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 		g_free (basename);
 		tmp_utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, NULL);
 		g_free (tmp);
+		tmp = NULL;
+
 		if (tmp_utf8 != NULL) {
 			gtk_entry_set_text (GTK_ENTRY (song_info->priv->name),
 					    tmp_utf8);
@@ -1124,19 +1125,22 @@ rb_song_info_update_location (RBSongInfo *song_info)
 
 		g_free (tmp_utf8);
 
-		tmp = gnome_vfs_get_local_path_from_uri (text);
-		if (tmp == NULL)
+		if (rb_uri_is_local (text)) {
+			tmp = g_filename_from_uri (text, NULL, NULL);
+		}
+		if (tmp == NULL) {
 			tmp = g_strdup (text);
+		}
+
 		dir = g_path_get_dirname (tmp);
 		g_free (tmp);
-		tmp = gnome_vfs_unescape_string_for_display (dir);
+		tmp = g_uri_unescape_string (dir, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 		g_free (dir);
 		tmp_utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, NULL);
 		g_free (tmp);
 
 		desktopdir = g_build_filename (g_get_home_dir (), "Desktop", NULL);
-		if ((tmp_utf8 != NULL) && (strcmp (tmp_utf8, desktopdir) == 0))
-		{
+		if ((tmp_utf8 != NULL) && (strcmp (tmp_utf8, desktopdir) == 0)) {
 			g_free (tmp_utf8);
 			tmp_utf8 = g_strdup (_("On the desktop"));
 		}

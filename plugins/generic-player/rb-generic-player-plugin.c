@@ -196,18 +196,18 @@ rb_generic_player_plugin_delete_playlist (GtkAction *actino, RBGenericPlayerPlug
 }
 
 static RBSource *
-create_source_cb (RBRemovableMediaManager *rmm, GnomeVFSVolume *volume, RBGenericPlayerPlugin *plugin)
+create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, RBGenericPlayerPlugin *plugin)
 {
 	RBSource *source = NULL;
 
-	if (rb_psp_is_volume_player (volume))
-		source = RB_SOURCE (rb_psp_source_new (plugin->shell, volume));
+	if (rb_psp_is_mount_player (mount))
+		source = RB_SOURCE (rb_psp_source_new (plugin->shell, mount));
 #ifdef HAVE_HAL
-	if (source == NULL && rb_nokia770_is_volume_player (volume))
-		source = RB_SOURCE (rb_nokia770_source_new (plugin->shell, volume));
+	if (source == NULL && rb_nokia770_is_mount_player (mount))
+		source = RB_SOURCE (rb_nokia770_source_new (plugin->shell, mount));
 #endif
-	if (source == NULL && rb_generic_player_is_volume_player (volume))
-		source = RB_SOURCE (rb_generic_player_source_new (plugin->shell, volume));
+	if (source == NULL && rb_generic_player_is_mount_player (mount))
+		source = RB_SOURCE (rb_generic_player_source_new (plugin->shell, mount));
 
 	if (plugin->actions == NULL) {
 		plugin->actions = gtk_action_group_new ("GenericPlayerActions");
@@ -263,7 +263,7 @@ impl_activate (RBPlugin *plugin,
 	 * plugins for more specific device types can get in first.
 	 */
 	g_signal_connect_after (G_OBJECT (rmm),
-				"create-source", G_CALLBACK (create_source_cb),
+				"create-source-mount", G_CALLBACK (create_source_cb),
 				pi);
 
 	/* only scan if we're being loaded after the initial scan has been done */

@@ -32,6 +32,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <gio/gio.h>
 #include <stdarg.h>
 #include <libxml/tree.h>
 
@@ -298,7 +299,7 @@ struct _RhythmDBClass
 
 	/* virtual methods */
 
-	gboolean	(*impl_load)		(RhythmDB *db, gboolean *dead, GError **error);
+	gboolean	(*impl_load)		(RhythmDB *db, GCancellable *cancel, GError **error);
 	void		(*impl_save)		(RhythmDB *db);
 
 	void		(*impl_entry_new)	(RhythmDB *db, RhythmDBEntry *entry);

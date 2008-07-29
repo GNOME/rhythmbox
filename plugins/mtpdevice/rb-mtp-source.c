@@ -31,10 +31,7 @@
 
 #include <string.h>
 #include <gtk/gtktreeview.h>
-#include <libgnome/gnome-i18n.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
-#include <libgnomevfs/gnome-vfs-volume.h>
-#include <libgnomevfs/gnome-vfs-volume-monitor.h>
+#include <glib/gi18n.h>
 
 #include "rhythmdb.h"
 #include "eel-gconf-extensions.h"
@@ -545,65 +542,24 @@ rb_mtp_source_is_udi (RBMtpSource *source,
 	return (strcmp (udi, priv->udi) == 0);
 }
 
-/*Borowed from rb-playlist-source-recorder*/
-static gboolean
-check_dir_has_space (const char *path,
-		     guint64 bytes_needed)
-{
-	GnomeVFSResult result;
-	GnomeVFSURI *dir_uri = NULL;
-	GnomeVFSFileSize free_bytes;
-
-	if (!g_file_test (path, G_FILE_TEST_IS_DIR))
-		return FALSE;
-
-	dir_uri = gnome_vfs_uri_new (path);
-	if (dir_uri == NULL) {
-		rb_debug ("Cannot get free space at %s\n", path);
-		return FALSE;
-	}
-
-	result = gnome_vfs_get_volume_free_space (dir_uri, &free_bytes);
-	gnome_vfs_uri_unref (dir_uri);
-
-	if (result != GNOME_VFS_OK) {
-		rb_debug ("Cannot get free space at %s\n", path);
-		return FALSE;
-	}
-
-	if (bytes_needed >= free_bytes) {
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
 static gboolean
 rb_mtp_source_transfer_track_to_disk (LIBMTP_mtpdevice_t *device,
 				      LIBMTP_track_t *track,
 				      const char *uri)
 {
 	int ret = -1;
-	GnomeVFSURI* guri = NULL;
 
 	if (device == NULL || track == NULL || strlen (uri) == 0) {
 		return FALSE;
 	}
 
-	guri = gnome_vfs_uri_new (uri);
-	if (!check_dir_has_space (gnome_vfs_uri_get_path (gnome_vfs_uri_get_parent (guri)), track->filesize)) {
-		gnome_vfs_uri_unref (guri);
+	if (rb_check_dir_has_space_uri (uri, track->filesize) == FALSE) {
 		return FALSE;
 	}
-	gnome_vfs_uri_unref (guri);
 
 	ret = LIBMTP_Get_Track_To_File (device, track->item_id, uri, NULL, NULL);
 
-	if (ret == 0) {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+	return (ret == 0);
 }
 
 static char *
@@ -756,13 +712,16 @@ impl_track_added (RBRemovableMediaSource *isource,
 {
 	RBMtpSource *source = RB_MTP_SOURCE (isource);
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	char *filename = NULL;
+	GFile *file;
+	char *path;
 	LIBMTP_track_t *track = NULL;
 
-	filename = g_filename_from_uri (dest, NULL, NULL);
-	track = transfer_track (source, priv->device, entry, filename, filesize, mimetype);
-	gnome_vfs_unlink (filename);
-	g_free (filename);
+	file = g_file_new_for_uri (dest);
+	path = g_file_get_path (file);
+	track = transfer_track (source, priv->device, entry, path, filesize, mimetype);
+	g_free (path);
+
+	g_file_delete (file, NULL, NULL);
 
 	if (track != NULL) {
 		/*request_artwork (isource, entry, song);*/

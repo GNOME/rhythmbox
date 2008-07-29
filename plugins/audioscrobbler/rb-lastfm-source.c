@@ -44,6 +44,7 @@
 
 #include <string.h>
 #include <math.h>
+#include <unistd.h>
 
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
@@ -54,7 +55,6 @@
 
 #include <totem-pl-parser.h>
 
-#include "rb-soup-compat.h"
 #include <libsoup/soup.h>
 
 #include "md5.h"
@@ -140,6 +140,7 @@ static void rb_lastfm_source_get_property (GObject *object,
 
 static void rb_lastfm_source_songs_view_sort_order_changed_cb (RBEntryView *view,
 							       RBLastfmSource *source);
+/* source-specific methods */
 
 static void rb_lastfm_source_drag_cb (GtkWidget *widget,
 				      GdkDragContext *dc,
@@ -1124,7 +1125,7 @@ rb_lastfm_source_title_from_uri (const char *uri)
 	}
 
 	g_strfreev (data);
-	unesc_title = gnome_vfs_unescape_string (title, NULL);
+	unesc_title = g_uri_unescape_string (title, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 	g_free (title);
 	return unesc_title;
 }
@@ -1256,33 +1257,14 @@ free_action (RBLastfmAction *action)
 	g_free (action);
 }
 
-#if defined(HAVE_LIBSOUP_2_4)
 static void
 http_response_cb (SoupSession *session, SoupMessage *req, gpointer user_data)
-#else
-static void
-http_response_cb (SoupMessage *req, gpointer user_data)
-#endif
 {
 	RBLastfmAction *action = (RBLastfmAction *)user_data;
 	RBLastfmSource *source = action->source;
 	char *free_body;
 	const char *body;
 
-#if defined(HAVE_LIBSOUP_2_2)
-
-	if ((req->response).body == NULL) {
-		body = NULL;
-		free_body = NULL;
-		rb_debug ("server failed to respond");
-	} else {
-		free_body = g_malloc0 ((req->response).length + 1);
-		memcpy (free_body, (req->response).body, (req->response).length);
-		g_strstrip (free_body);
-
-		body = free_body;
-	}
-#else
 	free_body = NULL;
 	if (req->response_body->length == 0) {
 		rb_debug ("server failed to respond");
@@ -1290,7 +1272,6 @@ http_response_cb (SoupMessage *req, gpointer user_data)
 	} else {
 		body = req->response_body->data;
 	}
-#endif
 
 	/* call the action's response handler */
 	if (action->handle_response != NULL) {
@@ -1405,7 +1386,6 @@ queue_action (RBLastfmSource *source,
 
 /* common protocol utility stuff */
 
-#if defined(HAVE_LIBSOUP_2_4)
 static char *
 auth_challenge (RBLastfmSource *source)
 {
@@ -1415,7 +1395,6 @@ auth_challenge (RBLastfmSource *source)
 	 */
 	return g_strdup_printf ("%ld", time (NULL));
 }
-#endif
 
 static gchar *
 mkmd5 (char *string, char *string2)
@@ -1665,7 +1644,9 @@ create_station_request (RBLastfmSource *source, RhythmDBEntry *entry)
 		return NULL;
 	}
 
-	lastfm_url = gnome_vfs_escape_string (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+	lastfm_url = g_uri_escape_string (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
+					  G_URI_RESERVED_CHARS_ALLOWED_IN_PATH,
+					  FALSE);
 
 	url = g_strdup_printf("http://%s%s/adjust.php?session=%s&url=%s&debug=0",
 			      source->priv->base_url ? source->priv->base_url : LASTFM_URL,
@@ -2056,24 +2037,6 @@ queue_get_playlist_and_skip (RBLastfmSource *source, RhythmDBEntry *station)
 
 /* XMLRPC requests */
 
-/* can't be bothered implementing this stuff for libsoup 2.2. */
-#if defined(HAVE_LIBSOUP_2_2)
-
-static SoupMessage *
-create_action_request (RBLastfmSource *source, RhythmDBEntry *entry, const char *action)
-{
-	g_warning ("xmlrpc stuff not implemented for libsoup 2.2");
-	return NULL;
-}
-
-static void
-handle_xmlrpc_response (RBLastfmSource *source, const char *body, RhythmDBEntry *entry)
-{
-	/* nothing */
-}
-
-#else
-
 static SoupMessage *
 create_action_request (RBLastfmSource *source, RhythmDBEntry *entry, const char *action)
 {
@@ -2142,7 +2105,6 @@ handle_xmlrpc_response (RBLastfmSource *source, const char *body, RhythmDBEntry 
 
 	g_value_unset (&v);
 }
-#endif
 
 /* XMLRPC: banTrack */
 

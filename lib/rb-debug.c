@@ -203,6 +203,7 @@ rb_debug_init_match (const char *match)
 		"libglade",
 		"libgnomevfs",
 		"librsvg",
+		"GLib-GIO",
 	};
 
 	debug_match = match;

@@ -34,15 +34,12 @@
 #include <config.h>
 
 #include <glib/gi18n.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
-#include <libgnomevfs/gnome-vfs-ops.h>
 #include <gst/gst.h>
 #include <gst/tag/tag.h>
 #include <string.h>
 #include <profiles/gnome-media-profiles.h>
 #include <gtk/gtk.h>
-
+#include <gio/gio.h>
 
 #include "rhythmdb.h"
 #include "eel-gconf-extensions.h"
@@ -51,6 +48,7 @@
 #include "rb-encoder-gst.h"
 #include "rb-debug.h"
 #include "rb-util.h"
+#include "rb-file-helpers.h"
 
 static void rb_encoder_gst_class_init (RBEncoderGstClass *klass);
 static void rb_encoder_gst_init       (RBEncoderGst *encoder);
@@ -182,8 +180,8 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 {
 	GError *error = NULL;
 	guint64 dest_size;
-	GnomeVFSFileInfo *file_info;
-	GnomeVFSResult result;
+	GFile *file;
+	GFileInfo *file_info;
 
 	g_return_if_fail (encoder->priv->completion_emitted == FALSE);
 
@@ -205,19 +203,21 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 		g_error_free (error);
 	}
 
-	/* find the size of the output file, assuming we can get at it with gnome-vfs */
+	/* find the size of the output file, assuming we can get at it with gio */
 	dest_size = 0;
-	file_info = gnome_vfs_file_info_new ();
-	result = gnome_vfs_get_file_info (encoder->priv->dest_uri, file_info, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
-	if (result == GNOME_VFS_OK && (file_info->valid_fields & GNOME_VFS_FILE_INFO_FIELDS_SIZE)) {
-		dest_size = file_info->size;
-		rb_debug ("destination file size: %" G_GUINT64_FORMAT, dest_size);
-	} else {
+	file = g_file_new_for_uri (encoder->priv->dest_uri);
+	file_info = g_file_query_info (file, G_FILE_ATTRIBUTE_STANDARD_SIZE, G_FILE_QUERY_INFO_NONE, NULL, &error);
+	if (error != NULL) {
 		rb_debug ("couldn't get size of destination %s: %s",
 			  encoder->priv->dest_uri,
-			  gnome_vfs_result_to_string (result));
+			  error->message);
+		g_clear_error (&error);
+	} else {
+		dest_size = g_file_info_get_attribute_uint64 (file_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+		rb_debug ("destination file size: %" G_GUINT64_FORMAT, dest_size);
+		g_object_unref (file_info);
 	}
-	gnome_vfs_file_info_unref (file_info);
+	g_object_unref (file);
 
 	encoder->priv->completion_emitted = TRUE;
 	_rb_encoder_emit_completed (RB_ENCODER (encoder), dest_size);
@@ -488,34 +488,8 @@ add_tags_from_entry (RBEncoderGst *encoder,
 	return result;
 }
 
-static gboolean
-gnomevfs_allow_overwrite_cb (GstElement *element, GnomeVFSURI *uri, RBEncoderGst *encoder)
-{
-	GtkWidget *dialog;
-	gint response;
-	char *name;
-	char *display_name;
-
-	name = gnome_vfs_uri_to_string (uri, GNOME_VFS_URI_HIDE_USER_NAME | GNOME_VFS_URI_HIDE_PASSWORD);
-	display_name = gnome_vfs_format_uri_for_display (name);
-
-	dialog = gtk_message_dialog_new (NULL, 0,
-					 GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
-					 _("Do you want to overwrite the file \"%s\"?"),
-					 display_name);
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_destroy (dialog);
-
-	g_free (display_name);
-	g_free (name);
-
-	return (response == GTK_RESPONSE_YES);
-}
-
 static void
-new_decoded_pad_cb (GstElement *decodebin,
-		GstPad *new_pad, gboolean arg1,
-		RBEncoderGst *encoder)
+new_decoded_pad_cb (GstElement *decodebin, GstPad *new_pad, gboolean arg1, RBEncoderGst *encoder)
 {
 	GstPad *enc_sinkpad;
 	GstCaps *caps;
@@ -574,22 +548,95 @@ add_decoding_pipeline (RBEncoderGst *encoder,
 }
 
 static gboolean
+prompt_for_overwrite (GFile *file)
+{
+	GtkWidget *dialog;
+	GFileInfo *info;
+	gint response;
+	char *free_name;
+	const char *display_name;
+
+	free_name = NULL;
+	display_name = NULL;
+	info = g_file_query_info (file,
+				  G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME,
+				  G_FILE_QUERY_INFO_NONE,
+				  NULL,
+				  NULL);
+	if (info != NULL) {
+		display_name = g_file_info_get_display_name (info);
+		g_object_unref (info);
+	}
+
+	if (display_name == NULL) {
+		free_name = g_file_get_uri (file);
+		display_name = free_name;
+	}
+
+	dialog = gtk_message_dialog_new (NULL, 0,
+					 GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
+					 _("Do you want to overwrite the file \"%s\"?"),
+					 display_name);
+	response = gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
+	g_free (free_name);
+
+	return (response == GTK_RESPONSE_YES);
+}
+
+static gboolean
 attach_output_pipeline (RBEncoderGst *encoder,
 			GstElement *end,
 			const char *dest,
 			GError **error)
 {
+	GFile *file;
+	GFileOutputStream *stream;
 	GstElement *sink;
+	GError *local_error = NULL;
 
-	sink = gst_element_make_from_uri (GST_URI_SINK, dest, "sink");
-
-	/* handle overwriting if we are using gnomevfssink
-	 * it would be nice if GST had an interface for sinks with thi, but it doesn't
+	/* if we can get to the location with gio, open the file here
+	 * (prompting for overwrite if it already exists) and use giostreamsink.
+	 * otherwise, create whatever sink element we can.
 	 */
-	if (g_type_is_a (G_OBJECT_TYPE (sink), g_type_from_name ("GstGnomeVFSSink"))) {
-		g_signal_connect_object (G_OBJECT (sink),
-					 "allow-overwrite", G_CALLBACK (gnomevfs_allow_overwrite_cb),
-					 encoder, 0);
+	file = g_file_new_for_uri (dest);
+	
+	sink = NULL;
+	stream = g_file_create (file, G_FILE_CREATE_NONE, NULL, &local_error);
+	if (local_error != NULL) {
+		if (g_error_matches (local_error,
+				     G_IO_ERROR,
+				     G_IO_ERROR_NOT_SUPPORTED)) {
+			rb_debug ("gio can't write to %s, so using whatever sink will work", dest);
+			sink = gst_element_make_from_uri (GST_URI_SINK, dest, "sink");
+			if (sink == NULL) {
+				g_propagate_error (error, local_error);		/* close enough */
+				return FALSE;
+			} else {
+				g_error_free (local_error);
+			}
+		} else if (g_error_matches (local_error,
+					    G_IO_ERROR,
+					    G_IO_ERROR_EXISTS)) {
+			if (prompt_for_overwrite (file)) {
+				g_error_free (local_error);
+				stream = g_file_replace (file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, error);
+				if (stream == NULL) {
+					return FALSE;
+				}
+			} else {
+				g_propagate_error (error, local_error);
+				return FALSE;
+			}
+		} else {
+			g_propagate_error (error, local_error);
+			return FALSE;
+		}
+	}
+
+	if (sink == NULL) {
+		sink = gst_element_factory_make ("giostreamsink", NULL);
+		g_object_set (sink, "stream", stream, NULL);
 	}
 
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), sink);
@@ -935,41 +982,6 @@ error:
 	return FALSE;
 }
 
-static GnomeVFSResult
-create_parent_dirs_uri (GnomeVFSURI *uri)
-{
-	GnomeVFSURI *parent_uri;
-	GnomeVFSResult result;
-
-	if (gnome_vfs_uri_exists (uri))
-		return GNOME_VFS_OK;
-
-	parent_uri = gnome_vfs_uri_get_parent (uri);
-	result = create_parent_dirs_uri (parent_uri);
-	gnome_vfs_uri_unref (parent_uri);
-	if (result != GNOME_VFS_OK)
-		return result;
-
-	return gnome_vfs_make_directory_for_uri (uri, 0750);
-}
-
-static GnomeVFSResult
-create_parent_dirs (const char *uri)
-{
-	GnomeVFSURI *vfs_uri;
-	GnomeVFSURI *parent_uri;
-	GnomeVFSResult result;
-
-	vfs_uri = gnome_vfs_uri_new (uri);
-	parent_uri = gnome_vfs_uri_get_parent (vfs_uri);
-
-	result = create_parent_dirs_uri (parent_uri);
-
-	gnome_vfs_uri_unref (parent_uri);
-	gnome_vfs_uri_unref (vfs_uri);
-	return result;
-}
-
 static void
 rb_encoder_gst_cancel (RBEncoder *encoder)
 {
@@ -997,7 +1009,6 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 	gboolean was_raw;
 	gboolean result;
 	GError *error = NULL;
-	GnomeVFSResult vfsresult;
 
 	g_return_val_if_fail (priv->pipeline == NULL, FALSE);
 
@@ -1017,11 +1028,10 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 		entry_mime_type = "audio/flac";
 	}
 
-	vfsresult = create_parent_dirs (dest);
-	if (vfsresult != GNOME_VFS_OK) {
+	if (rb_uri_create_parent_dirs (dest, &error) == FALSE) {
 		error = g_error_new_literal (RB_ENCODER_ERROR,
 					     RB_ENCODER_ERROR_FILE_ACCESS,
-					     gnome_vfs_result_to_string (vfsresult));
+					     error->message);		/* I guess */
 
 		_rb_encoder_emit_error (encoder, error);
 		_rb_encoder_emit_completed (encoder, 0);

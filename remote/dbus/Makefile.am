@@ -4,8 +4,8 @@ bin_PROGRAMS = rhythmbox-client
 rhythmbox_client_SOURCES = rb-client.c
 rhythmbox_client_LDADD =				\
 	$(top_builddir)/lib/librb.la			\
-	$(DBUS_LIBS)					\
-	$(RB_CLIENT_LIBS)
+	$(RB_CLIENT_LIBS)				\
+	$(DBUS_LIBS)
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

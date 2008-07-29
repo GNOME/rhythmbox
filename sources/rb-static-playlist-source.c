@@ -34,7 +34,6 @@
 #include <libxml/tree.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
 
 #include "rb-static-playlist-source.h"
 #include "rb-library-browser.h"
@@ -729,12 +728,17 @@ rb_static_playlist_source_add_location_internal (RBStaticPlaylistSource *source,
 }
 
 static gboolean
-rb_static_playlist_source_add_location_cb (const char *uri,
-					   gboolean dir,
-					   RBStaticPlaylistSource *source)
+_add_location_cb (GFile *file,
+		  gboolean dir,
+		  RBStaticPlaylistSource *source)
 {
-	if (!dir)
+	if (!dir) {
+		char *uri;
+
+		uri = g_file_get_uri (file);
 		rb_static_playlist_source_add_location_internal (source, uri, -1);
+		g_free (uri);
+	}
 	return TRUE;	
 }
 
@@ -752,8 +756,8 @@ rb_static_playlist_source_add_location (RBStaticPlaylistSource *source,
 	/* if there is an entry, it won't be a directory */
 	if (entry == NULL && rb_uri_is_directory (location))
 		rb_uri_handle_recursively (location,
-					   (RBUriRecurseFunc) rb_static_playlist_source_add_location_cb,
 					   NULL,
+					   (RBUriRecurseFunc) _add_location_cb,
 					   source);
 	else
 		rb_static_playlist_source_add_location_internal (source, location, index);

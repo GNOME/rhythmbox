@@ -420,7 +420,7 @@ rb_library_source_location_button_clicked_cb (GtkButton *button, RBLibrarySource
 			uri = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (dialog));
 		}
 
-		path = gnome_vfs_format_uri_for_display (uri);
+		path = g_uri_unescape_string (uri, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 
 		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), path);
 		rb_library_source_library_location_cb (GTK_ENTRY (source->priv->library_location_entry),
@@ -586,7 +586,7 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 
 		gtk_widget_set_sensitive (source->priv->library_location_entry, TRUE);
 
-		path = gnome_vfs_format_uri_for_display (list->data);
+		path = g_uri_unescape_string (list->data, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), path);
 		g_free (path);
 	} else if (g_slist_length (list) == 0) {
@@ -643,10 +643,13 @@ rb_library_source_library_location_cb (GtkEntry *entry,
 {
 	GSList *list = NULL;
 	const char *path;
+	GFile *file;
 	char *uri;
 
 	path = gtk_entry_get_text (entry);
-	uri = gnome_vfs_make_uri_from_input (path);
+	file = g_file_parse_name (path);
+	uri = g_file_get_uri (file);
+	g_object_unref (file);
 
 	if (uri && uri[0])
 		list = g_slist_prepend (NULL, (gpointer)uri);
@@ -1076,8 +1079,9 @@ rb_library_source_layout_filename_changed (GConfClient *client,
 static char*
 build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 {
-	GnomeVFSURI *uri;
-	GnomeVFSURI *new;
+	GFile *library_location;
+	GFile *dir;
+	GFile *dest;
 	char *realfile;
 	char *realpath;
 	char *filename;
@@ -1104,15 +1108,11 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	g_free (layout_filename);
 	layout_filename = tmp;
 
-	uri = gnome_vfs_uri_new ((const char *)list->data);
-	if (uri == NULL) {
-		goto out;
-	}
-
 	realpath = filepath_parse_pattern (layout_path, entry);
-	new = gnome_vfs_uri_append_path (uri, realpath);
-	gnome_vfs_uri_unref (uri);
-	uri = new;
+
+	library_location = g_file_new_for_uri ((const char *)list->data);
+	dir = g_file_resolve_relative_path (library_location, realpath);
+	g_object_unref (library_location);
 	g_free (realpath);
 
 	if (g_str_has_prefix (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE), "audio/x-raw")) {
@@ -1150,14 +1150,13 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 		filename = realfile;
 	}
 
-	new = gnome_vfs_uri_append_file_name (uri, filename);
-	gnome_vfs_uri_unref (uri);
-	uri = new;
+	dest = g_file_resolve_relative_path (dir, filename);
+	g_object_unref (dir);
 	g_free (extension);
 	g_free (filename);
 
-	string = gnome_vfs_uri_to_string (uri, 0);
-	gnome_vfs_uri_unref (uri);
+	string = g_file_get_uri (dest);
+	g_object_unref (dest);
  out:
 	rb_slist_deep_free (list);
 	g_free (layout_path);
@@ -1254,7 +1253,7 @@ impl_paste (RBSource *asource, GList *entries)
 
 		rb_removable_media_manager_queue_transfer (rm_mgr, entry,
 							  dest, NULL,
-							  (RBTranferCompleteCallback)completed_cb, source);
+							  (RBTransferCompleteCallback)completed_cb, source);
 	}
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
 
@@ -1291,26 +1290,21 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	RBSource *source;
 	GPtrArray *query;
 	RBShell *shell;
-	GnomeVFSURI *uri;
 	char *name;
 	GdkPixbuf *icon;
 	RhythmDBEntryType entry_type;
 	char *sort_column;
 	int sort_order;
+	GFile *file;
 
 	g_object_get (library_source,
 		      "shell", &shell,
 		      "entry-type", &entry_type,
 		      NULL);
-	uri = gnome_vfs_uri_new (path);
-	if (uri == NULL) {
-		g_object_unref (shell);
-		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
-		return;
-	}
 
-	name = gnome_vfs_uri_extract_short_name (uri);
-	gnome_vfs_uri_unref (uri);
+	file = g_file_new_for_uri (path);		/* ? */
+	name = g_file_get_basename (file);
+	g_object_unref (file);
 
 	rb_entry_view_get_sorting_order (rb_source_get_entry_view (RB_SOURCE (library_source)),
 					 &sort_column, &sort_order);

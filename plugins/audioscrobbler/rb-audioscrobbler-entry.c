@@ -38,7 +38,6 @@
 
 #include "rb-debug.h"
 #include "rhythmdb.h"
-#include "rb-soup-compat.h"
 #include <libsoup/soup.h>
 
 #include "rb-audioscrobbler-entry.h"
@@ -130,19 +129,6 @@ rb_audioscrobbler_entry_encode (AudioscrobblerEntry *entry)
 	return encoded;
 }
 
-static char *
-rb_uri_decode (const char *uri)
-{
-#if defined(HAVE_LIBSOUP_2_4)
-    return soup_uri_decode (uri);
-#else 
-    char *result;
-    result = g_strdup (uri);
-    soup_uri_decode (result);
-    return result;
-#endif
-}
-
 AudioscrobblerEntry*
 rb_audioscrobbler_entry_load_from_string (const char *string)
 {
@@ -161,19 +147,19 @@ rb_audioscrobbler_entry_load_from_string (const char *string)
 		if (breaks2[0] != NULL && breaks2[1] != NULL) {
 			if (g_str_has_prefix (breaks2[0], "a")) {
 				g_free (entry->artist);
-				entry->artist = rb_uri_decode (breaks2[1]);
+				entry->artist = soup_uri_decode (breaks2[1]);
 			}
 			if (g_str_has_prefix (breaks2[0], "t")) {
 				g_free (entry->title);
-				entry->title = rb_uri_decode (breaks2[1]);
+				entry->title = soup_uri_decode (breaks2[1]);
 			}
 			if (g_str_has_prefix (breaks2[0], "b")) {
 				g_free (entry->album);
-				entry->album = rb_uri_decode (breaks2[1]);
+				entry->album = soup_uri_decode (breaks2[1]);
 			}
 			if (g_str_has_prefix (breaks2[0], "m")) {
 				g_free (entry->mbid);
-				entry->mbid = rb_uri_decode (breaks2[1]);
+				entry->mbid = soup_uri_decode (breaks2[1]);
 			}
 			if (g_str_has_prefix (breaks2[0], "l")) {
 				entry->length = atoi (breaks2[1]);
@@ -203,22 +189,21 @@ rb_audioscrobbler_entry_load_from_string (const char *string)
 	return entry;
 }
 
-char *
-rb_audioscrobbler_entry_save_to_string (AudioscrobblerEntry *entry)
+void
+rb_audioscrobbler_entry_save_to_string (GString *string, AudioscrobblerEntry *entry)
 {
-	char *result;
 	AudioscrobblerEncodedEntry *encoded;
 
 	encoded = rb_audioscrobbler_entry_encode (entry);
-	result = g_strdup_printf ("a=%s&t=%s&b=%s&m=%s&l=%d&I=%ld\n",
-				  encoded->artist, 
-				  encoded->title,
-				  encoded->album, 
-				  encoded->mbid,
-				  encoded->length,
-				  entry->play_time);
+	g_string_append_printf (string,
+				"a=%s&t=%s&b=%s&m=%s&l=%d&I=%ld\n",
+				encoded->artist,
+				encoded->title,
+				encoded->album,
+				encoded->mbid,
+				encoded->length,
+				entry->play_time);
 	rb_audioscrobbler_encoded_entry_free (encoded);
-	return result;
 }
 
 void

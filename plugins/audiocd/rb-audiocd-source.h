@@ -54,12 +54,12 @@ typedef struct
 } RBAudioCdSourceClass;
 
 RBRemovableMediaSource *	rb_audiocd_source_new		(RBPlugin *plugin,
-								 RBShell *shell,
-								 GnomeVFSVolume *volume);
+								 RBShell  *shell,
+								 GVolume  *volume);
 GType			rb_audiocd_source_get_type		(void);
 GType			rb_audiocd_source_register_type		(GTypeModule *module);
 
-gboolean		rb_audiocd_is_volume_audiocd		(GnomeVFSVolume *volume);
+gboolean		rb_audiocd_is_volume_audiocd		(GVolume *volume);
 
 G_END_DECLS
 

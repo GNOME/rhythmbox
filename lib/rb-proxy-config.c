@@ -266,7 +266,6 @@ get_proxy_config (RBProxyConfig *config)
  *
  * Return value: a libsoup URI object containing the current HTTP proxy configuration.
  */
-#if defined(HAVE_LIBSOUP_2_4)
 SoupURI *
 rb_proxy_config_get_libsoup_uri (RBProxyConfig *config)
 {
@@ -287,26 +286,4 @@ rb_proxy_config_get_libsoup_uri (RBProxyConfig *config)
 
 	return uri;
 }
-#elif defined(HAVE_LIBSOUP_2_2)
-SoupUri *
-rb_proxy_config_get_libsoup_uri (RBProxyConfig *config)
-{
-	SoupUri *uri = NULL;
-
-	if (!config->enabled)
-		return NULL;
-
-	uri = g_new0 (SoupUri, 1);
-	uri->protocol = SOUP_PROTOCOL_HTTP;
-
-	uri->host = g_strdup (config->host);
-	uri->port = config->port;
-	if (config->auth_enabled) {
-		uri->user = g_strdup (config->username);
-		uri->passwd = g_strdup (config->password);
-	}
-
-	return uri;
-}
-#endif
 

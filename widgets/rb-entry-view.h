@@ -34,7 +34,6 @@
 #include <gtk/gtkscrolledwindow.h>
 #include <gtk/gtktreeviewcolumn.h>
 #include <gtk/gtkdnd.h>
-#include <libgnomevfs/gnome-vfs-file-info.h>
 
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"

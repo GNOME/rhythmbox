@@ -36,10 +36,8 @@
 #include <gst/gsttagsetter.h>
 #include <gst/tag/tag.h>
 #include <gst/gsturi.h>
-
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
+#include <gio/gio.h>
 #include <gst/pbutils/pbutils.h>
-#endif /* HAVE_GSTREAMER_0_10_MISSING_PLUGINS */
 
 #include "rb-metadata.h"
 #include "rb-debug.h"
@@ -329,7 +327,7 @@ static void
 rb_metadata_init (RBMetaData *md)
 {
 	RBAddTaggerElem tagger;
-	gboolean has_gnomevfssink = FALSE;
+	gboolean has_giosink = FALSE;
 	gboolean has_id3 = FALSE;
 
 	md->priv = RB_METADATA_GET_PRIVATE (md);
@@ -345,10 +343,9 @@ rb_metadata_init (RBMetaData *md)
  	 * only registering types we have plugins for defeats the second
 	 * purpose.
  	 */
-	has_gnomevfssink = (gst_element_factory_find ("gnomevfssrc") != NULL &&
-			    gst_element_factory_find ("gnomevfssink") != NULL);
+	has_giosink = (gst_element_factory_find ("giostreamsink") != NULL);
 	has_id3 = (gst_element_factory_find ("id3v2mux") != NULL);
-	tagger = (has_gnomevfssink && has_id3) ?  rb_add_id3_tagger : NULL;
+	tagger = (has_giosink && has_id3) ?  rb_add_id3_tagger : NULL;
 	add_supported_type (md, "application/x-id3", tagger, "MP3");
 	add_supported_type (md, "audio/mpeg", tagger, "MP3");
 
@@ -359,7 +356,7 @@ rb_metadata_init (RBMetaData *md)
 			      gst_default_registry_check_feature_version ("vorbisparse", 0, 10, 6) &&
 			      gst_default_registry_check_feature_version ("oggmux", 0, 10, 6) &&
 			      gst_default_registry_check_feature_version ("oggdemux", 0, 10, 6));
-		tagger = (has_gnomevfssink && has_vorbis) ?  rb_add_ogg_tagger : NULL;
+		tagger = (has_giosink && has_vorbis) ?  rb_add_ogg_tagger : NULL;
 	}
 	add_supported_type (md, "application/ogg", tagger, "Ogg Vorbis");
 	add_supported_type (md, "audio/x-vorbis", tagger, "Ogg Vorbis");
@@ -368,7 +365,7 @@ rb_metadata_init (RBMetaData *md)
 	add_supported_type (md, "audio/x-wav", NULL, "WAV");
 	add_supported_type (md, "video/x-ms-asf", NULL, "ASF");
 
-	tagger = (has_gnomevfssink && gst_element_factory_find ("flactag")) ?  rb_add_flac_tagger : NULL;
+	tagger = (has_giosink && gst_element_factory_find ("flactag")) ?  rb_add_flac_tagger : NULL;
 	add_supported_type (md, "audio/x-flac", tagger, "FLAC");
 
 }
@@ -585,10 +582,13 @@ static char *
 make_undecodable_error (RBMetaData *md)
 {
 	const char *human_name;
+	char *free_name = NULL;
 
-	human_name= rb_metadata_gst_type_to_name (md, md->priv->type);
-	if (human_name == NULL)
-		human_name = rb_mime_get_friendly_name (md->priv->type);
+	human_name = rb_metadata_gst_type_to_name (md, md->priv->type);
+	if (human_name == NULL) {
+		free_name = rb_mime_get_friendly_name (md->priv->type);
+		human_name = free_name;
+	}
 
 	if (human_name) {
 		return g_strdup_printf (_("The GStreamer plugins to decode \"%s\" files cannot be found"),
@@ -597,6 +597,8 @@ make_undecodable_error (RBMetaData *md)
 		return g_strdup_printf (_("The file contains a stream of type %s, which is not decodable"),
 					md->priv->type);
 	}
+
+	g_free (free_name);
 }
 
 static void
@@ -785,16 +787,6 @@ rb_metadata_gst_unknown_type_cb (GstElement *decodebin, GstPad *pad, GstCaps *ca
 	}
 
 	md->priv->has_non_audio = TRUE;
-#ifndef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
-	/* try to shortcut it a bit */
-	{
-		char *msg;
-
-		msg = make_undecodable_error (md);
-		GST_ELEMENT_ERROR (md->priv->pipeline, STREAM, CODEC_NOT_FOUND, ("%s", msg), (NULL));
-		g_free (msg);
-	}
-#endif
 }
 
 static GstElement *make_pipeline_element (GstElement *pipeline, const char *element, GError **error)
@@ -813,7 +805,6 @@ static GstElement *make_pipeline_element (GstElement *pipeline, const char *elem
 	return elem;
 }
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 static void
 rb_metadata_handle_missing_plugin_message (RBMetaData *md, GstMessage *message)
 {
@@ -822,7 +813,6 @@ rb_metadata_handle_missing_plugin_message (RBMetaData *md, GstMessage *message)
 		  gst_missing_plugin_message_get_installer_detail (message));
 	md->priv->missing_plugins = g_slist_prepend (md->priv->missing_plugins, gst_message_ref (message));
 }
-#endif
 
 static gboolean
 rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
@@ -891,11 +881,9 @@ rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 	}
 	case GST_MESSAGE_ELEMENT:
 	{
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 		if (gst_is_missing_plugin_message (message)) {
 			rb_metadata_handle_missing_plugin_message (md, message);
 		}
-#endif
 		break;
 	}
 	default:
@@ -985,9 +973,7 @@ rb_metadata_load (RBMetaData *md,
 						    NULL, (GDestroyNotify) free_gvalue);
 
 	/* The main tagfinding pipeline looks like this:
- 	 * gnomevfssrc ! decodebin ! fakesink
-	 * or
-	 * filesrc ! decodebin ! fakesink
+ 	 * <src> ! decodebin ! fakesink
  	 *
  	 * but we can only link the fakesink in when the decodebin
  	 * creates an audio source pad.  we do this in the 'new-decoded-pad'
@@ -1252,13 +1238,13 @@ void
 rb_metadata_save (RBMetaData *md, GError **error)
 {
 	GstElement *pipeline = NULL;
-	GstElement *gnomevfssrc = NULL;
+	GstElement *source = NULL;
         GstElement *retag_end = NULL; /* the last element after retagging subpipeline */
 	const char *plugin_name = NULL;
 	char *tmpname_prefix = NULL;
 	char *tmpname = NULL;
-	GnomeVFSHandle *handle = NULL;
-	GnomeVFSResult result;
+	GOutputStream *stream = NULL;
+	GError *io_error = NULL;
 	RBAddTaggerElem add_tagger_func;
 
 	g_return_if_fail (md->priv->uri != NULL);
@@ -1269,27 +1255,29 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	tmpname_prefix = rb_uri_make_hidden (md->priv->uri);
 	rb_debug ("temporary file name prefix: %s", tmpname_prefix);
 
-	result = rb_uri_mkstemp (tmpname_prefix, &tmpname, &handle);
+	rb_uri_mkstemp (tmpname_prefix, &tmpname, &stream, &io_error);
 	g_free (tmpname_prefix);
-	if (result != GNOME_VFS_OK)
-		goto vfs_error;
+	if (io_error != NULL) {
+		goto gio_error;
+	}
 
 	pipeline = gst_pipeline_new ("pipeline");
 	md->priv->pipeline = pipeline;
 
 	/* Source */
-	plugin_name = "gnomevfssrc";
-	if (!(gnomevfssrc = gst_element_factory_make (plugin_name, plugin_name)))
-		goto missing_plugin;
-	gst_bin_add (GST_BIN (pipeline), gnomevfssrc);
-	g_object_set (G_OBJECT (gnomevfssrc), "location", md->priv->uri, NULL);
+	source = gst_element_make_from_uri (GST_URI_SRC, md->priv->uri, "urisrc");
+	if (source == NULL) {
+		plugin_name = "urisrc";
+		goto missing_plugin;	
+	}
+	gst_bin_add (GST_BIN (pipeline), source);
 
 	/* Sink */
-	plugin_name = "gnomevfssink";
+	plugin_name = "giostreamsink";
 	if (!(md->priv->sink = gst_element_factory_make (plugin_name, plugin_name)))
 		goto missing_plugin;
 
-	g_object_set (G_OBJECT (md->priv->sink), "handle", handle, NULL);
+	g_object_set (G_OBJECT (md->priv->sink), "stream", stream, NULL);
 
 	md->priv->tags = gst_tag_list_new ();
 	g_hash_table_foreach (md->priv->metadata,
@@ -1307,7 +1295,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto out_error;
 	}
 
-	retag_end = add_tagger_func (md, gnomevfssrc);
+	retag_end = add_tagger_func (md, source);
 	if (!retag_end) {
 		g_set_error (error,
 			     RB_METADATA_ERROR,
@@ -1336,10 +1324,15 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		g_propagate_error (error, md->priv->error);
 		goto out_error;
 	}
-	if (handle != NULL) {
-		if ((result = gnome_vfs_close (handle)) != GNOME_VFS_OK)
-			goto vfs_error;
-		handle = NULL;
+	if (stream != NULL) {
+		GFile *src;
+		GFile *dest;
+
+		if (g_output_stream_close (stream, NULL, &io_error) == FALSE) {
+			goto gio_error;
+		}
+		g_object_unref (stream);
+		stream = NULL;
 
 		/* check to ensure the file isn't corrupt */
 		if (!rb_metadata_file_valid (md->priv->uri, tmpname)) {
@@ -1350,17 +1343,21 @@ rb_metadata_save (RBMetaData *md, GError **error)
 			goto out_error;
 		}
 
-		if ((result = gnome_vfs_move (tmpname, md->priv->uri, TRUE)) != GNOME_VFS_OK)
-				goto vfs_error;
+		src = g_file_new_for_uri (tmpname);
+		dest = g_file_new_for_uri (md->priv->uri);
+		g_file_move (src, dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &io_error);
+		if (io_error != NULL) {
+			goto gio_error;
+		}
 	}
 
 	goto out;
-vfs_error:
+gio_error:
 	g_set_error (error,
 		     RB_METADATA_ERROR,
-		     RB_METADATA_ERROR_GNOMEVFS,
+		     RB_METADATA_ERROR_IO,
 		     "%s",
-		     gnome_vfs_result_to_string (result));
+		     io_error->message);
 	goto out_error;
 missing_plugin:
 	g_set_error (error,
@@ -1369,10 +1366,17 @@ missing_plugin:
 		     _("Failed to create %s element; check your installation"),
 		     plugin_name);
 out_error:
-	if (handle != NULL)
-		gnome_vfs_close (handle);
-	if (tmpname != NULL)
-		gnome_vfs_unlink (tmpname);
+	if (stream != NULL) {
+		g_output_stream_close (stream, NULL, NULL);
+		g_object_unref (stream);
+	}
+
+	if (tmpname != NULL) {
+		GFile *del;
+		del = g_file_new_for_uri (tmpname);
+		g_file_delete (del, NULL, NULL);
+		g_object_unref (del);
+	}
 
 out:
 	if (md->priv->tags)
@@ -1430,11 +1434,7 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 gboolean
 rb_metadata_has_missing_plugins (RBMetaData *md)
 {
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	return (g_slist_length (md->priv->missing_plugins) > 0);
-#else
-	return FALSE;
-#endif
 }
 
 gboolean
@@ -1442,7 +1442,6 @@ rb_metadata_get_missing_plugins (RBMetaData *md,
 				 char ***missing_plugins,
 				 char ***plugin_descriptions)
 {
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	char **mp;
 	char **pd;
 	int count;
@@ -1477,8 +1476,5 @@ rb_metadata_get_missing_plugins (RBMetaData *md,
 	*missing_plugins = mp;
 	*plugin_descriptions = pd;
 	return TRUE;
-#else
-	return FALSE;
-#endif
 }
 

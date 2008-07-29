@@ -60,16 +60,10 @@
 #include <time.h>
 #include <string.h>
 
-#ifdef HAVE_XIDLE_EXTENSION
-#include <X11/extensions/xidle.h>
-#endif /* HAVE_XIDLE_EXTENSION */
-
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
 
 #include "rb-property-view.h"
 #include "rb-shell-player.h"
@@ -161,9 +155,7 @@ static void rb_shell_player_sync_replaygain (RBShellPlayer *player,
                                              RhythmDBEntry *entry);
 static void tick_cb (RBPlayer *player, RhythmDBEntry *entry, long elapsed, long duration, gpointer data);
 static void error_cb (RBPlayer *player, RhythmDBEntry *entry, const GError *err, gpointer data);
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 static void missing_plugins_cb (RBPlayer *player, RhythmDBEntry *entry, const char **details, const char **descriptions, RBShellPlayer *sp);
-#endif
 static void playing_stream_cb (RBPlayer *player, RhythmDBEntry *entry, RBShellPlayer *shell_player);
 static void rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err);
 
@@ -597,7 +589,6 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_TYPE_STRING, G_TYPE_STRING,
 			      G_TYPE_VALUE, G_TYPE_VALUE);
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	/**
 	 * RBShellPlayer::missing-plugins:
 	 * @player: the #RBShellPlayer
@@ -619,8 +610,6 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_TYPE_BOOLEAN,
 			      3,
 			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);
-#endif
-
 
 	g_type_class_add_private (klass, sizeof (RBShellPlayerPrivate));
 }
@@ -678,41 +667,39 @@ rb_shell_player_constructor (GType type,
 }
 
 static void
-volume_pre_unmount_cb (GnomeVFSVolumeMonitor *monitor,
-		       GnomeVFSVolume *volume,
+volume_pre_unmount_cb (GVolumeMonitor *monitor,
+		       GMount *mount,
 		       RBShellPlayer *player)
 {
-	gchar *uri_mount_point;
-	gchar *volume_mount_point;
+	const char *entry_mount_point;
+	GFile *mount_root;
 	RhythmDBEntry *entry;
-	const char *uri;
-	gboolean playing;
-
-	rb_shell_player_get_playing (player, &playing, NULL);
-	if (playing) {
-		return;
-	}
 
 	entry = rb_shell_player_get_playing_entry (player);
 	if (entry == NULL) {
-		/* At startup for example, playing path can be NULL */
 		return;
 	}
 
-	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-	uri_mount_point = rb_uri_get_mount_point (uri);
-	volume_mount_point = gnome_vfs_volume_get_activation_uri (volume);
-
-	if (uri_mount_point && volume_mount_point &&
-	    (strcmp (uri_mount_point, volume_mount_point) == 0)) {
-		rb_shell_player_stop (player);
+	entry_mount_point = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+	if (entry_mount_point == NULL) {
+		return;
 	}
-	g_free (uri_mount_point);
-	g_free (volume_mount_point);
 
-	if (entry != NULL) {
-		rhythmdb_entry_unref (entry);
+	mount_root = g_mount_get_root (mount);
+	if (mount_root != NULL) {
+		char *mount_point;
+		
+		mount_point = g_file_get_uri (mount_root);
+		if (mount_point && entry_mount_point &&
+		    strcmp (entry_mount_point, mount_point) == 0) {
+			rb_shell_player_stop (player);
+		}
+
+		g_free (mount_point);
+		g_object_unref (mount_root);
 	}
+
+	rhythmdb_entry_unref (entry);
 }
 
 static void
@@ -1014,17 +1001,19 @@ rb_shell_player_init (RBShellPlayer *player)
 				 G_CALLBACK (playing_stream_cb),
 				 player, 0);
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
 	g_signal_connect_object (player->priv->mmplayer,
 				 "missing-plugins",
 				 G_CALLBACK (missing_plugins_cb),
 				 player, 0);
-#endif
 
-	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()),
-			  "volume-pre-unmount",
-			  G_CALLBACK (volume_pre_unmount_cb),
-			  player);
+	{
+		GVolumeMonitor *monitor = g_volume_monitor_get ();
+		g_signal_connect (G_OBJECT (monitor),
+				  "mount-pre-unmount",
+				  G_CALLBACK (volume_pre_unmount_cb),
+				  player);
+		g_object_unref (monitor);	/* hmm */
+	}
 
 	player->priv->gconf_play_order_id =
 		eel_gconf_notification_add (CONF_STATE_PLAY_ORDER,
@@ -3666,8 +3655,6 @@ tick_cb (RBPlayer *mmplayer,
 	GDK_THREADS_LEAVE ();
 }
 
-#ifdef HAVE_GSTREAMER_0_10_MISSING_PLUGINS
-
 typedef struct {
 	RhythmDBEntry *entry;
 	RBShellPlayer *player;
@@ -3745,7 +3732,6 @@ missing_plugins_cb (RBPlayer *player,
 
 	g_closure_sink (retry);
 }
-#endif
 
 /**
  * rb_shell_player_get_playing_path:

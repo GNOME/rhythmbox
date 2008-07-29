@@ -44,18 +44,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <nautilus-burn-drive.h>
-#ifndef NAUTILUS_BURN_CHECK_VERSION
-#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
-#endif
-
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-#include <nautilus-burn.h>
-#endif
-
-#ifndef HAVE_BURN_DRIVE_UNREF
-#define nautilus_burn_drive_unref nautilus_burn_drive_free
-#endif
+#include <totem-disc.h>
 
 #include "sj-metadata-musicbrainz.h"
 #include "sj-structures.h"
@@ -487,35 +476,6 @@ get_rdf (SjMetadata *metadata)
   g_free (cdindex);
 }
 
-static NautilusBurnMediaType
-get_drive_media_type (SjMetadata *metadata)
-{
-  SjMetadataMusicbrainzPrivate *priv;
-  NautilusBurnDrive *drive;
-  NautilusBurnMediaType type;
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-  NautilusBurnDriveMonitor *monitor;
-#endif
-
-  priv = SJ_METADATA_MUSICBRAINZ (metadata)->priv;
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-  if (! nautilus_burn_initialized ()) {
-    nautilus_burn_init ();
-  }
-  monitor = nautilus_burn_get_drive_monitor ();
-  drive = nautilus_burn_drive_monitor_get_drive_for_device (monitor, priv->cdrom);
-#else
-  drive = nautilus_burn_drive_new_from_path (priv->cdrom);
-#endif
-
-  if (drive == NULL) {
-    return NAUTILUS_BURN_MEDIA_TYPE_ERROR;
-  }
-  type = nautilus_burn_drive_get_media_type (drive);
-  nautilus_burn_drive_unref (drive);
-  return type;
-}
-
 static gpointer
 lookup_cd (SjMetadata *metadata)
 {
@@ -525,7 +485,8 @@ lookup_cd (SjMetadata *metadata)
   GList *al, *tl;
   char data[256];
   int num_albums, i, j;
-  NautilusBurnMediaType type;
+  TotemDiscMediaType type;
+  GError *totem_error = NULL;
 
   /* TODO: fire error signal */
   g_return_val_if_fail (metadata != NULL, NULL);
@@ -534,22 +495,11 @@ lookup_cd (SjMetadata *metadata)
   g_return_val_if_fail (priv->cdrom != NULL, NULL);
   priv->error = NULL; /* TODO: hack */
 
-  type = get_drive_media_type (metadata);
+  type = totem_cd_detect_type (priv->cdrom, &totem_error);
 
-  if (type == NAUTILUS_BURN_MEDIA_TYPE_ERROR) {
-    char *msg;
-    SjError err;
-
-    if (access (priv->cdrom, W_OK) == 0) {
-      msg = g_strdup_printf (_("Device '%s' does not contain any media"), priv->cdrom);
-      err = SJ_ERROR_CD_NO_MEDIA;
-    } else {
-      msg = g_strdup_printf (_("Device '%s' could not be opened. Check the access permissions on the device."), priv->cdrom);
-      err = SJ_ERROR_CD_PERMISSION_ERROR;
-    }
-    priv->error = g_error_new (SJ_ERROR, err, _("Cannot read CD: %s"), msg);
-    g_free (msg);
-
+  if (totem_error != NULL) {
+    priv->error = g_error_new (SJ_ERROR, SJ_ERROR_CD_NO_MEDIA, _("Cannot read CD: %s"), totem_error->message);
+    g_error_free (totem_error);
     priv->albums = NULL;
     g_idle_add ((GSourceFunc)fire_signal_idle, metadata);
     return NULL;

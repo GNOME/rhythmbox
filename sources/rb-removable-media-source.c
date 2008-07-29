@@ -37,8 +37,6 @@
 #include <gtk/gtktreeview.h>
 #include <gtk/gtkicontheme.h>
 #include <gtk/gtkiconfactory.h>
-#include <libgnomevfs/gnome-vfs-volume.h>
-#include <libgnomevfs/gnome-vfs-volume-monitor.h>
 
 #include "rhythmdb.h"
 #include "eel-gconf-extensions.h"
@@ -75,7 +73,8 @@ static gboolean impl_uri_is_source (RBSource *source, const char *uri);
 
 typedef struct
 {
-	GnomeVFSVolume *volume;
+	GVolume *volume;
+	GMount *mount;
 } RBRemovableMediaSourcePrivate;
 
 G_DEFINE_TYPE (RBRemovableMediaSource, rb_removable_media_source, RB_TYPE_BROWSER_SOURCE)
@@ -85,6 +84,7 @@ enum
 {
 	PROP_0,
 	PROP_VOLUME,
+	PROP_MOUNT,
 };
 
 static void
@@ -122,8 +122,15 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 					 PROP_VOLUME,
 					 g_param_spec_object ("volume",
 							      "Volume",
-							      "GnomeVfs Volume",
-							      GNOME_VFS_TYPE_VOLUME,
+							      "GIO Volume",
+							      G_TYPE_VOLUME,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_MOUNT,
+					 g_param_spec_object ("mount",
+							      "Mount",
+							      "GIO Mount",
+							      G_TYPE_MOUNT,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBRemovableMediaSourcePrivate));
@@ -139,45 +146,75 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 				       GObjectConstructParam *construct_properties)
 {
 	GObject *source;
-	GnomeVFSVolume *volume;
-	GnomeVFSDrive *drive;
+	GVolume *volume;
+	GIcon *icon = NULL;
+	GDrive *drive;
 	char *display_name;
-	gint size;
-	char *icon_name;
-	GtkIconTheme *theme;
-	GdkPixbuf *pixbuf;
+	GdkPixbuf *pixbuf = NULL;
+	RBRemovableMediaSourcePrivate *priv;
 
 	source = G_OBJECT_CLASS(rb_removable_media_source_parent_class)
 			->constructor (type, n_construct_properties, construct_properties);
+	priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (source);
 
-	g_object_get (source, "volume", &volume, NULL);
+	if (priv->mount != NULL) {
+		volume = g_mount_get_volume (priv->mount);
+	} else if (priv->volume != NULL) {
+		volume = g_object_ref (priv->volume);
+	} else {
+		volume = NULL;
+	}
+
 	if (volume != NULL) {
-		drive = gnome_vfs_volume_get_drive (volume);
+		drive = g_volume_get_drive (volume);
 		if (drive != NULL) {
-			display_name = gnome_vfs_drive_get_display_name (drive);
-			gnome_vfs_drive_unref (drive);
+			display_name = g_drive_get_name (drive);
+			g_object_unref (drive);
 		} else {
-			display_name = gnome_vfs_volume_get_display_name (volume);
+			display_name = g_volume_get_name (volume);
 		}
-		icon_name = gnome_vfs_volume_get_icon (volume);
+		icon = g_volume_get_icon (volume);
 		g_object_unref (volume);
+		rb_debug ("display name = %s, icon = %p", display_name, icon);
 	} else {
 		display_name = g_strdup ("Unknown Device");
-		icon_name = g_strdup ("multimedia-player");
+		icon = g_themed_icon_new ("multimedia-player");
 	}
 
 	g_object_set (source, "name", display_name, NULL);
 	g_free (display_name);
 
-	theme = gtk_icon_theme_get_default ();
-	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-	pixbuf = gtk_icon_theme_load_icon (theme, icon_name, size, 0, NULL);
-	g_free (icon_name);
+	if (icon == NULL) {
+		rb_debug ("no icon set");
+		pixbuf = NULL;
+	} else if (G_IS_THEMED_ICON (icon)) {
+		GtkIconTheme *theme;
+		const char * const *names;
+		gint size;
+		int i;
+
+		theme = gtk_icon_theme_get_default ();
+		gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
+
+		i = 0;
+		names = g_themed_icon_get_names (G_THEMED_ICON (icon));
+		while (names[i] != NULL && pixbuf == NULL) {
+			rb_debug ("looking up themed icon: %s", names[i]);
+			pixbuf = gtk_icon_theme_load_icon (theme, names[i], size, 0, NULL);
+			i++;
+		}
+
+	} else if (G_IS_LOADABLE_ICON (icon)) {
+		rb_debug ("loading of GLoadableIcons is not implemented yet");
+		pixbuf = NULL;
+	}
 
 	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
 	if (pixbuf != NULL) {
 		g_object_unref (pixbuf);
 	}
+	g_object_unref (icon);
+	g_object_unref (volume);
 
 	return source;
 }
@@ -188,8 +225,12 @@ rb_removable_media_source_dispose (GObject *object)
 	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (object);
 
 	if (priv->volume) {
-		gnome_vfs_volume_unref (priv->volume);
+		g_object_unref (priv->volume);
 		priv->volume = NULL;
+	}
+	if (priv->mount) {
+		g_object_unref (priv->mount);
+		priv->mount = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_removable_media_source_parent_class)->dispose (object);
@@ -206,10 +247,21 @@ rb_removable_media_source_set_property (GObject *object,
 	switch (prop_id) {
 	case PROP_VOLUME:
 		if (priv->volume) {
-			gnome_vfs_volume_unref (priv->volume);
+			g_object_unref (priv->volume);
 		}
 		priv->volume = g_value_get_object (value);
-		gnome_vfs_volume_ref (priv->volume);
+		if (priv->volume) {
+			g_object_ref (priv->volume);
+		}
+		break;
+	case PROP_MOUNT:
+		if (priv->mount) {
+			g_object_unref (priv->mount);
+		}
+		priv->mount = g_value_get_object (value);
+		if (priv->mount) {
+			g_object_ref (priv->mount);
+		}
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -227,8 +279,10 @@ rb_removable_media_source_get_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_VOLUME:
-		gnome_vfs_volume_ref (priv->volume);
-		g_value_take_object (value, priv->volume);
+		g_value_set_object (value, priv->volume);
+		break;
+	case PROP_MOUNT:
+		g_value_set_object (value, priv->mount);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -363,7 +417,7 @@ impl_paste (RBSource *source, GList *entries)
 		added_data->mimetype = g_strdup (mimetype);
 		rb_removable_media_manager_queue_transfer (rm_mgr, entry,
 							   dest, mime_types,
-							   (RBTranferCompleteCallback)_track_added_cb, added_data);
+							   (RBTransferCompleteCallback)_track_added_cb, added_data);
 impl_paste_end:
 		g_free (dest);
 		g_free (mimetype);
@@ -384,9 +438,12 @@ impl_paste_end:
 static guint
 impl_want_uri (RBSource *source, const char *uri)
 {
-	GnomeVFSVolume *volume;
-	char *activation_uri;
-	int retval, len;
+	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (source);
+	GVolume *volume;
+	const char *uri_path;
+	char *device_path;
+	int retval;
+	int len;
 
 	retval = 0;
 
@@ -394,26 +451,29 @@ impl_want_uri (RBSource *source, const char *uri)
 	 * that use mass storage */
 	if (g_str_has_prefix (uri, "file://") == FALSE)
 		return 0;
+	uri_path = uri + strlen ("file://");
 
-	g_object_get (G_OBJECT (source),
-		      "volume", &volume,
-		      NULL);
-	if (volume == NULL)
+	if (priv->mount) {
+		volume = g_mount_get_volume (priv->mount);
+	} else if (priv->volume) {
+		volume = g_object_ref (priv->volume);
+	} else {
+		return 0;
+	}
+
+	device_path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+	g_object_unref (volume);
+	if (device_path == NULL)
 		return 0;
 
-	activation_uri = gnome_vfs_volume_get_activation_uri (volume);
-	if (activation_uri == NULL)
-		return 0;
-
-	len = strlen (uri);
-	if (uri[len - 1] == '/') {
-		if (strncmp (uri, activation_uri, len - 1) == 0)
+	len = strlen (uri_path);
+	if (uri_path[len - 1] == '/') {
+		if (strncmp (uri_path, device_path, len - 1) == 0)
 			retval = 100;
-	} else if (strcmp (uri, activation_uri) == 0)
+	} else if (strcmp (uri_path, device_path) == 0)
 		retval = 100;
 
-	g_free (activation_uri);
-
+	g_free (device_path);
 	return retval;
 }
 

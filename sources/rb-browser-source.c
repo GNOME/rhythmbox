@@ -47,7 +47,6 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
-#include <libgnomevfs/gnome-vfs.h>
 #include <glade/glade.h>
 
 #include "rb-source.h"

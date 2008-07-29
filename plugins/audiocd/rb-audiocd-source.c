@@ -38,10 +38,8 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
-#include <libgnomevfs/gnome-vfs-volume.h>
-#include <libgnomevfs/gnome-vfs-volume-monitor.h>
 #include <gst/gst.h>
-#include <totem-disc.h>
+/*#include <totem-disc.h>*/
 
 #include "rb-plugin.h"
 #include "rhythmdb.h"
@@ -51,6 +49,11 @@
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-glade-helpers.h"
+
+#ifdef HAVE_HAL
+#include <libhal.h>
+#include <dbus/dbus.h>
+#endif
 
 #ifdef HAVE_MUSICBRAINZ
 #include "sj-metadata-musicbrainz.h"
@@ -130,10 +133,8 @@ rb_audiocd_source_dispose (GObject *object)
 {
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (object);
 
-	if (priv->device_path) {
-		g_free (priv->device_path);
-		priv->device_path = NULL;
-	}
+	g_free (priv->device_path);
+
 	if (priv->tracks) {
 		g_list_free (priv->tracks);
 		priv->tracks = NULL;
@@ -172,9 +173,8 @@ rb_audiocd_source_constructor (GType type,
 RBRemovableMediaSource *
 rb_audiocd_source_new (RBPlugin *plugin,
 		       RBShell *shell,
-		       GnomeVFSVolume *volume)
+		       GVolume *volume)
 {
-	char *device_path;
 	GObject *source;
 	RhythmDBEntryType entry_type;
 	RhythmDB *db;
@@ -184,20 +184,19 @@ rb_audiocd_source_new (RBPlugin *plugin,
 	if (!rb_audiocd_is_volume_audiocd (volume))
 		return NULL;
 
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	path = gnome_vfs_volume_get_device_path (volume);
+	g_object_get (shell, "db", &db, NULL);
+
+	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 	name = g_strdup_printf ("audiocd: %s", path);
 	entry_type = rhythmdb_entry_register_type (db, name);
-	g_object_unref (G_OBJECT (db));
 	g_free (name);
 	g_free (path);
+	g_object_unref (db);
 
 	entry_type->category = RHYTHMDB_ENTRY_NORMAL;
 	entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
-	/* TODO same the metadata somewhere */
+	/* TODO save the metadata somewhere */
 	entry_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;
-
-	device_path = gnome_vfs_volume_get_device_path (volume);
 
 	source = g_object_new (RB_TYPE_AUDIOCD_SOURCE,
 			       "entry-type", entry_type,
@@ -207,8 +206,6 @@ rb_audiocd_source_new (RBPlugin *plugin,
 			       "source-group", RB_SOURCE_GROUP_DEVICES,
 			       "plugin", plugin,
 			       NULL);
-
-	g_free (device_path);
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
@@ -665,10 +662,11 @@ rb_audiocd_load_songs (RBAudioCdSource *source)
 {
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 	RhythmDB *db;
-	GnomeVFSVolume *volume;
+	GVolume *volume;
 
 	g_object_get (source, "volume", &volume, NULL);
-	priv->device_path = gnome_vfs_volume_get_device_path (volume);
+	priv->device_path = g_volume_get_identifier (volume,
+						     G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 	g_object_unref (volume);
 
 	db = get_db_for_source (source);
@@ -722,38 +720,191 @@ impl_delete_thyself (RBSource *source)
 	g_object_unref (db);
 }
 
+#if  0
 gboolean
-rb_audiocd_is_volume_audiocd (GnomeVFSVolume *volume)
+rb_audiocd_is_volume_audiocd (GVolume *volume)
 {
 	char *device_path;
-	GnomeVFSDeviceType device_type;
+
+	device_path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+	if (device_path != NULL) {
+		gboolean result;
+		TotemDiscMediaType media_type;
+		GError *error = NULL;
+
+		/* should we do any kind of checking before we make this call? */
+		media_type = totem_cd_detect_type (device_path, &error);
+		if (error != NULL) {
+			rb_debug ("error detecting if volume is an audio CD: %s", error->message);
+			g_error_free (error);
+			result = FALSE;
+		} else if (media_type == MEDIA_TYPE_CDDA) {
+			rb_debug ("totem-disc says this is an audio CD");
+			result = TRUE;
+		} else {
+			rb_debug ("totem-disc says this is not an audio CD");
+			result = FALSE;
+		}
+
+		g_free (device_path);
+		return result;
+	} else {
+		rb_debug ("couldn't get device path");
+		return FALSE;
+	}
+}
+#endif
+
+
+#ifdef HAVE_HAL
+
+/* copied this stuff from the generic player plugin,
+ * so it should probably go somewhere common.
+ */
+
+static void
+free_dbus_error (const char *what, DBusError *error)
+{
+	if (dbus_error_is_set (error)) {
+		rb_debug ("%s: dbus error: %s", what, error->message);
+		dbus_error_free (error);
+	}
+}
+
+static LibHalContext *
+get_hal_context (void)
+{
+	LibHalContext *ctx = NULL;
+	DBusConnection *conn = NULL;
+	DBusError error;
 	gboolean result = FALSE;
 
-	device_type = gnome_vfs_volume_get_device_type (volume);
-	device_path = gnome_vfs_volume_get_device_path (volume);
+	dbus_error_init (&error);
+	ctx = libhal_ctx_new ();
+	if (ctx == NULL)
+		return NULL;
 
-	if (device_path == NULL)
-		return FALSE;
-
-	/* for sometimes device_type is GNOME_VFS_DEVICE_TYPE_CDROM */
-	if (device_type == GNOME_VFS_DEVICE_TYPE_AUDIO_CD || device_type == GNOME_VFS_DEVICE_TYPE_CDROM) {
-		GError *error = NULL;
-		MediaType media_type;
-
-		media_type = totem_cd_detect_type (device_path, &error);
-		g_free (device_path);
-		if (error != NULL) {
-			rb_debug ("error while detecting cd: %s", error->message);
-			g_error_free (error);
-			return FALSE;
-		}
-		rb_debug ("detecting new cd - totem cd media type=%d", media_type);
-		return (media_type == MEDIA_TYPE_CDDA);
+	conn = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
+	if (conn != NULL && !dbus_error_is_set (&error)) {
+		libhal_ctx_set_dbus_connection (ctx, conn);
+		if (libhal_ctx_init (ctx, &error))
+			result = TRUE;
 	}
 
-	g_free (device_path);
+	if (dbus_error_is_set (&error)) {
+		free_dbus_error ("setting up hal context", &error);
+		result = FALSE;
+	}
 
-	return result;
+	if (!result) {
+		libhal_ctx_free (ctx);
+		ctx = NULL;
+	}
+	return ctx;
+}
+
+static void
+cleanup_hal_context (LibHalContext *ctx)
+{
+	DBusError error;
+	if (ctx == NULL)
+		return;
+
+	dbus_error_init (&error);
+	libhal_ctx_shutdown (ctx, &error);
+	libhal_ctx_free (ctx);
+	free_dbus_error ("cleaning up hal context", &error);
+}
+
+#endif
+
+gboolean
+rb_audiocd_is_volume_audiocd (GVolume *volume)
+{
+	GMount *mount;
+#ifdef HAVE_HAL
+	LibHalContext *ctx;
+	char *udi;
+	char *device_path;
+
+	/* get device path for debug purposes */
+	device_path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+	if (device_path == NULL) {
+		device_path = g_strdup ("unknown device");
+	}
+
+	/* look at HAL properties to see if it's an audio CD */
+	udi = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
+	if (udi != NULL) {
+		ctx = get_hal_context ();
+		if (ctx != NULL) {
+			gboolean result = FALSE;
+			DBusError error;
+			dbus_error_init (&error);
+
+			/* check if it's a disc at all */
+			if (libhal_device_query_capability (ctx, udi, "volume.disc", &error) &&
+			    !dbus_error_is_set (&error)) {
+				/* check it's a CD with audio; maybe check it's not blank? */
+				char *disc_type;
+				dbus_bool_t is_audio;
+
+				disc_type = libhal_device_get_property_string (ctx, udi, "volume.disc.type", &error);
+				if (dbus_error_is_set (&error)) {
+					free_dbus_error ("checking volume disc type", &error);
+					disc_type = NULL;
+				}
+
+				is_audio = libhal_device_get_property_bool (ctx, udi, "volume.disc.has_audio", &error);
+				if (dbus_error_is_set (&error)) {
+					free_dbus_error ("checking if disc has audio", &error);
+					is_audio = FALSE;
+				}
+
+				if (is_audio && disc_type != NULL && strcmp (disc_type, "cd_rom") == 0) {
+					rb_debug ("disc in %s is an audio CD", device_path);
+					result = TRUE;
+				} else {
+					rb_debug ("disc %s is not an audio CD", device_path);
+				}
+				libhal_free_string (disc_type);
+				
+			} else if (dbus_error_is_set (&error)) {
+				free_dbus_error ("checking volume type", &error);
+			} else {
+				rb_debug ("volume in %s is not a disc", device_path);
+			}
+
+			cleanup_hal_context (ctx);
+			return result;
+		}
+	}
+	g_free (device_path);
+	rb_debug ("HAL couldn't tell us if this is an audio CD or not");
+#endif
+
+	/* if it's mounted, we can check the mount root URI scheme */
+	mount = g_volume_get_mount (volume);
+	if (mount != NULL) {
+		GFile *mount_root;
+		char *uri_scheme;
+		gboolean result = FALSE;
+
+		mount_root = g_mount_get_root (mount);
+		if (mount_root != NULL) {
+			uri_scheme = g_file_get_uri_scheme (mount_root);
+			rb_debug ("URI scheme of mounted volume is %s", uri_scheme);
+			result = (strcmp (uri_scheme, "cdda") == 0);
+
+			g_free (uri_scheme);
+			g_object_unref (mount_root);
+		}
+
+		g_object_unref (mount);
+		return result;
+	}
+
+	return FALSE;
 }
 
 static gboolean
@@ -776,39 +927,19 @@ impl_get_ui_actions (RBSource *source)
 	return actions;
 }
 
-static char *
-_gnome_vfs_to_gvfs_cdda_uri (const char *gnome_vfs_uri)
-{
-	GString *retval;
-	guint i;
-
-	if (strstr (gnome_vfs_uri, "/dev/") == NULL)
-		return NULL;
-
-	retval = g_string_new ("");
-	for (i = 0; gnome_vfs_uri[i] != '\0' ;) {
-		if (strncmp (gnome_vfs_uri + i, "/dev/", 5) == 0)
-			i += 5;
-		else {
-			g_string_append_c (retval, gnome_vfs_uri[i]);
-			i++;
-		}
-	}
-
-	return g_string_free (retval, FALSE);
-}
-
 static guint
 impl_want_uri (RBSource *source, const char *uri)
 {
-	GnomeVFSVolume *volume;
-	char *activation_uri;
+	GVolume *volume;
+	const char *uri_path;
+	char *device_path;
 	int retval;
 
 	retval = 0;
 
 	if (g_str_has_prefix (uri, "cdda://") == FALSE)
 		return 0;
+	uri_path = uri + strlen ("cdda://");
 
 	g_object_get (G_OBJECT (source),
 		      "volume", &volume,
@@ -816,25 +947,11 @@ impl_want_uri (RBSource *source, const char *uri)
 	if (volume == NULL)
 		return 0;
 
-	activation_uri = gnome_vfs_volume_get_activation_uri (volume);
-	if (activation_uri == NULL)
-		return 0;
-
-	if (strcmp (activation_uri, uri) == 0)
+	device_path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+	if (device_path != NULL && strcmp (device_path, uri_path) == 0) {
 		retval = 100;
-	else {
-		char *gvfs_uri;
-
-		/* FIXME work-around "new" gvfs style URLs:
-		 * cdda://sr0/ instead of cdda:///dev/sr0 */
-		gvfs_uri = _gnome_vfs_to_gvfs_cdda_uri (activation_uri);
-		if (strncmp (gvfs_uri, uri, strlen (gvfs_uri - 1)) == 0)
-			retval = 100;
-		g_free (gvfs_uri);
 	}
-
-	g_free (activation_uri);
-
+	g_free (device_path);
 	return retval;
 }
 

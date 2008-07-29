@@ -36,8 +36,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs-volume.h>
-#include <libgnomevfs/gnome-vfs-volume-monitor.h>
 
 #ifdef HAVE_HAL
 #include <libhal.h>
@@ -86,27 +84,31 @@ rb_psp_source_init (RBPspSource *source)
 }
 
 RBRemovableMediaSource *
-rb_psp_source_new (RBShell *shell, GnomeVFSVolume *volume)
+rb_psp_source_new (RBShell *shell, GMount *mount)
 {
 	RBPspSource *source;
 	RhythmDBEntryType entry_type;
 	RhythmDB *db;
 	char *name;
 	char *path;
+	GVolume *volume;
 
-	g_assert (rb_psp_is_volume_player (volume));
+	g_assert (rb_psp_is_mount_player (mount));
+
+	volume = g_mount_get_volume (mount);
 
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	path = gnome_vfs_volume_get_device_path (volume);
+	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 	name = g_strdup_printf ("psp: %s", path);
 	entry_type = rhythmdb_entry_register_type (db, name);
-	g_object_unref (G_OBJECT (db));
+	g_object_unref (db);
 	g_free (name);
 	g_free (path);
+	g_object_unref (volume);
 
 	source = RB_PSP_SOURCE (g_object_new (RB_TYPE_PSP_SOURCE,
 					  "entry-type", entry_type,
-					  "volume", volume,
+					  "mount", mount,
 					  "shell", shell,
 					  "source-group", RB_SOURCE_GROUP_DEVICES,
 					  NULL));
@@ -117,54 +119,68 @@ rb_psp_source_new (RBShell *shell, GnomeVFSVolume *volume)
 }
 
 static char *
-impl_get_mount_path (RBGenericPlayerSource *source)
+find_music_dir (GMount *mount)
 {
-	char *uri;
-	char *path;
-	GnomeVFSVolume *volume;
+	char *path = NULL;
+	GFile *root;
+	GFile *music_dir;
 
-	g_object_get (G_OBJECT (source), "volume", &volume, NULL);
-	uri = gnome_vfs_volume_get_activation_uri (volume);
-	g_object_unref (volume);
+	root = g_mount_get_root (mount);
+	if (root != NULL) {
+		int i;
+		char *paths[] = {
+			"PSP/MUSIC",
+			"MUSIC",
+			NULL
+		};
 
-	path = rb_uri_append_path (uri, "PSP/MUSIC");
-	/* For Firmware versions 2.80+ */
-	if (!rb_uri_exists(path)) {
-		g_free (path);
-		path = rb_uri_append_path(uri, "MUSIC");
+		i = 0;
+		while (paths[i] != NULL && path == NULL) {
+			music_dir = g_file_resolve_relative_path (root, "PSP/MUSIC");
+			if (g_file_query_exists (music_dir, NULL)) {
+				path = g_file_get_path (music_dir);
+			}
+			g_object_unref (music_dir);
+		}
+
+		g_object_unref (root);
 	}
 
-	g_free (uri);
+	return path;
+}
+
+static char *
+impl_get_mount_path (RBGenericPlayerSource *source)
+{
+	GMount *mount;
+	char *path;
+
+	g_object_get (G_OBJECT (source), "mount", &mount, NULL);
+
+	path = find_music_dir (mount);
+	g_object_unref (mount);
 
 	return path;
 }
 
 static gboolean
-visit_playlist_dirs (const gchar *rel_path,
-		     GnomeVFSFileInfo *info,
-		     gboolean recursing_will_loop,
-		     RBPspSource *source,
-		     gboolean *recurse)
+visit_playlist_dirs (GFile *file,
+		     gboolean dir,
+		     RBPspSource *source)
 {
 	RBShell *shell;
 	RhythmDB *db;
 	RhythmDBEntryType entry_type;
-	char *main_path;
 	char *playlist_path;
+	char *playlist_name;
 	RBSource *playlist;
 	GPtrArray *query;
 
-	*recurse = FALSE;
-
-	/* add playlist */
-	main_path = rb_generic_player_source_get_mount_path (RB_GENERIC_PLAYER_SOURCE (source));
-	playlist_path = rb_uri_append_path (main_path, rel_path);
-	g_free (main_path);
-
-	if (!rb_uri_is_directory (playlist_path)) {
-		g_free (playlist_path);
+	if (dir == FALSE) {
 		return TRUE;
 	}
+
+	playlist_path = g_file_get_uri (file);		/* or _get_path? */
 
 	g_object_get (source,
 		      "shell", &shell,
@@ -181,7 +197,10 @@ visit_playlist_dirs (const gchar *rel_path,
 	g_free (playlist_path);
         g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
-	playlist = rb_auto_playlist_source_new (shell, rel_path, FALSE);
+	playlist_name = g_file_get_basename (file);
+	playlist = rb_auto_playlist_source_new (shell, playlist_name, FALSE);
+	g_free (playlist_name);
+
 	rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (playlist), query,
 					   RHYTHMDB_QUERY_MODEL_LIMIT_NONE, NULL,
 					   NULL, 0);
@@ -201,10 +220,9 @@ rb_psp_source_create_playlists (RBGenericPlayerSource *source)
 	char *mount_path;
 
 	mount_path = rb_generic_player_source_get_mount_path (source);
-	gnome_vfs_directory_visit (mount_path,
-				   GNOME_VFS_FILE_INFO_DEFAULT,
-				   GNOME_VFS_DIRECTORY_VISIT_DEFAULT,
-				   (GnomeVFSDirectoryVisitFunc) visit_playlist_dirs,
+	rb_uri_handle_recursively (mount_path,
+				   NULL,
+				   (RBUriRecurseFunc) visit_playlist_dirs,
 				   source);
 	g_free (mount_path);
 }
@@ -280,39 +298,29 @@ end:
 #endif
 
 gboolean
-rb_psp_is_volume_player (GnomeVFSVolume *volume)
+rb_psp_is_mount_player (GMount *mount)
 {
+#ifndef HAVE_HAL
+	char *music_dir;
+#else
+	GVolume *volume;
+#endif
 	gboolean result = FALSE;
 	gchar *str;
 
-	if (gnome_vfs_volume_get_volume_type (volume) != GNOME_VFS_VOLUME_TYPE_MOUNTPOINT) {
-		return FALSE;
-	}
-
 #ifndef HAVE_HAL
-	str = gnome_vfs_volume_get_activation_uri (volume);
-	if (str) {
-		char *path;
-
-		path = rb_uri_append_path (str, "PSP/MUSIC");
-		g_free (str);
-		result = rb_uri_exists (path);
-		if (!result) {
-			g_free (path);
-			path = rb_uri_append_path (str, "MUSIC");
-			result = rb_uri_exists (path);
-		}
-		g_free (path);
-		return result;
-	}
+	music_dir = find_music_dir (mount);
+	result = (music_dir != NULL);
+	g_free (music_dir);
 #else
-	str = gnome_vfs_volume_get_hal_udi (volume);
-	if (str != NULL) {
-		gboolean result;
-
-		result = hal_udi_is_psp (str);
-		g_free (str);
-		return result;
+	volume = g_mount_get_volume (mount);
+	if (volume != NULL) {
+		str = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
+		if (str != NULL) {
+			result = hal_udi_is_psp (str);
+			g_free (str);
+		}
+		g_object_unref (volume);
 	}
 #endif
 	return result;

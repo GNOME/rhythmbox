@@ -41,19 +41,10 @@
 #include <glib/gprintf.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
 #include <glade/glade.h>
-#include <nautilus-burn-drive.h>
-#include <nautilus-burn-drive-selection.h>
+#include <gio/gio.h>
 
-#ifndef NAUTILUS_BURN_CHECK_VERSION
-#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
-#endif
-
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
 #include <nautilus-burn.h>
-#endif
 
 #include "rb-file-helpers.h"
 #include "rb-glade-helpers.h"
@@ -71,18 +62,6 @@
 #include "mkdtemp.h"
 #else
 extern char *mkdtemp (char *template);
-#endif
-
-/* NAUTILUS_BURN_DRIVE_SIZE_TO_TIME was added in 2.12 */
-#ifndef NAUTILUS_BURN_DRIVE_SIZE_TO_TIME
-#define nautilus_burn_drive_eject _nautilus_burn_drive_eject
-#define nautilus_burn_drive_new_from_path _nautilus_burn_drive_new_from_path
-#define nautilus_burn_drive_media_type_get_string _nautilus_burn_drive_media_type_get_string
-#endif
-/* NAUTILUS_BURN_DRIVE_SIZE_TO_TIME was added in 2.14 */
-#ifndef HAVE_BURN_DRIVE_UNREF
-#define nautilus_burn_drive_unref nautilus_burn_drive_free
-#define nautilus_burn_drive_ref nautilus_burn_drive_copy
 #endif
 
 #include "rb-recorder.h"
@@ -300,30 +279,6 @@ get_speed_selection (GtkWidget *combobox)
         return speed;
 }
 
-#ifndef HAVE_BURN_DRIVE_GET_WRITE_SPEEDS
-
-#define nautilus_burn_drive_get_write_speeds get_write_speeds
-
-static const int *
-get_write_speeds (NautilusBurnDrive *drive)
-{
-	int  max_speed;
-	int  i;
-        static int *write_speeds = NULL;
-
-	if (write_speeds == NULL) {
-		max_speed = drive->max_speed_write;
-		write_speeds = g_new0 (int, max_speed + 1);
-
-		for (i = 0; i < max_speed; i++) {
-			write_speeds [i] = max_speed - i;
-		}
-	}
-
-        return (const int*)write_speeds;
-}
-#endif
-
 static void
 update_speed_combobox (RBPlaylistSourceRecorder *source)
 {
@@ -361,11 +316,7 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
 
                 for (i = 0; write_speeds [i] > 0; i++) {
 
-#ifdef NAUTILUS_BURN_DRIVE_CD_SPEED
                         name = g_strdup_printf ("%d \303\227", (int)NAUTILUS_BURN_DRIVE_CD_SPEED (write_speeds [i]));
-#else
-                        name = g_strdup_printf ("%d \303\227", write_speeds [i]);
-#endif
 
                         if (write_speeds [i] == default_speed) {
                                 default_speed_index = i + 1;
@@ -572,89 +523,6 @@ progress_set_fraction (GtkWidget *progress,
 {
         gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (progress), fraction);
 }
-
-#ifndef NAUTILUS_BURN_DRIVE_SIZE_TO_TIME
-/* copied from nautilus-burn-drive 2.12 */
-static gboolean
-_nautilus_burn_drive_eject (NautilusBurnDrive *drive)
-{
-        char    *cmd;
-        gboolean res;
-
-        g_return_val_if_fail (drive != NULL, FALSE);
-
-        if (drive->device == NULL)
-                return FALSE;
-
-        cmd = g_strdup_printf ("eject %s", drive->device);
-        res = g_spawn_command_line_sync (cmd, NULL, NULL, NULL, NULL);
-        g_free (cmd);
-
-        /* delay a bit to make sure eject finishes */
-        sleep (2);
-
-        return res;
-}
-/* copied from nautilus-burn-drive 2.12 */
-static NautilusBurnDrive *
-_nautilus_burn_drive_new_from_path (const char *device)
-{
-        GList             *drives, *l;
-        NautilusBurnDrive *drive;
-
-        drives = nautilus_burn_drive_get_list (FALSE, FALSE);
-
-        drive = NULL;
-
-        for (l = drives; l != NULL; l = l->next) {
-                NautilusBurnDrive *d = l->data;
-                if (g_str_equal (device, d->device)) {
-                        drive = nautilus_burn_drive_ref (d);
-                }
-        }
-
-        g_list_foreach (drives, (GFunc)nautilus_burn_drive_unref, NULL);
-        g_list_free (drives);
-
-        return drive;
-}
-
-/* copied from nautilus-burn-drive 2.12 */
-static const char *
-_nautilus_burn_drive_media_type_get_string (NautilusBurnMediaType type)
-{
-        switch (type) {
-        case NAUTILUS_BURN_MEDIA_TYPE_BUSY:
-                return _("Could not determine media type because CD drive is busy");
-        case NAUTILUS_BURN_MEDIA_TYPE_ERROR:
-                return _("Couldn't open media");
-        case NAUTILUS_BURN_MEDIA_TYPE_UNKNOWN:
-                return _("Unknown Media");
-        case NAUTILUS_BURN_MEDIA_TYPE_CD:
-                return _("Commercial CD or Audio CD");
-        case NAUTILUS_BURN_MEDIA_TYPE_CDR:
-                return _("CD-R");
-        case NAUTILUS_BURN_MEDIA_TYPE_CDRW:
-                return _("CD-RW");
-        case NAUTILUS_BURN_MEDIA_TYPE_DVD:
-                return _("DVD");
-        case NAUTILUS_BURN_MEDIA_TYPE_DVDR:
-                return _("DVD-R, or DVD-RAM");
-        case NAUTILUS_BURN_MEDIA_TYPE_DVDRW:
-                return _("DVD-RW");
-        case NAUTILUS_BURN_MEDIA_TYPE_DVD_RAM:
-                return _("DVD-RAM");
-        case NAUTILUS_BURN_MEDIA_TYPE_DVD_PLUS_R:
-                return _("DVD+R");
-        case NAUTILUS_BURN_MEDIA_TYPE_DVD_PLUS_RW:
-                return _("DVD+RW");
-        default:
-                break;
-        }
-
-        return _("Broken media type");
-}
-#endif /* NAUTILUS_BURN_DRIVE_SIZE_TO_TIME */
 
 static int
 burn_cd (RBPlaylistSourceRecorder *source,
@@ -1105,12 +973,8 @@ ask_rewrite_disc (RBPlaylistSourceRecorder *source,
         char                 *msg;
         NautilusBurnDrive    *drive;
 
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
         drive = nautilus_burn_drive_monitor_get_drive_for_device (nautilus_burn_get_drive_monitor (),
                                                                   device);
-#else
-        drive = nautilus_burn_drive_new_from_path (device);
-#endif
 
         type = nautilus_burn_drive_get_media_type (drive);
 
@@ -1654,35 +1518,19 @@ rb_playlist_source_recorder_estimate_total_size (RBPlaylistSourceRecorder *sourc
 }
 
 static gboolean
-check_dir_has_space (const char *path,
-                     guint64     bytes_needed)
+try_tmp_dir (const char *dir, guint64 bytes_needed)
 {
-        GnomeVFSResult   result     = GNOME_VFS_OK;
-        GnomeVFSURI     *dir_uri    = NULL;
-        GnomeVFSFileSize free_bytes = 0;
+	GFile *file;
+	gboolean r;
 
-        if (!g_file_test (path, G_FILE_TEST_IS_DIR))
-                return FALSE;
-
-        dir_uri = gnome_vfs_uri_new (path);
-	if (dir_uri == NULL) {
-		g_warning (_("Cannot get free space at %s"), path);
+	if (dir == NULL) {
 		return FALSE;
 	}
 
-        result = gnome_vfs_get_volume_free_space (dir_uri, &free_bytes);
-
-        gnome_vfs_uri_unref (dir_uri);
-
-        if (result != GNOME_VFS_OK) {
-                g_warning (_("Cannot get free space at %s"), path);
-                return FALSE;
-        }
-
-        if (bytes_needed >= free_bytes)
-                return FALSE;
-
-        return TRUE;
+	file = g_file_new_for_path (dir);
+	r = rb_check_dir_has_space (file, bytes_needed);
+	g_object_unref (file);
+	return r;
 }
 
 static char *
@@ -1690,24 +1538,17 @@ find_tmp_dir (RBPlaylistSourceRecorder *source,
               guint64                   bytes_needed,
               GError                  **error)
 {
-        char *path;
-
         g_return_val_if_fail (source != NULL, NULL);
         g_return_val_if_fail (RB_IS_PLAYLIST_SOURCE_RECORDER (source), NULL);
 
         /* Use a configurable temporary directory? */
-        path = NULL;
-        if (path && strcmp (path, "")
-            && check_dir_has_space (path, bytes_needed))
-                return path;
-        else if (g_get_tmp_dir () &&
-                   check_dir_has_space (g_get_tmp_dir (), bytes_needed))
-                return g_strdup (g_get_tmp_dir ());
-        else if (g_get_home_dir () &&
-                   check_dir_has_space (g_get_home_dir (), bytes_needed))
-                return g_strdup (g_get_home_dir ());
-        else
-                return NULL;
+	if (try_tmp_dir (g_get_tmp_dir (), bytes_needed)) {
+		return g_strdup (g_get_tmp_dir ());
+	} else if (try_tmp_dir (g_get_home_dir (), bytes_needed)) {
+		return g_strdup (g_get_home_dir ());
+	} else {
+		return NULL;
+	}
 }
 
 static gboolean

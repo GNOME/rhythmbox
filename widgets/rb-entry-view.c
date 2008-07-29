@@ -72,7 +72,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
+#include <glib/gurifuncs.h>
 
 #include "rb-tree-dnd.h"
 #include "rb-entry-view.h"
@@ -1077,7 +1077,7 @@ rb_entry_view_location_cell_data_func (GtkTreeViewColumn *column,
 	entry = rhythmdb_query_model_iter_to_entry (data->view->priv->model, iter);
 
 	location = rhythmdb_entry_get_string (entry, data->propid);
-	str = gnome_vfs_unescape_string_for_display (location);
+	str = g_uri_unescape_string (location, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
 
 	g_object_set (renderer, "text", str, NULL);
 	g_free (str);

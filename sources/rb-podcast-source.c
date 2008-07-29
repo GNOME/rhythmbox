@@ -1356,9 +1356,17 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 static void
 rb_podcast_source_btn_file_change_cb (GtkFileChooserButton *widget, const char *key)
 {
-	char *uri = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (widget));
+	char *uri;
+	GFile *file;
+	char *path;
+	
+	uri = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (widget));
+	file = g_file_new_for_uri (uri);
+	path = g_file_get_path (file);
 
-	eel_gconf_set_string (key, gnome_vfs_get_local_path_from_uri (uri));
+	eel_gconf_set_string (key, path);
+	g_object_unref (file);
+	g_free (path);
 	g_free (uri);
 }
 
@@ -1809,29 +1817,12 @@ rb_podcast_source_load_finish_cb  (gpointer cb_data)
 static gboolean
 impl_receive_drag (RBSource *asource, GtkSelectionData *selection_data)
 {
-	GList *list, *uri_list, *i;
+	GList *list, *i;
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
 
-	rb_debug ("parsing uri list");
-	list = gnome_vfs_uri_list_parse ((char *)selection_data->data);
+	list = rb_uri_list_parse ((char *)selection_data->data);
 
-	if (list == NULL)
-		return FALSE;
-
-	uri_list = NULL;
-
-	for (i = list; i != NULL; i = g_list_next (i))
-		uri_list = g_list_prepend (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
-
-	gnome_vfs_uri_list_free (list);
-
-	if (uri_list == NULL)
-		return FALSE;
-
-	rb_debug ("adding uris");
-
-	i = uri_list;
-	while (i != NULL) {
+	for (i = list; i != NULL; i = i->next) {
 		char *uri = NULL;
 
 		/* as totem source says, "Super _NETSCAPE_URL trick" */
@@ -1848,14 +1839,9 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *selection_data)
 		    (!rhythmdb_entry_lookup_by_location (source->priv->db, uri))) {
 			rb_podcast_source_add_feed (source, uri);
 		}
-
-		g_free (uri);
-
-		if (i != NULL)
-			i = i->next;
 	}
 
-	g_list_free (uri_list);
+	g_list_free (list);
 	return TRUE;
 }
 
