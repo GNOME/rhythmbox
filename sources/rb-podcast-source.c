@@ -437,7 +437,7 @@ rb_podcast_source_init (RBPodcastSource *source)
 
 	icon_theme = gtk_icon_theme_get_default ();
 	source->priv->error_pixbuf = gtk_icon_theme_load_icon (icon_theme,
-							       "stock_dialog-error",
+							       "dialog-error",
 							       16,
 							       0,
 							       NULL);

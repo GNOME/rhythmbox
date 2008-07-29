@@ -521,17 +521,17 @@ rb_entry_view_init (RBEntryView *view)
 	icon_theme = gtk_icon_theme_get_default ();
 
 	view->priv->playing_pixbuf = gtk_icon_theme_load_icon (icon_theme,
-                                   			       "stock_media-play",
+                                   			       "media-playback-start",
                                    			       16,
                                    			       0,
                                    			       NULL);
 	view->priv->paused_pixbuf = gtk_icon_theme_load_icon (icon_theme,
-                                   			      "stock_media-pause",
+                                   			      "media-playback-pause",
                                    			      16,
                                    			      0,
                                    			      NULL);
 	view->priv->error_pixbuf = gtk_icon_theme_load_icon (icon_theme,
-                                   			     "stock_dialog-error",
+                                   			     "dialog-error",
                                    			     16,
                                    			     0,
                                    			     NULL);
@@ -1803,7 +1803,7 @@ rb_entry_view_constructor (GType type,
 							 view,
 							 NULL);
 
-		image_widget = gtk_image_new_from_icon_name ("stock_volume-max", GTK_ICON_SIZE_MENU);
+		image_widget = gtk_image_new_from_icon_name ("audio-volume-high", GTK_ICON_SIZE_MENU);
 		gtk_tree_view_column_set_widget (column, image_widget);
 		gtk_widget_show (image_widget);
 
