@@ -1264,7 +1264,7 @@ rb_recorder_burn (RBRecorder *recorder,
                 g_set_error (error,
                              RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_GENERAL,
-                             msg);
+                             "%s", msg);
                 g_free (msg);
                 result = RB_RECORDER_RESULT_ERROR;
         } else {

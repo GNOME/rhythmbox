@@ -1,5 +1,13 @@
 2008-07-30  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/cd-recorder/rb-playlist-source-recorder.c:
+	(error_dialog), (insert_media_request_cb), (ask_rewrite_disc),
+	(rb_playlist_source_recorder_constructor):
+	* plugins/cd-recorder/rb-recorder-gst.c: (rb_recorder_burn):
+	Fix more format string warnings
+
+2008-07-30  Jonathan Matthew  <jonathan@d14n.org>
+
 	* lib/rb-proxy-config.c:  Fix build without libsoup 2.4.
 
 2008-07-29  Jonathan Matthew  <jonathan@d14n.org>

@@ -440,7 +440,7 @@ error_dialog (RBPlaylistSourceRecorder *source,
                                          primary);
 
         gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-                                                  text);
+                                                  "%s", text);
 
         gtk_window_set_title (GTK_WINDOW (dialog), "");
 
@@ -898,7 +898,7 @@ insert_media_request_cb (RBRecorder *recorder,
                                          GTK_BUTTONS_OK_CANCEL,
                                          "%s", title);
 
-        gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), msg);
+        gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "%s", msg);
 
         gtk_window_set_title (GTK_WINDOW (dialog), "");
 
@@ -987,7 +987,7 @@ ask_rewrite_disc (RBPlaylistSourceRecorder *source,
                                          GTK_BUTTONS_NONE,
                                          "%s", _("Erase information on this disc?"));
 
-        gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), msg);
+        gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "%s", msg);
         g_free (msg);
 
         gtk_window_set_title (GTK_WINDOW (dialog), "");
@@ -1235,7 +1235,7 @@ rb_playlist_source_recorder_constructor (GType type,
                 dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL,
                                                  GTK_MESSAGE_ERROR,
                                                  GTK_BUTTONS_CLOSE,
-                                                 msg);
+                                                 "%s", msg);
                 gtk_dialog_run (GTK_DIALOG (dialog));
                 g_free (msg);
                 return G_OBJECT (source);
