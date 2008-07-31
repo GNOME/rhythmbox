@@ -157,7 +157,7 @@ help_cb (GtkWidget *widget,
 	GError *error = NULL;
 
 #if GTK_CHECK_VERSION(2,13,1)
-	gtk_show_uri (gtk_widget_get_display (widget),
+	gtk_show_uri (gtk_widget_get_screen (widget),
 		      "ghelp:rhythmbox",
 		      gtk_get_current_event_time (),
 		      &error);

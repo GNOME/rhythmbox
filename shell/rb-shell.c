@@ -992,7 +992,7 @@ rb_shell_create_mount_op_cb (RhythmDB *db, RBShell *shell)
 {
 	/* create a gtk mount operation if possible, otherwise don't use one at all */
 #if GTK_CHECK_VERSION(2,13,1)
-	return gtk_mount_operation_new (shell->priv->window);
+	return gtk_mount_operation_new (GTK_WINDOW (shell->priv->window));
 #else
 	return NULL;
 #endif

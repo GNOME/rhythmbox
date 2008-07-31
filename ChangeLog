@@ -1,3 +1,15 @@
+2008-07-31  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Sebastien Bacher  <seb128@debian.org>
+
+	* lib/rb-file-helpers.c: (rb_dot_dir):
+	* plugins/cd-recorder/rb-playlist-source-recorder.c:
+	(error_dialog):
+	* shell/rb-shell-preferences.c: (help_cb):
+	* shell/rb-shell.c: (rb_shell_create_mount_op_cb):
+	Various compile fixes, some in code I never even compiled before I
+	checked it in.  oops.
+
 2008-07-30  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Matthias Clasen  <mclasen@redhat.com>

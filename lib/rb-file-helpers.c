@@ -30,6 +30,7 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
 #include <stdio.h>
 #include <string.h>
 #include <config.h>
@@ -90,7 +91,7 @@ rb_dot_dir (void)
 					    GNOME_DOT_GNOME,
 					    "rhythmbox",
 					    NULL);
-		if (mkdir (dot_dir, 0750) == -1)
+		if (g_mkdir (dot_dir, 0750) == -1)
 			rb_debug ("unable to create Rhythmbox's dot dir");
 	}
 	

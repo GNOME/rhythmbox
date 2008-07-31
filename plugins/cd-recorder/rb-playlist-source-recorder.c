@@ -437,7 +437,7 @@ error_dialog (RBPlaylistSourceRecorder *source,
                                          GTK_DIALOG_DESTROY_WITH_PARENT,
                                          GTK_MESSAGE_ERROR,
                                          GTK_BUTTONS_CLOSE,
-                                         primary);
+                                         "%s", primary);
 
         gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
                                                   "%s", text);
