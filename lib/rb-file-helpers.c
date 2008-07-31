@@ -692,7 +692,7 @@ rb_uri_mkstemp (const char *prefix, char **uri_ret, GOutputStream **stream, GErr
 
 	if (fstream != NULL) {
 		*uri_ret = uri;
-		*stream = G_OUTPUT_STREAM (stream);
+		*stream = G_OUTPUT_STREAM (fstream);
 		return TRUE;
 	} else {
 		g_free (uri);
