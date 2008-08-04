@@ -1,3 +1,12 @@
+2008-08-04  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Wendy Hu  <Huiwe.Hu@sun.com>
+
+	* backends/gstreamer/rb-player-gst.c:
+	(rb_player_gst_handle_missing_plugin_message):
+	Don't unref missing plugin messages, we don't own a reference.
+	Fixes #546188.
+
 2008-07-31  Jonathan Matthew  <jonathan@d14n.org>
 
 	* lib/rb-file-helpers.c: (rb_uri_mkstemp):

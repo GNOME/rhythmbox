@@ -446,8 +446,6 @@ rb_player_gst_handle_missing_plugin_message (RBPlayerGst *player, GstMessage *me
 	g_signal_emit (player, signals[MISSING_PLUGINS], 0, player->priv->stream_data, details, descriptions);
 	g_strfreev (details);
 	g_strfreev (descriptions);
-
-	gst_message_unref (message);
 }
 
 static gboolean
