@@ -1569,7 +1569,7 @@ ipod_get_filename_for_uri (const gchar *mount_point,
 	if (escaped == NULL) {
 		return NULL;
 	}
-	filename = g_uri_unescape_string (escaped, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
+	filename = g_uri_unescape_string (escaped, NULL);
 	g_free (escaped);
 	if (filename == NULL) {
 		return NULL;

@@ -1109,7 +1109,7 @@ rb_song_info_update_location (RBSongInfo *song_info)
 		char *basename, *dir, *desktopdir;
 
 		basename = g_path_get_basename (text);
-		tmp = g_uri_unescape_string (basename, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
+		tmp = g_uri_unescape_string (basename, NULL);
 		g_free (basename);
 		tmp_utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, NULL);
 		g_free (tmp);
@@ -1134,7 +1134,7 @@ rb_song_info_update_location (RBSongInfo *song_info)
 
 		dir = g_path_get_dirname (tmp);
 		g_free (tmp);
-		tmp = g_uri_unescape_string (dir, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
+		tmp = g_uri_unescape_string (dir, NULL);
 		g_free (dir);
 		tmp_utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, NULL);
 		g_free (tmp);

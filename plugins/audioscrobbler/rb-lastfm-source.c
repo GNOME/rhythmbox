@@ -1125,7 +1125,7 @@ rb_lastfm_source_title_from_uri (const char *uri)
 	}
 
 	g_strfreev (data);
-	unesc_title = g_uri_unescape_string (title, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
+	unesc_title = g_uri_unescape_string (title, NULL);
 	g_free (title);
 	return unesc_title;
 }

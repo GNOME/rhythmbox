@@ -1,5 +1,31 @@
 2008-08-04  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_title_from_uri):
+	* plugins/ipod/rb-ipod-source.c: (ipod_get_filename_for_uri):
+	* plugins/iradio/rb-iradio-source.c:
+	(rb_iradio_source_add_station):
+	* plugins/iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_update_location):
+	* podcast/rb-feed-podcast-properties-dialog.c:
+	(rb_feed_podcast_properties_dialog_update_location):
+	* podcast/rb-podcast-properties-dialog.c:
+	(rb_podcast_properties_dialog_update_location),
+	(rb_podcast_properties_dialog_update_download_location):
+	* rhythmdb/rhythmdb.c: (make_access_failed_error):
+	* sources/rb-library-source.c:
+	(rb_library_source_location_button_clicked_cb),
+	(rb_library_source_preferences_sync):
+	* widgets/rb-entry-view.c: (rb_entry_view_location_cell_data_func):
+	* widgets/rb-query-creator-properties.c:
+	(escapedStringCriteriaSetWidgetData):
+	* widgets/rb-song-info.c: (rb_song_info_update_location):
+	All the g_uri_unescape_string calls were wrong.  We're using it for
+	display purposes, so there's no reason to reject any strings.
+	Fixes #546203.
+
+2008-08-04  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Wendy Hu  <Huiwe.Hu@sun.com>
 
 	* backends/gstreamer/rb-player-gst.c:

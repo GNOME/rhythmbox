@@ -426,7 +426,7 @@ rb_station_properties_dialog_update_location (RBStationPropertiesDialog *dialog)
 	char *unescaped;
 
 	location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION);
-	unescaped = g_uri_unescape_string (location, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
+	unescaped = g_uri_unescape_string (location, NULL);
 	gtk_entry_set_text (GTK_ENTRY (dialog->priv->location), unescaped);
 	g_free (unescaped);
 }

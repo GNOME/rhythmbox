@@ -506,7 +506,7 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 	if (title) {
 		fixed_title = rb_make_valid_utf8 (title, '?');
 	} else {
-		fixed_title = g_uri_unescape_string (uri, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
+		fixed_title = g_uri_unescape_string (uri, NULL);
 	}
 	g_value_take_string (&val, fixed_title);
 

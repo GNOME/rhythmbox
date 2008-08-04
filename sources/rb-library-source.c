@@ -420,7 +420,7 @@ rb_library_source_location_button_clicked_cb (GtkButton *button, RBLibrarySource
 			uri = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (dialog));
 		}
 
-		path = g_uri_unescape_string (uri, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
+		path = g_uri_unescape_string (uri, NULL);
 
 		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), path);
 		rb_library_source_library_location_cb (GTK_ENTRY (source->priv->library_location_entry),
@@ -586,7 +586,7 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 
 		gtk_widget_set_sensitive (source->priv->library_location_entry, TRUE);
 
-		path = g_uri_unescape_string (list->data, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
+		path = g_uri_unescape_string (list->data, NULL);
 		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), path);
 		g_free (path);
 	} else if (g_slist_length (list) == 0) {

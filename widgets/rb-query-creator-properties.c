@@ -283,7 +283,7 @@ stringCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 static void
 escapedStringCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 {
-	char *text = g_uri_unescape_string (g_value_get_string (val), G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
+	char *text = g_uri_unescape_string (g_value_get_string (val), NULL);
 	gtk_entry_set_text (GTK_ENTRY (widget), text);
 	g_free (text);
 }

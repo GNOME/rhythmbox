@@ -593,7 +593,7 @@ make_access_failed_error (const char *uri, GError *access_error)
 	GError *error;
 
 	/* make sure the URI we put in the error message is valid utf8 */
-	unescaped = g_uri_unescape_string (uri, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH);
+	unescaped = g_uri_unescape_string (uri, NULL);
 	utf8ised = rb_make_valid_utf8 (unescaped, '?');
 
 	error = g_error_new (RHYTHMDB_ERROR,
