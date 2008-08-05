@@ -846,14 +846,7 @@ rb_audiocd_is_volume_audiocd (GVolume *volume)
 			if (libhal_device_query_capability (ctx, udi, "volume.disc", &error) &&
 			    !dbus_error_is_set (&error)) {
 				/* check it's a CD with audio; maybe check it's not blank? */
-				char *disc_type;
 				dbus_bool_t is_audio;
-
-				disc_type = libhal_device_get_property_string (ctx, udi, "volume.disc.type", &error);
-				if (dbus_error_is_set (&error)) {
-					free_dbus_error ("checking volume disc type", &error);
-					disc_type = NULL;
-				}
 
 				is_audio = libhal_device_get_property_bool (ctx, udi, "volume.disc.has_audio", &error);
 				if (dbus_error_is_set (&error)) {
@@ -861,13 +854,12 @@ rb_audiocd_is_volume_audiocd (GVolume *volume)
 					is_audio = FALSE;
 				}
 
-				if (is_audio && disc_type != NULL && strcmp (disc_type, "cd_rom") == 0) {
+				if (is_audio) {
 					rb_debug ("disc in %s is an audio CD", device_path);
 					result = TRUE;
 				} else {
 					rb_debug ("disc %s is not an audio CD", device_path);
 				}
-				libhal_free_string (disc_type);
 				
 			} else if (dbus_error_is_set (&error)) {
 				free_dbus_error ("checking volume type", &error);

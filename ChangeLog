@@ -1,3 +1,10 @@
+2008-08-06  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/audiocd/rb-audiocd-source.c:
+	(rb_audiocd_is_volume_audiocd):
+	Don't check the disc type when deciding if a volume is an audio CD,
+	just check it's a disc that has audio.
+
 2008-08-05  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/artdisplay/artdisplay/__init__.py:
