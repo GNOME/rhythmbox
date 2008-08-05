@@ -362,7 +362,7 @@ class ArtDisplayPlugin (rb.Plugin):
 			db.disconnect (id)
 		self.db_cb_ids = ()
 
-		shell.remove_widget (self.art_widget, rb.SHELL_UI_LOCATION_SIDEBAR)
+		shell.remove_widget (self.art_container, rb.SHELL_UI_LOCATION_SIDEBAR)
 		self.art_widget.disconnect_handlers ()
 		self.art_widget = None
 		self.art_db = None
