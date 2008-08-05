@@ -1,3 +1,11 @@
+2008-08-05  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Raul Soriano  <GatoLoko@gmail.com>
+
+	* remote/dbus/rb-client.c: (parse_pattern):
+	Add '%tb' substitution parameter, giving the track bitrate.
+	Fixes #545930.
+
 2008-08-04  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/audioscrobbler/rb-lastfm-source.c:

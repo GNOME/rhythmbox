@@ -170,6 +170,7 @@ rb_make_duration_string (guint duration)
  * %tS -- track artist sortname (lowercase)
  * %td -- track duration
  * %te -- track elapsed time
+ * %tb -- track bitrate
  * %st -- stream title
  */
 static char *
@@ -327,6 +328,13 @@ parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
 				/* Track elapsed time */
 				string = rb_make_duration_string (elapsed);
 				break;
+			case 'b':
+				/* Track bitrate */
+				value = g_hash_table_lookup (properties, "bitrate");
+				if (value)
+					string = g_strdup_printf ("%u", g_value_get_uint (value));
+				break;
+
 			default:
 				string = g_strdup_printf ("%%t%c", *p);
  			}
