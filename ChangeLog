@@ -1,5 +1,17 @@
 2008-08-05  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Johannes H. Jensen  <joh@pseudoberries.com>
+
+	* lib/Makefile.am:
+	* lib/md5.c:
+	* lib/md5.h:
+	* plugins/audioscrobbler/rb-audioscrobbler.c: (mkmd5):
+	* plugins/audioscrobbler/rb-lastfm-source.c: (mkmd5):
+	Use GChecksum to calculate MD5 hashes.  Remove the MD5 code we were
+	shipping.  Fixes #524827.
+
+2008-08-05  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Raul Soriano  <GatoLoko@gmail.com>
 
 	* remote/dbus/rb-client.c: (parse_pattern):

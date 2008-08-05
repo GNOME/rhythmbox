@@ -56,7 +56,6 @@
 #include "rb-shell.h"
 #include "rb-shell-player.h"
 #include "rb-source.h"
-#include "md5.h"
 #include "rb-proxy-config.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-plugin.h"
@@ -644,26 +643,16 @@ rb_audioscrobbler_offline_play_notify_cb (RhythmDB *db,
 static gchar *
 mkmd5 (char *string)
 {
-	md5_state_t md5state;
-	guchar md5pword[16];
-	gchar md5_response[33];
-
-	int j = 0;
-
-	memset (md5_response, 0, sizeof (md5_response));
-
-	md5_init (&md5state);
-	md5_append (&md5state, (unsigned char*)string, strlen (string));
-	md5_finish (&md5state, md5pword);
-
-	for (j = 0; j < 16; j++) {
-		char a[3];
-		sprintf (a, "%02x", md5pword[j]);
-		md5_response[2*j] = a[0];
-		md5_response[2*j+1] = a[1];
-	}
-
-	return (g_strdup (md5_response));
+	GChecksum *checksum;
+	gchar *md5_result;
+	
+	checksum = g_checksum_new(G_CHECKSUM_MD5);	
+	g_checksum_update(checksum, (guchar *)string, -1);
+	
+	md5_result = g_strdup(g_checksum_get_string(checksum));
+	g_checksum_free(checksum);
+	
+	return (md5_result);
 }
 
 static void
