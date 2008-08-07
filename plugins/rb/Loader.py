@@ -25,31 +25,38 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import gobject
+
+use_gio = False
 try:
 	import gio
-	use_gio = True
+	# before 2.15.3, file.load_contents_async didn't work correctly
+	if gio.pygio_version > (2,15,2):
+		use_gio = True
 except:
+	# probably don't have gio at all
+	pass
+
+if use_gio is False:
 	import gnomevfs
-	use_gio = False
-	# meh
 
 class GioSrc(object):
 	def __init__ (self):
-		self.chunk = 4096
+		pass
 
-	def _contents_cb(self, result, (callback, args)):
+	def _contents_cb(self, file, result, (callback, args)):
 		try:
-			(contents, etag) = self.file.read_contents_finish(result)
-			# should actually use etag.. hrm.
-			callback(contents, args)
-		except:
-			callback(None, args)
+			(contents, length, etag) = file.load_contents_finish(result)
+			callback(contents, *args)
+		except Exception, e:
+			print "error getting file contents: %s" % e
+			callback(None, *args)
 
 	def get_url (self, url, callback, *args):
 		try:
-			self.file = gio.file_new_for_uri(url)
-			self.file.read_contents_async(callback = self._contents_cb, user_data=(callback, args))
-		except:
+			file = gio.File(url)
+			file.load_contents_async(callback = self._contents_cb, user_data = (callback, args))
+		except Exception, e:
+			print "error getting file contents: %s" % e
 			callback(None, *args)
 
 
