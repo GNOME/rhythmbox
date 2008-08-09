@@ -2328,11 +2328,11 @@ rhythmdb_process_one_event (RhythmDBEvent *event, RhythmDB *db)
 		if (db->priv->save_timeout_id > 0) {
 			g_source_remove (db->priv->save_timeout_id);
 		}
-		db->priv->save_timeout_id = g_timeout_add_full (G_PRIORITY_LOW,
-								5 * 60 * 1000,
-								(GSourceFunc) rhythmdb_idle_save,
-								db,
-								NULL);
+		db->priv->save_timeout_id = g_timeout_add_seconds_full (G_PRIORITY_LOW,
+									5 * 60,
+									(GSourceFunc) rhythmdb_idle_save,
+									db,
+									NULL);
 		break;
 	case RHYTHMDB_EVENT_THREAD_EXITED:
 		rb_debug ("processing RHYTHMDB_EVENT_THREAD_EXITED");

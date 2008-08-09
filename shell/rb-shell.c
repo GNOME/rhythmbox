@@ -2456,7 +2456,7 @@ add_to_library_response_cb (GtkDialog *dialog,
 	if (shell->priv->save_db_id > 0) {
 		g_source_remove (shell->priv->save_db_id);
 	}
-	shell->priv->save_db_id = g_timeout_add (10000, (GSourceFunc) idle_save_rhythmdb, shell);
+	shell->priv->save_db_id = g_timeout_add_seconds (10, (GSourceFunc) idle_save_rhythmdb, shell);
 }
 
 static void
@@ -2542,7 +2542,7 @@ idle_handle_load_complete (RBShell *shell)
 
 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
 	shell->priv->load_complete = TRUE;
-	shell->priv->save_playlist_id = g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell);
+	shell->priv->save_playlist_id = g_timeout_add_seconds (10, (GSourceFunc) idle_save_playlist_manager, shell);
 
 	rhythmdb_start_action_thread (shell->priv->db);
 

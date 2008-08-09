@@ -374,7 +374,7 @@ rb_plugins_engine_init (RBShell *shell)
 
 	rb_plugins_engine_load_all ();
 
-	garbage_collect_id = g_timeout_add_full (G_PRIORITY_LOW, 20000, garbage_collect_cb, NULL, NULL);
+	garbage_collect_id = g_timeout_add_seconds_full (G_PRIORITY_LOW, 20, garbage_collect_cb, NULL, NULL);
 
 	rb_profile_end ("plugins engine init");
 

@@ -265,9 +265,12 @@ add_changed_file (RhythmDB *db, const char *uri)
 	g_hash_table_replace (db->priv->changed_files,
 			      rb_refstring_new (uri),
 			      GINT_TO_POINTER (time.tv_sec));
-	if (db->priv->changed_files_id == 0)
-		db->priv->changed_files_id = g_timeout_add (RHYTHMDB_FILE_MODIFY_PROCESS_TIME * 1000,
-							    (GSourceFunc) rhythmdb_process_changed_files, db);
+	if (db->priv->changed_files_id == 0) {
+		db->priv->changed_files_id =
+			g_timeout_add_seconds (RHYTHMDB_FILE_MODIFY_PROCESS_TIME,
+					       (GSourceFunc) rhythmdb_process_changed_files,
+					       db);
+	}
 }
 
 static void

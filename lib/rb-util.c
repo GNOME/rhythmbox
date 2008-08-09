@@ -405,7 +405,7 @@ rb_threads_init (void)
 	rb_debug ("GMutex %s recursive", mutex_recurses ? "is" : "isn't");
 
 	/* purge useless thread-pool threads occasionally */
-	g_timeout_add (30 * 1000, purge_useless_threads, NULL);
+	g_timeout_add_seconds (30, purge_useless_threads, NULL);
 }
 
 gchar **

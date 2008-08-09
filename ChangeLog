@@ -1,5 +1,21 @@
 2008-08-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	* lib/rb-util.c: (rb_threads_init):
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_add_timeout):
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_init):
+	* rhythmdb/rhythmdb-monitor.c: (add_changed_file):
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_query_internal):
+	* rhythmdb/rhythmdb.c: (rhythmdb_process_one_event):
+	* shell/rb-shell.c: (add_to_library_response_cb),
+	(idle_handle_load_complete):
+	Convert various long period repeating timers to use
+	g_timeout_add_seconds in the hope of reducing wakeup frequency.
+	From #399012.
+
+2008-08-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	* sources/rb-removable-media-source.c:
 	(rb_removable_media_source_constructor):
 	Use mount or volume details rather than drive details for removable

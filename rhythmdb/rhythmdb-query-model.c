@@ -483,14 +483,12 @@ rhythmdb_query_model_set_query_internal (RhythmDBQueryModel *model,
 	rhythmdb_query_preprocess (model->priv->db, model->priv->query);
 
 	/* if the query contains time-relative criteria, re-run it periodically.
-	 * currently it's just every half hour, but perhaps it could be smarter.
+	 * currently it's just every minute, but perhaps it could be smarter.
 	 */
 	if (rhythmdb_query_is_time_relative (model->priv->db, model->priv->query)) {
 		if (model->priv->query_reapply_timeout_id == 0) {
 			model->priv->query_reapply_timeout_id =
-				g_timeout_add (1 * 60 * 1000,
-					       (GSourceFunc) rhythmdb_query_model_reapply_query_cb,
-					       model);
+				g_timeout_add_seconds (60, (GSourceFunc) rhythmdb_query_model_reapply_query_cb, model);
 		}
 	} else if (model->priv->query_reapply_timeout_id) {
 		g_source_remove (model->priv->query_reapply_timeout_id);

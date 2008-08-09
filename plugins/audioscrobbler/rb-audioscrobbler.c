@@ -463,8 +463,9 @@ rb_audioscrobbler_add_timeout (RBAudioscrobbler *audioscrobbler)
 	if (!audioscrobbler->priv->timeout_id) {
 		rb_debug ("Adding Audioscrobbler timer (15 seconds)");
 		audioscrobbler->priv->timeout_id = 
-			g_timeout_add (15000, (GSourceFunc) rb_audioscrobbler_timeout_cb,
-				       audioscrobbler);
+			g_timeout_add_seconds (15,
+					       (GSourceFunc) rb_audioscrobbler_timeout_cb,
+					       audioscrobbler);
 	}
 }
 
