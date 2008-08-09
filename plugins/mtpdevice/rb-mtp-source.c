@@ -329,6 +329,27 @@ add_mtp_track_to_db (RBMtpSource *source,
 		g_value_unset (&value);
 	}
 
+	/* Set playcount */
+	if (track->usecount != 0) {
+		GValue value = {0, };
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, track->usecount);
+		rhythmdb_entry_set (RHYTHMDB (db), entry,
+					       RHYTHMDB_PROP_PLAY_COUNT,
+					       &value);
+		g_value_unset (&value);
+	}
+	/* Set rating */
+	if (track->rating != 0) {
+		GValue value = {0, };
+		g_value_init (&value, G_TYPE_DOUBLE);
+		g_value_set_double (&value, track->rating/20);
+		rhythmdb_entry_set (RHYTHMDB (db), entry,
+					       RHYTHMDB_PROP_RATING,
+					       &value);
+		g_value_unset (&value);
+	}
+
 	/* Set title */
 	entry_set_string_prop (RHYTHMDB (db), entry, RHYTHMDB_PROP_TITLE, track->title);
 
@@ -663,6 +684,8 @@ transfer_track (RBMtpSource *source,
 	}
 	trackmeta->tracknumber = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
 	trackmeta->duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION) * 1000;
+	trackmeta->rating = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_RATING) * 20;
+	trackmeta->usecount = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_PLAY_COUNT);
 	trackmeta->filesize = filesize;
 	if (mimetype == NULL) {
 		trackmeta->filetype = mimetype_to_filetype (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE));
