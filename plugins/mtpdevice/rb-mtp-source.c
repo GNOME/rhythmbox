@@ -670,7 +670,11 @@ transfer_track (RBMtpSource *source,
 		trackmeta->filetype = mimetype_to_filetype (mimetype);
 	}
 
+#ifdef HAVE_LIBMTP_030
+	if (LIBMTP_Send_Track_From_File (device, filename, trackmeta, NULL, NULL) != 0) {
+#else
 	if (LIBMTP_Send_Track_From_File (device, filename, trackmeta, NULL, NULL, 0) != 0) {
+#endif
 		LIBMTP_destroy_track_t (trackmeta);
 		rb_debug ("Tracktransfer failed\n");
 		return NULL;

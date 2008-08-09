@@ -154,6 +154,11 @@ if test "x$with_mtp" != "xno"; then
 	  fi
           if test "x$enable_hal" = xyes; then
 	     use_mtp=yes
+	     dnl Check for libmtp 0.3.0+
+	     PKG_CHECK_EXISTS(libmtp >= 0.3.0, found_libmtp_030_pkg=yes, found_libmtp_030_pkg=no)
+	     if test x"$found_libmtp_030_pkg" = "xyes" ; then
+	       AC_DEFINE([HAVE_LIBMTP_030], 1, [indicates whether libmtp 0.3.0 is installed])
+	     fi
           fi
 	  AC_SUBST(MTP_CFLAGS)
 	  AC_SUBST(MTP_LIBS)
