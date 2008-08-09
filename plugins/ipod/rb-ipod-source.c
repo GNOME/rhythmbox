@@ -483,9 +483,8 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, const char *mimetype)
 	track->track_nr = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
 	track->bitrate = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE);
 	track->year = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_YEAR);
-	track->time_added = itdb_time_get_mac_time ();
+	track->time_added = time (NULL);
 	track->time_played = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_LAST_PLAYED);
-	track->time_played = itdb_time_host_to_mac (track->time_played);
 	track->rating = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_RATING);
 	track->rating *= ITDB_RATING_STEP;
 	track->app_rating = track->rating;
@@ -494,7 +493,6 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, const char *mimetype)
 	if (rhythmdb_entry_get_pointer (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
 		track->mediatype = MEDIATYPE_PODCAST;
 		track->time_released = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_POST_TIME);
-		track->time_released = itdb_time_host_to_mac (track->time_released);
 	} else {
 		track->mediatype = MEDIATYPE_AUDIO;
 	}
@@ -655,7 +653,7 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 	if (song->time_added != 0) {
 		GValue value = {0, };
 		g_value_init (&value, G_TYPE_ULONG);
-		g_value_set_ulong (&value, itdb_time_mac_to_host (song->time_added));
+		g_value_set_ulong (&value, song->time_added);
 		rhythmdb_entry_set (RHYTHMDB (db), entry,
 					       RHYTHMDB_PROP_FIRST_SEEN,
 					       &value);
@@ -666,7 +664,7 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 	if (song->time_played != 0) {
 		GValue value = {0, };
 		g_value_init (&value, G_TYPE_ULONG);
-		g_value_set_ulong (&value, itdb_time_mac_to_host (song->time_played));
+		g_value_set_ulong (&value, song->time_played);
 		rhythmdb_entry_set (RHYTHMDB (db), entry,
 					       RHYTHMDB_PROP_LAST_PLAYED,
 					       &value);
@@ -882,7 +880,7 @@ rb_ipod_source_entry_changed_cb (RhythmDB *db,
 			if (old_lastplay != new_lastplay) {
 				track = g_hash_table_lookup (priv->entry_map, 
 							     entry);
-				track->time_played = itdb_time_host_to_mac (new_lastplay);
+				track->time_played = new_lastplay;
 				rb_debug ("last play time changed, saving db");
 				rb_ipod_db_save_async (priv->ipod_db);
 			} else {
