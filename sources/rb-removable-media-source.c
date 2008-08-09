@@ -146,9 +146,8 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 				       GObjectConstructParam *construct_properties)
 {
 	GObject *source;
-	GVolume *volume;
+	GMount *mount;
 	GIcon *icon = NULL;
-	GDrive *drive;
 	char *display_name;
 	GdkPixbuf *pixbuf = NULL;
 	RBRemovableMediaSourcePrivate *priv;
@@ -157,25 +156,23 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 			->constructor (type, n_construct_properties, construct_properties);
 	priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (source);
 
+	/* prefer mount details to volume details, as the nautilus sidebar does */
 	if (priv->mount != NULL) {
-		volume = g_mount_get_volume (priv->mount);
+		mount = g_object_ref (priv->mount);
 	} else if (priv->volume != NULL) {
-		volume = g_object_ref (priv->volume);
+		mount = g_volume_get_mount (priv->volume);
 	} else {
-		volume = NULL;
+		mount = NULL;
 	}
 
-	if (volume != NULL) {
-		drive = g_volume_get_drive (volume);
-		if (drive != NULL) {
-			display_name = g_drive_get_name (drive);
-			g_object_unref (drive);
-		} else {
-			display_name = g_volume_get_name (volume);
-		}
-		icon = g_volume_get_icon (volume);
-		g_object_unref (volume);
-		rb_debug ("display name = %s, icon = %p", display_name, icon);
+	if (mount != NULL) {
+		display_name = g_mount_get_name (priv->mount);
+		icon = g_mount_get_icon (priv->mount);
+		rb_debug ("details from mount: display name = %s, icon = %p", display_name, icon);
+	} else if (priv->volume != NULL) {
+		display_name = g_volume_get_name (priv->volume);
+		icon = g_volume_get_icon (priv->volume);
+		rb_debug ("details from volume: display name = %s, icon = %p", display_name, icon);
 	} else {
 		display_name = g_strdup ("Unknown Device");
 		icon = g_themed_icon_new ("multimedia-player");
@@ -213,8 +210,10 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 	if (pixbuf != NULL) {
 		g_object_unref (pixbuf);
 	}
+	if (mount != NULL) {
+		g_object_unref (mount);
+	}
 	g_object_unref (icon);
-	g_object_unref (volume);
 
 	return source;
 }

@@ -1,5 +1,14 @@
 2008-08-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_constructor):
+	Use mount or volume details rather than drive details for removable
+	source names and icons.  This should make our device details
+	consistent with what nautilus displays.  Also remove an extra unref
+	that was causing crashes.  Fixes #494692.
+
+2008-08-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/mtpdevice/rb-mtp-plugin.c: (impl_activate),
 	(impl_deactivate), (rb_mtp_plugin_setup_dbus_hal_connection):
 	If dbus/hal setup fails, don't try to use the hal context.
