@@ -90,7 +90,7 @@ static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
 static void rb_mtp_plugin_device_added (LibHalContext *context, const char *udi);
 static void rb_mtp_plugin_device_removed (LibHalContext *context, const char *udi);
-static void rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin);
+static gboolean rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin);
 
 static RBSource* create_source_cb (RBMtpPlugin *plugin, LIBMTP_mtpdevice_t *device, const char *udi);
 /*static RBSource * create_source_cb (RBRemovableMediaManager *rmm,
@@ -168,10 +168,14 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 	gtk_ui_manager_insert_action_group (uimanager, plugin->action_group, 0);
 	file = rb_plugin_find_file (bplugin, "mtp-ui.xml");
 	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, file, NULL);
+	g_object_unref (G_OBJECT (uimanager));
 
-	/*device detection*/
+	/* device detection */
 
-	rb_mtp_plugin_setup_dbus_hal_connection (plugin);
+	if (rb_mtp_plugin_setup_dbus_hal_connection (plugin) == FALSE) {
+		rb_debug ("not scanning for MTP devices because we couldn't get a HAL context");
+		return;
+	}
 
 	rb_profile_start ("scanning for MTP devices");
 	devices = libhal_get_all_devices (plugin->hal_context, &num, NULL);
@@ -203,10 +207,9 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 	} else {
 		rb_debug ("Couldn't list mtp devices");
 	}
+
 	libhal_free_string_array (devices);
 	rb_profile_end ("scanning for MTP devices");
-
-	g_object_unref (G_OBJECT (uimanager));
 }
 
 static void
@@ -214,7 +217,6 @@ impl_deactivate (RBPlugin *bplugin, RBShell *shell)
 {
 	RBMtpPlugin *plugin = RB_MTP_PLUGIN (bplugin);
 	GtkUIManager *uimanager = NULL;
-	DBusError error;
 
 	g_object_get (G_OBJECT (shell),
 		      "ui-manager", &uimanager,
@@ -227,11 +229,20 @@ impl_deactivate (RBPlugin *bplugin, RBShell *shell)
 	g_list_free (plugin->mtp_sources);
 	plugin->mtp_sources = NULL;
 
-	dbus_error_init (&error);
-	libhal_ctx_shutdown (plugin->hal_context, &error);
-	libhal_ctx_free (plugin->hal_context);
-	dbus_connection_unref (plugin->dbus_connection);
-	dbus_error_free (&error);
+	if (plugin->hal_context != NULL) {
+		DBusError error;
+		dbus_error_init (&error);
+		libhal_ctx_shutdown (plugin->hal_context, &error);
+		libhal_ctx_free (plugin->hal_context);
+		dbus_error_free (&error);
+
+		plugin->hal_context = NULL;
+	}
+
+	if (plugin->dbus_connection != NULL) {
+		dbus_connection_unref (plugin->dbus_connection);
+		plugin->dbus_connection = NULL;
+	}
 
 	g_object_unref (G_OBJECT (uimanager));
 }
@@ -372,7 +383,7 @@ rb_mtp_plugin_device_removed (LibHalContext *context, const char *udi)
 	}
 }
 
-static void
+static gboolean
 rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin)
 {
 	DBusError error;
@@ -381,7 +392,8 @@ rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin)
 	plugin->dbus_connection = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
 	if (plugin->dbus_connection == NULL) {
 		rb_debug ("error: dbus_bus_get: %s: %s\n", error.name, error.message);
-		return;
+		dbus_error_free (&error);
+		return FALSE;
 	}
 
 	dbus_connection_setup_with_g_main (plugin->dbus_connection, NULL);
@@ -390,7 +402,8 @@ rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin)
 
 	plugin->hal_context = libhal_ctx_new ();
 	if (plugin->hal_context == NULL) {
-		return;
+		dbus_error_free (&error);
+		return FALSE;
 	}
 	libhal_ctx_set_dbus_connection (plugin->hal_context, plugin->dbus_connection);
 
@@ -402,9 +415,10 @@ rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin)
 	if (!libhal_ctx_init (plugin->hal_context, &error)) {
 		rb_debug ("error: libhal_ctx_init: %s: %s\n", error.name, error.message);
 		dbus_error_free (&error);
-		return;
+		return FALSE;
 	}
 
 	dbus_error_free (&error);
+	return TRUE;
 }
 
