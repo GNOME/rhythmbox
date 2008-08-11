@@ -123,6 +123,7 @@ struct RBShellPreferencesPrivate
 	GtkWidget *first_seen_check;
 	GtkWidget *quality_check;
 	GtkWidget *year_check;
+	GtkWidget *location_check;
 
 	GtkWidget *xfade_backend_check;
 	GtkWidget *album_crossfade_check;
@@ -244,6 +245,8 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		glade_xml_get_widget (xml, "year_check");
 	shell_preferences->priv->first_seen_check =
 		glade_xml_get_widget (xml, "first_seen_check");
+	shell_preferences->priv->location_check =
+		glade_xml_get_widget (xml, "location_check");
 
 	/* browser options */
 	rb_glade_boldify_label (xml, "browser_views_label");
@@ -486,6 +489,8 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 		colname = "RHYTHMDB_PROP_BITRATE";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->first_seen_check))
 		colname = "RHYTHMDB_PROP_FIRST_SEEN";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->location_check))
+		colname = "RHYTHMDB_PROP_LOCATION";
 	else
 		g_assert_not_reached ();
 
@@ -578,6 +583,9 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 		rb_shell_preferences_sync_column_button (shell_preferences,
 			       				 shell_preferences->priv->quality_check,
 							 columns, "RHYTHMDB_PROP_BITRATE");
+		rb_shell_preferences_sync_column_button (shell_preferences,
+			       				 shell_preferences->priv->location_check,
+							 columns, "RHYTHMDB_PROP_LOCATION");
 	}
 
 	g_free (columns);

@@ -1,3 +1,15 @@
+2008-08-11  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  John Daiker  <daikerjohn@gmail.com>
+
+	* data/glade/general-prefs.glade:
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init),
+	(rb_shell_preferences_column_check_changed_cb),
+	(rb_shell_preferences_sync):
+	* sources/rb-browser-source.c: (rb_browser_source_constructor):
+	Allow the 'location' column to be optionally displayed in all sources
+	like the rest of the columns.  From #397459.
+
 2008-08-10  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/artdisplay/artdisplay/PodcastCoverArtSearch.py:
