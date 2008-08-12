@@ -52,7 +52,6 @@
 #include "rb-plugin.h"
 
 static void rb_psp_source_create_playlists (RBGenericPlayerSource *source);
-static gchar *impl_get_mount_path (RBGenericPlayerSource *source);
 
 typedef struct
 {
@@ -71,7 +70,6 @@ rb_psp_source_class_init (RBPspSourceClass *klass)
 {
 	RBGenericPlayerSourceClass *generic_class = RB_GENERIC_PLAYER_SOURCE_CLASS (klass);
 
-	generic_class->impl_get_mount_path = impl_get_mount_path;
 	generic_class->impl_load_playlists = rb_psp_source_create_playlists;
 
 	g_type_class_add_private (klass, sizeof (RBPspSourcePrivate));
@@ -118,12 +116,11 @@ rb_psp_source_new (RBShell *shell, GMount *mount)
 	return RB_REMOVABLE_MEDIA_SOURCE (source);
 }
 
-static char *
+static GFile *
 find_music_dir (GMount *mount)
 {
-	char *path = NULL;
 	GFile *root;
-	GFile *music_dir;
+	GFile *music_dir = NULL;
 
 	root = g_mount_get_root (mount);
 	if (root != NULL) {
@@ -135,32 +132,19 @@ find_music_dir (GMount *mount)
 		};
 
 		i = 0;
-		while (paths[i] != NULL && path == NULL) {
-			music_dir = g_file_resolve_relative_path (root, "PSP/MUSIC");
-			if (g_file_query_exists (music_dir, NULL)) {
-				path = g_file_get_path (music_dir);
+		while (paths[i] != NULL) {
+			music_dir = g_file_resolve_relative_path (root, paths[i]);
+			if (g_file_query_exists (music_dir, NULL) == FALSE) {
+				break;
 			}
 			g_object_unref (music_dir);
+			i++;
 		}
 
 		g_object_unref (root);
 	}
 
-	return path;
-}
-
-static char *
-impl_get_mount_path (RBGenericPlayerSource *source)
-{
-	GMount *mount;
-	char *path;
-
-	g_object_get (G_OBJECT (source), "mount", &mount, NULL);
-
-	path = find_music_dir (mount);
-	g_object_unref (mount);
-
-	return path;
+	return music_dir;
 }
 
 static gboolean
@@ -217,14 +201,24 @@ visit_playlist_dirs (GFile *file,
 static void
 rb_psp_source_create_playlists (RBGenericPlayerSource *source)
 {
-	char *mount_path;
+	GMount *mount;
+	GFile *music_dir;
 
-	mount_path = rb_generic_player_source_get_mount_path (source);
-	rb_uri_handle_recursively (mount_path,
-				   NULL,
-				   (RBUriRecurseFunc) visit_playlist_dirs,
-				   source);
-	g_free (mount_path);
+	g_object_get (source, "mount", &mount, NULL);
+	music_dir = find_music_dir (mount);
+	g_object_unref (mount);
+
+	if (music_dir != NULL) {
+		char *music_dir_uri;
+
+		music_dir_uri = g_file_get_uri (music_dir);
+		rb_uri_handle_recursively (music_dir_uri,
+					   NULL,
+					   (RBUriRecurseFunc) visit_playlist_dirs,
+					   source);
+		g_free (music_dir_uri);
+		g_object_unref (music_dir);
+	}
 }
 
 #ifdef HAVE_HAL
@@ -301,7 +295,7 @@ gboolean
 rb_psp_is_mount_player (GMount *mount)
 {
 #ifndef HAVE_HAL
-	char *music_dir;
+	GFile *music_dir;
 #else
 	GVolume *volume;
 #endif
@@ -311,7 +305,7 @@ rb_psp_is_mount_player (GMount *mount)
 #ifndef HAVE_HAL
 	music_dir = find_music_dir (mount);
 	result = (music_dir != NULL);
-	g_free (music_dir);
+	g_object_unref (music_dir);
 #else
 	volume = g_mount_get_volume (mount);
 	if (volume != NULL) {

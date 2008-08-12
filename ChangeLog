@@ -1,3 +1,12 @@
+2008-08-12  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/generic-player/rb-psp-source.c:
+	(rb_psp_source_class_init), (find_music_dir):
+	Fix broken loop in find_music_dir, remove get_mount_path
+	implementation - we really want it to return the device root, and then
+	provide 'PSP/MUSIC' or 'MUSIC' as the audio folder, but we can't do
+	the second part of that yet.  From #547363.
+
 2008-08-11  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  John Daiker  <daikerjohn@gmail.com>
