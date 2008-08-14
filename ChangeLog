@@ -1,5 +1,14 @@
 2008-08-14  Bastien Nocera  <hadess@hadess.net>
 
+	* lib/rb-util.h:
+	* plugins/lirc/Makefile.am:
+	* plugins/lirc/rb-lirc-plugin.c (rb_lirc_plugin_read_code),
+	(impl_activate):
+	* plugins/lirc/rhythmbox_lirc_default: Add a default configuration
+	for lirc, so that it works out-of-the-box (Closes: #545555)
+
+2008-08-14  Bastien Nocera  <hadess@hadess.net>
+
 	* sources/rb-podcast-source.c: Remove unneeded libxml include
 
 2008-08-14  Jonathan Matthew  <jonathan@d14n.org>

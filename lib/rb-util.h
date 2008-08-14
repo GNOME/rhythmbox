@@ -38,6 +38,10 @@
 
 G_BEGIN_DECLS
 
+/* Offsets for seeking forward, and rewinding in seconds */
+#define FFWD_OFFSET 20
+#define RWD_OFFSET 10
+
 gboolean rb_true_function (gpointer dummy);
 gboolean rb_false_function (gpointer dummy);
 gpointer rb_null_function (gpointer dummy);

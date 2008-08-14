@@ -6,6 +6,9 @@ librblirc_la_SOURCES = \
 
 librblirc_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS) -llirc_client
 
+configdir = $(PLUGINDIR)/lirc
+config_DATA = rhythmbox_lirc_default
+
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
@@ -32,7 +35,7 @@ plugin_in_files = lirc.rb-plugin.in
 
 plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 
-EXTRA_DIST = $(plugin_in_files)
+EXTRA_DIST = $(plugin_in_files) $(config_DATA)
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

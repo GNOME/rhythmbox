@@ -42,6 +42,7 @@
 #include "rb-plugin.h"
 #include "rb-shell.h"
 #include "rb-debug.h"
+#include "rb-util.h"
 #include "rb-shell-player.h"
 
 #define RB_TYPE_LIRC_PLUGIN		(rb_lirc_plugin_get_type ())
@@ -162,9 +163,9 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 		} else if (strcmp (str, RB_IR_COMMAND_PREVIOUS) == 0) {
 			rb_shell_player_do_previous (plugin->shell_player, NULL);
 		} else if (strcmp (str, RB_IR_COMMAND_SEEK_FORWARD) == 0) {
-			rb_shell_player_seek (plugin->shell_player, 10);
+			rb_shell_player_seek (plugin->shell_player, FFWD_OFFSET);
 		} else if (strcmp (str, RB_IR_COMMAND_SEEK_BACKWARD) == 0) {
-			rb_shell_player_seek (plugin->shell_player, -10);
+			rb_shell_player_seek (plugin->shell_player, -RWD_OFFSET);
 		} else if (strcmp (str, RB_IR_COMMAND_VOLUME_UP) == 0) {
 			rb_shell_player_set_volume_relative (plugin->shell_player, 0.1, NULL);
 		} else if (strcmp (str, RB_IR_COMMAND_VOLUME_DOWN) == 0) {
@@ -191,6 +192,7 @@ impl_activate (RBPlugin *rbplugin,
 	       RBShell *shell)
 {
 	int fd;
+	char *path;
 	RBLircPlugin *plugin = RB_LIRC_PLUGIN (rbplugin);
 
 	plugin->shell = g_object_ref (shell);
@@ -205,11 +207,17 @@ impl_activate (RBPlugin *rbplugin,
 		return;
 	}
 
-	if (lirc_readconfig (NULL, &plugin->lirc_config, NULL) == -1) {
+	/* Load the default Rhythmbox setup */
+	path = rb_plugin_find_file (rbplugin, "rhythmbox_lirc_default");
+	if (path == NULL || lirc_readconfig (path, &plugin->lirc_config, NULL) == -1) {
+		g_free (path);
 		close (fd);
 		rb_debug ("Couldn't read lirc configuration");
 		return;
 	}
+	g_free (path);
+
+	lirc_readconfig (NULL, &plugin->lirc_config, NULL);
 
 	plugin->lirc_channel = g_io_channel_unix_new (fd);
 	g_io_channel_set_encoding (plugin->lirc_channel, NULL, NULL);
