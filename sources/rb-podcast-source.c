@@ -44,7 +44,6 @@
 #define __USE_XOPEN
 #include <time.h>
 
-#include <libxml/tree.h>
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
