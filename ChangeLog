@@ -1,3 +1,13 @@
+2008-08-14  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_class_init), (rb_lastfm_source_set_property),
+	(rb_lastfm_source_get_property), (rb_lastfm_source_new):
+	Make the track entry type the main entry type for the last.fm source,
+	and only register that type with the shell.  The shell can only handle
+	the main entry type being registered, and crashes when a source that
+	does otherwise is created for the second time.  Fixes #546609.
+
 2008-08-12  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/generic-player/rb-psp-source.c:

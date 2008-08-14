@@ -266,7 +266,7 @@ enum
 {
 	PROP_0,
 	PROP_ENTRY_TYPE,
-	PROP_TRACK_ENTRY_TYPE,
+	PROP_STATION_ENTRY_TYPE,
 	PROP_PROXY_CONFIG,
 	PROP_PLAY_ORDER
 };
@@ -324,14 +324,14 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 					 PROP_ENTRY_TYPE,
 					 g_param_spec_boxed ("entry-type",
 							     "Entry type",
-							     "Entry type for last.fm stations",
+							     "Entry type for last.fm tracks",
 							     RHYTHMDB_TYPE_ENTRY_TYPE,
 							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
-					 PROP_TRACK_ENTRY_TYPE,
-					 g_param_spec_boxed ("track-entry-type",
+					 PROP_STATION_ENTRY_TYPE,
+					 g_param_spec_boxed ("station-entry-type",
 							     "Entry type",
-							     "Entry type for last.fm tracks",
+							     "Entry type for last.fm stations",
 							     RHYTHMDB_TYPE_ENTRY_TYPE,
 							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
@@ -587,10 +587,10 @@ rb_lastfm_source_set_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
-		source->priv->station_entry_type = g_value_get_boxed (value);
-		break;
-	case PROP_TRACK_ENTRY_TYPE:
 		source->priv->track_entry_type = g_value_get_boxed (value);
+		break;
+	case PROP_STATION_ENTRY_TYPE:
+		source->priv->station_entry_type = g_value_get_boxed (value);
 		break;
 	case PROP_PROXY_CONFIG:
 		source->priv->proxy_config = g_value_get_object (value);
@@ -612,10 +612,10 @@ rb_lastfm_source_get_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
-		g_value_set_boxed (value, source->priv->station_entry_type);
-		break;
-	case PROP_TRACK_ENTRY_TYPE:
 		g_value_set_boxed (value, source->priv->track_entry_type);
+		break;
+	case PROP_STATION_ENTRY_TYPE:
+		g_value_set_boxed (value, source->priv->station_entry_type);
 		break;
 	case PROP_PLAY_ORDER:
 		g_value_set_object (value, source->priv->play_order);
@@ -677,12 +677,12 @@ rb_lastfm_source_new (RBShell *shell)
 	source = RB_SOURCE (g_object_new (RB_TYPE_LASTFM_SOURCE,
 					  "name", _("Last.fm"),
 					  "shell", shell,
-					  "entry-type", station_entry_type,
-					  "track-entry-type", track_entry_type,
+					  "station-entry-type", station_entry_type,
+					  "entry-type", track_entry_type,
 					  "proxy-config", proxy_config,
 					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  NULL));
-	rb_shell_register_entry_type_for_source (shell, source, station_entry_type);
+
 	rb_shell_register_entry_type_for_source (shell, source, track_entry_type);
 
 	g_object_unref (db);
