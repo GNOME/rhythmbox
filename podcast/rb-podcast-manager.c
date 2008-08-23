@@ -1270,16 +1270,16 @@ download_info_free (RBPodcastManagerInfo *data)
 }
 
 static void
-download_progress (RBPodcastManagerInfo *data, gsize downloaded, guint64 total, gboolean complete)
+download_progress (RBPodcastManagerInfo *data, guint64 downloaded, guint64 total, gboolean complete)
 {
 	guint local_progress = 0;
 
-	rb_debug ("%s: %lu / %" G_GUINT64_FORMAT,
+	rb_debug ("%s: %" G_GUINT64_FORMAT "/ %" G_GUINT64_FORMAT,
 		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION),
-		  (gulong)downloaded, total);
+		  downloaded, total);
 
 	if (downloaded > 0 && total > 0)
-		local_progress = (gint) (100 * downloaded) / total;
+		local_progress = (100 * downloaded) / total;
 
 	if (local_progress != data->progress) {
 		GValue val = {0,};
@@ -1331,7 +1331,7 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 	char buf[8192];
 	gssize n_read;
 	gssize n_written;
-	gsize downloaded;
+	guint64 downloaded;
 	
 	/* open remote file */
 	data->in_stream = g_file_read (data->source, data->cancel, &error);

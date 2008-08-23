@@ -1,3 +1,9 @@
+2008-08-23  Jonathan Matthew  <jonathan@d14n.org>
+
+	* podcast/rb-podcast-manager.c: (download_progress),
+	(podcast_download_thread):
+	Fix overflows in progress percentage calculation.
+
 2008-08-14  Bastien Nocera  <hadess@hadess.net>
 
 	* lib/rb-util.h:
