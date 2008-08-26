@@ -1,3 +1,14 @@
+2008-08-26  Bastien Nocera  <hadess@hadess.net>
+
+	* configure.ac:
+	* podcast/Makefile.am:
+	* podcast/npapi.h:
+	* podcast/npruntime.h:
+	* podcast/npupp.h:
+	* podcast/rhythmbox-itms-plugin.cpp: Remove xulrunner/mozilla/
+	whatever dependency for the mozilla plugin, saves use recompiles
+	on Firefox upgrades (Closes: #541150)
+
 2008-08-23  Jonathan Matthew  <jonathan@d14n.org>
 
 	* podcast/rb-podcast-manager.c: (download_progress),

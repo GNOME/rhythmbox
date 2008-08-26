@@ -859,49 +859,8 @@ dnl ================================================================
 
 AC_ARG_ENABLE([browser-plugin],
 	[AS_HELP_STRING([--enable-browser-plugin],[compile the iTunes detection browser plugin])],
-	[],[enable_browser_plugin=autodetect])
+	[],[enable_browser_plugin=yes])
 
-if test "$enable_browser_plugin" != "no" ; then
-	AC_MSG_CHECKING([which gecko to use])
-
-	AC_ARG_WITH([gecko],
-		[AS_HELP_STRING([--with-gecko],[Which gecko engine to use (default: autodetect)])])
-
-	GECKOS="xulrunner firefox mozilla-firefox seamonkey mozilla"
-	gecko=$with_gecko
-
-	if test -z "$with_gecko"; then
-		dnl Autodetect gecko
-		for g in $GECKOS; do
-			if $PKG_CONFIG --exists $g-plugin; then
-				gecko=$g
-				break;
-			fi
-		done
-	elif ! $PKG_CONFIG --exists $gecko-plugin; then
-		AC_MSG_ERROR([Gecko "$gecko" not found])
-	fi
-
-	if test -z "$gecko" -a "$enable_browser_plugin" = "autodetect"; then
-		dnl No gecko found, disable plugin
-		AC_MSG_WARN([No gecko found, disabling plugin])
-		enable_browser_plugin=no
-	elif test -z "$gecko"; then
-		AC_MSG_ERROR([No gecko found])
-	elif ! ( echo "$GECKOS" | egrep "(^| )$gecko(\$| )" > /dev/null); then
-		AC_MSG_ERROR([Unknown gecko "$gecko" specified])
-	else
-		enable_browser_plugin=yes
-	fi
-
-	AC_MSG_RESULT([$gecko])
-fi
-
-if test "$enable_browser_plugin" = "yes" ; then
-	PKG_CHECK_MODULES([BROWSER_PLUGIN],
-		[glib-2.0 $gecko-plugin],
-		[],[enable_browser_plugins=no])
-fi
 MOZILLA_PLUGINDIR="${MOZILLA_PLUGINDIR:="\${libdir}/mozilla/plugins"}"
 AC_ARG_VAR([MOZILLA_PLUGINDIR],[Where to install the browser plugin to])
 

@@ -27,7 +27,6 @@
 #include "config.h"
 
 #include <string.h>
-#include <glib.h>
 #include <npupp.h>
 
 static NPNetscapeFuncs mozilla_functions;
@@ -35,8 +34,8 @@ static NPNetscapeFuncs mozilla_functions;
 static NPError
 plugin_new_instance (NPMIMEType mime_type,
 		     NPP instance,
-		     guint16 mode,
-		     gint16 argc,
+		     uint16 mode,
+		     int16 argc,
 		     char **argn,
 		     char **argv,
 		     NPSavedData *saved)
@@ -56,7 +55,7 @@ plugin_new_stream (NPP instance,
 		   NPMIMEType type,
 		   NPStream *stream_ptr,
 		   NPBool seekable,
-		   guint16 *stype)
+		   uint16 *stype)
 {
 	return NPERR_INVALID_PARAM;
 }
@@ -89,7 +88,7 @@ plugin_write (NPP instance,
 	      NPStream *stream,
 	      int32 offset,
 	      int32 len,
-	      gpointer buffer)
+	      void *buffer)
 {
 	return -1;
 }
@@ -97,7 +96,7 @@ plugin_write (NPP instance,
 static NPError
 plugin_get_value (NPP instance,
 		  NPPVariable variable,
-		  gpointer value)
+		  void *value)
 {
 	NPError err = NPERR_NO_ERROR;
 
@@ -111,7 +110,7 @@ plugin_get_value (NPP instance,
 		break;
 
 	case NPPVpluginNeedsXEmbed:
-		*((NPBool *) value) = PR_FALSE;
+		*((NPBool *) value) = FALSE;
 		break;
 
 	default:
@@ -125,7 +124,7 @@ plugin_get_value (NPP instance,
 NPError
 NP_GetValue (void *future,
 	     NPPVariable variable,
-	     gpointer value)
+	     void *value)
 {
 	return plugin_get_value (NULL, variable, value);
 }

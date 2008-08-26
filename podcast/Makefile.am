@@ -45,12 +45,13 @@ AM_CFLAGS =						\
 
 librbpodcast_la_LDFLAGS = -export-dynamic
 
+PLUGIN_FILES = rhythmbox-itms-plugin.cpp npapi.h npupp.h npruntime.h
+
 if ENABLE_BROWSER_PLUGIN
 plugindir = $(MOZILLA_PLUGINDIR)
 plugin_LTLIBRARIES = librhythmbox-itms-detection-plugin.la
-librhythmbox_itms_detection_plugin_la_SOURCES = rhythmbox-itms-plugin.cpp
-librhythmbox_itms_detection_plugin_la_CXXFLAGS = $(BROWSER_PLUGIN_CFLAGS)
-librhythmbox_itms_detection_plugin_la_LIBADD = $(BROWSER_PLUGIN_LIBS)
+librhythmbox_itms_detection_plugin_la_SOURCES = $(PLUGIN_FILES)
+librhythmbox_itms_detection_plugin_la_CXXFLAGS = -I$(top_srcdir)/podcast
 
 librhythmbox_itms_detection_plugin_la_LDFLAGS = \
 	-avoid-version	\
@@ -59,5 +60,5 @@ librhythmbox_itms_detection_plugin_la_LDFLAGS = \
 
 endif
 
-EXTRA_DIST = rhythmbox-itms-plugin.cpp plugin.symbols
+EXTRA_DIST = $(PLUGIN_FILES) plugin.symbols
 

@@ -41,6 +41,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "rb-util.h"
 #include "rb-plugin.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
@@ -115,6 +116,22 @@ media_player_key_pressed (DBusGProxy *proxy,
 		rb_shell_player_do_previous (plugin->shell_player, NULL);
 	} else if (strcmp (key, "Next") == 0) {
 		rb_shell_player_do_next (plugin->shell_player, NULL);
+	} else if (strcmp (key, "Repeat") == 0) {
+		gboolean shuffle, repeat;
+
+		if (rb_shell_player_get_playback_state (plugin->shell_player, &shuffle, &repeat)) {
+			rb_shell_player_set_playback_state (plugin->shell_player, shuffle, !repeat);
+		}
+	} else if (strcmp (key, "Shuffle") == 0) {
+		gboolean shuffle, repeat;
+
+		if (rb_shell_player_get_playback_state (plugin->shell_player, &shuffle, &repeat)) {
+			rb_shell_player_set_playback_state (plugin->shell_player, !shuffle, repeat);
+		}
+	} else if (strcmp (key, "FastForward") == 0) {
+		rb_shell_player_seek (plugin->shell_player, FFWD_OFFSET);
+	} else if (strcmp (key, "Rewind") == 0) {
+		rb_shell_player_seek (plugin->shell_player, -RWD_OFFSET);
 	}
 }
 
