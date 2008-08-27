@@ -567,6 +567,72 @@
 	  <long>Whether command to handle FEED scheme URLs is enabled.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/zune/command</key>
+	<applyto>/desktop/gnome/url-handlers/zune/command</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>rhythmbox "%s"</default>
+        <locale name="C">
+	  <short>The command to handle ZUNE scheme URLs</short>
+	  <long>The command to handle ZUNE scheme URLs.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/zune/needs_terminal</key>
+	<applyto>/desktop/gnome/url-handlers/zune/needs_terminal</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+	  <short>Whether command to handle ZUNE scheme URLs needs a terminal</short>
+	  <long>Whether command to handle ZUNE scheme URLs needs a terminal.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/zune/enabled</key>
+	<applyto>/desktop/gnome/url-handlers/zune/enabled</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>true</default>
+        <locale name="C">
+	  <short>Whether command to handle ZUNE scheme URLs is enabled</short>
+	  <long>Whether command to handle ZUNE scheme URLs is enabled.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/zcast/command</key>
+	<applyto>/desktop/gnome/url-handlers/zcast/command</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>rhythmbox "%s"</default>
+        <locale name="C">
+	  <short>The command to handle ZCAST scheme URLs</short>
+	  <long>The command to handle ZCAST scheme URLs.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/zcast/needs_terminal</key>
+	<applyto>/desktop/gnome/url-handlers/zcast/needs_terminal</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>false</default>
+        <locale name="C">
+	  <short>Whether command to handle ZCAST scheme URLs needs a terminal</short>
+	  <long>Whether command to handle ZCAST scheme URLs needs a terminal.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/desktop/gnome/url-handlers/zcast/enabled</key>
+	<applyto>/desktop/gnome/url-handlers/zcast/enabled</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>true</default>
+        <locale name="C">
+	  <short>Whether command to handle ZCAST scheme URLs is enabled</short>
+	  <long>Whether command to handle ZCAST scheme URLs is enabled.</long>
+        </locale>
+      </schema>
 
       <schema>
         <key>/schemas/apps/rhythmbox/state/podcast/show_browser</key>
