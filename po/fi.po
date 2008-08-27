@@ -12,9 +12,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-14 17:38+0300\n"
-"PO-Revision-Date: 2008-03-27 12:22+0200\n"
-"Last-Translator: Timo Jyrinki <timo.jyrinki@iki.fi>\n"
+"POT-Creation-Date: 2008-08-27 14:31+0300\n"
+"PO-Revision-Date: 2008-08-27 14:30+0300\n"
+"Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <gnome-fi-laatu@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -605,7 +605,7 @@ msgstr "%b %d %Y"
 #: ../rhythmdb/rhythmdb-tree.c:1252 ../rhythmdb/rhythmdb-tree.c:1256
 #: ../rhythmdb/rhythmdb-tree.c:1260 ../rhythmdb/rhythmdb.c:1599
 #: ../shell/rb-shell-player.c:1717 ../shell/rb-shell.c:3063
-#: ../sources/rb-podcast-source.c:1771 ../widgets/rb-entry-view.c:1035
+#: ../sources/rb-podcast-source.c:1770 ../widgets/rb-entry-view.c:1035
 #: ../widgets/rb-entry-view.c:1060 ../widgets/rb-entry-view.c:1463
 #: ../widgets/rb-entry-view.c:1475 ../widgets/rb-entry-view.c:1487
 #: ../widgets/rb-song-info.c:902 ../widgets/rb-song-info.c:1067
@@ -1071,7 +1071,8 @@ msgstr "Lisää"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:720
 msgid "Could not log in to Last.fm.  Check your username and password."
-msgstr "Ei voitu kirjautua last.fm-palveluun. Tarkista käyttäjätunnus ja salasana."
+msgstr ""
+"Ei voitu kirjautua last.fm-palveluun. Tarkista käyttäjätunnus ja salasana."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:724
 msgid "This version of Rhythmbox has been banned from Last.fm."
@@ -1102,8 +1103,9 @@ msgstr "Käyttäjän %s henkilökohtainen"
 msgid "%s's Loved Tracks"
 msgstr "Käyttäjän %s rakastamat kappaleet"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1108
 # c-format
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1108
+#, c-format
 msgid "%s's Playlist"
 msgstr "Käyttäjän %s soittolista"
 
@@ -1142,7 +1144,8 @@ msgstr "Tämä asema on saatavissa vain tilaajille."
 msgid ""
 "The streaming system is offline for maintenance, please try again later."
 msgstr ""
-"Musiikin levityspalvelu on pois päältä huollon takia, yritä myöhemmin uudestaan."
+"Musiikin levityspalvelu on pois päältä huollon takia, yritä myöhemmin "
+"uudestaan."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1800
 msgid "Changing station"
@@ -1782,7 +1785,7 @@ msgstr "_Poista"
 msgid "Delete playlist"
 msgstr "Poista soittolista"
 
-#: ../plugins/ipod/rb-ipod-source.c:1341 ../sources/rb-podcast-source.c:903
+#: ../plugins/ipod/rb-ipod-source.c:1341 ../sources/rb-podcast-source.c:902
 msgid "Podcasts"
 msgstr "Podcastit"
 
@@ -2677,6 +2680,9 @@ msgid ""
 "or rpdb2. If you have not set a debugger password in GConf, it will use the "
 "default password ('rhythmbox')."
 msgstr ""
+"Kun olet painanut OK:ta, rhythmbox odottaa kunnes otat siihen yhteyttä winpdb- "
+"tai rpdb2-protokollalla. Jos et ole asetttanut vianetsimen salasanaa Gconfiin, "
+"käytetään oletus-salasanaa ('rhythmbox')."
 
 #. ex:noet:ts=8:
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:1
@@ -2871,24 +2877,24 @@ msgid "Podcast"
 msgstr "Podcast"
 
 #: ../podcast/rb-podcast-manager.c:1946
-#, fuzzy, c-format
+#, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
-msgstr "Virhe lisättäessä Podcastia. Tarkista URL %s"
+msgstr "Tapahtui virhe lisättäessä tätä podcastia. %s. Tarkista URL: %s"
 
 #: ../podcast/rb-podcast-parse.c:168
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to check file type: %s"
-msgstr "Tuntematon tiedostotyyppi: %s"
+msgstr "Tiedostotyyppiä ei voitu tarkistaa: %s"
 
 #: ../podcast/rb-podcast-parse.c:187
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected file type: %s"
-msgstr "Tuntematon tiedostotyyppi: %s"
+msgstr "Odottamaton tiedostotyyppi: %s"
 
 #: ../podcast/rb-podcast-parse.c:210
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse the feed contents"
-msgstr "Videoulostuloa ei voi käynnistää"
+msgstr "Virran sisältöä ei voi tulkita"
 
 #: ../podcast/rb-podcast-properties-dialog.c:423
 msgid "Not Downloaded"
@@ -2999,7 +3005,7 @@ msgstr "Äänenvoimakkuusi on %f.\n"
 
 #: ../rhythmdb/rhythmdb-property-model.c:473
 #: ../sources/rb-auto-playlist-source.c:107 ../sources/rb-browser-source.c:172
-#: ../sources/rb-podcast-source.c:345
+#: ../sources/rb-podcast-source.c:344
 #: ../sources/rb-static-playlist-source.c:113
 msgid "All"
 msgstr "Kaikki"
@@ -3330,7 +3336,7 @@ msgstr "O_minaisuudet"
 msgid "Show information on the selected song"
 msgstr "Näytä tietoja valitusta kappaleesta"
 
-#: ../shell/rb-shell-clipboard.c:189 ../sources/rb-podcast-source.c:329
+#: ../shell/rb-shell-clipboard.c:189 ../sources/rb-podcast-source.c:328
 msgid "_Properties"
 msgstr "_Ominaisuudet"
 
@@ -3821,7 +3827,7 @@ msgid "Show notifications of song changes and other events"
 msgstr "Näytä huomautukset kappaleen vaihtumisesta ja muista tapahtumista"
 
 #: ../sources/rb-auto-playlist-source.c:107 ../sources/rb-browser-source.c:172
-#: ../sources/rb-podcast-source.c:345
+#: ../sources/rb-podcast-source.c:344
 #: ../sources/rb-static-playlist-source.c:113
 msgid "Search all fields"
 msgstr "Etsi kaikista kentistä"
@@ -3991,117 +3997,117 @@ msgstr " -  "
 msgid "by"
 msgstr " - "
 
-#: ../sources/rb-podcast-source.c:319
+#: ../sources/rb-podcast-source.c:318
 msgid "_New Podcast Feed..."
 msgstr "Uusi _Podcast-virta..."
 
-#: ../sources/rb-podcast-source.c:320
+#: ../sources/rb-podcast-source.c:319
 msgid "Subscribe to a new Podcast Feed"
 msgstr "Tilaa uusi Podcast-virta"
 
-#: ../sources/rb-podcast-source.c:323
+#: ../sources/rb-podcast-source.c:322
 msgid "Download _Episode"
 msgstr "Nouda _jakso"
 
-#: ../sources/rb-podcast-source.c:324
+#: ../sources/rb-podcast-source.c:323
 msgid "Download Podcast Episode"
 msgstr "Nouda Podcast-jakso"
 
-#: ../sources/rb-podcast-source.c:326
+#: ../sources/rb-podcast-source.c:325
 msgid "_Cancel Download"
 msgstr "_keskeytä nouto"
 
-#: ../sources/rb-podcast-source.c:327
+#: ../sources/rb-podcast-source.c:326
 msgid "Cancel Episode Download"
 msgstr "Keskeytä jakson nouto"
 
-#: ../sources/rb-podcast-source.c:330
+#: ../sources/rb-podcast-source.c:329
 msgid "Episode Properties"
 msgstr "Jakson ominaisuudet"
 
-#: ../sources/rb-podcast-source.c:332
+#: ../sources/rb-podcast-source.c:331
 msgid "_Update Podcast Feed"
 msgstr "_Päivitä Podcast-virta"
 
-#: ../sources/rb-podcast-source.c:333
+#: ../sources/rb-podcast-source.c:332
 msgid "Update Feed"
 msgstr "Päivitä virta"
 
-#: ../sources/rb-podcast-source.c:335
+#: ../sources/rb-podcast-source.c:334
 msgid "_Delete Podcast Feed"
 msgstr "P_oista Podcast-virta"
 
-#: ../sources/rb-podcast-source.c:336
+#: ../sources/rb-podcast-source.c:335
 msgid "Delete Feed"
 msgstr "Poista virta"
 
-#: ../sources/rb-podcast-source.c:338
+#: ../sources/rb-podcast-source.c:337
 msgid "_Update All Feeds"
 msgstr "Päivitä _kaikki virrat"
 
-#: ../sources/rb-podcast-source.c:339
+#: ../sources/rb-podcast-source.c:338
 msgid "Update all feeds"
 msgstr "Päivitä kaikki virrat"
 
-#: ../sources/rb-podcast-source.c:346
+#: ../sources/rb-podcast-source.c:345
 msgid "Feeds"
 msgstr "Virrat"
 
-#: ../sources/rb-podcast-source.c:346
+#: ../sources/rb-podcast-source.c:345
 msgid "Search podcast feeds"
 msgstr "Etsi Podcast-virtoja"
 
-#: ../sources/rb-podcast-source.c:347
+#: ../sources/rb-podcast-source.c:346
 msgid "Episodes"
 msgstr "Jaksot"
 
-#: ../sources/rb-podcast-source.c:347
+#: ../sources/rb-podcast-source.c:346
 msgid "Search podcast episodes"
 msgstr "Esti Podcast-jaksoja"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
 #. Don't include the prefix "podcast|" in the translation.
-#: ../sources/rb-podcast-source.c:593
+#: ../sources/rb-podcast-source.c:592
 msgid "podcast|New"
 msgstr "Uusi"
 
 #. Translators: this is the toolbar button label
 #. for Update All Feeds action.
-#: ../sources/rb-podcast-source.c:599
+#: ../sources/rb-podcast-source.c:598
 msgid "Update"
 msgstr "Päivitä"
 
-#: ../sources/rb-podcast-source.c:638 ../sources/rb-podcast-source.c:649
+#: ../sources/rb-podcast-source.c:637 ../sources/rb-podcast-source.c:648
 msgid "Date"
 msgstr "Päiväys"
 
-#: ../sources/rb-podcast-source.c:670 ../sources/rb-podcast-source.c:738
-#: ../sources/rb-podcast-source.c:792
+#: ../sources/rb-podcast-source.c:669 ../sources/rb-podcast-source.c:737
+#: ../sources/rb-podcast-source.c:791
 msgid "Feed"
 msgstr "Virta"
 
-#: ../sources/rb-podcast-source.c:689 ../sources/rb-podcast-source.c:707
+#: ../sources/rb-podcast-source.c:688 ../sources/rb-podcast-source.c:706
 msgid "Status"
 msgstr "Tila"
 
-#: ../sources/rb-podcast-source.c:690 ../sources/rb-podcast-source.c:1596
+#: ../sources/rb-podcast-source.c:689 ../sources/rb-podcast-source.c:1595
 msgid "Downloaded"
 msgstr "Noudettu"
 
-#: ../sources/rb-podcast-source.c:691 ../sources/rb-podcast-source.c:1604
+#: ../sources/rb-podcast-source.c:690 ../sources/rb-podcast-source.c:1603
 msgid "Waiting"
 msgstr "Odotetaan"
 
-#: ../sources/rb-podcast-source.c:692 ../sources/rb-podcast-source.c:1600
+#: ../sources/rb-podcast-source.c:691 ../sources/rb-podcast-source.c:1599
 msgid "Failed"
 msgstr "Epäonnistui"
 
-#: ../sources/rb-podcast-source.c:987
+#: ../sources/rb-podcast-source.c:986
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Poista Podcastin jakso ja noudettu tiedosto?"
 
-#: ../sources/rb-podcast-source.c:990
+#: ../sources/rb-podcast-source.c:989
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -4111,19 +4117,19 @@ msgstr ""
 "että voit poistaa pelkän jakson, mutta säilyttää noudetun tiedoston "
 "valitsemalla pelkän jakson poistamisen."
 
-#: ../sources/rb-podcast-source.c:998
+#: ../sources/rb-podcast-source.c:997
 msgid "Delete _Episode Only"
 msgstr "Poista pelkkä _jakso"
 
-#: ../sources/rb-podcast-source.c:1004
+#: ../sources/rb-podcast-source.c:1003
 msgid "_Delete Episode And File"
 msgstr "Poista jakso ja _tiedosto"
 
-#: ../sources/rb-podcast-source.c:1489
+#: ../sources/rb-podcast-source.c:1488
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Poistetaanko podcast-virta ja siihen liittyvät tiedostot?"
 
-#: ../sources/rb-podcast-source.c:1492
+#: ../sources/rb-podcast-source.c:1491
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -4133,58 +4139,58 @@ msgstr ""
 "että voit poistaa virran, mutta säilyttää noudetut tiedostot valitsemalla "
 "pelkän virran poistamisen."
 
-#: ../sources/rb-podcast-source.c:1500
+#: ../sources/rb-podcast-source.c:1499
 msgid "Delete _Feed Only"
 msgstr "Poista _pelkkä virta"
 
-#: ../sources/rb-podcast-source.c:1507
+#: ../sources/rb-podcast-source.c:1506
 msgid "_Delete Feed And Files"
 msgstr "Poista virta ja tiedostot"
 
-#: ../sources/rb-podcast-source.c:1715
+#: ../sources/rb-podcast-source.c:1714
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
 msgstr[0] "%d virta"
 msgstr[1] "Kaikki %d virtaa"
 
-#: ../sources/rb-podcast-source.c:1857
+#: ../sources/rb-podcast-source.c:1856
 msgid "Downloading podcast"
 msgstr "Noudetaan podcastia"
 
-#: ../sources/rb-podcast-source.c:1870
+#: ../sources/rb-podcast-source.c:1869
 msgid "Finished downloading podcast"
 msgstr "Podcastin nouto päättyi"
 
-#: ../sources/rb-podcast-source.c:1883
+#: ../sources/rb-podcast-source.c:1882
 msgid "New updates available from"
 msgstr "Uusia päivityksiä haettavissa lähteestä"
 
-#: ../sources/rb-podcast-source.c:1999
+#: ../sources/rb-podcast-source.c:1998
 msgid "Error in podcast"
 msgstr "Virhe podcastissa"
 
-#: ../sources/rb-podcast-source.c:2006
+#: ../sources/rb-podcast-source.c:2005
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Haluatko lisätä podcast-virran joka tapauksessa?"
 
-#: ../sources/rb-podcast-source.c:2133
+#: ../sources/rb-podcast-source.c:2132
 msgid "New Podcast Feed"
 msgstr "Uusi Podcast-virta"
 
-#: ../sources/rb-podcast-source.c:2133
+#: ../sources/rb-podcast-source.c:2132
 msgid "URL of podcast feed:"
 msgstr "Podcast-virran URL:"
 
-#: ../sources/rb-podcast-source.c:2149
+#: ../sources/rb-podcast-source.c:2148
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d jakso"
 msgstr[1] "%d jaksoa"
 
-#: ../sources/rb-podcast-source.c:2257
+#: ../sources/rb-podcast-source.c:2256
 msgid "Podcast Error"
 msgstr "Virhe podcastissa"
 
