@@ -28,6 +28,15 @@
  *
  */
 
+/**
+ * SECTION:rb-removable-media-maanger
+ * @short_description: handling of removable media such as audio CDs and DAP devices
+ * 
+ * The removable media manager maintains the mapping between GIO GVolume and GMount
+ * objects and rhythmbox sources, and also performs track transfers between
+ * removable media sources and the library.
+ */
+
 #include "config.h"
 
 #include <string.h>
@@ -167,6 +176,11 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 	object_class->set_property = rb_removable_media_manager_set_property;
 	object_class->get_property = rb_removable_media_manager_get_property;
 
+	/**
+	 * RBRemovableMediaManager:source:
+	 *
+	 * The current selected source.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SOURCE,
 					 g_param_spec_object ("source",
@@ -174,6 +188,11 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 							      "RBSource object",
 							      RB_TYPE_SOURCE,
 							      G_PARAM_READWRITE));
+	/**
+	 * RBRemovableMediaManager:shell:
+	 *
+	 * The #RBShell instance.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SHELL,
 					 g_param_spec_object ("shell",
@@ -182,6 +201,14 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE));
 
+	/**
+	 * RBRemovableMediaManager:scanned:
+	 *
+	 * This is set to TRUE when the removable media manager has scanned
+	 * all existing volumes and mounts.  When a plugin that handles removable
+	 * media is activated, it should request a new scan if this property is
+	 * already set to TRUE.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SCANNED,
 					 g_param_spec_boolean ("scanned",
@@ -190,6 +217,13 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 							       FALSE,
 							       G_PARAM_READABLE));
 
+	/**
+	 * RBRemovableMediaManager::medium-added:
+	 * @mgr: the #RBRemovableMediaManager
+	 * @source: the newly added #RBSource
+	 *
+	 * Emitted when a new source is added for a removable medium.
+	 */
 	rb_removable_media_manager_signals[MEDIUM_ADDED] =
 		g_signal_new ("medium_added",
 			      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
@@ -200,6 +234,16 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      G_TYPE_NONE,
 			      1, G_TYPE_OBJECT);
 
+	/**
+	 * RBRemovableMediaManager::transfer-progress:
+	 * @mgr: the #RBRemovableMediaManager
+	 * @done: number of tracks that have been fully transferred
+	 * @total: total number of tracks to transfer
+	 * @progress: fraction of the current track that has been transferred
+	 *
+	 * Emitted throughout the track transfer process to allow UI elements
+	 * showing transfer progress to be updated.
+	 */
 	rb_removable_media_manager_signals[TRANSFER_PROGRESS] =
 		g_signal_new ("transfer-progress",
 			      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
@@ -210,6 +254,17 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      G_TYPE_NONE,
 			      3, G_TYPE_INT, G_TYPE_INT, G_TYPE_DOUBLE);
 
+	/**
+	 * RBRemovableMediaManager::create-source-volume
+	 * @mgr: the #RBRemovableMediaManager
+	 * @volume: the #GVolume 
+	 *
+	 * Emitted when a new volume is added to allow plugins to create a
+	 * corresponding #RBSource.  The first signal handler that returns
+	 * a source wins.  A plugin should only use this signal if it
+	 * doesn't require the volume to be mounted.  If the volume must be
+	 * mounted to be useful, use the create-source-mount signal instead.
+	 */
 	rb_removable_media_manager_signals[CREATE_SOURCE_VOLUME] =
 		g_signal_new ("create-source-volume",
 			      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
@@ -219,6 +274,17 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      rb_marshal_OBJECT__OBJECT,
 			      RB_TYPE_SOURCE,
 			      1, G_TYPE_VOLUME);
+
+	/**
+	 * RBRemovableMediaManager::create-source-mount
+	 * @mgr: the #RBRemovableMediaManager
+	 * @mount: the #GMount
+	 *
+	 * Emitted when a new mount is added to allow plugins to create a
+	 * corresponding #RBSource.  The first signal handler that returns
+	 * a source wins.  If a source was created for the #GVolume
+	 * for a mount, then this signal will not be emitted.
+	 */
 	rb_removable_media_manager_signals[CREATE_SOURCE_MOUNT] =
 		g_signal_new ("create-source-mount",
 			      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
@@ -356,6 +422,12 @@ rb_removable_media_manager_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_removable_media_manager_new:
+ * @shell: the #RBShell
+ *
+ * Creates the #RBRemovableMediaManager instance.
+ */
 RBRemovableMediaManager *
 rb_removable_media_manager_new (RBShell *shell)
 {
@@ -813,6 +885,15 @@ rb_removable_media_manager_cmd_scan_media (GtkAction *action, RBRemovableMediaMa
 	rb_removable_media_manager_scan (manager);
 }
 
+/**
+ * rb_removable_media_manager_scan:
+ * @manager: the #RBRemovableMediaManager
+ *
+ * Initiates a new scan of all attached media.  Newly activated plugins that use
+ * the create-source-volume or create-source-mount signals should call this if
+ * the 'scanned' property is %TRUE.  Otherwise, the first scan will catch any
+ * existing volumes or mounts that the plugin is interested in.
+ */
 void
 rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 {
@@ -895,6 +976,13 @@ emit_progress (RBRemovableMediaManager *mgr)
 static void
 error_cb (RBEncoder *encoder, GError *error, TransferData *data)
 {
+	/* ignore 'file exists' */
+	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_EXISTS)) {
+		rb_debug ("ignoring 'file exists' error for %s", data->dest);
+		data->failed = TRUE;
+		return;
+	}
+
 	rb_debug ("Error transferring track to %s: %s", data->dest, error->message);
 	rb_error_dialog (NULL, _("Error transferring track"), "%s", error->message);
 
@@ -970,6 +1058,19 @@ do_transfer (RBRemovableMediaManager *manager)
 	rb_encoder_encode (encoder, data->entry, data->dest, data->mime_types);
 }
 
+/**
+ * rb_removable_media_manager_queue_transfer:
+ * @manager: the #RBRemovableMediaManager
+ * @entry: the #RhythmDBEntry to transfer
+ * @dest: the destination URI
+ * @mime_types: a list of acceptable output MIME types
+ * @callback: function to call when the transfer is complete
+ * @userdata: data to pass to the callback
+ *
+ * Initiates a track transfer.  This will transfer the track identified by the
+ * #RhythmDBEntry to the given destination, transcoding it if its
+ * current media type is not in the list of acceptable output types.
+ */
 void
 rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *manager,
 					  RhythmDBEntry *entry,

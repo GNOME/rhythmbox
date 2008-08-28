@@ -50,12 +50,15 @@ typedef void (*RBTransferCompleteCallback) (RhythmDBEntry *entry,
 					    guint64 dest_size,
 					    gpointer userdata);
 
-typedef struct
+typedef struct _RBRemovableMediaManager RBRemovableMediaManager;
+typedef struct _RBRemovableMediaManagerClass RBRemovableMediaManagerClass;
+
+struct _RBRemovableMediaManager
 {
 	GObject parent;
-} RBRemovableMediaManager;
+};
 
-typedef struct
+struct _RBRemovableMediaManagerClass
 {
 	GObjectClass parent_class;
 
@@ -70,7 +73,7 @@ typedef struct
 					 GMount *mount);
 	RBSource * (*create_source_volume) (RBRemovableMediaManager *mgr,
 					 GVolume *volume);
-} RBRemovableMediaManagerClass;
+};
 
 RBRemovableMediaManager* rb_removable_media_manager_new		(RBShell *shell);
 GType			rb_removable_media_manager_get_type	(void);
