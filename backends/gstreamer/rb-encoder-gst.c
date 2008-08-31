@@ -565,7 +565,6 @@ prompt_for_overwrite (GFile *file)
 				  NULL);
 	if (info != NULL) {
 		display_name = g_file_info_get_display_name (info);
-		g_object_unref (info);
 	}
 
 	if (display_name == NULL) {
@@ -580,6 +579,9 @@ prompt_for_overwrite (GFile *file)
 	response = gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
 	g_free (free_name);
+	if (info != NULL) {
+		g_object_unref (info);
+	}
 
 	return (response == GTK_RESPONSE_YES);
 }

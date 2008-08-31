@@ -1,5 +1,11 @@
 2008-08-31  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-encoder-gst.c: (prompt_for_overwrite):
+	Don't unref the file info object until we're done with the strings
+	we pulled out of it.
+
+2008-08-31  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by: John Millikin  <jmillikin@gmail.com>
 
 	* metadata/rb-metadata-gst.c:
