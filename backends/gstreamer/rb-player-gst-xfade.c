@@ -1242,8 +1242,11 @@ post_eos_seek_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 static void
 unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 {
+	g_static_rec_mutex_lock (&stream->player->priv->sink_lock);
+
 	if (stream->adder_pad == NULL) {
 		rb_debug ("stream %s is already unlinked.  huh?", stream->uri);
+		g_static_rec_mutex_unlock (&stream->player->priv->sink_lock);
 		return;
 	}
 
@@ -1253,7 +1256,6 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		g_warning ("Couldn't unlink stream %s: things will probably go quite badly from here on", stream->uri);
 	}
 
-	g_static_rec_mutex_lock (&stream->player->priv->sink_lock);
 	stream->player->priv->linked_streams--;
 	rb_debug ("%d linked streams left", stream->player->priv->linked_streams);
 
@@ -2732,19 +2734,19 @@ stop_sink (RBPlayerGstXFade *player)
 			player->priv->tick_timeout_id = 0;
 		}
 
-		sr = gst_element_set_state (player->priv->silencebin, GST_STATE_READY);
+		sr = gst_element_set_state (player->priv->outputbin, GST_STATE_READY);
 		if (sr == GST_STATE_CHANGE_FAILURE) {
-			rb_debug ("couldn't stop silence bin");
+			rb_debug ("couldn't stop output bin");
 			return FALSE;
 		}
 
 		sr = gst_element_set_state (player->priv->adder, GST_STATE_READY);
 		if (sr == GST_STATE_CHANGE_FAILURE) {
-			rb_debug ("couldn't stop silence bin");
+			rb_debug ("couldn't stop adder");
 			return FALSE;
 		}
 
-		sr = gst_element_set_state (player->priv->outputbin, GST_STATE_READY);
+		sr = gst_element_set_state (player->priv->silencebin, GST_STATE_READY);
 		if (sr == GST_STATE_CHANGE_FAILURE) {
 			rb_debug ("couldn't stop silence bin");
 			return FALSE;

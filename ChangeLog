@@ -1,3 +1,12 @@
+2008-09-01  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (unlink_blocked_cb):
+	Take the sink lock earlier to protect against our pad block
+	callback being called simulatenously on multiple threads.
+	(stop_sink):
+	Perform downward state changes from sink to source, as GStreamer
+	itself does.  Should fix occasional deadlocking.
+
 2008-08-31  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-encoder-gst.c: (prompt_for_overwrite):
