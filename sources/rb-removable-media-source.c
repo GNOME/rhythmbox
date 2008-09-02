@@ -166,8 +166,8 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 	}
 
 	if (mount != NULL) {
-		display_name = g_mount_get_name (priv->mount);
-		icon = g_mount_get_icon (priv->mount);
+		display_name = g_mount_get_name (mount);
+		icon = g_mount_get_icon (mount);
 		rb_debug ("details from mount: display name = %s, icon = %p", display_name, icon);
 	} else if (priv->volume != NULL) {
 		display_name = g_volume_get_name (priv->volume);
