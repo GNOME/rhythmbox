@@ -1,3 +1,10 @@
+2008-09-03  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (perform_seek_idle),
+	(unlink_blocked_cb):
+	Don't seek from pad block callbacks, it tends to cause crashes when
+	playing mp3 streams using mad.
+
 2008-09-02  Bastien Nocera  <hadess@hadess.net>
 
 	* autogen.sh: Allow using the plugins uninstalled with the default

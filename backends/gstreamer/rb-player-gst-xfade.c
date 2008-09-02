@@ -1219,6 +1219,14 @@ perform_seek (RBXFadeStream *stream)
 	}
 }
 
+static gboolean
+perform_seek_idle (RBXFadeStream *stream)
+{
+	perform_seek (stream);
+	g_object_unref (stream);
+	return FALSE;
+}
+
 /*
  * called when a stream doing a post-EOS seek is blocked.  this indicates
  * that the seek has completed (that's the only way data can flow out of
@@ -1270,7 +1278,7 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	/* handle unlinks for seeking and stream reuse */
 	switch (stream->state) {
 	case SEEKING:
-		perform_seek (stream);
+		g_idle_add ((GSourceFunc) perform_seek_idle, g_object_ref (stream));
 		break;
 
 	case REUSING:
@@ -1278,7 +1286,7 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		break;
 
 	case SEEKING_PAUSED:
-		perform_seek (stream);
+		g_idle_add ((GSourceFunc) perform_seek_idle, g_object_ref (stream));
 		/* fall through.  this only happens when pausing, so it's OK
 		 * to stop the sink here.
 		 */
