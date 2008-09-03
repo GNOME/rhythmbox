@@ -1,3 +1,10 @@
+2008-09-04  Jonathan Matthew  <jonathan@d14n.org>
+
+	* lib/rb-file-helpers.c: (check_file_is_directory),
+	(create_parent_dirs), (rb_uri_create_parent_dirs):
+	Don't call g_file_make_directory_with_parents if the directory
+	we want already exists.  Fixes #550461.
+
 2008-09-03  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c: (perform_seek_idle),
