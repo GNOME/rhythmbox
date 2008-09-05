@@ -176,9 +176,6 @@ rb_audiocd_source_new (RBPlugin *plugin,
 	char *name;
 	char *path;
 
-	if (!rb_audiocd_is_volume_audiocd (volume))
-		return NULL;
-
 	g_object_get (shell, "db", &db, NULL);
 
 	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
@@ -723,40 +720,30 @@ impl_delete_thyself (RBSource *source)
 }
 
 gboolean
-rb_audiocd_is_volume_audiocd (GVolume *volume)
+rb_audiocd_is_mount_audiocd (GMount *mount)
 {
-	GMount *mount;
-
-	/* if it's mounted, we can check the mount root URI scheme */
-	mount = g_volume_get_mount (volume);
-	if (mount != NULL) {
-		gboolean result = FALSE;
+	gboolean result = FALSE;
 #if GLIB_CHECK_VERSION(2,17,7)
-		char **types;
-		guint i;
+	char **types;
+	guint i;
 
-		types = g_mount_guess_content_type_sync (mount, FALSE, NULL, NULL);
-		for (i = 0; types[i] != NULL; i++) {
-			if (g_str_equal (types[i], "x-content/audio-cdda") != FALSE) {
-				result = TRUE;
-				break;
-			}
+	types = g_mount_guess_content_type_sync (mount, FALSE, NULL, NULL);
+	for (i = 0; types[i] != NULL; i++) {
+		if (g_str_equal (types[i], "x-content/audio-cdda") != FALSE) {
+			result = TRUE;
+			break;
 		}
-
-		g_strfreev (types);
-#else
-		GFile *file;
-		
-		file = g_mount_get_root (mount);
-		result = g_file_has_uri_scheme (file, "cdda");
-		g_object_unref (file);
-#endif /* glib 2.17.7 */
-
-		g_object_unref (mount);
-		return result;
 	}
 
-	return FALSE;
+	g_strfreev (types);
+#else
+	GFile *file;
+	
+	file = g_mount_get_root (mount);
+	result = g_file_has_uri_scheme (file, "cdda");
+	g_object_unref (file);
+#endif /* glib 2.17.7 */
+	return result;
 }
 
 static gboolean

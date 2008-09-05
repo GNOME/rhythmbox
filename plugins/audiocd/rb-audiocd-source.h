@@ -59,7 +59,7 @@ RBRemovableMediaSource *	rb_audiocd_source_new		(RBPlugin *plugin,
 GType			rb_audiocd_source_get_type		(void);
 GType			rb_audiocd_source_register_type		(GTypeModule *module);
 
-gboolean		rb_audiocd_is_volume_audiocd		(GVolume *volume);
+gboolean		rb_audiocd_is_mount_audiocd		(GMount *mount);
 
 G_END_DECLS
 

@@ -1,5 +1,17 @@
 2008-09-05  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/audiocd/rb-audiocd-plugin.c: (create_source_cb),
+	(impl_activate):
+	* plugins/audiocd/rb-audiocd-source.c: (rb_audiocd_source_new),
+	(rb_audiocd_is_mount_audiocd):
+	* plugins/audiocd/rb-audiocd-source.h:
+	Detect audio CDs based on gio mounts rather than volumes, since we
+	require the volume to be mounted.  Sometimes the mount hasn't finished
+	by the time we get the volume-added signal, so this works a bit more
+	reliably.
+
+2008-09-05  Jonathan Matthew  <jonathan@d14n.org>
+
 	* shell/rb-removable-media-manager.c:
 	Fix typo in gtk-doc comments.
 

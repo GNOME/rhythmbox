@@ -86,9 +86,6 @@ static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 static void rb_audiocd_plugin_playing_uri_changed_cb (RBShellPlayer *player,
 						      const char *uri,
 						      RBAudioCdPlugin *plugin);
-static RBSource * create_source_cb (RBRemovableMediaManager *rmm,
-				    GVolume *volume,
-				    RBAudioCdPlugin *plugin);
 
 RB_PLUGIN_REGISTER(RBAudioCdPlugin, rb_audiocd_plugin)
 
@@ -247,13 +244,19 @@ rb_audiocd_plugin_source_deleted (RBAudioCdSource *source,
 
 static RBSource *
 create_source_cb (RBRemovableMediaManager *rmm,
-		  GVolume                 *volume,
+		  GMount                  *mount,
 		  RBAudioCdPlugin         *plugin)
 {
 	RBSource *source = NULL;
+	GVolume *volume = NULL;
 
-	if (rb_audiocd_is_volume_audiocd (volume)) {
-		source = RB_SOURCE (rb_audiocd_source_new (RB_PLUGIN (plugin), plugin->shell, volume));
+	if (rb_audiocd_is_mount_audiocd (mount)) {
+
+		volume = g_mount_get_volume (mount);
+		if (volume != NULL) {
+			source = RB_SOURCE (rb_audiocd_source_new (RB_PLUGIN (plugin), plugin->shell, volume));
+			g_object_unref (volume);
+		}
 	}
 
 	if (source != NULL) {
@@ -305,7 +308,7 @@ impl_activate (RBPlugin *plugin,
 	 * plugins for more specific device types can get in first.
 	 */
 	g_signal_connect_after (rmm,
-				"create-source-volume", G_CALLBACK (create_source_cb),
+				"create-source-mount", G_CALLBACK (create_source_cb),
 				pi);
 
 	/* only scan if we're being loaded after the initial scan has been done */
