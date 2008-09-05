@@ -1,3 +1,15 @@
+2008-09-05  Bastien Nocera  <hadess@hadess.net>
+
+	* configure.ac:
+	* plugins/audiocd/Makefile.am:
+	* plugins/audiocd/rb-audiocd-source.c (metadata_cb),
+	(metadata_cancelled_cb), (rb_audiocd_load_metadata),
+	(rb_audiocd_is_volume_audiocd):
+	* plugins/audiocd/sj-*.[ch]:
+	* plugins/audiocd/update-from-egg.sh: Update from sound-juicer
+	trunk, adds CD-Text support via gvfs trunk, and Musicbrainz3
+	(Closes: #550481)
+
 2008-09-04  Jonathan Matthew  <jonathan@d14n.org>
 
 	* lib/rb-file-helpers.c: (check_file_is_directory),

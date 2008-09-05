@@ -6,16 +6,18 @@ libaudiocd_la_SOURCES =					\
 	rb-audiocd-source.c				\
 	rb-audiocd-source.h
 
-libaudiocd_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS) $(LIBNAUTILUS_BURN_LIBS) $(MUSICBRAINZ_LIBS)
+libaudiocd_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 libaudiocd_la_LIBADD = \
 	$(top_builddir)/corelib/librhythmbox-core.la \
-	$(HAL_LIBS)                  \
 	$(TOTEM_PLPARSER_LIBS)       \
 	$(LIBNAUTILUS_BURN_LIBS)
 
 if HAVE_MUSICBRAINZ
 libaudiocd_la_LIBADD += $(MUSICBRAINZ_LIBS)
+endif
+if HAVE_MUSICBRAINZ3
+libaudiocd_la_LIBADD +=$(MUSICBRAINZ3_LIBS)
 endif
 
 libaudiocd_la_LIBADD += $(NULL)
@@ -41,9 +43,10 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(TOTEM_PLPARSER_CFLAGS)			\
-	$(HAL_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
+	$(MUSICBRAINZ_CFLAGS) $(MUSICBRAINZ3_CFLAGS)	\
 	$(LIBNAUTILUS_BURN_CFLAGS)			\
+	-DUSE_TOTEM_PL_PARSER				\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 gladedir = $(plugindir)
@@ -60,15 +63,35 @@ plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 
 EXTRA_DIST = $(glade_DATA) $(uixml_DATA) $(plugin_in_files) sj-metadata-marshal.list
 
+SJ_FILES =									\
+	sj-error.c sj-error.h							\
+	sj-metadata.c sj-metadata.h						\
+	sj-metadata-gvfs.c sj-metadata-gvfs.h					\
+	sj-metadata-getter.c sj-metadata-getter.h				\
+	sj-metadata-musicbrainz3.c sj-metadata-musicbrainz3.h			\
+	sj-metadata-musicbrainz.c sj-metadata-musicbrainz.h			\
+	sj-structures.c sj-structures.h						\
+	sj-metadata-marshal.list
+
+EGGDIR=$(srcdir)/../../../sound-juicer/libjuicer
+regenerate-built-sources:
+	EGGFILES="$(SJ_FILES)" EGGDIR="$(EGGDIR)" $(srcdir)/update-from-egg.sh || true
+
 MARSHALFILES = 
 
 if HAVE_MUSICBRAINZ
-libaudiocd_la_SOURCES += \
-	sj-metadata.h sj-metadata.c \
-	sj-metadata-musicbrainz.h sj-metadata-musicbrainz.c \
-	sj-structures.h sj-structures.c \
-	sj-error.h sj-error.c \
+libaudiocd_la_SOURCES +=							\
+	sj-metadata.h sj-metadata.c						\
+	sj-metadata-getter.c sj-metadata-getter.h				\
+	sj-metadata-musicbrainz.h sj-metadata-musicbrainz.c			\
+	sj-metadata-gvfs.c sj-metadata-gvfs.h					\
+	sj-structures.h sj-structures.c						\
+	sj-error.h sj-error.c							\
 	$(MARSHALFILES)
+
+if HAVE_MUSICBRAINZ3
+libaudiocd_la_SOURCES += sj-metadata-musicbrainz3.c sj-metadata-musicbrainz3.h
+endif
 
 MARSHALFILES += sj-metadata-marshal.h sj-metadata-marshal.c
 

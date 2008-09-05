@@ -7,14 +7,6 @@
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
  *
- * The Rhythmbox authors hereby grants permission for non-GPL compatible
- * GStreamer plugins to be used and distributed together with GStreamer
- * and Rhythmbox. This permission is above and beyond the permissions granted
- * by the GPL license by which Rhythmbox is covered. If you modify this code
- * you may extend this exception to your version of the code, but you are not
- * obligated to do so. If you do not wish to do so, delete this exception
- * statement from your version.
- *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -34,7 +26,7 @@
 
 G_BEGIN_DECLS
 
-#define SJ_TYPE_METADATA_MUSICBRAINZ            (sj_metadata_get_type ())
+#define SJ_TYPE_METADATA_MUSICBRAINZ            (sj_metadata_musicbrainz_get_type ())
 #define SJ_METADATA_MUSICBRAINZ(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), SJ_TYPE_METADATA_MUSICBRAINZ, SjMetadataMusicbrainz))
 #define SJ_METADATA_MUSICBRAINZ_CLASS(vtable)    (G_TYPE_CHECK_CLASS_CAST ((vtable), SJ_TYPE_METADATA_MUSICBRAINZ, SjMetadataMusicbrainzClass))
 #define SJ_IS_METADATA_MUSICBRAINZ(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SJ_TYPE_METADATA_MUSICBRAINZ))

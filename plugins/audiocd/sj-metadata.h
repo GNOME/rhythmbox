@@ -7,14 +7,6 @@
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
  *
- * The Rhythmbox authors hereby grants permission for non-GPL compatible
- * GStreamer plugins to be used and distributed together with GStreamer
- * and Rhythmbox. This permission is above and beyond the permissions granted
- * by the GPL license by which Rhythmbox is covered. If you modify this code
- * you may extend this exception to your version of the code, but you are not
- * obligated to do so. If you do not wish to do so, delete this exception
- * statement from your version.
- *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -48,25 +40,19 @@ struct _SjMetadataClass
 {
   GTypeInterface g_iface;
 
-  /* Signals */
-  void         (*metadata) (SjMetadata *md, GList *albums, GError *error);
-
   /* Virtual Table */
-  GError* (*get_new_error) (SjMetadata *metadata);
-  void (*set_cdrom) (SjMetadata *metadata, const char* device);
-  void (*set_proxy) (SjMetadata *metadata, const char* proxy);
-  void (*set_proxy_port) (SjMetadata *metadata, int proxy_port);
-  void (*list_albums) (SjMetadata *metadata, GError **error);
-  char *(*get_submit_url) (SjMetadata *metadata);
+  GList * (*list_albums) (SjMetadata *metadata, char **url, GError **error);
 };
 
 GType sj_metadata_get_type (void);
-GError *sj_metadata_get_new_error (SjMetadata *metadata);
 void sj_metadata_set_cdrom (SjMetadata *metadata, const char* device);
 void sj_metadata_set_proxy (SjMetadata *metadata, const char* proxy);
 void sj_metadata_set_proxy_port (SjMetadata *metadata, const int proxy_port);
-void sj_metadata_list_albums (SjMetadata *metadata, GError **error);
-char *sj_metadata_get_submit_url (SjMetadata *metadata);
+GList * sj_metadata_list_albums (SjMetadata *metadata, char **url, GError **error);
+
+char * sj_metadata_helper_scan_disc_number (const char *album_title, int *disc_number);
+GDate * sj_metadata_helper_scan_date (const char *date);
+gboolean sj_metadata_helper_check_media (const char *cdrom, GError **error);
 
 G_END_DECLS
 

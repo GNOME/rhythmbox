@@ -39,24 +39,19 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <gst/gst.h>
-/*#include <totem-disc.h>*/
 
 #include "rb-plugin.h"
 #include "rhythmdb.h"
 #include "eel-gconf-extensions.h"
+#include "rb-shell.h"
 #include "rb-audiocd-source.h"
 #include "rb-util.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-glade-helpers.h"
 
-#ifdef HAVE_HAL
-#include <libhal.h>
-#include <dbus/dbus.h>
-#endif
-
 #ifdef HAVE_MUSICBRAINZ
-#include "sj-metadata-musicbrainz.h"
+#include "sj-metadata-getter.h"
 #include "sj-structures.h"
 #endif
 
@@ -86,7 +81,7 @@ typedef struct
 	GstElement *fakesink;
 
 #ifdef HAVE_MUSICBRAINZ
-	SjMetadata *metadata;
+	SjMetadataGetter *metadata;
 #endif
 } RBAudioCdSourcePrivate;
 
@@ -506,7 +501,7 @@ multiple_album_dialog (GList *albums, RBAudioCdSource *source)
 
 
 static void
-metadata_cb (SjMetadata *metadata,
+metadata_cb (SjMetadataGetter *metadata,
 	     GList *albums,
 	     GError *error,
 	     RBAudioCdSource *source)
@@ -548,6 +543,13 @@ metadata_cb (SjMetadata *metadata,
 			album = (AlbumDetails *)albums->data;
 	} else
 		album = (AlbumDetails *)albums->data;
+
+	if (album->metadata_source == SOURCE_FALLBACK) {
+		g_object_unref (metadata);
+		priv->metadata = NULL;
+		g_object_unref (db);
+		return;
+	}
 
 	g_object_set (G_OBJECT (source), "name", album->title, NULL);
 
@@ -616,7 +618,7 @@ metadata_cb (SjMetadata *metadata,
 }
 
 static void
-metadata_cancelled_cb (SjMetadata *metadata,
+metadata_cancelled_cb (SjMetadataGetter *metadata,
 		       GList *albums,
 		       GError *error,
 		       gpointer old_source)
@@ -633,12 +635,12 @@ rb_audiocd_load_metadata (RBAudioCdSource *source,
 #ifdef HAVE_MUSICBRAINZ
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 
-	priv->metadata = (SjMetadata*)sj_metadata_musicbrainz_new ();
-	sj_metadata_set_cdrom (priv->metadata, priv->device_path);
+	priv->metadata = sj_metadata_getter_new ();
+	sj_metadata_getter_set_cdrom (priv->metadata, priv->device_path);
 
 	g_signal_connect (G_OBJECT (priv->metadata), "metadata",
 			  G_CALLBACK (metadata_cb), source);
-	sj_metadata_list_albums (priv->metadata, NULL);
+	sj_metadata_getter_list_albums (priv->metadata, NULL);
 #endif
 }
 
@@ -720,178 +722,27 @@ impl_delete_thyself (RBSource *source)
 	g_object_unref (db);
 }
 
-#if  0
-gboolean
-rb_audiocd_is_volume_audiocd (GVolume *volume)
-{
-	char *device_path;
-
-	device_path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
-	if (device_path != NULL) {
-		gboolean result;
-		TotemDiscMediaType media_type;
-		GError *error = NULL;
-
-		/* should we do any kind of checking before we make this call? */
-		media_type = totem_cd_detect_type (device_path, &error);
-		if (error != NULL) {
-			rb_debug ("error detecting if volume is an audio CD: %s", error->message);
-			g_error_free (error);
-			result = FALSE;
-		} else if (media_type == MEDIA_TYPE_CDDA) {
-			rb_debug ("totem-disc says this is an audio CD");
-			result = TRUE;
-		} else {
-			rb_debug ("totem-disc says this is not an audio CD");
-			result = FALSE;
-		}
-
-		g_free (device_path);
-		return result;
-	} else {
-		rb_debug ("couldn't get device path");
-		return FALSE;
-	}
-}
-#endif
-
-
-#ifdef HAVE_HAL
-
-/* copied this stuff from the generic player plugin,
- * so it should probably go somewhere common.
- */
-
-static void
-free_dbus_error (const char *what, DBusError *error)
-{
-	if (dbus_error_is_set (error)) {
-		rb_debug ("%s: dbus error: %s", what, error->message);
-		dbus_error_free (error);
-	}
-}
-
-static LibHalContext *
-get_hal_context (void)
-{
-	LibHalContext *ctx = NULL;
-	DBusConnection *conn = NULL;
-	DBusError error;
-	gboolean result = FALSE;
-
-	dbus_error_init (&error);
-	ctx = libhal_ctx_new ();
-	if (ctx == NULL)
-		return NULL;
-
-	conn = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
-	if (conn != NULL && !dbus_error_is_set (&error)) {
-		libhal_ctx_set_dbus_connection (ctx, conn);
-		if (libhal_ctx_init (ctx, &error))
-			result = TRUE;
-	}
-
-	if (dbus_error_is_set (&error)) {
-		free_dbus_error ("setting up hal context", &error);
-		result = FALSE;
-	}
-
-	if (!result) {
-		libhal_ctx_free (ctx);
-		ctx = NULL;
-	}
-	return ctx;
-}
-
-static void
-cleanup_hal_context (LibHalContext *ctx)
-{
-	DBusError error;
-	if (ctx == NULL)
-		return;
-
-	dbus_error_init (&error);
-	libhal_ctx_shutdown (ctx, &error);
-	libhal_ctx_free (ctx);
-	free_dbus_error ("cleaning up hal context", &error);
-}
-
-#endif
-
 gboolean
 rb_audiocd_is_volume_audiocd (GVolume *volume)
 {
 	GMount *mount;
-#ifdef HAVE_HAL
-	LibHalContext *ctx;
-	char *udi;
-	char *device_path;
-
-	/* get device path for debug purposes */
-	device_path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
-	if (device_path == NULL) {
-		device_path = g_strdup ("unknown device");
-	}
-
-	/* look at HAL properties to see if it's an audio CD */
-	udi = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
-	if (udi != NULL) {
-		ctx = get_hal_context ();
-		if (ctx != NULL) {
-			gboolean result = FALSE;
-			DBusError error;
-			dbus_error_init (&error);
-
-			/* check if it's a disc at all */
-			if (libhal_device_query_capability (ctx, udi, "volume.disc", &error) &&
-			    !dbus_error_is_set (&error)) {
-				/* check it's a CD with audio; maybe check it's not blank? */
-				dbus_bool_t is_audio;
-
-				is_audio = libhal_device_get_property_bool (ctx, udi, "volume.disc.has_audio", &error);
-				if (dbus_error_is_set (&error)) {
-					free_dbus_error ("checking if disc has audio", &error);
-					is_audio = FALSE;
-				}
-
-				if (is_audio) {
-					rb_debug ("disc in %s is an audio CD", device_path);
-					result = TRUE;
-				} else {
-					rb_debug ("disc %s is not an audio CD", device_path);
-				}
-				
-			} else if (dbus_error_is_set (&error)) {
-				free_dbus_error ("checking volume type", &error);
-			} else {
-				rb_debug ("volume in %s is not a disc", device_path);
-			}
-
-			cleanup_hal_context (ctx);
-			return result;
-		}
-	}
-	g_free (device_path);
-	rb_debug ("HAL couldn't tell us if this is an audio CD or not");
-#endif
 
 	/* if it's mounted, we can check the mount root URI scheme */
 	mount = g_volume_get_mount (volume);
 	if (mount != NULL) {
-		GFile *mount_root;
-		char *uri_scheme;
 		gboolean result = FALSE;
+		char **types;
+		guint i;
 
-		mount_root = g_mount_get_root (mount);
-		if (mount_root != NULL) {
-			uri_scheme = g_file_get_uri_scheme (mount_root);
-			rb_debug ("URI scheme of mounted volume is %s", uri_scheme);
-			result = (strcmp (uri_scheme, "cdda") == 0);
-
-			g_free (uri_scheme);
-			g_object_unref (mount_root);
+		types = g_mount_guess_content_type_sync (mount, FALSE, NULL, NULL);
+		for (i = 0; types[i] != NULL; i++) {
+			if (g_str_equal (types[i], "x-content/audio-cdda") != FALSE) {
+				result = TRUE;
+				break;
+			}
 		}
 
+		g_strfreev (types);
 		g_object_unref (mount);
 		return result;
 	}

@@ -7,14 +7,6 @@
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
  *
- * The Rhythmbox authors hereby grants permission for non-GPL compatible
- * GStreamer plugins to be used and distributed together with GStreamer
- * and Rhythmbox. This permission is above and beyond the permissions granted
- * by the GPL license by which Rhythmbox is covered. If you modify this code
- * you may extend this exception to your version of the code, but you are not
- * obligated to do so. If you do not wish to do so, delete this exception
- * statement from your version.
- *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -31,7 +23,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <string.h>
-#include <stdio.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <glib/gerror.h>
@@ -42,31 +33,10 @@
 #include <musicbrainz/queries.h>
 #include <musicbrainz/mb_c.h>
 #include <stdlib.h>
-#include <unistd.h>
-
-#include <totem-disc.h>
 
 #include "sj-metadata-musicbrainz.h"
 #include "sj-structures.h"
 #include "sj-error.h"
-
-struct SjMetadataMusicbrainzPrivate {
-  GError *construct_error;
-  musicbrainz_t mb;
-  char *http_proxy;
-  int http_proxy_port;
-  char *cdrom;
-  /* TODO: remove and use an async queue or something l33t */
-  GList *albums;
-  GError *error;
-};
-
-static GError* mb_get_new_error (SjMetadata *metadata);
-static void mb_set_cdrom (SjMetadata *metadata, const char* device);
-static void mb_set_proxy (SjMetadata *metadata, const char* proxy);
-static void mb_set_proxy_port (SjMetadata *metadata, const int port);
-static void mb_list_albums (SjMetadata *metadata, GError **error);
-static char *mb_get_submit_url (SjMetadata *metadata);
 
 #define GCONF_MUSICBRAINZ_SERVER "/apps/sound-juicer/musicbrainz_server"
 #define GCONF_PROXY_USE_PROXY "/system/http_proxy/use_http_proxy"
@@ -76,255 +46,51 @@ static char *mb_get_submit_url (SjMetadata *metadata);
 #define GCONF_PROXY_USERNAME "/system/http_proxy/authentication_user"
 #define GCONF_PROXY_PASSWORD "/system/http_proxy/authentication_password"
 
-/**
- * GObject methods
- */
 
-static GObjectClass *parent_class = NULL;
+struct SjMetadataMusicbrainzPrivate {
+  musicbrainz_t mb;
+  char *http_proxy;
+  int http_proxy_port;
+  char *cdrom;
+  GList *albums;
+};
 
-static void
-sj_metadata_musicbrainz_finalize (GObject *object)
-{
-  SjMetadataMusicbrainzPrivate *priv;
-  g_return_if_fail (object != NULL);
-  priv = SJ_METADATA_MUSICBRAINZ (object)->priv;
+#define GET_PRIVATE(o)  \
+  (G_TYPE_INSTANCE_GET_PRIVATE ((o), SJ_TYPE_METADATA_MUSICBRAINZ, SjMetadataMusicbrainzPrivate))
 
-  g_free (priv->http_proxy);
-  g_free (priv->cdrom);
-  mb_Delete (priv->mb);
-  g_free (priv);
+enum {
+  PROP_0,
+  PROP_DEVICE,
+  PROP_USE_PROXY,
+  PROP_PROXY_HOST,
+  PROP_PROXY_PORT,
+};
 
-  parent_class->finalize (object);
-}
+static void metadata_interface_init (gpointer g_iface, gpointer iface_data);
 
-static void
-sj_metadata_musicbrainz_instance_init (GTypeInstance *instance, gpointer g_class)
-{
-  GConfClient *gconf_client;
-  char *server_name = NULL;
-  SjMetadataMusicbrainz *self = (SjMetadataMusicbrainz*)instance;
-  self->priv = g_new0 (SjMetadataMusicbrainzPrivate, 1);
-  self->priv->construct_error = NULL;
-  self->priv->mb = mb_New ();
-  /* TODO: something. :/ */
-  if (!self->priv->mb) {
-    g_set_error (&self->priv->construct_error,
-                 SJ_ERROR, SJ_ERROR_CD_LOOKUP_ERROR,
-                 _("Cannot create MusicBrainz client"));
-    return;
-  }
-  mb_UseUTF8 (self->priv->mb, TRUE);
+G_DEFINE_TYPE_WITH_CODE (SjMetadataMusicbrainz,
+                         sj_metadata_musicbrainz,
+                         G_TYPE_OBJECT,
+                         G_IMPLEMENT_INTERFACE (SJ_TYPE_METADATA,
+                                                metadata_interface_init));
 
-  gconf_client = gconf_client_get_default ();
-  server_name = gconf_client_get_string (gconf_client, GCONF_MUSICBRAINZ_SERVER, NULL);
-  if (server_name) {
-    g_strstrip (server_name);
-  }
-  if (server_name && strcmp (server_name, "") != 0) {
-    mb_SetServer (self->priv->mb, server_name, 80);
-    g_free (server_name);
-  }
-  
-  /* Set the HTTP proxy */
-  if (gconf_client_get_bool (gconf_client, GCONF_PROXY_USE_PROXY, NULL)) {
-    char *proxy_host = gconf_client_get_string (gconf_client, GCONF_PROXY_HOST, NULL);
-    mb_SetProxy (self->priv->mb, proxy_host,
-                 gconf_client_get_int (gconf_client, GCONF_PROXY_PORT, NULL));
-    g_free (proxy_host);
-    if (gconf_client_get_bool (gconf_client, GCONF_PROXY_USE_AUTHENTICATION, NULL)) {
-#if HAVE_MB_SETPROXYCREDS
-      char *username = gconf_client_get_string (gconf_client, GCONF_PROXY_USERNAME, NULL);
-      char *password = gconf_client_get_string (gconf_client, GCONF_PROXY_PASSWORD, NULL);
-      mb_SetProxyCreds (self->priv->mb, username, password);
-      g_free (username);
-      g_free (password);
-#else
-      g_warning ("mb_SetProxyCreds() not found, no proxy authorisation possible.");
-#endif
-    }
-  }
 
-  g_object_unref (gconf_client);
-
-  if (g_getenv("MUSICBRAINZ_DEBUG")) {
-    mb_SetDebug (self->priv->mb, TRUE);
-  }
-}
-
-static void
-metadata_interface_init (gpointer g_iface, gpointer iface_data)
-{
-  SjMetadataClass *klass = (SjMetadataClass*)g_iface;
-  klass->get_new_error = mb_get_new_error;
-  klass->set_cdrom = mb_set_cdrom;
-  klass->set_proxy = mb_set_proxy;
-  klass->set_proxy_port = mb_set_proxy_port;
-  klass->list_albums = mb_list_albums;
-  klass->get_submit_url = mb_get_submit_url;
-}
-
-static void
-sj_metadata_musicbrainz_class_init (SjMetadataMusicbrainzClass *class)
-{
-  GObjectClass *object_class;
-  parent_class = g_type_class_peek_parent (class);
-  object_class = (GObjectClass*) class;
-  object_class->finalize = sj_metadata_musicbrainz_finalize;
-}
-
-GType
-sj_metadata_musicbrainz_get_type (void)
-{
-  static GType type = 0;
-  if (type == 0) {
-    static const GTypeInfo info = {
-      sizeof (SjMetadataMusicbrainzClass),
-      NULL,
-      NULL,
-      (GClassInitFunc)sj_metadata_musicbrainz_class_init,
-      NULL,
-      NULL,
-      sizeof (SjMetadataMusicbrainz),
-      0,
-      sj_metadata_musicbrainz_instance_init,
-      NULL
-    };
-    static const GInterfaceInfo metadata_i_info = {
-      (GInterfaceInitFunc) metadata_interface_init,
-      NULL, NULL
-    };
-    type = g_type_register_static (G_TYPE_OBJECT, "SjMetadataMusicBrainzClass", &info, 0);
-    g_type_add_interface_static (type, SJ_TYPE_METADATA, &metadata_i_info);
-  }
-  return type;
-}
-
-GObject *
-sj_metadata_musicbrainz_new (void)
-{
-  return g_object_new (sj_metadata_musicbrainz_get_type (), NULL);
-}
-
-/**
+/*
  * Private methods
  */
-
-#define BYTES_PER_SECTOR 2352
-#define BYTES_PER_SECOND (44100 / 8) / 16 / 2
 
 static int
 get_duration_from_sectors (int sectors)
 {
-  return (sectors * BYTES_PER_SECTOR / BYTES_PER_SECOND);
-}
-
-static GList*
-get_offline_track_listing(SjMetadata *metadata, GError **error)
-{
-  SjMetadataMusicbrainzPrivate *priv;
-  GList* list = NULL;
-  AlbumDetails *album;
-  TrackDetails *track;
-  int num_tracks, i;
-
-  g_return_val_if_fail (metadata != NULL, NULL);
-  priv = SJ_METADATA_MUSICBRAINZ (metadata)->priv;
-
-  if (!mb_Query (priv->mb, MBQ_GetCDTOC)) {
-    char message[255];
-    mb_GetQueryError (priv->mb, message, 255);
-    g_set_error (error,
-                 SJ_ERROR, SJ_ERROR_CD_LOOKUP_ERROR,
-                 _("Cannot read CD: %s"), message);
-    return NULL;
-  }
+#define BYTES_PER_SECTOR 2352
+#define BYTES_PER_SECOND (44100 / 8) / 16 / 2
   
-  num_tracks = mb_GetResultInt (priv->mb, MBE_TOCGetLastTrack);
-
-  album = g_new0 (AlbumDetails, 1);
-  album->artist = g_strdup (_("Unknown Artist"));
-  album->title = g_strdup (_("Unknown Title"));
-  album->genre = NULL;
-  for (i = 1; i <= num_tracks; i++) {
-    track = g_new0 (TrackDetails, 1);
-    track->album = album;
-    track->number = i;
-    track->title = g_strdup_printf (_("Track %d"), i);
-    track->artist = g_strdup (album->artist);
-    track->duration = get_duration_from_sectors (mb_GetResultInt1 (priv->mb, MBE_TOCGetTrackNumSectors, i+1));
-    album->tracks = g_list_append (album->tracks, track);
-    album->number++;
-  }
-  return g_list_append (list, album);
-}
-
-static gboolean
-fire_signal_idle (SjMetadataMusicbrainz *m)
-{
-  g_return_val_if_fail (SJ_IS_METADATA_MUSICBRAINZ (m), FALSE);
-  g_signal_emit_by_name (G_OBJECT (m), "metadata", m->priv->albums, m->priv->error);
-  return FALSE;
+  return (sectors * BYTES_PER_SECTOR / BYTES_PER_SECOND);
 }
 
 /**
  * Virtual methods
  */
-
-static GError*
-mb_get_new_error (SjMetadata *metadata)
-{
-  GError *error = NULL;
-  if (metadata == NULL || SJ_METADATA_MUSICBRAINZ (metadata)->priv == NULL) {
-    g_set_error (&error,
-                 SJ_ERROR, SJ_ERROR_INTERNAL_ERROR,
-                 _("MusicBrainz metadata object is not valid. This is bad, check your console for errors."));
-    return error;
-  }
-  return SJ_METADATA_MUSICBRAINZ (metadata)->priv->construct_error;
-}
-
-static void
-mb_set_cdrom (SjMetadata *metadata, const char* device)
-{
-  SjMetadataMusicbrainzPrivate *priv;
-  g_return_if_fail (metadata != NULL);
-  g_return_if_fail (device != NULL);
-  priv = SJ_METADATA_MUSICBRAINZ (metadata)->priv;
-
-  if (priv->cdrom) {
-    g_free (priv->cdrom);
-  }
-  priv->cdrom = g_strdup (device);
-  mb_SetDevice (priv->mb, priv->cdrom);
-}
-
-static void
-mb_set_proxy (SjMetadata *metadata, const char* proxy)
-{
-  SjMetadataMusicbrainzPrivate *priv;
-  g_return_if_fail (metadata != NULL);
-  priv = SJ_METADATA_MUSICBRAINZ (metadata)->priv;
-
-  if (proxy == NULL) {
-    proxy = "";
-  }
-  if (priv->http_proxy) {
-    g_free (priv->http_proxy);
-  }
-  priv->http_proxy = g_strdup (proxy);
-  mb_SetProxy (priv->mb, priv->http_proxy, priv->http_proxy_port);
-}
-
-static void
-mb_set_proxy_port (SjMetadata *metadata, const int port)
-{
-  SjMetadataMusicbrainzPrivate *priv;
-  g_return_if_fail (metadata != NULL);
-  priv = SJ_METADATA_MUSICBRAINZ (metadata)->priv;
-
-  priv->http_proxy_port = port;
-  mb_SetProxy (priv->mb, priv->http_proxy, priv->http_proxy_port);
-}
 
 /* Data imported from FreeDB is horrendeous for compilations,
  * Try to split the 'Various' artist */
@@ -333,7 +99,7 @@ artist_and_title_from_title (TrackDetails *track, gpointer data)
 {
   char *slash, **split;
 
-  if (g_ascii_strncasecmp (MBI_VARIOUS_ARTIST_ID, track->album->artist_id, 64) != 0 && track->album->artist_id[0] != '\0' && track->artist_id[0] != '\0') {
+  if (g_ascii_strncasecmp (track->album->album_id, "freedb:", 7) != 0 && track->album->artist_id[0] != '\0' && track->artist_id[0] != '\0') {
     track->title = g_strdup (data);
     return;
   }
@@ -382,7 +148,7 @@ cache_rdf (musicbrainz_t mb, const char *filename)
   g_free (rdf);
 }
 
-/*
+/**
  * Load into the MusicBrainz object the RDF from the specified cache file if it
  * exists and is valid then return TRUE, otherwise return FALSE.
  */
@@ -425,7 +191,7 @@ cache_rdf (musicbrainz_t mb, const char *filename) {
 }
 #endif
 
-/*
+/**
  * Fill the MusicBrainz object with RDF.  Basically get the CD Index and check
  * the local cache, if that fails then lookup the data online.
  */
@@ -476,8 +242,36 @@ get_rdf (SjMetadata *metadata)
   g_free (cdindex);
 }
 
-static gpointer
-lookup_cd (SjMetadata *metadata)
+/*
+ * Magic character set encoding to try and repair brain-dead FreeDB encoding,
+ * converting it to the current locale's encoding (which is likely to be the
+ * intended encoding).
+ */
+static void
+convert_encoding(char **str)
+{
+  char *iso8859;
+  char *converted;
+
+  if (str == NULL || *str == NULL)
+    return;
+
+  iso8859 = g_convert (*str, -1, "ISO-8859-1", "UTF-8", NULL, NULL, NULL);
+
+  if (iso8859) {
+    converted = g_locale_to_utf8 (iso8859, -1, NULL, NULL, NULL);
+
+    if (converted) {
+      g_free (*str);
+      *str = converted;
+    }
+  }
+
+  g_free (iso8859);
+}
+
+static GList *
+mb_list_albums (SjMetadata *metadata, char **url, GError **error)
 {
   /** The size of the buffer used in MusicBrainz lookups */
   SjMetadataMusicbrainzPrivate *priv;
@@ -485,43 +279,41 @@ lookup_cd (SjMetadata *metadata)
   GList *al, *tl;
   char data[256];
   int num_albums, i, j;
-  TotemDiscMediaType type;
-  GError *totem_error = NULL;
 
-  /* TODO: fire error signal */
   g_return_val_if_fail (metadata != NULL, NULL);
   g_return_val_if_fail (SJ_IS_METADATA_MUSICBRAINZ (metadata), NULL);
   priv = SJ_METADATA_MUSICBRAINZ (metadata)->priv;
   g_return_val_if_fail (priv->cdrom != NULL, NULL);
-  priv->error = NULL; /* TODO: hack */
 
-  type = totem_cd_detect_type (priv->cdrom, &totem_error);
-
-  if (totem_error != NULL) {
-    priv->error = g_error_new (SJ_ERROR, SJ_ERROR_CD_NO_MEDIA, _("Cannot read CD: %s"), totem_error->message);
-    g_error_free (totem_error);
+  if (sj_metadata_helper_check_media (priv->cdrom, error) == FALSE) {
     priv->albums = NULL;
-    g_idle_add ((GSourceFunc)fire_signal_idle, metadata);
     return NULL;
   }
 
   get_rdf (metadata);
 
+  if (url != NULL) {
+    mb_GetWebSubmitURL(priv->mb, data, sizeof(data));
+    *url = g_strdup(data);
+  }
+
   num_albums = mb_GetResultInt(priv->mb, MBE_GetNumAlbums);
   if (num_albums < 1) {
-    priv->albums = get_offline_track_listing (metadata, &(priv->error));
-    g_idle_add ((GSourceFunc)fire_signal_idle, metadata);
-    return priv->albums;
+    priv->albums = NULL;
+    return NULL;
   }
 
   for (i = 1; i <= num_albums; i++) {
     int num_tracks;
     AlbumDetails *album;
+    gboolean from_freedb = FALSE;
 
     mb_Select1(priv->mb, MBS_SelectAlbum, i);
     album = g_new0 (AlbumDetails, 1);
 
     if (mb_GetResultData(priv->mb, MBE_AlbumGetAlbumId, data, sizeof (data))) {
+      from_freedb = strstr(data, "freedb:") == data;
+
       mb_GetIDFromURL (priv->mb, data, data, sizeof (data));
       album->album_id = g_strdup (data);
     }
@@ -529,24 +321,34 @@ lookup_cd (SjMetadata *metadata)
     if (mb_GetResultData (priv->mb, MBE_AlbumGetAlbumArtistId, data, sizeof (data))) {
       mb_GetIDFromURL (priv->mb, data, data, sizeof (data));
       album->artist_id = g_strdup (data);
-      if (g_ascii_strncasecmp (MBI_VARIOUS_ARTIST_ID, data, 64) == 0) {
-        album->artist = g_strdup (_("Various"));
+
+      if (mb_GetResultData (priv->mb, MBE_AlbumGetAlbumArtistName, data, sizeof (data))) {
+        album->artist = g_strdup (data);
       } else {
-        if (*data && mb_GetResultData1(priv->mb, MBE_AlbumGetArtistName, data, sizeof (data), 1)) {
-          album->artist = g_strdup (data);
+        if (g_ascii_strcasecmp (MBI_VARIOUS_ARTIST_ID, album->artist_id) == 0) {
+          album->artist = g_strdup (_("Various"));
         } else {
           album->artist = g_strdup (_("Unknown Artist"));
         }
-        if (*data && mb_GetResultData1(priv->mb, MBE_AlbumGetArtistSortName, data, sizeof (data), 1)) {
-          album->artist_sortname = g_strdup (data);
-        }
+      }
+      if (mb_GetResultData(priv->mb, MBE_AlbumGetAlbumArtistSortName, data, sizeof (data))) {
+        album->artist_sortname = g_strdup (data);
       }
     }
 
     if (mb_GetResultData(priv->mb, MBE_AlbumGetAlbumName, data, sizeof (data))) {
-      album->title = g_strdup (data);
+      char *new_title;
+      new_title = sj_metadata_helper_scan_disc_number (data, &album->disc_number);
+      if (new_title)
+        album->title = new_title;
+      else
+        album->title = g_strdup (data);
     } else {
       album->title = g_strdup (_("Unknown Title"));
+    }
+
+    if (mb_GetResultData(priv->mb, MBE_AlbumGetAmazonAsin, data, sizeof (data))) {
+      album->asin = g_strdup (data);
     }
 
     {
@@ -555,11 +357,7 @@ lookup_cd (SjMetadata *metadata)
       if (num_releases > 0) {
         mb_Select1(priv->mb, MBS_SelectReleaseDate, 1);
         if (mb_GetResultData(priv->mb, MBE_ReleaseGetDate, data, sizeof (data))) {
-          int matched, year=1, month=1, day=1;
-          matched = sscanf(data, "%u-%u-%u", &year, &month, &day);
-          if (matched >= 1) {
-            album->release_date = g_date_new_dmy ((day == 0) ? 1 : day, (month == 0) ? 1 : month, year);
-          }
+          album->release_date = sj_metadata_helper_scan_date (data);
         }
         mb_Select(priv->mb, MBS_Back);
       }
@@ -572,9 +370,8 @@ lookup_cd (SjMetadata *metadata)
       g_free (album->title);
       g_free (album);
       g_warning (_("Incomplete metadata for this CD"));
-      priv->albums = get_offline_track_listing (metadata, &(priv->error));
-      g_idle_add ((GSourceFunc)fire_signal_idle, metadata);
-      return priv->albums;
+      priv->albums = NULL;
+      return NULL;
     }
 
     for (j = 1; j <= num_tracks; j++) {
@@ -601,6 +398,8 @@ lookup_cd (SjMetadata *metadata)
         } else {
           track->title = g_strdup (data);
         }
+      } else {
+        track->title = g_strdup (_("[Untitled]"));
       }
 
       if (track->artist == NULL && mb_GetResultData1(priv->mb, MBE_AlbumGetArtistName, data, sizeof (data), j)) {
@@ -614,9 +413,27 @@ lookup_cd (SjMetadata *metadata)
       if (mb_GetResultData1(priv->mb, MBE_AlbumGetTrackDuration, data, sizeof (data), j)) {
         track->duration = atoi (data) / 1000;
       }
+
+      if (from_freedb) {
+        convert_encoding(&track->title);
+        convert_encoding(&track->artist);
+        convert_encoding(&track->artist_sortname);
+      }
       
       album->tracks = g_list_append (album->tracks, track);
       album->number++;
+    }
+
+    if (from_freedb) {
+      convert_encoding(&album->title);
+      convert_encoding(&album->artist);
+      convert_encoding(&album->artist_sortname);
+    }
+
+    if (from_freedb) {
+      album->metadata_source = SOURCE_FREEDB;
+    } else {
+      album->metadata_source = SOURCE_MUSICBRAINZ;
     }
 
     albums = g_list_append (albums, album);
@@ -646,40 +463,157 @@ lookup_cd (SjMetadata *metadata)
     }
   }
 
-  priv->albums = albums;
-  g_idle_add ((GSourceFunc)fire_signal_idle, metadata);
   return albums;
 }
 
+/*
+ * GObject methods
+ */
+
 static void
-mb_list_albums (SjMetadata *metadata, GError **error)
+metadata_interface_init (gpointer g_iface, gpointer iface_data)
 {
-  GThread *thread;
+  SjMetadataClass *klass = (SjMetadataClass*)g_iface;
+  klass->list_albums = mb_list_albums;
+}
 
-  g_return_if_fail (SJ_IS_METADATA_MUSICBRAINZ (metadata));
+static void
+sj_metadata_musicbrainz_init (SjMetadataMusicbrainz *self)
+{
+  GConfClient *gconf_client;
+  char *server_name = NULL;
 
-  thread = g_thread_create ((GThreadFunc)lookup_cd, metadata, TRUE, error);
-  if (thread == NULL) {
-    g_set_error (error,
-                 SJ_ERROR, SJ_ERROR_INTERNAL_ERROR,
-                 _("Could not create CD lookup thread"));
-    return;
+  self->priv = GET_PRIVATE (self);
+  self->priv->mb = mb_New ();
+  mb_UseUTF8 (self->priv->mb, TRUE);
+
+  gconf_client = gconf_client_get_default ();
+  server_name = gconf_client_get_string (gconf_client, GCONF_MUSICBRAINZ_SERVER, NULL);
+  if (server_name) {
+    g_strstrip (server_name);
+  }
+  if (server_name && strcmp (server_name, "") != 0) {
+    mb_SetServer (self->priv->mb, server_name, 80);
+    g_free (server_name);
+  }
+  
+  /* Set the HTTP proxy */
+  if (gconf_client_get_bool (gconf_client, GCONF_PROXY_USE_PROXY, NULL)) {
+    char *proxy_host = gconf_client_get_string (gconf_client, GCONF_PROXY_HOST, NULL);
+    mb_SetProxy (self->priv->mb, proxy_host,
+                 gconf_client_get_int (gconf_client, GCONF_PROXY_PORT, NULL));
+    g_free (proxy_host);
+    if (gconf_client_get_bool (gconf_client, GCONF_PROXY_USE_AUTHENTICATION, NULL)) {
+#if HAVE_MB_SETPROXYCREDS
+      char *username = gconf_client_get_string (gconf_client, GCONF_PROXY_USERNAME, NULL);
+      char *password = gconf_client_get_string (gconf_client, GCONF_PROXY_PASSWORD, NULL);
+      mb_SetProxyCreds (self->priv->mb, username, password);
+      g_free (username);
+      g_free (password);
+#else
+      g_warning ("mb_SetProxyCreds() not found, no proxy authorisation possible.");
+#endif
+    }
+  }
+
+  g_object_unref (gconf_client);
+
+  if (g_getenv("MUSICBRAINZ_DEBUG")) {
+    mb_SetDebug (self->priv->mb, TRUE);
   }
 }
 
-static char *
-mb_get_submit_url (SjMetadata *metadata)
+static void
+sj_metadata_musicbrainz_get_property (GObject *object, guint property_id,
+                                      GValue *value, GParamSpec *pspec)
+{
+  SjMetadataMusicbrainzPrivate *priv = SJ_METADATA_MUSICBRAINZ (object)->priv;
+  g_assert (priv);
+
+  switch (property_id) {
+  case PROP_DEVICE:
+    g_value_set_string (value, priv->cdrom);
+    break;
+  case PROP_PROXY_HOST:
+    g_value_set_string (value, priv->http_proxy);
+    break;
+  case PROP_PROXY_PORT:
+    g_value_set_int (value, priv->http_proxy_port);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+  }
+}
+
+static void
+sj_metadata_musicbrainz_set_property (GObject *object, guint property_id,
+                                      const GValue *value, GParamSpec *pspec)
+{
+  SjMetadataMusicbrainzPrivate *priv = SJ_METADATA_MUSICBRAINZ (object)->priv;
+  g_assert (priv);
+
+  switch (property_id) {
+  case PROP_DEVICE:
+    if (priv->cdrom)
+      g_free (priv->cdrom);
+    priv->cdrom = g_value_dup_string (value);
+    if (priv->cdrom)
+      mb_SetDevice (priv->mb, priv->cdrom);
+    break;
+  case PROP_PROXY_HOST:
+    if (priv->http_proxy) {
+      g_free (priv->http_proxy);
+    }
+    priv->http_proxy = g_value_dup_string (value);
+    /* TODO: check this unsets the proxy if NULL, or should we pass "" ? */
+    mb_SetProxy (priv->mb, priv->http_proxy, priv->http_proxy_port);
+    break;
+  case PROP_PROXY_PORT:
+    priv->http_proxy_port = g_value_get_int (value);
+    mb_SetProxy (priv->mb, priv->http_proxy, priv->http_proxy_port);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+  }
+}
+
+static void
+sj_metadata_musicbrainz_finalize (GObject *object)
 {
   SjMetadataMusicbrainzPrivate *priv;
-  char url[1025];
+  
+  priv = SJ_METADATA_MUSICBRAINZ (object)->priv;
 
-  g_return_val_if_fail (metadata != NULL, NULL);
+  g_free (priv->http_proxy);
+  g_free (priv->cdrom);
+  mb_Delete (priv->mb);
 
-  priv = SJ_METADATA_MUSICBRAINZ (metadata)->priv;
+  G_OBJECT_CLASS (sj_metadata_musicbrainz_parent_class)->finalize (object);
+}
 
-  if (mb_GetWebSubmitURL(priv->mb, url, 1024)) {
-    return g_strdup(url);
-  } else {
-    return NULL;
-  }
+static void
+sj_metadata_musicbrainz_class_init (SjMetadataMusicbrainzClass *class)
+{
+  GObjectClass *object_class = (GObjectClass*)class;
+
+  g_type_class_add_private (class, sizeof (SjMetadataMusicbrainzPrivate));
+
+  object_class->get_property = sj_metadata_musicbrainz_get_property;
+  object_class->set_property = sj_metadata_musicbrainz_set_property;
+  object_class->finalize = sj_metadata_musicbrainz_finalize;
+
+  g_object_class_override_property (object_class, PROP_DEVICE, "device");
+  g_object_class_override_property (object_class, PROP_PROXY_HOST, "proxy-host");
+  g_object_class_override_property (object_class, PROP_PROXY_PORT, "proxy-port");
+}
+
+
+/*
+ * Public methods.
+ */
+
+GObject *
+sj_metadata_musicbrainz_new (void)
+{
+  return g_object_new (SJ_TYPE_METADATA_MUSICBRAINZ, NULL);
 }
