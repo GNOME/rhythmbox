@@ -731,6 +731,7 @@ rb_audiocd_is_volume_audiocd (GVolume *volume)
 	mount = g_volume_get_mount (volume);
 	if (mount != NULL) {
 		gboolean result = FALSE;
+#if GLIB_CHECK_VERSION(2,17,7)
 		char **types;
 		guint i;
 
@@ -743,6 +744,14 @@ rb_audiocd_is_volume_audiocd (GVolume *volume)
 		}
 
 		g_strfreev (types);
+#else
+		GFile *file;
+		
+		file = g_mount_get_root (mount);
+		result = g_file_has_uri_scheme (file, "cdda");
+		g_object_unref (file);
+#endif /* glib 2.17.7 */
+
 		g_object_unref (mount);
 		return result;
 	}
