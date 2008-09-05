@@ -846,6 +846,7 @@ filepath_parse_pattern (const char *pattern,
 	p = pattern;
 	while (*p) {
 		char *string = NULL;
+		char *t;
 
 		/* If not a % marker, copy and continue */
 		if (*p != '%') {
@@ -871,7 +872,7 @@ filepath_parse_pattern (const char *pattern,
 				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
 				break;
 			case 'T':
-				temp = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_FOLDED));
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_FOLDED));
 				break;
 			case 'a':
 				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
@@ -879,14 +880,14 @@ filepath_parse_pattern (const char *pattern,
 			case 'A':
 				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_FOLDED));
 				break;
-			/*case 's':
-				string = sanitize_path (album sort name);
+			case 's':
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME));
 				break;
 			case 'S':
-				char *t = g_utf8_strdown (album sort name)
+				t = g_utf8_strdown (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME), -1);
 				string = sanitize_path (t);
 				g_free (t);
-				break;*/
+				break;
 			default:
 				string = g_strdup_printf ("%%a%c", *p);
 			}
@@ -910,14 +911,14 @@ filepath_parse_pattern (const char *pattern,
 			case 'A':
 				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_FOLDED));
 				break;
-			/*case 's':
-				string = sanitize_path (artist sort name);
+			case 's':
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME));
 				break;
 			case 'S':
-				char *t = g_utf8_strdown (artist sort name)
+				t = g_utf8_strdown (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME), -1);
 				string = sanitize_path (t);
 				g_free (t);
-				break;*/
+				break;
 			case 'n':
 				/* Track number */
 				string = g_strdup_printf ("%u", (guint)rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER));

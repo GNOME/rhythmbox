@@ -231,14 +231,16 @@ parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
 				if (value)
 					string = g_value_dup_string (value);
 				break;
-			/*case 's':
-				string = sanitize_path (album sort name);
+			case 's':
+				value = g_hash_table_lookup (properties, "mb-artistsortname");
+				if (value)
+					string = g_value_dup_string (value);
 				break;
 			case 'S':
-				char *t = g_utf8_strdown (album sort name)
-				string = sanitize_path (t);
-				g_free (t);
-				break;*/
+				value = g_hash_table_lookup (properties, "mb-artistsortname");
+				if (value)
+					string = g_utf8_strdown (g_value_get_string (value), -1);
+				break;
 			case 'y':
 				/* Release year */
 				value = g_hash_table_lookup (properties, "year");
@@ -298,14 +300,16 @@ parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
 				if (value)
 					string = g_value_dup_string (value);
 				break;
-			/*case 's':
-				string = sanitize_path (artist sort name);
+			case 's':
+				value = g_hash_table_lookup (properties, "mb-artistsortname");
+				if (value)
+					string = g_value_dup_string (value);
 				break;
 			case 'S':
-				char *t = g_utf8_strdown (artist sort name)
-				string = sanitize_path (t);
-				g_free (t);
-				break;*/
+				value = g_hash_table_lookup (properties, "mb-artistsortname");
+				if (value)
+					string = g_utf8_strdown (g_value_get_string (value), -1);
+				break;
 			case 'n':
 				/* Track number */
 				value = g_hash_table_lookup (properties, "track-number");
