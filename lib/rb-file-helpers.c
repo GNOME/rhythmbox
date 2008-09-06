@@ -968,7 +968,8 @@ rb_sanitize_uri_for_filesystem (char *uri)
 		return g_strdup (uri);
 
 	if (!strcmp (filesystem, "fat") ||
-	    !strcmp (filesystem, "vfat") ) {
+	    !strcmp (filesystem, "vfat") ||
+	    !strcmp (filesystem, "msdos")) {
 	    	char *hostname = NULL;
 		GError *error = NULL;
 	    	char *full_path = g_filename_from_uri (uri, &hostname, &error);

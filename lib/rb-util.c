@@ -324,18 +324,40 @@ rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path)
 }
 
 char *
-rb_uri_get_filesystem_type(const char *uri)
+rb_uri_get_filesystem_type (const char *uri)
 {
 	GFile *file;
 	GFileInfo *info;
 	char *fstype = NULL;
+	GError *error = NULL;
 
+	/* if the file doesn't exist, walk up the directory structure
+	 * until we find something that does.
+	 */
 	file = g_file_new_for_uri (uri);
-	info = g_file_query_filesystem_info (file, G_FILE_ATTRIBUTE_FILESYSTEM_TYPE, NULL, NULL);
+	info = g_file_query_filesystem_info (file, G_FILE_ATTRIBUTE_FILESYSTEM_TYPE, NULL, &error);
+	while (error != NULL && error->code == G_IO_ERROR_NOT_FOUND) {
+		GFile *parent;
+		
+		g_clear_error (&error);
+		parent = g_file_get_parent (file);
+		g_object_unref (file);
+		file = parent;
+		if (file == NULL) {
+			g_warning ("filesystem root apparently doesn't exist!");
+			return NULL;
+		}
+	
+		info = g_file_query_filesystem_info (file, G_FILE_ATTRIBUTE_FILESYSTEM_TYPE, NULL, &error);
+	}
+
 	if (info != NULL) {
 		fstype = g_file_info_get_attribute_as_string (info, G_FILE_ATTRIBUTE_FILESYSTEM_TYPE);
 		g_object_unref (info);
+	} else {
+		rb_debug ("error querying filesystem info: %s", error->message);
 	}
+	g_clear_error (&error);
 	g_object_unref (file);
 	return fstype;
 }

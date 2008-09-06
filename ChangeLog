@@ -1,5 +1,16 @@
 2008-09-06  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch partly by: Colin Leroy <colin at colino.net>
+
+	* lib/rb-file-helpers.c: (rb_sanitize_uri_for_filesystem):
+	Treat 'msdos' like vfat and fat.
+
+	* lib/rb-util.c: (rb_uri_get_filesystem_type):
+	If the URI we're checking doesn't exist, walk up the hierarchy until
+	we find something that does.  From #550117.
+
+2008-09-06  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/gstreamer/rb-player-gst-xfade.c: (start_sink):
 	During sink startup, pass error messages from stream bins to the
 	normal message handler rather than assuming that they indicate a
