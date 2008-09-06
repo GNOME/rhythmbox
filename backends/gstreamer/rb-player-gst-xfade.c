@@ -2636,26 +2636,39 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 				{
 					char *debug;
 					GError *gst_error = NULL;
+					GstObject *message_src;
+					RBXFadeStream *stream;
 
-					gst_message_parse_error (message, &gst_error, &debug);
-					rb_debug ("got error message: %s (%s)", gst_error->message, debug);
-					gst_message_unref (message);
-					g_free (debug);
+					/* we only want to process errors from the sink here.
+					 * errors from streams should go to the normal message handler.
+					 */
+					message_src = GST_MESSAGE_SRC (message);
+					stream = find_stream_by_element (player, GST_ELEMENT (message_src));
+					if (stream != NULL) {
+						rb_debug ("got an error from a stream; passing it to the bus handler");
+						rb_player_gst_xfade_bus_cb (bus, message, player);
+						g_object_unref (stream);
+					} else {
+						gst_message_parse_error (message, &gst_error, &debug);
+						rb_debug ("got error message: %s (%s)", gst_error->message, debug);
+						gst_message_unref (message);
+						g_free (debug);
 
-					if (error != NULL && *error == NULL) {
-						g_set_error (error,
-							     RB_PLAYER_ERROR,
-							     RB_PLAYER_ERROR_INTERNAL,		/* ? */
-							     _("Failed to open output device: %s"),
-							     gst_error->message);
+						if (error != NULL && *error == NULL) {
+							g_set_error (error,
+								     RB_PLAYER_ERROR,
+								     RB_PLAYER_ERROR_INTERNAL,		/* ? */
+								     _("Failed to open output device: %s"),
+								     gst_error->message);
+						}
+						g_error_free (gst_error);
+						g_error_free (generic_error);
+
+						gst_element_set_state (player->priv->outputbin, GST_STATE_NULL);
+						gst_element_set_state (player->priv->adder, GST_STATE_NULL);
+						gst_element_set_state (player->priv->silencebin, GST_STATE_NULL);
+						return FALSE;
 					}
-					g_error_free (gst_error);
-					g_error_free (generic_error);
-
-					gst_element_set_state (player->priv->outputbin, GST_STATE_NULL);
-					gst_element_set_state (player->priv->adder, GST_STATE_NULL);
-					gst_element_set_state (player->priv->silencebin, GST_STATE_NULL);
-					return FALSE;
 				}
 				break;
 

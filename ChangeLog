@@ -1,5 +1,12 @@
 2008-09-06  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-player-gst-xfade.c: (start_sink):
+	During sink startup, pass error messages from stream bins to the
+	normal message handler rather than assuming that they indicate a
+	problem with the sink.  From #550271.
+
+2008-09-06  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Ernst Persson <ernstp@gmail.com>
 
 	* sources/rb-source-group.h:
