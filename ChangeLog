@@ -1,5 +1,13 @@
 2008-09-06  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Ernst Persson <ernstp@gmail.com>
+
+	* sources/rb-source-group.h:
+	Move the device source group above the playlist group.
+	Fixes #487618.
+
+2008-09-06  Jonathan Matthew  <jonathan@d14n.org>
+
 	* remote/dbus/rb-client.c: (parse_pattern):
 	* sources/rb-library-source.c: (filepath_parse_pattern):
 	Implement %ts, %as, %tS, and %aS (artist sortname) substitutions.

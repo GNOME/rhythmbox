@@ -36,8 +36,8 @@ G_BEGIN_DECLS
 
 typedef enum {
 	RB_SOURCE_GROUP_CATEGORY_FIXED = 0,	/* library, iradio, podcast, queue */
-	RB_SOURCE_GROUP_CATEGORY_PERSISTENT,	/* playlists */
 	RB_SOURCE_GROUP_CATEGORY_REMOVABLE,	/* ipod, generic audio player, audio CD */
+	RB_SOURCE_GROUP_CATEGORY_PERSISTENT,	/* playlists */
 	RB_SOURCE_GROUP_CATEGORY_TRANSIENT,	/* DAAP shares */
 	RB_SOURCE_GROUP_CATEGORY_LAST
 } RBSourceGroupCategory;
