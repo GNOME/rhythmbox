@@ -1,5 +1,24 @@
 2008-09-07  Jonathan Matthew  <jonathan@d14n.org>
 
+	* podcast/rb-podcast-manager.c: (download_file_info_cb),
+	(rb_podcast_manager_db_entry_deleted_cb),
+	(rb_podcast_manager_get_podcast_dir):
+	Construct podcast download locations as URIs rather than file paths.
+	Use rb_sanitize_uri_for_filesystem in case the podcast download
+	location is on a FAT filesystem.
+
+	* sources/rb-podcast-source.c:
+	Don't convert the selected URI into a path before setting the gconf
+	key, just use it as-is.
+
+	(rb_podcast_source_btn_file_change_cb):
+	* data/rhythmbox.schemas:  Mention that the podcast download
+	key is supposed to be a URI.
+
+	Fixes #536500, #415641.
+
+2008-09-07  Jonathan Matthew  <jonathan@d14n.org>
+
 	* metadata/rb-metadata-gst.c:  Ignore RAR files.
 
 2008-09-07  Bastien Nocera  <hadess@hadess.net>

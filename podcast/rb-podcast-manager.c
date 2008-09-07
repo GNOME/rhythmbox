@@ -670,9 +670,11 @@ download_file_info_cb (GFile *source,
 	GError *error = NULL;
 	GFileInfo *src_info;
 	char *local_file_name;
-	char *local_file_path;
-	char *dir_name;
-	char *conf_dir_name;
+	char *feed_folder;
+	char *esc_local_file_name;
+	char *local_file_uri;
+	char *sane_local_file_uri;
+	char *conf_dir_uri;
 
 	g_assert (rb_is_main_thread ());
 
@@ -704,21 +706,6 @@ download_file_info_cb (GFile *source,
 
 	data->download_size = g_file_info_get_attribute_uint64 (src_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
 
-	/* construct download directory */
-	conf_dir_name = rb_podcast_manager_get_podcast_dir (data->pd);
-	dir_name = g_build_filename (conf_dir_name,
-				     rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_ALBUM),
-				     NULL);
-	g_free (conf_dir_name);
-
-	if (g_mkdir_with_parents (dir_name, 0750) == -1) {
-		rb_debug ("Could not create podcast download directory %s", dir_name);
-		/* FIXME: display error to user */
-		g_free (dir_name);
-		rb_podcast_manager_abort_download (data);
-		return;
-	}
-
 	/* this should probably be the target of any redirects.  hmm. */
 	local_file_name = g_file_info_get_attribute_as_string (src_info, G_FILE_ATTRIBUTE_STANDARD_COPY_NAME);
 	if (local_file_name == NULL) {
@@ -741,17 +728,42 @@ download_file_info_cb (GFile *source,
 		rb_debug ("removing query string \"%s\" -> local file name \"%s\"", data->query_string, local_file_name);
 	}
 
+	esc_local_file_name = g_uri_escape_string (local_file_name,
+						   G_URI_RESERVED_CHARS_ALLOWED_IN_PATH,
+						   TRUE);
+	feed_folder = g_uri_escape_string (rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_ALBUM),
+					   G_URI_RESERVED_CHARS_ALLOWED_IN_PATH,
+					   TRUE);
+
 	/* construct local filename */
-	local_file_path = g_build_filename (dir_name,
-					    local_file_name,
-					    NULL);
-
+	conf_dir_uri = rb_podcast_manager_get_podcast_dir (data->pd);
+	local_file_uri = g_build_filename (conf_dir_uri,
+					   feed_folder,
+					   local_file_name,
+					   NULL);
 	g_free (local_file_name);
+	g_free (feed_folder);
+	g_free (esc_local_file_name);
 
-	g_free (dir_name);
-	rb_debug ("creating file %s", local_file_path);
+	sane_local_file_uri = rb_sanitize_uri_for_filesystem (local_file_uri);
+	g_free (local_file_uri);
+	
+	rb_debug ("download URI: %s", sane_local_file_uri);
 
-	data->destination = g_file_new_for_path (local_file_path);
+	if (rb_uri_create_parent_dirs (sane_local_file_uri, &error) == FALSE) {
+		rb_debug ("error creating parent dirs: %s", error->message);
+
+		rb_error_dialog (NULL, _("Error creating podcast download directory"),
+				 _("Unable to create the download directory for %s: %s"),
+				 sane_local_file_uri, error->message);
+
+		g_error_free (error);
+		rb_podcast_manager_abort_download (data);
+		return;
+	}
+
+
+	data->destination = g_file_new_for_uri (sane_local_file_uri);
 	if (g_file_query_exists (data->destination, NULL)) {
 		GFileInfo *dest_info;
 		guint64 local_size;
@@ -764,7 +776,7 @@ download_file_info_cb (GFile *source,
 		if (error != NULL) {
 			/* hrm */
 			g_warning ("Looking at downloaded podcast file %s: %s",
-				   local_file_path, error->message);
+				   sane_local_file_uri, error->message);
 			g_error_free (error);
 			rb_podcast_manager_abort_download (data);
 			return;
@@ -793,7 +805,6 @@ download_file_info_cb (GFile *source,
 			rb_podcast_manager_save_metadata (data->pd, data->entry);
 
 			rb_podcast_manager_abort_download (data);
-			g_free (local_file_path);
 			return;
 		} else if (local_size < data->download_size) {
 			rb_debug ("podcast partly downloaded (%" G_GUINT64_FORMAT " of %" G_GUINT64_FORMAT ")",
@@ -804,7 +815,7 @@ download_file_info_cb (GFile *source,
 		}
 	}
 
-	g_free (local_file_path);
+	g_free (sane_local_file_uri);
 
 	GDK_THREADS_ENTER ();
 	g_signal_emit (data->pd, rb_podcast_manager_signals[START_DOWNLOAD],
@@ -1530,12 +1541,9 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 
 	if ((type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) && (pd->priv->remove_files == TRUE)) {
 		const char *file_name;
-		const char *dir_name;
-		const char *conf_dir_name;
+		GFile *feed_dir;
 		GFile *file;
 		GError *error = NULL;
-
-		rb_debug ("Handling entry deleted");
 
 		/* make sure we're not downloading it */
 		rb_podcast_manager_cancel_download (pd, entry);
@@ -1547,8 +1555,10 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 			return;
 		}
 
+		rb_debug ("deleting downloaded episode %s", file_name);
 		file = g_file_new_for_uri (file_name);
 		g_file_delete (file, NULL, &error);
+
 		if (error != NULL) {
 			rb_debug ("Removing episode failed: %s", error->message);
 			g_clear_error (&error);
@@ -1556,19 +1566,14 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 			/* try to remove the directory
 			 * (will only work once it's empty)
 			 */
-			rb_debug ("removing dir");
-			conf_dir_name = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
-
-			dir_name = g_build_filename (conf_dir_name,
-						     rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM),
-						     NULL);
-			file = g_file_new_for_uri (conf_dir_name);
-			g_file_delete (file, NULL, &error);
+			feed_dir = g_file_get_parent (file);
+			g_file_delete (feed_dir, NULL, &error);
 			if (error != NULL) {
 				rb_debug ("couldn't remove podcast feed directory: %s",
 					  error->message);
 				g_clear_error (&error);
 			}
+			g_object_unref (feed_dir);
 		}
 		g_object_unref (file);
 
@@ -1971,18 +1976,21 @@ rb_podcast_manager_shutdown (RBPodcastManager *pd)
 	pd->priv->shutdown = TRUE;
 }
 
-gchar *
+char *
 rb_podcast_manager_get_podcast_dir (RBPodcastManager *pd)
 {
-	gchar *conf_dir_name = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
+	char *conf_dir_uri = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
 
-	if (conf_dir_name == NULL || (strcmp (conf_dir_name, "") == 0)) {
+	if (conf_dir_uri == NULL || (strcmp (conf_dir_uri, "") == 0)) {
+		char *conf_dir_name;
 		conf_dir_name = g_build_filename (g_get_home_dir (),
 						  "Podcasts",
 						  NULL);
-		eel_gconf_set_string (CONF_STATE_PODCAST_DOWNLOAD_DIR, conf_dir_name);
+
+		conf_dir_uri = g_filename_to_uri (conf_dir_name, NULL, NULL);
+		eel_gconf_set_string (CONF_STATE_PODCAST_DOWNLOAD_DIR, conf_dir_uri);
 	}
 
-	return conf_dir_name;
+	return conf_dir_uri;
 }
 

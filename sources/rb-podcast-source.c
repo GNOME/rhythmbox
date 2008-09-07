@@ -1356,16 +1356,9 @@ static void
 rb_podcast_source_btn_file_change_cb (GtkFileChooserButton *widget, const char *key)
 {
 	char *uri;
-	GFile *file;
-	char *path;
 	
 	uri = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (widget));
-	file = g_file_new_for_uri (uri);
-	path = g_file_get_path (file);
-
-	eel_gconf_set_string (key, path);
-	g_object_unref (file);
-	g_free (path);
+	eel_gconf_set_string (key, uri);
 	g_free (uri);
 }
 
