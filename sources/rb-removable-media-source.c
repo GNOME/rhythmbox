@@ -460,6 +460,9 @@ impl_want_uri (RBSource *source, const char *uri)
 		return 0;
 	}
 
+	if (volume == NULL)
+		return 0;
+
 	device_path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 	g_object_unref (volume);
 	if (device_path == NULL)

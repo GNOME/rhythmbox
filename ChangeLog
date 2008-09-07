@@ -1,3 +1,12 @@
+2008-09-07  Bastien Nocera  <hadess@hadess.net>
+
+	* plugins/ipod/rb-ipod-source.c (rb_ipod_is_mount_ipod):
+	* shell/rb-removable-media-manager.c
+	(rb_removable_media_manager_add_mount):
+	* sources/rb-removable-media-source.c (impl_want_uri):
+	Don't print out warnings when a mount doesn't have a corresponding
+	volume (Closes: #551178)
+
 2008-09-06  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch partly by: Colin Leroy <colin at colino.net>

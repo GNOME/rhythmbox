@@ -1000,6 +1000,9 @@ rb_ipod_is_mount_ipod (GMount *mount)
 	GVolume *volume;
 
 	volume = g_mount_get_volume (mount);
+	if (volume == NULL)
+		return FALSE;
+
 	udi = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
 	g_object_unref (volume);
 

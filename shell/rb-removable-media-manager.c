@@ -624,6 +624,10 @@ rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *moun
 	}
 
 	volume = g_mount_get_volume (mount);
+	if (volume == NULL) {
+		rb_debug ("Unhandled media, no volume for mount");
+		return;
+	}
 
 	/* if we've already created a source for the volume,
 	 * don't do anything with the mount.
