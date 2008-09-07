@@ -902,6 +902,8 @@ data/icons/hicolor/22x22/actions/Makefile
 data/icons/hicolor/22x22/apps/Makefile
 data/icons/hicolor/22x22/places/Makefile
 data/icons/hicolor/22x22/status/Makefile
+data/icons/hicolor/24x24/Makefile
+data/icons/hicolor/24x24/apps/Makefile
 data/icons/hicolor/32x32/Makefile
 data/icons/hicolor/32x32/actions/Makefile
 data/icons/hicolor/32x32/apps/Makefile
