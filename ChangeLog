@@ -1,5 +1,10 @@
 2008-09-07  Jonathan Matthew  <jonathan@d14n.org>
 
+	* lib/rb-file-helpers.c: (rb_uri_create_parent_dirs):
+	Fail a bit less vigorously for badly formed URIs.
+
+2008-09-07  Jonathan Matthew  <jonathan@d14n.org>
+
 	* podcast/rb-podcast-manager.c: (download_file_info_cb),
 	(rb_podcast_manager_db_entry_deleted_cb),
 	(rb_podcast_manager_get_podcast_dir):

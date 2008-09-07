@@ -941,6 +941,10 @@ rb_uri_create_parent_dirs (const char *uri, GError **error)
 	file = g_file_new_for_uri (uri);
 	parent = g_file_get_parent (file);
 	g_object_unref (file);
+	if (parent == NULL) {
+		/* now what? */
+		return TRUE;
+	}
 
 #if GLIB_CHECK_VERSION(2,17,1)
 	ret = check_file_is_directory (parent, error);
