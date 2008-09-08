@@ -425,6 +425,10 @@ AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" != "xno")
 
 AC_CHECK_LIB(z, uncompress)
 
+dnl check for libgstcdda, needed to list the audio tracks
+PKG_CHECK_MODULES(GSTCDDA, gstreamer-cdda-0.10)
+AC_SUBST(GSTCDDA_LIBS)
+AC_SUBST(GSTCDDA_CFLAGS)
 
 dnl check for MusicBrainz
 AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],

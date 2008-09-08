@@ -39,6 +39,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <gst/gst.h>
+#include <gst/cdda/gstcddabasesrc.h>
 
 #include "rb-plugin.h"
 #include "rhythmdb.h"
@@ -238,6 +239,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 	RhythmDBEntry *entry;
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 	char *audio_path;
+	guint64 duration;
 	GValue value = {0, };
 	gchar *str;
 	RhythmDBEntryType entry_type;
@@ -270,27 +272,17 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 			    &value);
 	g_value_unset (&value);
 
-	/* determine the duration */
-	{
-		GstFormat time_format = GST_FORMAT_TIME;
-		GstFormat track_format = gst_format_get_by_nick ("track");
-		gint64 duration;
-		gboolean result;
-                result = gst_element_seek (priv->fakesink, 1.0, track_format, GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, (guint64) track_number - 1, GST_SEEK_TYPE_NONE, -1);
-		if (result) {
-			result = gst_element_query_duration (priv->fakesink, &time_format, &duration) && time_format == GST_FORMAT_TIME;
-		}
-
-		if (result) {
-			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, (gulong)(duration / GST_SECOND));
-			rhythmdb_entry_set (db, entry,
-					    RHYTHMDB_PROP_DURATION,
-					    &value);
-			g_value_unset (&value);
-		} else {
-			g_warning ("Failed to query cd track duration");
-		}
+	/* determine the duration
+	 * FIXME: http://bugzilla.gnome.org/show_bug.cgi?id=551011 */
+	if (gst_tag_list_get_uint64 (GST_CDDA_BASE_SRC(priv->cdda)->tracks[track_number - 1].tags, GST_TAG_DURATION, &duration)) {
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, (gulong)(duration / GST_SECOND));
+		rhythmdb_entry_set (db, entry,
+				    RHYTHMDB_PROP_DURATION,
+				    &value);
+		g_value_unset (&value);
+	} else {
+		g_warning ("Failed to query cd track duration");
 	}
 
 	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_ARTIST, NULL);

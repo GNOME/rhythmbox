@@ -1,3 +1,13 @@
+2008-09-09  Bastien Nocera  <hadess@hadess.net>
+
+	* configure.ac:
+	* plugins/audiocd/Makefile.am:
+	* plugins/audiocd/rb-audiocd-source.c
+	(rb_audiocd_create_track_entry): Link against libgstcdda,
+	and access the tags directly to get the duration of the tracks,
+	avoids a lot of slow seeking on the CD, and makes loading CDs
+	awfully fast (Helps: #551011)
+
 2008-09-07  Jonathan Matthew  <jonathan@d14n.org>
 
 	* configure.ac:

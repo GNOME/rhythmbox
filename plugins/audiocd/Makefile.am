@@ -9,9 +9,10 @@ libaudiocd_la_SOURCES =					\
 libaudiocd_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 libaudiocd_la_LIBADD = \
-	$(top_builddir)/corelib/librhythmbox-core.la \
-	$(TOTEM_PLPARSER_LIBS)       \
-	$(LIBNAUTILUS_BURN_LIBS)
+	$(top_builddir)/corelib/librhythmbox-core.la	\
+	$(TOTEM_PLPARSER_LIBS)				\
+	$(LIBNAUTILUS_BURN_LIBS)			\
+	$(GSTCDDA_LIBS)
 
 if HAVE_MUSICBRAINZ
 libaudiocd_la_LIBADD += $(MUSICBRAINZ_LIBS)
@@ -44,6 +45,7 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)				\
+	$(GSTCDDA_CFLAGS)				\
 	$(MUSICBRAINZ_CFLAGS) $(MUSICBRAINZ3_CFLAGS)	\
 	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	-DUSE_TOTEM_PL_PARSER				\
