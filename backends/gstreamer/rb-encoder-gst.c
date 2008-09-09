@@ -603,27 +603,28 @@ attach_output_pipeline (RBEncoderGst *encoder,
 	 */
 	file = g_file_new_for_uri (dest);
 	
-	sink = NULL;
-	stream = g_file_create (file, G_FILE_CREATE_NONE, NULL, &local_error);
-	if (local_error != NULL) {
-		if (g_error_matches (local_error,
-				     G_IO_ERROR,
-				     G_IO_ERROR_NOT_SUPPORTED)) {
-			rb_debug ("gio can't write to %s, so using whatever sink will work", dest);
-			sink = gst_element_make_from_uri (GST_URI_SINK, dest, "sink");
-			if (sink == NULL) {
-				g_propagate_error (error, local_error);		/* close enough */
-				return FALSE;
-			} else {
+	sink = gst_element_factory_make ("giostreamsink", NULL);
+	if (sink != NULL) {
+		stream = g_file_create (file, G_FILE_CREATE_NONE, NULL, &local_error);
+		if (local_error != NULL) {
+			if (g_error_matches (local_error,
+					     G_IO_ERROR,
+					     G_IO_ERROR_NOT_SUPPORTED)) {
+				rb_debug ("gio can't write to %s, so using whatever sink will work", dest);
+				g_object_unref (sink);
+				sink = NULL;
 				g_error_free (local_error);
-			}
-		} else if (g_error_matches (local_error,
-					    G_IO_ERROR,
-					    G_IO_ERROR_EXISTS)) {
-			if (prompt_for_overwrite (file)) {
-				g_error_free (local_error);
-				stream = g_file_replace (file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, error);
-				if (stream == NULL) {
+			} else if (g_error_matches (local_error,
+						    G_IO_ERROR,
+						    G_IO_ERROR_EXISTS)) {
+				if (prompt_for_overwrite (file)) {
+					g_error_free (local_error);
+					stream = g_file_replace (file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, error);
+					if (stream == NULL) {
+						return FALSE;
+					}
+				} else {
+					g_propagate_error (error, local_error);
 					return FALSE;
 				}
 			} else {
@@ -631,14 +632,20 @@ attach_output_pipeline (RBEncoderGst *encoder,
 				return FALSE;
 			}
 		} else {
-			g_propagate_error (error, local_error);
-			return FALSE;
+			g_object_set (sink, "stream", stream, NULL);
 		}
+	} else {
+		rb_debug ("unable to create giostreamsink, falling back to default sink for uri");
 	}
 
 	if (sink == NULL) {
-		sink = gst_element_factory_make ("giostreamsink", NULL);
-		g_object_set (sink, "stream", stream, NULL);
+		sink = gst_element_make_from_uri (GST_URI_SINK, dest, "sink");
+		if (sink == NULL) {
+			g_set_error (error, RB_ENCODER_ERROR, RB_ENCODER_ERROR_FILE_ACCESS,
+				     _("Could not create a GStreamer sink element to write to %s"),
+				     dest);
+			return FALSE;
+		}
 	}
 
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), sink);
