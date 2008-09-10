@@ -439,8 +439,8 @@ impl_want_uri (RBSource *source, const char *uri)
 {
 	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (source);
 	GVolume *volume;
-	const char *uri_path;
-	char *device_path;
+	GFile *file;
+	char *device_path, *uri_path;
 	int retval;
 	int len;
 
@@ -448,11 +448,23 @@ impl_want_uri (RBSource *source, const char *uri)
 
 	/* A default version for use with the audio players
 	 * that use mass storage */
-	if (g_str_has_prefix (uri, "file://") == FALSE)
+	file = g_file_new_for_uri (uri);
+	if (g_file_has_uri_scheme (file, "file") == FALSE) {
+		g_object_unref (file);
 		return 0;
-	uri_path = uri + strlen ("file://");
+	}
 
+	/* Deal with the mount root being passed, eg. file:///media/IPODNAME */
 	if (priv->mount) {
+		GFile *root;
+
+		root = g_mount_get_root (priv->mount);
+		retval = g_file_equal (root, file) ? 100 : 0;
+		g_object_unref (root);
+		if (retval) {
+			g_object_unref (file);
+			return retval;
+		}
 		volume = g_mount_get_volume (priv->mount);
 	} else if (priv->volume) {
 		volume = g_object_ref (priv->volume);
@@ -460,14 +472,23 @@ impl_want_uri (RBSource *source, const char *uri)
 		return 0;
 	}
 
-	if (volume == NULL)
+	if (volume == NULL) {
+		g_object_unref (file);
 		return 0;
+	}
 
+	/* Deal with the path to the device node being passed */
 	device_path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 	g_object_unref (volume);
-	if (device_path == NULL)
+	if (device_path == NULL) {
+		g_object_unref (file);
 		return 0;
+	}
 
+	uri_path = g_file_get_path (file);
+	g_object_unref (file);
+	if (uri_path == NULL)
+		return 0;
 	len = strlen (uri_path);
 	if (uri_path[len - 1] == '/') {
 		if (strncmp (uri_path, device_path, len - 1) == 0)
@@ -476,6 +497,7 @@ impl_want_uri (RBSource *source, const char *uri)
 		retval = 100;
 
 	g_free (device_path);
+	g_free (uri_path);
 	return retval;
 }
 
