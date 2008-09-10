@@ -766,9 +766,10 @@ rb_library_source_format_changed_cb (GtkWidget *widget, RBLibrarySource *source)
 /**
  * Perform magic on a path to make it safe.
  *
- * This will always replace '/' with ' ', and optionally make the file name
- * shell-friendly. This involves removing [?*\ ] and replacing with '_'.  Also
- * any leading periods are removed so that the files don't end up being hidden.
+ * This will always replace '/' with '-', and optionally make the file name
+ * shell-friendly. This involves removing replacing shell metacharacters and all
+ * whitespace with '_'. Also any leading periods are removed so that the files
+ * don't end up being hidden.
  */
 static char *
 sanitize_path (const char *str)
@@ -792,9 +793,10 @@ sanitize_path (const char *str)
 		/* TODO: I'd like this to compress whitespace aswell */
 		g_strdelimit (s, "\t ", '_');
 	}
-	res = g_filename_from_utf8(s, -1, NULL, NULL, NULL);
-	g_free(s);
-	return res ? res : g_strdup(str);
+
+	res = g_uri_escape_string (s, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH_ELEMENT, TRUE);
+	g_free (s);
+	return res;
 }
 
 static char *
@@ -812,8 +814,7 @@ sanitize_pattern (const char *pat)
 }
 
 /*
- * Parse a filename pattern and replace markers with values from a TrackDetails
- * structure.
+ * Parse a filename pattern and replace markers with values from a RhythmDBEntry
  *
  * Valid markers so far are:
  * %at -- album title
@@ -1233,6 +1234,7 @@ impl_paste (RBSource *asource, GList *entries)
 		RhythmDBEntryType entry_type;
 		RBSource *source_source;
 		char *dest;
+		char *sane_dest;
 
 		rb_debug ("pasting entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 
@@ -1252,8 +1254,11 @@ impl_paste (RBSource *asource, GList *entries)
 			continue;
 		}
 
+		sane_dest = rb_sanitize_uri_for_filesystem (dest);
+		g_free (dest);
+
 		rb_removable_media_manager_queue_transfer (rm_mgr, entry,
-							  dest, NULL,
+							  sane_dest, NULL,
 							  (RBTransferCompleteCallback)completed_cb, source);
 	}
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);

@@ -1,5 +1,15 @@
 2008-09-10  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/generic-player/rb-generic-player-source.c:
+	(sanitize_path):
+	* sources/rb-library-source.c: (sanitize_path), (impl_paste):
+	Our sanitize_path function(s) are used for building URIs, not paths,
+	so we need to use g_uri_escape_string rather than
+	g_filename_from_utf8; also make library destination URIs safe for the
+	target filesystem.  Fixes #550117.
+
+2008-09-10  Jonathan Matthew  <jonathan@d14n.org>
+
 	* podcast/rb-podcast-manager.c: (download_file_info_cb):
 	If we get a generic 'failed' error here, continue with the download
 	anyway.  Things like 'file not found' and 'permission denied' will

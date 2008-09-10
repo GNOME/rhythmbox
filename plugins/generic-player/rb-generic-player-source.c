@@ -1107,7 +1107,6 @@ impl_can_paste (RBSource *source)
 	return (priv->read_only == FALSE);
 }
 
-/* probably should move this somewhere common */
 static char *
 sanitize_path (const char *str)
 {
@@ -1119,20 +1118,10 @@ sanitize_path (const char *str)
 		str++;
 
 	s = g_strdup (str);
-	/* Replace path seperators with a hyphen */
 	g_strdelimit (s, "/", '-');
-
-	/* Replace separators with a hyphen */
-	g_strdelimit (s, "\\:|", '-');
-	/* Replace all other weird characters to whitespace */
-	g_strdelimit (s, "*?&!\'\"$()`>{}", ' ');
-	/* Replace all whitespace with underscores */
-	/* TODO: I'd like this to compress whitespace aswell */
-	g_strdelimit (s, "\t ", '_');
-
-	res = g_filename_from_utf8 (s, -1, NULL, NULL, NULL);
+	res = g_uri_escape_string (s, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH_ELEMENT, TRUE);
 	g_free (s);
-	return res ? res : g_strdup (str);
+	return res;
 }
 
 static GList *
