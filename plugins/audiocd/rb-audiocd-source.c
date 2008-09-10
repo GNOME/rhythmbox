@@ -762,15 +762,17 @@ static guint
 impl_want_uri (RBSource *source, const char *uri)
 {
 	GVolume *volume;
-	const char *uri_path;
-	char *device_path;
+	GMount *mount;
+	GFile *file;
 	int retval;
 
 	retval = 0;
 
-	if (g_str_has_prefix (uri, "cdda://") == FALSE)
+	file = g_file_new_for_uri (uri);
+	if (g_file_has_uri_scheme (file, "cdda") == FALSE) {
+		g_object_unref (file);
 		return 0;
-	uri_path = uri + strlen ("cdda://");
+	}
 
 	g_object_get (G_OBJECT (source),
 		      "volume", &volume,
@@ -778,11 +780,17 @@ impl_want_uri (RBSource *source, const char *uri)
 	if (volume == NULL)
 		return 0;
 
-	device_path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
-	if (device_path != NULL && strcmp (device_path, uri_path) == 0) {
-		retval = 100;
+	mount = g_volume_get_mount (volume);
+	if (mount) {
+		GFile *root;
+
+		root = g_mount_get_root (mount);
+		retval = g_file_equal (root, file) ? 100 : 0;
+		g_object_unref (mount);
+		g_object_unref (root);
 	}
-	g_free (device_path);
+	g_object_unref (file);
+
 	return retval;
 }
 
