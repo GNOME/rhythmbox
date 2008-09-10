@@ -669,7 +669,7 @@ download_file_info_cb (GFile *source,
 {
 	GError *error = NULL;
 	GFileInfo *src_info;
-	char *local_file_name;
+	char *local_file_name = NULL;
 	char *feed_folder;
 	char *esc_local_file_name;
 	char *local_file_uri;
@@ -682,7 +682,12 @@ download_file_info_cb (GFile *source,
 		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION));
 
 	src_info = g_file_query_info_finish (source, result, &error);
-	if (error != NULL) {
+
+	/* ignore G_IO_ERROR_FAILED here, as it probably just means that the server is lame.
+	 * actual problems (not found, permission denied, etc.) have specific errors codes,
+	 * so they'll still be reported.
+	 */
+	if (error != NULL && g_error_matches (error, G_IO_ERROR, G_IO_ERROR_FAILED) == FALSE) {
 		GValue val = {0,};
 
 		rb_debug ("file info query failed: %s", error->message);
@@ -702,21 +707,28 @@ download_file_info_cb (GFile *source,
 		g_error_free (error);
 		rb_podcast_manager_abort_download (data);
 		return;
+	} else {
+		g_clear_error (&error);
 	}
 
-	data->download_size = g_file_info_get_attribute_uint64 (src_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+	if (src_info != NULL) {
+		data->download_size = g_file_info_get_attribute_uint64 (src_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
 
-	/* this should probably be the target of any redirects.  hmm. */
-	local_file_name = g_file_info_get_attribute_as_string (src_info, G_FILE_ATTRIBUTE_STANDARD_COPY_NAME);
-	if (local_file_name == NULL) {
-		/* probably shouldn't be using this, but the gvfs http backend doesn't
-		 * set the copy name (yet)
-		 */
-		local_file_name = g_strdup (g_file_info_get_edit_name (src_info));
+		local_file_name = g_file_info_get_attribute_as_string (src_info, G_FILE_ATTRIBUTE_STANDARD_COPY_NAME);
 		if (local_file_name == NULL) {
-			/* um, grab the original filename? */
-			local_file_name = g_strdup ("mysterious podcast download.mp3");
+			/* probably shouldn't be using this, but the gvfs http backend doesn't
+			 * set the copy name (yet)
+			 */
+			local_file_name = g_strdup (g_file_info_get_edit_name (src_info));
 		}
+
+		g_object_unref (src_info);
+	}
+
+	if (local_file_name == NULL) {
+		/* fall back to the basename from the original URI */
+		local_file_name = g_file_get_basename (source);
+		rb_debug ("didn't get a filename from the file info request; using basename %s", local_file_name);
 	}
 
 	/* if the filename ends with the query string from the original URI,
@@ -741,6 +753,7 @@ download_file_info_cb (GFile *source,
 					   feed_folder,
 					   local_file_name,
 					   NULL);
+
 	g_free (local_file_name);
 	g_free (feed_folder);
 	g_free (esc_local_file_name);
@@ -1285,15 +1298,16 @@ download_progress (RBPodcastManagerInfo *data, guint64 downloaded, guint64 total
 {
 	guint local_progress = 0;
 
-	rb_debug ("%s: %" G_GUINT64_FORMAT "/ %" G_GUINT64_FORMAT,
-		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION),
-		  downloaded, total);
 
 	if (downloaded > 0 && total > 0)
 		local_progress = (100 * downloaded) / total;
 
 	if (local_progress != data->progress) {
 		GValue val = {0,};
+
+		rb_debug ("%s: %" G_GUINT64_FORMAT "/ %" G_GUINT64_FORMAT,
+			  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION),
+			  downloaded, total);
 
 		GDK_THREADS_ENTER ();
 
@@ -1382,6 +1396,26 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 		download_error (data, error);
 		g_error_free (error);
 		return NULL;
+	}
+
+	/* gvfs doesn't do file info queries from streams, so this doesn't help, but
+	 * maybe some day it will..
+	 */
+	if (data->download_size == 0) {
+		GFileInfo *info;
+
+		info = g_file_input_stream_query_info (data->in_stream,
+						       G_FILE_ATTRIBUTE_STANDARD_SIZE,
+						       NULL,
+						       &error);
+		if (error != NULL) {
+			rb_debug ("stream info query failed: %s", error->message);
+			g_clear_error (&error);
+		} else {
+			data->download_size = g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+			rb_debug ("got file size from stream: %" G_GINT64_FORMAT, data->download_size);
+			g_object_unref (info);
+		}
 	}
 
 	/* open local file */

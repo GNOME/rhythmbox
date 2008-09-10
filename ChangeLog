@@ -1,5 +1,22 @@
 2008-09-10  Jonathan Matthew  <jonathan@d14n.org>
 
+	* podcast/rb-podcast-manager.c: (download_file_info_cb):
+	If we get a generic 'failed' error here, continue with the download
+	anyway.  Things like 'file not found' and 'permission denied' will
+	still be reported correctly.  If the file info query fails, use the
+	basename from the original URI for the downloaded file.
+
+	(download_progress):
+	Make the debug output a bit less obnoxious.
+	
+	(podcast_download_thread):
+	If we didn't get it from the file info query, try to get the download
+	size from the stream.  This doesn't actually work yet.
+
+	Fixes #551540.
+
+2008-09-10  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/gstreamer/rb-encoder-gst.c: (attach_output_pipeline):
 	Fall back to the default sink for the destination URI if
 	we can't create a giostreamsink.  Fixes #551513.
