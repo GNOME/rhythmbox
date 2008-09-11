@@ -2060,10 +2060,11 @@ rb_podcast_manager_get_podcast_dir (RBPodcastManager *pd)
 	char *conf_dir_uri = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
 
 	if (conf_dir_uri == NULL || (strcmp (conf_dir_uri, "") == 0)) {
-		char *conf_dir_name;
-		conf_dir_name = g_build_filename (g_get_home_dir (),
-						  "Podcasts",
-						  NULL);
+		const char *conf_dir_name;
+
+		conf_dir_name = g_get_user_special_dir (G_USER_DIRECTORY_MUSIC);
+		if (!conf_dir_name)
+			conf_dir_name = g_get_home_dir ();
 
 		conf_dir_uri = g_filename_to_uri (conf_dir_name, NULL, NULL);
 		eel_gconf_set_string (CONF_STATE_PODCAST_DOWNLOAD_DIR, conf_dir_uri);
