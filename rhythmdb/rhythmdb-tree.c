@@ -117,8 +117,8 @@ static void rhythmdb_hash_tree_foreach (RhythmDB *adb,
 					gpointer data);
 
 /* Update both of those! */
-#define RHYTHMDB_TREE_XML_VERSION "1.5"
-#define RHYTHMDB_TREE_XML_VERSION_INT 150
+#define RHYTHMDB_TREE_XML_VERSION "1.6"
+#define RHYTHMDB_TREE_XML_VERSION_INT 160
 
 static void destroy_tree_property (RhythmDBTreeProperty *prop);
 static RhythmDBTreeProperty *get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
@@ -332,9 +332,10 @@ struct RhythmDBTreeLoadContext
 	GError **error;
 
 	/* updating */
-	gboolean has_date;
-	gboolean canonicalise_uris;
-	gboolean reload_all_metadata;
+	guint has_date : 1;
+	guint canonicalise_uris : 1;
+	guint reload_all_metadata : 1;
+	guint update_podcasts : 1;
 };
 
 /* Returns the version as an int, multiplied by 100,
@@ -392,6 +393,9 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 							rb_debug ("old version of rhythmdb, performing URI canonicalisation for all entries (DB version %s)", version);
 							ctx->canonicalise_uris = TRUE;
 						}
+					case 150:
+						rb_debug ("Upgrade Podcasts remote vs. local locations");
+						ctx->update_podcasts = TRUE;
 					case RHYTHMDB_TREE_XML_VERSION_INT:
 						/* current version */
 						break;
@@ -520,6 +524,19 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 				podcast->post_time = ctx->entry->last_seen;
 			}
 		}
+		if (ctx->entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
+			/* When upgrading Podcasts from 0.11.6 and prior, we need to
+			 * swap mountpoint and location if there is a mountpoint */
+			if (ctx->update_podcasts && ctx->entry->mountpoint != NULL) {
+				RBRefString *tmp;
+
+				rb_debug ("pre-Podcast avoidance found, swapping location/mountpoint");
+
+				tmp = ctx->entry->location;
+				ctx->entry->location = ctx->entry->mountpoint;
+				ctx->entry->mountpoint = tmp;
+			}
+		}
 
 		if (ctx->entry->location != NULL && rb_refstring_get (ctx->entry->location)[0] != '\0') {
 			RhythmDBEntry *entry;
@@ -533,9 +550,33 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 					rhythmdb_commit (RHYTHMDB (ctx->db));
 					ctx->batch_count = 0;
 				}
+			} else if (ctx->entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST &&
+				   entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
+				rb_debug ("found song entry with duplicate location for Podcast post %s. merging metadata",
+					  rb_refstring_get (ctx->entry->location));
+
+				ctx->entry->play_count += entry->play_count;
+				if (ctx->entry->last_played < entry->last_played)
+					ctx->entry->last_played = entry->last_played;
+
+				/* Remove the song entry,
+				 * deleting requires relinquishing the locks */
+				g_mutex_unlock (ctx->db->priv->entries_lock);
+				rhythmdb_entry_delete (RHYTHMDB(ctx->db), entry);
+				g_mutex_lock (ctx->db->priv->entries_lock);
+				rhythmdb_commit (RHYTHMDB (ctx->db));
+
+				/* And add the Podcast entry to the database */
+				rhythmdb_tree_entry_new_internal (RHYTHMDB (ctx->db), ctx->entry);
+				rhythmdb_entry_insert (RHYTHMDB (ctx->db), ctx->entry);
+				if (++ctx->batch_count == RHYTHMDB_QUERY_MODEL_SUGGESTED_UPDATE_CHUNK) {
+					rhythmdb_commit (RHYTHMDB (ctx->db));
+					ctx->batch_count = 0;
+				}
 			} else {
 				rb_debug ("found entry with duplicate location %s. merging metadata",
 					  rb_refstring_get (ctx->entry->location));
+
 				entry->play_count += ctx->entry->play_count;
 
 				if (entry->rating < 0.01)

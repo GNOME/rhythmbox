@@ -1,3 +1,31 @@
+2008-09-11  Bastien Nocera  <hadess@hadess.net>
+
+	* podcast/rb-feed-podcast-properties-dialog.c
+	(rb_feed_podcast_properties_dialog_update_location):
+	* podcast/rb-podcast-manager.c (get_download_location),
+	(set_download_location), (get_remote_location),
+	(rb_podcast_manager_download_entry),
+	(rb_podcast_manager_entry_downloaded),
+	(rb_podcast_manager_head_query_cb), (download_error),
+	(rb_podcast_manager_next_file), (download_file_info_cb),
+	(rb_podcast_manager_save_metadata), (download_progress),
+	(podcast_download_thread), (end_job), (cancel_job),
+	(rb_podcast_manager_db_entry_deleted_cb),
+	(remove_if_not_downloaded):
+	* podcast/rb-podcast-properties-dialog.c
+	(rb_podcast_properties_dialog_update_location),
+	(rb_podcast_properties_dialog_update_download_location):
+	* rhythmdb/rhythmdb-tree.c (rhythmdb_tree_parser_start_element),
+	(rhythmdb_tree_parser_end_element):
+	* rhythmdb/rhythmdb.c (process_deleted_entries_cb):
+	Forbid podcasts from showing up in the main library, by using
+	the local download location to identify the file as soon as we start
+	downloading it (Closes: #323440)
+
+	* tests/podcast-upgrade.xml:
+	* tests/test-rhythmdb.c (START_TEST), (rhythmdb_suite), (main):
+	Add a test for the database upgrade code above
+
 2008-09-10  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/audiocd/rb-audiocd-source.c (impl_want_uri): Fix audiocd

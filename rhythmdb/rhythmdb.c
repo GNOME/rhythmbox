@@ -1232,6 +1232,8 @@ process_deleted_entries_cb (RhythmDBEntry *entry,
 		return FALSE;
 
 	rhythmdb_entry_ref (entry);
+	g_assert ((entry->flags & RHYTHMDB_ENTRY_INSERTED) != 0);
+	entry->flags &= ~(RHYTHMDB_ENTRY_INSERTED);
 	db->priv->deleted_entries_to_emit = g_list_prepend (db->priv->deleted_entries_to_emit, entry);
 
 	return TRUE;

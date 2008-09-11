@@ -402,7 +402,9 @@ rb_podcast_properties_dialog_update_location (RBPodcastPropertiesDialog *dialog)
 	const char *location;
 	char *display;
 
-	location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION);
+	location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_MOUNTPOINT);
+	if (location == NULL)
+		location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION);
 	display = g_uri_unescape_string (location, NULL);
 	gtk_label_set_text (GTK_LABEL (dialog->priv->location), display);
 	g_free (display);
@@ -416,6 +418,7 @@ rb_podcast_properties_dialog_update_download_location (RBPodcastPropertiesDialog
 	location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_MOUNTPOINT);
 	if (location != NULL && location[0] != '\0') {
 		char *display;
+		location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION);
 		display = g_uri_unescape_string (location, NULL);
 		gtk_label_set_text (GTK_LABEL (dialog->priv->download_location), display);
 		g_free (display);

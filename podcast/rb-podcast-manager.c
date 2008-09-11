@@ -429,6 +429,49 @@ rb_podcast_manager_new (RhythmDB *db)
 	return pd;
 }
 
+static const char *
+get_download_location (RhythmDBEntry *entry)
+{
+	/* We haven't tried to download the entry yet */
+	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT) == NULL)
+		return NULL;
+	return rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+}
+
+static void
+set_download_location (RhythmDB *db, RhythmDBEntry *entry, GValue *value)
+{
+	char *remote_location;
+
+	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT) == NULL) {
+		/* If the download location was never set */
+		GValue val = {0, };
+
+		/* Save the remote location */
+		remote_location = g_strdup (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+		/* Set the new download location */
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LOCATION, value);
+		/* Set MOUNTPOINT to the remote location */
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_take_string (&val, remote_location);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
+		g_value_unset (&val);
+	} else {
+		/* Just update the location */
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LOCATION, value);
+	}
+}
+
+static const char *
+get_remote_location (RhythmDBEntry *entry)
+{
+	const char *location;
+	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+	if (location == NULL)
+		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	return location;
+}
+
 void
 rb_podcast_manager_download_entry (RBPodcastManager *pd,
 				   RhythmDBEntry *entry)
@@ -454,8 +497,7 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd,
 
 			rhythmdb_commit (pd->priv->db);
 		}
-		rb_debug ("Adding podcast episode %s to download list",
-			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+		rb_debug ("Adding podcast episode %s to download list", get_remote_location (entry));
 
 		data = g_new0 (RBPodcastManagerInfo, 1);
 		data->pd = g_object_ref (pd);
@@ -479,7 +521,7 @@ rb_podcast_manager_entry_downloaded (RhythmDBEntry *entry)
 	g_assert (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST);
 
 	status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
-	file_name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+	file_name = get_download_location (entry);
 
 	return (status != RHYTHMDB_PODCAST_STATUS_ERROR && file_name != NULL);
 }
@@ -564,7 +606,7 @@ rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
 	guint status;
 
         gtk_tree_model_get (query_model, iter, 0, &entry, -1);
-        uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+        uri = get_remote_location (entry);
 	status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
 
 	if (status == 1)
@@ -580,7 +622,7 @@ download_error (RBPodcastManagerInfo *data, GError *error)
 {
 	GValue val = {0,};
 	rb_debug ("error downloading %s: %s",
-		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION),
+		  get_remote_location (data->entry),
 		  error->message);
 
 	g_value_init (&val, G_TYPE_ULONG);
@@ -633,7 +675,7 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 
 	pd->priv->active_download = data;
 
-	location = rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION);
+	location = get_remote_location (data->entry);
 	rb_debug ("processing %s", location);
 
 	/* extract the query string so we can remove it later if it appears
@@ -679,7 +721,7 @@ download_file_info_cb (GFile *source,
 	g_assert (rb_is_main_thread ());
 
 	rb_debug ("got file info results for %s",
-		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION));
+		  get_remote_location (data->entry));
 
 	src_info = g_file_query_info_finish (source, result, &error);
 
@@ -812,7 +854,7 @@ download_file_info_cb (GFile *source,
 
 			g_value_init (&val, G_TYPE_STRING);
 			g_value_take_string (&val, g_file_get_uri (data->destination));
-			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
+			set_download_location (data->pd->priv->db, data->entry, &val);
 			g_value_unset (&val);
 
 			rb_podcast_manager_save_metadata (data->pd, data->entry);
@@ -1176,7 +1218,7 @@ rb_podcast_manager_save_metadata (RBPodcastManager *pd, RhythmDBEntry *entry)
 	char **missing_plugins;
 	char **plugin_descriptions;
 
-	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+	uri = get_download_location (entry);
 	rb_debug ("loading podcast metadata from %s", uri);
         rb_metadata_load (md, uri, &error);
 
@@ -1298,7 +1340,6 @@ download_progress (RBPodcastManagerInfo *data, guint64 downloaded, guint64 total
 {
 	guint local_progress = 0;
 
-
 	if (downloaded > 0 && total > 0)
 		local_progress = (100 * downloaded) / total;
 
@@ -1330,7 +1371,7 @@ download_progress (RBPodcastManagerInfo *data, guint64 downloaded, guint64 total
 		if (g_cancellable_is_cancelled (data->cancel) == FALSE) {
 			GValue val = {0,};
 			rb_debug ("download of %s completed",
-				  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION));
+				  get_remote_location (data->entry));
 
 			g_value_init (&val, G_TYPE_UINT64);
 			g_value_set_uint64 (&val, downloaded);
@@ -1398,6 +1439,22 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 		return NULL;
 	}
 
+	/* set the downloaded location for the episode
+	 * and do it before opening the file, so that the monitor
+	 * doesn't add a normal entry for us */
+	if (get_download_location (data->entry) == NULL) {
+		GValue val = {0,};
+		char *uri = g_file_get_uri (data->destination);
+
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, uri);
+		set_download_location (data->pd->priv->db, data->entry, &val);
+		g_value_unset (&val);
+
+		rhythmdb_commit (data->pd->priv->db);
+		g_free (uri);
+	}
+
 	/* gvfs doesn't do file info queries from streams, so this doesn't help, but
 	 * maybe some day it will..
 	 */
@@ -1431,20 +1488,6 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 		}
 	}
 	
-	/* set the downloaded location for the episode */
-	if (rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_MOUNTPOINT) == NULL) {
-		GValue val = {0,};
-		char *uri = g_file_get_uri (data->destination);
-
-		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val, uri);
-		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
-		g_value_unset (&val);
-
-		rhythmdb_commit (data->pd->priv->db);
-		g_free (uri);
-	}
-
 	/* loop, copying from input stream to output stream */
 	while (TRUE) {
 		char *p;
@@ -1469,6 +1512,8 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 			n_read -= n_written;
 			downloaded += n_written;
 		}
+		if (n_written == -1)
+			break;
 
 		download_progress (data, downloaded, data->download_size, FALSE);
 	}
@@ -1495,7 +1540,7 @@ end_job	(RBPodcastManagerInfo *data)
 	g_assert (rb_is_main_thread ());
 
 	rb_debug ("cleaning up download of %s",
-		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION));
+		  get_remote_location (data->entry));
 
 	data->pd->priv->download_list = g_list_remove (data->pd->priv->download_list, data);
 
@@ -1520,8 +1565,7 @@ static void
 cancel_job (RBPodcastManagerInfo *data)
 {
 	g_assert (rb_is_main_thread ());
-	rb_debug ("cancelling download of %s",
-		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION));
+	rb_debug ("cancelling download of %s", get_remote_location (data->entry));
 
 	/* is this the active download? */
 	if (data == data->pd->priv->active_download) {
@@ -1582,7 +1626,7 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 		/* make sure we're not downloading it */
 		rb_podcast_manager_cancel_download (pd, entry);
 
-		file_name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+		file_name = get_download_location (entry);
 		if (file_name == NULL) {
 			/* episode has not been downloaded */
 			rb_debug ("Episode not downloaded, skipping.");
@@ -1621,7 +1665,7 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
                 	                RHYTHMDB_QUERY_PROP_EQUALS,
                         	        RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
                 	                RHYTHMDB_QUERY_PROP_LIKE,
-					RHYTHMDB_PROP_SUBTITLE, rhythmdb_entry_get_string (entry,  RHYTHMDB_PROP_LOCATION),
+					RHYTHMDB_PROP_SUBTITLE, get_remote_location (entry),
                                 	RHYTHMDB_QUERY_END);
 
 		if (gtk_tree_model_get_iter_first (query_model, &iter)) {
@@ -1729,7 +1773,7 @@ remove_if_not_downloaded (GtkTreeModel *model,
 						    iter);
 	if (entry != NULL && rb_podcast_manager_entry_downloaded (entry) == FALSE) {
 		rb_debug ("entry %s is no longer present in the feed and has not been downloaded",
-			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+			  get_remote_location (entry));
 		*remove = g_list_prepend (*remove, entry);
 	}
 
