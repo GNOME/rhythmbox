@@ -2059,6 +2059,10 @@ rb_podcast_manager_get_podcast_dir (RBPodcastManager *pd)
 {
 	char *conf_dir_uri = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
 
+	/* if we don't have a download directory yet, use the music dir,
+	 * or the home dir if we can't find that.
+	 * if the download directory is a path, rather than a URI, convert it.
+	 */
 	if (conf_dir_uri == NULL || (strcmp (conf_dir_uri, "") == 0)) {
 		const char *conf_dir_name;
 
@@ -2068,6 +2072,13 @@ rb_podcast_manager_get_podcast_dir (RBPodcastManager *pd)
 
 		conf_dir_uri = g_filename_to_uri (conf_dir_name, NULL, NULL);
 		eel_gconf_set_string (CONF_STATE_PODCAST_DOWNLOAD_DIR, conf_dir_uri);
+	} else if (conf_dir_uri[0] == '/') {
+		char *path = conf_dir_uri;
+
+		conf_dir_uri = g_filename_to_uri (path, NULL, NULL);
+		rb_debug ("converted podcast download dir %s to URI %s", path, conf_dir_uri);
+		eel_gconf_set_string (CONF_STATE_PODCAST_DOWNLOAD_DIR, conf_dir_uri);
+		g_free (path);
 	}
 
 	return conf_dir_uri;

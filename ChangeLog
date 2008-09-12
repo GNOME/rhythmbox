@@ -1,3 +1,10 @@
+2008-09-12  Jonathan Matthew  <jonathan@d14n.org>
+
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_get_podcast_dir):
+	If the podcast download location is a path, rather than a URI, convert
+	it.  Fixes (hopefully) the last bit of #536500.
+
 2008-09-11  Bastien Nocera  <hadess@hadess.net>
 
 	* podcast/rb-podcast-manager.c
