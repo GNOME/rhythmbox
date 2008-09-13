@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-09 21:54+0000\n"
-"PO-Revision-Date: 2008-09-10 20:59+0200\n"
+"POT-Creation-Date: 2008-09-13 01:26+0000\n"
+"PO-Revision-Date: 2008-09-13 08:14+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -609,19 +609,19 @@ msgstr "%d %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
 #: ../plugins/daap/rb-daap-connection.c:679
-#: ../plugins/generic-player/rb-generic-player-source.c:1182
+#: ../plugins/generic-player/rb-generic-player-source.c:1171
 #: ../plugins/ipod/rb-ipod-source.c:314
 #: ../plugins/iradio/rb-iradio-source.c:517
 #: ../plugins/iradio/rb-iradio-source.c:1110
 #: ../plugins/iradio/rb-station-properties-dialog.c:486
 #: ../plugins/mtpdevice/rb-mtp-source.c:266
-#: ../podcast/rb-feed-podcast-properties-dialog.c:319
-#: ../podcast/rb-podcast-manager.c:1785
-#: ../podcast/rb-podcast-properties-dialog.c:475
-#: ../podcast/rb-podcast-properties-dialog.c:528
-#: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1248
-#: ../rhythmdb/rhythmdb-tree.c:1252 ../rhythmdb/rhythmdb-tree.c:1256
-#: ../rhythmdb/rhythmdb-tree.c:1260 ../rhythmdb/rhythmdb.c:1599
+#: ../podcast/rb-feed-podcast-properties-dialog.c:321
+#: ../podcast/rb-podcast-manager.c:1863
+#: ../podcast/rb-podcast-properties-dialog.c:478
+#: ../podcast/rb-podcast-properties-dialog.c:531
+#: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1284
+#: ../rhythmdb/rhythmdb-tree.c:1288 ../rhythmdb/rhythmdb-tree.c:1292
+#: ../rhythmdb/rhythmdb-tree.c:1296 ../rhythmdb/rhythmdb.c:1601
 #: ../shell/rb-shell-player.c:1717 ../shell/rb-shell.c:3063
 #: ../sources/rb-podcast-source.c:1763 ../widgets/rb-entry-view.c:1035
 #: ../widgets/rb-entry-view.c:1060 ../widgets/rb-entry-view.c:1463
@@ -833,6 +833,37 @@ msgstr "Artista"
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox no pudo obtener acceso al dispositivo CD."
 
+#: ../plugins/audiocd/sj-metadata-getter.c:245
+#, c-format
+msgid "Could not create CD lookup thread"
+msgstr "No se pudo crear un hilo de búsqueda de CD"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:89
+#, c-format
+msgid "Cannot access CD"
+msgstr "No se puede acceder al CD"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:109
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:347
+msgid "Unknown Title"
+msgstr "Título desconocido"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:113
+#: ../plugins/audiocd/sj-metadata-gvfs.c:136
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:331
+msgid "Unknown Artist"
+msgstr "Artista desconocido"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:133
+#, c-format
+msgid "Track %d"
+msgstr "Pista %d"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:150
+#, c-format
+msgid "Cannot access CD: %s"
+msgstr "No se puede acceder al CD: %s"
+
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:213
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:220
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:234
@@ -843,14 +874,6 @@ msgstr "Este CD no se pudo consultar: %s\n"
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:329
 msgid "Various"
 msgstr "Varios"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:331
-msgid "Unknown Artist"
-msgstr "Artista desconocido"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:347
-msgid "Unknown Title"
-msgstr "Título desconocido"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:372
 msgid "Incomplete metadata for this CD"
@@ -920,7 +943,7 @@ msgstr "Perfil de Last.fm"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1084
 #: ../plugins/iradio/rb-station-properties-dialog.c:497
-#: ../rhythmdb/rhythmdb.c:3406 ../widgets/rb-entry-view.c:983
+#: ../rhythmdb/rhythmdb.c:3408 ../widgets/rb-entry-view.c:983
 #: ../widgets/rb-entry-view.c:1521 ../widgets/rb-entry-view.c:1534
 #: ../widgets/rb-song-info.c:1315
 msgid "Never"
@@ -2032,7 +2055,7 @@ msgid "%s Properties"
 msgstr "Propiedades de %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:488
-#: ../podcast/rb-podcast-properties-dialog.c:473
+#: ../podcast/rb-podcast-properties-dialog.c:476
 #: ../widgets/rb-song-info.c:1065
 #, c-format
 msgid "%lu kbps"
@@ -2872,30 +2895,30 @@ msgstr "Mostrar las visualizaciones"
 msgid "Visualization"
 msgstr "Visualización"
 
-#: ../podcast/rb-podcast-manager.c:756
+#: ../podcast/rb-podcast-manager.c:811
 msgid "Error creating podcast download directory"
 msgstr "Error al crear el directorio de descarga del Podcast"
 
-#: ../podcast/rb-podcast-manager.c:757
+#: ../podcast/rb-podcast-manager.c:812
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "No se pudo crear el directorio de descarga para %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:876
+#: ../podcast/rb-podcast-manager.c:931
 msgid "Invalid URL"
 msgstr "URL inválido"
 
-#: ../podcast/rb-podcast-manager.c:877
+#: ../podcast/rb-podcast-manager.c:932
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "La URL «%s» no es válida, compruébelo."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:887
+#: ../podcast/rb-podcast-manager.c:942
 msgid "URL already added"
 msgstr "La URL ya se ha añadido"
 
-#: ../podcast/rb-podcast-manager.c:888
+#: ../podcast/rb-podcast-manager.c:943
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2904,7 +2927,7 @@ msgstr ""
 "La URL «%s» ya se ha añadido como estación de radio. Si esto es un proveedor "
 "de Podcast, elimine la estación de radio."
 
-#: ../podcast/rb-podcast-manager.c:956
+#: ../podcast/rb-podcast-manager.c:1011
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2915,11 +2938,11 @@ msgstr ""
 "o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
 "todas formas?"
 
-#: ../podcast/rb-podcast-manager.c:1067
+#: ../podcast/rb-podcast-manager.c:1122
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:1951
+#: ../podcast/rb-podcast-manager.c:2029
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Hubo un problema al añadir este Podcast: %s. Compruebe el URL: %s"
@@ -2939,7 +2962,7 @@ msgstr "Tipo de archivo no esperado: %s"
 msgid "Unable to parse the feed contents"
 msgstr "No se pudo analizar el contenido del proveedor"
 
-#: ../podcast/rb-podcast-properties-dialog.c:423
+#: ../podcast/rb-podcast-properties-dialog.c:426
 msgid "Not Downloaded"
 msgstr "No descargado"
 
@@ -3053,7 +3076,7 @@ msgstr "El volumen de reproducción es %f.\n"
 msgid "All"
 msgstr "Todo"
 
-#: ../rhythmdb/rhythmdb-tree.c:403
+#: ../rhythmdb/rhythmdb-tree.c:407
 #, c-format
 msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
@@ -3067,29 +3090,29 @@ msgstr ""
 msgid "Couldn't access %s: %s"
 msgstr "No se ha podido acceder a %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:2037
+#: ../rhythmdb/rhythmdb.c:2039
 msgid "invalid unicode in error message"
 msgstr "Unicode inválido en el mensaje de error"
 
-#: ../rhythmdb/rhythmdb.c:2895
+#: ../rhythmdb/rhythmdb.c:2897
 msgid "Could not load the music database:"
 msgstr "No se pudo cargar la base de datos de la música:"
 
-#: ../rhythmdb/rhythmdb.c:4258
+#: ../rhythmdb/rhythmdb.c:4260
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minutos"
 
-#: ../rhythmdb/rhythmdb.c:4259
+#: ../rhythmdb/rhythmdb.c:4261
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hora"
 msgstr[1] "%ld horas"
 
-#: ../rhythmdb/rhythmdb.c:4260
+#: ../rhythmdb/rhythmdb.c:4262
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3097,7 +3120,7 @@ msgstr[0] "%ld día"
 msgstr[1] "%ld días"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4266
+#: ../rhythmdb/rhythmdb.c:4268
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s y %s"
@@ -3105,8 +3128,8 @@ msgstr "%s, %s y %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4272 ../rhythmdb/rhythmdb.c:4280
-#: ../rhythmdb/rhythmdb.c:4291
+#: ../rhythmdb/rhythmdb.c:4274 ../rhythmdb/rhythmdb.c:4282
+#: ../rhythmdb/rhythmdb.c:4293
 #, c-format
 msgid "%s and %s"
 msgstr "%s y %s"
@@ -3994,7 +4017,7 @@ msgstr "Elija el lugar de la fonoteca"
 msgid "Multiple locations set"
 msgstr "Se han establecido múltiples lugares"
 
-#: ../sources/rb-library-source.c:997
+#: ../sources/rb-library-source.c:998
 msgid "Example Path:"
 msgstr "Ejemplo de la dirección:"
 
@@ -4592,18 +4615,12 @@ msgstr "Dirección desconocida"
 #~ msgid "Cannot create MusicBrainz client"
 #~ msgstr "No se puede crear el cliente MusicBrainz"
 
-#~ msgid "Track %d"
-#~ msgstr "Pista %d"
-
 #~ msgid ""
 #~ "MusicBrainz metadata object is not valid. This is bad, check your console "
 #~ "for errors."
 #~ msgstr ""
 #~ "El objeto de metadatos de MusicBrainz no es válido. Esto es malo, mire su "
 #~ "consola buscando errores."
-
-#~ msgid "Could not create CD lookup thread"
-#~ msgstr "No se pudo crear un hilo de búsqueda de CD"
 
 #~ msgid "Could not determine media type because CD drive is busy"
 #~ msgstr "No se pudo determinar el tipo de soporte porque el CD está ocupado"
