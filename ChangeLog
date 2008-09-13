@@ -1,3 +1,11 @@
+2008-09-14  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Eric Shattow  <lucent+code@gmail.com>
+
+	* plugins/mtpdevice/rb-mtp-source.c: (load_mtp_db_idle_cb):
+	Call LIBMTP_Get_Tracklisting_With_Callback to stop libmtp 0.3.0+
+	complaining.  Fixes #552108.
+
 2008-09-13  Jonathan Matthew  <jonathan@d14n.org>
 
 	* rhythmdb/rhythmdb.c: (podcast_get_playback_uri):

@@ -375,7 +375,11 @@ load_mtp_db_idle_cb (RBMtpSource* source)
 
 	g_assert (db != NULL);
 
+#ifdef HAVE_LIBMTP_030
+	tracks = LIBMTP_Get_Tracklisting_With_Callback (priv->device, NULL, NULL);
+#else
 	tracks = LIBMTP_Get_Tracklisting (priv->device);
+#endif
 	if (tracks != NULL) {
 		LIBMTP_track_t *track, *tmp = NULL;
 		for (track = tracks; track != NULL; track = track->next) {
