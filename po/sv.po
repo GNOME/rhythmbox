@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-29 00:12+0200\n"
-"PO-Revision-Date: 2008-08-29 00:14+0100\n"
+"POT-Creation-Date: 2008-09-13 20:02+0200\n"
+"PO-Revision-Date: 2008-09-13 20:03+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -17,14 +17,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:578
+#: ../backends/gstreamer/rb-encoder-gst.c:577
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Vill du skriva över filen \"%s\"?"
 
+#: ../backends/gstreamer/rb-encoder-gst.c:645
+#, c-format
+msgid "Could not create a GStreamer sink element to write to %s"
+msgstr "Kunde inte skapa ett GStreamer-sinkelement för att skriva till %s"
+
 #: ../backends/gstreamer/rb-player-gst.c:693
-#: ../metadata/rb-metadata-gst.c:799
-#: ../metadata/rb-metadata-gst.c:1366
+#: ../metadata/rb-metadata-gst.c:801
+#: ../metadata/rb-metadata-gst.c:1368
 #: ../plugins/cd-recorder/rb-recorder-gst.c:507
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -47,43 +52,43 @@ msgid "Failed to start new stream"
 msgstr "Misslyckades med att starta ny ström"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2573
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2583
 #, c-format
 msgid "Failed to open output device"
 msgstr "Misslyckades med att öppna utdataenhet"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2639
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2661
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Misslyckades med att öppna utdataenhet: %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2835
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2923
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2858
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2946
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Misslyckades med att skapa GStreamer-element; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2848
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2871
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Misslyckades med att skapa ljudutmatningselement; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2897
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2939
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2965
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2974
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2983
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2920
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2962
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2988
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2997
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3006
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Misslyckades med att länka GStreamer-rörledning; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3078
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3101
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Misslyckades med att skapa GStreamer-rörledning för att spela upp %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3094
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3117
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Misslyckades med att starta uppspelning av %s"
@@ -519,7 +524,6 @@ msgstr "Senast spelade"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:207
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1494
-#: ../shell/rb-shell-player.c:2987
 #: ../shell/rb-shell.c:1046
 #: ../shell/rb-shell.c:2140
 #: ../shell/rb-tray-icon.c:50
@@ -576,8 +580,8 @@ msgstr "%d %b %Y"
 #.
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:326
-#: ../lib/rb-util.c:593
-#: ../lib/rb-util.c:833
+#: ../lib/rb-util.c:615
+#: ../lib/rb-util.c:855
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:85
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:86
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:88
@@ -587,31 +591,31 @@ msgstr "%d %b %Y"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:268
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:153
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:154
-#: ../plugins/audiocd/rb-audiocd-source.c:225
+#: ../plugins/audiocd/rb-audiocd-source.c:218
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:510
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
 #: ../plugins/daap/rb-daap-connection.c:679
-#: ../plugins/generic-player/rb-generic-player-source.c:1182
+#: ../plugins/generic-player/rb-generic-player-source.c:1171
 #: ../plugins/ipod/rb-ipod-source.c:314
 #: ../plugins/iradio/rb-iradio-source.c:517
 #: ../plugins/iradio/rb-iradio-source.c:1110
 #: ../plugins/iradio/rb-station-properties-dialog.c:486
 #: ../plugins/mtpdevice/rb-mtp-source.c:266
-#: ../podcast/rb-feed-podcast-properties-dialog.c:319
-#: ../podcast/rb-podcast-manager.c:1780
-#: ../podcast/rb-podcast-properties-dialog.c:475
-#: ../podcast/rb-podcast-properties-dialog.c:528
+#: ../podcast/rb-feed-podcast-properties-dialog.c:321
+#: ../podcast/rb-podcast-manager.c:1863
+#: ../podcast/rb-podcast-properties-dialog.c:478
+#: ../podcast/rb-podcast-properties-dialog.c:531
 #: ../remote/dbus/rb-client.c:140
-#: ../rhythmdb/rhythmdb-tree.c:1248
-#: ../rhythmdb/rhythmdb-tree.c:1252
-#: ../rhythmdb/rhythmdb-tree.c:1256
-#: ../rhythmdb/rhythmdb-tree.c:1260
-#: ../rhythmdb/rhythmdb.c:1599
+#: ../rhythmdb/rhythmdb-tree.c:1284
+#: ../rhythmdb/rhythmdb-tree.c:1288
+#: ../rhythmdb/rhythmdb-tree.c:1292
+#: ../rhythmdb/rhythmdb-tree.c:1296
+#: ../rhythmdb/rhythmdb.c:1601
 #: ../shell/rb-shell-player.c:1717
 #: ../shell/rb-shell.c:3063
-#: ../sources/rb-podcast-source.c:1770
+#: ../sources/rb-podcast-source.c:1763
 #: ../widgets/rb-entry-view.c:1035
 #: ../widgets/rb-entry-view.c:1060
 #: ../widgets/rb-entry-view.c:1463
@@ -641,34 +645,34 @@ msgstr "Fel i HTTP-proxykonfigurationen"
 msgid "Rhythmbox does not support automatic proxy configuration"
 msgstr "Rhythmbox saknar stöd för automatisk proxykonfiguration"
 
-#: ../lib/rb-util.c:595
+#: ../lib/rb-util.c:617
 #: ../remote/dbus/rb-client.c:142
 #, c-format
 msgid "%d:%02d"
 msgstr "%d.%02d"
 
-#: ../lib/rb-util.c:597
+#: ../lib/rb-util.c:619
 #: ../remote/dbus/rb-client.c:144
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d.%02d:%02d"
 
-#: ../lib/rb-util.c:632
+#: ../lib/rb-util.c:654
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d.%02d av %d.%02d återstår"
 
-#: ../lib/rb-util.c:636
+#: ../lib/rb-util.c:658
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d.%02d.%02d av %d.%02d.%02d återstår"
 
-#: ../lib/rb-util.c:641
+#: ../lib/rb-util.c:663
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d.%02d av %d.%02d"
 
-#: ../lib/rb-util.c:645
+#: ../lib/rb-util.c:667
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d.%02d:%02d av %d.%02d:%02d"
@@ -692,52 +696,52 @@ msgstr "Internt GStreamer-problem; skapa en felrapport"
 msgid "D-BUS communication error"
 msgstr "DBUS-kommunikationsfel"
 
-#: ../metadata/rb-metadata-gst.c:594
+#: ../metadata/rb-metadata-gst.c:596
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr "GStreamer-insticksmodulen för att avkoda \"%s\"-filer kan inte hittas"
 
-#: ../metadata/rb-metadata-gst.c:597
+#: ../metadata/rb-metadata-gst.c:599
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "Filen innehåller en ström av typen %s, som inte är avkodningsbar"
 
-#: ../metadata/rb-metadata-gst.c:989
+#: ../metadata/rb-metadata-gst.c:991
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Misslyckades med att skapa källelement; kontrollera din installation"
 
-#: ../metadata/rb-metadata-gst.c:1052
+#: ../metadata/rb-metadata-gst.c:1054
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "GStreamer-fel: kunde inte byta tillstånd"
 
-#: ../metadata/rb-metadata-gst.c:1148
+#: ../metadata/rb-metadata-gst.c:1150
 #, c-format
 msgid "Empty file"
 msgstr "Tom fil"
 
-#: ../metadata/rb-metadata-gst.c:1156
+#: ../metadata/rb-metadata-gst.c:1158
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "MIME-typen för filen kunde inte identifieras"
 
-#: ../metadata/rb-metadata-gst.c:1294
+#: ../metadata/rb-metadata-gst.c:1296
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Filtypen stöds inte: %s"
 
-#: ../metadata/rb-metadata-gst.c:1303
+#: ../metadata/rb-metadata-gst.c:1305
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "Kan inte skapa taggskrivningselement"
 
-#: ../metadata/rb-metadata-gst.c:1318
+#: ../metadata/rb-metadata-gst.c:1320
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Tidsgränsen överstegs när rörledningen ställdes in till NULL"
 
-#: ../metadata/rb-metadata-gst.c:1342
+#: ../metadata/rb-metadata-gst.c:1344
 #, c-format
 msgid "File corrupted during write"
 msgstr "Filen förstörd under skrivning"
@@ -778,30 +782,30 @@ msgstr "Denna cd kan vara mer än ett album. Välj vilket album det är nedan oc
 msgid "_Continue"
 msgstr "_Fortsätt"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:229
+#: ../plugins/audiocd/rb-audiocd-source.c:222
 msgid "<Invalid unicode>"
 msgstr "<Ogiltig unicode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:274
+#: ../plugins/audiocd/rb-audiocd-source.c:268
 #, c-format
 msgid "Track %u"
 msgstr "Spår %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:344
-#: ../plugins/audiocd/rb-audiocd-source.c:352
-#: ../plugins/audiocd/rb-audiocd-source.c:679
+#: ../plugins/audiocd/rb-audiocd-source.c:328
+#: ../plugins/audiocd/rb-audiocd-source.c:336
+#: ../plugins/audiocd/rb-audiocd-source.c:670
 msgid "Couldn't load Audio CD"
 msgstr "Kunde inte läsa in ljud-cd"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:345
+#: ../plugins/audiocd/rb-audiocd-source.c:329
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox kunde inte komma åt cd-skivan."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:353
+#: ../plugins/audiocd/rb-audiocd-source.c:337
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox kunde inte läsa cd-informationen."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:455
+#: ../plugins/audiocd/rb-audiocd-source.c:439
 #: ../sources/rb-library-source.c:158
 #: ../widgets/rb-entry-view.c:1419
 #: ../widgets/rb-query-creator-properties.c:75
@@ -809,7 +813,7 @@ msgstr "Rhythmbox kunde inte läsa cd-informationen."
 msgid "Title"
 msgstr "Titel"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:462
+#: ../plugins/audiocd/rb-audiocd-source.c:446
 #: ../sources/rb-library-source.c:149
 #: ../widgets/rb-entry-view.c:1429
 #: ../widgets/rb-library-browser.c:138
@@ -818,60 +822,75 @@ msgstr "Titel"
 msgid "Artist"
 msgstr "Artist"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:680
+#: ../plugins/audiocd/rb-audiocd-source.c:671
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox kunde inte komma åt cd-enheten"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:113
+#: ../plugins/audiocd/sj-metadata-getter.c:245
 #, c-format
-msgid "Cannot create MusicBrainz client"
-msgstr "Kan inte skapa MusicBrainz-klienten"
+msgid "Could not create CD lookup thread"
+msgstr "Kunde inte skapa tråd för uppslagning av cd"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:238
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:501
+#: ../plugins/audiocd/sj-metadata-gvfs.c:89
 #, c-format
-msgid "Cannot read CD: %s"
-msgstr "Kan inte läsa cd: %s"
+msgid "Cannot access CD"
+msgstr "Kan inte komma åt cd"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:245
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:538
-msgid "Unknown Artist"
-msgstr "Okänd artist"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:246
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:549
+#: ../plugins/audiocd/sj-metadata-gvfs.c:109
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:347
 msgid "Unknown Title"
 msgstr "Okänd titel"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:252
+#: ../plugins/audiocd/sj-metadata-gvfs.c:113
+#: ../plugins/audiocd/sj-metadata-gvfs.c:136
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:331
+msgid "Unknown Artist"
+msgstr "Okänd artist"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:133
 #, c-format
 msgid "Track %d"
 msgstr "Spår %d"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:280
+#: ../plugins/audiocd/sj-metadata-gvfs.c:150
 #, c-format
-msgid "MusicBrainz metadata object is not valid. This is bad, check your console for errors."
-msgstr "MusicBrainz metadataobjekt är felaktigt. Detta är ett problem, se konsollen för fel."
+msgid "Cannot access CD: %s"
+msgstr "Kan inte komma åt cd: %s"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:447
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:454
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:468
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:213
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:220
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:234
 #, c-format
 msgid "This CD could not be queried: %s\n"
 msgstr "Denna cd kunde inte slås upp: %s\n"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:533
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:329
 msgid "Various"
 msgstr "Diverse"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:574
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:372
 msgid "Incomplete metadata for this CD"
 msgstr "Ingen komplett metadata för denna cd"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:665
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:402
+msgid "[Untitled]"
+msgstr "[Namnlös]"
+
+#: ../plugins/audiocd/sj-metadata.c:186
 #, c-format
-msgid "Could not create CD lookup thread"
-msgstr "Kunde inte skapa tråd för uppslagning av cd"
+msgid "Device '%s' does not contain any media"
+msgstr "Enheten \"%s\" innehåller inte något media"
+
+#: ../plugins/audiocd/sj-metadata.c:189
+#, c-format
+msgid "Device '%s' could not be opened. Check the access permissions on the device."
+msgstr "Enheten \"%s\" kunde inte öppnas. Kontrollera åtkomsträttigheterna på enheten."
+
+#: ../plugins/audiocd/sj-metadata.c:192
+#: ../plugins/audiocd/sj-metadata.c:204
+#, c-format
+msgid "Cannot read CD: %s"
+msgstr "Kan inte läsa cd: %s"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:678
@@ -913,7 +932,7 @@ msgstr "Last.fm-profil"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1084
 #: ../plugins/iradio/rb-station-properties-dialog.c:497
-#: ../rhythmdb/rhythmdb.c:3406
+#: ../rhythmdb/rhythmdb.c:3408
 #: ../widgets/rb-entry-view.c:983
 #: ../widgets/rb-entry-view.c:1521
 #: ../widgets/rb-entry-view.c:1534
@@ -1780,12 +1799,12 @@ msgstr "_Ta bort"
 msgid "Delete playlist"
 msgstr "Ta bort spellistan"
 
-#: ../plugins/ipod/rb-ipod-source.c:1341
+#: ../plugins/ipod/rb-ipod-source.c:1344
 #: ../sources/rb-podcast-source.c:902
 msgid "Podcasts"
 msgstr "Poddsändningar"
 
-#: ../plugins/ipod/rb-ipod-source.c:1687
+#: ../plugins/ipod/rb-ipod-source.c:1690
 msgid "New playlist"
 msgstr "Ny spellista"
 
@@ -1986,7 +2005,7 @@ msgid "%s Properties"
 msgstr "Egenskaper för %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:488
-#: ../podcast/rb-podcast-properties-dialog.c:473
+#: ../podcast/rb-podcast-properties-dialog.c:476
 #: ../widgets/rb-song-info.c:1065
 #, c-format
 msgid "%lu kbps"
@@ -2543,7 +2562,7 @@ msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "Stöd för MTP-enheter (visa innehållet, överföra, spela upp från enhet)"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:106
-#: ../shell/rb-removable-media-manager.c:148
+#: ../shell/rb-removable-media-manager.c:157
 msgid "_Eject"
 msgstr "_Mata ut"
 
@@ -2749,35 +2768,44 @@ msgstr "Visar visualiseringar"
 msgid "Visualization"
 msgstr "Visualisering"
 
-#: ../podcast/rb-podcast-manager.c:865
+#: ../podcast/rb-podcast-manager.c:811
+msgid "Error creating podcast download directory"
+msgstr "Fel vid skapande av hämtningskatalog för poddsändningar"
+
+#: ../podcast/rb-podcast-manager.c:812
+#, c-format
+msgid "Unable to create the download directory for %s: %s"
+msgstr "Kunde inte skapa hämtningskatalogen för %s: %s"
+
+#: ../podcast/rb-podcast-manager.c:931
 msgid "Invalid URL"
 msgstr "Ogiltig URL"
 
-#: ../podcast/rb-podcast-manager.c:866
+#: ../podcast/rb-podcast-manager.c:932
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "\"%s\" är inte en korrekt URL, kontrollera att den stämmer."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:876
+#: ../podcast/rb-podcast-manager.c:942
 msgid "URL already added"
 msgstr "URL:en är redan tillagd"
 
-#: ../podcast/rb-podcast-manager.c:877
+#: ../podcast/rb-podcast-manager.c:943
 #, c-format
 msgid "The URL \"%s\" has already been added as a radio station. If this is a podcast feed, please remove the radio station."
 msgstr "\"%s\" har redan lagts till som en radiostation. Om det är en poddsändningskanal, ta bort radiostationen."
 
-#: ../podcast/rb-podcast-manager.c:945
+#: ../podcast/rb-podcast-manager.c:1011
 #, c-format
 msgid "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, or the feed may be broken. Would you like Rhythmbox to attempt to use it anyway?"
 msgstr "URL:en  \"%s\" verkar inte vara en poddsändningskanal. Det kan vara fel URL eller så kan kanalen vara trasig. Vill du att Rhythmbox ska försöka använda den ändå?"
 
-#: ../podcast/rb-podcast-manager.c:1056
+#: ../podcast/rb-podcast-manager.c:1122
 msgid "Podcast"
 msgstr "Poddsändning"
 
-#: ../podcast/rb-podcast-manager.c:1946
+#: ../podcast/rb-podcast-manager.c:2029
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Det uppstod ett problem när denna poddsändning lades till: %s.  Kontrollera url:en: %s"
@@ -2797,7 +2825,7 @@ msgstr "Oväntad filtyp: %s"
 msgid "Unable to parse the feed contents"
 msgstr "Kunde inte tolka kanalens innehåll"
 
-#: ../podcast/rb-podcast-properties-dialog.c:423
+#: ../podcast/rb-podcast-properties-dialog.c:426
 msgid "Not Downloaded"
 msgstr "Inte hämtad"
 
@@ -2891,17 +2919,17 @@ msgstr "Tysta uppspelningen"
 msgid "Unmute playback"
 msgstr "Normal uppspelningsvolym"
 
-#: ../remote/dbus/rb-client.c:427
+#: ../remote/dbus/rb-client.c:431
 #: ../shell/rb-shell.c:2115
 msgid "Not playing"
 msgstr "Spelar inte"
 
-#: ../remote/dbus/rb-client.c:655
+#: ../remote/dbus/rb-client.c:659
 #, c-format
 msgid "Playback is muted.\n"
 msgstr "Uppspelningen är tystad.\n"
 
-#: ../remote/dbus/rb-client.c:656
+#: ../remote/dbus/rb-client.c:660
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Uppspelningsvolym är %f.\n"
@@ -2914,7 +2942,7 @@ msgstr "Uppspelningsvolym är %f.\n"
 msgid "All"
 msgstr "Alla"
 
-#: ../rhythmdb/rhythmdb-tree.c:403
+#: ../rhythmdb/rhythmdb-tree.c:407
 #, c-format
 msgid "The database was created by a later version of rhythmbox.  This version of rhythmbox cannot read the database."
 msgstr "Databasen är skapad av en senare version av Rhythmbox. Denna version av Rhythmbox kan inte läsa databasen."
@@ -2924,29 +2952,29 @@ msgstr "Databasen är skapad av en senare version av Rhythmbox. Denna version av
 msgid "Couldn't access %s: %s"
 msgstr "Kunde inte komma åt %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:2037
+#: ../rhythmdb/rhythmdb.c:2039
 msgid "invalid unicode in error message"
 msgstr "ogiltig unicode i felmeddelande"
 
-#: ../rhythmdb/rhythmdb.c:2895
+#: ../rhythmdb/rhythmdb.c:2897
 msgid "Could not load the music database:"
 msgstr "Kunde inte läsa in musikdatabasen:"
 
-#: ../rhythmdb/rhythmdb.c:4258
+#: ../rhythmdb/rhythmdb.c:4260
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minut"
 msgstr[1] "%ld minuter"
 
-#: ../rhythmdb/rhythmdb.c:4259
+#: ../rhythmdb/rhythmdb.c:4261
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld timme"
 msgstr[1] "%ld timmar"
 
-#: ../rhythmdb/rhythmdb.c:4260
+#: ../rhythmdb/rhythmdb.c:4262
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -2954,7 +2982,7 @@ msgstr[0] "%ld dygn"
 msgstr[1] "%ld dygn"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4266
+#: ../rhythmdb/rhythmdb.c:4268
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s och %s"
@@ -2962,9 +2990,9 @@ msgstr "%s, %s och %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4272
-#: ../rhythmdb/rhythmdb.c:4280
-#: ../rhythmdb/rhythmdb.c:4291
+#: ../rhythmdb/rhythmdb.c:4274
+#: ../rhythmdb/rhythmdb.c:4282
+#: ../rhythmdb/rhythmdb.c:4293
 #, c-format
 msgid "%s and %s"
 msgstr "%s och %s"
@@ -3120,41 +3148,41 @@ msgstr "Okänd spellista: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "Spellistan %s är en automatisk spellista"
 
-#: ../shell/rb-removable-media-manager.c:149
+#: ../shell/rb-removable-media-manager.c:158
 msgid "Eject this medium"
 msgstr "Mata ut detta media"
 
-#: ../shell/rb-removable-media-manager.c:151
+#: ../shell/rb-removable-media-manager.c:160
 msgid "_Extract to Library"
 msgstr "_Extrahera till bibliotek"
 
-#: ../shell/rb-removable-media-manager.c:152
+#: ../shell/rb-removable-media-manager.c:161
 msgid "Copy all tracks to the library"
 msgstr "Kopiera alla spår till biblioteket"
 
-#: ../shell/rb-removable-media-manager.c:154
+#: ../shell/rb-removable-media-manager.c:163
 msgid "_Scan Removable Media"
 msgstr "Sök på _flyttbara enheter"
 
-#: ../shell/rb-removable-media-manager.c:155
+#: ../shell/rb-removable-media-manager.c:164
 msgid "Scan for new Removable Media"
 msgstr "Sök efter nya flyttbara enheter"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../shell/rb-removable-media-manager.c:661
+#: ../shell/rb-removable-media-manager.c:737
 msgid "Extract"
 msgstr "Extrahera"
 
-#: ../shell/rb-removable-media-manager.c:692
+#: ../shell/rb-removable-media-manager.c:768
 msgid "Unable to eject"
 msgstr "Kunde inte mata ut"
 
-#: ../shell/rb-removable-media-manager.c:713
+#: ../shell/rb-removable-media-manager.c:789
 msgid "Unable to unmount"
 msgstr "Kunde inte avmontera"
 
-#: ../shell/rb-removable-media-manager.c:899
+#: ../shell/rb-removable-media-manager.c:991
 msgid "Error transferring track"
 msgstr "Fel vid överföring av spår"
 
@@ -3286,7 +3314,7 @@ msgid "_Play"
 msgstr "Spela _upp"
 
 #: ../shell/rb-shell-player.c:336
-#: ../shell/rb-shell-player.c:3807
+#: ../shell/rb-shell-player.c:3805
 msgid "Start playback"
 msgstr "Börja spela"
 
@@ -3380,25 +3408,25 @@ msgid "No next song"
 msgstr "Ingen nästa låt"
 
 #: ../shell/rb-shell-player.c:2310
-#: ../shell/rb-shell-player.c:3438
+#: ../shell/rb-shell-player.c:3436
 msgid "Couldn't start playback"
 msgstr "Kunde inte starta uppspelning"
 
-#: ../shell/rb-shell-player.c:3194
+#: ../shell/rb-shell-player.c:3192
 msgid "Couldn't stop playback"
 msgstr "Kunde inte stoppa uppspelning"
 
-#: ../shell/rb-shell-player.c:3310
+#: ../shell/rb-shell-player.c:3308
 #, c-format
 msgid "Playback position not available"
 msgstr "Uppspelningsposition inte tillgänglig"
 
-#: ../shell/rb-shell-player.c:3342
+#: ../shell/rb-shell-player.c:3340
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Det går inte att söka i aktuell låt"
 
-#: ../shell/rb-shell-player.c:3805
+#: ../shell/rb-shell-player.c:3803
 msgid "Stop playback"
 msgstr "Stoppa uppspelning"
 
@@ -3867,7 +3895,7 @@ msgstr "Välj plats för bibliotek"
 msgid "Multiple locations set"
 msgstr "Flera platser valda"
 
-#: ../sources/rb-library-source.c:996
+#: ../sources/rb-library-source.c:998
 msgid "Example Path:"
 msgstr "Exempelsökväg:"
 
@@ -4017,17 +4045,17 @@ msgid "Status"
 msgstr "Status"
 
 #: ../sources/rb-podcast-source.c:689
-#: ../sources/rb-podcast-source.c:1595
+#: ../sources/rb-podcast-source.c:1588
 msgid "Downloaded"
 msgstr "Hämtat"
 
 #: ../sources/rb-podcast-source.c:690
-#: ../sources/rb-podcast-source.c:1603
+#: ../sources/rb-podcast-source.c:1596
 msgid "Waiting"
 msgstr "Väntar"
 
 #: ../sources/rb-podcast-source.c:691
-#: ../sources/rb-podcast-source.c:1599
+#: ../sources/rb-podcast-source.c:1592
 msgid "Failed"
 msgstr "Misslyckades"
 
@@ -4047,66 +4075,66 @@ msgstr "Ta _endast bort avsnittet"
 msgid "_Delete Episode And File"
 msgstr "Ta bort avsnitt och fil"
 
-#: ../sources/rb-podcast-source.c:1488
+#: ../sources/rb-podcast-source.c:1481
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Ta bort poddsändningskanalen och de hämtade filerna?"
 
-#: ../sources/rb-podcast-source.c:1491
+#: ../sources/rb-podcast-source.c:1484
 msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
 msgstr "Om du väljer att ta bort kanalen och filerna, kommer de att vara permanent förlorade. Observera att du kan ta bort kanalen men behålla filerna genom att välja att endast ta bort kanalen."
 
-#: ../sources/rb-podcast-source.c:1499
+#: ../sources/rb-podcast-source.c:1492
 msgid "Delete _Feed Only"
 msgstr "_Ta endast bort kanal"
 
-#: ../sources/rb-podcast-source.c:1506
+#: ../sources/rb-podcast-source.c:1499
 msgid "_Delete Feed And Files"
 msgstr "_Ta bort kanal och filer"
 
-#: ../sources/rb-podcast-source.c:1714
+#: ../sources/rb-podcast-source.c:1707
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
 msgstr[0] "%d kanal"
 msgstr[1] "Alla %d kanaler"
 
-#: ../sources/rb-podcast-source.c:1856
+#: ../sources/rb-podcast-source.c:1849
 msgid "Downloading podcast"
 msgstr "Hämtar poddsändning"
 
-#: ../sources/rb-podcast-source.c:1869
+#: ../sources/rb-podcast-source.c:1862
 msgid "Finished downloading podcast"
 msgstr "Klar med hämtning av poddsändning"
 
-#: ../sources/rb-podcast-source.c:1882
+#: ../sources/rb-podcast-source.c:1875
 msgid "New updates available from"
 msgstr "Nya uppdateringar tillgängliga från"
 
-#: ../sources/rb-podcast-source.c:1998
+#: ../sources/rb-podcast-source.c:1991
 msgid "Error in podcast"
 msgstr "Fel i poddsändning"
 
-#: ../sources/rb-podcast-source.c:2005
+#: ../sources/rb-podcast-source.c:1998
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Vill du lägga till poddsändningskanalen ändå?"
 
-#: ../sources/rb-podcast-source.c:2132
+#: ../sources/rb-podcast-source.c:2125
 msgid "New Podcast Feed"
 msgstr "Ny poddsändningskanal"
 
-#: ../sources/rb-podcast-source.c:2132
+#: ../sources/rb-podcast-source.c:2125
 msgid "URL of podcast feed:"
 msgstr "URL till poddsändningskanal:"
 
-#: ../sources/rb-podcast-source.c:2148
+#: ../sources/rb-podcast-source.c:2141
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d avsnitt"
 msgstr[1] "%d avsnitt"
 
-#: ../sources/rb-podcast-source.c:2256
+#: ../sources/rb-podcast-source.c:2249
 msgid "Podcast Error"
 msgstr "Fel i poddsändning"
 
@@ -4462,14 +4490,14 @@ msgstr "På skrivbordet"
 msgid "Unknown location"
 msgstr "Okänd plats"
 
-#~ msgid "Device '%s' does not contain any media"
-#~ msgstr "Enheten \"%s\" innehåller inte något media"
+#~ msgid "Cannot create MusicBrainz client"
+#~ msgstr "Kan inte skapa MusicBrainz-klienten"
 #~ msgid ""
-#~ "Device '%s' could not be opened. Check the access permissions on the "
-#~ "device."
+#~ "MusicBrainz metadata object is not valid. This is bad, check your console "
+#~ "for errors."
 #~ msgstr ""
-#~ "Enheten \"%s\" kunde inte öppnas. Kontrollera åtkomsträttigheterna på "
-#~ "enheten."
+#~ "MusicBrainz metadataobjekt är felaktigt. Detta är ett problem, se "
+#~ "konsollen för fel."
 #~ msgid "Could not determine media type because CD drive is busy"
 #~ msgstr "Kunde inte faststämma mediatypen eftersom cd-enheten är upptagen"
 #~ msgid "Couldn't open media"
