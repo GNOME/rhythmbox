@@ -2,6 +2,15 @@
 
 	patch by:  Eric Shattow  <lucent+code@gmail.com>
 
+	* plugins/mtpdevice/rb-mtp-source.c: (mimetype_to_filetype),
+	(filetype_to_mimetype):
+	Map LIBMTP_FILETYPE_ASF <=> video/x-ms-asf.  Might not be right,
+	but probably helps a bit.  Fixes #552105.
+
+2008-09-14  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Eric Shattow  <lucent+code@gmail.com>
+
 	* plugins/mtpdevice/rb-mtp-source.c: (load_mtp_db_idle_cb):
 	Call LIBMTP_Get_Tracklisting_With_Callback to stop libmtp 0.3.0+
 	complaining.  Fixes #552108.

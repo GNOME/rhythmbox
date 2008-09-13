@@ -473,6 +473,8 @@ mimetype_to_filetype (const char *mimetype)
 		return LIBMTP_FILETYPE_MP4;
 	} else if (!strcmp (mimetype, "audio/x-ms-wma") || !strcmp (mimetype, "audio/x-ms-asf")) {
 		return LIBMTP_FILETYPE_WMA;
+	} else if (!strcmp (mimetype, "video/x-ms-asf")) {
+		return LIBMTP_FILETYPE_ASF;
 	} else {
 		rb_debug ("\"%s\" is not a supported mimetype", mimetype);
 		return LIBMTP_FILETYPE_UNKNOWN;
@@ -494,6 +496,8 @@ filetype_to_mimetype (LIBMTP_filetype_t filetype)
 		return "audio/mp4";
 	} else if (filetype == LIBMTP_FILETYPE_WMV) {
 		return "audio/x-ms-wmv";
+	} else if (filetype == LIBMTP_FILETYPE_ASF) {
+		return "video/x-ms-asf";
 	} else {
 		return NULL;
 	}
