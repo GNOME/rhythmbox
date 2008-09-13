@@ -1,3 +1,8 @@
+2008-09-13  Jonathan Matthew  <jonathan@d14n.org>
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element):
+	Don't drop podcast mountpoint values that start with http://.
+
 2008-09-12  Jonathan Matthew  <jonathan@d14n.org>
 
 	* podcast/rb-podcast-manager.c:

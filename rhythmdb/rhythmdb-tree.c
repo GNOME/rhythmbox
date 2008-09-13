@@ -641,11 +641,6 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 				set = TRUE;
 			}
 			break;
-		case RHYTHMDB_PROP_MOUNTPOINT:
-			/* fix old podcast posts */
-			if (g_str_has_prefix (ctx->buf->str, "http://"))
-				skip = TRUE;
-			break;
 		default:
 			break;
 		}
