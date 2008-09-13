@@ -4492,7 +4492,10 @@ static char *
 podcast_get_playback_uri (RhythmDBEntry *entry,
 			  gpointer data)
 {
-	return rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT) != NULL) {
+		return rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
+	}
+	return NULL;
 }
 
 static void
