@@ -48,7 +48,6 @@
 #include "rb-shell-player.h"
 #include "rb-marshal.h"
 
-
 #ifdef HAVE_MMKEYS
 #include <X11/Xlib.h>
 #include <X11/XF86keysym.h>
