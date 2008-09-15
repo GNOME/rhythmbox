@@ -462,7 +462,7 @@ static guint rb_shell_n_actions = G_N_ELEMENTS (rb_shell_actions);
 
 static GtkToggleActionEntry rb_shell_toggle_entries [] =
 {
-	{ "ViewSidePane", NULL, N_("Side _Pane"), "<control>S",
+	{ "ViewSidePane", NULL, N_("Side _Pane"), "F9",
 	  N_("Change the visibility of the side pane"),
 	  G_CALLBACK (rb_shell_view_sidepane_changed_cb), TRUE },
 	{ "ViewToolbar", NULL, N_("T_oolbar"), NULL,
