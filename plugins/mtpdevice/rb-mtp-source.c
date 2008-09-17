@@ -596,20 +596,21 @@ rb_mtp_source_get_playback_uri (RhythmDBEntry *entry, gpointer data)
 {
 	RBMtpSourcePrivate *priv;
 	LIBMTP_track_t *track;
+	char *path;
 	char *uri = NULL;
-	char *s = NULL;
 
 	priv = MTP_SOURCE_GET_PRIVATE (data);
 
 	track = g_hash_table_lookup (priv->entry_map, entry);
-	uri = g_strdup_printf ("%s/%s-%s", g_get_tmp_dir (),
-			       rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST),
-			       rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE));
+	path = g_strdup_printf ("%s/%s-%s",
+				g_get_tmp_dir (),
+				rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST),
+				rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE));
+	uri = g_filename_to_uri (path, NULL, NULL);
+	g_free (path);
 
 	if (rb_mtp_source_transfer_track_to_disk (priv->device, track, uri) == TRUE) {
-		s = g_strdup_printf ("file://%s", uri);
-		g_free (uri);
-		return s;
+		return uri;
 	} else {
 		g_free (uri);
 		return NULL;
@@ -625,7 +626,6 @@ impl_copy (RBSource *source)
 	GList *iter;
 	GList *copy_entries;
 	int ret = -1;
-	const char *uri = NULL;
 	LIBMTP_track_t *track = NULL;
 
 	db = get_db_for_source (RB_MTP_SOURCE (source));
@@ -634,6 +634,8 @@ impl_copy (RBSource *source)
 	selected_entries = rb_entry_view_get_selected_entries (rb_source_get_entry_view (source));
 	for (iter = selected_entries; iter != NULL; iter = g_list_next (iter)) {
 		RhythmDBEntry *entry;
+		char *path;
+		char *uri;
 
 		entry = (RhythmDBEntry *)iter->data;
 		track = g_hash_table_lookup (priv->entry_map, entry);
@@ -641,13 +643,16 @@ impl_copy (RBSource *source)
 		if (track == NULL)
 			continue;
 
-		uri = g_strdup_printf ("%s/%s", g_get_tmp_dir (), track->filename);
+		path = g_strdup_printf ("%s/%s", g_get_tmp_dir (), track->filename);
+		uri = g_filename_to_uri (path, NULL, NULL);
+		g_free (path);
 		ret = rb_mtp_source_transfer_track_to_disk (priv->device, track, uri);
 
 		if (ret == 0) {
-			entry_set_string_prop (RHYTHMDB (db), entry, RHYTHMDB_PROP_LOCATION, g_strdup_printf ("file://%s", uri));
+			entry_set_string_prop (RHYTHMDB (db), entry, RHYTHMDB_PROP_LOCATION, uri);
 			copy_entries = g_list_prepend (copy_entries, entry);
 		}
+		g_free (uri);
 	}
 
 	g_list_free (selected_entries);

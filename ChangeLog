@@ -1,3 +1,9 @@
+2008-09-17  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/mtpdevice/rb-mtp-source.c:
+	(rb_mtp_source_get_playback_uri), (impl_copy):
+	Actually use URIs where we're supposed to.  Probably fixes #552614.
+
 2008-09-16  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Lasse Bigum  <zenith@zenith.dk>
