@@ -98,7 +98,9 @@ RBRemovableMediaManagerPrivate
 
 <SECTION>
 <FILE>rb-tray-icon</FILE>
-RBTrayIconPrivate
+<TITLE>RBTrayIcon</TITLE>
+RBTrayIcon
+RBTrayIconClass
 rb_tray_icon_new
 rb_tray_icon_get_geom
 rb_tray_icon_notify
@@ -114,6 +116,7 @@ rb_tray_icon_get_type
 RB_TRAY_ICON_CLASS
 RB_IS_TRAY_ICON_CLASS
 RB_TRAY_ICON_GET_CLASS
+RBTrayIconPrivate
 </SECTION>
 
 <SECTION>
@@ -206,39 +209,12 @@ rb_playlist_manager_error_quark
 </SECTION>
 
 <SECTION>
-<FILE>rb-play-order-linear-loop</FILE>
-rb_linear_play_order_loop_new
-<SUBSECTION Standard>
-RB_LINEAR_PLAY_ORDER_LOOP
-RB_IS_LINEAR_PLAY_ORDER_LOOP
-RB_TYPE_LINEAR_PLAY_ORDER_LOOP
-rb_linear_play_order_loop_get_type
-RB_LINEAR_PLAY_ORDER_LOOP_CLASS
-RB_IS_LINEAR_PLAY_ORDER_LOOP_CLASS
-RB_LINEAR_PLAY_ORDER_LOOP_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>rb-play-order-random-by-age</FILE>
-rb_random_play_order_by_age_new
-<SUBSECTION Standard>
-RB_RANDOM_PLAY_ORDER_BY_AGE
-RB_IS_RANDOM_PLAY_ORDER_BY_AGE
-RB_TYPE_RANDOM_PLAY_ORDER_BY_AGE
-rb_random_play_order_by_age_get_type
-RB_RANDOM_PLAY_ORDER_BY_AGE_CLASS
-RB_IS_RANDOM_PLAY_ORDER_BY_AGE_CLASS
-RB_RANDOM_PLAY_ORDER_BY_AGE_GET_CLASS
-</SECTION>
-
-<SECTION>
 <FILE>rb-source-header</FILE>
 <TITLE>RBSourceHeader</TITLE>
 RBSourceHeader
 RBSourceHeaderClass
 rb_source_header_new
 rb_source_header_set_source
-rb_source_header_get_source
 rb_source_header_clear_search
 rb_source_header_sync_control_state
 rb_source_header_focus_search_box
@@ -289,7 +265,9 @@ RB_SHELL_PREFERENCES_GET_CLASS
 
 <SECTION>
 <FILE>rb-statusbar</FILE>
-RBStatusbarPrivate
+<TITLE>RBStatusbar</TITLE>
+RBStatusbar
+RBStatusbarClass
 rb_statusbar_new
 rb_statusbar_set_source
 rb_statusbar_set_progress
@@ -301,6 +279,7 @@ rb_statusbar_get_type
 RB_STATUSBAR_CLASS
 RB_IS_STATUSBAR_CLASS
 RB_STATUSBAR_GET_CLASS
+RBStatusbarPrivate
 </SECTION>
 
 <SECTION>
@@ -377,59 +356,7 @@ rb_play_order_get_type
 RB_PLAY_ORDER_CLASS
 RB_IS_PLAY_ORDER_CLASS
 RB_PLAY_ORDER_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>rb-play-order-random-by-rating</FILE>
-rb_random_play_order_by_rating_new
-<SUBSECTION Standard>
-RB_RANDOM_PLAY_ORDER_BY_RATING
-RB_IS_RANDOM_PLAY_ORDER_BY_RATING
-RB_TYPE_RANDOM_PLAY_ORDER_BY_RATING
-rb_random_play_order_by_rating_get_type
-RB_RANDOM_PLAY_ORDER_BY_RATING_CLASS
-RB_IS_RANDOM_PLAY_ORDER_BY_RATING_CLASS
-RB_RANDOM_PLAY_ORDER_BY_RATING_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>rb-play-order-random-equal-weights</FILE>
-rb_random_play_order_equal_weights_new
-<SUBSECTION Standard>
-RB_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS
-RB_IS_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS
-RB_TYPE_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS
-rb_random_play_order_equal_weights_get_type
-RB_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS_CLASS
-RB_IS_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS_CLASS
-RB_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>rb-play-order-shuffle</FILE>
-RBShufflePlayOrderPrivate
-rb_shuffle_play_order_new
-<SUBSECTION Standard>
-RB_SHUFFLE_PLAY_ORDER
-RB_IS_SHUFFLE_PLAY_ORDER
-RB_TYPE_SHUFFLE_PLAY_ORDER
-rb_shuffle_play_order_get_type
-RB_SHUFFLE_PLAY_ORDER_CLASS
-RB_IS_SHUFFLE_PLAY_ORDER_CLASS
-RB_SHUFFLE_PLAY_ORDER_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>rb-play-order-random-by-age-and-rating</FILE>
-rb_random_play_order_by_age_and_rating_new
-<SUBSECTION Standard>
-RB_RANDOM_PLAY_ORDER_BY_AGE_AND_RATING
-RB_IS_RANDOM_PLAY_ORDER_BY_AGE_AND_RATING
-RB_TYPE_RANDOM_PLAY_ORDER_BY_AGE_AND_RATING
-rb_random_play_order_by_age_and_rating_get_type
-RB_RANDOM_PLAY_ORDER_BY_AGE_AND_RATING_CLASS
-RB_IS_RANDOM_PLAY_ORDER_BY_AGE_AND_RATING_CLASS
-RB_RANDOM_PLAY_ORDER_BY_AGE_AND_RATING_GET_CLASS
+RBPlayOrderPrivate
 </SECTION>
 
 <SECTION>
@@ -480,19 +407,6 @@ RB_SHELL_PLAYER_GET_CLASS
 RB_SHELL_PLAYER_ERROR
 rb_shell_player_error_quark
 RBShellPlayerPrivate
-</SECTION>
-
-<SECTION>
-<FILE>rb-play-order-linear</FILE>
-rb_linear_play_order_new
-<SUBSECTION Standard>
-RB_LINEAR_PLAY_ORDER
-RB_IS_LINEAR_PLAY_ORDER
-RB_TYPE_LINEAR_PLAY_ORDER
-rb_linear_play_order_get_type
-RB_LINEAR_PLAY_ORDER_CLASS
-RB_IS_LINEAR_PLAY_ORDER_CLASS
-RB_LINEAR_PLAY_ORDER_GET_CLASS
 </SECTION>
 
 <SECTION>
@@ -1091,26 +1005,6 @@ RBEntryViewPrivate
 </SECTION>
 
 <SECTION>
-<FILE>eggtrayicon</FILE>
-<TITLE>EggTrayIcon</TITLE>
-egg_tray_icon_new_for_screen
-egg_tray_icon_new
-egg_tray_icon_send_message
-egg_tray_icon_cancel_message
-egg_tray_icon_have_manager
-egg_tray_icon_notify
-egg_tray_icon_get_orientation
-<SUBSECTION Standard>
-EGG_TRAY_ICON
-EGG_IS_TRAY_ICON
-EGG_TYPE_TRAY_ICON
-egg_tray_icon_get_type
-EGG_TRAY_ICON_CLASS
-EGG_IS_TRAY_ICON_CLASS
-EGG_TRAY_ICON_GET_CLASS
-</SECTION>
-
-<SECTION>
 <FILE>rb-header</FILE>
 RBHeader
 RBHeaderClass
@@ -1429,54 +1323,6 @@ RB_PLUGIN_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>rb-plugin-manager</FILE>
-RB_PLUGIN_MANAGER_CONST
-RBPluginManagerPrivate
-rb_plugin_manager_new
-<SUBSECTION Standard>
-RB_PLUGIN_MANAGER
-RB_IS_PLUGIN_MANAGER
-RB_TYPE_PLUGIN_MANAGER
-rb_plugin_manager_get_type
-RB_PLUGIN_MANAGER_CLASS
-RB_IS_PLUGIN_MANAGER_CLASS
-RB_PLUGIN_MANAGER_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>rb-module</FILE>
-RBModule
-rb_module_new
-rb_module_get_path
-rb_module_new_object
-<SUBSECTION Standard>
-RB_MODULE
-RB_IS_MODULE
-RB_TYPE_MODULE
-rb_module_get_type
-RB_MODULE_CLASS
-RB_IS_MODULE_CLASS
-RB_MODULE_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>rb-python-module</FILE>
-rb_python_module_new
-rb_python_module_new_object
-rb_python_module_init_python
-rb_python_garbage_collect
-rb_python_shutdown
-<SUBSECTION Standard>
-RB_PYTHON_MODULE
-RB_IS_PYTHON_MODULE
-RB_TYPE_PYTHON_MODULE
-rb_python_module_get_type
-RB_PYTHON_MODULE_CLASS
-RB_IS_PYTHON_MODULE_CLASS
-RB_PYTHON_MODULE_GET_CLASS
-</SECTION>
-
-<SECTION>
 <FILE>rb-player-gst-filter</FILE>
 <TITLE>RBPlayerGstFilter</TITLE>
 RBPlayerGstFilter
@@ -1541,42 +1387,6 @@ RB_PLAYER_GST_DATA_TEE_GET_IFACE
 </SECTION>
 
 <SECTION>
-<FILE>rb-encoder-gst</FILE>
-RB_ENCODE_GST_CLASS
-RBEncoderGstPrivate
-rb_encoder_gst_new
-<SUBSECTION Standard>
-RB_ENCODER_GST
-RB_IS_ENCODER_GST
-RB_TYPE_ENCODER_GST
-rb_encoder_gst_get_type
-RB_IS_ENCODER_GST_CLASS
-RB_ENCODER_GST_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>rb-player-gst</FILE>
-RB_TYPE_PLAYER_GST
-RB_PLAYER_GST
-RBPlayerGstPrivate
-rb_player_gst_new
-<SUBSECTION Standard>
-RB_IS_PLAYERER_GST
-rb_player_gst_get_type
-</SECTION>
-
-<SECTION>
-<FILE>rb-player-gst-xfade</FILE>
-RBPlayerGstXFadePrivate
-rb_player_gst_xfade_new
-<SUBSECTION Standard>
-RB_PLAYER_GST_XFADE
-RB_IS_PLAYER_GST_XFADE
-RB_TYPE_PLAYER_GST_XFADE
-rb_player_gst_xfade_get_type
-</SECTION>
-
-<SECTION>
 <FILE>rhythmdb-query-results</FILE>
 <TITLE>RhythmDBQueryResults</TITLE>
 RhythmDBQueryResults
@@ -1590,21 +1400,6 @@ RHYTHMDB_IS_QUERY_RESULTS
 RHYTHMDB_TYPE_QUERY_RESULTS
 rhythmdb_query_results_get_type
 RHYTHMDB_QUERY_RESULTS_GET_IFACE
-</SECTION>
-
-<SECTION>
-<FILE>gossip-cell-renderer-expander</FILE>
-<TITLE>GossipCellRendererExpander</TITLE>
-GossipCellRendererExpander
-gossip_cell_renderer_expander_new
-<SUBSECTION Standard>
-GOSSIP_CELL_RENDERER_EXPANDER
-GOSSIP_IS_CELL_RENDERER_EXPANDER
-GOSSIP_TYPE_CELL_RENDERER_EXPANDER
-gossip_cell_renderer_expander_get_type
-GOSSIP_CELL_RENDERER_EXPANDER_CLASS
-GOSSIP_IS_CELL_RENDERER_EXPANDER_CLASS
-GOSSIP_CELL_RENDERER_EXPANDER_GET_CLASS
 </SECTION>
 
 <SECTION>
@@ -1648,61 +1443,6 @@ RBProxyConfigPrivate
 </SECTION>
 
 <SECTION>
-<FILE>rb-feed-podcast-properties-dialog</FILE>
-RBFeedPodcastPropertiesDialogPrivate
-rb_feed_podcast_properties_dialog_new
-<SUBSECTION Standard>
-RB_FEED_PODCAST_PROPERTIES_DIALOG
-RB_IS_FEED_PODCAST_PROPERTIES_DIALOG
-RB_TYPE_FEED_PODCAST_PROPERTIES_DIALOG
-rb_feed_podcast_properties_dialog_get_type
-RB_FEED_PODCAST_PROPERTIES_DIALOG_CLASS
-RB_IS_FEED_PODCAST_PROPERTIES_DIALOG_CLASS
-RB_FEED_PODCAST_PROPERTIES_DIALOG_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>rb-podcast-properties-dialog</FILE>
-RBPodcastPropertiesDialogPrivate
-rb_podcast_properties_dialog_new
-<SUBSECTION Standard>
-RB_PODCAST_PROPERTIES_DIALOG
-RB_IS_PODCAST_PROPERTIES_DIALOG
-RB_TYPE_PODCAST_PROPERTIES_DIALOG
-rb_podcast_properties_dialog_get_type
-RB_PODCAST_PROPERTIES_DIALOG_CLASS
-RB_IS_PODCAST_PROPERTIES_DIALOG_CLASS
-RB_PODCAST_PROPERTIES_DIALOG_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>rb-podcast-manager</FILE>
-RBPodcastManagerPrivate
-rb_podcast_manager_new
-rb_podcast_manager_download_entry
-rb_podcast_manager_cancel_download
-rb_podcast_manager_update_feeds
-rb_podcast_manager_start_sync
-rb_podcast_manager_set_remove_files
-rb_podcast_manager_get_remove_files
-rb_podcast_manager_remove_feed
-rb_podcast_manager_get_podcast_dir
-rb_podcast_manager_subscribe_feed
-rb_podcast_manager_unsubscribe_feed
-rb_podcast_manager_shutdown
-rb_podcast_manager_add_post
-rb_podcast_manager_entry_downloaded
-<SUBSECTION Standard>
-RB_PODCAST_MANAGER
-RB_IS_PODCAST_MANAGER
-RB_TYPE_PODCAST_MANAGER
-rb_podcast_manager_get_type
-RB_PODCAST_MANAGER_CLASS
-RB_IS_PODCAST_MANAGER_CLASS
-RB_PODCAST_MANAGER_GET_CLASS
-</SECTION>
-
-<SECTION>
 <FILE>rb-import-errors-source</FILE>
 <TITLE>RBImportErrorsSource</TITLE>
 RBImportErrorsSource
@@ -1738,7 +1478,9 @@ RB_STREAMING_SOURCE_GET_CLASS
 
 <SECTION>
 <FILE>rb-podcast-source</FILE>
-RBPodcastSourcePrivate
+<TITLE>RBPodcastSource</TITLE>
+RBPodcastSource
+RBPodcastSourceClass
 rb_podcast_source_new
 rb_podcast_source_add_feed
 rb_podcast_source_shutdown
@@ -1750,6 +1492,7 @@ rb_podcast_source_get_type
 RB_PODCAST_SOURCE_CLASS
 RB_IS_PODCAST_SOURCE_CLASS
 RB_PODCAST_SOURCE_GET_CLASS
+RBPodcastSourcePrivate
 </SECTION>
 
 <SECTION>
@@ -1875,41 +1618,7 @@ RB_BROWSER_SOURCE_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>rb-plugins-engine</FILE>
-RBPluginInfo
-rb_plugins_engine_init
-rb_plugins_engine_shutdown
-rb_plugins_engine_garbage_collect
-rb_plugins_engine_get_plugins_list
-rb_plugins_engine_activate_plugin
-rb_plugins_engine_deactivate_plugin
-rb_plugins_engine_plugin_is_active
-rb_plugins_engine_plugin_is_visible
-rb_plugins_engine_plugin_is_configurable
-rb_plugins_engine_configure_plugin
-rb_plugins_engine_get_plugin_name
-rb_plugins_engine_get_plugin_description
-rb_plugins_engine_get_plugin_authors
-rb_plugins_engine_get_plugin_website
-rb_plugins_engine_get_plugin_copyright
-rb_plugins_engine_get_plugin_icon
-</SECTION>
-
-<SECTION>
 <FILE>rb-async-queue-watch</FILE>
 RBAsyncQueueWatchFunc
 rb_async_queue_watch_new
 </SECTION>
-
-<SECTION>
-<FILE>rb-podcast-parse</FILE>
-rb_podcast_parse_load_feed
-rb_podcast_parse_channel_free
-rb_podcast_parse_item_free
-</SECTION>
-
-<SECTION>
-<FILE>rb-missing-plugins</FILE>
-rb_missing_plugins_init
-</SECTION>
-
