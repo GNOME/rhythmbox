@@ -57,6 +57,7 @@ char *		rb_uri_get_dir_name	(const char *uri);
 char *		rb_uri_get_short_path_name (const char *uri);
 char *		rb_uri_get_mount_point  (const char *uri);
 
+
 /* return TRUE to recurse further, FALSE to stop */
 typedef gboolean (*RBUriRecurseFunc) (GFile *file, gboolean dir, gpointer data);
 
@@ -79,12 +80,15 @@ char*		rb_uri_append_uri	(const char *uri,
 gboolean	rb_check_dir_has_space	(GFile *dir, guint64 bytes_needed);
 gboolean	rb_check_dir_has_space_uri (const char *uri, guint64 bytes_needed);
 
+GFile *		rb_file_find_extant_parent (GFile *file);
+
 gboolean	rb_uri_create_parent_dirs (const char *uri, GError **error);
 
 void		rb_file_helpers_init	(void);
 void		rb_file_helpers_shutdown(void);
 
-char *		rb_sanitize_uri_for_filesystem(gchar *uri);
+char *		rb_uri_get_filesystem_type (const char *uri);
+char *		rb_sanitize_uri_for_filesystem(const char *uri);
 
 G_END_DECLS
 

@@ -1,3 +1,19 @@
+2008-09-18  Jonathan Matthew  <jonathan@d14n.org>
+
+	* lib/rb-file-helpers.c: (rb_check_dir_has_space),
+	(rb_file_find_extant_parent), (rb_uri_get_filesystem_type),
+	(rb_sanitize_uri_for_filesystem):
+	* lib/rb-file-helpers.h:
+	* lib/rb-util.c:
+	* lib/rb-util.h:
+	rb_check_dir_has_space has to walk up the filesystem to find an
+	existing ancestor, like rb_uri_get_filesystem_type, so add a helper
+	function to do that part of it.  Rearrange some other things as
+	necessary.  Probably fixes #552614 again.
+
+	* tests/test-file-helpers.c: (START_TEST), (rb_file_helpers_suite):
+	Add some simple tests for rb_check_dir_has_space.
+
 2008-09-17  Jonathan Matthew  <jonathan@d14n.org>
 
 	* doc/reference/rhythmbox-sections.txt:

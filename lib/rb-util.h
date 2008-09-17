@@ -58,8 +58,6 @@ void rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path);
 
 GtkWidget *rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size);
 
-char *rb_uri_get_filesystem_type(const char *uri);
-
 void rb_threads_init (void);
 gboolean rb_is_main_thread (void);
 

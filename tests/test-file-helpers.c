@@ -87,6 +87,15 @@ START_TEST (test_rb_uri_get_short_path_name)
 }
 END_TEST
 
+START_TEST (test_rb_check_dir_has_space)
+{
+	fail_unless (rb_check_dir_has_space_uri ("file:///tmp", 1));
+	fail_unless (rb_check_dir_has_space_uri ("file:///etc/passwd", 1));
+	fail_unless (rb_check_dir_has_space_uri ("file:///tmp/NONEXISTANT_FILE", 1));
+	fail_unless (rb_check_dir_has_space_uri ("file:///tmp/NONEXISTANT/THISDOESNTEXISTEITHER/NORDOESTHIS", G_MAXUINT64) == FALSE);
+}
+END_TEST
+
 static Suite *
 rb_file_helpers_suite ()
 {
@@ -96,6 +105,7 @@ rb_file_helpers_suite ()
 	suite_add_tcase (s, tc_chain);
 
 	tcase_add_test (tc_chain, test_rb_uri_get_short_path_name);
+	tcase_add_test (tc_chain, test_rb_check_dir_has_space);
 
 	return s;
 }

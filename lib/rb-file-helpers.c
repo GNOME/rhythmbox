@@ -810,14 +810,22 @@ gboolean
 rb_check_dir_has_space (GFile *file,
 			guint64 bytes_needed)
 {
+	GFile *extant;
 	GFileInfo *fs_info;
 	GError *error = NULL;
 	guint64 free_bytes;
 
-	fs_info = g_file_query_filesystem_info (file,
+	extant = rb_file_find_extant_parent (file);
+	if (extant == NULL) {
+		return FALSE;
+	}
+
+	fs_info = g_file_query_filesystem_info (extant,
 						G_FILE_ATTRIBUTE_FILESYSTEM_FREE,
 						NULL,
 						&error);
+	g_object_unref (extant);
+
 	if (error != NULL) {
 		char *uri;
 		uri = g_file_get_uri (file);
@@ -962,8 +970,84 @@ rb_uri_create_parent_dirs (const char *uri, GError **error)
 	return ret;
 }
 
+/**
+ * rb_file_find_extant_parent:
+ * @file: a #GFile to find an extant ancestor of
+ *
+ * Walks up the filesystem hierarchy to find a #GFile representing
+ * the nearest extant ancestor of the specified file, which may be
+ * the file itself if it exists.
+ * 
+ * Return value: #GFile for the nearest extant ancestor
+ */
+GFile *
+rb_file_find_extant_parent (GFile *file)
+{
+	g_object_ref (file);
+	while (g_file_query_exists (file, NULL) == FALSE) {
+		GFile *parent;
+
+		parent = g_file_get_parent (file);
+		g_object_unref (file);
+		file = parent;
+
+		if (file == NULL) {
+			g_warning ("filesystem root apparently doesn't exist!");
+			return NULL;
+		}
+	}
+
+	return file;
+}
+
+/**
+ * rb_uri_get_filesystem_type:
+ * @uri: URI to get filesystem type for
+ *
+ * Return value: a string describing the type of the filesystem containing the URI
+ */
 char *
-rb_sanitize_uri_for_filesystem (char *uri)
+rb_uri_get_filesystem_type (const char *uri)
+{
+	GFile *file;
+	GFile *extant;
+	GFileInfo *info;
+	char *fstype = NULL;
+	GError *error = NULL;
+
+	/* if the file doesn't exist, walk up the directory structure
+	 * until we find something that does.
+	 */
+	file = g_file_new_for_uri (uri);
+
+	extant = rb_file_find_extant_parent (file);
+	if (extant == NULL) {
+		g_object_unref (file);
+		return NULL;
+	}
+
+	info = g_file_query_filesystem_info (extant, G_FILE_ATTRIBUTE_FILESYSTEM_TYPE, NULL, &error);
+	if (info != NULL) {
+		fstype = g_file_info_get_attribute_as_string (info, G_FILE_ATTRIBUTE_FILESYSTEM_TYPE);
+		g_object_unref (info);
+	} else {
+		rb_debug ("error querying filesystem info: %s", error->message);
+	}
+	g_clear_error (&error);
+	g_object_unref (file);
+	g_object_unref (extant);
+	return fstype;
+}
+
+/**
+ * rb_sanitize_uri_for_filesystem:
+ * @uri: a URI to sanitize
+ *
+ * Return value: a copy of the URI with characters not allowed by the target filesystem
+ *   replaced
+ */
+char *
+rb_sanitize_uri_for_filesystem (const char *uri)
 {
 	char *filesystem = rb_uri_get_filesystem_type (uri);
 	char *sane_uri = NULL;
@@ -1006,3 +1090,4 @@ rb_sanitize_uri_for_filesystem (char *uri)
 	g_free (filesystem);
 	return sane_uri ? sane_uri : g_strdup (uri);
 }
+
