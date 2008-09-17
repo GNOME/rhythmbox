@@ -300,7 +300,6 @@ rb_psp_is_mount_player (GMount *mount)
 	GVolume *volume;
 #endif
 	gboolean result = FALSE;
-	gchar *str;
 
 #ifndef HAVE_HAL
 	music_dir = find_music_dir (mount);
@@ -309,6 +308,8 @@ rb_psp_is_mount_player (GMount *mount)
 #else
 	volume = g_mount_get_volume (mount);
 	if (volume != NULL) {
+		char *str;
+
 		str = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
 		if (str != NULL) {
 			result = hal_udi_is_psp (str);

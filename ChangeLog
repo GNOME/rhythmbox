@@ -1,5 +1,10 @@
 2008-09-18  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/generic-player/rb-psp-source.c: (rb_psp_is_mount_player):
+	maybe fix a compile error when HAL is disabled, but who does that?
+
+2008-09-18  Jonathan Matthew  <jonathan@d14n.org>
+
 	* lib/rb-file-helpers.c: (rb_check_dir_has_space),
 	(rb_file_find_extant_parent), (rb_uri_get_filesystem_type),
 	(rb_sanitize_uri_for_filesystem):
