@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-09 14:53+0200\n"
-"PO-Revision-Date: 2008-09-09 14:55+0200\n"
+"POT-Creation-Date: 2008-09-18 15:51+0200\n"
+"PO-Revision-Date: 2008-09-18 16:11+0200\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -25,6 +25,11 @@ msgstr ""
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "\"%s\" fitxategia gainidatzi nahi duzu?"
+
+#: ../backends/gstreamer/rb-encoder-gst.c:645
+#, c-format
+msgid "Could not create a GStreamer sink element to write to %s"
+msgstr "Ezin izan da GStreamer-eko kolektorea sortu  %s(e)n idazteko"
 
 #: ../backends/gstreamer/rb-player-gst.c:693 ../metadata/rb-metadata-gst.c:801
 #: ../metadata/rb-metadata-gst.c:1368
@@ -573,8 +578,8 @@ msgstr "%Y %b %d"
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:615
-#: ../lib/rb-util.c:855
+#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:577
+#: ../lib/rb-util.c:817
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:85
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:86
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:88
@@ -590,19 +595,19 @@ msgstr "%Y %b %d"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
 #: ../plugins/daap/rb-daap-connection.c:679
-#: ../plugins/generic-player/rb-generic-player-source.c:1182
+#: ../plugins/generic-player/rb-generic-player-source.c:1171
 #: ../plugins/ipod/rb-ipod-source.c:314
 #: ../plugins/iradio/rb-iradio-source.c:517
 #: ../plugins/iradio/rb-iradio-source.c:1110
 #: ../plugins/iradio/rb-station-properties-dialog.c:486
 #: ../plugins/mtpdevice/rb-mtp-source.c:266
-#: ../podcast/rb-feed-podcast-properties-dialog.c:319
-#: ../podcast/rb-podcast-manager.c:1785
-#: ../podcast/rb-podcast-properties-dialog.c:475
-#: ../podcast/rb-podcast-properties-dialog.c:528
-#: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1248
-#: ../rhythmdb/rhythmdb-tree.c:1252 ../rhythmdb/rhythmdb-tree.c:1256
-#: ../rhythmdb/rhythmdb-tree.c:1260 ../rhythmdb/rhythmdb.c:1599
+#: ../podcast/rb-feed-podcast-properties-dialog.c:321
+#: ../podcast/rb-podcast-manager.c:1863
+#: ../podcast/rb-podcast-properties-dialog.c:478
+#: ../podcast/rb-podcast-properties-dialog.c:531
+#: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1284
+#: ../rhythmdb/rhythmdb-tree.c:1288 ../rhythmdb/rhythmdb-tree.c:1292
+#: ../rhythmdb/rhythmdb-tree.c:1296 ../rhythmdb/rhythmdb.c:1601
 #: ../shell/rb-shell-player.c:1717 ../shell/rb-shell.c:3063
 #: ../sources/rb-podcast-source.c:1763 ../widgets/rb-entry-view.c:1035
 #: ../widgets/rb-entry-view.c:1060 ../widgets/rb-entry-view.c:1463
@@ -617,7 +622,7 @@ msgstr "Ezezaguna"
 msgid "Too many symlinks"
 msgstr "Esteka sinboliko gehiegi"
 
-#: ../lib/rb-file-helpers.c:824
+#: ../lib/rb-file-helpers.c:832
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Ezin da leku librea lortu %s-(e)n: %s"
@@ -630,32 +635,32 @@ msgstr "HTTP proxy-aren konfigurazioko errorea"
 msgid "Rhythmbox does not support automatic proxy configuration"
 msgstr "Rhythmbox-ek ez du proxy-aren konfigurazio automatikoa onartzen"
 
-#: ../lib/rb-util.c:617 ../remote/dbus/rb-client.c:142
+#: ../lib/rb-util.c:579 ../remote/dbus/rb-client.c:142
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:619 ../remote/dbus/rb-client.c:144
+#: ../lib/rb-util.c:581 ../remote/dbus/rb-client.c:144
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:654
+#: ../lib/rb-util.c:616
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d / %d:%02d faltan"
 
-#: ../lib/rb-util.c:658
+#: ../lib/rb-util.c:620
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d / %d:%02d:%02d faltan"
 
-#: ../lib/rb-util.c:663
+#: ../lib/rb-util.c:625
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d / %d:%02d"
 
-#: ../lib/rb-util.c:667
+#: ../lib/rb-util.c:629
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d / %d:%02d:%02d"
@@ -811,6 +816,37 @@ msgstr "Artista"
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox-ek ezin izan du CD gailura sarbidetu."
 
+#: ../plugins/audiocd/sj-metadata-getter.c:245
+#, c-format
+msgid "Could not create CD lookup thread"
+msgstr "Ezin izan da CDaren bilaketa-haria sortu"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:89
+#, c-format
+msgid "Cannot access CD"
+msgstr "Ezin da CDa atzitu"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:109
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:347
+msgid "Unknown Title"
+msgstr "Titulu ezezaguna"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:113
+#: ../plugins/audiocd/sj-metadata-gvfs.c:136
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:331
+msgid "Unknown Artist"
+msgstr "Artista ezezaguna"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:133
+#, c-format
+msgid "Track %d"
+msgstr "%d. pista"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:150
+#, c-format
+msgid "Cannot access CD: %s"
+msgstr "Ezin da CDa atzitu: %s"
+
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:213
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:220
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:234
@@ -821,14 +857,6 @@ msgstr "Ezin izan da CD hau kontsultatu: %s\n"
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:329
 msgid "Various"
 msgstr "Hainbat"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:331
-msgid "Unknown Artist"
-msgstr "Artista ezezaguna"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:347
-msgid "Unknown Title"
-msgstr "Titulu ezezaguna"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:372
 msgid "Incomplete metadata for this CD"
@@ -897,7 +925,7 @@ msgstr "Last.fm profila"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1084
 #: ../plugins/iradio/rb-station-properties-dialog.c:497
-#: ../rhythmdb/rhythmdb.c:3406 ../widgets/rb-entry-view.c:983
+#: ../rhythmdb/rhythmdb.c:3408 ../widgets/rb-entry-view.c:983
 #: ../widgets/rb-entry-view.c:1521 ../widgets/rb-entry-view.c:1534
 #: ../widgets/rb-song-info.c:1315
 msgid "Never"
@@ -2000,7 +2028,7 @@ msgid "%s Properties"
 msgstr "%s propietateak"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:488
-#: ../podcast/rb-podcast-properties-dialog.c:473
+#: ../podcast/rb-podcast-properties-dialog.c:476
 #: ../widgets/rb-song-info.c:1065
 #, c-format
 msgid "%lu kbps"
@@ -2632,7 +2660,7 @@ msgstr "Egotzi MTP gailua"
 msgid "Rename MTP-device"
 msgstr "Aldatu MTP gailuaren izena"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:405
+#: ../plugins/mtpdevice/rb-mtp-source.c:409
 msgid "Digital Audio Player"
 msgstr "Audio digitalaren erreproduzigailua"
 
@@ -2832,30 +2860,30 @@ msgstr "Erreproduzitzen ari den kantaren hitzak bistaratzen ditu"
 msgid "Visualization"
 msgstr "Bisualizazioa"
 
-#: ../podcast/rb-podcast-manager.c:756
+#: ../podcast/rb-podcast-manager.c:811
 msgid "Error creating podcast download directory"
 msgstr "Errorea podcast-ak deskargatzeko direktorioa sortzean"
 
-#: ../podcast/rb-podcast-manager.c:757
+#: ../podcast/rb-podcast-manager.c:812
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Ezin da deskargatzeko direktorioa sortu '%s'(e)ntzako: %s"
 
-#: ../podcast/rb-podcast-manager.c:876
+#: ../podcast/rb-podcast-manager.c:931
 msgid "Invalid URL"
 msgstr "URL baliogabea"
 
-#: ../podcast/rb-podcast-manager.c:877
+#: ../podcast/rb-podcast-manager.c:932
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "\"%s\" URLa ez da baliozkoa, egiaztatu ezazu."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:887
+#: ../podcast/rb-podcast-manager.c:942
 msgid "URL already added"
 msgstr "URLa jadanik gehituta"
 
-#: ../podcast/rb-podcast-manager.c:888
+#: ../podcast/rb-podcast-manager.c:943
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2864,7 +2892,7 @@ msgstr ""
 "\"%s\" URLa jadanik irrati gisa gehituta dago. Podcast baten iturria bada "
 "kendu irratia."
 
-#: ../podcast/rb-podcast-manager.c:956
+#: ../podcast/rb-podcast-manager.c:1011
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2874,11 +2902,11 @@ msgstr ""
 "'%s' URLa ez dirudi podcast-eko iturria denik. Agian URL okerra da, edo "
 "iturria hondatuta dago. Hala ere, nahi duzu Rhythmbox-ek hori erabiltzea?"
 
-#: ../podcast/rb-podcast-manager.c:1067
+#: ../podcast/rb-podcast-manager.c:1122
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:1951
+#: ../podcast/rb-podcast-manager.c:2029
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Arazoak daude podcast hau gehitzean: %s. Egiaztatu URLa: %s"
@@ -2898,7 +2926,7 @@ msgstr "Ustekabeko fitxategi mota: %s"
 msgid "Unable to parse the feed contents"
 msgstr "Ezin da iturriaren edukia analizatu"
 
-#: ../podcast/rb-podcast-properties-dialog.c:423
+#: ../podcast/rb-podcast-properties-dialog.c:426
 msgid "Not Downloaded"
 msgstr "Deskargatu gabe"
 
@@ -3012,7 +3040,7 @@ msgstr "Erreprodukzio-bolumena: %f.\n"
 msgid "All"
 msgstr "Denak"
 
-#: ../rhythmdb/rhythmdb-tree.c:403
+#: ../rhythmdb/rhythmdb-tree.c:407
 #, c-format
 msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
@@ -3026,29 +3054,29 @@ msgstr ""
 msgid "Couldn't access %s: %s"
 msgstr "Ezin izan da %s atzitu: %s"
 
-#: ../rhythmdb/rhythmdb.c:2037
+#: ../rhythmdb/rhythmdb.c:2039
 msgid "invalid unicode in error message"
 msgstr "baliogabeko unicode-a erroreko mezuan"
 
-#: ../rhythmdb/rhythmdb.c:2895
+#: ../rhythmdb/rhythmdb.c:2897
 msgid "Could not load the music database:"
 msgstr "Ezin izan da musikaren datu-basea kargatu:"
 
-#: ../rhythmdb/rhythmdb.c:4258
+#: ../rhythmdb/rhythmdb.c:4260
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "Minutu %ld"
 msgstr[1] "%ld minutu"
 
-#: ../rhythmdb/rhythmdb.c:4259
+#: ../rhythmdb/rhythmdb.c:4261
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "Ordu %ld"
 msgstr[1] "%ld ordu"
 
-#: ../rhythmdb/rhythmdb.c:4260
+#: ../rhythmdb/rhythmdb.c:4262
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3056,7 +3084,7 @@ msgstr[0] "Egun %ld"
 msgstr[1] "%ld egun"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4266
+#: ../rhythmdb/rhythmdb.c:4268
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s eta %s"
@@ -3064,8 +3092,8 @@ msgstr "%s, %s eta %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4272 ../rhythmdb/rhythmdb.c:4280
-#: ../rhythmdb/rhythmdb.c:4291
+#: ../rhythmdb/rhythmdb.c:4274 ../rhythmdb/rhythmdb.c:4282
+#: ../rhythmdb/rhythmdb.c:4293
 #, c-format
 msgid "%s and %s"
 msgstr "%s eta %s"
@@ -3947,7 +3975,7 @@ msgstr "Aukeratu liburutegiaren kokalekua"
 msgid "Multiple locations set"
 msgstr "Hainbat kokaleku-multzo"
 
-#: ../sources/rb-library-source.c:997
+#: ../sources/rb-library-source.c:998
 msgid "Example Path:"
 msgstr "Bide-izenaren adibidea:"
 
