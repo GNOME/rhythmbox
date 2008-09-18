@@ -526,7 +526,7 @@ impl_delete (RBSource *source)
 		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		track = g_hash_table_lookup (priv->entry_map, entry);
 		if (track == NULL) {
-			rb_debug ("Couldn't find track on mtp-device! (%s)\n", uri);
+			rb_debug ("Couldn't find track on mtp-device! (%s)", uri);
 			continue;
 		}
 
@@ -536,7 +536,7 @@ impl_delete (RBSource *source)
 			LIBMTP_destroy_track_t (track);
 			rhythmdb_entry_delete (db, entry);
 		} else {
-			rb_debug ("Delete track failed");
+			rb_debug ("Delete track %d failed", track->item_id);
 		}
 	}
 	rhythmdb_commit (db);
@@ -583,10 +583,12 @@ rb_mtp_source_transfer_track_to_disk (LIBMTP_mtpdevice_t *device,
 	}
 
 	if (rb_check_dir_has_space_uri (uri, track->filesize) == FALSE) {
+		rb_debug ("not enough space to transfer track %d to %s", track->item_id, uri);
 		return FALSE;
 	}
 
 	ret = LIBMTP_Get_Track_To_File (device, track->item_id, uri, NULL, NULL);
+	rb_debug ("LIBMTP_Get_Track_To_File(%d, %s) returned %d", track->item_id, uri, ret);
 
 	return (ret == 0);
 }
@@ -610,6 +612,9 @@ rb_mtp_source_get_playback_uri (RhythmDBEntry *entry, gpointer data)
 	g_free (path);
 
 	if (rb_mtp_source_transfer_track_to_disk (priv->device, track, uri) == TRUE) {
+		rb_debug ("playback URI for %s: %s",
+			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
+			  uri);
 		return uri;
 	} else {
 		g_free (uri);
@@ -684,6 +689,7 @@ transfer_track (RBMtpSource *source,
 {
 	LIBMTP_track_t *trackmeta = LIBMTP_new_track_t ();
 	GDate d;
+	int ret;
 
 	trackmeta->title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
 	trackmeta->album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
@@ -707,12 +713,13 @@ transfer_track (RBMtpSource *source,
 	}
 
 #ifdef HAVE_LIBMTP_030
-	if (LIBMTP_Send_Track_From_File (device, filename, trackmeta, NULL, NULL) != 0) {
+	ret = LIBMTP_Send_Track_From_File (device, filename, trackmeta, NULL, NULL);
 #else
-	if (LIBMTP_Send_Track_From_File (device, filename, trackmeta, NULL, NULL, 0) != 0) {
+	ret = LIBMTP_Send_Track_From_File (device, filename, trackmeta, NULL, NULL, 0);
 #endif
+	rb_debug ("LIBMTP_Send_Track_From_File (%s) returned %d", filename, ret);
+	if (ret != 0) {
 		LIBMTP_destroy_track_t (trackmeta);
-		rb_debug ("Tracktransfer failed\n");
 		return NULL;
 	}
 

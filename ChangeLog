@@ -1,5 +1,12 @@
 2008-09-18  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/mtpdevice/rb-mtp-source.c: (impl_delete),
+	(rb_mtp_source_transfer_track_to_disk),
+	(rb_mtp_source_get_playback_uri), (transfer_track):
+	Add some useful debug output
+
+2008-09-18  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/generic-player/rb-psp-source.c: (rb_psp_is_mount_player):
 	maybe fix a compile error when HAL is disabled, but who does that?
 
