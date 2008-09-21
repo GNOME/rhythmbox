@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-21 16:08+0300\n"
-"PO-Revision-Date: 2008-07-07 19:31+0300\n"
+"POT-Creation-Date: 2008-09-21 16:17+0300\n"
+"PO-Revision-Date: 2008-09-21 16:17+0300\n"
 "Last-Translator: Žygimantas Beručka <zygis@gnome.org>\n"
 "Language-Team: Lithuanian <gnome-lt@lists.akl.lt>\n"
 "MIME-Version: 1.0\n"
@@ -27,9 +27,9 @@ msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Ar norite perrašyti failą „%s“?"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:645
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
-msgstr "Nepavyko sukurti GStreamer konvejerio %s atkūrimui"
+msgstr "Nepavyko sukurti GStreamer sink elemento rašymui į %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:693 ../metadata/rb-metadata-gst.c:801
 #: ../metadata/rb-metadata-gst.c:1368
@@ -161,9 +161,8 @@ msgid "G_enres, artists and albums"
 msgstr "Ža_nrai, atlikėjai ir albumai"
 
 #: ../data/glade/general-prefs.glade.h:11
-#, fuzzy
 msgid "Lo_cation"
-msgstr "Vieta"
+msgstr "_Vieta"
 
 #: ../data/glade/general-prefs.glade.h:12
 msgid "Ti_me"
@@ -623,12 +622,12 @@ msgstr "Nežinomas"
 #: ../lib/rb-file-helpers.c:213
 #, c-format
 msgid "Too many symlinks"
-msgstr ""
+msgstr "Per daug simbolinių nuorodų"
 
 #: ../lib/rb-file-helpers.c:832
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot get free space at %s: %s"
-msgstr "Nepavyko gauti %s laisvos vietos"
+msgstr "Nepavyko gauti %s laisvos vietos: %s"
 
 #: ../lib/rb-proxy-config.c:218
 msgid "HTTP proxy configuration error"
@@ -825,9 +824,9 @@ msgid "Could not create CD lookup thread"
 msgstr "Nepavyko sukurti CD peržiūros gijos"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:89
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot access CD"
-msgstr "Nepavyko perskaityti CD: %s"
+msgstr "Nepavyko perskaityti CD"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:109
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:347
@@ -846,7 +845,7 @@ msgid "Track %d"
 msgstr "Takelis %d"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:150
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot access CD: %s"
 msgstr "Nepavyko perskaityti CD: %s"
 
@@ -867,7 +866,7 @@ msgstr "Šio CD metaduomenys nepilni"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:402
 msgid "[Untitled]"
-msgstr ""
+msgstr "[Nepavadintas]"
 
 #: ../plugins/audiocd/sj-metadata.c:186
 #, c-format
@@ -1980,9 +1979,9 @@ msgid "Loading Jamendo catalogue"
 msgstr "Įkeliamas Jamendo katalogas"
 
 #: ../plugins/jamendo/jamendo/JamendoSource.py:388
-#, fuzzy, python-format
+#, python-format
 msgid "Error looking up p2plink for album %s on jamendo.com"
-msgstr "Klaida ieškant atlikėjo %s svetainėje jamendo.com"
+msgstr "Klaida ieškant p2plink albumui %s svetainėje jamendo.com"
 
 #: ../plugins/jamendo/jamendo/JamendoSource.py:409
 #, python-format
@@ -2716,6 +2715,9 @@ msgid ""
 "or rpdb2. If you have not set a debugger password in GConf, it will use the "
 "default password ('rhythmbox')."
 msgstr ""
+"Kai paspausite OK, Rhythmbox lauks, kol prisijungsite prie jo su winpdb arba "
+"rpdb2. Jei GConf nenustatytas derintuvės slaptažodis, bus naudojamas "
+"numatytasis slaptažodis ('rhythmbox')."
 
 #. ex:noet:ts=8:
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:1
@@ -2873,12 +2875,12 @@ msgstr "Vaizdo efektas"
 
 #: ../podcast/rb-podcast-manager.c:811
 msgid "Error creating podcast download directory"
-msgstr ""
+msgstr "Klaida kuriant podcast parsiuntimų aplanką"
 
 #: ../podcast/rb-podcast-manager.c:812
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create the download directory for %s: %s"
-msgstr "Nepavyko sukurti rašytuvo: %s"
+msgstr "Nepavyko sukurti parsiuntimo aplanko %s: %s"
 
 #: ../podcast/rb-podcast-manager.c:931
 msgid "Invalid URL"
@@ -3070,9 +3072,8 @@ msgid "invalid unicode in error message"
 msgstr "netinkamas unikodas klaidos pranešime"
 
 #: ../rhythmdb/rhythmdb.c:2897
-#, fuzzy
 msgid "Could not load the music database:"
-msgstr "Nepavyko įkelti muzikos duomenų bazės"
+msgstr "Nepavyko įkelti muzikos duomenų bazės:"
 
 #: ../rhythmdb/rhythmdb.c:4260
 #, c-format
@@ -3285,14 +3286,12 @@ msgid "Extract"
 msgstr "Įrašyti"
 
 #: ../shell/rb-removable-media-manager.c:768
-#, fuzzy
 msgid "Unable to eject"
-msgstr "Nepavyko sukurti audio CD"
+msgstr "Nepavyko išstumti"
 
 #: ../shell/rb-removable-media-manager.c:789
-#, fuzzy
 msgid "Unable to unmount"
-msgstr "Nepavyko atsieti „%s“"
+msgstr "Nepavyko atsieti"
 
 #: ../shell/rb-removable-media-manager.c:991
 msgid "Error transferring track"
