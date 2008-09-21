@@ -20,9 +20,8 @@
 
 import xml.sax, xml.sax.handler
 
-markups = ["JamendoData", "Artists", "artist", "Albums", "album", "Covers", "cover", "P2PLinks", "p2plink", "Tracks", "track"]
-ignore = ["lyrics", "description"]
-ignore_attr = ["licenseURL", "link"]
+markups = ["JamendoData", "Artists", "artist", "Albums", "album", "Tracks", "track"]
+ignore = ["location", "country", "state", "city", "latitude", "longitude"]
 
 class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def __init__(self):
@@ -62,8 +61,7 @@ class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def startartist (self, attrs):
 		self.artist = {}
 		for attr in attrs.getNames():
-			if attr not in ignore_attr:
-				self.artist[attr] = attrs[attr]
+			self.artist[attr] = attrs[attr]
 		self.current = self.artist
 
 	def startAlbums (self, attrs):
@@ -72,29 +70,8 @@ class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def startalbum (self, attrs):
 		self.album = {}
 		for attr in attrs.getNames():
-			if attr not in ignore_attr:
-				self.album[attr] = attrs[attr]
+			self.album[attr] = attrs[attr]
 		self.current = self.album
-
-	def startCovers (self, attrs):
-		# we create a list to store all the covers
-		# of this album
-		self.album['Covers'] = []
-
-	def startcover (self, attrs):
-		self.cover = {}
-		for attr in attrs.getNames():
-			if attr not in ignore_attr:
-				self.cover[attr] = attrs[attr]
-
-	def startP2PLinks (self, attrs):
-		self.album['P2PLinks'] = []
-
-	def startp2plink (self, attrs):
-		self.p2plink = {}
-		for attr in attrs.getNames():
-			if attr not in ignore_attr:
-				self.p2plink[attr] = attrs[attr]
 
 	def startTracks (self, attrs):
 		self.tracks = {}
@@ -102,8 +79,7 @@ class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def starttrack (self, attrs):
 		self.track = {}
 		for attr in attrs.getNames():
-			if attr not in ignore_attr:
-				self.track[attr] = attrs[attr]
+			self.track[attr] = attrs[attr]
 		self.current = self.track
 
 	# end markups
@@ -115,29 +91,15 @@ class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 
 	def endartist (self):
 		self.artists[self.artist['id']] = self.artist
-
+		
 	def endAlbums (self):
-		pass # we have load all albums
+		self.artist['ALBUMS'] = self.albums
 
 	def endalbum (self):
 		self.albums[self.album['id']] = self.album
 
-	def endCovers (self):
-		pass # we have load all covers of this album
-
-	def endcover (self):
-		self.cover["cover"] = self.__text
-		self.album["Covers"].append(self.cover)
-
-	def endP2PLinks (self):
-		pass # we have load all links of this album
-
-	def endp2plink (self):
-		self.p2plink["p2plink"] = self.__text
-		self.album["P2PLinks"].append(self.p2plink)
-
 	def endTracks (self):
-		pass #we have load all the tracks of this album
+		self.album['TRACKS'] = self.tracks
 
 	def endtrack (self):
 		self.tracks[self.track['id']] = self.track

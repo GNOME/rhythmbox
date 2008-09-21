@@ -34,13 +34,26 @@ import datetime
 
 # URIs
 jamendo_dir = gnome.user_dir_get() + "rhythmbox/jamendo/"
-jamendo_song_info_uri = gnomevfs.URI("http://img.jamendo.com/data/dbdump.en.xml.gz")
-local_song_info_uri = gnomevfs.URI(jamendo_dir + "dbdump.en.xml")
-local_song_info_temp_uri = gnomevfs.URI(jamendo_dir + "dbdump.en.xml.tmp")
+jamendo_song_info_uri = gnomevfs.URI("http://img.jamendo.com/data/dbdump_artistalbumtrack.xml.gz")
+local_song_info_uri = gnomevfs.URI(jamendo_dir + "dbdump.xml")
+local_song_info_temp_uri = gnomevfs.URI(jamendo_dir + "dbdump.xml.tmp")
+mp32_uri = "http://api.jamendo.com/get2/bittorrent/file/plain/?type=archive&class=mp32&album_id="
+ogg3_uri = "http://api.jamendo.com/get2/bittorrent/file/plain/?type=archive&class=ogg3&album_id="
 
-stream_url = "http://www.jamendo.com/get/track/id/track/audio/redirect/%s/?aue=ogg2"
-artwork_url = "http://www.jamendo.com/get/album/id/album/artworkurl/redirect/%s/?artwork_size=200"
+
+#  MP3s for streaming : http://api.jamendo.com/get2/stream/track/redirect/?id={TRACKID}&streamencoding=mp31
+# OGGs for streaming : http://api.jamendo.com/get2/stream/track/redirect/?id={TRACKID}&streamencoding=ogg2
+
+# .torrent file for download (MP3 archive) : http://api.jamendo.com/get2/bittorrent/file/plain/?album_id={ALBUMID}&type=archive&class=mp32
+# .torrent file for download (OGG archive) : http://api.jamendo.com/get2/bittorrent/file/plain/?album_id={ALBUMID}&type=archive&class=ogg3
+
+# Album Covers are available here: http://api.jamendo.com/get2/image/album/redirect/?id={ALBUMID}&imagesize={100-600}
+
+stream_url = "http://api.jamendo.com/get2/stream/track/redirect/?id=%s&streamencoding=ogg2"
+artwork_url = "http://api.jamendo.com/get2/image/album/redirect/?id=%s&imagesize=200"
 artist_url = "http://www.jamendo.com/get/artist/id/album/page/plain/"
+
+genre_id3 = ["Blues","Classic Rock","Country","Dance","Disco","Funk","Grunge","Hip-Hop","Jazz","Metal","New Age","Oldies","Other","Pop","R&B","Rap","Reggae","Rock","Techno","Industrial","Alternative","Ska","Death Metal","Pranks","Soundtrack","Euro-Techno","Ambient","Trip-Hop","Vocal","Jazz+Funk","Fusion","Trance","Classical","Instrumental","Acid","House","Game","Sound Clip","Gospel","Noise","AlternRock","Bass","Soul","Punk","Space","Meditative","Instrumental Pop","Instrumental Rock","Ethnic","Gothic","Darkwave","Techno-Industrial","Electronic","Pop-Folk","Eurodance","Dream","Southern Rock","Comedy","Cult","Gangsta","Top 40","Christian Rap","Pop/Funk","Jungle","Native American","Cabaret","New Wave","Psychadelic","Rave","Showtunes","Trailer","Lo-Fi","Tribal","Acid Punk","Acid Jazz","Polka","Retro","Musical","Rock & Roll","Hard Rock","Folk","Folk-Rock","National Folk","Swing","Fast Fusion","Bebob","Latin","Revival","Celtic","Bluegrass","Avantgarde","Gothic Rock","Progressive Rock","Psychedelic Rock","Symphonic Rock","Slow Rock","Big Band","Chorus","Easy Listening","Acoustic","Humour","Speech","Chanson","Opera","Chamber Music","Sonata","Symphony","Booty Bass","Primus","Porn Groove","Satire","Slow Jam","Club","Tango","Samba","Folklore","Ballad","Power Ballad","Rhythmic Soul","Freestyle","Duet","Punk Rock","Drum Solo","Acapella","Euro-House","Dance Hall"]
 
 class JamendoSource(rb.BrowserSource):
 	__gproperties__ = {
@@ -51,7 +64,6 @@ class JamendoSource(rb.BrowserSource):
 
 		rb.BrowserSource.__init__(self, name=_("Jamendo"))
 
-		self.__p2plinks = {}
 		self.__loader = rb.Loader()
 
 		# catalogue stuff
@@ -286,52 +298,56 @@ class JamendoSource(rb.BrowserSource):
 		self.__paned_box.set_property("visible", not show)
 
 	def __load_db(self):
-		tracks = self.__saxHandler.tracks
-		albums = self.__saxHandler.albums
 		artists = self.__saxHandler.artists
 
-		# map album ID -> { format -> torrent URL }
-		for album_key in albums.keys():
-			album = albums[album_key]
-			id = album['id']
-			formats = {}
-			self.__p2plinks[id] = formats
-			for p2plink in album['P2PLinks']:
-				if p2plink['network'] == 'bittorrent':
-					fmt = p2plink['audioEncoding']
-					link = p2plink['p2plink']
-					formats[fmt] = link
+		nbAlbums = 0
+		nbTracks = 0
+		for artist_key in artists.keys():
+			artist = artists[artist_key]
+			for album_key in artist['ALBUMS'].keys():
+				nbAlbums = nbAlbums + 1
+				album = artist['ALBUMS'][album_key]
+				for track_key in album['TRACKS'].keys():
+					nbTracks = nbTracks + 1
+					track = album['TRACKS'][track_key]
+					track_id = track['id']
+					stream = stream_url % (track_id)
+					entry = self.__db.entry_lookup_by_location (stream)
+					if entry == None:
+						entry = self.__db.entry_new(self.__entry_type, stream)
 
-		for track_key in tracks.keys():
-			track = tracks[track_key]
-			album = albums.get(track['albumID'])
-			if album != None:
-				artist = artists.get(album['artistID'])
-				stream = stream_url % (track_key)
+					release_date = album['releasedate']
+					if release_date:
+						year = int(release_date[0:4])
+						date = datetime.date(year, 1, 1).toordinal()
+						self.__db.set(entry, rhythmdb.PROP_DATE, date)
 
-				entry = self.__db.entry_lookup_by_location (stream)
-				if entry == None:
-					entry = self.__db.entry_new(self.__entry_type, stream)
+					self.__db.set(entry, rhythmdb.PROP_TITLE, track['name'])
+					self.__db.set(entry, rhythmdb.PROP_ARTIST, artist['name'])
+					try:
+						genre = genre_id3[int(album['id3genre'])]
+					except Exception:
+						genre = _('Unknown')
+						
+					self.__db.set(entry, rhythmdb.PROP_GENRE, genre)
+					self.__db.set(entry, rhythmdb.PROP_ALBUM, album['name'])
 
-				release_date = album['releaseDate']
-				if release_date:
-					year = int(release_date[0:4])
-					date = datetime.date(year, 1, 1).toordinal()
-					self.__db.set(entry, rhythmdb.PROP_DATE, date)
+					trackno = int(track['numalbum'])
+					if trackno >= 0:
+						self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, trackno)
+					try:
+						self.__db.set(entry, rhythmdb.PROP_DURATION, int(track['lengths']))
+					except Exception:
+						# No length, nevermind
+						length = 0
+					
+					# slight misuse, but this is far more efficient than having a python dict
+					# containing this data.
+					self.__db.set(entry, rhythmdb.PROP_MUSICBRAINZ_ALBUMID, album['id'])
 
-				self.__db.set(entry, rhythmdb.PROP_TITLE, track['dispname'])
-				if artist != None:
-					self.__db.set(entry, rhythmdb.PROP_ARTIST, artist['dispname'])
-					self.__db.set(entry, rhythmdb.PROP_GENRE, artist['genre'])
-				self.__db.set(entry, rhythmdb.PROP_ALBUM, album['dispname'])
-
-				trackno = int(track['trackno'])
-				if trackno >= 0:
-					self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, trackno)
-				self.__db.set(entry, rhythmdb.PROP_DURATION, int(track['lengths']))
-				# slight misuse, but this is far more efficient than having a python dict
-				# containing this data.
-				self.__db.set(entry, rhythmdb.PROP_MUSICBRAINZ_ALBUMID, track['albumID'])
+		print "Nb artistes : " + str(len(artists))
+		print "Nb albums : " + str(nbAlbums)
+		print "Nb tracks : " + str(nbTracks)
 
 		self.__db.commit()
 		self.__saxHandler = None
@@ -359,12 +375,20 @@ class JamendoSource(rb.BrowserSource):
 		if len(tracks) == 1:
 			track = tracks[0]
 			albumid = self.__db.entry_get(track, rhythmdb.PROP_MUSICBRAINZ_ALBUMID)
-			formats = self.__p2plinks[albumid]
-			p2plink = formats[format]
-			self.__download_p2plink (p2plink)
 
-	def __download_p2plink (self, link):
-		gnomevfs.url_show(link)
+			formats = {}
+			formats["mp32"] = mp32_uri + albumid
+			formats["ogg3"] = ogg3_uri + albumid
+
+			p2plink = formats[format]
+			self.__loader.get_url(p2plink, self.__download_p2plink, albumid)
+
+	def __download_p2plink (self, result, albumid):
+		if result is None:
+			emsg = _("Error looking up p2plink for album %s on jamendo.com") % (albumid)
+			gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, emsg).run()
+			return
+		gnomevfs.url_show(result)
 	
 	# Donate to Artist
 	def launch_donate (self):
