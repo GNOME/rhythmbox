@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-18 15:51+0200\n"
-"PO-Revision-Date: 2008-09-18 16:11+0200\n"
+"POT-Creation-Date: 2008-09-21 17:19+0200\n"
+"PO-Revision-Date: 2008-09-21 16:59+0200\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -75,7 +75,8 @@ msgstr "Huts egin du GStreamer elementua sortzean. Egiaztatu instalazioa"
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2871
 #, c-format
 msgid "Failed to create audio output element; check your installation"
-msgstr "Huts egin du irteerako audioko elementua sortzean. Egiaztatu instalazioa"
+msgstr ""
+"Huts egin du irteerako audioko elementua sortzean. Egiaztatu instalazioa"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2920
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2962
@@ -597,6 +598,7 @@ msgstr "%Y %b %d"
 #: ../plugins/daap/rb-daap-connection.c:679
 #: ../plugins/generic-player/rb-generic-player-source.c:1171
 #: ../plugins/ipod/rb-ipod-source.c:314
+#: ../plugins/jamendo/jamendo/JamendoSource.py:330
 #: ../plugins/iradio/rb-iradio-source.c:517
 #: ../plugins/iradio/rb-iradio-source.c:1110
 #: ../plugins/iradio/rb-station-properties-dialog.c:486
@@ -873,7 +875,8 @@ msgstr "'%s' gailuak ez du euskarririk"
 
 #: ../plugins/audiocd/sj-metadata.c:189
 #, c-format
-msgid "Device '%s' could not be opened. Check the access permissions on the device."
+msgid ""
+"Device '%s' could not be opened. Check the access permissions on the device."
 msgstr ""
 "Ezin izan da '%s' gailua ireki. Ziurtatu gailua erabiltzeko baimenak "
 "dituzula."
@@ -1159,7 +1162,8 @@ msgid "This station is available to subscribers only."
 msgstr "Irrati hau harpidetuentzako soilik dago erabilgarri."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1761
-msgid "The streaming system is offline for maintenance, please try again later."
+msgid ""
+"The streaming system is offline for maintenance, please try again later."
 msgstr ""
 "Korrontearen sistema lineaz kanpo dago konponketak lantzeko. Saiatu berriro "
 "beranduago."
@@ -1874,7 +1878,8 @@ msgstr "     * Artistei dirua zuzenean emateko aukera."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:7
 msgid "     * The use of the latest Peer-to-Peer technologies"
-msgstr "     * Puntutik punturako (Peer-to-Peer) azken teknologiaren erabilpena"
+msgstr ""
+"     * Puntutik punturako (Peer-to-Peer) azken teknologiaren erabilpena"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:8
 msgid "<b>Jamendo</b>"
@@ -1909,7 +1914,8 @@ msgstr ""
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:14
 msgid "You can find more information at http://www.jamendo.com/"
-msgstr "Informazio gehiago honako gunean aurki dezakezu: http://www.jamendo.com/"
+msgstr ""
+"Informazio gehiago honako gunean aurki dezakezu: http://www.jamendo.com/"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:15
 msgid ""
@@ -1936,13 +1942,14 @@ msgstr ""
 "Artista bat gustoko badute dirua ordainduz lagun dezaiokete artistari."
 
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:1
-msgid "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
+msgid ""
+"Adds support to Rhythmbox for playing and downloading albums from Jamendo"
 msgstr ""
 "Jamendo-tik albumak deskargatu eta erreproduzitzeko euskarria gehitzen dio "
 "Rhythmbox-i."
 
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:2
-#: ../plugins/jamendo/jamendo/JamendoSource.py:52
+#: ../plugins/jamendo/jamendo/JamendoSource.py:65
 msgid "Jamendo"
 msgstr "Jamendo"
 
@@ -1968,11 +1975,16 @@ msgstr "_Eman dirua artistari"
 msgid "Donate Money to this Artist"
 msgstr "Eman dirua artista honi"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:104
+#: ../plugins/jamendo/jamendo/JamendoSource.py:116
 msgid "Loading Jamendo catalogue"
 msgstr "Jamendo-ren katalogoa kargatzen"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:385
+#: ../plugins/jamendo/jamendo/JamendoSource.py:388
+#, python-format
+msgid "Error looking up p2plink for album %s on jamendo.com"
+msgstr "Errorea %s albumaren p2plink jamendo.com gunean bilatzean"
+
+#: ../plugins/jamendo/jamendo/JamendoSource.py:409
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Errorea %s artista jamendo.com gunean bilatzean"
@@ -2120,7 +2132,8 @@ msgstr "Hitzen plugin-aren hobespenak"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:1
 msgid "     * Founder/owner runs it -- support a small business"
-msgstr "     * Bilatzaileak/jabeak exekutatzen du -- negozio txiki bat sustatzen du"
+msgstr ""
+"     * Bilatzaileak/jabeak exekutatzen du -- negozio txiki bat sustatzen du"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:3
 #, no-c-format
@@ -2562,7 +2575,8 @@ msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "Nahi duzu '%(artist)s'(a)ren <i>%(album)s</i> albuma erostea?"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:358
-msgid "Rhythmbox could not understand the Magnatune catalogue, please file a bug."
+msgid ""
+"Rhythmbox could not understand the Magnatune catalogue, please file a bug."
 msgstr ""
 "Rhythmbox-ek ezin du Magnatune-ren katagoloa ulertu. Mesedez bidali  "
 "arazoari buruzko berri."
@@ -2645,7 +2659,8 @@ msgstr "Erreproduzigailu eramangarriak - MTP"
 
 #: ../plugins/mtpdevice/mtpdevice.rb-plugin.in.h:2
 msgid "Support for MTP devices (show the content, transfer, play from device)"
-msgstr "Onartu MTP gailuak (erakutsi edukia, transferitu, erreproduzitu gailutik)"
+msgstr ""
+"Onartu MTP gailuak (erakutsi edukia, transferitu, erreproduzitu gailutik)"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:106
 #: ../shell/rb-removable-media-manager.c:157
@@ -4569,4 +4584,3 @@ msgstr "Mahaigainean"
 #: ../widgets/rb-song-info.c:1154
 msgid "Unknown location"
 msgstr "Kokaleku ezezaguna"
-
