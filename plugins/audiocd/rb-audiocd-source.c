@@ -718,16 +718,21 @@ rb_audiocd_is_mount_audiocd (GMount *mount)
 #if GLIB_CHECK_VERSION(2,17,7)
 	char **types;
 	guint i;
+	GError *error = NULL;
 
-	types = g_mount_guess_content_type_sync (mount, FALSE, NULL, NULL);
-	for (i = 0; types[i] != NULL; i++) {
-		if (g_str_equal (types[i], "x-content/audio-cdda") != FALSE) {
-			result = TRUE;
-			break;
+	types = g_mount_guess_content_type_sync (mount, FALSE, NULL, &error);
+	if (types == NULL) {
+		rb_debug ("error guessing content type: %s", error->message);
+		g_clear_error (&error);
+	} else {
+		for (i = 0; types[i] != NULL; i++) {
+			if (g_str_equal (types[i], "x-content/audio-cdda") != FALSE) {
+				result = TRUE;
+				break;
+			}
 		}
+		g_strfreev (types);
 	}
-
-	g_strfreev (types);
 #else
 	GFile *file;
 	

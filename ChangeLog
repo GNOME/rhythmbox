@@ -1,3 +1,9 @@
+2008-09-23  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/audiocd/rb-audiocd-source.c:
+	(rb_audiocd_is_mount_audiocd):
+	Don't crash if g_mount_guess_content_type_sync fails.
+
 2008-09-22  Jonathan Matthew  <jonathan@d14n.org>
 
 	* autogen.sh:
