@@ -262,9 +262,11 @@ rb_search_entry_check_style (RBSearchEntry *entry)
 	if (text && *text) {
 		gtk_widget_modify_text (entry->priv->entry, GTK_STATE_NORMAL, &fg_colour);
 		gtk_widget_modify_base (entry->priv->entry, GTK_STATE_NORMAL, &bg_colour);
+		gtk_widget_modify_cursor (entry->priv->entry, &fg_colour, &fg_colour);
 	} else {
 		gtk_widget_modify_text (entry->priv->entry, GTK_STATE_NORMAL, NULL);
 		gtk_widget_modify_base (entry->priv->entry, GTK_STATE_NORMAL, NULL);
+		gtk_widget_modify_cursor (entry->priv->entry, NULL, NULL);
 	}
 
 	gtk_widget_queue_draw (GTK_WIDGET (entry));

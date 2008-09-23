@@ -1,5 +1,13 @@
 2008-09-23  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by: Mika Wahlroos  <mika.wahlroos@iki.fi>
+
+	* widgets/rb-search-entry.c: (rb_search_entry_check_style):
+	Make the cursor in the search box black along with the text.
+	Fixes #552829.
+
+2008-09-23  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/audiocd/rb-audiocd-source.c:
 	(rb_audiocd_is_mount_audiocd):
 	Don't crash if g_mount_guess_content_type_sync fails.
