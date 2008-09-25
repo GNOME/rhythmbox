@@ -1,6 +1,6 @@
 # #-#-#-#-#  fi.po (rhythmbox)  #-#-#-#-#
 # arch-tag: Finnish messages for rhythmbox.
-# Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+# Copyright (C) 2002-2008 Free Software Foundation, Inc.
 # Suomennos: http://gnome-fi.sourceforge.net/
 #
 # Ilkka Tuohela <hile@iki.fi>, 2002-2008.
@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-14 15:06+0300\n"
-"PO-Revision-Date: 2008-09-14 15:10+0300\n"
+"POT-Creation-Date: 2008-09-25 06:14+0300\n"
+"PO-Revision-Date: 2008-09-25 06:00+0300\n"
 "Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <gnome-fi-laatu@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -29,7 +29,9 @@ msgstr "Haluatko kirjoittaa tiedoston \"%s\" yli?"
 #: ../backends/gstreamer/rb-encoder-gst.c:645
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
-msgstr "Ei voitu luoda GStreamer-tuottajaelementtiä kohteeseen %s kirjoittamista varten"
+msgstr ""
+"Ei voitu luoda GStreamer-tuottajaelementtiä kohteeseen %s kirjoittamista "
+"varten"
 
 #: ../backends/gstreamer/rb-player-gst.c:693 ../metadata/rb-metadata-gst.c:801
 #: ../metadata/rb-metadata-gst.c:1368
@@ -578,8 +580,8 @@ msgstr "%b %d %Y"
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:615
-#: ../lib/rb-util.c:855
+#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:577
+#: ../lib/rb-util.c:817
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:85
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:86
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:88
@@ -597,6 +599,7 @@ msgstr "%b %d %Y"
 #: ../plugins/daap/rb-daap-connection.c:679
 #: ../plugins/generic-player/rb-generic-player-source.c:1171
 #: ../plugins/ipod/rb-ipod-source.c:314
+#: ../plugins/jamendo/jamendo/JamendoSource.py:330
 #: ../plugins/iradio/rb-iradio-source.c:517
 #: ../plugins/iradio/rb-iradio-source.c:1110
 #: ../plugins/iradio/rb-station-properties-dialog.c:486
@@ -622,7 +625,7 @@ msgstr "Tuntematon"
 msgid "Too many symlinks"
 msgstr "Liian monta symbolista linkkiä"
 
-#: ../lib/rb-file-helpers.c:824
+#: ../lib/rb-file-helpers.c:832
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Taltion %s vapaata tilaa ei voi selvittää: %s"
@@ -635,32 +638,32 @@ msgstr "HTTP-välipalvelimen asetusvirhe"
 msgid "Rhythmbox does not support automatic proxy configuration"
 msgstr "Rytmilaatikko ei tue automaattista välimuistiasetusten hakua"
 
-#: ../lib/rb-util.c:617 ../remote/dbus/rb-client.c:142
+#: ../lib/rb-util.c:579 ../remote/dbus/rb-client.c:142
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:619 ../remote/dbus/rb-client.c:144
+#: ../lib/rb-util.c:581 ../remote/dbus/rb-client.c:144
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:654
+#: ../lib/rb-util.c:616
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d / %d:%02d jäljellä"
 
-#: ../lib/rb-util.c:658
+#: ../lib/rb-util.c:620
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d / %d:%02d:%02d jäljellä"
 
-#: ../lib/rb-util.c:663
+#: ../lib/rb-util.c:625
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d / %d:%02d"
 
-#: ../lib/rb-util.c:667
+#: ../lib/rb-util.c:629
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d / %d:%02d:%02d"
@@ -1940,7 +1943,7 @@ msgid ""
 msgstr "Mahdollistaa musiikin kuuntelun ja levyjen noutamisen Jamendosta"
 
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:2
-#: ../plugins/jamendo/jamendo/JamendoSource.py:52
+#: ../plugins/jamendo/jamendo/JamendoSource.py:65
 msgid "Jamendo"
 msgstr "Jamendo"
 
@@ -1966,11 +1969,16 @@ msgstr "_Lahjoitus esittäjälle"
 msgid "Donate Money to this Artist"
 msgstr "Lahjoita rahaa tälle esittäjälle"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:104
+#: ../plugins/jamendo/jamendo/JamendoSource.py:116
 msgid "Loading Jamendo catalogue"
 msgstr "Ladataan Jamendon luetteloa"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:385
+#: ../plugins/jamendo/jamendo/JamendoSource.py:388
+#,  python-format
+msgid "Error looking up p2plink for album %s on jamendo.com"
+msgstr "Virhe etsittäesä p2plink:iä levylle %s jamendo.com-palvelusta"
+
+#: ../plugins/jamendo/jamendo/JamendoSource.py:409
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Virhe haettaessa esittäjää \"%s\" jamendo.com-palvelusta"
