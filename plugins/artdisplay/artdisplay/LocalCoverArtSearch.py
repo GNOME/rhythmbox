@@ -53,7 +53,9 @@ class LocalCoverArtSearch:
 
 	def _load_dir_cb (self, handle, files, exception, (results, on_search_completed_cb, entry, args)):
 		for f in files:
-			if f.mime_type.startswith ("image/") and f.permissions & gnomevfs.PERM_USER_READ:
+			if f.mime_type is None:
+				pass
+			elif f.mime_type.startswith ("image/") and f.permissions & gnomevfs.PERM_USER_READ:
 				results.append (f.name)
 		if exception:
 			on_search_completed_cb (self, entry, results, *args)
