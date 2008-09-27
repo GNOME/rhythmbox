@@ -377,10 +377,9 @@ dnl Check for libsoup, needed for DAAP and audioscrobbler
 if test "x$enable_daap" = "xyes" || test "x$enable_audioscrobbler" != "xno"; then
 	PKG_CHECK_MODULES(SOUP,                            \
 		libsoup-2.4,
-		have_libsoup24=yes,
-		have_libsoup24=no)
-	if test x"$have_libsoup24" = "xyes"; then
-		have_libsoup=yes
+		have_libsoup=yes,
+		have_libsoup=no)
+	if test x"$have_libsoup" = "xyes"; then
 		AC_DEFINE(HAVE_LIBSOUP, 1, [Define if libsoup support is enabled])
 	fi
 fi
