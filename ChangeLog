@@ -1,5 +1,10 @@
 2008-09-28  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/ipod/rb-ipod-source.c: (impl_build_dest_uri):
+	Don't crash when dealing with a brand new ipod.  Should fix #552617.
+
+2008-09-28  Jonathan Matthew  <jonathan@d14n.org>
+
 	* data/glade/podcast-feed-properties.glade:
 	* data/glade/podcast-properties.glade:
 	* plugins/iradio/station-properties.glade:

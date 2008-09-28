@@ -1176,6 +1176,10 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	char *dest;
 	const char *mount_path;
 
+	if (priv->ipod_db == NULL) {
+		return NULL;
+	}
+
 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	mount_path = rb_ipod_db_get_mount_path (priv->ipod_db);
 	dest = ipod_get_filename_for_uri (mount_path,  uri, 
