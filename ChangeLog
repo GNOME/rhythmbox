@@ -1,3 +1,12 @@
+2008-09-29  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Lasse Bigum  <zenith@zenith.dk>
+
+	* shell/rb-shell.c: (construct_widgets):
+	Move the 'bottom' UI location to immediately below the source
+	notebook, rather than at the actual bottom of the window.  Fixes
+	#545625.
+
 2008-09-28  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/ipod/rb-ipod-source.c: (impl_build_dest_uri):

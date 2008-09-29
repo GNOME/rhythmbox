@@ -1157,6 +1157,9 @@ construct_widgets (RBShell *shell)
 		gtk_box_pack_start (GTK_BOX (vbox2),
 				    shell->priv->notebook,
 				    TRUE, TRUE, 0);
+		gtk_box_pack_start (GTK_BOX (vbox2),
+				    GTK_WIDGET (shell->priv->bottom_container),
+				    FALSE, FALSE, 0);
 
 		gtk_box_pack_start_defaults (shell->priv->sidebar_container, shell->priv->queue_paned);
 		gtk_paned_pack1 (GTK_PANED (shell->priv->paned),
@@ -1181,7 +1184,6 @@ construct_widgets (RBShell *shell)
 
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->top_container), FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), shell->priv->paned, TRUE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->bottom_container), FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->statusbar), FALSE, TRUE, 0);
 	gtk_widget_show_all (shell->priv->main_vbox);
 
