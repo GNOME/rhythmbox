@@ -273,7 +273,7 @@ enum
 
 static GtkActionEntry rb_lastfm_source_actions [] =
 {
-	{ "LastfmLoveSong", GTK_STOCK_ADD, N_("Love"), NULL,
+	{ "LastfmLoveSong", "emblem-favorite", N_("Love"), NULL,
 	  N_("Mark this song as loved"),
 	  G_CALLBACK (rb_lastfm_source_love_track) },
 	{ "LastfmBanSong", GTK_STOCK_CANCEL, N_("Ban"), NULL,
