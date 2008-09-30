@@ -301,15 +301,7 @@ rb_sourcelist_cell_set_background (RBSourceList       *list,
 				      NULL);
 		}
 	} else {
-		color = style->text_aa[GTK_STATE_INSENSITIVE];
-
-		color.red = (color.red + (style->white).red) / 2;
-		color.green = (color.green + (style->white).green) / 2;
-		color.blue = (color.blue + (style->white).blue) / 2;
-
-		g_object_set (cell,
-			      "cell-background-gdk", &color,
-			      NULL);
+		/* don't set background for group heading */
 	}
 }
 
@@ -327,7 +319,7 @@ sourcelist_indent_level1_cell_data_func (GtkTreeViewColumn *tree_column,
 	depth = gtk_tree_path_get_depth (path);
 	gtk_tree_path_free (path);
 	g_object_set (cell,
-		      "text", " ",
+		      "text", "    ",
 		      "visible", depth > 1,
 		      NULL);
 }
@@ -346,7 +338,7 @@ sourcelist_indent_level2_cell_data_func (GtkTreeViewColumn *tree_column,
 	depth = gtk_tree_path_get_depth (path);
 	gtk_tree_path_free (path);
 	g_object_set (cell,
-		      "text", " ",
+		      "text", "    ",
 		      "visible", depth > 2,
 		      NULL);
 }
@@ -972,21 +964,21 @@ rb_sourcelist_find_group_iter (RBSourceList  *sourcelist,
 static void
 sourcelist_get_group (RBSourceList  *sourcelist,
 		      RBSourceGroup *group,
-		      GtkTreeIter   *iter,
+		      GtkTreeIter   *iter_group,
 		      gboolean      *created)
 {
 	gboolean found;
 
 	found = rb_sourcelist_find_group_iter (sourcelist,
 					       group,
-					       iter);
+					       iter_group);
 	if (! found) {
 		if (created != NULL) {
 			*created = TRUE;
 		}
 
-		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), iter, NULL);
-		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), iter,
+		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), iter_group, NULL);
+		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), iter_group,
 				    RB_SOURCELIST_MODEL_COLUMN_PIXBUF, NULL,
 				    RB_SOURCELIST_MODEL_COLUMN_NAME, group->display_name,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, NULL,

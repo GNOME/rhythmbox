@@ -1,5 +1,13 @@
 2008-09-30  William Jon McCann  <jmccann@redhat.com>
 
+	* sources/rb-sourcelist.c (rb_sourcelist_cell_set_background),
+	(sourcelist_get_group):
+	Increase the indentation of sources instead of using
+	a cell background color.
+	Fixes #553984
+
+2008-09-30  William Jon McCann  <jmccann@redhat.com>
+
 	* plugins/audioscrobbler/rb-lastfm-source.c:
 	Use the favorite emblem for the love icon.
 	Fixes #553989
