@@ -1153,7 +1153,7 @@ construct_widgets (RBShell *shell)
 
 		gtk_box_pack_start (GTK_BOX (vbox2),
 				    GTK_WIDGET (shell->priv->source_header),
-				    FALSE, FALSE, 0);
+				    FALSE, FALSE, 3);
 		gtk_box_pack_start (GTK_BOX (vbox2),
 				    shell->priv->notebook,
 				    TRUE, TRUE, 0);

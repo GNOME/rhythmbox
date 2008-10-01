@@ -1,5 +1,13 @@
 2008-10-01  William Jon McCann  <jmccann@redhat.com>
 
+	Patch by James "Doc" Livingston
+
+	* shell/rb-shell.c (construct_widgets):
+	Add three pixels of padding around source header.
+	Fixes #335812
+
+2008-10-01  William Jon McCann  <jmccann@redhat.com>
+
 	* plugins/cd-recorder/rb-recorder-gst.c (rb_recorder_burn):
 	Use burnproof by default.  Fix whitespace issues.
 	Fixes #346773
