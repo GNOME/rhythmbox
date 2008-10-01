@@ -58,7 +58,7 @@ struct _RBRecorderPrivate {
         char       *src_uri;
         char       *dest_uri;
         char       *tmp_dir;
-        
+
         GstElement *pipeline;
         GstElement *decoder;
         GstElement *src;
@@ -68,9 +68,9 @@ struct _RBRecorderPrivate {
         GstElement *encoder;
         GstElement *sink;
 
-	GstElement *capsfilter;
-	GstElement *audioconvert2;
-	gboolean    got_audio_pad;
+        GstElement *capsfilter;
+        GstElement *audioconvert2;
+        gboolean    got_audio_pad;
 
         guint       tick_timeout_id;
 
@@ -176,14 +176,14 @@ rb_recorder_class_init (RBRecorderClass *klass)
                               G_TYPE_BOOLEAN,
                               G_TYPE_BOOLEAN,
                               G_TYPE_BOOLEAN);
-	rb_recorder_signals [WARN_DATA_LOSS] =
-		g_signal_new ("warn-data-loss",
-			      G_TYPE_FROM_CLASS (klass),
-			      G_SIGNAL_RUN_LAST,
-			      0,
-			      NULL, NULL,
-			      rb_marshal_INT__VOID,
-			      G_TYPE_INT, 0);
+        rb_recorder_signals [WARN_DATA_LOSS] =
+                g_signal_new ("warn-data-loss",
+                              G_TYPE_FROM_CLASS (klass),
+                              G_SIGNAL_RUN_LAST,
+                              0,
+                              NULL, NULL,
+                              rb_marshal_INT__VOID,
+                              G_TYPE_INT, 0);
         rb_recorder_signals [ERROR] =
                 g_signal_new ("error",
                               G_TYPE_FROM_CLASS (klass),
@@ -262,7 +262,7 @@ rb_recorder_gst_free_pipeline (RBRecorder *recorder)
                         recorder->priv->start_timer = NULL;
                 }
         }
-	recorder->priv->got_audio_pad = FALSE;
+        recorder->priv->got_audio_pad = FALSE;
 
         gst_element_set_state (recorder->priv->pipeline, GST_STATE_NULL);
 
@@ -296,104 +296,104 @@ add_track (RBRecorder *recorder,
 
 static void
 rb_recorder_gst_signal_error (RBRecorder *recorder,
-			      const char *msg)
+                              const char *msg)
 {
-	GError *error;
+        GError *error;
 
-	g_object_ref (recorder);
-	error = g_error_new_literal (RB_RECORDER_ERROR,
-				     RB_RECORDER_ERROR_GENERAL,
-				     msg);
-	g_signal_emit (G_OBJECT (recorder),
-		       rb_recorder_signals [ERROR],
-		       0,
-		       error);
+        g_object_ref (recorder);
+        error = g_error_new_literal (RB_RECORDER_ERROR,
+                                     RB_RECORDER_ERROR_GENERAL,
+                                     msg);
+        g_signal_emit (G_OBJECT (recorder),
+                       rb_recorder_signals [ERROR],
+                       0,
+                       error);
 
-	/* close if not already closing */
-	if (recorder->priv->src_uri != NULL) {
-		rb_recorder_close (recorder, NULL);
+        /* close if not already closing */
+        if (recorder->priv->src_uri != NULL) {
+                rb_recorder_close (recorder, NULL);
         }
 
-	g_object_unref (recorder);
-	g_error_free (error);
+        g_object_unref (recorder);
+        g_error_free (error);
 }
 
 static gboolean
 pipe_message (GstBus *bus, GstMessage *message, RBRecorder *recorder)
 {
-	switch (message->type) {
-	case GST_MESSAGE_EOS: 
-		rb_debug ("EOS");
+        switch (message->type) {
+        case GST_MESSAGE_EOS:
+                rb_debug ("EOS");
 
-		if (recorder->priv->pipeline)
-			gst_element_set_state (recorder->priv->pipeline, GST_STATE_NULL);
+                if (recorder->priv->pipeline)
+                        gst_element_set_state (recorder->priv->pipeline, GST_STATE_NULL);
 
-		g_signal_emit (G_OBJECT (recorder), 
-			       rb_recorder_signals [EOS], 0);
-		break;
-	case GST_MESSAGE_ERROR:
-	{
-		GError *error;
-		gchar *debug;
+                g_signal_emit (G_OBJECT (recorder),
+                               rb_recorder_signals [EOS], 0);
+                break;
+        case GST_MESSAGE_ERROR:
+        {
+                GError *error;
+                gchar *debug;
 
-		rb_debug ("Error");
-		gst_message_parse_error (message, &error, &debug);
-		if (error) {
-			rb_recorder_gst_signal_error (recorder, error->message);
-			g_error_free (error);
-		} else {
-			rb_recorder_gst_signal_error (recorder, NULL);
-		}
+                rb_debug ("Error");
+                gst_message_parse_error (message, &error, &debug);
+                if (error) {
+                        rb_recorder_gst_signal_error (recorder, error->message);
+                        g_error_free (error);
+                } else {
+                        rb_recorder_gst_signal_error (recorder, NULL);
+                }
 
-		g_free (debug);
-		break;
-	}
-	default:
-		break;
-	}
+                g_free (debug);
+                break;
+        }
+        default:
+                break;
+        }
 
-	return TRUE;
+        return TRUE;
 }
- 
+
 static void
 rb_recorder_new_pad_cb (GstElement *decodebin,
-			GstPad     *pad,
-			gboolean    last,
-			RBRecorder *recorder)
+                        GstPad     *pad,
+                        gboolean    last,
+                        RBRecorder *recorder)
 {
-	GstCaps      *caps;
-	GstStructure *str;
-	GstPad       *audio_pad;
+        GstCaps      *caps;
+        GstStructure *str;
+        GstPad       *audio_pad;
 
-	audio_pad = gst_element_get_pad (recorder->priv->audioconvert, "sink");
+        audio_pad = gst_element_get_pad (recorder->priv->audioconvert, "sink");
 
-	/* Only link once. */
-	if (GST_PAD_IS_LINKED (audio_pad))
-		return;
+        /* Only link once. */
+        if (GST_PAD_IS_LINKED (audio_pad))
+                return;
 
-	/* Only link audio. */
-	caps = gst_pad_get_caps (pad);
-	str = gst_caps_get_structure (caps, 0);
-	if (! g_strrstr (gst_structure_get_name (str), "audio")) {
-		gst_caps_unref (caps);
-		return;
-	}
+        /* Only link audio. */
+        caps = gst_pad_get_caps (pad);
+        str = gst_caps_get_structure (caps, 0);
+        if (! g_strrstr (gst_structure_get_name (str), "audio")) {
+                gst_caps_unref (caps);
+                return;
+        }
 
-	gst_caps_unref (caps);
-	if (gst_pad_link (pad, audio_pad)) {
-		recorder->priv->got_audio_pad = TRUE;
+        gst_caps_unref (caps);
+        if (gst_pad_link (pad, audio_pad)) {
+                recorder->priv->got_audio_pad = TRUE;
         }
 }
 
 static void
 rb_recorder_construct (RBRecorder *recorder,
                        const char *src_uri,
-		       const char *dest_file,
+                       const char *dest_file,
                        GError    **error)
 {
         char    *element_name = NULL;
         GstCaps *filtercaps;
-	GstBus  *bus;
+        GstBus  *bus;
 
 #define MAKE_ELEMENT_OR_LOSE(NAME, NICE) G_STMT_START {                 \
                 element_name = #NAME ;                                  \
@@ -422,22 +422,22 @@ rb_recorder_construct (RBRecorder *recorder,
                 return;
         }
 
-	bus = gst_element_get_bus (recorder->priv->pipeline);
-	gst_bus_add_watch (bus, (GstBusFunc) pipe_message, recorder);
-	gst_object_unref (bus);
+        bus = gst_element_get_bus (recorder->priv->pipeline);
+        gst_bus_add_watch (bus, (GstBusFunc) pipe_message, recorder);
+        gst_object_unref (bus);
 
         /* Construct elements */
 
         /* The source */
-	recorder->priv->src = gst_element_make_from_uri (GST_URI_SRC, src_uri, NULL);
-	if (!recorder->priv->src) {
-		goto missing_element;
-	}
+        recorder->priv->src = gst_element_make_from_uri (GST_URI_SRC, src_uri, NULL);
+        if (!recorder->priv->src) {
+                goto missing_element;
+        }
 
-	if (g_object_class_find_property (G_OBJECT_GET_CLASS (recorder->priv->src),
-					  "iradio-mode")) {
-		g_object_set (recorder->priv->src, "iradio-mode", FALSE, NULL);
-	}
+        if (g_object_class_find_property (G_OBJECT_GET_CLASS (recorder->priv->src),
+                                          "iradio-mode")) {
+                g_object_set (recorder->priv->src, "iradio-mode", FALSE, NULL);
+        }
         gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->src);
 
         /* The queue */
@@ -447,10 +447,10 @@ rb_recorder_construct (RBRecorder *recorder,
 
         MAKE_ELEMENT_OR_LOSE(decodebin, decoder);
         gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->decoder);
-	
-	g_signal_connect_object (G_OBJECT (recorder->priv->decoder), 
-				 "new_decoded_pad", G_CALLBACK (rb_recorder_new_pad_cb), 
-				 recorder, 0);
+
+        g_signal_connect_object (G_OBJECT (recorder->priv->decoder),
+                                 "new_decoded_pad", G_CALLBACK (rb_recorder_new_pad_cb),
+                                 recorder, 0);
 
         MAKE_ELEMENT_OR_LOSE(audioconvert, audioconvert);
         gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->audioconvert);
@@ -461,17 +461,17 @@ rb_recorder_construct (RBRecorder *recorder,
         MAKE_ELEMENT_OR_LOSE(audioconvert, audioconvert2);
         gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->audioconvert2);
 
-	MAKE_ELEMENT_OR_LOSE(capsfilter, capsfilter);
-	gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->capsfilter);
-	
+        MAKE_ELEMENT_OR_LOSE(capsfilter, capsfilter);
+        gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->capsfilter);
+
         MAKE_ELEMENT_OR_LOSE(wavenc, encoder);
         gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->encoder);
 
         /* Output sink */
-	recorder->priv->sink = gst_element_factory_make ("filesink", NULL);
-	if (!recorder->priv->sink) {
-		goto missing_element;
-	}
+        recorder->priv->sink = gst_element_factory_make ("filesink", NULL);
+        if (!recorder->priv->sink) {
+                goto missing_element;
+        }
         gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->sink);
 
         filtercaps = gst_caps_new_simple ("audio/x-raw-int",
@@ -479,22 +479,22 @@ rb_recorder_construct (RBRecorder *recorder,
                                           "rate",     G_TYPE_INT, 44100,
                                           "width",    G_TYPE_INT, 16,
                                           "depth",    G_TYPE_INT, 16,
-					  "endianness",	G_TYPE_INT, G_LITTLE_ENDIAN,
+                                          "endianness", G_TYPE_INT, G_LITTLE_ENDIAN,
                                           NULL);
-	g_object_set (recorder->priv->capsfilter, "caps",  filtercaps, NULL);
+        g_object_set (recorder->priv->capsfilter, "caps",  filtercaps, NULL);
 
-	gst_element_link_many (recorder->priv->src,
-			       recorder->priv->typefind,
-			       recorder->priv->decoder,
-			       NULL);
+        gst_element_link_many (recorder->priv->src,
+                               recorder->priv->typefind,
+                               recorder->priv->decoder,
+                               NULL);
 
-	gst_element_link_many (recorder->priv->audioconvert,
-			       recorder->priv->audioscale,
-			       recorder->priv->audioconvert2,
-			       recorder->priv->capsfilter,
-			       recorder->priv->encoder,
-			       recorder->priv->sink,
-			       NULL);
+        gst_element_link_many (recorder->priv->audioconvert,
+                               recorder->priv->audioscale,
+                               recorder->priv->audioconvert2,
+                               recorder->priv->capsfilter,
+                               recorder->priv->encoder,
+                               recorder->priv->sink,
+                               NULL);
 
         rb_debug ("Pipeline construction complete");
         return;
@@ -575,19 +575,19 @@ tick_timeout_cb (RBRecorder *recorder)
         double elapsed;
         double secs;
         GstFormat format = GST_FORMAT_BYTES;
-	GstState  state;
+        GstState  state;
 
         g_return_val_if_fail (recorder != NULL, FALSE);
         g_return_val_if_fail (RB_IS_RECORDER (recorder), FALSE);
         g_return_val_if_fail (recorder->priv != NULL, FALSE);
         g_return_val_if_fail (recorder->priv->pipeline != NULL, FALSE);
 
-	if (!gst_element_get_state (recorder->priv->pipeline, &state,  NULL, 3 * GST_SECOND)) {
-		g_warning (_("Could not retrieve state from processing pipeline"));
-		return TRUE;
-	}
+        if (!gst_element_get_state (recorder->priv->pipeline, &state,  NULL, 3 * GST_SECOND)) {
+                g_warning (_("Could not retrieve state from processing pipeline"));
+                return TRUE;
+        }
 
-	if (state != GST_STATE_PLAYING) {		
+        if (state != GST_STATE_PLAYING) {
                 recorder->priv->tick_timeout_id = 0;
                 if (recorder->priv->start_timer) {
                         g_timer_destroy (recorder->priv->start_timer);
@@ -597,7 +597,7 @@ tick_timeout_cb (RBRecorder *recorder)
         }
 
         if (!gst_element_query_position (recorder->priv->src, &format, &position) ||
-	    !gst_element_query_duration (recorder->priv->src, &format, &total)) {
+            !gst_element_query_duration (recorder->priv->src, &format, &total)) {
                 g_warning (_("Could not get current track position"));
                 return TRUE;
         }
@@ -638,7 +638,7 @@ rb_recorder_sync_pipeline (RBRecorder *recorder,
         g_return_val_if_fail (RB_IS_RECORDER (recorder), FALSE);
         g_return_val_if_fail (recorder->priv != NULL, FALSE);
         g_return_val_if_fail (recorder->priv->pipeline != NULL, FALSE);
-        
+
         rb_debug ("Syncing pipeline");
         if (recorder->priv->playing) {
                 rb_debug ("Playing pipeline");
@@ -650,7 +650,7 @@ rb_recorder_sync_pipeline (RBRecorder *recorder,
                         return FALSE;
                 }
 
-		recorder->priv->tick_timeout_id = g_timeout_add (200, (GSourceFunc)tick_timeout_cb, recorder);
+                recorder->priv->tick_timeout_id = g_timeout_add (200, (GSourceFunc)tick_timeout_cb, recorder);
         } else {
                 rb_debug ("Pausing pipeline");
                 if (gst_element_set_state (recorder->priv->pipeline, GST_STATE_PAUSED) == GST_STATE_CHANGE_FAILURE) {
@@ -681,7 +681,7 @@ rb_recorder_close (RBRecorder *recorder,
 
         rb_debug ("Closing rb_recorder");
 
-	recorder->priv->got_audio_pad = FALSE;
+        recorder->priv->got_audio_pad = FALSE;
         recorder->priv->playing = FALSE;
         g_free (recorder->priv->src_uri);
         recorder->priv->src_uri = NULL;
@@ -716,8 +716,8 @@ get_dest_from_uri (const char *tmp_dir,
                    const char *src_uri)
 {
         char *lock_filename;
-	char *wav_filename;
-	char *uri;
+        char *wav_filename;
+        char *uri;
         int   fd;
 
         lock_filename = g_build_filename (tmp_dir, "rb-burn-tmp.XXXXXX", NULL);
@@ -727,8 +727,8 @@ get_dest_from_uri (const char *tmp_dir,
         /* keep empty file around until finalize
            it will serve as a lock file to protect our new filename */
 
-	wav_filename = g_strconcat (lock_filename, ".wav", NULL);
-	uri = g_filename_to_uri (wav_filename, NULL, NULL);
+        wav_filename = g_strconcat (lock_filename, ".wav", NULL);
+        uri = g_filename_to_uri (wav_filename, NULL, NULL);
         g_free (lock_filename);
         g_free (wav_filename);
 
@@ -743,7 +743,7 @@ rb_recorder_open (RBRecorder   *recorder,
 {
         char    *dest_uri;
         gboolean audiocd_mode = src_uri && g_str_has_prefix (src_uri, "audiocd://");
-        
+
         g_return_if_fail (recorder != NULL);
         g_return_if_fail (RB_IS_RECORDER (recorder));
         g_return_if_fail (recorder->priv != NULL);
@@ -755,16 +755,16 @@ rb_recorder_open (RBRecorder   *recorder,
                 recorder->priv->playing = FALSE;
                 return;
         }
-        
-	dest_uri = get_dest_from_uri (recorder->priv->tmp_dir, src_uri);
+
+        dest_uri = get_dest_from_uri (recorder->priv->tmp_dir, src_uri);
 
         rb_recorder_construct (recorder, src_uri, dest_uri, error);
         if (error && *error) {
-		g_free (dest_uri);
+                g_free (dest_uri);
                 return;
         }
-                
-	recorder->priv->got_audio_pad = FALSE;
+
+        recorder->priv->got_audio_pad = FALSE;
 
         g_free (recorder->priv->src_uri);
         recorder->priv->src_uri = g_strdup (src_uri);
@@ -978,12 +978,12 @@ rb_recorder_warn_data_loss_cb (NautilusBurnRecorder *cdrecorder,
 
         switch (res) {
         case RB_RECORDER_RESPONSE_RETRY:
-		return NAUTILUS_BURN_RECORDER_RESPONSE_RETRY;
+                return NAUTILUS_BURN_RECORDER_RESPONSE_RETRY;
         case RB_RECORDER_RESPONSE_ERASE:
-		return NAUTILUS_BURN_RECORDER_RESPONSE_ERASE;
+                return NAUTILUS_BURN_RECORDER_RESPONSE_ERASE;
         case RB_RECORDER_RESPONSE_CANCEL:
         default:
-		return NAUTILUS_BURN_RECORDER_RESPONSE_CANCEL;
+                return NAUTILUS_BURN_RECORDER_RESPONSE_CANCEL;
         }
 }
 
@@ -1044,23 +1044,23 @@ rb_recorder_get_media_length (RBRecorder *recorder,
 /* Copyright (C) Bastien Nocera */
 /* From xine-lib, whoop */
 typedef struct GNUC_PACKED {
-	gint16   wFormatTag;
-	gint16   nChannels;
-	gint32   nSamplesPerSec;
-	gint32   nAvgBytesPerSec;
-	gint16   nBlockAlign;
-	gint16   wBitsPerSample;
-	gint16   cbSize;
+        gint16   wFormatTag;
+        gint16   nChannels;
+        gint32   nSamplesPerSec;
+        gint32   nAvgBytesPerSec;
+        gint16   nBlockAlign;
+        gint16   wBitsPerSample;
+        gint16   cbSize;
 } waveformat;
 
 #ifndef GNUC_PACKED
 #pragma pack()
 #endif
 
-#define ACB_ERROR_OPEN				-1
-#define ACB_ERROR_NOT_WAVE_TOO_SMALL		-2
-#define ACB_ERROR_NOT_WAVE_FILE			-3
-#define ACB_ERROR_NOT_WAVE_FORMAT		-4
+#define ACB_ERROR_OPEN                          -1
+#define ACB_ERROR_NOT_WAVE_TOO_SMALL            -2
+#define ACB_ERROR_NOT_WAVE_FILE                 -3
+#define ACB_ERROR_NOT_WAVE_FORMAT               -4
 
 /* Copyright (C) Bastien Nocera */
 /* Data from
@@ -1101,7 +1101,7 @@ acb_wave_time (const char *filename)
                 return ACB_ERROR_NOT_WAVE_TOO_SMALL;
         }
 
-	len = GINT_FROM_LE (len);
+        len = GINT_FROM_LE (len);
         if (len != 16) {
                 close (fd);
                 g_print ("file len not defined\n");
@@ -1235,15 +1235,17 @@ rb_recorder_burn (RBRecorder *recorder,
                 flags |= NAUTILUS_BURN_RECORDER_WRITE_DEBUG;
         if (TRUE)
                 flags |= NAUTILUS_BURN_RECORDER_WRITE_DISC_AT_ONCE;
+        if (TRUE)
+                flags |= NAUTILUS_BURN_RECORDER_WRITE_BURNPROOF;
 
-	GDK_THREADS_LEAVE ();
+        GDK_THREADS_LEAVE ();
         res = nautilus_burn_recorder_write_tracks (cdrecorder,
                                                    recorder->priv->drive,
                                                    recorder->priv->tracks,
                                                    speed,
                                                    flags,
                                                    &local_error);
-	GDK_THREADS_ENTER ();
+        GDK_THREADS_ENTER ();
 
         if (res == NAUTILUS_BURN_RECORDER_RESULT_FINISHED) {
                 result = RB_RECORDER_RESULT_FINISHED;
@@ -1271,7 +1273,7 @@ rb_recorder_burn (RBRecorder *recorder,
                 /* cancelled */
                 result = RB_RECORDER_RESULT_CANCEL;
         }
-        
+
         g_object_unref (cdrecorder);
         recorder->priv->recorder = NULL;
 
