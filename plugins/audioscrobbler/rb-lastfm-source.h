@@ -59,7 +59,8 @@ typedef struct
 GType		rb_lastfm_source_get_type	(void);
 GType           rb_lastfm_source_register_type    (GTypeModule *module);
 
-RBSource *	rb_lastfm_source_new		(RBShell *shell);
+RBSource *	rb_lastfm_source_new		(RBPlugin *plugin,
+                                                 RBShell  *shell);
 
 G_END_DECLS
 

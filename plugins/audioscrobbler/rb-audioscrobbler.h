@@ -70,12 +70,12 @@ RBAudioscrobbler *	rb_audioscrobbler_new (RBShellPlayer *shell_player,
 GtkWidget *		rb_audioscrobbler_get_config_widget (RBAudioscrobbler *audioscrobbler,
 							     RBPlugin *plugin);
 
-void			rb_audioscrobbler_username_entry_changed_cb (GtkEntry *entry,
-								     RBAudioscrobbler *audioscrobbler);
+void			rb_audioscrobbler_username_entry_focus_out_event_cb (GtkWidget *widget,
+                                                                             RBAudioscrobbler *audioscrobbler);
 void			rb_audioscrobbler_username_entry_activate_cb (GtkEntry *entry,
 								      RBAudioscrobbler *audioscrobbler);
 
-void			rb_audioscrobbler_password_entry_changed_cb (GtkEntry *entry,
+void			rb_audioscrobbler_password_entry_focus_out_event_cb (GtkWidget *widget,
 								     RBAudioscrobbler *audioscrobbler);
 void			rb_audioscrobbler_password_entry_activate_cb (GtkEntry *entry,
 								      RBAudioscrobbler *audioscrobbler);

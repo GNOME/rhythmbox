@@ -28,6 +28,8 @@ librbwidgets_la_SOURCES =				\
 	rb-cell-renderer-rating.h			\
 	gossip-cell-renderer-expander.c			\
 	gossip-cell-renderer-expander.h			\
+	gedit-message-area.c				\
+	gedit-message-area.h				\
 	rb-song-info.c					\
 	rb-song-info.h					\
 	rb-rating.c					\

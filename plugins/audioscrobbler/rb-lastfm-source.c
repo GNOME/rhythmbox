@@ -76,6 +76,7 @@
 #include "rb-dialog.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
+#include "gedit-message-area.h"
 #include "rb-shell-player.h"
 #include "rb-play-order.h"
 #include "rb-lastfm-play-order.h"
@@ -208,10 +209,13 @@ typedef struct
 
 struct RBLastfmSourcePrivate
 {
+	GtkWidget *main_box;
 	GtkWidget *paned;
+	GtkWidget *message_area;
 	GtkWidget *txtbox;
 	GtkWidget *typecombo;
-	RhythmDB *db;
+	GtkWidget *config_widget;
+	RhythmDB  *db;
 
 	GtkActionGroup *action_group;
 
@@ -239,6 +243,9 @@ struct RBLastfmSourcePrivate
 		LOGIN_FAILED,
 		STATION_FAILED
 	} state;
+
+	guint notification_username_id;
+	guint notification_password_id;
 
 	GQueue *action_queue;
 	gboolean request_outstanding;
@@ -351,11 +358,43 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 }
 
 static void
+on_gconf_changed_cb (GConfClient    *client,
+		     guint           cnxn_id,
+		     GConfEntry     *entry,
+		     RBLastfmSource *source)
+{
+	rb_debug ("GConf key updated: \"%s\"", entry->key);
+
+
+	if (source->priv->state == CONNECTED) {
+		return;
+	}
+
+	if (strcmp (entry->key, CONF_AUDIOSCROBBLER_USERNAME) == 0
+	    || strcmp (entry->key, CONF_AUDIOSCROBBLER_PASSWORD) == 0) {
+		source->priv->state = NOT_CONNECTED;
+		queue_handshake (source);
+	} else {
+		rb_debug ("Unhandled GConf key updated: \"%s\"", entry->key);
+	}
+}
+
+static void
 rb_lastfm_source_init (RBLastfmSource *source)
 {
 	source->priv = G_TYPE_INSTANCE_GET_PRIVATE ((source), RB_TYPE_LASTFM_SOURCE,  RBLastfmSourcePrivate);
 
 	source->priv->action_queue = g_queue_new ();
+
+	source->priv->notification_username_id =
+		eel_gconf_notification_add (CONF_AUDIOSCROBBLER_USERNAME,
+					    (GConfClientNotifyFunc) on_gconf_changed_cb,
+					    source);
+	source->priv->notification_password_id =
+		eel_gconf_notification_add (CONF_AUDIOSCROBBLER_PASSWORD,
+					    (GConfClientNotifyFunc) on_gconf_changed_cb,
+					    source);
+
 }
 
 static void
@@ -391,6 +430,15 @@ rb_lastfm_source_dispose (GObject *object)
 		source->priv->query_model = NULL;
 	}
 
+	if (source->priv->notification_username_id != 0) {
+		eel_gconf_notification_remove (source->priv->notification_username_id);
+		source->priv->notification_username_id = 0;
+	}
+	if (source->priv->notification_password_id != 0) {
+		eel_gconf_notification_remove (source->priv->notification_password_id);
+		source->priv->notification_password_id = 0;
+	}
+
 	/* kill entries here? */
 
 	G_OBJECT_CLASS (rb_lastfm_source_parent_class)->dispose (object);
@@ -421,7 +469,6 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 	RBLastfmSourceClass *klass;
 	RBShell *shell;
 	GtkWidget *editor_vbox;
-	GtkWidget *main_box;
 	GtkWidget *editor_box;
 	GtkWidget *add_button;
 	GtkWidget *instructions;
@@ -536,10 +583,10 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->stations), TRUE, TRUE);
 	gtk_paned_pack2 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->tracks), TRUE, TRUE);
 
-	main_box = gtk_vbox_new (FALSE, 5);
-	gtk_box_pack_start (GTK_BOX (main_box), editor_vbox, FALSE, FALSE, 5);
-	gtk_box_pack_start_defaults (GTK_BOX (main_box), source->priv->paned);
-	gtk_container_add (GTK_CONTAINER (source), main_box);
+	source->priv->main_box = gtk_vbox_new (FALSE, 5);
+	gtk_box_pack_start (GTK_BOX (source->priv->main_box), editor_vbox, FALSE, FALSE, 5);
+	gtk_box_pack_start_defaults (GTK_BOX (source->priv->main_box), source->priv->paned);
+	gtk_container_add (GTK_CONTAINER (source), source->priv->main_box);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
 
@@ -641,7 +688,8 @@ destroy_track_data (RhythmDBEntry *entry, gpointer meh)
 
 
 RBSource *
-rb_lastfm_source_new (RBShell *shell)
+rb_lastfm_source_new (RBPlugin *plugin,
+		      RBShell  *shell)
 {
 	RBSource *source;
 	RBProxyConfig *proxy_config;
@@ -675,6 +723,7 @@ rb_lastfm_source_new (RBShell *shell)
 	g_object_get (G_OBJECT (shell), "proxy-config", &proxy_config, NULL);
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_LASTFM_SOURCE,
+					  "plugin", plugin,
 					  "name", _("Last.fm"),
 					  "shell", shell,
 					  "station-entry-type", station_entry_type,
@@ -710,6 +759,165 @@ impl_get_entry_view (RBSource *asource)
 }
 
 static void
+set_message_area_text_and_icon (RBLastfmSource *source,
+				const char     *icon_stock_id,
+				const char     *primary_text,
+				const char     *secondary_text)
+{
+	GtkWidget *hbox_content;
+	GtkWidget *image;
+	GtkWidget *vbox;
+	char      *primary_markup;
+	char      *secondary_markup;
+	GtkWidget *primary_label;
+	GtkWidget *secondary_label;
+
+	hbox_content = gtk_hbox_new (FALSE, 8);
+	gtk_widget_show (hbox_content);
+
+	image = gtk_image_new_from_stock (icon_stock_id, GTK_ICON_SIZE_DIALOG);
+	gtk_widget_show (image);
+	gtk_box_pack_start (GTK_BOX (hbox_content), image, FALSE, FALSE, 0);
+	gtk_misc_set_alignment (GTK_MISC (image), 0.5, 0);
+
+	vbox = gtk_vbox_new (FALSE, 6);
+	gtk_widget_show (vbox);
+	gtk_box_pack_start (GTK_BOX (hbox_content), vbox, TRUE, TRUE, 0);
+
+	primary_markup = g_strdup_printf ("<b>%s</b>", primary_text);
+	primary_label = gtk_label_new (primary_markup);
+	g_free (primary_markup);
+	gtk_widget_show (primary_label);
+	gtk_box_pack_start (GTK_BOX (vbox), primary_label, TRUE, TRUE, 0);
+	gtk_label_set_use_markup (GTK_LABEL (primary_label), TRUE);
+	gtk_label_set_line_wrap (GTK_LABEL (primary_label), TRUE);
+	gtk_misc_set_alignment (GTK_MISC (primary_label), 0, 0.5);
+	GTK_WIDGET_SET_FLAGS (primary_label, GTK_CAN_FOCUS);
+	gtk_label_set_selectable (GTK_LABEL (primary_label), TRUE);
+
+  	if (secondary_text != NULL) {
+  		secondary_markup = g_strdup_printf ("<small>%s</small>",
+  						    secondary_text);
+		secondary_label = gtk_label_new (secondary_markup);
+		g_free (secondary_markup);
+		gtk_widget_show (secondary_label);
+		gtk_box_pack_start (GTK_BOX (vbox), secondary_label, TRUE, TRUE, 0);
+		GTK_WIDGET_SET_FLAGS (secondary_label, GTK_CAN_FOCUS);
+		gtk_label_set_use_markup (GTK_LABEL (secondary_label), TRUE);
+		gtk_label_set_line_wrap (GTK_LABEL (secondary_label), TRUE);
+		gtk_label_set_selectable (GTK_LABEL (secondary_label), TRUE);
+		gtk_misc_set_alignment (GTK_MISC (secondary_label), 0, 0.5);
+	}
+
+	gtk_widget_show (source->priv->message_area);
+	gedit_message_area_set_contents (GEDIT_MESSAGE_AREA (source->priv->message_area),
+					 hbox_content);
+}
+
+static void
+set_message_area (RBLastfmSource *source,
+		  GtkWidget      *area)
+{
+	if (source->priv->message_area == area) {
+		return;
+	}
+
+	if (source->priv->message_area) {
+		gtk_widget_destroy (source->priv->message_area);
+	}
+	source->priv->message_area = area;
+
+	if (area == NULL) {
+		return;
+	}
+
+	gtk_box_pack_end (GTK_BOX (source->priv->main_box),
+			  source->priv->message_area,
+			  FALSE, FALSE, 0);
+#if 0
+	gtk_box_reorder_child (GTK_BOX (source->priv->view_box),
+			       source->priv->message_area, 0);
+#endif
+	g_object_add_weak_pointer (G_OBJECT (source->priv->message_area),
+				   (gpointer) &(source->priv->message_area));
+}
+
+static void
+on_message_area_response (GeditMessageArea *area,
+			  int               response_id,
+			  RBLastfmSource   *source)
+{
+	RBPlugin  *plugin;
+	GtkWidget *dialog;
+
+	g_object_get (source, "plugin", &plugin, NULL);
+	dialog = rb_plugin_create_configure_dialog (plugin);
+	g_object_unref (plugin);
+}
+
+static void
+show_error_message (RBLastfmSource *source,
+		    const char     *primary_text,
+		    const char     *secondary_text)
+{
+	GtkWidget *area;
+
+	if (source->priv->message_area != NULL) {
+		return;
+	}
+
+	area = gedit_message_area_new_with_buttons (_("Account Settings"),
+						    GTK_RESPONSE_ACCEPT,
+						    NULL);
+	set_message_area (source, area);
+	set_message_area_text_and_icon (source,
+					"gtk-dialog-error",
+					primary_text,
+					secondary_text);
+	g_signal_connect (area,
+			  "response",
+			  G_CALLBACK (on_message_area_response),
+			  source);
+}
+
+static void
+update_message_area (RBLastfmSource *source)
+{
+	char *primary_text;
+	char *secondary_text;
+
+	primary_text = NULL;
+	secondary_text = NULL;
+
+	switch (source->priv->state) {
+	case LOGIN_FAILED:
+		primary_text = g_strdup (_("Account details are needed before you can connect.  Check your settings."));
+		break;
+
+	case BANNED:
+		primary_text = g_strdup (_("This version of Rhythmbox has been banned from Last.fm."));
+		break;
+
+	case STATION_FAILED:
+		primary_text = g_strdup (_("Unable to connect"));
+		secondary_text = g_strdup (source->priv->station_failed_reason);
+		break;
+
+	case NOT_CONNECTED:
+	case CONNECTED:
+		set_message_area (source, NULL);
+		break;
+	default:
+		g_assert_not_reached ();
+		break;
+	}
+
+	if (primary_text != NULL) {
+		show_error_message (source, primary_text, secondary_text);
+	}
+}
+
+static void
 impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress)
 {
 	RBLastfmSource *source = RB_LASTFM_SOURCE (asource);
@@ -717,17 +925,9 @@ impl_get_status (RBSource *asource, char **text, char **progress_text, float *pr
 
 	switch (source->priv->state) {
 	case LOGIN_FAILED:
-		*text = g_strdup (_("Could not log in to Last.fm.  Check your username and password."));
-		break;
-
 	case BANNED:
-		*text = g_strdup (_("This version of Rhythmbox has been banned from Last.fm."));
-		break;
-
 	case STATION_FAILED:
-		*text = g_strdup (source->priv->station_failed_reason);
 		break;
-
 	case NOT_CONNECTED:
 	case CONNECTED:
 		g_object_get (asource, "query-model", &model, NULL);
@@ -735,6 +935,8 @@ impl_get_status (RBSource *asource, char **text, char **progress_text, float *pr
 		g_object_unref (model);
 		break;
 	}
+
+	update_message_area (source);
 
 	rb_streaming_source_get_progress (RB_STREAMING_SOURCE (source), progress_text, progress);
 	

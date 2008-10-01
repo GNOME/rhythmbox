@@ -1,3 +1,37 @@
+2008-10-01  William Jon McCann  <jmccann@redhat.com>
+
+	* plugins/audioscrobbler/audioscrobbler-prefs.glade:
+	* plugins/audioscrobbler/rb-audioscrobbler-plugin.c
+	(impl_activate), (impl_create_configure_dialog):
+	* plugins/audioscrobbler/rb-audioscrobbler.c
+	(rb_audioscrobbler_username_entry_focus_out_event_cb),
+	(rb_audioscrobbler_password_entry_focus_out_event_cb):
+	* plugins/audioscrobbler/rb-audioscrobbler.h:
+	* plugins/audioscrobbler/rb-lastfm-source.c (on_gconf_changed_cb),
+	(rb_lastfm_source_init), (rb_lastfm_source_dispose),
+	(rb_lastfm_source_constructor), (rb_lastfm_source_new),
+	(set_message_area_text_and_icon), (set_message_area),
+	(on_message_area_response), (show_error_message),
+	(update_message_area), (impl_get_status):
+	* plugins/audioscrobbler/rb-lastfm-source.h:
+	* widgets/Makefile.am:
+	* widgets/gedit-message-area.c (gedit_message_area_finalize),
+	(get_response_data), (find_button), (gedit_message_area_close),
+	(paint_message_area), (gedit_message_area_class_init), (style_set),
+	(gedit_message_area_init), (get_response_for_widget),
+	(action_widget_activated), (gedit_message_area_add_action_widget),
+	(gedit_message_area_set_contents), (gedit_message_area_add_button),
+	(add_buttons_valist), (gedit_message_area_add_buttons),
+	(gedit_message_area_new), (gedit_message_area_new_with_buttons),
+	(gedit_message_area_set_response_sensitive),
+	(gedit_message_area_set_default_response),
+	(gedit_message_area_response),
+	(gedit_message_area_add_stock_button_with_text):
+	* widgets/gedit-message-area.h:
+	Use a gedit-message-area widget to indicate when information
+	is needed to log in to the last.fm server.
+	Fixes #553990
+
 2008-10-01  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/lirc/Makefile.am: The target directory for

@@ -156,7 +156,7 @@ impl_activate (RBPlugin *bplugin,
 							       NULL);
 	g_free (file);
 
-	plugin->lastfm_source = rb_lastfm_source_new (shell);
+	plugin->lastfm_source = rb_lastfm_source_new (bplugin, shell);
     
     icon_filename = rb_plugin_find_file (bplugin, "as-icon.png");
     gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
@@ -213,11 +213,15 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 
 		widget =  rb_audioscrobbler_get_config_widget (plugin->audioscrobbler, bplugin);
 
-		plugin->preferences = gtk_dialog_new_with_buttons (_("Audioscrobbler preferences"),
+		plugin->preferences = gtk_dialog_new_with_buttons (_("Last.fm Preferences"),
 								   NULL,
 								   GTK_DIALOG_DESTROY_WITH_PARENT,
 								   GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
 								   NULL);
+                gtk_dialog_set_has_separator (GTK_DIALOG (plugin->preferences), FALSE);
+                gtk_container_set_border_width (GTK_CONTAINER (plugin->preferences), 5);
+                gtk_window_set_resizable (GTK_WINDOW (plugin->preferences), FALSE);
+
 		g_signal_connect (G_OBJECT (plugin->preferences),
 				  "response",
 				  G_CALLBACK (preferences_response_cb),

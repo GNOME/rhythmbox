@@ -1315,11 +1315,11 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 
 
 void
-rb_audioscrobbler_username_entry_changed_cb (GtkEntry *entry,
-					     RBAudioscrobbler *audioscrobbler)
+rb_audioscrobbler_username_entry_focus_out_event_cb (GtkWidget *widget,
+						     RBAudioscrobbler *audioscrobbler)
 {
 	eel_gconf_set_string (CONF_AUDIOSCROBBLER_USERNAME,
-			      gtk_entry_get_text (entry));
+			      gtk_entry_get_text (GTK_ENTRY (widget)));
 }
 
 void
@@ -1330,11 +1330,11 @@ rb_audioscrobbler_username_entry_activate_cb (GtkEntry *entry,
 }
 
 void
-rb_audioscrobbler_password_entry_changed_cb (GtkEntry *entry,
-					     RBAudioscrobbler *audioscrobbler)
+rb_audioscrobbler_password_entry_focus_out_event_cb (GtkWidget *widget,
+						     RBAudioscrobbler *audioscrobbler)
 {
 	eel_gconf_set_string (CONF_AUDIOSCROBBLER_PASSWORD,
-			      gtk_entry_get_text (entry));
+			      gtk_entry_get_text (GTK_ENTRY (widget)));
 }
 
 void
