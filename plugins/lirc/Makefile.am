@@ -1,4 +1,4 @@
-plugindir = $(PLUGINDIR)/lirc
+plugindir = $(PLUGINDIR)/rblirc
 plugin_LTLIBRARIES = librblirc.la
 
 librblirc_la_SOURCES = \
@@ -6,7 +6,7 @@ librblirc_la_SOURCES = \
 
 librblirc_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS) -llirc_client
 
-configdir = $(PLUGINDIR)/lirc
+configdir = $(PLUGINDIR)/rblirc
 config_DATA = rhythmbox_lirc_default
 
 INCLUDES = 						\

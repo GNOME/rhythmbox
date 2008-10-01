@@ -1,3 +1,11 @@
+2008-10-01  Bastien Nocera  <hadess@hadess.net>
+
+	* plugins/lirc/Makefile.am: The target directory for
+	the plugin needs to match that of the module name in the
+	plugin definition file, otherwise rb_plugin_find_file
+	won't be able to find the additional files.
+	Fixes the lirc plugin never loading properly
+
 2008-09-30  William Jon McCann  <jmccann@redhat.com>
 
 	* sources/rb-sourcelist.c (rb_sourcelist_cell_set_background),
