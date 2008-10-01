@@ -8,7 +8,7 @@
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
  *
- * The Rhythmbox authors hereby grants permission for non-GPL compatible
+ * The Rhythmbox authors hereby grant permission for non-GPL compatible
  * GStreamer plugins to be used and distributed together with GStreamer
  * and Rhythmbox. This permission is above and beyond the permissions granted
  * by the GPL license by which Rhythmbox is covered. If you modify this code
