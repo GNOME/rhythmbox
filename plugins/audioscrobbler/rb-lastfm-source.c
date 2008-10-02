@@ -1735,7 +1735,9 @@ handle_handshake_response (RBLastfmSource *source, const char *body, RhythmDBEnt
 	pieces = g_strsplit (body, "\n", 0);
 	for (i = 0; pieces[i] != NULL; i++) {
 		gchar **values = g_strsplit (pieces[i], "=", 2);
-		if (strcmp (values[0], "session") == 0) {
+		if (values[0] == NULL) {
+			rb_debug ("unexpected response content: %s", pieces[i]);
+		} else if (strcmp (values[0], "session") == 0) {
 			if (strcmp (values[1], "FAILED") == 0) {
 				source->priv->state = LOGIN_FAILED;
 				rb_debug ("login failed");
@@ -1769,6 +1771,10 @@ handle_handshake_response (RBLastfmSource *source, const char *body, RhythmDBEnt
 	}
 
 	g_strfreev (pieces);
+
+	if (source->priv->state != CONNECTED) {
+		return;
+	}
 
 	/* create default stations */
 	username = eel_gconf_get_string (CONF_AUDIOSCROBBLER_USERNAME);
@@ -1888,7 +1894,9 @@ handle_station_response (RBLastfmSource *source, const char *body, RhythmDBEntry
 	for (i = 0; pieces[i] != NULL; i++) {
 		gchar **values = g_strsplit (pieces[i], "=", 2);
 
-		if (strcmp (values[0], "response") == 0) {
+		if (values[0] == NULL) {
+			rb_debug ("unexpected response content: %s", pieces[i]);
+		} else if (strcmp (values[0], "response") == 0) {
 			if (source->priv->current_station != NULL) {
 				rhythmdb_entry_unref (source->priv->current_station);
 				source->priv->current_station = NULL;

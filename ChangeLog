@@ -1,3 +1,10 @@
+2008-10-03  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(handle_handshake_response), (handle_station_response):
+	Don't crash if the response data isn't in the format we expect to get
+	from last.fm.  Fixes #554695.
+
 2008-10-01  William Jon McCann  <jmccann@redhat.com>
 
 	Patch by James "Doc" Livingston
