@@ -1,3 +1,25 @@
+2008-10-03  Bastien Nocera  <hadess@hadess.net>
+
+	* data/icons/hicolor/16x16/actions/Makefile.am:
+	* data/icons/hicolor/16x16/actions/audio-cd-duplicate.svg:
+	* data/icons/hicolor/16x16/actions/audio-cd-new.svg:
+	* data/icons/hicolor/22x22/actions/Makefile.am:
+	* data/icons/hicolor/22x22/actions/audio-cd-duplicate.svg:
+	* data/icons/hicolor/22x22/actions/audio-cd-new.svg:
+	* data/icons/hicolor/32x32/actions/Makefile.am:
+	* data/icons/hicolor/32x32/actions/audio-cd-duplicate.svg:
+	* data/icons/hicolor/32x32/actions/audio-cd-new.svg:
+	* data/icons/hicolor/scalable/actions/Makefile.am:
+	* data/icons/hicolor/scalable/actions/audio-cd-duplicate.svg:
+	* data/icons/hicolor/scalable/actions/audio-cd-new.svg:
+	Add icons from brasero for the "create audio cd" and "duplicate audio
+	cd" actions
+	* plugins/audiocd/audiocd-ui.xml:
+	* plugins/cd-recorder/rb-cd-recorder-plugin.c (cmd_duplicate_cd),
+	(is_copy_available), (update_source), (impl_activate):
+	When nautilus-cd-burner and cdrdao are available, provide a simple
+	way to create a copy of an audio CD (Closes: #550496)
+
 2008-10-03  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/audioscrobbler/rb-lastfm-source.c:

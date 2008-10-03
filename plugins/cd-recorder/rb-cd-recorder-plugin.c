@@ -82,11 +82,16 @@ static void impl_activate (RBPlugin *plugin, RBShell *shell);
 static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 static void cmd_burn_source (GtkAction          *action,
 			     RBCdRecorderPlugin *pi);
+static void cmd_duplicate_cd (GtkAction          *action,
+			      RBCdRecorderPlugin *pi);
 
 static GtkActionEntry rb_cd_recorder_plugin_actions [] = {
-	{ "MusicPlaylistBurnPlaylist", GTK_STOCK_CDROM, N_("_Create Audio CD..."), NULL,
+	{ "MusicPlaylistBurnPlaylist", "audio-cd-new", N_("_Create Audio CD..."), NULL,
 	  N_("Create an audio CD from playlist"),
-	  G_CALLBACK (cmd_burn_source) }
+	  G_CALLBACK (cmd_burn_source) },
+	{ "MusicAudioCDDuplicate", "audio-cd-duplicate", N_("Duplicate Audio CD..."), NULL,
+	  N_("Create a copy of this audio CD"),
+	  G_CALLBACK (cmd_duplicate_cd) },
 };
 
 RB_PLUGIN_REGISTER(RBCdRecorderPlugin, rb_cd_recorder_plugin)
@@ -212,6 +217,46 @@ cmd_burn_source (GtkAction          *action,
 }
 
 static void
+cmd_duplicate_cd (GtkAction          *action,
+		  RBCdRecorderPlugin *pi)
+{
+	if (pi->selected_source != NULL) {
+		GVolume *volume;
+		char *device_path, *cmd;
+		GError *error = NULL;
+
+		g_object_get (G_OBJECT (pi->selected_source), "volume", &volume, NULL);
+		device_path = g_volume_get_identifier (volume,
+						       G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+		g_object_unref (volume);
+
+		cmd = g_strconcat ("nautilus-cd-burner --source-device=", device_path, NULL);
+
+		if (!g_spawn_command_line_async (cmd, &error)) {
+			GtkWidget *dialog;
+			GtkWidget *toplevel;
+
+			toplevel = gtk_widget_get_toplevel (GTK_WIDGET (pi->selected_source));
+
+			dialog = gtk_message_dialog_new (GTK_WINDOW (toplevel),
+							 GTK_DIALOG_DESTROY_WITH_PARENT,
+							 GTK_MESSAGE_ERROR,
+							 GTK_BUTTONS_CLOSE,
+							 "<b>%s</b>\n\n%s\n%s: %s",
+							 _("Could not duplicate disc"),
+							 _("Rhythmbox could not duplicate the disc"),
+							 _("Reason"),
+							 error->message);
+			gtk_label_set_use_markup (GTK_LABEL (GTK_MESSAGE_DIALOG (dialog)->label), TRUE);
+			gtk_dialog_run (GTK_DIALOG (dialog));
+			gtk_widget_destroy (dialog);
+			g_error_free (error);
+		}
+		g_free (cmd);
+	}
+}
+
+static void
 playlist_entries_changed (GtkTreeModel       *model,
 			  RhythmDBEntry      *entry,
 			  RBCdRecorderPlugin *pi)
@@ -238,13 +283,32 @@ playlist_row_inserted_cb (GtkTreeModel       *model,
 	rhythmdb_entry_unref (entry);
 }
 
+static gboolean
+is_copy_available (void)
+{
+	char *cmd;
+
+	if (!rb_recorder_enabled ())
+		return FALSE;
+	cmd = g_find_program_in_path ("nautilus-cd-burner");
+	if (cmd == NULL)
+		return FALSE;
+	g_free (cmd);
+	cmd = g_find_program_in_path ("cdrdao");
+	if (cmd == NULL)
+		return FALSE;
+	g_free (cmd);
+	return TRUE;
+}
+
 static void
 update_source (RBCdRecorderPlugin *pi,
 	       RBShell            *shell)
 {
-	GtkAction *action;
-	gboolean   playlist_active;
+	GtkAction *burn_action, *copy_action;
+	gboolean   playlist_active, is_audiocd_active;
 	RBSource  *selected_source;
+	const char *source_type;
 
 	if (pi->selected_source != NULL) {
 		RhythmDBQueryModel *model;
@@ -260,8 +324,13 @@ update_source (RBCdRecorderPlugin *pi,
 	/* for now restrict to playlist sources */
 	playlist_active = RB_IS_PLAYLIST_SOURCE (selected_source);
 
-	action = gtk_action_group_get_action (pi->action_group,
-					      "MusicPlaylistBurnPlaylist");
+	source_type = G_OBJECT_TYPE_NAME (selected_source);
+	is_audiocd_active = g_str_equal (source_type, "RBAudioCdSource");
+
+	burn_action = gtk_action_group_get_action (pi->action_group,
+						   "MusicPlaylistBurnPlaylist");
+	copy_action = gtk_action_group_get_action (pi->action_group,
+						   "MusicAudioCDDuplicate");
 
 	if (pi->enabled && playlist_active && rb_recorder_enabled ()) {
 		RhythmDBQueryModel *model;
@@ -279,11 +348,16 @@ update_source (RBCdRecorderPlugin *pi,
 
 		playlist_entries_changed (GTK_TREE_MODEL (model), NULL, pi);
 		g_object_unref (model);
-		gtk_action_set_visible (action, TRUE);
+		gtk_action_set_visible (burn_action, TRUE);
 	} else {
-		gtk_action_set_visible (action, FALSE);
+		gtk_action_set_visible (burn_action, FALSE);
 	}
 
+	if (pi->enabled && is_audiocd_active && is_copy_available ()) {
+		gtk_action_set_visible (copy_action, TRUE);
+	} else {
+		gtk_action_set_visible (copy_action, FALSE);
+	}
 
 	if (pi->selected_source != NULL) {
 		g_object_unref (pi->selected_source);
@@ -301,12 +375,17 @@ shell_selected_source_notify_cb (RBShell            *shell,
 	update_source (pi, shell);
 }
 
-static const char *ui_paths [] = {
-	"/MenuBar/MusicMenu/PlaylistMenu/MusicPlaylistPlaylistMenuPluginPlaceholder",
-	"/ToolBar/ToolBarPluginPlaceholder",
-	"/PlaylistSourcePopup/PlaylistSourcePopupPluginPlaceholder",
-	"/AutoPlaylistSourcePopup/AutoPlaylistSourcePopupPluginPlaceholder",
-	"/QueueSourcePopup/QueueSourcePopupPluginPlaceholder",
+static struct ui_paths {
+	const char *path;
+	gboolean for_burn;
+	gboolean for_copy;
+} ui_paths[] = {
+	{ "/MenuBar/MusicMenu/PlaylistMenu/MusicPlaylistPlaylistMenuPluginPlaceholder", TRUE, FALSE },
+	{ "/MenuBar/MusicMenu/MusicMenuNewPluginPlaceholder", FALSE, TRUE },
+	{ "/ToolBar/ToolBarPluginPlaceholder", TRUE, TRUE },
+	{ "/PlaylistSourcePopup/PlaylistSourcePopupPluginPlaceholder", TRUE, FALSE },
+	{ "/AutoPlaylistSourcePopup/AutoPlaylistSourcePopupPluginPlaceholder", TRUE, FALSE },
+	{ "/QueueSourcePopup/QueueSourcePopupPluginPlaceholder", TRUE, FALSE },
 };
 
 static void
@@ -345,13 +424,22 @@ impl_activate (RBPlugin *plugin,
 
 	pi->ui_merge_id = gtk_ui_manager_new_merge_id (uimanager);
 	for (i = 0; i < G_N_ELEMENTS (ui_paths); i++) {
-		gtk_ui_manager_add_ui (uimanager,
-				       pi->ui_merge_id,
-				       ui_paths [i],
-				       "MusicPlaylistBurnPlaylistMenu",
-				       "MusicPlaylistBurnPlaylist",
-				       GTK_UI_MANAGER_AUTO,
-				       FALSE);
+		if (ui_paths[i].for_burn)
+			gtk_ui_manager_add_ui (uimanager,
+					       pi->ui_merge_id,
+					       ui_paths[i].path,
+					       "MusicPlaylistBurnPlaylistMenu",
+					       "MusicPlaylistBurnPlaylist",
+					       GTK_UI_MANAGER_AUTO,
+					       FALSE);
+		if (ui_paths[i].for_copy)
+			gtk_ui_manager_add_ui (uimanager,
+					       pi->ui_merge_id,
+					       ui_paths[i].path,
+					       "MusicAudioCDDuplicateMenu",
+					       "MusicAudioCDDuplicate",
+					       GTK_UI_MANAGER_AUTO,
+					       FALSE);
 	}
 
         action = gtk_action_group_get_action (pi->action_group,
@@ -360,6 +448,11 @@ impl_activate (RBPlugin *plugin,
 	/* Create Audio CD action                            */
 	g_object_set (action, "short-label", _("Burn"), NULL);
 
+        action = gtk_action_group_get_action (pi->action_group,
+					      "MusicAudioCDDuplicate");
+	/* Translators: this is the toolbar button label for */
+	/* Duplicate Audio CD action                         */
+	g_object_set (action, "short-label", _("Copy CD"), NULL);
 
 	update_source (pi, shell);
 }

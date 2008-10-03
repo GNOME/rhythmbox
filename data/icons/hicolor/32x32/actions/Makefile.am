@@ -7,7 +7,11 @@ iconsdir = $(themedir)/$(size)/$(context)
 icons_DATA = \
 	internet-radio-new.png		\
 	playlist-automatic-new.png	\
-	playlist-new.png
+	playlist-new.png		\
+	audio-cd-new.png		\
+	audio-cd-new.svg		\
+	audio-cd-duplicate.png		\
+	audio-cd-duplicate.svg
 
 noinst_DATA = \
 	internet-radio-new.svg		\

@@ -9,7 +9,11 @@ icons_DATA = \
 	media-eject.png			\
 	playlist-automatic-new.png	\
 	playlist-new.png		\
-	podcast-new.png
+	podcast-new.png			\
+	audio-cd-new.png		\
+	audio-cd-new.svg		\
+	audio-cd-duplicate.png		\
+	audio-cd-duplicate.svg
 
 noinst_DATA = \
 	internet-radio-new.xcf		\
