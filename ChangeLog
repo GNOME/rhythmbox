@@ -1,3 +1,11 @@
+2008-10-05  Jonathan Matthew  <jonathan@d14n.org>
+
+	* data/glade/create-playlist.glade:
+	Don't set a non-zero page size on the spin button used for limit
+	settings.
+	* sources/rb-auto-playlist-source.c: (impl_save_contents_to_xml):
+	Don't try to free the array holding the limit value if there isn't one.
+
 2008-10-03  Bastien Nocera  <hadess@hadess.net>
 
 	* data/icons/hicolor/16x16/actions/Makefile.am:
