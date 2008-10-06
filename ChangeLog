@@ -1,5 +1,13 @@
 2008-10-06  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(stream_new_decoded_pad_cb), (stream_pad_removed_cb),
+	(create_stream):
+	When the decoder src pad is removed, allow the next one to be linked
+	in its place.  Makes chained ogg playback work when using decodebin2.
+
+2008-10-06  Jonathan Matthew  <jonathan@d14n.org>
+
 	* widgets/rb-song-info.c: (rb_song_info_dispose),
 	(rb_song_info_set_source_internal),
 	(rb_song_info_base_query_model_changed_cb):

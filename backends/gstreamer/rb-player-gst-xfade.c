@@ -299,6 +299,7 @@ typedef struct
 	gboolean emitted_playing;
 	gboolean emitted_fake_playing;
 
+	GstPad *decoder_pad;
 	GstPad *src_pad;
 	GstPad *ghost_pad;
 	GstPad *adder_pad;
@@ -1869,9 +1870,25 @@ stream_new_decoded_pad_cb (GstElement *decoder, GstPad *pad, gboolean last, RBXF
 		gst_pad_link (pad, vpad);
 		gst_object_unref (vpad);
 		stream->decoder_linked = TRUE;
+
+		stream->decoder_pad = gst_object_ref (pad);
 	}
 	
 	gst_caps_unref (caps);
+}
+
+static void
+stream_pad_removed_cb (GstElement *decoder, GstPad *pad, RBXFadeStream *stream)
+{
+	if (pad == stream->decoder_pad) {
+		rb_debug ("active output pad for stream %s removed", stream->uri);
+		stream->decoder_linked = FALSE;
+
+		gst_object_unref (stream->decoder_pad);
+		stream->decoder_pad = NULL;
+	} else {
+		rb_debug ("non-active output pad for stream %s removed .. what?", stream->uri);
+	}
 }
 
 /* handles EOS events on stream bins.  since the pipeline as a whole
@@ -2020,6 +2037,11 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	g_signal_connect_object (stream->decoder,
 				 "new-decoded-pad",
 				 G_CALLBACK (stream_new_decoded_pad_cb),
+				 stream,
+				 0);
+	g_signal_connect_object (stream->decoder,
+				 "pad-removed",
+				 G_CALLBACK (stream_pad_removed_cb),
 				 stream,
 				 0);
 
