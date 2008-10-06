@@ -98,6 +98,9 @@ static void rb_song_info_forward_clicked_cb (GtkWidget *button,
 static void rb_song_info_query_model_changed_cb (GObject *source,
 						 GParamSpec *pspec,
 						 RBSongInfo *song_info);
+static void rb_song_info_base_query_model_changed_cb (GObject *source,
+						      GParamSpec *pspec,
+						      RBSongInfo *song_info);
 static void rb_song_info_rated_cb (RBRating *rating,
 				   double score,
 				   RBSongInfo *song_info);
@@ -110,6 +113,7 @@ struct RBSongInfoPrivate
 	RBSource *source;
 	RBEntryView *entry_view;
 	RhythmDBQueryModel *query_model;
+	RhythmDBQueryModel *base_query_model;
 
 	/* information on the displayed song */
 	RhythmDBEntry *current_entry;
@@ -599,6 +603,9 @@ rb_song_info_dispose (GObject *object)
 		g_signal_handlers_disconnect_by_func (song_info->priv->source,
 						      G_CALLBACK (rb_song_info_query_model_changed_cb),
 						      song_info);
+		g_signal_handlers_disconnect_by_func (song_info->priv->source,
+						      G_CALLBACK (rb_song_info_base_query_model_changed_cb),
+						      song_info);
 		g_object_unref (song_info->priv->source);
 		song_info->priv->source = NULL;
 	}
@@ -634,11 +641,12 @@ static void
 rb_song_info_set_source_internal (RBSongInfo *song_info,
 				  RBSource   *source)
 {
-	RhythmDB *old_db = song_info->priv->db;
-
 	if (song_info->priv->source != NULL) {
 		g_signal_handlers_disconnect_by_func (song_info->priv->source,
 						      rb_song_info_query_model_changed_cb,
+						      song_info);
+		g_signal_handlers_disconnect_by_func (song_info->priv->source,
+						      rb_song_info_base_query_model_changed_cb,
 						      song_info);
 		g_object_unref (song_info->priv->source);
 		g_object_unref (song_info->priv->query_model);
@@ -655,43 +663,14 @@ rb_song_info_set_source_internal (RBSongInfo *song_info,
 				 "notify::query-model",
 				 G_CALLBACK (rb_song_info_query_model_changed_cb),
 				 song_info, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->source),
+				 "notify::base-query-model",
+				 G_CALLBACK (rb_song_info_base_query_model_changed_cb),
+				 song_info, 0);
 
 	g_object_get (G_OBJECT (song_info->priv->query_model), "db", &song_info->priv->db, NULL);
 
-	if (old_db != song_info->priv->db) {
-		if (song_info->priv->albums) {
-			g_object_unref (song_info->priv->albums);
-		}
-		if (song_info->priv->artists) {
-			g_object_unref (song_info->priv->artists);
-		}
-		if (song_info->priv->genres) {
-			g_object_unref (song_info->priv->genres);
-		}
-
-		song_info->priv->albums  = rhythmdb_property_model_new (song_info->priv->db, RHYTHMDB_PROP_ALBUM);
-		song_info->priv->artists = rhythmdb_property_model_new (song_info->priv->db, RHYTHMDB_PROP_ARTIST);
-		song_info->priv->genres  = rhythmdb_property_model_new (song_info->priv->db, RHYTHMDB_PROP_GENRE);
-
-		g_object_set (song_info->priv->albums,  "query-model", song_info->priv->query_model, NULL);
-		g_object_set (song_info->priv->artists, "query-model", song_info->priv->query_model, NULL);
-		g_object_set (song_info->priv->genres,  "query-model", song_info->priv->query_model, NULL);
-
-		if(song_info->priv->album) {
-			GtkEntryCompletion *comp = gtk_entry_get_completion (GTK_ENTRY (song_info->priv->album));
-			gtk_entry_completion_set_model (comp, GTK_TREE_MODEL (song_info->priv->albums));
-		}
-
-		if(song_info->priv->artist) {
-			GtkEntryCompletion *comp = gtk_entry_get_completion (GTK_ENTRY (song_info->priv->artist));
-			gtk_entry_completion_set_model (comp, GTK_TREE_MODEL (song_info->priv->artist));
-		}
-
-		if(song_info->priv->genre) {
-			GtkEntryCompletion *comp = gtk_entry_get_completion (GTK_ENTRY (song_info->priv->genre));
-			gtk_entry_completion_set_model (comp, GTK_TREE_MODEL (song_info->priv->genre));
-		}
-	}
+	rb_song_info_base_query_model_changed_cb (G_OBJECT (song_info->priv->source), NULL, song_info);
 }
 
 static void
@@ -1254,6 +1233,51 @@ rb_song_info_query_model_reordered_cb (RhythmDBQueryModel *model,
 				       RBSongInfo *song_info)
 {
 	rb_song_info_update_buttons (song_info);
+}
+
+static void
+rb_song_info_base_query_model_changed_cb (GObject *source,
+					  GParamSpec *whatever,
+					  RBSongInfo *song_info)
+{
+	RhythmDBQueryModel *base_query_model;
+
+	g_object_get (source, "base-query-model", &base_query_model, NULL);
+
+	if (song_info->priv->albums) {
+		g_object_unref (song_info->priv->albums);
+	}
+	if (song_info->priv->artists) {
+		g_object_unref (song_info->priv->artists);
+	}
+	if (song_info->priv->genres) {
+		g_object_unref (song_info->priv->genres);
+	}
+
+	song_info->priv->albums  = rhythmdb_property_model_new (song_info->priv->db, RHYTHMDB_PROP_ALBUM);
+	song_info->priv->artists = rhythmdb_property_model_new (song_info->priv->db, RHYTHMDB_PROP_ARTIST);
+	song_info->priv->genres  = rhythmdb_property_model_new (song_info->priv->db, RHYTHMDB_PROP_GENRE);
+
+	g_object_set (song_info->priv->albums,  "query-model", base_query_model, NULL);
+	g_object_set (song_info->priv->artists, "query-model", base_query_model, NULL);
+	g_object_set (song_info->priv->genres,  "query-model", base_query_model, NULL);
+
+	if (song_info->priv->album) {
+		GtkEntryCompletion *comp = gtk_entry_get_completion (GTK_ENTRY (song_info->priv->album));
+		gtk_entry_completion_set_model (comp, GTK_TREE_MODEL (song_info->priv->albums));
+	}
+
+	if (song_info->priv->artist) {
+		GtkEntryCompletion *comp = gtk_entry_get_completion (GTK_ENTRY (song_info->priv->artist));
+		gtk_entry_completion_set_model (comp, GTK_TREE_MODEL (song_info->priv->artist));
+	}
+
+	if (song_info->priv->genre) {
+		GtkEntryCompletion *comp = gtk_entry_get_completion (GTK_ENTRY (song_info->priv->genre));
+		gtk_entry_completion_set_model (comp, GTK_TREE_MODEL (song_info->priv->genre));
+	}
+
+	g_object_unref (base_query_model);
 }
 
 static void

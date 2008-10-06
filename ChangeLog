@@ -1,3 +1,12 @@
+2008-10-06  Jonathan Matthew  <jonathan@d14n.org>
+
+	* widgets/rb-song-info.c: (rb_song_info_dispose),
+	(rb_song_info_set_source_internal),
+	(rb_song_info_base_query_model_changed_cb):
+	Use the base query model from the source for completion, rather than
+	the current query model, since that's probably more helpful.  Fixes
+	#523045.
+
 2008-10-05  Jonathan Matthew  <jonathan@d14n.org>
 
 	* data/glade/create-playlist.glade:
