@@ -1,5 +1,11 @@
 2008-10-06  Jonathan Matthew  <jonathan@d14n.org>
 
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_insert_feed):
+	Fix detection of podcast episodes that are no longer available to work
+	with the new(ish) location/mountpoint scheme.
+
+2008-10-06  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/gstreamer/rb-player-gst-xfade.c:
 	(stream_new_decoded_pad_cb), (stream_pad_removed_cb),
 	(create_stream):

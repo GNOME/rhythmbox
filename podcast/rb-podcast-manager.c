@@ -1908,10 +1908,24 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		RhythmDBEntry *post_entry;
 
 		if (existing_entries != NULL) {
-			post_entry = rhythmdb_entry_lookup_by_location (db, (char *)item->url);
-			if (post_entry != NULL) {
+			GtkTreeIter iter;
+			RhythmDBEntry *entry = NULL;
+
+			/* look for an existing entry with this remote location */
+			if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (existing_entries), &iter)) {
+				do {
+					entry = rhythmdb_query_model_iter_to_entry (existing_entries, &iter);
+					if (strcmp (get_remote_location (entry), item->url) == 0) {
+						break;
+					}
+					entry = NULL;
+
+				} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (existing_entries), &iter));
+			}
+
+			if (entry != NULL) {
 				/* mark this entry as still being available */
-				rhythmdb_query_model_remove_entry (existing_entries, post_entry);
+				rhythmdb_query_model_remove_entry (existing_entries, entry);
 			}
 		}
 
