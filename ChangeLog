@@ -1,3 +1,11 @@
+2008-10-12  Bastien Nocera  <hadess@hadess.net>
+
+	* corelib/Makefile.am:
+	* shell/Makefile.am: Link the corelib against gnome-media-profiles,
+	not the shell itself, otherwise we end up with missing symbols that
+	aren't from the rb shell
+	(see https://bugzilla.redhat.com/show_bug.cgi?id=466651)
+
 2008-10-06  Jonathan Matthew  <jonathan@d14n.org>
 
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_insert_feed):

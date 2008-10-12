@@ -116,11 +116,6 @@ INCLUDES += $(PYGTK_CFLAGS)  $(PYTHON_CFLAGS)
 rhythmbox_LDADD += $(PYTHON_LIBS) $(top_builddir)/bindings/python/rb.la
 endif
 
-if ENABLE_TRACK_TRANSFER
-rhythmbox_LDADD += $(GNOME_MEDIA_PROFILES_LIBS)
-INCLUDES += $(GNOME_MEDIA_PROFILES_CFLAGS)
-endif
-
 rb-shell-glue.h: rb-shell.xml Makefile
 	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell --mode=glib-server --output=$@ $<
 rb-shell-player-glue.h: rb-shell-player.xml Makefile
