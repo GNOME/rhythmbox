@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox trunk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-17 02:33+0400\n"
-"PO-Revision-Date: 2008-08-09 20:42+0800\n"
+"POT-Creation-Date: 2008-10-14 01:03+0400\n"
+"PO-Revision-Date: 2008-10-10 23:51+0800\n"
 "Last-Translator: Anton Shestakov <engored@ya.ru>\n"
 "Language-Team: Russian <gnome-cyr@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -21,13 +21,18 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
 "10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:578
+#: ../backends/gstreamer/rb-encoder-gst.c:577
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Перезаписать файл «%s»?"
 
-#: ../backends/gstreamer/rb-player-gst.c:693 ../metadata/rb-metadata-gst.c:799
-#: ../metadata/rb-metadata-gst.c:1366
+#: ../backends/gstreamer/rb-encoder-gst.c:645
+#, c-format
+msgid "Could not create a GStreamer sink element to write to %s"
+msgstr "Не удалось создать элемент-приёмник GStreamer для записи в %s"
+
+#: ../backends/gstreamer/rb-player-gst.c:693 ../metadata/rb-metadata-gst.c:801
+#: ../metadata/rb-metadata-gst.c:1368
 #: ../plugins/cd-recorder/rb-recorder-gst.c:507
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -39,61 +44,61 @@ msgstr ""
 msgid "Unknown playback error"
 msgstr "Неизвестная ошибка воспроизведения"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1108
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1122
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1109
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1123
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Не удалось соединить новый поток с конвейером GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1149
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1150
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Не удалось начать новый поток"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2573
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2605
 #, c-format
 msgid "Failed to open output device"
 msgstr "Не удалось открыть устройство вывода"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2639
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2683
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Не удалось открыть устройство вывода: %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2835
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2923
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2880
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2968
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Не удалось создать элемент GStreamer; проверьте правильность установки "
 "программы"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2848
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2893
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Не удалось создать элемент аудио-вывода; проверьте правильность установки "
 "программы"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2897
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2939
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2965
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2974
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2983
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2942
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2984
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3010
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3019
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3028
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Не удалось соединить конвейер GStreamer; проверьте правильность установки "
 "программы"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3078
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3123
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Не удалось создать конвейер GStreamer для воспроизведения %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3094
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3139
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Не удалось начать воспроизведение %s"
@@ -529,9 +534,8 @@ msgstr "Недавно прослушанные"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:207
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1494
-#: ../shell/rb-shell-player.c:2987 ../shell/rb-shell.c:1046
-#: ../shell/rb-shell.c:2140 ../shell/rb-tray-icon.c:50
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1494 ../shell/rb-shell.c:1046
+#: ../shell/rb-shell.c:2142 ../shell/rb-tray-icon.c:50
 msgid "Music Player"
 msgstr "Музыкальный проигрыватель"
 
@@ -584,8 +588,8 @@ msgstr "%b %d %Y"
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:593
-#: ../lib/rb-util.c:833
+#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:577
+#: ../lib/rb-util.c:817
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:85
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:86
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:88
@@ -595,31 +599,32 @@ msgstr "%b %d %Y"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:268
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:153
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:154
-#: ../plugins/audiocd/rb-audiocd-source.c:225
+#: ../plugins/audiocd/rb-audiocd-source.c:218
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:510
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
 #: ../plugins/daap/rb-daap-connection.c:679
-#: ../plugins/generic-player/rb-generic-player-source.c:1182
+#: ../plugins/generic-player/rb-generic-player-source.c:1171
 #: ../plugins/ipod/rb-ipod-source.c:314
+#: ../plugins/jamendo/jamendo/JamendoSource.py:330
 #: ../plugins/iradio/rb-iradio-source.c:517
 #: ../plugins/iradio/rb-iradio-source.c:1110
 #: ../plugins/iradio/rb-station-properties-dialog.c:486
 #: ../plugins/mtpdevice/rb-mtp-source.c:266
-#: ../podcast/rb-feed-podcast-properties-dialog.c:319
-#: ../podcast/rb-podcast-manager.c:1780
-#: ../podcast/rb-podcast-properties-dialog.c:475
-#: ../podcast/rb-podcast-properties-dialog.c:528
-#: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1248
-#: ../rhythmdb/rhythmdb-tree.c:1252 ../rhythmdb/rhythmdb-tree.c:1256
-#: ../rhythmdb/rhythmdb-tree.c:1260 ../rhythmdb/rhythmdb.c:1599
-#: ../shell/rb-shell-player.c:1717 ../shell/rb-shell.c:3063
-#: ../sources/rb-podcast-source.c:1770 ../widgets/rb-entry-view.c:1035
+#: ../podcast/rb-feed-podcast-properties-dialog.c:321
+#: ../podcast/rb-podcast-manager.c:1863
+#: ../podcast/rb-podcast-properties-dialog.c:478
+#: ../podcast/rb-podcast-properties-dialog.c:531
+#: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1284
+#: ../rhythmdb/rhythmdb-tree.c:1288 ../rhythmdb/rhythmdb-tree.c:1292
+#: ../rhythmdb/rhythmdb-tree.c:1296 ../rhythmdb/rhythmdb.c:1601
+#: ../shell/rb-shell-player.c:1717 ../shell/rb-shell.c:3065
+#: ../sources/rb-podcast-source.c:1763 ../widgets/rb-entry-view.c:1035
 #: ../widgets/rb-entry-view.c:1060 ../widgets/rb-entry-view.c:1463
 #: ../widgets/rb-entry-view.c:1475 ../widgets/rb-entry-view.c:1487
-#: ../widgets/rb-song-info.c:902 ../widgets/rb-song-info.c:1067
-#: ../widgets/rb-song-info.c:1342
+#: ../widgets/rb-song-info.c:881 ../widgets/rb-song-info.c:1046
+#: ../widgets/rb-song-info.c:1366
 msgid "Unknown"
 msgstr "Неизвестно"
 
@@ -628,7 +633,7 @@ msgstr "Неизвестно"
 msgid "Too many symlinks"
 msgstr "Слишком много символьных ссылок"
 
-#: ../lib/rb-file-helpers.c:824
+#: ../lib/rb-file-helpers.c:832
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Не удалось выделить свободное место на %s: %s"
@@ -641,32 +646,32 @@ msgstr "Ошибка настройки HTTP-прокси"
 msgid "Rhythmbox does not support automatic proxy configuration"
 msgstr "Rhythmbox не поддерживает автоматическую настройку прокси-сервера"
 
-#: ../lib/rb-util.c:595 ../remote/dbus/rb-client.c:142
+#: ../lib/rb-util.c:579 ../remote/dbus/rb-client.c:142
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:597 ../remote/dbus/rb-client.c:144
+#: ../lib/rb-util.c:581 ../remote/dbus/rb-client.c:144
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:632
+#: ../lib/rb-util.c:616
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "Осталось %d:%02d из %d:%02d"
 
-#: ../lib/rb-util.c:636
+#: ../lib/rb-util.c:620
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "Осталось %d:%02d:%02d из %d:%02d:%02d"
 
-#: ../lib/rb-util.c:641
+#: ../lib/rb-util.c:625
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d из %d:%02d"
 
-#: ../lib/rb-util.c:645
+#: ../lib/rb-util.c:629
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d из %d:%02d:%02d"
@@ -691,56 +696,56 @@ msgstr ""
 msgid "D-BUS communication error"
 msgstr "Ошибка связи по шине D-BUS"
 
-#: ../metadata/rb-metadata-gst.c:594
+#: ../metadata/rb-metadata-gst.c:596
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr "Модули GStreamer для декодирования файлов «%s» не найдены"
 
-#: ../metadata/rb-metadata-gst.c:597
+#: ../metadata/rb-metadata-gst.c:599
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "Содержащийся в файле поток типа %s не может быть декодирован"
 
-#: ../metadata/rb-metadata-gst.c:989
+#: ../metadata/rb-metadata-gst.c:991
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr ""
 "Не удалось создать исходный элемент; проверьте правильность установки "
 "программы"
 
-#: ../metadata/rb-metadata-gst.c:1052
+#: ../metadata/rb-metadata-gst.c:1054
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Ошибка GStreamer: не удалось сменить состояние"
 
-#: ../metadata/rb-metadata-gst.c:1148
+#: ../metadata/rb-metadata-gst.c:1150
 #, c-format
 msgid "Empty file"
 msgstr "Пустой файл"
 
-#: ../metadata/rb-metadata-gst.c:1156
+#: ../metadata/rb-metadata-gst.c:1158
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "Не удалось определить MIME-тип этого файла"
 
-#: ../metadata/rb-metadata-gst.c:1294
+#: ../metadata/rb-metadata-gst.c:1296
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Тип файла не поддерживается: %s"
 
-#: ../metadata/rb-metadata-gst.c:1303
+#: ../metadata/rb-metadata-gst.c:1305
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "Не удалось создать элемент записи тегов"
 
-#: ../metadata/rb-metadata-gst.c:1318
+#: ../metadata/rb-metadata-gst.c:1320
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr ""
 "Истекло время ожидания при попытке установить конвейер в NULL (timeout while "
 "setting pipeline to NULL)"
 
-#: ../metadata/rb-metadata-gst.c:1342
+#: ../metadata/rb-metadata-gst.c:1344
 #, c-format
 msgid "File corrupted during write"
 msgstr "Во время записи файл был повреждён"
@@ -786,37 +791,37 @@ msgstr ""
 msgid "_Continue"
 msgstr "_Продолжить"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:229
+#: ../plugins/audiocd/rb-audiocd-source.c:222
 msgid "<Invalid unicode>"
 msgstr "<Неверная кодировка>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:274
+#: ../plugins/audiocd/rb-audiocd-source.c:268
 #, c-format
 msgid "Track %u"
 msgstr "Дорожка %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:344
-#: ../plugins/audiocd/rb-audiocd-source.c:352
-#: ../plugins/audiocd/rb-audiocd-source.c:679
+#: ../plugins/audiocd/rb-audiocd-source.c:328
+#: ../plugins/audiocd/rb-audiocd-source.c:336
+#: ../plugins/audiocd/rb-audiocd-source.c:670
 msgid "Couldn't load Audio CD"
 msgstr "Не удалось загрузить звуковой компакт-диск"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:345
+#: ../plugins/audiocd/rb-audiocd-source.c:329
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Не удалось получить доступ к компакт-диску."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:353
+#: ../plugins/audiocd/rb-audiocd-source.c:337
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Не удалось считать информацию с компакт-диска."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:455
+#: ../plugins/audiocd/rb-audiocd-source.c:439
 #: ../sources/rb-library-source.c:158 ../widgets/rb-entry-view.c:1419
 #: ../widgets/rb-query-creator-properties.c:75
 #: ../widgets/rb-query-creator-properties.c:105
 msgid "Title"
 msgstr "Название"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:462
+#: ../plugins/audiocd/rb-audiocd-source.c:446
 #: ../sources/rb-library-source.c:149 ../widgets/rb-entry-view.c:1429
 #: ../widgets/rb-library-browser.c:138
 #: ../widgets/rb-query-creator-properties.c:76
@@ -824,67 +829,80 @@ msgstr "Название"
 msgid "Artist"
 msgstr "Исполнитель"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:680
+#: ../plugins/audiocd/rb-audiocd-source.c:671
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Не удалось получить доступ к CD-приводу."
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:113
-#, c-format
-msgid "Cannot create MusicBrainz client"
-msgstr "Не удалось создать клиента службы MusicBrainz"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:238
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:501
-#, c-format
-msgid "Cannot read CD: %s"
-msgstr "Не удалось прочитать компакт-диск: %s"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:245
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:538
-msgid "Unknown Artist"
-msgstr "Неизвестный исполнитель"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:246
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:549
-msgid "Unknown Title"
-msgstr "Неизвестное название"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:252
-#, c-format
-msgid "Track %d"
-msgstr "Дорожка %d"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:280
-#, c-format
-msgid ""
-"MusicBrainz metadata object is not valid. This is bad, check your console "
-"for errors."
-msgstr ""
-"Объект метаданных MusicBrainz некорректен. Более подробную информацию об "
-"ошибке можно найти в консоли."
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:447
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:454
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:468
-#, c-format
-msgid "This CD could not be queried: %s\n"
-msgstr "Не удалось получить информацию об этом компакт-диске: %s\n"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:533
-msgid "Various"
-msgstr "Разное"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:574
-msgid "Incomplete metadata for this CD"
-msgstr "Неполные метаданные по этому компакт-диску"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:665
+#: ../plugins/audiocd/sj-metadata-getter.c:245
 #, c-format
 msgid "Could not create CD lookup thread"
 msgstr "Не удалось создать поток для поиска по компакт-диску"
 
+#: ../plugins/audiocd/sj-metadata-gvfs.c:89
+#, c-format
+msgid "Cannot access CD"
+msgstr "Не удалось прочитать компакт-диск"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:109
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:347
+msgid "Unknown Title"
+msgstr "Неизвестное название"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:113
+#: ../plugins/audiocd/sj-metadata-gvfs.c:136
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:331
+msgid "Unknown Artist"
+msgstr "Неизвестный исполнитель"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:133
+#, c-format
+msgid "Track %d"
+msgstr "Дорожка %d"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:150
+#, c-format
+msgid "Cannot access CD: %s"
+msgstr "Не удалось прочитать компакт-диск: %s"
+
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:213
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:220
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:234
+#, c-format
+msgid "This CD could not be queried: %s\n"
+msgstr "Не удалось получить информацию об этом компакт-диске: %s\n"
+
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:329
+msgid "Various"
+msgstr "Разное"
+
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:372
+msgid "Incomplete metadata for this CD"
+msgstr "Неполные метаданные по этому компакт-диску"
+
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:402
+msgid "[Untitled]"
+msgstr "[Безымянный]"
+
+#: ../plugins/audiocd/sj-metadata.c:186
+#, c-format
+msgid "Device '%s' does not contain any media"
+msgstr "Устройство «%s» не содержит носителей информации"
+
+#: ../plugins/audiocd/sj-metadata.c:189
+#, c-format
+msgid ""
+"Device '%s' could not be opened. Check the access permissions on the device."
+msgstr ""
+"Устройство «%s» не может быть открыто. Проверьте права доступа к этому "
+"устройству."
+
+#: ../plugins/audiocd/sj-metadata.c:192 ../plugins/audiocd/sj-metadata.c:204
+#, c-format
+msgid "Cannot read CD: %s"
+msgstr "Не удалось прочитать компакт-диск: %s"
+
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:678
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:727
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -898,80 +916,72 @@ msgid "0"
 msgstr "0"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:2
-msgid "Check Last.fm server status at"
-msgstr "Проверка состояния сервера Last.fm на"
+msgid "Account Login"
+msgstr "Учётная запись"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:3
 msgid "Disabled"
 msgstr "Выключен"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:4
-msgid "Find out about Last.fm at "
-msgstr "Узнайте больше о Last.fm на"
+msgid "Join the Rhythmbox group"
+msgstr "Присоединиться к группе Rhythmbox"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:5
-msgid "Join the Rhythmbox group at "
-msgstr "Присоединяйтесь к пользователям Rhythmbox на "
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
 msgid "Last submission time:"
 msgstr "Последняя отправка данных:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:7
-msgid "Last.fm Profile"
-msgstr "Профиль пользователя Last.fm"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1084
 #: ../plugins/iradio/rb-station-properties-dialog.c:497
-#: ../rhythmdb/rhythmdb.c:3406 ../widgets/rb-entry-view.c:983
+#: ../rhythmdb/rhythmdb.c:3408 ../widgets/rb-entry-view.c:983
 #: ../widgets/rb-entry-view.c:1521 ../widgets/rb-entry-view.c:1534
-#: ../widgets/rb-song-info.c:1315
+#: ../widgets/rb-song-info.c:1339
 msgid "Never"
 msgstr "Никогда"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:9
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:7
+msgid "New to Last.fm?"
+msgstr "Не знакомы с Last.fm?"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 msgid "Queued tracks:"
 msgstr "В очереди:"
 
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:9
+msgid "Sign up for an account"
+msgstr "Зайти на сайт"
+
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:10
+msgid "Statistics"
+msgstr "Статистика"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:11
 msgid "Status:"
 msgstr "Состояние:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:11
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:12
 msgid "Tracks submitted:"
 msgstr "Передано дорожек:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:12
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:13
 msgid "_Password:"
 msgstr "_Пароль:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:13
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:14
 msgid "_Username:"
 msgstr "_Имя пользователя:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:14
-msgid "http://last.fm"
-msgstr "http://last.fm"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:15
-msgid "http://last.fm/group/Rhythmbox"
-msgstr "http://last.fm/group/Rhythmbox"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:16
-msgid "http://status.last.fm/"
-msgstr "http://status.last.fm/"
-
 #: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:216
-msgid "Audioscrobbler preferences"
-msgstr "Настройки Audioscrobbler"
+msgid "Last.fm Preferences"
+msgstr "Параметры Last.fm"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1107
 msgid "OK"
 msgstr "OK"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1110
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1611
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1819
 msgid "Logging in"
 msgstr "Осуществляется вход"
 
@@ -1007,175 +1017,183 @@ msgstr "Слишком длинная очередь"
 msgid "Track submission failed too many times"
 msgstr "Слишком часто возникают ошибки при попытке передачи дорожки"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:193
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
 msgid "Similar Artists radio"
 msgstr "Радио похожих исполнителей"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:193
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1090
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1292
 #, c-format
 msgid "Artists similar to %s"
 msgstr "Исполнители, похожие на %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
 msgid "Tag radio"
 msgstr "Радио по меткам"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
 #, c-format
 msgid "Tracks tagged with %s"
 msgstr "Дорожки были отмечены «%s»"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
 msgid "Artist Fan radio"
 msgstr "Радио поклонников исполнителя"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1092
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1294
 #, c-format
 msgid "Artists liked by fans of %s"
 msgstr "Исполнители, которых любят поклонники %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
 msgid "Group radio"
 msgstr "Радио группы"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
 #, c-format
 msgid "Tracks liked by the %s group"
 msgstr "Дорожки, которые любит группа %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:276
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:283
 msgid "Love"
 msgstr "Мне нравится!"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:277
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:284
 msgid "Mark this song as loved"
 msgstr "Отметить эту композицию как любимую"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:279
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
 msgid "Ban"
 msgstr "Заблокировать"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:280
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
 msgid "Ban the current track from being played again"
 msgstr "Запретить проигрывание этой дорожки в будущем"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:282
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
 msgid "Delete Station"
 msgstr "Удалить станцию"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:283
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
 msgid "Delete the selected station"
 msgstr "Удалить выбранную станцию"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:285
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
 msgid "Download song"
 msgstr "Загрузить композицию"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
 msgid "Download this song"
 msgstr "Загрузить эту композицию"
 
 #. awful
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:466
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:513
 msgid "Enter the item to build a Last.fm station out of:"
 msgstr ""
 "Введите строку, которая будет использоваться для построения радиостанции:"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:469
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:516
 msgid "Add"
 msgstr "Добавить"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:720
-msgid "Could not log in to Last.fm.  Check your username and password."
-msgstr ""
-"Не удалось войти в систему Last.fm.  Проверьте имя пользователя и пароль."
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:869
+msgid "Account Settings"
+msgstr "Настройки учётной записи"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:724
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:894
+msgid ""
+"Account details are needed before you can connect.  Check your settings."
+msgstr "Для соединения требуется настроить учётную запись."
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:898
 msgid "This version of Rhythmbox has been banned from Last.fm."
 msgstr "Эта версия Rhythmbox была заблокирована на Last.fm."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1081
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:902
+msgid "Unable to connect"
+msgstr "Не удалось установить соединение"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1283
 #, c-format
 msgid "Global Tag %s"
 msgstr "Глобальная метка %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1100
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1302
 #, c-format
 msgid "%s's Neighbour Radio"
 msgstr "Соседское радио для %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1102
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1304
 #, c-format
 msgid "%s's Recommended Radio: %s percent"
 msgstr "Рекомендованное для %s радио: %s%%"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1104
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1306
 #, c-format
 msgid "%s's Personal Radio"
 msgstr "Личное радио %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1106
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1308
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr "Любимые песни %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1108
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1310
 #, c-format
 msgid "%s's Playlist"
 msgstr "Список воспроизведения %s"
 
 #. Translators: variables are 1: user name, 2: tag name; for user tag radio
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1114
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1316
 #, c-format
 msgid "%s's %s Radio"
 msgstr "Радио %s %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1118
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1320
 #, c-format
 msgid "%s Group Radio"
 msgstr "Радио группы %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1581
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1789
 msgid "Neighbour Radio"
 msgstr "Соседское радио"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1589
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1797
 msgid "Personal Radio"
 msgstr "Личное радио"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1679
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1887
 msgid "Server did not respond"
 msgstr "Сервер не ответил"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1749
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1959
 msgid "There is not enough content available to play this station."
 msgstr "Недостаточно содержимого для прослушивания этой станции."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1754
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1964
 msgid "This station is available to subscribers only."
 msgstr "Эта станция доступна только для подписчиков."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1761
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1971
 msgid ""
 "The streaming system is offline for maintenance, please try again later."
 msgstr "Система вещания отключена на профилактику, повторите попытку позже."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1800
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2010
 msgid "Changing station"
 msgstr "Смена станции"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2014
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2024
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2224
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2234
 msgid "Retrieving playlist"
 msgstr "Получение списка воспроизведения"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2113
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2323
 msgid "Banning song"
 msgstr "Блокирование композиции..."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2131
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2341
 msgid "Adding song to your Loved tracks"
 msgstr "Добавление композиции в Любимые песни"
 
@@ -1189,23 +1207,49 @@ msgid "Support for recording audio CDs from playlists"
 msgstr ""
 "Поддержка записи компакт-дисков с музыкой на основе списка воспроизведения"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:87
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:89
 msgid "_Create Audio CD..."
 msgstr "Создать звуковой _компакт-диск..."
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:88
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:90
 msgid "Create an audio CD from playlist"
 msgstr "Создать звуковой компакт-диск на основе списка воспроизведения"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:188
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:92
+msgid "Duplicate Audio CD..."
+msgstr "Копировать звуковой компакт-диск..."
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:93
+msgid "Create a copy of this audio CD"
+msgstr "Создать копию этого звукового компакт-диска"
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:193
 msgid "Unable to create audio CD"
 msgstr "Не удалось создать звуковой компакт-диск"
 
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:246
+msgid "Could not duplicate disc"
+msgstr "Не удалось создать копию компакт-диска"
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:247
+msgid "Rhythmbox could not duplicate the disc"
+msgstr "Не удалось создать копию компакт-диска"
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:248
+msgid "Reason"
+msgstr "Причина"
+
 #. Translators: this is the toolbar button label for
 #. Create Audio CD action
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:361
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:449
 msgid "Burn"
 msgstr "Записать"
+
+#. Translators: this is the toolbar button label for
+#. Duplicate Audio CD action
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:455
+msgid "Copy CD"
+msgstr "Копировать компакт-диск"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:420
 #, c-format
@@ -1267,7 +1311,7 @@ msgstr "Не удалось определить продолжительнос�
 msgid "Could not determine audio track durations."
 msgstr "Не удалось определить длительность звуковой дорожки."
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1255
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1257
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -1276,7 +1320,7 @@ msgstr ""
 "При записи компакт-диска возникла ошибка:\n"
 "%s"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1259
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1261
 msgid "There was an error writing to the CD"
 msgstr "При записи на компакт-диск возникла ошибка"
 
@@ -1810,11 +1854,11 @@ msgstr "_Удалить"
 msgid "Delete playlist"
 msgstr "Удалить список воспроизведения"
 
-#: ../plugins/ipod/rb-ipod-source.c:1341 ../sources/rb-podcast-source.c:902
+#: ../plugins/ipod/rb-ipod-source.c:1348 ../sources/rb-podcast-source.c:902
 msgid "Podcasts"
 msgstr "Подкасты"
 
-#: ../plugins/ipod/rb-ipod-source.c:1687
+#: ../plugins/ipod/rb-ipod-source.c:1694
 msgid "New playlist"
 msgstr "Новый список воспроизведения"
 
@@ -1955,7 +1999,7 @@ msgstr ""
 "Jamendo"
 
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:2
-#: ../plugins/jamendo/jamendo/JamendoSource.py:52
+#: ../plugins/jamendo/jamendo/JamendoSource.py:65
 msgid "Jamendo"
 msgstr "Jamendo"
 
@@ -1981,11 +2025,16 @@ msgstr "_Пожертвовать исполнителю"
 msgid "Donate Money to this Artist"
 msgstr "Пожертвовать денег этому исполнителю"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:104
+#: ../plugins/jamendo/jamendo/JamendoSource.py:116
 msgid "Loading Jamendo catalogue"
 msgstr "Загрузка каталога Jamendo"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:385
+#: ../plugins/jamendo/jamendo/JamendoSource.py:388
+#, python-format
+msgid "Error looking up p2plink for album %s on jamendo.com"
+msgstr "Не удалось найти ссылку для сети P2P на альбом %s на jamendo.com"
+
+#: ../plugins/jamendo/jamendo/JamendoSource.py:409
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Ошибка поиска исполнителя %s на jamendo.com"
@@ -2035,15 +2084,14 @@ msgstr "URL Интернет-радиостанции:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:396
 #: ../podcast/rb-feed-podcast-properties-dialog.c:217
-#: ../podcast/rb-podcast-properties-dialog.c:363
-#: ../widgets/rb-song-info.c:1006
+#: ../podcast/rb-podcast-properties-dialog.c:363 ../widgets/rb-song-info.c:985
 #, c-format
 msgid "%s Properties"
 msgstr "Свойства %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:488
-#: ../podcast/rb-podcast-properties-dialog.c:473
-#: ../widgets/rb-song-info.c:1065
+#: ../podcast/rb-podcast-properties-dialog.c:476
+#: ../widgets/rb-song-info.c:1044
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu Кбит/с"
@@ -2660,7 +2708,7 @@ msgstr ""
 "с устройства)"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:106
-#: ../shell/rb-removable-media-manager.c:148
+#: ../shell/rb-removable-media-manager.c:157
 msgid "_Eject"
 msgstr "_Извлечь"
 
@@ -2672,7 +2720,7 @@ msgstr "Отсоединить MTP-устройство"
 msgid "Rename MTP-device"
 msgstr "Переименовать MTP-устройство"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:405
+#: ../plugins/mtpdevice/rb-mtp-source.c:409
 msgid "Digital Audio Player"
 msgstr "Цифровой звуковой проигрыватель"
 
@@ -2874,21 +2922,30 @@ msgstr "Отображает визуализацию"
 msgid "Visualization"
 msgstr "Визуализация"
 
-#: ../podcast/rb-podcast-manager.c:865
+#: ../podcast/rb-podcast-manager.c:811
+msgid "Error creating podcast download directory"
+msgstr "Не удалось создать папку для подкастов"
+
+#: ../podcast/rb-podcast-manager.c:812
+#, c-format
+msgid "Unable to create the download directory for %s: %s"
+msgstr "Не удалось создать папку для загрузки %s: %s"
+
+#: ../podcast/rb-podcast-manager.c:931
 msgid "Invalid URL"
 msgstr "Некорректный URL"
 
-#: ../podcast/rb-podcast-manager.c:866
+#: ../podcast/rb-podcast-manager.c:932
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "Некорректный URL «%s», проверьте правильность написания."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:876
+#: ../podcast/rb-podcast-manager.c:942
 msgid "URL already added"
 msgstr "Ресурс уже добавлен"
 
-#: ../podcast/rb-podcast-manager.c:877
+#: ../podcast/rb-podcast-manager.c:943
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2897,7 +2954,7 @@ msgstr ""
 "Ресурс «%s» уж был добавлен как радиостанция. Если это лента подкастов, "
 "удалите соответствующую радиостанцию."
 
-#: ../podcast/rb-podcast-manager.c:945
+#: ../podcast/rb-podcast-manager.c:1011
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2908,11 +2965,11 @@ msgstr ""
 "или указанный ресурс не работает. Игнорировать ошибки и продолжить "
 "использование ресурса?"
 
-#: ../podcast/rb-podcast-manager.c:1056
+#: ../podcast/rb-podcast-manager.c:1122
 msgid "Podcast"
 msgstr "Подкаст"
 
-#: ../podcast/rb-podcast-manager.c:1946
+#: ../podcast/rb-podcast-manager.c:2043
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -2934,7 +2991,7 @@ msgstr "Неожиданный тип файла: %s"
 msgid "Unable to parse the feed contents"
 msgstr "Не удалось обработать содержание ленты"
 
-#: ../podcast/rb-podcast-properties-dialog.c:423
+#: ../podcast/rb-podcast-properties-dialog.c:426
 msgid "Not Downloaded"
 msgstr "Не загружено"
 
@@ -3027,16 +3084,16 @@ msgstr "Приглушить"
 msgid "Unmute playback"
 msgstr "Восстановить громкость"
 
-#: ../remote/dbus/rb-client.c:427 ../shell/rb-shell.c:2115
+#: ../remote/dbus/rb-client.c:431 ../shell/rb-shell.c:2117
 msgid "Not playing"
 msgstr "Ничего не воспроизводится"
 
-#: ../remote/dbus/rb-client.c:655
+#: ../remote/dbus/rb-client.c:659
 #, c-format
 msgid "Playback is muted.\n"
 msgstr "Громкость воспроизведения приглушена.\n"
 
-#: ../remote/dbus/rb-client.c:656
+#: ../remote/dbus/rb-client.c:660
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Текущий уровень громкости воспроизведения: %f.\n"
@@ -3048,7 +3105,7 @@ msgstr "Текущий уровень громкости воспроизвед�
 msgid "All"
 msgstr "Все"
 
-#: ../rhythmdb/rhythmdb-tree.c:403
+#: ../rhythmdb/rhythmdb-tree.c:407
 #, c-format
 msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
@@ -3062,15 +3119,15 @@ msgstr ""
 msgid "Couldn't access %s: %s"
 msgstr "Не удалось получить доступ к %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:2037
+#: ../rhythmdb/rhythmdb.c:2039
 msgid "invalid unicode in error message"
 msgstr "неправильная кодировка в сообщении об ошибке"
 
-#: ../rhythmdb/rhythmdb.c:2895
+#: ../rhythmdb/rhythmdb.c:2897
 msgid "Could not load the music database:"
 msgstr "Не удалось загрузить базу данных музыки:"
 
-#: ../rhythmdb/rhythmdb.c:4258
+#: ../rhythmdb/rhythmdb.c:4260
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3078,7 +3135,7 @@ msgstr[0] "%ld минута"
 msgstr[1] "%ld минуты"
 msgstr[2] "%ld минут"
 
-#: ../rhythmdb/rhythmdb.c:4259
+#: ../rhythmdb/rhythmdb.c:4261
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3086,7 +3143,7 @@ msgstr[0] "%ld час"
 msgstr[1] "%ld часа"
 msgstr[2] "%ld часов"
 
-#: ../rhythmdb/rhythmdb.c:4260
+#: ../rhythmdb/rhythmdb.c:4262
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3095,7 +3152,7 @@ msgstr[1] "%ld дня"
 msgstr[2] "%ld дней"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4266
+#: ../rhythmdb/rhythmdb.c:4268
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s и %s"
@@ -3103,8 +3160,8 @@ msgstr "%s, %s и %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4272 ../rhythmdb/rhythmdb.c:4280
-#: ../rhythmdb/rhythmdb.c:4291
+#: ../rhythmdb/rhythmdb.c:4274 ../rhythmdb/rhythmdb.c:4282
+#: ../rhythmdb/rhythmdb.c:4293
 #, c-format
 msgid "%s and %s"
 msgstr "%s и %s"
@@ -3254,41 +3311,41 @@ msgstr "Неизвестный список воспроизведения: «%s
 msgid "Playlist %s is an automatic playlist"
 msgstr "Список воспроизведения «%s» — автоматический"
 
-#: ../shell/rb-removable-media-manager.c:149
+#: ../shell/rb-removable-media-manager.c:158
 msgid "Eject this medium"
 msgstr "Извлечь носитель"
 
-#: ../shell/rb-removable-media-manager.c:151
+#: ../shell/rb-removable-media-manager.c:160
 msgid "_Extract to Library"
 msgstr "_Копировать в фонотеку"
 
-#: ../shell/rb-removable-media-manager.c:152
+#: ../shell/rb-removable-media-manager.c:161
 msgid "Copy all tracks to the library"
 msgstr "Копировать все дорожки в фонотеку"
 
-#: ../shell/rb-removable-media-manager.c:154
+#: ../shell/rb-removable-media-manager.c:163
 msgid "_Scan Removable Media"
 msgstr "_Просканировать сменные носители"
 
-#: ../shell/rb-removable-media-manager.c:155
+#: ../shell/rb-removable-media-manager.c:164
 msgid "Scan for new Removable Media"
 msgstr "Сканировать сменные носители на наличие мультимедийных файлов"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../shell/rb-removable-media-manager.c:661
+#: ../shell/rb-removable-media-manager.c:737
 msgid "Extract"
 msgstr "Копировать"
 
-#: ../shell/rb-removable-media-manager.c:692
+#: ../shell/rb-removable-media-manager.c:768
 msgid "Unable to eject"
 msgstr "Не удалось извлечь носитель"
 
-#: ../shell/rb-removable-media-manager.c:713
+#: ../shell/rb-removable-media-manager.c:789
 msgid "Unable to unmount"
 msgstr "Не удалось отсоединить том"
 
-#: ../shell/rb-removable-media-manager.c:899
+#: ../shell/rb-removable-media-manager.c:991
 msgid "Error transferring track"
 msgstr "Ошибка передачи дорожки"
 
@@ -3416,7 +3473,7 @@ msgstr "Уменьшить громкость воспроизведения"
 msgid "_Play"
 msgstr "Вос_произвести"
 
-#: ../shell/rb-shell-player.c:336 ../shell/rb-shell-player.c:3807
+#: ../shell/rb-shell-player.c:336 ../shell/rb-shell-player.c:3805
 msgid "Start playback"
 msgstr "Начать воспроизведение"
 
@@ -3510,29 +3567,29 @@ msgstr "Это первая композиция в списке"
 msgid "No next song"
 msgstr "Это последняя композиция в списке"
 
-#: ../shell/rb-shell-player.c:2310 ../shell/rb-shell-player.c:3438
+#: ../shell/rb-shell-player.c:2310 ../shell/rb-shell-player.c:3436
 msgid "Couldn't start playback"
 msgstr "Не удалось начать воспроизведение"
 
-#: ../shell/rb-shell-player.c:3194
+#: ../shell/rb-shell-player.c:3192
 msgid "Couldn't stop playback"
 msgstr "Не удалось остановить воспроизведение"
 
-#: ../shell/rb-shell-player.c:3310
+#: ../shell/rb-shell-player.c:3308
 #, c-format
 msgid "Playback position not available"
 msgstr "Позиция воспроизведения недоступна"
 
-#: ../shell/rb-shell-player.c:3342
+#: ../shell/rb-shell-player.c:3340
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Текущую композицию нельзя перемотать"
 
-#: ../shell/rb-shell-player.c:3805
+#: ../shell/rb-shell-player.c:3803
 msgid "Stop playback"
 msgstr "Остановить воспроизведение"
 
-#: ../shell/rb-shell-preferences.c:171 ../shell/rb-shell.c:2351
+#: ../shell/rb-shell-preferences.c:171 ../shell/rb-shell.c:2353
 msgid "Couldn't display help"
 msgstr "Не удалось показать справку"
 
@@ -3696,37 +3753,37 @@ msgstr "_Строка состояния"
 msgid "Change the visibility of the statusbar"
 msgstr "Показать/скрыть строку состояния"
 
-#: ../shell/rb-shell.c:1296
+#: ../shell/rb-shell.c:1298
 msgid "Change the music volume"
 msgstr "Изменить громкость"
 
-#: ../shell/rb-shell.c:1738
+#: ../shell/rb-shell.c:1740
 msgid "Error while saving song information"
 msgstr "Ошибка при сохранении информации о композиции"
 
-#: ../shell/rb-shell.c:1889
+#: ../shell/rb-shell.c:1891
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "Передача звуковых дорожек: %d из %d (%.0f%%)"
 
-#: ../shell/rb-shell.c:1892
+#: ../shell/rb-shell.c:1894
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Передача звуковых дорожек: %d из %d"
 
 #. Translators: the %s is the elapsed and total time
-#: ../shell/rb-shell.c:2118
+#: ../shell/rb-shell.c:2120
 #, c-format
 msgid "Paused, %s"
 msgstr "Приостановлено, %s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2160
+#: ../shell/rb-shell.c:2162
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Приостановлено)"
 
-#: ../shell/rb-shell.c:2264
+#: ../shell/rb-shell.c:2266
 msgid "translator-credits"
 msgstr ""
 "Nail Abdrahmanov <nail@gella.com.ru>, 2002\n"
@@ -3735,7 +3792,7 @@ msgstr ""
 "Юрий Мясоедов <omerta13@yandex.ru>\n"
 "Anton Shestakov <engored@ya.ru>, 2008"
 
-#: ../shell/rb-shell.c:2267
+#: ../shell/rb-shell.c:2269
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3748,7 +3805,7 @@ msgstr ""
 "Free Software Foundation; либо версии 2 лицензии, либо\n"
 "(на ваше усмотрение) любой более поздней версии.\n"
 
-#: ../shell/rb-shell.c:2271
+#: ../shell/rb-shell.c:2273
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3761,7 +3818,7 @@ msgstr ""
 "ознакомьтесь\n"
 "с GNU General Public License.\n"
 
-#: ../shell/rb-shell.c:2275
+#: ../shell/rb-shell.c:2277
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3772,66 +3829,66 @@ msgstr ""
 "Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2282
+#: ../shell/rb-shell.c:2284
 msgid "Maintainers:"
 msgstr "Сопровождающие:"
 
-#: ../shell/rb-shell.c:2285
+#: ../shell/rb-shell.c:2287
 msgid "Former Maintainers:"
 msgstr "Бывшие сопровождающие:"
 
-#: ../shell/rb-shell.c:2288
+#: ../shell/rb-shell.c:2290
 msgid "Contributors:"
 msgstr "Свой вклад внесли:"
 
-#: ../shell/rb-shell.c:2290
+#: ../shell/rb-shell.c:2292
 msgid "Music management and playback software for GNOME."
 msgstr "Программа воспроизведения и управления музыкой для GNOME."
 
-#: ../shell/rb-shell.c:2299
+#: ../shell/rb-shell.c:2301
 msgid "Rhythmbox Website"
 msgstr "Веб-сайт Rhythmbox"
 
-#: ../shell/rb-shell.c:2398
+#: ../shell/rb-shell.c:2400
 msgid "Configure Plugins"
 msgstr "Настройка модулей"
 
-#: ../shell/rb-shell.c:2469
+#: ../shell/rb-shell.c:2471
 msgid "Import Folder into Library"
 msgstr "Добавить папку в фонотеку"
 
-#: ../shell/rb-shell.c:2491
+#: ../shell/rb-shell.c:2493
 msgid "Import File into Library"
 msgstr "Добавить файл в фонотеку"
 
 #. Translators: by Artist
-#: ../shell/rb-shell.c:3006
+#: ../shell/rb-shell.c:3008
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "в исполнении <i>%s</i>"
 
 #. Translators: from Album
-#: ../shell/rb-shell.c:3027
+#: ../shell/rb-shell.c:3029
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "из альбома <i>%s</i>"
 
-#: ../shell/rb-shell.c:3235
+#: ../shell/rb-shell.c:3237
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ни один из зарегистрированных источников не может обработать URI %s"
 
-#: ../shell/rb-shell.c:3504 ../shell/rb-shell.c:3533
+#: ../shell/rb-shell.c:3506 ../shell/rb-shell.c:3535
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Неизвестный URI композиции: %s"
 
-#: ../shell/rb-shell.c:3542
+#: ../shell/rb-shell.c:3544
 #, c-format
 msgid "Unknown property %s"
 msgstr "Неизвестное свойство %s"
 
-#: ../shell/rb-shell.c:3552
+#: ../shell/rb-shell.c:3554
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Неизвестный тип свойства %s у свойства %s"
@@ -3993,7 +4050,7 @@ msgstr "Выбрать расположение фонотеки"
 msgid "Multiple locations set"
 msgstr "Заданы несколько мест"
 
-#: ../sources/rb-library-source.c:996
+#: ../sources/rb-library-source.c:998
 msgid "Example Path:"
 msgstr "Образец пути:"
 
@@ -4137,15 +4194,15 @@ msgstr "Лента"
 msgid "Status"
 msgstr "Загрузка"
 
-#: ../sources/rb-podcast-source.c:689 ../sources/rb-podcast-source.c:1595
+#: ../sources/rb-podcast-source.c:689 ../sources/rb-podcast-source.c:1588
 msgid "Downloaded"
 msgstr "Завершена"
 
-#: ../sources/rb-podcast-source.c:690 ../sources/rb-podcast-source.c:1603
+#: ../sources/rb-podcast-source.c:690 ../sources/rb-podcast-source.c:1596
 msgid "Waiting"
 msgstr "Ожидание"
 
-#: ../sources/rb-podcast-source.c:691 ../sources/rb-podcast-source.c:1599
+#: ../sources/rb-podcast-source.c:691 ../sources/rb-podcast-source.c:1592
 msgid "Failed"
 msgstr "Не удалась"
 
@@ -4170,11 +4227,11 @@ msgstr "Удалить только _эпизод"
 msgid "_Delete Episode And File"
 msgstr "Удалить эпизод и _файл"
 
-#: ../sources/rb-podcast-source.c:1488
+#: ../sources/rb-podcast-source.c:1481
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Удалить ленту подкастов и загруженные файлы?"
 
-#: ../sources/rb-podcast-source.c:1491
+#: ../sources/rb-podcast-source.c:1484
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -4184,15 +4241,15 @@ msgstr ""
 "можно удалить ленту, но оставить загруженные файлы, выбрав соответствующий "
 "вариант."
 
-#: ../sources/rb-podcast-source.c:1499
+#: ../sources/rb-podcast-source.c:1492
 msgid "Delete _Feed Only"
 msgstr "_Удалить только ленту"
 
-#: ../sources/rb-podcast-source.c:1506
+#: ../sources/rb-podcast-source.c:1499
 msgid "_Delete Feed And Files"
 msgstr "Удалить _ленту и файлы"
 
-#: ../sources/rb-podcast-source.c:1714
+#: ../sources/rb-podcast-source.c:1707
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
@@ -4200,36 +4257,36 @@ msgstr[0] "Всего %d лента"
 msgstr[1] "Всего %d ленты"
 msgstr[2] "Всего %d лент"
 
-#: ../sources/rb-podcast-source.c:1856
+#: ../sources/rb-podcast-source.c:1849
 msgid "Downloading podcast"
 msgstr "Загружается подкаст"
 
-#: ../sources/rb-podcast-source.c:1869
+#: ../sources/rb-podcast-source.c:1862
 msgid "Finished downloading podcast"
 msgstr "Загрузка подкастов завершена"
 
-#: ../sources/rb-podcast-source.c:1882
+#: ../sources/rb-podcast-source.c:1875
 msgid "New updates available from"
 msgstr "Новые обновления доступны с"
 
-#: ../sources/rb-podcast-source.c:1998
+#: ../sources/rb-podcast-source.c:1991
 msgid "Error in podcast"
 msgstr "Ошибка в подкасте"
 
-#: ../sources/rb-podcast-source.c:2005
+#: ../sources/rb-podcast-source.c:1998
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Добавить ленту подкастов не смотря на это?"
 
-#: ../sources/rb-podcast-source.c:2132
+#: ../sources/rb-podcast-source.c:2125
 msgid "New Podcast Feed"
 msgstr "Добавление ленты подкастов"
 
-#: ../sources/rb-podcast-source.c:2132
+#: ../sources/rb-podcast-source.c:2125
 msgid "URL of podcast feed:"
 msgstr "URL ленты подкастов:"
 
-#: ../sources/rb-podcast-source.c:2148
+#: ../sources/rb-podcast-source.c:2141
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -4237,7 +4294,7 @@ msgstr[0] "%d эпизод"
 msgstr[1] "%d эпизода"
 msgstr[2] "%d эпизодов"
 
-#: ../sources/rb-podcast-source.c:2256
+#: ../sources/rb-podcast-source.c:2249
 msgid "Podcast Error"
 msgstr "Ошибка подкаста"
 
@@ -4265,7 +4322,7 @@ msgstr "Устройства"
 msgid "Shared"
 msgstr "Доступно"
 
-#: ../sources/rb-sourcelist.c:718
+#: ../sources/rb-sourcelist.c:710
 msgid "S_ource"
 msgstr "Исто_чник"
 
@@ -4575,35 +4632,60 @@ msgstr "Изменить автоматический список воспро�
 msgid "_Search:"
 msgstr "_Найти:"
 
-#: ../widgets/rb-song-info.c:367
+#: ../widgets/rb-song-info.c:371
 msgid "Song Properties"
 msgstr "Свойства композиции"
 
-#: ../widgets/rb-song-info.c:416
+#: ../widgets/rb-song-info.c:420
 msgid "Multiple Song Properties"
 msgstr "Свойства нескольких записей"
 
-#: ../widgets/rb-song-info.c:1123
+#: ../widgets/rb-song-info.c:1102
 msgid "Unknown file name"
 msgstr "Имя файла неизвестно"
 
-#: ../widgets/rb-song-info.c:1145
+#: ../widgets/rb-song-info.c:1124
 msgid "On the desktop"
 msgstr "На рабочем столе"
 
-#: ../widgets/rb-song-info.c:1154
+#: ../widgets/rb-song-info.c:1133
 msgid "Unknown location"
 msgstr "Местоположение неизвестно"
 
-#~ msgid "Device '%s' does not contain any media"
-#~ msgstr "Устройство «%s» не содержит носителей информации"
+#~ msgid "Cannot create MusicBrainz client"
+#~ msgstr "Не удалось создать клиента службы MusicBrainz"
 
 #~ msgid ""
-#~ "Device '%s' could not be opened. Check the access permissions on the "
-#~ "device."
+#~ "MusicBrainz metadata object is not valid. This is bad, check your console "
+#~ "for errors."
 #~ msgstr ""
-#~ "Устройство «%s» не может быть открыто. Проверьте права доступа к этому "
-#~ "устройству."
+#~ "Объект метаданных MusicBrainz некорректен. Более подробную информацию об "
+#~ "ошибке можно найти в консоли."
+
+#~ msgid "Check Last.fm server status at"
+#~ msgstr "Проверка состояния сервера Last.fm на"
+
+#~ msgid "Find out about Last.fm at "
+#~ msgstr "Узнайте больше о Last.fm на"
+
+#~ msgid "Last.fm Profile"
+#~ msgstr "Профиль пользователя Last.fm"
+
+#~ msgid "http://last.fm"
+#~ msgstr "http://last.fm"
+
+#~ msgid "http://last.fm/group/Rhythmbox"
+#~ msgstr "http://last.fm/group/Rhythmbox"
+
+#~ msgid "http://status.last.fm/"
+#~ msgstr "http://status.last.fm/"
+
+#~ msgid "Audioscrobbler preferences"
+#~ msgstr "Настройки Audioscrobbler"
+
+#~ msgid "Could not log in to Last.fm.  Check your username and password."
+#~ msgstr ""
+#~ "Не удалось войти в систему Last.fm.  Проверьте имя пользователя и пароль."
 
 #~ msgid "http://last.fm/forum/21713/_/51596"
 #~ msgstr "http://last.fm/forum/21713/_/51596"
