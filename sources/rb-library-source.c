@@ -298,6 +298,13 @@ add_child_sources_idle (RBLibrarySource *source)
 	return FALSE;
 }
 
+static void
+db_load_complete_cb (RhythmDB *db, RBLibrarySource *source)
+{
+	/* once the database is loaded, we can run the query to populate the library source */
+	g_object_set (source, "populate", TRUE, NULL);
+}
+
 static GObject *
 rb_library_source_constructor (GType type,
 			       guint n_construct_properties,
@@ -313,6 +320,8 @@ rb_library_source_constructor (GType type,
 
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "db", &source->priv->db, NULL);
+
+	g_signal_connect_object (source->priv->db, "load-complete", G_CALLBACK (db_load_complete_cb), source, 0);
 
 	rb_library_source_ui_prefs_sync (source);
 
@@ -380,6 +389,7 @@ rb_library_source_new (RBShell *shell)
 					  "sorting-key", CONF_STATE_LIBRARY_SORTING,
 					  "shell", shell,
 					  "icon", icon,
+					  "populate", FALSE,		/* wait until the database is loaded */
 					  NULL));
 	if (icon != NULL) {
 		g_object_unref (icon);

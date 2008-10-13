@@ -1,3 +1,33 @@
+2008-10-14  Jonathan Matthew  <jonathan@d14n.org>
+
+	* sources/rb-browser-source.c: (rb_browser_source_class_init),
+	(rb_browser_source_constructor), (rb_browser_source_set_property),
+	(rb_browser_source_get_property), (cached_all_query_complete_cb),
+	(rb_browser_source_populate),
+	(rb_browser_source_query_complete_cb),
+	(rb_browser_source_do_query):
+	Add a property controlling when the query model is populated.  When
+	populating the base query model or running other queries, only attach
+	the query model to the browser when the query is complete.
+
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_query_complete_cb),
+	(rb_auto_playlist_source_do_query), (cached_all_query_complete_cb),
+	(rb_auto_playlist_source_set_query):
+	When running queries, only attach the query model to the browser when
+	the query is complete.
+
+	* sources/rb-library-source.c: (db_load_complete_cb),
+	(rb_library_source_constructor), (rb_library_source_new):
+	Only populate the base query model for the library when the database
+	is fully loaded.
+
+	From #419383.  The main point of this is to avoid adding lots of rows
+	to tree models that are already visible, as when accessibility is
+	enabled, each row added triggers a synchronous IPC request.
+	This makes it possible to start rhythmbox with a fairly large library
+	when a11y is enabled.  Probably makes loading a bit faster otherwise.
+
 2008-10-12  Bastien Nocera  <hadess@hadess.net>
 
 	* corelib/Makefile.am:

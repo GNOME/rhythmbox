@@ -124,6 +124,7 @@ static void songs_view_drag_data_received_cb (GtkWidget *widget,
 					      RBBrowserSource *source);
 static void rb_browser_source_do_query (RBBrowserSource *source,
 					gboolean subset);
+static void rb_browser_source_populate (RBBrowserSource *source);
 
 struct RBBrowserSourcePrivate
 {
@@ -137,7 +138,7 @@ struct RBBrowserSourcePrivate
 	char *search_text;
 	RhythmDBQueryModel *cached_all_query;
 	RhythmDBPropType search_prop;
-	gboolean initialized;
+	gboolean populate;
 	gboolean query_active;
 	gboolean search_on_completion;
 
@@ -184,7 +185,8 @@ enum
 {
 	PROP_0,
 	PROP_SORTING_KEY,
-	PROP_BASE_QUERY_MODEL
+	PROP_BASE_QUERY_MODEL,
+	PROP_POPULATE
 };
 
 G_DEFINE_ABSTRACT_TYPE (RBBrowserSource, rb_browser_source, RB_TYPE_SOURCE)
@@ -235,6 +237,14 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	g_object_class_override_property (object_class,
 					  PROP_BASE_QUERY_MODEL,
 					  "base-query-model");
+	
+	g_object_class_install_property (object_class,
+					 PROP_POPULATE,
+					 g_param_spec_boolean ("populate",
+						 	       "populate",
+							       "whether to populate the source",
+							       TRUE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
 	g_type_class_add_private (klass, sizeof (RBBrowserSourcePrivate));
 }
@@ -509,12 +519,14 @@ rb_browser_source_constructor (GType type,
 
 	gtk_widget_show_all (GTK_WIDGET (source));
 
+	/* use a throwaway model until the real one is ready */
+	rb_library_browser_set_model (source->priv->browser,
+				      rhythmdb_query_model_new_empty (source->priv->db),
+				      TRUE);
+
 	source->priv->cached_all_query = rhythmdb_query_model_new_empty (source->priv->db);
-	rb_library_browser_set_model (source->priv->browser, source->priv->cached_all_query, TRUE);
-	rhythmdb_do_full_query_async (source->priv->db,
-				      RHYTHMDB_QUERY_RESULTS (source->priv->cached_all_query),
-				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, entry_type,
-				      RHYTHMDB_QUERY_END);
+	rb_browser_source_populate (source);
+
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	return G_OBJECT (source);
@@ -532,6 +544,14 @@ rb_browser_source_set_property (GObject *object,
 	case PROP_SORTING_KEY:
 		g_free (source->priv->sorting_key);
 		source->priv->sorting_key = g_strdup (g_value_get_string (value));
+		break;
+	case PROP_POPULATE:
+		source->priv->populate = g_value_get_boolean (value);
+
+		/* if being set after construction, run the query now.  otherwise the constructor will do it. */
+		if (source->priv->songs != NULL) {
+			rb_browser_source_populate (source);
+		}
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -554,11 +574,47 @@ rb_browser_source_get_property (GObject *object,
 	case PROP_BASE_QUERY_MODEL:
 		g_value_set_object (value, source->priv->cached_all_query);
 		break;
+	case PROP_POPULATE:
+		g_value_set_boolean (value, source->priv->populate);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
 }
+
+static void
+cached_all_query_complete_cb (RhythmDBQueryModel *model, RBBrowserSource *source)
+{
+	rb_library_browser_set_model (source->priv->browser,
+				      source->priv->cached_all_query,
+				      TRUE);
+}
+
+static void
+rb_browser_source_populate (RBBrowserSource *source)
+{
+	RhythmDBEntryType *entry_type;
+
+	if (source->priv->populate == FALSE)
+		return;
+
+	/* only connect the model to the browser when it's complete.  this avoids
+	 * thousands of row-added signals, which is ridiculously slow with a11y enabled.
+	 */
+	g_signal_connect_object (source->priv->cached_all_query,
+				 "complete",
+				 G_CALLBACK (cached_all_query_complete_cb),
+				 source, 0);
+
+	g_object_get (source, "entry-type", &entry_type, NULL);
+	rhythmdb_do_full_query_async (source->priv->db,
+				      RHYTHMDB_QUERY_RESULTS (source->priv->cached_all_query),
+				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, entry_type,
+				      RHYTHMDB_QUERY_END);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+}
+
 
 static void
 rb_browser_source_cmd_choose_genre (GtkAction *action,
@@ -879,8 +935,10 @@ rb_browser_source_browser_changed_cb (RBLibraryBrowser *browser,
 
 static void
 rb_browser_source_query_complete_cb (RhythmDBQueryModel *query_model,
-					    RBBrowserSource *source)
+				     RBBrowserSource *source)
 {
+	rb_library_browser_set_model (source->priv->browser, query_model, TRUE);
+
 	source->priv->query_active = FALSE;
 	if (source->priv->search_on_completion) {
 		rb_debug ("performing deferred search");
@@ -933,9 +991,10 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 		g_object_unref (query_model);
 
 	} else {
-		/* otherwise build a query based on the search text and feed it to the browser */
+		/* otherwise build a query based on the search text, and feed it to the browser
+		 * when the query finishes.
+		 */ 
 		query_model = rhythmdb_query_model_new_empty (source->priv->db);
-		rb_library_browser_set_model (source->priv->browser, query_model, TRUE);
 		source->priv->query_active = TRUE;
 		source->priv->search_on_completion = FALSE;
 		g_signal_connect_object (query_model,
