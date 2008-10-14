@@ -1,5 +1,13 @@
 2008-10-14  Jonathan Matthew  <jonathan@d14n.org>
 
+	* sources/rb-browser-source.c: (rb_browser_source_constructor),
+	(cached_all_query_complete_cb),
+	(rb_browser_source_query_complete_cb):
+	Now we don't have queries pending when setting the browser query
+	model.
+
+2008-10-14  Jonathan Matthew  <jonathan@d14n.org>
+
 	* sources/rb-auto-playlist-source.c:
 	(rb_auto_playlist_source_query_complete_cb),
 	(rb_auto_playlist_source_do_query),

@@ -522,7 +522,7 @@ rb_browser_source_constructor (GType type,
 	/* use a throwaway model until the real one is ready */
 	rb_library_browser_set_model (source->priv->browser,
 				      rhythmdb_query_model_new_empty (source->priv->db),
-				      TRUE);
+				      FALSE);
 
 	source->priv->cached_all_query = rhythmdb_query_model_new_empty (source->priv->db);
 	rb_browser_source_populate (source);
@@ -588,7 +588,7 @@ cached_all_query_complete_cb (RhythmDBQueryModel *model, RBBrowserSource *source
 {
 	rb_library_browser_set_model (source->priv->browser,
 				      source->priv->cached_all_query,
-				      TRUE);
+				      FALSE);
 }
 
 static void
@@ -937,7 +937,7 @@ static void
 rb_browser_source_query_complete_cb (RhythmDBQueryModel *query_model,
 				     RBBrowserSource *source)
 {
-	rb_library_browser_set_model (source->priv->browser, query_model, TRUE);
+	rb_library_browser_set_model (source->priv->browser, query_model, FALSE);
 
 	source->priv->query_active = FALSE;
 	if (source->priv->search_on_completion) {
