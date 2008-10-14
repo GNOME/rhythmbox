@@ -784,7 +784,6 @@ rb_library_source_format_changed_cb (GtkWidget *widget, RBLibrarySource *source)
 static char *
 sanitize_path (const char *str)
 {
-	gchar *res = NULL;
 	gchar *s;
 
 	/* Skip leading periods, otherwise files disappear... */
@@ -804,9 +803,7 @@ sanitize_path (const char *str)
 		g_strdelimit (s, "\t ", '_');
 	}
 
-	res = g_uri_escape_string (s, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH_ELEMENT, TRUE);
-	g_free (s);
-	return res;
+	return s;
 }
 
 static char *

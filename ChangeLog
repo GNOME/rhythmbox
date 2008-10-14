@@ -1,5 +1,11 @@
 2008-10-14  Jonathan Matthew  <jonathan@d14n.org>
 
+	* sources/rb-library-source.c: (sanitize_path):
+	The filename bits we're creating here aren't URI fragments, so we
+	don't need to escape them as if they were.  Fixes #555767.
+
+2008-10-14  Jonathan Matthew  <jonathan@d14n.org>
+
 	* sources/rb-browser-source.c: (rb_browser_source_constructor),
 	(cached_all_query_complete_cb),
 	(rb_browser_source_query_complete_cb):
