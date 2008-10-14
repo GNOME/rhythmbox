@@ -723,8 +723,6 @@ rb_auto_playlist_source_query_complete_cb (RhythmDBQueryModel *model,
 {
 	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
 
-	rb_library_browser_set_model (priv->browser, model, TRUE);
-
 	priv->query_active = FALSE;
 	if (priv->search_on_completion) {
 		priv->search_on_completion = FALSE;
@@ -774,6 +772,7 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 					    "limit-value", priv->limit_value,
 					    NULL);
 		rhythmdb_query_model_chain (query_model, priv->cached_all_query, FALSE);
+		rb_library_browser_set_model (priv->browser, query_model, TRUE);
 
 		priv->query_active = TRUE;
 		priv->search_on_completion = FALSE;
@@ -787,14 +786,6 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 	}
 
 	rhythmdb_query_free (query);
-}
-
-static void
-cached_all_query_complete_cb (RhythmDBQueryModel *model,
-			      RBAutoPlaylistSource *source)
-{
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
-	rb_library_browser_set_model (priv->browser, model, TRUE);
 }
 
 /**
@@ -847,10 +838,7 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 					       "limit-type", priv->limit_type,
 					       "limit-value", priv->limit_value,
 					       NULL);
-	g_signal_connect_object (priv->cached_all_query,
-				 "complete",
-				 G_CALLBACK (cached_all_query_complete_cb),
-				 source, 0);
+	rb_library_browser_set_model (priv->browser, priv->cached_all_query, TRUE);
 	rhythmdb_do_full_query_async_parsed (db,
 					     RHYTHMDB_QUERY_RESULTS (priv->cached_all_query),
 					     priv->query);

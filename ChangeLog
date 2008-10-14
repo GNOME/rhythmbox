@@ -1,5 +1,14 @@
 2008-10-14  Jonathan Matthew  <jonathan@d14n.org>
 
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_query_complete_cb),
+	(rb_auto_playlist_source_do_query),
+	(rb_auto_playlist_source_set_query):
+	Revert auto playlist changes from the previous commit, they cause
+	crashes with limited playlists.
+
+2008-10-14  Jonathan Matthew  <jonathan@d14n.org>
+
 	* sources/rb-browser-source.c: (rb_browser_source_class_init),
 	(rb_browser_source_constructor), (rb_browser_source_set_property),
 	(rb_browser_source_get_property), (cached_all_query_complete_cb),
