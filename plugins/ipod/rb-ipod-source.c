@@ -1028,7 +1028,8 @@ hal_udi_is_ipod (const char *udi)
 	LibHalContext *ctx;
 	DBusConnection *conn;
 	char *parent_udi;
-	char *parent_name;
+	char **methods_list;
+	guint i;
 	gboolean result;
 	DBusError error;
 	gboolean inited = FALSE;
@@ -1038,7 +1039,7 @@ hal_udi_is_ipod (const char *udi)
 
 	conn = NULL;
 	parent_udi = NULL;
-	parent_name = NULL;
+	methods_list = NULL;
 
 	ctx = libhal_ctx_new ();
 	if (ctx == NULL) {
@@ -1058,21 +1059,23 @@ hal_udi_is_ipod (const char *udi)
 
 	inited = TRUE;
 	parent_udi = libhal_device_get_property_string (ctx, udi,
-			"info.parent", &error);
+							"info.parent", &error);
 	if (parent_udi == NULL || dbus_error_is_set (&error))
 		goto end;
-
-	parent_name = libhal_device_get_property_string (ctx, parent_udi,
-			"storage.model", &error);
-	if (parent_name == NULL || dbus_error_is_set (&error))
+	methods_list = libhal_device_get_property_strlist (ctx, parent_udi,
+							   "portable_audio_player.access_method.protocols", &error);
+	if (methods_list == NULL || dbus_error_is_set (&error))
 		goto end;
-
-	if (strcmp (parent_name, "iPod") == 0)
-		result = TRUE;
+	for (i = 0; methods_list[i] != NULL; i++) {
+		if (strcmp ("ipod", methods_list[i]) == 0) {
+			result = TRUE;
+			break;
+		}
+	}
 
 end:
 	g_free (parent_udi);
-	g_free (parent_name);
+	libhal_free_string_array (methods_list);
 
 	if (dbus_error_is_set (&error)) {
 		rb_debug ("Error: %s\n", error.message);

@@ -1,3 +1,11 @@
+2008-10-14  Bastien Nocera  <hadess@hadess.net>
+
+	* plugins/ipod/rb-ipod-source.c (hal_udi_is_ipod):
+	Check for portable_audio_player.access_method.protocols == ipod
+	instead of checking for the name of the device, otherwise we won't be
+	catching 3rd-party devices that have iPod-like capabilities like the
+	Motorola Rokr phones (Closes: #556070)
+
 2008-10-14  Jonathan Matthew  <jonathan@d14n.org>
 
 	* sources/rb-library-source.c: (sanitize_path):
