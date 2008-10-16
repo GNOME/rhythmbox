@@ -589,6 +589,12 @@ rb_entry_view_dispose (GObject *object)
 	}
 
 	if (view->priv->model != NULL) {
+		/* remove the model from the treeview so
+		 * atk-bridge doesn't have to emit deletion events
+		 * for each cell in the view.
+		 */
+		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview), NULL);
+
 		g_object_unref (view->priv->model);
 		view->priv->model = NULL;
 	}

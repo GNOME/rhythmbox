@@ -1,3 +1,9 @@
+2008-10-16  Jonathan Matthew  <jonathan@d14n.org>
+
+	* widgets/rb-entry-view.c: (rb_entry_view_dispose):
+	Remove the model from the tree view, avoiding deletion events for each
+	cell when a11y is enabled; mostly fixes shutdown time.  From #419383.
+
 2008-10-14  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/ipod/rb-ipod-source.c (hal_udi_is_ipod):
