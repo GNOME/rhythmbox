@@ -1,3 +1,9 @@
+2008-10-18  Jonathan Matthew  <jonathan@d14n.org>
+
+	* rhythmdb/rhythmdb-tree.c: (version_to_int):
+	Use roundf to convert the version number to an integer.
+	Maybe it'll work most of the time now.
+
 2008-10-16  Jonathan Matthew  <jonathan@d14n.org>
 
 	* widgets/rb-entry-view.c: (rb_entry_view_dispose):
