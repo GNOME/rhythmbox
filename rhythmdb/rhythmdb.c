@@ -1863,6 +1863,7 @@ rhythmdb_process_stat_event (RhythmDB *db,
 					  event->error->message);
 				rhythmdb_entry_delete (db, entry);
 			}
+			rhythmdb_commit (db);
 		} else {
 			/* erm.. */
 		}
