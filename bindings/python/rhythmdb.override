@@ -826,19 +826,20 @@ _wrap_rhythmdb_entry_type__set_can_sync_metadata (PyGBoxed *self, PyObject *valu
 override-attr  RhythmDBEntryType_.get_playback_uri
 
 static char*
-_wrap_py_entry_type_get_playback_uri (RhythmDB *db, RhythmDBEntry *entry, PyObject *py_call)
+_wrap_py_entry_type_get_playback_uri (RhythmDBEntry *entry, PyObject *py_call)
 {
+	PyGILState_STATE __py_state;
+	__py_state = pyg_gil_state_ensure();
+
 	if (PyCallable_Check (py_call)) {
 		PyObject *py_ret, *args;
-		PyObject *py_db, *py_entry;
+		PyObject *py_entry;
 		char *ret;
 
-		py_db = pygobject_new (G_OBJECT (db));
 		py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, FALSE, FALSE);
-		args = Py_BuildValue ("(OO)", py_db, py_entry);
-		py_ret = PyObject_Call (py_call, args, NULL);
+		args = Py_BuildValue ("(O)", py_entry);
+		py_ret = PyObject_CallObject (py_call, args);
 
-		Py_DECREF (py_db);
 		Py_DECREF (py_entry);
 
 		if (py_ret != Py_None) {
@@ -847,9 +848,11 @@ _wrap_py_entry_type_get_playback_uri (RhythmDB *db, RhythmDBEntry *entry, PyObje
 			ret = NULL;
 		}
 		Py_DECREF (py_ret);
+		pyg_gil_state_release(__py_state);
 		return ret;
 	} else {
 		/* TODO: emit error */
+		pyg_gil_state_release(__py_state);
 		return NULL;
 	}
 }

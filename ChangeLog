@@ -1,3 +1,9 @@
+2008-10-20  Jonathan Matthew  <jonathan@d14n.org>
+
+	* bindings/python/rhythmdb.override:
+	Fix wrapper for get_playback_uri - there's no 'db' parameter, and it
+	needs to look after the GIL too.
+
 2008-10-19  Jonathan Matthew  <jonathan@d14n.org>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_process_stat_event):
