@@ -1246,14 +1246,17 @@ impl_paste (RBSource *asource, GList *entries)
 		rb_debug ("pasting entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 
 		entry_type = rhythmdb_entry_get_entry_type (entry);
-		if (entry_type == source_entry_type)
-			/* copying to ourselves would be silly */
+		if (entry_type == source_entry_type) {
+			rb_debug ("can't copy an entry from the library to itself");
 			continue;
+		}
 
 		/* see if the responsible source lets us copy */
 		source_source = rb_shell_get_source_by_entry_type (shell, entry_type);
-		if ((source_source != NULL) && !rb_source_can_copy (source_source))
+		if ((source_source != NULL) && !rb_source_can_copy (source_source)) {
+			rb_debug ("source for the entry doesn't want us to copy it");
 			continue;
+		}
 
 		dest = build_filename (source, entry);
 		if (dest == NULL) {

@@ -817,6 +817,9 @@ rb_check_dir_has_space (GFile *file,
 
 	extant = rb_file_find_extant_parent (file);
 	if (extant == NULL) {
+		char *uri = g_file_get_uri (file);
+		g_warning ("Cannot get free space at %s: none of the directory structure exists", uri);
+		g_free (uri);
 		return FALSE;
 	}
 
@@ -988,13 +991,16 @@ rb_file_find_extant_parent (GFile *file)
 		GFile *parent;
 
 		parent = g_file_get_parent (file);
-		g_object_unref (file);
-		file = parent;
-
-		if (file == NULL) {
-			g_warning ("filesystem root apparently doesn't exist!");
+		if (parent == NULL) {
+			char *uri = g_file_get_uri (file);
+			g_warning ("filesystem root %s apparently doesn't exist!", uri);
+			g_free (uri);
+			g_object_unref (file);
 			return NULL;
 		}
+
+		g_object_unref (file);
+		file = parent;
 	}
 
 	return file;
@@ -1022,6 +1028,7 @@ rb_uri_get_filesystem_type (const char *uri)
 
 	extant = rb_file_find_extant_parent (file);
 	if (extant == NULL) {
+		rb_debug ("unable to get filesystem type for %s: none of the directory structure exists", uri);
 		g_object_unref (file);
 		return NULL;
 	}

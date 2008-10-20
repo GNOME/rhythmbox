@@ -1035,11 +1035,14 @@ do_transfer (RBRemovableMediaManager *manager)
 
 	emit_progress (manager);
 
-	if (priv->transfer_running)
+	if (priv->transfer_running) {
+		rb_debug ("already transferring something");
 		return;
+	}
 
 	data = g_async_queue_try_pop (priv->transfer_queue);
 	if (data == NULL) {
+		rb_debug ("transfer queue is empty");
 		priv->transfer_total = 0;
 		priv->transfer_done = 0;
 		emit_progress (manager);
@@ -1059,7 +1062,12 @@ do_transfer (RBRemovableMediaManager *manager)
 	g_signal_connect (G_OBJECT (encoder),
 			  "completed", G_CALLBACK (completed_cb),
 			  data);
-	rb_encoder_encode (encoder, data->entry, data->dest, data->mime_types);
+	rb_debug ("starting transfer of %s to %s",
+		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION),
+		  data->dest);
+	if (rb_encoder_encode (encoder, data->entry, data->dest, data->mime_types) == FALSE) {
+		rb_debug ("unable to start transfer");
+	}
 }
 
 /**

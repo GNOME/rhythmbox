@@ -333,6 +333,8 @@ start_pipeline (RBEncoderGst *encoder, GError **error)
 		} else {
 			_rb_encoder_emit_progress (RB_ENCODER (encoder), -1);
 		}
+	} else {
+		rb_debug ("encoder pipeline refused to start");
 	}
 
 	return (result != GST_STATE_CHANGE_FAILURE);
@@ -363,11 +365,14 @@ add_encoding_pipeline (RBEncoderGst *encoder,
 	g_object_set (queue, "max-size-time", 120 * GST_SECOND, NULL);
 
 	tmp = g_strdup_printf (GST_ENCODING_PROFILE, gm_audio_profile_get_pipeline (profile));
+	rb_debug ("constructing encoding bin from pipeline string %s", tmp);
 	encoding_bin = GST_ELEMENT (gst_parse_launch (tmp, error));
 	g_free (tmp);
 
-	if (encoding_bin == NULL)
+	if (encoding_bin == NULL) {
+		rb_debug ("unable to construct encoding bin");
 		return NULL;
+	}
 
 	/* find pads and ghost them if necessary */
 	if ((pad = gst_bin_find_unconnected_pad (GST_BIN (encoding_bin), GST_PAD_SRC)))
@@ -377,8 +382,10 @@ add_encoding_pipeline (RBEncoderGst *encoder,
 
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), encoding_bin);
 
-	if (gst_element_link_many (queue, encoding_bin, queue2, NULL) == FALSE)
+	if (gst_element_link_many (queue, encoding_bin, queue2, NULL) == FALSE) {
+		rb_debug ("unable to link encoding bin with queues");
 		return NULL;
+	}
 
 	/* store the first element of the encoding graph. new_decoded_pad_cb
 	 * will link to this once a decoded pad is found */
@@ -601,6 +608,7 @@ attach_output_pipeline (RBEncoderGst *encoder,
 	 * (prompting for overwrite if it already exists) and use giostreamsink.
 	 * otherwise, create whatever sink element we can.
 	 */
+	rb_debug ("attempting to open output file %s", dest);
 	file = g_file_new_for_uri (dest);
 	
 	sink = gst_element_factory_make ("giostreamsink", NULL);
@@ -635,7 +643,7 @@ attach_output_pipeline (RBEncoderGst *encoder,
 			g_object_set (sink, "stream", stream, NULL);
 		}
 	} else {
-		rb_debug ("unable to create giostreamsink, falling back to default sink for uri");
+		rb_debug ("unable to create giostreamsink, falling back to default sink for %s", dest);
 	}
 
 	if (sink == NULL) {
@@ -748,6 +756,9 @@ profile_bin_find_encoder (GstBin *profile_bin)
 	}
 	gst_iterator_free (iter);
 
+	if (encoder == NULL) {
+		rb_debug ("unable to find encoder element");
+	}
 	return encoder;
 }
 
@@ -827,8 +838,11 @@ create_pipeline_and_source (RBEncoderGst *encoder,
 	GstElement *src;
 
 	uri = rhythmdb_entry_get_playback_uri (entry);
-	if (uri == NULL)
+	if (uri == NULL) {
+		rb_debug ("didn't get a playback URI for entry %s",
+			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 		return NULL;
+	}
 
 	src = gst_element_make_from_uri (GST_URI_SRC, uri, "source");
 	if (src == NULL) {
@@ -903,8 +917,11 @@ extract_track (RBEncoderGst *encoder,
 
 	/* setup cd extraction properties */
 	uri = rhythmdb_entry_get_playback_uri (entry);
-	if (uri == NULL)
+	if (uri == NULL) {
+		rb_debug ("didn't get a playback URI for entry %s",
+			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 		return FALSE;
+	}
 
 	device = g_utf8_strrchr (uri, -1, '#');
 	g_object_set (G_OBJECT (src),
@@ -922,8 +939,10 @@ extract_track (RBEncoderGst *encoder,
 	end = add_encoding_pipeline (encoder, profile, error);
 	if (end == NULL)
 		return FALSE;
-	if (gst_element_link (src, encoder->priv->enc) == FALSE)
+	if (gst_element_link (src, encoder->priv->enc) == FALSE) {
+		rb_debug ("unable to link source to encoding pipeline");
 		return FALSE;
+	}
 
 	if (!attach_output_pipeline (encoder, end, dest, error))
 		return FALSE;
@@ -969,8 +988,10 @@ transcode_track (RBEncoderGst *encoder,
 	if (decoder == NULL)
 		goto error;
 
-	if (gst_element_link (src, decoder) == FALSE)
+	if (gst_element_link (src, decoder) == FALSE) {
+		rb_debug ("unable to link source element to decodebin");
 		goto error;
+	}
 
 	end = add_encoding_pipeline (encoder, profile, error);
 	if (end == NULL)

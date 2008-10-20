@@ -1,5 +1,18 @@
 2008-10-20  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-encoder-gst.c: (start_pipeline),
+	(add_encoding_pipeline), (attach_output_pipeline),
+	(profile_bin_find_encoder), (create_pipeline_and_source),
+	(extract_track), (transcode_track):
+	* lib/rb-file-helpers.c: (rb_check_dir_has_space),
+	(rb_file_find_extant_parent), (rb_uri_get_filesystem_type):
+	* shell/rb-removable-media-manager.c: (do_transfer):
+	* sources/rb-library-source.c: (impl_paste):
+	Add more debug info for track transfer stuff, might help figure out
+	why things are broken for MTP devices..
+
+2008-10-20  Jonathan Matthew  <jonathan@d14n.org>
+
 	* bindings/python/rhythmdb.override:
 	Fix wrapper for get_playback_uri - there's no 'db' parameter, and it
 	needs to look after the GIL too.
