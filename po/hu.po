@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-07 11:13+0000\n"
-"PO-Revision-Date: 2008-09-27 07:47+0200\n"
+"POT-Creation-Date: 2008-10-03 16:11+0000\n"
+"PO-Revision-Date: 2008-10-20 20:05+0200\n"
 "Last-Translator: Gabor Kelemen <kelemeng@gnome.hu>\n"
 "Language-Team: Hungarian <gnome@fsf.hu>\n"
 "MIME-Version: 1.0\n"
@@ -23,6 +23,11 @@ msgstr ""
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Felül kívánja írni a következő fájlt: „%s”?"
+
+#: ../backends/gstreamer/rb-encoder-gst.c:645
+#, c-format
+msgid "Could not create a GStreamer sink element to write to %s"
+msgstr "Nem sikerült GStreamer nyelőelemet létrehozni a(z) %s írásához"
 
 #: ../backends/gstreamer/rb-player-gst.c:693 ../metadata/rb-metadata-gst.c:801
 #: ../metadata/rb-metadata-gst.c:1368
@@ -40,7 +45,7 @@ msgstr "Ismeretlen lejátszási hiba"
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1122
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
-msgstr "Nem sikerült az új adatfolyamot a GStreamer csővezetékhez kapcsolni"
+msgstr "Nem sikerült az új adatfolyamot a GStreamer adatcsatornához kapcsolni"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1149
 #, c-format
@@ -77,12 +82,12 @@ msgstr "Nem sikerült létrehozni a hangkimeneti elemet; ellenőrizze a telepít
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3006
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
-msgstr "Nem sikerült létrehozni a GStreamer csővezetéket; ellenőrizze a telepítését"
+msgstr "Nem sikerült létrehozni a GStreamer adatcsatornát; ellenőrizze a telepítését"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3101
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
-msgstr "Nem sikerült GStreamer csővezetéket létrehozni a(z) %s lejátszásához"
+msgstr "Nem sikerült GStreamer adatcsatornát létrehozni a(z) %s lejátszásához"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3117
 #, c-format
@@ -517,9 +522,8 @@ msgstr "Legutóbb lejátszott"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:207
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1494
-#: ../shell/rb-shell-player.c:2987 ../shell/rb-shell.c:1046
-#: ../shell/rb-shell.c:2140 ../shell/rb-tray-icon.c:50
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1494 ../shell/rb-shell.c:1046
+#: ../shell/rb-shell.c:2142 ../shell/rb-tray-icon.c:50
 msgid "Music Player"
 msgstr "Zenelejátszó"
 
@@ -572,8 +576,8 @@ msgstr "%Y %b %e"
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:615
-#: ../lib/rb-util.c:855
+#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:577
+#: ../lib/rb-util.c:817
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:85
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:86
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:88
@@ -583,26 +587,27 @@ msgstr "%Y %b %e"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:268
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:153
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:154
-#: ../plugins/audiocd/rb-audiocd-source.c:217
+#: ../plugins/audiocd/rb-audiocd-source.c:218
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:510
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
 #: ../plugins/daap/rb-daap-connection.c:679
-#: ../plugins/generic-player/rb-generic-player-source.c:1182
+#: ../plugins/generic-player/rb-generic-player-source.c:1171
 #: ../plugins/ipod/rb-ipod-source.c:314
+#: ../plugins/jamendo/jamendo/JamendoSource.py:330
 #: ../plugins/iradio/rb-iradio-source.c:517
 #: ../plugins/iradio/rb-iradio-source.c:1110
 #: ../plugins/iradio/rb-station-properties-dialog.c:486
 #: ../plugins/mtpdevice/rb-mtp-source.c:266
-#: ../podcast/rb-feed-podcast-properties-dialog.c:319
-#: ../podcast/rb-podcast-manager.c:1785
-#: ../podcast/rb-podcast-properties-dialog.c:475
-#: ../podcast/rb-podcast-properties-dialog.c:528
-#: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1248
-#: ../rhythmdb/rhythmdb-tree.c:1252 ../rhythmdb/rhythmdb-tree.c:1256
-#: ../rhythmdb/rhythmdb-tree.c:1260 ../rhythmdb/rhythmdb.c:1599
-#: ../shell/rb-shell-player.c:1717 ../shell/rb-shell.c:3063
+#: ../podcast/rb-feed-podcast-properties-dialog.c:321
+#: ../podcast/rb-podcast-manager.c:1863
+#: ../podcast/rb-podcast-properties-dialog.c:478
+#: ../podcast/rb-podcast-properties-dialog.c:531
+#: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1284
+#: ../rhythmdb/rhythmdb-tree.c:1288 ../rhythmdb/rhythmdb-tree.c:1292
+#: ../rhythmdb/rhythmdb-tree.c:1296 ../rhythmdb/rhythmdb.c:1601
+#: ../shell/rb-shell-player.c:1717 ../shell/rb-shell.c:3065
 #: ../sources/rb-podcast-source.c:1763 ../widgets/rb-entry-view.c:1035
 #: ../widgets/rb-entry-view.c:1060 ../widgets/rb-entry-view.c:1463
 #: ../widgets/rb-entry-view.c:1475 ../widgets/rb-entry-view.c:1487
@@ -616,7 +621,7 @@ msgstr "Ismeretlen"
 msgid "Too many symlinks"
 msgstr "Túl sok szimbolikus hivatkozás"
 
-#: ../lib/rb-file-helpers.c:824
+#: ../lib/rb-file-helpers.c:832
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Nem kérhető le a szabad helyet ennél: %s: %s"
@@ -629,32 +634,32 @@ msgstr "HTTP proxy beállítási hiba"
 msgid "Rhythmbox does not support automatic proxy configuration"
 msgstr "A Rhythmbox nem támogatja az automatikus proxybeállítást"
 
-#: ../lib/rb-util.c:617 ../remote/dbus/rb-client.c:142
+#: ../lib/rb-util.c:579 ../remote/dbus/rb-client.c:142
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:619 ../remote/dbus/rb-client.c:144
+#: ../lib/rb-util.c:581 ../remote/dbus/rb-client.c:144
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:654
+#: ../lib/rb-util.c:616
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d / %d:%02d van még hátra"
 
-#: ../lib/rb-util.c:658
+#: ../lib/rb-util.c:620
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d / %d:%02d:%02d van még hátra"
 
-#: ../lib/rb-util.c:663
+#: ../lib/rb-util.c:625
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d / %d:%02d"
 
-#: ../lib/rb-util.c:667
+#: ../lib/rb-util.c:629
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d / %d:%02d:%02d"
@@ -721,7 +726,7 @@ msgstr "Nem hozhatók létre címkeíró elemek"
 #: ../metadata/rb-metadata-gst.c:1320
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
-msgstr "Időtúllépés a csővezeték NULL értékre állítása közben"
+msgstr "Időtúllépés az adatcsatorna NULL értékre állítása közben"
 
 #: ../metadata/rb-metadata-gst.c:1344
 #, c-format
@@ -768,37 +773,37 @@ msgstr ""
 msgid "_Continue"
 msgstr "_Folytatás"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:221
+#: ../plugins/audiocd/rb-audiocd-source.c:222
 msgid "<Invalid unicode>"
 msgstr "<érvénytelen unicode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:266
+#: ../plugins/audiocd/rb-audiocd-source.c:268
 #, c-format
 msgid "Track %u"
 msgstr "%u. szám"
 
+#: ../plugins/audiocd/rb-audiocd-source.c:328
 #: ../plugins/audiocd/rb-audiocd-source.c:336
-#: ../plugins/audiocd/rb-audiocd-source.c:344
-#: ../plugins/audiocd/rb-audiocd-source.c:678
+#: ../plugins/audiocd/rb-audiocd-source.c:670
 msgid "Couldn't load Audio CD"
 msgstr "Nem tölthető be a hang CD"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:337
+#: ../plugins/audiocd/rb-audiocd-source.c:329
 msgid "Rhythmbox couldn't access the CD."
 msgstr "A Rhythmbox nem tudta elérni a CD-t."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:345
+#: ../plugins/audiocd/rb-audiocd-source.c:337
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "A Rhythmbox nem tudta beolvasni a CD információkat."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:447
+#: ../plugins/audiocd/rb-audiocd-source.c:439
 #: ../sources/rb-library-source.c:158 ../widgets/rb-entry-view.c:1419
 #: ../widgets/rb-query-creator-properties.c:75
 #: ../widgets/rb-query-creator-properties.c:105
 msgid "Title"
 msgstr "Cím"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:454
+#: ../plugins/audiocd/rb-audiocd-source.c:446
 #: ../sources/rb-library-source.c:149 ../widgets/rb-entry-view.c:1429
 #: ../widgets/rb-library-browser.c:138
 #: ../widgets/rb-query-creator-properties.c:76
@@ -806,9 +811,40 @@ msgstr "Cím"
 msgid "Artist"
 msgstr "Előadó"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:679
+#: ../plugins/audiocd/rb-audiocd-source.c:671
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "A Rhythmbox nem képes elérni a CD eszközt."
+
+#: ../plugins/audiocd/sj-metadata-getter.c:245
+#, c-format
+msgid "Could not create CD lookup thread"
+msgstr "A CD lekérdező szál nem hozható létre"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:89
+#, c-format
+msgid "Cannot access CD"
+msgstr "Nem érhető el a CD"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:109
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:347
+msgid "Unknown Title"
+msgstr "Ismeretlen cím"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:113
+#: ../plugins/audiocd/sj-metadata-gvfs.c:136
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:331
+msgid "Unknown Artist"
+msgstr "Ismeretlen előadó"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:133
+#, c-format
+msgid "Track %d"
+msgstr "%d. szám"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:150
+#, c-format
+msgid "Cannot access CD: %s"
+msgstr "Nem érhető el a CD: %s"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:213
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:220
@@ -820,14 +856,6 @@ msgstr "Ez a CD nem kérdezhető le: %s\n"
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:329
 msgid "Various"
 msgstr "Különböző"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:331
-msgid "Unknown Artist"
-msgstr "Ismeretlen előadó"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:347
-msgid "Unknown Title"
-msgstr "Ismeretlen cím"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:372
 msgid "Incomplete metadata for this CD"
@@ -855,7 +883,7 @@ msgid "Cannot read CD: %s"
 msgstr "Nem olvasható a CD: %s"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:678
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:727
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -868,80 +896,72 @@ msgid "0"
 msgstr "0"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:2
-msgid "Check Last.fm server status at"
-msgstr "A Last.fm kiszolgáló állapotának ellenőrzése"
+msgid "Account Login"
+msgstr "Fiókbejelentkezés"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:3
 msgid "Disabled"
 msgstr "Tiltva"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:4
-msgid "Find out about Last.fm at "
-msgstr "A Last.fm-ről a következő címen tudhat meg többet:"
+msgid "Join the Rhythmbox group"
+msgstr "Csatlakozzon a Rhythmbox csoporthoz"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:5
-msgid "Join the Rhythmbox group at "
-msgstr "Csatlakozzon a Rhythmbox csoporthoz a következő címen:"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
 msgid "Last submission time:"
 msgstr "Utolsó beküldés időpontja:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:7
-msgid "Last.fm Profile"
-msgstr "Last.fm profil"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1084
 #: ../plugins/iradio/rb-station-properties-dialog.c:497
-#: ../rhythmdb/rhythmdb.c:3406 ../widgets/rb-entry-view.c:983
+#: ../rhythmdb/rhythmdb.c:3408 ../widgets/rb-entry-view.c:983
 #: ../widgets/rb-entry-view.c:1521 ../widgets/rb-entry-view.c:1534
 #: ../widgets/rb-song-info.c:1315
 msgid "Never"
 msgstr "Soha"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:9
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:7
+msgid "New to Last.fm?"
+msgstr "Új Last.fm felhasználó?"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 msgid "Queued tracks:"
 msgstr "Sorba állított számok:"
 
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:9
+msgid "Sign up for an account"
+msgstr "Készítsen fiókot"
+
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:10
+msgid "Statistics"
+msgstr "Statisztika"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:11
 msgid "Status:"
 msgstr "Állapot:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:11
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:12
 msgid "Tracks submitted:"
 msgstr "Beküldött számok:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:12
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:13
 msgid "_Password:"
 msgstr "_Jelszó:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:13
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:14
 msgid "_Username:"
 msgstr "_Felhasználónév:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:14
-msgid "http://last.fm"
-msgstr "http://last.fm"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:15
-msgid "http://last.fm/group/Rhythmbox"
-msgstr "http://last.fm/group/Rhythmbox"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:16
-msgid "http://status.last.fm/"
-msgstr "http://status.last.fm/"
-
 #: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:216
-msgid "Audioscrobbler preferences"
-msgstr "Audioscrobbler beállításai"
+msgid "Last.fm Preferences"
+msgstr "Last.fm beállítások"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1107
 msgid "OK"
 msgstr "OK"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1110
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1611
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1819
 msgid "Logging in"
 msgstr "Bejelentkezés"
 
@@ -977,174 +997,182 @@ msgstr "A sor túl hosszú"
 msgid "Track submission failed too many times"
 msgstr "A számbeküldés túl sokszor hiúsult meg"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:193
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
 msgid "Similar Artists radio"
 msgstr "Hasonló előadók rádiója"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:193
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1090
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1292
 #, c-format
 msgid "Artists similar to %s"
 msgstr "Hasonló előadók, mint: %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
 msgid "Tag radio"
 msgstr "Címkerádió"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
 #, c-format
 msgid "Tracks tagged with %s"
 msgstr "%s címkéjű számok"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
 msgid "Artist Fan radio"
 msgstr "Előadó rajongói rádiója"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1092
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1294
 #, c-format
 msgid "Artists liked by fans of %s"
 msgstr "%s rajongói által kedvelt előadók"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
 msgid "Group radio"
 msgstr "Csoportrádió"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
 #, c-format
 msgid "Tracks liked by the %s group"
 msgstr "A(z) %s csoport által kedvelt számok"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:276
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:283
 msgid "Love"
 msgstr "Kedvelt"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:277
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:284
 msgid "Mark this song as loved"
 msgstr "A dal megjelölése kedveltként"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:279
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
 msgid "Ban"
 msgstr "Tiltás"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:280
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
 msgid "Ban the current track from being played again"
 msgstr "A jelenlegi dal újabb lejátszásának megtiltása"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:282
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
 msgid "Delete Station"
 msgstr "Állomás törlése"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:283
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
 msgid "Delete the selected station"
 msgstr "A kiválasztott állomás törlése"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:285
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
 msgid "Download song"
 msgstr "Szám letöltése"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
 msgid "Download this song"
 msgstr "A szám letöltése"
 
 #. awful
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:466
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:513
 msgid "Enter the item to build a Last.fm station out of:"
 msgstr "Adja meg a last.fm adó felépítéséhez használandó elemet:"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:469
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:516
 msgid "Add"
 msgstr "Hozzáadás"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:720
-msgid "Could not log in to Last.fm.  Check your username and password."
-msgstr "Nem lehet bejelentkezni a last.fm-re. Ellenőrizze felhasználónevét és jelszavát."
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:869
+msgid "Account Settings"
+msgstr "Fiókbeállítások"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:724
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:894
+msgid "Account details are needed before you can connect.  Check your settings."
+msgstr "A csatlakozáshoz a fiók adatai szükségesek. Ellenőrizze a beállításokat."
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:898
 msgid "This version of Rhythmbox has been banned from Last.fm."
 msgstr "A Rhythmbox ezen verzióját kitiltották a last.fm-ről."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1081
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:902
+msgid "Unable to connect"
+msgstr "Nem lehet csatlakozni"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1283
 #, c-format
 msgid "Global Tag %s"
 msgstr "Globális címke: %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1100
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1302
 #, c-format
 msgid "%s's Neighbour Radio"
 msgstr "%s szomszéd rádiója"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1102
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1304
 #, c-format
 msgid "%s's Recommended Radio: %s percent"
 msgstr "%s javasolt rádiója: %s százalék"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1104
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1306
 #, c-format
 msgid "%s's Personal Radio"
 msgstr "%s személyes rádiója"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1106
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1308
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr "%s kedvelt számai"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1108
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1310
 #, c-format
 msgid "%s's Playlist"
 msgstr "%s lejátszólistái"
 
 #. Translators: variables are 1: user name, 2: tag name; for user tag radio
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1114
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1316
 #, c-format
 msgid "%s's %s Radio"
 msgstr "%s %s rádiója"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1118
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1320
 #, c-format
 msgid "%s Group Radio"
 msgstr "%s csoport rádiója"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1581
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1789
 msgid "Neighbour Radio"
 msgstr "Szomszéd rádió"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1589
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1797
 msgid "Personal Radio"
 msgstr "Személyes rádió"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1679
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1887
 msgid "Server did not respond"
 msgstr "A kiszolgáló nem válaszolt"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1749
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1959
 msgid "There is not enough content available to play this station."
 msgstr "Nincs elég tartalom az állomás lejátszásához."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1754
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1964
 msgid "This station is available to subscribers only."
 msgstr "Az állomás csak előfizetőknek érhető el."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1761
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1971
 msgid "The streaming system is offline for maintenance, please try again later."
 msgstr ""
 "A műsorszórási rendszer karbantartás miatt nem érhető el, próbálja újra "
 "később."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1800
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2010
 msgid "Changing station"
 msgstr "Állomásváltás"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2014
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2024
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2224
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2234
 msgid "Retrieving playlist"
 msgstr "Lejátszólista lekérése"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2113
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2323
 msgid "Banning song"
 msgstr "Dal tiltása"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2131
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2341
 msgid "Adding song to your Loved tracks"
 msgstr "Dal hozzáadása a kedveltekhez"
 
@@ -1157,28 +1185,54 @@ msgstr "Hang CD író"
 msgid "Support for recording audio CDs from playlists"
 msgstr "Hang CD-k létrehozása lejátszólistákból"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:87
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:89
 msgid "_Create Audio CD..."
 msgstr "Hang CD _létrehozása…"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:88
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:90
 msgid "Create an audio CD from playlist"
 msgstr "Hang CD létrehozása a lejátszólistából"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:188
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:92
+msgid "Duplicate Audio CD..."
+msgstr "Hang CD másolása…"
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:93
+msgid "Create a copy of this audio CD"
+msgstr "Másolat létrehozása a hang CD-ről"
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:193
 msgid "Unable to create audio CD"
 msgstr "Nem hozható létre a hang CD"
 
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:246
+msgid "Could not duplicate disc"
+msgstr "A CD nem másolható"
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:247
+msgid "Rhythmbox could not duplicate the disc"
+msgstr "A Rhythmbox nem tudta lemásolni a lemezt."
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:248
+msgid "Reason"
+msgstr "Ok"
+
 #. Translators: this is the toolbar button label for
 #. Create Audio CD action
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:361
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:449
 msgid "Burn"
 msgstr "Írás"
+
+#. Translators: this is the toolbar button label for
+#. Duplicate Audio CD action
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:455
+msgid "Copy CD"
+msgstr "CD másolása"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:420
 #, c-format
 msgid "Failed to create pipeline"
-msgstr "Nem sikerült csővezetéket létrehozni"
+msgstr "Nem sikerült adatcsatornát létrehozni"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:525
 #: ../plugins/cd-recorder/rb-recorder-gst.c:531
@@ -1188,7 +1242,7 @@ msgstr "Nem lehet törölni a következőt: „%s”"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:586
 msgid "Could not retrieve state from processing pipeline"
-msgstr "Az állapot nem kérhető le a feldolgozó csővezetékből"
+msgstr "Az állapot nem kérhető le a feldolgozó adatcsatornából"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:601
 msgid "Could not get current track position"
@@ -1197,7 +1251,7 @@ msgstr "Nem kérhető le a jelenlegi szám pozíciója"
 #: ../plugins/cd-recorder/rb-recorder-gst.c:649
 #, c-format
 msgid "Could not start pipeline playing"
-msgstr "Nem indítható el a csővezetékes lejátszás"
+msgstr "Nem indítható el az adatcsatornás lejátszás"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:660
 #, c-format
@@ -1235,7 +1289,7 @@ msgstr "Nem kérhető le a szám ideje a fájlhoz: %s"
 msgid "Could not determine audio track durations."
 msgstr "A számok időtartamai nem határozhatók meg."
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1255
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1257
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -1244,7 +1298,7 @@ msgstr ""
 "Hiba történt a CD-re írás közben:\n"
 "%s"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1259
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1261
 msgid "There was an error writing to the CD"
 msgstr "Hiba történt a CD-re írás közben"
 
@@ -1768,11 +1822,11 @@ msgstr "_Törlés"
 msgid "Delete playlist"
 msgstr "Lejátszólista törlése"
 
-#: ../plugins/ipod/rb-ipod-source.c:1344 ../sources/rb-podcast-source.c:902
+#: ../plugins/ipod/rb-ipod-source.c:1348 ../sources/rb-podcast-source.c:902
 msgid "Podcasts"
 msgstr "Podcastok"
 
-#: ../plugins/ipod/rb-ipod-source.c:1690
+#: ../plugins/ipod/rb-ipod-source.c:1694
 msgid "New playlist"
 msgstr "Új lejátszólista"
 
@@ -1910,7 +1964,7 @@ msgstr ""
 "Jamendo oldalról"
 
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:2
-#: ../plugins/jamendo/jamendo/JamendoSource.py:52
+#: ../plugins/jamendo/jamendo/JamendoSource.py:65
 msgid "Jamendo"
 msgstr "Jamendo"
 
@@ -1936,11 +1990,16 @@ msgstr "Előadó tá_mogatása"
 msgid "Donate Money to this Artist"
 msgstr "Pénz küldése az előadónak"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:104
+#: ../plugins/jamendo/jamendo/JamendoSource.py:116
 msgid "Loading Jamendo catalogue"
 msgstr "A Jamendo katalógus betöltése"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:385
+#: ../plugins/jamendo/jamendo/JamendoSource.py:388
+#, python-format
+msgid "Error looking up p2plink for album %s on jamendo.com"
+msgstr "Hiba a(z) %s album P2P hivatkozásának keresése közben a jamendo.com oldalon"
+
+#: ../plugins/jamendo/jamendo/JamendoSource.py:409
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Hiba a(z) %s előadó kikeresése közben a jamendo.com oldalon"
@@ -1996,7 +2055,7 @@ msgid "%s Properties"
 msgstr "%s tulajdonságai"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:488
-#: ../podcast/rb-podcast-properties-dialog.c:473
+#: ../podcast/rb-podcast-properties-dialog.c:476
 #: ../widgets/rb-song-info.c:1065
 #, c-format
 msgid "%lu kbps"
@@ -2625,7 +2684,7 @@ msgstr "MTP eszköz kiadása"
 msgid "Rename MTP-device"
 msgstr "MTP eszköz átnevezése"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:405
+#: ../plugins/mtpdevice/rb-mtp-source.c:409
 msgid "Digital Audio Player"
 msgstr "Digitális zenelejátszó"
 
@@ -2666,7 +2725,10 @@ msgid ""
 "After you press OK, Rhythmbox will wait until you connect to it with winpdb "
 "or rpdb2. If you have not set a debugger password in GConf, it will use the "
 "default password ('rhythmbox')."
-msgstr "Az OK gombra kattintva a Rhythmbox megvárja, amíg winpdb vagy rpdb2 használatával csatlakozik hozzá. Ha nem állított be hibakereső jelszót a GConfban, akkor az alapértelmezett jelszót („rhythmbox”) fogja használni."
+msgstr ""
+"Az OK gombra kattintva a Rhythmbox megvárja, amíg winpdb vagy rpdb2 "
+"használatával csatlakozik hozzá. Ha nem állított be hibakereső jelszót a "
+"GConfban, akkor az alapértelmezett jelszót („rhythmbox”) fogja használni."
 
 #. ex:noet:ts=8:
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:1
@@ -2772,7 +2834,7 @@ msgstr "A videokimenet nem indítható el"
 #: ../plugins/visualizer/rb-visualizer-plugin.c:749
 #, c-format
 msgid "Failed to link new visual effect into the GStreamer pipeline"
-msgstr "Nem sikerült az új vizuális effektust a GStreamer csővezetékhez kapcsolni"
+msgstr "Nem sikerült az új vizuális effektust a GStreamer adatcsatornához kapcsolni"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:797
 msgid "Unable to start visualization"
@@ -2822,30 +2884,30 @@ msgstr "Vizualizációk megjelenítése"
 msgid "Visualization"
 msgstr "Vizualizáció"
 
-#: ../podcast/rb-podcast-manager.c:756
+#: ../podcast/rb-podcast-manager.c:811
 msgid "Error creating podcast download directory"
 msgstr "Hiba a podcast letöltési könyvtárának létrehozásakor"
 
-#: ../podcast/rb-podcast-manager.c:757
+#: ../podcast/rb-podcast-manager.c:812
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Nem lehet létrehozni a(z) %s letöltési könyvtárát: %s"
 
-#: ../podcast/rb-podcast-manager.c:876
+#: ../podcast/rb-podcast-manager.c:931
 msgid "Invalid URL"
 msgstr "Érvénytelen URL"
 
-#: ../podcast/rb-podcast-manager.c:877
+#: ../podcast/rb-podcast-manager.c:932
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "A(z) „%s” URL érvénytelen, kérem ellenőrizze."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:887
+#: ../podcast/rb-podcast-manager.c:942
 msgid "URL already added"
 msgstr "Az URL már fel van véve"
 
-#: ../podcast/rb-podcast-manager.c:888
+#: ../podcast/rb-podcast-manager.c:943
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2854,7 +2916,7 @@ msgstr ""
 "A(z) „%s” URL már fel van véve rádióállomásként. Ha ez egy podcast folyam, "
 "akkor távolítsa el a rádióállomások közül."
 
-#: ../podcast/rb-podcast-manager.c:956
+#: ../podcast/rb-podcast-manager.c:1011
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2864,14 +2926,16 @@ msgstr ""
 "A(z) „%s” URL nem tűnik podcast folyamnak. Lehet, hogy az URL hibás, vagy a "
 "folyam sérült. Kívánja, hogy a Rhythmbox mindenképp megpróbálja használni?"
 
-#: ../podcast/rb-podcast-manager.c:1067
+#: ../podcast/rb-podcast-manager.c:1122
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:1951
+#: ../podcast/rb-podcast-manager.c:2029
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
-msgstr "Probléma lépett fel a podcast (%s) hozzáadása közben. Ellenőrizze az URL címet: %s"
+msgstr ""
+"Probléma lépett fel a podcast (%s) hozzáadása közben. Ellenőrizze az URL "
+"címet: %s"
 
 #: ../podcast/rb-podcast-parse.c:168
 #, c-format
@@ -2888,7 +2952,7 @@ msgstr "Váratlan fájltípus: %s"
 msgid "Unable to parse the feed contents"
 msgstr "A forrás tartalma nem dolgozható fel"
 
-#: ../podcast/rb-podcast-properties-dialog.c:423
+#: ../podcast/rb-podcast-properties-dialog.c:426
 msgid "Not Downloaded"
 msgstr "Nincs letöltve"
 
@@ -2981,7 +3045,7 @@ msgstr "Lejátszás némítása"
 msgid "Unmute playback"
 msgstr "Némítás megszüntetése"
 
-#: ../remote/dbus/rb-client.c:431 ../shell/rb-shell.c:2115
+#: ../remote/dbus/rb-client.c:431 ../shell/rb-shell.c:2117
 msgid "Not playing"
 msgstr "Lejátszás áll"
 
@@ -3002,7 +3066,7 @@ msgstr "A lejátszás hangereje %f.\n"
 msgid "All"
 msgstr "Összes"
 
-#: ../rhythmdb/rhythmdb-tree.c:403
+#: ../rhythmdb/rhythmdb-tree.c:407
 #, c-format
 msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
@@ -3016,29 +3080,29 @@ msgstr ""
 msgid "Couldn't access %s: %s"
 msgstr "A(z) %s nem érhető el: %s"
 
-#: ../rhythmdb/rhythmdb.c:2037
+#: ../rhythmdb/rhythmdb.c:2039
 msgid "invalid unicode in error message"
 msgstr "érvénytelen unicode a hibaüzenetben"
 
-#: ../rhythmdb/rhythmdb.c:2895
+#: ../rhythmdb/rhythmdb.c:2897
 msgid "Could not load the music database:"
 msgstr "A zeneadatbázis nem tölthető be:"
 
-#: ../rhythmdb/rhythmdb.c:4258
+#: ../rhythmdb/rhythmdb.c:4260
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld perc"
 msgstr[1] "%ld perc"
 
-#: ../rhythmdb/rhythmdb.c:4259
+#: ../rhythmdb/rhythmdb.c:4261
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld óra"
 msgstr[1] "%ld óra"
 
-#: ../rhythmdb/rhythmdb.c:4260
+#: ../rhythmdb/rhythmdb.c:4262
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3046,7 +3110,7 @@ msgstr[0] "%ld nap"
 msgstr[1] "%ld nap"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4266
+#: ../rhythmdb/rhythmdb.c:4268
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s és %s"
@@ -3054,8 +3118,8 @@ msgstr "%s, %s és %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4272 ../rhythmdb/rhythmdb.c:4280
-#: ../rhythmdb/rhythmdb.c:4291
+#: ../rhythmdb/rhythmdb.c:4274 ../rhythmdb/rhythmdb.c:4282
+#: ../rhythmdb/rhythmdb.c:4293
 #, c-format
 msgid "%s and %s"
 msgstr "%s %s"
@@ -3369,7 +3433,7 @@ msgstr "A lejátszás hangerejének csökkentése"
 msgid "_Play"
 msgstr "_Lejátszás"
 
-#: ../shell/rb-shell-player.c:336 ../shell/rb-shell-player.c:3807
+#: ../shell/rb-shell-player.c:336 ../shell/rb-shell-player.c:3805
 msgid "Start playback"
 msgstr "Lejátszás indítása"
 
@@ -3466,29 +3530,29 @@ msgstr "Nincs előző dal"
 msgid "No next song"
 msgstr "Nincs következő dal"
 
-#: ../shell/rb-shell-player.c:2310 ../shell/rb-shell-player.c:3438
+#: ../shell/rb-shell-player.c:2310 ../shell/rb-shell-player.c:3436
 msgid "Couldn't start playback"
 msgstr "Nem indítható el a lejátszás"
 
-#: ../shell/rb-shell-player.c:3194
+#: ../shell/rb-shell-player.c:3192
 msgid "Couldn't stop playback"
 msgstr "Nem állítható le a lejátszás"
 
-#: ../shell/rb-shell-player.c:3310
+#: ../shell/rb-shell-player.c:3308
 #, c-format
 msgid "Playback position not available"
 msgstr "A lejátszási pozíció nem érhető el"
 
-#: ../shell/rb-shell-player.c:3342
+#: ../shell/rb-shell-player.c:3340
 #, c-format
 msgid "Current song is not seekable"
 msgstr "A jelenlegi dalban nem lehet pozicionálni"
 
-#: ../shell/rb-shell-player.c:3805
+#: ../shell/rb-shell-player.c:3803
 msgid "Stop playback"
 msgstr "Lejátszás leállítása"
 
-#: ../shell/rb-shell-preferences.c:171 ../shell/rb-shell.c:2351
+#: ../shell/rb-shell-preferences.c:171 ../shell/rb-shell.c:2353
 msgid "Couldn't display help"
 msgstr "Nem jeleníthető meg a súgó"
 
@@ -3652,41 +3716,41 @@ msgstr "Á_llapotsor"
 msgid "Change the visibility of the statusbar"
 msgstr "Az állapotsor láthatóságának megváltoztatása"
 
-#: ../shell/rb-shell.c:1296
+#: ../shell/rb-shell.c:1298
 msgid "Change the music volume"
 msgstr "Hangerő módosítása"
 
-#: ../shell/rb-shell.c:1738
+#: ../shell/rb-shell.c:1740
 msgid "Error while saving song information"
 msgstr "Hiba a dalinformációk mentése közben"
 
-#: ../shell/rb-shell.c:1889
+#: ../shell/rb-shell.c:1891
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "%d. szám átvitele, összesen %d (%.0f%%)"
 
-#: ../shell/rb-shell.c:1892
+#: ../shell/rb-shell.c:1894
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "%d. szám átvitele, összesen %d"
 
 #. Translators: the %s is the elapsed and total time
-#: ../shell/rb-shell.c:2118
+#: ../shell/rb-shell.c:2120
 #, c-format
 msgid "Paused, %s"
 msgstr "Leállítva, %s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2160
+#: ../shell/rb-shell.c:2162
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (leállítva)"
 
-#: ../shell/rb-shell.c:2264
+#: ../shell/rb-shell.c:2266
 msgid "translator-credits"
 msgstr "Kelemen Gábor <kelemeng@gnome.hu>"
 
-#: ../shell/rb-shell.c:2267
+#: ../shell/rb-shell.c:2269
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3697,7 +3761,7 @@ msgstr ""
 "Software Foundation által kiadott GNU General Public License második (vagy\n"
 "bármely későbbi) változatában foglaltak alapján\n"
 
-#: ../shell/rb-shell.c:2271
+#: ../shell/rb-shell.c:2273
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3710,7 +3774,7 @@ msgstr ""
 "alkalmas-e a KÖZREADÁSRA vagy EGY BIZONYOS FELADAT ELVÉGZÉSÉRE.\n"
 "További részletekért tanulmányozza a GNU GPL licencet.\n"
 
-#: ../shell/rb-shell.c:2275
+#: ../shell/rb-shell.c:2277
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3720,66 +3784,66 @@ msgstr ""
 "ha nem kapta meg, írjon a Free Software Foundation Inc.-nek. \n"
 "Levélcímük: 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA\n"
 
-#: ../shell/rb-shell.c:2282
+#: ../shell/rb-shell.c:2284
 msgid "Maintainers:"
 msgstr "Karbantartók:"
 
-#: ../shell/rb-shell.c:2285
+#: ../shell/rb-shell.c:2287
 msgid "Former Maintainers:"
 msgstr "Korábbi karbantartók:"
 
-#: ../shell/rb-shell.c:2288
+#: ../shell/rb-shell.c:2290
 msgid "Contributors:"
 msgstr "Hozzájárultak:"
 
-#: ../shell/rb-shell.c:2290
+#: ../shell/rb-shell.c:2292
 msgid "Music management and playback software for GNOME."
 msgstr "Zenekezelő és -lejátszó szoftver a GNOME-hoz."
 
-#: ../shell/rb-shell.c:2299
+#: ../shell/rb-shell.c:2301
 msgid "Rhythmbox Website"
 msgstr "A Rhythmbox weboldala"
 
-#: ../shell/rb-shell.c:2398
+#: ../shell/rb-shell.c:2400
 msgid "Configure Plugins"
 msgstr "A bővítmények beállítása"
 
-#: ../shell/rb-shell.c:2469
+#: ../shell/rb-shell.c:2471
 msgid "Import Folder into Library"
 msgstr "Mappa importálása a gyűjteménybe"
 
-#: ../shell/rb-shell.c:2491
+#: ../shell/rb-shell.c:2493
 msgid "Import File into Library"
 msgstr "Fájl importálása a gyűjteménybe"
 
 #. Translators: by Artist
-#: ../shell/rb-shell.c:3006
+#: ../shell/rb-shell.c:3008
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "<i>%s</i> előadó"
 
 #. Translators: from Album
-#: ../shell/rb-shell.c:3027
+#: ../shell/rb-shell.c:3029
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "<i>%s</i> albumáról"
 
-#: ../shell/rb-shell.c:3235
+#: ../shell/rb-shell.c:3237
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Egyetlen regisztrált forrás sem képes kezelni a következő URI címet: %s"
 
-#: ../shell/rb-shell.c:3504 ../shell/rb-shell.c:3533
+#: ../shell/rb-shell.c:3506 ../shell/rb-shell.c:3535
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Ismeretlen dal URI: %s"
 
-#: ../shell/rb-shell.c:3542
+#: ../shell/rb-shell.c:3544
 #, c-format
 msgid "Unknown property %s"
 msgstr "Ismeretlen tulajdonság: %s"
 
-#: ../shell/rb-shell.c:3552
+#: ../shell/rb-shell.c:3554
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "%s tulajdonságtípus érvénytelen %s tulajdonsághoz"
@@ -3938,7 +4002,7 @@ msgstr "Válassza ki a gyűjtemény helyét"
 msgid "Multiple locations set"
 msgstr "Összetett helykészlet"
 
-#: ../sources/rb-library-source.c:997
+#: ../sources/rb-library-source.c:998
 msgid "Example Path:"
 msgstr "Példaútvonal:"
 
@@ -4207,7 +4271,7 @@ msgstr "Eszközök"
 msgid "Shared"
 msgstr "Megosztott"
 
-#: ../sources/rb-sourcelist.c:718
+#: ../sources/rb-sourcelist.c:710
 msgid "S_ource"
 msgstr "_Forrás"
 
