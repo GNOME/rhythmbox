@@ -1,3 +1,9 @@
+2008-10-21  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(handle_playlist_response), (handle_xmlrpc_response):
+	Don't crash on failed xmlrpc and playlist requests.  Fixes #556551.
+
 2008-10-20  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-encoder-gst.c: (start_pipeline),

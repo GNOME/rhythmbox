@@ -2132,6 +2132,11 @@ handle_playlist_response (RBLastfmSource *source, const char *body, RhythmDBEntr
 	gboolean ret = FALSE;
 	time_t now;
 	GValue value = {0,};
+
+	if (body == NULL) {
+		rb_debug ("didn't get a response");
+		return FALSE;
+	}
 	
 	/* until totem-pl-parser can parse playlists from in-memory data, we save it to a
 	 * temporary file.
@@ -2293,6 +2298,11 @@ handle_xmlrpc_response (RBLastfmSource *source, const char *body, RhythmDBEntry 
 {
 	GError *error = NULL;
 	GValue v = {0,};
+
+	if (body == NULL) {
+		rb_debug ("didn't get a response to an xmlrpc request");
+		return;
+	}
 
 	soup_xmlrpc_parse_method_response (body, strlen (body), &v, &error);
 	if (error != NULL) {
