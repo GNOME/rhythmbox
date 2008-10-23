@@ -824,21 +824,43 @@ rb_generic_player_is_mount_player (GMount *mount)
 		char *udi = get_hal_udi_for_player (ctx, mount);
 		if (udi != NULL) {
 			DBusError error;
+			char **proplist;
 			char *prop;
 
 			rb_debug ("Checking udi %s", udi);
 			/* check that it can be accessed as mass-storage */
 			dbus_error_init (&error);
-			prop = libhal_device_get_property_string (ctx, udi, "portable_audio_player.access_method", &error);
-			if (prop != NULL && strcmp (prop, "storage") == 0 && !dbus_error_is_set (&error)) {
-				/* the device has passed all tests, so it should be a usable player */
-				result = TRUE;
-			} else {
+			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.access_method.protocols", &error);
+			if (proplist != NULL && !dbus_error_is_set (&error)) {
+				int i;
+				for (i = 0; proplist[i] != NULL; i++) {
+					rb_debug ("device access method: %s", proplist[i]);
+					if (strcmp (proplist[i], "storage") == 0) {
+						result = TRUE;
+						break;
+					}
+				}
+
+				libhal_free_string_array (proplist);
+			}
+			free_dbus_error ("checking device access method", &error);
+
+			if (result == FALSE) {
+				dbus_error_init (&error);
+				prop = libhal_device_get_property_string (ctx, udi, "portable_audio_player.access_method", &error);
+				if (prop != NULL && strcmp (prop, "storage") == 0 && !dbus_error_is_set (&error)) {
+					/* the device has passed all tests, so it should be a usable player */
+					result = TRUE;
+				}
+
+				libhal_free_string (prop);
+				free_dbus_error ("checking device access method", &error);
+			}
+
+			if (result == FALSE) {
 				rb_debug ("device cannot be accessed via storage");
 			}
-			libhal_free_string (prop);
 
-			free_dbus_error ("checking device access method", &error);
 		} else {
 			rb_debug ("device is not an audio player");
 		}

@@ -1,3 +1,10 @@
+2008-10-23  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/generic-player/rb-generic-player-source.c:
+	(rb_generic_player_is_mount_player):
+	Check portable_audio_player.access_method.protocols first, then
+	portable_audio_player.access_method.
+
 2008-10-21  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/audioscrobbler/rb-lastfm-source.c:
