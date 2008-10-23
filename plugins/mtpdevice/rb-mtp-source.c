@@ -579,6 +579,7 @@ rb_mtp_source_transfer_track_to_disk (LIBMTP_mtpdevice_t *device,
 	int ret = -1;
 
 	if (device == NULL || track == NULL || strlen (uri) == 0) {
+		rb_debug ("device (%p), track (%p), or URI (%s) not supplied", device, track, uri);
 		return FALSE;
 	}
 
@@ -600,6 +601,7 @@ rb_mtp_source_get_playback_uri (RhythmDBEntry *entry, gpointer data)
 	LIBMTP_track_t *track;
 	char *path;
 	char *uri = NULL;
+	GError *error = NULL;
 
 	priv = MTP_SOURCE_GET_PRIVATE (data);
 
@@ -608,7 +610,13 @@ rb_mtp_source_get_playback_uri (RhythmDBEntry *entry, gpointer data)
 				g_get_tmp_dir (),
 				rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST),
 				rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE));
-	uri = g_filename_to_uri (path, NULL, NULL);
+	uri = g_filename_to_uri (path, NULL, &error);
+	if (error != NULL) {
+		g_warning ("unable to convert path %s to filename: %s", path, error->message);
+		g_error_free (error);
+		g_free (path);
+		return NULL;
+	}
 	g_free (path);
 
 	if (rb_mtp_source_transfer_track_to_disk (priv->device, track, uri) == TRUE) {
