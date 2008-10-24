@@ -56,7 +56,7 @@ static void rb_recorder_finalize   (GObject         *object);
 
 struct _RBRecorderPrivate {
         char       *src_uri;
-        char       *dest_uri;
+        char       *dest_file;
         char       *tmp_dir;
 
         GstElement *pipeline;
@@ -275,16 +275,16 @@ add_track (RBRecorder *recorder,
            const char *cdtext)
 {
         NautilusBurnRecorderTrack *track;
-        char                      *uri;
+        char                      *file;
 
         g_return_val_if_fail (RB_IS_RECORDER (recorder), FALSE);
 
-        uri = g_strdup (recorder->priv->dest_uri);
+        file = g_strdup (recorder->priv->dest_file);
 
         track = g_new0 (NautilusBurnRecorderTrack, 1);
 
         track->type = NAUTILUS_BURN_RECORDER_TRACK_TYPE_AUDIO;
-        track->contents.audio.filename = uri;
+        track->contents.audio.filename = file;
         if (cdtext) {
                 track->contents.audio.cdtext = g_strdup (cdtext);
         }
@@ -468,10 +468,11 @@ rb_recorder_construct (RBRecorder *recorder,
         gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->encoder);
 
         /* Output sink */
-        recorder->priv->sink = gst_element_factory_make ("filesink", NULL);
-        if (!recorder->priv->sink) {
+        recorder->priv->sink = gst_element_factory_make ("filesink", "sink");
+        if (recorder->priv->sink == NULL) {
                 goto missing_element;
         }
+        g_object_set (recorder->priv->sink, "location", dest_file, NULL);
         gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->sink);
 
         filtercaps = gst_caps_new_simple ("audio/x-raw-int",
@@ -686,8 +687,8 @@ rb_recorder_close (RBRecorder *recorder,
         g_free (recorder->priv->src_uri);
         recorder->priv->src_uri = NULL;
 
-        g_free (recorder->priv->dest_uri);
-        recorder->priv->dest_uri = NULL;
+        g_free (recorder->priv->dest_file);
+        recorder->priv->dest_file = NULL;
 
         if (recorder->priv->pipeline == NULL) {
                 return;
@@ -717,7 +718,6 @@ get_dest_from_uri (const char *tmp_dir,
 {
         char *lock_filename;
         char *wav_filename;
-        char *uri;
         int   fd;
 
         lock_filename = g_build_filename (tmp_dir, "rb-burn-tmp.XXXXXX", NULL);
@@ -728,11 +728,9 @@ get_dest_from_uri (const char *tmp_dir,
            it will serve as a lock file to protect our new filename */
 
         wav_filename = g_strconcat (lock_filename, ".wav", NULL);
-        uri = g_filename_to_uri (wav_filename, NULL, NULL);
         g_free (lock_filename);
-        g_free (wav_filename);
 
-        return uri;
+        return wav_filename;
 }
 
 void
@@ -741,7 +739,7 @@ rb_recorder_open (RBRecorder   *recorder,
                   const char   *cdtext,
                   GError      **error)
 {
-        char    *dest_uri;
+        char    *dest_file;
         gboolean audiocd_mode = src_uri && g_str_has_prefix (src_uri, "audiocd://");
 
         g_return_if_fail (recorder != NULL);
@@ -756,11 +754,11 @@ rb_recorder_open (RBRecorder   *recorder,
                 return;
         }
 
-        dest_uri = get_dest_from_uri (recorder->priv->tmp_dir, src_uri);
+        dest_file = get_dest_from_uri (recorder->priv->tmp_dir, src_uri);
 
-        rb_recorder_construct (recorder, src_uri, dest_uri, error);
+        rb_recorder_construct (recorder, src_uri, dest_file, error);
         if (error && *error) {
-                g_free (dest_uri);
+                g_free (dest_file);
                 return;
         }
 
@@ -769,8 +767,8 @@ rb_recorder_open (RBRecorder   *recorder,
         g_free (recorder->priv->src_uri);
         recorder->priv->src_uri = g_strdup (src_uri);
 
-        g_free (recorder->priv->dest_uri);
-        recorder->priv->dest_uri = dest_uri;
+        g_free (recorder->priv->dest_file);
+        recorder->priv->dest_file = dest_file;
 
         recorder->priv->playing = FALSE;
 

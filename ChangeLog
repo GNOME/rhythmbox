@@ -1,3 +1,11 @@
+2008-10-25  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/cd-recorder/rb-recorder-gst.c: (add_track),
+	(rb_recorder_construct), (rb_recorder_close), (get_dest_from_uri),
+	(rb_recorder_open):
+	Don't bother pretending we can use URIs here, and actually set the
+	location on the sink element.  Fixes #557221.
+
 2008-10-24  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/mtpdevice/rb-mtp-source.c:
