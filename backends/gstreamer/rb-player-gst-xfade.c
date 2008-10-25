@@ -317,6 +317,7 @@ typedef struct
 	gulong queue_threshold_id;
 	gulong underrun_id;
 	gulong queue_probe_id;
+	gulong adjust_probe_id;
 
 	float replaygain_scale;
 	double fade_end;
@@ -336,6 +337,8 @@ typedef struct
 typedef struct {
 	GObjectClass obj_class;
 } RBXFadeStreamClass;
+
+static void adjust_stream_base_time (RBXFadeStream *stream);
 
 static void rb_xfade_stream_class_init (RBXFadeStreamClass *klass);
 
@@ -850,6 +853,15 @@ post_buffering_message (RBXFadeStream *stream, guint64 level)
 	gst_element_post_message (stream->queue, message);
 }
 
+
+static gboolean
+adjust_base_time_probe_cb (GstPad *pad, GstBuffer *data, RBXFadeStream *stream)
+{
+	rb_debug ("attempting to adjust base time for stream %s", stream->uri);
+	adjust_stream_base_time (stream);
+	return TRUE;
+}
+
 /* updates a stream's base time so its position is reported correctly */
 static void
 adjust_stream_base_time (RBXFadeStream *stream)
@@ -878,6 +890,23 @@ adjust_stream_base_time (RBXFadeStream *stream)
 		    stream->base_time, stream_pos,
 		    stream->base_time - stream_pos);
 		stream->base_time -= stream_pos;
+
+		/* once we've successfully adjusted the base time, we don't need the data probe */
+		if (stream->adjust_probe_id != 0) {
+			gst_pad_remove_buffer_probe (stream->ghost_pad,
+						     stream->adjust_probe_id);
+			stream->adjust_probe_id = 0;
+		}
+	} else {
+		rb_debug ("unable to adjust base time as position query failed");
+
+		/* add a pad probe to attempt to adjust when the next buffer goes out */
+		if (stream->adjust_probe_id == 0) {
+			stream->adjust_probe_id =
+				gst_pad_add_buffer_probe (stream->ghost_pad,
+							  G_CALLBACK (adjust_base_time_probe_cb),
+							  stream);
+		}
 	}
 }
 
@@ -1192,21 +1221,18 @@ reuse_stream (RBXFadeStream *stream)
 static void
 perform_seek (RBXFadeStream *stream)
 {
-	GError *error = NULL;
+	GstEvent *event;
+
 	rb_debug ("sending seek event..");
-	gst_element_seek (stream->volume, 1.0,
-			  GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
-			  GST_SEEK_TYPE_SET, stream->seek_target,
-			  GST_SEEK_TYPE_NONE, -1);
+	event = gst_event_new_seek (1.0, GST_FORMAT_TIME,
+				    GST_SEEK_FLAG_FLUSH,
+				    GST_SEEK_TYPE_SET, stream->seek_target,
+				    GST_SEEK_TYPE_NONE, -1);
+	gst_pad_send_event (stream->src_pad, event);
 
 	switch (stream->state) {
 	case SEEKING:
-		if (link_and_unblock_stream (stream, &error) == FALSE) {
-			emit_stream_error (stream, error);
-		}
-		/* state will be set to PLAYING or FADING_IN when the
-		 * stream is relinked.
-		 */
+		stream->state = PLAYING;
 		break;
 	case SEEKING_PAUSED:
 		rb_debug ("leaving paused stream %s unlinked", stream->uri);
@@ -1278,10 +1304,6 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 
 	/* handle unlinks for seeking and stream reuse */
 	switch (stream->state) {
-	case SEEKING:
-		g_idle_add ((GSourceFunc) perform_seek_idle, g_object_ref (stream));
-		break;
-
 	case REUSING:
 		reuse_stream (stream);
 		break;
@@ -1900,6 +1922,9 @@ stream_pad_removed_cb (GstElement *decoder, GstPad *pad, RBXFadeStream *stream)
  *
  * when a new segment event is received, the stream base time is updated
  * (mostly for seeking)
+ *
+ * flush events are dropped, as they're only relevant inside the stream bin.
+ * flushing the adder or the output bin mostly just breaks everything.
  */
 static gboolean
 stream_src_event_cb (GstPad *pad, GstEvent *event, RBXFadeStream *stream)
@@ -1939,7 +1964,14 @@ stream_src_event_cb (GstPad *pad, GstEvent *event, RBXFadeStream *stream)
 		rb_debug ("got new segment for stream %s", stream->uri);
 		adjust_stream_base_time (stream);
 		break;
+
+	case GST_EVENT_FLUSH_STOP:
+	case GST_EVENT_FLUSH_START:
+		rb_debug ("dropping %s event for stream %s", GST_EVENT_TYPE_NAME (event), stream->uri);
+		return FALSE;
+
 	default:
+		rb_debug ("got %s event for stream %s", GST_EVENT_TYPE_NAME (event), stream->uri);
 		break;
 	}
 
@@ -3560,7 +3592,6 @@ rb_player_gst_xfade_set_time (RBPlayer *iplayer, long time)
 {
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
 	RBXFadeStream *stream;
-	StreamState seeking_state = SEEKING;
 
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 	stream = find_stream_by_state (player, FADING_IN | PLAYING | PAUSED | FADING_OUT_PAUSED | PENDING_REMOVE);
@@ -3581,13 +3612,18 @@ rb_player_gst_xfade_set_time (RBPlayer *iplayer, long time)
 
 	case FADING_OUT_PAUSED:
 		/* don't unblock and relink when the seek is done */
-		seeking_state = SEEKING_PAUSED;
+		stream->state = SEEKING_PAUSED;
+		rb_debug ("seeking in pausing stream %s; target %"
+			  G_GINT64_FORMAT, stream->uri, stream->seek_target);
+		unlink_and_block_stream (stream);
+		break;
+
 	case FADING_IN:
 	case PLAYING:
-		rb_debug ("unlinking playing stream %s to seek to %"
-		    G_GINT64_FORMAT, stream->uri, stream->seek_target);
-		stream->state = seeking_state;
-		unlink_and_block_stream (stream);
+		stream->state = SEEKING;
+		rb_debug ("seeking in playing stream %s; target %"
+			  G_GINT64_FORMAT, stream->uri, stream->seek_target);
+		perform_seek (stream);
 		break;
 
 	case PENDING_REMOVE:

@@ -1,5 +1,23 @@
 2008-10-25  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(adjust_base_time_probe_cb), (adjust_stream_base_time):
+	If we can't adjust the stream base time the first time, add a pad
+	probe to try again next time a buffer exits the bin.
+
+	(stream_src_event_cb):
+	Don't allow flush events to pass outside the stream bin.  Flushing the
+	adder or the output bin breaks everything.
+
+	(perform_seek), (unlink_blocked_cb), (stream_src_event_cb),
+	(rb_player_gst_xfade_set_time):
+	Don't unlink to seek in playing streams.  Not sure where I got the
+	idea that this was necessary, but it's completely wrong.
+
+	Fixes #553230.
+
+2008-10-25  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/mtpdevice/rb-mtp-source.c:
 	(rb_mtp_source_get_playback_uri):
 	libmtp doesn't want a file:/// URI, it just wants a path.
