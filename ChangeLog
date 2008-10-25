@@ -1,3 +1,11 @@
+2008-10-26  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/mtpdevice/rb-mtp-source.c:
+	(rb_mtp_source_transfer_track_to_disk),
+	(rb_mtp_source_get_playback_uri):
+	libmtp may not want file:/// URIs, but our various helper functions
+	do.  Actually fixes #552614.
+
 2008-10-25  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c:
