@@ -1,5 +1,12 @@
 2008-10-25  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/mtpdevice/rb-mtp-source.c:
+	(rb_mtp_source_get_playback_uri):
+	libmtp doesn't want a file:/// URI, it just wants a path.
+	Should fix #552614.
+
+2008-10-25  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/cd-recorder/rb-recorder-gst.c: (add_track),
 	(rb_recorder_construct), (rb_recorder_close), (get_dest_from_uri),
 	(rb_recorder_open):

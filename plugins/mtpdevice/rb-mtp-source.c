@@ -617,15 +617,16 @@ rb_mtp_source_get_playback_uri (RhythmDBEntry *entry, gpointer data)
 		g_free (path);
 		return NULL;
 	}
-	g_free (path);
 
-	if (rb_mtp_source_transfer_track_to_disk (priv->device, track, uri) == TRUE) {
+	if (rb_mtp_source_transfer_track_to_disk (priv->device, track, path) == TRUE) {
 		rb_debug ("playback URI for %s: %s",
 			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
 			  uri);
+		g_free (path);
 		return uri;
 	} else {
 		g_free (uri);
+		g_free (path);
 		return NULL;
 	}
 }
