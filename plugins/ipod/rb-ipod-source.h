@@ -63,6 +63,8 @@ void			rb_ipod_source_new_playlist	(RBiPodSource *source);
 void			rb_ipod_source_remove_playlist	(RBiPodSource *ipod_source,
 							 RBSource *source);
 
+void			rb_ipod_source_show_properties	(RBiPodSource *source);
+
 G_END_DECLS
 
 #endif /* __RB_IPOD_SOURCE_H */

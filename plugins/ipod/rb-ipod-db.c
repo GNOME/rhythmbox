@@ -900,3 +900,10 @@ rb_ipod_db_get_device (RbIpodDb *ipod_db)
 	return priv->itdb->device;
 }
 
+guint32
+rb_ipod_db_get_database_version (RbIpodDb *ipod_db)
+{
+	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
+
+	return priv->itdb->version;
+}

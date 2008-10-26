@@ -46,6 +46,7 @@
 #include "rb-ipod-db.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
+#include "rb-glade-helpers.h"
 #include "rb-plugin.h"
 #include "rb-removable-media-manager.h"
 #include "rb-ipod-static-playlist-source.h"
@@ -69,6 +70,7 @@ static void impl_move_to_trash (RBSource *asource);
 static void rb_ipod_load_songs (RBiPodSource *source);
 static void impl_delete_thyself (RBSource *source);
 static GList* impl_get_ui_actions (RBSource *source);
+
 #ifdef HAVE_HAL
 static gboolean hal_udi_is_ipod (const char *udi);
 #endif
@@ -1708,5 +1710,157 @@ rb_ipod_source_remove_playlist (RBiPodSource *ipod_source,
 
 	rb_source_delete_thyself (source);
 	rb_ipod_db_remove_playlist (priv->ipod_db, rb_ipod_static_playlist_source_get_itdb_playlist (playlist_source));
+}
+
+static void
+rb_ipod_info_response_cb (GtkDialog *dialog,
+ 			  int response_id,
+ 			  RBiPodSource *source)
+{
+	if (response_id == GTK_RESPONSE_CLOSE) {
+ 		
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+	}
+}
+
+static gboolean
+ipod_name_changed_cb (GtkWidget     *widget,
+ 		      GdkEventFocus *event,
+ 		      gpointer       user_data) 
+{
+	g_object_set (RB_SOURCE (user_data), "name", 
+		      gtk_entry_get_text (GTK_ENTRY (widget)),
+		      NULL);
+	return FALSE;
+}
+
+static guint64 get_fs_property (const char *mountpoint, const char *attr)
+{
+        GFile *root;
+        GFileInfo *info;
+        guint64 value;
+
+        root = g_file_new_for_path (mountpoint);
+        info = g_file_query_filesystem_info (root, attr, NULL, NULL);
+        g_object_unref (G_OBJECT (root));
+        if (info == NULL) {
+                return 0;
+        }
+        if (!g_file_info_has_attribute (info, attr)) {
+                g_object_unref (G_OBJECT (info));
+                return 0;
+        }
+        value = g_file_info_get_attribute_uint64 (info, attr);
+        g_object_unref (G_OBJECT (info));
+
+        return value;
+}
+
+static guint64
+get_ipod_capacity (const char *mountpoint)
+{
+        return  get_fs_property (mountpoint, G_FILE_ATTRIBUTE_FILESYSTEM_SIZE);
+}
+
+static guint64
+get_ipod_free_space (const char *mountpoint)
+{
+	return get_fs_property (mountpoint, G_FILE_ATTRIBUTE_FILESYSTEM_FREE);
+}
+
+static char *
+get_ipod_device (RBiPodSource *source)
+{
+        GMount *mount;
+        GVolume *volume;
+        char *device;
+
+        g_object_get (RB_SOURCE (source), "mount", &mount, NULL);
+        volume = g_mount_get_volume (mount);
+        device = g_volume_get_identifier (volume,
+                                          G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+        g_object_unref (G_OBJECT (volume));
+        g_object_unref (G_OBJECT (mount));
+
+        return device;
+}
+
+void
+rb_ipod_source_show_properties (RBiPodSource *source)
+{
+	GladeXML *xml;
+	GtkWidget *dialog;
+	GtkWidget *label;
+	char *text;
+	const gchar *mp;
+	char *used;
+	char *capacity;
+ 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	Itdb_Device *ipod_dev;
+
+	ipod_dev = rb_ipod_db_get_device(priv->ipod_db);
+
+	xml = rb_glade_xml_new ("ipod-info.glade", "ipod-information", NULL);
+ 	if (xml == NULL) {
+ 		rb_debug ("Couldn't load ipod-info.glade");
+ 		return;
+ 	}
+	
+ 	dialog = glade_xml_get_widget (xml, "ipod-information");
+ 	g_signal_connect_object (G_OBJECT (dialog),
+ 				 "response",
+ 				 G_CALLBACK (rb_ipod_info_response_cb),
+ 				 source, 0);
+ 
+ 	label = glade_xml_get_widget (xml, "label-number-track-number");
+ 	text = g_strdup_printf ("%u", g_list_length ( rb_ipod_db_get_tracks(priv->ipod_db) ));
+ 	gtk_label_set_text (GTK_LABEL (label), text);
+ 	g_free (text);
+ 
+ 	label = glade_xml_get_widget (xml, "entry-ipod-name");
+ 	gtk_entry_set_text (GTK_ENTRY (label), rb_ipod_db_get_ipod_name(priv->ipod_db));
+ 	g_signal_connect (G_OBJECT (label), "focus-out-event", 
+ 			  (GCallback)ipod_name_changed_cb, source);
+ 
+ 	label = glade_xml_get_widget (xml, "label-number-playlist-number");
+ 	text = g_strdup_printf ("%u", g_list_length(rb_ipod_db_get_playlists(priv->ipod_db)));
+ 	gtk_label_set_text (GTK_LABEL (label), text);
+ 	g_free (text);
+ 
+ 	label = glade_xml_get_widget (xml, "label-mount-point-value");
+	mp = rb_ipod_db_get_mount_path (priv->ipod_db);
+ 	gtk_label_set_text (GTK_LABEL (label), mp);
+
+	label = glade_xml_get_widget (xml, "progressbar-ipod-usage");
+	used = g_format_size_for_display (get_ipod_capacity (mp) - get_ipod_free_space (mp));
+	capacity = g_format_size_for_display (get_ipod_capacity(mp));
+	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (label), 
+				       (double)(get_ipod_capacity (mp) - get_ipod_free_space (mp))/(double)get_ipod_capacity (mp));
+	text = g_strdup_printf("%s of %s", used, capacity);
+	gtk_progress_bar_set_text (GTK_PROGRESS_BAR (label), text);
+	g_free (text);
+	g_free (capacity);
+	g_free (used);
+
+	label = glade_xml_get_widget (xml, "label-device-node-value");
+	text = get_ipod_device (source);
+	gtk_label_set_text (GTK_LABEL (label), text);
+	g_free (text);
+
+ 	label = glade_xml_get_widget (xml, "label-ipod-model-value");
+ 	gtk_label_set_text (GTK_LABEL (label), itdb_device_get_sysinfo(ipod_dev, "ModelNumStr"));
+
+ 	label = glade_xml_get_widget (xml, "label-database-version-value");
+	text = g_strdup_printf ("%u", rb_ipod_db_get_database_version(priv->ipod_db));
+ 	gtk_label_set_text (GTK_LABEL (label), text);
+	g_free(text);
+
+ 	label = glade_xml_get_widget (xml, "label-serial-number-value");
+	gtk_label_set_text (GTK_LABEL (label), itdb_device_get_sysinfo(ipod_dev, "pszSerialNumber"));
+
+ 	label = glade_xml_get_widget (xml, "label-firmware-version-value");
+	gtk_label_set_text (GTK_LABEL (label), itdb_device_get_sysinfo(ipod_dev, "VisibleBuildID"));
+
+ 	gtk_widget_show (GTK_WIDGET (dialog));
 }
 

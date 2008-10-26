@@ -77,4 +77,5 @@ GList *rb_ipod_db_get_playlists (RbIpodDb *ipod_db);
 GList *rb_ipod_db_get_tracks (RbIpodDb *ipod_db);
 const char *rb_ipod_db_get_mount_path (RbIpodDb *ipod_db);
 Itdb_Device *rb_ipod_db_get_device (RbIpodDb *ipod_db);
+guint32 rb_ipod_db_get_database_version (RbIpodDb *ipod_db);
 #endif

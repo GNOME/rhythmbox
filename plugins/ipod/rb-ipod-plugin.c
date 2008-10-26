@@ -46,6 +46,7 @@
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 #include "rb-shell.h"
+#include "rb-stock-icons.h"
 
 
 #define RB_TYPE_IPOD_PLUGIN		(rb_ipod_plugin_get_type ())
@@ -91,6 +92,8 @@ static void  rb_ipod_plugin_cmd_playlist_rename (GtkAction *action,
 					RBIpodPlugin *plugin);
 static void  rb_ipod_plugin_cmd_playlist_delete (GtkAction *action,
 					RBIpodPlugin *plugin);
+static void  rb_ipod_plugin_cmd_properties (GtkAction *action,
+					    RBIpodPlugin *plugin);
 
 RB_PLUGIN_REGISTER(RBIpodPlugin, rb_ipod_plugin)
 
@@ -100,7 +103,10 @@ static GtkActionEntry rb_ipod_plugin_actions [] =
 	{ "iPodSourceRename", NULL, N_("_Rename"), NULL,
 	  N_("Rename iPod"),
 	  G_CALLBACK (rb_ipod_plugin_cmd_rename) },
-	{ "iPodSourcePlaylistNew", NULL, N_("_New Playlist"), NULL,
+	{ "iPodProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), NULL,
+	  N_("Display iPod properties"),
+	  G_CALLBACK (rb_ipod_plugin_cmd_properties) },
+	{ "iPodSourcePlaylistNew", RB_STOCK_PLAYLIST_NEW, N_("_New Playlist"), NULL,
 	  N_("Add new playlist to iPod"),
 	  G_CALLBACK (rb_ipod_plugin_cmd_playlist_new) },
 	{ "iPodPlaylistSourceRename", NULL, N_("_Rename"), NULL,
@@ -239,6 +245,24 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, RBIpodPlugin *plu
 	return NULL;
 }
 
+static void
+rb_ipod_plugin_cmd_properties (GtkAction *action,
+			       RBIpodPlugin *plugin)
+{
+	RBSource *source = NULL;
+
+	g_object_get (G_OBJECT (plugin->shell), 
+		      "selected-source", &source,
+		      NULL);
+	if ((source == NULL) || !RB_IS_IPOD_SOURCE (source)) {
+		g_critical ("got iPodSourceProperties action for non-ipod source");
+		return;
+	}
+
+	rb_ipod_source_show_properties (RB_IPOD_SOURCE (source));
+	g_object_unref (G_OBJECT (source));
+}
+ 
 static void
 rb_ipod_plugin_cmd_rename (GtkAction *action,
 			   RBIpodPlugin *plugin)
