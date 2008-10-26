@@ -77,6 +77,8 @@ static gboolean hal_udi_is_ipod (const char *udi);
 
 #ifdef ENABLE_IPOD_WRITING
 static GList * impl_get_mime_types (RBRemovableMediaSource *source);
+static gboolean impl_should_paste (RBRemovableMediaSource *source,
+				   RhythmDBEntry *entry);
 static gboolean impl_track_added (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
 				  const char *dest,
@@ -158,6 +160,7 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 
 #ifdef ENABLE_IPOD_WRITING
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
+	rms_class->impl_should_paste = impl_should_paste;
 	rms_class->impl_track_added = impl_track_added;
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
 	rms_class->impl_get_mime_types = impl_get_mime_types;
@@ -1360,6 +1363,55 @@ add_to_podcasts (RBiPodSource *source, Itdb_Track *song)
   	filename = ipod_path_to_uri (mount_path, song->ipod_path);
  	rb_static_playlist_source_add_location (RB_STATIC_PLAYLIST_SOURCE (priv->podcast_pl), filename, -1);
 	g_free (filename);
+}
+
+static gboolean
+impl_should_paste (RBRemovableMediaSource *source,
+		   RhythmDBEntry *entry)
+{
+	RhythmDBEntryType entry_type;
+	RhythmDB *db;
+	RBShell *shell;
+	const char *title;
+	const char *album;
+	const char *artist;
+	GtkTreeModel *query_model;
+	GtkTreeIter iter;
+	gboolean no_match;
+	 
+	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (g_type_class_peek_parent (RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source)));
+	/* chain up to parent impl */
+	if (!rms_class->impl_should_paste (source, entry))
+		return FALSE;
+
+	g_object_get (source, "shell", &shell, "entry-type", &entry_type, NULL);
+	g_object_get (shell, "db", &db, NULL);
+	g_object_unref (shell);
+
+	query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (db));
+	title = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
+	album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
+	artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (query_model),
+				RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_TYPE, entry_type,
+				RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_ARTIST, artist,
+				RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_ALBUM, album,
+				RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_TITLE, title,
+				RHYTHMDB_QUERY_END);
+
+	no_match = (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (query_model),
+						 &iter));
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref(query_model);
+	g_object_unref (db);
+	if (no_match == FALSE) {
+		rb_debug ("not adding %s - %s - %s to the ipod since it's already present\n", title, album, artist);
+	}
+	return no_match;
 }
 
 static gboolean

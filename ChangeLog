@@ -1,5 +1,14 @@
 2008-10-26 Christophe Fergeau  <teuf@gnome.org>
 
+	Patch by: Ed Catmur, Paul Drain and Christophe Fergeau
+	Part of bug 411634 – Copying tracks to iPod can create duplicates
+
+	* plugins/ipod/rb-ipod-source.c: implement should_paste and don't
+	copy files to the ipod if it already contains a song with the same
+	album/artist/title
+
+2008-10-26 Christophe Fergeau  <teuf@gnome.org>
+
 	Patch by: Ed Catmur and Paul Drain
 	Part of bug 411634 – Copying tracks to iPod can create duplicates
 
