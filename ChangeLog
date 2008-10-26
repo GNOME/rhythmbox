@@ -1,5 +1,15 @@
 2008-10-26 Christophe Fergeau  <teuf@gnome.org>
 
+	Patch by: Ed Catmur and Paul Drain
+	Part of bug 411634 – Copying tracks to iPod can create duplicates
+
+	* sources/rb-removable-media-source.c
+	* sources/rb-removable-media-source.h: add should_paste virtual
+	method so that derived sources can indicate whether a paste
+	operation should be completed or not
+
+2008-10-15 Christophe Fergeau  <teuf@gnome.org>
+
 	Patch by: John Daiker
 
 	* plugins/ipod/Makefile.am

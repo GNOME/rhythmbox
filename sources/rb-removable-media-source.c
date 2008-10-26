@@ -68,6 +68,8 @@ static void impl_delete_thyself (RBSource *source);
 static void impl_paste (RBSource *source, GList *entries);
 #endif
 static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
+static gboolean impl_should_paste (RBRemovableMediaSource *source,
+				   RhythmDBEntry *entry);
 static guint impl_want_uri (RBSource *source, const char *uri);
 static gboolean impl_uri_is_source (RBSource *source, const char *uri);
 
@@ -117,6 +119,8 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 
 	browser_source_class->impl_get_paned_key = NULL;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
+
+	klass->impl_should_paste = impl_should_paste;
 
 	g_object_class_install_property (object_class,
 					 PROP_VOLUME,
@@ -363,7 +367,7 @@ impl_paste (RBSource *source, GList *entries)
 		entry_type = rhythmdb_entry_get_entry_type (entry);
 
 		if (entry_type == our_entry_type ||
-		    entry_type->category != RHYTHMDB_ENTRY_NORMAL) {
+		    !rb_removable_media_source_should_paste (RB_REMOVABLE_MEDIA_SOURCE (source), entry)) {
 			goto impl_paste_end;
 		}
 
@@ -632,6 +636,24 @@ rb_removable_media_source_get_mime_types (RBRemovableMediaSource *source)
 		return klass->impl_get_mime_types (source);
 	else
 		return NULL;
+}
+
+static gboolean
+impl_should_paste (RBRemovableMediaSource *source, RhythmDBEntry *entry)
+{
+	RhythmDBEntryType entry_type = rhythmdb_entry_get_entry_type (entry);
+	gboolean should_paste = (entry_type->category == RHYTHMDB_ENTRY_NORMAL);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	return should_paste;
+}
+
+gboolean
+rb_removable_media_source_should_paste (RBRemovableMediaSource *source,
+					RhythmDBEntry *entry)
+{
+	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
+
+	return klass->impl_should_paste (source, entry);
 }
 
 void

@@ -62,7 +62,12 @@ typedef struct
 						 const char *uri,
 						 guint64 filesize,
 						 const char *mimetype);
+	gboolean	(*impl_should_paste)	(RBRemovableMediaSource *source,
+						 RhythmDBEntry *entry);
 } RBRemovableMediaSourceClass;
+
+typedef gboolean	(*RBRemovableMediaSourceShouldPasteFunc) (RBRemovableMediaSource *source,
+								  RhythmDBEntry *entry);
 
 GType			rb_removable_media_source_get_type	(void);
 
@@ -76,6 +81,8 @@ void		rb_removable_media_source_track_added		(RBRemovableMediaSource *source,
 								 guint64 filesize,
 								 const char *mimetype);
 GList *		rb_removable_media_source_get_mime_types	(RBRemovableMediaSource *source);
+gboolean	rb_removable_media_source_should_paste		(RBRemovableMediaSource *source,
+								 RhythmDBEntry *entry);
 
 G_END_DECLS
 
