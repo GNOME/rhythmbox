@@ -255,7 +255,10 @@ rb_ipod_free_delayed_action (RbIpodDelayedAction *action)
 		g_object_unref (action->thumbnail_data.pixbuf);
 		break;
 	case RB_IPOD_ACTION_ADD_TRACK:
-		itdb_track_free (action->track);
+		if (action->track != NULL) {
+			g_warning ("non NULL Itdb_Track, shouldn't happen");
+			itdb_track_free (action->track);
+		}
 		break;
 	case RB_IPOD_ACTION_ADD_PLAYLIST:
 		/* Do nothing */

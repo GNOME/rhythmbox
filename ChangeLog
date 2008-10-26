@@ -1,3 +1,9 @@
+2008-10-26  Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/ipod/rb-ipod-db.c: when freeing delayed actions, don't
+	blindly try to free the ItdbTrack we get, especially since it
+	should never be non-NULL
+
 2008-10-26 Christophe Fergeau  <teuf@gnome.org>
 
 	Patch by: Ed Catmur, Paul Drain and Christophe Fergeau
