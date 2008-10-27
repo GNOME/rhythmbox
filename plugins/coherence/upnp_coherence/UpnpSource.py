@@ -2,7 +2,7 @@
 # http://opensource.org/licenses/mit-license.php
 #
 # Copyright 2007, James Livingston  <doclivingston@gmail.com>
-# Copyright 2007, Frank Scholz <coherence@beebits.net>
+# Copyright 2007,2008 Frank Scholz <coherence@beebits.net>
 
 import rb, rhythmdb
 import gobject, gtk
@@ -10,6 +10,7 @@ import gobject, gtk
 from coherence import __version_info__ as coherence_version
 
 from coherence import log
+from coherence.upnp.core import DIDLLite
 
 class UpnpSource(rb.BrowserSource,log.Loggable):
 
@@ -18,7 +19,7 @@ class UpnpSource(rb.BrowserSource,log.Loggable):
     __gproperties__ = {
         'plugin': (rb.Plugin, 'plugin', 'plugin', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
         'client': (gobject.TYPE_PYOBJECT, 'client', 'client', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
-        'usn': (gobject.TYPE_PYOBJECT, 'usn', 'usn', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
+        'udn': (gobject.TYPE_PYOBJECT, 'udn', 'udn', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
     }
 
     def __init__(self):
@@ -37,8 +38,8 @@ class UpnpSource(rb.BrowserSource,log.Loggable):
         elif property.name == 'client':
             self.__client = value
             self.props.name = self.__client.device.get_friendly_name()
-        elif property.name == 'usn':
-            self.__usn = value
+        elif property.name == 'udn':
+            self.__udn = value
         else:
             raise AttributeError, 'unknown property %s' % property.name
 
@@ -59,15 +60,12 @@ class UpnpSource(rb.BrowserSource,log.Loggable):
 
 
     def load_db(self, id):
-        if coherence_version < (0,5,1):
-            d = self.__client.content_directory.browse(id, browse_flag='BrowseDirectChildren', backward_compatibility=False)
-        else:
-            d = self.__client.content_directory.browse(id, browse_flag='BrowseDirectChildren', process_result=False, backward_compatibility=False)
-        d.addCallback(self.process_media_server_browse, self.__usn)
+        d = self.__client.content_directory.browse(id, browse_flag='BrowseDirectChildren', process_result=False, backward_compatibility=False)
+        d.addCallback(self.process_media_server_browse, self.__udn)
 
 
-    def state_variable_change(self, variable, usn=None):
-        print "%s changed from %s to %s" % (variable.name, variable.old_value, variable.value)
+    def state_variable_change(self, variable, udn=None):
+        self.info("%s changed from >%s< to >%s<", variable.name, variable.old_value, variable.value)
         if variable.old_value == '':
             return
 
@@ -79,12 +77,13 @@ class UpnpSource(rb.BrowserSource,log.Loggable):
                 container = changes.pop(0).strip()
                 update_id = changes.pop(0).strip()
                 if container in self.container_watch:
-                    print "we have a change in %s, container needs a reload" % container
+                    self.info("we have a change in %r, container needs a reload", container)
                     self.load_db(container)
 
 
-    def new_process_media_server_browse(self, results, usn):
-        for item in results:
+    def new_process_media_server_browse(self, results, udn):
+        didl = DIDLLite.DIDLElement.fromString(results['Result'])
+        for item in didl.getItems():
             self.info("process_media_server_browse %r %r", item.id, item)
             if item.upnp_class.startswith('object.container'):
                 self.load_db(item.id)
@@ -141,40 +140,5 @@ class UpnpSource(rb.BrowserSource,log.Loggable):
                         self.__db.set(entry, rhythmdb.PROP_FILE_SIZE,int(size))
 
                     self.__db.commit()
-
-
-    def old_process_media_server_browse(self, results, usn):
-        for k,v in results.iteritems():
-            if k == 'items':
-                for id, values in v.iteritems():
-                    if values['upnp_class'].startswith('object.container'):
-                        self.load_db(id)
-                    if values['upnp_class'].startswith('object.item.audioItem'):
-                        # (url, [method, something which is in asterix,  format, semicolon delimited key=value map of something])
-                        resources = [(k, v.split(':')) for (k, v) in values['resources'].iteritems()]
-                        # break data into map
-                        for r in resources:
-                            if r[1][3] is not '*':
-                                r[1][3] = dict([v.split('=') for v in r[1][3].split(';')])
-                            else:
-                                r[1][3] = dict()
-
-                        url = None
-                        for r in resources:
-                            if r[1][3].has_key('DLNA.ORG_CI') and r[1][3]['DLNA.ORG_CI'] is not '1':
-                                url = r[0]
-                                break
-
-                        if url is None:
-                            # use transcoded format, since we can't find a normal one
-                            url = resources[0][0]
-
-                        entry = self.__db.entry_lookup_by_location (url)
-                        if entry == None:
-                            entry = self.__db.entry_new(self.__entry_type, url)
-
-                        self.__db.set(entry, rhythmdb.PROP_TITLE, values['title'])
-
-                        self.__db.commit()
 
 gobject.type_register(UpnpSource)

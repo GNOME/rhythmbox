@@ -10,7 +10,7 @@
 import rhythmdb, rb
 import gobject, gtk
 
-import louie
+import coherence.extern.louie as louie
 
 from coherence import log
 
@@ -117,7 +117,7 @@ class CoherencePlugin(rb.Plugin,log.Loggable):
 
     def get_coherence (self):
         coherence_instance = None
-        required_version = (0, 3, 2)
+        required_version = (0, 5, 7)
 
         try:
             from coherence.base import Coherence
@@ -143,15 +143,15 @@ class CoherencePlugin(rb.Plugin,log.Loggable):
 
         return coherence_instance
 
-    def removed_media_server(self, usn):
-        print "upnp server went away %s" % usn
-        if self.sources.has_key(usn):
-            self.sources[usn].delete_thyself()
-            del self.sources[usn]
+    def removed_media_server(self, udn):
+        print "upnp server went away %s" % udn
+        if self.sources.has_key(udn):
+            self.sources[udn].delete_thyself()
+            del self.sources[udn]
 
-    def detected_media_server(self, client, usn):
-        print "found upnp server %s (%s)"  %  (client.device.get_friendly_name(), usn)
-        self.warning("found upnp server %s (%s)"  %  (client.device.get_friendly_name(), usn))
+    def detected_media_server(self, client, udn):
+        print "found upnp server %s (%s)"  %  (client.device.get_friendly_name(), udn)
+        self.warning("found upnp server %s (%s)"  %  (client.device.get_friendly_name(), udn))
         if client.device.get_id() == self.uuid:
             """ don't react on our own MediaServer"""
             return
@@ -167,8 +167,8 @@ class CoherencePlugin(rb.Plugin,log.Loggable):
                     source_group=group,
                     plugin=self,
                     client=client,
-                    usn=usn)
+                    udn=udn)
 
-        self.sources[usn] = source
+        self.sources[udn] = source
 
         self.shell.append_source (source, None)

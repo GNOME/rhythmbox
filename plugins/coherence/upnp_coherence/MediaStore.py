@@ -5,17 +5,17 @@
 # Copyright 2007, Frank Scholz <coherence@beebits.net>
 
 import rhythmdb
-import louie
+import coherence.extern.louie as louie
 import urllib
 from coherence.upnp.core import DIDLLite
 
-from coherence import log
+from coherence.backend import BackendItem, BackendStore
 
 ROOT_CONTAINER_ID = 0
-AUDIO_CONTAINER = 10
-AUDIO_ALL_CONTAINER_ID = 11
-AUDIO_ARTIST_CONTAINER_ID = 12
-AUDIO_ALBUM_CONTAINER_ID = 13
+AUDIO_CONTAINER = 100
+AUDIO_ALL_CONTAINER_ID = 101
+AUDIO_ARTIST_CONTAINER_ID = 102
+AUDIO_ALBUM_CONTAINER_ID = 103
 
 CONTAINER_COUNT = 10000
 
@@ -23,7 +23,7 @@ TRACK_COUNT = 1000000
 
 # most of this class is from Coherence, originally under the MIT licence
 
-class Container(log.Loggable):
+class Container(BackendItem):
 
     logCategory = 'rb_media_store'
 
@@ -46,7 +46,7 @@ class Container(log.Loggable):
 
     def get_children(self,start=0,request_count=0):
         if callable(self.children):
-            children = self.children()
+            children = self.children(self.id)
         else:
             children = self.children
 
@@ -57,13 +57,9 @@ class Container(log.Loggable):
             return children[start:request_count]
 
     def get_child_count(self):
+        return len(self.get_children())
 
-        if callable(self.children):
-            return len(self.children())
-        else:
-            return len(self.children)
-
-    def get_item(self):
+    def get_item(self, parent_id=None):
         self.item.childCount = self.get_child_count()
         return self.item
 
@@ -74,11 +70,11 @@ class Container(log.Loggable):
         return self.id
 
 
-class Album(log.Loggable):
+class Album(BackendItem):
 
     logCategory = 'rb_media_store'
 
-    def __init__(self, store, title, id):
+    def __init__(self, store, title, id, parent_id):
         self.id = id
         self.title = title
         self.store = store
@@ -103,7 +99,7 @@ class Album(log.Loggable):
         def collate (model, path, iter):
             self.info("Album get_children %r %r %r" %(model, path, iter))
             id = model.get(iter, 0)[0]
-            children.append(Track(self.store,id))
+            children.append(Track(self.store,id,self.id))
 
         self.tracks_per_album_query.foreach(collate)
 
@@ -117,8 +113,8 @@ class Album(log.Loggable):
     def get_child_count(self):
         return len(self.get_children())
 
-    def get_item(self):
-        item = DIDLLite.MusicAlbum(self.id, AUDIO_ALBUM_CONTAINER_ID, self.title)
+    def get_item(self, parent_id = AUDIO_ALBUM_CONTAINER_ID):
+        item = DIDLLite.MusicAlbum(self.id, parent_id, self.title)
         return item
 
     def get_id(self):
@@ -131,11 +127,11 @@ class Album(log.Loggable):
         return self.cover
 
 
-class Artist(log.Loggable):
+class Artist(BackendItem):
 
     logCategory = 'rb_media_store'
 
-    def __init__(self, store, name, id):
+    def __init__(self, store, name, id, parent_id):
         self.id = id
         self.name = name
         self.store = store
@@ -173,8 +169,8 @@ class Artist(log.Loggable):
     def get_child_count(self):
         return len(self.get_children())
 
-    def get_item(self):
-        item = DIDLLite.MusicArtist(self.id, AUDIO_ARTIST_CONTAINER_ID, self.name)
+    def get_item(self, parent_id = AUDIO_ARTIST_CONTAINER_ID):
+        item = DIDLLite.MusicArtist(self.id, parent_id, self.name)
         return item
 
     def get_id(self):
@@ -184,16 +180,17 @@ class Artist(log.Loggable):
         return self.name
 
 
-class Track(log.Loggable):
+class Track(BackendItem):
 
     logCategory = 'rb_media_store'
 
-    def __init__(self, store, id):
+    def __init__(self, store, id, parent_id):
         self.store = store
         if type(id) == int:
             self.id = id
         else:
             self.id = self.store.db.entry_get (id, rhythmdb.PROP_ENTRY_ID)
+        self.parent_id = parent_id
 
     def get_children(self, start=0, request_count=0):
         return []
@@ -201,9 +198,9 @@ class Track(log.Loggable):
     def get_child_count(self):
         return 0
 
-    def get_item(self):
+    def get_item(self, parent_id=None):
 
-        self.info("Track get_item %r" %(self.id))
+        self.info("Track get_item %r @ %r" %(self.id,self.parent_id))
 
         host = ""
 
@@ -226,9 +223,17 @@ class Track(log.Loggable):
             mimetype = "audio/mpeg"
         size = self.store.db.entry_get(entry, rhythmdb.PROP_FILE_SIZE)
 
+        album = self.store.db.entry_get(entry, rhythmdb.PROP_ALBUM)
+        if self.parent_id == None:
+            try:
+                self.parent_id = self.store.albums[album].id
+            except:
+                pass
+
         # create item
-        item = DIDLLite.MusicTrack(self.id + TRACK_COUNT)
-        item.album = self.store.db.entry_get(entry, rhythmdb.PROP_ALBUM)
+        item = DIDLLite.MusicTrack(self.id + TRACK_COUNT,self.parent_id)
+        item.album = album
+
         item.artist = self.store.db.entry_get(entry, rhythmdb.PROP_ARTIST)
         #item.date =
         item.genre = self.store.db.entry_get(entry, rhythmdb.PROP_GENRE)
@@ -239,15 +244,18 @@ class Track(log.Loggable):
         #self.warning("cover for %r is %r", item.title, cover)
         #item.albumArtURI = ## can we somehow store art in the upnp share??
 
-        # add internal resource
-        #res = DIDLLite.Resource(location, 'internal:%s:%s:*' % (host, mimetype))
-        #res.size = size
-        #res.duration = duration
-        #res.bitrate = bitrate
-        #item.res.append(res)
-
         # add http resource
         res = DIDLLite.Resource(self.get_url(), 'http-get:*:%s:*' % mimetype)
+        if size > 0:
+            res.size = size
+        if duration > 0:
+            res.duration = str(duration)
+        if bitrate > 0:
+            res.bitrate = str(bitrate)
+        item.res.append(res)
+
+        # add internal resource
+        res = DIDLLite.Resource('track-%d' % self.id, 'rhythmbox:%s:%s:*' % (self.store.server.coherence.hostname, mimetype))
         if size > 0:
             res.size = size
         if duration > 0:
@@ -280,16 +288,21 @@ class Track(log.Loggable):
 
         return location
 
-class MediaStore(log.Loggable):
+class MediaStore(BackendStore):
 
     logCategory = 'rb_media_store'
     implements = ['MediaServer']
 
     def __init__(self, server, **kwargs):
-        print "creating UPnP MediaStore"
+        self.warning("__init__ MediaStore %r", kwargs)
         self.server = server
         self.db = kwargs['db']
         self.plugin = kwargs['plugin']
+
+        self.wmc_mapping.update({'4': lambda : self.get_by_id(AUDIO_ALL_CONTAINER_ID),    # all tracks
+                                 '7': lambda : self.get_by_id(AUDIO_ALBUM_CONTAINER_ID),    # all albums
+                                 '6': lambda : self.get_by_id(AUDIO_ARTIST_CONTAINER_ID),    # all artists
+                                })
 
         self.update_id = 0
 
@@ -340,11 +353,16 @@ class MediaStore(log.Loggable):
     def get_by_id(self,id):
 
         self.info("looking for id %r", id)
-        id = int(id)
-        if id < TRACK_COUNT:
-            item = self.containers[id]
+        id = id.split('@',1)
+        item_id = id[0]
+        item_id = int(item_id)
+        if item_id < TRACK_COUNT:
+            try:
+                item = self.containers[item_id]
+            except KeyError:
+                item = None
         else:
-            item = Track(self, (id - TRACK_COUNT))
+            item = Track(self, (item_id - TRACK_COUNT),None)
 
         return item
 
@@ -356,24 +374,26 @@ class MediaStore(log.Loggable):
     def upnp_init(self):
         if self.server:
             self.server.connection_manager_server.set_variable(0, 'SourceProtocolInfo', [
-                #'internal:%s:*:*' % self.name,
+                'rhythmbox:%s:*:*' % self.server.coherence.hostname,
                 'http-get:*:audio/mpeg:*',
             ])
+        self.warning("__init__ MediaStore initialized")
 
-    def children_tracks(self):
+
+    def children_tracks(self, parent_id):
         tracks = []
 
         def track_cb (entry):
             if self.db.entry_get (entry, rhythmdb.PROP_HIDDEN):
                 return
             id = self.db.entry_get (entry, rhythmdb.PROP_ENTRY_ID)
-            track = Track(self, id)
+            track = Track(self, id, parent_id)
             tracks.append(track)
 
         self.db.entry_foreach_by_type (self.db.entry_type_get_by_name('song'), track_cb)
         return tracks
 
-    def children_albums(self):
+    def children_albums(self,parent_id):
         albums =  {}
 
         self.info('children_albums')
@@ -389,7 +409,7 @@ class MediaStore(log.Loggable):
             self.info("children_albums collate %r %r", name, priority)
             if priority is False:
                 id = self.get_next_container_id()
-                album = Album(self, name, id)
+                album = Album(self, name, id,parent_id)
                 self.containers[id] = album
                 albums[name] = album
 
@@ -401,7 +421,7 @@ class MediaStore(log.Loggable):
         albums.sort(cmp=album_sort)
         return albums
 
-    def children_artists(self,killbug=False):
+    def children_artists(self,parent_id):
         artists = []
 
         self.info('children_artists')
@@ -411,7 +431,7 @@ class MediaStore(log.Loggable):
             priority = model.get(iter, 1)[0]
             if priority is False:
                 id = self.get_next_container_id()
-                artist = Artist(self,name, id)
+                artist = Artist(self,name, id,parent_id)
                 self.containers[id] = artist
                 artists.append(artist)
 

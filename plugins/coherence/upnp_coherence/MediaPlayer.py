@@ -10,7 +10,7 @@ import rhythmdb
 from coherence.upnp.core.soap_service import errorCode
 from coherence.upnp.core import DIDLLite
 
-import louie
+import coherence.extern.louie as louie
 
 from coherence.extern.simple_plugin import Plugin
 
@@ -26,7 +26,8 @@ class RhythmboxPlayer(log.Loggable):
     logCategory = 'rb_media_renderer'
 
     implements = ['MediaRenderer']
-    vendor_value_defaults = {'RenderingControl': {'A_ARG_TYPE_Channel':'Master'}}
+    vendor_value_defaults = {'RenderingControl': {'A_ARG_TYPE_Channel':'Master'},
+                             'AVTransport': {'A_ARG_TYPE_SeekMode':('ABS_TIME','REL_TIME')}}
     vendor_range_defaults = {'RenderingControl': {'Volume': {'maximum':100}}}
 
     def __init__(self, device, **kwargs):
@@ -36,17 +37,9 @@ class RhythmboxPlayer(log.Loggable):
 
         self.player = None
         self.metadata = None
-        self.host = '127.0.0.1'
         self.name = "Rhythmbox on %s" % self.server.coherence.hostname
 
         self.player = self.shell.get_player()
-        self.player.connect ('playing-song-changed',
-                                 self.playing_song_changed),
-        self.player.connect ('playing-changed',
-                                 self.playing_changed)
-        self.player.connect ('elapsed-changed',
-                                 self.elapsed_changed)
-        self.player.connect("notify::volume", self.volume_changed)
         louie.send('Coherence.UPnP.Backend.init_completed', None, backend=self)
 
         self.playing = False
@@ -226,23 +219,30 @@ class RhythmboxPlayer(log.Loggable):
         self.metadata = metadata
         self.tags = {}
 
-        if len(self.metadata)>0:
-            elt = DIDLLite.DIDLElement.fromString(self.metadata)
+        was_playing = self.playing
+
+        if was_playing == True:
+            self.stop()
+
+        if len(metadata)>0:
+            elt = DIDLLite.DIDLElement.fromString(metadata)
             if elt.numItems() == 1:
                 item = elt.getItems()[0]
 
-                self.entry = self.shell.props.db.entry_lookup_by_location(uri)
-                self.warning("check for entry %r %r", self.entry, item.server_uuid)
+                if uri.startswith('track-'):
+                    self.entry = self.shell.props.db.entry_lookup_by_id(int(uri[6:]))
+                else:
+                    self.entry = self.shell.props.db.entry_lookup_by_location(uri)
+                self.warning("check for entry %r %r %r", self.entry,item.server_uuid,uri)
                 if self.entry == None:
                     if item.server_uuid is not None:
                         entry_type = self.shell.props.db.entry_register_type("CoherenceUpnp:" + item.server_uuid)
                         self.entry = self.shell.props.db.entry_new(entry_type, uri)
                         self.warning("create new entry %r", self.entry)
                     else:
-                        self.shell.load_uri(uri,play=False)
-                        self.entry = self.shell.props.db.entry_lookup_by_location(uri)
+                        entry_type = self.shell.props.db.entry_register_type("CoherencePlayer")
+                        self.entry = self.shell.props.db.entry_new(entry_type, uri)
                         self.warning("load and check for entry %r", self.entry)
-
 
                 duration = None
                 size = None
@@ -283,19 +283,29 @@ class RhythmboxPlayer(log.Loggable):
                     self.shell.props.db.set(self.entry, rhythmdb.PROP_FILE_SIZE,int(size))
 
         else:
-            self.shell.load_uri(uri,play=False)
-            self.entry = self.shell.props.db.entry_lookup_by_location(uri)
+            if uri.startswith('track-'):
+                self.entry = self.shell.props.db.entry_lookup_by_id(int(uri[6:]))
+            else:
+                #self.shell.load_uri(uri,play=False)
+                #self.entry = self.shell.props.db.entry_lookup_by_location(uri)
+                entry_type = self.shell.props.db.entry_register_type("CoherencePlayer")
+                self.entry = self.shell.props.db.entry_new(entry_type, uri)
+
 
         self.playing = False
+        self.metadata = metadata
 
         connection_id = self.server.connection_manager_server.lookup_avt_id(self.current_connection_id)
-        self.server.av_transport_server.set_variable(connection_id, 'CurrentTransportActions','Play,Stop,Pause')
+        self.server.av_transport_server.set_variable(connection_id, 'CurrentTransportActions','Play,Stop,Pause,Seek')
         self.server.av_transport_server.set_variable(connection_id, 'NumberOfTracks',1)
         self.server.av_transport_server.set_variable(connection_id, 'CurrentTrackURI',uri)
         self.server.av_transport_server.set_variable(connection_id, 'AVTransportURI',uri)
         self.server.av_transport_server.set_variable(connection_id, 'AVTransportURIMetaData',metadata)
         self.server.av_transport_server.set_variable(connection_id, 'CurrentTrackURI',uri)
         self.server.av_transport_server.set_variable(connection_id, 'CurrentTrackMetaData',metadata)
+
+        if was_playing == True:
+            self.play()
 
     def start(self, uri):
         self.load(uri)
@@ -328,12 +338,15 @@ class RhythmboxPlayer(log.Loggable):
         #    self.server.connection_manager_server.lookup_avt_id(self.current_connection_id),\
         #                     'TransportState', 'PAUSED_PLAYBACK')
 
-    def seek(self, location):
+    def seek(self, location, old_state):
         """
         @param location:    simple number = time to seek to, in seconds
                             +nL = relative seek forward n seconds
                             -nL = relative seek backwards n seconds
         """
+        self.warning("player seek %r", location)
+        self.player.seek(location)
+        self.server.av_transport_server.set_variable(0, 'TransportState', old_state)
 
     def mute(self):
         self.muted_volume = self.volume
@@ -368,9 +381,17 @@ class RhythmboxPlayer(log.Loggable):
         self.player.set_volume(float(volume/100.0))
 
     def upnp_init(self):
+        self.player.connect ('playing-song-changed',
+                                 self.playing_song_changed),
+        self.player.connect ('playing-changed',
+                                 self.playing_changed)
+        self.player.connect ('elapsed-changed',
+                                 self.elapsed_changed)
+        self.player.connect("notify::volume", self.volume_changed)
+
         self.current_connection_id = None
         self.server.connection_manager_server.set_variable(0, 'SinkProtocolInfo',
-                            ['internal:%s:*:*' % self.host,
+                            ['rhythmbox:%s:audio/mpeg:*' % self.server.coherence.hostname,
                              'http-get:*:audio/mpeg:*'],
                             default=True)
         self.server.av_transport_server.set_variable(0, 'TransportState', 'NO_MEDIA_PRESENT', default=True)
@@ -396,6 +417,18 @@ class RhythmboxPlayer(log.Loggable):
         self.stop()
         return {}
 
+    def upnp_Seek(self, *args, **kwargs):
+        InstanceID = int(kwargs['InstanceID'])
+        Unit = kwargs['Unit']
+        Target = kwargs['Target']
+        if Unit in ['ABS_TIME','REL_TIME']:
+            old_state = self.server.av_transport_server.get_variable(0, 'TransportState')
+            self.server.av_transport_server.set_variable(0, 'TransportState', 'TRANSITIONING')
+            h,m,s = Target.split(':')
+            seconds = int(h)*3600 + int(m)*60 + int(s)
+            self.seek(seconds, old_state)
+        return {}
+
     def upnp_SetAVTransportURI(self, *args, **kwargs):
         InstanceID = int(kwargs['InstanceID'])
         CurrentURI = kwargs['CurrentURI']
@@ -404,12 +437,13 @@ class RhythmboxPlayer(log.Loggable):
         #print '>>>', local_protocol_infos
         if len(CurrentURIMetaData)==0:
             self.load(CurrentURI,CurrentURIMetaData)
+            return {}
         else:
             elt = DIDLLite.DIDLElement.fromString(CurrentURIMetaData)
             #import pdb; pdb.set_trace()
             if elt.numItems() == 1:
                 item = elt.getItems()[0]
-                res = item.res.get_matching(local_protocol_infos, protocol_type='internal')
+                res = item.res.get_matching(local_protocol_infos, protocol_type='rhythmbox')
                 if len(res) == 0:
                     res = item.res.get_matching(local_protocol_infos)
                 if len(res) > 0:
