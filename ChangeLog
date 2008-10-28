@@ -1,3 +1,8 @@
+2008-10-28  Jonathan Matthew  <jonathan@d14n.org>
+
+	* sources/rb-library-source.c: (rb_library_source_constructor):
+	Convert library location paths to URIs on startup.  Fixes #556711.
+
 2008-10-27  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/coherence/upnp_coherence/MediaPlayer.py:

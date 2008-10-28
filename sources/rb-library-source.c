@@ -335,6 +335,28 @@ rb_library_source_constructor (GType type,
 			list = g_slist_prepend (list, music_dir_uri);
 			eel_gconf_set_string_list (CONF_LIBRARY_LOCATION, list);
 		}
+	} else {
+		/* ensure all library locations are URIs and not file paths */
+		GSList *t;
+		gboolean update = FALSE;
+		for (t = list; t != NULL; t = t->next) {
+			char *location;
+
+			location = (char *)t->data;
+			if (location[0] == '/') {
+				char *uri = g_filename_to_uri (location, NULL, NULL);
+				if (uri != NULL) {
+					rb_debug ("converting library location path %s to URI %s", location, uri);
+					g_free (location);
+					t->data = uri;
+					update = TRUE;
+				}
+			}
+		}
+
+		if (update) {
+			eel_gconf_set_string_list (CONF_LIBRARY_LOCATION, list);
+		}
 	}
 	rb_slist_deep_free (list);
 
