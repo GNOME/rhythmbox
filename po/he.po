@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-29 13:18+0000\n"
-"PO-Revision-Date: 2008-07-17 17:26+0200\n"
+"POT-Creation-Date: 2008-10-26 19:50+0000\n"
+"PO-Revision-Date: 2008-11-01 13:04+0200\n"
 "Last-Translator: Mark Krapivner <mark125@gmail.com>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -21,72 +21,78 @@ msgstr ""
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: Hebrew\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:578
+#: ../backends/gstreamer/rb-encoder-gst.c:584
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "להחליף את הקובץ \"%s\"?"
 
-#: ../backends/gstreamer/rb-player-gst.c:695 ../metadata/rb-metadata-gst.c:799
-#: ../metadata/rb-metadata-gst.c:1366
-#: ../plugins/cd-recorder/rb-recorder-gst.c:507
+#: ../backends/gstreamer/rb-encoder-gst.c:653
+#, fuzzy, c-format
+msgid "Could not create a GStreamer sink element to write to %s"
+msgstr "יצירת הנגן %s נכשלה"
+
+#: ../backends/gstreamer/rb-player-gst.c:693
+#: ../metadata/rb-metadata-gst.c:801
+#: ../metadata/rb-metadata-gst.c:1368
+#: ../plugins/cd-recorder/rb-recorder-gst.c:508
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "יצירת רכיב %s נכשלה, נא לבדוק את התקנת התוכנה"
 
-#: ../backends/gstreamer/rb-player-gst.c:763
+#: ../backends/gstreamer/rb-player-gst.c:761
 #, c-format
 msgid "Unknown playback error"
 msgstr "שגיאת ניגון לא ידועה"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1108
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1122
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1138
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1152
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1149
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1179
 #, fuzzy, c-format
 msgid "Failed to start new stream"
 msgstr "דילוג בקובץ נכשל"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2573
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2637
 #, fuzzy, c-format
 msgid "Failed to open output device"
 msgstr "דילוג בקובץ נכשל"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2639
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2715
 #, fuzzy, c-format
 msgid "Failed to open output device: %s"
 msgstr "נכשל ביצירת המקליט: %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2835
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2923
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2912
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3000
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "נכשל ביצירת אלמנט GStreamer; בדוק את ההתקנה שלך"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2848
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2925
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "נכשל ביצירת אלמנט פלט שמע; בדוק את ההתקנה שלך"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2897
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2939
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2965
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2974
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2983
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3016
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3042
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3051
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3060
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3078
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3155
 #, fuzzy, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "יצירת הנגן %s נכשלה"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3094
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3171
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "נכשל בהתחלת הנגינה של %s"
@@ -156,54 +162,58 @@ msgid "G_enres, artists and albums"
 msgstr "ז'_אנרים, אמנים ואלבומים"
 
 #: ../data/glade/general-prefs.glade.h:11
+msgid "Lo_cation"
+msgstr "מי_קום"
+
+#: ../data/glade/general-prefs.glade.h:12
 msgid "Ti_me"
 msgstr "_זמן"
 
-#: ../data/glade/general-prefs.glade.h:12
+#: ../data/glade/general-prefs.glade.h:13
 msgid "Toolbar Button Labels"
 msgstr "התוויות התחתונות של סרגל הכלים"
 
-#: ../data/glade/general-prefs.glade.h:13
+#: ../data/glade/general-prefs.glade.h:14
 msgid "Track _number"
 msgstr "מספר _רצועה"
 
-#: ../data/glade/general-prefs.glade.h:14
+#: ../data/glade/general-prefs.glade.h:15
 msgid "Visible Columns"
 msgstr "עמודות מוצגות"
 
-#: ../data/glade/general-prefs.glade.h:15
+#: ../data/glade/general-prefs.glade.h:16
 msgid "_Artist"
 msgstr "_אומן"
 
-#: ../data/glade/general-prefs.glade.h:16
+#: ../data/glade/general-prefs.glade.h:17
 msgid "_Artists and albums"
 msgstr "_אמנים ואלבומים"
 
-#: ../data/glade/general-prefs.glade.h:17
-msgid "_Genre"
-msgstr "_ז'אנר"
-
 #: ../data/glade/general-prefs.glade.h:18
-msgid "_Genres and artists"
-msgstr "_ז'אנרים ואמנים"
+msgid "_Genre"
+msgstr "_סוג"
 
 #: ../data/glade/general-prefs.glade.h:19
+msgid "_Genres and artists"
+msgstr "_סוגי מוזיקה ואמנים"
+
+#: ../data/glade/general-prefs.glade.h:20
 msgid "_Last played"
 msgstr "_נוגן לאחרונה"
 
-#: ../data/glade/general-prefs.glade.h:20
+#: ../data/glade/general-prefs.glade.h:21
 msgid "_Play count"
 msgstr "_מספר השמעות"
 
-#: ../data/glade/general-prefs.glade.h:21
+#: ../data/glade/general-prefs.glade.h:22
 msgid "_Quality"
 msgstr "_איכות"
 
-#: ../data/glade/general-prefs.glade.h:22
+#: ../data/glade/general-prefs.glade.h:23
 msgid "_Rating"
 msgstr "_דירוג"
 
-#: ../data/glade/general-prefs.glade.h:23
+#: ../data/glade/general-prefs.glade.h:24
 msgid "_Year"
 msgstr "_שנה"
 
@@ -221,9 +231,8 @@ msgid "F_older hierarchy:"
 msgstr "מבנה _תיקיות:"
 
 #: ../data/glade/library-prefs.glade.h:4
-#, fuzzy
 msgid "Library Location"
-msgstr "_מיקום הספרייה"
+msgstr "מיקום הספרייה"
 
 #: ../data/glade/library-prefs.glade.h:5
 msgid "Library Structure"
@@ -233,7 +242,8 @@ msgstr "מבנה ספרייה"
 msgid "_Browse..."
 msgstr "_עיון..."
 
-#: ../data/glade/library-prefs.glade.h:7 ../shell/rb-playlist-manager.c:168
+#: ../data/glade/library-prefs.glade.h:7
+#: ../shell/rb-playlist-manager.c:168
 msgid "_Edit..."
 msgstr "_עריכה..."
 
@@ -323,7 +333,8 @@ msgstr "אתר:"
 
 #. -
 #: ../data/glade/podcast-feed-properties.glade.h:1
-#: ../data/glade/podcast-properties.glade.h:1 ../widgets/bacon-volume.c:224
+#: ../data/glade/podcast-properties.glade.h:1
+#: ../widgets/bacon-volume.c:224
 msgid "-"
 msgstr "-"
 
@@ -385,7 +396,7 @@ msgstr ""
 
 #: ../data/glade/podcast-prefs.glade.h:7
 msgid "Select Folder For Podcasts"
-msgstr "בחירת תיקייה לשמירת פודקאסטים"
+msgstr "בחירת תיקייה לשמירת פודקסטים"
 
 #: ../data/glade/podcast-prefs.glade.h:8
 msgid "_Download location:"
@@ -452,7 +463,7 @@ msgstr "_תקליטור מספר:"
 #: ../data/glade/song-info.glade.h:15
 #: ../plugins/iradio/station-properties.glade.h:8
 msgid "_Genre:"
-msgstr "_ז'אנר:"
+msgstr "_סוג:"
 
 #: ../data/glade/song-info-multiple.glade.h:6
 #: ../data/glade/song-info.glade.h:19
@@ -517,8 +528,9 @@ msgstr "נוגנו לאחרונה"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:207
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1494
-#: ../shell/rb-shell-player.c:2987 ../shell/rb-shell.c:1046
-#: ../shell/rb-shell.c:2140 ../shell/rb-tray-icon.c:50
+#: ../shell/rb-shell.c:1046
+#: ../shell/rb-shell.c:2142
+#: ../shell/rb-tray-icon.c:50
 msgid "Music Player"
 msgstr "נגן המוזיקה"
 
@@ -571,8 +583,9 @@ msgstr "%b %d %Y"
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:593
-#: ../lib/rb-util.c:833
+#: ../lib/rb-cut-and-paste-code.c:326
+#: ../lib/rb-util.c:577
+#: ../lib/rb-util.c:817
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:85
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:86
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:88
@@ -582,43 +595,52 @@ msgstr "%b %d %Y"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:268
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:153
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:154
-#: ../plugins/audiocd/rb-audiocd-source.c:225
+#: ../plugins/audiocd/rb-audiocd-source.c:218
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:510
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
 #: ../plugins/daap/rb-daap-connection.c:679
-#: ../plugins/generic-player/rb-generic-player-source.c:1182
-#: ../plugins/ipod/rb-ipod-source.c:314
+#: ../plugins/generic-player/rb-generic-player-source.c:1193
+#: ../plugins/ipod/rb-ipod-source.c:319
+#: ../plugins/jamendo/jamendo/JamendoSource.py:330
 #: ../plugins/iradio/rb-iradio-source.c:517
 #: ../plugins/iradio/rb-iradio-source.c:1110
 #: ../plugins/iradio/rb-station-properties-dialog.c:486
 #: ../plugins/mtpdevice/rb-mtp-source.c:266
-#: ../podcast/rb-feed-podcast-properties-dialog.c:319
-#: ../podcast/rb-podcast-manager.c:1780
-#: ../podcast/rb-podcast-properties-dialog.c:475
-#: ../podcast/rb-podcast-properties-dialog.c:528
-#: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1248
-#: ../rhythmdb/rhythmdb-tree.c:1252 ../rhythmdb/rhythmdb-tree.c:1256
-#: ../rhythmdb/rhythmdb-tree.c:1260 ../rhythmdb/rhythmdb.c:1599
-#: ../shell/rb-shell-player.c:1717 ../shell/rb-shell.c:3063
-#: ../sources/rb-podcast-source.c:1771 ../widgets/rb-entry-view.c:1035
-#: ../widgets/rb-entry-view.c:1060 ../widgets/rb-entry-view.c:1463
-#: ../widgets/rb-entry-view.c:1475 ../widgets/rb-entry-view.c:1487
-#: ../widgets/rb-song-info.c:902 ../widgets/rb-song-info.c:1067
-#: ../widgets/rb-song-info.c:1342
+#: ../podcast/rb-feed-podcast-properties-dialog.c:321
+#: ../podcast/rb-podcast-manager.c:1863
+#: ../podcast/rb-podcast-properties-dialog.c:478
+#: ../podcast/rb-podcast-properties-dialog.c:531
+#: ../remote/dbus/rb-client.c:140
+#: ../rhythmdb/rhythmdb-tree.c:1284
+#: ../rhythmdb/rhythmdb-tree.c:1288
+#: ../rhythmdb/rhythmdb-tree.c:1292
+#: ../rhythmdb/rhythmdb-tree.c:1296
+#: ../rhythmdb/rhythmdb.c:1601
+#: ../shell/rb-shell-player.c:1717
+#: ../shell/rb-shell.c:3065
+#: ../sources/rb-podcast-source.c:1763
+#: ../widgets/rb-entry-view.c:1041
+#: ../widgets/rb-entry-view.c:1066
+#: ../widgets/rb-entry-view.c:1469
+#: ../widgets/rb-entry-view.c:1481
+#: ../widgets/rb-entry-view.c:1493
+#: ../widgets/rb-song-info.c:881
+#: ../widgets/rb-song-info.c:1046
+#: ../widgets/rb-song-info.c:1366
 msgid "Unknown"
 msgstr "לא ידוע"
 
-#: ../lib/rb-file-helpers.c:212
+#: ../lib/rb-file-helpers.c:213
 #, c-format
 msgid "Too many symlinks"
 msgstr ""
 
-#: ../lib/rb-file-helpers.c:823
-#, fuzzy, c-format
+#: ../lib/rb-file-helpers.c:835
+#, c-format
 msgid "Cannot get free space at %s: %s"
-msgstr "אין אפשרות לקרוא את התקליטור: %s"
+msgstr ""
 
 #: ../lib/rb-proxy-config.c:218
 msgid "HTTP proxy configuration error"
@@ -626,34 +648,36 @@ msgstr ""
 
 #: ../lib/rb-proxy-config.c:219
 msgid "Rhythmbox does not support automatic proxy configuration"
-msgstr ""
+msgstr "‏Rhythmbox לא תומך בהגדרת פרוקסי אוטומטית"
 
-#: ../lib/rb-util.c:595 ../remote/dbus/rb-client.c:142
+#: ../lib/rb-util.c:579
+#: ../remote/dbus/rb-client.c:142
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:597 ../remote/dbus/rb-client.c:144
+#: ../lib/rb-util.c:581
+#: ../remote/dbus/rb-client.c:144
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:632
+#: ../lib/rb-util.c:616
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "נותרו %d:%02d מתוך %d:%02d"
 
-#: ../lib/rb-util.c:636
+#: ../lib/rb-util.c:620
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "נותרו %d:%02d:%02d מתוך %d:%02d:%02d"
 
-#: ../lib/rb-util.c:641
+#: ../lib/rb-util.c:625
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d מתוך %d:%02d"
 
-#: ../lib/rb-util.c:645
+#: ../lib/rb-util.c:629
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d מתוך %d:%02d:%02d"
@@ -677,52 +701,52 @@ msgstr ""
 msgid "D-BUS communication error"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:594
+#: ../metadata/rb-metadata-gst.c:596
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:597
+#: ../metadata/rb-metadata-gst.c:599
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:989
-#, fuzzy, c-format
+#: ../metadata/rb-metadata-gst.c:991
+#, c-format
 msgid "Failed to create a source element; check your installation"
-msgstr "יצירת רכיב %s נכשלה, נא לבדוק את התקנת התוכנה"
+msgstr "נכשל ביצירת האלמנט; בדוק את ההתקנה שלך"
 
-#: ../metadata/rb-metadata-gst.c:1052
+#: ../metadata/rb-metadata-gst.c:1054
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:1148
+#: ../metadata/rb-metadata-gst.c:1150
 #, c-format
 msgid "Empty file"
 msgstr "קובץ ריק"
 
-#: ../metadata/rb-metadata-gst.c:1156
+#: ../metadata/rb-metadata-gst.c:1158
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:1294
+#: ../metadata/rb-metadata-gst.c:1296
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "סוג קובץ לא נתמך: %s"
 
-#: ../metadata/rb-metadata-gst.c:1303
+#: ../metadata/rb-metadata-gst.c:1305
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:1318
+#: ../metadata/rb-metadata-gst.c:1320
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:1342
+#: ../metadata/rb-metadata-gst.c:1344
 #, c-format
 msgid "File corrupted during write"
 msgstr ""
@@ -756,116 +780,126 @@ msgid "Multiple Albums Found"
 msgstr "נמצאו מספר אלבומים"
 
 #: ../plugins/audiocd/multiple-album.glade.h:2
-msgid ""
-"This CD could be more than one album. Please select which album it is below "
-"and press <i>Continue</i>."
-msgstr ""
-"אפשר שבתקליטור זה יש יותר מאלבום אחד. אנא בחר את האלבום ולחץ <i>המשך</i>."
+msgid "This CD could be more than one album. Please select which album it is below and press <i>Continue</i>."
+msgstr "אפשר שבתקליטור זה יש יותר מאלבום אחד. אנא בחר את האלבום ולחץ <i>המשך</i>."
 
 #: ../plugins/audiocd/multiple-album.glade.h:3
 msgid "_Continue"
 msgstr "_המשך"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:229
+#: ../plugins/audiocd/rb-audiocd-source.c:222
 #, fuzzy
 msgid "<Invalid unicode>"
 msgstr "<שם קובץ לא תקני>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:274
+#: ../plugins/audiocd/rb-audiocd-source.c:268
 #, c-format
 msgid "Track %u"
 msgstr "רצועה %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:344
-#: ../plugins/audiocd/rb-audiocd-source.c:352
-#: ../plugins/audiocd/rb-audiocd-source.c:679
+#: ../plugins/audiocd/rb-audiocd-source.c:328
+#: ../plugins/audiocd/rb-audiocd-source.c:336
+#: ../plugins/audiocd/rb-audiocd-source.c:670
 msgid "Couldn't load Audio CD"
 msgstr "לא ניתן לטעון תקליטור שמע"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:345
+#: ../plugins/audiocd/rb-audiocd-source.c:329
 msgid "Rhythmbox couldn't access the CD."
-msgstr ""
+msgstr "‏Rhythmbox לא יכול לגשת לתקליטור"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:353
+#: ../plugins/audiocd/rb-audiocd-source.c:337
 msgid "Rhythmbox couldn't read the CD information."
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:455
-#: ../sources/rb-library-source.c:158 ../widgets/rb-entry-view.c:1419
+#: ../plugins/audiocd/rb-audiocd-source.c:439
+#: ../sources/rb-library-source.c:158
+#: ../widgets/rb-entry-view.c:1425
 #: ../widgets/rb-query-creator-properties.c:75
 #: ../widgets/rb-query-creator-properties.c:105
 msgid "Title"
 msgstr "שם"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:462
-#: ../sources/rb-library-source.c:149 ../widgets/rb-entry-view.c:1429
+#: ../plugins/audiocd/rb-audiocd-source.c:446
+#: ../sources/rb-library-source.c:149
+#: ../widgets/rb-entry-view.c:1435
 #: ../widgets/rb-library-browser.c:138
 #: ../widgets/rb-query-creator-properties.c:76
 #: ../widgets/rb-query-creator-properties.c:102
 msgid "Artist"
 msgstr "אומן"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:680
+#: ../plugins/audiocd/rb-audiocd-source.c:671
 msgid "Rhythmbox could not get access to the CD device."
 msgstr ""
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:113
-#, c-format
-msgid "Cannot create MusicBrainz client"
-msgstr "אין אפשרות ליצור לקוח MusicBrainz"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:238
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:501
-#, c-format
-msgid "Cannot read CD: %s"
-msgstr "אין אפשרות לקרוא את התקליטור: %s"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:245
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:538
-msgid "Unknown Artist"
-msgstr "אומן לא ידוע"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:246
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:549
-msgid "Unknown Title"
-msgstr "שם לא ידוע"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:252
-#, c-format
-msgid "Track %d"
-msgstr "רצועה %d"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:280
-#, c-format
-msgid ""
-"MusicBrainz metadata object is not valid. This is bad, check your console "
-"for errors."
-msgstr ""
-"אובייקט מטה-מידע של MusicBrainz אינו תקין. זה לא טוב, אנא בדוק את המסוף "
-"לשגיאות."
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:447
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:454
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:468
-#, c-format
-msgid "This CD could not be queried: %s\n"
-msgstr "אין אפשרות לבדוק את התקליטור: %s\n"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:533
-msgid "Various"
-msgstr "מבחר"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:574
-msgid "Incomplete metadata for this CD"
-msgstr ""
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:665
+#: ../plugins/audiocd/sj-metadata-getter.c:245
 #, c-format
 msgid "Could not create CD lookup thread"
 msgstr ""
 
+#: ../plugins/audiocd/sj-metadata-gvfs.c:89
+#, c-format
+msgid "Cannot access CD"
+msgstr "לא ניתן לגשת אל התקליטור"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:109
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:347
+msgid "Unknown Title"
+msgstr "שם לא ידוע"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:113
+#: ../plugins/audiocd/sj-metadata-gvfs.c:136
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:331
+msgid "Unknown Artist"
+msgstr "אומן לא ידוע"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:133
+#, c-format
+msgid "Track %d"
+msgstr "רצועה %d"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:150
+#, c-format
+msgid "Cannot access CD: %s"
+msgstr "לא ניתן לגשת אל התקליטור: %s"
+
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:213
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:220
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:234
+#, c-format
+msgid "This CD could not be queried: %s\n"
+msgstr "אין אפשרות לבדוק את התקליטור: %s\n"
+
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:329
+msgid "Various"
+msgstr "מבחר"
+
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:372
+msgid "Incomplete metadata for this CD"
+msgstr ""
+
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:402
+msgid "[Untitled]"
+msgstr ""
+
+#: ../plugins/audiocd/sj-metadata.c:186
+#, c-format
+msgid "Device '%s' does not contain any media"
+msgstr "כונן '%s' אינו מכיל תקליטור"
+
+#: ../plugins/audiocd/sj-metadata.c:189
+#, c-format
+msgid "Device '%s' could not be opened. Check the access permissions on the device."
+msgstr "לא ניתן לפתוח את הכונן '%s'. אנא בדוק את הרשאות הגישה לכונן."
+
+#: ../plugins/audiocd/sj-metadata.c:192
+#: ../plugins/audiocd/sj-metadata.c:204
+#, c-format
+msgid "Cannot read CD: %s"
+msgstr "אין אפשרות לקרוא את התקליטור: %s"
+
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:680
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:727
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -878,286 +912,284 @@ msgid "0"
 msgstr "0"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:2
-msgid "Check Last.fm server status at"
-msgstr "בדוק מידע שרת של last.fm אצל"
+msgid "Account Login"
+msgstr "התחברות לחשבון"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:3
 msgid "Disabled"
 msgstr "מכובה"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:4
-msgid "Find out about Last.fm at "
-msgstr "פרטים נוספים אודות last.fm אצל "
+msgid "Join the Rhythmbox group"
+msgstr "הצטרף לקבוצת Rhythmbox"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:5
-msgid "Join the Rhythmbox group at "
-msgstr "הצטרף לקבוצת Rhythmbox אצל "
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
 msgid "Last submission time:"
 msgstr "זמן ההצבעה האחרון:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:7
-msgid "Last.fm Profile"
-msgstr "פרופיל last.fm"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1094
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1084
 #: ../plugins/iradio/rb-station-properties-dialog.c:497
-#: ../rhythmdb/rhythmdb.c:3406 ../widgets/rb-entry-view.c:983
-#: ../widgets/rb-entry-view.c:1521 ../widgets/rb-entry-view.c:1534
-#: ../widgets/rb-song-info.c:1315
+#: ../rhythmdb/rhythmdb.c:3409
+#: ../widgets/rb-entry-view.c:989
+#: ../widgets/rb-entry-view.c:1527
+#: ../widgets/rb-entry-view.c:1540
+#: ../widgets/rb-song-info.c:1339
 msgid "Never"
 msgstr "אף פעם"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:9
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:7
+msgid "New to Last.fm?"
+msgstr "חדש ב-Last.fm?"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 msgid "Queued tracks:"
 msgstr "רצועות בתור:"
 
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:9
+msgid "Sign up for an account"
+msgstr "הרשם כדי לקבל חשבון"
+
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:10
+msgid "Statistics"
+msgstr "סטטיסטיקות"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:11
 msgid "Status:"
 msgstr "מצב:‏"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:11
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:12
 msgid "Tracks submitted:"
 msgstr "רצועות שנשלחו:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:12
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:13
 msgid "_Password:"
 msgstr "_סיסמה:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:13
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:14
 msgid "_Username:"
 msgstr "שם _משתמש:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:14
-msgid "http://last.fm"
-msgstr "http://last.fm"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:15
-msgid "http://last.fm/group/Rhythmbox"
-msgstr "http://last.fm/group/Rhythmbox"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:16
-msgid "http://status.last.fm/"
-msgstr "http://status.last.fm/"
-
 #: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:216
-#, fuzzy
-msgid "Audioscrobbler preferences"
-msgstr "עריכת העדפות נגן המוזיקה"
+msgid "Last.fm Preferences"
+msgstr "העדפות Last.fm"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1117
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1107
 msgid "OK"
 msgstr "אישור"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1120
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1622
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1110
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1819
 msgid "Logging in"
 msgstr "נכנס"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1123
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1113
 msgid "Request failed"
-msgstr ""
+msgstr "בקשה נכשלה"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1126
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1116
 msgid "Incorrect username"
 msgstr "שם משתמש שגוי"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1129
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1119
 msgid "Incorrect password"
 msgstr "סיסמה שגויה"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1132
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1122
 msgid "Handshake failed"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1135
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1125
 msgid "Client update required"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1138
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1128
 msgid "Track submission failed"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1141
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1131
 msgid "Queue is too long"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1144
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1134
 msgid "Track submission failed too many times"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
 msgid "Similar Artists radio"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1092
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1292
 #, c-format
 msgid "Artists similar to %s"
-msgstr ""
+msgstr "אומנים הדומים ל-%s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
 msgid "Tag radio"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
 #, c-format
 msgid "Tracks tagged with %s"
 msgstr "רצועות שסומנו עם %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
 msgid "Artist Fan radio"
 msgstr "רדיו מעריצי אומן"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1094
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1294
 #, c-format
 msgid "Artists liked by fans of %s"
 msgstr "אמנים שנאהדים על ידי מעריצים של %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
 msgid "Group radio"
 msgstr "רדיו קבוצתי"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
 #, c-format
 msgid "Tracks liked by the %s group"
 msgstr "רצועות שנאהדות על ידי הקבוצה %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:278
-#, fuzzy
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:283
 msgid "Love"
 msgstr "שיר אהבה"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:279
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:284
 msgid "Mark this song as loved"
 msgstr "סמן שיר זה כאהוב"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:281
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
 msgid "Ban"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:282
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
 msgid "Ban the current track from being played again"
 msgstr "החרם את הרצועה הנוכחית מניגון שוב"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:284
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
 msgid "Delete Station"
 msgstr "מחק תחנה"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:285
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
 msgid "Delete the selected station"
 msgstr "מחק את התחנה הנבחרת"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
 msgid "Download song"
 msgstr "הורדת השיר"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:288
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
 msgid "Download this song"
 msgstr "הורד את השיר הזה"
 
 #. awful
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:468
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:513
 msgid "Enter the item to build a Last.fm station out of:"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:471
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:516
 msgid "Add"
 msgstr "הוספה"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:722
-msgid "Could not log in to Last.fm.  Check your username and password."
-msgstr ""
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:869
+msgid "Account Settings"
+msgstr "הגדרות חשבון"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:726
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:894
+msgid "Account details are needed before you can connect.  Check your settings."
+msgstr "לפני ההתחברות נדרשים פרטי החשבון. בדוק את ההגדרות שלך."
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:898
 msgid "This version of Rhythmbox has been banned from Last.fm."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1083
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:902
+msgid "Unable to connect"
+msgstr "לא ניתן להתחבר"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1283
 #, c-format
 msgid "Global Tag %s"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1102
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1302
 #, c-format
 msgid "%s's Neighbour Radio"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1104
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1304
 #, c-format
 msgid "%s's Recommended Radio: %s percent"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1106
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1306
 #, c-format
 msgid "%s's Personal Radio"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1108
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1308
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1110
-#, fuzzy, c-format
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1310
+#, c-format
 msgid "%s's Playlist"
-msgstr "_רשימת השמעה"
+msgstr "רשימת השמעה של %s"
 
 #. Translators: variables are 1: user name, 2: tag name; for user tag radio
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1116
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1316
 #, fuzzy, c-format
 msgid "%s's %s Radio"
-msgstr "%s, %s %sו־"
+msgstr "הרדיו %s של %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1120
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1320
 #, c-format
 msgid "%s Group Radio"
 msgstr "רדיו של קבוצת %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1592
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1789
 msgid "Neighbour Radio"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1600
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1797
 msgid "Personal Radio"
 msgstr "רדיו אישי"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1690
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1887
 msgid "Server did not respond"
-msgstr ""
+msgstr "השרת לא החזיר תגובה"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1760
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1959
 msgid "There is not enough content available to play this station."
-msgstr ""
+msgstr "אין מספיק תוכן זמין כדי לנגן את התחנה."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1765
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1964
 msgid "This station is available to subscribers only."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1772
-msgid ""
-"The streaming system is offline for maintenance, please try again later."
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1971
+msgid "The streaming system is offline for maintenance, please try again later."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1811
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2010
 msgid "Changing station"
 msgstr "משנה תחנה"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2025
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2035
-#, fuzzy
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2229
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2239
 msgid "Retrieving playlist"
-msgstr "שנה שם רשימת ההשמעה"
+msgstr "מוריד רשימת השמעה"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2124
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2333
 #, fuzzy
 msgid "Banning song"
 msgstr "טעינת שירים מתבצעת..."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2142
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2351
 msgid "Adding song to your Loved tracks"
 msgstr ""
 
@@ -1170,80 +1202,109 @@ msgstr "מקליט תקליטורי שמע"
 msgid "Support for recording audio CDs from playlists"
 msgstr "תמיכה בהקלטת תקליטורי שמע מרשימות השמעה"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:87
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:89
 msgid "_Create Audio CD..."
 msgstr "_יצירת תקליטור אודיו..."
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:88
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:90
 msgid "Create an audio CD from playlist"
 msgstr "יצירת תקליטור אודיו מרשימת ההשמעה"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:188
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:92
+#, fuzzy
+msgid "Duplicate Audio CD..."
+msgstr "_יצירת תקליטור אודיו..."
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:93
+#, fuzzy
+msgid "Create a copy of this audio CD"
+msgstr "יצירת רשימת השמעה חדשה"
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:193
 msgid "Unable to create audio CD"
 msgstr "לא ניתן ליצור תקליטור שמע"
 
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:246
+msgid "Could not duplicate disc"
+msgstr "לא ניתן לשכפל את הדיסק"
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:247
+msgid "Rhythmbox could not duplicate the disc"
+msgstr "‏Rhythmbox לא יכול לשכפל את הדיסק"
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:248
+msgid "Reason"
+msgstr "סיבה"
+
 #. Translators: this is the toolbar button label for
 #. Create Audio CD action
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:361
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:449
 msgid "Burn"
 msgstr "צרוב"
+
+#. Translators: this is the toolbar button label for
+#. Duplicate Audio CD action
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:455
+#, fuzzy
+msgid "Copy CD"
+msgstr "ה_עתקה"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:420
 #, fuzzy, c-format
 msgid "Failed to create pipeline"
 msgstr "דילוג בקובץ נכשל"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:525
-#: ../plugins/cd-recorder/rb-recorder-gst.c:531
+#: ../plugins/cd-recorder/rb-recorder-gst.c:526
+#: ../plugins/cd-recorder/rb-recorder-gst.c:532
 #, fuzzy, c-format
 msgid "Unable to unlink '%s'"
 msgstr "%s לא נמצא"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:586
+#: ../plugins/cd-recorder/rb-recorder-gst.c:587
 msgid "Could not retrieve state from processing pipeline"
 msgstr ""
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:601
+#: ../plugins/cd-recorder/rb-recorder-gst.c:602
 msgid "Could not get current track position"
 msgstr "לא הייתה אפשרות לאתר את מיקום הרצועה הנוכחית"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:649
+#: ../plugins/cd-recorder/rb-recorder-gst.c:650
 #, c-format
 msgid "Could not start pipeline playing"
 msgstr "לא ניתן להתחיל נגינה בצינור"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:660
+#: ../plugins/cd-recorder/rb-recorder-gst.c:661
 #, c-format
 msgid "Could not pause playback"
 msgstr "השהיית ההשמעה נכשלה"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:844
+#: ../plugins/cd-recorder/rb-recorder-gst.c:842
 #, c-format
 msgid "Cannot find drive"
 msgstr "לא ניתן למצוא כונן"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:884
+#: ../plugins/cd-recorder/rb-recorder-gst.c:882
 #, c-format
 msgid "Cannot find drive %s"
 msgstr "לא ניתן למצוא את כונן %s"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:893
+#: ../plugins/cd-recorder/rb-recorder-gst.c:891
 #, c-format
 msgid "Drive %s is not a recorder"
 msgstr "הכונן %s אינו צורב"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1021
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1206
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1019
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1204
 #, c-format
 msgid "No writable drives found."
 msgstr "לא נמצאו כוננים לכתיבה"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1156
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1154
 #, c-format
 msgid "Could not get track time for file: %s"
 msgstr "לא יכול לקבל אורך רצועה בקובץ: %s"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1215
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1213
 #, c-format
 msgid "Could not determine audio track durations."
 msgstr "קביעת אורך רצועות השמע נכשלה."
@@ -1389,7 +1450,7 @@ msgstr ""
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:882
 msgid "Insert a rewritable or blank CD"
-msgstr ""
+msgstr "הכנס תקליטור ריק או הניתן לכתיבה חוזרת"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:884
 msgid "Please put a blank CD in the drive."
@@ -1492,13 +1553,8 @@ msgstr "רשימת השמעה זאת גדולה מידי כדי להכתב על 
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1604
 #, c-format
-msgid ""
-"This playlist is %s minutes long.  This exceeds the length of a standard "
-"audio CD.  If the destination media is larger than a standard audio CD "
-"please insert it in the drive and try again."
-msgstr ""
-"רשימת השמעה זאת באורך %s דקות, ולכן מעל הקיבולת הסטנדרטית של תקליטור אודיו. "
-"אם המדיה גדולה מתקליטור שמע סטנדרטי אנא הכנס אותה לכונן ונסה שוב."
+msgid "This playlist is %s minutes long.  This exceeds the length of a standard audio CD.  If the destination media is larger than a standard audio CD please insert it in the drive and try again."
+msgstr "רשימת השמעה זאת באורך %s דקות, ולכן מעל הקיבולת הסטנדרטית של תקליטור אודיו. אם המדיה גדולה מתקליטור שמע סטנדרטי אנא הכנס אותה לכונן ונסה שוב."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1615
 msgid "Playlist too long"
@@ -1510,9 +1566,7 @@ msgstr ""
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1656
 #, c-format
-msgid ""
-"Could not find enough temporary space to convert audio tracks.  %s MiB "
-"required."
+msgid "Could not find enough temporary space to convert audio tracks.  %s MiB required."
 msgstr ""
 
 #: ../plugins/cd-recorder/recorder.glade.h:1
@@ -1540,9 +1594,7 @@ msgid "_Make multiple copies"
 msgstr "_יצירת מספר עותקים"
 
 #: ../plugins/coherence/coherence.rb-plugin.in.h:1
-msgid ""
-"Adds support for playing media from and sending media to DLNA/UPnP network "
-"devices, and enables Rhythmbox to be controlled by a DLNA/UPnP ControlPoint"
+msgid "Adds support for playing media from and sending media to DLNA/UPnP network devices, and enables Rhythmbox to be controlled by a DLNA/UPnP ControlPoint"
 msgstr ""
 
 #: ../plugins/coherence/coherence.rb-plugin.in.h:2
@@ -1555,7 +1607,7 @@ msgstr ""
 
 #: ../plugins/daap/daap.rb-plugin.in.h:2
 msgid "Share music and play shared music on your local network"
-msgstr ""
+msgstr "שתף מוזיקה"
 
 #: ../plugins/daap/daap-prefs.glade.h:1
 msgid "<b>Sharing</b>"
@@ -1563,9 +1615,10 @@ msgstr "‏<b>שיתוף</b>"
 
 #: ../plugins/daap/daap-prefs.glade.h:2
 msgid "Require _password:"
-msgstr ""
+msgstr "דרישת (סיסמה:"
 
-#: ../plugins/daap/daap-prefs.glade.h:3 ../plugins/daap/rb-daap-dialog.c:82
+#: ../plugins/daap/daap-prefs.glade.h:3
+#: ../plugins/daap/rb-daap-dialog.c:82
 msgid "Shared music _name:"
 msgstr "ש_ם שיתוף המוזיקה:"
 
@@ -1637,7 +1690,8 @@ msgstr ""
 msgid "Connect to a new DAAP share"
 msgstr ""
 
-#: ../plugins/daap/rb-daap-plugin.c:618 ../plugins/daap/rb-daap-source.c:526
+#: ../plugins/daap/rb-daap-plugin.c:618
+#: ../plugins/daap/rb-daap-source.c:526
 msgid "Could not connect to shared music"
 msgstr "לא ניתן להתחבר למוזיקה משותפת"
 
@@ -1679,7 +1733,7 @@ msgstr "מתחבר לשיתוף מוזיקה"
 
 #: ../plugins/daap/rb-daap-source.c:439
 msgid "Retrieving songs from music share"
-msgstr ""
+msgstr "מוריד שירים משיתוף מוזיקה"
 
 #: ../plugins/daap/rb-daap-src.c:480
 #, c-format
@@ -1724,9 +1778,8 @@ msgid "New Playlist"
 msgstr "רשימת השמעה חדשה"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:99
-#, fuzzy
 msgid "Create a new playlist on this device"
-msgstr "יצירת רשימת השמעה חדשה"
+msgstr "יצירת רשימת השמעה חדשה על ההתקן"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:101
 msgid "Delete Playlist"
@@ -1736,7 +1789,7 @@ msgstr "מחיקת רשימת השמעה"
 msgid "Delete this playlist"
 msgstr "מחק את רשימת ההשמעה"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:895
+#: ../plugins/generic-player/rb-generic-player-source.c:917
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "מייבא (%d/%d)"
@@ -1749,41 +1802,57 @@ msgstr "נגנים ניידים - iPod"
 msgid "Support for Apple iPod devices (show the content, play from device)"
 msgstr "תמיכה בהתקני Apple iPod (מציג את התוכן, מנגן מההתקן)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:100 ../plugins/ipod/rb-ipod-plugin.c:106
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:109 ../shell/rb-playlist-manager.c:162
+#: ../plugins/ipod/rb-ipod-plugin.c:103
+#: ../plugins/ipod/rb-ipod-plugin.c:112
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:109
+#: ../shell/rb-playlist-manager.c:162
 msgid "_Rename"
 msgstr "_שינוי שם"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:101
+#: ../plugins/ipod/rb-ipod-plugin.c:104
 msgid "Rename iPod"
 msgstr "שנה שם iPod"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:103 ../shell/rb-shell-clipboard.c:176
+#: ../plugins/ipod/rb-ipod-plugin.c:106
+#: ../shell/rb-shell-clipboard.c:189
+#: ../sources/rb-podcast-source.c:328
+msgid "_Properties"
+msgstr "_מאפיינים"
+
+#: ../plugins/ipod/rb-ipod-plugin.c:107
+msgid "Display iPod properties"
+msgstr "הצג מאפייני iPod"
+
+#: ../plugins/ipod/rb-ipod-plugin.c:109
+#: ../shell/rb-shell-clipboard.c:176
 msgid "_New Playlist"
 msgstr "רשימת השמעה _חדשה"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:104
-#, fuzzy
+#: ../plugins/ipod/rb-ipod-plugin.c:110
 msgid "Add new playlist to iPod"
-msgstr "שמירת רשימת השמעה לקובץ"
+msgstr "הוסף רשימת השמעה חדשה ל-iPod"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:107 ../shell/rb-playlist-manager.c:163
+#: ../plugins/ipod/rb-ipod-plugin.c:113
+#: ../shell/rb-playlist-manager.c:163
 msgid "Rename playlist"
 msgstr "שנה שם רשימת ההשמעה"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:109 ../shell/rb-playlist-manager.c:165
+#: ../plugins/ipod/rb-ipod-plugin.c:115
+#: ../shell/rb-playlist-manager.c:165
 msgid "_Delete"
 msgstr "_מחיקה"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:110 ../shell/rb-playlist-manager.c:166
+#: ../plugins/ipod/rb-ipod-plugin.c:116
+#: ../shell/rb-playlist-manager.c:166
 msgid "Delete playlist"
 msgstr "מחק רשימת ההשמעה"
 
-#: ../plugins/ipod/rb-ipod-source.c:1343 ../sources/rb-podcast-source.c:903
+#: ../plugins/ipod/rb-ipod-source.c:1356
+#: ../sources/rb-podcast-source.c:902
 msgid "Podcasts"
 msgstr "פודקסטים"
 
-#: ../plugins/ipod/rb-ipod-source.c:1689
+#: ../plugins/ipod/rb-ipod-source.c:1751
 msgid "New playlist"
 msgstr "רשימת השמעה חדשה"
 
@@ -1825,21 +1894,15 @@ msgstr "http://www.jamendo.com/"
 
 #. This text comes from http://www.jamendo.com/en/static/concept/ and was already translated in many languages. You should take a look on this site and check if you can't reuse it.
 #: ../plugins/jamendo/jamendo-loading.glade.h:2
-msgid ""
-"     * A legal framework protecting the artists (thanks to the Creative "
-"Commons licenses)."
-msgstr ""
-"     * מערכת חוקית המגנה על האומנים (תודות לרישיון Creative Commons "
-"licenses)."
+msgid "     * A legal framework protecting the artists (thanks to the Creative Commons licenses)."
+msgstr "     * מערכת חוקית המגנה על האומנים (תודות לרישיון Creative Commons licenses)."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:3
 msgid ""
-"     * An adaptive music recommendation system based on iRATE to help "
-"listeners discover new artists based on their tastes\n"
+"     * An adaptive music recommendation system based on iRATE to help listeners discover new artists based on their tastes\n"
 "       and on other criteria such as their location."
 msgstr ""
-"     * מערכת המלצת מוזיקה מותאמת המבוססת על iRATE כדי לעזור למאזינים לגלות "
-"אומנים לפי הטעם שלהם\n"
+"     * מערכת המלצת מוזיקה מותאמת המבוססת על iRATE כדי לעזור למאזינים לגלות אומנים לפי הטעם שלהם\n"
 "       ובקריטריון נוסף כמו מיקומם."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:5
@@ -1860,12 +1923,9 @@ msgstr "<b>Jamendo</b>"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:9
 msgid ""
-"On jamendo, the artists distribute their music under Creative Commons "
-"licenses.\n"
-"In a nutshell, they allow you to download, remix and share their music "
-"freely.\n"
-"It's a \"Some rights reserved\" agreement, perfectly suited for the new "
-"century."
+"On jamendo, the artists distribute their music under Creative Commons licenses.\n"
+"In a nutshell, they allow you to download, remix and share their music freely.\n"
+"It's a \"Some rights reserved\" agreement, perfectly suited for the new century."
 msgstr ""
 "ב-jamendo, האומנים מפיצים את המוזיקה שלהם תחת רישיון Creative Commons.\n"
 "בקיצור, הם מאפשרים לך להוריד, לערוך מחדש ולשתף את המוזיקה שלהם בחופשיות.\n"
@@ -1873,27 +1933,19 @@ msgstr ""
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:12
 msgid ""
-"These new rules make jamendo able to use the new powerful means of digital "
-"distribution like\n"
-"Peer-to-Peer networks such as BitTorrent or eMule to legally distribute "
-"albums at near-zero cost."
+"These new rules make jamendo able to use the new powerful means of digital distribution like\n"
+"Peer-to-Peer networks such as BitTorrent or eMule to legally distribute albums at near-zero cost."
 msgstr ""
-"החוקים החדשים האלו מאפשרים ל-jamendo להשתמש בשיטות הפצה דיגיטלית חדשות "
-"ומתקדמות כמו\n"
-"שיתוף קבצים בעזרת ביטורנט או אימיול כדי להפיץ את האלבומים שלהם בצורה חוקית "
-"במחיר כמעט אפסי."
+"החוקים החדשים האלו מאפשרים ל-jamendo להשתמש בשיטות הפצה דיגיטלית חדשות ומתקדמות כמו\n"
+"שיתוף קבצים בעזרת ביטורנט או אימיול כדי להפיץ את האלבומים שלהם בצורה חוקית במחיר כמעט אפסי."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:14
 msgid "You can find more information at http://www.jamendo.com/"
 msgstr "ניתן למצוא מידע נוסף בכתובת http://www.jamendo.com/"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:15
-msgid ""
-"jamendo is a new model for artists to promote, publish, and be paid for "
-"their music."
-msgstr ""
-"‏jamendo הוא מודל חדש לאומנים המאפשר קידום, פרסום וקבלת תשלום עבור המוזיקה "
-"שלהם."
+msgid "jamendo is a new model for artists to promote, publish, and be paid for their music."
+msgstr "‏jamendo הוא מודל חדש לאומנים המאפשר קידום, פרסום וקבלת תשלום עבור המוזיקה שלהם."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:16
 msgid "jamendo is the only platform that joins together :"
@@ -1901,23 +1953,20 @@ msgstr "‏jamendo זו הבמה היחידה שמאחדת :"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:17
 msgid ""
-"jamendo users can discover and share albums, but also review them or start a "
-"discussion on the forums.\n"
+"jamendo users can discover and share albums, but also review them or start a discussion on the forums.\n"
 "Albums are democratically rated based on the visitors’ reviews.\n"
 "If they fancy an artist they can support him by making a donation."
 msgstr ""
-"משתמשי jamendo יכולים לגלות ולשתף אלבומים, אבל גם לסקור אותם או להתחיל עליהם "
-"דיון בפורומים.\n"
+"משתמשי jamendo יכולים לגלות ולשתף אלבומים, אבל גם לסקור אותם או להתחיל עליהם דיון בפורומים.\n"
 "האלבומים מדורגים באופן דמוקרטי לפי סקירות הגולשים.\n"
 "אם הם משבחים אומן הם יכולים לתמוך בו על ידי מתן תרומה."
 
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:1
-msgid ""
-"Adds support to Rhythmbox for playing and downloading albums from Jamendo"
+msgid "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
 msgstr "מוסיף ל-Rhythmbox תמיכה בהשמעה והורדת אלבומים מ-Jamendo"
 
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:2
-#: ../plugins/jamendo/jamendo/JamendoSource.py:52
+#: ../plugins/jamendo/jamendo/JamendoSource.py:65
 msgid "Jamendo"
 msgstr "Jamendo"
 
@@ -1943,14 +1992,19 @@ msgstr "_תרומה לאומן"
 msgid "Donate Money to this Artist"
 msgstr "תרום כסף לאומן"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:104
+#: ../plugins/jamendo/jamendo/JamendoSource.py:116
 msgid "Loading Jamendo catalogue"
 msgstr "טוען את קטלוג Jamendo"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:385
+#: ../plugins/jamendo/jamendo/JamendoSource.py:388
+#, python-format
+msgid "Error looking up p2plink for album %s on jamendo.com"
+msgstr ""
+
+#: ../plugins/jamendo/jamendo/JamendoSource.py:409
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
-msgstr ""
+msgstr "התרחשה שגיאה בחיפוש האומן %s ב-jamendo.com"
 
 #: ../plugins/iradio/rb-iradio-source.c:174
 msgid "New Internet _Radio Station..."
@@ -1967,12 +2021,13 @@ msgstr "יצירת תחנת רדיו אינטרנט חדשה"
 msgid "radio|New"
 msgstr "חדש"
 
-#: ../plugins/iradio/rb-iradio-source.c:349 ../widgets/rb-entry-view.c:1449
+#: ../plugins/iradio/rb-iradio-source.c:349
+#: ../widgets/rb-entry-view.c:1455
 #: ../widgets/rb-library-browser.c:137
 #: ../widgets/rb-query-creator-properties.c:78
 #: ../widgets/rb-query-creator-properties.c:104
 msgid "Genre"
-msgstr "ז'אנר"
+msgstr "סוג"
 
 #: ../plugins/iradio/rb-iradio-source.c:443
 msgid "Radio"
@@ -1991,28 +2046,27 @@ msgid "New Internet Radio Station"
 msgstr "תחנת רדיו אינטרנט חדשה"
 
 #: ../plugins/iradio/rb-iradio-source.c:1022
-#, fuzzy
 msgid "URL of internet radio station:"
-msgstr "תחנת רדיו אינטרנט חדשה"
+msgstr "כתובת תחנת רדיו אינטרנט:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:396
 #: ../podcast/rb-feed-podcast-properties-dialog.c:217
 #: ../podcast/rb-podcast-properties-dialog.c:363
-#: ../widgets/rb-song-info.c:1006
+#: ../widgets/rb-song-info.c:985
 #, c-format
 msgid "%s Properties"
 msgstr "מאפייני %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:488
-#: ../podcast/rb-podcast-properties-dialog.c:473
-#: ../widgets/rb-song-info.c:1065
+#: ../podcast/rb-podcast-properties-dialog.c:476
+#: ../widgets/rb-song-info.c:1044
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:579
 msgid "Unable to change station property"
-msgstr ""
+msgstr "לא ניתן לשנות מאפיין של תחנה"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:579
 #, c-format
@@ -2041,7 +2095,8 @@ msgid "_Save"
 msgstr "_שמור"
 
 #: ../plugins/lyrics/lyrics/__init__.py:182
-#: ../plugins/lyrics/lyrics/__init__.py:195 ../shell/rb-shell.c:424
+#: ../plugins/lyrics/lyrics/__init__.py:195
+#: ../shell/rb-shell.c:424
 msgid "_Edit"
 msgstr "_עריכה"
 
@@ -2060,7 +2115,7 @@ msgstr "מחפש מילים..."
 
 #: ../plugins/lyrics/lyrics/__init__.py:291
 msgid "Song L_yrics"
-msgstr ""
+msgstr "מ_ילים לשירים"
 
 #: ../plugins/lyrics/lyrics/__init__.py:292
 msgid "Display lyrics for the playing song"
@@ -2091,9 +2146,8 @@ msgid "Browse..."
 msgstr "סייר..."
 
 #: ../plugins/lyrics/lyrics-prefs.glade.h:4
-#, fuzzy
 msgid "Lyrics Plugin Preferences"
-msgstr "העדפות נגן המוזיקה"
+msgstr "העדפות תוסף המילים"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:1
 msgid "     * Founder/owner runs it -- support a small business"
@@ -2101,9 +2155,7 @@ msgstr "     * מייסד/בעלים מריץ את זה -- תמיכה בעסקי
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:3
 #, no-c-format
-msgid ""
-"    * 50% of payment goes to artist (makes buyer feel good: they're helping "
-"the world)"
+msgid "    * 50% of payment goes to artist (makes buyer feel good: they're helping the world)"
 msgstr "    * 50% מהתשלום הולך לאומן (נותן לקונים הרגשה טובה: הם עוזרים לעולם)"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:4
@@ -2111,85 +2163,55 @@ msgid "    * All albums and artists hand-picked"
 msgstr "    * כל האלבומים והאומנים נבחרו ידנית"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:5
-msgid ""
-"    * Downloads and CDs are both available (no other site on the internet "
-"sells both)"
-msgstr ""
-"    * הורדות ותקליטורים זמינים יחד (אין עוד אתר באינטרנט המוכר את שניהם)"
+msgid "    * Downloads and CDs are both available (no other site on the internet sells both)"
+msgstr "    * הורדות ותקליטורים זמינים יחד (אין עוד אתר באינטרנט המוכר את שניהם)"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:6
-msgid ""
-"    * Extensive biographical info about each musician, and artist photo -- "
-"feel a strong connection to the artist"
-msgstr ""
-"    * מידע ביוגרפי נרחב אודות כל מוזיקאי, ותמונת האומן -- תחושת קשר חזקה "
-"לאומן"
+msgid "    * Extensive biographical info about each musician, and artist photo -- feel a strong connection to the artist"
+msgstr "    * מידע ביוגרפי נרחב אודות כל מוזיקאי, ותמונת האומן -- תחושת קשר חזקה לאומן"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:7
 msgid "    * Free listening of all songs"
 msgstr "    * האזנה חינם לכל השירים"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:8
-msgid ""
-"    * Full color, high quality cover art PDF available for most albums - "
-"easy to print"
-msgstr ""
-"    * אומנות כיסוי בצבעים מלאים ובאיכות גבוהה זמינה להורדה בקובץ PDF עבור "
-"רוב האלבומים - קל להדפסה"
+msgid "    * Full color, high quality cover art PDF available for most albums - easy to print"
+msgstr "    * אומנות כיסוי בצבעים מלאים ובאיכות גבוהה זמינה להורדה בקובץ PDF עבור רוב האלבומים - קל להדפסה"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:9
-msgid ""
-"    * Low pressure environment - nothing flashing, no audio ads while "
-"listening to albums"
-msgstr ""
-"    * סביבה נטולת לחץ - שם דבר לא מהבהב, אין פרסומות קול בזמן הקשבה לאלבום"
+msgid "    * Low pressure environment - nothing flashing, no audio ads while listening to albums"
+msgstr "    * סביבה נטולת לחץ - שם דבר לא מהבהב, אין פרסומות קול בזמן הקשבה לאלבום"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:10
-msgid ""
-"    * Music selection is unique to Magnatune, unlike most on-line stores "
-"that have more-or-less the same (gigantic) selection\n"
-msgstr ""
-"    * בחירת המוזיקה היא ייחודית ל-Magnatune, שונה מרוב החנויות המקוונות "
-"המספקות פחות או יותר אותה הבחירה (הענקית)\n"
+msgid "    * Music selection is unique to Magnatune, unlike most on-line stores that have more-or-less the same (gigantic) selection\n"
+msgstr "    * בחירת המוזיקה היא ייחודית ל-Magnatune, שונה מרוב החנויות המקוונות המספקות פחות או יותר אותה הבחירה (הענקית)\n"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:12
-msgid ""
-"    * No copy protection on the music (DRM) which allows playing music on "
-"any device (unlike iTunes/MSN/etc)"
-msgstr ""
-"    * אין הגנה נגד העתקות על המוזיקה (DRM) מה שמאפשר את ניגון המוזיקה על כל "
-"מכשיר (שונה מ- iTunes/MSN/וכ'ו)"
+msgid "    * No copy protection on the music (DRM) which allows playing music on any device (unlike iTunes/MSN/etc)"
+msgstr "    * אין הגנה נגד העתקות על המוזיקה (DRM) מה שמאפשר את ניגון המוזיקה על כל מכשיר (שונה מ- iTunes/MSN/וכ'ו)"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:13
 msgid "    * No need to \"register\" to listen or buy"
 msgstr "    * אין צורך ב\"הרשמה\" כדי להאזין או לקנות"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:14
-msgid ""
-"    * Not part of the \"evil\" major label machine - for those that hate the "
-"music biz and want to help topple it"
-msgstr ""
+msgid "    * Not part of the \"evil\" major label machine - for those that hate the music biz and want to help topple it"
+msgstr "    * לא חלק מחברת תקליטים \"מרושעת\" גדולה - לאלה ששנואים את תעשיית המוזיקה ורוצים להפיל אותה"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:15
 msgid "    * Not venture-capital backed big business"
 msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:16
-msgid ""
-"    * Our genres are hard to find in record stores and not on radio (though "
-"do appear on college radio)"
+msgid "    * Our genres are hard to find in record stores and not on radio (though do appear on college radio)"
 msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:17
-msgid ""
-"    * Perfect quality downloads (CD copy) are available when you download "
-"(not inferior quality sound)"
+msgid "    * Perfect quality downloads (CD copy) are available when you download (not inferior quality sound)"
 msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:18
-msgid ""
-"    * Radio stations and \"genre mix\" playlists allow background listening "
-"- can do work while listening to our music"
+msgid "    * Radio stations and \"genre mix\" playlists allow background listening - can do work while listening to our music"
 msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:19
@@ -2197,9 +2219,7 @@ msgid "    * Smaller selection means easier to find good music"
 msgstr "    * בחירה קטנה יותר משמעו שקל יותר למצוא מוזיקה טובה"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:20
-msgid ""
-"    * Variable pricing scheme means you can pay as little as $5 for an album "
-"if you choose"
+msgid "    * Variable pricing scheme means you can pay as little as $5 for an album if you choose"
 msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:21
@@ -2208,16 +2228,14 @@ msgstr "    * מנשק משתמש פשוט, מהיר מאוד כדי לנגן מ
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:22
 msgid "    * Wide variety of genres, can fit any mood"
-msgstr ""
+msgstr "    * מגוון רחב של סוגי מוזיקה, מתאים לכל מצב רוח"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:23
 msgid "<b>Magnatune online music store</b>"
 msgstr "<b>חנות המוזיקה המקוונת Magnatune</b>"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:24
-msgid ""
-"Magnatune is an online record label that is not evil. Some of their key "
-"attributes are:\n"
+msgid "Magnatune is an online record label that is not evil. Some of their key attributes are:\n"
 msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:26
@@ -2285,9 +2303,7 @@ msgstr ""
 "12"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:27
-msgid ""
-"<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
-"expiration date listed.</span>"
+msgid "<span weight=\"bold\" foreground=\"red\">Your credit card is past the expiration date listed.</span>"
 msgstr ""
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:28
@@ -2308,7 +2324,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:32
 msgid "Magnatune Information"
-msgstr ""
+msgstr "נתוני Magnatune"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:33
 msgid "Magnatune Preferences"
@@ -2335,7 +2351,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:40
 msgid "Redownload purchased music at "
-msgstr ""
+msgstr "הורדה חדשה של מוזיקה שנרכשה"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:41
 msgid "Remember my credit card details"
@@ -2343,7 +2359,7 @@ msgstr "זכור את פרטי כרטיס האשראי שלי"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:42
 msgid "Visit Magnatune at "
-msgstr ""
+msgstr "בקור ב-Magnatune בכתובת "
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:43
 msgid "_Email:"
@@ -2482,9 +2498,7 @@ msgid "_Remember my credit card details"
 msgstr "_זכור את פרטי כרטיס האשראי שלי"
 
 #: ../plugins/magnatune/magnatune.rb-plugin.in.h:1
-msgid ""
-"Adds support to Rhythmbox for playing and purchasing from the Magnatune "
-"online music store"
+msgid "Adds support to Rhythmbox for playing and purchasing from the Magnatune online music store"
 msgstr "מוסיף ל-Rhythmbox תמיכה לניגון ורכישה מהחנות המקוונת Magnatune"
 
 #: ../plugins/magnatune/magnatune.rb-plugin.in.h:2
@@ -2517,8 +2531,7 @@ msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "ברצונך לרכוש את האלבום <i>%(album)s</i> מאת '%(artist)s'?"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:358
-msgid ""
-"Rhythmbox could not understand the Magnatune catalogue, please file a bug."
+msgid "Rhythmbox could not understand the Magnatune catalogue, please file a bug."
 msgstr "‏Rhythmbox לא הבין את הקטלוג של Magnatune, נא לדווח על באג."
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:513
@@ -2537,7 +2550,7 @@ msgstr ""
 "%s"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:517
-#: ../widgets/rb-entry-view.c:1572
+#: ../widgets/rb-entry-view.c:1578
 msgid "Error"
 msgstr "שגיאה"
 
@@ -2548,6 +2561,9 @@ msgid ""
 "The error text is:\n"
 "%s"
 msgstr ""
+"התרחשה שגיאה ברכישת האלבום.\n"
+"פרטי השגיאה:\n"
+"%s"
 
 #. Add the popup menu actions
 #: ../plugins/magnatune/magnatune/__init__.py:122
@@ -2584,7 +2600,7 @@ msgstr "הפסק הורדה של אלבומים שנרכשו"
 
 #: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
-msgstr ""
+msgstr "שליטה ב-Rhythmbox בעזרת קיצורי דרך"
 
 #: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:2
 #, fuzzy
@@ -2600,7 +2616,7 @@ msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr ""
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:106
-#: ../shell/rb-removable-media-manager.c:148
+#: ../shell/rb-removable-media-manager.c:157
 msgid "_Eject"
 msgstr "_הוצא"
 
@@ -2612,7 +2628,7 @@ msgstr ""
 msgid "Rename MTP-device"
 msgstr ""
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:384
+#: ../plugins/mtpdevice/rb-mtp-source.c:409
 msgid "Digital Audio Player"
 msgstr ""
 
@@ -2650,10 +2666,7 @@ msgid "You can access the main window through the 'shell' variable :"
 msgstr ""
 
 #: ../plugins/pythonconsole/pythonconsole.py:133
-msgid ""
-"After you press OK, Rhythmbox will wait until you connect to it with winpdb "
-"or rpdb2. If you have not set a debugger password in GConf, it will use the "
-"default password ('rhythmbox')."
+msgid "After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in GConf, it will use the default password ('rhythmbox')."
 msgstr ""
 
 #. ex:noet:ts=8:
@@ -2678,11 +2691,9 @@ msgid "Plugin Error"
 msgstr "שגיאת תוסף"
 
 #: ../plugins/rb-plugins-engine.c:551
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to activate plugin %s"
-msgstr ""
-"כישלון באתחול המעטפת:\n"
-"%s"
+msgstr "לא ניתן להפעיל את התוסף %s"
 
 #: ../plugins/sample-python/sample-python.py:14
 #, fuzzy
@@ -2778,6 +2789,8 @@ msgid ""
 "It seems you are running Rhythmbox remotely.\n"
 "Are you sure you want to enable the visual effects?"
 msgstr ""
+"נראה שאתה מפעיל את Rhythmbox מרחוק.\n"
+"אתה בטוח שברצונך להפעיל את האפקטים החזותיים?"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1694
 msgid "Music Player Visualization"
@@ -2811,60 +2824,64 @@ msgstr "מציג ויזואליזציות"
 msgid "Visualization"
 msgstr "ויזואליזציה"
 
-#: ../podcast/rb-podcast-manager.c:865
+#: ../podcast/rb-podcast-manager.c:811
+msgid "Error creating podcast download directory"
+msgstr ""
+
+#: ../podcast/rb-podcast-manager.c:812
+#, fuzzy, c-format
+msgid "Unable to create the download directory for %s: %s"
+msgstr "נכשל ביצירת המקליט: %s"
+
+#: ../podcast/rb-podcast-manager.c:931
 msgid "Invalid URL"
 msgstr "כתובת לא תקינה"
 
-#: ../podcast/rb-podcast-manager.c:866
+#: ../podcast/rb-podcast-manager.c:932
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
-msgstr ""
+msgstr "הכתובת \"%s\" לא תקינה, נא לבדוק אותה."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:876
+#: ../podcast/rb-podcast-manager.c:942
 msgid "URL already added"
-msgstr ""
+msgstr "הכתובת כבר קיימת"
 
-#: ../podcast/rb-podcast-manager.c:877
+#: ../podcast/rb-podcast-manager.c:943
 #, c-format
-msgid ""
-"The URL \"%s\" has already been added as a radio station. If this is a "
-"podcast feed, please remove the radio station."
+msgid "The URL \"%s\" has already been added as a radio station. If this is a podcast feed, please remove the radio station."
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:945
+#: ../podcast/rb-podcast-manager.c:1011
 #, c-format
-msgid ""
-"The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
-"or the feed may be broken. Would you like Rhythmbox to attempt to use it "
-"anyway?"
+msgid "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, or the feed may be broken. Would you like Rhythmbox to attempt to use it anyway?"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:1056
+#: ../podcast/rb-podcast-manager.c:1122
 msgid "Podcast"
 msgstr "פודקסט"
 
-#: ../podcast/rb-podcast-manager.c:1946
+#: ../podcast/rb-podcast-manager.c:2043
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
-msgstr ""
+msgstr "התרחשה בעיה בעיה בהוספת הפודקסט: %s. נא לבדוק את הכתובת: %s"
 
 #: ../podcast/rb-podcast-parse.c:168
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to check file type: %s"
-msgstr "סוג קובץ לא נתמך: %s"
+msgstr "לא ניתן לבדוק את סוג הקובץ: %s"
 
 #: ../podcast/rb-podcast-parse.c:187
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected file type: %s"
-msgstr "סוג קובץ לא נתמך: %s"
+msgstr ""
 
 #: ../podcast/rb-podcast-parse.c:210
 #, fuzzy, c-format
 msgid "Unable to parse the feed contents"
 msgstr "לא ניתן לפענח את שם המארח %s"
 
-#: ../podcast/rb-podcast-properties-dialog.c:423
+#: ../podcast/rb-podcast-properties-dialog.c:426
 msgid "Not Downloaded"
 msgstr "לא הורד"
 
@@ -2872,7 +2889,8 @@ msgstr "לא הורד"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:82 ../shell/main.c:121
+#: ../remote/dbus/rb-client.c:82
+#: ../shell/main.c:121
 msgid "Quit Rhythmbox"
 msgstr "יציאה מ־Rhythmbox"
 
@@ -2881,9 +2899,8 @@ msgid "Don't present an existing Rhythmbox window"
 msgstr ""
 
 #: ../remote/dbus/rb-client.c:85
-#, fuzzy
 msgid "Hide the Rhythmbox window"
-msgstr "יציאה מ־Rhythmbox"
+msgstr "הסתר את חלון Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:87
 msgid "Jump to next song"
@@ -2928,9 +2945,8 @@ msgid "Empty the play queue before adding new tracks"
 msgstr ""
 
 #: ../remote/dbus/rb-client.c:101
-#, fuzzy
 msgid "Print the title and artist of the playing song"
-msgstr "הדפסת זמן ההשמעה הנוכחי של השיר ויציאה"
+msgstr "הדפסת השם של האומן ואת שם השיר שמתנגן כעת"
 
 #: ../remote/dbus/rb-client.c:102
 msgid "Print formatted details of the song"
@@ -2963,65 +2979,62 @@ msgstr "השהיית השמעה"
 msgid "Unmute playback"
 msgstr "השהיית השמעה"
 
-#: ../remote/dbus/rb-client.c:419 ../shell/rb-shell.c:2115
+#: ../remote/dbus/rb-client.c:431
+#: ../shell/rb-shell.c:2117
 msgid "Not playing"
 msgstr "השמעה אינה מופעלת"
 
-#: ../remote/dbus/rb-client.c:647
+#: ../remote/dbus/rb-client.c:659
 #, c-format
 msgid "Playback is muted.\n"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:648
+#: ../remote/dbus/rb-client.c:660
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr ""
 
 #: ../rhythmdb/rhythmdb-property-model.c:473
-#: ../sources/rb-auto-playlist-source.c:107 ../sources/rb-browser-source.c:172
-#: ../sources/rb-podcast-source.c:345
+#: ../sources/rb-auto-playlist-source.c:107
+#: ../sources/rb-browser-source.c:173
+#: ../sources/rb-podcast-source.c:344
 #: ../sources/rb-static-playlist-source.c:113
 msgid "All"
 msgstr "הכל"
 
-#: ../rhythmdb/rhythmdb-tree.c:403
+#: ../rhythmdb/rhythmdb-tree.c:407
 #, c-format
-msgid ""
-"The database was created by a later version of rhythmbox.  This version of "
-"rhythmbox cannot read the database."
-msgstr ""
-"מסד הנתונים נוצר על ידי גרסה עדכנית יותר של rhythmbox.  הגרסה הזו לא יכולה "
-"לקרוא את מסד הנתונים."
+msgid "The database was created by a later version of rhythmbox.  This version of rhythmbox cannot read the database."
+msgstr "מסד הנתונים נוצר על ידי גרסה עדכנית יותר של rhythmbox.  הגרסה הזו לא יכולה לקרוא את מסד הנתונים."
 
 #: ../rhythmdb/rhythmdb.c:601
 #, fuzzy, c-format
 msgid "Couldn't access %s: %s"
 msgstr "פתיחת רשימת ההשמעה %s נכשלה"
 
-#: ../rhythmdb/rhythmdb.c:2037
+#: ../rhythmdb/rhythmdb.c:2040
 msgid "invalid unicode in error message"
 msgstr ""
 
-#: ../rhythmdb/rhythmdb.c:2895
-#, fuzzy
+#: ../rhythmdb/rhythmdb.c:2898
 msgid "Could not load the music database:"
-msgstr "לא ניתן להתחבר למוזיקה משותפת"
+msgstr ""
 
-#: ../rhythmdb/rhythmdb.c:4258
+#: ../rhythmdb/rhythmdb.c:4261
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "דקה %ld"
 msgstr[1] "%ld דקות"
 
-#: ../rhythmdb/rhythmdb.c:4259
+#: ../rhythmdb/rhythmdb.c:4262
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "שעה %ld"
 msgstr[1] "%ld שעות"
 
-#: ../rhythmdb/rhythmdb.c:4260
+#: ../rhythmdb/rhythmdb.c:4263
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3029,7 +3042,7 @@ msgstr[0] "%ld ימים"
 msgstr[1] "%ld ימים"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4266
+#: ../rhythmdb/rhythmdb.c:4269
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s %sו־"
@@ -3037,8 +3050,9 @@ msgstr "%s, %s %sו־"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4272 ../rhythmdb/rhythmdb.c:4280
-#: ../rhythmdb/rhythmdb.c:4291
+#: ../rhythmdb/rhythmdb.c:4275
+#: ../rhythmdb/rhythmdb.c:4283
+#: ../rhythmdb/rhythmdb.c:4294
 #, c-format
 msgid "%s and %s"
 msgstr "%s %sו־"
@@ -3075,7 +3089,9 @@ msgstr "Path for playlists file to use"
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:147 ../shell/main.c:153 ../shell/main.c:162
+#: ../shell/main.c:147
+#: ../shell/main.c:153
+#: ../shell/main.c:162
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -3137,18 +3153,16 @@ msgid "Shuffle the tracks in this playlist"
 msgstr ""
 
 #: ../shell/rb-playlist-manager.c:622
-#, fuzzy
 msgid "Unnamed playlist"
-msgstr "טעינת רשימת השמעה"
+msgstr "רשימת השמעה ללא שם"
 
 #: ../shell/rb-playlist-manager.c:665
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr ""
 
 #: ../shell/rb-playlist-manager.c:1083
-#, fuzzy
 msgid "Untitled Playlist"
-msgstr "רשימת השמעה"
+msgstr "רשימת השמעה ללא שם"
 
 #: ../shell/rb-playlist-manager.c:1355
 msgid "Couldn't read playlist"
@@ -3167,7 +3181,8 @@ msgstr ""
 msgid "Shoutcast playlist"
 msgstr "טעינת רשימת השמעה"
 
-#: ../shell/rb-playlist-manager.c:1437 ../sources/rb-playlist-source.c:615
+#: ../shell/rb-playlist-manager.c:1437
+#: ../sources/rb-playlist-source.c:615
 msgid "Couldn't save playlist"
 msgstr "לא ניתן לשמור רשימת השמעה"
 
@@ -3180,56 +3195,56 @@ msgstr ""
 msgid "Playlist %s already exists"
 msgstr "רשימת ההשמעה %s כבר קיימת"
 
-#: ../shell/rb-playlist-manager.c:1754 ../shell/rb-playlist-manager.c:1787
-#: ../shell/rb-playlist-manager.c:1827 ../shell/rb-playlist-manager.c:1870
-#, fuzzy, c-format
+#: ../shell/rb-playlist-manager.c:1754
+#: ../shell/rb-playlist-manager.c:1787
+#: ../shell/rb-playlist-manager.c:1827
+#: ../shell/rb-playlist-manager.c:1870
+#, c-format
 msgid "Unknown playlist: %s"
-msgstr "פתיחת רשימת ההשמעה %s נכשלה"
+msgstr "רשימת השמעה לא ידועה: %s"
 
-#: ../shell/rb-playlist-manager.c:1795 ../shell/rb-playlist-manager.c:1835
-#, fuzzy, c-format
+#: ../shell/rb-playlist-manager.c:1795
+#: ../shell/rb-playlist-manager.c:1835
+#, c-format
 msgid "Playlist %s is an automatic playlist"
-msgstr "שינוי רשימת ההשמעה האוטומטית"
+msgstr "רשימת ההשמעה %s היא רשימה אוטומטית"
 
-#: ../shell/rb-removable-media-manager.c:149
+#: ../shell/rb-removable-media-manager.c:158
 msgid "Eject this medium"
 msgstr "הוצא את המדיה"
 
-#: ../shell/rb-removable-media-manager.c:151
-#, fuzzy
+#: ../shell/rb-removable-media-manager.c:160
 msgid "_Extract to Library"
-msgstr "_הוספה לספריה..."
+msgstr "_חלץ לספרייה"
 
-#: ../shell/rb-removable-media-manager.c:152
+#: ../shell/rb-removable-media-manager.c:161
 #, fuzzy
 msgid "Copy all tracks to the library"
 msgstr "לא לעדכן את הספרייה"
 
-#: ../shell/rb-removable-media-manager.c:154
+#: ../shell/rb-removable-media-manager.c:163
 msgid "_Scan Removable Media"
 msgstr "_סרוק מדיה ניידת"
 
-#: ../shell/rb-removable-media-manager.c:155
+#: ../shell/rb-removable-media-manager.c:164
 msgid "Scan for new Removable Media"
 msgstr "סרוק אחר מדיה ניידת"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../shell/rb-removable-media-manager.c:661
+#: ../shell/rb-removable-media-manager.c:737
 msgid "Extract"
-msgstr ""
+msgstr "חלץ"
 
-#: ../shell/rb-removable-media-manager.c:692
-#, fuzzy
+#: ../shell/rb-removable-media-manager.c:768
 msgid "Unable to eject"
-msgstr "לא ניתן ליצור תקליטור שמע"
+msgstr "לא ניתן להוציא"
 
-#: ../shell/rb-removable-media-manager.c:713
-#, fuzzy
+#: ../shell/rb-removable-media-manager.c:789
 msgid "Unable to unmount"
-msgstr "%s לא נמצא"
+msgstr "לא ניתן לנתק"
 
-#: ../shell/rb-removable-media-manager.c:899
+#: ../shell/rb-removable-media-manager.c:991
 msgid "Error transferring track"
 msgstr ""
 
@@ -3277,7 +3292,8 @@ msgstr "הדבקת בחירה"
 msgid "_Remove"
 msgstr "ה_סרה"
 
-#: ../shell/rb-shell-clipboard.c:169 ../shell/rb-shell-clipboard.c:183
+#: ../shell/rb-shell-clipboard.c:169
+#: ../shell/rb-shell-clipboard.c:183
 msgid "Remove selection"
 msgstr "הסרת בחירה"
 
@@ -3313,13 +3329,10 @@ msgstr "הסר"
 msgid "Pr_operties"
 msgstr "מ_אפיינים"
 
-#: ../shell/rb-shell-clipboard.c:187 ../shell/rb-shell-clipboard.c:190
+#: ../shell/rb-shell-clipboard.c:187
+#: ../shell/rb-shell-clipboard.c:190
 msgid "Show information on the selected song"
 msgstr "הצגת מידע על השיר הנבחר"
-
-#: ../shell/rb-shell-clipboard.c:189 ../sources/rb-podcast-source.c:329
-msgid "_Properties"
-msgstr "_מאפיינים"
 
 #: ../shell/rb-shell-player.c:318
 msgid "Pre_vious"
@@ -3359,7 +3372,8 @@ msgstr "השהיית השמעה"
 msgid "_Play"
 msgstr "_השמעה"
 
-#: ../shell/rb-shell-player.c:336 ../shell/rb-shell-player.c:3807
+#: ../shell/rb-shell-player.c:336
+#: ../shell/rb-shell-player.c:3805
 #, fuzzy
 msgid "Start playback"
 msgstr "הפסקת השמעה"
@@ -3435,62 +3449,64 @@ msgid "Failed to create the player: %s"
 msgstr "יצירת הנגן %s נכשלה"
 
 #: ../shell/rb-shell-player.c:1532
-#, fuzzy, c-format
+#, c-format
 msgid "Playlist was empty"
-msgstr "רשימת השמעה"
+msgstr "רשימת השמעה ריקה"
 
 #: ../shell/rb-shell-player.c:2039
-#, fuzzy, c-format
+#, c-format
 msgid "Not currently playing"
-msgstr "השמעה אינה מופעלת"
+msgstr "לא מנגן כרגע"
 
 #: ../shell/rb-shell-player.c:2097
-#, fuzzy, c-format
+#, c-format
 msgid "No previous song"
-msgstr "השמעת השיר הקודם"
+msgstr "אין שיר קודם"
 
 #: ../shell/rb-shell-player.c:2189
-#, fuzzy, c-format
+#, c-format
 msgid "No next song"
-msgstr "השמעת השיר הבא"
+msgstr "אין עוד שיר"
 
-#: ../shell/rb-shell-player.c:2310 ../shell/rb-shell-player.c:3438
+#: ../shell/rb-shell-player.c:2310
+#: ../shell/rb-shell-player.c:3436
 #, fuzzy
 msgid "Couldn't start playback"
 msgstr "השהיית ההשמעה נכשלה"
 
-#: ../shell/rb-shell-player.c:3194
+#: ../shell/rb-shell-player.c:3192
 #, fuzzy
 msgid "Couldn't stop playback"
 msgstr "השהיית ההשמעה נכשלה"
 
-#: ../shell/rb-shell-player.c:3310
+#: ../shell/rb-shell-player.c:3308
 #, c-format
 msgid "Playback position not available"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:3342
+#: ../shell/rb-shell-player.c:3340
 #, c-format
 msgid "Current song is not seekable"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:3805
+#: ../shell/rb-shell-player.c:3803
 msgid "Stop playback"
 msgstr "הפסקת השמעה"
 
-#: ../shell/rb-shell-preferences.c:170 ../shell/rb-shell.c:2351
+#: ../shell/rb-shell-preferences.c:171
+#: ../shell/rb-shell.c:2353
 msgid "Couldn't display help"
 msgstr "לא ניתן להציג עזרה"
 
-#: ../shell/rb-shell-preferences.c:205
+#: ../shell/rb-shell-preferences.c:206
 msgid "Music Player Preferences"
 msgstr "העדפות נגן המוזיקה"
 
-#: ../shell/rb-shell-preferences.c:258
+#: ../shell/rb-shell-preferences.c:261
 msgid "General"
 msgstr "כללי"
 
-#: ../shell/rb-shell-preferences.c:317
+#: ../shell/rb-shell-preferences.c:320
 #, fuzzy
 msgid "Playback"
 msgstr "השהיית השמעה"
@@ -3520,18 +3536,16 @@ msgid "_Import Folder..."
 msgstr "ייבוא _תיקייה..."
 
 #: ../shell/rb-shell.c:431
-#, fuzzy
 msgid "Choose folder to be added to the Library"
-msgstr "בחירת קבצים או תיקיות להוספה לספריה"
+msgstr "בחר תיקייה להוסיף לספרייה"
 
 #: ../shell/rb-shell.c:433
 msgid "Import _File..."
 msgstr "ייבא _קובץ..."
 
 #: ../shell/rb-shell.c:434
-#, fuzzy
 msgid "Choose file to be added to the Library"
-msgstr "בחירת קבצים או תיקיות להוספה לספריה"
+msgstr "בחר קובץ כדי להוספה לספרייה"
 
 #: ../shell/rb-shell.c:436
 msgid "_About"
@@ -3554,9 +3568,8 @@ msgid "_Close"
 msgstr "_סגור"
 
 #: ../shell/rb-shell.c:443
-#, fuzzy
 msgid "Hide the music player window"
-msgstr "סגירת נגן המוזיקה"
+msgstr "הסתר את חלון נגן המוזיקה"
 
 #: ../shell/rb-shell.c:445
 msgid "_Quit"
@@ -3580,7 +3593,7 @@ msgstr "תו_ספים"
 
 #: ../shell/rb-shell.c:452
 msgid "Change and configure plugins"
-msgstr ""
+msgstr "רוך והגדר את התוספים שלך"
 
 #: ../shell/rb-shell.c:454
 msgid "Show _All Tracks"
@@ -3588,7 +3601,7 @@ msgstr "הצגת _כל הרצועות"
 
 #: ../shell/rb-shell.c:455
 msgid "Show all tracks in this music source"
-msgstr ""
+msgstr "הצג את כל הרצועות בשיתוף מוזיקה זה"
 
 #: ../shell/rb-shell.c:457
 msgid "_Jump to Playing Song"
@@ -3649,50 +3662,49 @@ msgstr "_שורת מצב"
 msgid "Change the visibility of the statusbar"
 msgstr "שינוי תצוגת שורת המצב"
 
-#: ../shell/rb-shell.c:1296
+#: ../shell/rb-shell.c:1298
 msgid "Change the music volume"
 msgstr "שינוי עוצמת המוזיקה"
 
-#: ../shell/rb-shell.c:1738
+#: ../shell/rb-shell.c:1740
 msgid "Error while saving song information"
-msgstr ""
+msgstr "התרחשה שגיאה בשמירת נתוני השיר"
 
-#: ../shell/rb-shell.c:1889
+#: ../shell/rb-shell.c:1891
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr ""
 
-#: ../shell/rb-shell.c:1892
+#: ../shell/rb-shell.c:1894
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr ""
 
 #. Translators: the %s is the elapsed and total time
-#: ../shell/rb-shell.c:2118
+#: ../shell/rb-shell.c:2120
 #, c-format
 msgid "Paused, %s"
 msgstr "מושהה, %s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2160
+#: ../shell/rb-shell.c:2162
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (מושהה)"
 
-#: ../shell/rb-shell.c:2264
+#: ../shell/rb-shell.c:2266
 msgid "translator-credits"
 msgstr ""
 "‏מארק קרפיבנר <mark125@gmail.com>\n"
 "‏Eli Daian https://launchpad.net/~elidaian\n"
 "‏Gil 'Dolfin' Osher https://launchpad.net/~dolfin\n"
 "‏Oren Segal https://launchpad.net/~tintys\n"
-"‏Yaniv Abir https://launchpad.net/~yanivabir‏Oren Segal https://launchpad.net/"
-"~tintys\n"
+"‏Yaniv Abir https://launchpad.net/~yanivabir‏Oren Segal https://launchpad.net/~tintys\n"
 "\n"
 "פרוייקט תרגום GNOME לעברית:\n"
 "‏http://gnome-il.berlios.de"
 
-#: ../shell/rb-shell.c:2267
+#: ../shell/rb-shell.c:2269
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3704,7 +3716,7 @@ msgstr ""
 "the Free Software Foundation; either version 2 of the License, or\n"
 "(at your option) any later version.\n"
 
-#: ../shell/rb-shell.c:2271
+#: ../shell/rb-shell.c:2273
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3716,7 +3728,7 @@ msgstr ""
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 
-#: ../shell/rb-shell.c:2275
+#: ../shell/rb-shell.c:2277
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3726,68 +3738,67 @@ msgstr ""
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2282
+#: ../shell/rb-shell.c:2284
 msgid "Maintainers:"
 msgstr "מתחזקים:"
 
-#: ../shell/rb-shell.c:2285
+#: ../shell/rb-shell.c:2287
 msgid "Former Maintainers:"
 msgstr "מתחזקים לשעבר:"
 
-#: ../shell/rb-shell.c:2288
+#: ../shell/rb-shell.c:2290
 msgid "Contributors:"
 msgstr "תורמים:"
 
-#: ../shell/rb-shell.c:2290
+#: ../shell/rb-shell.c:2292
 msgid "Music management and playback software for GNOME."
 msgstr "תוכנה לניהול והשמעת מוזיקה בסביבת GNOME."
 
-#: ../shell/rb-shell.c:2299
+#: ../shell/rb-shell.c:2301
 msgid "Rhythmbox Website"
 msgstr "אתר הבית של Rhythmbox"
 
-#: ../shell/rb-shell.c:2398
+#: ../shell/rb-shell.c:2400
 msgid "Configure Plugins"
 msgstr "הגדרת תוספים"
 
-#: ../shell/rb-shell.c:2469
-#, fuzzy
+#: ../shell/rb-shell.c:2471
 msgid "Import Folder into Library"
-msgstr "שגיאה בטעינת קבצים לספריה"
+msgstr "ייבוא תיקייה לתוך ספרייה"
 
-#: ../shell/rb-shell.c:2491
-#, fuzzy
+#: ../shell/rb-shell.c:2493
 msgid "Import File into Library"
-msgstr "שגיאה בטעינת קבצים לספריה"
+msgstr "ייבוא קובץ לתוך ספרייה"
 
 #. Translators: by Artist
-#: ../shell/rb-shell.c:3006
+#: ../shell/rb-shell.c:3008
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "מאת <i>%s</i>"
 
 #. Translators: from Album
-#: ../shell/rb-shell.c:3027
+#: ../shell/rb-shell.c:3029
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "מ-<i>%s</i>"
 
-#: ../shell/rb-shell.c:3235
+#: ../shell/rb-shell.c:3237
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr ""
 
-#: ../shell/rb-shell.c:3504 ../shell/rb-shell.c:3533
+#: ../shell/rb-shell.c:3506
+#: ../shell/rb-shell.c:3535
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr ""
 
-#: ../shell/rb-shell.c:3542
-#, fuzzy, c-format
+#: ../shell/rb-shell.c:3544
+#, c-format
 msgid "Unknown property %s"
-msgstr "סוג קובץ לא ידוע"
+msgstr "מאפיין לא מזוהה %s"
 
-#: ../shell/rb-shell.c:3552
+#: ../shell/rb-shell.c:3554
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr ""
@@ -3802,7 +3813,7 @@ msgstr "שינוי תצוגת העיון"
 
 #: ../shell/rb-source-header.c:276
 msgid "Filter music display by genre, artist, album, or title"
-msgstr "סינון תצוגת מוזיקה לפי ז'אנר, אומן, אלבום או שם"
+msgstr "סינון תצוגת מוזיקה לפי סוג, אומן, אלבום או שם"
 
 #: ../shell/rb-statusbar.c:202
 msgid "Loading..."
@@ -3813,76 +3824,81 @@ msgid "_Show Music Player"
 msgstr "_הצג נגן מוזיקה"
 
 #: ../shell/rb-tray-icon.c:168
-#, fuzzy
 msgid "Choose music to play"
-msgstr "סגירת נגן המוזיקה"
+msgstr "בחר מוזיקה לנגן"
 
 #: ../shell/rb-tray-icon.c:170
 msgid "Show N_otifications"
-msgstr ""
+msgstr "הצג ה_ודעות"
 
 #: ../shell/rb-tray-icon.c:171
 msgid "Show notifications of song changes and other events"
 msgstr ""
 
-#: ../sources/rb-auto-playlist-source.c:107 ../sources/rb-browser-source.c:172
-#: ../sources/rb-podcast-source.c:345
+#: ../sources/rb-auto-playlist-source.c:107
+#: ../sources/rb-browser-source.c:173
+#: ../sources/rb-podcast-source.c:344
 #: ../sources/rb-static-playlist-source.c:113
 msgid "Search all fields"
 msgstr "חיפוש בכל השדות"
 
-#: ../sources/rb-auto-playlist-source.c:108 ../sources/rb-browser-source.c:173
+#: ../sources/rb-auto-playlist-source.c:108
+#: ../sources/rb-browser-source.c:174
 #: ../sources/rb-static-playlist-source.c:114
 msgid "Artists"
 msgstr "אמנים"
 
-#: ../sources/rb-auto-playlist-source.c:108 ../sources/rb-browser-source.c:173
+#: ../sources/rb-auto-playlist-source.c:108
+#: ../sources/rb-browser-source.c:174
 #: ../sources/rb-static-playlist-source.c:114
 msgid "Search artists"
 msgstr "חיפוש אמנים"
 
-#: ../sources/rb-auto-playlist-source.c:109 ../sources/rb-browser-source.c:174
+#: ../sources/rb-auto-playlist-source.c:109
+#: ../sources/rb-browser-source.c:175
 #: ../sources/rb-static-playlist-source.c:115
 msgid "Albums"
 msgstr "אלבומים"
 
-#: ../sources/rb-auto-playlist-source.c:109 ../sources/rb-browser-source.c:174
+#: ../sources/rb-auto-playlist-source.c:109
+#: ../sources/rb-browser-source.c:175
 #: ../sources/rb-static-playlist-source.c:115
 msgid "Search albums"
 msgstr "חיפוש אלבומים"
 
-#: ../sources/rb-auto-playlist-source.c:110 ../sources/rb-browser-source.c:175
+#: ../sources/rb-auto-playlist-source.c:110
+#: ../sources/rb-browser-source.c:176
 #: ../sources/rb-static-playlist-source.c:116
 msgid "Titles"
 msgstr "שמות"
 
-#: ../sources/rb-auto-playlist-source.c:110 ../sources/rb-browser-source.c:175
+#: ../sources/rb-auto-playlist-source.c:110
+#: ../sources/rb-browser-source.c:176
 #: ../sources/rb-static-playlist-source.c:116
 msgid "Search titles"
-msgstr ""
-
-#: ../sources/rb-browser-source.c:159
-msgid "Browse This _Genre"
-msgstr "סייר _בז'אנר"
+msgstr "חיפוש שמות"
 
 #: ../sources/rb-browser-source.c:160
-msgid "Set the browser to view only this genre"
-msgstr "עיון בז'אנר זה בלבד"
+msgid "Browse This _Genre"
+msgstr "סייר _בסוג מוזיקה זה"
 
-#: ../sources/rb-browser-source.c:162
-#, fuzzy
-msgid "Browse This _Artist"
-msgstr "עיון במבצע הזה"
+#: ../sources/rb-browser-source.c:161
+msgid "Set the browser to view only this genre"
+msgstr "עיון במוזיקה מסוג זה בלבד"
 
 #: ../sources/rb-browser-source.c:163
+msgid "Browse This _Artist"
+msgstr "עיון ב_אומן הזה"
+
+#: ../sources/rb-browser-source.c:164
 msgid "Set the browser to view only this artist"
 msgstr "עיון באומן זה בלבד"
 
-#: ../sources/rb-browser-source.c:165
+#: ../sources/rb-browser-source.c:166
 msgid "Browse This A_lbum"
 msgstr "סייר _באלבום"
 
-#: ../sources/rb-browser-source.c:166
+#: ../sources/rb-browser-source.c:167
 msgid "Set the browser to view only this album"
 msgstr "עיון באלבום זה בלבד"
 
@@ -3909,7 +3925,8 @@ msgstr "אומן/אלבום"
 msgid "Artist - Album"
 msgstr "אומן - אלבום"
 
-#: ../sources/rb-library-source.c:148 ../widgets/rb-entry-view.c:1439
+#: ../sources/rb-library-source.c:148
+#: ../widgets/rb-entry-view.c:1445
 #: ../widgets/rb-library-browser.c:139
 #: ../widgets/rb-query-creator-properties.c:77
 #: ../widgets/rb-query-creator-properties.c:103
@@ -3930,26 +3947,26 @@ msgstr "אומן  - מספר - שם"
 
 #: ../sources/rb-library-source.c:157
 msgid "Artist (Album) - Number - Title"
-msgstr ""
+msgstr "אומן (אלבום) - מספר - שם"
 
 #: ../sources/rb-library-source.c:159
 msgid "Number. Artist - Title"
-msgstr ""
+msgstr "מספר.אומן - שם"
 
-#: ../sources/rb-library-source.c:377
+#: ../sources/rb-library-source.c:386
 msgid "Music"
 msgstr "מוזיקה"
 
-#: ../sources/rb-library-source.c:412
+#: ../sources/rb-library-source.c:422
 msgid "Choose Library Location"
-msgstr ""
+msgstr "בחר את מיקום הספרייה"
 
-#: ../sources/rb-library-source.c:599
+#: ../sources/rb-library-source.c:609
 #, fuzzy
 msgid "Multiple locations set"
 msgstr "מאפיינים למספר שירים"
 
-#: ../sources/rb-library-source.c:996
+#: ../sources/rb-library-source.c:1005
 msgid "Example Path:"
 msgstr "נתיב לדוגמה:"
 
@@ -3983,219 +4000,217 @@ msgstr ""
 
 #. Translators: this is the toolbutton label for Clear Queue action
 #: ../sources/rb-play-queue-source.c:242
-#, fuzzy
 msgid "Clear"
-msgstr "שנה"
+msgstr "נקה"
 
-#: ../sources/rb-play-queue-source.c:259 ../sources/rb-play-queue-source.c:319
+#: ../sources/rb-play-queue-source.c:259
+#: ../sources/rb-play-queue-source.c:319
 #: ../sources/rb-play-queue-source.c:461
 msgid "Play Queue"
 msgstr "רשימת ניגונים"
 
-#: ../sources/rb-play-queue-source.c:429 ../widgets/rb-header.c:123
+#: ../sources/rb-play-queue-source.c:429
+#: ../widgets/rb-header.c:123
 msgid "from"
 msgstr "מ"
 
-#: ../sources/rb-play-queue-source.c:429 ../widgets/rb-header.c:124
+#: ../sources/rb-play-queue-source.c:429
+#: ../widgets/rb-header.c:124
 msgid "by"
 msgstr "מאת"
 
-#: ../sources/rb-podcast-source.c:319
+#: ../sources/rb-podcast-source.c:318
 #, fuzzy
 msgid "_New Podcast Feed..."
 msgstr "_רשימת השמעה חדשה..."
 
-#: ../sources/rb-podcast-source.c:320
+#: ../sources/rb-podcast-source.c:319
 msgid "Subscribe to a new Podcast Feed"
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:323
+#: ../sources/rb-podcast-source.c:322
 msgid "Download _Episode"
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:324
+#: ../sources/rb-podcast-source.c:323
 msgid "Download Podcast Episode"
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:326
+#: ../sources/rb-podcast-source.c:325
 msgid "_Cancel Download"
 msgstr "_ביטול הורדה"
 
-#: ../sources/rb-podcast-source.c:327
+#: ../sources/rb-podcast-source.c:326
 msgid "Cancel Episode Download"
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:330
+#: ../sources/rb-podcast-source.c:329
 #, fuzzy
 msgid "Episode Properties"
 msgstr "מאפייני %s"
 
-#: ../sources/rb-podcast-source.c:332
+#: ../sources/rb-podcast-source.c:331
 msgid "_Update Podcast Feed"
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:333
+#: ../sources/rb-podcast-source.c:332
 msgid "Update Feed"
 msgstr "עדכן ערוץ"
 
-#: ../sources/rb-podcast-source.c:335
+#: ../sources/rb-podcast-source.c:334
 msgid "_Delete Podcast Feed"
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:336
+#: ../sources/rb-podcast-source.c:335
 msgid "Delete Feed"
 msgstr "מחק ערוץ"
 
-#: ../sources/rb-podcast-source.c:338
+#: ../sources/rb-podcast-source.c:337
 msgid "_Update All Feeds"
-msgstr ""
+msgstr "_עדכון כל הערוצים"
 
-#: ../sources/rb-podcast-source.c:339
+#: ../sources/rb-podcast-source.c:338
 msgid "Update all feeds"
-msgstr ""
+msgstr "עדכן את כל הערוצים"
 
-#: ../sources/rb-podcast-source.c:346
+#: ../sources/rb-podcast-source.c:345
 msgid "Feeds"
-msgstr ""
+msgstr "ערוצים"
 
-#: ../sources/rb-podcast-source.c:346
+#: ../sources/rb-podcast-source.c:345
 msgid "Search podcast feeds"
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:347
+#: ../sources/rb-podcast-source.c:346
 msgid "Episodes"
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:347
+#: ../sources/rb-podcast-source.c:346
 msgid "Search podcast episodes"
 msgstr ""
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
 #. Don't include the prefix "podcast|" in the translation.
-#: ../sources/rb-podcast-source.c:593
-#, fuzzy
+#: ../sources/rb-podcast-source.c:592
 msgid "podcast|New"
-msgstr "פודקסט"
+msgstr "חדש"
 
 #. Translators: this is the toolbar button label
 #. for Update All Feeds action.
-#: ../sources/rb-podcast-source.c:599
+#: ../sources/rb-podcast-source.c:598
 msgid "Update"
 msgstr "עדכון"
 
-#: ../sources/rb-podcast-source.c:638 ../sources/rb-podcast-source.c:649
+#: ../sources/rb-podcast-source.c:637
+#: ../sources/rb-podcast-source.c:648
 msgid "Date"
 msgstr "תאריך"
 
-#: ../sources/rb-podcast-source.c:670 ../sources/rb-podcast-source.c:738
-#: ../sources/rb-podcast-source.c:792
+#: ../sources/rb-podcast-source.c:669
+#: ../sources/rb-podcast-source.c:737
+#: ../sources/rb-podcast-source.c:791
 msgid "Feed"
 msgstr "ערוץ"
 
-#: ../sources/rb-podcast-source.c:689 ../sources/rb-podcast-source.c:707
+#: ../sources/rb-podcast-source.c:688
+#: ../sources/rb-podcast-source.c:706
 msgid "Status"
 msgstr "מצב"
 
-#: ../sources/rb-podcast-source.c:690 ../sources/rb-podcast-source.c:1596
+#: ../sources/rb-podcast-source.c:689
+#: ../sources/rb-podcast-source.c:1588
 msgid "Downloaded"
-msgstr "הורד"
+msgstr "ירד"
 
-#: ../sources/rb-podcast-source.c:691 ../sources/rb-podcast-source.c:1604
+#: ../sources/rb-podcast-source.c:690
+#: ../sources/rb-podcast-source.c:1596
 msgid "Waiting"
 msgstr "ממתין"
 
-#: ../sources/rb-podcast-source.c:692 ../sources/rb-podcast-source.c:1600
+#: ../sources/rb-podcast-source.c:691
+#: ../sources/rb-podcast-source.c:1592
 msgid "Failed"
 msgstr "כישלון"
 
-#: ../sources/rb-podcast-source.c:987
+#: ../sources/rb-podcast-source.c:986
 msgid "Delete the podcast episode and downloaded file?"
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:990
-msgid ""
-"If you choose to delete the episode and file, they will be permanently "
-"lost.  Please note that you can delete the episode but keep the downloaded "
-"file by choosing to delete the episode only."
+#: ../sources/rb-podcast-source.c:989
+msgid "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the episode but keep the downloaded file by choosing to delete the episode only."
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:998
+#: ../sources/rb-podcast-source.c:997
 msgid "Delete _Episode Only"
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:1004
+#: ../sources/rb-podcast-source.c:1003
 msgid "_Delete Episode And File"
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:1489
+#: ../sources/rb-podcast-source.c:1481
 msgid "Delete the podcast feed and downloaded files?"
-msgstr ""
+msgstr "למחוק את ערוץ הפודקסט ואת הקבצים שירדו?"
+
+#: ../sources/rb-podcast-source.c:1484
+msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
+msgstr "אם תבחר למחוק את הערות והקבצים, הם ימחקו לתמיד. ניתן למחוק את הערוץ ולשמור את הקבצים שירדו על ידי בחירת האפשרות של מחיקת הערוץ בלבד."
 
 #: ../sources/rb-podcast-source.c:1492
-msgid ""
-"If you choose to delete the feed and files, they will be permanently lost.  "
-"Please note that you can delete the feed but keep the downloaded files by "
-"choosing to delete the feed only."
-msgstr ""
-
-#: ../sources/rb-podcast-source.c:1500
-#, fuzzy
 msgid "Delete _Feed Only"
-msgstr "מחיקת בחירה"
+msgstr "מחיקת _הערוץ בלבד"
 
-#: ../sources/rb-podcast-source.c:1507
+#: ../sources/rb-podcast-source.c:1499
 msgid "_Delete Feed And Files"
-msgstr ""
+msgstr "_מחיקת הערוץ והקבצים"
 
-#: ../sources/rb-podcast-source.c:1715
+#: ../sources/rb-podcast-source.c:1707
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "ערוץ %d"
+msgstr[1] "כל %d ערוצים"
 
-#: ../sources/rb-podcast-source.c:1857
+#: ../sources/rb-podcast-source.c:1849
 msgid "Downloading podcast"
-msgstr "מוריד פודקאסט"
+msgstr "מוריד פודקסט"
 
-#: ../sources/rb-podcast-source.c:1870
+#: ../sources/rb-podcast-source.c:1862
 msgid "Finished downloading podcast"
-msgstr ""
+msgstr "הורדת פודקסט הסתיימה"
 
-#: ../sources/rb-podcast-source.c:1883
-#, fuzzy
+#: ../sources/rb-podcast-source.c:1875
 msgid "New updates available from"
-msgstr "אין מאפיינים זמינים."
+msgstr "יש עדכונים חדשים n"
 
-#: ../sources/rb-podcast-source.c:1999
+#: ../sources/rb-podcast-source.c:1991
 msgid "Error in podcast"
-msgstr ""
+msgstr "שגיאה בפודקסט"
 
-#: ../sources/rb-podcast-source.c:2006
+#: ../sources/rb-podcast-source.c:1998
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:2133
+#: ../sources/rb-podcast-source.c:2125
 msgid "New Podcast Feed"
-msgstr ""
+msgstr "ערוץ פודקסט חדש"
 
-#: ../sources/rb-podcast-source.c:2133
+#: ../sources/rb-podcast-source.c:2125
 msgid "URL of podcast feed:"
-msgstr ""
+msgstr "כתובת ערוץ הפודקסט"
 
-#: ../sources/rb-podcast-source.c:2149
+#: ../sources/rb-podcast-source.c:2141
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../sources/rb-podcast-source.c:2257
-#, fuzzy
+#: ../sources/rb-podcast-source.c:2249
 msgid "Podcast Error"
-msgstr "שגיאת רכישה"
+msgstr "שגיאת פודקסטים"
 
 #: ../sources/rb-source.c:699
 #, c-format
@@ -4220,7 +4235,7 @@ msgstr "התקנים"
 msgid "Shared"
 msgstr "משותף"
 
-#: ../sources/rb-sourcelist.c:718
+#: ../sources/rb-sourcelist.c:710
 msgid "S_ource"
 msgstr "_מקור"
 
@@ -4266,69 +4281,72 @@ msgid "Pixbuf Object"
 msgstr "אובייקט Pixbuf"
 
 #: ../widgets/rb-cell-renderer-pixbuf.c:119
+#, fuzzy
 msgid "The pixbuf to render."
 msgstr "ה־Pixbuf לרנדור."
 
-#: ../widgets/rb-entry-view.c:1056
+#: ../widgets/rb-entry-view.c:1062
 #, c-format
 msgid "%u kbps"
 msgstr "%u kbps"
 
-#: ../widgets/rb-entry-view.c:1408
+#: ../widgets/rb-entry-view.c:1414
 msgid "Track"
 msgstr "רצועה"
 
-#: ../widgets/rb-entry-view.c:1459
+#: ../widgets/rb-entry-view.c:1465
 msgid "Time"
 msgstr "זמן"
 
-#: ../widgets/rb-entry-view.c:1471 ../widgets/rb-query-creator-properties.c:79
+#: ../widgets/rb-entry-view.c:1477
+#: ../widgets/rb-query-creator-properties.c:79
 #: ../widgets/rb-query-creator-properties.c:108
 msgid "Year"
 msgstr "שנה"
 
-#: ../widgets/rb-entry-view.c:1483
+#: ../widgets/rb-entry-view.c:1489
 msgid "Quality"
 msgstr "איכות"
 
-#: ../widgets/rb-entry-view.c:1486
-#, fuzzy
+#: ../widgets/rb-entry-view.c:1492
 msgid "000 kbps"
-msgstr "%d קסל\"ש"
+msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1496 ../widgets/rb-query-creator-properties.c:80
+#: ../widgets/rb-entry-view.c:1502
+#: ../widgets/rb-query-creator-properties.c:80
 #: ../widgets/rb-query-creator-properties.c:106
 msgid "Rating"
 msgstr "דירוג"
 
-#: ../widgets/rb-entry-view.c:1518 ../widgets/rb-query-creator-properties.c:83
+#: ../widgets/rb-entry-view.c:1524
+#: ../widgets/rb-query-creator-properties.c:83
 #: ../widgets/rb-query-creator-properties.c:107
 msgid "Play Count"
 msgstr "מספר השמעות"
 
-#: ../widgets/rb-entry-view.c:1530
+#: ../widgets/rb-entry-view.c:1536
 #: ../widgets/rb-query-creator-properties.c:111
 msgid "Last Played"
 msgstr "הושמע לאחרונה"
 
-#: ../widgets/rb-entry-view.c:1542
+#: ../widgets/rb-entry-view.c:1548
 #: ../widgets/rb-query-creator-properties.c:112
 msgid "Date Added"
 msgstr "תאריך הוספה"
 
-#: ../widgets/rb-entry-view.c:1553
+#: ../widgets/rb-entry-view.c:1559
 msgid "Last Seen"
 msgstr "נראה לאחרונה"
 
-#: ../widgets/rb-entry-view.c:1564
+#: ../widgets/rb-entry-view.c:1570
 msgid "Location"
 msgstr "מיקום"
 
-#: ../widgets/rb-entry-view.c:1821
+#: ../widgets/rb-entry-view.c:1827
 msgid "Now Playing"
 msgstr "משמיע כעת"
 
-#: ../widgets/rb-entry-view.c:1884
+#: ../widgets/rb-entry-view.c:1890
 msgid "Playback Error"
 msgstr "שגיאת ניגון"
 
@@ -4392,14 +4410,12 @@ msgid "Duration"
 msgstr "אורך"
 
 #: ../widgets/rb-query-creator-properties.c:90
-#, fuzzy
 msgid "Time of Last Play"
-msgstr "הושמע לא_חרונה"
+msgstr "הושמע לאחרונה"
 
 #: ../widgets/rb-query-creator-properties.c:91
-#, fuzzy
 msgid "Time Added to Library"
-msgstr "_הוספה לספריה..."
+msgstr "זמן הוספה לספרייה"
 
 #: ../widgets/rb-query-creator-properties.c:102
 #: ../widgets/rb-query-creator-properties.c:103
@@ -4468,7 +4484,7 @@ msgstr "לכל היותר"
 
 #: ../widgets/rb-query-creator-properties.c:167
 msgid "in"
-msgstr ""
+msgstr "ב"
 
 #. matches if within 1-JAN-YEAR to 31-DEC-YEAR
 #: ../widgets/rb-query-creator-properties.c:169
@@ -4485,18 +4501,16 @@ msgstr "לפני"
 #. * e.g. "in the last" "7 days" will match if within 7 days of the current time
 #.
 #: ../widgets/rb-query-creator-properties.c:227
-#, fuzzy
 msgid "in the last"
-msgstr "על שולחן העבודה"
+msgstr "באחרון"
 
 #.
 #. * Translators: this is the opposite of the above, and will match if not
 #. * within <value> of the current time
 #.
 #: ../widgets/rb-query-creator-properties.c:233
-#, fuzzy
 msgid "not in the last"
-msgstr "לא אחרון"
+msgstr "לא באחרון"
 
 #: ../widgets/rb-query-creator-properties.c:247
 msgid "seconds"
@@ -4531,43 +4545,56 @@ msgstr "ערוך רשימת שמע אוטומטית"
 msgid "_Search:"
 msgstr "_חיפוש:"
 
-#: ../widgets/rb-song-info.c:367
+#: ../widgets/rb-song-info.c:371
 msgid "Song Properties"
 msgstr "מאפייני שיר"
 
-#: ../widgets/rb-song-info.c:416
+#: ../widgets/rb-song-info.c:420
 msgid "Multiple Song Properties"
 msgstr "מאפיינים למספר שירים"
 
-#: ../widgets/rb-song-info.c:1123
+#: ../widgets/rb-song-info.c:1102
 msgid "Unknown file name"
 msgstr "שם קובץ לא ידוע"
 
-#: ../widgets/rb-song-info.c:1145
+#: ../widgets/rb-song-info.c:1124
 msgid "On the desktop"
 msgstr "על שולחן העבודה"
 
-#: ../widgets/rb-song-info.c:1154
+#: ../widgets/rb-song-info.c:1133
 msgid "Unknown location"
 msgstr "מיקום לא ידוע"
 
-#~ msgid "Device '%s' does not contain any media"
-#~ msgstr "כונן '%s' אינו מכיל תקליטור"
-
+#~ msgid "Cannot create MusicBrainz client"
+#~ msgstr "אין אפשרות ליצור לקוח MusicBrainz"
 #~ msgid ""
-#~ "Device '%s' could not be opened. Check the access permissions on the "
-#~ "device."
-#~ msgstr "לא ניתן לפתוח את הכונן '%s'. אנא בדוק את הרשאות הגישה לכונן."
+#~ "MusicBrainz metadata object is not valid. This is bad, check your console "
+#~ "for errors."
+#~ msgstr ""
+#~ "אובייקט מטה-מידע של MusicBrainz אינו תקין. זה לא טוב, אנא בדוק את המסוף "
+#~ "לשגיאות."
+#~ msgid "Check Last.fm server status at"
+#~ msgstr "בדוק מידע שרת של last.fm אצל"
+#~ msgid "Find out about Last.fm at "
+#~ msgstr "פרטים נוספים אודות last.fm אצל "
+#~ msgid "Last.fm Profile"
+#~ msgstr "פרופיל last.fm"
+#~ msgid "http://last.fm"
+#~ msgstr "http://last.fm"
+#~ msgid "http://last.fm/group/Rhythmbox"
+#~ msgstr "http://last.fm/group/Rhythmbox"
+#~ msgid "http://status.last.fm/"
+#~ msgstr "http://status.last.fm/"
 
+#, fuzzy
+#~ msgid "Audioscrobbler preferences"
+#~ msgstr "עריכת העדפות נגן המוזיקה"
 #~ msgid "http://last.fm/forum/21713/_/51596"
 #~ msgstr "http://last.fm/forum/21713/_/51596"
-
 #~ msgid "Next Song"
 #~ msgstr "השיר הבא"
-
 #~ msgid "Skip the current track"
 #~ msgstr "דלג על הרצועה הנוכחית"
-
 #~ msgid "Ban Song"
 #~ msgstr "החרם שיר"
 
@@ -4578,55 +4605,40 @@ msgstr "מיקום לא ידוע"
 #, fuzzy
 #~ msgid "Marking song loved..."
 #~ msgstr "טעינת שירים מתבצעת..."
-
 #~ msgid "Skipping song..."
 #~ msgstr "מדלג על שיר..."
-
 #~ msgid "Could not determine media type because CD drive is busy"
 #~ msgstr "לא ניתן לקבוע את סוג המדיה משום שהכונן עסוק"
-
 #~ msgid "Couldn't open media"
 #~ msgstr "לא ניתן לפתוח מדיה"
-
 #~ msgid "Unknown Media"
 #~ msgstr "מדיה לא ידועה"
-
 #~ msgid "Commercial CD or Audio CD"
 #~ msgstr "תקליטור מסחרי, או תקליטור אודיו"
-
 #~ msgid "CD-R"
 #~ msgstr "CD-R"
-
 #~ msgid "CD-RW"
 #~ msgstr "CD-RW"
-
 #~ msgid "DVD"
 #~ msgstr "DVD"
-
 #~ msgid "DVD-R, or DVD-RAM"
 #~ msgstr "DVD-R, או DVD-RAM"
-
 #~ msgid "DVD-RW"
 #~ msgstr "DVD-RW"
-
 #~ msgid "DVD-RAM"
 #~ msgstr "DVD-RAM"
-
 #~ msgid "DVD+R"
 #~ msgstr "DVD+R"
-
 #~ msgid "DVD+RW"
 #~ msgstr "DVD+RW"
-
 #~ msgid "Broken media type"
 #~ msgstr "סוג מדיה שבור"
 
 #, fuzzy
 #~ msgid "Couldn't monitor %s: %s"
 #~ msgstr "פתיחת רשימת ההשמעה %s נכשלה"
-
 #~ msgid "<invalid filename>"
 #~ msgstr "<שם קובץ לא תקני>"
-
 #~ msgid "Add Location"
 #~ msgstr "הוספת מיקום"
+
