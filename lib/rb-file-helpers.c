@@ -334,6 +334,12 @@ rb_uri_could_be_podcast (const char *uri, gboolean *is_opml)
 	if (is_opml != NULL)
 		*is_opml = FALSE;
 
+	/* feed:// URIs are always podcasts */
+	if (g_str_has_prefix (uri, "feed:")) {
+		rb_debug ("'%s' must be a podcast", uri);
+		return TRUE;
+	}
+
 	/* Check the scheme is a possible one first */
 	if (g_str_has_prefix (uri, "http") == FALSE &&
 	    g_str_has_prefix (uri, "itpc:") == FALSE &&
