@@ -172,13 +172,10 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 			   GObjectConstructParam *construct_properties)
 {
 	RBMtpSource *source;
-	RBMtpSourcePrivate *priv;
 	RBEntryView *tracks;
 	GtkIconTheme *theme;
 	GdkPixbuf *pixbuf;
 	gint size;
-	guint16 *types = NULL;
-	guint16 num_types= 0;
 
 	source = RB_MTP_SOURCE (G_OBJECT_CLASS (rb_mtp_source_parent_class)->
 				constructor (type, n_construct_properties, construct_properties));
@@ -226,6 +223,8 @@ rb_mtp_source_new (RBShell *shell,
 	RhythmDB *db = NULL;
 	RBMtpSourcePrivate *priv = NULL;
 	char *name = NULL;
+	guint16 *types = NULL;
+	guint16 num_types= 0;
 
 	g_object_get (shell, "db", &db, NULL);
 	name = g_strdup_printf ("MTP-%s", LIBMTP_Get_Serialnumber (device));
