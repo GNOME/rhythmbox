@@ -1,5 +1,14 @@
 2008-11-02  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/mtpdevice/rb-mtp-source.c: (rb_mtp_source_constructor),
+	(rb_mtp_source_new), (mimetype_to_filetype), (transfer_track),
+	(impl_get_mime_types):
+	Rework mediatype to libmtp filetype mapping.  Figure out the supported
+	media types during initialisation, add FLAC, and try a few different
+	file types for m4a/aac.
+
+2008-11-02  Jonathan Matthew  <jonathan@d14n.org>
+
 	* metadata/rb-metadata-gst.c: (qt_pad_added_cb),
 	(rb_add_qt_tagger), (rb_metadata_init):
 	Add m4a tag editing using qtmux.  Edited files don't play in itunes or

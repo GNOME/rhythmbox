@@ -89,6 +89,8 @@ typedef struct
 	LIBMTP_mtpdevice_t *device;
 	GHashTable *entry_map;
 	char *udi;
+	uint16_t supported_types[LIBMTP_FILETYPE_UNKNOWN+1];
+	GList *mediatypes;
 } RBMtpSourcePrivate;
 
 RB_PLUGIN_DEFINE_TYPE(RBMtpSource,
@@ -170,10 +172,13 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 			   GObjectConstructParam *construct_properties)
 {
 	RBMtpSource *source;
+	RBMtpSourcePrivate *priv;
 	RBEntryView *tracks;
 	GtkIconTheme *theme;
 	GdkPixbuf *pixbuf;
 	gint size;
+	guint16 *types = NULL;
+	guint16 num_types= 0;
 
 	source = RB_MTP_SOURCE (G_OBJECT_CLASS (rb_mtp_source_parent_class)->
 				constructor (type, n_construct_properties, construct_properties));
@@ -246,6 +251,60 @@ rb_mtp_source_new (RBShell *shell,
 	priv = MTP_SOURCE_GET_PRIVATE (source);
 	priv->device = device;
 	priv->udi = g_strdup (udi);
+
+ 	/* figure out supported file types */
+	if (LIBMTP_Get_Supported_Filetypes(priv->device, &types, &num_types) == 0) {
+		int i;
+		for (i = 0; i < num_types; i++) {
+			const char *mediatype;
+
+			if (i <= LIBMTP_FILETYPE_UNKNOWN) {
+				priv->supported_types[types[i]] = 1;
+			}
+
+			/* this has to work with the remapping done in 
+			 * rb-removable-media-source.c:impl_paste.
+			 */
+			switch (types[i]) {
+			case LIBMTP_FILETYPE_WAV:
+				mediatype = "audio/x-wav";
+				break;
+			case LIBMTP_FILETYPE_MP3:
+				mediatype = "audio/mpeg";
+				break;
+			case LIBMTP_FILETYPE_WMA:
+				mediatype = "audio/x-ms-wma";
+				break;
+			case LIBMTP_FILETYPE_OGG:
+				mediatype = "application/ogg";
+				break;
+			case LIBMTP_FILETYPE_MP4:
+			case LIBMTP_FILETYPE_M4A:
+			case LIBMTP_FILETYPE_AAC:
+				mediatype = "audio/aac";
+				break;
+			case LIBMTP_FILETYPE_WMV:
+				mediatype = "audio/x-ms-wmv";
+				break;
+			case LIBMTP_FILETYPE_ASF:
+				mediatype = "video/x-ms-asf";
+				break;
+			case LIBMTP_FILETYPE_FLAC:
+				mediatype = "audio/flac";
+				break;
+			default:
+				rb_debug ("unknown libmtp filetype %d supported", types[i]);
+				mediatype = NULL;
+				break;
+			}
+
+			if (mediatype != NULL) {
+				rb_debug ("media type %s supported", mediatype);
+				priv->mediatypes = g_list_prepend (priv->mediatypes,
+								   g_strdup (mediatype));
+			}
+		}
+	}
 
 	rb_mtp_source_load_tracks (source);
 
@@ -461,45 +520,34 @@ gdate_to_char (GDate* date)
 }
 
 static LIBMTP_filetype_t
-mimetype_to_filetype (const char *mimetype)
+mimetype_to_filetype (RBMtpSource *source, const char *mimetype)
 {
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+
 	if (!strcmp (mimetype, "audio/mpeg") || !strcmp (mimetype, "application/x-id3")) {
 		return LIBMTP_FILETYPE_MP3;
 	}  else if (!strcmp (mimetype, "audio/x-wav")) {
 		return  LIBMTP_FILETYPE_WAV;
 	} else if (!strcmp (mimetype, "application/ogg")) {
 		return LIBMTP_FILETYPE_OGG;
-	} else if (!strcmp (mimetype, "audio/mp4")) {
-		return LIBMTP_FILETYPE_MP4;
+	} else if (!strcmp (mimetype, "audio/x-m4a") || !strcmp (mimetype, "video/quicktime")) {
+		/* try a few different filetypes that might work */
+		if (priv->supported_types[LIBMTP_FILETYPE_MP4])
+			return LIBMTP_FILETYPE_MP4;
+		else if (priv->supported_types[LIBMTP_FILETYPE_M4A])
+			return LIBMTP_FILETYPE_M4A;
+		else
+			return LIBMTP_FILETYPE_AAC;
+
 	} else if (!strcmp (mimetype, "audio/x-ms-wma") || !strcmp (mimetype, "audio/x-ms-asf")) {
 		return LIBMTP_FILETYPE_WMA;
 	} else if (!strcmp (mimetype, "video/x-ms-asf")) {
 		return LIBMTP_FILETYPE_ASF;
+	} else if (!strcmp (mimetype, "audio/x-flac")) {
+		return LIBMTP_FILETYPE_FLAC;
 	} else {
 		rb_debug ("\"%s\" is not a supported mimetype", mimetype);
 		return LIBMTP_FILETYPE_UNKNOWN;
-	}
-}
-
-static const char*
-filetype_to_mimetype (LIBMTP_filetype_t filetype)
-{
-	if (filetype == LIBMTP_FILETYPE_WAV) {
-		return "audio/x-wav";
-	} else if (filetype == LIBMTP_FILETYPE_MP3) {
-		return "audio/mpeg";
-	} else if (filetype == LIBMTP_FILETYPE_WMA) {
-		return "audio/x-ms-wma";
-	} else if (filetype == LIBMTP_FILETYPE_OGG) {
-		return "application/ogg";
-	} else if (filetype == LIBMTP_FILETYPE_MP4) {
-		return "audio/mp4";
-	} else if (filetype == LIBMTP_FILETYPE_WMV) {
-		return "audio/x-ms-wmv";
-	} else if (filetype == LIBMTP_FILETYPE_ASF) {
-		return "video/x-ms-asf";
-	} else {
-		return NULL;
 	}
 }
 
@@ -722,9 +770,9 @@ transfer_track (RBMtpSource *source,
 	trackmeta->usecount = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_PLAY_COUNT);
 	trackmeta->filesize = filesize;
 	if (mimetype == NULL) {
-		trackmeta->filetype = mimetype_to_filetype (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE));
+		trackmeta->filetype = mimetype_to_filetype (source, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE));
 	} else {
-		trackmeta->filetype = mimetype_to_filetype (mimetype);
+		trackmeta->filetype = mimetype_to_filetype (source, mimetype);
 	}
 
 #ifdef HAVE_LIBMTP_030
@@ -745,24 +793,7 @@ static GList *
 impl_get_mime_types (RBRemovableMediaSource *source)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	guint16 *types = NULL;
-	guint16 num_devices = 0;
-	int i = 0;
-	GList *list = NULL;
-
-	if (LIBMTP_Get_Supported_Filetypes (priv->device, &types, &num_devices) == 0) {
-		for (i = 0; i < num_devices; i++) {
-			const char *mime = filetype_to_mimetype (types[i]);
-
-			if (mime != NULL) {
-				list = g_list_prepend (list, g_strdup (mime));
-			}
-		}
-	} else {
-		rb_debug ("Get supported filetypes failed");
-	}
-
-	return list;
+	return rb_string_list_copy (priv->mediatypes);
 }
 
 static gboolean
