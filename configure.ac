@@ -761,6 +761,12 @@ EOF
 	else
 		result=no
 		have_python=no
+		if test "x$enable_python" = "xyes"; then
+			AC_MSG_ERROR([Unable to build a shared library depending on libpython])
+		else
+			AC_MSG_WARN([Disabling python support])
+			enable_python=no
+		fi
 	fi
 	cd ..
 	rm -rf testpython
@@ -1031,7 +1037,7 @@ if test x"$enable_hal" = xyes; then
 else
 	AC_MSG_NOTICE([   HAL support disabled])
 fi
-if test x"$enable_python" != xno; then
+if test x"$enable_python" = xyes; then
 	AC_MSG_NOTICE([** Python plugin support enabled])
 else
 	AC_MSG_NOTICE([   Python plugin support disabled])
