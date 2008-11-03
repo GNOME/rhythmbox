@@ -1,5 +1,10 @@
 2008-11-03  Jonathan Matthew  <jonathan@d14n.org>
 
+	* configure.ac:  We need libsoup unless audioscrobbler and daap are
+	both explicitly disabled.  Fixes #559051.
+
+2008-11-03  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/mtpdevice/rb-mtp-source.c: (rb_mtp_source_constructor),
 	(rb_mtp_source_new):  fix stupid compile errors
 
