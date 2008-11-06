@@ -36,7 +36,8 @@ typedef enum
 {
 	RB_PODCAST_PARSE_ERROR_FILE_INFO,		/* error getting podcast file info */
 	RB_PODCAST_PARSE_ERROR_MIME_TYPE,		/* podcast has unexpected mime type */
-	RB_PODCAST_PARSE_ERROR_XML_PARSE		/* error parsing podcast xml */
+	RB_PODCAST_PARSE_ERROR_XML_PARSE,		/* error parsing podcast xml */
+	RB_PODCAST_PARSE_ERROR_NO_ITEMS,		/* feed doesn't contain any downloadable items */
 } RBPodcastParseError;
 
 #define RB_PODCAST_PARSE_ERROR rb_podcast_parse_error_quark ()

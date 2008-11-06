@@ -211,6 +211,19 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 		g_object_unref (plparser);
 		return FALSE;
 	}
+	g_object_unref (plparser);
+
+	/* treat empty feeds, or feeds that don't contain any downloadable items, as
+	 * an error.
+	 */
+	if (data->posts == NULL) {
+		rb_debug ("Parsing %s as a podcast succeeded, but the feed contains no downloadable items", file_name);
+		g_set_error (error,
+			     RB_PODCAST_PARSE_ERROR,
+			     RB_PODCAST_PARSE_ERROR_NO_ITEMS,
+			     _("The feed does not contain any downloadable items"));
+		return FALSE;
+	}
 
 	rb_debug ("Parsing %s as a Podcast succeeded", file_name);
 	return TRUE;

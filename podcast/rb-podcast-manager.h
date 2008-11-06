@@ -61,7 +61,7 @@ typedef struct
     void        (*start_download)    		(RBPodcastManager* pd, RhythmDBEntry *entry);
     void        (*finish_download)   		(RBPodcastManager* pd, RhythmDBEntry *entry);
     void        (*feed_updates_available)   	(RBPodcastManager* pd, RhythmDBEntry *entry);
-    void        (*process_error)	   	(RBPodcastManager* pd, const char *error);
+    gboolean    (*process_error)	   	(RBPodcastManager* pd, const char *error, gboolean existing);
 
 } RBPodcastManagerClass;
 

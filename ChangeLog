@@ -1,3 +1,12 @@
+2008-11-06  Jonathan Matthew  <jonathan@d14n.org>
+
+	* podcast/rb-podcast-manager.h: Fix signal prototype
+
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed):
+	* podcast/rb-podcast-parse.h:
+	If a feed parses correctly, but contains no downloadable items, report
+	it as an error.  Fixes #452512.
+
 2008-11-03  Jonathan Matthew  <jonathan@d14n.org>
 
 	* configure.ac:  We need libsoup unless audioscrobbler and daap are
