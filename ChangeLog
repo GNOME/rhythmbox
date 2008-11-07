@@ -1,5 +1,21 @@
 2008-11-07  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch partly by:  Steven Brown  <steven.w.j.brown@gmail.com>
+
+	* data/ui/rhythmbox-ui.xml:
+	Rename existing plugin placeholders to just 'PluginPlaceholder' (no
+	need to qualify with the name of the popup or whatever), and add some
+	more.  Fixes #557152.
+
+	* plugins/cd-recorder/rb-cd-recorder-plugin.c:
+	* plugins/daap/daap-ui.xml:
+	* plugins/fmradio/fmradio-ui.xml:
+	* plugins/iradio/iradio-ui.xml:
+	* plugins/visualizer/visualizer-ui.xml:
+	Adjust to the above change.
+
+2008-11-07  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Kjartan Maraas  <kmaraas@gnome.org>
 
 	* plugins/audiocd/sj-metadata-musicbrainz3.c: (mb_list_albums):

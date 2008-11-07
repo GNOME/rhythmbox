@@ -380,12 +380,12 @@ static struct ui_paths {
 	gboolean for_burn;
 	gboolean for_copy;
 } ui_paths[] = {
-	{ "/MenuBar/MusicMenu/PlaylistMenu/MusicPlaylistPlaylistMenuPluginPlaceholder", TRUE, FALSE },
-	{ "/MenuBar/MusicMenu/MusicMenuNewPluginPlaceholder", FALSE, TRUE },
-	{ "/ToolBar/ToolBarPluginPlaceholder", TRUE, TRUE },
-	{ "/PlaylistSourcePopup/PlaylistSourcePopupPluginPlaceholder", TRUE, FALSE },
-	{ "/AutoPlaylistSourcePopup/AutoPlaylistSourcePopupPluginPlaceholder", TRUE, FALSE },
-	{ "/QueueSourcePopup/QueueSourcePopupPluginPlaceholder", TRUE, FALSE },
+	{ "/MenuBar/MusicMenu/PlaylistMenu/PluginPlaceholder", TRUE, FALSE },
+	{ "/MenuBar/MusicMenu/PluginPlaceholder", FALSE, TRUE },
+	{ "/ToolBar/PluginPlaceholder", TRUE, TRUE },
+	{ "/PlaylistSourcePopup/PluginPlaceholder", TRUE, FALSE },
+	{ "/AutoPlaylistSourcePopup/PluginPlaceholder", TRUE, FALSE },
+	{ "/QueueSourcePopup/PluginPlaceholder", TRUE, FALSE },
 };
 
 static void

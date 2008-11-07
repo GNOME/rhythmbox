@@ -12,11 +12,11 @@
 	<menuitem name="MusicPlaylistLoadPlaylistMenu" action="MusicPlaylistLoadPlaylist"/>
 	<menuitem name="MusicPlaylistSavePlaylistMenu" action="MusicPlaylistSavePlaylist"/>
 	<menuitem name="MusicPlaylistEditAutoPlaylistMenu" action="EditAutomaticPlaylist"/>
-	<placeholder name="MusicPlaylistPlaylistMenuPluginPlaceholder" />
+	<placeholder name="PluginPlaceholder" />
 	<separator name="MusicPlaylistSeparator1"/>
 	<menuitem name="MusicPlaylistDeletePlaylistMenu" action="MusicPlaylistDeletePlaylist"/>
       </menu>
-      <placeholder name="MusicMenuNewPluginPlaceholder" />
+      <placeholder name="PluginPlaceholder" />
       <menuitem name="MusicNewPodcastMenu" action="MusicNewPodcast"/>
       <separator/>
       <menuitem name="MusicPropertiesMenu" action="MusicProperties"/>
@@ -105,10 +105,11 @@
     <separator/>
     <toolitem name="Browse" action="ViewBrowser"/>
     <separator/>
-    <placeholder name="ToolBarPluginPlaceholder" />
+    <placeholder name="PluginPlaceholder" />
   </toolbar>
 
   <toolbar name="SearchBar">
+    <placeholder name="PluginPlaceholder" />
   </toolbar>
 
   <popup name="RhythmboxTrayPopup">
@@ -119,6 +120,8 @@
       <separator/>
       <menuitem name="ShowWindowTray" action="TrayShowWindow"/>
       <menuitem name="ShowNotifications" action="TrayShowNotifications"/>
+      <separator/>
+      <placeholder name="PluginPlaceholder"/>
       <separator/>
       <menuitem name="QuitTray" action="MusicQuit"/>
   </popup>
@@ -139,12 +142,16 @@
     <menuitem name="BrowseArtistLibraryPopup" action="BrowserSrcChooseArtist"/>
     <menuitem name="BrowseAlbumLibraryPopup" action="BrowserSrcChooseAlbum"/>
     <separator/>
+    <placeholder name="PluginPlaceholder"/>
+    <separator/>
     <menuitem name="PropertiesLibraryPopup" action="MusicProperties"/>
   </popup>
 
   <popup name="ImportErrorsViewPopup">
     <menuitem name="DeleteLibraryPopup" action="EditDelete"/>
     <menuitem name="MovetoTrashPopup" action="EditMovetoTrash"/>
+    <separator/>
+    <placeholder name="PluginPlaceholder"/>
   </popup>
 
   <popup name="PlaylistViewPopup">
@@ -160,12 +167,16 @@
     <separator/>
     <menuitem name="MovetoTrashPlaylistPopup" action="EditMovetoTrash"/>
     <separator/>
+    <placeholder name="PluginPlaceholder"/>
+    <separator/>
     <menuitem name="PropertiesPlaylistPopup" action="MusicProperties"/>
   </popup>
 
   <popup name="QueuePlaylistViewPopup">
     <menuitem name="DeletePlaylistPopup" action="EditDelete"/>
     <menuitem name="ShufflePlaylistPopup" action="ShuffleQueue"/>
+    <separator/>
+    <placeholder name="PluginPlaceholder"/>
     <separator/>
     <menuitem name="PropertiesPlaylistPopup" action="MusicProperties"/>
   </popup>
@@ -175,30 +186,37 @@
     <menuitem name="ClearPlaylistPopup" action="ClearQueue"/>
     <menuitem name="ShufflePlaylistPopup" action="ShuffleQueue"/>
     <separator/>
+    <placeholder name="PluginPlaceholder"/>
+    <separator/>
     <menuitem name="PropertiesPlaylistPopup" action="QueueMusicProperties"/>
   </popup>
 
   <popup name="QueueSourcePopup">
     <menuitem name="ClearPlaylistPopup" action="ClearQueue"/>
     <menuitem name="ShufflePlaylistPopup" action="ShuffleQueue"/>
-    <placeholder name="QueueSourcePopupPluginPlaceholder" />
     <separator/>
+    <placeholder name="PluginPlaceholder" />
   </popup>
 
   <popup name="SourceListPopup">
     <menuitem name="SourceListPopupNewPlaylist" action="MusicPlaylistNewPlaylist"/>
     <menuitem name="SourceListPopupNewAutomaticPlaylist" action="MusicPlaylistNewAutomaticPlaylist"/>
-    <placeholder name="SourceListPopupPluginPlaceholder" />
+    <separator/>
+    <placeholder name="PluginPlaceholder" />
   </popup>
 
   <popup name="LibrarySourcePopup">
     <menuitem name="LibrarySrcPopupAddFile" action="MusicImportFile"/>
     <menuitem name="LibrarySrcPopupAddFolder" action="MusicImportFolder"/>
+    <separator/>
+    <placeholder name="PluginPlaceholder"/>
   </popup>
 
   <popup name="PodcastSourcePopup">
     <menuitem name="PodcastSrcPopupNew" action="MusicNewPodcast"/>
     <menuitem name="PodcastSrcPopupUpdateAllFeeds" action="PodcastUpdateAllFeeds"/>
+    <separator/>
+    <placeholder name="PluginPlaceholder"/>
   </popup>
 
   <popup name="PodcastViewPopup">
@@ -207,6 +225,8 @@
     <menuitem name="DeletePodcastPopup" action="EditDelete"/>
     <separator/>
     <menuitem name="AddToQueuePodcastPopup" action="AddToQueue"/>
+    <separator/>
+    <placeholder name="PluginPlaceholder"/>
     <separator/>
     <menuitem name="PropertiesPodcastPopup" action="MusicProperties"/>
   </popup>
@@ -218,6 +238,8 @@
     <menuitem name="UpdateFeedPodcastPopup" action="PodcastFeedUpdate"/>
     <menuitem name="DeleteFeedPodcastPopup" action="PodcastFeedDelete"/>
     <separator/>
+    <placeholder name="PluginPlaceholder"/>
+    <separator/>
     <menuitem name="PropertiesFeedPodcastPopup" action="PodcastFeedProperties"/>
   </popup>
 
@@ -226,9 +248,11 @@
     <separator/>
     <menuitem name="QueuePlaylistPopup" action="QueuePlaylist"/>
     <menuitem name="ShufflePlaylistPopup" action="ShufflePlaylist"/>
-    <placeholder name="PlaylistSourcePopupPluginPlaceholder" />
+    <placeholder name="PluginPlaceholder" />
     <separator/>
     <menuitem name="DeletePlaylistPopup" action="MusicPlaylistDeletePlaylist"/>
+    <separator/>
+    <placeholder name="PluginPlaceholder"/>
     <separator/>
     <menuitem name="PlaylistSourceSavePlaylistPopup" action="MusicPlaylistSavePlaylist"/>
   </popup>
@@ -239,9 +263,11 @@
     <separator/>
     <menuitem name="QueuePlaylistPopup" action="QueuePlaylist"/>
     <menuitem name="ShufflePlaylistPopup" action="ShufflePlaylist"/>
-    <placeholder name="AutoPlaylistSourcePopupPluginPlaceholder" />
+    <placeholder name="PluginPlaceholder" />
     <separator/>
     <menuitem name="DeleteAutoPlaylistPopup" action="MusicPlaylistDeletePlaylist"/>
+    <separator/>
+    <placeholder name="PluginPlaceholder"/>
     <separator/>
     <menuitem name="PlaylistSourceSavePlaylistPopup" action="MusicPlaylistSavePlaylist"/>
   </popup>
@@ -249,6 +275,8 @@
   <popup name="MissingFilesViewPopup">
     <menuitem name="DeleteMissingFilesPopup" action="EditDelete"/>
     <menuitem name="PropertiesMissingFilesPopup" action="MusicProperties"/>
+    <separator/>
+    <placeholder name="PluginPlaceholder"/>
   </popup>
 
 </ui>
