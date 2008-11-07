@@ -1344,7 +1344,7 @@ rb_shell_player_get_property (GObject *object,
 		char *play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
 		if (!play_order)
 			play_order = g_strdup ("linear");
-		g_value_set_string_take_ownership (value, play_order);
+		g_value_take_string (value, play_order);
 		break;
 	}
 	case PROP_PLAYING:

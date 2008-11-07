@@ -4604,7 +4604,7 @@ rhythmdb_entry_set_mount_point (RhythmDB *db,
 	mount_point = rb_uri_get_mount_point (realuri);
 	if (mount_point != NULL) {
 		g_value_init (&value, G_TYPE_STRING);
-		g_value_set_string_take_ownership (&value, mount_point);
+		g_value_take_string (&value, mount_point);
 		rhythmdb_entry_set_internal (db, entry, FALSE,
 					     RHYTHMDB_PROP_MOUNTPOINT,
 					     &value);

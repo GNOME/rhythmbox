@@ -1,3 +1,16 @@
+2008-11-07  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Kjartan Maraas  <kmaraas@gnome.org>
+
+	* plugins/audiocd/sj-metadata-musicbrainz3.c: (mb_list_albums):
+	* plugins/audiocd/sj-metadata.c:
+	* plugins/daap/rb-daap-connection.c: (build_message),
+	(rb_daap_connection_get_headers):
+	* plugins/daap/rb-daap-src.c: (rb_daap_src_open):
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_set_mount_point):
+	* shell/rb-shell-player.c: (rb_shell_player_get_property):
+	Fix build with -DG_DISABLE_DEPRECATED, #559582.
+
 2008-11-06  Jonathan Matthew  <jonathan@d14n.org>
 
 	* podcast/rb-podcast-manager.h: Fix signal prototype

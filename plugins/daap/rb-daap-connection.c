@@ -370,7 +370,7 @@ build_message (RBDAAPConnection *connection,
 		gchar hash[33] = {0};
 		gchar *no_daap_path = (gchar *)path;
 
-		if (g_strncasecmp (path, "daap://", 7) == 0) {
+		if (g_ascii_strncasecmp (path, "daap://", 7) == 0) {
 			no_daap_path = strstr (path, "/data");
 		}
 
@@ -1650,7 +1650,7 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 
 	priv->request_id++;
 
-	if (g_strncasecmp (uri, "daap://", 7) == 0) {
+	if (g_ascii_strncasecmp (uri, "daap://", 7) == 0) {
 		norb_daap_uri = strstr (uri, "/data");
 	}
 

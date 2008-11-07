@@ -558,7 +558,7 @@ rb_daap_src_open (RBDAAPSrc *src)
 			len_str = soup_message_headers_get (header_table, "Content-Length");
 
 			if (enc_str) {
-				if (g_strcasecmp (enc_str, "chunked") == 0) {
+				if (g_ascii_strcasecmp (enc_str, "chunked") == 0) {
 					src->chunked = TRUE;
 				} else {
 					GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
