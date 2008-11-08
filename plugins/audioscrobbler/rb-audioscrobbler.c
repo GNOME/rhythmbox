@@ -543,22 +543,22 @@ rb_audioscrobbler_create_entry (RhythmDBEntry *rb_entry)
 	return as_entry;
 }
 
-static gboolean
+static void
 rb_audioscrobbler_add_to_queue (RBAudioscrobbler *audioscrobbler,
 				AudioscrobblerEntry *entry)
-{	
-	if (g_queue_get_length (audioscrobbler->priv->queue) < MAX_QUEUE_SIZE){
-		g_queue_push_tail (audioscrobbler->priv->queue, entry);
-		audioscrobbler->priv->queue_changed = TRUE;
-		audioscrobbler->priv->queue_count++;
-		return TRUE;
+{
+	if (g_queue_get_length (audioscrobbler->priv->queue) >= MAX_QUEUE_SIZE) {
+		AudioscrobblerEntry *oldest;
+
+		rb_debug ("queue limit reached.  dropping oldest entry.");
+		oldest = g_queue_pop_head (audioscrobbler->priv->queue);
+		rb_audioscrobbler_entry_free (oldest);
 	} else {
-		rb_debug ("Queue is too long.  Not adding song to queue");
-		g_free (audioscrobbler->priv->status_msg);
-		audioscrobbler->priv->status = QUEUE_TOO_LONG;
-		audioscrobbler->priv->status_msg = NULL;
-		return FALSE;
+		audioscrobbler->priv->queue_count++;
 	}
+
+	g_queue_push_tail (audioscrobbler->priv->queue, entry);
+	audioscrobbler->priv->queue_changed = TRUE;
 }
 
 static void
@@ -583,9 +583,8 @@ maybe_add_current_song_to_queue (RBAudioscrobbler *audioscrobbler)
 		if ((elapsed >= cur_entry->length / 2 || elapsed >= 240) && elapsed_delta < 20) {
 			rb_debug ("Adding currently playing song to queue");
 			time (&cur_entry->play_time);
-			if (rb_audioscrobbler_add_to_queue (audioscrobbler, cur_entry)){
-				audioscrobbler->priv->currently_playing = NULL;
-			}
+			rb_audioscrobbler_add_to_queue (audioscrobbler, cur_entry);
+			audioscrobbler->priv->currently_playing = NULL;
 			
 			rb_audioscrobbler_preferences_sync (audioscrobbler);
 		} else if (elapsed_delta > 20) {

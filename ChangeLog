@@ -1,5 +1,15 @@
 2008-11-08  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch mostly by:  John Wimer  <john@god.vtic.net>
+
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_add_to_queue),
+	(maybe_add_current_song_to_queue):
+	If the submission queue is full, drop the oldest entry rather than
+	refusing to add any more.  Fixes #555598.
+
+2008-11-08  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch partly by:  Lasse Bigum  <zenith@zenith.dk>
 	patch also partly by:  Martin Franco  <mfranco@gmx.com>
 
