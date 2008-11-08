@@ -1606,11 +1606,14 @@ rb_shell_window_configure_cb (GtkWidget *win,
 			      GdkEventConfigure *event,
 			      RBShell *shell)
 {
+	if (shell->priv->window_maximised || shell->priv->iconified)
+		return FALSE;
+
 	if (shell->priv->window_small) {
 		rb_debug ("storing small window width of %d", event->width);
 		shell->priv->small_width = event->width;
 		eel_gconf_set_integer (CONF_STATE_SMALL_WIDTH, event->width);
-	} else if (!shell->priv->window_maximised && !shell->priv->iconified) {
+	} else {
 		rb_debug ("storing window size of %d:%d", event->width, event->height);
 		shell->priv->window_width = event->width;
 		shell->priv->window_height = event->height;
@@ -1618,14 +1621,15 @@ rb_shell_window_configure_cb (GtkWidget *win,
 		eel_gconf_set_integer (CONF_STATE_WINDOW_HEIGHT, event->height);
 	}
 
-	if (shell->priv->window_small || !shell->priv->window_maximised) {
-		gtk_window_get_position (GTK_WINDOW(shell->priv->window),
-					 &shell->priv->window_x,
-					 &shell->priv->window_y);
+	gtk_window_get_position (GTK_WINDOW(shell->priv->window),
+				 &shell->priv->window_x,
+				 &shell->priv->window_y);
+	rb_debug ("storing window position of %d:%d",
+		  shell->priv->window_x,
+		  shell->priv->window_y);
 
-		eel_gconf_set_integer (CONF_STATE_WINDOW_X_POSITION, shell->priv->window_x);
-		eel_gconf_set_integer (CONF_STATE_WINDOW_Y_POSITION, shell->priv->window_y);
-	}
+	eel_gconf_set_integer (CONF_STATE_WINDOW_X_POSITION, shell->priv->window_x);
+	eel_gconf_set_integer (CONF_STATE_WINDOW_Y_POSITION, shell->priv->window_y);
 
 	return FALSE;
 }

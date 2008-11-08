@@ -1,5 +1,14 @@
 2008-11-08  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Pelle Kristiansson  <pellek@home.se>
+
+	* shell/rb-shell.c: (rb_shell_window_configure_cb):
+	Don't save window size and position when iconified.  Depending on the
+	window manager in use, the values may not reflect where the window
+	actually was.  Fixes #502827.
+
+2008-11-08  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch mostly by:  John Wimer  <john@god.vtic.net>
 
 	* plugins/audioscrobbler/rb-audioscrobbler.c:
