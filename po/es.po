@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-26 19:50+0000\n"
-"PO-Revision-Date: 2008-10-27 22:20+0100\n"
+"POT-Creation-Date: 2008-11-08 08:31+0000\n"
+"PO-Revision-Date: 2008-11-08 14:49+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -37,8 +37,8 @@ msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
 "No se pudo crear un elemento sumidero de GStreamer en el que escribir %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:693 ../metadata/rb-metadata-gst.c:801
-#: ../metadata/rb-metadata-gst.c:1368
+#: ../backends/gstreamer/rb-player-gst.c:693 ../metadata/rb-metadata-gst.c:846
+#: ../metadata/rb-metadata-gst.c:1413
 #: ../plugins/cd-recorder/rb-recorder-gst.c:508
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -255,7 +255,7 @@ msgstr "Estructura de la fonoteca"
 msgid "_Browse..."
 msgstr "_Examinar…"
 
-#: ../data/glade/library-prefs.glade.h:7 ../shell/rb-playlist-manager.c:168
+#: ../data/glade/library-prefs.glade.h:7 ../shell/rb-playlist-manager.c:188
 msgid "_Edit..."
 msgstr "_Editar…"
 
@@ -610,12 +610,12 @@ msgstr "%d %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
 #: ../plugins/daap/rb-daap-connection.c:679
 #: ../plugins/generic-player/rb-generic-player-source.c:1193
-#: ../plugins/ipod/rb-ipod-source.c:316
+#: ../plugins/ipod/rb-ipod-source.c:319
 #: ../plugins/jamendo/jamendo/JamendoSource.py:330
 #: ../plugins/iradio/rb-iradio-source.c:517
 #: ../plugins/iradio/rb-iradio-source.c:1110
 #: ../plugins/iradio/rb-station-properties-dialog.c:486
-#: ../plugins/mtpdevice/rb-mtp-source.c:266
+#: ../plugins/mtpdevice/rb-mtp-source.c:324
 #: ../podcast/rb-feed-podcast-properties-dialog.c:321
 #: ../podcast/rb-podcast-manager.c:1863
 #: ../podcast/rb-podcast-properties-dialog.c:478
@@ -637,7 +637,7 @@ msgstr "Desconocido"
 msgid "Too many symlinks"
 msgstr "Demasiados enlaces simbólicos"
 
-#: ../lib/rb-file-helpers.c:835
+#: ../lib/rb-file-helpers.c:841
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "No se puede obtener espacio libre en %s: %s"
@@ -699,55 +699,55 @@ msgstr "Problema interno de GStreamer, archive un error"
 msgid "D-BUS communication error"
 msgstr "Error de comunicación de D-BUS"
 
-#: ../metadata/rb-metadata-gst.c:596
+#: ../metadata/rb-metadata-gst.c:641
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr ""
 "No se pudieron encontrar los complementos de GStreamer para decodificar "
 "archivos «%s»"
 
-#: ../metadata/rb-metadata-gst.c:599
+#: ../metadata/rb-metadata-gst.c:644
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "El archivo contiene un flujo de tipo %s, que no es decodificable"
 
-#: ../metadata/rb-metadata-gst.c:991
+#: ../metadata/rb-metadata-gst.c:1036
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear un elemento de origen; compruebe su instalación"
 
-#: ../metadata/rb-metadata-gst.c:1054
+#: ../metadata/rb-metadata-gst.c:1099
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Error de GStreamer: falló al cambiar el estado"
 
-#: ../metadata/rb-metadata-gst.c:1150
+#: ../metadata/rb-metadata-gst.c:1195
 #, c-format
 msgid "Empty file"
 msgstr "Archivo vacío"
 
-#: ../metadata/rb-metadata-gst.c:1158
+#: ../metadata/rb-metadata-gst.c:1203
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "El tipo MIME del archivo no se pudo identificar"
 
-#: ../metadata/rb-metadata-gst.c:1296
+#: ../metadata/rb-metadata-gst.c:1341
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Tipo de archivo no soportado: %s"
 
-#: ../metadata/rb-metadata-gst.c:1305
+#: ../metadata/rb-metadata-gst.c:1350
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "No se pueden crear elementos tag-writing"
 
-#: ../metadata/rb-metadata-gst.c:1320
+#: ../metadata/rb-metadata-gst.c:1365
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Tiempo cumplido mientras se ponía el conducto en NULO"
 
-#: ../metadata/rb-metadata-gst.c:1344
+#: ../metadata/rb-metadata-gst.c:1389
 #, c-format
 msgid "File corrupted during write"
 msgstr "El archivo ha sido corrompido mientras se grababa"
@@ -884,12 +884,12 @@ msgstr "Metadatos incompletos para este CD"
 msgid "[Untitled]"
 msgstr "[Sin título]"
 
-#: ../plugins/audiocd/sj-metadata.c:186
+#: ../plugins/audiocd/sj-metadata.c:187
 #, c-format
 msgid "Device '%s' does not contain any media"
 msgstr "El dispositivo «%s» no contiene ningún soporte"
 
-#: ../plugins/audiocd/sj-metadata.c:189
+#: ../plugins/audiocd/sj-metadata.c:190
 #, c-format
 msgid ""
 "Device '%s' could not be opened. Check the access permissions on the device."
@@ -897,7 +897,7 @@ msgstr ""
 "El dispositivo «%s» no se pudo abrir. Compruebe los permisos de acceso en el "
 "dispositivo."
 
-#: ../plugins/audiocd/sj-metadata.c:192 ../plugins/audiocd/sj-metadata.c:204
+#: ../plugins/audiocd/sj-metadata.c:193 ../plugins/audiocd/sj-metadata.c:205
 #, c-format
 msgid "Cannot read CD: %s"
 msgstr "No se pudo leer el CD: %s"
@@ -1827,7 +1827,7 @@ msgstr ""
 "el dispositivo)"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:103 ../plugins/ipod/rb-ipod-plugin.c:112
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:109 ../shell/rb-playlist-manager.c:162
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:109 ../shell/rb-playlist-manager.c:182
 msgid "_Rename"
 msgstr "_Renombrar"
 
@@ -1852,23 +1852,23 @@ msgstr "_Lista de reproducción nueva"
 msgid "Add new playlist to iPod"
 msgstr "Añadir una lista de reproducción nueva al iPod"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:113 ../shell/rb-playlist-manager.c:163
+#: ../plugins/ipod/rb-ipod-plugin.c:113 ../shell/rb-playlist-manager.c:183
 msgid "Rename playlist"
 msgstr "Renombrar la lista de reproducción"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:115 ../shell/rb-playlist-manager.c:165
+#: ../plugins/ipod/rb-ipod-plugin.c:115 ../shell/rb-playlist-manager.c:185
 msgid "_Delete"
 msgstr "_Borrar"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:116 ../shell/rb-playlist-manager.c:166
+#: ../plugins/ipod/rb-ipod-plugin.c:116 ../shell/rb-playlist-manager.c:186
 msgid "Delete playlist"
 msgstr "Borrar lista de reproducción"
 
-#: ../plugins/ipod/rb-ipod-source.c:1353 ../sources/rb-podcast-source.c:902
+#: ../plugins/ipod/rb-ipod-source.c:1356 ../sources/rb-podcast-source.c:902
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../plugins/ipod/rb-ipod-source.c:1699
+#: ../plugins/ipod/rb-ipod-source.c:1751
 msgid "New playlist"
 msgstr "Lista de reproducción nueva"
 
@@ -2736,7 +2736,7 @@ msgstr "Expulsar el dispositivo MTP"
 msgid "Rename MTP-device"
 msgstr "Renombrar el dispositivo MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:409
+#: ../plugins/mtpdevice/rb-mtp-source.c:467
 msgid "Digital Audio Player"
 msgstr "Reproductor de sonido digital"
 
@@ -3004,6 +3004,11 @@ msgstr "Tipo de archivo no esperado: %s"
 msgid "Unable to parse the feed contents"
 msgstr "No se pudo analizar el contenido del proveedor"
 
+#: ../podcast/rb-podcast-parse.c:224
+#, c-format
+msgid "The feed does not contain any downloadable items"
+msgstr "El proveedor no contiene ningún elemento descargable"
+
 #: ../podcast/rb-podcast-properties-dialog.c:426
 msgid "Not Downloaded"
 msgstr "No descargado"
@@ -3212,113 +3217,125 @@ msgstr "[URI…]"
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
+#: ../shell/rb-playlist-manager.c:159
+msgid "MPEG Version 3.0 URL"
+msgstr "MPEG Versión 3.0 URL"
+
+#: ../shell/rb-playlist-manager.c:160
+msgid "Shoutcast playlist"
+msgstr "Lista de reproducción de Shoutcast"
+
+#: ../shell/rb-playlist-manager.c:161
+msgid "XML Shareable Playlist Format"
+msgstr "Formato de lista de reproducción compartible XML"
+
 #. Submenu of Music
-#: ../shell/rb-playlist-manager.c:148
+#: ../shell/rb-playlist-manager.c:168
 msgid "_Playlist"
 msgstr "_Lista de reproducción"
 
-#: ../shell/rb-playlist-manager.c:150
+#: ../shell/rb-playlist-manager.c:170
 msgid "_New Playlist..."
 msgstr "_Lista de reproducción nueva…"
 
-#: ../shell/rb-playlist-manager.c:151
+#: ../shell/rb-playlist-manager.c:171
 msgid "Create a new playlist"
 msgstr "Crear una lista de reproducción"
 
-#: ../shell/rb-playlist-manager.c:153
+#: ../shell/rb-playlist-manager.c:173
 msgid "New _Automatic Playlist..."
 msgstr "Lista de reproducción _automática nueva…"
 
-#: ../shell/rb-playlist-manager.c:154
+#: ../shell/rb-playlist-manager.c:174
 msgid "Create a new automatically updating playlist"
 msgstr "Crea una lista de reproducción de actualización automática"
 
-#: ../shell/rb-playlist-manager.c:156
+#: ../shell/rb-playlist-manager.c:176
 msgid "_Load from File..."
 msgstr "_Cargar desde archivo…"
 
-#: ../shell/rb-playlist-manager.c:157
+#: ../shell/rb-playlist-manager.c:177
 msgid "Choose a playlist to be loaded"
 msgstr "Elija una lista de reproducción para cargar"
 
-#: ../shell/rb-playlist-manager.c:159
+#: ../shell/rb-playlist-manager.c:179
 msgid "_Save to File..."
 msgstr "_Guardar al archivo…"
 
-#: ../shell/rb-playlist-manager.c:160
+#: ../shell/rb-playlist-manager.c:180
 msgid "Save a playlist to a file"
 msgstr "Guardar una lista de reproducción en un archivo"
 
-#: ../shell/rb-playlist-manager.c:169
+#: ../shell/rb-playlist-manager.c:189
 msgid "Change this automatic playlist"
 msgstr "Cambiar esta lista de reproducción automática"
 
-#: ../shell/rb-playlist-manager.c:171
+#: ../shell/rb-playlist-manager.c:191
 msgid "_Queue All Tracks"
 msgstr "_Poner en cola todas las pistas"
 
-#: ../shell/rb-playlist-manager.c:172
+#: ../shell/rb-playlist-manager.c:192
 msgid "Add all tracks in this playlist to the queue"
 msgstr "Añadir todas las pistas en esta lista de reproducción a la cola"
 
-#: ../shell/rb-playlist-manager.c:174
+#: ../shell/rb-playlist-manager.c:194
 msgid "_Shuffle Playlist"
 msgstr "Lista de reproducción aleator_ias"
 
-#: ../shell/rb-playlist-manager.c:175
+#: ../shell/rb-playlist-manager.c:195
 msgid "Shuffle the tracks in this playlist"
 msgstr "Pistas aleatorias para esta lista de reproducción"
 
-#: ../shell/rb-playlist-manager.c:622
+#: ../shell/rb-playlist-manager.c:642
 msgid "Unnamed playlist"
 msgstr "Lista de reproducción sin nombre"
 
-#: ../shell/rb-playlist-manager.c:665
+#: ../shell/rb-playlist-manager.c:685
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr ""
 "El archivo de lista de reproducción puede estar en un formato desconocido o "
 "corrompido."
 
-#: ../shell/rb-playlist-manager.c:1083
+#: ../shell/rb-playlist-manager.c:1103
 msgid "Untitled Playlist"
 msgstr "Lista de reproducción sin título"
 
-#: ../shell/rb-playlist-manager.c:1355
+#: ../shell/rb-playlist-manager.c:1375
 msgid "Couldn't read playlist"
 msgstr "No se ha podido leer la lista de reproducción"
 
-#: ../shell/rb-playlist-manager.c:1370
+#: ../shell/rb-playlist-manager.c:1394 ../sources/rb-source-group.c:63
+msgid "Playlists"
+msgstr "Listas de reproducción"
+
+#: ../shell/rb-playlist-manager.c:1400
+msgid "All Files"
+msgstr "Todos los archivos"
+
+#: ../shell/rb-playlist-manager.c:1404
 msgid "Load Playlist"
 msgstr "Cargar lista de reproducción"
 
-#: ../shell/rb-playlist-manager.c:1391
-msgid "MPEG Version 3.0 URL"
-msgstr "MPEG Versión 3.0 URL"
-
-#: ../shell/rb-playlist-manager.c:1392
-msgid "Shoutcast playlist"
-msgstr "Lista de reproducción de Shoutcast"
-
-#: ../shell/rb-playlist-manager.c:1437 ../sources/rb-playlist-source.c:615
+#: ../shell/rb-playlist-manager.c:1458 ../sources/rb-playlist-source.c:631
 msgid "Couldn't save playlist"
 msgstr "No se ha podido guardar la lista de reproducción"
 
-#: ../shell/rb-playlist-manager.c:1437
+#: ../shell/rb-playlist-manager.c:1458
 msgid "Unsupported file extension given."
 msgstr "Extensión de archivo dada no soportada."
 
-#: ../shell/rb-playlist-manager.c:1724
+#: ../shell/rb-playlist-manager.c:1745
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "La lista %s ya existe"
 
-#: ../shell/rb-playlist-manager.c:1754 ../shell/rb-playlist-manager.c:1787
-#: ../shell/rb-playlist-manager.c:1827 ../shell/rb-playlist-manager.c:1870
+#: ../shell/rb-playlist-manager.c:1775 ../shell/rb-playlist-manager.c:1808
+#: ../shell/rb-playlist-manager.c:1848 ../shell/rb-playlist-manager.c:1891
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Lista desconocida: %s"
 
-#: ../shell/rb-playlist-manager.c:1795 ../shell/rb-playlist-manager.c:1835
+#: ../shell/rb-playlist-manager.c:1816 ../shell/rb-playlist-manager.c:1856
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "La lista %s es de reproducción automática"
@@ -4043,19 +4060,19 @@ msgstr "Artista (Álbum) -Número - Título"
 msgid "Number. Artist - Title"
 msgstr "Número. Artista - Título"
 
-#: ../sources/rb-library-source.c:386
+#: ../sources/rb-library-source.c:408
 msgid "Music"
 msgstr "Música"
 
-#: ../sources/rb-library-source.c:422
+#: ../sources/rb-library-source.c:444
 msgid "Choose Library Location"
 msgstr "Elija el lugar de la fonoteca"
 
-#: ../sources/rb-library-source.c:609
+#: ../sources/rb-library-source.c:631
 msgid "Multiple locations set"
 msgstr "Se han establecido múltiples lugares"
 
-#: ../sources/rb-library-source.c:1005
+#: ../sources/rb-library-source.c:1027
 msgid "Example Path:"
 msgstr "Ejemplo de la dirección:"
 
@@ -4311,10 +4328,6 @@ msgstr[1] "%d canciones"
 #: ../sources/rb-source-group.c:62
 msgid "Library"
 msgstr "Fonoteca"
-
-#: ../sources/rb-source-group.c:63
-msgid "Playlists"
-msgstr "Listas de reproducción"
 
 #: ../sources/rb-source-group.c:64
 msgid "Devices"
