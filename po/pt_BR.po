@@ -20,8 +20,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-07 15:34+0100\n"
-"PO-Revision-Date: 2008-11-07 15:16-0300\n"
+"POT-Creation-Date: 2008-11-08 08:31+0000\n"
+"PO-Revision-Date: 2008-11-08 08:42-0300\n"
 "Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -255,7 +255,7 @@ msgstr "Estrutura da biblioteca"
 msgid "_Browse..."
 msgstr "_Navegar..."
 
-#: ../data/glade/library-prefs.glade.h:7 ../shell/rb-playlist-manager.c:168
+#: ../data/glade/library-prefs.glade.h:7 ../shell/rb-playlist-manager.c:188
 msgid "_Edit..."
 msgstr "_Editar..."
 
@@ -1829,7 +1829,7 @@ msgstr ""
 "dispositivo)"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:103 ../plugins/ipod/rb-ipod-plugin.c:112
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:109 ../shell/rb-playlist-manager.c:162
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:109 ../shell/rb-playlist-manager.c:182
 msgid "_Rename"
 msgstr "_Renomear"
 
@@ -1854,15 +1854,15 @@ msgstr "_Nova lista de reprodução"
 msgid "Add new playlist to iPod"
 msgstr "Adicionar nova lista de reprodução ao iPod"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:113 ../shell/rb-playlist-manager.c:163
+#: ../plugins/ipod/rb-ipod-plugin.c:113 ../shell/rb-playlist-manager.c:183
 msgid "Rename playlist"
 msgstr "Renomear a lista de reprodução"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:115 ../shell/rb-playlist-manager.c:165
+#: ../plugins/ipod/rb-ipod-plugin.c:115 ../shell/rb-playlist-manager.c:185
 msgid "_Delete"
 msgstr "_Excluir"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:116 ../shell/rb-playlist-manager.c:166
+#: ../plugins/ipod/rb-ipod-plugin.c:116 ../shell/rb-playlist-manager.c:186
 msgid "Delete playlist"
 msgstr "Excluir a lista de reprodução"
 
@@ -3224,114 +3224,126 @@ msgstr "[URI...]"
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
+#: ../shell/rb-playlist-manager.c:159
+msgid "MPEG Version 3.0 URL"
+msgstr "MPEG Versão 3.0 URL"
+
+#: ../shell/rb-playlist-manager.c:160
+msgid "Shoutcast playlist"
+msgstr "Lista de reprodução do Shoutcast"
+
+#: ../shell/rb-playlist-manager.c:161
+msgid "XML Shareable Playlist Format"
+msgstr "Formato da lista de reprodução XML compartilhável"
+
 #. Submenu of Music
-#: ../shell/rb-playlist-manager.c:148
+#: ../shell/rb-playlist-manager.c:168
 msgid "_Playlist"
 msgstr "_Lista de reprodução"
 
-#: ../shell/rb-playlist-manager.c:150
+#: ../shell/rb-playlist-manager.c:170
 msgid "_New Playlist..."
 msgstr "_Nova lista de reprodução..."
 
-#: ../shell/rb-playlist-manager.c:151
+#: ../shell/rb-playlist-manager.c:171
 msgid "Create a new playlist"
 msgstr "Criar uma nova lista de reprodução"
 
-#: ../shell/rb-playlist-manager.c:153
+#: ../shell/rb-playlist-manager.c:173
 msgid "New _Automatic Playlist..."
 msgstr "Nova lista de reprodução _automática..."
 
-#: ../shell/rb-playlist-manager.c:154
+#: ../shell/rb-playlist-manager.c:174
 msgid "Create a new automatically updating playlist"
 msgstr "Criar uma nova lista de reprodução automática"
 
-#: ../shell/rb-playlist-manager.c:156
+#: ../shell/rb-playlist-manager.c:176
 msgid "_Load from File..."
 msgstr "_Carregar do arquivo..."
 
-#: ../shell/rb-playlist-manager.c:157
+#: ../shell/rb-playlist-manager.c:177
 msgid "Choose a playlist to be loaded"
 msgstr "Escolher uma lista de reprodução para ser carregada"
 
-#: ../shell/rb-playlist-manager.c:159
+#: ../shell/rb-playlist-manager.c:179
 msgid "_Save to File..."
 msgstr "_Salvar no arquivo..."
 
-#: ../shell/rb-playlist-manager.c:160
+#: ../shell/rb-playlist-manager.c:180
 msgid "Save a playlist to a file"
 msgstr "Salvar uma lista de reprodução em um arquivo"
 
-#: ../shell/rb-playlist-manager.c:169
+#: ../shell/rb-playlist-manager.c:189
 msgid "Change this automatic playlist"
 msgstr "Alterar esta lista de reprodução automática"
 
-#: ../shell/rb-playlist-manager.c:171
+#: ../shell/rb-playlist-manager.c:191
 msgid "_Queue All Tracks"
 msgstr "_Colocar todas as faixas na fila"
 
-#: ../shell/rb-playlist-manager.c:172
+#: ../shell/rb-playlist-manager.c:192
 msgid "Add all tracks in this playlist to the queue"
 msgstr "Adicionar todas as faixas desta lista de reprodução à fila"
 
-#: ../shell/rb-playlist-manager.c:174
+#: ../shell/rb-playlist-manager.c:194
 msgid "_Shuffle Playlist"
 msgstr "Embaralhar li_sta de reprodução"
 
-#: ../shell/rb-playlist-manager.c:175
+#: ../shell/rb-playlist-manager.c:195
 msgid "Shuffle the tracks in this playlist"
 msgstr "Embaralhar as faixas nesta lista de reprodução"
 
-#: ../shell/rb-playlist-manager.c:622
+#: ../shell/rb-playlist-manager.c:642
 msgid "Unnamed playlist"
 msgstr "Lista de reprodução sem nome"
 
-#: ../shell/rb-playlist-manager.c:665
+#: ../shell/rb-playlist-manager.c:685
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr ""
 "O arquivo da lista de reprodução pode estar corrompido ou em um formato "
 "desconhecido."
 
-#: ../shell/rb-playlist-manager.c:1083
+#: ../shell/rb-playlist-manager.c:1103
 msgid "Untitled Playlist"
 msgstr "Lista de reprodução sem título"
 
-#: ../shell/rb-playlist-manager.c:1355
+#: ../shell/rb-playlist-manager.c:1375
 msgid "Couldn't read playlist"
 msgstr "Não foi possível ler a lista de reprodução"
 
-#: ../shell/rb-playlist-manager.c:1370
+#: ../shell/rb-playlist-manager.c:1394 ../sources/rb-source-group.c:63
+msgid "Playlists"
+msgstr "Listas de reprodução"
+
+#: ../shell/rb-playlist-manager.c:1400
+msgid "All Files"
+msgstr "Todos os Arquivos"
+
+#: ../shell/rb-playlist-manager.c:1404
 msgid "Load Playlist"
 msgstr "Carregar a lista de reprodução"
 
-#: ../shell/rb-playlist-manager.c:1391
-msgid "MPEG Version 3.0 URL"
-msgstr "MPEG Versão 3.0 URL"
-
-#: ../shell/rb-playlist-manager.c:1392
-msgid "Shoutcast playlist"
-msgstr "Lista de reprodução do Shoutcast"
-
-#: ../shell/rb-playlist-manager.c:1437 ../sources/rb-playlist-source.c:615
+#: ../shell/rb-playlist-manager.c:1458 ../sources/rb-playlist-source.c:631
 msgid "Couldn't save playlist"
 msgstr "Não foi possível salvar a lista de reprodução"
 
 # "Suportado" não existe nesse sentido, usar "sem suporte"
-#: ../shell/rb-playlist-manager.c:1437
+#: ../shell/rb-playlist-manager.c:1458
 msgid "Unsupported file extension given."
 msgstr "Extensão de arquivo fornecido sem suporte."
 
-#: ../shell/rb-playlist-manager.c:1724
+#: ../shell/rb-playlist-manager.c:1745
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "A lista de reprodução %s já existe"
 
-#: ../shell/rb-playlist-manager.c:1754 ../shell/rb-playlist-manager.c:1787
-#: ../shell/rb-playlist-manager.c:1827 ../shell/rb-playlist-manager.c:1870
+#: ../shell/rb-playlist-manager.c:1775 ../shell/rb-playlist-manager.c:1808
+#: ../shell/rb-playlist-manager.c:1848 ../shell/rb-playlist-manager.c:1891
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Lista de reprodução desconhecida: %s"
 
-#: ../shell/rb-playlist-manager.c:1795 ../shell/rb-playlist-manager.c:1835
+#: ../shell/rb-playlist-manager.c:1816 ../shell/rb-playlist-manager.c:1856
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "A lista de reprodução %s é uma lista automática"
@@ -3819,7 +3831,8 @@ msgstr ""
 "Raul Pereira <contato@raulpereira.com>\n"
 "Vladimir Melo <vladimirmelo@foresightlinux.org>\n"
 "Fábio Nogueira <deb-user-ba@ubuntu.com>\n"
-"Fabrício Godoy <skarllot@gmail.com>"
+"Fabrício Godoy <skarllot@gmail.com>\n"
+"Enrico Nicoletto <liverig@gmail.com>"
 
 #: ../shell/rb-shell.c:2269
 msgid ""
@@ -4331,10 +4344,6 @@ msgstr[1] "%d músicas"
 #: ../sources/rb-source-group.c:62
 msgid "Library"
 msgstr "Biblioteca"
-
-#: ../sources/rb-source-group.c:63
-msgid "Playlists"
-msgstr "Listas de reprodução"
 
 #: ../sources/rb-source-group.c:64
 msgid "Devices"
