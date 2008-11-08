@@ -531,22 +531,27 @@ rb_plugins_engine_activate_plugin_real (RBPluginInfo *info, RBShell *shell)
 gboolean
 rb_plugins_engine_activate_plugin (RBPluginInfo *info)
 {
+	gboolean ret;
+
 	g_return_val_if_fail (info != NULL, FALSE);
 
 	if (info->active)
 		return TRUE;
 
-	if (rb_plugins_engine_activate_plugin_real (info, rb_plugins_shell)) {
+	ret = rb_plugins_engine_activate_plugin_real (info, rb_plugins_shell);
+
+	if (info->visible != FALSE || ret != FALSE) {
 		char *key_name;
 
 		key_name = g_strdup_printf (CONF_PLUGIN_ACTIVE_KEY, info->location);
-		eel_gconf_set_boolean (key_name, TRUE);
+		eel_gconf_set_boolean (key_name, ret);
 		g_free (key_name);
-
-		info->active = TRUE;
-
-		return TRUE;
 	}
+        info->active = ret;
+ 
+        if (ret != FALSE)
+                return TRUE;
+
 
 	rb_error_dialog (NULL, _("Plugin Error"), _("Unable to activate plugin %s"), info->name);
 

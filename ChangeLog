@@ -1,5 +1,13 @@
 2008-11-08  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Susana Pereira  <susana.pereira@gmail.com>
+
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_activate_plugin):
+	Apply some changes from totem's copy of the plugin code to disable
+	non-hidden plugins in gconf when they fail to load.  Fixes #551295.
+
+2008-11-08  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Pelle Kristiansson  <pellek@home.se>
 
 	* shell/rb-shell.c: (rb_shell_window_configure_cb):
