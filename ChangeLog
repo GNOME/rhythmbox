@@ -1,3 +1,12 @@
+2008-11-09  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Jason Crain  <jason@bluetree.ath.cx>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_execute_enum_dir):
+	Skip the file if g_file_enumerator_next_file fails.  From #556729.
+	Still need to report a useful error here, but at least it doesn't
+	crash any more.
+
 2008-11-08  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Susana Pereira  <susana.pereira@gmail.com>

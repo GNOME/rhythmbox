@@ -2559,9 +2559,15 @@ rhythmdb_execute_enum_dir (RhythmDB *db,
 		char *child_uri;
 
 		file_info = g_file_enumerator_next_file (dir_enum, db->priv->exiting, &error);
-		if (file_info == NULL && error == NULL) {
-			/* done */
-			break;
+		if (file_info == NULL) {
+			if (error == NULL) {
+				/* done */
+				break;
+			}
+
+			g_warning ("error getting next file: %s", error->message);
+			g_clear_error (&error);
+			continue;
 		}
 
 		child = g_file_get_child (dir, g_file_info_get_name (file_info));
