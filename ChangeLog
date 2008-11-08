@@ -1,3 +1,21 @@
+2008-11-08  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch partly by:  Lasse Bigum  <zenith@zenith.dk>
+	patch also partly by:  Martin Franco  <mfranco@gmx.com>
+
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_cmd_load_playlist),
+	(save_playlist_response_cb), (export_set_extension_cb),
+	(setup_format_menu):
+	* shell/rb-playlist-manager.h:
+	Add mimetype to playlist format information, add XSPF format, and use
+	the playlist information to set up filters for the import dialog.
+	Fixes #551217.
+
+	* sources/rb-playlist-source.c: (rb_playlist_source_save_playlist):
+	* sources/rb-playlist-source.h:
+	Add XSPF export.  From #375665.
+
 2008-11-07  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch partly by:  Steven Brown  <steven.w.j.brown@gmail.com>

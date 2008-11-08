@@ -142,6 +142,26 @@ enum
 
 static guint rb_playlist_manager_signals[LAST_SIGNAL] = { 0 };
 
+typedef struct {
+  const gchar *description;
+  /* NULL terminated array of extensions for this file format.  The first
+   * one is the prefered extension for files of this type. */
+  const gchar **extensions;
+  const char *mimetype;
+  const RBPlaylistExportType type;
+} RBPlaylistExportFilter;
+
+static const char *m3u_extensions [] = {"m3u", NULL};
+static const char *pls_extensions [] = {"pls", NULL};
+static const char *xspf_extensions[] = {"xspf", NULL};
+
+static RBPlaylistExportFilter playlist_formats[] = {
+	{N_("MPEG Version 3.0 URL"), m3u_extensions, "audio/x-mpegurl", RB_PLAYLIST_EXPORT_TYPE_M3U},
+	{N_("Shoutcast playlist"), pls_extensions, "audio/x-scpls", RB_PLAYLIST_EXPORT_TYPE_PLS},
+	{N_("XML Shareable Playlist Format"), xspf_extensions, "application/xspf+xml", RB_PLAYLIST_EXPORT_TYPE_XSPF},
+};
+
+
 static GtkActionEntry rb_playlist_manager_actions [] =
 {
 	/* Submenu of Music */
@@ -1366,31 +1386,32 @@ rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 				       RBPlaylistManager *mgr)
 {
 	GtkWidget *dialog;
+	GtkFileFilter *filter;
+	GtkFileFilter *filter_all;
+	int i;
+
+	filter = gtk_file_filter_new ();
+	gtk_file_filter_set_name (filter, _("Playlists"));
+	for (i = 0; i < G_N_ELEMENTS (playlist_formats); i++) {
+		gtk_file_filter_add_mime_type (filter, playlist_formats[i].mimetype);
+	}
+
+	filter_all = gtk_file_filter_new ();
+	gtk_file_filter_set_name (filter_all, _("All Files"));
+	gtk_file_filter_add_pattern (filter_all, "*");
+
 
 	dialog = rb_file_chooser_new (_("Load Playlist"),
 				      GTK_WINDOW (mgr->priv->window),
 				      GTK_FILE_CHOOSER_ACTION_OPEN,
 				      FALSE);
+	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
+	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter_all);
+	gtk_file_chooser_set_filter (GTK_FILE_CHOOSER (dialog), filter);
 
 	g_signal_connect_object (dialog, "response",
 				 G_CALLBACK (load_playlist_response_cb), mgr, 0);
 }
-
-typedef struct {
-  const gchar *description;
-  /* NULL terminated array of extensions for this file format.  The first
-   * one is the prefered extension for files of this type. */
-  const gchar **extensions;
-  const RBPlaylistExportType type;
-} RBPlaylistExportFilter;
-
-static const char *m3u_extensions [] = {"m3u", NULL};
-static const char *pls_extensions [] = {"pls", NULL};
-
-static RBPlaylistExportFilter playlist_export_formats[] = {
-	{N_("MPEG Version 3.0 URL"), m3u_extensions, RB_PLAYLIST_EXPORT_TYPE_M3U},
-	{N_("Shoutcast playlist"), pls_extensions, RB_PLAYLIST_EXPORT_TYPE_PLS},
-};
 
 static void
 save_playlist_response_cb (GtkDialog *dialog,
@@ -1418,26 +1439,26 @@ save_playlist_response_cb (GtkDialog *dialog,
 	if (index <= 0) {
 		int i;
 
-		for (i = 0; i < G_N_ELEMENTS (playlist_export_formats); i++) {
+		for (i = 0; i < G_N_ELEMENTS (playlist_formats); i++) {
 			int j;
 
 			/* determine the playlist type from the extension */
-			for (j = 0; playlist_export_formats[i].extensions[j] != NULL; j++) {
-				if (g_str_has_suffix (file, playlist_export_formats[i].extensions[j])) {
-					export_type = playlist_export_formats[i].type;
+			for (j = 0; playlist_formats[i].extensions[j] != NULL; j++) {
+				if (g_str_has_suffix (file, playlist_formats[i].extensions[j])) {
+					export_type = playlist_formats[i].type;
 					break;
 				}
 			}
 		}
 	} else {
-		export_type = playlist_export_formats[index-1].type;
+		export_type = playlist_formats[index-1].type;
 	}
 
 	if (export_type == RB_PLAYLIST_EXPORT_TYPE_UNKNOWN) {
-			rb_error_dialog (NULL, _("Couldn't save playlist"), _("Unsupported file extension given."));
+		rb_error_dialog (NULL, _("Couldn't save playlist"), _("Unsupported file extension given."));
 	} else {
 		rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source),
-						  file, (export_type == RB_PLAYLIST_EXPORT_TYPE_M3U));
+						  file, export_type);
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 	}
 
@@ -1458,7 +1479,7 @@ export_set_extension_cb (GtkWidget* widget, GtkDialog *dialog)
 	if (index <= 0)
 		return;
 
-	extension = playlist_export_formats[index-1].extensions[0];
+	extension = playlist_formats[index-1].extensions[0];
 	if (extension == NULL)
 		return;
 
@@ -1512,11 +1533,11 @@ setup_format_menu (GtkWidget* menu, GtkWidget *dialog)
 	gtk_combo_box_set_row_separator_func (GTK_COMBO_BOX (menu), rb_combo_box_hyphen_separator_func,
 					      NULL, NULL);
 
-	for (i = 0; i < G_N_ELEMENTS (playlist_export_formats); i++) {
+	for (i = 0; i < G_N_ELEMENTS (playlist_formats); i++) {
 		gchar *filter_label;
 		GtkTreeIter iter;
 
-		filter_label = filter_get_export_filter_label (&playlist_export_formats[i]);
+		filter_label = filter_get_export_filter_label (&playlist_formats[i]);
 		gtk_list_store_insert_with_values (GTK_LIST_STORE (model), &iter, -1,
 						   0, filter_label, -1);
 

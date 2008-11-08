@@ -82,6 +82,7 @@ typedef enum
 	RB_PLAYLIST_EXPORT_TYPE_UNKNOWN,
 	RB_PLAYLIST_EXPORT_TYPE_M3U,
 	RB_PLAYLIST_EXPORT_TYPE_PLS,
+	RB_PLAYLIST_EXPORT_TYPE_XSPF,
 } RBPlaylistExportType;
 
 GType			rb_playlist_manager_get_type	(void);

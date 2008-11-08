@@ -37,6 +37,7 @@
 #include "rb-source.h"
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
+#include "rb-playlist-manager.h"
 
 G_BEGIN_DECLS
 
@@ -76,7 +77,7 @@ RBSource *	rb_playlist_source_new_from_xml	(RBShell *shell,
 
 void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
 						 const char *uri,
-						 gboolean m3u_format);
+						 RBPlaylistExportType export_type);
 
 void		rb_playlist_source_save_to_xml	(RBPlaylistSource *source,
 						 xmlNodePtr parent_node);

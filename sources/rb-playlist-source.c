@@ -54,6 +54,8 @@
 #include "rb-static-playlist-source.h"
 #include "rb-auto-playlist-source.h"
 
+#include "rb-playlist-manager.h"
+
 /**
  * SECTION:rb-playlist-source
  * @short_description: Base class for playlist sources
@@ -584,19 +586,20 @@ playlist_iter_func (GtkTreeModel *model,
  * rb_playlist_source_save_playlist:
  * @source: a #RBPlaylistSource
  * @uri: destination URI
- * @m3u_format: if TRUE, save as .m3u, otherwise .pls
+ * @export_type: format to save in
  *
  * Saves the playlist to an external file in a standard
- * format (M3U or PLS).
+ * format (M3U, PLS, or XSPF).
  */
 void
 rb_playlist_source_save_playlist (RBPlaylistSource *source,
 				  const char *uri,
-				  gboolean m3u_format)
+				  RBPlaylistExportType export_type)
 {
 	TotemPlParser *playlist;
 	GError *error = NULL;
 	char *name;
+	gint totem_format;
 
 	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (source));
 
@@ -605,9 +608,22 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source,
 
 	g_object_get (source, "name", &name, NULL);
 
+	switch (export_type) {
+	case RB_PLAYLIST_EXPORT_TYPE_XSPF:
+		totem_format = TOTEM_PL_PARSER_XSPF;
+		break;
+	case RB_PLAYLIST_EXPORT_TYPE_M3U:
+		totem_format = TOTEM_PL_PARSER_M3U;
+		break;
+	case RB_PLAYLIST_EXPORT_TYPE_PLS:
+	default:
+		totem_format = TOTEM_PL_PARSER_PLS;
+		break;
+	}
+
 	totem_pl_parser_write_with_title (playlist, GTK_TREE_MODEL (source->priv->model),
 					  playlist_iter_func, uri, name,
-					  m3u_format ? TOTEM_PL_PARSER_M3U : TOTEM_PL_PARSER_PLS,
+					  totem_format,
 					  NULL, &error);
 	g_object_unref (playlist);
 	g_free (name);
