@@ -1490,11 +1490,24 @@ rhythmdb_entry_example_new (RhythmDB *db,
 
 	if (type == RHYTHMDB_ENTRY_TYPE_SONG) {
 		rb_refstring_unref (ret->artist);
-		ret->artist = rb_refstring_new ("The Beatles");
+		/* Translators: this is an example artist name.  It should
+		 * not be translated literally, but could be replaced with 
+		 * a local artist name if desired.  Ensure the album name
+		 * and song title are also replaced in this case.
+		 */
+		ret->artist = rb_refstring_new (_("The Beatles"));
 		rb_refstring_unref (ret->album);
-		ret->album = rb_refstring_new ("Help!");
+		/* Translators: this is an example album name.  If the
+		 * example artist name is localised, this should be replaced
+		 * with the name of an album by that artist.
+		 */
+		ret->album = rb_refstring_new (_("Help!"));
 		rb_refstring_unref (ret->title);
-		ret->title = rb_refstring_new ("Ticket To Ride");
+		/* Translators: this is an example song title.  If the example
+		 * artist and album names are localised, this should be replaced
+		 * with the name of the seventh song from the localised album.
+		 */
+		ret->title = rb_refstring_new (_("Ticket To Ride"));
 		ret->tracknum = 7;
 	} else {
 	}

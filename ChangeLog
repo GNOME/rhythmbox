@@ -1,5 +1,14 @@
 2008-11-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	based on patch by:  Takao Fujiwara  <Takao.Fujiwara@sun.com>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_example_new):
+	Make the example artist/album/song title translatable so translators
+	can substitute a well-known local example if they think that works
+	better than a Beatles song.  Fixes #438861.
+
+2008-11-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Jason Crain  <jason@bluetree.ath.cx>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_execute_enum_dir):
