@@ -1,5 +1,12 @@
 2008-11-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/daap/rb-daap-connection.c:
+	(connection_set_error_message), (actual_http_response_handler):
+	Don't try to parse DAAP responses from iTunes 7 servers, causing
+	connection attempts to fail immediately.  From #356627.
+
+2008-11-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	* configure.ac:
 	* plugins/daap/rb-daap-mdns-browser-avahi.c: (client_cb),
 	(avahi_client_init), (resolve_cb), (rb_daap_mdns_browser_resolve),

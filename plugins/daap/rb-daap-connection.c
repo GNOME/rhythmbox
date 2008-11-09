@@ -53,6 +53,8 @@
 
 #define RB_DAAP_USER_AGENT "iTunes/4.6 (Windows; N)"
 
+#define ITUNES_7_SERVER "iTunes/7"
+
 static void      rb_daap_connection_dispose      (GObject *obj);
 static void      rb_daap_connection_set_property (GObject *object,
 						  guint prop_id,
@@ -412,10 +414,12 @@ connection_set_error_message (RBDAAPConnection *connection,
 			      const char       *message)
 {
 	/* FIXME: obtain a lock */
-	if (connection->priv->last_error_message != NULL) {
-		g_free (connection->priv->last_error_message);
+	g_free (connection->priv->last_error_message);
+	if (message != NULL) {
+		connection->priv->last_error_message = g_strdup (message);
+	} else {
+		connection->priv->last_error_message = NULL;
 	}
-	connection->priv->last_error_message = g_strdup (message);
 }
 
 typedef struct {
@@ -434,6 +438,7 @@ actual_http_response_handler (DAAPResponseData *data)
 	const char *encoding_header;
 	char *message_path;
 	int response_length;
+	gboolean compatible_server = TRUE;
 
 	priv = data->connection->priv;
 	structure = NULL;
@@ -449,7 +454,15 @@ actual_http_response_handler (DAAPResponseData *data)
 		  data->message->reason_phrase);
 
 	if (data->message->response_headers) {
+		const char *server;
+
 		encoding_header = soup_message_headers_get (data->message->response_headers, "Content-Encoding");
+
+		server = soup_message_headers_get (data->message->response_headers, "DAAP-Server");
+		if (server != NULL && strstr (server, ITUNES_7_SERVER) != NULL) {
+			rb_debug ("giving up.  we can't talk to %s", server);
+			compatible_server = FALSE;
+		}
 	}
 
 	if (SOUP_STATUS_IS_SUCCESSFUL (data->status) && encoding_header && strcmp (encoding_header, "gzip") == 0) {
@@ -522,7 +535,13 @@ actual_http_response_handler (DAAPResponseData *data)
 #endif
 	}
 
-	if (SOUP_STATUS_IS_SUCCESSFUL (data->status)) {
+	if (compatible_server == FALSE) {
+		/* leaving structure == NULL here causes the connection process
+		 * to fail at the first step.
+		 */
+		connection_set_error_message (data->connection,
+					      _("Rhythmbox is not able to connect to iTunes 7 shares"));
+	} else if (SOUP_STATUS_IS_SUCCESSFUL (data->status)) {
 		RBDAAPItem *item;
 
 		if (!rb_is_main_thread ()) {
