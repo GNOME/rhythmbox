@@ -43,6 +43,7 @@
 #include <avahi-glib/glib-malloc.h>
 #include <avahi-glib/glib-watch.h>
 
+#include "rb-daap-mdns-avahi.h"
 #include "rb-daap-mdns-publisher.h"
 #include "rb-debug.h"
 
@@ -55,7 +56,6 @@ static void	rb_daap_mdns_publisher_finalize   (GObject	            *object);
 struct RBDaapMdnsPublisherPrivate
 {
 	AvahiClient     *client;
-	AvahiGLibPoll   *poll;
 	AvahiEntryGroup *entry_group;
 
 	char            *name;
@@ -90,70 +90,6 @@ rb_daap_mdns_publisher_error_quark (void)
 }
 
 static void
-client_cb (AvahiClient         *client,
-	   AvahiClientState     state,
-	   RBDaapMdnsPublisher *publisher)
-{
-	/* FIXME
-	 * check to make sure we're in the _RUNNING state before we publish
-	 * check for COLLISION state and remove published information
-	 */
-
-	/* Called whenever the client or server state changes */
-
-	switch (state) {
-	case AVAHI_CLIENT_S_RUNNING:
-
-		/* The server has startup successfully and registered its host
-		 * name on the network, so it's time to create our services */
-
-		break;
-
-	case AVAHI_CLIENT_S_COLLISION:
-
-		 /* Let's drop our registered services. When the server is back
-		  * in AVAHI_SERVER_RUNNING state we will register them
-		  * again with the new host name. */
-		 if (publisher->priv->entry_group) {
-			 avahi_entry_group_reset (publisher->priv->entry_group);
-		 }
-		 break;
-
-	case AVAHI_CLIENT_FAILURE:
-
-		 g_warning ("Client failure: %s\n", avahi_strerror (avahi_client_errno (client)));
-		 break;
-	case AVAHI_CLIENT_CONNECTING:
-	case AVAHI_CLIENT_S_REGISTERING:
-	default:
-		break;
-	}
-}
-
-static void
-avahi_client_init (RBDaapMdnsPublisher *publisher)
-{
-	gint error = 0;
-	AvahiClientFlags flags;
-
-	avahi_set_allocator (avahi_glib_allocator ());
-
-	publisher->priv->poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
-
-	if (! publisher->priv->poll) {
-		rb_debug ("Unable to create AvahiGlibPoll object for mDNS");
-	}
-
-	flags = 0;
-
-	publisher->priv->client = avahi_client_new (avahi_glib_poll_get (publisher->priv->poll),
-						    flags,
-						    (AvahiClientCallback)client_cb,
-						    publisher,
-						    &error);
-}
-
-static void
 entry_group_cb (AvahiEntryGroup     *group,
 		AvahiEntryGroupState state,
 		RBDaapMdnsPublisher *publisher)
@@ -180,6 +116,7 @@ create_service (RBDaapMdnsPublisher *publisher,
 		publisher->priv->entry_group = avahi_entry_group_new (publisher->priv->client,
 								      (AvahiEntryGroupCallback)entry_group_cb,
 								      publisher);
+		rb_daap_mdns_avahi_set_entry_group (publisher->priv->entry_group);
 	} else {
 		avahi_entry_group_reset (publisher->priv->entry_group);
 	}
@@ -377,6 +314,7 @@ rb_daap_mdns_publisher_withdraw (RBDaapMdnsPublisher *publisher,
 	avahi_entry_group_reset (publisher->priv->entry_group);
 	avahi_entry_group_free (publisher->priv->entry_group);
 	publisher->priv->entry_group = NULL;
+	rb_daap_mdns_avahi_set_entry_group (NULL);
 
 	return TRUE;
 }
@@ -445,7 +383,7 @@ rb_daap_mdns_publisher_init (RBDaapMdnsPublisher *publisher)
 {
 	publisher->priv = RB_DAAP_MDNS_PUBLISHER_GET_PRIVATE (publisher);
 
-	avahi_client_init (publisher);
+	publisher->priv->client = rb_daap_mdns_avahi_get_client ();
 }
 
 static void
@@ -462,14 +400,7 @@ rb_daap_mdns_publisher_finalize (GObject *object)
 
 	if (publisher->priv->entry_group) {
 		avahi_entry_group_free (publisher->priv->entry_group);
-	}
-
-	if (publisher->priv->client) {
-		avahi_client_free (publisher->priv->client);
-	}
-
-	if (publisher->priv->poll) {
-		avahi_glib_poll_free (publisher->priv->poll);
+		rb_daap_mdns_avahi_set_entry_group (NULL);
 	}
 
 	g_free (publisher->priv->name);

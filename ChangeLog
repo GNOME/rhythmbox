@@ -1,5 +1,25 @@
 2008-11-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/daap/Makefile.am:
+	* plugins/daap/rb-daap-mdns-avahi.c: (client_cb),
+	(rb_daap_mdns_avahi_get_client),
+	(rb_daap_mdns_avahi_set_entry_group):
+	* plugins/daap/rb-daap-mdns-avahi.h:
+	Add some machinery to create a single avahi client to use for both
+	browsing and publishing.
+
+	* plugins/daap/rb-daap-mdns-browser-avahi.c: (browse_cb),
+	(rb_daap_mdns_browser_init), (rb_daap_mdns_browser_finalize):
+	* plugins/daap/rb-daap-mdns-publisher-avahi.c: (create_service),
+	(rb_daap_mdns_publisher_withdraw), (rb_daap_mdns_publisher_init),
+	(rb_daap_mdns_publisher_finalize):
+	Use the shared avahi client.  Since we publish and browse using the
+	same client, we can use the AVAHI_LOOKUP_RESULT_OUR_OWN flag (rather
+	than AVAHI_LOOKUP_RESULT_LOCAL) to ignore just our own share.
+	Previously, we ignored all shares on the same machine.  Fixes #342655.
+
+2008-11-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/daap/rb-daap-connection.c:
 	(connection_set_error_message), (actual_http_response_handler):
 	Don't try to parse DAAP responses from iTunes 7 servers, causing

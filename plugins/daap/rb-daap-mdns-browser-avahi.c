@@ -44,6 +44,7 @@
 #include <avahi-glib/glib-malloc.h>
 #include <avahi-glib/glib-watch.h>
 
+#include "rb-daap-mdns-avahi.h"
 #include "rb-daap-mdns-browser.h"
 #include "rb-marshal.h"
 #include "rb-debug.h"
@@ -57,7 +58,6 @@ static void	rb_daap_mdns_browser_finalize   (GObject	        *object);
 struct RBDaapMdnsBrowserPrivate
 {
 	AvahiClient         *client;
-	AvahiGLibPoll       *poll;
 	AvahiServiceBrowser *service_browser;
 
 	GSList              *resolvers;
@@ -88,46 +88,6 @@ rb_daap_mdns_browser_error_quark (void)
 		quark = g_quark_from_static_string ("rb_daap_mdns_browser_error");
 
 	return quark;
-}
-
-static void
-client_cb (AvahiClient         *client,
-	   AvahiClientState     state,
-	   RBDaapMdnsBrowser   *browser)
-{
-	/* Called whenever the client or server state changes */
-
-	switch (state) {
-	case AVAHI_CLIENT_FAILURE:
-
-		 g_warning ("Client failure: %s\n", avahi_strerror (avahi_client_errno (client)));
-		 break;
-	default:
-		break;
-	}
-}
-
-static void
-avahi_client_init (RBDaapMdnsBrowser *browser)
-{
-	int error = 0;
-	AvahiClientFlags flags;
-
-	avahi_set_allocator (avahi_glib_allocator ());
-
-	browser->priv->poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
-
-	if (! browser->priv->poll) {
-		rb_debug ("Unable to create AvahiGlibPoll object for mDNS");
-	}
-
-	flags = 0;
-
-	browser->priv->client = avahi_client_new (avahi_glib_poll_get (browser->priv->poll),
-						  flags,
-						  (AvahiClientCallback)client_cb,
-						  browser,
-						  &error);
 }
 
 static void
@@ -252,7 +212,7 @@ browse_cb (AvahiServiceBrowser   *service_browser,
 {
 	gboolean local;
 
-	local = ((flags & AVAHI_LOOKUP_RESULT_LOCAL) != 0);
+	local = ((flags & AVAHI_LOOKUP_RESULT_OUR_OWN) != 0);
 	if (local) {
 		rb_debug ("Ignoring local service %s", name);
 		return;
@@ -401,7 +361,7 @@ rb_daap_mdns_browser_init (RBDaapMdnsBrowser *browser)
 {
 	browser->priv = RB_DAAP_MDNS_BROWSER_GET_PRIVATE (browser);
 
-	avahi_client_init (browser);
+	browser->priv->client = rb_daap_mdns_avahi_get_client ();
 }
 
 static void
@@ -425,14 +385,6 @@ rb_daap_mdns_browser_finalize (GObject *object)
 
 	if (browser->priv->service_browser) {
 		avahi_service_browser_free (browser->priv->service_browser);
-	}
-
-	if (browser->priv->client) {
-		avahi_client_free (browser->priv->client);
-	}
-
-	if (browser->priv->poll) {
-		avahi_glib_poll_free (browser->priv->poll);
 	}
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);

@@ -24,6 +24,7 @@ libdaap_la_SOURCES = \
 	rb-daap-src.h				\
 	rb-daap-dialog.c			\
 	rb-daap-dialog.h			\
+	rb-daap-mdns-avahi.c			\
 	rb-daap-mdns-publisher-avahi.c		\
 	rb-daap-mdns-browser-avahi.c		\
 	$(NULL)
