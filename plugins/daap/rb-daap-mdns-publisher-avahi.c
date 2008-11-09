@@ -36,10 +36,8 @@
 #include <glib/gi18n.h>
 #include <glib-object.h>
 
-#ifdef HAVE_AVAHI_0_6
 #include <avahi-client/lookup.h>
 #include <avahi-client/publish.h>
-#endif
 #include <avahi-client/client.h>
 #include <avahi-common/error.h>
 #include <avahi-glib/glib-malloc.h>
@@ -121,14 +119,12 @@ client_cb (AvahiClient         *client,
 		 }
 		 break;
 
-#ifdef HAVE_AVAHI_0_6
 	case AVAHI_CLIENT_FAILURE:
 
 		 g_warning ("Client failure: %s\n", avahi_strerror (avahi_client_errno (client)));
 		 break;
 	case AVAHI_CLIENT_CONNECTING:
 	case AVAHI_CLIENT_S_REGISTERING:
-#endif
 	default:
 		break;
 	}
@@ -138,6 +134,7 @@ static void
 avahi_client_init (RBDaapMdnsPublisher *publisher)
 {
 	gint error = 0;
+	AvahiClientFlags flags;
 
 	avahi_set_allocator (avahi_glib_allocator ());
 
@@ -147,24 +144,13 @@ avahi_client_init (RBDaapMdnsPublisher *publisher)
 		rb_debug ("Unable to create AvahiGlibPoll object for mDNS");
 	}
 
-#ifdef HAVE_AVAHI_0_5
+	flags = 0;
+
 	publisher->priv->client = avahi_client_new (avahi_glib_poll_get (publisher->priv->poll),
-						    (AvahiClientCallback) client_cb,
+						    flags,
+						    (AvahiClientCallback)client_cb,
 						    publisher,
 						    &error);
-#endif
-#ifdef HAVE_AVAHI_0_6
-	{
-		AvahiClientFlags flags;
-		flags = 0;
-
-		publisher->priv->client = avahi_client_new (avahi_glib_poll_get (publisher->priv->poll),
-							    flags,
-							    (AvahiClientCallback)client_cb,
-							    publisher,
-							    &error);
-	}
-#endif
 }
 
 static void
@@ -224,9 +210,7 @@ create_service (RBDaapMdnsPublisher *publisher,
 	ret = avahi_entry_group_add_service (publisher->priv->entry_group,
 					     AVAHI_IF_UNSPEC,
 					     AVAHI_PROTO_UNSPEC,
-#ifdef HAVE_AVAHI_0_6
 					     0,
-#endif
 					     publisher->priv->name,
 					     "_daap._tcp",
 					     NULL,

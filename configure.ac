@@ -36,6 +36,7 @@ MUSICBRAINZ_REQS=2.1.0
 NCB_MIN_REQS=2.21.6
 TOTEM_PLPARSER_REQS=2.22.0
 VALA_REQS=0.1.0
+AVAHI_REQS=0.6
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
@@ -268,65 +269,27 @@ AC_ARG_WITH(mdns,
    [Select the mDNS/DNS-SD implementation to use (default auto)]),,
    with_mdns=auto)
 
-#have_howl=no
 have_avahi=no
 have_mdns=no
-#use_howl=no
 use_avahi=no
 
 PKG_CHECK_MODULES(AVAHI,
-   avahi-client >= 0.6
-   avahi-glib >= 0.6,
-   have_avahi_06=yes,
-   have_avahi_06=no)
-if test x$have_avahi_06 != xyes; then
-   PKG_CHECK_MODULES(AVAHI,
-      avahi-client >= 0.5
-      avahi-glib >= 0.5,
-      have_avahi_05=yes,
-      have_avahi_05=no)
-fi
-if test x$have_avahi_06 = xyes || test x$have_avahi_05 = xyes; then
-   have_avahi=yes
-else
-   have_avahi=no
-fi
+   avahi-client >= $AVAHI_REQS
+   avahi-glib >= $AVAHI_REQS,
+   have_avahi=yes,
+   have_avahi=no)
 
-if test x"$with_mdns" = xauto; then
+if test x"$with_mdns" = xauto || test x"$with_mdns" = xavahi; then
    if test x"$have_avahi" = xyes; then
       MDNS_CFLAGS=$AVAHI_CFLAGS
       MDNS_LIBS=$AVAHI_LIBS
       AC_DEFINE(WITH_AVAHI, 1, [Define if mDNS/DNS-SD implementation uses Avahi])
       use_avahi=yes
       AC_MSG_NOTICE([Detected Avahi, using it for mDNS/DNS-SD])
-      if test x$have_avahi_06 = xyes; then
-         AC_DEFINE(HAVE_AVAHI_0_6, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.6])
-      else
-         AC_DEFINE(HAVE_AVAHI_0_5, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.5])
-      fi
-
       have_mdns=yes
-   fi
-fi
-
-if test x"$with_mdns" = xavahi; then
-   if test x"$have_avahi" = xno; then
+   elif test x"$with_mdns" = xavahi; then
       AC_MSG_ERROR([Avahi explicitly requested but not found.])
    fi
-
-   MDNS_CFLAGS=$AVAHI_CFLAGS
-   MDNS_LIBS=$AVAHI_LIBS
-   AC_DEFINE(WITH_AVAHI, 1, [Define if mDNS/DNS-SD implementation uses Avahi])
-   use_avahi=yes
-   AC_MSG_NOTICE([Using Avahi for mDNS/DNS-SD])
-
-   if test x$have_avahi_06 = xyes; then
-      AC_DEFINE(HAVE_AVAHI_0_6, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.6])
-   else
-      AC_DEFINE(HAVE_AVAHI_0_5, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.5])
-   fi
-
-   have_mdns=yes
 fi
 
 AM_CONDITIONAL(USE_AVAHI, test "x$use_avahi" = "xyes")

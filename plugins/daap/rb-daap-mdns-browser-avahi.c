@@ -37,10 +37,8 @@
 #include <glib/gi18n.h>
 #include <glib-object.h>
 
-#ifdef HAVE_AVAHI_0_6
 #include <avahi-client/lookup.h>
 #include <avahi-client/publish.h>
-#endif
 #include <avahi-client/client.h>
 #include <avahi-common/error.h>
 #include <avahi-glib/glib-malloc.h>
@@ -49,10 +47,6 @@
 #include "rb-daap-mdns-browser.h"
 #include "rb-marshal.h"
 #include "rb-debug.h"
-
-#ifdef HAVE_AVAHI_0_5
-#define AVAHI_ADDRESS_STR_MAX	(40)	/* IPv6 Max = 4*8 + 7 + 1 for NUL */
-#endif
 
 static void	rb_daap_mdns_browser_class_init (RBDaapMdnsBrowserClass *klass);
 static void	rb_daap_mdns_browser_init	(RBDaapMdnsBrowser	*browser);
@@ -104,12 +98,10 @@ client_cb (AvahiClient         *client,
 	/* Called whenever the client or server state changes */
 
 	switch (state) {
-#ifdef HAVE_AVAHI_0_6
 	case AVAHI_CLIENT_FAILURE:
 
 		 g_warning ("Client failure: %s\n", avahi_strerror (avahi_client_errno (client)));
 		 break;
-#endif
 	default:
 		break;
 	}
@@ -119,6 +111,7 @@ static void
 avahi_client_init (RBDaapMdnsBrowser *browser)
 {
 	int error = 0;
+	AvahiClientFlags flags;
 
 	avahi_set_allocator (avahi_glib_allocator ());
 
@@ -128,24 +121,13 @@ avahi_client_init (RBDaapMdnsBrowser *browser)
 		rb_debug ("Unable to create AvahiGlibPoll object for mDNS");
 	}
 
-#ifdef HAVE_AVAHI_0_5
+	flags = 0;
+
 	browser->priv->client = avahi_client_new (avahi_glib_poll_get (browser->priv->poll),
-						  (AvahiClientCallback) client_cb,
+						  flags,
+						  (AvahiClientCallback)client_cb,
 						  browser,
 						  &error);
-#endif
-#ifdef HAVE_AVAHI_0_6
-	{
-		AvahiClientFlags flags;
-		flags = 0;
-
-		browser->priv->client = avahi_client_new (avahi_glib_poll_get (browser->priv->poll),
-							  flags,
-							  (AvahiClientCallback)client_cb,
-							  browser,
-							  &error);
-	}
-#endif
 }
 
 static void
@@ -160,9 +142,7 @@ resolve_cb (AvahiServiceResolver  *service_resolver,
 	    const AvahiAddress    *address,
 	    uint16_t               port,
 	    AvahiStringList       *text,
-#ifdef HAVE_AVAHI_0_6
 	    AvahiLookupResultFlags flags,
-#endif
 	    RBDaapMdnsBrowser     *browser)
 {
 	if (event == AVAHI_RESOLVER_FOUND) {
@@ -232,9 +212,7 @@ rb_daap_mdns_browser_resolve (RBDaapMdnsBrowser *browser,
 						       "_daap._tcp",
 						       NULL,
 						       AVAHI_PROTO_UNSPEC,
-#ifdef HAVE_AVAHI_0_6
 						       0,
-#endif
 						       (AvahiServiceResolverCallback)resolve_cb,
 						       browser);
 	if (service_resolver == NULL) {
@@ -269,19 +247,12 @@ browse_cb (AvahiServiceBrowser   *service_browser,
 	   const char            *name,
 	   const char            *type,
 	   const char            *domain,
-#ifdef HAVE_AVAHI_0_6
 	   AvahiLookupResultFlags flags,
-#endif
 	   RBDaapMdnsBrowser     *browser)
 {
 	gboolean local;
 
-#ifdef HAVE_AVAHI_0_5
-	local = avahi_client_is_service_local (browser->priv->client, interface, protocol, name, type, domain);
-#endif
-#ifdef HAVE_AVAHI_0_6
 	local = ((flags & AVAHI_LOOKUP_RESULT_LOCAL) != 0);
-#endif
 	if (local) {
 		rb_debug ("Ignoring local service %s", name);
 		return;
@@ -320,9 +291,7 @@ rb_daap_mdns_browser_start (RBDaapMdnsBrowser *browser,
 								    AVAHI_PROTO_UNSPEC,
 								    "_daap._tcp",
 								    NULL,
-#ifdef HAVE_AVAHI_0_6
 								    0,
-#endif
 								    (AvahiServiceBrowserCallback)browse_cb,
 								    browser);
 	if (browser->priv->service_browser == NULL) {

@@ -1,5 +1,16 @@
 2008-11-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	* configure.ac:
+	* plugins/daap/rb-daap-mdns-browser-avahi.c: (client_cb),
+	(avahi_client_init), (resolve_cb), (rb_daap_mdns_browser_resolve),
+	(browse_cb), (rb_daap_mdns_browser_start):
+	* plugins/daap/rb-daap-mdns-publisher-avahi.c: (client_cb),
+	(avahi_client_init), (create_service):
+	Drop avahi 0.5 compatibility.  Avahi 0.6 has been out for almost three
+	years now.
+
+2008-11-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	based on patch by:  Takao Fujiwara  <Takao.Fujiwara@sun.com>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_entry_example_new):
