@@ -1,3 +1,17 @@
+2008-11-10  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  James "Doc" Livingston  <doclivingston@gmail.com>
+
+	* tests/Makefile.am:
+	* tests/test-file-helpers.c: (START_TEST), (main):
+	* tests/test-rhythmdb-query-model.c: (main):
+	* tests/test-rhythmdb.c: (main):
+	* tests/test-utils.c: (init_once), (init_setup),
+	(test_rhythmdb_setup):
+	* tests/test-utils.h:
+	Add unit tests for the query creator widget, rearrange initialization
+	code to support non-forking test run mode.  From #351398.
+
 2008-11-09  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/daap/Makefile.am:

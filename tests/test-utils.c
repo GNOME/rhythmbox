@@ -36,6 +36,28 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 
+static gboolean init_in_tests;
+static int argc_;
+static char **argv_;
+
+void
+init_once (gboolean test)
+{
+	if (test != init_in_tests)
+		return;
+
+	gtk_init (&argc_, &argv_);
+	GDK_THREADS_ENTER ();
+}
+
+void
+init_setup (SRunner *runner, int argc, char **argv)
+{
+	init_in_tests = (srunner_fork_status (runner) == CK_FORK);
+	argc_ = argc;
+	argv_ = argv;
+}
+
 void
 start_test_case (void)
 {
@@ -112,6 +134,9 @@ void
 test_rhythmdb_setup (void)
 {
 	RhythmDBEntryType entry_type;
+
+	init_once (TRUE);
+
 	db = rhythmdb_tree_new ("test");
 	fail_unless (db != NULL, "failed to initialise DB");
 	rhythmdb_start_action_thread (db);

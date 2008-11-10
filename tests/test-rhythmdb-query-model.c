@@ -245,17 +245,17 @@ main (int argc, char **argv)
 	g_thread_init (NULL);
 	rb_threads_init ();
 	gtk_set_locale ();
-	gtk_init (&argc, &argv);
 	rb_debug_init (TRUE);
 	rb_refstring_system_init ();
 	rb_file_helpers_init ();
 
-
-	GDK_THREADS_ENTER ();
-
 	/* setup tests */
 	s = rhythmdb_query_model_suite ();
 	sr = srunner_create (s);
+
+	init_setup (sr, argc, argv);
+	init_once (FALSE);
+
 	srunner_run_all (sr, CK_NORMAL);
 	ret = srunner_ntests_failed (sr);
 	srunner_free (sr);

@@ -52,6 +52,8 @@ START_TEST (test_rb_uri_get_short_path_name)
 	char *in;
 	char *out;
 
+	init_once (TRUE);
+
 	/* nothing */
 	in = NULL;
 	out = rb_uri_get_short_path_name (in);
@@ -89,6 +91,7 @@ END_TEST
 
 START_TEST (test_rb_check_dir_has_space)
 {
+	init_once (TRUE);
 	fail_unless (rb_check_dir_has_space_uri ("file:///tmp", 1));
 	fail_unless (rb_check_dir_has_space_uri ("file:///etc/passwd", 1));
 	fail_unless (rb_check_dir_has_space_uri ("file:///tmp/NONEXISTANT_FILE", 1));
@@ -121,15 +124,16 @@ main (int argc, char **argv)
 	g_thread_init (NULL);
 	rb_threads_init ();
 	gtk_set_locale ();
-	gtk_init (&argc, &argv);
 	rb_debug_init (TRUE);
 	rb_file_helpers_init ();
-
-	GDK_THREADS_ENTER ();
 
 	/* setup tests */
 	s = rb_file_helpers_suite ();
 	sr = srunner_create (s);
+
+	init_setup (sr, argc, argv);
+	init_once (FALSE);
+
 	srunner_run_all (sr, CK_NORMAL);
 	ret = srunner_ntests_failed (sr);
 	srunner_free (sr);

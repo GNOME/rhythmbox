@@ -6,9 +6,9 @@ TESTS =
 LDADD = \
 	$(CHECK_LIBS)						\
 	$(top_builddir)/rhythmdb/librhythmdb.la 		\
-	$(top_builddir)/lib/librb.la				\
 	$(top_builddir)/metadata/librbmetadata.la		\
 	$(top_builddir)/widgets/librbwidgets.la			\
+	$(top_builddir)/lib/librb.la				\
 	$(RHYTHMBOX_LIBS)
 
 test_utils = \
@@ -40,6 +40,10 @@ test_audioscrobbler_SOURCES = \
 	$(top_srcdir)/plugins/audioscrobbler/rb-audioscrobbler-entry.c \
 	$(test_utils)
 
+test_widgets_SOURCES = \
+	test-widgets.c						\
+	$(test_utils)
+
 bench_rhythmdb_load_SOURCES = bench-rhythmdb-load.c
 
 INCLUDES = 							\
@@ -62,7 +66,8 @@ TESTS += \
 	test-rhythmdb-query-model				\
 	test-rhythmdb-property-model				\
 	test-file-helpers					\
-	test-audioscrobbler
+	test-audioscrobbler					\
+	test-widgets
 endif
 
 OLD_TESTS = \

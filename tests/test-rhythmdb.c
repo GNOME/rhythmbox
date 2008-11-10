@@ -42,8 +42,6 @@
 #include "rhythmdb-tree.h"
 #include "rhythmdb-query-model.h"
 
-
-
 static void
 set_true (RhythmDBEntry *entry, gboolean *b)
 {
@@ -468,26 +466,27 @@ main (int argc, char **argv)
 	SRunner *sr;
 	Suite *s;
 
+	g_log_set_always_fatal (G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
+
 	/* init stuff */
 	rb_profile_start ("rhythmbox test suite");
 
 	g_thread_init (NULL);
 	rb_threads_init ();
-	gtk_init (&argc, &argv);
 	rb_debug_init (TRUE);
 	rb_refstring_system_init ();
 	rb_file_helpers_init ();
 
-
-	GDK_THREADS_ENTER ();
-
 	/* setup tests */
 	s = rhythmdb_suite ();
 	sr = srunner_create (s);
+
+	init_setup (sr, argc, argv);
+	init_once (FALSE);
+
 	srunner_run_all (sr, CK_NORMAL);
 	ret = srunner_ntests_failed (sr);
 	srunner_free (sr);
-
 
 	rb_file_helpers_shutdown ();
 	rb_refstring_system_shutdown ();

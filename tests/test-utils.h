@@ -36,6 +36,9 @@
 /* yes.  really. */
 extern RhythmDB *db;
 
+void init_setup (SRunner *runner, int argc, char **argv);
+void init_once (gboolean test);
+
 void start_test_case (void);
 void end_step (void);
 void end_test_case (void);
