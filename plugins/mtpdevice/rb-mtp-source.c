@@ -460,7 +460,9 @@ rb_mtp_source_load_tracks (RBMtpSource *source)
 
 	if ((priv->device != NULL) && (priv->entry_map != NULL)) {
 		name = LIBMTP_Get_Friendlyname (priv->device);
-		if (name == NULL) {
+		/* ignore some particular broken device names */
+		if (name == NULL || strcmp (name, "?????") == 0) {
+			g_free (name);
 			name = LIBMTP_Get_Modelname (priv->device);
 		}
 		if (name == NULL) {

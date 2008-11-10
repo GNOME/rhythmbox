@@ -1,5 +1,12 @@
 2008-11-10  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch more or less by: Flavio Martins  <xhaker@gmail.com>
+
+	* plugins/mtpdevice/rb-mtp-source.c: (rb_mtp_source_load_tracks):
+	Ignore some broken device names.  Fixes #478715.
+
+2008-11-10  Jonathan Matthew  <jonathan@d14n.org>
+
 	* tests/test-widgets.c: (rb_value_array_equal),
 	(rb_gvalue_array_to_string), (rhythmdb_query_equal),
 	(query_creator_test_load_query), (START_TEST),
