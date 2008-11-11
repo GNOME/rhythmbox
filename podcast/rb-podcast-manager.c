@@ -867,6 +867,13 @@ download_file_info_cb (GFile *source,
 			data->download_offset = local_size;
 		} else {
 			rb_debug ("replacing local file as it's larger than the download");
+			g_file_delete (data->destination, NULL, &error);
+			if (error != NULL) {
+				g_warning ("Removing existing download: %s", error->message);
+				g_error_free (error);
+				rb_podcast_manager_abort_download (data);
+				return;
+			}
 		}
 	}
 
