@@ -1,5 +1,17 @@
 2008-11-11  Jonathan Matthew  <jonathan@d14n.org>
 
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_entry_set),
+	(rhythmdb_tree_entry_delete):
+	* rhythmdb/rhythmdb-tree.h:
+	Add an entry flag that indicates the entry has been removed from the
+	tree, and don't update the tree for changes made to entries that have
+	been removed.  Fixes #539447.
+
+	* tests/test-rhythmdb.c: (START_TEST), (rhythmdb_suite):
+	Add a test for the above.
+
+2008-11-11  Jonathan Matthew  <jonathan@d14n.org>
+
 	* podcast/rb-podcast-manager.c: (download_file_info_cb):
 	When replacing a downloaded podcast file, delete the existing file
 	first.

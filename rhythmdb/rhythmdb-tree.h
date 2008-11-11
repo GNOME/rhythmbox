@@ -48,6 +48,7 @@ typedef struct RhythmDBTreePrivate RhythmDBTreePrivate;
 /* RhythmDBEntry flags */
 enum {
 	RHYTHMDB_ENTRY_TREE_LOADING = RHYTHMDB_ENTRY_PRIVATE_FLAG_BASE,
+	RHYTHMDB_ENTRY_TREE_REMOVED = RHYTHMDB_ENTRY_PRIVATE_FLAG_BASE << 1,
 };
 
 typedef enum

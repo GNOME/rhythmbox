@@ -427,6 +427,50 @@ START_TEST (test_rhythmdb_podcast_upgrade)
 }
 END_TEST
 
+START_TEST (test_rhythmdb_modify_after_delete)
+{
+	RhythmDBEntry *entry;
+	GValue val = {0,};
+
+	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///whee.ogg");
+	fail_unless (entry != NULL, "failed to create entry");
+
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_static_string (&val, "Anything");
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
+	g_value_unset (&val);
+	
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_static_string (&val, "Nothing");
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
+	g_value_unset (&val);
+	
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_static_string (&val, "Something");
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
+	g_value_unset (&val);
+	
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_static_string (&val, "Thing");
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
+	g_value_unset (&val);
+
+	rhythmdb_commit (db);
+	rhythmdb_entry_ref (entry);
+
+	rhythmdb_entry_delete (db, entry);
+	rhythmdb_commit (db);
+	
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_static_string (&val, "Something Else");
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
+	g_value_unset (&val);
+	
+	rhythmdb_commit (db);
+	rhythmdb_entry_unref (entry);
+}
+END_TEST
+
 static Suite *
 rhythmdb_suite (void)
 {
@@ -455,6 +499,7 @@ rhythmdb_suite (void)
 
 	/* tests for breakable bug fixes */
 	tcase_add_test (tc_chain, test_rhythmdb_podcast_upgrade);
+	tcase_add_test (tc_chain, test_rhythmdb_modify_after_delete);
 
 	return s;
 }

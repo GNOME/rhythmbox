@@ -1507,9 +1507,10 @@ rhythmdb_tree_entry_set (RhythmDB *adb,
 	type = entry->type;
 
 	/* don't process changes to entries we're loading, we'll get them
-	 * when the entry is complete.
+	 * when the entry is complete.  don't process changes for entries that
+	 * have been removed either.
 	 */
-	if (entry->flags & RHYTHMDB_ENTRY_TREE_LOADING)
+	if (entry->flags & (RHYTHMDB_ENTRY_TREE_LOADING | RHYTHMDB_ENTRY_TREE_REMOVED))
 		return FALSE;
 
 	/* Handle special properties */
@@ -1636,6 +1637,8 @@ rhythmdb_tree_entry_delete (RhythmDB *adb,
 	g_mutex_lock (db->priv->entries_lock);
 	g_assert (g_hash_table_remove (db->priv->entries, entry->location));
 	g_assert (g_hash_table_remove (db->priv->entry_ids, GINT_TO_POINTER (entry->id)));
+
+	entry->flags |= RHYTHMDB_ENTRY_TREE_REMOVED;
 	rhythmdb_entry_unref (entry);
 	g_mutex_unlock (db->priv->entries_lock);
 }
