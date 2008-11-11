@@ -1,5 +1,15 @@
 2008-11-11  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/ipod/rb-ipod-source.c: (rb_ipod_source_set_ipod_name),
+	(rb_ipod_source_new_playlist), (rb_ipod_source_show_properties):
+	Don't crash if there's no database on an ipod.  Fixes #556320.
+	
+	(rb_ipod_source_show_properties):
+	Mark the space used/total space format string for translation.
+	Minor code style stuff too.
+
+2008-11-11  Jonathan Matthew  <jonathan@d14n.org>
+
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_entry_set),
 	(rhythmdb_tree_entry_delete):
 	* rhythmdb/rhythmdb-tree.h:

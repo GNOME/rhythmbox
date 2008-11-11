@@ -180,6 +180,11 @@ rb_ipod_source_set_ipod_name (RBiPodSource *source, const char *name)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 
+	if (priv->ipod_db == NULL) {
+		rb_debug ("can't change ipod name with no ipod db");
+		return;
+	}
+
 	rb_ipod_db_set_ipod_name (priv->ipod_db, name);
 }
 
@@ -1748,6 +1753,11 @@ rb_ipod_source_new_playlist (RBiPodSource *source)
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	Itdb_Playlist *ipod_playlist;
 
+	if (priv->ipod_db == NULL) {
+		rb_debug ("can't create new ipod playlist with no ipod db");
+		return;
+	}
+
 	ipod_playlist = itdb_playlist_new (_("New playlist"), FALSE);
 	rb_ipod_db_add_playlist (priv->ipod_db, ipod_playlist);
 	add_rb_playlist (source, ipod_playlist);
@@ -1850,7 +1860,12 @@ rb_ipod_source_show_properties (RBiPodSource *source)
  	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	Itdb_Device *ipod_dev;
 
-	ipod_dev = rb_ipod_db_get_device(priv->ipod_db);
+	if (priv->ipod_db == NULL) {
+		rb_debug ("can't show ipod properties with no ipod db");
+		return;
+	}
+
+	ipod_dev = rb_ipod_db_get_device (priv->ipod_db);
 
 	xml = rb_glade_xml_new ("ipod-info.glade", "ipod-information", NULL);
  	if (xml == NULL) {
@@ -1865,17 +1880,17 @@ rb_ipod_source_show_properties (RBiPodSource *source)
  				 source, 0);
  
  	label = glade_xml_get_widget (xml, "label-number-track-number");
- 	text = g_strdup_printf ("%u", g_list_length ( rb_ipod_db_get_tracks(priv->ipod_db) ));
+ 	text = g_strdup_printf ("%u", g_list_length (rb_ipod_db_get_tracks(priv->ipod_db) ));
  	gtk_label_set_text (GTK_LABEL (label), text);
  	g_free (text);
  
  	label = glade_xml_get_widget (xml, "entry-ipod-name");
- 	gtk_entry_set_text (GTK_ENTRY (label), rb_ipod_db_get_ipod_name(priv->ipod_db));
+ 	gtk_entry_set_text (GTK_ENTRY (label), rb_ipod_db_get_ipod_name (priv->ipod_db));
  	g_signal_connect (G_OBJECT (label), "focus-out-event", 
  			  (GCallback)ipod_name_changed_cb, source);
  
  	label = glade_xml_get_widget (xml, "label-number-playlist-number");
- 	text = g_strdup_printf ("%u", g_list_length(rb_ipod_db_get_playlists(priv->ipod_db)));
+ 	text = g_strdup_printf ("%u", g_list_length (rb_ipod_db_get_playlists (priv->ipod_db)));
  	gtk_label_set_text (GTK_LABEL (label), text);
  	g_free (text);
  
@@ -1888,7 +1903,10 @@ rb_ipod_source_show_properties (RBiPodSource *source)
 	capacity = g_format_size_for_display (get_ipod_capacity(mp));
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (label), 
 				       (double)(get_ipod_capacity (mp) - get_ipod_free_space (mp))/(double)get_ipod_capacity (mp));
-	text = g_strdup_printf("%s of %s", used, capacity);
+	/* Translators: this is used to display the amount of storage space
+	 * used and the total storage space on an iPod.
+	 */
+	text = g_strdup_printf (_("%s of %s"), used, capacity);
 	gtk_progress_bar_set_text (GTK_PROGRESS_BAR (label), text);
 	g_free (text);
 	g_free (capacity);
@@ -1900,18 +1918,18 @@ rb_ipod_source_show_properties (RBiPodSource *source)
 	g_free (text);
 
  	label = glade_xml_get_widget (xml, "label-ipod-model-value");
- 	gtk_label_set_text (GTK_LABEL (label), itdb_device_get_sysinfo(ipod_dev, "ModelNumStr"));
+ 	gtk_label_set_text (GTK_LABEL (label), itdb_device_get_sysinfo (ipod_dev, "ModelNumStr"));
 
  	label = glade_xml_get_widget (xml, "label-database-version-value");
-	text = g_strdup_printf ("%u", rb_ipod_db_get_database_version(priv->ipod_db));
+	text = g_strdup_printf ("%u", rb_ipod_db_get_database_version (priv->ipod_db));
  	gtk_label_set_text (GTK_LABEL (label), text);
-	g_free(text);
+	g_free (text);
 
  	label = glade_xml_get_widget (xml, "label-serial-number-value");
-	gtk_label_set_text (GTK_LABEL (label), itdb_device_get_sysinfo(ipod_dev, "pszSerialNumber"));
+	gtk_label_set_text (GTK_LABEL (label), itdb_device_get_sysinfo (ipod_dev, "pszSerialNumber"));
 
  	label = glade_xml_get_widget (xml, "label-firmware-version-value");
-	gtk_label_set_text (GTK_LABEL (label), itdb_device_get_sysinfo(ipod_dev, "VisibleBuildID"));
+	gtk_label_set_text (GTK_LABEL (label), itdb_device_get_sysinfo (ipod_dev, "VisibleBuildID"));
 
  	gtk_widget_show (GTK_WIDGET (dialog));
 }
