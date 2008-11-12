@@ -167,6 +167,7 @@ find_dir_no_case (GFile *root, gboolean look_for_psp)
 		}
 		g_object_unref (info);
 	}
+	g_object_unref (e);
 
 	if (ret == NULL)
 		ret = music_dir;

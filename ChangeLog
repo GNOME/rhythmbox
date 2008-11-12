@@ -1,5 +1,10 @@
 2008-11-12  Bastien Nocera  <hadess@hadess.net>
 
+	* plugins/generic-player/rb-psp-source.c (find_dir_no_case):
+	Fix small memleak
+
+2008-11-12  Bastien Nocera  <hadess@hadess.net>
+
 	* plugins/generic-player/rb-psp-source.c (find_dir_no_case),
 	(find_music_dir): Look harder for the PSP music directory:
 	- prefer PSP/MUSIC over MUSIC
