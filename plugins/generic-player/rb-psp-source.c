@@ -265,7 +265,7 @@ hal_udi_is_psp (const char *udi)
 	if (parent_name == NULL || dbus_error_is_set (&error))
 		goto end;
 
-	if (strcmp (parent_name, "PSP") == 0) {
+	if (strcmp (parent_name, "PSP") == 0 || strcmp (parent_name, "\"PSP\" MS") == 0) {
 		result = TRUE;
 	}
 
