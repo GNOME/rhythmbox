@@ -117,6 +117,64 @@ rb_psp_source_new (RBShell *shell, GMount *mount)
 }
 
 static GFile *
+find_dir_no_case (GFile *root, gboolean look_for_psp)
+{
+	GFileEnumerator *e;
+	GFileInfo *info;
+	GFile *ret;
+	GFile *music_dir;
+
+	ret = music_dir = NULL;
+	e = g_file_enumerate_children (root, G_FILE_ATTRIBUTE_STANDARD_NAME","G_FILE_ATTRIBUTE_STANDARD_TYPE,
+				       G_FILE_QUERY_INFO_NONE, NULL, NULL);
+	if (e == NULL)
+		return ret;
+
+	while ((info = g_file_enumerator_next_file (e, NULL, NULL)) != NULL) {
+		const char *name;
+
+		name = g_file_info_get_name (info);
+		if (g_file_info_get_file_type (info) != G_FILE_TYPE_DIRECTORY) {
+			g_object_unref (info);
+			continue;
+		}
+
+		if (g_ascii_strcasecmp (name, "MUSIC") == 0) {
+			music_dir = g_file_resolve_relative_path (root, name);
+			g_object_unref (info);
+			if (look_for_psp)
+				continue;
+			else
+				break;
+		}
+
+		if (look_for_psp) {
+			if (g_ascii_strcasecmp (name, "PSP") == 0) {
+				GFile *psp_dir;
+
+				psp_dir = g_file_resolve_relative_path (root, name);
+				ret = find_dir_no_case (psp_dir, FALSE);
+				g_object_unref (psp_dir);
+
+				if (ret != NULL) {
+					g_object_unref (info);
+					if (music_dir != NULL)
+						g_object_unref (music_dir);
+					music_dir = NULL;
+					break;
+				}
+			}
+		}
+		g_object_unref (info);
+	}
+
+	if (ret == NULL)
+		ret = music_dir;
+
+	return ret;
+}
+
+static GFile *
 find_music_dir (GMount *mount)
 {
 	GFile *root;
@@ -124,23 +182,7 @@ find_music_dir (GMount *mount)
 
 	root = g_mount_get_root (mount);
 	if (root != NULL) {
-		int i;
-		char *paths[] = {
-			"PSP/MUSIC",
-			"MUSIC",
-			NULL
-		};
-
-		i = 0;
-		while (paths[i] != NULL) {
-			music_dir = g_file_resolve_relative_path (root, paths[i]);
-			if (g_file_query_exists (music_dir, NULL) == FALSE) {
-				break;
-			}
-			g_object_unref (music_dir);
-			i++;
-		}
-
+		music_dir = find_dir_no_case (root, TRUE);
 		g_object_unref (root);
 	}
 
