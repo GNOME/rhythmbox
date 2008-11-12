@@ -184,16 +184,16 @@ find_music_dir (GMount *mount)
 	root = g_mount_get_root (mount);
 	if (root != NULL) {
 		music_dir = find_dir_no_case (root, TRUE);
+		/* FIXME create directories if they don't exist */
 		g_object_unref (root);
 	}
 
 	return music_dir;
 }
 
-static gboolean
-visit_playlist_dirs (GFile *file,
-		     gboolean dir,
-		     RBPspSource *source)
+static void
+visit_playlist_dirs (RBPspSource *source,
+		     GFile *file)
 {
 	RBShell *shell;
 	RhythmDB *db;
@@ -202,10 +202,6 @@ visit_playlist_dirs (GFile *file,
 	char *playlist_name;
 	RBSource *playlist;
 	GPtrArray *query;
-
-	if (dir == FALSE) {
-		return TRUE;
-	}
 
 	playlist_path = g_file_get_uri (file);		/* or _get_path? */
 
@@ -217,6 +213,8 @@ visit_playlist_dirs (GFile *file,
 		      "db", &db,
 		      NULL);
 
+	/* FIXME this isn't good enough, we only need the files directly under the playlist directory,
+	 * not sub-dirs */
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, entry_type,
 				      RHYTHMDB_QUERY_PROP_PREFIX, RHYTHMDB_PROP_LOCATION, playlist_path,
@@ -236,8 +234,6 @@ visit_playlist_dirs (GFile *file,
 
 	g_object_unref (shell);
 	g_object_unref (db);
-
-	return TRUE;
 }
 
 
@@ -252,14 +248,26 @@ rb_psp_source_create_playlists (RBGenericPlayerSource *source)
 	g_object_unref (mount);
 
 	if (music_dir != NULL) {
-		char *music_dir_uri;
+		GFileEnumerator *e;
+		GFileInfo *info;
 
-		music_dir_uri = g_file_get_uri (music_dir);
-		rb_uri_handle_recursively (music_dir_uri,
-					   NULL,
-					   (RBUriRecurseFunc) visit_playlist_dirs,
-					   source);
-		g_free (music_dir_uri);
+		e = g_file_enumerate_children (music_dir, G_FILE_ATTRIBUTE_STANDARD_NAME","G_FILE_ATTRIBUTE_STANDARD_TYPE,
+					       G_FILE_QUERY_INFO_NONE, NULL, NULL);
+		if (e != NULL) {
+			while ((info = g_file_enumerator_next_file (e, NULL, NULL)) != NULL) {
+				GFile *file;
+				const char *name;
+				if (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY) {
+					g_object_unref (info);
+					continue;
+				}
+				name = g_file_info_get_name (info);
+				file = g_file_resolve_relative_path (music_dir, name);
+				visit_playlist_dirs (RB_PSP_SOURCE (source), file);
+				g_object_unref (file);
+			}
+			g_object_unref (e);
+		}
 		g_object_unref (music_dir);
 	}
 }
