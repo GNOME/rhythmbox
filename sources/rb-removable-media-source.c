@@ -638,6 +638,55 @@ rb_removable_media_source_get_mime_types (RBRemovableMediaSource *source)
 		return NULL;
 }
 
+gboolean
+rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *source,
+						     RhythmDBEntry *entry)
+{
+	RhythmDBEntryType entry_type;
+	RhythmDB *db;
+	RBShell *shell;
+	const char *title;
+	const char *album;
+	const char *artist;
+	GtkTreeModel *query_model;
+	GtkTreeIter iter;
+	gboolean no_match;
+	 
+	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (g_type_class_peek_parent (RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source)));
+	/* chain up to parent impl */
+	if (!rms_class->impl_should_paste (source, entry))
+		return FALSE;
+
+	g_object_get (source, "shell", &shell, "entry-type", &entry_type, NULL);
+	g_object_get (shell, "db", &db, NULL);
+	g_object_unref (shell);
+
+	query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (db));
+	title = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
+	album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
+	artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (query_model),
+				RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_TYPE, entry_type,
+				RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_ARTIST, artist,
+				RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_ALBUM, album,
+				RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_TITLE, title,
+				RHYTHMDB_QUERY_END);
+
+	no_match = (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (query_model),
+						 &iter));
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref(query_model);
+	g_object_unref (db);
+	if (no_match == FALSE) {
+		rb_debug ("not adding %s - %s - %s to  removable device since it's already present\n", title, album, artist);
+	}
+	return no_match;
+}
+
 static gboolean
 impl_should_paste (RBRemovableMediaSource *source, RhythmDBEntry *entry)
 {

@@ -83,6 +83,9 @@ void		rb_removable_media_source_track_added		(RBRemovableMediaSource *source,
 GList *		rb_removable_media_source_get_mime_types	(RBRemovableMediaSource *source);
 gboolean	rb_removable_media_source_should_paste		(RBRemovableMediaSource *source,
 								 RhythmDBEntry *entry);
+gboolean        rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *source,
+								     RhythmDBEntry *entry);
+
 
 G_END_DECLS
 

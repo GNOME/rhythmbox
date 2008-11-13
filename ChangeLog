@@ -1,3 +1,15 @@
+2008-11-13  Christophe Fergeau  <teuf@gnome.org>
+
+	* sources/rb-removable-media-source.c
+	* sources/rb-removable-media-source.h: add
+	rb_removable_media_source_should_paste_no_duplicate helper which
+	can be used as a vfunc for RbRemovableMediaSource::should_paste for
+	sources that want to disallow copying of duplicate songs. For now,
+	duplicate checking is done by comparing song title/album/artist
+	(which is a bit simplistic ;)
+	* plugins/ipod/rb-ipod-source.c: use this helper function instead
+	of having dedicated code in the ipod plugin
+
 2008-11-12  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/generic-player/rb-psp-source.c (find_music_dir),
