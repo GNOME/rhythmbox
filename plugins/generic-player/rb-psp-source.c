@@ -257,7 +257,7 @@ rb_psp_source_create_playlists (RBGenericPlayerSource *source)
 			while ((info = g_file_enumerator_next_file (e, NULL, NULL)) != NULL) {
 				GFile *file;
 				const char *name;
-				if (g_file_info_get_file_type (info) == G_FILE_TYPE_DIRECTORY) {
+				if (g_file_info_get_file_type (info) != G_FILE_TYPE_DIRECTORY) {
 					g_object_unref (info);
 					continue;
 				}
