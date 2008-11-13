@@ -1,5 +1,16 @@
 2008-11-13  Christophe Fergeau  <teuf@gnome.org>
 
+	* lib/rb-tree-dnd.c
+	* metadata/rb-metadata-dbus-service.c
+	* plugins/generic-player/rb-generic-player-playlist-source.c
+	* plugins/ipod/rb-ipod-db.c
+	* podcast/rb-podcast-manager.c
+	* rhythmdb/rhythmdb.c
+	* shell/rb-shell.c: use g_timeout_add_seconds instead of
+	g_timeout_add. Fixes part of bug #399012
+
+2008-11-13  Christophe Fergeau  <teuf@gnome.org>
+
 	* sources/rb-removable-media-source.c
 	* sources/rb-removable-media-source.h: add
 	rb_removable_media_source_should_paste_no_duplicate helper which

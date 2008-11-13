@@ -2535,7 +2535,7 @@ rb_shell_quit (RBShell *shell,
 	rb_shell_sync_state (shell);
 	g_object_unref (G_OBJECT (shell));
 
-	g_timeout_add (10000, quit_timeout, NULL);
+	g_timeout_add_seconds (10, quit_timeout, NULL);
 	return TRUE;
 }
 

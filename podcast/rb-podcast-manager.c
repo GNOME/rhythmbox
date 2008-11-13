@@ -551,7 +551,7 @@ rb_podcast_manager_start_sync (RBPodcastManager *pd)
 			rb_podcast_manager_update_synctime (pd);
 			return;
 		}
-		pd->priv->source_sync = g_timeout_add (next_time * 1000, (GSourceFunc) rb_podcast_manager_sync_head_cb, pd);
+		pd->priv->source_sync = g_timeout_add_seconds (next_time, (GSourceFunc) rb_podcast_manager_sync_head_cb, pd);
 	}
 
 }

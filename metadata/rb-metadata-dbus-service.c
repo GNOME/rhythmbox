@@ -555,7 +555,7 @@ main (int argc, char **argv)
 				       g_main_loop_get_context (svc.loop));
 
 	if (!svc.external)
-		g_timeout_add (ATTENTION_SPAN * 500, (GSourceFunc) electromagnetic_shotgun, &svc);
+		g_timeout_add_seconds (ATTENTION_SPAN / 2, (GSourceFunc) electromagnetic_shotgun, &svc);
 
 	g_main_loop_run (svc.loop);
 

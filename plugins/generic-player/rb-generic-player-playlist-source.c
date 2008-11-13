@@ -37,7 +37,7 @@
 #include "rb-plugin.h"
 #include "rb-file-helpers.h"
 
-#define PLAYLIST_SAVE_TIMEOUT	1000
+#define PLAYLIST_SAVE_TIMEOUT	1
 
 typedef struct
 {
@@ -333,9 +333,9 @@ rb_generic_player_playlist_source_mark_dirty (RBPlaylistSource *source)
 		g_source_remove (priv->save_playlist_id);
 	}
 
-	priv->save_playlist_id = g_timeout_add (PLAYLIST_SAVE_TIMEOUT,
-						(GSourceFunc) save_playlist,
-						source);
+	priv->save_playlist_id = g_timeout_add_seconds (PLAYLIST_SAVE_TIMEOUT,
+							(GSourceFunc) save_playlist,
+							source);
 }
 
 RBSource *

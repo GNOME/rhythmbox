@@ -860,9 +860,9 @@ rb_ipod_db_save_async (RbIpodDb *ipod_db)
 
 	if (priv->save_timeout_id == 0) {
 		rb_debug ("Scheduling iPod database save in 15 seconds");
-		priv->save_timeout_id = g_timeout_add (15000, 
-						       (GSourceFunc)save_timeout_cb,
-						       ipod_db);
+		priv->save_timeout_id = g_timeout_add_seconds (15, 
+							       (GSourceFunc)save_timeout_cb,
+							       ipod_db);
 	} else {
 		rb_debug ("Database save already scheduled");
 	}

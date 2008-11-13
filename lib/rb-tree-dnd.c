@@ -749,7 +749,7 @@ rb_tree_dnd_drag_motion_cb (GtkWidget        *widget,
 			priv_data->previous_dest_path = path;
 			if (priv_data->select_on_drag_timeout == 0) {
 				rb_debug("Setting up a new select on drag timeout");
-				priv_data->select_on_drag_timeout = g_timeout_add (2000, select_on_drag_timeout, tree_view);
+				priv_data->select_on_drag_timeout = g_timeout_add_seconds (2, select_on_drag_timeout, tree_view);
 			}
 		} else {
 			gtk_tree_path_free (path);

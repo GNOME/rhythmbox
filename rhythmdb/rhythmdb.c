@@ -2942,7 +2942,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 	g_mutex_unlock (db->priv->saving_mutex);
 
 	g_object_ref (db);
-	g_timeout_add (10000, (GSourceFunc) rhythmdb_sync_library_idle, db);
+	g_timeout_add_seconds (10, (GSourceFunc) rhythmdb_sync_library_idle, db);
 
 	rb_debug ("queuing db load complete signal");
 	result = g_slice_new0 (RhythmDBEvent);
