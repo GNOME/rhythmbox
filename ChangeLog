@@ -1,5 +1,11 @@
 2008-11-14  Bastien Nocera  <hadess@hadess.net>
 
+	* plugins/generic-player/rb-psp-source.c (rb_psp_is_mount_player):
+	Fix object unref on NULL object, spotted by Christophe Fergeau
+	(Closes: #560804)
+
+2008-11-14  Bastien Nocera  <hadess@hadess.net>
+
 	* plugins/generic-player/rb-generic-player-source.c
 	(rb_generic_player_source_class_init), (impl_constructor),
 	(impl_can_move_to_trash), (impl_can_delete),

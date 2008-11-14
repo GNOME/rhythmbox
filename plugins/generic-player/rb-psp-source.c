@@ -354,8 +354,10 @@ rb_psp_is_mount_player (GMount *mount)
 
 #ifndef HAVE_HAL
 	music_dir = find_music_dir (mount);
-	result = (music_dir != NULL);
-	g_object_unref (music_dir);
+	if (music_dir != NULL) {
+		g_object_unref (music_dir);
+		result = TRUE;
+	}
 #else
 	volume = g_mount_get_volume (mount);
 	if (volume != NULL) {
