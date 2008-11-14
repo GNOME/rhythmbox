@@ -77,6 +77,9 @@ static gboolean impl_show_popup (RBSource *source);
 static void impl_delete_thyself (RBSource *source);
 static gboolean impl_can_move_to_trash (RBSource *source);
 static gboolean impl_can_paste (RBSource *source);
+static gboolean impl_can_delete (RBSource *source);
+static void impl_delete (RBSource *source);
+static void impl_move_to_trash (RBSource *source);
 static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 
 static GList* impl_get_mime_types (RBRemovableMediaSource *source);
@@ -123,7 +126,6 @@ typedef struct
 
 	/* information derived from volume */
 	gboolean read_only;
-	gboolean handles_trash;
 
 	/* information derived from HAL */
 	char **audio_folders;
@@ -155,7 +157,10 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
+	source_class->impl_can_delete = impl_can_delete;
+	source_class->impl_delete = impl_delete;
 	source_class->impl_can_move_to_trash = impl_can_move_to_trash;
+	source_class->impl_move_to_trash = impl_move_to_trash;
 	source_class->impl_can_paste = impl_can_paste;
 	source_class->impl_get_status = impl_get_status;
 
@@ -230,16 +235,6 @@ impl_constructor (GType type,
 		priv->read_only = FALSE;
 	} else {
 		priv->read_only = g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_FILESYSTEM_READONLY);
-		g_object_unref (info);
-	}
-
-	info = g_file_query_info (root, G_FILE_ATTRIBUTE_ACCESS_CAN_TRASH, G_FILE_QUERY_INFO_NONE, NULL, &error);
-	if (error != NULL) {
-		rb_debug ("error querying file info for %s: %s", mount_name, error->message);
-		g_error_free (error);
-		priv->handles_trash = FALSE;		/* hmm */
-	} else {
-		priv->handles_trash = g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_ACCESS_CAN_TRASH);
 		g_object_unref (info);
 	}
 
@@ -894,7 +889,43 @@ static gboolean
 impl_can_move_to_trash (RBSource *source)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	return priv->handles_trash;
+	RBEntryView *view;
+	GList *sel, *tem;
+	gboolean ret;
+
+	if (priv->read_only != FALSE)
+		return FALSE;
+
+	ret = FALSE;
+
+	view = rb_source_get_entry_view (source);
+	sel = rb_entry_view_get_selected_entries (view);
+
+	for (tem = sel; tem != NULL; tem = tem->next) {
+		RhythmDBEntry *entry;
+		const char *uri;
+		GFile *file;
+		GFileInfo *info;
+
+		entry = tem->data;
+		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		file = g_file_new_for_uri (uri);
+		info = g_file_query_info (file, G_FILE_ATTRIBUTE_ACCESS_CAN_TRASH, G_FILE_QUERY_INFO_NONE, NULL, NULL);
+		g_object_unref (file);
+		if (info == NULL) {
+			ret = FALSE;
+			break;
+		}
+		ret = g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_ACCESS_CAN_TRASH);
+		g_object_unref (info);
+		if (ret == FALSE)
+			break;
+	}
+
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (sel);
+
+	return ret;
 }
 
 static void
@@ -1127,6 +1158,61 @@ impl_can_paste (RBSource *source)
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 
 	return (priv->read_only == FALSE);
+}
+
+static gboolean
+impl_can_delete (RBSource *source)
+{
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+
+	return (priv->read_only == FALSE);
+}
+
+static void
+impl_move_to_trash_or_delete (RBSource *source, gboolean delete)
+{
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBEntryView *view;
+	GList *sel, *tem;
+
+	if (priv->read_only != FALSE)
+		return;
+
+	view = rb_source_get_entry_view (source);
+	sel = rb_entry_view_get_selected_entries (view);
+
+	for (tem = sel; tem != NULL; tem = tem->next) {
+		RhythmDBEntry *entry;
+		const char *uri;
+		GFile *file;
+
+		entry = tem->data;
+		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		file = g_file_new_for_uri (uri);
+		if (delete)
+			g_file_delete (file, NULL, NULL);
+		else
+			g_file_trash (file, NULL, NULL);
+		g_object_unref (file);
+
+		rhythmdb_entry_delete (priv->db, entry);
+		rhythmdb_commit (priv->db);
+	}
+
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (sel);
+}
+
+static void
+impl_move_to_trash (RBSource *source)
+{
+	impl_move_to_trash_or_delete (source, FALSE);
+}
+
+static void
+impl_delete (RBSource *source)
+{
+	impl_move_to_trash_or_delete (source, TRUE);
 }
 
 static char *

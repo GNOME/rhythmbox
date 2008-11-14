@@ -1,3 +1,13 @@
+2008-11-14  Bastien Nocera  <hadess@hadess.net>
+
+	* plugins/generic-player/rb-generic-player-source.c
+	(rb_generic_player_source_class_init), (impl_constructor),
+	(impl_can_move_to_trash), (impl_can_delete),
+	(impl_move_to_trash_or_delete), (impl_move_to_trash),
+	(impl_delete): Implement delete and move to trash for
+	generic players, also fix can_move_to_trash
+	(Closes: #560725, #560720)
+
 2008-11-14  Luca Ferretti  <elle.uca@libero.it>
 
 	* sources/rb-missing-files-source.c:
