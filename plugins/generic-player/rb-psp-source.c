@@ -55,9 +55,7 @@ static void rb_psp_source_create_playlists (RBGenericPlayerSource *source);
 
 typedef struct
 {
-#ifdef __SUNPRO_C
-  char x; /* To build with Solaris forte compiler. */
-#endif
+  char garbage_so_its_not_empty; /* To avoid run-time warnings. FIXME remove if no private needed */
 } RBPspSourcePrivate;
 
 
