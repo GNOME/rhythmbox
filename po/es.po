@@ -15,9 +15,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-09 08:19+0000\n"
-"PO-Revision-Date: 2008-11-10 22:13+0100\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=rhythmbox&amp;component=general\n"
+"POT-Creation-Date: 2008-11-11 12:53+0000\n"
+"PO-Revision-Date: 2008-11-15 00:13+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -610,14 +611,14 @@ msgstr "%d %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
 #: ../plugins/daap/rb-daap-connection.c:698
 #: ../plugins/generic-player/rb-generic-player-source.c:1193
-#: ../plugins/ipod/rb-ipod-source.c:319
+#: ../plugins/ipod/rb-ipod-source.c:324
 #: ../plugins/jamendo/jamendo/JamendoSource.py:330
 #: ../plugins/iradio/rb-iradio-source.c:517
 #: ../plugins/iradio/rb-iradio-source.c:1110
 #: ../plugins/iradio/rb-station-properties-dialog.c:486
 #: ../plugins/mtpdevice/rb-mtp-source.c:324
 #: ../podcast/rb-feed-podcast-properties-dialog.c:321
-#: ../podcast/rb-podcast-manager.c:1863
+#: ../podcast/rb-podcast-manager.c:1870
 #: ../podcast/rb-podcast-properties-dialog.c:478
 #: ../podcast/rb-podcast-properties-dialog.c:531
 #: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1284
@@ -1662,41 +1663,41 @@ msgstr "Nombre de compartición inválido"
 msgid "The shared music name '%s' is already taken. Please choose another."
 msgstr "El nombre de música compartida «%s» ya está usándose. Elija otro."
 
-#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:277
-#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:320
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:237
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:280
 msgid "MDNS service is not running"
 msgstr "El servicio MDNS no se está ejecutando"
 
-#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:285
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:245
 msgid "Browser already active"
 msgstr "Examinador ya activo"
 
-#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:303
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:263
 msgid "Unable to activate browser"
 msgstr "No se pudo activar el examinador"
 
-#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:328
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:288
 msgid "Browser is not active"
 msgstr "El examinador no está activo"
 
-#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:193
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:130
 msgid "Could not create AvahiEntryGroup for publishing"
 msgstr "No se pudo crear AvahiEntryGroup para publicar"
 
-#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:227
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:164
 msgid "Could not add service"
 msgstr "No se ha podido añadir el servicio"
 
-#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:239
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:176
 msgid "Could not commit service"
 msgstr "No se ha podido efectuar el servicio"
 
-#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:344
-#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:364
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:281
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:301
 msgid "The avahi MDNS service is not running"
 msgstr "El servicio MDNS no se está ejecutando"
 
-#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:373
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:310
 msgid "The MDNS service is not published"
 msgstr "Es servicio MDNS no está publicado"
 
@@ -1868,13 +1869,21 @@ msgstr "_Borrar"
 msgid "Delete playlist"
 msgstr "Borrar lista de reproducción"
 
-#: ../plugins/ipod/rb-ipod-source.c:1356 ../sources/rb-podcast-source.c:902
+#: ../plugins/ipod/rb-ipod-source.c:1361 ../sources/rb-podcast-source.c:902
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../plugins/ipod/rb-ipod-source.c:1751
+#: ../plugins/ipod/rb-ipod-source.c:1761
 msgid "New playlist"
 msgstr "Lista de reproducción nueva"
+
+#. Translators: this is used to display the amount of storage space
+#. * used and the total storage space on an iPod.
+#.
+#: ../plugins/ipod/rb-ipod-source.c:1909
+#, c-format
+msgid "%s of %s"
+msgstr "%s de %s"
 
 #: ../plugins/iradio/iradio.rb-plugin.in.h:1
 msgid "Internet Radio"
@@ -2740,7 +2749,7 @@ msgstr "Expulsar el dispositivo MTP"
 msgid "Rename MTP-device"
 msgstr "Renombrar el dispositivo MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:467
+#: ../plugins/mtpdevice/rb-mtp-source.c:469
 msgid "Digital Audio Player"
 msgstr "Reproductor de sonido digital"
 
@@ -2950,21 +2959,21 @@ msgstr "Error al crear el directorio de descarga del Podcast"
 msgid "Unable to create the download directory for %s: %s"
 msgstr "No se pudo crear el directorio de descarga para %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:931
+#: ../podcast/rb-podcast-manager.c:938
 msgid "Invalid URL"
 msgstr "URL inválido"
 
-#: ../podcast/rb-podcast-manager.c:932
+#: ../podcast/rb-podcast-manager.c:939
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "La URL «%s» no es válida, compruébelo."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:942
+#: ../podcast/rb-podcast-manager.c:949
 msgid "URL already added"
 msgstr "La URL ya se ha añadido"
 
-#: ../podcast/rb-podcast-manager.c:943
+#: ../podcast/rb-podcast-manager.c:950
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2973,7 +2982,7 @@ msgstr ""
 "La URL «%s» ya se ha añadido como estación de radio. Si esto es un proveedor "
 "de Podcast, elimine la estación de radio."
 
-#: ../podcast/rb-podcast-manager.c:1011
+#: ../podcast/rb-podcast-manager.c:1018
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2984,11 +2993,11 @@ msgstr ""
 "o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
 "todas formas?"
 
-#: ../podcast/rb-podcast-manager.c:1122
+#: ../podcast/rb-podcast-manager.c:1129
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2043
+#: ../podcast/rb-podcast-manager.c:2050
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Hubo un problema al añadir este Podcast: %s. Compruebe el URL: %s"
