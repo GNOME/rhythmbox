@@ -1,5 +1,10 @@
 2008-11-14  Bastien Nocera  <hadess@hadess.net>
 
+	* plugins/generic-player/rb-psp-source.c
+	(rb_psp_source_create_playlists): Fix small leak
+
+2008-11-14  Bastien Nocera  <hadess@hadess.net>
+
 	* plugins/generic-player/rb-psp-source.c: Fix run-time
 	warning when creating the PSP source, as glib doesn't
 	like zero-sized private structures

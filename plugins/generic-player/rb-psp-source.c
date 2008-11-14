@@ -263,6 +263,7 @@ rb_psp_source_create_playlists (RBGenericPlayerSource *source)
 				file = g_file_resolve_relative_path (music_dir, name);
 				visit_playlist_dirs (RB_PSP_SOURCE (source), file);
 				g_object_unref (file);
+				g_object_unref (info);
 			}
 			g_object_unref (e);
 		}
