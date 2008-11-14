@@ -130,7 +130,7 @@ rb_missing_files_source_init (RBMissingFilesSource *source)
 
 	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
 	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					   GTK_STOCK_MISSING_IMAGE,
+					   "dialog-warning",
 					   size,
 					   0, NULL);
 	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);

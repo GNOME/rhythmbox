@@ -1,3 +1,13 @@
+2008-11-14  Luca Ferretti  <elle.uca@libero.it>
+
+	* sources/rb-missing-files-source.c:
+	(rb_missing_files_source_init): use named icon "dialog-warning" 
+	instead improper GTK_STOCK_MISSING_IMAGE. Fixes bug #560349
+
+	* sources/rb-import-errors-source.c:
+	(rb_import_errors_source_init): use named icon "dialog-error" instead
+	GTK_STOCK_DIALOG_ERROR to match previous change
+	
 2008-11-13  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/generic-player/rb-psp-source.c
