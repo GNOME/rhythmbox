@@ -60,7 +60,9 @@ const char * ignore_mime_types[] = {
 	"application/xml",
 	"application/zip",
 	"application/x-executable",
+	"application/x-ms-dos-executable",
 	"application/x-bzip",
+	"application/x-gzip",
 	"application/pdf",
 	"application/x-rar"
 };
