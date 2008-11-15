@@ -1,5 +1,15 @@
 2008-11-15  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(link_and_unblock_stream), (start_sink_locked), (start_sink),
+	(rb_player_gst_xfade_play):
+	Disentangle locking a bit.  Drop the stream list lock as soon as
+	possible in rb_player_gst_xfade_play, and don't hold the sink lock
+	while processing messages received during sink startup.
+	Should fix #560371, maybe #550271.
+
+2008-11-15  Jonathan Matthew  <jonathan@d14n.org>
+
 	* metadata/rb-metadata-gst.c:
 	Ignore a few more non-audio/video media types
 

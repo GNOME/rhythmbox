@@ -1109,17 +1109,13 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 	GstPadLinkReturn plr;
 	GstStateChangeReturn scr;
 	RBPlayerGstXFade *player = stream->player;
-	gboolean ret;
 
 	if (stream->adder_pad != NULL) {
 		rb_debug ("stream %s is already linked", stream->uri);
 		return TRUE;
 	}
 
-	g_static_rec_mutex_lock (&player->priv->sink_lock);
-	ret = start_sink (player, error);
-	g_static_rec_mutex_unlock (&player->priv->sink_lock);
-	if (ret == FALSE) {
+	if (start_sink (player, error) == FALSE) {
 		rb_debug ("sink didn't start, so we're not going to link the stream");
 		return FALSE;
 	}
@@ -1626,6 +1622,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 		}
 
 		if (emit) {
+			rb_debug ("emitting error %s for stream %s", error->message, stream->uri);
 			sig_error = g_error_new_literal (RB_PLAYER_ERROR,
 							 code,
 							 error->message);
@@ -2624,7 +2621,7 @@ tick_timeout (RBPlayerGstXFade *player)
  */
 
 static gboolean
-start_sink (RBPlayerGstXFade *player, GError **error)
+start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 {
 	GstStateChangeReturn sr;
 	gboolean waiting;
@@ -2682,6 +2679,7 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 			if (message == NULL) {
 				rb_debug ("sink is taking too long to start..");
 				g_propagate_error (error, generic_error);
+				gst_object_unref (bus);
 				return FALSE;
 			}
 
@@ -2700,7 +2698,7 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 					stream = find_stream_by_element (player, GST_ELEMENT (message_src));
 					if (stream != NULL) {
 						rb_debug ("got an error from a stream; passing it to the bus handler");
-						rb_player_gst_xfade_bus_cb (bus, message, player);
+						*messages = g_list_append (*messages, gst_message_ref (message));
 						g_object_unref (stream);
 					} else {
 						gst_message_parse_error (message, &gst_error, &debug);
@@ -2721,6 +2719,7 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 						gst_element_set_state (player->priv->outputbin, GST_STATE_NULL);
 						gst_element_set_state (player->priv->adder, GST_STATE_NULL);
 						gst_element_set_state (player->priv->silencebin, GST_STATE_NULL);
+						gst_object_unref (bus);
 						return FALSE;
 					}
 				}
@@ -2743,13 +2742,16 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 				break;
 
 			default:
-				rb_debug ("passing message to bus callback");
-				rb_player_gst_xfade_bus_cb (bus, message, player);
+				/* save the message to pass to the bus callback once we've dropped
+				 * the sink lock.
+				 */
+				*messages = g_list_append (*messages, gst_message_ref (message));
 				break;
 			}
 
 			gst_message_unref (message);
 		}
+		gst_object_unref (bus);
 
 		sr = gst_element_set_state (player->priv->silencebin, GST_STATE_PLAYING);
 		if (sr == GST_STATE_CHANGE_FAILURE) {
@@ -2793,6 +2795,27 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 	}
 
 	return TRUE;
+}
+
+static gboolean
+start_sink (RBPlayerGstXFade *player, GError **error)
+{
+	GList *messages = NULL;
+	GList *t;
+	GstBus *bus;
+	gboolean ret;
+
+	g_static_rec_mutex_lock (&player->priv->sink_lock);
+	ret = start_sink_locked (player, &messages, error);
+	g_static_rec_mutex_unlock (&player->priv->sink_lock);
+
+	bus = gst_element_get_bus (GST_ELEMENT (player->priv->pipeline));
+	for (t = messages; t != NULL; t = t->next) {
+		rb_player_gst_xfade_bus_cb (bus, t->data, player);
+	}
+
+	rb_list_destroy_free (messages, (GDestroyNotify) gst_mini_object_unref);
+	return ret;
 }
 
 static gboolean
@@ -3288,18 +3311,16 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 		return FALSE;
 	}
-
-	/* make sure the sink is playing */
-	g_static_rec_mutex_lock (&player->priv->sink_lock);
-	if (start_sink (player, error) == FALSE) {
-		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
-		return FALSE;
-	}
-	g_static_rec_mutex_unlock (&player->priv->sink_lock);
-
+	
 	stream = g_list_first (player->priv->streams)->data;
 	g_object_ref (stream);
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+
+	/* make sure the sink is playing */
+	if (start_sink (player, error) == FALSE) {
+		g_object_unref (stream);
+		return FALSE;
+	}
 
 	rb_debug ("playing stream %s, crossfade %d", stream->uri, crossfade);
 
