@@ -1,3 +1,11 @@
+2008-11-16  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/iradio/rb-iradio-source.c:
+	(stations_view_drag_data_received_cb):
+	* sources/rb-podcast-source.c: (impl_receive_drag):
+	Apparently _NETSCAPE_URL drag data changed ordering somewhere.
+	Fixes #549544.
+
 2008-11-15  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c:

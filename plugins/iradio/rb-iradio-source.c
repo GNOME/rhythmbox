@@ -958,31 +958,21 @@ stations_view_drag_data_received_cb (GtkWidget *widget,
 	if (uri_list == NULL)
 		return;
 
-	i = uri_list;
-	while (i != NULL) {
+	for (i = uri_list; i != NULL; i = i->next) {
 		char *uri = NULL;
-
-		/* as totem source says, "Super _NETSCAPE_URL trick" */
-		if (info == 1) {
-			if (i != NULL)
-				g_free (i->data);
-			i = i->next;
-			if (i == NULL)
-				break;
-		}
 
 		uri = i->data;
 		if (uri != NULL) {
 			rb_iradio_source_add_station (source, uri, NULL, NULL);
 		}
 
-		g_free (uri);
-
-		if (i != NULL)
+		if (info == 1) {
+			/* for _NETSCAPE_URL drags, this item is the link text */
 			i = i->next;
+		}
 	}
 
-	g_list_free (uri_list);
+	rb_list_deep_free (uri_list);
 	return;
 }
 
