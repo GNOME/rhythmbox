@@ -446,6 +446,7 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	GList *tem;
 	gboolean editable = TRUE;
 	RBShell *shell;
+	AtkObject *lobj, *robj;
 
 	klass = RB_SONG_INFO_CLASS (g_type_class_peek (RB_TYPE_SONG_INFO));
 
@@ -540,6 +541,13 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 				 G_OBJECT (song_info), 0);
 	gtk_container_add (GTK_CONTAINER (glade_xml_get_widget (xml, "song_info_rating_container")),
 			   song_info->priv->rating);
+
+	/* add relationship between the rating label and the rating widget */
+	lobj = gtk_widget_get_accessible (glade_xml_get_widget (xml, "rating_label"));
+	robj = gtk_widget_get_accessible (song_info->priv->rating);
+
+	atk_object_add_relationship (lobj, ATK_RELATION_LABEL_FOR, robj);
+	atk_object_add_relationship (robj, ATK_RELATION_LABELLED_BY, lobj);
 
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->artist), editable);
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->album), editable);

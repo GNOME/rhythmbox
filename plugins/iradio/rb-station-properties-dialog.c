@@ -161,6 +161,7 @@ rb_station_properties_dialog_constructor (GType type,
 	RBStationPropertiesDialog *dialog;
 	GladeXML *xml;
 	char *gladefile;
+	AtkObject *lobj, *robj;
 
 	dialog = RB_STATION_PROPERTIES_DIALOG (G_OBJECT_CLASS (rb_station_properties_dialog_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
@@ -221,6 +222,14 @@ rb_station_properties_dialog_constructor (GType type,
 				 G_OBJECT (dialog), 0);
 	gtk_container_add (GTK_CONTAINER (glade_xml_get_widget (xml, "ratingVBox")),
 			   dialog->priv->rating);
+
+	/* add relationship between the rating label and the rating widget */
+	lobj = gtk_widget_get_accessible (glade_xml_get_widget (xml, "ratingLabel"));
+	robj = gtk_widget_get_accessible (dialog->priv->rating);
+
+	atk_object_add_relationship (lobj, ATK_RELATION_LABEL_FOR, robj);
+	atk_object_add_relationship (robj, ATK_RELATION_LABELLED_BY, lobj);
+
 	g_object_unref (xml);
 
 	return G_OBJECT (dialog);

@@ -42,7 +42,6 @@
 #include "rb-file-helpers.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
-#include "rb-rating.h"
 #include "rb-cut-and-paste-code.h"
 #include "rhythmdb.h"
 

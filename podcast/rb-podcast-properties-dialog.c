@@ -137,6 +137,7 @@ static void
 rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 {
 	GladeXML *xml;
+	AtkObject *lobj, *robj;
 
 	dialog->priv = G_TYPE_INSTANCE_GET_PRIVATE (dialog,
 						    RB_TYPE_PODCAST_PROPERTIES_DIALOG,
@@ -197,6 +198,14 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 				 G_OBJECT (dialog), 0);
 	gtk_container_add (GTK_CONTAINER (glade_xml_get_widget (xml, "ratingVBox")),
 			   dialog->priv->rating);
+
+	/* add relationship between the rating label and the rating widget */
+	lobj = gtk_widget_get_accessible (glade_xml_get_widget (xml, "ratingDescLabel"));
+	robj = gtk_widget_get_accessible (dialog->priv->rating);
+	
+	atk_object_add_relationship (lobj, ATK_RELATION_LABEL_FOR, robj);
+	atk_object_add_relationship (robj, ATK_RELATION_LABELLED_BY, lobj);
+
 	g_object_unref (G_OBJECT (xml));
 }
 

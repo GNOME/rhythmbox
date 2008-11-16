@@ -30,9 +30,14 @@
 
 #include "config.h"
 
+#include <math.h>
+
+#include <glib/gi18n.h>
+
 #include "rb-cut-and-paste-code.h"
 #include "rb-rating-helper.h"
 #include "rb-stock-icons.h"
+
 
 /**
  * SECTION:rb-rating-helper
@@ -281,3 +286,32 @@ rb_rating_get_rating_from_widget (GtkWidget *widget,
 
 	return rating;
 }
+
+/**
+ * rb_rating_set_accessible_name:
+ * @widget: a #GtkWidget for which to set the accessible name
+ * @rating: the rating value to set
+ *
+ * Sets the accessible object name for the specified widget to reflect the
+ * rating.
+ */
+void
+rb_rating_set_accessible_name (GtkWidget *widget, gdouble rating)
+{
+	AtkObject *aobj;
+	int stars;
+	char *aname;
+
+	aobj = gtk_widget_get_accessible (widget);
+
+	stars = floor (rating);
+	if (stars == 0) {
+		aname = g_strdup (_("No Stars"));		/* is this really necessary */
+	} else {
+		aname = g_strdup_printf (ngettext ("%d Star", "%d Stars", stars), stars);
+	}
+
+	atk_object_set_name (aobj, aname);
+	g_free (aname);
+}
+

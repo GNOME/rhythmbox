@@ -46,16 +46,18 @@ typedef struct _RBRatingPrivate RBRatingPrivate;
 
 struct _RBRating
 {
-	GtkEventBox parent;
+	GtkWidget parent;
 
 	RBRatingPrivate *priv;
 };
 
 struct _RBRatingClass
 {
-	GtkEventBoxClass parent;
+	GtkWidgetClass parent;
 
 	void (*rated) (RBRating *rating, double score);
+	gboolean (*set_rating) (RBRating *rating, double score);
+	gboolean (*adjust_rating) (RBRating *rating, double adjust);
 };
 
 GtkType    rb_rating_get_type (void);

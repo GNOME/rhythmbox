@@ -1,5 +1,34 @@
 2008-11-16  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch partly by:  Patrick Wade  <patrick.wade@sun.com>
+	
+	* plugins/iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_constructor):
+	* podcast/rb-feed-podcast-properties-dialog.c:
+	* podcast/rb-podcast-properties-dialog.c:
+	(rb_podcast_properties_dialog_init):
+	* widgets/rb-song-info.c: (rb_song_info_constructor):
+	* data/glade/song-info.glade:
+	Add relationships between the 'rating' label and the rating widget.
+
+	* widgets/rb-rating-helper.c: (rb_rating_set_accessible_name):
+	* widgets/rb-rating-helper.h:
+	Add helper function for setting the accessible name of a rating widget
+	to describe the current rating.
+
+	* widgets/rb-rating.c: (rb_rating_class_init), (rb_rating_init),
+	(rb_rating_set_rating), (rb_rating_set_property), (rb_rating_new),
+	(rb_rating_realize), (rb_rating_expose),
+	(rb_rating_button_press_cb), (rb_rating_set_rating_cb),
+	(rb_rating_adjust_rating_cb), (rb_rating_focus):
+	* widgets/rb-rating.h:
+	Add key bindings to adjust the rating, set the accessible name of the
+	widget when the rating changes.
+
+	From #368641.
+
+2008-11-16  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/daap/rb-daap-plugin.c:
 	Add ellipsis to 'Connect to DAAP share' (#521025)
 
