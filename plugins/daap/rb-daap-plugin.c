@@ -116,7 +116,7 @@ static GtkActionEntry rb_daap_source_actions [] =
 	{ "DaapSourceDisconnect", GTK_STOCK_DISCONNECT, N_("_Disconnect"), NULL,
 	  N_("Disconnect from DAAP share"),
 	  G_CALLBACK (rb_daap_plugin_cmd_disconnect) },
-	{ "MusicNewDAAPShare", GTK_STOCK_CONNECT, N_("Connect to _DAAP share"), NULL,
+	{ "MusicNewDAAPShare", GTK_STOCK_CONNECT, N_("Connect to _DAAP share..."), NULL,
 	  N_("Connect to a new DAAP share"),
 	  G_CALLBACK (rb_daap_plugin_cmd_connect) },
 };
