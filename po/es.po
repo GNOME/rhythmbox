@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&amp;component=general\n"
-"POT-Creation-Date: 2008-11-11 12:53+0000\n"
-"PO-Revision-Date: 2008-11-15 00:13+0100\n"
+"POT-Creation-Date: 2008-11-16 10:36+0000\n"
+"PO-Revision-Date: 2008-11-16 12:05+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -38,8 +38,8 @@ msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
 "No se pudo crear un elemento sumidero de GStreamer en el que escribir %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:693 ../metadata/rb-metadata-gst.c:846
-#: ../metadata/rb-metadata-gst.c:1413
+#: ../backends/gstreamer/rb-player-gst.c:693 ../metadata/rb-metadata-gst.c:848
+#: ../metadata/rb-metadata-gst.c:1415
 #: ../plugins/cd-recorder/rb-recorder-gst.c:508
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -50,63 +50,63 @@ msgstr "Ha ocurrido un error al crear el elemento %s; compruebe su instalación"
 msgid "Unknown playback error"
 msgstr "Error de reproducción desconocido"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1138
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1152
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1134
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1148
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr ""
 "Ha ocurrido un error al enlazar un nuevo flujo dentro del pipeline de "
 "GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1179
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1175
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Ha ocurrido un error al inicializar un nuevo flujo"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2637
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2634
 #, c-format
 msgid "Failed to open output device"
 msgstr "Falló al abrir el dispositivo de salida"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2715
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2713
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Falló al abrir el dispositivo de salida: %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2912
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3000
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2935
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3023
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear el elemento GStreamer; compruebe su instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2925
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2948
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear un elemento de salida de audio; compruebe su "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2974
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3016
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3042
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3051
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3060
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2997
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3039
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3065
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3074
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3083
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Ha ocurrido un error al enlazar la tubería de GStreamer; compruebe su "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3155
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3178
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr ""
 "Ha ocurrido un error al crear una tubería de GStreamer para reproducir %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3171
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3194
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "No se ha podido iniciar la reproducción de %s"
@@ -610,11 +610,11 @@ msgstr "%d %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
 #: ../plugins/daap/rb-daap-connection.c:698
-#: ../plugins/generic-player/rb-generic-player-source.c:1193
-#: ../plugins/ipod/rb-ipod-source.c:324
+#: ../plugins/generic-player/rb-generic-player-source.c:1279
+#: ../plugins/ipod/rb-ipod-source.c:322
 #: ../plugins/jamendo/jamendo/JamendoSource.py:330
 #: ../plugins/iradio/rb-iradio-source.c:517
-#: ../plugins/iradio/rb-iradio-source.c:1110
+#: ../plugins/iradio/rb-iradio-source.c:1100
 #: ../plugins/iradio/rb-station-properties-dialog.c:486
 #: ../plugins/mtpdevice/rb-mtp-source.c:324
 #: ../podcast/rb-feed-podcast-properties-dialog.c:321
@@ -700,55 +700,55 @@ msgstr "Problema interno de GStreamer, archive un error"
 msgid "D-BUS communication error"
 msgstr "Error de comunicación de D-BUS"
 
-#: ../metadata/rb-metadata-gst.c:641
+#: ../metadata/rb-metadata-gst.c:643
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr ""
 "No se pudieron encontrar los complementos de GStreamer para decodificar "
 "archivos «%s»"
 
-#: ../metadata/rb-metadata-gst.c:644
+#: ../metadata/rb-metadata-gst.c:646
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "El archivo contiene un flujo de tipo %s, que no es decodificable"
 
-#: ../metadata/rb-metadata-gst.c:1036
+#: ../metadata/rb-metadata-gst.c:1038
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear un elemento de origen; compruebe su instalación"
 
-#: ../metadata/rb-metadata-gst.c:1099
+#: ../metadata/rb-metadata-gst.c:1101
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Error de GStreamer: falló al cambiar el estado"
 
-#: ../metadata/rb-metadata-gst.c:1195
+#: ../metadata/rb-metadata-gst.c:1197
 #, c-format
 msgid "Empty file"
 msgstr "Archivo vacío"
 
-#: ../metadata/rb-metadata-gst.c:1203
+#: ../metadata/rb-metadata-gst.c:1205
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "El tipo MIME del archivo no se pudo identificar"
 
-#: ../metadata/rb-metadata-gst.c:1341
+#: ../metadata/rb-metadata-gst.c:1343
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Tipo de archivo no soportado: %s"
 
-#: ../metadata/rb-metadata-gst.c:1350
+#: ../metadata/rb-metadata-gst.c:1352
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "No se pueden crear elementos tag-writing"
 
-#: ../metadata/rb-metadata-gst.c:1365
+#: ../metadata/rb-metadata-gst.c:1367
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Tiempo cumplido mientras se ponía el conducto en NULO"
 
-#: ../metadata/rb-metadata-gst.c:1389
+#: ../metadata/rb-metadata-gst.c:1391
 #, c-format
 msgid "File corrupted during write"
 msgstr "El archivo ha sido corrompido mientras se grababa"
@@ -763,7 +763,7 @@ msgstr "Buscar portadas de álbum de Internet"
 
 #: ../plugins/artdisplay/artdisplay/__init__.py:291
 msgid "Searching... drop artwork here"
-msgstr "Buscando... soltar aquí la portada"
+msgstr "Buscando… soltar aquí la portada"
 
 #: ../plugins/artdisplay/artdisplay/__init__.py:293
 msgid "Drop artwork here"
@@ -1710,8 +1710,8 @@ msgid "Disconnect from DAAP share"
 msgstr "Desconectar de una compartición DAAP"
 
 #: ../plugins/daap/rb-daap-plugin.c:119
-msgid "Connect to _DAAP share"
-msgstr "Conectar a una compartición _DAAP"
+msgid "Connect to _DAAP share..."
+msgstr "Conectar a una compartición _DAAP…"
 
 #: ../plugins/daap/rb-daap-plugin.c:120
 msgid "Connect to a new DAAP share"
@@ -1816,7 +1816,7 @@ msgstr "Borrar lista de reproducción"
 msgid "Delete this playlist"
 msgstr "Borrar esta lista de reproducción"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:917
+#: ../plugins/generic-player/rb-generic-player-source.c:948
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Importando (%d/%d)"
@@ -1869,18 +1869,18 @@ msgstr "_Borrar"
 msgid "Delete playlist"
 msgstr "Borrar lista de reproducción"
 
-#: ../plugins/ipod/rb-ipod-source.c:1361 ../sources/rb-podcast-source.c:902
+#: ../plugins/ipod/rb-ipod-source.c:1359 ../sources/rb-podcast-source.c:902
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../plugins/ipod/rb-ipod-source.c:1761
+#: ../plugins/ipod/rb-ipod-source.c:1710
 msgid "New playlist"
 msgstr "Lista de reproducción nueva"
 
 #. Translators: this is used to display the amount of storage space
 #. * used and the total storage space on an iPod.
 #.
-#: ../plugins/ipod/rb-ipod-source.c:1909
+#: ../plugins/ipod/rb-ipod-source.c:1858
 #, c-format
 msgid "%s of %s"
 msgstr "%s de %s"
@@ -2093,12 +2093,12 @@ msgid_plural "%d stations"
 msgstr[0] "%d estación"
 msgstr[1] "%d estaciones"
 
-#: ../plugins/iradio/rb-iradio-source.c:1022
+#: ../plugins/iradio/rb-iradio-source.c:1012
 #: ../plugins/iradio/rb-station-properties-dialog.c:400
 msgid "New Internet Radio Station"
 msgstr "Emisora de radio de Internet nueva"
 
-#: ../plugins/iradio/rb-iradio-source.c:1022
+#: ../plugins/iradio/rb-iradio-source.c:1012
 msgid "URL of internet radio station:"
 msgstr "URL de la emisora de radio de Internet:"
 
@@ -4316,43 +4316,43 @@ msgid_plural "All %d feeds"
 msgstr[0] "%d proveedor"
 msgstr[1] "Todos los %d proveedores"
 
-#: ../sources/rb-podcast-source.c:1849
+#: ../sources/rb-podcast-source.c:1844
 msgid "Downloading podcast"
 msgstr "Descargando podcast"
 
-#: ../sources/rb-podcast-source.c:1862
+#: ../sources/rb-podcast-source.c:1857
 msgid "Finished downloading podcast"
 msgstr "Terminó la descarga del podcast"
 
-#: ../sources/rb-podcast-source.c:1875
+#: ../sources/rb-podcast-source.c:1870
 msgid "New updates available from"
 msgstr "Nuevas actualizaciones disponibles desde"
 
-#: ../sources/rb-podcast-source.c:1991
+#: ../sources/rb-podcast-source.c:1986
 msgid "Error in podcast"
 msgstr "Error en el podcast"
 
-#: ../sources/rb-podcast-source.c:1998
+#: ../sources/rb-podcast-source.c:1993
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s: ¿Quiere añadir el proveedor de podcast de todas formas?"
 
-#: ../sources/rb-podcast-source.c:2125
+#: ../sources/rb-podcast-source.c:2120
 msgid "New Podcast Feed"
 msgstr "Proveedor podcast nuevo"
 
-#: ../sources/rb-podcast-source.c:2125
+#: ../sources/rb-podcast-source.c:2120
 msgid "URL of podcast feed:"
 msgstr "URL del proveedor podcast:"
 
-#: ../sources/rb-podcast-source.c:2141
+#: ../sources/rb-podcast-source.c:2136
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d episodio"
 msgstr[1] "%d episodios"
 
-#: ../sources/rb-podcast-source.c:2249
+#: ../sources/rb-podcast-source.c:2244
 msgid "Podcast Error"
 msgstr "Error del podcast"
 
