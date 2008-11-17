@@ -124,13 +124,7 @@ if test "x$with_ipod" != "xno"; then
 	  AC_MSG_ERROR([iPod explicitly requested but libgpod couldn't be found])
 	fi
 	if test "x$have_libgpod" = "xyes"; then
-          if test "x$with_hal" = xyes && test "x$enable_hal" = xno; then
-	     AC_MSG_ERROR([iPod explicitly requested but HAL not found or too old])
-	  fi
-          if test "x$enable_hal" = xyes; then
-	     AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
-	     use_ipod=yes
-	  fi
+	  use_ipod=yes
 	  AC_SUBST(IPOD_CFLAGS)
 	  AC_SUBST(IPOD_LIBS)
 	fi
@@ -138,7 +132,6 @@ fi
 AM_CONDITIONAL(USE_IPOD, test x"$use_ipod" = xyes)
 
 dnl mtp support
-
 AC_ARG_WITH(mtp,
             AC_HELP_STRING([--with-mtp],
 			   [Enable MTP support]),,

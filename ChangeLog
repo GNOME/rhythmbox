@@ -1,3 +1,8 @@
+2008-11-17  Christophe Feregau  <teuf@gnome.org>
+
+	* configure.ac: don't disable the ipod plugin when hal is
+	disabled since it has #ifdef code to work with or without hal
+
 2008-11-17  Christophe Fergeau  <teuf@gnome.org>
 
 	* plugins/generic-player/rb-generic-player-source.c:
