@@ -1,3 +1,12 @@
+2008-11-17  Jonathan Matthew  <jonathan@d14n.org>
+
+	* podcast/rb-podcast-manager.c: (podcast_download_thread):
+	Close the streams (and unref them) before emitting the error/complete
+	status.  Previously there was a race between the download thread and
+	the main loop thread that could cause crashes here.  Also, now we can
+	report errors that occur when closing the output stream.
+	Fixes #554556.
+
 2008-11-16  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch partly by:  Patrick Wade  <patrick.wade@sun.com>

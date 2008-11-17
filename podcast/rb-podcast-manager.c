@@ -1525,17 +1525,20 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 		download_progress (data, downloaded, data->download_size, FALSE);
 	}
 
+	/* close everything */
+	g_input_stream_close (G_INPUT_STREAM (data->in_stream), data->cancel, NULL);
+	g_object_unref (data->in_stream);
+
+	g_output_stream_close (G_OUTPUT_STREAM (data->out_stream), data->cancel, &error);
+	g_object_unref (data->out_stream);
+
 	if (error != NULL) {
 		download_error (data, error);
 	} else {
 		download_progress (data, downloaded, data->download_size, TRUE);
 	}
 
-	/* close everything */
-	g_input_stream_close (G_INPUT_STREAM (data->in_stream), data->cancel, NULL);
-	/* probably should actually care about this.. */
-	g_output_stream_close (G_OUTPUT_STREAM (data->out_stream), data->cancel, NULL);
-
+	rb_debug ("exiting download thread");
 	return NULL;
 }
 
