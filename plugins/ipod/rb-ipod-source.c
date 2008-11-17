@@ -35,15 +35,12 @@
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
-#ifdef HAVE_HAL
-#include <libhal.h>
-#include <dbus/dbus.h>
-#endif
 #include <gpod/itdb.h>
 
 #include "eel-gconf-extensions.h"
 #include "rb-ipod-source.h"
 #include "rb-ipod-db.h"
+#include "rb-ipod-helpers.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 #include "rb-glade-helpers.h"
@@ -70,10 +67,6 @@ static void impl_move_to_trash (RBSource *asource);
 static void rb_ipod_load_songs (RBiPodSource *source);
 static void impl_delete_thyself (RBSource *source);
 static GList* impl_get_ui_actions (RBSource *source);
-
-#ifdef HAVE_HAL
-static gboolean hal_udi_is_ipod (const char *udi);
-#endif
 
 #ifdef ENABLE_IPOD_WRITING
 static GList * impl_get_mime_types (RBRemovableMediaSource *source);
@@ -283,8 +276,6 @@ rb_ipod_source_new (RBShell *shell,
 	GVolume *volume;
 	char *name;
 	char *path;
-
-	g_assert (rb_ipod_is_mount_ipod (mount));
 
 	volume = g_mount_get_volume (mount);
 	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
@@ -961,148 +952,6 @@ rb_ipod_load_songs (RBiPodSource *source)
 	g_object_unref (mount);
 }
 
-static gchar *
-rb_ipod_get_itunesdb_path (GMount *mount)
-{
-	GFile *root;
-	gchar *mount_point;
-	gchar *result = NULL;
-
-	root = g_mount_get_root (mount);
-	if (root != NULL) {
-		mount_point = g_file_get_path (root);
-		if (mount_point != NULL) {
-			result = itdb_get_itunes_dir (mount_point);
-		}
-
-		g_free (mount_point);
-		g_object_unref (root);
-	}
-
-	return result;
-}
-
-static gboolean
-rb_ipod_mount_has_ipod_db (GMount *mount)
-{
-	char *itunesdb_path;
-	gboolean result;
-
-	itunesdb_path = rb_ipod_get_itunesdb_path (mount);
-
-	if (itunesdb_path != NULL) {
-		result = g_file_test (itunesdb_path, G_FILE_TEST_EXISTS);
-	} else {
-		result = FALSE;
-	}
-	g_free (itunesdb_path);
-
-	return result;
-}
-
-gboolean
-rb_ipod_is_mount_ipod (GMount *mount)
-{
-#ifdef HAVE_HAL
-	gchar *udi;
-	GVolume *volume;
-
-	volume = g_mount_get_volume (mount);
-	if (volume == NULL)
-		return FALSE;
-
-	udi = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
-	g_object_unref (volume);
-
-	if (udi != NULL) {
-		gboolean result;
-
-		result = hal_udi_is_ipod (udi);
-		g_free (udi);
-		if (result == FALSE) {
-			return FALSE;
-		}
-	}
-#endif
-
-	return rb_ipod_mount_has_ipod_db (mount);
-}
-
-#ifdef HAVE_HAL
-
-static gboolean
-hal_udi_is_ipod (const char *udi)
-{
-	LibHalContext *ctx;
-	DBusConnection *conn;
-	char *parent_udi;
-	char **methods_list;
-	guint i;
-	gboolean result;
-	DBusError error;
-	gboolean inited = FALSE;
-
-	result = FALSE;
-	dbus_error_init (&error);
-
-	conn = NULL;
-	parent_udi = NULL;
-	methods_list = NULL;
-
-	ctx = libhal_ctx_new ();
-	if (ctx == NULL) {
-		/* FIXME: should we return an error somehow so that we can
-		 * fall back to a check for iTunesDB presence instead ?
-		 */
-		rb_debug ("cannot connect to HAL");
-		goto end;
-	}
-	conn = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
-	if (conn == NULL || dbus_error_is_set (&error))
-		goto end;
-
-	libhal_ctx_set_dbus_connection (ctx, conn);
-	if (!libhal_ctx_init (ctx, &error) || dbus_error_is_set (&error))
-		goto end;
-
-	inited = TRUE;
-	parent_udi = libhal_device_get_property_string (ctx, udi,
-							"info.parent", &error);
-	if (parent_udi == NULL || dbus_error_is_set (&error))
-		goto end;
-	methods_list = libhal_device_get_property_strlist (ctx, parent_udi,
-							   "portable_audio_player.access_method.protocols", &error);
-	if (methods_list == NULL || dbus_error_is_set (&error))
-		goto end;
-	for (i = 0; methods_list[i] != NULL; i++) {
-		if (strcmp ("ipod", methods_list[i]) == 0) {
-			result = TRUE;
-			break;
-		}
-	}
-
-end:
-	g_free (parent_udi);
-	libhal_free_string_array (methods_list);
-
-	if (dbus_error_is_set (&error)) {
-		rb_debug ("Error: %s\n", error.message);
-		dbus_error_free (&error);
-		dbus_error_init (&error);
-	}
-
-	if (ctx) {
-		if (inited)
-			libhal_ctx_shutdown (ctx, &error);
-		libhal_ctx_free(ctx);
-	}
-
-	dbus_error_free (&error);
-
-	return result;
-}
-#endif
-
 static GList*
 impl_get_ui_actions (RBSource *source)
 {
@@ -1745,57 +1594,6 @@ ipod_name_changed_cb (GtkWidget     *widget,
 	return FALSE;
 }
 
-static guint64 get_fs_property (const char *mountpoint, const char *attr)
-{
-        GFile *root;
-        GFileInfo *info;
-        guint64 value;
-
-        root = g_file_new_for_path (mountpoint);
-        info = g_file_query_filesystem_info (root, attr, NULL, NULL);
-        g_object_unref (G_OBJECT (root));
-        if (info == NULL) {
-                return 0;
-        }
-        if (!g_file_info_has_attribute (info, attr)) {
-                g_object_unref (G_OBJECT (info));
-                return 0;
-        }
-        value = g_file_info_get_attribute_uint64 (info, attr);
-        g_object_unref (G_OBJECT (info));
-
-        return value;
-}
-
-static guint64
-get_ipod_capacity (const char *mountpoint)
-{
-        return  get_fs_property (mountpoint, G_FILE_ATTRIBUTE_FILESYSTEM_SIZE);
-}
-
-static guint64
-get_ipod_free_space (const char *mountpoint)
-{
-	return get_fs_property (mountpoint, G_FILE_ATTRIBUTE_FILESYSTEM_FREE);
-}
-
-static char *
-get_ipod_device (RBiPodSource *source)
-{
-        GMount *mount;
-        GVolume *volume;
-        char *device;
-
-        g_object_get (RB_SOURCE (source), "mount", &mount, NULL);
-        volume = g_mount_get_volume (mount);
-        device = g_volume_get_identifier (volume,
-                                          G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
-        g_object_unref (G_OBJECT (volume));
-        g_object_unref (G_OBJECT (mount));
-
-        return device;
-}
-
 void
 rb_ipod_source_show_properties (RBiPodSource *source)
 {
@@ -1848,10 +1646,10 @@ rb_ipod_source_show_properties (RBiPodSource *source)
  	gtk_label_set_text (GTK_LABEL (label), mp);
 
 	label = glade_xml_get_widget (xml, "progressbar-ipod-usage");
-	used = g_format_size_for_display (get_ipod_capacity (mp) - get_ipod_free_space (mp));
-	capacity = g_format_size_for_display (get_ipod_capacity(mp));
+	used = g_format_size_for_display (rb_ipod_helpers_get_capacity (mp) - rb_ipod_helpers_get_free_space (mp));
+	capacity = g_format_size_for_display (rb_ipod_helpers_get_capacity(mp));
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (label), 
-				       (double)(get_ipod_capacity (mp) - get_ipod_free_space (mp))/(double)get_ipod_capacity (mp));
+				       (double)(rb_ipod_helpers_get_capacity (mp) - rb_ipod_helpers_get_free_space (mp))/(double)rb_ipod_helpers_get_capacity (mp));
 	/* Translators: this is used to display the amount of storage space
 	 * used and the total storage space on an iPod.
 	 */
@@ -1862,7 +1660,7 @@ rb_ipod_source_show_properties (RBiPodSource *source)
 	g_free (used);
 
 	label = glade_xml_get_widget (xml, "label-device-node-value");
-	text = get_ipod_device (source);
+	text = rb_ipod_helpers_get_device (RB_SOURCE(source));
 	gtk_label_set_text (GTK_LABEL (label), text);
 	g_free (text);
 

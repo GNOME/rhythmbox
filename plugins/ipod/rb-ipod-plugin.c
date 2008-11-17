@@ -36,6 +36,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "rb-ipod-helpers.h"
 #include "rb-removable-media-manager.h"
 #include "rb-sourcelist.h"
 #include "rb-source.h"
@@ -230,19 +231,33 @@ rb_ipod_plugin_source_deleted (RBiPodSource *source, RBIpodPlugin *plugin)
 static RBSource *
 create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, RBIpodPlugin *plugin)
 {
-	if (rb_ipod_is_mount_ipod (mount)) {
-		RBSource *src;
-		src = RB_SOURCE (rb_ipod_source_new (plugin->shell, mount));
-
-		plugin->ipod_sources = g_list_prepend (plugin->ipod_sources, src);
-		g_signal_connect_object (G_OBJECT (src),
-					 "deleted", G_CALLBACK (rb_ipod_plugin_source_deleted),
-					 plugin, 0);
-
-		return src;
+	RBSource *src;
+	if (!rb_ipod_helpers_is_ipod (mount)) {
+		return NULL;
 	}
 
-	return NULL;
+	if (rb_ipod_helpers_needs_init (mount)) {
+		gboolean inited;
+		gchar *glade_file;
+		glade_file = rb_plugin_find_file (RB_PLUGIN (plugin),
+						  "ipod-init.glade");
+		inited = rb_ipod_helpers_show_first_time_dialog (mount,
+								 glade_file);
+		g_free (glade_file);
+		if (!inited) {
+			return NULL;
+		}
+	}
+
+	src = RB_SOURCE (rb_ipod_source_new (plugin->shell,
+					     mount));
+
+	plugin->ipod_sources = g_list_prepend (plugin->ipod_sources, src);
+	g_signal_connect_object (G_OBJECT (src),
+				 "deleted", G_CALLBACK (rb_ipod_plugin_source_deleted),
+				 plugin, 0);
+
+	return src;
 }
 
 static void

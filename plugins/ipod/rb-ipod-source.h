@@ -53,11 +53,10 @@ typedef struct
 	RBRemovableMediaSourceClass parent;
 } RBiPodSourceClass;
 
-RBRemovableMediaSource *	rb_ipod_source_new		(RBShell *shell, GMount *mount);
+RBRemovableMediaSource *rb_ipod_source_new		(RBShell *shell,
+                                                         GMount *mount);
 GType			rb_ipod_source_get_type		(void);
 GType                   rb_ipod_source_register_type    (GTypeModule *module);
-
-gboolean		rb_ipod_is_mount_ipod		(GMount *mount);
 
 void			rb_ipod_source_new_playlist	(RBiPodSource *source);
 void			rb_ipod_source_remove_playlist	(RBiPodSource *ipod_source,

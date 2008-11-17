@@ -1,7 +1,24 @@
-2008-11-17  Christophe Feregau  <teuf@gnome.org>
+2008-11-17  Christophe Fergeau  <teuf@gnome.org>
+
+	patch partly by: James "Doc" Livingston <doclivingston@gmail.com>
+	based on code from gtkpod (http://gtkpod.sf.net)
+
+	* plugins/ipod/ipod-init.glade
+	* plugins/ipod/rb-ipod-source.c
+	* plugins/ipod/rb-ipod-source.h
+	* plugins/ipod/rb-ipod-helpers.c
+	* plugins/ipod/rb-ipod-helpers.h
+	* plugins/ipod/rb-ipod-plugin.c
+	* plugins/ipod/Makefile.am: when a "new" ipod (ie one which doesn't
+	have a database) is plugged in, show a dialog to let the user tell
+	which ipod he owns. 
+	Fixes #358029.
+
+2008-11-17  Christophe Fergeau  <teuf@gnome.org>
 
 	* configure.ac: don't disable the ipod plugin when hal is
-	disabled since it has #ifdef code to work with or without hal
+	disabled since it has #ifdef code to work with or without hal.
+	Fixes #560798
 
 2008-11-17  Christophe Fergeau  <teuf@gnome.org>
 

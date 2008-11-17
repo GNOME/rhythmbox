@@ -4,6 +4,8 @@ plugin_LTLIBRARIES = libipod.la
 libipod_la_SOURCES = \
 	rb-ipod-db.c				\
 	rb-ipod-db.h				\
+	rb-ipod-helpers.c			\
+	rb-ipod-helpers.h			\
 	rb-ipod-static-playlist-source.c	\
 	rb-ipod-static-playlist-source.h	\
 	rb-ipod-source.c			\
@@ -47,7 +49,7 @@ uixml_DATA = ipod-ui.xml
 plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 
 gladedir = $(plugindir)
-glade_DATA = ipod-info.glade
+glade_DATA = ipod-info.glade ipod-init.glade
 
 EXTRA_DIST = $(uixml_DATA) $(plugin_in_files) $(glade_DATA)
 
