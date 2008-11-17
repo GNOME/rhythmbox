@@ -184,6 +184,7 @@ struct _RhythmDBPrivate
 	guint emit_entry_signals_id;
 	GList *added_entries_to_emit;
 	GList *deleted_entries_to_emit;
+	GHashTable *changed_entries_to_emit;
 
 	gboolean can_save;
 	gboolean saving;

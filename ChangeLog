@@ -1,5 +1,17 @@
 2008-11-17  Jonathan Matthew  <jonathan@d14n.org>
 
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_dispose), (free_entry_changes),
+	(rhythmdb_emit_entry_signals_idle), (process_changed_entries_cb),
+	(sync_entry_changed), (rhythmdb_commit_internal):
+	Rather than emitting entry-changed signals as part of rhythmdb_commit,
+	marshal the data over to the main thread as is done for entry-added
+	and entry-deleted.  Take the gdk lock before emitting any of those
+	signals.  Fixes any number of weird crashes, as well as deadlocks
+	after podcast downloads when a11y is enabled.  #362725.
+
+2008-11-17  Jonathan Matthew  <jonathan@d14n.org>
+
 	* podcast/rb-podcast-manager.c: (podcast_download_thread):
 	Close the streams (and unref them) before emitting the error/complete
 	status.  Previously there was a race between the download thread and

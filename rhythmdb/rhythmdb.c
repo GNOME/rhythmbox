@@ -135,9 +135,6 @@ static void rhythmdb_entry_set_mount_point (RhythmDB *db,
  					    RhythmDBEntry *entry,
  					    const gchar *realuri);
 
-static gboolean free_entry_changes (RhythmDBEntry *entry,
-				    GSList *changes,
-				    RhythmDB *db);
 static gboolean rhythmdb_idle_save (RhythmDB *db);
 static void library_location_changed_cb (GConfClient *client,
 					  guint cnxn_id,
@@ -906,6 +903,9 @@ rhythmdb_dispose (GObject *object)
 
 		g_list_foreach (db->priv->added_entries_to_emit, (GFunc)rhythmdb_entry_unref, NULL);
 		g_list_foreach (db->priv->deleted_entries_to_emit, (GFunc)rhythmdb_entry_unref, NULL);
+		if (db->priv->changed_entries_to_emit != NULL) {
+			g_hash_table_destroy (db->priv->changed_entries_to_emit);
+		}
 	}
 
 	if (db->priv->metadata != NULL) {
@@ -1081,57 +1081,17 @@ rhythmdb_read_leave (RhythmDB *db)
 	}
 }
 
-static gboolean
-free_entry_changes (RhythmDBEntry *entry,
-		    GSList *changes,
-		    RhythmDB *db)
+static void
+free_entry_changes (GSList *entry_changes)
 {
 	GSList *t;
-	for (t = changes; t; t = t->next) {
+	for (t = entry_changes; t; t = t->next) {
 		RhythmDBEntryChange *change = t->data;
 		g_value_unset (&change->old);
 		g_value_unset (&change->new);
 		g_slice_free (RhythmDBEntryChange, change);
 	}
-	g_slist_free (changes);
-
-	return TRUE;
-}
-
-static void
-emit_entry_changed (RhythmDBEntry *entry,
-		    GSList *changes,
-		    RhythmDB *db)
-{
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, entry, changes);
-}
-
-static void
-sync_entry_changed (RhythmDBEntry *entry,
-		    GSList *changes,
-		    RhythmDB *db)
-{
-	GSList *t;
-
-	for (t = changes; t; t = t->next) {
-		RBMetaDataField field;
-		RhythmDBEntryChange *change = t->data;
-
-		if (metadata_field_from_prop (change->prop, &field)) {
-			RhythmDBAction *action;
-
-			if (!rhythmdb_entry_is_editable (db, entry)) {
-				g_warning ("trying to sync properties of non-editable file");
-				break;
-			}
-
-			action = g_slice_new0 (RhythmDBAction);
-			action->type = RHYTHMDB_ACTION_SYNC;
-			action->uri = rb_refstring_ref (entry->location);
-			g_async_queue_push (db->priv->action_queue, action);
-			break;
-		}
-	}
+	g_slist_free (entry_changes);
 }
 
 static gboolean
@@ -1139,7 +1099,11 @@ rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 {
 	GList *added_entries;
 	GList *deleted_entries;
+	GHashTable *changed_entries;
 	GList *l;
+	GHashTableIter iter;
+	RhythmDBEntry *entry;
+	GSList *entry_changes;
 
 	/* get lists of entries to emit, reset source id value */
 	g_mutex_lock (db->priv->change_mutex);
@@ -1150,24 +1114,43 @@ rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 	deleted_entries = db->priv->deleted_entries_to_emit;
 	db->priv->deleted_entries_to_emit = NULL;
 
+	changed_entries = db->priv->changed_entries_to_emit;
+	db->priv->changed_entries_to_emit = NULL;
+
 	db->priv->emit_entry_signals_id = 0;
 
 	g_mutex_unlock (db->priv->change_mutex);
 
+	GDK_THREADS_ENTER ();
+
+	/* emit changed entries */
+	if (changed_entries != NULL) {
+		g_hash_table_iter_init (&iter, changed_entries);
+		while (g_hash_table_iter_next (&iter, (gpointer *)&entry, (gpointer *)&entry_changes)) {
+			g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, entry, entry_changes);
+			g_hash_table_iter_remove (&iter);
+		}
+	}
+
 	/* emit added entries */
 	for (l = added_entries; l; l = g_list_next (l)) {
-		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;
+		entry = (RhythmDBEntry *)l->data;
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, entry);
 		rhythmdb_entry_unref (entry);
 	}
 
 	/* emit deleted entries */
 	for (l = deleted_entries; l; l = g_list_next (l)) {
-		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;
+		entry = (RhythmDBEntry *)l->data;
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_DELETED], 0, entry);
 		rhythmdb_entry_unref (entry);
 	}
 
+	GDK_THREADS_LEAVE ();
+
+	if (changed_entries != NULL) {
+		g_hash_table_destroy (changed_entries);
+	}
 	g_list_free (added_entries);
 	g_list_free (deleted_entries);
 	return FALSE;
@@ -1239,24 +1222,69 @@ process_deleted_entries_cb (RhythmDBEntry *entry,
 	return TRUE;
 }
 
+static gboolean
+process_changed_entries_cb (RhythmDBEntry *entry,
+			    GSList *changes,
+			    RhythmDB *db)
+{
+	if (db->priv->changed_entries_to_emit == NULL) {
+		db->priv->changed_entries_to_emit = g_hash_table_new_full (NULL,
+									   NULL,
+									   (GDestroyNotify) rhythmdb_entry_unref,
+									   (GDestroyNotify) free_entry_changes);
+	}
+
+	g_hash_table_insert (db->priv->changed_entries_to_emit, rhythmdb_entry_ref (entry), changes);
+	return TRUE;
+}
+
+static void
+sync_entry_changed (RhythmDBEntry *entry,
+		    GSList *changes,
+		    RhythmDB *db)
+{
+	GSList *t;
+
+	for (t = changes; t; t = t->next) {
+		RBMetaDataField field;
+		RhythmDBEntryChange *change = t->data;
+
+		if (metadata_field_from_prop (change->prop, &field)) {
+			RhythmDBAction *action;
+
+			if (!rhythmdb_entry_is_editable (db, entry)) {
+				g_warning ("trying to sync properties of non-editable file");
+				break;
+			}
+
+			action = g_slice_new0 (RhythmDBAction);
+			action->type = RHYTHMDB_ACTION_SYNC;
+			action->uri = rb_refstring_ref (entry->location);
+			g_async_queue_push (db->priv->action_queue, action);
+			break;
+		}
+	}
+}
+
+
 static void
 rhythmdb_commit_internal (RhythmDB *db,
 			  gboolean sync_changes,
 			  GThread *thread)
 {
 	g_mutex_lock (db->priv->change_mutex);
-
-	g_hash_table_foreach (db->priv->changed_entries, (GHFunc) emit_entry_changed, db);
-	if (sync_changes)
+	
+	if (sync_changes) {
 		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) sync_entry_changed, db);
-	g_hash_table_foreach_remove (db->priv->changed_entries, (GHRFunc) free_entry_changes, db);
+	}
 
-	/* update the lists of entry added/deleted signals to emit */
+	/* update the sets of entry changed/added/deleted signals to emit */
+	g_hash_table_foreach_remove (db->priv->changed_entries, (GHRFunc) process_changed_entries_cb, db);
 	g_hash_table_foreach_remove (db->priv->added_entries, (GHRFunc) process_added_entries_cb, db);
 	g_hash_table_foreach_remove (db->priv->deleted_entries, (GHRFunc) process_deleted_entries_cb, db);
 
 	/* if there are some signals to emit, add a new idle callback if required */
-	if (db->priv->added_entries_to_emit || db->priv->deleted_entries_to_emit) {
+	if (db->priv->added_entries_to_emit || db->priv->deleted_entries_to_emit || db->priv->changed_entries_to_emit) {
 		if (db->priv->emit_entry_signals_id == 0)
 			db->priv->emit_entry_signals_id = g_idle_add ((GSourceFunc) rhythmdb_emit_entry_signals_idle, db);
 	}
