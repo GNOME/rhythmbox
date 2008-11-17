@@ -166,6 +166,7 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
 	rms_class->impl_get_mime_types = impl_get_mime_types;
+	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
 
 	klass->impl_get_mount_path = default_get_mount_path;
 	klass->impl_load_playlists = default_load_playlists;
