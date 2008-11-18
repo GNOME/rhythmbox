@@ -49,6 +49,7 @@
 static void rb_library_browser_class_init (RBLibraryBrowserClass *klass);
 static void rb_library_browser_init (RBLibraryBrowser *entry);
 static void rb_library_browser_finalize (GObject *object);
+static void rb_library_browser_dispose (GObject *object);
 static GObject* rb_library_browser_constructor (GType type, guint n_construct_properties,
 						GObjectConstructParam *construct_properties);
 static void rb_library_browser_set_property (GObject *object,
@@ -71,6 +72,10 @@ static void rb_library_browser_views_changed (GConfClient *client,
 					      guint cnxn_id,
 					      GConfEntry *entry,
 					      RBLibraryBrowser *widget);
+
+typedef struct _RBLibraryBrowserRebuildData RBLibraryBrowserRebuildData;
+
+static void destroy_idle_rebuild_model (RBLibraryBrowserRebuildData *data);
 
 G_DEFINE_TYPE (RBLibraryBrowser, rb_library_browser, GTK_TYPE_HBOX)
 #define RB_LIBRARY_BROWSER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LIBRARY_BROWSER, RBLibraryBrowserPrivate))
@@ -96,12 +101,12 @@ G_DEFINE_TYPE (RBLibraryBrowser, rb_library_browser, GTK_TYPE_HBOX)
  * asynchronously to update the property views.
  */
 
-typedef struct
+struct _RBLibraryBrowserRebuildData
 {
 	RBLibraryBrowser *widget;
 	int rebuild_prop_index;
 	int rebuild_idle_id;
-} RBLibraryBrowserRebuildData;
+};
 
 typedef struct
 {
@@ -146,6 +151,7 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = rb_library_browser_finalize;
+	object_class->dispose = rb_library_browser_dispose;
 	object_class->constructor = rb_library_browser_constructor;
 	object_class->set_property = rb_library_browser_set_property;
 	object_class->get_property = rb_library_browser_get_property;
@@ -268,22 +274,48 @@ rb_library_browser_constructor (GType type,
 
 	return G_OBJECT (browser);
 }
+
+static void
+rb_library_browser_dispose (GObject *object)
+{
+	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (object);
+	
+	if (priv->browser_view_notify_id != 0) {
+		eel_gconf_notification_remove (priv->browser_view_notify_id);
+		priv->browser_view_notify_id = 0;
+	}
+
+	if (priv->rebuild_data != NULL) {
+		/* this looks a bit odd, but removing the idle handler cleans up the
+		 * data too.
+		 */
+		guint id = priv->rebuild_data->rebuild_idle_id;
+		priv->rebuild_data = NULL;
+		g_source_remove (id);
+	}
+	
+	if (priv->db != NULL) {
+		g_object_unref (priv->db);
+		priv->db = NULL;
+	}
+
+	if (priv->input_model != NULL) {
+		g_object_unref (priv->input_model);
+		priv->input_model = NULL;
+	}
+
+	if (priv->output_model != NULL) {
+		g_object_unref (priv->output_model);
+		priv->output_model = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_library_browser_parent_class)->dispose (object);
+}
+
 static void
 rb_library_browser_finalize (GObject *object)
 {
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (object);
-
-	eel_gconf_notification_remove (priv->browser_view_notify_id);
-
-	if (priv->db != NULL) {
-		g_object_unref (priv->db);
-	}
-	if (priv->input_model != NULL) {
-		g_object_unref (priv->input_model);
-	}
-	if (priv->output_model != NULL) {
-		g_object_unref (priv->output_model);
-	}
 
 	g_hash_table_destroy (priv->property_views);
 	g_hash_table_destroy (priv->selections);
