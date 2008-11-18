@@ -639,7 +639,9 @@ attach_output_pipeline (RBEncoderGst *encoder,
 				g_propagate_error (error, local_error);
 				return FALSE;
 			}
-		} else {
+		}
+
+		if (stream != NULL) {
 			g_object_set (sink, "stream", stream, NULL);
 		}
 	} else {

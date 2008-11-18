@@ -1,5 +1,11 @@
 2008-11-18  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-encoder-gst.c: (attach_output_pipeline):
+	The stream sink needs the stream object when we're replacing an
+	existing output file, not just when it doesn't already exist.
+
+2008-11-18  Jonathan Matthew  <jonathan@d14n.org>
+
 	* widgets/rb-library-browser.c: (rb_library_browser_class_init),
 	(rb_library_browser_dispose), (rb_library_browser_finalize):
 	Remove the browser rebuild idle handler when the browser is disposed.
