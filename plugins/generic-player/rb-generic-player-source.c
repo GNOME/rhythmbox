@@ -691,14 +691,18 @@ rb_generic_player_source_new (RBShell *shell, GMount *mount)
 static void
 impl_delete_thyself (RBSource *source)
 {
+	GList *pl;
 	GList *p;
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 
-	for (p = priv->playlists; p != NULL; p = p->next) {
+	/* take a copy of the list first, as playlist_deleted_cb modifies priv->playlists */
+	pl = g_list_copy (priv->playlists);
+	for (p = pl; p != NULL; p = p->next) {
 		RBSource *playlist = RB_SOURCE (p->data);
 		rb_source_delete_thyself (playlist);
 	}
 	g_list_free (priv->playlists);
+	g_list_free (pl);
 	priv->playlists = NULL;
 
 	if (priv->import_errors != NULL) {
