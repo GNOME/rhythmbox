@@ -101,11 +101,6 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/plugins/librbplugins.la		\
 	-lgstpbutils-0.10
 
-if USE_LIBSOUP
-rhythmbox_LDADD += $(SOUP_LIBS)
-INCLUDES += $(SOUP_CFLAGS)
-endif
-
 if USE_NOTIFY
 rhythmbox_LDADD += $(NOTIFY_LIBS)
 INCLUDES += $(NOTIFY_CFLAGS)

@@ -107,10 +107,5 @@ GTKDOC_LIBS=\
 	$(RHYTHMBOX_LIBS)				\
 	$(MORE_GTKDOC_LIBS)
 
-if ENABLE_TRACK_TRANSFER
-GTKDOC_LIBS +=	$(GNOME_MEDIA_PROFILES_LIBS) 
-endif
-
-
 include $(top_srcdir)/gtk-doc.make
 

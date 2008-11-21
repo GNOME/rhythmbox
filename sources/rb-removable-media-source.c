@@ -64,9 +64,7 @@ static void rb_removable_media_source_get_property (GObject *object,
 			                  GParamSpec *pspec);
 
 static void impl_delete_thyself (RBSource *source);
-#ifdef ENABLE_TRACK_TRANSFER
 static void impl_paste (RBSource *source, GList *entries);
-#endif
 static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
 static gboolean impl_should_paste (RBRemovableMediaSource *source,
 				   RhythmDBEntry *entry);
@@ -106,9 +104,7 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
-#ifdef ENABLE_TRACK_TRANSFER
   	source_class->impl_paste = impl_paste;
-#endif
   	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_delete = NULL;
@@ -313,8 +309,6 @@ impl_delete_thyself (RBSource *source)
 	g_object_unref (db);
 }
 
-#ifdef ENABLE_TRACK_TRANSFER
-
 struct _TrackAddedData {
 	RBRemovableMediaSource *source;
 	char *mimetype;
@@ -435,8 +429,6 @@ impl_paste_end:
 	g_object_unref (rm_mgr);
 	g_object_unref (encoder);
 }
-
-#endif
 
 static guint
 impl_want_uri (RBSource *source, const char *uri)

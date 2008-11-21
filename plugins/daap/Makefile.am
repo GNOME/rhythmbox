@@ -31,7 +31,6 @@ libdaap_la_SOURCES = \
 
 libdaap_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libdaap_la_LIBADD = 					\
-	$(SOUP_LIBS)					\
 	$(MDNS_LIBS)
 
 INCLUDES = 						\
@@ -55,7 +54,6 @@ INCLUDES = 						\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
-	$(SOUP_CFLAGS)					\
 	$(MDNS_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE

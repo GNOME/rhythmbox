@@ -68,7 +68,6 @@ static void rb_ipod_load_songs (RBiPodSource *source);
 static void impl_delete_thyself (RBSource *source);
 static GList* impl_get_ui_actions (RBSource *source);
 
-#ifdef ENABLE_IPOD_WRITING
 static GList * impl_get_mime_types (RBRemovableMediaSource *source);
 static gboolean impl_track_added (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
@@ -90,7 +89,7 @@ static gboolean rb_ipod_song_artwork_add_cb (RhythmDB *db,
                                              const gchar *property_name,
                                              const GValue *metadata,
                                              RBiPodSource *isource);
-#endif
+
 static RhythmDB *get_db_for_source (RBiPodSource *source);
 
 struct _PlayedEntry {
@@ -116,12 +115,10 @@ typedef struct
 	GQueue *offline_plays;
 } RBiPodSourcePrivate;
 
-#ifdef ENABLE_IPOD_WRITING
 typedef struct {
 	RBiPodSourcePrivate *priv;
 	GdkPixbuf *pixbuf;
 } RBiPodSongArtworkAddData;
-#endif
 
 RB_PLUGIN_DEFINE_TYPE(RBiPodSource,
 		      rb_ipod_source,
@@ -149,16 +146,11 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
 
-#ifdef ENABLE_IPOD_WRITING
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
 	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
 	rms_class->impl_track_added = impl_track_added;
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
 	rms_class->impl_get_mime_types = impl_get_mime_types;
-#else
-	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
-	rms_class->impl_track_added = NULL;
-#endif
 
 	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 
@@ -212,14 +204,12 @@ rb_ipod_source_constructor (GType type, guint n_construct_properties,
 
 	rb_ipod_load_songs (source);
 
-#ifdef ENABLE_IPOD_WRITING                                      
         RhythmDB *db = get_db_for_source (RB_IPOD_SOURCE (source));
         g_signal_connect_object (db,
                                  "entry-extra-metadata-notify::rb:coverArt",
                                  G_CALLBACK (rb_ipod_song_artwork_add_cb),
                                  RB_IPOD_SOURCE(source), 0);
         g_object_unref (G_OBJECT (db));
-#endif
 
 	return G_OBJECT (source);
 }
@@ -455,8 +445,6 @@ load_ipod_playlists (RBiPodSource *source)
 
 }
 
-#ifdef ENABLE_IPOD_WRITING
-
 /* FIXME:  these should go away once we compile against new-enough libgpod */
 #define MEDIATYPE_AUDIO         0x0001
 #define MEDIATYPE_PODCAST       0x0004
@@ -498,7 +486,6 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, const char *mimetype)
 
 	return track;
 }
-#endif
 
 static void add_offline_played_entry (RBiPodSource *source,
 				      RhythmDBEntry *entry,
@@ -1024,7 +1011,6 @@ impl_move_to_trash (RBSource *asource)
 	g_list_free (sel);
 }
 
-#ifdef ENABLE_IPOD_WRITING
 static char *
 impl_build_dest_uri (RBRemovableMediaSource *source,
 		     RhythmDBEntry *entry,
@@ -1487,7 +1473,6 @@ ipod_path_from_unix_path (const gchar *mount_point, const gchar *unix_path)
 
 	return ipod_path;
 }
-#endif
 
 static void
 impl_delete_thyself (RBSource *source)
@@ -1528,8 +1513,6 @@ impl_delete_thyself (RBSource *source)
 	RB_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_delete_thyself (source);
 }
 
-#ifdef ENABLE_IPOD_WRITING
-
 static GList *
 impl_get_mime_types (RBRemovableMediaSource *source)
 {
@@ -1541,8 +1524,6 @@ impl_get_mime_types (RBRemovableMediaSource *source)
 
 	return ret;
 }
-
-#endif
 
 
 void

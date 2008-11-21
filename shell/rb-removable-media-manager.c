@@ -56,10 +56,7 @@
 #include "rhythmdb.h"
 #include "rb-marshal.h"
 #include "rb-util.h"
-
-#ifdef ENABLE_TRACK_TRANSFER
 #include "rb-encoder.h"
-#endif
 
 static void rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass);
 static void rb_removable_media_manager_init (RBRemovableMediaManager *mgr);
@@ -96,9 +93,7 @@ static void mount_removed_cb (GVolumeMonitor *monitor, GMount *mount, RBRemovabl
 
 static gboolean rb_removable_media_manager_load_media (RBRemovableMediaManager *manager);
 
-#ifdef ENABLE_TRACK_TRANSFER
 static void do_transfer (RBRemovableMediaManager *manager);
-#endif
 static void rb_removable_media_manager_cmd_copy_tracks (GtkAction *action,
 							RBRemovableMediaManager *mgr);
 
@@ -719,13 +714,6 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 					      mgr);
 	}
 
-#ifndef ENABLE_TRACK_TRANSFER
-	{
-		action = gtk_action_group_get_action (priv->actiongroup, "RemovableSourceCopyAllTracks");
-		gtk_action_set_visible (action, FALSE);
-	}
-#endif
-
 	gtk_ui_manager_insert_action_group (priv->uimanager,
 					    priv->actiongroup,
 					    0);
@@ -952,7 +940,6 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 	g_list_free (list);
 }
 
-#ifdef ENABLE_TRACK_TRANSFER
 /* Track transfer */
 
 typedef struct {
@@ -1120,12 +1107,10 @@ copy_entry (RhythmDBQueryModel *model,
 	*list = l;
 	return FALSE;
 }
-#endif
 
 static void
 rb_removable_media_manager_cmd_copy_tracks (GtkAction *action, RBRemovableMediaManager *mgr)
 {
-#ifdef ENABLE_TRACK_TRANSFER
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 	RBRemovableMediaSource *source;
 	RBLibrarySource *library;
@@ -1142,5 +1127,4 @@ rb_removable_media_manager_cmd_copy_tracks (GtkAction *action, RBRemovableMediaM
 
 	g_object_unref (model);
 	g_object_unref (library);
-#endif
 }

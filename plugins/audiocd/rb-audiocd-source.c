@@ -755,9 +755,7 @@ impl_get_ui_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
-#ifdef ENABLE_TRACK_TRANSFER
 	actions = g_list_prepend (actions, g_strdup ("RemovableSourceCopyAllTracks"));
-#endif
 	actions = g_list_prepend (actions, g_strdup ("RemovableSourceEject"));
 
 	return actions;

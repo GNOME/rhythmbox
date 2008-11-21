@@ -13,9 +13,5 @@ librhythmbox_core_la_LIBADD = 				\
 	$(top_builddir)/backends/librbbackends.la	\
 	$(top_builddir)/lib/librb.la
 
-if ENABLE_TRACK_TRANSFER
-librhythmbox_core_la_LIBADD += $(GNOME_MEDIA_PROFILES_LIBS)
-endif
-
 librhythmbox_core_la_LDFLAGS = -export-dynamic
 

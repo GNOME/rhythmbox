@@ -5,6 +5,8 @@ noinst_LTLIBRARIES = librbbackends.la
 SUBDIRS = gstreamer 
 
 librbbackends_la_SOURCES =				\
+	rb-encoder.h 					\
+	rb-encoder.c					\
 	rb-player.h					\
 	rb-player.c					\
 	rb-player-gst-filter.h				\
@@ -32,10 +34,4 @@ INCLUDES = 						\
 	-I$(top_builddir)/lib 				\
 	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)
-
-if ENABLE_TRACK_TRANSFER
-librbbackends_la_SOURCES +=	\
-	rb-encoder.h 		\
-	rb-encoder.c
-endif
 

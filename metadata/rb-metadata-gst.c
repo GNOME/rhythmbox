@@ -1226,11 +1226,7 @@ rb_metadata_load (RBMetaData *md,
 gboolean
 rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 {
-#ifdef ENABLE_TAG_WRITING
 	return rb_metadata_gst_type_to_tag_function (md, mimetype) != NULL;
-#else
-	return FALSE;
-#endif
 }
 
 static void

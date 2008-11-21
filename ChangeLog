@@ -1,5 +1,54 @@
 2008-11-21  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/Makefile.am:
+	* backends/gstreamer/Makefile.am:
+	* bindings/python/rb.override:
+	* corelib/Makefile.am:
+	* doc/reference/Makefile.am:
+	* plugins/audiocd/rb-audiocd-source.c: (impl_get_ui_actions):
+	* plugins/mtpdevice/rb-mtp-source.c: (rb_mtp_source_class_init):
+	* plugins/generic-player/rb-generic-player-source.h:
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_set_uimanager), (copy_entry),
+	(rb_removable_media_manager_cmd_copy_tracks):
+	* shell/rb-removable-media-manager.h:
+	* sources/Makefile.am:
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(rb_library_source_dispose),
+	(rb_library_source_edit_profile_clicked_cb),
+	(impl_get_config_widget), (rb_library_source_preferences_sync),
+	(build_filename), (impl_can_paste), (impl_paste):
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_class_init):
+	Remove the option of disabling track transfer.
+
+	* metadata/Makefile.am:
+	Remove the option of disabling the metadata helper process.
+
+	* metadata/rb-metadata-gst.c: (rb_metadata_can_save):
+	Remove the option of disabling tag writing.
+
+	* lib/rb-proxy-config.c: (rb_proxy_config_get_libsoup_uri):
+	* lib/rb-proxy-config.h:
+	* plugins/Makefile.am:
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/daap/Makefile.am:
+	* shell/Makefile.am:
+	Remove the option of disabling audioscrobbler/last.fm.  This means
+	libsoup is always required.
+	
+	* plugins/ipod/rb-ipod-source.c: (rb_ipod_source_class_init),
+	(rb_ipod_source_constructor), (create_ipod_song_from_entry),
+	(ipod_path_from_unix_path):
+	Remove the option of disabling ipod writing.
+
+	* configure.ac:
+	all of the above.
+
+	libsoup and gnome-media-profiles are now mandatory.  #561142.
+
+2008-11-21  Jonathan Matthew  <jonathan@d14n.org>
+
 	* rhythmdb/rhythmdb-private.h:
 	missed a file in the previous commit
 

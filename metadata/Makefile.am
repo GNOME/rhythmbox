@@ -11,8 +11,6 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(NO_STRICT_ALIASING_CFLAGS)
 
-if WITH_METADATA_HELPER
-
 INSTALLED_METADATA_HELPER=`echo rhythmbox-metadata | sed '$(transform)'`
 
 INCLUDES += $(DBUS_CFLAGS)				\
@@ -67,19 +65,6 @@ test_metadata_LDADD =					\
 	$(RHYTHMBOX_LIBS)				\
 	-lgstpbutils-0.10				\
 	$(DBUS_LIBS)
-
-else
-
-noinst_LTLIBRARIES = librbmetadata.la
-
-librbmetadata_la_SOURCES = \
-	rb-metadata.h rb-metadata-common.c rb-metadata-gst.c
-
-
-librbmetadata_la_LIBADD =			\
-	$(RHYTHMBOX_LIBS)
-
-endif
 
 librbmetadata_la_LDFLAGS = -export-dynamic
 

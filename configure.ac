@@ -66,8 +66,10 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  gtk+-2.0 >= $GTK_REQS			\
 		  glib-2.0 >= $GLIB_REQS		\
 		  gio-2.0 >= $GLIB_REQS			\
+		  gnome-media-profiles >= $GNOME_MEDIA_PROFILES_REQS \
 		  libgnomeui-2.0			\
-		  libglade-2.0)
+		  libglade-2.0				\
+		  libsoup-2.4)
 
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
 if test x$have_totem_plparser != xyes; then
@@ -90,26 +92,6 @@ if test "x$with_hal" != "xno"; then
   fi	
 fi
 AM_CONDITIONAL(HAVE_HAL, test x"$enable_hal" = xyes)
-
-dnl transfers
-AC_ARG_ENABLE(track-transfer,
-	      AC_HELP_STRING([--disable-track-transfer],
-			     [Disable track transfer support in rhythmbox]))
-if test x"$enable_track_transfer" != xno; then
-   PKG_CHECK_MODULES(GNOME_MEDIA_PROFILES,
-      gnome-media-profiles >= $GNOME_MEDIA_PROFILES_REQS,
-      with_track_transfer=yes,
-      with_track_transfer=no)
-
-   if test "x$with_track_transfer" = xno -a "x$enable_track_transfer" = xyes; then
-      AC_MSG_ERROR([Track transfer support explicitly requested but gnome-media-profiles not found.])
-   fi
-
-   if test "x$with_track_transfer" = xyes; then
-      AC_DEFINE(ENABLE_TRACK_TRANSFER, 1, [Define if track transfer should be enabled])
-   fi
-fi
-AM_CONDITIONAL(ENABLE_TRACK_TRANSFER, test "x$with_track_transfer" = "xyes")
 
 
 dnl iPod support
@@ -159,28 +141,6 @@ if test "x$with_mtp" != "xno"; then
 	fi
 fi			  
 AM_CONDITIONAL(USE_MTP, test x"$use_mtp" = xyes)
-
-
-dnl ipod writing
-AC_ARG_ENABLE(ipod-writing,
-	      AC_HELP_STRING([--disable-ipod-writing],
-			     [Disable support for writing to ipods in rhythmbox]))
-if test x"$enable_ipod_writing" != xno; then
-   if test "x$use_ipod" != xyes; then
-      if test "x$enable_ipod_writing" = xyes; then
-         AC_MSG_ERROR([iPod write support explicitly requested but iPod support is disabled.])
-      fi
-      enable_ipod_writing=no
-   elif test "x$with_track_transfer" != xyes; then
-      if test "x$enable_ipod_writing" = xyes; then
-         AC_MSG_ERROR([iPod write support explicitly requested but track transfer support is disabled.])
-      fi
-      enable_ipod_writing=no
-   else
-      AC_DEFINE(ENABLE_IPOD_WRITING, 1, [Define if ipod writing should be enabled])
-   fi
-fi
-
 
 
 dnl gnome-keyring support
@@ -238,19 +198,6 @@ PKG_CHECK_MODULES(GSTREAMER_0_10, \
 
 RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $GSTREAMER_0_10_CFLAGS"
 RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $GSTREAMER_0_10_LIBS"
-
-dnl Tag writing
-AC_ARG_ENABLE(tag-writing,
-	      AC_HELP_STRING([--disable-tag-writing],
-			     [Disable tag writing support in rhythmbox]))
-if test x"$enable_tag_writing" != xno; then
-   AC_DEFINE(ENABLE_TAG_WRITING, 1, [Define if tag writing should be enabled])
-fi
-
-dnl Audioscrobbler
-AC_ARG_ENABLE(audioscrobbler,
-	      AC_HELP_STRING([--disable-audioscrobbler],
-			     [Disable Audioscrobbler support in Rhythmbox]))
 
 dnl DAAP (iTunes Music Shares)
 AC_ARG_ENABLE(daap,
@@ -329,42 +276,9 @@ if test x$enable_libnotify = xyes ; then
     AC_SUBST(NOTIFY_LIBS)
 fi
 
-dnl Check for libsoup, needed for DAAP and audioscrobbler
-if test "x$enable_daap" != "xno" || test "x$enable_audioscrobbler" != "xno"; then
-	PKG_CHECK_MODULES(SOUP,                            \
-		libsoup-2.4,
-		have_libsoup=yes,
-		have_libsoup=no)
-	if test x"$have_libsoup" = "xyes"; then
-		AC_DEFINE(HAVE_LIBSOUP, 1, [Define if libsoup support is enabled])
-	fi
-fi
-
-AM_CONDITIONAL(USE_LIBSOUP, test x"$have_libsoup" = "xyes")
-
-
-dnl audioscrobbler support
-if test "x$enable_audioscrobbler" != "xno"; then
-	if test x"$have_libsoup" = "xno"; then
-		if test "x$enable_audioscrobbler" = "xyes"; then
-			AC_MSG_ERROR([AudioScrobbler support explicitly requested, but no libsoup found.  Install libsoup])
-		fi
-		enable_audioscrobbler=no
-	else
-		AC_DEFINE(WITH_AUDIOSCROBBLER, 1, [define if Audioscrobbler support should be enabled])
-	fi
-fi
-AM_CONDITIONAL(WITH_AUDIOSCROBBLER, test "x$enable_audioscrobbler" != "xno")
-
-
 dnl daap support
 if test "x$enable_daap" != "xno"; then
-	if test x"$have_libsoup" = "xno"; then
-		if test "x$enable_daap" = "xyes"; then
-			AC_MSG_ERROR([DAAP support explicitly requested, but no libsoup found.  Install libsoup])
-		fi
-		enable_daap=no
-	elif test x"$have_mdns" = xno; then
+	if test x"$have_mdns" = xno; then
 		if test "x$enable_daap" = "xyes"; then
 			AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implementation found.  Install Avahi])
 		fi
@@ -508,16 +422,6 @@ PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS)
 DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_API_SUBJECT_TO_CHANGE"
 DBUS_GLIB_BIN="`$PKG_CONFIG --variable=exec_prefix dbus-glib-1`/bin"
 AC_SUBST(DBUS_GLIB_BIN)
-
-dnl out-of-process metadata reader (requires dbus)
-AC_ARG_WITH(metadata-helper,
-	    AC_HELP_STRING([--with-metadata-helper],
-	    		   [Use a separate process for metadata reading]),,
-	    with_metadata_helper=auto)
-if test "x$with_metadata_helper" != xno; then
-	AC_DEFINE(WITH_METADATA_HELPER, 1, [Define if the metadata helper process is enabled])
-fi
-AM_CONDITIONAL(WITH_METADATA_HELPER, test "x$with_metadata_helper" != "xno")
 
 AM_GCONF_SOURCE_2
 
@@ -938,16 +842,6 @@ if test x"${with_rhythmdb_debug}" != x0; then
 fi
 
 
-if test x"$enable_tag_writing" != xno; then
-        AC_MSG_NOTICE([** Tag writing is enabled])
-else
-	AC_MSG_NOTICE([   Tag writing is disabled])
-fi
-if test x"$with_track_transfer" = xyes; then
-        AC_MSG_NOTICE([** Track transfer is enabled])
-else
-	AC_MSG_NOTICE([   Track transfer is disabled])
-fi
 if test x"$enable_mmkeys" != "xyes"; then
 	AC_MSG_NOTICE([   Multimedia keys support is disabled])
 else
@@ -960,11 +854,7 @@ else
 fi
 
 if test x"$use_ipod" = xyes; then
-	if test x"$enable_ipod_writing" != xno; then
-		AC_MSG_NOTICE([** iPod integration enabled])
-	else
-		AC_MSG_NOTICE([** iPod integration enabled (read-only)])
-	fi
+	AC_MSG_NOTICE([** iPod integration enabled])
 else
 	AC_MSG_NOTICE([   iPod integration disabled])
 fi
@@ -1007,16 +897,6 @@ if test x"$use_gnome_keyring" = xyes; then
 	AC_MSG_NOTICE([** gnome-keyring support enabled])
 else
 	AC_MSG_NOTICE([   gnome-keyring support disabled])
-fi
-if test x"$enable_audioscrobbler" != xno; then
-	AC_MSG_NOTICE([** Audioscrobbler support enabled])
-else
-	AC_MSG_NOTICE([   Audioscrobbler support disabled])
-fi
-if test x"$with_metadata_helper" != xno; then
-	AC_MSG_NOTICE([** Separate metadata helper process enabled])
-else
-	AC_MSG_NOTICE([   Separate metadata helper process disabled])
 fi
 if test x"$with_internal_libsexy" = xyes; then
 	AC_MSG_NOTICE([   using internal libsexy])

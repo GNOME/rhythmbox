@@ -2,16 +2,13 @@
 
 SUBDIRS = 						\
 	audiocd						\
+	audioscrobbler					\
 	generic-player					\
 	iradio						\
 	mmkeys						\
 	power-manager					\
 	sample						\
 	visualizer
-
-if WITH_AUDIOSCROBBLER
-SUBDIRS += audioscrobbler
-endif
 
 if WITH_LIRC
 SUBDIRS += lirc

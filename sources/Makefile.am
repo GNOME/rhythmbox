@@ -66,11 +66,3 @@ INCLUDES =						\
 libsources_la_LDFLAGS = -export-dynamic
 libsourcesimpl_la_LDFLAGS = -export-dynamic
 
-if USE_LIBSOUP
-INCLUDES += $(SOUP_CFLAGS)
-endif
-
-if ENABLE_TRACK_TRANSFER
-INCLUDES +=$(GNOME_MEDIA_PROFILES_CFLAGS)
-endif
-

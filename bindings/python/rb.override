@@ -1318,7 +1318,6 @@ _rb_removable_media_manager_queue_transfer_func (RhythmDBEntry *entry, const cha
 static PyObject *
 _wrap_rb_removable_media_manager_queue_transfer(PyGObject *self, PyObject *args, PyObject *kwargs)
 {
-#ifdef ENABLE_TRACK_TRANSFER
 	static char *kwlist[] = { "entry", "dest", "mimetypes", "callback", "data", NULL };
 	PyObject *py_entry, *py_mimes;
 	char *dest = NULL;
@@ -1348,10 +1347,6 @@ _wrap_rb_removable_media_manager_queue_transfer(PyGObject *self, PyObject *args,
 	g_list_free (mimes);
 	Py_INCREF(Py_None);
 	return Py_None;
-#else
-	PyErr_SetString(PyExc_NotImplementedError, "Track transfer is disabled in this build of Rhythmbox");
-	return NULL;
-#endif
 }
 
 %%

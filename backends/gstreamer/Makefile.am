@@ -3,6 +3,8 @@
 noinst_LTLIBRARIES = librbbackendsgstreamer.la
 
 librbbackendsgstreamer_la_SOURCES =			\
+	rb-encoder-gst.h				\
+	rb-encoder-gst.c				\
 	rb-player-gst.h					\
 	rb-player-gst.c					\
 	rb-player-gst-xfade.h				\
@@ -26,11 +28,4 @@ INCLUDES = 						\
 	-I$(top_srcdir)/backends			\
 	-I$(top_builddir)/lib 				\
 	$(RHYTHMBOX_CFLAGS)
-
-if ENABLE_TRACK_TRANSFER
-INCLUDES += $(GNOME_MEDIA_PROFILES_CFLAGS)
-librbbackendsgstreamer_la_SOURCES +=	\
-	rb-encoder-gst.h		\
-	rb-encoder-gst.c
-endif
 
