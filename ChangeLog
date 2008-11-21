@@ -1,3 +1,9 @@
+2008-11-21  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/rb/Loader.py:
+	When invoking callbacks from an idle handler or a gio completion
+	callback, take the gdk lock first.  Probably fixes #473757.
+
 2008-11-19  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/generic-player/rb-generic-player-source.c:

@@ -25,6 +25,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import gobject
+import gtk
 
 use_gio = False
 try:
@@ -39,6 +40,12 @@ except:
 if use_gio is False:
 	import gnomevfs
 
+def callback_with_gdk_lock(callback, data, args):
+	gtk.gdk.threads_enter()
+	callback(data, *args)
+	gtk.gdk.threads_leave()
+	return False
+
 class GioSrc(object):
 	def __init__ (self):
 		pass
@@ -46,10 +53,10 @@ class GioSrc(object):
 	def _contents_cb(self, file, result, (callback, args)):
 		try:
 			(contents, length, etag) = file.load_contents_finish(result)
-			callback(contents, *args)
+			callback_with_gdk_lock(callback, contents, args)
 		except Exception, e:
 			print "error getting file contents: %s" % e
-			callback(None, *args)
+			callback_with_gdk_lock(callback, None, args)
 
 	def get_url (self, url, callback, *args):
 		try:
@@ -67,10 +74,10 @@ class GnomeVFSAsyncSrc (object):
 	def read_cb (self, handle, buffer, exc_type, bytes_requested, (data, callback, args)):
 		if exc_type:
 			if issubclass (exc_type, gnomevfs.EOFError):
-				gobject.idle_add (callback, data, *args)
+				gobject.idle_add (callback_with_gdk_lock, callback, data, args)
 				handle.close (lambda *args: None)
 			else:
-				gobject.idle_add (callback, None, *args)
+				gobject.idle_add (callback_with_gdk_lock, callback, None, args)
 				handle.close (lambda *args: None)
 			return
  			
@@ -79,7 +86,7 @@ class GnomeVFSAsyncSrc (object):
 
 	def open_cb (self, handle, exc_type, (data, callback, args)):
 		if exc_type:
-			gobject.idle_add (callback, None, *args)
+			gobject.idle_add (callback_with_gdk_lock, callback, None, args)
 			return
 
 		handle.read (self.chunk, self.read_cb, (data, callback, args))
