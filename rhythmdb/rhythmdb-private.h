@@ -159,6 +159,7 @@ struct _RhythmDBPrivate
 	guint changed_files_id;
 	GSList *library_locations;
 	guint monitor_notify_id;
+	GMutex *monitor_mutex;
 
 	gboolean dry_run;
 	gboolean no_update;
