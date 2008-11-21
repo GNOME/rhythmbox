@@ -1,5 +1,13 @@
 2008-11-21  Jonathan Matthew  <jonathan@d14n.org>
 
+	* rhythmdb/rhythmdb-monitor.c: (rhythmdb_init_monitoring),
+	(rhythmdb_finalize_monitoring), (actually_add_monitor),
+	(rhythmdb_process_changed_files):
+	Add a mutex around the monitored directory map because it can be
+	accessed from multiple threads.  Probably fixes #484611.
+
+2008-11-21  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/rb/Loader.py:
 	When invoking callbacks from an idle handler or a gio completion
 	callback, take the gdk lock first.  Probably fixes #473757.

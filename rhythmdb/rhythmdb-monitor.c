@@ -61,6 +61,8 @@ static void rhythmdb_mount_removed_cb (GVolumeMonitor *monitor,
 void
 rhythmdb_init_monitoring (RhythmDB *db)
 {
+	db->priv->monitor_mutex = g_mutex_new ();
+
 	db->priv->monitored_directories = g_hash_table_new_full (g_file_hash, (GEqualFunc) g_file_equal,
 								 (GDestroyNotify) g_object_unref,
 								 (GDestroyNotify)g_file_monitor_cancel);
@@ -106,6 +108,8 @@ rhythmdb_finalize_monitoring (RhythmDB *db)
 
 	g_hash_table_destroy (db->priv->monitored_directories);
 	g_hash_table_destroy (db->priv->changed_files);
+
+	g_mutex_free (db->priv->monitor_mutex);
 }
 
 void
@@ -126,7 +130,10 @@ actually_add_monitor (RhythmDB *db, GFile *directory, GError **error)
 		return;
 	}
 
+	g_mutex_lock (db->priv->monitor_mutex);
+
 	if (g_hash_table_lookup (db->priv->monitored_directories, directory)) {
+		g_mutex_unlock (db->priv->monitor_mutex);
 		return;
 	}
 
@@ -141,6 +148,8 @@ actually_add_monitor (RhythmDB *db, GFile *directory, GError **error)
 				     g_object_ref (directory),
 				     monitor);
 	}
+
+	g_mutex_unlock (db->priv->monitor_mutex);
 }
 
 static void
@@ -228,6 +237,11 @@ rhythmdb_check_changed_file (RBRefString *uri, gpointer data, RhythmDB *db)
 static gboolean
 rhythmdb_process_changed_files (RhythmDB *db)
 {
+	/*
+	 * no need for a mutex around the changed files map as it's only accessed
+	 * from the main thread.  GFileMonitor's 'changed' signal is emitted from an
+	 * idle handler, and we only process the map in a timeout callback.
+	 */
 	if (g_hash_table_size (db->priv->changed_files) == 0) {
 		db->priv->changed_files_id = 0;
 		return FALSE;
