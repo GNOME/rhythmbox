@@ -318,9 +318,9 @@ static void
 qt_pad_added_cb (GstElement *demux, GstPad *demuxpad, GstPad *muxpad)
 {
 	if (gst_pad_link (demuxpad, muxpad) != GST_PAD_LINK_OK)
-		rb_debug ("unable to link pad from qtdemux to qtmux");
+		rb_debug ("unable to link pad from qtdemux to mp4mux");
 	else
-		rb_debug ("linked pad from qtdemux to qtmux");
+		rb_debug ("linked pad from qtdemux to mp4mux");
 }
 
 
@@ -332,7 +332,7 @@ rb_add_qt_tagger (RBMetaData *md, GstElement *element)
 	GstPad *muxpad;
 
 	demux = gst_element_factory_make ("qtdemux", NULL);
-	mux = gst_element_factory_make ("qtmux", NULL);
+	mux = gst_element_factory_make ("mp4mux", NULL);
 	if (demux == NULL || mux == NULL)
 		goto error;
 
@@ -413,7 +413,7 @@ rb_metadata_init (RBMetaData *md)
 	tagger = (has_giosink && gst_element_factory_find ("flactag")) ?  rb_add_flac_tagger : NULL;
 	add_supported_type (md, "audio/x-flac", tagger, "FLAC");
 
-	tagger = (has_giosink && gst_element_factory_find ("qtdemux") && gst_element_factory_find ("qtmux")) ? rb_add_qt_tagger : NULL;
+	tagger = (has_giosink && gst_element_factory_find ("qtdemux") && gst_element_factory_find ("mp4mux")) ? rb_add_qt_tagger : NULL;
 	add_supported_type (md, "audio/x-m4a", tagger, "M4A");
 	add_supported_type (md, "video/quicktime", tagger, "M4A");			/* hmm. */
 
