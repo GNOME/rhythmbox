@@ -1074,7 +1074,7 @@ link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	g_static_rec_mutex_lock (&stream->player->priv->stream_list_lock);
 
 	/* sometimes we seem to get called twice */
-	if (stream->state == FADING_IN || stream->state == PLAYING) {
+	if (stream->src_blocked == FALSE) {
 		g_static_rec_mutex_unlock (&stream->player->priv->stream_list_lock);
 		return;
 	}
@@ -2407,7 +2407,15 @@ static void
 stream_src_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 {
 	GError *error = NULL;
+
+	g_static_rec_mutex_lock (&stream->player->priv->stream_list_lock);
+	if (stream->src_blocked) {
+		rb_debug ("stream %s already blocked", stream->uri);
+		g_static_rec_mutex_unlock (&stream->player->priv->stream_list_lock);
+		return;
+	}
 	stream->src_blocked = TRUE;
+	g_static_rec_mutex_unlock (&stream->player->priv->stream_list_lock);
 
 	g_object_set (stream->preroll,
 		      "min-threshold-time", G_GINT64_CONSTANT (0),
