@@ -291,7 +291,7 @@ rb_mtp_source_new (RBShell *shell,
 				mediatype = "audio/flac";
 				break;
 			default:
-				rb_debug ("unknown libmtp filetype %d supported", types[i]);
+				rb_debug ("unknown libmtp filetype %s supported", LIBMTP_Get_Filetype_Description (types[i]));
 				mediatype = NULL;
 				break;
 			}
@@ -330,15 +330,21 @@ entry_set_string_prop (RhythmDB *db,
 
 static void
 add_mtp_track_to_db (RBMtpSource *source,
+		     RhythmDB *db,
 		     LIBMTP_track_t *track)
 {
 	RhythmDBEntry *entry = NULL;
 	RhythmDBEntryType entry_type;
-	RhythmDB *db = NULL;
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 	char *name = NULL;
 
-	db = get_db_for_source (source);
+	/* ignore everything except audio (allow audio/video types too, since they're probably pretty common) */
+	if (!(LIBMTP_FILETYPE_IS_AUDIO (track->filetype) || LIBMTP_FILETYPE_IS_AUDIOVIDEO (track->filetype))) {
+		rb_debug ("ignoring non-audio item %d (filetype %s)",
+			  track->item_id,
+			  LIBMTP_Get_Filetype_Description (track->filetype));
+		return;
+	}
 
 	/* Set URI */
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
@@ -417,8 +423,6 @@ add_mtp_track_to_db (RBMtpSource *source,
 
 	g_hash_table_insert (priv->entry_map, entry, track);
 	rhythmdb_commit (RHYTHMDB (db));
-
-	g_object_unref (G_OBJECT (db));
 }
 
 static gboolean
@@ -438,10 +442,9 @@ load_mtp_db_idle_cb (RBMtpSource* source)
 	tracks = LIBMTP_Get_Tracklisting (priv->device);
 #endif
 	if (tracks != NULL) {
-		LIBMTP_track_t *track, *tmp = NULL;
+		LIBMTP_track_t *track;
 		for (track = tracks; track != NULL; track = track->next) {
-			add_mtp_track_to_db (source, track);
-			tmp = track;
+			add_mtp_track_to_db (source, db, track);
 		}
 	} else {
 		rb_debug ("No tracks");
@@ -817,8 +820,12 @@ impl_track_added (RBRemovableMediaSource *isource,
 	g_file_delete (file, NULL, NULL);
 
 	if (track != NULL) {
+		RhythmDB *db;
 		/*request_artwork (isource, entry, song);*/
-		add_mtp_track_to_db (source, track);
+
+		db = get_db_for_source (source);
+		add_mtp_track_to_db (source, db, track);
+		g_object_unref (db);
 	}
 
 	return FALSE;

@@ -1,5 +1,11 @@
 2008-11-23  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/mtpdevice/rb-mtp-source.c: (rb_mtp_source_new),
+	(add_mtp_track_to_db), (load_mtp_db_idle_cb), (impl_track_added):
+	Ignore non-audio items on MTP devices.  Fixes #561950.
+
+2008-11-23  Jonathan Matthew  <jonathan@d14n.org>
+
 	* data/ui/rhythmbox-ui.xml:
 	* shell/rb-playlist-manager.c: (save_playlist_response_cb),
 	(save_playlist), (rb_playlist_manager_cmd_save_playlist),
