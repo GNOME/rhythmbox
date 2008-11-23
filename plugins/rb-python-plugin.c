@@ -194,6 +194,7 @@ static void
 rb_python_object_init (RBPythonObject *object)
 {
 	RBPythonObjectClass *class;
+	PyGILState_STATE state = pyg_gil_state_ensure ();
 
 	rb_debug ("Creating python plugin instance");
 
@@ -202,16 +203,22 @@ rb_python_object_init (RBPythonObject *object)
 	object->instance = PyObject_CallObject (class->type, NULL);
 	if (object->instance == NULL)
 		PyErr_Print();
+	
+	pyg_gil_state_release (state);
 }
 
 static void
 rb_python_object_finalize (GObject *object)
 {
+	PyGILState_STATE state = pyg_gil_state_ensure ();
+
 	rb_debug ("Finalizing python plugin instance");
 
 	if (((RBPythonObject *) object)->instance) {
 		Py_DECREF (((RBPythonObject *) object)->instance);
 	}
+	
+	pyg_gil_state_release (state);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

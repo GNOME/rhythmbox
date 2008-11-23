@@ -1,3 +1,10 @@
+2008-11-24  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/rb-python-plugin.c: (rb_python_object_init),
+	(rb_python_object_finalize):
+	Acquire GIL before creating and finalizing python plugin objects.
+	Should fix #544865.
+
 2008-11-23  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/mtpdevice/rb-mtp-source.c: (rb_mtp_source_new),
