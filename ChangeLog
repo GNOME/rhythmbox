@@ -1,5 +1,13 @@
 2008-11-23  Jonathan Matthew  <jonathan@d14n.org>
 
+	* data/ui/rhythmbox-ui.xml:
+	* shell/rb-playlist-manager.c: (save_playlist_response_cb),
+	(save_playlist), (rb_playlist_manager_cmd_save_playlist),
+	(rb_playlist_manager_cmd_save_queue):
+	Add 'save to file' actions for the play queue.  Fixes #543808.
+
+2008-11-23  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/gstreamer/rb-player-gst-xfade.c: (link_unblocked_cb),
 	(stream_src_blocked_cb):
 	Take the stream list lock before processing pad block callbacks, since

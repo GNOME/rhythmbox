@@ -85,6 +85,8 @@ static void rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 						   RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 						   RBPlaylistManager *mgr);
+static void rb_playlist_manager_cmd_save_queue (GtkAction *action,
+						RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_new_playlist (GtkAction *action,
 						  RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
@@ -194,6 +196,9 @@ static GtkActionEntry rb_playlist_manager_actions [] =
 	{ "ShufflePlaylist", NULL, N_("_Shuffle Playlist"), NULL,
 	  N_("Shuffle the tracks in this playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_shuffle_playlist) },
+	{ "MusicPlaylistSaveQueue", GTK_STOCK_SAVE_AS, N_("_Save to File..."), NULL,
+	  N_("Save the play queue to a file"),
+	  G_CALLBACK (rb_playlist_manager_cmd_save_queue) },
 };
 static guint rb_playlist_manager_n_actions = G_N_ELEMENTS (rb_playlist_manager_actions);
 
@@ -1416,7 +1421,7 @@ rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 static void
 save_playlist_response_cb (GtkDialog *dialog,
 			   int response_id,
-			   RBPlaylistManager *mgr)
+			   RBSource *source)
 {
 	char *file = NULL;
 	GtkWidget *menu;
@@ -1457,7 +1462,7 @@ save_playlist_response_cb (GtkDialog *dialog,
 	if (export_type == RB_PLAYLIST_EXPORT_TYPE_UNKNOWN) {
 		rb_error_dialog (NULL, _("Couldn't save playlist"), _("Unsupported file extension given."));
 	} else {
-		rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source),
+		rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (source),
 						  file, export_type);
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 	}
@@ -1550,8 +1555,7 @@ setup_format_menu (GtkWidget* menu, GtkWidget *dialog)
 }
 
 static void
-rb_playlist_manager_cmd_save_playlist (GtkAction *action,
-				       RBPlaylistManager *mgr)
+save_playlist (RBPlaylistManager *mgr, RBSource *source)
 {
 	GladeXML *xml;
 	GtkWidget *dialog, *menu;
@@ -1566,7 +1570,7 @@ rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 	setup_format_menu (menu, dialog);
 	g_object_set_data (G_OBJECT (dialog), "export-menu", menu);
 
-	g_object_get (mgr->priv->selected_source, "name", &name, NULL);
+	g_object_get (source, "name", &name, NULL);
 	tmp = g_strconcat (name, ".pls", NULL);
 	gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), tmp);
 	g_free (tmp);
@@ -1576,9 +1580,26 @@ rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 	gtk_combo_box_set_active (GTK_COMBO_BOX (menu), 0);
 	g_signal_connect_object (dialog, "response",
 				 G_CALLBACK (save_playlist_response_cb),
-				 mgr, 0);
+				 source, 0);
 
 	g_object_unref (xml);
+}
+
+static void
+rb_playlist_manager_cmd_save_playlist (GtkAction *action,
+				       RBPlaylistManager *mgr)
+{
+	save_playlist (mgr, mgr->priv->selected_source);
+}
+
+static void
+rb_playlist_manager_cmd_save_queue (GtkAction *action,
+				    RBPlaylistManager *mgr)
+{
+	RBSource *queue;
+	g_object_get (mgr->priv->shell, "queue-source", &queue, NULL);
+	save_playlist (mgr, queue);
+	g_object_unref (queue);
 }
 
 static gboolean
