@@ -74,6 +74,10 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
 if test x$have_totem_plparser != xyes; then
    AC_MSG_ERROR([totem playlist parsing library not found or too old])
+else
+   if test "x`pkg-config --variable uselibcamel totem-plparser`" = "xno" ; then
+       AC_MSG_ERROR([totem playlist parsing library has Podcast parsing disabled])
+   fi
 fi
 
 AC_ARG_WITH(hal,
