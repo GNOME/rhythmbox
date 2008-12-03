@@ -55,13 +55,11 @@ class RhythmboxPlayer(log.Loggable):
 
     def volume_changed(self, player, parameter):
         self.volume = self.player.props.volume
-        self.warning('volume_changed to %r', self.volume)
         if self.volume > 0:
             rcs_id = self.server.connection_manager_server.lookup_rcs_id(self.current_connection_id)
             self.server.rendering_control_server.set_variable(rcs_id, 'Volume', self.volume*100)
 
     def playing_song_changed(self, player, entry):
-        self.warning("playing_song_changed %r", entry)
         if self.server != None:
             connection_id = self.server.connection_manager_server.lookup_avt_id(self.current_connection_id)
         if entry == None:
@@ -118,13 +116,11 @@ class RhythmboxPlayer(log.Loggable):
             if self.server != None:
                 self.server.av_transport_server.set_variable(connection_id, 'AVTransportURIMetaData',self.metadata)
                 self.server.av_transport_server.set_variable(connection_id, 'CurrentTrackMetaData',self.metadata)
-            self.warning("playing_song_changed %r", self.metadata)
         if self.server != None:
             self.server.av_transport_server.set_variable(connection_id, 'RelativeTimePosition', '00:00:00')
             self.server.av_transport_server.set_variable(connection_id, 'AbsoluteTimePosition', '00:00:00')
 
     def playing_changed(self, player, state):
-        self.warning("playing_changed", state)
         if state is True:
             transport_state = 'PLAYING'
         else:
@@ -142,10 +138,8 @@ class RhythmboxPlayer(log.Loggable):
         except:
             duration = None
         self.update_position(position,duration)
-        self.warning("playing_changed %r %r ", position, duration)
 
     def elapsed_changed(self, player, time):
-        self.warning("elapsed_changed %r %r", player, time)
         try:
             duration = player.get_playing_song_duration()
         except:
@@ -153,8 +147,6 @@ class RhythmboxPlayer(log.Loggable):
         self.update_position(time,duration)
 
     def update(self, state):
-
-        self.warning("update %r", state)
 
         if state in ('STOPPED','READY'):
             transport_state = 'STOPPED'
@@ -173,8 +165,6 @@ class RhythmboxPlayer(log.Loggable):
 
 
     def update_position(self, position,duration):
-        self.warning("update_position %r %r", position,duration)
-
         if self.server != None:
             connection_id = self.server.connection_manager_server.lookup_avt_id(self.current_connection_id)
             self.server.av_transport_server.set_variable(connection_id, 'CurrentTrack', 0)
@@ -199,7 +189,6 @@ class RhythmboxPlayer(log.Loggable):
 
             if self.duration is None:
                 if self.metadata is not None:
-                    self.warning("update_position %r", self.metadata)
                     elt = DIDLLite.DIDLElement.fromString(self.metadata)
                     for item in elt:
                         for res in item.findall('res'):
@@ -213,7 +202,6 @@ class RhythmboxPlayer(log.Loggable):
                 self.duration = duration
 
     def load( self, uri, metadata):
-        self.warning("player load %r %r", uri, metadata)
         #self.shell.load_uri(uri,play=False)
         self.duration = None
         self.metadata = metadata
@@ -233,16 +221,13 @@ class RhythmboxPlayer(log.Loggable):
                     self.entry = self.shell.props.db.entry_lookup_by_id(int(uri[6:]))
                 else:
                     self.entry = self.shell.props.db.entry_lookup_by_location(uri)
-                self.warning("check for entry %r %r %r", self.entry,item.server_uuid,uri)
                 if self.entry == None:
                     if item.server_uuid is not None:
                         entry_type = self.shell.props.db.entry_register_type("CoherenceUpnp:" + item.server_uuid)
                         self.entry = self.shell.props.db.entry_new(entry_type, uri)
-                        self.warning("create new entry %r", self.entry)
                     else:
                         entry_type = self.shell.props.db.entry_register_type("CoherencePlayer")
                         self.entry = self.shell.props.db.entry_new(entry_type, uri)
-                        self.warning("load and check for entry %r", self.entry)
 
                 duration = None
                 size = None
@@ -312,8 +297,6 @@ class RhythmboxPlayer(log.Loggable):
         self.play()
 
     def stop(self):
-        self.warning("player stop")
-
         self.player.stop()
         self.playing = False
         #self.server.av_transport_server.set_variable( \
@@ -321,8 +304,6 @@ class RhythmboxPlayer(log.Loggable):
         #                     'TransportState', 'STOPPED')
 
     def play(self):
-        self.warning("player play")
-
         if self.playing == False:
             self.player.play_entry(self.entry)
             self.playing = True
@@ -344,7 +325,6 @@ class RhythmboxPlayer(log.Loggable):
                             +nL = relative seek forward n seconds
                             -nL = relative seek backwards n seconds
         """
-        self.warning("player seek %r", location)
         self.player.seek(location)
         self.server.av_transport_server.set_variable(0, 'TransportState', old_state)
 
@@ -367,11 +347,9 @@ class RhythmboxPlayer(log.Loggable):
 
     def get_volume(self):
         self.volume = self.player.get_volume()
-        self.warning("get_volume %r", self.volume)
         return self.volume * 100
 
     def set_volume(self, volume):
-        self.warning("set_volume %r", volume)
         volume = int(volume)
         if volume < 0:
             volume=0

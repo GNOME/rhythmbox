@@ -1,3 +1,10 @@
+2008-12-03  Bastien Nocera  <hadess@hadess.net>
+
+	* plugins/coherence/upnp_coherence/MediaPlayer.py: Cut the crap,
+	remove loads of warnings from the MediaRenderer bits of the
+	Coherence UPNP plugin, they should be debug messages, not
+	appearing all the time as they do now...
+
 2008-12-02  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/daap/Makefile.am: Add missing file to the sources,
