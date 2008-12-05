@@ -1618,13 +1618,10 @@ mkmd5 (char *string, char *string2)
 static gboolean
 station_is_subscriber_only (const char *uri)
 {
-	/* personal and loved-tracks radio */
-	if (g_str_has_prefix (uri, "lastfm://user/")) {
-		if (g_str_has_suffix (uri, "/personal"))
-			return TRUE;
-
-		if (g_str_has_suffix (uri, "/loved"))
-			return TRUE;
+	/* loved-tracks radio */
+	if (g_str_has_prefix (uri, "lastfm://user/") &&
+	    g_str_has_suffix (uri, "/loved")) {
+		return TRUE;
 	}
 
 	/* user tag radio */
