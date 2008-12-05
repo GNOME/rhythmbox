@@ -50,6 +50,40 @@
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/mtp/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/mtp/show_browser"
 
+#ifndef HAVE_LIBMTP_030
+/*
+ * Helpful macros to determine filetype properties
+ */
+#define LIBMTP_FILETYPE_IS_AUDIO(a)\
+(a == LIBMTP_FILETYPE_WAV ||\
+ a == LIBMTP_FILETYPE_MP3 ||\
+ a == LIBMTP_FILETYPE_MP2 ||\
+ a == LIBMTP_FILETYPE_WMA ||\
+ a == LIBMTP_FILETYPE_OGG ||\
+ a == LIBMTP_FILETYPE_FLAC ||\
+ a == LIBMTP_FILETYPE_AAC ||\
+ a == LIBMTP_FILETYPE_M4A ||\
+ a == LIBMTP_FILETYPE_UNDEF_AUDIO)
+
+#define LIBMTP_FILETYPE_IS_VIDEO(a)\
+(a == LIBMTP_FILETYPE_WMV ||\
+ a == LIBMTP_FILETYPE_AVI ||\
+ a == LIBMTP_FILETYPE_MPEG ||\
+ a == LIBMTP_FILETYPE_UNDEF_VIDEO)
+
+#define LIBMTP_FILETYPE_IS_AUDIOVIDEO(a)\
+(a == LIBMTP_FILETYPE_MP4 ||\
+ a == LIBMTP_FILETYPE_ASF ||\
+ a == LIBMTP_FILETYPE_QT)
+
+#define LIBMTP_FILETYPE_IS_TRACK(a)\
+(LIBMTP_FILETYPE_IS_AUDIO(a) ||\
+ LIBMTP_FILETYPE_IS_VIDEO(a) ||\
+ LIBMTP_FILETYPE_IS_AUDIOVIDEO(a))
+
+#endif
+
+
 static GObject *rb_mtp_source_constructor (GType type,
 					   guint n_construct_properties,
 					   GObjectConstructParam *construct_properties);
