@@ -1,3 +1,9 @@
+2008-12-07  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/rb-plugin-manager.c: (cursor_changed_cb):
+	Don't crash if the plugin's .rb-plugin file doesn't list any authors.
+	Fixes #563476.
+
 2008-12-05  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch sort of by:  John Daiker  <daikerjohn@gmail.com>

@@ -168,6 +168,7 @@ cursor_changed_cb (GtkTreeSelection *selection,
 	RBPluginInfo *info;
 	char *string;
 	GdkPixbuf *icon;
+	const gchar **authors;
 
 	view = gtk_tree_selection_get_tree_view (selection);
 	info = plugin_manager_get_selected_plugin (pm);
@@ -187,9 +188,14 @@ cursor_changed_cb (GtkTreeSelection *selection,
 	gtk_label_set_text (GTK_LABEL (pm->priv->site_text),
 			    rb_plugins_engine_get_plugin_website (info));
 
-	string = g_strjoinv ("\n", (gchar**)rb_plugins_engine_get_plugin_authors (info));
-	gtk_label_set_text (GTK_LABEL (pm->priv->authors_text), string);
-	g_free (string);
+	authors = rb_plugins_engine_get_plugin_authors (info);
+	if (authors != NULL) {
+		string = g_strjoinv ("\n", (gchar **)authors);
+		gtk_label_set_text (GTK_LABEL (pm->priv->authors_text), string);
+		g_free (string);
+	} else {
+		gtk_label_set_text (GTK_LABEL (pm->priv->authors_text), NULL);
+	}
 
 	icon = rb_plugins_engine_get_plugin_icon (info);
 	if (icon != NULL) {
