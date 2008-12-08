@@ -1,5 +1,13 @@
 2008-12-08  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  John Daiker  <daikerjohn@gmail.com>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_ban_track):
+	Skip to next track when banning the current track.  Fixes #552563.
+
+2008-12-08  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/gstreamer/rb-player-gst-xfade.c: (rb_xfade_stream_init),
 	(rb_xfade_stream_finalize), (emit_stream_error),
 	(volume_changed_cb), (start_stream_fade), (link_unblocked_cb),

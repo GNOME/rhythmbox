@@ -1176,6 +1176,8 @@ rb_lastfm_source_ban_track (GtkAction *run_action, RBLastfmSource *source)
 	gtk_action_set_sensitive (action, FALSE);
 	action = gtk_action_group_get_action (source->priv->action_group, "LastfmBanSong");
 	gtk_action_set_sensitive (action, FALSE);
+
+	rb_shell_player_do_next (source->priv->shell_player, NULL);
 }
 
 static void
