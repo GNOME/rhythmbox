@@ -274,7 +274,7 @@ typedef struct
 	GObject parent;
 	RBPlayerGstXFade *player;
 
-	GStaticMutex lock;
+	GMutex *lock;
 
 	char *uri;
 	gpointer stream_data;
@@ -390,7 +390,7 @@ static void
 rb_xfade_stream_init (RBXFadeStream *stream)
 {
 	stream->replaygain_scale = 1.0;
-	g_static_mutex_init (&stream->lock);
+	stream->lock = g_mutex_new ();
 }
 
 static void
@@ -474,8 +474,8 @@ static void
 rb_xfade_stream_finalize (GObject *object)
 {
 	RBXFadeStream *sd = RB_XFADE_STREAM (object);
-
-	g_static_mutex_free (&sd->lock);
+	
+	g_mutex_free (sd->lock);
 	g_free (sd->uri);
 
 	if (sd->error != NULL) {
@@ -802,8 +802,6 @@ emit_stream_error_cb (RBXFadeStream *stream)
 static void
 emit_stream_error (RBXFadeStream *stream, GError *error)
 {
-	g_static_rec_mutex_lock (&stream->player->priv->stream_list_lock);
-
 	if (stream->error_idle_id != 0) {
 		g_error_free (error);
 	} else {
@@ -811,8 +809,6 @@ emit_stream_error (RBXFadeStream *stream, GError *error)
 		stream->error_idle_id = g_idle_add ((GSourceFunc) emit_stream_error_cb,
 						    stream);
 	}
-
-	g_static_rec_mutex_unlock (&stream->player->priv->stream_list_lock);
 }
 
 static void
@@ -931,6 +927,8 @@ volume_changed_cb (GObject *object, GParamSpec *pspec, RBPlayerGstXFade *player)
 		return;
 	}
 
+	g_mutex_lock (stream->lock);
+
 	/* check if the fade is complete */
 	g_object_get (stream->volume, "volume", &vol, NULL);
 	switch (stream->state) {
@@ -977,6 +975,8 @@ volume_changed_cb (GObject *object, GParamSpec *pspec, RBPlayerGstXFade *player)
 		gst_element_post_message (GST_ELEMENT (object), msg);
 	}
 
+	g_mutex_unlock (stream->lock);
+
 	g_object_unref (stream);
 }
 
@@ -992,6 +992,8 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time,
 	gint64 pos = -1;
 	GstFormat format = GST_FORMAT_TIME;
 	RBPlayerGstXFade *player = stream->player;
+
+	/* hmm, can we take the stream lock safely here?  probably should.. */
 
 	/* should this take replaygain scaling into account? */
 
@@ -1071,11 +1073,11 @@ static void
 link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 {
 	GstStateChangeReturn state_ret;
-	g_static_rec_mutex_lock (&stream->player->priv->stream_list_lock);
+	g_mutex_lock (stream->lock);
 
 	/* sometimes we seem to get called twice */
-	if (stream->src_blocked == FALSE) {
-		g_static_rec_mutex_unlock (&stream->player->priv->stream_list_lock);
+	if (stream->state == FADING_IN || stream->state == PLAYING) {
+		g_mutex_unlock (stream->lock);
 		return;
 	}
 
@@ -1094,7 +1096,7 @@ link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		  gst_element_state_change_return_get_name (state_ret));
 
 	post_stream_playing_message (stream, FALSE);
-	g_static_rec_mutex_unlock (&stream->player->priv->stream_list_lock);
+	g_mutex_unlock (stream->lock);
 	g_object_unref (stream);
 }
 
@@ -1109,15 +1111,15 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 	GstPadLinkReturn plr;
 	GstStateChangeReturn scr;
 	RBPlayerGstXFade *player = stream->player;
+	
+	if (start_sink (player, error) == FALSE) {
+		rb_debug ("sink didn't start, so we're not going to link the stream");
+		return FALSE;
+	}
 
 	if (stream->adder_pad != NULL) {
 		rb_debug ("stream %s is already linked", stream->uri);
 		return TRUE;
-	}
-
-	if (start_sink (player, error) == FALSE) {
-		rb_debug ("sink didn't start, so we're not going to link the stream");
-		return FALSE;
 	}
 
 	rb_debug ("linking stream %s", stream->uri);
@@ -1260,11 +1262,15 @@ post_eos_seek_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 {
 	GError *error = NULL;
 
+	g_mutex_lock (stream->lock);
+
 	rb_debug ("stream %s is blocked; linking and unblocking", stream->uri);
 	stream->src_blocked = TRUE;
 	if (link_and_unblock_stream (stream, &error) == FALSE) {
 		emit_stream_error (stream, error);
 	}
+
+	g_mutex_unlock (stream->lock);
 }
 
 /* called when a stream's source pad is blocked, so it can be unlinked
@@ -1273,11 +1279,14 @@ post_eos_seek_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 static void
 unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 {
-	g_static_rec_mutex_lock (&stream->player->priv->sink_lock);
+	int stream_state;
+	RBPlayerGstXFade *player;
+
+	g_mutex_lock (stream->lock);
 
 	if (stream->adder_pad == NULL) {
 		rb_debug ("stream %s is already unlinked.  huh?", stream->uri);
-		g_static_rec_mutex_unlock (&stream->player->priv->sink_lock);
+		g_mutex_unlock (stream->lock);
 		return;
 	}
 
@@ -1287,19 +1296,26 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		g_warning ("Couldn't unlink stream %s: things will probably go quite badly from here on", stream->uri);
 	}
 
-	stream->player->priv->linked_streams--;
-	rb_debug ("%d linked streams left", stream->player->priv->linked_streams);
-
 	gst_element_release_request_pad (GST_PAD_PARENT (stream->adder_pad), stream->adder_pad);
 	stream->adder_pad = NULL;
 
 	stream->src_blocked = TRUE;
 	stream->emitted_playing = FALSE;
 
+	stream_state = stream->state;
+	player = stream->player;
+
+	g_mutex_unlock (stream->lock);
+
 	/* might want a stream-paused signal here? */
 
+	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	
+	player->priv->linked_streams--;
+	rb_debug ("%d linked streams left", player->priv->linked_streams);
+
 	/* handle unlinks for seeking and stream reuse */
-	switch (stream->state) {
+	switch (stream_state) {
 	case REUSING:
 		reuse_stream (stream);
 		break;
@@ -1311,13 +1327,14 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		 */
 	default:
 		/* consider pausing the sink if this is the linked last stream */
-		if (stream->player->priv->linked_streams == 0) {
-			maybe_stop_sink (stream->player);
+		if (player->priv->linked_streams == 0) {
+			maybe_stop_sink (player);
 		}
 
 		break;
 	}
-	g_static_rec_mutex_unlock (&stream->player->priv->sink_lock);
+	
+	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 }
 
 /*
@@ -1352,6 +1369,11 @@ static void
 unlink_and_dispose_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 {
 	GstStateChangeReturn sr;
+	gboolean was_linked = FALSE;
+	gboolean was_in_pipeline = FALSE;
+
+	/* seems to be too much locking in here.. */
+
 
 	rb_debug ("stopping stream %s", stream->uri);
 	sr = gst_element_set_state (stream->bin, GST_STATE_NULL);
@@ -1360,6 +1382,8 @@ unlink_and_dispose_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 		rb_debug ("!!! stream %s isn't cooperating", stream->uri);
 		gst_element_get_state (stream->bin, NULL, NULL, GST_CLOCK_TIME_NONE);
 	}
+	
+	g_mutex_lock (stream->lock);
 
 	if (stream->adder_pad != NULL) {
 		rb_debug ("unlinking stream %s", stream->uri);
@@ -1370,6 +1394,17 @@ unlink_and_dispose_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 		gst_element_release_request_pad (GST_PAD_PARENT (stream->adder_pad), stream->adder_pad);
 		stream->adder_pad = NULL;
 
+		was_linked = TRUE;
+	}
+
+	was_in_pipeline = (GST_ELEMENT_PARENT (stream->bin) == player->priv->pipeline);
+	
+	g_mutex_unlock (stream->lock);
+
+	if (was_in_pipeline)
+		gst_bin_remove (GST_BIN (player->priv->pipeline), stream->bin);
+
+	if (was_linked) {
 		g_static_rec_mutex_lock (&player->priv->sink_lock);
 		player->priv->linked_streams--;
 		rb_debug ("now have %d linked streams", player->priv->linked_streams);
@@ -1379,9 +1414,6 @@ unlink_and_dispose_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 		}
 		g_static_rec_mutex_unlock (&player->priv->sink_lock);
 	}
-
-	if (GST_ELEMENT_PARENT (stream->bin) == player->priv->pipeline)
-		gst_bin_remove (GST_BIN (player->priv->pipeline), stream->bin);
 
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 	player->priv->streams = g_list_remove (player->priv->streams, stream);
@@ -2407,11 +2439,12 @@ static void
 stream_src_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 {
 	GError *error = NULL;
+	gboolean start_stream = FALSE;
 
-	g_static_rec_mutex_lock (&stream->player->priv->stream_list_lock);
+	g_mutex_lock (stream->lock);
 	if (stream->src_blocked) {
 		rb_debug ("stream %s already blocked", stream->uri);
-		g_static_rec_mutex_unlock (&stream->player->priv->stream_list_lock);
+		g_mutex_unlock (stream->lock);
 		return;
 	}
 	stream->src_blocked = TRUE;
@@ -2429,15 +2462,21 @@ stream_src_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		stream->state = WAITING;
 		break;
 	case PREROLL_PLAY:
-		/* not sure this is actually an acceptable thing to do on a streaming thread.. */
 		rb_debug ("stream %s is prerolled, need to start it", stream->uri);
-		if (actually_start_stream (stream, &error) == FALSE) {
-			emit_stream_error (stream, error);
-		}
+		start_stream = TRUE;
 		break;
 	default:
 		rb_debug ("didn't expect to get preroll completion callback in this state (%d)", stream->state);
 		break;
+	}
+	
+	g_mutex_unlock (stream->lock);
+	
+	if (start_stream == TRUE) {	
+		/* not sure this is actually an acceptable thing to do on a streaming thread.. */
+		if (actually_start_stream (stream, &error) == FALSE) {
+			emit_stream_error (stream, error);
+		}
 	}
 }
 
@@ -3304,6 +3343,7 @@ static gboolean
 rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 {
 	RBXFadeStream *stream;
+	int stream_state;
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
 	gboolean ret = TRUE;
 
@@ -3330,10 +3370,43 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 		return FALSE;
 	}
 
+	g_mutex_lock (stream->lock);
+
 	rb_debug ("playing stream %s, crossfade %d", stream->uri, crossfade);
 
-	/* is the head stream already playing? */
+	/* handle transitional states while holding the lock, and handle states that
+	 * require action outside it (lock precedence, mostly)
+	 */
 	switch (stream->state) {
+	case PREROLLING:
+	case PREROLL_PLAY:
+		rb_debug ("stream %s is prerolling; will start playback once prerolling is complete -> PREROLL_PLAY", stream->uri);
+		stream->crossfade = crossfade;
+		stream->state = PREROLL_PLAY;
+		break;
+	
+	case SEEKING_PAUSED:
+		rb_debug ("unpausing seeking stream %s", stream->uri);
+		stream->state = SEEKING;
+		break;
+
+	case REUSING:
+		rb_debug ("currently reusing stream %s; will play when done", stream->uri);
+		break;
+
+	case PENDING_REMOVE:
+		rb_debug ("hmm, can't play streams in PENDING_REMOVE state..");
+		break;
+
+	default:
+		break;
+	}
+
+	stream_state = stream->state;
+	g_mutex_unlock (stream->lock);
+
+	/* is the head stream already playing? */
+	switch (stream_state) {
 	case FADING_IN:
 	case FADING_OUT:
 	case FADING_OUT_PAUSED:
@@ -3344,22 +3417,10 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 		_rb_player_emit_playing_stream (RB_PLAYER (player), stream->stream_data);
 		break;
 
-	case PREROLLING:
-	case PREROLL_PLAY:
-		rb_debug ("stream %s is prerolling; will start playback once prerolling is complete -> PREROLL_PLAY", stream->uri);
-		stream->crossfade = crossfade;
-		stream->state = PREROLL_PLAY;
-		break;
-
 	case PAUSED:
 		rb_debug ("unpausing stream %s", stream->uri);
 		start_stream_fade (stream, 0.0f, 1.0f, PAUSE_FADE_LENGTH, FALSE);
 		ret = link_and_unblock_stream (stream, error);
-		break;
-
-	case SEEKING_PAUSED:
-		rb_debug ("unpausing seeking stream %s", stream->uri);
-		stream->state = SEEKING;
 		break;
 
 	case WAITING_EOS:
@@ -3368,12 +3429,7 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 		ret = actually_start_stream (stream, error);
 		break;
 
-	case REUSING:
-		rb_debug ("currently reusing stream %s; will play when done", stream->uri);
-		break;
-
-	case PENDING_REMOVE:
-		rb_debug ("hmm, can't play streams in PENDING_REMOVE state..");
+	default:
 		break;
 	}
 

@@ -1,3 +1,17 @@
+2008-12-08  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (rb_xfade_stream_init),
+	(rb_xfade_stream_finalize), (emit_stream_error),
+	(volume_changed_cb), (start_stream_fade), (link_unblocked_cb),
+	(link_and_unblock_stream), (post_eos_seek_blocked_cb),
+	(unlink_blocked_cb), (unlink_and_dispose_stream),
+	(rb_player_gst_xfade_bus_cb), (stream_src_blocked_cb),
+	(rb_player_gst_xfade_play):
+	Rather than inconsistently grabbing either the stream list or sink
+	lock, use the per-stream lock I apparently added a while ago to
+	protect changes to a single stream's state.  Don't do anything to the
+	pipeline while holding this lock, though.
+
 2008-12-07  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/rb-plugin-manager.c: (cursor_changed_cb):
