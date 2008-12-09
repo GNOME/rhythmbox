@@ -964,6 +964,8 @@ volume_changed_cb (GObject *object, GParamSpec *pspec, RBPlayerGstXFade *player)
 		/*rb_debug ("unexpectedly got a volume change for stream %s to %f (not fading)", stream->uri, (float)vol);*/
 		break;
 	}
+	
+	g_mutex_unlock (stream->lock);
 
 	if (message != NULL) {
 		GstMessage *msg;
@@ -974,8 +976,6 @@ volume_changed_cb (GObject *object, GParamSpec *pspec, RBPlayerGstXFade *player)
 		msg = gst_message_new_application (GST_OBJECT (object), s);
 		gst_element_post_message (GST_ELEMENT (object), msg);
 	}
-
-	g_mutex_unlock (stream->lock);
 
 	g_object_unref (stream);
 }
@@ -1087,6 +1087,8 @@ link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		stream->state = FADING_IN;
 	else
 		stream->state = PLAYING;
+	
+	g_mutex_unlock (stream->lock);
 
 	adjust_stream_base_time (stream);
 
@@ -1096,7 +1098,6 @@ link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		  gst_element_state_change_return_get_name (state_ret));
 
 	post_stream_playing_message (stream, FALSE);
-	g_mutex_unlock (stream->lock);
 	g_object_unref (stream);
 }
 

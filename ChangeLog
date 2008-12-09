@@ -1,3 +1,10 @@
+2008-12-09  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (volume_changed_cb),
+	(link_unblocked_cb):  Don't hold the stream lock for so long in
+	streaming thread callbacks.  This (and contended waiting threads) was
+	causing some interruptions in the output when changing tracks.
+
 2008-12-08  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  John Daiker  <daikerjohn@gmail.com>
