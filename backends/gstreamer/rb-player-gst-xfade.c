@@ -986,12 +986,11 @@ volume_changed_cb (GObject *object, GParamSpec *pspec, RBPlayerGstXFade *player)
  * is done.
  */
 static void
-start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time, gboolean havelock)
+start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
 {
 	GValue v = {0,};
 	gint64 pos = -1;
 	GstFormat format = GST_FORMAT_TIME;
-	RBPlayerGstXFade *player = stream->player;
 
 	/* hmm, can we take the stream lock safely here?  probably should.. */
 
@@ -1021,16 +1020,7 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time,
 		  (float)end, pos + time);
 
 
-	if (havelock) {
-		/* drop the stream list lock before doing anything to the controller.
-		 * volume changes result in volume_changed_cb being called with the
-		 * controller lock held; volume_changed_cb acquires the stream list lock.
-		 * therefore we can't ever touch the controller with the stream list lock
-		 * held.
-		 */
-		g_object_ref (stream);
-		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
-	}
+	g_signal_handlers_block_by_func (stream->volume, volume_changed_cb, stream->player);
 
 	/* apparently we need to set the starting volume, otherwise fading in doesn't work. */
 	stream->fade_end = end;
@@ -1055,10 +1045,7 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time,
 	}
 	g_value_unset (&v);
 
-	if (havelock) {
-		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
-		g_object_unref (stream);
-	}
+	g_signal_handlers_unblock_by_func (stream->volume, volume_changed_cb, stream->player);
 
 	stream->fading = TRUE;
 
@@ -2213,8 +2200,8 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				  stream->audioconvert,
 				  stream->audioresample,
 				  stream->capsfilter,
-				  stream->preroll,
 				  stream->volume,
+				  stream->preroll,
 				  NULL);
 		gst_element_link_many (stream->source,
 				       stream->queue,
@@ -2223,8 +2210,8 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		gst_element_link_many (stream->audioconvert,
 				       stream->audioresample,
 				       stream->capsfilter,
-				       stream->preroll,
 				       stream->volume,
+				       stream->preroll,
 				       NULL);
 	} else {
 		gst_bin_add_many (GST_BIN (stream->bin),
@@ -2233,8 +2220,8 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				  stream->audioconvert,
 				  stream->audioresample,
 				  stream->capsfilter,
-				  stream->preroll,
 				  stream->volume,
+				  stream->preroll,
 				  NULL);
 		gst_element_link_many (stream->source,
 				       stream->decoder,
@@ -2242,8 +2229,8 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		gst_element_link_many (stream->audioconvert,
 				       stream->audioresample,
 				       stream->capsfilter,
-				       stream->preroll,
 				       stream->volume,
+				       stream->preroll,
 				       NULL);
 	}
 
@@ -2255,7 +2242,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 
 		identity = gst_element_factory_make ("identity", NULL);
 		gst_bin_add (GST_BIN (stream->bin), identity);
-		gst_element_link (stream->volume, identity);
+		gst_element_link (stream->preroll, identity);
 		if (rb_debug_matches ("check-imperfect-timestamp", __FILE__)) {
 			g_object_set (identity, "check-imperfect-timestamp", TRUE, NULL);
 		}
@@ -2265,7 +2252,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 
 		stream->src_pad = gst_element_get_pad (identity, "src");
 	} else {
-		stream->src_pad = gst_element_get_pad (stream->volume, "src");
+		stream->src_pad = gst_element_get_pad (stream->preroll, "src");
 	}
 
 	/* ghost the stream src pad up to the bin */
@@ -2324,10 +2311,10 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 				/* fall through */
 			case PLAYING:
 				rb_debug ("stream %s is playing; crossfading -> FADING_OUT", pstream->uri);
-				start_stream_fade (pstream, fade_out_start, 0.0f, fade_out_time, TRUE);
+				start_stream_fade (pstream, fade_out_start, 0.0f, fade_out_time);
 				pstream->state = FADING_OUT;
 
-				start_stream_fade (stream, 0.0f, 1.0f, stream->crossfade * GST_SECOND, TRUE);
+				start_stream_fade (stream, 0.0f, 1.0f, stream->crossfade * GST_SECOND);
 				break;
 
 			case PAUSED:
@@ -2449,7 +2436,6 @@ stream_src_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		return;
 	}
 	stream->src_blocked = TRUE;
-	g_static_rec_mutex_unlock (&stream->player->priv->stream_list_lock);
 
 	g_object_set (stream->preroll,
 		      "min-threshold-time", G_GINT64_CONSTANT (0),
@@ -3420,7 +3406,7 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 
 	case PAUSED:
 		rb_debug ("unpausing stream %s", stream->uri);
-		start_stream_fade (stream, 0.0f, 1.0f, PAUSE_FADE_LENGTH, FALSE);
+		start_stream_fade (stream, 0.0f, 1.0f, PAUSE_FADE_LENGTH);
 		ret = link_and_unblock_stream (stream, error);
 		break;
 
@@ -3482,7 +3468,7 @@ rb_player_gst_xfade_pause (RBPlayer *iplayer)
 			rb_debug ("pausing stream %s -> FADING_OUT_PAUSED", stream->uri);
 
 			stream->state = FADING_OUT_PAUSED;
-			start_stream_fade (stream, fade_out_start, 0.0f, fade_out_time, TRUE);
+			start_stream_fade (stream, fade_out_start, 0.0f, fade_out_time);
 			done = TRUE;
 			break;
 

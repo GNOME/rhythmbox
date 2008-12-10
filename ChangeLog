@@ -1,3 +1,18 @@
+2008-12-10  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (start_stream_fade),
+	(actually_start_stream), (rb_player_gst_xfade_play),
+	(rb_player_gst_xfade_pause): Rather than doing the stupid drop
+	lock-set volume-take lock bit, just block the signal handler.
+
+	(create_stream):
+	Move the per-stream volume element before the preroll queue.  This
+	decouples it (and our callbacks) from the adder and the output
+	pipeline, which should reduce the likelihood of gaps in the output.
+
+	(stream_src_blocked_cb):
+	Remove a stray mutex unlock that I somehow left behind.
+
 2008-12-09  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c: (volume_changed_cb),
