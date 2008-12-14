@@ -2200,8 +2200,8 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				  stream->audioconvert,
 				  stream->audioresample,
 				  stream->capsfilter,
-				  stream->volume,
 				  stream->preroll,
+				  stream->volume,
 				  NULL);
 		gst_element_link_many (stream->source,
 				       stream->queue,
@@ -2210,8 +2210,8 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		gst_element_link_many (stream->audioconvert,
 				       stream->audioresample,
 				       stream->capsfilter,
-				       stream->volume,
 				       stream->preroll,
+				       stream->volume,
 				       NULL);
 	} else {
 		gst_bin_add_many (GST_BIN (stream->bin),
@@ -2220,8 +2220,8 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				  stream->audioconvert,
 				  stream->audioresample,
 				  stream->capsfilter,
-				  stream->volume,
 				  stream->preroll,
+				  stream->volume,
 				  NULL);
 		gst_element_link_many (stream->source,
 				       stream->decoder,
@@ -2229,8 +2229,8 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		gst_element_link_many (stream->audioconvert,
 				       stream->audioresample,
 				       stream->capsfilter,
-				       stream->volume,
 				       stream->preroll,
+				       stream->volume,
 				       NULL);
 	}
 
@@ -2242,7 +2242,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 
 		identity = gst_element_factory_make ("identity", NULL);
 		gst_bin_add (GST_BIN (stream->bin), identity);
-		gst_element_link (stream->preroll, identity);
+		gst_element_link (stream->volume, identity);
 		if (rb_debug_matches ("check-imperfect-timestamp", __FILE__)) {
 			g_object_set (identity, "check-imperfect-timestamp", TRUE, NULL);
 		}
@@ -2252,7 +2252,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 
 		stream->src_pad = gst_element_get_pad (identity, "src");
 	} else {
-		stream->src_pad = gst_element_get_pad (stream->preroll, "src");
+		stream->src_pad = gst_element_get_pad (stream->volume, "src");
 	}
 
 	/* ghost the stream src pad up to the bin */

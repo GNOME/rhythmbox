@@ -1,3 +1,10 @@
+2008-12-15  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (create_stream):
+	Put the per-stream volume element back where it was.  Moving it breaks
+	fading out (mostly) and doesn't really fix the problem it was supposed
+	to fix.
+
 2008-12-10  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c: (start_stream_fade),
