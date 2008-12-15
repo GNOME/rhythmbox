@@ -31,9 +31,7 @@
 #ifndef __RB_ENTRY_VIEW_H
 #define __RB_ENTRY_VIEW_H
 
-#include <gtk/gtkscrolledwindow.h>
-#include <gtk/gtktreeviewcolumn.h>
-#include <gtk/gtkdnd.h>
+#include <gtk/gtk.h>
 
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"

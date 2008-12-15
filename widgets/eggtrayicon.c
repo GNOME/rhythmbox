@@ -27,7 +27,7 @@
 #include "rb-file-helpers.h"
 
 #include <gdkconfig.h>
-#include <gtk/gtkimage.h>
+#include <gtk/gtk.h>
 #if defined (GDK_WINDOWING_X11)
 #include <gdk/gdkx.h>
 #include <X11/Xatom.h>

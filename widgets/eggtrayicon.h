@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-#include <gtk/gtkplug.h>
+#include <gtk/gtk.h>
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #endif

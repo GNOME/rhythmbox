@@ -29,7 +29,7 @@
 
 #include "rb-source.h"
 
-#include <gtk/gtkactiongroup.h>
+#include <gtk/gtk.h>
 
 #ifndef __RB_SHELL_CLIPBOARD_H
 #define __RB_SHELL_CLIPBOARD_H

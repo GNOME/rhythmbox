@@ -32,7 +32,7 @@
 
 #include "rhythmdb-private.h"
 #include <glib-object.h>
-#include <glib/gatomic.h>
+#include <glib.h>
 
 G_BEGIN_DECLS
 

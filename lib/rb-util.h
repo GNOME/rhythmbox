@@ -32,9 +32,7 @@
 
 #include <stdarg.h>
 #include <glib.h>
-#include <gtk/gtkimage.h>
-#include <gtk/gtkuimanager.h>
-#include <gtk/gtktreeview.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 

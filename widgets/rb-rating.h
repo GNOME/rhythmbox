@@ -30,7 +30,7 @@
 #ifndef RB_RATING_H
 #define RB_RATING_H
 
-#include <gtk/gtkeventbox.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 

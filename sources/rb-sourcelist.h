@@ -31,7 +31,7 @@
 #ifndef __RB_SOURCELIST_H
 #define __RB_SOURCELIST_H
 
-#include <gtk/gtkscrolledwindow.h>
+#include <gtk/gtk.h>
 
 #include "rb-source.h"
 #include "rb-shell.h"

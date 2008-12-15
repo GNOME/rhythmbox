@@ -43,9 +43,9 @@
 #include <string.h>
 #include <math.h>
 #include <glib/gprintf.h>
-#include <glib/gatomic.h>
+#include <glib.h>
 #include <glib/gi18n.h>
-#include <gtk/gtkliststore.h>
+#include <gtk/gtk.h>
 #include <libxml/entities.h>
 #include <libxml/SAX.h>
 #include <libxml/parserInternals.h>

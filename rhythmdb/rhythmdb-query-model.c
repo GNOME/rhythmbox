@@ -35,9 +35,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <glib/gsequence.h>
+#include <glib.h>
 
-#include <gtk/gtktreednd.h>
+#include <gtk/gtk.h>
 
 #include "rhythmdb-query-model.h"
 #include "rb-debug.h"

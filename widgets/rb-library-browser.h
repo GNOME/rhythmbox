@@ -30,7 +30,7 @@
 #ifndef __RB_LIBRARY_BROWSER_H
 #define __RB_LIBRARY_BROWSER_H
 
-#include <gtk/gtkhbox.h>
+#include <gtk/gtk.h>
 
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"

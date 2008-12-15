@@ -31,7 +31,7 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
-#include <glib/gurifuncs.h>
+#include <glib.h>
 #include <gtk/gtk.h>
 
 #include "rhythmdb.h"

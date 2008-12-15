@@ -50,7 +50,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <gtk/gtkstock.h>
 
 #include "rb-shell-clipboard.h"
 #include "rb-playlist-manager.h"

@@ -27,8 +27,7 @@
  *
  */
 
-#include <gtk/gtkactiongroup.h>
-#include <gtk/gtkuimanager.h>
+#include <gtk/gtk.h>
 #include "eggtrayicon.h"
 #include "rhythmdb.h"
 #include "rb-shell.h"

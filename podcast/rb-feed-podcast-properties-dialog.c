@@ -36,7 +36,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
-#include <glib/gurifuncs.h>
+#include <glib.h>
 
 #include "rb-feed-podcast-properties-dialog.h"
 #include "rb-file-helpers.h"

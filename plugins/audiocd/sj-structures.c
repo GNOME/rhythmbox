@@ -22,8 +22,7 @@
  */
 
 #include "sj-structures.h"
-#include <glib/gmessages.h>
-#include <glib/glist.h>
+#include <glib.h>
 
 /**
  * Free a TrackDetails*

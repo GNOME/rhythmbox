@@ -35,8 +35,8 @@
 
 #include <string.h>
 
+#include <glib.h>
 #include <glib/gi18n.h>
-#include <glib/gkeyfile.h>
 
 #include "eel-gconf-extensions.h"
 #include "rb-file-helpers.h"

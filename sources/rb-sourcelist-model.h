@@ -31,7 +31,7 @@
 #ifndef __RB_SOURCELIST_MODEL_H
 #define __RB_SOURCELIST_MODEL_H
 
-#include <gtk/gtktreemodelfilter.h>
+#include <gtk/gtk.h>
 
 #include "rb-source.h"
 

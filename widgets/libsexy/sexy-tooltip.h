@@ -25,7 +25,7 @@ typedef struct _SexyTooltip      SexyTooltip;
 typedef struct _SexyTooltipClass SexyTooltipClass;
 typedef struct _SexyTooltipPriv  SexyTooltipPriv;
 
-#include <gtk/gtkwindow.h>
+#include <gtk/gtk.h>
 
 #define SEXY_TYPE_TOOLTIP            (sexy_tooltip_get_type())
 #define SEXY_TOOLTIP(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), SEXY_TYPE_TOOLTIP, SexyTooltip))

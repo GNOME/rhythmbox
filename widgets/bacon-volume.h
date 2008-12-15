@@ -21,8 +21,7 @@
 #define __BACON_VOLUME_BUTTON_H__
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <gtk/gtkbutton.h>
-#include <gtk/gtkicontheme.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 

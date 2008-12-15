@@ -30,8 +30,7 @@
 #ifndef __RB_BROWSER_SOURCE_H
 #define __RB_BROWSER_SOURCE_H
 
-#include <gtk/gtkwindow.h>
-#include <gtk/gtkactiongroup.h>
+#include <gtk/gtk.h>
 
 #include "rb-shell.h"
 #include "rb-source.h"

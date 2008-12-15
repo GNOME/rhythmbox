@@ -24,8 +24,7 @@
 #ifndef SJ_STRUCTURES_H
 #define SJ_STRUCTURES_H
 
-#include <glib/glist.h>
-#include <glib/gdate.h>
+#include <glib.h>
 
 typedef enum _MetadataSource MetadataSource;
 

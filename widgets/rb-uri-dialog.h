@@ -28,7 +28,7 @@
  *
  */
 
-#include <gtk/gtkdialog.h>
+#include <gtk/gtk.h>
 
 #ifndef __RB_URI_DIALOG_H
 #define __RB_URI_DIALOG_H

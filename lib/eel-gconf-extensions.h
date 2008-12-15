@@ -25,7 +25,7 @@
 #ifndef EEL_GCONF_EXTENSIONS_H
 #define EEL_GCONF_EXTENSIONS_H
 
-#include <glib/gerror.h>
+#include <glib.h>
 #include <gconf/gconf.h>
 #include <gconf/gconf-client.h>
 

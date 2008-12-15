@@ -31,8 +31,7 @@
 #ifndef __RB_DIALOG_H
 #define __RB_DIALOG_H
 
-#include <gtk/gtkwindow.h>
-#include <gtk/gtkfilechooserdialog.h>
+#include <gtk/gtk.h>
 #include <stdarg.h>
 
 G_BEGIN_DECLS

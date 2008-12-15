@@ -24,7 +24,7 @@
 #ifndef __RB_CELL_RENDERER_PIXBUF_H__
 #define __RB_CELL_RENDERER_PIXBUF_H__
 
-#include <gtk/gtkcellrenderer.h>
+#include <gtk/gtk.h>
 
 #ifdef __cplusplus
 extern "C" {

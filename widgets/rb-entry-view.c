@@ -72,7 +72,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <glib/gurifuncs.h>
+#include <glib.h>
 
 #include "rb-tree-dnd.h"
 #include "rb-entry-view.h"

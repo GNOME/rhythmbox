@@ -27,7 +27,7 @@
  *
  */
 
-#include <gtk/gtkdialog.h>
+#include <gtk/gtk.h>
 
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"

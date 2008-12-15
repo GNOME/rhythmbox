@@ -31,8 +31,7 @@
 #ifndef __RB_PROPERTY_VIEW_H
 #define __RB_PROPERTY_VIEW_H
 
-#include <gtk/gtkscrolledwindow.h>
-#include <gtk/gtkdnd.h>
+#include <gtk/gtk.h>
 
 #include "rhythmdb.h"
 #include "rhythmdb-property-model.h"

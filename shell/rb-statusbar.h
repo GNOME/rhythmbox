@@ -27,8 +27,7 @@
  *
  */
 
-#include <gtk/gtkstatusbar.h>
-#include <gtk/gtkactiongroup.h>
+#include <gtk/gtk.h>
 
 #include "rb-source.h"
 #include "rhythmdb.h"

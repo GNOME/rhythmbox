@@ -31,8 +31,7 @@
 #ifndef __RB_SOURCE_H
 #define __RB_SOURCE_H
 
-#include <gtk/gtkhbox.h>
-#include <gtk/gtkactiongroup.h>
+#include <gtk/gtk.h>
 
 #include "rb-source-group.h"
 #include "rb-entry-view.h"

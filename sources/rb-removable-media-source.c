@@ -34,9 +34,7 @@
 #include <string.h>
 
 #include <glib/gi18n.h>
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkicontheme.h>
-#include <gtk/gtkiconfactory.h>
+#include <gtk/gtk.h>
 
 #include "rhythmdb.h"
 #include "eel-gconf-extensions.h"

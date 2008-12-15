@@ -22,7 +22,7 @@
 #define SJ_METADATA_GETTER_H
 
 #include <glib-object.h>
-#include <glib/gerror.h>
+#include <glib.h>
 
 G_BEGIN_DECLS
 

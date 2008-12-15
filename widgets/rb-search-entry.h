@@ -30,7 +30,7 @@
 #ifndef __RB_SEARCH_ENTRY_H
 #define __RB_SEARCH_ENTRY_H
 
-#include <gtk/gtkhbox.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 

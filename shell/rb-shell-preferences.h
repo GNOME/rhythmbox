@@ -27,7 +27,7 @@
  *
  */
 
-#include <gtk/gtkdialog.h>
+#include <gtk/gtk.h>
 #include "rb-preferences.h"
 
 #ifndef __RB_SHELL_PREFERENCES_H

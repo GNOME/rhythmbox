@@ -24,7 +24,7 @@
 #ifndef __RB_CELL_RENDERER_RATING_H
 #define __RB_CELL_RENDERER_RATING_H
 
-#include <gtk/gtkcellrenderer.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 

@@ -21,7 +21,7 @@
 #ifndef __GOSSIP_CELL_RENDERER_EXPANDER_H__
 #define __GOSSIP_CELL_RENDERER_EXPANDER_H__
 
-#include <gtk/gtkcellrenderer.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 

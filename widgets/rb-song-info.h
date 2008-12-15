@@ -27,7 +27,7 @@
  *
  */
 
-#include <gtk/gtkdialog.h>
+#include <gtk/gtk.h>
 #include "rb-entry-view.h"
 #include "rhythmdb.h"
 #include "rb-source.h"

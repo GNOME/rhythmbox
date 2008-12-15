@@ -27,7 +27,7 @@
  *
  */
 
-#include <glib/glist.h>
+#include <glib.h>
 #include "rhythmdb.h"
 #include "rb-shell-player.h"
 

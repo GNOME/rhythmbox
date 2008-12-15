@@ -25,10 +25,7 @@
 #include <string.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
-#include <glib/gerror.h>
-#include <glib/glist.h>
-#include <glib/gstrfuncs.h>
-#include <glib/gmessages.h>
+#include <glib.h>
 #include <gio/gio.h>
 
 #include "sj-metadata-gvfs.h"

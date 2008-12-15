@@ -35,7 +35,7 @@
 #include <string.h>
 
 #include <glib/gi18n.h>
-#include <gtk/gtkuimanager.h>
+#include <gtk/gtk.h>
 
 #include "rb-cut-and-paste-code.h"
 #include "rb-debug.h"

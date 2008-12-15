@@ -27,8 +27,7 @@
  *
  */
 
-#include <gtk/gtkhbox.h>
-#include <gtk/gtkactiongroup.h>
+#include <gtk/gtk.h>
 
 #include "rb-source.h"
 

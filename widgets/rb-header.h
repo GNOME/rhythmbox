@@ -31,7 +31,7 @@
 #ifndef __RB_HEADER_H
 #define __RB_HEADER_H
 
-#include <gtk/gtkhbox.h>
+#include <gtk/gtk.h>
 
 #include "rhythmdb.h"
 #include "rb-shell-player.h"
