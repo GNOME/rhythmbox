@@ -223,6 +223,13 @@ rhythmdb_class_init (RhythmDBClass *klass)
 							       "Whether or not to update the database",
 							       FALSE,
 							       G_PARAM_READWRITE));
+	/**
+	 * RhythmDB::entry-added:
+	 * @db: the #RhythmDB
+	 * @entry: the newly added #RhythmDBEntry
+	 *
+	 * Emitted when a new entry is added to the database.
+	 */
 	rhythmdb_signals[ENTRY_ADDED] =
 		g_signal_new ("entry_added",
 			      RHYTHMDB_TYPE,
@@ -233,6 +240,13 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
 
+	/**
+	 * RhythmDB::entry-deleted:
+	 * @db: the #RhythmDB
+	 * @entry: the deleted #RhythmDBEntry
+	 *
+	 * Emitted when an entry is deleted from the database.
+	 */
 	rhythmdb_signals[ENTRY_DELETED] =
 		g_signal_new ("entry_deleted",
 			      RHYTHMDB_TYPE,
@@ -243,6 +257,15 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
 
+	/**
+	 * RhythmDB::entry-changed:
+	 * @db: the #RhythmDB
+	 * @entry: the changed #RhythmDBEntry
+	 * @changes: a #GSList of #RhythmDBEntryChanges structures describing the changes
+	 *
+	 * Emitted when a database entry is modified.  The @changes list
+	 * contains a structure for each entry property that has been modified.
+	 */
 	rhythmdb_signals[ENTRY_CHANGED] =
 		g_signal_new ("entry_changed",
 			      RHYTHMDB_TYPE,
@@ -253,6 +276,14 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_NONE, 2,
 			      RHYTHMDB_TYPE_ENTRY, G_TYPE_POINTER);
 
+	/**
+	 * RhythmDB::entry-keyword-added:
+	 * @db: the #RhythmDB
+	 * @entry: the #RhythmDBEntry to which a keyword has been added
+	 * @keyword: the keyword that was added
+	 *
+	 * Emitted when a keyword is added to an entry.
+	 */
 	rhythmdb_signals[ENTRY_KEYWORD_ADDED] =
 		g_signal_new ("entry_keyword_added",
 			      RHYTHMDB_TYPE,
@@ -263,6 +294,14 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_NONE,
 			      2, RHYTHMDB_TYPE_ENTRY, RB_TYPE_REFSTRING);
 
+	/**
+	 * RhythmDB::entry-keyword-removed:
+	 * @db: the #RhythmDB
+	 * @entry: the #RhythmDBEntry from which a keyword has been removed
+	 * @keyword: the keyword that was removed
+	 *
+	 * Emitted when a keyword is removed from an entry.
+	 */
 	rhythmdb_signals[ENTRY_KEYWORD_REMOVED] =
 		g_signal_new ("entry_keyword_removed",
 			      RHYTHMDB_TYPE,
@@ -273,6 +312,20 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_NONE,
 			      2, RHYTHMDB_TYPE_ENTRY, RB_TYPE_REFSTRING);
 
+	/**
+	 * RhythmDB::entry-extra-metadata-request:
+	 * @db: the #RhythmDB
+	 * @entry: the #RhythmDBEntry for which extra metadata is being requested
+	 *
+	 * This signal is emitted to allow extra (transient) metadata to be supplied
+	 * for the given entry.  The detail of the signal invocation describes the
+	 * specific metadata value being requested.  If the object handling the signal
+	 * can provide the requested item, but it isn't immediately available, it can
+	 * initiate an attempt to retrieve it.  If successful, it would call
+	 * @rhythmdb_emit_entry_extra_metadata_notify when the metadata is available.
+	 *
+	 * Return value: the extra metadata value
+	 */
 	rhythmdb_signals[ENTRY_EXTRA_METADATA_REQUEST] =
 		g_signal_new ("entry_extra_metadata_request",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -283,6 +336,16 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_VALUE, 1,
 			      RHYTHMDB_TYPE_ENTRY);
 
+	/**
+	 * RhythmDB::entry-extra-metadata-notify:
+	 * @db: the #RhythmDB
+	 * @entry: the #RhythmDBEntry for which extra metadata has been supplied
+	 * @field: the extra metadata field being supplied
+	 * @metadata: the extra metadata value
+	 *
+	 * This signal is emitted when an extra metadata value is provided for a specific
+	 * entry independantly of an extra metadata request.
+	 */
 	rhythmdb_signals[ENTRY_EXTRA_METADATA_NOTIFY] =
 		g_signal_new ("entry_extra_metadata_notify",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -293,6 +356,19 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_NONE, 3,
 			      RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING, G_TYPE_VALUE);
 
+	/**
+	 * RhythmDB::entry-extra-metadata-gather:
+	 * @db: the #RhythmDB
+	 * @entry: the #RhythmDBEntry for which to gather metadata
+	 * @data: a #RBStringValueMap to hold the gathered metadata
+	 *
+	 * Emitted to gather all available extra metadata for a database entry.
+	 * Handlers for this signal should insert any metadata they can provide
+	 * into the string-value map.  Only immediately available metadata
+	 * items should be returned.  If one or more metadata items is not
+	 * immediately available, the handler should not initiate an attempt to
+	 * retrieve them.
+	 */
 	rhythmdb_signals[ENTRY_EXTRA_METADATA_GATHER] =
 		g_signal_new ("entry_extra_metadata_gather",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -303,6 +379,12 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_NONE, 2,
 			      RHYTHMDB_TYPE_ENTRY, RB_TYPE_STRING_VALUE_MAP);
 
+	/**
+	 * RhythmDB::load-complete:
+	 * @db: the #RhythmDB
+	 *
+	 * Emitted when the database is fully loaded.
+	 */
 	rhythmdb_signals[LOAD_COMPLETE] =
 		g_signal_new ("load_complete",
 			      RHYTHMDB_TYPE,
@@ -313,6 +395,12 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_NONE,
 			      0);
 
+	/**
+	 * RhythmDB::save-completed:
+	 * @db: the #RhythmDB
+	 *
+	 * Emitted when the database has been saved.
+	 */
 	rhythmdb_signals[SAVE_COMPLETE] =
 		g_signal_new ("save_complete",
 			      RHYTHMDB_TYPE,
@@ -323,6 +411,14 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_NONE,
 			      0);
 
+	/**
+	 * RhythmDB::save-error:
+	 * @db: the #RhythmDB
+	 * @uri: URI of the database file
+	 * @error: the error that occurred
+	 *
+	 * Emitted when an error occurs while saving the database.
+	 */
 	rhythmdb_signals[SAVE_ERROR] =
 		g_signal_new ("save-error",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -335,6 +431,14 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_STRING,
 			      G_TYPE_POINTER);
 
+	/**
+	 * RhythmDB::read-only:
+	 * @db: the #RhythmDB
+	 * @readonly: %TRUE if the database is read-only
+	 *
+	 * Emitted when the database becomes temporarily read-only, or becomes
+	 * writeable after being read-only.
+	 */
 	rhythmdb_signals[READ_ONLY] =
 		g_signal_new ("read-only",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -346,6 +450,16 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      1,
 			      G_TYPE_BOOLEAN);
 
+	/**
+	 * RhythmDB::missing-plugins:
+	 * @db: the #RhythmDB
+	 * @details: a NULL-terminated array of missing plugin detail strings
+	 * @descriptions: a NULL-terminated array of missing plugin description strings
+	 * @closure: a #GClosure to be invoked when missing plugin processing is finished
+	 *
+	 * Emitted to request installation of GStreamer plugins required to import a file
+	 * into the database.
+	 */
 	rhythmdb_signals[MISSING_PLUGINS] =
 		g_signal_new ("missing-plugins",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -356,6 +470,15 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_BOOLEAN,
 			      3,
 			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);
+
+	/**
+	 * RhythmDB::create-mount-op:
+	 * @db: the #RhythmDB
+	 *
+	 * Emitted to request creation of a #GMountOperation to use to mount a volume.
+	 *
+	 * Return value: a #GMountOperation (usually actually a #GtkMountOperation)
+	 */
 	rhythmdb_signals[CREATE_MOUNT_OP] =
 		g_signal_new ("create-mount-op",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -818,6 +941,7 @@ _shutdown_foreach_swapped (RhythmDBEvent *event, RhythmDB *db)
 
 /**
  * rhythmdb_shutdown:
+ * @db: the #RhythmDB
  *
  * Ceases all #RhythmDB operations, including stopping all directory monitoring, and
  * removing all actions and events currently queued.
@@ -1548,6 +1672,8 @@ rhythmdb_entry_example_new (RhythmDB *db,
  * @entry: a #RhythmDBEntry.
  *
  * Increase the reference count of the entry.
+ *
+ * Returns: the entry
  **/
 RhythmDBEntry *
 rhythmdb_entry_ref (RhythmDBEntry *entry)
@@ -2641,6 +2767,7 @@ rhythmdb_execute_enum_dir (RhythmDB *db,
 
 /**
  * rhythmdb_entry_get:
+ * @db: the #RhythmDB
  * @entry: a #RhythmDBEntry.
  * @propid: the id of the property to get.
  * @val: return location for the property value.
@@ -3798,7 +3925,7 @@ rhythmdb_entry_count_by_type (RhythmDB *db,
  * rhythmdb_evaluate_query:
  * @db: a #RhythmDB.
  * @query: a query.
- * @entry a @RhythmDBEntry.
+ * @entry: a @RhythmDBEntry.
  *
  * Evaluates the given entry against the given query.
  *
@@ -5072,6 +5199,7 @@ rhythmdb_entry_get_playback_uri (RhythmDBEntry *entry)
 
 /**
  * rhythmdb_entry_keyword_add:
+ * @db: the #RhythmDB
  * @entry: a #RhythmDBEntry.
  * @keyword: the keyword to add.
  *
@@ -5096,6 +5224,7 @@ rhythmdb_entry_keyword_add	(RhythmDB *db,
 
 /**
  * rhythmdb_entry_keyword_remove:
+ * @db: the #RhythmDB
  * @entry: a #RhythmDBEntry.
  * @keyword: the keyword to remove.
  *
@@ -5120,6 +5249,7 @@ rhythmdb_entry_keyword_remove	(RhythmDB *db,
 
 /**
  * rhythmdb_entry_keyword_has:
+ * @db: the #RhythmDB
  * @entry: a #RhythmDBEntry.
  * @keyword: the keyword to check for.
  *
@@ -5139,6 +5269,7 @@ rhythmdb_entry_keyword_has	(RhythmDB *db,
 
 /**
  * rhythmdb_entry_keywords_get:
+ * @db: the #RhythmDB
  * @entry: a #RhythmDBEntry.
  *
  * Gets the list ofkeywords that have been added to an entry.
