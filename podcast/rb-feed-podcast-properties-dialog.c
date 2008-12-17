@@ -276,7 +276,7 @@ rb_feed_podcast_properties_dialog_update_last_update (RBFeedPodcastPropertiesDia
 
 	time_val = rhythmdb_entry_get_ulong (dialog->priv->current_entry, RHYTHMDB_PROP_LAST_SEEN);
 	time_str = rb_feed_podcast_properties_dialog_parse_time (time_val);
-	gtk_label_set (GTK_LABEL (dialog->priv->last_update), time_str);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->last_update), time_str);
 	g_free (time_str);
 }
 
@@ -288,7 +288,7 @@ rb_feed_podcast_properties_dialog_update_last_episode (RBFeedPodcastPropertiesDi
 
 	time_val = rhythmdb_entry_get_ulong (dialog->priv->current_entry, RHYTHMDB_PROP_POST_TIME);
 	time_str = rb_feed_podcast_properties_dialog_parse_time (time_val);
-	gtk_label_set (GTK_LABEL (dialog->priv->last_episode), time_str);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->last_episode), time_str);
 	g_free (time_str);
 }
 
@@ -308,7 +308,7 @@ rb_feed_podcast_properties_dialog_update_summary (RBFeedPodcastPropertiesDialog 
 						     RHYTHMDB_PROP_SUBTITLE);
 	}
 
-	gtk_label_set (GTK_LABEL (dialog->priv->summary), summary);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->summary), summary);
 }
 
 static char *

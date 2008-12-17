@@ -507,7 +507,7 @@ rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dial
 
 	if (dialog->priv->current_entry)
 		last_played = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LAST_PLAYED_STR);
-	gtk_label_set (GTK_LABEL (dialog->priv->lastplayed), last_played);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->lastplayed), last_played);
 }
 
 static void

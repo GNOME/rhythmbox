@@ -496,7 +496,7 @@ rb_podcast_properties_dialog_update_last_played (RBPodcastPropertiesDialog *dial
 	const char *str;
 
 	str = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LAST_PLAYED_STR);
-	gtk_label_set (GTK_LABEL (dialog->priv->lastplayed), str);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->lastplayed), str);
 }
 
 static void
@@ -517,8 +517,7 @@ rb_podcast_properties_dialog_update_date (RBPodcastPropertiesDialog *dialog)
 	post_time = rhythmdb_entry_get_ulong (dialog->priv->current_entry, RHYTHMDB_PROP_POST_TIME);
 	time = rb_podcast_properties_dialog_parse_time (post_time);
 
-	gtk_label_set (GTK_LABEL (dialog->priv->date),
-		       time);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->date), time);
 	g_free (time);
 }
 
@@ -528,7 +527,7 @@ rb_podcast_properties_dialog_update_description (RBPodcastPropertiesDialog *dial
 	const char *str;
 
 	str = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_DESCRIPTION);
-	gtk_label_set (GTK_LABEL (dialog->priv->description), str);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->description), str);
 }
 
 static char *
