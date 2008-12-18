@@ -1,3 +1,10 @@
+2008-12-18  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/daap/rb-daap-mdns-avahi.c:
+	(rb_daap_mdns_avahi_set_entry_group):
+	Fix some assertions, should stop it crashing on shutdown.
+	Probably fixes #562188.
+
 2008-12-17  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  John Daiker  <daikerjohn@gmail.com>

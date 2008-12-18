@@ -114,7 +114,9 @@ rb_daap_mdns_avahi_get_client (void)
 void
 rb_daap_mdns_avahi_set_entry_group (AvahiEntryGroup *eg)
 {
-	g_assert (eg == NULL || entry_group == NULL);
-	g_assert (avahi_entry_group_get_client (eg) == client);
+	if (eg != NULL) {
+		g_assert (entry_group == NULL);
+		g_assert (avahi_entry_group_get_client (eg) == client);
+	}
 	entry_group = eg;
 }
