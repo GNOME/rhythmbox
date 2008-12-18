@@ -55,7 +55,6 @@ typedef struct {
   MbWebService mb;
   MbDisc disc;
   char *cdrom;
-  GList *albums;
   /* Proxy */
   char *http_proxy;
   int http_proxy_port;
@@ -213,6 +212,7 @@ static GList *
 mb_list_albums (SjMetadata *metadata, char **url, GError **error)
 {
   SjMetadataMusicbrainz3Private *priv;
+  GList *albums = NULL;
   MbQuery query;
   MbReleaseFilter filter;
   MbResultList results;
@@ -225,7 +225,6 @@ mb_list_albums (SjMetadata *metadata, char **url, GError **error)
   priv = GET_PRIVATE (metadata);
 
   if (sj_metadata_helper_check_media (priv->cdrom, error) == FALSE) {
-    priv->albums = NULL;
     return NULL;
   }
 
@@ -268,13 +267,13 @@ mb_list_albums (SjMetadata *metadata, char **url, GError **error)
     album = make_album_from_release (release);
     album->metadata_source = SOURCE_MUSICBRAINZ;
     fill_empty_durations (priv->disc, album);
-    priv->albums = g_list_append (priv->albums, album);
+    albums = g_list_append (albums, album);
     mb_release_free (release);
   }
   mb_result_list_free (results);
   mb_query_free (query);
 
-  return priv->albums;
+  return albums;
 }
 
 /*
