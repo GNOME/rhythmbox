@@ -1,5 +1,17 @@
 2008-12-18  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/mtpdevice/rb-mtp-plugin.c: (rb_mtp_plugin_eject),
+	(rb_mtp_plugin_rename):
+	Use g_warning instead of g_critical - mtp device actions
+	getting called for some other source is weird, but nothing to
+	freak out about.
+
+	* plugins/mtpdevice/rb-mtp-source.c: (add_mtp_track_to_db):
+	Make the entry location look like a URI, and append the track filename
+	so we can use the right extension for track transfers.  Fixes #537356.
+
+2008-12-18  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/daap/rb-daap-mdns-avahi.c:
 	(rb_daap_mdns_avahi_set_entry_group):
 	Fix some assertions, should stop it crashing on shutdown.

@@ -382,7 +382,7 @@ add_mtp_track_to_db (RBMtpSource *source,
 
 	/* Set URI */
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
-	name = g_strdup_printf ("rb-mtp-%i", track->item_id);
+	name = g_strdup_printf ("x-rb-mtp://%i/%s", track->item_id, track->filename);
 	entry = rhythmdb_entry_new (RHYTHMDB (db), entry_type, name);
 	g_free (name);
         g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);

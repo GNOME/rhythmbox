@@ -93,9 +93,6 @@ static void rb_mtp_plugin_device_removed (LibHalContext *context, const char *ud
 static gboolean rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin);
 
 static RBSource* create_source_cb (RBMtpPlugin *plugin, LIBMTP_mtpdevice_t *device, const char *udi);
-/*static RBSource * create_source_cb (RBRemovableMediaManager *rmm,
-				    GVolume *volume,
-				    RBMtpPlugin *plugin);*/
 static void rb_mtp_plugin_eject  (GtkAction *action, RBMtpPlugin *plugin);
 static void rb_mtp_plugin_rename (GtkAction *action, RBMtpPlugin *plugin);
 
@@ -281,7 +278,7 @@ rb_mtp_plugin_eject (GtkAction *action,
 		      "selected-source", &source,
 		      NULL);
 	if ((source == NULL) || !RB_IS_MTP_SOURCE (source)) {
-		g_critical ("got MTPSourceEject action for non-mtp source");
+		g_warning ("got MTPSourceEject action for non-mtp source");
 		if (source != NULL)
 			g_object_unref (source);
 		return;
@@ -306,7 +303,7 @@ rb_mtp_plugin_rename (GtkAction *action,
 		      "selected-source", &source,
 		      NULL);
 	if ((source == NULL) || !RB_IS_MTP_SOURCE (source)) {
-		g_critical ("got MTPSourceEject action for non-mtp source");
+		g_warning ("got MTPSourceEject action for non-mtp source");
 		if (source != NULL)
 			g_object_unref (source);
 		return;
