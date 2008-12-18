@@ -1161,7 +1161,8 @@ construct_widgets (RBShell *shell)
 				    GTK_WIDGET (shell->priv->bottom_container),
 				    FALSE, FALSE, 0);
 
-		gtk_box_pack_start_defaults (shell->priv->sidebar_container, shell->priv->queue_paned);
+		gtk_box_pack_start (shell->priv->sidebar_container, shell->priv->queue_paned,
+				    TRUE, TRUE, 0);
 		gtk_paned_pack1 (GTK_PANED (shell->priv->paned),
 				 GTK_WIDGET (shell->priv->sidebar_container),
 				 FALSE, TRUE);
@@ -1262,7 +1263,7 @@ construct_load_ui (RBShell *shell)
 	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), hbox, 1);
 
 	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
-	gtk_box_pack_start_defaults (GTK_BOX (hbox), toolbar);
+	gtk_box_pack_start (GTK_BOX (hbox), toolbar, TRUE, TRUE, 0);
 
 #ifdef HAVE_GTK_VOLUME_BUTTON
 	shell->priv->volume_button = gtk_volume_button_new ();

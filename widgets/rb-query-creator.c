@@ -787,30 +787,30 @@ append_row (RBQueryCreator *creator)
 	len = g_list_length (rows);
 
 	hbox = GTK_BOX (gtk_hbox_new (FALSE, 5));
-	gtk_box_pack_start_defaults (GTK_BOX (priv->vbox), GTK_WIDGET (hbox));
+	gtk_box_pack_start (GTK_BOX (priv->vbox), GTK_WIDGET (hbox), TRUE, TRUE, 0);
 	priv->rows = g_list_prepend (priv->rows, hbox);
 	gtk_box_reorder_child (priv->vbox, GTK_WIDGET (hbox), -1);
 
 	/* This is the main (leftmost) GtkOptionMenu, for types. */
 	option = create_property_option_menu (creator, property_options, num_property_options);
 	gtk_size_group_add_widget (priv->property_size_group, option);
-	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (option));
+	gtk_box_pack_start (hbox, GTK_WIDGET (option), TRUE, TRUE, 0);
 	gtk_option_menu_set_history (GTK_OPTION_MENU (option), 0);
 	criteria = create_criteria_option_menu (property_options[0].property_type->criteria_options,
 						property_options[0].property_type->num_criteria_options);
 	gtk_size_group_add_widget (priv->criteria_size_group, criteria);
-	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (criteria));
+	gtk_box_pack_start (hbox, GTK_WIDGET (criteria), TRUE, TRUE, 0);
 
 	entry = get_entry_for_property (creator, property_options[0].strict_val, &constrain);
 	if (constrain)
 		gtk_size_group_add_widget (priv->entry_size_group, entry);
-	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (entry));
+	gtk_box_pack_start (hbox, GTK_WIDGET (entry), TRUE, TRUE, 0);
 
 	remove_button = gtk_button_new_from_stock (GTK_STOCK_REMOVE);
 	g_signal_connect_object (G_OBJECT (remove_button), "clicked", G_CALLBACK (remove_button_click_cb),
 				 creator, 0);
 	gtk_size_group_add_widget (priv->button_size_group, remove_button);
-	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (remove_button));
+	gtk_box_pack_start (hbox, GTK_WIDGET (remove_button), TRUE, TRUE, 0);
 
 	gtk_widget_show_all (GTK_WIDGET (priv->vbox));
 	return GTK_WIDGET (hbox);
@@ -888,7 +888,7 @@ property_option_menu_changed (GtkOptionMenu *propmenu,
 	criteria = create_criteria_option_menu (criteria_options, length);
 	gtk_widget_show (criteria);
 	gtk_size_group_add_widget (priv->criteria_size_group, criteria);
-	gtk_box_pack_start_defaults (GTK_BOX (row), GTK_WIDGET (criteria));
+	gtk_box_pack_start (GTK_BOX (row), GTK_WIDGET (criteria), TRUE, TRUE, 0);
 	gtk_box_reorder_child (GTK_BOX (row), criteria, 1);
 
 	entry = get_box_widget_at_pos (GTK_BOX (row), 2);
@@ -899,7 +899,7 @@ property_option_menu_changed (GtkOptionMenu *propmenu,
 
 	if (constrain)
 		gtk_size_group_add_widget (priv->entry_size_group, entry);
-	gtk_box_pack_start_defaults (GTK_BOX (row), GTK_WIDGET (entry));
+	gtk_box_pack_start (GTK_BOX (row), GTK_WIDGET (entry), TRUE, TRUE, 0);
 	gtk_box_reorder_child (GTK_BOX (row), entry, 2);
 }
 

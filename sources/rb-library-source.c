@@ -486,7 +486,7 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	tmp = glade_xml_get_widget (xml, "layout_path_menu_box");
 	label = glade_xml_get_widget (xml, "layout_path_menu_label");
 	source->priv->layout_path_menu = gtk_combo_box_new_text ();
-	gtk_box_pack_start_defaults (GTK_BOX (tmp), source->priv->layout_path_menu);
+	gtk_box_pack_start (GTK_BOX (tmp), source->priv->layout_path_menu, TRUE, TRUE, 0);
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->layout_path_menu);
 	g_signal_connect (G_OBJECT (source->priv->layout_path_menu),
 			  "changed",
@@ -500,7 +500,7 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	tmp = glade_xml_get_widget (xml, "layout_filename_menu_box");
 	label = glade_xml_get_widget (xml, "layout_filename_menu_label");
 	source->priv->layout_filename_menu = gtk_combo_box_new_text ();
-	gtk_box_pack_start_defaults (GTK_BOX (tmp), source->priv->layout_filename_menu);
+	gtk_box_pack_start (GTK_BOX (tmp), source->priv->layout_filename_menu, TRUE, TRUE, 0);
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->layout_filename_menu);
 	g_signal_connect (G_OBJECT (source->priv->layout_filename_menu),
 			  "changed",
@@ -520,7 +520,7 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	tmp = glade_xml_get_widget (xml, "preferred_format_menu_box");
 	label = glade_xml_get_widget (xml, "preferred_format_menu_label");
 	source->priv->preferred_format_menu = gm_audio_profile_choose_new ();
-	gtk_box_pack_start_defaults (GTK_BOX (tmp), source->priv->preferred_format_menu);
+	gtk_box_pack_start (GTK_BOX (tmp), source->priv->preferred_format_menu, TRUE, TRUE, 0);
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->preferred_format_menu);
 	g_signal_connect (G_OBJECT (source->priv->preferred_format_menu),
 			  "changed",

@@ -527,11 +527,11 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 
 	source->priv->txtbox = gtk_entry_new ();
 
-	gtk_box_pack_end_defaults (GTK_BOX (editor_box), add_button);
-	gtk_box_pack_end_defaults (GTK_BOX (editor_box), source->priv->txtbox);
-	gtk_box_pack_start_defaults (GTK_BOX (editor_box), source->priv->typecombo);
-	gtk_box_pack_end_defaults (GTK_BOX (editor_vbox), editor_box);
-	gtk_box_pack_end_defaults (GTK_BOX (editor_vbox), instructions);
+	gtk_box_pack_end (GTK_BOX (editor_box), add_button, TRUE, TRUE, 0);
+	gtk_box_pack_end (GTK_BOX (editor_box), source->priv->txtbox, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (editor_box), source->priv->typecombo, TRUE, TRUE, 0);
+	gtk_box_pack_end (GTK_BOX (editor_vbox), editor_box, TRUE, TRUE, 0);
+	gtk_box_pack_end (GTK_BOX (editor_vbox), instructions, TRUE, TRUE, 0);
 
 	source->priv->paned = gtk_vpaned_new ();
 
@@ -585,7 +585,7 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 
 	source->priv->main_box = gtk_vbox_new (FALSE, 5);
 	gtk_box_pack_start (GTK_BOX (source->priv->main_box), editor_vbox, FALSE, FALSE, 5);
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->main_box), source->priv->paned);
+	gtk_box_pack_start (GTK_BOX (source->priv->main_box), source->priv->paned, TRUE, TRUE, 0);
 	gtk_container_add (GTK_CONTAINER (source), source->priv->main_box);
 
 	gtk_widget_show_all (GTK_WIDGET (source));

@@ -1015,7 +1015,7 @@ default_pack_paned (RBBrowserSource *source, GtkWidget *paned)
 	GtkWidget *box;
 
 	box = gtk_vbox_new (FALSE, 5);
-	gtk_box_pack_start_defaults (GTK_BOX (box), paned);
+	gtk_box_pack_start (GTK_BOX (box), paned, TRUE, TRUE, 0);
 	gtk_container_add (GTK_CONTAINER (source), box);
 }
 

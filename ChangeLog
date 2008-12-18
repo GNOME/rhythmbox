@@ -1,3 +1,28 @@
+2008-12-18  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  John Daiker  <daikerjohn@gmail.com>
+
+	* lib/rb-util.c: (rb_image_new_from_stock):
+	* widgets/rb-cell-renderer-pixbuf.c:
+	(rb_cell_renderer_pixbuf_render):
+	Stop using deprecated gdk-pixbuf functions.
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_constructor):
+	* plugins/iradio/rb-iradio-source.c:
+	(rb_iradio_source_constructor):
+	* shell/rb-shell.c: (construct_widgets), (construct_load_ui):
+	* sources/rb-browser-source.c: (default_pack_paned):
+	* sources/rb-library-source.c: (impl_get_config_widget):
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor):
+	* widgets/rb-library-browser.c: (rb_library_browser_constructor):
+	* widgets/rb-query-creator-properties.c:
+	(relativeTimeCriteriaCreateWidget):
+	* widgets/rb-query-creator.c: (append_row),
+	(property_option_menu_changed):
+	Stop using deprecated gtk_box_pack_start/end functions.
+	From #564800.
+
 2008-12-18  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/audiocd/sj-metadata-musicbrainz3.c (mb_list_albums):

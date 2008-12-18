@@ -834,7 +834,7 @@ rb_podcast_source_constructor (GType type,
 	gtk_paned_pack2 (GTK_PANED (source->priv->paned),
 			 GTK_WIDGET (source->priv->posts), TRUE, FALSE);
 
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), source->priv->paned);
+	gtk_box_pack_start (GTK_BOX (source->priv->vbox), source->priv->paned, TRUE, TRUE, 0);
 
 	source->priv->prefs_notify_id = eel_gconf_notification_add (CONF_STATE_PODCAST_PREFIX,
 								    (GConfClientNotifyFunc) rb_podcast_source_state_pref_changed,

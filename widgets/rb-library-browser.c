@@ -264,7 +264,7 @@ rb_library_browser_constructor (GType type,
 					 browser, 0);
 		gtk_widget_show_all (GTK_WIDGET (view));
 		gtk_widget_set_no_show_all (GTK_WIDGET (view), TRUE);
-		gtk_box_pack_start_defaults (GTK_BOX (browser), GTK_WIDGET (view));
+		gtk_box_pack_start (GTK_BOX (browser), GTK_WIDGET (view), TRUE, TRUE, 0);
 	}
 
 	update_browser_views_visibility (browser);

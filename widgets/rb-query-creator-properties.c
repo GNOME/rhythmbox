@@ -508,11 +508,11 @@ relativeTimeCriteriaCreateWidget (gboolean *constrain)
 	box = GTK_BOX (gtk_hbox_new (FALSE, 6));
 
 	timeSpin = gtk_spin_button_new_with_range (1.0, G_MAXINT, 1.0);
-	gtk_box_pack_start_defaults (box, timeSpin);
+	gtk_box_pack_start (box, timeSpin, TRUE, TRUE, 0);
 
 	timeOption = create_time_unit_option_menu (time_unit_options, G_N_ELEMENTS (time_unit_options));
 	gtk_option_menu_set_history (GTK_OPTION_MENU (timeOption), time_unit_options_default);
-	gtk_box_pack_start_defaults (box, timeOption);
+	gtk_box_pack_start (box, timeOption, TRUE, TRUE, 0);
 	
 	g_signal_connect_object (timeOption, "changed",
 				 G_CALLBACK (update_time_unit_limits),
