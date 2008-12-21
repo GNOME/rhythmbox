@@ -377,7 +377,7 @@ struct RBShellPrivate
 	/* markup, used for notifications and for tray tooltips */
 	char *cached_notify_primary;
 	char *cached_notify_secondary;
-	GtkWidget *cached_art_icon;
+	GdkPixbuf *cached_art_icon;
 
 	guint sidepane_visibility_notify_id;
 	guint toolbar_visibility_notify_id;
@@ -1749,8 +1749,6 @@ rb_shell_db_metadata_art_cb (RhythmDB *db,
 			     GValue *metadata,
 			     RBShell *shell)
 {
-	GdkPixbuf *pixbuf = NULL;
-	GdkPixbuf *my_pixbuf;
 	RhythmDBEntry *playing_entry;
 	guint time;
 
@@ -1769,11 +1767,11 @@ rb_shell_db_metadata_art_cb (RhythmDB *db,
 	}
 
 	if (G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF)) {
+		GdkPixbuf *pixbuf;
+
 		pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
 		if (pixbuf != NULL) {
-			my_pixbuf = rb_scale_pixbuf_to_size (pixbuf, GTK_ICON_SIZE_DIALOG);
-			shell->priv->cached_art_icon = g_object_ref_sink (gtk_image_new_from_pixbuf (my_pixbuf));
-			g_object_unref (my_pixbuf);
+			shell->priv->cached_art_icon = rb_scale_pixbuf_to_size (pixbuf, GTK_ICON_SIZE_DIALOG);
 		}
 	}
 
@@ -3070,7 +3068,7 @@ void
 rb_shell_hidden_notify (RBShell *shell,
 			guint timeout,
 			const char *primary,
-			GtkWidget *icon,
+			GdkPixbuf *pixbuf,
 			const char *secondary,
 			gboolean requested)
 {
@@ -3078,7 +3076,7 @@ rb_shell_hidden_notify (RBShell *shell,
 	char *secondary_markup = g_markup_escape_text (secondary, -1);
 
 	rb_shell_hidden_notify_markup (shell, timeout, primary_markup, 
-				       icon, secondary_markup, requested);
+				       pixbuf, secondary_markup, requested);
 
 	g_free (primary_markup);
 	g_free (secondary_markup);
@@ -3088,7 +3086,7 @@ void
 rb_shell_hidden_notify_markup (RBShell *shell,
 			       guint timeout,
 			       const char *primary_markup,
-			       GtkWidget *icon,
+			       GdkPixbuf *pixbuf,
 			       const char *secondary_markup,
 			       gboolean requested)
 {
@@ -3101,7 +3099,7 @@ rb_shell_hidden_notify_markup (RBShell *shell,
 	rb_tray_icon_notify (shell->priv->tray_icon,
 			     timeout,
 			     primary_markup,
-			     icon,
+			     pixbuf,
 			     secondary_markup,
 			     requested);
 }

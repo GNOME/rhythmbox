@@ -550,7 +550,7 @@ void
 egg_tray_icon_notify (EggTrayIcon *icon,
 		      guint timeout,
 		      const char *primary_markup,
-		      GtkWidget *msgicon,
+		      GdkPixbuf *pixbuf,
 		      const char *secondary_markup)
 {
 #ifdef HAVE_NOTIFY
@@ -590,20 +590,13 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 
   notify_notification_set_timeout (icon->notify->handle, timeout);
 
-  if (msgicon)
+  if (pixbuf)
     {
-      GdkPixbuf *pixbuf;
-
-      pixbuf = g_object_ref (gtk_image_get_pixbuf (GTK_IMAGE (msgicon)));
-      if (pixbuf)
-	{
 #if (LIBNOTIFY_VERSION_MAJOR == 0 && LIBNOTIFY_VERSION_MINOR <=3 && LIBNOTIFY_VERSION_MICRO < 2)
-	  notify_notification_set_icon_data_from_pixbuf (icon->notify->handle, pixbuf);
+      notify_notification_set_icon_data_from_pixbuf (icon->notify->handle, pixbuf);
 #else
-	  notify_notification_set_icon_from_pixbuf (icon->notify->handle, pixbuf);
+      notify_notification_set_icon_from_pixbuf (icon->notify->handle, pixbuf);
 #endif
-	  g_object_unref (pixbuf);
-	}
     }
 
   gdk_window_get_origin (GTK_WIDGET (icon)->window, &x, &y);

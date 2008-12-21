@@ -116,7 +116,7 @@ struct RBPlaylistSourceRecorderPrivate
         GTimer      *timer;
         guint64      start_pos;
 
-        GtkWidget   *cd_icon;
+        GdkPixbuf   *cd_icon;
         GtkWidget   *vbox;
         GtkWidget   *multiple_copies_checkbutton;
         GtkWidget   *cancel_button;
@@ -553,6 +553,12 @@ burn_cd (RBPlaylistSourceRecorder *source,
 
                 finished_msg = _("Finished creating audio CD.");
 
+		if (source->priv->cd_icon == NULL) {
+			source->priv->cd_icon = gtk_widget_render_icon (GTK_WIDGET (source),
+									GTK_STOCK_CDROM,
+									GTK_ICON_SIZE_BUTTON,
+									NULL);
+		}
                 rb_shell_hidden_notify (source->priv->shell, 0, finished_msg, source->priv->cd_icon, "", FALSE);
 
                 /* save the write speed that was used */
@@ -1157,9 +1163,7 @@ rb_playlist_source_recorder_constructor (GType type,
         hbox = gtk_hbox_new (FALSE, 6);
         gtk_container_add (GTK_CONTAINER (widget), hbox);
         gtk_widget_show (hbox);
-        widget = gtk_image_new_from_stock (GTK_STOCK_CDROM, GTK_ICON_SIZE_BUTTON);
-        source->priv->cd_icon = widget;
-        g_object_ref (source->priv->cd_icon);
+
         gtk_box_pack_start (GTK_BOX (hbox), widget, TRUE, TRUE, 0);
         gtk_widget_show (widget);
         widget = gtk_label_new_with_mnemonic (_("C_reate"));

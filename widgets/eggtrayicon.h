@@ -89,7 +89,7 @@ gboolean     egg_tray_icon_have_manager   (EggTrayIcon *icon);
 void 	     egg_tray_icon_notify         (EggTrayIcon *icon,
 					   guint timeout,
 					   const char *primary_markup,
-					   GtkWidget *msgicon,
+					   GdkPixbuf  *pixbuf,
 					   const char *secondary_markup);
 
 GtkOrientation egg_tray_icon_get_orientation (EggTrayIcon *icon);

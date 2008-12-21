@@ -1,5 +1,38 @@
 2008-12-21  Jonathan Matthew  <jonathan@d14n.org>
 
+	* shell/rb-tray-icon.c: (rb_tray_icon_init),
+	(rb_tray_icon_finalize), (rb_tray_icon_update_tooltip_visibility),
+	(rb_tray_icon_set_tooltip_primary_text),
+	(rb_tray_icon_set_tooltip_icon),
+	(rb_tray_icon_set_tooltip_secondary_markup), (rb_tray_icon_notify),
+	(tray_icon_tooltip_cb), (rb_tray_icon_create_blank_image):
+	* shell/rb-tray-icon.h:
+	Use a normal GtkTooltip, containing an image and some markup, rather
+	than a custom arrangement of widgets in a SexyTooltip.  Probably looks
+	a bit better and also might be accessible now.  To work with the
+	GtkTooltip API, use a GdkPixbuf instead of a GtkImage.
+
+	* shell/rb-shell.c: (rb_shell_db_metadata_art_cb),
+	(rb_shell_hidden_notify), (rb_shell_hidden_notify_markup):
+	* shell/rb-shell.h:
+	* plugins/cd-recorder/rb-playlist-source-recorder.c: (burn_cd),
+	(rb_playlist_source_recorder_constructor):
+	* bindings/python/rb.defs:
+	RBTrayIcon now wants a GdkPixbuf instead of a GtkImage.
+	
+	* widgets/eggtrayicon.c: (egg_tray_icon_notify):
+	* widgets/eggtrayicon.h:
+	RBTrayIcon now provides a GdkPixbuf instead of a GtkImage, which is
+	OK because that's what libnotify wants.
+
+	* doc/reference/Makefile.am:
+	* widgets/libsexy/Makefile.am:
+	* widgets/libsexy/sexy-tooltip.c:
+	* widgets/libsexy/sexy-tooltip.h:
+	Remove our copy of SexyTooltip.
+
+2008-12-21  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/visualizer/rb-visualizer-plugin.c: (can_draw_on_desktop):
 	Remove #ifdef for gtk<2.12.
 
