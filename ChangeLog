@@ -1,5 +1,20 @@
 2008-12-21  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  John Daiker  <daikerjohn@gmail.com>
+
+	* configure.ac:
+	Increase gtk+ version requirement to 2.12 to get the new tooltip API.
+
+	* shell/rb-shell.c: (rb_shell_finalize), (construct_load_ui),
+	(tray_destroy_cb):
+	* shell/rb-source-header.c: (rb_source_header_init):
+	* shell/rb-statusbar.c: (rb_statusbar_init):
+	* widgets/rb-entry-view.c: (rb_entry_view_constructor):
+	Use GtkTooltip (or its helper functions) instead of GtkTooltips.
+	From #564800.
+
+2008-12-21  Jonathan Matthew  <jonathan@d14n.org>
+
 	* remote/dbus/rb-client.c: (get_playing_song_info),
 	(print_playing_song), (print_playing_song_default), (main):
 	For --print-playing, use '%st (%tt)' as the format string if the song

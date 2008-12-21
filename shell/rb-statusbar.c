@@ -89,7 +89,6 @@ struct RBStatusbarPrivate
         RhythmDB *db;
 
         GtkUIManager *ui_manager;
-        GtkTooltips *tooltips;
 
         GtkWidget *progress;
         double progress_fraction;
@@ -189,9 +188,6 @@ rb_statusbar_init (RBStatusbar *statusbar)
 	statusbar->priv = G_TYPE_INSTANCE_GET_PRIVATE (statusbar,
 						       RB_TYPE_STATUSBAR,
 						       RBStatusbarPrivate);
-
-        statusbar->priv->tooltips = gtk_tooltips_new ();
-        gtk_tooltips_enable (statusbar->priv->tooltips);
 
         gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (statusbar), TRUE);
 

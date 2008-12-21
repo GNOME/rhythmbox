@@ -378,7 +378,6 @@ struct RBShellPrivate
 	GtkWidget *plugins;
 
 	RBTrayIcon *tray_icon;
-	GtkTooltips *tooltips;
 	GtkWidget *volume_button;
 	gboolean syncing_volume;
 
@@ -935,9 +934,6 @@ rb_shell_finalize (GObject *object)
 	if (shell->priv->prefs != NULL)
 		gtk_widget_destroy (shell->priv->prefs);
 
-	rb_debug ("destroying tooltips");
-	gtk_object_destroy (GTK_OBJECT (shell->priv->tooltips));
-
 	g_free (shell->priv->rhythmdb_file);
 
 	g_free (shell->priv->playlists_file);
@@ -1291,12 +1287,8 @@ construct_load_ui (RBShell *shell)
 
 	gtk_widget_show (hbox);
 
-	shell->priv->tooltips = gtk_tooltips_new ();
-	gtk_tooltips_enable (shell->priv->tooltips);
-
-	gtk_tooltips_set_tip (GTK_TOOLTIPS (shell->priv->tooltips),
-			      GTK_WIDGET (shell->priv->volume_button),
-			      _("Change the music volume"), NULL);
+	gtk_widget_set_tooltip_text (shell->priv->volume_button,
+				     _("Change the music volume"));
 
 	if (error != NULL) {
 		g_warning ("Couldn't merge %s: %s",
@@ -2951,7 +2943,7 @@ tray_destroy_cb (GtkObject *object,
 {
 	if (shell->priv->tray_icon) {
 		rb_debug ("caught destroy event for tray icon %p", object);
-		gtk_object_sink (object);
+		g_object_ref_sink (object);
 		shell->priv->tray_icon = NULL;
 		rb_debug ("finished sinking tray");
 	}

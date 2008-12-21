@@ -1792,12 +1792,9 @@ rb_entry_view_constructor (GType type,
 
 	{
 		GtkTreeViewColumn *column;
-		GtkTooltips *tooltip;
 		GtkCellRenderer *renderer;
 		GtkWidget *image_widget;
 		gint width;
-
-		tooltip = gtk_tooltips_new ();
 
 		/* Playing icon column */
 		column = GTK_TREE_VIEW_COLUMN (gtk_tree_view_column_new ());
@@ -1823,8 +1820,8 @@ rb_entry_view_constructor (GType type,
 					  G_CALLBACK (rb_entry_view_pixbuf_clicked_cb),
 					  view);
 
-		gtk_tooltips_set_tip (GTK_TOOLTIPS (tooltip), GTK_WIDGET (column->button),
-				       _("Now Playing"), NULL);
+		gtk_widget_set_tooltip_text (GTK_WIDGET (column->button),
+					     _("Now Playing"));
 	}
 
 	view->priv->gconf_notification_id =

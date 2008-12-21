@@ -102,8 +102,6 @@ struct RBSourceHeaderPrivate
 	GtkActionGroup *actiongroup;
 	guint source_ui_merge_id;
 
-	GtkTooltips *tooltips;
-
 	GtkWidget *search;
 	GtkWidget *search_bar;
 
@@ -263,18 +261,15 @@ rb_source_header_init (RBSourceHeader *header)
 
 	header->priv = RB_SOURCE_HEADER_GET_PRIVATE (header);
 
-	header->priv->tooltips = gtk_tooltips_new ();
-	gtk_tooltips_enable (header->priv->tooltips);
-
 	gtk_table_set_col_spacings (GTK_TABLE (header), 5);
 	gtk_table_resize (GTK_TABLE (header), 1, 3);
 
 	ebox = GTK_EVENT_BOX (gtk_event_box_new ());
 	header->priv->search = GTK_WIDGET (rb_search_entry_new ());
-	gtk_tooltips_set_tip (GTK_TOOLTIPS (header->priv->tooltips),
-			      GTK_WIDGET (ebox),
-			      _("Filter music display by genre, artist, album, or title"),
-			      NULL);
+
+	gtk_widget_set_tooltip_text (GTK_WIDGET (ebox),
+				     _("Filter music display by genre, artist, album, or title"));
+
 	gtk_container_add (GTK_CONTAINER (ebox), GTK_WIDGET (header->priv->search));
 
 	g_signal_connect_object (G_OBJECT (header->priv->search), "search",
