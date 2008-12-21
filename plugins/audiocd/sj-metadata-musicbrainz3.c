@@ -247,6 +247,11 @@ mb_list_albums (SjMetadata *metadata, char **url, GError **error)
   mb_release_filter_free (filter);
   g_free (id);
 
+  if (results == NULL) {
+    mb_query_free (query);
+    return NULL;
+  }
+
   if (mb_result_list_get_size (results) == 0) {
     mb_result_list_free (results);
     mb_query_free (query);

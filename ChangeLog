@@ -1,3 +1,9 @@
+2008-12-22  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/audiocd/sj-metadata-musicbrainz3.c: (mb_list_albums):
+	Handle mb_query_get_releases returning NULL, which indicates an error.
+	It doesn't tell us anything about the error, sadly.  (Closes: #565056)
+
 2008-12-21  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/audiocd/rb-audiocd-source.c: (metadata_cb):
