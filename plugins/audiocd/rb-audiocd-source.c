@@ -506,7 +506,6 @@ metadata_cb (SjMetadataGetter *metadata,
 	if (error != NULL) {
 		rb_debug ("Failed to load cd metadata: %s", error->message);
 		/* TODO display error to user? */
-		g_error_free (error);
 		g_object_unref (metadata);
 		return;
 	}

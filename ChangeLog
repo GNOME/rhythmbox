@@ -1,5 +1,10 @@
 2008-12-21  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/audiocd/rb-audiocd-source.c: (metadata_cb):
+	The caller owns the error here, so we can't free it.
+
+2008-12-21  Jonathan Matthew  <jonathan@d14n.org>
+
 	* shell/rb-tray-icon.c: (rb_tray_icon_init),
 	(rb_tray_icon_finalize), (rb_tray_icon_update_tooltip_visibility),
 	(rb_tray_icon_set_tooltip_primary_text),
