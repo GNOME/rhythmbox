@@ -411,33 +411,80 @@ create_rb_shell_proxies (DBusGConnection *bus, DBusGProxy **shell_proxy, DBusGPr
 	return TRUE;
 }
 
+static GHashTable *
+get_playing_song_info (DBusGProxy *shell_proxy, DBusGProxy *player_proxy, GError **error)
+{
+	char *playing_uri;
+	GHashTable *properties;
+
+	org_gnome_Rhythmbox_Player_get_playing_uri (player_proxy, &playing_uri, error);
+	if (*error != NULL) {
+		return NULL;
+	}
+
+	if (!playing_uri || playing_uri[0] == '\0') {
+		return NULL;
+	}
+
+	rb_debug ("playing song is %s", playing_uri);
+	org_gnome_Rhythmbox_Shell_get_song_properties (shell_proxy, playing_uri, &properties, error);
+	if (*error != NULL) {
+		return NULL;
+	}
+
+	return properties;
+}
+
 static void
 print_playing_song (DBusGProxy *shell_proxy, DBusGProxy *player_proxy, const char *format)
 {
-	char *playing_uri;
-	GError *error = NULL;
+	gboolean errored;
 	GHashTable *properties;
-	char *string;
 	guint elapsed = 0;
+	GError *error = NULL;
+	char *string;
 
-	org_gnome_Rhythmbox_Player_get_playing_uri (player_proxy, &playing_uri, &error);
-	if (annoy (&error))
+	properties = get_playing_song_info (shell_proxy, player_proxy, &error);
+	if (annoy (&error)) {
 		return;
-
-	org_gnome_Rhythmbox_Player_get_elapsed (player_proxy, &elapsed, &error);
-	annoy (&error);
-
-	if (!playing_uri || playing_uri[0] == '\0') {
+	}
+	if (properties == NULL) {
 		g_print ("%s\n", _("Not playing"));
 		return;
 	}
-	rb_debug ("playing song is %s", playing_uri);
-
-	org_gnome_Rhythmbox_Shell_get_song_properties (shell_proxy, playing_uri, &properties, &error);
-	if (annoy (&error))
-		return;
+	
+	org_gnome_Rhythmbox_Player_get_elapsed (player_proxy, &elapsed, &error);
+	annoy (&error);
 
 	string = parse_pattern (format, properties, elapsed);
+	g_print ("%s\n", string);
+	g_hash_table_destroy (properties);
+	g_free (string);
+}
+
+static void
+print_playing_song_default (DBusGProxy *shell_proxy, DBusGProxy *player_proxy)
+{
+	gboolean errored;
+	GHashTable *properties;
+	char *string;
+	GError *error = NULL;
+
+	properties = get_playing_song_info (shell_proxy, player_proxy, &error);
+	if (annoy (&error)) {
+		return;
+	}
+	if (properties == NULL) {
+		g_print ("%s\n", _("Not playing"));
+		return;
+	}
+
+	if (g_hash_table_lookup (properties, "rb:stream-song-title") != NULL) {
+		string = parse_pattern ("%st (%tt)", properties, 0);
+	} else {
+		string = parse_pattern ("%ta - %tt", properties, 0);
+	}
+
 	g_print ("%s\n", string);
 	g_hash_table_destroy (properties);
 	g_free (string);
@@ -664,7 +711,7 @@ main (int argc, char **argv)
 	if (print_playing_format) {
 		print_playing_song (shell_proxy, player_proxy, print_playing_format);
 	} else if (print_playing) {
-		print_playing_song (shell_proxy, player_proxy, "%ta - %tt");
+		print_playing_song_default (shell_proxy, player_proxy);
 	}
 
 	/* 8. display notification about playing song */

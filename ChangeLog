@@ -1,3 +1,10 @@
+2008-12-21  Jonathan Matthew  <jonathan@d14n.org>
+
+	* remote/dbus/rb-client.c: (get_playing_song_info),
+	(print_playing_song), (print_playing_song_default), (main):
+	For --print-playing, use '%st (%tt)' as the format string if the song
+	info includes a streaming song title.  Fixes #562047.
+
 2008-12-18  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  John Daiker  <daikerjohn@gmail.com>
