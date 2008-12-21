@@ -88,12 +88,6 @@
 #include "rb-marshal.h"
 #include "rb-missing-plugins.h"
 
-#if GTK_CHECK_VERSION(2,12,0)
-#define HAVE_GTK_VOLUME_BUTTON
-#else
-#include "bacon-volume.h"
-#endif
-
 #define PLAYING_ENTRY_NOTIFY_TIME 4
 
 static void rb_shell_class_init (RBShellClass *klass);
@@ -252,14 +246,9 @@ static void paned_size_allocate_cb (GtkWidget *widget,
 static void sidebar_paned_size_allocate_cb (GtkWidget *widget,
 					    GtkAllocation *allocation,
 					    RBShell *shell);
-#ifdef HAVE_GTK_VOLUME_BUTTON
 static void rb_shell_volume_widget_changed_cb (GtkScaleButton *vol,
 					       gdouble volume,
 					       RBShell *shell);
-#else
-static void rb_shell_volume_widget_changed_cb (BaconVolumeButton *vol,
-					       RBShell *shell);
-#endif
 static void rb_shell_player_volume_changed_cb (RBShellPlayer *player,
 					       GParamSpec *arg,
 					       RBShell *shell);
@@ -1261,12 +1250,7 @@ construct_load_ui (RBShell *shell)
 	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
 	gtk_box_pack_start (GTK_BOX (hbox), toolbar, TRUE, TRUE, 0);
 
-#ifdef HAVE_GTK_VOLUME_BUTTON
 	shell->priv->volume_button = gtk_volume_button_new ();
-#else
-	shell->priv->volume_button = bacon_volume_button_new (GTK_ICON_SIZE_LARGE_TOOLBAR,
-							       0.0, 1.0, 0.02);
-#endif
 	g_signal_connect (shell->priv->volume_button, "value-changed",
 			  G_CALLBACK (rb_shell_volume_widget_changed_cb),
 			  shell);
@@ -3558,7 +3542,6 @@ rb_shell_set_song_property (RBShell *shell,
 	return TRUE;
 }
 
-#ifdef HAVE_GTK_VOLUME_BUTTON
 static void
 rb_shell_volume_widget_changed_cb (GtkScaleButton *vol,
 				   gdouble volume,
@@ -3569,21 +3552,6 @@ rb_shell_volume_widget_changed_cb (GtkScaleButton *vol,
 	}
 }
 
-#else
-
-static void
-rb_shell_volume_widget_changed_cb (BaconVolumeButton *vol,
-				   RBShell *shell)
-{
-	if (!shell->priv->syncing_volume) {
-		g_object_set (shell->priv->player_shell,
-			      "volume", bacon_volume_button_get_value (vol),
-			      NULL);
-	}
-}
-
-#endif
-
 static void
 rb_shell_player_volume_changed_cb (RBShellPlayer *player,
 				   GParamSpec *arg,
@@ -3593,12 +3561,7 @@ rb_shell_player_volume_changed_cb (RBShellPlayer *player,
 
 	g_object_get (player, "volume", &volume, NULL);
 	shell->priv->syncing_volume = TRUE;
-#ifdef HAVE_GTK_VOLUME_BUTTON
 	gtk_scale_button_set_value (GTK_SCALE_BUTTON (shell->priv->volume_button), volume);
-#else
-	bacon_volume_button_set_value (BACON_VOLUME_BUTTON (shell->priv->volume_button),
-				       volume);
-#endif
 	shell->priv->syncing_volume = FALSE;
 
 }

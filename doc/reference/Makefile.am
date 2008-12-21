@@ -29,7 +29,6 @@ CFILE_GLOB=$(top_srcdir)/lib/*.c
 
 # Header files to ignore when scanning.
 IGNORE_HFILES= \
-	bacon-volume.h \
 	config.h \
 	gsequence.h \
 	md5.h \

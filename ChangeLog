@@ -1,5 +1,19 @@
 2008-12-21  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/visualizer/rb-visualizer-plugin.c: (can_draw_on_desktop):
+	Remove #ifdef for gtk<2.12.
+
+	* doc/reference/Makefile.am:
+	* shell/rb-shell.c: (construct_load_ui),
+	(rb_shell_player_volume_changed_cb):
+	* widgets/Makefile.am:
+	* widgets/bacon-volume.h:
+	* widgets/bacon-volume.c:
+	GtkVolumeButton was added in gtk 2.12, so we don't need our copy of
+	BaconVolumeButton or the code to use it any more.
+
+2008-12-21  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  John Daiker  <daikerjohn@gmail.com>
 
 	* configure.ac:

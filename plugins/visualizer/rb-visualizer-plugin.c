@@ -356,12 +356,10 @@ can_draw_on_desktop (RBVisualizerPlugin *plugin, int screen)
 	/* if we have a compositing manager, we probably can't just
 	 * scribble on the desktop.
 	 */
-#if GTK_CHECK_VERSION(2,10,0)
 	if (gdk_screen_is_composited (gdk_display_get_screen (display, screen))) {
 		rb_debug ("screen is composited: probably can't draw on desktop");
 		return FALSE;
 	}
-#endif
 
 	selection_name = g_strdup_printf ("_NET_DESKTOP_MANAGER_S%d", screen);
 	selection_atom = gdk_atom_intern (selection_name, FALSE);
