@@ -255,9 +255,6 @@ class ArtDisplayWidget (FadingImage):
 		self.current_entry, self.working = None, False
 		self.current_pixbuf, self.current_uri = None, None
 
-		self.tooltips = gtk.Tooltips ()
-		self.tooltips.enable ()
-	
 	def disconnect_handlers (self):
  		super (ArtDisplayWidget, self).disconnect_handlers ()
 		self.disconnect (self.ddg_id)
@@ -286,11 +283,11 @@ class ArtDisplayWidget (FadingImage):
 
 	def update_tooltips (self, working):
 		if not self.current_entry:
-			self.tooltips.set_tip (self, None)
+			self.set_tooltip_text (None)
 		elif working:
-			self.tooltips.set_tip (self, _("Searching... drop artwork here"))
+			self.set_tooltip_text (_("Searching... drop artwork here"))
 		else:
-			self.tooltips.set_tip (self, _("Drop artwork here"))
+			self.set_tooltip_text (_("Drop artwork here"))
 
 	def set (self, entry, pixbuf, uri, working):
 		self.current_entry = entry
