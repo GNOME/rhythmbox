@@ -33,6 +33,7 @@
 
 G_BEGIN_DECLS
 
+extern const char RB_APP_ICON[];
 extern const char RB_STOCK_TRAY_ICON_PLAYING[];
 extern const char RB_STOCK_TRAY_ICON_NOT_PLAYING[];
 extern const char RB_STOCK_SET_STAR[];

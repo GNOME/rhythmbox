@@ -47,7 +47,8 @@
 #include "rb-util.h"
 
 #define TRAY_ICON_DEFAULT_TOOLTIP _("Music Player")
-#define DEFAULT_TOOLTIP_ICON "" /*"gnome-media-player"*/
+
+#define TOOLTIP_IMAGE_BORDER_WIDTH	1
 
 /**
  * SECTION:rb-tray-icon
@@ -109,7 +110,6 @@ static void rb_tray_icon_drop_cb (GtkWidget *widget,
 				  guint time,
 				  RBTrayIcon *icon);
 static void rb_tray_icon_suppress_tooltips (RBTrayIcon *icon, guint duration);
-static GdkPixbuf* rb_tray_icon_create_blank_image (RBTrayIcon *icon);
 static gboolean tray_icon_tooltip_cb (GtkWidget  *widget,
 				      gint        x,
 				      gint        y,
@@ -128,6 +128,7 @@ struct RBTrayIconPrivate
 
 	char *primary_text;
 	char *secondary_markup;
+	GdkPixbuf *app_pixbuf;
 	GdkPixbuf *pixbuf;
 
 	gboolean tooltips_suppressed;
@@ -224,6 +225,9 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 static void
 rb_tray_icon_init (RBTrayIcon *icon)
 {
+	GtkIconTheme *theme;
+	gint size;
+
 	rb_debug ("setting up tray icon");
 
 	icon->priv = RB_TRAY_ICON_GET_PRIVATE (icon);
@@ -253,6 +257,15 @@ rb_tray_icon_init (RBTrayIcon *icon)
 								      GTK_ICON_SIZE_SMALL_TOOLBAR);
 	g_object_ref (icon->priv->playing_image);
 	g_object_ref (icon->priv->not_playing_image);
+
+	theme = gtk_icon_theme_get_default ();
+
+	gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &size, NULL);
+	icon->priv->app_pixbuf = gtk_icon_theme_load_icon (theme,
+							   RB_APP_ICON,
+							   size,
+							   0,
+							   NULL);
 
 	gtk_container_add (GTK_CONTAINER (icon->priv->ebox), icon->priv->not_playing_image);
 
@@ -325,6 +338,16 @@ rb_tray_icon_dispose (GObject *object)
 		}
 		g_object_unref (tray->priv->actiongroup);
 		tray->priv->actiongroup = NULL;
+	}
+
+	if (tray->priv->pixbuf != NULL) {
+		g_object_unref (tray->priv->pixbuf);
+		tray->priv->pixbuf = NULL;
+	}
+
+	if (tray->priv->app_pixbuf != NULL) {
+		g_object_unref (tray->priv->app_pixbuf);
+		tray->priv->app_pixbuf = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_tray_icon_parent_class)->dispose (object);
@@ -671,11 +694,24 @@ rb_tray_icon_set_tooltip_icon (RBTrayIcon *icon, GdkPixbuf *pixbuf)
 {
 	if (icon->priv->pixbuf != NULL) {
 		g_object_unref (icon->priv->pixbuf);
+		icon->priv->pixbuf = NULL;
 	}
+
 	if (pixbuf != NULL) {
-		icon->priv->pixbuf = g_object_ref (pixbuf);
-	} else {
-		icon->priv->pixbuf = rb_tray_icon_create_blank_image (icon);
+		/* create a copy of the image with a black border */
+		int w = gdk_pixbuf_get_width (pixbuf);
+		int h = gdk_pixbuf_get_height (pixbuf);
+		icon->priv->pixbuf = gdk_pixbuf_new (gdk_pixbuf_get_colorspace (pixbuf),
+						     gdk_pixbuf_get_has_alpha (pixbuf),
+						     gdk_pixbuf_get_bits_per_sample (pixbuf),
+						     w + (TOOLTIP_IMAGE_BORDER_WIDTH*2),
+						     h + (TOOLTIP_IMAGE_BORDER_WIDTH*2));
+		gdk_pixbuf_fill (icon->priv->pixbuf, 0xff);		/* opaque black */
+		gdk_pixbuf_copy_area (pixbuf,
+				      0, 0, w, h,
+				      icon->priv->pixbuf,
+				      TOOLTIP_IMAGE_BORDER_WIDTH,
+				      TOOLTIP_IMAGE_BORDER_WIDTH);
 	}
 
 	gtk_widget_trigger_tooltip_query (GTK_WIDGET (icon));
@@ -732,8 +768,6 @@ rb_tray_icon_notify (RBTrayIcon *icon,
 	rb_debug ("doing notify: %s", primary_markup);
 	if (timeout > 0)
 		rb_tray_icon_suppress_tooltips (icon, timeout);
-	if (pixbuf == NULL)
-		pixbuf = rb_tray_icon_create_blank_image (icon);
 	egg_tray_icon_notify (EGG_TRAY_ICON (icon), timeout,
 			      primary_markup, pixbuf, secondary_markup);
 }
@@ -764,7 +798,11 @@ tray_icon_tooltip_cb (GtkWidget  *widget,
 	if (icon->priv->tooltips_suppressed)
 		return FALSE;
 
-	gtk_tooltip_set_icon (tooltip, icon->priv->pixbuf);
+	if (icon->priv->pixbuf != NULL) {
+		gtk_tooltip_set_icon (tooltip, icon->priv->pixbuf);
+	} else {
+		gtk_tooltip_set_icon (tooltip, icon->priv->app_pixbuf);
+	}
 
 	if (icon->priv->primary_text != NULL) {
 		esc_primary = g_markup_escape_text (icon->priv->primary_text, -1);
@@ -810,18 +848,5 @@ rb_tray_icon_suppress_tooltips (RBTrayIcon *icon, guint duration)
 	if (icon->priv->tooltip_unsuppress_id > 0)
 		g_source_remove (icon->priv->tooltip_unsuppress_id);
 	icon->priv->tooltip_unsuppress_id = g_timeout_add (duration, (GSourceFunc) rb_tray_icon_unsuppress_cb, icon);
-}
-
-static GdkPixbuf *
-rb_tray_icon_create_blank_image (RBTrayIcon *icon)
-{
-	int width;
-	GdkPixbuf *pixbuf;
-
-	gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &width, NULL);
-	pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, width, width);
-	gdk_pixbuf_fill (pixbuf, 0); /* transparent */
-
-	return pixbuf;
 }
 

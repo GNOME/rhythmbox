@@ -1,5 +1,20 @@
 2008-12-27  Jonathan Matthew  <jonathan@d14n.org>
 
+	* lib/rb-stock-icons.h:
+	* shell/rb-tray-icon.c: (rb_tray_icon_init),
+	(rb_tray_icon_dispose), (rb_tray_icon_set_tooltip_icon),
+	(rb_tray_icon_notify), (tray_icon_tooltip_cb):
+	If no pixbuf is supplied, use the app icon instead.
+	If a pixbuf is supplied, add a thin black border around it to help
+	separate it from the rest of the bits in the tooltip.
+
+	* widgets/eggtrayicon.c: (egg_tray_icon_notify):
+	If no pixbuf is supplied, use the app icon instead.
+
+	Fixes #407246, sort of relates to #435950.
+
+2008-12-27  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/artdisplay/artdisplay/__init__.py:
 	Use GtkTooltip API instead of GtkTooltips.  From #564800.
 

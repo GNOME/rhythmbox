@@ -590,13 +590,27 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 
   notify_notification_set_timeout (icon->notify->handle, timeout);
 
-  if (pixbuf)
+  if (pixbuf == NULL)
     {
-#if (LIBNOTIFY_VERSION_MAJOR == 0 && LIBNOTIFY_VERSION_MINOR <=3 && LIBNOTIFY_VERSION_MICRO < 2)
-      notify_notification_set_icon_data_from_pixbuf (icon->notify->handle, pixbuf);
-#else
+      GtkIconTheme *theme;
+      gint size;
+
+      theme = gtk_icon_theme_get_default ();
+      gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &size, NULL);
+      pixbuf = gtk_icon_theme_load_icon (theme,
+	  				 RB_APP_ICON,
+					 size,
+					 0,
+					 NULL);
+      if (pixbuf != NULL)
+	{
+	  notify_notification_set_icon_from_pixbuf (icon->notify->handle, pixbuf);
+	  g_object_unref (pixbuf);
+	}
+    }
+  else
+    {
       notify_notification_set_icon_from_pixbuf (icon->notify->handle, pixbuf);
-#endif
     }
 
   gdk_window_get_origin (GTK_WIDGET (icon)->window, &x, &y);
