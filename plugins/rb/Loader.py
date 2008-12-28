@@ -30,8 +30,8 @@ import gtk
 use_gio = False
 try:
 	import gio
-	# before 2.15.3, file.load_contents_async didn't work correctly
-	if gio.pygio_version > (2,15,2):
+	# before 2.15.5, file.load_contents_async didn't work correctly
+	if gio.pygio_version > (2,15,4):
 		use_gio = True
 except:
 	# probably don't have gio at all

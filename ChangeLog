@@ -1,3 +1,10 @@
+2008-12-28  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/rb/Loader.py:  We'll actually require pygobject 2.15.5 (when
+	that exists) to use gio to download things, not 2.15.3, due to
+	bug #551059.  If your distribution's pygobject package includes the fix
+	for that, don't include this change.  Simple..
+
 2008-12-27  Jonathan Matthew  <jonathan@d14n.org>
 
 	* lib/rb-stock-icons.h:
