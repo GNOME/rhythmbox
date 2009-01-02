@@ -15,8 +15,7 @@ EXTRA_DIST = 			\
 	MAINTAINERS		\
 	MAINTAINERS.old		\
 	DOCUMENTERS		\
-	INTERNALS		\
-	README.iPod
+	INTERNALS
 
 DISTCLEANFILES =			\
 	gnome-doc-utils.make		\
