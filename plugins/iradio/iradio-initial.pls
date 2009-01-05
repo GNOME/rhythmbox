@@ -1,30 +1,28 @@
 [playlist]
 
-# http://www.virginradio.co.uk/listen/
-file1=http://www.smgradio.com/core/audio/ogg/live.pls?service=vr
-title1=Virgin Radio UK (Modem)
+# http://www.absoluteradio.co.uk/listen/on_your_computer.html
+file1=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=vr
+title1=Absolute Radio (Modem)
 genre1=Pop
 
-file2=http://www.smgradio.com/core/audio/ogg/live.pls?service=vrbb
-title2=Virgin Radio UK (Broadband)
+file2=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=vrbb
+title2=Absolute Radio (Broadband)
 genre2=Pop
 
-# http://xtreme.virginradio.co.uk/thestation/listen/index.html
-file3=http://www.smgradio.com/core/audio/ogg/live.pls?service=vx
-title3=Virgin Xtreme (Modem)
+file3=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=vx
+title3=Absolute Xtreme (Modem)
 genre3=Modern Rock
 
-file4=http://www.smgradio.com/core/audio/ogg/live.pls?service=vxbb
-title4=Virgin Xtreme (Broadband)
+file4=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=vxbb
+title4=Absolute Xtreme (Broadband)
 genre4=Modern Rock
 
-# http://classicrock.virginradio.co.uk/thestation/listen/index.html
-file5=http://www.smgradio.com/core/audio/ogg/live.pls?service=vc
-title5=Virgin Classic Rock (Modem)
+file5=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=vc
+title5=Absolute Classic Rock (Modem)
 genre5=Rock'n'Roll
 
-file6=http://www.smgradio.com/core/audio/ogg/live.pls?service=vcbb
-title6=Virgin Classic Rock (Broadband)
+file6=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=vcbb
+title6=Absolute Classic Rock (Broadband)
 genre6=Rock'n'Roll
 
 file7=http://ubuntu.hbr1.com:19800/trance.ogg
