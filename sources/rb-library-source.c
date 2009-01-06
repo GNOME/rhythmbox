@@ -120,6 +120,7 @@ static void rb_library_source_filename_changed_cb (GtkComboBox *box,
 						   RBLibrarySource *source);
 static void rb_library_source_format_changed_cb (GtkWidget *widget,
 						 RBLibrarySource *source);
+static void layout_example_label_update (RBLibrarySource *source);
 
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
 #define CONF_STATE_LIBRARY_DIR CONF_PREFIX "/state/library"
@@ -759,6 +760,8 @@ rb_library_source_format_changed_cb (GtkWidget *widget, RBLibrarySource *source)
 
 	profile = gm_audio_profile_choose_get_active (widget);
 	eel_gconf_set_string (CONF_LIBRARY_PREFERRED_FORMAT, gm_audio_profile_get_id (profile));
+	
+	layout_example_label_update (source);
 }
 
 /**
