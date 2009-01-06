@@ -1,5 +1,15 @@
 2009-01-06  Jonathan Matthew  <jonathan@d14n.org>
 
+	* widgets/rb-query-creator.c: (rb_query_creator_get_limit):
+	If the size limit is set using the 'GB' option, return that as a
+	number of MB in a uint64, rather than GB in a ulong for consistency
+	with the 'MB' option.  Fixes #566615.
+
+	* tests/test-widgets.c: (START_TEST):
+	Actually test the above.
+
+2009-01-06  Jonathan Matthew  <jonathan@d14n.org>
+
 	* sources/rb-library-source.c:
 	(rb_library_source_format_changed_cb):
 	Update the example file path when the selected encoding profile

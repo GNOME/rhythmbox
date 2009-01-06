@@ -369,7 +369,7 @@ START_TEST (test_query_creator_load_limit_gb)
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
 	array = g_value_array_new (0);
-	rb_value_array_append_data (array, G_TYPE_UINT64, (guint64)(14 * 1024));
+	rb_value_array_append_data (array, G_TYPE_UINT64, (guint64)(14 * 1000));
 	query_creator_test_load_query (db,
 				       query,
 				       RHYTHMDB_QUERY_MODEL_LIMIT_SIZE, array,

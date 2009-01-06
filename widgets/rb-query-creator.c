@@ -662,7 +662,7 @@ rb_query_creator_get_limit (RBQueryCreator *creator,
 
 		case 2:
 			*type = RHYTHMDB_QUERY_MODEL_LIMIT_SIZE;
-			rb_value_array_append_data (*limit, G_TYPE_ULONG, (gulong)l);
+			rb_value_array_append_data (*limit, G_TYPE_UINT64, l * 1000);
 			break;
 
 		case 3:
