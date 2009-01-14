@@ -257,7 +257,8 @@ rb_ipod_source_dispose (GObject *object)
 }
 
 RBRemovableMediaSource *
-rb_ipod_source_new (RBShell *shell,
+rb_ipod_source_new (RBPlugin *plugin,
+		    RBShell *shell,
 		    GMount *mount)
 {
 	RBiPodSource *source;
@@ -281,6 +282,7 @@ rb_ipod_source_new (RBShell *shell,
 	g_free (path);
 
 	source = RB_IPOD_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
+				               "plugin", plugin,
 					       "entry-type", entry_type,
 					       "mount", mount,
 					       "shell", shell,
@@ -1585,8 +1587,10 @@ rb_ipod_source_show_properties (RBiPodSource *source)
 	const gchar *mp;
 	char *used;
 	char *capacity;
+	char *glade_file;
  	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	Itdb_Device *ipod_dev;
+	RBPlugin *plugin;
 
 	if (priv->ipod_db == NULL) {
 		rb_debug ("can't show ipod properties with no ipod db");
@@ -1595,7 +1599,18 @@ rb_ipod_source_show_properties (RBiPodSource *source)
 
 	ipod_dev = rb_ipod_db_get_device (priv->ipod_db);
 
-	xml = rb_glade_xml_new ("ipod-info.glade", "ipod-information", NULL);
+	g_object_get (source, "plugin", &plugin, NULL);
+	glade_file = rb_plugin_find_file (plugin, "ipod-info.glade");
+	g_object_unref (plugin);
+
+	if (glade_file == NULL) {
+		g_warning ("Couldn't find ipod-info.glade");
+		return;
+	}
+
+	xml = rb_glade_xml_new (glade_file, "ipod-information", NULL);
+	g_free (glade_file);
+
  	if (xml == NULL) {
  		rb_debug ("Couldn't load ipod-info.glade");
  		return;

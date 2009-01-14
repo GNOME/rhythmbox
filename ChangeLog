@@ -1,3 +1,14 @@
+2009-01-14  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/ipod/rb-ipod-plugin.c: (create_source_cb):
+	* plugins/ipod/rb-ipod-source.c: (rb_ipod_source_new):
+	* plugins/ipod/rb-ipod-source.h:
+	Pass the RBPlugin pointer in to the ipod source constructor.
+
+	* plugins/ipod/rb-ipod-source.c: (rb_ipod_source_show_properties):
+	Use rb_plugin_find_file to locate ipod-info.glade.
+	Fixes #567085.
+
 2009-01-06  Jonathan Matthew  <jonathan@d14n.org>
 
 	* widgets/rb-query-creator.c: (rb_query_creator_get_limit):
