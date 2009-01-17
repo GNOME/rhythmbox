@@ -20,6 +20,7 @@
 # this plugin is more license than plugin.
 
 import rb
+import gconf
 
 class DontReallyClosePlugin(rb.Plugin):
 	def __init__(self):
@@ -28,6 +29,7 @@ class DontReallyClosePlugin(rb.Plugin):
 
 	def delete_event_cb(self, widget, event):
 		widget.hide()
+		gconf.client_get_default().set_bool("/apps/rhythmbox/state/window_visible", 0)
 		return True
 
 	def activate(self, shell):

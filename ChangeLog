@@ -1,5 +1,13 @@
 2009-01-17  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Uri Sivan  <tartif@gmail.com>
+
+	* plugins/dontreallyclose/dontreallyclose.py:
+	Set the state/window_visible gconf key to false when not really
+	closing the window.  Fixes #567917.
+
+2009-01-17  Jonathan Matthew  <jonathan@d14n.org>
+
 	based on patch by:  Michael Terry  <michael.terry@canonical.com>
 
 	* shell/rb-shell.c: (rb_shell_cmd_add_folder_to_library),
