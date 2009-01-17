@@ -1,3 +1,12 @@
+2009-01-17  Jonathan Matthew  <jonathan@d14n.org>
+
+	based on patch by:  Michael Terry  <michael.terry@canonical.com>
+
+	* shell/rb-shell.c: (rb_shell_cmd_add_folder_to_library),
+	(rb_shell_cmd_add_file_to_library):
+	Don't try to set the file chooser's current location to '' when the
+	state/add_dir gconf key isn't set.  Fixes #551035.
+
 2009-01-14  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/ipod/rb-ipod-plugin.c: (create_source_cb):
