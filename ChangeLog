@@ -1,5 +1,11 @@
 2009-01-21  Jonathan Matthew  <jonathan@d14n.org>
 
+	* rhythmdb/rhythmdb-monitor.c: (actually_add_monitor):
+	Don't get the file URI here - it wasn't used for anything, and we
+	weren't freeing it.
+
+2009-01-21  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Andy Owen <andy-gnome@ultra-premium.com>
 
 	* shell/rb-shell-player.c: (rb_shell_player_do_next_internal):

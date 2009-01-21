@@ -124,7 +124,6 @@ static void
 actually_add_monitor (RhythmDB *db, GFile *directory, GError **error)
 {
 	GFileMonitor *monitor;
-	char *uri;
 
 	if (directory == NULL) {
 		return;
@@ -137,7 +136,6 @@ actually_add_monitor (RhythmDB *db, GFile *directory, GError **error)
 		return;
 	}
 
-	uri = g_file_get_uri (directory);
 	monitor = g_file_monitor_directory (directory, 0, db->priv->exiting, error);
 	if (monitor != NULL) {
 		g_signal_connect_object (G_OBJECT (monitor),
