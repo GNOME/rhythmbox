@@ -526,6 +526,10 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->typecombo), 0);
 
 	source->priv->txtbox = gtk_entry_new ();
+	g_signal_connect_object (G_OBJECT (source->priv->txtbox),
+				 "activate",
+				 G_CALLBACK (rb_lastfm_source_add_station_cb),
+				 source, 0);
 
 	gtk_box_pack_end (GTK_BOX (editor_box), add_button, TRUE, TRUE, 0);
 	gtk_box_pack_end (GTK_BOX (editor_box), source->priv->txtbox, TRUE, TRUE, 0);

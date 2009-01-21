@@ -1,3 +1,12 @@
+2009-01-22  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Pascal Terjan  <pascal.terjan@free.fr>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_constructor): Create the station when the text box
+	is activated, as well as when the 'add' button is pressed.
+	Fixes #568232.
+
 2009-01-21  Jonathan Matthew  <jonathan@d14n.org>
 
 	* rhythmdb/rhythmdb-monitor.c: (actually_add_monitor):
