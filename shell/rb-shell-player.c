@@ -2196,7 +2196,7 @@ rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, gboo
 			 * play order if it has one?
 			 */
 
-			rb_shell_player_set_playing_source (player, NULL);
+			rb_shell_player_stop (player);
 			rb_play_order_set_playing_entry (player->priv->play_order, NULL);
 		}
 	}
