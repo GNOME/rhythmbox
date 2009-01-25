@@ -78,6 +78,7 @@ class JamendoSource(rb.BrowserSource):
 		self.__load_handle = None
 		self.__load_current_size = 0
 		self.__load_total_size = 0
+		self.__db_load_finished = False
 
 	def do_set_property(self, property, value):
 		if property.name == 'plugin':
@@ -182,7 +183,11 @@ class JamendoSource(rb.BrowserSource):
 						except:
 							break
 					gtk.gdk.threads_leave()
-				gobject.idle_add (finish_loadscreen)
+					return False
+
+				if self.__db_load_finished is False:
+					gobject.idle_add (finish_loadscreen)
+					self.__db_load_finished = True
 			else:
 				# error reading file
 				raise exc_type
@@ -216,6 +221,7 @@ class JamendoSource(rb.BrowserSource):
 
 	def __load_catalogue(self):
 		self.__notify_status_changed()
+		self.__db_load_finished = False
 		self.__load_handle = gnomevfs.async.open (local_song_info_uri, self.__load_catalogue_open_cb)
 
 
@@ -335,11 +341,13 @@ class JamendoSource(rb.BrowserSource):
 					trackno = int(track['numalbum'])
 					if trackno >= 0:
 						self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, trackno)
+
 					try:
-						self.__db.set(entry, rhythmdb.PROP_DURATION, int(track['lengths']))
+						duration = float(track['duration'])
+						self.__db.set(entry, rhythmdb.PROP_DURATION, int(duration))
 					except Exception:
 						# No length, nevermind
-						length = 0
+						pass
 					
 					# slight misuse, but this is far more efficient than having a python dict
 					# containing this data.

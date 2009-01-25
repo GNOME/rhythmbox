@@ -1,3 +1,9 @@
+2009-01-25  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/jamendo/jamendo/JamendoSource.py:
+	Parse track durations, protect against finish_loadscreen() being
+	called twice due to gnome-vfs weirdness.  Fixes #569009.
+
 2009-01-22  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Pascal Terjan  <pascal.terjan@free.fr>
