@@ -1,4 +1,4 @@
-# Vietnamese translation for RhythmBox.
+# Vietnamese translation for Rhythmbox.
 # Copyright © 2007 Gnome i18n Project for Vietnamese.
 # Nguyễn Thái Ngọc Duy <pclouds@vnlinux.org>, 2002-2004, 2005, 2007.
 # Clytie Siddall <clytie@riverland.net.au>, 2005-2006.
@@ -6,9 +6,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox Gnome HEAD\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-07 11:14+0100\n"
-"PO-Revision-Date: 2007-07-15 20:42-0400\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=rhythmbox&amp;component=general\n"
+"POT-Creation-Date: 2008-12-21 11:08+0000\n"
+"PO-Revision-Date: 2009-01-26 18:09+0700\n"
 "Last-Translator: Phạm Thành Long <lngt@ngonngu.net>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -16,54 +17,77 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:472
+#: ../backends/gstreamer/rb-encoder-gst.c:584
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Bạn có muốn ghi đè tập tin \"%s\" không?"
 
-#: ../backends/gstreamer/rb-player-gst.c:628 ../metadata/rb-metadata-gst.c:790
-#: ../metadata/rb-metadata-gst.c:1318
-#: ../plugins/cd-recorder/rb-recorder-gst.c:507
+#: ../backends/gstreamer/rb-encoder-gst.c:655
+#, c-format
+msgid "Could not create a GStreamer sink element to write to %s"
+msgstr "Không thể tạo ống dẫn phần tử sink của GStreamer để ghi vào %s"
+
+#: ../backends/gstreamer/rb-player-gst.c:693 ../metadata/rb-metadata-gst.c:848
+#: ../metadata/rb-metadata-gst.c:1411
+#: ../plugins/cd-recorder/rb-recorder-gst.c:508
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Lỗi tạo yếu tố %s; hãy kiểm tra lại bản cài đặt"
 
-#: ../backends/gstreamer/rb-player-gst.c:695
+#: ../backends/gstreamer/rb-player-gst.c:761
+#, c-format
 msgid "Unknown playback error"
 msgstr "Lỗi phát lại không xác định"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1054
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1068
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1124
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1138
+#, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Lỗi liên kết luồng mới vào ống dẫn GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1092
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1165
+#, c-format
 msgid "Failed to start new stream"
 msgstr "Lỗi khởi tạo luồng mới"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2546
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2634
-msgid "Failed to create GStreamer element; check your installation"
-msgstr "Lỗi tạo phần tử GStreamer %s; hãy kiểm tra lại bản cài đặt"
+#. ?
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2668
+#, c-format
+msgid "Failed to open output device"
+msgstr "Lỗi tạo thiết bị ra"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2559
+#. ?
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2747
+#, c-format
+msgid "Failed to open output device: %s"
+msgstr "Lỗi tạo thiết bị ra: %s"
+
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2969
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3057
+#, c-format
+msgid "Failed to create GStreamer element; check your installation"
+msgstr "Lỗi tạo phần tử GStreamer; hãy kiểm tra lại bản cài đặt"
+
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2982
+#, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Lỗi tạo phần tử xuất tiếng; hãy kiểm tra lại bản cài đặt."
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2608
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2650
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2676
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2685
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2694
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3031
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3073
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3099
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3108
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3117
+#, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Lỗi tạo liên kết ống dẫn GStreamer; hãy kiểm tra lại bản cài đặt"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2784
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3212
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Lỗi tạo ống dẫn GStreamer để chơi %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2805
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3228
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Không thể khởi chạy phát lại %s"
@@ -133,54 +157,58 @@ msgid "G_enres, artists and albums"
 msgstr "_Thể loại, nghệ sĩ và tập nhạc"
 
 #: ../data/glade/general-prefs.glade.h:11
+msgid "Lo_cation"
+msgstr "Đị_a điểm"
+
+#: ../data/glade/general-prefs.glade.h:12
 msgid "Ti_me"
 msgstr "Thờ_i lượng"
 
-#: ../data/glade/general-prefs.glade.h:12
+#: ../data/glade/general-prefs.glade.h:13
 msgid "Toolbar Button Labels"
 msgstr "Nhãn nút thanh công cụ"
 
-#: ../data/glade/general-prefs.glade.h:13
+#: ../data/glade/general-prefs.glade.h:14
 msgid "Track _number"
 msgstr "Số rã_nh"
 
-#: ../data/glade/general-prefs.glade.h:14
+#: ../data/glade/general-prefs.glade.h:15
 msgid "Visible Columns"
 msgstr "Cột hiển thị"
 
-#: ../data/glade/general-prefs.glade.h:15
+#: ../data/glade/general-prefs.glade.h:16
 msgid "_Artist"
 msgstr "Nghệ _sĩ"
 
-#: ../data/glade/general-prefs.glade.h:16
+#: ../data/glade/general-prefs.glade.h:17
 msgid "_Artists and albums"
 msgstr "_Nghệ sĩ và tập nhạc"
 
-#: ../data/glade/general-prefs.glade.h:17
+#: ../data/glade/general-prefs.glade.h:18
 msgid "_Genre"
 msgstr "_Thể loại"
 
-#: ../data/glade/general-prefs.glade.h:18
+#: ../data/glade/general-prefs.glade.h:19
 msgid "_Genres and artists"
 msgstr "T_hể loại và nghệ sĩ"
 
-#: ../data/glade/general-prefs.glade.h:19
+#: ../data/glade/general-prefs.glade.h:20
 msgid "_Last played"
 msgstr "_Phát lần cuối"
 
-#: ../data/glade/general-prefs.glade.h:20
+#: ../data/glade/general-prefs.glade.h:21
 msgid "_Play count"
 msgstr "_Số lần phát"
 
-#: ../data/glade/general-prefs.glade.h:21
+#: ../data/glade/general-prefs.glade.h:22
 msgid "_Quality"
 msgstr "_Chất lượng"
 
-#: ../data/glade/general-prefs.glade.h:22
+#: ../data/glade/general-prefs.glade.h:23
 msgid "_Rating"
 msgstr "Đánh _giá"
 
-#: ../data/glade/general-prefs.glade.h:23
+#: ../data/glade/general-prefs.glade.h:24
 msgid "_Year"
 msgstr "_Năm"
 
@@ -198,30 +226,34 @@ msgid "F_older hierarchy:"
 msgstr "Câ_y thư mục:"
 
 #: ../data/glade/library-prefs.glade.h:4
+msgid "Library Location"
+msgstr "Địa điểm thư viện"
+
+#: ../data/glade/library-prefs.glade.h:5
 msgid "Library Structure"
 msgstr "Cấu trúc thư viện"
 
-#: ../data/glade/library-prefs.glade.h:5
+#: ../data/glade/library-prefs.glade.h:6
 msgid "_Browse..."
 msgstr "_Duyệt..."
 
-#: ../data/glade/library-prefs.glade.h:6 ../shell/rb-playlist-manager.c:151
+#: ../data/glade/library-prefs.glade.h:7 ../shell/rb-playlist-manager.c:190
 msgid "_Edit..."
 msgstr "_Sửa..."
 
-#: ../data/glade/library-prefs.glade.h:7
+#: ../data/glade/library-prefs.glade.h:8
 msgid "_File name:"
 msgstr "_Tên tập tin:"
 
-#: ../data/glade/library-prefs.glade.h:8
-msgid "_Library Location"
-msgstr "Địa điểm thư _viện"
-
 #: ../data/glade/library-prefs.glade.h:9
+msgid "_Music files are placed in:"
+msgstr "_Tập tin nhạc nằm trong:"
+
+#: ../data/glade/library-prefs.glade.h:10
 msgid "_Preferred format:"
 msgstr "Dạng thức ư_u tiên:"
 
-#: ../data/glade/library-prefs.glade.h:10
+#: ../data/glade/library-prefs.glade.h:11
 msgid "_Watch my library for new files"
 msgstr "Th_eo dõi thư viện để tìm tập tin mới"
 
@@ -293,22 +325,21 @@ msgstr "Bổ sung Rhythmbox"
 msgid "Site:"
 msgstr "Địa chỉ:"
 
-#. -
 #: ../data/glade/podcast-feed-properties.glade.h:1
-#: ../data/glade/podcast-properties.glade.h:1 ../widgets/bacon-volume.c:224
+#: ../data/glade/podcast-properties.glade.h:1
 msgid "-"
 msgstr "-"
 
 #: ../data/glade/podcast-feed-properties.glade.h:3
 #: ../data/glade/podcast-properties.glade.h:2
-#: ../data/glade/song-info.glade.h:1
+#: ../data/glade/song-info.glade.h:1 ../plugins/ipod/ipod-info.glade.h:5
 #: ../plugins/iradio/station-properties.glade.h:1
 msgid "Basic"
 msgstr "Cơ bản"
 
 #: ../data/glade/podcast-feed-properties.glade.h:6
 #: ../data/glade/podcast-properties.glade.h:6
-#: ../data/glade/song-info.glade.h:3
+#: ../data/glade/song-info.glade.h:4
 #: ../plugins/iradio/station-properties.glade.h:3
 msgid "Details"
 msgstr "Chi tiết"
@@ -378,7 +409,7 @@ msgid "Download location:"
 msgstr "Địa điểm tải về:"
 
 #: ../data/glade/podcast-properties.glade.h:8
-#: ../data/glade/song-info.glade.h:4
+#: ../data/glade/song-info.glade.h:5
 msgid "Duration:"
 msgstr "Thời lượng:"
 
@@ -387,74 +418,78 @@ msgid "Feed:"
 msgstr "Nguồn:"
 
 #: ../data/glade/podcast-properties.glade.h:10
-#: ../data/glade/song-info.glade.h:8
+#: ../data/glade/song-info.glade.h:9
 #: ../plugins/iradio/station-properties.glade.h:6
 msgid "Last played:"
 msgstr "Lần phát cuối:"
 
 #: ../data/glade/podcast-properties.glade.h:11
-#: ../data/glade/song-info.glade.h:10
+#: ../data/glade/song-info.glade.h:11
 #: ../plugins/iradio/station-properties.glade.h:7
 msgid "Play count:"
 msgstr "Số lần phát:"
 
 #: ../data/glade/podcast-properties.glade.h:14
 #: ../data/glade/song-info-multiple.glade.h:5
-#: ../data/glade/song-info.glade.h:15
+#: ../data/glade/song-info.glade.h:16
 #: ../plugins/iradio/station-properties.glade.h:9
 msgid "_Rating:"
 msgstr "Đánh _giá:"
 
 #: ../data/glade/song-info-multiple.glade.h:1
-#: ../data/glade/song-info.glade.h:11
+#: ../data/glade/song-info.glade.h:12
 msgid "_Album:"
 msgstr "_Tập nhạc:"
 
 #: ../data/glade/song-info-multiple.glade.h:2
-#: ../data/glade/song-info.glade.h:12
+#: ../data/glade/song-info.glade.h:13
 msgid "_Artist:"
 msgstr "Nghệ _sĩ:"
 
 #: ../data/glade/song-info-multiple.glade.h:3
-#: ../data/glade/song-info.glade.h:13
+#: ../data/glade/song-info.glade.h:14
 msgid "_Disc number:"
 msgstr "_Số hiệu đĩa:"
 
 #: ../data/glade/song-info-multiple.glade.h:4
-#: ../data/glade/song-info.glade.h:14
+#: ../data/glade/song-info.glade.h:15
 #: ../plugins/iradio/station-properties.glade.h:8
 msgid "_Genre:"
 msgstr "Thể l_oại:"
 
 #: ../data/glade/song-info-multiple.glade.h:6
-#: ../data/glade/song-info.glade.h:18
+#: ../data/glade/song-info.glade.h:19
 #: ../plugins/magnatune/magnatune-prefs.glade.h:46
 msgid "_Year:"
 msgstr "_Năm:"
 
-#: ../data/glade/song-info.glade.h:5
+#: ../data/glade/song-info.glade.h:3
+msgid "Date added:"
+msgstr "Ngà_y thêm:"
+
+#: ../data/glade/song-info.glade.h:6
 #: ../plugins/iradio/station-properties.glade.h:4
 msgid "Error message"
 msgstr "Thông điệp lỗi"
 
-#: ../data/glade/song-info.glade.h:6
+#: ../data/glade/song-info.glade.h:7
 msgid "File name:"
 msgstr "Tên tập tin:"
 
-#: ../data/glade/song-info.glade.h:7
+#: ../data/glade/song-info.glade.h:8
 msgid "File size:"
 msgstr "Cỡ tập tin:"
 
-#: ../data/glade/song-info.glade.h:9
+#: ../data/glade/song-info.glade.h:10
 msgid "Location:"
 msgstr "Địa điểm:"
 
-#: ../data/glade/song-info.glade.h:16
+#: ../data/glade/song-info.glade.h:17
 #: ../plugins/iradio/station-properties.glade.h:10
 msgid "_Title:"
 msgstr "_Tựa:"
 
-#: ../data/glade/song-info.glade.h:17
+#: ../data/glade/song-info.glade.h:18
 msgid "_Track number:"
 msgstr "Số _rãnh:"
 
@@ -483,9 +518,9 @@ msgid "Recently Played"
 msgstr "Mới phát"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../plugins/power-manager/rb-power-manager-plugin.c:181
-#: ../shell/rb-shell.c:1003 ../shell/rb-shell.c:2085
-#: ../shell/rb-tray-icon.c:43
+#: ../plugins/power-manager/rb-power-manager-plugin.c:207
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1492 ../shell/rb-shell.c:1031
+#: ../shell/rb-shell.c:2123 ../shell/rb-tray-icon.c:50
 msgid "Music Player"
 msgstr "Bộ phát nhạc"
 
@@ -498,46 +533,39 @@ msgid "Rhythmbox Music Player"
 msgstr "Bộ phát nhạc Rhythmbox"
 
 #. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
-#: ../lib/rb-cut-and-paste-code.c:269
+#: ../lib/rb-cut-and-paste-code.c:270
 msgid "Today %I:%M %p"
 msgstr "Hôm nay %I:%M %p"
 
 #. Translators: "friendly time" string for the previous day,
 #. * strftime format. e.g. "Yesterday 12:34 am"
 #.
-#: ../lib/rb-cut-and-paste-code.c:282
+#: ../lib/rb-cut-and-paste-code.c:283
 msgid "Yesterday %I:%M %p"
 msgstr "Hôm qua %I:%M %p"
 
 #. Translators: "friendly time" string for a day in the current week,
 #. * strftime format. e.g. "Wed 12:34 am"
 #.
-#: ../lib/rb-cut-and-paste-code.c:298
+#: ../lib/rb-cut-and-paste-code.c:299
 msgid "%a %I:%M %p"
 msgstr "%a %I:%M %p"
 
 #. Translators: "friendly time" string for a day in the current year,
 #. * strftime format. e.g. "Feb 12 12:34 am"
 #.
-#: ../lib/rb-cut-and-paste-code.c:310
+#: ../lib/rb-cut-and-paste-code.c:311
 msgid "%b %d %I:%M %p"
 msgstr "%d %b %I:%M %p"
 
 #. Translators: "friendly time" string for a day in a different year,
 #. * strftime format. e.g. "Feb 12 1997"
 #.
-#: ../lib/rb-cut-and-paste-code.c:315
+#: ../lib/rb-cut-and-paste-code.c:316
 msgid "%b %d %Y"
 msgstr "%b %d %Y"
 
-#: ../lib/rb-proxy-config.c:189
-msgid "HTTP proxy configuration error"
-msgstr "Lỗi cấu hình uỷ nhiệm HTTP"
-
-#: ../lib/rb-proxy-config.c:190
-msgid "Rhythmbox does not support automatic proxy configuration"
-msgstr "Rhythmbox không hỗ trợ khả năng cấu hình uỷ nhiệm mạng tự động"
-
+#. impossible time or broken locale settings
 #. TODO: Improve to decrease wrong cover downloads, maybe add severity?
 #. Assemble list of search keywords (and thus search queries)
 #. If we still have no definite hit, use first result where artist matches
@@ -545,145 +573,185 @@ msgstr "Rhythmbox không hỗ trợ khả năng cấu hình uỷ nhiệm mạng 
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-util.c:648 ../lib/rb-util.c:888
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:67
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:68
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:101
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:107
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:117
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:233
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:249
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:122
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:123
-#: ../plugins/audiocd/rb-audiocd-source.c:213
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:459
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1121
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1122
-#: ../plugins/daap/rb-daap-connection.c:677
-#: ../plugins/generic-player/rb-generic-player-source.c:775
-#: ../plugins/ipod/rb-ipod-source.c:257
-#: ../plugins/iradio/rb-iradio-source.c:497
-#: ../plugins/iradio/rb-iradio-source.c:1109
-#: ../plugins/iradio/rb-station-properties-dialog.c:479
-#: ../plugins/mtpdevice/rb-mtp-source.c:236
-#: ../podcast/rb-feed-podcast-properties-dialog.c:301
-#: ../podcast/rb-podcast-manager.c:1567
-#: ../podcast/rb-podcast-properties-dialog.c:467
-#: ../podcast/rb-podcast-properties-dialog.c:520
-#: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1211
-#: ../rhythmdb/rhythmdb-tree.c:1215 ../rhythmdb/rhythmdb-tree.c:1219
-#: ../rhythmdb/rhythmdb-tree.c:1223 ../rhythmdb/rhythmdb.c:1419
-#: ../shell/rb-shell-player.c:1443 ../shell/rb-shell.c:2987
-#: ../sources/rb-podcast-source.c:1630 ../widgets/rb-entry-view.c:837
-#: ../widgets/rb-entry-view.c:862 ../widgets/rb-entry-view.c:1146
-#: ../widgets/rb-entry-view.c:1158 ../widgets/rb-entry-view.c:1170
-#: ../widgets/rb-song-info.c:766 ../widgets/rb-song-info.c:930
-#: ../widgets/rb-song-info.c:1200
+#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:576
+#: ../lib/rb-util.c:816
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:85
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:86
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:88
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:123
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:129
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:247
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:268
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:153
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:154
+#: ../plugins/audiocd/rb-audiocd-source.c:218
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:510
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
+#: ../plugins/daap/rb-daap-connection.c:698
+#: ../plugins/generic-player/rb-generic-player-source.c:1284
+#: ../plugins/ipod/rb-ipod-source.c:303
+#: ../plugins/jamendo/jamendo/JamendoSource.py:330
+#: ../plugins/iradio/rb-iradio-source.c:517
+#: ../plugins/iradio/rb-iradio-source.c:1100
+#: ../plugins/iradio/rb-station-properties-dialog.c:495
+#: ../plugins/mtpdevice/rb-mtp-source.c:357
+#: ../podcast/rb-feed-podcast-properties-dialog.c:320
+#: ../podcast/rb-podcast-manager.c:1873
+#: ../podcast/rb-podcast-properties-dialog.c:487
+#: ../podcast/rb-podcast-properties-dialog.c:539
+#: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1284
+#: ../rhythmdb/rhythmdb-tree.c:1288 ../rhythmdb/rhythmdb-tree.c:1292
+#: ../rhythmdb/rhythmdb-tree.c:1296 ../rhythmdb/rhythmdb.c:1768
+#: ../shell/rb-shell-player.c:1717 ../shell/rb-shell.c:3046
+#: ../sources/rb-podcast-source.c:1763 ../widgets/rb-entry-view.c:1041
+#: ../widgets/rb-entry-view.c:1066 ../widgets/rb-entry-view.c:1469
+#: ../widgets/rb-entry-view.c:1481 ../widgets/rb-entry-view.c:1493
+#: ../widgets/rb-song-info.c:889 ../widgets/rb-song-info.c:1054
+#: ../widgets/rb-song-info.c:1374
 msgid "Unknown"
 msgstr "Không rõ"
 
-#: ../lib/rb-util.c:650 ../remote/dbus/rb-client.c:136
+#: ../lib/rb-file-helpers.c:213
+#, c-format
+msgid "Too many symlinks"
+msgstr "Quá nhiều liên kết"
+
+#: ../lib/rb-file-helpers.c:841
+#, c-format
+msgid "Cannot get free space at %s: %s"
+msgstr "Không thể lấy chỗ còn trống tại %s: %s"
+
+#: ../lib/rb-proxy-config.c:218
+msgid "HTTP proxy configuration error"
+msgstr "Lỗi cấu hình uỷ nhiệm HTTP"
+
+#: ../lib/rb-proxy-config.c:219
+msgid "Rhythmbox does not support automatic proxy configuration"
+msgstr "Rhythmbox không hỗ trợ khả năng cấu hình uỷ nhiệm mạng tự động"
+
+#: ../lib/rb-util.c:578 ../remote/dbus/rb-client.c:142
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:652 ../remote/dbus/rb-client.c:138
+#: ../lib/rb-util.c:580 ../remote/dbus/rb-client.c:144
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:687
+#: ../lib/rb-util.c:615
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "còn lại %d:%02d/%d:%02d"
 
-#: ../lib/rb-util.c:691
+#: ../lib/rb-util.c:619
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "còn lại %d:%02d:%02d/%d:%02d:%02d"
 
-#: ../lib/rb-util.c:696
+#: ../lib/rb-util.c:624
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d/%d:%02d"
 
-#: ../lib/rb-util.c:700
+#: ../lib/rb-util.c:628
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d/%d:%02d:%02d"
 
-#: ../metadata/rb-metadata-dbus-client.c:295
+#: ../metadata/rb-metadata-dbus-client.c:324
+#, c-format
 msgid "Internal GStreamer problem; file a bug"
 msgstr "Vấn đề GStreamer nội bộ; vui lòng thông báo lỗi này"
 
-#: ../metadata/rb-metadata-dbus-client.c:313
-#: ../metadata/rb-metadata-dbus-client.c:363
-#: ../metadata/rb-metadata-dbus-client.c:368
-#: ../metadata/rb-metadata-dbus-client.c:388
-#: ../metadata/rb-metadata-dbus-client.c:398
-#: ../metadata/rb-metadata-dbus-client.c:406
-#: ../metadata/rb-metadata-dbus-client.c:546
-#: ../metadata/rb-metadata-dbus-client.c:556
+#: ../metadata/rb-metadata-dbus-client.c:342
+#: ../metadata/rb-metadata-dbus-client.c:403
+#: ../metadata/rb-metadata-dbus-client.c:408
+#: ../metadata/rb-metadata-dbus-client.c:428
+#: ../metadata/rb-metadata-dbus-client.c:438
+#: ../metadata/rb-metadata-dbus-client.c:448
+#: ../metadata/rb-metadata-dbus-client.c:467
+#: ../metadata/rb-metadata-dbus-client.c:479
+#: ../metadata/rb-metadata-dbus-client.c:710
+#: ../metadata/rb-metadata-dbus-client.c:720
+#, c-format
 msgid "D-BUS communication error"
 msgstr "Lỗi liên lạc D-BUS"
 
-#: ../metadata/rb-metadata-gst.c:579
+#: ../metadata/rb-metadata-gst.c:643
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr ""
 "Không tìm thấy những phần bổ sung GStreamer để giải mã tập tin kiểu \"%s\"."
 
-#: ../metadata/rb-metadata-gst.c:582
+#: ../metadata/rb-metadata-gst.c:646
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "Tập tin chứa một luồng kiểu %s, loại không thể giải mã được"
 
-#: ../metadata/rb-metadata-gst.c:952
+#: ../metadata/rb-metadata-gst.c:1038
+#, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Lỗi tạo phần tử nguồn; hãy kiểm tra lại bản cài đặt."
 
-#: ../metadata/rb-metadata-gst.c:1016
+#: ../metadata/rb-metadata-gst.c:1101
+#, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Lỗi GStreamer: chưa thay đổi tình trạng"
 
-#: ../metadata/rb-metadata-gst.c:1111
+#: ../metadata/rb-metadata-gst.c:1197
+#, c-format
 msgid "Empty file"
 msgstr "Tập tin rỗng"
 
-#: ../metadata/rb-metadata-gst.c:1119
+#: ../metadata/rb-metadata-gst.c:1205
+#, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "Không thể nhận diện kiểu MIME của tập tin này"
 
-#: ../metadata/rb-metadata-gst.c:1255
+#: ../metadata/rb-metadata-gst.c:1339
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Loại tập tin không được hỗ trợ: %s"
 
-#: ../metadata/rb-metadata-gst.c:1264
+#: ../metadata/rb-metadata-gst.c:1348
+#, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "Không thể tạo yếu tố ghi thẻ"
 
-#: ../metadata/rb-metadata-gst.c:1279
+#: ../metadata/rb-metadata-gst.c:1363
+#, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Quá giờ khi đặt ống dẫn về NULL"
 
-#: ../metadata/rb-metadata-gst.c:1298
+#: ../metadata/rb-metadata-gst.c:1387
+#, c-format
 msgid "File corrupted during write"
 msgstr "Tập tin bị hỏng khi ghi"
 
-#: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:1
+#: ../plugins/artdisplay/artdisplay.rb-plugin.in.h:1
 msgid "Cover art"
 msgstr "Ảnh bìa"
 
-#: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
+#: ../plugins/artdisplay/artdisplay.rb-plugin.in.h:2
 msgid "Fetch album covers from the Internet"
 msgstr "Lấy ảnh bìa tập nhạc từ Internet"
 
-#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
+#: ../plugins/artdisplay/artdisplay/__init__.py:291
+msgid "Searching... drop artwork here"
+msgstr "Đang tìm... thả ảnh bìa vào đây"
+
+#: ../plugins/artdisplay/artdisplay/__init__.py:293
+msgid "Drop artwork here"
+msgstr "Thả ảnh bìa vào đây"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.in.h:1
 msgid "Audio CD Player"
 msgstr "Máy chơi CD Nhạc"
 
-#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:2
+#: ../plugins/audiocd/audiocd.rb-plugin.in.h:2
 msgid "Support for playing of audio CDs as music source"
 msgstr "Hỗ trợ khả năng chơi đĩa CD nhạc từ danh mục nhạc"
 
@@ -703,117 +771,120 @@ msgstr ""
 msgid "_Continue"
 msgstr "_Tiếp tục"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:217
+#: ../plugins/audiocd/rb-audiocd-source.c:222
 msgid "<Invalid unicode>"
 msgstr "<unicode không hợp lệ>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:262
+#: ../plugins/audiocd/rb-audiocd-source.c:268
 #, c-format
 msgid "Track %u"
 msgstr "Rãnh %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:331
-#: ../plugins/audiocd/rb-audiocd-source.c:337
-#: ../plugins/audiocd/rb-audiocd-source.c:661
+#: ../plugins/audiocd/rb-audiocd-source.c:328
+#: ../plugins/audiocd/rb-audiocd-source.c:336
+#: ../plugins/audiocd/rb-audiocd-source.c:670
 msgid "Couldn't load Audio CD"
 msgstr "Không thể nạp CD Nhạc"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:332
+#: ../plugins/audiocd/rb-audiocd-source.c:329
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox không thể truy cập đĩa CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:338
+#: ../plugins/audiocd/rb-audiocd-source.c:337
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox không thể đọc thông tin về đĩa CD."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:439
-#: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1102
-#: ../widgets/rb-query-creator-properties.c:67
-#: ../widgets/rb-query-creator-properties.c:97
+#: ../sources/rb-library-source.c:149 ../widgets/rb-entry-view.c:1425
+#: ../widgets/rb-query-creator-properties.c:75
+#: ../widgets/rb-query-creator-properties.c:105
 msgid "Title"
 msgstr "Tiêu đề"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:446
-#: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1112
-#: ../widgets/rb-library-browser.c:100
-#: ../widgets/rb-query-creator-properties.c:68
-#: ../widgets/rb-query-creator-properties.c:94
+#: ../sources/rb-library-source.c:140 ../widgets/rb-entry-view.c:1435
+#: ../widgets/rb-library-browser.c:143
+#: ../widgets/rb-query-creator-properties.c:76
+#: ../widgets/rb-query-creator-properties.c:102
 msgid "Artist"
 msgstr "Nghệ sĩ"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:662
+#: ../plugins/audiocd/rb-audiocd-source.c:671
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox không thể truy cập thiết bị CD."
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:116
-msgid "Cannot create MusicBrainz client"
-msgstr "Không thể tạo ứng dụng khách MusicBrainz"
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:241
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:542
+#: ../plugins/audiocd/sj-metadata-getter.c:245
 #, c-format
-msgid "Cannot read CD: %s"
-msgstr "Không thể đọc CD: %s"
+msgid "Could not create CD lookup thread"
+msgstr "Không thể tạo mạch tra tìm CD"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:248
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:580
-msgid "Unknown Artist"
-msgstr "Nghệ sĩ lạ"
+#: ../plugins/audiocd/sj-metadata-gvfs.c:86
+#, c-format
+msgid "Cannot access CD"
+msgstr "Không thể truy cập CD"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:249
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:591
+#: ../plugins/audiocd/sj-metadata-gvfs.c:106
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:344
 msgid "Unknown Title"
 msgstr "Không rõ tiêu đề"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:255
+#: ../plugins/audiocd/sj-metadata-gvfs.c:110
+#: ../plugins/audiocd/sj-metadata-gvfs.c:133
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:328
+msgid "Unknown Artist"
+msgstr "Nghệ sĩ lạ"
+
+#: ../plugins/audiocd/sj-metadata-gvfs.c:130
 #, c-format
 msgid "Track %d"
 msgstr "Rãnh %d"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:283
-msgid ""
-"MusicBrainz metadata object is not valid. This is bad, check your console "
-"for errors."
-msgstr ""
-"Đối tượng siêu dữ liệu MusicBrainz không hợp lệ. Đây là lỗi nghiệm trọng. "
-"Vui lòng kiểm tra nội dung bàn giao tiếp để tìm lỗi."
+#: ../plugins/audiocd/sj-metadata-gvfs.c:147
+#, c-format
+msgid "Cannot access CD: %s"
+msgstr "Không thể truy cập CD: %s"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:450
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:457
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:471
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:210
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:217
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:231
 #, c-format
 msgid "This CD could not be queried: %s\n"
 msgstr "Không thể truy vấn đĩa CD: %s\n"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:536
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:326
+msgid "Various"
+msgstr "Khác nhau"
+
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:369
+msgid "Incomplete metadata for this CD"
+msgstr "Siêu dữ liệu không hoàn chỉnh cho đĩa CD này."
+
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:399
+msgid "[Untitled]"
+msgstr "[Không đề]"
+
+#: ../plugins/audiocd/sj-metadata.c:187
 #, c-format
 msgid "Device '%s' does not contain any media"
 msgstr "Thiết bị '%s' không chứa vật chứa nào"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:539
+#: ../plugins/audiocd/sj-metadata.c:190
 #, c-format
 msgid ""
 "Device '%s' could not be opened. Check the access permissions on the device."
 msgstr "Không thể mở thiết bị '%s'. Vui lòng kiểm tra quyền truy cập thiết bị."
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:575
-msgid "Various"
-msgstr "Khác nhau"
+#: ../plugins/audiocd/sj-metadata.c:193 ../plugins/audiocd/sj-metadata.c:205
+#, c-format
+msgid "Cannot read CD: %s"
+msgstr "Không thể đọc CD: %s"
 
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:616
-msgid "Incomplete metadata for this CD"
-msgstr "Siêu dữ liệu không hoàn chỉnh cho đĩa CD này."
-
-#: ../plugins/audiocd/sj-metadata-musicbrainz.c:707
-msgid "Could not create CD lookup thread"
-msgstr "Không thể tạo mạch tra tìm CD"
-
-#: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:521
+#: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:727
 msgid "Last.fm"
 msgstr "Last.fm"
 
-#: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:2
+#: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:2
 msgid "Submits song information to last.fm and plays last.fm radio streams"
 msgstr "Gửi thông tin nhạc lên last.fm và phát đài last.fm"
 
@@ -822,321 +893,400 @@ msgid "0"
 msgstr "0"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:2
-msgid "Check Last.fm server status at"
-msgstr "Kiểm tra trạng thái máy phục vụ Last.fm tại"
+msgid "Account Login"
+msgstr "Đăng nhập tài khoản"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:3
 msgid "Disabled"
 msgstr "Đã tắt"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:4
-msgid "Find out about Last.fm at "
-msgstr "Tìm hiểu về Last.fm tại "
+msgid "Join the Rhythmbox group"
+msgstr "Tham gia nhóm Rhythmbox"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:5
-msgid "Join the Rhythmbox group at "
-msgstr "Tham gia nhóm Rhythmbox tại "
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
 msgid "Last submission time:"
 msgstr "Lần gửi sau cùng:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:7
-msgid "Last.fm Profile"
-msgstr "Hồ sơ Last.fm"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:912
-#: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../rhythmdb/rhythmdb.c:2936 ../widgets/rb-entry-view.c:785
-#: ../widgets/rb-entry-view.c:1204 ../widgets/rb-entry-view.c:1217
-#: ../widgets/rb-song-info.c:1173
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1083
+#: ../plugins/iradio/rb-station-properties-dialog.c:506
+#: ../rhythmdb/rhythmdb.c:3583 ../widgets/rb-entry-view.c:989
+#: ../widgets/rb-entry-view.c:1527 ../widgets/rb-entry-view.c:1540
+#: ../widgets/rb-song-info.c:1347
 msgid "Never"
 msgstr "Chưa bao giờ"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:9
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:7
+msgid "New to Last.fm?"
+msgstr "Lần đầu dùng Last.fm?"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 msgid "Queued tracks:"
 msgstr "Các rãnh đang đợi:"
 
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:9
+msgid "Sign up for an account"
+msgstr "Đăng ký tài khoản mới"
+
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:10
+msgid "Statistics"
+msgstr "Thống kê"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:11
 msgid "Status:"
 msgstr "Trạng thái:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:11
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:12
 msgid "Tracks submitted:"
 msgstr "Rãnh đã gửi:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:12
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:13
 msgid "_Password:"
 msgstr "_Mật khẩu:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:13
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:14
 msgid "_Username:"
 msgstr "Tê_n người dùng:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:14
-msgid "http://last.fm"
-msgstr "http://last.fm"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:216
+msgid "Last.fm Preferences"
+msgstr "Tuỳ thích Last.fm"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:15
-msgid "http://last.fm/forum/21713/_/51596"
-msgstr "http://last.fm/forum/21713/_/51596"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:16
-msgid "http://last.fm/group/Rhythmbox"
-msgstr "http://last.fm/group/Rhythmbox"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:208
-msgid "Audioscrobbler preferences"
-msgstr "Cấu hình Audioscrobbler"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:935
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1106
 msgid "OK"
 msgstr "OK"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:938
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1109
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1818
 msgid "Logging in"
 msgstr "Đang đăng nhập"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:941
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1112
 msgid "Request failed"
 msgstr "Yêu cầu thất bại"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:944
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1115
 msgid "Incorrect username"
 msgstr "Tên người dùng sai"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:947
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1118
 msgid "Incorrect password"
 msgstr "Mật khẩu sai"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:950
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:583
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1121
 msgid "Handshake failed"
 msgstr "Kết nối thất bại"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:953
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1124
 msgid "Client update required"
 msgstr "Cần cập nhật máy khách"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:956
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1127
 msgid "Track submission failed"
 msgstr "Gửi rãnh thất bại"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:959
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1130
 msgid "Queue is too long"
 msgstr "Hàng đợi nhạc quá dài"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:962
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1133
 msgid "Track submission failed too many times"
 msgstr "Lỗi gửi rãnh quá nhiều lần"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:151
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
 msgid "Similar Artists radio"
 msgstr "Đài phát nghệ sĩ tương tự"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:151
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1068
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1294
 #, c-format
 msgid "Artists similar to %s"
 msgstr "Nghệ sĩ tương tự với %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:152
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
 msgid "Tag radio"
 msgstr "Đài phát theo thẻ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:152
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
 #, c-format
 msgid "Tracks tagged with %s"
 msgstr "Bài được đánh thẻ %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:153
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
 msgid "Artist Fan radio"
 msgstr "Đài phát người hâm mộ nghệ sĩ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:153
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1070
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1296
 #, c-format
 msgid "Artists liked by fans of %s"
 msgstr "Nghệ sĩ có người hâm mộ của %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:154
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
 msgid "Group radio"
 msgstr "Đài phát nhóm"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:154
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
 #, c-format
 msgid "Tracks liked by the %s group"
 msgstr "Bài được yêu thích bởi nhóm %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:214
-msgid "Next Song"
-msgstr "Bài kế"
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:283
+msgid "Love"
+msgstr "Thích"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:215
-msgid "Skip the current track"
-msgstr "Bỏ qua bài này"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:217
-msgid "Love Song"
-msgstr "Bài yêu thích"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:218
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:284
 msgid "Mark this song as loved"
 msgstr "Đánh dấu yêu thích bài này"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:220
-msgid "Ban Song"
-msgstr "Cấm bài này"
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
+msgid "Ban"
+msgstr "Cấm"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:221
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
 msgid "Ban the current track from being played again"
 msgstr "Cấm bài hiện thời để khỏi nghe lại lần nữa"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:341
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
+msgid "Delete Station"
+msgstr "Xoá trạm"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
+msgid "Delete the selected station"
+msgstr "Xoá trạm đã chọn"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
+msgid "Download song"
+msgstr "Lấy bài nhạc"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
+msgid "Download this song"
+msgstr "Lấy bài nhạc này về"
+
+#. awful
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:513
 msgid "Enter the item to build a Last.fm station out of:"
 msgstr "Nhập để tạo trạm Last.fm cho:"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:344
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:516
 msgid "Add"
 msgstr "Thêm"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:539
-msgid "Neighbour Radio"
-msgstr "Đài láng giềng"
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:869
+msgid "Account Settings"
+msgstr "Thiết lập tài khoản"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:579
-msgid "No such artist.  Check your spelling"
-msgstr "Không có nghệ sĩ này. Vui lòng kiểm tra chính tả"
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:894
+msgid ""
+"Account details are needed before you can connect.  Check your settings."
+msgstr "Cầnchi tiết tài khoản để kết nối. Vui lòng kiểm tra thiết lập của bạn."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:587
-msgid "The server marked you as banned"
-msgstr "Máy chú đã cấm bạn"
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:898
+msgid "This version of Rhythmbox has been banned from Last.fm."
+msgstr "Phiên bản này của Rhythmbox đã bị Last.fm cấm."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:600
-#: ../plugins/iradio/rb-iradio-source.c:560
-#, c-format
-msgid "%d station"
-msgid_plural "%d stations"
-msgstr[0] "%d trạm"
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:902
+msgid "Unable to connect"
+msgstr "Không thể kết nối"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:980
-msgid "Marking song loved..."
-msgstr "Đang đánh dấu yêu thích bài nhạc..."
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:994
-msgid "Skipping song..."
-msgstr "Đang bỏ qua bài nhạc..."
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1010
-msgid "Banning song..."
-msgstr "Đang cấm bài nhạc..."
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1059
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1285
 #, c-format
 msgid "Global Tag %s"
 msgstr "Thẻ toàn cầu %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1078
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1304
 #, c-format
 msgid "%s's Neighbour Radio"
 msgstr "Đài láng giềng của %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1080
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1306
 #, c-format
 msgid "%s's Recommended Radio: %s percent"
 msgstr "Đài đề nghị của %s: %s phần trăm"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1082
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1308
 #, c-format
 msgid "%s's Personal Radio"
 msgstr "Đài cá nhân của %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1088
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1310
+#, c-format
+msgid "%s's Loved Tracks"
+msgstr "Rãnh yêu thích của %s"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1312
+#, c-format
+msgid "%s's Playlist"
+msgstr "Danh mục nhạc của %s"
+
+#. Translators: variables are 1: user name, 2: tag name; for user tag radio
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1318
 #, c-format
 msgid "%s's %s Radio"
 msgstr "Đài %2$s của %1$s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1092
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1322
 #, c-format
 msgid "%s Group Radio"
 msgstr "Đài nhóm %s"
 
-#: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:1
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1788
+msgid "Neighbour Radio"
+msgstr "Đài láng giềng"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1796
+msgid "Personal Radio"
+msgstr "Đài cá nhân"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1886
+msgid "Server did not respond"
+msgstr "Máy chủ không trả lời"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1958
+msgid "There is not enough content available to play this station."
+msgstr "Không đủ nội dung để phát trạm này."
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1963
+msgid "This station is available to subscribers only."
+msgstr "Trạm chỉ dành cho tài khoản trả tiền."
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1970
+msgid ""
+"The streaming system is offline for maintenance, please try again later."
+msgstr "Hệ thống truyền tạm thời bị ngưng để bảo dưỡng, vui lòng thử lại sau."
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2009
+msgid "Changing station"
+msgstr "Đang đổi trạm"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2228
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2238
+msgid "Retrieving playlist"
+msgstr "Đang lấy danh mục nhạc"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2332
+msgid "Banning song"
+msgstr "Đang cấm bài nhạc"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2350
+msgid "Adding song to your Loved tracks"
+msgstr "Thêm bài nhạc vào danh sách rãnh yêu thích"
+
+#. and maybe some more
+#: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:1
 msgid "Audio CD Recorder"
 msgstr "Bộ thu đĩa CD"
 
-#: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:2
+#: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:2
 msgid "Support for recording audio CDs from playlists"
 msgstr "Hỗ trợ khả năng thu đĩa CD nhạc từ danh mục nhạc"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:86
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:89
 msgid "_Create Audio CD..."
 msgstr "Tạo đĩa _CD nhạc..."
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:87
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:90
 msgid "Create an audio CD from playlist"
 msgstr "Tạo đĩa CD Nhạc từ danh mục nhạc"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:191
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:92
+msgid "Duplicate Audio CD..."
+msgstr "Sao CD Nhạc..."
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:93
+msgid "Create a copy of this audio CD"
+msgstr "Tạo bản sao CD Nhạc này"
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:193
 msgid "Unable to create audio CD"
 msgstr "Không thể tạo đĩa CD Nhạc"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:429
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:246
+msgid "Could not duplicate disc"
+msgstr "Không thể sao đĩa CD Nhạc"
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:247
+msgid "Rhythmbox could not duplicate the disc"
+msgstr "Rhythmbox không thể sao đĩa này"
+
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:248
+msgid "Reason"
+msgstr "Nguyên nhân"
+
+#. Translators: this is the toolbar button label for
+#. Create Audio CD action
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:449
+msgid "Burn"
+msgstr "Ghi đĩa"
+
+#. Translators: this is the toolbar button label for
+#. Duplicate Audio CD action
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:455
+msgid "Copy CD"
+msgstr "Chép CD"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:420
+#, c-format
 msgid "Failed to create pipeline"
 msgstr "Lỗi tạo ống dẫn"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:525
-#: ../plugins/cd-recorder/rb-recorder-gst.c:531
+#: ../plugins/cd-recorder/rb-recorder-gst.c:526
+#: ../plugins/cd-recorder/rb-recorder-gst.c:532
 #, c-format
 msgid "Unable to unlink '%s'"
 msgstr "Không thể bỏ liên kết '%s'"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:586
+#: ../plugins/cd-recorder/rb-recorder-gst.c:587
 msgid "Could not retrieve state from processing pipeline"
 msgstr "Không thể lấy tình trạng từ ống dẫn đang xử lí"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:600
+#: ../plugins/cd-recorder/rb-recorder-gst.c:602
 msgid "Could not get current track position"
 msgstr "Không thể lấy vị trí rãnh hiện tại"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:648
+#: ../plugins/cd-recorder/rb-recorder-gst.c:650
+#, c-format
 msgid "Could not start pipeline playing"
 msgstr "Không thể khởi chạy phát qua ống dẫn"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:659
+#: ../plugins/cd-recorder/rb-recorder-gst.c:661
+#, c-format
 msgid "Could not pause playback"
 msgstr "Không thể tạm dừng"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:856
+#: ../plugins/cd-recorder/rb-recorder-gst.c:842
+#, c-format
 msgid "Cannot find drive"
 msgstr "Không tìm được ổ đĩa"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:919
+#: ../plugins/cd-recorder/rb-recorder-gst.c:882
 #, c-format
 msgid "Cannot find drive %s"
 msgstr "Không tìm được ổ đĩa %s"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:928
+#: ../plugins/cd-recorder/rb-recorder-gst.c:891
 #, c-format
 msgid "Drive %s is not a recorder"
 msgstr "Ổ %s không thể ghi đĩa"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1094
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1287
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1019
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1204
+#, c-format
 msgid "No writable drives found."
 msgstr "Không tìm thấy ổ có thể ghi."
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1237
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1154
 #, c-format
 msgid "Could not get track time for file: %s"
 msgstr "Không thể xác định thời lượng cho tập tin: %s"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1296
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1213
+#, c-format
 msgid "Could not determine audio track durations."
 msgstr "Không thể xác định thời lượng rãnh."
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1346
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1255
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -1145,126 +1295,74 @@ msgstr ""
 "Gặp lỗi khi ghi vào đĩa CD:\n"
 "%s"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1350
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1259
 msgid "There was an error writing to the CD"
 msgstr "Gặp lỗi khi ghi vào đĩa CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:341
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:304
 msgid "Maximum possible"
 msgstr "Tối đa có thể"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:412
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:371
 #, c-format
 msgid "Invalid writer device: %s"
 msgstr "Thiết bị ghi không hợp lệ: %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:513
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:472
 #, c-format
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d giờ"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:515
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:474
 #, c-format
 msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "%d phút"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:518
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:477
 #, c-format
 msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] "%d giây"
 
 #. hour:minutes:seconds
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:523
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:482
 #, c-format
 msgid "%s %s %s"
 msgstr "%s %s %s"
 
 #. minutes:seconds
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:526
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:485
 #, c-format
 msgid "%s %s"
 msgstr "%s, %s"
 
 #. seconds
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:529
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:488
 #, c-format
 msgid "%s"
 msgstr "%s"
 
 #. 0 seconds
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:532
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:491
 msgid "0 seconds"
 msgstr "0 giây"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:551
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:510
 #, c-format
 msgid "About %s left"
 msgstr "Còn lại khoảng %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:620
-msgid "Could not determine media type because CD drive is busy"
-msgstr "Không thể xác định kiểu vật chứa vì ổ đĩa CD đang bận"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:622
-msgid "Couldn't open media"
-msgstr "Không thể mở vật chứa"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:624
-msgid "Unknown Media"
-msgstr "Vật chứa lạ"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:626
-msgid "Commercial CD or Audio CD"
-msgstr "Đĩa CD quảng cáo hoặc CD nhạc"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:628
-msgid "CD-R"
-msgstr "Đĩa CD-R"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:630
-msgid "CD-RW"
-msgstr "Đĩa CD-RW"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:632
-msgid "DVD"
-msgstr "Đĩa DVD"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:634
-msgid "DVD-R, or DVD-RAM"
-msgstr "Đĩa DVD-R hoặc DVD-RAM"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:636
-msgid "DVD-RW"
-msgstr "Đĩa DVD-RW"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:638
-msgid "DVD-RAM"
-msgstr "Đĩa DVD-RAM"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:640
-msgid "DVD+R"
-msgstr "Đĩa DVD+R"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:642
-msgid "DVD+RW"
-msgstr "Đĩa DVD+RW"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:647
-msgid "Broken media type"
-msgstr "Kiểu vật chứa bị hỏng"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:662
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:538
 msgid "Writing audio to CD"
 msgstr "Đang ghi nhạc vào CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:678
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:554
 msgid "Finished creating audio CD."
 msgstr "Đã tạo xong CD nhạc"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:696
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:572
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
@@ -1272,167 +1370,163 @@ msgstr ""
 "Đã tạo xong đĩa CD Nhạc.\n"
 "Tạo thêm một bản sao?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:698
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:574
 msgid "Writing failed.  Try again?"
 msgstr "Việc ghi bị lỗi. Bạn có muốn thử lại không?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:700
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:576
 msgid "Writing cancelled.  Try again?"
 msgstr "Việc ghi bị huỷ. Bạn có muốn làm lại không?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:768
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:644
 msgid "Audio recording error"
 msgstr "Lỗi thu âm thanh"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:797
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:673
 msgid "Audio Conversion Error"
 msgstr "Lỗi chuyển đổi âm thanh"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:827
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:703
 msgid "Recording error"
 msgstr "Lỗi thu"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:947
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:823
 msgid "Do you wish to interrupt writing this disc?"
 msgstr "Bạn có muốn dừng việc ghi vào đĩa này không?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:950
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:826
 msgid "This may result in an unusable disc."
 msgstr "Việc này có thể làm cho đĩa không dùng được nữa."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:957
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:833
 msgid "_Cancel"
 msgstr "Thô_i"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:958
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:834
 msgid "_Interrupt"
 msgstr "_Dừng"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:980
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:856
 msgid "Could not create audio CD"
 msgstr "Không thể tạo đĩa CD Nhạc"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1002
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:878
 msgid "Please make sure another application is not using the drive."
 msgstr "Vui lòng bảo đảm không có ứng dụng khác đang dùng ổ đĩa này."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1003
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:879
 msgid "Drive is busy"
 msgstr "Ổ đĩa đang bận"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1005
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:881
 msgid "Please put a rewritable or blank CD in the drive."
 msgstr "Vui lòng đưa đĩa CD trắng hoặc loại ghi lại được vào ổ đĩa."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1006
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:882
 msgid "Insert a rewritable or blank CD"
 msgstr "Hãy đưa đĩa CD trắng hoặc loại ghi lại được"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1008
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:884
 msgid "Please put a blank CD in the drive."
 msgstr "Hãy đưa đĩa CD trắng vào ổ đĩa."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1009
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:885
 msgid "Insert a blank CD"
 msgstr "Đưa đĩa CD trắng"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1011
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:887
 msgid "Please replace the disc in the drive with a rewritable or blank CD."
 msgstr ""
 "Vui lòng thay thế đĩa trong ổ bằng một đĩa CD trắng hoặc loại ghi lại được."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1012
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:888
 msgid "Reload a rewritable or blank CD"
 msgstr "Tải lại một đĩa CD trắng hoặc loại ghi lại được"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1014
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:890
 msgid "Please replace the disc in the drive with a blank CD."
 msgstr "Vui lòng thay thế đĩa đang trong ổ đĩa bằng một đĩa CD trắng."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1015
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:891
 msgid "Reload a blank CD"
 msgstr "Tải lại một đĩa CD trắng"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1066
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:942
 msgid "Converting audio tracks"
 msgstr "Đang chuyển đổi rãnh âm thanh..."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1069
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:945
 msgid "Preparing to write CD"
 msgstr "Đang chuẩn bị ghi vào đĩa CD..."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1072
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:948
 msgid "Writing CD"
 msgstr "Đang ghi vào đĩa CD..."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1075
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:951
 msgid "Finishing write"
 msgstr "Đang hoàn tất việc ghi..."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1078
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:954
 msgid "Erasing CD"
 msgstr "Đang xoá đĩa CD..."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1081
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:957
 msgid "Unhandled action in burn_action_changed_cb"
 msgstr "Gặp hành động không được quản lí trong 'burn_action_changed_cb'."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1109
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:981
 #, c-format
 msgid "This %s appears to have information already recorded on it."
 msgstr "Hình như %s này đã có dữ liệu."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1116
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:988
 msgid "Erase information on this disc?"
 msgstr "Xoá mọi thông tin trên đĩa này phải không?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1125
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:997
 msgid "_Try Another"
 msgstr "_Thử đĩa khác"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1132
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1004
 msgid "_Erase Disc"
 msgstr "_Xoá đĩa"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1293
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1165
 msgid "C_reate"
 msgstr "Tạ_o"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1360
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1232
 #, c-format
 msgid "Failed to create the recorder: %s"
 msgstr "Lỗi tạo bộ thu: %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1484
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1356
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
 msgstr "Không thể gỡ bỏ thư mục tạm '%s': %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1504
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1376
 msgid "Create Audio CD"
 msgstr "Tạo đĩa CD Nhạc"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1522
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1394
 #, c-format
 msgid "Create audio CD from '%s'?"
 msgstr "Tạo đĩa CD nhạc từ '%s' không?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1568
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1586
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1440
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1458
+#, c-format
 msgid "Unable to build an audio track list."
 msgstr "Không thể tạo danh sách rãnh âm thanh."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1596
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1468
+#, c-format
 msgid "This playlist is too long to write to an audio CD."
 msgstr "Danh mục nhạc này quá dài nên không thể ghi vào CD Nhạc."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1661
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1670
-#, c-format
-msgid "Cannot get free space at %s"
-msgstr "Không thể lấy chỗ còn trống tại %s"
-
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1755
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1604
 #, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
@@ -1443,15 +1537,15 @@ msgstr ""
 "Nếu vật chứa đích có dung lượng lớn hơn đĩa CD nhạc chuẩn thì hãy đưa nó vào "
 "ổ đĩa rồi thử lại."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1766
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1615
 msgid "Playlist too long"
 msgstr "Danh mục nhạc quá dài"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1806
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1655
 msgid "Could not find temporary space!"
 msgstr "Không thể tìm chỗ tạm!"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1807
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1656
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MiB "
@@ -1482,11 +1576,21 @@ msgstr "Ghi đĩa _vào :"
 msgid "_Make multiple copies"
 msgstr "Tạo _nhiều bản sao"
 
-#: ../plugins/daap/daap.rb-plugin.desktop.in.h:1
+#: ../plugins/coherence/coherence.rb-plugin.in.h:1
+msgid ""
+"Adds support for playing media from and sending media to DLNA/UPnP network "
+"devices, and enables Rhythmbox to be controlled by a DLNA/UPnP ControlPoint"
+msgstr "Thêm hỗ trợ phát phương tiện và gửi phương tiện đến các thiết bị mạng DLNA/UPnP, cho phép Rhythmbox hoạt động như một điểm điều khiển DLNA/UPnP"
+
+#: ../plugins/coherence/coherence.rb-plugin.in.h:2
+msgid "DLNA/UPnP sharing and control support"
+msgstr "Hỗ trợ chia sẻ và điều khiển DLNA/UPnP"
+
+#: ../plugins/daap/daap.rb-plugin.in.h:1
 msgid "DAAP Music Sharing"
 msgstr "Chia sẻ nhạc DAAP"
 
-#: ../plugins/daap/daap.rb-plugin.desktop.in.h:2
+#: ../plugins/daap/daap.rb-plugin.in.h:2
 msgid "Share music and play shared music on your local network"
 msgstr "Chia sẻ nhạc và nghe nhạc từ xa trên mạng cục bộ"
 
@@ -1498,7 +1602,7 @@ msgstr "<b>Chia sẻ</b>"
 msgid "Require _password:"
 msgstr "Cần _mật khẩu:"
 
-#: ../plugins/daap/daap-prefs.glade.h:3 ../plugins/daap/rb-daap-dialog.c:74
+#: ../plugins/daap/daap-prefs.glade.h:3 ../plugins/daap/rb-daap-dialog.c:82
 msgid "Shared music _name:"
 msgstr "Tê_n nhạc chia sẻ:"
 
@@ -1506,146 +1610,350 @@ msgstr "Tê_n nhạc chia sẻ:"
 msgid "_Share my music"
 msgstr "Chia _sẻ nhạc của tôi"
 
-#: ../plugins/daap/rb-daap-dialog.c:47
+#: ../plugins/daap/rb-daap-connection.c:543
+msgid "Rhythmbox is not able to connect to iTunes 7 shares"
+msgstr "Rhythmbox không thể kết nối đến chia sẻ iTunes 7"
+
+#: ../plugins/daap/rb-daap-dialog.c:55
 msgid "Invalid share name"
 msgstr "Tên chia sẻ không hợp lệ"
 
-#: ../plugins/daap/rb-daap-dialog.c:66
+#: ../plugins/daap/rb-daap-dialog.c:74
 #, c-format
 msgid "The shared music name '%s' is already taken. Please choose another."
 msgstr "Tên chia sẻ nhạc '%s' đã được chọn. Hãy chọn tên khác."
 
-#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:298
-#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:343
-#: ../plugins/daap/rb-daap-mdns-browser-howl.c:318
-#: ../plugins/daap/rb-daap-mdns-browser-howl.c:364
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:237
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:280
 msgid "MDNS service is not running"
 msgstr "Dịch vụ MDNS đã dừng"
 
-#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:306
-#: ../plugins/daap/rb-daap-mdns-browser-howl.c:327
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:245
 msgid "Browser already active"
 msgstr "Bộ duyệt đang hoạt động"
 
-#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:326
-#: ../plugins/daap/rb-daap-mdns-browser-howl.c:347
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:263
 msgid "Unable to activate browser"
 msgstr "Không thể kích hoạt bộ duyệt"
 
-#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:351
-#: ../plugins/daap/rb-daap-mdns-browser-howl.c:372
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:288
 msgid "Browser is not active"
 msgstr "Bộ duyệt không hoạt động"
 
-#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:199
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:130
 msgid "Could not create AvahiEntryGroup for publishing"
 msgstr "Không thể tạo AvahiEntryGroup (nhóm vào Avahi) để xuất bản"
 
-#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:235
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:164
 msgid "Could not add service"
 msgstr "Không thể tạo dịch vụ"
 
-#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:247
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:176
 msgid "Could not commit service"
 msgstr "Không thể gài vào dịch vụ"
 
-#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:352
-#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:372
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:281
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:301
 msgid "The avahi MDNS service is not running"
 msgstr "Dịch vụ MDNS Avahi đã dừng"
 
-#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:381
-#: ../plugins/daap/rb-daap-mdns-publisher-howl.c:272
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:310
 msgid "The MDNS service is not published"
 msgstr "Dịch vụ MDNS chưa được xuất bản"
 
-#: ../plugins/daap/rb-daap-mdns-publisher-howl.c:176
-#: ../plugins/daap/rb-daap-mdns-publisher-howl.c:211
-msgid "Error initializing Howl for publishing"
-msgstr "Gặp lỗi khi sơ khởi Howl để xuất bản"
-
-#: ../plugins/daap/rb-daap-mdns-publisher-howl.c:238
-#: ../plugins/daap/rb-daap-mdns-publisher-howl.c:263
-msgid "The howl MDNS service is not running"
-msgstr "Dịch vụ MDNS Howl đã dừng"
-
-#: ../plugins/daap/rb-daap-plugin.c:104
+#: ../plugins/daap/rb-daap-plugin.c:116
 msgid "_Disconnect"
 msgstr "N_gắt kết nối"
 
-#: ../plugins/daap/rb-daap-plugin.c:105
+#: ../plugins/daap/rb-daap-plugin.c:117
 msgid "Disconnect from DAAP share"
 msgstr "Đang ngắt kết nối khỏi chia sẻ nhạc"
 
-#: ../plugins/daap/rb-daap-plugin.c:794
+#: ../plugins/daap/rb-daap-plugin.c:119
+msgid "Connect to _DAAP share..."
+msgstr "Kết nối đến chia sẻ _DAAP..."
+
+#: ../plugins/daap/rb-daap-plugin.c:120
+msgid "Connect to a new DAAP share"
+msgstr "Kết nối đến chia sẻ DAAP mới"
+
+#: ../plugins/daap/rb-daap-plugin.c:618 ../plugins/daap/rb-daap-source.c:526
+msgid "Could not connect to shared music"
+msgstr "Không thể kết nối đến chia sẻ nhạc"
+
+#: ../plugins/daap/rb-daap-plugin.c:619
+#, c-format
+msgid "Unable to resolve hostname %s"
+msgstr "Không thể phân giải tên máy %s"
+
+#: ../plugins/daap/rb-daap-plugin.c:668
+msgid "New DAAP share"
+msgstr "Chia sẻ DAAP mới"
+
+#: ../plugins/daap/rb-daap-plugin.c:668
+msgid "Host:port of DAAP share:"
+msgstr "Máy:Cổng của chia sẻ DAAP:"
+
+#: ../plugins/daap/rb-daap-plugin.c:893
 msgid "DAAP Music Sharing Preferences"
 msgstr "Tuỳ thích chia sẻ nhạc DAAP"
 
-#: ../plugins/daap/rb-daap-sharing.c:54
+#: ../plugins/daap/rb-daap-sharing.c:62
 #, c-format
 msgid "%s's Music"
 msgstr "Nhạc của %s"
 
-#: ../plugins/daap/rb-daap-source.c:344
+#: ../plugins/daap/rb-daap-source.c:358
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr "Chia sẻ nhạc '%s' yêu cầu mật khẩu để kết nối"
 
-#: ../plugins/daap/rb-daap-source.c:346
+#: ../plugins/daap/rb-daap-source.c:360
 msgid "Password Required"
 msgstr "Cần mật khẩu"
 
-#: ../plugins/daap/rb-daap-source.c:418
+#: ../plugins/daap/rb-daap-source.c:432
 msgid "Connecting to music share"
 msgstr "Đang kết nối đến chia sẻ nhạc"
 
-#: ../plugins/daap/rb-daap-source.c:425
+#: ../plugins/daap/rb-daap-source.c:439
 msgid "Retrieving songs from music share"
 msgstr "Đang nhận bài nhạc từ chia sẻ nhạc"
 
-#: ../plugins/daap/rb-daap-source.c:512
-msgid "Could not connect to shared music"
-msgstr "Không thể kết nối đến chia sẻ nhạc"
-
-#: ../plugins/daap/rb-daap-src.c:474
+#: ../plugins/daap/rb-daap-src.c:480
 #, c-format
 msgid "Connection to %s:%d refused."
 msgstr "Kết nối đến %s:%d bị từ chối."
 
-#: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:1
+#: ../plugins/dontreallyclose/dontreallyclose.rb-plugin.in.h:1
+msgid "Minimize to the tray when closing the main window"
+msgstr "Thu nhỏ vào khay khi đóng cửa sổ"
+
+#: ../plugins/dontreallyclose/dontreallyclose.rb-plugin.in.h:2
+msgid "Minimize to tray"
+msgstr "Thu nhỏ vào khay"
+
+#: ../plugins/fmradio/fmradio.rb-plugin.in.h:1
+#: ../plugins/fmradio/rb-fm-radio-source.c:203
+msgid "FM Radio"
+msgstr "Đài FM"
+
+#: ../plugins/fmradio/fmradio.rb-plugin.in.h:2
+msgid "Support for FM radio broadcasting services"
+msgstr "Hỗ trợ dịch vụ phát đài FM"
+
+#: ../plugins/fmradio/rb-fm-radio-source.c:88
+msgid "New FM R_adio Station"
+msgstr "Trạm phát sóng _FM mới"
+
+#: ../plugins/fmradio/rb-fm-radio-source.c:89
+msgid "Create a new FM Radio station"
+msgstr "Tạo trạm phát FM mới"
+
+#: ../plugins/fmradio/rb-fm-radio-source.c:347
+msgid "New FM Radio Station"
+msgstr "Trạm phát FM mới"
+
+#: ../plugins/fmradio/rb-fm-radio-source.c:348
+msgid "Frequency of radio station"
+msgstr "Tần số trạm radio"
+
+#: ../plugins/generic-player/generic-player.rb-plugin.in.h:1
 msgid "Portable Players"
 msgstr "Máy nghe nhạc di động"
 
-#: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:2
+#: ../plugins/generic-player/generic-player.rb-plugin.in.h:2
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "Hỗ trợ các thiết bị nhạc số phổ quát (và PSP, Nokia 770)"
 
-#: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:1
+#: ../plugins/generic-player/rb-generic-player-plugin.c:98
+msgid "New Playlist"
+msgstr "Danh mục nhạc mới"
+
+#: ../plugins/generic-player/rb-generic-player-plugin.c:99
+msgid "Create a new playlist on this device"
+msgstr "Tạo danh mục nhạc mới trên thiết bị này"
+
+#: ../plugins/generic-player/rb-generic-player-plugin.c:101
+msgid "Delete Playlist"
+msgstr "Xoá bỏ danh mục nhạc"
+
+#: ../plugins/generic-player/rb-generic-player-plugin.c:102
+msgid "Delete this playlist"
+msgstr "Xoá danh mục nhạc này"
+
+#: ../plugins/generic-player/rb-generic-player-source.c:953
+#, c-format
+msgid "Importing (%d/%d)"
+msgstr "Đang nhập (%d/%d)"
+
+#: ../plugins/ipod/ipod.rb-plugin.in.h:1
 msgid "Portable Players - iPod"
 msgstr "Máy nghe nhạc di động - iPod"
 
-#: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:2
+#: ../plugins/ipod/ipod.rb-plugin.in.h:2
 msgid "Support for Apple iPod devices (show the content, play from device)"
 msgstr "Hỗ trợ thiết bị Apple iPod (hiện nội dung, nghe nhạc)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:86
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:102 ../shell/rb-playlist-manager.c:145
+#: ../plugins/ipod/ipod-info.glade.h:1
+msgid "<b>Content</b>"
+msgstr "<b>Nội dung</b>"
+
+#: ../plugins/ipod/ipod-info.glade.h:2
+msgid "<b>Information</b>"
+msgstr "<b>Thông tin</b>"
+
+#: ../plugins/ipod/ipod-info.glade.h:3
+msgid "<b>System</b>"
+msgstr "<b>Hệ thống</b>"
+
+#: ../plugins/ipod/ipod-info.glade.h:4
+msgid "Advanced"
+msgstr "Nâng cao"
+
+#: ../plugins/ipod/ipod-info.glade.h:6
+msgid "Database Version:"
+msgstr "Phiên bản CSDL:"
+
+#: ../plugins/ipod/ipod-info.glade.h:7
+msgid "Device Node:"
+msgstr "Thiết bị:"
+
+#: ../plugins/ipod/ipod-info.glade.h:8
+msgid "Firmware Version:"
+msgstr "Phiên bản Firmware:"
+
+#: ../plugins/ipod/ipod-info.glade.h:9
+msgid "Model:"
+msgstr "Kiểu:"
+
+#: ../plugins/ipod/ipod-info.glade.h:10
+msgid "Mount Point:"
+msgstr "Điểm gắn:"
+
+#: ../plugins/ipod/ipod-info.glade.h:11
+msgid "Number of Playlists:"
+msgstr "Số danh mục nhạc:"
+
+#: ../plugins/ipod/ipod-info.glade.h:12
+msgid "Number of Tracks:"
+msgstr "Số rãnh:"
+
+#: ../plugins/ipod/ipod-info.glade.h:13
+msgid "Serial Number:"
+msgstr "Số hiệu:"
+
+#: ../plugins/ipod/ipod-info.glade.h:14
+msgid "Volume Usage:"
+msgstr "Âm lượng:"
+
+#: ../plugins/ipod/ipod-info.glade.h:15
+msgid "Your Name:"
+msgstr "Tên bạn:"
+
+#: ../plugins/ipod/ipod-info.glade.h:16
+msgid "iPod Name:"
+msgstr "Tên iPod:"
+
+#: ../plugins/ipod/ipod-info.glade.h:17
+msgid "iPod Properties"
+msgstr "Thuộc tính iPod"
+
+#: ../plugins/ipod/ipod-init.glade.h:1
+msgid ""
+"<span size=\"x-large\" weight=\"bold\">Do you want to initialize your iPod?</"
+"span>"
+msgstr "<span size=\"x-large\" weight=\"bold\">Bạn có muốn khởi tạo iPod của bạn?</span>"
+
+#: ../plugins/ipod/ipod-init.glade.h:2
+msgid ""
+"Rhythmbox has detected a device that is probably an uninitialised or "
+"corrupted iPod. It must be initialised before Rhythmbox can use it, but this "
+"will destroy any song metadata already present. If you wish Rhythmbox to "
+"initialise the iPod, please fill in the information below. If the device is "
+"not an iPod, or you do not wish to initialise it, please click cancel."
+msgstr "Rhythmbox phát hiện một thiết bị iPod có lẽ chưa được khởi tạo hoặc bị hư. Nó phải được khởi tạo trước khi Rhythmbox có thể dùng, tuy nhiên việc này sẽ huỷ mọi thông tin về nhạc đã có. Nếu bạn muốn Rhythmbox khởi tạo iPod này, vui lòng điền những thông tin bên dưới. Nếu thiết bị không phải là iPod, hoặc bạn không muốn làm thế, hãy nhấn \"Thôi\"."
+
+#: ../plugins/ipod/ipod-init.glade.h:3
+msgid "_Initialise"
+msgstr "_Khởi tạo"
+
+#: ../plugins/ipod/ipod-init.glade.h:4
+msgid "_Model:"
+msgstr "_Kiểu:"
+
+#: ../plugins/ipod/ipod-init.glade.h:5
+#: ../plugins/magnatune/magnatune-prefs.glade.h:45
+msgid "_Name:"
+msgstr "Tê_n:"
+
+#: ../plugins/ipod/ipod-init.glade.h:6
+msgid "iPod detected"
+msgstr "Phát hiện iPod"
+
+#: ../plugins/ipod/rb-ipod-helpers.c:297
+msgid "Unable to initialise new iPod"
+msgstr "Không thể khởi động iPod mới"
+
+#: ../plugins/ipod/rb-ipod-plugin.c:104 ../plugins/ipod/rb-ipod-plugin.c:113
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:106 ../shell/rb-playlist-manager.c:184
 msgid "_Rename"
 msgstr "Đổi _tên"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:87
+#: ../plugins/ipod/rb-ipod-plugin.c:105
 msgid "Rename iPod"
 msgstr "Đổi tên iPod"
 
-#: ../plugins/ipod/rb-ipod-source.c:1046 ../sources/rb-podcast-source.c:806
+#: ../plugins/ipod/rb-ipod-plugin.c:107 ../shell/rb-shell-clipboard.c:188
+#: ../sources/rb-podcast-source.c:328
+msgid "_Properties"
+msgstr "Thuộ_c tính"
+
+#: ../plugins/ipod/rb-ipod-plugin.c:108
+msgid "Display iPod properties"
+msgstr "Hiện thuộc tính iPod"
+
+#: ../plugins/ipod/rb-ipod-plugin.c:110 ../shell/rb-shell-clipboard.c:175
+msgid "_New Playlist"
+msgstr "Da_nh mục nhạc mới"
+
+#: ../plugins/ipod/rb-ipod-plugin.c:111
+msgid "Add new playlist to iPod"
+msgstr "Thêm danh mục nhạc mới vào iPod"
+
+#: ../plugins/ipod/rb-ipod-plugin.c:114 ../shell/rb-playlist-manager.c:185
+msgid "Rename playlist"
+msgstr "Thay đổi tên của danh mục nhạc"
+
+#: ../plugins/ipod/rb-ipod-plugin.c:116 ../shell/rb-playlist-manager.c:187
+msgid "_Delete"
+msgstr "_Xoá bỏ"
+
+#: ../plugins/ipod/rb-ipod-plugin.c:117 ../shell/rb-playlist-manager.c:188
+msgid "Delete playlist"
+msgstr "Xoá bỏ danh mục nhạc"
+
+#: ../plugins/ipod/rb-ipod-source.c:1194 ../sources/rb-podcast-source.c:902
 msgid "Podcasts"
 msgstr "Podcast"
 
-#: ../plugins/iradio/iradio.rb-plugin.desktop.in.h:1
+#: ../plugins/ipod/rb-ipod-source.c:1540
+msgid "New playlist"
+msgstr "Danh mục nhạc mới"
+
+#. Translators: this is used to display the amount of storage space
+#. * used and the total storage space on an iPod.
+#.
+#: ../plugins/ipod/rb-ipod-source.c:1637
+#, c-format
+msgid "%s of %s"
+msgstr "%s trên %s"
+
+#: ../plugins/iradio/iradio.rb-plugin.in.h:1
 msgid "Internet Radio"
 msgstr "Đài phát thanh Internet"
 
-#: ../plugins/iradio/iradio.rb-plugin.desktop.in.h:2
+#: ../plugins/iradio/iradio.rb-plugin.in.h:2
 msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "Hỗ trợ dịch vụ truyền thanh qua Internet"
 
@@ -1768,79 +2076,112 @@ msgstr ""
 "Nếu họ hâm mộ nghệ sĩ nào đó, họ có thể hỗ trợ nghệ sĩ này bằng đóng góp tài "
 "chính."
 
-#: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:1
+#: ../plugins/jamendo/jamendo.rb-plugin.in.h:1
 msgid ""
 "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
 msgstr "Thêm hỗ trợ Rhythmbox để nghe và mua nhạc từ Jamendo"
 
-#: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:2
-#: ../plugins/jamendo/jamendo/JamendoSource.py:51
+#: ../plugins/jamendo/jamendo.rb-plugin.in.h:2
+#: ../plugins/jamendo/jamendo/JamendoSource.py:65
 msgid "Jamendo"
 msgstr "Jamendo"
 
-#: ../plugins/jamendo/jamendo/__init__.py:66
-#: ../plugins/magnatune/magnatune/__init__.py:88
+#: ../plugins/jamendo/jamendo/__init__.py:75
+#: ../plugins/magnatune/magnatune/__init__.py:96
 msgid "Stores"
 msgstr "Cửa hàng"
 
-#: ../plugins/jamendo/jamendo/__init__.py:75
+#: ../plugins/jamendo/jamendo/__init__.py:95
 msgid "_Download Album"
 msgstr "_Tải tập nhạc về"
 
-#: ../plugins/jamendo/jamendo/__init__.py:76
+#: ../plugins/jamendo/jamendo/__init__.py:96
 msgid "Download this album using BitTorrent"
 msgstr "Tải tập nhạc này bằng BitTorrent"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:110
+#. Add Button for Donate
+#: ../plugins/jamendo/jamendo/__init__.py:103
+msgid "_Donate to Artist"
+msgstr "Ủ_ng hộ tiền cho nghệ sĩ"
+
+#: ../plugins/jamendo/jamendo/__init__.py:104
+msgid "Donate Money to this Artist"
+msgstr "Ủng hộ tiền cho nghệ sĩ này"
+
+#: ../plugins/jamendo/jamendo/JamendoSource.py:116
 msgid "Loading Jamendo catalogue"
 msgstr "Đang nạp danh mục Jamendo"
 
-#: ../plugins/iradio/rb-iradio-source.c:166
+#: ../plugins/jamendo/jamendo/JamendoSource.py:388
+#, python-format
+msgid "Error looking up p2plink for album %s on jamendo.com"
+msgstr "Lỗi tra cứu p2plink cho tập nhạc %s trên jamendo.com"
+
+#: ../plugins/jamendo/jamendo/JamendoSource.py:409
+#, python-format
+msgid "Error looking up artist %s on jamendo.com"
+msgstr "Lỗi tra cứu nghệ sỉ %s trên jamendo.com"
+
+#: ../plugins/iradio/rb-iradio-source.c:174
 msgid "New Internet _Radio Station..."
 msgstr "Đài phát thanh Internet _mới..."
 
-#: ../plugins/iradio/rb-iradio-source.c:167
+#: ../plugins/iradio/rb-iradio-source.c:175
 msgid "Create a new Internet Radio station"
 msgstr "Tạo trạm phát Internet mới"
 
-#: ../plugins/iradio/rb-iradio-source.c:332 ../widgets/rb-entry-view.c:1132
-#: ../widgets/rb-library-browser.c:99
-#: ../widgets/rb-query-creator-properties.c:70
-#: ../widgets/rb-query-creator-properties.c:96
+#. Translators: this is the toolbar button label for
+#. New Interner Radio Station action.
+#. Don't include the prefix "radio|" in the translation.
+#: ../plugins/iradio/rb-iradio-source.c:307
+msgid "radio|New"
+msgstr "Mới"
+
+#: ../plugins/iradio/rb-iradio-source.c:349 ../widgets/rb-entry-view.c:1455
+#: ../widgets/rb-library-browser.c:142
+#: ../widgets/rb-query-creator-properties.c:78
+#: ../widgets/rb-query-creator-properties.c:104
 msgid "Genre"
 msgstr "Thể loại"
 
-#: ../plugins/iradio/rb-iradio-source.c:426
+#: ../plugins/iradio/rb-iradio-source.c:443
 msgid "Radio"
 msgstr "Đài phát thanh"
 
-#: ../plugins/iradio/rb-iradio-source.c:1021
-#: ../plugins/iradio/rb-station-properties-dialog.c:393
+#: ../plugins/iradio/rb-iradio-source.c:586
+#, c-format
+msgid "%d station"
+msgid_plural "%d stations"
+msgstr[0] "%d trạm"
+
+#: ../plugins/iradio/rb-iradio-source.c:1012
+#: ../plugins/iradio/rb-station-properties-dialog.c:409
 msgid "New Internet Radio Station"
 msgstr "Trạm phát Internet mới"
 
-#: ../plugins/iradio/rb-iradio-source.c:1021
+#: ../plugins/iradio/rb-iradio-source.c:1012
 msgid "URL of internet radio station:"
 msgstr "URL của trạm phát Internet mạng:"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:389
-#: ../podcast/rb-feed-podcast-properties-dialog.c:209
-#: ../podcast/rb-podcast-properties-dialog.c:355 ../widgets/rb-song-info.c:870
+#: ../plugins/iradio/rb-station-properties-dialog.c:405
+#: ../podcast/rb-feed-podcast-properties-dialog.c:216
+#: ../podcast/rb-podcast-properties-dialog.c:372 ../widgets/rb-song-info.c:993
 #, c-format
 msgid "%s Properties"
 msgstr "Thuộc tính %s"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:481
-#: ../podcast/rb-podcast-properties-dialog.c:465 ../widgets/rb-song-info.c:928
+#: ../plugins/iradio/rb-station-properties-dialog.c:497
+#: ../podcast/rb-podcast-properties-dialog.c:485
+#: ../widgets/rb-song-info.c:1052
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:572
+#: ../plugins/iradio/rb-station-properties-dialog.c:588
 msgid "Unable to change station property"
 msgstr "Không thể thay đổi thuộc tính trạm"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:572
+#: ../plugins/iradio/rb-station-properties-dialog.c:588
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
 msgstr "Không thể thay đổi URI của trạm sang %s, vì trạm đó đã có rồi"
@@ -1849,44 +2190,58 @@ msgstr "Không thể thay đổi URI của trạm sang %s, vì trạm đó đã 
 msgid "L_ocation:"
 msgstr "Đị_a điểm:"
 
-#: ../plugins/lirc/lirc.rb-plugin.desktop.in.h:1
+#: ../plugins/lirc/lirc.rb-plugin.in.h:1
 msgid "Control Rhythmbox using an infrared remote control"
 msgstr "Điều khiển Rhythmbox bằng bộ điều khiển từ xa"
 
-#: ../plugins/lirc/lirc.rb-plugin.desktop.in.h:2
+#: ../plugins/lirc/lirc.rb-plugin.in.h:2
 msgid "LIRC "
 msgstr "LIRC "
 
-#: ../plugins/lyrics/lyrics/__init__.py:124
-#: ../plugins/lyrics/lyrics/__init__.py:133
+#: ../plugins/lyrics/lyrics/__init__.py:134
+#: ../plugins/lyrics/lyrics/__init__.py:143
 msgid "No lyrics found"
 msgstr "Không có lời nhạc"
 
-#: ../plugins/lyrics/lyrics/__init__.py:202
+#: ../plugins/lyrics/lyrics/__init__.py:177
+msgid "_Save"
+msgstr "_Lưu"
+
+#: ../plugins/lyrics/lyrics/__init__.py:182
+#: ../plugins/lyrics/lyrics/__init__.py:195 ../shell/rb-shell.c:412
+msgid "_Edit"
+msgstr "_Sửa"
+
+#: ../plugins/lyrics/lyrics/__init__.py:197
+msgid "_Search again"
+msgstr "_Tìm tiếp"
+
+#: ../plugins/lyrics/lyrics/__init__.py:215
+#: ../plugins/lyrics/lyrics/__init__.py:281
 msgid "Lyrics"
 msgstr "Lời nhạc"
 
-#: ../plugins/lyrics/lyrics/__init__.py:242
+#: ../plugins/lyrics/lyrics/__init__.py:255
 msgid "Searching for lyrics..."
 msgstr "Đang tìm lời nhạc..."
 
-#: ../plugins/lyrics/lyrics/__init__.py:278
+#: ../plugins/lyrics/lyrics/__init__.py:291
 msgid "Song L_yrics"
 msgstr "_Lời nhạc"
 
-#: ../plugins/lyrics/lyrics/__init__.py:279
+#: ../plugins/lyrics/lyrics/__init__.py:292
 msgid "Display lyrics for the playing song"
 msgstr "Hiển thị lời khi nghe nhạc"
 
-#: ../plugins/lyrics/lyrics/LyricsConfigureDialog.py:88
+#: ../plugins/lyrics/lyrics/LyricsConfigureDialog.py:104
 msgid "Choose lyrics folder..."
 msgstr "Chọn thư mục lời nhạc..."
 
-#: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:1
+#: ../plugins/lyrics/lyrics.rb-plugin.in.h:1
 msgid "Fetch song lyrics from the Internet"
 msgstr "Lấy lời nhạc từ Internet"
 
-#: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:2
+#: ../plugins/lyrics/lyrics.rb-plugin.in.h:2
 msgid "Song Lyrics"
 msgstr "Lời nhạc"
 
@@ -1915,7 +2270,9 @@ msgstr "     * Người sáng lập/sở hữu điều hành nó -- hỗ trợ d
 msgid ""
 "    * 50% of payment goes to artist (makes buyer feel good: they're helping "
 "the world)"
-msgstr "    * 50% khoản thu dành cho nghệ sĩ (giúp người mua cảm thấy dễ chịu vì đã giúp đỡ người khác)"
+msgstr ""
+"    * 50% khoản thu dành cho nghệ sĩ (giúp người mua cảm thấy dễ chịu vì đã "
+"giúp đỡ người khác)"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:4
 msgid "    * All albums and artists hand-picked"
@@ -1925,13 +2282,16 @@ msgstr "    * Mọi tập nhạc và nghệ sĩ đều được chọn bằng ta
 msgid ""
 "    * Downloads and CDs are both available (no other site on the internet "
 "sells both)"
-msgstr "    * CD và tải về đều có (không nơi nào khác trên Internet bán cả hai cách)"
+msgstr ""
+"    * CD và tải về đều có (không nơi nào khác trên Internet bán cả hai cách)"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:6
 msgid ""
 "    * Extensive biographical info about each musician, and artist photo -- "
 "feel a strong connection to the artist"
-msgstr "    * Thông tin tiểu sử chi tiết của từng nghệ sĩ, ảnh nghệ sĩ -- mối quan hệ gần gũi với nghệ sĩ"
+msgstr ""
+"    * Thông tin tiểu sử chi tiết của từng nghệ sĩ, ảnh nghệ sĩ -- mối quan "
+"hệ gần gũi với nghệ sĩ"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:7
 msgid "    * Free listening of all songs"
@@ -1941,25 +2301,33 @@ msgstr "    * Nghe miễn phí mọi bài nhạc"
 msgid ""
 "    * Full color, high quality cover art PDF available for most albums - "
 "easy to print"
-msgstr "    * Có ảnh bìa PDF chất lượng cao, đầy màu sắc với hầu hết các tập nhạc - dễ dàng in"
+msgstr ""
+"    * Có ảnh bìa PDF chất lượng cao, đầy màu sắc với hầu hết các tập nhạc - "
+"dễ dàng in"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:9
 msgid ""
 "    * Low pressure environment - nothing flashing, no audio ads while "
 "listening to albums"
-msgstr "    * Môi trường áp lực thấp - không flash, không quảng cáo bằng âm thanh khi đang nghe nhạc"
+msgstr ""
+"    * Môi trường áp lực thấp - không flash, không quảng cáo bằng âm thanh "
+"khi đang nghe nhạc"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:10
 msgid ""
 "    * Music selection is unique to Magnatune, unlike most on-line stores "
 "that have more-or-less the same (gigantic) selection\n"
-msgstr "    * Chọn nhạc ở Magnatune là duy nhất, không giống các cửa hàng trực tuyến khác hầu như cùng cách chọn\n"
+msgstr ""
+"    * Chọn nhạc ở Magnatune là duy nhất, không giống các cửa hàng trực tuyến "
+"khác hầu như cùng cách chọn\n"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:12
 msgid ""
 "    * No copy protection on the music (DRM) which allows playing music on "
 "any device (unlike iTunes/MSN/etc)"
-msgstr "    * Không chống sao chép (DRM), cho phép chơi trên mọi thiết bị (không như iTunes/MSN/...)"
+msgstr ""
+"    * Không chống sao chép (DRM), cho phép chơi trên mọi thiết bị (không như "
+"iTunes/MSN/...)"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:13
 msgid "    * No need to \"register\" to listen or buy"
@@ -1969,7 +2337,9 @@ msgstr "    * Không cần \"đăng ký\" để nghe hoặc mua nhạc"
 msgid ""
 "    * Not part of the \"evil\" major label machine - for those that hate the "
 "music biz and want to help topple it"
-msgstr "    * Không có các hãng đĩa \"xấu xa\" - dành cho ai ghét nền kinh doanh âm nhạc và muốn giúp đỡ"
+msgstr ""
+"    * Không có các hãng đĩa \"xấu xa\" - dành cho ai ghét nền kinh doanh âm "
+"nhạc và muốn giúp đỡ"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:15
 msgid "    * Not venture-capital backed big business"
@@ -1979,19 +2349,26 @@ msgstr "    * Không phải dạng doanh nghiệp được đầu tư tài chín
 msgid ""
 "    * Our genres are hard to find in record stores and not on radio (though "
 "do appear on college radio)"
-msgstr "    * Các thể loại của chúng tôi khó tìm được trong các cửa hàng băng đĩa và không có trên đài phát thanh (mặc dù đôi khi xuất hiện trên sóng phát thanh trường học)"
+msgstr ""
+"    * Các thể loại của chúng tôi khó tìm được trong các cửa hàng băng đĩa và "
+"không có trên đài phát thanh (mặc dù đôi khi xuất hiện trên sóng phát thanh "
+"trường học)"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:17
 msgid ""
 "    * Perfect quality downloads (CD copy) are available when you download "
 "(not inferior quality sound)"
-msgstr "    * Có thể tải về với chất lượng tuyệt hảo (bản sao CD), bảo đảm không kém hơn"
+msgstr ""
+"    * Có thể tải về với chất lượng tuyệt hảo (bản sao CD), bảo đảm không kém "
+"hơn"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:18
 msgid ""
 "    * Radio stations and \"genre mix\" playlists allow background listening "
 "- can do work while listening to our music"
-msgstr "    * Đài phát thanh và danh mục nhạc \"thể loại hỗn hợp\" có thể nghe nền - vừa làm việc vừa nghe nhạc"
+msgstr ""
+"    * Đài phát thanh và danh mục nhạc \"thể loại hỗn hợp\" có thể nghe nền - "
+"vừa làm việc vừa nghe nhạc"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:19
 msgid "    * Smaller selection means easier to find good music"
@@ -2001,7 +2378,8 @@ msgstr "    * Ít lựa chọn nghĩa là dễ tìm ra nhạc hay"
 msgid ""
 "    * Variable pricing scheme means you can pay as little as $5 for an album "
 "if you choose"
-msgstr "    * Bảng giá cho phép bạn chỉ cần trả ít nhất 5$ cho một tập nhạc bạn chọn"
+msgstr ""
+"    * Bảng giá cho phép bạn chỉ cần trả ít nhất 5$ cho một tập nhạc bạn chọn"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:21
 msgid "    * Very simple user interface, quick to play music"
@@ -2019,7 +2397,8 @@ msgstr "<b>Cửa hàng nhạc trực tuyến Magnatune</b>"
 msgid ""
 "Magnatune is an online record label that is not evil. Some of their key "
 "attributes are:\n"
-msgstr "Magnatune là nhãn đĩa trực tuyến không xấu xa. Một số đặc điểm chính là:\n"
+msgstr ""
+"Magnatune là nhãn đĩa trực tuyến không xấu xa. Một số đặc điểm chính là:\n"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:26
 msgid "You can find more information at http://www.magnatune.com/"
@@ -2156,10 +2535,6 @@ msgstr "_Email:"
 msgid "_Month:"
 msgstr "_Tháng:"
 
-#: ../plugins/magnatune/magnatune-prefs.glade.h:45
-msgid "_Name:"
-msgstr "Tê_n:"
-
 #: ../plugins/magnatune/magnatune-prefs.glade.h:47
 msgid "http://www.magnatune.com/"
 msgstr "http://www.magnatune.com/"
@@ -2284,7 +2659,7 @@ msgstr "_Mua"
 msgid "_Remember my credit card details"
 msgstr "_Ghi nhớ chi tiết thẻ tín dụng của tôi"
 
-#: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:1
+#: ../plugins/magnatune/magnatune.rb-plugin.in.h:1
 msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
 "online music store"
@@ -2292,40 +2667,45 @@ msgstr ""
 "Thêm hỗ trợ Rhythmbox để chơi và mua nhạc từ cửa hàng nhạc trực tuyến "
 "Magnatune"
 
-#: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:2
+#: ../plugins/magnatune/magnatune.rb-plugin.in.h:2
 msgid "Magnatune Store"
 msgstr "Cửa hàng Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:58
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:66
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:110
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:112
 msgid "Loading Magnatune catalogue"
 msgstr "Đang nạp danh mục Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:113
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:115
 msgid "Downloading Magnatune Album(s)"
 msgstr "Đang tải các tập nhạc Magnatune về"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:213
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:215
 msgid "Couldn't purchase album"
 msgstr "Không thể mua tập nhạc"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:214
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:216
 msgid "You must have a library location set to purchase an album."
 msgstr "Bạn phải đặt vị trí thư viện để có thể mua tập nhạc."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:235
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:237
 #, python-format
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "Bạn có muốn mua tập nhạc <i>%(album)s</i> của '%(artist)s' không?"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:501
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:358
+msgid ""
+"Rhythmbox could not understand the Magnatune catalogue, please file a bug."
+msgstr "Rhythmbox không thể hiểu phân loại Magnatune, vui lòng thông báo lỗi."
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:513
 msgid "Purchase Error"
 msgstr "Lỗi mua"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:502
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:514
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -2336,12 +2716,12 @@ msgstr ""
 "Máy chủ Magnatune trả về:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:505
-#: ../widgets/rb-entry-view.c:1255
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:517
+#: ../widgets/rb-entry-view.c:1578
 msgid "Error"
 msgstr "Lỗi"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:506
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:518
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -2353,113 +2733,132 @@ msgstr ""
 "%s"
 
 #. Add the popup menu actions
-#: ../plugins/magnatune/magnatune/__init__.py:107
+#: ../plugins/magnatune/magnatune/__init__.py:122
 msgid "Purchase Album"
 msgstr "Mua tập nhạc"
 
-#: ../plugins/magnatune/magnatune/__init__.py:108
+#: ../plugins/magnatune/magnatune/__init__.py:123
 msgid "Purchase this album from Magnatune"
 msgstr "Mua tập nhạc này từ Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:113
+#: ../plugins/magnatune/magnatune/__init__.py:128
 msgid "Purchase Physical CD"
 msgstr "Mua CD"
 
-#: ../plugins/magnatune/magnatune/__init__.py:114
+#: ../plugins/magnatune/magnatune/__init__.py:129
 msgid "Purchase a physical CD from Magnatune"
 msgstr "Mua CD nhạc này từ Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:118
+#: ../plugins/magnatune/magnatune/__init__.py:133
 msgid "Artist Information"
 msgstr "Thông tin nghệ sĩ"
 
-#: ../plugins/magnatune/magnatune/__init__.py:119
+#: ../plugins/magnatune/magnatune/__init__.py:134
 msgid "Get information about this artist"
 msgstr "Lấy thông tin về nghệ sĩ này"
 
-#: ../plugins/magnatune/magnatune/__init__.py:123
+#: ../plugins/magnatune/magnatune/__init__.py:138
 msgid "Cancel Downloads"
 msgstr "Thôi tải về"
 
-#: ../plugins/magnatune/magnatune/__init__.py:124
+#: ../plugins/magnatune/magnatune/__init__.py:139
 msgid "Stop downloading purchased albums"
 msgstr "Ngừng tải về tập nhạc đã mua"
 
-#: ../plugins/mmkeys/mmkeys.rb-plugin.desktop.in.h:1
+#: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
 msgstr "Điều khiển Rhythmbox bằng phím tắt"
 
-#: ../plugins/mmkeys/mmkeys.rb-plugin.desktop.in.h:2
+#: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:2
 msgid "Media Player Keys"
 msgstr "Phím chơi nhạc"
 
-#: ../plugins/mtpdevice/mtpdevice.rb-plugin.desktop.in.h:1
+#: ../plugins/mtpdevice/mtpdevice.rb-plugin.in.h:1
 msgid "Portable Players - MTP"
 msgstr "Máy nghe nhạc di động - MTP"
 
-#: ../plugins/mtpdevice/mtpdevice.rb-plugin.desktop.in.h:2
+#: ../plugins/mtpdevice/mtpdevice.rb-plugin.in.h:2
 msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "Hỗ trợ thiết bị MTP (hiện nội dung, chép nhạc, nghe nhạc)"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:99
-#: ../shell/rb-removable-media-manager.c:133
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:103
+#: ../shell/rb-removable-media-manager.c:152
 msgid "_Eject"
 msgstr "Đẩy _ra"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:100
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:104
 msgid "Eject MTP-device"
 msgstr "Đẩy thiết bị MTP ra"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:103
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:107
 msgid "Rename MTP-device"
 msgstr "Đổi tên thiết bị MTP"
 
-#: ../plugins/power-manager/power-manager.rb-plugin.desktop.in.h:1
+#: ../plugins/mtpdevice/rb-mtp-source.c:505
+msgid "Digital Audio Player"
+msgstr "Trình chơi nhạc số"
+
+#: ../plugins/power-manager/power-manager.rb-plugin.in.h:1
 msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr "Ngăn bộ quản lí năng lượng ngưng máy khi đang phát nhạc"
 
-#: ../plugins/power-manager/power-manager.rb-plugin.desktop.in.h:2
+#: ../plugins/power-manager/power-manager.rb-plugin.in.h:2
 msgid "Power Manager"
 msgstr "Quản lí năng lượng"
 
-#: ../plugins/power-manager/rb-power-manager-plugin.c:182
+#: ../plugins/power-manager/rb-power-manager-plugin.c:208
 msgid "Playing"
 msgstr "Đang phát"
 
-#: ../plugins/pythonconsole/pythonconsole.py:57
+#: ../plugins/pythonconsole/pythonconsole.py:75
 msgid "_Python Console"
 msgstr "Bàn giao tiếp _Python"
 
-#: ../plugins/pythonconsole/pythonconsole.py:58
+#: ../plugins/pythonconsole/pythonconsole.py:76
 msgid "Show Rhythmbox's python console"
 msgstr "Hiện bàn giao tiếp điều khiển Rhythmbox bằng Python"
 
-#: ../plugins/pythonconsole/pythonconsole.py:93
+#: ../plugins/pythonconsole/pythonconsole.py:81
+msgid "Python Debugger"
+msgstr "Bộ gỡ lỗi Python"
+
+#: ../plugins/pythonconsole/pythonconsole.py:82
+msgid "Enable remote python debugging with rpdb2"
+msgstr "Bật gỡ lỗi python từ xa bằng rpdb2"
+
+#: ../plugins/pythonconsole/pythonconsole.py:119
 msgid "You can access the main window through the 'shell' variable :"
 msgstr "Bạn có thể truy cập cửa sổ chính thông qua biến 'shell':"
 
+#: ../plugins/pythonconsole/pythonconsole.py:133
+msgid ""
+"After you press OK, Rhythmbox will wait until you connect to it with winpdb "
+"or rpdb2. If you have not set a debugger password in GConf, it will use the "
+"default password ('rhythmbox')."
+msgstr "Sau khi bạn nhấn OK, Rhythmbox sẽ chờ tới khi bạn kết nối bằng winpdb hoặc rpdb2. Nếu bạn chưa đặt mật khẩu cho trình bắt lỗi trong GConf, nó sẽ dùng mật khẩu mặc định ('rhythmbox')."
+
 #. ex:noet:ts=8:
-#: ../plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in.h:1
+#: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:1
 msgid "Interactive python console"
 msgstr "Bàn giao tiếp tương tác Python"
 
-#: ../plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in.h:2
+#: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:2
 msgid "Python Console"
 msgstr "Bàn giao tiếp Python"
 
-#: ../plugins/rb-plugin-manager.c:47
+#: ../plugins/rb-plugin-manager.c:55
 msgid "Plugin"
 msgstr "Phần bổ sung"
 
-#: ../plugins/rb-plugin-manager.c:48
+#: ../plugins/rb-plugin-manager.c:56
 msgid "Enabled"
 msgstr "Bật"
 
-#: ../plugins/rb-plugins-engine.c:514
+#: ../plugins/rb-plugins-engine.c:556
 msgid "Plugin Error"
 msgstr "Lỗi Phần bổ sung"
 
-#: ../plugins/rb-plugins-engine.c:514
+#: ../plugins/rb-plugins-engine.c:556
 #, c-format
 msgid "Unable to activate plugin %s"
 msgstr "Không thể kích hoạt phần bổ sung %s"
@@ -2468,90 +2867,91 @@ msgstr "Không thể kích hoạt phần bổ sung %s"
 msgid "Python Source"
 msgstr "Mã nguồn Python"
 
-#: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:1
+#: ../plugins/sample-python/sample-python.rb-plugin.in.h:1
 msgid "A sample plugin in Python with no features"
 msgstr "Phần bổ sung mẫu viết bằng Python, không có tính năng gì"
 
-#: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:2
+#: ../plugins/sample-python/sample-python.rb-plugin.in.h:2
 msgid "Python Sample Plugin"
 msgstr "Ví dụ mẫu Python"
 
-#: ../plugins/sample/rb-sample-plugin.c:115
-#: ../plugins/sample/rb-sample-plugin.c:122
-#: ../plugins/sample/sample.rb-plugin.desktop.in.h:2
+#: ../plugins/sample/rb-sample-plugin.c:123
+#: ../plugins/sample/rb-sample-plugin.c:130
+#: ../plugins/sample/sample.rb-plugin.in.h:2
 msgid "Sample Plugin"
 msgstr "Phần bổ sung mẫu"
 
-#: ../plugins/sample/sample.rb-plugin.desktop.in.h:1
+#: ../plugins/sample/sample.rb-plugin.in.h:1
 msgid "A sample plugin in C with no features"
 msgstr "Phần bổ sung mẫu viết bằng C, không có tính năng gì"
 
-#: ../plugins/sample-vala/sample-vala.rb-plugin.desktop.in.h:1
+#: ../plugins/sample-vala/sample-vala.rb-plugin.in.h:1
 msgid "A sample plugin in Vala with no features"
 msgstr "Phần bổ sung mẫu viết bằng Vala không có tính năng gì"
 
-#: ../plugins/sample-vala/sample-vala.rb-plugin.desktop.in.h:2
+#: ../plugins/sample-vala/sample-vala.rb-plugin.in.h:2
 msgid "Vala Sample Plugin"
 msgstr "Phần bổ sung mẫu Vala"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:222
-#: ../plugins/visualizer/visualizer.rb-plugin.desktop.in.h:2
-msgid "Visualization"
-msgstr "Hiệu ứng thị giác"
+#: ../plugins/visualizer/rb-visualizer-plugin.c:230
+msgid "_Visualization"
+msgstr "_Hiệu ứng trực quan"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:223
+#: ../plugins/visualizer/rb-visualizer-plugin.c:231
 msgid "Start or stop visualization"
 msgstr "Chạy hoặc ngưng hiệu ứng thị giác"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:229
+#: ../plugins/visualizer/rb-visualizer-plugin.c:237
 msgid "Small"
 msgstr "Nhỏ"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:230
+#: ../plugins/visualizer/rb-visualizer-plugin.c:238
 msgid "Normal"
 msgstr "Bình thường"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:231
+#: ../plugins/visualizer/rb-visualizer-plugin.c:239
 msgid "Large"
 msgstr "Lớn"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:232
+#: ../plugins/visualizer/rb-visualizer-plugin.c:240
 msgid "Extra Large"
 msgstr "Rất lớn"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:243
+#: ../plugins/visualizer/rb-visualizer-plugin.c:251
 msgid "Embedded"
 msgstr "Nhúng"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:244
+#: ../plugins/visualizer/rb-visualizer-plugin.c:252
 msgid "Fullscreen"
 msgstr "Toàn màn hình"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:245
+#: ../plugins/visualizer/rb-visualizer-plugin.c:253
 msgid "Desktop"
 msgstr "Màn hình nền"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:246
+#: ../plugins/visualizer/rb-visualizer-plugin.c:254
 msgid "Window"
 msgstr "Cửa sổ"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:694
+#: ../plugins/visualizer/rb-visualizer-plugin.c:712
+#, c-format
 msgid "Unable to start video output"
 msgstr "Không thể khởi động đầu phát hình"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:729
+#: ../plugins/visualizer/rb-visualizer-plugin.c:747
+#, c-format
 msgid "Failed to link new visual effect into the GStreamer pipeline"
 msgstr "Lỗi liên kết hiệu ứng thị giác với ống dẫn GStreamer"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:777
+#: ../plugins/visualizer/rb-visualizer-plugin.c:795
 msgid "Unable to start visualization"
 msgstr "Không thể khởi động hiệu ứng thị giác"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1340
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1358
 msgid "Enable visual effects?"
 msgstr "Bật hiệu ứng thị giác chứ?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1342
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1360
 msgid ""
 "It seems you are running Rhythmbox remotely.\n"
 "Are you sure you want to enable the visual effects?"
@@ -2559,7 +2959,7 @@ msgstr ""
 "Dường như bạn đang chạy Rhythmbox từ xa.\n"
 "Bạn có chắc muốn bật hiệu ứng thị giác không?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1674
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1692
 msgid "Music Player Visualization"
 msgstr "Hiệu ứng thị giác với nhạc"
 
@@ -2583,41 +2983,47 @@ msgstr "Màn hình:"
 msgid "Visualization:"
 msgstr "Hiệu ứng thị giác:"
 
-#: ../plugins/visualizer/visualizer.rb-plugin.desktop.in.h:1
+#: ../plugins/visualizer/visualizer.rb-plugin.in.h:1
 msgid "Displays visualizations"
 msgstr "Hiển thị hiệu ứng thị giác"
 
-#: ../podcast/rb-podcast-manager.c:830
+#: ../plugins/visualizer/visualizer.rb-plugin.in.h:2
+msgid "Visualization"
+msgstr "Hiệu ứng thị giác"
+
+#: ../podcast/rb-podcast-manager.c:811
+msgid "Error creating podcast download directory"
+msgstr "Lỗi tạo thư mục lưu podcast lấy về"
+
+#: ../podcast/rb-podcast-manager.c:812
+#, c-format
+msgid "Unable to create the download directory for %s: %s"
+msgstr "Không thể tạo thư mục lấy về cho %s: %s"
+
+#: ../podcast/rb-podcast-manager.c:938
 msgid "Invalid URL"
 msgstr "URL không hợp lệ"
 
-#: ../podcast/rb-podcast-manager.c:831
+#: ../podcast/rb-podcast-manager.c:939
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL \"%s\" không hợp lệ, vui lòng kiểm tra."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:839
+#: ../podcast/rb-podcast-manager.c:949
 msgid "URL already added"
 msgstr "URL đã được thêm"
 
-#: ../podcast/rb-podcast-manager.c:840
+#: ../podcast/rb-podcast-manager.c:950
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
-msgstr "URL \"%s\" đã được thêm dạng đài phát thanh. Nếu đây là nguồn Podcast, vui lòng gỡ bỏ Trạm phát này."
+msgstr ""
+"URL \"%s\" đã được thêm dạng đài phát thanh. Nếu đây là nguồn Podcast, vui "
+"lòng gỡ bỏ Trạm phát này."
 
-#: ../podcast/rb-podcast-manager.c:881
-#, c-format
-msgid "There was a problem adding this podcast. Please verify the URL: %s"
-msgstr "Lỗi thêm Podcast. Vui lòng kiểm tra URL: %s"
-
-#: ../podcast/rb-podcast-manager.c:959
-msgid "Podcast"
-msgstr "Podcast"
-
-#: ../podcast/rb-podcast-parse.c:477
+#: ../podcast/rb-podcast-manager.c:1018
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2628,125 +3034,152 @@ msgstr ""
 "chỉ mạng không đúng, hoặc nguồn bị ngắt. Bạn có muốn trình Rhythmbox cố sử "
 "dụng nó không?"
 
-#: ../podcast/rb-podcast-properties-dialog.c:415
+#: ../podcast/rb-podcast-manager.c:1129
+msgid "Podcast"
+msgstr "Podcast"
+
+#: ../podcast/rb-podcast-manager.c:2053
+#, c-format
+msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
+msgstr "Lỗi thêm Podcast: %s. Vui lòng kiểm tra URL: %s"
+
+#: ../podcast/rb-podcast-parse.c:168
+#, c-format
+msgid "Unable to check file type: %s"
+msgstr "Không thể kiểm tra loại tập tin: %s"
+
+#: ../podcast/rb-podcast-parse.c:187
+#, c-format
+msgid "Unexpected file type: %s"
+msgstr "Loại tập tin lạ: %s"
+
+#: ../podcast/rb-podcast-parse.c:210
+#, c-format
+msgid "Unable to parse the feed contents"
+msgstr "Không thể phân tích nội dung nguồn"
+
+#: ../podcast/rb-podcast-parse.c:224
+#, c-format
+msgid "The feed does not contain any downloadable items"
+msgstr "Nguồn không chứ gì có thể lấy về"
+
+#: ../podcast/rb-podcast-properties-dialog.c:435
 msgid "Not Downloaded"
 msgstr "Chưa tải về"
 
-#: ../remote/dbus/rb-client.c:73
+#: ../remote/dbus/rb-client.c:81
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Không khởi chạy tiến trình Rhythmbox mới"
 
-#: ../remote/dbus/rb-client.c:74 ../shell/main.c:101
+#: ../remote/dbus/rb-client.c:82 ../shell/main.c:121
 msgid "Quit Rhythmbox"
-msgstr "Thoát khỏi RhythmBox"
+msgstr "Thoát khỏi Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:76
+#: ../remote/dbus/rb-client.c:84
 msgid "Don't present an existing Rhythmbox window"
 msgstr "Không hiển thị cửa sổ Rhythmbox đã có"
 
-#: ../remote/dbus/rb-client.c:77
+#: ../remote/dbus/rb-client.c:85
 msgid "Hide the Rhythmbox window"
 msgstr "Ẩn cửa sổ Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:79
+#: ../remote/dbus/rb-client.c:87
 msgid "Jump to next song"
 msgstr "Nhảy tới bài kế tiếp"
 
-#: ../remote/dbus/rb-client.c:80
+#: ../remote/dbus/rb-client.c:88
 msgid "Jump to previous song"
 msgstr "Nhảy về bài trước đó"
 
-#: ../remote/dbus/rb-client.c:82
+#: ../remote/dbus/rb-client.c:90
 msgid "Show notification of the playing song"
 msgstr "Hiện thông báo về bài nhạc đang phát"
 
-#: ../remote/dbus/rb-client.c:84
+#: ../remote/dbus/rb-client.c:92
 msgid "Resume playback if currently paused"
 msgstr "Tiếp tục phát lại nếu đã tạm dừng"
 
-#: ../remote/dbus/rb-client.c:85
+#: ../remote/dbus/rb-client.c:93
 msgid "Pause playback if currently playing"
 msgstr "Tạm dừng phát lại nếu đang phát"
 
-#: ../remote/dbus/rb-client.c:86
+#: ../remote/dbus/rb-client.c:94
 msgid "Toggle play/pause mode"
 msgstr "Bật/tắt chế độ phát/tạm dừng"
 
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
-#: ../remote/dbus/rb-client.c:89
+#: ../remote/dbus/rb-client.c:97
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Phát một URI đã chỉ định, nhập khẩu nó nếu cần"
 
-#: ../remote/dbus/rb-client.c:89
+#: ../remote/dbus/rb-client.c:97
 msgid "URI to play"
 msgstr "URI cần phát"
 
-#: ../remote/dbus/rb-client.c:90
+#: ../remote/dbus/rb-client.c:98
 msgid "Add specified tracks to the play queue"
 msgstr "Thêm các rãnh được chọn vào hàng đợi phát"
 
-#: ../remote/dbus/rb-client.c:91
+#: ../remote/dbus/rb-client.c:99
 msgid "Empty the play queue before adding new tracks"
 msgstr "Xoá hàng đợi phát trước khi tham rãnh mới"
 
-#: ../remote/dbus/rb-client.c:93
+#: ../remote/dbus/rb-client.c:101
 msgid "Print the title and artist of the playing song"
 msgstr "Hiển thị tiêu đề và nghệ sĩ của bài nhạc đang phát"
 
-#: ../remote/dbus/rb-client.c:94
+#: ../remote/dbus/rb-client.c:102
 msgid "Print formatted details of the song"
 msgstr "Hiển thị chi tiết đã định dạng về bài nhạc"
 
-#: ../remote/dbus/rb-client.c:97
+#: ../remote/dbus/rb-client.c:104
 msgid "Set the playback volume"
 msgstr "Đặt âm lượng phát lại"
 
-#: ../remote/dbus/rb-client.c:99
+#: ../remote/dbus/rb-client.c:105
 msgid "Increase the playback volume"
 msgstr "Tăng âm lượng phát lại"
 
-#: ../remote/dbus/rb-client.c:100
+#: ../remote/dbus/rb-client.c:106
 msgid "Decrease the playback volume"
 msgstr "Giảm âm lượng phát lại"
 
-#: ../remote/dbus/rb-client.c:101
+#: ../remote/dbus/rb-client.c:107
 msgid "Print the current playback volume"
 msgstr "In âm lượng phát lại hiện thời"
 
-#: ../remote/dbus/rb-client.c:102
+#: ../remote/dbus/rb-client.c:108
 msgid "Mute playback"
 msgstr "Tắt phát tiếng"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:109
 msgid "Unmute playback"
 msgstr "Thôi tắt phát tiếng"
 
-#: ../remote/dbus/rb-client.c:395 ../shell/rb-shell.c:2060
+#: ../remote/dbus/rb-client.c:452 ../remote/dbus/rb-client.c:478
+#: ../shell/rb-shell.c:2098
 msgid "Not playing"
 msgstr "Không phát"
 
-#: ../remote/dbus/rb-client.c:616
+#: ../remote/dbus/rb-client.c:706
+#, c-format
 msgid "Playback is muted.\n"
 msgstr "Phát tiếng bị cấm.\n"
 
-#: ../remote/dbus/rb-client.c:617
+#: ../remote/dbus/rb-client.c:707
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Âm lượng là %f.\n"
 
-#: ../rhythmdb/rhythmdb-monitor.c:325
-#, c-format
-msgid "Couldn't monitor %s: %s"
-msgstr "Không thể theo dõi %s: %s"
-
-#: ../rhythmdb/rhythmdb-property-model.c:430
-#: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:153
-#: ../sources/rb-podcast-source.c:310
-#: ../sources/rb-static-playlist-source.c:90
+#: ../rhythmdb/rhythmdb-property-model.c:473
+#: ../sources/rb-auto-playlist-source.c:107 ../sources/rb-browser-source.c:173
+#: ../sources/rb-podcast-source.c:344
+#: ../sources/rb-static-playlist-source.c:113
 msgid "All"
 msgstr "Tất cả"
 
-#: ../rhythmdb/rhythmdb-tree.c:367
+#: ../rhythmdb/rhythmdb-tree.c:407
+#, c-format
 msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
 "rhythmbox cannot read the database."
@@ -2754,43 +3187,64 @@ msgstr ""
 "Cơ sở dữ liệu đã được tạo bởi một phiên bản Rhythmbox mới hơn. Phiên bản "
 "Rhythmbox đang dùng không thể đọc cơ sở dữ liệu này."
 
-#: ../rhythmdb/rhythmdb.c:545
+#: ../rhythmdb/rhythmdb.c:721
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Không thể truy cập %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:1561
-msgid "<invalid filename>"
-msgstr "<tên tập tin không hợp lệ>"
+#. Translators: this is an example artist name.  It should
+#. * not be translated literally, but could be replaced with
+#. * a local artist name if desired.  Ensure the album name
+#. * and song title are also replaced in this case.
+#.
+#: ../rhythmdb/rhythmdb.c:1650
+msgid "The Beatles"
+msgstr "Đức Huy"
 
-#: ../rhythmdb/rhythmdb.c:1817
+#. Translators: this is an example album name.  If the
+#. * example artist name is localised, this should be replaced
+#. * with the name of an album by that artist.
+#.
+#: ../rhythmdb/rhythmdb.c:1656
+msgid "Help!"
+msgstr "Phố Nhỏ"
+
+#. Translators: this is an example song title.  If the example
+#. * artist and album names are localised, this should be replaced
+#. * with the name of the seventh song from the localised album.
+#.
+#: ../rhythmdb/rhythmdb.c:1662
+msgid "Ticket To Ride"
+msgstr "Ngậm Ngùi"
+
+#: ../rhythmdb/rhythmdb.c:2207
 msgid "invalid unicode in error message"
 msgstr "gặp Unicode không hợp lệ trong thông điệp lỗi"
 
-#: ../rhythmdb/rhythmdb.c:2454
-msgid "Could not load the music database"
-msgstr "Không thể nạp cơ sở dữ liệu âm nhạc"
+#: ../rhythmdb/rhythmdb.c:3072
+msgid "Could not load the music database:"
+msgstr "Không thể nạp cơ sở dữ liệu âm nhạc:"
 
-#: ../rhythmdb/rhythmdb.c:3874
+#: ../rhythmdb/rhythmdb.c:4435
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld phút"
 
-#: ../rhythmdb/rhythmdb.c:3875
+#: ../rhythmdb/rhythmdb.c:4436
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld giờ"
 
-#: ../rhythmdb/rhythmdb.c:3876
+#: ../rhythmdb/rhythmdb.c:4437
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld ngày"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3882
+#: ../rhythmdb/rhythmdb.c:4443
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s, %s"
@@ -2798,611 +3252,646 @@ msgstr "%s, %s, %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3888 ../rhythmdb/rhythmdb.c:3896
-#: ../rhythmdb/rhythmdb.c:3907
+#: ../rhythmdb/rhythmdb.c:4449 ../rhythmdb/rhythmdb.c:4457
+#: ../rhythmdb/rhythmdb.c:4468
 #, c-format
 msgid "%s and %s"
 msgstr "%s, %s"
 
-#: ../shell/main.c:94
+#: ../shell/main.c:114
 msgid "Enable debug output"
 msgstr "Bật kết xuất gỡ lỗi"
 
-#: ../shell/main.c:95
+#: ../shell/main.c:115
 msgid "Enable debug output matching a specified string"
 msgstr "Bật kết xuất gỡ lỗi khớp với chuỗi đã chỉ định"
 
-#: ../shell/main.c:96
+#: ../shell/main.c:116
 msgid "Do not update the library with file changes"
 msgstr "Không cập nhật thư viện theo thay đổi trong tập tin"
 
-#: ../shell/main.c:97
+#: ../shell/main.c:117
 msgid "Do not register the shell"
 msgstr "Không đăng kí hệ vỏ"
 
-#: ../shell/main.c:98
+#: ../shell/main.c:118
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr ""
 "Không lưu vĩnh viễn dữ liệu (ngầm định --no-registration [không đăng kí])"
 
-#: ../shell/main.c:99
+#: ../shell/main.c:119
 msgid "Path for database file to use"
 msgstr "Đường dẫn mà tập tin cơ sở dữ liệu cần dùng"
 
-#: ../shell/main.c:100
+#: ../shell/main.c:120
 msgid "Path for playlists file to use"
 msgstr "Đường dẫn mà tập tin danh mục nhạc cần dùng"
 
-#: ../shell/main.c:102
+#: ../shell/main.c:122
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:127 ../shell/main.c:133 ../shell/main.c:142
+#: ../shell/main.c:147 ../shell/main.c:153 ../shell/main.c:162
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: ../shell/rb-play-order.c:308
-msgid "Linear"
-msgstr "Tuần tự"
-
-#: ../shell/rb-play-order.c:309
-msgid "Linear looping"
-msgstr "Lặp lại tuần tự"
-
-#: ../shell/rb-play-order.c:310
-msgid "Shuffle"
-msgstr "Xáo trộn"
-
-#: ../shell/rb-play-order.c:311
-msgid "Random with equal weights"
-msgstr "Ngẫu nhiên với độ ưu tiên như nhau"
-
-#: ../shell/rb-play-order.c:312
-msgid "Random by time since last play"
-msgstr "Ngẫu nhiên theo thời gian kể từ phát cuối cùng"
-
-#: ../shell/rb-play-order.c:313
-msgid "Random by rating"
-msgstr "Ngẫu nhiên theo đánh giá"
-
-#: ../shell/rb-play-order.c:314
-msgid "Random by time since last play and rating"
-msgstr "Ngẫu nhiên theo thời gian kể từ phát cuối cùng và đánh giá"
-
-#: ../shell/rb-play-order.c:315
-msgid "Linear, removing entries once played"
-msgstr "Tuần tự, gỡ bỏ bài sau khi đã nghe"
-
-#. Submenu of Music
-#: ../shell/rb-playlist-manager.c:131
-msgid "_Playlist"
-msgstr "_Danh mục nhạc"
-
-#: ../shell/rb-playlist-manager.c:133 ../shell/rb-shell-clipboard.c:151
-msgid "_New Playlist"
-msgstr "Da_nh mục nhạc mới"
-
-#: ../shell/rb-playlist-manager.c:134
-msgid "Create a new playlist"
-msgstr "Tạo danh mục nhạc mới"
-
-#: ../shell/rb-playlist-manager.c:136
-msgid "New _Automatic Playlist..."
-msgstr "D_anh mục nhạc tự động mới..."
-
-#: ../shell/rb-playlist-manager.c:137
-msgid "Create a new automatically updating playlist"
-msgstr "Tạo danh mục nhạc mới sẽ cập nhật tự động"
-
-#: ../shell/rb-playlist-manager.c:139
-msgid "_Load from File..."
-msgstr "Nạ_p từ tập tin..."
-
-#: ../shell/rb-playlist-manager.c:140
-msgid "Choose a playlist to be loaded"
-msgstr "Chọn danh mục nhạc cần nạp"
-
-#: ../shell/rb-playlist-manager.c:142
-msgid "_Save to File..."
-msgstr "_Lưu vào tập tin..."
-
-#: ../shell/rb-playlist-manager.c:143
-msgid "Save a playlist to a file"
-msgstr "Lưu danh mục nhạc vào tập tin"
-
-#: ../shell/rb-playlist-manager.c:146
-msgid "Rename playlist"
-msgstr "Thay đổi tên của danh mục nhạc"
-
-#: ../shell/rb-playlist-manager.c:148
-msgid "_Delete"
-msgstr "_Xoá bỏ"
-
-#: ../shell/rb-playlist-manager.c:149
-msgid "Delete playlist"
-msgstr "Xoá bỏ danh mục nhạc"
-
-#: ../shell/rb-playlist-manager.c:152
-msgid "Change this automatic playlist"
-msgstr "Thay đổi danh mục nhạc tự động này"
-
-#: ../shell/rb-playlist-manager.c:154
-msgid "_Queue All Tracks"
-msgstr "_Xếp hàng mọi rãnh"
-
-#: ../shell/rb-playlist-manager.c:155
-msgid "Add all tracks in this playlist to the queue"
-msgstr "Thêm các rãnh trong danh mục nhạc này vào hàng đợi"
-
-#: ../shell/rb-playlist-manager.c:620
-msgid "The playlist file may be in an unknown format or corrupted."
-msgstr "Tập tin danh mục nhạc có lẽ dùng định dạng lạ hoặc bị hỏng."
-
-#: ../shell/rb-playlist-manager.c:1024
-msgid "Untitled Playlist"
-msgstr "Danh mục nhạc chưa đặt tên"
-
-#: ../shell/rb-playlist-manager.c:1285
-msgid "Couldn't read playlist"
-msgstr "Không thể đọc danh mục nhạc"
-
-#: ../shell/rb-playlist-manager.c:1300
-msgid "Load Playlist"
-msgstr "Tải danh mục nhạc"
-
-#: ../shell/rb-playlist-manager.c:1321
+#: ../shell/rb-playlist-manager.c:161
 msgid "MPEG Version 3.0 URL"
 msgstr "URL MPEG Phiên bản 3.0"
 
-#: ../shell/rb-playlist-manager.c:1322
+#: ../shell/rb-playlist-manager.c:162
 msgid "Shoutcast playlist"
 msgstr "Danh mục nhạc Shoutcast"
 
-#: ../shell/rb-playlist-manager.c:1367 ../sources/rb-playlist-source.c:547
+#: ../shell/rb-playlist-manager.c:163
+msgid "XML Shareable Playlist Format"
+msgstr "Định dạng danh mục nhạc XML chia sẻ được"
+
+#. Submenu of Music
+#: ../shell/rb-playlist-manager.c:170
+msgid "_Playlist"
+msgstr "_Danh mục nhạc"
+
+#: ../shell/rb-playlist-manager.c:172
+msgid "_New Playlist..."
+msgstr "Danh mục _nhạc mới..."
+
+#: ../shell/rb-playlist-manager.c:173
+msgid "Create a new playlist"
+msgstr "Tạo danh mục nhạc mới"
+
+#: ../shell/rb-playlist-manager.c:175
+msgid "New _Automatic Playlist..."
+msgstr "D_anh mục nhạc tự động mới..."
+
+#: ../shell/rb-playlist-manager.c:176
+msgid "Create a new automatically updating playlist"
+msgstr "Tạo danh mục nhạc mới sẽ cập nhật tự động"
+
+#: ../shell/rb-playlist-manager.c:178
+msgid "_Load from File..."
+msgstr "Nạ_p từ tập tin..."
+
+#: ../shell/rb-playlist-manager.c:179
+msgid "Choose a playlist to be loaded"
+msgstr "Chọn danh mục nhạc cần nạp"
+
+#: ../shell/rb-playlist-manager.c:181 ../shell/rb-playlist-manager.c:199
+msgid "_Save to File..."
+msgstr "_Lưu vào tập tin..."
+
+#: ../shell/rb-playlist-manager.c:182
+msgid "Save a playlist to a file"
+msgstr "Lưu danh mục nhạc vào tập tin"
+
+#: ../shell/rb-playlist-manager.c:191
+msgid "Change this automatic playlist"
+msgstr "Thay đổi danh mục nhạc tự động này"
+
+#: ../shell/rb-playlist-manager.c:193
+msgid "_Queue All Tracks"
+msgstr "_Xếp hàng mọi rãnh"
+
+#: ../shell/rb-playlist-manager.c:194
+msgid "Add all tracks in this playlist to the queue"
+msgstr "Thêm các rãnh trong danh mục nhạc này vào hàng đợi"
+
+#: ../shell/rb-playlist-manager.c:196
+msgid "_Shuffle Playlist"
+msgstr "_Xáo trộn danh mục nhạc"
+
+#: ../shell/rb-playlist-manager.c:197
+msgid "Shuffle the tracks in this playlist"
+msgstr "Xáo trộn các rãnh trong danh mục nhạc này"
+
+#: ../shell/rb-playlist-manager.c:200
+msgid "Save the play queue to a file"
+msgstr "Lưu hàng đợi phát vào tập tin"
+
+#: ../shell/rb-playlist-manager.c:647
+msgid "Unnamed playlist"
+msgstr "Danh mục nhạc không tên"
+
+#: ../shell/rb-playlist-manager.c:690
+msgid "The playlist file may be in an unknown format or corrupted."
+msgstr "Tập tin danh mục nhạc có lẽ dùng định dạng lạ hoặc bị hỏng."
+
+#: ../shell/rb-playlist-manager.c:1108
+msgid "Untitled Playlist"
+msgstr "Danh mục nhạc chưa đặt tên"
+
+#: ../shell/rb-playlist-manager.c:1380
+msgid "Couldn't read playlist"
+msgstr "Không thể đọc danh mục nhạc"
+
+#: ../shell/rb-playlist-manager.c:1399 ../sources/rb-source-group.c:63
+msgid "Playlists"
+msgstr "Danh mục nhạc"
+
+#: ../shell/rb-playlist-manager.c:1405
+msgid "All Files"
+msgstr "Mọi tập tin"
+
+#: ../shell/rb-playlist-manager.c:1409
+msgid "Load Playlist"
+msgstr "Tải danh mục nhạc"
+
+#: ../shell/rb-playlist-manager.c:1463 ../sources/rb-playlist-source.c:631
 msgid "Couldn't save playlist"
 msgstr "Không thể lưu danh mục nhạc"
 
-#: ../shell/rb-playlist-manager.c:1367
+#: ../shell/rb-playlist-manager.c:1463
 msgid "Unsupported file extension given."
 msgstr "Phần mở rộng tập tin không được hỗ trợ"
 
-#: ../shell/rb-playlist-manager.c:1668
+#: ../shell/rb-playlist-manager.c:1766
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "Danh mục nhạc %s đã có"
 
-#: ../shell/rb-playlist-manager.c:1698 ../shell/rb-playlist-manager.c:1731
-#: ../shell/rb-playlist-manager.c:1771 ../shell/rb-playlist-manager.c:1814
+#: ../shell/rb-playlist-manager.c:1796 ../shell/rb-playlist-manager.c:1829
+#: ../shell/rb-playlist-manager.c:1869 ../shell/rb-playlist-manager.c:1912
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Không biết danh mục nhạc: %s"
 
-#: ../shell/rb-playlist-manager.c:1739 ../shell/rb-playlist-manager.c:1779
+#: ../shell/rb-playlist-manager.c:1837 ../shell/rb-playlist-manager.c:1877
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "Danh mục %s là một danh mục nhạc tự động"
 
-#: ../shell/rb-removable-media-manager.c:134
+#: ../shell/rb-removable-media-manager.c:153
 msgid "Eject this medium"
 msgstr "Đẩy vật chứa này ra"
 
-#: ../shell/rb-removable-media-manager.c:136
-msgid "_Copy to library"
-msgstr "_Chép vào thư viện"
+#: ../shell/rb-removable-media-manager.c:155
+msgid "_Extract to Library"
+msgstr "_Trích cho vào thư viện"
 
-#: ../shell/rb-removable-media-manager.c:137
+#: ../shell/rb-removable-media-manager.c:156
 msgid "Copy all tracks to the library"
 msgstr "Chép mọi rãnh vào thư viện"
 
-#: ../shell/rb-removable-media-manager.c:139
+#: ../shell/rb-removable-media-manager.c:158
 msgid "_Scan Removable Media"
 msgstr "_Quét vật chứa rời"
 
-#: ../shell/rb-removable-media-manager.c:140
+#: ../shell/rb-removable-media-manager.c:159
 msgid "Scan for new Removable Media"
 msgstr "Quét tìm vật chứa có thể tháo rời"
 
-#: ../shell/rb-removable-media-manager.c:644
+#. Translators: this is the toolbar button label
+#. for Copy to Library action.
+#: ../shell/rb-removable-media-manager.c:725
+msgid "Extract"
+msgstr "Trích"
+
+#: ../shell/rb-removable-media-manager.c:756
+msgid "Unable to eject"
+msgstr "Không thể đẩy ra"
+
+#: ../shell/rb-removable-media-manager.c:777
+msgid "Unable to unmount"
+msgstr "Không thể bỏ gắn kết"
+
+#: ../shell/rb-removable-media-manager.c:978
 msgid "Error transferring track"
 msgstr "Gặp lỗi khi truyền rãnh"
 
-#: ../shell/rb-shell-clipboard.c:128
+#: ../shell/rb-shell-clipboard.c:152
 msgid "Select _All"
 msgstr "Chọn _hết"
 
-#: ../shell/rb-shell-clipboard.c:129
+#: ../shell/rb-shell-clipboard.c:153
 msgid "Select all songs"
 msgstr "Chọn mọi bài nhạc"
 
-#: ../shell/rb-shell-clipboard.c:131
+#: ../shell/rb-shell-clipboard.c:155
 msgid "D_eselect All"
 msgstr "_Bỏ chọn hết"
 
-#: ../shell/rb-shell-clipboard.c:132
+#: ../shell/rb-shell-clipboard.c:156
 msgid "Deselect all songs"
 msgstr "Bỏ chọn mọi bài nhạc"
 
-#: ../shell/rb-shell-clipboard.c:134
+#: ../shell/rb-shell-clipboard.c:158
 msgid "Cu_t"
 msgstr "Cắ_t"
 
-#: ../shell/rb-shell-clipboard.c:135
+#: ../shell/rb-shell-clipboard.c:159
 msgid "Cut selection"
 msgstr "Cắt vùng chọn"
 
-#: ../shell/rb-shell-clipboard.c:137
+#: ../shell/rb-shell-clipboard.c:161
 msgid "_Copy"
 msgstr "_Chép"
 
-#: ../shell/rb-shell-clipboard.c:138
+#: ../shell/rb-shell-clipboard.c:162
 msgid "Copy selection"
 msgstr "Sao chép vùng chọn"
 
-#: ../shell/rb-shell-clipboard.c:140
+#: ../shell/rb-shell-clipboard.c:164
 msgid "_Paste"
 msgstr "_Dán"
 
-#: ../shell/rb-shell-clipboard.c:141
+#: ../shell/rb-shell-clipboard.c:165
 msgid "Paste selection"
 msgstr "Dán vùng chọn"
 
-#: ../shell/rb-shell-clipboard.c:143
+#: ../shell/rb-shell-clipboard.c:167
 msgid "_Remove"
 msgstr "_Gỡ bỏ"
 
-#: ../shell/rb-shell-clipboard.c:144 ../shell/rb-shell-clipboard.c:158
+#: ../shell/rb-shell-clipboard.c:168 ../shell/rb-shell-clipboard.c:182
 msgid "Remove selection"
 msgstr "Gỡ bỏ vùng chọn"
 
-#: ../shell/rb-shell-clipboard.c:146
+#: ../shell/rb-shell-clipboard.c:170
 msgid "_Move to Trash"
 msgstr "Chuyển vào _Sọt rác"
 
-#: ../shell/rb-shell-clipboard.c:147
+#: ../shell/rb-shell-clipboard.c:171
 msgid "Move selection to the trash"
 msgstr "Chuyển các mục chọn vào Sọt rác"
 
-#: ../shell/rb-shell-clipboard.c:150
+#: ../shell/rb-shell-clipboard.c:174
 msgid "Add to P_laylist"
 msgstr "Thêm vào _danh mục nhạc"
 
-#: ../shell/rb-shell-clipboard.c:152
+#: ../shell/rb-shell-clipboard.c:176
 msgid "Add the selected songs to a new playlist"
 msgstr "Thêm các bài được chọn vào danh mục nhạc mới"
 
-#: ../shell/rb-shell-clipboard.c:154
+#: ../shell/rb-shell-clipboard.c:178
 msgid "Add _to Play Queue"
 msgstr "Thê_m vào hàng đợi phát"
 
-#: ../shell/rb-shell-clipboard.c:155
+#: ../shell/rb-shell-clipboard.c:179
 msgid "Add the selected songs to the play queue"
 msgstr "Thêm các bài được chọn vào hàng đợi"
 
-#: ../shell/rb-shell-clipboard.c:157
+#: ../shell/rb-shell-clipboard.c:181
 msgid "Remove"
 msgstr "Gỡ bỏ"
 
-#: ../shell/rb-shell-clipboard.c:161 ../shell/rb-shell-clipboard.c:164
-#: ../sources/rb-podcast-source.c:294
-msgid "_Properties"
+#: ../shell/rb-shell-clipboard.c:185
+msgid "Pr_operties"
 msgstr "Thuộ_c tính"
 
-#: ../shell/rb-shell-clipboard.c:162 ../shell/rb-shell-clipboard.c:165
+#: ../shell/rb-shell-clipboard.c:186 ../shell/rb-shell-clipboard.c:189
 msgid "Show information on the selected song"
 msgstr "Hiện thông tin về bài nhạc được chọn"
 
-#: ../shell/rb-shell-player.c:256
-msgid "P_revious"
+#: ../shell/rb-shell-player.c:318
+msgid "Pre_vious"
 msgstr "T_rước"
 
-#: ../shell/rb-shell-player.c:257
+#: ../shell/rb-shell-player.c:319
 msgid "Start playing the previous song"
 msgstr "Phát bài nhạc trước đó"
 
-#: ../shell/rb-shell-player.c:259
+#: ../shell/rb-shell-player.c:321
 msgid "_Next"
 msgstr "Tiế_p"
 
-#: ../shell/rb-shell-player.c:260
+#: ../shell/rb-shell-player.c:322
 msgid "Start playing the next song"
 msgstr "Phát bài nhạc kế tiếp"
 
-#: ../shell/rb-shell-player.c:262
+#: ../shell/rb-shell-player.c:324
 msgid "_Increase Volume"
 msgstr "_Tăng âm"
 
-#: ../shell/rb-shell-player.c:263
+#: ../shell/rb-shell-player.c:325
 msgid "Increase playback volume"
 msgstr "Tăng âm lượng phát lại"
 
-#: ../shell/rb-shell-player.c:265
+#: ../shell/rb-shell-player.c:327
 msgid "_Decrease Volume"
 msgstr "_Giảm âm"
 
-#: ../shell/rb-shell-player.c:266
+#: ../shell/rb-shell-player.c:328
 msgid "Decrease playback volume"
 msgstr "Giảm âm lượng phát lại"
 
-#: ../shell/rb-shell-player.c:273
+#: ../shell/rb-shell-player.c:335
 msgid "_Play"
 msgstr "_Phát"
 
-#: ../shell/rb-shell-player.c:274 ../shell/rb-shell-player.c:3200
+#: ../shell/rb-shell-player.c:336 ../shell/rb-shell-player.c:3805
 msgid "Start playback"
 msgstr "Phát lại"
 
-#: ../shell/rb-shell-player.c:276
+#: ../shell/rb-shell-player.c:338
 msgid "Sh_uffle"
 msgstr "_Xáo trộn"
 
-#: ../shell/rb-shell-player.c:277
+#: ../shell/rb-shell-player.c:339
 msgid "Play songs in a random order"
 msgstr "Phát nhạc theo thứ tự ngẫu nhiên"
 
-#: ../shell/rb-shell-player.c:279
+#: ../shell/rb-shell-player.c:341
 msgid "_Repeat"
 msgstr "_Lặp lại"
 
-#: ../shell/rb-shell-player.c:280
+#: ../shell/rb-shell-player.c:342
 msgid "Play first song again after all songs are played"
 msgstr "Phát bài nhạc đầu tiên lần nữa sau khi phát mọi bài"
 
-#: ../shell/rb-shell-player.c:282
+#: ../shell/rb-shell-player.c:344
 msgid "_Song Position Slider"
 msgstr "Th_anh trượt vị trí bài nhạc"
 
-#: ../shell/rb-shell-player.c:283
+#: ../shell/rb-shell-player.c:345
 msgid "Change the visibility of the song position slider"
 msgstr "Hiện/Ẩn thanh trượt vị trí bài nhạc"
 
-#: ../shell/rb-shell-player.c:662
+#: ../shell/rb-shell-player.c:816
 msgid "Stream error"
 msgstr "Lỗi luồng"
 
-#: ../shell/rb-shell-player.c:663
+#: ../shell/rb-shell-player.c:817
 msgid "Unexpected end of stream!"
 msgstr "Gặp kết thúc luồng bất ngờ!"
 
-#: ../shell/rb-shell-player.c:761
+#: ../shell/rb-shell-player.c:951
+msgid "Linear"
+msgstr "Tuần tự"
+
+#: ../shell/rb-shell-player.c:953
+msgid "Linear looping"
+msgstr "Lặp lại tuần tự"
+
+#: ../shell/rb-shell-player.c:955
+msgid "Shuffle"
+msgstr "Xáo trộn"
+
+#: ../shell/rb-shell-player.c:957
+msgid "Random with equal weights"
+msgstr "Ngẫu nhiên với độ ưu tiên như nhau"
+
+#: ../shell/rb-shell-player.c:959
+msgid "Random by time since last play"
+msgstr "Ngẫu nhiên theo thời gian kể từ phát cuối cùng"
+
+#: ../shell/rb-shell-player.c:961
+msgid "Random by rating"
+msgstr "Ngẫu nhiên theo đánh giá"
+
+#: ../shell/rb-shell-player.c:963
+msgid "Random by time since last play and rating"
+msgstr "Ngẫu nhiên theo thời gian kể từ phát cuối cùng và đánh giá"
+
+#: ../shell/rb-shell-player.c:965
+msgid "Linear, removing entries once played"
+msgstr "Tuần tự, gỡ bỏ bài sau khi đã nghe"
+
+#: ../shell/rb-shell-player.c:975
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Lỗi tạo bộ phát nhạc: %s"
 
-#: ../shell/rb-shell-player.c:1263
+#: ../shell/rb-shell-player.c:1532
+#, c-format
 msgid "Playlist was empty"
 msgstr "Danh mục nhạc rỗng"
 
-#: ../shell/rb-shell-player.c:1720
+#: ../shell/rb-shell-player.c:2039
+#, c-format
 msgid "Not currently playing"
 msgstr "Không phát"
 
-#: ../shell/rb-shell-player.c:1758
+#: ../shell/rb-shell-player.c:2097
+#, c-format
 msgid "No previous song"
 msgstr "Không có bài trước đó"
 
-#: ../shell/rb-shell-player.c:1835
+#: ../shell/rb-shell-player.c:2189
+#, c-format
 msgid "No next song"
 msgstr "Không có bài kế tiếp"
 
-#: ../shell/rb-shell-player.c:1956 ../shell/rb-shell-player.c:2926
+#: ../shell/rb-shell-player.c:2310 ../shell/rb-shell-player.c:3436
 msgid "Couldn't start playback"
 msgstr "Không thể khởi chạy phát lại"
 
-#: ../shell/rb-shell-player.c:2757
+#: ../shell/rb-shell-player.c:3192
 msgid "Couldn't stop playback"
 msgstr "Không thể dừng phát lại"
 
-#: ../shell/rb-shell-player.c:2846
+#: ../shell/rb-shell-player.c:3308
+#, c-format
+msgid "Playback position not available"
+msgstr "Vị trí phát tiếp không hỗ trợ"
+
+#: ../shell/rb-shell-player.c:3340
+#, c-format
 msgid "Current song is not seekable"
 msgstr "Không thể tìm tới bài nhạc hiện thời"
 
-#: ../shell/rb-shell-player.c:3198
+#: ../shell/rb-shell-player.c:3803
 msgid "Stop playback"
 msgstr "Dừng phát lại"
 
-#: ../shell/rb-shell-preferences.c:137 ../shell/rb-shell.c:2289
+#: ../shell/rb-shell-preferences.c:171 ../shell/rb-shell.c:2334
 msgid "Couldn't display help"
 msgstr "Không thể hiển thị trợ giúp"
 
-#: ../shell/rb-shell-preferences.c:172
+#: ../shell/rb-shell-preferences.c:206
 msgid "Music Player Preferences"
 msgstr "Cấu hình bộ phát nhạc"
 
-#: ../shell/rb-shell-preferences.c:225
+#: ../shell/rb-shell-preferences.c:261
 msgid "General"
 msgstr "Chung"
 
-#: ../shell/rb-shell-preferences.c:285
+#: ../shell/rb-shell-preferences.c:320
 msgid "Playback"
 msgstr "Phát lại"
 
-#: ../shell/rb-shell.c:405
+#: ../shell/rb-shell.c:411
 msgid "_Music"
 msgstr "_Nhạc"
 
-#: ../shell/rb-shell.c:406
-msgid "_Edit"
-msgstr "_Sửa"
-
-#: ../shell/rb-shell.c:407
+#: ../shell/rb-shell.c:413
 msgid "_View"
 msgstr "_Xem"
 
-#: ../shell/rb-shell.c:408
+#: ../shell/rb-shell.c:414
 msgid "_Control"
 msgstr "Điều _khiển"
 
-#: ../shell/rb-shell.c:409
+#: ../shell/rb-shell.c:415
 msgid "_Tools"
 msgstr "_Công cụ"
 
-#: ../shell/rb-shell.c:410
+#: ../shell/rb-shell.c:416
 msgid "_Help"
 msgstr "Trợ _giúp"
 
-#: ../shell/rb-shell.c:412
+#: ../shell/rb-shell.c:418
 msgid "_Import Folder..."
 msgstr "Nhậ_p thư mục..."
 
-#: ../shell/rb-shell.c:413
+#: ../shell/rb-shell.c:419
 msgid "Choose folder to be added to the Library"
 msgstr "Chọn thư mục cần thêm vào thư viện"
 
-#: ../shell/rb-shell.c:415
+#: ../shell/rb-shell.c:421
 msgid "Import _File..."
 msgstr "Nhập _tập tin..."
 
-#: ../shell/rb-shell.c:416
+#: ../shell/rb-shell.c:422
 msgid "Choose file to be added to the Library"
 msgstr "Chọn tập tin cần thêm vào thư viện"
 
-#: ../shell/rb-shell.c:418
+#: ../shell/rb-shell.c:424
 msgid "_About"
 msgstr "_Giới thiệu"
 
-#: ../shell/rb-shell.c:419
+#: ../shell/rb-shell.c:425
 msgid "Show information about the music player"
 msgstr "Hiện thông tin về bộ phát nhạc"
 
-#: ../shell/rb-shell.c:421
+#: ../shell/rb-shell.c:427
 msgid "_Contents"
 msgstr "_Nội dung"
 
-#: ../shell/rb-shell.c:422
+#: ../shell/rb-shell.c:428
 msgid "Display music player help"
 msgstr "Hiện trợ giúp bộ phát nhạc"
 
-#: ../shell/rb-shell.c:424
+#: ../shell/rb-shell.c:430
 msgid "_Close"
 msgstr "Đón_g"
 
-#: ../shell/rb-shell.c:425
+#: ../shell/rb-shell.c:431
 msgid "Hide the music player window"
 msgstr "Ẩn cửa sổ bộ phát nhạc"
 
-#: ../shell/rb-shell.c:427
+#: ../shell/rb-shell.c:433
 msgid "_Quit"
 msgstr "T_hoát"
 
-#: ../shell/rb-shell.c:428
+#: ../shell/rb-shell.c:434
 msgid "Quit the music player"
 msgstr "Thoát khỏi bộ phát nhạc"
 
-#: ../shell/rb-shell.c:430
-msgid "Prefere_nces..."
-msgstr "Cấ_u hình..."
+#: ../shell/rb-shell.c:436
+msgid "Prefere_nces"
+msgstr "Tuỳ t_hích"
 
-#: ../shell/rb-shell.c:431
+#: ../shell/rb-shell.c:437
 msgid "Edit music player preferences"
 msgstr "Sửa đổi cấu hình của bộ phát nhạc"
 
-#: ../shell/rb-shell.c:433
-msgid "Plu_gins..."
-msgstr "Phầ_n bổ sung..."
+#: ../shell/rb-shell.c:439
+msgid "Plu_gins"
+msgstr "_Phần bổ sung"
 
-#: ../shell/rb-shell.c:434
+#: ../shell/rb-shell.c:440
 msgid "Change and configure plugins"
 msgstr "Chuyển đổi và cấu hình bổ sung"
 
-#: ../shell/rb-shell.c:436
+#: ../shell/rb-shell.c:442
 msgid "Show _All Tracks"
 msgstr "Hiện _mọi rãnh"
 
-#: ../shell/rb-shell.c:437
+#: ../shell/rb-shell.c:443
 msgid "Show all tracks in this music source"
 msgstr "Hiển thị mọi rãnh trong nguồn nhạc này"
 
-#: ../shell/rb-shell.c:439
+#: ../shell/rb-shell.c:445
 msgid "_Jump to Playing Song"
 msgstr "Nhả_y tới bài đang phát"
 
-#: ../shell/rb-shell.c:440
+#: ../shell/rb-shell.c:446
 msgid "Scroll the view to the currently playing song"
 msgstr "Cuộn khung xem tới bài nhạc đang phát"
 
-#: ../shell/rb-shell.c:447
+#: ../shell/rb-shell.c:453
 msgid "Side _Pane"
 msgstr "_Khung lề"
 
-#: ../shell/rb-shell.c:448
+#: ../shell/rb-shell.c:454
 msgid "Change the visibility of the side pane"
 msgstr "Hiện/Ẩn khung lề"
 
-#: ../shell/rb-shell.c:450
-msgid "_Toolbar"
+#: ../shell/rb-shell.c:456
+msgid "T_oolbar"
 msgstr "Thanh _công cụ"
 
-#: ../shell/rb-shell.c:451
+#: ../shell/rb-shell.c:457
 msgid "Change the visibility of the toolbar"
 msgstr "Hiện/Ẩn thanh công cụ"
 
-#: ../shell/rb-shell.c:453
+#: ../shell/rb-shell.c:459
 msgid "_Small Display"
 msgstr "_Hiển thị nhỏ"
 
-#: ../shell/rb-shell.c:454
+#: ../shell/rb-shell.c:460
 msgid "Make the main window smaller"
 msgstr "Thu nhỏ cửa sổ chính"
 
-#: ../shell/rb-shell.c:456
-msgid "_Party Mode"
+#: ../shell/rb-shell.c:462
+msgid "Party _Mode"
 msgstr "_Chế độ tiệc"
 
-#: ../shell/rb-shell.c:457
+#: ../shell/rb-shell.c:463
 msgid "Change the status of the party mode"
 msgstr "Thay đổi trạng thái của chế độ tiệc"
 
-#: ../shell/rb-shell.c:459
+#: ../shell/rb-shell.c:465
 msgid "Play _Queue as Side Pane"
 msgstr "Hàng đợi _phát ở dạng khung lề"
 
-#: ../shell/rb-shell.c:460
+#: ../shell/rb-shell.c:466
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Hiển thị hàng đợi phát ở dạng nguồn hoặc dạng khung lề"
 
-#: ../shell/rb-shell.c:462
+#: ../shell/rb-shell.c:468
 msgid "S_tatusbar"
 msgstr "_Thanh trạng thái"
 
-#: ../shell/rb-shell.c:463
+#: ../shell/rb-shell.c:469
 msgid "Change the visibility of the statusbar"
 msgstr "Hiện/Ẩn thanh trạng thái"
 
-#: ../shell/rb-shell.c:1251
+#: ../shell/rb-shell.c:1275
 msgid "Change the music volume"
 msgstr "Thay đổi âm lượng nhạc"
 
-#: ../shell/rb-shell.c:1678
+#: ../shell/rb-shell.c:1721
 msgid "Error while saving song information"
 msgstr "Gặp lỗi khi lưu thông tin bài nhạc"
 
-#: ../shell/rb-shell.c:1834
+#: ../shell/rb-shell.c:1872
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "Đang truyền rãnh %d trên %d (%.0f%%)..."
 
-#: ../shell/rb-shell.c:1837
+#: ../shell/rb-shell.c:1875
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Đang truyền rãnh %d trên %d..."
 
 #. Translators: the %s is the elapsed and total time
-#: ../shell/rb-shell.c:2063
+#: ../shell/rb-shell.c:2101
 #, c-format
 msgid "Paused, %s"
 msgstr "Tạm ngừng, %s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2105
+#: ../shell/rb-shell.c:2143
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (tạm ngừng)"
 
-#: ../shell/rb-shell.c:2209
+#: ../shell/rb-shell.c:2247
 msgid "translator-credits"
 msgstr "Nhóm Việt hoá Gnome <gnomevi-list@lists.sourceforge.net>"
 
-#: ../shell/rb-shell.c:2212
+#: ../shell/rb-shell.c:2250
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3416,7 +3905,7 @@ msgstr ""
 "hoặc phiên bản 2 của License,\n"
 "hoặc bất cứ phiên bản sau nào (tuỳ ý).\n"
 
-#: ../shell/rb-shell.c:2216
+#: ../shell/rb-shell.c:2254
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3428,7 +3917,7 @@ msgstr ""
 "KHẢ NĂNG BÁN LẠI hoặc PHÙ HỢP VỚI TỪNG MỤC ĐÍCH CỤ THỂ.\n"
 "Xem Giấy phép Công cộng GNU để biết thêm chi tiết.\n"
 
-#: ../shell/rb-shell.c:2220
+#: ../shell/rb-shell.c:2258
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3440,361 +3929,382 @@ msgstr ""
 "51 Franklin Street, Fifth Floor,\n"
 "Boston, MA  02110-1301, USA\n"
 
-#: ../shell/rb-shell.c:2227
+#: ../shell/rb-shell.c:2265
 msgid "Maintainers:"
 msgstr "Người bảo trì:"
 
-#: ../shell/rb-shell.c:2230
+#: ../shell/rb-shell.c:2268
 msgid "Former Maintainers:"
 msgstr "Người bảo trì trước đây:"
 
-#: ../shell/rb-shell.c:2233
+#: ../shell/rb-shell.c:2271
 msgid "Contributors:"
 msgstr "Người đóng góp:"
 
-#: ../shell/rb-shell.c:2235
+#: ../shell/rb-shell.c:2273
 msgid "Music management and playback software for GNOME."
 msgstr "Phần mềm quản lí và phát nhạc cho GNOME."
 
-#: ../shell/rb-shell.c:2244
+#: ../shell/rb-shell.c:2282
 msgid "Rhythmbox Website"
 msgstr "Trang Web Rhythmbox"
 
-#: ../shell/rb-shell.c:2336
+#: ../shell/rb-shell.c:2381
 msgid "Configure Plugins"
 msgstr "Cấu hình Phần bổ sung"
 
-#: ../shell/rb-shell.c:2407
+#: ../shell/rb-shell.c:2452
 msgid "Import Folder into Library"
 msgstr "Nhập thư mục vào thư viện"
 
-#: ../shell/rb-shell.c:2429
+#: ../shell/rb-shell.c:2474
 msgid "Import File into Library"
 msgstr "Nhập tập tin vào thư viện"
 
 #. Translators: by Artist
-#: ../shell/rb-shell.c:2933
+#: ../shell/rb-shell.c:2989
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "bởi <i>%s</i>"
 
 #. Translators: from Album
-#: ../shell/rb-shell.c:2954
+#: ../shell/rb-shell.c:3010
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "trong <i>%s</i>"
 
-#: ../shell/rb-shell.c:3159
+#: ../shell/rb-shell.c:3218
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Không có nguồn đã đăng kí có khả năng quản lí URI %s"
 
-#: ../shell/rb-shell.c:3403 ../shell/rb-shell.c:3432
+#: ../shell/rb-shell.c:3487 ../shell/rb-shell.c:3516
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Không biết URI của bài nhạc: %s"
 
-#: ../shell/rb-shell.c:3441
+#: ../shell/rb-shell.c:3525
 #, c-format
 msgid "Unknown property %s"
 msgstr "Thuộc tính lạ: %s"
 
-#: ../shell/rb-shell.c:3451
+#: ../shell/rb-shell.c:3535
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Kiểu thuộc tính không hợp lệ %s cho thuộc tính %s"
 
-#: ../shell/rb-source-header.c:111
+#: ../shell/rb-source-header.c:131
 msgid "_Browse"
 msgstr "_Duyệt"
 
-#: ../shell/rb-source-header.c:112
+#: ../shell/rb-source-header.c:132
 msgid "Change the visibility of the browser"
 msgstr "Hiện/Ẩn bộ duyệt"
 
-#: ../shell/rb-source-header.c:239
+#: ../shell/rb-source-header.c:271
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "Lọc hiển thị nhạc theo thể loại, nghệ sĩ, tập nhạc, hoặc tiêu đề"
 
-#: ../shell/rb-statusbar.c:160
+#: ../shell/rb-statusbar.c:198
 msgid "Loading..."
 msgstr "Đang tải..."
 
-#: ../shell/rb-tray-icon.c:134
+#: ../shell/rb-tray-icon.c:167
 msgid "_Show Music Player"
 msgstr "_Hiện bộ phát nhạc"
 
-#: ../shell/rb-tray-icon.c:135
+#: ../shell/rb-tray-icon.c:168
 msgid "Choose music to play"
 msgstr "Chọn nhạc cần phát"
 
-#: ../shell/rb-tray-icon.c:137
+#: ../shell/rb-tray-icon.c:170
 msgid "Show N_otifications"
 msgstr "Hiện thông bá_o"
 
-#: ../shell/rb-tray-icon.c:138
+#: ../shell/rb-tray-icon.c:171
 msgid "Show notifications of song changes and other events"
 msgstr "Hiển thị thông báo các thay đổi bài nhạc và sự kiện khác"
 
-#: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:153
-#: ../sources/rb-podcast-source.c:310
-#: ../sources/rb-static-playlist-source.c:90
+#: ../sources/rb-auto-playlist-source.c:107 ../sources/rb-browser-source.c:173
+#: ../sources/rb-podcast-source.c:344
+#: ../sources/rb-static-playlist-source.c:113
 msgid "Search all fields"
 msgstr "Tìm kiếm qua mọi trường"
 
-#: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:154
-#: ../sources/rb-static-playlist-source.c:91
+#: ../sources/rb-auto-playlist-source.c:108 ../sources/rb-browser-source.c:174
+#: ../sources/rb-static-playlist-source.c:114
 msgid "Artists"
 msgstr "Nghệ sĩ"
 
-#: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:154
-#: ../sources/rb-static-playlist-source.c:91
+#: ../sources/rb-auto-playlist-source.c:108 ../sources/rb-browser-source.c:174
+#: ../sources/rb-static-playlist-source.c:114
 msgid "Search artists"
 msgstr "Tìm kiếm nghệ sĩ"
 
-#: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:155
-#: ../sources/rb-static-playlist-source.c:92
+#: ../sources/rb-auto-playlist-source.c:109 ../sources/rb-browser-source.c:175
+#: ../sources/rb-static-playlist-source.c:115
 msgid "Albums"
 msgstr "Tập nhạc"
 
-#: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:155
-#: ../sources/rb-static-playlist-source.c:92
+#: ../sources/rb-auto-playlist-source.c:109 ../sources/rb-browser-source.c:175
+#: ../sources/rb-static-playlist-source.c:115
 msgid "Search albums"
 msgstr "Tìm kiếm tập nhạc"
 
-#: ../sources/rb-auto-playlist-source.c:76 ../sources/rb-browser-source.c:156
-#: ../sources/rb-static-playlist-source.c:93
+#: ../sources/rb-auto-playlist-source.c:110 ../sources/rb-browser-source.c:176
+#: ../sources/rb-static-playlist-source.c:116
 msgid "Titles"
 msgstr "Tiêu đề"
 
-#: ../sources/rb-auto-playlist-source.c:76 ../sources/rb-browser-source.c:156
-#: ../sources/rb-static-playlist-source.c:93
+#: ../sources/rb-auto-playlist-source.c:110 ../sources/rb-browser-source.c:176
+#: ../sources/rb-static-playlist-source.c:116
 msgid "Search titles"
 msgstr "Tìm kiếm tiêu đề"
 
-#: ../sources/rb-browser-source.c:140
+#: ../sources/rb-browser-source.c:160
 msgid "Browse This _Genre"
 msgstr "Duyệt theo thể _loại này"
 
-#: ../sources/rb-browser-source.c:141
+#: ../sources/rb-browser-source.c:161
 msgid "Set the browser to view only this genre"
 msgstr "Điều chỉnh bộ duyệt chỉ hiện thể loại này"
 
-#: ../sources/rb-browser-source.c:143
+#: ../sources/rb-browser-source.c:163
 msgid "Browse This _Artist"
 msgstr "Duyệt theo nghệ _sĩ này"
 
-#: ../sources/rb-browser-source.c:144
+#: ../sources/rb-browser-source.c:164
 msgid "Set the browser to view only this artist"
 msgstr "Điều chỉnh bộ duyệt chỉ hiện nghệ sĩ này"
 
-#: ../sources/rb-browser-source.c:146
+#: ../sources/rb-browser-source.c:166
 msgid "Browse This A_lbum"
 msgstr "Duyệt theo _tập nhạc này"
 
-#: ../sources/rb-browser-source.c:147
+#: ../sources/rb-browser-source.c:167
 msgid "Set the browser to view only this album"
 msgstr "Điều chỉnh bộ duyệt chỉ hiển thị tập nhạc này"
 
-#: ../sources/rb-import-errors-source.c:191
+#: ../sources/rb-import-errors-source.c:228
 msgid "Import Errors"
 msgstr "Lỗi nhập"
 
-#: ../sources/rb-import-errors-source.c:227
+#: ../sources/rb-import-errors-source.c:264
 #, c-format
 msgid "%d import errors"
 msgid_plural "%d import errors"
 msgstr[0] "%d lỗi nhập"
 
-#: ../sources/rb-library-source.c:120
+#: ../sources/rb-library-source.c:136
 msgid "Artist/Artist - Album"
 msgstr "Nghệ sĩ/Nghệ sĩ — Tập"
 
-#: ../sources/rb-library-source.c:121
+#: ../sources/rb-library-source.c:137
 msgid "Artist/Album"
 msgstr "Nghệ sĩ/Tập"
 
-#: ../sources/rb-library-source.c:122
+#: ../sources/rb-library-source.c:138
 msgid "Artist - Album"
 msgstr "Nghệ sĩ — Tập"
 
-#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1122
-#: ../widgets/rb-library-browser.c:101
-#: ../widgets/rb-query-creator-properties.c:69
-#: ../widgets/rb-query-creator-properties.c:95
+#: ../sources/rb-library-source.c:139 ../widgets/rb-entry-view.c:1445
+#: ../widgets/rb-library-browser.c:144
+#: ../widgets/rb-query-creator-properties.c:77
+#: ../widgets/rb-query-creator-properties.c:103
 msgid "Album"
 msgstr "Tập nhạc"
 
-#: ../sources/rb-library-source.c:129
+#: ../sources/rb-library-source.c:145
 msgid "Number - Title"
 msgstr "Số — Tiêu đề"
 
-#: ../sources/rb-library-source.c:130
+#: ../sources/rb-library-source.c:146
 msgid "Artist - Title"
 msgstr "Nghệ sĩ — Tiêu đề"
 
-#: ../sources/rb-library-source.c:131
+#: ../sources/rb-library-source.c:147
 msgid "Artist - Number - Title"
 msgstr "Nghệ sĩ — Số — Tiêu đề"
 
-#: ../sources/rb-library-source.c:132
+#: ../sources/rb-library-source.c:148
 msgid "Artist (Album) - Number - Title"
 msgstr "Nghệ sĩ (Tập) — Số — Tiêu đề"
 
-#: ../sources/rb-library-source.c:134
+#: ../sources/rb-library-source.c:150
 msgid "Number. Artist - Title"
 msgstr "Số. Nghệ sĩ — Tiêu đề"
 
-#: ../sources/rb-library-source.c:339
+#: ../sources/rb-library-source.c:389
 msgid "Music"
 msgstr "Nhạc"
 
-#: ../sources/rb-library-source.c:374
+#: ../sources/rb-library-source.c:423
 msgid "Choose Library Location"
 msgstr "Chọn địa điểm thư viện"
 
-#: ../sources/rb-library-source.c:561
+#: ../sources/rb-library-source.c:600
 msgid "Multiple locations set"
 msgstr "Nhiều địa điểm được đặt"
 
-#: ../sources/rb-library-source.c:660
-msgid "Add Location"
-msgstr "Thêm địa điểm"
-
-#: ../sources/rb-library-source.c:1026
+#: ../sources/rb-library-source.c:993
 msgid "Example Path:"
 msgstr "Đường dẫn ví dụ:"
 
-#: ../sources/rb-missing-files-source.c:259
+#: ../sources/rb-missing-files-source.c:289
 msgid "Missing Files"
 msgstr "Tập tin còn thiếu"
 
-#: ../sources/rb-missing-files-source.c:327
+#: ../sources/rb-missing-files-source.c:357
 #, c-format
 msgid "%d missing file"
 msgid_plural "%d missing files"
 msgstr[0] "%d tập tin còn thiếu"
 
-#: ../sources/rb-play-queue-source.c:89
+#: ../sources/rb-play-queue-source.c:115
 msgid "Clear _Queue"
 msgstr "_Xoá hàng đợi"
 
-#: ../sources/rb-play-queue-source.c:90
+#: ../sources/rb-play-queue-source.c:116
 msgid "Remove all songs from the play queue"
 msgstr "Xoá mọi bài khỏi hàng đợi nhạc"
 
-#: ../sources/rb-play-queue-source.c:204 ../sources/rb-play-queue-source.c:253
-#: ../sources/rb-play-queue-source.c:375
+#: ../sources/rb-play-queue-source.c:118
+msgid "Shuffle Queue"
+msgstr "Xáo trộn hàng đợi"
+
+#: ../sources/rb-play-queue-source.c:119
+msgid "Shuffle the tracks in the play queue"
+msgstr "Xáo trộn các rãnh trong hàng đợi phát"
+
+#. Translators: this is the toolbutton label for Clear Queue action
+#: ../sources/rb-play-queue-source.c:242
+msgid "Clear"
+msgstr "Xoá trắng"
+
+#: ../sources/rb-play-queue-source.c:259 ../sources/rb-play-queue-source.c:319
+#: ../sources/rb-play-queue-source.c:461
 msgid "Play Queue"
 msgstr "Hàng đợi phát"
 
-#: ../sources/rb-play-queue-source.c:343 ../widgets/rb-header.c:100
+#: ../sources/rb-play-queue-source.c:429 ../widgets/rb-header.c:123
 msgid "from"
 msgstr "trong"
 
-#: ../sources/rb-play-queue-source.c:343 ../widgets/rb-header.c:101
+#: ../sources/rb-play-queue-source.c:429 ../widgets/rb-header.c:124
 msgid "by"
 msgstr "bởi"
 
-#: ../sources/rb-podcast-source.c:284
+#: ../sources/rb-podcast-source.c:318
 msgid "_New Podcast Feed..."
 msgstr "_Nguồn Podcast mới..."
 
-#: ../sources/rb-podcast-source.c:285
+#: ../sources/rb-podcast-source.c:319
 msgid "Subscribe to a new Podcast Feed"
 msgstr "Đăng kí nguồn Podcast mới"
 
-#: ../sources/rb-podcast-source.c:288
+#: ../sources/rb-podcast-source.c:322
 msgid "Download _Episode"
 msgstr "Lấy Tình tiết _về"
 
-#: ../sources/rb-podcast-source.c:289
+#: ../sources/rb-podcast-source.c:323
 msgid "Download Podcast Episode"
 msgstr "Lấy tình tiết Podcast về"
 
-#: ../sources/rb-podcast-source.c:291
+#: ../sources/rb-podcast-source.c:325
 msgid "_Cancel Download"
 msgstr "Thô_i tải về"
 
-#: ../sources/rb-podcast-source.c:292
+#: ../sources/rb-podcast-source.c:326
 msgid "Cancel Episode Download"
 msgstr "Thôi tải tình tiết về"
 
-#: ../sources/rb-podcast-source.c:295
+#: ../sources/rb-podcast-source.c:329
 msgid "Episode Properties"
 msgstr "Thuộc tính tình tiết"
 
-#: ../sources/rb-podcast-source.c:297
+#: ../sources/rb-podcast-source.c:331
 msgid "_Update Podcast Feed"
 msgstr "Cập nhật ng_uồn Podcast"
 
-#: ../sources/rb-podcast-source.c:298
+#: ../sources/rb-podcast-source.c:332
 msgid "Update Feed"
 msgstr "Cập nhật nguồn"
 
-#: ../sources/rb-podcast-source.c:300
+#: ../sources/rb-podcast-source.c:334
 msgid "_Delete Podcast Feed"
 msgstr "_Xoá bỏ nguồn Podcast"
 
-#: ../sources/rb-podcast-source.c:301
+#: ../sources/rb-podcast-source.c:335
 msgid "Delete Feed"
 msgstr "Xoá bỏ nguồn"
 
-#: ../sources/rb-podcast-source.c:303
+#: ../sources/rb-podcast-source.c:337
 msgid "_Update All Feeds"
 msgstr "Cập nhật mọi ng_uồn"
 
-#: ../sources/rb-podcast-source.c:304
+#: ../sources/rb-podcast-source.c:338
 msgid "Update all feeds"
 msgstr "Cập nhật mọi nguồn"
 
-#: ../sources/rb-podcast-source.c:311
+#: ../sources/rb-podcast-source.c:345
 msgid "Feeds"
 msgstr "Nguồn"
 
-#: ../sources/rb-podcast-source.c:311
+#: ../sources/rb-podcast-source.c:345
 msgid "Search podcast feeds"
 msgstr "Tìm kiếm nguồn podcast"
 
-#: ../sources/rb-podcast-source.c:312
+#: ../sources/rb-podcast-source.c:346
 msgid "Episodes"
 msgstr "Tình tiết"
 
-#: ../sources/rb-podcast-source.c:312
+#: ../sources/rb-podcast-source.c:346
 msgid "Search podcast episodes"
 msgstr "Tìm kiếm tình tiết podcast"
 
-#: ../sources/rb-podcast-source.c:577 ../sources/rb-podcast-source.c:588
+#. Translators: this is the toolbar button label
+#. for New Podcast Feed action.
+#. Don't include the prefix "podcast|" in the translation.
+#: ../sources/rb-podcast-source.c:592
+msgid "podcast|New"
+msgstr "Mới"
+
+#. Translators: this is the toolbar button label
+#. for Update All Feeds action.
+#: ../sources/rb-podcast-source.c:598
+msgid "Update"
+msgstr "Cập nhật"
+
+#: ../sources/rb-podcast-source.c:637 ../sources/rb-podcast-source.c:648
 msgid "Date"
 msgstr "Ngày"
 
-#. configure feed view
-#: ../sources/rb-podcast-source.c:609 ../sources/rb-podcast-source.c:673
-#: ../sources/rb-podcast-source.c:703
+#: ../sources/rb-podcast-source.c:669 ../sources/rb-podcast-source.c:737
+#: ../sources/rb-podcast-source.c:791
 msgid "Feed"
 msgstr "Nguồn"
 
-#: ../sources/rb-podcast-source.c:628 ../sources/rb-podcast-source.c:646
+#: ../sources/rb-podcast-source.c:688 ../sources/rb-podcast-source.c:706
 msgid "Status"
 msgstr "Trạng thái"
 
-#: ../sources/rb-podcast-source.c:629 ../sources/rb-podcast-source.c:1481
+#: ../sources/rb-podcast-source.c:689 ../sources/rb-podcast-source.c:1588
 msgid "Downloaded"
 msgstr "Đã tải về"
 
-#: ../sources/rb-podcast-source.c:630 ../sources/rb-podcast-source.c:1489
+#: ../sources/rb-podcast-source.c:690 ../sources/rb-podcast-source.c:1596
 msgid "Waiting"
 msgstr "Đang chờ"
 
-#: ../sources/rb-podcast-source.c:631 ../sources/rb-podcast-source.c:1485
+#: ../sources/rb-podcast-source.c:691 ../sources/rb-podcast-source.c:1592
 msgid "Failed"
 msgstr "Thất bại"
 
-#: ../sources/rb-podcast-source.c:890
+#: ../sources/rb-podcast-source.c:986
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Xoá bỏ tình tiết Podcast và tập tin đã tải về chứ?"
 
-#: ../sources/rb-podcast-source.c:893
+#: ../sources/rb-podcast-source.c:989
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -3804,19 +4314,19 @@ msgstr ""
 "lòng chú ý rằng bạn có thể xoá bỏ tình tiết mà vẫn giữ tập tin đã tải về "
 "bằng cách chọn chỉ xoá bỏ tình tiết."
 
-#: ../sources/rb-podcast-source.c:901
+#: ../sources/rb-podcast-source.c:997
 msgid "Delete _Episode Only"
 msgstr "Chỉ xoá bỏ tình t_iết"
 
-#: ../sources/rb-podcast-source.c:907
+#: ../sources/rb-podcast-source.c:1003
 msgid "_Delete Episode And File"
 msgstr "_Xoá bỏ tình tiết và tập tin"
 
-#: ../sources/rb-podcast-source.c:1375
+#: ../sources/rb-podcast-source.c:1481
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Xoá bỏ nguồn Podcast và những tập tin đã tải về chứ?"
 
-#: ../sources/rb-podcast-source.c:1378
+#: ../sources/rb-podcast-source.c:1484
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -3826,322 +4336,310 @@ msgstr ""
 "lòng nhớ rằng bạn có thể chỉ xoá bỏ nguồn và giữ lại những tập tin đã tải về "
 "bằng cách chọn chỉ xoá bỏ nguồn."
 
-#: ../sources/rb-podcast-source.c:1386
+#: ../sources/rb-podcast-source.c:1492
 msgid "Delete _Feed Only"
 msgstr "_Chỉ xoá bỏ nguồn"
 
-#: ../sources/rb-podcast-source.c:1393
+#: ../sources/rb-podcast-source.c:1499
 msgid "_Delete Feed And Files"
 msgstr "_Xoá bỏ nguồn và tập tin"
 
-#: ../sources/rb-podcast-source.c:1600
+#: ../sources/rb-podcast-source.c:1707
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
 msgstr[0] "Tất cả %d nguồn"
 
-#: ../sources/rb-podcast-source.c:1738
+#: ../sources/rb-podcast-source.c:1844
 msgid "Downloading podcast"
 msgstr "Đang tải Podcast về"
 
-#: ../sources/rb-podcast-source.c:1751
+#: ../sources/rb-podcast-source.c:1857
 msgid "Finished downloading podcast"
 msgstr "Đà hoàn tất lấy Podcast"
 
-#: ../sources/rb-podcast-source.c:1764
+#: ../sources/rb-podcast-source.c:1870
 msgid "New updates available from"
 msgstr "Có cập nhật mới từ"
 
-#: ../sources/rb-podcast-source.c:1868
+#: ../sources/rb-podcast-source.c:1986
 msgid "Error in podcast"
 msgstr "Lỗi trong Podcast"
 
-#: ../sources/rb-podcast-source.c:1982
+#: ../sources/rb-podcast-source.c:1993
+#, c-format
+msgid "%s. Would you like to add the podcast feed anyway?"
+msgstr "%s. Bạn vẫn muốn thêm nguồn podcast này chứ?"
+
+#: ../sources/rb-podcast-source.c:2120
 msgid "New Podcast Feed"
 msgstr "Nguồn Podcast mới"
 
-#: ../sources/rb-podcast-source.c:1982
+#: ../sources/rb-podcast-source.c:2120
 msgid "URL of podcast feed:"
 msgstr "URL của nguồn podcast:"
 
-#: ../sources/rb-podcast-source.c:1998
+#: ../sources/rb-podcast-source.c:2136
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d tình tiết"
 
-#: ../sources/rb-source.c:553
+#: ../sources/rb-podcast-source.c:2244
+msgid "Podcast Error"
+msgstr "Lỗi Podcast"
+
+#: ../sources/rb-source.c:699
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d bài nhạc"
 
-#: ../sources/rb-source-group.c:44
+#: ../sources/rb-source-group.c:62
 msgid "Library"
 msgstr "Thư viện"
 
-#: ../sources/rb-source-group.c:45
-msgid "Playlists"
-msgstr "Danh mục nhạc"
-
-#: ../sources/rb-source-group.c:46
+#: ../sources/rb-source-group.c:64
 msgid "Devices"
 msgstr "Thiết bị"
 
-#: ../sources/rb-source-group.c:47
+#: ../sources/rb-source-group.c:65
 msgid "Shared"
 msgstr "Chia sẻ"
 
-#: ../sources/rb-sourcelist.c:651
+#: ../sources/rb-sourcelist.c:710
 msgid "S_ource"
 msgstr "_Nguồn"
 
-#: ../sources/rb-streaming-source.c:209
+#: ../sources/rb-streaming-source.c:217
 msgid "Connecting"
 msgstr "Đang kết nối..."
 
-#: ../sources/rb-streaming-source.c:212
+#: ../sources/rb-streaming-source.c:221
 msgid "Buffering"
 msgstr "Đang lưu tạm vào bộ đệm"
 
-#: ../widgets/bacon-volume.c:178
-msgid "Volume"
-msgstr "Âm lượng"
-
-#. +
-#: ../widgets/bacon-volume.c:206
-msgid "+"
-msgstr "+"
-
-#: ../widgets/bacon-volume.c:208
-msgid "Volume Down"
-msgstr "Giảm âm"
-
-#: ../widgets/bacon-volume.c:226
-msgid "Volume Up"
-msgstr "Tăng âm"
-
-#: ../widgets/eggtrayicon.c:153
+#: ../widgets/eggtrayicon.c:147
 msgid "Orientation"
 msgstr "Hướng"
 
-#: ../widgets/eggtrayicon.c:154
+#: ../widgets/eggtrayicon.c:148
 msgid "The orientation of the tray."
 msgstr "Hướng của khay."
 
-#: ../widgets/eggtrayicon.c:531
+#: ../widgets/eggtrayicon.c:521
 msgid "Notification"
 msgstr "Lưu ý"
 
-#: ../widgets/rb-cell-renderer-pixbuf.c:105
+#: ../widgets/rb-cell-renderer-pixbuf.c:118
 msgid "Pixbuf Object"
 msgstr "Đối tượng Pixbuf"
 
-#: ../widgets/rb-cell-renderer-pixbuf.c:106
+#: ../widgets/rb-cell-renderer-pixbuf.c:119
 msgid "The pixbuf to render."
 msgstr "Pixbuf cần vẽ."
 
-#: ../widgets/rb-entry-view.c:858
+#: ../widgets/rb-entry-view.c:1062
 #, c-format
 msgid "%u kbps"
 msgstr "%u kbps"
 
-#: ../widgets/rb-entry-view.c:1091
+#: ../widgets/rb-entry-view.c:1414
 msgid "Track"
 msgstr "Rãnh"
 
-#: ../widgets/rb-entry-view.c:1142
+#: ../widgets/rb-entry-view.c:1465
 msgid "Time"
 msgstr "Thời lượng"
 
-#: ../widgets/rb-entry-view.c:1154 ../widgets/rb-query-creator-properties.c:71
-#: ../widgets/rb-query-creator-properties.c:100
+#: ../widgets/rb-entry-view.c:1477 ../widgets/rb-query-creator-properties.c:79
+#: ../widgets/rb-query-creator-properties.c:108
 msgid "Year"
 msgstr "Năm"
 
-#: ../widgets/rb-entry-view.c:1166
+#: ../widgets/rb-entry-view.c:1489
 msgid "Quality"
 msgstr "Chất lượng"
 
-#: ../widgets/rb-entry-view.c:1169
+#: ../widgets/rb-entry-view.c:1492
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1179 ../widgets/rb-query-creator-properties.c:72
-#: ../widgets/rb-query-creator-properties.c:98
+#: ../widgets/rb-entry-view.c:1502 ../widgets/rb-query-creator-properties.c:80
+#: ../widgets/rb-query-creator-properties.c:106
 msgid "Rating"
 msgstr "Đánh giá"
 
-#: ../widgets/rb-entry-view.c:1201 ../widgets/rb-query-creator-properties.c:75
-#: ../widgets/rb-query-creator-properties.c:99
+#: ../widgets/rb-entry-view.c:1524 ../widgets/rb-query-creator-properties.c:83
+#: ../widgets/rb-query-creator-properties.c:107
 msgid "Play Count"
 msgstr "Số lần phát"
 
-#: ../widgets/rb-entry-view.c:1213
-#: ../widgets/rb-query-creator-properties.c:103
+#: ../widgets/rb-entry-view.c:1536
+#: ../widgets/rb-query-creator-properties.c:111
 msgid "Last Played"
 msgstr "Lần phát cuối"
 
-#: ../widgets/rb-entry-view.c:1225
-#: ../widgets/rb-query-creator-properties.c:104
+#: ../widgets/rb-entry-view.c:1548
+#: ../widgets/rb-query-creator-properties.c:112
 msgid "Date Added"
 msgstr "Ngày thêm"
 
-#: ../widgets/rb-entry-view.c:1236
+#: ../widgets/rb-entry-view.c:1559
 msgid "Last Seen"
 msgstr "Xem cuối cùng"
 
-#: ../widgets/rb-entry-view.c:1247
+#: ../widgets/rb-entry-view.c:1570
 msgid "Location"
 msgstr "Địa điểm"
 
-#: ../widgets/rb-entry-view.c:1471
+#: ../widgets/rb-entry-view.c:1824
 msgid "Now Playing"
 msgstr "Đang phát"
 
-#: ../widgets/rb-entry-view.c:1546
+#: ../widgets/rb-entry-view.c:1887
 msgid "Playback Error"
 msgstr "Lỗi phát lại"
 
-#: ../widgets/rb-header.c:427
+#: ../widgets/rb-header.c:529
 msgid "Not Playing"
 msgstr "Không phát"
 
-#: ../widgets/rb-property-view.c:504
+#: ../widgets/rb-property-view.c:630
 #, c-format
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
 msgstr[0] "Tất cả %d nghệ sĩ (%d)"
 
-#: ../widgets/rb-property-view.c:507
+#: ../widgets/rb-property-view.c:633
 #, c-format
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
 msgstr[0] "Tất cả %d tập nhạc (%d)"
 
-#: ../widgets/rb-property-view.c:510
+#: ../widgets/rb-property-view.c:636
 #, c-format
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
 msgstr[0] "Tất cả %d thể loại (%d)"
 
-#: ../widgets/rb-property-view.c:513
+#: ../widgets/rb-property-view.c:639
 #, c-format
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
 msgstr[0] "Tất cả %d (%d)"
 
-#: ../widgets/rb-property-view.c:519
+#: ../widgets/rb-property-view.c:645
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
 
-#: ../widgets/rb-query-creator-properties.c:73
+#: ../widgets/rb-query-creator-properties.c:81
 msgid "Path"
 msgstr "Đường dẫn"
 
-#: ../widgets/rb-query-creator-properties.c:76
-#: ../widgets/rb-query-creator-properties.c:102
+#: ../widgets/rb-query-creator-properties.c:84
+#: ../widgets/rb-query-creator-properties.c:110
 msgid "Track Number"
 msgstr "Số rãnh"
 
-#: ../widgets/rb-query-creator-properties.c:77
+#: ../widgets/rb-query-creator-properties.c:85
 msgid "Disc Number"
 msgstr "Mã số đĩa"
 
-#: ../widgets/rb-query-creator-properties.c:78
+#: ../widgets/rb-query-creator-properties.c:86
 msgid "Bitrate"
 msgstr "Tỉ lệ bit"
 
-#: ../widgets/rb-query-creator-properties.c:80
-#: ../widgets/rb-query-creator-properties.c:101
+#: ../widgets/rb-query-creator-properties.c:88
+#: ../widgets/rb-query-creator-properties.c:109
 msgid "Duration"
 msgstr "Thời lượng"
 
-#: ../widgets/rb-query-creator-properties.c:82
+#: ../widgets/rb-query-creator-properties.c:90
 msgid "Time of Last Play"
 msgstr "Lần phát cuối"
 
-#: ../widgets/rb-query-creator-properties.c:83
+#: ../widgets/rb-query-creator-properties.c:91
 msgid "Time Added to Library"
 msgstr "Thời điểm thêm vào thư viện"
 
-#: ../widgets/rb-query-creator-properties.c:94
-#: ../widgets/rb-query-creator-properties.c:95
-#: ../widgets/rb-query-creator-properties.c:96
-#: ../widgets/rb-query-creator-properties.c:97
+#: ../widgets/rb-query-creator-properties.c:102
+#: ../widgets/rb-query-creator-properties.c:103
+#: ../widgets/rb-query-creator-properties.c:104
+#: ../widgets/rb-query-creator-properties.c:105
 msgid "_In reverse alphabetical order"
 msgstr "Theo thứ tự chữ cá_i ngược"
 
-#: ../widgets/rb-query-creator-properties.c:98
+#: ../widgets/rb-query-creator-properties.c:106
 msgid "W_ith more highly rated tracks first"
 msgstr "Những rãnh đánh g_iá cao ở trước"
 
-#: ../widgets/rb-query-creator-properties.c:99
+#: ../widgets/rb-query-creator-properties.c:107
 msgid "W_ith more often played songs first"
 msgstr "Những bà_i thường nghe ở trước"
 
-#: ../widgets/rb-query-creator-properties.c:100
+#: ../widgets/rb-query-creator-properties.c:108
 msgid "W_ith newer tracks first"
 msgstr "Rãnh mớ_i hơn ở trước"
 
-#: ../widgets/rb-query-creator-properties.c:101
+#: ../widgets/rb-query-creator-properties.c:109
 msgid "W_ith longer tracks first"
 msgstr "Rãnh dà_i hơn ở trước"
 
-#: ../widgets/rb-query-creator-properties.c:102
+#: ../widgets/rb-query-creator-properties.c:110
 msgid "_In decreasing order"
 msgstr "Theo thứ tự g_iảm dần"
 
-#: ../widgets/rb-query-creator-properties.c:103
+#: ../widgets/rb-query-creator-properties.c:111
 msgid "W_ith more recently played tracks first"
 msgstr "Rãnh được ngh_e gần đây ở trước"
 
-#: ../widgets/rb-query-creator-properties.c:104
+#: ../widgets/rb-query-creator-properties.c:112
 msgid "W_ith more recently added tracks first"
 msgstr "Rãnh được thêm _vào gần đây ở trước"
 
-#: ../widgets/rb-query-creator-properties.c:117
+#: ../widgets/rb-query-creator-properties.c:125
 msgid "contains"
 msgstr "chứa"
 
-#: ../widgets/rb-query-creator-properties.c:118
+#: ../widgets/rb-query-creator-properties.c:126
 msgid "does not contain"
 msgstr "không chứa"
 
-#: ../widgets/rb-query-creator-properties.c:119
-#: ../widgets/rb-query-creator-properties.c:148
+#: ../widgets/rb-query-creator-properties.c:127
+#: ../widgets/rb-query-creator-properties.c:156
 msgid "equals"
 msgstr "bằng"
 
-#: ../widgets/rb-query-creator-properties.c:120
+#: ../widgets/rb-query-creator-properties.c:128
 msgid "starts with"
 msgstr "bất đầu bằng"
 
-#: ../widgets/rb-query-creator-properties.c:121
+#: ../widgets/rb-query-creator-properties.c:129
 msgid "ends with"
 msgstr "kết thúc bằng"
 
-#: ../widgets/rb-query-creator-properties.c:149
+#: ../widgets/rb-query-creator-properties.c:157
 msgid "at least"
 msgstr "tối thiểu"
 
 #. matches if A >= B
-#: ../widgets/rb-query-creator-properties.c:150
+#: ../widgets/rb-query-creator-properties.c:158
 msgid "at most"
 msgstr "tối đa"
 
-#: ../widgets/rb-query-creator-properties.c:159
+#: ../widgets/rb-query-creator-properties.c:167
 msgid "in"
 msgstr "trong"
 
 #. matches if within 1-JAN-YEAR to 31-DEC-YEAR
-#: ../widgets/rb-query-creator-properties.c:161
+#: ../widgets/rb-query-creator-properties.c:169
 msgid "after"
 msgstr "sau"
 
 #. matches if >= 31-DEC-YEAR
-#: ../widgets/rb-query-creator-properties.c:163
+#: ../widgets/rb-query-creator-properties.c:171
 msgid "before"
 msgstr "trước"
 
@@ -4149,7 +4647,7 @@ msgstr "trước"
 #. * Translators: this will match when within <value> of the current time
 #. * e.g. "in the last" "7 days" will match if within 7 days of the current time
 #.
-#: ../widgets/rb-query-creator-properties.c:219
+#: ../widgets/rb-query-creator-properties.c:227
 msgid "in the last"
 msgstr "cuối cùng"
 
@@ -4157,62 +4655,190 @@ msgstr "cuối cùng"
 #. * Translators: this is the opposite of the above, and will match if not
 #. * within <value> of the current time
 #.
-#: ../widgets/rb-query-creator-properties.c:225
+#: ../widgets/rb-query-creator-properties.c:233
 msgid "not in the last"
 msgstr "không cuối cùng"
 
-#: ../widgets/rb-query-creator-properties.c:239
+#: ../widgets/rb-query-creator-properties.c:247
 msgid "seconds"
 msgstr "giây"
 
-#: ../widgets/rb-query-creator-properties.c:240
+#: ../widgets/rb-query-creator-properties.c:248
 msgid "minutes"
 msgstr "phút"
 
-#: ../widgets/rb-query-creator-properties.c:241
+#: ../widgets/rb-query-creator-properties.c:249
 msgid "hours"
 msgstr "giờ"
 
-#: ../widgets/rb-query-creator-properties.c:242
+#: ../widgets/rb-query-creator-properties.c:250
 msgid "days"
 msgstr "ngày"
 
-#: ../widgets/rb-query-creator-properties.c:243
+#: ../widgets/rb-query-creator-properties.c:251
 msgid "weeks"
 msgstr "tuần"
 
-#: ../widgets/rb-query-creator.c:178
+#: ../widgets/rb-query-creator.c:214
 msgid "Create Automatic Playlist"
 msgstr "Tạo danh mục nhạc tự động"
 
-#: ../widgets/rb-query-creator.c:180
+#: ../widgets/rb-query-creator.c:216
 msgid "Edit Automatic Playlist"
 msgstr "Sửa đổi danh mục nhạc tự động"
 
+#: ../widgets/rb-rating-helper.c:309
+msgid "No Stars"
+msgstr "Không sao"
+
+#: ../widgets/rb-rating-helper.c:311
+#, c-format
+msgid "%d Star"
+msgid_plural "%d Stars"
+msgstr[0] "%d sao"
+
 #. this string can only be so long, or there wont be a search entry :)
-#: ../widgets/rb-search-entry.c:115
+#: ../widgets/rb-search-entry.c:154
 msgid "_Search:"
 msgstr "Tìm _kiếm:"
 
-#: ../widgets/rb-song-info.c:272
+#: ../widgets/rb-song-info.c:371
 msgid "Song Properties"
 msgstr "Thuộc tính bài nhạc"
 
-#: ../widgets/rb-song-info.c:319
+#: ../widgets/rb-song-info.c:420
 msgid "Multiple Song Properties"
 msgstr "Thuộc tính nhiều bài nhạc"
 
-#: ../widgets/rb-song-info.c:984
+#: ../widgets/rb-song-info.c:1110
 msgid "Unknown file name"
 msgstr "Tên tập tin lạ"
 
-#: ../widgets/rb-song-info.c:1003
+#: ../widgets/rb-song-info.c:1132
 msgid "On the desktop"
 msgstr "Trên màn hình nền"
 
-#: ../widgets/rb-song-info.c:1012
+#: ../widgets/rb-song-info.c:1141
 msgid "Unknown location"
 msgstr "Địa điểm lạ"
+
+#~ msgid "Cannot create MusicBrainz client"
+#~ msgstr "Không thể tạo ứng dụng khách MusicBrainz"
+
+#~ msgid ""
+#~ "MusicBrainz metadata object is not valid. This is bad, check your console "
+#~ "for errors."
+#~ msgstr ""
+#~ "Đối tượng siêu dữ liệu MusicBrainz không hợp lệ. Đây là lỗi nghiệm trọng. "
+#~ "Vui lòng kiểm tra nội dung bàn giao tiếp để tìm lỗi."
+
+#~ msgid "Check Last.fm server status at"
+#~ msgstr "Kiểm tra trạng thái máy phục vụ Last.fm tại"
+
+#~ msgid "Find out about Last.fm at "
+#~ msgstr "Tìm hiểu về Last.fm tại "
+
+#~ msgid "Last.fm Profile"
+#~ msgstr "Hồ sơ Last.fm"
+
+#~ msgid "http://last.fm"
+#~ msgstr "http://last.fm"
+
+#~ msgid "http://last.fm/forum/21713/_/51596"
+#~ msgstr "http://last.fm/forum/21713/_/51596"
+
+#~ msgid "http://last.fm/group/Rhythmbox"
+#~ msgstr "http://last.fm/group/Rhythmbox"
+
+#~ msgid "Audioscrobbler preferences"
+#~ msgstr "Cấu hình Audioscrobbler"
+
+#~ msgid "Next Song"
+#~ msgstr "Bài kế"
+
+#~ msgid "Skip the current track"
+#~ msgstr "Bỏ qua bài này"
+
+#~ msgid "Ban Song"
+#~ msgstr "Cấm bài này"
+
+#~ msgid "No such artist.  Check your spelling"
+#~ msgstr "Không có nghệ sĩ này. Vui lòng kiểm tra chính tả"
+
+#~ msgid "The server marked you as banned"
+#~ msgstr "Máy chú đã cấm bạn"
+
+#~ msgid "Marking song loved..."
+#~ msgstr "Đang đánh dấu yêu thích bài nhạc..."
+
+#~ msgid "Skipping song..."
+#~ msgstr "Đang bỏ qua bài nhạc..."
+
+#~ msgid "Could not determine media type because CD drive is busy"
+#~ msgstr "Không thể xác định kiểu vật chứa vì ổ đĩa CD đang bận"
+
+#~ msgid "Couldn't open media"
+#~ msgstr "Không thể mở vật chứa"
+
+#~ msgid "Unknown Media"
+#~ msgstr "Vật chứa lạ"
+
+#~ msgid "Commercial CD or Audio CD"
+#~ msgstr "Đĩa CD quảng cáo hoặc CD nhạc"
+
+#~ msgid "CD-R"
+#~ msgstr "Đĩa CD-R"
+
+#~ msgid "CD-RW"
+#~ msgstr "Đĩa CD-RW"
+
+#~ msgid "DVD"
+#~ msgstr "Đĩa DVD"
+
+#~ msgid "DVD-R, or DVD-RAM"
+#~ msgstr "Đĩa DVD-R hoặc DVD-RAM"
+
+#~ msgid "DVD-RW"
+#~ msgstr "Đĩa DVD-RW"
+
+#~ msgid "DVD-RAM"
+#~ msgstr "Đĩa DVD-RAM"
+
+#~ msgid "DVD+R"
+#~ msgstr "Đĩa DVD+R"
+
+#~ msgid "DVD+RW"
+#~ msgstr "Đĩa DVD+RW"
+
+#~ msgid "Broken media type"
+#~ msgstr "Kiểu vật chứa bị hỏng"
+
+#~ msgid "Error initializing Howl for publishing"
+#~ msgstr "Gặp lỗi khi sơ khởi Howl để xuất bản"
+
+#~ msgid "The howl MDNS service is not running"
+#~ msgstr "Dịch vụ MDNS Howl đã dừng"
+
+#~ msgid "Couldn't monitor %s: %s"
+#~ msgstr "Không thể theo dõi %s: %s"
+
+#~ msgid "<invalid filename>"
+#~ msgstr "<tên tập tin không hợp lệ>"
+
+#~ msgid "Plu_gins..."
+#~ msgstr "Phầ_n bổ sung..."
+
+#~ msgid "Add Location"
+#~ msgstr "Thêm địa điểm"
+
+#~ msgid "Volume"
+#~ msgstr "Âm lượng"
+
+#~ msgid "+"
+#~ msgstr "+"
+
+#~ msgid "Volume Down"
+#~ msgstr "Giảm âm"
 
 #~ msgid ""
 #~ "Rhythmbox manages all of your music in a central music \"library\", so "
@@ -4333,9 +4959,6 @@ msgstr "Địa điểm lạ"
 #~ msgid "Leave Fullscreen"
 #~ msgstr "Thoát khỏi toàn màn hình"
 
-#~ msgid "_New Playlist..."
-#~ msgstr "Danh mục _nhạc mới..."
-
 #~ msgid "Welcome to Rhythmbox"
 #~ msgstr "Chào mừng bạn đến với RhythmBox"
 
@@ -4385,9 +5008,6 @@ msgstr "Địa điểm lạ"
 #~ msgid "Don't store credit card information"
 #~ msgstr "Đừng lưu thông tin thẻ tín dụng"
 
-#~ msgid "Name:"
-#~ msgstr "Tên:"
-
 #~ msgid "%Y-%m-%d %H:%M"
 #~ msgstr "%d-%m-%Y %H:%M"
 
@@ -4419,12 +5039,6 @@ msgstr "Địa điểm lạ"
 #~ msgid "Submits songs to last.fm"
 #~ msgstr "Gửi bài nhạc lên last.fm"
 
-#~ msgid "Last.fm Profile Preferences"
-#~ msgstr "Tuỳ thích Hồ sơ Last.fm"
-
-#~ msgid "Generic Audio Player"
-#~ msgstr "Trình nghe thiết bị số tổng quát"
-
 #~ msgid ""
 #~ "Adds iPod support to Rhythmbox so that it can show an iPod content, and "
 #~ "play from there"
@@ -4443,9 +5057,6 @@ msgstr "Địa điểm lạ"
 
 #~ msgid "by %s from %s"
 #~ msgstr "bởi %s từ %s"
-
-#~ msgid "_Date"
-#~ msgstr "Ngà_y"
 
 #~ msgid "_Feed"
 #~ msgstr "_Nguồn"
