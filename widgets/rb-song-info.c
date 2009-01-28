@@ -2,7 +2,7 @@
  *
  *  arch-tag: Implementation of local song properties dialog
  *
- *  Copyright (C) 2002 Olivier Martin <omartin@ifrance.com>
+ *  Copyright (C) 2002 Olivier Martin <olive.martin@gmail.com>
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify

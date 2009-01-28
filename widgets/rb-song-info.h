@@ -1,7 +1,7 @@
 /*
  *  arch-tag: Header for local song properties dialog
  *
- *  Copyright (C) 2002 Olivier Martin <omartin@ifrance.com>
+ *  Copyright (C) 2002 Olivier Martin <olive.martin@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
