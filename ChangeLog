@@ -1,5 +1,28 @@
 2009-01-28  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/mtpdevice/rb-mtp-plugin.c:
+	(rb_mtp_plugin_device_removed):
+	* plugins/mtpdevice/rb-mtp-source.c: (report_libmtp_errors),
+	(rb_mtp_source_class_init), (rb_mtp_source_name_changed_cb),
+	(rb_mtp_source_init), (rb_mtp_source_constructor),
+	(rb_mtp_source_set_property), (rb_mtp_source_get_property),
+	(rb_mtp_source_dispose), (rb_mtp_source_finalize),
+	(impl_get_browser_key), (impl_get_paned_key), (rb_mtp_source_new),
+	(load_mtp_db_idle_cb), (rb_mtp_source_load_tracks),
+	(mimetype_to_filetype), (impl_delete),
+	(rb_mtp_source_transfer_track_to_disk), (transfer_track):
+	* plugins/mtpdevice/rb-mtp-source.h:
+	Rearrange things to improve GObjectness, add some basic 
+	reporting for libmtp errors, ensure MP3 is the first format in the
+	list of supported types for the device (since if an encoder is
+	installed at all, transcoding to MP3 is far more reliable than other
+	formats), try to use audio-only types for M4A/AAC tracks added to MTP
+	devices, and remove the idle handler used to load tracks off the
+	device if the device is removed.  Fixes #567524, #569074, maybe some
+	other stuff.
+
+2009-01-28  Jonathan Matthew  <jonathan@d14n.org>
+
 	* metadata/rb-metadata-gst.c:
 	Ignore application/msword (mostly for thumbs.db) and
 	application/octet-stream (for .DS_Store).

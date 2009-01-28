@@ -44,6 +44,7 @@
 #include "rb-refstring.h"
 #include "rhythmdb.h"
 #include "rb-encoder.h"
+#include "rb-dialog.h"
 
 #include "rb-mtp-source.h"
 
@@ -87,8 +88,17 @@
 static GObject *rb_mtp_source_constructor (GType type,
 					   guint n_construct_properties,
 					   GObjectConstructParam *construct_properties);
+static void rb_mtp_source_dispose (GObject *object);
 static void rb_mtp_source_finalize (GObject *object);
 
+static void rb_mtp_source_set_property (GObject *object,
+			                guint prop_id,
+			                const GValue *value,
+			                GParamSpec *pspec);
+static void rb_mtp_source_get_property (GObject *object,
+			                guint prop_id,
+			                GValue *value,
+			                GParamSpec *pspec);
 static char *impl_get_browser_key (RBSource *source);
 static char *impl_get_paned_key (RBBrowserSource *source);
 
@@ -99,7 +109,6 @@ static gboolean rb_mtp_source_transfer_track_to_disk (LIBMTP_mtpdevice_t *device
 static char* rb_mtp_source_get_playback_uri (RhythmDBEntry *entry,
 					     gpointer data);
 
-static void impl_delete_thyself (RBSource *source);
 static void impl_delete (RBSource *asource);
 static gboolean impl_show_popup (RBSource *source);
 static GList* impl_get_ui_actions (RBSource *source);
@@ -125,6 +134,8 @@ typedef struct
 	char *udi;
 	uint16_t supported_types[LIBMTP_FILETYPE_UNKNOWN+1];
 	GList *mediatypes;
+
+	guint load_songs_idle_id;
 } RBMtpSourcePrivate;
 
 RB_PLUGIN_DEFINE_TYPE(RBMtpSource,
@@ -132,6 +143,32 @@ RB_PLUGIN_DEFINE_TYPE(RBMtpSource,
 		       RB_TYPE_REMOVABLE_MEDIA_SOURCE)
 
 #define MTP_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_MTP_SOURCE, RBMtpSourcePrivate))
+
+enum
+{
+	PROP_0,
+	PROP_LIBMTP_DEVICE,
+	PROP_UDI,
+};
+
+static void
+report_libmtp_errors (LIBMTP_mtpdevice_t *device, gboolean use_dialog)
+{
+	LIBMTP_error_t *stack;
+
+	for (stack = LIBMTP_Get_Errorstack (device); stack != NULL; stack = stack->next) {
+		if (use_dialog) {
+			rb_error_dialog (NULL, _("Media player device error"), "%s", stack->error_text);
+
+			/* only display one dialog box per error */
+			use_dialog = FALSE;
+		} else {
+			g_warning ("libmtp error: %s", stack->error_text);
+		}
+	}
+
+	LIBMTP_Clear_Errorstack (device);
+}
 
 static void
 rb_mtp_source_class_init (RBMtpSourceClass *klass)
@@ -142,7 +179,10 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
 	object_class->constructor = rb_mtp_source_constructor;
+	object_class->dispose = rb_mtp_source_dispose;
 	object_class->finalize = rb_mtp_source_finalize;
+	object_class->set_property = rb_mtp_source_set_property;
+	object_class->get_property = rb_mtp_source_get_property;
 
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_browser_key = impl_get_browser_key;
@@ -156,7 +196,6 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
-	source_class->impl_delete_thyself = impl_delete_thyself;
 	source_class->impl_delete = impl_delete;
 	source_class->impl_copy = impl_copy;
 
@@ -167,6 +206,20 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	rms_class->impl_get_mime_types = impl_get_mime_types;
 	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
 
+	g_object_class_install_property (object_class,
+					 PROP_LIBMTP_DEVICE,
+					 g_param_spec_pointer ("libmtp-device",
+							       "libmtp-device",
+							       "libmtp device",
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_UDI,
+					 g_param_spec_string ("udi",
+						 	      "udi",
+							      "udi",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
 	g_type_class_add_private (klass, sizeof (RBMtpSourcePrivate));
 }
 
@@ -176,16 +229,13 @@ rb_mtp_source_name_changed_cb (RBMtpSource *source,
 			       gpointer data)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	char *name = NULL;
 
-	if (priv->device) {
-		char *name = NULL;
-
-		g_object_get (source, "name", &name, NULL);
-		if (LIBMTP_Set_Friendlyname (priv->device, name) != 0) {
-			rb_debug ("Set friendly name failed");
-		}
-		g_free (name);
+	g_object_get (source, "name", &name, NULL);
+	if (LIBMTP_Set_Friendlyname (priv->device, name) != 0) {
+		report_libmtp_errors (priv->device, TRUE);
 	}
+	g_free (name);
 }
 
 static void
@@ -193,11 +243,10 @@ rb_mtp_source_init (RBMtpSource *source)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 
-	priv->entry_map = g_hash_table_new (g_direct_hash,
-					    g_direct_equal);
-
-	g_signal_connect (G_OBJECT (source), "notify::name",
-			  (GCallback)rb_mtp_source_name_changed_cb, NULL);
+	priv->entry_map = g_hash_table_new_full (g_direct_hash,
+						 g_direct_equal,
+						 NULL,
+						 (GDestroyNotify) LIBMTP_destroy_track_t);
 }
 
 static GObject *
@@ -205,10 +254,13 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 			   GObjectConstructParam *construct_properties)
 {
 	RBMtpSource *source;
+	RBMtpSourcePrivate *priv;
 	RBEntryView *tracks;
 	GtkIconTheme *theme;
 	GdkPixbuf *pixbuf;
 	gint size;
+	guint16 *types = NULL;
+	guint16 num_types= 0;
 
 	source = RB_MTP_SOURCE (G_OBJECT_CLASS (rb_mtp_source_parent_class)->
 				constructor (type, n_construct_properties, construct_properties));
@@ -225,68 +277,14 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
 	g_object_unref (pixbuf);
 
-	return G_OBJECT (source);
-}
-
-static void
-rb_mtp_source_finalize (GObject *object)
-{
-	G_OBJECT_CLASS (rb_mtp_source_parent_class)->finalize (object);
-}
-
-static char *
-impl_get_browser_key (RBSource *source)
-{
-	return g_strdup (CONF_STATE_SHOW_BROWSER);
-}
-
-static char *
-impl_get_paned_key (RBBrowserSource *source)
-{
-	return g_strdup (CONF_STATE_PANED_POSITION);
-}
-
-RBBrowserSource *
-rb_mtp_source_new (RBShell *shell,
-		   LIBMTP_mtpdevice_t *device,
-		   const char *udi)
-{
-	RBMtpSource *source = NULL;
-	RhythmDBEntryType entry_type;
-	RhythmDB *db = NULL;
-	RBMtpSourcePrivate *priv = NULL;
-	char *name = NULL;
-	guint16 *types = NULL;
-	guint16 num_types= 0;
-
-	g_object_get (shell, "db", &db, NULL);
-	name = g_strdup_printf ("MTP-%s", LIBMTP_Get_Serialnumber (device));
-
-	entry_type = rhythmdb_entry_register_type (db, name);
-	entry_type->save_to_disk = FALSE;
-	entry_type->category = RHYTHMDB_ENTRY_NORMAL;
-	entry_type->get_playback_uri = (RhythmDBEntryStringFunc)rb_mtp_source_get_playback_uri;
-
-	g_free (name);
-	g_object_unref (db);
-
-	source = RB_MTP_SOURCE (g_object_new (RB_TYPE_MTP_SOURCE,
-					      "entry-type", entry_type,
-					      "shell", shell,
-					      "visibility", TRUE,
-					      "volume", NULL,
-					      "source-group", RB_SOURCE_GROUP_DEVICES,
-					      NULL));
-
-	entry_type->get_playback_uri_data = source;
-
+	g_signal_connect (G_OBJECT (source), "notify::name",
+			  (GCallback)rb_mtp_source_name_changed_cb, NULL);
+	
+	/* figure out supported file types */
 	priv = MTP_SOURCE_GET_PRIVATE (source);
-	priv->device = device;
-	priv->udi = g_strdup (udi);
-
- 	/* figure out supported file types */
 	if (LIBMTP_Get_Supported_Filetypes(priv->device, &types, &num_types) == 0) {
 		int i;
+		gboolean has_mp3 = FALSE;
 		for (i = 0; i < num_types; i++) {
 			const char *mediatype;
 
@@ -302,7 +300,11 @@ rb_mtp_source_new (RBShell *shell,
 				mediatype = "audio/x-wav";
 				break;
 			case LIBMTP_FILETYPE_MP3:
-				mediatype = "audio/mpeg";
+				/* special handling for mp3: always put it at the front of the list
+				 * if it's supported.
+				 */
+				has_mp3 = TRUE;
+				mediatype = NULL;
 				break;
 			case LIBMTP_FILETYPE_WMA:
 				mediatype = "audio/x-ms-wma";
@@ -336,9 +338,145 @@ rb_mtp_source_new (RBShell *shell,
 								   g_strdup (mediatype));
 			}
 		}
+
+		if (has_mp3) {
+			rb_debug ("audio/mpeg supported");
+			priv->mediatypes = g_list_prepend (priv->mediatypes, g_strdup ("audio/mpeg"));
+		}
+	} else {
+		report_libmtp_errors (priv->device, FALSE);
 	}
 
 	rb_mtp_source_load_tracks (source);
+
+	return G_OBJECT (source);
+}
+
+static void
+rb_mtp_source_set_property (GObject *object,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *pspec)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (object);
+
+	switch (prop_id) {
+	case PROP_LIBMTP_DEVICE:
+		priv->device = g_value_get_pointer (value);
+		break;
+	case PROP_UDI:
+		priv->udi = g_value_dup_string (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_mtp_source_get_property (GObject *object,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *pspec)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (object);
+
+	switch (prop_id) {
+	case PROP_LIBMTP_DEVICE:
+		g_value_set_pointer (value, priv->device);
+		break;
+	case PROP_UDI:
+		g_value_set_string (value, priv->udi);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_mtp_source_dispose (GObject *object)
+{
+	RBMtpSource *source = RB_MTP_SOURCE (object);
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	RhythmDBEntryType entry_type;
+	RhythmDB *db;
+
+	db = get_db_for_source (source);
+
+	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+	rhythmdb_entry_delete_by_type (db, entry_type);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+
+	rhythmdb_commit (db);
+	g_object_unref (db);
+
+	if (priv->load_songs_idle_id != 0) {
+		g_source_remove (priv->load_songs_idle_id);
+		priv->load_songs_idle_id = 0;
+	}
+
+	G_OBJECT_CLASS (rb_mtp_source_parent_class)->dispose (object);
+}
+
+static void
+rb_mtp_source_finalize (GObject *object)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (object);
+
+	g_hash_table_destroy (priv->entry_map);
+
+	g_free (priv->udi);
+
+	LIBMTP_Release_Device (priv->device);
+
+	G_OBJECT_CLASS (rb_mtp_source_parent_class)->finalize (object);
+}
+
+static char *
+impl_get_browser_key (RBSource *source)
+{
+	return g_strdup (CONF_STATE_SHOW_BROWSER);
+}
+
+static char *
+impl_get_paned_key (RBBrowserSource *source)
+{
+	return g_strdup (CONF_STATE_PANED_POSITION);
+}
+
+RBBrowserSource *
+rb_mtp_source_new (RBShell *shell,
+		   LIBMTP_mtpdevice_t *device,
+		   const char *udi)
+{
+	RBMtpSource *source = NULL;
+	RhythmDBEntryType entry_type;
+	RhythmDB *db = NULL;
+	char *name = NULL;
+
+	g_object_get (shell, "db", &db, NULL);
+	name = g_strdup_printf ("MTP-%s", LIBMTP_Get_Serialnumber (device));
+
+	entry_type = rhythmdb_entry_register_type (db, name);
+	entry_type->save_to_disk = FALSE;
+	entry_type->category = RHYTHMDB_ENTRY_NORMAL;
+	entry_type->get_playback_uri = (RhythmDBEntryStringFunc)rb_mtp_source_get_playback_uri;
+
+	g_free (name);
+	g_object_unref (db);
+
+	source = RB_MTP_SOURCE (g_object_new (RB_TYPE_MTP_SOURCE,
+					      "entry-type", entry_type,
+					      "shell", shell,
+					      "visibility", TRUE,
+					      "volume", NULL,
+					      "source-group", RB_SOURCE_GROUP_DEVICES,
+					      "libmtp-device", device,
+					      "udi", udi,
+					      NULL));
+
+	entry_type->get_playback_uri_data = source;
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
@@ -475,6 +613,7 @@ load_mtp_db_idle_cb (RBMtpSource* source)
 #else
 	tracks = LIBMTP_Get_Tracklisting (priv->device);
 #endif
+	report_libmtp_errors (priv->device, FALSE);
 	if (tracks != NULL) {
 		LIBMTP_track_t *track;
 		for (track = tracks; track != NULL; track = track->next) {
@@ -494,57 +633,22 @@ rb_mtp_source_load_tracks (RBMtpSource *source)
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 	char *name = NULL;
 
-	if ((priv->device != NULL) && (priv->entry_map != NULL)) {
-		name = LIBMTP_Get_Friendlyname (priv->device);
-		/* ignore some particular broken device names */
-		if (name == NULL || strcmp (name, "?????") == 0) {
-			g_free (name);
-			name = LIBMTP_Get_Modelname (priv->device);
-		}
-		if (name == NULL) {
-			name = g_strdup (_("Digital Audio Player"));
-		}
-
-		g_object_set (RB_SOURCE (source),
-			      "name", name,
-			      NULL);
-		g_idle_add ((GSourceFunc)load_mtp_db_idle_cb, source);
+	name = LIBMTP_Get_Friendlyname (priv->device);
+	/* ignore some particular broken device names */
+	if (name == NULL || strcmp (name, "?????") == 0) {
+		g_free (name);
+		name = LIBMTP_Get_Modelname (priv->device);
 	}
+	if (name == NULL) {
+		name = g_strdup (_("Digital Audio Player"));
+	}
+
+	g_object_set (RB_SOURCE (source),
+		      "name", name,
+		      NULL);
+
+	priv->load_songs_idle_id = g_idle_add ((GSourceFunc)load_mtp_db_idle_cb, source);
 	g_free (name);
-}
-
-static gboolean
-destroy_entry_map_pair (RhythmDBEntry *entry, LIBMTP_track_t *track, RhythmDB *db)
-{
-	LIBMTP_destroy_track_t (track);
-	rhythmdb_entry_delete (db, entry);
-	return TRUE;
-}
-
-static void
-impl_delete_thyself (RBSource *asource)
-{
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (asource);
-	RhythmDB *db = get_db_for_source (RB_MTP_SOURCE (asource));
-
-	if (priv->entry_map) {
-		g_hash_table_foreach_remove (priv->entry_map, (GHRFunc)destroy_entry_map_pair, db);
-		g_hash_table_destroy (priv->entry_map);
-		rhythmdb_commit (db);
-		priv->entry_map = NULL;
-	}
-
-	g_object_unref (db);
-
-	LIBMTP_Release_Device (priv->device);
-	priv->device = NULL;
-
-	if (priv->udi != NULL) {
-		g_free (priv->udi);
-		priv->udi = NULL;
-	}
-
-	RB_SOURCE_CLASS (rb_mtp_source_parent_class)->impl_delete_thyself (asource);
 }
 
 static char *
@@ -569,10 +673,10 @@ mimetype_to_filetype (RBMtpSource *source, const char *mimetype)
 		return LIBMTP_FILETYPE_OGG;
 	} else if (!strcmp (mimetype, "audio/x-m4a") || !strcmp (mimetype, "video/quicktime")) {
 		/* try a few different filetypes that might work */
-		if (priv->supported_types[LIBMTP_FILETYPE_MP4])
-			return LIBMTP_FILETYPE_MP4;
-		else if (priv->supported_types[LIBMTP_FILETYPE_M4A])
+		if (priv->supported_types[LIBMTP_FILETYPE_M4A])
 			return LIBMTP_FILETYPE_M4A;
+		else if (!priv->supported_types[LIBMTP_FILETYPE_AAC] && priv->supported_types[LIBMTP_FILETYPE_MP4])
+			return LIBMTP_FILETYPE_MP4;
 		else
 			return LIBMTP_FILETYPE_AAC;
 
@@ -592,20 +696,20 @@ static void
 impl_delete (RBSource *source)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	GList *sel = NULL;
-	GList *tem = NULL;
-	RBEntryView *tracks = NULL;
-	RhythmDB *db = NULL;
-	RhythmDBEntry *entry = NULL;
-	const gchar *uri = NULL;
-	LIBMTP_track_t *track = NULL;
-	int ret = -1;
+	GList *sel;
+	GList *tem;
+	RBEntryView *tracks;
+	RhythmDB *db;
+	int ret;
 
 	db = get_db_for_source (RB_MTP_SOURCE (source));
 
 	tracks = rb_source_get_entry_view (source);
 	sel = rb_entry_view_get_selected_entries (tracks);
 	for (tem = sel; tem != NULL; tem = tem->next) {
+		LIBMTP_track_t *track;
+		RhythmDBEntry *entry;
+		const char *uri;
 
 		entry = (RhythmDBEntry *)tem->data;
 		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
@@ -616,13 +720,14 @@ impl_delete (RBSource *source)
 		}
 
 		ret = LIBMTP_Delete_Object (priv->device, track->item_id);
-		if (ret == 0) {
-			g_hash_table_remove (priv->entry_map, entry);
-			LIBMTP_destroy_track_t (track);
-			rhythmdb_entry_delete (db, entry);
-		} else {
+		if (ret != 0) {
 			rb_debug ("Delete track %d failed", track->item_id);
+			report_libmtp_errors (priv->device, TRUE);
+			continue;
 		}
+
+		g_hash_table_remove (priv->entry_map, entry);
+		rhythmdb_entry_delete (db, entry);
 	}
 	rhythmdb_commit (db);
 
@@ -647,15 +752,6 @@ impl_get_ui_actions (RBSource *source)
 	return actions;
 }
 
-gboolean
-rb_mtp_source_is_udi (RBMtpSource *source,
-		      const char *udi)
-{
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-
-	return (strcmp (udi, priv->udi) == 0);
-}
-
 static gboolean
 rb_mtp_source_transfer_track_to_disk (LIBMTP_mtpdevice_t *device,
 				      LIBMTP_track_t *track,
@@ -678,6 +774,9 @@ rb_mtp_source_transfer_track_to_disk (LIBMTP_mtpdevice_t *device,
 	if (path != NULL) {
 		ret = LIBMTP_Get_Track_To_File (device, track->item_id, path, NULL, NULL);
 		rb_debug ("LIBMTP_Get_Track_To_File(%d, %s) returned %d", track->item_id, path, ret);
+		if (ret != 0) {
+			report_libmtp_errors (device, TRUE);
+		}
 		g_free (path);
 	} else {
 		g_warning ("couldn't get path from URI %s", uri);
@@ -807,10 +906,13 @@ transfer_track (RBMtpSource *source,
 	trackmeta->usecount = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_PLAY_COUNT);
 	trackmeta->filesize = filesize;
 	if (mimetype == NULL) {
-		trackmeta->filetype = mimetype_to_filetype (source, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE));
-	} else {
-		trackmeta->filetype = mimetype_to_filetype (source, mimetype);
+		mimetype = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
 	}
+	trackmeta->filetype = mimetype_to_filetype (source, mimetype);
+	rb_debug ("using libmtp filetype %d (%s) for source media type %s",
+		  trackmeta->filetype,
+		  LIBMTP_Get_Filetype_Description (trackmeta->filetype),
+		  mimetype);
 
 #ifdef HAVE_LIBMTP_030
 	ret = LIBMTP_Send_Track_From_File (device, filename, trackmeta, NULL, NULL);
@@ -819,6 +921,7 @@ transfer_track (RBMtpSource *source,
 #endif
 	rb_debug ("LIBMTP_Send_Track_From_File (%s) returned %d", filename, ret);
 	if (ret != 0) {
+		report_libmtp_errors (device, TRUE);
 		LIBMTP_destroy_track_t (trackmeta);
 		return NULL;
 	}

@@ -371,12 +371,15 @@ rb_mtp_plugin_device_removed (LibHalContext *context, const char *udi)
 
 	for (tmp = list; tmp != NULL; tmp = tmp->next) {
 		RBSource *source = (RBSource *)tmp->data;
-		if ((source != NULL) && (rb_mtp_source_is_udi (RB_MTP_SOURCE (source), udi) != 0)) {
+		char *source_udi;
+
+		g_object_get (source, "udi", &source_udi, NULL);
+		if (strcmp (udi, source_udi) == 0) {
 			rb_debug ("removing device %s, %p", udi, source);
 			plugin->mtp_sources = g_list_remove (plugin->mtp_sources, source);
 			rb_source_delete_thyself (source);
-			break;
 		}
+		g_free (source_udi);
 	}
 }
 

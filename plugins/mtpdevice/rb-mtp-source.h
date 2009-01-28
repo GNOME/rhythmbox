@@ -58,8 +58,6 @@ RBBrowserSource *	rb_mtp_source_new		(RBShell *shell, LIBMTP_mtpdevice_t *device
 GType			rb_mtp_source_get_type		(void);
 GType			rb_mtp_source_register_type	(GTypeModule *module);
 
-gboolean rb_mtp_source_is_udi				(RBMtpSource *source, const char *udi);
-
 G_END_DECLS
 
 #endif /* __RB_MTP_SOURCE_H */
