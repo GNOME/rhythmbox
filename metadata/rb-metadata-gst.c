@@ -64,7 +64,9 @@ const char * ignore_mime_types[] = {
 	"application/x-bzip",
 	"application/x-gzip",
 	"application/pdf",
-	"application/x-rar"
+	"application/x-rar",
+	"application/msword",
+	"application/octet-stream"
 };
 
 /*
