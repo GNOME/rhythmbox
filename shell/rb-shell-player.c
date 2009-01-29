@@ -776,7 +776,6 @@ rb_shell_player_open_playlist_url (RBShellPlayer *player,
 static void
 rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry, gboolean allow_stop)
 {
-	RhythmDBEntry *playing_entry;
 	RBSource *source;
 	gboolean update_stats;
 	gboolean dragging;
@@ -788,9 +787,8 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 		return;
 	}
 
-	playing_entry = rb_shell_player_get_playing_entry (player);
-	if (entry != NULL ) {
-		if (playing_entry != entry) {
+	if (entry != NULL) {
+		if (player->priv->playing_entry != entry) {
 			rb_debug ("EOS'd entry is not the current playing entry; ignoring");
 			return;
 		}
@@ -886,10 +884,6 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 		rb_source_update_play_statistics (source,
 						  player->priv->db,
 						  entry);
-	}
-
-	if (entry != NULL) {
-		rhythmdb_entry_unref (entry);
 	}
 }
 
@@ -2119,8 +2113,8 @@ rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, gboo
 		g_object_get (player->priv->current_playing_source, "play-order", &porder, NULL);
 		if (porder != NULL) {
 			entry = rb_play_order_get_next (porder);
-			rb_play_order_go_next (porder);
 			if (entry != NULL) {
+				rb_play_order_go_next (porder);
 				new_source = player->priv->current_playing_source;
 			}
 			g_object_unref (porder);
@@ -2146,7 +2140,11 @@ rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, gboo
 		/* if that didn't help, advance the play order */
 		if (entry == NULL) {
 			entry = rb_play_order_get_next (porder);
-			rb_play_order_go_next (porder);
+			if (entry != NULL) {
+				rb_debug ("got new entry %s from play order",
+					  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+				rb_play_order_go_next (porder);
+			}
 		}
 
 		if (entry != NULL)
@@ -2163,13 +2161,17 @@ rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, gboo
 		RhythmDBEntry *queue_entry;
 
 		queue_entry = rb_play_order_get_next (player->priv->queue_play_order);
+		rb_play_order_go_next (player->priv->queue_play_order);
 		if (queue_entry != NULL) {
+			rb_debug ("got new entry %s from queue play order",
+				  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 			if (entry != NULL) {
 				rhythmdb_entry_unref (entry);
 			}
 			entry = queue_entry;
 			new_source = RB_SOURCE (player->priv->queue_source);
-			rb_play_order_go_next (player->priv->queue_play_order);
+		} else {
+			rb_debug ("didn't get a new entry from queue play order");
 		}
 	}
 
