@@ -480,14 +480,25 @@ get_device_info (RBGenericPlayerSource *source)
 			}
 			free_dbus_error ("getting playlist format", &error);
 
-			/* get playlist path */
+			/* get playlist path - in current hal-info packages, this is sometimes a string
+			 * and sometimes a strlist, so try both. 
+			 * http://bugs.freedesktop.org/show_bug.cgi?id=19961
+			 */
+			dbus_error_init (&error);
+			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.playlist_path", &error);
+			if (proplist && !dbus_error_is_set (&error)) {
+				set_playlist_path (source, proplist[0]);
+				libhal_free_string_array (proplist);
+			}
+			free_dbus_error ("getting playlist path (strlist)", &error);
+			
 			dbus_error_init (&error);
 			prop = libhal_device_get_property_string (ctx, udi, "portable_audio_player.playlist_path", &error);
 			if (prop && !dbus_error_is_set (&error)) {
 				set_playlist_path (source, prop);
 				libhal_free_string (prop);
 			}
-			free_dbus_error ("getting playlist path", &error);
+			free_dbus_error ("getting playlist path (string)", &error);
 
 			/* get max folder depth */
 			dbus_error_init (&error);
