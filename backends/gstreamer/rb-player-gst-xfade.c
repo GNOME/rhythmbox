@@ -1139,7 +1139,8 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 		return FALSE;
 	}
 
-	player->priv->linked_streams++;
+
+	g_atomic_int_inc (&player->priv->linked_streams);
 	rb_debug ("now have %d linked streams", player->priv->linked_streams);
 
 	if (stream->src_blocked) {
@@ -1268,6 +1269,7 @@ static void
 unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 {
 	int stream_state;
+	gboolean last;
 	RBPlayerGstXFade *player;
 
 	g_mutex_lock (stream->lock);
@@ -1297,9 +1299,7 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 
 	/* might want a stream-paused signal here? */
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
-	
-	player->priv->linked_streams--;
+	last = g_atomic_int_dec_and_test (&player->priv->linked_streams);
 	rb_debug ("%d linked streams left", player->priv->linked_streams);
 
 	/* handle unlinks for seeking and stream reuse */
@@ -1315,14 +1315,12 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		 */
 	default:
 		/* consider pausing the sink if this is the linked last stream */
-		if (player->priv->linked_streams == 0) {
+		if (last) {
 			maybe_stop_sink (player);
 		}
 
 		break;
 	}
-	
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 }
 
 /*
@@ -1393,14 +1391,14 @@ unlink_and_dispose_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 		gst_bin_remove (GST_BIN (player->priv->pipeline), stream->bin);
 
 	if (was_linked) {
-		g_static_rec_mutex_lock (&player->priv->sink_lock);
-		player->priv->linked_streams--;
+		gboolean last;
+
+		last = g_atomic_int_dec_and_test (&player->priv->linked_streams);
 		rb_debug ("now have %d linked streams", player->priv->linked_streams);
 
-		if (player->priv->linked_streams == 0) {
+		if (last) {
 			maybe_stop_sink (player);
 		}
-		g_static_rec_mutex_unlock (&player->priv->sink_lock);
 	}
 
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
@@ -1950,6 +1948,7 @@ stream_src_event_cb (GstPad *pad, GstEvent *event, RBXFadeStream *stream)
 	GstStructure *s;
 	RBPlayerGstXFade *player;
 	GList *l;
+	GList *to_start = NULL;
 
 	switch (GST_EVENT_TYPE (event)) {
 	case GST_EVENT_EOS:
@@ -1966,15 +1965,23 @@ stream_src_event_cb (GstPad *pad, GstEvent *event, RBXFadeStream *stream)
 		for (l = player->priv->streams; l != NULL; l = l->next) {
 			RBXFadeStream *pstream = l->data;
 			if (pstream->state == WAITING_EOS) {
-				GError *error = NULL;
-				rb_debug ("starting stream %s on EOS from previous", pstream->uri);
-
-				if (link_and_unblock_stream (pstream, &error) == FALSE) {
-					emit_stream_error (pstream, error);
-				}
+				to_start = g_list_prepend (to_start, g_object_ref (pstream));
 			}
 		}
 		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+
+		for (l = to_start; l != NULL; l = l->next) {
+			RBXFadeStream *pstream = l->data;
+			GError *error = NULL;
+
+			rb_debug ("starting stream %s on EOS from previous", pstream->uri);
+			if (link_and_unblock_stream (pstream, &error) == FALSE) {
+				emit_stream_error (pstream, error);
+			}
+
+			g_object_unref (pstream);
+		}
+		g_list_free (to_start);
 		break;
 
 	case GST_EVENT_NEWSEGMENT:
@@ -2288,33 +2295,24 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 	gboolean ret = TRUE;
 	gboolean need_reap = FALSE;
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 
 	rb_debug ("going to start playback for stream %s (crossfade %d) -> FADING_IN | PLAYING", stream->uri, stream->crossfade);
 	if (stream->crossfade > 0) {
 		GList *l;
+		GList *to_fade = NULL;
 
+		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 		for (l = player->priv->streams; l != NULL; l = l->next) {
 			RBXFadeStream *pstream = (RBXFadeStream *)l->data;
-
-			double fade_out_start = 1.0f;
-			gint64 fade_out_time = stream->crossfade * GST_SECOND;
 
 			if (pstream == stream)
 				continue;
 
 			switch (pstream->state) {
 			case FADING_IN:
-				/* fade out from where the fade in got up to */
-				g_object_get (pstream->volume, "volume", &fade_out_start, NULL);
-				fade_out_time = (gint64)(((double) stream->crossfade) * fade_out_start) * GST_SECOND;
-				/* fall through */
 			case PLAYING:
 				rb_debug ("stream %s is playing; crossfading -> FADING_OUT", pstream->uri);
-				start_stream_fade (pstream, fade_out_start, 0.0f, fade_out_time);
-				pstream->state = FADING_OUT;
-
-				start_stream_fade (stream, 0.0f, 1.0f, stream->crossfade * GST_SECOND);
+				to_fade = g_list_prepend (to_fade, g_object_ref (pstream));
 				break;
 
 			case PAUSED:
@@ -2325,6 +2323,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			case PREROLL_PLAY:
 				rb_debug ("stream %s is paused; replacing it", pstream->uri);
 				pstream->state = PENDING_REMOVE;
+				/* fall through */
 			case PENDING_REMOVE:
 				need_reap = TRUE;
 				break;
@@ -2333,6 +2332,36 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 				break;
 			}
 		}
+
+		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+
+		for (l = to_fade; l != NULL; l = l->next) {
+			RBXFadeStream *pstream = (RBXFadeStream *)l->data;
+			double fade_out_start = 1.0f;
+			gint64 fade_out_time = stream->crossfade * GST_SECOND;
+
+			switch (pstream->state) {
+			case FADING_IN:
+				/* fade out from where the fade in got up to */
+				g_object_get (pstream->volume, "volume", &fade_out_start, NULL);
+				fade_out_time = (gint64)(((double) stream->crossfade) * fade_out_start) * GST_SECOND;
+				/* fall through */
+
+			case PLAYING:
+				start_stream_fade (pstream, fade_out_start, 0.0f, fade_out_time);
+				pstream->state = FADING_OUT;
+
+				start_stream_fade (stream, 0.0f, 1.0f, stream->crossfade * GST_SECOND);
+				break;
+
+			default:
+				/* shouldn't happen, but ignore it if it does */
+				break;
+			}
+
+			g_object_unref (pstream);
+		}
+		g_list_free (to_fade);
 
 		if (stream->fading == FALSE) {
 			GValue v = {0,};
@@ -2350,6 +2379,9 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 	} else if (stream->crossfade == 0) {
 		GList *l;
 		gboolean playing = FALSE;
+
+		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+
 		for (l = player->priv->streams; l != NULL; l = l->next) {
 			RBXFadeStream *pstream = (RBXFadeStream *)l->data;
 			if (pstream == stream)
@@ -2372,6 +2404,8 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 				break;
 			}
 		}
+
+		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 	
 		if (playing) {
 			/* wait for current stream's EOS */
@@ -2384,6 +2418,9 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 	} else {
 		/* replace any existing playing stream */
 		GList *l;
+
+		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+
 		for (l = player->priv->streams; l != NULL; l = l->next) {
 			RBXFadeStream *pstream = (RBXFadeStream *)l->data;
 			if (pstream == stream)
@@ -2406,14 +2443,14 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			}
 		}
 
+		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+
 		ret = link_and_unblock_stream (stream, error);
 	}
 
 	if (need_reap) {
 		schedule_stream_reap (player);
 	}
-
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	return ret;
 }
@@ -3236,9 +3273,9 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 static gboolean
 stop_sink_later (RBPlayerGstXFade *player)
 {
-	player->priv->stop_sink_id = 0;
 	g_static_rec_mutex_lock (&player->priv->sink_lock);
-	if (player->priv->linked_streams == 0) {
+	player->priv->stop_sink_id = 0;
+	if (g_atomic_int_get (&player->priv->linked_streams) == 0) {
 		stop_sink (player);
 	}
 	g_static_rec_mutex_unlock (&player->priv->sink_lock);
@@ -3249,12 +3286,14 @@ stop_sink_later (RBPlayerGstXFade *player)
 static void
 maybe_stop_sink (RBPlayerGstXFade *player)
 {
+	g_static_rec_mutex_lock (&player->priv->sink_lock);
 	if (player->priv->stop_sink_id == 0) {
 		player->priv->stop_sink_id =
 			g_timeout_add (1000,
 				       (GSourceFunc) stop_sink_later,
 				       player);
 	}
+	g_static_rec_mutex_unlock (&player->priv->sink_lock);
 }
 
 static gboolean
@@ -3430,6 +3469,7 @@ rb_player_gst_xfade_pause (RBPlayer *iplayer)
 {
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
 	GList *l;
+	GList *to_fade = NULL;
 	gboolean done = FALSE;
 	double fade_out_start = 1.0f;
 	gint64 fade_out_time = PAUSE_FADE_LENGTH;
@@ -3462,13 +3502,9 @@ rb_player_gst_xfade_pause (RBPlayer *iplayer)
 			break;
 
 		case FADING_IN:
-			g_object_get (stream->volume, "volume", &fade_out_start, NULL);
-			fade_out_time = (gint64)(((double) PAUSE_FADE_LENGTH) * fade_out_start);
 		case PLAYING:
 			rb_debug ("pausing stream %s -> FADING_OUT_PAUSED", stream->uri);
-
-			stream->state = FADING_OUT_PAUSED;
-			start_stream_fade (stream, fade_out_start, 0.0f, fade_out_time);
+			to_fade = g_list_prepend (to_fade, g_object_ref (stream));
 			done = TRUE;
 			break;
 
@@ -3496,10 +3532,31 @@ rb_player_gst_xfade_pause (RBPlayer *iplayer)
 			break;
 	}
 
+	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+
+	for (l = to_fade; l != NULL; l = l->next) {
+		RBXFadeStream *stream = (RBXFadeStream *)l->data;
+
+		switch (stream->state) {
+		case FADING_IN:
+			g_object_get (stream->volume, "volume", &fade_out_start, NULL);
+			fade_out_time = (gint64)(((double) PAUSE_FADE_LENGTH) * fade_out_start);
+
+		case PLAYING:
+			stream->state = FADING_OUT_PAUSED;
+			start_stream_fade (stream, fade_out_start, 0.0f, fade_out_time);
+
+		default:
+			/* shouldn't happen, but ignore it if it does */
+			break;
+		}
+
+		g_object_unref (stream);
+	}
+	g_list_free (to_fade);
+	
 	if (done == FALSE)
 		rb_debug ("couldn't find a stream to pause");
-
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 }
 
 static gboolean

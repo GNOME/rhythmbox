@@ -1,3 +1,13 @@
+2009-02-06  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(link_and_unblock_stream), (unlink_blocked_cb),
+	(unlink_and_dispose_stream), (stream_src_event_cb),
+	(actually_start_stream), (stop_sink_later), (maybe_stop_sink),
+	(rb_player_gst_xfade_pause):  Rearrange locking a bit more.
+	Don't do any work while holding the stream list lock.  It's only used
+	for finding streams to process later now.
+
 2009-02-05  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/generic-player/rb-generic-player-source.c:
