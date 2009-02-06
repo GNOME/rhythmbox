@@ -1,5 +1,12 @@
 2009-02-06  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/generic-player/rb-generic-player-playlist-source.c:
+	(rb_generic_player_playlist_delete_from_player):
+	Don't try to use priv->playlist_path as a URI.  Fixes deletion of
+	playlist files from generic player devices.
+
+2009-02-06  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/gstreamer/rb-player-gst-xfade.c:
 	(link_and_unblock_stream), (unlink_blocked_cb),
 	(unlink_and_dispose_stream), (stream_src_event_cb),

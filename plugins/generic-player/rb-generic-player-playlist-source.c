@@ -365,10 +365,10 @@ rb_generic_player_playlist_delete_from_player (RBGenericPlayerPlaylistSource *so
 		GError *error = NULL;
 		GFile *playlist;
 
-		playlist = g_file_new_for_uri (priv->playlist_path);
+		playlist = g_file_new_for_path (priv->playlist_path);
 		g_file_delete (playlist, NULL, &error);
 		if (error != NULL) {
-			g_warning ("Deleting playlist failed: %s", error->message);
+			g_warning ("Deleting playlist %s failed: %s", priv->playlist_path, error->message);
 			g_clear_error (&error);
 		}
 		g_object_unref (playlist);
