@@ -252,33 +252,6 @@ rb_uri_exists (const char *uri)
 }
 
 static gboolean
-is_valid_scheme_character (char c)
-{
-	return g_ascii_isalnum (c) || c == '+' || c == '-' || c == '.';
-}
-
-
-
-
-static gboolean
-has_valid_scheme (const char *uri)
-{
-        const char *p;
-
-        p = uri;
-
-        if (!is_valid_scheme_character (*p)) {
-                return FALSE;
-        }
-
-        do {
-                p++;
-        } while (is_valid_scheme_character (*p));
-
-        return *p == ':';
-}
-
-static gboolean
 get_uri_perm (const char *uri, const char *perm_attribute)
 {
 	GFile *f;
@@ -749,14 +722,17 @@ rb_uri_append_path (const char *uri, const char *path)
 char*
 rb_uri_append_uri (const char *uri, const char *fragment)
 {
-	/* skip scheme component of the fragment */
-	if (has_valid_scheme (fragment)) {
-		while (is_valid_scheme_character (*fragment))
-			fragment++;
-	}
-	fragment++;
+	char *path;
+	char *rv;
+	GFile *f = g_file_new_for_uri (fragment);
 
-	return rb_uri_append_path (uri, fragment);
+	path = g_file_get_path (f);
+
+	rv = rb_uri_append_path (uri, path);
+	g_free (path);
+	g_object_unref (f);
+
+	return rv;
 }
 
 char *

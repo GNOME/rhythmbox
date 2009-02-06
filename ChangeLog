@@ -1,5 +1,12 @@
 2009-02-06  Jonathan Matthew  <jonathan@d14n.org>
 
+	* lib/rb-file-helpers.c: (rb_uri_append_uri):
+	Stop pretending we can chop up URIs without dealing with escaping.
+	Instead, use a temporary GFile to extract the path we're appending.
+	Makes loading of playlists from generic player devices work.
+
+2009-02-06  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/generic-player/rb-generic-player-playlist-source.c:
 	(rb_generic_player_playlist_delete_from_player):
 	Don't try to use priv->playlist_path as a URI.  Fixes deletion of
