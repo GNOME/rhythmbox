@@ -245,10 +245,12 @@ filter_mmkeys (GdkXEvent *xevent,
 	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioStop) == key->keycode) {
 		rb_shell_player_stop (player);
 		return GDK_FILTER_REMOVE;
-	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPrev) == key->keycode) {
+	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPrev) == key->keycode ||
+		   XKeysymToKeycode (GDK_DISPLAY (), XF86XK_Back) == key->keycode) {
 		rb_shell_player_do_previous (player, NULL);
 		return GDK_FILTER_REMOVE;
-	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioNext) == key->keycode) {
+	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioNext) == key->keycode ||
+		   XKeysymToKeycode (GDK_DISPLAY (), XF86XK_Forward) == key->keycode) {
 		rb_shell_player_do_next (player, NULL);
 		return GDK_FILTER_REMOVE;
 	} else {
@@ -259,7 +261,7 @@ filter_mmkeys (GdkXEvent *xevent,
 static void
 mmkeys_grab (RBMMKeysPlugin *plugin, gboolean grab)
 {
-	gint keycodes[] = {0, 0, 0, 0, 0};
+	gint keycodes[] = {0, 0, 0, 0, 0, 0, 0};
 	GdkDisplay *display;
 	GdkScreen *screen;
 	GdkWindow *root;
@@ -270,6 +272,8 @@ mmkeys_grab (RBMMKeysPlugin *plugin, gboolean grab)
 	keycodes[2] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPrev);
 	keycodes[3] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioNext);
 	keycodes[4] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPause);
+	keycodes[5] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_Back);
+	keycodes[6] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_Forward);
 
 	display = gdk_display_get_default ();
 
