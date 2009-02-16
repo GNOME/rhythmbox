@@ -2428,3 +2428,18 @@
   )
 )
 
+;; From rb-file-helpers.h
+
+(define-function user_data_dir
+  (in-module "rb")
+  (c-name "rb_user_data_dir")
+  (return-type "const-char*")
+)
+
+(define-function user_cache_dir
+  (in-module "rb")
+  (c-name "rb_user_cache_dir")
+  (return-type "const-char*")
+)
+
+

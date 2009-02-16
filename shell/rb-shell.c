@@ -678,7 +678,7 @@ rb_shell_init (RBShell *shell)
 {
 	shell->priv = RB_SHELL_GET_PRIVATE (shell);
 
-	rb_dot_dir ();
+	rb_user_data_dir ();
 
         rb_shell_session_init (shell);
 
@@ -953,23 +953,11 @@ rb_shell_new (gboolean no_registration,
 	      char *rhythmdb,
 	      char *playlists)
 {
-	RBShell *s;
-	char *pathname;
-
-	/* set default playlist name, if none supplied */
-	if (playlists) 
-		pathname = g_strdup (playlists);
-	else 
-		pathname = g_build_filename (rb_dot_dir (), "playlists.xml", NULL); 
-	
-	s = g_object_new (RB_TYPE_SHELL,
+	return g_object_new (RB_TYPE_SHELL,
 			  "no-registration", no_registration,
 			  "no-update", no_update,
 			  "dry-run", dry_run, "rhythmdb-file", rhythmdb, 
-			  "playlists-file", pathname, NULL);
-
-	g_free (pathname);
-	return s;
+			  "playlists-file", playlists, NULL);
 }
 
 static GMountOperation *
@@ -986,16 +974,24 @@ rb_shell_create_mount_op_cb (RhythmDB *db, RBShell *shell)
 static void
 construct_db (RBShell *shell)
 {
+	GError *error = NULL;
 	char *pathname;
 
 	/* Initialize the database */
 	rb_debug ("creating database object");
 	rb_profile_start ("creating database object");
 
-	if (shell->priv->rhythmdb_file)
+	if (shell->priv->rhythmdb_file) {
 		pathname = g_strdup (shell->priv->rhythmdb_file);
-	else
-		pathname = g_build_filename (rb_dot_dir (), "rhythmdb.xml", NULL);
+	} else {
+		pathname = rb_find_user_data_file ("rhythmdb.xml", &error);
+		if (error != NULL) {
+			rb_error_dialog (GTK_WINDOW (shell->priv->window),
+					 _("Unable to move user data files"),
+					 "%s", error->message);
+			g_error_free (error);
+		}
+	}
 
 #ifdef WITH_RHYTHMDB_TREE
 	shell->priv->db = rhythmdb_tree_new (pathname);
@@ -1183,6 +1179,9 @@ construct_widgets (RBShell *shell)
 static void
 construct_sources (RBShell *shell)
 {
+	GError *error = NULL;
+	char *pathname;
+
 	rb_profile_start ("constructing sources");
 
 	shell->priv->library_source = RB_LIBRARY_SOURCE (rb_library_source_new (shell));
@@ -1194,10 +1193,23 @@ construct_sources (RBShell *shell)
 	shell->priv->import_errors_source = rb_import_errors_source_new (shell, RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
 	rb_shell_append_source (shell, shell->priv->import_errors_source, NULL);
 
+	/* Find the playlist name if none supplied */
+	if (shell->priv->playlists_file) {
+		pathname = g_strdup (shell->priv->playlists_file);
+	} else {
+		pathname = rb_find_user_data_file ("playlists.xml", &error);
+		if (error != NULL) {
+			rb_error_dialog (GTK_WINDOW (shell->priv->window),
+					 _("Unable to move user data files"),
+					 "%s", error->message);
+			g_error_free (error);
+		}
+	}
+
 	/* Initialize playlist manager */
 	rb_debug ("shell: creating playlist manager");
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell,
-								 RB_SOURCELIST (shell->priv->sourcelist), shell->priv->playlists_file);
+								 RB_SOURCELIST (shell->priv->sourcelist), pathname);
 
 	g_object_set (G_OBJECT(shell->priv->clipboard_shell), "playlist-manager", shell->priv->playlist_manager, NULL);
 
@@ -1214,6 +1226,8 @@ construct_sources (RBShell *shell)
 				 G_CALLBACK (rb_shell_medium_added_cb), shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->removable_media_manager), "transfer-progress",
 				 G_CALLBACK (rb_shell_transfer_progress_cb), shell, 0);
+
+	g_free (pathname);
 
 	rb_profile_end ("constructing sources");
 }

@@ -40,11 +40,8 @@ from urllib import unquote
 ART_SEARCHES_LOCAL = [LocalCoverArtSearch]
 ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, AmazonCoverArtSearch]
 OLD_ART_FOLDER = '~/.gnome2/rhythmbox/covers'
-# complicated way of saying ~/.cache/rhythmbox/covers
-ART_FOLDER = os.path.join(os.environ.get('XDG_CACHE_HOME',
-		os.path.join(os.environ.get('XDG_HOME_DIR',
-				os.environ.get('HOME','~')),
-				'.cache')), 'rhythmbox/covers')
+
+ART_FOLDER = os.path.join(rb.user_cache_dir(), 'covers')
 ART_CACHE_EXTENSION_JPG = 'jpg'
 ART_CACHE_EXTENSION_PNG = 'png'
 ART_CACHE_FORMAT_JPG = 'jpeg'

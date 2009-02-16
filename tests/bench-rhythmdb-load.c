@@ -89,8 +89,8 @@ main (int argc, char **argv)
 	int i;
 
 	if (argc < 2) {
-		g_print ("using ~/.gnome2/rhythmbox/rhythmdb.xml\n");
-		name = g_strdup_printf ("%s/rhythmdb.xml", rb_dot_dir ());
+		name = g_build_filename (rb_user_data_dir(), "rhythmdb.xml", NULL);
+		g_print ("using %s\n", name);
 	} else {
 		name = g_strdup (argv[1]);
 	}

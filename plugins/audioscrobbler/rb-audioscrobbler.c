@@ -1357,7 +1357,8 @@ rb_audioscrobbler_load_queue (RBAudioscrobbler *audioscrobbler)
 	char *end;
 	gsize size;
 
-	pathname = g_build_filename (rb_dot_dir (), "audioscrobbler.queue", NULL);
+	/* we don't really care about errors enough to report them here */
+	pathname = rb_find_user_data_file ("audioscrobbler.queue", NULL);
 	file = g_file_new_for_path (pathname);
 	rb_debug ("loading Audioscrobbler queue from \"%s\"", pathname);
 	g_free (pathname);
@@ -1413,7 +1414,8 @@ rb_audioscrobbler_save_queue (RBAudioscrobbler *audioscrobbler)
 		rb_audioscrobbler_entry_save_to_string (str, entry);
 	}
 
-	pathname = g_build_filename (rb_dot_dir (), "audioscrobbler.queue", NULL);
+	/* we don't really care about errors enough to report them here */
+	pathname = rb_find_user_data_file ("audioscrobbler.queue", NULL);
 	rb_debug ("Saving Audioscrobbler queue to \"%s\"", pathname);
 
 	file = g_file_new_for_path (pathname);

@@ -46,6 +46,8 @@
 static GHashTable *files = NULL;
 
 static char *dot_dir = NULL;
+static char *user_data_dir = NULL;
+static char *user_cache_dir = NULL;
 
 const char *
 rb_file (const char *filename)
@@ -91,11 +93,61 @@ rb_dot_dir (void)
 					    GNOME_DOT_GNOME,
 					    "rhythmbox",
 					    NULL);
-		if (g_mkdir (dot_dir, 0750) == -1)
-			rb_debug ("unable to create Rhythmbox's dot dir");
+
+		/* since we don't write any new files in this directory, we shouldn't
+		 * create it if it doesn't already exist.
+		 */
 	}
 	
 	return dot_dir;
+}
+
+/**
+ * rb_user_data_dir:
+ *
+ * This will create the rhythmbox user data directory, using the XDG Base
+ * Directory specification.  If none of the XDG environment variables are
+ * set, this will be ~/.local/share/rhythmbox.
+ *
+ * Returns: string holding the path to the rhythmbox user data directory, or
+ * NULL if the directory does not exist and cannot be created.
+ */
+const char *
+rb_user_data_dir (void)
+{
+	if (user_data_dir == NULL) {
+		user_data_dir = g_build_filename (g_get_user_data_dir (),
+						  "rhythmbox",
+						  NULL);
+		if (g_mkdir_with_parents (user_data_dir, 0700) == -1)
+			rb_debug ("unable to create Rhythmbox's user data dir, %s", user_data_dir);
+	}
+	
+	return user_data_dir;
+}
+
+/**
+ * rb_user_cache_dir:
+ *
+ * This will create the rhythmbox user cache directory, using the XDG
+ * Base Directory specification.  If none of the XDG environment
+ * variables are set, this will be ~/.cache/rhythmbox.
+ *
+ * Returns: string holding the path to the rhythmbox user cache directory, or
+ * NULL if the directory does not exist and could not be created.
+ */
+const char *
+rb_user_cache_dir (void)
+{
+	if (user_cache_dir == NULL) {
+		user_cache_dir = g_build_filename (g_get_user_cache_dir (),
+						   "rhythmbox",
+						   NULL);
+		if (g_mkdir_with_parents (user_cache_dir, 0700) == -1)
+			rb_debug ("unable to create Rhythmbox's user cache dir, %s", user_cache_dir);
+	}
+
+	return user_cache_dir;
 }
 
 
@@ -114,6 +166,77 @@ rb_music_dir (void)
 	return dir;
 }
 
+/**
+ * rb_find_user_data_file:
+ * @name: name of file to find
+ * @error: returns error information
+ *
+ * Determines the full path to use for user-specific files, such as rhythmdb.xml.
+ * This first checks in the user data directory (see @rb_user_data_dir).
+ * If the file does not exist in the user data directory, it then checks the
+ * old .gnome2 directory, moving the file to the user data directory if found there.
+ * If an error occurs while moving the file, this will be reported through @error 
+ * and the .gnome2 path will be returned.
+ *
+ * Returns: allocated string containing the location of the file to use, even if
+ *  an error occurred.
+ */
+char *
+rb_find_user_data_file (const char *name,
+			GError **error)
+{
+	GError *temp_err = NULL;
+	char *srcpath;
+	char *destpath;
+	GFile *src;
+	GFile *dest;
+	char *use_path;
+
+	/* if the file exists in the user data dir, return the path */
+	destpath = g_build_filename (rb_user_data_dir (), name, NULL);
+	dest = g_file_new_for_path (destpath);
+	if (g_file_query_exists (dest, NULL) == TRUE) {
+		g_object_unref (dest);
+		rb_debug ("found user data dir path for '%s': %s", name, destpath);
+		return destpath;
+	}
+
+	/* doesn't exist in the user data dir, so try to move it from the .gnome2 dir */
+	srcpath = g_build_filename (rb_dot_dir (), name, NULL);
+	src = g_file_new_for_path (srcpath);
+
+	if (g_file_query_exists (src, NULL)) {
+		g_file_move (src, dest, G_FILE_COPY_NONE, NULL, NULL, NULL, &temp_err);
+		if (temp_err != NULL) {
+			rb_debug ("failed to move user data file '%s' from .gnome2 dir, returning .gnome2 path %s: %s",
+				  name, srcpath, temp_err->message);
+
+			use_path = g_file_get_path (src);
+			g_set_error (error,
+				     temp_err->domain,
+				     temp_err->code,
+				     _("Unable to move %s to %s: %s"),
+				     srcpath, destpath, temp_err->message);
+			g_error_free (temp_err);
+		} else {
+			rb_debug ("moved user data file '%s' from .gnome2 dir, returning user data dir path %s",
+				  name, destpath);
+			use_path = g_file_get_path (dest);
+		}
+	} else {
+		rb_debug ("no existing file for '%s', returning user data dir path %s", name, destpath);
+		use_path = g_file_get_path (dest);
+	}
+
+	g_free (srcpath);
+	g_free (destpath);
+
+	g_object_unref (src);
+	g_object_unref (dest);
+
+	return use_path;
+}
+
 void
 rb_file_helpers_init (void)
 {
@@ -128,6 +251,8 @@ rb_file_helpers_shutdown (void)
 {
 	g_hash_table_destroy (files);
 	g_free (dot_dir);
+	g_free (user_data_dir);
+	g_free (user_cache_dir);
 }
 
 #define MAX_LINK_LEVEL 5

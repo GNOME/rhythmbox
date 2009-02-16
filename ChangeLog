@@ -1,3 +1,40 @@
+2009-02-16  Jonathan Matthew  <jonathan@d14n.org>
+
+	based on a patch by: John Daiker  <daikerjohn@gmail.com>
+
+	* lib/rb-file-helpers.c: (rb_dot_dir), (rb_user_data_dir),
+	(rb_user_cache_dir), (rb_find_user_data_file),
+	(rb_file_helpers_shutdown):
+	* lib/rb-file-helpers.h:
+	Add helpers to get our user data and cache directories, and for
+	handling the migration of files from ~/.gnome2/rhythmbox/
+	intelligently.
+	
+	* shell/rb-shell.c: (rb_shell_init), (rb_shell_new),
+	(construct_db), (construct_sources):
+	Use rb_find_user_data_file to migrate rhythmdb.xml and playlists.xml
+	to the user data directory.
+
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	* plugins/rb-plugin.c: (rb_get_plugin_paths):
+	Add user data dir search paths for icons and plugins
+
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_load_queue), (rb_audioscrobbler_save_queue):
+	Store audioscrobbler cache in user data dir.
+
+	* tests/bench-rhythmdb-load.c: (main):
+	Use rb_user_data_dir to find rhythmdb.xml
+	
+	* bindings/python/Makefile.am:
+	* bindings/python/rb.defs:
+	Add bindings for rb_user_data_dir and rb_user_cache_dir
+	
+	* plugins/artdisplay/artdisplay/CoverArtDatabase.py:
+	Use rb_user_cache_dir to find the cover cache path.
+
+	Fixes #518589 and #560824.
+
 2009-02-11  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/mmkeys/rb-mmkeys-plugin.c (filter_mmkeys), (mmkeys_grab):

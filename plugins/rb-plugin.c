@@ -202,7 +202,11 @@ rb_get_plugin_paths (void)
 	paths = NULL;
 
 	if (!eel_gconf_get_boolean (CONF_PLUGIN_DISABLE_USER)) {
+		/* deprecated path, should be removed some time in the future */
 		path = g_build_filename (rb_dot_dir (), "plugins", NULL);
+		paths = g_list_prepend (paths, path);
+
+		path = g_build_filename (rb_user_data_dir (), "plugins", NULL);
 		paths = g_list_prepend (paths, path);
 	}
 
