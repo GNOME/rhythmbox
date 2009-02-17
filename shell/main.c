@@ -267,6 +267,8 @@ main (int argc, char **argv)
 
 		gtk_window_set_default_icon_name ("rhythmbox");
 
+		g_setenv ("PULSE_PROP_media.role", "music", TRUE);
+
 		rb_shell = rb_shell_new (no_registration, no_update, dry_run, rhythmdb_file, playlists_file);
 		g_object_weak_ref (G_OBJECT (rb_shell), main_shell_weak_ref_cb, NULL);
 		if (!no_registration && session_bus != NULL) {
