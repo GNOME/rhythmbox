@@ -315,15 +315,15 @@ if test x"$enable_musicbrainz" = xyes; then
 	RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $MUSICBRAINZ_CFLAGS"
 	RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $MUSICBRAINZ_LIBS"
 	AC_DEFINE(HAVE_MUSICBRAINZ, 1, [define if you have Musicbrainz])
-
-	PKG_CHECK_MODULES(MUSICBRAINZ3, libmusicbrainz3, [have_mb3=yes], [have_mb3=no])
-	AC_SUBST(MUSICBRAINZ3_CFLAGS)
-	AC_SUBST(MUSICBRAINZ3_LIBS)
-	if test "$have_mb3" = "yes" ; then
-		AC_DEFINE([HAVE_MUSICBRAINZ3], 1, [Whether libmusicbrainz3 is available])
-	fi
 fi
 AM_CONDITIONAL(HAVE_MUSICBRAINZ, test "x$enable_musicbrainz" = "xyes")
+
+PKG_CHECK_MODULES(MUSICBRAINZ3, libmusicbrainz3, [have_mb3=yes], [have_mb3=no])
+AC_SUBST(MUSICBRAINZ3_CFLAGS)
+AC_SUBST(MUSICBRAINZ3_LIBS)
+if test "$have_mb3" = "yes" ; then
+	AC_DEFINE([HAVE_MUSICBRAINZ3], 1, [Whether libmusicbrainz3 is available])
+fi
 AM_CONDITIONAL([HAVE_MUSICBRAINZ3], [test "x$have_mb3" = "xyes"])
 
 AC_PATH_XTRA
@@ -855,6 +855,12 @@ if test x"$enable_musicbrainz" != "xyes"; then
 	AC_MSG_NOTICE([   MusicBrainz support is disabled])
 else
 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
+fi
+
+if test x"$have_mb3" != "xyes"; then
+	AC_MSG_NOTICE([   MusicBrainz3 support is disabled])
+else
+	AC_MSG_NOTICE([** MusicBrainz3 support is enabled])
 fi
 
 if test x"$use_ipod" = xyes; then

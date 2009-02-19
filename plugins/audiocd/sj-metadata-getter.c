@@ -28,7 +28,9 @@
 #ifdef HAVE_MUSICBRAINZ3
 #include "sj-metadata-musicbrainz3.h"
 #endif /* HAVE_MUSICBRAINZ3 */
+#ifdef HAVE_MUSICBRAINZ
 #include "sj-metadata-musicbrainz.h"
+#endif /* HAVE_MUSICBRAINZ */
 #ifdef HAVE_LIBCDIO
 #include "sj-metadata-cdtext.h"
 #endif /* HAVE_LIBCDIO */
@@ -179,7 +181,9 @@ lookup_cd (SjMetadataGetter *mdg)
 #ifdef HAVE_MUSICBRAINZ3
     SJ_TYPE_METADATA_MUSICBRAINZ3,
 #endif /* HAVE_MUSICBRAINZ3 */
+#ifdef HAVE_MUSICBRAINZ
     SJ_TYPE_METADATA_MUSICBRAINZ,
+#endif /* HAVE_MUSICBRAINZ */
 #ifdef HAVE_LIBCDIO
     SJ_TYPE_METADATA_CDTEXT,
 #endif /* HAVE_LIBCDIO */
