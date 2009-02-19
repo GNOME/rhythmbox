@@ -43,6 +43,10 @@
 
 #include <X11/Xatom.h>
 
+#ifdef HAVE_MMKEYS
+#include <X11/XF86keysym.h>
+#endif /* HAVE_MMKEYS */
+
 #if !GTK_CHECK_VERSION(2,13,1)
 #include <libgnome/libgnome.h>
 #endif
@@ -114,6 +118,9 @@ static gboolean rb_shell_window_configure_cb (GtkWidget *win,
 static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   GdkEventAny *event,
 			                   RBShell *shell);
+static gboolean rb_shell_key_press_event_cb (GtkWidget *win,
+					     GdkEventKey *event,
+					     RBShell *shell);
 static void rb_shell_sync_window_state (RBShell *shell, gboolean dont_maximise);
 static void rb_shell_sync_paned (RBShell *shell);
 static void rb_shell_sync_party_mode (RBShell *shell);
@@ -1041,6 +1048,10 @@ construct_widgets (RBShell *shell)
 				 G_CALLBACK (rb_shell_window_delete_cb),
 				 shell, G_CONNECT_AFTER);
 
+	gtk_widget_add_events (GTK_WIDGET (win), GDK_KEY_PRESS_MASK);
+	g_signal_connect_object (G_OBJECT(win), "key_press_event",
+				 G_CALLBACK (rb_shell_key_press_event_cb), shell, 0);
+
 	rb_debug ("shell: initializing shell services");
 
 	shell->priv->ui_manager = gtk_ui_manager_new ();
@@ -1637,6 +1648,32 @@ rb_shell_window_delete_cb (GtkWidget *win,
 	rb_shell_quit (shell, NULL);
 
 	return TRUE;
+}
+
+static gboolean
+rb_shell_key_press_event_cb (GtkWidget *win,
+			     GdkEventKey *event,
+			     RBShell *shell)
+{
+#ifndef HAVE_MMKEYS
+	return FALSE;
+#else
+
+	gboolean retval = TRUE;
+
+	switch (event->keyval) {
+	case XF86XK_Back:
+		rb_shell_player_do_previous (shell->priv->player_shell, NULL);
+		break;
+	case XF86XK_Forward:
+		rb_shell_player_do_next (shell->priv->player_shell, NULL);
+		break;
+	default:
+		retval = FALSE;
+	}
+
+	return retval;
+#endif /* !HAVE_MMKEYS */
 }
 
 static void

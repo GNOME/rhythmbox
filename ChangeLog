@@ -1,5 +1,12 @@
 2009-02-19  Bastien Nocera  <hadess@hadess.net>
 
+	* shell/rb-shell.c (construct_widgets),
+	(rb_shell_key_press_event_cb): Add support for
+	XF86Forward and XF86Back to play the previous/next songs,
+	this will only work when Rhythmbox is focused (Closes: #568737)
+
+2009-02-19  Bastien Nocera  <hadess@hadess.net>
+
 	* configure.ac: Allow building with libmusicbrainz3 only,
 	and don't require the old libmusicbrainz
 	* plugins/audiocd/sj-metadata-getter.c (lookup_cd):
