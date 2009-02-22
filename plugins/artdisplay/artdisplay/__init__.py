@@ -435,7 +435,8 @@ class ArtDisplayPlugin (rb.Plugin):
 					pass
 
 		print "got cover art URI notification: %s" % (uri)
-		rb.Loader().get_url (uri, loader_cb)
+		l = rb.Loader()
+		l.get_url (uri, loader_cb)
 
 	def cover_art_uri_request (self, db, entry):
 		if entry == self.current_entry:

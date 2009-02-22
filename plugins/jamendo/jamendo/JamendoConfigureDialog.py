@@ -20,7 +20,7 @@
 
 import gobject
 import gtk, gtk.glade
-import gconf, gnomevfs, gnome
+import gconf, gnome
 
 gconf_keys = {	'format' : '/apps/rhythmbox/plugins/jamendo/format',
 		'sorting': '/apps/rhythmbox/plugins/jamendo/sorting'

@@ -48,8 +48,8 @@ def shared_prefix_length (a, b):
 
 
 class LocalCoverArtSearch:
-	def __init__ (self, loader):
-		self.loader = loader
+	def __init__ (self):
+		pass
 
 	def _load_dir_cb (self, handle, files, exception, (results, on_search_completed_cb, entry, args)):
 		for f in files:

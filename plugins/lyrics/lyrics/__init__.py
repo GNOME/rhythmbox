@@ -108,7 +108,6 @@ def build_cache_path(artist, title):
 
 class LyricGrabber(object):
 	def __init__(self, db, entry):
-		self.loader = rb.Loader ()
 		self.db = db
 		self.entry = entry
 		
@@ -128,7 +127,8 @@ class LyricGrabber(object):
 		status = self.verify_lyric()
 		
 		if status:
-			self.loader.get_url(self.cache_path, callback)
+			l = rb.Loader()
+			l.get_url(self.cache_path, callback)
 		else:
 			if cache_only:
 				self.callback(_("No lyrics found"))

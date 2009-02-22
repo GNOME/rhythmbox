@@ -1,3 +1,59 @@
+2009-02-22  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/rb/Loader.py:
+	* plugins/rb/__init__.py:
+	Restructure, rewrite, add two new classes: one for loading URI
+	contents by chunks (for downloading large files, progressively parsing
+	huge xml documents, etc.), one for performing file modification time
+	checks.  Implement all of these using both GIO and gnome-vfs.  GIO
+	implementations require pygobject 2.16.0.  The loader classes are now
+	intended to be single use (they have state) and operations are
+	cancellable.
+
+	Add a helper function to use gtk.show_uri() if available, falling back
+	to gnome-vfs otherwise.
+
+	* plugins/lyrics/lyrics/__init__.py:
+	* plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:
+	* plugins/artdisplay/artdisplay/LocalCoverArtSearch.py:
+	* plugins/artdisplay/artdisplay/PodcastCoverArtSearch.py:
+	* plugins/artdisplay/artdisplay/__init__.py:
+	Rewrite various bits to create loader instances as required, rather
+	than sharing them between submodules.
+	
+	* plugins/artdisplay/artdisplay/Makefile.am:
+	* plugins/artdisplay/artdisplay/LocalCoverArtSearchGIO.py:
+	* plugins/artdisplay/artdisplay/CoverArtDatabase.py:
+	Add a GIO implementation of the local cover art search.  Requires GIO
+	2.15.3 or newer.
+	
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override:
+	* lib/rb-file-helpers.c: (rb_find_user_file),
+	(rb_find_user_data_file), (rb_find_user_cache_file):
+	* lib/rb-file-helpers.h:
+	Add function for migrating user cache files from ~/.gnome2 to XDG
+	cache directory, add python bindings for various directory helper
+	functions.
+
+	* plugins/jamendo/jamendo/JamendoConfigureDialog.py:
+	* plugins/jamendo/jamendo/JamendoSource.py:
+	Rewrite the catalogue downloading and parsing stuff to use the new
+	loader classes.  Rework the download/parse logic a bit so we don't
+	parse the catalogue twice if we're downloading a new copy on startup.
+
+	* plugins/magnatune/magnatune/MagnatuneSource.py:
+	Rewrite all the catalogue and purchasing code using the new loader
+	classes.  The purchasing code is completely untested, but at least the
+	idea is right as far as I can tell.
+	
+	* plugins/coherence/upnp_coherence/__init__.py:
+	Add code to get the mime type of the icon using gio, falling back to
+	gnome-vfs if that doesn't work
+
+	While gnome-vfs code remains, it's only there as a fallback.
+	Fixes #510392.
+
 2009-02-19  Bastien Nocera  <hadess@hadess.net>
 
 	* shell/rb-shell.c (construct_widgets),

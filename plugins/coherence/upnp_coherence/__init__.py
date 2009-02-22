@@ -15,7 +15,7 @@ import coherence.extern.louie as louie
 from coherence import log
 
 # For the icon
-import os.path, urllib, gnomevfs, gtk.gdk
+import os.path, urllib, gtk.gdk
 
 class CoherencePlugin(rb.Plugin,log.Loggable):
 
@@ -47,7 +47,16 @@ class CoherencePlugin(rb.Plugin,log.Loggable):
         face_path = os.path.join(os.path.expanduser('~'), ".face")
         if os.path.exists(face_path):
             url = "file://" + urllib.pathname2url(face_path)
-            mimetype = gnomevfs.get_mime_type(url)
+	    try:
+		    import gio
+		    f = gio.File(url)
+		    fi = f.query_info(gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE)
+		    ctype = fi.get_attribute_string(gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE)
+		    mimetype = gio.content_type_get_mime_type(ctype)
+	    except:
+		    import gnomevfs
+		    mimetype = gnomevfs.get_mime_type(url)
+
             pixbuf = gtk.gdk.pixbuf_new_from_file(face_path)
             width = "%s" % pixbuf.get_width()
             height = "%s" % pixbuf.get_height()

@@ -43,6 +43,8 @@ const char *	rb_music_dir		(void);
 
 char *		rb_find_user_data_file	(const char *name,
 					 GError **error);
+char *		rb_find_user_cache_file	(const char *name,
+					 GError **error);
 
 char *		rb_canonicalise_uri	(const char *uri);
 

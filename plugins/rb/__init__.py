@@ -27,9 +27,15 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import sys
+import os.path
+import os
+
+import gtk
 
 # rb classes
 from Loader import Loader
+from Loader import ChunkLoader
+from Loader import UpdateCheck
 from Coroutine import Coroutine
 
 #def _excepthandler (exc_class, exc_inst, trace):
@@ -46,7 +52,6 @@ def try_load_icon(theme, icon, size, flags):
 
 def append_plugin_source_path(theme, iconpath):
 	# check for a Makefile.am in the dir the file was loaded from
-	import sys, os
 	fr = sys._getframe(1)
 	co = fr.f_code
 	filename = co.co_filename
@@ -58,6 +63,15 @@ def append_plugin_source_path(theme, iconpath):
 		icondir = plugindir + iconpath
 		theme.append_search_path(icondir)
 
+def show_uri(uri):
+	# use gtk_show_uri if available, otherwise use gnome-vfs
+	if hasattr(gtk, 'show_uri'):
+		gtk.show_uri(gtk.gdk.Screen(), uri, 0)
+	else:
+		import gnomevfs
+		gnomevfs.url_show(uri)
+
+
 class _rbdebugfile:
 	def __init__(self, fn):
 		self.fn = fn
@@ -65,7 +79,7 @@ class _rbdebugfile:
 	def write(self, str):
 		if str == '\n':
 			return
-		import sys, os, rb
+		import rb
 		fr = sys._getframe(1)
 
 		co = fr.f_code

@@ -25,18 +25,18 @@ import rb, rhythmdb
 from JamendoSaxHandler import JamendoSaxHandler
 import JamendoConfigureDialog
 
+import os.path
 import gobject
 import gtk.glade
-import gnomevfs, gnome, gconf
+import gnome, gconf
 import xml
 import gzip
 import datetime
 
 # URIs
-jamendo_dir = gnome.user_dir_get() + "rhythmbox/jamendo/"
-jamendo_song_info_uri = gnomevfs.URI("http://img.jamendo.com/data/dbdump_artistalbumtrack.xml.gz")
-local_song_info_uri = gnomevfs.URI(jamendo_dir + "dbdump.xml")
-local_song_info_temp_uri = gnomevfs.URI(jamendo_dir + "dbdump.xml.tmp")
+
+jamendo_song_info_uri = "http://img.jamendo.com/data/dbdump_artistalbumtrack.xml.gz"
+
 mp32_uri = "http://api.jamendo.com/get2/bittorrent/file/plain/?type=archive&class=mp32&album_id="
 ogg3_uri = "http://api.jamendo.com/get2/bittorrent/file/plain/?type=archive&class=ogg3&album_id="
 
@@ -64,21 +64,25 @@ class JamendoSource(rb.BrowserSource):
 
 		rb.BrowserSource.__init__(self, name=_("Jamendo"))
 
-		self.__loader = rb.Loader()
-
 		# catalogue stuff
 		self.__db = None
 		self.__saxHandler = None
 		self.__activated = False
 		self.__notify_id = 0
 		self.__update_id = 0
-		self.__xfer_handle = None
 		self.__info_screen = None
 		self.__updating = True
-		self.__load_handle = None
 		self.__load_current_size = 0
 		self.__load_total_size = 0
 		self.__db_load_finished = False
+
+		self.__catalogue_loader = None
+		self.__catalogue_check = None
+
+		self.__jamendo_dir = rb.find_user_cache_file("jamendo")
+
+		self.__local_catalogue_path = os.path.join(self.__jamendo_dir, "dbdump.xml")
+		self.__local_catalogue_temp = os.path.join(self.__jamendo_dir, "dbdump.xml.tmp")
 
 	def do_set_property(self, property, value):
 		if property.name == 'plugin':
@@ -127,7 +131,6 @@ class JamendoSource(rb.BrowserSource):
 
 			self.__activated = True
 			self.__show_loading_screen (True)
-			self.__load_catalogue()
 
 			# start our catalogue updates
 			self.__update_id = gobject.timeout_add(6 * 60 * 60 * 1000, self.__update_catalogue)
@@ -149,9 +152,13 @@ class JamendoSource(rb.BrowserSource):
 			gobject.source_remove (self.__notify_id)
 			self.__notify_id = 0
 
-		if self.__xfer_handle is not None:
-			self.__xfer_handle.cancel()
-			self.__xfer_handle = None
+		if self.__catalogue_loader:
+			self.__catalogue_loader.cancel()
+			self.__catalogue_loader = None
+
+		if self.__catalogue_check:
+			self.__catalogue_check.cancel()
+			self.__catalogue_check = None
 
 		gconf.client_get_default().set_string(JamendoConfigureDialog.gconf_keys['sorting'], self.get_entry_view().get_sorting_type())
 		rb.BrowserSource.do_impl_delete_thyself (self)
@@ -160,136 +167,91 @@ class JamendoSource(rb.BrowserSource):
 	#
 	# internal catalogue downloading and loading
 	#
-	def __load_catalogue_read_cb (self, handle, data, exc_type, bytes_requested, parser):
-		if exc_type:
-			if issubclass (exc_type, gnomevfs.EOFError):
-				def finish_loadscreen():
-					# successfully loaded
-					gtk.gdk.threads_enter()
-					self.__load_db ()
-					self.__show_loading_screen (False)
 
-					in_progress_dir = gnomevfs.DirectoryHandle(gnomevfs.URI(jamendo_dir))
-					in_progress = in_progress_dir.next()
-					while True:
-						if in_progress.name[0:12] == "in_progress_":
-							in_progress = gnomevfs.read_entire_file(jamendo_dir + in_progress.name)
-							for uri in in_progress.split("\n"):
-								if uri == '':
-									continue
-								self.__download_album(gnomevfs.URI(uri))
-						try:
-							in_progress = in_progress_dir.next()
-						except:
-							break
-					gtk.gdk.threads_leave()
-					return False
-
-				if self.__db_load_finished is False:
-					gobject.idle_add (finish_loadscreen)
-					self.__db_load_finished = True
-			else:
-				# error reading file
-				raise exc_type
+	def __catalogue_chunk_cb(self, result, total, parser):
+		if result is None or isinstance (result, Exception):
+			if result:
+				# report error somehow?
+				print "error loading catalogue: %s" % result
 
 			parser.close()
-			handle.close(lambda handle, exc: None) # FIXME: report it?
-			self.__load_handle = None
+			self.__db_load_finished = True
 			self.__updating = False
-			self.__notify_status_changed()
- 		else:
-
-			parser.feed(data)
-			handle.read(64 * 1024, self.__load_catalogue_read_cb, parser)
-
-		self.__notify_status_changed()
-
-	def __load_catalogue_open_cb (self, handle, exc_type):
-		if exc_type:
-			self.__load_handle = None
-			self.__notify_status_changed()
-
-			if gnomevfs.exists(local_song_info_uri):
-				raise exc_type
-			else:
-				return
-
-		parser = xml.sax.make_parser()
-		self.__saxHandler = JamendoSaxHandler()
-		parser.setContentHandler(self.__saxHandler)
-		handle.read (64 * 1024, self.__load_catalogue_read_cb, parser)
-
-	def __load_catalogue(self):
-		self.__notify_status_changed()
-		self.__db_load_finished = False
-		self.__load_handle = gnomevfs.async.open (local_song_info_uri, self.__load_catalogue_open_cb)
-
-
-	def __download_update_cb (self, _reserved, info, moving):
-		self.__load_current_size = info.bytes_copied
-		self.__load_total_size = info.bytes_total
-		self.__notify_status_changed()
-
-		if info.phase == gnomevfs.XFER_PHASE_COMPLETED:
-			self.__xfer_handle = None
-			# done downloading, unzip to real location
-			catalog = gzip.open(local_song_info_temp_uri.path)
-			out = create_if_needed(local_song_info_uri, gnomevfs.OPEN_WRITE)
-			out.write(catalog.read())
-			out.close()
-			catalog.close()
-			gnomevfs.unlink(local_song_info_temp_uri)
-			self.__updating = False
-			self.__load_catalogue()
-		else:
-			#print info
-			pass
-
-		return 1
-
-	def __download_catalogue(self):
-		self.__updating = True
-		create_if_needed(local_song_info_temp_uri, gnomevfs.OPEN_WRITE).close()
-		self.__xfer_handle = gnomevfs.async.xfer (source_uri_list = [jamendo_song_info_uri],
-							  target_uri_list = [local_song_info_temp_uri],
-							  xfer_options = gnomevfs.XFER_FOLLOW_LINKS_RECURSIVE,
-							  error_mode = gnomevfs.XFER_ERROR_MODE_ABORT,
-							  overwrite_mode = gnomevfs.XFER_OVERWRITE_MODE_REPLACE,
-							  progress_update_callback = self.__download_update_cb,
-							  update_callback_data = False)
-
-	def __update_catalogue(self):
-		def info_cb (handle, results):
-			(remote_uri, remote_exc, remote_info) = results[0]
-			(local_uri, local_exc, local_info) = results[1]
-
-			if remote_exc:
-				# error locating remote file
-				print "error locating remote catalogue", remote_exc
-			elif local_exc:
-				if issubclass (local_exc, gnomevfs.NotFoundError):
-					# we haven't got it yet
-					print "no local copy of catalogue"
-					self.__download_catalogue()
-				else:
-					# error locating local file
-					print "error locating local catalogue", local_exc
-					self.__download_catalogue()
-			else:
-				try:
-					if remote_info.mtime > local_info.mtime:
-						# newer version available
-						self.__download_catalogue()
-					else:
-						# up to date
-						pass
-				except ValueError, e:
-					# couldn't get the mtimes. download?
-					print "error checking times", e
-					self.__download_catalogue()
+			self.__load_db ()
+			self.__show_loading_screen (False)
+			self.__catalogue_loader = None
 			return
 
-		gnomevfs.async.get_file_info ((jamendo_song_info_uri, local_song_info_uri), info_cb)
+		parser.feed(result)
+		self.__load_current_size += len(result)
+		self.__load_total_size = total
+		self.__notify_status_changed()
+
+	def __load_catalogue(self):
+		print "loading catalogue %s" % self.__local_catalogue_path
+		self.__notify_status_changed()
+		self.__db_load_finished = False
+
+		self.__saxHandler = JamendoSaxHandler()
+		parser = xml.sax.make_parser()
+		parser.setContentHandler(self.__saxHandler)
+
+		self.__catalogue_loader = rb.ChunkLoader()
+		self.__catalogue_loader.get_url_chunks(self.__local_catalogue_path, 64*1024, True, self.__catalogue_chunk_cb, parser)
+
+
+	def __download_catalogue_chunk_cb (self, result, total, out):
+		if not result:
+			# done downloading, unzip to real location
+			out.close()
+			catalog = gzip.open(self.__local_catalogue_temp)
+			out = open(self.__local_catalogue_path, 'w')
+
+			while True:
+				s = catalog.read(4096)
+				if s == "":
+					break
+				out.write(s)
+
+			out.close()
+			catalog.close()
+			os.unlink(self.__local_catalogue_temp)
+
+			self.__db_load_finished = True
+			self.__show_loading_screen (False)
+			self.__catalogue_loader = None
+
+			self.__load_catalogue ()
+
+		elif isinstance(result, Exception):
+			# complain
+			pass
+		else:
+			out.write(result)
+			self.__load_current_size += len(result)
+			self.__load_total_size = total
+
+		self.__notify_status_changed()
+
+	def __download_catalogue(self):
+		print "downloading catalogue"
+		self.__updating = True
+		out = open(self.__local_catalogue_temp, 'w')
+
+		self.__catalogue_loader = rb.ChunkLoader()
+		self.__catalogue_loader.get_url_chunks(jamendo_song_info_uri, 4*1024, True, self.__download_catalogue_chunk_cb, out)
+
+	def __update_catalogue(self):
+		def update_cb (result):
+			self.__catalogue_check = None
+			if result is True:
+				self.__download_catalogue()
+			elif self.__db_load_finished is False:
+				self.__load_catalogue()
+
+		self.__catalogue_check = rb.UpdateCheck()
+		self.__catalogue_check.check_for_update(jamendo_song_info_uri, self.__local_catalogue_path, update_cb)
+
 
 	def __show_loading_screen(self, show):
 		if self.__info_screen is None:
@@ -389,14 +351,16 @@ class JamendoSource(rb.BrowserSource):
 			formats["ogg3"] = ogg3_uri + albumid
 
 			p2plink = formats[format]
-			self.__loader.get_url(p2plink, self.__download_p2plink, albumid)
+			l = rb.Loader()
+			l.get_url(p2plink, self.__download_p2plink, albumid)
 
 	def __download_p2plink (self, result, albumid):
 		if result is None:
 			emsg = _("Error looking up p2plink for album %s on jamendo.com") % (albumid)
 			gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, emsg).run()
 			return
-		gnomevfs.url_show(result)
+
+		rb.show_uri(result)
 	
 	# Donate to Artist
 	def launch_donate (self):
@@ -410,20 +374,16 @@ class JamendoSource(rb.BrowserSource):
 			albumid = self.__db.entry_get(track, rhythmdb.PROP_MUSICBRAINZ_ALBUMID)
 			artist = self.__db.entry_get(track, rhythmdb.PROP_ARTIST)
 			url = artist_url + albumid.__str__() + "/"
-			self.__loader.get_url(url, self.__open_donate, artist)
+
+			l = rb.Loader()
+			l.get_url(url, self.__open_donate, artist)
 
 	def __open_donate (self, result, artist):
 		if result is None:
 			emsg = _("Error looking up artist %s on jamendo.com") % (artist)
 			gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, emsg).run()
 			return
-		gnomevfs.url_show(result + "donate/")
-
-	def __p2plink_download_update_cb (self, _reserved, info, moving):
-		if info.phase == gnomevfs.XFER_PHASE_COMPLETED:
-			print info
-
-		return 1
+		rb.show_uri(result + "donate/")
 
 	def playing_entry_changed (self, entry):
 		if not self.__db or not entry:
@@ -444,27 +404,3 @@ class JamendoSource(rb.BrowserSource):
 
 gobject.type_register(JamendoSource)
 
-def create_if_needed(uri, mode):
-	if not gnomevfs.exists(uri):
-		for directory in URIIterator(uri):
-			if not gnomevfs.exists(directory):
-				gnomevfs.make_directory(directory, 0755)
-		out = gnomevfs.create(uri, open_mode=mode)
-	else:
-		out = gnomevfs.open(uri, open_mode=mode)
-	return out
-
-class URIIterator:
-	def __init__(self, uri):
-		self.uri_list = uri.dirname.split("/")[1:] # dirname starts with /
-		self.counter = 0
-	def __iter__(self):
-		return self
-	def next(self):
-		if self.counter == len(self.uri_list) + 1:
-			raise StopIteration
-		value = "file://"
-		for i in range(self.counter):
-			value += "/" + self.uri_list[i]
-		self.counter += 1
-		return gnomevfs.URI(value)

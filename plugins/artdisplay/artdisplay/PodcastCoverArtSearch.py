@@ -27,7 +27,7 @@
 import rhythmdb
 
 class PodcastCoverArtSearch (object):
-	def __init__ (self, loader):
+	def __init__ (self):
 		self.searching = False
 		self.cancel = False
 		self.entry = None

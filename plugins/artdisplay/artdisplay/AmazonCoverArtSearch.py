@@ -29,6 +29,7 @@ import re
 import locale
 import urllib
 
+import rb
 import rhythmdb
 
 LICENSE_KEY = "18C3VZN9HCECM5G3HQG2"
@@ -43,10 +44,9 @@ MAX_BATCH_JOBS = 2
 class Bag: pass
 
 class AmazonCoverArtSearch (object):
-	def __init__ (self, loader):
+	def __init__ (self):
 		self.searching = False
 		self.cancel = False
-		self.loader = loader
 		self.db = None
 		self.entry = None
 		(self.tld, self.encoding) = self.__get_locale ()
@@ -168,7 +168,8 @@ class AmazonCoverArtSearch (object):
 			job += 1
 
 		# Retrieve search for keyword
-		self.loader.get_url (url, self.on_search_response)
+		l = rb.Loader()
+		l.get_url (url, self.on_search_response)
 		return True
 
 	def __unmarshal (self, element):

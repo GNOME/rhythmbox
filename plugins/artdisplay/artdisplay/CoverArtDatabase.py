@@ -33,9 +33,17 @@ import gobject
 
 from PodcastCoverArtSearch import PodcastCoverArtSearch
 from AmazonCoverArtSearch import AmazonCoverArtSearch
-from LocalCoverArtSearch import LocalCoverArtSearch
 
 from urllib import unquote
+
+try:
+	# try to use the gio implementation, fall back to gnome-vfs if that
+	# isn't available.
+	import gio
+	if gio.pygio_version > (2,15,2):	# probably
+		from LocalCoverArtSearchGIO import LocalCoverArtSearch
+except:
+	from LocalCoverArtSearch import LocalCoverArtSearch
 
 ART_SEARCHES_LOCAL = [LocalCoverArtSearch]
 ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, AmazonCoverArtSearch]
@@ -88,7 +96,6 @@ class TicketSystem:
 
 class CoverArtDatabase (object):
 	def __init__ (self):
-		self.loader = rb.Loader()
 		self.ticket = TicketSystem ()
 
 	def build_art_cache_filename (self, db, entry, extension):
@@ -109,15 +116,17 @@ class CoverArtDatabase (object):
 
 	def engines (self, blist):
 		for Engine in ART_SEARCHES_LOCAL:
-			yield Engine (self.loader), Engine.__name__, False
+			yield Engine (), Engine.__name__, False
 		for Engine in ART_SEARCHES_REMOTE:
 			if Engine.__name__ not in blist:
-				yield Engine (self.loader), Engine.__name__, True
+				yield Engine (), Engine.__name__, True
 	
 	def set_pixbuf_from_uri (self, db, entry, uri, callback):
 		def loader_cb (data):
 			self.set_pixbuf (db, entry, self.image_data_load (data), callback)
-		self.loader.get_url (str (uri), loader_cb)
+
+		l = rb.Loader()
+		l.get_url (str (uri), loader_cb)
 
 	def set_pixbuf (self, db, entry, pixbuf, callback):
 		if entry is None or pixbuf is None:
@@ -135,7 +144,7 @@ class CoverArtDatabase (object):
 		callback (entry, pixbuf, art_location)
 		for Engine in ART_SEARCHES_LOCAL:
 			try:
-				Engine (self.loader).save_pixbuf (db, entry, pixbuf)
+				Engine ().save_pixbuf (db, entry, pixbuf)
 			except AttributeError:
 				pass
 
@@ -191,7 +200,8 @@ class CoverArtDatabase (object):
 						print "got empty url from engine %s." % (engine)
 						continue
 
-					yield self.loader.get_url (str (url), plexer.send ())
+					l = rb.Loader()
+					yield l.get_url (str (url), plexer.send ())
 					_, (data, ) = plexer.receive ()
 					pixbuf = self.image_data_load (data)
 					if pixbuf:

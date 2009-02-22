@@ -2430,6 +2430,18 @@
 
 ;; From rb-file-helpers.h
 
+(define-function music_dir
+  (in-module "rb")
+  (c-name "rb_music_dir")
+  (return-type "const-char*")
+)
+
+(define-function dot_dir
+  (in-module "rb")
+  (c-name "rb_dot_dir")
+  (return-type "const-char*")
+)
+
 (define-function user_data_dir
   (in-module "rb")
   (c-name "rb_user_data_dir")
@@ -2442,4 +2454,23 @@
   (return-type "const-char*")
 )
 
+(define-function find_user_data_file
+  (in-module "rb")
+  (c-name "rb_find_user_data_file")
+  (return-type "char*")
+  (parameters
+    '("const-char*" "name")
+    '("GError**" "error")
+  )
+)
+
+(define-function find_user_cache_file
+  (in-module "rb")
+  (c-name "rb_find_user_cache_file")
+  (return-type "char*")
+  (parameters
+    '("const-char*" "name")
+    '("GError**" "error")
+  )
+)
 
