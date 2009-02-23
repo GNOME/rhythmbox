@@ -77,7 +77,7 @@ static void limit_toggled_cb (GtkWidget *limit, RBQueryCreator *creator);
 
 static int get_property_index_from_proptype (const RBQueryCreatorPropertyOption *options,
 			    	  int length, RhythmDBPropType prop);
-static void sort_option_menu_changed (GtkOptionMenu *propmenu, RBQueryCreator *creator);
+static void sort_option_menu_changed (GtkComboBox *propmenu, RBQueryCreator *creator);
 
 typedef struct
 {
@@ -355,6 +355,7 @@ rb_query_creator_load_query (RBQueryCreator *creator,
 	gboolean disjunction = FALSE;
 	RhythmDBQueryData *qdata;
 	GPtrArray *subquery;
+	guint64 limit;
 
 	g_return_val_if_fail (query->len == 2, FALSE);
 
@@ -363,18 +364,19 @@ rb_query_creator_load_query (RBQueryCreator *creator,
 
 	subquery = qdata->subquery;
 
-	if (subquery->len > 0)
+	if (subquery->len > 0) {
 		for (i = 0; i < subquery->len; i++) {
 			RhythmDBQueryData *data = g_ptr_array_index (subquery, i);
 			if (data->type != RHYTHMDB_QUERY_DISJUNCTION)
 				append_row (creator);
 		}
+	}
 
 	rows = priv->rows;
 
 	for (i = 0; i < subquery->len; i++) {
 		RhythmDBQueryData *data = g_ptr_array_index (subquery, i);
-		GtkOptionMenu *propmenu;
+		GtkComboBox *propmenu;
 		GtkWidget *criteria_menu;
 		int index;
 		const RBQueryCreatorPropertyType *property_type;
@@ -384,9 +386,9 @@ rb_query_creator_load_query (RBQueryCreator *creator,
 			continue;
 		}
 
-		propmenu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (rows->data), 0));
+		propmenu = GTK_COMBO_BOX (get_box_widget_at_pos (GTK_BOX (rows->data), 0));
 		index = get_property_index_from_proptype (property_options, num_property_options, data->propid);
-		gtk_option_menu_set_history (propmenu, index);
+		gtk_combo_box_set_active (propmenu, index);
 
 		criteria_menu = get_box_widget_at_pos (GTK_BOX (rows->data), 1);
 		select_criteria_from_value (creator, criteria_menu, data->propid, data->type);
@@ -400,47 +402,43 @@ rb_query_creator_load_query (RBQueryCreator *creator,
 	}
 
 	/* setup the limits */
-	{
-		guint64 limit;
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->disjunction_check),
+				      disjunction);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->limit_check),
+				      limit_type != RHYTHMDB_QUERY_MODEL_LIMIT_NONE);
 
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->disjunction_check),
-					      disjunction);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->limit_check),
-					      limit_type != RHYTHMDB_QUERY_MODEL_LIMIT_NONE);
+	switch (limit_type) {
+	case RHYTHMDB_QUERY_MODEL_LIMIT_NONE:
+		limit = 0;
+		break;
 
-		switch (limit_type) {
-		case RHYTHMDB_QUERY_MODEL_LIMIT_NONE:
-			limit = 0;
-			break;
+	case RHYTHMDB_QUERY_MODEL_LIMIT_COUNT:
+		gtk_combo_box_set_active (GTK_COMBO_BOX (priv->limit_option), 0);
+		limit = g_value_get_ulong (g_value_array_get_nth (limit_value, 0));
+		break;
 
-		case RHYTHMDB_QUERY_MODEL_LIMIT_COUNT:
-			gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 0);
-			limit = g_value_get_ulong (g_value_array_get_nth (limit_value, 0));
-			break;
+	case RHYTHMDB_QUERY_MODEL_LIMIT_TIME:
+		gtk_combo_box_set_active (GTK_COMBO_BOX (priv->limit_option), 3);
+		/* convert to minutes */
+		limit = g_value_get_ulong (g_value_array_get_nth (limit_value, 0)) / 60;
+		break;
 
-		case RHYTHMDB_QUERY_MODEL_LIMIT_TIME:
-			gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 3);
-			/* convert to minutes */
-			limit = g_value_get_ulong (g_value_array_get_nth (limit_value, 0)) / 60;
-			break;
+	case RHYTHMDB_QUERY_MODEL_LIMIT_SIZE:
+		limit = g_value_get_uint64 (g_value_array_get_nth (limit_value, 0));
 
-		case RHYTHMDB_QUERY_MODEL_LIMIT_SIZE:
-			limit = g_value_get_uint64 (g_value_array_get_nth (limit_value, 0));
-
-			if (limit % 1000 == 0) {
-				gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 2);
-				limit /= 1000;
-			} else {
-				gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 1);
-			}
-
-			break;
-		default:
-			g_assert_not_reached ();
+		if (limit % 1000 == 0) {
+			gtk_combo_box_set_active (GTK_COMBO_BOX (priv->limit_option), 2);
+			limit /= 1000;
+		} else {
+			gtk_combo_box_set_active (GTK_COMBO_BOX (priv->limit_option), 1);
 		}
 
-		gtk_spin_button_set_value (GTK_SPIN_BUTTON (priv->limit_entry), limit);
+		break;
+	default:
+		g_assert_not_reached ();
 	}
+
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (priv->limit_entry), limit);
 
 	return TRUE;
 }
@@ -469,8 +467,8 @@ rb_query_creator_set_sorting (RBQueryCreator *creator,
 	/* check that it is a valid sort option */
 	g_return_val_if_fail (i < num_property_options, FALSE);
 
-	gtk_option_menu_set_history (GTK_OPTION_MENU (priv->sort_menu), i);
-	sort_option_menu_changed (GTK_OPTION_MENU (priv->sort_menu), creator); /* force the checkbox to change label */
+	gtk_combo_box_set_active (GTK_COMBO_BOX (priv->sort_menu), i);
+	sort_option_menu_changed (GTK_COMBO_BOX (priv->sort_menu), creator); /* force the checkbox to change label */
 
 	return TRUE;
 }
@@ -582,14 +580,14 @@ rb_query_creator_get_query (RBQueryCreator *creator)
 	rows = priv->rows;
 
 	for (row = rows; row; row = row->next) {
-		GtkOptionMenu *propmenu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (row->data),
+		GtkComboBox *propmenu = GTK_COMBO_BOX (get_box_widget_at_pos (GTK_BOX (row->data),
 										  0));
-		GtkOptionMenu *criteria_menu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (row->data),
+		GtkComboBox *criteria_menu = GTK_COMBO_BOX (get_box_widget_at_pos (GTK_BOX (row->data),
 										       1));
-		guint prop_position = gtk_option_menu_get_history (propmenu);
+		guint prop_position = gtk_combo_box_get_active (propmenu);
 		const RBQueryCreatorPropertyOption *prop_option = &property_options[prop_position];
 		const RBQueryCreatorCriteriaOption *criteria_options = prop_option->property_type->criteria_options;
-		const RBQueryCreatorCriteriaOption *criteria_option = &criteria_options[gtk_option_menu_get_history (criteria_menu)];
+		const RBQueryCreatorCriteriaOption *criteria_option = &criteria_options[gtk_combo_box_get_active (criteria_menu)];
 
 		g_assert (prop_option->property_type->criteria_get_widget_data != NULL);
 		{
@@ -650,7 +648,7 @@ rb_query_creator_get_limit (RBQueryCreator *creator,
 		l = gtk_spin_button_get_value(GTK_SPIN_BUTTON (priv->limit_entry));
 		*limit = g_value_array_new (0);
 
-		switch (gtk_option_menu_get_history (GTK_OPTION_MENU (priv->limit_option))) {
+		switch (gtk_combo_box_get_active (GTK_COMBO_BOX (priv->limit_option))) {
 		case 0:
 			*type = RHYTHMDB_QUERY_MODEL_LIMIT_COUNT;
 			rb_value_array_append_data (*limit, G_TYPE_ULONG, (gulong)l);
@@ -708,7 +706,7 @@ rb_query_creator_get_sort_order (RBQueryCreator *creator,
 
 	if (sort_key != NULL) {
 		int i;
-		i = gtk_option_menu_get_history (GTK_OPTION_MENU (priv->sort_menu));
+		i = gtk_combo_box_get_active (GTK_COMBO_BOX (priv->sort_menu));
 		*sort_key = sort_options[i].sort_key;
 	}
 }
@@ -791,11 +789,11 @@ append_row (RBQueryCreator *creator)
 	priv->rows = g_list_prepend (priv->rows, hbox);
 	gtk_box_reorder_child (priv->vbox, GTK_WIDGET (hbox), -1);
 
-	/* This is the main (leftmost) GtkOptionMenu, for types. */
+	/* This is the main (leftmost) GtkComboBox, for types. */
 	option = create_property_option_menu (creator, property_options, num_property_options);
 	gtk_size_group_add_widget (priv->property_size_group, option);
 	gtk_box_pack_start (hbox, GTK_WIDGET (option), TRUE, TRUE, 0);
-	gtk_option_menu_set_history (GTK_OPTION_MENU (option), 0);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (option), 0);
 	criteria = create_criteria_option_menu (property_options[0].property_type->criteria_options,
 						property_options[0].property_type->num_criteria_options);
 	gtk_size_group_add_widget (priv->criteria_size_group, criteria);
@@ -846,7 +844,7 @@ select_criteria_from_value (RBQueryCreator *creator,
 
 	for (i = 0; i < length; i++) {
 		if (qtype == options[i].val) {
-			gtk_option_menu_set_history (GTK_OPTION_MENU (option_menu), i);
+			gtk_combo_box_set_active (GTK_COMBO_BOX (option_menu), i);
 			return;
 		}
 	}
@@ -854,7 +852,7 @@ select_criteria_from_value (RBQueryCreator *creator,
 }
 
 static void
-property_option_menu_changed (GtkOptionMenu *propmenu,
+property_option_menu_changed (GtkComboBox *propmenu,
 			      RBQueryCreator *creator)
 {
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
@@ -867,7 +865,7 @@ property_option_menu_changed (GtkOptionMenu *propmenu,
 	guint old_value;
 	gboolean constrain;
 
-	prop_option = &property_options[gtk_option_menu_get_history (propmenu)];
+	prop_option = &property_options[gtk_combo_box_get_active (propmenu)];
 	old_value = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (propmenu), "prop-menu old-value"));
 
 	/* don't recreate the criteria menu and entry if they will be the same*/
@@ -875,7 +873,7 @@ property_option_menu_changed (GtkOptionMenu *propmenu,
 		return;
 
 	g_object_set_data (G_OBJECT (propmenu), "prop-menu old-value",
-			   GINT_TO_POINTER (gtk_option_menu_get_history (propmenu)));
+			   GINT_TO_POINTER (gtk_combo_box_get_active (propmenu)));
 
 	row = lookup_row_by_widget (creator, GTK_WIDGET (propmenu));
 
@@ -908,63 +906,46 @@ create_property_option_menu (RBQueryCreator *creator,
                              const RBQueryCreatorPropertyOption *options,
 			     int length)
 {
-	GtkWidget *option_menu;
-	GtkWidget *menu;
-	GtkWidget *menu_item;
+	GtkWidget *combo;
 	int i;
 
-	option_menu = gtk_option_menu_new ();
-	menu = gtk_menu_new ();
-
-	/* add the property options */
+	combo = gtk_combo_box_new_text ();
 	for (i = 0; i < length; i++) {
-		menu_item = gtk_menu_item_new_with_label (_(options[i].name));
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-		gtk_widget_show (menu_item);
+		gtk_combo_box_append_text (GTK_COMBO_BOX (combo), _(options[i].name));
 	}
 
-		gtk_option_menu_set_history (GTK_OPTION_MENU (option_menu), 0);
-	g_object_set_data (G_OBJECT (option_menu), "prop-menu old-value", GINT_TO_POINTER (0));
+	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
+	
+	g_object_set_data (G_OBJECT (combo), "prop-menu old value", GINT_TO_POINTER (0));
 
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (option_menu), menu);
-	gtk_widget_show (menu);
-
-	g_signal_connect_object (G_OBJECT (option_menu), "changed",
+	g_signal_connect_object (G_OBJECT (combo), "changed",
 				 G_CALLBACK (property_option_menu_changed), creator, 0);
 
-	return option_menu;
+	return combo;
 }
 
 static GtkWidget*
 create_criteria_option_menu (const RBQueryCreatorCriteriaOption *options,
 			     int length)
 {
-	GtkWidget *option_menu;
-	GtkWidget *menu;
-	GtkWidget *menu_item;
+	GtkWidget *combo;
 	int i;
 
-	option_menu = gtk_option_menu_new ();
-	menu = gtk_menu_new ();
-
+	combo = gtk_combo_box_new_text ();
 	for (i = 0; i < length; i++) {
-		menu_item = gtk_menu_item_new_with_label (_(options[i].name));
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-		gtk_widget_show (menu_item);
+		gtk_combo_box_append_text (GTK_COMBO_BOX (combo), _(options[i].name));
 	}
+	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
 
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (option_menu), menu);
-	gtk_widget_show (menu);
-
-	return option_menu;
+	return combo;
 }
 
 static void
-sort_option_menu_changed (GtkOptionMenu *propmenu,
+sort_option_menu_changed (GtkComboBox *propmenu,
 			  RBQueryCreator *creator)
 {
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
-	int index = gtk_option_menu_get_history (propmenu);
+	int index = gtk_combo_box_get_active (propmenu);
 
 	gtk_button_set_label (GTK_BUTTON (priv->sort_desc), _(sort_options[index].sort_descending_name));
 	rb_debug("changing descending label to %s[%d]", sort_options[index].sort_descending_name, index);
@@ -976,21 +957,20 @@ setup_sort_option_menu (RBQueryCreator *creator,
 			const RBQueryCreatorSortOption *options,
 			int length)
 {
-	GtkWidget *menu;
-	GtkWidget *menu_item;
+	GtkListStore *store;
 	int i;
 
-	menu = gtk_menu_new ();
-	gtk_widget_show (menu);
+	store = gtk_list_store_new (1, G_TYPE_STRING);
 
 	for (i = 0; i < length; i++) {
-		menu_item = gtk_menu_item_new_with_label (_(options[i].name));
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-		gtk_widget_show (menu_item);
+		GtkTreeIter iter;
+
+		gtk_list_store_append (store, &iter);
+		gtk_list_store_set (store, &iter, 0, _(options[i].name), -1);
 	}
+
+	gtk_combo_box_set_model (GTK_COMBO_BOX (option_menu), GTK_TREE_MODEL (store));
 
 	g_signal_connect_object (G_OBJECT (option_menu), "changed",
 				 G_CALLBACK (sort_option_menu_changed), creator, 0);
-
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (option_menu), menu);
 }

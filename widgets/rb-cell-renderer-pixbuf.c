@@ -195,7 +195,7 @@ rb_cell_renderer_pixbuf_set_property (GObject      *object,
 GtkCellRenderer *
 rb_cell_renderer_pixbuf_new (void)
 {
-  return GTK_CELL_RENDERER (gtk_type_new (rb_cell_renderer_pixbuf_get_type ()));
+  return GTK_CELL_RENDERER (g_object_new (rb_cell_renderer_pixbuf_get_type (), NULL, NULL));
 }
 
 static void
@@ -321,11 +321,9 @@ rb_cell_renderer_pixbuf_activate (GtkCellRenderer *cell,
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_width, NULL);
 	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
-	gtk_tree_view_widget_to_tree_coords (GTK_TREE_VIEW (widget),
-					     mouse_x,
-					     mouse_y,
-					     &mouse_x,
-					     &mouse_y);
+	gtk_tree_view_convert_widget_to_bin_window_coords (GTK_TREE_VIEW (widget),
+							   mouse_x, mouse_y,
+							   &mouse_x, &mouse_y);
 
 	/* ensure the user clicks within the good cell */
 	if (mouse_x - cell_area->x >= 0

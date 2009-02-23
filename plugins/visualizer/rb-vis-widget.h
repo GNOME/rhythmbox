@@ -32,11 +32,11 @@
 G_BEGIN_DECLS
 
 #define RB_TYPE_VIS_WIDGET		(rb_vis_widget_get_type ())
-#define RB_VIS_WIDGET(obj)		(GTK_CHECK_CAST ((obj), RB_TYPE_VIS_WIDGET, RBVisWidget))
-#define RB_VIS_WIDGET_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), RB_TYPE_VIS_WIDGET, RBVisWidgetClass))
-#define RB_IS_VIS_WIDGET(obj)		(GTK_CHECK_TYPE ((obj), RB_TYPE_VIS_WIDGET))
-#define RB_IS_VIS_WIDGET_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), RB_TYPE_VIS_WIDGET))
-#define RB_VIS_WIDGET_GET_CLASS(obj)	(GTK_CHECK_GET_CLASS ((obj), RB_TYPE_VIS_WIDGET, RBVisWidgetClass))
+#define RB_VIS_WIDGET(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_VIS_WIDGET, RBVisWidget))
+#define RB_VIS_WIDGET_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), RB_TYPE_VIS_WIDGET, RBVisWidgetClass))
+#define RB_IS_VIS_WIDGET(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_VIS_WIDGET))
+#define RB_IS_VIS_WIDGET_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), RB_TYPE_VIS_WIDGET))
+#define RB_VIS_WIDGET_GET_CLASS(obj)	(G_TYPE_CHECK_GET_CLASS ((obj), RB_TYPE_VIS_WIDGET, RBVisWidgetClass))
 
 typedef struct _RBVisWidget
 {

@@ -29,11 +29,11 @@
 G_BEGIN_DECLS
 
 #define RB_TYPE_CELL_RENDERER_RATING		(rb_cell_renderer_rating_get_type ())
-#define RB_CELL_RENDERER_RATING(obj)		(GTK_CHECK_CAST ((obj), RB_TYPE_CELL_RENDERER_RATING, RBCellRendererRating))
-#define RB_CELL_RENDERER_RATING_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), RB_TYPE_CELL_RENDERER_RATING, RBCellRendererRatingClass))
-#define RB_IS_CELL_RENDERER_RATING(obj)		(GTK_CHECK_TYPE ((obj), RB_TYPE_CELL_RENDERER_RATING))
-#define RB_IS_CELL_RENDERER_RATING_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), RB_TYPE_CELL_RENDERER_RATING))
-#define RB_CELL_RENDERER_RATING_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), RB_TYPE_CELL_RENDERER_RATING, RBCellRendererRatingClass))
+#define RB_CELL_RENDERER_RATING(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_CELL_RENDERER_RATING, RBCellRendererRating))
+#define RB_CELL_RENDERER_RATING_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), RB_TYPE_CELL_RENDERER_RATING, RBCellRendererRatingClass))
+#define RB_IS_CELL_RENDERER_RATING(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_CELL_RENDERER_RATING))
+#define RB_IS_CELL_RENDERER_RATING_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), RB_TYPE_CELL_RENDERER_RATING))
+#define RB_CELL_RENDERER_RATING_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), RB_TYPE_CELL_RENDERER_RATING, RBCellRendererRatingClass))
 
 typedef struct RBCellRendererRatingPrivate RBCellRendererRatingPrivate;
 typedef struct RBCellRendererRatingClassPrivate RBCellRendererRatingClassPrivate;
@@ -57,7 +57,7 @@ struct _RBCellRendererRatingClass
 
 };
 
-GtkType          rb_cell_renderer_rating_get_type (void);
+GType		 rb_cell_renderer_rating_get_type (void);
 
 GtkCellRenderer *rb_cell_renderer_rating_new      (void);
 

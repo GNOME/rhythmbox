@@ -33,10 +33,10 @@
 G_BEGIN_DECLS
 
 #define RB_TYPE_STRING_VALUE_MAP            (rb_string_value_map_get_type ())
-#define RB_STRING_VALUE_MAP(obj)            (GTK_CHECK_CAST ((obj), RB_TYPE_STRING_VALUE_MAP, RBStringValueMap))
-#define RB_STRING_VALUE_MAP_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), RB_TYPE_STRING_VALUE_MAP, RBStringValueMapClass))
-#define RB_IS_STRING_VALUE_MAP(obj)         (GTK_CHECK_TYPE ((obj), RB_TYPE_STRING_VALUE_MAP))
-#define RB_IS_STRING_VALUE_MAP_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), RB_TYPE_STRING_VALUE_MAP))
+#define RB_STRING_VALUE_MAP(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), RB_TYPE_STRING_VALUE_MAP, RBStringValueMap))
+#define RB_STRING_VALUE_MAP_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), RB_TYPE_STRING_VALUE_MAP, RBStringValueMapClass))
+#define RB_IS_STRING_VALUE_MAP(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), RB_TYPE_STRING_VALUE_MAP))
+#define RB_IS_STRING_VALUE_MAP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), RB_TYPE_STRING_VALUE_MAP))
 
 typedef struct _RBStringValueMap RBStringValueMap;
 typedef struct _RBStringValueMapClass RBStringValueMapClass;

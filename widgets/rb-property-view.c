@@ -961,7 +961,7 @@ void
 rb_property_view_set_search_func (RBPropertyView *view,
 				  GtkTreeViewSearchEqualFunc func,
 				  gpointer func_data,
-				  GtkDestroyNotify notify)
+				  GDestroyNotify notify)
 {
 	g_return_if_fail (RB_IS_PROPERTY_VIEW (view));
 

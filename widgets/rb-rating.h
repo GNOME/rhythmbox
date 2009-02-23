@@ -35,10 +35,10 @@
 G_BEGIN_DECLS
 
 #define RB_TYPE_RATING            (rb_rating_get_type ())
-#define RB_RATING(obj)            (GTK_CHECK_CAST ((obj), RB_TYPE_RATING, RBRating))
-#define RB_RATING_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), RB_TYPE_RATING, RBRatingClass))
-#define RB_IS_RATING(obj)         (GTK_CHECK_TYPE ((obj), RB_TYPE_RATING))
-#define RB_IS_RATING_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), RB_TYPE_RATING))
+#define RB_RATING(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_RATING, RBRating))
+#define RB_RATING_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), RB_TYPE_RATING, RBRatingClass))
+#define RB_IS_RATING(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_RATING))
+#define RB_IS_RATING_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), RB_TYPE_RATING))
 
 typedef struct _RBRating RBRating;
 typedef struct _RBRatingClass RBRatingClass;
@@ -60,7 +60,7 @@ struct _RBRatingClass
 	gboolean (*adjust_rating) (RBRating *rating, double adjust);
 };
 
-GtkType    rb_rating_get_type (void);
+GType      rb_rating_get_type (void);
 
 RBRating  *rb_rating_new      (void);
 

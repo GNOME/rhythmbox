@@ -469,12 +469,12 @@ durationCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
  */
 
 static void
-update_time_unit_limits (GtkOptionMenu *menu, GtkWidget *spin_button)
+update_time_unit_limits (GtkComboBox *menu, GtkWidget *spin_button)
 {
 	/* set the range on the spin button so it can't overflow when
 	 * converted to seconds when we're constructing the query
 	 */
-	gulong mult = time_unit_options [gtk_option_menu_get_history (menu)].timeMultiplier;
+	gulong mult = time_unit_options [gtk_combo_box_get_active (menu)].timeMultiplier;
 	gtk_spin_button_set_range (GTK_SPIN_BUTTON (spin_button), 1, G_MAXINT / mult);
 }
 
@@ -482,19 +482,15 @@ static GtkWidget*
 create_time_unit_option_menu (const RBQueryCreatorTimeUnitOption *options,
 			     int length)
 {
-	GtkWidget *menu = gtk_menu_new ();
-	GtkWidget *option_menu = gtk_option_menu_new ();
+	GtkWidget *combo;
 	int i;
 
+	combo = gtk_combo_box_new_text ();
 	for (i = 0; i < length; i++) {
-		GtkWidget *menu_item = gtk_menu_item_new_with_label (_(options[i].name));
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+		gtk_combo_box_append_text (GTK_COMBO_BOX (combo), _(options[i].name));
 	}
 
-	gtk_widget_show_all (menu);
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (option_menu), menu);
-
-	return option_menu;
+	return combo;
 }
 
 static GtkWidget *
@@ -511,7 +507,7 @@ relativeTimeCriteriaCreateWidget (gboolean *constrain)
 	gtk_box_pack_start (box, timeSpin, TRUE, TRUE, 0);
 
 	timeOption = create_time_unit_option_menu (time_unit_options, G_N_ELEMENTS (time_unit_options));
-	gtk_option_menu_set_history (GTK_OPTION_MENU (timeOption), time_unit_options_default);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (timeOption), time_unit_options_default);
 	gtk_box_pack_start (box, timeOption, TRUE, TRUE, 0);
 	
 	g_signal_connect_object (timeOption, "changed",
@@ -528,7 +524,7 @@ relativeTimeCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 	GtkBox *box = GTK_BOX (widget);
 
 	GtkSpinButton *timeSpin = GTK_SPIN_BUTTON (get_box_widget_at_pos (box, 0));
-	GtkOptionMenu *unitMenu = GTK_OPTION_MENU (get_box_widget_at_pos (box, 1));
+	GtkComboBox *unitMenu = GTK_COMBO_BOX (get_box_widget_at_pos (box, 1));
 
 	gulong time = g_value_get_ulong (val);
 	gulong unit = 0;
@@ -544,7 +540,7 @@ relativeTimeCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 	time = time / time_unit_options[unit].timeMultiplier;
 	g_assert (time < G_MAXINT);
 	/* set the time value and unit*/
-	gtk_option_menu_set_history (unitMenu, unit);
+	gtk_combo_box_set_active (unitMenu, unit);
 	gtk_spin_button_set_value (timeSpin, time);
 }
 
@@ -552,9 +548,9 @@ static void
 relativeTimeCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 {
 	GtkSpinButton *timeSpin = GTK_SPIN_BUTTON (get_box_widget_at_pos (GTK_BOX (widget), 0));
-	GtkOptionMenu *unitMenu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (widget), 1));
+	GtkComboBox *unitMenu = GTK_COMBO_BOX (get_box_widget_at_pos (GTK_BOX (widget), 1));
 
-	gulong timeMultiplier = time_unit_options [gtk_option_menu_get_history (unitMenu)].timeMultiplier;
+	gulong timeMultiplier = time_unit_options [gtk_combo_box_get_active (unitMenu)].timeMultiplier;
 	gint value = gtk_spin_button_get_value_as_int (timeSpin) * timeMultiplier;
 	g_assert (value >= 0);
 

@@ -457,11 +457,9 @@ gossip_cell_renderer_expander_activate (GtkCellRenderer      *cell,
 	path = gtk_tree_path_new_from_string (path_string);
 
 	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
-	gtk_tree_view_widget_to_tree_coords (GTK_TREE_VIEW (widget),
-					     mouse_x,
-					     mouse_y,
-					     &mouse_x,
-					     &mouse_y);
+	gtk_tree_view_convert_widget_to_bin_window_coords (GTK_TREE_VIEW (widget),
+							   mouse_x, mouse_y,
+							   &mouse_x, &mouse_y);
 
 	/* check if click is within the cell */
 	if (mouse_x - cell_area->x >= 0

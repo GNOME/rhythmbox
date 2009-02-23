@@ -1,3 +1,41 @@
+2009-02-23  Jonathan Matthew  <jonathan@d14n.org>
+
+	* data/glade/create-playlist.glade:
+	* widgets/rb-query-creator-properties.c: (update_time_unit_limits),
+	(create_time_unit_option_menu), (relativeTimeCriteriaCreateWidget),
+	(relativeTimeCriteriaSetWidgetData),
+	(relativeTimeCriteriaGetWidgetData):
+	* widgets/rb-query-creator.c: (rb_query_creator_load_query),
+	(rb_query_creator_set_sorting), (rb_query_creator_get_query),
+	(rb_query_creator_get_limit), (rb_query_creator_get_sort_order),
+	(append_row), (select_criteria_from_value),
+	(property_option_menu_changed), (create_property_option_menu),
+	(create_criteria_option_menu), (sort_option_menu_changed),
+	(setup_sort_option_menu):
+	Replace GtkOptionMenu with GtkComboBox in the query creator.
+
+	* lib/rb-string-value-map.h:
+	* plugins/visualizer/rb-vis-widget.h:
+	* widgets/rb-cell-renderer-pixbuf.h:
+	* widgets/rb-cell-renderer-rating.h:
+	* widgets/rb-rating.h:
+	Replace GTK_CHECK macros with G_TYPE_CHECK equivalents.
+
+	* lib/rb-tree-dnd.c: (scroll_row_timeout):
+	* widgets/gossip-cell-renderer-expander.c:
+	(gossip_cell_renderer_expander_activate):
+	* widgets/rb-cell-renderer-pixbuf.c: (rb_cell_renderer_pixbuf_new),
+	(rb_cell_renderer_pixbuf_activate):
+	* widgets/rb-cell-renderer-rating.c: (rb_cell_renderer_rating_new),
+	(rb_cell_renderer_rating_activate):
+	Replace gtk_tree_view_widget_to_tree_coords.
+
+	* widgets/rb-property-view.c: (rb_property_view_set_search_func):
+	* widgets/rb-property-view.h:
+	Replace GtkDestroyNotify with GDestroyNotify.
+
+	No more deprecated gtk+ stuff.  Fixes #564800.
+
 2009-02-22  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/rb/Loader.py:
