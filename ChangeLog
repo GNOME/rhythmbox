@@ -1,5 +1,14 @@
 2009-02-24  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Oscar Morante  <spacepluk@gmail.com>
+
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_cmd_new_playlist),
+	(rb_playlist_manager_cmd_new_automatic_playlist):
+	Set a default name for newly created playlists.  Fixes #432688.
+
+2009-02-24  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Alban Crequy  <alban.crequy@collabora.co.uk>
 
 	* plugins/daap/rb-daap.xml:

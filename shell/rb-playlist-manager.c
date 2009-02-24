@@ -1147,7 +1147,7 @@ static void
 rb_playlist_manager_cmd_new_playlist (GtkAction *action,
 				      RBPlaylistManager *mgr)
 {
-	rb_playlist_manager_new_playlist (mgr, NULL, FALSE);
+	rb_playlist_manager_new_playlist (mgr, _("New Playlist"), FALSE);
 }
 
 static void
@@ -1190,7 +1190,7 @@ rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
 		return;
 	}
 
-	playlist = rb_playlist_manager_new_playlist (mgr, NULL, TRUE);
+	playlist = rb_playlist_manager_new_playlist (mgr, _("New Playlist"), TRUE);
 
 	rb_playlist_manager_set_automatic_playlist (mgr, RB_AUTO_PLAYLIST_SOURCE (playlist), creator);
 
