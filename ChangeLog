@@ -1,3 +1,15 @@
+2009-02-24  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Alban Crequy  <alban.crequy@collabora.co.uk>
+
+	* plugins/daap/rb-daap.xml:
+	* plugins/daap/Makefile.am:
+	* plugins/daap/rb-daap-plugin.c: (impl_activate),
+	(new_daap_share_resolve_cb), (new_daap_share_location_added_cb),
+	(rb_daap_add_source), (rb_daap_remove_source):
+	Add a D-Bus interface for adding and removing DAAP shares.
+	Fixes #570115.
+
 2009-02-23  Jonathan Matthew  <jonathan@d14n.org>
 
 	* data/glade/create-playlist.glade:

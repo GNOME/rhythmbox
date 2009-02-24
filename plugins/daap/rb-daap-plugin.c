@@ -2,6 +2,7 @@
  * rb-daap-plugin.c
  *
  * Copyright (C) 2006 James Livingston <doclivingston@gmail.com>
+ * Copyright (C) 2008 Alban Crequy <alban.crequy@collabora.co.uk>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +37,7 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib-object.h>
+#include <dbus/dbus-glib.h>
 
 #include <libsoup/soup.h>
 
@@ -57,6 +59,8 @@
 #define CONF_DAAP_PREFIX  	CONF_PREFIX "/plugins/daap"
 #define CONF_ENABLE_BROWSING 	CONF_DAAP_PREFIX "/enable_browsing"
 
+#define DAAP_DBUS_PATH	"/org/gnome/Rhythmbox/DAAP"
+
 struct RBDaapPluginPrivate
 {
 	RBShell *shell;
@@ -65,6 +69,7 @@ struct RBDaapPluginPrivate
 	GtkWidget *preferences;
 	gboolean sharing;
 	gboolean shutdown;
+	gboolean dbus_intf_added;
 
 	GtkActionGroup *daap_action_group;
 	guint daap_ui_merge_id;
@@ -108,6 +113,10 @@ static void enable_browsing_changed_cb (GConfClient *client,
 					guint cnxn_id,
 					GConfEntry *entry,
 					RBDaapPlugin *plugin);
+
+gboolean rb_daap_add_source (RBDaapPlugin *plugin, gchar *service_name, gchar *host, unsigned int port, GError **error);
+gboolean rb_daap_remove_source (RBDaapPlugin *plugin, gchar *service_name, GError **error);
+#include "rb-daap-glue.h"
 
 RB_PLUGIN_REGISTER(RBDaapPlugin, rb_daap_plugin)
 
@@ -197,7 +206,10 @@ impl_activate (RBPlugin *bplugin,
 	GConfClient *client = eel_gconf_client_get_global ();
 	GtkUIManager *uimanager = NULL;
 	char *uifile;
+	DBusGConnection *conn;
+	GError *error = NULL;
 
+	plugin->priv->shutdown = FALSE;
 	plugin->priv->shell = g_object_ref (shell);
 
 	value = gconf_client_get_without_default (client,
@@ -255,6 +267,22 @@ impl_activate (RBPlugin *bplugin,
 	plugin->priv->sharing = !no_registration;
 	if (plugin->priv->sharing)
 		rb_daap_sharing_init (shell);
+
+	/*
+	 * Add dbus interface
+	 */
+	if (plugin->priv->dbus_intf_added == FALSE) {
+		conn = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
+		if (conn != NULL) {
+			dbus_g_object_type_install_info (RB_TYPE_DAAP_PLUGIN,
+							 &dbus_glib_rb_daap_object_info);
+			dbus_g_connection_register_g_object (conn, DAAP_DBUS_PATH,
+							     G_OBJECT (bplugin));
+			plugin->priv->dbus_intf_added = TRUE;
+		}
+		else
+			rb_debug ("No session D-Bus. DAAP interface on D-Bus disabled.");
+	}
 }
 
 static void
@@ -593,6 +621,7 @@ rb_daap_plugin_cmd_disconnect (GtkAction *action,
 
 typedef struct {
 	RBDaapPlugin *plugin;
+	char *service_name;
 	char *location;
 } RBDaapShareResolveData;
 
@@ -606,7 +635,7 @@ new_daap_share_resolve_cb (SoupAddress *addr,
 	if (status == SOUP_STATUS_OK) {
 		rb_debug ("adding manually specified DAAP share at %s", data->location);
 		mdns_service_added (NULL,
-				    data->location,
+				    data->service_name,
 				    data->location,
 				    soup_address_get_physical (addr),
 				    soup_address_get_port (addr),
@@ -621,6 +650,7 @@ new_daap_share_resolve_cb (SoupAddress *addr,
 	}
 
 	g_object_unref (data->plugin);
+	g_free (data->service_name);
 	g_free (data->location);
 	g_free (data);
 	g_object_unref (addr);
@@ -641,6 +671,7 @@ new_daap_share_location_added_cb (RBURIDialog *dialog,
 
 	data = g_new0 (RBDaapShareResolveData, 1);
 	data->plugin = g_object_ref (plugin);
+	data->service_name = g_strdup (location);
 	data->location = g_strdup (location);
 
 	host = g_strdup (location);
@@ -908,5 +939,41 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 
 	gtk_widget_show_all (plugin->priv->preferences);
 	return plugin->priv->preferences;
+}
+
+gboolean
+rb_daap_add_source (RBDaapPlugin *plugin, gchar *service_name, gchar *host, unsigned int port, GError **error)
+{
+	SoupAddress *addr;
+	RBDaapShareResolveData *data;
+
+	if (plugin->priv->shutdown)
+		return FALSE;
+
+	rb_debug ("Add DAAP source %s (%s:%d)", service_name, host, port);
+
+	data = g_new0 (RBDaapShareResolveData, 1);
+	data->plugin = g_object_ref (plugin);
+	data->service_name = g_strdup (service_name);
+	data->location = g_strdup (service_name);
+
+	addr = soup_address_new (host, port);
+
+	soup_address_resolve_async (addr,
+				    NULL, NULL,
+				    (SoupAddressCallback) new_daap_share_resolve_cb,
+				    data);
+
+	return TRUE;
+}
+
+gboolean
+rb_daap_remove_source (RBDaapPlugin *plugin, gchar *service_name, GError **error)
+{
+	if (plugin->priv->shutdown)
+		return FALSE;
+	rb_debug ("Remove DAAP source %s", service_name);
+	mdns_service_removed (plugin->priv->mdns_browser, service_name, plugin);
+	return TRUE;
 }
 

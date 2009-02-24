@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/">
+  <interface name="org.gnome.Rhythmbox.DAAP">
+
+    <method name="AddDAAPSource">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_daap_add_source"/>
+      <arg type="s" name="service_name"/>
+      <arg type="s" name="host"/>
+      <arg type="u" name="port"/>
+    </method>
+
+    <method name="RemoveDAAPSource">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_daap_remove_source"/>
+      <arg type="s" name="service_name"/>
+    </method>
+
+  </interface>
+</node>
+

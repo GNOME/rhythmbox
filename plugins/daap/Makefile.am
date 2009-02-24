@@ -32,6 +32,7 @@ libdaap_la_SOURCES = \
 
 libdaap_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libdaap_la_LIBADD = 					\
+	$(DBUS_LIBS)					\
 	$(MDNS_LIBS)
 
 INCLUDES = 						\
@@ -57,6 +58,7 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(MDNS_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
+	$(DBUS_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 if USE_GNOME_KEYRING
@@ -95,4 +97,12 @@ CLEANFILES = 			\
 DISTCLEANFILES =		\
 	$(BUILT_SOURCES)	\
 	$(NULL)
+
+rb-daap-glue.h: rb-daap.xml Makefile
+	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_daap --mode=glib-server --output=$@ $<
+
+BUILT_SOURCES += rb-daap-glue.h
+EXTRA_DIST += rb-daap.xml
+
+libdaap_la_LIBADD += $(DBUS_LIBS)
 
