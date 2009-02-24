@@ -1,5 +1,13 @@
 2009-02-24  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Neil Loknath  <neil.loknath@gmail.com>
+
+	* widgets/rb-header.c: (rb_header_init), (slider_scroll_callback):
+	Handle scroll events on the slider to make the seek direction
+	consistent with totem.  Fixes #164351.
+
+2009-02-24  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Oscar Morante  <spacepluk@gmail.com>
 
 	* shell/rb-playlist-manager.c:

@@ -79,6 +79,7 @@ static gboolean slider_press_callback (GtkWidget *widget, GdkEventButton *event,
 static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event, RBHeader *header);
 static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *header);
 static void slider_changed_callback (GtkWidget *widget, RBHeader *header);
+static gboolean slider_scroll_callback (GtkWidget *widget, GdkEventScroll *event, RBHeader *header);
 
 static void rb_header_elapsed_changed_cb (RBShellPlayer *player, guint elapsed, RBHeader *header);
 
@@ -123,6 +124,9 @@ enum
 #define ALBUM_MARKUP(xALBUM) g_markup_printf_escaped (" %s <i>%s</i>", _("from"), xALBUM)
 #define ARTIST_MARKUP(xARTIST) g_markup_printf_escaped (" %s <i>%s</i>", _("by"), xARTIST)
 #define STREAM_MARKUP(xSTREAM) g_markup_printf_escaped (" (%s)", xSTREAM)
+
+#define SCROLL_UP_SEEK_OFFSET	5
+#define SCROLL_DOWN_SEEK_OFFSET -5
 
 G_DEFINE_TYPE (RBHeader, rb_header, GTK_TYPE_HBOX)
 
@@ -270,6 +274,10 @@ rb_header_init (RBHeader *header)
 	g_signal_connect_object (G_OBJECT (header->priv->scale),
 				 "value_changed",
 				 G_CALLBACK (slider_changed_callback),
+				 header, 0);
+	g_signal_connect_object (G_OBJECT (header->priv->scale),
+				 "scroll_event",
+				 G_CALLBACK (slider_scroll_callback),
 				 header, 0);
 	gtk_scale_set_draw_value (GTK_SCALE (header->priv->scale), FALSE);
 	gtk_widget_set_size_request (header->priv->scale, 150, -1);
@@ -728,6 +736,31 @@ slider_changed_callback (GtkWidget *widget,
 	    header->priv->slider_locked == FALSE) {
 		apply_slider_position (header);
 	}
+}
+
+static gboolean
+slider_scroll_callback (GtkWidget *widget, GdkEventScroll *event, RBHeader *header)
+{
+	gboolean retval = TRUE;
+	gdouble adj = gtk_adjustment_get_value (header->priv->adjustment);
+
+	switch (event->direction) {
+	case GDK_SCROLL_UP:
+		rb_debug ("slider scrolling up");
+		gtk_adjustment_set_value (header->priv->adjustment, adj + SCROLL_UP_SEEK_OFFSET);
+		break;
+
+	case GDK_SCROLL_DOWN:
+		rb_debug ("slider scrolling down");
+		gtk_adjustment_set_value (header->priv->adjustment, adj + SCROLL_DOWN_SEEK_OFFSET);
+		break;
+
+	default:
+		retval = FALSE;
+		break;
+	}
+
+	return retval;
 }
 
 static void
