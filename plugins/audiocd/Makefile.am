@@ -81,15 +81,18 @@ regenerate-built-sources:
 
 MARSHALFILES = 
 
-if HAVE_MUSICBRAINZ
+if HAVE_SJ_METADATA_GETTER
 libaudiocd_la_SOURCES +=							\
 	sj-metadata.h sj-metadata.c						\
 	sj-metadata-getter.c sj-metadata-getter.h				\
-	sj-metadata-musicbrainz.h sj-metadata-musicbrainz.c			\
 	sj-metadata-gvfs.c sj-metadata-gvfs.h					\
 	sj-structures.h sj-structures.c						\
 	sj-error.h sj-error.c							\
 	$(MARSHALFILES)
+
+if HAVE_MUSICBRAINZ
+libaudiocd_la_SOURCES += sj-metadata-musicbrainz.c sj-metadata-musicbrainz.h
+endif
 
 if HAVE_MUSICBRAINZ3
 libaudiocd_la_SOURCES += sj-metadata-musicbrainz3.c sj-metadata-musicbrainz3.h

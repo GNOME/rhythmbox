@@ -326,6 +326,11 @@ if test "$have_mb3" = "yes" ; then
 fi
 AM_CONDITIONAL([HAVE_MUSICBRAINZ3], [test "x$have_mb3" = "xyes"])
 
+if test "$have_mb3" = "yes" || test x"$enable_musicbrainz" = xyes; then
+	have_sj_getter=yes
+fi
+AM_CONDITIONAL([HAVE_SJ_METADATA_GETTER], [test "x$have_sj_getter" = "xyes"])
+
 AC_PATH_XTRA
 CFLAGS="$CFLAGS $X_CFLAGS"
 #LIBS=$X_LIBS
