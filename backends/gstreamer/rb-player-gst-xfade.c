@@ -866,8 +866,11 @@ adjust_stream_base_time (RBXFadeStream *stream)
 	gint64 output_pos = -1;
 	gint64 stream_pos = -1;
 
+	g_mutex_lock (stream->lock);
+
 	if (stream->adder_pad == NULL) {
 		rb_debug ("stream isn't linked, can't adjust base time");
+		g_mutex_unlock (stream->lock);
 		return;
 	}
 
@@ -904,6 +907,8 @@ adjust_stream_base_time (RBXFadeStream *stream)
 							  stream);
 		}
 	}
+		
+	g_mutex_unlock (stream->lock);
 }
 
 /* called on a streaming thread when the volume level for a stream changes. */

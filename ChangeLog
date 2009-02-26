@@ -1,3 +1,11 @@
+2009-02-26  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(adjust_stream_base_time):
+	Take the stream lock while adjusting the base time.  This can happen
+	simultaneously from two threads when a new segment event arrives
+	immediately after linking the stream.
+
 2009-02-25  Bastien Nocera  <hadess@hadess.net>
 
 	* configure.ac:
