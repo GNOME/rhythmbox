@@ -83,7 +83,7 @@
 
 #define LASTFM_URL "ws.audioscrobbler.com"
 #define RB_LASTFM_PLATFORM "linux"
-#define RB_LASTFM_VERSION "1.3.1.1"
+#define RB_LASTFM_VERSION "1.5"
 
 #define USER_AGENT "Rhythmbox/" VERSION
 
