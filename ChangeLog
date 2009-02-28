@@ -1,3 +1,13 @@
+2009-02-28  Jonathan Matthew  <jonathan@d14n.org>
+
+	* shell/rb-play-order-random-by-age-and-rating.c:
+	(rb_random_by_age_and_rating_get_entry_weight):
+	* shell/rb-play-order-random-by-age.c:
+	(rb_random_by_age_get_entry_weight):
+	Treat the current playing entry as having been played 0 seconds ago,
+	rather than using the value from the last-played field, which only
+	reflects the last time the entry was played.  Fixes #164250, more or less.
+
 2009-02-27  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by: Víctor Manuel Jáquez Leal <vjaquez@igalia.com>
