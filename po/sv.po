@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-19 20:41+0100\n"
-"PO-Revision-Date: 2009-02-19 20:41+0100\n"
+"POT-Creation-Date: 2009-03-01 10:25+0100\n"
+"PO-Revision-Date: 2009-03-01 10:26+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -40,90 +40,90 @@ msgstr "Misslyckades med att skapa %s-element; kontrollera din installation"
 msgid "Unknown playback error"
 msgstr "Okänt uppspelningsfel"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1124
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1138
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1129
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1143
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Misslyckades med att länka ny ström in i GStreamer-rörledning"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1166
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1171
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Misslyckades med att starta ny ström"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2705
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2710
 #, c-format
 msgid "Failed to open output device"
 msgstr "Misslyckades med att öppna utdataenhet"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2784
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2789
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Misslyckades med att öppna utdataenhet: %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3006
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3094
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3011
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3099
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Misslyckades med att skapa GStreamer-element; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3019
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3024
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Misslyckades med att skapa ljudutmatningselement; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3068
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3110
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3136
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3145
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3154
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3073
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3115
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3141
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3150
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3159
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Misslyckades med att länka GStreamer-rörledning; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3249
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3254
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Misslyckades med att skapa GStreamer-rörledning för att spela upp %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3265
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3270
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Misslyckades med att starta uppspelning av %s"
 
 #: ../data/glade/create-playlist.glade.h:1
+msgid " "
+msgstr " "
+
+#: ../data/glade/create-playlist.glade.h:2
 msgid "A_dd if any criteria are matched"
 msgstr "_Lägg till om något villkor matchar"
 
-#: ../data/glade/create-playlist.glade.h:2
+#: ../data/glade/create-playlist.glade.h:3
 msgid "Create automatically updating playlist where:"
 msgstr "Skapa automatiskt uppdaterande spellista där:"
 
-#: ../data/glade/create-playlist.glade.h:3
-msgid "GB"
-msgstr "GB"
-
 #: ../data/glade/create-playlist.glade.h:4
-msgid "MB"
-msgstr "MB"
-
-#: ../data/glade/create-playlist.glade.h:5
-msgid "Minutes"
-msgstr "Minuter"
-
-#: ../data/glade/create-playlist.glade.h:6
 msgid "_Limit to: "
 msgstr "_Begränsa till: "
 
-#: ../data/glade/create-playlist.glade.h:7
+#: ../data/glade/create-playlist.glade.h:5
 msgid "_When sorted by:"
 msgstr "_När sorterad efter:"
 
-#: ../data/glade/create-playlist.glade.h:8
-msgid "songs"
-msgstr "låtar"
+#: ../data/glade/create-playlist.glade.h:6
+msgid ""
+"songs\n"
+"MB\n"
+"GB\n"
+"Minutes"
+msgstr ""
+"låtar\n"
+"MB\n"
+"GB\n"
+"minuter"
 
 #: ../data/glade/general-prefs.glade.h:1
 msgid "A_lbum"
@@ -586,10 +586,10 @@ msgstr "%d %b %Y"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:88
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:123
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:129
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:247
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:268
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:150
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:151
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:248
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:269
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:159
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:160
 #: ../plugins/audiocd/rb-audiocd-source.c:218
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:510
@@ -598,7 +598,7 @@ msgstr "%d %b %Y"
 #: ../plugins/daap/rb-daap-connection.c:698
 #: ../plugins/generic-player/rb-generic-player-source.c:1295
 #: ../plugins/ipod/rb-ipod-source.c:305
-#: ../plugins/jamendo/jamendo/JamendoSource.py:336
+#: ../plugins/jamendo/jamendo/JamendoSource.py:298
 #: ../plugins/iradio/rb-iradio-source.c:517
 #: ../plugins/iradio/rb-iradio-source.c:1100
 #: ../plugins/iradio/rb-station-properties-dialog.c:495
@@ -627,17 +627,17 @@ msgstr "%d %b %Y"
 msgid "Unknown"
 msgstr "Okänd"
 
-#: ../lib/rb-file-helpers.c:218
+#: ../lib/rb-file-helpers.c:204
 #, c-format
 msgid "Unable to move %s to %s: %s"
 msgstr "Kunde inte flytta %s till %s: %s"
 
-#: ../lib/rb-file-helpers.c:338
+#: ../lib/rb-file-helpers.c:368
 #, c-format
 msgid "Too many symlinks"
 msgstr "För många symboliska länkar"
 
-#: ../lib/rb-file-helpers.c:942
+#: ../lib/rb-file-helpers.c:972
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Kan inte få fritt utrymme på %s: %s"
@@ -1672,41 +1672,41 @@ msgstr "Avahis MDNS-tjänst kör inte"
 msgid "The MDNS service is not published"
 msgstr "MDNS-tjänsten är inte publicerad"
 
-#: ../plugins/daap/rb-daap-plugin.c:116
+#: ../plugins/daap/rb-daap-plugin.c:125
 msgid "_Disconnect"
 msgstr "_Koppla från"
 
-#: ../plugins/daap/rb-daap-plugin.c:117
+#: ../plugins/daap/rb-daap-plugin.c:126
 msgid "Disconnect from DAAP share"
 msgstr "Koppla från DAAP-utdelning"
 
-#: ../plugins/daap/rb-daap-plugin.c:119
+#: ../plugins/daap/rb-daap-plugin.c:128
 msgid "Connect to _DAAP share..."
 msgstr "Anslut till _DAAP-utdelning..."
 
-#: ../plugins/daap/rb-daap-plugin.c:120
+#: ../plugins/daap/rb-daap-plugin.c:129
 msgid "Connect to a new DAAP share"
 msgstr "Anslut till en ny DAAP-utdelning"
 
-#: ../plugins/daap/rb-daap-plugin.c:618
+#: ../plugins/daap/rb-daap-plugin.c:647
 #: ../plugins/daap/rb-daap-source.c:526
 msgid "Could not connect to shared music"
 msgstr "Kunde inte ansluta till musikutdelning"
 
-#: ../plugins/daap/rb-daap-plugin.c:619
+#: ../plugins/daap/rb-daap-plugin.c:648
 #, c-format
 msgid "Unable to resolve hostname %s"
 msgstr "Kunde inte slå upp värdnamnet %s"
 
-#: ../plugins/daap/rb-daap-plugin.c:668
+#: ../plugins/daap/rb-daap-plugin.c:699
 msgid "New DAAP share"
 msgstr "Ny DAAP-utdelning"
 
-#: ../plugins/daap/rb-daap-plugin.c:668
+#: ../plugins/daap/rb-daap-plugin.c:699
 msgid "Host:port of DAAP share:"
 msgstr "Värd:port för DAAP-utdelning:"
 
-#: ../plugins/daap/rb-daap-plugin.c:893
+#: ../plugins/daap/rb-daap-plugin.c:924
 msgid "DAAP Music Sharing Preferences"
 msgstr "Inställningar för DAAP-musikutdelning"
 
@@ -1779,6 +1779,8 @@ msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "Stöd för generiska ljudspelarenheter (plus PSP och Nokia 770)"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:98
+#: ../shell/rb-playlist-manager.c:1150
+#: ../shell/rb-playlist-manager.c:1193
 msgid "New Playlist"
 msgstr "Ny spellista"
 
@@ -2098,16 +2100,16 @@ msgstr "_Donera till artist"
 msgid "Donate Money to this Artist"
 msgstr "Donera pengar till denna artist"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:117
+#: ../plugins/jamendo/jamendo/JamendoSource.py:121
 msgid "Loading Jamendo catalogue"
 msgstr "Läser in Jamendo-katalog"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:396
+#: ../plugins/jamendo/jamendo/JamendoSource.py:359
 #, python-format
 msgid "Error looking up p2plink for album %s on jamendo.com"
 msgstr "Fel vid uppslagning av p2plink för albumet %s på jamendo.com"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:417
+#: ../plugins/jamendo/jamendo/JamendoSource.py:383
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Fel vid uppslagning av artisten %s på jamendo.com"
@@ -2607,40 +2609,52 @@ msgstr "Lägger till stöd i Rhythmbox för att spela och köpa musik från nät
 msgid "Magnatune Store"
 msgstr "Magnatunebutik"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:66
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:74
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:112
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:121
 msgid "Loading Magnatune catalogue"
 msgstr "Läser in Magnatune-katalog"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:115
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:124
 msgid "Downloading Magnatune Album(s)"
 msgstr "Hämtar Magnatune-album"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:215
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:231
 msgid "Couldn't purchase album"
 msgstr "Kunde inte köpa album"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:216
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:232
 msgid "You must have a library location set to purchase an album."
 msgstr "Du måste ha en biblioteksplats inställd för att köpa ett album."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:237
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:253
 #, python-format
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "Vill du köpa albumet <i>%(album)s</i> av \"%(artist)s\"?"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:357
+msgid "Unable to load catalogue"
+msgstr "Kunde inte läsa in katalogen"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:358
 msgid "Rhythmbox could not understand the Magnatune catalogue, please file a bug."
 msgstr "Rhythmbox kunde inte förstå Magnatune-katalogen. Skicka in en felrapport."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:513
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:443
+msgid "Authorizing Purchase"
+msgstr "Godkänner köp"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:444
+msgid "Authorizing purchase with the Magnatune server. Please wait..."
+msgstr "Godkänner köp med Magnatune-servern. Vänta..."
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:490
 msgid "Purchase Error"
 msgstr "Fel vid köp"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:514
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -2651,12 +2665,12 @@ msgstr ""
 "Magnatuneservern returnerade:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:517
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:494
 #: ../widgets/rb-entry-view.c:1578
 msgid "Error"
 msgstr "Fel"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:518
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:495
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -4146,12 +4160,12 @@ msgid "Play Queue"
 msgstr "Spelkö"
 
 #: ../sources/rb-play-queue-source.c:429
-#: ../widgets/rb-header.c:123
+#: ../widgets/rb-header.c:124
 msgid "from"
 msgstr "från"
 
 #: ../sources/rb-play-queue-source.c:429
-#: ../widgets/rb-header.c:124
+#: ../widgets/rb-header.c:125
 msgid "by"
 msgstr "av"
 
@@ -4462,7 +4476,7 @@ msgstr "Spelar nu"
 msgid "Playback Error"
 msgstr "Uppspelningsfel"
 
-#: ../widgets/rb-header.c:529
+#: ../widgets/rb-header.c:537
 msgid "Not Playing"
 msgstr "Spelar inte"
 
@@ -4688,6 +4702,14 @@ msgstr "På skrivbordet"
 msgid "Unknown location"
 msgstr "Okänd plats"
 
+#~ msgid "GB"
+#~ msgstr "GB"
+#~ msgid "MB"
+#~ msgstr "MB"
+#~ msgid "Minutes"
+#~ msgstr "Minuter"
+#~ msgid "songs"
+#~ msgstr "låtar"
 #~ msgid "Volume"
 #~ msgstr "Volym"
 #~ msgid "+"
