@@ -5,6 +5,8 @@ noinst_LTLIBRARIES = librbbackendsgstreamer.la
 librbbackendsgstreamer_la_SOURCES =			\
 	rb-encoder-gst.h				\
 	rb-encoder-gst.c				\
+	rb-player-gst-helper.c				\
+	rb-player-gst-helper.h				\
 	rb-player-gst.h					\
 	rb-player-gst.c					\
 	rb-player-gst-xfade.h				\

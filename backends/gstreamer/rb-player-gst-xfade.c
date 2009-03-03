@@ -169,6 +169,7 @@
 #include "rb-marshal.h"
 #include "rb-player-gst-tee.h"
 #include "rb-player-gst-filter.h"
+#include "rb-player-gst-helper.h"
 
 static void rb_player_init (RBPlayerIface *iface);
 static void rb_player_gst_tee_init (RBPlayerGstTeeIface *iface);
@@ -357,6 +358,7 @@ struct _RBPlayerGstXFadePrivate
 	GstElement *sink;
 	GstElement *tee;
 	GstElement *filterbin;
+	GstElement *volume_handler;
 	enum {
 		SINK_NULL,
 		SINK_STOPPED,
@@ -741,6 +743,11 @@ rb_player_gst_xfade_dispose (GObject *object)
 	g_list_free (player->priv->streams);
 	player->priv->streams = NULL;
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+
+	if (player->priv->volume_handler) {
+		g_object_unref (player->priv->volume_handler);
+		player->priv->volume_handler = NULL;
+	}
 
 	g_static_rec_mutex_lock (&player->priv->sink_lock);
 	stop_sink (player);
@@ -2828,6 +2835,16 @@ start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 			gst_message_unref (message);
 		}
 		gst_object_unref (bus);
+	
+		/* if the sink provides a 'volume' property, use that to control output volume */
+		player->priv->volume_handler = rb_player_gst_find_element_with_property (player->priv->sink, "volume");
+		if (player->priv->volume_handler == NULL) {
+			rb_debug ("sink doesn't provide volume control, using volume element");
+			player->priv->volume_handler = g_object_ref (player->priv->volume);
+		}
+
+		g_object_set (player->priv->volume_handler, "volume", player->priv->cur_volume, NULL);
+
 
 		sr = gst_element_set_state (player->priv->silencebin, GST_STATE_PLAYING);
 		if (sr == GST_STATE_CHANGE_FAILURE) {
@@ -2932,6 +2949,11 @@ stop_sink (RBPlayerGstXFade *player)
 			rb_debug ("couldn't set audio sink to NULL state");
 		}
 
+		if (player->priv->volume_handler) {
+			g_object_unref (player->priv->volume_handler);
+			player->priv->volume_handler = NULL;
+		}
+
 		player->priv->sink_state = SINK_STOPPED;
 		break;
 
@@ -3012,11 +3034,9 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 		return FALSE;
 	}
 
-	g_object_set (player->priv->volume, "volume", player->priv->cur_volume, NULL);
-
-	player->priv->sink = gst_element_factory_make ("gconfaudiosink", NULL);
+	player->priv->sink = rb_player_gst_try_audio_sink ("gconfaudiosink", NULL);
 	if (player->priv->sink == NULL) {
-		player->priv->sink = gst_element_factory_make ("autoaudiosink", NULL);
+		player->priv->sink = rb_player_gst_try_audio_sink ("autoaudiosink", NULL);
 		if (player->priv->sink == NULL) {
 			g_set_error (error,
 				     RB_PLAYER_ERROR,
@@ -3024,10 +3044,6 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 				     _("Failed to create audio output element; check your installation"));
 			return FALSE;
 		}
-	} else {
-		/* set the profile property on the gconfaudiosink to "music and movies" */
-		if (g_object_class_find_property (G_OBJECT_GET_CLASS (player->priv->sink), "profile"))
-			g_object_set (player->priv->sink, "profile", 1, NULL);
 	}
 
 	g_object_set (player->priv->capsfilter, "caps", caps, NULL);
@@ -3671,11 +3687,11 @@ rb_player_gst_xfade_set_volume (RBPlayer *iplayer, float volume)
 {
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
 
-	if (player->priv->volume != NULL) {
+	if (player->priv->volume_handler != NULL) {
 		gdouble v = (gdouble)volume;
 
 		/* maybe use a controller here for smoother changes? */
-		g_object_set (player->priv->volume, "volume", v, NULL);
+		g_object_set (player->priv->volume_handler, "volume", v, NULL);
 	}
 	player->priv->cur_volume = volume;
 }

@@ -48,6 +48,7 @@
 #include "rb-player-gst-tee.h"
 /*#include "rb-player-gst-data-tee.h"*/
 #include "rb-player-gst.h"
+#include "rb-player-gst-helper.h"
 
 static void rb_player_init (RBPlayerIface *iface);
 static void rb_player_gst_filter_init (RBPlayerGstFilterIface *iface);
@@ -112,6 +113,7 @@ struct _RBPlayerGstPrivate
 	GDestroyNotify stream_data_destroy;
 
 	GstElement *playbin;
+	GstElement *volume_handler;
 
 	gboolean can_signal_direct_error;
 	GError *error;
@@ -261,6 +263,10 @@ rb_player_gst_finalize (GObject *object)
 				       GST_STATE_NULL);
 
 		rb_player_gst_gst_free_playbin (mp);
+	}
+	if (mp->priv->volume_handler) {
+		g_object_unref (mp->priv->volume_handler);
+		mp->priv->volume_handler = NULL;
 	}
 
 	if (mp->priv->waiting_tees) {
@@ -599,17 +605,13 @@ rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 	/* Use gconfaudiosink for audio if there's no audio sink yet */
 	g_object_get (G_OBJECT (mp->priv->playbin), "audio-sink", &sink, NULL);
 	if (sink == NULL) {
-		sink = gst_element_factory_make ("gconfaudiosink", "audiosink");
+		sink = rb_player_gst_try_audio_sink ("gconfaudiosink", "audiosink");
 		if (sink == NULL) {
 			/* fall back to autoaudiosink */
-			sink = gst_element_factory_make ("autoaudiosink", "audiosink");
+			sink = rb_player_gst_try_audio_sink ("autoaudiosink", "audiosink");
 		}
 
 		if (sink != NULL) {
-			/* set the profile property on the gconfaudiosink to "music and movies" */
-			if (g_object_class_find_property (G_OBJECT_GET_CLASS (sink), "profile"))
-				g_object_set (G_OBJECT (sink), "profile", 1, NULL);
-
 			g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
 		}
 	} else {
@@ -939,6 +941,12 @@ rb_player_gst_close (RBPlayer *player, const char *uri, GError **error)
 	begin_gstreamer_operation (mp);
 	ret = gst_element_set_state (mp->priv->playbin, GST_STATE_READY) == GST_STATE_CHANGE_SUCCESS;
 	end_gstreamer_operation (mp, !ret, error);
+
+	if (mp->priv->volume_handler) {
+		g_object_unref (mp->priv->volume_handler);
+		mp->priv->volume_handler = NULL;
+	}
+
 	return ret;
 }
 
@@ -1002,6 +1010,25 @@ rb_player_gst_playing (RBPlayer *player)
 }
 
 static void
+find_volume_handler (RBPlayerGst *mp)
+{
+	/* look for a 'volume' property provided by the sink */
+	if (mp->priv->volume_handler == NULL && mp->priv->playbin != NULL) {
+		GstElement *sink;
+
+		g_object_get (mp->priv->playbin, "audio-sink", &sink, NULL);
+		if (sink != NULL) {
+			mp->priv->volume_handler = rb_player_gst_find_element_with_property (sink, "volume");
+			g_object_unref (sink);
+		}
+
+		if (mp->priv->volume_handler == NULL) {
+			mp->priv->volume_handler = g_object_ref (mp->priv->playbin);
+		}
+	}
+}
+
+static void
 rb_player_gst_set_replaygain (RBPlayer *player,
 			      const char *uri,
 			      double track_gain, double track_peak,
@@ -1037,11 +1064,12 @@ rb_player_gst_set_replaygain (RBPlayer *player,
 
 	rb_debug ("Scale : %f New volume : %f", scale, mp->priv->cur_volume * scale);
 
-	if (mp->priv->playbin != NULL) {
+	find_volume_handler (mp);
+	if (mp->priv->volume_handler != NULL) {
 		GParamSpec *volume_pspec;
 		GValue val = {0,};
 
-		volume_pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (mp->priv->playbin),
+		volume_pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (mp->priv->volume_handler),
 							     "volume");
 		g_value_init (&val, G_TYPE_DOUBLE);
 
@@ -1049,7 +1077,7 @@ rb_player_gst_set_replaygain (RBPlayer *player,
 		if (g_param_value_validate (volume_pspec, &val))
 			rb_debug ("replay gain too high, reducing value to %f", g_value_get_double (&val));
 
-		g_object_set_property (G_OBJECT (mp->priv->playbin), "volume", &val);
+		g_object_set_property (G_OBJECT (mp->priv->volume_handler), "volume", &val);
 		g_value_unset (&val);
 	}
 }
@@ -1061,11 +1089,9 @@ rb_player_gst_set_volume (RBPlayer *player,
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
 	g_return_if_fail (volume >= 0.0 && volume <= 1.0);
 
-	if (mp->priv->playbin != NULL) {
-		g_object_set (G_OBJECT (mp->priv->playbin),
-			      "volume",
-			      volume,
-			      NULL);
+	find_volume_handler (mp);
+	if (mp->priv->volume_handler != NULL) {
+		g_object_set (mp->priv->volume_handler, "volume", volume, NULL);
 	}
 
 	mp->priv->cur_volume = volume;

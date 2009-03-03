@@ -1,5 +1,31 @@
 2009-03-03  Jonathan Matthew  <jonathan@d14n.org>
 
+	based on patch by:  Bastien Nocera  <hadess@hadess.net>
+
+	* backends/gstreamer/Makefile.am:
+	* backends/gstreamer/rb-player-gst-helper.c:
+	(rb_player_gst_try_audio_sink), (find_property_element),
+	(rb_player_gst_find_element_with_property):
+	* backends/gstreamer/rb-player-gst-helper.h:
+	Add helper functions to testing audio sinks (making sure they can at
+	least go to READY state) and for examining sink bins to find elements
+	that provide a particular property.
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(rb_player_gst_xfade_dispose), (start_sink_locked), (stop_sink),
+	(create_sink), (rb_player_gst_xfade_set_volume):
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_finalize),
+	(rb_player_gst_construct), (rb_player_gst_close),
+	(find_volume_handler), (rb_player_gst_set_replaygain),
+	(rb_player_gst_set_volume):
+	If the audio sink provides a 'volume' property, use that instead of
+	a volume element (or the 'volume' property on playbin) for setting
+	output volume.  The practical effect is that when using pulseaudio,
+	the volume control uses the pulseaudio stream volume, which has much
+	lower latency.  Fixes #571606.
+
+2009-03-03  Jonathan Matthew  <jonathan@d14n.org>
+
 	* lib/rb-file-helpers.c: (rb_uri_append_uri):
 	g_file_get_path sometimes returns NULL, so rb_uri_append_uri should do
 	the same.  Fixes #573325.
