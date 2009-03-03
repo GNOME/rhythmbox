@@ -882,6 +882,10 @@ rb_uri_append_uri (const char *uri, const char *fragment)
 	GFile *f = g_file_new_for_uri (fragment);
 
 	path = g_file_get_path (f);
+	if (path == NULL) {
+		g_object_unref (f);
+		return NULL;
+	}
 
 	rv = rb_uri_append_path (uri, path);
 	g_free (path);

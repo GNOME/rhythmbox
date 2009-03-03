@@ -1,3 +1,9 @@
+2009-03-03  Jonathan Matthew  <jonathan@d14n.org>
+
+	* lib/rb-file-helpers.c: (rb_uri_append_uri):
+	g_file_get_path sometimes returns NULL, so rb_uri_append_uri should do
+	the same.  Fixes #573325.
+
 2009-02-28  Jonathan Matthew  <jonathan@d14n.org>
 
 	* shell/rb-play-order-random-by-age-and-rating.c:
