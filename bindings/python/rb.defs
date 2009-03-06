@@ -1373,8 +1373,24 @@
     '("GtkTreeViewColumn*" "column")
     '("const-char*" "title")
     '("const-char*" "key")
-    '("GCompareDataFunc" "sort_func")
-    '("RhythmDBPropType" "sort_propid")
+    '("GCompareDataFunc" "sort_func" (optional))
+    '("gpointer" "data" (optional))
+    '("GDestroyNotify" "data_destroy" (optional))
+  )
+)
+
+(define-method insert_column_custom
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_insert_column_custom")
+  (return-type "none")
+  (parameters
+    '("GtkTreeViewColumn*" "column")
+    '("const-char*" "title")
+    '("const-char*" "key")
+    '("GCompareDataFunc" "sort_func" (optional))
+    '("gpointer" "data" (optional))
+    '("GDestroyNotify" "data_destroy" (optional))
+    '("gint" "position")
   )
 )
 

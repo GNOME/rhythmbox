@@ -83,6 +83,100 @@ ignore-glob
   *_get_type
   *_quark
 %%
+override rb_entry_view_append_column_custom kwargs
+static PyObject *
+_wrap_rb_entry_view_append_column_custom(PyGObject *self, PyObject *args,
+                                         PyObject *kwargs)
+{
+    static char *kwlist[] = { "column", "title", "key", "sort_func", "sort_data", NULL };
+    PyGObject *pycolumn = NULL;
+    PyObject *pyfunc = NULL;
+    PyObject *pyarg = NULL;
+    char *title, *key;
+  
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+                                     "Ozz|OO:RBEntryView.append_column_custom",
+                                     kwlist, &pycolumn, &title, &key, &pyfunc, &pyarg))
+        return NULL;
+
+    if (pyfunc != Py_None && pyfunc != NULL) {
+        PyRhythmDBQueryModelSortData *data;
+
+        if (!PyCallable_Check(pyfunc)) {
+            PyErr_SetString(PyExc_TypeError,
+                            "sort_func must be a callable object");
+            return NULL;
+        }
+        data = g_new0(PyRhythmDBQueryModelSortData, 1);
+        data->func = pyfunc;
+        data->data = pyarg;
+        Py_INCREF(data->func);
+        Py_XINCREF(data->data);
+
+        rb_entry_view_append_column_custom(RB_ENTRY_VIEW(self->obj),
+                                           GTK_TREE_VIEW_COLUMN(pycolumn->obj),
+                                           title, key,
+                                           (GCompareDataFunc) _rhythmdb_query_model_sort_func,
+                                           data,
+                                           (GDestroyNotify) _rhythmdb_query_model_sort_data_free);
+    } else {
+        rb_entry_view_append_column_custom(RB_ENTRY_VIEW(self->obj),
+                                           GTK_TREE_VIEW_COLUMN(pycolumn->obj),
+                                           title, key, NULL, NULL, NULL);
+    }
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+%%
+override rb_entry_view_insert_column_custom kwargs
+static PyObject *
+_wrap_rb_entry_view_insert_column_custom(PyGObject *self, PyObject *args,
+                                         PyObject *kwargs)
+{
+    static char *kwlist[] = { "column", "title", "key", "position", "sort_func", "sort_data", NULL };
+    PyGObject *pycolumn;
+    PyObject *pyfunc = NULL;
+    PyObject *pyarg = NULL;
+    char *title, *key;
+    int position;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+                                     "Ozzi|OO:RBEntryView.insert_column_custom",
+                                     kwlist, &pycolumn, &title, &key, &position, &pyfunc, &pyarg))
+        return NULL;
+
+    if (pyfunc != Py_None && pyfunc != NULL) {
+        PyRhythmDBQueryModelSortData *data;
+        if (!PyCallable_Check(pyfunc)) {
+            PyErr_SetString(PyExc_TypeError,
+                            "sort_func must be a callable object");
+            return NULL;
+        }
+        data = g_new0(PyRhythmDBQueryModelSortData, 1);
+        data->func = pyfunc;
+        data->data = pyarg;
+        Py_INCREF(data->func);
+        Py_XINCREF(data->data);
+
+        rb_entry_view_insert_column_custom(RB_ENTRY_VIEW(self->obj),
+                                           GTK_TREE_VIEW_COLUMN(pycolumn->obj),
+                                           title, key,
+                                           (GCompareDataFunc) _rhythmdb_query_model_sort_func,
+                                           data, (GDestroyNotify) _rhythmdb_query_model_sort_data_free,
+                                           position);
+    } else {
+        rb_entry_view_insert_column_custom(RB_ENTRY_VIEW(self->obj),
+                                           GTK_TREE_VIEW_COLUMN(pycolumn->obj),
+                                           title, key,
+                                           NULL, NULL, NULL,
+                                           position);
+    }
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+%%
 override rb_entry_view_get_selected_entries noargs
 static PyObject *
 _wrap_rb_entry_view_get_selected_entries(PyGObject *self)

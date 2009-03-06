@@ -1,3 +1,18 @@
+2009-03-06  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by: Tim Retout <tim@retout.co.uk>, Mike Gratton <mike@vee.net>
+
+	* bindings/python/override_common.c:
+	(_rhythmdb_query_model_sort_data_free),
+	(_rhythmdb_query_model_sort_func):
+	* bindings/python/override_common.h:
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override:
+	* bindings/python/rhythmdb.override:
+	* widgets/rb-entry-view.c: (rb_entry_view_resort_model):
+	Add bindings for the methods used to add custom columns to entry
+	views.  Fixes #432318.
+
 2009-03-04  Bastien Nocera  <hadess@hadess.net>
 
 	* configure.ac: Create .tar.bz2 when creating a tarball

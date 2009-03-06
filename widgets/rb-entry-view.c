@@ -2545,7 +2545,7 @@ rb_entry_view_resort_model (RBEntryView *view)
 	rhythmdb_query_model_set_sort_order (view->priv->model,
 					     sort_data->func,
 					     sort_data->data,
-					     sort_data->data_destroy,
+					     NULL,
 					     (view->priv->sorting_order == GTK_SORT_DESCENDING));
 }
 

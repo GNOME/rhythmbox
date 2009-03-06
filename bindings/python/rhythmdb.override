@@ -49,57 +49,6 @@ _py_decref (PyObject *o)
 	Py_XDECREF (o);
 }
 
-
-/* query model sorting stuff */
-typedef struct {
-	PyObject *func;
-	PyObject *data;
-} PyRhythmDBQueryModelSortData;
-
-static void
-_rhythmdb_query_model_sort_data_free (PyRhythmDBQueryModelSortData *data)
-{
-	PyGILState_STATE __py_state;
-	__py_state = pyg_gil_state_ensure();
-
-	Py_DECREF (data->func);
-	Py_DECREF (data->data);
-	g_free (data);
-
-	pyg_gil_state_release(__py_state);
-}
-
-static int
-_rhythmdb_query_model_sort_func (RhythmDBEntry *a, RhythmDBEntry *b, PyRhythmDBQueryModelSortData *data)
-{
-	PyObject *args;
-	PyObject *py_result;
-	PyObject *py_a, *py_b;
-	int result;
-	PyGILState_STATE __py_state;
-
-	__py_state = pyg_gil_state_ensure();
-
-	py_a = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, a, FALSE, FALSE);
-	py_b = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, b, FALSE, FALSE);
-	if (data->data)
-		args = Py_BuildValue ("(OOO)", py_a, py_b, data->data);
-	else
-		args = Py_BuildValue ("(OO)", py_a, py_b);
-
-	py_result = PyEval_CallObject (data->func, args);
-	result = PyInt_AsLong (py_result);
-
-	Py_DECREF (py_a);
-	Py_DECREF (py_b);
-	Py_DECREF (args);
-	Py_DECREF (py_result);
-	pyg_gil_state_release(__py_state);
-
-	return result;
-}
-/* end query model sorting stuff */
-
 typedef struct {
 	PyObject *func;
 	PyObject *data;

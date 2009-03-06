@@ -34,6 +34,8 @@
 #ifndef __OVERRIDE_COMMON_H
 #define __OVERRIDE_COMMON_H
 
+#include "rhythmdb.h"
+
 PyObject * _helper_wrap_gobject_glist (const GList *list); /* references objects */
 PyObject * _helper_wrap_string_glist (const GList *list); /* duplicated strings */
 PyObject * _helper_wrap_pointer_glist (const GList *list,
@@ -53,5 +55,19 @@ GList * _helper_unwrap_boxed_pylist (PyObject *py_list, /* does not copy boxed *
 					GType type);
 GList * _helper_unwrap_gobject_pylist (PyObject *py_list); /* does not reference objects */
 GPtrArray* _helper_unwrap_boxed_gptrarray (PyObject *list, GType type); /* does not copy boxed */
+
+/* query model sorting stuff */
+typedef struct {
+	PyObject *func;
+	PyObject *data;
+} PyRhythmDBQueryModelSortData;
+
+void _rhythmdb_query_model_sort_data_free (PyRhythmDBQueryModelSortData *data);
+
+int _rhythmdb_query_model_sort_func (RhythmDBEntry *a,
+				     RhythmDBEntry *b,
+				     PyRhythmDBQueryModelSortData *data);
+/* end query model sorting stuff */
+
 #endif /* __OVERRIDE_COMMON_H */
 

@@ -263,3 +263,53 @@ _helper_unwrap_boxed_gptrarray (PyObject *list, GType type)
 	return array;
 }
 
+/* query model sorting stuff */
+void
+_rhythmdb_query_model_sort_data_free (PyRhythmDBQueryModelSortData *data)
+{
+	PyGILState_STATE __py_state;
+	__py_state = pyg_gil_state_ensure();
+
+	Py_DECREF (data->func);
+	Py_DECREF (data->data);
+	g_free (data);
+
+	pyg_gil_state_release(__py_state);
+}
+
+int
+_rhythmdb_query_model_sort_func (RhythmDBEntry *a, RhythmDBEntry *b, PyRhythmDBQueryModelSortData *data)
+{
+	PyObject *args;
+	PyObject *py_result;
+	PyObject *py_a, *py_b;
+	int result;
+	PyGILState_STATE __py_state;
+
+	__py_state = pyg_gil_state_ensure();
+
+	py_a = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, a, FALSE, FALSE);
+	py_b = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, b, FALSE, FALSE);
+	if (data->data)
+		args = Py_BuildValue ("(OOO)", py_a, py_b, data->data);
+	else
+		args = Py_BuildValue ("(OO)", py_a, py_b);
+
+	Py_DECREF (py_a);
+	Py_DECREF (py_b);
+
+	py_result = PyEval_CallObject (data->func, args);
+	Py_DECREF (args);
+
+	if (!py_result) {
+		PyErr_Print();
+		return NULL;
+	}
+	result = PyInt_AsLong (py_result);
+
+	Py_DECREF (py_result);
+	pyg_gil_state_release(__py_state);
+
+	return result;
+}
+/* end query model sorting stuff */
