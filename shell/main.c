@@ -257,7 +257,11 @@ main (int argc, char **argv)
 
 		rb_refstring_system_init ();
 
-		rb_file_helpers_init ();
+#ifdef USE_UNINSTALLED_DIRS
+		rb_file_helpers_init (TRUE);
+#else
+		rb_file_helpers_init (FALSE);
+#endif
 
 		rb_debug ("Going to create a new shell");
 

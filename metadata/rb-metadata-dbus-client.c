@@ -244,7 +244,7 @@ start_metadata_service (GError **error)
 		 * but when --enable-uninstalled-build is specified, we look
 		 * in the directory it's built in.
 		 */
-#ifdef METADATA_UNINSTALLED_DIR
+#ifdef USE_UNINSTALLED_DIRS
 		g_ptr_array_add (argv, METADATA_UNINSTALLED_DIR "/rhythmbox-metadata");
 #else
 		g_ptr_array_add (argv, LIBEXEC_DIR G_DIR_SEPARATOR_S INSTALLED_METADATA_HELPER);

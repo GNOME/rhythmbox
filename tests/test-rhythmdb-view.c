@@ -110,7 +110,7 @@ main (int argc, char **argv)
 	g_thread_init (NULL);
 	gdk_threads_init ();
 	rb_thread_helpers_init ();
-	rb_file_helpers_init ();
+	rb_file_helpers_init (TRUE);
 	rb_stock_icons_init ();
 	rb_debug_init (TRUE);
 

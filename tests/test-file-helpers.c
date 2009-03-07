@@ -125,7 +125,7 @@ main (int argc, char **argv)
 	rb_threads_init ();
 	gtk_set_locale ();
 	rb_debug_init (TRUE);
-	rb_file_helpers_init ();
+	rb_file_helpers_init (TRUE);
 
 	/* setup tests */
 	s = rb_file_helpers_suite ();

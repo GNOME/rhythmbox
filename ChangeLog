@@ -1,3 +1,30 @@
+2009-03-07  Jonathan Matthew  <jonathan@d14n.org>
+
+	* configure.ac:
+	Always define uninstalled locations, since we need to use them to run
+	tests.
+
+	* lib/rb-file-helpers.c: (rb_file), (rb_file_helpers_init):
+	* lib/rb-file-helpers.h:
+	Decide whether to use uninstalled locations at runtime, rather than
+	compile time.
+
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	* metadata/rb-metadata-dbus-client.c: (start_metadata_service):
+	* plugins/rb-plugin.c: (rb_get_plugin_paths):
+	* shell/main.c: (main):
+	Uninstalled locations are always defined now, so use
+	USE_UNINSTALLED_DIRS to decide whether to use them.
+
+	* tests/bench-rhythmdb-load.c: (main):
+	* tests/test-file-helpers.c: (main):
+	* tests/test-rhythmdb-property-model.c: (main):
+	* tests/test-rhythmdb-query-model.c: (main):
+	* tests/test-rhythmdb-view.c: (main):
+	* tests/test-rhythmdb.c: (main):
+	* tests/test-widgets.c: (main):
+	Always use uninstalled locations in test programs.  Fixes #563051.
+
 2009-03-06  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by: Tim Retout <tim@retout.co.uk>, Mike Gratton <mike@vee.net>

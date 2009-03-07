@@ -49,32 +49,41 @@ static char *dot_dir = NULL;
 static char *user_data_dir = NULL;
 static char *user_cache_dir = NULL;
 
+static char *uninstalled_paths[] = {
+	SHARE_UNINSTALLED_DIR "/",
+	SHARE_UNINSTALLED_DIR "/ui/",
+	SHARE_UNINSTALLED_DIR "/glade/",
+	SHARE_UNINSTALLED_DIR "/art/",
+	SHARE_DIR "/",
+	SHARE_DIR "/glade/",
+	SHARE_DIR "/art/",
+	NULL
+};
+
+static char *installed_paths[] = {
+	SHARE_DIR "/",
+	SHARE_DIR "/glade/",
+	SHARE_DIR "/art/",
+	NULL
+};
+
+static char **search_paths;
+
+
 const char *
 rb_file (const char *filename)
 {
 	char *ret;
 	int i;
 
-	static char *paths[] = {
-#ifdef SHARE_UNINSTALLED_DIR
-		SHARE_UNINSTALLED_DIR "/",
-		SHARE_UNINSTALLED_DIR "/ui/",
-		SHARE_UNINSTALLED_DIR "/glade/",
-		SHARE_UNINSTALLED_DIR "/art/",
-#endif
-		SHARE_DIR "/",
-		SHARE_DIR "/glade/",
-		SHARE_DIR "/art/",
-	};
-	
 	g_assert (files != NULL);
 
 	ret = g_hash_table_lookup (files, filename);
 	if (ret != NULL)
 		return ret;
 
-	for (i = 0; i < (int) G_N_ELEMENTS (paths); i++) {
-		ret = g_strconcat (paths[i], filename, NULL);
+	for (i = 0; search_paths[i] != NULL; i++) {
+		ret = g_strconcat (search_paths[i], filename, NULL);
 		if (g_file_test (ret, G_FILE_TEST_EXISTS) == TRUE) {
 			g_hash_table_insert (files, g_strdup (filename), ret);
 			return (const char *) ret;
@@ -268,8 +277,13 @@ rb_find_user_cache_file (const char *name,
 }
 
 void
-rb_file_helpers_init (void)
+rb_file_helpers_init (gboolean uninstalled)
 {
+	if (uninstalled)
+		search_paths = uninstalled_paths;
+	else
+		search_paths = installed_paths;
+
 	files = g_hash_table_new_full (g_str_hash,
 				       g_str_equal,
 				       (GDestroyNotify) g_free,

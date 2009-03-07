@@ -210,7 +210,7 @@ rb_get_plugin_paths (void)
 		paths = g_list_prepend (paths, path);
 	}
 
-#ifdef SHARE_UNINSTALLED_DIR
+#ifdef USE_UNINSTALLED_DIRS
 	path = g_build_filename (UNINSTALLED_PLUGINS_LOCATION, NULL);
 	paths = g_list_prepend (paths, path);
 	path = g_build_filename ("..", UNINSTALLED_PLUGINS_LOCATION, NULL);

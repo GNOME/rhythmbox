@@ -452,7 +452,7 @@ main (int argc, char **argv)
 	gtk_init (&argc, &argv);
 	rb_debug_init (TRUE);
 	rb_refstring_system_init ();
-	rb_file_helpers_init ();
+	rb_file_helpers_init (TRUE);
 
 
 	GDK_THREADS_ENTER ();

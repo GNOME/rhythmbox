@@ -247,7 +247,7 @@ main (int argc, char **argv)
 	gtk_set_locale ();
 	rb_debug_init (TRUE);
 	rb_refstring_system_init ();
-	rb_file_helpers_init ();
+	rb_file_helpers_init (TRUE);
 
 	/* setup tests */
 	s = rhythmdb_query_model_suite ();
