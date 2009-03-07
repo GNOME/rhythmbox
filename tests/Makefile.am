@@ -80,4 +80,9 @@ noinst_PROGRAMS = \
 		$(TESTS)
 
 
-EXTRA_DIST = deserialization-test1.xml deserialization-test2.xml deserialization-test3.xml $(OLD_TESTS)
+EXTRA_DIST = 							\
+	deserialization-test1.xml 				\
+	deserialization-test2.xml 				\
+	deserialization-test3.xml 				\
+	podcast-upgrade.xml					\
+	$(OLD_TESTS)

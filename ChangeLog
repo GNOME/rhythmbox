@@ -1,6 +1,23 @@
 2009-03-07  Jonathan Matthew  <jonathan@d14n.org>
 
 	* configure.ac:
+	* lib/rb-file-helpers.c:
+	Add SHARE_UNINSTALLED_BUILDDIR to handle cases where builddir !=
+	srcdir.
+
+	* plugins/rb-plugins-engine.c: (load_plugin_module):
+	Missed a #define in the previous commit
+
+	* tests/Makefile.am:
+	Add podcast-upgrade.xml to EXTRA_DIST
+
+	* tests/test-rhythmdb.c: (START_TEST):
+	Find podcast-upgrade.xml relative to the source dir, rather than
+	expecting it to be in the build dir.
+
+2009-03-07  Jonathan Matthew  <jonathan@d14n.org>
+
+	* configure.ac:
 	Always define uninstalled locations, since we need to use them to run
 	tests.
 

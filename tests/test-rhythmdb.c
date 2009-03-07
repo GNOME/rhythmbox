@@ -407,7 +407,7 @@ START_TEST (test_rhythmdb_podcast_upgrade)
 	const char *mountpoint;
 
 	/* load db with old podcasts setups */
-	g_object_set (G_OBJECT (db), "name", "podcast-upgrade.xml", NULL);
+	g_object_set (G_OBJECT (db), "name", SHARE_UNINSTALLED_DIR "/../tests/podcast-upgrade.xml", NULL);
 	set_waiting_signal (G_OBJECT (db), "load-complete");
 	rhythmdb_load (db);
 	wait_for_signal ();

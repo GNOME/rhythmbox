@@ -462,7 +462,7 @@ load_plugin_module (RBPluginInfo *info)
 			g_return_val_if_fail (dirname != NULL, FALSE);
 
 			path = g_module_build_path (dirname, info->location);
-#ifdef SHARE_UNINSTALLED_DIR
+#ifdef USE_UNINSTALLED_DIRS
 			if (!g_file_test (path, G_FILE_TEST_EXISTS)) {
 				char *temp;
 
