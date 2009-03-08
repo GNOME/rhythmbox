@@ -36,10 +36,13 @@ if USE_IPOD
 SUBDIRS += ipod
 endif
 
-if USE_CD_BURNING
-SUBDIRS += 						\
-	cd-recorder
-endif
+if HAVE_LIBBRASERO_MEDIA
+SUBDIRS += brasero-disc-recorder
+else
+if HAVE_NAUTILUS_BURN
+SUBDIRS += cd-recorder
+endif # HAVE_NAUTILUS_BURN
+endif # HAVE_LIBBRASERO_MEDIA
 
 if USE_DAAP
 SUBDIRS += daap

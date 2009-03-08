@@ -1,3 +1,24 @@
+2009-03-08  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Philippe Rouquier <brasero-app@wanadoo.fr>, Bastien Nocera
+	<hadess@hadess.net> and me
+
+	* plugins/cd-recorder/rb-cd-recorder-plugin.c:
+	* plugins/audiocd/audiocd-ui.xml:
+	Slight adjustment to the way the 'duplicate CD' menu item is created;
+	should stop things complaining when no CD burning plugin is enabled.
+
+	* configure.ac:
+	* plugins/Makefile.am:
+	* plugins/brasero-disc-recorder/Makefile.am:
+	* plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in:
+	* plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:
+	New CD burning plugin using Brasero.  If libbrasero-media is
+	available, this plugin is built in preference to the
+	nautilus-cd-burner plugin.  The two plugins use the same plugin name,
+	and install to the same location, so only one can be available at a
+	time.  Fixes #536732.
+
 2009-03-07  Jonathan Matthew  <jonathan@d14n.org>
 
 	* configure.ac:

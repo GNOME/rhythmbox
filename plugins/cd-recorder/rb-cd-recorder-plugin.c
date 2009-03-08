@@ -386,6 +386,7 @@ static struct ui_paths {
 	{ "/PlaylistSourcePopup/PluginPlaceholder", TRUE, FALSE },
 	{ "/AutoPlaylistSourcePopup/PluginPlaceholder", TRUE, FALSE },
 	{ "/QueueSourcePopup/PluginPlaceholder", TRUE, FALSE },
+	{ "/AudioCdSourcePopup/PluginPlaceholder", FALSE, TRUE },
 };
 
 static void
