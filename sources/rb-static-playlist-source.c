@@ -42,6 +42,7 @@
 #include "rb-stock-icons.h"
 #include "rb-file-helpers.h"
 #include "rb-playlist-xml.h"
+#include "rb-source-search-basic.h"
 
 static GObject *rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 						       GObjectConstructParam *construct_properties);
@@ -60,7 +61,7 @@ static void rb_static_playlist_source_get_property (GObject *object,
 static GList * impl_cut (RBSource *source);
 static void impl_paste (RBSource *asource, GList *entries);
 static void impl_delete (RBSource *source);
-static void impl_search (RBSource *asource, const char *search_text);
+static void impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_browser_toggled (RBSource *source, gboolean enabled);
 static void impl_reset_filters (RBSource *asource);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
@@ -104,16 +105,12 @@ static void rb_static_playlist_source_rows_reordered (GtkTreeModel *model,
 						      gint *order_map,
 						      RBStaticPlaylistSource *source);
 
-static void search_action_changed (GtkRadioAction *action,
-				   GtkRadioAction *current,
-				   RBShell *shell);
-
 static GtkRadioActionEntry rb_static_playlist_source_radio_actions [] =
 {
-	{ "StaticPlaylistSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), 0 },
-	{ "StaticPlaylistSearchArtists", NULL, N_("Artists"), NULL, N_("Search artists"), 1 },
-	{ "StaticPlaylistSearchAlbums", NULL, N_("Albums"), NULL, N_("Search albums"), 2 },
-	{ "StaticPlaylistSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), 3 }
+	{ "StaticPlaylistSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), RHYTHMDB_PROP_SEARCH_MATCH },
+	{ "StaticPlaylistSearchArtists", NULL, N_("Artists"), NULL, N_("Search artists"), RHYTHMDB_PROP_ARTIST_FOLDED },
+	{ "StaticPlaylistSearchAlbums", NULL, N_("Albums"), NULL, N_("Search albums"), RHYTHMDB_PROP_ALBUM_FOLDED },
+	{ "StaticPlaylistSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), RHYTHMDB_PROP_TITLE_FOLDED }
 };
 
 enum
@@ -136,10 +133,10 @@ typedef struct
 	RBLibraryBrowser *browser;
 	gboolean browser_shown;
 
-	char *search_text;
+	RBSourceSearch *default_search;
+	RhythmDBQuery *search_query;
 
 	GtkActionGroup *action_group;
-	RhythmDBPropType search_prop;
 	gboolean dispose_has_run;
 } RBStaticPlaylistSourcePrivate;
 
@@ -165,7 +162,6 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	source_class->impl_paste = impl_paste;
 	source_class->impl_delete = impl_delete;
 	source_class->impl_receive_drag = impl_receive_drag;
-	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
 	source_class->impl_reset_filters = impl_reset_filters;
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
@@ -237,6 +233,11 @@ rb_static_playlist_source_dispose (GObject *object)
 		priv->action_group = NULL;
 	}
 
+	if (priv->default_search != NULL) {
+		g_object_unref (priv->default_search);
+		priv->default_search = NULL;
+	}
+
 	G_OBJECT_CLASS (rb_static_playlist_source_parent_class)->dispose (object);
 }
 
@@ -247,7 +248,10 @@ rb_static_playlist_source_finalize (GObject *object)
 
 	rb_debug ("Finalizing static playlist source %p", object);
 
-	g_free (priv->search_text);
+	if (priv->search_query != NULL) {
+		rhythmdb_query_free (priv->search_query);
+		priv->search_query = NULL;
+	}
 
 	G_OBJECT_CLASS (rb_static_playlist_source_parent_class)->finalize (object);
 }
@@ -287,10 +291,13 @@ rb_static_playlist_source_constructor (GType type,
 						    rb_static_playlist_source_radio_actions,
 						    G_N_ELEMENTS (rb_static_playlist_source_radio_actions),
 						    0,
-						    (GCallback)search_action_changed,
-						    shell);
+						    NULL,
+						    NULL);
+		rb_source_search_basic_create_for_actions (priv->action_group,
+							   rb_static_playlist_source_radio_actions,
+							   G_N_ELEMENTS (rb_static_playlist_source_radio_actions));
 	}
-	priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
+	priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
 
 	g_object_unref (shell);
 
@@ -346,6 +353,7 @@ rb_static_playlist_source_new (RBShell *shell, const char *name, const char *sor
 					"is-local", local,
 					"entry-type", entry_type,
 					"source-group", RB_SOURCE_GROUP_PLAYLISTS,
+					"search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					NULL));
 }
 
@@ -465,10 +473,10 @@ impl_reset_filters (RBSource *source)
 	if (rb_library_browser_reset (priv->browser))
 		changed = TRUE;
 
-	if (priv->search_text != NULL) {
+	if (priv->search_query != NULL) {
 		changed = TRUE;
-		g_free (priv->search_text);
-		priv->search_text = NULL;
+		rhythmdb_query_free (priv->search_query);
+		priv->search_query = NULL;
 	}
 
 	if (changed) {
@@ -478,29 +486,22 @@ impl_reset_filters (RBSource *source)
 }
 
 static void
-impl_search (RBSource *source, const char *search_text)
+impl_search (RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text)
 {
 	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
-	char *old_search_text = NULL;
+	RhythmDB *db;
 
-	if (search_text != NULL && search_text[0] == '\0')
-		search_text = NULL;
-
-	if (search_text == NULL && priv->search_text == NULL)
-		return;
-	if (search_text != NULL && priv->search_text != NULL
-	    && !strcmp (search_text, priv->search_text))
-		return;
-
-	old_search_text = priv->search_text;
-	if (search_text == NULL) {
-		priv->search_text = NULL;
-	} else {
-		priv->search_text = g_strdup (search_text);
+	if (search == NULL) {
+		search = priv->default_search;
 	}
-	g_free (old_search_text);
 
-	rb_debug ("doing search for \"%s\"", priv->search_text ? priv->search_text : "(NULL)");
+	/* replace our search query */
+	if (priv->search_query != NULL) {
+		rhythmdb_query_free (priv->search_query);
+		priv->search_query = NULL;
+	}
+	db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
+	priv->search_query = rb_source_search_create_query (search, db, new_text);
 
 	rb_static_playlist_source_do_query (RB_STATIC_PLAYLIST_SOURCE (source));
 }
@@ -538,10 +539,10 @@ construct_query_from_selection (RBStaticPlaylistSource *source)
 
 	query = g_ptr_array_new();
 
-	if (priv->search_text) {
+	if (priv->search_query != NULL) {
 		rhythmdb_query_append (db,
 				       query,
-				       RHYTHMDB_QUERY_PROP_LIKE, priv->search_prop, priv->search_text,
+				       RHYTHMDB_QUERY_SUBQUERY, priv->search_query,
 				       RHYTHMDB_QUERY_END);
 	}
 
@@ -893,63 +894,6 @@ impl_get_search_actions (RBSource *source)
 	actions = g_list_prepend (actions, g_strdup ("StaticPlaylistSearchAll"));
 
 	return actions;
-}
-
-static RhythmDBPropType
-search_action_to_prop (GtkAction *action)
-{
-	const char      *name;
-	RhythmDBPropType prop;
-
-	name = gtk_action_get_name (action);
-
-	if (name == NULL) {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	} else if (strcmp (name, "StaticPlaylistSearchAll") == 0) {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	} else if (strcmp (name, "StaticPlaylistSearchArtists") == 0) {
-		prop = RHYTHMDB_PROP_ARTIST_FOLDED;
-	} else if (strcmp (name, "StaticPlaylistSearchAlbums") == 0) {
-		prop = RHYTHMDB_PROP_ALBUM_FOLDED;
-	} else if (strcmp (name, "StaticPlaylistSearchTitles") == 0) {
-		prop = RHYTHMDB_PROP_TITLE_FOLDED;
-	} else {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	}
-
-	return prop;
-}
-
-static void
-search_action_changed (GtkRadioAction  *action,
-		       GtkRadioAction  *current,
-		       RBShell         *shell)
-{
-	RBStaticPlaylistSource *source;
-	RBStaticPlaylistSourcePrivate *priv;
-	gboolean active;
-
-	g_object_get (shell, "selected-source", &source, NULL);
-	if (source == NULL || !RB_IS_STATIC_PLAYLIST_SOURCE (source)) {
-		if (source != NULL)
-			g_object_unref (source);
-		return;
-	}
-
-	priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
-
-	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));
-
-	if (active) {
-		/* update query */
-		priv->search_prop = search_action_to_prop (GTK_ACTION (current));
-		rb_static_playlist_source_do_query (source);
-		rb_source_notify_filter_changed (RB_SOURCE (source));
-	}
-
-	if (source != NULL) {
-		g_object_unref (source);
-	}
 }
 
 static guint

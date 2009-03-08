@@ -1,3 +1,130 @@
+2009-03-09  Jonathan Matthew  <jonathan@d14n.org>
+
+	* sources/Makefile.am:
+	* sources/rb-source-search-basic.c: (impl_create_query),
+	(impl_set_property), (impl_get_property),
+	(rb_source_search_basic_class_init), (rb_source_search_basic_init),
+	(rb_source_search_basic_new),
+	(rb_source_search_basic_create_for_actions):
+	* sources/rb-source-search-basic.h:
+	* sources/rb-source-search.c: (default_is_subset),
+	(rb_source_search_class_init), (rb_source_search_init),
+	(rb_source_search_is_subset), (rb_source_search_create_query),
+	(_rb_source_search_create_simple_query),
+	(rb_source_search_action_attach),
+	(rb_source_search_get_from_action):
+	* sources/rb-source-search.h:
+	Add a base class and a simple implementation for objects that
+	facilitate different kinds of searches.  A search implementation has
+	methods for constructing a RhythmDBQuery for a given search string,
+	and for determining if the results from one search string will be a
+	strict subset of those from another.  The simple implementation
+	compares the search string with a single RhythmDBEntry property.
+
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_set_property), (rb_source_get_property),
+	(rb_source_search), (rb_source_search_type_get_type):
+	* sources/rb-source.h:
+	Replace impl_can_search with an enum property describing the search
+	capabilities of the source.  The available values are 'none',
+	'incremental', and 'explicit'.  'incremental' is the existing
+	behaviour, and 'explicit' requires that the search entry be activated
+	(by pressing enter, etc.) before searching.  The default is 'none'.
+
+	Add more parameters to rb_source_search: the search implementation to
+	use, and the previous search text.
+
+	* plugins/audiocd/rb-audiocd-source.c:
+	(rb_audiocd_source_class_init):
+	* plugins/daap/rb-daap-source.c: (rb_daap_source_class_init):
+	* sources/rb-import-errors-source.c:
+	(rb_import_errors_source_class_init):
+	* sources/rb-missing-files-source.c:
+	(rb_missing_files_source_class_init):
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_class_init):
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init):
+	Remove impl_can_search methods.
+	
+	* widgets/rb-search-entry.c: (rb_search_entry_class_init),
+	(rb_search_entry_activate_cb):
+	Include the text from the search box when emitting the 'activate'
+	signal.
+
+	* shell/rb-source-header.c: (sourcestate_free),
+	(rb_source_header_class_init), (rb_source_header_init),
+	(rb_source_header_dispose), (merge_source_ui_cb),
+	(rb_source_header_refresh_search_bar),
+	(rb_source_header_set_source_internal),
+	(rb_source_header_set_property), (rb_source_state_sync),
+	(search_action_changed_cb), (rb_source_header_search_cb),
+	(rb_source_header_clear_search),
+	(rb_source_header_view_browser_changed_cb),
+	(rb_source_header_sync_control_state),
+	(rb_source_header_search_activate_cb):
+	* shell/rb-source-header.h:
+	* lib/rb-marshal.list:
+	* lib/rb-util.c: (rb_signal_accumulator_value_array):
+	* lib/rb-util.h:
+	Track the active search action in the source header, rather than
+	making the source itself do it.  Add signals to allow plugins to
+	provide additional search actions (refresh-search-bar,
+	get-search-actions).  Add support for 'explicit' search type.
+
+	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_get_property):
+	Add a property providing access to the source header object.
+
+	* plugins/iradio/Makefile.am:
+	* plugins/iradio/rb-iradio-source-search.c: (impl_create_query),
+	(rb_iradio_source_search_class_init),
+	(rb_iradio_source_search_init), (rb_iradio_source_search_new):
+	* plugins/iradio/rb-iradio-source-search.h:
+	* plugins/iradio/rb-iradio-source.c: (rb_iradio_source_class_init),
+	(rb_iradio_source_dispose), (rb_iradio_source_constructor),
+	(rb_iradio_source_new), (rb_iradio_source_add_station),
+	(impl_search), (rb_iradio_source_do_query):
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_class_init),
+	(rb_auto_playlist_source_dispose),
+	(rb_auto_playlist_source_finalize),
+	(rb_auto_playlist_source_constructor),
+	(rb_auto_playlist_source_new),
+	(rb_auto_playlist_source_set_property),
+	(rb_auto_playlist_source_get_property), (impl_reset_filters),
+	(impl_search), (impl_get_property_views), (impl_browser_toggled),
+	(rb_auto_playlist_source_query_complete_cb),
+	(rb_auto_playlist_source_do_query),
+	(rb_auto_playlist_source_set_query),
+	(rb_auto_playlist_source_get_query),
+	(rb_auto_playlist_source_songs_sort_order_changed_cb):
+	* sources/rb-browser-source.c: (rb_browser_source_class_init),
+	(rb_browser_source_init), (rb_browser_source_dispose),
+	(rb_browser_source_constructor), (rb_browser_source_set_property),
+	(rb_browser_source_get_property), (impl_search),
+	(impl_reset_filters), (rb_browser_source_do_query):
+	* sources/rb-podcast-source.c: (rb_podcast_source_class_init),
+	(rb_podcast_source_dispose), (rb_podcast_source_constructor),
+	(rb_podcast_source_new), (impl_search), (feed_select_change_cb),
+	(construct_query_from_selection), (rb_podcast_source_do_query):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_class_init),
+	(rb_static_playlist_source_dispose),
+	(rb_static_playlist_source_finalize),
+	(rb_static_playlist_source_constructor),
+	(rb_static_playlist_source_new), (impl_reset_filters),
+	(impl_search), (construct_query_from_selection):
+	Rework sources that implement searching to use the new search stuff.
+	The internet radio source needs a custom search implementation, since
+	it matches on genre and title, but the others are pretty
+	straightforward.
+	
+	* bindings/python/Makefile.am:
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override:
+	Update python bindings for the above.
+
+	Fixes #508750.
+
 2009-03-08  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Philippe Rouquier <brasero-app@wanadoo.fr>, Bastien Nocera

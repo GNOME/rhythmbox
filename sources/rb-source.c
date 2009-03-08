@@ -64,7 +64,6 @@ static void rb_source_get_property (GObject *object,
 static char * default_get_browser_key (RBSource *source);
 static GList *default_get_property_views (RBSource *source);
 static gboolean default_can_rename (RBSource *source);
-static gboolean default_can_search (RBSource *source);
 static GList *default_copy (RBSource *source);
 static void default_reset_filters (RBSource *source);
 static gboolean default_try_playlist (RBSource *source);
@@ -124,6 +123,7 @@ struct _RBSourcePrivate
 	RhythmDBEntryType entry_type;
 	RBSourceGroup *source_group;
 	RBPlugin *plugin;
+	RBSourceSearchType search_type;
 };
 
 enum
@@ -140,7 +140,8 @@ enum
 	PROP_ENTRY_TYPE,
 	PROP_PLUGIN,
 	PROP_BASE_QUERY_MODEL,
-	PROP_PLAY_ORDER
+	PROP_PLAY_ORDER,
+	PROP_SEARCH_TYPE
 };
 
 enum
@@ -169,7 +170,6 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_browser_toggled = NULL;
 	klass->impl_get_property_views = default_get_property_views;
 	klass->impl_can_rename = default_can_rename;
-	klass->impl_can_search = default_can_search;
 	klass->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
@@ -352,6 +352,21 @@ rb_source_class_init (RBSourceClass *klass)
 							      "optional play order specific to the source",
 							      RB_TYPE_PLAY_ORDER,
 							      G_PARAM_READABLE));
+
+	/**
+	 * RBSource:search-type:
+	 *
+	 * The type of searching this source provides, as a RBSourceSearchType value.
+	 * This is used by the RBSourceHeader to modify the search box widget.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SEARCH_TYPE,
+					 g_param_spec_enum ("search-type",
+						 	    "search-type",
+							    "search type",
+							    RB_TYPE_SOURCE_SEARCH_TYPE,
+							    RB_SOURCE_SEARCH_NONE,
+							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
 	/**
 	 * RBSource::deleted:
@@ -622,6 +637,9 @@ rb_source_set_property (GObject *object,
 	case PROP_PLUGIN:
 		priv->plugin = g_value_get_object (value);
 		break;
+	case PROP_SEARCH_TYPE:
+		priv->search_type = g_value_get_enum (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -679,6 +697,9 @@ rb_source_get_property (GObject *object,
 		break;
 	case PROP_PLAY_ORDER:
 		g_value_set_object (value, NULL);		/* ? */
+		break;
+	case PROP_SEARCH_TYPE:
+		g_value_set_enum (value, priv->search_type);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -910,27 +931,6 @@ rb_source_can_rename (RBSource *source)
 	return klass->impl_can_rename (source);
 }
 
-static gboolean
-default_can_search (RBSource *source)
-{
-	return FALSE;
-}
-
-/**
- * rb_source_can_search:
- * @source: a #RBSource
- *
- * Return value: TRUE if the source can be searched using
- * the search box
- */
-gboolean
-rb_source_can_search (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_can_search (source);
-}
-
 /**
  * rb_source_search:
  * @source: a #RBSource
@@ -942,13 +942,15 @@ rb_source_can_search (RBSource *source)
  */
 void
 rb_source_search (RBSource *source,
-		  const char *text)
+		  RBSourceSearch *search,
+		  const char *cur_text,
+		  const char *new_text)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	/* several sources don't have a search ability */
 	if (klass->impl_search != NULL)
-		klass->impl_search (source, text);
+		klass->impl_search (source, search, cur_text, new_text);
 }
 
 /**
@@ -1758,3 +1760,23 @@ rb_source_eof_type_get_type (void)
 
 	return etype;
 }
+
+GType
+rb_source_search_type_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0) {
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_SOURCE_SEARCH_NONE, "No search capability"),
+			ENUM_ENTRY (RB_SOURCE_SEARCH_INCREMENTAL, "Immediate incremental search"),
+			ENUM_ENTRY (RB_SOURCE_SEARCH_EXPLICIT, "Explicitly activated search"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBSourceSearchType", values);
+	}
+
+	return etype;
+}
+

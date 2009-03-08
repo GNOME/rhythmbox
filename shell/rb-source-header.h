@@ -58,6 +58,9 @@ struct _RBSourceHeader
 struct _RBSourceHeaderClass
 {
 	GtkTableClass parent_class;
+
+	/* action signal */
+	void	(*refresh_search_bar) (RBSourceHeader *header);
 };
 
 GType			rb_source_header_get_type	(void);

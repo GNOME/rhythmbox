@@ -3,11 +3,13 @@ NULL =
 plugindir = $(PLUGINDIR)/iradio
 plugin_LTLIBRARIES = libiradio.la
 
-libiradio_la_SOURCES = \
-	rb-iradio-plugin.c					\
-	rb-iradio-source.c		\
-	rb-iradio-source.h		\
-	rb-station-properties-dialog.c	\
+libiradio_la_SOURCES = 					\
+	rb-iradio-plugin.c				\
+	rb-iradio-source.c				\
+	rb-iradio-source.h				\
+	rb-iradio-source-search.c			\
+	rb-iradio-source-search.h			\
+	rb-station-properties-dialog.c			\
 	rb-station-properties-dialog.h
 
 libiradio_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)

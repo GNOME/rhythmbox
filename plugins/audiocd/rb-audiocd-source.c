@@ -102,7 +102,6 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	object_class->dispose = rb_audiocd_source_dispose;
 
 	/* don't bother showing the browser/search bits */
-	source_class->impl_can_search = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;

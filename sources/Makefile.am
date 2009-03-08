@@ -9,6 +9,8 @@ libsources_la_SOURCES = 		\
 	rb-streaming-source.h		\
 	rb-source-group.c		\
 	rb-source-group.h		\
+	rb-source-search.c		\
+	rb-source-search.h		\
 	$(NULL)
 
 libsourcesimpl_la_SOURCES =		\
@@ -37,6 +39,8 @@ libsourcesimpl_la_SOURCES =		\
 	rb-missing-files-source.h	\
 	rb-import-errors-source.c	\
 	rb-import-errors-source.h	\
+	rb-source-search-basic.c	\
+	rb-source-search-basic.h	\
 	$(NULL)
 
 INCLUDES =						\

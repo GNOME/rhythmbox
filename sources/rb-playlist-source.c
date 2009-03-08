@@ -175,7 +175,6 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_get_browser_key = impl_get_browser_key;
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_search = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;

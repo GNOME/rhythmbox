@@ -836,6 +836,45 @@ rb_signal_accumulator_object_handled (GSignalInvocationHint *hint,
 	return FALSE;
 }
 
+gboolean
+rb_signal_accumulator_value_array (GSignalInvocationHint *hint,
+				   GValue *return_accu,
+				   const GValue *handler_return,
+				   gpointer bleh)
+{
+	GValueArray *a;
+	GValueArray *b;
+	int i;
+
+	if (handler_return == NULL)
+		return TRUE;
+
+	a = NULL;
+	if (G_VALUE_HOLDS_BOXED (return_accu)) {
+		a = g_value_get_boxed (return_accu);
+		if (a != NULL) {
+			a = g_value_array_copy (a);
+		}
+	}
+
+	if (a == NULL) {
+		a = g_value_array_new (1);
+	}
+
+	if (G_VALUE_HOLDS_BOXED (handler_return)) {
+		b = g_value_get_boxed (handler_return);
+		for (i=0; i < b->n_values; i++) {
+			GValue *z = g_value_array_get_nth (b, i);
+			a = g_value_array_append (a, z);
+		}
+	}
+
+	g_value_unset (return_accu);
+	g_value_init (return_accu, G_TYPE_VALUE_ARRAY);
+	g_value_set_boxed (return_accu, a);
+	return TRUE;
+}
+
 void
 rb_value_array_append_data (GValueArray *array, GType type, ...)
 {

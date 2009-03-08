@@ -72,6 +72,8 @@ BINDING_HEADERS_SRCDIR_IN = \
 	sources/rb-sourcelist-model.h		\
 	sources/rb-static-playlist-source.h	\
 	sources/rb-streaming-source.h		\
+	sources/rb-source-search.h		\
+	sources/rb-source-search-basic.h	\
 	widgets/rb-entry-view.h			\
 	widgets/rb-library-browser.h		\
 	widgets/rb-property-view.h		\

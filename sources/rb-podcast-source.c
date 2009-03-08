@@ -71,14 +71,8 @@
 #include "rb-podcast-manager.h"
 #include "rb-static-playlist-source.h"
 #include "rb-cut-and-paste-code.h"
+#include "rb-source-search-basic.h"
 #include "rb-cell-renderer-pixbuf.h"
-
-typedef enum
-{
-	RB_PODCAST_QUERY_TYPE_ALL,
-	RB_PODCAST_QUERY_TYPE_ALBUM,
-	RB_PODCAST_QUERY_TYPE_SEARCH,
-} RBPodcastQueryType;
 
 static void rb_podcast_source_class_init 		(RBPodcastSourceClass *klass);
 
@@ -244,13 +238,14 @@ static void rb_podcast_source_pixbuf_clicked_cb	(RBCellRendererPixbuf *renderer,
 static char *impl_get_browser_key	 		(RBSource *source);
 static RBEntryView *impl_get_entry_view 		(RBSource *source);
 static void impl_search 				(RBSource *source,
-							 const char *text);
+							 RBSourceSearch *search,
+							 const char *current,
+							 const char *next);
 static void impl_delete 				(RBSource *source);
 static void impl_song_properties 			(RBSource *source);
 static RBSourceEOFType impl_handle_eos 			(RBSource *asource);
 static gboolean impl_show_popup 			(RBSource *source);
-static void rb_podcast_source_do_query			(RBPodcastSource *source,
-							 RBPodcastQueryType type);
+static void rb_podcast_source_do_query			(RBPodcastSource *source);
 static GtkWidget *impl_get_config_widget 		(RBSource *source,
 							 RBShellPreferences *prefs);
 static gboolean impl_receive_drag 			(RBSource *source,
@@ -297,10 +292,10 @@ struct RBPodcastSourcePrivate
 	RBEntryView *posts;
 	GtkActionGroup *action_group;
 
-	char *search_text;
 	GList *selected_feeds;
-	RhythmDBQueryModel *cached_all_query;
+	RhythmDBQuery *search_query;
 	RhythmDBPropType search_prop;
+	RBSourceSearch *default_search;
 
 	gboolean initialized;
 
@@ -341,9 +336,9 @@ static GtkActionEntry rb_podcast_source_actions [] =
 
 static GtkRadioActionEntry rb_podcast_source_radio_actions [] =
 {
-	{ "PodcastSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), 0 },
-	{ "PodcastSearchFeeds", NULL, N_("Feeds"), NULL, N_("Search podcast feeds"), 1 },
-	{ "PodcastSearchEpisodes", NULL, N_("Episodes"), NULL, N_("Search podcast episodes"), 2 }
+	{ "PodcastSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), RHYTHMDB_PROP_SEARCH_MATCH },
+	{ "PodcastSearchFeeds", NULL, N_("Feeds"), NULL, N_("Search podcast feeds"), RHYTHMDB_PROP_ALBUM_FOLDED },
+	{ "PodcastSearchEpisodes", NULL, N_("Episodes"), NULL, N_("Search podcast episodes"), RHYTHMDB_PROP_TITLE_FOLDED }
 };
 
 static const GtkTargetEntry posts_view_drag_types[] = {
@@ -381,7 +376,6 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
 	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_get_config_widget = impl_get_config_widget;
@@ -462,9 +456,9 @@ rb_podcast_source_dispose (GObject *object)
 		source->priv->db = NULL;
 	}
 
-	if (source->priv->cached_all_query) {
-		g_object_unref (source->priv->cached_all_query);
-		source->priv->cached_all_query = NULL;
+	if (source->priv->search_query != NULL) {
+		rhythmdb_query_free (source->priv->search_query);
+		source->priv->search_query = NULL;
 	}
 
 	if (source->priv->action_group != NULL) {
@@ -507,53 +501,6 @@ rb_podcast_source_finalize (GObject *object)
 	}
 
 	G_OBJECT_CLASS (rb_podcast_source_parent_class)->finalize (object);
-}
-
-static RhythmDBPropType
-search_action_to_prop (GtkAction *action)
-{
-	const char      *name;
-	RhythmDBPropType prop;
-
-	name = gtk_action_get_name (action);
-
-	if (name == NULL) {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	} else if (strcmp (name, "PodcastSearchAll") == 0) {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	} else if (strcmp (name, "PodcastSearchFeeds") == 0) {
-		prop = RHYTHMDB_PROP_ALBUM_FOLDED;
-	} else if (strcmp (name, "PodcastSearchEpisodes") == 0) {
-		prop = RHYTHMDB_PROP_TITLE_FOLDED;
-	} else {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	}
-
-	return prop;
-}
-
-static void
-search_action_changed (GtkRadioAction  *action,
-		       GtkRadioAction  *current,
-		       RBShell         *shell)
-{
-	gboolean active;
-	RBPodcastSource *source;
-
-	g_object_get (shell, "selected-source", &source, NULL);
-
-	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));
-
-	if (active) {
-		/* update query */
-		source->priv->search_prop = search_action_to_prop (GTK_ACTION (current));
-		rb_podcast_source_do_query (source, RB_PODCAST_QUERY_TYPE_SEARCH);
-		rb_source_notify_filter_changed (RB_SOURCE (source));
-	}
-
-	if (source != NULL) {
-		g_object_unref (source);
-	}
 }
 
 static GObject *
@@ -601,8 +548,13 @@ rb_podcast_source_constructor (GType type,
 					    rb_podcast_source_radio_actions,
 					    G_N_ELEMENTS (rb_podcast_source_radio_actions),
 					    0,
-					    (GCallback)search_action_changed,
-					    shell);
+					    NULL,
+					    NULL);
+	rb_source_search_basic_create_for_actions (source->priv->action_group,
+						   rb_podcast_source_radio_actions,
+						   G_N_ELEMENTS (rb_podcast_source_radio_actions));
+
+	source->priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
 
 	source->priv->paned = gtk_vpaned_new ();
 
@@ -828,7 +780,7 @@ rb_podcast_source_constructor (GType type,
 			   posts_view_drag_types, 2,
 			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 
-	/* set up propiets page */
+	/* set up properties page */
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned),
 			 GTK_WIDGET (source->priv->feeds), FALSE, FALSE);
 	gtk_paned_pack2 (GTK_PANED (source->priv->paned),
@@ -843,7 +795,7 @@ rb_podcast_source_constructor (GType type,
 	gtk_widget_show_all (GTK_WIDGET (source));
 	rb_podcast_source_state_prefs_sync (source);
 
-	rb_podcast_source_do_query (source, RB_PODCAST_QUERY_TYPE_ALL);
+	rb_podcast_source_do_query (source);
 
 	return G_OBJECT (source);
 }
@@ -903,6 +855,7 @@ rb_podcast_source_new (RBShell *shell)
 					  "shell", shell,
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
 					  "source-group", RB_SOURCE_GROUP_LIBRARY,
+					  "search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					  NULL));
 
 	rb_shell_register_entry_type_for_source (shell, source,
@@ -914,29 +867,20 @@ rb_podcast_source_new (RBShell *shell)
 }
 
 static void
-impl_search (RBSource *asource, const char *search_text)
+impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, const char *new_text)
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
 
-	if (source->priv->initialized) {
-		if (search_text == NULL && source->priv->search_text == NULL)
-			return;
-		if (search_text != NULL &&
-		    source->priv->search_text != NULL
-		    && !strcmp (search_text, source->priv->search_text))
-			return;
+	if (search == NULL) {
+		search = source->priv->default_search;
 	}
 
-	source->priv->initialized = TRUE;
-	if (search_text != NULL && search_text[0] == '\0')
-		search_text = NULL;
-
-	g_free (source->priv->search_text);
-	if (search_text)
-		source->priv->search_text = g_utf8_casefold (search_text, -1);
-	else
-		source->priv->search_text = NULL;
-	rb_podcast_source_do_query (source, RB_PODCAST_QUERY_TYPE_SEARCH);
+	if (source->priv->search_query != NULL) {
+		rhythmdb_query_free (source->priv->search_query);
+		source->priv->search_query = NULL;
+	}
+	source->priv->search_query = rb_source_search_create_query (search, source->priv->db, new_text);
+	rb_podcast_source_do_query (source);
 
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
@@ -1178,7 +1122,7 @@ feed_select_change_cb (RBPropertyView *propview,
 
 	source->priv->selected_feeds = rb_string_list_copy (feeds);
 
-	rb_podcast_source_do_query (source, RB_PODCAST_QUERY_TYPE_ALBUM);
+	rb_podcast_source_do_query (source);
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
 
@@ -1204,34 +1148,12 @@ construct_query_from_selection (RBPodcastSource *source)
 				      RHYTHMDB_QUERY_END);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
-	if (source->priv->search_text) {
-		GPtrArray *subquery;
-
-		if (source->priv->search_prop == RHYTHMDB_PROP_SEARCH_MATCH) {
-			subquery = rhythmdb_query_parse (source->priv->db,
-							 RHYTHMDB_QUERY_PROP_LIKE,
-							 RHYTHMDB_PROP_ALBUM_FOLDED,
-							 source->priv->search_text,
-							 RHYTHMDB_QUERY_DISJUNCTION,
-							 RHYTHMDB_QUERY_PROP_LIKE,
-							 RHYTHMDB_PROP_TITLE_FOLDED,
-							 source->priv->search_text,
-							 RHYTHMDB_QUERY_END);
-		} else {
-			subquery = rhythmdb_query_parse (source->priv->db,
-							 RHYTHMDB_QUERY_PROP_LIKE,
-							 source->priv->search_prop,
-							 source->priv->search_text,
-							 RHYTHMDB_QUERY_END);
-		}
-
+	if (source->priv->search_query) {
 		rhythmdb_query_append (source->priv->db,
 				       query,
 				       RHYTHMDB_QUERY_SUBQUERY,
-				       subquery,
+				       source->priv->search_query,
 				       RHYTHMDB_QUERY_END);
-
-		rhythmdb_query_free (subquery);
 	}
 
 	if (source->priv->selected_feeds) {
@@ -1266,35 +1188,18 @@ construct_query_from_selection (RBPodcastSource *source)
 }
 
 static void
-rb_podcast_source_do_query (RBPodcastSource *source,
-			    RBPodcastQueryType qtype)
+rb_podcast_source_do_query (RBPodcastSource *source)
 {
 	RhythmDBQueryModel *query_model;
 	GPtrArray *query;
-	gboolean is_all_query;
 
-	rb_debug ("select entry filter");
-
-	is_all_query  = ((qtype == RB_PODCAST_QUERY_TYPE_ALL) ||
-			 ((source->priv->selected_feeds == NULL) &&
-			 (source->priv->search_text == NULL)));
-
-	if (is_all_query && source->priv->cached_all_query) {
-		g_object_unref (source->priv->cached_all_query);
-		source->priv->cached_all_query = NULL;
-	}
-
+	/* set up new query model */
 	query_model = rhythmdb_query_model_new_empty (source->priv->db);
-	if (source->priv->cached_all_query == NULL) {
-		rb_debug ("caching new query");
-		source->priv->cached_all_query = g_object_ref (query_model);
-	}
 
-	rb_debug ("setting empty model");
 	rb_entry_view_set_model (source->priv->posts, query_model);
 	g_object_set (source, "query-model", query_model, NULL);
 
-	rb_debug ("doing query");
+	/* build and run the query */
 	query = construct_query_from_selection (source);
 	rhythmdb_do_full_query_async_parsed (source->priv->db,
 					     RHYTHMDB_QUERY_RESULTS (query_model),

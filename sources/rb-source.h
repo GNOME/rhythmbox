@@ -34,6 +34,7 @@
 #include <gtk/gtk.h>
 
 #include "rb-source-group.h"
+#include "rb-source-search.h"
 #include "rb-entry-view.h"
 #include "rb-shell-preferences.h"
 
@@ -46,8 +47,17 @@ typedef enum {
 	RB_SOURCE_EOF_NEXT,
 } RBSourceEOFType;
 
+typedef enum {
+	RB_SOURCE_SEARCH_NONE,
+	RB_SOURCE_SEARCH_INCREMENTAL,
+	RB_SOURCE_SEARCH_EXPLICIT,
+} RBSourceSearchType;
+
 GType rb_source_eof_type_get_type (void);
 #define RB_TYPE_SOURCE_EOF_TYPE	(rb_source_eof_type_get_type())
+
+GType rb_source_search_type_get_type (void);
+#define RB_TYPE_SOURCE_SEARCH_TYPE (rb_source_search_type_get_type())
 
 #define RB_TYPE_SOURCE         (rb_source_get_type ())
 #define RB_SOURCE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SOURCE, RBSource))
@@ -92,9 +102,7 @@ struct _RBSourceClass
 
 	gboolean	(*impl_can_rename)	(RBSource *source);
 
-	gboolean	(*impl_can_search)	(RBSource *source);
-
-	void		(*impl_search)		(RBSource *source, const char *text);
+	void		(*impl_search)		(RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 	void		(*impl_reset_filters)	(RBSource *source);
 	GtkWidget *	(*impl_get_config_widget)(RBSource *source, RBShellPreferences *prefs);
 
@@ -156,9 +164,10 @@ GList *		rb_source_get_property_views	(RBSource *source);
 
 gboolean	rb_source_can_rename		(RBSource *source);
 
-gboolean	rb_source_can_search		(RBSource *source);
 void		rb_source_search		(RBSource *source,
-						 const char *text);
+						 RBSourceSearch *search,
+						 const char *cur_text,
+						 const char *new_text);
 
 void		rb_source_reset_filters		(RBSource *source);
 

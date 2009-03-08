@@ -285,6 +285,7 @@ enum
 	PROP_LIBRARY_SOURCE,
 	PROP_SOURCELIST_MODEL,
 	PROP_SOURCELIST,
+	PROP_SOURCE_HEADER,
 	PROP_VISIBILITY,
 };
 
@@ -645,6 +646,13 @@ rb_shell_class_init (RBShellClass *klass)
 							       "Current window visibility",
 							       TRUE,
 							       G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_SOURCE_HEADER,
+					 g_param_spec_object ("source-header",
+							      "source header widget",
+							      "RBSourceHeader",
+							      RB_TYPE_SOURCE_HEADER,
+							      G_PARAM_READABLE));
 
 	rb_shell_signals[VISIBILITY_CHANGED] =
 		g_signal_new ("visibility_changed",
@@ -805,6 +813,9 @@ rb_shell_get_property (GObject *object,
  		break;
 	case PROP_VISIBILITY:
 		g_value_set_boolean (value, rb_shell_get_visibility (shell));
+		break;
+	case PROP_SOURCE_HEADER:
+		g_value_set_object (value, shell->priv->source_header);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

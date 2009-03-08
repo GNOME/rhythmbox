@@ -119,6 +119,7 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 	/**
 	 * RBSearchEntry::activate:
 	 * @entry: the #RBSearchEntry
+	 * @text: search text
 	 *
 	 * Emitted when the entry is activated.
 	 */
@@ -128,9 +129,10 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBSearchEntryClass, activate),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      g_cclosure_marshal_VOID__STRING,
 			      G_TYPE_NONE,
-			      0);
+			      1,
+			      G_TYPE_STRING);
 
 	g_type_class_add_private (klass, sizeof (RBSearchEntryPrivate));
 }
@@ -340,7 +342,8 @@ static void
 rb_search_entry_activate_cb (GtkEntry *gtkentry,
 			     RBSearchEntry *entry)
 {
-	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[ACTIVATE], 0);
+	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[ACTIVATE], 0,
+		       gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)));
 }
 
 /**

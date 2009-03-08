@@ -45,6 +45,7 @@
 #include "rb-entry-view.h"
 #include "eel-gconf-extensions.h"
 #include "rb-util.h"
+#include "rb-marshal.h"
 
 /**
  * SECTION:rb-source-header
@@ -63,6 +64,7 @@
 static void rb_source_header_class_init (RBSourceHeaderClass *klass);
 static void rb_source_header_init (RBSourceHeader *shell_player);
 static void rb_source_header_finalize (GObject *object);
+static void rb_source_header_dispose (GObject *object);
 static void rb_source_header_set_property (GObject *object,
 					  guint prop_id,
 					  const GValue *value,
@@ -77,19 +79,28 @@ static void rb_source_header_search_cb (RBSearchEntry *search,
 					const char *text,
 					RBSourceHeader *header);
 static void rb_source_header_search_activate_cb (RBSearchEntry *search,
+						 const char *text,
 						 RBSourceHeader *header);
 static void rb_source_header_view_browser_changed_cb (GtkAction *action,
 						      RBSourceHeader *header);
 static void rb_source_header_source_weak_destroy_cb (RBSourceHeader *header, RBSource *source);
+static void search_action_changed_cb (GtkRadioAction *action,
+				      GtkRadioAction *current,
+				      RBSourceHeader *header);
+static void rb_source_header_refresh_search_bar (RBSourceHeader *header);
 
 typedef struct {
-	gboolean disclosed;
-	char     *search_text;
-}  SourceState;
+	gboolean 	disclosed;
+	char     	*search_text;
+	GtkRadioAction  *search_action;
+} SourceState;
 
 static void
 sourcestate_free (SourceState *state)
 {
+	if (state->search_action != NULL) {
+		g_object_unref (state->search_action);
+	}
         g_free (state->search_text);
         g_free (state);
 }
@@ -104,16 +115,16 @@ struct RBSourceHeaderPrivate
 
 	GtkWidget *search;
 	GtkWidget *search_bar;
+	GtkRadioAction *search_group_head;
 
 	guint browser_notify_id;
 	guint search_notify_id;
-	gboolean have_search;
+	RBSourceSearchType search_type;
 	gboolean have_browser;
 	gboolean disclosed;
 	char *browser_key;
 
 	GHashTable *source_states;
-
 };
 
 #define RB_SOURCE_HEADER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SOURCE_HEADER, RBSourceHeaderPrivate))
@@ -132,7 +143,15 @@ static GtkToggleActionEntry rb_source_header_toggle_entries [] =
 	  N_("Change the visibility of the browser"),
 	  G_CALLBACK (rb_source_header_view_browser_changed_cb), FALSE }
 };
-static guint rb_source_header_n_toggle_entries = G_N_ELEMENTS (rb_source_header_toggle_entries);
+
+enum
+{
+	GET_SEARCH_ACTIONS,
+	REFRESH_SEARCH_BAR,
+	LAST_SIGNAL
+};
+
+static guint rb_source_header_signals[LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE (RBSourceHeader, rb_source_header, GTK_TYPE_TABLE)
 
@@ -208,10 +227,13 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = rb_source_header_finalize;
+	object_class->dispose = rb_source_header_dispose;
 	object_class->constructor = rb_source_header_constructor;
 
 	object_class->set_property = rb_source_header_set_property;
 	object_class->get_property = rb_source_header_get_property;
+
+	klass->refresh_search_bar = rb_source_header_refresh_search_bar;
 
 	/**
 	 * RBSourceHeader:source:
@@ -249,6 +271,27 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 							      "GtkUIManager object",
 							      GTK_TYPE_UI_MANAGER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	rb_source_header_signals[GET_SEARCH_ACTIONS] =
+		g_signal_new ("get-search-actions",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,		/* no need to handle this ourselves */
+			      rb_signal_accumulator_value_array, NULL,
+			      rb_marshal_BOXED__OBJECT,
+			      G_TYPE_VALUE_ARRAY,
+			      1,
+			      RB_TYPE_SOURCE);
+
+	rb_source_header_signals[REFRESH_SEARCH_BAR] =
+		g_signal_new ("refresh-search-bar",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBSourceHeaderClass, refresh_search_bar),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 
 	g_type_class_add_private (klass, sizeof (RBSourceHeaderPrivate));
 }
@@ -288,6 +331,16 @@ rb_source_header_init (RBSourceHeader *header)
 
 	header->priv->source_states = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 							    NULL, (GDestroyNotify)sourcestate_free);
+
+	/* invisible action at the start of the search bar, used to
+	 * simplify the radio action group handling.
+	 */
+	header->priv->search_group_head = gtk_radio_action_new ("InvisibleSearchHead", NULL, NULL, NULL, 0);
+	gtk_action_set_visible (GTK_ACTION (header->priv->search_group_head), FALSE);
+
+	g_signal_connect_object (header->priv->search_group_head,
+				 "changed",
+				 G_CALLBACK (search_action_changed_cb), header, 0);
 }
 
 static void
@@ -296,6 +349,26 @@ rb_source_header_source_weak_unref (RBSource *source, char *text, RBSourceHeader
 	g_object_weak_unref (G_OBJECT (source),
 			     (GWeakNotify)rb_source_header_source_weak_destroy_cb,
 			     header);
+}
+
+static void
+rb_source_header_dispose (GObject *object)
+{
+	RBSourceHeader *header;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_SOURCE_HEADER (object));
+
+	header = RB_SOURCE_HEADER (object);
+
+	g_return_if_fail (header->priv != NULL);
+
+	if (header->priv->search_group_head != NULL) {
+		g_object_unref (header->priv->search_group_head);
+		header->priv->search_group_head = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_source_header_parent_class)->dispose (object);
 }
 
 static void
@@ -324,6 +397,10 @@ static void
 merge_source_ui_cb (const char *action,
 		    RBSourceHeader *header)
 {
+	GSList *group;
+	GtkAction *radio_action;
+	char *path;
+
 	gtk_ui_manager_add_ui (header->priv->ui_manager,
 			       header->priv->source_ui_merge_id,
 			       "/SearchBar",
@@ -331,19 +408,101 @@ merge_source_ui_cb (const char *action,
 			       action,
 			       GTK_UI_MANAGER_AUTO,
 			       FALSE);
+
+	/* find the action */
+	path = g_strdup_printf ("/SearchBar/%s", action);
+	radio_action = gtk_ui_manager_get_action (header->priv->ui_manager, path);
+	g_free (path);
+	g_assert (radio_action);
+	
+	/* add it to the group */
+	group = gtk_radio_action_get_group (header->priv->search_group_head);
+	gtk_radio_action_set_group (GTK_RADIO_ACTION (radio_action), group);
+
+	/* ensure it isn't active; we'll activate the right one later */
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (radio_action), FALSE);
+}
+
+static void
+rb_source_header_refresh_search_bar (RBSourceHeader *header)
+{
+	GSList *group;
+	GSList *t;
+
+	if (header->priv->source_ui_merge_id != 0) {
+		gtk_ui_manager_remove_ui (header->priv->ui_manager, header->priv->source_ui_merge_id);
+	}
+
+	gtk_ui_manager_ensure_update (header->priv->ui_manager);
+
+	/* dismember the search action group */
+	group = gtk_radio_action_get_group (header->priv->search_group_head);
+	group = g_slist_copy (group);
+
+	for (t = group; t != NULL; t = t->next) {
+		GtkRadioAction *a = (GtkRadioAction *)t->data;
+		if (a != header->priv->search_group_head) {
+			gtk_radio_action_set_group (a, NULL);
+		}
+	}
+
+	g_slist_free (group);
+
+	gtk_ui_manager_add_ui (header->priv->ui_manager,
+			       header->priv->source_ui_merge_id,
+			       "/SearchBar",
+			       "InvisibleSearchHead",
+			       "InvisibleSearchHead",
+			       GTK_UI_MANAGER_AUTO,
+			       FALSE);
+
+	if (header->priv->selected_source != NULL) {
+		SourceState *source_state;
+		GList *actions;
+		GValueArray *plugin_actions;
+
+		source_state = g_hash_table_lookup (header->priv->source_states,
+						    header->priv->selected_source);
+
+		/* merge the source-specific UI */
+		actions = rb_source_get_search_actions (header->priv->selected_source);
+		g_list_foreach (actions, (GFunc)merge_source_ui_cb, header);
+		rb_list_deep_free (actions);
+
+		/* merge in plugin-supplied search actions */
+		g_signal_emit (header,
+			       rb_source_header_signals[GET_SEARCH_ACTIONS], 0,
+			       header->priv->selected_source,
+			       &plugin_actions);
+		if (plugin_actions != NULL) {
+			int i;
+			for (i = 0; i < plugin_actions->n_values; i++) {
+				GValue *v = g_value_array_get_nth (plugin_actions, i);
+				const char *action;
+
+				action = g_value_get_string (v);
+				merge_source_ui_cb (action, header);
+			}
+
+			g_value_array_free (plugin_actions);
+		}
+
+		/* select the active search for the source */
+		if (source_state != NULL && source_state->search_action != NULL) {
+			gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (source_state->search_action),
+						      TRUE);
+		}
+	}
 }
 
 static void
 rb_source_header_set_source_internal (RBSourceHeader *header,
 				      RBSource *source)
 {
-	GList *actions;
-
 	if (header->priv->selected_source != NULL) {
 		g_signal_handlers_disconnect_by_func (G_OBJECT (header->priv->selected_source),
 						      G_CALLBACK (rb_source_header_filter_changed_cb),
 						      header);
-		gtk_ui_manager_remove_ui (header->priv->ui_manager, header->priv->source_ui_merge_id);
 	}
 
 	header->priv->selected_source = source;
@@ -374,31 +533,32 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 					 G_CALLBACK (rb_source_header_filter_changed_cb),
 					 header, 0);
 
+		g_object_get (header->priv->selected_source, "search-type", &header->priv->search_type, NULL);
 		gtk_widget_set_sensitive (GTK_WIDGET (header->priv->search),
-					  rb_source_can_search (header->priv->selected_source));
-		header->priv->have_search = rb_source_can_search (header->priv->selected_source);
+					  (header->priv->search_type != RB_SOURCE_SEARCH_NONE));
 		header->priv->have_browser = rb_source_can_browse (header->priv->selected_source);
-		if (!header->priv->have_browser)
+
+		if (!header->priv->have_browser) {
 			header->priv->disclosed = FALSE;
-		else if (header->priv->browser_key)
+		} else if (header->priv->browser_key) {
 			header->priv->disclosed = eel_gconf_get_boolean (header->priv->browser_key);
-		else
+		} else {
 			/* restore the previous state of the source*/
 			header->priv->disclosed = disclosed;
+		}
 
-		if (!header->priv->have_browser && !header->priv->have_search)
+		if (!header->priv->have_browser && (header->priv->search_type == RB_SOURCE_SEARCH_NONE)) {
 			gtk_widget_hide (GTK_WIDGET (header));
-		else
+		} else {
 			gtk_widget_show (GTK_WIDGET (header));
+		}
 
-		/* merge the source-specific UI */
-		actions = rb_source_get_search_actions (source);
-		g_list_foreach (actions, (GFunc)merge_source_ui_cb, header);
-		rb_list_deep_free (actions);
 	} else {
 		/* no selected source -> hide source header */
 		gtk_widget_hide (GTK_WIDGET (header));
 	}
+
+	rb_source_header_refresh_search_bar (header);
 
 	rb_source_header_sync_control_state (header);
 }
@@ -418,9 +578,11 @@ rb_source_header_set_property (GObject *object,
 		break;
 	case PROP_ACTION_GROUP:
 		header->priv->actiongroup = g_value_get_object (value);
+		gtk_action_group_add_action (header->priv->actiongroup,
+					     GTK_ACTION (header->priv->search_group_head));
 		gtk_action_group_add_toggle_actions (header->priv->actiongroup,
 						     rb_source_header_toggle_entries,
-						     rb_source_header_n_toggle_entries,
+						     G_N_ELEMENTS (rb_source_header_toggle_entries),
 						     header);
 		break;
 	case PROP_UI_MANAGER:
@@ -521,34 +683,99 @@ static void
 rb_source_state_sync (RBSourceHeader *header,
 		      gboolean set_text,
 		      const char *text,
+		      gboolean set_search,
+		      GtkRadioAction *action,
 		      gboolean set_disclosure,
 		      gboolean disclosed)
 {
-	SourceState *old_state;
+	SourceState *state;
+	gboolean do_search = FALSE;
+	char *old_text = NULL;
 
-	old_state = g_hash_table_lookup (header->priv->source_states,
-					 header->priv->selected_source);
-
-	if (old_state) {
-		if (set_text)
-			old_state->search_text = text ? g_strdup (text) : NULL;
-		if (set_disclosure)
-			old_state->disclosed = disclosed;
-	} else {
-		SourceState *new_state;
-
+	state = g_hash_table_lookup (header->priv->source_states,
+				     header->priv->selected_source);
+	if (state == NULL) {
 		/* if we haven't seen the source before, monitor it for deletion */
 		g_object_weak_ref (G_OBJECT (header->priv->selected_source),
 				   (GWeakNotify)rb_source_header_source_weak_destroy_cb,
 				   header);
 
-		new_state = g_new (SourceState, 1);
-		new_state->search_text = text ? g_strdup (text) : NULL;
-		new_state->disclosed = disclosed;
+		state = g_new0 (SourceState, 1);
 		g_hash_table_insert (header->priv->source_states,
 				     header->priv->selected_source,
-				     new_state);
+				     state);
+		do_search = TRUE;
 	}
+
+	if (set_text) {
+		if (rb_safe_strcmp (state->search_text, text) != 0) {
+			old_text = state->search_text;
+			do_search = TRUE;
+		} else {
+			old_text = NULL;
+			g_free (state->search_text);
+		}
+		state->search_text = g_strdup (text ? text : "");
+	}
+
+	if (set_disclosure) {
+		state->disclosed = disclosed;
+	}
+
+	if (set_search) {
+		if (state->search_action != action) {
+			/* if the search action changes, there's no way we can use the current
+			 * search text to optimise the query.
+			 */
+			g_free (old_text);
+			old_text = NULL;
+
+			do_search = TRUE;
+		}
+		if (state->search_action != NULL) {
+			g_object_unref (state->search_action);
+			state->search_action = NULL;
+		}
+		if (action != NULL) {
+			state->search_action = g_object_ref (action);
+		}
+	}
+
+	if (do_search) {
+		RBSourceSearch *search = NULL;
+
+		if (state->search_action != NULL) {
+			search = rb_source_search_get_from_action (G_OBJECT (state->search_action));
+		}
+
+		rb_source_search (header->priv->selected_source,
+				  search,
+				  old_text,
+				  state->search_text);
+	}
+
+	g_free (old_text);
+}
+
+static void
+search_action_changed_cb (GtkRadioAction *action,
+			  GtkRadioAction *current,
+			  RBSourceHeader *header)
+{
+	if (header->priv->selected_source == NULL) {
+		return;
+	}
+
+	if (gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current)) == FALSE) {
+		return;
+	}
+
+	rb_debug ("search action %s activated", gtk_action_get_name (GTK_ACTION (current)));
+	rb_source_state_sync (header,
+			      FALSE, NULL,
+			      TRUE, current,
+			      FALSE, FALSE);
+	rb_source_header_sync_control_state (header);
 }
 
 static void
@@ -556,12 +783,17 @@ rb_source_header_search_cb (RBSearchEntry *search,
 			    const char *text,
 			    RBSourceHeader *header)
 {
+	if (header->priv->search_type != RB_SOURCE_SEARCH_INCREMENTAL) {
+		return;
+	}
 
-	rb_debug  ("searching for \"%s\"", text);
+	rb_debug ("searching for \"%s\"", text);
 
-	rb_source_state_sync (header, TRUE, text, FALSE, FALSE);
+	rb_source_state_sync (header,
+			      TRUE, text,
+			      FALSE, NULL,
+			      FALSE, FALSE);
 
-	rb_source_search (header->priv->selected_source, text);
 	rb_source_header_sync_control_state (header);
 }
 
@@ -578,13 +810,15 @@ rb_source_header_clear_search (RBSourceHeader *header)
 	rb_debug ("clearing search");
 
 	if (!rb_search_entry_searching (RB_SEARCH_ENTRY (header->priv->search)))
-	    return;
+		return;
 
 	if (header->priv->selected_source) {
-		rb_source_search (header->priv->selected_source, NULL);
-		rb_source_state_sync (header, TRUE, NULL, FALSE, FALSE);
-
+		rb_source_state_sync (header,
+				      TRUE, NULL,
+				      FALSE, NULL,
+				      FALSE, FALSE);
 	}
+
 	rb_search_entry_clear (RB_SEARCH_ENTRY (header->priv->search));
 	rb_source_header_sync_control_state (header);
 }
@@ -596,11 +830,14 @@ rb_source_header_view_browser_changed_cb (GtkAction *action,
 	rb_debug ("got view browser toggle");
 	header->priv->disclosed = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
 
-	if (header->priv->browser_key)
+	if (header->priv->browser_key) {
 		eel_gconf_set_boolean (header->priv->browser_key,
 				       header->priv->disclosed);
-	else {
-		rb_source_state_sync (header, FALSE, NULL, TRUE, header->priv->disclosed);
+	} else {
+		rb_source_state_sync (header,
+				      FALSE, NULL,
+				      FALSE, NULL,
+				      TRUE, header->priv->disclosed);
 	}
 
 	rb_debug ("got view browser toggle");
@@ -634,7 +871,7 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 	viewall_action = gtk_action_group_get_action (header->priv->actiongroup,
 						      "ViewAll");
 	g_object_set (G_OBJECT (viewall_action), "sensitive",
-		      (header->priv->have_browser || header->priv->have_search) && not_small, NULL);
+		      (header->priv->have_browser || (header->priv->search_type != RB_SOURCE_SEARCH_NONE)) && not_small, NULL);
 
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (viewbrowser_action),
 				      header->priv->disclosed);
@@ -645,9 +882,18 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 
 static void
 rb_source_header_search_activate_cb (RBSearchEntry *search,
+				     const char *text,
 				     RBSourceHeader *header)
 {
-	gtk_widget_grab_focus (GTK_WIDGET (header->priv->selected_source));
+	if (header->priv->search_type == RB_SOURCE_SEARCH_EXPLICIT) {
+		rb_source_state_sync (header,
+				      TRUE, text,
+				      FALSE, NULL,
+				      FALSE, FALSE);
+	} else {
+		/* whatever this is supposed to do, I don't think it's doing it */
+		gtk_widget_grab_focus (GTK_WIDGET (header->priv->selected_source));
+	}
 }
 
 /**

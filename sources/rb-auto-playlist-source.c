@@ -41,6 +41,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-stock-icons.h"
 #include "rb-playlist-xml.h"
+#include "rb-source-search-basic.h"
 
 /**
  * SECTION:rb-auto-playlist-source
@@ -77,7 +78,7 @@ static void rb_auto_playlist_source_get_property (GObject *object,
 /* source methods */
 static gboolean impl_show_popup (RBSource *source);
 static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
-static void impl_search (RBSource *asource, const char *search_text);
+static void impl_search (RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_reset_filters (RBSource *asource);
 static void impl_browser_toggled (RBSource *source, gboolean enabled);
 static GList *impl_get_search_actions (RBSource *source);
@@ -98,16 +99,13 @@ void rb_auto_playlist_source_browser_views_activated_cb (GtkWidget *widget,
 static void rb_auto_playlist_source_browser_changed_cb (RBLibraryBrowser *entry,
 							GParamSpec *pspec,
 							RBAutoPlaylistSource *source);
-static void search_action_changed (GtkRadioAction *action,
-				   GtkRadioAction *current,
-				   RBShell *shell);
 
 static GtkRadioActionEntry rb_auto_playlist_source_radio_actions [] =
 {
-	{ "AutoPlaylistSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), 0 },
-	{ "AutoPlaylistSearchArtists", NULL, N_("Artists"), NULL, N_("Search artists"), 1 },
-	{ "AutoPlaylistSearchAlbums", NULL, N_("Albums"), NULL, N_("Search albums"), 2 },
-	{ "AutoPlaylistSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), 3 }
+	{ "AutoPlaylistSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), RHYTHMDB_PROP_SEARCH_MATCH },
+	{ "AutoPlaylistSearchArtists", NULL, N_("Artists"), NULL, N_("Search artists"), RHYTHMDB_PROP_ARTIST_FOLDED },
+	{ "AutoPlaylistSearchAlbums", NULL, N_("Albums"), NULL, N_("Search albums"), RHYTHMDB_PROP_ALBUM_FOLDED },
+	{ "AutoPlaylistSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), RHYTHMDB_PROP_TITLE_FOLDED }
 };
 
 enum
@@ -135,16 +133,16 @@ struct _RBAutoPlaylistSourcePrivate
 	RBLibraryBrowser *browser;
 	gboolean browser_shown;
 
-	char *search_text;
+	RBSourceSearch *default_search;
+	RhythmDBQuery *search_query;
 
 	GtkActionGroup *action_group;
-	RhythmDBPropType search_prop;
 };
 
 static gpointer playlist_pixbuf = NULL;
 
 G_DEFINE_TYPE (RBAutoPlaylistSource, rb_auto_playlist_source, RB_TYPE_PLAYLIST_SOURCE)
-#define RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_AUTO_PLAYLIST_SOURCE, RBAutoPlaylistSourcePrivate))
+#define GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_AUTO_PLAYLIST_SOURCE, RBAutoPlaylistSourcePrivate))
 
 static void
 rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
@@ -165,7 +163,6 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_browser_toggled = impl_browser_toggled;
-	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
 	source_class->impl_reset_filters = impl_reset_filters;
 	source_class->impl_get_property_views = impl_get_property_views;
@@ -205,16 +202,21 @@ rb_auto_playlist_source_init (RBAutoPlaylistSource *source)
 static void
 rb_auto_playlist_source_dispose (GObject *object)
 {
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (object);
+	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (object);
 
 	if (priv->action_group != NULL) {
 		g_object_unref (priv->action_group);
 		priv->action_group = NULL;
 	}
 
-	if (priv->cached_all_query) {
-		g_object_unref (G_OBJECT (priv->cached_all_query));
+	if (priv->cached_all_query != NULL) {
+		g_object_unref (priv->cached_all_query);
 		priv->cached_all_query = NULL;
+	}
+
+	if (priv->default_search != NULL) {
+		g_object_unref (priv->default_search);
+		priv->default_search = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_auto_playlist_source_parent_class)->dispose (object);
@@ -223,17 +225,19 @@ rb_auto_playlist_source_dispose (GObject *object)
 static void
 rb_auto_playlist_source_finalize (GObject *object)
 {
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (object);
+	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (object);
 
 	if (priv->query) {
 		rhythmdb_query_free (priv->query);
+	}
+	
+	if (priv->search_query) {
+		rhythmdb_query_free (priv->search_query);
 	}
 
 	if (priv->limit_value) {
 		g_value_array_free (priv->limit_value);
 	}
-
-	g_free (priv->search_text);
 
 	G_OBJECT_CLASS (rb_auto_playlist_source_parent_class)->finalize (object);
 }
@@ -251,7 +255,7 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 
 	source = RB_AUTO_PLAYLIST_SOURCE (
 			parent_class->constructor (type, n_construct_properties, construct_properties));
-	priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	priv = GET_PRIVATE (source);
 
 	priv->paned = gtk_vpaned_new ();
 
@@ -280,10 +284,14 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 						    rb_auto_playlist_source_radio_actions,
 						    G_N_ELEMENTS (rb_auto_playlist_source_radio_actions),
 						    0,
-						    (GCallback)search_action_changed,
-						    shell);
+						    NULL,
+						    NULL);
+		rb_source_search_basic_create_for_actions (priv->action_group,
+							   rb_auto_playlist_source_radio_actions,
+							   G_N_ELEMENTS (rb_auto_playlist_source_radio_actions));
 	}
-	priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
+	priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
+
 	g_object_unref (shell);
 
 	/* reparent the entry view */
@@ -320,6 +328,7 @@ rb_auto_playlist_source_new (RBShell *shell, const char *name, gboolean local)
 					"is-local", local,
 					"entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
 					"source-group", RB_SOURCE_GROUP_PLAYLISTS,
+					"search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					NULL));
 }
 
@@ -329,7 +338,7 @@ rb_auto_playlist_source_set_property (GObject *object,
 				      const GValue *value,
 				      GParamSpec *pspec)
 {
-	/*RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);*/
+	/*RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (source);*/
 
 	switch (prop_id) {
 	default:
@@ -344,7 +353,7 @@ rb_auto_playlist_source_get_property (GObject *object,
 				      GValue *value,
 				      GParamSpec *pspec)
 {
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (object);
+	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (object);
 
 	switch (prop_id) {
 	case PROP_BASE_QUERY_MODEL:
@@ -469,16 +478,16 @@ impl_show_popup (RBSource *source)
 static void
 impl_reset_filters (RBSource *source)
 {
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 	gboolean changed = FALSE;
 
 	if (rb_library_browser_reset (priv->browser))
 		changed = TRUE;
 
-	if (priv->search_text != NULL) {
+	if (priv->search_query != NULL) {
 		changed = TRUE;
-		g_free (priv->search_text);
-		priv->search_text = NULL;
+		rhythmdb_query_free (priv->search_query);
+		priv->search_query = NULL;
 	}
 
 	if (changed)
@@ -486,49 +495,39 @@ impl_reset_filters (RBSource *source)
 }
 
 static void
-impl_search (RBSource *source, const char *search_text)
+impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, const char *new_text)
 {
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
-	char *old_search_text = NULL;
-	gboolean subset = FALSE;
-	const char *debug_search_text;
+	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (asource);
+	RhythmDB *db;
+	gboolean subset;
 
-	if (search_text != NULL && search_text[0] == '\0')
-		search_text = NULL;
-
-	if (search_text == NULL && priv->search_text == NULL)
-		return;
-	if (search_text != NULL && priv->search_text != NULL
-	    && !strcmp (search_text, priv->search_text))
-		return;
-
-	old_search_text = priv->search_text;
-	if (search_text == NULL) {
-		priv->search_text = NULL;
-		debug_search_text = "(NULL)";
-	} else {
-		priv->search_text = g_strdup (search_text);
-		debug_search_text = priv->search_text;
-
-		if (old_search_text != NULL)
-			subset = (g_str_has_prefix (priv->search_text, old_search_text));
+	if (search == NULL) {
+		search = priv->default_search;
 	}
-	g_free (old_search_text);
+	
+	/* replace our search query */
+	if (priv->search_query != NULL) {
+		rhythmdb_query_free (priv->search_query);
+		priv->search_query = NULL;
+	}
+	db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (asource));
+	priv->search_query = rb_source_search_create_query (search, db, new_text);
 
 	/* we can only do subset searches once the original query is complete */
+	subset = rb_source_search_is_subset (search, cur_text, new_text);
 	if (priv->query_active && subset) {
-		rb_debug ("deferring search for \"%s\" until query completion", debug_search_text);
+		rb_debug ("deferring search for \"%s\" until query completion", new_text ? new_text : "<NULL>");
 		priv->search_on_completion = TRUE;
 	} else {
-		rb_debug ("doing search for \"%s\"", debug_search_text);
-		rb_auto_playlist_source_do_query (RB_AUTO_PLAYLIST_SOURCE (source), subset);
+		rb_debug ("doing search for \"%s\"", new_text ? new_text : "<NULL>");
+		rb_auto_playlist_source_do_query (RB_AUTO_PLAYLIST_SOURCE (asource), subset);
 	}
 }
 
 static GList *
 impl_get_property_views (RBSource *source)
 {
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 	GList *ret;
 
 	ret =  rb_library_browser_get_property_views (priv->browser);
@@ -553,7 +552,7 @@ rb_auto_playlist_source_drag_atom_to_prop (GdkAtom smasher)
 static void
 impl_browser_toggled (RBSource *source, gboolean enabled)
 {
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 
 	priv->browser_shown = enabled;
 
@@ -721,7 +720,7 @@ static void
 rb_auto_playlist_source_query_complete_cb (RhythmDBQueryModel *model,
 					   RBAutoPlaylistSource *source)
 {
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 
 	priv->query_active = FALSE;
 	if (priv->search_on_completion) {
@@ -735,7 +734,7 @@ rb_auto_playlist_source_query_complete_cb (RhythmDBQueryModel *model,
 static void
 rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 {
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 	RhythmDB *db;
 	RhythmDBQueryModel *query_model;
 	GPtrArray *query;
@@ -745,7 +744,7 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 
 	g_assert (priv->cached_all_query);
 
-	if (!priv->search_text) {
+	if (priv->search_query == NULL) {
 		rb_library_browser_set_model (priv->browser,
 					      priv->cached_all_query,
 					      FALSE);
@@ -754,7 +753,7 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 
 	query = rhythmdb_query_copy (priv->query);
 	rhythmdb_query_append (db, query,
-			       RHYTHMDB_QUERY_PROP_LIKE, priv->search_prop, priv->search_text,
+			       RHYTHMDB_QUERY_SUBQUERY, priv->search_query,
 			       RHYTHMDB_QUERY_END);
 
 	if (subset) {
@@ -808,7 +807,7 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 				   const char *sort_key,
 				   gint sort_direction)
 {
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 	RhythmDB *db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
 	RBEntryView *songs = rb_source_get_entry_view (RB_SOURCE (source));
 
@@ -870,7 +869,7 @@ rb_auto_playlist_source_get_query (RBAutoPlaylistSource *source,
 
  	g_return_if_fail (RB_IS_AUTO_PLAYLIST_SOURCE (source));
 
-	priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	priv = GET_PRIVATE (source);
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 
 	*query = rhythmdb_query_copy (priv->query);
@@ -883,7 +882,7 @@ rb_auto_playlist_source_get_query (RBAutoPlaylistSource *source,
 static void
 rb_auto_playlist_source_songs_sort_order_changed_cb (RBEntryView *view, RBAutoPlaylistSource *source)
 {
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 
 	/* don't process this if we are in the middle of setting a query */
 	if (priv->query_resetting)
@@ -922,59 +921,3 @@ impl_get_search_actions (RBSource *source)
 	return actions;
 }
 
-static RhythmDBPropType
-search_action_to_prop (GtkAction *action)
-{
-	const char      *name;
-	RhythmDBPropType prop;
-
-	name = gtk_action_get_name (action);
-
-	if (name == NULL) {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	} else if (strcmp (name, "AutoPlaylistSearchAll") == 0) {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	} else if (strcmp (name, "AutoPlaylistSearchArtists") == 0) {
-		prop = RHYTHMDB_PROP_ARTIST_FOLDED;
-	} else if (strcmp (name, "AutoPlaylistSearchAlbums") == 0) {
-		prop = RHYTHMDB_PROP_ALBUM_FOLDED;
-	} else if (strcmp (name, "AutoPlaylistSearchTitles") == 0) {
-		prop = RHYTHMDB_PROP_TITLE_FOLDED;
-	} else {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	}
-
-	return prop;
-}
-
-static void
-search_action_changed (GtkRadioAction  *action,
-		       GtkRadioAction  *current,
-		       RBShell         *shell)
-{
-	RBAutoPlaylistSourcePrivate *priv;
-	gboolean active;
-	RBAutoPlaylistSource *source;
-
-	g_object_get (shell, "selected-source", &source, NULL);
-	if (source == NULL || !RB_IS_AUTO_PLAYLIST_SOURCE (source)) {
-		if (source != NULL)
-			g_object_unref (source);
-		return;
-	}
-
-	priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
-
-	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));
-
-	if (active) {
-		/* update query */
-		priv->search_prop = search_action_to_prop (GTK_ACTION (current));
-		rb_auto_playlist_source_do_query (source, FALSE);
-		rb_source_notify_filter_changed (RB_SOURCE (source));
-	}
-
-	if (source != NULL) {
-		g_object_unref (source);
-	}
-}

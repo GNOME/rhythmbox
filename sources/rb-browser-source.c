@@ -51,6 +51,7 @@
 
 #include "rb-source.h"
 #include "rb-library-source.h"
+#include "rb-source-search-basic.h"
 
 #include "rhythmdb-query-model.h"
 #include "rb-property-view.h"
@@ -106,7 +107,7 @@ static void paned_size_allocate_cb (GtkWidget *widget,
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static GList *impl_get_property_views (RBSource *source);
 static void impl_delete (RBSource *source);
-static void impl_search (RBSource *source, const char *text);
+static void impl_search (RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_reset_filters (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static GList *impl_get_search_actions (RBSource *source);
@@ -135,12 +136,13 @@ struct RBBrowserSourcePrivate
 	RBEntryView *songs;
 	GtkWidget *paned;
 
-	char *search_text;
 	RhythmDBQueryModel *cached_all_query;
+	RhythmDBQuery *search_query;
 	RhythmDBPropType search_prop;
 	gboolean populate;
 	gboolean query_active;
 	gboolean search_on_completion;
+	RBSourceSearch *default_search;
 
 	GtkActionGroup *action_group;
 	GtkActionGroup *search_action_group;
@@ -170,10 +172,10 @@ static GtkActionEntry rb_browser_source_actions [] =
 
 static GtkRadioActionEntry rb_browser_source_radio_actions [] =
 {
-	{ "BrowserSourceSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), 0 },
-	{ "BrowserSourceSearchArtists", NULL, N_("Artists"), NULL, N_("Search artists"), 1 },
-	{ "BrowserSourceSearchAlbums", NULL, N_("Albums"), NULL, N_("Search albums"), 2 },
-	{ "BrowserSourceSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), 3 }
+	{ "BrowserSourceSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), RHYTHMDB_PROP_SEARCH_MATCH },
+	{ "BrowserSourceSearchArtists", NULL, N_("Artists"), NULL, N_("Search artists"), RHYTHMDB_PROP_ARTIST_FOLDED },
+	{ "BrowserSourceSearchAlbums", NULL, N_("Albums"), NULL, N_("Search albums"), RHYTHMDB_PROP_ALBUM_FOLDED },
+	{ "BrowserSourceSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), RHYTHMDB_PROP_TITLE_FOLDED }
 };
 
 static const GtkTargetEntry songs_view_drag_types[] = {
@@ -186,7 +188,8 @@ enum
 	PROP_0,
 	PROP_SORTING_KEY,
 	PROP_BASE_QUERY_MODEL,
-	PROP_POPULATE
+	PROP_POPULATE,
+	PROP_SEARCH_TYPE
 };
 
 G_DEFINE_ABSTRACT_TYPE (RBBrowserSource, rb_browser_source, RB_TYPE_SOURCE)
@@ -205,7 +208,6 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	object_class->get_property = rb_browser_source_get_property;
 
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_get_property_views = impl_get_property_views;
@@ -246,6 +248,10 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 							       TRUE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
+	g_object_class_override_property (object_class,
+					  PROP_SEARCH_TYPE,
+					  "search-type");
+
 	g_type_class_add_private (klass, sizeof (RBBrowserSourcePrivate));
 }
 
@@ -253,8 +259,6 @@ static void
 rb_browser_source_init (RBBrowserSource *source)
 {
 	source->priv = RB_BROWSER_SOURCE_GET_PRIVATE (source);
-
-	source->priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
 }
 
 static void
@@ -275,9 +279,9 @@ rb_browser_source_dispose (GObject *object)
 		source->priv->db = NULL;
 	}
 
-	if (source->priv->search_text != NULL) {
-		g_free (source->priv->search_text);
-		source->priv->search_text = NULL;
+	if (source->priv->search_query != NULL) {
+		rhythmdb_query_free (source->priv->search_query);
+		source->priv->search_query = NULL;
 	}
 
 	if (source->priv->cached_all_query != NULL) {
@@ -288,6 +292,11 @@ rb_browser_source_dispose (GObject *object)
 	if (source->priv->action_group != NULL) {
 		g_object_unref (source->priv->action_group);
 		source->priv->action_group = NULL;
+	}
+
+	if (source->priv->default_search != NULL) {
+		g_object_unref (source->priv->default_search);
+		source->priv->default_search = NULL;
 	}
 
 	eel_gconf_notification_remove (source->priv->state_browser_notify_id);
@@ -334,60 +343,6 @@ default_show_entry_popup (RBBrowserSource *source)
 	_rb_source_show_popup (RB_SOURCE (source), "/BrowserSourceViewPopup");
 }
 
-static RhythmDBPropType
-search_action_to_prop (GtkAction *action)
-{
-	const char      *name;
-	RhythmDBPropType prop;
-
-	name = gtk_action_get_name (action);
-
-	if (name == NULL) {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	} else if (strcmp (name, "BrowserSourceSearchAll") == 0) {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	} else if (strcmp (name, "BrowserSourceSearchArtists") == 0) {
-		prop = RHYTHMDB_PROP_ARTIST_FOLDED;
-	} else if (strcmp (name, "BrowserSourceSearchAlbums") == 0) {
-		prop = RHYTHMDB_PROP_ALBUM_FOLDED;
-	} else if (strcmp (name, "BrowserSourceSearchTitles") == 0) {
-		prop = RHYTHMDB_PROP_TITLE_FOLDED;
-	} else {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	}
-
-	return prop;
-}
-
-static void
-search_action_changed (GtkRadioAction  *action,
-		       GtkRadioAction  *current,
-		       RBShell         *shell)
-{
-	gboolean         active;
-	RBBrowserSource *source;
-
-	g_object_get (shell, "selected-source", &source, NULL);
-	if (source == NULL || !RB_IS_BROWSER_SOURCE (source)) {
-		if (source != NULL)
-			g_object_unref (source);
-		return;
-	}
-
-	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));
-
-	if (active) {
-		/* update query */
-		source->priv->search_prop = search_action_to_prop (GTK_ACTION (current));
-		rb_browser_source_do_query (source, FALSE);
-		rb_source_notify_filter_changed (RB_SOURCE (source));
-	}
-
-	if (source != NULL) {
-		g_object_unref (source);
-	}
-}
-
 static GObject *
 rb_browser_source_constructor (GType type,
 			       guint n_construct_properties,
@@ -424,10 +379,16 @@ rb_browser_source_constructor (GType type,
 						    rb_browser_source_radio_actions,
 						    G_N_ELEMENTS (rb_browser_source_radio_actions),
 						    0,
-						    (GCallback)search_action_changed,
-						    shell);
+						    NULL,
+						    NULL);
+
+		rb_source_search_basic_create_for_actions (source->priv->action_group,
+							   rb_browser_source_radio_actions,
+							   G_N_ELEMENTS (rb_browser_source_radio_actions));
 	}
 	g_object_unref (shell);
+
+	source->priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
 
 	source->priv->paned = gtk_vpaned_new ();
 
@@ -553,6 +514,9 @@ rb_browser_source_set_property (GObject *object,
 			rb_browser_source_populate (source);
 		}
 		break;
+	case PROP_SEARCH_TYPE:
+		/* ignored */
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -576,6 +540,9 @@ rb_browser_source_get_property (GObject *object,
 		break;
 	case PROP_POPULATE:
 		g_value_set_boolean (value, source->priv->populate);
+		break;
+	case PROP_SEARCH_TYPE:
+		g_value_set_enum (value, RB_SOURCE_SEARCH_INCREMENTAL);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -684,43 +651,31 @@ songs_view_sort_order_changed_cb (RBEntryView *view, RBBrowserSource *source)
 }
 
 static void
-impl_search (RBSource *asource, const char *search_text)
+impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, const char *new_text)
 {
 	RBBrowserSource *source = RB_BROWSER_SOURCE (asource);
-	char *old_search_text = NULL;
-	gboolean subset = FALSE;
-	const char *debug_search_text;
+	gboolean subset;
 
-	if (search_text != NULL && search_text[0] == '\0')
-		search_text = NULL;
-
-	if (search_text == NULL && source->priv->search_text == NULL)
-		return;
-	if (search_text != NULL && source->priv->search_text != NULL
-	    && !strcmp (search_text, source->priv->search_text))
-		return;
-
-	old_search_text = source->priv->search_text;
-	if (search_text == NULL) {
-		source->priv->search_text = NULL;
-		debug_search_text = "(NULL)";
-	} else {
-		source->priv->search_text = g_strdup (search_text);
-		debug_search_text = source->priv->search_text;
-
-		if (old_search_text != NULL)
-			subset = (g_str_has_prefix (source->priv->search_text, old_search_text));
+	if (search == NULL) {
+		search = source->priv->default_search;
 	}
-	g_free (old_search_text);
 
-	/* we can't do subset searches until the original query is complete, because they
-	 * reuse the query model.
+	/* replace our search query */
+	if (source->priv->search_query != NULL) {
+		rhythmdb_query_free (source->priv->search_query);
+		source->priv->search_query = NULL;
+	}
+	source->priv->search_query = rb_source_search_create_query (search, source->priv->db, new_text);
+
+	/* for subset searches, we have to wait until the query
+	 * has finished before we can refine the results.
 	 */
+	subset = rb_source_search_is_subset (search, cur_text, new_text);
 	if (source->priv->query_active && subset) {
-		rb_debug ("deferring search for \"%s\" until query completion", debug_search_text);
+		rb_debug ("deferring search for \"%s\" until query completion", new_text ? new_text : "<NULL>");
 		source->priv->search_on_completion = TRUE;
 	} else {
-		rb_debug ("doing search for \"%s\"", debug_search_text);
+		rb_debug ("doing search for \"%s\"", new_text ? new_text : "<NULL>");
 		rb_browser_source_do_query (source, subset);
 	}
 }
@@ -754,10 +709,11 @@ impl_reset_filters (RBSource *asource)
 	if (rb_library_browser_reset (source->priv->browser))
 		changed = TRUE;
 
-	if (source->priv->search_text != NULL)
+	if (source->priv->search_query != NULL) {
+		rhythmdb_query_free (source->priv->search_query);
+		source->priv->search_query = NULL;
 		changed = TRUE;
-	g_free (source->priv->search_text);
-	source->priv->search_text = NULL;
+	}
 
 	if (changed)
 		rb_browser_source_do_query (source, FALSE);
@@ -956,7 +912,7 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 	RhythmDBEntryType entry_type;
 
 	/* use the cached 'all' query to optimise the no-search case */
-	if (!source->priv->search_text) {
+	if (source->priv->search_query == NULL) {
 		rb_library_browser_set_model (source->priv->browser,
 					      source->priv->cached_all_query,
 					      FALSE);
@@ -968,9 +924,8 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
 				      entry_type,
-				      RHYTHMDB_QUERY_PROP_LIKE,
-				      source->priv->search_prop,
-				      source->priv->search_text,
+				      RHYTHMDB_QUERY_SUBQUERY,
+				      source->priv->search_query,
 				      RHYTHMDB_QUERY_END);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 

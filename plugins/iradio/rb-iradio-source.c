@@ -38,6 +38,7 @@
 #include <libxml/tree.h>
 
 #include "rb-iradio-source.h"
+#include "rb-iradio-source-search.h"
 
 #include "rhythmdb-query-model.h"
 #include "rb-glade-helpers.h"
@@ -58,6 +59,7 @@
 #include "rb-metadata.h"
 #include "rb-plugin.h"
 #include "rb-cut-and-paste-code.h"
+#include "rb-source-search-basic.h"
 
 /* icon names */
 #define IRADIO_SOURCE_ICON  "library-internet-radio"
@@ -103,7 +105,7 @@ static char *guess_uri_scheme (const char *uri);
 static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 static char *impl_get_browser_key (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
-static void impl_search (RBSource *source, const char *text);
+static void impl_search (RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_delete (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
@@ -151,10 +153,9 @@ struct RBIRadioSourcePrivate
 	RBEntryView *stations;
 	gboolean setting_new_query;
 
-	gboolean initialized;
-
-	char *search_text;
 	char *selected_genre;
+	RhythmDBQuery *search_query;
+	RBSourceSearch *default_search;
 
 	guint prefs_notify_id;
 	guint first_time_notify_id;
@@ -199,7 +200,6 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
 	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_get_entry_view = impl_get_entry_view;
@@ -264,6 +264,16 @@ rb_iradio_source_dispose (GObject *object)
 	if (source->priv->action_group != NULL) {
 		g_object_unref (source->priv->action_group);
 		source->priv->action_group = NULL;
+	}
+
+	if (source->priv->default_search != NULL) {
+		g_object_unref (source->priv->default_search);
+		source->priv->default_search = NULL;
+	}
+
+	if (source->priv->search_query != NULL) {
+		rhythmdb_query_free (source->priv->search_query);
+		source->priv->search_query = NULL;
 	}
 
 	eel_gconf_notification_remove (source->priv->prefs_notify_id);
@@ -385,6 +395,8 @@ rb_iradio_source_constructor (GType type,
 				 G_CALLBACK (playing_source_changed_cb),
 				 source, 0);
 
+	source->priv->default_search = rb_iradio_source_search_new ();
+
 	rb_iradio_source_do_query (source);
 
 	return G_OBJECT (source);
@@ -445,6 +457,7 @@ rb_iradio_source_new (RBShell *shell, RBPlugin *plugin)
 					  "entry-type", entry_type,
 					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  "plugin", plugin,
+					  "search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					  NULL));
 	rb_shell_register_entry_type_for_source (shell, source, entry_type);
 	return source;
@@ -534,28 +547,23 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 
 	g_free (real_uri);
 }
-
 static void
 impl_search (RBSource *asource,
-	     const char *search_text)
+	     RBSourceSearch *search,
+	     const char *cur_text,
+	     const char *new_text)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 
-	if (source->priv->initialized) {
-		if (search_text == NULL && source->priv->search_text == NULL)
-			return;
-		if (search_text != NULL &&
-		    source->priv->search_text != NULL
-		    && !strcmp (search_text, source->priv->search_text))
-			return;
+	if (source->priv->search_query != NULL) {
+		rhythmdb_query_free (source->priv->search_query);
 	}
 
-	source->priv->initialized = TRUE;
-	if (search_text != NULL && search_text[0] == '\0')
-		search_text = NULL;
+	if (search == NULL) {
+		search = source->priv->default_search;
+	}
+	source->priv->search_query = rb_source_search_create_query (search, source->priv->db, new_text);
 
-	g_free (source->priv->search_text);
-	source->priv->search_text = g_strdup (search_text);
 	rb_iradio_source_do_query (source);
 
 	rb_source_notify_filter_changed (RB_SOURCE (source));
@@ -781,26 +789,12 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 				      RHYTHMDB_QUERY_END);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
-	if (source->priv->search_text != NULL) {
-		GPtrArray *subquery;
-
-		subquery = rhythmdb_query_parse (source->priv->db,
-						 RHYTHMDB_QUERY_PROP_LIKE,
-						 RHYTHMDB_PROP_GENRE_FOLDED,
-						 source->priv->search_text,
-						 RHYTHMDB_QUERY_DISJUNCTION,
-						 RHYTHMDB_QUERY_PROP_LIKE,
-						 RHYTHMDB_PROP_TITLE_FOLDED,
-						 source->priv->search_text,
-						 RHYTHMDB_QUERY_END);
-		rb_debug ("searching for \"%s\"", source->priv->search_text);
+	if (source->priv->search_query != NULL) {
 		rhythmdb_query_append (source->priv->db,
 				       query,
 				       RHYTHMDB_QUERY_SUBQUERY,
-				       subquery,
+				       source->priv->search_query,
 				       RHYTHMDB_QUERY_END);
-
-		rhythmdb_query_free (subquery);
 	}
 
 	genre_model = rb_property_view_get_model (source->priv->genres);

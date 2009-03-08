@@ -153,6 +153,17 @@
 ;  (gtype-id "RB_TYPE_PLAYER_GST_DATA_TEE")
 ;)
 
+(define-object SourceSearch
+  (in-module "RB")
+  (c-name "RBSourceSearch")
+  (gtype-id "RB_TYPE_SOURCE_SEARCH")
+)
+
+(define-object SourceSearchBasic
+  (in-module "RB")
+  (c-name "RBSourceSearchBasic")
+  (gtype-id "RB_TYPE_SOURCE_SEARCH_BASIC")
+)
 
 ;; Enumerations and flags ...
 
@@ -188,6 +199,17 @@
     '("stop" "RB_SOURCE_EOF_STOP")
     '("retry" "RB_SOURCE_EOF_RETRY")
     '("next" "RB_SOURCE_EOF_NEXT")
+  )
+)
+
+(define-enum SourceSearchType
+  (in-module "RB")
+  (c-name "RBSourceSearchType")
+  (gtype-id "RB_TYPE_SOURCE_SEARCH_TYPE")
+  (values
+    '("none" "RB_SOURCE_SEARCH_NONE")
+    '("incremental" "RB_SOURCE_SEARCH_INCREMENTAL")
+    '("explicit" "RB_SOURCE_SEARCH_EXPLICIT")
   )
 )
 
@@ -859,18 +881,14 @@
   (return-type "gboolean")
 )
 
-(define-method can_search
-  (of-object "RBSource")
-  (c-name "rb_source_can_search")
-  (return-type "gboolean")
-)
-
 (define-method search
   (of-object "RBSource")
   (c-name "rb_source_search")
   (return-type "none")
   (parameters
-    '("const-char*" "text")
+    '("RBSourceSearch*" "search")
+    '("const-char*" "cur_text")
+    '("const-char*" "new_text")
   )
 )
 
@@ -1089,16 +1107,13 @@
   (return-type "gboolean")
 )
 
-(define-virtual impl_can_search
-  (of-object "RBSource")
-  (return-type "gboolean")
-)
-
 (define-virtual impl_search
   (of-object "RBSource")
   (return-type "none")
   (parameters
-    '("const-char*" "text")
+    '("RBSourceSearch*" "search")
+    '("const-char*" "cur_text")
+    '("const-char*" "new_text")
   )
 )
 
@@ -2490,3 +2505,91 @@
   )
 )
 
+;; From rb-source-search.h
+
+(define-function rb_source_search_get_type
+  (c-name "rb_source_search_get_type")
+  (return-type "GType")
+)
+
+(define-method is_subset
+  (of-object "RBSourceSearch")
+  (c-name "rb_source_search_is_subset")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "current")
+    '("const-char*" "next")
+  )
+)
+
+(define-method create_query
+  (of-object "RBSourceSearch")
+  (c-name "rb_source_search_create_query")
+  (return-type "RhythmDBQuery*")
+  (parameters
+    '("RhythmDB*" "db")
+    '("const-char*" "search_text")
+  )
+)
+
+(define-method action_attach
+  (of-object "RBSourceSearch")
+  (c-name "rb_source_search_action_attach")
+  (return-type "none")
+  (parameters
+    '("GObject*" "action")
+  )
+)
+
+(define-function rb_source_search_get_from_action
+  (c-name "rb_source_search_get_from_action")
+  (return-type "RBSourceSearch*")
+  (parameters
+    '("GObject*" "action")
+  )
+)
+
+(define-virtual is_subset 
+  (of-object "RBSourceSearch")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "cur_text")
+    '("const-char*" "new_text")
+  )
+)
+
+(define-virtual create_query
+  (of-object "RBSourceSearch")
+  (return-type "RhythmDBQuery*")
+  (parameters
+    '("RhythmDB*" "db")
+    '("const-char*" "search_text")
+  )
+)
+
+;; From rb-source-search-basic.h
+
+(define-function rb_source_search_basic_get_type
+  (c-name "rb_source_search_basic_get_type")
+  (return-type "GType")
+)
+
+(define-function source_search_basic_new
+  (in-module "rb")
+  (c-name "rb_source_search_basic_new")
+  (is-constructor-of "RBSourceSearchBasic")
+  (return-type "RBSourceSearch*")
+  (properties
+    '("prop")
+  )
+)
+
+(define-function rb_source_search_basic_create_for_actions
+  (c-name "rb_source_search_basic_create_for_actions")
+  (return-type "none")
+  (parameters
+    '("GtkActionGroup*" "action_group")
+    '("GtkRadioActionEntry*" "actions")
+    '("int" "n_actions")
+  )
+)

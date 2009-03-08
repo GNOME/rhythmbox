@@ -145,7 +145,6 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	object_class->set_property = rb_daap_source_set_property;
 
 	source_class->impl_activate = rb_daap_source_activate;
-	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
