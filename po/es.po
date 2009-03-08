@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-02-23 12:24+0000\n"
-"PO-Revision-Date: 2009-02-24 19:02+0100\n"
+"POT-Creation-Date: 2009-03-08 09:41+0000\n"
+"PO-Revision-Date: 2009-03-08 16:33+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -38,75 +38,75 @@ msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
 "No se pudo crear un elemento sumidero de GStreamer en el que escribir %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:693 ../metadata/rb-metadata-gst.c:850
+#: ../backends/gstreamer/rb-player-gst.c:695 ../metadata/rb-metadata-gst.c:850
 #: ../metadata/rb-metadata-gst.c:1413
 #: ../plugins/cd-recorder/rb-recorder-gst.c:508
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Ha ocurrido un error al crear el elemento %s; compruebe su instalación"
 
-#: ../backends/gstreamer/rb-player-gst.c:761
+#: ../backends/gstreamer/rb-player-gst.c:763
 #, c-format
 msgid "Unknown playback error"
 msgstr "Error de reproducción desconocido"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1124
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1138
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1136
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1150
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr ""
 "Ha ocurrido un error al enlazar un nuevo flujo dentro del pipeline de "
 "GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1166
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1178
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Ha ocurrido un error al inicializar un nuevo flujo"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2705
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2717
 #, c-format
 msgid "Failed to open output device"
 msgstr "Falló al abrir el dispositivo de salida"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2784
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2796
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Falló al abrir el dispositivo de salida: %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3006
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3094
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3033
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3115
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear el elemento GStreamer; compruebe su instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3019
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3044
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear un elemento de salida de audio; compruebe su "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3068
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3110
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3136
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3145
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3154
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3089
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3131
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3157
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3166
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3175
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Ha ocurrido un error al enlazar la tubería de GStreamer; compruebe su "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3249
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3270
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr ""
 "Ha ocurrido un error al crear una tubería de GStreamer para reproducir %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3265
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3286
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "No se ha podido iniciar la reproducción de %s"
@@ -632,18 +632,17 @@ msgstr "%d %b %Y"
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: ../lib/rb-file-helpers.c:204
+#: ../lib/rb-file-helpers.c:217
 #, c-format
-#| msgid "Unable to resolve hostname %s"
 msgid "Unable to move %s to %s: %s"
 msgstr "No se pudo mover %s a %s: %s"
 
-#: ../lib/rb-file-helpers.c:368
+#: ../lib/rb-file-helpers.c:386
 #, c-format
 msgid "Too many symlinks"
 msgstr "Demasiados enlaces simbólicos"
 
-#: ../lib/rb-file-helpers.c:972
+#: ../lib/rb-file-helpers.c:994
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "No se puede obtener espacio libre en %s: %s"
@@ -1210,29 +1209,88 @@ msgid "Adding song to your Loved tracks"
 msgstr "Añadiendo canción a sus pistas preferidas"
 
 #. and maybe some more
+#: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:1
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:1
 msgid "Audio CD Recorder"
 msgstr "Grabadora de CD de audio"
 
-#: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:2
-msgid "Support for recording audio CDs from playlists"
-msgstr "Soporte para grabar un CD de audio desde listas de reproducción"
+#: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:2
+msgid "Record audio CDs from playlists and duplicate audio CDs"
+msgstr ""
+"Grabar CD de sonido desde listas de reproducción y duplicar CD de sonido"
 
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:98
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:89
 msgid "_Create Audio CD..."
 msgstr "_Crear CD de audio…"
 
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:99
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:90
 msgid "Create an audio CD from playlist"
 msgstr "Crear un CD de audio desde la lista de reproducción"
 
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:101
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:92
 msgid "Duplicate Audio CD..."
 msgstr "Duplicar CD de sonido…"
 
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:102
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:93
 msgid "Create a copy of this audio CD"
 msgstr "Crear una copia de este CD de sonido"
+
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:192
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:247
+msgid "Rhythmbox could not duplicate the disc"
+msgstr "Rhythmbox no pudo duplicar el disco"
+
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:197
+#| msgid "Rhythmbox could not duplicate the disc"
+msgid "Rhythmbox could not record the audio disc"
+msgstr "Rhythmbox no pudo grabar el disco de sonido"
+
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:228
+#, c-format
+#| msgid "Unable to build an audio track list."
+msgid "Unable to build an audio track list"
+msgstr "No se pudo construir una lista de pistas de sonido"
+
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:239
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:431
+#, c-format
+#| msgid "Unable to create the download directory for %s: %s"
+msgid "Unable to write audio project file %s: %s"
+msgstr "No se pudo escribir el archivo del proyecto de sonido %s: %s"
+
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:257
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:438
+#, c-format
+#| msgid "Unable to create audio CD"
+msgid "Unable to write audio project"
+msgstr "No se pudo escribir el proyecto de sonido"
+
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:478
+#| msgid "Unable to create audio CD"
+msgid "Unable to create audio CD project"
+msgstr "No se pudo crear el proyecto de CD de sonido"
+
+#. Translators: this is the toolbar button label for
+#. Create Audio CD action
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:730
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:450
+msgid "Burn"
+msgstr "Grabar"
+
+#. Translators: this is the toolbar button label for
+#. Duplicate Audio CD action
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:736
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:456
+msgid "Copy CD"
+msgstr "Copiar CD"
+
+#: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:2
+msgid "Support for recording audio CDs from playlists"
+msgstr "Soporte para grabar un CD de audio desde listas de reproducción"
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:193
 msgid "Unable to create audio CD"
@@ -1242,25 +1300,9 @@ msgstr "No se pudo crear un CD de audio"
 msgid "Could not duplicate disc"
 msgstr "No se pudo duplicar el disco"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:247
-msgid "Rhythmbox could not duplicate the disc"
-msgstr "Rhythmbox no pudo duplicar el disco"
-
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:248
 msgid "Reason"
 msgstr "Razón"
-
-#. Translators: this is the toolbar button label for
-#. Create Audio CD action
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:449
-msgid "Burn"
-msgstr "Grabar"
-
-#. Translators: this is the toolbar button label for
-#. Duplicate Audio CD action
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:455
-msgid "Copy CD"
-msgstr "Copiar CD"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:420
 #, c-format
@@ -1706,40 +1748,40 @@ msgstr "El servicio MDNS no se está ejecutando"
 msgid "The MDNS service is not published"
 msgstr "Es servicio MDNS no está publicado"
 
-#: ../plugins/daap/rb-daap-plugin.c:116
+#: ../plugins/daap/rb-daap-plugin.c:125
 msgid "_Disconnect"
 msgstr "_Desconectar"
 
-#: ../plugins/daap/rb-daap-plugin.c:117
+#: ../plugins/daap/rb-daap-plugin.c:126
 msgid "Disconnect from DAAP share"
 msgstr "Desconectar de una compartición DAAP"
 
-#: ../plugins/daap/rb-daap-plugin.c:119
+#: ../plugins/daap/rb-daap-plugin.c:128
 msgid "Connect to _DAAP share..."
 msgstr "Conectar a una compartición _DAAP…"
 
-#: ../plugins/daap/rb-daap-plugin.c:120
+#: ../plugins/daap/rb-daap-plugin.c:129
 msgid "Connect to a new DAAP share"
 msgstr "Conectar a una compartición DAAP nueva"
 
-#: ../plugins/daap/rb-daap-plugin.c:618 ../plugins/daap/rb-daap-source.c:526
+#: ../plugins/daap/rb-daap-plugin.c:647 ../plugins/daap/rb-daap-source.c:526
 msgid "Could not connect to shared music"
 msgstr "No se ha podido conectar a la música compartida"
 
-#: ../plugins/daap/rb-daap-plugin.c:619
+#: ../plugins/daap/rb-daap-plugin.c:648
 #, c-format
 msgid "Unable to resolve hostname %s"
 msgstr "No se pudo resolver el nombre de equipo %s"
 
-#: ../plugins/daap/rb-daap-plugin.c:668
+#: ../plugins/daap/rb-daap-plugin.c:699
 msgid "New DAAP share"
 msgstr "Compartición DAAP nueva"
 
-#: ../plugins/daap/rb-daap-plugin.c:668
+#: ../plugins/daap/rb-daap-plugin.c:699
 msgid "Host:port of DAAP share:"
 msgstr "Equipo:puerto de la compartición DAAP:"
 
-#: ../plugins/daap/rb-daap-plugin.c:893
+#: ../plugins/daap/rb-daap-plugin.c:924
 msgid "DAAP Music Sharing Preferences"
 msgstr "DAAP preferencias de música compartida"
 
@@ -1814,6 +1856,7 @@ msgstr ""
 "Nokia 770)"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:98
+#: ../shell/rb-playlist-manager.c:1150 ../shell/rb-playlist-manager.c:1193
 msgid "New Playlist"
 msgstr "Lista de reproducción nueva"
 
@@ -2763,7 +2806,6 @@ msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "¿Le gustaría comprar el álbum <i>%(album)s</i> de «%(artist)s»?"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:357
-#| msgid "Unable to activate browser"
 msgid "Unable to load catalogue"
 msgstr "No se pudo cargar el catálogo"
 
@@ -3955,7 +3997,6 @@ msgid "Change the visibility of the statusbar"
 msgstr "Cambiar la visibilidad de la barra de estado"
 
 #: ../shell/rb-shell.c:997 ../shell/rb-shell.c:1214
-#| msgid "Unable to resolve hostname %s"
 msgid "Unable to move user data files"
 msgstr "No se pudieron mover los archivos de datos del usuario"
 
@@ -4293,11 +4334,11 @@ msgstr "Limpiar"
 msgid "Play Queue"
 msgstr "Cola de reproducción"
 
-#: ../sources/rb-play-queue-source.c:429 ../widgets/rb-header.c:123
+#: ../sources/rb-play-queue-source.c:429 ../widgets/rb-header.c:124
 msgid "from"
 msgstr "de"
 
-#: ../sources/rb-play-queue-source.c:429 ../widgets/rb-header.c:124
+#: ../sources/rb-play-queue-source.c:429 ../widgets/rb-header.c:125
 msgid "by"
 msgstr "por"
 
@@ -4611,7 +4652,7 @@ msgstr "Reproduciendo"
 msgid "Playback Error"
 msgstr "Error de reproducción"
 
-#: ../widgets/rb-header.c:529
+#: ../widgets/rb-header.c:537
 msgid "Not Playing"
 msgstr "No se reproduce nada"
 
