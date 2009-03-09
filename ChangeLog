@@ -1,5 +1,11 @@
 2009-03-09  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/lyrics/lyrics/__init__.py:
+	Use 'lyrics' under the user cache dir for the default lyrics cache
+	directory instead of ~/.lyrics.  Fixes #533199.
+
+2009-03-09  Jonathan Matthew  <jonathan@d14n.org>
+
 	* sources/Makefile.am:
 	* sources/rb-source-search-basic.c: (impl_create_query),
 	(impl_set_property), (impl_get_property),

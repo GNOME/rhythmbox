@@ -94,17 +94,17 @@ def parse_song_data(artist, title):
 def build_cache_path(artist, title):
 	folder = gconf.client_get_default().get_string(gconf_keys['folder'])
 	if folder is None:
-		folder = "~/.lyrics"
+		folder = os.path.join(rb.user_cache_dir(), "lyrics")
 
 	lyrics_folder = os.path.expanduser (folder)
 	if not os.path.exists (lyrics_folder):
 		os.mkdir (lyrics_folder)
 
-	artist_folder = lyrics_folder + '/' + artist[:128]
+	artist_folder = os.path.join(lyrics_folder, artist[:128])
 	if not os.path.exists (artist_folder):
 		os.mkdir (artist_folder)
 
-	return artist_folder + '/' + title[:128] + '.lyric'
+	return os.path.join(artist_folder, title[:128] + '.lyric')
 
 class LyricGrabber(object):
 	def __init__(self, db, entry):
