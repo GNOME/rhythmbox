@@ -1,4 +1,12 @@
 2009-03-11  Jonathan Matthew  <jonathan@d14n.org>
+
+	* tests/test-rhythmdb-property-model.c: (START_TEST), (main):
+	Need to use wait_for_signal for some of the property model tests now,
+	since rhythmdb emits entry-changed signals in an idle handler.
+	Use the common setup stuff the other test suites use for calling
+	gtk_init in the child process (if forking).  Should fix #540385.
+
+2009-03-11  Jonathan Matthew  <jonathan@d14n.org>
 	
 	patch by:  "OrbWeaver"  <orbweaver3d@gmail.com>
 

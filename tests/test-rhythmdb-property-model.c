@@ -27,7 +27,6 @@
 
 #include "config.h"
 
-
 #include <check.h>
 #include <gtk/gtk.h>
 #include "test-utils.h"
@@ -108,8 +107,10 @@ START_TEST (test_rhythmdb_property_model_static)
 	end_step ();
 
 	/* hide it */
+	set_waiting_signal (G_OBJECT (model), "entry-prop-changed");
 	set_entry_hidden (db, a, TRUE);
 	rhythmdb_commit (db);
+	wait_for_signal ();
 	/*fail_unless (_get_property_count (propmodel, _("All")) == 1);*/
 	fail_unless (_get_property_count (propmodel, "x") == 0);
 	fail_unless (_get_property_count (propmodel, "y") == 1);
@@ -238,16 +239,20 @@ START_TEST (test_rhythmdb_property_model_query)
 	end_step ();
 
 	/* change b so it matches the query */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
 	set_entry_string (db, b, RHYTHMDB_PROP_ARTIST, "x");
 	rhythmdb_commit (db);
+	wait_for_signal ();
 	fail_unless (_get_property_count (propmodel, "x") == 2);
 	fail_unless (_get_property_count (propmodel, "y") == 0);
 
 	end_step ();
 
 	/* change b again */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
 	set_entry_string (db, b, RHYTHMDB_PROP_ARTIST, "xx");
 	rhythmdb_commit (db);
+	wait_for_signal ();
 	fail_unless (_get_property_count (propmodel, "x") == 1);
 	fail_unless (_get_property_count (propmodel, "xx") == 1);
 	fail_unless (_get_property_count (propmodel, "y") == 0);
@@ -255,32 +260,40 @@ START_TEST (test_rhythmdb_property_model_query)
 	end_step ();
 
 	/* hide a */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
 	set_entry_hidden (db, a, TRUE);
 	rhythmdb_commit (db);
+	wait_for_signal ();
 	fail_unless (_get_property_count (propmodel, "x") == 0);
 	fail_unless (_get_property_count (propmodel, "xx") == 1);
 
 	end_step ();
 
 	/* change a */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
 	set_entry_string (db, a, RHYTHMDB_PROP_ARTIST, "xx");
 	rhythmdb_commit (db);
+	wait_for_signal ();
 	fail_unless (_get_property_count (propmodel, "x") == 0);
 	fail_unless (_get_property_count (propmodel, "xx") == 1);
 
 	end_step ();
 
 	/* unhide a */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
 	set_entry_hidden (db, a, FALSE);
 	rhythmdb_commit (db);
+	wait_for_signal ();
 	fail_unless (_get_property_count (propmodel, "x") == 0);
 	fail_unless (_get_property_count (propmodel, "xx") == 2);
 
 	end_step ();
 
 	/* change a -> y */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
 	set_entry_string (db, a, RHYTHMDB_PROP_ARTIST, "y");
 	rhythmdb_commit (db);
+	wait_for_signal ();
 	fail_unless (_get_property_count (propmodel, "x") == 0);
 	fail_unless (_get_property_count (propmodel, "xx") == 1);
 	fail_unless (_get_property_count (propmodel, "y") == 0);
@@ -296,8 +309,10 @@ START_TEST (test_rhythmdb_property_model_query)
 	end_step ();
 
 	/* change a -> x */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
 	set_entry_string (db, a, RHYTHMDB_PROP_ARTIST, "x");
 	rhythmdb_commit (db);
+	wait_for_signal ();
 	fail_unless (_get_property_count (propmodel, "x") == 0);
 	fail_unless (_get_property_count (propmodel, "xx") == 0);
 	fail_unless (_get_property_count (propmodel, "y") == 0);
@@ -373,8 +388,10 @@ START_TEST (test_rhythmdb_property_model_query_chain)
 	end_step ();
 
 	/* change entry a so it matches the child query */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
 	set_entry_string (db, a, RHYTHMDB_PROP_ALBUM, "yy");
 	rhythmdb_commit (db);
+	wait_for_signal ();
 
 	fail_unless (_get_property_count (propmodel, "x") == 0);
 	fail_unless (_get_property_count (propmodel, "y") == 1);
@@ -383,8 +400,10 @@ START_TEST (test_rhythmdb_property_model_query_chain)
 	end_step ();
 
 	/* change entry a again */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
 	set_entry_string (db, a, RHYTHMDB_PROP_ALBUM, "y");
 	rhythmdb_commit (db);
+	wait_for_signal ();
 
 	fail_unless (_get_property_count (propmodel, "y") == 2);
 	fail_unless (_get_property_count (propmodel, "yy") == 0);
@@ -392,8 +411,10 @@ START_TEST (test_rhythmdb_property_model_query_chain)
 	end_step ();
 
 	/* change entry b again */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
 	set_entry_string (db, b, RHYTHMDB_PROP_ALBUM, "z");
 	rhythmdb_commit (db);
+	wait_for_signal ();
 
 	fail_unless (_get_property_count (propmodel, "y") == 1);
 	fail_unless (_get_property_count (propmodel, "z") == 0);
@@ -449,21 +470,20 @@ main (int argc, char **argv)
 	g_thread_init (NULL);
 	rb_threads_init ();
 	gtk_set_locale ();
-	gtk_init (&argc, &argv);
 	rb_debug_init (TRUE);
 	rb_refstring_system_init ();
 	rb_file_helpers_init (TRUE);
 
-
-	GDK_THREADS_ENTER ();
-
 	/* setup tests */
 	s = rhythmdb_property_model_suite ();
 	sr = srunner_create (s);
+	
+	init_setup (sr, argc, argv);
+	init_once (FALSE);
+	
 	srunner_run_all (sr, CK_NORMAL);
 	ret = srunner_ntests_failed (sr);
 	srunner_free (sr);
-
 
 	rb_file_helpers_shutdown ();
 	rb_refstring_system_shutdown ();
