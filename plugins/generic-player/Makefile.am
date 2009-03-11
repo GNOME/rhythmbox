@@ -18,6 +18,7 @@ endif
 
 libgeneric_player_la_LDFLAGS = 				\
 	$(TOTEM_PLPARSER_LIBS)				\
+	$(HAL_LIBS)				        \	
 	$(PLUGIN_LIBTOOL_FLAGS)
 
 INCLUDES = 						\

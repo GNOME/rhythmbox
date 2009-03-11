@@ -1,3 +1,9 @@
+2009-03-10  Brian Cameron  <brian.cameron@sun.com>
+
+	* plugins/generic-player/Makefile.am: Add $(HAL_LIBS) to
+	libgeneric_player LDFLAGS.  Needed to link on Solaris.
+	Fixes bug #574834.
+
 2009-03-09  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/lyrics/lyrics/__init__.py:
