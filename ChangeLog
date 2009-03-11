@@ -1,3 +1,15 @@
+2009-03-11  Jonathan Matthew  <jonathan@d14n.org>
+	
+	patch by:  "OrbWeaver"  <orbweaver3d@gmail.com>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_constructor), (impl_delete),
+	(playing_song_changed_cb), (rb_lastfm_source_station_selection_cb),
+	(handle_station_response), (xspf_entry_parsed):
+	Refresh the playlist when we start playing the last track, rather than
+	trying to use a count of the tracks that haven't been played.  Fixes
+	#560866.
+
 2009-03-10  Brian Cameron  <brian.cameron@sun.com>
 
 	* plugins/generic-player/Makefile.am: Add $(HAL_LIBS) to

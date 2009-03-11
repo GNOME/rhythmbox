@@ -230,7 +230,7 @@ struct RBLastfmSourcePrivate
 	RBPlayOrder *play_order;
 
 	RhythmDBQueryModel *query_model;
-	int tracks_remaining;
+	RhythmDBEntry *last_entry;
 
 	gboolean subscriber;
 	char *base_url;
@@ -620,7 +620,6 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 	g_object_unref (station_query_model);
 
 	source->priv->query_model = rhythmdb_query_model_new_empty (source->priv->db);
-	source->priv->tracks_remaining = 0;
 	rb_entry_view_set_model (source->priv->tracks, source->priv->query_model);
 	
 	g_object_set (source, "query-model", source->priv->query_model, NULL);
@@ -968,9 +967,6 @@ impl_delete (RBSource *asource)
 		track = (RhythmDBEntry *)l->data;
 		track_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (track, RBLastfmTrackEntryData);
 
-		if (track_data->played == FALSE) {
-			source->priv->tracks_remaining--;
-		}
 		rhythmdb_entry_delete (source->priv->db, track);
 	}
 	rhythmdb_commit (source->priv->db);
@@ -1120,31 +1116,27 @@ playing_song_changed_cb (RBShellPlayer *player,
 		track_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBLastfmTrackEntryData);
 		if (track_data->played == FALSE) {
 
-			if (source->priv->current_station != NULL) {
-				source->priv->tracks_remaining--;
-				if (source->priv->tracks_remaining < 1) {
+			if (source->priv->current_station != NULL && entry == source->priv->last_entry) {
 
-					GList *sel;
-					RhythmDBEntry *selected_station = NULL;
-					/* if a new station has been selected, change station before
-					 * refreshing the playlist.
-					 */
-					sel = rb_entry_view_get_selected_entries (source->priv->stations);
-					if (sel != NULL) {
-						selected_station = (RhythmDBEntry *)sel->data;
-						if (selected_station != source->priv->current_station) {
-							rb_debug ("changing to station %s",
-								  rhythmdb_entry_get_string (selected_station, RHYTHMDB_PROP_LOCATION));
-							queue_change_station (source, selected_station);
-						}
-						queue_get_playlist (source, selected_station);
-					} else {
-						queue_get_playlist (source, source->priv->current_station);
+				GList *sel;
+				RhythmDBEntry *selected_station = NULL;
+				/* if a new station has been selected, change station before
+				 * refreshing the playlist.
+				 */
+				sel = rb_entry_view_get_selected_entries (source->priv->stations);
+				if (sel != NULL) {
+					selected_station = (RhythmDBEntry *)sel->data;
+					if (selected_station != source->priv->current_station) {
+						rb_debug ("changing to station %s",
+							  rhythmdb_entry_get_string (selected_station, RHYTHMDB_PROP_LOCATION));
+						queue_change_station (source, selected_station);
 					}
-					g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
-					g_list_free (sel);
-
+					queue_get_playlist (source, selected_station);
+				} else {
+					queue_get_playlist (source, source->priv->current_station);
 				}
+				g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
+				g_list_free (sel);
 			}
 			track_data->played = TRUE;
 		}
@@ -1265,10 +1257,8 @@ rb_lastfm_source_station_selection_cb (RBEntryView *stations,
 		rb_debug ("station %s selected",
 			  rhythmdb_entry_get_string (selected, RHYTHMDB_PROP_LOCATION));
 
-		/* if we don't have any more tracks to play, or this is the first station
-		 * selection, update the playlist.
-		 */
-		if (source->priv->tracks_remaining < 1) {
+		/* if this is the first station selected, update the playlist */
+		if (source->priv->last_entry == NULL) {
 			queue_change_station (source, selected);
 			queue_get_playlist (source, selected);
 		}
@@ -1939,10 +1929,6 @@ handle_station_response (RBLastfmSource *source, const char *body, RhythmDBEntry
 					track = (RhythmDBEntry *)i->data;
 					track_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (track, RBLastfmTrackEntryData);
 
-					if (track_data->played == FALSE) {
-						source->priv->tracks_remaining--;
-					}
-
 					rhythmdb_entry_delete (source->priv->db, track);
 					rhythmdb_entry_unref (track);
 				}
@@ -2119,7 +2105,8 @@ xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata,
 
 	/* what happens if it's already in there? need to use move_entry instead? */
 	rhythmdb_query_model_add_entry (source->priv->query_model, track_entry, -1);
-	source->priv->tracks_remaining++;
+
+	source->priv->last_entry = track_entry;
 }
 
 static gboolean
