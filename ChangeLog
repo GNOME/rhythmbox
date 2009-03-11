@@ -1,5 +1,12 @@
 2009-03-11  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Pascal Terjan  <pascal.terjan@free.fr>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	Add more last.fm stream types.  From #398179.
+
+2009-03-11  Jonathan Matthew  <jonathan@d14n.org>
+
 	* tests/test-rhythmdb-property-model.c: (START_TEST), (main):
 	Need to use wait_for_signal for some of the property model tests now,
 	since rhythmdb emits entry-changed signals in an idle handler.

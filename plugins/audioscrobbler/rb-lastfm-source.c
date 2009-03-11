@@ -195,6 +195,10 @@ static const char* const radio_options[][3] = {
 	{N_("Tag radio"), "lastfm://globaltags/%s", N_("Tracks tagged with %s")},
 	{N_("Artist Fan radio"), "lastfm://artist/%s/fans", N_("Artists liked by fans of %s")},
 	{N_("Group radio"), "lastfm://group/%s", N_("Tracks liked by the %s group")},
+	{N_("Neighbour radio"), "lastfm://user/%s/neighbours", N_("%s's Neighbour Radio")},
+	{N_("Personal radio"), "lastfm://user/%s/personal", N_("%s's Personal Radio")},
+	{N_("Loved tracks"), "lastfm://user/%s/loved", N_("%s's Loved Tracks")},
+	{N_("Recommended tracks"), "lastfm://user/%s/recommended/100", N_("Tracks recommended to %s")},
 	{NULL, NULL, NULL}
 };
 
