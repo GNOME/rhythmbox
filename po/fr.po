@@ -1,5 +1,5 @@
 # French translation of rhythmbox.
-# Copyright (C) 2002-2008 Free Software Foundation, Inc.
+# Copyright (C) 2002-2009 Free Software Foundation, Inc.
 # This file is distributed under the same license as the rhythmbox package.
 #
 # Baptiste Mille-Mathias <bmm80@free.fr>, 2002-2005.
@@ -21,8 +21,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-10 16:38+0100\n"
-"PO-Revision-Date: 2009-03-10 16:49+0100\n"
+"POT-Creation-Date: 2009-03-12 08:56+0100\n"
+"PO-Revision-Date: 2009-03-12 08:58+0100\n"
 "Last-Translator: Claude Paroz <claude@2xlibre.net>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -912,7 +912,7 @@ msgid "Cannot read CD: %s"
 msgstr "Impossible de lire le CD : %s"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:731
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:734
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -991,7 +991,7 @@ msgid "OK"
 msgstr "OK"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1109
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1822
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1816
 msgid "Logging in"
 msgstr "Connexion en cours"
 
@@ -1032,7 +1032,7 @@ msgid "Similar Artists radio"
 msgstr "Radio d'artistes similaires"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:194
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1298
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1292
 #, c-format
 msgid "Artists similar to %s"
 msgstr "Artistes similaires à %s"
@@ -1051,7 +1051,7 @@ msgid "Artist Fan radio"
 msgstr "Radio des fans de l'artiste"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:196
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1300
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1294
 #, c-format
 msgid "Artists liked by fans of %s"
 msgstr "Artistes appréciés par les fans de %s"
@@ -1065,148 +1065,172 @@ msgstr "Radio du groupe"
 msgid "Tracks liked by the %s group"
 msgstr "Morceaux appréciés par le groupe %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:283
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
+msgid "Neighbour radio"
+msgstr "Radio voisine"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1302
+#, c-format
+msgid "%s's Neighbour Radio"
+msgstr "Radio voisine de %s"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:199
+msgid "Personal radio"
+msgstr "Radio personnelle"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:199
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1306
+#, c-format
+msgid "%s's Personal Radio"
+msgstr "Radio personnelle de %s"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:200
+msgid "Loved tracks"
+msgstr "Morceaux préférés"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:200
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1308
+#, c-format
+msgid "%s's Loved Tracks"
+msgstr "Morceaux préférés de %s"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:201
+msgid "Recommended tracks"
+msgstr "Morceaux recommandés"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:201
+#, c-format
+msgid "Tracks recommended to %s"
+msgstr "Morceaux recommandés à %s"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
 msgid "Love"
 msgstr "Morceau apprécié"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:284
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:288
 msgid "Mark this song as loved"
 msgstr "Marque ce morceau comme apprécié"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
 msgid "Ban"
 msgstr "Bannir"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:291
 msgid "Ban the current track from being played again"
 msgstr "Bannit le morceau actuel pour qu'il ne soit pas lu à l'avenir"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
 msgid "Delete Station"
 msgstr "Supprimer la station"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:294
 msgid "Delete the selected station"
 msgstr "Supprime la station sélectionnée"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:296
 msgid "Download song"
 msgstr "Télécharger le morceau"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:297
 msgid "Download this song"
 msgstr "Télécharge ce morceau"
 
 #. awful
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:513
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:517
 msgid "Enter the item to build a Last.fm station out of:"
 msgstr "Saisissez l'élément à partir duquel créer une station Last.fm :"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:516
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:520
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:873
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:876
 msgid "Account Settings"
 msgstr "Paramètres de compte"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:898
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:901
 msgid ""
 "Account details are needed before you can connect.  Check your settings."
 msgstr ""
 "Les détails du compte sont nécessaires avant de pouvoir se connecter. "
 "Vérifiez les paramètres."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:902
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:905
 msgid "This version of Rhythmbox has been banned from Last.fm."
 msgstr "Cette version de Rhythmbox a été bannie de Last.fm."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:906
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:909
 msgid "Unable to connect"
 msgstr "Connexion impossible"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1289
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1283
 #, c-format
 msgid "Global Tag %s"
 msgstr "Étiquette globale %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1308
-#, c-format
-msgid "%s's Neighbour Radio"
-msgstr "Radio voisine de %s"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1310
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1304
 #, c-format
 msgid "%s's Recommended Radio: %s percent"
 msgstr "Radio recommandée par %s : %s pourcent"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1312
-#, c-format
-msgid "%s's Personal Radio"
-msgstr "Radio personnelle de %s"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1314
-#, c-format
-msgid "%s's Loved Tracks"
-msgstr "Morceaux préférés de %s"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1316
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1310
 #, c-format
 msgid "%s's Playlist"
 msgstr "Liste de lecture de %s"
 
 #. Translators: variables are 1: user name, 2: tag name; for user tag radio
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1322
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1316
 #, c-format
 msgid "%s's %s Radio"
 msgstr "Radio %2$s de %1$s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1326
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1320
 #, c-format
 msgid "%s Group Radio"
 msgstr "Radio du groupe %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1792
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1786
 msgid "Neighbour Radio"
 msgstr "Radio voisine"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1800
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1794
 msgid "Personal Radio"
 msgstr "Radio personnelle"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1890
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1884
 msgid "Server did not respond"
 msgstr "Le serveur n'a pas répondu"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1962
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1952
 msgid "There is not enough content available to play this station."
 msgstr "Il n'existe pas assez de contenu disponible pour lire cette station."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1967
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1957
 msgid "This station is available to subscribers only."
 msgstr "Cette station n'est disponible que pour les abonnés."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1974
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1964
 msgid ""
 "The streaming system is offline for maintenance, please try again later."
 msgstr ""
 "Le système de flux est hors ligne pour maintenance, veuillez essayer à "
 "nouveau plus tard."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2013
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2003
 msgid "Changing station"
 msgstr "Changement de station"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2232
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2242
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2223
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2233
 msgid "Retrieving playlist"
 msgstr "Récupération de la liste de lecture"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2336
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2327
 msgid "Banning song"
 msgstr "Bannissement du morceau"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2354
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2345
 msgid "Adding song to your Loved tracks"
 msgstr "Ajout du morceau dans vos morceaux préférés"
 
@@ -1218,7 +1242,8 @@ msgstr "Graveur de CD audio"
 
 #: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:2
 msgid "Record audio CDs from playlists and duplicate audio CDs"
-msgstr "Enregistrer des CD audio à partir de listes de lecture et copier des CD audio"
+msgstr ""
+"Enregistrer des CD audio à partir de listes de lecture et copier des CD audio"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:98
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:89
@@ -2842,7 +2867,8 @@ msgstr "Autorisation de l'achat"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:444
 msgid "Authorizing purchase with the Magnatune server. Please wait..."
-msgstr "Autorisation de l'achat avec le serveur Magnatune. Veuillez patienter..."
+msgstr ""
+"Autorisation de l'achat avec le serveur Magnatune. Veuillez patienter..."
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:490
 msgid "Purchase Error"
