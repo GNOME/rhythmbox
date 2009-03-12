@@ -1,3 +1,83 @@
+Overview of changes in Rhythmbox 0.12.0  "Flood Victim"
+=======================================================
+
+* Replaced gnome-vfs with GIO
+* New CD burning plugin using Brasero
+* Improvements to the cross-fading player backend
+* Various improvements to MTP device support
+* Updated audio CD metadata code, supporting CD-Text and musicbrainz3
+* User data and cached files moved to XDG base directory spec locations
+* Much clearer indication of problems with last.fm login and streaming
+* Where possible, provide a simple means to duplicate audio CDs
+* Greatly improved performance when accessibility is enabled
+* Updated Coherence UPnP plugin
+* iPod improvements: avoid creating duplicates, add a device properties
+   dialog, initialize brand new ipods
+* Support for more last.fm stream types
+* GTK+ and GLib usage cleanups: use single header includes,
+   stop using deprecated functions and widgets
+* Reworked tray icon tooltip using GtkTooltip instead of SexyTooltip
+* Random play order should repeat itself far less often
+* If using pulseaudio, control the output volume using the PA stream volume
+* Reworked search infrastructure that might make interesting things possible
+
+Contributors to this release:
+- Pascal Terjan
+- "OrbWeaver"
+- Brian Cameron
+- Philippe Rouquier
+- Bastien Nocera
+- Jonathan Matthew
+- Tim Retout
+- Mike Gratton
+- Víctor Manuel Jáquez Leal
+- Neil Loknath
+- Oscar Morante
+- Alban Crequy
+- John Daiker
+- Andy Owen
+- Uri Sivan
+- Michael Terry
+- Pedro Fragoso
+- Christophe Fergeau
+- James "Doc" Livingston
+- Patrick Wade
+- Luca Ferretti
+- Flavio Martins
+- Takao Fujiwara
+- Jason Crain
+- Susana Pereira
+- Pelle Kristiansson
+- John Wimer
+- Lasse Bigum
+- Martin Franco
+- Steven Brown
+- Kjartan Maraas
+- Maxim Ermilov
+- Ed Catmur
+- Paul Drain
+- William Jon McCann
+- Johan Frank
+- Mika Wahlroos
+- Bruno Prin
+- Eric Shattow
+- Colin Leroy
+- Ernst Persson
+- John Millikin
+- Linus Walleij
+- Johannes H. Jensen
+- Raul Soriano
+- Wendy Hu
+- Sebastien Bacher
+- Matthias Clasen
+- Dereck Wonnacott
+
+Updated translations
+--------------------
+
+...
+
+
 Overview of changes in Rhythmbox 0.11.6  "Haunt You Down"
 =========================================================
 
