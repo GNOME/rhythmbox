@@ -1,5 +1,13 @@
 2009-03-13  Jonathan Matthew  <jonathan@d14n.org>
 
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_do_query):
+	We can only do subset queries if the existing query model is not the
+	cached 'all' query model.  Fixes crashes when trying to search in auto
+	playlists.
+
+2009-03-13  Jonathan Matthew  <jonathan@d14n.org>
+
 	* README:
 	* configure.ac:
 	Another prerelease

@@ -756,15 +756,17 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 			       RHYTHMDB_QUERY_SUBQUERY, priv->search_query,
 			       RHYTHMDB_QUERY_END);
 
-	if (subset) {
+	g_object_get (priv->browser, "input-model", &query_model, NULL);
+
+	if (subset && query_model != priv->cached_all_query) {
 		/* just apply the new query to the existing query model */
-		g_object_get (priv->browser, "input-model", &query_model, NULL);
-		g_assert (query_model != priv->cached_all_query);
 		g_object_set (query_model, "query", query, NULL);
 		rhythmdb_query_model_reapply_query (query_model, FALSE);
 		g_object_unref (query_model);
 	} else {
 		/* otherwise, we need a new query model */
+		g_object_unref (query_model);
+
 		query_model = g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
 					    "db", db,
 					    "limit-type", priv->limit_type,
@@ -781,7 +783,7 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 		rhythmdb_do_full_query_async_parsed (db,
 						     RHYTHMDB_QUERY_RESULTS (query_model),
 						     query);
-		g_object_unref (G_OBJECT (query_model));
+		g_object_unref (query_model);
 	}
 
 	rhythmdb_query_free (query);
