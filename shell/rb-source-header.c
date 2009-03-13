@@ -701,6 +701,7 @@ rb_source_state_sync (RBSourceHeader *header,
 				   header);
 
 		state = g_new0 (SourceState, 1);
+		state->search_text = g_strdup ("");
 		g_hash_table_insert (header->priv->source_states,
 				     header->priv->selected_source,
 				     state);
