@@ -1,3 +1,13 @@
+2009-03-17  Jonathan Matthew  <jonathan@d14n.org>
+
+	* configure.ac:
+	* plugins/audiocd/Makefile.am:
+	* plugins/audiocd/rb-audiocd-source.c: (rb_audiocd_load_metadata),
+	(rb_audiocd_load_metadata_cancel):
+	Rework autoconf stuff for musicbrainz so --disable-musicbrainz works,
+	and the audio CD plugin calls the metadata code when only musicbrainz3
+	is enabled.
+
 2009-03-14  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	* plugins/ipod/ipod-info.glade: add translator comment about the

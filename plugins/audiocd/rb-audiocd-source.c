@@ -51,7 +51,7 @@
 #include "rb-dialog.h"
 #include "rb-glade-helpers.h"
 
-#ifdef HAVE_MUSICBRAINZ
+#ifdef HAVE_SJ_METADATA_GETTER
 #include "sj-metadata-getter.h"
 #include "sj-structures.h"
 #endif
@@ -81,7 +81,7 @@ typedef struct
 	GstElement *cdda;
 	GstElement *fakesink;
 
-#ifdef HAVE_MUSICBRAINZ
+#ifdef HAVE_SJ_METADATA_GETTER
 	SjMetadataGetter *metadata;
 #endif
 } RBAudioCdSourcePrivate;
@@ -89,7 +89,7 @@ typedef struct
 RB_PLUGIN_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
 #define AUDIOCD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOCD_SOURCE, RBAudioCdSourcePrivate))
 
-#ifdef HAVE_MUSICBRAINZ
+#ifdef HAVE_SJ_METADATA_GETTER
 static AlbumDetails* multiple_album_dialog (GList *albums, RBAudioCdSource *source);
 #endif
 static void
@@ -371,7 +371,7 @@ get_db_for_source (RBAudioCdSource *source)
         return db;
 }
 
-#ifdef HAVE_MUSICBRAINZ
+#ifdef HAVE_SJ_METADATA_GETTER
 
 /*
  * Called by the Multiple Album dialog when the user hits return in
@@ -619,7 +619,7 @@ static void
 rb_audiocd_load_metadata (RBAudioCdSource *source,
 			  RhythmDB *db)
 {
-#ifdef HAVE_MUSICBRAINZ
+#ifdef HAVE_SJ_METADATA_GETTER
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 
 	priv->metadata = sj_metadata_getter_new ();
@@ -634,7 +634,7 @@ rb_audiocd_load_metadata (RBAudioCdSource *source,
 static void
 rb_audiocd_load_metadata_cancel (RBAudioCdSource *source)
 {
-#ifdef HAVE_MUSICBRAINZ
+#ifdef HAVE_SJ_METADATA_GETTER
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 
 	if (priv->metadata) {

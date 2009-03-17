@@ -307,32 +307,37 @@ AC_SUBST(GSTCDDA_LIBS)
 AC_SUBST(GSTCDDA_CFLAGS)
 
 dnl check for MusicBrainz
+have_sj_metadata_getter=no
 AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
 				[don't build with MusicBrainz support]))
 if test x"$enable_musicbrainz" != "xno"; then
-	PKG_CHECK_MODULES(MUSICBRAINZ, libmusicbrainz >= $MUSICBRAINZ_REQS,
-                          enable_musicbrainz=yes,
-		          enable_musicbrainz=no)
-fi
-if test x"$enable_musicbrainz" = xyes; then
-	RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $MUSICBRAINZ_CFLAGS"
-	RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $MUSICBRAINZ_LIBS"
-	AC_DEFINE(HAVE_MUSICBRAINZ, 1, [define if you have Musicbrainz])
-fi
-AM_CONDITIONAL(HAVE_MUSICBRAINZ, test "x$enable_musicbrainz" = "xyes")
+	PKG_CHECK_MODULES(MUSICBRAINZ3, libmusicbrainz3, [have_musicbrainz3=yes], [have_musicbrainz3=no])
+	PKG_CHECK_MODULES(MUSICBRAINZ, libmusicbrainz >= $MUSICBRAINZ_REQS, [have_musicbrainz=yes], [have_musicbrainz=no])
 
-PKG_CHECK_MODULES(MUSICBRAINZ3, libmusicbrainz3, [have_mb3=yes], [have_mb3=no])
-AC_SUBST(MUSICBRAINZ3_CFLAGS)
-AC_SUBST(MUSICBRAINZ3_LIBS)
-if test "$have_mb3" = "yes" ; then
-	AC_DEFINE([HAVE_MUSICBRAINZ3], 1, [Whether libmusicbrainz3 is available])
-fi
-AM_CONDITIONAL([HAVE_MUSICBRAINZ3], [test "x$have_mb3" = "xyes"])
+	AC_SUBST(MUSICBRAINZ3_CFLAGS)
+	AC_SUBST(MUSICBRAINZ3_LIBS)
+	AC_SUBST(MUSICBRAINZ_CFLAGS)
+	AC_SUBST(MUSICBRAINZ_LIBS)
 
-if test "$have_mb3" = "yes" || test x"$enable_musicbrainz" = xyes; then
-	have_sj_getter=yes
+	if test x"$have_musicbrainz3" = xyes; then
+		AC_DEFINE([HAVE_MUSICBRAINZ3], 1, [Whether libmusicbrainz3 is available])
+	fi
+	if test x"$have_musicbrainz" = xyes; then
+		AC_DEFINE([HAVE_MUSICBRAINZ], 1, [define if you have Musicbrainz])
+	fi
+
+	if test x"$have_musicbrainz3" = "xyes" || test x"$have_musicbrainz" = "xyes"; then
+		have_sj_metadata_getter=yes
+		AC_DEFINE([HAVE_SJ_METADATA_GETTER], 1, [Whether to use the sound-juicer metadata getter code])
+	else
+		if test x"$enable_musicbrainz" = xyes; then
+			AC_MSG_ERROR([MusicBrainz requested, but neither libmusicbrainz nor libmusicbrainz3 are available])
+		fi
+	fi
 fi
-AM_CONDITIONAL([HAVE_SJ_METADATA_GETTER], [test "x$have_sj_getter" = "xyes"])
+AM_CONDITIONAL([HAVE_MUSICBRAINZ], [test "x$have_musicbrainz" = "xyes"])
+AM_CONDITIONAL([HAVE_MUSICBRAINZ3], [test "x$have_musicbrainz3" = "xyes"])
+AM_CONDITIONAL([HAVE_SJ_METADATA_GETTER], [test "x$have_sj_metadata_getter" = "xyes"])
 
 AC_PATH_XTRA
 CFLAGS="$CFLAGS $X_CFLAGS"
@@ -866,16 +871,15 @@ if test x"$enable_mmkeys" != "xyes"; then
 else
 	AC_MSG_NOTICE([** Multimedia keys support is enabled])
 fi
-if test x"$enable_musicbrainz" != "xyes"; then
-	AC_MSG_NOTICE([   MusicBrainz support is disabled])
-else
-	AC_MSG_NOTICE([** MusicBrainz support is enabled])
-fi
 
-if test x"$have_mb3" != "xyes"; then
-	AC_MSG_NOTICE([   MusicBrainz3 support is disabled])
+if test x"$have_musicbrainz3" = "xyes" && test x"$have_musicbrainz" = "xyes"; then
+	AC_MSG_NOTICE([** MusicBrainz support is enabled (using libmusicbrainz3 and libmusicbrainz)])
+elif test x"$have_musicbrainz3" = "xyes"; then
+	AC_MSG_NOTICE([** MusicBrainz support is enabled (using libmusicbrainz3)])
+elif test x"$have_musicbrainz" = "xyes"; then
+	AC_MSG_NOTICE([** MusicBrainz support is enabled (using libmusicbrainz)])
 else
-	AC_MSG_NOTICE([** MusicBrainz3 support is enabled])
+	AC_MSG_NOTICE([   MusicBrainz support is disabled])
 fi
 
 if test x"$use_ipod" = xyes; then
