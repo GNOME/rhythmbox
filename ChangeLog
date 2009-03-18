@@ -1,6 +1,12 @@
 2009-03-18  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/jamendo/jamendo/JamendoSource.py:
+	Store the sax parser as an attribute on the source object rather than
+	passing it around as callback userdata.  Avoids a pygobject crash.
+
+2009-03-18  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/jamendo/jamendo/JamendoSource.py:
 	* plugins/magnatune/magnatune/MagnatuneSource.py:
 	Handle old directories not existing, create new ones as required.
 

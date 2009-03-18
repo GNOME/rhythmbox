@@ -170,13 +170,13 @@ class JamendoSource(rb.BrowserSource):
 	# internal catalogue downloading and loading
 	#
 
-	def __catalogue_chunk_cb(self, result, total, parser):
-		if result is None or isinstance (result, Exception):
+	def __catalogue_chunk_cb(self, result, total):
+		if not result or isinstance (result, Exception):
 			if result:
 				# report error somehow?
 				print "error loading catalogue: %s" % result
 
-			parser.close()
+			self.__parser.close()
 			self.__db_load_finished = True
 			self.__updating = False
 			self.__load_db ()
@@ -184,7 +184,7 @@ class JamendoSource(rb.BrowserSource):
 			self.__catalogue_loader = None
 			return
 
-		parser.feed(result)
+		self.__parser.feed(result)
 		self.__load_current_size += len(result)
 		self.__load_total_size = total
 		self.__notify_status_changed()
@@ -195,11 +195,11 @@ class JamendoSource(rb.BrowserSource):
 		self.__db_load_finished = False
 
 		self.__saxHandler = JamendoSaxHandler()
-		parser = xml.sax.make_parser()
-		parser.setContentHandler(self.__saxHandler)
+		self.__parser = xml.sax.make_parser()
+		self.__parser.setContentHandler(self.__saxHandler)
 
 		self.__catalogue_loader = rb.ChunkLoader()
-		self.__catalogue_loader.get_url_chunks(self.__local_catalogue_path, 64*1024, True, self.__catalogue_chunk_cb, parser)
+		self.__catalogue_loader.get_url_chunks(self.__local_catalogue_path, 64*1024, True, self.__catalogue_chunk_cb)
 
 
 	def __download_catalogue_chunk_cb (self, result, total, out):
@@ -252,7 +252,7 @@ class JamendoSource(rb.BrowserSource):
 				self.__load_catalogue()
 
 		self.__catalogue_check = rb.UpdateCheck()
-		self.__catalogue_check.check_for_update(jamendo_song_info_uri, self.__local_catalogue_path, update_cb)
+		self.__catalogue_check.check_for_update(self.__local_catalogue_path, jamendo_song_info_uri, update_cb)
 
 
 	def __show_loading_screen(self, show):
