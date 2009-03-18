@@ -1,5 +1,11 @@
 2009-03-18  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/rb/Loader.py:
+	Rename the 'cancel' member to '_cancel' and add cancel methods as
+	required, so cancelling loader operations might actually work.
+
+2009-03-18  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/jamendo/jamendo/JamendoSource.py:
 	Store the sax parser as an attribute on the source object rather than
 	passing it around as callback userdata.  Avoids a pygobject crash.
