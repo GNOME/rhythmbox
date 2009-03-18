@@ -623,11 +623,15 @@ class MagnatuneSource(rb.BrowserSource):
 	def __move_data_files (self):
 		# create cache and data directories
 		# (we know they don't already exist, and we know the parent dirs do)
-		os.mkdir(magnatune_cache_dir, 0700)
 		os.mkdir(magnatune_in_progress_dir, 0700)
+		if os.path.exists(magnatune_cache_dir) is False:
+			os.mkdir(magnatune_cache_dir, 0700)
 
 		# move song info to cache dir
 		old_magnatune_dir = os.path.join(rb.dot_dir(), 'magnatune')
+		if os.path.exists(old_magnatune_dir) is False:
+			print "old magnatune directory does not exist"
+			return
 
 		old_song_info = os.path.join(old_magnatune_dir, 'song_info.xml')
 		if os.path.exists(old_song_info):

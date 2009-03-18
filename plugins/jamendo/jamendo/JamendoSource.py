@@ -25,7 +25,7 @@ import rb, rhythmdb
 from JamendoSaxHandler import JamendoSaxHandler
 import JamendoConfigureDialog
 
-import os.path
+import os
 import gobject
 import gtk.glade
 import gnome, gconf
@@ -80,6 +80,8 @@ class JamendoSource(rb.BrowserSource):
 		self.__catalogue_check = None
 
 		self.__jamendo_dir = rb.find_user_cache_file("jamendo")
+		if os.path.exists(self.__jamendo_dir) is False:
+			os.makedirs(self.__jamendo_dir, 0700)
 
 		self.__local_catalogue_path = os.path.join(self.__jamendo_dir, "dbdump.xml")
 		self.__local_catalogue_temp = os.path.join(self.__jamendo_dir, "dbdump.xml.tmp")
