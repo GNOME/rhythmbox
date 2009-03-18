@@ -1,5 +1,15 @@
 2009-03-18  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(link_and_unblock_stream), (unlink_blocked_cb),
+	(unlink_and_block_stream), (rb_player_gst_xfade_bus_cb):
+	Add a flag to detect repeated pad block callback invocations, rather
+	than relying on the presence of a pad.  Sometimes we relink the stream
+	in the pad block callback, so the next time through we'd unlink it
+	again.  Fixes occasional crashes when playing audio CDs.
+
+2009-03-18  Jonathan Matthew  <jonathan@d14n.org>
+
 	* configure.ac:
 	I really hope this is the last prerelease.
 

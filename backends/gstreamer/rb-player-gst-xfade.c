@@ -305,6 +305,7 @@ typedef struct
 	GstPad *ghost_pad;
 	GstPad *adder_pad;
 	gboolean src_blocked;
+	gboolean needs_unlink;
 	GstClockTime base_time;
 
 	gint64 seek_target;
@@ -1121,6 +1122,7 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 		rb_debug ("stream %s is already linked", stream->uri);
 		return TRUE;
 	}
+	stream->needs_unlink = FALSE;
 
 	rb_debug ("linking stream %s", stream->uri);
 	if (GST_ELEMENT_PARENT (stream->bin) == NULL)
@@ -1286,8 +1288,8 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 
 	g_mutex_lock (stream->lock);
 
-	if (stream->adder_pad == NULL) {
-		rb_debug ("stream %s is already unlinked.  huh?", stream->uri);
+	if (stream->needs_unlink == FALSE) {
+		rb_debug ("stream %s doesn't need to be unlinked", stream->uri);
 		g_mutex_unlock (stream->lock);
 		return;
 	}
@@ -1297,6 +1299,7 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	if (gst_pad_unlink (stream->ghost_pad, stream->adder_pad) == FALSE) {
 		g_warning ("Couldn't unlink stream %s: things will probably go quite badly from here on", stream->uri);
 	}
+	stream->needs_unlink = FALSE;
 
 	gst_element_release_request_pad (GST_PAD_PARENT (stream->adder_pad), stream->adder_pad);
 	stream->adder_pad = NULL;
@@ -1345,7 +1348,11 @@ unlink_and_block_stream (RBXFadeStream *stream)
 {
 	if (stream->adder_pad == NULL) {
 		rb_debug ("stream %s is not linked", stream->uri);
-	} else if (stream->src_blocked) {
+		return;
+	}
+
+	stream->needs_unlink = TRUE;
+	if (stream->src_blocked) {
 		/* probably shouldn't happen, but we'll handle it anyway */
 		unlink_blocked_cb (stream->src_pad, TRUE, stream);
 	} else {
@@ -1746,6 +1753,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			rb_debug ("got EOS message for stream %s -> PENDING_REMOVE", stream->uri);
 			_rb_player_emit_eos (RB_PLAYER (player), stream->stream_data);
 			stream->state = PENDING_REMOVE;
+			stream->needs_unlink = TRUE;
 
 			unlink_blocked_cb (stream->src_pad, TRUE, stream);
 		} else {
