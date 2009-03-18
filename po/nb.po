@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox 0.11.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-12 00:53+0100\n"
-"PO-Revision-Date: 2009-03-12 00:57+0100\n"
+"POT-Creation-Date: 2009-03-18 11:44+0100\n"
+"PO-Revision-Date: 2009-03-18 11:47+0100\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -41,55 +41,55 @@ msgstr "Feil under oppretting av %s-element; sjekk installasjonen"
 msgid "Unknown playback error"
 msgstr "Ukjent feil under avspilling"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1136
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1150
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1138
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1152
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Klarte ikke å koble ny strøm med GStreamer-rør"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1178
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1180
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Kunne ikke starte ny strøm"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2717
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2725
 #, c-format
 msgid "Failed to open output device"
 msgstr "Klarte ikke å åpne utdataenhet"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2796
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2804
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Klarte ikke å åpne utdataenhet: %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3033
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3115
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3041
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3123
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Feil under oppretting av GStreamer-element; sjekk installasjonen din"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3044
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3052
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Feil under oppretting av utdataelement; sjekk installasjonen"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3089
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3131
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3157
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3166
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3175
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3097
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3139
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3165
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3174
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3183
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Klarte ikke å koble GStreamer-rør; sjekk installasjonen"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3270
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3278
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Feil under oppretting av GStreamer-rør for å spille %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3286
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3294
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Kunne ikke starte avspilling av %s"
@@ -594,7 +594,7 @@ msgstr "%d %b %Y"
 #: ../plugins/daap/rb-daap-connection.c:698
 #: ../plugins/generic-player/rb-generic-player-source.c:1295
 #: ../plugins/ipod/rb-ipod-source.c:305
-#: ../plugins/jamendo/jamendo/JamendoSource.py:298
+#: ../plugins/jamendo/jamendo/JamendoSource.py:300
 #: ../plugins/iradio/rb-iradio-source.c:530
 #: ../plugins/iradio/rb-iradio-source.c:1094
 #: ../plugins/iradio/rb-station-properties-dialog.c:495
@@ -1241,26 +1241,25 @@ msgid "Rhythmbox could not duplicate the disc"
 msgstr "Rhythmbox kunne ikke kopiere platen"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:197
-#, fuzzy
 msgid "Rhythmbox could not record the audio disc"
-msgstr "Rhythmbox kunne ikke kopiere platen"
+msgstr "Rhythmbox kunne ikke ta opp lyd-platen"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:228
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to build an audio track list"
-msgstr "Kan ikke bygge en liste med lydspor."
+msgstr "Kan ikke bygge en liste med lydspor"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:239
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:431
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write audio project file %s: %s"
-msgstr "Kan ikke opprette nedlastingskatalog for %s: %s"
+msgstr "Kan ikke skrive prosjektfil %s for lydprosjekt: %s"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:257
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:438
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write audio project"
-msgstr "Kunne ikke lage lyd-CD"
+msgstr "Kan ikke skrive lydprosjekt"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:478
 msgid "Unable to create audio CD project"
@@ -1918,19 +1917,20 @@ msgstr "Antall spor:"
 msgid "Serial Number:"
 msgstr "Serienummer:"
 
-#: ../plugins/ipod/ipod-info.glade.h:14
+#. amount of disk space used on the iPod
+#: ../plugins/ipod/ipod-info.glade.h:15
 msgid "Volume Usage:"
 msgstr "Volumbruk:"
 
-#: ../plugins/ipod/ipod-info.glade.h:15
+#: ../plugins/ipod/ipod-info.glade.h:16
 msgid "Your Name:"
 msgstr "Ditt navn:"
 
-#: ../plugins/ipod/ipod-info.glade.h:16
+#: ../plugins/ipod/ipod-info.glade.h:17
 msgid "iPod Name:"
 msgstr "Navn på iPod:"
 
-#: ../plugins/ipod/ipod-info.glade.h:17
+#: ../plugins/ipod/ipod-info.glade.h:18
 msgid "iPod Properties"
 msgstr "Egenskaper for iPod"
 
@@ -1966,7 +1966,7 @@ msgstr "_Navn:"
 msgid "iPod detected"
 msgstr "iPod funnet"
 
-#: ../plugins/ipod/rb-ipod-helpers.c:297
+#: ../plugins/ipod/rb-ipod-helpers.c:299
 msgid "Unable to initialise new iPod"
 msgstr "Kan ikke initiere ny iPod"
 
@@ -2167,16 +2167,16 @@ msgstr "_Doner til artist"
 msgid "Donate Money to this Artist"
 msgstr "Doner penger til denne artisten"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:121
+#: ../plugins/jamendo/jamendo/JamendoSource.py:123
 msgid "Loading Jamendo catalogue"
 msgstr "Laster katalog for Jamendo"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:359
+#: ../plugins/jamendo/jamendo/JamendoSource.py:361
 #, python-format
 msgid "Error looking up p2plink for album %s on jamendo.com"
 msgstr ""
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:383
+#: ../plugins/jamendo/jamendo/JamendoSource.py:385
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
 msgstr ""
@@ -2856,9 +2856,8 @@ msgid "Rename MTP-device"
 msgstr "Gi nytt navn til MTP-enhet"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:161
-#, fuzzy
 msgid "Media player device error"
-msgstr "Medieasvpillertaster"
+msgstr "Enhetsfeil på mediesavspiller"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:643
 msgid "Digital Audio Player"
@@ -3124,9 +3123,9 @@ msgid "Unable to parse the feed contents"
 msgstr "Klarte ikke å lese innholdet i strømmen"
 
 #: ../podcast/rb-podcast-parse.c:224
-#, fuzzy, c-format
+#, c-format
 msgid "The feed does not contain any downloadable items"
-msgstr "Enhet «%s» inneholder ingen media"
+msgstr "Strømmen inneholder ingen nedlastbare oppføringer"
 
 #: ../podcast/rb-podcast-properties-dialog.c:435
 msgid "Not Downloaded"
@@ -3433,9 +3432,8 @@ msgid "Shuffle the tracks in this playlist"
 msgstr "Stokk om sporene i spillelisten"
 
 #: ../shell/rb-playlist-manager.c:200
-#, fuzzy
 msgid "Save the play queue to a file"
-msgstr "Lagre en spilleliste til en fil"
+msgstr "Lagre spillekøen til en fil"
 
 #: ../shell/rb-playlist-manager.c:647
 msgid "Unnamed playlist"
@@ -3927,9 +3925,8 @@ msgid "Change the visibility of the statusbar"
 msgstr "Endre synlighet for statuslinjen"
 
 #: ../shell/rb-shell.c:1008 ../shell/rb-shell.c:1225
-#, fuzzy
 msgid "Unable to move user data files"
-msgstr "Kan ikke slå opp vertsnavn %s"
+msgstr "Kan ikke flytte datafiler for bruker"
 
 #: ../shell/rb-shell.c:1311
 msgid "Change the music volume"
