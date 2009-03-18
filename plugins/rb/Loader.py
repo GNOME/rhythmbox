@@ -119,9 +119,9 @@ class GioChunkLoader(object):
 			self.callback = callback
 			self.args = args
 
-			file = gio.File(url)
+			file = gio.File(uri)
 			if want_size:
-				file.query_info_async(gio.FILE_ATTRIBUTE_STANDARD_SIZE, self._info_cb, cancellable=self._cancel)
+				file.query_info_async(self._info_cb, gio.FILE_ATTRIBUTE_STANDARD_SIZE, cancellable=self._cancel)
 			else:
 				file.read_async(self._open_cb, cancellable=self.cancel)
 		except gio.Error, e:
@@ -136,7 +136,7 @@ class GioUpdateCheck(object):
 	def __init__ (self):
 		self._cancel = gio.Cancellable()
 
-	def _file_info_cb (self, result):
+	def _file_info_cb (self, file, result):
 		try:
 			rfi = file.query_info_finish(result)
 
@@ -158,13 +158,14 @@ class GioUpdateCheck(object):
 			self.local_mod = lfi.get_attribute_uint64(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
 
 			rf = gio.File(remote)
-			rf.query_info_async(gio.FILE_ATTRIBUTE_TIME_MODIFIED, self._file_info_cb, cancellable=self._cancel)
+			rf.query_info_async(self._file_info_cb, gio.FILE_ATTRIBUTE_TIME_MODIFIED, cancellable=self._cancel)
 		except Exception, e:
 			print "error checking for update: %s" % e
-			self.callback(True, self.args)
+			self.callback(True, *self.args)
 
 	def cancel (self):
 		self._cancel.cancel()
+
 
 class GnomeVFSLoader (object):
 	def __init__ (self):

@@ -1,6 +1,12 @@
 2009-03-18  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/rb/Loader.py:
+	Fix a bunch of other stupid mistakes - typos, parameter ordering,
+	passing callback arguments.
+
+2009-03-18  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/rb/Loader.py:
 	Rename the 'cancel' member to '_cancel' and add cancel methods as
 	required, so cancelling loader operations might actually work.
 
