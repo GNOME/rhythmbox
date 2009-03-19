@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
 "POT-Creation-Date: 2009-03-11 13:45+0000\n"
-"PO-Revision-Date: 2009-03-19 20:10+0000\n"
+"PO-Revision-Date: 2009-03-19 20:11+0000\n"
 "Last-Translator: A S Alam <aalam@users.sf.net>\n"
 "Language-Team: Punjabi/Panjabi <punjab-l10n@list.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -628,10 +628,11 @@ msgstr ""
 msgid "Too many symlinks"
 msgstr "ਬਹੁਤ ਸਾਰੇ ਸਿੰਮਲਿੰਕ"
 
-#: ../lib/rb-file-helpers.c:994, c-format
+#: ../lib/rb-file-helpers.c:994
+#, fuzzy, c-format
 #| msgid "Cannot get free space at %s"
 msgid "Cannot get free space at %s: %s"
-msgstr "%s ਉੱਤੇ ਖਾਲੀ ਥਾਂ ਲਈ ਨਹੀਂ ਜਾ ਸਕਦੀ: %s"
+msgstr "%s 'ਤੇ ਖਾਲੀ ਥਾਂ ਮਿਲ ਨਹੀਂ ਸਕਦੀ ਹੈ"
 
 #: ../lib/rb-proxy-config.c:218
 msgid "HTTP proxy configuration error"
@@ -750,11 +751,11 @@ msgstr "ਇੰਟਰਨੈੱਟ ਤੋਂ ਐਲਬਮ ਢੱਕਣ ਲਵੋ"
 
 #: ../plugins/artdisplay/artdisplay/__init__.py:288
 msgid "Searching... drop artwork here"
-msgstr "ਖੋਜ ਜਾਰੀ ਹੈ...ਆਰਟਵਰਕ ਇੱਥੇ ਸੁੱਟੋ"
+msgstr ""
 
 #: ../plugins/artdisplay/artdisplay/__init__.py:290
 msgid "Drop artwork here"
-msgstr "ਆਰਟਵਰਕ ਇੱਥੇ ਸੁੱਟੋ"
+msgstr ""
 
 #: ../plugins/audiocd/audiocd.rb-plugin.in.h:1
 msgid "Audio CD Player"
@@ -868,7 +869,7 @@ msgstr "ਇਹ CD ਲਈ ਮੈਟਾ-ਡਾਟਾ ਨਾ-ਮੁਕੰਮਲ ਹ
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:399
 msgid "[Untitled]"
-msgstr "[ਬਿਨ-ਟਾਈਟਲ]"
+msgstr ""
 
 #: ../plugins/audiocd/sj-metadata.c:187
 #, c-format
@@ -878,7 +879,7 @@ msgstr "ਜੰਤਰ '%s' ਵਿੱਚ ਕੋਈ ਮੀਡਿਆ ਨਹੀਂ �
 #: ../plugins/audiocd/sj-metadata.c:190
 #, c-format
 msgid "Device '%s' could not be opened. Check the access permissions on the device."
-msgstr "ਜੰਤਰ '%s' ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ ਹੈ। ਜੰਤਰ ਦੇ ਵਰਤਣ ਦੇ ਅਧਿਕਾਰਾਂ ਦੀ ਜਾਂਚ ਕਰੋ।"
+msgstr "ਜੰਤਰ '%s' ਨੂੰ ਖੋਲਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ ਹੈ। ਜੰਤਰ ਦੇ ਵਰਤਣ ਦੇ ਅਧਿਕਾਰਾਂ ਦੀ ਜਾਂਚ ਕਰੋ।"
 
 #: ../plugins/audiocd/sj-metadata.c:193 ../plugins/audiocd/sj-metadata.c:205
 #, c-format
@@ -1110,7 +1111,7 @@ msgstr "ਸਟੇਸ਼ਨ ਹਟਾਓ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:294
 msgid "Delete the selected station"
-msgstr "ਚੁਣਿਆ ਸਟੇਸ਼ਨ ਹਟਾਓ"
+msgstr ""
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:296
 #| msgid "Download _Episode"
@@ -1137,7 +1138,7 @@ msgstr "ਅਕਾਊਂਟ ਸੈਟਿੰਗ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:901
 msgid "Account details are needed before you can connect.  Check your settings."
-msgstr "ਤੁਹਾਨੂੰ ਕੁਨੈਕਟ ਹੋਣ ਤੋਂ ਪਹਿਲਾਂ ਅਕਾਊਂਟ ਵੇਰਵੇ ਦੀ ਲੋੜ ਹੈ।  ਆਪਣੀ ਸੈਟਿੰਗ ਚੈੱਕ ਕਰੋ।"
+msgstr ""
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:905
 msgid "This version of Rhythmbox has been banned from Last.fm."
@@ -1172,7 +1173,7 @@ msgstr "%s ਦਾ %s ਰੇਡੀਓ"
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1320, c-format
 #| msgid "Group radio"
 msgid "%s Group Radio"
-msgstr "%s ਗਰੁੱਪ ਰੇਡੀਓ"
+msgstr ""
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1786
 msgid "Neighbour Radio"
@@ -1185,11 +1186,11 @@ msgstr "ਨਿੱਜੀ ਰੇਡੀਓ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1884
 msgid "Server did not respond"
-msgstr "ਸਰਵਰ ਜਵਾਬ ਨਹੀਂ ਦਿੰਦਾ"
+msgstr ""
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1952
 msgid "There is not enough content available to play this station."
-msgstr "ਇਹ ਸਟੇਸ਼ਨ ਚਲਾਉਣ ਲਈ ਲੋੜੀਦੀ ਸਮੱਗਰੀ ਉਪਲੱਬਧ ਨਹੀਂ।"
+msgstr ""
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1957
 msgid "This station is available to subscribers only."
@@ -1706,7 +1707,7 @@ msgstr "ਆਪਣਾ ਸੰਗੀਤ ਸਾਂਝਾ ਕਰੋ(_S)"
 
 #: ../plugins/daap/rb-daap-connection.c:543
 msgid "Rhythmbox is not able to connect to iTunes 7 shares"
-msgstr ""
+msgstr "ਰੀਥਮਬਾਕਸ iTunes 7 ਸ਼ੇਅਰ ਨਾਲ ਕੁਨੈਕਟ ਨਹੀਂ ਹੋ ਸਕਦਾ"
 
 #: ../plugins/daap/rb-daap-dialog.c:55
 msgid "Invalid share name"
