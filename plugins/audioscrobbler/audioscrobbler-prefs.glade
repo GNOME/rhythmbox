@@ -2,7 +2,6 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
-<requires lib="gnome"/>
 
 <widget class="GtkWindow" id="preferences">
   <property name="visible">True</property>
@@ -248,11 +247,11 @@
 		      </child>
 
 		      <child>
-			<widget class="GnomeHRef" id="last_fm_link">
+			<widget class="GtkLinkButton" id="last_fm_link">
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
-			  <property name="url">http://last.fm</property>
-			  <property name="text" translatable="yes">Sign up for an account</property>
+			  <property name="uri">http://last.fm</property>
+			  <property name="label" translatable="yes">Sign up for an account</property>
 			  <property name="focus_on_click">True</property>
 			</widget>
 			<packing>
@@ -588,11 +587,11 @@
 	      <property name="spacing">0</property>
 
 	      <child>
-		<widget class="GnomeHRef" id="rb_group_link">
+		<widget class="GtkLinkButton" id="rb_group_link">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="url">http://last.fm/group/Rhythmbox</property>
-		  <property name="text" translatable="yes">Join the Rhythmbox group</property>
+		  <property name="uri">http://last.fm/group/Rhythmbox</property>
+		  <property name="label" translatable="yes">Join the Rhythmbox group</property>
 		  <property name="focus_on_click">True</property>
 		</widget>
 		<packing>

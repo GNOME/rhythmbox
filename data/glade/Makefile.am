@@ -8,7 +8,6 @@ glade_DATA =	general-prefs.glade	  	\
 		podcast-feed-properties.glade	\
 		podcast-properties.glade	\
 		create-playlist.glade		\
-		uri.glade			\
 		plugins.glade			\
 		playlist-save.glade		\
 		playback-prefs.glade		\

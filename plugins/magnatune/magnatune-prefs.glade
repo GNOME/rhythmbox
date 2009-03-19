@@ -2,7 +2,6 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
-<requires lib="gnome"/>
 
 <widget class="GtkDialog" id="preferences_dialog">
   <property name="visible">True</property>
@@ -669,11 +668,11 @@ VBR MP3
 		  </child>
 
 		  <child>
-		    <widget class="GnomeHRef" id="href1">
+		    <widget class="GtkLinkButton" id="href1">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="url">http://www.magnatune.com/</property>
-		      <property name="text" translatable="yes">http://www.magnatune.com/</property>
+		      <property name="uri">http://www.magnatune.com/</property>
+		      <property name="label" translatable="yes">http://www.magnatune.com/</property>
 		      <property name="focus_on_click">True</property>
 		    </widget>
 		    <packing>
@@ -723,11 +722,11 @@ VBR MP3
 		  </child>
 
 		  <child>
-		    <widget class="GnomeHRef" id="magnatune_link">
+		    <widget class="GtkLinkButton" id="magnatune_link">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="url">http://www.magnatune.com/info/</property>
-		      <property name="text" translatable="yes">http://www.magnatune.com/info/</property>
+		      <property name="uri">http://www.magnatune.com/info/</property>
+		      <property name="label" translatable="yes">http://www.magnatune.com/info/</property>
 		      <property name="focus_on_click">True</property>
 		    </widget>
 		    <packing>
@@ -777,11 +776,11 @@ VBR MP3
 		  </child>
 
 		  <child>
-		    <widget class="GnomeHRef" id="redownload_link">
+		    <widget class="GtkLinkButton" id="redownload_link">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="url">http://www.magnatune.com/info/redownload</property>
-		      <property name="text" translatable="yes">http://www.magnatune.com/info/redownload</property>
+		      <property name="uri">http://www.magnatune.com/info/redownload</property>
+		      <property name="label" translatable="yes">http://www.magnatune.com/info/redownload</property>
 		      <property name="focus_on_click">True</property>
 		    </widget>
 		    <packing>

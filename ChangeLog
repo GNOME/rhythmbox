@@ -1,5 +1,22 @@
 2009-03-19  Jonathan Matthew  <jonathan@d14n.org>
 
+	* data/glade/Makefile.am:
+	* data/glade/general-prefs.glade:
+	* data/glade/library-prefs.glade:
+	* data/glade/playback-prefs.glade:
+	* data/glade/uri.glade:
+	* plugins/audioscrobbler/audioscrobbler-prefs.glade:
+	* plugins/cd-recorder/recorder.glade:
+	* plugins/daap/daap-prefs.glade:
+	* plugins/iradio/station-properties.glade:
+	* plugins/jamendo/jamendo-prefs.glade:
+	* plugins/magnatune/magnatune-prefs.glade:
+	* plugins/visualizer/visualizer-controls.glade:
+	Replace GnomeHRef with GtkLinkButton, remove libgnome dependencies, and
+	remove the unusued uri.glade.
+
+2009-03-19  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/artdisplay/artdisplay/LocalCoverArtSearchGIO.py:
 	Add daap to the set of URI schemes to ignore, fix some other typos.
 

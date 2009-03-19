@@ -2,7 +2,6 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
-<requires lib="gnome"/>
 
 <widget class="GtkDialog" id="preferences_dialog">
   <property name="visible">True</property>
@@ -187,11 +186,11 @@ MP3 (200Kbps)</property>
 	      </child>
 
 	      <child>
-		<widget class="GnomeHRef" id="href1">
+		<widget class="GtkLinkButton" id="href1">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="url">http://www.jamendo.com/</property>
-		  <property name="text" translatable="yes">http://www.jamendo.com/</property>
+		  <property name="uri">http://www.jamendo.com/</property>
+		  <property name="label" translatable="yes">http://www.jamendo.com/</property>
 		  <property name="focus_on_click">True</property>
 		</widget>
 		<packing>
