@@ -736,7 +736,6 @@ AM_CONDITIONAL(ENABLE_VALA, test "x$with_vala" = "xyes")
 dnl ================================================================
 dnl FM Radio Plugin
 dnl ================================================================
-AC_CHECK_HEADER
 AC_MSG_CHECKING([whether FM radio support is requested])
 AC_ARG_ENABLE([fm-radio],
   AC_HELP_STRING([--disable-fm-radio],[Disable FM radio support]),,
