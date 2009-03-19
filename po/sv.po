@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-12 06:56+0100\n"
-"PO-Revision-Date: 2009-03-12 06:58+0100\n"
+"POT-Creation-Date: 2009-03-19 16:34+0100\n"
+"PO-Revision-Date: 2009-03-19 16:34+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -40,55 +40,55 @@ msgstr "Misslyckades med att skapa %s-element; kontrollera din installation"
 msgid "Unknown playback error"
 msgstr "Okänt uppspelningsfel"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1136
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1150
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1138
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1152
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Misslyckades med att länka ny ström in i GStreamer-rörledning"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1178
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1180
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Misslyckades med att starta ny ström"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2717
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2725
 #, c-format
 msgid "Failed to open output device"
 msgstr "Misslyckades med att öppna utdataenhet"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2796
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2804
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Misslyckades med att öppna utdataenhet: %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3033
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3115
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3041
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3123
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Misslyckades med att skapa GStreamer-element; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3044
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3052
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Misslyckades med att skapa ljudutmatningselement; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3089
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3131
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3157
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3166
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3175
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3097
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3139
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3165
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3174
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3183
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Misslyckades med att länka GStreamer-rörledning; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3270
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3278
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Misslyckades med att skapa GStreamer-rörledning för att spela upp %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3286
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3294
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Misslyckades med att starta uppspelning av %s"
@@ -496,18 +496,6 @@ msgstr "_Titel:"
 msgid "_Track number:"
 msgstr "_Spårnummer:"
 
-#: ../data/glade/uri.glade.h:1
-msgid "*"
-msgstr "*"
-
-#: ../data/glade/uri.glade.h:2
-msgid "Enter the _location (URI) of the file you would like to add:"
-msgstr "Ange _platsen (URI) för den fil du vill lägga till:"
-
-#: ../data/glade/uri.glade.h:3
-msgid "Open from URI"
-msgstr "Öppna från URI"
-
 #: ../data/playlists.xml.in.h:1
 msgid "My Top Rated"
 msgstr "Mina högst rankade"
@@ -598,7 +586,7 @@ msgstr "%d %b %Y"
 #: ../plugins/daap/rb-daap-connection.c:698
 #: ../plugins/generic-player/rb-generic-player-source.c:1295
 #: ../plugins/ipod/rb-ipod-source.c:305
-#: ../plugins/jamendo/jamendo/JamendoSource.py:298
+#: ../plugins/jamendo/jamendo/JamendoSource.py:300
 #: ../plugins/iradio/rb-iradio-source.c:530
 #: ../plugins/iradio/rb-iradio-source.c:1094
 #: ../plugins/iradio/rb-station-properties-dialog.c:495
@@ -1918,19 +1906,20 @@ msgstr "Antal spår:"
 msgid "Serial Number:"
 msgstr "Serienummer:"
 
-#: ../plugins/ipod/ipod-info.glade.h:14
+#. amount of disk space used on the iPod
+#: ../plugins/ipod/ipod-info.glade.h:15
 msgid "Volume Usage:"
 msgstr "Volymanvändning:"
 
-#: ../plugins/ipod/ipod-info.glade.h:15
+#: ../plugins/ipod/ipod-info.glade.h:16
 msgid "Your Name:"
 msgstr "Ditt namn:"
 
-#: ../plugins/ipod/ipod-info.glade.h:16
+#: ../plugins/ipod/ipod-info.glade.h:17
 msgid "iPod Name:"
 msgstr "iPod-namn:"
 
-#: ../plugins/ipod/ipod-info.glade.h:17
+#: ../plugins/ipod/ipod-info.glade.h:18
 msgid "iPod Properties"
 msgstr "Egenskaper för iPod"
 
@@ -1959,7 +1948,7 @@ msgstr "_Namn:"
 msgid "iPod detected"
 msgstr "iPod upptäcktes"
 
-#: ../plugins/ipod/rb-ipod-helpers.c:297
+#: ../plugins/ipod/rb-ipod-helpers.c:299
 msgid "Unable to initialise new iPod"
 msgstr "Kunde inte initiera ny iPod"
 
@@ -2161,16 +2150,16 @@ msgstr "_Donera till artist"
 msgid "Donate Money to this Artist"
 msgstr "Donera pengar till denna artist"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:121
+#: ../plugins/jamendo/jamendo/JamendoSource.py:123
 msgid "Loading Jamendo catalogue"
 msgstr "Läser in Jamendo-katalog"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:359
+#: ../plugins/jamendo/jamendo/JamendoSource.py:361
 #, python-format
 msgid "Error looking up p2plink for album %s on jamendo.com"
 msgstr "Fel vid uppslagning av p2plink för albumet %s på jamendo.com"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:383
+#: ../plugins/jamendo/jamendo/JamendoSource.py:385
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Fel vid uppslagning av artisten %s på jamendo.com"
@@ -4042,7 +4031,7 @@ msgstr "Välj musik att spela"
 
 #: ../shell/rb-tray-icon.c:163
 msgid "Show N_otifications"
-msgstr "Visa _notifieringar"
+msgstr "Visa n_otifieringar"
 
 #: ../shell/rb-tray-icon.c:164
 msgid "Show notifications of song changes and other events"
@@ -4763,6 +4752,12 @@ msgstr "På skrivbordet"
 msgid "Unknown location"
 msgstr "Okänd plats"
 
+#~ msgid "*"
+#~ msgstr "*"
+#~ msgid "Enter the _location (URI) of the file you would like to add:"
+#~ msgstr "Ange _platsen (URI) för den fil du vill lägga till:"
+#~ msgid "Open from URI"
+#~ msgstr "Öppna från URI"
 #~ msgid "GB"
 #~ msgstr "GB"
 #~ msgid "MB"
