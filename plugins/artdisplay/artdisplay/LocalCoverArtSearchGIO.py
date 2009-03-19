@@ -72,7 +72,7 @@ class LocalCoverArtSearch:
 	def search (self, db, entry, on_search_completed_cb, *args):
 
 		self.file = gio.File(entry.get_playback_uri())
-		if self.file.get_uri_scheme() in ('http','cdda'):
+		if self.file.get_uri_scheme() in ('http','cdda','daap'):
 			print 'not searching for local art for %s' % (self.file.get_uri())
 			on_search_completed_cb (self, entry, [], *args)
 			return
@@ -142,9 +142,9 @@ class LocalCoverArtSearch:
 				if ct.startswith("image/") or ct.startswith("x-directory/"):
 					continue
 
-				uri = dir.resolve_relative_path(f.get_name())
+				uri = dir.resolve_relative_path(f.get_name()).get_uri()
 				u_entry = db.entry_lookup_by_location (uri)
-				if e_entry:
+				if u_entry:
 					u_artist, u_album = [db.entry_get (u_entry, x) for x in [rhythmdb.PROP_ARTIST, rhythmdb.PROP_ALBUM]]
 					if album != u_album:
 						print "Not saving local art; encountered media with different album (%s, %s, %s)" % (uri, u_artist, u_album)
@@ -163,7 +163,7 @@ class LocalCoverArtSearch:
 			return
 
 		f = gio.File(uri)
-		if uri.get_uri_scheme() == 'http':
+		if f.get_uri_scheme() in ('http','cdda','daap'):
 			print "not saving local art for %s" % uri
 			return
 
