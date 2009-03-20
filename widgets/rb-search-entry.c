@@ -35,7 +35,10 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+
+#if !GTK_CHECK_VERSION(2,16,0)
 #include "libsexy/sexy-icon-entry.h"
+#endif
 
 #include "rb-search-entry.h"
 
@@ -50,6 +53,12 @@ static void rb_search_entry_activate_cb (GtkEntry *gtkentry,
 static gboolean rb_search_entry_focus_out_event_cb (GtkWidget *widget,
 				                    GdkEventFocus *event,
 				                    RBSearchEntry *entry);
+#if GTK_CHECK_VERSION(2,16,0)
+static void rb_search_entry_clear_cb (GtkEntry *entry,
+				      GtkEntryIconPosition icon_pos,
+				      GdkEvent *event,
+				      RBSearchEntry *search_entry);
+#endif
 
 struct RBSearchEntryPrivate
 {
@@ -70,8 +79,8 @@ G_DEFINE_TYPE (RBSearchEntry, rb_search_entry, GTK_TYPE_HBOX)
  * @short_description: text entry widget for the search box
  *
  * The search entry contains a label and a text entry box.
- * The text entry box (a SexyIconEntry) contains an icon
- * that acts as a 'clear' button.
+ * The text entry box contains an icon that acts as a 'clear'
+ * button.
  *
  * Signals are emitted when the search text changes,
  * arbitrarily rate-limited to one every 300ms.
@@ -157,8 +166,22 @@ rb_search_entry_init (RBSearchEntry *entry)
 	gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_RIGHT);
 	gtk_box_pack_start (GTK_BOX (entry), label, FALSE, TRUE, 0);
 
+#if GTK_CHECK_VERSION(2,16,0)
+	entry->priv->entry = gtk_entry_new ();
+	gtk_entry_set_icon_from_stock (GTK_ENTRY (entry->priv->entry),
+				       GTK_ENTRY_ICON_SECONDARY,
+				       GTK_STOCK_CLEAR);
+	gtk_entry_set_icon_tooltip_text (GTK_ENTRY (entry->priv->entry),
+					 GTK_ENTRY_ICON_SECONDARY,
+					 _("Clear the search text"));
+	g_signal_connect_object (GTK_ENTRY (entry->priv->entry),
+				 "icon-press",
+				 G_CALLBACK (rb_search_entry_clear_cb),
+				 entry, 0);
+#else
 	entry->priv->entry = sexy_icon_entry_new ();
 	sexy_icon_entry_add_clear_button (SEXY_ICON_ENTRY (entry->priv->entry));
+#endif
 
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label),
 				       entry->priv->entry);
@@ -357,3 +380,14 @@ rb_search_entry_grab_focus (RBSearchEntry *entry)
 {
 	gtk_widget_grab_focus (GTK_WIDGET (entry->priv->entry));
 }
+
+#if GTK_CHECK_VERSION(2,16,0)
+static void
+rb_search_entry_clear_cb (GtkEntry *entry,
+			  GtkEntryIconPosition icon_pos,
+			  GdkEvent *event,
+			  RBSearchEntry *search_entry)
+{
+	rb_search_entry_set_text (search_entry, "");
+}
+#endif

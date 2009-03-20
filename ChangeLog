@@ -1,5 +1,14 @@
 2009-03-20  Jonathan Matthew  <jonathan@d14n.org>
 
+	* configure.ac:
+	* widgets/rb-search-entry.c: (rb_search_entry_init),
+	(rb_search_entry_clear_cb):
+	If available, use gtk 2.16's new GtkEntry API for the 'clear' icon
+	in the search entry, rather than libsexy's SexyIconEntry.
+	Incidentally fixes #513828.
+
+2009-03-20  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/gstreamer/rb-player-gst-xfade.c: (unlink_blocked_cb):
 	Don't try to unlink if we don't have an adder pad.  Probably fixes
 	#576031.

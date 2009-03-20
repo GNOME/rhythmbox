@@ -476,11 +476,14 @@ AC_DEFINE_UNQUOTED(SHARE_UNINSTALLED_BUILDDIR,"`pwd`/data",[path to built source
 AC_DEFINE_UNQUOTED(METADATA_UNINSTALLED_DIR,"`pwd`/metadata",[path to metadata build dir])
 AC_SUBST(ROOT_UNINSTALLED_DIR)
 
+dnl libsexy is only required with gtk < 2.16
+PKG_CHECK_EXISTS(gtk+-2.0 >= 2.16, [need_libsexy=no], [need_libsexy=yes])
+
 AC_ARG_WITH(internal-libsexy,
             AC_HELP_STRING([--with-internal-libsexy],
 			   [Build using internal libsexy library]),,
 	      with_internal_libsexy=no)
-if test "x$with_internal_libsexy" = "xno"; then
+if test "x$need_libsexy" = "xyes" && test "x$with_internal_libsexy" = "xno"; then
 	PKG_CHECK_MODULES(LIBSEXY, libsexy >= 0.1.5,
 		          with_internal_libsexy=no,
 		          with_internal_libsexy=yes)
@@ -928,10 +931,12 @@ if test x"$use_gnome_keyring" = xyes; then
 else
 	AC_MSG_NOTICE([   gnome-keyring support disabled])
 fi
-if test x"$with_internal_libsexy" = xyes; then
-	AC_MSG_NOTICE([   using internal libsexy])
-else
-	AC_MSG_NOTICE([** using system-wide libsexy])
+if test x"$need_libsexy" = xyes; then
+	if test x"$with_internal_libsexy" = xyes; then
+		AC_MSG_NOTICE([   using internal libsexy])
+	else
+		AC_MSG_NOTICE([** using system-wide libsexy])
+	fi
 fi
 if test "x$enable_fm_radio" != xno; then
 	AC_MSG_NOTICE([** FM radio support enabled])
