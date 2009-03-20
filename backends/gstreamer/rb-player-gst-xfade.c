@@ -1288,7 +1288,7 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 
 	g_mutex_lock (stream->lock);
 
-	if (stream->needs_unlink == FALSE) {
+	if (stream->needs_unlink == FALSE || stream->adder_pad == NULL) {
 		rb_debug ("stream %s doesn't need to be unlinked", stream->uri);
 		g_mutex_unlock (stream->lock);
 		return;

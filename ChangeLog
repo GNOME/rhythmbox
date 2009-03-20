@@ -1,5 +1,11 @@
 2009-03-20  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-player-gst-xfade.c: (unlink_blocked_cb):
+	Don't try to unlink if we don't have an adder pad.  Probably fixes
+	#576031.
+
+2009-03-20  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Kim Sullivan  <alicebot@seznam.cz>
 
 	* plugins/jamendo/jamendo/JamendoSaxHandler.py:
