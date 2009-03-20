@@ -1,3 +1,14 @@
+2009-03-20  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Kim Sullivan  <alicebot@seznam.cz>
+
+	* plugins/jamendo/jamendo/JamendoSaxHandler.py:
+	* plugins/jamendo/jamendo/JamendoSource.py:
+	Rework the jamendo xml parser to create database entries in a single
+	pass, rather than creating an intermediate structure and converting
+	that to database entries.  Speeds up catalogue loading and reduces
+	memory consumption.  From #424423.
+
 2009-03-19  Christophe Fergeau <cfergeau@mandriva.com>
 
 	* configure.ac: remove unused AC_CHECK_HEADER, spotted by vuntz.

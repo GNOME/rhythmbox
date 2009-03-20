@@ -49,11 +49,8 @@ ogg3_uri = "http://api.jamendo.com/get2/bittorrent/file/plain/?type=archive&clas
 
 # Album Covers are available here: http://api.jamendo.com/get2/image/album/redirect/?id={ALBUMID}&imagesize={100-600}
 
-stream_url = "http://api.jamendo.com/get2/stream/track/redirect/?id=%s&streamencoding=ogg2"
 artwork_url = "http://api.jamendo.com/get2/image/album/redirect/?id=%s&imagesize=200"
 artist_url = "http://www.jamendo.com/get/artist/id/album/page/plain/"
-
-genre_id3 = ["Blues","Classic Rock","Country","Dance","Disco","Funk","Grunge","Hip-Hop","Jazz","Metal","New Age","Oldies","Other","Pop","R&B","Rap","Reggae","Rock","Techno","Industrial","Alternative","Ska","Death Metal","Pranks","Soundtrack","Euro-Techno","Ambient","Trip-Hop","Vocal","Jazz+Funk","Fusion","Trance","Classical","Instrumental","Acid","House","Game","Sound Clip","Gospel","Noise","AlternRock","Bass","Soul","Punk","Space","Meditative","Instrumental Pop","Instrumental Rock","Ethnic","Gothic","Darkwave","Techno-Industrial","Electronic","Pop-Folk","Eurodance","Dream","Southern Rock","Comedy","Cult","Gangsta","Top 40","Christian Rap","Pop/Funk","Jungle","Native American","Cabaret","New Wave","Psychadelic","Rave","Showtunes","Trailer","Lo-Fi","Tribal","Acid Punk","Acid Jazz","Polka","Retro","Musical","Rock & Roll","Hard Rock","Folk","Folk-Rock","National Folk","Swing","Fast Fusion","Bebob","Latin","Revival","Celtic","Bluegrass","Avantgarde","Gothic Rock","Progressive Rock","Psychedelic Rock","Symphonic Rock","Slow Rock","Big Band","Chorus","Easy Listening","Acoustic","Humour","Speech","Chanson","Opera","Chamber Music","Sonata","Symphony","Booty Bass","Primus","Porn Groove","Satire","Slow Jam","Club","Tango","Samba","Folklore","Ballad","Power Ballad","Rhythmic Soul","Freestyle","Duet","Punk Rock","Drum Solo","Acapella","Euro-House","Dance Hall"]
 
 class JamendoSource(rb.BrowserSource):
 	__gproperties__ = {
@@ -179,9 +176,15 @@ class JamendoSource(rb.BrowserSource):
 			self.__parser.close()
 			self.__db_load_finished = True
 			self.__updating = False
-			self.__load_db ()
+			self.__saxHandler = None
 			self.__show_loading_screen (False)
-			self.__catalogue_loader = None
+
+			# hack around bug 575781: if the catalogue loader is destroyed in this callback
+			# we'll crash, but afterwards is OK.
+			def done(self):
+				self.__catalogue_loader = None
+				return False
+			gobject.idle_add(done, self)
 			return
 
 		self.__parser.feed(result)
@@ -194,7 +197,7 @@ class JamendoSource(rb.BrowserSource):
 		self.__notify_status_changed()
 		self.__db_load_finished = False
 
-		self.__saxHandler = JamendoSaxHandler()
+		self.__saxHandler = JamendoSaxHandler(self.__db, self.__entry_type)
 		self.__parser = xml.sax.make_parser()
 		self.__parser.setContentHandler(self.__saxHandler)
 
@@ -266,63 +269,6 @@ class JamendoSource(rb.BrowserSource):
 
 		self.__info_screen.set_property("visible", show)
 		self.__paned_box.set_property("visible", not show)
-
-	def __load_db(self):
-		artists = self.__saxHandler.artists
-
-		nbAlbums = 0
-		nbTracks = 0
-		for artist_key in artists.keys():
-			artist = artists[artist_key]
-			for album_key in artist['ALBUMS'].keys():
-				nbAlbums = nbAlbums + 1
-				album = artist['ALBUMS'][album_key]
-				for track_key in album['TRACKS'].keys():
-					nbTracks = nbTracks + 1
-					track = album['TRACKS'][track_key]
-					track_id = track['id']
-					stream = stream_url % (track_id)
-					entry = self.__db.entry_lookup_by_location (stream)
-					if entry == None:
-						entry = self.__db.entry_new(self.__entry_type, stream)
-
-					release_date = album['releasedate']
-					if release_date:
-						year = int(release_date[0:4])
-						date = datetime.date(year, 1, 1).toordinal()
-						self.__db.set(entry, rhythmdb.PROP_DATE, date)
-
-					self.__db.set(entry, rhythmdb.PROP_TITLE, track['name'])
-					self.__db.set(entry, rhythmdb.PROP_ARTIST, artist['name'])
-					try:
-						genre = genre_id3[int(album['id3genre'])]
-					except Exception:
-						genre = _('Unknown')
-						
-					self.__db.set(entry, rhythmdb.PROP_GENRE, genre)
-					self.__db.set(entry, rhythmdb.PROP_ALBUM, album['name'])
-
-					trackno = int(track['numalbum'])
-					if trackno >= 0:
-						self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, trackno)
-
-					try:
-						duration = float(track['duration'])
-						self.__db.set(entry, rhythmdb.PROP_DURATION, int(duration))
-					except Exception:
-						# No length, nevermind
-						pass
-					
-					# slight misuse, but this is far more efficient than having a python dict
-					# containing this data.
-					self.__db.set(entry, rhythmdb.PROP_MUSICBRAINZ_ALBUMID, album['id'])
-
-		print "Nb artistes : " + str(len(artists))
-		print "Nb albums : " + str(nbAlbums)
-		print "Nb tracks : " + str(nbTracks)
-
-		self.__db.commit()
-		self.__saxHandler = None
 
 
 	def __notify_status_changed(self):
