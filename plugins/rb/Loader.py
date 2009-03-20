@@ -74,22 +74,30 @@ class GioChunkLoader(object):
 		gtk.gdk.threads_leave()
 		return v
 
+	def _error_idle_cb(self, error):
+		self._callback_gdk(error)
+		return False
+
+	def _read_idle_cb(self, (stream, data)):
+		if (self._callback_gdk(data) is not False) and data:
+			stream.read_async (self.chunksize, self._read_cb, cancellable=self._cancel)
+		else:
+			# finished or cancelled by callback
+			stream.close()
+
+		return False
+
 	def _read_cb(self, stream, result):
 		try:
 			data = stream.read_finish(result)
 		except gio.Error, e:
 			print "error reading file %s: %s" % (self.uri, e.message)
 			stream.close()
-			self._callback_gdk(e)
+			gobject.idle_add(self._error_idle_cb, e)
+		
+		# this is mostly here to hack around bug 575781
+		gobject.idle_add(self._read_idle_cb, (stream, data))
 
-		if (self._callback_gdk(data) is not False) and data:
-			def again():
-				stream.read_async (self.chunksize, self._read_cb, cancellable=self._cancel)
-				return False
-			gobject.idle_add(again)
-		else:
-			# finished or cancelled by callback
-			stream.close()
 
 	def _open_cb(self, file, result):
 		try:

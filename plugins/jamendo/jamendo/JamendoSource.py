@@ -178,13 +178,7 @@ class JamendoSource(rb.BrowserSource):
 			self.__updating = False
 			self.__saxHandler = None
 			self.__show_loading_screen (False)
-
-			# hack around bug 575781: if the catalogue loader is destroyed in this callback
-			# we'll crash, but afterwards is OK.
-			def done(self):
-				self.__catalogue_loader = None
-				return False
-			gobject.idle_add(done, self)
+			self.__catalogue_loader = None
 			return
 
 		self.__parser.feed(result)
