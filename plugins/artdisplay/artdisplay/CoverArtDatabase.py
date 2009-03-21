@@ -63,10 +63,22 @@ class TicketSystem:
 		self.hash = {}
 		self.dead = set ()
 
+	def dump (self):
+		for k in self.hash.keys():
+			print " item %s: %s" % (str(k), self.hash[k])
+
+		print "dead tickets: %s" % str(self.dead)
+
 	def get (self, item):
 		ticket = self.counter.next ()
 		self.hash.setdefault (item, set ()).add (ticket)
 		return ticket
+
+	def find (self, item, comparator, *args):
+		for titem in self.hash.keys():
+			if comparator(item, titem, *args):
+				return titem
+		return None
 
 	def bury (self, ticket):
 		try:
@@ -77,26 +89,33 @@ class TicketSystem:
 
 	def forget (self, item, ticket):
 		try:
-			self.hash[item].remove (ticket)
+			tickets = self.hash[item]
+			tickets.remove(ticket)
+			if len(tickets) == 0:
+				del self.hash[item]
 			return True
 		except KeyError:
 			self.dead.remove (ticket)
 			return False
 
 	def purge (self, item):
-		self.dead.update (self.hash.pop (item, set ()))
+		tickets = self.hash.pop (item, set())
+		self.dead.update (tickets)
 
 	def release (self, item, ticket):
 		try:
-			self.dead.update (self.hash.pop (item) - set([ticket]))
+			othertickets = self.hash.pop (item) - set([ticket])
+			self.dead.update (othertickets)
 			return True
 		except KeyError:
 			self.dead.remove (ticket)
 			return False
 
+
 class CoverArtDatabase (object):
 	def __init__ (self):
 		self.ticket = TicketSystem ()
+		self.same_search = {}
 
 	def build_art_cache_filename (self, db, entry, extension):
 		artist = db.entry_get (entry, rhythmdb.PROP_ARTIST)
@@ -111,8 +130,9 @@ class CoverArtDatabase (object):
 		if not os.path.exists (art_folder):
 			os.makedirs (art_folder)
 
-		# FIXME: the following block of code is messy and needs to be redone ASAP
-		return art_folder + '/%s - %s.%s' % (artist.replace ('/', '-'), album.replace ('/', '-'), extension)	
+		artist = artist.replace('/', '-')
+		album = album.replace('/', '-')
+		return art_folder + '/%s - %s.%s' % (artist, album, extension)	
 
 	def engines (self, blist):
 		for Engine in ART_SEARCHES_LOCAL:
@@ -167,6 +187,7 @@ class CoverArtDatabase (object):
 
 		rb.Coroutine (self.image_search, db, st_album, st_artist, entry, callback).begin ()
 
+
 	def image_search (self, plexer, db, st_album, st_artist, entry, callback):
 		art_location_jpg = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_JPG)
 		art_location_png = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_PNG)
@@ -183,6 +204,23 @@ class CoverArtDatabase (object):
 			self.ticket.purge (entry)
 			pixbuf = gtk.gdk.pixbuf_new_from_file (art_location)	
 			callback (entry, pixbuf, art_location)
+			return
+
+		# Check if we're already searching for art for this album
+		# (this won't work for compilations, but there isn't much we can do about that)
+		def find_same_search(a, b, db):
+			for prop in (rhythmdb.PROP_ARTIST, rhythmdb.PROP_ALBUM):
+				if db.entry_get(a, prop) != db.entry_get(b, prop):
+					return False
+
+			return True
+
+		match_entry = self.ticket.find(entry, find_same_search, db)
+		if match_entry is not None:
+			print "entry %s matches existing search for %s" % (
+				 db.entry_get (entry, rhythmdb.PROP_LOCATION),
+				 db.entry_get (match_entry, rhythmdb.PROP_LOCATION))
+			self.same_search.setdefault (match_entry, []).append(entry)
 			return
 
 		blist = self.read_blist (blist_location)
@@ -214,22 +252,41 @@ class CoverArtDatabase (object):
 								uri = art_location
 							else:
 								uri = unquote (str (url))
+
+							print "found image for %s" % (db.entry_get(entry, rhythmdb.PROP_LOCATION))
 							callback (entry, pixbuf, uri)
+							for m in self.same_search.pop(entry, []):
+								print "and for same search %s" % (db.entry_get(m, rhythmdb.PROP_LOCATION))
+								callback (m, pixbuf, uri)
+
 						self.write_blist (blist_location, blist)
+						self.same_search.pop (entry, None)
 						return
+
 				if not engine.search_next ():
 					if engine_remote:
 						blist.append (engine_name)
 					break
+
 				if self.ticket.bury (ticket):
 					self.write_blist (blist_location, blist)
+					self.same_search.pop (entry, None)
 					return
+
 			if self.ticket.bury (ticket):
 				self.write_blist (blist_location, blist)
+				self.same_search.pop (entry, None)
 				return
+
 		if self.ticket.forget (entry, ticket):
+			print "didn't find image for %s" % (db.entry_get(entry, rhythmdb.PROP_LOCATION))
 			callback (entry, None, None)
+			for m in self.same_search.pop (entry, []):
+				print "or for same search %s" % (db.entry_get(m, rhythmdb.PROP_LOCATION))
+				callback (m, None, None)
+
 		self.write_blist (blist_location, blist)
+		self.same_search.pop (entry, None)
 
 	def read_blist (self, blist_location):
 		if os.path.exists (blist_location):

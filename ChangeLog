@@ -1,3 +1,15 @@
+2009-03-22  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/artdisplay/artdisplay/CoverArtDatabase.py:
+	Make the ticket system code a bit less inscrutable, remove items from
+	the hash when the last ticket is forgotten, and add a method to search
+	for existing items with live tickets that match a new item.
+
+	When a new cover art search request arrives, look for already running
+	searches for the same artist and album.  If an existing search is
+	found, just wait for the results rather than doing the same search
+	again.  From #529873.
+
 2009-03-21  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/jamendo/jamendo/JamendoSource.py:
