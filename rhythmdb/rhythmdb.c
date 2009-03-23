@@ -1317,8 +1317,10 @@ process_added_entries_cb (RhythmDBEntry *entry,
 						   RHYTHMDB_ENTRY_TYPE_INVALID,
 						   RHYTHMDB_ENTRY_TYPE_IGNORE,
 						   RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+			/* mutex is unlocked in rhythmdb_add_to_stat_list */
+		} else {
+			g_mutex_unlock (db->priv->stat_mutex);
 		}
-		g_mutex_unlock (db->priv->stat_mutex);
 	}
 
 	g_assert ((entry->flags & RHYTHMDB_ENTRY_INSERTED) == 0);
@@ -3052,6 +3054,8 @@ rhythmdb_add_uri_with_types (RhythmDB *db,
 
 		entry = rhythmdb_entry_lookup_by_location (db, uri);
 		rhythmdb_add_to_stat_list (db, uri, entry, type, ignore_type, error_type);
+
+		/* stat mutex is unlocked in rhythmdb_add_to_stat_list */
 	}
 }
 

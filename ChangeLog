@@ -1,3 +1,10 @@
+2009-03-23  Jonathan Matthew  <jonathan@d14n.org>
+
+	* rhythmdb/rhythmdb.c: (process_added_entries_cb),
+	(rhythmdb_add_uri_with_types):
+	Fix a double-unlock of the stat mutex, add comments explaining the
+	slight weirdness in the way it's unlocked.  Probably fixes #576238.
+
 2009-03-22  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/artdisplay/artdisplay/CoverArtDatabase.py:
