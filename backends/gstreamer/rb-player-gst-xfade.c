@@ -52,7 +52,7 @@
  *
  * we have a single output bin, beginning with an adder.
  * connected to this are a number of stream bins, consisting of a
- * source, decodebin, audio convert/resample, and a volume element used
+ * source, decodebin2, audio convert/resample, and a volume element used
  * for fading in and out.  (might be interesting to replace those with
  * high/low pass filter elements?)
  *
@@ -1897,7 +1897,7 @@ stream_queue_underrun_cb (GstElement *queue, RBXFadeStream *stream)
 
 }
 
-/* links decodebin src pads to the rest of the output pipeline */
+/* links decodebin2 src pads to the rest of the output pipeline */
 static void
 stream_new_decoded_pad_cb (GstElement *decoder, GstPad *pad, gboolean last, RBXFadeStream *stream)
 {
@@ -2025,7 +2025,7 @@ stream_src_event_cb (GstPad *pad, GstEvent *event, RBXFadeStream *stream)
 /*
  * stream playback bin:
  *
- * src [ ! queue ] ! decodebin ! audioconvert ! audioresample ! caps ! queue ! volume
+ * src [ ! queue ] ! decodebin2 ! audioconvert ! audioresample ! caps ! queue ! volume
  *
  * the first queue is only added for non-local streams.  the thresholds
  * and such are probably going to be configurable at some point,
@@ -2094,22 +2094,16 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		}
 	}
 
-	if (g_getenv ("USE_DECODEBIN2") != NULL) {
-		stream->decoder = gst_element_factory_make ("decodebin2", NULL);
-	}
+	stream->decoder = gst_element_factory_make ("decodebin2", NULL);
 
 	if (stream->decoder == NULL) {
-		stream->decoder = gst_element_factory_make ("decodebin", NULL);
-	}
-
-	if (stream->decoder == NULL) {
-		rb_debug ("unable to create decodebin");
+		rb_debug ("unable to create decodebin2");
 		g_object_unref (stream);
 		return NULL;
 	}
 	gst_object_ref (stream->decoder);
 
-	/* connect decodebin to audioconvert when it creates its output pad */
+	/* connect decodebin2 to audioconvert when it creates its output pad */
 	g_signal_connect_object (stream->decoder,
 				 "new-decoded-pad",
 				 G_CALLBACK (stream_new_decoded_pad_cb),

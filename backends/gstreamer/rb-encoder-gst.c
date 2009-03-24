@@ -534,7 +534,7 @@ add_decoding_pipeline (RBEncoderGst *encoder,
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
 	encoder->priv->transcoding = TRUE;
-	decodebin = gst_element_factory_make ("decodebin", NULL);
+	decodebin = gst_element_factory_make ("decodebin2", NULL);
 	if (decodebin == NULL) {
 		g_set_error (error,
 				RB_ENCODER_ERROR,
