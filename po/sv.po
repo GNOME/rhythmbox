@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-19 16:34+0100\n"
-"PO-Revision-Date: 2009-03-19 16:34+0100\n"
+"POT-Creation-Date: 2009-03-24 10:10+0100\n"
+"PO-Revision-Date: 2009-03-24 10:10+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -576,8 +576,8 @@ msgstr "%d %b %Y"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:129
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:248
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:269
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:159
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:160
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:179
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:180
 #: ../plugins/audiocd/rb-audiocd-source.c:217
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:510
@@ -586,7 +586,7 @@ msgstr "%d %b %Y"
 #: ../plugins/daap/rb-daap-connection.c:698
 #: ../plugins/generic-player/rb-generic-player-source.c:1295
 #: ../plugins/ipod/rb-ipod-source.c:305
-#: ../plugins/jamendo/jamendo/JamendoSource.py:300
+#: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:530
 #: ../plugins/iradio/rb-iradio-source.c:1094
 #: ../plugins/iradio/rb-station-properties-dialog.c:495
@@ -600,7 +600,7 @@ msgstr "%d %b %Y"
 #: ../rhythmdb/rhythmdb-tree.c:1288
 #: ../rhythmdb/rhythmdb-tree.c:1292
 #: ../rhythmdb/rhythmdb-tree.c:1296
-#: ../rhythmdb/rhythmdb.c:1768
+#: ../rhythmdb/rhythmdb.c:1770
 #: ../shell/rb-shell-player.c:1711
 #: ../shell/rb-shell.c:3106
 #: ../sources/rb-podcast-source.c:1668
@@ -917,7 +917,7 @@ msgstr "Tid för senaste inrapportering:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1083
 #: ../plugins/iradio/rb-station-properties-dialog.c:506
-#: ../rhythmdb/rhythmdb.c:3583
+#: ../rhythmdb/rhythmdb.c:3587
 #: ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1527
 #: ../widgets/rb-entry-view.c:1540
@@ -2124,7 +2124,7 @@ msgid "Adds support to Rhythmbox for playing and downloading albums from Jamendo
 msgstr "Lägger till stöd i Rhythmbox för att spela och hämta musik från Jamendo"
 
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:2
-#: ../plugins/jamendo/jamendo/JamendoSource.py:65
+#: ../plugins/jamendo/jamendo/JamendoSource.py:62
 msgid "Jamendo"
 msgstr "Jamendo"
 
@@ -2150,16 +2150,16 @@ msgstr "_Donera till artist"
 msgid "Donate Money to this Artist"
 msgstr "Donera pengar till denna artist"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:123
+#: ../plugins/jamendo/jamendo/JamendoSource.py:120
 msgid "Loading Jamendo catalogue"
 msgstr "Läser in Jamendo-katalog"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:361
+#: ../plugins/jamendo/jamendo/JamendoSource.py:301
 #, python-format
 msgid "Error looking up p2plink for album %s on jamendo.com"
 msgstr "Fel vid uppslagning av p2plink för albumet %s på jamendo.com"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:385
+#: ../plugins/jamendo/jamendo/JamendoSource.py:325
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Fel vid uppslagning av artisten %s på jamendo.com"
@@ -3186,7 +3186,7 @@ msgstr "Kunde inte komma åt %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1650
+#: ../rhythmdb/rhythmdb.c:1652
 msgid "The Beatles"
 msgstr "Esbjörn Svenssions Trio"
 
@@ -3194,7 +3194,7 @@ msgstr "Esbjörn Svenssions Trio"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1656
+#: ../rhythmdb/rhythmdb.c:1658
 msgid "Help!"
 msgstr "Hjälp!"
 
@@ -3202,33 +3202,33 @@ msgstr "Hjälp!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1662
+#: ../rhythmdb/rhythmdb.c:1664
 msgid "Ticket To Ride"
 msgstr "Leucocyte"
 
-#: ../rhythmdb/rhythmdb.c:2207
+#: ../rhythmdb/rhythmdb.c:2209
 msgid "invalid unicode in error message"
 msgstr "ogiltig unicode i felmeddelande"
 
-#: ../rhythmdb/rhythmdb.c:3072
+#: ../rhythmdb/rhythmdb.c:3076
 msgid "Could not load the music database:"
 msgstr "Kunde inte läsa in musikdatabasen:"
 
-#: ../rhythmdb/rhythmdb.c:4435
+#: ../rhythmdb/rhythmdb.c:4439
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minut"
 msgstr[1] "%ld minuter"
 
-#: ../rhythmdb/rhythmdb.c:4436
+#: ../rhythmdb/rhythmdb.c:4440
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld timme"
 msgstr[1] "%ld timmar"
 
-#: ../rhythmdb/rhythmdb.c:4437
+#: ../rhythmdb/rhythmdb.c:4441
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3236,7 +3236,7 @@ msgstr[0] "%ld dygn"
 msgstr[1] "%ld dygn"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4443
+#: ../rhythmdb/rhythmdb.c:4447
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s och %s"
@@ -3244,9 +3244,9 @@ msgstr "%s, %s och %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4449
-#: ../rhythmdb/rhythmdb.c:4457
-#: ../rhythmdb/rhythmdb.c:4468
+#: ../rhythmdb/rhythmdb.c:4453
+#: ../rhythmdb/rhythmdb.c:4461
+#: ../rhythmdb/rhythmdb.c:4472
 #, c-format
 msgid "%s and %s"
 msgstr "%s och %s"
@@ -4728,9 +4728,13 @@ msgstr[0] "%d stjärna"
 msgstr[1] "%d stjärnor"
 
 #. this string can only be so long, or there wont be a search entry :)
-#: ../widgets/rb-search-entry.c:156
+#: ../widgets/rb-search-entry.c:165
 msgid "_Search:"
 msgstr "_Sök:"
+
+#: ../widgets/rb-search-entry.c:176
+msgid "Clear the search text"
+msgstr "Töm söktexten"
 
 #: ../widgets/rb-song-info.c:371
 msgid "Song Properties"
