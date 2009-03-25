@@ -104,6 +104,8 @@ rb_psp_source_new (RBShell *shell, GMount *mount)
 
 	source = RB_PSP_SOURCE (g_object_new (RB_TYPE_PSP_SOURCE,
 					  "entry-type", entry_type,
+					  "ignore-entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,
+					  "error-entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,
 					  "mount", mount,
 					  "shell", shell,
 					  "source-group", RB_SOURCE_GROUP_DEVICES,

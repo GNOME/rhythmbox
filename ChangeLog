@@ -1,3 +1,11 @@
+2009-03-26  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/generic-player/rb-nokia770-source.c:
+	(rb_nokia770_source_new):
+	* plugins/generic-player/rb-psp-source.c: (rb_psp_source_new):
+	Set the ignore and error entry types for these to 'invalid' rather
+	than leaving them NULL.  Fixes #510236.
+
 2009-03-24  Bastien Nocera  <hadess@hadess.net>
 
 	* backends/gstreamer/rb-encoder-gst.c (add_decoding_pipeline):
