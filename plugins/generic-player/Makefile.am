@@ -6,14 +6,14 @@ libgeneric_player_la_SOURCES =				\
 	rb-generic-player-source.c 			\
 	rb-generic-player-source.h	 		\
 	rb-generic-player-playlist-source.c		\
-	rb-generic-player-playlist-source.h		\
-	rb-psp-source.c					\
-	rb-psp-source.h
+	rb-generic-player-playlist-source.h
 
 if HAVE_HAL
 libgeneric_player_la_SOURCES +=				\
 	rb-nokia770-source.c				\
-	rb-nokia770-source.h
+	rb-nokia770-source.h				\
+	rb-psp-source.c					\
+	rb-psp-source.h
 endif
 
 libgeneric_player_la_LDFLAGS = 				\

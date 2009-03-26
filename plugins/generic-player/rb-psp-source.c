@@ -37,10 +37,8 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#ifdef HAVE_HAL
 #include <libhal.h>
 #include <dbus/dbus.h>
-#endif
 
 #include "eel-gconf-extensions.h"
 #include "rb-psp-source.h"
@@ -273,8 +271,6 @@ rb_psp_source_create_playlists (RBGenericPlayerSource *source)
 	}
 }
 
-#ifdef HAVE_HAL
-
 static gboolean
 hal_udi_is_psp (const char *udi)
 {
@@ -341,25 +337,13 @@ end:
 
 	return result;
 }
-#endif
 
 gboolean
 rb_psp_is_mount_player (GMount *mount)
 {
-#ifndef HAVE_HAL
-	GFile *music_dir;
-#else
 	GVolume *volume;
-#endif
 	gboolean result = FALSE;
 
-#ifndef HAVE_HAL
-	music_dir = find_music_dir (mount);
-	if (music_dir != NULL) {
-		g_object_unref (music_dir);
-		result = TRUE;
-	}
-#else
 	volume = g_mount_get_volume (mount);
 	if (volume != NULL) {
 		char *str;
@@ -371,7 +355,6 @@ rb_psp_is_mount_player (GMount *mount)
 		}
 		g_object_unref (volume);
 	}
-#endif
 	return result;
 }
 

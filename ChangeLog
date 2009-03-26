@@ -1,5 +1,15 @@
 2009-03-26  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/generic-player/Makefile.am:
+	* plugins/generic-player/rb-generic-player-plugin.c:
+	(rb_generic_player_plugin_class_init), (create_source_cb):
+	* plugins/generic-player/rb-psp-source.c: (hal_udi_is_psp),
+	(rb_psp_is_mount_player):
+	Disable the PSP source if building without HAL.  Too many false
+	positives.
+
+2009-03-26  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/generic-player/rb-nokia770-source.c:
 	(rb_nokia770_source_new):
 	* plugins/generic-player/rb-psp-source.c: (rb_psp_source_new):

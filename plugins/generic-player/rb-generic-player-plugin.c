@@ -46,9 +46,9 @@
 #include "rb-removable-media-manager.h"
 #include "rb-generic-player-source.h"
 #include "rb-generic-player-playlist-source.h"
-#include "rb-psp-source.h"
 #ifdef HAVE_HAL
 #include "rb-nokia770-source.h"
+#include "rb-psp-source.h"
 #endif
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
@@ -116,8 +116,8 @@ rb_generic_player_plugin_class_init (RBGenericPlayerPluginClass *klass)
 
 	RB_PLUGIN_REGISTER_TYPE(rb_generic_player_source);
 	RB_PLUGIN_REGISTER_TYPE(rb_generic_player_playlist_source);
-	RB_PLUGIN_REGISTER_TYPE(rb_psp_source);
 #ifdef HAVE_HAL
+	RB_PLUGIN_REGISTER_TYPE(rb_psp_source);
 	RB_PLUGIN_REGISTER_TYPE(rb_nokia770_source);
 #endif
 }
@@ -200,9 +200,9 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, RBGenericPlayerPl
 {
 	RBSource *source = NULL;
 
+#ifdef HAVE_HAL
 	if (rb_psp_is_mount_player (mount))
 		source = RB_SOURCE (rb_psp_source_new (plugin->shell, mount));
-#ifdef HAVE_HAL
 	if (source == NULL && rb_nokia770_is_mount_player (mount))
 		source = RB_SOURCE (rb_nokia770_source_new (plugin->shell, mount));
 #endif
