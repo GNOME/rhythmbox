@@ -513,6 +513,13 @@ impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, co
 	db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (asource));
 	priv->search_query = rb_source_search_create_query (search, db, new_text);
 
+	/* if we don't have the base query yet, we can't do searches */
+	if (priv->cached_all_query == NULL) {
+		rb_debug ("deferring search for \"%s\" until we have the base query", new_text ? new_text : "<NULL>");
+		priv->search_on_completion = TRUE;
+		return;
+	}
+
 	/* we can only do subset searches once the original query is complete */
 	subset = rb_source_search_is_subset (search, cur_text, new_text);
 	if (priv->query_active && subset) {

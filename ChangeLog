@@ -1,5 +1,11 @@
 2009-03-26  Jonathan Matthew  <jonathan@d14n.org>
 
+	* sources/rb-auto-playlist-source.c: (impl_search):
+	If we don't have the base query yet, defer the search until we do.
+	Fixes #576846.
+
+2009-03-26  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/generic-player/Makefile.am:
 	* plugins/generic-player/rb-generic-player-plugin.c:
 	(rb_generic_player_plugin_class_init), (create_source_cb):
