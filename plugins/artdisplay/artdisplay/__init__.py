@@ -384,10 +384,9 @@ class ArtDisplayPlugin (rb.Plugin):
 
 	def on_get_pixbuf_completed(self, entry, pixbuf, uri):
 		# Set the pixbuf for the entry returned from the art db
-		if entry != self.current_entry:
-			return
-		self.current_pixbuf = pixbuf
-		self.art_widget.set (entry, pixbuf, uri, False)
+		if entry == self.current_entry:
+			self.current_pixbuf = pixbuf
+			self.art_widget.set (entry, pixbuf, uri, False)
 		if pixbuf:
 			db = self.shell.get_property ("db")
 			# This might be from a playing-changed signal,
@@ -398,8 +397,15 @@ class ArtDisplayPlugin (rb.Plugin):
 			gobject.idle_add(idle_emit_art)
 
 	def cover_art_request (self, db, entry):
-		if entry == self.current_entry:
-			return self.current_pixbuf
+		a = [None]
+		def callback(entry, pixbuf, uri):
+			a[0] = pixbuf
+			self.on_get_pixbuf_completed(entry, pixbuf, uri)
+			
+		self.art_db.get_pixbuf(db, entry, callback)
+
+		# If callback was called synchronously we can return a pixmap
+		return a[0]
 
 	def cover_art_notify (self, db, entry, field, metadata):
 		if entry != self.current_entry:
