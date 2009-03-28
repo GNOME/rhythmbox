@@ -1,16 +1,18 @@
-# English translation of rhythmbox.
-# Copyright (C) 2004 THE rhythmbox'S COPYRIGHT HOLDER
+# British English translation of rhythmbox.
+# Copyright (C) 2004 rhythmbox's COPYRIGHT HOLDER
 # This file is distributed under the same license as the rhythmbox package.
 # David Lodge <dave@cirt.net>, 2004.
 #
 # Philip Withnall <philip@tecnocode.co.uk>, 2009.
+# Bruce Cowan <bcowan@fastmail.co.uk>, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox HEAD\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-12 07:07+0000\n"
-"PO-Revision-Date: 2009-03-12 07:07+0000\n"
-"Last-Translator: Philip Withnall <philip@tecnocode.co.uk>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=rhythmbox&component=general\n"
+"POT-Creation-Date: 2009-03-27 00:08+0000\n"
+"PO-Revision-Date: 2009-03-27 15:43+0000\n"
+"Last-Translator: Bruce Cowan <bcowan@fastmail.co.uk>\n"
 "Language-Team: British English <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,55 +41,55 @@ msgstr "Failed to create %s element; check your installation"
 msgid "Unknown playback error"
 msgstr "Unknown playback error"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1136
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1150
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1138
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1152
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Failed to link new stream into GStreamer pipeline"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1178
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1180
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Failed to start new stream"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2717
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2719
 #, c-format
 msgid "Failed to open output device"
 msgstr "Failed to open output device"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2796
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2798
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Failed to open output device: %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3033
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3115
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3035
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3117
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Failed to create GStreamer element; check your installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3044
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3046
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Failed to create audio output element; check your installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3089
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3131
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3157
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3166
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3175
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3091
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3133
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3159
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3168
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3177
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Failed to link GStreamer pipeline; check your installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3270
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3272
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Failed to create GStreamer pipeline to play %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3286
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3288
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Failed to start playback of %s"
@@ -493,18 +495,6 @@ msgstr "_Title:"
 msgid "_Track number:"
 msgstr "_Track number:"
 
-#: ../data/glade/uri.glade.h:1
-msgid "*"
-msgstr "*"
-
-#: ../data/glade/uri.glade.h:2
-msgid "Enter the _location (URI) of the file you would like to add:"
-msgstr "Enter the _location (URI) of the file you would like to add:"
-
-#: ../data/glade/uri.glade.h:3
-msgid "Open from URI"
-msgstr "Open from URI"
-
 #: ../data/playlists.xml.in.h:1
 msgid "My Top Rated"
 msgstr "My Top Rated"
@@ -535,28 +525,28 @@ msgstr "Rhythmbox Music Player"
 #. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
 #: ../lib/rb-cut-and-paste-code.c:270
 msgid "Today %I:%M %p"
-msgstr "Today %I:%M %p"
+msgstr "Today %H:%M"
 
 #. Translators: "friendly time" string for the previous day,
 #. * strftime format. e.g. "Yesterday 12:34 am"
 #.
 #: ../lib/rb-cut-and-paste-code.c:283
 msgid "Yesterday %I:%M %p"
-msgstr "Yesterday %I:%M %p"
+msgstr "Yesterday %H:%M"
 
 #. Translators: "friendly time" string for a day in the current week,
 #. * strftime format. e.g. "Wed 12:34 am"
 #.
 #: ../lib/rb-cut-and-paste-code.c:299
 msgid "%a %I:%M %p"
-msgstr "%a %I:%M %p"
+msgstr "%a %H:%M"
 
 #. Translators: "friendly time" string for a day in the current year,
 #. * strftime format. e.g. "Feb 12 12:34 am"
 #.
 #: ../lib/rb-cut-and-paste-code.c:311
 msgid "%b %d %I:%M %p"
-msgstr "%d %b %I:%M %p"
+msgstr "%d %b %H:%M"
 
 #. Translators: "friendly time" string for a day in a different year,
 #. * strftime format. e.g. "Feb 12 1997"
@@ -582,8 +572,8 @@ msgstr "%d %b %Y"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:129
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:248
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:269
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:159
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:160
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:179
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:180
 #: ../plugins/audiocd/rb-audiocd-source.c:217
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:510
@@ -592,7 +582,7 @@ msgstr "%d %b %Y"
 #: ../plugins/daap/rb-daap-connection.c:698
 #: ../plugins/generic-player/rb-generic-player-source.c:1295
 #: ../plugins/ipod/rb-ipod-source.c:305
-#: ../plugins/jamendo/jamendo/JamendoSource.py:298
+#: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:530
 #: ../plugins/iradio/rb-iradio-source.c:1094
 #: ../plugins/iradio/rb-station-properties-dialog.c:495
@@ -603,7 +593,7 @@ msgstr "%d %b %Y"
 #: ../podcast/rb-podcast-properties-dialog.c:539
 #: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1284
 #: ../rhythmdb/rhythmdb-tree.c:1288 ../rhythmdb/rhythmdb-tree.c:1292
-#: ../rhythmdb/rhythmdb-tree.c:1296 ../rhythmdb/rhythmdb.c:1768
+#: ../rhythmdb/rhythmdb-tree.c:1296 ../rhythmdb/rhythmdb.c:1770
 #: ../shell/rb-shell-player.c:1711 ../shell/rb-shell.c:3106
 #: ../sources/rb-podcast-source.c:1668 ../widgets/rb-entry-view.c:1041
 #: ../widgets/rb-entry-view.c:1066 ../widgets/rb-entry-view.c:1469
@@ -916,7 +906,7 @@ msgstr "Last submission time:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1083
 #: ../plugins/iradio/rb-station-properties-dialog.c:506
-#: ../rhythmdb/rhythmdb.c:3583 ../widgets/rb-entry-view.c:989
+#: ../rhythmdb/rhythmdb.c:3587 ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1527 ../widgets/rb-entry-view.c:1540
 #: ../widgets/rb-song-info.c:1347
 msgid "Never"
@@ -1918,19 +1908,20 @@ msgstr "Number of Tracks:"
 msgid "Serial Number:"
 msgstr "Serial Number:"
 
-#: ../plugins/ipod/ipod-info.glade.h:14
+#. amount of disk space used on the iPod
+#: ../plugins/ipod/ipod-info.glade.h:15
 msgid "Volume Usage:"
 msgstr "Volume Usage:"
 
-#: ../plugins/ipod/ipod-info.glade.h:15
+#: ../plugins/ipod/ipod-info.glade.h:16
 msgid "Your Name:"
 msgstr "Your Name:"
 
-#: ../plugins/ipod/ipod-info.glade.h:16
+#: ../plugins/ipod/ipod-info.glade.h:17
 msgid "iPod Name:"
 msgstr "iPod Name:"
 
-#: ../plugins/ipod/ipod-info.glade.h:17
+#: ../plugins/ipod/ipod-info.glade.h:18
 msgid "iPod Properties"
 msgstr "iPod Properties"
 
@@ -1973,7 +1964,7 @@ msgstr "_Name:"
 msgid "iPod detected"
 msgstr "iPod detected"
 
-#: ../plugins/ipod/rb-ipod-helpers.c:297
+#: ../plugins/ipod/rb-ipod-helpers.c:299
 msgid "Unable to initialise new iPod"
 msgstr "Unable to initialise new iPod"
 
@@ -2165,7 +2156,7 @@ msgstr ""
 "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
 
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:2
-#: ../plugins/jamendo/jamendo/JamendoSource.py:65
+#: ../plugins/jamendo/jamendo/JamendoSource.py:62
 msgid "Jamendo"
 msgstr "Jamendo"
 
@@ -2191,16 +2182,16 @@ msgstr "_Donate to Artist"
 msgid "Donate Money to this Artist"
 msgstr "Donate Money to this Artist"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:121
+#: ../plugins/jamendo/jamendo/JamendoSource.py:120
 msgid "Loading Jamendo catalogue"
 msgstr "Loading Jamendo catalogue"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:359
+#: ../plugins/jamendo/jamendo/JamendoSource.py:301
 #, python-format
 msgid "Error looking up p2plink for album %s on jamendo.com"
 msgstr "Error looking up p2plink for album %s on jamendo.com"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:383
+#: ../plugins/jamendo/jamendo/JamendoSource.py:325
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Error looking up artist %s on jamendo.com"
@@ -2615,7 +2606,7 @@ msgstr "Visit Magnatune at "
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:43
 msgid "_Email:"
-msgstr "_Email:"
+msgstr "_E-mail:"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:44
 msgid "_Month:"
@@ -2731,7 +2722,7 @@ msgstr "_Amount to pay (US Dollars):"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:41
 msgid "_Email address:"
-msgstr "_Email address:"
+msgstr "_E-mail address:"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:42
 msgid "_Name (as printed on card):"
@@ -3304,7 +3295,7 @@ msgstr "Couldn't access %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1650
+#: ../rhythmdb/rhythmdb.c:1652
 msgid "The Beatles"
 msgstr "The Beatles"
 
@@ -3312,7 +3303,7 @@ msgstr "The Beatles"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1656
+#: ../rhythmdb/rhythmdb.c:1658
 msgid "Help!"
 msgstr "Help!"
 
@@ -3320,33 +3311,33 @@ msgstr "Help!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1662
+#: ../rhythmdb/rhythmdb.c:1664
 msgid "Ticket To Ride"
 msgstr "Ticket To Ride"
 
-#: ../rhythmdb/rhythmdb.c:2207
+#: ../rhythmdb/rhythmdb.c:2209
 msgid "invalid unicode in error message"
 msgstr "invalid unicode in error message"
 
-#: ../rhythmdb/rhythmdb.c:3072
+#: ../rhythmdb/rhythmdb.c:3076
 msgid "Could not load the music database:"
 msgstr "Could not load the music database:"
 
-#: ../rhythmdb/rhythmdb.c:4435
+#: ../rhythmdb/rhythmdb.c:4439
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minute"
 msgstr[1] "%ld minutes"
 
-#: ../rhythmdb/rhythmdb.c:4436
+#: ../rhythmdb/rhythmdb.c:4440
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hour"
 msgstr[1] "%ld hours"
 
-#: ../rhythmdb/rhythmdb.c:4437
+#: ../rhythmdb/rhythmdb.c:4441
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3354,7 +3345,7 @@ msgstr[0] "%ld day"
 msgstr[1] "%ld days"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4443
+#: ../rhythmdb/rhythmdb.c:4447
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s and %s"
@@ -3362,8 +3353,8 @@ msgstr "%s, %s and %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4449 ../rhythmdb/rhythmdb.c:4457
-#: ../rhythmdb/rhythmdb.c:4468
+#: ../rhythmdb/rhythmdb.c:4453 ../rhythmdb/rhythmdb.c:4461
+#: ../rhythmdb/rhythmdb.c:4472
 #, c-format
 msgid "%s and %s"
 msgstr "%s and %s"
@@ -4002,7 +3993,10 @@ msgstr "%s (Paused)"
 
 #: ../shell/rb-shell.c:2307
 msgid "translator-credits"
-msgstr "David Lodge <dave@cirt.net>"
+msgstr ""
+"David Lodge <dave@cirt.net>\n"
+"Philip Withnall <philip@tecnocode.co.uk>\n"
+"Bruce Cowan <bcowan@fastmail.co.uk>"
 
 #: ../shell/rb-shell.c:2310
 msgid ""
@@ -4817,9 +4811,13 @@ msgstr[0] "%d Star"
 msgstr[1] "%d Stars"
 
 #. this string can only be so long, or there wont be a search entry :)
-#: ../widgets/rb-search-entry.c:156
+#: ../widgets/rb-search-entry.c:165
 msgid "_Search:"
 msgstr "_Search:"
+
+#: ../widgets/rb-search-entry.c:176
+msgid "Clear the search text"
+msgstr "Clear the search text"
 
 #: ../widgets/rb-song-info.c:371
 msgid "Song Properties"
@@ -4840,6 +4838,15 @@ msgstr "On the desktop"
 #: ../widgets/rb-song-info.c:1141
 msgid "Unknown location"
 msgstr "Unknown location"
+
+#~ msgid "*"
+#~ msgstr "*"
+
+#~ msgid "Enter the _location (URI) of the file you would like to add:"
+#~ msgstr "Enter the _location (URI) of the file you would like to add:"
+
+#~ msgid "Open from URI"
+#~ msgstr "Open from URI"
 
 #~ msgid "GB"
 #~ msgstr "GB"
