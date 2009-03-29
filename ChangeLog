@@ -1,5 +1,11 @@
 2009-03-29  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/cd-recorder/rb-playlist-source-recorder.c:
+	(rb_playlist_source_recorder_constructor):
+	Use the right user data for the device-changed signal.  Fixes #365154.
+
+2009-03-29  Jonathan Matthew  <jonathan@d14n.org>
+
 	* widgets/rb-song-info.c: (rb_song_info_constructor):
 	Set mnemonic-widget property of the 'rating' label to point to the
 	rating widget.  Fixes #576673.

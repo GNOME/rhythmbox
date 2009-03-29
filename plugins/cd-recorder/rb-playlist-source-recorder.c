@@ -1248,7 +1248,7 @@ rb_playlist_source_recorder_constructor (GType type,
         update_speed_combobox (source);
         g_signal_connect (source->priv->device_menu, "device-changed",
                           G_CALLBACK (rb_playlist_source_recorder_device_changed_cb),
-                          xml);
+                          source);
 
         g_signal_connect_object (G_OBJECT (source->priv->recorder), "eos",
                                  G_CALLBACK (eos_cb), source, 0);
