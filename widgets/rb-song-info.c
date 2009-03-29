@@ -541,6 +541,7 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 				 G_OBJECT (song_info), 0);
 	gtk_container_add (GTK_CONTAINER (glade_xml_get_widget (xml, "song_info_rating_container")),
 			   song_info->priv->rating);
+	g_object_set (glade_xml_get_widget (xml, "rating_label"), "mnemonic-widget", song_info->priv->rating, NULL);
 
 	/* add relationship between the rating label and the rating widget */
 	lobj = gtk_widget_get_accessible (glade_xml_get_widget (xml, "rating_label"));

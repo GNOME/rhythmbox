@@ -1,5 +1,11 @@
 2009-03-29  Jonathan Matthew  <jonathan@d14n.org>
 
+	* widgets/rb-song-info.c: (rb_song_info_constructor):
+	Set mnemonic-widget property of the 'rating' label to point to the
+	rating widget.  Fixes #576673.
+
+2009-03-29  Jonathan Matthew  <jonathan@d14n.org>
+
 	* data/glade/podcast-prefs.glade:
 	Set mnemonic_widget property of the 'download location' widget so the
 	shortcut selects the file chooser.  Fixes #576925.
