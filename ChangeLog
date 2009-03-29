@@ -1,3 +1,31 @@
+2009-03-29  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by: Bruce Cowan  <bugs@bcowan.fastmail.co.uk>
+
+	* data/glade/create-playlist.glade:
+	* data/glade/library-prefs.glade:
+	* data/glade/playback-prefs.glade:
+	* plugins/audioscrobbler/audioscrobbler.rb-plugin.in:
+	* plugins/cd-recorder/rb-playlist-source-recorder.c: (burn_cd),
+	(check_media_length), (rb_playlist_source_recorder_start):
+	* plugins/daap/rb-daap-mdns-browser-avahi.c:
+	(rb_daap_mdns_browser_start), (rb_daap_mdns_browser_stop):
+	* plugins/daap/rb-daap-mdns-publisher-avahi.c:
+	(rb_daap_mdns_publisher_publish),
+	(rb_daap_mdns_publisher_withdraw):
+	* plugins/ipod/ipod-init.glade:
+	* plugins/ipod/rb-ipod-helpers.c:
+	(rb_ipod_helpers_show_first_time_dialog):
+	* plugins/iradio/rb-iradio-source.c:
+	(rb_iradio_source_constructor):
+	* plugins/jamendo/jamendo-loading.glade:
+	* plugins/jamendo/jamendo/JamendoSource.py:
+	* plugins/magnatune/magnatune/MagnatuneSource.py:
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element):
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor):
+	Fix some capitalisation, americanisation, and other stuff in
+	translatable strings.  #576987.
+
 2009-03-27  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Niels Vorgaard Christensen  <vorgaard.c@math.ku.dk>

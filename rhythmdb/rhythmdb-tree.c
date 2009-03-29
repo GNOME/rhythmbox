@@ -404,8 +404,8 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 							g_set_error (ctx->error,
 								     RHYTHMDB_TREE_ERROR,
 								     RHYTHMDB_TREE_ERROR_DATABASE_TOO_NEW,
-								     _("The database was created by a later version of rhythmbox."
-								       "  This version of rhythmbox cannot read the database."));
+								     _("The database was created by a later version of Rhythmbox."
+								       "  This version of Rhythmbox cannot read the database."));
 							xmlStopParser (ctx->xmlctx);
 						}
 					}

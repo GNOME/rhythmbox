@@ -296,7 +296,7 @@ rb_ipod_helpers_show_first_time_dialog (GMount *mount, const char *glade_file)
 	rb_debug ("attempting to init ipod on '%s', with model '%s' and name '%s'",
 		  mountpoint, info->model_number, ipod_name);
 	if (!itdb_init_ipod (mountpoint, info->model_number, ipod_name, &error)) {
-		rb_error_dialog (NULL, _("Unable to initialise new iPod"), "%s", error->message);
+		rb_error_dialog (NULL, _("Unable to initialize new iPod"), "%s", error->message);
 
 		g_free (mountpoint);
 		g_free (ipod_name);

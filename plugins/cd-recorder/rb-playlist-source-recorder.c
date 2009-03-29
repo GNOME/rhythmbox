@@ -579,7 +579,7 @@ burn_cd (RBPlaylistSourceRecorder *source,
         } else if (res == RB_RECORDER_RESULT_ERROR) {
                 set_message_text (source, _("Writing failed.  Try again?"));
         } else {
-                set_message_text (source, _("Writing cancelled.  Try again?"));
+                set_message_text (source, _("Writing canceled.  Try again?"));
         }
 
         progress_set_fraction (source->priv->progress, 0);
@@ -1607,7 +1607,7 @@ check_media_length (RBPlaylistSourceRecorder *source,
         if ((media_duration < 0) && (duration > 4440)) {
                 message = g_strdup_printf (_("This playlist is %s minutes long.  "
                                              "This exceeds the length of a standard audio CD.  "
-                                             "If the destination media is larger than a standard audio CD "
+                                             "If the destination medium is larger than a standard audio CD "
                                              "please insert it in the drive and try again."),
                                            duration_string);
         }
@@ -1657,7 +1657,7 @@ rb_playlist_source_recorder_start (RBPlaylistSourceRecorder *source,
 
                         error_dialog (source,
                                       _("Could not find temporary space!"),
-                                      _("Could not find enough temporary space to convert audio tracks.  %s MiB required."),
+                                      _("Could not find enough temporary space to convert audio tracks.  %s MB required."),
                                       mib_needed_string);
                         g_free (mib_needed_string);
 

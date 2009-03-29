@@ -118,7 +118,7 @@ class MagnatuneSource(rb.BrowserSource):
 				progress = min (float(self.__load_current_size) / self.__load_total_size, 1.0)
 			else:
 				progress = -1.0
-			return (_("Loading Magnatune catalogue"), None, progress)
+			return (_("Loading Magnatune catalog"), None, progress)
 		elif self.__downloading:
 			progress = min (self.__download_progress, 1.0)
 			return (_("Downloading Magnatune Album(s)"), None, progress)
@@ -354,8 +354,8 @@ class MagnatuneSource(rb.BrowserSource):
 			out = open(magnatune_song_info, 'w')
 			filename = self.__find_song_info(catalog)
 			if filename is None:
-				rb.error_dialog(title=_("Unable to load catalogue"),
-						message=_("Rhythmbox could not understand the Magnatune catalogue, please file a bug."))
+				rb.error_dialog(title=_("Unable to load catalog"),
+						message=_("Rhythmbox could not understand the Magnatune catalog, please file a bug."))
 				return
 			out.write(catalog.read(filename))
 			out.close()

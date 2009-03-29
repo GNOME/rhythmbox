@@ -117,7 +117,7 @@ class JamendoSource(rb.BrowserSource):
 				progress = min (float(self.__load_current_size) / self.__load_total_size, 1.0)
 			else:
 				progress = -1.0
-			return (_("Loading Jamendo catalogue"), None, progress)
+			return (_("Loading Jamendo catalog"), None, progress)
 		else:
 			qm = self.get_property("query-model")
 			return (qm.compute_status_normal("%d song", "%d songs"), None, 0.0)

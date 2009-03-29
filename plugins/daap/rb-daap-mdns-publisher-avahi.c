@@ -278,7 +278,7 @@ rb_daap_mdns_publisher_publish (RBDaapMdnsPublisher *publisher,
 			     RB_DAAP_MDNS_PUBLISHER_ERROR,
 			     RB_DAAP_MDNS_PUBLISHER_ERROR_NOT_RUNNING,
                              "%s",
-                             _("The avahi MDNS service is not running"));
+                             _("The avahi mDNS service is not running"));
 		return FALSE;
 	}
 
@@ -298,7 +298,7 @@ rb_daap_mdns_publisher_withdraw (RBDaapMdnsPublisher *publisher,
 			     RB_DAAP_MDNS_PUBLISHER_ERROR,
 			     RB_DAAP_MDNS_PUBLISHER_ERROR_NOT_RUNNING,
                              "%s",
-                             _("The avahi MDNS service is not running"));
+                             _("The avahi mDNS service is not running"));
 		return FALSE;
 	}
 
@@ -307,7 +307,7 @@ rb_daap_mdns_publisher_withdraw (RBDaapMdnsPublisher *publisher,
 			     RB_DAAP_MDNS_PUBLISHER_ERROR,
 			     RB_DAAP_MDNS_PUBLISHER_ERROR_FAILED,
                              "%s",
-                             _("The MDNS service is not published"));
+                             _("The mDNS service is not published"));
 		return FALSE;
 	}
 

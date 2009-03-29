@@ -234,7 +234,7 @@ rb_daap_mdns_browser_start (RBDaapMdnsBrowser *browser,
 			     RB_DAAP_MDNS_BROWSER_ERROR,
 			     RB_DAAP_MDNS_BROWSER_ERROR_NOT_RUNNING,
 			     "%s",
-			     _("MDNS service is not running"));
+			     _("mDNS service is not running"));
 		return FALSE;
 	}
 	if (browser->priv->service_browser != NULL) {
@@ -277,7 +277,7 @@ rb_daap_mdns_browser_stop (RBDaapMdnsBrowser *browser,
 			     RB_DAAP_MDNS_BROWSER_ERROR,
 			     RB_DAAP_MDNS_BROWSER_ERROR_NOT_RUNNING,
 			     "%s",
-			     _("MDNS service is not running"));
+			     _("mDNS service is not running"));
 		return FALSE;
 	}
 	if (browser->priv->service_browser == NULL) {

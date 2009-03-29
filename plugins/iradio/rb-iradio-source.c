@@ -312,9 +312,8 @@ rb_iradio_source_constructor (GType type,
 	action = gtk_action_group_get_action (source->priv->action_group,
                                               "MusicNewInternetRadioStation");
         /* Translators: this is the toolbar button label for 
-           New Interner Radio Station action.
-           Don't include the prefix "radio|" in the translation. */
-        g_object_set (action, "short-label", Q_("radio|New"), NULL);
+           New Internet Radio Station action. */
+        g_object_set (action, "short-label", C_("Radio", "New"), NULL);
 
 
 	/* set up stations view */

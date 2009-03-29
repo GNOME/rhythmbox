@@ -534,9 +534,8 @@ rb_podcast_source_constructor (GType type,
 	action = gtk_action_group_get_action (source->priv->action_group,
 					      "MusicNewPodcast");
 	/* Translators: this is the toolbar button label
-	   for New Podcast Feed action.
-	   Don't include the prefix "podcast|" in the translation. */
-	g_object_set (G_OBJECT (action), "short-label", Q_("podcast|New"), NULL);
+	   for New Podcast Feed action. */
+	g_object_set (G_OBJECT (action), "short-label", C_("Podcast", "New"), NULL);
 
 	action = gtk_action_group_get_action (source->priv->action_group,
 					      "PodcastUpdateAllFeeds");
