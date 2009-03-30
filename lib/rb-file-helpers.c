@@ -37,8 +37,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <libgnome/gnome-init.h>		/* for GNOME_DOT_GNOME */
-
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
 #include "rb-util.h"
@@ -103,7 +101,7 @@ rb_dot_dir (void)
 {
 	if (dot_dir == NULL) {
 		dot_dir = g_build_filename (g_get_home_dir (),
-					    GNOME_DOT_GNOME,
+					    ".gnome2",
 					    "rhythmbox",
 					    NULL);
 

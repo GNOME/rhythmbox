@@ -14,6 +14,12 @@ librb_la_SOURCES =					\
 	rb-debug.h					\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h				\
+	eggdesktopfile.c				\
+	eggdesktopfile.h				\
+	eggsmclient.c					\
+	eggsmclient.h					\
+	eggsmclient-private.h				\
+	eggsmclient-xsmp.c				\
 	rb-file-helpers.c				\
 	rb-file-helpers.h				\
 	rb-glade-helpers.c				\
@@ -39,12 +45,13 @@ INCLUDES =						\
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-DSHARE_DIR=\"$(pkgdatadir)\"			\
 	-DDATADIR=\""$(datadir)"\"			\
+	-DEGG_SM_CLIENT_BACKEND_XSMP			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/widgets				\
 	$(SOUP_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
-librb_la_LIBADD = $(SOUP_LIBS)
+librb_la_LIBADD = $(SOUP_LIBS) -lSM -lICE
 
 BUILT_SOURCES=
 

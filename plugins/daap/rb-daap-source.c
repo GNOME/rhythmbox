@@ -34,10 +34,13 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libgnomeui/gnome-password-dialog.h>
 
 #ifdef WITH_GNOME_KEYRING
 #include <gnome-keyring.h>
+#endif
+
+#if !GTK_CHECK_VERSION(2,14,0)
+#include <libgnomeui/gnome-password-dialog.h>
 #endif
 
 #include "rhythmdb.h"
@@ -96,6 +99,8 @@ struct RBDAAPSourcePrivate
 	const char *connection_status;
 	float connection_progress;
 
+	GMainLoop *mount_op_loop;
+	gboolean mount_op_handled;
 	gboolean tried_password;
 	gboolean disconnecting;
 };
@@ -313,13 +318,154 @@ rb_daap_source_new (RBShell *shell,
 	return source;
 }
 
+#if GTK_CHECK_VERSION(2,14,0)
+
+/* use GtkMountOperation if available */
+
+static void
+mount_op_reply_cb (GMountOperation *op,
+		   GMountOperationResult result,
+		   RBDAAPSource *source)
+{
+	rb_debug ("mount op reply: %d", result);
+	source->priv->mount_op_handled = (result == G_MOUNT_OPERATION_HANDLED);
+	g_main_loop_quit (source->priv->mount_op_loop);
+}
+
+static char *
+ask_password (RBDAAPSource *source, const char *name, const char *keyring)
+{
+	GtkWindow *parent;
+	GMountOperation *mount_op;
+	GAskPasswordFlags flags;
+	char *password = NULL;
+	char *message;
+	guint32 item_id;
+
+	parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source)));
+
+	mount_op = gtk_mount_operation_new (parent);
+	g_signal_connect_object (mount_op, "reply", G_CALLBACK (mount_op_reply_cb), source, 0);
+
+	flags = G_ASK_PASSWORD_NEED_PASSWORD;
+#ifdef WITH_GNOME_KEYRING
+	if (gnome_keyring_is_available ()) {
+		flags |= G_ASK_PASSWORD_SAVING_SUPPORTED;
+	}
+#endif
+	source->priv->mount_op_handled = FALSE;
+	
+	message = g_strdup_printf (_("The music share '%s' requires a password to connect"), name);
+	g_signal_emit_by_name (mount_op, "ask-password", message, NULL, "DAAP", flags);
+	g_free (message);
+
+	source->priv->mount_op_loop = g_main_loop_new (NULL, FALSE);
+	GDK_THREADS_LEAVE ();
+	g_main_loop_run (source->priv->mount_op_loop);
+	GDK_THREADS_ENTER ();
+	g_main_loop_unref (source->priv->mount_op_loop);
+	source->priv->mount_op_loop = NULL;
+
+	if (source->priv->mount_op_handled) {
+		password = g_strdup (g_mount_operation_get_password (mount_op));
+
+#ifdef WITH_GNOME_KEYRING
+		switch (g_mount_operation_get_password_save (mount_op)) {
+		case G_PASSWORD_SAVE_NEVER:
+			break;
+
+		case G_PASSWORD_SAVE_FOR_SESSION:
+			keyring = "session";
+			/* fall through */
+
+		case G_PASSWORD_SAVE_PERMANENTLY:
+			gnome_keyring_set_network_password_sync (keyring,
+				NULL,
+				"DAAP", name,
+				NULL, "daap",
+				NULL, 0,
+				password,
+				&item_id);
+			break;
+
+		default:
+			g_assert_not_reached ();
+		}
+#endif
+	}
+
+	return password;
+}
+
+#else
+
+static char *
+ask_password (RBDAAPSource *source, const char *name, const char *keyring)
+{
+	GtkWindow *parent;
+	GnomePasswordDialog *dialog;
+	char *message;
+	char *password;
+
+	parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source)));
+
+	message = g_strdup_printf (_("The music share '%s' requires a password to connect"), name);
+	dialog = GNOME_PASSWORD_DIALOG (gnome_password_dialog_new (
+				_("Password Required"), message,
+				NULL, NULL, TRUE));
+	gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
+	g_free (message);
+
+	gnome_password_dialog_set_domain (dialog, "DAAP");
+	gnome_password_dialog_set_show_username (dialog, FALSE);
+	gnome_password_dialog_set_show_domain (dialog, FALSE);
+	gnome_password_dialog_set_show_userpass_buttons (dialog, FALSE);
+#ifdef WITH_GNOME_KEYRING
+	gnome_password_dialog_set_show_remember (dialog, gnome_keyring_is_available ());
+#endif
+
+	if (gnome_password_dialog_run_and_block (dialog)) {
+		password = gnome_password_dialog_get_password (dialog);
+
+#ifdef WITH_GNOME_KEYRING
+		switch (gnome_password_dialog_get_remember (dialog)) {
+		case GNOME_PASSWORD_DIALOG_REMEMBER_SESSION:
+			keyring = "session";
+			/* fall through */
+		case GNOME_PASSWORD_DIALOG_REMEMBER_FOREVER:
+		{
+			guint32 item_id;
+			gnome_keyring_set_network_password_sync (keyring,
+				NULL,
+				"DAAP", name,
+				NULL, "daap",
+				NULL, 0,
+				password,
+				&item_id);
+			break;
+		}
+		default:
+			break;
+		}
+#endif
+	} else {
+		password = NULL;
+	}
+
+	/* buggered if I know why we don't do this...
+	g_object_unref (G_OBJECT (dialog)); */
+	return password;
+}
+
+#endif
+
 static char *
 connection_auth_cb (RBDAAPConnection *connection,
 		    const char       *name,
 		    RBDAAPSource     *source)
 {
-	gchar *password = NULL;
 #ifdef WITH_GNOME_KEYRING
+	gchar *password = NULL;
 	GnomeKeyringResult keyringret;
 	gchar *keyring;
 	GList *list;
@@ -347,69 +493,18 @@ connection_auth_cb (RBDAAPConnection *connection,
 	}
 
 	if (password == NULL) {
-#endif
-		GtkWindow *parent;
-		GnomePasswordDialog *dialog;
-		char *message;
-
-		parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source)));
-
-		message = g_strdup_printf (_("The music share '%s' requires a password to connect"), name);
-		dialog = GNOME_PASSWORD_DIALOG (gnome_password_dialog_new (
-					_("Password Required"), message,
-					NULL, NULL, TRUE));
-		gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
-		g_free (message);
-
-		gnome_password_dialog_set_domain (dialog, "DAAP");
-		gnome_password_dialog_set_show_username (dialog, FALSE);
-		gnome_password_dialog_set_show_domain (dialog, FALSE);
-		gnome_password_dialog_set_show_userpass_buttons (dialog, FALSE);
-#ifdef WITH_GNOME_KEYRING
-		gnome_password_dialog_set_show_remember (dialog, gnome_keyring_is_available ());
-#endif
-
-		if (gnome_password_dialog_run_and_block (dialog)) {
-			password = gnome_password_dialog_get_password (dialog);
-
-#ifdef WITH_GNOME_KEYRING
-			switch (gnome_password_dialog_get_remember (dialog)) {
-			case GNOME_PASSWORD_DIALOG_REMEMBER_SESSION:
-				g_free (keyring);
-				keyring = g_strdup ("session");
-				/* fall through */
-			case GNOME_PASSWORD_DIALOG_REMEMBER_FOREVER:
-			{
-				guint32 item_id;
-				gnome_keyring_set_network_password_sync (keyring,
-					NULL,
-					"DAAP", name,
-					NULL, "daap",
-					NULL, 0,
-					password,
-					&item_id);
-				break;
-			}
-			default:
-				break;
-			}
-#endif
-		} else {
-			password = NULL;
-		}
-
-		/* buggered if I know why we don't do this...
-		g_object_unref (G_OBJECT (dialog)); */
-#ifdef WITH_GNOME_KEYRING
+		password = ask_password (source, name, keyring);
 	}
 
-	/* or these...
+	/* this is commented out for some reason
 	if (list)
 		gnome_keyring_network_password_list_free (list); */
 	g_free (keyring);
+	return password;
+#else
+	return ask_password (source, name, NULL);
 #endif
 
-	return password;
 }
 
 static void

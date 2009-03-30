@@ -30,7 +30,7 @@ AC_CHECK_SIZEOF(long)
 DBUS_MIN_REQS=0.35
 GST_0_10_REQS=0.10.12
 GTK_REQS=2.12.0
-GLIB_REQS=2.15.5
+GLIB_REQS=2.16.0
 GNOME_MEDIA_PROFILES_REQS=2.8
 LIBNOTIFY_REQS=0.3.2
 LIBGPOD_REQS=0.6
@@ -65,14 +65,17 @@ PKG_PROG_PKG_CONFIG
 
 PKG_CHECK_MODULES(RB_CLIENT, glib-2.0 >= $GLIB_REQS gio-2.0 >= $GLIB_REQS)
 
+# libgnomeui still required with gtk < 2.14
+PKG_CHECK_EXISTS(gtk+-2.0 >= 2.14, [LIBGNOME_REQS=], [LIBGNOME_REQS=libgnomeui-2.0])
+
 PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  gtk+-2.0 >= $GTK_REQS			\
 		  glib-2.0 >= $GLIB_REQS		\
 		  gio-2.0 >= $GLIB_REQS			\
 		  gnome-media-profiles >= $GNOME_MEDIA_PROFILES_REQS \
-		  libgnomeui-2.0			\
 		  libglade-2.0				\
-		  libsoup-2.4)
+		  libsoup-2.4				\
+		  $LIBGNOME_REQS)
 
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
 if test x$have_totem_plparser != xyes; then

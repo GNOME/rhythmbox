@@ -47,10 +47,9 @@
 #include <X11/XF86keysym.h>
 #endif /* HAVE_MMKEYS */
 
-#if !GTK_CHECK_VERSION(2,13,1)
+#if !GTK_CHECK_VERSION(2,14,0)
 #include <libgnome/libgnome.h>
 #endif
-#include <libgnomeui/gnome-client.h>
 
 #include "rb-shell.h"
 #include "rb-debug.h"
@@ -91,6 +90,8 @@
 #include "rb-song-info.h"
 #include "rb-marshal.h"
 #include "rb-missing-plugins.h"
+
+#include "eggsmclient.h"
 
 #define PLAYING_ENTRY_NOTIFY_TIME 4
 
@@ -240,13 +241,6 @@ static gboolean tray_destroy_cb (GtkObject *object, RBShell *shell);
 static void rb_shell_construct_notify_titles (RBShell *shell,
 					      RhythmDBEntry *entry);
 
-static gboolean save_yourself_cb (GnomeClient *client,
-                                  gint phase,
-                                  GnomeSaveStyle save_style,
-                                  gboolean shutdown,
-                                  GnomeInteractStyle interact_style,
-                                  gboolean fast,
-                                  RBShell *shell);
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 				    RBShell *shell);
@@ -260,7 +254,6 @@ static void rb_shell_player_volume_changed_cb (RBShellPlayer *player,
 					       GParamSpec *arg,
 					       RBShell *shell);
 
-static void session_die_cb (GnomeClient *client, RBShell *shell);
 static void rb_shell_session_init (RBShell *shell);
 
 enum
@@ -982,7 +975,7 @@ static GMountOperation *
 rb_shell_create_mount_op_cb (RhythmDB *db, RBShell *shell)
 {
 	/* create a gtk mount operation if possible, otherwise don't use one at all */
-#if GTK_CHECK_VERSION(2,13,1)
+#if GTK_CHECK_VERSION(2,14,0)
 	return gtk_mount_operation_new (GTK_WINDOW (shell->priv->window));
 #else
 	return NULL;
@@ -2381,7 +2374,7 @@ rb_shell_cmd_contents (GtkAction *action,
 {
 	GError *error = NULL;
 
-#if GTK_CHECK_VERSION(2,13,1)
+#if GTK_CHECK_VERSION(2,14,0)
 	gtk_show_uri (gtk_widget_get_screen (shell->priv->window),
 		      "ghelp:rhythmbox",
 		      gtk_get_current_event_time (),
@@ -3178,14 +3171,6 @@ rb_shell_do_notify (RBShell *shell, gboolean requested, GError **error)
 	return TRUE;
 }
 
-static void
-session_die_cb (GnomeClient *client,
-                RBShell *shell)
-{
-        rb_debug ("session die");
-        rb_shell_quit (shell, NULL);
-}
-
 GQuark
 rb_shell_error_quark (void)
 {
@@ -3196,36 +3181,31 @@ rb_shell_error_quark (void)
 	return quark;
 }
 
-static gboolean
-save_yourself_cb (GnomeClient *client,
-                  gint phase,
-                  GnomeSaveStyle save_style,
-                  gboolean shutdown,
-                  GnomeInteractStyle interact_style,
-                  gboolean fast,
-                  RBShell *shell)
+static void
+session_save_state_cb (EggSMClient *client,
+		       GKeyFile *key_file,
+		       RBShell *shell)
 {
-        rb_debug ("session save yourself");
+	rb_debug ("session save-state");
 	rb_shell_sync_state (shell);
-        return TRUE;
+}
+
+static void
+session_quit_cb (EggSMClient *client,
+		 RBShell *shell)
+{
+	rb_debug ("session quit");
+	rb_shell_quit (shell, NULL);
 }
 
 static void
 rb_shell_session_init (RBShell *shell)
 {
-        GnomeClient *client;
+	EggSMClient *sm_client;
 
-        client = gnome_master_client ();
-
-        g_signal_connect_object (G_OBJECT (client),
-				 "save_yourself",
-				 G_CALLBACK (save_yourself_cb),
-				 shell, 0);
-
-        g_signal_connect_object (G_OBJECT (client),
-				 "die",
-				 G_CALLBACK (session_die_cb),
-				 shell, 0);
+	sm_client = egg_sm_client_get ();
+	g_signal_connect (sm_client, "save-state", G_CALLBACK (session_save_state_cb), shell);
+	g_signal_connect (sm_client, "quit", G_CALLBACK (session_quit_cb), shell);
 }
 
 RBSource *

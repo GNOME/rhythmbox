@@ -53,9 +53,6 @@
 #include <gdk/gdkx.h> /* For _get_user_time... */
 #include <gtk/gtk.h>
 #include <glade/glade-init.h>
-#include <libgnome/gnome-program.h>
-#include <libgnomeui/gnome-ui-init.h>
-#include <libgnomeui/gnome-app-helper.h>
 
 #include <gst/gst.h>
 
@@ -73,6 +70,8 @@
 #include "rb-util.h"
 #include "eel-gconf-extensions.h"
 #include "rb-util.h"
+#include "eggdesktopfile.h"
+#include "eggsmclient.h"
 
 #include <dbus/dbus-glib.h>
 #include "rb-shell-glue.h"
@@ -80,7 +79,6 @@
 #include "rb-playlist-manager.h"
 #include "rb-playlist-manager-glue.h"
 
-#define HAVE_LIBGNOME_GOPTION defined(GNOME_PARAM_GOPTION_CONTEXT)
 
 static gboolean debug           = FALSE;
 static char *debug_match        = NULL;
@@ -102,12 +100,12 @@ static void main_shell_weak_ref_cb (gpointer data, GObject *objptr);
 int
 main (int argc, char **argv)
 {
-	GnomeProgram *program = NULL;
 	DBusGConnection *session_bus;
 	GError *error = NULL;
 	RBShell *rb_shell;
-	char **new_argv;
 	gboolean activated;
+	char *accel_map_file = NULL;
+	char *desktop_file_path;
 
 	GOptionContext *context;
 	static const GOptionEntry options []  = {
@@ -127,44 +125,36 @@ main (int argc, char **argv)
 
 	rb_profile_start ("starting rhythmbox");
 
+#ifdef USE_UNINSTALLED_DIRS
+	desktop_file_path = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "rhythmbox.desktop", NULL);
+#else
+	desktop_file_path = g_build_filename (DATADIR, "applications", "rhythmbox.desktop", NULL);
+#endif
+	egg_set_desktop_file (desktop_file_path);
+	g_free (desktop_file_path);
+
 	context = g_option_context_new (NULL);
 	g_option_context_add_main_entries (context, options, GETTEXT_PACKAGE);
-
-	/* Disable event sounds for now by passing "--disable-sound" to libgnomeui.
-	 * See: http://bugzilla.gnome.org/show_bug.cgi?id=119222 */
-	new_argv = g_strdupv (argv);
-	new_argv = g_realloc (new_argv, (argc+2)*sizeof(char*));
-	new_argv[argc] = g_strdup ("--disable-sound");
-	new_argv[argc+1] = NULL;
 
 	rb_profile_start ("initializing gstreamer");
 	g_option_context_add_group (context, gst_init_get_option_group ());
 	rb_profile_end ("initializing gstreamer");
 
+	g_option_context_add_group (context, egg_sm_client_get_option_group ());
+	g_option_context_add_group (context, gtk_get_option_group (TRUE));
+
 	gtk_set_locale ();
-	rb_profile_start ("initializing gnome program");
 
-	g_set_application_name (_("Rhythmbox"));
-#if HAVE_LIBGNOME_GOPTION
-	program = gnome_program_init (PACKAGE, VERSION,
-				      LIBGNOMEUI_MODULE,
-				      argc+1, new_argv,
-				      GNOME_PARAM_GOPTION_CONTEXT, context,
-				      GNOME_PARAM_HUMAN_READABLE_NAME, _("Rhythmbox"),
-				      GNOME_PARAM_APP_DATADIR, DATADIR,
-				      NULL);
-#else
-	g_option_context_parse (context, &argc, &argv, NULL);
+	rb_profile_start ("parsing command line options");
+	if (g_option_context_parse (context, &argc, &argv, &error) == FALSE) {
+		g_print (_("%s\nRun '%s --help' to see a full list of available command line options.\n"),
+			 error->message, argv[0]);
+		g_error_free (error);
+		g_option_context_free (context);
+		exit (1);
+	}
 	g_option_context_free (context);
-	program = gnome_program_init (PACKAGE, VERSION,
-				      LIBGNOMEUI_MODULE,
-				      argc+1, new_argv,
-				      GNOME_PARAM_HUMAN_READABLE_NAME, _("Rhythmbox"),
-				      GNOME_PARAM_APP_DATADIR, DATADIR,
-				      NULL);
-#endif
-
-	rb_profile_end ("initializing gnome program");
+	rb_profile_end ("parsing command line options");
 
 	g_random_set_seed (time (0));
 
@@ -263,13 +253,20 @@ main (int argc, char **argv)
 		rb_file_helpers_init (FALSE);
 #endif
 
+		/* XXX not sure what to do with this.  should we move it to
+		 * the config dir, or leave it where it is?
+		 */
+		accel_map_file = g_build_filename (g_get_home_dir (),
+						   ".gnome2",
+						   "accels",
+						   "rhythmbox",
+						   NULL);
+		gtk_accel_map_load (accel_map_file);
+
+
 		rb_debug ("Going to create a new shell");
 
-		glade_gnome_init ();
-
 		rb_stock_icons_init ();
-
-		gtk_window_set_default_icon_name ("rhythmbox");
 
 		g_setenv ("PULSE_PROP_media.role", "music", TRUE);
 
@@ -348,13 +345,13 @@ main (int argc, char **argv)
 
 	gst_deinit ();
 
-	g_strfreev (new_argv);
-
 	rb_debug ("THE END");
 	rb_profile_end ("starting rhythmbox");
-	g_object_unref (program);
 
-	gnome_accelerators_sync ();
+	if (accel_map_file != NULL) {
+		gtk_accel_map_save (accel_map_file);
+	}
+
 	gdk_threads_leave ();
 
 	exit (0);

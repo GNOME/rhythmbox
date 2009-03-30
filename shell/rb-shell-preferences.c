@@ -56,7 +56,7 @@
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 
-#if !GTK_CHECK_VERSION(2,13,1)
+#if !GTK_CHECK_VERSION(2,14,0)
 #include <libgnome/gnome-help.h>
 #endif
 
@@ -157,9 +157,9 @@ help_cb (GtkWidget *widget,
 {
 	GError *error = NULL;
 
-#if GTK_CHECK_VERSION(2,13,1)
+#if GTK_CHECK_VERSION(2,14,0)
 	gtk_show_uri (gtk_widget_get_screen (widget),
-		      "ghelp:rhythmbox",
+		      "ghelp:rhythmbox?prefs",
 		      gtk_get_current_event_time (),
 		      &error);
 #else

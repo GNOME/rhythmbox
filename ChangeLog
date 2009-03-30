@@ -1,3 +1,43 @@
+2009-03-30  Jonathan Matthew  <jonathan@d14n.org>
+
+	* lib/eggdesktopfile.c: (egg_desktop_file_new),
+	* lib/eggdesktopfile.h:
+	* lib/eggsmclient-private.h:
+	* lib/eggsmclient-xsmp.c: (egg_sm_client_xsmp_init),
+	* lib/eggsmclient.c: (egg_sm_client_init),
+	* lib/eggsmclient.h:
+	* lib/Makefile.am:
+	Add session management code copied from libegg.
+
+	* lib/rb-file-helpers.c: (rb_dot_dir):
+	Replace GNOME_DOT_GNOME with ".gnome2" - pretty safe to assume that
+	this isn't going to change.
+
+	* plugins/daap/rb-daap-source.c: (mount_op_reply_cb),
+	(ask_password), (connection_auth_cb):
+	When building with gtk+ 2.14 or newer, use GtkMountOperation to ask
+	for passwords instead of GnomePasswordDialog.
+
+	* shell/rb-shell-preferences.c: (help_cb):
+	Fix the help URI for the preferences section, round up gtk version
+	check numbers.
+
+	* shell/rb-shell.c: (rb_shell_create_mount_op_cb),
+	(rb_shell_cmd_contents), (session_save_state_cb),
+	(session_quit_cb), (rb_shell_session_init):
+	Use EggSMClient instead of GnomeClient for session management, round
+	up the gtk version check numbers.
+
+	* shell/main.c: (main):
+	Parse options directly (including option groups for EggSMClient and
+	gtk), load and save the accelerator map file ourselves (replacing
+	gnome_accelerators_sync), stop calling glade_gnome_init (it doesn't do
+	anything anyway), and set the application name and window icon via
+	egg_set_desktop_file.
+	
+	* configure.ac:
+	Only require libgnome when building with gtk+ < 2.14.  Fixes #576038.
+
 2009-03-29  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/cd-recorder/rb-playlist-source-recorder.c:
