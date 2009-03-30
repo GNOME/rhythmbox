@@ -1232,7 +1232,7 @@ artwork_notify_cb (RhythmDB *db,
 	if (ret != 0) {
 		report_libmtp_errors (priv->device, TRUE);
 	} else {
-		rb_debug ("successfully set album art for %s (%d bytes)", album_name, image_size);
+		rb_debug ("successfully set album art for %s (%" G_GSIZE_FORMAT " bytes)", album_name, image_size);
 	}
 
 	/* libmtp will try to free this if we don't clear the pointer */
