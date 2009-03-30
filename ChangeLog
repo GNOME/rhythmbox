@@ -1,5 +1,22 @@
 2009-03-30  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/mtpdevice/rb-mtp-source.c: (rb_mtp_source_init),
+	(rb_mtp_source_constructor), (rb_mtp_source_finalize),
+	(load_mtp_db_idle_cb), (add_track_to_album),
+	(remove_track_from_album), (impl_delete), (transfer_track),
+	(impl_track_added), (artwork_notify_cb):
+	Create album objects on the device when transferring songs, and delete
+	them when the last song is removed.  If all of the existing albums
+	have zero tracks, try to rebuild the albums when reading the song
+	list.  This helps with some odd devices that forget all album contents
+	when they restart.
+
+	If the device supports the JPEG file type, request album art when
+	transferring songs, and send it to the device as a 'representative
+	sample' of the album.
+
+2009-03-30  Jonathan Matthew  <jonathan@d14n.org>
+
 	* lib/eggdesktopfile.c: (egg_desktop_file_new),
 	* lib/eggdesktopfile.h:
 	* lib/eggsmclient-private.h:
