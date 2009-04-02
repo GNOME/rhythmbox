@@ -117,25 +117,34 @@ class LocalCoverArtSearch:
 		if match[1] is not None:
 			yield parent.resolve_relative_path(match[1]).get_uri()
 
-	def pixbuf_save (self, plexer, pixbuf, uri):
-		def pixbuf_cb(buf):
-			f = gio.File(uri)
-			f.replace_contents_async(buf, plexer.send())
-			yield None
-			_, (file, result) = plexer.receive()
-			try:
-				file.replace_contents_finish(result)
-			except Exception, e:
-				print "error creating \"%s\": %s" % (uri, e)
 
-		pixbuf.save_to_callback(pixbuf_cb, ART_SAVE_FORMAT, ART_SAVE_SETTINGS)
+
+	def _pixbuf_save (self, pixbuf, uri):
+		def pixbuf_cb(buf, stream):
+			# can't be bothered doing this asynchronously..
+			stream.write(buf)
+
+		def replace_cb(file, result, pixbuf):
+			try:
+				stream = file.replace_finish(result)
+				pixbuf.save_to_callback(pixbuf_cb, ART_SAVE_FORMAT, ART_SAVE_SETTINGS, user_data=stream)
+				stream.close()
+			except Exception,e :
+				print "error creating %s: %s" % (file.get_uri(), e)
+
+		f = gio.File(uri)
+		f.replace_async(replace_cb, user_data=pixbuf)
 
 	def _save_dir_cb (self, enum, result, (db, entry, dir, pixbuf)):
 		artist, album = [db.entry_get (entry, x) for x in [rhythmdb.PROP_ARTIST, rhythmdb.PROP_ALBUM]]
 		try:
 			files = enum.next_files_finish(result)
 			if len(files) == 0:
-				art_file = dir.resolve_relative_path(file.get_display_name())
+				art_file = dir.resolve_relative_path(ART_SAVE_NAME)
+				print "saving local art to \"%s\"" % art_file.get_uri()
+				self._pixbuf_save (pixbuf, art_file.get_uri ())
+				enum.close()
+				return
 
 			for f in files:
 				ct = f.get_attribute_string("standard::fast-content-type")
@@ -154,8 +163,10 @@ class LocalCoverArtSearch:
 				print "Not saving local art; encountered unknown file (%s)" % uri
 				enum.close()
 				return
+	
+			enum.next_files_async(ITEMS_PER_NOTIFICATION, callback = self._save_dir_cb, user_data=(db, entry, dir, pixbuf))
 		except Exception, e:
-			print "Error reading \"%s\": %s" % (dir, exception)
+			print "Error reading \"%s\": %s" % (dir, e)
 
 	def save_pixbuf (self, db, entry, pixbuf):
 		uri = entry.get_playback_uri()
@@ -169,6 +180,9 @@ class LocalCoverArtSearch:
 
 		print 'checking whether to save local art for %s' % uri
 		parent = f.get_parent()
-		enumfiles = parent.enumerate_children(attributes="standard::fast-content-type,access::can-read,standard::name")
-		enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, callback = self._save_dir_cb, user_data=(db, entry, parent, pixbuf))
+		try:
+			enumfiles = parent.enumerate_children(attributes="standard::fast-content-type,access::can-read,standard::name")
+			enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, callback = self._save_dir_cb, user_data=(db, entry, parent, pixbuf))
+		except Exception, e:
+			print "unable to scan directory %s: %s" % (parent.get_uri(), e)
 
