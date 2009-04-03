@@ -489,6 +489,7 @@ create_time_unit_option_menu (const RBQueryCreatorTimeUnitOption *options,
 	for (i = 0; i < length; i++) {
 		gtk_combo_box_append_text (GTK_COMBO_BOX (combo), _(options[i].name));
 	}
+	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
 
 	return combo;
 }

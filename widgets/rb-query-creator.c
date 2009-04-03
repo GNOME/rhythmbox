@@ -232,6 +232,8 @@ rb_query_creator_constructor (GType type,
 	priv->sort_menu = GTK_WIDGET (glade_xml_get_widget (xml, "sortMenu"));
 	priv->sort_desc = GTK_WIDGET (glade_xml_get_widget (xml, "sortDesc"));
 
+	gtk_combo_box_set_active (GTK_COMBO_BOX (priv->limit_option), 0);
+
 	g_signal_connect_object (G_OBJECT (priv->limit_check), "toggled", G_CALLBACK (limit_toggled_cb),
 				 creator, 0);
 	limit_toggled_cb (priv->limit_check, creator);
@@ -970,6 +972,7 @@ setup_sort_option_menu (RBQueryCreator *creator,
 	}
 
 	gtk_combo_box_set_model (GTK_COMBO_BOX (option_menu), GTK_TREE_MODEL (store));
+	gtk_combo_box_set_active (GTK_COMBO_BOX (option_menu), 0);
 
 	g_signal_connect_object (G_OBJECT (option_menu), "changed",
 				 G_CALLBACK (sort_option_menu_changed), creator, 0);
