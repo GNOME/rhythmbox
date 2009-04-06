@@ -1,5 +1,11 @@
 2009-04-06  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/audiocd/sj-metadata.c: (sj_metadata_helper_scan_date),
+	(sj_metadata_helper_check_media):
+	Update from sound-juicer, including fix for #578060.
+
+2009-04-06  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/magnatune/magnatune/MagnatuneSource.py:
 	Catch parser exceptions and sort of pretend we can keep going, though
 	all that will show up in the track list will be what we parsed before
