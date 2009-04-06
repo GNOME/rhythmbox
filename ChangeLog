@@ -1,3 +1,12 @@
+2009-04-06  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (add_bus_watch),
+	(start_sink_locked), (start_sink), (create_sink):
+	Remove the bus watch before trying to start the sink.  If we're not
+	doing this from the main thread, the main thread could process the
+	messages before the loop in start_sink_locked could, so it'd just sit
+	there waiting.  Fixes #577840.
+
 2009-04-03  Jonathan Matthew  <jonathan@d14n.org>
 
 	* widgets/rb-query-creator-properties.c:

@@ -386,6 +386,7 @@ struct _RBPlayerGstXFadePrivate
 
 	guint stream_reap_id;
 	guint stop_sink_id;
+	guint bus_watch_id;
 };
 
 
@@ -2705,6 +2706,16 @@ tick_timeout (RBPlayerGstXFade *player)
  * - probably helps keep things from falling over between streams
  */
 
+static void
+add_bus_watch (RBPlayerGstXFade *player)
+{
+	GstBus *bus;
+
+	bus = gst_element_get_bus (GST_ELEMENT (player->priv->pipeline));
+	player->priv->bus_watch_id = gst_bus_add_watch (bus, (GstBusFunc) rb_player_gst_xfade_bus_cb, player);
+	gst_object_unref (bus);
+}
+
 static gboolean
 start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 {
@@ -2718,177 +2729,168 @@ start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 		     RB_PLAYER_ERROR_INTERNAL,		/* ? */
 		     _("Failed to open output device"));
 
-	switch (player->priv->sink_state) {
-	case SINK_NULL:
-		/* oops */
-		g_assert_not_reached ();
-		break;
-	case SINK_STOPPED:
-		rb_debug ("starting sink");
-		/* first, start the output bin.
-		 * this won't preroll until we start the silence bin.
-		 */
-		sr = gst_element_set_state (player->priv->outputbin, GST_STATE_PAUSED);
-		if (sr == GST_STATE_CHANGE_FAILURE) {
-			rb_debug ("output bin state change failed");
-			g_propagate_error (error, generic_error);
-			return FALSE;
-		}
+	rb_debug ("starting sink");
 
-		/* then the adder */
-		sr = gst_element_set_state (player->priv->adder, GST_STATE_PAUSED);
-		if (sr == GST_STATE_CHANGE_FAILURE) {
-			rb_debug ("adder state change failed");
-			g_propagate_error (error, generic_error);
-			return FALSE;
-		}
-
-		/* then the silence bin */
-		sr = gst_element_set_state (player->priv->silencebin, GST_STATE_PAUSED);
-		if (sr == GST_STATE_CHANGE_FAILURE) {
-			rb_debug ("silence bin state change failed");
-			g_propagate_error (error, generic_error);
-			return FALSE;
-		}
-
-		/* now wait for everything to finish */
-		waiting = TRUE;
-		bus = gst_element_get_bus (GST_ELEMENT (player->priv->pipeline));
-		while (waiting) {
-			GstMessage *message;
-			GstState oldstate;
-			GstState newstate;
-			GstState pending;
-
-			message = gst_bus_timed_pop (bus, GST_SECOND * 5);
-			if (message == NULL) {
-				rb_debug ("sink is taking too long to start..");
-				g_propagate_error (error, generic_error);
-				gst_object_unref (bus);
-				return FALSE;
-			}
-
-			switch (GST_MESSAGE_TYPE (message)) {
-			case GST_MESSAGE_ERROR:
-				{
-					char *debug;
-					GError *gst_error = NULL;
-					GstObject *message_src;
-					RBXFadeStream *stream;
-
-					/* we only want to process errors from the sink here.
-					 * errors from streams should go to the normal message handler.
-					 */
-					message_src = GST_MESSAGE_SRC (message);
-					stream = find_stream_by_element (player, GST_ELEMENT (message_src));
-					if (stream != NULL) {
-						rb_debug ("got an error from a stream; passing it to the bus handler");
-						*messages = g_list_append (*messages, gst_message_ref (message));
-						g_object_unref (stream);
-					} else {
-						gst_message_parse_error (message, &gst_error, &debug);
-						rb_debug ("got error message: %s (%s)", gst_error->message, debug);
-						gst_message_unref (message);
-						g_free (debug);
-
-						if (error != NULL && *error == NULL) {
-							g_set_error (error,
-								     RB_PLAYER_ERROR,
-								     RB_PLAYER_ERROR_INTERNAL,		/* ? */
-								     _("Failed to open output device: %s"),
-								     gst_error->message);
-						}
-						g_error_free (gst_error);
-						g_error_free (generic_error);
-
-						gst_element_set_state (player->priv->outputbin, GST_STATE_NULL);
-						gst_element_set_state (player->priv->adder, GST_STATE_NULL);
-						gst_element_set_state (player->priv->silencebin, GST_STATE_NULL);
-						gst_object_unref (bus);
-						return FALSE;
-					}
-				}
-				break;
-
-			case GST_MESSAGE_STATE_CHANGED:
-				{
-					gst_message_parse_state_changed (message, &oldstate, &newstate, &pending);
-					if (newstate == GST_STATE_PAUSED && pending == GST_STATE_VOID_PENDING) {
-						if (GST_MESSAGE_SRC (message) == GST_OBJECT (player->priv->outputbin)) {
-							rb_debug ("outputbin is now PAUSED");
-							waiting = FALSE;
-						} else if (GST_MESSAGE_SRC (message) == GST_OBJECT (player->priv->adder)) {
-							rb_debug ("adder is now PAUSED");
-						} else if (GST_MESSAGE_SRC (message) == GST_OBJECT (player->priv->silencebin)) {
-							rb_debug ("silencebin is now PAUSED");
-						}
-					}
-				}
-				break;
-
-			default:
-				/* save the message to pass to the bus callback once we've dropped
-				 * the sink lock.
-				 */
-				*messages = g_list_append (*messages, gst_message_ref (message));
-				break;
-			}
-
-			gst_message_unref (message);
-		}
-		gst_object_unref (bus);
-	
-		/* if the sink provides a 'volume' property, use that to control output volume */
-		player->priv->volume_handler = rb_player_gst_find_element_with_property (player->priv->sink, "volume");
-		if (player->priv->volume_handler == NULL) {
-			rb_debug ("sink doesn't provide volume control, using volume element");
-			player->priv->volume_handler = g_object_ref (player->priv->volume);
-		}
-
-		g_object_set (player->priv->volume_handler, "volume", player->priv->cur_volume, NULL);
-
-
-		sr = gst_element_set_state (player->priv->silencebin, GST_STATE_PLAYING);
-		if (sr == GST_STATE_CHANGE_FAILURE) {
-			rb_debug ("silence bin state change failed");
-			g_propagate_error (error, generic_error);
-			return FALSE;
-		}
-
-		sr = gst_element_set_state (player->priv->adder, GST_STATE_PLAYING);
-		if (sr == GST_STATE_CHANGE_FAILURE) {
-			rb_debug ("adder state change failed");
-			g_propagate_error (error, generic_error);
-			return FALSE;
-		}
-
-		sr = gst_element_set_state (player->priv->outputbin, GST_STATE_PLAYING);
-		if (sr == GST_STATE_CHANGE_FAILURE) {
-			rb_debug ("output bin state change failed");
-			g_propagate_error (error, generic_error);
-			return FALSE;
-		}
-
-		rb_debug ("sink playing");
-		player->priv->sink_state = SINK_PLAYING;
-
-		/* now that the sink is running, start polling for playing position.
-		 * might want to replace this with a complicated set of pad probes
-		 * to avoid polling, but duration queries on the sink are better
-		 * as they account for internal buffering etc.  maybe there's a way
-		 * to account for that in a pad probe callback on the sink's sink pad?
-		 */
-		if (player->priv->tick_timeout_id == 0) {
-			gint ms_period = 1000 / RB_PLAYER_GST_XFADE_TICK_HZ;
-			player->priv->tick_timeout_id =
-				g_timeout_add (ms_period,
-					      (GSourceFunc) tick_timeout,
-					      player);
-		}
-	case SINK_PLAYING:
-		break;
+	/* first, start the output bin.
+	 * this won't preroll until we start the silence bin.
+	 */
+	sr = gst_element_set_state (player->priv->outputbin, GST_STATE_PAUSED);
+	if (sr == GST_STATE_CHANGE_FAILURE) {
+		rb_debug ("output bin state change failed");
+		g_propagate_error (error, generic_error);
+		return FALSE;
 	}
 
+	/* then the adder */
+	sr = gst_element_set_state (player->priv->adder, GST_STATE_PAUSED);
+	if (sr == GST_STATE_CHANGE_FAILURE) {
+		rb_debug ("adder state change failed");
+		g_propagate_error (error, generic_error);
+		return FALSE;
+	}
+
+	/* then the silence bin */
+	sr = gst_element_set_state (player->priv->silencebin, GST_STATE_PAUSED);
+	if (sr == GST_STATE_CHANGE_FAILURE) {
+		rb_debug ("silence bin state change failed");
+		g_propagate_error (error, generic_error);
+		return FALSE;
+	}
+
+	/* now wait for everything to finish */
+	waiting = TRUE;
+	bus = gst_element_get_bus (GST_ELEMENT (player->priv->pipeline));
+	while (waiting) {
+		GstMessage *message;
+		GstState oldstate;
+		GstState newstate;
+		GstState pending;
+
+		message = gst_bus_timed_pop (bus, GST_SECOND * 5);
+		if (message == NULL) {
+			rb_debug ("sink is taking too long to start..");
+			g_propagate_error (error, generic_error);
+			gst_object_unref (bus);
+			return FALSE;
+		}
+
+		switch (GST_MESSAGE_TYPE (message)) {
+		case GST_MESSAGE_ERROR:
+			{
+				char *debug;
+				GError *gst_error = NULL;
+				GstObject *message_src;
+				RBXFadeStream *stream;
+
+				/* we only want to process errors from the sink here.
+				 * errors from streams should go to the normal message handler.
+				 */
+				message_src = GST_MESSAGE_SRC (message);
+				stream = find_stream_by_element (player, GST_ELEMENT (message_src));
+				if (stream != NULL) {
+					rb_debug ("got an error from a stream; passing it to the bus handler");
+					*messages = g_list_append (*messages, gst_message_ref (message));
+					g_object_unref (stream);
+				} else {
+					gst_message_parse_error (message, &gst_error, &debug);
+					rb_debug ("got error message: %s (%s)", gst_error->message, debug);
+					gst_message_unref (message);
+					g_free (debug);
+
+					if (error != NULL && *error == NULL) {
+						g_set_error (error,
+							     RB_PLAYER_ERROR,
+							     RB_PLAYER_ERROR_INTERNAL,		/* ? */
+							     _("Failed to open output device: %s"),
+							     gst_error->message);
+					}
+					g_error_free (gst_error);
+					g_error_free (generic_error);
+
+					gst_element_set_state (player->priv->outputbin, GST_STATE_NULL);
+					gst_element_set_state (player->priv->adder, GST_STATE_NULL);
+					gst_element_set_state (player->priv->silencebin, GST_STATE_NULL);
+					gst_object_unref (bus);
+					return FALSE;
+				}
+			}
+			break;
+
+		case GST_MESSAGE_STATE_CHANGED:
+			{
+				gst_message_parse_state_changed (message, &oldstate, &newstate, &pending);
+				if (newstate == GST_STATE_PAUSED && pending == GST_STATE_VOID_PENDING) {
+					if (GST_MESSAGE_SRC (message) == GST_OBJECT (player->priv->outputbin)) {
+						rb_debug ("outputbin is now PAUSED");
+						waiting = FALSE;
+					} else if (GST_MESSAGE_SRC (message) == GST_OBJECT (player->priv->adder)) {
+						rb_debug ("adder is now PAUSED");
+					} else if (GST_MESSAGE_SRC (message) == GST_OBJECT (player->priv->silencebin)) {
+						rb_debug ("silencebin is now PAUSED");
+					}
+				}
+			}
+			break;
+
+		default:
+			/* save the message to pass to the bus callback once we've dropped
+			 * the sink lock.
+			 */
+			*messages = g_list_append (*messages, gst_message_ref (message));
+			break;
+		}
+
+		gst_message_unref (message);
+	}
+	gst_object_unref (bus);
+
+	/* if the sink provides a 'volume' property, use that to control output volume */
+	player->priv->volume_handler = rb_player_gst_find_element_with_property (player->priv->sink, "volume");
+	if (player->priv->volume_handler == NULL) {
+		rb_debug ("sink doesn't provide volume control, using volume element");
+		player->priv->volume_handler = g_object_ref (player->priv->volume);
+	}
+
+	g_object_set (player->priv->volume_handler, "volume", player->priv->cur_volume, NULL);
+
+
+	sr = gst_element_set_state (player->priv->silencebin, GST_STATE_PLAYING);
+	if (sr == GST_STATE_CHANGE_FAILURE) {
+		rb_debug ("silence bin state change failed");
+		g_propagate_error (error, generic_error);
+		return FALSE;
+	}
+
+	sr = gst_element_set_state (player->priv->adder, GST_STATE_PLAYING);
+	if (sr == GST_STATE_CHANGE_FAILURE) {
+		rb_debug ("adder state change failed");
+		g_propagate_error (error, generic_error);
+		return FALSE;
+	}
+
+	sr = gst_element_set_state (player->priv->outputbin, GST_STATE_PLAYING);
+	if (sr == GST_STATE_CHANGE_FAILURE) {
+		rb_debug ("output bin state change failed");
+		g_propagate_error (error, generic_error);
+		return FALSE;
+	}
+
+	rb_debug ("sink playing");
+	player->priv->sink_state = SINK_PLAYING;
+
+	/* now that the sink is running, start polling for playing position.
+	 * might want to replace this with a complicated set of pad probes
+	 * to avoid polling, but duration queries on the sink are better
+	 * as they account for internal buffering etc.  maybe there's a way
+	 * to account for that in a pad probe callback on the sink's sink pad?
+	 */
+	if (player->priv->tick_timeout_id == 0) {
+		gint ms_period = 1000 / RB_PLAYER_GST_XFADE_TICK_HZ;
+		player->priv->tick_timeout_id =
+			g_timeout_add (ms_period,
+				      (GSourceFunc) tick_timeout,
+				      player);
+	}
 	return TRUE;
 }
 
@@ -2901,13 +2903,32 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 	gboolean ret;
 
 	g_static_rec_mutex_lock (&player->priv->sink_lock);
-	ret = start_sink_locked (player, &messages, error);
+	switch (player->priv->sink_state) {
+	case SINK_NULL:
+		g_assert_not_reached ();
+		break;
+
+	case SINK_STOPPED:
+		/* prevent messages from being processed by the main thread while we're starting the sink */
+		g_source_remove (player->priv->bus_watch_id);
+		ret = start_sink_locked (player, &messages, error);
+		add_bus_watch (player);
+		break;
+
+	case SINK_PLAYING:
+		ret = TRUE;
+		break;
+
+	default:
+		g_assert_not_reached ();
+	}
 	g_static_rec_mutex_unlock (&player->priv->sink_lock);
 
 	bus = gst_element_get_bus (GST_ELEMENT (player->priv->pipeline));
 	for (t = messages; t != NULL; t = t->next) {
 		rb_player_gst_xfade_bus_cb (bus, t->data, player);
 	}
+	gst_object_unref (bus);
 
 	rb_list_destroy_free (messages, (GDestroyNotify) gst_mini_object_unref);
 	return ret;
@@ -3004,8 +3025,7 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 				    NULL);
 
 	player->priv->pipeline = gst_pipeline_new ("rbplayer");
-	gst_bus_add_watch (gst_element_get_bus (GST_ELEMENT (player->priv->pipeline)),
-			     (GstBusFunc) rb_player_gst_xfade_bus_cb, player);
+	add_bus_watch (player);
 
 	player->priv->outputbin = gst_bin_new ("outputbin");
 	player->priv->adder = gst_element_factory_make ("adder", "outputadder");
