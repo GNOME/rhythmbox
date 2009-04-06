@@ -1,5 +1,16 @@
 2009-04-06  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/magnatune/magnatune/MagnatuneSource.py:
+	Catch parser exceptions and sort of pretend we can keep going, though
+	all that will show up in the track list will be what we parsed before
+	the error.  Fixes #574465.
+
+	Replace a couple of strange characters that appear in the XML with
+	best guesses as to what they're supposed to be.  This lets us parse
+	the current catalog file successfully.
+
+2009-04-06  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/gstreamer/rb-player-gst-xfade.c: (add_bus_watch),
 	(start_sink_locked), (start_sink), (create_sink):
 	Remove the bus watch before trying to start the sink.  If we're not

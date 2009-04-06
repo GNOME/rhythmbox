@@ -304,7 +304,12 @@ class MagnatuneSource(rb.BrowserSource):
 				# report error somehow?
 				print "error loading catalogue: %s" % result
 
-			parser.close ()
+			try:
+				parser.close ()
+			except xml.sax.SAXParseException, e:
+				# there isn't much we can do here
+				print "error parsing catalogue: %s" % e
+
 			self.__show_loading_screen (False)
 			self.__updating = False
 			self.__catalogue_loader = None
@@ -319,7 +324,15 @@ class MagnatuneSource(rb.BrowserSource):
 					self.__download_album(uri)
 
 		else:
-			parser.feed(result)
+			# hack around some weird chars that show up in the catalogue for some reason
+			result = result.replace("\x19", "'")
+			result = result.replace("\x13", "-")
+
+			try:
+				parser.feed(result)
+			except xml.sax.SAXParseException, e:
+				print "error parsing catalogue: %s" % e
+
 			self.__load_current_size += len(result)
 			self.__load_total_size = total
 
