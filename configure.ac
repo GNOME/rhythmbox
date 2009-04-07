@@ -35,6 +35,7 @@ GNOME_MEDIA_PROFILES_REQS=2.8
 LIBNOTIFY_REQS=0.3.2
 LIBGPOD_REQS=0.6
 MUSICBRAINZ_REQS=2.1.0
+MUSICBRAINZ3_REQS=3.0.2
 NCB_MIN_REQS=2.21.6
 BRASERO_MIN_REQS=0.9.1
 TOTEM_PLPARSER_REQS=2.22.0
@@ -314,7 +315,7 @@ have_sj_metadata_getter=no
 AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
 				[don't build with MusicBrainz support]))
 if test x"$enable_musicbrainz" != "xno"; then
-	PKG_CHECK_MODULES(MUSICBRAINZ3, libmusicbrainz3, [have_musicbrainz3=yes], [have_musicbrainz3=no])
+	PKG_CHECK_MODULES(MUSICBRAINZ3, libmusicbrainz3 >= $MUSICBRAINZ3_REQS, [have_musicbrainz3=yes], [have_musicbrainz3=no])
 	PKG_CHECK_MODULES(MUSICBRAINZ, libmusicbrainz >= $MUSICBRAINZ_REQS, [have_musicbrainz=yes], [have_musicbrainz=no])
 
 	AC_SUBST(MUSICBRAINZ3_CFLAGS)

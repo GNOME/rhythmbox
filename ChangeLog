@@ -1,5 +1,14 @@
 2009-04-07  Jonathan Matthew  <jonathan@d14n.org>
 
+	* configure.ac:
+	Require libmusicbrainz3 3.0.2 for per-track artist information.
+
+	* plugins/audiocd/sj-metadata-musicbrainz3.c:
+	(make_album_from_release), (mb_list_albums):
+	Update from sound-juicer, including fixes for #576574 and #575820.
+
+2009-04-07  Jonathan Matthew  <jonathan@d14n.org>
+
 	patch by:  Paul Bellamy  <paul.a.bellamy@gmail.com>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_entry_is_lossless):
