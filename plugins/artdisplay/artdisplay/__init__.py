@@ -156,6 +156,7 @@ class FadingImage (gtk.Misc):
 	def after_resize (self):
 		self.reload_util_pixbufs ()
 		self.merged_pixbuf = None
+		self.resize_id = 0
 		self.queue_draw ()
 		return False
 

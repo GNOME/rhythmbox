@@ -1,5 +1,12 @@
 2009-04-07  Jonathan Matthew  <jonathan@d14n.org>
 
+	* plugins/artdisplay/artdisplay/__init__.py:
+	Clear the source ID for the post-resize handler before returning from
+	it, so we correctly regenerate the source pixbuf when the cover art
+	widget is resized.  Fixes #426164.
+
+2009-04-07  Jonathan Matthew  <jonathan@d14n.org>
+
 	* configure.ac:
 	Require libmusicbrainz3 3.0.2 for per-track artist information.
 
