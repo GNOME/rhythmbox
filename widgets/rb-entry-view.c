@@ -1052,18 +1052,21 @@ rb_entry_view_quality_cell_data_func (GtkTreeViewColumn *column,
 				      struct RBEntryViewCellDataFuncData *data)
 {
 	RhythmDBEntry *entry;
-	guint bitrate;
+	gulong bitrate;
 
 	entry = rhythmdb_query_model_iter_to_entry (data->view->priv->model, iter);
+	bitrate = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE);
 
-	bitrate = rhythmdb_entry_get_ulong (entry, data->propid);
-
-	if (bitrate > 0) {
-		char *s = g_strdup_printf (_("%u kbps"), (guint)bitrate);
+	if (rhythmdb_entry_is_lossless (entry)) {
+		g_object_set (renderer, "text", _("Lossless"), NULL);
+	} else if (bitrate == 0) {
+		g_object_set (renderer, "text", _("Unknown"), NULL);
+	} else {
+		char *s;
+	       
+		s = g_strdup_printf (_("%lu kbps"), bitrate);
 		g_object_set (renderer, "text", s, NULL);
 		g_free (s);
-	} else {
-		g_object_set (renderer, "text", _("Unknown"), NULL);
 	}
 
 	rhythmdb_entry_unref (entry);
@@ -1391,7 +1394,7 @@ rb_entry_view_append_column (RBEntryView *view,
 	struct RBEntryViewCellDataFuncData *cell_data;
 	const char *title = NULL;
 	const char *key = NULL;
-	const char *strings[4] = {0};
+	const char *strings[5] = {0};
 	GtkTreeCellDataFunc cell_data_func = NULL;
 	GCompareDataFunc sort_func = NULL;
 	RhythmDBPropType propid;
@@ -1485,12 +1488,13 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_quality_cell_data_func;
 		sort_propid = cell_data->propid;
-		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_bitrate_sort_func;
 		title = _("Quality");
 		key = "Quality";
 		strings[0] = title;
 		strings[1] = _("000 kbps");
 		strings[2] = _("Unknown");
+		strings[3] = _("Lossless");
 		break;
 	case RB_ENTRY_VIEW_COL_RATING:
 		propid = RHYTHMDB_PROP_RATING;

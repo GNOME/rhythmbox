@@ -2792,6 +2792,32 @@ rhythmdb_query_model_ulong_sort_func (RhythmDBEntry *a,
 }
 
 gint
+rhythmdb_query_model_bitrate_sort_func (RhythmDBEntry *a,
+					RhythmDBEntry *b,
+					gpointer data)
+{
+	gulong a_val, b_val;
+	
+	if (rhythmdb_entry_is_lossless (a)) {
+		if (rhythmdb_entry_is_lossless (b))
+			return rhythmdb_query_model_location_sort_func (a, b, data);
+		else
+			return 1;
+	} else {
+		if (rhythmdb_entry_is_lossless (b))
+			return -1;
+	}
+
+	a_val = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_BITRATE);
+	b_val = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_BITRATE);
+
+	if (a_val != b_val)
+		return (a_val > b_val ? 1 : -1);
+	else
+		return rhythmdb_query_model_location_sort_func (a, b, data);
+}
+
+gint
 rhythmdb_query_model_date_sort_func (RhythmDBEntry *a,
 				     RhythmDBEntry *b,
 				     gpointer data)

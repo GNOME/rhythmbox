@@ -5327,3 +5327,20 @@ rhythmdb_entry_type_get_type (void)
 
 	return type;
 }
+
+gboolean
+rhythmdb_entry_is_lossless (RhythmDBEntry *entry)
+{
+	const char *mime_type;
+
+	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE) != 0)
+		return FALSE;
+       
+	/* possible performance improvement here, if it proves necessary:
+	 * keep references to the refstrings for all lossless media types here,
+	 * and use pointer comparisons rather than string comparisons to check entries.
+	 */
+	mime_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
+	return (g_str_equal (mime_type, "audio/x-flac"));
+}
+

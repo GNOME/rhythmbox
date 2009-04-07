@@ -1,3 +1,29 @@
+2009-04-07  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Paul Bellamy  <paul.a.bellamy@gmail.com>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_is_lossless):
+	* rhythmdb/rhythmdb.h:
+	Add a function to determine if an entry represents a lossless encoded
+	stream.  This currently just checks that the bitrate field is 0 and
+	the media type is 'audio/x-flac'.  More media types and other checks
+	can be added later.
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_bitrate_sort_func):
+	* rhythmdb/rhythmdb-query-model.h:
+	Add a query model sort function for bitrate comparisons, sorting
+	lossless encodings as being of higher quality than anything with a
+	bitrate.  Not exactly correct, but it's the best we can do.
+
+	* widgets/rb-entry-view.c: (rb_entry_view_quality_cell_data_func),
+	(rb_entry_view_append_column):
+	* widgets/rb-song-info.c: (rb_song_info_update_bitrate):
+	Display "Lossless" for lossless encodings in the 'quality' column in
+	track lists and the same field in the song info dialog.
+
+	Fixes #337438.
+
 2009-04-06  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/audiocd/sj-metadata.c: (sj_metadata_helper_scan_date),

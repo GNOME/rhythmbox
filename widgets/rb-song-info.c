@@ -1045,14 +1045,19 @@ rb_song_info_update_playback_error (RBSongInfo *song_info)
 static void
 rb_song_info_update_bitrate (RBSongInfo *song_info)
 {
-	char *tmp = NULL;
-	gulong bitrate = 0;
+	char *tmp;
+	gulong bitrate;
+
 	bitrate = rhythmdb_entry_get_ulong (song_info->priv->current_entry, RHYTHMDB_PROP_BITRATE);
 
-	if (bitrate > 0)
-		tmp = g_strdup_printf (_("%lu kbps"), bitrate);
-	else
+	if (rhythmdb_entry_is_lossless (song_info->priv->current_entry)) {
+		tmp = g_strdup (_("Lossless"));
+	} else if (bitrate == 0) {
 		tmp = g_strdup (_("Unknown"));
+	} else {
+		tmp = g_strdup_printf (_("%lu kbps"), bitrate);
+	}
+
 	gtk_label_set_text (GTK_LABEL (song_info->priv->bitrate),
 			    tmp);
 	g_free (tmp);

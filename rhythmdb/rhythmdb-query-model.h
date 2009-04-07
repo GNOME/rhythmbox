@@ -188,6 +188,10 @@ gint 			rhythmdb_query_model_double_ceiling_sort_func (RhythmDBEntry *a,
 gint 			rhythmdb_query_model_ulong_sort_func	(RhythmDBEntry *a,
 								 RhythmDBEntry *b,
 								 gpointer data);
+								 
+gint			rhythmdb_query_model_bitrate_sort_func  (RhythmDBEntry *a,
+								 RhythmDBEntry *b,
+								 gpointer data);
 
 gint 			rhythmdb_query_model_date_sort_func	(RhythmDBEntry *a,
 								 RhythmDBEntry *b,
