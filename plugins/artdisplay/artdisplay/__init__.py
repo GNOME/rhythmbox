@@ -82,7 +82,10 @@ def merge_with_background (pixbuf, bgcolor, pad_if_not_near_square):
 	return ret
 
 class FadingImage (gtk.Misc):
-	__gsignals__ = { 'size-allocate': 'override' }
+	__gsignals__ = {
+		'size-allocate': 'override',
+		'get-max-size' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_INT, ())
+	}
 	def __init__ (self, missing_image):
 		gobject.GObject.__init__ (self)
 		self.sc_id = self.connect('screen-changed', self.screen_changed)
@@ -142,12 +145,17 @@ class FadingImage (gtk.Misc):
 		self.missing_pixbuf = merge_with_background (missing_pixbuf, self.style.bg[gtk.STATE_NORMAL], False)
 
 	def do_size_allocate (self, allocation):
+		old_width = self.allocation.width
 		self.allocation = allocation
+
 		if self.resize_id == 0:
 			self.resize_id = gobject.idle_add (self.after_resize)
-		if self.size != allocation.width:
-			self.size = allocation.width
+
+		if old_width != allocation.width:
+			max_size = self.emit ('get-max-size')
+			self.size = min (allocation.width, max_size)
 			self.queue_resize ()
+		
 		elif self.window is not None:
 			self.window.move_resize (allocation.x, allocation.y, allocation.width, allocation.height)
 			self.queue_draw ()
@@ -166,12 +174,23 @@ class FadingImage (gtk.Misc):
 	def expose (self, widget, event):
 		if not self.ensure_merged_pixbuf ():
 			return False
+
 		if self.merged_pixbuf.props.width != self.size:
 			draw_pb = self.merged_pixbuf.scale_simple (self.size, self.size, gtk.gdk.INTERP_NEAREST)
 		else:
 			draw_pb = self.merged_pixbuf
+
+		# center the image if we're wider than we are tall
 		x, y, w, h = event.area
-		event.window.draw_pixbuf (None, draw_pb, x, y, x, y, min (w, self.size - x), min (h, self.size - y))
+		pad = (self.allocation.width - self.size) / 2
+
+		left = max (x, pad)
+		right = min (x + w, pad + self.size)
+		top = y
+		bottom = min (y + h, self.size)
+		if right > left and bottom > top:
+			event.window.draw_pixbuf (None, draw_pb, left-pad, top, left, top, right - left, bottom - top)
+
 		if self.anim:
 			x, y, w, h = self.anim_rect ()
 			event.window.draw_pixbuf (None, self.anim, max (0, -x), max (0, -y), max (0, x), max (0, y), w, h)
@@ -340,6 +359,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.art_widget = ArtDisplayWidget (self.find_file (ART_MISSING_ICON + ".svg"))
 		self.art_widget.connect ('pixbuf-dropped', self.on_set_pixbuf)
 		self.art_widget.connect ('uri-dropped', self.on_set_uri)
+		self.art_widget.connect ('get-max-size', self.get_max_art_size)
 		self.art_container = gtk.VBox ()
 		self.art_container.pack_start (self.art_widget, padding=6)
 		shell.add_widget (self.art_container, rb.SHELL_UI_LOCATION_SIDEBAR)
@@ -460,3 +480,10 @@ class ArtDisplayPlugin (rb.Plugin):
 	def on_set_uri (self, widget, entry, uri):
 		db = self.shell.get_property ("db")
 		self.art_db.set_pixbuf_from_uri (db, entry, uri, self.on_get_pixbuf_completed)
+
+	def get_max_art_size (self, widget):
+		# limit the art image to a third of the window height to prevent it from
+		# forcing the window to resize, obscuring everything else, and so on.
+		(width, height) = self.shell.props.window.get_size()
+		return height / 3
+

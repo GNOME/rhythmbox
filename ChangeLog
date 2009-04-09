@@ -1,3 +1,12 @@
+2009-04-09  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/artdisplay/artdisplay/__init__.py:
+	Limit the cover art image size to one third of the height of the main
+	window, so it behaves sensibly when the side pane is expanded to cover
+	most of the window.  This avoids forcing the main window to be
+	resized.  When above the size limit, center the image in the side pane.
+	Fixes #443720.
+
 2009-04-07  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/artdisplay/artdisplay/__init__.py:
