@@ -272,11 +272,11 @@ rb_psp_source_create_playlists (RBGenericPlayerSource *source)
 }
 
 static gboolean
-hal_udi_is_psp (const char *udi)
+volume_is_psp (GVolume *volume)
 {
 	LibHalContext *ctx;
 	DBusConnection *conn;
-	char *parent_udi;
+	char *parent_udi, *udi;
 	char *parent_name;
 	gboolean result;
 	DBusError error;
@@ -285,6 +285,7 @@ hal_udi_is_psp (const char *udi)
 	result = FALSE;
 	dbus_error_init (&error);
 
+	udi = NULL;
 	parent_udi = NULL;
 	parent_name = NULL;
 
@@ -300,6 +301,10 @@ hal_udi_is_psp (const char *udi)
 
 	libhal_ctx_set_dbus_connection (ctx, conn);
 	if (!libhal_ctx_init (ctx, &error) || dbus_error_is_set (&error))
+		goto end;
+
+	udi = rb_gvolume_get_udi (volume, ctx);
+	if (udi == NULL)
 		goto end;
 
 	inited = TRUE;
@@ -318,6 +323,7 @@ hal_udi_is_psp (const char *udi)
 	}
 
 end:
+	g_free (udi);
 	g_free (parent_udi);
 	g_free (parent_name);
 
@@ -342,19 +348,15 @@ gboolean
 rb_psp_is_mount_player (GMount *mount)
 {
 	GVolume *volume;
-	gboolean result = FALSE;
+	gboolean result;
 
 	volume = g_mount_get_volume (mount);
-	if (volume != NULL) {
-		char *str;
+	if (volume == NULL)
+		return FALSE;
 
-		str = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
-		if (str != NULL) {
-			result = hal_udi_is_psp (str);
-			g_free (str);
-		}
-		g_object_unref (volume);
-	}
+	result = volume_is_psp (volume);
+	g_object_unref (volume);
+
 	return result;
 }
 

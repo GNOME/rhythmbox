@@ -38,6 +38,11 @@
 #include <gobject/gvaluecollector.h>
 #include <gio/gio.h>
 
+#ifdef HAVE_HAL
+#include <libhal.h>
+#include <dbus/dbus.h>
+#endif
+
 #include "rb-util.h"
 #include "rb-debug.h"
 
@@ -990,4 +995,42 @@ rb_scale_pixbuf_to_size (GdkPixbuf *pixbuf, GtkIconSize size)
 
 	return gdk_pixbuf_scale_simple (pixbuf, d_width, d_height, GDK_INTERP_BILINEAR);
 }
+
+#ifdef HAVE_HAL
+char *
+rb_gvolume_get_udi (GVolume *volume, gpointer ctx)
+{
+	char *udi, *dev, **udis;
+	int num_udis;
+
+	g_return_val_if_fail (volume != NULL, NULL);
+	g_return_val_if_fail (G_IS_VOLUME (volume), NULL);
+	g_return_val_if_fail (ctx != NULL, NULL);
+
+	udi = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
+	if (udi != NULL)
+		return udi;
+
+	dev = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+	udis = libhal_manager_find_device_string_match ((LibHalContext *) ctx,
+							"block.device", dev,
+							&num_udis, NULL);
+
+	if (udis == NULL || num_udis < 1) {
+		libhal_free_string_array (udis);
+		return NULL;
+	}
+
+	udi = g_strdup (udis[0]);
+	libhal_free_string_array (udis);
+
+	return udi;
+}
+#else
+char *
+rb_gvolume_get_udi (GVolume *volume, gpointer ctx)
+{
+	return NULL;
+}
+#endif /* HAVE_HAL */
 

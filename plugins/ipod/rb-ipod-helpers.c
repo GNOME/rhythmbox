@@ -44,6 +44,7 @@
 #endif
 
 #include "rb-ipod-helpers.h"
+#include "rb-util.h"
 
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -402,11 +403,11 @@ rb_ipod_helpers_mount_has_ipod_db (GMount *mount)
 
 #ifdef HAVE_HAL
 static gboolean
-hal_udi_is_ipod (const char *udi)
+volume_is_ipod (GVolume *volume)
 {
 	LibHalContext *ctx;
 	DBusConnection *conn;
-	char *parent_udi;
+	char *parent_udi, *udi;
 	char **methods_list;
 	guint i;
 	gboolean result;
@@ -416,6 +417,7 @@ hal_udi_is_ipod (const char *udi)
 	result = FALSE;
 	dbus_error_init (&error);
 
+	udi = NULL;
 	conn = NULL;
 	parent_udi = NULL;
 	methods_list = NULL;
@@ -436,6 +438,10 @@ hal_udi_is_ipod (const char *udi)
 	if (!libhal_ctx_init (ctx, &error) || dbus_error_is_set (&error))
 		goto end;
 
+	udi = rb_gvolume_get_udi (volume, ctx);
+	if (udi == NULL)
+		goto end;
+
 	inited = TRUE;
 	parent_udi = libhal_device_get_property_string (ctx, udi,
 							"info.parent", &error);
@@ -453,6 +459,7 @@ hal_udi_is_ipod (const char *udi)
 	}
 
 end:
+	g_free (udi);
 	g_free (parent_udi);
 	libhal_free_string_array (methods_list);
 
@@ -476,23 +483,15 @@ end:
 gboolean
 rb_ipod_helpers_is_ipod (GMount *mount)
 {
-	gchar *udi;
-        gboolean result;
+	gboolean result;
 	GVolume *volume;
 
 	volume = g_mount_get_volume (mount);
 	if (volume == NULL)
 		return FALSE;
 
-	udi = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
+	result = volume_is_ipod (volume);
 	g_object_unref (volume);
-
-        if (udi == NULL) {
-                return FALSE;
-        }
-
-        result = hal_udi_is_ipod (udi);
-        g_free (udi);
 
 	return result;
 }

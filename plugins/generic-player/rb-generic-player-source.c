@@ -1468,7 +1468,7 @@ get_hal_udi_for_player (LibHalContext *ctx, GMount *mount)
 		return NULL;
 	}
 
-	udi = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
+	udi = rb_gvolume_get_udi (volume, ctx);
 
 	if (udi == NULL) {
 		g_object_unref (volume);

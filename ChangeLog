@@ -1,3 +1,23 @@
+2009-04-11  Bastien Nocera  <hadess@hadess.net>
+
+	* lib/Makefile.am:
+	* lib/rb-util.c (rb_gvolume_get_udi):
+	* lib/rb-util.h: Add rb_gvolume_get_udi utility function to
+	get a UDI from a GVolume, even if the gvfs volume monitor doesn't
+	use HAL, or export the UDI information (eg. the DeviceKit-disks
+	gvfs monitor)
+	* plugins/generic-player/rb-generic-player-source.c
+	(get_hal_udi_for_player):
+	* plugins/generic-player/rb-nokia770-source.c (volume_is_nokia770),
+	(rb_nokia770_is_mount_player):
+	* plugins/generic-player/rb-psp-source.c (volume_is_psp),
+	(rb_psp_is_mount_player):
+	* plugins/ipod/rb-ipod-helpers.c (volume_is_ipod),
+	(rb_ipod_helpers_is_ipod): Use rb_gvolume_get_udi() to get the UDI
+	of the devices
+
+	(Closes: #578514)
+
 2009-04-09  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/artdisplay/artdisplay/__init__.py:

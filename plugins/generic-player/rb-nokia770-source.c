@@ -136,14 +136,12 @@ impl_uri_from_playlist_uri (RBGenericPlayerSource *source, const char *uri)
 }
 
 
-#ifdef HAVE_HAL
-
 static gboolean
-hal_udi_is_nokia770 (const char *udi)
+volume_is_nokia770 (GVolume *volume)
 {
 	LibHalContext *ctx;
 	DBusConnection *conn;
-	char *parent_udi;
+	char *parent_udi, *udi;
 	char *parent_name;
 	gboolean result;
 	DBusError error;
@@ -153,6 +151,7 @@ hal_udi_is_nokia770 (const char *udi)
 	dbus_error_init (&error);
 
 	conn = NULL;
+	udi = NULL;
 	parent_udi = NULL;
 	parent_name = NULL;
 
@@ -167,6 +166,10 @@ hal_udi_is_nokia770 (const char *udi)
 
 	libhal_ctx_set_dbus_connection (ctx, conn);
 	if (!libhal_ctx_init (ctx, &error) || dbus_error_is_set (&error))
+		goto end;
+
+	udi = rb_gvolume_get_udi (volume, ctx);
+	if (udi == NULL)
 		goto end;
 
 	inited = TRUE;
@@ -206,6 +209,7 @@ hal_udi_is_nokia770 (const char *udi)
 	}
 
 end:
+	g_free (udi);
 	g_free (parent_name);
 	g_free (parent_udi);
 
@@ -225,24 +229,19 @@ end:
 
 	return result;
 }
-#endif
 
 gboolean
 rb_nokia770_is_mount_player (GMount *mount)
 {
-	gboolean result = FALSE;
-	gchar *str;
+	gboolean result;
 	GVolume *volume;
 
 	volume = g_mount_get_volume (mount);
-	if (volume != NULL) {
-		str = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_HAL_UDI);
-		if (str != NULL) {
-			result = hal_udi_is_nokia770 (str);
-			g_free (str);
-		}
-		g_object_unref (volume);
-	}
+	if (volume == NULL)
+		return FALSE;
+
+	result = volume_is_nokia770 (volume);
+	g_object_unref (volume);
 
 	return result;
 }

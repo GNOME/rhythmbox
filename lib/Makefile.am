@@ -49,9 +49,10 @@ INCLUDES =						\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/widgets				\
 	$(SOUP_CFLAGS)					\
+	$(HAL_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
-librb_la_LIBADD = $(SOUP_LIBS) -lSM -lICE
+librb_la_LIBADD = $(SOUP_LIBS) $(HAL_LIBS) -lSM -lICE
 
 BUILT_SOURCES=
 
