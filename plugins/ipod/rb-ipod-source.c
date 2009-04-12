@@ -1329,15 +1329,22 @@ get_ipod_filename (const char *mount_point, const char *filename)
 	g_free (dirname);
 
 	if (strlen (result) >= IPOD_MAX_PATH_LEN) {
-		char *ext;
+		char *ext, *suffix;
 
 		ext = strrchr (result, '.');
 		if (ext == NULL) {
+			suffix = result + IPOD_MAX_PATH_LEN - 4;
 			result [IPOD_MAX_PATH_LEN - 1] = '\0';
 		} else {
+			suffix = result + IPOD_MAX_PATH_LEN - 4 - strlen(ext);
 			memmove (&result[IPOD_MAX_PATH_LEN - strlen (ext) - 1] ,
 				 ext, strlen (ext) + 1);
 		}
+
+		/* Add suffix to reduce the chance of a name collision with truncated name */
+		suffix[0] = '~';
+		suffix[1] = 'A' + g_random_int_range (0, 26);
+		suffix[2] = 'A' + g_random_int_range (0, 26);
 	}
 
 	tmp = g_build_filename (mount_point, result, NULL);
