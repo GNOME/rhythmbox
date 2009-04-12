@@ -822,6 +822,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/audioscrobbler/scrobbler_url</key>
+        <applyto>/apps/rhythmbox/audioscrobbler/scrobbler_url</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>http://post.audioscrobbler.com/</default>
+        <locale name="C">
+	<short>URL for last.fm-style track submission</short>
+	<long>URL for last.fm-style track submission.  This can be used to direct track submission to an alternate service such as libre.fm.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/ui/show_notifications</key>
         <applyto>/apps/rhythmbox/ui/show_notifications</applyto>
         <owner>rhythmbox</owner>

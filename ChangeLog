@@ -1,3 +1,14 @@
+2009-04-12  Jonathan Matthew  <jonathan@d14n.org>
+
+	* data/rhythmbox.schemas:
+	* lib/rb-preferences.h:
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_do_handshake):
+	Read the initial track submission handshake URL from gconf key
+	/apps/rhythmbox/audioscrobbler/scrobbler_url, allowing
+	it to be redirected to other services such as libre.fm without having
+	to modify /etc/hosts.
+
 2009-04-12  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	patch by: Sebastian Dransfeld <sebastid@tango.flipp.net>
