@@ -1,5 +1,19 @@
 2009-04-12  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	patch by: Sebastian Dransfeld <sebastid@tango.flipp.net>
+
+	* backends/gstreamer/rb-encoder-gst.c:
+	* metadata/rb-metadata-common.c:
+	* metadata/rb-metadata-gst.c:
+	* metadata/rb-metadata.h:
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-tree.c:
+	* rhythmdb/rhythmdb.c:
+	* rhythmdb/rhythmdb.h: read album sort tag from gstreamer and store
+	it in rhythmbox database. Fixes part of bug #577753.
+
+2009-04-12  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	patch by: Robert Ancell  <robert.ancell@gmail.com>
 
 	* plugins/ipod/rb-ipod-source.c: try harder to build a unique

@@ -90,6 +90,7 @@ struct RhythmDBEntry_ {
 	RBRefString *musicbrainz_albumid;
 	RBRefString *musicbrainz_albumartistid;
 	RBRefString *artist_sortname;
+	RBRefString *album_sortname;
 	gulong tracknum;
 	gulong discnum;
 	gulong duration;

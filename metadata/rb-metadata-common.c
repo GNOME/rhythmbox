@@ -74,6 +74,7 @@ static struct RBMetaDataFieldInfo field_info[RB_METADATA_FIELD_LAST] = {
 	/* RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID */	{ G_TYPE_STRING, "musicbrainz-albumid" },
 	/* RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID */ { G_TYPE_STRING, "musicbrainz-albumartistid" },
 	/* RB_METADATA_FIELD_ARTIST_SORTNAME */         { G_TYPE_STRING, "musicbrainz-sortname" },
+	/* RB_METADATA_FIELD_ALBUM_SORTNAME */         { G_TYPE_STRING, "album-sortname" },
 
 };
 

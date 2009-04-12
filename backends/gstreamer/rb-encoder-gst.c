@@ -454,6 +454,11 @@ add_tags_from_entry (RBEncoderGst *encoder,
 				  GST_TAG_MUSICBRAINZ_SORTNAME, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME),
 				  NULL);
 	}
+	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME)) {
+		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
+				  GST_TAG_ALBUM_SORTNAME, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME),
+				  NULL);
+	}
 #endif
 
 	{

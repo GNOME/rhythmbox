@@ -527,6 +527,8 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID;
 	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_SORTNAME))
 		return RB_METADATA_FIELD_ARTIST_SORTNAME;
+	else if (!strcmp (tag, GST_TAG_ALBUM_SORTNAME))
+		return RB_METADATA_FIELD_ALBUM_SORTNAME;
 
 #endif
 	else
@@ -599,6 +601,8 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 		return GST_TAG_MUSICBRAINZ_ALBUMARTISTID;
 	case RB_METADATA_FIELD_ARTIST_SORTNAME:
 		return GST_TAG_MUSICBRAINZ_SORTNAME;
+	case RB_METADATA_FIELD_ALBUM_SORTNAME:
+		return GST_TAG_ALBUM_SORTNAME;
 #endif
 	default:
 		return NULL;

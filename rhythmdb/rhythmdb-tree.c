@@ -975,6 +975,9 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_ARTIST_SORTNAME:
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->artist_sortname));
 			break;
+		case RHYTHMDB_PROP_ALBUM_SORTNAME:
+			save_entry_string(ctx, elt_name, rb_refstring_get (entry->album_sortname));
+			break;
 		case RHYTHMDB_PROP_TRACK_NUMBER:
 			save_entry_ulong (ctx, elt_name, entry->tracknum, FALSE);
 			break;
