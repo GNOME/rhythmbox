@@ -1,5 +1,11 @@
 2009-04-12  Jonathan Matthew  <jonathan@d14n.org>
 
+	* rhythmdb/rhythmdb.c: (process_added_entries_cb),
+	(rhythmdb_add_to_stat_list), (rhythmdb_add_uri_with_types):
+	Fix the stupid way the stat list mutex was being handled.
+
+2009-04-12  Jonathan Matthew  <jonathan@d14n.org>
+
 	* podcast/rb-podcast-parse.c: (entry_parsed):
 	Ignore podcast items with no URI or a URI without a valid scheme.
 	Fixes #578398.
