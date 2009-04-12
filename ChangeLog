@@ -1,3 +1,9 @@
+2009-04-12  Jonathan Matthew  <jonathan@d14n.org>
+
+	* podcast/rb-podcast-parse.c: (entry_parsed):
+	Ignore podcast items with no URI or a URI without a valid scheme.
+	Fixes #578398.
+
 2009-04-11  Bastien Nocera  <hadess@hadess.net>
 
 	* lib/Makefile.am:

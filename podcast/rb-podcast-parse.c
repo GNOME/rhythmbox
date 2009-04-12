@@ -129,9 +129,24 @@ entry_parsed (TotemPlParser *parser,
 {
 	RBPodcastChannel *channel = (RBPodcastChannel *) data;
 	RBPodcastItem *item;
+	char *scheme = NULL;
 
 	item = g_new0 (RBPodcastItem, 1);
 	g_hash_table_foreach (metadata, (GHFunc) entry_metadata_foreach, item);
+
+	/* make sure the item URI is at least URI-like */
+	if (item->url != NULL)
+		scheme = g_uri_parse_scheme (item->url);
+
+	if (scheme == NULL) {
+		rb_debug ("ignoring podcast entry from feed %s with no/invalid uri %s",
+			  channel->url,
+			  item->url ? item->url : "<null>");
+		rb_podcast_parse_item_free (item);
+		return;
+	}
+	g_free (scheme);
+
 	channel->posts = g_list_prepend (channel->posts, item);
 }
 
