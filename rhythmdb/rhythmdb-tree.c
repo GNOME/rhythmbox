@@ -506,7 +506,7 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 		break;
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY:
 	{
-		if (!ctx->has_date | ctx->reload_all_metadata) {
+		if (!ctx->has_date || ctx->reload_all_metadata) {
 			/* there is no date metadata, so this is from an old version
 			 * reset the last-modified timestamp, so that the file is re-read
 			 */
