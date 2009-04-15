@@ -248,13 +248,16 @@ class LyricPane(object):
 		self.visible = 1
 		self.get_lyrics()
 
+	def __got_lyrics(self, text):
+		self.buffer.set_text(text)
+
 	def get_lyrics(self):
 		if self.entry is None:
 			return
 
 		self.buffer.set_text(_("Searching for lyrics..."));
 		lyrics_grabber = LyricGrabber(self.db, self.entry)
-		lyrics_grabber.search_lyrics(self.buffer.set_text)
+		lyrics_grabber.search_lyrics(self.__got_lyrics)
 			
 
 class LyricWindow (gtk.Window):
@@ -339,6 +342,11 @@ class LyricsDisplayPlugin(rb.Plugin):
 		else:
 			self.action.set_sensitive (False)
 
+	def __got_lyrics(self, text):
+		# don't do anything if the window has already been destroyed
+		if self.window is not None:
+			self.window.buffer.set_text (text)
+
 	def update_song_lyrics(self, entry):
 		if entry == self.current_entry:
 			return
@@ -353,7 +361,7 @@ class LyricsDisplayPlugin(rb.Plugin):
 
 		self.window.s_title(title, artist)
 		lyrics_grabber = LyricGrabber(db, entry)
-		lyrics_grabber.search_lyrics(self.window.buffer.set_text)
+		lyrics_grabber.search_lyrics(self.__got_lyrics)
 
 	def show_song_lyrics (self, action, shell):
 
@@ -375,7 +383,7 @@ class LyricsDisplayPlugin(rb.Plugin):
 		self.window.s_title(title, artist)
 		self.window.connect("destroy", self.window_deleted)
 		lyrics_grabber = LyricGrabber(db, entry)
-		lyrics_grabber.search_lyrics(self.window.buffer.set_text)
+		lyrics_grabber.search_lyrics(self.__got_lyrics)
 
 	def window_deleted (self, window):
 		print "lyrics window destroyed"

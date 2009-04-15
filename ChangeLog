@@ -1,3 +1,13 @@
+2009-04-15  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/lyrics/lyrics/__init__.py:
+	Use callback methods on the window/pane object, rather than just the
+	text buffer.  Previously, if the window was destroyed while the search
+	was in progress, the text buffer was kept alive by the reference in
+	the callback.  gail expects the text buffer to be destroyed along with
+	the text view widget, and crashes if it isn't.  Fixes #473757
+	properly.
+
 2009-04-14  Bastien Nocera  <hadess@hadess.net>
 
 	* rhythmdb/rhythmdb-tree.c (rhythmdb_tree_parser_end_element):
