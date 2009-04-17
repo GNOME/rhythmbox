@@ -157,6 +157,7 @@ static void tick_cb (RBPlayer *player, RhythmDBEntry *entry, long elapsed, long 
 static void error_cb (RBPlayer *player, RhythmDBEntry *entry, const GError *err, gpointer data);
 static void missing_plugins_cb (RBPlayer *player, RhythmDBEntry *entry, const char **details, const char **descriptions, RBShellPlayer *sp);
 static void playing_stream_cb (RBPlayer *player, RhythmDBEntry *entry, RBShellPlayer *shell_player);
+static void player_image_cb (RBPlayer *player, RhythmDBEntry *entry, GdkPixbuf *image, RBShellPlayer *shell_player);
 static void rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err);
 
 static void rb_shell_player_set_play_order (RBShellPlayer *player,
@@ -1003,6 +1004,11 @@ rb_shell_player_init (RBShellPlayer *player)
 	g_signal_connect_object (player->priv->mmplayer,
 				 "volume-changed",
 				 G_CALLBACK (rb_shell_player_volume_changed_cb),
+				 player, 0);
+
+	g_signal_connect_object (player->priv->mmplayer,
+				 "image",
+				 G_CALLBACK (player_image_cb),
 				 player, 0);
 
 	{
@@ -3674,6 +3680,29 @@ missing_plugins_cb (RBPlayer *player,
 	}
 
 	g_closure_sink (retry);
+}
+
+static void
+player_image_cb (RBPlayer *player,
+		 RhythmDBEntry *entry,
+		 GdkPixbuf *image,
+		 RBShellPlayer *shell_player)
+{
+	GValue v = {0,};
+
+	if (image == NULL) {
+		return;
+	}
+
+	g_value_init (&v, GDK_TYPE_PIXBUF);
+	g_value_set_object (&v, image);
+
+	rhythmdb_emit_entry_extra_metadata_notify (shell_player->priv->db,
+						   entry,
+						   "rb:coverArt",
+						   &v);
+	g_value_unset (&v);
+
 }
 
 /**

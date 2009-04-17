@@ -125,3 +125,137 @@ rb_player_gst_find_element_with_property (GstElement *element, const char *prope
 	gst_iterator_free (iter);
 	return result;
 }
+
+/**
+ * rb_gst_process_embedded_image:
+ * @taglist:	a #GstTagList containing an image
+ * @tag:	the tag name
+ *
+ * Converts embedded image data extracted from a tag list into
+ * a #GdkPixbuf.  The returned #GdkPixbuf is owned by the caller.
+ *
+ * Returns: a #GdkPixbuf, or NULL.
+ */
+GdkPixbuf *
+rb_gst_process_embedded_image (const GstTagList *taglist, const char *tag)
+{
+	GstBuffer *buf;
+	GdkPixbufLoader *loader;
+	GdkPixbuf *pixbuf;
+	GError *error = NULL;
+	const GValue *val;
+
+	val = gst_tag_list_get_value_index (taglist, tag, 0);
+	if (val == NULL) {
+		rb_debug ("no value for tag %s in the tag list" , tag);
+		return NULL;
+	}
+
+	buf = gst_value_get_buffer (val);
+	if (buf == NULL) {
+		rb_debug ("apparently couldn't get image buffer");
+		return NULL;
+	}
+
+	/* probably should check media type?  text/uri-list won't work too well in a pixbuf loader */
+
+	loader = gdk_pixbuf_loader_new ();
+	rb_debug ("sending %d bytes to pixbuf loader", buf->size);
+	if (gdk_pixbuf_loader_write (loader, buf->data, buf->size, &error) == FALSE) {
+		rb_debug ("pixbuf loader doesn't like the data: %s", error->message);
+		g_error_free (error);
+		g_object_unref (loader);
+		return NULL;
+	}
+
+	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+	if (pixbuf != NULL) {
+		g_object_ref (pixbuf);
+	}
+	
+	gdk_pixbuf_loader_close (loader, NULL);
+	g_object_unref (loader);
+
+	if (pixbuf == NULL) {
+		rb_debug ("pixbuf loader didn't give us a pixbuf");
+		return NULL;
+	}
+
+	rb_debug ("returning embedded image: %d x %d / %d",
+		  gdk_pixbuf_get_width (pixbuf),
+		  gdk_pixbuf_get_height (pixbuf),
+		  gdk_pixbuf_get_bits_per_sample (pixbuf));
+	return pixbuf;
+}
+
+/**
+ * rb_gst_process_tag_string:
+ * @taglist:	a #GstTagList containing a string tag
+ * @tag:	tag name
+ * @field:	returns the #RBMetaDataField corresponding to the tag
+ * @value:	returns the tag value
+ *
+ * Processes a tag string, determining the metadata field identifier
+ * corresponding to the tag name, and converting the tag data into the
+ * appropriate value type.
+ *
+ * Return value: %TRUE if the tag was successfully converted.
+ */
+gboolean
+rb_gst_process_tag_string (const GstTagList *taglist,
+			   const char *tag,
+			   RBMetaDataField *field,
+			   GValue *value)
+{
+	const GValue *tagval;
+
+	if (gst_tag_list_get_tag_size (taglist, tag) < 0) {
+		rb_debug ("no values in taglist for tag %s", tag);
+		return FALSE;
+	}
+
+	/* only handle a few fields here */
+	if (!strcmp (tag, GST_TAG_TITLE))
+		*field = RB_METADATA_FIELD_TITLE;
+	else if (!strcmp (tag, GST_TAG_GENRE))
+		*field = RB_METADATA_FIELD_GENRE;
+	else if (!strcmp (tag, GST_TAG_COMMENT))
+		*field = RB_METADATA_FIELD_COMMENT;
+	else if (!strcmp (tag, GST_TAG_BITRATE))
+		*field = RB_METADATA_FIELD_BITRATE;
+#ifdef GST_TAG_MUSICBRAINZ_TRACKID
+	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_TRACKID))
+		*field = RB_METADATA_FIELD_MUSICBRAINZ_TRACKID;
+#endif
+	else {
+		rb_debug ("tag %s doesn't correspond to a metadata field we're interested in", tag);
+		return FALSE;
+	}
+
+	/* most of the fields we care about are strings */
+	switch (*field) {
+	case RB_METADATA_FIELD_BITRATE:
+		g_value_init (value, G_TYPE_ULONG);
+		break;
+
+	case RB_METADATA_FIELD_TITLE:
+	case RB_METADATA_FIELD_GENRE:
+	case RB_METADATA_FIELD_COMMENT:
+	case RB_METADATA_FIELD_MUSICBRAINZ_TRACKID:
+	default:
+		g_value_init (value, G_TYPE_STRING);
+		break;
+	}
+
+	tagval = gst_tag_list_get_value_index (taglist, tag, 0);
+	if (!g_value_transform (tagval, value)) {
+		rb_debug ("Could not transform tag value type %s into %s",
+			  g_type_name (G_VALUE_TYPE (tagval)),
+			  g_type_name (G_VALUE_TYPE (value)));
+		g_value_unset (value);
+		return FALSE;
+	}
+
+	return TRUE;
+}
+

@@ -29,8 +29,25 @@
 #ifndef __RB_PLAYER_GST_HELPER_H
 #define __RB_PLAYER_GST_HELPER_H
 
-GstElement *rb_player_gst_try_audio_sink (const char *plugin_name, const char *name);
+#include <gst/gst.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
-GstElement *rb_player_gst_find_element_with_property (GstElement *element, const char *property);
+#include "rb-metadata.h"
+
+G_BEGIN_DECLS
+
+GstElement *	rb_player_gst_try_audio_sink (const char *plugin_name, const char *name);
+
+GstElement *	rb_player_gst_find_element_with_property (GstElement *element, const char *property);
+
+GdkPixbuf *	rb_gst_process_embedded_image 	(const GstTagList *taglist,
+						 const char *tag);
+
+gboolean	rb_gst_process_tag_string	(const GstTagList *taglist,
+						 const char *tag,
+						 RBMetaDataField *field,
+						 GValue *value);
+
+G_END_DECLS
 
 #endif /* __RB_PLAYER_GST_HELPER_H */

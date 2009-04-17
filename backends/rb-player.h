@@ -32,6 +32,7 @@
 #define __RB_PLAYER_H
 
 #include <glib-object.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #include "rb-metadata.h"
 
 G_BEGIN_DECLS
@@ -121,6 +122,9 @@ struct _RBPlayerIface
 						 gpointer data);
 	void		(*volume_changed)	(RBPlayer *player,
 						 float volume);
+	void		(*image)		(RBPlayer *player,
+						 gpointer stream_data,
+						 GdkPixbuf *image);
 };
 
 GType		rb_player_get_type   (void);
@@ -163,6 +167,7 @@ void	_rb_player_emit_tick (RBPlayer *player, gpointer stream_data, long elapsed,
 void	_rb_player_emit_event (RBPlayer *player, gpointer stream_data, const char *name, gpointer data);
 void	_rb_player_emit_playing_stream (RBPlayer *player, gpointer stream_data);
 void	_rb_player_emit_volume_changed (RBPlayer *player, float volume);
+void	_rb_player_emit_image (RBPlayer *player, gpointer stream_data, GdkPixbuf *image);
 
 G_END_DECLS
 

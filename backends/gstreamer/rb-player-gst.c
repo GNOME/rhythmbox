@@ -262,60 +262,27 @@ rb_player_gst_gst_free_playbin (RBPlayerGst *player)
 static void
 process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 {
-	int count;
 	RBMetaDataField field;
-	const GValue *val;
-	GValue *newval;
+	GValue value = {0,};
 
-	count = gst_tag_list_get_tag_size (list, tag);
-	if (count < 1)
-		return;
-
-	/* only handle the subset of fields we use for iradio */
-	if (!strcmp (tag, GST_TAG_TITLE))
-		field = RB_METADATA_FIELD_TITLE;
-	else if (!strcmp (tag, GST_TAG_GENRE))
-		field = RB_METADATA_FIELD_GENRE;
-	else if (!strcmp (tag, GST_TAG_COMMENT))
-		field = RB_METADATA_FIELD_COMMENT;
-	else if (!strcmp (tag, GST_TAG_BITRATE))
-		field = RB_METADATA_FIELD_BITRATE;
-#ifdef GST_TAG_MUSICBRAINZ_TRACKID
-	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_TRACKID))
-		field = RB_METADATA_FIELD_MUSICBRAINZ_TRACKID;
-#endif
-	else
-		return;
-
-	/* of those, all except bitrate are strings */
-	newval = g_new0 (GValue, 1);
-	switch (field) {
-	case RB_METADATA_FIELD_BITRATE:
-		g_value_init (newval, G_TYPE_ULONG);
-		break;
-
-	case RB_METADATA_FIELD_TITLE:
-	case RB_METADATA_FIELD_GENRE:
-	case RB_METADATA_FIELD_COMMENT:
-	case RB_METADATA_FIELD_MUSICBRAINZ_TRACKID:
-	default:
-		g_value_init (newval, G_TYPE_STRING);
-		break;
+	/* process embedded images */
+	if (!strcmp (tag, GST_TAG_IMAGE) || !strcmp (tag, GST_TAG_PREVIEW_IMAGE)) {
+		GdkPixbuf *pixbuf;
+		pixbuf = rb_gst_process_embedded_image (list, tag);
+		if (pixbuf != NULL) {
+			_rb_player_emit_image (RB_PLAYER (player),
+					       player->priv->stream_data,
+					       pixbuf);
+			g_object_unref (pixbuf);
+		}
+	} else if (rb_gst_process_tag_string (list, tag, &field, &value)) {
+		rb_debug ("emitting info field %d", field);
+		_rb_player_emit_info (RB_PLAYER (player),
+				      player->priv->stream_data,
+				      field,
+				      &value);
+		g_value_unset (&value);
 	}
-	val = gst_tag_list_get_value_index (list, tag, 0);
-	if (!g_value_transform (val, newval)) {
-		rb_debug ("Could not transform tag value type %s into %s",
-			  g_type_name (G_VALUE_TYPE (val)),
-			  g_type_name (G_VALUE_TYPE (newval)));
-		g_free (newval);
-		return;
-	}
-
-	_rb_player_emit_info (RB_PLAYER (player),
-			      player->priv->stream_data,
-			      field,
-			      newval);
-	g_free (newval);
 }
 
 static void

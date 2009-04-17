@@ -43,6 +43,7 @@ enum {
 	EVENT,
 	PLAYING_STREAM,
 	VOLUME_CHANGED,
+	IMAGE,
 	LAST_SIGNAL
 };
 
@@ -249,6 +250,26 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_FLOAT);
+	
+	/**
+	 * RBPlayer::image:
+	 * @player: the #RBPlayer
+	 * @stream_data: data associated with the stream
+	 * @image: the image extracted from the stream
+	 *
+	 * The 'image' signal is emitted to provide access to images extracted
+	 * from the stream.
+	 */
+	signals[IMAGE] =
+		g_signal_new ("image",
+			      G_TYPE_FROM_INTERFACE (iface),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlayerIface, image),
+			      NULL, NULL,
+			      rb_marshal_VOID__POINTER_OBJECT,
+			      G_TYPE_NONE,
+			      2,
+			      G_TYPE_POINTER, GDK_TYPE_PIXBUF);
 }
 
 GType
@@ -656,6 +677,21 @@ void
 _rb_player_emit_volume_changed (RBPlayer *player, float volume)
 {
 	g_signal_emit (player, signals[VOLUME_CHANGED], 0, volume);
+}
+
+/**
+ * _rb_player_emit_image:
+ * @player: a #RBPlayer implementation
+ * @stream_data: data associated with the stream
+ * @image: an image extracted from the stream
+ *
+ * Emits the 'image' signal to notify listeners of an image that
+ * has been extracted from the stream.  To be used by implementations only.
+ */
+void
+_rb_player_emit_image (RBPlayer *player, gpointer stream_data, GdkPixbuf *image)
+{
+	g_signal_emit (player, signals[IMAGE], 0, stream_data, image);
 }
 
 GQuark
