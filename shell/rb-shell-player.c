@@ -3669,7 +3669,7 @@ missing_plugins_retry_cb (gpointer inst,
 	if (retry == FALSE) {
 		/* next?  or stop playback? */
 		rb_debug ("not retrying playback; stopping player");
-		rb_player_close (retry_data->player->priv->mmplayer, NULL, NULL);
+		rb_shell_player_stop (retry_data->player);
 		return;
 	}
 
