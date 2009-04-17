@@ -326,6 +326,8 @@ typedef struct
 
 	GSList *missing_plugins;
 	gulong  emit_missing_plugins_id;
+
+	GList *tags;
 } RBXFadeStream;
 
 #define RB_TYPE_XFADE_STREAM 	(rb_xfade_stream_get_type ())
@@ -1611,8 +1613,12 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			GstTagList *tags;
 			gst_message_parse_tag (message, &tags);
 
-			gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, stream);
-			gst_tag_list_free (tags);
+			if (stream->emitted_playing) {
+				gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, stream);
+				gst_tag_list_free (tags);
+			} else {
+				stream->tags = g_list_append (stream->tags, tags);
+			}
 		}
 		break;
 
@@ -1641,8 +1647,23 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 		if (stream == NULL) {
 			rb_debug ("got application message %s for unknown stream", name);
 		} else if (strcmp (name, STREAM_PLAYING_MESSAGE) == 0) {
+			GList *t;
+
 			rb_debug ("got stream playing message for %s", stream->uri);
 			_rb_player_emit_playing_stream (RB_PLAYER (player), stream->stream_data);
+
+			/* process any buffered tag lists we received while prerolling the stream */
+			for (t = stream->tags; t != NULL; t = t->next) {
+				GstTagList *tags;
+
+				tags = (GstTagList *)t->data;
+				rb_debug ("processing buffered taglist");
+				gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, stream);
+				gst_tag_list_free (tags);
+			}
+			g_list_free (stream->tags);
+			stream->tags = NULL;
+
 		} else if (strcmp (name, FADE_IN_DONE_MESSAGE) == 0) {
 			/* do something? */
 		} else if (strcmp (name, FADE_OUT_DONE_MESSAGE) == 0) {
