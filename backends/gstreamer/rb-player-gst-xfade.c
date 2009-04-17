@@ -315,10 +315,6 @@ typedef struct
 	gint crossfade;
 	gboolean fading;
 
-	guint queue_threshold;
-	gulong queue_threshold_id;
-	gulong underrun_id;
-	gulong queue_probe_id;
 	gulong adjust_probe_id;
 
 	float replaygain_scale;
@@ -423,17 +419,6 @@ rb_xfade_stream_dispose (GObject *object)
 	}
 
 	if (sd->queue != NULL) {
-		if (sd->queue_threshold_id != 0)
-			g_signal_handler_disconnect (sd->queue, sd->queue_threshold_id);
-		if (sd->underrun_id != 0)
-			g_signal_handler_disconnect (sd->queue, sd->underrun_id);
-		if (sd->queue_probe_id != 0) {
-			GstPad *sinkpad;
-
-			sinkpad = gst_element_get_pad (sd->queue, "sink");
-			gst_pad_remove_buffer_probe (sinkpad, sd->queue_probe_id);
-			gst_object_unref (sinkpad);
-		}
 		gst_object_unref (sd->queue);
 		sd->queue = NULL;
 	}
@@ -839,25 +824,6 @@ post_stream_playing_message (RBXFadeStream *stream, gboolean fake)
 		stream->emitted_playing = TRUE;
 	}
 }
-
-static void
-post_buffering_message (RBXFadeStream *stream, guint64 level)
-{
-	GstMessage *message;
-
-	/* somewhat hackish: pretend the stream is already playing
-	 * so that everything above handles the buffering messages
-	 * correctly.
-	 */
-	if (stream->emitted_fake_playing == FALSE) {
-		post_stream_playing_message (stream, TRUE);
-		stream->emitted_fake_playing = TRUE;
-	}
-
-	message = gst_message_new_buffering (GST_OBJECT_CAST (stream->queue), level);
-	gst_element_post_message (stream->queue, message);
-}
-
 
 static gboolean
 adjust_base_time_probe_cb (GstPad *pad, GstBuffer *data, RBXFadeStream *stream)
@@ -1818,86 +1784,6 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 	return TRUE;
 }
 
-
-/* queue buffering signal handlers */
-
-
-static gboolean
-stream_queue_probe_cb (GstPad *pad, GstBuffer *data, RBXFadeStream *stream)
-{
-	guint level = 0;
-	guint progress = 0;
-
-	g_object_get (stream->queue, "current-level-bytes", &level, NULL);
-	if (stream->queue_threshold > 0) {
-		progress = (level * 99) / stream->queue_threshold;
-		if (progress > 99)
-			progress = 99;
-	} else {
-		progress = 99;
-	}
-	rb_debug ("%s: buffer level: %u; threshold %u - %u%%",
-		  stream->uri, level, stream->queue_threshold, progress);
-
-	post_buffering_message (stream, progress);
-
-	return TRUE;
-}
-
-static void
-stream_queue_threshold_cb (GstElement *queue, RBXFadeStream *stream)
-{
-	GstPad *sinkpad;
-
-	rb_debug ("%s: queue running", stream->uri);
-
-	/* detach pad probe */
-	sinkpad = gst_element_get_pad (stream->queue, "sink");
-	gst_pad_remove_buffer_probe (sinkpad, stream->queue_probe_id);
-	stream->queue_probe_id = 0;
-	gst_object_unref (sinkpad);
-
-	g_object_set (stream->queue, "min-threshold-bytes", G_GINT64_CONSTANT (0), NULL);
-
-	/* detach self */
-	g_signal_handler_disconnect (stream->queue,
-				     stream->queue_threshold_id);
-	stream->queue_threshold_id = 0;
-
-	post_buffering_message (stream, 100);
-}
-
-static void
-stream_queue_underrun_cb (GstElement *queue, RBXFadeStream *stream)
-{
-	rb_debug ("%s: queue underrun", stream->uri);
-	GstPad *sinkpad;
-
-	g_object_set (stream->queue, "min-threshold-bytes", stream->queue_threshold, NULL);
-
-	/* attach pad probe to get buffering progress while refilling */
-	if (stream->queue_probe_id == 0) {
-		sinkpad = gst_element_get_pad (stream->queue, "sink");
-		stream->queue_probe_id = gst_pad_add_buffer_probe (sinkpad,
-								   G_CALLBACK (stream_queue_probe_cb),
-								   stream);
-		/* need an event probe for eos/flush events too? */
-		gst_object_unref (sinkpad);
-	}
-
-	if (stream->queue_threshold_id == 0) {
-		stream->queue_threshold_id =
-			g_signal_connect_object (stream->queue,
-						 "running",
-						 G_CALLBACK (stream_queue_threshold_cb),
-						 stream,
-						 0);
-
-		post_buffering_message (stream, 0);
-	}
-
-}
-
 /* links decodebin2 src pads to the rest of the output pipeline */
 static void
 stream_new_decoded_pad_cb (GstElement *decoder, GstPad *pad, gboolean last, RBXFadeStream *stream)
@@ -2190,30 +2076,20 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	 */
 	if (rb_uri_is_local (stream->uri) == FALSE) {
 
-		stream->queue = gst_element_factory_make ("queue", NULL);
+		stream->queue = gst_element_factory_make ("queue2", NULL);
 		if (stream->queue == NULL) {
-			rb_debug ("unable to create queue");
+			rb_debug ("unable to create queue2");
 			g_object_unref (stream);
 			return NULL;
 		}
 		gst_object_ref (stream->queue);
 
-		/* set buffer size */
-		stream->queue_threshold = player->priv->buffer_size * 1024;
 		g_object_set (stream->queue,
-			      "min-threshold-bytes",
-			      stream->queue_threshold,
-			      "max-size-bytes", 
-			      MAX_NETWORK_BUFFER_SIZE * 2 * 1024,
 			      "max-size-buffers", 0,
+			      "max-size-bytes", player->priv->buffer_size * 1024,
 			      "max-size-time", (gint64)0,
+			      "use-buffering", TRUE,
 			      NULL);
-
-		stream->underrun_id =
-			g_signal_connect_object (stream->queue,
-						 "underrun",
-						 G_CALLBACK (stream_queue_underrun_cb),
-						 stream, 0);
 
 		gst_bin_add_many (GST_BIN (stream->bin),
 				  stream->source,
