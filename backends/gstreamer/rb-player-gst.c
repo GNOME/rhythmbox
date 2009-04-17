@@ -122,11 +122,6 @@ struct _RBPlayerGstPrivate
 	gboolean playing;
 	gboolean buffering;
 
-	guint idle_error_id;
-	guint idle_eos_id;
-	guint idle_buffering_id;
-	GHashTable *idle_info_ids;
-
 	GList *waiting_tees;
 	GstElement *sinkbin;
 	GstElement *tee;
@@ -138,26 +133,6 @@ struct _RBPlayerGstPrivate
 
 	guint tick_timeout_id;
 };
-
-typedef enum
-{
-	EOS,
-	INFO,
-	ERROR,
-	TICK,
-	BUFFERING,
-	EVENT,
-} RBPlayerGstSignalType;
-
-typedef struct
-{
-	int type;
-	RBPlayerGst *object;
-	RBMetaDataField info_field;
-	GError *error;
-	GValue *info;
-	guint id;
-} RBPlayerGstSignal;
 
 static gboolean rb_player_gst_sync_pipeline (RBPlayerGst *mp);
 static void rb_player_gst_gst_free_playbin (RBPlayerGst *player);
@@ -225,8 +200,6 @@ static void
 rb_player_gst_init (RBPlayerGst *mp)
 {
 	mp->priv = RB_PLAYER_GST_GET_PRIVATE (mp);
-	mp->priv->idle_info_ids = g_hash_table_new (NULL, NULL);
-
 }
 
 static void
@@ -256,7 +229,6 @@ rb_player_gst_finalize (GObject *object)
 
 	if (mp->priv->tick_timeout_id != 0)
 		g_source_remove (mp->priv->tick_timeout_id);
-	g_hash_table_destroy (mp->priv->idle_info_ids);
 
 	if (mp->priv->playbin) {
 		gst_element_set_state (mp->priv->playbin,
@@ -288,79 +260,10 @@ rb_player_gst_gst_free_playbin (RBPlayerGst *player)
 }
 
 static void
-destroy_idle_signal (gpointer signal_pointer)
-{
-	RBPlayerGstSignal *signal = signal_pointer;
-
-	if (signal->error)
-		g_error_free (signal->error);
-
-	if (signal->info) {
-		g_value_unset (signal->info);
-		g_free (signal->info);
-	}
-
-	if (signal->id != 0) {
-		g_hash_table_remove (signal->object->priv->idle_info_ids,
-				     GUINT_TO_POINTER (signal->id));
-	}
-
-	g_object_unref (G_OBJECT (signal->object));
-	g_free (signal);
-
-}
-
-static gboolean
-emit_signal_idle (RBPlayerGstSignal *signal)
-{
-	switch (signal->type) {
-	case ERROR:
-		_rb_player_emit_error (RB_PLAYER (signal->object),
-				       signal->object->priv->stream_data,
-				       signal->error);
-
-		/* close if not already closing */
-		if (signal->object->priv->uri != NULL)
-			rb_player_close (RB_PLAYER (signal->object), NULL, NULL);
-
-		break;
-
-	case EOS:
-		_rb_player_emit_eos (RB_PLAYER (signal->object),
-				     signal->object->priv->stream_data);
-		signal->object->priv->idle_eos_id = 0;
-		break;
-
-	case INFO:
-		_rb_player_emit_info (RB_PLAYER (signal->object),
-				      signal->object->priv->stream_data,
-				      signal->info_field,
-				      signal->info);
-		break;
-
-	case BUFFERING:
-		_rb_player_emit_buffering (RB_PLAYER (signal->object),
-					   signal->object->priv->stream_data,
-					   g_value_get_uint (signal->info));
-		signal->object->priv->idle_buffering_id = 0;
-		break;
-	case EVENT:
-		_rb_player_emit_event (RB_PLAYER (signal->object),
-				       signal->object->priv->stream_data,
-				       g_value_get_string (signal->info),
-				       NULL);
-		break;
-	}
-
-	return FALSE;
-}
-
-static void
 process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 {
 	int count;
 	RBMetaDataField field;
-	RBPlayerGstSignal *signal;
 	const GValue *val;
 	GValue *newval;
 
@@ -408,18 +311,11 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 		return;
 	}
 
-	signal = g_new0 (RBPlayerGstSignal, 1);
-	signal->object = player;
-	signal->info_field = field;
-	signal->info = newval;
-	signal->type = INFO;
-	signal->id = g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
-				      (GSourceFunc) emit_signal_idle,
-				      signal,
-				      destroy_idle_signal);
-
-	g_object_ref (G_OBJECT (player));
-	g_hash_table_insert (player->priv->idle_info_ids, GUINT_TO_POINTER (signal->id), NULL);
+	_rb_player_emit_info (RB_PLAYER (player),
+			      player->priv->stream_data,
+			      field,
+			      newval);
+	g_free (newval);
 }
 
 static void
@@ -514,7 +410,6 @@ rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
 		break;
 	}
 	case GST_MESSAGE_BUFFERING: {
-		RBPlayerGstSignal *signal;
 		const GstStructure *s;
 		gint progress;
 
@@ -543,31 +438,20 @@ rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
 			}
 			mp->priv->buffering = TRUE;
 		}
-		signal = g_new0 (RBPlayerGstSignal, 1);
-		signal->type = BUFFERING;
 
-		g_object_ref (G_OBJECT (mp));
-		signal->object = mp;
-		signal->info = g_new0 (GValue, 1);
-		g_value_init (signal->info, G_TYPE_UINT);
-		g_value_set_uint (signal->info, (guint)progress);
-		g_idle_add ((GSourceFunc) emit_signal_idle, signal);
+		_rb_player_emit_buffering (RB_PLAYER (mp),
+					   mp->priv->stream_data,
+					   progress);
 		break;
 	}
 	case GST_MESSAGE_APPLICATION: {
-		RBPlayerGstSignal *signal;
 		const GstStructure *structure;
 
 		structure = gst_message_get_structure (message);
-		signal = g_new0 (RBPlayerGstSignal, 1);
-		signal->type = EVENT;
-
-		g_object_ref (G_OBJECT (mp));
-		signal->object = mp;
-		signal->info = g_new0 (GValue, 1);
-		g_value_init (signal->info, G_TYPE_STRING);
-		g_value_set_string (signal->info, gst_structure_get_name (structure));
-		g_idle_add ((GSourceFunc) emit_signal_idle, signal);
+		_rb_player_emit_event (RB_PLAYER (mp),
+				       mp->priv->stream_data,
+				       gst_structure_get_name (structure),
+				       NULL);
 	}
 	case GST_MESSAGE_ELEMENT: {
 		if (gst_is_missing_plugin_message (message)) {
@@ -890,14 +774,6 @@ rb_player_gst_open (RBPlayer *player,
 	return TRUE;
 }
 
-static void
-remove_idle_source (gpointer key, gpointer value, gpointer user_data)
-{
-	guint id = GPOINTER_TO_UINT (key);
-
-	g_source_remove (id);
-}
-
 static gboolean
 rb_player_gst_close (RBPlayer *player, const char *uri, GError **error)
 {
@@ -915,20 +791,6 @@ rb_player_gst_close (RBPlayer *player, const char *uri, GError **error)
 	_destroy_stream_data (mp);
 	g_free (mp->priv->uri);
 	mp->priv->uri = NULL;
-
-	if (mp->priv->idle_eos_id != 0) {
-		g_source_remove (mp->priv->idle_eos_id);
-		mp->priv->idle_eos_id = 0;
-	}
-	if (mp->priv->idle_error_id != 0) {
-		g_source_remove (mp->priv->idle_error_id);
-		mp->priv->idle_error_id = 0;
-	}
-	if (mp->priv->idle_buffering_id != 0) {
-		g_source_remove (mp->priv->idle_buffering_id);
-		mp->priv->idle_buffering_id = 0;
-	}
-	g_hash_table_foreach (mp->priv->idle_info_ids, remove_idle_source, NULL);
 
 	if (mp->priv->tick_timeout_id != 0) {
 		g_source_remove (mp->priv->tick_timeout_id);
