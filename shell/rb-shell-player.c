@@ -278,9 +278,7 @@ struct RBShellPlayerPrivate
 	float volume;
 
 	guint do_next_idle_id;
-	guint emit_playing_id;
 	guint unblock_play_id;
-	guint jump_to_current_id;
 	guint notify_playing_id;
 };
 
@@ -1233,19 +1231,9 @@ rb_shell_player_dispose (GObject *object)
 		player->priv->do_next_idle_id = 0;
 	}
 
-	if (player->priv->emit_playing_id != 0) {
-		g_source_remove (player->priv->emit_playing_id);
-		player->priv->emit_playing_id = 0;
-	}
-
 	if (player->priv->unblock_play_id != 0) {
 		g_source_remove (player->priv->unblock_play_id);
 		player->priv->unblock_play_id = 0;
-	}
-
-	if (player->priv->jump_to_current_id != 0) {
-		g_source_remove (player->priv->jump_to_current_id);
-		player->priv->jump_to_current_id = 0;
 	}
 
 	if (player->priv->notify_playing_id != 0) {
@@ -1931,16 +1919,6 @@ rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlNext");
 	g_object_set (action, "sensitive", have_next, NULL);
-}
-
-static gboolean
-rb_shell_player_jump_to_current_cb (RBShellPlayer *player)
-{
-	GDK_THREADS_ENTER ();
-	player->priv->jump_to_current_id = 0;
-	rb_shell_player_jump_to_current (player);
-	GDK_THREADS_LEAVE ();
-	return FALSE;
 }
 
 static void
@@ -3215,12 +3193,6 @@ rb_shell_player_stop (RBShellPlayer *player)
 		g_error_free (error);
 	}
 
-	/* make sure we don't say something else is playing after this */
-	if (player->priv->emit_playing_id > 0) {
-		g_source_remove (player->priv->emit_playing_id);
-		player->priv->emit_playing_id = 0;
-	}
-
 	if (player->priv->playing_entry != NULL) {
 		rhythmdb_entry_unref (player->priv->playing_entry);
 		player->priv->playing_entry = NULL;
@@ -3477,74 +3449,18 @@ rb_shell_player_error (RBShellPlayer *player,
 	}
 }
 
-static gboolean
-new_playing_stream_idle_cb (RBShellPlayer *player)
-{
-	RhythmDBEntry *entry;
-	const char *location;
-
-	GDK_THREADS_ENTER ();
-
-	player->priv->emit_playing_id = 0;
-
-	/* emit some interesting signals */
-	entry = rb_shell_player_get_playing_entry (player);
-	if (entry == NULL) {
-		/* this should never happen */
-		GDK_THREADS_LEAVE ();
-		g_return_val_if_fail (entry != NULL, FALSE);
-	}
-
-	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-	rb_debug ("new playing stream: %s", location);
-	g_signal_emit (G_OBJECT (player),
-		       rb_shell_player_signals[PLAYING_SONG_CHANGED], 0,
-		       entry);
-	g_signal_emit (G_OBJECT (player),
-		       rb_shell_player_signals[PLAYING_URI_CHANGED], 0,
-		       location);
-
-	/* resync UI */
-	rb_shell_player_sync_with_source (player);
-	rb_shell_player_sync_buttons (player);
-	g_object_notify (G_OBJECT (player), "playing");
-
-	GDK_THREADS_LEAVE ();
-	return FALSE;
-}
-
-static gboolean
-current_playing_stream_idle_cb (RBShellPlayer *player)
-{
-	GDK_THREADS_ENTER ();
-
-	player->priv->emit_playing_id = 0;
-
-	/* resync UI */
-	rb_shell_player_sync_with_source (player);
-	rb_shell_player_sync_buttons (player);
-	g_object_notify (G_OBJECT (player), "playing");
-
-	GDK_THREADS_LEAVE ();
-	return FALSE;
-}
-
 static void
 playing_stream_cb (RBPlayer *mmplayer,
 		   RhythmDBEntry *entry,
 		   RBShellPlayer *player)
 {
+	gboolean entry_changed;
+
+	g_return_if_fail (entry != NULL);
+
 	GDK_THREADS_ENTER ();
 
-	if (player->priv->emit_playing_id != 0)
-		g_source_remove (player->priv->emit_playing_id);
-
-	/* only emit playing-song-changed etc. when the entry changes */
-	if (player->priv->playing_entry != entry) {
-		player->priv->emit_playing_id = g_idle_add ((GSourceFunc) new_playing_stream_idle_cb, player);
-	} else {
-		player->priv->emit_playing_id = g_idle_add ((GSourceFunc) current_playing_stream_idle_cb, player);
-	}
+	entry_changed = (player->priv->playing_entry != entry);
 
 	/* update playing entry */
 	if (player->priv->playing_entry)
@@ -3552,18 +3468,26 @@ playing_stream_cb (RBPlayer *mmplayer,
 	player->priv->playing_entry = rhythmdb_entry_ref (entry);
 	player->priv->playing_entry_eos = FALSE;
 
+	if (entry_changed) {
+		const char *location;
+
+		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		rb_debug ("new playing stream: %s", location);
+		g_signal_emit (G_OBJECT (player),
+			       rb_shell_player_signals[PLAYING_SONG_CHANGED], 0,
+			       entry);
+		g_signal_emit (G_OBJECT (player),
+			       rb_shell_player_signals[PLAYING_URI_CHANGED], 0,
+			       location);
+	}
+
+	/* resync UI */
+	rb_shell_player_sync_with_source (player);
+	rb_shell_player_sync_buttons (player);
+	g_object_notify (G_OBJECT (player), "playing");
+
 	if (player->priv->jump_to_playing_entry) {
-		/* do this in a timeout because if we do it immediately (or even in
-		 * another idle handler), it causes gaps in the audio output.
-		 * I have no idea why this is.  Even 250ms later, it's mostly OK and
-		 * the UI doesn't look too sluggish.  hmm.
-		 */
-		if (player->priv->jump_to_current_id == 0) {
-			player->priv->jump_to_current_id =
-				g_timeout_add (250,
-					       (GSourceFunc) rb_shell_player_jump_to_current_cb,
-					       player);
-		}
+		rb_shell_player_jump_to_current (player);
 		player->priv->jump_to_playing_entry = FALSE;
 	}
 
