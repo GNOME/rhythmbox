@@ -33,6 +33,7 @@ import gobject
 
 from PodcastCoverArtSearch import PodcastCoverArtSearch
 from AmazonCoverArtSearch import AmazonCoverArtSearch
+from EmbeddedCoverArtSearch import EmbeddedCoverArtSearch
 
 from urllib import unquote
 
@@ -45,7 +46,7 @@ try:
 except:
 	from LocalCoverArtSearch import LocalCoverArtSearch
 
-ART_SEARCHES_LOCAL = [LocalCoverArtSearch]
+ART_SEARCHES_LOCAL = [LocalCoverArtSearch, EmbeddedCoverArtSearch]
 ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, AmazonCoverArtSearch]
 OLD_ART_FOLDER = '~/.gnome2/rhythmbox/covers'
 
