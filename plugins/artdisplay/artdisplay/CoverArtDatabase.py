@@ -171,7 +171,7 @@ class CoverArtDatabase (object):
 	def cancel_get_pixbuf (self, entry):
 		self.ticket.purge (entry)
   
-	def get_pixbuf (self, db, entry, callback):
+	def get_pixbuf (self, db, entry, is_playing, callback):
 		if entry is None:
 			callback (entry, None, None)
 			return
@@ -185,10 +185,9 @@ class CoverArtDatabase (object):
 			st_artist = st_artist.replace (char, '')
 			st_album = st_album.replace (char, '')
 
-		rb.Coroutine (self.image_search, db, st_album, st_artist, entry, callback).begin ()
+		rb.Coroutine (self.image_search, db, st_album, st_artist, entry, is_playing, callback).begin ()
 
-
-	def image_search (self, plexer, db, st_album, st_artist, entry, callback):
+	def image_search (self, plexer, db, st_album, st_artist, entry, is_playing, callback):
 		art_location_jpg = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_JPG)
 		art_location_png = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_PNG)
 		blist_location = self.build_art_cache_filename (db, entry, "rb-blist")
@@ -202,7 +201,7 @@ class CoverArtDatabase (object):
 		# Check local cache
 		if art_location:
 			self.ticket.purge (entry)
-			pixbuf = gtk.gdk.pixbuf_new_from_file (art_location)	
+			pixbuf = gtk.gdk.pixbuf_new_from_file (art_location)
 			callback (entry, pixbuf, art_location)
 			return
 
@@ -227,12 +226,42 @@ class CoverArtDatabase (object):
 		ticket = self.ticket.get (entry)
 		for engine, engine_name, engine_remote in self.engines (blist):
 			plexer.clear ()
-			engine.search (db, entry, plexer.send ())
+			engine.search (db, entry, is_playing, plexer.send ())
 			while True:
 				yield None
 				_, (engine, entry, results) = plexer.receive ()
 				if not results:
 					break
+
+				def handle_result_pixbuf (pixbuf, engine_uri, should_save):
+					if self.ticket.release (entry, ticket):
+						if should_save:
+							if pixbuf.get_has_alpha ():
+								pixbuf.save (art_location_png, ART_CACHE_FORMAT_PNG, ART_CACHE_SETTINGS_PNG)
+								uri = art_location_png
+							else:
+								pixbuf.save (art_location_jpg, ART_CACHE_FORMAT_JPG, ART_CACHE_SETTINGS_JPG)
+								uri = art_location_jpg
+						else:
+							uri = engine_uri
+
+						print "found image for %s" % (db.entry_get(entry, rhythmdb.PROP_LOCATION))
+						callback (entry, pixbuf, uri)
+						for m in self.same_search.pop(entry, []):
+							print "and for same search %s" % (db.entry_get(m, rhythmdb.PROP_LOCATION))
+							callback (m, pixbuf, uri)
+
+					self.write_blist (blist_location, blist)
+					self.same_search.pop (entry, None)
+
+
+				# first check if the engine gave us a pixbuf
+				pixbuf = engine.get_result_pixbuf (results)
+				if pixbuf:
+					handle_result_pixbuf (pixbuf, None, True)
+					return
+
+				# then check URIs
 				for url in engine.get_best_match_urls (results):
 					if str(url) == "":
 						print "got empty url from engine %s." % (engine)
@@ -243,24 +272,7 @@ class CoverArtDatabase (object):
 					_, (data, ) = plexer.receive ()
 					pixbuf = self.image_data_load (data)
 					if pixbuf:
-						if self.ticket.release (entry, ticket):
-							if engine_remote:
-								if pixbuf.get_has_alpha ():
-									pixbuf.save (art_location_png, ART_CACHE_FORMAT_PNG, ART_CACHE_SETTINGS_PNG)
-								else:
-									pixbuf.save (art_location_jpg, ART_CACHE_FORMAT_JPG, ART_CACHE_SETTINGS_JPG)
-								uri = art_location
-							else:
-								uri = unquote (str (url))
-
-							print "found image for %s" % (db.entry_get(entry, rhythmdb.PROP_LOCATION))
-							callback (entry, pixbuf, uri)
-							for m in self.same_search.pop(entry, []):
-								print "and for same search %s" % (db.entry_get(m, rhythmdb.PROP_LOCATION))
-								callback (m, pixbuf, uri)
-
-						self.write_blist (blist_location, blist)
-						self.same_search.pop (entry, None)
+						handle_result_pixbuf (pixbuf, url, engine_remote)
 						return
 
 				if not engine.search_next ():

@@ -62,7 +62,7 @@ class LocalCoverArtSearch:
 			if not issubclass (exception, gnomevfs.EOFError):
 				print "Error reading \"%s\": %s" % (self.uri.parent, exception)
 
-	def search (self, db, entry, on_search_completed_cb, *args):
+	def search (self, db, entry, is_playing, on_search_completed_cb, *args):
 		self.uri = None
 		try:
 			self.uri = gnomevfs.URI (entry.get_playback_uri())
@@ -82,6 +82,9 @@ class LocalCoverArtSearch:
 
 	def search_next (self):
 		return False
+
+	def get_result_pixbuf (self, results):
+		return None
 
 	def get_best_match_urls (self, results):
 		# Compare lower case, without file extension

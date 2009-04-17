@@ -28,19 +28,13 @@ import rhythmdb
 
 class PodcastCoverArtSearch (object):
 	def __init__ (self):
-		self.searching = False
-		self.cancel = False
-		self.entry = None
+		pass
 
-	def search (self, db, entry, on_search_completed_callback, *args):
-		self.searching = True
-		self.cancel = False
-		self.entry = entry
-		self.args = args
+	def search (self, db, entry, is_playing, on_search_completed_callback, *args):
 
 		# Check if entry is a podcast for performance
 		if entry.get_entry_type() != db.entry_type_get_by_name("podcast-post"):
-			on_search_completed_callback (self, self.entry, None, *self.args)
+			on_search_completed_callback (self, entry, None, *args)
 			return
 
 		# Retrieve corresponding feed for this entry
@@ -50,11 +44,15 @@ class PodcastCoverArtSearch (object):
 		# Check for PROP_IMAGE in feed
 		image_url = db.entry_get(podcast_feed_entry, rhythmdb.PROP_IMAGE)
 		
-		on_search_completed_callback (self, self.entry, image_url, *self.args)
+		on_search_completed_callback (self, entry, image_url, *args)
 
 	def search_next (self):
 		return False
 
+	def get_result_pixbuf (self, search_results):
+		return None
+
 	def get_best_match_urls (self, search_results):
 		# Return image URL
 		return [search_results]
+

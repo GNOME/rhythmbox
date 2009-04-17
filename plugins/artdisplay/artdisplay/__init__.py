@@ -401,7 +401,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		# Intitates search in the database (which checks art cache, internet etc.)
 		self.current_entry = entry
 		self.current_pixbuf = None
-		self.art_db.get_pixbuf(db, entry, self.on_get_pixbuf_completed)
+		self.art_db.get_pixbuf(db, entry, True, self.on_get_pixbuf_completed)
 
 	def on_get_pixbuf_completed(self, entry, pixbuf, uri):
 		# Set the pixbuf for the entry returned from the art db
@@ -422,8 +422,9 @@ class ArtDisplayPlugin (rb.Plugin):
 		def callback(entry, pixbuf, uri):
 			a[0] = pixbuf
 			self.on_get_pixbuf_completed(entry, pixbuf, uri)
-			
-		self.art_db.get_pixbuf(db, entry, callback)
+
+		playing = (entry == self.current_entry)
+		self.art_db.get_pixbuf(db, entry, playing, callback)
 
 		# If callback was called synchronously we can return a pixmap
 		return a[0]

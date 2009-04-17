@@ -69,7 +69,7 @@ class LocalCoverArtSearch:
 			print "okay, probably done: %s" % e
 			on_search_completed_cb(self, entry, results, *args)
 
-	def search (self, db, entry, on_search_completed_cb, *args):
+	def search (self, db, entry, is_playing, on_search_completed_cb, *args):
 
 		self.file = gio.File(entry.get_playback_uri())
 		if self.file.get_uri_scheme() in ('http','cdda','daap'):
@@ -87,6 +87,9 @@ class LocalCoverArtSearch:
 
 	def search_next (self):
 		return False
+
+	def get_result_pixbuf (self, results):
+		return None
 
 	def get_best_match_urls (self, results):
 		parent = self.file.get_parent()

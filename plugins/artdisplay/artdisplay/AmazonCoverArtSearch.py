@@ -73,7 +73,7 @@ class AmazonCoverArtSearch (object):
 
 		return supported_locales[lc_id]
 
-	def search (self, db, entry, on_search_completed_callback, *args):
+	def search (self, db, entry, is_playing, on_search_completed_callback, *args):
 		self.searching = True
 		self.cancel = False
 		self.db = db
@@ -234,6 +234,9 @@ class AmazonCoverArtSearch (object):
 	def __valid_match (self, item):
 		return (hasattr (item, "LargeImage") or hasattr (item, "MediumImage")) \
 		       and hasattr (item, "ItemAttributes")
+
+	def get_result_pixbuf (self, search_results):
+		return None
 
 	def get_best_match_urls (self, search_results):
 		# Default to "no match", our results must match our criteria
