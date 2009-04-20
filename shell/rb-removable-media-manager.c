@@ -91,8 +91,6 @@ static void volume_removed_cb (GVolumeMonitor *monitor, GVolume *volume, RBRemov
 static void mount_added_cb (GVolumeMonitor *monitor, GMount *mount, RBRemovableMediaManager *manager);
 static void mount_removed_cb (GVolumeMonitor *monitor, GMount *mount, RBRemovableMediaManager *manager);
 
-static gboolean rb_removable_media_manager_load_media (RBRemovableMediaManager *manager);
-
 static void do_transfer (RBRemovableMediaManager *manager);
 static void rb_removable_media_manager_cmd_copy_tracks (GtkAction *action,
 							RBRemovableMediaManager *mgr);
@@ -302,7 +300,38 @@ rb_removable_media_manager_init (RBRemovableMediaManager *mgr)
 	priv->mount_mapping = g_hash_table_new (NULL, NULL);
 	priv->transfer_queue = g_async_queue_new ();
 
-	g_idle_add ((GSourceFunc)rb_removable_media_manager_load_media, mgr);
+	/*
+	 * Monitor new (un)mounted file systems to look for new media;
+	 * we watch for both volumes and mounts because for some devices,
+	 * we don't require the volume to actually be mounted.
+	 *
+	 * both pre-unmount and unmounted callbacks are registered because it is
+	 * better to do it before the unmount, but sometimes we don't get those
+	 * (e.g. someone pressing the eject button on a cd drive). If we get the
+	 * pre-unmount signal, the corresponding unmounted signal is ignored
+	 */
+	priv->volume_monitor = g_object_ref (g_volume_monitor_get ());
+
+	priv->volume_added_id = g_signal_connect_object (priv->volume_monitor,
+							 "volume-added",
+							 G_CALLBACK (volume_added_cb),
+							 mgr, 0);
+	priv->volume_removed_id = g_signal_connect_object (priv->volume_monitor,
+							   "volume-removed",
+							   G_CALLBACK (volume_removed_cb),
+							   mgr, 0);
+	priv->mount_added_id = g_signal_connect_object (priv->volume_monitor,
+							"mount-added",
+							G_CALLBACK (mount_added_cb),
+							mgr, 0);
+	priv->mount_pre_unmount_id = g_signal_connect_object (priv->volume_monitor,
+							      "mount-pre-unmount",
+							      G_CALLBACK (mount_removed_cb),
+							      mgr, 0);
+	priv->mount_removed_id = g_signal_connect_object (G_OBJECT (priv->volume_monitor),
+							  "mount-removed",
+							  G_CALLBACK (mount_removed_cb),
+							  mgr, 0);
 }
 
 static void
@@ -429,50 +458,6 @@ rb_removable_media_manager_new (RBShell *shell)
 	return g_object_new (RB_TYPE_REMOVABLE_MEDIA_MANAGER,
 			     "shell", shell,
 			     NULL);
-}
-
-static gboolean
-rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
-{
-	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (manager);
-
-	GDK_THREADS_ENTER ();
-	
-	/*
-	 * Monitor new (un)mounted file systems to look for new media;
-	 * we watch for both volumes and mounts because for some devices,
-	 * we don't require the volume to actually be mounted.
-	 *
-	 * both pre-unmount and unmounted callbacks are registered because it is
-	 * better to do it before the unmount, but sometimes we don't get those
-	 * (e.g. someone pressing the eject button on a cd drive). If we get the
-	 * pre-unmount signal, the corresponding unmounted signal is ignored
-	 */
-	priv->volume_monitor = g_object_ref (g_volume_monitor_get ());
-
-	priv->volume_added_id = g_signal_connect_object (priv->volume_monitor,
-							 "volume-added",
-							 G_CALLBACK (volume_added_cb),
-							 manager, 0);
-	priv->volume_removed_id = g_signal_connect_object (priv->volume_monitor,
-							   "volume-removed",
-							   G_CALLBACK (volume_removed_cb),
-							   manager, 0);
-	priv->mount_added_id = g_signal_connect_object (priv->volume_monitor,
-							"mount-added",
-							G_CALLBACK (mount_added_cb),
-							manager, 0);
-	priv->mount_pre_unmount_id = g_signal_connect_object (priv->volume_monitor,
-							      "mount-pre-unmount",
-							      G_CALLBACK (mount_removed_cb),
-							      manager, 0);
-	priv->mount_removed_id = g_signal_connect_object (G_OBJECT (priv->volume_monitor),
-							  "mount-removed",
-							  G_CALLBACK (mount_removed_cb),
-							  manager, 0);
-
-	GDK_THREADS_LEAVE ();
-	return FALSE;
 }
 
 static void
