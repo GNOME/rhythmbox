@@ -416,7 +416,8 @@ AC_PATH_PROG(GCONFTOOL, gconftool-2)
 AC_SUBST(RHYTHMBOX_CFLAGS)
 AC_SUBST(RHYTHMBOX_LIBS)
 
-AC_TRY_RUN([#include <time.h>
+AC_CACHE_CHECK([whether strftime supports %E and %O modifiers], ac_cv_strftime_supports_E_O, [
+AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <time.h>
                 int main ()
                 {
                   char buf[100];
@@ -427,9 +428,16 @@ AC_TRY_RUN([#include <time.h>
                     return 0;
                   return 1;
                 }
-            ],
-            AC_DEFINE(HAVE_STRFTIME_EXTENSION, 1, [Define if strftime supports %E and %O modifiers.])
+            ]])],
+            [ac_cv_strftime_supports_E_O=yes],
+            [ac_cv_strftime_supports_E_O=no],
+            [AC_MSG_RESULT([cannot run test program while cross compiling])
+            AC_MSG_ERROR([Please set ac_cv_strftime_supports_E_O to yes or no.])]
             )
+])
+if test "x$ac_cv_strftime_supports_E_O" = xyes; then
+        AC_DEFINE(HAVE_STRFTIME_EXTENSION, 1, [Define if strftime supports %E and %O modifiers.])
+fi
 
 GETTEXT_PACKAGE=rhythmbox
 AC_SUBST(GETTEXT_PACKAGE)
