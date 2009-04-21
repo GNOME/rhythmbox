@@ -1,3 +1,70 @@
+Overview of changes in Rhythmbox 0.12.1  "Easily Fooled"
+=======================================================
+
+* Removal of libgnome dependency when building with gtk+ 2.14+
+* Greatly reduced memory usage when accessing Jamendo catalog
+* Cover art improvements:
+  - Cover art to iPods for all songs transferred to iPods
+  - Support for transferring cover art to MTP devices
+  - Cover art image widget is better behaved when resized
+* Switched to decodebin2, notably allowing playback of chained ogg streams
+* Better support for lossless encoded files in the UI
+* Compatibility with the DeviceKit-disks gvfs volume monitor
+* Some support for 'album sortname' tags
+* Allow configuration of the audioscrobbler handshake URL (libre.fm)
+* Improved network buffering in the crossfading player backend
+
+Bugs fixed:
+
+* 576031 - crasher at end of playlist
+* 513828 - tooltip for clean icon in the entry search
+* 529873 - The artdisplay plugin should be able to supply metadata for
+           arbitrary db entries
+* 576238 - crash due to extra mutex unlock call
+* 510236 - crash when an import error occurs on a PSP or n770 device
+* 576846 - crash when creating an auto playlist with the browser visible
+* 576987 - minor string issues
+* 576925 - shortcut key for the 'download location' entry doesn't work
+* 576673 - shortcut key for the 'rating' label in the song properties window
+           doesn't work
+* 365154 - crash when changing the selected device for audio CD burning
+* 576038 - stop using libgnome
+* 577840 - race condition in audio sink setup code when playing network
+           streams or audio CD
+* 577465 - Magnatune plugin is not robust
+* 578060 - musicbrainz3 CD metadata getter crash if the release has no date
+* 337438 - display and sort on bitrate properly for lossless encodings
+* 576574 - musicbrainz3 CD metadata getter crash if there is no release
+* 426164 - resizing sidebar results in bad cover art image quality
+* 443720 - art image shown only partially after side bar resize
+* 578514 - Player detection broken with DeviceKit-disks gvfs monitor
+* 578398 - crash when updating podcast feeds containing entries with empty URIs
+* 570600 - rhythmbox picks bad filenames for ipod
+* 577753 - rhythmbox does not support album sort tag
+* 473757 - crash when lyrics window is destroyed while still fetching lyrics
+* 579262 - stop playback properly after missing plugin install fails
+* 579465 - bizarre crash in volume monitoring code
+ 
+
+Contributors to this release:
+
+- Jonathan Matthew
+- Christophe Fergeau
+- Kim Sullivan
+- Bastien Nocera
+- Niels Vorgaard Christensen
+- Bruce Cowan
+- Paul Bellamy
+- Robert Ancell
+- Sebastian Dransfeld
+
+Updated translations
+--------------------
+
+ ...
+
+
+
 Overview of changes in Rhythmbox 0.12.0  "Flood Victim"
 =======================================================
 
