@@ -23,7 +23,8 @@ AC_ISC_POSIX
 AC_PROG_CC
 AC_PROG_CXX
 AC_STDC_HEADERS
-AM_PROG_LIBTOOL()
+AM_PROG_LIBTOOL
+m4_ifdef([LT_OUTPUT], [LT_OUTPUT])
 AC_C_BIGENDIAN
 AC_CHECK_SIZEOF(long)
 
@@ -609,7 +610,7 @@ if test "x$have_python" != "xyes"; then
 fi
 
 if test "x$have_python" != "xno"; then
-	AM_PATH_PYTHON([2.3],[],[no])
+	AM_PATH_PYTHON([2.3],[],[have_python=no])
 	if test "x$PYTHON" = "x:"; then
 		have_python=no
 	fi
@@ -619,9 +620,14 @@ if test "x$have_python" != "xno"; then
 	PY_PREFIX=`$PYTHON -c 'import sys ; print sys.prefix'`
 	PY_EXEC_PREFIX=`$PYTHON -c 'import sys ; print sys.exec_prefix'`
 	PYTHON_LIBS="-lpython$PYTHON_VERSION"
-	PYTHON_LIB_LOC="-L$PY_EXEC_PREFIX/lib/python$PYTHON_VERSION/config"
+	if test -d $PY_EXEC_PREFIX/lib64/python$PYTHON_VERSION ; then
+		PYTHON_LIB_LOC="-L$PY_EXEC_PREFIX/lib64/python$PYTHON_VERSION/config"
+		PYTHON_MAKEFILE="$PY_EXEC_PREFIX/lib64/python$PYTHON_VERSION/config/Makefile"
+	else
+		PYTHON_LIB_LOC="-L$PY_EXEC_PREFIX/lib/python$PYTHON_VERSION/config"
+		PYTHON_MAKEFILE="$PY_EXEC_PREFIX/lib/python$PYTHON_VERSION/config/Makefile"
+	fi
 	PYTHON_CFLAGS="-I$PY_PREFIX/include/python$PYTHON_VERSION"
-	PYTHON_MAKEFILE="$PY_EXEC_PREFIX/lib/python$PYTHON_VERSION/config/Makefile"
 	PYTHON_LOCALMODLIBS=`sed -n -e 's/^LOCALMODLIBS=\(.*\)/\1/p' $PYTHON_MAKEFILE`
 	PYTHON_BASEMODLIBS=`sed -n -e 's/^BASEMODLIBS=\(.*\)/\1/p' $PYTHON_MAKEFILE`
 	PYTHON_OTHER_LIBS=`sed -n -e 's/^LIBS=\(.*\)/\1/p' $PYTHON_MAKEFILE`
@@ -631,39 +637,6 @@ if test "x$have_python" != "xno"; then
 	AC_SUBST([PYTHON_CFLAGS])
 	AC_SUBST([PYTHON_EXTRA_LIBS])
 
-	dnl FIXME: do we really need this test?
-	AC_MSG_CHECKING([whether we can build a shared library depending on libpython])
-	rm -rf testpython
-	mkdir testpython
-	cd testpython
-	cat > testpython.c <<EOF
-#include <Python.h>
-int testpython (void)
-{
-Py_Exit (0);
-}
-EOF
-
-	if /bin/sh ../libtool --mode=compile ${CC} $PYTHON_CFLAGS -c testpython.c >/dev/null 2>&1 && \
-		/bin/sh ../libtool --mode=link ${CC} -o testpython.la -rpath `pwd` -module -avoid-version $PYTHON_LIB_LOC testpython.lo $PYTHON_LIBS $PYTHON_EXTRA_LIBS >/dev/null 2>&1 && \
-		grep 'dlname.*testpython' testpython.la >/dev/null 2>&1; then
-		result=yes
-	else
-		result=no
-		have_python=no
-		if test "x$enable_python" = "xyes"; then
-			AC_MSG_ERROR([Unable to build a shared library depending on libpython])
-		else
-			AC_MSG_WARN([Disabling python support])
-			enable_python=no
-		fi
-	fi
-	cd ..
-	rm -rf testpython
-	AC_MSG_RESULT([$result])
-fi
-
-if test "x$have_python" != "xno"; then
 	PYGTK_REQUIRED=2.8.0
 	GST_PYTHON_REQUIRED=0.10.1
 
