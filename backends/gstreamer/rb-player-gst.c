@@ -1009,6 +1009,23 @@ rb_player_gst_playing (RBPlayer *player)
 	return mp->priv->playing;
 }
 
+static gboolean
+emit_volume_changed_idle (RBPlayerGst *mp)
+{
+	_rb_player_emit_volume_changed (RB_PLAYER (mp), mp->priv->cur_volume);
+	return FALSE;
+}
+
+static void
+stream_volume_changed (GObject *element, GParamSpec *pspec, RBPlayerGst *mp)
+{
+	gdouble v;
+	g_object_get (element, "volume", &v, NULL);
+	mp->priv->cur_volume = v;
+
+	g_idle_add ((GSourceFunc) emit_volume_changed_idle, mp);
+}
+
 static void
 find_volume_handler (RBPlayerGst *mp)
 {
@@ -1025,6 +1042,11 @@ find_volume_handler (RBPlayerGst *mp)
 		if (mp->priv->volume_handler == NULL) {
 			mp->priv->volume_handler = g_object_ref (mp->priv->playbin);
 		}
+
+		g_signal_connect_object (mp->priv->volume_handler,
+					 "notify::volume",
+					 G_CALLBACK (stream_volume_changed),
+					 mp, 0);
 	}
 }
 

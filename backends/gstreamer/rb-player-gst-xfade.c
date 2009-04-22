@@ -2564,6 +2564,24 @@ tick_timeout (RBPlayerGstXFade *player)
 	return TRUE;
 }
 
+static gboolean
+emit_volume_changed_idle (RBPlayerGstXFade *player)
+{
+	_rb_player_emit_volume_changed (RB_PLAYER (player), player->priv->cur_volume);
+	return FALSE;
+}
+
+static void
+stream_volume_changed (GObject *element, GParamSpec *pspec, RBPlayerGstXFade *player)
+{
+	double v;
+
+	g_object_get (element, "volume", &v, NULL);
+	player->priv->cur_volume = v;
+
+	g_idle_add ((GSourceFunc) emit_volume_changed_idle, player);
+}
+
 /*
  * output sink + adder pipeline:
  *
@@ -2728,6 +2746,10 @@ start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 	}
 
 	g_object_set (player->priv->volume_handler, "volume", player->priv->cur_volume, NULL);
+	g_signal_connect_object (player->priv->volume_handler,
+				 "notify::volume",
+				 G_CALLBACK (stream_volume_changed),
+				 player, 0);
 
 
 	sr = gst_element_set_state (player->priv->silencebin, GST_STATE_PLAYING);
