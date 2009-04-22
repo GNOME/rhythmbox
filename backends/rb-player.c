@@ -42,6 +42,7 @@ enum {
 	TICK,
 	EVENT,
 	PLAYING_STREAM,
+	VOLUME_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -230,6 +231,24 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_POINTER);
+	/**
+	 * RBPlayer::volume-changed:
+	 * @player: the #RBPlayer
+	 * @volume: the new volume level
+	 *
+	 * The 'volume-changed' signal is emitted when the output stream volume is
+	 * changed externally.
+	 */
+	signals[VOLUME_CHANGED] =
+		g_signal_new ("volume-changed",
+			      G_TYPE_FROM_INTERFACE (iface),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlayerIface, volume_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__FLOAT,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_FLOAT);
 }
 
 GType
@@ -623,6 +642,20 @@ void
 _rb_player_emit_playing_stream (RBPlayer *player, gpointer stream_data)
 {
 	g_signal_emit (player, signals[PLAYING_STREAM], 0, stream_data);
+}
+
+/**
+ * _rb_player_emit_volume_changed:
+ * @player: a #RBPlayer implementation
+ * @volume: the new volume level
+ *
+ * Emits the 'volume-changed' signal to indicate the output stream
+ * volume has been changed.  To be used by implementations only.
+ */
+void
+_rb_player_emit_volume_changed (RBPlayer *player, float volume)
+{
+	g_signal_emit (player, signals[VOLUME_CHANGED], 0, volume);
 }
 
 GQuark

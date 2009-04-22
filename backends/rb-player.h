@@ -119,6 +119,8 @@ struct _RBPlayerIface
 	void		(*event)		(RBPlayer *player,
 						 gpointer stream_data,
 						 gpointer data);
+	void		(*volume_changed)	(RBPlayer *player,
+						 float volume);
 };
 
 GType		rb_player_get_type   (void);
@@ -160,6 +162,7 @@ void	_rb_player_emit_error (RBPlayer *player, gpointer stream_data, GError *erro
 void	_rb_player_emit_tick (RBPlayer *player, gpointer stream_data, long elapsed, long duration);
 void	_rb_player_emit_event (RBPlayer *player, gpointer stream_data, const char *name, gpointer data);
 void	_rb_player_emit_playing_stream (RBPlayer *player, gpointer stream_data);
+void	_rb_player_emit_volume_changed (RBPlayer *player, float volume);
 
 G_END_DECLS
 
