@@ -150,7 +150,7 @@ static void rb_shell_player_entry_activated_cb (RBEntryView *view,
 static void rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 						       const char *name,
 						       RBShellPlayer *player);
-static void rb_shell_player_sync_volume (RBShellPlayer *player, gboolean notify);
+static void rb_shell_player_sync_volume (RBShellPlayer *player, gboolean notify, gboolean set_volume);
 static void rb_shell_player_sync_replaygain (RBShellPlayer *player,
                                              RhythmDBEntry *entry);
 static void tick_cb (RBPlayer *player, RhythmDBEntry *entry, long elapsed, long duration, gpointer data);
@@ -197,6 +197,9 @@ static gboolean rb_shell_player_do_next_internal (RBShellPlayer *player,
 static void rb_shell_player_slider_dragging_cb (GObject *header,
 						GParamSpec *pspec,
 						RBShellPlayer *player);
+static void rb_shell_player_volume_changed_cb (RBPlayer *player,
+					       float volume,
+					       RBShellPlayer *shell_player);
 
 
 
@@ -653,7 +656,7 @@ rb_shell_player_constructor (GType type,
 	rb_shell_player_set_playing_source (player, NULL);
 	rb_shell_player_sync_play_order (player);
 	rb_shell_player_sync_control_state (player);
-	rb_shell_player_sync_volume (player, FALSE);
+	rb_shell_player_sync_volume (player, FALSE, TRUE);
 	player->priv->syncing_state = FALSE;
 
 	rb_shell_player_sync_song_position_slider_visibility (player);
@@ -999,6 +1002,10 @@ rb_shell_player_init (RBShellPlayer *player)
 				 "missing-plugins",
 				 G_CALLBACK (missing_plugins_cb),
 				 player, 0);
+	g_signal_connect_object (player->priv->mmplayer,
+				 "volume-changed",
+				 G_CALLBACK (rb_shell_player_volume_changed_cb),
+				 player, 0);
 
 	{
 		GVolumeMonitor *monitor = g_volume_monitor_get ();
@@ -1295,7 +1302,7 @@ rb_shell_player_set_property (GObject *object,
 		break;
 	case PROP_VOLUME:
 		player->priv->volume = g_value_get_float (value);
-		rb_shell_player_sync_volume (player, FALSE);
+		rb_shell_player_sync_volume (player, FALSE, TRUE);
 		break;
 	case PROP_STATUSBAR:
 		player->priv->statusbar_widget = g_value_get_object (value);
@@ -2463,7 +2470,8 @@ rb_shell_player_sync_control_state (RBShellPlayer *player)
 
 static void
 rb_shell_player_sync_volume (RBShellPlayer *player,
-			     gboolean notify)
+			     gboolean notify,
+			     gboolean set_volume)
 {
 	GtkAction *action;
 	RhythmDBEntry *entry;
@@ -2482,8 +2490,10 @@ rb_shell_player_sync_volume (RBShellPlayer *player,
 					      "ControlVolumeDown");
 	g_object_set (G_OBJECT (action), "sensitive", player->priv->volume > 0.0001, NULL);
 
-	rb_player_set_volume (player->priv->mmplayer,
-			      player->priv->mute ? 0.0 : player->priv->volume);
+	if (set_volume) {
+		rb_player_set_volume (player->priv->mmplayer,
+				      player->priv->mute ? 0.0 : player->priv->volume);
+	}
 
 	eel_gconf_set_float (CONF_STATE_VOLUME, player->priv->volume);
 
@@ -2508,7 +2518,7 @@ void
 rb_shell_player_toggle_mute (RBShellPlayer *player)
 {
 	player->priv->mute = !player->priv->mute;
-	rb_shell_player_sync_volume (player, FALSE);
+	rb_shell_player_sync_volume (player, FALSE, TRUE);
 }
 
 static void
@@ -2550,7 +2560,7 @@ rb_shell_player_set_volume (RBShellPlayer *player,
 			    GError **error)
 {
 	player->priv->volume = volume;
-	rb_shell_player_sync_volume (player, TRUE);
+	rb_shell_player_sync_volume (player, TRUE, TRUE);
 	return TRUE;
 }
 
@@ -2571,7 +2581,7 @@ rb_shell_player_set_volume_relative (RBShellPlayer *player,
 {
 	/* rb_shell_player_sync_volume does clipping */
 	player->priv->volume += delta;
-	rb_shell_player_sync_volume (player, TRUE);
+	rb_shell_player_sync_volume (player, TRUE, TRUE);
 	return TRUE;
 }
 
@@ -2592,6 +2602,15 @@ rb_shell_player_get_volume (RBShellPlayer *player,
 	return TRUE;
 }
 
+static void
+rb_shell_player_volume_changed_cb (RBPlayer *player,
+				   float volume,
+				   RBShellPlayer *shell_player)
+{
+	shell_player->priv->volume = volume;
+	rb_shell_player_sync_volume (shell_player, TRUE, FALSE);
+}
+
 /**
  * rb_shell_player_set_mute
  * @player: the #RBShellPlayer
@@ -2608,7 +2627,7 @@ rb_shell_player_set_mute (RBShellPlayer *player,
 			  GError **error)
 {
 	player->priv->mute = mute;
-	rb_shell_player_sync_volume (player, FALSE);
+	rb_shell_player_sync_volume (player, FALSE, TRUE);
 	return TRUE;
 }
 
