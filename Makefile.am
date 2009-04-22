@@ -18,6 +18,7 @@ EXTRA_DIST = 			\
 	INTERNALS
 
 DISTCLEANFILES =			\
+	ChangeLog			\
 	gnome-doc-utils.make		\
 	intltool-extract		\
 	intltool-merge			\
