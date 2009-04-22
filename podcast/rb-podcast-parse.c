@@ -69,7 +69,7 @@ playlist_metadata_foreach (const char *key,
 		channel->author = g_strdup (value);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_CONTACT) == 0) {
 		channel->contact = g_strdup (value);
-	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_IMAGE_URL) == 0) {
+	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_IMAGE_URI) == 0) {
 		channel->img = g_strdup (value);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_PUB_DATE) == 0) {
 		channel->pub_date = totem_pl_parser_parse_date (value, FALSE);
@@ -106,7 +106,7 @@ entry_metadata_foreach (const char *key,
 
 	if (strcmp (key, TOTEM_PL_PARSER_FIELD_TITLE) == 0) {
 		item->title = g_strdup (value);
-	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_URL) == 0) {
+	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_URI) == 0) {
 		item->url = g_strdup (value);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_DESCRIPTION) == 0) {
 		item->description = g_strdup (value);
