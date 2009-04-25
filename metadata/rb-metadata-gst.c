@@ -64,6 +64,7 @@ const char * ignore_mime_types[] = {
 	"application/x-bzip",
 	"application/x-gzip",
 	"application/pdf",
+	"application/postscript",
 	"application/x-rar",
 	"application/msword",
 	"application/octet-stream"
