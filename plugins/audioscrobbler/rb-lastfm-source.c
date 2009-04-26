@@ -2091,7 +2091,7 @@ xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata,
 	}
 
 	/* image URL and track auth ID are stored in entry type specific data */
-	value = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_IMAGE_URL);
+	value = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_IMAGE_URI);
 	if (value != NULL && (strcmp (value, LASTFM_NO_COVER_IMAGE) != 0)) {
 		track_data->image_url = g_strdup (value);
 	}
@@ -2101,7 +2101,7 @@ xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata,
 		track_data->track_auth = g_strdup (value);
 	}
 
-	value = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_DOWNLOAD_URL);
+	value = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_DOWNLOAD_URI);
 	if (value != NULL) {
 		track_data->download_url = g_strdup (value);
 		rb_debug ("track %s has a download url: %s", uri, track_data->download_url);
