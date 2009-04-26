@@ -63,6 +63,8 @@ const char * ignore_mime_types[] = {
 	"application/x-ms-dos-executable",
 	"application/x-bzip",
 	"application/x-gzip",
+	"application/x-java",
+	"application/x-lha",
 	"application/pdf",
 	"application/postscript",
 	"application/x-rar",
