@@ -809,6 +809,11 @@ actually_hide_controls (RBVisualizerPlugin *plugin)
 		 * to exit fullscreen mode.
 		 */
 		gtk_widget_grab_focus (plugin->vis_widget);
+
+		if (GTK_WIDGET_REALIZED (plugin->vis_widget)) {
+			gdk_window_set_cursor (plugin->vis_widget->window,
+					       gdk_cursor_new (GDK_BLANK_CURSOR));
+		}
 		/* fall through */
 	case EMBEDDED:
 	case EXTERNAL_WINDOW:
@@ -861,6 +866,9 @@ show_controls (RBVisualizerPlugin *plugin, gboolean play_controls_only)
 		case FULLSCREEN:
 			gtk_widget_show (plugin->play_control_widget);
 			gtk_widget_show (plugin->disable_button);
+			if (GTK_WIDGET_REALIZED (plugin->vis_widget)) {
+				gdk_window_set_cursor (plugin->vis_widget->window, NULL);
+			}
 			break;
 		case EXTERNAL_WINDOW:
 			gtk_widget_hide (plugin->play_control_widget);
