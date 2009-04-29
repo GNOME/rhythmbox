@@ -1768,6 +1768,9 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 	if (stream != NULL)
 		g_object_unref (stream);
 
+	/* emit message signals too, so plugins can process bus messages */
+	gst_bus_async_signal_func (bus, message, NULL);
+
 	return TRUE;
 }
 

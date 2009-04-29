@@ -430,6 +430,9 @@ rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
 		break;
 	}
 
+	/* emit message signals too, so plugins can process messages */
+	gst_bus_async_signal_func (bus, message, NULL);
+
 	return TRUE;
 }
 
