@@ -1081,6 +1081,11 @@ update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int 
 		gtk_box_pack_start (GTK_BOX (plugin->vis_box), plugin->play_control_widget, FALSE, FALSE, 6);
 		gtk_box_pack_end (GTK_BOX (plugin->vis_box), plugin->control_widget, FALSE, FALSE, 6);
 	} else {
+		if (plugin->xoverlay != NULL) {
+			gst_x_overlay_set_xwindow_id (plugin->xoverlay,
+						      GDK_WINDOW_XWINDOW (plugin->fake_window));
+		}
+
 		switch (plugin->mode) {
 		case EMBEDDED:
 			gtk_container_remove (GTK_CONTAINER (plugin->vis_shell),
