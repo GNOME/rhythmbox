@@ -37,13 +37,13 @@ file9=http://ubuntu.hbr1.com:19800/ambient.ogg
 title9=HBR1.com - Dream Factory
 genre9=Ambient
 
-# http://www.wknc.org/listen.php
-file10=http://wknc.org:8000/wknclq.ogg.m3u
-title10=WKNC 88.1 FM (NC State) (Modem)
+# http://www.wknc.org/listen/
+file10=http://wknc.sma.ncsu.edu:8000/wkncmq.ogg.m3u
+title10=WKNC 88.1 FM (NC State) (Low Quality)
 genre10=Music
 
-file11=http://wknc.org:8000/wkncmq.ogg.m3u
-title11=WKNC 88.1 FM (NC State) (Broadband)
+file11=http://wknc.sma.ncsu.edu:8000/wknchq.ogg.m3u
+title11=WKNC 88.1 FM (NC State) (High Quality)
 genre11=Music
 
 # http://www.cbc.ca/listen/ogg.html
