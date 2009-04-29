@@ -1691,7 +1691,6 @@ impl_activate (RBPlugin *plugin,
 							NULL);
 	g_free (ui_file);
 
-	g_object_unref (uim);
 
 	if (pi->vis_shell == NULL) {
 		pi->vis_shell = gtk_vbox_new (FALSE, 0);
@@ -1700,6 +1699,7 @@ impl_activate (RBPlugin *plugin,
 
 	if (pi->vis_window == NULL) {
 		GtkWindow *parent;
+		GtkAccelGroup *accel_group;
 
 		pi->vis_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 		gtk_window_set_title (GTK_WINDOW (pi->vis_window), _("Music Player Visualization"));
@@ -1714,7 +1714,12 @@ impl_activate (RBPlugin *plugin,
 					 "delete-event",
 					 G_CALLBACK (window_delete_cb),
 					 pi, 0);
+
+		accel_group = gtk_ui_manager_get_accel_group (uim);
+		gtk_window_add_accel_group (GTK_WINDOW (pi->vis_window), accel_group);
 	}
+
+	g_object_unref (uim);
 
 	/* real output window */
 	update_window (pi, EMBEDDED, -1, -1);
