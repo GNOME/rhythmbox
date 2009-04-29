@@ -256,6 +256,24 @@ static const VisualizerModeName vis_mode_name[] = {
 
 RB_PLUGIN_REGISTER(RBVisualizerPlugin, rb_visualizer_plugin)
 
+static GdkCursor *
+get_blank_cursor (GdkWindow *window)
+{
+#if !GTK_CHECK_VERSION(2,16,0)
+	GdkPixmap *pixmap;
+	GdkCursor *cursor;
+	GdkColor color = {0, 0, 0, 0};
+
+	pixmap = gdk_bitmap_create_from_data (window, "\0\0\0\0\0\0\0\0", 1, 1);
+	cursor = gdk_cursor_new_from_pixmap (pixmap, pixmap, &color, &color, 0, 0);
+	g_object_unref (pixmap);
+
+	return cursor;
+#else
+	return gdk_cursor_new (GDK_BLANK_CURSOR);
+#endif
+}
+
 static void
 rb_visualizer_plugin_init (RBVisualizerPlugin *plugin)
 {
@@ -811,8 +829,11 @@ actually_hide_controls (RBVisualizerPlugin *plugin)
 		gtk_widget_grab_focus (plugin->vis_widget);
 
 		if (GTK_WIDGET_REALIZED (plugin->vis_widget)) {
-			gdk_window_set_cursor (plugin->vis_widget->window,
-					       gdk_cursor_new (GDK_BLANK_CURSOR));
+			GdkCursor *cursor;
+
+			cursor = get_blank_cursor (plugin->vis_widget->window);
+			gdk_window_set_cursor (plugin->vis_widget->window, cursor);
+			gdk_cursor_unref (cursor);
 		}
 		/* fall through */
 	case EMBEDDED:
