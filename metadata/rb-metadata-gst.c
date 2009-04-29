@@ -51,25 +51,20 @@ static void rb_metadata_finalize (GObject *object);
 typedef GstElement *(*RBAddTaggerElem) (RBMetaData *, GstElement *);
 
 /*
- * The list of mine type prefixes for files that shouldn't display errors about being non-audio.
+ * The list of mime-type prefixes for files that shouldn't display errors about being non-audio.
  * Useful for people who have cover art, et cetera, in their music directories
  */
 const char * ignore_mime_types[] = {
 	"image/",
 	"text/",
-	"application/xml",
-	"application/zip",
-	"application/x-executable",
-	"application/x-ms-dos-executable",
-	"application/x-bzip",
-	"application/x-gzip",
-	"application/x-java",
-	"application/x-lha",
-	"application/pdf",
-	"application/postscript",
-	"application/x-rar",
-	"application/msword",
-	"application/octet-stream"
+	"application/",
+};
+
+const char * non_ignore_mime_types[] = {
+	"application/x-id3",
+	"application/ogg",
+	"application/x-apetag",
+	"application/x-3gp"
 };
 
 /*
@@ -987,6 +982,23 @@ rb_metadata_event_loop (RBMetaData *md, GstElement *element, gboolean block)
 	gst_object_unref (bus);
 }
 
+static gboolean
+ignore_mimetype (const char *type)
+{
+	guint i;
+
+	for (i = 0; i < G_N_ELEMENTS (non_ignore_mime_types); i++) {
+		if (g_str_equal (type, non_ignore_mime_types[i]) != FALSE)
+			return FALSE;
+	}
+	for (i = 0; i < G_N_ELEMENTS (ignore_mime_types); i++) {
+		if (g_str_has_prefix (type, ignore_mime_types[i]) != FALSE)
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
 void
 rb_metadata_load (RBMetaData *md,
 		  const char *uri,
@@ -1158,17 +1170,11 @@ rb_metadata_load (RBMetaData *md,
 	if ((md->priv->has_video || !md->priv->has_audio) &&
 	    (md->priv->has_non_audio || !md->priv->handoff)) {
 		gboolean ignore = FALSE;
-		int i;
 
 		if (md->priv->has_video) {
 			ignore = TRUE;
 		} else {
-			for (i = 0; i < G_N_ELEMENTS (ignore_mime_types); i++) {
-				if (g_str_has_prefix (md->priv->type, ignore_mime_types[i])) {
-					ignore = TRUE;
-					break;
-				}
-			}
+			ignore = ignore_mimetype (md->priv->type);
 		}
 
 		if (!ignore) {
