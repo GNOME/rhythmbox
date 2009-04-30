@@ -807,6 +807,7 @@ plugins/cd-recorder/Makefile
 plugins/brasero-disc-recorder/Makefile
 plugins/daap/Makefile
 plugins/fmradio/Makefile
+plugins/im-status/Makefile
 plugins/ipod/Makefile
 plugins/mtpdevice/Makefile
 plugins/iradio/Makefile

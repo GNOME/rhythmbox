@@ -24,6 +24,7 @@ SUBDIRS += 						\
 	jamendo						\
 	coherence					\
 	dontreallyclose					\
+	im-status					\
 	rb
 endif
 
