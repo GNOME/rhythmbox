@@ -233,7 +233,8 @@ G_DEFINE_TYPE_WITH_CODE(RBPlayerGstXFade, rb_player_gst_xfade, G_TYPE_OBJECT,
 enum
 {
 	PROP_0,
-	PROP_BUFFER_SIZE
+	PROP_BUFFER_SIZE,
+	PROP_BUS
 };
 
 enum
@@ -590,6 +591,14 @@ rb_player_gst_xfade_get_property (GObject *object,
 	case PROP_BUFFER_SIZE:
 		g_value_set_uint (value, player->priv->buffer_size);
 		break;
+	case PROP_BUS:
+		if (player->priv->pipeline) {
+			GstBus *bus;
+			bus = gst_element_get_bus (player->priv->pipeline);
+			g_value_set_object (value, bus);
+			gst_object_unref (bus);
+		}
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -628,10 +637,18 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_BUFFER_SIZE,
 					 g_param_spec_uint ("buffer-size",
-						 	    "buffer size",
+							    "buffer size",
 							    "Buffer size for network streams, in kB",
 							    64, MAX_NETWORK_BUFFER_SIZE, 128,
 							    G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class,
+					 PROP_BUS,
+					 g_param_spec_object ("bus",
+							      "bus",
+							      "GStreamer message bus",
+							      GST_TYPE_BUS,
+							      G_PARAM_READABLE));
 
 	signals[CAN_REUSE_STREAM] =
 		g_signal_new ("can-reuse-stream",
@@ -2914,6 +2931,7 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 
 	player->priv->pipeline = gst_pipeline_new ("rbplayer");
 	add_bus_watch (player);
+	g_object_notify (G_OBJECT (player), "bus");
 
 	player->priv->outputbin = gst_bin_new ("outputbin");
 	player->priv->adder = gst_element_factory_make ("adder", "outputadder");

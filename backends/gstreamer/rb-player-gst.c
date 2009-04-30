@@ -95,7 +95,8 @@ G_DEFINE_TYPE_WITH_CODE(RBPlayerGst, rb_player_gst, G_TYPE_OBJECT,
 enum
 {
 	PROP_0,
-	PROP_PLAYBIN
+	PROP_PLAYBIN,
+	PROP_BUS
 };
 
 enum
@@ -151,6 +152,13 @@ rb_player_gst_class_init (RBPlayerGstClass *klass)
 						 	      "playbin",
 							      "playbin element",
 							      GST_TYPE_ELEMENT,
+							      G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_BUS,
+					 g_param_spec_object ("bus",
+							      "bus",
+							      "GStreamer message bus",
+							      GST_TYPE_BUS,
 							      G_PARAM_READABLE));
 	
 	signals[MISSING_PLUGINS] =
@@ -213,6 +221,14 @@ rb_player_gst_get_property (GObject *object,
 	switch (prop_id) {
 	case PROP_PLAYBIN:
 		g_value_set_object (value, mp->priv->playbin);
+		break;
+	case PROP_BUS:
+		if (mp->priv->playbin) {
+			GstBus *bus;
+			bus = gst_element_get_bus (mp->priv->playbin);
+			g_value_set_object (value, bus);
+			gst_object_unref (bus);
+		}
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -455,6 +471,7 @@ rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 
 	/* let plugins add bits to playbin */
 	g_object_notify (G_OBJECT (mp), "playbin");
+	g_object_notify (G_OBJECT (mp), "bus");
 
 	/* Use gconfaudiosink for audio if there's no audio sink yet */
 	g_object_get (G_OBJECT (mp->priv->playbin), "audio-sink", &sink, NULL);
