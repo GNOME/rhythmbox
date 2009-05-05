@@ -43,9 +43,6 @@
 #include "rb-audioscrobbler-entry.h"
 
 
-#define SCROBBLER_DATE_FORMAT "%Y%%2D%m%%2D%d%%20%H%%3A%M%%3A%S"
-
-
 void
 rb_audioscrobbler_entry_init (AudioscrobblerEntry *entry)
 {
@@ -55,6 +52,7 @@ rb_audioscrobbler_entry_init (AudioscrobblerEntry *entry)
 	entry->length = 0;
 	entry->play_time = 0;
 	entry->mbid = g_strdup ("");
+	entry->source = g_strdup ("P");
 }
 
 void
@@ -64,6 +62,7 @@ rb_audioscrobbler_entry_free (AudioscrobblerEntry *entry)
 	g_free (entry->album);
 	g_free (entry->title);
 	g_free (entry->mbid);
+	g_free (entry->source);
 
 	g_free (entry);
 }
@@ -76,6 +75,8 @@ rb_audioscrobbler_encoded_entry_free (AudioscrobblerEncodedEntry *entry)
 	g_free (entry->title);
 	g_free (entry->mbid);
 	g_free (entry->timestamp);
+	g_free (entry->source);
+	g_free (entry->track);
 
 	g_free (entry);
 }
@@ -86,20 +87,30 @@ rb_audioscrobbler_entry_create (RhythmDBEntry *rb_entry)
 {
 	AudioscrobblerEntry *as_entry = g_new0 (AudioscrobblerEntry, 1);
 
-	as_entry->title = rhythmdb_entry_dup_string (rb_entry,
-						     RHYTHMDB_PROP_TITLE);
-	as_entry->artist = rhythmdb_entry_dup_string (rb_entry,
-						      RHYTHMDB_PROP_ARTIST);
-	as_entry->album = rhythmdb_entry_dup_string (rb_entry,
-						     RHYTHMDB_PROP_ALBUM);
+	as_entry->title = rhythmdb_entry_dup_string (rb_entry, RHYTHMDB_PROP_TITLE);
+	as_entry->track = rhythmdb_entry_get_ulong (rb_entry, RHYTHMDB_PROP_TRACK_NUMBER);
+	as_entry->artist = rhythmdb_entry_dup_string (rb_entry, RHYTHMDB_PROP_ARTIST);
+	as_entry->album = rhythmdb_entry_dup_string (rb_entry, RHYTHMDB_PROP_ALBUM);
 	if (strcmp (as_entry->album, _("Unknown")) == 0) {
 		g_free (as_entry->album);
 		as_entry->album = g_strdup ("");
 	}
-	as_entry->length = rhythmdb_entry_get_ulong (rb_entry,
-						     RHYTHMDB_PROP_DURATION);
-	as_entry->mbid = rhythmdb_entry_dup_string (rb_entry,
-						    RHYTHMDB_PROP_MUSICBRAINZ_TRACKID);
+
+	as_entry->length = rhythmdb_entry_get_ulong (rb_entry, RHYTHMDB_PROP_DURATION);
+	as_entry->mbid = rhythmdb_entry_dup_string (rb_entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID);
+	if (strcmp (as_entry->mbid, _("Unknown")) == 0) {
+		g_free (as_entry->mbid);
+		as_entry->mbid = g_strdup ("");
+	}
+
+	/*
+	 * TODO: identify the source type.  we just use 'P' for everything for now.
+	 * should use 'R' for iradio, 'P' for everything else except last.fm.
+	 * for last.fm, we need to extract the recommendation key from the db entry's
+	 * extra data (see RBLastfmTrackEntryData in rb-lastfm-source.c) and include
+	 * that in the source info here.
+	 */
+	as_entry->source = g_strdup ("P");
 
 	return as_entry;
 }
@@ -112,19 +123,16 @@ rb_audioscrobbler_entry_encode (AudioscrobblerEntry *entry)
 
 	encoded = g_new0 (AudioscrobblerEncodedEntry, 1);
 	
-	encoded->artist = soup_uri_encode (entry->artist, 
-					   EXTRA_URI_ENCODE_CHARS);
-	encoded->title = soup_uri_encode (entry->title,
-					  EXTRA_URI_ENCODE_CHARS);
-	encoded->album = soup_uri_encode (entry->album, 
-					  EXTRA_URI_ENCODE_CHARS);
-	encoded->mbid = soup_uri_encode (entry->mbid, 
-					 EXTRA_URI_ENCODE_CHARS);
-	encoded->timestamp = g_new0 (gchar, 30);
-	strftime (encoded->timestamp, 30, SCROBBLER_DATE_FORMAT, 
-		  gmtime (&entry->play_time));
+	encoded->artist = soup_uri_encode (entry->artist, EXTRA_URI_ENCODE_CHARS);
+	encoded->title = soup_uri_encode (entry->title, EXTRA_URI_ENCODE_CHARS);
+	encoded->album = soup_uri_encode (entry->album, EXTRA_URI_ENCODE_CHARS);
+	encoded->track = g_strdup_printf ("%lu", entry->track);
 
+	encoded->mbid = soup_uri_encode (entry->mbid, EXTRA_URI_ENCODE_CHARS);
+
+	encoded->timestamp = g_strdup_printf("%ld", entry->play_time);
 	encoded->length = entry->length;
+	encoded->source = g_strdup (entry->source);
 
 	return encoded;
 }
@@ -164,14 +172,11 @@ rb_audioscrobbler_entry_load_from_string (const char *string)
 			if (g_str_has_prefix (breaks2[0], "l")) {
 				entry->length = atoi (breaks2[1]);
 			}
-			if (g_str_has_prefix (breaks2[0], "i")) {
-				struct tm tm;
-				strptime (breaks2[1], SCROBBLER_DATE_FORMAT, 
-					  &tm);
-				entry->play_time = mktime (&tm);
-			}
-			/* slight format extension: time_t */
-			if (g_str_has_prefix (breaks2[0], "I")) {		
+			/* 'I' here is for backwards compatibility with queue files
+			 * saved while we were using the 1.1 protocol.  see bug 508895.
+			 */
+			if (g_str_has_prefix (breaks2[0], "i") ||
+			    g_str_has_prefix (breaks2[0], "I")) {
 				entry->play_time = strtol (breaks2[1], NULL, 10);
 			}
 		}
@@ -196,7 +201,7 @@ rb_audioscrobbler_entry_save_to_string (GString *string, AudioscrobblerEntry *en
 
 	encoded = rb_audioscrobbler_entry_encode (entry);
 	g_string_append_printf (string,
-				"a=%s&t=%s&b=%s&m=%s&l=%d&I=%ld\n",
+				"a=%s&t=%s&b=%s&m=%s&l=%d&i=%ld\n",
 				encoded->artist,
 				encoded->title,
 				encoded->album,
@@ -209,14 +214,10 @@ rb_audioscrobbler_entry_save_to_string (GString *string, AudioscrobblerEntry *en
 void
 rb_audioscrobbler_entry_debug (AudioscrobblerEntry *entry, int index)
 {
-	char timestamp[30];
 	rb_debug ("%-3d  artist: %s", index, entry->artist);
 	rb_debug ("      album: %s", entry->album);
 	rb_debug ("      title: %s", entry->title);
 	rb_debug ("     length: %d", entry->length);
 	rb_debug ("   playtime: %ld", entry->play_time);
-	strftime (timestamp, 30, SCROBBLER_DATE_FORMAT, 
-		  gmtime (&entry->play_time));
-	rb_debug ("  timestamp: %s", timestamp);
 }
 

@@ -40,8 +40,10 @@ typedef struct
 	gchar *album;
 	gchar *title;
 	guint length;
+	gulong track;
 	gchar *mbid;
 	time_t play_time;
+	gchar *source;
 } AudioscrobblerEntry;
 
 typedef struct
@@ -52,6 +54,8 @@ typedef struct
 	guint length;
 	gchar *mbid;
 	gchar *timestamp;
+	gchar *source;
+	gchar *track;
 } AudioscrobblerEncodedEntry;
 
 
