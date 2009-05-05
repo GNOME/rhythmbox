@@ -31,6 +31,7 @@
 #include <string.h>
 
 #include <gst/gst.h>
+#include <gst/tag/tag.h>
 
 #include <rb-player-gst-helper.h>
 #include <rb-debug.h>
@@ -223,10 +224,8 @@ rb_gst_process_tag_string (const GstTagList *taglist,
 		*field = RB_METADATA_FIELD_COMMENT;
 	else if (!strcmp (tag, GST_TAG_BITRATE))
 		*field = RB_METADATA_FIELD_BITRATE;
-#ifdef GST_TAG_MUSICBRAINZ_TRACKID
 	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_TRACKID))
 		*field = RB_METADATA_FIELD_MUSICBRAINZ_TRACKID;
-#endif
 	else {
 		rb_debug ("tag %s doesn't correspond to a metadata field we're interested in", tag);
 		return FALSE;

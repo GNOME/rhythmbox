@@ -514,7 +514,6 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_ALBUM_GAIN;
 	else if (!strcmp (tag, GST_TAG_ALBUM_PEAK))
 		return RB_METADATA_FIELD_ALBUM_PEAK;
-#ifdef GST_TAG_MUSICBRAINZ_TRACKID
 	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_TRACKID))
 		return RB_METADATA_FIELD_MUSICBRAINZ_TRACKID;
 	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_ARTISTID))
@@ -523,12 +522,10 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID;
 	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_ALBUMARTISTID))
 		return RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID;
-	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_SORTNAME))
+	else if (!strcmp (tag, GST_TAG_ARTIST_SORTNAME))
 		return RB_METADATA_FIELD_ARTIST_SORTNAME;
 	else if (!strcmp (tag, GST_TAG_ALBUM_SORTNAME))
 		return RB_METADATA_FIELD_ALBUM_SORTNAME;
-
-#endif
 	else
 		return -1;
 }
@@ -588,7 +585,6 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 		return GST_TAG_ALBUM_GAIN;
 	case RB_METADATA_FIELD_ALBUM_PEAK:
 		return GST_TAG_ALBUM_PEAK;
-#ifdef GST_TAG_MUSICBRAINZ_TRACKID
 	case RB_METADATA_FIELD_MUSICBRAINZ_TRACKID:
 		return GST_TAG_MUSICBRAINZ_TRACKID;
 	case RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID:
@@ -598,10 +594,9 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 	case RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID:
 		return GST_TAG_MUSICBRAINZ_ALBUMARTISTID;
 	case RB_METADATA_FIELD_ARTIST_SORTNAME:
-		return GST_TAG_MUSICBRAINZ_SORTNAME;
+		return GST_TAG_ARTIST_SORTNAME;
 	case RB_METADATA_FIELD_ALBUM_SORTNAME:
 		return GST_TAG_ALBUM_SORTNAME;
-#endif
 	default:
 		return NULL;
 	}

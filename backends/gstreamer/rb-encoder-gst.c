@@ -428,7 +428,6 @@ add_tags_from_entry (RBEncoderGst *encoder,
 				  NULL);
 		g_date_free (date);
 	}
-#ifdef GST_TAG_MUSICBRAINZ_TRACKID
 	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID)) {
 		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
 				  GST_TAG_MUSICBRAINZ_TRACKID, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID),
@@ -451,7 +450,7 @@ add_tags_from_entry (RBEncoderGst *encoder,
 	}
 	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME)) {
 		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
-				  GST_TAG_MUSICBRAINZ_SORTNAME, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME),
+				  GST_TAG_ARTIST_SORTNAME, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME),
 				  NULL);
 	}
 	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME)) {
@@ -459,7 +458,6 @@ add_tags_from_entry (RBEncoderGst *encoder,
 				  GST_TAG_ALBUM_SORTNAME, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME),
 				  NULL);
 	}
-#endif
 
 	{
 		GstIterator *iter;
