@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-04 17:31+0200\n"
-"PO-Revision-Date: 2009-05-04 18:04+0100\n"
+"POT-Creation-Date: 2009-05-06 20:35+0200\n"
+"PO-Revision-Date: 2009-05-06 20:36+0100\n"
 "Last-Translator: Mario Blättermann <mariobl@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -27,19 +27,19 @@ msgstr ""
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: GERMANY\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:589
+#: ../backends/gstreamer/rb-encoder-gst.c:587
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Möchten Sie die Datei »%s« überschreiben?"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:660
+#: ../backends/gstreamer/rb-encoder-gst.c:658
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
 "GStreamer-Datenempfänger zum Schreiben von %s konnte nicht erzeugt werden"
 
-#: ../backends/gstreamer/rb-player-gst.c:566 ../metadata/rb-metadata-gst.c:852
-#: ../metadata/rb-metadata-gst.c:1426
+#: ../backends/gstreamer/rb-player-gst.c:566 ../metadata/rb-metadata-gst.c:847
+#: ../metadata/rb-metadata-gst.c:1421
 #: ../plugins/cd-recorder/rb-recorder-gst.c:508
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -647,10 +647,10 @@ msgstr "%d. %B %Y"
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:180
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:181
 #: ../plugins/audiocd/rb-audiocd-source.c:217
-#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:510
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:519
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:523
 #: ../plugins/daap/rb-daap-connection.c:698
 #: ../plugins/generic-player/rb-generic-player-source.c:1295
 #: ../plugins/ipod/rb-ipod-source.c:305
@@ -748,59 +748,59 @@ msgstr "Internes GStreamer-Problem; senden Sie einen Fehlerbericht"
 msgid "D-BUS communication error"
 msgstr "D-BUS-Kommunikationsfehler"
 
-#: ../metadata/rb-metadata-gst.c:647
+#: ../metadata/rb-metadata-gst.c:642
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr ""
 "Die GStreamer-Plugins zum Dekodieren von »%s«-Dateien konnten nicht gefunden "
 "werden"
 
-#: ../metadata/rb-metadata-gst.c:650
+#: ../metadata/rb-metadata-gst.c:645
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr ""
 "Die Datei enthält einen Datenstrom des Typs %s, der nicht dekodierbar ist"
 
-#: ../metadata/rb-metadata-gst.c:1059
+#: ../metadata/rb-metadata-gst.c:1054
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr ""
 "Quellelement konnte nicht angelegt werden; bitte überprüfen Sie die "
 "Installation"
 
-#: ../metadata/rb-metadata-gst.c:1122
+#: ../metadata/rb-metadata-gst.c:1117
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "GStreamer-Fehler: Status konnte nicht geändert werden"
 
-#: ../metadata/rb-metadata-gst.c:1212
+#: ../metadata/rb-metadata-gst.c:1207
 #, c-format
 msgid "Empty file"
 msgstr "Leere Datei"
 
-#: ../metadata/rb-metadata-gst.c:1220
+#: ../metadata/rb-metadata-gst.c:1215
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "Der MIME-Typ der Datei konnte nicht ermittelt werden"
 
-#: ../metadata/rb-metadata-gst.c:1354
+#: ../metadata/rb-metadata-gst.c:1349
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Nicht unterstützter Dateiyp: %s"
 
-#: ../metadata/rb-metadata-gst.c:1363
+#: ../metadata/rb-metadata-gst.c:1358
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr ""
 "Elemente zum Bearbeiten von Musik-Kennzeichnungen konnten nicht erstellt "
 "werden"
 
-#: ../metadata/rb-metadata-gst.c:1378
+#: ../metadata/rb-metadata-gst.c:1373
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Zeitüberschreibung beim Setzen der Pipeline auf NULL"
 
-#: ../metadata/rb-metadata-gst.c:1402
+#: ../metadata/rb-metadata-gst.c:1397
 #, c-format
 msgid "File corrupted during write"
 msgstr "Datei wurde während des Schreibvorgangs beschädigt"
@@ -987,7 +987,7 @@ msgid "Last submission time:"
 msgstr "Letztes Übermittlungsdatum:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1090
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1010
 #: ../plugins/iradio/rb-station-properties-dialog.c:506
 #: ../rhythmdb/rhythmdb.c:3601 ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1531 ../widgets/rb-entry-view.c:1544
@@ -1031,44 +1031,33 @@ msgstr "_Benutzername:"
 msgid "Last.fm Preferences"
 msgstr "Einstellungen des Last.fm-Profils"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1113
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1033
 msgid "OK"
 msgstr "OK"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1116
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1036
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1816
 msgid "Logging in"
 msgstr "Anmelden"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1119
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1039
 msgid "Request failed"
 msgstr "Anfrage ist fehlgeschlagen"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1122
-msgid "Incorrect username"
-msgstr "Ungültiger Benutzername"
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1042
+msgid "Incorrect username or password"
+msgstr "Ungültiger Benutzername oder Passwort"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1125
-msgid "Incorrect password"
-msgstr "Ungültiges Passwort"
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1045
+msgid "Clock is not set correctly"
+msgstr "Uhr ist nicht korrekt eingestellt"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1128
-msgid "Handshake failed"
-msgstr "Handschlag ist fehlgeschlagen"
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1048
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:905
+msgid "This version of Rhythmbox has been banned from Last.fm."
+msgstr "Diese Version von Rhythmbox wurde auf Last.fm gesperrt."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1131
-msgid "Client update required"
-msgstr "Aktualisierung des Clients erforderlich"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1134
-msgid "Track submission failed"
-msgstr "Übermittlung der Titel ist fehlgeschlagen"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1137
-msgid "Queue is too long"
-msgstr "Warteschlange ist zu lang"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1140
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1051
 msgid "Track submission failed too many times"
 msgstr "Übermittlung der Titel ist zu oft fehlgeschlagen"
 
@@ -1201,10 +1190,6 @@ msgid "Account details are needed before you can connect.  Check your settings."
 msgstr ""
 "Kontodetails sind erforderlich, bevor die Verbindung hergestellt werden kann. "
 "Prüfen Sie Ihre Einstellungen."
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:905
-msgid "This version of Rhythmbox has been banned from Last.fm."
-msgstr "Diese Version von Rhythmbox wurde auf Last.fm gesperrt."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:909
 msgid "Unable to connect"
@@ -4993,6 +4978,21 @@ msgstr "Auf dem Desktop"
 #: ../widgets/rb-song-info.c:1147
 msgid "Unknown location"
 msgstr "Unbekannter Speicherort"
+
+#~ msgid "Incorrect password"
+#~ msgstr "Ungültiges Passwort"
+
+#~ msgid "Handshake failed"
+#~ msgstr "Handschlag ist fehlgeschlagen"
+
+#~ msgid "Client update required"
+#~ msgstr "Aktualisierung des Clients erforderlich"
+
+#~ msgid "Track submission failed"
+#~ msgstr "Übermittlung der Titel ist fehlgeschlagen"
+
+#~ msgid "Queue is too long"
+#~ msgstr "Warteschlange ist zu lang"
 
 #~ msgid " "
 #~ msgstr " "
