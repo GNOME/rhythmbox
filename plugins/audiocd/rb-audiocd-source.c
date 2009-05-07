@@ -598,6 +598,11 @@ metadata_cb (SjMetadataGetter *metadata,
 		cd_track = g_list_next (cd_track);
 	}
 
+	/* And free the albums list, as it belongs to us, not
+	 * the metadata getter */
+	g_list_foreach (albums, (GFunc)album_details_free, NULL);
+	g_list_free (albums);
+
 	g_object_unref (metadata);
 	priv->metadata = NULL;
 
@@ -611,6 +616,8 @@ metadata_cancelled_cb (SjMetadataGetter *metadata,
 		       gpointer old_source)
 {
 	/* NOTE: the source may have been finalised, and so should NOT be used*/
+	g_list_foreach (albums, (GFunc)album_details_free, NULL);
+	g_list_free (albums);
 	g_object_unref (metadata);
 }
 #endif
