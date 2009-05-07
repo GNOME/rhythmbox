@@ -35,7 +35,6 @@
 struct SjMetadataGvfsPrivate {
   char *cdrom;
   char *uri;
-  GList *albums;
 };
 
 #define GET_PRIVATE(o)  \
@@ -71,9 +70,10 @@ static GList *
 gvfs_list_albums (SjMetadata *metadata, char **url, GError **error)
 {
   SjMetadataGvfsPrivate *priv;
+  GList *albums = NULL;
   AlbumDetails *album;
   GError *my_error = NULL;
-  GFile *file;
+  GFile *file = NULL;
   GFileInfo *info;
   GFileEnumerator *e;
   guint i = 0;
@@ -84,8 +84,7 @@ gvfs_list_albums (SjMetadata *metadata, char **url, GError **error)
 
   if (priv->uri == NULL) {
     g_set_error (error, SJ_ERROR, SJ_ERROR_INTERNAL_ERROR, _("Cannot access CD"));
-    priv->albums = NULL;
-    return NULL;
+    goto bail;
   }
 
   file = g_file_new_for_uri (priv->uri);
@@ -134,24 +133,25 @@ gvfs_list_albums (SjMetadata *metadata, char **url, GError **error)
     track->duration = g_file_info_get_attribute_uint64 (info, "xattr::org.gnome.audio.duration");
     album->number++;
     g_object_unref (info);
+
+    album->tracks = g_list_append (album->tracks, track);
   }
   g_object_unref (e);
 
-  priv->albums = g_list_append (NULL, album);
+  albums = g_list_append (albums, album);
 
-  return priv->albums;
+  return albums;
 
 bail:
 
-  g_object_unref (file);
-  g_set_error (error, SJ_ERROR, SJ_ERROR_INTERNAL_ERROR, _("Cannot access CD: %s"), my_error->message);
-  g_error_free (my_error);
-  g_list_foreach (priv->albums, (GFunc)album_details_free, NULL);
-  g_list_free (priv->albums);
-  priv->albums = NULL;
+  if (file)
+    g_object_unref (file);
+  if (my_error) {
+    g_set_error (error, SJ_ERROR, SJ_ERROR_INTERNAL_ERROR, _("Cannot access CD: %s"), my_error->message);
+    g_error_free (my_error);
+  }
   return NULL;
 }
-
 
 /**
  * GObject methods
@@ -190,8 +190,7 @@ sj_metadata_gvfs_set_property (GObject *object, guint property_id,
 
   switch (property_id) {
   case PROP_DEVICE:
-    if (priv->cdrom)
-      g_free (priv->cdrom);
+    g_free (priv->cdrom);
     priv->cdrom = g_value_dup_string (value);
     priv->uri = device_to_cdda_uri (priv->cdrom);
     break;
@@ -210,8 +209,6 @@ sj_metadata_gvfs_finalize (GObject *object)
   SjMetadataGvfsPrivate *priv = SJ_METADATA_GVFS (object)->priv;
   g_free (priv->cdrom);
   g_free (priv->uri);
-  g_list_foreach (priv->albums, (GFunc)album_details_free, NULL);
-  g_list_free (priv->albums);
 }
 
 static void

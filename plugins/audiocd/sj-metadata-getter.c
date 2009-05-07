@@ -22,6 +22,7 @@
 
 #include <glib-object.h>
 #include <glib/gi18n.h>
+#include "sj-structures.h"
 #include "sj-metadata-getter.h"
 #include "sj-metadata-marshal.h"
 #include "sj-metadata.h"
@@ -155,11 +156,10 @@ sj_metadata_getter_set_proxy_port (SjMetadataGetter *mdg, const int proxy_port)
 static gboolean
 fire_signal_idle (SjMetadataGetterSignal *signal)
 {
+  /* The callback is the sucker, and now owns the albums list */
   g_signal_emit_by_name (G_OBJECT (signal->mdg), "metadata",
   			 signal->albums, signal->error);
 
-  /* This will kill the albums, as
-   * those belong to the metadata backend */
   if (signal->metadata)
     g_object_unref (signal->metadata);
   if (signal->error != NULL)
