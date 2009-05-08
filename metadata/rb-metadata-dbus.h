@@ -40,10 +40,13 @@ G_BEGIN_DECLS
 #define RB_METADATA_DBUS_OBJECT_PATH	"/org/gnome/rhythmbox/MetadataService"
 #define RB_METADATA_DBUS_INTERFACE	"org.gnome.rhythmbox.Metadata"
 
-/* Timeout in milliseconds.  If a metadata operation takes longer than this,
- * the metadata process will be killed and the operation will fail.
+/* Timeouts in milliseconds.  If a metadata operation takes longer than this,
+ * the metadata process will be killed and the operation will fail.  We use a
+ * longer timeout for save operations because they involve reading and writing
+ * the entire file being modified, which can take some time on slow devices.
  */
 #define RB_METADATA_DBUS_TIMEOUT	(15000)
+#define RB_METADATA_SAVE_DBUS_TIMEOUT	(120000)
 
 gboolean	rb_metadata_dbus_get_boolean (DBusMessageIter *iter,
 					      gboolean *value);

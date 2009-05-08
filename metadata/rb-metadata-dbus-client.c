@@ -724,7 +724,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	if (*error == NULL) {
 		response = dbus_connection_send_with_reply_and_block (dbus_connection,
 								      message,
-								      RB_METADATA_DBUS_TIMEOUT,
+								      RB_METADATA_SAVE_DBUS_TIMEOUT,
 								      &dbus_error);
 		if (!response) {
 			handle_dbus_error (md, &dbus_error, error);
