@@ -962,7 +962,7 @@ rb_metadata_event_loop (RBMetaData *md, GstElement *element, gboolean block)
 		GstMessage *message;
 
 		if (block)
-			message = gst_bus_poll (bus, GST_MESSAGE_ANY, -1);
+			message = gst_bus_timed_pop (bus, GST_CLOCK_TIME_NONE);
 		else
 			message = gst_bus_pop (bus);
 
@@ -1093,7 +1093,7 @@ rb_metadata_load (RBMetaData *md,
 	       change_timeout < 5) {
 		GstMessage *msg;
 
-		msg = gst_bus_poll (bus, GST_MESSAGE_ANY, 1 * GST_SECOND);
+		msg = gst_bus_timed_pop (bus, 1 * GST_SECOND);
 		if (msg) {
 			rb_metadata_bus_handler (bus, msg, md);
 			gst_message_unref (msg);
