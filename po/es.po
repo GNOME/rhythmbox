@@ -11,14 +11,14 @@
 # Francisco Javier F. Serrador <serrador@tecknolabs.com>, 2004, 2005, 2006.
 # Claudio Saavedra <csaavedra@alumnos.utalca.cl>, 2007.
 # Jorge Gonzalez <jorgegonz@svn.gnome.org>, 2008.
-# Jorge González <jorgegonz@svn.gnome.org>, 2007, 200, 2009.
+# Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-04-30 05:15+0000\n"
-"PO-Revision-Date: 2009-05-02 11:01+0200\n"
+"POT-Creation-Date: 2009-05-05 03:41+0000\n"
+"PO-Revision-Date: 2009-05-08 19:54+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -647,10 +647,10 @@ msgstr "%d %b %Y"
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:180
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:181
 #: ../plugins/audiocd/rb-audiocd-source.c:217
-#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:510
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:534
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:519
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:523
 #: ../plugins/daap/rb-daap-connection.c:698
 #: ../plugins/generic-player/rb-generic-player-source.c:1295
 #: ../plugins/ipod/rb-ipod-source.c:305
@@ -983,7 +983,7 @@ msgid "Last submission time:"
 msgstr "Hora del último envío:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1090
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1010
 #: ../plugins/iradio/rb-station-properties-dialog.c:506
 #: ../rhythmdb/rhythmdb.c:3601 ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1531 ../widgets/rb-entry-view.c:1544
@@ -1027,44 +1027,34 @@ msgstr "_Usuario:"
 msgid "Last.fm Preferences"
 msgstr "Preferencias de Last.fm"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1113
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1033
 msgid "OK"
 msgstr "Aceptar"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1116
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1036
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1816
 msgid "Logging in"
 msgstr "Registrarse"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1119
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1039
 msgid "Request failed"
 msgstr "Petición rechazada"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1122
-msgid "Incorrect username"
-msgstr "Nombre de usuario incorrecto"
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1042
+#| msgid "Incorrect username"
+msgid "Incorrect username or password"
+msgstr "Nombre de usuario o contraseña incorrecta"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1125
-msgid "Incorrect password"
-msgstr "Contraseña incorrecta"
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1045
+msgid "Clock is not set correctly"
+msgstr "El reloj no está correctamente ajustado"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1128
-msgid "Handshake failed"
-msgstr "Negociación fallida"
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1048
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:905
+msgid "This version of Rhythmbox has been banned from Last.fm."
+msgstr "Esta versión de Rhythmbox ha sido excluida de Last.fm."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1131
-msgid "Client update required"
-msgstr "Se requiere actualización del cliente"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1134
-msgid "Track submission failed"
-msgstr "Envío de pista fallido"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1137
-msgid "Queue is too long"
-msgstr "La cola es demasiado larga"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1140
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1051
 msgid "Track submission failed too many times"
 msgstr "El registro de pista falló demasiadas veces"
 
@@ -1196,10 +1186,6 @@ msgid ""
 msgstr ""
 "Se necesitan los detalles de la cuenta antes de poder conectar. Compruebe "
 "sus ajustes."
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:905
-msgid "This version of Rhythmbox has been banned from Last.fm."
-msgstr "Esta versión de Rhythmbox ha sido excluida de Last.fm."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:909
 msgid "Unable to connect"
@@ -1941,7 +1927,6 @@ msgid "Importing (%d/%d)"
 msgstr "Importando (%d/%d)"
 
 #: ../plugins/im-status/im-status.rb-plugin.in.h:1
-#| msgid "Status"
 msgid "IM Status"
 msgstr "Estado en MI"
 
@@ -4963,6 +4948,21 @@ msgstr "En el escritorio"
 #: ../widgets/rb-song-info.c:1147
 msgid "Unknown location"
 msgstr "Dirección desconocida"
+
+#~ msgid "Incorrect password"
+#~ msgstr "Contraseña incorrecta"
+
+#~ msgid "Handshake failed"
+#~ msgstr "Negociación fallida"
+
+#~ msgid "Client update required"
+#~ msgstr "Se requiere actualización del cliente"
+
+#~ msgid "Track submission failed"
+#~ msgstr "Envío de pista fallido"
+
+#~ msgid "Queue is too long"
+#~ msgstr "La cola es demasiado larga"
 
 #~ msgid "%u kbps"
 #~ msgstr "%u kbps"
