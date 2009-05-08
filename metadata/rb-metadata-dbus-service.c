@@ -366,20 +366,23 @@ static DBusHandlerResult
 _handle_message (DBusConnection *connection, DBusMessage *message, void *data)
 {
 	ServiceData *svc = (ServiceData *)data;
+	DBusHandlerResult result;
 	rb_debug ("handling metadata service message");
 
-	svc->last_active = time (NULL);
 	if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "load")) {
-		return rb_metadata_dbus_load (connection, message, svc);
+		result = rb_metadata_dbus_load (connection, message, svc);
 	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "canSave")) {
-		return rb_metadata_dbus_can_save (connection, message, svc);
+		result = rb_metadata_dbus_can_save (connection, message, svc);
 	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "save")) {
-		return rb_metadata_dbus_save (connection, message, svc);
+		result = rb_metadata_dbus_save (connection, message, svc);
 	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "ping")) {
-		return rb_metadata_dbus_ping (connection, message, svc);
+		result = rb_metadata_dbus_ping (connection, message, svc);
 	} else {
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+		result = DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 	}
+
+	svc->last_active = time (NULL);
+	return result;
 }
 
 static void
