@@ -37,6 +37,8 @@ ART_SAVE_NAME = 'Cover.jpg'
 ART_SAVE_FORMAT = 'jpeg'
 ART_SAVE_SETTINGS = {"quality": "100"}
 
+IGNORED_SCHEMES = ('http', 'cdda', 'daap', 'mms')
+
 def file_root (f_name):
 	return os.path.splitext (f_name)[0].lower ()
 
@@ -72,7 +74,7 @@ class LocalCoverArtSearch:
 	def search (self, db, entry, is_playing, on_search_completed_cb, *args):
 
 		self.file = gio.File(entry.get_playback_uri())
-		if self.file.get_uri_scheme() in ('http','cdda','daap'):
+		if self.file.get_uri_scheme() in IGNORED_SCHEMES:
 			print 'not searching for local art for %s' % (self.file.get_uri())
 			on_search_completed_cb (self, entry, [], *args)
 			return
@@ -177,7 +179,7 @@ class LocalCoverArtSearch:
 			return
 
 		f = gio.File(uri)
-		if f.get_uri_scheme() in ('http','cdda','daap'):
+		if f.get_uri_scheme() in IGNORED_SCHEMES:
 			print "not saving local art for %s" % uri
 			return
 
