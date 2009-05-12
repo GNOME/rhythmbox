@@ -111,7 +111,7 @@ rb_fm_radio_src_init (RBFMRadioSrc *src, RBFMRadioSrcClass *klass)
 		      "wave", 4,
 		      NULL);
 
-	pad = gst_element_get_pad (src->audiotestsrc, "src");
+	pad = gst_element_get_static_pad (src->audiotestsrc, "src");
 	src->ghostpad = gst_ghost_pad_new ("src", pad);
 	gst_element_add_pad (GST_ELEMENT (src), src->ghostpad);
 	gst_object_ref (src->ghostpad);

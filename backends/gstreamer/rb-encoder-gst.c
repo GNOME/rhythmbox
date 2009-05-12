@@ -519,7 +519,7 @@ new_decoded_pad_cb (GstElement *decodebin, GstPad *new_pad, gboolean arg1, RBEnc
 	/* only process audio data */
 	if (strncmp (caps_string, "audio/", 6) == 0) {
 		encoder->priv->decoded_pads++;
-		enc_sinkpad = gst_element_get_pad (encoder->priv->enc,
+		enc_sinkpad = gst_element_get_static_pad (encoder->priv->enc,
 				"sink");
 		if (gst_pad_link (new_pad, enc_sinkpad) != GST_PAD_LINK_OK)
 			rb_debug ("error linking pads");
@@ -677,7 +677,7 @@ encoder_match_mime (RBEncoderGst *rbencoder, GstElement *encoder, const gchar *m
 	gboolean match = FALSE;
 	char *tmp;
 
-	srcpad = gst_element_get_pad (encoder, "src");
+	srcpad = gst_element_get_static_pad (encoder, "src");
 	element_caps = gst_pad_get_caps (srcpad);
 
 	if (element_caps == NULL) {

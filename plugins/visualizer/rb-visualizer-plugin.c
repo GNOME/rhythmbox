@@ -482,7 +482,7 @@ fixate_vis_caps (RBVisualizerPlugin *pi, GstElement *vis_element, GstElement *ca
 	else
 		q = &fake_vis_quality;
 
-	pad = gst_element_get_pad (vis_element, "src");
+	pad = gst_element_get_static_pad (vis_element, "src");
 	template_caps = gst_pad_get_pad_template_caps (pad);
 	gst_object_unref (pad);
 
@@ -567,7 +567,7 @@ update_playbin_visualizer (RBVisualizerPlugin *plugin,
 	plugin->capsfilter = gst_element_factory_make ("capsfilter", NULL);
 	gst_bin_add (GST_BIN (plugin->visualizer), plugin->capsfilter);
 
-	pad = gst_element_get_pad (plugin->capsfilter, "src");
+	pad = gst_element_get_static_pad (plugin->capsfilter, "src");
 	gst_element_add_pad (plugin->visualizer, gst_ghost_pad_new ("src", pad));
 	gst_object_unref (pad);
 
@@ -580,7 +580,7 @@ update_playbin_visualizer (RBVisualizerPlugin *plugin,
 		gst_bin_add (GST_BIN (plugin->visualizer), vis_plugin);
 	}
 
-	pad = gst_element_get_pad (vis_plugin, "sink");
+	pad = gst_element_get_static_pad (vis_plugin, "sink");
 	gst_element_add_pad (plugin->visualizer, gst_ghost_pad_new ("sink", pad));
 	gst_object_unref (pad);
 
@@ -682,7 +682,7 @@ update_tee_visualizer (RBVisualizerPlugin *plugin,
 
 			/* probably should do this async.. */
 			rb_debug ("blocking visualizer bin sink pad");
-			pad = gst_element_get_pad (plugin->visualizer, "sink");
+			pad = gst_element_get_static_pad (plugin->visualizer, "sink");
 			blocked_pad = gst_ghost_pad_get_target (GST_GHOST_PAD (pad));
 			gst_pad_set_blocked (blocked_pad, TRUE);
 			gst_object_unref (pad);
@@ -1681,7 +1681,7 @@ impl_activate (RBPlugin *plugin,
 		gst_element_link_many (pi->capsfilter, colorspace, videoscale, pi->video_sink, NULL);
 		/* leave identity unlinked until we have a visualizer element */
 
-		pad = gst_element_get_pad (pi->identity, "sink");
+		pad = gst_element_get_static_pad (pi->identity, "sink");
 		gst_element_add_pad (pi->visualizer, gst_ghost_pad_new ("sink", pad));
 		gst_object_unref (pad);
 

@@ -365,7 +365,7 @@ rb_recorder_new_pad_cb (GstElement *decodebin,
         GstStructure *str;
         GstPad       *audio_pad;
 
-        audio_pad = gst_element_get_pad (recorder->priv->audioconvert, "sink");
+        audio_pad = gst_element_get_static_pad (recorder->priv->audioconvert, "sink");
 
         /* Only link once. */
         if (GST_PAD_IS_LINKED (audio_pad))

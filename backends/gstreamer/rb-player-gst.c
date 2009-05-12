@@ -502,12 +502,12 @@ rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 		gst_bin_add (GST_BIN (mp->priv->filterbin), audioconvert);
 
 		/* ghost it to the bin */
-		pad = gst_element_get_pad (audioconvert, "sink");
+		pad = gst_element_get_static_pad (audioconvert, "sink");
 		ghostpad = gst_ghost_pad_new ("sink", pad);
 		gst_element_add_pad (mp->priv->filterbin, ghostpad);
 		gst_object_unref (pad);
 
-		pad = gst_element_get_pad (audioconvert, "src");
+		pad = gst_element_get_static_pad (audioconvert, "src");
 		ghostpad = gst_ghost_pad_new ("src", pad);
 		gst_element_add_pad (mp->priv->filterbin, ghostpad);
 		gst_object_unref (pad);
@@ -522,7 +522,7 @@ rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 		gst_bin_add_many (GST_BIN (mp->priv->sinkbin), mp->priv->filterbin, mp->priv->tee, queue, sink, NULL);
 		gst_element_link_many (mp->priv->filterbin, mp->priv->tee, queue, sink, NULL);
 
-		pad = gst_element_get_pad (mp->priv->filterbin, "sink");
+		pad = gst_element_get_static_pad (mp->priv->filterbin, "sink");
 		ghostpad = gst_ghost_pad_new ("sink", pad);
 		gst_element_add_pad (mp->priv->sinkbin, ghostpad);
 		gst_object_unref (pad);
@@ -1079,7 +1079,7 @@ rb_player_gst_add_tee (RBPlayerGstTee *player, GstElement *element)
 	gst_element_link_many (queue, audioconvert, element, NULL);
 
 	/* link it to the tee */
-	pad = gst_element_get_pad (queue, "sink");
+	pad = gst_element_get_static_pad (queue, "sink");
 	ghostpad = gst_ghost_pad_new ("sink", pad);
 	gst_element_add_pad (bin, ghostpad);
 	gst_object_unref (pad);
@@ -1207,7 +1207,7 @@ rb_player_gst_add_filter (RBPlayerGstFilter *player, GstElement *element)
 	binsinkpad = gst_ghost_pad_new ("sink", GST_PAD (element_sink_pad));
 	gst_element_add_pad (bin, binsinkpad);
 
-	realpad = gst_element_get_pad (audioconvert, "src");
+	realpad = gst_element_get_static_pad (audioconvert, "src");
 	binsrcpad = gst_ghost_pad_new ("src", realpad);
 	gst_element_add_pad (bin, binsrcpad);
 	gst_object_unref (realpad);
@@ -1215,7 +1215,7 @@ rb_player_gst_add_filter (RBPlayerGstFilter *player, GstElement *element)
 	/* replace the filter chain ghost with the new bin */
 	gst_bin_add (GST_BIN (mp->priv->filterbin), bin);
 
-	ghostpad = gst_element_get_pad (mp->priv->filterbin, "src");
+	ghostpad = gst_element_get_static_pad (mp->priv->filterbin, "src");
 	realpad = gst_ghost_pad_get_target (GST_GHOST_PAD (ghostpad));
 	gst_ghost_pad_set_target (GST_GHOST_PAD (ghostpad), binsrcpad);
 	gst_object_unref (ghostpad);
@@ -1279,13 +1279,13 @@ rb_player_gst_remove_filter (RBPlayerGstFilter *player, GstElement *element)
 		}
 	}
 
-	mypad = gst_element_get_pad (bin, "sink");
+	mypad = gst_element_get_static_pad (bin, "sink");
 	prevpad = gst_pad_get_peer (mypad);
 	gst_pad_unlink (prevpad, mypad);
 	gst_object_unref (mypad);
 
-	ghostpad = gst_element_get_pad (bin, "src");
-	nextpad = gst_element_get_pad (mp->priv->filterbin, "src");
+	ghostpad = gst_element_get_static_pad (bin, "src");
+	nextpad = gst_element_get_static_pad (mp->priv->filterbin, "src");
 
 	targetpad = gst_ghost_pad_get_target (GST_GHOST_PAD (nextpad));
 	if (targetpad == ghostpad) {
@@ -1293,7 +1293,7 @@ rb_player_gst_remove_filter (RBPlayerGstFilter *player, GstElement *element)
 		gst_ghost_pad_set_target (GST_GHOST_PAD (nextpad), prevpad);
 	} else {
 		/* we are in the middle, so link the previous and next elements */
-		mypad = gst_element_get_pad (bin, "src");
+		mypad = gst_element_get_static_pad (bin, "src");
 		gst_object_unref (nextpad);
 		nextpad = gst_pad_get_peer (mypad);
 		gst_pad_unlink (mypad, nextpad);

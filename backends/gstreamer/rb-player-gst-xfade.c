@@ -1817,7 +1817,7 @@ stream_new_decoded_pad_cb (GstElement *decoder, GstPad *pad, gboolean last, RBXF
 		rb_debug ("hmm, decoder is already linked");
 	} else {
 		rb_debug ("got decoded audio pad for stream %s", stream->uri);
-		vpad = gst_element_get_pad (stream->audioconvert, "sink");
+		vpad = gst_element_get_static_pad (stream->audioconvert, "sink");
 		gst_pad_link (pad, vpad);
 		gst_object_unref (vpad);
 		stream->decoder_linked = TRUE;
@@ -2155,9 +2155,9 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 			g_object_set (identity, "check-imperfect-offset", TRUE, NULL);
 		}
 
-		stream->src_pad = gst_element_get_pad (identity, "src");
+		stream->src_pad = gst_element_get_static_pad (identity, "src");
 	} else {
-		stream->src_pad = gst_element_get_pad (stream->volume, "src");
+		stream->src_pad = gst_element_get_static_pad (stream->volume, "src");
 	}
 
 	/* ghost the stream src pad up to the bin */
@@ -2980,12 +2980,12 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 	audioconvert2 = gst_element_factory_make ("audioconvert", NULL);
 	gst_bin_add (GST_BIN (player->priv->filterbin), audioconvert2);
 
-	pad = gst_element_get_pad (audioconvert2, "sink");
+	pad = gst_element_get_static_pad (audioconvert2, "sink");
 	gst_element_add_pad (player->priv->filterbin,
 			     gst_ghost_pad_new ("sink", pad));
 	gst_object_unref (pad);
 
-	pad = gst_element_get_pad (audioconvert2, "src");
+	pad = gst_element_get_static_pad (audioconvert2, "src");
 	gst_element_add_pad (player->priv->filterbin,
 			     gst_ghost_pad_new ("src", pad));
 	gst_object_unref (pad);
@@ -3018,7 +3018,7 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 		return FALSE;
 	}
 
-	filterpad = gst_element_get_pad (player->priv->capsfilter, "sink");
+	filterpad = gst_element_get_static_pad (player->priv->capsfilter, "sink");
 	outputghostpad = gst_ghost_pad_new ("sink", filterpad);
 	gst_element_add_pad (player->priv->outputbin, outputghostpad);
 	gst_object_unref (filterpad);
@@ -3060,7 +3060,7 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 		return FALSE;
 	}
 
-	filterpad = gst_element_get_pad (capsfilter, "src");
+	filterpad = gst_element_get_static_pad (capsfilter, "src");
 	ghostpad = gst_ghost_pad_new (NULL, filterpad);
 	gst_element_add_pad (player->priv->silencebin, ghostpad);
 	gst_object_unref (filterpad);
@@ -3076,7 +3076,7 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 			  player->priv->silencebin,
 			  NULL);
 
-	addersrcpad = gst_element_get_pad (player->priv->adder, "src");
+	addersrcpad = gst_element_get_static_pad (player->priv->adder, "src");
 	plr = gst_pad_link (addersrcpad, outputghostpad);
 	if (plr != GST_PAD_LINK_OK) {
 		g_set_error (error,
@@ -3811,7 +3811,7 @@ really_add_tee (GstPad *pad, gboolean blocked, RBPlayerGstXFadePipelineOp *op)
 	gst_element_link_many (queue, audioconvert, op->element, NULL);
 
 	/* add ghost pad */
-	sinkpad = gst_element_get_pad (queue, "sink");
+	sinkpad = gst_element_get_static_pad (queue, "sink");
 	ghostpad = gst_ghost_pad_new ("sink", sinkpad);
 	gst_element_add_pad (bin, ghostpad);
 	gst_object_unref (sinkpad);
@@ -3880,7 +3880,7 @@ pipeline_op (RBPlayerGstXFade *player,
 
 	op = new_pipeline_op (player, element);
 
-	block_pad = gst_element_get_pad (previous_element, "src");
+	block_pad = gst_element_get_static_pad (previous_element, "src");
 	if (player->priv->sink_state == SINK_PLAYING) {
 		rb_debug ("blocking the volume src pad to perform an operation");
 		gst_pad_set_blocked_async (block_pad,
@@ -3986,7 +3986,7 @@ really_add_filter (GstPad *pad,
 	binsinkpad = gst_ghost_pad_new ("sink", GST_PAD (element_sink_pad));
 	gst_element_add_pad (bin, binsinkpad);
 
-	realpad = gst_element_get_pad (audioconvert, "src");
+	realpad = gst_element_get_static_pad (audioconvert, "src");
 	binsrcpad = gst_ghost_pad_new ("src", realpad);
 	gst_element_add_pad (bin, binsrcpad);
 	gst_object_unref (realpad);
@@ -3994,7 +3994,7 @@ really_add_filter (GstPad *pad,
 	/* chuck it into the filter bin */
 	gst_bin_add (GST_BIN (op->player->priv->filterbin), bin);
 
-	ghostpad = gst_element_get_pad (op->player->priv->filterbin, "src");
+	ghostpad = gst_element_get_static_pad (op->player->priv->filterbin, "src");
 	realpad = gst_ghost_pad_get_target (GST_GHOST_PAD (ghostpad));
 	gst_ghost_pad_set_target (GST_GHOST_PAD (ghostpad), binsrcpad);
 	gst_object_unref (ghostpad);
@@ -4043,13 +4043,13 @@ really_remove_filter (GstPad *pad,
 	/* probably check return? */
 	gst_element_set_state (bin, GST_STATE_NULL);
 
-	mypad = gst_element_get_pad (bin, "sink");
+	mypad = gst_element_get_static_pad (bin, "sink");
 	prevpad = gst_pad_get_peer (mypad);
 	gst_pad_unlink (prevpad, mypad);
 	gst_object_unref (mypad);
 
-	ghostpad = gst_element_get_pad (bin, "src");
-	nextpad = gst_element_get_pad (op->player->priv->filterbin, "src");
+	ghostpad = gst_element_get_static_pad (bin, "src");
+	nextpad = gst_element_get_static_pad (op->player->priv->filterbin, "src");
 
 	targetpad = gst_ghost_pad_get_target (GST_GHOST_PAD (nextpad));
 	if (targetpad == ghostpad) {

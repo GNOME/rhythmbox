@@ -216,7 +216,7 @@ rb_audiocd_plugin_reuse_stream_cb (RBPlayer *player,
 
 	rb_debug ("seeking to track %d on CD device %s", track, new_device+1);
 
-	ghost_pad = gst_element_get_pad (stream_bin, "src");
+	ghost_pad = gst_element_get_static_pad (stream_bin, "src");
 	if (GST_IS_GHOST_PAD (ghost_pad)) {
 		pad = gst_ghost_pad_get_target (GST_GHOST_PAD (ghost_pad));
 		gst_object_unref (ghost_pad);

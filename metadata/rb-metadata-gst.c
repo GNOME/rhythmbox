@@ -783,8 +783,9 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 	} else {
 		GstPad *sink_pad;
 
-		sink_pad = gst_element_get_pad (md->priv->sink, "sink");
+		sink_pad = gst_element_get_static_pad (md->priv->sink, "sink");
 		gst_pad_link (pad, sink_pad);
+		gst_object_unref (sink_pad);
 
 		/* is this pad audio? */
 		structure = gst_caps_get_structure (caps, 0);
