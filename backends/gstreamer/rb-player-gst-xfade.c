@@ -1572,6 +1572,9 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 
 	message_src = GST_MESSAGE_SRC (message);
+	if (GST_IS_PAD (message_src)) {
+		message_src = GST_OBJECT_PARENT (message_src);
+	}
 	stream = find_stream_by_element (player, GST_ELEMENT (message_src));
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 
