@@ -2330,7 +2330,7 @@ rb_shell_cmd_about (GtkAction *action,
 
 	gtk_show_about_dialog (GTK_WINDOW (shell->priv->window),
 			       "version", VERSION,
-			       "copyright", "Copyright \xc2\xa9 2005 - 2008 The Rhythmbox authors\nCopyright \xc2\xa9 2003 - 2005 Colin Walters\nCopyright \xc2\xa9 2002, 2003 Jorn Baayen",
+			       "copyright", "Copyright \xc2\xa9 2005 - 2009 The Rhythmbox authors\nCopyright \xc2\xa9 2003 - 2005 Colin Walters\nCopyright \xc2\xa9 2002, 2003 Jorn Baayen",
 			       "license", license_trans,
 			       "website-label", _("Rhythmbox Website"),
 			       "website", "http://www.gnome.org/projects/rhythmbox",
