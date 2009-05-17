@@ -475,6 +475,8 @@ scroll_row_timeout (gpointer data)
 
 	gdk_window_get_pointer (gtk_tree_view_get_bin_window (tree_view), &x, &y, NULL);
 	gtk_tree_view_convert_widget_to_bin_window_coords (tree_view, x, y, &x, &y);
+	gtk_tree_view_convert_bin_window_to_tree_coords (tree_view, x, y, &x, &y);
+
 	gtk_tree_view_get_visible_rect (tree_view, &visible_rect);
 
 	/* see if we are near the edge. */
