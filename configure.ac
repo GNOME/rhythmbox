@@ -70,6 +70,14 @@ PKG_CHECK_MODULES(RB_CLIENT, glib-2.0 >= $GLIB_REQS gio-2.0 >= $GLIB_REQS)
 # libgnomeui still required with gtk < 2.14
 PKG_CHECK_EXISTS(gtk+-2.0 >= 2.14, [LIBGNOME_REQS=], [LIBGNOME_REQS=libgnomeui-2.0])
 
+# use gtk status icon with gtk >= 2.16
+PKG_CHECK_EXISTS(gtk+-2.0 >= 2.16, [
+	use_gtk_status_icon=yes
+	AC_DEFINE(USE_GTK_STATUS_ICON, 1, [Use GtkStatusIcon])
+], [use_gtk_status_icon=no])
+AM_CONDITIONAL(USE_GTK_STATUS_ICON, test x"$use_gtk_status_icon" = xyes)
+
+
 PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  gtk+-2.0 >= $GTK_REQS			\
 		  glib-2.0 >= $GLIB_REQS		\
@@ -819,7 +827,6 @@ plugins/sample-vala/Makefile
 plugins/pythonconsole/Makefile
 plugins/artdisplay/Makefile
 plugins/artdisplay/artdisplay/Makefile
-plugins/dontreallyclose/Makefile
 plugins/magnatune/Makefile
 plugins/magnatune/magnatune/Makefile
 plugins/jamendo/Makefile
@@ -827,6 +834,7 @@ plugins/jamendo/jamendo/Makefile
 plugins/generic-player/Makefile
 plugins/rb/Makefile
 plugins/power-manager/Makefile
+plugins/status-icon/Makefile
 plugins/visualizer/Makefile
 plugins/mmkeys/Makefile
 bindings/Makefile

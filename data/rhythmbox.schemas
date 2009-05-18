@@ -124,17 +124,6 @@
       </schema>
 
       <schema>
-        <key>/schemas/apps/rhythmbox/state/window_visible</key>
-        <applyto>/apps/rhythmbox/state/window_visible</applyto>
-        <owner>rhythmbox</owner>
-        <type>bool</type>
-        <default>TRUE</default>
-        <locale name="C">
-	<short>Whether the window is visible</short>
-	<long>When set to false, causes Rhythmbox to start only as a tray icon with the window hidden.</long>
-        </locale>
-      </schema>
-      <schema>
         <key>/schemas/apps/rhythmbox/state/paned_position</key>
         <applyto>/apps/rhythmbox/state/paned_position</applyto>
         <owner>rhythmbox</owner>
@@ -833,17 +822,6 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/ui/show_notifications</key>
-        <applyto>/apps/rhythmbox/ui/show_notifications</applyto>
-        <owner>rhythmbox</owner>
-        <type>bool</type>
-        <default>TRUE</default>
-        <locale name="C">
-	<short>Whether to show notifications from the tray icon</short>
-	<long>When enabled, Rhythmbox will display notification bubbles when the playing track changes, a podcast is downloaded, a CD finished burning, etc.</long>
-        </locale>
-      </schema>
-      <schema>
         <key>/schemas/apps/rhythmbox/plugins/no_user_plugins</key>
         <applyto>/apps/rhythmbox/plugins/no_user_plugins</applyto>
         <owner>rhythmbox</owner>
@@ -1477,6 +1455,70 @@
         <short>True if the FM radio plugin is hidden.</short>
 	<long>True if the FM radio plugin is hidden.</long>
 	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/status-icon/active</key>
+        <applyto>/apps/rhythmbox/plugins/status-icon/active</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>TRUE</default>
+        <locale name="C">
+        <short>True if the status icon plugin is enabled.</short>
+	<long>True if the status icon plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/tray-icon/hidden</key>
+        <applyto>/apps/rhythmbox/plugins/tray-icon/hidden</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the status icon plugin is hidden.</short>
+	<long>True if the status icon plugin is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/status-icon/notification-mode</key>
+        <applyto>/apps/rhythmbox/plugins/status-icon/notification-mode</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+        <short>Notification popup visibility mode.</short>
+	<long>
+          If 0, no notification popups are shown.
+          If 1, notification popups are shown when the main window is hidden.
+          If 2, notification popups are always shown.
+        </long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/status-icon/status-icon-mode</key>
+        <applyto>/apps/rhythmbox/plugins/status-icon/status-icon-mode</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+        <short>Status icon visibility mode.</short>
+	<long>
+          If 0, the status icon is never shown.
+          If 1, the status icon is only shown while a notification popup is visible.
+          If 2, the status icon is always shown.
+          If 3, the status icon is always shown, and the main window minimizes and closes into the status icon.
+        </long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/status-icon/window-visible</key>
+        <applyto>/apps/rhythmbox/plugins/status-icon/window-visible</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>TRUE</default>
+        <locale name="C">
+	<short>Whether the window is visible</short>
+	<long>When set to false, causes Rhythmbox to start only as a tray icon with the window hidden.</long>
+        </locale>
       </schema>
     </schemalist>
 </gconfschemafile>

@@ -1,0 +1,26 @@
+<ui>
+
+  <!-- add 'close' item to the 'music' menu -->
+  <menubar name="MenuBar">
+    <menu name="MusicMenu" action="Music">
+      <placeholder name="PluginWindowPlaceholder">
+	<menuitem name="MusicClose" action="MusicClose"/>
+      </placeholder>
+    </menu>
+  </menubar>
+
+  <popup name="RhythmboxTrayPopup">
+      <menuitem name="PlayTray" action="ControlPlay"/>
+      <separator/>
+      <menuitem name="PreviousTray" action="ControlPrevious"/>
+      <menuitem name="NextTray" action="ControlNext"/>
+      <separator/>
+      <menuitem name="ShowWindowTray" action="TrayShowWindow"/>
+      <menuitem name="ShowNotifications" action="TrayShowNotifications"/>
+      <separator/>
+      <placeholder name="PluginPlaceholder"/> <!-- .. hmm. -->
+      <separator/>
+      <menuitem name="QuitTray" action="MusicQuit"/>
+  </popup>
+</ui>
+

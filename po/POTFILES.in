@@ -64,7 +64,6 @@ plugins/daap/rb-daap-plugin.c
 plugins/daap/rb-daap-sharing.c
 plugins/daap/rb-daap-source.c
 plugins/daap/rb-daap-src.c
-[type: gettext/ini]plugins/dontreallyclose/dontreallyclose.rb-plugin.in
 [type: gettext/ini]plugins/fmradio/fmradio.rb-plugin.in
 plugins/fmradio/rb-fm-radio-source.c
 [type: gettext/ini]plugins/generic-player/generic-player.rb-plugin.in
@@ -127,6 +126,11 @@ plugins/sample-python/sample-python.py
 plugins/sample/rb-sample-plugin.c
 [type: gettext/ini]plugins/sample/sample.rb-plugin.in
 [type: gettext/ini]plugins/sample-vala/sample-vala.rb-plugin.in
+plugins/status-icon/eggtrayicon.c
+plugins/status-icon/rb-tray-icon.c
+plugins/status-icon/rb-status-icon-plugin.c
+[type: gettext/ini]plugins/status-icon/status-icon.rb-plugin.in
+[type: gettext/glade]plugins/status-icon/status-icon-preferences.ui
 plugins/visualizer/rb-visualizer-plugin.c
 plugins/visualizer/visualizer-controls.glade
 [type: gettext/ini]plugins/visualizer/visualizer.rb-plugin.in
@@ -149,7 +153,6 @@ shell/rb-shell-preferences.c
 shell/rb-shell.c
 shell/rb-source-header.c
 shell/rb-statusbar.c
-shell/rb-tray-icon.c
 sources/rb-auto-playlist-source.c
 sources/rb-browser-source.c
 sources/rb-import-errors-source.c
@@ -163,7 +166,6 @@ sources/rb-source-group.c
 sources/rb-sourcelist.c
 sources/rb-static-playlist-source.c
 sources/rb-streaming-source.c
-widgets/eggtrayicon.c
 widgets/rb-cell-renderer-pixbuf.c
 widgets/rb-dialog.c
 widgets/rb-entry-view.c

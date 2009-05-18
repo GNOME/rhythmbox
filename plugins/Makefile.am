@@ -8,6 +8,7 @@ SUBDIRS = 						\
 	mmkeys						\
 	power-manager					\
 	sample						\
+	status-icon					\
 	visualizer
 
 if WITH_LIRC
@@ -23,7 +24,6 @@ SUBDIRS += 						\
 	magnatune					\
 	jamendo						\
 	coherence					\
-	dontreallyclose					\
 	im-status					\
 	rb
 endif
