@@ -41,8 +41,8 @@ INCLUDES = 						\
 	$(DBUS_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-gladedir = $(plugindir)
-glade_DATA = visualizer-controls.glade
+gtkbuilderdir = $(plugindir)
+gtkbuilder_DATA = visualizer-controls.ui
 
 uixmldir = $(plugindir)
 uixml_DATA = visualizer-ui.xml
@@ -67,7 +67,7 @@ plugin_DATA = 			\
 	$(NULL)
 
 EXTRA_DIST = 			\
-	$(glade_DATA)		\
+	$(gtkbuilder_DATA)	\
 	$(uixml_DATA)		\
 	$(icon_DATA)		\
 	$(plugin_in_files)	\

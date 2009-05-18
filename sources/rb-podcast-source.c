@@ -47,14 +47,13 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 
 #include "rb-podcast-source.h"
 
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
 #include "rb-statusbar.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-entry-view.h"
 #include "rb-property-view.h"
@@ -280,7 +279,6 @@ struct RBPodcastSourcePrivate
 {
 	RhythmDB *db;
 
-	guint toolbar_ui_merge_id;
 	guint prefs_notify_id;
 
 	GtkWidget *vbox;
@@ -297,13 +295,9 @@ struct RBPodcastSourcePrivate
 	RhythmDBPropType search_prop;
 	RBSourceSearch *default_search;
 
-	gboolean initialized;
-
 	RBPodcastManager *podcast_mgr;
 
 	GdkPixbuf *error_pixbuf;
-
-	gboolean dispose_has_run;
 };
 
 #define RB_PODCAST_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PODCAST_SOURCE, RBPodcastSourcePrivate))
@@ -444,13 +438,6 @@ rb_podcast_source_dispose (GObject *object)
 	rb_debug ("dispose podcast_source");
 	source = RB_PODCAST_SOURCE (object);
 
-	if (source->priv->dispose_has_run) {
-		/* If dispose did already run, return. */
-		return;
-	}
-	/* Make sure dispose does not run twice. */
-	source->priv->dispose_has_run = TRUE;
-
 	if (source->priv->db != NULL) {
 		g_object_unref (source->priv->db);
 		source->priv->db = NULL;
@@ -476,7 +463,10 @@ rb_podcast_source_dispose (GObject *object)
 		source->priv->error_pixbuf = NULL;
 	}
 
-	eel_gconf_notification_remove (source->priv->prefs_notify_id);
+	if (source->priv->prefs_notify_id != 0) {
+		eel_gconf_notification_remove (source->priv->prefs_notify_id);
+		source->priv->prefs_notify_id = 0;
+	}
 
 	G_OBJECT_CLASS (rb_podcast_source_parent_class)->dispose (object);
 }
@@ -1220,18 +1210,18 @@ static GtkWidget *
 impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
+	GtkBuilder *builder;
 	GtkWidget *cb_update_interval;
 	GtkWidget *btn_file;
 	char *download_dir;
-	GladeXML *xml;
 
 	if (source->priv->config_widget)
 		return source->priv->config_widget;
 
-	xml = rb_glade_xml_new ("podcast-prefs.glade", "podcast_vbox", source);
-	source->priv->config_widget = glade_xml_get_widget (xml, "podcast_vbox");
+	builder = rb_builder_load ("podcast-prefs.ui", source);
+	source->priv->config_widget = GTK_WIDGET (gtk_builder_get_object (builder, "podcast_vbox"));
 
-	btn_file = glade_xml_get_widget (xml, "location_chooser");
+	btn_file = GTK_WIDGET (gtk_builder_get_object (builder, "location_chooser"));
 	gtk_file_chooser_add_shortcut_folder (GTK_FILE_CHOOSER (btn_file),
 					      rb_music_dir (),
 					      NULL);
@@ -1245,7 +1235,7 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 			  G_CALLBACK (rb_podcast_source_btn_file_change_cb),
 			  CONF_STATE_PODCAST_DOWNLOAD_DIR);
 
-	cb_update_interval = glade_xml_get_widget (xml, "cb_update_interval");
+	cb_update_interval = GTK_WIDGET (gtk_builder_get_object (builder, "cb_update_interval"));
 	gtk_combo_box_set_active (GTK_COMBO_BOX (cb_update_interval),
 				  eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL));
 	g_signal_connect (cb_update_interval,

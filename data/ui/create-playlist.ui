@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<interface>
+  <!-- interface-requires gtk+ 2.12 -->
+  <!-- interface-naming-policy toplevel-contextual -->
+  <object class="GtkAdjustment" id="adjustment1">
+    <property name="value">1</property>
+    <property name="lower">1</property>
+    <property name="upper">100000</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkListStore" id="model1">
+    <columns>
+      <!-- column-name gchararray -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">songs</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">MB</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">GB</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Minutes</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="model2">
+    <columns>
+      <!-- column-name gchararray -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes"> </col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkVBox" id="complex-playlist-creator">
+    <property name="visible">True</property>
+    <property name="border_width">5</property>
+    <property name="orientation">vertical</property>
+    <property name="spacing">6</property>
+    <child>
+      <object class="GtkVBox" id="vbox101">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkLabel" id="createLabel">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="label" translatable="yes">Create automatically updating playlist where:</property>
+            <property name="use_markup">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkVBox" id="sub_vbox">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkVBox" id="vbox102">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkHBox" id="hbox200">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkCheckButton" id="disjunctionCheck">
+                <property name="label" translatable="yes">A_dd if any criteria are matched</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="addButton">
+                <property name="label">gtk-add</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="pack_type">end</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="hbox197">
+            <property name="visible">True</property>
+            <property name="spacing">12</property>
+            <child>
+              <object class="GtkCheckButton" id="limitCheck">
+                <property name="label" translatable="yes">_Limit to: </property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="limitEntry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x25CF;</property>
+                <property name="adjustment">adjustment1</property>
+                <property name="climb_rate">1</property>
+                <property name="numeric">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBox" id="limitOption">
+                <property name="visible">True</property>
+                <property name="model">model1</property>
+                <child>
+                  <object class="GtkCellRendererText" id="renderer1"/>
+                  <attributes>
+                    <attribute name="text">0</attribute>
+                  </attributes>
+                </child>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="hbox201">
+            <property name="visible">True</property>
+            <property name="spacing">12</property>
+            <child>
+              <object class="GtkLabel" id="sortLabel">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_When sorted by:</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBox" id="sortMenu">
+                <property name="visible">True</property>
+                <property name="model">model2</property>
+                <child>
+                  <object class="GtkCellRendererText" id="renderer2"/>
+                  <attributes>
+                    <attribute name="text">0</attribute>
+                  </attributes>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="sortDesc">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="pack_type">end</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
+        <property name="position">2</property>
+      </packing>
+    </child>
+  </object>
+</interface>

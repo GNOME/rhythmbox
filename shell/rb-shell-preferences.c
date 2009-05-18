@@ -54,7 +54,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 
 #if !GTK_CHECK_VERSION(2,14,0)
 #include <libgnome/gnome-help.h>
@@ -63,7 +62,7 @@
 #include "rb-file-helpers.h"
 #include "rb-shell-preferences.h"
 #include "rb-source.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "rb-dialog.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
@@ -179,7 +178,7 @@ static void
 rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 {
 	GtkWidget *tmp;
-	GladeXML *xml;
+	GtkBuilder *builder;
 
 	shell_preferences->priv = RB_SHELL_PREFERENCES_GET_PRIVATE (shell_preferences);
 
@@ -216,54 +215,52 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (shell_preferences)->vbox), 2);
 	gtk_dialog_set_has_separator (GTK_DIALOG (shell_preferences), FALSE);
 
-	xml = rb_glade_xml_new ("general-prefs.glade",
-				"general_vbox",
-				shell_preferences);
+	builder = rb_builder_load ("general-prefs.ui", shell_preferences);
 
-	rb_glade_boldify_label (xml, "visible_columns_label");
+	rb_builder_boldify_label (builder, "visible_columns_label");
 
 	/* Columns */
 	shell_preferences->priv->artist_check =
-		glade_xml_get_widget (xml, "artist_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "artist_check"));
 	shell_preferences->priv->album_check =
-		glade_xml_get_widget (xml, "album_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "album_check"));
 	shell_preferences->priv->genre_check =
-		glade_xml_get_widget (xml, "genre_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "genre_check"));
 	shell_preferences->priv->duration_check =
-		glade_xml_get_widget (xml, "duration_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "duration_check"));
 	shell_preferences->priv->track_check =
-		glade_xml_get_widget (xml, "track_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "track_check"));
 	shell_preferences->priv->rating_check =
-		glade_xml_get_widget (xml, "rating_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "rating_check"));
 	shell_preferences->priv->play_count_check =
-		glade_xml_get_widget (xml, "play_count_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "play_count_check"));
 	shell_preferences->priv->last_played_check =
-		glade_xml_get_widget (xml, "last_played_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "last_played_check"));
 	shell_preferences->priv->quality_check =
-		glade_xml_get_widget (xml, "quality_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "quality_check"));
 	shell_preferences->priv->year_check =
-		glade_xml_get_widget (xml, "year_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "year_check"));
 	shell_preferences->priv->first_seen_check =
-		glade_xml_get_widget (xml, "first_seen_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "first_seen_check"));
 	shell_preferences->priv->location_check =
-		glade_xml_get_widget (xml, "location_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "location_check"));
 
 	/* browser options */
-	rb_glade_boldify_label (xml, "browser_views_label");
+	rb_builder_boldify_label (builder, "browser_views_label");
 
-	tmp = glade_xml_get_widget (xml, "library_browser_views_radio");
+	tmp = GTK_WIDGET (gtk_builder_get_object (builder, "library_browser_views_radio"));
 	shell_preferences->priv->browser_views_group =
 		g_slist_reverse (g_slist_copy (gtk_radio_button_get_group
 					       (GTK_RADIO_BUTTON (tmp))));
 
 	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook),
-				  glade_xml_get_widget (xml, "general_vbox"),
+				  GTK_WIDGET (gtk_builder_get_object (builder, "general_vbox")),
 				  gtk_label_new (_("General")));
 
 	/* toolbar button style */
-	rb_glade_boldify_label (xml, "toolbar_style_label");
+	rb_builder_boldify_label (builder, "toolbar_style_label");
 	shell_preferences->priv->toolbar_style_menu =
-		glade_xml_get_widget (xml, "toolbar_style_menu");
+		GTK_WIDGET (gtk_builder_get_object (builder, "toolbar_style_menu"));
 	gtk_combo_box_set_row_separator_func (GTK_COMBO_BOX (shell_preferences->priv->toolbar_style_menu),
 					      rb_combo_box_hyphen_separator_func,
 					      NULL, NULL);
@@ -274,26 +271,24 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	eel_gconf_notification_add (CONF_UI_DIR,
 				    (GConfClientNotifyFunc) rb_shell_preferences_ui_pref_changed,
 				    shell_preferences);
-	g_object_unref (xml);
+	g_object_unref (builder);
 
 	/* playback preferences */
-	xml = rb_glade_xml_new ("playback-prefs.glade",
-				"playback_prefs_box",
-				shell_preferences);
+	builder = rb_builder_load ("playback-prefs.ui", shell_preferences);
 
-	rb_glade_boldify_label (xml, "backend_label");
-	rb_glade_boldify_label (xml, "crossfade_type_label");
-	rb_glade_boldify_label (xml, "duration_label");
-	rb_glade_boldify_label (xml, "buffer_size_label");
+	rb_builder_boldify_label (builder, "backend_label");
+	rb_builder_boldify_label (builder, "crossfade_type_label");
+	rb_builder_boldify_label (builder, "duration_label");
+	rb_builder_boldify_label (builder, "buffer_size_label");
 
 	shell_preferences->priv->xfade_backend_check =
-		glade_xml_get_widget (xml, "use_xfade_backend");
+		GTK_WIDGET (gtk_builder_get_object (builder, "use_xfade_backend"));
 	shell_preferences->priv->album_crossfade_check =
-		glade_xml_get_widget (xml, "album_check");
+		GTK_WIDGET (gtk_builder_get_object (builder, "album_check"));
 	shell_preferences->priv->transition_duration =
-		glade_xml_get_widget (xml, "duration");
+		GTK_WIDGET (gtk_builder_get_object (builder, "duration"));
 	shell_preferences->priv->network_buffer_size =
-		glade_xml_get_widget (xml, "network_buffer_size");
+		GTK_WIDGET (gtk_builder_get_object (builder, "network_buffer_size"));
 
 	g_signal_connect_object (shell_preferences->priv->xfade_backend_check,
 				 "toggled",
@@ -316,9 +311,9 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 				 shell_preferences, 0);
 
 	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook),
-				  glade_xml_get_widget (xml, "playback_prefs_box"),
+				  GTK_WIDGET (gtk_builder_get_object (builder, "playback_prefs_box")),
 				  gtk_label_new (_("Playback")));
-	g_object_unref (xml);
+	g_object_unref (builder);
 
 	eel_gconf_notification_add (CONF_PLAYER_DIR,
 				    (GConfClientNotifyFunc) rb_shell_preferences_ui_pref_changed,

@@ -31,7 +31,7 @@ from BuyAlbumHandler import BuyAlbumHandler, MagnatunePurchaseError
 
 import os
 import gobject
-import gtk.glade
+import gtk
 import gnome, gconf
 import xml
 import urllib
@@ -212,17 +212,17 @@ class MagnatuneSource(rb.BrowserSource):
 				rb.show_uri(url)
 				urls.add(url)
 
-	def radio_toggled(self, gladexml):
-		gc = gladexml.get_widget("radio_gc").get_active()
-		gladexml.get_widget("remember_cc_details").set_sensitive(not gc)
-		gladexml.get_widget("name_entry").set_sensitive(not gc)
-		gladexml.get_widget("cc_entry").set_sensitive(not gc)
-		gladexml.get_widget("mm_entry").set_sensitive(not gc)
-		gladexml.get_widget("yy_entry").set_sensitive(not gc)
+	def radio_toggled(self, builder):
+		gc = builder.get_object("radio_gc").get_active()
+		builder.get_object("remember_cc_details").set_sensitive(not gc)
+		builder.get_object("name_entry").set_sensitive(not gc)
+		builder.get_object("cc_entry").set_sensitive(not gc)
+		builder.get_object("mm_entry").set_sensitive(not gc)
+		builder.get_object("yy_entry").set_sensitive(not gc)
 		
-		gladexml.get_widget("gc_entry").set_sensitive(gc)
+		builder.get_object("gc_entry").set_sensitive(gc)
 		if not gc:
-			gladexml.get_widget("gc_entry").set_text("")
+			builder.get_object("gc_entry").set_text("")
 	
 	def purchase_album(self):
 		try:
@@ -235,6 +235,12 @@ class MagnatuneSource(rb.BrowserSource):
 		tracks = self.get_entry_view().get_selected_entries()
 		skus = []
 
+		builder = gtk.Builder()
+		builder.add_from_file(self.__plugin.find_file("magnatune-purchase.ui"))
+		# .. argh autoconnect ..
+		#cb_dict = {"rb_magnatune_on_radio_cc_toggled_cb":lambda w:self.radio_toggled(gladexml)}
+		#gladexml.signal_autoconnect(cb_dict)
+
 		for track in tracks:
 			sku = self.__sku_dict[self.__db.entry_get(track, rhythmdb.PROP_LOCATION)]
 			if sku in skus:
@@ -243,49 +249,45 @@ class MagnatuneSource(rb.BrowserSource):
 			artist = self.__db.entry_get(track, rhythmdb.PROP_ARTIST)
 			album = self.__db.entry_get(track, rhythmdb.PROP_ALBUM)
 
-			gladexml = gtk.glade.XML(self.__plugin.find_file("magnatune-purchase.glade"))
-			cb_dict = {"rb_magnatune_on_radio_cc_toggled_cb":lambda w:self.radio_toggled(gladexml)}
-			gladexml.signal_autoconnect(cb_dict)
-			
-			gladexml.get_widget("gc_entry").set_sensitive(False)
-			gladexml.get_widget("pay_combobox").set_active(self.__client.get_int(self.__plugin.gconf_keys['pay']) - 5)
-			gladexml.get_widget("audio_combobox").set_active(self.__plugin.format_list.index(self.__client.get_string(self.__plugin.gconf_keys['format'])))
-			gladexml.get_widget("info_label").set_markup(_("Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?") % {"album":album, "artist":artist})
-			gladexml.get_widget("remember_cc_details").props.visible = has_gnome_keyring
+			builder.get_object("gc_entry").set_sensitive(False)
+			builder.get_object("pay_combobox").set_active(self.__client.get_int(self.__plugin.gconf_keys['pay']) - 5)
+			builder.get_object("audio_combobox").set_active(self.__plugin.format_list.index(self.__client.get_string(self.__plugin.gconf_keys['format'])))
+			builder.get_object("info_label").set_markup(_("Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?") % {"album":album, "artist":artist})
+			builder.get_object("remember_cc_details").props.visible = has_gnome_keyring
 
 			try:
 				(ccnumber, ccyear, ccmonth, name, email) = self.__plugin.get_cc_details()
-				gladexml.get_widget("cc_entry").set_text(ccnumber)
-				gladexml.get_widget("yy_entry").set_text(ccyear)
-				gladexml.get_widget("mm_entry").set_active(ccmonth-1)
-				gladexml.get_widget("name_entry").set_text(name)
-				gladexml.get_widget("email_entry").set_text(email)
+				builder.get_object("cc_entry").set_text(ccnumber)
+				builder.get_object("yy_entry").set_text(ccyear)
+				builder.get_object("mm_entry").set_active(ccmonth-1)
+				builder.get_object("name_entry").set_text(name)
+				builder.get_object("email_entry").set_text(email)
 
-				gladexml.get_widget("remember_cc_details").set_active(True)
+				builder.get_object("remember_cc_details").set_active(True)
 			except Exception, e:
 				print e
 
-				gladexml.get_widget("cc_entry").set_text("")
-				gladexml.get_widget("yy_entry").set_text("")
-				gladexml.get_widget("mm_entry").set_active(0)
-				gladexml.get_widget("name_entry").set_text("")
-				gladexml.get_widget("email_entry").set_text("")
+				builder.get_object("cc_entry").set_text("")
+				builder.get_object("yy_entry").set_text("")
+				builder.get_object("mm_entry").set_active(0)
+				builder.get_object("name_entry").set_text("")
+				builder.get_object("email_entry").set_text("")
 
-				gladexml.get_widget("remember_cc_details").set_active(False)
+				builder.get_object("remember_cc_details").set_active(False)
 
-			window = gladexml.get_widget("purchase_dialog")
+			window = builder.get_object("purchase_dialog")
 			if window.run() == gtk.RESPONSE_ACCEPT:
-				amount = gladexml.get_widget("pay_combobox").get_active() + 5
-				format = self.__plugin.format_list[gladexml.get_widget("audio_combobox").get_active()]
-				ccnumber = gladexml.get_widget("cc_entry").get_text()
-				ccyear = gladexml.get_widget("yy_entry").get_text()
-				ccmonth = str(gladexml.get_widget("mm_entry").get_active() + 1).zfill(2)
-				name = gladexml.get_widget("name_entry").get_text()
-				email = gladexml.get_widget("email_entry").get_text()
-				gc = gladexml.get_widget("radio_gc").get_active()
-				gc_text = gladexml.get_widget("gc_entry").get_text()
+				amount = builder.get_object("pay_combobox").get_active() + 5
+				format = self.__plugin.format_list[builder.get_object("audio_combobox").get_active()]
+				ccnumber = builder.get_object("cc_entry").get_text()
+				ccyear = builder.get_object("yy_entry").get_text()
+				ccmonth = str(builder.get_object("mm_entry").get_active() + 1).zfill(2)
+				name = builder.get_object("name_entry").get_text()
+				email = builder.get_object("email_entry").get_text()
+				gc = builder.get_object("radio_gc").get_active()
+				gc_text = builder.get_object("gc_entry").get_text()
 
-				if gladexml.get_widget("remember_cc_details").props.active:
+				if builder.get_object("remember_cc_details").props.active:
 					self.__plugin.store_cc_details(ccnumber, ccyear, ccmonth, name, email)
 				else:
 					self.__plugin.clear_cc_details()
@@ -413,9 +415,10 @@ class MagnatuneSource(rb.BrowserSource):
 
 	def __show_loading_screen(self, show):
 		if self.__info_screen is None:
-			# load the glade stuff
-			gladexml = gtk.glade.XML(self.__plugin.find_file("magnatune-loading.glade"), root="magnatune_loading_scrolledwindow")
-			self.__info_screen = gladexml.get_widget("magnatune_loading_scrolledwindow")
+			# load the builder stuff
+			builder = gtk.Builder()
+			builder.add_from_file(self.__plugin.find_file("magnatune-loading.ui"))
+			self.__info_screen = builder.get_object("magnatune_loading_scrolledwindow")
 			self.pack_start(self.__info_screen)
 			self.get_entry_view().set_no_show_all (True)
 			self.__info_screen.set_no_show_all (True)

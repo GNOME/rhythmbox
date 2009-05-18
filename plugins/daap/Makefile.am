@@ -66,8 +66,8 @@ libdaap_la_LIBADD += $(GNOME_KEYRING_LIBS)
 INCLUDES += $(GNOME_KEYRING_CFLAGS)
 endif
 
-gladedir = $(plugindir)
-glade_DATA = daap-prefs.glade
+gtkbuilderdir = $(plugindir)
+gtkbuilder_DATA = daap-prefs.ui
 
 uixmldir = $(plugindir)
 uixml_DATA = daap-ui.xml
@@ -85,7 +85,7 @@ plugin_DATA = 			\
 	$(NULL)
 
 EXTRA_DIST = 			\
-	$(glade_DATA)		\
+	$(gtkbuilder_DATA)		\
 	$(uixml_DATA)		\
 	$(plugin_in_files)	\
 	$(NULL)

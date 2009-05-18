@@ -1,4 +1,3 @@
-## arch-tag: Automake rules for misc. utility functions
 
 noinst_LTLIBRARIES = librb.la
 
@@ -22,8 +21,8 @@ librb_la_SOURCES =					\
 	eggsmclient-xsmp.c				\
 	rb-file-helpers.c				\
 	rb-file-helpers.h				\
-	rb-glade-helpers.c				\
-	rb-glade-helpers.h				\
+	rb-builder-helpers.c				\
+	rb-builder-helpers.h				\
 	rb-stock-icons.c				\
 	rb-stock-icons.h				\
 	rb-cut-and-paste-code.c				\

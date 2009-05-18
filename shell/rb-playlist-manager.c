@@ -63,7 +63,7 @@
 #include "rhythmdb.h"
 #include "rb-stock-icons.h"
 #include "eel-gconf-extensions.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "rb-util.h"
 
 #define RB_PLAYLIST_MGR_VERSION (xmlChar *) "1.0"
@@ -1557,16 +1557,16 @@ setup_format_menu (GtkWidget* menu, GtkWidget *dialog)
 static void
 save_playlist (RBPlaylistManager *mgr, RBSource *source)
 {
-	GladeXML *xml;
-	GtkWidget *dialog, *menu;
-	char *name, *tmp;
+	GtkBuilder *builder;
+	GtkWidget *dialog;
+	GtkWidget *menu;
+	char *name;
+	char *tmp;
 
-	xml = rb_glade_xml_new ("playlist-save.glade",
-				"playlist_save_dialog",
-				mgr);
-	dialog = glade_xml_get_widget (xml, "playlist_save_dialog");
+	builder = rb_builder_load ("playlist-save.ui", mgr);
+	dialog = GTK_WIDGET (gtk_builder_get_object (builder, "playlist_save_dialog"));
 
-	menu = glade_xml_get_widget (xml, "playlist_format_menu");
+	menu = GTK_WIDGET (gtk_builder_get_object (builder, "playlist_format_menu"));
 	setup_format_menu (menu, dialog);
 	g_object_set_data (G_OBJECT (dialog), "export-menu", menu);
 
@@ -1582,7 +1582,7 @@ save_playlist (RBPlaylistManager *mgr, RBSource *source)
 				 G_CALLBACK (save_playlist_response_cb),
 				 source, 0);
 
-	g_object_unref (xml);
+	g_object_unref (builder);
 }
 
 static void

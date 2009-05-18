@@ -10,10 +10,7 @@ plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 
 plugin_in_files = coherence.rb-plugin.in
 
-glade_DATA = 
-
-gladedir = $(plugindir)
-EXTRA_DIST = $(plugin_in_files) $(glade_DATA)
+EXTRA_DIST = $(plugin_in_files)
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)
 

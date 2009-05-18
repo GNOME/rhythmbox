@@ -1,0 +1,296 @@
+<?xml version="1.0"?>
+<interface>
+  <!-- interface-requires gtk+ 2.12 -->
+  <!-- interface-naming-policy toplevel-contextual -->
+  <object class="GtkHBox" id="edit_plugins">
+    <property name="visible">True</property>
+    <property name="border_width">6</property>
+    <property name="spacing">12</property>
+    <child>
+      <object class="GtkScrolledWindow" id="plugins_list_window">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="hscrollbar_policy">never</property>
+        <property name="vscrollbar_policy">automatic</property>
+        <property name="shadow_type">in</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkVBox" id="vbox1">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkHBox" id="header_hbox">
+            <property name="height_request">64</property>
+            <property name="visible">True</property>
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkLabel" id="plugin_title">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="yalign">0</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="plugin_icon">
+                <property name="visible">True</property>
+                <property name="yalign">0</property>
+                <property name="stock">gtk-about</property>
+                <property name="icon-size">6</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkVBox" id="vbox2">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkVBox" id="vbox4">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel" id="description_label">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="yalign">0</property>
+                    <property name="label" translatable="yes">Description:</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="description_text">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="xalign">0</property>
+                    <property name="wrap">True</property>
+                    <property name="selectable">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="vbox5">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel" id="authors_label">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="yalign">0</property>
+                    <property name="label" translatable="yes">Author:</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="authors_text">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="xalign">0</property>
+                    <property name="wrap">True</property>
+                    <property name="selectable">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="vbox6">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel" id="copyright_label">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="yalign">0</property>
+                    <property name="label" translatable="yes">Copyright:</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="copyright_text">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="xalign">0</property>
+                    <property name="wrap">True</property>
+                    <property name="selectable">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="vbox7">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel" id="site_label">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="yalign">0</property>
+                    <property name="label" translatable="yes">Site:</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="site_text">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="xalign">0</property>
+                    <property name="wrap">True</property>
+                    <property name="selectable">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <object class="GtkHBox" id="hbox1">
+            <property name="visible">True</property>
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkButton" id="configure_button">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <child>
+                  <object class="GtkAlignment" id="alignment1">
+                    <property name="visible">True</property>
+                    <property name="xscale">0</property>
+                    <property name="yscale">0</property>
+                    <child>
+                      <object class="GtkHBox" id="hbox2">
+                        <property name="visible">True</property>
+                        <property name="spacing">2</property>
+                        <child>
+                          <object class="GtkImage" id="image1">
+                            <property name="visible">True</property>
+                            <property name="stock">gtk-preferences</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label2">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">C_onfigure...</property>
+                            <property name="use_underline">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </object>
+</interface>

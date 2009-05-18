@@ -35,10 +35,9 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 
 #include "rb-uri-dialog.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "rb-dialog.h"
 #include "rb-debug.h"
 
@@ -52,7 +51,6 @@
 
 static void rb_uri_dialog_class_init (RBURIDialogClass *klass);
 static void rb_uri_dialog_init (RBURIDialog *dialog);
-static void rb_uri_dialog_finalize (GObject *object);
 static void rb_uri_dialog_response_cb (GtkDialog *gtkdialog,
 				       int response_id,
 				       RBURIDialog *dialog);
@@ -98,7 +96,6 @@ rb_uri_dialog_class_init (RBURIDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	
-	object_class->finalize = rb_uri_dialog_finalize;
 	object_class->set_property = rb_uri_dialog_set_property;
 	object_class->get_property = rb_uri_dialog_get_property;
 
@@ -139,7 +136,7 @@ rb_uri_dialog_class_init (RBURIDialogClass *klass)
 static void
 rb_uri_dialog_init (RBURIDialog *dialog)
 {
-	GladeXML *xml;
+	GtkBuilder *builder;
 
 	/* create the dialog and some buttons forward - close */
 	dialog->priv = RB_URI_DIALOG_GET_PRIVATE (dialog);
@@ -161,16 +158,14 @@ rb_uri_dialog_init (RBURIDialog *dialog)
 							GTK_RESPONSE_OK);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 
-	xml = rb_glade_xml_new ("uri-new.glade",
-				"newuri",
-				dialog);
+	builder = rb_builder_load ("uri-new.ui", dialog);
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
-			   glade_xml_get_widget (xml, "newuri"));
+			   GTK_WIDGET (gtk_builder_get_object (builder, "newuri")));
 
-	/* get the widgets from the XML */
-	dialog->priv->label = glade_xml_get_widget (xml, "label");
-	dialog->priv->url = glade_xml_get_widget (xml, "txt_url");
+	/* get the widgets from the GtkBuilder */
+	dialog->priv->label = GTK_WIDGET (gtk_builder_get_object (builder, "label"));
+	dialog->priv->url = GTK_WIDGET (gtk_builder_get_object (builder, "txt_url"));
 	gtk_entry_set_activates_default (GTK_ENTRY (dialog->priv->url), TRUE);
 
 	g_signal_connect_object (G_OBJECT (dialog->priv->url),
@@ -184,22 +179,7 @@ rb_uri_dialog_init (RBURIDialog *dialog)
 	/* FIXME */
 	gtk_widget_set_sensitive (dialog->priv->okbutton, FALSE);
 
-	g_object_unref (G_OBJECT (xml));
-}
-
-static void
-rb_uri_dialog_finalize (GObject *object)
-{
-	RBURIDialog *dialog;
-
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_URI_DIALOG (object));
-
-	dialog = RB_URI_DIALOG (object);
-
-	g_return_if_fail (dialog->priv != NULL);
-
-	G_OBJECT_CLASS (rb_uri_dialog_parent_class)->finalize (object);
+	g_object_unref (builder);
 }
 
 static void

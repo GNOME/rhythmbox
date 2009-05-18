@@ -48,10 +48,12 @@ uixml_DATA = ipod-ui.xml
 
 plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 
-gladedir = $(plugindir)
-glade_DATA = ipod-info.glade ipod-init.glade
+gtkbuilderdir = $(plugindir)
+gtkbuilder_DATA = 					\
+	ipod-info.ui	 				\
+	ipod-init.ui
 
-EXTRA_DIST = $(uixml_DATA) $(plugin_in_files) $(glade_DATA)
+EXTRA_DIST = $(uixml_DATA) $(plugin_in_files) $(gtkbuilder_DATA)
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

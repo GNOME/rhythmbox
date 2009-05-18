@@ -50,6 +50,7 @@
 #include "rb-marshal.h"
 #include "rb-stock-icons.h"
 #include "eel-gconf-extensions.h"
+#include "rb-builder-helpers.h"
 
 #if defined(USE_GTK_STATUS_ICON)
 #include "rb-tray-icon-gtk.h"
@@ -1095,23 +1096,6 @@ config_notify_cb (GConfClient *client, guint connection_id, GConfEntry *entry, R
 
 /* plugin infrastructure */
 
-static void
-boldify_label (GtkBuilder *builder, const char *name)
-{
-	GtkWidget *label;
-	char *bolded;
-
-	label = GTK_WIDGET (gtk_builder_get_object (builder, name));
-	if (label == NULL) {
-		g_warning ("widget '%s' not found", name);
-		return;
-	}
-
-	bolded = g_strdup_printf ("<b>%s</b>", gtk_label_get_label (GTK_LABEL (label)));
-	gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), bolded);
-	g_free (bolded);
-}
-
 static GtkWidget *
 impl_get_config_widget (RBPlugin *bplugin)
 {
@@ -1120,7 +1104,6 @@ impl_get_config_widget (RBPlugin *bplugin)
 	GtkComboBox *icon_combo;
 	GtkComboBox *notify_combo;
 	char *builderfile;
-	GError *error = NULL;
 
 	plugin = RB_STATUS_ICON_PLUGIN (bplugin);
 	if (plugin->priv->config_dialog != NULL) {
@@ -1134,18 +1117,10 @@ impl_get_config_widget (RBPlugin *bplugin)
 		return NULL;
 	}
 
-	builder = gtk_builder_new ();
-	gtk_builder_set_translation_domain (builder, GETTEXT_PACKAGE);
-	if (gtk_builder_add_from_file (builder, builderfile, &error) == FALSE) {
-		g_warning ("error loading %s: %s", builderfile, error->message);
-		g_free (builderfile);
-		g_error_free (error);
-		return NULL;
-	}
-
+	builder = rb_builder_load (builderfile, NULL);
 	g_free (builderfile);
 
-	boldify_label (builder, "headerlabel");
+	rb_builder_boldify_label (builder, "headerlabel");
 
 	plugin->priv->config_dialog = GTK_WIDGET (gtk_builder_get_object (builder, "statusiconpreferences"));
 	gtk_widget_hide_on_delete (plugin->priv->config_dialog);

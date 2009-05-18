@@ -35,11 +35,10 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 
 #include "rb-station-properties-dialog.h"
 #include "rb-file-helpers.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"
 #include "rb-plugin.h"
@@ -159,8 +158,8 @@ rb_station_properties_dialog_constructor (GType type,
 					  GObjectConstructParam *construct_properties)
 {
 	RBStationPropertiesDialog *dialog;
-	GladeXML *xml;
-	char *gladefile;
+	GtkBuilder *builder;
+	char *builder_file;
 	AtkObject *lobj, *robj;
 
 	dialog = RB_STATION_PROPERTIES_DIALOG (G_OBJECT_CLASS (rb_station_properties_dialog_parent_class)
@@ -175,40 +174,37 @@ rb_station_properties_dialog_constructor (GType type,
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
 
-	gladefile = rb_plugin_find_file (dialog->priv->plugin, "station-properties.glade");
-	g_assert (gladefile != NULL);
-	xml = rb_glade_xml_new (gladefile,
-				"stationproperties",
-				dialog);
-	glade_xml_signal_autoconnect (xml);
-	g_free (gladefile);
+	builder_file = rb_plugin_find_file (dialog->priv->plugin, "station-properties.ui");
+	g_assert (builder_file != NULL);
+	builder = rb_builder_load (builder_file, dialog);
+	g_free (builder_file);
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
-			   glade_xml_get_widget (xml, "stationproperties"));
+			   GTK_WIDGET (gtk_builder_get_object (builder, "stationproperties")));
 
 	dialog->priv->close_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
 							    GTK_STOCK_CLOSE,
 							    GTK_RESPONSE_CLOSE);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
 
-	/* get the widgets from the XML */
-	dialog->priv->title = glade_xml_get_widget (xml, "titleEntry");
-	dialog->priv->genre = glade_xml_get_widget (xml, "genreEntry");
-	dialog->priv->location = glade_xml_get_widget (xml, "locationEntry");
+	/* get the widgets from the builder */
+	dialog->priv->title = GTK_WIDGET (gtk_builder_get_object (builder, "titleEntry"));
+	dialog->priv->genre = GTK_WIDGET (gtk_builder_get_object (builder, "genreEntry"));
+	dialog->priv->location = GTK_WIDGET (gtk_builder_get_object (builder, "locationEntry"));
 
-	dialog->priv->lastplayed = glade_xml_get_widget (xml, "lastplayedLabel");
-	dialog->priv->playcount = glade_xml_get_widget (xml, "playcountLabel");
-	dialog->priv->bitrate = glade_xml_get_widget (xml, "bitrateLabel");
-	dialog->priv->playback_error = glade_xml_get_widget (xml, "errorLabel");
-	dialog->priv->playback_error_box = glade_xml_get_widget (xml, "errorBox");
+	dialog->priv->lastplayed = GTK_WIDGET (gtk_builder_get_object (builder, "lastplayedLabel"));
+	dialog->priv->playcount = GTK_WIDGET (gtk_builder_get_object (builder, "playcountLabel"));
+	dialog->priv->bitrate = GTK_WIDGET (gtk_builder_get_object (builder, "bitrateLabel"));
+	dialog->priv->playback_error = GTK_WIDGET (gtk_builder_get_object (builder, "errorLabel"));
+	dialog->priv->playback_error_box = GTK_WIDGET (gtk_builder_get_object (builder, "errorBox"));
 
-	rb_glade_boldify_label (xml, "titleLabel");
-	rb_glade_boldify_label (xml, "genreLabel");
-	rb_glade_boldify_label (xml, "locationLabel");
-	rb_glade_boldify_label (xml, "ratingLabel");
-	rb_glade_boldify_label (xml, "lastplayedDescLabel");
-	rb_glade_boldify_label (xml, "playcountDescLabel");
-	rb_glade_boldify_label (xml, "bitrateDescLabel");
+	rb_builder_boldify_label (builder, "titleLabel");
+	rb_builder_boldify_label (builder, "genreLabel");
+	rb_builder_boldify_label (builder, "locationLabel");
+	rb_builder_boldify_label (builder, "ratingLabel");
+	rb_builder_boldify_label (builder, "lastplayedDescLabel");
+	rb_builder_boldify_label (builder, "playcountDescLabel");
+	rb_builder_boldify_label (builder, "bitrateDescLabel");
 
 	g_signal_connect_object (G_OBJECT (dialog->priv->location),
 				 "changed",
@@ -220,17 +216,17 @@ rb_station_properties_dialog_constructor (GType type,
 				 "rated",
 				 G_CALLBACK (rb_station_properties_dialog_rated_cb),
 				 G_OBJECT (dialog), 0);
-	gtk_container_add (GTK_CONTAINER (glade_xml_get_widget (xml, "ratingVBox")),
+	gtk_container_add (GTK_CONTAINER (gtk_builder_get_object (builder, "ratingVBox")),
 			   dialog->priv->rating);
 
 	/* add relationship between the rating label and the rating widget */
-	lobj = gtk_widget_get_accessible (glade_xml_get_widget (xml, "ratingLabel"));
+	lobj = gtk_widget_get_accessible (GTK_WIDGET (gtk_builder_get_object (builder, "ratingLabel")));
 	robj = gtk_widget_get_accessible (dialog->priv->rating);
 
 	atk_object_add_relationship (lobj, ATK_RELATION_LABEL_FOR, robj);
 	atk_object_add_relationship (robj, ATK_RELATION_LABELLED_BY, lobj);
 
-	g_object_unref (xml);
+	g_object_unref (builder);
 
 	return G_OBJECT (dialog);
 }

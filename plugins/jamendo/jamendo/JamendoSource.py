@@ -27,7 +27,7 @@ import JamendoConfigureDialog
 
 import os
 import gobject
-import gtk.glade
+import gtk
 import gnome, gconf
 import xml
 import gzip
@@ -254,9 +254,11 @@ class JamendoSource(rb.BrowserSource):
 
 	def __show_loading_screen(self, show):
 		if self.__info_screen is None:
-			# load the glade stuff
-			gladexml = gtk.glade.XML(self.__plugin.find_file("jamendo-loading.glade"), root="jamendo_loading_scrolledwindow")
-			self.__info_screen = gladexml.get_widget("jamendo_loading_scrolledwindow")
+			# load the builder stuff
+			builder = gtk.Builder()
+			builder.add_from_file(self.__plugin.find_file("jamendo-loading.ui"))
+
+			self.__info_screen = builder.get_object("jamendo_loading_scrolledwindow")
 			self.pack_start(self.__info_screen)
 			self.get_entry_view().set_no_show_all (True)
 			self.__info_screen.set_no_show_all (True)

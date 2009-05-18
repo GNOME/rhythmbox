@@ -44,12 +44,11 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 
 #include "rhythmdb.h"
 #include "rhythmdb-property-model.h"
 #include "rb-song-info.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"
 #include "rb-preferences.h"
@@ -347,8 +346,7 @@ rb_song_info_show (GtkWidget *widget)
 }
 
 static void
-rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
-			       gboolean editable)
+rb_song_info_construct_single (RBSongInfo *song_info, GtkBuilder *builder, gboolean editable)
 {
 	song_info->priv->backward = gtk_dialog_add_button (GTK_DIALOG (song_info),
 							   GTK_STOCK_GO_BACK,
@@ -371,28 +369,28 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 	gtk_window_set_title (GTK_WINDOW (song_info), _("Song Properties"));
 
 	/* get the widgets from the XML */
-	song_info->priv->notebook      = glade_xml_get_widget (xml, "song_info_vbox");
-	song_info->priv->title         = glade_xml_get_widget (xml, "song_info_title");
-	song_info->priv->track_cur     = glade_xml_get_widget (xml, "song_info_track_cur");
-	song_info->priv->bitrate       = glade_xml_get_widget (xml, "song_info_bitrate");
-	song_info->priv->duration      = glade_xml_get_widget (xml, "song_info_duration");
-	song_info->priv->location = glade_xml_get_widget (xml, "song_info_location");
-	song_info->priv->filesize = glade_xml_get_widget (xml, "song_info_filesize");
-	song_info->priv->date_added    = glade_xml_get_widget (xml, "song_info_dateadded");
-	song_info->priv->play_count    = glade_xml_get_widget (xml, "song_info_playcount");
-	song_info->priv->last_played   = glade_xml_get_widget (xml, "song_info_lastplayed");
-	song_info->priv->name = glade_xml_get_widget (xml, "song_info_name");
+	song_info->priv->notebook      = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_vbox"));
+	song_info->priv->title         = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_title"));
+	song_info->priv->track_cur     = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_track_cur"));
+	song_info->priv->bitrate       = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_bitrate"));
+	song_info->priv->duration      = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_duration"));
+	song_info->priv->location = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_location"));
+	song_info->priv->filesize = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_filesize"));
+	song_info->priv->date_added    = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_dateadded"));
+	song_info->priv->play_count    = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_playcount"));
+	song_info->priv->last_played   = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_lastplayed"));
+	song_info->priv->name = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_name"));
 
-	rb_glade_boldify_label (xml, "title_label");
-	rb_glade_boldify_label (xml, "trackn_label");
-	rb_glade_boldify_label (xml, "name_label");
-	rb_glade_boldify_label (xml, "location_label");
-	rb_glade_boldify_label (xml, "filesize_label");
-	rb_glade_boldify_label (xml, "date_added_label");
-	rb_glade_boldify_label (xml, "last_played_label");
-	rb_glade_boldify_label (xml, "play_count_label");
-	rb_glade_boldify_label (xml, "duration_label");
-	rb_glade_boldify_label (xml, "bitrate_label");
+	rb_builder_boldify_label (builder, "title_label");
+	rb_builder_boldify_label (builder, "trackn_label");
+	rb_builder_boldify_label (builder, "name_label");
+	rb_builder_boldify_label (builder, "location_label");
+	rb_builder_boldify_label (builder, "filesize_label");
+	rb_builder_boldify_label (builder, "date_added_label");
+	rb_builder_boldify_label (builder, "last_played_label");
+	rb_builder_boldify_label (builder, "play_count_label");
+	rb_builder_boldify_label (builder, "duration_label");
+	rb_builder_boldify_label (builder, "bitrate_label");
 
 	/* whenever you press a mnemonic, the associated GtkEntry's text gets highlighted */
 	g_signal_connect_object (G_OBJECT (song_info->priv->title),
@@ -413,14 +411,13 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 }
 
 static void
-rb_song_info_construct_multiple (RBSongInfo *song_info, GladeXML *xml,
-				 gboolean editable)
+rb_song_info_construct_multiple (RBSongInfo *song_info, GtkBuilder *builder, gboolean editable)
 {
 	gtk_window_set_title (GTK_WINDOW (song_info),
 			      _("Multiple Song Properties"));
 	gtk_widget_grab_focus (song_info->priv->artist);
 
-	song_info->priv->notebook = glade_xml_get_widget (xml, "song_info_notebook");
+	song_info->priv->notebook = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_notebook"));
 }
 
 static void
@@ -441,12 +438,12 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 {
 	RBSongInfo *song_info;
 	RBSongInfoClass *klass;
-	GladeXML *xml;
 	GList *selected_entries;
 	GList *tem;
 	gboolean editable = TRUE;
 	RBShell *shell;
 	AtkObject *lobj, *robj;
+	GtkBuilder *builder;
 
 	klass = RB_SONG_INFO_CLASS (g_type_class_peek (RB_TYPE_SONG_INFO));
 
@@ -479,39 +476,33 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	}
 
 	if (song_info->priv->current_entry) {
-		xml = rb_glade_xml_new ("song-info.glade",
-					"song_info_vbox",
-					song_info);
+		builder = rb_builder_load ("song-info.ui", song_info);
 		gtk_container_add (GTK_CONTAINER (GTK_DIALOG (song_info)->vbox),
-				   glade_xml_get_widget (xml, "song_info_vbox"));
+				   GTK_WIDGET (gtk_builder_get_object (builder, "song_info_vbox")));
 	} else {
-		xml = rb_glade_xml_new ("song-info-multiple.glade",
-					"song_info_notebook",
-					song_info);
+		builder = rb_builder_load ("song-info-multiple.ui", song_info);
 		gtk_container_add (GTK_CONTAINER (GTK_DIALOG (song_info)->vbox),
-				   glade_xml_get_widget (xml, "song_info_notebook"));
+				   GTK_WIDGET (gtk_builder_get_object (builder, "song_info_notebook")));
 	}
 
-	glade_xml_signal_autoconnect (xml);
-
-	song_info->priv->artist = glade_xml_get_widget (xml, "song_info_artist");
-	song_info->priv->album = glade_xml_get_widget (xml, "song_info_album");
-	song_info->priv->genre = glade_xml_get_widget (xml, "song_info_genre");
-	song_info->priv->year = glade_xml_get_widget (xml, "song_info_year");
-	song_info->priv->playback_error_box = glade_xml_get_widget (xml, "song_info_error_box");
-	song_info->priv->playback_error_label = glade_xml_get_widget (xml, "song_info_error_label");
-	song_info->priv->disc_cur = glade_xml_get_widget (xml, "song_info_disc_cur");
+	song_info->priv->artist = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_artist"));
+	song_info->priv->album = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_album"));
+	song_info->priv->genre = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_genre"));
+	song_info->priv->year = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_year"));
+	song_info->priv->playback_error_box = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_error_box"));
+	song_info->priv->playback_error_label = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_error_label"));
+	song_info->priv->disc_cur = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_disc_cur"));
 
 	rb_song_info_add_completion (GTK_ENTRY (song_info->priv->genre), song_info->priv->genres);
 	rb_song_info_add_completion (GTK_ENTRY (song_info->priv->artist), song_info->priv->artists);
 	rb_song_info_add_completion (GTK_ENTRY (song_info->priv->album), song_info->priv->albums);
 
-	rb_glade_boldify_label (xml, "album_label");
-	rb_glade_boldify_label (xml, "artist_label");
-	rb_glade_boldify_label (xml, "genre_label");
-	rb_glade_boldify_label (xml, "year_label");
-	rb_glade_boldify_label (xml, "rating_label");
-	rb_glade_boldify_label (xml, "discn_label");
+	rb_builder_boldify_label (builder, "album_label");
+	rb_builder_boldify_label (builder, "artist_label");
+	rb_builder_boldify_label (builder, "genre_label");
+	rb_builder_boldify_label (builder, "year_label");
+	rb_builder_boldify_label (builder, "rating_label");
+	rb_builder_boldify_label (builder, "discn_label");
 
 	g_signal_connect_object (G_OBJECT (song_info->priv->artist),
 				 "mnemonic-activate",
@@ -539,12 +530,12 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	g_signal_connect_object (song_info->priv->rating, "rated",
 				 G_CALLBACK (rb_song_info_rated_cb),
 				 G_OBJECT (song_info), 0);
-	gtk_container_add (GTK_CONTAINER (glade_xml_get_widget (xml, "song_info_rating_container")),
+	gtk_container_add (GTK_CONTAINER (gtk_builder_get_object (builder, "song_info_rating_container")),
 			   song_info->priv->rating);
-	g_object_set (glade_xml_get_widget (xml, "rating_label"), "mnemonic-widget", song_info->priv->rating, NULL);
+	g_object_set (gtk_builder_get_object (builder, "rating_label"), "mnemonic-widget", song_info->priv->rating, NULL);
 
 	/* add relationship between the rating label and the rating widget */
-	lobj = gtk_widget_get_accessible (glade_xml_get_widget (xml, "rating_label"));
+	lobj = gtk_widget_get_accessible (GTK_WIDGET (gtk_builder_get_object (builder, "rating_label")));
 	robj = gtk_widget_get_accessible (song_info->priv->rating);
 
 	atk_object_add_relationship (lobj, ATK_RELATION_LABEL_FOR, robj);
@@ -558,10 +549,10 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 
 	/* Finish construction */
 	if (song_info->priv->current_entry) {
-		rb_song_info_construct_single (song_info, xml, editable);
+		rb_song_info_construct_single (song_info, builder, editable);
 		rb_song_info_populate_dialog (song_info);
 	} else {
-		rb_song_info_construct_multiple (song_info, xml, editable);
+		rb_song_info_construct_multiple (song_info, builder, editable);
 		rb_song_info_populate_dialog_multiple (song_info);
 	}
 	g_object_get (G_OBJECT (song_info->priv->source), "shell", &shell, NULL);
@@ -575,7 +566,8 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	gtk_dialog_set_default_response (GTK_DIALOG (song_info),
 					 GTK_RESPONSE_CLOSE);
 
-	g_object_unref (G_OBJECT (xml));
+	g_object_unref (builder);
+
 	return G_OBJECT (song_info);
 }
 

@@ -35,12 +35,11 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #include <glib.h>
 
 #include "rb-feed-podcast-properties-dialog.h"
 #include "rb-file-helpers.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "rb-dialog.h"
 #include "rb-cut-and-paste-code.h"
 #include "rhythmdb.h"
@@ -104,7 +103,7 @@ rb_feed_podcast_properties_dialog_class_init (RBFeedPodcastPropertiesDialogClass
 static void
 rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 {
-	GladeXML *xml;
+	GtkBuilder *builder;
 
 	dialog->priv = RB_FEED_PODCAST_PROPERTIES_DIALOG_GET_PRIVATE (dialog);
 
@@ -119,13 +118,10 @@ rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
 
-	xml = rb_glade_xml_new ("podcast-feed-properties.glade",
-				"podcastproperties",
-				dialog);
-	glade_xml_signal_autoconnect (xml);
+	builder = rb_builder_load ("podcast-feed-properties.ui", dialog);
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
-			   glade_xml_get_widget (xml, "podcastproperties"));
+			   GTK_WIDGET (gtk_builder_get_object (builder, "podcastproperties")));
 
 	dialog->priv->close_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
 							    GTK_STOCK_CLOSE,
@@ -133,26 +129,26 @@ rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 					 GTK_RESPONSE_CLOSE);
 
-	/* get the widgets from the XML */
-	dialog->priv->title = glade_xml_get_widget (xml, "titleLabel");
-	dialog->priv->author = glade_xml_get_widget (xml, "authorLabel");
-	dialog->priv->location = glade_xml_get_widget (xml, "locationLabel");
-	dialog->priv->language = glade_xml_get_widget (xml, "languageLabel");
-	dialog->priv->last_update = glade_xml_get_widget (xml, "lastupdateLabel");
-	dialog->priv->last_episode = glade_xml_get_widget (xml, "lastepisodeLabel");
-	dialog->priv->copyright = glade_xml_get_widget (xml, "copyrightLabel");
-	dialog->priv->summary = glade_xml_get_widget (xml, "summaryLabel");
+	/* get the widgets from the builder */
+	dialog->priv->title = GTK_WIDGET (gtk_builder_get_object (builder, "titleLabel"));
+	dialog->priv->author = GTK_WIDGET (gtk_builder_get_object (builder, "authorLabel"));
+	dialog->priv->location = GTK_WIDGET (gtk_builder_get_object (builder, "locationLabel"));
+	dialog->priv->language = GTK_WIDGET (gtk_builder_get_object (builder, "languageLabel"));
+	dialog->priv->last_update = GTK_WIDGET (gtk_builder_get_object (builder, "lastupdateLabel"));
+	dialog->priv->last_episode = GTK_WIDGET (gtk_builder_get_object (builder, "lastepisodeLabel"));
+	dialog->priv->copyright = GTK_WIDGET (gtk_builder_get_object (builder, "copyrightLabel"));
+	dialog->priv->summary = GTK_WIDGET (gtk_builder_get_object (builder, "summaryLabel"));
 
-	rb_glade_boldify_label (xml, "titleDescLabel");
-	rb_glade_boldify_label (xml, "authorDescLabel");
-	rb_glade_boldify_label (xml, "locationDescLabel");
-	rb_glade_boldify_label (xml, "languageDescLabel");
-	rb_glade_boldify_label (xml, "lastupdateDescLabel");
-	rb_glade_boldify_label (xml, "lastepisodeDescLabel");
-	rb_glade_boldify_label (xml, "copyrightDescLabel");
-	rb_glade_boldify_label (xml, "summaryDescLabel");
+	rb_builder_boldify_label (builder, "titleDescLabel");
+	rb_builder_boldify_label (builder, "authorDescLabel");
+	rb_builder_boldify_label (builder, "locationDescLabel");
+	rb_builder_boldify_label (builder, "languageDescLabel");
+	rb_builder_boldify_label (builder, "lastupdateDescLabel");
+	rb_builder_boldify_label (builder, "lastepisodeDescLabel");
+	rb_builder_boldify_label (builder, "copyrightDescLabel");
+	rb_builder_boldify_label (builder, "summaryDescLabel");
 
-	g_object_unref (G_OBJECT (xml));
+	g_object_unref (builder);
 }
 
 static void

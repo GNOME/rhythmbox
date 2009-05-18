@@ -1,0 +1,654 @@
+<?xml version="1.0"?>
+<interface>
+  <!-- interface-requires gtk+ 2.12 -->
+  <!-- interface-naming-policy toplevel-contextual -->
+  <object class="GtkNotebook" id="song_info_vbox">
+    <property name="visible">True</property>
+    <property name="can_focus">True</property>
+    <property name="border_width">5</property>
+    <child>
+      <object class="GtkVBox" id="song_info_basic">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkTable" id="song_info_table">
+            <property name="visible">True</property>
+            <property name="border_width">12</property>
+            <property name="n_rows">7</property>
+            <property name="n_columns">2</property>
+            <property name="column_spacing">12</property>
+            <property name="row_spacing">6</property>
+            <child>
+              <object class="GtkEntry" id="song_info_title">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x25CF;</property>
+                <property name="activates_default">True</property>
+                <accessibility>
+                  <relation type="labelled-by" target="title_label"/>
+                </accessibility>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="y_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="song_info_artist">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x25CF;</property>
+                <property name="activates_default">True</property>
+                <accessibility>
+                  <relation type="labelled-by" target="artist_label"/>
+                </accessibility>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+                <property name="y_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="song_info_album">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x25CF;</property>
+                <property name="activates_default">True</property>
+                <accessibility>
+                  <relation type="labelled-by" target="album_label"/>
+                </accessibility>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
+                <property name="y_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="album_label">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">_Album:</property>
+                <property name="use_underline">True</property>
+                <property name="mnemonic_widget">song_info_album</property>
+              </object>
+              <packing>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options">GTK_FILL</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="title_label">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">_Title:</property>
+                <property name="use_underline">True</property>
+                <property name="mnemonic_widget">song_info_title</property>
+              </object>
+              <packing>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options">GTK_FILL</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="trackn_label">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">_Track number:</property>
+                <property name="use_underline">True</property>
+                <property name="mnemonic_widget">song_info_track_cur</property>
+              </object>
+              <packing>
+                <property name="top_attach">4</property>
+                <property name="bottom_attach">5</property>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="genre_label">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">_Genre:</property>
+                <property name="use_underline">True</property>
+                <property name="mnemonic_widget">song_info_genre</property>
+              </object>
+              <packing>
+                <property name="top_attach">3</property>
+                <property name="bottom_attach">4</property>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="song_info_track_cur">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x25CF;</property>
+                <property name="activates_default">True</property>
+                <property name="width_chars">3</property>
+                <accessibility>
+                  <relation type="labelled-by" target="trackn_label"/>
+                </accessibility>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">4</property>
+                <property name="bottom_attach">5</property>
+                <property name="y_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="song_info_genre">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x25CF;</property>
+                <property name="activates_default">True</property>
+                <accessibility>
+                  <relation type="labelled-by" target="genre_label"/>
+                </accessibility>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">3</property>
+                <property name="bottom_attach">4</property>
+                <property name="y_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="artist_label">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">_Artist:</property>
+                <property name="use_underline">True</property>
+                <property name="mnemonic_widget">song_info_artist</property>
+              </object>
+              <packing>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="discn_label">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">_Disc number:</property>
+                <property name="use_underline">True</property>
+                <property name="mnemonic_widget">song_info_disc_cur</property>
+              </object>
+              <packing>
+                <property name="top_attach">5</property>
+                <property name="bottom_attach">6</property>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="song_info_disc_cur">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x25CF;</property>
+                <property name="activates_default">True</property>
+                <accessibility>
+                  <relation type="labelled-by" target="discn_label"/>
+                </accessibility>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">5</property>
+                <property name="bottom_attach">6</property>
+                <property name="y_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="song_info_year">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x25CF;</property>
+                <property name="activates_default">True</property>
+                <accessibility>
+                  <relation type="labelled-by" target="year_label"/>
+                </accessibility>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">6</property>
+                <property name="bottom_attach">7</property>
+                <property name="y_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="year_label">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">_Year:</property>
+                <property name="use_underline">True</property>
+                <property name="mnemonic_widget">song_info_year</property>
+              </object>
+              <packing>
+                <property name="top_attach">6</property>
+                <property name="bottom_attach">7</property>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options"></property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="song_info_error_box">
+            <property name="visible">True</property>
+            <property name="border_width">6</property>
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkImage" id="image1">
+                <property name="visible">True</property>
+                <property name="stock">gtk-dialog-error</property>
+                <property name="icon-size">6</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="song_info_error_label">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Error message</property>
+                <property name="wrap">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel" id="label105">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Basic</property>
+        <property name="use_underline">True</property>
+      </object>
+      <packing>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkTable" id="song_info_additional">
+        <property name="visible">True</property>
+        <property name="border_width">12</property>
+        <property name="n_rows">11</property>
+        <property name="n_columns">2</property>
+        <property name="column_spacing">12</property>
+        <property name="row_spacing">6</property>
+        <child>
+          <object class="GtkLabel" id="name_label">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="label" translatable="yes">File name:</property>
+            <property name="mnemonic_widget">song_info_name</property>
+          </object>
+          <packing>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="song_info_duration">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="xalign">0</property>
+            <property name="selectable">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">1</property>
+            <property name="bottom_attach">2</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="bitrate_label">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="label" translatable="yes">Bitrate:</property>
+            <property name="mnemonic_widget">song_info_bitrate</property>
+          </object>
+          <packing>
+            <property name="top_attach">2</property>
+            <property name="bottom_attach">3</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="song_info_bitrate">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="xalign">0</property>
+            <property name="selectable">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">2</property>
+            <property name="bottom_attach">3</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="location_label">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="label" translatable="yes">Location:</property>
+            <property name="mnemonic_widget">song_info_location</property>
+          </object>
+          <packing>
+            <property name="top_attach">3</property>
+            <property name="bottom_attach">4</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label117">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="top_attach">5</property>
+            <property name="bottom_attach">6</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="last_played_label">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="label" translatable="yes">Last played:</property>
+            <property name="mnemonic_widget">song_info_lastplayed</property>
+          </object>
+          <packing>
+            <property name="top_attach">7</property>
+            <property name="bottom_attach">8</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="song_info_lastplayed">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="xalign">0</property>
+            <property name="selectable">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">7</property>
+            <property name="bottom_attach">8</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="play_count_label">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="label" translatable="yes">Play count:</property>
+            <property name="mnemonic_widget">song_info_playcount</property>
+          </object>
+          <packing>
+            <property name="top_attach">8</property>
+            <property name="bottom_attach">9</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="song_info_playcount">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="xalign">0</property>
+            <property name="selectable">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">8</property>
+            <property name="bottom_attach">9</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label119">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="top_attach">9</property>
+            <property name="bottom_attach">10</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label120">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">9</property>
+            <property name="bottom_attach">10</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="song_info_name">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="editable">False</property>
+            <property name="invisible_char">&#x25CF;</property>
+            <accessibility>
+              <relation type="labelled-by" target="name_label"/>
+            </accessibility>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="rating_label">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="yalign">0</property>
+            <property name="label" translatable="yes">_Rating:</property>
+            <property name="use_underline">True</property>
+          </object>
+          <packing>
+            <property name="top_attach">10</property>
+            <property name="bottom_attach">11</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="song_info_rating_container">
+            <property name="visible">True</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">10</property>
+            <property name="bottom_attach">11</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label118">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">5</property>
+            <property name="bottom_attach">6</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="duration_label">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="label" translatable="yes">Duration:</property>
+            <property name="mnemonic_widget">song_info_duration</property>
+          </object>
+          <packing>
+            <property name="top_attach">1</property>
+            <property name="bottom_attach">2</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="song_info_location">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="editable">False</property>
+            <property name="invisible_char">&#x25CF;</property>
+            <accessibility>
+              <relation type="labelled-by" target="location_label"/>
+            </accessibility>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">3</property>
+            <property name="bottom_attach">4</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="filesize_label">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="label" translatable="yes">File size:</property>
+            <property name="mnemonic_widget">song_info_filesize</property>
+          </object>
+          <packing>
+            <property name="top_attach">4</property>
+            <property name="bottom_attach">5</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="song_info_filesize">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="xalign">0</property>
+            <property name="selectable">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">4</property>
+            <property name="bottom_attach">5</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="date_added_label">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="label" translatable="yes">Date added:</property>
+            <property name="mnemonic_widget">song_info_dateadded</property>
+          </object>
+          <packing>
+            <property name="top_attach">6</property>
+            <property name="bottom_attach">7</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="song_info_dateadded">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="xalign">0</property>
+            <property name="selectable">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">6</property>
+            <property name="bottom_attach">7</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options"></property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="position">1</property>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel" id="label106">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Details</property>
+        <property name="use_underline">True</property>
+      </object>
+      <packing>
+        <property name="position">1</property>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+  </object>
+</interface>

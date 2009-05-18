@@ -238,12 +238,11 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, RBIpodPlugin *plu
 
 	if (rb_ipod_helpers_needs_init (mount)) {
 		gboolean inited;
-		gchar *glade_file;
-		glade_file = rb_plugin_find_file (RB_PLUGIN (plugin),
-						  "ipod-init.glade");
+		gchar *builder_file;
+		builder_file = rb_plugin_find_file (RB_PLUGIN (plugin), "ipod-init.ui");
 		inited = rb_ipod_helpers_show_first_time_dialog (mount,
-								 glade_file);
-		g_free (glade_file);
+								 builder_file);
+		g_free (builder_file);
 		if (!inited) {
 			return NULL;
 		}

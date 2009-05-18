@@ -27,25 +27,27 @@
 
 
 
-import gobject, gtk, gtk.glade
+import gobject, gtk
 import gconf
 from os import system, path
 
 class LyricsConfigureDialog (object):
-	def __init__(self, glade_file, gconf_keys):
+	def __init__(self, builder_file, gconf_keys):
 		self.gconf = gconf.client_get_default()
 		self.gconf_keys = gconf_keys
-		self.gladexml = gtk.glade.XML(glade_file)
-			
-		self.dialog = self.gladexml.get_widget("preferences_dialog")
 
-		self.toggle1 = self.gladexml.get_widget("engine1")
-		self.toggle2 = self.gladexml.get_widget("engine2")
-		self.toggle3 = self.gladexml.get_widget("engine3")
-		self.toggle4 = self.gladexml.get_widget("engine4")
-		self.toggle5 = self.gladexml.get_widget("engine5")
-		self.choose_button = self.gladexml.get_widget("choose_button")
-		self.path_display = self.gladexml.get_widget("path_display")
+		builder = gtk.Builder()
+		builder.add_from_file(builder_file)
+			
+		self.dialog = builder.get_object("preferences_dialog")
+
+		self.toggle1 = builder.get_object("engine1")
+		self.toggle2 = builder.get_object("engine2")
+		self.toggle3 = builder.get_object("engine3")
+		self.toggle4 = builder.get_object("engine4")
+		self.toggle5 = builder.get_object("engine5")
+		self.choose_button = builder.get_object("choose_button")
+		self.path_display = builder.get_object("path_display")
 
 		self.choose_button.connect("clicked", self.choose_callback)
 		self.dialog.connect("response", self.dialog_response)

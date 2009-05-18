@@ -3,18 +3,18 @@ backends/gstreamer/rb-encoder-gst.c
 backends/gstreamer/rb-player-gst.c
 backends/gstreamer/rb-player-gst-xfade.c
 backends/rb-player.c
-data/glade/create-playlist.glade
-data/glade/general-prefs.glade
-data/glade/library-prefs.glade
-data/glade/playback-prefs.glade
-data/glade/playlist-save.glade
-data/glade/plugins.glade
-data/glade/podcast-feed-properties.glade
-data/glade/podcast-prefs.glade
-data/glade/podcast-properties.glade
-data/glade/song-info-multiple.glade
-data/glade/song-info.glade
-data/glade/uri-new.glade
+[type: gettext/glade]data/ui/create-playlist.ui
+[type: gettext/glade]data/ui/general-prefs.ui
+[type: gettext/glade]data/ui/library-prefs.ui
+[type: gettext/glade]data/ui/playback-prefs.ui
+[type: gettext/glade]data/ui/playlist-save.ui
+[type: gettext/glade]data/ui/plugins.ui
+[type: gettext/glade]data/ui/podcast-feed-properties.ui
+[type: gettext/glade]data/ui/podcast-prefs.ui
+[type: gettext/glade]data/ui/podcast-properties.ui
+[type: gettext/glade]data/ui/song-info-multiple.ui
+[type: gettext/glade]data/ui/song-info.ui
+[type: gettext/glade]data/ui/uri-new.ui
 data/playlists.xml.in
 data/rhythmbox.desktop.in.in
 lib/eel-gconf-extensions.c
@@ -31,7 +31,7 @@ plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py
 plugins/artdisplay/artdisplay/CoverArtDatabase.py
 plugins/artdisplay/artdisplay/__init__.py
 [type: gettext/ini]plugins/audiocd/audiocd.rb-plugin.in
-plugins/audiocd/multiple-album.glade
+[type: gettext/glade]plugins/audiocd/multiple-album.ui
 plugins/audiocd/rb-audiocd-plugin.c
 plugins/audiocd/rb-audiocd-source.c
 plugins/audiocd/sj-error.c
@@ -41,7 +41,7 @@ plugins/audiocd/sj-metadata-musicbrainz.c
 plugins/audiocd/sj-metadata.c
 plugins/audiocd/sj-structures.c
 [type: gettext/ini]plugins/audioscrobbler/audioscrobbler.rb-plugin.in
-plugins/audioscrobbler/audioscrobbler-prefs.glade
+[type: gettext/glade]plugins/audioscrobbler/audioscrobbler-prefs.ui
 plugins/audioscrobbler/rb-audioscrobbler-plugin.c
 plugins/audioscrobbler/rb-audioscrobbler-entry.c
 plugins/audioscrobbler/rb-audioscrobbler.c
@@ -52,10 +52,10 @@ plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c
 plugins/cd-recorder/rb-cd-recorder-plugin.c
 plugins/cd-recorder/rb-recorder-gst.c
 plugins/cd-recorder/rb-playlist-source-recorder.c
-plugins/cd-recorder/recorder.glade
+[type: gettext/glade]plugins/cd-recorder/recorder.ui
 [type: gettext/ini]plugins/coherence/coherence.rb-plugin.in
 [type: gettext/ini]plugins/daap/daap.rb-plugin.in
-plugins/daap/daap-prefs.glade
+[type: gettext/glade]plugins/daap/daap-prefs.ui
 plugins/daap/rb-daap-connection.c
 plugins/daap/rb-daap-dialog.c
 plugins/daap/rb-daap-mdns-browser-avahi.c
@@ -74,14 +74,14 @@ plugins/generic-player/rb-psp-source.c
 [type: gettext/ini]plugins/im-status/im-status.rb-plugin.in
 plugins/im-status/im-status/__init__.py
 [type: gettext/ini]plugins/ipod/ipod.rb-plugin.in
-plugins/ipod/ipod-info.glade
-plugins/ipod/ipod-init.glade
+[type: gettext/glade]plugins/ipod/ipod-info.ui
+[type: gettext/glade]plugins/ipod/ipod-init.ui
 plugins/ipod/rb-ipod-helpers.c
 plugins/ipod/rb-ipod-plugin.c
 plugins/ipod/rb-ipod-source.c
 [type: gettext/ini]plugins/iradio/iradio.rb-plugin.in
-plugins/jamendo/jamendo-prefs.glade
-plugins/jamendo/jamendo-loading.glade
+[type: gettext/glade]plugins/jamendo/jamendo-prefs.ui
+[type: gettext/glade]plugins/jamendo/jamendo-loading.ui
 [type: gettext/ini]plugins/jamendo/jamendo.rb-plugin.in
 plugins/jamendo/jamendo/__init__.py
 plugins/jamendo/jamendo/JamendoConfigureDialog.py
@@ -89,7 +89,7 @@ plugins/jamendo/jamendo/JamendoSaxHandler.py
 plugins/jamendo/jamendo/JamendoSource.py
 plugins/iradio/rb-iradio-source.c
 plugins/iradio/rb-station-properties-dialog.c
-plugins/iradio/station-properties.glade
+[type: gettext/glade]plugins/iradio/station-properties.ui
 [type: gettext/ini]plugins/lirc/lirc.rb-plugin.in
 plugins/lirc/rb-lirc-plugin.c
 plugins/lyrics/lyrics/__init__.py
@@ -99,10 +99,10 @@ plugins/lyrics/lyrics/LyrcParser.py
 plugins/lyrics/lyrics/LyricsConfigureDialog.py
 plugins/lyrics/lyrics/LyricsParse.py
 [type: gettext/ini]plugins/lyrics/lyrics.rb-plugin.in
-plugins/lyrics/lyrics-prefs.glade
-plugins/magnatune/magnatune-loading.glade
-plugins/magnatune/magnatune-prefs.glade
-plugins/magnatune/magnatune-purchase.glade
+[type: gettext/glade]plugins/lyrics/lyrics-prefs.ui
+[type: gettext/glade]plugins/magnatune/magnatune-loading.ui
+[type: gettext/glade]plugins/magnatune/magnatune-prefs.ui
+[type: gettext/glade]plugins/magnatune/magnatune-purchase.ui
 [type: gettext/ini]plugins/magnatune/magnatune.rb-plugin.in
 plugins/magnatune/magnatune/MagnatuneSource.py
 plugins/magnatune/magnatune/__init__.py
@@ -132,7 +132,7 @@ plugins/status-icon/rb-status-icon-plugin.c
 [type: gettext/ini]plugins/status-icon/status-icon.rb-plugin.in
 [type: gettext/glade]plugins/status-icon/status-icon-preferences.ui
 plugins/visualizer/rb-visualizer-plugin.c
-plugins/visualizer/visualizer-controls.glade
+[type: gettext/glade]plugins/visualizer/visualizer-controls.ui
 [type: gettext/ini]plugins/visualizer/visualizer.rb-plugin.in
 podcast/rb-feed-podcast-properties-dialog.c
 podcast/rb-podcast-manager.c

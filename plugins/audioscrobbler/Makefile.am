@@ -40,8 +40,8 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-gladedir = $(plugindir)
-glade_DATA = audioscrobbler-prefs.glade
+gtkbuilderdir = $(plugindir)
+gtkbuilder_DATA = audioscrobbler-prefs.ui
 
 uixmldir = $(plugindir)
 uixml_DATA = audioscrobbler-ui.xml
@@ -62,7 +62,7 @@ plugin_DATA = 					\
 EXTRA_DIST = 					\
 	$(plugin_in_files)			\
 	$(uixml_DATA)				\
-	$(glade_DATA)				\
+	$(gtkbuilder_DATA)			\
 	$(top_srcdir)/plugins/audioscrobbler/as-icon.png		\
 	$(top_srcdir)/plugins/audioscrobbler/as-powered.png		\
 	$(NULL)

@@ -30,7 +30,7 @@
 # - check that the lyrics returned even remotely match the request?
 
 import os, re
-import gtk, gtk.glade
+import gtk
 import gconf
 import rhythmdb, rb
 
@@ -330,8 +330,8 @@ class LyricsDisplayPlugin(rb.Plugin):
 
 	def create_configure_dialog(self, dialog=None):
 		if not dialog:
-			glade_file = self.find_file("lyrics-prefs.glade")
-			dialog = LyricsConfigureDialog (glade_file, gconf_keys).get_dialog()
+			builder_file = self.find_file("lyrics-prefs.ui")
+			dialog = LyricsConfigureDialog (builder_file, gconf_keys).get_dialog()
 		dialog.present()
 		return dialog
 	

@@ -1,0 +1,335 @@
+<?xml version="1.0"?>
+<interface>
+  <!-- interface-requires gtk+ 2.12 -->
+  <!-- interface-naming-policy toplevel-contextual -->
+  <object class="GtkScrolledWindow" id="magnatune_loading_scrolledwindow">
+    <property name="visible">True</property>
+    <property name="can_focus">True</property>
+    <property name="hscrollbar_policy">automatic</property>
+    <property name="vscrollbar_policy">automatic</property>
+    <child>
+      <object class="GtkViewport" id="viewport1">
+        <property name="visible">True</property>
+        <property name="resize_mode">queue</property>
+        <child>
+          <object class="GtkVBox" id="magnatune_loading_vbox">
+            <property name="visible">True</property>
+            <property name="border_width">12</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkImage" id="image1">
+                <property name="visible">True</property>
+                <property name="pixbuf">magnatune_logo_color_small.png</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label1">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">&lt;b&gt;Magnatune online music store&lt;/b&gt;</property>
+                <property name="use_markup">True</property>
+                <property name="justify">center</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label2">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">Magnatune is an online record label that is not evil. Some of their key attributes are:
+</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkTable" id="table1">
+                <property name="visible">True</property>
+                <property name="n_rows">20</property>
+                <child>
+                  <object class="GtkLabel" id="label3">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Free listening of all songs</property>
+                  </object>
+                  <packing>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label4">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * All albums and artists hand-picked</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label5">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Very simple user interface, quick to play music</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label6">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Radio stations and "genre mix" playlists allow background listening - can do work while listening to our music</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label7">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * No need to "register" to listen or buy</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label8">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Smaller selection means easier to find good music</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label9">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Wide variety of genres, can fit any mood</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">6</property>
+                    <property name="bottom_attach">7</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label10">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Our genres are hard to find in record stores and not on radio (though do appear on college radio)</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">7</property>
+                    <property name="bottom_attach">8</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label11">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Downloads and CDs are both available (no other site on the internet sells both)</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">8</property>
+                    <property name="bottom_attach">9</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label12">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Perfect quality downloads (CD copy) are available when you download (not inferior quality sound)</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">9</property>
+                    <property name="bottom_attach">10</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label13">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * No copy protection on the music (DRM) which allows playing music on any device (unlike iTunes/MSN/etc)</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">10</property>
+                    <property name="bottom_attach">11</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label14">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Extensive biographical info about each musician, and artist photo -- feel a strong connection to the artist</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">11</property>
+                    <property name="bottom_attach">12</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label15">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Full color, high quality cover art PDF available for most albums - easy to print</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">12</property>
+                    <property name="bottom_attach">13</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label16">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Variable pricing scheme means you can pay as little as $5 for an album if you choose</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">13</property>
+                    <property name="bottom_attach">14</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label17">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * 50% of payment goes to artist (makes buyer feel good: they're helping the world)</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">14</property>
+                    <property name="bottom_attach">15</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label18">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Not venture-capital backed big business</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">15</property>
+                    <property name="bottom_attach">16</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label19">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Not part of the "evil" major label machine - for those that hate the music biz and want to help topple it</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">16</property>
+                    <property name="bottom_attach">17</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label20">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">     * Founder/owner runs it -- support a small business</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">17</property>
+                    <property name="bottom_attach">18</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label21">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Low pressure environment - nothing flashing, no audio ads while listening to albums</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">18</property>
+                    <property name="bottom_attach">19</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label22">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    * Music selection is unique to Magnatune, unlike most on-line stores that have more-or-less the same (gigantic) selection
+</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">19</property>
+                    <property name="bottom_attach">20</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label23">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">You can find more information at http://www.magnatune.com/</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

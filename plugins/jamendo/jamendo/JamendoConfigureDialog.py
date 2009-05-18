@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import gobject
-import gtk, gtk.glade
+import gtk
 import gconf, gnome
 
 gconf_keys = {	'format' : '/apps/rhythmbox/plugins/jamendo/format',
@@ -28,12 +28,14 @@ gconf_keys = {	'format' : '/apps/rhythmbox/plugins/jamendo/format',
 format_list = ['ogg3', 'mp32']
 
 class JamendoConfigureDialog (object):
-	def __init__(self, glade_file):
+	def __init__(self, builder_file):
 		self.gconf = gconf.client_get_default()
-		gladexml = gtk.glade.XML(glade_file)
 
-		self.dialog = gladexml.get_widget('preferences_dialog')
-		self.audio_combobox = gladexml.get_widget("audio_combobox")
+		builder = gtk.Builder()
+		builder.add_from_file(builder_file)
+
+		self.dialog = builder.get_object('preferences_dialog')
+		self.audio_combobox = builder.get_object("audio_combobox")
 
 		format_text = self.gconf.get_string(gconf_keys['format'])
 		if not format_text:

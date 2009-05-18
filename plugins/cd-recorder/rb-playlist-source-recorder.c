@@ -41,13 +41,12 @@
 #include <glib/gprintf.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #include <gio/gio.h>
 
 #include <nautilus-burn.h>
 
 #include "rb-file-helpers.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-util.h"
@@ -90,8 +89,6 @@ static void rb_playlist_source_recorder_get_property (GObject *object,
 void        rb_playlist_source_recorder_device_changed_cb  (NautilusBurnDriveSelection *selection,
                                                             const char                 *device_path,
                                                             RBPlaylistSourceRecorder   *source);
-
-GtkWidget * rb_playlist_source_recorder_device_menu_create (void);
 
 typedef struct
 {
@@ -227,28 +224,6 @@ rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClass *klass)
                               G_TYPE_STRING);
 
         g_type_class_add_private (klass, sizeof (RBPlaylistSourceRecorderPrivate));
-}
-
-GtkWidget *
-rb_playlist_source_recorder_device_menu_create (void)
-{
-        GtkWidget *widget;
-        char      *value;
-
-        widget = nautilus_burn_drive_selection_new ();
-        g_object_set (widget, "file-image", FALSE, NULL);
-        g_object_set (widget, "show-recorders-only", TRUE, NULL);
-
-	value = eel_gconf_get_string (CONF_STATE_BURN_DEVICE);
-        if (value) {
-                nautilus_burn_drive_selection_set_device (NAUTILUS_BURN_DRIVE_SELECTION (widget),
-                                                          value);
-                g_free (value);
-        }
-
-        gtk_widget_show (widget);
-
-        return widget;
 }
 
 static const NautilusBurnDrive *
@@ -553,12 +528,6 @@ burn_cd (RBPlaylistSourceRecorder *source,
 
                 finished_msg = _("Finished creating audio CD.");
 
-		if (source->priv->cd_icon == NULL) {
-			source->priv->cd_icon = gtk_widget_render_icon (GTK_WIDGET (source),
-									GTK_STOCK_CDROM,
-									GTK_ICON_SIZE_BUTTON,
-									NULL);
-		}
                 rb_shell_notify_custom (source->priv->shell, 0, finished_msg, "", source->priv->cd_icon, FALSE);
 
                 /* save the write speed that was used */
@@ -1130,14 +1099,15 @@ rb_playlist_source_recorder_constructor (GType type,
 					 GObjectConstructParam *construct_properties)
 {
 	RBPlaylistSourceRecorder *source;
-	char           *gladefile;
-        GladeXML       *xml;
+	char           *builder_file;
+        GtkBuilder     *builder;
         GError         *error = NULL;
         GtkWidget      *widget;
         GtkWidget      *hbox;
         int             font_size;
         PangoAttrList  *pattrlist;
         PangoAttribute *attr;
+	char           *value;
 
 	source = RB_PLAYLIST_SOURCE_RECORDER (G_OBJECT_CLASS (rb_playlist_source_recorder_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
@@ -1164,6 +1134,11 @@ rb_playlist_source_recorder_constructor (GType type,
         gtk_container_add (GTK_CONTAINER (widget), hbox);
         gtk_widget_show (hbox);
 
+	source->priv->cd_icon = gtk_widget_render_icon (GTK_WIDGET (source),
+							GTK_STOCK_CDROM,
+							GTK_ICON_SIZE_BUTTON,
+							NULL);
+	widget = gtk_image_new_from_pixbuf (source->priv->cd_icon);
         gtk_box_pack_start (GTK_BOX (hbox), widget, TRUE, TRUE, 0);
         gtk_widget_show (widget);
         widget = gtk_label_new_with_mnemonic (_("C_reate"));
@@ -1176,38 +1151,48 @@ rb_playlist_source_recorder_constructor (GType type,
 
         gtk_dialog_set_default_response (GTK_DIALOG (source), GTK_RESPONSE_ACCEPT);
 
-	gladefile = rb_plugin_find_file (source->priv->plugin, "recorder.glade");
-	g_assert (gladefile != NULL);
+	builder_file = rb_plugin_find_file (source->priv->plugin, "recorder.ui");
+	g_assert (builder_file != NULL);
 
-        xml = rb_glade_xml_new (gladefile,
-                                "recorder_vbox",
-                                source);
-	g_free (gladefile);
+	builder = rb_builder_load (builder_file, source);
+	g_free (builder_file);
 
-        source->priv->vbox = glade_xml_get_widget (xml, "recorder_vbox");
+        source->priv->vbox = GTK_WIDGET (gtk_builder_get_object (builder, "recorder_vbox"));
 
-        source->priv->message_label  = glade_xml_get_widget (xml, "message_label");
-        source->priv->progress_label  = glade_xml_get_widget (xml, "progress_label");
+        source->priv->message_label  = GTK_WIDGET (gtk_builder_get_object (builder, "message_label"));
+        source->priv->progress_label  = GTK_WIDGET (gtk_builder_get_object (builder, "progress_label"));
 
-        source->priv->progress = glade_xml_get_widget (xml, "progress");
+        source->priv->progress = GTK_WIDGET (gtk_builder_get_object (builder, "progress"));
         gtk_progress_bar_set_ellipsize (GTK_PROGRESS_BAR (source->priv->progress), PANGO_ELLIPSIZE_END);
         gtk_progress_bar_set_text (GTK_PROGRESS_BAR (source->priv->progress), " ");
         gtk_widget_set_size_request (source->priv->progress, 400, -1);
 
-        source->priv->progress_frame = glade_xml_get_widget (xml, "progress_frame");
+        source->priv->progress_frame = GTK_WIDGET (gtk_builder_get_object (builder, "progress_frame"));
 
-        source->priv->options_box    = glade_xml_get_widget (xml, "options_box");
-        source->priv->device_menu    = glade_xml_get_widget (xml, "device_menu");
-        source->priv->multiple_copies_checkbutton = glade_xml_get_widget (xml, "multiple_copies_checkbutton");
+        source->priv->options_box    = GTK_WIDGET (gtk_builder_get_object (builder, "options_box"));
+        source->priv->multiple_copies_checkbutton = GTK_WIDGET (gtk_builder_get_object (builder, "multiple_copies_checkbutton"));
 
-        source->priv->speed_combobox = glade_xml_get_widget (xml, "speed_combobox");
+        source->priv->speed_combobox = GTK_WIDGET (gtk_builder_get_object (builder, "speed_combobox"));
         setup_speed_combobox (source->priv->speed_combobox);
 
-        widget = glade_xml_get_widget (xml, "device_label");
+        source->priv->device_menu    = nautilus_burn_drive_selection_new ();
+        g_object_set (source->priv->device_menu, "file-image", FALSE, NULL);
+        g_object_set (source->priv->device_menu, "show-recorders-only", TRUE, NULL);
+
+	value = eel_gconf_get_string (CONF_STATE_BURN_DEVICE);
+        if (value) {
+                nautilus_burn_drive_selection_set_device (NAUTILUS_BURN_DRIVE_SELECTION (source->priv->device_menu),
+                                                          value);
+                g_free (value);
+        }
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "device_menu_container"));
+	gtk_box_pack_start (GTK_BOX (widget), source->priv->device_menu, TRUE, TRUE, 0);
+
+        widget = GTK_WIDGET (gtk_builder_get_object (builder, "device_label"));
         gtk_label_set_mnemonic_widget (GTK_LABEL (widget), source->priv->device_menu);
 
-	rb_glade_boldify_label (xml, "progress_frame_label");
-	rb_glade_boldify_label (xml, "options_expander_label");
+	rb_builder_boldify_label (builder, "progress_frame_label");
+	rb_builder_boldify_label (builder, "options_expander_label");
 
         pattrlist = pango_attr_list_new ();
         attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);

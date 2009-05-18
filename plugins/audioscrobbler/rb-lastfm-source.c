@@ -49,7 +49,6 @@
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 
 #include <gconf/gconf-value.h>
 
@@ -66,7 +65,6 @@
 #include "rb-lastfm-source.h"
 
 #include "rhythmdb-query-model.h"
-#include "rb-glade-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-entry-view.h"
 #include "rb-property-view.h"

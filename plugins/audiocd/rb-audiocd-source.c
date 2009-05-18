@@ -49,7 +49,7 @@
 #include "rb-util.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 
 #ifdef HAVE_SJ_METADATA_GETTER
 #include "sj-metadata-getter.h"
@@ -402,11 +402,11 @@ multiple_album_dialog (GList *albums, RBAudioCdSource *source)
 	AlbumDetails *album;
 	GtkTreeIter iter;
 	int response;
-	GladeXML *xml;
+	GtkBuilder *builder;
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *text_renderer;
 	RBPlugin *plugin;
-	char *glade_file;
+	char *builder_file;
 
 	gdk_threads_enter ();
 
@@ -414,22 +414,22 @@ multiple_album_dialog (GList *albums, RBAudioCdSource *source)
 	g_assert (plugin != NULL);
 
 	/* create dialog */
-	glade_file = rb_plugin_find_file (plugin, "multiple-album.glade");
+	builder_file = rb_plugin_find_file (plugin, "multiple-album.ui");
 	g_object_unref (plugin);
 
-	if (glade_file == NULL) {
-		g_warning ("couldn't find multiple-album.glade");
+	if (builder_file == NULL) {
+		g_warning ("couldn't find multiple-album.ui");
 		return NULL;
 	}
 
-	xml = glade_xml_new (glade_file, NULL, NULL);
-	g_free (glade_file);
+	builder = rb_builder_load (builder_file, NULL);
+	g_free (builder_file);
 
-	dialog = glade_xml_get_widget (xml, "multiple_dialog");
+	dialog = GTK_WIDGET (gtk_builder_get_object (builder, "multiple_dialog"));
 	g_assert (dialog != NULL);
 	gtk_window_set_transient_for (GTK_WINDOW (dialog),
 				      GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source))));
-	albums_listview = glade_xml_get_widget (xml, "albums_listview");
+	albums_listview = GTK_WIDGET (gtk_builder_get_object (builder, "albums_listview"));
 
 	g_signal_connect (albums_listview, "row-activated", G_CALLBACK (album_row_activated), dialog);
 
@@ -484,6 +484,7 @@ multiple_album_dialog (GList *albums, RBAudioCdSource *source)
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
 	gdk_threads_leave ();
+	g_object_unref (builder);
 	return album;
 }
 

@@ -83,7 +83,6 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  glib-2.0 >= $GLIB_REQS		\
 		  gio-2.0 >= $GLIB_REQS			\
 		  gnome-media-profiles >= $GNOME_MEDIA_PROFILES_REQS \
-		  libglade-2.0				\
 		  libsoup-2.4				\
 		  $LIBGNOME_REQS)
 
@@ -776,7 +775,6 @@ shell/Makefile
 data/Makefile
 data/rhythmbox.desktop.in
 data/ui/Makefile
-data/glade/Makefile
 data/icons/Makefile
 data/icons/hicolor/Makefile
 data/icons/hicolor/16x16/Makefile

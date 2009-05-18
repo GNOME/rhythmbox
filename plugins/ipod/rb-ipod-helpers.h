@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 gboolean rb_ipod_helpers_show_first_time_dialog (GMount *mount,
-						 const char *glade_file);
+						 const char *builder_file);
 
 guint64 rb_ipod_helpers_get_capacity (const char *mountpoint);
 guint64 rb_ipod_helpers_get_free_space (const char *mountpoint);

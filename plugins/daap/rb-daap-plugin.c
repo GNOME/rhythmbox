@@ -46,7 +46,7 @@
 #include "rb-shell.h"
 #include "rb-dialog.h"
 #include "rb-file-helpers.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "eel-gconf-extensions.h"
 #include "rb-daap-source.h"
 #include "rb-daap-sharing.h"
@@ -65,7 +65,7 @@ struct RBDaapPluginPrivate
 {
 	RBShell *shell;
 
-	GladeXML *config_xml;
+	GtkBuilder *builder;
 	GtkWidget *preferences;
 	gboolean sharing;
 	gboolean shutdown;
@@ -98,7 +98,7 @@ static void rb_daap_plugin_get_property (GObject *object,
 					 GParamSpec *pspec);
 
 static void rb_daap_plugin_init (RBDaapPlugin *plugin);
-static void rb_daap_plugin_finalize (GObject *object);
+static void rb_daap_plugin_dispose (GObject *object);
 static void impl_activate (RBPlugin *plugin, RBShell *shell);
 static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
@@ -136,7 +136,7 @@ rb_daap_plugin_class_init (RBDaapPluginClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
 
-	object_class->finalize = rb_daap_plugin_finalize;
+	object_class->dispose = rb_daap_plugin_dispose;
 	object_class->get_property = rb_daap_plugin_get_property;
 
 	plugin_class->activate = impl_activate;
@@ -164,16 +164,23 @@ rb_daap_plugin_init (RBDaapPlugin *plugin)
 }
 
 static void
-rb_daap_plugin_finalize (GObject *object)
+rb_daap_plugin_dispose (GObject *object)
 {
 	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (object);
 
-	rb_debug ("RBDaapPlugin finalising");
+	rb_debug ("RBDaapPlugin dispose");
 
-	if (plugin->priv->preferences)
+	if (plugin->priv->preferences) {
 		gtk_widget_destroy (plugin->priv->preferences);
+		plugin->priv->preferences = NULL;
+	}
 
-	G_OBJECT_CLASS (rb_daap_plugin_parent_class)->finalize (object);
+	if (plugin->priv->builder) {
+		g_object_unref (plugin->priv->builder);
+		plugin->priv->builder = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_daap_plugin_parent_class)->dispose (object);
 }
 
 
@@ -245,10 +252,6 @@ impl_activate (RBPlugin *bplugin,
 
 	/* add UI */
 	uifile = rb_plugin_find_file (bplugin, "daap-ui.xml");
-	if (uifile == NULL) {
-		uifile = g_strdup (rb_file ("daap-ui.xml"));
-	}
-
 	if (uifile != NULL) {
 		plugin->priv->daap_ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, uifile, NULL);
 		g_free (uifile);
@@ -856,11 +859,11 @@ update_config_widget (RBDaapPlugin *plugin)
 	char *name;
 	char *password;
 
-	check = glade_xml_get_widget (plugin->priv->config_xml, "daap_enable_check");
-	password_check = glade_xml_get_widget (plugin->priv->config_xml, "daap_password_check");
-	name_entry = glade_xml_get_widget (plugin->priv->config_xml, "daap_name_entry");
-	password_entry = glade_xml_get_widget (plugin->priv->config_xml, "daap_password_entry");
-	box = glade_xml_get_widget (plugin->priv->config_xml, "daap_box");
+	check = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_enable_check"));
+	password_check = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_password_check"));
+	name_entry = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_name_entry"));
+	password_entry = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_password_entry"));
+	box = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_box"));
 
 	sharing_enabled = eel_gconf_get_boolean (CONF_DAAP_ENABLE_SHARING);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), sharing_enabled);
@@ -893,21 +896,18 @@ update_config_widget (RBDaapPlugin *plugin)
 static GtkWidget *
 make_config_widget (RBDaapPlugin *plugin)
 {
-	char *gladefile;
+	char *builder_file;
 
-	gladefile = rb_plugin_find_file (RB_PLUGIN (plugin), "daap-prefs.glade");
-	if (gladefile == NULL) {
-		gladefile = g_strdup (rb_file ("daap-prefs.glade"));
-		if (gladefile == NULL) {
-			return NULL;
-		}
+	builder_file = rb_plugin_find_file (RB_PLUGIN (plugin), "daap-prefs.ui");
+	if (builder_file == NULL) {
+		return NULL;
 	}
 
-	plugin->priv->config_xml = glade_xml_new (gladefile, "daap_vbox", NULL);
-	g_free (gladefile);
+	plugin->priv->builder = rb_builder_load (builder_file, NULL);
+	g_free (builder_file);
 
 	update_config_widget (plugin);
-	return glade_xml_get_widget (plugin->priv->config_xml, "daap_vbox");
+	return GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_vbox"));
 }
 
 

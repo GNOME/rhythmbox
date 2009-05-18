@@ -41,7 +41,7 @@
 #include "rb-dialog.h"
 #include "rb-debug.h"
 #include "rb-preferences.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "rb-util.h"
 
 static void rb_query_creator_class_init (RBQueryCreatorClass *klass);
@@ -120,8 +120,8 @@ G_DEFINE_TYPE (RBQueryCreator, rb_query_creator, GTK_TYPE_DIALOG)
  * of entries, the total duration, or the total file size; and also the
  * order in which the results are to be sorted.
  *
- * The structure of the query creator is defined in the glade file 
- * create-playlist.xml.
+ * The structure of the query creator is defined in the builder file
+ * create-playlist.ui.
  */
 
 enum
@@ -183,8 +183,8 @@ rb_query_creator_constructor (GType type,
 {
 	RBQueryCreatorPrivate *priv;
 	RBQueryCreator *creator;
-	GladeXML *xml;
 	GtkWidget *mainbox;
+	GtkBuilder *builder;
 
 	creator = RB_QUERY_CREATOR (G_OBJECT_CLASS (rb_query_creator_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
@@ -219,18 +219,16 @@ rb_query_creator_constructor (GType type,
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (creator)->vbox), 2);
 	gtk_dialog_set_has_separator (GTK_DIALOG (creator), FALSE);
 
-	xml = rb_glade_xml_new ("create-playlist.glade",
-				"main_vbox",
-				creator);
+	builder = rb_builder_load ("create-playlist.ui", creator);
 
-	priv->disjunction_check = GTK_WIDGET (glade_xml_get_widget (xml, "disjunctionCheck"));
-	priv->limit_check = GTK_WIDGET (glade_xml_get_widget (xml, "limitCheck"));
-	priv->limit_entry = GTK_WIDGET (glade_xml_get_widget (xml, "limitEntry"));
-	priv->limit_option = GTK_WIDGET (glade_xml_get_widget (xml, "limitOption"));
-	priv->addbutton = GTK_WIDGET (glade_xml_get_widget (xml, "addButton"));
-	priv->sort_label = GTK_WIDGET (glade_xml_get_widget (xml, "sortLabel"));
-	priv->sort_menu = GTK_WIDGET (glade_xml_get_widget (xml, "sortMenu"));
-	priv->sort_desc = GTK_WIDGET (glade_xml_get_widget (xml, "sortDesc"));
+	priv->disjunction_check = GTK_WIDGET (gtk_builder_get_object (builder, "disjunctionCheck"));
+	priv->limit_check = GTK_WIDGET (gtk_builder_get_object (builder, "limitCheck"));
+	priv->limit_entry = GTK_WIDGET (gtk_builder_get_object (builder, "limitEntry"));
+	priv->limit_option = GTK_WIDGET (gtk_builder_get_object (builder, "limitOption"));
+	priv->addbutton = GTK_WIDGET (gtk_builder_get_object (builder, "addButton"));
+	priv->sort_label = GTK_WIDGET (gtk_builder_get_object (builder, "sortLabel"));
+	priv->sort_menu = GTK_WIDGET (gtk_builder_get_object (builder, "sortMenu"));
+	priv->sort_desc = GTK_WIDGET (gtk_builder_get_object (builder, "sortDesc"));
 
 	gtk_combo_box_set_active (GTK_COMBO_BOX (priv->limit_option), 0);
 
@@ -244,15 +242,15 @@ rb_query_creator_constructor (GType type,
 
 	setup_sort_option_menu (creator, priv->sort_menu, sort_options, num_sort_options);
 
-	priv->vbox = GTK_BOX (glade_xml_get_widget (xml, "sub_vbox"));
+	priv->vbox = GTK_BOX (gtk_builder_get_object (builder, "sub_vbox"));
 	if (priv->creating)
 		append_row (creator);
 
-	mainbox = glade_xml_get_widget (xml, "main_vbox");
+	mainbox = GTK_WIDGET (gtk_builder_get_object (builder, "complex-playlist-creator"));
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (creator)->vbox), mainbox, FALSE, FALSE, 0);
 	gtk_widget_show_all (GTK_WIDGET (creator));
 
-	g_object_unref (xml);
+	g_object_unref (builder);
 
 	return G_OBJECT (creator);
 }
@@ -267,22 +265,29 @@ rb_query_creator_dispose (GObject *object)
 	priv = QUERY_CREATOR_GET_PRIVATE (object);
 	g_return_if_fail (priv != NULL);
 
-	if (priv->property_size_group != NULL)
-		g_object_unref (G_OBJECT (priv->property_size_group));
-	priv->property_size_group = NULL;
-	if (priv->criteria_size_group != NULL)
-		g_object_unref (G_OBJECT (priv->criteria_size_group));
-	priv->criteria_size_group = NULL;
-	if (priv->entry_size_group != NULL)
-		g_object_unref (G_OBJECT (priv->entry_size_group));
-	priv->entry_size_group = NULL;
-	if (priv->button_size_group != NULL)
-		g_object_unref (G_OBJECT (priv->button_size_group));
-	priv->button_size_group = NULL;
+	if (priv->property_size_group != NULL) {
+		g_object_unref (priv->property_size_group);
+		priv->property_size_group = NULL;
+	}
 
-	if (priv->rows)
+	if (priv->criteria_size_group != NULL) {
+		g_object_unref (priv->criteria_size_group);
+		priv->criteria_size_group = NULL;
+	}
+	if (priv->entry_size_group != NULL) {
+		g_object_unref (priv->entry_size_group);
+		priv->entry_size_group = NULL;
+	}
+
+	if (priv->button_size_group != NULL) {
+		g_object_unref (priv->button_size_group);
+		priv->button_size_group = NULL;
+	}
+
+	if (priv->rows) {
 		g_list_free (priv->rows);
-	priv->rows = NULL;
+		priv->rows = NULL;
+	}
 
 	G_OBJECT_CLASS (rb_query_creator_parent_class)->dispose (object);
 }

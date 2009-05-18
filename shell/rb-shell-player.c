@@ -63,12 +63,11 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 
 #include "rb-property-view.h"
 #include "rb-shell-player.h"
 #include "rb-stock-icons.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "rb-file-helpers.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-dialog.h"

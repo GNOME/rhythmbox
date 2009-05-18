@@ -10,10 +10,10 @@ plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 
 plugin_in_files = jamendo.rb-plugin.in
 
-glade_DATA =	\
-		jamendo-loading.glade                 \
-		jamendo-prefs.glade		      \
-		jamendo_logo.png		      \
+gtkbuilder_DATA =	\
+		jamendo-loading.ui			\
+		jamendo-prefs.ui			\
+		jamendo_logo.png			\
 		jamendo_logo_medium.png
 
 themedir = $(pkgdatadir)/icons/hicolor
@@ -22,8 +22,8 @@ context = places
 icondir = $(themedir)/$(size)/$(context)
 icon_DATA = icons/hicolor/$(size)/$(context)/jamendo.png
 
-gladedir = $(plugindir)
-EXTRA_DIST = $(plugin_in_files) $(glade_DATA) $(icon_DATA)
+gtkbuilderdir = $(plugindir)
+EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA) $(icon_DATA)
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)
 

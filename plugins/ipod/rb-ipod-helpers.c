@@ -36,7 +36,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #include <gpod/itdb.h>
 #ifdef HAVE_HAL
 #include <libhal.h>
@@ -45,6 +44,7 @@
 
 #include "rb-ipod-helpers.h"
 #include "rb-util.h"
+#include "rb-builder-helpers.h"
 
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -242,10 +242,10 @@ fill_model_combo (GtkWidget *combo, const char *mount_path)
 }
 
 gboolean
-rb_ipod_helpers_show_first_time_dialog (GMount *mount, const char *glade_file)
+rb_ipod_helpers_show_first_time_dialog (GMount *mount, const char *builder_file)
 {
 	/* could be an uninitialised iPod, ask the user */
-	GladeXML *xml;
+	GtkBuilder *builder;
 	GtkWidget *dialog;
 	GtkWidget *widget;
 	GtkTreeModel *tree_model;
@@ -271,10 +271,14 @@ rb_ipod_helpers_show_first_time_dialog (GMount *mount, const char *glade_file)
 	/* create message dialog with model-number combo box
 	 * and asking whether they want to initialise the iPod
 	 */
-	xml = glade_xml_new (glade_file, NULL, NULL);
-	dialog = glade_xml_get_widget (xml, "ipod_init");
-	widget = glade_xml_get_widget (xml, "model_combo");
+	builder = rb_builder_load (builder_file, NULL);
+	if (builder == NULL) {
+		return FALSE;
+	}
+	dialog = GTK_WIDGET (gtk_builder_get_object (builder, "ipod_init"));
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "model_combo"));
 	fill_model_combo (widget, mountpoint);
+	g_object_unref (builder);
 
 	rb_debug ("showing init dialog for ipod mount on '%s'", mountpoint);
 
@@ -289,7 +293,7 @@ rb_ipod_helpers_show_first_time_dialog (GMount *mount, const char *glade_file)
 	tree_model = gtk_combo_box_get_model (GTK_COMBO_BOX (widget));
 	gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter);
 	gtk_tree_model_get (tree_model, &iter, COL_INFO, &info, -1);
-	widget = glade_xml_get_widget (xml, "name_entry");
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "name_entry"));
 	ipod_name = g_strdup (gtk_entry_get_text (GTK_ENTRY (widget)));
 
 	gtk_widget_destroy (dialog);

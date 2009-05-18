@@ -36,13 +36,12 @@
 #include <string.h>
 
 #include <glib/gi18n.h>
-#include <glade/glade-xml.h>
 
 #include "rb-plugin-manager.h"
 #include "rb-plugins-engine.h"
 #include "rb-plugin.h"
 #include "rb-debug.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 
 enum
 {
@@ -497,46 +496,44 @@ plugin_name_cmp (gconstpointer a, gconstpointer b)
 static void
 rb_plugin_manager_init (RBPluginManager *pm)
 {
-	GladeXML *xml;
+	GtkBuilder *builder;
 	GtkWidget *plugins_window;
 
 	pm->priv = RB_PLUGIN_MANAGER_GET_PRIVATE (pm);
 
-	xml = rb_glade_xml_new ("plugins.glade",
-				"plugins_vbox",
-				pm);
-	gtk_container_add (GTK_CONTAINER (pm), glade_xml_get_widget (xml, "plugins_vbox"));
+	builder = rb_builder_load ("plugins.ui", pm);
+	gtk_container_add (GTK_CONTAINER (pm), GTK_WIDGET (gtk_builder_get_object (builder, "edit_plugins")));
 
 	gtk_box_set_spacing (GTK_BOX (pm), 6);
 
 	pm->priv->tree = gtk_tree_view_new ();
-        plugins_window = glade_xml_get_widget (xml, "plugins_list_window");
+        plugins_window = GTK_WIDGET (gtk_builder_get_object (builder, "plugins_list_window"));
 	gtk_container_add (GTK_CONTAINER (plugins_window), pm->priv->tree);
 
-	pm->priv->configure_button = glade_xml_get_widget (xml, "configure_button");
+	pm->priv->configure_button = GTK_WIDGET (gtk_builder_get_object (builder, "configure_button"));
 	g_signal_connect (pm->priv->configure_button,
 			  "clicked",
 			  G_CALLBACK (configure_button_cb),
 			  pm);
 	
-        pm->priv->header_hbox = glade_xml_get_widget (xml, "header_hbox");
+        pm->priv->header_hbox = GTK_WIDGET (gtk_builder_get_object (builder, "header_hbox"));
 
-	pm->priv->plugin_title = glade_xml_get_widget (xml, "plugin_title");
+	pm->priv->plugin_title = GTK_WIDGET (gtk_builder_get_object (builder, "plugin_title"));
 
-	pm->priv->site_label = glade_xml_get_widget (xml, "site_label");
-	rb_glade_boldify_label (xml, "site_label");
-	pm->priv->copyright_label = glade_xml_get_widget (xml, "copyright_label");
-	rb_glade_boldify_label (xml, "copyright_label");
-	pm->priv->authors_label = glade_xml_get_widget (xml, "authors_label");
-	rb_glade_boldify_label (xml, "authors_label");
-	pm->priv->description_label = glade_xml_get_widget (xml, "description_label");
-	rb_glade_boldify_label (xml, "description_label");
+	pm->priv->site_label = GTK_WIDGET (gtk_builder_get_object (builder, "site_label"));
+	rb_builder_boldify_label (builder, "site_label");
+	pm->priv->copyright_label = GTK_WIDGET (gtk_builder_get_object (builder, "copyright_label"));
+	rb_builder_boldify_label (builder, "copyright_label");
+	pm->priv->authors_label = GTK_WIDGET (gtk_builder_get_object (builder, "authors_label"));
+	rb_builder_boldify_label (builder, "authors_label");
+	pm->priv->description_label = GTK_WIDGET (gtk_builder_get_object (builder, "description_label"));
+	rb_builder_boldify_label (builder, "description_label");
 
-	pm->priv->plugin_icon = glade_xml_get_widget (xml, "plugin_icon");
-	pm->priv->site_text = glade_xml_get_widget (xml, "site_text");
-	pm->priv->copyright_text = glade_xml_get_widget (xml, "copyright_text");
-	pm->priv->authors_text = glade_xml_get_widget (xml, "authors_text");
-	pm->priv->description_text = glade_xml_get_widget (xml, "description_text");
+	pm->priv->plugin_icon = GTK_WIDGET (gtk_builder_get_object (builder, "plugin_icon"));
+	pm->priv->site_text = GTK_WIDGET (gtk_builder_get_object (builder, "site_text"));
+	pm->priv->copyright_text = GTK_WIDGET (gtk_builder_get_object (builder, "copyright_text"));
+	pm->priv->authors_text = GTK_WIDGET (gtk_builder_get_object (builder, "authors_text"));
+	pm->priv->description_text = GTK_WIDGET (gtk_builder_get_object (builder, "description_text"));
 
 	plugin_manager_construct_tree (pm);
 
@@ -544,7 +541,7 @@ rb_plugin_manager_init (RBPluginManager *pm)
 	pm->priv->plugins = rb_plugins_engine_get_plugins_list ();
 	pm->priv->plugins = g_list_sort (pm->priv->plugins, plugin_name_cmp);
 	plugin_manager_populate_lists (pm);
-	g_object_unref (xml);
+	g_object_unref (builder);
 }
 
 GtkWidget *

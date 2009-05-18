@@ -47,7 +47,6 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
-#include <glade/glade.h>
 
 #include "rb-source.h"
 #include "rb-library-source.h"
@@ -55,7 +54,6 @@
 
 #include "rhythmdb-query-model.h"
 #include "rb-property-view.h"
-#include "rb-glade-helpers.h"
 #include "rb-entry-view.h"
 #include "rb-library-browser.h"
 #include "rb-util.h"

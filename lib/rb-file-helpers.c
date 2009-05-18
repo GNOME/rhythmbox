@@ -50,21 +50,17 @@ static char *user_cache_dir = NULL;
 static char *uninstalled_paths[] = {
 	SHARE_UNINSTALLED_DIR "/",
 	SHARE_UNINSTALLED_DIR "/ui/",
-	SHARE_UNINSTALLED_DIR "/glade/",
 	SHARE_UNINSTALLED_DIR "/art/",
 	SHARE_UNINSTALLED_BUILDDIR "/",
 	SHARE_UNINSTALLED_BUILDDIR "/ui/",
-	SHARE_UNINSTALLED_BUILDDIR "/glade/",
 	SHARE_UNINSTALLED_BUILDDIR "/art/",
 	SHARE_DIR "/",
-	SHARE_DIR "/glade/",
 	SHARE_DIR "/art/",
 	NULL
 };
 
 static char *installed_paths[] = {
 	SHARE_DIR "/",
-	SHARE_DIR "/glade/",
 	SHARE_DIR "/art/",
 	NULL
 };

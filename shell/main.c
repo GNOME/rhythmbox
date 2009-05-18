@@ -52,7 +52,6 @@
 #include <glib/gi18n.h>
 #include <gdk/gdkx.h> /* For _get_user_time... */
 #include <gtk/gtk.h>
-#include <glade/glade-init.h>
 
 #include <gst/gst.h>
 

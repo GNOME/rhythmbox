@@ -60,7 +60,7 @@
 #include "rhythmdb.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 #include "eel-gconf-extensions.h"
@@ -448,9 +448,9 @@ static GtkWidget *
 impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	GtkWidget *tmp;
-	GladeXML *xml;
-	GtkWidget *label;
+	GtkBuilder *builder;
+	GObject *tmp;
+	GObject *label;
 	int i;
 
 	if (source->priv->config_widget)
@@ -459,15 +459,15 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	g_object_ref (G_OBJECT (prefs));
 	source->priv->shell_prefs = prefs;
 
-	xml = rb_glade_xml_new ("library-prefs.glade", "library_vbox", source);
+	builder = rb_builder_load ("library-prefs.ui", source);
 	source->priv->config_widget =
-		glade_xml_get_widget (xml, "library_vbox");
+		GTK_WIDGET (gtk_builder_get_object (builder, "library_vbox"));
 
-	rb_glade_boldify_label (xml, "library_location_label");
+	rb_builder_boldify_label (builder, "library_location_label");
 
-	source->priv->library_location_entry = glade_xml_get_widget (xml, "library_location_entry");
-	tmp = glade_xml_get_widget (xml, "library_location_button");
-	g_signal_connect (G_OBJECT (tmp),
+	source->priv->library_location_entry = GTK_WIDGET (gtk_builder_get_object (builder, "library_location_entry"));
+	tmp = gtk_builder_get_object (builder, "library_location_button");
+	g_signal_connect (tmp,
 			  "clicked",
 			  G_CALLBACK (rb_library_source_location_button_clicked_cb),
 			  asource);
@@ -476,16 +476,16 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 			  G_CALLBACK (rb_library_source_library_location_cb),
 			  asource);
 
-	source->priv->watch_library_check = glade_xml_get_widget (xml, "watch_library_check");
+	source->priv->watch_library_check = GTK_WIDGET (gtk_builder_get_object (builder, "watch_library_check"));
 	g_signal_connect (G_OBJECT (source->priv->watch_library_check),
 			  "toggled",
 			  G_CALLBACK (rb_library_source_watch_toggled_cb),
 			  asource);
 
-	rb_glade_boldify_label (xml, "library_structure_label");
+	rb_builder_boldify_label (builder, "library_structure_label");
 
-	tmp = glade_xml_get_widget (xml, "layout_path_menu_box");
-	label = glade_xml_get_widget (xml, "layout_path_menu_label");
+	tmp = gtk_builder_get_object (builder, "layout_path_menu_box");
+	label = gtk_builder_get_object (builder, "layout_path_menu_label");
 	source->priv->layout_path_menu = gtk_combo_box_new_text ();
 	gtk_box_pack_start (GTK_BOX (tmp), source->priv->layout_path_menu, TRUE, TRUE, 0);
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->layout_path_menu);
@@ -498,8 +498,8 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 					   _(library_layout_paths[i].title));
 	}
 
-	tmp = glade_xml_get_widget (xml, "layout_filename_menu_box");
-	label = glade_xml_get_widget (xml, "layout_filename_menu_label");
+	tmp = gtk_builder_get_object (builder, "layout_filename_menu_box");
+	label = gtk_builder_get_object (builder, "layout_filename_menu_label");
 	source->priv->layout_filename_menu = gtk_combo_box_new_text ();
 	gtk_box_pack_start (GTK_BOX (tmp), source->priv->layout_filename_menu, TRUE, TRUE, 0);
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->layout_filename_menu);
@@ -512,14 +512,14 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 					   _(library_layout_filenames[i].title));
 	}
 
-	tmp = glade_xml_get_widget (xml, "edit_profile_button");
-	g_signal_connect (G_OBJECT (tmp),
+	tmp = gtk_builder_get_object (builder, "edit_profile_button");
+	g_signal_connect (tmp,
 			  "clicked",
 			  G_CALLBACK (rb_library_source_edit_profile_clicked_cb),
 			  asource);
 
-	tmp = glade_xml_get_widget (xml, "preferred_format_menu_box");
-	label = glade_xml_get_widget (xml, "preferred_format_menu_label");
+	tmp = gtk_builder_get_object (builder, "preferred_format_menu_box");
+	label = gtk_builder_get_object (builder, "preferred_format_menu_label");
 	source->priv->preferred_format_menu = gm_audio_profile_choose_new ();
 	gtk_box_pack_start (GTK_BOX (tmp), source->priv->preferred_format_menu, TRUE, TRUE, 0);
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->preferred_format_menu);
@@ -528,9 +528,7 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 			  G_CALLBACK (rb_library_source_format_changed_cb),
 			  asource);
 
-	source->priv->layout_example_label = glade_xml_get_widget (xml, "layout_example_label");
-
-	g_object_unref (G_OBJECT (xml));
+	source->priv->layout_example_label = GTK_WIDGET (gtk_builder_get_object (builder, "layout_example_label"));
 
 	rb_library_source_preferences_sync (source);
 

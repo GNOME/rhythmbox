@@ -10,11 +10,11 @@ plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 
 plugin_in_files = lyrics.rb-plugin.in
 
-glade_DATA =	\
-		lyrics-prefs.glade
+gtkbuilder_DATA =	\
+		lyrics-prefs.ui
 
-gladedir = $(plugindir)
-EXTRA_DIST = $(plugin_in_files) $(glade_DATA)
+gtkbuilderdir = $(plugindir)
+EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA)
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)
 

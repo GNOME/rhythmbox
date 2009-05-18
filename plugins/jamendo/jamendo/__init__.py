@@ -31,7 +31,7 @@
 
 import rhythmdb, rb
 import gobject
-import gtk, gtk.glade
+import gtk
 
 from JamendoSource import JamendoSource
 from JamendoConfigureDialog import JamendoConfigureDialog
@@ -130,8 +130,8 @@ class Jamendo(rb.Plugin):
 
 	def create_configure_dialog(self, dialog=None):
 		if not dialog:
-			glade_file = self.find_file("jamendo-prefs.glade")
-			dialog = JamendoConfigureDialog (glade_file).get_dialog()
+			builder_file = self.find_file("jamendo-prefs.ui")
+			dialog = JamendoConfigureDialog (builder_file).get_dialog()
 		dialog.present()
 		return dialog
 

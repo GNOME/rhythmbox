@@ -58,7 +58,6 @@
 #include <gdk/gdkkeysyms.h>
 #include <glib.h>
 #include <glib-object.h>
-#include <glade/glade.h>
 
 #include <gst/gst.h>
 #include <gst/gstutils.h>
@@ -75,6 +74,7 @@
 #include "rb-file-helpers.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
+#include "rb-builder-helpers.h"
 
 #define VISUALIZATION_ICON_NAME	"visualization"
 
@@ -2287,26 +2287,25 @@ static void
 create_controls (RBVisualizerPlugin *plugin)
 {
 	GtkWidget *widget;
-	GladeXML *xml;
-	char *gladefile;
+	GtkBuilder *builder;
+	char *builder_file;
 
-	/* load glade stuff */
-	gladefile = rb_plugin_find_file (RB_PLUGIN (plugin), "visualizer-controls.glade");
-	if (gladefile == NULL) {
+	/* load builder stuff */
+	builder_file = rb_plugin_find_file (RB_PLUGIN (plugin), "visualizer-controls.ui");
+	if (builder_file == NULL) {
 		return;
 	}
-	xml = glade_xml_new (gladefile,
-			     "visualizer_controls",
-			     NULL);
 
-	plugin->control_widget = glade_xml_get_widget (xml, "visualizer_controls");
-	plugin->element_combo = glade_xml_get_widget (xml, "element");
-	plugin->quality_combo = glade_xml_get_widget (xml, "quality");
-	plugin->mode_combo = glade_xml_get_widget (xml, "mode");
-	plugin->disable_button = glade_xml_get_widget (xml, "disable");
+	builder = rb_builder_load (builder_file, NULL);
 
-	plugin->screen_label = glade_xml_get_widget (xml, "screen_label");
-	plugin->screen_combo = glade_xml_get_widget (xml, "screen");
+	plugin->control_widget = GTK_WIDGET (gtk_builder_get_object (builder, "visualizer_controls"));
+	plugin->element_combo = GTK_WIDGET (gtk_builder_get_object (builder, "element"));
+	plugin->quality_combo = GTK_WIDGET (gtk_builder_get_object (builder, "quality"));
+	plugin->mode_combo = GTK_WIDGET (gtk_builder_get_object (builder, "mode"));
+	plugin->disable_button = GTK_WIDGET (gtk_builder_get_object (builder, "disable"));
+
+	plugin->screen_label = GTK_WIDGET (gtk_builder_get_object (builder, "screen_label"));
+	plugin->screen_combo = GTK_WIDGET (gtk_builder_get_object (builder, "screen"));
 
 	populate_combo_boxes (plugin);
 
@@ -2327,32 +2326,28 @@ create_controls (RBVisualizerPlugin *plugin)
 				 0);
 
 	g_object_ref (plugin->control_widget);
-	g_object_unref (xml);
 
-	xml = glade_xml_new (gladefile,
-			     "play_controls",
-			     NULL);
-	plugin->play_control_widget = glade_xml_get_widget (xml, "play_controls");
-	plugin->song_info_label = glade_xml_get_widget (xml, "song_info");
+	plugin->play_control_widget = GTK_WIDGET (gtk_builder_get_object (builder, "play_controls"));
+	plugin->song_info_label = GTK_WIDGET (gtk_builder_get_object (builder, "song_info"));
 
-	plugin->play_button = glade_xml_get_widget (xml, "play");
+	plugin->play_button = GTK_WIDGET (gtk_builder_get_object (builder, "play"));
 	g_signal_connect_object (plugin->play_button, "toggled",
 				 G_CALLBACK (play_toggled_cb), plugin,
 				 0);
 
-	widget = glade_xml_get_widget (xml, "previous");
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "previous"));
 	g_signal_connect_object (widget, "clicked",
 				 G_CALLBACK (previous_clicked_cb), plugin,
 				 0);
-	widget = glade_xml_get_widget (xml, "next");
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "next"));
 	g_signal_connect_object (widget, "clicked",
 				 G_CALLBACK (next_clicked_cb), plugin,
 				 0);
 
 	g_object_ref (plugin->play_control_widget);
 
-	g_object_unref (xml);
-	g_free (gladefile);
+	g_object_unref (builder);
+	g_free (builder_file);
 }
 
 

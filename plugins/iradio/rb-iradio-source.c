@@ -34,14 +34,12 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #include <libxml/tree.h>
 
 #include "rb-iradio-source.h"
 #include "rb-iradio-source-search.h"
 
 #include "rhythmdb-query-model.h"
-#include "rb-glade-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-entry-view.h"
 #include "rb-property-view.h"

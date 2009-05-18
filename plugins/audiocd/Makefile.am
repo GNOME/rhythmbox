@@ -51,8 +51,8 @@ endif
 libaudiocd_la_LIBADD += $(NULL)
 
 
-gladedir = $(plugindir)
-glade_DATA =	multiple-album.glade
+gtkbuilderdir = $(plugindir)
+gtkbuilder_DATA = multiple-album.ui
 
 uixmldir = $(plugindir)
 uixml_DATA = audiocd-ui.xml
@@ -63,7 +63,7 @@ plugin_in_files = audiocd.rb-plugin.in
 
 plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 
-EXTRA_DIST = $(glade_DATA) $(uixml_DATA) $(plugin_in_files) sj-metadata-marshal.list
+EXTRA_DIST = $(gtkbuilder_DATA) $(uixml_DATA) $(plugin_in_files) sj-metadata-marshal.list
 
 SJ_FILES =									\
 	sj-error.c sj-error.h							\

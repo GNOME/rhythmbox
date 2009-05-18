@@ -35,12 +35,11 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #include <glib.h>
 
 #include "rb-podcast-properties-dialog.h"
 #include "rb-file-helpers.h"
-#include "rb-glade-helpers.h"
+#include "rb-builder-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"
 #include "rb-util.h"
@@ -136,7 +135,7 @@ rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass)
 static void
 rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 {
-	GladeXML *xml;
+	GtkBuilder *builder;
 	AtkObject *lobj, *robj;
 
 	dialog->priv = G_TYPE_INSTANCE_GET_PRIVATE (dialog,
@@ -155,58 +154,55 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 					 GTK_RESPONSE_OK);
 
-	xml = rb_glade_xml_new ("podcast-properties.glade",
-				"podcastproperties",
-				dialog);
-	glade_xml_signal_autoconnect (xml);
+	builder = rb_builder_load ("podcast-properties.ui", dialog);
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
-			   glade_xml_get_widget (xml, "podcastproperties"));
+			   GTK_WIDGET (gtk_builder_get_object (builder, "podcastproperties")));
 	dialog->priv->close_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
 							    GTK_STOCK_CLOSE,
 							    GTK_RESPONSE_CLOSE);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
 
-	/* get the widgets from the XML */
-	dialog->priv->title = glade_xml_get_widget (xml, "titleLabel");
-	dialog->priv->feed = glade_xml_get_widget (xml, "feedLabel");
-	dialog->priv->duration = glade_xml_get_widget (xml, "durationLabel");
-	dialog->priv->location = glade_xml_get_widget (xml, "locationLabel");
-	dialog->priv->download_location = glade_xml_get_widget (xml, "downloadLocationLabel");
-	dialog->priv->lastplayed = glade_xml_get_widget (xml, "lastplayedLabel");
-	dialog->priv->playcount = glade_xml_get_widget (xml, "playcountLabel");
-	dialog->priv->bitrate = glade_xml_get_widget (xml, "bitrateLabel");
-	dialog->priv->date = glade_xml_get_widget (xml, "dateLabel");
-	dialog->priv->description = glade_xml_get_widget (xml, "descriptionLabel");
+	/* get the widgets from the builder */
+	dialog->priv->title = GTK_WIDGET (gtk_builder_get_object (builder, "titleLabel"));
+	dialog->priv->feed = GTK_WIDGET (gtk_builder_get_object (builder, "feedLabel"));
+	dialog->priv->duration = GTK_WIDGET (gtk_builder_get_object (builder, "durationLabel"));
+	dialog->priv->location = GTK_WIDGET (gtk_builder_get_object (builder, "locationLabel"));
+	dialog->priv->download_location = GTK_WIDGET (gtk_builder_get_object (builder, "downloadLocationLabel"));
+	dialog->priv->lastplayed = GTK_WIDGET (gtk_builder_get_object (builder, "lastplayedLabel"));
+	dialog->priv->playcount = GTK_WIDGET (gtk_builder_get_object (builder, "playcountLabel"));
+	dialog->priv->bitrate = GTK_WIDGET (gtk_builder_get_object (builder, "bitrateLabel"));
+	dialog->priv->date = GTK_WIDGET (gtk_builder_get_object (builder, "dateLabel"));
+	dialog->priv->description = GTK_WIDGET (gtk_builder_get_object (builder, "descriptionLabel"));
 
-	rb_glade_boldify_label (xml, "titleDescLabel");
-	rb_glade_boldify_label (xml, "feedDescLabel");
-	rb_glade_boldify_label (xml, "locationDescLabel");
-	rb_glade_boldify_label (xml, "downloadLocationDescLabel");
-	rb_glade_boldify_label (xml, "durationDescLabel");
-	rb_glade_boldify_label (xml, "ratingDescLabel");
-	rb_glade_boldify_label (xml, "lastplayedDescLabel");
-	rb_glade_boldify_label (xml, "playcountDescLabel");
-	rb_glade_boldify_label (xml, "bitrateDescLabel");
-	rb_glade_boldify_label (xml, "dateDescLabel");
-	rb_glade_boldify_label (xml, "descriptionDescLabel");
+	rb_builder_boldify_label (builder, "titleDescLabel");
+	rb_builder_boldify_label (builder, "feedDescLabel");
+	rb_builder_boldify_label (builder, "locationDescLabel");
+	rb_builder_boldify_label (builder, "downloadLocationDescLabel");
+	rb_builder_boldify_label (builder, "durationDescLabel");
+	rb_builder_boldify_label (builder, "ratingDescLabel");
+	rb_builder_boldify_label (builder, "lastplayedDescLabel");
+	rb_builder_boldify_label (builder, "playcountDescLabel");
+	rb_builder_boldify_label (builder, "bitrateDescLabel");
+	rb_builder_boldify_label (builder, "dateDescLabel");
+	rb_builder_boldify_label (builder, "descriptionDescLabel");
 
 	dialog->priv->rating = GTK_WIDGET (rb_rating_new ());
 	g_signal_connect_object (dialog->priv->rating,
 				 "rated",
 				 G_CALLBACK (rb_podcast_properties_dialog_rated_cb),
 				 G_OBJECT (dialog), 0);
-	gtk_container_add (GTK_CONTAINER (glade_xml_get_widget (xml, "ratingVBox")),
+	gtk_container_add (GTK_CONTAINER (gtk_builder_get_object (builder, "ratingVBox")),
 			   dialog->priv->rating);
 
 	/* add relationship between the rating label and the rating widget */
-	lobj = gtk_widget_get_accessible (glade_xml_get_widget (xml, "ratingDescLabel"));
+	lobj = gtk_widget_get_accessible (GTK_WIDGET (gtk_builder_get_object (builder, "ratingDescLabel")));
 	robj = gtk_widget_get_accessible (dialog->priv->rating);
 	
 	atk_object_add_relationship (lobj, ATK_RELATION_LABEL_FOR, robj);
 	atk_object_add_relationship (robj, ATK_RELATION_LABELLED_BY, lobj);
 
-	g_object_unref (G_OBJECT (xml));
+	g_object_unref (builder);
 }
 
 static void
