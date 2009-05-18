@@ -1742,11 +1742,13 @@ rb_podcast_source_start_download_cb (RBPodcastManager *pd,
 				     RBPodcastSource *source)
 {
 	RBShell *shell = rb_podcast_source_get_shell (source);
-	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
+	char *podcast_name;
 
-	rb_debug ("Start download");
-	rb_shell_hidden_notify (shell, 4000, _("Downloading podcast"), NULL, podcast_name, FALSE);
+	podcast_name = g_markup_escape_text (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), -1);
+	rb_shell_notify_custom (shell, 4000, _("Downloading podcast"), podcast_name, NULL, FALSE);
+
 	g_object_unref (shell);
+	g_free (podcast_name);
 }
 
 static void
@@ -1755,11 +1757,13 @@ rb_podcast_source_finish_download_cb (RBPodcastManager *pd,
 				      RBPodcastSource *source)
 {
 	RBShell *shell = rb_podcast_source_get_shell (source);
-	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
+	char *podcast_name;
 
-	rb_debug ("Finish download");
-	rb_shell_hidden_notify (shell, 4000, _("Finished downloading podcast"), NULL, podcast_name, FALSE);
+	podcast_name = g_markup_escape_text (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), -1);
+	rb_shell_notify_custom (shell, 4000, _("Finished downloading podcast"), podcast_name, NULL, FALSE);
+
 	g_object_unref (shell);
+	g_free (podcast_name);
 }
 
 static void
@@ -1768,11 +1772,13 @@ rb_podcast_source_feed_updates_available_cb (RBPodcastManager *pd,
 					     RBPodcastSource *source)
 {
 	RBShell *shell = rb_podcast_source_get_shell (source);
-	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
+	char *podcast_name;
 
-	rb_debug ("Updates available");
-	rb_shell_hidden_notify (shell, 4000, _("New updates available from"), NULL, podcast_name, FALSE);
+	podcast_name = g_markup_escape_text (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), -1);
+	rb_shell_notify_custom (shell, 4000, _("New updates available from"), podcast_name, NULL, FALSE);
+
 	g_object_unref (shell);
+	g_free (podcast_name);
 
 }
 

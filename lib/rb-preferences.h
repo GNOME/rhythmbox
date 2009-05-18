@@ -50,11 +50,9 @@ G_BEGIN_DECLS
 #define CONF_UI_COLUMNS_SETUP CONF_PREFIX "/ui/rhythmdb_columns_setup"
 #define CONF_UI_TIME_DISPLAY CONF_PREFIX "/ui/time_display"
 #define CONF_UI_BROWSER_VIEWS CONF_PREFIX "/ui/library/browser_views"
-#define CONF_UI_SHOW_NOTIFICATIONS CONF_PREFIX "/ui/show_notifications"
 #define CONF_STATE_PLAY_ORDER	CONF_PREFIX "/state/play_order"
 #define CONF_STATE_VOLUME	CONF_PREFIX "/state/volume"
 #define CONF_STATE_BURN_DEVICE	CONF_PREFIX "/state/burn_device"
-#define CONF_STATE_WINDOW_VISIBLE	CONF_PREFIX "/state/window_visible"
 #define CONF_UI_AUTO_PROXY_COMPLAINT	CONF_PREFIX "/ui/auto_proxy_complaint"
 
 #define CONF_AUDIOSCROBBLER_USERNAME CONF_PREFIX "/audioscrobbler/username"

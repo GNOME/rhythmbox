@@ -41,8 +41,6 @@
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 
-#include <X11/Xatom.h>
-
 #ifdef HAVE_MMKEYS
 #include <X11/XF86keysym.h>
 #endif /* HAVE_MMKEYS */
@@ -69,7 +67,6 @@
 #include "rb-shell-clipboard.h"
 #include "rb-shell-player.h"
 #include "rb-source-header.h"
-#include "rb-tray-icon.h"
 #include "rb-statusbar.h"
 #include "rb-shell-preferences.h"
 #include "rb-library-source.h"
@@ -132,9 +129,6 @@ static void source_selected_cb (RBSourceList *sourcelist,
 static void rb_shell_playing_source_changed_cb (RBShellPlayer *player,
 						RBSource *source,
 						RBShell *shell);
-static void rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
-					       RhythmDBEntry *entry,
-					       RBShell *shell);
 static void rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 					    GParamSpec *arg,
 					    RBShell *shell);
@@ -149,11 +143,6 @@ static void rb_shell_db_save_error_cb (RhythmDB *db,
 static void rb_shell_db_entry_added_cb (RhythmDB *db,
 					RhythmDBEntry *entry,
 					RBShell *shell);
-static void rb_shell_db_metadata_art_cb (RhythmDB *db,
-					 RhythmDBEntry *entry,
-					 const char *field,
-					 GValue *metadata,
-					 RBShell *shell);
 
 static void rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
@@ -165,19 +154,13 @@ static void rb_shell_transfer_progress_cb (RBRemovableMediaManager *mgr,
 					   RBShell *shell);
 static void rb_shell_source_deleted_cb (RBSource *source, RBShell *shell);
 static void rb_shell_set_window_title (RBShell *shell, const char *window_title);
-static void rb_shell_update_tray_tooltip_elapsed (RBShell *shell);
 static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 					             const char *window_title,
 					             RBShell *shell);
-static void rb_shell_player_elapsed_changed_cb (RBShellPlayer *player,
-						guint elapsed,
-						RBShell *shell);
 static void rb_shell_cmd_about (GtkAction *action,
 		                RBShell *shell);
 static void rb_shell_cmd_contents (GtkAction *action,
 				   RBShell *shell);
-static void rb_shell_cmd_toggle_visibility (GtkAction *action,
-					    RBShell *shell);
 static void rb_shell_cmd_quit (GtkAction *action,
 			       RBShell *shell);
 static void rb_shell_cmd_preferences (GtkAction *action,
@@ -216,8 +199,8 @@ static void rb_shell_sync_smalldisplay (RBShell *shell);
 static void rb_shell_sync_pane_visibility (RBShell *shell);
 static void rb_shell_sync_statusbar_visibility (RBShell *shell);
 static void rb_shell_set_visibility (RBShell *shell,
-				     gboolean visible,
-				     gboolean force);
+				     gboolean initial,
+				     gboolean visible);
 static void sidepane_visibility_changed_cb (GConfClient *client,
 					    guint cnxn_id,
 					    GConfEntry *entry,
@@ -237,9 +220,6 @@ static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
 static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBSource *target,
 					RBShell *shell);
-static gboolean tray_destroy_cb (GtkObject *object, RBShell *shell);
-static void rb_shell_construct_notify_titles (RBShell *shell,
-					      RhythmDBEntry *entry);
 
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
@@ -255,6 +235,8 @@ static void rb_shell_player_volume_changed_cb (RBShellPlayer *player,
 					       RBShell *shell);
 
 static void rb_shell_session_init (RBShell *shell);
+
+static gboolean rb_shell_visibility_changing (RBShell *shell, gboolean initial, gboolean visible);
 
 enum
 {
@@ -296,8 +278,11 @@ enum
 enum
 {
 	VISIBILITY_CHANGED,
+	VISIBILITY_CHANGING,
 	CREATE_SONG_INFO,
 	REMOVABLE_MEDIA_SCAN_FINISHED,
+	NOTIFY_PLAYING_ENTRY,
+	NOTIFY_CUSTOM,
 	LAST_SIGNAL
 };
 
@@ -309,7 +294,6 @@ struct RBShellPrivate
 {
 	GtkWidget *window;
 	gboolean iconified;
-	guint idle_hide_mainwindow_id;
 
 	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
@@ -352,8 +336,6 @@ struct RBShellPrivate
 	RBPlaylistManager *playlist_manager;
 	RBRemovableMediaManager *removable_media_manager;
 
-	GList *supported_media_extensions;
-
 	RBLibrarySource *library_source;
 	RBPodcastSource *podcast_source;
 	RBPlaylistSource *queue_source;
@@ -367,18 +349,11 @@ struct RBShellPrivate
 	GtkWidget *prefs;
 	GtkWidget *plugins;
 
-	RBTrayIcon *tray_icon;
 	GtkWidget *volume_button;
 	gboolean syncing_volume;
 
 	char *cached_title;
-	char *cached_duration;
 	gboolean cached_playing;
-
-	/* markup, used for notifications and for tray tooltips */
-	char *cached_notify_primary;
-	char *cached_notify_secondary;
-	GdkPixbuf *cached_art_icon;
 
 	guint sidepane_visibility_notify_id;
 	guint toolbar_visibility_notify_id;
@@ -428,9 +403,6 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "HelpContents", GTK_STOCK_HELP, N_("_Contents"), "F1",
 	  N_("Display music player help"),
 	  G_CALLBACK (rb_shell_cmd_contents) },
-	{ "MusicClose", GTK_STOCK_CLOSE, N_("_Close"), "<control>W",
-	  N_("Hide the music player window"),
-	  G_CALLBACK (rb_shell_cmd_toggle_visibility) },
 	{ "MusicQuit", GTK_STOCK_QUIT, N_("_Quit"), "<control>Q",
 	  N_("Quit the music player"),
 	  G_CALLBACK (rb_shell_cmd_quit) },
@@ -481,6 +453,8 @@ rb_shell_class_init (RBShellClass *klass)
 	object_class->get_property = rb_shell_get_property;
         object_class->finalize = rb_shell_finalize;
 	object_class->constructor = rb_shell_constructor;
+
+	klass->visibility_changing = rb_shell_visibility_changing;
 
 	g_object_class_install_property (object_class,
 					 PROP_NO_REGISTRATION,
@@ -657,6 +631,17 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
+	rb_shell_signals[VISIBILITY_CHANGING] =
+		g_signal_new ("visibility_changing",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellClass, visibility_changing),
+			      NULL, NULL,
+			      rb_marshal_BOOLEAN__BOOLEAN_BOOLEAN,
+			      G_TYPE_BOOLEAN,
+			      2,
+			      G_TYPE_BOOLEAN,
+			      G_TYPE_BOOLEAN);
 
 	rb_shell_signals[CREATE_SONG_INFO] =
 		g_signal_new ("create_song_info",
@@ -677,6 +662,26 @@ rb_shell_class_init (RBShellClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+	rb_shell_signals[NOTIFY_PLAYING_ENTRY] =
+		g_signal_new ("notify-playing-entry",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__BOOLEAN,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_BOOLEAN);
+	rb_shell_signals[NOTIFY_CUSTOM] =
+		g_signal_new ("notify-custom",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,
+			      NULL, NULL,
+			      rb_marshal_VOID__UINT_STRING_STRING_OBJECT_BOOLEAN,
+			      G_TYPE_NONE,
+			      5,
+			      G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN);
 
 	g_type_class_add_private (klass, sizeof (RBShellPrivate));
 }
@@ -723,7 +728,7 @@ rb_shell_set_property (GObject *object,
 		shell->priv->playlists_file = g_value_dup_string (value);
 		break;
 	case PROP_VISIBILITY:
-		rb_shell_set_visibility (shell, g_value_get_boolean (value), FALSE);
+		rb_shell_set_visibility (shell, FALSE, g_value_get_boolean (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -871,7 +876,6 @@ rb_shell_shutdown (RBShell *shell)
 	/* Hide the main window and tray icon as soon as possible */
 	display = gtk_widget_get_display (shell->priv->window);
 	gtk_widget_hide (shell->priv->window);
-	gtk_widget_hide (GTK_WIDGET (shell->priv->tray_icon));
 	gdk_display_sync (display);
 }
 
@@ -890,17 +894,7 @@ rb_shell_finalize (GObject *object)
 	eel_gconf_notification_remove (shell->priv->toolbar_style_notify_id);
 	eel_gconf_notification_remove (shell->priv->smalldisplay_notify_id);
 
-	g_list_free (shell->priv->supported_media_extensions);
-
-	gtk_widget_destroy (GTK_WIDGET (shell->priv->tray_icon));
-
-	g_free (shell->priv->cached_notify_primary);
-	g_free (shell->priv->cached_notify_secondary);
-
 	g_free (shell->priv->cached_title);
-
-	if (shell->priv->cached_art_icon != NULL)
-		g_object_unref (shell->priv->cached_art_icon);
 
 	if (shell->priv->save_playlist_id > 0) {
 		g_source_remove (shell->priv->save_playlist_id);
@@ -1069,20 +1063,12 @@ construct_widgets (RBShell *shell)
 				 G_CALLBACK (rb_shell_playing_source_changed_cb),
 				 shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
-				 "playing-song-changed",
-				 G_CALLBACK (rb_shell_playing_entry_changed_cb),
-				 shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
 				 "notify::playing-from-queue",
 				 G_CALLBACK (rb_shell_playing_from_queue_cb),
 				 shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
 				 "window_title_changed",
 				 G_CALLBACK (rb_shell_player_window_title_changed_cb),
-				 shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
-				 "elapsed_changed",
-				 G_CALLBACK (rb_shell_player_elapsed_changed_cb),
 				 shell, 0);
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->actiongroup,
 							       shell->priv->ui_manager,
@@ -1352,9 +1338,6 @@ rb_shell_constructor (GType type,
 	/* initialize shell services */
 	construct_widgets (shell);
 
-	rb_debug ("shell: setting up tray icon");
-	tray_destroy_cb (NULL, shell);
-
 	rb_debug ("shell: adding gconf notification");
 	/* sync state */
 	shell->priv->sidepane_visibility_notify_id =
@@ -1396,10 +1379,6 @@ rb_shell_constructor (GType type,
 	g_signal_connect_object (G_OBJECT (shell->priv->db), "entry-added",
 				 G_CALLBACK (rb_shell_db_entry_added_cb), shell, 0);
 
-	g_signal_connect_object (G_OBJECT (shell->priv->db),
-				 "entry_extra_metadata_notify::rb:coverArt",
-				 G_CALLBACK (rb_shell_db_metadata_art_cb), shell, 0);
-
 	construct_sources (shell);
 
 	construct_load_ui (shell);
@@ -1423,13 +1402,14 @@ rb_shell_constructor (GType type,
 
 	rb_debug ("shell: syncing window state");
 	rb_shell_sync_paned (shell);
-	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 
 	/* Do as if we ran the first time druid */
 	if (!eel_gconf_get_boolean (CONF_FIRST_TIME))
 		eel_gconf_set_boolean (CONF_FIRST_TIME, TRUE);
 
-	rb_shell_set_visibility (shell, eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE), TRUE);
+	/* set initial visibility */
+	rb_shell_set_visibility (shell, TRUE, TRUE);
+
 	gdk_notify_startup_complete ();
 
 	/* focus play if small, the entry view if not */
@@ -1448,30 +1428,6 @@ rb_shell_constructor (GType type,
 	rb_profile_end ("constructing shell");
 
 	return G_OBJECT (shell);
-}
-
-/* Based on a function found in wnck */
-static void
-set_icon_geometry  (GdkWindow *window,
-		    int        x,
-		    int        y,
-		    int        width,
-		    int        height)
-{
-	gulong data[4];
-	Display *dpy = gdk_x11_drawable_get_xdisplay (window);
-
-	data[0] = x;
-	data[1] = y;
-	data[2] = width;
-	data[3] = height;
-
-	XChangeProperty (dpy,
-			 GDK_WINDOW_XID (window),
-			 gdk_x11_get_xatom_by_name_for_display (gdk_drawable_get_display (window),
-								"_NET_WM_ICON_GEOMETRY"),
-			 XA_CARDINAL, 32, PropModeReplace,
-			 (guchar *)&data, 4);
 }
 
 static gboolean
@@ -1508,6 +1464,12 @@ rb_shell_window_state_cb (GtkWidget *widget,
 }
 
 static gboolean
+rb_shell_visibility_changing (RBShell *shell, gboolean initial, gboolean visible)
+{
+	return visible;
+}
+
+static gboolean
 rb_shell_get_visibility (RBShell *shell)
 {
 	GdkWindowState state;
@@ -1524,51 +1486,27 @@ rb_shell_get_visibility (RBShell *shell)
 	return TRUE;
 }
 
-static gboolean
-idle_hide_mainwindow (gpointer data)
-{
-	RBShell *shell = RB_SHELL (data);
-
-	GDK_THREADS_ENTER ();
-
-	gtk_widget_hide (GTK_WIDGET (shell->priv->window));
-
-	g_signal_emit (shell, rb_shell_signals[VISIBILITY_CHANGED], 0, FALSE);
-
-	g_object_unref (shell);
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
-}
-
 static void
 rb_shell_set_visibility (RBShell *shell,
-			 gboolean visible,
-			 gboolean force)
+			 gboolean initial,
+			 gboolean visible)
 {
-	gboolean current_visible;
+	gboolean really_visible;
 
 	rb_profile_start ("changing shell visibility");
 
-	current_visible = rb_shell_get_visibility (shell);
-	if (!force && visible == current_visible) {
+	if (visible == rb_shell_get_visibility (shell)) {
 		rb_profile_end ("changing shell visibility");
 		return;
 	}
 
-	/* FIXME - see below */
-	if (shell->priv->idle_hide_mainwindow_id > 0)
-		g_source_remove (shell->priv->idle_hide_mainwindow_id);
-	shell->priv->idle_hide_mainwindow_id = 0;
+	really_visible = visible;
+	g_signal_emit (shell, rb_shell_signals[VISIBILITY_CHANGING], 0, initial, visible, &really_visible);
 
-	/* don't minimise if we have no tray icon */
-	if (visible || (!force && !egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon)))) {
+	if (really_visible) {
 		rb_debug ("showing main window");
 		rb_shell_sync_window_state (shell, FALSE);
 
-		if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon)))
-			gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), FALSE);
 		gtk_widget_show (GTK_WIDGET (shell->priv->window));
 		gtk_window_deiconify (GTK_WINDOW (shell->priv->window));
 
@@ -1578,30 +1516,12 @@ rb_shell_set_visibility (RBShell *shell,
 			gtk_widget_show_all (GTK_WIDGET (shell->priv->window));
 
 		g_signal_emit (shell, rb_shell_signals[VISIBILITY_CHANGED], 0, visible);
-
-		eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE, TRUE);
 	} else {
-		int x, y, width, height;
-
 		rb_debug ("hiding main window");
 		shell->priv->iconified = TRUE;
-		rb_tray_icon_get_geom (shell->priv->tray_icon,
-				       &x, &y, &width, &height);
-		if (GTK_WIDGET_REALIZED (GTK_WIDGET (shell->priv->window)))
-			set_icon_geometry (GTK_WIDGET (shell->priv->window)->window,
-					   x, y, width, height);
-		if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon)))
-			gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), TRUE);
 		gtk_window_iconify (GTK_WINDOW (shell->priv->window));
 
-		/* FIMXE - this is horribly evil racy workaround for a
-		 * current bug in the tasklist not noticing our hint
-		 * change
-		 */
-		shell->priv->idle_hide_mainwindow_id =
-			g_timeout_add (250, idle_hide_mainwindow, g_object_ref (shell));
-
-		eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE, FALSE);
+		g_signal_emit (shell, rb_shell_signals[VISIBILITY_CHANGED], 0, FALSE);
 	}
 
 	rb_profile_end ("changing shell visibility");
@@ -1797,50 +1717,6 @@ rb_shell_db_entry_added_cb (RhythmDB *db,
 	}
 }
 
-static void
-rb_shell_db_metadata_art_cb (RhythmDB *db,
-			     RhythmDBEntry *entry,
-			     const char *field,
-			     GValue *metadata,
-			     RBShell *shell)
-{
-	RhythmDBEntry *playing_entry;
-	guint time;
-
-	playing_entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
-	if (playing_entry == NULL)
-		return;
-
-	if (entry != playing_entry) {
-		rhythmdb_entry_unref (playing_entry);
-		return;
-	}
-
-	if (shell->priv->cached_art_icon != NULL) {
-		g_object_unref (shell->priv->cached_art_icon);
-		shell->priv->cached_art_icon = NULL;
-	}
-
-	if (G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF)) {
-		GdkPixbuf *pixbuf;
-
-		pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
-		if (pixbuf != NULL) {
-			shell->priv->cached_art_icon = rb_scale_pixbuf_to_size (pixbuf, GTK_ICON_SIZE_DIALOG);
-		}
-	}
-
-	rb_tray_icon_set_tooltip_icon (shell->priv->tray_icon,
-				       shell->priv->cached_art_icon);
-
-	if (rb_shell_player_get_playing_time (shell->priv->player_shell, &time, NULL)) {
-		if (time < PLAYING_ENTRY_NOTIFY_TIME)
-			rb_shell_notify_playing_entry (shell, entry, FALSE);
-	}
-
-	rhythmdb_entry_unref (playing_entry);
-}
-
 RBSource *
 rb_shell_get_source_by_entry_type (RBShell *shell,
 				   RhythmDBEntryType type)
@@ -2026,22 +1902,6 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 }
 
 static void
-rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
-				   RhythmDBEntry *entry,
-				   RBShell *shell)
-{
-	if (shell->priv->cached_art_icon != NULL)
-		g_object_unref (shell->priv->cached_art_icon);
-	shell->priv->cached_art_icon = NULL;
-
-	rb_shell_notify_playing_entry (shell, entry, FALSE);
-
-	rb_tray_icon_set_tooltip_primary_text (shell->priv->tray_icon, shell->priv->cached_notify_primary);
-	rb_tray_icon_set_tooltip_icon (shell->priv->tray_icon, shell->priv->cached_art_icon);
-	rb_shell_update_tray_tooltip_elapsed (shell);
-}
-
-static void
 merge_source_ui_cb (const char *action,
 		    RBShell *shell)
 {
@@ -2107,59 +1967,7 @@ rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 					 const char *window_title,
 					 RBShell *shell)
 {
-	RhythmDBEntry *entry;
 	rb_shell_set_window_title (shell, window_title);
-
-	/* also update the tooltip; this is slightly weird,
-	 * but this is the most useful way to identify
-	 * track changes in radio streams.
-	 */
-	entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
-	rb_shell_construct_notify_titles (shell, entry);
-	rb_tray_icon_set_tooltip_primary_text (shell->priv->tray_icon, shell->priv->cached_notify_primary);
-	rb_shell_update_tray_tooltip_elapsed (shell);
-	
-	if (entry)
-		rhythmdb_entry_unref (entry);
-}
-
-static void
-rb_shell_player_elapsed_changed_cb (RBShellPlayer *player,
-				    guint elapsed,
-				    RBShell *shell)
-{
-	rb_shell_update_tray_tooltip_elapsed (shell);
-}
-
-static void
-rb_shell_update_tray_tooltip_elapsed (RBShell *shell)
-{
-	gboolean playing;
-	char *elapsed_string;
-	GString *secondary;
-
-	rb_shell_player_get_playing (shell->priv->player_shell, &playing, NULL);
-	elapsed_string = rb_shell_player_get_playing_time_string (shell->priv->player_shell);
-
-	secondary = g_string_sized_new (100);
-	if (shell->priv->cached_notify_secondary != NULL) {
-		g_string_append (secondary, shell->priv->cached_notify_secondary);
-		if (secondary->len != 0)
-			g_string_append_c (secondary, '\n');
-	}
-	if (shell->priv->cached_notify_primary == NULL) {
-		g_string_append (secondary, _("Not playing"));
-	} else if (!playing) {
-		/* Translators: the %s is the elapsed and total time */
-		g_string_append_printf (secondary, _("Paused, %s"), elapsed_string);
-	} else {
-		g_string_append (secondary, elapsed_string);
-	}
-
-	rb_tray_icon_set_tooltip_secondary_markup (shell->priv->tray_icon,
-						   secondary->str);
-	g_free (elapsed_string);
-	g_string_free (secondary, TRUE);
 }
 
 static void
@@ -2351,14 +2159,7 @@ rb_shell_toggle_visibility (RBShell *shell)
 
 	visible = rb_shell_get_visibility (shell);
 
-	rb_shell_set_visibility (shell, !visible, FALSE);
-}
-
-static void
-rb_shell_cmd_toggle_visibility (GtkAction *action,
-				RBShell *shell)
-{
-	rb_shell_toggle_visibility (shell);
+	rb_shell_set_visibility (shell, FALSE, !visible);
 }
 
 static void
@@ -2710,8 +2511,6 @@ rb_shell_sync_party_mode (RBShell *shell)
 	   should not be persistent */
 
 	/* disable/enable quit action */
-	action = gtk_action_group_get_action (shell->priv->actiongroup, "MusicClose");
-	g_object_set (G_OBJECT (action), "sensitive", !shell->priv->party_mode, NULL);
 	action = gtk_action_group_get_action (shell->priv->actiongroup, "MusicQuit");
 	g_object_set (G_OBJECT (action), "sensitive", !shell->priv->party_mode, NULL);
 	action = gtk_action_group_get_action (shell->priv->actiongroup, "ViewSmallDisplay");
@@ -2959,215 +2758,21 @@ rb_shell_show_popup_cb (RBSourceList *sourcelist,
 	return rb_source_show_popup (target);
 }
 
-static void
-tray_embedded_cb (GtkPlug *plug,
-		  gpointer data)
-{
-	/* FIXME - this doens't work */
-#if 0
-	RBShell *shell = RB_SHELL (data);
-
-	rb_debug ("got embedded signal");
-
-	gdk_window_set_decorations (shell->priv->window->window,
-				    GDK_DECOR_ALL | GDK_DECOR_MINIMIZE | GDK_DECOR_MAXIMIZE);
-#endif
-}
-
-static gboolean
-tray_destroy_cb (GtkObject *object,
-		 RBShell *shell)
-{
-	if (shell->priv->tray_icon) {
-		rb_debug ("caught destroy event for tray icon %p", object);
-		g_object_ref_sink (object);
-		shell->priv->tray_icon = NULL;
-		rb_debug ("finished sinking tray");
-	}
-
-	rb_debug ("creating new tray icon");
-	shell->priv->tray_icon = rb_tray_icon_new (shell->priv->ui_manager, shell);
-	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "destroy",
-				 G_CALLBACK (tray_destroy_cb), shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "embedded",
-				 G_CALLBACK (tray_embedded_cb), shell, 0);
-
- 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
-
-	rb_debug ("done creating new tray icon %p", shell->priv->tray_icon);
- 	return TRUE;
-}
-
-static gchar *
-markup_escape (const char *text)
-{
-	return (text == NULL) ? NULL : g_markup_escape_text (text, -1);
-}
-
-static void
-rb_shell_construct_notify_titles (RBShell *shell,
-				  RhythmDBEntry *entry)
-{
-	GValue *value;
-	const char *stream_title = NULL;
-	char *artist = NULL;
-	char *album = NULL;
-	char *title = NULL;
-	GString *secondary;
-
-	g_free (shell->priv->cached_notify_primary);
-	g_free (shell->priv->cached_notify_secondary);
-	shell->priv->cached_notify_primary = NULL;
-	shell->priv->cached_notify_secondary = NULL;
-
-	if (entry == NULL)
-		return;
-
-	secondary = g_string_sized_new (100);
-
-	/* get artist, preferring streaming song details */
-	value = rhythmdb_entry_request_extra_metadata (shell->priv->db,
-						       entry,
-						       RHYTHMDB_PROP_STREAM_SONG_ARTIST);
-	if (value != NULL) {
-		artist = markup_escape (g_value_get_string (value));
-		g_value_unset (value);
-		g_free (value);
-	} else {
-		artist = markup_escape (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
-	}
-
-	if (artist != NULL && artist[0] != '\0') {
-		/* Translators: by Artist */
-		g_string_append_printf (secondary, _("by <i>%s</i>"), artist);
-	}
-	g_free (artist);
-
-	/* get album, preferring streaming song details */
-	value = rhythmdb_entry_request_extra_metadata (shell->priv->db,
-						       entry,
-						       RHYTHMDB_PROP_STREAM_SONG_ALBUM);
-	if (value != NULL) {
-		album = markup_escape (g_value_get_string (value));
-		g_value_unset (value);
-		g_free (value);
-	} else {
-		album = markup_escape (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
-	}
-
-	if (album != NULL && album[0] != '\0') {
-		if (secondary->len != 0)
-			g_string_append_c (secondary, ' ');
-
-		/* Translators: from Album */
-		g_string_append_printf (secondary, _("from <i>%s</i>"), album);
-	}
-	g_free (album);
-
-	/* get title and possibly stream name.
-	 * if we have a streaming song title, the entry's title
-	 * property is the stream name.
-	 */
-	value = rhythmdb_entry_request_extra_metadata (shell->priv->db,
-						       entry,
-						       RHYTHMDB_PROP_STREAM_SONG_TITLE);
-	if (value != NULL) {
-		title = g_value_dup_string (value);
-		g_value_unset (value);
-		g_free (value);
-
-		stream_title = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
-	} else {
-		title = g_strdup (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
-	}
-
-	if (stream_title != NULL && stream_title[0] != '\0') {
-		char *escaped;
-
-		escaped = markup_escape (stream_title);
-		if (secondary->len == 0)
-			g_string_append (secondary, escaped);
-		else
-			g_string_append_printf (secondary, " (%s)", escaped);
-		g_free (escaped);
-	}
-
-	if (title != NULL)
-		shell->priv->cached_notify_primary = title;
-	else
-		/* Translators: unknown track title */
-		shell->priv->cached_notify_primary = g_strdup (_("Unknown"));
-
-	shell->priv->cached_notify_secondary = g_string_free (secondary, FALSE);
-}
-
 void
-rb_shell_notify_playing_entry (RBShell *shell,
-			       RhythmDBEntry *entry,
-			       gboolean requested)
-{
-	rb_shell_construct_notify_titles (shell, entry);
-
-	if (entry == NULL)
-		return;
-
-	rb_shell_hidden_notify_markup (shell,
-				       PLAYING_ENTRY_NOTIFY_TIME * 1000,
-				       shell->priv->cached_notify_primary,
-				       shell->priv->cached_art_icon,
-				       shell->priv->cached_notify_secondary,
-				       requested);
-}
-
-void
-rb_shell_hidden_notify (RBShell *shell,
+rb_shell_notify_custom (RBShell *shell,
 			guint timeout,
 			const char *primary,
-			GdkPixbuf *pixbuf,
 			const char *secondary,
+			GdkPixbuf *pixbuf,
 			gboolean requested)
 {
-	char *primary_markup = g_markup_escape_text (primary, -1);
-	char *secondary_markup = g_markup_escape_text (secondary, -1);
-
-	rb_shell_hidden_notify_markup (shell, timeout, primary_markup, 
-				       pixbuf, secondary_markup, requested);
-
-	g_free (primary_markup);
-	g_free (secondary_markup);
-}
-
-void
-rb_shell_hidden_notify_markup (RBShell *shell,
-			       guint timeout,
-			       const char *primary_markup,
-			       GdkPixbuf *pixbuf,
-			       const char *secondary_markup,
-			       gboolean requested)
-{
-
-	if (requested == FALSE && rb_shell_get_visibility (shell)) {
-		rb_debug ("shell is visible, not notifying");
-		return;
-	}
-
-	rb_tray_icon_notify (shell->priv->tray_icon,
-			     timeout,
-			     primary_markup,
-			     pixbuf,
-			     secondary_markup,
-			     requested);
+	g_signal_emit (shell, rb_shell_signals[NOTIFY_CUSTOM], 0, timeout, primary, secondary, pixbuf, requested);
 }
 
 gboolean
 rb_shell_do_notify (RBShell *shell, gboolean requested, GError **error)
 {
-	RhythmDBEntry *entry;
-
-	entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
-	rb_shell_notify_playing_entry (shell, entry, requested);
-	rhythmdb_entry_unref (entry);
-
+	g_signal_emit (shell, rb_shell_signals[NOTIFY_PLAYING_ENTRY], 0, requested);
 	return TRUE;
 }
 

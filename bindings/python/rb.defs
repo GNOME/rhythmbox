@@ -418,26 +418,26 @@
   )
 )
 
-(define-method hidden_notify
+(define-method notify_custom
   (of-object "RBShell")
-  (c-name "rb_shell_hidden_notify")
+  (c-name "rb_shell_notify_custom")
   (return-type "none")
   (parameters
     '("guint" "timeout")
     '("const-char*" "primary")
-    '("GdkPixbuf*" "pixbuf")
     '("const-char*" "secondary")
+    '("GdkPixbuf*" "pixbuf")
     '("gboolean" "requested")
   )
 )
 
-(define-method notify_playing_entry
+(define-method do_notify
   (of-object "RBShell")
-  (c-name "rb_shell_notify_playing_entry")
-  (return-type "none")
+  (c-name "rb_shell_do_notify")
+  (return-type "gboolean")
   (parameters
-    '("RhythmDBEntry*" "entry")
     '("gboolean" "requested")
+    '("GError**" "error")
   )
 )
 

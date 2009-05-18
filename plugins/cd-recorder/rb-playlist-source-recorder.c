@@ -559,7 +559,7 @@ burn_cd (RBPlaylistSourceRecorder *source,
 									GTK_ICON_SIZE_BUTTON,
 									NULL);
 		}
-                rb_shell_hidden_notify (source->priv->shell, 0, finished_msg, source->priv->cd_icon, "", FALSE);
+                rb_shell_notify_custom (source->priv->shell, 0, finished_msg, "", source->priv->cd_icon, FALSE);
 
                 /* save the write speed that was used */
                 eel_gconf_set_integer (CONF_STATE_BURN_SPEED, speed);

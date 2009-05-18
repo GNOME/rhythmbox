@@ -353,9 +353,7 @@ emit_notification_cb (RBStreamingSource *source)
 	source->priv->emit_notify_id = 0;
 
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	rb_shell_notify_playing_entry (shell,
-				       source->priv->playing_stream,
-				       FALSE);
+	rb_shell_do_notify (shell, FALSE, NULL);
 	g_object_unref (shell);
 
 	return FALSE;

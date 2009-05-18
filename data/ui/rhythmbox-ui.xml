@@ -21,7 +21,7 @@
       <separator/>
       <menuitem name="MusicPropertiesMenu" action="MusicProperties"/>
       <separator/>
-      <menuitem name="MusicClose" action="MusicClose"/>
+      <placeholder name="PluginWindowPlaceholder" />
       <menuitem name="MusicQuit" action="MusicQuit"/>
     </menu>
 
@@ -111,20 +111,6 @@
   <toolbar name="SearchBar">
     <placeholder name="PluginPlaceholder" />
   </toolbar>
-
-  <popup name="RhythmboxTrayPopup">
-      <menuitem name="PlayTray" action="ControlPlay"/>
-      <separator/>
-      <menuitem name="PreviousTray" action="ControlPrevious"/>
-      <menuitem name="NextTray" action="ControlNext"/>
-      <separator/>
-      <menuitem name="ShowWindowTray" action="TrayShowWindow"/>
-      <menuitem name="ShowNotifications" action="TrayShowNotifications"/>
-      <separator/>
-      <placeholder name="PluginPlaceholder"/>
-      <separator/>
-      <menuitem name="QuitTray" action="MusicQuit"/>
-  </popup>
 
   <popup name="BrowserSourceViewPopup">
     <menuitem name="AddToQueueLibraryPopup" action="AddToQueue"/>

@@ -88,8 +88,6 @@ librbshell_la_SOURCES =              			\
 	rb-play-order-random-by-age-and-rating.h	\
 	rb-play-order-random-by-rating.c		\
 	rb-play-order-random-by-rating.h		\
-	rb-tray-icon.c					\
-	rb-tray-icon.h					\
 	rb-missing-plugins.c				\
 	rb-missing-plugins.h
 

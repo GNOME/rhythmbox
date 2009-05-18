@@ -82,9 +82,10 @@ typedef struct
         GObjectClass parent_class;
 
 	/* signals */
-	void	(*visibility_changed)	(RBShell *shell, gboolean visible);
-	void	(*create_song_info)	(RBShell *shell, RBSongInfo *song_info, gboolean multi);
-	void	(*removable_media_scan_finished) (RBShell *shell);
+	gboolean (*visibility_changing)	(RBShell *shell, gboolean initial, gboolean visible);
+	void	 (*visibility_changed)	(RBShell *shell, gboolean visible);
+	void	 (*create_song_info)	(RBShell *shell, RBSongInfo *song_info, gboolean multi);
+	void	 (*removable_media_scan_finished) (RBShell *shell);
 } RBShellClass;
 
 GType		rb_shell_get_type	(void);
@@ -140,21 +141,12 @@ gboolean	rb_shell_clear_queue (RBShell *shell,
 gboolean	rb_shell_quit (RBShell *shell,
 			       GError **error);
 
-void            rb_shell_hidden_notify  (RBShell *shell,
+void            rb_shell_notify_custom  (RBShell *shell,
 					 guint timeout,
 					 const char *primary,
-					 GdkPixbuf *pixbuf,
 					 const char *secondary,
+					 GdkPixbuf *pixbuf,
 					 gboolean requested);
-void            rb_shell_hidden_notify_markup  (RBShell *shell,
-						guint timeout,
-						const char *primary_markup,
-						GdkPixbuf *pixbuf,
-						const char *secondary_markup,
-						gboolean requested);
-void		rb_shell_notify_playing_entry (RBShell *shell,
-					       RhythmDBEntry *entry,
-					       gboolean requested);
 gboolean	rb_shell_do_notify (RBShell *shell,
 				    gboolean requested,
 				    GError **error);

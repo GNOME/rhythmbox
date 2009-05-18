@@ -16,8 +16,6 @@ librbwidgets_la_SOURCES =				\
 	rb-search-entry.h				\
 	rb-header.c					\
 	rb-header.h					\
-	eggtrayicon.c					\
-	eggtrayicon.h					\
 	rb-dialog.c					\
 	rb-dialog.h					\
 	rb-cell-renderer-pixbuf.c			\
