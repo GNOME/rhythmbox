@@ -8,6 +8,7 @@ GTK_BUILDER_FILES =					\
 	library-prefs.ui				\
 	playback-prefs.ui				\
 	playlist-save.ui				\
+	plugins.ui					\
 	podcast-feed-properties.ui			\
 	podcast-prefs.ui				\
 	podcast-properties.ui				\
