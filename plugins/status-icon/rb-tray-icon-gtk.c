@@ -346,11 +346,13 @@ rb_tray_icon_is_embedded (RBTrayIcon *tray)
 	return gtk_status_icon_is_embedded (tray->priv->icon);
 }
 
+#if defined(HAVE_NOTIFY)
 void
 rb_tray_icon_attach_notification (RBTrayIcon *tray, NotifyNotification *notification)
 {
 	notify_notification_attach_to_status_icon (notification, tray->priv->icon);
 }
+#endif
 
 void
 rb_tray_icon_set_visible (RBTrayIcon *tray, gboolean visible)

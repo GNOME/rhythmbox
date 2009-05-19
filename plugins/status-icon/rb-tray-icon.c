@@ -469,11 +469,13 @@ rb_tray_icon_is_embedded (RBTrayIcon *icon)
 	return (GTK_PLUG (icon)->socket_window != NULL);
 }
 
+#if defined(HAVE_NOTIFY)
 void
 rb_tray_icon_attach_notification (RBTrayIcon *icon, NotifyNotification *notification)
 {
 	notify_notification_attach_to_widget (notification, GTK_WIDGET (icon));
 }
+#endif
 
 
 void

@@ -465,7 +465,7 @@ notify_playing_entry (RBStatusIconPlugin *plugin, gboolean requested)
 }
 
 static void
-notify_custom (RBStatusIconPlugin *plugin, const char *primary, const char *secondary, GdkPixbuf *pixbuf, gboolean requested)
+notify_custom (RBStatusIconPlugin *plugin, guint timeout, const char *primary, const char *secondary, GdkPixbuf *pixbuf, gboolean requested)
 {
 }
 
