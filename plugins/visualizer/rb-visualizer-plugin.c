@@ -82,9 +82,6 @@
 
 #include "rb-vis-widget.h"
 
-/* not going to create a new header just for this */
-extern GType rb_fake_vis_get_type (void);
-
 /* preferences */
 #define CONF_VIS_PREFIX  CONF_PREFIX "/plugins/visualizer"
 #define CONF_VIS_ELEMENT CONF_VIS_PREFIX "/element"
@@ -108,6 +105,8 @@ extern GType rb_fake_vis_get_type (void);
 
 #define VISUALIZER_DBUS_PATH	"/org/gnome/Rhythmbox/Visualizer"
 
+/* playbin2 flag(s) */
+#define PLAYBIN2_FLAG_VIS	0x08
 
 typedef struct {
 	char *name;
@@ -239,13 +238,6 @@ static const VisualizerQuality vis_quality[] = {
 	{ N_("Large"),		640,	480,	25,	1 },
 	{ N_("Extra Large"),	800,	600,	30,	1 },
 };
-
-/* "quality" to use for fake visualization; should be small and
- * low framerate, but not so slow it makes a noticeable difference
- * to playback start time.  the video sink needs to preroll too,
- * so if the framerate is 1/10, that will take 10 seconds.
- */
-static const VisualizerQuality fake_vis_quality = { "", 60, 60, 1, 1 };
 
 static const VisualizerModeName vis_mode_name[] = {
 	{ N_("Embedded"),	EMBEDDED },
@@ -443,12 +435,7 @@ bus_sync_message_cb (GstBus *bus, GstMessage *msg, RBVisualizerPlugin *plugin)
 	case EXTERNAL_WINDOW:
 		if (plugin->vis_widget != NULL) {
 			g_object_get (plugin->vis_widget, "window-xid", &window, NULL);
-			if (window == 0) {
-				window = GDK_WINDOW_XWINDOW (plugin->fake_window);
-				rb_debug ("setting fake window id %lu", window);
-			} else {
-				rb_debug ("setting window id %lu in prepare-xwindow-id handler", window);
-			}
+			rb_debug ("setting window id %lu in prepare-xwindow-id handler", window);
 		}
 		break;
 	case DESKTOP_WINDOW:
@@ -457,7 +444,7 @@ bus_sync_message_cb (GstBus *bus, GstMessage *msg, RBVisualizerPlugin *plugin)
 		break;
 	}
 
-	if (plugin->xoverlay != NULL)
+	if (plugin->xoverlay != NULL && window != 0)
 		gst_x_overlay_set_xwindow_id (plugin->xoverlay, window);
 	plugin->window_id_set = TRUE;
 }
@@ -477,10 +464,7 @@ fixate_vis_caps (RBVisualizerPlugin *pi, GstElement *vis_element, GstElement *ca
 	if (quality < 0 || quality > G_N_ELEMENTS (vis_quality))
 		quality = DEFAULT_VIS_QUALITY;
 
-	if (pi->active)
-		q = &vis_quality[quality];
-	else
-		q = &fake_vis_quality;
+	q = &vis_quality[quality];
 
 	pad = gst_element_get_static_pad (vis_element, "src");
 	template_caps = gst_pad_get_pad_template_caps (pad);
@@ -554,12 +538,24 @@ update_playbin_visualizer (RBVisualizerPlugin *plugin,
 {
 	GstPad *pad;
 	GstElement *vis_plugin;
+	int playbin_flags;
 
 	if (plugin->playbin == NULL)
 		return;
 
-	if (plugin->visualizer)
+	if (plugin->visualizer) {
 		g_object_unref (plugin->visualizer);
+		plugin->visualizer = NULL;
+	}
+
+	g_object_get (plugin->playbin, "flags", &playbin_flags, NULL);
+
+	if (plugin->active == FALSE) {
+		playbin_flags &= ~PLAYBIN2_FLAG_VIS;
+		rb_debug ("disabling vis; new playbin2 flags %d", playbin_flags);
+		g_object_set (plugin->playbin, "flags", playbin_flags, NULL);
+		return;
+	}
 
 	plugin->visualizer = gst_bin_new (NULL);
 
@@ -572,13 +568,8 @@ update_playbin_visualizer (RBVisualizerPlugin *plugin,
 	gst_object_unref (pad);
 
 	/* set up visualizer */
-	if (plugin->active) {
-		vis_plugin = create_visualizer_element (vis_override);
-		gst_bin_add (GST_BIN (plugin->visualizer), vis_plugin);
-	} else {
-		vis_plugin = g_object_new (rb_fake_vis_get_type (), NULL);
-		gst_bin_add (GST_BIN (plugin->visualizer), vis_plugin);
-	}
+	vis_plugin = create_visualizer_element (vis_override);
+	gst_bin_add (GST_BIN (plugin->visualizer), vis_plugin);
 
 	pad = gst_element_get_static_pad (vis_plugin, "sink");
 	gst_element_add_pad (plugin->visualizer, gst_ghost_pad_new ("sink", pad));
@@ -589,7 +580,12 @@ update_playbin_visualizer (RBVisualizerPlugin *plugin,
 
 	g_object_ref (plugin->visualizer);
 
-	g_object_set (plugin->playbin, "vis-plugin", plugin->visualizer, NULL);
+	playbin_flags |= PLAYBIN2_FLAG_VIS;
+	rb_debug ("enabling vis; new playbin2 flags %d", playbin_flags);
+	g_object_set (plugin->playbin,
+		      "vis-plugin", plugin->visualizer,
+		      "flags", playbin_flags,
+		      NULL);
 }
 
 static void
@@ -1618,8 +1614,6 @@ impl_activate (RBPlugin *plugin,
 	GtkAction *action;
 	char *ui_file;
 
-	rb_fake_vis_get_type ();
-
 	pi->shell = shell;
 
 	/* find the player backend and connect to its pipeline mutation signal */
@@ -1912,10 +1906,6 @@ static gboolean
 vis_plugin_filter (GstPluginFeature *feature, gpointer data)
 {
 	GstElementFactory *f;
-
-	/* skip our fake visualizer */
-	if (strcmp (gst_plugin_feature_get_name (feature), "rbfakevis") == 0)
-		return FALSE;
 
 	if  (!GST_IS_ELEMENT_FACTORY (feature))
 		return FALSE;

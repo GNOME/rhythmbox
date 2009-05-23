@@ -666,7 +666,6 @@ update_playback_prefs_sensitivity (RBShellPreferences *preferences)
 	backend = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (preferences->priv->xfade_backend_check));
 
 	gtk_widget_set_sensitive (preferences->priv->album_crossfade_check, backend);
-	gtk_widget_set_sensitive (preferences->priv->network_buffer_size, backend);
 	gtk_widget_set_sensitive (preferences->priv->transition_duration, backend);
 }
 

@@ -6,8 +6,7 @@ plugin_LTLIBRARIES = libvisualizer.la
 libvisualizer_la_SOURCES = \
 	rb-visualizer-plugin.c				\
 	rb-vis-widget.c					\
-	rb-vis-widget.h					\
-	rb-fake-visualizer.c
+	rb-vis-widget.h
 
 libvisualizer_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
