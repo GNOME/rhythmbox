@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-05-18 11:24+0000\n"
-"PO-Revision-Date: 2009-05-18 23:17+0200\n"
+"POT-Creation-Date: 2009-05-23 11:41+0000\n"
+"PO-Revision-Date: 2009-05-24 13:58+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -38,17 +38,26 @@ msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
 "No se pudo crear un elemento sumidero de GStreamer en el que escribir %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:566 ../metadata/rb-metadata-gst.c:848
-#: ../metadata/rb-metadata-gst.c:1422
-#: ../plugins/cd-recorder/rb-recorder-gst.c:508
+#: ../backends/gstreamer/rb-player-gst.c:372
 #, c-format
-msgid "Failed to create %s element; check your installation"
-msgstr "Ha ocurrido un error al crear el elemento %s; compruebe su instalación"
+#| msgid "Failed to create %s element; check your installation"
+msgid "Failed to create playbin2 element; check your GStreamer installation"
+msgstr ""
+"Ha ocurrido un error al crear el elemento playbin2; compruebe su instalación "
+"de GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst.c:634
+#. ?
+#: ../backends/gstreamer/rb-player-gst.c:583
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2708
 #, c-format
-msgid "Unknown playback error"
-msgstr "Error de reproducción desconocido"
+msgid "Failed to open output device: %s"
+msgstr "Falló al abrir el dispositivo de salida: %s"
+
+#: ../backends/gstreamer/rb-player-gst.c:628
+#, c-format
+#| msgid "Failed to start playback of %s"
+msgid "Unable to start playback pipeline"
+msgstr "No se pudo iniciar la tubería de reproducción"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1124
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1138
@@ -68,12 +77,6 @@ msgstr "Ha ocurrido un error al inicializar un nuevo flujo"
 #, c-format
 msgid "Failed to open output device"
 msgstr "Falló al abrir el dispositivo de salida"
-
-#. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2708
-#, c-format
-msgid "Failed to open output device: %s"
-msgstr "Falló al abrir el dispositivo de salida: %s"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2964
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3046
@@ -513,7 +516,7 @@ msgstr "Reproducidos recientemente"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:207
 #: ../plugins/status-icon/rb-status-icon-plugin.c:61
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1526 ../shell/rb-shell.c:1032
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1522 ../shell/rb-shell.c:1032
 #: ../shell/rb-shell.c:1984
 msgid "Music Player"
 msgstr "Reproductor de música"
@@ -756,6 +759,12 @@ msgstr ""
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "El archivo contiene un flujo de tipo %s, que no es decodificable"
+
+#: ../metadata/rb-metadata-gst.c:848 ../metadata/rb-metadata-gst.c:1422
+#: ../plugins/cd-recorder/rb-recorder-gst.c:508
+#, c-format
+msgid "Failed to create %s element; check your installation"
+msgstr "Ha ocurrido un error al crear el elemento %s; compruebe su instalación"
 
 #: ../metadata/rb-metadata-gst.c:1055
 #, c-format
@@ -2146,9 +2155,6 @@ msgid "MP3 (200Kbps)"
 msgstr "MP3 (200Kbps)"
 
 #: ../plugins/jamendo/jamendo-prefs.ui.h:4
-#| msgid ""
-#| "Ogg Vorbis (300Kbps)\n"
-#| "MP3 (200Kbps)"
 msgid "Ogg Vorbis (300Kbps)"
 msgstr "Ogg Vorbis (300Kbps)"
 
@@ -2212,11 +2218,6 @@ msgid "Jamendo is the only platform that joins together :"
 msgstr "Jamendo es la única plataforma que engloba:"
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:11
-#| msgid ""
-#| "Jamendo users can discover and share albums, but also review them or "
-#| "start a discussion on the forums.\n"
-#| "Albums are democratically rated based on the visitors’ reviews.\n"
-#| "If they fancy an artist they can support him by making a donation."
 msgid ""
 "Jamendo users can discover and share albums, but also review them or start a "
 "discussion on the forums.\n"
@@ -3187,7 +3188,6 @@ msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:1
-#| msgid "Status"
 msgid "Status Icon"
 msgstr "Icono de estado"
 
@@ -3204,7 +3204,6 @@ msgid "Always visible"
 msgstr "Siempre visible"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:3
-#| msgid "Never"
 msgid "Never shown"
 msgstr "No mostrar nunca"
 
@@ -3213,94 +3212,88 @@ msgid "Never visible"
 msgstr "Nunca visible"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:5
-#| msgid "Make the main window smaller"
 msgid "Owns the main window"
 msgstr "Posee la ventana principal"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:6
-#| msgid "Make the main window smaller"
 msgid "Shown when the main window is hidden"
 msgstr "Mostrado cuando la ventana principal está oculta"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:7
-#| msgid "Magnatune Preferences"
 msgid "Status icon preferences"
 msgstr "Preferencias de los iconos de estado"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:8
-#| msgid "Show N_otifications"
 msgid "Visible with notifications"
 msgstr "Visibles con notificaciones"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:9
-#| msgid "Notification"
 msgid "_Notifications"
 msgstr "_Notificaciones"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:10
-#| msgid "Status:"
 msgid "_Status Icon:"
 msgstr "Icono de _estado:"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:230
+#: ../plugins/visualizer/rb-visualizer-plugin.c:229
 msgid "_Visualization"
 msgstr "_Visualización"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:231
+#: ../plugins/visualizer/rb-visualizer-plugin.c:230
 msgid "Start or stop visualization"
 msgstr "Comenzar o parar la visualización"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:237
+#: ../plugins/visualizer/rb-visualizer-plugin.c:236
 msgid "Small"
 msgstr "Pequeña"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:238
+#: ../plugins/visualizer/rb-visualizer-plugin.c:237
 msgid "Normal"
 msgstr "Normal"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:239
+#: ../plugins/visualizer/rb-visualizer-plugin.c:238
 msgid "Large"
 msgstr "Alta"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:240
+#: ../plugins/visualizer/rb-visualizer-plugin.c:239
 msgid "Extra Large"
 msgstr "Altísima"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:251
+#: ../plugins/visualizer/rb-visualizer-plugin.c:243
 msgid "Embedded"
 msgstr "Empotrado"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:252
+#: ../plugins/visualizer/rb-visualizer-plugin.c:244
 msgid "Fullscreen"
 msgstr "Pantalla completa"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:253
+#: ../plugins/visualizer/rb-visualizer-plugin.c:245
 msgid "Desktop"
 msgstr "Escritorio"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:254
+#: ../plugins/visualizer/rb-visualizer-plugin.c:246
 msgid "Window"
 msgstr "Ventana"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:730
+#: ../plugins/visualizer/rb-visualizer-plugin.c:726
 #, c-format
 msgid "Unable to start video output"
 msgstr "No se pudo iniciar la salida de vídeo"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:765
+#: ../plugins/visualizer/rb-visualizer-plugin.c:761
 #, c-format
 msgid "Failed to link new visual effect into the GStreamer pipeline"
 msgstr "Falló al enlazar el efecto visual nuevo en la pipeline de GStreamer"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:813
+#: ../plugins/visualizer/rb-visualizer-plugin.c:809
 msgid "Unable to start visualization"
 msgstr "No se pudo iniciar la visualización"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1392
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1388
 msgid "Enable visual effects?"
 msgstr "¿Activar efectos visuales?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1394
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1390
 msgid ""
 "It seems you are running Rhythmbox remotely.\n"
 "Are you sure you want to enable the visual effects?"
@@ -3308,7 +3301,7 @@ msgstr ""
 "Parece que está ejecutando Rhythmbox de forma remota.\n"
 "¿Está seguro de que quiere activar los efectos visuales?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1726
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1720
 msgid "Music Player Visualization"
 msgstr "Visualización del reproductor de música"
 
@@ -5045,6 +5038,9 @@ msgstr "En el escritorio"
 #: ../widgets/rb-song-info.c:1139
 msgid "Unknown location"
 msgstr "Dirección desconocida"
+
+#~ msgid "Unknown playback error"
+#~ msgstr "Error de reproducción desconocido"
 
 #~ msgid ""
 #~ "songs\n"
