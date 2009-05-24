@@ -1,3 +1,61 @@
+Overview of changes in Rhythmbox 0.12.2  "We Are Underused"
+===========================================================
+
+* Support for cover art images embedded in song metadata
+* New plugin that sets your IM status to describe the current playing song
+* Last.fm submission protocol v1.2 (including the 'now playing' feature)
+* New status icon plugin
+* Replaced libglade with GtkBuilder
+* Switched from playbin to playbin2 when crossfading is disabled, providing
+    gapless playback and better support for visualization
+
+Bugs fixed:
+
+* 158168 - Rhythmbox should minimize to tray on Exit
+* 317982 - Notification icon redundant when applet is used
+* 324114 - Minimize to nothing (no tray)
+* 331019 - Show notification when unfocused but not minimized
+* 345975 - Show album covers embedded in files e.g. mp3 ID3 tags
+* 349280 - Move to GtkStatusIcon (Help kill libegg)
+* 396409 - Radio stations using chained oggs break rhythmbox
+* 397196 - rhythmbox error report "Unknown playback error" needs improvement
+* 406807 - visualisation plugin blocks video output when not active
+* 501998 - Mouse pointer should disappear in fullscreen visualization
+* 509845 - Keyboard shortcuts should work with fullscreen visuals
+* 526493 - New plugin: change IM status according played song
+* 542922 - Use playbin2 instead of playbin
+* 551002 - "Don't Really Close" should have an animation
+* 562016 - Migrate from libglade to GtkBuilder
+* 567335 - Crash in while playing file and visualizing
+* 579137 - Cannot rearange playlists longer than one screen size
+* 580269 - Rhythmbox won't compile with latest totem-pl-parser
+* 580663 - WKNC Radio streams have changed URL
+* 580721 - Crashes when not selecting the limiting kind
+* 580743 - Rhythmbox doesn't support the newest audioscrobbler api
+* 581468 - Missing im-status plugin file in POTFILES.in
+* 581574 - Rhythmbox tries to import desktop files
+* 582130 - [PATCH] New Jamendo Logo
+* 583171 - crash due to plugins.ui not being installed
+
+Contributors to this release:
+
+- Bastien Nocera
+- Christian Becke
+- Jonathan Matthew
+- Matt Novenstern
+- Ryan Hughes
+- Sebastian Morr
+- Sergey Rudchenko
+- Vincent Untz
+- Víctor Manuel Jáquez Leal
+- Will Woods
+
+Updated translations
+--------------------
+
+  ...
+
+
 Overview of changes in Rhythmbox 0.12.1  "Easily Fooled"
 ========================================================
 
