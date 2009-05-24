@@ -29,6 +29,7 @@
 
 #include <locale.h>
 #include <glib.h>
+#include <glib-object.h>
 #include <glib/gi18n.h>
 
 #include "rb-podcast-parse.h"
@@ -73,6 +74,7 @@ int main (int argc, char **argv)
 	char datebuf[1024];
 	GError *error = NULL;
 
+	g_type_init ();
 	setlocale (LC_ALL, "");
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
