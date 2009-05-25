@@ -756,7 +756,7 @@ rb_shell_player_open_playlist_url (RBShellPlayer *player,
 	rb_debug ("playing stream url %s", location);
 	rb_player_open (player->priv->mmplayer,
 			location,
-			entry,
+			rhythmdb_entry_ref (entry),
 			(GDestroyNotify) rhythmdb_entry_unref,
 			&error);
 	if (error == NULL)
