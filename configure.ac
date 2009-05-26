@@ -104,7 +104,7 @@ if test "x$with_hal" != "xno"; then
       AC_MSG_ERROR([HAL support explicitly requested but HAL couldn't be found])
   fi
 
-  if test "x$enable_hal" == "xyes"; then
+  if test "x$enable_hal" = "xyes"; then
   	AC_DEFINE(HAVE_HAL, 1, [Define if you have HAL support])
 	AC_SUBST(HAL_CFLAGS)
     AC_SUBST(HAL_LIBS)
