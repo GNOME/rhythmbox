@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug."
 "cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-05-23 11:41+0000\n"
-"PO-Revision-Date: 2009-05-24 19:46+0530\n"
+"POT-Creation-Date: 2009-05-24 14:17+0000\n"
+"PO-Revision-Date: 2009-05-27 06:18+0530\n"
 "Last-Translator: A S Alam <aalam@users.sf.net>\n"
 "Language-Team: Punjabi/Panjabi <punjabi-users@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -29,8 +29,8 @@ msgstr "ਕੀ ਤੁਸੀਂ \"%s\" ਫਾਇਲ ਉੱਤੇ ਲਿਖਣਾ 
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "ਜੀਸਟਰੀਮਰ ਸਿੰਕ ਐਲੀਮੈਂਟ %s ਲਿਖਣ ਲਈ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ"
 
-#: ../backends/gstreamer/rb-player-gst.c:372, c-format
-#| msgid "Failed to create %s element; check your installation"
+#: ../backends/gstreamer/rb-player-gst.c:372
+#, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr "ਐਲੀਮੈਂਟ playbin2 ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ; ਆਪਣੀ GStreamer ਇੰਸਟਾਲੇਸ਼ਨ ਚੈੱਕ ਕਰੋ ਜੀ"
 
@@ -41,8 +41,8 @@ msgstr "ਐਲੀਮੈਂਟ playbin2 ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ
 msgid "Failed to open output device: %s"
 msgstr "ਆਉਟਪੁੱਟ ਜੰਤਰ ਖੋਲ੍ਹਣ ਲਈ ਫੇਲ੍ਹ: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:628, c-format
-#| msgid "Failed to start playback of %s"
+#: ../backends/gstreamer/rb-player-gst.c:628
+#, c-format
 msgid "Unable to start playback pipeline"
 msgstr "ਪਾਈਪਲਾਈਨ ਪਲੇਅਬੈਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
@@ -78,8 +78,8 @@ msgstr "ਆਡੀਓ ਆਉਟਪੁੱਟ ਐਲੀਮੈਂਟ ਬਨਾਉਣ
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3062
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3088
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3097
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3106, c-format
-#| msgid "Failed to create %s element; check your installation"
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3106
+#, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "ਜੀਸਟਰੀਮਰ ਪਾਈਪਲਾਈਨ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ; ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਇੰਸਟਾਲੇਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ"
 
@@ -171,7 +171,6 @@ msgid "Text beside icons"
 msgstr "ਆਈਕਾਨ ਨਾਲ ਟੈਕਸਟ"
 
 #: ../data/ui/general-prefs.ui.h:11
-#| msgid "Next Song"
 msgid "Text only"
 msgstr "ਕੇਵਲ ਟੈਕਸਟ"
 
@@ -269,15 +268,15 @@ msgstr "ਨਵੀਆਂ ਫਾਇਲਾਂ ਲਈ ਮੇਰੀ ਲਾਇਬਰ�
 
 #: ../data/ui/playback-prefs.ui.h:1
 msgid "C_rossfade between songs on the same album"
-msgstr "ਇਕੋ ਐਲਬਮ ਉੱਤੇ ਗੀਤਾਂ ਵਿੱਚ ਕਰਾਂਸਫੇਡ(_r)"
+msgstr "ਇਕੋ ਐਲਬਮ ਉੱਤੇ ਗੀਤਾਂ ਵਿੱਚ ਕਰਾਸਫੇਡ(_r)"
 
 #: ../data/ui/playback-prefs.ui.h:2
 msgid "Crossfade Duration (Seconds)"
-msgstr "ਕਰਾਂਸਫੇਡ ਅੰਤਰਾਲ (ਸਕਿੰਟ)"
+msgstr "ਕਰਾਸਫੇਡ ਅੰਤਰਾਲ (ਸਕਿੰਟ)"
 
 #: ../data/ui/playback-prefs.ui.h:3
 msgid "Crossfade Type"
-msgstr "ਕਰਾਂਸਫੇਡ ਟਾਈਪ"
+msgstr "ਕਰਾਸਫੇਡ ਟਾਈਪ"
 
 #: ../data/ui/playback-prefs.ui.h:4
 msgid "Network Buffer Size (kB)"
@@ -289,7 +288,7 @@ msgstr "ਪਲੇਅਰ ਬੈਕਐਂਡ"
 
 #: ../data/ui/playback-prefs.ui.h:6
 msgid "_Use crossfading backend (requires restart)"
-msgstr ""
+msgstr "ਕਰਾਸਫੇਡਿੰਗ ਬੈਕਐਂਡ ਵਰਤੋਂ (ਮੁੜ-ਚਾਲੂ ਕਰਨਾ ਪਵੇਗਾ)(_U)"
 
 #: ../data/ui/playlist-save.ui.h:1
 msgid "<b>Playlist format</b>"
@@ -512,12 +511,12 @@ msgstr "ਰੀਥਮਬਾਕਸ ਸੰਗੀਤ ਪਲੇਅਰ"
 #: ../lib/eggdesktopfile.c:165
 #, c-format
 msgid "File is not a valid .desktop file"
-msgstr ""
+msgstr "ਫਾਇਲ ਢੁੱਕਵੀਂ .desktop ਫਾਇਲ ਨਹੀਂ"
 
 #: ../lib/eggdesktopfile.c:188
 #, c-format
 msgid "Unrecognized desktop file Version '%s'"
-msgstr ""
+msgstr "ਬੇਪਛਾਣ ਡੈਸਕਟਾਪ ਫਾਇਲ ਵਰਜਨ '%s'"
 
 #: ../lib/eggdesktopfile.c:958
 #, c-format
@@ -527,17 +526,17 @@ msgstr "%s ਚਲਾਇਆ ਜਾ ਰਿਹਾ ਹੈ"
 #: ../lib/eggdesktopfile.c:1100
 #, c-format
 msgid "Application does not accept documents on command line"
-msgstr ""
+msgstr "ਐਪਲੀਕੇਸ਼ਣ ਕਮਾਂਡ ਲਾਈਨ ਉੱਤੇ ਡੌਕੂਮੈਂਟ ਮਨਜ਼ੂਰ ਨਹੀਂ ਕਰਦੀ"
 
 #: ../lib/eggdesktopfile.c:1168
 #, c-format
 msgid "Unrecognized launch option: %d"
-msgstr ""
+msgstr "ਬੇਪਛਾਣ ਲਾਂਚ ਚੋਣ: %d"
 
 #: ../lib/eggdesktopfile.c:1373
 #, c-format
 msgid "Can't pass document URIs to a 'Type=Link' desktop entry"
-msgstr ""
+msgstr "ਡੌਕੂਮੈਂਟ URIs 'Type=Link' ਡੈਸਕਟਾਪ ਐਂਟਰੀ ਲਈ ਭੇਜੀ ਨਹੀਂ ਜਾ ਸਕੀ"
 
 #: ../lib/eggdesktopfile.c:1392
 #, c-format
@@ -550,7 +549,7 @@ msgstr "ਸ਼ੈਸ਼ਨ ਮੈਨੇਜਰ ਨਾਲ ਕੁਨਕੈਸ਼ਨ
 
 #: ../lib/eggsmclient.c:228
 msgid "Specify file containing saved configuration"
-msgstr ""
+msgstr "ਸੰਭਾਲੀ ਸੰਰਚਨਾ ਰੱਖਣ ਵਾਲੀ ਫਾਇਲ ਦਿਓ"
 
 #: ../lib/eggsmclient.c:228
 msgid "FILE"
@@ -558,7 +557,7 @@ msgstr "ਫਾਇਲ"
 
 #: ../lib/eggsmclient.c:231
 msgid "Specify session management ID"
-msgstr ""
+msgstr "ਸ਼ੈਸ਼ਨ ਪਰਬੰਧ ID ਦਿਓ"
 
 #: ../lib/eggsmclient.c:231
 msgid "ID"
@@ -658,15 +657,15 @@ msgstr "ਅਣਜਾਣ"
 #: ../lib/rb-file-helpers.c:211
 #, c-format
 msgid "Unable to move %s to %s: %s"
-msgstr ""
+msgstr "%s ਨੂੰ %s ਭੇਜਣ ਲਈ ਅਸਮਰੱਥ: %s"
 
 #: ../lib/rb-file-helpers.c:380
 #, c-format
 msgid "Too many symlinks"
 msgstr "ਬਹੁਤ ਸਾਰੇ ਸਿੰਮਲਿੰਕ"
 
-#: ../lib/rb-file-helpers.c:988, c-format
-#| msgid "Cannot get free space at %s"
+#: ../lib/rb-file-helpers.c:988
+#, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "%s 'ਤੇ ਖਾਲੀ ਥਾਂ ਮਿਲ ਨਹੀਂ ਸਕਦੀ ਹੈ: %s"
 
@@ -776,7 +775,7 @@ msgstr "ਟੈਗ-ਲਿਖਣ ਇਕਾਈਆਂ ਵਰਤਣ ਲਈ ਅਸਫ�
 #: ../metadata/rb-metadata-gst.c:1374
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
-msgstr ""
+msgstr "ਨਲ (NULL) ਲਈ ਪਾਈਪਲਾਈਨ ਸੈਟਿੰਗ ਦੌਰਾਨ ਟਾਈਮਆਉਟ"
 
 #: ../metadata/rb-metadata-gst.c:1398
 #, c-format
@@ -935,7 +934,6 @@ msgid "Last.fm"
 msgstr "Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:2
-#| msgid "Submits song information to last.fm and plays last.fm radio streams"
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
 msgstr "ਗੀਤ ਜਾਣਕਾਰੀ Last.fm ਨੂੰ ਭੇਜੋ ਅਤੇ Last.fm ਰੇਡੀਓ ਸਟਰੀਮ ਚਲਾਓ"
 
@@ -1018,7 +1016,6 @@ msgid "Request failed"
 msgstr "ਬੇਨਤੀ ਅਸਫ਼ਲ ਰਹੀ ਹੈ"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1042
-#| msgid "Incorrect username"
 msgid "Incorrect username or password"
 msgstr "ਗਲਤ ਯੂਜ਼ਰ ਨਾਂ ਜਾਂ ਪਾਸਵਰਡ"
 
@@ -1029,7 +1026,7 @@ msgstr "ਘੜੀ ਠੀਕ ਸੈੱਟ ਨਹੀਂ ਕੀਤੀ ਗਈ ਹੈ
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1048
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:903
 msgid "This version of Rhythmbox has been banned from Last.fm."
-msgstr ""
+msgstr "ਰੀਥਮਬਾਕਸ ਦੇ ਇਹ ਵਰਜਨ ਲਈ Last.fm ਤੋਂ ਪਾਬੰਦੀ ਲਗਾਈ ਗਈ ਹੈ"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1051
 msgid "Track submission failed too many times"
@@ -1094,7 +1091,6 @@ msgid "%s's Personal Radio"
 msgstr "%s ਦਾ ਨਿੱਜੀ ਰੇਡੀਓ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:198
-#| msgid "Queued tracks:"
 msgid "Loved tracks"
 msgstr "ਲਵ ਟਰੈਕ"
 
@@ -1102,7 +1098,7 @@ msgstr "ਲਵ ਟਰੈਕ"
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1306
 #, c-format
 msgid "%s's Loved Tracks"
-msgstr ""
+msgstr "%s ਦੇ ਲਵ ਟਰੈਕ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:199
 msgid "Recommended tracks"
@@ -1160,7 +1156,7 @@ msgstr "ਅਕਾਊਂਟ ਸੈਟਿੰਗ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:899
 msgid "Account details are needed before you can connect.  Check your settings."
-msgstr ""
+msgstr "ਤੁਹਾਡੇ ਕੁਨੈਕਟ ਹੋਣ ਤੋਂ ਪਹਿਲਾਂ ਅਕਾਊਂਟ ਵੇਰਵੇ ਦੀ ਲੋੜ ਹੈ। ਆਪਣੀ ਸੈਟਿੰਗ ਚੈੱਕ ਕਰੋ ਜੀ।"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:907
 msgid "Unable to connect"
@@ -1189,7 +1185,6 @@ msgstr "%s ਦਾ %s ਰੇਡੀਓ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1318
 #, c-format
-#| msgid "%s Group Radio"
 msgid "%s Group Radio"
 msgstr "%s ਗਰੁੱਪ ਰੇਡੀਓ"
 
@@ -1203,19 +1198,19 @@ msgstr "ਨਿੱਜੀ ਰੇਡੀਓ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1882
 msgid "Server did not respond"
-msgstr ""
+msgstr "ਸਰਵਰ ਜਵਾਬ ਨਹੀਂ ਦਿੰਦਾ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1950
 msgid "There is not enough content available to play this station."
-msgstr ""
+msgstr "ਇਹ ਸਟੇਸ਼ਨ ਚਲਾਉਣ ਲਈ ਲੋੜੀਦੀ ਸਮੱਗਰੀ ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ।"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1955
 msgid "This station is available to subscribers only."
-msgstr ""
+msgstr "ਇਹ ਸਟੇਸ਼ਨ ਕੇਵਲ ਮੈਂਬਰ ਲਈ ਹੀ ਉਪਲੱਬਧ ਹੈ।"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1962
 msgid "The streaming system is offline for maintenance, please try again later."
-msgstr ""
+msgstr "ਸਟਰੀਮਿੰਗ ਸਿਸਟਮ ਦੇਖਭਾਲ ਲਈ ਆਫਲਾਈਨ ਹੈ, ਬਾਅਧ ਵਿੱਚ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜੀ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:2001
 msgid "Changing station"
@@ -1232,7 +1227,7 @@ msgstr "ਗੀਤ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਈ ਜਾ ਰਹੀ ਹ
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:2343
 msgid "Adding song to your Loved tracks"
-msgstr ""
+msgstr "ਗੀਤ ਲਵ ਟਰੈਕਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
 #. and maybe some more
 #: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:1
@@ -1242,7 +1237,7 @@ msgstr "ਆਡੀਓ CD ਰਿਕਾਰਡਰ"
 
 #: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:2
 msgid "Record audio CDs from playlists and duplicate audio CDs"
-msgstr ""
+msgstr "ਪਲੇਅਲਿਸਟ ਤੋਂ ਆਡੀਓ CD ਰਿਕਾਰਡ ਕਰੋ ਅਤੇ ਡੁਪਲੀਕੇਟ ਆਡੀਓ CD ਬਣਾਓ"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:98
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:89
@@ -1476,7 +1471,6 @@ msgid "Writing failed.  Try again?"
 msgstr "ਲਿਖਣਾ ਫੇਲ੍ਹ ਹੈ।  ਕੀ ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰਨੀ ਹੈ?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:551
-#| msgid "Writing cancelled.  Try again?"
 msgid "Writing canceled.  Try again?"
 msgstr "ਲਿਖਣਾ ਰੱਦ ਕੀਤਾ ਹੈ।  ਕੀ ਮੁੜ-ਕੋਸ਼ਿਸ ਕਰਨੀ ਹੈ?"
 
@@ -1627,19 +1621,15 @@ msgstr "ਇੱਕ ਆਡੀਓ ਟਰੈਕ ਸੂਚੀ ਬਣਾਉਣ ਲਈ 
 msgid "This playlist is too long to write to an audio CD."
 msgstr "ਇਹ ਸੰਗੀਤ-ਸੂਚੀ ਬਹੁਤ ਲੰਮੀ ਹੈ, ਜਿਸ ਨੂੰ ਇੱਕ ਆਡੀਓ CD ਲਿਖਣਾ ਸੰਭਵ ਨਹੀਂ ਹੈ।"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1593, c-format
-#| msgid ""
-#| "This playlist is %s minutes long.  This exceeds the length of a standard "
-#| "audio CD.  If the destination media is larger than a standard audio CD "
-#| "please insert it in the drive and try again."
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1593
+#, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
 "audio CD.  If the destination medium is larger than a standard audio CD "
 "please insert it in the drive and try again."
 msgstr ""
 "ਇਹ ਸੰਗੀਤ-ਸੂਚੀ %s ਮਿੰਟ ਲੰਮੀ ਹੈ। ਇਹ ਇੱਕ ਸਟੈਂਡਰਡ ਆਡੀਓ CD ਤੋਂ ਲੰਬਾਈ ਤੋਂ ਵੱਧ ਗਈ ਹੈ।  ਜੇਕਰ ਟਿਕਾਣਾ "
-"ਮੀਡਿਆ ਇੱਕ ਸਟੈਂਡਰਡ ਆਡੀਓ CD ਤੋਂ ਵੱਡਾ ਲੋੜੀਦਾ ਹੈ, ਇਸ ਨੂੰ ਡਰਾਇਵ ਵਿੱਚ ਪਾ ਕੇ ਮੁੜ ਕੋਸ਼ਿਸ "
-"ਕਰੋ।"
+"ਮੀਡਿਆ ਇੱਕ ਸਟੈਂਡਰਡ ਆਡੀਓ CD ਤੋਂ ਵੱਡਾ ਲੋੜੀਦਾ ਹੈ, ਇਸ ਨੂੰ ਡਰਾਇਵ ਵਿੱਚ ਪਾ ਕੇ ਮੁੜ ਕੋਸ਼ਿਸ ਕਰੋ।"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1604
 msgid "Playlist too long"
@@ -1649,8 +1639,7 @@ msgstr "ਪਲੇਅਲਿਸਟ ਲੰਮੀ ਹੈ"
 msgid "Could not find temporary space!"
 msgstr "ਆਰਜ਼ੀ ਥਾਂ ਨਹੀਂ ਲੱਭੀ!"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1645
-#, fuzzy, c-format
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1645, c-format
 #| msgid ""
 #| "Could not find enough temporary space to convert audio tracks.  %s MiB "
 #| "required."
@@ -1691,7 +1680,7 @@ msgstr ""
 
 #: ../plugins/coherence/coherence.rb-plugin.in.h:2
 msgid "DLNA/UPnP sharing and control support"
-msgstr ""
+msgstr "DLNA/UPnP ਸਾਂਝ ਅਤੇ ਕੰਟਰੋਲ ਸਹਿਯੋਗ"
 
 #: ../plugins/daap/daap.rb-plugin.in.h:1
 msgid "DAAP Music Sharing"
@@ -1732,7 +1721,6 @@ msgstr "ਸਾਂਝ ਸੰਗੀਤ ਨਾਂ '%s' ਪਹਿਲਾਂ ਹੀ �
 
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:237
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:280
-#| msgid "MDNS service is not running"
 msgid "mDNS service is not running"
 msgstr "mDNS ਸੇਵਾ ਚੱਲ ਨਹੀਂ ਰਹੀ ਹੈ"
 
@@ -1762,12 +1750,10 @@ msgstr "ਸਰਵਿਸ ਕਮਿਟ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ"
 
 #: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:281
 #: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:301
-#| msgid "The avahi MDNS service is not running"
 msgid "The avahi mDNS service is not running"
 msgstr "avahi mDNS ਸੇਵਾ ਨਹੀਂ ਚੱਲ ਰਹੀ ਹੈ"
 
 #: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:310
-#| msgid "The MDNS service is not published"
 msgid "The mDNS service is not published"
 msgstr "mDNS ਸੇਵਾ ਪਰਕਾਸ਼ਿਤ ਨਹੀਂ ਕੀਤੀ ਗਈ ਹੈ"
 
@@ -1784,7 +1770,6 @@ msgid "Connect to _DAAP share..."
 msgstr "_DAAP ਸਾਂਝ ਨਾਲ ਕੁਨੈਕਟ ਕਰੋ..."
 
 #: ../plugins/daap/rb-daap-plugin.c:129
-#| msgid "Disconnect from DAAP share"
 msgid "Connect to a new DAAP share"
 msgstr "ਨਵੇਂ DAAP ਸਾਂਝ ਨਾਲ ਕੁਨੈਕਟ ਕਰੋ"
 
@@ -1792,11 +1777,10 @@ msgstr "ਨਵੇਂ DAAP ਸਾਂਝ ਨਾਲ ਕੁਨੈਕਟ ਕਰੋ"
 msgid "Could not connect to shared music"
 msgstr "ਸਾਂਝੇ ਸੰਗੀਤ ਨਾਲ ਜੁੜ ਨਹੀਂ ਸਕਿਆ ਹੈ"
 
-#: ../plugins/daap/rb-daap-plugin.c:651
-#, fuzzy, c-format
+#: ../plugins/daap/rb-daap-plugin.c:651, c-format
 #| msgid "Unable to unlink '%s'"
 msgid "Unable to resolve hostname %s"
-msgstr "'%s' ਨੂੰ ਨਾ-ਸਬੰਧਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ"
+msgstr "%s ਹੋਸਟ-ਨਾਂ ਹੱਲ਼ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ"
 
 #: ../plugins/daap/rb-daap-plugin.c:702
 msgid "New DAAP share"
@@ -1804,7 +1788,7 @@ msgstr "ਨਵੀਂ DAAP ਸਾਂਝ"
 
 #: ../plugins/daap/rb-daap-plugin.c:702
 msgid "Host:port of DAAP share:"
-msgstr ""
+msgstr "DAAP ਸਾਂਝ ਲਈ Host:port:"
 
 #: ../plugins/daap/rb-daap-plugin.c:924
 msgid "DAAP Music Sharing Preferences"
@@ -1844,18 +1828,16 @@ msgstr "FM ਰੇਡਿਓ"
 
 #: ../plugins/fmradio/fmradio.rb-plugin.in.h:2
 msgid "Support for FM radio broadcasting services"
-msgstr ""
+msgstr "FM ਰੇਡੀਓ ਬਰਾਡਕਾਸਟ ਸਰਵਿਸਾਂ ਲਈ ਸਹਿਯੋਗ"
 
 #: ../plugins/fmradio/rb-fm-radio-source.c:88
-#| msgid "New Internet Radio Station"
 msgid "New FM R_adio Station"
 msgstr "ਨਵਾਂ FM ਰੇਡੀਓ ਸਟੇਸ਼ਨ(_a)"
 
 #: ../plugins/fmradio/rb-fm-radio-source.c:89
-#, fuzzy
 #| msgid "Create a new Internet Radio station"
 msgid "Create a new FM Radio station"
-msgstr "ਨਵਾਂ ਇੰਟਰਨੈਟ ਰੇਡੀਓ ਸਟੇਸ਼ਨ ਬਣਾਉ"
+msgstr "ਨਵਾਂ FM ਰੇਡੀਓ ਸਟੇਸ਼ਨ ਬਣਾਉ"
 
 #: ../plugins/fmradio/rb-fm-radio-source.c:347
 msgid "New FM Radio Station"
@@ -1896,13 +1878,12 @@ msgid "Importing (%d/%d)"
 msgstr "ਇੰਪੋਰਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ (%d/%d)"
 
 #: ../plugins/im-status/im-status.rb-plugin.in.h:1
-#| msgid "Status"
 msgid "IM Status"
 msgstr "IM ਹਾਲਤ"
 
 #: ../plugins/im-status/im-status.rb-plugin.in.h:2
 msgid "Updates IM status according to the current song (works with Empathy & Gossip)"
-msgstr ""
+msgstr "ਮੌਜੂਦਾ ਗੀਤ ਤੇ ਮੁਤਾਬਕ IM ਹਾਲਤ ਅੱਪਡੇਟ ਕਰੋ (ਇੰਪੈਥੀ ਅਤੇ ਗੁੱਸਿਪ ਨਾਲ ਕੰਮ ਕਰਦਾ ਹੈ)"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -1936,7 +1917,7 @@ msgstr "♫ %(title)s ♫"
 
 #: ../plugins/im-status/im-status/__init__.py:168
 msgid "♫ Listening to music... ♫"
-msgstr ""
+msgstr "♫ ਸੰਗੀਤ ਸੁਣ ਰਿਹਾ ਹਾਂ... ♫"
 
 #: ../plugins/ipod/ipod.rb-plugin.in.h:1
 msgid "Portable Players - iPod"
@@ -1944,7 +1925,7 @@ msgstr "ਪੋਰਟੇਬਲ ਪਲੇਅਰ - iPod"
 
 #: ../plugins/ipod/ipod.rb-plugin.in.h:2
 msgid "Support for Apple iPod devices (show the content, play from device)"
-msgstr ""
+msgstr "ਐਪਲ iPod ਜੰਤਰਾਂ ਲਈ ਸਹਿਯੋਗ (ਜੰਤਰਾਂ ਤੋਂ ਸਮੱਗਰੀ ਵੇਖੋ, ਚਲਾਓ)"
 
 #: ../plugins/ipod/ipod-info.ui.h:1
 msgid "<b>Content</b>"
@@ -2025,7 +2006,6 @@ msgid ""
 msgstr ""
 
 #: ../plugins/ipod/ipod-init.ui.h:3
-#| msgid "_Initialise"
 msgid "_Initialize"
 msgstr "ਸ਼ੁਰੂ ਕਰੋ(_I)"
 
@@ -2040,13 +2020,12 @@ msgstr "ਨਾਂ(_N):"
 
 #: ../plugins/ipod/ipod-init.ui.h:6
 msgid "iPod detected"
-msgstr ""
+msgstr "iPod ਖੋਜਿਆ"
 
 #: ../plugins/ipod/rb-ipod-helpers.c:304
-#, fuzzy
 #| msgid "Unable to unlink '%s'"
 msgid "Unable to initialize new iPod"
-msgstr "'%s' ਨੂੰ ਨਾ-ਸਬੰਧਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ"
+msgstr "ਨਵਾਂ iPod ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਅਸਮਰੱਥ"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:104 ../plugins/ipod/rb-ipod-plugin.c:113
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:106 ../shell/rb-playlist-manager.c:184
@@ -2063,20 +2042,18 @@ msgid "_Properties"
 msgstr "ਵਿਸ਼ੇਸ਼ਤਾ(_P)"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:108
-#, fuzzy
 #| msgid "Episode Properties"
 msgid "Display iPod properties"
-msgstr "ਕਾਂਡ ਵਿਸ਼ੇਸ਼ਤਾ"
+msgstr "iPod ਵਿਸ਼ੇਸ਼ਤਾ ਵੇਖੋ"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:110 ../shell/rb-shell-clipboard.c:175
 msgid "_New Playlist"
 msgstr "ਨਵੀਂ ਸੰਗੀਤ-ਸੂਚੀ(_N)"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:111
-#, fuzzy
 #| msgid "Save a playlist to a file"
 msgid "Add new playlist to iPod"
-msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਨੂੰ ਇੱਕ ਫਾਇਲ ਵਿੱਚ ਸੰਭਾਲੋ"
+msgstr "ਨਵੀਂ ਪਲੇਅਲਿਸਟ iPod ਵਿੱਚ ਸ਼ਾਮਲ"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:114 ../shell/rb-playlist-manager.c:185
 msgid "Rename playlist"
@@ -2112,7 +2089,7 @@ msgstr "ਇੰਟਰਨੈੱਟ ਰੇਡੀਓ"
 
 #: ../plugins/iradio/iradio.rb-plugin.in.h:2
 msgid "Support for broadcasting services transmitted via the Internet"
-msgstr ""
+msgstr "ਇੰਟਰਨੈੱਟ ਰਾਹੀਂ ਸਰਵਿਸ ਨੂੰ ਬਰਾਡਕਾਸਟ ਕਰਨ ਲਈ ਸਹਿਯੋਗੀ"
 
 #: ../plugins/jamendo/jamendo-prefs.ui.h:1
 msgid "<b>Download</b>"
@@ -2127,9 +2104,6 @@ msgid "MP3 (200Kbps)"
 msgstr "MP3 (200Kbps)"
 
 #: ../plugins/jamendo/jamendo-prefs.ui.h:4
-#| msgid ""
-#| "Ogg Vorbis (300Kbps)\n"
-#| "MP3 (200Kbps)"
 msgid "Ogg Vorbis (300Kbps)"
 msgstr "Ogg Vorbis (੩੦੦Kbps)"
 
@@ -2176,23 +2150,20 @@ msgid "<b>Jamendo</b>"
 msgstr "<b>ਜਾਮੀਂਡੋ</b>"
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:9
-#, fuzzy
 #| msgid ""
 #| "jamendo is a new model for artists to promote, publish, and be paid for "
 #| "their music."
 msgid ""
 "Jamendo is a new model for artists to promote, publish, and be paid for "
 "their music."
-msgstr "ਜਾਮੀਂਡੋ ਕਲਾਕਾਰ ਦੇ ਪਰਚਾਰ ਲਈ ਅਤੇ ਉਨ੍ਹਾਂ ਦੇ ਸੰਗੀਤ ਨੂੰ ਵੇਚਣ ਦਾ ਨਵਾਂ ਮਾਡਲ ਹੈ।"
+msgstr "ਜਾਮੀਂਡੋ ਕਲਾਕਾਰ ਦੇ ਪਰਚਾਰ ਲਈ, ਪਬਲਿਸ਼ ਕਰਨ ਅਤੇ ਉਨ੍ਹਾਂ ਦੇ ਸੰਗੀਤ ਨੂੰ ਵੇਚਣ ਦਾ ਨਵਾਂ ਮਾਡਲ ਹੈ।"
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:10
-#, fuzzy
 #| msgid "jamendo is the only platform that joins together :"
 msgid "Jamendo is the only platform that joins together :"
 msgstr "ਜਾਮੀਂਡੋ ਹੀ ਉਹ ਪਲੇਟਫਾਰਮ ਹੈ, ਜਿਸ ਰਾਹੀਂ ਇੱਕਠੇ ਹੋ ਸਕਦੇ ਹਨ:"
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:11
-#, fuzzy
 #| msgid ""
 #| "jamendo users can discover and share albums, but also review them or "
 #| "start a discussion on the forums.\n"
@@ -2259,24 +2230,22 @@ msgid "_Donate to Artist"
 msgstr "ਕਲਾਕਾਰ ਨੂੰ ਦਾਨ ਦਿਓ(_D)"
 
 #: ../plugins/jamendo/jamendo/__init__.py:104
-#| msgid "Get information about this artist"
 msgid "Donate Money to this Artist"
 msgstr "ਇਹ ਕਲਾਕਾਰ ਨੂੰ ਪੈਸਾ ਦਾਨ ਦਿਓ"
 
 #: ../plugins/jamendo/jamendo/JamendoSource.py:120
-#| msgid "Loading Jamendo catalogue"
 msgid "Loading Jamendo catalog"
 msgstr "ਜਾਮੀਂਡੋ ਕੈਟਾਲਾਗ ਲੋਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
 
 #: ../plugins/jamendo/jamendo/JamendoSource.py:303
 #, python-format
 msgid "Error looking up p2plink for album %s on jamendo.com"
-msgstr ""
+msgstr "jamendo.com ਉੱਤੇ ਐਲਬਮ %s ਲਈ p2plink ਖੋਜਣ ਦੌਰਾਨ ਗਲਤੀ"
 
 #: ../plugins/jamendo/jamendo/JamendoSource.py:327
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
-msgstr ""
+msgstr "jamendo.com ਉੱਤੇ ਕਲਾਕਾਰ %s ਖੋਜਣ ਦੌਰਾਨ ਗਲਤੀ"
 
 #: ../plugins/iradio/rb-iradio-source.c:173
 msgid "New Internet _Radio Station..."
@@ -2341,7 +2310,7 @@ msgstr "ਸਟੇਸ਼ਨ ਵਿਸ਼ੇਸ਼ਤਾ ਬਦਲਣ ਲਈ ਅ�
 #: ../plugins/iradio/rb-station-properties-dialog.c:584
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
-msgstr ""
+msgstr "ਸਟੇਸ਼ਨ URI %s ਬਦਲਣ ਲਈ ਅਸਮਰੱਥ ਹੈ, ਕਿਉਂਕਿ ਉਹ ਸਟੇਸ਼ਨ ਮੌਜੂਦ ਹੈ"
 
 #: ../plugins/iradio/station-properties.ui.h:5
 msgid "L_ocation:"
@@ -2420,7 +2389,7 @@ msgstr "ਬੋਲ ਪਲੱਗਇਨ ਪਸੰਦ"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
 msgid "     * Founder/owner runs it -- support a small business"
-msgstr ""
+msgstr "     * Founder/owner runs it -- ਛੋਟੇ ਵਪਾਰ ਨੂੰ ਸਹਿਯੋਗ ਦਿਓ"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:3
 #, no-c-format
@@ -2447,7 +2416,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:7
 msgid "    * Free listening of all songs"
-msgstr ""
+msgstr "    * ਸਭ ਗਾਣੇ ਮੁਫ਼ਤ ਸੁਣੋ"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:8
 msgid ""
@@ -2475,7 +2444,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:13
 msgid "    * No need to \"register\" to listen or buy"
-msgstr ""
+msgstr "    * ਸੁਨਣ ਜਾਂ ਖਰੀਦਣ ਲਈ \"ਰਜਿਸਟਰ\" ਕਰਨ ਦੀ ਲੋੜ ਨਹੀਂ"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:14
 msgid ""
@@ -2827,7 +2796,6 @@ msgid "Magnatune"
 msgstr "ਮੰਗਨਟੋਨ"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:121
-#| msgid "Loading Magnatune catalogue"
 msgid "Loading Magnatune catalog"
 msgstr "ਮੰਗਨਟੋਨ ਕੈਟਾਲਾਗ ਲੋਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
 
@@ -2843,20 +2811,18 @@ msgstr "ਐਲਬਮ ਖਰੀਦੀ ਨਹੀਂ ਜਾ ਸਕੀ"
 msgid "You must have a library location set to purchase an album."
 msgstr "ਇੱਕ ਐਲਬਮ ਖਰੀਦਣ ਲਈ ਤੁਹਾਨੂੰ ਇੱਕ ਲਾਇਬਰੇਰੀ ਟਿਕਾਣਾ ਸੈੱਟ ਕਰਨਾ ਪਵੇਗਾ।"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:255
-#, fuzzy, python-format
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:255, python-format
 #| msgid "Would you like to purchase the album '%(album)s' by '%(artist)s'."
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
-msgstr "ਕੀ ਤੁਸੀਂ '%(artist)s' ਦੀ '%(album)s' ਐਲਬਮ ਖਰੀਦਣੀ ਚਾਹੁੰਦੇ ਹੋ।"
+msgstr "ਕੀ ਤੁਸੀਂ '%(artist)s' ਦੀ <i>(album)s</i> ਐਲਬਮ ਖਰੀਦਣੀ ਚਾਹੁੰਦੇ ਹੋ।"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:372
-#| msgid "Unable to load catalogue"
 msgid "Unable to load catalog"
 msgstr "ਕੈਟਾਲਾਗ ਲੋਡ ਕਰਨ ਲਈ ਅਸਮਰੱਥ"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:373
 msgid "Rhythmbox could not understand the Magnatune catalog, please file a bug."
-msgstr ""
+msgstr "ਰੀਥਮਬਾਕਸ ਮੈਗਨਾਟਿਊਨ ਕੈਟਾਲਾਗ ਨੂੰ ਸਮਝ ਨਹੀਂ ਸਕਿਆ, ਬੱਗ ਫਾਇਲ ਕਰੋ ਜੀ"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:459
 msgid "Authorizing Purchase"
@@ -2864,7 +2830,7 @@ msgstr "ਖਰੀਦਣ ਲਈ ਪਰਮਾਣਿਕਤਾ"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:460
 msgid "Authorizing purchase with the Magnatune server. Please wait..."
-msgstr ""
+msgstr "ਮੰਗਨਾਟਿਊਨ ਸਰਵਰ ਨਾਲ ਖਰੀਦਣ ਲਈ ਪਰਮਾਣਕਿਤਾ ਦੀ ਲੋੜ ਹੈ। ਉਡੀਕੋ ਜੀ..."
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:506
 msgid "Purchase Error"
@@ -2886,8 +2852,7 @@ msgstr ""
 msgid "Error"
 msgstr "ਗਲਤੀ"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:511
-#, fuzzy, python-format
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:511, python-format
 #| msgid ""
 #| "An error occurred while trying to purchase the album.\n"
 #| "The Magnatune server returned:\n"
@@ -2898,7 +2863,7 @@ msgid ""
 "%s"
 msgstr ""
 "ਐਲਬਮ ਖਰੀਦਣ ਦੌਰਾਨ ਇੱਕ ਗਲਤੀ ਆਈ ਹੈ।\n"
-"ਮੰਗਨਟੋਨ ਸਰਵਰ ਦਾ ਜਵਾਬ:\n"
+"ਗਲਤੀ ਟੈਕਸਟ ਹੈ:\n"
 "%s"
 
 #. Add the popup menu actions
@@ -2948,7 +2913,7 @@ msgstr "ਪੋਰਟੇਬਲ ਪਲੇਅਰ - MTP"
 
 #: ../plugins/mtpdevice/mtpdevice.rb-plugin.in.h:2
 msgid "Support for MTP devices (show the content, transfer, play from device)"
-msgstr ""
+msgstr "MTP ਜੰਤਰਾਂ ਲਈ ਸਹਿਯੋਗ (ਜੰਤਰ ਤੋਂ ਸਮੱਗਰੀ ਵੇਖੋ, ਟਰਾਂਸਫਰ ਕਰੋ ਅਤੇ ਚਲਾਓ)"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:103
 #: ../shell/rb-removable-media-manager.c:150
@@ -2997,7 +2962,7 @@ msgstr "ਪਾਈਥਨ ਡੀਬੱਗਰ"
 
 #: ../plugins/pythonconsole/pythonconsole.py:82
 msgid "Enable remote python debugging with rpdb2"
-msgstr ""
+msgstr "rpdb2 ਨਾਲ ਰਿਮੋਟ ਪਾਈਥਨ ਡੀਬੱਗ ਕਰਨ ਯੋਗ ਕਰੋ"
 
 #: ../plugins/pythonconsole/pythonconsole.py:119
 msgid "You can access the main window through the 'shell' variable :"
@@ -3009,6 +2974,9 @@ msgid ""
 "or rpdb2. If you have not set a debugger password in GConf, it will use the "
 "default password ('rhythmbox')."
 msgstr ""
+"ਜਦੋਂ ਤੁਸੀਂ ਠੀਕ ਹੈ ਦੱਬੋਗੇ ਤਾਂ ਟੋਟੇਮ ਤੁਹਾਡੇ ਵਲੋਂ ਇਸ ਨੂੰ winpdb ਜਾਂ rpdb2 ਨਾਲ ਕੁਨੈਕਟ ਕਰਨ ਦੀ ਉਡੀਕ "
+"ਕਰੇਗਾ। ਜੇ ਤੁਸੀਂ GConf ਵੱਚ ਡੀਬੱਗਰ ਲਈ ਪਾਸਵਰਡ ਨਾ ਸੈੱਟ ਕੀਤਾ ਹੋਇਆ ਤਾਂ ਇਹ ਡਿਫਾਲਟ ਪਾਸਵਰਡ "
+"('rhythmbox') ਵਰਤੇਗਾ।"
 
 #. ex:noet:ts=8:
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:1
@@ -3059,10 +3027,9 @@ msgid "A sample plugin in C with no features"
 msgstr "C 'ਚ ਇੱਕ ਸਧਾਰਨ ਪਲੱਗਇਨ ਬਿਨਾਂ ਫੀਚਰ ਦੇ"
 
 #: ../plugins/sample-vala/sample-vala.rb-plugin.in.h:1
-#, fuzzy
 #| msgid "A sample plugin in C with no features"
 msgid "A sample plugin in Vala with no features"
-msgstr "C 'ਚ ਇੱਕ ਸਧਾਰਨ ਪਲੱਗਇਨ ਬਿਨਾਂ ਫੀਚਰ ਦੇ"
+msgstr "ਵਾਲਾ 'ਚ ਇੱਕ ਸਧਾਰਨ ਪਲੱਗਇਨ ਬਿਨਾਂ ਫੀਚਰ ਦੇ"
 
 #: ../plugins/sample-vala/sample-vala.rb-plugin.in.h:2
 msgid "Vala Sample Plugin"
@@ -3124,7 +3091,6 @@ msgid "from <i>%s</i>"
 msgstr "<i>%s</i> ਵਿੱਚੋਂ"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:1
-#| msgid "Status"
 msgid "Status Icon"
 msgstr "ਹਾਲਤ ਆਈਕਾਨ"
 
@@ -3141,7 +3107,6 @@ msgid "Always visible"
 msgstr "ਹਮੇਸ਼ਾ ਵੇਖਾਓ"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:3
-#| msgid "Never"
 msgid "Never shown"
 msgstr "ਕਦੇ ਨਹੀਂ ਵੇਖਾਓ"
 
@@ -3150,32 +3115,26 @@ msgid "Never visible"
 msgstr "ਕਦੇ ਨਾ ਵੇਖਾਓ"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:5
-#| msgid "Make the main window smaller"
 msgid "Owns the main window"
 msgstr "ਮੁੱਖ ਵਿੰਡੋ ਰੱਖਦਾ ਹੈ"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:6
-#| msgid "Make the main window smaller"
 msgid "Shown when the main window is hidden"
 msgstr "ਜਦੋਂ ਮੁੱਖ ਵਿੰਡੋ ਓਹਲੇ ਹੋਵੇ ਤਾਂ ਵੇਖਾਓ"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:7
-#| msgid "Magnatune Preferences"
 msgid "Status icon preferences"
 msgstr "ਹਾਲਤ ਆਈਕਾਨ ਪਸੰਦ"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:8
-#| msgid "Show N_otifications"
 msgid "Visible with notifications"
 msgstr "ਨੋਟੀਫਿਕੇਸ਼ਨ ਨਾਲ ਵੇਖੋ"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:9
-#| msgid "Notification"
 msgid "_Notifications"
 msgstr "ਨੋਟੀਫਿਕੇਸ਼ਨ(_N)"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:10
-#| msgid "Status:"
 msgid "_Status Icon:"
 msgstr "ਹਾਲਤ ਆਈਕਾਨ(_S):"
 
@@ -3281,11 +3240,10 @@ msgstr "ਵਜੁਲਾਈਜੇਸ਼ਨ"
 msgid "Error creating podcast download directory"
 msgstr "ਪੋਡਕਾਸਟ ਡਾਊਨਲੋਡ ਡਾਇਰੈਕਟਰੀ ਬਣਾਉਣ ਲਈ ਗਲਤੀ"
 
-#: ../podcast/rb-podcast-manager.c:812
-#, fuzzy, c-format
+#: ../podcast/rb-podcast-manager.c:812, c-format
 #| msgid "Failed to create the recorder: %s"
 msgid "Unable to create the download directory for %s: %s"
-msgstr "ਰਿਕਾਰਡਰ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ: %s"
+msgstr "%s ਲਈ ਡਾਊਨਲੋਡ ਡਾਇਰੈਕਟਰੀ ਬਣਾਉਣ ਵਿੱਚ ਅਸਮਰੱਥ: %s"
 
 #: ../podcast/rb-podcast-manager.c:938
 msgid "Invalid URL"
@@ -3324,34 +3282,30 @@ msgstr ""
 msgid "Podcast"
 msgstr "ਪੋਡਕਾਸਟ"
 
-#: ../podcast/rb-podcast-manager.c:2053
-#, fuzzy, c-format
+#: ../podcast/rb-podcast-manager.c:2053, c-format
 #| msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
-msgstr "ਇਹ ਪੋਸਟ-ਕਾਸਟ ਜੋੜਨ ਦੌਰਾਨ ਇੱਕ ਸਮੱਸਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ URL ਦੀ ਜਾਂਚ ਕਰੋ: %s"
+msgstr "%s: ਇਹ ਪੋਡ-ਕਾਸਟ ਜੋੜਨ ਦੌਰਾਨ ਇੱਕ ਸਮੱਸਿਆ ਹੈ। URL ਦੀ ਜਾਂਚ ਕਰੋ: %s"
 
-#: ../podcast/rb-podcast-parse.c:183
-#, fuzzy, c-format
+#: ../podcast/rb-podcast-parse.c:183, c-format
 #| msgid "Unsupported file type: %s"
 msgid "Unable to check file type: %s"
-msgstr "ਨਾ-ਸਹਾਇਕ ਫਾਇਲ ਕਿਸਮ: %s"
+msgstr "ਫਾਇਲ ਕਿਸਮ ਚੈੱਕ ਕਰਨ ਲਈ ਅਸਮਰੱਥ: %s"
 
-#: ../podcast/rb-podcast-parse.c:202
-#, fuzzy, c-format
+#: ../podcast/rb-podcast-parse.c:202, c-format
 #| msgid "Unsupported file type: %s"
 msgid "Unexpected file type: %s"
-msgstr "ਨਾ-ਸਹਾਇਕ ਫਾਇਲ ਕਿਸਮ: %s"
+msgstr "ਬੇਲੋੜੀ ਫਾਇਲ ਕਿਸਮ: %s"
 
 #: ../podcast/rb-podcast-parse.c:225
 #, c-format
 msgid "Unable to parse the feed contents"
 msgstr "ਫੀਡ ਸਮੱਗਰੀ ਪਾਰਸ ਕਰਨ ਲਈ ਅਸਮਰੱਥ"
 
-#: ../podcast/rb-podcast-parse.c:239
-#, fuzzy, c-format
+#: ../podcast/rb-podcast-parse.c:239, c-format
 #| msgid "Device '%s' does not contain any media"
 msgid "The feed does not contain any downloadable items"
-msgstr "ਜੰਤਰ '%s' ਵਿੱਚ ਕੋਈ ਮੀਡਿਆ ਨਹੀਂ ਹੈ"
+msgstr "ਫੀਡ ਵਿੱਚ ਕੋਈ ਡਾਊਨਲੋਡਯੋਗ ਆਈਟਮਾਂ ਨਹੀਂ ਹਨ"
 
 #: ../podcast/rb-podcast-properties-dialog.c:431
 msgid "Not Downloaded"
@@ -3359,7 +3313,7 @@ msgstr "ਡਾਊਨਲੋਡ ਨਹੀਂ ਹੈ"
 
 #: ../remote/dbus/rb-client.c:81
 msgid "Don't start a new instance of Rhythmbox"
-msgstr "ਰੀਥਮਬਾਕਸ ਦਾ ਨਵਾਂ ਝਰੋਖਾ ਨਾ ਚਲਾਓ"
+msgstr "ਰੀਥਮਬਾਕਸ ਦਾ ਨਵਾਂ ਮੌਕਾ ਨਾ ਚਲਾਓ"
 
 #: ../remote/dbus/rb-client.c:82 ../shell/main.c:118
 msgid "Quit Rhythmbox"
@@ -3367,11 +3321,11 @@ msgstr "ਰੀਥਮਬਾਕਸ ਬੰਦ ਕਰੋ"
 
 #: ../remote/dbus/rb-client.c:84
 msgid "Don't present an existing Rhythmbox window"
-msgstr "ਇੱਕ ਮੌਜੂਦਾ ਰੀਥਮਬਾਕਸ ਝਰੋਖਾ ਪੇਸ਼ ਨਾ ਕਰੋ"
+msgstr "ਇੱਕ ਮੌਜੂਦਾ ਰੀਥਮਬਾਕਸ ਵਿੰਡੋ ਨਾ ਵੇਖਾਉ"
 
 #: ../remote/dbus/rb-client.c:85
 msgid "Hide the Rhythmbox window"
-msgstr "ਰੀਥਮਬਾਕਸ ਝਰੋਖਾ ਓਹਲੇ"
+msgstr "ਰੀਥਮਬਾਕਸ ਵਿੰਡੋ ਓਹਲੇ"
 
 #: ../remote/dbus/rb-client.c:87
 msgid "Jump to next song"
@@ -3400,7 +3354,7 @@ msgstr "ਚੱਲਣ/ਵਿਰਾਮ ਢੰਗ ਬਦਲੋ"
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
 #: ../remote/dbus/rb-client.c:97
 msgid "Play a specified URI, importing it if necessary"
-msgstr "ਇੱਕ ਦਿੱਤਾ URI ਚਲਾਓ, ਲੋੜ ਪਵੇ ਤਾਂ ਆਯਾਤ ਕਰੋ"
+msgstr "ਇੱਕ ਦਿੱਤਾ URI ਚਲਾਓ, ਲੋੜ ਪਵੇ ਤਾਂ ਇੰਪੋਰਟ ਕਰੋ"
 
 #: ../remote/dbus/rb-client.c:97
 msgid "URI to play"
@@ -3463,8 +3417,7 @@ msgstr "ਪਲੇਅਬੈਕ ਵਾਲੀਅਮ %f ਹੈ।\n"
 msgid "All"
 msgstr "ਸਭ"
 
-#: ../rhythmdb/rhythmdb-tree.c:407
-#, fuzzy, c-format
+#: ../rhythmdb/rhythmdb-tree.c:407, c-format
 #| msgid ""
 #| "The database was created by a later version of rhythmbox.  This version "
 #| "of rhythmbox cannot read the database."
@@ -3487,7 +3440,7 @@ msgstr "%s ਨੂੰ ਖੋਲਣਾ ਸੰਭਵ ਨਹੀਂ: %s"
 #.
 #: ../rhythmdb/rhythmdb.c:1654
 msgid "The Beatles"
-msgstr ""
+msgstr "ਬੀਟਲਜ਼"
 
 #. Translators: this is an example album name.  If the
 #. * example artist name is localised, this should be replaced
@@ -3503,7 +3456,7 @@ msgstr "ਮੱਦਦ!"
 #.
 #: ../rhythmdb/rhythmdb.c:1666
 msgid "Ticket To Ride"
-msgstr ""
+msgstr "ਚੜ੍ਹਨ ਲਈ ਟਿਕਟ"
 
 #: ../rhythmdb/rhythmdb.c:2221
 msgid "invalid unicode in error message"
@@ -3587,6 +3540,8 @@ msgid ""
 "%s\n"
 "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
+"%s\n"
+"Run '%s --help' to see a full list of available command line options.\n"
 
 #: ../shell/rb-playlist-manager.c:161
 msgid "MPEG Version 3.0 URL"
@@ -4625,7 +4580,7 @@ msgstr "ਪੋਸਟ-ਕਾਸਟ ਵਿੱਚ ਗਲਤੀ ਹੈ"
 #: ../sources/rb-podcast-source.c:1893
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
-msgstr ""
+msgstr "%s। ਕੀ ਤੁਸੀਂ ਪੋਡਕਾਸਟ ਫੀਡ ਕਿਵੇਂ ਵੀ ਸ਼ਾਮਲ ਕਰਨੀ ਚਾਹੁੰਦੇ ਹੋ?"
 
 #: ../sources/rb-podcast-source.c:2020
 msgid "New Podcast Feed"
