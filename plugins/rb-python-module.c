@@ -169,6 +169,11 @@ rb_python_module_init_python (void)
 
 	/* import gobject */
 	init_pygobject ();
+	if (PyErr_Occurred ()) {
+		g_warning ("Could not initialize pygobject");
+		PyErr_Print();
+		return;
+	}
 
 	/* disable pyg* log hooks, since ours is more interesting */
 #ifdef pyg_disable_warning_redirections
@@ -180,6 +185,11 @@ rb_python_module_init_python (void)
 
 	/* import gtk */
 	init_pygtk ();
+	if (PyErr_Occurred ()) {
+		g_warning ("Could not initialize pygtk");
+		PyErr_Print();
+		return;
+	}
 
 	pyg_enable_threads ();
 
@@ -207,6 +217,12 @@ rb_python_module_init_python (void)
 	mdict = PyModule_GetDict (rhythmdb);
 
 	pyrhythmdb_register_classes (mdict);
+	if (PyErr_Occurred ()) {
+		g_warning ("unable to register rhythmdb classes");
+		PyErr_Print();
+		return;
+	}
+
 	pyrhythmdb_add_constants (rhythmdb, "RHYTHMDB_");
 
 	/* import rb */
@@ -251,6 +267,11 @@ rb_python_module_init_python (void)
 	mdict = PyModule_GetDict (rb);
 
 	pyrb_register_classes (mdict);
+	if (PyErr_Occurred ()) {
+		g_warning ("unable to register rb classes");
+		PyErr_Print();
+		return;
+	}
 	pyrb_add_constants (rb, "RB_");
 
 	/* Retreive the Python type for rb.Plugin */
