@@ -15,6 +15,7 @@ libaudioscrobbler_la_SOURCES = \
 	rb-lastfm-play-order.h
 
 libaudioscrobbler_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libaudioscrobbler_la_LIBTOOLFLAGS = --tag=disable-static
 libaudioscrobbler_la_LIBADD = 				\
 	$(top_builddir)/corelib/librhythmbox-core.la	\
 	$(TOTEM_PLPARSER_LIBS)

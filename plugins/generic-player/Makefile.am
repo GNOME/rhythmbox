@@ -16,6 +16,7 @@ libgeneric_player_la_SOURCES +=				\
 	rb-psp-source.h
 endif
 
+libgeneric_player_la_LIBTOOLFLAGS = --tag=disable-static
 libgeneric_player_la_LDFLAGS = 				\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)				        \	

@@ -1,6 +1,6 @@
-plugindir = $(PLUGINDIR)
-plugin_LTLIBRARIES = libsample-vala.la
-#noinst_LTLIBRARIES = libsample-vala.la
+plugindir = $(PLUGINDIR)/sample-vala
+#plugin_LTLIBRARIES = libsample-vala.la
+noinst_LTLIBRARIES = libsample-vala.la
 
 nodist_libsample_vala_la_SOURCES = \
 	rb-sample-vala-plugin.c				\
@@ -10,6 +10,7 @@ libsample_vala_la_SOURCES = \
 	rb-sample-vala-plugin.vala
 	
 libsample_vala_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libsample_vala_la_LIBTOOLFLAGS = --tag=disable-static
 
 libsample_vala_la_CFLAGS = $(WNOERROR_CFLAGS)
 
@@ -41,7 +42,7 @@ plugin_in_files = sample-vala.rb-plugin.in
 %.c %.h: %.vala
 	$(VALAC) -C --vapidir=$(top_srcdir)/bindings/vala --pkg=rhythmdb --pkg=rb $^
 	
-plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
+# plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 
 EXTRA_DIST = $(plugin_in_files)
 

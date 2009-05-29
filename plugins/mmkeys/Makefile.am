@@ -8,6 +8,7 @@ libmmkeys_la_SOURCES = \
 	$(NULL)
 
 libmmkeys_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libmmkeys_la_LIBTOOLFLAGS = --tag=disable-static
 
 libmmkeys_la_LIBADD =					\
 	$(top_builddir)/corelib/librhythmbox-core.la	\

@@ -23,6 +23,7 @@ libstatus_icon_la_SOURCES = \
 
 
 libstatus_icon_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libstatus_icon_la_LIBTOOLFLAGS = --tag=disable-static
 
 libstatus_icon_la_LIBADD = $(RHYTHMBOX_LIBS)
 

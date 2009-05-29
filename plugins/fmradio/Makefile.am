@@ -11,6 +11,7 @@ libfmradio_la_SOURCES = \
   rb-radio-tuner-v4l2.c
 
 libfmradio_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libfmradio_la_LIBTOOLFLAGS = --tag=disable-static
 libfmradio_la_LIBADD = $(top_builddir)/corelib/librhythmbox-core.la
 
 INCLUDES = \

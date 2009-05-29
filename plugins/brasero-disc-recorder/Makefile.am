@@ -8,6 +8,7 @@ libcd_recorder_la_SOURCES =					\
 	$(NULL)
 
 libcd_recorder_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libcd_recorder_la_LIBTOOLFLAGS = --tag=disable-static
 libcd_recorder_la_LIBADD = 				\
 	$(top_builddir)/corelib/librhythmbox-core.la	\
 	$(LIBBRASERO_MEDIA_LIBS)			\

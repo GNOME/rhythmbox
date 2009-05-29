@@ -14,4 +14,5 @@ librhythmbox_core_la_LIBADD = 				\
 	$(top_builddir)/lib/librb.la
 
 librhythmbox_core_la_LDFLAGS = -export-dynamic
+librhythmbox_core_la_LIBTOOLFLAGS = --tag=disable-static
 

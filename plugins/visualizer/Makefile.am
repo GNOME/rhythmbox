@@ -9,6 +9,7 @@ libvisualizer_la_SOURCES = \
 	rb-vis-widget.h
 
 libvisualizer_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libvisualizer_la_LIBTOOLFLAGS = --tag=disable-static
 
 libvisualizer_la_LIBADD = 				\
 	-lgstinterfaces-0.10				\

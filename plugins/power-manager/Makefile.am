@@ -5,6 +5,7 @@ libpower_manager_la_SOURCES = \
 	rb-power-manager-plugin.c
 
 libpower_manager_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libpower_manager_la_LIBTOOLFLAGS = --tag=disable-static
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

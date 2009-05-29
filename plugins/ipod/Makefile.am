@@ -13,6 +13,7 @@ libipod_la_SOURCES = \
 	rb-ipod-plugin.c
 
 libipod_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libipod_la_LIBTOOLFLAGS = --tag=disable-static
 libipod_la_LIBADD = 					\
 	$(top_builddir)/corelib/librhythmbox-core.la	\
 	$(HAL_LIBS)					\

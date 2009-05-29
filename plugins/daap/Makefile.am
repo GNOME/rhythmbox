@@ -31,6 +31,7 @@ libdaap_la_SOURCES = \
 	$(NULL)
 
 libdaap_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libdaap_la_LIBTOOLFLAGS = --tag=disable-static
 libdaap_la_LIBADD = 					\
 	$(DBUS_LIBS)					\
 	$(MDNS_LIBS)

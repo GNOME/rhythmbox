@@ -5,6 +5,7 @@ librblirc_la_SOURCES = \
 	rb-lirc-plugin.c
 
 librblirc_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS) -llirc_client
+librblirc_la_LIBTOOLFLAGS = --tag=disable-static
 
 configdir = $(PLUGINDIR)/rblirc
 config_DATA = rhythmbox_lirc_default

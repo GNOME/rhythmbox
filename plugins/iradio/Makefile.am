@@ -13,6 +13,7 @@ libiradio_la_SOURCES = 					\
 	rb-station-properties-dialog.h
 
 libiradio_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libiradio_la_LIBTOOLFLAGS = --tag=disable-static
 libiradio_la_LIBADD = 					\
 	$(top_builddir)/corelib/librhythmbox-core.la
 

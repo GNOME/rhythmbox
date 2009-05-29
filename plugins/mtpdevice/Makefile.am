@@ -9,6 +9,7 @@ libmtpdevice_la_SOURCES = \
 	rb-mtp-source.h
 	
 libmtpdevice_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libmtpdevice_la_LIBTOOLFLAGS = --tag=disable-static
 libmtpdevice_la_LIBADD = 					\
 	$(top_builddir)/lib/librb.la			\
 	$(HAL_LIBS)					\
