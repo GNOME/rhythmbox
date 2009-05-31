@@ -1156,13 +1156,18 @@ default_load_playlists (RBGenericPlayerSource *source)
 		 */
 		playlist_path = rb_uri_append_path (mount_path, priv->playlist_path);
 		rb_debug ("constructed playlist search path %s", playlist_path);
-
+	} else {
+		playlist_path = g_strdup (mount_path);
 	}
 
-	rb_uri_handle_recursively (playlist_path ? playlist_path : mount_path,
-				   NULL,
-				   (RBUriRecurseFunc) visit_playlist_dirs,
-				   source);
+	/* if we don't have any information about playlist support, don't go looking for playlists */
+	if (priv->playlist_path != NULL || priv->playlist_format_unknown == FALSE) {
+		rb_debug ("searching for playlists in %s", playlist_path);
+		rb_uri_handle_recursively (playlist_path,
+					   NULL,
+					   (RBUriRecurseFunc) visit_playlist_dirs,
+					   source);
+	}
 
 	g_free (playlist_path);
 	g_free (mount_path);
