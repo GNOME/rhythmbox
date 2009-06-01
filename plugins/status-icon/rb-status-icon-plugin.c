@@ -114,6 +114,7 @@ struct _RBStatusIconPluginPrivate
 	GdkPixbuf *notify_pixbuf;
 #ifdef HAVE_NOTIFY
 	NotifyNotification *notification;
+	gboolean notify_supports_actions;
 #endif
 
 	GtkWidget *config_dialog;
@@ -302,20 +303,42 @@ notification_closed_cb (NotifyNotification *notification,
 }
 
 static void
+notification_next_cb (NotifyNotification *notification,
+		      const char *action,
+		      RBStatusIconPlugin *plugin)
+{
+	rb_debug ("notification action: %s", action);
+	rb_shell_player_do_next (plugin->priv->shell_player, NULL);
+}
+
+static void
 do_notify (RBStatusIconPlugin *plugin,
 	   guint timeout,
 	   const char *primary,
 	   const char *secondary,
-	   GdkPixbuf *pixbuf)
+	   GdkPixbuf *pixbuf,
+	   gboolean show_action)
 {
 	const char *icon_name;
 	GError *error = NULL;
 
 	if (notify_is_initted () == FALSE) {
+		GList *caps;
+
 		if (notify_init ("rhythmbox") == FALSE) {
 			g_warning ("libnotify initialization failed");
 			return;
 		}
+
+		/* ask the notification server if it supports actions */
+		caps = notify_get_server_caps ();
+		if (g_list_find_custom (caps, "actions", (GCompareFunc)g_strcmp0) != NULL) {
+			rb_debug ("notification server supports actions");
+			plugin->priv->notify_supports_actions = TRUE;
+		} else {
+			rb_debug ("notification server does not support actions");
+		}
+		rb_list_deep_free (caps);
 	}
 
 	update_status_icon_visibility (plugin, TRUE);
@@ -361,6 +384,16 @@ do_notify (RBStatusIconPlugin *plugin,
 
 	if (pixbuf != NULL) {
 		notify_notification_set_icon_from_pixbuf (plugin->priv->notification, pixbuf);
+	}
+
+	notify_notification_clear_actions (plugin->priv->notification);
+	if (show_action && plugin->priv->notify_supports_actions) {
+		notify_notification_add_action (plugin->priv->notification,
+						"media-next",
+						_("Next"),
+						(NotifyActionCallback) notification_next_cb,
+						plugin,
+						NULL);
 	}
 
 	if (notify_notification_show (plugin->priv->notification, &error) == FALSE) {
@@ -430,7 +463,8 @@ notify_playing_entry (RBStatusIconPlugin *plugin, gboolean requested)
 		   PLAYING_ENTRY_NOTIFY_TIME * 1000,
 		   plugin->priv->current_title,
 		   plugin->priv->current_album_and_artist,
-		   plugin->priv->notify_pixbuf);
+		   plugin->priv->notify_pixbuf,
+		   TRUE);
 }
 
 static void
@@ -440,7 +474,7 @@ notify_custom (RBStatusIconPlugin *plugin, guint timeout, const char *primary, c
 		return;
 	}
 
-	do_notify (plugin, timeout, primary, secondary, pixbuf);
+	do_notify (plugin, timeout, primary, secondary, pixbuf, FALSE);
 }
 
 static void
