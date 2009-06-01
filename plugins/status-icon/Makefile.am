@@ -25,7 +25,10 @@ libstatus_icon_la_SOURCES = \
 libstatus_icon_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libstatus_icon_la_LIBTOOLFLAGS = --tag=disable-static
 
-libstatus_icon_la_LIBADD = $(RHYTHMBOX_LIBS)
+libstatus_icon_la_LIBADD = 				\
+	$(top_builddir)/corelib/librhythmbox-core.la	\
+	$(NOTIFY_LIBS)					\
+	$(NULL)
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

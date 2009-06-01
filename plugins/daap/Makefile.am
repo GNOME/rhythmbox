@@ -33,6 +33,7 @@ libdaap_la_SOURCES = \
 libdaap_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libdaap_la_LIBTOOLFLAGS = --tag=disable-static
 libdaap_la_LIBADD = 					\
+	$(top_builddir)/corelib/librhythmbox-core.la	\
 	$(DBUS_LIBS)					\
 	$(MDNS_LIBS)
 

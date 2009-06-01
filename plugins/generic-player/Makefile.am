@@ -18,8 +18,9 @@ endif
 
 libgeneric_player_la_LIBTOOLFLAGS = --tag=disable-static
 libgeneric_player_la_LDFLAGS = 				\
+	$(top_builddir)/corelib/librhythmbox-core.la	\
 	$(TOTEM_PLPARSER_LIBS)				\
-	$(HAL_LIBS)				        \	
+	$(HAL_LIBS)				        \
 	$(PLUGIN_LIBTOOL_FLAGS)
 
 INCLUDES = 						\

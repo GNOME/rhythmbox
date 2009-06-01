@@ -7,6 +7,8 @@ libsample_la_SOURCES = \
 	
 libsample_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
+libsample_la_LIBADD = $(top_builddir)/corelib/librhythmbox-core.la
+
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
