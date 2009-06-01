@@ -88,6 +88,8 @@ struct _RBStatusIconPluginPrivate
 	guint gconf_notify_id;
 
 	/* configuration */
+	gboolean syncing_actions;
+	gboolean syncing_config_widgets;
 	enum {
 		ICON_NEVER = 0,
 		ICON_WITH_NOTIFY,
@@ -118,6 +120,8 @@ struct _RBStatusIconPluginPrivate
 #endif
 
 	GtkWidget *config_dialog;
+	GtkWidget *notify_combo;
+	GtkWidget *icon_combo;
 
 	RBShellPlayer *shell_player;
 	RBShell *shell;
@@ -187,6 +191,9 @@ toggle_window_cmd (GtkAction *action, RBStatusIconPlugin *plugin)
 static void
 show_window_cmd (GtkAction *action, RBStatusIconPlugin *plugin)
 {
+	if (plugin->priv->syncing_actions)
+		return;
+
 	g_object_set (plugin->priv->shell,
 		      "visibility", gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)),
 		      NULL);
@@ -197,6 +204,9 @@ show_notifications_cmd (GtkAction *action, RBStatusIconPlugin *plugin)
 {
 	gboolean active;
 	int new_mode;
+
+	if (plugin->priv->syncing_actions)
+		return;
 
 	/* we've only got on/off here, so map that to 'never' or 'only when hidden' */
 	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
@@ -260,6 +270,8 @@ sync_actions (RBStatusIconPlugin *plugin)
 	GtkAction *action;
 	gboolean visible;
 
+	plugin->priv->syncing_actions = TRUE;
+
 	action = gtk_action_group_get_action (plugin->priv->action_group,
 					      "TrayShowWindow");
 	g_object_get (plugin->priv->shell, "visibility", &visible, NULL);
@@ -278,6 +290,8 @@ sync_actions (RBStatusIconPlugin *plugin)
 	action = gtk_action_group_get_action (plugin->priv->action_group,
 					      "MusicClose");
 	gtk_action_set_visible (action, plugin->priv->icon_mode == ICON_OWNS_WINDOW);
+
+	plugin->priv->syncing_actions = FALSE;
 }
 
 static void
@@ -1064,12 +1078,18 @@ cleanup_status_icon (RBStatusIconPlugin *plugin)
 static void
 notification_config_changed_cb (GtkComboBox *widget, RBStatusIconPlugin *plugin)
 {
+	if (plugin->priv->syncing_config_widgets)
+		return;
+
 	eel_gconf_set_integer (CONF_NOTIFICATION_MODE, gtk_combo_box_get_active (widget));
 }
 
 static void
 status_icon_config_changed_cb (GtkComboBox *widget, RBStatusIconPlugin *plugin)
 {
+	if (plugin->priv->syncing_config_widgets)
+		return;
+
 	eel_gconf_set_integer (CONF_STATUS_ICON_MODE, gtk_combo_box_get_active (widget));
 }
 
@@ -1121,9 +1141,19 @@ config_notify_cb (GConfClient *client, guint connection_id, GConfEntry *entry, R
 		update_status_icon_visibility (plugin, FALSE);	/* maybe should remember if we're notifying.. */
 		sync_actions (plugin);
 
+		plugin->priv->syncing_config_widgets = TRUE;
+		gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->icon_combo), plugin->priv->icon_mode);
+		plugin->priv->syncing_config_widgets = FALSE;
+
 	} else if (g_str_equal (gconf_entry_get_key (entry), CONF_NOTIFICATION_MODE)) {
 		plugin->priv->notify_mode = gconf_value_get_int (gconf_entry_get_value (entry));
 		rb_debug ("notify mode changed to %d", plugin->priv->notify_mode);
+
+		sync_actions (plugin);
+
+		plugin->priv->syncing_config_widgets = TRUE;
+		gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->notify_combo), plugin->priv->notify_mode);
+		plugin->priv->syncing_config_widgets = FALSE;
 	}
 }
 
@@ -1135,8 +1165,6 @@ impl_get_config_widget (RBPlugin *bplugin)
 {
 	RBStatusIconPlugin *plugin;
 	GtkBuilder *builder;
-	GtkComboBox *icon_combo;
-	GtkComboBox *notify_combo;
 	char *builderfile;
 
 	plugin = RB_STATUS_ICON_PLUGIN (bplugin);
@@ -1162,18 +1190,18 @@ impl_get_config_widget (RBPlugin *bplugin)
 	/* connect signals and stuff */
 	g_signal_connect_object (plugin->priv->config_dialog, "response", G_CALLBACK (config_response_cb), plugin, 0);
 
-	icon_combo = GTK_COMBO_BOX (gtk_builder_get_object (builder, "statusiconmode"));
-	notify_combo = GTK_COMBO_BOX (gtk_builder_get_object (builder, "notificationmode"));
-	g_signal_connect_object (notify_combo,
+	plugin->priv->icon_combo = GTK_WIDGET (gtk_builder_get_object (builder, "statusiconmode"));
+	plugin->priv->notify_combo = GTK_WIDGET (gtk_builder_get_object (builder, "notificationmode"));
+	g_signal_connect_object (plugin->priv->notify_combo,
 				 "changed",
 				 G_CALLBACK (notification_config_changed_cb),
 				 plugin, 0);
-	g_signal_connect_object (icon_combo,
+	g_signal_connect_object (plugin->priv->icon_combo,
 				 "changed",
 				 G_CALLBACK (status_icon_config_changed_cb),
 				 plugin, 0);
-	gtk_combo_box_set_active (notify_combo, plugin->priv->notify_mode);
-	gtk_combo_box_set_active (icon_combo, plugin->priv->icon_mode);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->notify_combo), plugin->priv->notify_mode);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->icon_combo), plugin->priv->icon_mode);
 
 	g_object_unref (builder);
 	return plugin->priv->config_dialog;
