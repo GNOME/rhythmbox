@@ -646,13 +646,13 @@ impl_close (RBPlayer *player, const char *uri, GError **error)
 {
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
-	mp->priv->playing = FALSE;
-	mp->priv->buffering = FALSE;
-
 	if ((uri != NULL) && (mp->priv->uri != NULL) && strcmp (mp->priv->uri, uri) == 0) {
 		rb_debug ("URI doesn't match current playing URI; ignoring");
 		return TRUE;
 	}
+
+	mp->priv->playing = FALSE;
+	mp->priv->buffering = FALSE;
 
 	_destroy_stream_data (mp);
 	g_free (mp->priv->uri);
@@ -729,10 +729,8 @@ impl_play (RBPlayer *player, gint crossfade, GError **error)
 	} else if (mp->priv->current_track_finishing) {
 		rb_debug ("current track finishing -> just setting URI on playbin");
 		g_object_set (mp->priv->playbin, "uri", mp->priv->uri, NULL);
-
-		_rb_player_emit_playing_stream (RB_PLAYER (mp), mp->priv->stream_data);
-
 		result = TRUE;
+
 	} else {
 		gboolean cdda_seek = FALSE;
 
@@ -766,7 +764,6 @@ impl_play (RBPlayer *player, gint crossfade, GError **error)
 						      GST_SEEK_TYPE_NONE, -1)) {
 					cdda_seek = TRUE;
 					result = TRUE;
-					_rb_player_emit_playing_stream (RB_PLAYER (mp), mp->priv->stream_data);
 				}
 			} else {
 				/* +1 to skip the '#' */
@@ -784,8 +781,6 @@ impl_play (RBPlayer *player, gint crossfade, GError **error)
 			result = set_state_and_wait (mp, GST_STATE_READY, error);
 			if (result == TRUE) {
 				g_object_set (mp->priv->playbin, "uri", mp->priv->uri, NULL);
-
-				_rb_player_emit_playing_stream (RB_PLAYER (mp), mp->priv->stream_data);
 				result = set_state_and_wait (mp, GST_STATE_PLAYING, error);
 			}
 		}
@@ -797,6 +792,8 @@ impl_play (RBPlayer *player, gint crossfade, GError **error)
 		mp->priv->current_track_finishing = FALSE;
 		mp->priv->buffering = FALSE;
 		mp->priv->playing = TRUE;
+
+		_rb_player_emit_playing_stream (RB_PLAYER (mp), mp->priv->stream_data);
 
 		if (mp->priv->tick_timeout_id == 0) {
 			mp->priv->tick_timeout_id =
