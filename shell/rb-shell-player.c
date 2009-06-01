@@ -279,7 +279,6 @@ struct RBShellPlayerPrivate
 
 	guint do_next_idle_id;
 	guint unblock_play_id;
-	guint notify_playing_id;
 };
 
 #define RB_SHELL_PLAYER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL_PLAYER, RBShellPlayerPrivate))
@@ -712,19 +711,6 @@ reemit_playing_signal (RBShellPlayer *player,
 		       rb_player_playing (player->priv->mmplayer));
 }
 
-static gboolean
-notify_playing_idle (RBShellPlayer *player)
-{
-	GDK_THREADS_ENTER ();
-	rb_debug ("emitting playing notification: %d", rb_player_playing (player->priv->mmplayer));
-	g_object_notify (G_OBJECT (player), "playing");
-	rb_shell_player_sync_buttons (player);
-
-	player->priv->notify_playing_id = 0;
-	GDK_THREADS_LEAVE ();
-	return FALSE;
-}
-
 static int
 rb_shell_player_get_crossfade (RBShellPlayer *player, PlaybackStartType play_type)
 {
@@ -767,10 +753,6 @@ rb_shell_player_open_playlist_url (RBShellPlayer *player,
 		rb_shell_player_error (player, TRUE, error);
 		g_error_free (error);
 		GDK_THREADS_LEAVE ();
-	}
-	if (player->priv->notify_playing_id == 0) {
-		player->priv->notify_playing_id = g_idle_add ((GSourceFunc) notify_playing_idle,
-							      player);
 	}
 }
 
@@ -1239,11 +1221,6 @@ rb_shell_player_dispose (GObject *object)
 	if (player->priv->unblock_play_id != 0) {
 		g_source_remove (player->priv->unblock_play_id);
 		player->priv->unblock_play_id = 0;
-	}
-
-	if (player->priv->notify_playing_id != 0) {
-		g_source_remove (player->priv->notify_playing_id);
-		player->priv->notify_playing_id = 0;
 	}
 
 	G_OBJECT_CLASS (rb_shell_player_parent_class)->dispose (object);
