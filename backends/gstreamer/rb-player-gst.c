@@ -734,58 +734,34 @@ impl_play (RBPlayer *player, gint crossfade, GError **error)
 		result = TRUE;
 
 	} else {
-		gboolean cdda_seek = FALSE;
+		gboolean reused = FALSE;
 
-		rb_debug ("not in transition, stopping current track to start the new one");
+		/* try to reuse the stream */
+		if (mp->priv->prev_uri != NULL) {
+			g_signal_emit (mp,
+				       signals[CAN_REUSE_STREAM], 0,
+				       mp->priv->uri, mp->priv->prev_uri, mp->priv->playbin,
+				       &reused);
 
-		/* check if we are switching tracks on a cd, so we don't have to close the device */
-		if (g_str_has_prefix (mp->priv->uri, "cdda://")) {
-			const char *old_device = NULL;
-			const char *new_device;
-
-			if (mp->priv->prev_uri && g_str_has_prefix (mp->priv->prev_uri, "cdda://"))
-				old_device = g_utf8_strchr (mp->priv->prev_uri, -1, '#');
-
-			new_device = g_utf8_strchr (mp->priv->uri, -1, '#');
-
-			if (old_device && strcmp (old_device, new_device) == 0) {
-				GstFormat track_format = gst_format_get_by_nick ("track");
-				char *track_str;
-				guint track;
-				guint cdda_len;
-
-				cdda_len = strlen ("cdda://");
-				track_str = g_strndup (mp->priv->uri + cdda_len, new_device - (mp->priv->uri + cdda_len));
-				track = atoi (track_str);
-				g_free (track_str);
-
-				rb_debug ("seeking to track %d on CD device %s", track, new_device);
-				if (gst_element_seek (mp->priv->playbin, 1.0,
-						      track_format, GST_SEEK_FLAG_FLUSH,
-						      GST_SEEK_TYPE_SET, track - 1,
-						      GST_SEEK_TYPE_NONE, -1)) {
-					cdda_seek = TRUE;
-					result = TRUE;
-				}
-			} else {
-				/* +1 to skip the '#' */
-				char *device = g_strdup (new_device + 1);
-
-				rb_debug ("waiting for source element for CD device %s", device);
-				g_signal_connect (G_OBJECT (mp->priv->playbin),
-						  "notify::source",
-						  G_CALLBACK (cdda_got_source_cb),
-						  device);
+			if (reused) {
+				rb_debug ("reusing stream to switch from %s to %s", mp->priv->prev_uri, mp->priv->uri);
+				g_signal_emit (player,
+					       signals[REUSE_STREAM], 0,
+					       mp->priv->uri, mp->priv->prev_uri, mp->priv->playbin);
+				result = TRUE;
 			}
 		}
 
-		if (cdda_seek == FALSE) {
+		/* no stream reuse, so stop, set the new URI, then start */
+		if (reused == FALSE) {
+			rb_debug ("not in transition, stopping current track to start the new one");
 			result = set_state_and_wait (mp, GST_STATE_READY, error);
 			if (result == TRUE) {
 				g_object_set (mp->priv->playbin, "uri", mp->priv->uri, NULL);
 				result = set_state_and_wait (mp, GST_STATE_PLAYING, error);
 			}
 		}
+
 	}
 
 	mp->priv->stream_change_pending = FALSE;
