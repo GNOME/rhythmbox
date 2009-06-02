@@ -32,6 +32,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gst/gst.h>
 
 #include "rhythmdb.h"
 #include "eel-gconf-extensions.h"
@@ -43,8 +44,10 @@
 #include "rb-util.h"
 #include "rb-refstring.h"
 #include "rhythmdb.h"
-#include "rb-encoder.h"
 #include "rb-dialog.h"
+#include "rb-shell-player.h"
+#include "rb-player.h"
+#include "rb-encoder.h"
 
 #include "rb-mtp-source.h"
 
@@ -103,16 +106,10 @@ static char *impl_get_browser_key (RBSource *source);
 static char *impl_get_paned_key (RBBrowserSource *source);
 
 static void rb_mtp_source_load_tracks (RBMtpSource*);
-static gboolean rb_mtp_source_transfer_track_to_disk (LIBMTP_mtpdevice_t *device,
-						      LIBMTP_track_t *track,
-						      const char *uri);
-static char* rb_mtp_source_get_playback_uri (RhythmDBEntry *entry,
-					     gpointer data);
 
 static void impl_delete (RBSource *asource);
 static gboolean impl_show_popup (RBSource *source);
 static GList* impl_get_ui_actions (RBSource *source);
-static GList* impl_copy (RBSource *source);
 
 static GList * impl_get_mime_types (RBRemovableMediaSource *source);
 static gboolean impl_track_added (RBRemovableMediaSource *source,
@@ -133,6 +130,15 @@ static void artwork_notify_cb (RhythmDB *db,
 			       RBMtpSource *source);
 
 static void add_track_to_album (RBMtpSource *source, const char *album_name, LIBMTP_track_t *track);
+
+static void prepare_player_source_cb (RBPlayer *player,
+				      const char *stream_uri,
+				      GstElement *src,
+				      RBMtpSource *source);
+static void prepare_encoder_source_cb (RBEncoderFactory *factory,
+				       const char *stream_uri,
+				       GObject *src,
+				       RBMtpSource *source);
 
 typedef struct
 {
@@ -207,7 +213,6 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_delete = impl_delete;
-	source_class->impl_copy = impl_copy;
 
 	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 
@@ -271,6 +276,9 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 	RBMtpSource *source;
 	RBMtpSourcePrivate *priv;
 	RBEntryView *tracks;
+	RBShell *shell;
+	RBShellPlayer *shell_player;
+	GObject *player_backend;
 	GtkIconTheme *theme;
 	GdkPixbuf *pixbuf;
 	gint size;
@@ -280,9 +288,29 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 	source = RB_MTP_SOURCE (G_OBJECT_CLASS (rb_mtp_source_parent_class)->
 				constructor (type, n_construct_properties, construct_properties));
 
+	priv = MTP_SOURCE_GET_PRIVATE (source);
+
 	tracks = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (tracks, RB_ENTRY_VIEW_COL_RATING, FALSE);
 	rb_entry_view_append_column (tracks, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
+
+	/* the source element needs our cooperation */
+	g_object_get (source, "shell", &shell, NULL);
+	shell_player = RB_SHELL_PLAYER (rb_shell_get_player (shell));
+	g_object_get (shell_player, "player", &player_backend, NULL);
+
+	g_signal_connect_object (player_backend,
+				 "prepare-source",
+				 G_CALLBACK (prepare_player_source_cb),
+				 source, 0);
+
+	g_object_unref (player_backend);
+	g_object_unref (shell);
+
+	g_signal_connect_object (rb_encoder_factory_get (),
+				 "prepare-source",
+				 G_CALLBACK (prepare_encoder_source_cb),
+				 source, 0);
 
 	/* icon */
 	theme = gtk_icon_theme_get_default ();
@@ -296,7 +324,6 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 			  (GCallback)rb_mtp_source_name_changed_cb, NULL);
 	
 	/* figure out supported file types */
-	priv = MTP_SOURCE_GET_PRIVATE (source);
 	if (LIBMTP_Get_Supported_Filetypes(priv->device, &types, &num_types) == 0) {
 		int i;
 		gboolean has_mp3 = FALSE;
@@ -494,7 +521,6 @@ rb_mtp_source_new (RBShell *shell,
 	entry_type = rhythmdb_entry_register_type (db, name);
 	entry_type->save_to_disk = FALSE;
 	entry_type->category = RHYTHMDB_ENTRY_NORMAL;
-	entry_type->get_playback_uri = (RhythmDBEntryStringFunc)rb_mtp_source_get_playback_uri;
 
 	g_free (name);
 	g_object_unref (db);
@@ -508,8 +534,6 @@ rb_mtp_source_new (RBShell *shell,
 					      "libmtp-device", device,
 					      "udi", udi,
 					      NULL));
-
-	entry_type->get_playback_uri_data = source;
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
@@ -553,7 +577,7 @@ add_mtp_track_to_db (RBMtpSource *source,
 
 	/* Set URI */
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
-	name = g_strdup_printf ("x-rb-mtp://%i/%s", track->item_id, track->filename);
+	name = g_strdup_printf ("xrbmtp://%i/%s", track->item_id, track->filename);
 	entry = rhythmdb_entry_new (RHYTHMDB (db), entry_type, name);
 	g_free (name);
         g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
@@ -927,119 +951,6 @@ impl_get_ui_actions (RBSource *source)
 	return actions;
 }
 
-static gboolean
-rb_mtp_source_transfer_track_to_disk (LIBMTP_mtpdevice_t *device,
-				      LIBMTP_track_t *track,
-				      const char *uri)
-{
-	int ret = -1;
-	char *path;
-
-	if (device == NULL || track == NULL || strlen (uri) == 0) {
-		rb_debug ("device (%p), track (%p), or URI (%s) not supplied", device, track, uri);
-		return FALSE;
-	}
-
-	if (rb_check_dir_has_space_uri (uri, track->filesize) == FALSE) {
-		rb_debug ("not enough space to transfer track %d to %s", track->item_id, uri);
-		return FALSE;
-	}
-
-	path = g_filename_from_uri (uri, NULL, NULL);
-	if (path != NULL) {
-		ret = LIBMTP_Get_Track_To_File (device, track->item_id, path, NULL, NULL);
-		rb_debug ("LIBMTP_Get_Track_To_File(%d, %s) returned %d", track->item_id, path, ret);
-		if (ret != 0) {
-			report_libmtp_errors (device, TRUE);
-		}
-		g_free (path);
-	} else {
-		g_warning ("couldn't get path from URI %s", uri);
-	}
-
-	return (ret == 0);
-}
-
-static char *
-rb_mtp_source_get_playback_uri (RhythmDBEntry *entry, gpointer data)
-{
-	RBMtpSourcePrivate *priv;
-	LIBMTP_track_t *track;
-	char *path;
-	char *uri = NULL;
-	GError *error = NULL;
-
-	priv = MTP_SOURCE_GET_PRIVATE (data);
-
-	track = g_hash_table_lookup (priv->entry_map, entry);
-	path = g_strdup_printf ("%s/%s-%s",
-				g_get_tmp_dir (),
-				rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST),
-				rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE));
-	uri = g_filename_to_uri (path, NULL, &error);
-	g_free (path);
-	if (error != NULL) {
-		g_warning ("unable to convert path %s to filename: %s", path, error->message);
-		g_error_free (error);
-		g_free (path);
-		return NULL;
-	}
-
-	if (rb_mtp_source_transfer_track_to_disk (priv->device, track, uri) == TRUE) {
-		rb_debug ("playback URI for %s: %s",
-			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
-			  uri);
-		return uri;
-	} else {
-		g_free (uri);
-		return NULL;
-	}
-}
-
-static GList *
-impl_copy (RBSource *source)
-{
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (RB_MTP_SOURCE (source));
-	RhythmDB *db;
-	GList *selected_entries;
-	GList *iter;
-	GList *copy_entries;
-	int ret = -1;
-	LIBMTP_track_t *track = NULL;
-
-	db = get_db_for_source (RB_MTP_SOURCE (source));
-
-	copy_entries = NULL;
-	selected_entries = rb_entry_view_get_selected_entries (rb_source_get_entry_view (source));
-	for (iter = selected_entries; iter != NULL; iter = g_list_next (iter)) {
-		RhythmDBEntry *entry;
-		char *path;
-		char *uri;
-
-		entry = (RhythmDBEntry *)iter->data;
-		track = g_hash_table_lookup (priv->entry_map, entry);
-
-		if (track == NULL)
-			continue;
-
-		path = g_strdup_printf ("%s/%s", g_get_tmp_dir (), track->filename);
-		uri = g_filename_to_uri (path, NULL, NULL);
-		g_free (path);
-		ret = rb_mtp_source_transfer_track_to_disk (priv->device, track, uri);
-
-		if (ret == 0) {
-			entry_set_string_prop (RHYTHMDB (db), entry, RHYTHMDB_PROP_LOCATION, uri);
-			copy_entries = g_list_prepend (copy_entries, entry);
-		}
-		g_free (uri);
-	}
-
-	g_list_free (selected_entries);
-	g_object_unref (G_OBJECT (db));
-
-	return copy_entries;
-}
-
 static RhythmDB *
 get_db_for_source (RBMtpSource *source)
 {
@@ -1239,5 +1150,50 @@ artwork_notify_cb (RhythmDB *db,
 	albumart->data = NULL;
 	LIBMTP_destroy_filesampledata_t (albumart);
 	g_free (image_data);
+}
+
+static void
+prepare_source (RBMtpSource *source, const char *stream_uri, GObject *src)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	RhythmDBEntry *entry;
+	RhythmDB *db;
+
+	/* make sure this stream is for a file on our device */
+	if (g_str_has_prefix (stream_uri, "xrbmtp://") == FALSE)
+		return;
+
+	db = get_db_for_source (source);
+	entry = rhythmdb_entry_lookup_by_location (db, stream_uri);
+	g_object_unref (db);
+	if (entry == NULL)
+		return;
+
+	if (_rb_source_check_entry_type (RB_SOURCE (source), entry) == FALSE) {
+		rhythmdb_entry_unref (entry);
+		return;
+	}
+
+	rb_debug ("setting device %p for stream %s", priv->device, stream_uri);
+	g_object_set (src, "device", priv->device, NULL);
+	rhythmdb_entry_unref (entry);
+}
+
+static void
+prepare_player_source_cb (RBPlayer *player,
+			  const char *stream_uri,
+			  GstElement *src,
+			  RBMtpSource *source)
+{
+	prepare_source (source, stream_uri, G_OBJECT (src));
+}
+
+static void
+prepare_encoder_source_cb (RBEncoderFactory *factory,
+			   const char *stream_uri,
+			   GObject *src,
+			   RBMtpSource *source)
+{
+	prepare_source (source, stream_uri, src);
 }
 

@@ -60,6 +60,7 @@
 #define RB_IS_MTP_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_MTP_PLUGIN))
 #define RB_MTP_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_MTP_PLUGIN, RBMtpPluginClass))
 
+
 typedef struct
 {
 	RBPlugin parent;
@@ -96,6 +97,8 @@ static RBSource* create_source_cb (RBMtpPlugin *plugin, LIBMTP_mtpdevice_t *devi
 static void rb_mtp_plugin_eject  (GtkAction *action, RBMtpPlugin *plugin);
 static void rb_mtp_plugin_rename (GtkAction *action, RBMtpPlugin *plugin);
 
+GType rb_mtp_src_get_type (void);
+
 RB_PLUGIN_REGISTER(RBMtpPlugin, rb_mtp_plugin)
 
 static GtkActionEntry rb_mtp_plugin_actions [] =
@@ -121,6 +124,9 @@ rb_mtp_plugin_class_init (RBMtpPluginClass *klass)
 
 	/* register types used by the plugin */
 	RB_PLUGIN_REGISTER_TYPE (rb_mtp_source);
+
+	/* ensure the gstreamer src element gets linked in */
+	rb_mtp_src_get_type ();
 }
 
 static void
