@@ -1996,26 +1996,8 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		g_object_set (stream->source, "iradio-mode", TRUE, NULL);
 	}
 
-	/* for audio CD playback, try to reduce read speed and disable error correction,
-	 * and handle our cdda://1#/dev/cdrom hack for specifying the device.
-	 */
-	if (g_str_has_prefix (uri, "cdda://")) {
-		GObjectClass *klass = G_OBJECT_GET_CLASS (stream->source);
-		if (g_object_class_find_property (klass, "paranoia-mode")) {
-			g_object_set (stream->source, "paranoia-mode", 0, NULL);
-		}
-		if (g_object_class_find_property (klass, "read-speed")) {
-			g_object_set (stream->source, "read-speed", 1, NULL);
-		}
-		if (g_object_class_find_property (klass, "device")) {
-			char *device;
-
-			device = g_utf8_strchr (uri, -1, '#');
-			if (device != NULL) {
-				g_object_set (stream->source, "device", device+1, NULL);
-			}
-		}
-	}
+	/* let plugins apply additional properties to the source */
+	g_signal_emit (player, signals[PREPARE_SOURCE], 0, stream->uri, stream->source);
 
 	stream->decoder = gst_element_factory_make ("decodebin2", NULL);
 
