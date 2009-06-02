@@ -46,15 +46,56 @@
  * A new encoder instance should be created for each file that is transcoded.
  */
 
+static void rb_encoder_factory_class_init (RBEncoderFactoryClass *klass);
+static void rb_encoder_factory_init       (RBEncoderFactory *encoder);
+
 /* Signals */
 enum {
 	PROGRESS,
 	COMPLETED,
 	ERROR,
+	PREPARE_SOURCE,		/* this is on RBEncoderFactory */
 	LAST_SIGNAL
 };
 
 static guint signals[LAST_SIGNAL] = { 0 };
+
+static RBEncoderFactory *the_encoder_factory = NULL;
+static gsize encoder_factory_init = 0;
+
+G_DEFINE_TYPE(RBEncoderFactory, rb_encoder_factory, G_TYPE_OBJECT)
+
+static void
+rb_encoder_factory_init (RBEncoderFactory *factory)
+{
+}
+
+static void
+rb_encoder_factory_class_init (RBEncoderFactoryClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	/**
+	 * RBEncoderFactory::prepare-source:
+	 * @factory: the #RBEncoderFactory instance
+	 * @uri: the URI for the source
+	 * @source: the source object (a GstElement in fact)
+	 *
+	 * Emitted when creating a source to read the specified URI.
+	 * Plugins can use this when just creating a GStreamer element from the URI
+	 * isn't enough.  Typically this happens when there's no way to pass device
+	 * information through the URI format.
+	 */
+	signals[PREPARE_SOURCE] =
+		g_signal_new ("prepare-source",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBEncoderFactoryClass, prepare_source),
+			      NULL, NULL,
+			      rb_marshal_VOID__STRING_OBJECT,
+			      G_TYPE_NONE,
+			      2, G_TYPE_STRING, G_TYPE_OBJECT);
+}
 
 static void
 rb_encoder_interface_init (RBEncoderIface *iface)
@@ -132,6 +173,22 @@ rb_encoder_get_type (void)
 	}
 
 	return our_type;
+}
+
+/**
+ * rb_encoder_factory_get:
+ *
+ * Return value: the #RBEncoderFactory
+ */
+RBEncoderFactory *
+rb_encoder_factory_get ()
+{
+	if (g_once_init_enter (&encoder_factory_init)) {
+		the_encoder_factory = g_object_new (RB_TYPE_ENCODER_FACTORY, NULL);
+		g_once_init_leave (&encoder_factory_init, 1);
+	}
+
+	return the_encoder_factory;
 }
 
 /**
@@ -230,6 +287,12 @@ void
 _rb_encoder_emit_error (RBEncoder *encoder, GError *error)
 {
 	g_signal_emit (encoder, signals[ERROR], 0, error);
+}
+
+void
+_rb_encoder_emit_prepare_source (RBEncoder *encoder, const char *uri, GObject *source)
+{
+	g_signal_emit (rb_encoder_factory_get (), signals[PREPARE_SOURCE], 0, uri, source);
 }
 
 GQuark
