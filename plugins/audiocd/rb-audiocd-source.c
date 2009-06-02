@@ -66,7 +66,6 @@ static gboolean impl_uri_is_source (RBSource *source, const char *uri);
 
 static void impl_delete_thyself (RBSource *source);
 static GList* impl_get_ui_actions (RBSource *source);
-static gboolean impl_try_playlist (RBSource *source);
 
 static gpointer rb_audiocd_load_songs (RBAudioCdSource *source);
 static void rb_audiocd_load_metadata (RBAudioCdSource *source, RhythmDB *db);
@@ -111,7 +110,7 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	source_class->impl_delete_thyself = impl_delete_thyself;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_uri_is_source = impl_uri_is_source;
-	source_class->impl_try_playlist = impl_try_playlist;
+	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;	/* shouldn't need this. */
 	source_class->impl_want_uri = impl_want_uri;
 
 	g_type_class_add_private (klass, sizeof (RBAudioCdSourcePrivate));
@@ -811,8 +810,3 @@ impl_uri_is_source (RBSource *source, const char *uri)
 	return FALSE;
 }
 
-static gboolean
-impl_try_playlist (RBSource *source)
-{
-	return TRUE;
-}
