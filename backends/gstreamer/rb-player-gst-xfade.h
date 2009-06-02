@@ -53,6 +53,9 @@ typedef struct
 {
 	GObjectClass obj_class;
 
+	void (*prepare_source) (RBPlayerGstXFade *player,
+				const char *stream_uri,
+				GstElement *source);
 	gboolean (*can_reuse_stream) (RBPlayerGstXFade *player,
 				      const char *new_uri,
 				      const char *stream_uri,

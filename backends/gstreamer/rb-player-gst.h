@@ -48,6 +48,9 @@ struct _RBPlayerGstClass
 {
 	GObjectClass obj_class;
 
+	void (*prepare_source) (RBPlayerGst *player,
+				const char *stream_uri,
+				GstElement *source);
 	gboolean (*can_reuse_stream) (RBPlayerGst *player,
 				      const char *new_uri,
 				      const char *stream_uri,

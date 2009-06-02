@@ -240,6 +240,7 @@ enum
 
 enum
 {
+	PREPARE_SOURCE,
 	CAN_REUSE_STREAM,
 	REUSE_STREAM,
 	MISSING_PLUGINS,
@@ -668,6 +669,16 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 							      GST_TYPE_BUS,
 							      G_PARAM_READABLE));
 
+	signals[PREPARE_SOURCE] =
+		g_signal_new ("prepare-source",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlayerGstXFadeClass, prepare_source),
+			      NULL, NULL,
+			      rb_marshal_VOID__STRING_OBJECT,
+			      G_TYPE_NONE,
+			      2,
+			      G_TYPE_STRING, GST_TYPE_ELEMENT);
 	signals[CAN_REUSE_STREAM] =
 		g_signal_new ("can-reuse-stream",
 			      G_OBJECT_CLASS_TYPE (object_class),
