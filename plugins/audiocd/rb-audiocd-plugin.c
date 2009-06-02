@@ -49,6 +49,7 @@
 #include "rb-removable-media-manager.h"
 #include "rb-audiocd-source.h"
 #include "rb-player.h"
+#include "rb-encoder.h"
 
 
 #define RB_TYPE_AUDIOCD_PLUGIN		(rb_audiocd_plugin_get_type ())
@@ -83,10 +84,6 @@ static void rb_audiocd_plugin_finalize (GObject *object);
 static void impl_activate (RBPlugin *plugin, RBShell *shell);
 static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
-static void rb_audiocd_plugin_playing_uri_changed_cb (RBShellPlayer *player,
-						      const char *uri,
-						      RBAudioCdPlugin *plugin);
-
 RB_PLUGIN_REGISTER(RBAudioCdPlugin, rb_audiocd_plugin)
 
 static void
@@ -119,51 +116,60 @@ rb_audiocd_plugin_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_audiocd_plugin_parent_class)->finalize (object);
 }
 
-static char *
-split_drive_from_cdda_uri (const char *uri)
-{
-	gchar *copy, *temp, *split;
-	int len;
-
-	if (!g_str_has_prefix (uri, "cdda://"))
-		return NULL;
-
-	len = strlen ("cdda://");
-
-	copy = g_strdup (uri);
-	split = g_utf8_strrchr (copy + len, -1, ':');
-
-	if (split == NULL) {
-		/* invalid URI, it doesn't contain a ':' */
-		g_free (copy);
-		return NULL;
-	}
-
-	*split = 0;
-	temp = g_strdup (copy + len);
-	g_free (copy);
-
-	return temp;
-}
-
 static void
 rb_audiocd_plugin_playing_uri_changed_cb (RBShellPlayer   *player,
 					  const char      *uri,
 					  RBAudioCdPlugin *plugin)
 {
-	char *old_drive = NULL;
-	char *new_drive = NULL;
-
-	/* extract the drive paths */
-	if (plugin->playing_uri)
-		old_drive = split_drive_from_cdda_uri (plugin->playing_uri);
-
-	if (uri != NULL) {
-		new_drive = split_drive_from_cdda_uri (uri);
-	}
-
 	g_free (plugin->playing_uri);
 	plugin->playing_uri = uri ? g_strdup (uri) : NULL;
+}
+
+static void
+set_source_properties (GstElement *source, const char *uri, gboolean playback_mode)
+{
+	const char *device;
+
+	if (g_str_has_prefix (uri, "cdda://") == FALSE)
+		return;
+
+	device = g_utf8_strrchr (uri, -1, '#');
+	if (device != NULL) {
+		device++;	/* skip the # */
+		g_object_set (source, "device", device, NULL);
+
+		if (playback_mode) {
+			/* disable paranoia (if using cdparanoiasrc) and set read speed to 1 */
+			if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "paranoia-mode"))
+				g_object_set (source, "paranoia-mode", 0, NULL);
+
+			if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "read-speed"))
+				g_object_set (source, "read-speed", 1, NULL);
+		} else {
+			/* enable full paranoia; maybe this should be configurable. */
+			/* also, sound-juicer defaults to 8 (scratch) not 0xff (full) here.. */
+			if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "paranoia-mode"))
+				g_object_set (source, "paranoia-mode", 0xff, NULL);
+		}
+	}
+}
+
+static void
+rb_audiocd_plugin_prepare_player_source_cb (RBPlayer *player,
+					    const char *stream_uri,
+					    GstElement *source,
+					    RBAudioCdPlugin *plugin)
+{
+	set_source_properties (source, stream_uri, TRUE);
+}
+
+static void
+rb_audiocd_plugin_prepare_encoder_source_cb (RBEncoderFactory *factory,
+					     const char *stream_uri,
+					     GObject *source,
+					     RBAudioCdPlugin *plugin)
+{
+	set_source_properties (GST_ELEMENT (source), stream_uri, FALSE);
 }
 
 static gboolean
@@ -308,14 +314,20 @@ impl_activate (RBPlugin *plugin,
 
 	g_object_unref (rmm);
 
-	/* if we're using the gapless/crossfade player backend, make it reuse
-	 * audio cd playback streams to avoid closing and reopening the device
-	 * (and prevent it from even thinking about crossfading songs on the same cd)
+	/* player backend hooks: specify the device, limit read speed, and disable paranoia
+	 * in source elements, and when changing between tracks on the same CD, just seek
+	 * between them, rather than closing and reopening the device.
 	 */
 	shell_player = rb_shell_get_player (shell);
 	g_object_get (shell_player, "player", &player_backend, NULL);
 	if (player_backend) {
 		GObjectClass *klass = G_OBJECT_GET_CLASS (player_backend);
+		if (g_signal_lookup ("prepare-source", G_OBJECT_CLASS_TYPE (klass)) != 0) {
+			g_signal_connect_object (player_backend,
+						 "prepare-source",
+						 G_CALLBACK (rb_audiocd_plugin_prepare_player_source_cb),
+						 plugin, 0);
+		}
 		if (g_signal_lookup ("reuse-stream", G_OBJECT_CLASS_TYPE (klass)) != 0) {
 			g_signal_connect_object (player_backend,
 						 "can-reuse-stream",
@@ -328,7 +340,14 @@ impl_activate (RBPlugin *plugin,
 		}
 	}
 
-	/* monitor the playing song, to disable cd drive polling */
+	/* encoder hooks: specify the device and set the paranoia level (if available) on
+	 * source elements.
+	 */
+	g_signal_connect_object (rb_encoder_factory_get (),
+				 "prepare-source",
+				 G_CALLBACK (rb_audiocd_plugin_prepare_encoder_source_cb),
+				 plugin, 0);
+
 	g_signal_connect_object (shell_player, "playing-uri-changed",
 				 G_CALLBACK (rb_audiocd_plugin_playing_uri_changed_cb),
 				 plugin, 0);
