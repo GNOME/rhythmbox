@@ -196,7 +196,7 @@ static void
 rb_audiocd_plugin_reuse_stream_cb (RBPlayer *player,
 				   const char *new_uri,
 				   const char *stream_uri,
-				   GstElement *stream_bin,
+				   GstElement *element,
 				   RBAudioCdPlugin *plugin)
 {
 	GstFormat track_format = gst_format_get_by_nick ("track");
@@ -204,8 +204,6 @@ rb_audiocd_plugin_reuse_stream_cb (RBPlayer *player,
 	char *new_device;
 	guint track;
 	guint cdda_len;
-	GstPad *ghost_pad;
-	GstPad *pad;
 
 	/* get the new track number */
 	cdda_len = strlen ("cdda://");
@@ -216,19 +214,10 @@ rb_audiocd_plugin_reuse_stream_cb (RBPlayer *player,
 
 	rb_debug ("seeking to track %d on CD device %s", track, new_device+1);
 
-	ghost_pad = gst_element_get_static_pad (stream_bin, "src");
-	if (GST_IS_GHOST_PAD (ghost_pad)) {
-		pad = gst_ghost_pad_get_target (GST_GHOST_PAD (ghost_pad));
-		gst_object_unref (ghost_pad);
-	} else {
-		pad = ghost_pad;
-	}
-
-	gst_element_seek (GST_PAD_PARENT (pad),
+	gst_element_seek (element,
 			  1.0, track_format, GST_SEEK_FLAG_FLUSH,
 			  GST_SEEK_TYPE_SET, track-1,
 			  GST_SEEK_TYPE_NONE, -1);
-	gst_object_unref (pad);
 }
 
 static void

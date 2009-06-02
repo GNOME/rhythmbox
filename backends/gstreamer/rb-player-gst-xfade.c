@@ -207,6 +207,7 @@ static gboolean stop_sink (RBPlayerGstXFade *player);
 static void maybe_stop_sink (RBPlayerGstXFade *player);
 
 GType rb_xfade_stream_get_type (void);
+GType rb_xfade_stream_bin_get_type (void);
 
 G_DEFINE_TYPE_WITH_CODE(RBPlayerGstXFade, rb_player_gst_xfade, G_TYPE_OBJECT,
 			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER,
@@ -247,6 +248,49 @@ enum
 
 static guint signals[LAST_SIGNAL] = { 0 };
 
+struct _RBPlayerGstXFadePrivate
+{
+	/* probably don't need to store pointers to these either */
+	GstElement *pipeline;
+	GstElement *outputbin;
+	GstElement *silencebin;
+	GstElement *adder;
+	GstElement *capsfilter;
+	GstElement *volume;
+	GstElement *sink;
+	GstElement *tee;
+	GstElement *filterbin;
+	GstElement *volume_handler;
+	enum {
+		SINK_NULL,
+		SINK_STOPPED,
+		SINK_PLAYING
+	} sink_state;
+	GStaticRecMutex sink_lock;
+
+	GList *waiting_tees;
+	GList *waiting_filters;
+
+	GStaticRecMutex stream_list_lock;
+	GList *streams;
+	gint linked_streams;
+
+	gboolean can_signal_direct_error;
+	GError *error;
+
+	gboolean playing;
+
+	float cur_volume;
+	guint buffer_size;	/* kB */
+
+	guint tick_timeout_id;
+
+	guint stream_reap_id;
+	guint stop_sink_id;
+	guint bus_watch_id;
+};
+
+
 /* these aren't actually used to construct bitmasks,
  * but we search the list that way.
  */
@@ -271,9 +315,14 @@ typedef enum
 	PENDING_REMOVE = 8192
 } StreamState;
 
+typedef struct {
+	GstBinClass bin_class;
+} RBXFadeStreamClass;
+
+
 typedef struct
 {
-	GObject parent;
+	GstBin parent;
 	RBPlayerGstXFade *player;
 
 	GMutex *lock;
@@ -288,7 +337,6 @@ typedef struct
 	GDestroyNotify new_stream_data_destroy;
 
 	/* probably don't need to store pointers to all of these.. */
-	GstElement *bin;
 	GstElement *source;
 	GstElement *queue;
 	GstElement *decoder;
@@ -335,59 +383,30 @@ typedef struct
 #define RB_XFADE_STREAM(obj)	(G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_XFADE_STREAM, RBXFadeStream))
 #define RB_IS_XFADE_STREAM(obj)	(G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_XFADE_STREAM))
 
-typedef struct {
-	GObjectClass obj_class;
-} RBXFadeStreamClass;
-
 static void adjust_stream_base_time (RBXFadeStream *stream);
 
 static void rb_xfade_stream_class_init (RBXFadeStreamClass *klass);
 
-G_DEFINE_TYPE(RBXFadeStream, rb_xfade_stream, G_TYPE_OBJECT)
+G_DEFINE_TYPE(RBXFadeStream, rb_xfade_stream, GST_TYPE_BIN)
 
-
-struct _RBPlayerGstXFadePrivate
+static gboolean
+rb_xfade_stream_send_event (GstElement *element, GstEvent *event)
 {
-	/* probably don't need to store pointers to these either */
-	GstElement *pipeline;
-	GstElement *outputbin;
-	GstElement *silencebin;
-	GstElement *adder;
-	GstElement *capsfilter;
-	GstElement *volume;
-	GstElement *sink;
-	GstElement *tee;
-	GstElement *filterbin;
-	GstElement *volume_handler;
-	enum {
-		SINK_NULL,
-		SINK_STOPPED,
-		SINK_PLAYING
-	} sink_state;
-	GStaticRecMutex sink_lock;
+	GstPad *pad;
+	GstPad *ghost_pad;
+	gboolean ret;
 
-	GList *waiting_tees;
-	GList *waiting_filters;
+	/* just send the event to the element that provides the src pad */
+	ghost_pad = gst_element_get_pad (element, "src");
+	pad = gst_ghost_pad_get_target (GST_GHOST_PAD (ghost_pad));
 
-	GStaticRecMutex stream_list_lock;
-	GList *streams;
-	gint linked_streams;
+	ret = gst_element_send_event (GST_PAD_PARENT (pad), event);
 
-	gboolean can_signal_direct_error;
-	GError *error;
+	gst_object_unref (pad);
+	gst_object_unref (ghost_pad);
 
-	gboolean playing;
-
-	float cur_volume;
-	guint buffer_size;	/* kB */
-
-	guint tick_timeout_id;
-
-	guint stream_reap_id;
-	guint stop_sink_id;
-	guint bus_watch_id;
-};
-
+	return ret;
+}
 
 static void
 rb_xfade_stream_init (RBXFadeStream *stream)
@@ -411,10 +430,7 @@ rb_xfade_stream_dispose (GObject *object)
 {
 	RBXFadeStream *sd = RB_XFADE_STREAM (object);
 
-	if (sd->bin != NULL) {
-		gst_object_unref (sd->bin);
-		sd->bin = NULL;
-	}
+	rb_debug ("disposing stream %s", sd->uri);
 
 	if (sd->source != NULL) {
 		gst_object_unref (sd->source);
@@ -456,7 +472,6 @@ rb_xfade_stream_dispose (GObject *object)
 		sd->player = NULL;
 	}
 
-
 	rb_xfade_stream_dispose_stream_data (sd);
 
 	G_OBJECT_CLASS (rb_xfade_stream_parent_class)->dispose (object);
@@ -481,9 +496,12 @@ static void
 rb_xfade_stream_class_init (RBXFadeStreamClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GstElementClass *element_class = GST_ELEMENT_CLASS (klass);
 
 	object_class->dispose = rb_xfade_stream_dispose;
 	object_class->finalize = rb_xfade_stream_finalize;
+
+	element_class->send_event = rb_xfade_stream_send_event;
 }
 
 /* caller must hold stream list lock */
@@ -551,7 +569,7 @@ find_stream_by_element (RBPlayerGstXFade *player, GstElement *element)
 		stream = (RBXFadeStream *)i->data;
 		e = element;
 		while (e != NULL) {
-			if (e == stream->bin)
+			if (e == GST_ELEMENT (stream))
 				return g_object_ref (stream);
 
 			e = GST_ELEMENT_PARENT (e);
@@ -742,7 +760,7 @@ rb_player_gst_xfade_dispose (GObject *object)
 		RBXFadeStream *stream = (RBXFadeStream *)l->data;
 
 		/* unlink instead? */
-		gst_element_set_state (stream->bin, GST_STATE_NULL);
+		gst_element_set_state (GST_ELEMENT (stream), GST_STATE_NULL);
 
 		g_object_unref (stream);
 	}
@@ -836,8 +854,8 @@ post_stream_playing_message (RBXFadeStream *stream, gboolean fake)
 
 	rb_debug ("posting " STREAM_PLAYING_MESSAGE " message for stream %s", stream->uri);
 	s = gst_structure_new (STREAM_PLAYING_MESSAGE, NULL);
-	msg = gst_message_new_application (GST_OBJECT (stream->bin), s);
-	gst_element_post_message (stream->bin, msg);
+	msg = gst_message_new_application (GST_OBJECT (stream), s);
+	gst_element_post_message (GST_ELEMENT (stream), msg);
 
 	if (fake == FALSE) {
 		stream->emitted_playing = TRUE;
@@ -1079,7 +1097,7 @@ link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	adjust_stream_base_time (stream);
 
 	/* should handle state change failures here.. */
-	state_ret = gst_element_set_state (stream->bin, GST_STATE_PLAYING);
+	state_ret = gst_element_set_state (GST_ELEMENT (stream), GST_STATE_PLAYING);
 	rb_debug ("stream %s state change returned: %s", stream->uri,
 		  gst_element_state_change_return_get_name (state_ret));
 
@@ -1111,8 +1129,8 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 	stream->needs_unlink = FALSE;
 
 	rb_debug ("linking stream %s", stream->uri);
-	if (GST_ELEMENT_PARENT (stream->bin) == NULL)
-		gst_bin_add (GST_BIN (player->priv->pipeline), stream->bin);
+	if (GST_ELEMENT_PARENT (GST_ELEMENT (stream)) == NULL)
+		gst_bin_add (GST_BIN (player->priv->pipeline), GST_ELEMENT (stream));
 
 	stream->adder_pad = gst_element_get_request_pad (player->priv->adder, "sink%d");
 	if (stream->adder_pad == NULL) {
@@ -1155,7 +1173,7 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 		stream->state = PLAYING;
 		adjust_stream_base_time (stream);
 
-		scr = gst_element_set_state (stream->bin, GST_STATE_PLAYING);
+		scr = gst_element_set_state (GST_ELEMENT (stream), GST_STATE_PLAYING);
 
 		post_stream_playing_message (stream, FALSE);
 
@@ -1180,7 +1198,7 @@ reuse_stream (RBXFadeStream *stream)
 	GError *error = NULL;
 	g_signal_emit (stream->player,
 		       signals[REUSE_STREAM], 0,
-		       stream->new_uri, stream->uri, stream->bin);
+		       stream->new_uri, stream->uri, GST_ELEMENT (stream));
 
 	/* replace URI and stream data */
 	g_free (stream->uri);
@@ -1367,11 +1385,11 @@ unlink_and_dispose_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 
 
 	rb_debug ("stopping stream %s", stream->uri);
-	sr = gst_element_set_state (stream->bin, GST_STATE_NULL);
+	sr = gst_element_set_state (GST_ELEMENT (stream), GST_STATE_NULL);
 	if (sr == GST_STATE_CHANGE_ASYNC) {
 		/* downward state transitions aren't supposed to return ASYNC.. */
 		rb_debug ("!!! stream %s isn't cooperating", stream->uri);
-		gst_element_get_state (stream->bin, NULL, NULL, GST_CLOCK_TIME_NONE);
+		gst_element_get_state (GST_ELEMENT (stream), NULL, NULL, GST_CLOCK_TIME_NONE);
 	}
 	
 	g_mutex_lock (stream->lock);
@@ -1388,12 +1406,12 @@ unlink_and_dispose_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 		was_linked = TRUE;
 	}
 
-	was_in_pipeline = (GST_ELEMENT_PARENT (stream->bin) == player->priv->pipeline);
+	was_in_pipeline = (GST_ELEMENT_PARENT (GST_ELEMENT (stream)) == player->priv->pipeline);
 	
 	g_mutex_unlock (stream->lock);
 
 	if (was_in_pipeline)
-		gst_bin_remove (GST_BIN (player->priv->pipeline), stream->bin);
+		gst_bin_remove (GST_BIN (player->priv->pipeline), GST_ELEMENT (stream));
 
 	if (was_linked) {
 		gboolean last;
@@ -1871,8 +1889,8 @@ stream_src_event_cb (GstPad *pad, GstEvent *event, RBXFadeStream *stream)
 	case GST_EVENT_EOS:
 		rb_debug ("posting EOS message for stream %s", stream->uri);
 		s = gst_structure_new (STREAM_EOS_MESSAGE, NULL);
-		msg = gst_message_new_application (GST_OBJECT (stream->bin), s);
-		gst_element_post_message (stream->bin, msg);
+		msg = gst_message_new_application (GST_OBJECT (stream), s);
+		gst_element_post_message (GST_ELEMENT (stream), msg);
 
 		/* start playing any streams that were waiting on an EOS
 		 * (are we really allowed to do this on a stream thread?)
@@ -1944,14 +1962,11 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	stream->stream_data = stream_data;
 	stream->stream_data_destroy = stream_data_destroy;
 	stream->uri = g_strdup (uri);
-	stream->bin = gst_bin_new (NULL);
 	stream->state = WAITING;
-	if (stream->bin == NULL) {
-		rb_debug ("unable to create new bin");
-		g_object_unref (stream);
-		return NULL;
-	}
-	gst_object_ref (stream->bin);
+
+	/* kill the floating reference */
+	g_object_ref (stream);
+	gst_object_sink (stream);
 
 	stream->source = gst_element_make_from_uri (GST_URI_SRC, stream->uri, NULL);
 	if (stream->source == NULL) {
@@ -2101,7 +2116,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 			      "use-buffering", TRUE,
 			      NULL);
 
-		gst_bin_add_many (GST_BIN (stream->bin),
+		gst_bin_add_many (GST_BIN (stream),
 				  stream->source,
 				  stream->queue,
 				  stream->decoder,
@@ -2122,7 +2137,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				       stream->volume,
 				       NULL);
 	} else {
-		gst_bin_add_many (GST_BIN (stream->bin),
+		gst_bin_add_many (GST_BIN (stream),
 				  stream->source,
 				  stream->decoder,
 				  stream->audioconvert,
@@ -2149,7 +2164,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		GstElement *identity;
 
 		identity = gst_element_factory_make ("identity", NULL);
-		gst_bin_add (GST_BIN (stream->bin), identity);
+		gst_bin_add (GST_BIN (stream), identity);
 		gst_element_link (stream->volume, identity);
 		if (rb_debug_matches ("check-imperfect-timestamp", __FILE__)) {
 			g_object_set (identity, "check-imperfect-timestamp", TRUE, NULL);
@@ -2165,13 +2180,13 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 
 	/* ghost the stream src pad up to the bin */
 	stream->ghost_pad = gst_ghost_pad_new ("src", stream->src_pad);
-	gst_element_add_pad (stream->bin, stream->ghost_pad);
+	gst_element_add_pad (GST_ELEMENT (stream), stream->ghost_pad);
 
 	/* watch for EOS events using a pad probe */
 	gst_pad_add_event_probe (stream->src_pad, (GCallback) stream_src_event_cb, stream);
 
 	/* use the pipeline bus even when not inside the pipeline (?) */
-	gst_element_set_bus (stream->bin, gst_element_get_bus (player->priv->pipeline));
+	gst_element_set_bus (GST_ELEMENT (stream), gst_element_get_bus (player->priv->pipeline));
 
 	return stream;
 }
@@ -2428,7 +2443,7 @@ preroll_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 
 	stream->emitted_playing = FALSE;
 	stream->state = PREROLLING;
-	state = gst_element_set_state (stream->bin, GST_STATE_PAUSED);
+	state = gst_element_set_state (GST_ELEMENT (stream), GST_STATE_PAUSED);
 	switch (state) {
 	case GST_STATE_CHANGE_FAILURE:
 		rb_debug ("preroll for stream %s failed (state change failed)", stream->uri);
@@ -3166,7 +3181,7 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 		case PAUSED:
 			g_signal_emit (player,
 				       signals[CAN_REUSE_STREAM], 0,
-				       uri, stream->uri, stream->bin,
+				       uri, stream->uri, GST_ELEMENT (stream),
 				       &reused);
 			break;
 		}
