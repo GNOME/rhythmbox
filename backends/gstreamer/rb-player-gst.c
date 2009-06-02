@@ -73,6 +73,8 @@ enum
 
 enum
 {
+	CAN_REUSE_STREAM,
+	REUSE_STREAM,
 	MISSING_PLUGINS,
 	LAST_SIGNAL
 };
@@ -1396,6 +1398,26 @@ rb_player_gst_class_init (RBPlayerGstClass *klass)
 							    64, MAX_NETWORK_BUFFER_SIZE, 128,
 							    G_PARAM_READWRITE));
 
+	signals[CAN_REUSE_STREAM] =
+		g_signal_new ("can-reuse-stream",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlayerGstClass, can_reuse_stream),
+			      NULL, NULL,
+			      rb_marshal_BOOLEAN__STRING_STRING_OBJECT,
+			      G_TYPE_BOOLEAN,
+			      3,
+			      G_TYPE_STRING, G_TYPE_STRING, GST_TYPE_ELEMENT);
+	signals[REUSE_STREAM] =
+		g_signal_new ("reuse-stream",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlayerGstClass, reuse_stream),
+			      NULL, NULL,
+			      rb_marshal_VOID__STRING_STRING_OBJECT,
+			      G_TYPE_NONE,
+			      3,
+			      G_TYPE_STRING, G_TYPE_STRING, GST_TYPE_ELEMENT);
 	signals[MISSING_PLUGINS] =
 		g_signal_new ("missing-plugins",
 			      G_OBJECT_CLASS_TYPE (object_class),

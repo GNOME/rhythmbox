@@ -30,6 +30,7 @@
 #define __RB_PLAYER_GST_H__
 
 #include <glib-object.h>
+#include <gst/gst.h>
 
 #include "rb-player.h"
 
@@ -37,20 +38,31 @@ G_BEGIN_DECLS
 
 #define RB_TYPE_PLAYER_GST            (rb_player_gst_get_type ())
 #define RB_PLAYER_GST(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_PLAYER, RBPlayerGst))
-#define RB_IS_PLAYERER_GST(obj)       (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_PLAYER))
+#define RB_IS_PLAYER_GST(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_PLAYER))
 
 typedef struct _RBPlayerGstPrivate RBPlayerGstPrivate;
+typedef struct _RBPlayerGst RBPlayerGst;
+typedef struct _RBPlayerGstClass RBPlayerGstClass;
 
-typedef struct
+struct _RBPlayerGstClass
 {
 	GObjectClass obj_class;
-} RBPlayerGstClass;
 
-typedef struct
+	gboolean (*can_reuse_stream) (RBPlayerGst *player,
+				      const char *new_uri,
+				      const char *stream_uri,
+				      GstElement *source);
+	void (*reuse_stream) (RBPlayerGst *player,
+			      const char *new_uri,
+			      const char *stream_uri,
+			      GstElement *source);
+};
+
+struct _RBPlayerGst
 {
 	GObject obj;
 	RBPlayerGstPrivate *priv;
-} RBPlayerGst;
+};
 
 RBPlayer*	rb_player_gst_new (GError **error);
 GType		rb_player_gst_get_type (void);
