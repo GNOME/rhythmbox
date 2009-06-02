@@ -342,24 +342,14 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 }
 
 static void
-cdda_got_source_cb (GObject *object, GParamSpec *pspec, char *device)
+source_notify_cb (GObject *object, GParamSpec *pspec, RBPlayerGst *player)
 {
 	GstElement *source;
-
 	g_object_get (object, "source", &source, NULL);
-	rb_debug ("got source %p", source);
-	if (source) {
-		g_signal_handlers_disconnect_by_func (object, cdda_got_source_cb, device);
 
-		g_object_set (G_OBJECT (source), "device", device, NULL);
-		g_free (device);
+	g_signal_emit (player, signals[PREPARE_SOURCE], 0, player->priv->uri, source);
 
-		if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "paranoia-mode"))
-			g_object_set (G_OBJECT (source), "paranoia-mode", 0, NULL);
-
-		if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "read-speed"))
-			g_object_set (G_OBJECT (source), "read-speed", 1, NULL);
-	}
+	g_object_unref (source);
 }
 
 static gboolean
@@ -382,6 +372,10 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 	g_signal_connect_object (G_OBJECT (mp->priv->playbin),
 				 "notify::volume",
 				 G_CALLBACK (volume_notify_cb),
+				 mp, 0);
+	g_signal_connect_object (G_OBJECT (mp->priv->playbin),
+				 "notify::source",
+				 G_CALLBACK (source_notify_cb),
 				 mp, 0);
 	if (mp->priv->buffer_size != 0) {
 		g_object_set (mp->priv->playbin, "buffer-size", mp->priv->buffer_size * 1024, NULL);
