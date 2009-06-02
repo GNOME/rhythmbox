@@ -40,8 +40,6 @@
  *
  * things that need to be fixed:
  * - error reporting is abysmal
- * - shell-player still thinks it's paused when playing the first stream
- *    (playing/paused status is generally screwy) (maybe fixed?)
  *
  * crack:
  * - use more interesting transition effects - filter sweeps, reverb, etc.
@@ -148,8 +146,9 @@
  * - rb_player_pause() -> SEEKING_PAUSED
  *
  * from REUSING:
- *
- *  - blocked:  emit reuse-stream, -> PLAYING
+ *  - EOS: emit reuse-stream, -> PLAYING
+ *  - rb_player_play(): -> block, unlink
+ *  - blocked:  emit reuse-stream, link -> PLAYING
  */
 
 #include "config.h"
@@ -1092,6 +1091,7 @@ link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 
 	/* sometimes we seem to get called twice */
 	if (stream->state == FADING_IN || stream->state == PLAYING) {
+		rb_debug ("stream %s already unblocked", stream->uri);
 		g_mutex_unlock (stream->lock);
 		return;
 	}
@@ -1206,7 +1206,6 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 static void
 reuse_stream (RBXFadeStream *stream)
 {
-	GError *error = NULL;
 	g_signal_emit (stream->player,
 		       signals[REUSE_STREAM], 0,
 		       stream->new_uri, stream->uri, GST_ELEMENT (stream));
@@ -1223,9 +1222,7 @@ reuse_stream (RBXFadeStream *stream)
 	stream->new_stream_data = NULL;
 	stream->new_stream_data_destroy = NULL;
 
-	if (link_and_unblock_stream (stream, &error) == FALSE) {
-		emit_stream_error (stream, error);
-	}
+	stream->emitted_playing = FALSE;
 }
 
 
@@ -1291,6 +1288,40 @@ post_eos_seek_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	g_mutex_unlock (stream->lock);
 }
 
+static void
+unlink_reuse_relink (RBPlayerGstXFade *player, RBXFadeStream *stream)
+{
+	GError *error = NULL;
+
+	g_mutex_lock (stream->lock);
+
+	if (stream->adder_pad == NULL) {
+		rb_debug ("stream %s doesn't need to be unlinked.. weird.", stream->uri);
+	} else {
+		rb_debug ("unlinking stream %s for reuse", stream->uri);
+
+		if (gst_pad_unlink (stream->ghost_pad, stream->adder_pad) == FALSE) {
+			g_warning ("Couldn't unlink stream %s: this is going to suck.", stream->uri);
+		}
+
+		gst_element_release_request_pad (player->priv->adder, stream->adder_pad);
+		stream->adder_pad = NULL;
+
+		(void) g_atomic_int_dec_and_test (&player->priv->linked_streams);
+		rb_debug ("%d linked streams left", player->priv->linked_streams);
+	}
+
+	stream->needs_unlink = FALSE;
+	stream->emitted_playing = FALSE;
+
+	g_mutex_unlock (stream->lock);
+
+	reuse_stream (stream);
+	if (link_and_unblock_stream (stream, &error) == FALSE) {
+		emit_stream_error (stream, error);
+	}
+}
+
 /* called when a stream's source pad is blocked, so it can be unlinked
  * from the pipeline.
  */
@@ -1300,6 +1331,7 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	int stream_state;
 	gboolean last;
 	RBPlayerGstXFade *player;
+	GError *error = NULL;
 
 	g_mutex_lock (stream->lock);
 
@@ -1336,6 +1368,9 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	switch (stream_state) {
 	case REUSING:
 		reuse_stream (stream);
+		if (link_and_unblock_stream (stream, &error) == FALSE) {
+			emit_stream_error (stream, error);
+		}
 		break;
 
 	case SEEKING_PAUSED:
@@ -1748,17 +1783,23 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				g_assert_not_reached ();
 			}
 		} else if (strcmp (name, STREAM_EOS_MESSAGE) == 0) {
-			/* emit EOS, unlink the stream, and start any
-			 * streams we had waiting for an EOS.  if we don't
-			 * start a new stream, we keep the old stream around
-			 * so that we can still seek back in it.
+			/* emit EOS (if we aren't already reusing the stream), then unlink it.
+			 * the stream stay around so we can seek back in it.
 			 */
-			rb_debug ("got EOS message for stream %s -> PENDING_REMOVE", stream->uri);
-			_rb_player_emit_eos (RB_PLAYER (player), stream->stream_data);
-			stream->state = PENDING_REMOVE;
 			stream->needs_unlink = TRUE;
+			if (stream->state != REUSING) {
+				rb_debug ("got EOS message for stream %s -> PENDING_REMOVE", stream->uri);
+				_rb_player_emit_eos (RB_PLAYER (player), stream->stream_data);
+				stream->state = PENDING_REMOVE;
 
-			unlink_blocked_cb (stream->src_pad, TRUE, stream);
+				unlink_blocked_cb (stream->src_pad, TRUE, stream);
+			} else {
+				/* no need to emit EOS here, we already know what to do next */
+				rb_debug ("got EOS message for stream %s in REUSING state", stream->uri);
+
+				unlink_reuse_relink (player, stream);
+			}
+
 		} else {
 			_rb_player_emit_event (RB_PLAYER (player), stream->stream_data, name, NULL);
 		}
@@ -1869,8 +1910,6 @@ stream_pad_removed_cb (GstElement *decoder, GstPad *pad, RBXFadeStream *stream)
 
 		gst_object_unref (stream->decoder_pad);
 		stream->decoder_pad = NULL;
-	} else {
-		rb_debug ("non-active output pad for stream %s removed .. what?", stream->uri);
 	}
 }
 
@@ -2507,7 +2546,7 @@ get_times_and_stream (RBPlayerGstXFade *player, RBXFadeStream **pstream, gint64 
 
 	/* otherwise, the stream that is playing */
 	if (stream == NULL) {
-		stream = find_stream_by_state (player, FADING_IN | PLAYING | FADING_OUT_PAUSED | PAUSED | PENDING_REMOVE);
+		stream = find_stream_by_state (player, FADING_IN | PLAYING | FADING_OUT_PAUSED | PAUSED | PENDING_REMOVE | REUSING);
 	}
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 
@@ -3181,16 +3220,16 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 
 		if (reused) {
 			rb_debug ("reusing stream %s for new stream %s", stream->uri, uri);
+			stream->state = REUSING;
 			stream->new_uri = g_strdup (uri);
 			stream->new_stream_data = stream_data;
 			stream->new_stream_data_destroy = stream_data_destroy;
 
-			if (stream->state == PAUSED) {
-				reuse_stream (stream);
-			} else {
-				stream->state = REUSING;
-				unlink_and_block_stream (stream);
-			}
+			/* move the stream to the front of the list so it'll be started when
+			 * _play is called (it's probably already there, but just in case..)
+			 */
+			player->priv->streams = g_list_remove (player->priv->streams, stream);
+			player->priv->streams = g_list_prepend (player->priv->streams, stream);
 			break;
 		}
 	}
@@ -3376,10 +3415,6 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 		stream->state = SEEKING;
 		break;
 
-	case REUSING:
-		rb_debug ("currently reusing stream %s; will play when done", stream->uri);
-		break;
-
 	case PENDING_REMOVE:
 		rb_debug ("hmm, can't play streams in PENDING_REMOVE state..");
 		break;
@@ -3413,6 +3448,22 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 	case WAITING:
 		stream->crossfade = crossfade;
 		ret = actually_start_stream (stream, error);
+		break;
+
+	case REUSING:
+		if (crossfade > 0) {
+			/* probably should split this into two states.. */
+			if (stream->src_blocked) {
+				rb_debug ("reusing and restarting paused stream %s", stream->uri);
+				reuse_stream (stream);
+				ret = link_and_unblock_stream (stream, error);
+			} else {
+				rb_debug ("unlinking stream %s for reuse", stream->uri);
+				unlink_and_block_stream (stream);
+			}
+		} else {
+			rb_debug ("waiting for EOS before reusing stream %s", stream->uri);
+		}
 		break;
 
 	default:
