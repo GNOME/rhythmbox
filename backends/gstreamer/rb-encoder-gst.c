@@ -821,17 +821,23 @@ get_profile_from_mime_type (RBEncoderGst *rbencoder, const char *mime_type)
 static GMAudioProfile*
 get_profile_from_mime_types (RBEncoderGst *rbencoder, GList *mime_types)
 {
+	GMAudioProfile *profile = NULL;
 	GList *l;
 
-	for (l = mime_types; l != NULL; l = g_list_next (l)) {
-		GMAudioProfile *profile;
+	if (mime_types == NULL) {
+		const char *profile_name;
 
-		profile = get_profile_from_mime_type (rbencoder, (const char *)l->data);
-		if (profile)
-			return profile;
+		profile_name = eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT);
+		profile = gm_audio_profile_lookup (profile_name);
+	} else {
+		for (l = mime_types; l != NULL; l = g_list_next (l)) {
+			profile = get_profile_from_mime_type (rbencoder, (const char *)l->data);
+			if (profile != NULL)
+				break;
+		}
 	}
 
-	return NULL;
+	return profile;
 }
 
 static GstElement *
@@ -861,10 +867,10 @@ create_pipeline_and_source (RBEncoderGst *encoder,
 	encoder->priv->pipeline = gst_pipeline_new ("pipeline");
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), src);
 
-	/* TODO: add progress reporting */
+	/* provide a hook for setting source properties */
+	_rb_encoder_emit_prepare_source (RB_ENCODER (encoder), uri, G_OBJECT (src));
 
 	g_free (uri);
-
 	return src;
 }
 
@@ -893,73 +899,6 @@ copy_track (RBEncoderGst *encoder,
 }
 
 static gboolean
-extract_track (RBEncoderGst *encoder,
-	       RhythmDBEntry *entry,
-	       const char *dest,
-	       GError **error)
-{
-	/* cdsrc ! encoder ! sink */
-	char *uri;
-	const char *device;
-	const char *profile_name;
-	GMAudioProfile *profile;
-	GstElement *src, *end;
-
-	g_assert (encoder->priv->pipeline == NULL);
-
-	profile_name = eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT);
-	profile = gm_audio_profile_lookup (profile_name);
-	if (profile == NULL) {
-		g_set_error (error,
-			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_FORMAT_UNSUPPORTED,
-			     "Could not find encoding profile '%s'", profile_name);
-		return FALSE;
-	}
-
-	src = create_pipeline_and_source (encoder, entry, error);
-	if (src == NULL)
-		return FALSE;
-
-	/* setup cd extraction properties */
-	uri = rhythmdb_entry_get_playback_uri (entry);
-	if (uri == NULL) {
-		rb_debug ("didn't get a playback URI for entry %s",
-			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
-		return FALSE;
-	}
-
-	device = g_utf8_strrchr (uri, -1, '#');
-	g_object_set (G_OBJECT (src),
-		      "device", device + 1, /* skip the '#' */
-		      "track", rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER),
-		      NULL);
-	if (g_object_class_find_property (G_OBJECT_GET_CLASS (src), "paranoia-mode")) {
-		int paranoia_mode;
-
-		paranoia_mode = 255; /* TODO: make configurable */
-		g_object_set (G_OBJECT (src), "paranoia-mode", paranoia_mode, NULL);
-	}
-	g_free (uri);
-
-	end = add_encoding_pipeline (encoder, profile, error);
-	if (end == NULL)
-		return FALSE;
-	if (gst_element_link (src, encoder->priv->enc) == FALSE) {
-		rb_debug ("unable to link source to encoding pipeline");
-		return FALSE;
-	}
-
-	if (!attach_output_pipeline (encoder, end, dest, error))
-		return FALSE;
-	if (!add_tags_from_entry (encoder, entry, error))
-		return FALSE;
-	if (!start_pipeline (encoder, error))
-		return FALSE;
-
-	return TRUE;
-}
-
-static gboolean
 transcode_track (RBEncoderGst *encoder,
 	 	 RhythmDBEntry *entry,
 		 const char *dest,
@@ -981,8 +920,7 @@ transcode_track (RBEncoderGst *encoder,
 			     /*"'%s'", mime_type*/);
 		goto error;
 	} else {
-		rb_debug ("selected profile %s",
-				gm_audio_profile_get_name (profile));
+		rb_debug ("selected profile %s", gm_audio_profile_get_name (profile));
 	}
 
 	src = create_pipeline_and_source (encoder, entry, error);
@@ -1103,11 +1041,7 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 		priv->total_length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 		priv->position_format = GST_FORMAT_TIME;
 
-		if (mime_types == NULL) {
-			result = extract_track (RB_ENCODER_GST (encoder), entry, dest, &error);
-		} else {
-			result = transcode_track (RB_ENCODER_GST (encoder), entry, dest, mime_types, &error);
-		}
+		result = transcode_track (RB_ENCODER_GST (encoder), entry, dest, mime_types, &error);
 	}
 
 	if (error) {
@@ -1118,8 +1052,7 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 		if (enc->priv->pipeline == NULL) {
 			rb_encoder_gst_emit_completed (enc);
 		} else {
-			/* this will unref the pipeline and call emit_completed
-			 */
+			/* this will unref the pipeline and call emit_completed */
 			rb_encoder_gst_cancel (encoder);
 		}
 	}
