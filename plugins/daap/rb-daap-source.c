@@ -340,7 +340,9 @@ ask_password (RBDAAPSource *source, const char *name, const char *keyring)
 	GAskPasswordFlags flags;
 	char *password = NULL;
 	char *message;
+#ifdef WITH_GNOME_KEYRING
 	guint32 item_id;
+#endif
 
 	parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source)));
 
