@@ -42,7 +42,7 @@ class GioLoader(object):
 		try:
 			(contents, length, etag) = file.load_contents_finish(result)
 			callback_with_gdk_lock(self.callback, contents, self.args)
-		except gio.Error, e:
+		except Exception, e:
 			# somehow check if we just got cancelled
 			callback_with_gdk_lock(self.callback, None, self.args)
 
@@ -54,7 +54,7 @@ class GioLoader(object):
 			file = gio.File(url)
 			file.load_contents_async(callback = self._contents_cb, cancellable=self._cancel)
 		except Exception, e:
-			print "error getting contents of %s: %s" % e
+			print "error getting contents of %s: %s" % (url, e)
 			callback(None, *args)
 
 	def cancel (self):
