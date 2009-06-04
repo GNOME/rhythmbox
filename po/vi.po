@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox Gnome HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-04 21:42+1000\n"
-"PO-Revision-Date: 2009-01-26 18:09+0700\n"
+"POT-Creation-Date: 2009-06-03 23:56+1000\n"
+"PO-Revision-Date: 2009-06-04 21:37+1000\n"
 "Last-Translator: Phạm Thành Long <lngt@ngonngu.net>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -27,9 +27,9 @@ msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Không thể tạo ống dẫn phần tử sink của GStreamer để ghi vào %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:365
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
-msgstr "Lỗi tạo yếu tố %s; hãy kiểm tra lại bản cài đặt"
+msgstr "Lỗi tạo yếu tố playbin2; hãy kiểm tra lại bản cài đặt GStreamer"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:580
@@ -39,9 +39,9 @@ msgid "Failed to open output device: %s"
 msgstr "Lỗi tạo thiết bị ra: %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:625
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to start playback pipeline"
-msgstr "Không thể khởi chạy phát lại %s"
+msgstr "Không thể khởi chạy ống phát (playback pipeline)"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1153
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1167
@@ -92,7 +92,7 @@ msgstr "Không thể khởi chạy phát lại %s"
 
 #: ../data/ui/create-playlist.ui.h:1
 msgid " "
-msgstr ""
+msgstr " "
 
 #: ../data/ui/create-playlist.ui.h:2
 msgid "A_dd if any criteria are matched"
@@ -145,7 +145,7 @@ msgstr "Ngà_y thêm"
 
 #: ../data/ui/general-prefs.ui.h:5
 msgid "Default"
-msgstr ""
+msgstr "Mặc định"
 
 #: ../data/ui/general-prefs.ui.h:6
 msgid "G_enres, artists and albums"
@@ -153,7 +153,7 @@ msgstr "_Thể loại, nghệ sĩ và tập nhạc"
 
 #: ../data/ui/general-prefs.ui.h:7
 msgid "Icons only"
-msgstr ""
+msgstr "Chỉ hình"
 
 #: ../data/ui/general-prefs.ui.h:8
 msgid "Lo_cation"
@@ -161,16 +161,15 @@ msgstr "Đị_a điểm"
 
 #: ../data/ui/general-prefs.ui.h:9
 msgid "Text below icons"
-msgstr ""
+msgstr "Chữ dưới hình"
 
 #: ../data/ui/general-prefs.ui.h:10
 msgid "Text beside icons"
-msgstr ""
+msgstr "Chữ cạnh hình"
 
 #: ../data/ui/general-prefs.ui.h:11
-#, fuzzy
 msgid "Text only"
-msgstr "Bài kế"
+msgstr "Chỉ chữ"
 
 #: ../data/ui/general-prefs.ui.h:12
 msgid "Ti_me"
@@ -370,19 +369,19 @@ msgstr "Kiểm tra tì_nh tiết mới:"
 
 #: ../data/ui/podcast-prefs.ui.h:3
 msgid "Every day"
-msgstr ""
+msgstr "Mỗi ngày"
 
 #: ../data/ui/podcast-prefs.ui.h:4
 msgid "Every hour"
-msgstr ""
+msgstr "Mỗi giờ"
 
 #: ../data/ui/podcast-prefs.ui.h:5
 msgid "Every week"
-msgstr ""
+msgstr "Mỗi tuần"
 
 #: ../data/ui/podcast-prefs.ui.h:6
 msgid "Manually"
-msgstr ""
+msgstr "Thủ công"
 
 #: ../data/ui/podcast-prefs.ui.h:7
 msgid "Select Folder For Podcasts"
@@ -509,65 +508,65 @@ msgstr "Bộ phát nhạc Rhythmbox"
 #: ../lib/eggdesktopfile.c:165
 #, c-format
 msgid "File is not a valid .desktop file"
-msgstr ""
+msgstr "Không phải tập tin .desktop hợp lệ"
 
 #: ../lib/eggdesktopfile.c:188
 #, c-format
 msgid "Unrecognized desktop file Version '%s'"
-msgstr ""
+msgstr "Phiên bản tập tin desktop không nhận ra '%s'"
 
 #: ../lib/eggdesktopfile.c:958
 #, c-format
 msgid "Starting %s"
-msgstr ""
+msgstr "Đang bắt đầu %s"
 
 #: ../lib/eggdesktopfile.c:1100
 #, c-format
 msgid "Application does not accept documents on command line"
-msgstr ""
+msgstr "Ứng dụng không chấp nhận tài liệu trên dòng lệnh"
 
 #: ../lib/eggdesktopfile.c:1168
 #, c-format
 msgid "Unrecognized launch option: %d"
-msgstr ""
+msgstr "Tuỳ chọn thực thi không nhận ra: %d"
 
 #: ../lib/eggdesktopfile.c:1373
 #, c-format
 msgid "Can't pass document URIs to a 'Type=Link' desktop entry"
-msgstr ""
+msgstr "Không thể chuyển URI tài liệu cho mục desktop 'Type=Link'"
 
 #: ../lib/eggdesktopfile.c:1392
 #, c-format
 msgid "Not a launchable item"
-msgstr ""
+msgstr "Không phải mục thực thi"
 
 #: ../lib/eggsmclient.c:225
 msgid "Disable connection to session manager"
-msgstr ""
+msgstr "Tắt kết nối đến trình quản lý phiên làm việc"
 
 #: ../lib/eggsmclient.c:228
 msgid "Specify file containing saved configuration"
-msgstr ""
+msgstr "Xác định tập tin lưu cấu hình"
 
 #: ../lib/eggsmclient.c:228
 msgid "FILE"
-msgstr ""
+msgstr "FILE"
 
 #: ../lib/eggsmclient.c:231
 msgid "Specify session management ID"
-msgstr ""
+msgstr "Xác định ID quản lý phiên làm việc"
 
 #: ../lib/eggsmclient.c:231
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: ../lib/eggsmclient.c:252
 msgid "Session management options:"
-msgstr ""
+msgstr "Tuỳ chọn quản lý phiên làm việc:"
 
 #: ../lib/eggsmclient.c:253
 msgid "Show session management options"
-msgstr ""
+msgstr "Hiện tuỳ chọn quản lý phiên làm việc"
 
 #. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
 #: ../lib/rb-cut-and-paste-code.c:270
@@ -641,9 +640,9 @@ msgstr "%b %d %Y"
 #: ../podcast/rb-podcast-manager.c:1873
 #: ../podcast/rb-podcast-properties-dialog.c:483
 #: ../podcast/rb-podcast-properties-dialog.c:535
-#: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1288
-#: ../rhythmdb/rhythmdb-tree.c:1292 ../rhythmdb/rhythmdb-tree.c:1296
-#: ../rhythmdb/rhythmdb-tree.c:1300 ../rhythmdb/rhythmdb.c:1774
+#: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1287
+#: ../rhythmdb/rhythmdb-tree.c:1291 ../rhythmdb/rhythmdb-tree.c:1295
+#: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb.c:1773
 #: ../shell/rb-shell-player.c:1688 ../sources/rb-podcast-source.c:1657
 #: ../widgets/rb-entry-view.c:1041 ../widgets/rb-entry-view.c:1063
 #: ../widgets/rb-entry-view.c:1472 ../widgets/rb-entry-view.c:1484
@@ -653,9 +652,9 @@ msgid "Unknown"
 msgstr "Không rõ"
 
 #: ../lib/rb-file-helpers.c:211
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to move %s to %s: %s"
-msgstr "Không thể phân giải tên máy %s"
+msgstr "Không thể chuyển %s sang %s: %s"
 
 #: ../lib/rb-file-helpers.c:380
 #, c-format
@@ -935,9 +934,8 @@ msgid "Last.fm"
 msgstr "Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:2
-#, fuzzy
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
-msgstr "Gửi thông tin nhạc lên last.fm và phát đài last.fm"
+msgstr "Gửi thông tin nhạc lên Last.fm và phát đài Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:1
 msgid "0"
@@ -962,7 +960,7 @@ msgstr "Lần gửi sau cùng:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:6
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1010
 #: ../plugins/iradio/rb-station-properties-dialog.c:502
-#: ../rhythmdb/rhythmdb.c:3602 ../widgets/rb-entry-view.c:989
+#: ../rhythmdb/rhythmdb.c:3601 ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1531 ../widgets/rb-entry-view.c:1544
 #: ../widgets/rb-song-info.c:1345
 msgid "Never"
@@ -1018,13 +1016,12 @@ msgid "Request failed"
 msgstr "Yêu cầu thất bại"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1042
-#, fuzzy
 msgid "Incorrect username or password"
-msgstr "Tên người dùng sai"
+msgstr "Tên người dùng hoặc mật khẩu sai"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1045
 msgid "Clock is not set correctly"
-msgstr ""
+msgstr "Đồng hồ không đúng"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1048
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:903
@@ -1074,7 +1071,6 @@ msgid "Tracks liked by the %s group"
 msgstr "Bài được yêu thích bởi nhóm %s"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:196
-#, fuzzy
 msgid "Neighbour radio"
 msgstr "Đài láng giềng"
 
@@ -1085,7 +1081,6 @@ msgid "%s's Neighbour Radio"
 msgstr "Đài láng giềng của %s"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-#, fuzzy
 msgid "Personal radio"
 msgstr "Đài cá nhân"
 
@@ -1096,9 +1091,8 @@ msgid "%s's Personal Radio"
 msgstr "Đài cá nhân của %s"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:198
-#, fuzzy
 msgid "Loved tracks"
-msgstr "Rãnh yêu thích của %s"
+msgstr "Rãnh yêu thích"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:198
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1306
@@ -1107,14 +1101,13 @@ msgid "%s's Loved Tracks"
 msgstr "Rãnh yêu thích của %s"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:199
-#, fuzzy
 msgid "Recommended tracks"
-msgstr "Các rãnh đang đợi:"
+msgstr "Rãnh gợi ý"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:199
-#, fuzzy, c-format
+#, c-format
 msgid "Tracks recommended to %s"
-msgstr "Bài được đánh thẻ %s"
+msgstr "Rãnh được gợi ý cho %s"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:285
 msgid "Love"
@@ -1246,7 +1239,7 @@ msgstr "Bộ thu đĩa CD"
 
 #: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:2
 msgid "Record audio CDs from playlists and duplicate audio CDs"
-msgstr ""
+msgstr "Thu CD nhạc từ danh mục phát và sao CD nhạc"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:98
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:89
@@ -1274,31 +1267,29 @@ msgid "Rhythmbox could not duplicate the disc"
 msgstr "Rhythmbox không thể sao đĩa này"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:197
-#, fuzzy
 msgid "Rhythmbox could not record the audio disc"
-msgstr "Rhythmbox không thể sao đĩa này"
+msgstr "Rhythmbox không thể thu đĩa này"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:228
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to build an audio track list"
-msgstr "Không thể tạo danh sách rãnh âm thanh."
+msgstr "Không thể tạo danh sách rãnh âm thanh"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:239
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:431
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write audio project file %s: %s"
-msgstr "Không thể tạo thư mục lấy về cho %s: %s"
+msgstr "Không thể ghi tập tin dự án nhạc %s: %s"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:257
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:438
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write audio project"
-msgstr "Không thể tạo đĩa CD Nhạc"
+msgstr "Không thể ghi dự án nhạc"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:478
-#, fuzzy
 msgid "Unable to create audio CD project"
-msgstr "Không thể tạo đĩa CD Nhạc"
+msgstr "Không thể tạo dự án CD Nhạc"
 
 #. Translators: this is the toolbar button label for
 #. Create Audio CD action
@@ -1479,9 +1470,8 @@ msgid "Writing failed.  Try again?"
 msgstr "Việc ghi bị lỗi. Bạn có muốn thử lại không?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:551
-#, fuzzy
 msgid "Writing canceled.  Try again?"
-msgstr "Việc ghi bị huỷ. Bạn có muốn làm lại không?"
+msgstr "Đã huỷ ghi. Thử lại nhé?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:619
 msgid "Audio recording error"
@@ -1632,15 +1622,12 @@ msgid "This playlist is too long to write to an audio CD."
 msgstr "Danh mục nhạc này quá dài nên không thể ghi vào CD Nhạc."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1593
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
 "audio CD.  If the destination medium is larger than a standard audio CD "
 "please insert it in the drive and try again."
-msgstr ""
-"Danh mục nhạc này có độ dài %s phút, vượt quá độ dài của đĩa CD nhạc chuẩn. "
-"Nếu vật chứa đích có dung lượng lớn hơn đĩa CD nhạc chuẩn thì hãy đưa nó vào "
-"ổ đĩa rồi thử lại."
+msgstr "Danh mục nhạc này có độ dài %s phút, vượt quá độ dài của đĩa CD nhạc chuẩn. Nếu vật chứa đích có dung lượng lớn hơn đĩa CD nhạc chuẩn thì hãy đưa nó vào ổ đĩa rồi thử lại."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1604
 msgid "Playlist too long"
@@ -1651,11 +1638,11 @@ msgid "Could not find temporary space!"
 msgstr "Không thể tìm chỗ tạm!"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1645
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MB "
 "required."
-msgstr "Không thể tìm đủ chỗ tạm để chuyển đổi các rãnh âm thanh. Cần %s MiB."
+msgstr "Không đủ chỗ tạm để chuyển đổi các rãnh âm thanh. Cần %s MB."
 
 #: ../plugins/cd-recorder/recorder.ui.h:1
 msgid "Create audio CD from playlist?"
@@ -1732,9 +1719,8 @@ msgstr "Tên chia sẻ nhạc '%s' đã được chọn. Hãy chọn tên khác.
 
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:237
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:280
-#, fuzzy
 msgid "mDNS service is not running"
-msgstr "Dịch vụ MDNS đã dừng"
+msgstr "Dịch vụ mDNS chưa chạy"
 
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:245
 msgid "Browser already active"
@@ -1762,14 +1748,12 @@ msgstr "Không thể gài vào dịch vụ"
 
 #: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:281
 #: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:301
-#, fuzzy
 msgid "The avahi mDNS service is not running"
-msgstr "Dịch vụ MDNS Avahi đã dừng"
+msgstr "Dịch vụ mDNS Avahi chưa chạy"
 
 #: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:310
-#, fuzzy
 msgid "The mDNS service is not published"
-msgstr "Dịch vụ MDNS chưa được xuất bản"
+msgstr "Dịch vụ mDNS chưa được công bố"
 
 #: ../plugins/daap/rb-daap-plugin.c:125
 msgid "_Disconnect"
@@ -1891,14 +1875,13 @@ msgid "Importing (%d/%d)"
 msgstr "Đang nhập (%d/%d)"
 
 #: ../plugins/im-status/im-status.rb-plugin.in.h:1
-#, fuzzy
 msgid "IM Status"
-msgstr "Trạng thái"
+msgstr "Trạng thái IM"
 
 #: ../plugins/im-status/im-status.rb-plugin.in.h:2
 msgid ""
 "Updates IM status according to the current song (works with Empathy & Gossip)"
-msgstr ""
+msgstr "Cập nhật trạng thái IM theo bài nhạc hiện thời (hoạt động với Empathy & Gossip)"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -1906,7 +1889,7 @@ msgstr ""
 #: ../plugins/im-status/im-status/__init__.py:153
 #, python-format
 msgid "♫ %(artist)s - %(title)s ♫"
-msgstr ""
+msgstr "♫ %(artist)s - %(title)s ♫"
 
 #. Translators: do not translate %(artist)s or %(album)s, they are
 #. string substitution markers (like %s) for the artist and album name
@@ -1914,25 +1897,25 @@ msgstr ""
 #: ../plugins/im-status/im-status/__init__.py:158
 #, python-format
 msgid "♫ %(artist)s - %(album)s ♫"
-msgstr ""
+msgstr "♫ %(artist)s - %(album)s ♫"
 
 #. Translators: do not translate %(album)s, it is a string substitution
 #. marker (like %s) for the album name of the current playing song.
 #: ../plugins/im-status/im-status/__init__.py:162
 #, python-format
 msgid "♫ %(album)s ♫"
-msgstr ""
+msgstr "♫ %(album)s ♫"
 
 #. Translators: do not translate %(title)s, it is a string substitution
 #. marker (like %s) for the title of the current playing song.
 #: ../plugins/im-status/im-status/__init__.py:166
 #, python-format
 msgid "♫ %(title)s ♫"
-msgstr ""
+msgstr "♫ %(title)s ♫"
 
 #: ../plugins/im-status/im-status/__init__.py:168
 msgid "♫ Listening to music... ♫"
-msgstr ""
+msgstr "♫ Đang nghe nhạc... ♫"
 
 #: ../plugins/ipod/ipod.rb-plugin.in.h:1
 msgid "Portable Players - iPod"
@@ -2012,22 +1995,15 @@ msgstr ""
 "span>"
 
 #: ../plugins/ipod/ipod-init.ui.h:2
-#, fuzzy
 msgid ""
 "Rhythmbox has detected a device that is probably an uninitialized or "
 "corrupted iPod. It must be initialized before Rhythmbox can use it, but this "
 "will destroy any song metadata already present. If you wish Rhythmbox to "
 "initialize the iPod, please fill in the information below. If the device is "
 "not an iPod, or you do not wish to initialize it, please click cancel."
-msgstr ""
-"Rhythmbox phát hiện một thiết bị iPod có lẽ chưa được khởi tạo hoặc bị hư. "
-"Nó phải được khởi tạo trước khi Rhythmbox có thể dùng, tuy nhiên việc này sẽ "
-"huỷ mọi thông tin về nhạc đã có. Nếu bạn muốn Rhythmbox khởi tạo iPod này, "
-"vui lòng điền những thông tin bên dưới. Nếu thiết bị không phải là iPod, "
-"hoặc bạn không muốn làm thế, hãy nhấn \"Thôi\"."
+msgstr "Rhythmbox phát hiện một thiết bị iPod có lẽ chưa được khởi tạo hoặc bị hư. Phải khởi tạo nó trước khi có thể dùng với Rhythmbox, tuy nhiên việc này sẽ huỷ mọi thông tin nhạc đã có. Nếu bạn muốn Rhythmbox khởi tạo iPod này, vui lòng điền những thông tin bên dưới. Nếu thiết bị không phải là iPod, hoặc bạn không muốn làm thế, hãy nhấn \"Thôi\"."
 
 #: ../plugins/ipod/ipod-init.ui.h:3
-#, fuzzy
 msgid "_Initialize"
 msgstr "_Khởi tạo"
 
@@ -2045,9 +2021,8 @@ msgid "iPod detected"
 msgstr "Phát hiện iPod"
 
 #: ../plugins/ipod/rb-ipod-helpers.c:304
-#, fuzzy
 msgid "Unable to initialize new iPod"
-msgstr "Không thể khởi động iPod mới"
+msgstr "Không thể khởi tạo iPod mới"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:104 ../plugins/ipod/rb-ipod-plugin.c:113
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:109 ../shell/rb-playlist-manager.c:184
@@ -2121,14 +2096,11 @@ msgstr "Tuỳ thích Jamendo"
 
 #: ../plugins/jamendo/jamendo-prefs.ui.h:3
 msgid "MP3 (200Kbps)"
-msgstr ""
+msgstr "MP3 (200Kbps)"
 
 #: ../plugins/jamendo/jamendo-prefs.ui.h:4
-#, fuzzy
 msgid "Ogg Vorbis (300Kbps)"
-msgstr ""
-"Ogg Vorbis (300Kbps)\n"
-"MP3 (200Kbps)"
+msgstr "Ogg Vorbis (300Kbps)"
 
 #: ../plugins/jamendo/jamendo-prefs.ui.h:5
 msgid "Visit Jamendo at "
@@ -2179,36 +2151,27 @@ msgid "<b>Jamendo</b>"
 msgstr "<b>Jamendo</b>"
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:9
-#, fuzzy
 msgid ""
 "Jamendo is a new model for artists to promote, publish, and be paid for "
 "their music."
-msgstr ""
-"Jamendo là mô hình mới để các nghệ sĩ quảng cáo, công bố và thu lợi từ các "
-"nhạc phẩm của họ."
+msgstr "Jamendo là mô hình mới để các nghệ sĩ quảng cáo, công bố và thu lợi từ các nhạc phẩm của họ."
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:10
-#, fuzzy
 msgid "Jamendo is the only platform that joins together :"
 msgstr "Jamendo là hệ thống duy nhất kết hợp:"
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:11
-#, fuzzy
 msgid ""
 "Jamendo users can discover and share albums, but also review them or start a "
 "discussion on the forums.\n"
 "Albums are democratically rated based on the visitors&#x2019; reviews.\n"
 "If they fancy an artist they can support him by making a donation."
 msgstr ""
-"Người dùng Jamendo có thể khám phá và chia sẻ các tập nhạc, viết các đánh "
-"giá về chúng\n"
-"hoặc thảo luận trên các diễn đàn.\n"
-"Các tập nhạc được đánh giá dân chủ dựa trên tỉ lệ đánh giá của thính giả.\n"
-"Nếu họ hâm mộ nghệ sĩ nào đó, họ có thể hỗ trợ nghệ sĩ này bằng đóng góp tài "
-"chính."
+"Người dùng Jamendo có thể khám phá và chia sẻ các tập nhạc, viết đánh giá hoặc thảo luận trên các diễn đàn.\n"
+"Các tập nhạc được đánh giá dân chủ dựa trên tỉ lệ đánh giá của thính giả&#x2019.\n"
+"Nếu họ hâm mộ nghệ sĩ nào đó, họ có thể hỗ trợ nghệ sĩ này bằng đóng góp tài chính."
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:14
-#, fuzzy
 msgid ""
 "On Jamendo, the artists distribute their music under Creative Commons "
 "licenses.\n"
@@ -2217,21 +2180,19 @@ msgid ""
 "It's a \"Some rights reserved\" agreement, perfectly suited for the new "
 "century."
 msgstr ""
-"Với Jamendo, các nghệ sĩ phân phối nhạc của họ theo giấy phép Creative "
-"Commons.\n"
+"Với Jamendo, các nghệ sĩ phân phối nhạc của họ theo giấy phép Creative Commons.\n"
 "Nói ngắn gọn, họ cho phép bạn tải về, phối âm lại và chia sẻ nhạc tự do.\n"
 "Nó là thoả thuận \"Bảo lưu một số quyền\", rất phù hợp cho thế kỉ mới."
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:17
-#, fuzzy
 msgid ""
 "These new rules make Jamendo able to use the new powerful means of digital "
 "distribution like\n"
 "Peer-to-Peer networks such as BitTorrent or eMule to legally distribute "
 "albums at near-zero cost."
 msgstr ""
-"Những nguyên tắc này giúp Jamendo có thể sử dụng sức mạnh mới của\n"
-"các kênh phân phối kĩ thuật số như mạng ngang hàng BitTorrent hoặc eMule\n"
+"Những nguyên tắc này giúp Jamendo có thể sử dụng sức mạnh mới của các\n"
+" kênh phân phối kĩ thuật số như mạng ngang hàng BitTorrent hoặc eMule\n"
 "để phân phối hợp pháp các tập nhạc với giá gần như miễn phí."
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:19
@@ -2271,7 +2232,6 @@ msgid "Donate Money to this Artist"
 msgstr "Ủng hộ tiền cho nghệ sĩ này"
 
 #: ../plugins/jamendo/jamendo/JamendoSource.py:120
-#, fuzzy
 msgid "Loading Jamendo catalog"
 msgstr "Đang nạp danh mục Jamendo"
 
@@ -2298,7 +2258,7 @@ msgstr "Tạo trạm phát Internet mới"
 #: ../plugins/iradio/rb-iradio-source.c:314
 msgctxt "Radio"
 msgid "New"
-msgstr ""
+msgstr "Đài mới"
 
 #: ../plugins/iradio/rb-iradio-source.c:356 ../widgets/rb-entry-view.c:1458
 #: ../widgets/rb-library-browser.c:142
@@ -2570,77 +2530,77 @@ msgstr "Bạn có thể tìm hiểu thêm tại http://www.magnatune.com/"
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
 #: ../plugins/magnatune/magnatune-purchase.ui.h:1
 msgid "$10 US (better than average)"
-msgstr ""
+msgstr "$10 US (hơn trung bình)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:2
 #: ../plugins/magnatune/magnatune-purchase.ui.h:2
 msgid "$11 US"
-msgstr ""
+msgstr "$11 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:3
 #: ../plugins/magnatune/magnatune-purchase.ui.h:3
 msgid "$12 US (generous)"
-msgstr ""
+msgstr "$12 US (hào phóng)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:4
 #: ../plugins/magnatune/magnatune-purchase.ui.h:4
 msgid "$13 US"
-msgstr ""
+msgstr "$13 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:5
 #: ../plugins/magnatune/magnatune-purchase.ui.h:5
 msgid "$14 US"
-msgstr ""
+msgstr "$14 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:6
 #: ../plugins/magnatune/magnatune-purchase.ui.h:6
 msgid "$15 US (VERY generous!)"
-msgstr ""
+msgstr "$15 US (RẤT hào phóng!)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:7
 #: ../plugins/magnatune/magnatune-purchase.ui.h:7
 msgid "$16 US"
-msgstr ""
+msgstr "$16 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:8
 #: ../plugins/magnatune/magnatune-purchase.ui.h:8
 msgid "$17 US"
-msgstr ""
+msgstr "$17 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:9
 #: ../plugins/magnatune/magnatune-purchase.ui.h:9
 msgid "$18 US (We love you!)"
-msgstr ""
+msgstr "$18 US (Chúng tôi yêu bạn!)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:10
 #: ../plugins/magnatune/magnatune-purchase.ui.h:10
 msgid "$5 US"
-msgstr ""
+msgstr "$5 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:11
 #: ../plugins/magnatune/magnatune-purchase.ui.h:11
 msgid "$6 US"
-msgstr ""
+msgstr "$6 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:12
 #: ../plugins/magnatune/magnatune-purchase.ui.h:12
 msgid "$7 US"
-msgstr ""
+msgstr "$7 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:13
 #: ../plugins/magnatune/magnatune-purchase.ui.h:13
 msgid "$8 US (typical)"
-msgstr ""
+msgstr "$8 US (điển hình)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:14
 #: ../plugins/magnatune/magnatune-purchase.ui.h:14
 msgid "$9 US"
-msgstr ""
+msgstr "$9 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:15
 #: ../plugins/magnatune/magnatune-purchase.ui.h:15
 msgid "128K MP3"
-msgstr ""
+msgstr "128K MP3"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:16
 msgid ""
@@ -2653,12 +2613,12 @@ msgstr ""
 #: ../plugins/magnatune/magnatune-prefs.ui.h:17
 #: ../plugins/magnatune/magnatune-purchase.ui.h:16
 msgid "April (04)"
-msgstr ""
+msgstr "Tháng tư (04)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:18
 #: ../plugins/magnatune/magnatune-purchase.ui.h:18
 msgid "August (08)"
-msgstr ""
+msgstr "Tháng tám (08)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:19
 msgid "C_redit Card:"
@@ -2667,7 +2627,7 @@ msgstr "Thẻ _tín dụng:"
 #: ../plugins/magnatune/magnatune-prefs.ui.h:20
 #: ../plugins/magnatune/magnatune-purchase.ui.h:21
 msgid "December (12)"
-msgstr ""
+msgstr "Tháng mười hai (12)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:21
 msgid "Default _amount to pay:"
@@ -2680,12 +2640,12 @@ msgstr "Hết hạn:"
 #: ../plugins/magnatune/magnatune-prefs.ui.h:23
 #: ../plugins/magnatune/magnatune-purchase.ui.h:24
 msgid "FLAC"
-msgstr ""
+msgstr "FLAC"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:24
 #: ../plugins/magnatune/magnatune-purchase.ui.h:25
 msgid "February (02)"
-msgstr ""
+msgstr "Tháng hai (02)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:25
 msgid "Find out about Magnatune at "
@@ -2694,17 +2654,17 @@ msgstr "Tìm hiểu về Magnatune tại "
 #: ../plugins/magnatune/magnatune-prefs.ui.h:26
 #: ../plugins/magnatune/magnatune-purchase.ui.h:28
 msgid "January (01)"
-msgstr ""
+msgstr "Tháng giêng (01)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:27
 #: ../plugins/magnatune/magnatune-purchase.ui.h:29
 msgid "July (07)"
-msgstr ""
+msgstr "Tháng bảy (07)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:28
 #: ../plugins/magnatune/magnatune-purchase.ui.h:30
 msgid "June (06)"
-msgstr ""
+msgstr "Tháng sáu (06)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:29
 msgid "Magnatune Information"
@@ -2717,27 +2677,27 @@ msgstr "Tuỳ thích Magnatune"
 #: ../plugins/magnatune/magnatune-prefs.ui.h:31
 #: ../plugins/magnatune/magnatune-purchase.ui.h:31
 msgid "March (03)"
-msgstr ""
+msgstr "Tháng ba (03)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:32
 #: ../plugins/magnatune/magnatune-purchase.ui.h:32
 msgid "May (05)"
-msgstr ""
+msgstr "Tháng năm (05)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:33
 #: ../plugins/magnatune/magnatune-purchase.ui.h:33
 msgid "November (11)"
-msgstr ""
+msgstr "Tháng mười một (11)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:34
 #: ../plugins/magnatune/magnatune-purchase.ui.h:34
 msgid "October (10)"
-msgstr ""
+msgstr "Tháng mười (10)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:35
 #: ../plugins/magnatune/magnatune-purchase.ui.h:35
 msgid "Ogg Vorbis"
-msgstr ""
+msgstr "Ogg Vorbis"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:36
 msgid "Preferred audio _format:"
@@ -2754,12 +2714,12 @@ msgstr "Ghi nhớ chi tiết thẻ tín dụng của tôi"
 #: ../plugins/magnatune/magnatune-prefs.ui.h:39
 #: ../plugins/magnatune/magnatune-purchase.ui.h:37
 msgid "September (09)"
-msgstr ""
+msgstr "Tháng chín (09)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:40
 #: ../plugins/magnatune/magnatune-purchase.ui.h:38
 msgid "VBR MP3"
-msgstr ""
+msgstr "VBR MP3"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:41
 msgid "Visit Magnatune at "
@@ -2768,7 +2728,7 @@ msgstr "Thăm Magnatune tại "
 #: ../plugins/magnatune/magnatune-prefs.ui.h:42
 #: ../plugins/magnatune/magnatune-purchase.ui.h:39
 msgid "WAV"
-msgstr ""
+msgstr "WAV"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:43
 msgid "_Email:"
@@ -2859,7 +2819,6 @@ msgid "Magnatune"
 msgstr "Magnatune"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:121
-#, fuzzy
 msgid "Loading Magnatune catalog"
 msgstr "Đang nạp danh mục Magnatune"
 
@@ -2881,23 +2840,21 @@ msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "Bạn có muốn mua tập nhạc <i>%(album)s</i> của '%(artist)s' không?"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:372
-#, fuzzy
 msgid "Unable to load catalog"
-msgstr "Không thể kết nối"
+msgstr "Không thể nạp danh mục"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:373
-#, fuzzy
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
-msgstr "Rhythmbox không thể hiểu phân loại Magnatune, vui lòng thông báo lỗi."
+msgstr "Rhythmbox không thể hiểu danh mục Magnatune, vui lòng thông báo lỗi."
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:459
 msgid "Authorizing Purchase"
-msgstr ""
+msgstr "Cho phép mua"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:460
 msgid "Authorizing purchase with the Magnatune server. Please wait..."
-msgstr ""
+msgstr "Đang cho phép mua từ máy chủ Magnatune. Vui lòng chờ..."
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:506
 msgid "Purchase Error"
@@ -2981,19 +2938,19 @@ msgstr "Hỗ trợ thiết bị MTP (hiện nội dung, chép nhạc, nghe nhạ
 
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:174
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:216
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to copy file from MTP device: %s"
-msgstr "Lỗi tạo thiết bị ra: %s"
+msgstr "Không thể chép tập tin từ thiết bị MTP: %s"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:190
 #, c-format
 msgid "Not enough space in %s"
-msgstr ""
+msgstr "Không đủ chỗ trong %s"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:202
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open temporary file: %s"
-msgstr "Lỗi tạo thiết bị ra: %s"
+msgstr "Lỗi mở tập tin tạm: %s"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:106
 #: ../shell/rb-removable-media-manager.c:150
@@ -3009,9 +2966,8 @@ msgid "Rename MTP-device"
 msgstr "Đổi tên thiết bị MTP"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:177
-#, fuzzy
 msgid "Media player device error"
-msgstr "Phím chơi nhạc"
+msgstr "Lỗi thiết bị phát nhạc"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:750
 msgid "Digital Audio Player"
@@ -3148,9 +3104,8 @@ msgid "Show notifications of song changes and other events"
 msgstr "Hiển thị thông báo các thay đổi bài nhạc và sự kiện khác"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:407
-#, fuzzy
 msgid "Next"
-msgstr "Tiế_p"
+msgstr "Tiếp"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:558
 #: ../remote/dbus/rb-client.c:452 ../remote/dbus/rb-client.c:478
@@ -3176,9 +3131,8 @@ msgid "from <i>%s</i>"
 msgstr "trong <i>%s</i>"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:1
-#, fuzzy
 msgid "Status Icon"
-msgstr "Trạng thái"
+msgstr "Biểu tượng trạng thái"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:2
 msgid "Status icon and notification popups"
@@ -3186,50 +3140,43 @@ msgstr ""
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:1
 msgid "Always shown"
-msgstr ""
+msgstr "Luôn hiện"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:2
 msgid "Always visible"
-msgstr ""
+msgstr "Luôn nhìn thấy"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:3
-#, fuzzy
 msgid "Never shown"
-msgstr "Chưa bao giờ"
+msgstr "Chưa bao giờ hiện"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:4
 msgid "Never visible"
-msgstr ""
+msgstr "Chưa bao giờ hiện"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:5
-#, fuzzy
 msgid "Owns the main window"
-msgstr "Thu nhỏ cửa sổ chính"
+msgstr "Sở hữu cửa sổ chính"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:6
-#, fuzzy
 msgid "Shown when the main window is hidden"
-msgstr "Thu nhỏ cửa sổ chính"
+msgstr "Hiện khi ẩn cửa số chính"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:7
-#, fuzzy
 msgid "Status icon preferences"
-msgstr "Tuỳ thích Magnatune"
+msgstr "Tuỳ thích biểu tượng trạng thái"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:8
-#, fuzzy
 msgid "Visible with notifications"
-msgstr "Hiện thông bá_o"
+msgstr "Hiện cùng thông báo"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:9
-#, fuzzy
 msgid "_Notifications"
-msgstr "Lưu ý"
+msgstr "_Thông báo"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:10
-#, fuzzy
 msgid "_Status Icon:"
-msgstr "Trạng thái:"
+msgstr "Biểu tượng _Trạng thái:"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:229
 msgid "_Visualization"
@@ -3512,13 +3459,11 @@ msgid "All"
 msgstr "Tất cả"
 
 #: ../rhythmdb/rhythmdb-tree.c:407
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
 "Rhythmbox cannot read the database."
-msgstr ""
-"Cơ sở dữ liệu đã được tạo bởi một phiên bản Rhythmbox mới hơn. Phiên bản "
-"Rhythmbox đang dùng không thể đọc cơ sở dữ liệu này."
+msgstr "Cơ sở dữ liệu đã được tạo bởi một phiên bản Rhythmbox mới hơn. Phiên bản Rhythmbox đang dùng không thể đọc cơ sở dữ liệu này."
 
 #: ../rhythmdb/rhythmdb.c:724
 #, c-format
@@ -3530,7 +3475,7 @@ msgstr "Không thể truy cập %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1655
+#: ../rhythmdb/rhythmdb.c:1654
 msgid "The Beatles"
 msgstr "Đức Huy"
 
@@ -3538,7 +3483,7 @@ msgstr "Đức Huy"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1661
+#: ../rhythmdb/rhythmdb.c:1660
 msgid "Help!"
 msgstr "Phố Nhỏ"
 
@@ -3546,38 +3491,38 @@ msgstr "Phố Nhỏ"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1667
+#: ../rhythmdb/rhythmdb.c:1666
 msgid "Ticket To Ride"
 msgstr "Ngậm Ngùi"
 
-#: ../rhythmdb/rhythmdb.c:2222
+#: ../rhythmdb/rhythmdb.c:2221
 msgid "invalid unicode in error message"
 msgstr "gặp Unicode không hợp lệ trong thông điệp lỗi"
 
-#: ../rhythmdb/rhythmdb.c:3087
+#: ../rhythmdb/rhythmdb.c:3086
 msgid "Could not load the music database:"
 msgstr "Không thể nạp cơ sở dữ liệu âm nhạc:"
 
-#: ../rhythmdb/rhythmdb.c:4455
+#: ../rhythmdb/rhythmdb.c:4454
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld phút"
 
-#: ../rhythmdb/rhythmdb.c:4456
+#: ../rhythmdb/rhythmdb.c:4455
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld giờ"
 
-#: ../rhythmdb/rhythmdb.c:4457
+#: ../rhythmdb/rhythmdb.c:4456
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld ngày"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4463
+#: ../rhythmdb/rhythmdb.c:4462
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s, %s"
@@ -3585,8 +3530,8 @@ msgstr "%s, %s, %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4469 ../rhythmdb/rhythmdb.c:4477
-#: ../rhythmdb/rhythmdb.c:4488
+#: ../rhythmdb/rhythmdb.c:4468 ../rhythmdb/rhythmdb.c:4476
+#: ../rhythmdb/rhythmdb.c:4487
 #, c-format
 msgid "%s and %s"
 msgstr "%s, %s"
@@ -3630,6 +3575,8 @@ msgid ""
 "%s\n"
 "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
+"%s\n"
+"Chạy '%s --help' để có danh sách tuỳ chọn dòng lệnh đầy đủ.\n"
 
 #: ../shell/rb-playlist-manager.c:161
 msgid "MPEG Version 3.0 URL"
@@ -4186,9 +4133,8 @@ msgid "Change the visibility of the statusbar"
 msgstr "Hiện/Ẩn thanh trạng thái"
 
 #: ../shell/rb-shell.c:995 ../shell/rb-shell.c:1204
-#, fuzzy
 msgid "Unable to move user data files"
-msgstr "Không thể phân giải tên máy %s"
+msgstr "Không thể di chuyển tập tin dữ liệu người dùng"
 
 #: ../shell/rb-shell.c:1290
 msgid "Change the music volume"
@@ -4566,7 +4512,7 @@ msgstr "Tìm kiếm tình tiết podcast"
 #: ../sources/rb-podcast-source.c:528
 msgctxt "Podcast"
 msgid "New"
-msgstr ""
+msgstr "Podcast mới"
 
 #. Translators: this is the toolbar button label
 #. for Update All Feeds action.
@@ -4729,7 +4675,7 @@ msgstr "Pixbuf cần vẽ."
 #: ../widgets/rb-entry-view.c:1061 ../widgets/rb-entry-view.c:1497
 #: ../widgets/rb-song-info.c:1046
 msgid "Lossless"
-msgstr ""
+msgstr "Không mất mát"
 
 #: ../widgets/rb-entry-view.c:1417
 msgid "Track"
@@ -4991,7 +4937,7 @@ msgstr "Tìm _kiếm:"
 
 #: ../widgets/rb-search-entry.c:176
 msgid "Clear the search text"
-msgstr ""
+msgstr "Xoá chuỗi tìm kiếm"
 
 #: ../widgets/rb-song-info.c:369
 msgid "Song Properties"
