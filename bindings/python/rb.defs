@@ -190,6 +190,17 @@
   )
 )
 
+(define-enum PlayerPlayType
+  (in-module "RB")
+  (c-name "RBPlayerPlayType")
+  (gtype-id "RB_TYPE_PLAYER_PLAY_TYPE")
+  (values
+    '("replace" "RB_PLAYER_PLAY_REPLACE")
+    '("crossfade" "RB_PLAYER_PLAY_CROSSFADE")
+    '("after-eos" "RB_PLAYER_PLAY_AFTER_EOS")
+  )
+)
+
 (define-enum SourceEOFType
   (in-module "RB")
   (c-name "RBSourceEOFType")
@@ -2308,7 +2319,8 @@
   (c-name "rb_player_play")
   (return-type "gboolean")
   (parameters
-    '("gint" "crossfade")
+    '("RBPlayerPlayType" "play_type")
+    '("gint64" "crossfade")
     '("GError**" "error")
   )
 )

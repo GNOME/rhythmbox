@@ -39,6 +39,16 @@ G_BEGIN_DECLS
 
 typedef enum
 {
+	RB_PLAYER_PLAY_REPLACE,
+	RB_PLAYER_PLAY_AFTER_EOS,
+	RB_PLAYER_PLAY_CROSSFADE
+} RBPlayerPlayType;
+
+GType rb_player_play_type_get_type (void);
+#define RB_TYPE_PLAYER_PLAY_TYPE (rb_player_play_type_get_type())
+
+typedef enum
+{
 	RB_PLAYER_ERROR_NO_AUDIO,
 	RB_PLAYER_ERROR_GENERAL,
 	RB_PLAYER_ERROR_INTERNAL
@@ -49,6 +59,7 @@ GType rb_player_error_get_type (void);
 GQuark rb_player_error_quark (void);
 #define RB_PLAYER_ERROR rb_player_error_quark ()
 
+#define RB_PLAYER_SECOND	(G_USEC_PER_SEC * 1000)
 
 #define RB_TYPE_PLAYER         (rb_player_get_type ())
 #define RB_PLAYER(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_PLAYER, RBPlayer))
@@ -76,7 +87,8 @@ struct _RBPlayerIface
 						 GError **error);
 
 	gboolean	(*play)			(RBPlayer *player,
-						 gint crossfade,
+						 RBPlayerPlayType play_type,
+						 gint64 crossfade,
 						 GError **error);
 	void		(*pause)		(RBPlayer *player);
 	gboolean	(*playing)		(RBPlayer *player);
@@ -93,8 +105,8 @@ struct _RBPlayerIface
 
 	gboolean	(*seekable)		(RBPlayer *player);
 	void		(*set_time)		(RBPlayer *player,
-						 long time);
-	long		(*get_time)		(RBPlayer *player);
+						 gint64 time);
+	gint64		(*get_time)		(RBPlayer *player);
 	gboolean	(*multiple_open)	(RBPlayer *player);
 
 
@@ -115,8 +127,8 @@ struct _RBPlayerIface
 						 GError *error);
 	void		(*tick)            	(RBPlayer *player,
 						 gpointer stream_data,
-						 long elapsed,
-						 long duration);
+						 gint64 elapsed,
+						 gint64 duration);
 	void		(*event)		(RBPlayer *player,
 						 gpointer stream_data,
 						 gpointer data);
@@ -141,7 +153,10 @@ gboolean        rb_player_close      (RBPlayer *player,
 				      const char *uri,
 				      GError **error);
 
-gboolean	rb_player_play       (RBPlayer *player, gint crossfade, GError **error);
+gboolean	rb_player_play       (RBPlayer *player,
+				      RBPlayerPlayType play_type,
+				      gint64 crossfade,
+				      GError **error);
 void		rb_player_pause      (RBPlayer *player);
 gboolean	rb_player_playing    (RBPlayer *player);
 
@@ -153,8 +168,8 @@ void		rb_player_set_replaygain (RBPlayer *player,
 					  double album_gain, double album_peak);
 
 gboolean	rb_player_seekable   (RBPlayer *player);
-void		rb_player_set_time   (RBPlayer *player, long newtime);
-long		rb_player_get_time   (RBPlayer *player);
+void		rb_player_set_time   (RBPlayer *player, gint64 newtime);
+gint64		rb_player_get_time   (RBPlayer *player);
 
 gboolean	rb_player_multiple_open (RBPlayer *player);
 
@@ -163,7 +178,7 @@ void	_rb_player_emit_eos (RBPlayer *player, gpointer stream_data);
 void	_rb_player_emit_info (RBPlayer *player, gpointer stream_data, RBMetaDataField field, GValue *value);
 void	_rb_player_emit_buffering (RBPlayer *player, gpointer stream_data, guint progress);
 void	_rb_player_emit_error (RBPlayer *player, gpointer stream_data, GError *error);
-void	_rb_player_emit_tick (RBPlayer *player, gpointer stream_data, long elapsed, long duration);
+void	_rb_player_emit_tick (RBPlayer *player, gpointer stream_data, gint64 elapsed, gint64 duration);
 void	_rb_player_emit_event (RBPlayer *player, gpointer stream_data, const char *name, gpointer data);
 void	_rb_player_emit_playing_stream (RBPlayer *player, gpointer stream_data);
 void	_rb_player_emit_volume_changed (RBPlayer *player, float volume);

@@ -712,7 +712,7 @@ impl_opened (RBPlayer *player)
 }
 
 static gboolean
-impl_play (RBPlayer *player, gint crossfade, GError **error)
+impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GError **error)
 {
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
 	gboolean result;
@@ -902,7 +902,7 @@ impl_seekable (RBPlayer *player)
 }
 
 static void
-impl_set_time (RBPlayer *player, long time)
+impl_set_time (RBPlayer *player, gint64 time)
 {
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
 	GError *error = NULL;
@@ -920,7 +920,7 @@ impl_set_time (RBPlayer *player, long time)
 
 	gst_element_seek (mp->priv->playbin, 1.0,
 			  GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
-			  GST_SEEK_TYPE_SET, time * GST_SECOND,
+			  GST_SEEK_TYPE_SET, time,
 			  GST_SEEK_TYPE_NONE, -1);
 
 	if (mp->priv->playing) {
@@ -931,7 +931,7 @@ impl_set_time (RBPlayer *player, long time)
 	}
 }
 
-static long
+static gint64
 impl_get_time (RBPlayer *player)
 {
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
@@ -941,10 +941,7 @@ impl_get_time (RBPlayer *player)
 		GstFormat fmt = GST_FORMAT_TIME;
 
 		gst_element_query_position (mp->priv->playbin, &fmt, &position);
-		if (position != -1)
-			position /= GST_SECOND;
-
-		return (long) position;
+		return position;
 	} else {
 		return -1;
 	}

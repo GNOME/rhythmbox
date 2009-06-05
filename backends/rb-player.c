@@ -149,8 +149,9 @@ rb_player_interface_init (RBPlayerIface *iface)
 	 * RBPlayer::tick:
 	 * @player: the #RBPlayer
 	 * @stream_data: the data associated with the stream
-	 * @elapsed: playback position in the stream
+	 * @elapsed: playback position in the stream (in nanoseconds)
 	 * @duration: current estimate of the duration of the stream
+	 *  (in nanoseconds)
 	 *
 	 * The 'tick' signal is emitted repeatedly while the stream is
 	 * playing. Signal handlers can use this to update UI and to
@@ -162,10 +163,10 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerIface, tick),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_LONG_LONG,
+			      rb_marshal_VOID__POINTER_INT64_INT64,
 			      G_TYPE_NONE,
 			      3,
-			      G_TYPE_POINTER, G_TYPE_LONG, G_TYPE_LONG);
+			      G_TYPE_POINTER, G_TYPE_INT64, G_TYPE_INT64);
 
 	/**
 	 * RBPlayer::buffering:
@@ -360,34 +361,37 @@ rb_player_close (RBPlayer *player, const char *uri, GError **error)
 /**
  * rb_player_play:
  * @player:	a #RBPlayer
- * @crossfade:	requested crossfade duration
+ * @play_type:  requested playback start type
+ * @crossfade:	requested crossfade duration (nanoseconds)
  * @error:	returns error information
  *
  * Starts playback of the most recently opened stream.
- * If @crossfade is greater than zero, the player may attempt
- * to crossfade the new stream with any existing streams.
+ * if @play_type is #RB_PLAYER_PLAY_CROSSFADE, the player
+ * may attempt to crossfade the new stream with any existing
+ * streams.  If it does this, the it will use @crossfade as the
+ * duration of the fade.
  *
- * If @crossfade is zero, the player may attempt to start the
- * stream immediately after the current playing stream reaches
- * EOS.  This may or may not result in the phenomemon known
- * as 'gapless playback'.
+ * If @play_type is #RB_PLAYER_PLAY_AFTER_EOS, the player may
+ * attempt to start the stream immediately after the current
+ * playing stream reaches EOS.  This may or may not result in
+ * the phenomemon known as 'gapless playback'.
  *
- * If @crossfade is less than zero, the player will stop any
+ * If @play_type is #RB_PLAYER_PLAY_REPLACE, the player will stop any
  * existing stream before starting the new stream. It may do
- * this anyway, regardless of the value of @crossfade.
+ * this anyway, regardless of the value of @play_type.
  *
  * The 'playing-stream' signal will be emitted when the new stream
  * is actually playing. This may be before or after control returns
  * to the caller.
  *
- * Return value: TRUE if playback started successfully
+ * Return value: %TRUE if playback started successfully
  */
 gboolean
-rb_player_play (RBPlayer *player, gint crossfade, GError **error)
+rb_player_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GError **error)
 {
 	RBPlayerIface *iface = RB_PLAYER_GET_IFACE (player);
 
-	return iface->play (player, crossfade, error);
+	return iface->play (player, play_type, crossfade, error);
 }
 
 /**
@@ -498,7 +502,7 @@ rb_player_seekable (RBPlayer *player)
  * The seek may take place asynchronously.
  */
 void
-rb_player_set_time (RBPlayer *player, long newtime)
+rb_player_set_time (RBPlayer *player, gint64 newtime)
 {
 	RBPlayerIface *iface = RB_PLAYER_GET_IFACE (player);
 
@@ -510,8 +514,9 @@ rb_player_set_time (RBPlayer *player, long newtime)
  * @player:	a #RBPlayer
  *
  * Return value: the current playback position in the current stream
+ *  in nanoseconds.
  */
-long
+gint64
 rb_player_get_time (RBPlayer *player)
 {
 	RBPlayerIface *iface = RB_PLAYER_GET_IFACE (player);
@@ -630,7 +635,7 @@ _rb_player_emit_error (RBPlayer *player, gpointer stream_data, GError *error)
  * To be used by implementations only.
  */
 void
-_rb_player_emit_tick (RBPlayer *player, gpointer stream_data, long elapsed, long duration)
+_rb_player_emit_tick (RBPlayer *player, gpointer stream_data, gint64 elapsed, gint64 duration)
 {
 	g_signal_emit (player, signals[TICK], 0, stream_data, elapsed, duration);
 }
@@ -721,6 +726,25 @@ rb_player_error_get_type (void)
 		};
 
 		etype = g_enum_register_static ("RBPlayerError", values);
+	}
+
+	return etype;
+}
+
+GType
+rb_player_play_type_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_PLAYER_PLAY_REPLACE, "Replace existing stream"),
+			ENUM_ENTRY (RB_PLAYER_PLAY_AFTER_EOS, "Start new stream after EOS of existing stream"),
+			ENUM_ENTRY (RB_PLAYER_PLAY_CROSSFADE, "Crossfade between streams"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBPlayerPlayType", values);
 	}
 
 	return etype;
