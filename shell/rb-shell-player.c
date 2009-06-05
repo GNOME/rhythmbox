@@ -300,6 +300,7 @@ enum
 	PLAYING_URI_CHANGED,
 	PLAYING_SONG_PROPERTY_CHANGED,
 	MISSING_PLUGINS,
+	ELAPSED_NANO_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -600,6 +601,26 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_TYPE_BOOLEAN,
 			      3,
 			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);
+
+	/**
+	 * RBShellPlayer::elapsed-nano-changed:
+	 * @player: the #RBShellPlayer
+	 * @elapsed: the new playback position in nanoseconds
+	 *
+	 * Emitted when the playback position changes.  Only use this (as opposed to
+	 * elapsed-changed) when you require subsecond precision.  This signal will be
+	 * emitted multiple times per second.
+	 */
+	rb_shell_player_signals[ELAPSED_NANO_CHANGED] =
+		g_signal_new ("elapsed-nano-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, elapsed_nano_changed),
+			      NULL, NULL,
+			      rb_marshal_VOID__INT64,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_INT64);
 
 	g_type_class_add_private (klass, sizeof (RBShellPlayerPrivate));
 }
@@ -3508,6 +3529,7 @@ tick_cb (RBPlayer *mmplayer,
 		g_signal_emit (G_OBJECT (player), rb_shell_player_signals[ELAPSED_CHANGED],
 			       0, player->priv->elapsed);
 	}
+	g_signal_emit (player, rb_shell_player_signals[ELAPSED_NANO_CHANGED], 0, elapsed);
 
 	if (duration_from_player) {
 		/* XXX update duration in various things? */

@@ -77,6 +77,7 @@ struct _RBShellPlayerClass
 
 	void (*window_title_changed) (RBShellPlayer *player, const char *window_title);
 	void (*elapsed_changed) (RBShellPlayer *player, guint elapsed);
+	void (*elapsed_nano_changed) (RBShellPlayer *player, gint64 elapsed);
 	void (*playing_changed) (RBShellPlayer *player, gboolean playing);
 	void (*playing_source_changed) (RBShellPlayer *player, RBSource *source);
 	void (*playing_uri_changed) (RBShellPlayer *player, const char *uri);
