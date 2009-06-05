@@ -45,6 +45,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-util.h"
 #include "rhythmdb.h"
+#include "rb-player.h"
 
 /**
  * SECTION:rb-header
@@ -81,7 +82,7 @@ static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *even
 static void slider_changed_callback (GtkWidget *widget, RBHeader *header);
 static gboolean slider_scroll_callback (GtkWidget *widget, GdkEventScroll *event, RBHeader *header);
 
-static void rb_header_elapsed_changed_cb (RBShellPlayer *player, guint elapsed, RBHeader *header);
+static void rb_header_elapsed_changed_cb (RBShellPlayer *player, gint64 elapsed, RBHeader *header);
 
 struct RBHeaderPrivate
 {
@@ -105,7 +106,7 @@ struct RBHeaderPrivate
 	long latest_set_time;
 	GtkWidget *elapsed;
 
-	guint elapsed_time;
+	gint64 elapsed_time;		/* nanoseconds */
 	long duration;
 	gboolean seekable;
 };
@@ -334,7 +335,7 @@ rb_header_set_property (GObject *object,
 	case PROP_SHELL_PLAYER:
 		header->priv->shell_player = g_value_get_object (value);
 		g_signal_connect (G_OBJECT (header->priv->shell_player),
-				  "elapsed-changed",
+				  "elapsed-nano-changed",
 				  (GCallback) rb_header_elapsed_changed_cb,
 				  header);
 		break;
@@ -594,8 +595,6 @@ rb_header_set_show_timeline (RBHeader *header,
 void
 rb_header_sync_time (RBHeader *header)
 {
-	guint seconds;
-
 	if (header->priv->shell_player == NULL)
 		return;
 
@@ -604,10 +603,8 @@ rb_header_sync_time (RBHeader *header)
 		return;
 	}
 
-	seconds = header->priv->elapsed_time;
-
 	if (header->priv->duration > 0) {
-		double progress = (double) seconds;
+		double progress = ((double) header->priv->elapsed_time) / RB_PLAYER_SECOND;
 
 		header->priv->slider_locked = TRUE;
 		gtk_adjustment_set_value (header->priv->adjustment, progress);
@@ -669,7 +666,7 @@ slider_moved_callback (GtkWidget *widget,
 	}
 
 	progress = gtk_adjustment_get_value (header->priv->adjustment);
-	header->priv->elapsed_time = (guint) (progress+0.5);
+	header->priv->elapsed_time = (guint) ((progress+0.5) * RB_PLAYER_SECOND);
 
 	rb_header_update_elapsed (header);
 
@@ -766,14 +763,17 @@ slider_scroll_callback (GtkWidget *widget, GdkEventScroll *event, RBHeader *head
 static void
 rb_header_update_elapsed (RBHeader *header)
 {
+	long seconds;
+
 	/* sanity check */
-	if (header->priv->duration > 0 && header->priv->elapsed_time > header->priv->duration)
+	seconds = header->priv->elapsed_time / RB_PLAYER_SECOND;
+	if (header->priv->duration > 0 && seconds > header->priv->duration)
 		return;
 
 	if (header->priv->entry != NULL) {
 		char *elapsed_text;
 
-		elapsed_text = rb_make_elapsed_time_string (header->priv->elapsed_time,
+		elapsed_text = rb_make_elapsed_time_string (seconds,
 							    header->priv->duration,
 							    !eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY));
 		gtk_label_set_text (GTK_LABEL (header->priv->elapsed), elapsed_text);
@@ -786,7 +786,7 @@ rb_header_update_elapsed (RBHeader *header)
 
 static void
 rb_header_elapsed_changed_cb (RBShellPlayer *player,
-			      guint elapsed,
+			      gint64 elapsed,
 			      RBHeader *header)
 {
 	header->priv->elapsed_time = elapsed;
