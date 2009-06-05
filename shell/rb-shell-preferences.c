@@ -91,8 +91,6 @@ static void rb_shell_preferences_toolbar_style_cb (GtkComboBox *box,
 						   RBShellPreferences *preferences);
 static void rb_shell_preferences_player_backend_cb (GtkToggleButton *button,
 						    RBShellPreferences *preferences);
-static void rb_shell_preferences_album_crossfade_cb (GtkToggleButton *button,
-						     RBShellPreferences *preferences);
 static void rb_shell_preferences_transition_duration_cb (GtkRange *range,
 							 RBShellPreferences *preferences);
 static void rb_shell_preferences_network_buffer_size_cb (GtkRange *range,
@@ -125,7 +123,6 @@ struct RBShellPreferencesPrivate
 	GtkWidget *location_check;
 
 	GtkWidget *xfade_backend_check;
-	GtkWidget *album_crossfade_check;
 	GtkWidget *transition_duration;
 	GtkWidget *network_buffer_size;
 
@@ -277,14 +274,11 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	builder = rb_builder_load ("playback-prefs.ui", shell_preferences);
 
 	rb_builder_boldify_label (builder, "backend_label");
-	rb_builder_boldify_label (builder, "crossfade_type_label");
 	rb_builder_boldify_label (builder, "duration_label");
 	rb_builder_boldify_label (builder, "buffer_size_label");
 
 	shell_preferences->priv->xfade_backend_check =
 		GTK_WIDGET (gtk_builder_get_object (builder, "use_xfade_backend"));
-	shell_preferences->priv->album_crossfade_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "album_check"));
 	shell_preferences->priv->transition_duration =
 		GTK_WIDGET (gtk_builder_get_object (builder, "duration"));
 	shell_preferences->priv->network_buffer_size =
@@ -293,11 +287,6 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	g_signal_connect_object (shell_preferences->priv->xfade_backend_check,
 				 "toggled",
 				 G_CALLBACK (rb_shell_preferences_player_backend_cb),
-				 shell_preferences, 0);
-
-	g_signal_connect_object (shell_preferences->priv->album_crossfade_check,
-				 "toggled",
-				 G_CALLBACK (rb_shell_preferences_album_crossfade_cb),
 				 shell_preferences, 0);
 
 	g_signal_connect_object (shell_preferences->priv->transition_duration,
@@ -608,9 +597,6 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	b = eel_gconf_get_boolean (CONF_PLAYER_USE_XFADE_BACKEND);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->xfade_backend_check), b);
 
-	b = eel_gconf_get_boolean (CONF_PLAYER_TRANSITION_ALBUM_CHECK);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->album_crossfade_check), !b);
-
 	duration = eel_gconf_get_float (CONF_PLAYER_TRANSITION_TIME);
 	gtk_range_set_value (GTK_RANGE (shell_preferences->priv->transition_duration), duration);
 
@@ -665,7 +651,6 @@ update_playback_prefs_sensitivity (RBShellPreferences *preferences)
 
 	backend = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (preferences->priv->xfade_backend_check));
 
-	gtk_widget_set_sensitive (preferences->priv->album_crossfade_check, backend);
 	gtk_widget_set_sensitive (preferences->priv->transition_duration, backend);
 }
 
@@ -677,17 +662,6 @@ rb_shell_preferences_player_backend_cb (GtkToggleButton *button,
 
 	eel_gconf_set_boolean (CONF_PLAYER_USE_XFADE_BACKEND,
 			       gtk_toggle_button_get_active (button));
-}
-
-static void
-rb_shell_preferences_album_crossfade_cb (GtkToggleButton *button,
-					 RBShellPreferences *preferences)
-{
-	/* sense is inverted here because the wording sounded more natural
-	 * this way.  "[ ] Don't do x" sucks.
-	 */
-	eel_gconf_set_boolean (CONF_PLAYER_TRANSITION_ALBUM_CHECK,
-			       !gtk_toggle_button_get_active (button));
 }
 
 static void

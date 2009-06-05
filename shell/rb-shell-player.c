@@ -177,8 +177,6 @@ static void gconf_song_position_slider_visibility_changed (GConfClient *client, 
 							   GConfEntry *entry, RBShellPlayer *player);
 static void gconf_track_transition_time_changed (GConfClient *client, guint cnxn_id,
 						 GConfEntry *entry, RBShellPlayer *player);
-static void gconf_track_transition_album_check_changed (GConfClient *client, guint cnxn_id,
-							GConfEntry *entry, RBShellPlayer *player);
 static void gconf_network_buffer_size_changed (GConfClient *client, guint cnxn_id,
 					       GConfEntry *entry, RBShellPlayer *player);
 static void rb_shell_player_playing_changed_cb (RBShellPlayer *player,
@@ -255,7 +253,6 @@ struct RBShellPlayerPrivate
 
 	guint elapsed;
 	gint track_transition_time;
-	gboolean track_transition_album_check;
 	RhythmDBEntry *playing_entry;
 	gboolean playing_entry_eos;
 	gboolean jump_to_playing_entry;
@@ -271,7 +268,6 @@ struct RBShellPlayerPrivate
 	guint gconf_play_order_id;
 	guint gconf_song_position_slider_visibility_id;
 	guint gconf_track_transition_time_id;
-	guint gconf_track_transition_album_check_id;
 	guint gconf_network_buffer_size_id;
 
 	gboolean mute;
@@ -1009,14 +1005,9 @@ rb_shell_player_init (RBShellPlayer *player)
 	player->priv->volume = eel_gconf_get_float (CONF_STATE_VOLUME);
 
 	player->priv->track_transition_time = (int)(eel_gconf_get_float (CONF_PLAYER_TRANSITION_TIME));
-	player->priv->track_transition_album_check = eel_gconf_get_boolean (CONF_PLAYER_TRANSITION_ALBUM_CHECK);
 	player->priv->gconf_track_transition_time_id =
 		eel_gconf_notification_add (CONF_PLAYER_TRANSITION_TIME,
 					    (GConfClientNotifyFunc) gconf_track_transition_time_changed,
-					    player);
-	player->priv->gconf_track_transition_album_check_id =
-		eel_gconf_notification_add (CONF_PLAYER_TRANSITION_ALBUM_CHECK,
-					    (GConfClientNotifyFunc) gconf_track_transition_album_check_changed,
 					    player);
 	player->priv->gconf_network_buffer_size_id =
 		eel_gconf_notification_add (CONF_PLAYER_NETWORK_BUFFER_SIZE,
@@ -1675,22 +1666,17 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 
 	if (player->priv->playing_entry != NULL &&
 	    player->priv->track_transition_time > 0) {
-		if (player->priv->track_transition_album_check) {
-			const char *previous_album;
-			const char *album;
+		const char *previous_album;
+		const char *album;
 
-			previous_album = rhythmdb_entry_get_string (player->priv->playing_entry, RHYTHMDB_PROP_ALBUM);
-			album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
-			/* only crossfade if we're not going from the end of one song on an
-			 * album to the start of another.  "Unknown" doesn't count as an album.
-			 */
-			if (wait_for_eos == FALSE ||
-			    strcmp (album, _("Unknown")) == 0 ||
-			    strcmp (album, previous_album) != 0) {
-				play_type = CROSSFADE;
-			}
-		} else {
-			/* always crossfade */
+		previous_album = rhythmdb_entry_get_string (player->priv->playing_entry, RHYTHMDB_PROP_ALBUM);
+		album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
+		/* only crossfade if we're not going from the end of one song on an
+		 * album to the start of another.  "Unknown" doesn't count as an album.
+		 */
+		if (wait_for_eos == FALSE ||
+		    strcmp (album, _("Unknown")) == 0 ||
+		    strcmp (album, previous_album) != 0) {
 			play_type = CROSSFADE;
 		}
 	}
@@ -3565,9 +3551,8 @@ tick_cb (RBPlayer *mmplayer,
 
 	/*
 	 * just pretending we got an EOS will do exactly what we want
-	 * here.  for the album crossfade case, it might mean we leave
-	 * the stream prerolled for a few extra seconds, in which time
-	 * something interesting (file being deleted?) might happen.
+	 * here.  if we don't want to crossfade, we'll just leave the stream
+	 * prerolled until the current stream really ends.
 	 */
 	if (remaining_check > 0 &&
 	    duration > 0 &&
@@ -3803,16 +3788,6 @@ gconf_track_transition_time_changed (GConfClient *client,
 {
 	rb_debug ("track transition time changed");
 	player->priv->track_transition_time = (int)(eel_gconf_get_float (CONF_PLAYER_TRANSITION_TIME));
-}
-
-static void
-gconf_track_transition_album_check_changed (GConfClient *client,
-					    guint cnxn_id,
-					    GConfEntry *entry,
-					    RBShellPlayer *player)
-{
-	rb_debug ("track transition album check flag changed");
-	player->priv->track_transition_album_check = eel_gconf_get_boolean (CONF_PLAYER_TRANSITION_ALBUM_CHECK);
 }
 
 static void
