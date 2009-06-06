@@ -433,7 +433,8 @@ static gboolean
 rb_daap_src_open (RBDAAPSrc *src)
 {
 	int ret;
-	struct sockaddr_in server;
+	struct sockaddr *server;
+	int server_len;
 	RBDAAPSource *source;
 	gchar *headers;
 	gchar *host;
@@ -449,6 +450,7 @@ rb_daap_src_open (RBDAAPSrc *src)
 	gchar *http_status_phrase = NULL;
 	gboolean parse_result;
 	SoupAddress *addr;
+	SoupAddressFamily addr_family;
 
 	if (src->buffer_base) {
 		g_free (src->buffer_base);
@@ -458,13 +460,6 @@ rb_daap_src_open (RBDAAPSrc *src)
 	}
 
 	rb_debug ("Connecting to DAAP source: %s", src->daap_uri);
-
-	/* connect */
-	src->sock_fd = socket (AF_INET, SOCK_STREAM, 0);
-	if (src->sock_fd == -1) {
-		GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL), GST_ERROR_SYSTEM);
-		return FALSE;
-	}
 
 	_split_uri (src->daap_uri, &host, &port, &path);
 
@@ -476,13 +471,24 @@ rb_daap_src_open (RBDAAPSrc *src)
 		return FALSE;
 	}
 
-	server.sin_family = AF_INET;
-	server.sin_port = htons (port);
-	server.sin_addr.s_addr = inet_addr (soup_address_get_physical (addr));
-	memset (&server.sin_zero, 0, sizeof (server.sin_zero));
+	server = soup_address_get_sockaddr (addr, &server_len);
+	if (server == NULL) {
+		GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
+				("Getting socket address from %s failed", host));
+		return FALSE;
+	}
+
+	g_object_get (addr, "family", &addr_family, NULL);
+
+	/* connect */
+	src->sock_fd = socket (addr_family, SOCK_STREAM, 0);
+	if (src->sock_fd == -1) {
+		GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL), GST_ERROR_SYSTEM);
+		return FALSE;
+	}
 
 	GST_DEBUG_OBJECT (src, "connecting to server %s:%d", host, port);
-	ret = connect (src->sock_fd, (struct sockaddr *) &server, sizeof (struct sockaddr));
+	ret = connect (src->sock_fd, server, server_len);
 	if (ret) {
 		if (errno == ECONNREFUSED) {
 			GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ,
