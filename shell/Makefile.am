@@ -42,11 +42,9 @@ INCLUDES = 						\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
-	$(GDA_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(DBUS_CFLAGS)					\
-	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	-D_XOPEN_SOURCE -D__EXTENSIONS__ -D_BSD_SOURCE
 
 librbshell_la_SOURCES =              			\
@@ -99,11 +97,6 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/plugins/librbplugins.la		\
 	-lgstpbutils-0.10
 
-if USE_NOTIFY
-rhythmbox_LDADD += $(NOTIFY_LIBS)
-INCLUDES += $(NOTIFY_CFLAGS)
-endif
-
 if ENABLE_PYTHON
 INCLUDES += $(PYGTK_CFLAGS)  $(PYTHON_CFLAGS)
 rhythmbox_LDADD += $(PYTHON_LIBS) $(top_builddir)/bindings/python/rb.la
@@ -126,10 +119,8 @@ rhythmbox_LDADD += $(DBUS_LIBS)
 
 rhythmbox_LDADD += \
 	$(top_builddir)/backends/librbbackends.la	\
-	$(GDA_LIBS)					\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)					\
-	$(LIBNAUTILUS_BURN_LIBS)			\
 	$(RHYTHMBOX_LIBS)				\
 	-lgstcontroller-0.10
 
