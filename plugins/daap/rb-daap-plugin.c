@@ -622,45 +622,6 @@ rb_daap_plugin_cmd_disconnect (GtkAction *action,
 	}
 }
 
-typedef struct {
-	RBDaapPlugin *plugin;
-	char *service_name;
-	char *location;
-} RBDaapShareResolveData;
-
-static void
-new_daap_share_resolve_cb (SoupAddress *addr,
-			   guint status,
-			   RBDaapShareResolveData *data)
-{
-	GDK_THREADS_ENTER ();
-
-	if (status == SOUP_STATUS_OK) {
-		rb_debug ("adding manually specified DAAP share at %s", data->location);
-		mdns_service_added (NULL,
-				    data->service_name,
-				    data->location,
-				    soup_address_get_physical (addr),
-				    soup_address_get_port (addr),
-				    FALSE,
-				    data->plugin);
-	} else {
-		rb_debug ("unable to resolve DAAP share address %s",
-			  data->location);
-		rb_error_dialog (NULL, _("Could not connect to shared music"),
-				 _("Unable to resolve hostname %s"),
-				 data->location);
-	}
-
-	g_object_unref (data->plugin);
-	g_free (data->service_name);
-	g_free (data->location);
-	g_free (data);
-	g_object_unref (addr);
-
-	GDK_THREADS_LEAVE ();
-}
-
 static void
 new_daap_share_location_added_cb (RBURIDialog *dialog,
 				  const char *location,
@@ -669,13 +630,6 @@ new_daap_share_location_added_cb (RBURIDialog *dialog,
 	char *host;
 	char *p;
 	int port = 3689;
-	SoupAddress *addr;
-	RBDaapShareResolveData *data;
-
-	data = g_new0 (RBDaapShareResolveData, 1);
-	data->plugin = g_object_ref (plugin);
-	data->service_name = g_strdup (location);
-	data->location = g_strdup (location);
 
 	host = g_strdup (location);
 	p = strrchr (host, ':');
@@ -684,13 +638,17 @@ new_daap_share_location_added_cb (RBURIDialog *dialog,
 		*p = '\0';
 	}
 
-	addr = soup_address_new (host, port);
+	rb_debug ("adding manually specified DAAP share at %s", location);
+	mdns_service_added (NULL,
+			    g_strdup (location),
+			    g_strdup (location),
+			    g_strdup (host),
+			    port,
+			    FALSE,
+			    plugin);
+
 	g_free (host);
 
-	soup_address_resolve_async (addr,
-				    NULL, NULL,
-				    (SoupAddressCallback) new_daap_share_resolve_cb,
-				    data);
 }
 
 static void
@@ -944,25 +902,20 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 gboolean
 rb_daap_add_source (RBDaapPlugin *plugin, gchar *service_name, gchar *host, unsigned int port, GError **error)
 {
-	SoupAddress *addr;
-	RBDaapShareResolveData *data;
 
 	if (plugin->priv->shutdown)
 		return FALSE;
 
 	rb_debug ("Add DAAP source %s (%s:%d)", service_name, host, port);
 
-	data = g_new0 (RBDaapShareResolveData, 1);
-	data->plugin = g_object_ref (plugin);
-	data->service_name = g_strdup (service_name);
-	data->location = g_strdup (service_name);
-
-	addr = soup_address_new (host, port);
-
-	soup_address_resolve_async (addr,
-				    NULL, NULL,
-				    (SoupAddressCallback) new_daap_share_resolve_cb,
-				    data);
+	rb_debug ("adding manually specified DAAP share at %s", service_name);
+	mdns_service_added (NULL,
+			    g_strdup (service_name),
+			    g_strdup (service_name),
+			    g_strdup (host),
+			    port,
+			    FALSE,
+			    plugin);
 
 	return TRUE;
 }

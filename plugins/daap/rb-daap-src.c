@@ -448,6 +448,7 @@ rb_daap_src_open (RBDAAPSrc *src)
 	guint http_status;
 	gchar *http_status_phrase = NULL;
 	gboolean parse_result;
+	SoupAddress *addr;
 
 	if (src->buffer_base) {
 		g_free (src->buffer_base);
@@ -467,9 +468,17 @@ rb_daap_src_open (RBDAAPSrc *src)
 
 	_split_uri (src->daap_uri, &host, &port, &path);
 
+	GST_DEBUG_OBJECT (src, "resolving server %s", host);
+	addr = soup_address_new (host, port);
+	if (soup_address_resolve_sync (addr, NULL) != SOUP_STATUS_OK) {
+		GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
+				("Resolving %s failed", host));
+		return FALSE;
+	}
+
 	server.sin_family = AF_INET;
 	server.sin_port = htons (port);
-	server.sin_addr.s_addr = inet_addr (host);
+	server.sin_addr.s_addr = inet_addr (soup_address_get_physical (addr));
 	memset (&server.sin_zero, 0, sizeof (server.sin_zero));
 
 	GST_DEBUG_OBJECT (src, "connecting to server %s:%d", host, port);
@@ -488,6 +497,8 @@ rb_daap_src_open (RBDAAPSrc *src)
 		g_free (path);
 		return FALSE;
 	}
+
+	g_object_unref (addr);
 
 	/* construct request */
 	source = rb_daap_plugin_find_source_for_uri (daap_plugin, src->daap_uri);
