@@ -269,8 +269,9 @@ enum
 #define CONF_STATE_WINDOW_HEIGHT    CONF_PREFIX "/state/window_height"
 #define CONF_STATE_SMALL_WIDTH      CONF_PREFIX "/state/small_width"
 #define CONF_STATE_WINDOW_MAXIMIZED CONF_PREFIX "/state/window_maximized"
-#define CONF_STATE_PANED_POSITION   CONF_PREFIX "/state/paned_position"
 #define CONF_STATE_ADD_DIR          CONF_PREFIX "/state/add_dir"
+#define CONF_STATE_PANED_POSITION   CONF_PREFIX "/state/paned_position"
+#define CONF_STATE_RIGHT_PANED_POSITION   CONF_PREFIX "/state/right_paned_position"
 #define CONF_STATE_WINDOW_X_POSITION CONF_PREFIX "/state/window_x_position"
 #define CONF_STATE_WINDOW_Y_POSITION CONF_PREFIX "/state/window_y_position"
 #define CONF_STATE_SOURCELIST_HEIGHT CONF_PREFIX "/state/sourcelist_height"
@@ -301,14 +302,17 @@ struct RBShellPrivate
 
 	GtkWidget *main_vbox;
 	GtkWidget *paned;
+	GtkWidget *right_paned;
 	GtkWidget *sourcelist;
 	GtkWidget *notebook;
 	GtkWidget *queue_paned;
 	GtkWidget *queue_sidebar;
 
 	GtkBox *sidebar_container;
+	GtkBox *right_sidebar_container;
 	GtkBox *top_container;
 	GtkBox *bottom_container;
+	guint right_sidebar_widget_count;
 
 	GList *sources;
 	GHashTable *sources_hash;
@@ -377,6 +381,7 @@ struct RBShellPrivate
 	gint window_x;
 	gint window_y;
 	gint paned_position;
+	gint right_paned_position;
 	gint sourcelist_height;
 };
 
@@ -1115,9 +1120,17 @@ construct_widgets (RBShell *shell)
 	shell->priv->top_container = GTK_BOX (gtk_vbox_new (FALSE, 0));
 	shell->priv->bottom_container = GTK_BOX (gtk_vbox_new (FALSE, 0));
 	shell->priv->sidebar_container = GTK_BOX (gtk_vbox_new (FALSE, 0));
+	shell->priv->right_sidebar_container = GTK_BOX (gtk_vbox_new (FALSE, 0));
 
 	/* set up sidebars */
 	shell->priv->paned = gtk_hpaned_new ();
+	shell->priv->right_paned = gtk_hpaned_new ();
+	gtk_widget_show_all (shell->priv->right_paned);
+	g_signal_connect_object (G_OBJECT (shell->priv->right_paned),
+				 "size-allocate",
+				 G_CALLBACK (paned_size_allocate_cb),
+				 shell, 0);
+	gtk_widget_set_no_show_all (shell->priv->right_paned, TRUE);
 	{
 		GtkWidget *vbox2 = gtk_vbox_new (FALSE, 0);
 
@@ -1143,13 +1156,21 @@ construct_widgets (RBShell *shell)
 				    GTK_WIDGET (shell->priv->bottom_container),
 				    FALSE, FALSE, 0);
 
-		gtk_box_pack_start (shell->priv->sidebar_container, shell->priv->queue_paned,
+		gtk_paned_pack1 (GTK_PANED (shell->priv->right_paned),
+				 vbox2, TRUE, TRUE);
+		gtk_paned_pack2 (GTK_PANED (shell->priv->right_paned),
+				 GTK_WIDGET (shell->priv->right_sidebar_container),
+				 FALSE, TRUE);
+		gtk_widget_hide (GTK_WIDGET(shell->priv->right_sidebar_container));
+
+		gtk_box_pack_start (shell->priv->sidebar_container,
+				    shell->priv->queue_paned,
 				    TRUE, TRUE, 0);
 		gtk_paned_pack1 (GTK_PANED (shell->priv->paned),
 				 GTK_WIDGET (shell->priv->sidebar_container),
 				 FALSE, TRUE);
 		gtk_paned_pack2 (GTK_PANED (shell->priv->paned),
-				 vbox2,
+				 shell->priv->right_paned,
 				 TRUE, TRUE);
 		gtk_widget_show (vbox2);
 	}
@@ -1367,6 +1388,7 @@ rb_shell_constructor (GType type,
 	shell->priv->window_x = eel_gconf_get_integer (CONF_STATE_WINDOW_X_POSITION);
 	shell->priv->window_y = eel_gconf_get_integer (CONF_STATE_WINDOW_Y_POSITION);
 	shell->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
+	shell->priv->right_paned_position = eel_gconf_get_integer (CONF_STATE_RIGHT_PANED_POSITION);
 	shell->priv->sourcelist_height = eel_gconf_get_integer (CONF_STATE_SOURCELIST_HEIGHT);
 	shell->priv->statusbar_hidden = eel_gconf_get_boolean (CONF_UI_STATUSBAR_HIDDEN);
 
@@ -2635,6 +2657,8 @@ smalldisplay_changed_cb (GConfClient *client,
 static void
 rb_shell_sync_paned (RBShell *shell)
 {
+	gtk_paned_set_position (GTK_PANED (shell->priv->right_paned),
+				shell->priv->right_paned_position);
 	gtk_paned_set_position (GTK_PANED (shell->priv->paned),
 				shell->priv->paned_position);
 	gtk_paned_set_position (GTK_PANED (shell->priv->queue_paned),
@@ -2647,8 +2671,11 @@ paned_size_allocate_cb (GtkWidget *widget,
 		        RBShell *shell)
 {
 	shell->priv->paned_position = gtk_paned_get_position (GTK_PANED (shell->priv->paned));
+	shell->priv->right_paned_position = gtk_paned_get_position (GTK_PANED (shell->priv->right_paned));
 	rb_debug ("paned position %d", shell->priv->paned_position);
+	rb_debug ("right_paned position %d", shell->priv->right_paned_position);
 	eel_gconf_set_integer (CONF_STATE_PANED_POSITION, shell->priv->paned_position);
+	eel_gconf_set_integer (CONF_STATE_RIGHT_PANED_POSITION, shell->priv->right_paned_position);
 }
 
 static void
@@ -3220,6 +3247,9 @@ rb_shell_get_box_for_ui_location (RBShell *shell, RBShellUILocation location)
 	case RB_SHELL_UI_LOCATION_SIDEBAR:
 		box = shell->priv->sidebar_container;
 		break;
+	case RB_SHELL_UI_LOCATION_RIGHT_SIDEBAR:
+		box = shell->priv->right_sidebar_container;
+		break;
 	case RB_SHELL_UI_LOCATION_MAIN_TOP:
 		box = shell->priv->top_container;
 		break;
@@ -3244,6 +3274,10 @@ rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation locati
 					  widget,
 					  gtk_label_new (""));
 		break;
+	case RB_SHELL_UI_LOCATION_RIGHT_SIDEBAR:
+		if (!shell->priv->right_sidebar_widget_count)
+			gtk_widget_show (GTK_WIDGET (shell->priv->right_sidebar_container));
+		shell->priv->right_sidebar_widget_count++;
 	default:
 		box = rb_shell_get_box_for_ui_location (shell, location);
 		g_return_if_fail (box != NULL);
@@ -3267,6 +3301,10 @@ rb_shell_remove_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation loc
 		gtk_notebook_remove_page (GTK_NOTEBOOK (shell->priv->notebook),
 					  page_num);
 		break;
+	case RB_SHELL_UI_LOCATION_RIGHT_SIDEBAR:
+		shell->priv->right_sidebar_widget_count--;
+		if (!shell->priv->right_sidebar_widget_count)
+			gtk_widget_hide (GTK_WIDGET (shell->priv->right_sidebar_container));
 	default:
 		box = rb_shell_get_box_for_ui_location (shell, location);
 		g_return_if_fail (box != NULL);
@@ -3310,6 +3348,7 @@ rb_shell_ui_location_get_type (void)
 	if (etype == 0)	{
 		static const GEnumValue values[] = {
 			ENUM_ENTRY (RB_SHELL_UI_LOCATION_SIDEBAR, "Sidebar"),
+			ENUM_ENTRY (RB_SHELL_UI_LOCATION_RIGHT_SIDEBAR, "Right Sidebar"),
 			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_TOP, "Main Top"),
 			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_BOTTOM, "Main Bottom"),
 			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK, "Main Notebook"),

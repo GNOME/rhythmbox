@@ -43,6 +43,7 @@ G_BEGIN_DECLS
 #define CONF_UI_TOOLBAR_STYLE	CONF_PREFIX "/ui/toolbar_style"
 #define CONF_UI_SONG_POSITION_SLIDER_HIDDEN  CONF_PREFIX "/ui/song_position_slider_hidden"
 #define CONF_UI_SIDEPANE_HIDDEN CONF_PREFIX "/ui/sourcelist_hidden"
+#define CONF_UI_RSIDEPANE_HIDDEN CONF_PREFIX "/ui/rsidebar_hidden"
 #define CONF_UI_QUEUE_AS_SIDEBAR  CONF_PREFIX "/ui/queue_as_sidebar"
 #define CONF_UI_SMALL_DISPLAY     CONF_PREFIX "/ui/small_display"
 #define CONF_UI_FULLSCREEN     CONF_PREFIX "/ui/fullscreen"
