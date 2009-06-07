@@ -1015,7 +1015,7 @@ rb_recorder_get_media_length (RBRecorder *recorder,
                 g_set_error (error,
                              RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_INTERNAL,
-                             _("No writable drives found."));
+                             _("No writable drives found"));
 
                 return -1;
         }
@@ -1200,7 +1200,7 @@ rb_recorder_burn (RBRecorder *recorder,
                 g_set_error (error,
                              RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_INTERNAL,
-                             _("No writable drives found."));
+                             _("No writable drives found"));
                 return RB_RECORDER_RESULT_ERROR;
         }
 
@@ -1209,7 +1209,7 @@ rb_recorder_burn (RBRecorder *recorder,
                 g_set_error (error,
                              RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_INTERNAL,
-                             _("Could not determine audio track durations."));
+                             _("Could not determine audio track durations"));
                 return RB_RECORDER_RESULT_ERROR;
         }
 
