@@ -574,6 +574,7 @@ set_state_and_wait (RBPlayerGst *player, GstState target, GError **error)
 
 				if (message_from_sink (player->priv->audio_sink, message)) {
 					rb_debug ("got error from sink: %s (%s)", gst_error->message, debug);
+					/* Translators: the parameter here is an error message */
 					g_set_error (error,
 						     RB_PLAYER_ERROR,
 						     RB_PLAYER_ERROR_INTERNAL,
