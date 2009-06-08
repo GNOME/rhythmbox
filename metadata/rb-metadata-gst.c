@@ -411,13 +411,6 @@ rb_metadata_new (void)
 	return RB_METADATA (g_object_new (RB_TYPE_METADATA, NULL, NULL));
 }
 
-static void
-free_gvalue (GValue *val)
-{
-	g_value_unset (val);
-	g_free (val);
-}
-
 static RBAddTaggerElem
 rb_metadata_gst_type_to_tag_function (RBMetaData *md, const char *mimetype)
 {
@@ -438,15 +431,15 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 	GValue *newval;
 	const GValue *val;
 
-	rb_debug ("uri: %s tag: %s ", md->priv->uri, tag);
-
 	count = gst_tag_list_get_tag_size (list, tag);
 	if (count < 1)
 		return;
 
 	tem = rb_metadata_gst_tag_to_field (tag);
-	if (tem < 0)
+	if (tem < 0) {
+		rb_debug ("no metadata field for tag \"%s\"", tag);
 		return;
+	}
 	field = (RBMetaDataField) tem;
 
 	type = rb_metadata_get_field_type (field);
@@ -499,6 +492,9 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 				}
 			}
 		}
+
+		rb_debug ("processed string tag \"%s\": \"%s\"", tag, str);
+
 		g_value_take_string (newval, str);
 		break;
 	}
@@ -512,6 +508,7 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 		gulong bitrate;
 		bitrate = g_value_get_ulong (newval);
 		g_value_set_ulong (newval, bitrate/1000);
+		rb_debug ("processed bitrate value: %lu", g_value_get_ulong (newval));
 		break;
 	}
 
@@ -522,6 +519,7 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 		guint64 duration;
 		duration = g_value_get_uint64 (val);
 		g_value_set_ulong (newval, duration/(1000*1000*1000));
+		rb_debug ("processed duration value: %lu", g_value_get_ulong (newval));
 		break;
 	}
 
@@ -803,7 +801,7 @@ rb_metadata_load (RBMetaData *md,
 	if (md->priv->metadata)
 		g_hash_table_destroy (md->priv->metadata);
 	md->priv->metadata = g_hash_table_new_full (g_direct_hash, g_direct_equal,
-						    NULL, (GDestroyNotify) free_gvalue);
+						    NULL, (GDestroyNotify) rb_value_free);
 
 	/* The main tagfinding pipeline looks like this:
  	 * <src> ! decodebin ! fakesink
