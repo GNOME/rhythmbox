@@ -127,6 +127,9 @@ rb_metadata_dbus_load (DBusConnection *connection,
 	const char *mimetype = NULL;
 	char **missing_plugins = NULL;
 	char **plugin_descriptions = NULL;
+	gboolean has_audio;
+	gboolean has_video;
+	gboolean has_other_data;
 
 	if (!dbus_message_iter_init (message, &iter)) {
 		return DBUS_HANDLER_RESULT_NEED_MEMORY;
@@ -169,6 +172,9 @@ rb_metadata_dbus_load (DBusConnection *connection,
 	}
 
 	mimetype = rb_metadata_get_mime (svc->metadata);
+	has_audio = rb_metadata_has_audio (svc->metadata);
+	has_video = rb_metadata_has_video (svc->metadata);
+	has_other_data = rb_metadata_has_other_data (svc->metadata);
 	dbus_message_iter_init_append (reply, &iter);
 	
 	if (!rb_metadata_dbus_add_strv (&iter, missing_plugins)) {
@@ -181,6 +187,9 @@ rb_metadata_dbus_load (DBusConnection *connection,
 	}
 
 	if (!dbus_message_iter_append_basic (&iter, DBUS_TYPE_BOOLEAN, &ok) ||
+	    !dbus_message_iter_append_basic (&iter, DBUS_TYPE_BOOLEAN, &has_audio) ||
+	    !dbus_message_iter_append_basic (&iter, DBUS_TYPE_BOOLEAN, &has_video) ||
+	    !dbus_message_iter_append_basic (&iter, DBUS_TYPE_BOOLEAN, &has_other_data) ||
 	    !dbus_message_iter_append_basic (&iter, DBUS_TYPE_STRING, &mimetype)) {
 		rb_debug ("out of memory adding data to return message");
 		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
@@ -467,6 +476,10 @@ test_load (const char *uri)
 			}
 		}
 	}
+
+	g_print ("has audio: %d\n", rb_metadata_has_audio (md));
+	g_print ("has video: %d\n", rb_metadata_has_video (md));
+	g_print ("has other: %d\n", rb_metadata_has_other_data (md));
 
 	if (rb_metadata_get_missing_plugins (md, &missing_plugins, &plugin_descriptions)) {
 		int i = 0;

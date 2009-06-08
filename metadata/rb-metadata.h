@@ -137,6 +137,9 @@ gboolean	rb_metadata_has_missing_plugins (RBMetaData *md);
 gboolean	rb_metadata_get_missing_plugins (RBMetaData *md,
 					 char ***missing_plugins,
 					 char ***plugin_descriptions);
+gboolean	rb_metadata_has_audio	(RBMetaData *md);
+gboolean	rb_metadata_has_video	(RBMetaData *md);
+gboolean	rb_metadata_has_other_data (RBMetaData *md);
 
 gboolean	rb_metadata_get		(RBMetaData *md, RBMetaDataField field,
 					 GValue *val);

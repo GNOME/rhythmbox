@@ -796,12 +796,8 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 			md->priv->has_audio = TRUE;
 		} else if (g_str_has_prefix (mimetype, "video/")) {
 			rb_debug ("got decoded video pad of type %s", mimetype);
-			md->priv->has_non_audio = TRUE;
 			md->priv->has_video = TRUE;
 		} else {
-			/* assume anything we can get a video or text stream out of is
-			 * something that should be fed to totem rather than rhythmbox.
-			 */
 			rb_debug ("got decoded pad of non-audio type %s", mimetype);
 			md->priv->has_non_audio = TRUE;
 		}
@@ -1532,5 +1528,23 @@ rb_metadata_get_missing_plugins (RBMetaData *md,
 	*missing_plugins = mp;
 	*plugin_descriptions = pd;
 	return TRUE;
+}
+
+gboolean
+rb_metadata_has_audio (RBMetaData *md)
+{
+	return md->priv->has_audio;
+}
+
+gboolean
+rb_metadata_has_video (RBMetaData *md)
+{
+	return md->priv->has_video;
+}
+
+gboolean
+rb_metadata_has_other_data (RBMetaData *md)
+{
+	return md->priv->has_non_audio;		/* kinda */
 }
 

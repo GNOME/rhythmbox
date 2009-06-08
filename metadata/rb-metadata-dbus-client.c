@@ -90,6 +90,9 @@ struct RBMetaDataPrivate
 	char       *mimetype;
 	char      **missing_plugins;
 	char      **plugin_descriptions;
+	gboolean    has_audio;
+	gboolean    has_video;
+	gboolean    has_other_data;
 	GHashTable *metadata;
 };
 
@@ -371,6 +374,11 @@ rb_metadata_load (RBMetaData *md,
 	DBusError dbus_error = {0,};
 	gboolean ok;
 	GError *fake_error = NULL;
+	GError *dbus_gerror;
+
+	dbus_gerror = g_error_new (RB_METADATA_ERROR,
+				   RB_METADATA_ERROR_INTERNAL,
+				   _("D-BUS communication error"));
 
 	if (error == NULL)
 		error = &fake_error;
@@ -397,15 +405,9 @@ rb_metadata_load (RBMetaData *md,
 							RB_METADATA_DBUS_INTERFACE,
 							"load");
 		if (!message) {
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_INTERNAL,
-				     _("D-BUS communication error"));
+			g_propagate_error (error, dbus_gerror);
 		} else if (!dbus_message_append_args (message, DBUS_TYPE_STRING, &uri, DBUS_TYPE_INVALID)) {
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_INTERNAL,
-				     _("D-BUS communication error"));
+			g_propagate_error (error, dbus_gerror);
 		}
 	}
 
@@ -422,30 +424,21 @@ rb_metadata_load (RBMetaData *md,
 
 	if (*error == NULL) {
 		if (!dbus_message_iter_init (response, &iter)) {
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_INTERNAL,
-				     _("D-BUS communication error"));
+			g_propagate_error (error, dbus_gerror);
 			rb_debug ("couldn't read response message");
 		}
 	}
 	
 	if (*error == NULL) {
 		if (!rb_metadata_dbus_get_strv (&iter, &md->priv->missing_plugins)) {
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_INTERNAL,
-				     _("D-BUS communication error"));
+			g_propagate_error (error, dbus_gerror);
 			rb_debug ("couldn't get missing plugin data from response message");
 		}
 	}
 
 	if (*error == NULL) {
 		if (!rb_metadata_dbus_get_strv (&iter, &md->priv->plugin_descriptions)) {
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_INTERNAL,
-				     _("D-BUS communication error"));
+			g_propagate_error (error, dbus_gerror);
 			rb_debug ("couldn't get missing plugin descriptions from response message");
 		}
 	}
@@ -461,22 +454,43 @@ rb_metadata_load (RBMetaData *md,
 
 	if (*error == NULL) {
 		if (!rb_metadata_dbus_get_boolean (&iter, &ok)) {
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_INTERNAL,
-				     _("D-BUS communication error"));
+			g_propagate_error (error, dbus_gerror);
 			rb_debug ("couldn't get success flag from response message");
 		} else if (ok == FALSE) {
 			read_error_from_message (md, &iter, error);
 		}
 	}
 
+	if (*error == NULL) {
+		if (!rb_metadata_dbus_get_boolean (&iter, &md->priv->has_audio)) {
+			g_propagate_error (error, dbus_gerror);
+			rb_debug ("couldn't get has-audio flag from response message");
+		} else {
+			rb_debug ("has audio: %d", md->priv->has_audio);
+		}
+	}
+
+	if (*error == NULL) {
+		if (!rb_metadata_dbus_get_boolean (&iter, &md->priv->has_video)) {
+			g_propagate_error (error, dbus_gerror);
+			rb_debug ("couldn't get has-video flag from response message");
+		} else {
+			rb_debug ("has video: %d", md->priv->has_video);
+		}
+	}
+
+	if (*error == NULL) {
+		if (!rb_metadata_dbus_get_boolean (&iter, &md->priv->has_other_data)) {
+			g_propagate_error (error, dbus_gerror);
+			rb_debug ("couldn't get has-other-data flag from response message");
+		} else {
+			rb_debug ("has other data: %d", md->priv->has_other_data);
+		}
+	}
+
 	if (ok && *error == NULL) {
 		if (!rb_metadata_dbus_get_string (&iter, &md->priv->mimetype)) {
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_INTERNAL,
-				     _("D-BUS communication error"));
+			g_propagate_error (error, dbus_gerror);
 		} else {
 			rb_debug ("got mimetype: %s", md->priv->mimetype);
 		}
@@ -490,6 +504,8 @@ rb_metadata_load (RBMetaData *md,
 		dbus_message_unref (message);
 	if (response)
 		dbus_message_unref (response);
+	if (*error != dbus_gerror)
+		g_error_free (dbus_gerror);
 	if (fake_error)
 		g_error_free (fake_error);
 
@@ -742,4 +758,22 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		g_error_free (fake_error);
 
 	g_static_mutex_unlock (&conn_mutex);
+}
+
+gboolean
+rb_metadata_has_audio (RBMetaData *md)
+{
+	return md->priv->has_audio;
+}
+
+gboolean
+rb_metadata_has_video (RBMetaData *md)
+{
+	return md->priv->has_video;
+}
+
+gboolean
+rb_metadata_has_other_data (RBMetaData *md)
+{
+	return md->priv->has_other_data;
 }
