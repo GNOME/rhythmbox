@@ -47,16 +47,9 @@
 
 G_DEFINE_TYPE(RBMetaData, rb_metadata, G_TYPE_OBJECT)
 
+typedef GstElement *(*RBAddTaggerElem) (GstElement *pipeline, GstElement *source, GstTagList *tags);
+
 static void rb_metadata_finalize (GObject *object);
-
-typedef GstElement *(*RBAddTaggerElem) (RBMetaData *, GstElement *);
-
-struct RBMetadataGstType
-{
-	char *mimetype;
-	RBAddTaggerElem tag_func;
-	char *human_name;
-};
 
 struct RBMetaDataPrivate
 {
@@ -69,8 +62,7 @@ struct RBMetaDataPrivate
 	gulong typefind_cb_id;
 	GstTagList *tags;
 
-	/* Array of RBMetadataGstType */
-	GPtrArray *supported_types;
+	GHashTable *taggers;
 
 	char *type;
 	gboolean eos;
@@ -83,30 +75,20 @@ struct RBMetaDataPrivate
 
 #define RB_METADATA_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_METADATA, RBMetaDataPrivate))
 
-static void
-rb_metadata_class_init (RBMetaDataClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	object_class->finalize = rb_metadata_finalize;
-
-	g_type_class_add_private (klass, sizeof (RBMetaDataPrivate));
-	rb_metadata_gst_register_transforms ();
-}
 
 static GstElement *
-rb_add_flac_tagger (RBMetaData *md, GstElement *element)
+flac_tagger (GstElement *pipeline, GstElement *link_to, GstTagList *tags)
 {
 	GstElement *tagger = NULL;
 
-	if (!(tagger = gst_element_factory_make ("flactag", "flactag")))
+	tagger = gst_element_factory_make ("flactag", NULL);
+	if (tagger == NULL)
 		return NULL;
 
-	gst_bin_add (GST_BIN (md->priv->pipeline), tagger);
-	gst_element_link_many (element, tagger, NULL);
+	gst_bin_add (GST_BIN (pipeline), tagger);
+	gst_element_link_many (link_to, tagger, NULL);
 
-	gst_tag_setter_merge_tags (GST_TAG_SETTER (tagger), md->priv->tags, GST_TAG_MERGE_REPLACE_ALL);
-
+	gst_tag_setter_merge_tags (GST_TAG_SETTER (tagger), tags, GST_TAG_MERGE_REPLACE_ALL);
 	return tagger;
 }
 
@@ -117,66 +99,30 @@ id3_pad_added_cb (GstElement *demux, GstPad *pad, GstElement *mux)
 
 	mux_pad = gst_element_get_compatible_pad (mux, pad, NULL);
 	if (gst_pad_link (pad, mux_pad) != GST_PAD_LINK_OK)
-		rb_debug ("unable to link pad from id3demux to id3mux");
+		rb_debug ("unable to link pad from id3demux to id3v2mux");
 	else
-		rb_debug ("linked pad from id3de to id3mux");
-}
-
-static gboolean
-rb_gst_plugin_greater (const char *plugin, const char *element, gint major, gint minor, gint micro)
-{
-	const char *version;
-	GstPlugin *p;
-	guint i;
-	guint count;
-
-	if (gst_default_registry_check_feature_version (element, major, minor, micro + 1))
-		return TRUE;
-
-	if (!gst_default_registry_check_feature_version (element, major, minor, micro))
-		return FALSE;
-
-	p = gst_default_registry_find_plugin (plugin);
-	if (p == NULL)
-		return FALSE;
-
-	version = gst_plugin_get_version (p);
-
-	/* check if it's not a release */
-	count = sscanf (version, "%u.%u.%u.%u", &i, &i, &i, &i);
-	return (count > 3);
+		rb_debug ("linked pad from id3demux to id3v2mux");
 }
 
 static GstElement *
-rb_add_id3_tagger (RBMetaData *md, GstElement *element)
+id3_tagger (GstElement *pipeline, GstElement *link_to, GstTagList *tags)
 {
 	GstElement *demux = NULL;
 	GstElement *mux = NULL;
 
+	/* TODO use new id3tag element here; not sure what name it'll end up with though */
 	demux = gst_element_factory_make ("id3demux", NULL);
-
 	mux = gst_element_factory_make ("id3v2mux", NULL);
-	if (mux != NULL) {
-		/* check for backwards id3v2mux merge-mode */
-		if (!rb_gst_plugin_greater ("taglib", "id3v2mux", 0, 10, 3)) {
-			rb_debug ("using id3v2mux with backwards merge mode");
-			gst_tag_setter_set_tag_merge_mode (GST_TAG_SETTER (mux), GST_TAG_MERGE_REPLACE);
-		} else {
-			rb_debug ("using id3v2mux");
-		}
-	}
-
 	if (demux == NULL || mux == NULL)
 		goto error;
 
-	gst_bin_add_many (GST_BIN (md->priv->pipeline), demux, mux, NULL);
-	if (!gst_element_link (element, demux))
+	gst_bin_add_many (GST_BIN (pipeline), demux, mux, NULL);
+	if (!gst_element_link (link_to, demux))
 		goto error;
 
 	g_signal_connect (demux, "pad-added", (GCallback)id3_pad_added_cb, mux);
 
-	gst_tag_setter_merge_tags (GST_TAG_SETTER (mux), md->priv->tags, GST_TAG_MERGE_REPLACE_ALL);
-
+	gst_tag_setter_merge_tags (GST_TAG_SETTER (mux), tags, GST_TAG_MERGE_REPLACE_ALL);
 	return mux;
 
 error:
@@ -186,7 +132,7 @@ error:
 }
 
 static void
-ogg_pad_added_cb (GstElement *demux, GstPad *pad, RBMetaData *md)
+ogg_pad_added_cb (GstElement *demux, GstPad *pad, GstTagList *tags)
 {
 	GstCaps *caps;
 	GstStructure *structure;
@@ -233,7 +179,7 @@ ogg_pad_added_cb (GstElement *demux, GstPad *pad, RBMetaData *md)
 		conn_pad = gst_element_get_compatible_pad (tagger, pad, NULL);
 		gst_pad_link (pad, conn_pad);
 
-		gst_tag_setter_merge_tags (GST_TAG_SETTER (tagger), md->priv->tags, GST_TAG_MERGE_REPLACE_ALL);
+		gst_tag_setter_merge_tags (GST_TAG_SETTER (tagger), tags, GST_TAG_MERGE_REPLACE_ALL);
 	} else {
 		conn_pad = gst_element_get_compatible_pad (mux, pad, NULL);
 		gst_pad_link (pad, conn_pad);
@@ -245,7 +191,7 @@ end:
 }
 
 static GstElement *
-rb_add_ogg_tagger (RBMetaData *md, GstElement *element)
+vorbis_tagger (GstElement *pipeline, GstElement *link_to, GstTagList *tags)
 {
 	GstElement *demux = NULL;
 	GstElement *mux = NULL;
@@ -256,13 +202,12 @@ rb_add_ogg_tagger (RBMetaData *md, GstElement *element)
 	if (demux == NULL || mux == NULL)
 		goto error;
 
-	gst_bin_add_many (GST_BIN (md->priv->pipeline), demux, mux, NULL);
-	if (!gst_element_link (element, demux))
+	gst_bin_add_many (GST_BIN (pipeline), demux, mux, NULL);
+	if (!gst_element_link (link_to, demux))
 		goto error;
 
 	g_object_set_data (G_OBJECT (demux), "mux", mux);
-	g_signal_connect (demux, "pad-added", (GCallback)ogg_pad_added_cb, md);
-
+	g_signal_connect (demux, "pad-added", (GCallback)ogg_pad_added_cb, tags);
 	return mux;
 
 error:
@@ -272,7 +217,7 @@ error:
 }
 
 static void
-qt_pad_added_cb (GstElement *demux, GstPad *demuxpad, GstPad *muxpad)
+mp4_pad_added_cb (GstElement *demux, GstPad *demuxpad, GstPad *muxpad)
 {
 	if (gst_pad_link (demuxpad, muxpad) != GST_PAD_LINK_OK)
 		rb_debug ("unable to link pad from qtdemux to mp4mux");
@@ -282,7 +227,7 @@ qt_pad_added_cb (GstElement *demux, GstPad *demuxpad, GstPad *muxpad)
 
 
 static GstElement *
-rb_add_qt_tagger (RBMetaData *md, GstElement *element)
+mp4_tagger (GstElement *pipeline, GstElement *link_to, GstTagList *tags)
 {
 	GstElement *demux;
 	GstElement *mux;
@@ -293,14 +238,14 @@ rb_add_qt_tagger (RBMetaData *md, GstElement *element)
 	if (demux == NULL || mux == NULL)
 		goto error;
 
-	gst_bin_add_many (GST_BIN (md->priv->pipeline), demux, mux, NULL);
-	if (!gst_element_link (element, demux))
+	gst_bin_add_many (GST_BIN (pipeline), demux, mux, NULL);
+	if (!gst_element_link (link_to, demux))
 		goto error;
 
 	muxpad = gst_element_get_request_pad (mux, "audio_%d");
-	g_signal_connect (demux, "pad-added", G_CALLBACK (qt_pad_added_cb), muxpad);
-	
-	gst_tag_setter_merge_tags (GST_TAG_SETTER (mux), md->priv->tags, GST_TAG_MERGE_REPLACE_ALL);
+	g_signal_connect (demux, "pad-added", G_CALLBACK (mp4_pad_added_cb), muxpad);
+
+	gst_tag_setter_merge_tags (GST_TAG_SETTER (mux), tags, GST_TAG_MERGE_REPLACE_ALL);
 
 	return mux;
 
@@ -312,91 +257,73 @@ error:
 	return NULL;
 }
 
+
+
 static void
-add_supported_type (RBMetaData *md,
-		    const char *mime,
-		    RBAddTaggerElem add_tagger_func,
-		    const char *human_name)
+rb_metadata_class_init (RBMetaDataClass *klass)
 {
-	struct RBMetadataGstType *type = g_new0 (struct RBMetadataGstType, 1);
-	type->mimetype = g_strdup (mime);
-	type->tag_func = add_tagger_func;
-	type->human_name = g_strdup (human_name);
-	g_ptr_array_add (md->priv->supported_types, type);
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->finalize = rb_metadata_finalize;
+
+	g_type_class_add_private (klass, sizeof (RBMetaDataPrivate));
+	rb_metadata_gst_register_transforms ();
 }
 
 static void
 rb_metadata_init (RBMetaData *md)
 {
-	RBAddTaggerElem tagger;
-	gboolean has_giosink = FALSE;
-	gboolean has_id3 = FALSE;
-
 	md->priv = RB_METADATA_GET_PRIVATE (md);
 
-	md->priv->supported_types = g_ptr_array_new ();
+	md->priv->taggers = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL);
 
- 	/* the list of supported types serves two purposes:
- 	 * - it knows how to construct elements for tag writing
- 	 * - it knows human-readable names for MIME types so we can say
- 	 *     "There is no plugin available to play WMV files"
- 	 *     rather than " .. play video/x-ms-asf files".
- 	 *
- 	 * only registering types we have plugins for defeats the second
-	 * purpose.
- 	 */
-	has_giosink = (gst_element_factory_find ("giostreamsink") != NULL);
-	has_id3 = (gst_element_factory_find ("id3v2mux") != NULL);
-	tagger = (has_giosink && has_id3) ?  rb_add_id3_tagger : NULL;
-	add_supported_type (md, "application/x-id3", tagger, "MP3");
-	add_supported_type (md, "audio/mpeg", tagger, "MP3");
+	if (gst_element_factory_find ("giostreamsink") == FALSE) {
+		rb_debug ("giostreamsink not found, can't tag anything");
+	} else {
+		if (gst_element_factory_find ("vorbistag") &&
+		    gst_element_factory_find ("vorbisparse") &&
+		    gst_element_factory_find ("oggdemux") &&
+		    gst_element_factory_find ("oggmux")) {
+			rb_debug ("ogg vorbis tagging available");
+			g_hash_table_insert (md->priv->taggers, "application/ogg", vorbis_tagger);
+			g_hash_table_insert (md->priv->taggers, "audio/x-vorbis", vorbis_tagger);
+		}
 
-	{
-		gboolean has_vorbis;
+		if (gst_element_factory_find ("flactag")) {
+			rb_debug ("flac tagging available");
+			g_hash_table_insert (md->priv->taggers, "audio/x-flac", flac_tagger);
+		}
 
-		has_vorbis = ((gst_element_factory_find ("vorbistag") != NULL) &&
-			      gst_default_registry_check_feature_version ("vorbisparse", 0, 10, 6) &&
-			      gst_default_registry_check_feature_version ("oggmux", 0, 10, 6) &&
-			      gst_default_registry_check_feature_version ("oggdemux", 0, 10, 6));
-		tagger = (has_giosink && has_vorbis) ?  rb_add_ogg_tagger : NULL;
+		/* TODO check for new id3 tag element too */
+		if (gst_element_factory_find ("id3v2mux") && gst_element_factory_find ("id3demux")) {
+			rb_debug ("id3 tagging available");
+			g_hash_table_insert (md->priv->taggers, "application/x-id3", id3_tagger);
+			g_hash_table_insert (md->priv->taggers, "audio/mpeg", id3_tagger);
+		}
+
+		if (gst_element_factory_find ("qtdemux") && gst_element_factory_find ("mp4mux")) {
+			rb_debug ("mp4 tagging available");
+			g_hash_table_insert (md->priv->taggers, "audio/x-m4a", mp4_tagger);
+			g_hash_table_insert (md->priv->taggers, "video/quicktime", mp4_tagger);
+		}
 	}
-	add_supported_type (md, "application/ogg", tagger, "Ogg Vorbis");
-	add_supported_type (md, "audio/x-vorbis", tagger, "Ogg Vorbis");
-
-	add_supported_type (md, "audio/x-mod", NULL, "MOD");
-	add_supported_type (md, "audio/x-wav", NULL, "WAV");
-	add_supported_type (md, "video/x-ms-asf", NULL, "ASF");
-
-	tagger = (has_giosink && gst_element_factory_find ("flactag")) ?  rb_add_flac_tagger : NULL;
-	add_supported_type (md, "audio/x-flac", tagger, "FLAC");
-
-	tagger = (has_giosink && gst_element_factory_find ("qtdemux") && gst_element_factory_find ("mp4mux")) ? rb_add_qt_tagger : NULL;
-	add_supported_type (md, "audio/x-m4a", tagger, "M4A");
-	add_supported_type (md, "video/quicktime", tagger, "M4A");			/* hmm. */
-
 }
 
 static void
 rb_metadata_finalize (GObject *object)
 {
-	int i;
 	RBMetaData *md;
 
 	md = RB_METADATA (object);
-
-	for (i = 0; i < md->priv->supported_types->len; i++) {
-		struct RBMetadataGstType *type = g_ptr_array_index (md->priv->supported_types, i);
-		g_free (type->mimetype);
-		g_free (type->human_name);
-		g_free (type);
-	}
-	g_ptr_array_free (md->priv->supported_types, TRUE);
 
 	if (md->priv->metadata)
 		g_hash_table_destroy (md->priv->metadata);
 
 	if (md->priv->pipeline)
 		gst_object_unref (GST_OBJECT (md->priv->pipeline));
+
+	if (md->priv->taggers)
+		g_hash_table_destroy (md->priv->taggers);
 
 	g_free (md->priv->type);
 	g_free (md->priv->uri);
@@ -409,18 +336,6 @@ RBMetaData *
 rb_metadata_new (void)
 {
 	return RB_METADATA (g_object_new (RB_TYPE_METADATA, NULL, NULL));
-}
-
-static RBAddTaggerElem
-rb_metadata_gst_type_to_tag_function (RBMetaData *md, const char *mimetype)
-{
-	int i;
-	for (i = 0; i < md->priv->supported_types->len; i++) {
-		struct RBMetadataGstType *type = g_ptr_array_index (md->priv->supported_types, i);
-		if (!strcmp (type->mimetype, mimetype))
-			return type->tag_func;
-	}
-	return NULL;
 }
 
 static void
@@ -945,7 +860,7 @@ rb_metadata_load (RBMetaData *md,
 gboolean
 rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 {
-	return rb_metadata_gst_type_to_tag_function (md, mimetype) != NULL;
+	return g_hash_table_lookup (md->priv->taggers, mimetype) != NULL;
 }
 
 static void
@@ -1049,8 +964,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 			      md);
 
 	/* Tagger element(s) */
-	add_tagger_func = rb_metadata_gst_type_to_tag_function (md, md->priv->type);
-
+	add_tagger_func = g_hash_table_lookup (md->priv->taggers, md->priv->type);
 	if (!add_tagger_func) {
 		g_set_error (error,
 			     RB_METADATA_ERROR,
@@ -1059,7 +973,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto out_error;
 	}
 
-	retag_end = add_tagger_func (md, source);
+	retag_end = add_tagger_func (md->priv->pipeline, source, md->priv->tags);
 	if (!retag_end) {
 		g_set_error (error,
 			     RB_METADATA_ERROR,
