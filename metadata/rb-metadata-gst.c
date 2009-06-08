@@ -594,27 +594,6 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 		gst_element_set_state (md->priv->pipeline, GST_STATE_NULL);
 }
 
-static void
-rb_metadata_gst_unknown_type_cb (GstElement *decodebin, GstPad *pad, GstCaps *caps, RBMetaData *md)
-{
-	if (!gst_caps_is_empty (caps) && !gst_caps_is_any (caps)) {
-		GstStructure *structure;
-		const gchar *mimetype;
-
-		structure = gst_caps_get_structure (caps, 0);
-		mimetype = gst_structure_get_name (structure);
-
-		g_free (md->priv->type);
-		md->priv->type = g_strdup (mimetype);
-
-		rb_debug ("decodebin emitted unknown type signal for %s", mimetype);
-	} else {
-		rb_debug ("decodebin emitted unknown type signal");
-	}
-
-	md->priv->has_non_audio = TRUE;
-}
-
 static GstElement *make_pipeline_element (GstElement *pipeline, const char *element, GError **error)
 {
 	GstElement *elem = gst_element_factory_make (element, element);
@@ -634,10 +613,39 @@ static GstElement *make_pipeline_element (GstElement *pipeline, const char *elem
 static void
 rb_metadata_handle_missing_plugin_message (RBMetaData *md, GstMessage *message)
 {
+	char *detail;
+
+	detail = gst_missing_plugin_message_get_installer_detail (message);
 	rb_debug ("got missing-plugin message from %s: %s",
 		  GST_OBJECT_NAME (GST_MESSAGE_SRC (message)),
-		  gst_missing_plugin_message_get_installer_detail (message));
+		  detail);
+	g_free (detail);
+
 	md->priv->missing_plugins = g_slist_prepend (md->priv->missing_plugins, gst_message_ref (message));
+
+	/* update our information on what's in the stream based on
+	 * what we're missing.
+	 */
+	switch (rb_metadata_gst_get_missing_plugin_type (message)) {
+	case MEDIA_TYPE_NONE:
+		break;
+	case MEDIA_TYPE_CONTAINER:
+		/* hm, maybe we need a way to say 'we don't even know what's in here'.
+		 * but for now, the things we actually identify as containers are mostly
+		 * used for audio, so pretending they actually are is good enough.
+		 */
+	case MEDIA_TYPE_AUDIO:
+		md->priv->has_audio = TRUE;
+		break;
+	case MEDIA_TYPE_VIDEO:
+		md->priv->has_video = TRUE;
+		break;
+	case MEDIA_TYPE_OTHER:
+		md->priv->has_non_audio = TRUE;
+		break;
+	default:
+		g_assert_not_reached ();
+	}
 }
 
 static gboolean
@@ -825,7 +833,6 @@ rb_metadata_load (RBMetaData *md,
  	}
 
  	g_signal_connect_object (decodebin, "new-decoded-pad", G_CALLBACK (rb_metadata_gst_new_decoded_pad_cb), md, 0);
- 	g_signal_connect_object (decodebin, "unknown-type", G_CALLBACK (rb_metadata_gst_unknown_type_cb), md, 0);
 
  	/* locate the decodebin's typefind, so we can get the have_type signal too.
  	 * this is kind of nasty, since it relies on an essentially arbitrary string

@@ -34,10 +34,20 @@ G_BEGIN_DECLS
 
 #include "rb-metadata.h"
 
+typedef enum {
+	MEDIA_TYPE_NONE = 0,
+	MEDIA_TYPE_CONTAINER,
+	MEDIA_TYPE_AUDIO,
+	MEDIA_TYPE_VIDEO,
+	MEDIA_TYPE_OTHER
+} RBGstMediaType;
+
 const char *		rb_metadata_gst_field_to_gst_tag (RBMetaDataField field);
 RBMetaDataField		rb_metadata_gst_tag_to_field (const char *tag);
 
 void			rb_metadata_gst_register_transforms (void);
+
+RBGstMediaType		rb_metadata_gst_get_missing_plugin_type (GstMessage *msg);
 
 G_END_DECLS
 
