@@ -47,7 +47,6 @@
 #include "rb-debug.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
-#include "rb-marshal.h"
 #include "rb-stock-icons.h"
 #include "eel-gconf-extensions.h"
 #include "rb-builder-helpers.h"
