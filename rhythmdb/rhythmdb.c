@@ -80,6 +80,33 @@ G_DEFINE_ABSTRACT_TYPE(RhythmDB, rhythmdb, G_TYPE_OBJECT)
 	RHYTHMDB_FILE_INFO_ATTRIBUTES ","		\
 	G_FILE_ATTRIBUTE_STANDARD_NAME
 
+/*
+ * Filters for MIME/media types to ignore.
+ * The only complication here is that there are some application/ types that
+ * are used for audio/video files.  Otherwise, we'd ignore everything except
+ * audio/ and video/.
+ */
+struct media_type_filter {
+	const char *prefix;
+	gboolean ignore;
+} media_type_filters[] = {
+	{ "image/", TRUE },
+	{ "text/", TRUE },
+	{ "application/ogg", FALSE },
+	{ "application/x-id3", FALSE },
+	{ "application/x-apetag", FALSE },
+	{ "application/x-3gp", FALSE },
+	{ "application/", TRUE },
+};
+
+/*
+ * File size below which we will simply ignore files that can't be identified.
+ * This is mostly here so we ignore the various text files that are packaged
+ * with many netlabel releases and other downloads.
+ */
+#define REALLY_SMALL_FILE_SIZE	(4096)
+
+
 typedef struct
 {
 	RhythmDB *db;
@@ -728,6 +755,19 @@ make_access_failed_error (const char *uri, GError *access_error)
 	g_free (unescaped);
 	g_free (utf8ised);
 	return error;
+}
+
+static gboolean
+rhythmdb_ignore_media_type (const char *media_type)
+{
+	int i;
+
+	for (i = 0; i < G_N_ELEMENTS (media_type_filters); i++) {
+		if (g_str_has_prefix (media_type, media_type_filters[i].prefix)) {
+			return media_type_filters[i].ignore;
+		}
+	}
+	return FALSE;
 }
 
 typedef struct {
@@ -2153,20 +2193,14 @@ typedef struct
 
 static void
 rhythmdb_add_import_error_entry (RhythmDB *db,
-				 RhythmDBEvent *event)
+				 RhythmDBEvent *event,
+				 RhythmDBEntryType error_entry_type)
 {
 	RhythmDBEntry *entry;
 	GValue value = {0,};
-	RhythmDBEntryType error_entry_type = event->error_type;
 
-	rb_debug ("adding import error for %s: %s", rb_refstring_get (event->real_uri), event->error->message);
-	if (g_error_matches (event->error, RB_METADATA_ERROR, RB_METADATA_ERROR_NOT_AUDIO_IGNORE)) {
-		/* only add an ignore entry if we have an entry type for it */
-		if (event->ignore_type == RHYTHMDB_ENTRY_TYPE_INVALID)
-			return;
-
-		error_entry_type = event->ignore_type;
-	} else if (event->error_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
+	rb_debug ("adding import error for %s: %s", rb_refstring_get (event->real_uri), event->error ? event->error->message : "<no error>");
+	if (error_entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		/* we don't have an error entry type, so we can't add an import error */
 		return;
 	}
@@ -2246,18 +2280,51 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry;
 	GValue value = {0,};
-	const char *mime;
 	GTimeVal time;
+	const char *media_type;
 
-	if (event->error) {
-		rhythmdb_add_import_error_entry (event->db, event);
+	/*
+	 * always ignore anything with video in it, or anything
+	 * matching one of the media types we don't care about.
+	 * if we can identify it that much, we know it's not interesting.
+	 * otherwise, add an import error entry if there was an error,
+	 * or just ignore it if it doesn't contain audio.
+	 */
+
+	media_type = rb_metadata_get_mime (event->metadata);
+	if (rb_metadata_has_video (event->metadata) ||
+	    (media_type != NULL && rhythmdb_ignore_media_type (media_type))) {
+		rhythmdb_add_import_error_entry (event->db, event, event->ignore_type);
 		return TRUE;
 	}
 
-	/* do we really need to do this? */
-	mime = rb_metadata_get_mime (event->metadata);
-	if (!mime) {
-		rb_debug ("unsupported file");
+	/* also ignore really small files we can't identify */
+	if (event->error && event->error->code == RB_METADATA_ERROR_UNRECOGNIZED) {
+		guint64 file_size;
+
+		file_size = g_file_info_get_attribute_uint64 (event->file_info,
+							      G_FILE_ATTRIBUTE_STANDARD_SIZE);
+		if (file_size == 0) {
+			/* except for empty files */
+			g_clear_error (&event->error);
+			g_set_error (&event->error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_EMPTY_FILE,
+				     _("Empty file"));
+		} else if (file_size < REALLY_SMALL_FILE_SIZE) {
+			rhythmdb_add_import_error_entry (event->db, event, event->ignore_type);
+			return TRUE;
+		}
+	}
+
+	if (event->error) {
+		rhythmdb_add_import_error_entry (event->db, event, event->error_type);
+		return TRUE;
+	}
+
+	/* check if this is something we want in the library */
+	if (rb_metadata_has_audio (event->metadata) == FALSE) {
+		rhythmdb_add_import_error_entry (event->db, event, event->ignore_type);
 		return TRUE;
 	}
 

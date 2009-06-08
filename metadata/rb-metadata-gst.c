@@ -51,30 +51,6 @@ static void rb_metadata_finalize (GObject *object);
 
 typedef GstElement *(*RBAddTaggerElem) (RBMetaData *, GstElement *);
 
-/*
- * The list of mime-type prefixes for files that shouldn't display errors about being non-audio.
- * Useful for people who have cover art, et cetera, in their music directories
- */
-const char * ignore_mime_types[] = {
-	"image/",
-	"text/",
-	"application/",
-};
-
-const char * non_ignore_mime_types[] = {
-	"application/x-id3",
-	"application/ogg",
-	"application/x-apetag",
-	"application/x-3gp"
-};
-
-/*
- * File size below which we will simply ignore files that can't be identified.
- * This is mostly here so we ignore the various text files that are packaged
- * with many netlabel releases and other downloads.
- */
-#define REALLY_SMALL_FILE_SIZE	(4096)
-
 struct RBMetadataGstType
 {
 	char *mimetype;
@@ -97,7 +73,6 @@ struct RBMetaDataPrivate
 	GPtrArray *supported_types;
 
 	char *type;
-	gboolean handoff;
 	gboolean eos;
 	gboolean has_audio;
 	gboolean has_non_audio;
@@ -443,18 +418,6 @@ free_gvalue (GValue *val)
 	g_free (val);
 }
 
-static const char *
-rb_metadata_gst_type_to_name (RBMetaData *md, const char *mimetype)
-{
-	int i;
-	for (i = 0; i < md->priv->supported_types->len; i++) {
-		struct RBMetadataGstType *type = g_ptr_array_index (md->priv->supported_types, i);
-		if (!strcmp (type->mimetype, mimetype))
-			return type->human_name;
-	}
-	return NULL;
-}
-
 static RBAddTaggerElem
 rb_metadata_gst_type_to_tag_function (RBMetaData *md, const char *mimetype)
 {
@@ -465,29 +428,6 @@ rb_metadata_gst_type_to_tag_function (RBMetaData *md, const char *mimetype)
 			return type->tag_func;
 	}
 	return NULL;
-}
-
-static char *
-make_undecodable_error (RBMetaData *md)
-{
-	const char *human_name;
-	char *free_name = NULL;
-
-	human_name = rb_metadata_gst_type_to_name (md, md->priv->type);
-	if (human_name == NULL) {
-		free_name = rb_mime_get_friendly_name (md->priv->type);
-		human_name = free_name;
-	}
-
-	if (human_name) {
-		return g_strdup_printf (_("The GStreamer plugins to decode \"%s\" files cannot be found"),
-					human_name);
-	} else {
-		return g_strdup_printf (_("The file contains a stream of type %s, which is not decodable"),
-					md->priv->type);
-	}
-
-	g_free (free_name);
 }
 
 static void
@@ -815,23 +755,6 @@ rb_metadata_event_loop (RBMetaData *md, GstElement *element, gboolean block)
 	gst_object_unref (bus);
 }
 
-static gboolean
-ignore_mimetype (const char *type)
-{
-	guint i;
-
-	for (i = 0; i < G_N_ELEMENTS (non_ignore_mime_types); i++) {
-		if (g_str_equal (type, non_ignore_mime_types[i]) != FALSE)
-			return FALSE;
-	}
-	for (i = 0; i < G_N_ELEMENTS (ignore_mime_types); i++) {
-		if (g_str_has_prefix (type, ignore_mime_types[i]) != FALSE)
-			return TRUE;
-	}
-
-	return FALSE;
-}
-
 void
 rb_metadata_load (RBMetaData *md,
 		  const char *uri,
@@ -853,7 +776,6 @@ rb_metadata_load (RBMetaData *md,
 	md->priv->type = NULL;
 	md->priv->error = NULL;
 	md->priv->eos = FALSE;
-	md->priv->handoff = FALSE;
 	md->priv->has_audio = FALSE;
 	md->priv->has_non_audio = FALSE;
 	md->priv->has_video = FALSE;
@@ -994,75 +916,19 @@ rb_metadata_load (RBMetaData *md,
 	if (state_ret == GST_STATE_CHANGE_ASYNC) {
 		g_warning ("Failed to return metadata reader to NULL state");
 	}
-	md->priv->handoff = (state_ret == GST_STATE_CHANGE_SUCCESS);
 
-	/* report errors for various failure cases.
-	 * these don't include the URI as the import errors source
-	 * already displays it.
-	 */
-	if ((md->priv->has_video || !md->priv->has_audio) &&
-	    (md->priv->has_non_audio || !md->priv->handoff)) {
-		gboolean ignore = FALSE;
-
-		if (md->priv->has_video) {
-			ignore = TRUE;
-		} else {
-			ignore = ignore_mimetype (md->priv->type);
-		}
-
-		if (!ignore) {
-			char *msg = make_undecodable_error (md);
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_NOT_AUDIO,
-				     "%s", msg);
-			g_free (msg);
-		} else {
-			/* we don't need an error message here (it'll never be
-			 * displayed).  using NULL causes crashes with some C
-			 * libraries, and gcc doesn't like zero-length format
-			 * strings, so we use a single space instead.
-			 */
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_NOT_AUDIO_IGNORE,
-				     " ");
-		}
-	} else if (md->priv->error != NULL) {
+	if (md->priv->error != NULL) {
 		g_propagate_error (error, md->priv->error);
 		md->priv->error = NULL;
 	} else if (!md->priv->type) {
-		/* ignore really small files that can't be identified */
-		gint error_code = RB_METADATA_ERROR_UNRECOGNIZED;
-		if (file_size > 0 && file_size < REALLY_SMALL_FILE_SIZE) {
-			rb_debug ("ignoring %s because it's too small to care about", md->priv->uri);
-			error_code = RB_METADATA_ERROR_NOT_AUDIO_IGNORE;
-		} else if (file_size == 0) {
-			g_clear_error (error);
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_EMPTY_FILE,
-				     _("Empty file"));
-			goto out;
-		}
-
 		g_clear_error (error);
 		g_set_error (error,
 			     RB_METADATA_ERROR,
-			     error_code,
+			     RB_METADATA_ERROR_UNRECOGNIZED,
 			     _("The MIME type of the file could not be identified"));
 	} else {
 		/* yay, it worked */
 		rb_debug ("successfully read metadata for %s", uri);
-
-		/* it doesn't matter if we don't recognise the format,
-		 * as long as gstreamer can play it, we can put it in
-		 * the library.
-		 */
-		if (!rb_metadata_gst_type_to_name (md, md->priv->type)) {
-			rb_debug ("we don't know what type %s (from file %s) is, but we'll play it anyway",
-				  md->priv->type, uri);
-		}
 	}
 
  out:
