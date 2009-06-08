@@ -41,7 +41,9 @@ librbmetadatasvc_la_SOURCES =				\
 	rb-metadata-common.c				\
 	rb-metadata-dbus.h				\
 	rb-metadata-dbus.c				\
-	rb-metadata-gst.c
+	rb-metadata-gst.c				\
+	rb-metadata-gst-common.h			\
+	rb-metadata-gst-common.c
 
 libexec_PROGRAMS = rhythmbox-metadata
 rhythmbox_metadata_SOURCES = 				\
