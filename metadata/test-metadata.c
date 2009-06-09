@@ -86,6 +86,7 @@ load_metadata_cb (gpointer file)
 	char **missing_plugins;
 	char **plugin_descriptions;
 	GError *error = NULL;
+	RBMetaDataField f;
 
 	if (strncmp (uri, "file://", 7)) {
 		if (uri[0] == '/') {
@@ -106,22 +107,18 @@ load_metadata_cb (gpointer file)
 	rb_metadata_load (md, (const char *)uri, &error);
 
 	if (error) {
-		switch (error->code) {
-		case RB_METADATA_ERROR_NOT_AUDIO_IGNORE:
-			printf ("file ignored: %s\n", error->message);
-			break;
-		default:
-			printf ("error: %s\n", error->message);
-			break;
-		}
+		printf ("error: %s\n", error->message);
 		g_clear_error (&error);
-	} else {
-		RBMetaDataField f;
-
-		printf ("type: %s\n", rb_metadata_get_mime (md));
-		for (f =(RBMetaDataField)0; f < RB_METADATA_FIELD_LAST; f++)
-			print_metadata_string (md, f, rb_metadata_get_field_name (f));
 	}
+
+	printf ("type: %s\n", rb_metadata_get_mime (md));
+	for (f =(RBMetaDataField)0; f < RB_METADATA_FIELD_LAST; f++)
+		print_metadata_string (md, f, rb_metadata_get_field_name (f));
+
+	printf ("has audio: %d\n", rb_metadata_has_audio (md));
+	printf ("has video: %d\n", rb_metadata_has_video (md));
+	printf ("has other data: %d\n", rb_metadata_has_other_data (md));
+
 	if (rb_metadata_get_missing_plugins (md, &missing_plugins, &plugin_descriptions)) {
 		int i = 0;
 		g_print ("missing plugins:\n");

@@ -420,13 +420,7 @@ test_load (const char *uri)
 	md = rb_metadata_new ();
 	rb_metadata_load (md, uri, &error);
 	if (error) {
-		if (error->code == RB_METADATA_ERROR_NOT_AUDIO_IGNORE) {
-			g_print ("%s is not an audio stream (ignored)\n", uri);
-		} else if (error->code == RB_METADATA_ERROR_NOT_AUDIO) {
-			g_print ("%s is not an audio stream\n", uri);
-		} else {
-			g_print ("Error loading metadata from %s: %s\n", uri, error->message);
-		}
+		g_print ("Error loading metadata from %s: %s\n", uri, error->message);
 		g_clear_error (&error);
 		rv = -1;
 	} else {
