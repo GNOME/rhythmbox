@@ -2455,22 +2455,19 @@ static gboolean
 rhythmdb_process_metadata_load (RhythmDB *db,
 				RhythmDBEvent *event)
 {
-	char **missing_plugins;
-	char **plugin_descriptions;
-
-	/* don't process missing plugin messages for files we're ignoring */
-	if (g_error_matches (event->error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_NOT_AUDIO_IGNORE)) {
-		return rhythmdb_process_metadata_load_real (event);
-	} else if (event->metadata != NULL &&
-		   rb_metadata_get_missing_plugins (event->metadata,
-			   			    &missing_plugins,
-						    &plugin_descriptions)) {
+	/* only process missing plugins for audio files */
+	if (event->metadata != NULL &&
+	    rb_metadata_has_audio (event->metadata) == TRUE &&
+	    rb_metadata_has_video (event->metadata) == FALSE &&
+	    rb_metadata_has_missing_plugins (event->metadata) == TRUE) {
+		char **missing_plugins;
+		char **plugin_descriptions;
 		GClosure *closure;
 		gboolean processing;
+
+		rb_metadata_get_missing_plugins (event->metadata, &missing_plugins, &plugin_descriptions);
 		
-		rb_debug ("missing plugins during metadata load for %s (event = %p)", rb_refstring_get (event->real_uri), event);
+		rb_debug ("missing plugins during metadata load for %s", rb_refstring_get (event->real_uri));
 
 		g_mutex_lock (event->db->priv->metadata_lock);
 
@@ -2487,6 +2484,17 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 
 		g_closure_sink (closure);
 		return FALSE;
+	} else if (rb_metadata_has_missing_plugins (event->metadata)) {
+		rb_debug ("ignoring missing plugins for %s; not audio (%d %d %d)",
+			  rb_refstring_get (event->real_uri),
+			  rb_metadata_has_audio (event->metadata),
+			  rb_metadata_has_video (event->metadata),
+			  rb_metadata_has_other_data (event->metadata));
+
+		g_mutex_lock (db->priv->metadata_lock);
+		db->priv->metadata_blocked = FALSE;
+		g_cond_signal (db->priv->metadata_cond);
+		g_mutex_unlock (db->priv->metadata_lock);
 	}
 
 	return rhythmdb_process_metadata_load_real (event);
@@ -2759,10 +2767,7 @@ rhythmdb_execute_load (RhythmDB *db,
 		/* if we're missing some plugins, block further attempts to
 		 * read metadata until we've processed them.
 		 */
-		if (!g_error_matches (event->error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_NOT_AUDIO_IGNORE) &&
-		    rb_metadata_has_missing_plugins (event->metadata)) {
+		if (rb_metadata_has_missing_plugins (event->metadata)) {
 			event->db->priv->metadata_blocked = TRUE;
 		}
 
