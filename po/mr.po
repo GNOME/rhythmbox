@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mr\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-06-05 02:17+0000\n"
-"PO-Revision-Date: 2009-06-05 18:00+0530\n"
+"POT-Creation-Date: 2009-06-08 10:42+0000\n"
+"PO-Revision-Date: 2009-06-09 11:05+0530\n"
 "Last-Translator: Sandeep Shedmake <sandeep.shedmake@gmail.com>\n"
 "Language-Team: marathi\n"
 "MIME-Version: 1.0\n"
@@ -33,61 +33,60 @@ msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr "playbin2 घटक बनवण्यास अपयशी; तुमचे GStreamer प्रतिष्ठापन तपासा"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:580
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2755
+#: ../backends/gstreamer/rb-player-gst.c:581
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2757
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "आऊटपुट साधन उघडण्यास अपयशी: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:625
+#: ../backends/gstreamer/rb-player-gst.c:626
 #, c-format
-#| msgid "Failed to start playback of %s"
 msgid "Unable to start playback pipeline"
 msgstr "प्लेबॅक पाइपलाइल सुरू करण्यास अपयशी"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1153
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1167
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1154
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1168
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "नवीन स्ट्रीमला GStreamer पाइपलाइन अंतर्गत जुळवण्यास अपयशी"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1195
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1196
 #, c-format
 msgid "Failed to start new stream"
 msgstr "नवीन स्ट्रीम सुरू करण्यास अपयशी"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2681
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2682
 #, c-format
 msgid "Failed to open output device"
 msgstr "आऊटपुट साधन उघडण्यास अपयशी"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3011
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3093
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3013
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3095
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "GStreamer घटक बनवण्यास अपयशी; तुमचे प्रतिष्ठापन तपासा"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3022
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3024
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "ऑडिओ आऊटपुट घटक बनवण्यास अपयशी; तुमचे प्रतिष्ठापन तपासा"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3067
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3109
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3135
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3144
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3153
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3069
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3111
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3137
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3146
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3155
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "GStreamer पाइपलाइनशी जुळवणी करण्यास अपयशी; तुमचे प्रतिष्ठापन तपासा"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3248
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3250
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr " %s चालवण्याकरीता GStreamer पाइपलाइन बनवण्यास अपयशी"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3264
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3266
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "%s चे प्लेबॅक सुरू करण्यास अपयशी"
@@ -113,7 +112,6 @@ msgid "MB"
 msgstr "MB"
 
 #: ../data/ui/create-playlist.ui.h:6
-#| msgid "minutes"
 msgid "Minutes"
 msgstr "मिनिटे"
 
@@ -126,105 +124,98 @@ msgid "_When sorted by:"
 msgstr "यानुरूप क्रमवारीत लावले जाते (_W):"
 
 #: ../data/ui/create-playlist.ui.h:9
-#| msgid "%d song"
-#| msgid_plural "%d songs"
 msgid "songs"
 msgstr "गाणे"
 
-#: ../data/ui/general-prefs.ui.h:1 ../data/ui/podcast-feed-properties.ui.h:1
-#: ../data/ui/podcast-properties.ui.h:1
-msgid "-"
-msgstr "-"
-
-#: ../data/ui/general-prefs.ui.h:2
+#: ../data/ui/general-prefs.ui.h:1
 msgid "A_lbum"
 msgstr "अल्बम (_l)"
 
-#: ../data/ui/general-prefs.ui.h:3
+#: ../data/ui/general-prefs.ui.h:2
 msgid "Browser Views"
 msgstr "ब्राऊजर दृष्य"
 
-#: ../data/ui/general-prefs.ui.h:4
+#: ../data/ui/general-prefs.ui.h:3
 msgid "Da_te added"
 msgstr "समावेष दिनांक (_t)"
 
-#: ../data/ui/general-prefs.ui.h:5
+#: ../data/ui/general-prefs.ui.h:4
 msgid "Default"
 msgstr "मुलभूत"
 
-#: ../data/ui/general-prefs.ui.h:6
+#: ../data/ui/general-prefs.ui.h:5
 msgid "G_enres, artists and albums"
 msgstr "श्रेणी, कलाकार व अल्बम (_e)"
 
-#: ../data/ui/general-prefs.ui.h:7
+#: ../data/ui/general-prefs.ui.h:6
 msgid "Icons only"
 msgstr "फक्त चिन्ह"
 
-#: ../data/ui/general-prefs.ui.h:8
+#: ../data/ui/general-prefs.ui.h:7
 msgid "Lo_cation"
 msgstr "ठिकाण (_c)"
 
-#: ../data/ui/general-prefs.ui.h:9
+#: ../data/ui/general-prefs.ui.h:8
 msgid "Text below icons"
 msgstr "चिन्हा खालिल पाठ्य"
 
-#: ../data/ui/general-prefs.ui.h:10
+#: ../data/ui/general-prefs.ui.h:9
 msgid "Text beside icons"
 msgstr "चिन्हाच्या बाजूचे पाठ्य"
 
-#: ../data/ui/general-prefs.ui.h:11
+#: ../data/ui/general-prefs.ui.h:10
 msgid "Text only"
 msgstr "फक्त पाठ्य"
 
-#: ../data/ui/general-prefs.ui.h:12
+#: ../data/ui/general-prefs.ui.h:11
 msgid "Ti_me"
 msgstr "वेळा (_m)"
 
-#: ../data/ui/general-prefs.ui.h:13
+#: ../data/ui/general-prefs.ui.h:12
 msgid "Toolbar Button Labels"
 msgstr "साधनपट्टी बटण लेबल"
 
-#: ../data/ui/general-prefs.ui.h:14
+#: ../data/ui/general-prefs.ui.h:13
 msgid "Track _number"
 msgstr "ट्रॅक क्रमांक (_n)"
 
-#: ../data/ui/general-prefs.ui.h:15
+#: ../data/ui/general-prefs.ui.h:14
 msgid "Visible Columns"
 msgstr "दृष्यास्पद स्तंभ"
 
-#: ../data/ui/general-prefs.ui.h:16
+#: ../data/ui/general-prefs.ui.h:15
 msgid "_Artist"
 msgstr "कलाकार (_A)"
 
-#: ../data/ui/general-prefs.ui.h:17
+#: ../data/ui/general-prefs.ui.h:16
 msgid "_Artists and albums"
 msgstr "कलाकार व अल्बम (_A)"
 
-#: ../data/ui/general-prefs.ui.h:18
+#: ../data/ui/general-prefs.ui.h:17
 msgid "_Genre"
 msgstr "श्रेणी (_G)"
 
-#: ../data/ui/general-prefs.ui.h:19
+#: ../data/ui/general-prefs.ui.h:18
 msgid "_Genres and artists"
 msgstr "श्रेणी व कलाकार (_G)"
 
-#: ../data/ui/general-prefs.ui.h:20
+#: ../data/ui/general-prefs.ui.h:19
 msgid "_Last played"
 msgstr "शेवटी चालवलेले (_L)"
 
-#: ../data/ui/general-prefs.ui.h:21
+#: ../data/ui/general-prefs.ui.h:20
 msgid "_Play count"
 msgstr "चालवा प्रमाण (_P)"
 
-#: ../data/ui/general-prefs.ui.h:22
+#: ../data/ui/general-prefs.ui.h:21
 msgid "_Quality"
 msgstr "दर्जा (_Q)"
 
-#: ../data/ui/general-prefs.ui.h:23
+#: ../data/ui/general-prefs.ui.h:22
 msgid "_Rating"
 msgstr "गुणोत्तर (_R)"
 
-#: ../data/ui/general-prefs.ui.h:24
+#: ../data/ui/general-prefs.ui.h:23
 msgid "_Year"
 msgstr "वर्ष (_Y)"
 
@@ -300,7 +291,7 @@ msgstr "वादकयादी संचयीत करा"
 msgid "Select playlist format:"
 msgstr "वादकयादी स्वरूप नीवडा:"
 
-#: ../data/ui/plugins.ui.h:1 ../data/ui/podcast-feed-properties.ui.h:2
+#: ../data/ui/plugins.ui.h:1 ../data/ui/podcast-feed-properties.ui.h:1
 msgid "Author:"
 msgstr "लेखक:"
 
@@ -308,12 +299,12 @@ msgstr "लेखक:"
 msgid "C_onfigure..."
 msgstr "संयोजीत करा (_o)..."
 
-#: ../data/ui/plugins.ui.h:3 ../data/ui/podcast-feed-properties.ui.h:4
+#: ../data/ui/plugins.ui.h:3 ../data/ui/podcast-feed-properties.ui.h:3
 msgid "Copyright:"
 msgstr "कॉपीराइट:"
 
-#: ../data/ui/plugins.ui.h:4 ../data/ui/podcast-feed-properties.ui.h:5
-#: ../data/ui/podcast-properties.ui.h:5
+#: ../data/ui/plugins.ui.h:4 ../data/ui/podcast-feed-properties.ui.h:4
+#: ../data/ui/podcast-properties.ui.h:4
 msgid "Description:"
 msgstr "वर्णन:"
 
@@ -321,38 +312,38 @@ msgstr "वर्णन:"
 msgid "Site:"
 msgstr "स्थान:"
 
-#: ../data/ui/podcast-feed-properties.ui.h:3
-#: ../data/ui/podcast-properties.ui.h:2 ../data/ui/song-info.ui.h:1
+#: ../data/ui/podcast-feed-properties.ui.h:2
+#: ../data/ui/podcast-properties.ui.h:1 ../data/ui/song-info.ui.h:1
 #: ../plugins/ipod/ipod-info.ui.h:5
 #: ../plugins/iradio/station-properties.ui.h:1
 msgid "Basic"
 msgstr "मुलभूत"
 
-#: ../data/ui/podcast-feed-properties.ui.h:6
-#: ../data/ui/podcast-properties.ui.h:6 ../data/ui/song-info.ui.h:4
+#: ../data/ui/podcast-feed-properties.ui.h:5
+#: ../data/ui/podcast-properties.ui.h:5 ../data/ui/song-info.ui.h:4
 #: ../plugins/iradio/station-properties.ui.h:3
 msgid "Details"
 msgstr "तपशील"
 
-#: ../data/ui/podcast-feed-properties.ui.h:7
+#: ../data/ui/podcast-feed-properties.ui.h:6
 msgid "Language:"
 msgstr "भाषा:"
 
-#: ../data/ui/podcast-feed-properties.ui.h:8
+#: ../data/ui/podcast-feed-properties.ui.h:7
 msgid "Last episode:"
 msgstr "शेवटची मालिका:"
 
-#: ../data/ui/podcast-feed-properties.ui.h:9
+#: ../data/ui/podcast-feed-properties.ui.h:8
 msgid "Last updated:"
 msgstr "शेवटी अद्ययावत केलेले:"
 
-#: ../data/ui/podcast-feed-properties.ui.h:10
-#: ../data/ui/podcast-properties.ui.h:12
+#: ../data/ui/podcast-feed-properties.ui.h:9
+#: ../data/ui/podcast-properties.ui.h:11
 msgid "Source:"
 msgstr "स्त्रोत:"
 
-#: ../data/ui/podcast-feed-properties.ui.h:11
-#: ../data/ui/podcast-properties.ui.h:13
+#: ../data/ui/podcast-feed-properties.ui.h:10
+#: ../data/ui/podcast-properties.ui.h:12
 msgid "Title:"
 msgstr "शिर्षक:"
 
@@ -388,38 +379,38 @@ msgstr "पॉडकास्ट करीता फोल्डर नीवड
 msgid "_Download location:"
 msgstr "डाऊनलोड ठिकाण (_D):"
 
-#: ../data/ui/podcast-properties.ui.h:3 ../data/ui/song-info.ui.h:2
+#: ../data/ui/podcast-properties.ui.h:2 ../data/ui/song-info.ui.h:2
 #: ../plugins/iradio/station-properties.ui.h:2
 msgid "Bitrate:"
 msgstr "बिट दर:"
 
-#: ../data/ui/podcast-properties.ui.h:4
+#: ../data/ui/podcast-properties.ui.h:3
 msgid "Date:"
 msgstr "दिनांक:"
 
-#: ../data/ui/podcast-properties.ui.h:7
+#: ../data/ui/podcast-properties.ui.h:6
 msgid "Download location:"
 msgstr "डाऊनलोड ठिकाण:"
 
-#: ../data/ui/podcast-properties.ui.h:8 ../data/ui/song-info.ui.h:5
+#: ../data/ui/podcast-properties.ui.h:7 ../data/ui/song-info.ui.h:5
 msgid "Duration:"
 msgstr "वेळ:"
 
-#: ../data/ui/podcast-properties.ui.h:9
+#: ../data/ui/podcast-properties.ui.h:8
 msgid "Feed:"
 msgstr "फीड:"
 
-#: ../data/ui/podcast-properties.ui.h:10 ../data/ui/song-info.ui.h:9
+#: ../data/ui/podcast-properties.ui.h:9 ../data/ui/song-info.ui.h:9
 #: ../plugins/iradio/station-properties.ui.h:6
 msgid "Last played:"
 msgstr "शेवटी चालविलेले:"
 
-#: ../data/ui/podcast-properties.ui.h:11 ../data/ui/song-info.ui.h:11
+#: ../data/ui/podcast-properties.ui.h:10 ../data/ui/song-info.ui.h:11
 #: ../plugins/iradio/station-properties.ui.h:7
 msgid "Play count:"
 msgstr "चालवा प्रमाण:"
 
-#: ../data/ui/podcast-properties.ui.h:14 ../data/ui/song-info-multiple.ui.h:5
+#: ../data/ui/podcast-properties.ui.h:13 ../data/ui/song-info-multiple.ui.h:5
 #: ../data/ui/song-info.ui.h:16 ../plugins/iradio/station-properties.ui.h:9
 msgid "_Rating:"
 msgstr "गुणोत्तर (_R):"
@@ -488,9 +479,9 @@ msgstr "अलिकडील चालवलेले"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:207
-#: ../plugins/status-icon/rb-status-icon-plugin.c:61
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1522 ../shell/rb-shell.c:1032
-#: ../shell/rb-shell.c:1984
+#: ../plugins/status-icon/rb-status-icon-plugin.c:60
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1522 ../shell/rb-shell.c:1037
+#: ../shell/rb-shell.c:2006
 msgid "Music Player"
 msgstr "संगीत वादक"
 
@@ -632,15 +623,15 @@ msgstr "%b %d %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:552
 #: ../plugins/mtpdevice/rb-mtp-source.c:924
 #: ../plugins/mtpdevice/rb-mtp-source.c:1015
-#: ../plugins/status-icon/rb-status-icon-plugin.c:707
+#: ../plugins/status-icon/rb-status-icon-plugin.c:706
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
 #: ../podcast/rb-podcast-manager.c:1873
 #: ../podcast/rb-podcast-properties-dialog.c:483
 #: ../podcast/rb-podcast-properties-dialog.c:535
 #: ../remote/dbus/rb-client.c:140 ../rhythmdb/rhythmdb-tree.c:1287
 #: ../rhythmdb/rhythmdb-tree.c:1291 ../rhythmdb/rhythmdb-tree.c:1295
-#: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb.c:1773
-#: ../shell/rb-shell-player.c:1678 ../sources/rb-podcast-source.c:1657
+#: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb.c:1813
+#: ../shell/rb-shell-player.c:1670 ../sources/rb-podcast-source.c:1657
 #: ../widgets/rb-entry-view.c:1041 ../widgets/rb-entry-view.c:1063
 #: ../widgets/rb-entry-view.c:1472 ../widgets/rb-entry-view.c:1484
 #: ../widgets/rb-entry-view.c:1496 ../widgets/rb-song-info.c:882
@@ -701,77 +692,56 @@ msgstr "%d:%02d, %d:%02d पैकी"
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d, %d:%02d:%02d पैकी"
 
-#: ../metadata/rb-metadata-dbus-client.c:324
+#: ../metadata/rb-metadata-dbus-client.c:327
 #, c-format
 msgid "Internal GStreamer problem; file a bug"
 msgstr "आंतरीक GStreamer अडचण; बग फाइल करा"
 
-#: ../metadata/rb-metadata-dbus-client.c:342
-#: ../metadata/rb-metadata-dbus-client.c:403
-#: ../metadata/rb-metadata-dbus-client.c:408
-#: ../metadata/rb-metadata-dbus-client.c:428
-#: ../metadata/rb-metadata-dbus-client.c:438
-#: ../metadata/rb-metadata-dbus-client.c:448
-#: ../metadata/rb-metadata-dbus-client.c:467
-#: ../metadata/rb-metadata-dbus-client.c:479
-#: ../metadata/rb-metadata-dbus-client.c:710
-#: ../metadata/rb-metadata-dbus-client.c:720
+#: ../metadata/rb-metadata-dbus-client.c:345
+#: ../metadata/rb-metadata-dbus-client.c:381
+#: ../metadata/rb-metadata-dbus-client.c:726
+#: ../metadata/rb-metadata-dbus-client.c:736
 #, c-format
 msgid "D-BUS communication error"
 msgstr "D-BUS संवाद त्रुटी"
 
-#: ../metadata/rb-metadata-gst.c:642
-#, c-format
-msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
-msgstr "\"%s\" फाइल डिकोड करण्याकरीता GStreamer प्लगइन आढळले नाही"
-
-#: ../metadata/rb-metadata-gst.c:645
-#, c-format
-msgid "The file contains a stream of type %s, which is not decodable"
-msgstr "फाइल अंतर्गत %s प्रकारचे स्ट्रीम समाविष्टीत आहे, जे डिकोडजोगी नाही"
-
-#: ../metadata/rb-metadata-gst.c:848 ../metadata/rb-metadata-gst.c:1422
+#: ../metadata/rb-metadata-gst.c:517 ../metadata/rb-metadata-gst.c:1044
 #: ../plugins/cd-recorder/rb-recorder-gst.c:507
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "%s घटक बनवण्यास अपयशी; तुमचे प्रतिष्ठापन तपासा"
 
-#: ../metadata/rb-metadata-gst.c:1055
+#: ../metadata/rb-metadata-gst.c:735
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "स्त्रोत घटक बनवण्यास अपयशी; तुमचे प्रतिष्ठापन तपासा"
 
-#: ../metadata/rb-metadata-gst.c:1118
+#: ../metadata/rb-metadata-gst.c:797
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "GStreamer त्रुटी: स्थर बदलवण्यास अपयशी"
 
-#: ../metadata/rb-metadata-gst.c:1208
-#, c-format
-msgid "Empty file"
-msgstr "रिकामी फाइल"
-
-#: ../metadata/rb-metadata-gst.c:1216
+#: ../metadata/rb-metadata-gst.c:848
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "फाइलचे MIME प्रकार ओळखले जाऊ शकले नाही"
 
-#: ../metadata/rb-metadata-gst.c:1350
+#: ../metadata/rb-metadata-gst.c:972
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "असमर्थीत फाइल प्रकार: %s"
 
-#: ../metadata/rb-metadata-gst.c:1359
+#: ../metadata/rb-metadata-gst.c:981
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "टॅग-लेखन घटक बनवणे अशक्य"
 
-#: ../metadata/rb-metadata-gst.c:1374
+#: ../metadata/rb-metadata-gst.c:996
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "पाइपलाइनला NULL निश्चित करतेवेळी वेळसमाप्ती"
 
-#: ../metadata/rb-metadata-gst.c:1398
+#: ../metadata/rb-metadata-gst.c:1020
 #, c-format
 msgid "File corrupted during write"
 msgstr "लेखनवेळी फाइल सदोषीत झाली"
@@ -933,63 +903,59 @@ msgid "Submits song information to Last.fm and plays Last.fm radio streams"
 msgstr "गाण्याची माहिती Last.fm करीता सादर करतो व Last.fm रेडिओ स्ट्रीम चालवतो"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:1
-msgid "0"
-msgstr "0"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:2
 msgid "Account Login"
 msgstr "खाती प्रवेश"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:3
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:2
 msgid "Disabled"
 msgstr "अकार्यान्वीत"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:4
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:3
 msgid "Join the Rhythmbox group"
 msgstr "Rhythmbox गटशी सहभागी व्हा"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:4
 msgid "Last submission time:"
 msgstr "शेवटचे सादरीकरण वेळ:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:6
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1010
 #: ../plugins/iradio/rb-station-properties-dialog.c:502
-#: ../rhythmdb/rhythmdb.c:3601 ../widgets/rb-entry-view.c:989
+#: ../rhythmdb/rhythmdb.c:3668 ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1531 ../widgets/rb-entry-view.c:1544
 #: ../widgets/rb-song-info.c:1345
 msgid "Never"
 msgstr "कधिच नाही"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:7
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:6
 msgid "New to Last.fm?"
 msgstr "Last.fm करीता नवीन?"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:8
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:7
 msgid "Queued tracks:"
 msgstr "रांगेतील ट्रॅक:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:9
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:8
 msgid "Sign up for an account"
 msgstr "खाती करीता अर्जा भरा"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:10
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:9
 msgid "Statistics"
 msgstr "आकडेवारी"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:11
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:10
 msgid "Status:"
 msgstr "स्थिती:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:12
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:11
 msgid "Tracks submitted:"
 msgstr "सादर केलेले ट्रॅक:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:13
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:12
 msgid "_Password:"
 msgstr "परवलीचा शब्द (_P):"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:14
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:13
 msgid "_Username:"
 msgstr "वापरकर्ता नाव (_U):"
 
@@ -1011,7 +977,6 @@ msgid "Request failed"
 msgstr "विनंती अपयशी"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1042
-#| msgid "Incorrect password"
 msgid "Incorrect username or password"
 msgstr "अयोग्य वापरकर्ता किंवा परवलीचा शब्द"
 
@@ -1362,8 +1327,9 @@ msgstr "ड्राइव्ह %s रेकॉर्डर नाही"
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1018
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1203
 #, c-format
-msgid "No writable drives found."
-msgstr "लेखनजोगी ड्राइव्ह आढळले नाही."
+#| msgid "No writable drives found."
+msgid "No writable drives found"
+msgstr "लेखनजोगी ड्राइव्ह आढळले नाही"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1153
 #, c-format
@@ -1372,8 +1338,9 @@ msgstr "फाइल करीता ट्रॅक टाइम प्रा�
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1212
 #, c-format
-msgid "Could not determine audio track durations."
-msgstr "ऑडिओ ट्रॅक कालावधी ओळखण्यास अपयशी."
+#| msgid "Could not determine audio track durations."
+msgid "Could not determine audio track durations"
+msgstr "ऑडिओ ट्रॅक कालावधी ओळखण्यास अपयशी"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1254
 #, c-format
@@ -1623,7 +1590,9 @@ msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
 "audio CD.  If the destination medium is larger than a standard audio CD "
 "please insert it in the drive and try again."
-msgstr "ही वादकयादी %s मिनीटं लांब आहे.  यामुळे मानक ऑडिओ CD ची लांबी वाढते.  लक्ष्य माध्यम मानक आडिओ CD पेक्षा मोठे असल्यास कृपया ड्राइव्ह मध्ये अंतर्भूत करा व पुन्हा प्रयत्न करा."
+msgstr ""
+"ही वादकयादी %s मिनीटं लांब आहे.  यामुळे मानक ऑडिओ CD ची लांबी वाढते.  लक्ष्य माध्यम "
+"मानक आडिओ CD पेक्षा मोठे असल्यास कृपया ड्राइव्ह मध्ये अंतर्भूत करा व पुन्हा प्रयत्न करा."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1604
 msgid "Playlist too long"
@@ -1668,7 +1637,10 @@ msgstr "एकापेक्षा जास्त प्रत बनवा (_
 msgid ""
 "Adds support for playing media from and sending media to DLNA/UPnP network "
 "devices, and enables Rhythmbox to be controlled by a DLNA/UPnP ControlPoint"
-msgstr "DLNA/UPnP जाळं साधन करीता चालवण्याजोगी मिडीया प्राप्त करणे व पाठवणे याकरीता समर्थन समावेष करतो, व Rhythmbox ला DLNA/UPnP ControlPoint द्वारे नियंत्रीत करण्यास कार्यान्वीत करतो"
+msgstr ""
+"DLNA/UPnP जाळं साधन करीता चालवण्याजोगी मिडीया प्राप्त करणे व पाठवणे याकरीता समर्थन "
+"समावेष करतो, व Rhythmbox ला DLNA/UPnP ControlPoint द्वारे नियंत्रीत करण्यास "
+"कार्यान्वीत करतो"
 
 #: ../plugins/coherence/coherence.rb-plugin.in.h:2
 msgid "DLNA/UPnP sharing and control support"
@@ -1869,7 +1841,6 @@ msgid "Importing (%d/%d)"
 msgstr "(%d/%d) आयात करत आहे"
 
 #: ../plugins/im-status/im-status.rb-plugin.in.h:1
-#| msgid "Status"
 msgid "IM Status"
 msgstr "IM स्थिती"
 
@@ -1984,9 +1955,7 @@ msgstr "iPod गुणधर्म"
 msgid ""
 "<span size=\"x-large\" weight=\"bold\">Do you want to initialize your iPod?</"
 "span>"
-msgstr ""
-"<span size=\"x-large\" weight=\"bold\">तुम्हाला तुमचे iPod सुरू करायचे?</"
-"span>"
+msgstr "<span size=\"x-large\" weight=\"bold\">तुम्हाला तुमचे iPod सुरू करायचे?</span>"
 
 #: ../plugins/ipod/ipod-init.ui.h:2
 msgid ""
@@ -1996,11 +1965,11 @@ msgid ""
 "initialize the iPod, please fill in the information below. If the device is "
 "not an iPod, or you do not wish to initialize it, please click cancel."
 msgstr ""
-"Rhythmbox ला साधन आढळले आहे जे बहुदा विना प्रारंभीत किंवा "
-"सदोषीत iPod आहे. त्याला Rhythmbox द्वारे वापरण्यापूर्वी प्रारंभ करायला हवे, परंतु यामुळे "
-"आधिपासून उपलब्ध कुठल्याही गाण्याचा मेटाडेटा नष्ट होईल. Rhythmbox ने "
-"iPod ला प्रारंभ करण्यासाठी, कृपया खालिल माहिती भरा. साधन "
-"iPod नसल्यास, किंवा तुम्हाला त्यांस प्रारंभ करायचे नसल्यावर, कृपया रद्द करा क्लिक करा."
+"Rhythmbox ला साधन आढळले आहे जे बहुदा विना प्रारंभीत किंवा सदोषीत iPod आहे. त्याला "
+"Rhythmbox द्वारे वापरण्यापूर्वी प्रारंभ करायला हवे, परंतु यामुळे आधिपासून उपलब्ध कुठल्याही "
+"गाण्याचा मेटाडेटा नष्ट होईल. Rhythmbox ने iPod ला प्रारंभ करण्यासाठी, कृपया खालिल "
+"माहिती भरा. साधन iPod नसल्यास, किंवा तुम्हाला त्यांस प्रारंभ करायचे नसल्यावर, कृपया रद्द "
+"करा क्लिक करा."
 
 #: ../plugins/ipod/ipod-init.ui.h:3
 msgid "_Initialize"
@@ -2118,7 +2087,9 @@ msgstr "http://www.jamendo.com/"
 msgid ""
 "     * A legal framework protecting the artists (thanks to the Creative "
 "Commons licenses)."
-msgstr "     * कलाकारांना सुरक्षा प्रदान करणारी कायदेशीर मांडणी (Creative Commons परवानाचे धन्यवाद)."
+msgstr ""
+"     * कलाकारांना सुरक्षा प्रदान करणारी कायदेशीर मांडणी (Creative Commons परवानाचे "
+"धन्यवाद)."
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:3
 msgid ""
@@ -2126,8 +2097,7 @@ msgid ""
 "listeners discover new artists based on their tastes\n"
 "       and on other criteria such as their location."
 msgstr ""
-"     * iRATE वर आधरीत एक सुसज्ज संगीत सूजाव ज्यामुळे "
-"श्रोता त्यांच्या पसंती नुरूप\n"
+"     * iRATE वर आधरीत एक सुसज्ज संगीत सूजाव ज्यामुळे श्रोता त्यांच्या पसंती नुरूप\n"
 "       व ठिकाणाच्या आधारे नवीन कलाकार शोधू शकतात."
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:5
@@ -2150,7 +2120,9 @@ msgstr "<b>Jamendo</b>"
 msgid ""
 "Jamendo is a new model for artists to promote, publish, and be paid for "
 "their music."
-msgstr "Jamendo कलाकारांना संगीत जाहिरात करण्यास, तेसच प्रकाशीत, व संगीतच्या मोबदल्यात पैश्यांची भरपाई करीता एक नवीन प्रारूप आहे."
+msgstr ""
+"Jamendo कलाकारांना संगीत जाहिरात करण्यास, तेसच प्रकाशीत, व संगीतच्या मोबदल्यात "
+"पैश्यांची भरपाई करीता एक नवीन प्रारूप आहे."
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:10
 msgid "Jamendo is the only platform that joins together :"
@@ -2163,7 +2135,8 @@ msgid ""
 "Albums are democratically rated based on the visitors&#x2019; reviews.\n"
 "If they fancy an artist they can support him by making a donation."
 msgstr ""
-"Jamendo वापरकर्ते अल्बम शोधू व सहभागीय करू शकतात, परंतु त्यांस पुनरावलोकन किंवा फोरम वर चर्चा देखिल करू शकता.\n"
+"Jamendo वापरकर्ते अल्बम शोधू व सहभागीय करू शकतात, परंतु त्यांस पुनरावलोकन किंवा फोरम वर "
+"चर्चा देखिल करू शकता.\n"
 "visitors&#x2019; पुनरावलोकनच्या आधारावर अल्बमचे स्वतंत्रपणे गुणोत्तर केले जाते.\n"
 "कलाकारास दान स्वरूप भेट करून समर्थन पुरवले जाऊ शकते."
 
@@ -2176,11 +2149,10 @@ msgid ""
 "It's a \"Some rights reserved\" agreement, perfectly suited for the new "
 "century."
 msgstr ""
-"Jamendo वर, कलाकार Creative Commons "
-"परवाना अंतर्गत स्वत:चे संगीत वितरीत करू शकतात.\n"
+"Jamendo वर, कलाकार Creative Commons परवाना अंतर्गत स्वत:चे संगीत वितरीत करू "
+"शकतात.\n"
 "म्हणजेच, तुम्ही संगीत मोफतपणे डाऊनलोड, रिमीक्स् व सहभागीय करू शकता.\n"
-"\"Some rights reserved\" करार, नवीन "
-"शतक करीता योग्यरित्या लागू होते."
+"\"Some rights reserved\" करार, नवीन शतक करीता योग्यरित्या लागू होते."
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:17
 msgid ""
@@ -2189,9 +2161,9 @@ msgid ""
 "Peer-to-Peer networks such as BitTorrent or eMule to legally distribute "
 "albums at near-zero cost."
 msgstr ""
-"या नवीन नियम मुळे Jamendo नवीन शक्तिशाली डिजीटल "
-"वितरण प्रणाली जसे\n"
-"की Peer-to-Peer जाळं अंतर्गत BitTorrent किंवा eMule चा वापर कायदेशीरपणे शून्य-जवळील किंमतीचे अल्बम वितरीत करण्याकरीता करतो."
+"या नवीन नियम मुळे Jamendo नवीन शक्तिशाली डिजीटल वितरण प्रणाली जसे\n"
+"की Peer-to-Peer जाळं अंतर्गत BitTorrent किंवा eMule चा वापर कायदेशीरपणे शून्य-जवळील "
+"किंमतीचे अल्बम वितरीत करण्याकरीता करतो."
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:19
 msgid "You can find more information at http://www.jamendo.com/"
@@ -2329,7 +2301,7 @@ msgid "_Save"
 msgstr "साठवा (_S)"
 
 #: ../plugins/lyrics/lyrics/__init__.py:182
-#: ../plugins/lyrics/lyrics/__init__.py:195 ../shell/rb-shell.c:388
+#: ../plugins/lyrics/lyrics/__init__.py:195 ../shell/rb-shell.c:393
 msgid "_Edit"
 msgstr "संपादीत करा (_E)"
 
@@ -2408,8 +2380,8 @@ msgid ""
 "    * Extensive biographical info about each musician, and artist photo -- "
 "feel a strong connection to the artist"
 msgstr ""
-"    * प्रत्येक संगीतकार, व कलाकाराच्या फोटोची आत्मकथा माहिती -- "
-"यामुळे कलाकाराला अधिक समझण्यास मदत प्राप्त होते"
+"    * प्रत्येक संगीतकार, व कलाकाराच्या फोटोची आत्मकथा माहिती -- यामुळे कलाकाराला "
+"अधिक समझण्यास मदत प्राप्त होते"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:7
 msgid "    * Free listening of all songs"
@@ -2420,26 +2392,32 @@ msgid ""
 "    * Full color, high quality cover art PDF available for most albums - "
 "easy to print"
 msgstr ""
-"    * बहुतांश अल्बम करीता संपूर्ण रंग, उच्च दर्जा कवर आर्ट PDF उपलब्ध आहे - "
-"छपाई करीता सोपे"
+"    * बहुतांश अल्बम करीता संपूर्ण रंग, उच्च दर्जा कवर आर्ट PDF उपलब्ध आहे - छपाई करीता "
+"सोपे"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:9
 msgid ""
 "    * Low pressure environment - nothing flashing, no audio ads while "
 "listening to albums"
-msgstr "    * कमी दबावाचे वातावरण - कुठलिही फ्लॅशींग नाही, अल्बमला ऐकतेवेळी ऑडिओ जाहिरात चालवले जात नाही"
+msgstr ""
+"    * कमी दबावाचे वातावरण - कुठलिही फ्लॅशींग नाही, अल्बमला ऐकतेवेळी ऑडिओ जाहिरात "
+"चालवले जात नाही"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:10
 msgid ""
 "    * Music selection is unique to Magnatune, unlike most on-line stores "
 "that have more-or-less the same (gigantic) selection\n"
-msgstr "    * बहुतांश ऑन-लाइन स्टोर नुरूप ज्यांकडे जास्त-किंवा-कमी समाननुरूप (विशाल) नीवड उपलब्ध राहते, त्यापेक्षा भरपुर वेगळे Magnatune ची संगीत नीवड असते\n"
+msgstr ""
+"    * बहुतांश ऑन-लाइन स्टोर नुरूप ज्यांकडे जास्त-किंवा-कमी समाननुरूप (विशाल) नीवड उपलब्ध "
+"राहते, त्यापेक्षा भरपुर वेगळे Magnatune ची संगीत नीवड असते\n"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:12
 msgid ""
 "    * No copy protection on the music (DRM) which allows playing music on "
 "any device (unlike iTunes/MSN/etc)"
-msgstr "    * संगीत (DRM) वर कुठलिही सर्वहक्काधिकार सुरक्षा लागू होत नाही ज्यामुले कुठल्याही साधन वर संगीत चालवणे स्वीकार्ले जाते (iTunes/MSN/etc पेक्षा वेगळे)"
+msgstr ""
+"    * संगीत (DRM) वर कुठलिही सर्वहक्काधिकार सुरक्षा लागू होत नाही ज्यामुले कुठल्याही "
+"साधन वर संगीत चालवणे स्वीकार्ले जाते (iTunes/MSN/etc पेक्षा वेगळे)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:13
 msgid "    * No need to \"register\" to listen or buy"
@@ -2449,7 +2427,9 @@ msgstr "    * ऐकण्यासाठी किंवा विकत घे
 msgid ""
 "    * Not part of the \"evil\" major label machine - for those that hate the "
 "music biz and want to help topple it"
-msgstr "    * \"evil\" मुख्य लेबल मशीनचे भाग नाही - ज्यांना संगीत व्यापरीकरण आवडत नाही व यात बदल आणू इच्छितात"
+msgstr ""
+"    * \"evil\" मुख्य लेबल मशीनचे भाग नाही - ज्यांना संगीत व्यापरीकरण आवडत नाही व यात "
+"बदल आणू इच्छितात"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:15
 msgid "    * Not venture-capital backed big business"
@@ -2459,21 +2439,25 @@ msgstr "    * venture-capital बॅकऐन्ड मोठे बिजने
 msgid ""
 "    * Our genres are hard to find in record stores and not on radio (though "
 "do appear on college radio)"
-msgstr "    * आमच्या श्रेणीतील संगीत, रेकॉर्ड स्टोर मध्ये आढळणे कठिण आहे परंतु रेडिओवर आढळले जातात (कॉलेज रेडिओवर नक्की आढळले जातात)"
+msgstr ""
+"    * आमच्या श्रेणीतील संगीत, रेकॉर्ड स्टोर मध्ये आढळणे कठिण आहे परंतु रेडिओवर आढळले जातात "
+"(कॉलेज रेडिओवर नक्की आढळले जातात)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:17
 msgid ""
 "    * Perfect quality downloads (CD copy) are available when you download "
 "(not inferior quality sound)"
-msgstr "    * डाऊनलोड करीता योग्य दर्जा डाऊनलोड (CD प्रत) उपलब्ध आहे (कमी दर्जाचा आवाज आढळणार नाही)"
+msgstr ""
+"    * डाऊनलोड करीता योग्य दर्जा डाऊनलोड (CD प्रत) उपलब्ध आहे (कमी दर्जाचा आवाज "
+"आढळणार नाही)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:18
 msgid ""
 "    * Radio stations and \"genre mix\" playlists allow background listening "
 "- can do work while listening to our music"
 msgstr ""
-"    * रेडिओ स्टेशन व \"genre mix\" वादकयादी तुम्हाला पार्श्वभूमी ऐकण्यास परवानगी देते "
-"- संगीत ऐकत तुम्ही कामही करू शकता"
+"    * रेडिओ स्टेशन व \"genre mix\" वादकयादी तुम्हाला पार्श्वभूमी ऐकण्यास परवानगी देते - "
+"संगीत ऐकत तुम्ही कामही करू शकता"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:19
 msgid "    * Smaller selection means easier to find good music"
@@ -2501,7 +2485,9 @@ msgstr "<b>Magnatune ऑनलाइन संगीत स्टोर</b>"
 msgid ""
 "Magnatune is an online record label that is not evil. Some of their key "
 "attributes are:\n"
-msgstr "Magnatune हे ऑनलाइन रेकॉर्ड लेबल आहे जे कूटरिती नाही. काहिक मुख्य गुणधर्म खालिल रित्या आहे:\n"
+msgstr ""
+"Magnatune हे ऑनलाइन रेकॉर्ड लेबल आहे जे कूटरिती नाही. काहिक मुख्य गुणधर्म खालिल रित्या "
+"आहे:\n"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:26
 msgid "You can find more information at http://www.magnatune.com/"
@@ -2586,7 +2572,9 @@ msgstr "128K MP3"
 msgid ""
 "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
 "expiration date listed.</span>"
-msgstr "<span weight=\"bold\" foreground=\"red\">तुमचे क्रेडिट कार्ड वेळसमाप्ती दिनांक पेक्षा जुणे आहे.</span>"
+msgstr ""
+"<span weight=\"bold\" foreground=\"red\">तुमचे क्रेडिट कार्ड वेळसमाप्ती दिनांक पेक्षा "
+"जुणे आहे.</span>"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:17
 #: ../plugins/magnatune/magnatune-purchase.ui.h:16
@@ -2784,7 +2772,9 @@ msgstr "माझ्या क्रेडिट कार्डची तपश
 msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
 "online music store"
-msgstr "Magnatune ऑनलाइन संगीत स्टोर पासून संगीत वाजवणे व वीकत घेण्याकरीता Rhythmbox मध्ये समर्थन समावेष करतो"
+msgstr ""
+"Magnatune ऑनलाइन संगीत स्टोर पासून संगीत वाजवणे व वीकत घेण्याकरीता Rhythmbox मध्ये "
+"समर्थन समावेष करतो"
 
 #: ../plugins/magnatune/magnatune.rb-plugin.in.h:2
 msgid "Magnatune Store"
@@ -2914,7 +2904,6 @@ msgstr "MTP साधन करीता समर्थन (अंतर्भ�
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:174
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:216
 #, c-format
-#| msgid "Failed to open output device: %s"
 msgid "Unable to copy file from MTP device: %s"
 msgstr "MTP साधन पासून फाइलची प्रत बनवण्यास अपयशी: %s"
 
@@ -2925,7 +2914,6 @@ msgstr "%s मध्ये अतिरीक्त जागा उपलब्
 
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:202
 #, c-format
-#| msgid "Failed to open output device: %s"
 msgid "Unable to open temporary file: %s"
 msgstr "तात्पुर्ती फाइल उघडण्यास अपयशी: %s"
 
@@ -2987,7 +2975,10 @@ msgid ""
 "After you press OK, Rhythmbox will wait until you connect to it with winpdb "
 "or rpdb2. If you have not set a debugger password in GConf, it will use the "
 "default password ('rhythmbox')."
-msgstr "OK दाबल्यानंतर, winpdb किंवा rpdb2 शी जुळवणी स्थापीत करेपर्यंत Rhythmbox प्रतिक्षा करतो. GConf मध्ये डिबगर परवलीचा शब्द निश्चित न केल्यास, मुलभूत परवलीचा शब्द ('rhythmbox') वापरला जातो."
+msgstr ""
+"OK दाबल्यानंतर, winpdb किंवा rpdb2 शी जुळवणी स्थापीत करेपर्यंत Rhythmbox प्रतिक्षा "
+"करतो. GConf मध्ये डिबगर परवलीचा शब्द निश्चित न केल्यास, मुलभूत परवलीचा शब्द "
+"('rhythmbox') वापरला जातो."
 
 #. ex:noet:ts=8:
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:1
@@ -3053,60 +3044,58 @@ msgstr "मार्गनिर्देशन"
 msgid "The orientation of the tray."
 msgstr "ट्रेचे दिशानिर्देशन."
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:137
+#: ../plugins/status-icon/rb-status-icon-plugin.c:136
 msgid "_Close"
 msgstr "बंद करा (_C)"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:138
+#: ../plugins/status-icon/rb-status-icon-plugin.c:137
 msgid "Hide the music player window"
 msgstr "संगीत वादक चौकट लपवा"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:144
+#: ../plugins/status-icon/rb-status-icon-plugin.c:143
 msgid "_Show Music Player"
 msgstr "संगीत वादक दाखवा (_S)"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:145
+#: ../plugins/status-icon/rb-status-icon-plugin.c:144
 msgid "Choose music to play"
 msgstr "वाजवण्याकरीता संगीत नीवडा"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:147
+#: ../plugins/status-icon/rb-status-icon-plugin.c:146
 msgid "Show N_otifications"
 msgstr "सूचना दाखवा (_o)"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:148
+#: ../plugins/status-icon/rb-status-icon-plugin.c:147
 msgid "Show notifications of song changes and other events"
 msgstr "गाण्याचे बदल व इतर घटनांची सूचना दाखवा"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:407
-#| msgid "_Next"
+#: ../plugins/status-icon/rb-status-icon-plugin.c:406
 msgid "Next"
 msgstr "पुढचे"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:558
+#: ../plugins/status-icon/rb-status-icon-plugin.c:557
 #: ../remote/dbus/rb-client.c:452 ../remote/dbus/rb-client.c:478
 msgid "Not playing"
 msgstr "चालवत नाही"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:561
+#: ../plugins/status-icon/rb-status-icon-plugin.c:560
 #, c-format
 msgid "Paused, %s"
 msgstr "स्तब्ध, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:650
+#: ../plugins/status-icon/rb-status-icon-plugin.c:649
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "<i>%s</i> नुरूप"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:671
+#: ../plugins/status-icon/rb-status-icon-plugin.c:670
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "<i>%s</i> पासून"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:1
-#| msgid "Status"
 msgid "Status Icon"
 msgstr "स्थिती चिन्ह"
 
@@ -3123,7 +3112,6 @@ msgid "Always visible"
 msgstr "नेहमी दृष्यास्पद"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:3
-#| msgid "Never"
 msgid "Never shown"
 msgstr "कधिच नाही"
 
@@ -3148,12 +3136,10 @@ msgid "Visible with notifications"
 msgstr "सूचना सह दृष्यास्पद"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:9
-#| msgid "Notification"
 msgid "_Notifications"
 msgstr "सूचना (_N)"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:10
-#| msgid "Status:"
 msgid "_Status Icon:"
 msgstr "स्थिती चिन्ह (_S):"
 
@@ -3283,7 +3269,9 @@ msgstr "URL आधिपासूनच समावेष केले"
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
-msgstr "URL \"%s\" आधिपासूनच रेडिओ स्टेशन नुरूप समावेष केले आहे. हे पॉडकास्ट फीड असल्यास, कृपया रेडिओ स्टेशन काढूण टाका."
+msgstr ""
+"URL \"%s\" आधिपासूनच रेडिओ स्टेशन नुरूप समावेष केले आहे. हे पॉडकास्ट फीड असल्यास, कृपया "
+"रेडिओ स्टेशन काढूण टाका."
 
 #: ../podcast/rb-podcast-manager.c:1018
 #, c-format
@@ -3291,7 +3279,9 @@ msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
-msgstr "URL '%s' podcast फीड नुरूप आढळला नाही. URL चुकीचा असू शकतो, किंवा फीड दोषीत असू शकते. Rhythmbox ने याचा वापर करायला हवा?"
+msgstr ""
+"URL '%s' podcast फीड नुरूप आढळला नाही. URL चुकीचा असू शकतो, किंवा फीड दोषीत असू "
+"शकते. Rhythmbox ने याचा वापर करायला हवा?"
 
 #: ../podcast/rb-podcast-manager.c:1129
 msgid "Podcast"
@@ -3438,10 +3428,10 @@ msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
 "Rhythmbox cannot read the database."
 msgstr ""
-"कोष Rhythmbox च्या शेवटच्या आवृत्ती द्वारे बनवले गेले.  "
-"Rhythmbox ची ही आवृत्ती कोष वाचू शकत नाही."
+"कोष Rhythmbox च्या शेवटच्या आवृत्ती द्वारे बनवले गेले.  Rhythmbox ची ही आवृत्ती कोष वाचू "
+"शकत नाही."
 
-#: ../rhythmdb/rhythmdb.c:724
+#: ../rhythmdb/rhythmdb.c:751
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "%s करीता प्रवेश शक्य नाही: %s"
@@ -3451,7 +3441,7 @@ msgstr "%s करीता प्रवेश शक्य नाही: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1654
+#: ../rhythmdb/rhythmdb.c:1694
 msgid "The Beatles"
 msgstr "The Beatles"
 
@@ -3459,7 +3449,7 @@ msgstr "The Beatles"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1660
+#: ../rhythmdb/rhythmdb.c:1700
 msgid "Help!"
 msgstr "मदत!"
 
@@ -3467,33 +3457,38 @@ msgstr "मदत!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1666
+#: ../rhythmdb/rhythmdb.c:1706
 msgid "Ticket To Ride"
 msgstr "Ticket To Ride"
 
-#: ../rhythmdb/rhythmdb.c:2221
+#: ../rhythmdb/rhythmdb.c:2255
 msgid "invalid unicode in error message"
 msgstr "त्रुटी संदेश मध्ये अवैध यूनिकोड"
 
-#: ../rhythmdb/rhythmdb.c:3086
+#: ../rhythmdb/rhythmdb.c:2313
+#, c-format
+msgid "Empty file"
+msgstr "रिकामी फाइल"
+
+#: ../rhythmdb/rhythmdb.c:3153
 msgid "Could not load the music database:"
 msgstr "संगीत कोष दाखल करण्यास अशक्य:"
 
-#: ../rhythmdb/rhythmdb.c:4454
+#: ../rhythmdb/rhythmdb.c:4521
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld मिनिट"
 msgstr[1] "%ld मिनिट"
 
-#: ../rhythmdb/rhythmdb.c:4455
+#: ../rhythmdb/rhythmdb.c:4522
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld तास"
 msgstr[1] "%ld तास"
 
-#: ../rhythmdb/rhythmdb.c:4456
+#: ../rhythmdb/rhythmdb.c:4523
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3501,7 +3496,7 @@ msgstr[0] "%ld दिवस"
 msgstr[1] "%ld दिवसं"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4462
+#: ../rhythmdb/rhythmdb.c:4529
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s व %s"
@@ -3509,8 +3504,8 @@ msgstr "%s, %s व %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4468 ../rhythmdb/rhythmdb.c:4476
-#: ../rhythmdb/rhythmdb.c:4487
+#: ../rhythmdb/rhythmdb.c:4535 ../rhythmdb/rhythmdb.c:4543
+#: ../rhythmdb/rhythmdb.c:4554
 #, c-format
 msgid "%s and %s"
 msgstr "%s व %s"
@@ -3803,158 +3798,158 @@ msgstr "गुणधर्म (_o)"
 msgid "Show information on the selected song"
 msgstr "नीवडलेल्या गाण्याविषयी माहिती दाखवा"
 
-#: ../shell/rb-shell-player.c:314
+#: ../shell/rb-shell-player.c:309
 msgid "Pre_vious"
 msgstr "मागील (_v)"
 
-#: ../shell/rb-shell-player.c:315
+#: ../shell/rb-shell-player.c:310
 msgid "Start playing the previous song"
 msgstr "मागील गाणं चालवायला सुरू करा"
 
-#: ../shell/rb-shell-player.c:317
+#: ../shell/rb-shell-player.c:312
 msgid "_Next"
 msgstr "पुढील (_N)"
 
-#: ../shell/rb-shell-player.c:318
+#: ../shell/rb-shell-player.c:313
 msgid "Start playing the next song"
 msgstr "पुढील गाणं चालवायला सुरू करा"
 
-#: ../shell/rb-shell-player.c:320
+#: ../shell/rb-shell-player.c:315
 msgid "_Increase Volume"
 msgstr "ध्वनिमान वाढवा (_I)"
 
-#: ../shell/rb-shell-player.c:321
+#: ../shell/rb-shell-player.c:316
 msgid "Increase playback volume"
 msgstr "प्लेबॅक ध्वनिमान वाढवा"
 
-#: ../shell/rb-shell-player.c:323
+#: ../shell/rb-shell-player.c:318
 msgid "_Decrease Volume"
 msgstr "ध्वनिमान कमी करा (_D)"
 
-#: ../shell/rb-shell-player.c:324
+#: ../shell/rb-shell-player.c:319
 msgid "Decrease playback volume"
 msgstr "प्लेबॅक ध्वनिमान कमी करा"
 
-#: ../shell/rb-shell-player.c:331
+#: ../shell/rb-shell-player.c:326
 msgid "_Play"
 msgstr "चालवा (_P)"
 
-#: ../shell/rb-shell-player.c:332 ../shell/rb-shell-player.c:3740
+#: ../shell/rb-shell-player.c:327 ../shell/rb-shell-player.c:3738
 msgid "Start playback"
 msgstr "प्लेबॅक चालवा"
 
-#: ../shell/rb-shell-player.c:334
+#: ../shell/rb-shell-player.c:329
 msgid "Sh_uffle"
 msgstr "अदलाबदल करा (_u)"
 
-#: ../shell/rb-shell-player.c:335
+#: ../shell/rb-shell-player.c:330
 msgid "Play songs in a random order"
 msgstr "गाणे विनाक्रम नुरूप चालवा"
 
-#: ../shell/rb-shell-player.c:337
+#: ../shell/rb-shell-player.c:332
 msgid "_Repeat"
 msgstr "पुन्हा चालवा (_R)"
 
-#: ../shell/rb-shell-player.c:338
+#: ../shell/rb-shell-player.c:333
 msgid "Play first song again after all songs are played"
 msgstr "सर्व गाणे चालवल्यानंतर प्रथम गाणं पुन्हा चालवा"
 
-#: ../shell/rb-shell-player.c:340
+#: ../shell/rb-shell-player.c:335
 msgid "_Song Position Slider"
 msgstr "गाण्याचे ठिकाण करीता स्लाइडर (_S)"
 
-#: ../shell/rb-shell-player.c:341
+#: ../shell/rb-shell-player.c:336
 msgid "Change the visibility of the song position slider"
 msgstr "गाण्याचे ठिकाण करीता स्लाइडरचे दृष्य बदला"
 
-#: ../shell/rb-shell-player.c:793
+#: ../shell/rb-shell-player.c:788
 msgid "Stream error"
 msgstr "Stream त्रुटी"
 
-#: ../shell/rb-shell-player.c:794
+#: ../shell/rb-shell-player.c:789
 msgid "Unexpected end of stream!"
 msgstr "अनपेक्षीत स्ट्रीमची समाप्ती!"
 
-#: ../shell/rb-shell-player.c:924
+#: ../shell/rb-shell-player.c:919
 msgid "Linear"
 msgstr "सरळ रेषेत"
 
-#: ../shell/rb-shell-player.c:926
+#: ../shell/rb-shell-player.c:921
 msgid "Linear looping"
 msgstr "सरळ रेषेतील लुपींग"
 
-#: ../shell/rb-shell-player.c:928
+#: ../shell/rb-shell-player.c:923
 msgid "Shuffle"
 msgstr "अदलाबदल करा"
 
-#: ../shell/rb-shell-player.c:930
+#: ../shell/rb-shell-player.c:925
 msgid "Random with equal weights"
 msgstr "समान वजनसह विनाक्रमवारी"
 
-#: ../shell/rb-shell-player.c:932
+#: ../shell/rb-shell-player.c:927
 msgid "Random by time since last play"
 msgstr "शेवटच्यावेळी चालवल्यापासून विनाक्रम"
 
-#: ../shell/rb-shell-player.c:934
+#: ../shell/rb-shell-player.c:929
 msgid "Random by rating"
 msgstr "गुणोत्तर नुरुप विनाक्रम"
 
-#: ../shell/rb-shell-player.c:936
+#: ../shell/rb-shell-player.c:931
 msgid "Random by time since last play and rating"
 msgstr "शेवटच्यावेळी चालवल्यापासून व गुणोत्तर नुरूप विनाक्रम"
 
-#: ../shell/rb-shell-player.c:938
+#: ../shell/rb-shell-player.c:933
 msgid "Linear, removing entries once played"
 msgstr "सरळ रेषेत, एकदा चालवलेले गाणं काढूण टाकत आहे"
 
-#: ../shell/rb-shell-player.c:948
+#: ../shell/rb-shell-player.c:943
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "वादक बनवण्यास अपयशी: %s"
 
-#: ../shell/rb-shell-player.c:1494
+#: ../shell/rb-shell-player.c:1489
 #, c-format
 msgid "Playlist was empty"
 msgstr "वादकयादी रिकामी आढळली"
 
-#: ../shell/rb-shell-player.c:1986
+#: ../shell/rb-shell-player.c:1978
 #, c-format
 msgid "Not currently playing"
 msgstr "वर्तमानक्षणी चालवत नाही"
 
-#: ../shell/rb-shell-player.c:2044
+#: ../shell/rb-shell-player.c:2036
 #, c-format
 msgid "No previous song"
 msgstr "मागील गाणं आढळले नाही"
 
-#: ../shell/rb-shell-player.c:2144
+#: ../shell/rb-shell-player.c:2136
 #, c-format
 msgid "No next song"
 msgstr "पुढील गाणं आढळले नाही"
 
-#: ../shell/rb-shell-player.c:2265 ../shell/rb-shell-player.c:3397
+#: ../shell/rb-shell-player.c:2257 ../shell/rb-shell-player.c:3389
 msgid "Couldn't start playback"
 msgstr "प्लेबॅक सुरू करण्यास अपयशी"
 
-#: ../shell/rb-shell-player.c:3159
+#: ../shell/rb-shell-player.c:3151
 msgid "Couldn't stop playback"
 msgstr "प्लेबॅक थांबवणे अशक्य"
 
-#: ../shell/rb-shell-player.c:3269
+#: ../shell/rb-shell-player.c:3261
 #, c-format
 msgid "Playback position not available"
 msgstr "प्लेबॅक ठिकाण उपलब्ध नाही"
 
-#: ../shell/rb-shell-player.c:3301
+#: ../shell/rb-shell-player.c:3293
 #, c-format
 msgid "Current song is not seekable"
 msgstr "वर्तमान गाणं सीकेबल नाही"
 
-#: ../shell/rb-shell-player.c:3738
+#: ../shell/rb-shell-player.c:3736
 msgid "Stop playback"
 msgstr "प्लेबॅक थांबवा"
 
-#: ../shell/rb-shell-preferences.c:167 ../shell/rb-shell.c:2188
+#: ../shell/rb-shell-preferences.c:167 ../shell/rb-shell.c:2210
 msgid "Couldn't display help"
 msgstr "मदत दाखवण्यास अपयशी"
 
@@ -3970,179 +3965,179 @@ msgstr "सर्वसाधारण"
 msgid "Playback"
 msgstr "प्लेबॅक"
 
-#: ../shell/rb-shell.c:387
+#: ../shell/rb-shell.c:392
 msgid "_Music"
 msgstr "संगीत (_M)"
 
-#: ../shell/rb-shell.c:389
+#: ../shell/rb-shell.c:394
 msgid "_View"
 msgstr "अवलोकन (_V)"
 
-#: ../shell/rb-shell.c:390
+#: ../shell/rb-shell.c:395
 msgid "_Control"
 msgstr "कंट्रोल (_C)"
 
-#: ../shell/rb-shell.c:391
+#: ../shell/rb-shell.c:396
 msgid "_Tools"
 msgstr "साधन (_T)"
 
-#: ../shell/rb-shell.c:392
+#: ../shell/rb-shell.c:397
 msgid "_Help"
 msgstr "मदत (_H)"
 
-#: ../shell/rb-shell.c:394
+#: ../shell/rb-shell.c:399
 msgid "_Import Folder..."
 msgstr "फोल्डर आयात करा (_I)..."
 
-#: ../shell/rb-shell.c:395
+#: ../shell/rb-shell.c:400
 msgid "Choose folder to be added to the Library"
 msgstr "लायब्ररीत समावेष करण्याजोगी फोल्डर नीवडा"
 
-#: ../shell/rb-shell.c:397
+#: ../shell/rb-shell.c:402
 msgid "Import _File..."
 msgstr "फाइल आयात करा (_F)..."
 
-#: ../shell/rb-shell.c:398
+#: ../shell/rb-shell.c:403
 msgid "Choose file to be added to the Library"
 msgstr "लायब्ररीत समावेष करण्याजोगी फाइल नीवडा"
 
-#: ../shell/rb-shell.c:400
+#: ../shell/rb-shell.c:405
 msgid "_About"
 msgstr "विषयी (_A)"
 
-#: ../shell/rb-shell.c:401
+#: ../shell/rb-shell.c:406
 msgid "Show information about the music player"
 msgstr "संगीत वादक विषयी माहिती दाखवा"
 
-#: ../shell/rb-shell.c:403
+#: ../shell/rb-shell.c:408
 msgid "_Contents"
 msgstr "अंतर्भूत माहिती (_C)"
 
-#: ../shell/rb-shell.c:404
+#: ../shell/rb-shell.c:409
 msgid "Display music player help"
 msgstr "संगीत वादक मदत दाखवा"
 
-#: ../shell/rb-shell.c:406
+#: ../shell/rb-shell.c:411
 msgid "_Quit"
 msgstr "बाहेर पडा (_Q)"
 
-#: ../shell/rb-shell.c:407
+#: ../shell/rb-shell.c:412
 msgid "Quit the music player"
 msgstr "संगीत वादक पासून बाहेर पडा"
 
-#: ../shell/rb-shell.c:409
+#: ../shell/rb-shell.c:414
 msgid "Prefere_nces"
 msgstr "आवड नीवड (_n)"
 
-#: ../shell/rb-shell.c:410
+#: ../shell/rb-shell.c:415
 msgid "Edit music player preferences"
 msgstr "संगीत वादक आवड नीवड संपादीत करा"
 
-#: ../shell/rb-shell.c:412
+#: ../shell/rb-shell.c:417
 msgid "Plu_gins"
 msgstr "प्लगइनस् (_g)"
 
-#: ../shell/rb-shell.c:413
+#: ../shell/rb-shell.c:418
 msgid "Change and configure plugins"
 msgstr "प्लगइन बदला व संयोजीत करा"
 
-#: ../shell/rb-shell.c:415
+#: ../shell/rb-shell.c:420
 msgid "Show _All Tracks"
 msgstr "सर्व ट्रॅक दाखवा (_A)"
 
-#: ../shell/rb-shell.c:416
+#: ../shell/rb-shell.c:421
 msgid "Show all tracks in this music source"
 msgstr "या संगीत स्त्रोत मध्ये सर्व ट्रॅक दाखवा"
 
-#: ../shell/rb-shell.c:418
+#: ../shell/rb-shell.c:423
 msgid "_Jump to Playing Song"
 msgstr "गाणं चालवण्याकडे जा (_J)"
 
-#: ../shell/rb-shell.c:419
+#: ../shell/rb-shell.c:424
 msgid "Scroll the view to the currently playing song"
 msgstr "वर्तमानक्षणी चालवण्याजोगी गाण्याचे अवलोकन स्क्रोल करा"
 
-#: ../shell/rb-shell.c:426
+#: ../shell/rb-shell.c:431
 msgid "Side _Pane"
 msgstr "बाजूचे पटल (_P)"
 
-#: ../shell/rb-shell.c:427
+#: ../shell/rb-shell.c:432
 msgid "Change the visibility of the side pane"
 msgstr "बाजूच्या पटलाचे दृष्य बदला"
 
-#: ../shell/rb-shell.c:429
+#: ../shell/rb-shell.c:434
 msgid "T_oolbar"
 msgstr "साधनपट्टी (_o)"
 
-#: ../shell/rb-shell.c:430
+#: ../shell/rb-shell.c:435
 msgid "Change the visibility of the toolbar"
 msgstr "साधनपट्टीचे दृष्य बदला"
 
-#: ../shell/rb-shell.c:432
+#: ../shell/rb-shell.c:437
 msgid "_Small Display"
 msgstr "लहान दृष्य (_S)"
 
-#: ../shell/rb-shell.c:433
+#: ../shell/rb-shell.c:438
 msgid "Make the main window smaller"
 msgstr "मुख्य चौकट आणखी लहान करा"
 
-#: ../shell/rb-shell.c:435
+#: ../shell/rb-shell.c:440
 msgid "Party _Mode"
 msgstr "पार्टी पद्धत (_M)"
 
-#: ../shell/rb-shell.c:436
+#: ../shell/rb-shell.c:441
 msgid "Change the status of the party mode"
 msgstr "पार्टी पद्धतची स्थिती बदला"
 
-#: ../shell/rb-shell.c:438
+#: ../shell/rb-shell.c:443
 msgid "Play _Queue as Side Pane"
 msgstr "रांग यास बाजूचे पटल नुरूप चालवा (_Q)"
 
-#: ../shell/rb-shell.c:439
+#: ../shell/rb-shell.c:444
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "रांग स्त्रोत किंवा बाजूचीपट्टी नुरूप दाखवायचे त्याप्रमाणे बदल करा"
 
-#: ../shell/rb-shell.c:441
+#: ../shell/rb-shell.c:446
 msgid "S_tatusbar"
 msgstr "स्थितीपट्टी (_t)"
 
-#: ../shell/rb-shell.c:442
+#: ../shell/rb-shell.c:447
 msgid "Change the visibility of the statusbar"
 msgstr "स्थितीपट्टीचे दृष्य बदला"
 
-#: ../shell/rb-shell.c:995 ../shell/rb-shell.c:1204
+#: ../shell/rb-shell.c:1000 ../shell/rb-shell.c:1225
 msgid "Unable to move user data files"
 msgstr "वापरकर्ता डेटा फाइल हलवण्यास अशक्य"
 
-#: ../shell/rb-shell.c:1290
+#: ../shell/rb-shell.c:1311
 msgid "Change the music volume"
 msgstr "संगीत ध्वनिमान बदला"
 
-#: ../shell/rb-shell.c:1696
+#: ../shell/rb-shell.c:1718
 msgid "Error while saving song information"
 msgstr "गाणं विषयी माहिती साठवतेवेळी त्रुटी आढळली"
 
-#: ../shell/rb-shell.c:1801
+#: ../shell/rb-shell.c:1823
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "ट्रॅक %d ला %d (%.0f%%) च्या बाहेर स्थानांतरीत करत आहे"
 
-#: ../shell/rb-shell.c:1804
+#: ../shell/rb-shell.c:1826
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "ट्रॅक %d ला %d च्या बाहेर स्थानांतरीत करत आहे"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2004
+#: ../shell/rb-shell.c:2026
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (स्तब्ध)"
 
-#: ../shell/rb-shell.c:2108
+#: ../shell/rb-shell.c:2130
 msgid "translator-credits"
 msgstr "संदिप शेडमाके <sandeep.shedmake@gmail.com>, 2009."
 
-#: ../shell/rb-shell.c:2111
+#: ../shell/rb-shell.c:2133
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -4154,7 +4149,7 @@ msgstr ""
 "the Free Software Foundation; either version 2 of the License, or\n"
 "(at your option) any later version.\n"
 
-#: ../shell/rb-shell.c:2115
+#: ../shell/rb-shell.c:2137
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -4166,7 +4161,7 @@ msgstr ""
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 
-#: ../shell/rb-shell.c:2119
+#: ../shell/rb-shell.c:2141
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -4176,54 +4171,54 @@ msgstr ""
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2126
+#: ../shell/rb-shell.c:2148
 msgid "Maintainers:"
 msgstr "मेनटैनर्स:"
 
-#: ../shell/rb-shell.c:2129
+#: ../shell/rb-shell.c:2151
 msgid "Former Maintainers:"
 msgstr "पूर्वीचे मेनटैनर्स:"
 
-#: ../shell/rb-shell.c:2132
+#: ../shell/rb-shell.c:2154
 msgid "Contributors:"
 msgstr "सहभागी:"
 
-#: ../shell/rb-shell.c:2134
+#: ../shell/rb-shell.c:2156
 msgid "Music management and playback software for GNOME."
 msgstr "GNOME करीता संगीत व्यवस्थापन व प्लेबॅक सॉफ्टवेअर."
 
-#: ../shell/rb-shell.c:2143
+#: ../shell/rb-shell.c:2165
 msgid "Rhythmbox Website"
 msgstr "Rhythmbox संकेतस्थळ"
 
-#: ../shell/rb-shell.c:2235
+#: ../shell/rb-shell.c:2257
 msgid "Configure Plugins"
 msgstr "प्लगईन संयोजीत करा"
 
-#: ../shell/rb-shell.c:2306
+#: ../shell/rb-shell.c:2328
 msgid "Import Folder into Library"
 msgstr "लायब्ररी मध्ये फोल्डर आयात करा"
 
-#: ../shell/rb-shell.c:2328
+#: ../shell/rb-shell.c:2350
 msgid "Import File into Library"
 msgstr "लायब्ररीत फाइल आयात करा"
 
-#: ../shell/rb-shell.c:2863
+#: ../shell/rb-shell.c:2890
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "कुठलेही नोंदणीकृत स्त्रोत URI %s हाताळू शकत नाही"
 
-#: ../shell/rb-shell.c:3132 ../shell/rb-shell.c:3161
+#: ../shell/rb-shell.c:3159 ../shell/rb-shell.c:3188
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "अपरिचीत गाणं URI: %s"
 
-#: ../shell/rb-shell.c:3170
+#: ../shell/rb-shell.c:3197
 #, c-format
 msgid "Unknown property %s"
 msgstr "अपरिचीत गुणधर्म %s"
 
-#: ../shell/rb-shell.c:3180
+#: ../shell/rb-shell.c:3207
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "अवैध गुणधर्म प्रकार %s, गुणधर्म %s करीता"
@@ -4407,11 +4402,11 @@ msgstr "पुसा"
 msgid "Play Queue"
 msgstr "चालवा रांग"
 
-#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:124
+#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:125
 msgid "from"
 msgstr "पासून"
 
-#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:125
+#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:126
 msgid "by"
 msgstr "द्वारे"
 
@@ -4530,7 +4525,9 @@ msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
 "file by choosing to delete the episode only."
-msgstr "मालिका व फाइल नष्ट करायचे निश्चित केल्यास, ते नेहमी करीता नाहीसे होतील.  तुम्ही मालिकी रद्द करू शकता परंतु फक्त मालिका रद्द करून डाऊनलोड केलेल्या फाइल जपवायला कृपया विसरू नका."
+msgstr ""
+"मालिका व फाइल नष्ट करायचे निश्चित केल्यास, ते नेहमी करीता नाहीसे होतील.  तुम्ही मालिकी "
+"रद्द करू शकता परंतु फक्त मालिका रद्द करून डाऊनलोड केलेल्या फाइल जपवायला कृपया विसरू नका."
 
 #: ../sources/rb-podcast-source.c:930
 msgid "Delete _Episode Only"
@@ -4550,8 +4547,8 @@ msgid ""
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
 msgstr ""
-"फीड व फाइल नष्ट करायचे ठरवल्यास, ते नेहमीकरीता नाहीसे होतील.  "
-"तुम्ही फीड रद्द करू शकता परंतु फक्त फीड रद्द करून डाऊनलोड केलेल्या फाइल जपवायला कृपया विसरू नका."
+"फीड व फाइल नष्ट करायचे ठरवल्यास, ते नेहमीकरीता नाहीसे होतील.  तुम्ही फीड रद्द करू शकता "
+"परंतु फक्त फीड रद्द करून डाऊनलोड केलेल्या फाइल जपवायला कृपया विसरू नका."
 
 #: ../sources/rb-podcast-source.c:1386
 msgid "Delete _Feed Only"
@@ -4709,7 +4706,7 @@ msgstr "आता वाजवत आहे"
 msgid "Playback Error"
 msgstr "प्लेबॅक त्रुटी"
 
-#: ../widgets/rb-header.c:537
+#: ../widgets/rb-header.c:538
 msgid "Not Playing"
 msgstr "वाजवत नाही"
 
