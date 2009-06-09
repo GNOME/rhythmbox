@@ -716,7 +716,7 @@ AC_ARG_ENABLE([vala],
 	[enable_vala=$enableval have_vala=$enableval],
 	[enable_vala=autodetect have_vala=yes])
 AC_MSG_RESULT([$enable_vala])
-if test "x$enable_vala" != "xno"; then
+if test "x$enable_vala" = "xyes"; then
 	PKG_CHECK_MODULES(VALA, vala-1.0 >= $VALA_REQS, with_vala=yes,
 		          with_vala=no)
 	if test "x$with_vala" = "xyes"; then
