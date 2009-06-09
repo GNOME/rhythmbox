@@ -453,15 +453,6 @@ rb_metadata_load (RBMetaData *md,
 	}
 
 	if (*error == NULL) {
-		if (!rb_metadata_dbus_get_boolean (&iter, &ok)) {
-			g_propagate_error (error, dbus_gerror);
-			rb_debug ("couldn't get success flag from response message");
-		} else if (ok == FALSE) {
-			read_error_from_message (md, &iter, error);
-		}
-	}
-
-	if (*error == NULL) {
 		if (!rb_metadata_dbus_get_boolean (&iter, &md->priv->has_audio)) {
 			g_propagate_error (error, dbus_gerror);
 			rb_debug ("couldn't get has-audio flag from response message");
@@ -488,7 +479,7 @@ rb_metadata_load (RBMetaData *md,
 		}
 	}
 
-	if (ok && *error == NULL) {
+	if (*error == NULL) {
 		if (!rb_metadata_dbus_get_string (&iter, &md->priv->mimetype)) {
 			g_propagate_error (error, dbus_gerror);
 		} else {
@@ -496,7 +487,16 @@ rb_metadata_load (RBMetaData *md,
 		}
 	}
 
-	if (ok && *error == NULL) {
+	if (*error == NULL) {
+		if (!rb_metadata_dbus_get_boolean (&iter, &ok)) {
+			g_propagate_error (error, dbus_gerror);
+			rb_debug ("couldn't get success flag from response message");
+		} else if (ok == FALSE) {
+			read_error_from_message (md, &iter, error);
+		}
+	}
+
+	if (*error == NULL) {
 		rb_metadata_dbus_read_from_message (md, md->priv->metadata, &iter);
 	}
 
