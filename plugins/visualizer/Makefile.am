@@ -12,7 +12,7 @@ libvisualizer_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libvisualizer_la_LIBTOOLFLAGS = --tag=disable-static
 
 libvisualizer_la_LIBADD = 				\
-	$(top_builddir)/corelib/librhythmbox-core.la	\
+	$(top_builddir)/shell/librhythmbox-core.la	\
 	-lgstinterfaces-0.10				\
 	$(DBUS_LIBS)					\
 	$(RHYTHMBOX_LIBS)

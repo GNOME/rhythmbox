@@ -30,6 +30,10 @@
 #include <config.h>
 #endif
 
+#ifdef _XOPEN_SOURCE
+#undef _XOPEN_SOURCE
+#endif
+
 #include <pygobject.h>
 #include <pygtk/pygtk.h>
 
@@ -79,7 +83,7 @@ pyg_value_g_value_from_pyobject (GValue *value, PyObject *obj)
 {
 	GType type;
 	GValue obj_value = { 0, };
-	
+
 	type = pyg_type_from_object((PyObject *) obj->ob_type);
 	if (! type) {
 		PyErr_Clear();

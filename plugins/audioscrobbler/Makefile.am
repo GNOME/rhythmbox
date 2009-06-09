@@ -17,7 +17,7 @@ libaudioscrobbler_la_SOURCES = \
 libaudioscrobbler_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libaudioscrobbler_la_LIBTOOLFLAGS = --tag=disable-static
 libaudioscrobbler_la_LIBADD = 				\
-	$(top_builddir)/corelib/librhythmbox-core.la	\
+	$(top_builddir)/shell/librhythmbox-core.la	\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(RHYTHMBOX_LIBS)
 

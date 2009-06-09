@@ -15,7 +15,7 @@ libipod_la_SOURCES = \
 libipod_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libipod_la_LIBTOOLFLAGS = --tag=disable-static
 libipod_la_LIBADD = 					\
-	$(top_builddir)/corelib/librhythmbox-core.la	\
+	$(top_builddir)/shell/librhythmbox-core.la	\
 	$(HAL_LIBS)					\
 	$(IPOD_LIBS)
 

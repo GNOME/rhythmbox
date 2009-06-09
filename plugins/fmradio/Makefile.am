@@ -12,7 +12,7 @@ libfmradio_la_SOURCES = \
 
 libfmradio_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libfmradio_la_LIBTOOLFLAGS = --tag=disable-static
-libfmradio_la_LIBADD = $(top_builddir)/corelib/librhythmbox-core.la
+libfmradio_la_LIBADD = $(top_builddir)/shell/librhythmbox-core.la
 
 INCLUDES = \
   -DGNOMELOCALEDIR=\""$(datadir)/locale"\" \

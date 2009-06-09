@@ -27,6 +27,10 @@
 
 #include <config.h>
 
+#ifdef _XOPEN_SOURCE
+#undef _XOPEN_SOURCE
+#endif
+
 #include "rb-python-plugin.h"
 #include "rb-plugin.h"
 #include "rb-debug.h"
@@ -74,11 +78,11 @@ check_py_object_is_gtk_widget (PyObject *py_obj)
 	{
 		PyObject *module;
 
-	    	if ((module = PyImport_ImportModule ("gtk")))
-	    	{
+		if ((module = PyImport_ImportModule ("gtk")))
+		{
 			PyObject *moddict = PyModule_GetDict (module);
 			_PyGtkWidget_Type = (PyTypeObject *) PyDict_GetItemString (moddict, "Widget");
-	    	}
+		}
 
 		if (_PyGtkWidget_Type == NULL)
 		{
@@ -203,7 +207,7 @@ rb_python_object_init (RBPythonObject *object)
 	object->instance = PyObject_CallObject (class->type, NULL);
 	if (object->instance == NULL)
 		PyErr_Print();
-	
+
 	pyg_gil_state_release (state);
 }
 
@@ -217,7 +221,7 @@ rb_python_object_finalize (GObject *object)
 	if (((RBPythonObject *) object)->instance) {
 		Py_DECREF (((RBPythonObject *) object)->instance);
 	}
-	
+
 	pyg_gil_state_release (state);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);

@@ -7,7 +7,7 @@ libpower_manager_la_SOURCES = \
 libpower_manager_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libpower_manager_la_LIBTOOLFLAGS = --tag=disable-static
 
-libpower_manager_la_LIBADD = $(top_builddir)/corelib/librhythmbox-core.la
+libpower_manager_la_LIBADD = $(top_builddir)/shell/librhythmbox-core.la
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

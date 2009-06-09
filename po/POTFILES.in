@@ -115,12 +115,6 @@ plugins/mtpdevice/rb-mtp-source.c
 plugins/power-manager/rb-power-manager-plugin.c
 plugins/pythonconsole/pythonconsole.py
 [type: gettext/ini]plugins/pythonconsole/pythonconsole.rb-plugin.in
-plugins/rb-module.c
-plugins/rb-plugin-manager.c
-plugins/rb-plugin.c
-plugins/rb-plugins-engine.c
-plugins/rb-python-module.c
-plugins/rb-python-plugin.c
 plugins/rb/__init__.py
 plugins/sample-python/sample-python.py
 [type: gettext/ini]plugins/sample-python/sample-python.rb-plugin.in
@@ -145,8 +139,14 @@ rhythmdb/rhythmdb-property-model.c
 rhythmdb/rhythmdb-tree.c
 rhythmdb/rhythmdb.c
 shell/main.c
+shell/rb-module.c
 shell/rb-play-order.c
 shell/rb-playlist-manager.c
+shell/rb-plugin-manager.c
+shell/rb-plugin.c
+shell/rb-plugins-engine.c
+shell/rb-python-module.c
+shell/rb-python-plugin.c
 shell/rb-removable-media-manager.c
 shell/rb-shell-clipboard.c
 shell/rb-shell-player.c

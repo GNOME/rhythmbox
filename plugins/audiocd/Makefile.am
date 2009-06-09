@@ -10,7 +10,7 @@ libaudiocd_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libaudiocd_la_LIBTOOLFLAGS = --tag=disable-static
 
 libaudiocd_la_LIBADD = \
-	$(top_builddir)/corelib/librhythmbox-core.la	\
+	$(top_builddir)/shell/librhythmbox-core.la	\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(GSTCDDA_LIBS)
 

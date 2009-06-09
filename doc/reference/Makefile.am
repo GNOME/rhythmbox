@@ -83,17 +83,8 @@ MORE_GTKDOC_LIBS = $(PYTHON_LIBS)
 endif
 
 GTKDOC_LIBS=\
-	$(top_builddir)/shell/librbshell.la	        \
-	$(top_builddir)/sources/libsources.la	        \
-	$(top_builddir)/sources/libsourcesimpl.la	\
-	$(top_builddir)/podcast/librbpodcast.la		\
-	$(top_builddir)/metadata/librbmetadata.la	\
-	$(top_builddir)/widgets/librbwidgets.la         \
-	$(top_builddir)/plugins/librbplugins.la		\
+	$(top_builddir)/shell/librhythmbox-core.la        \
 	$(BINDING_LIBS)					\
-	$(top_builddir)/rhythmdb/librhythmdb.la         \
-	$(top_builddir)/backends/librbbackends.la	\
-	$(top_builddir)/lib/librb.la	                \
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)					\
 	$(LIBNAUTILUS_BURN_LIBS)			\

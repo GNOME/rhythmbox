@@ -6,9 +6,6 @@ librbpodcast_parse_la_SOURCES = 			\
 	rb-podcast-parse.c				\
 	rb-podcast-parse.h
 
-librbpodcast_parse_la_LIBADD =				\
-	$(top_builddir)/lib/librb.la
-
 librbpodcast_la_SOURCES =				\
 	rb-feed-podcast-properties-dialog.c		\
 	rb-feed-podcast-properties-dialog.h		\
@@ -18,14 +15,13 @@ librbpodcast_la_SOURCES =				\
 	rb-podcast-parse.h				\
 	rb-podcast-manager.c				\
 	rb-podcast-manager.h
-librbpodcast_la_LIBADD =				\
-	librbpodcast_parse.la
 
 noinst_PROGRAMS = test-podcast-parse
 test_podcast_parse_SOURCES =				\
 	test-podcast-parse.c
 test_podcast_parse_LDADD =				\
 	librbpodcast_parse.la				\
+	$(top_builddir)/lib/librb.la			\
 	$(RHYTHMBOX_LIBS)				\
 	$(TOTEM_PLPARSER_LIBS)
 

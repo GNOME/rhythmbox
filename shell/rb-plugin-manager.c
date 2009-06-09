@@ -206,7 +206,7 @@ cursor_changed_cb (GtkTreeSelection *selection,
 		height = gdk_pixbuf_get_height (icon);
 		header_height = pm->priv->header_hbox->allocation.height;
 		if (height > header_height) {
-			icon_scaled = gdk_pixbuf_scale_simple (icon, 
+			icon_scaled = gdk_pixbuf_scale_simple (icon,
 							       (gfloat)width/height*header_height, header_height,
 							       GDK_INTERP_BILINEAR);
 			gtk_image_set_from_pixbuf (GTK_IMAGE (pm->priv->plugin_icon), icon_scaled);
@@ -515,7 +515,7 @@ rb_plugin_manager_init (RBPluginManager *pm)
 			  "clicked",
 			  G_CALLBACK (configure_button_cb),
 			  pm);
-	
+
         pm->priv->header_hbox = GTK_WIDGET (gtk_builder_get_object (builder, "header_hbox"));
 
 	pm->priv->plugin_title = GTK_WIDGET (gtk_builder_get_object (builder, "plugin_title"));

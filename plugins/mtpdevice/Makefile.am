@@ -12,7 +12,7 @@ libmtpdevice_la_SOURCES = \
 libmtpdevice_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libmtpdevice_la_LIBTOOLFLAGS = --tag=disable-static
 libmtpdevice_la_LIBADD = 				\
-	$(top_builddir)/corelib/librhythmbox-core.la	\
+	$(top_builddir)/shell/librhythmbox-core.la	\
 	$(HAL_LIBS)					\
 	$(MTP_LIBS)
 

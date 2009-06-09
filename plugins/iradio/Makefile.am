@@ -15,7 +15,7 @@ libiradio_la_SOURCES = 					\
 libiradio_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libiradio_la_LIBTOOLFLAGS = --tag=disable-static
 libiradio_la_LIBADD = 					\
-	$(top_builddir)/corelib/librhythmbox-core.la	\
+	$(top_builddir)/shell/librhythmbox-core.la	\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(NULL)
 

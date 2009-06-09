@@ -804,7 +804,6 @@ data/icons/hicolor/scalable/apps/Makefile
 data/icons/hicolor/scalable/places/Makefile
 data/icons/hicolor/scalable/status/Makefile
 sources/Makefile
-corelib/Makefile
 plugins/Makefile
 plugins/sample/Makefile
 plugins/audiocd/Makefile

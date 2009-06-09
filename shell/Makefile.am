@@ -24,7 +24,7 @@ tab_files = AUTHORS.tab MAINTAINERS.tab MAINTAINERS.old.tab DOCUMENTERS.tab
 
 bin_PROGRAMS = rhythmbox
 rhythmbox_SOURCES = main.c
-noinst_LTLIBRARIES = librbshell.la
+lib_LTLIBRARIES = librhythmbox-core.la
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -42,12 +42,13 @@ INCLUDES = 						\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
+	-DRB_PLUGIN_DIR=\"$(PLUGINDIR)\"		\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(DBUS_CFLAGS)					\
 	-D_XOPEN_SOURCE -D__EXTENSIONS__ -D_BSD_SOURCE
 
-librbshell_la_SOURCES =              			\
+librhythmbox_core_la_SOURCES =				\
 	rb-shell.c					\
 	rb-shell.h					\
 	rb-shell-player.c				\
@@ -87,19 +88,46 @@ librbshell_la_SOURCES =              			\
 	rb-play-order-random-by-rating.c		\
 	rb-play-order-random-by-rating.h		\
 	rb-missing-plugins.c				\
-	rb-missing-plugins.h
+	rb-missing-plugins.h				\
+	\
+	rb-plugin.h					\
+	rb-plugin.c					\
+	rb-module.h					\
+	rb-module.c					\
+	rb-plugin-manager.h				\
+	rb-plugin-manager.c				\
+	rb-plugins-engine.h				\
+	rb-plugins-engine.c
 
-rhythmbox_LDADD =					\
-	librbshell.la					\
-	$(top_builddir)/corelib/librhythmbox-core.la	\
+librhythmbox_core_la_LIBADD =				\
 	$(top_builddir)/sources/libsourcesimpl.la	\
 	$(top_builddir)/podcast/librbpodcast.la	        \
-	$(top_builddir)/plugins/librbplugins.la		\
-	-lgstpbutils-0.10
+	$(top_builddir)/sources/libsources.la	        \
+	$(top_builddir)/metadata/librbmetadata.la	\
+	$(top_builddir)/widgets/librbwidgets.la         \
+	$(top_builddir)/rhythmdb/librhythmdb.la		\
+	$(top_builddir)/backends/librbbackends.la	\
+	$(top_builddir)/lib/librb.la			\
+	$(DBUS_LIBS)					\
+	$(TOTEM_PLPARSER_LIBS)				\
+	$(RHYTHMBOX_LIBS)				\
+	-lgstpbutils-0.10				\
+	-lgstcontroller-0.10
+
+librhythmbox_core_la_LDFLAGS = -export-dynamic -no-undefined
+librhythmbox_core_la_LIBTOOLFLAGS = --tag=disable-static
 
 if ENABLE_PYTHON
+
+librhythmbox_core_la_SOURCES +=				\
+	rb-python-module.h				\
+	rb-python-module.c				\
+	rb-python-plugin.h				\
+	rb-python-plugin.c
+
 INCLUDES += $(PYGTK_CFLAGS)  $(PYTHON_CFLAGS)
-rhythmbox_LDADD += $(PYTHON_LIBS) $(top_builddir)/bindings/python/rb.la
+
+librhythmbox_core_la_LIBADD += $(PYTHON_LIBS) $(top_builddir)/bindings/python/rb.la
 endif
 
 rb-shell-glue.h: rb-shell.xml Makefile
@@ -115,14 +143,11 @@ rb-shell-player-binding.h: rb-shell-player.xml Makefile
 
 BUILT_SOURCES += rb-shell-glue.h rb-shell-binding.h rb-shell-player-glue.h rb-shell-player-binding.h rb-playlist-manager-glue.h
 EXTRA_DIST += rb-shell.xml rb-shell-player.xml rb-playlist-manager.xml
-rhythmbox_LDADD += $(DBUS_LIBS)
 
-rhythmbox_LDADD += \
-	$(top_builddir)/backends/librbbackends.la	\
-	$(TOTEM_PLPARSER_LIBS)				\
-	$(HAL_LIBS)					\
+rhythmbox_LDADD = 					\
+	librhythmbox-core.la				\
 	$(RHYTHMBOX_LIBS)				\
-	-lgstcontroller-0.10
+	$(DBUS_LIBS)
 
 rhythmbox_LDFLAGS = -export-dynamic -no-undefined
 

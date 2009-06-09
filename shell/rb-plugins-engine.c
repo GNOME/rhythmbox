@@ -125,7 +125,7 @@ rb_plugins_engine_load (const gchar *file)
 	}
 
 	if (!g_key_file_has_key (plugin_file,
-			   	 "RB Plugin",
+				 "RB Plugin",
 				 "IAge",
 				 NULL))	{
 		rb_debug ("IAge key does not exist in file: %s", file);
@@ -269,7 +269,7 @@ rb_plugins_engine_load_cb (GFile *file, gboolean dir, gpointer userdata)
 		sep = plugin_path;
 	else
 		sep += 1;
-	
+
 	/* don't look inside version control system directories.
 	 * most are already covered by excluding hidden files/directories.
 	 */
@@ -314,7 +314,7 @@ rb_plugins_engine_load_cb (GFile *file, gboolean dir, gpointer userdata)
 
 	if (activate)
 		rb_plugins_engine_activate_plugin (info);
-	return TRUE;	
+	return TRUE;
 }
 
 static void
@@ -396,7 +396,7 @@ rb_plugin_info_free (RBPluginInfo *info)
 		rb_plugins_engine_deactivate_plugin_real (info, rb_plugins_shell);
 
 	if (info->plugin != NULL) {
-	       	rb_debug ("Unref plugin %s", info->name);
+		rb_debug ("Unref plugin %s", info->name);
 
 		g_object_unref (info->plugin);
 
@@ -548,7 +548,7 @@ rb_plugins_engine_activate_plugin (RBPluginInfo *info)
 		g_free (key_name);
 	}
         info->active = ret;
- 
+
         if (ret != FALSE)
                 return TRUE;
 

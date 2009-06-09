@@ -7,7 +7,7 @@ librblirc_la_SOURCES = \
 librblirc_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS) -llirc_client
 librblirc_la_LIBTOOLFLAGS = --tag=disable-static
 
-librblirc_la_LIBADD = $(top_builddir)/corelib/librhythmbox-core.la
+librblirc_la_LIBADD = $(top_builddir)/shell/librhythmbox-core.la
 
 configdir = $(PLUGINDIR)/rblirc
 config_DATA = rhythmbox_lirc_default
