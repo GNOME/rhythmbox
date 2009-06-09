@@ -2414,6 +2414,30 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 }
 
 static void
+set_missing_plugin_error (RhythmDBEvent *event)
+{
+	char **missing_plugins;
+	char **plugin_descriptions;
+	char *list;
+
+	g_clear_error (&event->error);
+
+	rb_metadata_get_missing_plugins (event->metadata, &missing_plugins, &plugin_descriptions);
+	list = g_strjoinv (", ", plugin_descriptions);
+	/* Translators: the parameter here is a list of GStreamer plugins.
+	 * The plugin names are already translated.
+	 */
+	g_set_error (&event->error,
+		     RB_METADATA_ERROR,
+		     RB_METADATA_ERROR_MISSING_PLUGIN,
+		     _("Additional GStreamer plugins are required to play this file: %s"),
+		     list);
+	g_free (list);
+	g_strfreev (missing_plugins);
+	g_strfreev (plugin_descriptions);
+}
+
+static void
 rhythmdb_missing_plugins_cb (gpointer duh, gboolean should_retry, RhythmDBEvent *event)
 {
 	rb_debug ("missing-plugin retry closure called: event %p, retry %d", event, should_retry);
@@ -2430,11 +2454,9 @@ rhythmdb_missing_plugins_cb (gpointer duh, gboolean should_retry, RhythmDBEvent 
 		load_action->error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 		g_async_queue_push (event->db->priv->action_queue, load_action);
 	} else {
-		/* TODO replace event->error with something like
-		 * "Additional GStreamer plugins are required to play this file: %s"
-		 */
-
+		/* plugin installation failed or was cancelled, so add an import error for the file */
 		rb_debug ("not retrying RHYTHMDB_ACTION_LOAD for %s", rb_refstring_get (event->real_uri));
+		set_missing_plugin_error (event);
 		rhythmdb_process_metadata_load_real (event);
 	}
 }
@@ -2479,6 +2501,10 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 		if (processing) {
 			rb_debug ("processing missing plugins");
 		} else {
+			/* not installing plugins because the requested plugins are blacklisted,
+			 * so just add an import error for the file.
+			 */
+			set_missing_plugin_error (event);
 			rhythmdb_process_metadata_load_real (event);
 		}
 
