@@ -225,50 +225,6 @@ rb_metadata_dbus_get_saveable_types (DBusConnection *connection,
 	return DBUS_HANDLER_RESULT_HANDLED;
 }
 
-static DBusHandlerResult
-rb_metadata_dbus_can_save (DBusConnection *connection,
-			   DBusMessage *message,
-			   ServiceData *svc)
-{
-	char *mimetype;
-	DBusMessageIter iter;
-	DBusMessage *reply;
-	gboolean can_save;
-
-	if (!dbus_message_iter_init (message, &iter)) {
-		return DBUS_HANDLER_RESULT_NEED_MEMORY;
-	}
-
-	if (!rb_metadata_dbus_get_string (&iter, &mimetype)) {
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	can_save = rb_metadata_can_save (svc->metadata, mimetype);
-	g_free (mimetype);
-
-	/* construct reply */
-	reply = dbus_message_new_method_return (message);
-	if (!reply) {
-		rb_debug ("out of memory creating return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	dbus_message_iter_init_append (reply, &iter);
-	if (!dbus_message_iter_append_basic (&iter, DBUS_TYPE_BOOLEAN, &can_save)) {
-		rb_debug ("out of memory adding data to return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	if (!dbus_connection_send (connection, reply, NULL)) {
-		rb_debug ("failed to send return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	dbus_message_unref (reply);
-
-	return DBUS_HANDLER_RESULT_HANDLED;
-}
-
 static gboolean
 _set_metadata (gpointer key, GValue *data, RBMetaData *metadata)
 {
@@ -387,8 +343,6 @@ _handle_message (DBusConnection *connection, DBusMessage *message, void *data)
 
 	if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "load")) {
 		result = rb_metadata_dbus_load (connection, message, svc);
-	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "canSave")) {
-		result = rb_metadata_dbus_can_save (connection, message, svc);
 	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "getSaveableTypes")) {
 		result = rb_metadata_dbus_get_saveable_types (connection, message, svc);
 	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "save")) {
@@ -432,19 +386,6 @@ _new_connection (DBusServer *server,
 					   g_main_loop_get_context (svc->loop));
 	if (!svc->external)
 		dbus_connection_set_exit_on_disconnect (connection, TRUE);
-}
-
-static int
-test_can_save (const char *mimetype)
-{
-	RBMetaData *md;
-	gboolean can_save;
-
-	md = rb_metadata_new ();
-	can_save = rb_metadata_can_save (md, mimetype);
-	g_print ("%s save %s\n", can_save ? "Can" : "Can't", mimetype);
-	g_object_unref (G_OBJECT (md));
-	return 0;
 }
 
 static int
@@ -547,9 +488,6 @@ main (int argc, char **argv)
 	/* bug report modes */
 	if (argv[1] != NULL && strcmp(argv[1], "--load") == 0) {
 		return test_load (argv[2]);
-	}
-	if (argv[1] != NULL && strcmp(argv[1], "--can-save") == 0) {
-		return test_can_save (argv[2]);
 	}
 	if (argv[1] != NULL && strcmp(argv[1], "--saveable-types") == 0) {
 		return test_saveable_types ();
