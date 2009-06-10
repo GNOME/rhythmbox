@@ -3246,7 +3246,7 @@ rb_shell_player_get_playing_time (RBShellPlayer *player,
 				  guint *time,
 				  GError **error)
 {
-	int ptime;
+	gint64 ptime;
 
 	ptime = rb_player_get_time (player->priv->mmplayer);
 	if (ptime >= 0) {
