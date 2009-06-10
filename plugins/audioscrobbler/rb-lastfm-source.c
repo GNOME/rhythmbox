@@ -197,6 +197,7 @@ static const char* const radio_options[][3] = {
 	{N_("Personal radio"), "lastfm://user/%s/personal", N_("%s's Personal Radio")},
 	{N_("Loved tracks"), "lastfm://user/%s/loved", N_("%s's Loved Tracks")},
 	{N_("Recommended tracks"), "lastfm://user/%s/recommended/100", N_("Tracks recommended to %s")},
+	{N_("Playlist"), "lastfm://user/%s/playlist", N_("%s's playlist")},
 	{NULL, NULL, NULL}
 };
 
