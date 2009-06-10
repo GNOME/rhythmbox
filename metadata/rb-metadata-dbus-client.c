@@ -692,52 +692,27 @@ gboolean
 rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 {
 	GError *error = NULL;
-	DBusMessage *message = NULL;
-	DBusMessage *response = NULL;
-	gboolean can_save = FALSE;
-	DBusError dbus_error = {0,};
-	DBusMessageIter iter;
-	gboolean ok = TRUE;
+	gboolean result = FALSE;
+	int i = 0;
 
 	g_static_mutex_lock (&conn_mutex);
 
-	if (start_metadata_service (&error) == FALSE) {
-		g_error_free (error);
-		ok = FALSE;
-	}
-
-	if (ok) {
-		message = dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
-							RB_METADATA_DBUS_OBJECT_PATH,
-							RB_METADATA_DBUS_INTERFACE,
-							"canSave");
-		if (!message) {
-			ok = FALSE;
-		} else if (!dbus_message_append_args (message, DBUS_TYPE_STRING, &mimetype, DBUS_TYPE_INVALID)) {
-			ok = FALSE;
+	if (saveable_types == NULL) {
+		if (start_metadata_service (&error) == FALSE) {
+			g_error_free (error);
+			return FALSE;
 		}
 	}
 
-	if (ok) {
-		response = dbus_connection_send_with_reply_and_block (dbus_connection,
-								      message,
-								      RB_METADATA_DBUS_TIMEOUT,
-								      &dbus_error);
-		if (!response) {
-			dbus_error_free (&dbus_error);
-			ok = FALSE;
-		} else if (dbus_message_iter_init (response, &iter)) {
-			rb_metadata_dbus_get_boolean (&iter, &can_save);
+	for (i = 0; saveable_types[i] != NULL; i++) {
+		if (g_str_equal (mimetype, saveable_types[i])) {
+			result = TRUE;
+			break;
 		}
 	}
 
-	if (message)
-		dbus_message_unref (message);
-	if (response)
-		dbus_message_unref (response);
 	g_static_mutex_unlock (&conn_mutex);
-
-	return can_save;
+	return result;
 }
 
 /**
