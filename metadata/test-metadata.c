@@ -165,14 +165,15 @@ int main(int argc, char **argv)
 		rb_debug_init (TRUE);
 	}
 
-	if (can_save) {
-		g_idle_add (check_can_save_cb, argv[2]);
-	}
 
 	loop = g_main_loop_new (NULL, FALSE);
 	md = rb_metadata_new ();
 	while (argv[1] != NULL) {
-		g_idle_add (load_metadata_cb, argv[1]);
+		if (can_save) {
+			g_idle_add (check_can_save_cb, argv[1]);
+		} else {
+			g_idle_add (load_metadata_cb, argv[1]);
+		}
 		argv++;
 		filecount++;
 	}
@@ -180,7 +181,11 @@ int main(int argc, char **argv)
 
 	g_main_loop_run (loop);
 
-	printf ("%d file(s) read\n", filecount);
+	if (can_save) {
+		printf ("%d file type(s) checked\n", filecount);
+	} else {
+		printf ("%d file(s) read\n", filecount);
+	}
 	g_object_unref (G_OBJECT (md));
 	return 0;
 }
