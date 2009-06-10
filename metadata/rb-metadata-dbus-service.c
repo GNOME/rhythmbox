@@ -189,6 +189,43 @@ rb_metadata_dbus_load (DBusConnection *connection,
 }
 
 static DBusHandlerResult
+rb_metadata_dbus_get_saveable_types (DBusConnection *connection,
+				     DBusMessage *message,
+				     ServiceData *svc)
+{
+	DBusMessageIter iter;
+	DBusMessage *reply;
+	char **saveable_types;
+
+	/* construct reply */
+	reply = dbus_message_new_method_return (message);
+	if (!reply) {
+		rb_debug ("out of memory creating return message");
+		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+	}
+
+	dbus_message_iter_init_append (reply, &iter);
+
+	saveable_types = rb_metadata_get_saveable_types (svc->metadata);
+
+	if (!rb_metadata_dbus_add_strv (&iter, saveable_types)) {
+		rb_debug ("out of memory adding saveable types to return message");
+		g_strfreev (saveable_types);
+		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+	}
+	g_strfreev (saveable_types);
+
+	if (!dbus_connection_send (connection, reply, NULL)) {
+		rb_debug ("failed to send return message");
+		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+	}
+
+	dbus_message_unref (reply);
+
+	return DBUS_HANDLER_RESULT_HANDLED;
+}
+
+static DBusHandlerResult
 rb_metadata_dbus_can_save (DBusConnection *connection,
 			   DBusMessage *message,
 			   ServiceData *svc)
@@ -346,12 +383,14 @@ _handle_message (DBusConnection *connection, DBusMessage *message, void *data)
 {
 	ServiceData *svc = (ServiceData *)data;
 	DBusHandlerResult result;
-	rb_debug ("handling metadata service message");
+	rb_debug ("handling metadata service message: %s", dbus_message_get_member (message));
 
 	if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "load")) {
 		result = rb_metadata_dbus_load (connection, message, svc);
 	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "canSave")) {
 		result = rb_metadata_dbus_can_save (connection, message, svc);
+	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "getSaveableTypes")) {
+		result = rb_metadata_dbus_get_saveable_types (connection, message, svc);
 	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "save")) {
 		result = rb_metadata_dbus_save (connection, message, svc);
 	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "ping")) {
@@ -405,6 +444,25 @@ test_can_save (const char *mimetype)
 	can_save = rb_metadata_can_save (md, mimetype);
 	g_print ("%s save %s\n", can_save ? "Can" : "Can't", mimetype);
 	g_object_unref (G_OBJECT (md));
+	return 0;
+}
+
+static int
+test_saveable_types ()
+{
+	RBMetaData *md;
+	char **saveable;
+	int i;
+
+	md = rb_metadata_new ();
+	saveable = rb_metadata_get_saveable_types (md);
+	g_object_unref (md);
+
+	for (i = 0; saveable[i] != NULL; i++) {
+		g_print ("%s\n", saveable[i]);
+	}
+	g_strfreev (saveable);
+
 	return 0;
 }
 
@@ -492,6 +550,9 @@ main (int argc, char **argv)
 	}
 	if (argv[1] != NULL && strcmp(argv[1], "--can-save") == 0) {
 		return test_can_save (argv[2]);
+	}
+	if (argv[1] != NULL && strcmp(argv[1], "--saveable-types") == 0) {
+		return test_saveable_types ();
 	}
 
 	if (argv[1] != NULL && strcmp (argv[1], "--external") == 0) {

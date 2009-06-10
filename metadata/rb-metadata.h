@@ -120,6 +120,7 @@ const char *	rb_metadata_get_field_name (RBMetaDataField field);
 RBMetaData *	rb_metadata_new		(void);
 
 gboolean	rb_metadata_can_save	(RBMetaData *md, const char *mimetype);
+char **		rb_metadata_get_saveable_types (RBMetaData *md);
 
 void		rb_metadata_load	(RBMetaData *md,
 					 const char *uri,

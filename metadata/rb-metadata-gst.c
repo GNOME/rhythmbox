@@ -863,6 +863,25 @@ rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 	return g_hash_table_lookup (md->priv->taggers, mimetype) != NULL;
 }
 
+char **
+rb_metadata_get_saveable_types (RBMetaData *md)
+{
+	GHashTableIter iter;
+	gpointer key;
+	gpointer value;
+	char **types;
+	int i;
+
+	types = g_new0 (char *, g_hash_table_size (md->priv->taggers) + 1);
+	i = 0;
+	g_hash_table_iter_init (&iter, md->priv->taggers);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		types[i++] = g_strdup ((const char *) key);
+	}
+
+	return types;
+}
+
 static void
 rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, RBMetaData *md)
 {

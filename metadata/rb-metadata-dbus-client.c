@@ -83,6 +83,7 @@ static GPid metadata_child = 0;
 static int metadata_stdout = -1;
 static GMainContext *main_context = NULL;
 static GStaticMutex conn_mutex = G_STATIC_MUTEX_INIT;
+static char **saveable_types = NULL;
 
 struct RBMetaDataPrivate
 {
@@ -688,6 +689,22 @@ rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 	g_static_mutex_unlock (&conn_mutex);
 
 	return can_save;
+}
+
+/**
+ * rb_metadata_get_saveable_types:
+ * @md: a #RBMetaData
+ *
+ * Constructs a list of the media types for which the metadata backend
+ * implements tag saving.
+ *
+ * Return value: a NULL-terminated array of media type strings.  Use g_strfreev
+ *  to free it.
+ */
+char **
+rb_metadata_get_saveable_types (RBMetaData *md)
+{
+	return g_strdupv (saveable_types);
 }
 
 /**
