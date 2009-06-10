@@ -208,9 +208,13 @@ static gboolean
 start_metadata_service (GError **error)
 {
 	DBusError dbus_error = {0,};
+	DBusMessage *message;
+	DBusMessage *response;
+	DBusMessageIter iter;
 	GIOChannel *stdout_channel;
 	GIOStatus status;
 	gchar *dbus_address = NULL;
+	char *saveable_type_list;
 
 	if (dbus_connection) {
 		if (ping_metadata_service (error))
@@ -308,6 +312,51 @@ start_metadata_service (GError **error)
 	dbus_connection_setup_with_g_main (dbus_connection, main_context);
 
 	rb_debug ("Metadata process %d started", metadata_child);
+
+	/* now ask it what types it can re-tag */
+	if (saveable_types != NULL) {
+		g_strfreev (saveable_types);
+	}
+
+	message = dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
+						RB_METADATA_DBUS_OBJECT_PATH,
+						RB_METADATA_DBUS_INTERFACE,
+						"getSaveableTypes");
+	if (!message) {
+		/* what now? */
+		rb_debug ("unable to query metadata helper for saveable types");
+		return FALSE;
+	}
+
+	rb_debug ("sending metadata saveable types query");
+	response = dbus_connection_send_with_reply_and_block (dbus_connection,
+							      message,
+							      RB_METADATA_DBUS_TIMEOUT,
+							      &dbus_error);
+
+	if (!response) {
+		rb_debug ("saveable type query failed");
+		return FALSE;
+	}
+
+	if (!dbus_message_iter_init (response, &iter)) {
+		rb_debug ("couldn't read saveable type query response");
+		return FALSE;
+	}
+
+	if (!rb_metadata_dbus_get_strv (&iter, &saveable_types)) {
+		rb_debug ("couldn't get saveable type data from response message");
+		return FALSE;
+	}
+
+	saveable_type_list = g_strjoinv (", ", saveable_types);
+	rb_debug ("saveable types from metadata helper: %s", saveable_type_list);
+	g_free (saveable_type_list);
+
+	if (message)
+		dbus_message_unref (message);
+	if (response)
+		dbus_message_unref (response);
 	return TRUE;
 }
 
