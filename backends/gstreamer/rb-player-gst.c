@@ -98,6 +98,7 @@ struct _RBPlayerGstPrivate
 
 	gboolean stream_change_pending;
 	gboolean current_track_finishing;
+	gboolean fake_playing_position;
 
 	gboolean emitted_error;
 
@@ -122,6 +123,7 @@ tick_timeout (RBPlayerGst *mp)
 				      mp->priv->stream_data,
 				      rb_player_get_time (RB_PLAYER (mp)),
 				      -1);
+		mp->priv->fake_playing_position = FALSE;
 	}
 	return TRUE;
 }
@@ -729,6 +731,12 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 		g_object_set (mp->priv->playbin, "uri", mp->priv->uri, NULL);
 		result = TRUE;
 
+		/* since we don't know exactly when the change occurs, pretend the playing position
+		 * is 0 until the next tick.  otherwise we sometimes get the playing position from the
+		 * previous track.
+		 */
+		mp->priv->fake_playing_position = TRUE;
+
 	} else {
 		gboolean reused = FALSE;
 
@@ -937,7 +945,10 @@ impl_get_time (RBPlayer *player)
 {
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
-	if (mp->priv->playbin != NULL) {
+	if (mp->priv->fake_playing_position) {
+		/* track transition occurring, so pretend we're at the start of the new one */
+		return 0;
+	} else if (mp->priv->playbin != NULL) {
 		gint64 position = -1;
 		GstFormat fmt = GST_FORMAT_TIME;
 
