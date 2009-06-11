@@ -1,14 +1,14 @@
-# translation of rhythmbox.master.gu.po to Gujarati
+# translation of gu.po to Gujarati
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Sweta Kothari <swkothar@redhat.com>, 2009.
 msgid ""
 msgstr ""
-"Project-Id-Version: rhythmbox.master.gu\n"
+"Project-Id-Version: gu\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
 "POT-Creation-Date: 2009-06-08 10:42+0000\n"
-"PO-Revision-Date: 2009-06-10 15:57+0530\n"
+"PO-Revision-Date: 2009-06-11 17:00+0530\n"
 "Last-Translator: Sweta Kothari <swkothar@redhat.com>\n"
 "Language-Team: Gujarati\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +25,7 @@ msgstr "શું તમે ફાઇલ \"%s\" ઉપર લખવા માં
 #: ../backends/gstreamer/rb-encoder-gst.c:658
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
-msgstr ""
+msgstr "%s માં લખવા માટે GStreamer સિંક ઘટકને બનાવી શકાયુ નહિં"
 
 #: ../backends/gstreamer/rb-player-gst.c:365
 #, c-format
@@ -117,11 +117,11 @@ msgstr "મિનિટો"
 
 #: ../data/ui/create-playlist.ui.h:7
 msgid "_Limit to: "
-msgstr ""
+msgstr "ની મર્યાદા (_L): "
 
 #: ../data/ui/create-playlist.ui.h:8
 msgid "_When sorted by:"
-msgstr ""
+msgstr "ને દ્દારા ક્રમ કરેલ (_W):"
 
 #: ../data/ui/create-playlist.ui.h:9
 msgid "songs"
@@ -205,7 +205,7 @@ msgstr "છેલ્લે વગાડેલ (_L)"
 
 #: ../data/ui/general-prefs.ui.h:20
 msgid "_Play count"
-msgstr ""
+msgstr "ગણતરીને વગાડો (_P)"
 
 #: ../data/ui/general-prefs.ui.h:21
 msgid "_Quality"
@@ -213,7 +213,7 @@ msgstr "ગુણવત્તા (_Q)"
 
 #: ../data/ui/general-prefs.ui.h:22
 msgid "_Rating"
-msgstr ""
+msgstr "રેટિંગ (_R)"
 
 #: ../data/ui/general-prefs.ui.h:23
 msgid "_Year"
@@ -261,7 +261,7 @@ msgstr "નવી ફાઇલો માટે મારી લાઇબ્ર�
 
 #: ../data/ui/playback-prefs.ui.h:1
 msgid "Crossfade Duration (Seconds)"
-msgstr ""
+msgstr "Crossfade સમયગાળો (સેકંડો)"
 
 #: ../data/ui/playback-prefs.ui.h:2
 msgid "Network Buffer Size (kB)"
@@ -269,11 +269,11 @@ msgstr "નેટવર્ક બફર માપ (kB)"
 
 #: ../data/ui/playback-prefs.ui.h:3
 msgid "Player Backend"
-msgstr ""
+msgstr "પ્લેયર બેકએન્ડ"
 
 #: ../data/ui/playback-prefs.ui.h:4
 msgid "_Use crossfading backend (requires restart)"
-msgstr ""
+msgstr "crossfading બેકએન્ડને વાપરો (_U) (પુન:શરૂ કરવાની જરૂર છે)"
 
 #: ../data/ui/playlist-save.ui.h:1
 msgid "<b>Playlist format</b>"
@@ -526,7 +526,7 @@ msgstr "'Type=Link' ડેસ્કટોપ પ્રવેશમાં દસ�
 #: ../lib/eggdesktopfile.c:1392
 #, c-format
 msgid "Not a launchable item"
-msgstr ""
+msgstr "શરૂ કરી શકાય તેવી વસ્તુ નથી"
 
 #: ../lib/eggsmclient.c:225
 msgid "Disable connection to session manager"
@@ -2164,7 +2164,7 @@ msgstr "Jamendo"
 #: ../plugins/jamendo/jamendo/__init__.py:75
 #: ../plugins/magnatune/magnatune/__init__.py:96
 msgid "Stores"
-msgstr ""
+msgstr "સંગ્રહ કરો"
 
 #: ../plugins/jamendo/jamendo/__init__.py:95
 msgid "_Download Album"
@@ -2177,15 +2177,15 @@ msgstr "BitTorrent મદદથી આ આલ્બમને ડાઉનલો�
 #. Add Button for Donate
 #: ../plugins/jamendo/jamendo/__init__.py:103
 msgid "_Donate to Artist"
-msgstr ""
+msgstr "કલાકારને દાન કરો (_D)"
 
 #: ../plugins/jamendo/jamendo/__init__.py:104
 msgid "Donate Money to this Artist"
-msgstr ""
+msgstr "આ કલાકારને પૈસા દાન કરો"
 
 #: ../plugins/jamendo/jamendo/JamendoSource.py:120
 msgid "Loading Jamendo catalog"
-msgstr ""
+msgstr "Jamendo કેટલોગને લોડ કરી રહ્યા છે"
 
 #: ../plugins/jamendo/jamendo/JamendoSource.py:303
 #, python-format
@@ -2227,7 +2227,7 @@ msgstr "રેડિયો"
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
-msgstr[0] ""
+msgstr[0] "%d સ્ટેશન"
 msgstr[1] "%d સ્ટેશનો"
 
 #: ../plugins/iradio/rb-iradio-source.c:1003
@@ -2260,7 +2260,7 @@ msgstr "સ્ટેશન ગુણધર્મને બદલવાનું 
 #: ../plugins/iradio/rb-station-properties-dialog.c:584
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
-msgstr ""
+msgstr "%s માં સ્ટેશનને બદલવામાં અસમર્થ, પેલુ સ્ટેશન પહેલેથી અસ્તિત્વ ધરાવે છે"
 
 #: ../plugins/iradio/station-properties.ui.h:5
 msgid "L_ocation:"
@@ -2295,23 +2295,23 @@ msgstr "ફરીથી શોધો (_S)"
 #: ../plugins/lyrics/lyrics/__init__.py:215
 #: ../plugins/lyrics/lyrics/__init__.py:284
 msgid "Lyrics"
-msgstr ""
+msgstr "ગીતકાવ્યો"
 
 #: ../plugins/lyrics/lyrics/__init__.py:258
 msgid "Searching for lyrics..."
-msgstr ""
+msgstr "ગીતકાવ્યો માટે શોધી રહ્યા છે..."
 
 #: ../plugins/lyrics/lyrics/__init__.py:294
 msgid "Song L_yrics"
-msgstr ""
+msgstr "ગીત કાવ્યો (_y)"
 
 #: ../plugins/lyrics/lyrics/__init__.py:295
 msgid "Display lyrics for the playing song"
-msgstr ""
+msgstr "ગીતને વગાડવા માટે ગીતકાવ્યોને દર્શાવો"
 
 #: ../plugins/lyrics/lyrics/LyricsConfigureDialog.py:106
 msgid "Choose lyrics folder..."
-msgstr ""
+msgstr "ગીતકાવ્યો ફોલ્ડરને પસંદ કરો..."
 
 #: ../plugins/lyrics/lyrics.rb-plugin.in.h:1
 msgid "Fetch song lyrics from the Internet"
@@ -2323,7 +2323,7 @@ msgstr ""
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:1
 msgid "<b>Lyrics Folder</b>"
-msgstr ""
+msgstr "<b>ગીતકાવ્યો ફોલ્ડર</b>"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:2
 msgid "<b>Search engines</b>"
@@ -2335,7 +2335,7 @@ msgstr "બ્રાઉઝ કરો..."
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:4
 msgid "Lyrics Plugin Preferences"
-msgstr ""
+msgstr "ગીતકાવ્યો પ્લગઇન પસંદગીઓ"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
 msgid "     * Founder/owner runs it -- support a small business"
@@ -2454,7 +2454,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:26
 msgid "You can find more information at http://www.magnatune.com/"
-msgstr ""
+msgstr "http://www.magnatune.com/ પર તમે વધારે જાણકારી શોધી શકો છો"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
 #: ../plugins/magnatune/magnatune-purchase.ui.h:1
@@ -2558,7 +2558,7 @@ msgstr "ડિસેમ્બર (12)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:21
 msgid "Default _amount to pay:"
-msgstr ""
+msgstr "કિંમત ચૂકવવા માટે મૂળભૂત કિંમત (_a):"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:22
 msgid "Expiry:"
@@ -2576,7 +2576,7 @@ msgstr "ફેબ્રુઆરી (02)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:25
 msgid "Find out about Magnatune at "
-msgstr ""
+msgstr "Magnatune વિશો શોધો "
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:26
 #: ../plugins/magnatune/magnatune-purchase.ui.h:28
@@ -2632,7 +2632,7 @@ msgstr "પસંદ થયેલ ઓડિયો બંધારણ (_f):"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:37
 msgid "Redownload purchased music at "
-msgstr ""
+msgstr "ખરીદેલ સંગીત ને પુન:ડાઉનલોડ કરો"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:38
 msgid "Remember my credit card details"
@@ -2650,7 +2650,7 @@ msgstr "VBR MP3"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:41
 msgid "Visit Magnatune at "
-msgstr ""
+msgstr "Magnatune ની મુલાકાત લો"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:42
 #: ../plugins/magnatune/magnatune-purchase.ui.h:39
@@ -2695,7 +2695,7 @@ msgstr "નિવૃત્ત મહિનો (_m):"
 
 #: ../plugins/magnatune/magnatune-purchase.ui.h:23
 msgid "Expiry _year (last two digits):"
-msgstr ""
+msgstr "નિવૃત્ત વર્ષ (_y) (છેલ્લા બે આંકડાઓ):"
 
 #: ../plugins/magnatune/magnatune-purchase.ui.h:26
 msgid "Gift Card"
@@ -2707,11 +2707,11 @@ msgstr "ભેટ કાર્ડ નંબર:"
 
 #: ../plugins/magnatune/magnatune-purchase.ui.h:36
 msgid "Purchase Magnatune Tracks"
-msgstr ""
+msgstr "Magnatune ટ્રેકોને ખરીદો"
 
 #: ../plugins/magnatune/magnatune-purchase.ui.h:40
 msgid "_Amount to pay (US Dollars):"
-msgstr ""
+msgstr "પૈસા ચૂકવવા માટે કિંમત (_A) (US ડોલરો):"
 
 #: ../plugins/magnatune/magnatune-purchase.ui.h:41
 msgid "_Email address:"
@@ -2737,19 +2737,19 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune.rb-plugin.in.h:2
 msgid "Magnatune Store"
-msgstr ""
+msgstr "Magnatune સંગ્રહ"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:74
 msgid "Magnatune"
-msgstr ""
+msgstr "Magnatune"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:121
 msgid "Loading Magnatune catalog"
-msgstr ""
+msgstr "Magnatune કેટલોગને લોડ કરી રહ્યા છે"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:124
 msgid "Downloading Magnatune Album(s)"
-msgstr ""
+msgstr "Magnatune આલ્બમ(ઓ) ને ડાઉનલોડ કરી રહ્યા છે"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:231
 msgid "Couldn't purchase album"
@@ -2757,12 +2757,12 @@ msgstr "આલ્બમને ખરીદી શકાયો નહિં"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:232
 msgid "You must have a library location set to purchase an album."
-msgstr ""
+msgstr "આલ્બમને ખરીદવા માટે તમારે લાઇબ્રેરી સ્થાનને સુયોજિત કરવી પડશે જ."
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:255
 #, python-format
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
-msgstr ""
+msgstr "'%(artist)s' દ્દારા આલ્બમ <i>%(album)s</i> ને ખરીદવા માંગો છો?"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:372
 msgid "Unable to load catalog"
@@ -2770,7 +2770,7 @@ msgstr "કેટલોગને લોડ કરવામાં અસમર્
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:373
 msgid "Rhythmbox could not understand the Magnatune catalog, please file a bug."
-msgstr ""
+msgstr "Rhythmbox એ Magnatune કેટલોગને સમજી શક્યુ નહિં, મહેરબાની કરીને બગને નોંધો."
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:459
 msgid "Authorizing Purchase"
@@ -2782,7 +2782,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:506
 msgid "Purchase Error"
-msgstr ""
+msgstr "ખરીદી ભૂલ"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:507
 #, python-format
@@ -2791,6 +2791,9 @@ msgid ""
 "The Magnatune server returned:\n"
 "%s"
 msgstr ""
+"જ્યારે આલ્બમને ખરીદવા માટે પ્રયત્ન કરી રહ્યા હોય ત્યારે ભૂલ ઉદ્ભવી.\n"
+"Magnatune સર્વર પાછુ આવેલ છે:\n"
+"%s"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:510
 #: ../widgets/rb-entry-view.c:1582
@@ -2804,6 +2807,9 @@ msgid ""
 "The error text is:\n"
 "%s"
 msgstr ""
+"જ્યારે આલ્બમને ખરીદવાનો પ્રયત્ન કરી રહ્યા હોય ત્યારે ભૂલ ઉદ્ભવી.\n"
+"ભૂલ લખાણ આ છે:\n"
+"%s"
 
 #. Add the popup menu actions
 #: ../plugins/magnatune/magnatune/__init__.py:122
@@ -2836,23 +2842,23 @@ msgstr "ડાઉનલોડને રદ કરો"
 
 #: ../plugins/magnatune/magnatune/__init__.py:139
 msgid "Stop downloading purchased albums"
-msgstr ""
+msgstr "ખરીદેલ આલ્બમને ડાઉનલોડ કરવાનું બંધ કરો"
 
 #: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
-msgstr ""
+msgstr "કી ટૂંકાણોની મદદથી Rhythmbox ને નિયંત્રણ કરો"
 
 #: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:2
 msgid "Media Player Keys"
-msgstr ""
+msgstr "મીડિયા પ્લેયર કીઓ"
 
 #: ../plugins/mtpdevice/mtpdevice.rb-plugin.in.h:1
 msgid "Portable Players - MTP"
-msgstr ""
+msgstr "પોર્ટેબલ પ્લેયરો - MTP"
 
 #: ../plugins/mtpdevice/mtpdevice.rb-plugin.in.h:2
 msgid "Support for MTP devices (show the content, transfer, play from device)"
-msgstr ""
+msgstr "MTP ઉપકરણો માટે આધાર (ઉપકરણ માટે સમાવિષ્ટ, સ્થળાંતર, વગાડોને બતાવો)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:174
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:216
@@ -3018,7 +3024,7 @@ msgstr "સૂચનાઓને બતાવો (_o)"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:147
 msgid "Show notifications of song changes and other events"
-msgstr ""
+msgstr "ગીત બદલાવો અને બીજી ઘટનાઓની નોંધણીઓને બતાવો"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:406
 #, fuzzy
@@ -3632,11 +3638,11 @@ msgstr "વગાડવાની યાદી %s એ આપોઆપ વગા�
 
 #: ../shell/rb-removable-media-manager.c:151
 msgid "Eject this medium"
-msgstr ""
+msgstr "આ માધ્યમને બહાર કાઢો"
 
 #: ../shell/rb-removable-media-manager.c:153
 msgid "_Extract to Library"
-msgstr ""
+msgstr "લાઇબ્રેરીનો અર્ક કરો (_E)"
 
 #: ../shell/rb-removable-media-manager.c:154
 msgid "Copy all tracks to the library"
@@ -4261,8 +4267,8 @@ msgstr "ભૂલોને આયાત કરો"
 #, c-format
 msgid "%d import errors"
 msgid_plural "%d import errors"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d એ ભૂલોને આયાત કરે છે"
+msgstr[1] "%d એ ભૂલોને આયાત કરે છે"
 
 #: ../sources/rb-library-source.c:137
 msgid "Artist/Artist - Album"
@@ -4293,15 +4299,15 @@ msgstr "કલાકાર - શીર્ષક"
 
 #: ../sources/rb-library-source.c:148
 msgid "Artist - Number - Title"
-msgstr ""
+msgstr "કલાકાર - નંબર - શીર્ષક"
 
 #: ../sources/rb-library-source.c:149
 msgid "Artist (Album) - Number - Title"
-msgstr ""
+msgstr "કલાકાર (આલ્બમ) - નંબર - શીર્ષક"
 
 #: ../sources/rb-library-source.c:151
 msgid "Number. Artist - Title"
-msgstr ""
+msgstr "નંબર. કલાકાર - શીર્ષક"
 
 #: ../sources/rb-library-source.c:390
 msgid "Music"
@@ -4313,7 +4319,7 @@ msgstr "લાઇબ્રેરી સ્થાનને પસંદ કરો
 
 #: ../sources/rb-library-source.c:599
 msgid "Multiple locations set"
-msgstr ""
+msgstr "ઘણાબધા સ્થાનો સુયોજિત"
 
 #: ../sources/rb-library-source.c:994
 msgid "Example Path:"
@@ -4344,7 +4350,7 @@ msgstr "કતારની અદલાબદલી કરો"
 
 #: ../sources/rb-play-queue-source.c:119
 msgid "Shuffle the tracks in the play queue"
-msgstr ""
+msgstr "વગાડવાની કતારમાં ટ્રેકોની અદલાબદલી કરો"
 
 #. Translators: this is the toolbutton label for Clear Queue action
 #: ../sources/rb-play-queue-source.c:241
@@ -4394,7 +4400,7 @@ msgstr ""
 
 #: ../sources/rb-podcast-source.c:320
 msgid "_Update Podcast Feed"
-msgstr ""
+msgstr "પોડકાસ્ટ ફીડને સુધારો (_U)"
 
 #: ../sources/rb-podcast-source.c:321
 msgid "Update Feed"
@@ -4491,7 +4497,7 @@ msgstr ""
 
 #: ../sources/rb-podcast-source.c:1375
 msgid "Delete the podcast feed and downloaded files?"
-msgstr ""
+msgstr "પોડકાસ્ટ ફીડ અને ડાઉનલોડ થયેલ ફાઇલોને કાઢી નાંખો?"
 
 #: ../sources/rb-podcast-source.c:1378
 msgid ""
@@ -4534,7 +4540,7 @@ msgstr "પોડકાસ્ટમાં ભૂલ"
 #: ../sources/rb-podcast-source.c:1893
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
-msgstr ""
+msgstr "%s. ગમે તે રીતે પોડકાસ્ટ ફીડ ને તમે ઉમેરવા માંગો છો?"
 
 #: ../sources/rb-podcast-source.c:2020
 msgid "New Podcast Feed"
@@ -4628,7 +4634,7 @@ msgstr "રેટિંગ"
 #: ../widgets/rb-entry-view.c:1528 ../widgets/rb-query-creator-properties.c:83
 #: ../widgets/rb-query-creator-properties.c:107
 msgid "Play Count"
-msgstr ""
+msgstr "કાઉન્ટને વગાડો"
 
 #: ../widgets/rb-entry-view.c:1540
 #: ../widgets/rb-query-creator-properties.c:111
@@ -4664,15 +4670,15 @@ msgstr "વગાડી રહ્યા નથી"
 #, c-format
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d કલાકાર (%d)"
+msgstr[1] "બધા %d કલાકારો (%d)"
 
 #: ../widgets/rb-property-view.c:633
 #, c-format
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d આલ્બમ (%d)"
+msgstr[1] "બધા %d આલ્બમો (%d)"
 
 #: ../widgets/rb-property-view.c:636
 #, c-format
@@ -4685,7 +4691,7 @@ msgstr[1] ""
 #, c-format
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
-msgstr[0] ""
+msgstr[0] "%d (%d)"
 msgstr[1] "બધા %d (%d)"
 
 #: ../widgets/rb-property-view.c:645
@@ -4708,7 +4714,7 @@ msgstr "ડિસ્ક નંબર"
 
 #: ../widgets/rb-query-creator-properties.c:86
 msgid "Bitrate"
-msgstr ""
+msgstr "બીટરેટ"
 
 #: ../widgets/rb-query-creator-properties.c:88
 #: ../widgets/rb-query-creator-properties.c:109
@@ -4721,7 +4727,7 @@ msgstr ""
 
 #: ../widgets/rb-query-creator-properties.c:91
 msgid "Time Added to Library"
-msgstr ""
+msgstr "લાઇબ્રેરીમાં સમય ઉમેરાયેલ છે"
 
 #: ../widgets/rb-query-creator-properties.c:102
 #: ../widgets/rb-query-creator-properties.c:103
@@ -4740,11 +4746,11 @@ msgstr ""
 
 #: ../widgets/rb-query-creator-properties.c:108
 msgid "W_ith newer tracks first"
-msgstr ""
+msgstr "પહેલાં નવા ટ્રેકો સાથે (_i)"
 
 #: ../widgets/rb-query-creator-properties.c:109
 msgid "W_ith longer tracks first"
-msgstr ""
+msgstr "પહેલાં લાંબા ટ્રેકો સાથે (_i)"
 
 #: ../widgets/rb-query-creator-properties.c:110
 msgid "_In decreasing order"
@@ -4840,7 +4846,7 @@ msgstr "અઠવાડિયાઓ"
 
 #: ../widgets/rb-query-creator.c:214
 msgid "Create Automatic Playlist"
-msgstr ""
+msgstr "આપમેળે વગાડવાની યાદીને બનાવો"
 
 #: ../widgets/rb-query-creator.c:216
 msgid "Edit Automatic Playlist"
