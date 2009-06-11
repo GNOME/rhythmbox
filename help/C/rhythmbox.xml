@@ -256,7 +256,7 @@
 						<listitem>
 							<para>
 						 		Choose
-								<menuchoice><guisubmenu>Multimedia</guisubmenu>
+								<menuchoice><guisubmenu>Sound&amp;Video</guisubmenu>
 								<guimenuitem>Rhythmbox Music
 								Player</guimenuitem></menuchoice>.
 							</para>
@@ -279,7 +279,7 @@
 			<para>
 				The first time you launch the <application>&app;</application>, an 
 				assistant will help you import your music. On the second panel
-				of the assistant, press the <guibutton>Browse...</guibutton> button and 
+				of the assistant, press the <guibutton>Browse</guibutton> button and
 				select the folder where your music is stored.
 			</para>
 		</sect2>
@@ -301,10 +301,10 @@
               <imagedata fileref="figures/rb-window.png" format="PNG"/>
             </imageobject>
             <textobject>
-            	<phrase>Show the <application>&app;</application> window showing 
-            	the different parts on the <application>&app;</application> interface.
-						Callouts: Menubar, Player area, Browser, Source list, Statusbar.
-				</phrase>
+              <phrase>Show the <application>&app;</application> window showing 
+                the different parts on the <application>&app;</application> interface.
+                Callouts: Menubar, Player area, Browser, Side pane, Statusbar.
+              </phrase>
             </textobject>
           </mediaobject>
         </screenshot>
@@ -344,7 +344,7 @@
             </row>
             <row>
               <entry valign="top">4</entry>
-              <entry valign="top">Source List</entry>
+              <entry valign="top">Side Pane</entry>
               <entry valign="top">Displays a list of available
 							sources.</entry>
 
@@ -367,16 +367,16 @@
               <entry valign="top">7</entry>
               <entry valign="top">Statusbar</entry>
               <entry valign="top">Displays informations about the
-							source selected in Source List.</entry>
+							source selected in the side pane.</entry>
             </row>
           </tbody>
         </tgroup>
       </table>
     </sect2>
     <sect2 id="intro-sourcelist">
-      <title>The Source List</title>
-      <para>The source list is where you can access your music library,
-			internet radio,	your playlists and audio CDs. The source list can contain	
+      <title>The Side Pane</title>
+      <para>The side pane is where you can access your music library,
+			internet radio,	your playlists and audio CDs. The side pane can contain
 			the following sources:
 				<itemizedlist>
 				  <listitem><para>The <application>&app;</application> library, where 
@@ -396,8 +396,8 @@
 				</itemizedlist>
 		</para>
       	<para>
-				The display of the source list can be toggled on or off by selecting
-				<menuchoice><guimenu>View</guimenu><guimenuitem>Source List</guimenuitem>
+				The display of the side pane can be toggled on or off by selecting
+				<menuchoice><guimenu>View</guimenu><guimenuitem>Side Pane</guimenuitem>
 				</menuchoice>.
 			</para>
     </sect2>
@@ -615,7 +615,7 @@
 					<listitem>
 						<para>
 							To import only one track, choose 
-							<menuchoice><guimenu>Music</guimenu><guimenuitem>Import File...
+							<menuchoice><guimenu>Music</guimenu><guimenuitem>Import File
 							</guimenuitem></menuchoice> from the menu, then select the file
 							in the file selector and press the <guibutton>Open</guibutton> button.
 						</para>
@@ -624,7 +624,7 @@
 						<para>
 							If you want to import several music files located in a
 							folder, choose <menuchoice><guimenu>Music</guimenu><guimenuitem>Import
-							Folder...</guimenuitem></menuchoice> from the menu, then select the
+							Folder</guimenuitem></menuchoice> from the menu, then select the
 							folder in the file selector and press the 
 							<guibutton>Open</guibutton> button. All the music files located
 							in the folder and its sub-folders will be imported.
@@ -1012,7 +1012,7 @@
 			To create a new playlist, choose
 			<menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>New
 			Playlist</guimenuitem></menuchoice>. An empty playlist without name 
-			appears in the Source list. Enter a name for the playlist and press
+			appears in the side pane. Enter a name for the playlist and press
 			<keycombo><keycap>Enter</keycap></keycombo>.
 		</para>
       </sect3>
@@ -1021,7 +1021,7 @@
         <para>
 					To add tracks to a playlist, select tracks from the track
 					list from the library and drag and drop your selection over the
-					playlist icon in the Source list.
+					playlist icon in the side pane.
 				</para>
         <para>
 					You can also drop over a playlist a genre, an artist, or an
@@ -1029,7 +1029,11 @@
 					to the chosen category will be added to the playlist.
 				</para>
         <tip>
-          <para>You can create a playlist with tracks in one action. Select tracks from the <guilabel>Tracks List</guilabel>, or directly one or more categories from the browser (<guilabel>Genre</guilabel>, <guilabel>Artist</guilabel> or <guilabel>Album</guilabel>) and drop the selection over the <guilabel>Source List</guilabel>. It will create automatically a named playlist.</para>
+          <para>You can create a playlist with tracks in one action. Select tracks from
+            the <guilabel>Tracks List</guilabel>, or directly one or more categories from
+            the browser (<guilabel>Genre</guilabel>, <guilabel>Artist</guilabel> or
+            <guilabel>Album</guilabel>) and drop the selection over the <guilabel>Side
+            pane</guilabel>. It will automatically create a named playlist.</para>
         </tip>
       </sect3>
       <sect3 id="playlist-static-tracks-del">
@@ -1076,7 +1080,7 @@
 					To create a new playlist:
 					<orderedlist><listitem><para>
 								Choose <menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>New
-								Automatic Playlist...</guimenuitem></menuchoice>.
+								Automatic Playlist</guimenuitem></menuchoice>.
 							</para></listitem><listitem><para>
 								Edit the playlist criteria through the query editor.
 							</para></listitem><listitem><para>
@@ -1139,7 +1143,7 @@
     <sect2 id="cd-playing">
       <title>Playing</title>
       <para>When an Audio CD is inserted, it will appear in the
-	  Source list, and the tracks on it can be displayed in
+	  side pane, and the tracks on it can be displayed in
 	  <application>&app;</application>'s main window. If you are connected to
 	  the Internet, the CD details will be retrieved and displayed.
 			</para>
@@ -1152,8 +1156,8 @@
       <para>If you wish to keep the tracks of your Audio CDs on your computer,
 			you can import them.</para>
       <para>To import Audio CD tracks, choose <menuchoice><guimenu>Music</guimenu>
-	  <guimenuitem>Import Audio CD...</guimenuitem></menuchoice>, it will start Sound-Juicer,
-			an application dedicated to importing Audio CDs. To know more about Sound-Juicer,
+	  <guimenuitem>Import Audio CD</guimenuitem></menuchoice>, it will start <application>Sound-Juicer</application>,
+			an application dedicated to importing Audio CDs. To know more about <application>Sound-Juicer</application>,
 			you can read the <ulink url="ghelp:sound-juicer">Sound-Juicer manual</ulink>.</para>
       <tip>
         <para>To get imported tracks from Sound-Juicer automatically added to you Rhythmbox Library,
@@ -1169,7 +1173,11 @@
       <para>Rhythmbox enables you to create you own Audio CDs with the music stored in the Rhythmbox Library.</para>
       <para>To create an Audio CD: 
 				<orderedlist><listitem><para>Create a playlist, static or smart
-				(see <xref linkend="playlist"/>) and add tracks.</para></listitem><listitem><para>Choose <menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>Create Audio CD...</guimenuitem></menuchoice></para></listitem><listitem><para>Insert a blank CD.</para></listitem><listitem><para>Click the button <guibutton>Create</guibutton>, the burning process starts.</para></listitem></orderedlist>
+				(see <xref linkend="playlist"/>) and add tracks.</para></listitem>
+                <listitem><para>Choose <menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>Create Audio CD</guimenuitem></menuchoice></para></listitem>
+                <listitem><para>Insert a blank CD.</para></listitem>
+                <listitem><para>Click the button <guibutton>Create</guibutton>, the burning process starts.</para></listitem>
+                </orderedlist>
 			</para>
     </sect2>
   </sect1>
@@ -1181,7 +1189,7 @@
 	portable audio players including Apple iPod, MTP players and Mass Storage
 	players.</para>
     <para>When you plug in a portable audio player, an icon for the Portable Audio Player
-        is added to the Source List. This source works in the same way as the Library
+        is added to the side pane. This source works in the same way as the Library
         source.</para>
 	<tip><para>If <application>&app;</application> does not detect your device
 	as a portable audio player, you can create an empty file named
@@ -1197,7 +1205,7 @@
 	software, like iTunes.</para>
     <para>When you start Rhythmbox, it will look for all DAAP shares published on
         your local network (your home or your office, not the whole Internet) by other
-        users and will display them in the <guilabel>Source</guilabel> list. If sharing
+        users and will display them in the side pane. If sharing
         is enabled, at the same time Rhythmbox will publish your library and your
         playlists. In this way, you can listen to music stored on your friend's
         computers and they can listen your music.</para>
@@ -1382,8 +1390,8 @@
 			</para>
             <para>
 				If this location doesn't fit your needs, select another folder
-				in the drop-down list or choose <guilabel>Other...</guilabel>
-				to make the File Selector appears.
+				in the drop-down list or choose <guilabel>Other</guilabel>
+				to make the File Selector appear.
 			</para>
           </listitem>
           <listitem>
@@ -1464,7 +1472,7 @@
             <row>
               <entry>
                 <keycombo>
-                  <keycap>Alt</keycap>
+                  <keycap>Ctrl</keycap>
                   <keycap>Space</keycap>
                 </keycombo>
               </entry>
@@ -1704,12 +1712,11 @@
             <row>
               <entry>
                 <keycombo>
-                  <keycap>Ctrl</keycap>
-                  <keycap>L</keycap>
+                  <keycap>F9</keycap>
                 </keycombo>
               </entry>
               <entry>
-                <para>Show / Hide the sources list</para>
+                <para>Show / Hide the side pane</para>
               </entry>
             </row>
             <row>
