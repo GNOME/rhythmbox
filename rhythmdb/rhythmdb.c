@@ -2283,6 +2283,9 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 	GTimeVal time;
 	const char *media_type;
 
+	if (event->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID)
+		event->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
+
 	/*
 	 * always ignore anything with video in it, or anything
 	 * matching one of the media types we don't care about.
@@ -2333,8 +2336,7 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 	entry = rhythmdb_entry_lookup_by_location_refstring (event->db, event->real_uri);
 
 	if (entry != NULL) {
-		if ((event->entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) &&
-		    (rhythmdb_entry_get_entry_type (entry) != event->entry_type)) {
+		if (rhythmdb_entry_get_entry_type (entry) != event->entry_type) {
 			/* switching from IGNORE to SONG or vice versa, recreate the entry */
 			rhythmdb_entry_delete (event->db, entry);
 			rhythmdb_add_timeout_commit (event->db, FALSE);
@@ -2343,8 +2345,6 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 	}
 
 	if (entry == NULL) {
-		if (event->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID)
-			event->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 
 		entry = rhythmdb_entry_new (event->db, event->entry_type, rb_refstring_get (event->real_uri));
 		if (entry == NULL) {
