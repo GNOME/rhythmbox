@@ -1240,7 +1240,9 @@ update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int 
 
 		rb_shell_add_widget (plugin->shell,
 				     plugin->vis_box,
-				     RB_SHELL_UI_LOCATION_MAIN_BOTTOM);
+				     RB_SHELL_UI_LOCATION_MAIN_BOTTOM,
+				     FALSE,
+				     TRUE);
 
 		if (plugin->xoverlay != NULL) {
 			gst_x_overlay_set_xwindow_id (plugin->xoverlay, plugin->remote_window);
@@ -1709,7 +1711,7 @@ impl_activate (RBPlugin *plugin,
 
 	if (pi->vis_shell == NULL) {
 		pi->vis_shell = gtk_vbox_new (FALSE, 0);
-		rb_shell_add_widget (pi->shell, pi->vis_shell, RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK);
+		rb_shell_add_widget (pi->shell, pi->vis_shell, RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK, FALSE, TRUE);
 	}
 
 	if (pi->vis_window == NULL) {

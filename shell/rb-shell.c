@@ -3264,7 +3264,7 @@ rb_shell_get_box_for_ui_location (RBShell *shell, RBShellUILocation location)
 }
 
 void
-rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location)
+rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location, gboolean expand, gboolean fill)
 {
 	GtkBox *box;
 
@@ -3282,7 +3282,7 @@ rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation locati
 		box = rb_shell_get_box_for_ui_location (shell, location);
 		g_return_if_fail (box != NULL);
 
-		gtk_box_pack_start (box, widget, FALSE, TRUE, 0);
+		gtk_box_pack_start (box, widget, expand, fill, 0);
 		break;
 	}
 }

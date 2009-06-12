@@ -162,7 +162,7 @@ gboolean        rb_shell_get_party_mode (RBShell *shell);
 
 void rb_shell_append_source (RBShell *shell, RBSource *source, RBSource *parent);
 
-void 		rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location);
+void 		rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location, gboolean expand, gboolean fill);
 void 		rb_shell_remove_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location);
 void		rb_shell_notebook_set_page (RBShell *shell, GtkWidget *widget);
 
