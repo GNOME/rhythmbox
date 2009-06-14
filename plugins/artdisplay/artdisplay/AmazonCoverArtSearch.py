@@ -32,6 +32,8 @@ import urllib
 import rb
 import rhythmdb
 
+from rb.stringmatch import string_match
+
 LICENSE_KEY = "18C3VZN9HCECM5G3HQG2"
 DEFAULT_LOCALE = "en_US"
 ASSOCIATE = "webservices-20"
@@ -40,6 +42,10 @@ ASSOCIATE = "webservices-20"
 # http://docs.amazonwebservices.com/AWSEcommerceService/4-0/PgCombiningOperations.html
 MAX_BATCH_JOBS = 2
 
+# match quality parameters
+DEFAULT_MATCH = 0.35		# used when the item doesn't have the match property
+MINIMUM_MATCH = 0.5		# ignore results below this quality
+REJECT_MATCH = 0.3		# reject results if either match strength is below this
 
 class Bag: pass
 
@@ -82,13 +88,19 @@ class AmazonCoverArtSearch (object):
 		self.args = args
 		self.keywords = []
 
-		st_artist = db.entry_get (entry, rhythmdb.PROP_ARTIST) or _("Unknown")
-		st_album = db.entry_get (entry, rhythmdb.PROP_ALBUM) or _("Unknown")
+		st_artist = db.entry_get (entry, rhythmdb.PROP_ARTIST) or ""
+		st_album = db.entry_get (entry, rhythmdb.PROP_ALBUM) or ""
+		if st_artist == _("Unknown"):
+			st_artist = ""
+		if st_album == _("Unknown"):
+			st_album = ""
 
-		if st_artist == st_album == _("Unknown"):
+		if st_artist == st_album == "":
+			print "can't search due to missing album and artist info"
 			self.on_search_completed (None)
 			return
 
+		print "searching for \"%s\" by \"%s\"" % (st_album, st_artist)
 		# Tidy up
 
 		# Replace quote characters
@@ -96,10 +108,6 @@ class AmazonCoverArtSearch (object):
 		for char in ["\""]:
 			st_artist = st_artist.replace (char, '')
 			st_album = st_album.replace (char, '')
-
-
-		self.st_album = st_album
-		self.st_artist = st_artist
 
 		# Remove variants of Disc/CD [1-9] from album title before search
 		for exp in ["\([Dd]isc *[1-9]+\)", "\([Cc][Dd] *[1-9]+\)"]:
@@ -111,8 +119,6 @@ class AmazonCoverArtSearch (object):
 			p = re.compile (exp)
 			st_album_no_vol = p.sub ('', st_album_no_vol)
 
-		self.st_album_no_vol = st_album_no_vol
-
 		# Save current search's entry properties
 		self.search_album = st_album
 		self.search_artist = st_artist
@@ -120,13 +126,13 @@ class AmazonCoverArtSearch (object):
 		
 		# TODO: Improve to decrease wrong cover downloads, maybe add severity?
 		# Assemble list of search keywords (and thus search queries)
-		if st_album == _("Unknown"):
+		if st_album == "":
 			self.keywords.append ("%s Best of" % (st_artist))
 			self.keywords.append ("%s Greatest Hits" % (st_artist))
 			self.keywords.append ("%s Essential" % (st_artist))
 			self.keywords.append ("%s Collection" % (st_artist))
 			self.keywords.append ("%s" % (st_artist))
-		elif st_artist == _("Unknown"):
+		elif st_artist == "":
 			self.keywords.append ("%s" % (st_album))
 			if st_album_no_vol != st_artist:
 				self.keywords.append ("%s" % (st_album_no_vol))
@@ -144,7 +150,7 @@ class AmazonCoverArtSearch (object):
 
 	def search_next (self):
 		if len (self.keywords) == 0:
-			# No keywords left to search -> no results
+			print "no keywords left to search"
 			self.on_search_completed (None)
 			return False
 
@@ -161,6 +167,7 @@ class AmazonCoverArtSearch (object):
 		job = 1
 		while job <= MAX_BATCH_JOBS and len (self.keywords) > 0:
 			keyword = self.keywords.pop (0)
+			print "searching keyword: \"%s\"" % keyword
 			keyword = keyword.encode (self.encoding, "ignore")
 			keyword = keyword.strip ()
 			keyword = urllib.quote (keyword)
@@ -206,30 +213,16 @@ class AmazonCoverArtSearch (object):
 		if not hasattr (data, "ItemSearchResponse") or \
 		   not hasattr (data.ItemSearchResponse, "Items"):
 			# Something went wrong ...
+			print "unable to parse search response"
 			self.search_next ()
 		else:
 			# We got some search results
-			self.on_search_results (data.ItemSearchResponse.Items)
-
-	def on_search_results (self, results):
-		self.on_search_completed (results)
+			print "got %d search result(s)" % len(data.ItemSearchResponse.Items)
+			self.on_search_completed (data.ItemSearchResponse.Items)
 
 	def on_search_completed (self, result):
 		self.on_search_completed_callback (self, self.entry, result, *self.args)
 		self.searching = False
-
-	def __tidy_up_string (self, s):
-		# Lowercase
-		s = s.lower ()
-		# Strip
-		s = s.strip ()
-
-		# TODO: Convert accented to unaccented (fixes matching Salomé vs Salome)
-		s = s.replace (" - ", " ")	
-		s = s.replace (": ", " ")
-		s = s.replace (" & ", " and ")
-
-		return s
 
 	def __valid_match (self, item):
 		return (hasattr (item, "LargeImage") or hasattr (item, "MediumImage")) \
@@ -239,58 +232,72 @@ class AmazonCoverArtSearch (object):
 		return None
 
 	def get_best_match_urls (self, search_results):
-		# Default to "no match", our results must match our criteria
-		best_match = None
+		best = None
+		best_match = 0.0
+
+		print "attempting to find best search result from %d sets" % len(search_results)
 
 		for result in search_results:
 			if not hasattr (result, "Item"):
 				# Search was unsuccessful, try next batch job
 				continue
 
-			items = filter(self.__valid_match, result.Item)
-			if self.search_album != _("Unknown"):
-				album_check = self.__tidy_up_string (self.search_album)
-				for item in items:
-					if not hasattr (item.ItemAttributes, "Title"):
-						continue
+			valid = filter(self.__valid_match, result.Item)
+			print "%d valid results in this set" % len(valid)
+			for item in valid:
 
-					album = self.__tidy_up_string (item.ItemAttributes.Title)
-					if album == album_check:
-						# Found exact album, can not get better than that
-						best_match = item
-						break
-					# If we already found a best_match, just keep checking for exact one
-					# Check the results for both an album name that contains the name
-					# we're searching for, and an album name that's a substring of the
-					# name we're searching for
-					elif (best_match is None) and \
-					     (album.find (album_check) != -1 or
-					      album_check.find (album) != -1):
-						best_match = item
+				album_match = DEFAULT_MATCH
+				item_album = str(getattr(item.ItemAttributes, "Title", ""))
+				if item_album != "":
+					album_match = string_match (self.search_album, item_album)
 
-			# If we still have no definite hit, use first result where artist matches
-			if (self.search_album == _("Unknown") and self.search_artist != _("Unknown")):
-				artist_check = self.__tidy_up_string (self.search_artist)
-				if best_match is None:
-					# Check if artist appears in the Artists list
-					hit = False
-					for item in items:
-						if not hasattr (item.ItemAttributes, "Artist"):
-							continue
+				# match against all returned artist names, taking the best result
+				item_artists = getattr(item.ItemAttributes, "Artist", [])
+				if len(item_artists) > 0:
+					artist_match = 0.0
+					for artist in item_artists:
+						# special case 'various artists' for great justice
+						if artist == "Various Artists":
+							m = DEFAULT_MATCH
+						else:
+							m = string_match (self.search_artist, artist)
+						if m > artist_match:
+							artist_match = m
+				else:
+					artist_match = DEFAULT_MATCH
 
-						for artist in item.ItemAttributes.Artist:
-							artist = self.__tidy_up_string (artist)
-							if artist.find (artist_check) != -1:
-								best_match = item
-								hit = True
-								break
-						if hit:
-							break
+				# figure out the match strength
+				if self.search_album == "":
+					this_match = artist_match
+				elif self.search_artist == "":
+					this_match = album_match
+				else:
+					# this probably isn't the best way to combine match strengths.
+					# extremely low values for one match should disqualify a result completely,
+					# so we don't end up with the wrong album for the right artist.
+					this_match = (artist_match + album_match) / 2
 
-			urls = [getattr (best_match, size).URL for size in ("LargeImage", "MediumImage")
-			        if hasattr (best_match, size)]
+				# reject results with a match strength below a given floor
+				if album_match < REJECT_MATCH or artist_match < REJECT_MATCH:
+					result = "rejected"
+				elif this_match > best_match:
+					best = item
+					best_match = this_match
+					result = "best"
+				else:
+					result = "discarded"
+
+				print "search result: \"%s\" (%f) by \"%s\" (%f): %f, %s" % (item_album, album_match, str(item_artists), artist_match, this_match, result)
+
+
+		print "best result has match strength %f" % best_match
+		if best_match > MINIMUM_MATCH:
+			urls = [getattr (best, size).URL for size in ("LargeImage", "MediumImage") if hasattr (best, size)]
 			if urls:
+				print "got urls: %s" % urls
 				return urls
 
 		# No search was successful
+		print "no search results to return"
 		return []
+
