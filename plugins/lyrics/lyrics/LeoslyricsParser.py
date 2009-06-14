@@ -31,6 +31,12 @@ import urllib
 import re
 import rb
 
+from rb.stringmatch import string_match
+
+# these numbers pulled directly from the air
+artist_match = 0.8
+title_match = 0.5
+
 # Python 2.4 compatibility
 try:
 	from xml.etree import cElementTree
@@ -64,17 +70,37 @@ class LeoslyricsParser(object):
 			callback (None, *data)
 			return
 
-		#FIXME: check non-exact matches
-		match = element.find("searchResults").find("result")
-		if match.attrib["exactMatch"] is None:
-			print "no exact match:" + lyrics
-			callback (None, *data)
-			return
+		match = None
+		matches = element.find("searchResults").findall("result")
+		print "got %d result(s)" % (len(matches))
+		for m in matches:
+			matchtitle = m.findtext("title")
+			matchartist = m.findtext("artist/name")
 
-		lurl = "http://api.leoslyrics.com/api_lyrics.php?auth=Rhythmbox&hid=%s" % (urllib.quote(match.attrib["hid"].encode('utf-8')))
-		loader = rb.Loader()
-		loader.get_url (lurl, self.parse_lyrics, callback, *data)
-			
+			# if we don't know the artist, then anyone will do
+			if self.artist != "":
+				artist_str = string_match(self.artist, matchartist)
+			else:
+				artist_str = artist_match + 0.1
+
+			title_str = string_match(self.title, matchtitle)
+			if artist_str > artist_match and title_str > title_match:
+				print "found acceptable match, artist: %s (%f), title: %s (%f)" % (matchartist, artist_str, matchtitle, title_str)
+				match = m
+				break
+			else:
+				print "skipping match, artist: %s (%f), title: %s (%f)" % (matchartist, artist_str, matchtitle, title_str)
+
+		if match is not None:
+			hid = m.attrib['hid'].encode('utf-8')
+			lurl = "http://api.leoslyrics.com/api_lyrics.php?auth=Rhythmbox&hid=%s" % (urllib.quote(hid))
+			loader = rb.Loader()
+			loader.get_url (lurl, self.parse_lyrics, callback, *data)
+		else:
+			print "no acceptable match found"
+			callback (None, *data)
+
+
 	def parse_lyrics(self, result, callback, *data):
 		if result is None:
 			callback (None, *data)
@@ -86,3 +112,4 @@ class LeoslyricsParser(object):
 		lyrics += "\n\nLyrics provided by leoslyrics.com"
 
 		callback (lyrics, *data)
+
