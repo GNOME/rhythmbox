@@ -74,6 +74,16 @@ def create_lyrics_view():
 	return (vbox, tview.get_buffer(), tview)
 
 def parse_song_data(artist, title):
+
+	# don't search for 'unknown' when we don't have the artist or title information
+	if artist == _("Unknown"):
+		artist = ""
+	if title == _("Unknown"):
+		title = ""
+
+	# convert to lowercase
+	artist = artist.lower()
+	title = title.lower()
 	
 	# replace ampersands and the like
 	for exp in LYRIC_ARTIST_REPLACE:
@@ -111,8 +121,8 @@ class LyricGrabber(object):
 		self.db = db
 		self.entry = entry
 		
-		self.artist = self.db.entry_get(self.entry, rhythmdb.PROP_ARTIST).lower()
-		self.title = self.db.entry_get(self.entry, rhythmdb.PROP_TITLE).lower()
+		self.artist = self.db.entry_get(self.entry, rhythmdb.PROP_ARTIST)
+		self.title = self.db.entry_get(self.entry, rhythmdb.PROP_TITLE)
 
 		(self.artist, self.title) = parse_song_data(self.artist, self.title)
 
@@ -129,21 +139,22 @@ class LyricGrabber(object):
 		if status:
 			l = rb.Loader()
 			l.get_url(self.cache_path, callback)
+		elif cache_only:
+			self.callback(_("No lyrics found"))
+		elif self.artist == "" and self.title == "":
+			self.callback(_("No lyrics found"))
 		else:
-			if cache_only:
-				self.callback(_("No lyrics found"))
-			else:
-				def lyric_callback (text):
-					if text is not None:
-						f = file (self.cache_path, 'w')
-						f.write (text)
-						f.close ()
-						self.callback(text)
-					else:
-						self.callback(_("No lyrics found"))
+			def lyric_callback (text):
+				if text is not None:
+					f = file (self.cache_path, 'w')
+					f.write (text)
+					f.close ()
+					self.callback(text)
+				else:
+					self.callback(_("No lyrics found"))
 
-				parser = LyricsParse.Parser(gconf_keys, self.artist, self.title)
-				parser.get_lyrics(lyric_callback)
+			parser = LyricsParse.Parser(gconf_keys, self.artist, self.title)
+			parser.get_lyrics(lyric_callback)
 
 class LyricPane(object):
 	def __init__(self, db, song_info):
@@ -224,8 +235,8 @@ class LyricPane(object):
 
 	def build_path(self):
 
-		artist = self.db.entry_get(self.entry, rhythmdb.PROP_ARTIST).lower()
-		title = self.db.entry_get(self.entry, rhythmdb.PROP_TITLE).lower()
+		artist = self.db.entry_get(self.entry, rhythmdb.PROP_ARTIST)
+		title = self.db.entry_get(self.entry, rhythmdb.PROP_TITLE)
 		(artist, title) = parse_song_data(artist, title)
 		cache_path = build_cache_path(artist, title)
 		self.cache_path = cache_path
