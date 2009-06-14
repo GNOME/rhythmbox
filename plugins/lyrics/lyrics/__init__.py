@@ -103,7 +103,7 @@ def parse_song_data(artist, title):
 	
 def build_cache_path(artist, title):
 	folder = gconf.client_get_default().get_string(gconf_keys['folder'])
-	if folder is None:
+	if folder is None or folder == "":
 		folder = os.path.join(rb.user_cache_dir(), "lyrics")
 
 	lyrics_folder = os.path.expanduser (folder)
