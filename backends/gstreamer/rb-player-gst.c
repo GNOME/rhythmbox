@@ -102,6 +102,8 @@ struct _RBPlayerGstPrivate
 
 	gboolean emitted_error;
 
+	gint volume_changed;
+	gint volume_applied;
 	float cur_volume;
 	float replaygain_scale;
 
@@ -158,7 +160,7 @@ emit_volume_changed_idle (RBPlayerGst *player)
 }
 
 static void
-volume_notify_cb (GObject *element, GParamSpec *pspec, RBPlayerGst *player)
+volume_notify_cb (GObject *element, GstObject *prop_object, GParamSpec *pspec, RBPlayerGst *player)
 {
 	gdouble v;
 	g_object_get (element, "volume", &v, NULL);
@@ -372,7 +374,7 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 				 G_CALLBACK (about_to_finish_cb),
 				 mp, 0);
 	g_signal_connect_object (G_OBJECT (mp->priv->playbin),
-				 "notify::volume",
+				 "deep-notify::volume",
 				 G_CALLBACK (volume_notify_cb),
 				 mp, 0);
 	g_signal_connect_object (G_OBJECT (mp->priv->playbin),
@@ -485,8 +487,6 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 	if (mp->priv->cur_volume < 0.0)
 		mp->priv->cur_volume = 0;
 	mp->priv->replaygain_scale = 1.0f;
-
-	rb_player_set_volume (RB_PLAYER (mp), mp->priv->cur_volume);
 
 	rb_debug ("pipeline construction complete");
 	return TRUE;
@@ -714,6 +714,17 @@ impl_opened (RBPlayer *player)
 	return mp->priv->uri != NULL;
 }
 
+static void
+set_playbin_volume (RBPlayerGst *player, float volume)
+{
+	/* ignore the deep-notify we get directly from the sink, as it causes deadlock.
+	 * we still get another one anyway.
+	 */
+	g_signal_handlers_block_by_func (player->priv->playbin, volume_notify_cb, player);
+	g_object_set (player->priv->playbin, "volume", volume, NULL);
+	g_signal_handlers_unblock_by_func (player->priv->playbin, volume_notify_cb, player);
+}
+
 static gboolean
 impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GError **error)
 {
@@ -782,6 +793,28 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 				g_timeout_add (1000 / RB_PLAYER_GST_TICK_HZ,
 					       (GSourceFunc) tick_timeout,
 					       mp);
+		}
+
+		if (mp->priv->volume_applied == 0) {
+			GstElement *e;
+
+			/* if the sink provides volume control, ignore the first
+			 * volume setting, allowing the sink to restore its own
+			 * volume.
+			 */
+			e = rb_player_gst_find_element_with_property (mp->priv->audio_sink, "volume");
+			if (e != NULL) {
+				mp->priv->volume_applied = 1;
+			}
+			gst_object_unref (e);
+
+			if (mp->priv->volume_applied < mp->priv->volume_changed) {
+				float volume = mp->priv->cur_volume * mp->priv->replaygain_scale;
+				rb_debug ("applying initial volume: %f", volume);
+				set_playbin_volume (mp, volume);
+			}
+
+			mp->priv->volume_applied = mp->priv->volume_changed;
 		}
 	}
 
@@ -871,8 +904,12 @@ impl_set_volume (RBPlayer *player,
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
 	g_return_if_fail (volume >= 0.0 && volume <= 1.0);
 
-	if (mp->priv->playbin != NULL) {
-		g_object_set (mp->priv->playbin, "volume", volume * mp->priv->replaygain_scale, NULL);
+	mp->priv->volume_changed++;
+	if (mp->priv->volume_applied > 0) {
+		set_playbin_volume (mp, volume * mp->priv->replaygain_scale);
+		mp->priv->volume_applied = mp->priv->volume_changed;
+	} else {
+		/* volume will be applied in the first call to impl_play */
 	}
 
 	mp->priv->cur_volume = volume;

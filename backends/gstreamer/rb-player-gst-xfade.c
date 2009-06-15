@@ -275,11 +275,8 @@ struct _RBPlayerGstXFadePrivate
 	GList *streams;
 	gint linked_streams;
 
-	gboolean can_signal_direct_error;
-	GError *error;
-
-	gboolean playing;
-
+	int volume_changed;
+	int volume_applied;
 	float cur_volume;
 	guint buffer_size;	/* kB */
 
@@ -2802,9 +2799,19 @@ start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 	if (player->priv->volume_handler == NULL) {
 		rb_debug ("sink doesn't provide volume control, using volume element");
 		player->priv->volume_handler = g_object_ref (player->priv->volume);
+	} else if (player->priv->volume_applied == 0) {
+		/* ignore the initial volume setting, allowing the
+		 * sink to restore its own volume.
+		 */
+		player->priv->volume_applied = 1;
 	}
 
-	g_object_set (player->priv->volume_handler, "volume", player->priv->cur_volume, NULL);
+	/* if there has been a volume change that we haven't applied, apply it now */
+	if (player->priv->volume_applied < player->priv->volume_changed) {
+		g_object_set (player->priv->volume_handler, "volume", player->priv->cur_volume, NULL);
+		player->priv->volume_applied = player->priv->volume_changed;
+	}
+
 	g_signal_connect_object (player->priv->volume_handler,
 				 "notify::volume",
 				 G_CALLBACK (stream_volume_changed),
@@ -3688,11 +3695,13 @@ rb_player_gst_xfade_set_volume (RBPlayer *iplayer, float volume)
 {
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
 
+	player->priv->volume_changed++;
 	if (player->priv->volume_handler != NULL) {
 		gdouble v = (gdouble)volume;
 
 		/* maybe use a controller here for smoother changes? */
 		g_object_set (player->priv->volume_handler, "volume", v, NULL);
+		player->priv->volume_applied = player->priv->volume_changed;
 	}
 	player->priv->cur_volume = volume;
 }
