@@ -1,14 +1,14 @@
-# translation of mr.po to marathi
+# translation of rhythmbox.master.mr.po to marathi
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Sandeep Shedmake <sandeep.shedmake@gmail.com>, 2009.
 msgid ""
 msgstr ""
-"Project-Id-Version: mr\n"
+"Project-Id-Version: rhythmbox.master.mr\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-06-08 10:42+0000\n"
-"PO-Revision-Date: 2009-06-09 11:05+0530\n"
+"POT-Creation-Date: 2009-06-11 07:11+0000\n"
+"PO-Revision-Date: 2009-06-15 14:22+0530\n"
 "Last-Translator: Sandeep Shedmake <sandeep.shedmake@gmail.com>\n"
 "Language-Team: marathi\n"
 "MIME-Version: 1.0\n"
@@ -27,19 +27,19 @@ msgstr "तुम्हाला नक्की फाइल \"%s\" खोड�
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "%s करीता लिहण्याकरीता GStreamer sink घटक बनवू शकले नाही"
 
-#: ../backends/gstreamer/rb-player-gst.c:365
+#: ../backends/gstreamer/rb-player-gst.c:367
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr "playbin2 घटक बनवण्यास अपयशी; तुमचे GStreamer प्रतिष्ठापन तपासा"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:581
+#: ../backends/gstreamer/rb-player-gst.c:583
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2757
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "आऊटपुट साधन उघडण्यास अपयशी: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:626
+#: ../backends/gstreamer/rb-player-gst.c:628
 #, c-format
 msgid "Unable to start playback pipeline"
 msgstr "प्लेबॅक पाइपलाइल सुरू करण्यास अपयशी"
@@ -692,20 +692,20 @@ msgstr "%d:%02d, %d:%02d पैकी"
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d, %d:%02d:%02d पैकी"
 
-#: ../metadata/rb-metadata-dbus-client.c:327
+#: ../metadata/rb-metadata-dbus-client.c:377
 #, c-format
 msgid "Internal GStreamer problem; file a bug"
 msgstr "आंतरीक GStreamer अडचण; बग फाइल करा"
 
-#: ../metadata/rb-metadata-dbus-client.c:345
-#: ../metadata/rb-metadata-dbus-client.c:381
-#: ../metadata/rb-metadata-dbus-client.c:726
-#: ../metadata/rb-metadata-dbus-client.c:736
+#: ../metadata/rb-metadata-dbus-client.c:395
+#: ../metadata/rb-metadata-dbus-client.c:431
+#: ../metadata/rb-metadata-dbus-client.c:767
+#: ../metadata/rb-metadata-dbus-client.c:777
 #, c-format
 msgid "D-BUS communication error"
 msgstr "D-BUS संवाद त्रुटी"
 
-#: ../metadata/rb-metadata-gst.c:517 ../metadata/rb-metadata-gst.c:1044
+#: ../metadata/rb-metadata-gst.c:517 ../metadata/rb-metadata-gst.c:1063
 #: ../plugins/cd-recorder/rb-recorder-gst.c:507
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -726,22 +726,22 @@ msgstr "GStreamer त्रुटी: स्थर बदलवण्यास �
 msgid "The MIME type of the file could not be identified"
 msgstr "फाइलचे MIME प्रकार ओळखले जाऊ शकले नाही"
 
-#: ../metadata/rb-metadata-gst.c:972
+#: ../metadata/rb-metadata-gst.c:991
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "असमर्थीत फाइल प्रकार: %s"
 
-#: ../metadata/rb-metadata-gst.c:981
+#: ../metadata/rb-metadata-gst.c:1000
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "टॅग-लेखन घटक बनवणे अशक्य"
 
-#: ../metadata/rb-metadata-gst.c:996
+#: ../metadata/rb-metadata-gst.c:1015
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "पाइपलाइनला NULL निश्चित करतेवेळी वेळसमाप्ती"
 
-#: ../metadata/rb-metadata-gst.c:1020
+#: ../metadata/rb-metadata-gst.c:1039
 #, c-format
 msgid "File corrupted during write"
 msgstr "लेखनवेळी फाइल सदोषीत झाली"
@@ -894,7 +894,7 @@ msgid "Cannot read CD: %s"
 msgstr "सीडी वाचवता येत नाही: %s"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:732
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:733
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -921,7 +921,7 @@ msgstr "शेवटचे सादरीकरण वेळ:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1010
 #: ../plugins/iradio/rb-station-properties-dialog.c:502
-#: ../rhythmdb/rhythmdb.c:3668 ../widgets/rb-entry-view.c:989
+#: ../rhythmdb/rhythmdb.c:3699 ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1531 ../widgets/rb-entry-view.c:1544
 #: ../widgets/rb-song-info.c:1345
 msgid "Never"
@@ -968,7 +968,7 @@ msgid "OK"
 msgstr "ठीक आहे"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1036
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1814
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1815
 msgid "Logging in"
 msgstr "प्रवेश करत आहे"
 
@@ -985,7 +985,7 @@ msgid "Clock is not set correctly"
 msgstr "घड्याळ योग्यरित्या निश्चित नाही"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1048
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:903
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:904
 msgid "This version of Rhythmbox has been banned from Last.fm."
 msgstr "Rhythmbox ची ही आवृत्ती Last.fm पासून बॅन केली आहे."
 
@@ -998,7 +998,7 @@ msgid "Similar Artists radio"
 msgstr "Similar Artists रेडिओ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:192
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1290
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1291
 #, c-format
 msgid "Artists similar to %s"
 msgstr "%s नुरूप कलाकार"
@@ -1017,7 +1017,7 @@ msgid "Artist Fan radio"
 msgstr "Artist Fan रेडिओ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:194
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1292
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1293
 #, c-format
 msgid "Artists liked by fans of %s"
 msgstr "%s च्या श्रेतांद्वारे पसंत केलेले कलाकार"
@@ -1036,7 +1036,7 @@ msgid "Neighbour radio"
 msgstr "Neighbour रेडिओ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:196
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1300
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1301
 #, c-format
 msgid "%s's Neighbour Radio"
 msgstr "%s चे Neighbour Radio"
@@ -1046,7 +1046,7 @@ msgid "Personal radio"
 msgstr "Personal रेडिओ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1304
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1305
 #, c-format
 msgid "%s's Personal Radio"
 msgstr "%s चे Personal Radio"
@@ -1056,7 +1056,7 @@ msgid "Loved tracks"
 msgstr "Loved ट्रॅक"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:198
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1306
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1307
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr "%s चे पसंतीचे ट्रॅक"
@@ -1070,123 +1070,134 @@ msgstr "सूचवलेले ट्रॅक"
 msgid "Tracks recommended to %s"
 msgstr "%s करीता सूचवलेले ट्रॅक"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:285
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:200
+#| msgid "_Playlist"
+msgid "Playlist"
+msgstr "वादकयादी"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:200
+#, c-format
+#| msgid "%s's Playlist"
+msgid "%s's playlist"
+msgstr "%s ची वादकयादी"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
 msgid "Love"
 msgstr "पसंत"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
 msgid "Mark this song as loved"
 msgstr "या गाण्याला पसंतीचे नुरूप चिन्हाकृत करा"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:288
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
 msgid "Ban"
 msgstr "मनाई करा"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
 msgid "Ban the current track from being played again"
 msgstr "वर्तमान ट्रॅकला पुन्हा चालवण्यापासून मनाई करा"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:291
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
 msgid "Delete Station"
 msgstr "स्टेशन नष्ट करा"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
 msgid "Delete the selected station"
 msgstr "नीवडलेले स्टेशन नष्ट करा"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:294
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:295
 msgid "Download song"
 msgstr "गाणं डाऊनलोड करा"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:295
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:296
 msgid "Download this song"
 msgstr "हे गाणं डाऊनलोड करा"
 
 #. awful
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:515
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:516
 msgid "Enter the item to build a Last.fm station out of:"
 msgstr "Last.fm स्टेशन बांधण्याकरीता घटक प्रविष्ट करा:"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:518
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:519
 msgid "Add"
 msgstr "समावेष करा"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:874
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:875
 msgid "Account Settings"
 msgstr "खाती संयोजना"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:899
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:900
 msgid "Account details are needed before you can connect.  Check your settings."
 msgstr "जुळवणी करण्यापूर्वी खाती तपशील आवश्यक आहे.  तुमची संयोजना तपासा."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:907
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:908
 msgid "Unable to connect"
 msgstr "जुळवणी शक्य नाही"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1281
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1282
 #, c-format
 msgid "Global Tag %s"
 msgstr "ग्लोबल टॅग %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1302
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1303
 #, c-format
 msgid "%s's Recommended Radio: %s percent"
 msgstr "%s चे सूचवलेले रेडिओ: %s टक्के"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1308
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1309
 #, c-format
 msgid "%s's Playlist"
 msgstr "%s ची वादकयादी"
 
 #. Translators: variables are 1: user name, 2: tag name; for user tag radio
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1314
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1315
 #, c-format
 msgid "%s's %s Radio"
 msgstr "%s चे %s रेडिओ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1318
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1319
 #, c-format
 msgid "%s Group Radio"
 msgstr "%s Group रेडिओ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1784
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1785
 msgid "Neighbour Radio"
 msgstr "Neighbour रेडिओ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1792
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1793
 msgid "Personal Radio"
 msgstr "व्यक्तिगत रेडिओ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1882
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1883
 msgid "Server did not respond"
 msgstr "सर्वरने प्रतिसाद दिला नाही"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1950
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1951
 msgid "There is not enough content available to play this station."
 msgstr "हे स्टेशन चालवण्याकरीता अतिरीक्त अंतर्भूत माहिती उपलब्ध नाही."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1955
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1956
 msgid "This station is available to subscribers only."
 msgstr "हे स्टेशन फक्त सबस्क्राईबर करीताच उपलब्ध आहे."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1962
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1963
 msgid "The streaming system is offline for maintenance, please try again later."
 msgstr "सट्रीमींग प्रणाली दुरूस्ती करीता ऑफलाइन आहे, कृपया पुन्हा प्रयत्न करा."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2001
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2002
 msgid "Changing station"
 msgstr "स्टेशन बदलवत आहे"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2221
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2231
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2222
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2232
 msgid "Retrieving playlist"
 msgstr "वादकयादी प्राप्त करा"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2325
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2326
 msgid "Banning song"
 msgstr "गाणं मनाई करत आहे"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2343
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2344
 msgid "Adding song to your Loved tracks"
 msgstr "पसंतीचे ट्रॅक करीता गाणं समावेष करत आहे"
 
@@ -1327,7 +1338,6 @@ msgstr "ड्राइव्ह %s रेकॉर्डर नाही"
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1018
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1203
 #, c-format
-#| msgid "No writable drives found."
 msgid "No writable drives found"
 msgstr "लेखनजोगी ड्राइव्ह आढळले नाही"
 
@@ -1338,7 +1348,6 @@ msgstr "फाइल करीता ट्रॅक टाइम प्रा�
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1212
 #, c-format
-#| msgid "Could not determine audio track durations."
 msgid "Could not determine audio track durations"
 msgstr "ऑडिओ ट्रॅक कालावधी ओळखण्यास अपयशी"
 
@@ -1737,24 +1746,15 @@ msgstr "DAAP सहभागशी जुळवणी स्थापीत क�
 msgid "Connect to a new DAAP share"
 msgstr "नवीन DAAP सहभागशी जुळवणी करा"
 
-#: ../plugins/daap/rb-daap-plugin.c:650 ../plugins/daap/rb-daap-source.c:622
-msgid "Could not connect to shared music"
-msgstr "सहभागीय संगीतशी जुळवणी करण्यास अपयशी"
-
-#: ../plugins/daap/rb-daap-plugin.c:651
-#, c-format
-msgid "Unable to resolve hostname %s"
-msgstr "यजमाननाव %s निर्धारीत करण्यास अपयशी"
-
-#: ../plugins/daap/rb-daap-plugin.c:702
+#: ../plugins/daap/rb-daap-plugin.c:660
 msgid "New DAAP share"
 msgstr "नवीन DAAP सहभाग"
 
-#: ../plugins/daap/rb-daap-plugin.c:702
+#: ../plugins/daap/rb-daap-plugin.c:660
 msgid "Host:port of DAAP share:"
 msgstr "यजनान:DAAP सहभागचे पोर्ट:"
 
-#: ../plugins/daap/rb-daap-plugin.c:924
+#: ../plugins/daap/rb-daap-plugin.c:882
 msgid "DAAP Music Sharing Preferences"
 msgstr "DAAP संगीत सहभाग आवड नीवड"
 
@@ -1780,7 +1780,11 @@ msgstr "संगीत सहभागशी जुळवणी करत आ�
 msgid "Retrieving songs from music share"
 msgstr "संगीत सहभाग पासून गाणी प्राप्त करत आहे"
 
-#: ../plugins/daap/rb-daap-src.c:480
+#: ../plugins/daap/rb-daap-source.c:622
+msgid "Could not connect to shared music"
+msgstr "सहभागीय संगीतशी जुळवणी करण्यास अपयशी"
+
+#: ../plugins/daap/rb-daap-src.c:495
 #, c-format
 msgid "Connection to %s:%d refused."
 msgstr "%s:%d करीता जुळवणी नकारली गेली."
@@ -3470,25 +3474,30 @@ msgstr "त्रुटी संदेश मध्ये अवैध यू�
 msgid "Empty file"
 msgstr "रिकामी फाइल"
 
-#: ../rhythmdb/rhythmdb.c:3153
+#: ../rhythmdb/rhythmdb.c:2433
+#, c-format
+msgid "Additional GStreamer plugins are required to play this file: %s"
+msgstr "ही फाइल चालवण्याकरीता अगाऊ GStreamer प्लगइन आवश्यक आहे: %s"
+
+#: ../rhythmdb/rhythmdb.c:3184
 msgid "Could not load the music database:"
 msgstr "संगीत कोष दाखल करण्यास अशक्य:"
 
-#: ../rhythmdb/rhythmdb.c:4521
+#: ../rhythmdb/rhythmdb.c:4552
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld मिनिट"
 msgstr[1] "%ld मिनिट"
 
-#: ../rhythmdb/rhythmdb.c:4522
+#: ../rhythmdb/rhythmdb.c:4553
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld तास"
 msgstr[1] "%ld तास"
 
-#: ../rhythmdb/rhythmdb.c:4523
+#: ../rhythmdb/rhythmdb.c:4554
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3496,7 +3505,7 @@ msgstr[0] "%ld दिवस"
 msgstr[1] "%ld दिवसं"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4529
+#: ../rhythmdb/rhythmdb.c:4560
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s व %s"
@@ -3504,8 +3513,8 @@ msgstr "%s, %s व %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4535 ../rhythmdb/rhythmdb.c:4543
-#: ../rhythmdb/rhythmdb.c:4554
+#: ../rhythmdb/rhythmdb.c:4566 ../rhythmdb/rhythmdb.c:4574
+#: ../rhythmdb/rhythmdb.c:4585
 #, c-format
 msgid "%s and %s"
 msgstr "%s व %s"
