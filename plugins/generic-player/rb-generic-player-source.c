@@ -1189,6 +1189,44 @@ impl_can_delete (RBSource *source)
 	return (priv->read_only == FALSE);
 }
 
+static gboolean
+can_delete_directory (RBSource *source, GFile *dir)
+{
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	gboolean result;
+	GMount *mount;
+	GFile *root;
+	int i;
+
+	g_object_get (source, "mount", &mount, NULL);
+	root = g_mount_get_root (mount);
+	g_object_unref (mount);
+
+	/* can't delete the root dir */
+	if (g_file_equal (dir, root)) {
+		rb_debug ("refusing to delete device root dir");
+		g_object_unref (root);
+		return FALSE;
+	}
+
+	/* can't delete the device's audio folders */
+	result = TRUE;
+	for (i = 0; priv->audio_folders[i] != NULL; i++) {
+		GFile *check;
+
+		check = g_file_resolve_relative_path (root, priv->audio_folders[i]);
+		if (g_file_equal (dir, check)) {
+			rb_debug ("refusing to delete device audio folder %s", priv->audio_folders[i]);
+			result = FALSE;
+		}
+		g_object_unref (check);
+	}
+
+	/* can delete anything else */
+	g_object_unref (root);
+	return result;
+}
+
 static void
 impl_move_to_trash_or_delete (RBSource *source, gboolean delete)
 {
@@ -1206,6 +1244,7 @@ impl_move_to_trash_or_delete (RBSource *source, gboolean delete)
 		RhythmDBEntry *entry;
 		const char *uri;
 		GFile *file;
+		GFile *dir;
 
 		entry = tem->data;
 		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
@@ -1214,6 +1253,32 @@ impl_move_to_trash_or_delete (RBSource *source, gboolean delete)
 			g_file_delete (file, NULL, NULL);
 		else
 			g_file_trash (file, NULL, NULL);
+
+		/* now walk up the directory structure and delete empty dirs
+		 * until we reach the root or one of the device's audio folders.
+		 */
+		dir = g_file_get_parent (file);
+		while (can_delete_directory (source, dir)) {
+			GFile *parent;
+			char *path;
+
+			path = g_file_get_path (dir);
+			rb_debug ("trying to delete %s", path);
+			g_free (path);
+
+			if (g_file_delete (dir, NULL, NULL) == FALSE) {
+				break;
+			}
+
+			parent = g_file_get_parent (dir);
+			if (parent == NULL) {
+				break;
+			}
+			g_object_unref (dir);
+			dir = parent;
+		}
+
+		g_object_unref (dir);
 		g_object_unref (file);
 
 		rhythmdb_entry_delete (priv->db, entry);
