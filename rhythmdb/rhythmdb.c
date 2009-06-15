@@ -4791,6 +4791,21 @@ podcast_get_playback_uri (RhythmDBEntry *entry,
 }
 
 static void
+podcast_post_create (RhythmDBEntry *entry,
+		     gpointer something)
+{
+	RhythmDBPodcastFields *podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
+	RBRefString *empty = rb_refstring_new ("");
+	podcast->description = rb_refstring_ref (empty);
+	podcast->subtitle = rb_refstring_ref (empty);
+	podcast->summary = rb_refstring_ref (empty);
+	podcast->lang = rb_refstring_ref (empty);
+	podcast->copyright = rb_refstring_ref (empty);
+	podcast->image = rb_refstring_ref (empty);
+	rb_refstring_unref (empty);
+}
+
+static void
 podcast_data_destroy (RhythmDBEntry *entry,
 		      gpointer something)
 {
@@ -4839,6 +4854,7 @@ rhythmdb_register_core_entry_types (RhythmDB *db)
 	podcast_post_type->entry_type_data_size = sizeof (RhythmDBPodcastFields);
 	podcast_post_type->save_to_disk = TRUE;
 	podcast_post_type->category = RHYTHMDB_ENTRY_NORMAL;
+	podcast_post_type->post_entry_create = (RhythmDBEntryActionFunc) podcast_post_create;
 	podcast_post_type->pre_entry_destroy = (RhythmDBEntryActionFunc) podcast_data_destroy;
 	podcast_post_type->get_playback_uri = podcast_get_playback_uri;
 	podcast_post_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc) rb_true_function;
@@ -4849,6 +4865,7 @@ rhythmdb_register_core_entry_types (RhythmDB *db)
 	podcast_feed_type->entry_type_data_size = sizeof (RhythmDBPodcastFields);
 	podcast_feed_type->save_to_disk = TRUE;
 	podcast_feed_type->category = RHYTHMDB_ENTRY_VIRTUAL;
+	podcast_post_type->post_entry_create = (RhythmDBEntryActionFunc) podcast_post_create;
 	podcast_feed_type->pre_entry_destroy = (RhythmDBEntryActionFunc) podcast_data_destroy;
 	podcast_feed_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc) rb_true_function;
 	podcast_feed_type->sync_metadata = (RhythmDBEntrySyncFunc) rb_null_function;
