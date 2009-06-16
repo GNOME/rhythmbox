@@ -72,6 +72,7 @@ static gboolean volume_down = FALSE;
 static gboolean print_volume = FALSE;
 static gboolean mute = FALSE;
 static gboolean unmute = FALSE;
+static gdouble set_rating = -1.0;
 
 static gchar **other_stuff = NULL;
 
@@ -107,6 +108,7 @@ static GOptionEntry args[] = {
 	{ "print-volume", 0, 0, G_OPTION_ARG_NONE, &print_volume, N_("Print the current playback volume"), NULL },
 	{ "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
 	{ "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
+	{ "set-rating", 0, 0, G_OPTION_ARG_DOUBLE, &set_rating, N_("Set the rating of the current song"), NULL },
 
 	{ G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &other_stuff, NULL, NULL },
 
@@ -490,6 +492,34 @@ print_playing_song_default (DBusGProxy *shell_proxy, DBusGProxy *player_proxy)
 	g_free (string);
 }
 
+static void
+rate_song (DBusGProxy *shell_proxy, DBusGProxy *player_proxy, gdouble song_rating)
+{
+	GError *error = NULL;
+	char *playing_uri;
+	GValue *value = NULL;
+
+	org_gnome_Rhythmbox_Player_get_playing_uri (player_proxy, &playing_uri, &error);
+	if (annoy (&error)) {
+		return;
+	}
+
+	if (!playing_uri || playing_uri[0] == '\0') {
+		return;
+	}
+
+	rb_debug ("rating song %s: %f", playing_uri, song_rating);
+
+	value = g_new0 (GValue, 1);
+	g_value_init (value, G_TYPE_DOUBLE);
+	g_value_set_double (value, song_rating);
+	org_gnome_Rhythmbox_Shell_set_song_property (shell_proxy, playing_uri, "rating", value, &error);
+	annoy (&error);
+
+	g_free (value);
+	g_free (playing_uri);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -582,7 +612,7 @@ main (int argc, char **argv)
 	    play_uri || other_stuff ||
 	    play || pause || play_pause || stop ||
 	    print_playing || print_playing_format || notify ||
-	    (set_volume > -0.01) || volume_up || volume_down || print_volume || mute || unmute)
+	    (set_volume > -0.01) || volume_up || volume_down || print_volume || mute || unmute || (set_rating > -0.01))
 		no_present = TRUE;
 
 	/* 2. present or hide */
@@ -719,6 +749,13 @@ main (int argc, char **argv)
 		rb_debug ("show notification");
 		org_gnome_Rhythmbox_Shell_notify (shell_proxy, TRUE, &error);
 		annoy (&error);
+	}
+
+	/* 9. set song rate */
+	if (set_rating >= 0.0 && set_rating <= 5.0) {
+		rb_debug ("rate song");
+
+		rate_song (shell_proxy, player_proxy, set_rating);
 	}
 
 	g_object_unref (shell_proxy);
