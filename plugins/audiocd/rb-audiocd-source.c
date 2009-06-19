@@ -56,9 +56,17 @@
 #include "sj-structures.h"
 #endif
 
+enum
+{
+	PROP_0,
+	PROP_SEARCH_TYPE
+};
+
 static void rb_audiocd_source_dispose (GObject *object);
 static GObject *rb_audiocd_source_constructor (GType type, guint n_construct_properties,
 					        GObjectConstructParam *construct_properties);
+static void impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
+static void impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 
 static gboolean impl_show_popup (RBSource *source);
 static guint impl_want_uri (RBSource *source, const char *uri);
@@ -99,6 +107,8 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 
 	object_class->constructor = rb_audiocd_source_constructor;
 	object_class->dispose = rb_audiocd_source_dispose;
+	object_class->set_property = impl_set_property;
+	object_class->get_property = impl_get_property;
 
 	/* don't bother showing the browser/search bits */
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
@@ -112,6 +122,10 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	source_class->impl_uri_is_source = impl_uri_is_source;
 	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;	/* shouldn't need this. */
 	source_class->impl_want_uri = impl_want_uri;
+
+	g_object_class_override_property (object_class,
+					  PROP_SEARCH_TYPE,
+					  "search-type");
 
 	g_type_class_add_private (klass, sizeof (RBAudioCdSourcePrivate));
 }
@@ -202,6 +216,33 @@ rb_audiocd_source_new (RBPlugin *plugin,
 
 	return RB_REMOVABLE_MEDIA_SOURCE (source);
 }
+
+static void
+impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	switch (prop_id) {
+	case PROP_SEARCH_TYPE:
+		/* ignored */
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	switch (prop_id) {
+	case PROP_SEARCH_TYPE:
+		g_value_set_enum (value, RB_SOURCE_SEARCH_NONE);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
 
 static void
 entry_set_string_prop (RhythmDB *db,
