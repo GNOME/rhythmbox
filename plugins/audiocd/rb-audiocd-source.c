@@ -82,6 +82,10 @@ static gpointer rb_audiocd_load_songs (RBAudioCdSource *source);
 static void rb_audiocd_load_metadata (RBAudioCdSource *source, RhythmDB *db);
 static void rb_audiocd_load_metadata_cancel (RBAudioCdSource *source);
 
+static void metadata_gather_cb (RhythmDB *db, RhythmDBEntry *entry, RBStringValueMap *data, RBAudioCdSource *source);
+static GValue *album_artist_metadata_request_cb (RhythmDB *db, RhythmDBEntry *entry, RBAudioCdSource *source);
+static GValue *album_artist_sortname_metadata_request_cb (RhythmDB *db, RhythmDBEntry *entry, RBAudioCdSource *source);
+
 static gboolean update_album_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
 static gboolean update_genre_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
 static gboolean update_year_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
@@ -115,6 +119,21 @@ RB_PLUGIN_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MED
 #ifdef HAVE_SJ_METADATA_GETTER
 static AlbumDetails* multiple_album_dialog (GList *albums, RBAudioCdSource *source);
 #endif
+
+static RhythmDB *
+get_db_for_source (RBAudioCdSource *source)
+{
+	RBShell *shell;
+	RhythmDB *db;
+
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &db, NULL);
+	g_object_unref (shell);
+
+	return db;
+}
+
+
 static void
 rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 {
@@ -191,6 +210,7 @@ rb_audiocd_source_constructor (GType type,
 {
 	RBAudioCdSource *source;
 	RBEntryView *entry_view;
+	RhythmDB *db;
 	RBPlugin *plugin;
 	char *ui_file;
 
@@ -205,6 +225,16 @@ rb_audiocd_source_constructor (GType type,
 
 	/* hide the 'album' column */
 	gtk_tree_view_column_set_visible (rb_entry_view_get_column (entry_view, RB_ENTRY_VIEW_COL_ALBUM), FALSE);
+
+	/* handle extra metadata requests for album artist and album artist sortname */
+	db = get_db_for_source (source);
+	g_signal_connect_object (G_OBJECT (db), "entry-extra-metadata-request::" RHYTHMDB_PROP_ALBUM_ARTIST,
+				 G_CALLBACK (album_artist_metadata_request_cb), source, 0);
+	g_signal_connect_object (G_OBJECT (db), "entry-extra-metadata-request::" RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME,
+				 G_CALLBACK (album_artist_sortname_metadata_request_cb), source, 0);
+	g_signal_connect_object (G_OBJECT (db), "entry-extra-metadata-gather",
+				 G_CALLBACK (metadata_gather_cb), source, 0);
+	g_object_unref (db);
 
 	/* set up the album info widgets */
 	g_object_get (source, "plugin", &plugin, NULL);
@@ -477,19 +507,6 @@ rb_audiocd_scan_songs (RBAudioCdSource *source,
 	}
 
 	return ok;
-}
-
-static RhythmDB *
-get_db_for_source (RBAudioCdSource *source)
-{
-	RBShell *shell;
-	RhythmDB *db;
-
-  	g_object_get (source, "shell", &shell, NULL);
-  	g_object_get (shell, "db", &db, NULL);
-  	g_object_unref (shell);
-
-        return db;
 }
 
 #ifdef HAVE_SJ_METADATA_GETTER
@@ -964,6 +981,70 @@ impl_uri_is_source (RBSource *source, const char *uri)
 	if (impl_want_uri (source, uri) == 100)
 		return TRUE;
 	return FALSE;
+}
+
+static void
+metadata_gather_cb (RhythmDB *db, RhythmDBEntry *entry, RBStringValueMap *data, RBAudioCdSource *source)
+{
+	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
+	GValue value = {0,};
+
+	if (_rb_source_check_entry_type (RB_SOURCE (source), entry) == FALSE) {
+		return;
+	}
+
+	if (gtk_entry_get_text_length (GTK_ENTRY (priv->artist_entry)) > 0) {
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, gtk_entry_get_text (GTK_ENTRY (priv->artist_entry)));
+		rb_string_value_map_set (data, RHYTHMDB_PROP_ALBUM_ARTIST, &value);
+		g_value_unset (&value);
+	}
+
+	if (gtk_entry_get_text_length (GTK_ENTRY (priv->artist_sort_entry)) > 0) {
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, gtk_entry_get_text (GTK_ENTRY (priv->artist_sort_entry)));
+		rb_string_value_map_set (data, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, &value);
+		g_value_unset (&value);
+	}
+}
+
+
+static GValue *
+album_artist_metadata_request_cb (RhythmDB *db, RhythmDBEntry *entry, RBAudioCdSource *source)
+{
+	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
+	GValue *value = NULL;
+
+	if (_rb_source_check_entry_type (RB_SOURCE (source), entry) == FALSE) {
+		return NULL;
+	}
+
+	if (gtk_entry_get_text_length (GTK_ENTRY (priv->artist_entry)) > 0) {
+		value = g_new0 (GValue, 1);
+		g_value_init (value, G_TYPE_STRING);
+		g_value_set_string (value, gtk_entry_get_text (GTK_ENTRY (priv->artist_entry)));
+	}
+
+	return value;
+}
+
+static GValue *
+album_artist_sortname_metadata_request_cb (RhythmDB *db, RhythmDBEntry *entry, RBAudioCdSource *source)
+{
+	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
+	GValue *value = NULL;
+
+	if (_rb_source_check_entry_type (RB_SOURCE (source), entry) == FALSE) {
+		return NULL;
+	}
+
+	if (gtk_entry_get_text_length (GTK_ENTRY (priv->artist_sort_entry)) > 0) {
+		value = g_new0 (GValue, 1);
+		g_value_init (value, G_TYPE_STRING);
+		g_value_set_string (value, gtk_entry_get_text (GTK_ENTRY (priv->artist_sort_entry)));
+	}
+
+	return value;
 }
 
 static void
