@@ -893,6 +893,7 @@ rb_iradio_source_add_from_playlist (RBIRadioSource *source,
 		rb_iradio_source_add_station (source, uri, NULL, NULL);
 		break;
 
+	default:
 	case TOTEM_PL_PARSER_RESULT_SUCCESS:
 	case TOTEM_PL_PARSER_RESULT_ERROR:
 		break;

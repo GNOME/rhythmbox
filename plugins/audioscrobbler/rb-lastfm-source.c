@@ -2162,6 +2162,7 @@ handle_playlist_response (RBLastfmSource *source, const char *body, RhythmDBEntr
 	result = totem_pl_parser_parse (parser, tmp_uri, FALSE);
 
 	switch (result) {
+	default:
 	case TOTEM_PL_PARSER_RESULT_UNHANDLED:
 	case TOTEM_PL_PARSER_RESULT_IGNORED:
 	case TOTEM_PL_PARSER_RESULT_ERROR:
