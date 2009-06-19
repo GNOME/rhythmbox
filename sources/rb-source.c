@@ -325,7 +325,7 @@ rb_source_class_init (RBSourceClass *klass)
 						 	      "RBPlugin",
 							      "RBPlugin instance for the plugin that created the source",
 							      RB_TYPE_PLUGIN,
-							      G_PARAM_READWRITE));
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 	/**
 	 * RBSource:base-query-model:
 	 *
