@@ -1140,9 +1140,11 @@ config_notify_cb (GConfClient *client, guint connection_id, GConfEntry *entry, R
 		update_status_icon_visibility (plugin, FALSE);	/* maybe should remember if we're notifying.. */
 		sync_actions (plugin);
 
-		plugin->priv->syncing_config_widgets = TRUE;
-		gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->icon_combo), plugin->priv->icon_mode);
-		plugin->priv->syncing_config_widgets = FALSE;
+		if (plugin->priv->icon_combo != NULL) {
+			plugin->priv->syncing_config_widgets = TRUE;
+			gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->icon_combo), plugin->priv->icon_mode);
+			plugin->priv->syncing_config_widgets = FALSE;
+		}
 
 	} else if (g_str_equal (gconf_entry_get_key (entry), CONF_NOTIFICATION_MODE)) {
 		plugin->priv->notify_mode = gconf_value_get_int (gconf_entry_get_value (entry));
@@ -1150,9 +1152,11 @@ config_notify_cb (GConfClient *client, guint connection_id, GConfEntry *entry, R
 
 		sync_actions (plugin);
 
-		plugin->priv->syncing_config_widgets = TRUE;
-		gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->notify_combo), plugin->priv->notify_mode);
-		plugin->priv->syncing_config_widgets = FALSE;
+		if (plugin->priv->notify_combo != NULL) {
+			plugin->priv->syncing_config_widgets = TRUE;
+			gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->notify_combo), plugin->priv->notify_mode);
+			plugin->priv->syncing_config_widgets = FALSE;
+		}
 	}
 }
 
