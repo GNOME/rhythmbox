@@ -827,16 +827,29 @@ sanitize_pattern (const char *pat)
  * %tS -- track artist sortname (lowercase)
  */
 static char *
-filepath_parse_pattern (const char *pattern,
+filepath_parse_pattern (RhythmDB *db,
+			const char *pattern,
 			RhythmDBEntry *entry)
 {
 	/* p is the pattern iterator, i is a general purpose iterator */
 	const char *p;
 	char *temp;
 	GString *s;
+	GValue *value;
+	RBRefString *albumartist;
 
 	if (pattern == NULL || pattern[0] == 0)
 		return g_strdup (" ");
+
+	/* request album artist (this is sort of temporary) */
+	value = rhythmdb_entry_request_extra_metadata (db, entry, RHYTHMDB_PROP_ALBUM_ARTIST);
+	if (value != NULL) {
+		albumartist = rb_refstring_new (g_value_get_string (value));
+		g_value_unset (value);
+		g_free (value);
+	} else {
+		albumartist = rhythmdb_entry_get_refstring (entry, RHYTHMDB_PROP_ARTIST);
+	}
 
 	s = g_string_new (NULL);
 
@@ -872,10 +885,10 @@ filepath_parse_pattern (const char *pattern,
 				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_FOLDED));
 				break;
 			case 'a':
-				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+				string = sanitize_path (rb_refstring_get (albumartist));
 				break;
 			case 'A':
-				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_FOLDED));
+				string = sanitize_path (rb_refstring_get_folded (albumartist));
 				break;
 			case 's':
 				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME));
@@ -943,6 +956,7 @@ filepath_parse_pattern (const char *pattern,
 
 	temp = s->str;
 	g_string_free (s, FALSE);
+	rb_refstring_unref (albumartist);
 	return temp;
 }
 
@@ -980,8 +994,8 @@ layout_example_label_update (RBLibrarySource *source)
 	sample_entry = rhythmdb_entry_example_new (source->priv->db, entry_type, NULL);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
-	file_value = filepath_parse_pattern (file_pattern, sample_entry);
-	path_value = filepath_parse_pattern (path_pattern, sample_entry);
+	file_value = filepath_parse_pattern (source->priv->db, file_pattern, sample_entry);
+	path_value = filepath_parse_pattern (source->priv->db, path_pattern, sample_entry);
 	rhythmdb_entry_unref (sample_entry);
 
 	example = g_build_filename (G_DIR_SEPARATOR_S, path_value, file_value, NULL);
@@ -1106,7 +1120,7 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	g_free (layout_filename);
 	layout_filename = tmp;
 
-	realpath = filepath_parse_pattern (layout_path, entry);
+	realpath = filepath_parse_pattern (source->priv->db, layout_path, entry);
 
 	library_location = g_file_new_for_uri ((const char *)list->data);
 	dir = g_file_resolve_relative_path (library_location, realpath);
@@ -1140,7 +1154,7 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 			*tmp = '\0';
 	}
 
-	realfile = filepath_parse_pattern (layout_filename, entry);
+	realfile = filepath_parse_pattern (source->priv->db, layout_filename, entry);
 	if (extension) {
 		filename = g_strdup_printf ("%s.%s", realfile, extension);
 		g_free (realfile);

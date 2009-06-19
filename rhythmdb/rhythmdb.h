@@ -230,6 +230,8 @@ enum {
 #define RHYTHMDB_PROP_STREAM_SONG_ALBUM		"rb:stream-song-album"
 #define RHYTHMDB_PROP_COVER_ART			"rb:coverArt"
 #define RHYTHMDB_PROP_COVER_ART_URI		"rb:coverArt-uri"
+#define RHYTHMDB_PROP_ALBUM_ARTIST		"rb:album-artist"
+#define RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME	"rb:album-artist-sortname"
 
 GType rhythmdb_query_type_get_type (void);
 GType rhythmdb_prop_type_get_type (void);
