@@ -1211,15 +1211,17 @@ can_delete_directory (RBSource *source, GFile *dir)
 
 	/* can't delete the device's audio folders */
 	result = TRUE;
-	for (i = 0; priv->audio_folders[i] != NULL; i++) {
-		GFile *check;
+	if (priv->audio_folders != NULL) {
+		for (i = 0; priv->audio_folders[i] != NULL; i++) {
+			GFile *check;
 
-		check = g_file_resolve_relative_path (root, priv->audio_folders[i]);
-		if (g_file_equal (dir, check)) {
-			rb_debug ("refusing to delete device audio folder %s", priv->audio_folders[i]);
-			result = FALSE;
+			check = g_file_resolve_relative_path (root, priv->audio_folders[i]);
+			if (g_file_equal (dir, check)) {
+				rb_debug ("refusing to delete device audio folder %s", priv->audio_folders[i]);
+				result = FALSE;
+			}
+			g_object_unref (check);
 		}
-		g_object_unref (check);
 	}
 
 	/* can delete anything else */
