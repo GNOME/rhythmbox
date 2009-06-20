@@ -101,6 +101,9 @@ struct RBEntryViewColumnSortData
 	GDestroyNotify data_destroy;
 };
 
+/* GObject data item used to associate cell renderers with property IDs */
+#define CELL_PROPID_ITEM "rb-cell-propid"
+
 static void rb_entry_view_class_init (RBEntryViewClass *klass);
 static void rb_entry_view_init (RBEntryView *view);
 static GObject *rb_entry_view_constructor (GType type, guint n_construct_properties,
@@ -1372,6 +1375,51 @@ rb_entry_view_get_column (RBEntryView *view, RBEntryViewColumn coltype)
 	return (GtkTreeViewColumn *)g_hash_table_lookup (view->priv->propid_column_map, GINT_TO_POINTER (propid));
 }
 
+static void
+rb_entry_view_cell_edited_cb (GtkCellRendererText *renderer,
+			      char *path_str,
+			      char *new_text,
+			      RBEntryView *view)
+{
+	RhythmDBPropType propid;
+	RhythmDBEntry *entry;
+	GValue value = {0,};
+	GtkTreePath *path;
+
+	/* get the property corresponding to the cell, filter out properties we can't edit */
+	propid = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (renderer), CELL_PROPID_ITEM));
+	switch (propid) {
+	case RHYTHMDB_PROP_TITLE:
+	case RHYTHMDB_PROP_GENRE:
+	case RHYTHMDB_PROP_ARTIST:
+	case RHYTHMDB_PROP_ALBUM:
+	case RHYTHMDB_PROP_ARTIST_SORTNAME:
+	case RHYTHMDB_PROP_ALBUM_SORTNAME:
+		break;
+
+	default:
+		rb_debug ("can't edit property %s", rhythmdb_nice_elt_name_from_propid (view->priv->db, propid));
+		return;
+	}
+
+	/* find entry */
+	path = gtk_tree_path_new_from_string (path_str);
+	entry = rhythmdb_query_model_tree_path_to_entry (view->priv->model, path);
+	gtk_tree_path_free (path);
+
+	if (entry != NULL) {
+		/* update it */
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, new_text);
+		rhythmdb_entry_set (view->priv->db, entry, propid, &value);
+		g_value_unset (&value);
+
+		rhythmdb_commit (view->priv->db);
+		rhythmdb_entry_unref (entry);
+	}
+}
+
+
 /**
  * rb_entry_view_append_column:
  * @view: a #RBEntryView
@@ -1597,6 +1645,11 @@ rb_entry_view_append_column (RBEntryView *view,
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
 		gtk_tree_view_column_set_cell_data_func (column, renderer,
 							 cell_data_func, cell_data, g_free);
+
+		g_object_set_data (G_OBJECT (renderer), CELL_PROPID_ITEM, GINT_TO_POINTER (propid));
+		g_signal_connect_object (renderer, "edited",
+					 G_CALLBACK (rb_entry_view_cell_edited_cb),
+					 view, 0);
 	} else {
 		g_free (cell_data);
 	}
@@ -2551,6 +2604,31 @@ rb_entry_view_resort_model (RBEntryView *view)
 					     sort_data->data,
 					     NULL,
 					     (view->priv->sorting_order == GTK_SORT_DESCENDING));
+}
+
+/**
+ * rb_entry_view_set_column_editable:
+ * @view: a #RBEntryView
+ * @column: a #RBEntryViewColumn to update
+ * @editable: %TRUE to make the column editable, %FALSE otherwise
+ *
+ * Enables in-place editing of the values in a column.
+ * The underlying %RhythmDBEntry is updated when editing is complete.
+ */
+void
+rb_entry_view_set_column_editable (RBEntryView *view,
+				   RBEntryViewColumn column_type,
+				   gboolean editable)
+{
+	GtkTreeViewColumn *column;
+	GList *renderers;
+
+	column = rb_entry_view_get_column (view, column_type);
+	if (column == NULL)
+		return;
+
+	renderers = gtk_tree_view_column_get_cell_renderers (column);
+	g_object_set (renderers->data, "editable", editable, NULL);
 }
 
 /* This should really be standard. */

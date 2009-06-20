@@ -1432,6 +1432,16 @@
   )
 )
 
+(define-method set_column_editable
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_set_column_editable")
+  (return-type "none")
+  (parameters
+    '("RBEntryViewColumn" "coltype")
+    '("gboolean" "editable")
+  )
+)
+
 (define-method set_model
   (of-object "RBEntryView")
   (c-name "rb_entry_view_set_model")

@@ -182,6 +182,9 @@ void		rb_entry_view_set_fixed_column_width	(RBEntryView *view,
 							 GtkTreeViewColumn *column,
 							 GtkCellRenderer *renderer,
 							 const gchar **strings);
+void		rb_entry_view_set_column_editable	(RBEntryView *view,
+							 RBEntryViewColumn column,
+							 gboolean editable);
 
 const char *	rb_entry_view_get_time_date_column_sample (void);
 
