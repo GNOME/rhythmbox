@@ -226,6 +226,11 @@ rb_audiocd_source_constructor (GType type,
 	/* hide the 'album' column */
 	gtk_tree_view_column_set_visible (rb_entry_view_get_column (entry_view, RB_ENTRY_VIEW_COL_ALBUM), FALSE);
 
+	/* enable in-place editing for titles, artists, and genres */
+	rb_entry_view_set_column_editable (entry_view, RB_ENTRY_VIEW_COL_TITLE, TRUE);
+	rb_entry_view_set_column_editable (entry_view, RB_ENTRY_VIEW_COL_ARTIST, TRUE);
+	rb_entry_view_set_column_editable (entry_view, RB_ENTRY_VIEW_COL_GENRE, TRUE);
+
 	/* handle extra metadata requests for album artist and album artist sortname */
 	db = get_db_for_source (source);
 	g_signal_connect_object (G_OBJECT (db), "entry-extra-metadata-request::" RHYTHMDB_PROP_ALBUM_ARTIST,
