@@ -53,7 +53,9 @@ libaudiocd_la_LIBADD += $(NULL)
 
 
 gtkbuilderdir = $(plugindir)
-gtkbuilder_DATA = multiple-album.ui
+gtkbuilder_DATA = 					\
+	album-info.ui					\
+	multiple-album.ui
 
 uixmldir = $(plugindir)
 uixml_DATA = audiocd-ui.xml
