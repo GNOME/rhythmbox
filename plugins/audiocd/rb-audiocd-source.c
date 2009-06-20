@@ -858,6 +858,12 @@ rb_audiocd_load_songs (RBAudioCdSource *source)
 	gst_bin_add_many (GST_BIN (priv->pipeline), priv->cdda, priv->fakesink, NULL);
 	gst_element_link (priv->cdda, priv->fakesink);
 
+	/* disable paranoia (if using cdparanoia) since we're only reading track information here.
+	 * this reduces cdparanoia's cache size, so the process is much faster.
+	 */
+	if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "paranoia-mode"))
+		g_object_set (source, "paranoia-mode", 0, NULL);
+
 	if (rb_audiocd_scan_songs (source, db))
 		rb_audiocd_load_metadata (source, db);
 
