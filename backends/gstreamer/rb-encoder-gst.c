@@ -362,7 +362,7 @@ add_encoding_pipeline (RBEncoderGst *encoder,
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), queue2);
 
 	/* Nice big buffers... */
-	g_object_set (queue, "max-size-time", 120 * GST_SECOND, NULL);
+	g_object_set (queue, "max-size-time", 30 * GST_SECOND, "max-size-buffers", 0, "max-size-bytes", 0, NULL);
 
 	tmp = g_strdup_printf (GST_ENCODING_PROFILE, gm_audio_profile_get_pipeline (profile));
 	rb_debug ("constructing encoding bin from pipeline string %s", tmp);
