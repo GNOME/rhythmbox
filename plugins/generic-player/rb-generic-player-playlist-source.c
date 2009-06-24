@@ -63,7 +63,7 @@ enum {
 
 
 static void
-rb_generic_player_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr node)
+impl_save_to_xml (RBPlaylistSource *source, xmlNodePtr node)
 {
 	/* do nothing; just to prevent weirdness */
 }
@@ -321,7 +321,7 @@ load_playlist (RBGenericPlayerPlaylistSource *source)
 }
 
 static void
-rb_generic_player_playlist_source_mark_dirty (RBPlaylistSource *source)
+impl_mark_dirty (RBPlaylistSource *source)
 {
 	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 
@@ -383,7 +383,7 @@ rb_generic_player_playlist_source_init (RBGenericPlayerPlaylistSource *source)
 }
 
 static GObject *
-rb_generic_player_playlist_source_constructor (GType type, guint n_construct_properties, GObjectConstructParam *construct_properties)
+impl_constructor (GType type, guint n_construct_properties, GObjectConstructParam *construct_properties)
 {
 	RBGenericPlayerPlaylistSource *source;
 
@@ -401,7 +401,7 @@ rb_generic_player_playlist_source_constructor (GType type, guint n_construct_pro
 }
 
 static void
-rb_generic_player_playlist_source_dispose (GObject *object)
+impl_dispose (GObject *object)
 {
 	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (object);
 
@@ -419,7 +419,7 @@ rb_generic_player_playlist_source_dispose (GObject *object)
 }
 
 static void
-rb_generic_player_playlist_source_finalize (GObject *object)
+impl_finalize (GObject *object)
 {
 	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (object);
 
@@ -429,7 +429,7 @@ rb_generic_player_playlist_source_finalize (GObject *object)
 }
 
 static void
-rb_generic_player_playlist_source_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
 	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (object);
 
@@ -450,7 +450,7 @@ rb_generic_player_playlist_source_get_property (GObject *object, guint prop_id, 
 }
 
 static void
-rb_generic_player_playlist_source_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {
 	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (object);
 
@@ -484,16 +484,18 @@ rb_generic_player_playlist_source_class_init (RBGenericPlayerPlaylistSourceClass
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
-	object_class->constructor = rb_generic_player_playlist_source_constructor;
-	object_class->dispose = rb_generic_player_playlist_source_dispose;
-	object_class->finalize = rb_generic_player_playlist_source_finalize;
-	object_class->get_property = rb_generic_player_playlist_source_get_property;
-	object_class->set_property = rb_generic_player_playlist_source_set_property;
+	object_class->constructor = impl_constructor;
+	object_class->dispose = impl_dispose;
+	object_class->finalize = impl_finalize;
+	object_class->get_property = impl_get_property;
+	object_class->set_property = impl_set_property;
 
-	source_class->impl_show_popup = rb_generic_player_playlist_source_show_popup;
+	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_can_move_to_trash = impl_can_move_to_trash;
+	source_class->impl_move_to_trash = impl_move_to_trash;
 
-	playlist_class->impl_save_contents_to_xml = rb_generic_player_playlist_source_save_to_xml;
-	playlist_class->impl_mark_dirty = rb_generic_player_playlist_source_mark_dirty;
+	playlist_class->impl_save_contents_to_xml = impl_save_to_xml;
+	playlist_class->impl_mark_dirty = impl_mark_dirty;
 
 	g_object_class_install_property (object_class,
 					 PROP_PLAYER_SOURCE,
