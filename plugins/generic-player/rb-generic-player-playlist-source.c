@@ -33,6 +33,7 @@
 #include <totem-pl-parser.h>
 
 #include "rb-generic-player-playlist-source.h"
+#include "rb-generic-player-source.h"
 #include "rb-debug.h"
 #include "rb-plugin.h"
 #include "rb-file-helpers.h"
@@ -471,10 +472,45 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 }
 
 static gboolean
-rb_generic_player_playlist_source_show_popup (RBSource *source)
+impl_show_popup (RBSource *source)
 {
 	_rb_source_show_popup (source, "/GenericPlayerPlaylistSourcePopup");
 	return TRUE;
+}
+
+static gboolean
+impl_can_move_to_trash (RBSource *source)
+{
+	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (source);
+	RBEntryView *songs;
+	GList *sel;
+	gboolean ret;
+
+	songs = rb_source_get_entry_view (source);
+	sel = rb_entry_view_get_selected_entries (songs);
+
+	ret = rb_generic_player_source_can_trash_entries (priv->player_source, sel);
+
+	g_list_foreach (sel, (GFunc) rhythmdb_entry_unref, NULL);
+	g_list_free (sel);
+
+	return ret;
+}
+
+static void
+impl_move_to_trash (RBSource *source)
+{
+	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (source);
+	RBEntryView *songs;
+	GList *sel;
+
+	songs = rb_source_get_entry_view (source);
+	sel = rb_entry_view_get_selected_entries (songs);
+
+	rb_generic_player_source_trash_or_delete_entries (priv->player_source, sel, FALSE);
+
+	g_list_foreach (sel, (GFunc) rhythmdb_entry_unref, NULL);
+	g_list_free (sel);
 }
 
 static void

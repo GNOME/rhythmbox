@@ -901,12 +901,12 @@ impl_show_popup (RBSource *source)
 	return TRUE;
 }
 
-static gboolean
-impl_can_move_to_trash (RBSource *source)
+gboolean
+rb_generic_player_source_can_trash_entries (RBGenericPlayerSource *source,
+					    GList *entries)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	RBEntryView *view;
-	GList *sel, *tem;
+	GList *tem;
 	gboolean ret;
 
 	if (priv->read_only != FALSE)
@@ -914,10 +914,7 @@ impl_can_move_to_trash (RBSource *source)
 
 	ret = FALSE;
 
-	view = rb_source_get_entry_view (source);
-	sel = rb_entry_view_get_selected_entries (view);
-
-	for (tem = sel; tem != NULL; tem = tem->next) {
+	for (tem = entries; tem != NULL; tem = tem->next) {
 		RhythmDBEntry *entry;
 		const char *uri;
 		GFile *file;
@@ -926,7 +923,11 @@ impl_can_move_to_trash (RBSource *source)
 		entry = tem->data;
 		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		file = g_file_new_for_uri (uri);
-		info = g_file_query_info (file, G_FILE_ATTRIBUTE_ACCESS_CAN_TRASH, G_FILE_QUERY_INFO_NONE, NULL, NULL);
+		info = g_file_query_info (file,
+					  G_FILE_ATTRIBUTE_ACCESS_CAN_TRASH,
+					  G_FILE_QUERY_INFO_NONE,
+					  NULL,
+					  NULL);
 		g_object_unref (file);
 		if (info == NULL) {
 			ret = FALSE;
@@ -937,6 +938,23 @@ impl_can_move_to_trash (RBSource *source)
 		if (ret == FALSE)
 			break;
 	}
+
+	return ret;
+}
+
+static gboolean
+impl_can_move_to_trash (RBSource *source)
+{
+	RBEntryView *view;
+	GList *sel;
+	gboolean ret;
+
+
+	view = rb_source_get_entry_view (source);
+	sel = rb_entry_view_get_selected_entries (view);
+
+	ret = rb_generic_player_source_can_trash_entries (RB_GENERIC_PLAYER_SOURCE (source),
+							  sel);
 
 	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (sel);
@@ -1190,7 +1208,7 @@ impl_can_delete (RBSource *source)
 }
 
 static gboolean
-can_delete_directory (RBSource *source, GFile *dir)
+can_delete_directory (RBGenericPlayerSource *source, GFile *dir)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 	gboolean result;
@@ -1229,20 +1247,18 @@ can_delete_directory (RBSource *source, GFile *dir)
 	return result;
 }
 
-static void
-impl_move_to_trash_or_delete (RBSource *source, gboolean delete)
+void
+rb_generic_player_source_trash_or_delete_entries (RBGenericPlayerSource *source,
+						  GList *entries,
+						  gboolean _delete)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	RBEntryView *view;
-	GList *sel, *tem;
+	GList *tem;
 
 	if (priv->read_only != FALSE)
 		return;
 
-	view = rb_source_get_entry_view (source);
-	sel = rb_entry_view_get_selected_entries (view);
-
-	for (tem = sel; tem != NULL; tem = tem->next) {
+	for (tem = entries; tem != NULL; tem = tem->next) {
 		RhythmDBEntry *entry;
 		const char *uri;
 		GFile *file;
@@ -1251,7 +1267,7 @@ impl_move_to_trash_or_delete (RBSource *source, gboolean delete)
 		entry = tem->data;
 		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		file = g_file_new_for_uri (uri);
-		if (delete)
+		if (_delete)
 			g_file_delete (file, NULL, NULL);
 		else
 			g_file_trash (file, NULL, NULL);
@@ -1284,23 +1300,41 @@ impl_move_to_trash_or_delete (RBSource *source, gboolean delete)
 		g_object_unref (file);
 
 		rhythmdb_entry_delete (priv->db, entry);
-		rhythmdb_commit (priv->db);
 	}
 
-	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
-	g_list_free (sel);
+	rhythmdb_commit (priv->db);
 }
 
 static void
 impl_move_to_trash (RBSource *source)
 {
-	impl_move_to_trash_or_delete (source, FALSE);
+	RBEntryView *view;
+	GList *sel;
+
+	view = rb_source_get_entry_view (source);
+	sel = rb_entry_view_get_selected_entries (view);
+
+	rb_generic_player_source_trash_or_delete_entries (RB_GENERIC_PLAYER_SOURCE (source),
+							  sel,
+							  FALSE);
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (sel);
 }
 
 static void
 impl_delete (RBSource *source)
 {
-	impl_move_to_trash_or_delete (source, TRUE);
+	RBEntryView *view;
+	GList *sel;
+
+	view = rb_source_get_entry_view (source);
+	sel = rb_entry_view_get_selected_entries (view);
+
+	rb_generic_player_source_trash_or_delete_entries (RB_GENERIC_PLAYER_SOURCE (source),
+							  sel,
+							  TRUE);
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (sel);
 }
 
 static char *

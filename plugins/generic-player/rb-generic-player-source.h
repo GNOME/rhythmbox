@@ -81,6 +81,11 @@ char *			rb_generic_player_source_get_playlist_path	(RBGenericPlayerSource *sour
 
 gboolean		rb_generic_player_is_mount_player		(GMount *mount);
 
+void			rb_generic_player_source_trash_or_delete_entries (RBGenericPlayerSource *source,
+									 GList *entries,
+									 gboolean _delete);
+gboolean		rb_generic_player_source_can_trash_entries	(RBGenericPlayerSource *source,
+									 GList *entries);
 
 /* for subclasses */
 void			rb_generic_player_source_add_playlist		(RBGenericPlayerSource *source,
