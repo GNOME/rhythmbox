@@ -2419,19 +2419,21 @@ set_missing_plugin_error (RhythmDBEvent *event)
 	char **missing_plugins;
 	char **plugin_descriptions;
 	char *list;
+	const char *msg;
+
+	/* Translators: the parameter here is a list of GStreamer plugins.
+	 * The plugin names are already translated.
+	 */
+	msg = _("Additional GStreamer plugins are required to play this file: %s");
 
 	g_clear_error (&event->error);
 
 	rb_metadata_get_missing_plugins (event->metadata, &missing_plugins, &plugin_descriptions);
 	list = g_strjoinv (", ", plugin_descriptions);
-	/* Translators: the parameter here is a list of GStreamer plugins.
-	 * The plugin names are already translated.
-	 */
 	g_set_error (&event->error,
 		     RB_METADATA_ERROR,
 		     RB_METADATA_ERROR_MISSING_PLUGIN,
-		     _("Additional GStreamer plugins are required to play this file: %s"),
-		     list);
+		     msg, list);
 	g_free (list);
 	g_strfreev (missing_plugins);
 	g_strfreev (plugin_descriptions);
