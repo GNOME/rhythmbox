@@ -978,28 +978,22 @@ impl_show_popup (RBSource *source)
 	return TRUE;
 }
 
-static void
-impl_move_to_trash (RBSource *asource)
+void
+rb_ipod_source_trash_entries (RBiPodSource *source, GList *entries)
 {
-	GList *sel, *tem;
-	RBEntryView *songs;
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	RhythmDB *db;
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (asource);
-	RBiPodSource *source = RB_IPOD_SOURCE (asource);
+	GList *tem;
 
 	db = get_db_for_source (source);
-
-	songs = rb_source_get_entry_view (RB_SOURCE (asource));
-	sel = rb_entry_view_get_selected_entries (songs);
-	for (tem = sel; tem != NULL; tem = tem->next) {
+	for (tem = entries; tem != NULL; tem = tem->next) {
 		RhythmDBEntry *entry;
 		const gchar *uri;
 		gchar *file;
 		Itdb_Track *track;
 
 		entry = (RhythmDBEntry *)tem->data;
-		uri = rhythmdb_entry_get_string (entry,
-						 RHYTHMDB_PROP_LOCATION);
+		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		track = g_hash_table_lookup (priv->entry_map, entry);
 		if (track == NULL) {
 			g_warning ("Couldn't find track on ipod! (%s)", uri);
@@ -1013,11 +1007,23 @@ impl_move_to_trash (RBSource *asource)
 			g_unlink (file);
 		g_free (file);
 		rhythmdb_entry_delete (db, entry);
-		rhythmdb_commit (db);
 	}
 
+	rhythmdb_commit (db);
 	g_object_unref (db);
+}
 
+static void
+impl_move_to_trash (RBSource *source)
+{
+	GList *sel;
+	RBEntryView *songs;
+
+	songs = rb_source_get_entry_view (source);
+	sel = rb_entry_view_get_selected_entries (songs);
+	rb_ipod_source_trash_entries (RB_IPOD_SOURCE (source), sel);
+
+	g_list_foreach (sel, (GFunc) rhythmdb_entry_unref, NULL);
 	g_list_free (sel);
 }
 
