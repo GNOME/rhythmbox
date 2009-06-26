@@ -36,7 +36,6 @@ G_BEGIN_DECLS
 #include <glib.h>
 
 #include "rb-shell-player.h"
-#include "rb-proxy-config.h"
 #include "rb-plugin.h"
 
 #define RB_TYPE_AUDIOSCROBBLER			(rb_audioscrobbler_get_type ())
@@ -64,8 +63,7 @@ typedef struct
 
 GType			rb_audioscrobbler_get_type (void);
 
-RBAudioscrobbler *	rb_audioscrobbler_new (RBShellPlayer *shell_player,
-					       RBProxyConfig *proxy_config);
+RBAudioscrobbler *	rb_audioscrobbler_new (RBShellPlayer *shell_player);
 
 GtkWidget *		rb_audioscrobbler_get_config_widget (RBAudioscrobbler *audioscrobbler,
 							     RBPlugin *plugin);

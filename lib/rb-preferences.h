@@ -54,7 +54,6 @@ G_BEGIN_DECLS
 #define CONF_STATE_PLAY_ORDER	CONF_PREFIX "/state/play_order"
 #define CONF_STATE_VOLUME	CONF_PREFIX "/state/volume"
 #define CONF_STATE_BURN_DEVICE	CONF_PREFIX "/state/burn_device"
-#define CONF_UI_AUTO_PROXY_COMPLAINT	CONF_PREFIX "/ui/auto_proxy_complaint"
 
 #define CONF_AUDIOSCROBBLER_USERNAME CONF_PREFIX "/audioscrobbler/username"
 #define CONF_AUDIOSCROBBLER_PASSWORD CONF_PREFIX "/audioscrobbler/password"

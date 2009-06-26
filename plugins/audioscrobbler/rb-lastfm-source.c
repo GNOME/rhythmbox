@@ -55,10 +55,10 @@
 #include <totem-pl-parser.h>
 
 #include <libsoup/soup.h>
+#include <libsoup/soup-gnome.h>
 
 #include "eel-gconf-extensions.h"
 
-#include "rb-proxy-config.h"
 #include "rb-preferences.h"
 
 #include "rb-audioscrobbler.h"
@@ -256,7 +256,6 @@ struct RBLastfmSourcePrivate
 	const char *station_failed_reason;
 
 	SoupSession *soup_session;
-	RBProxyConfig *proxy_config;
 
 	guint emit_coverart_id;
 };
@@ -277,7 +276,6 @@ enum
 	PROP_0,
 	PROP_ENTRY_TYPE,
 	PROP_STATION_ENTRY_TYPE,
-	PROP_PROXY_CONFIG,
 	PROP_PLAY_ORDER
 };
 
@@ -344,14 +342,6 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 							     "Entry type for last.fm stations",
 							     RHYTHMDB_TYPE_ENTRY_TYPE,
 							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
-					 PROP_PROXY_CONFIG,
-					 g_param_spec_object ("proxy-config",
-							      "RBProxyConfig",
-							      "RBProxyConfig object",
-							      RB_TYPE_PROXY_CONFIG,
-							      G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
-
 	g_object_class_override_property (object_class,
 					  PROP_PLAY_ORDER,
 					  "play-order");
@@ -410,11 +400,6 @@ rb_lastfm_source_dispose (GObject *object)
 	if (source->priv->db) {
 		g_object_unref (source->priv->db);
 		source->priv->db = NULL;
-	}
-
-	if (source->priv->proxy_config != NULL) {
-		g_object_unref (source->priv->proxy_config);
-		source->priv->proxy_config = NULL;
 	}
 
 	if (source->priv->soup_session != NULL) {
@@ -645,10 +630,6 @@ rb_lastfm_source_set_property (GObject *object,
 	case PROP_STATION_ENTRY_TYPE:
 		source->priv->station_entry_type = g_value_get_boxed (value);
 		break;
-	case PROP_PROXY_CONFIG:
-		source->priv->proxy_config = g_value_get_object (value);
-		g_object_ref (G_OBJECT (source->priv->proxy_config));
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -698,7 +679,6 @@ rb_lastfm_source_new (RBPlugin *plugin,
 		      RBShell  *shell)
 {
 	RBSource *source;
-	RBProxyConfig *proxy_config;
 	RhythmDBEntryType station_entry_type;
 	RhythmDBEntryType track_entry_type;
 	RhythmDB *db;
@@ -726,22 +706,18 @@ rb_lastfm_source_new (RBPlugin *plugin,
 		track_entry_type->pre_entry_destroy = destroy_track_data;
 	}
 
-	g_object_get (G_OBJECT (shell), "proxy-config", &proxy_config, NULL);
-
 	source = RB_SOURCE (g_object_new (RB_TYPE_LASTFM_SOURCE,
 					  "plugin", plugin,
 					  "name", _("Last.fm"),
 					  "shell", shell,
 					  "station-entry-type", station_entry_type,
 					  "entry-type", track_entry_type,
-					  "proxy-config", proxy_config,
 					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  NULL));
 
 	rb_shell_register_entry_type_for_source (shell, source, track_entry_type);
 
 	g_object_unref (db);
-	g_object_unref (proxy_config);
 	return source;
 }
 
@@ -1485,22 +1461,6 @@ http_response_cb (SoupSession *session, SoupMessage *req, gpointer user_data)
 }
 
 static void
-proxy_config_changed_cb (RBProxyConfig *config,
-			 RBLastfmSource *source)
-{
-	SoupURI *uri;
-
-	if (source->priv->soup_session) {
-		uri = rb_proxy_config_get_libsoup_uri (config);
-		g_object_set (G_OBJECT (source->priv->soup_session),
-					"proxy-uri", uri,
-					NULL);
-		if (uri)
-			soup_uri_free (uri);
-	}
-}
-
-static void
 process_queue (RBLastfmSource *source)
 {
 	RBLastfmAction *action;
@@ -1535,17 +1495,10 @@ process_queue (RBLastfmSource *source)
 	}
 
 	if (source->priv->soup_session == NULL) {
-		SoupURI *uri;
-
-		uri = rb_proxy_config_get_libsoup_uri (source->priv->proxy_config);
-		source->priv->soup_session = soup_session_async_new_with_options ("proxy-uri", uri, NULL);
-		if (uri)
-			soup_uri_free (uri);
-		
-		g_signal_connect_object (G_OBJECT (source->priv->proxy_config),
-					 "config-changed",
-					 G_CALLBACK (proxy_config_changed_cb),
-					 source, 0);
+		source->priv->soup_session =
+			soup_session_async_new_with_options (
+					SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_GNOME_FEATURES_2_26,
+					NULL);
 	}
 
 

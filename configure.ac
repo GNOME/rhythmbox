@@ -42,6 +42,7 @@ BRASERO_MIN_REQS=0.9.1
 TOTEM_PLPARSER_REQS=2.26.0
 VALA_REQS=0.1.0
 AVAHI_REQS=0.6
+LIBSOUP_REQS=2.26.0
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
@@ -83,7 +84,8 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  glib-2.0 >= $GLIB_REQS		\
 		  gio-2.0 >= $GLIB_REQS			\
 		  gnome-media-profiles >= $GNOME_MEDIA_PROFILES_REQS \
-		  libsoup-2.4				\
+		  libsoup-2.4 >= $LIBSOUP_REQS		\
+		  libsoup-gnome-2.4 >= $LIBSOUP_REQS	\
 		  $LIBGNOME_REQS)
 
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)

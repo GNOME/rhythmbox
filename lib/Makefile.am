@@ -32,8 +32,6 @@ librb_la_SOURCES =					\
 	rb-tree-dnd.c					\
 	rb-tree-dnd.h					\
 	rb-preferences.h				\
-	rb-proxy-config.c				\
-	rb-proxy-config.h				\
 	rb-string-value-map.c				\
 	rb-string-value-map.h				\
 	rb-async-queue-watch.c				\
@@ -47,11 +45,10 @@ INCLUDES =						\
 	-DEGG_SM_CLIENT_BACKEND_XSMP			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/widgets				\
-	$(SOUP_CFLAGS)					\
 	$(HAL_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
-librb_la_LIBADD = $(SOUP_LIBS) $(HAL_LIBS) -lSM -lICE
+librb_la_LIBADD = $(HAL_LIBS) -lSM -lICE
 
 BUILT_SOURCES=
 

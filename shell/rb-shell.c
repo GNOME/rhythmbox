@@ -81,7 +81,6 @@
 #include "rb-import-errors-source.h"
 #include "rb-plugins-engine.h"
 #include "rb-plugin-manager.h"
-#include "rb-proxy-config.h"
 #include "rb-util.h"
 #include "rb-sourcelist-model.h"
 #include "rb-song-info.h"
@@ -346,8 +345,6 @@ struct RBShellPrivate
 	RBSource *missing_files_source;
 	RBSource *import_errors_source;
 
-	RBProxyConfig *proxy_config;
-
 	RBSource *selected_source;
 
 	GtkWidget *prefs;
@@ -582,13 +579,6 @@ rb_shell_class_init (RBShellClass *klass)
 							      RB_TYPE_PLAY_QUEUE_SOURCE,
 							      G_PARAM_READABLE));
 	g_object_class_install_property (object_class,
-					 PROP_PROXY_CONFIG,
-					 g_param_spec_object ("proxy-config",
-						 	      "proxy-config",
-							      "HTTP proxy configuration",
-							      RB_TYPE_PROXY_CONFIG,
-							      G_PARAM_READABLE));
-	g_object_class_install_property (object_class,
 					 PROP_LIBRARY_SOURCE,
 					 g_param_spec_object ("library-source",
 							      "library-source",
@@ -796,9 +786,6 @@ rb_shell_get_property (GObject *object,
 	case PROP_QUEUE_SOURCE:
 		g_value_set_object (value, shell->priv->queue_source);
 		break;
-	case PROP_PROXY_CONFIG:
-		g_value_set_object (value, shell->priv->proxy_config);
-		break;
  	case PROP_LIBRARY_SOURCE:
  		g_value_set_object (value, shell->priv->library_source);
  		break;
@@ -923,8 +910,6 @@ rb_shell_finalize (GObject *object)
 
 	rb_debug ("unreffing removable media manager");
 	g_object_unref (G_OBJECT (shell->priv->removable_media_manager));
-
-	g_object_unref (G_OBJECT (shell->priv->proxy_config));
 
 	rb_debug ("unreffing clipboard shell");
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
@@ -1192,8 +1177,6 @@ construct_widgets (RBShell *shell)
 	gtk_widget_show_all (shell->priv->main_vbox);
 
 	gtk_container_add (GTK_CONTAINER (win), shell->priv->main_vbox);
-
-	shell->priv->proxy_config = rb_proxy_config_new ();
 
 	rb_profile_end ("constructing widgets");
 }
