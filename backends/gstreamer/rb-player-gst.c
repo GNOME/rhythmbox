@@ -621,7 +621,7 @@ set_state_and_wait (RBPlayerGst *player, GstState target, GError **error)
 		}
 	}
 
-	if (result == FALSE && *error == NULL) {
+	if (result == FALSE && error != NULL && *error == NULL) {
 		g_set_error (error,
 			     RB_PLAYER_ERROR,
 			     RB_PLAYER_ERROR_GENERAL,
