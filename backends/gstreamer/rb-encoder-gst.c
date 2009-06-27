@@ -351,12 +351,12 @@ add_encoding_pipeline (RBEncoderGst *encoder,
 	GstPad *pad;
 	char *tmp;
 
-	queue = gst_element_factory_make ("queue", NULL);
+	queue = gst_element_factory_make ("queue2", NULL);
 	if (queue == NULL)
 		return NULL;
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), queue);
 
-	queue2 = gst_element_factory_make ("queue", NULL);
+	queue2 = gst_element_factory_make ("queue2", NULL);
 	if (queue2 == NULL)
 		return NULL;
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), queue2);
