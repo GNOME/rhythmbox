@@ -394,6 +394,16 @@ add_encoding_pipeline (RBEncoderGst *encoder,
 	return queue2;
 }
 
+static void
+add_string_tag (GstTagList *tags, GstTagMergeMode mode, const char *tag, RhythmDBEntry *entry, RhythmDBPropType property)
+{
+	const char *v;
+	v = rhythmdb_entry_get_string (entry, property);
+	if (v != NULL && v[0] != '\0') {
+		gst_tag_list_add (tags, mode, tag, v, NULL);
+	}
+}
+
 static gboolean
 add_tags_from_entry (RBEncoderGst *encoder,
 		     RhythmDBEntry *entry,
@@ -406,16 +416,16 @@ add_tags_from_entry (RBEncoderGst *encoder,
 	tags = gst_tag_list_new ();
 
 	gst_tag_list_add (tags, GST_TAG_MERGE_REPLACE_ALL,
-			  /* TODO: compute replay-gain */
-			  GST_TAG_TITLE, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
-			  GST_TAG_ARTIST, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
 			  GST_TAG_TRACK_NUMBER, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER),
 			  GST_TAG_ALBUM_VOLUME_NUMBER, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER),
-			  GST_TAG_ALBUM, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM),
-			  GST_TAG_GENRE, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE),
 			  GST_TAG_ENCODER, "Rhythmbox",
 			  GST_TAG_ENCODER_VERSION, VERSION,
 			  NULL);
+
+	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_TITLE, entry, RHYTHMDB_PROP_TITLE);
+	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_ARTIST, entry, RHYTHMDB_PROP_ARTIST);
+	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_ALBUM, entry, RHYTHMDB_PROP_ALBUM);
+	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_GENRE, entry, RHYTHMDB_PROP_GENRE);
 
 	day = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE);
 
@@ -428,36 +438,12 @@ add_tags_from_entry (RBEncoderGst *encoder,
 				  NULL);
 		g_date_free (date);
 	}
-	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID)) {
-		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
-				  GST_TAG_MUSICBRAINZ_TRACKID, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID),
-				  NULL);
-	}
-	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID)) {
-		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
-				  GST_TAG_MUSICBRAINZ_ARTISTID, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID),
-				  NULL);
-	}
-	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID)) {
-		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
-				  GST_TAG_MUSICBRAINZ_ALBUMID, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID),
-				  NULL);
-	}
-	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID)) {
-		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
-				  GST_TAG_MUSICBRAINZ_ALBUMARTISTID, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID),
-				  NULL);
-	}
-	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME)) {
-		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
-				  GST_TAG_ARTIST_SORTNAME, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME),
-				  NULL);
-	}
-	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME)) {
-		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
-				  GST_TAG_ALBUM_SORTNAME, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME),
-				  NULL);
-	}
+	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_MUSICBRAINZ_TRACKID, entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID);
+	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_MUSICBRAINZ_ARTISTID, entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID);
+	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_MUSICBRAINZ_ALBUMID, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID);
+	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_MUSICBRAINZ_ALBUMARTISTID, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID);
+	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_ARTIST_SORTNAME, entry, RHYTHMDB_PROP_ARTIST_SORTNAME);
+	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_ALBUM_SORTNAME, entry, RHYTHMDB_PROP_ALBUM_SORTNAME);
 
 	{
 		GstIterator *iter;
