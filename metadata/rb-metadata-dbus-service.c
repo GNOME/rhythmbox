@@ -148,6 +148,9 @@ rb_metadata_dbus_load (DBusConnection *connection,
 	}
 
 	mimetype = rb_metadata_get_mime (svc->metadata);
+	if (mimetype == NULL) {
+		mimetype = "";
+	}
 	has_audio = rb_metadata_has_audio (svc->metadata);
 	has_video = rb_metadata_has_video (svc->metadata);
 	has_other_data = rb_metadata_has_other_data (svc->metadata);
