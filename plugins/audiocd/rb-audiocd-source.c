@@ -650,15 +650,20 @@ metadata_cb (SjMetadataGetter *metadata,
 		rb_debug ("Failed to load cd metadata: %s", error->message);
 		/* TODO display error to user? */
 		g_object_unref (metadata);
+		priv->metadata = NULL;
 		return;
 	}
 	if (albums == NULL) {
 		rb_debug ("Musicbrainz didn't return any CD metadata, but didn't give an error");
 		g_object_unref (metadata);
+		priv->metadata = NULL;
 		return;
 	}
 	if (cd_track == NULL) {
 		/* empty cd? */
+		rb_debug ("no tracks on the CD?");
+		g_object_unref (metadata);
+		priv->metadata = NULL;
 		return;
 	}
 
@@ -676,6 +681,7 @@ metadata_cb (SjMetadataGetter *metadata,
 		album = (AlbumDetails *)albums->data;
 
 	if (album->metadata_source == SOURCE_FALLBACK) {
+		rb_debug ("ignoring CD metadata from fallback source");
 		g_object_unref (metadata);
 		priv->metadata = NULL;
 		g_object_unref (db);
@@ -885,7 +891,7 @@ impl_delete_thyself (RBSource *source)
 	RhythmDB *db;
 	RhythmDBEntryType entry_type;
 
-	rb_debug ("audio cd ejected\n");
+	rb_debug ("audio cd ejected");
 
 	/* cancel the loading of metadata */
 	rb_audiocd_load_metadata_cancel (RB_AUDIOCD_SOURCE (source));
