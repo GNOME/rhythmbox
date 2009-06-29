@@ -359,7 +359,7 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 
 	type = rb_metadata_get_field_type (field);
 	val = gst_tag_list_get_value_index (list, tag, 0);
-	newval = g_new0 (GValue, 1);
+	newval = g_slice_new0 (GValue);
 	g_value_init (newval, type);
 	if (!g_value_transform (val, newval)) {
 
@@ -811,7 +811,7 @@ rb_metadata_load (RBMetaData *md,
 
 			if (gst_element_query_duration (md->priv->sink, &format, &length)) {
 				g_assert (format == GST_FORMAT_TIME);
-				newval = g_new0 (GValue, 1);
+				newval = g_slice_new0 (GValue);
 
 				rb_debug ("duration query succeeded");
 
@@ -1119,7 +1119,7 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 	type = rb_metadata_get_field_type (field);
 	g_return_val_if_fail (type == G_VALUE_TYPE (val), FALSE);
 
-	newval = g_new0 (GValue, 1);
+	newval = g_slice_new0 (GValue);
 	g_value_init (newval, type);
 	g_value_copy (val, newval);
 
