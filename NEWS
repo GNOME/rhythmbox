@@ -1,3 +1,95 @@
+Overview of changes in Rhythmbox 0.12.3  "Perfect Depth"
+========================================================
+
+* Only attempts to install GStreamer audio decoder plugins
+* More accurate lyrics and cover art searches
+* Problems with M4A files in podcasts fixed
+* CD playback and ripping improvements:
+  * Fixed playback when crossfading is enabled
+  * New entry fields for album artist, genre, year, disc number
+  * Album artist is used when constructing filenames
+  * Song title, genre, and artist can be edited in the track list
+  * Increased extraction buffer size, meaning faster ripping
+* Playback position slider updates more frequently
+* Better behaviour with PulseAudio's flat volume
+* Support for automatic proxy configuration (via libsoup-gnome)
+* Clean up empty directories on media player devices
+* Improved playback from MTP devices
+* Some improvements manually added and IPv6 addressed DAAP servers
+
+Bugs fixed:
+
+331272 - track change notification should have Next button
+345712 - automatic proxy configuration
+349066 - cover art search inaccuracy
+358313 - lyrics search inaccuracy
+382906 - make the position-slider make run more smoothly
+425239 - Last.fm paid member usability
+437324 - Freeze when right-click -> Properties after start
+479897 - Podcast containing m4a always returns failed upon download
+501217 - Rhythmbox ignores http_proxy
+502670 - Some typos in Rhythmbox's manual
+516192 - crash when ejecting audio CD after metadata read failure
+531310 - Update of documentation
+537113 - attempts to install missing plugins for video and non-audio files
+539007 - Gives up instantly on files if mime type isn't recognized
+550491 - Use album artist information when importing from audio CD
+556296 - crash due to missing podcast information in database
+576005 - files played from MTP devices remain in /tmp afterwards
+583108 - Song rating throught rhythmbox-client
+583700 - Rhythmbox fails to import or play songs with forward slash from MTP devices
+583934 - don't search for playlists on devices with no playlist format information
+584182 - Additional areas for plugins to add UI elements
+584248 - "Always show notifications" doesn't work accross restarts
+584378 - undefined symbol in status-icon plugin
+584394 - Tooltip for play button does not change to "Stop Playback" once track starts playing
+584588 - Update libnotify required version to 0.4.1
+584726 - Wrong icon sizes
+584770 - minor translatable string fixes
+584804 - audioscrobbler only sends one track with RBPlayerGst backend
+584927 - daap: Fix “Host” HTTP header on manual daap
+584930 - support for daap servers with ipv6 addresses
+584958 - fix interaction with pulseaudio 0.9.15 flat volume feature
+585043 - Last.fm playlist support
+585114 - status-icon plugin build is broken (missing rb-marshall.h)
+585524 - add_widget does not allow you to specify packing options
+586363 - update for totem-pl-parser API additions
+586365 - update for totem-pl-parser API additions
+586803 - translator comment addition
+586922 - proxy authentication not working for last.fm
+586985 - crash when playback pipeline shutdown fails
+
+Contributors:
+
+- Szilveszter Ördög
+- Nguyễn Thái Ngọc Duy
+- Sergey Rudchenko
+- Edgar Luna
+- John Iacona
+- Jean-Philippe Garcia Ballester
+- Markus Järvinen
+- Stefano Frangioni
+- Jonathan Matthew
+
+New and updated translations:
+
+- as, courtesy of Amitakhya Phukan
+- de, courtesy of Mario Blättermann
+- es, courtesy of Jorge González
+- fr, courtesy of Claude Paroz
+- gu, courtesy of Sweta Kothari
+- he, courtesy of Mark Krapivner
+- it, courtesy of Luca Ferretti
+- lt, courtesy of Žygimantas Beručka
+- mr, courtesy of Sandeep Shedmake
+- or, courtesy of Manoj Kumar Giri
+- pa, courtesy of A S Alam
+- pl, courtesy of Tomasz Dominikowski
+- pt_BR, courtesy of Leonardo Ferreira Fontenelle
+- sv, courtesy of Daniel Nylander
+- vi, courtesy of Phạm Thành Long
+
+
 Overview of changes in Rhythmbox 0.12.2  "We Are Underused"
 ===========================================================
 
