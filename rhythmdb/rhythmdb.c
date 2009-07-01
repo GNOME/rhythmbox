@@ -2281,7 +2281,6 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 	RhythmDBEntry *entry;
 	GValue value = {0,};
 	GTimeVal time;
-	const char *media_type;
 
 	if (event->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID)
 		event->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
@@ -2293,12 +2292,13 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 	 * otherwise, add an import error entry if there was an error,
 	 * or just ignore it if it doesn't contain audio.
 	 */
-
-	media_type = rb_metadata_get_mime (event->metadata);
-	if (rb_metadata_has_video (event->metadata) ||
-	    (media_type != NULL && rhythmdb_ignore_media_type (media_type))) {
-		rhythmdb_add_import_error_entry (event->db, event, event->ignore_type);
-		return TRUE;
+	if (event->metadata != NULL) {
+		const char *media_type = rb_metadata_get_mime (event->metadata);
+		if (rb_metadata_has_video (event->metadata) ||
+		    (media_type != NULL && rhythmdb_ignore_media_type (media_type))) {
+			rhythmdb_add_import_error_entry (event->db, event, event->ignore_type);
+			return TRUE;
+		}
 	}
 
 	/* also ignore really small files we can't identify */
@@ -2480,10 +2480,11 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 				RhythmDBEvent *event)
 {
 	/* only process missing plugins for audio files */
-	if (event->metadata != NULL &&
-	    rb_metadata_has_audio (event->metadata) == TRUE &&
-	    rb_metadata_has_video (event->metadata) == FALSE &&
-	    rb_metadata_has_missing_plugins (event->metadata) == TRUE) {
+	if (event->metadata == NULL) {
+		/* obviously can't process missing plugins here */
+	} else if (rb_metadata_has_audio (event->metadata) == TRUE &&
+		   rb_metadata_has_video (event->metadata) == FALSE &&
+		   rb_metadata_has_missing_plugins (event->metadata) == TRUE) {
 		char **missing_plugins;
 		char **plugin_descriptions;
 		GClosure *closure;
