@@ -1,1511 +1,3741 @@
 # translation of rhythmbox.po to Estonian
-# Copyright (C) 2001 Free Software Foundation, Inc.
-# Priit Laes <amd@tt.ee>, 2004
-# 
+# Copyright (C) 2009 Free Software Foundation, Inc.
+# Priit Laes <amd@tt.ee>, 2004.
+# Mattias Põldaru <mahfiaz@gmail.com>, 2009.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2004-02-27 04:31+0100\n"
-"PO-Revision-Date: 2004-05-05 21:01+0300\n"
-"Last-Translator: Priit Laes <amd@tt.ee>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=rhythmbox&component=general\n"
+"POT-Creation-Date: 2009-06-28 01:42+0000\n"
+"PO-Revision-Date: 2009-06-30 18:29+0300\n"
+"Last-Translator: Mattias Põldaru <mahfiaz gmail com>\n"
 "Language-Team: Estonian <gnome-et@linux.ee>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2;plural=(n!=1);\n"
 
-#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
-msgid "Add to Music Library"
-msgstr "Lisa muusikateeki"
+#, c-format
+msgid "Do you want to overwrite the file \"%s\"?"
+msgstr "Kas tahad faili \"%s\" üle kirjutada?"
 
-#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
-msgid "Nautilus context menu extension for Rhythmbox"
-msgstr ""
+#, c-format
+msgid "Could not create a GStreamer sink element to write to %s"
+msgstr "%s kirjutamiseks ei suudetud luua GStreamer sink elementi"
 
-#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
-msgid "Rhythmbox Nautilus Context Menu Item"
-msgstr "Rhythmboxi Nautiluse kontekstmenüü element"
+#, c-format
+msgid "Failed to create playbin2 element; check your GStreamer installation"
+msgstr "Playbin2 elementi ei õnnestunud luua; kontrolli GStreameri paigaldust"
 
-#: data/GNOME_Rhythmbox.server.in.h:1
-msgid "Rhythmbox shell"
-msgstr "Rhythmboxi kest"
+#. ?
+#, c-format
+msgid "Failed to open output device: %s"
+msgstr "Väljundseadme avamine nurjus: %s"
 
-#: data/GNOME_Rhythmbox.server.in.h:2
-#, fuzzy
-msgid "Rhythmbox shell factory"
-msgstr "Clock Applet Factory"
+#, c-format
+msgid "Unable to start playback pipeline"
+msgstr "Taasesituse toru ei õnnestunud käivitada"
 
-#: data/glade/create-playlist.glade.h:1
-#: data/glade/druid.glade.h:1
-#: data/glade/song-info.glade.h:1
-#: data/glade/song-info-multiple.glade.h:1
-#: data/glade/station-new.glade.h:1
-#: data/glade/station-properties.glade.h:1
-#: data/glade/uri.glade.h:1
-msgid "*"
-msgstr "*"
+#, c-format
+msgid "Failed to link new stream into GStreamer pipeline"
+msgstr "Uue voo linkimine GStreameri toru otsa nurjus"
 
-#: data/glade/create-playlist.glade.h:2
-msgid "Add if any criteria are matched"
-msgstr "Lisa lisa kui vastab vähemalt ühele tunnusele"
+#, c-format
+msgid "Failed to start new stream"
+msgstr "Uue voo alustamine nurjus"
 
-#: data/glade/create-playlist.glade.h:3
+#. ?
+#, c-format
+msgid "Failed to open output device"
+msgstr "Väljundseadme avamine nurjus"
+
+#, c-format
+msgid "Failed to create GStreamer element; check your installation"
+msgstr "GStreameri elemendi loomine nurjus; kontrolli paigaldust"
+
+#, c-format
+msgid "Failed to create audio output element; check your installation"
+msgstr "Audioväljundi elemendi loomine nurjus; kontrolli paigaldust"
+
+#, c-format
+msgid "Failed to link GStreamer pipeline; check your installation"
+msgstr "GStreameri toru ühendamine nurjus; kontrolli paigaldust"
+
+#, c-format
+msgid "Failed to create GStreamer pipeline to play %s"
+msgstr "GStreameri toru loomine %s mängimiseks nurjus"
+
+#, c-format
+msgid "Failed to start playback of %s"
+msgstr "%s esitamise alustamine nurjus"
+
+msgid " "
+msgstr " "
+
+msgid "A_dd if any criteria are matched"
+msgstr "Lisa, kui vastab vähemalt ühele tunnusele"
+
 msgid "Create automatically updating playlist where:"
-msgstr "Loo a uus automaatselt uuendatav lugude nimekiri, kus:"
+msgstr "Loo uus iseuuenev esitusnimekiri, kus:"
 
-#: data/glade/create-playlist.glade.h:4
 msgid "GB"
 msgstr "GB"
 
-#: data/glade/create-playlist.glade.h:5
 msgid "MB"
 msgstr "MB"
 
-#: data/glade/create-playlist.glade.h:6
+msgid "Minutes"
+msgstr "minutit"
+
 msgid "_Limit to: "
-msgstr "_Piira:"
+msgstr "_Piirang:"
 
-#: data/glade/create-playlist.glade.h:7
+msgid "_When sorted by:"
+msgstr "_Järjestuse alus:"
+
 msgid "songs"
-msgstr "lugu"
+msgstr "laulu"
 
-#: data/glade/druid.glade.h:2
-msgid ""
-"Rhythmbox manages all of your music in a central music \"library\", so you can easily view, search, and organize it.\n"
-"In order to use this feature, you need to tell Rhythmbox where to find your music.  You may choose to skip this step; instead, you can add music to your library at any point later.\n"
-"Please choose one of the options below:"
-msgstr ""
-"Rhythmbox haldab kogu sinu muusikat ühes \"keskandmebaasis\", selleks et sul oleks lugusid kergem kuulata, otsida ja korraldada.\n"
-"Selleks, et seda kasutada, anna Rhythmboxile oma muusika asukoht. Samas võid sa selle tegevuse vahele jätta ja teha seda hiljem.\n"
-"Palun vali allpool olevatest valikutest:"
-
-#: data/glade/druid.glade.h:5
-msgid "_Browse..."
-msgstr "_Sirvi..."
-
-#: data/glade/druid.glade.h:6
-msgid "_Enter location manually:"
-msgstr "_Sisesta asukoht käsitsi:"
-
-#: data/glade/druid.glade.h:7
-msgid "_Path:"
-msgstr "_Otsingutee:"
-
-#: data/glade/druid.glade.h:8
-msgid "_Skip this step"
-msgstr "_Jäta see samm vahele"
-
-#: data/glade/general-prefs.glade.h:1
-#: widgets/rb-entry-view.c:1228
 msgid "A_lbum"
 msgstr "A_lbum"
 
-#: data/glade/general-prefs.glade.h:2
-msgid "Track _number"
-msgstr "Loo _number"
-
-#: data/glade/general-prefs.glade.h:3
-msgid "Visible Columns"
-msgstr "Nähtavad veerud"
-
-#: data/glade/general-prefs.glade.h:4
-msgid "_Artist"
-msgstr "Esit_aja"
-
-#: data/glade/general-prefs.glade.h:5
-msgid "_Duration"
-msgstr "_Kestvus"
-
-#: data/glade/general-prefs.glade.h:6
-msgid "_Genre"
-msgstr "Stiil"
-
-#: data/glade/general-prefs.glade.h:7
-msgid "_Last played"
-msgstr "_Viimati mängitud"
-
-#: data/glade/general-prefs.glade.h:8
-msgid "_Play count"
-msgstr "_Mängimise arv"
-
-#: data/glade/general-prefs.glade.h:9
-#: widgets/rb-entry-view.c:1179
-msgid "_Rating"
-msgstr "_Reiting"
-
-#: data/glade/library-prefs.glade.h:1
-msgid "Artists and albums"
-msgstr "Esitajad ja albumid"
-
-#: data/glade/library-prefs.glade.h:2
 msgid "Browser Views"
 msgstr "Brauseri vaated"
 
-#: data/glade/library-prefs.glade.h:3
-msgid "Genres and artists"
-msgstr "Stiilid ja esitajad"
+msgid "Da_te added"
+msgstr "Lisamise _kuupäev"
 
-#: data/glade/library-prefs.glade.h:4
-msgid "Genres, artists and albums"
-msgstr "Stiilid, esitajad ja albumid"
+msgid "Default"
+msgstr "Vaikimisi"
 
-#: data/glade/load-failure.glade.h:1
-msgid "The following files couldn't be loaded:"
-msgstr "Järgnevaid faile ei olnud võimalik laadida:"
+msgid "G_enres, artists and albums"
+msgstr "S_tiilid, esitajad ja albumid"
 
-#: data/glade/song-info.glade.h:2
-#: data/glade/song-info-multiple.glade.h:2
-msgid "Automatically rate:"
-msgstr "Automaatne hindamine:"
+msgid "Icons only"
+msgstr "Ainult ikoonid"
 
-#: data/glade/song-info.glade.h:3
+msgid "Lo_cation"
+msgstr "_Asukoht"
+
+msgid "Text below icons"
+msgstr "Tekst ikoonide all"
+
+msgid "Text beside icons"
+msgstr "Tekst ikoonide kõrval"
+
+msgid "Text only"
+msgstr "Ainult tekst"
+
+msgid "Ti_me"
+msgstr "_Aeg"
+
+msgid "Toolbar Button Labels"
+msgstr "Tööriistariba nuppude sildid"
+
+msgid "Track _number"
+msgstr "Loo _number"
+
+msgid "Visible Columns"
+msgstr "Nähtavad veerud"
+
+msgid "_Artist"
+msgstr "Esit_aja"
+
+msgid "_Artists and albums"
+msgstr "_Esitajad ja albumid"
+
+msgid "_Genre"
+msgstr "_Stiil"
+
+msgid "_Genres and artists"
+msgstr "_Stiilid ja esitajad"
+
+msgid "_Last played"
+msgstr "_Viimati esitatud"
+
+msgid "_Play count"
+msgstr "_Esituste arv"
+
+msgid "_Quality"
+msgstr "_Kvaliteet"
+
+msgid "_Rating"
+msgstr "_Reiting"
+
+#  this string can only be so long, or there wont be a search entry :)
+msgid "_Year"
+msgstr "_Aasta"
+
+msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
+msgstr "Artist/Artist - Album/Artist (Album) - 01 - Pealkiri.ogg"
+
+msgid "F_older hierarchy:"
+msgstr "_Kataloogipuu:"
+
+msgid "Library Location"
+msgstr "Fonoteegi asukoht"
+
+msgid "Library Structure"
+msgstr "Fonoteegi struktuur"
+
+msgid "_Browse..."
+msgstr "_Sirvi..."
+
+msgid "_Edit..."
+msgstr "_Muuda..."
+
+msgid "_File name:"
+msgstr "_Faili nimi:"
+
+msgid "_Music files are placed in:"
+msgstr "_Muusikafailid asuvad kaustas:"
+
+msgid "_Preferred format:"
+msgstr "_Eelistatud vorming:"
+
+msgid "_Watch my library for new files"
+msgstr "_Fonoteeki lisatud uute failide jälgimine"
+
+msgid "Crossfade Duration (Seconds)"
+msgstr "Sulatamise kestus (sekundites)"
+
+msgid "Network Buffer Size (kB)"
+msgstr "Võrgupuhvri suurus (kB)"
+
+msgid "Player Backend"
+msgstr "Esitaja taustprogramm"
+
+msgid "_Use crossfading backend (requires restart)"
+msgstr "_Kasutatakse lugude sulatamist (vajalik taaskäivitus)"
+
+msgid "<b>Playlist format</b>"
+msgstr "<b>Esitusnimekirja vorming</b>"
+
+msgid "By extension"
+msgstr "Laiendi järgi"
+
+msgid "Save Playlist"
+msgstr "Salvesta esitusnimekiri"
+
+msgid "Select playlist format:"
+msgstr "Esitusnimekirja vorming:"
+
+msgid "Author:"
+msgstr "Autor:"
+
+msgid "C_onfigure..."
+msgstr "_Seadista..."
+
+msgid "Copyright:"
+msgstr "Autorõigus:"
+
+msgid "Description:"
+msgstr "Kirjeldus:"
+
+msgid "Site:"
+msgstr "Sait:"
+
 msgid "Basic"
 msgstr "Põhiline"
 
-#: data/glade/song-info.glade.h:4
-#: data/glade/station-properties.glade.h:2
-msgid "Bitrate:"
-msgstr "Bitikiirus:"
-
-#: data/glade/song-info.glade.h:5
 msgid "Details"
 msgstr "Üksikasjad"
 
-#: data/glade/song-info.glade.h:6
+msgid "Language:"
+msgstr "Keel:"
+
+msgid "Last episode:"
+msgstr "Viimane osa:"
+
+msgid "Last updated:"
+msgstr "Viimati uuendatud:"
+
+msgid "Source:"
+msgstr "Allikas:"
+
+msgid "Title:"
+msgstr "Pealkiri:"
+
+msgid "<b>Download Manager</b>"
+msgstr "<b>Allalaadimiste haldur</b>"
+
+msgid "Check for _new episodes:"
+msgstr "_Uute osade kontroll:"
+
+msgid "Every day"
+msgstr "Iga päev"
+
+msgid "Every hour"
+msgstr "Kord tunnis"
+
+msgid "Every week"
+msgstr "Iga nädal"
+
+msgid "Manually"
+msgstr "Käsitsi"
+
+msgid "Select Folder For Podcasts"
+msgstr "Podcastide kataloog"
+
+msgid "_Download location:"
+msgstr "Allalaadimise asukoht:"
+
+msgid "Bitrate:"
+msgstr "Bitikiirus:"
+
+msgid "Date:"
+msgstr "Kuupäev:"
+
+msgid "Download location:"
+msgstr "Allalaadimise asukoht:"
+
 msgid "Duration:"
-msgstr "Kestvus:"
+msgstr "Kestus:"
 
-#: data/glade/song-info.glade.h:7
-msgid "File name:"
-msgstr "Faili nimi:"
+msgid "Feed:"
+msgstr "Voog:"
 
-#: data/glade/song-info.glade.h:8
 msgid "Last played:"
 msgstr "Viimati mängitud:"
 
-#: data/glade/song-info.glade.h:9
-msgid "Location:"
-msgstr "Asukoht:"
-
-#: data/glade/song-info.glade.h:10
 msgid "Play count:"
 msgstr "Mängimiste arv:"
 
-#: data/glade/song-info.glade.h:11
-#: data/glade/song-info-multiple.glade.h:3
-msgid "_Album:"
-msgstr "_Album:"
-
-#: data/glade/song-info.glade.h:12
-#: data/glade/song-info-multiple.glade.h:4
-msgid "_Artist:"
-msgstr "_Esitaja:"
-
-#: data/glade/song-info.glade.h:13
-#: data/glade/song-info-multiple.glade.h:5
-#: data/glade/station-new.glade.h:2
-#: data/glade/station-properties.glade.h:6
-msgid "_Genre:"
-msgstr "_Stiil:"
-
-#: data/glade/song-info.glade.h:14
-#: data/glade/song-info-multiple.glade.h:6
-#: data/glade/station-properties.glade.h:8
 msgid "_Rating:"
 msgstr "_Reiting:"
 
-#: data/glade/song-info.glade.h:15
-#: data/glade/station-new.glade.h:4
-#: data/glade/station-properties.glade.h:9
-msgid "_Title:"
-msgstr "_Tiitel:"
+msgid "_Album:"
+msgstr "_Album:"
 
-#: data/glade/song-info.glade.h:16
+msgid "_Artist:"
+msgstr "_Esitaja:"
+
+msgid "_Disc number:"
+msgstr "_Plaadi number:"
+
+msgid "_Genre:"
+msgstr "_Stiil:"
+
+#  this string can only be so long, or there wont be a search entry :)
+msgid "_Year:"
+msgstr "_Aasta:"
+
+msgid "Date added:"
+msgstr "Lisamise kuupäev:"
+
+msgid "Error message"
+msgstr "Veateade"
+
+msgid "File name:"
+msgstr "Faili nimi:"
+
+msgid "File size:"
+msgstr "Faili suurus:"
+
+msgid "Location:"
+msgstr "Asukoht:"
+
+msgid "_Title:"
+msgstr "_Pealkiri:"
+
 msgid "_Track number:"
 msgstr "_Loo number:"
 
-#: data/glade/station-new.glade.h:3
-msgid "_Location:"
-msgstr "_Asukoht:"
+msgid "My Top Rated"
+msgstr "Kõrgeima hindega"
 
-#: data/glade/station-properties.glade.h:3
-msgid "L_ocation:"
-msgstr "As_ukoht:"
+msgid "Recently Added"
+msgstr "Hiljuti lisatud"
 
-#: data/glade/station-properties.glade.h:4
-msgid "Play Count:"
-msgstr "Mängimiste arv:"
+msgid "Recently Played"
+msgstr "Hiljuti kuulatud"
 
-#: data/glade/station-properties.glade.h:5
-msgid "Wed, Jan 01, 1970 00:00:00 -0500"
-msgstr "K, 01. jaan. 1970 00:00:00 -0500"
-
-#: data/glade/station-properties.glade.h:7
-msgid "_Last Played:"
-msgstr "_Viimati mängitud:"
-
-#: data/glade/uri.glade.h:2
-msgid "Enter the _location (URI) of the file you would like to add:"
-msgstr "Sisesta lisatava faili _asukoht (URI):"
-
-#: data/glade/uri.glade.h:3
-msgid "Open from URI"
-msgstr "Ava URI-st"
-
-#: data/rhythmbox.desktop.in.h:1
-#: shell/rb-shell.c:1216
-#: shell/rb-shell.c:1885
 msgid "Music Player"
 msgstr "Muusikamängija"
 
-#: data/rhythmbox.desktop.in.h:2
 msgid "Play and organize your music collection"
-msgstr "Mängi ja halda oma muusikakollektsiooni"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:1
-#: data/ui/rhythmbox-ui.xml.h:21
-msgid "Deselect all songs"
-msgstr "Tühista valik"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:2
-msgid "Eject Audio-CD"
-msgstr "Väljasta Audio CD"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3
-#: data/ui/rhythmbox-ui.xml.h:41
-msgid "Scroll the view to the currently playing song"
-msgstr ""
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4
-#: data/ui/rhythmbox-ui.xml.h:42
-msgid "Select _All"
-msgstr "_Vali kõik"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5
-#: data/ui/rhythmbox-ui.xml.h:43
-msgid "Select all songs"
-msgstr "Vali kõik laulud"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6
-#: data/ui/rhythmbox-ui.xml.h:62
-msgid "_Edit"
-msgstr "_Redaktor"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:7
-msgid "_Eject Audio-CD..."
-msgstr "_Väljasta Audio CD..."
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8
-#: data/ui/rhythmbox-ui.xml.h:65
-msgid "_Jump to Playing Song"
-msgstr "_Hüppa mängiva loo peale"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9
-#: data/ui/rhythmbox-ui.xml.h:79
-msgid "_View"
-msgstr "_Vaade"
-
-#: data/ui/rhythmbox-ui.xml.h:1
-msgid "Add Lo_cation..."
-msgstr "Lisa _asukoht..."
-
-#: data/ui/rhythmbox-ui.xml.h:2
-msgid "Browse this album"
-msgstr "Sirvi seda albumit"
-
-#: data/ui/rhythmbox-ui.xml.h:3
-msgid "Browse this artist"
-msgstr "Sirvi seda artisti"
-
-#: data/ui/rhythmbox-ui.xml.h:4
-msgid "Browse this genre"
-msgstr "Sirvi seda stiili"
-
-#: data/ui/rhythmbox-ui.xml.h:5
-msgid "Change the visibility of the browser"
-msgstr "Muuda sirvija nähtavust"
-
-#: data/ui/rhythmbox-ui.xml.h:6
-msgid "Change the visibility of the main window"
-msgstr "Muuda põhiakna nähtavust"
-
-#: data/ui/rhythmbox-ui.xml.h:7
-msgid "Change the visibility of the source list"
-msgstr "Muuda lähtenimekirja nähtavust"
-
-#: data/ui/rhythmbox-ui.xml.h:8
-msgid "Change the visibility of the statusbar"
-msgstr "Muuda olekuriba nähtavust"
-
-#: data/ui/rhythmbox-ui.xml.h:9
-msgid "Change this automatic playlist"
-msgstr "Muuda seda automaatset lugude nimekirja"
-
-#: data/ui/rhythmbox-ui.xml.h:10
-#, fuzzy
-msgid "Choose a location (URI) to be added to the library"
-msgstr "Vali teeki lisatavad failid või kataloog"
-
-#: data/ui/rhythmbox-ui.xml.h:11
-msgid "Choose a playlist to be loaded"
-msgstr "Vali lugude nimekiri mida laadida"
-
-#: data/ui/rhythmbox-ui.xml.h:12
-msgid "Choose files or a directory to be added to the library"
-msgstr "Vali teeki lisatavad failid või kataloog"
-
-#: data/ui/rhythmbox-ui.xml.h:13
-msgid "Copy selection"
-msgstr "Kopeeri valik"
-
-#: data/ui/rhythmbox-ui.xml.h:14
-msgid "Create a new Internet Radio station"
-msgstr "Loo a uus Interneti raadio"
-
-#: data/ui/rhythmbox-ui.xml.h:15
-msgid "Create a new automatically updating playlist"
-msgstr "Loo a uus automaatselt uuendatav lugude nimekiri"
-
-#: data/ui/rhythmbox-ui.xml.h:16
-msgid "Create a new playlist"
-msgstr "Loo a uus lugude nimekiri"
-
-#: data/ui/rhythmbox-ui.xml.h:17
-msgid "Cu_t"
-msgstr "_Lõika"
-
-#: data/ui/rhythmbox-ui.xml.h:18
-msgid "Cut selection"
-msgstr "Lõika valik"
-
-#: data/ui/rhythmbox-ui.xml.h:19
-msgid "D_eselect All"
-msgstr "_Tühista valik"
-
-#: data/ui/rhythmbox-ui.xml.h:20
-msgid "Delete selection"
-msgstr "Kustuta valik"
-
-#: data/ui/rhythmbox-ui.xml.h:22
-msgid "Display music player help"
-msgstr "Kuva muusikamängija abi"
-
-#: data/ui/rhythmbox-ui.xml.h:23
-msgid "Edit music player preferences"
-msgstr "Redigeerimine muusikamängija eelistusi"
-
-#: data/ui/rhythmbox-ui.xml.h:24
-msgid "Extract and import songs from a CD"
-msgstr "Impordi lugusid CD'lt"
-
-#: data/ui/rhythmbox-ui.xml.h:25
-msgid "Import Lo_cation..."
-msgstr "Impordi _asukoht..."
-
-#: data/ui/rhythmbox-ui.xml.h:26
-msgid "Import _Audio CD..."
-msgstr "Impordi _Audio CD..."
-
-#: data/ui/rhythmbox-ui.xml.h:27
-msgid "Make the main window smaller"
-msgstr "Tee põhiaken väiksemaks"
-
-#: data/ui/rhythmbox-ui.xml.h:28
-msgid "New _Automatic Playlist..."
-msgstr "Uus _automaatne lugude nimekiri..."
-
-#: data/ui/rhythmbox-ui.xml.h:29
-msgid "New _Internet Radio Station"
-msgstr "Uus _internetiraadio"
-
-#: data/ui/rhythmbox-ui.xml.h:30
-msgid "P_laylist"
-msgstr "_Lugude nimekiri"
-
-#: data/ui/rhythmbox-ui.xml.h:31
-msgid "P_revious"
-msgstr "Eelmine"
-
-#: data/ui/rhythmbox-ui.xml.h:32
-msgid "Paste selection"
-msgstr "Aseta valik"
-
-#: data/ui/rhythmbox-ui.xml.h:33
-msgid "Pause playing"
-msgstr "Peata mängimine"
-
-#: data/ui/rhythmbox-ui.xml.h:34
-#: shell/rb-statusbar.c:238
-msgid "Play first song again after all songs are played"
-msgstr "Mängi esimest lugu kui kõik lood on mängitud"
-
-#: data/ui/rhythmbox-ui.xml.h:35
-#: shell/rb-statusbar.c:233
-msgid "Play songs in a random order"
-msgstr "Mängi lugusid suvalises järjekorras"
-
-#: data/ui/rhythmbox-ui.xml.h:36
-msgid "Prefere_nces"
-msgstr "_Häälestus"
-
-#: data/ui/rhythmbox-ui.xml.h:37
-msgid "Quit the music player"
-msgstr "Välju muusikamängijast"
-
-#: data/ui/rhythmbox-ui.xml.h:38
-msgid "Repea_t"
-msgstr "_Kordus"
-
-#: data/ui/rhythmbox-ui.xml.h:39
-msgid "S_tatusbar"
-msgstr "_Olekuriba"
-
-#: data/ui/rhythmbox-ui.xml.h:40
-msgid "Save a playlist to a file"
-msgstr "Salvesta lugude nimekiri faili"
-
-#: data/ui/rhythmbox-ui.xml.h:44
-msgid "Set the browser to view only this album"
-msgstr "Vaata sirvijas ainult seda albumit"
-
-#: data/ui/rhythmbox-ui.xml.h:45
-msgid "Set the browser to view only this artist"
-msgstr "Vaata sirvijas ainult seda esitajat"
-
-#: data/ui/rhythmbox-ui.xml.h:46
-msgid "Set the browser to view only this genre"
-msgstr "Vaata sirvijas ainult seda stiili"
-
-#: data/ui/rhythmbox-ui.xml.h:47
-msgid "Show information about the music player"
-msgstr "Näita informatsiooni muusikamängija kohta"
-
-#: data/ui/rhythmbox-ui.xml.h:48
-msgid "Show information on the selected song"
-msgstr "Näita informatsiooni valitud loo kohta"
-
-#: data/ui/rhythmbox-ui.xml.h:49
-msgid "Source _List"
-msgstr "_Lähtenimekiri"
-
-#: data/ui/rhythmbox-ui.xml.h:50
-#: shell/rb-shell-player.c:1536
-msgid "Start playing"
-msgstr "Alusta mängimist"
-
-#: data/ui/rhythmbox-ui.xml.h:51
-msgid "Start playing the next song"
-msgstr "Alusta järgmise loo mängimist"
-
-#: data/ui/rhythmbox-ui.xml.h:52
-msgid "Start playing the previous song"
-msgstr "Alusta eelmise loo mängimist"
-
-#: data/ui/rhythmbox-ui.xml.h:53
-msgid "Stop playing"
-msgstr "Lõpeta mängimine"
-
-#: data/ui/rhythmbox-ui.xml.h:54
-msgid "_About"
-msgstr "_Info"
-
-#: data/ui/rhythmbox-ui.xml.h:55
-msgid "_Add to Library..."
-msgstr "Lis_a teeki..."
-
-#: data/ui/rhythmbox-ui.xml.h:56
-msgid "_Browser"
-msgstr "_Sirvija"
-
-#: data/ui/rhythmbox-ui.xml.h:57
-msgid "_Contents"
-msgstr "_Sisukord"
-
-#: data/ui/rhythmbox-ui.xml.h:58
-#, fuzzy
-msgid "_Control"
-msgstr "Control-H"
-
-#: data/ui/rhythmbox-ui.xml.h:59
-msgid "_Copy"
-msgstr "_Kopeeri"
-
-#: data/ui/rhythmbox-ui.xml.h:60
-msgid "_Cut"
-msgstr "_Lõika"
-
-#: data/ui/rhythmbox-ui.xml.h:61
-msgid "_Delete"
-msgstr "_Kustuta"
-
-#: data/ui/rhythmbox-ui.xml.h:63
-msgid "_Help"
-msgstr "_Abi"
-
-#: data/ui/rhythmbox-ui.xml.h:64
-msgid "_Import Folder..."
-msgstr "_Impordi kataloog..."
-
-#: data/ui/rhythmbox-ui.xml.h:66
-msgid "_Load from file..."
-msgstr "_Lae failist..."
-
-#: data/ui/rhythmbox-ui.xml.h:67
-msgid "_Music"
-msgstr "_Muusika"
-
-#: data/ui/rhythmbox-ui.xml.h:68
-msgid "_New Playlist..."
-msgstr "Uus lugude _nimekiri..."
-
-#: data/ui/rhythmbox-ui.xml.h:69
-msgid "_Next"
-msgstr "_Järgmine"
-
-#: data/ui/rhythmbox-ui.xml.h:70
-msgid "_Paste"
-msgstr "_Aseta"
-
-#: data/ui/rhythmbox-ui.xml.h:71
-#: shell/rb-shell-player.c:1537
-msgid "_Play"
-msgstr "_Mängi"
-
-#: data/ui/rhythmbox-ui.xml.h:72
-msgid "_Properties"
-msgstr "_Omadused"
-
-#: data/ui/rhythmbox-ui.xml.h:73
-msgid "_Quit"
-msgstr "_Lahku"
-
-#: data/ui/rhythmbox-ui.xml.h:74
-msgid "_Remove"
-msgstr "_Eemalda"
-
-#: data/ui/rhythmbox-ui.xml.h:75
-msgid "_Save to file..."
-msgstr "_Salvesta faili..."
-
-#: data/ui/rhythmbox-ui.xml.h:76
-msgid "_Show Window"
-msgstr "_Näita akent"
-
-#: data/ui/rhythmbox-ui.xml.h:77
-#: shell/rb-statusbar.c:230
-msgid "_Shuffle"
-msgstr "_Segatud"
-
-#: data/ui/rhythmbox-ui.xml.h:78
-msgid "_Small Display"
-msgstr "_Väike vaade"
-
-#: iradio/rb-new-station-dialog.c:144
-msgid "New Internet Radio Station"
-msgstr "Uus Internetiraadiojaam"
-
-#: iradio/rb-new-station-dialog.c:182
-#: iradio/rb-station-properties-dialog.c:460
-#: metadata/monkey-media/monkey-media-stream-info.c:404
-#: metadata/monkey-media/monkey-media-stream-info.c:420
-#: metadata/monkey-media/monkey-media-stream-info.c:667
-#: rhythmdb/rhythmdb.c:767
-#: sources/rb-ipod-source.c:175
-#: sources/rb-iradio-source.c:266
-#: sources/rb-iradio-source.c:267
-#: sources/rb-iradio-source.c:268
-#: sources/rb-playlist-source.c:394
-#: widgets/rb-entry-view.c:961
-#: widgets/rb-entry-view.c:988
-#: widgets/rb-song-info.c:801
+msgstr "Esita ja halda oma muusikakollektsiooni"
+
+msgid "Rhythmbox Music Player"
+msgstr "Rhythmbox muusikamängija"
+
+#, c-format
+msgid "File is not a valid .desktop file"
+msgstr "See pole sobiv .desktop fail"
+
+#, c-format
+msgid "Unrecognized desktop file Version '%s'"
+msgstr "Tundmatu töölauafaili versioon '%s'"
+
+#, c-format
+msgid "Starting %s"
+msgstr "%s alustamine"
+
+#, c-format
+msgid "Application does not accept documents on command line"
+msgstr "Rakendus ei võta käsurealt dokumente vastu"
+
+#, c-format
+msgid "Unrecognized launch option: %d"
+msgstr "Tundmatu käivitusvalik: %d"
+
+#, c-format
+msgid "Can't pass document URIs to a 'Type=Link' desktop entry"
+msgstr "Dokumendi URI-sid pole võimalik edasi anda 'Type=Link' töölauakirjele"
+
+#, c-format
+msgid "Not a launchable item"
+msgstr "Pole käivitatav kirje"
+
+msgid "Disable connection to session manager"
+msgstr "Ühenduste keelamine seansihaldurisse"
+
+msgid "Specify file containing saved configuration"
+msgstr "Salvestatud seadistust sisaldava faili määramine"
+
+msgid "FILE"
+msgstr "FAIL"
+
+msgid "Specify session management ID"
+msgstr "Määra seansihalduse ID"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Session management options:"
+msgstr "Seansihalduse valikud"
+
+msgid "Show session management options"
+msgstr "Seansihalduse valikute kuvamine"
+
+#. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
+msgid "Today %I:%M %p"
+msgstr "Täna %H:%M"
+
+#. Translators: "friendly time" string for the previous day,
+#. * strftime format. e.g. "Yesterday 12:34 am"
+#.
+msgid "Yesterday %I:%M %p"
+msgstr "Eile %H:%M"
+
+#. Translators: "friendly time" string for a day in the current week,
+#. * strftime format. e.g. "Wed 12:34 am"
+#.
+msgid "%a %I:%M %p"
+msgstr "%A, %H:%M"
+
+#. Translators: "friendly time" string for a day in the current year,
+#. * strftime format. e.g. "Feb 12 12:34 am"
+#.
+msgid "%b %d %I:%M %p"
+msgstr "%d. %b %d %H:%M"
+
+#. Translators: "friendly time" string for a day in a different year,
+#. * strftime format. e.g. "Feb 12 1997"
+#.
+msgid "%b %d %Y"
+msgstr "%d. %B %Y"
+
+#. impossible time or broken locale settings
+#. we really do need to fix this so untagged entries actually have NULL rather than
+#. * a translated string.
+#.
+#. don't search for 'unknown' when we don't have the artist or title information
+#. Translators: unknown track title
 msgid "Unknown"
 msgstr "Tundmatu"
 
-#: iradio/rb-new-station-dialog.c:309
-#: rhythmdb/rhythmdb-property-model.c:372
-msgid "All"
-msgstr "Kõik"
-
-#: iradio/rb-station-properties-dialog.c:173
-#: widgets/rb-song-info.c:751
 #, c-format
-msgid "%s Properties"
-msgstr "%s omadused"
+msgid "Unable to move %s to %s: %s"
+msgstr "%s liigutamine kohta %s nurjus: %s"
 
-#: iradio/rb-station-properties-dialog.c:358
 #, c-format
-msgid "Properties for %s"
-msgstr "%s omadused"
+msgid "Too many symlinks"
+msgstr "Liiga palju sümbolviiteid"
 
-#: lib/disclosure-widget.c:300
-msgid "Expander Size"
-msgstr "Laiendaja suurus"
-
-#: lib/disclosure-widget.c:301
-msgid "Size of the expander arrow"
-msgstr "Laiendaja noole suurus"
-
-#: lib/eel-gconf-extensions.c:67
 #, c-format
-msgid ""
-"GConf error:\n"
-"  %s"
-msgstr ""
-"GConf'i viga:\n"
-"  %s"
+msgid "Cannot get free space at %s: %s"
+msgstr "Asukohas %s ei saadud vaba ruumi: %s"
 
-#: lib/eggtrayicon.c:120
-msgid "Orientation"
-msgstr "Suund"
-
-#: lib/eggtrayicon.c:121
-#, fuzzy
-msgid "The orientation of the tray."
-msgstr "Alumine salv"
-
-#: lib/rb-file-helpers.c:77
-#, c-format
-msgid "Failed to find %s"
-msgstr "%s leidmine ebaõnnestus"
-
-#: lib/rb-file-helpers.c:102
-#, c-format
-msgid "%s exists, please move it out of the way."
-msgstr "%s eksisteerib, palun vii see eest ära."
-
-#: lib/rb-file-helpers.c:105
-#, c-format
-msgid "Failed to create directory %s."
-msgstr "Kataloogi %s loomine ebaõnnestus."
-
-#: lib/rb-playlist.c:217
-#, c-format
-msgid "Couldn't write playlist: %s"
-msgstr "Viga lugude nimekirja kirjutamisel: %s"
-
-#: lib/rb-playlist.c:250
-#, c-format
-msgid "Couldn't open playlist: %s"
-msgstr "Viga lugude nimekirja avamisel: %s"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:310
-#, c-format
-msgid "Unsupported MIME type %s"
-msgstr "Toetamata MIME tüüp %s"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:315
-msgid "Unknown file type"
-msgstr "Tundmatu faili tüüp"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:386
-#, c-format
-msgid "Track %.2d"
-msgstr "Lugu %.2d"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:751
-#: metadata/monkey-media/monkey-media-stream-info.c:816
-msgid "No TRM ID for this song"
-msgstr "Selle lool puudub TRM ID"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:767
-#: metadata/monkey-media/monkey-media-stream-info.c:831
-msgid "No information for this song found"
-msgstr "Selle loo kohta infot ei leitud"
-
-#: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:166
-msgid "Invalid track number"
-msgstr "Vigane loo number"
-
-#: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:270
-msgid "Audio CD track"
-msgstr "Audio CD lugu"
-
-#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:197
-#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:266
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:172
-#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
-msgid "Failed to open file for reading"
-msgstr "Viga faili avamisel lugemiseks"
-
-#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:249
-msgid "Error decoding FLAC file"
-msgstr "Viga FLAC fail dekodeerimisel"
-
-#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:759
-msgid "FLAC"
-msgstr "FLAC"
-
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:183
-msgid "Failed to gather information about the file"
-msgstr "Viga faili kohta info kogumisel"
-
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:588
-#, c-format
-msgid "MPEG %d Layer III"
-msgstr "MPEG %d Kiht III"
-
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:590
-msgid "MPEG 2.5 Layer III"
-msgstr "MPEG 2.5 Kiht III"
-
-#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:163
-msgid "Failed to recognise filetype"
-msgstr "Failitüübi tunnustamine ebaõnnestus"
-
-#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:201
-msgid "Failed to find an audio track"
-msgstr "Loo leidmine ebaõnnestus"
-
-#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:438
-msgid "MPEG-4 audio (MPEG-4 AAC)"
-msgstr "MPEG-4 audio (MPEG-4 AAC)"
-
-#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:180
-#, fuzzy
-msgid "Failed to seek file"
-msgstr "Faili '%s' avamine ebaõnnestus: %s"
-
-#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:194
-msgid "Failed to open file as Ogg Vorbis"
-msgstr "Faili avamine Ogg Vorbis failina ebaõnnestus"
-
-#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:546
-msgid "Ogg Vorbis"
-msgstr "Ogg Vorbis"
-
-#: metadata/rb-metadata-gst.c:290
-#, c-format
-msgid "There is no plugin installed to handle a %s file."
-msgstr ""
-
-#: metadata/rb-metadata-gst.c:531
-#: metadata/rb-metadata-gst.c:660
-#: player/rb-player-gst.c:562
-#, c-format
-msgid "Failed to create %s element; check your installation"
-msgstr ""
-
-#: metadata/rb-metadata-mm.c:219
-msgid "Operation not supported"
-msgstr "Tegevus ei ole toetatud"
-
-#: player/rb-player-gst.c:409
-#: player/rb-player-gst.c:621
-#: player/rb-player-gst.c:631
-#, fuzzy
-msgid "Could not start pipeline playing"
-msgstr "Ei saa käivitada wombat serverit"
-
-#: player/rb-player-gst.c:528
-msgid "Could not create audio output element; check your settings"
-msgstr ""
-
-#: player/rb-player-gst.c:586
-msgid "Couldn't initialize scheduler.  Did you run gst-register?"
-msgstr ""
-
-#: player/rb-player-gst.c:658
-msgid "Could not pause playback"
-msgstr "Esituse peatamine ebaõnnestus"
-
-#: player/rb-player-gst.c:668
-#, fuzzy
-msgid "Could not close output sink"
-msgstr "Võrdlemise väljundi parsimine ei õnnestunud."
-
-#: player/rb-player-gst.c:715
-msgid "No AudioCD support; check your settings"
-msgstr "AudioCD tugi puudub; kontrolli oma seadeid"
-
-#: player/rb-player-gst.c:774
-msgid "Failed to close audio output sink"
-msgstr ""
-
-#: player/rb-player-xine.c:354
-#, fuzzy
-msgid "Failed to set up an audio driver; check your installation"
-msgstr "Viga audio"
-
-#: player/rb-player-xine.c:454
-#, c-format
-msgid "No input plugin available for %s; check your installation."
-msgstr ""
-
-#: player/rb-player-xine.c:463
-#, c-format
-msgid "No demux plugin available for %s; check your installation."
-msgstr ""
-
-#: player/rb-player-xine.c:472
-#, c-format
-msgid "Demuxing for %s failed; check your installation."
-msgstr ""
-
-#: player/rb-player-xine.c:480
-msgid "Internal error; check your installation."
-msgstr "Sisemine viga; kontrolli paigaldust."
-
-#: player/rb-player-xine.c:488
-#, fuzzy, c-format
-msgid "Audio of %s not handled; check your installation."
-msgstr "Teeki cupsdconf ei leitud. Kontrolli paigaldust."
-
-#: rhythmdb/rhythmdb.c:845
-msgid "<invalid filename>"
-msgstr "<vigane failinimi>"
-
-#: rhythmdb/rhythmdb.c:1462
-#: widgets/rb-entry-view.c:927
-#: widgets/rb-song-info.c:774
-#: widgets/rb-song-info.c:954
-msgid "Never"
-msgstr "Mitte kunagi"
-
-#: rhythmdb/rhythmdb.c:1464
-msgid "%Y-%m-%d %H:%M"
-msgstr "%Y-%m-%d %H:%M"
-
-#: rhythmdb/rhythmdb.c:2191
-msgid "Loading songs..."
-msgstr "Lugude laadimine..."
-
-#: rhythmdb/rhythmdb.c:2193
-msgid "Refreshing songs..."
-msgstr "Värskendan lugusid..."
-
-#  Translators: the format is "X days, X hours and X minutes"
-#. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2210
-#: rhythmdb/rhythmdb.c:2217
-#: rhythmdb/rhythmdb.c:2218
-#: rhythmdb/rhythmdb.c:2228
-#: rhythmdb/rhythmdb.c:2219
-#: rhythmdb/rhythmdb.c:2223
-#, c-format
-msgid "%s, %s and %s"
-msgstr "%s. %s ja %s"
-
-#  Translators: the format is "X hours and X minutes"
-#. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2231
-#, c-format
-msgid "%s and %s"
-msgstr "%s ja %s-it"
-
-#: shell/main.c:91
-#, fuzzy
-msgid "Print the playing song and exit"
-msgstr "Näitab seda abiteksti"
-
-#: shell/main.c:92
-msgid "Print the playing song URI and exit"
-msgstr ""
-
-#: shell/main.c:94
-msgid "Print the playing song length in seconds and exit"
-msgstr ""
-
-#: shell/main.c:95
-msgid "Print the current elapsed time of playing song and exit"
-msgstr ""
-
-#: shell/main.c:96
-msgid "Seek to the specified time in playing song if possible and exit"
-msgstr ""
-
-#: shell/main.c:98
-#, fuzzy
-msgid "Toggle play/pause mode"
-msgstr "Täisekraanirežii&m"
-
-#: shell/main.c:99
-msgid "Focus the running player"
-msgstr "Fokusseeri töötav mängija"
-
-#: shell/main.c:100
-msgid "Jump to previous song"
-msgstr "Hüppa eelmisele loole"
-
-#: shell/main.c:101
-msgid "Jump to next song"
-msgstr "Hüppa järgmisele loole"
-
-#: shell/main.c:103
-#, fuzzy
-msgid "Toggle shuffling"
-msgstr "Näita segamist"
-
-#: shell/main.c:105
-#, fuzzy
-msgid "Enable debugging code"
-msgstr "Kodeerija täieliku silumisinfo lubamine"
-
-#: shell/main.c:106
-msgid "Do not update the library"
-msgstr "Ära uuenda teeki"
-
-#: shell/main.c:107
-#, fuzzy
-msgid "Do not register the shell"
-msgstr "Ära uuenda teeki"
-
-#: shell/main.c:108
-msgid "Don't save any data permanently (implies --no-registration)"
-msgstr ""
-
-#: shell/main.c:109
-msgid "Path for database file to use"
-msgstr "Otsingutee kasutatava andmebaasifailini"
-
-#: shell/main.c:110
-msgid "Quit Rhythmbox"
-msgstr "Välju Rhythmboxist"
-
-#: shell/main.c:125
-#: widgets/rb-druid.c:218
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
-
-#: shell/main.c:232
-#: shell/main.c:241
-#, fuzzy, c-format
-msgid "An exception occured '%s'"
-msgstr "Pythoni erand (%s)"
-
-#: shell/main.c:305
-#, fuzzy, c-format
-msgid ""
-"Failed to activate the shell:\n"
-"%s"
-msgstr "Ebaõnnestus pikselrastri %s saamine"
-
-#: shell/rb-play-order.c:228
-msgid "Linear"
-msgstr "Lineaarne"
-
-#: shell/rb-play-order.c:229
-msgid "Linear looping"
-msgstr "Lineaarne tsükkel"
-
-#: shell/rb-play-order.c:230
-msgid "Shuffle"
-msgstr "Segatud"
-
-#: shell/rb-play-order.c:231
-msgid "Random with equal weights"
-msgstr "Juhuslik võrdsete kaaludega"
-
-#: shell/rb-play-order.c:232
-msgid "Random by time since last play"
-msgstr "Juhuslik aeg alates viimasest mängimisest"
-
-#: shell/rb-play-order.c:233
-msgid "Random by rating"
-msgstr "Juhuslik reitingu alusel"
-
-#: shell/rb-play-order.c:234
-msgid "Random by time since last play and rating"
-msgstr ""
-
-#: shell/rb-playlist-manager.c:476
-#: shell/rb-shell-player.c:868
-msgid "Couldn't parse playlist"
-msgstr "Ei suutnud töödelda lugude nimekirja"
-
-#: shell/rb-playlist-manager.c:774
-msgid "Load playlist"
-msgstr "Lae lugude nimekiri"
-
-#: shell/rb-playlist-manager.c:815
-msgid "Save playlist"
-msgstr "Salvesta lugude nimekiri"
-
-#: shell/rb-shell-player.c:443
-#, c-format
-msgid "Failed to create the player: %s"
-msgstr "Mängija loomine ebaõnnestus: %s"
-
-#: shell/rb-shell-player.c:511
-msgid "Play previous song"
-msgstr "Mängi eelmist lugu"
-
-#: shell/rb-shell-player.c:540
-msgid "Play next song"
-msgstr "Mängi järgmist lugu"
-
-#: shell/rb-shell-player.c:559
-msgid "Change the music volume"
-msgstr "Muuda muusika helitugevust"
-
-#: shell/rb-shell-player.c:841
-#, c-format
-msgid "Opening %s..."
-msgstr "Avan %s..."
-
-#: shell/rb-shell-player.c:1528
-msgid "Pause playback"
-msgstr "Peata esitus"
-
-#: shell/rb-shell-player.c:1529
-msgid "_Pause"
-msgstr "_Peata"
-
-#: shell/rb-shell-player.c:1544
-msgid "Stop playback"
-msgstr "Lõpeta esitus"
-
-#: shell/rb-shell-player.c:1545
-msgid "_Stop"
-msgstr "_Lõpeta"
-
-#: shell/rb-shell-player.c:1873
-msgid "Unexpected end of stream!"
-msgstr "Ootamatu voo lõpp!"
-
-#: shell/rb-shell-preferences.c:177
-msgid "Music Player Preferences"
-msgstr "Muusikamängija seadistused"
-
-#: shell/rb-shell-preferences.c:225
-msgid "General"
-msgstr "Üldine"
-
-#: shell/rb-shell.c:838
-#, c-format
-msgid "Unable to parse URI \"%s\"\n"
-msgstr "Viga URI \"%s\" töötlemisel\n"
-
-#: shell/rb-shell.c:1062
-msgid "Whether the main window is visible"
-msgstr "Kas põhiaken on nähtav"
-
-#: shell/rb-shell.c:1067
-msgid "Whether shuffle is enabled"
-msgstr " "
-
-#: shell/rb-shell.c:1071
-msgid "Properties for the current song"
-msgstr "Käesoleva laulu omadused"
-
-#: shell/rb-shell.c:1484
-#, c-format
-msgid ""
-"Failed to register the shell: %s\n"
-"This probably means that you installed Rhythmbox in a different prefix than bonobo-activation; this warning is harmless, but IPC will not work."
-msgstr ""
-
-#: shell/rb-shell.c:1859
-#: shell/rb-tray-icon.c:227
-#: widgets/rb-header.c:579
-msgid "Not playing"
-msgstr "Ei mängi"
-
-#  Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1862
-#, c-format
-msgid ""
-"%s\n"
-"Paused, %s"
-msgstr ""
-"%s\n"
-"peatatud, %s"
-
-#  Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1866
-#, c-format
-msgid ""
-"%s\n"
-"%s"
-msgstr ""
-"%s\n"
-"%s"
-
-#  Translators: %s is the song name
-#. Translators: %s is the song name
-#: shell/rb-shell.c:1901
-#, c-format
-msgid "%s (Paused)"
-msgstr "%s (peatatud)"
-
-#: shell/rb-shell.c:1969
-msgid "translator_credits"
-msgstr ""
-"Tõlge eesti keelde:\n"
-"       Priit Laes <amd@linux.ee>, 2004."
-
-#: shell/rb-shell.c:1978
-msgid "Maintainers:"
-msgstr "Arendajad:"
-
-#: shell/rb-shell.c:1981
-msgid "Former Maintainers:"
-msgstr "Endised arendajad:"
-
-#: shell/rb-shell.c:1984
-msgid "Contributors:"
-msgstr "Kaasautorid:"
-
-#: shell/rb-shell.c:1986
-msgid "Music management and playback software for GNOME."
-msgstr "Muusikahaldus ja -esitus tarkvara GNOME töölaua jaoks."
-
-#: shell/rb-shell.c:2167
-msgid "Choose Files or Directory"
-msgstr "Vali failid või kataloog"
-
-#: shell/rb-shell.c:2213
-msgid "To extract CDs you must install the Sound Juicer package."
-msgstr ""
-
-#: shell/rb-shell.c:2220
-#, c-format
-msgid "Couldn't run sound-juicer: %s"
-msgstr "Viga sound-juicer'i rakendamisel: %s"
-
-#: shell/rb-source-header.c:183
-msgid "Filter music display by genre, artist, album, or title"
-msgstr "Filtreeri muusikat stiili, artisti, albumi või pealkirja alusel"
-
-#: shell/rb-source-header.c:190
-msgid "Show _Browser"
-msgstr "Näita _sirvijat"
-
-#: shell/rb-source-header.c:191
-msgid "Hide _Browser"
-msgstr "Peida _sirvija"
-
-#: shell/rb-statusbar.c:235
-msgid "_Repeat"
-msgstr "Ko_rdus"
-
-#: shell/rb-statusbar.c:442
-msgid "Buffering..."
-msgstr "Puhverdan..."
-
-#: sources/itunesdb.c:447
-#, fuzzy
-msgid "Master-PL"
-msgstr "Poola (pl_PL)"
-
-#: sources/itunesdb.c:449
-msgid "Playlist"
-msgstr "Lugude nimekiri"
-
-#: sources/itunesdb.c:801
-#, c-format
-msgid "Error reading \"%s\".\n"
-msgstr "Viga \"%s\" lugemisel.\n"
-
-#: sources/itunesdb.c:809
-#, c-format
-msgid "\"%s\" is not a valid iPod database.\n"
-msgstr "\"%s\" ei ole korrektne iPodi andmebaas.\n"
-
-#: sources/itunesdb.c:1049
-#: sources/itunesdb.c:1704
-#, c-format
-msgid "Could not open \"%s\" file for reading.\n"
-msgstr "Viga faili \"%s\" avamisel kirjutamiseks.\n"
-
-#: sources/itunesdb.c:1556
-#: sources/itunesdb.c:1711
-#, c-format
-msgid "Could not open \"%s\" file for writing.\n"
-msgstr "Ei suuda avada faili \"%s\" kirjutamiseks.\n"
-
-#  an error occured
-#. an error occured
-#: sources/itunesdb.c:1568
-#, c-format
-msgid "Error renaming '%s' to '%s' (%s).\n"
-msgstr "Viga faili '%s' ümbernimetamisel '%s'-iks (%s).\n"
-
-#  error -- not end of file!
-#. error -- not end of file!
-#: sources/itunesdb.c:1724
-#, c-format
-msgid "Error reading file \"%s\".\n"
-msgstr "Viga faili \"%s\" lugemisel.\n"
-
-#: sources/itunesdb.c:1736
-#, fuzzy, c-format
-msgid "Error writing PC file \"%s\".\n"
-msgstr "viga faili \"%s\" kirjutamisel"
-
-#: sources/rb-ipod-source.c:117
-msgid "iPod"
-msgstr "iPod"
-
-#: sources/rb-iradio-source.c:340
-#: sources/rb-library-source.c:513
-#: widgets/rb-query-creator.c:56
-msgid "Genre"
-msgstr "Stiil"
-
-#: sources/rb-iradio-source.c:421
-msgid "Radio"
-msgstr "Raadio"
-
-#: sources/rb-iradio-source.c:590
-#: sources/rb-library-source.c:527
-#: widgets/rb-query-creator.c:54
-#, c-format
-msgid "Artist"
-msgstr "Esitaja"
-
-#: sources/rb-library-source.c:541
-#: widgets/rb-query-creator.c:55
-msgid "Album"
-msgstr "Album"
-
-#: sources/rb-library-source.c:649
-msgid "Library"
-msgstr "Teek"
-
-#: sources/rb-library-source.c:1192
-msgid "Add Location"
-msgstr "Lisa asukoht"
-
-#: sources/rb-playlist-source.c:271
-#: widgets/rb-entry-view.c:1197
-msgid "Tra_ck"
-msgstr "L_ugu"
-
-#: sources/rb-source.c:528
-#, fuzzy
-msgid "No properties available."
-msgstr "Sätteid pole saadaval"
-
-#: sources/rb-source.c:611
-msgid "This source does not support drag and drop."
-msgstr ""
-
-#: sources/rb-sourcelist.c:194
-msgid "_Source"
-msgstr "Allika_s"
-
-#: widgets/rb-cell-renderer-pixbuf.c:109
-msgid "Pixbuf Object"
-msgstr "Pixbuf objekt"
-
-#: widgets/rb-cell-renderer-pixbuf.c:110
-#, fuzzy
-msgid "The pixbuf to render."
-msgstr "Renderdatav tekst"
-
-#: widgets/rb-druid.c:239
-msgid "Welcome to Rhythmbox"
-msgstr "Tere tulemast Rhythmbox'i"
-
-#: widgets/rb-druid.c:243
-msgid ""
-"Rhythmbox is the GNOME music player that lets you do everything: play your music files, listen to Internet Radio, import music from CDs, and much more.\n"
-"\n"
-"This assistant will help you get started by asking you some simple questions."
-msgstr ""
-
-#: widgets/rb-druid.c:249
-msgid "Music library setup"
-msgstr "Muusikateegi seadistamine"
-
-#: widgets/rb-druid.c:258
-msgid "Finish"
-msgstr "Lõpp"
-
-#: widgets/rb-druid.c:260
-msgid ""
-"You are now ready to start Rhythmbox.\n"
-"\n"
-"Remember that you may add music to the library using \"Music\" then \"Import Folder\", or by importing it from CDs."
-msgstr ""
-
-#: widgets/rb-druid.c:318
-#, c-format
-msgid "Error reading filename: %s"
-msgstr "Viga failinime lugemisel: %s"
-
-#: widgets/rb-druid.c:333
-msgid "Choose a directory"
-msgstr "Vali kataloog"
-
-#: widgets/rb-entry-view.c:963
-#: widgets/rb-header.c:872
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:990
-msgid "Very Low"
-msgstr "Väga madal"
+#, c-format
+msgid "%d:%02d:%02d"
+msgstr "%d:%02d:%02d"
 
-#: widgets/rb-entry-view.c:992
-msgid "Low"
-msgstr "Madal"
-
-#: widgets/rb-entry-view.c:994
-msgid "Regular"
-msgstr "Normaalne"
-
-#: widgets/rb-entry-view.c:996
-msgid "High"
-msgstr "Kõrge"
-
-#: widgets/rb-entry-view.c:998
-msgid "Very High"
-msgstr "Väga kõrge"
-
-#: widgets/rb-entry-view.c:1000
-msgid "Perfect"
-msgstr "Perfektne"
-
-#: widgets/rb-entry-view.c:1206
-msgid "_Title"
-msgstr "_Pealkiri"
-
-#: widgets/rb-entry-view.c:1217
-msgid "Art_ist"
-msgstr "Es_itaja"
-
-#: widgets/rb-entry-view.c:1239
-msgid "Ge_nre"
-msgstr "_Stiil"
-
-#: widgets/rb-entry-view.c:1249
-msgid "Ti_me"
-msgstr "_Aeg"
-
-#: widgets/rb-entry-view.c:1258
-msgid "_Quality"
-msgstr "_Kvaliteet"
-
-#: widgets/rb-entry-view.c:1268
-msgid "_Play Count"
-msgstr "Mängimiste arv"
-
-#: widgets/rb-entry-view.c:1277
-msgid "L_ast Played"
-msgstr "Viim_ati mängitud"
-
-#: widgets/rb-entry-view.c:1422
-msgid "Now Playing"
-msgstr "Hetkel mängib"
-
-#: widgets/rb-header.c:277
-msgid "Listening to "
-msgstr "Kuulan"
-
-#: widgets/rb-header.c:539
-msgid "Get information on this album from the web"
-msgstr "Hangi internetist infot selle albumi kohta "
-
-#: widgets/rb-header.c:558
-msgid "Get information on this artist from the web"
-msgstr "Hangi internetist infot selle artisti kohta "
-
-#: widgets/rb-header.c:586
-msgid "Get information on this station from the web"
-msgstr "Hangi internetist infot selle raadiojaama kohta"
-
-#: widgets/rb-header.c:861
-#, fuzzy, c-format
-msgid "%d:%02d of %d:%02d"
-msgstr "%d:%02d"
-
-#: widgets/rb-header.c:869
-#, fuzzy, c-format
+#, c-format
 msgid "%d:%02d of %d:%02d remaining"
-msgstr "Jääkviga:"
+msgstr "%d:%02d %d:%02d-st jäänud"
 
-#: widgets/rb-load-failure-dialog.c:119
-msgid "Error loading files into library"
-msgstr "Viga failide laadimisel teeki"
+#, c-format
+msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
+msgstr "%d:%02d:%02d %d:%02d:%02d-st jäänud"
 
-#: widgets/rb-load-failure-dialog.c:136
-msgid "_Error"
-msgstr "_Viga"
+#, c-format
+msgid "%d:%02d of %d:%02d"
+msgstr "%d:%02d %d:%02d-st"
 
-#: widgets/rb-load-failure-dialog.c:144
-msgid "_File"
-msgstr "_Fail"
+#, c-format
+msgid "%d:%02d:%02d of %d:%02d:%02d"
+msgstr "%d:%02d:%02d %d:%02d:%02d-st"
 
-#: widgets/rb-query-creator.c:53
+#, c-format
+msgid "Internal GStreamer problem; file a bug"
+msgstr "GStreameri sisetõrge; raporteeri veast"
+
+#, c-format
+msgid "D-BUS communication error"
+msgstr "D-BUS suhtlustõrge"
+
+#, c-format
+msgid "Failed to create %s element; check your installation"
+msgstr "%s elemendi loomine nurjus; kontrolli paigaldust"
+
+#, c-format
+msgid "Failed to create a source element; check your installation"
+msgstr "Lähteelemendi loomine nurjus; kontrolli paigaldust"
+
+#, c-format
+msgid "GStreamer error: failed to change state"
+msgstr "GStreameri viga: oleku muutmine nurjus"
+
+#, c-format
+msgid "The MIME type of the file could not be identified"
+msgstr "Failid MIME tüüpi polnud võimalik tuvastada"
+
+#, c-format
+msgid "Unsupported file type: %s"
+msgstr "Toetamata failitüüp: %s"
+
+#, c-format
+msgid "Unable to create tag-writing elements"
+msgstr "Märksõna-kirjutamise elemente pole võimalik luua"
+
+#, c-format
+msgid "Timeout while setting pipeline to NULL"
+msgstr "Toru määramine NULL'i aegus"
+
+#, c-format
+msgid "File corrupted during write"
+msgstr "Kirjutamise ajal sai fail rikutud"
+
+msgid "Cover art"
+msgstr "Plaadiümbrised"
+
+msgid "Fetch album covers from the Internet"
+msgstr "Plaadiümbriste tõmbamine internetist"
+
+msgid "Searching... drop artwork here"
+msgstr "Otsimine... lohista plaadiümbris siia"
+
+msgid "Drop artwork here"
+msgstr "Lohista plaadiümbris siia"
+
+msgid "Audio CD Player"
+msgstr "Audio-CD esitaja"
+
+msgid "Support for playing of audio CDs as music source"
+msgstr "Audioplaatide esitamise tugi"
+
+msgid "A_lbum:"
+msgstr "A_lbum:"
+
+msgid "Artist s_ort order:"
+msgstr "Esitaja _järjestamise kord:"
+
+msgid "_Disc:"
+msgstr "_Plaat:"
+
+msgid "Multiple Albums Found"
+msgstr "Leiti mitu albumit"
+
+msgid ""
+"This CD could be more than one album. Please select which album it is below "
+"and press <i>Continue</i>."
+msgstr ""
+"Sellel plaadil võib olla mitu albumit. Vali, milline album see on ja klõpsa "
+"<i>Jätka</i>."
+
+msgid "_Continue"
+msgstr "_Jätka"
+
+msgid "<Invalid unicode>"
+msgstr "<vigane unicode>"
+
+#, c-format
+msgid "Track %u"
+msgstr "Lugu %u"
+
+msgid "Couldn't load Audio CD"
+msgstr "Audioplaati ei suudetud laadida"
+
+msgid "Rhythmbox couldn't access the CD."
+msgstr "Rhythmbox ei saanud ligipääsu plaadile."
+
+msgid "Rhythmbox couldn't read the CD information."
+msgstr "Rhythmbox ei suutnud CD-infot lugeda."
+
 msgid "Title"
 msgstr "Pealkiri"
 
-#: widgets/rb-query-creator.c:57
+msgid "Artist"
+msgstr "Esitaja"
+
+msgid "Rhythmbox could not get access to the CD device."
+msgstr "Rhythmbox ei saanud ligipääsu CD-lugejale."
+
+#, c-format
+msgid "Could not create CD lookup thread"
+msgstr "Ei suutnud luua CD otsimise lõime (thread)."
+
+#, c-format
+msgid "Cannot access CD"
+msgstr "Pole ligipääsu CD-le"
+
+msgid "Unknown Title"
+msgstr "Tundmatu pealkiri"
+
+msgid "Unknown Artist"
+msgstr "Tundmatu artist"
+
+#, c-format
+msgid "Track %d"
+msgstr "Lugu %d"
+
+#, c-format
+msgid "Cannot access CD: %s"
+msgstr "CD-le pole ligipääsu: %s"
+
+#, c-format
+msgid "This CD could not be queried: %s\n"
+msgstr "Seda CD-d pole võimalik pärida: %s\n"
+
+msgid "Various"
+msgstr "Varia"
+
+msgid "Incomplete metadata for this CD"
+msgstr "CD metaandmed pole täielikud"
+
+msgid "[Untitled]"
+msgstr "[Pealkirjata]"
+
+#, c-format
+msgid "Device '%s' does not contain any media"
+msgstr "Seade '%s' ei sisalda meediat"
+
+#, c-format
+msgid ""
+"Device '%s' could not be opened. Check the access permissions on the device."
+msgstr "Seadet '%s' pole võimalik avada. Kontrolli seadme ligipääsuõiguseid."
+
+#, c-format
+msgid "Cannot read CD: %s"
+msgstr "CD-d pole võimalik lugeda: %s"
+
+msgid "Last.fm"
+msgstr "Last.fm"
+
+msgid "Submits song information to Last.fm and plays Last.fm radio streams"
+msgstr ""
+"Saadab Last.fm'i mängitud lugude teavet ning mängib Last.fm'i raadiovoogusid"
+
+msgid "Account Login"
+msgstr "Kontosse sisselogimine"
+
+msgid "Disabled"
+msgstr "Keelatud"
+
+msgid "Join the Rhythmbox group"
+msgstr "Liitu Rhythmboxi grupiga"
+
+msgid "Last submission time:"
+msgstr "Viimase saatmise aeg:"
+
+msgid "Never"
+msgstr "Mitte kunagi"
+
+msgid "New to Last.fm?"
+msgstr "Kas oled uus Last.fm'i kasutaja?"
+
+msgid "Queued tracks:"
+msgstr "Ootel rajad:"
+
+msgid "Sign up for an account"
+msgstr "Registreeri konto"
+
+msgid "Statistics"
+msgstr "Statistika"
+
+msgid "Status:"
+msgstr "Olek:"
+
+msgid "Tracks submitted:"
+msgstr "Edastatud lugusid:"
+
+msgid "_Password:"
+msgstr "_Parool:"
+
+msgid "_Username:"
+msgstr "_Kasutajanimi:"
+
+msgid "Last.fm Preferences"
+msgstr "Last.fm eelistused"
+
+msgid "OK"
+msgstr "Olgu"
+
+msgid "Logging in"
+msgstr "Sisselogimine"
+
+msgid "Request failed"
+msgstr "Päring nurjus"
+
+msgid "Incorrect username or password"
+msgstr "Vale kasutajanimi või parool"
+
+msgid "Clock is not set correctly"
+msgstr "Kell pole õige"
+
+msgid "This version of Rhythmbox has been banned from Last.fm."
+msgstr "Selle Rhythmboxi versiooni ühendumine Last.fm on keelatud."
+
+msgid "Track submission failed too many times"
+msgstr "Loo saatmine nurjus liiga mitu korda"
+
+msgid "Similar Artists radio"
+msgstr "Sarnaste esitajate raadio"
+
+#, c-format
+msgid "Artists similar to %s"
+msgstr "Sarnane esitajaga %s"
+
+msgid "Tag radio"
+msgstr "Märksõnaraadio"
+
+#, c-format
+msgid "Tracks tagged with %s"
+msgstr "Lood sildiga %s"
+
+msgid "Artist Fan radio"
+msgstr "Esitaja fänniraadio"
+
+#, c-format
+msgid "Artists liked by fans of %s"
+msgstr "Esitajad, kes meeldivad esitaja %s fännidele"
+
+msgid "Group radio"
+msgstr "Grupiraadio"
+
+#, c-format
+msgid "Tracks liked by the %s group"
+msgstr "Lood, mis meeldivad %s grupile"
+
+msgid "Neighbour radio"
+msgstr "Naabriraadio"
+
+#, c-format
+msgid "%s's Neighbour Radio"
+msgstr "Naabri %s raadio"
+
+msgid "Personal radio"
+msgstr "Enda raadio"
+
+#, c-format
+msgid "%s's Personal Radio"
+msgstr "Enda raadio (%s)"
+
+msgid "Loved tracks"
+msgstr "Lemmiklood"
+
+#, c-format
+msgid "%s's Loved Tracks"
+msgstr "Lemmiklood (%s)"
+
+msgid "Recommended tracks"
+msgstr "Soovitatud lood"
+
+#, c-format
+msgid "Tracks recommended to %s"
+msgstr "Lood, mida soovitab %s"
+
+msgid "Playlist"
+msgstr "Esitusnimekiri"
+
+#, c-format
+msgid "%s's playlist"
+msgstr "%s - esitusnimekiri"
+
+msgid "Love"
+msgstr "Meeldib"
+
+msgid "Mark this song as loved"
+msgstr "Selle loo märkimine meeldivaks"
+
+msgid "Ban"
+msgstr "Keelatud"
+
+msgid "Ban the current track from being played again"
+msgstr "Keela selle loo taasesitus"
+
+msgid "Delete Station"
+msgstr "Jaama kustutamine"
+
+msgid "Delete the selected station"
+msgstr "Kustuta valitud jaam"
+
+msgid "Download song"
+msgstr "Laadi laul alla"
+
+msgid "Download this song"
+msgstr "Selle laulu allalaadimine"
+
+#. awful
+msgid "Enter the item to build a Last.fm station out of:"
+msgstr "Sisesta sõna, mille järgi Last.fm jaam teha:"
+
+msgid "Add"
+msgstr "Lisa"
+
+msgid "Account Settings"
+msgstr "Konto sätted"
+
+msgid ""
+"Account details are needed before you can connect.  Check your settings."
+msgstr "Enne ühendumist pead konto seadistama."
+
+msgid "Unable to connect"
+msgstr "Ühendumine pole võimalik"
+
+#, c-format
+msgid "Global Tag %s"
+msgstr "Üldmärksõna %s"
+
+#, c-format
+msgid "%s's Recommended Radio: %s percent"
+msgstr "%s soovitusraadio: %s protsent"
+
+#, c-format
+msgid "%s's Playlist"
+msgstr "%s esitusnimekiri"
+
+#  Translators: the format is "X days, X hours and X minutes"
+#. Translators: variables are 1: user name, 2: tag name; for user tag radio
+#, c-format
+msgid "%s's %s Radio"
+msgstr "Kasutaja %s raadio %s"
+
+#, c-format
+msgid "%s Group Radio"
+msgstr "Grupi %s raadio"
+
+msgid "Neighbour Radio"
+msgstr "Naabriraadio"
+
+msgid "Personal Radio"
+msgstr "Enda raadio"
+
+msgid "Server did not respond"
+msgstr "Server ei vastanud"
+
+msgid "There is not enough content available to play this station."
+msgstr "Selle jaama mängimiseks pole piisavalt laule."
+
+msgid "This station is available to subscribers only."
+msgstr "See jaam on saadaval ainult tellijatele."
+
+msgid ""
+"The streaming system is offline for maintenance, please try again later."
+msgstr "Voosüsteem pole hooldustööde tõttu saadaval, proovi varsti uuesti."
+
+msgid "Changing station"
+msgstr "Jaama muutmine"
+
+msgid "Retrieving playlist"
+msgstr "Esitusnimekirja hankimine"
+
+msgid "Banning song"
+msgstr "Loo keelamine"
+
+msgid "Adding song to your Loved tracks"
+msgstr "Laulu lisamine meeldivate nimekirja"
+
+#. and maybe some more
+msgid "Audio CD Recorder"
+msgstr "Audio-CD kirjutaja"
+
+msgid "Record audio CDs from playlists and duplicate audio CDs"
+msgstr ""
+"Audioplaadi kirjutamine esitusnimekirja järgi või plaatide paljundamine"
+
+msgid "_Create Audio CD..."
+msgstr "_Loo audio-CD..."
+
+msgid "Create an audio CD from playlist"
+msgstr "Esitusnimekirjast audioplaadi loomine"
+
+msgid "Duplicate Audio CD..."
+msgstr "_Paljunda audio-CD..."
+
+msgid "Create a copy of this audio CD"
+msgstr "Tee audioplaadist koopia"
+
+msgid "Rhythmbox could not duplicate the disc"
+msgstr "Rhythmbox ei suuda plaati paljundada"
+
+msgid "Rhythmbox could not record the audio disc"
+msgstr "Rhythmbox ei suuda audioplaati kirjutada"
+
+#, c-format
+msgid "Unable to build an audio track list"
+msgstr "Helipalade loendi koostamine pole võimalik"
+
+#, c-format
+msgid "Unable to write audio project file %s: %s"
+msgstr "Audioprojekti faili pole võimalik kirjutada %s: %s"
+
+#, c-format
+msgid "Unable to write audio project"
+msgstr "Audioprojekti võimatu kirjutada"
+
+msgid "Unable to create audio CD project"
+msgstr "Audio-CD projekti loomine pole võimalik"
+
+#. Translators: this is the toolbar button label for
+#. Create Audio CD action
+msgid "Burn"
+msgstr "Kirjuta"
+
+#. Translators: this is the toolbar button label for
+#. Duplicate Audio CD action
+msgid "Copy CD"
+msgstr "Kopeeri CD"
+
+msgid "Support for recording audio CDs from playlists"
+msgstr "Esitusnimekirja järgi audioplaadi kirjutamise tugi"
+
+msgid "Unable to create audio CD"
+msgstr "Audio-CD loomine pole võimalk"
+
+msgid "Could not duplicate disc"
+msgstr "Plaati pole võimalik paljundada"
+
+msgid "Reason"
+msgstr "Põhjus"
+
+#, c-format
+msgid "Failed to create pipeline"
+msgstr "Toru loomine nurjus"
+
+#, c-format
+msgid "Unable to unlink '%s'"
+msgstr "'%s' lahtilinkimine pole võimalik"
+
+msgid "Could not retrieve state from processing pipeline"
+msgstr "Töötlusprotsessi torus ei suudetud olekut hankida"
+
+msgid "Could not get current track position"
+msgstr "Ei saanud praeguse loo positsiooni"
+
+#, c-format
+msgid "Could not start pipeline playing"
+msgstr "Esitamiseks ei saanud avada toru"
+
+#, c-format
+msgid "Could not pause playback"
+msgstr "Esituse peatamine ebaõnnestus"
+
+#, c-format
+msgid "Cannot find drive"
+msgstr "Seadet ei leitud"
+
+#, c-format
+msgid "Cannot find drive %s"
+msgstr "Seadet %s ei leitud"
+
+#, c-format
+msgid "Drive %s is not a recorder"
+msgstr "Seade %s ei ole kirjutav"
+
+#, c-format
+msgid "No writable drives found"
+msgstr "Kirjutavaid seadmeid ei leitud"
+
+#, c-format
+msgid "Could not get track time for file: %s"
+msgstr "Failile ei suudetud pikkust: %s"
+
+#, c-format
+msgid "Could not determine audio track durations"
+msgstr "Ei suutnud määrata helipala pikkust"
+
+#, c-format
+msgid ""
+"There was an error writing to the CD:\n"
+"%s"
+msgstr ""
+"CD-le kirjutamisel esines viga:\n"
+"%s"
+
+msgid "There was an error writing to the CD"
+msgstr "CD-le kirjutamisel esines viga"
+
+msgid "Maximum possible"
+msgstr "Suurim võimalik"
+
+#, c-format
+msgid "Invalid writer device: %s"
+msgstr "Sobimatu kirjutusseade: %s"
+
+#, c-format
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] "%d tund"
+msgstr[1] "%d tundi"
+
+#, c-format
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] "%d minut"
+msgstr[1] "%d minutit"
+
+#, c-format
+msgid "%d second"
+msgid_plural "%d seconds"
+msgstr[0] "%d sekund"
+msgstr[1] "%d sekundit"
+
+#  Translators: the format is "X days, X hours and X minutes"
+#. hour:minutes:seconds
+#, c-format
+msgid "%s %s %s"
+msgstr "%s, %s ja %s"
+
+#  Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
+#. minutes:seconds
+#, c-format
+msgid "%s %s"
+msgstr "%s %s"
+
+#. seconds
+#, c-format
+msgid "%s"
+msgstr "%s"
+
+#. 0 seconds
+msgid "0 seconds"
+msgstr "0 sekundit"
+
+#, c-format
+msgid "About %s left"
+msgstr "Umbes %s jäänud"
+
+msgid "Writing audio to CD"
+msgstr "Audioplaadi kirjutamine"
+
+msgid "Finished creating audio CD."
+msgstr "Audioplaadi kirjutamine lõpetati."
+
+msgid ""
+"Finished creating audio CD.\n"
+"Create another copy?"
+msgstr ""
+"Audioplaadi kirjutamine lõpetati.\n"
+"Kas teha veel üks koopia?"
+
+msgid "Writing failed.  Try again?"
+msgstr "Kirjutamine nurjus. Kas proovida uuesti?"
+
+msgid "Writing canceled.  Try again?"
+msgstr "Kirjutamine katkestati. Kas proovida uuesti?"
+
+msgid "Audio recording error"
+msgstr "Viga audio kirjutamisel"
+
+msgid "Audio Conversion Error"
+msgstr "Viga audio teisendamisel"
+
+msgid "Recording error"
+msgstr "Lindistamise viga"
+
+msgid "Do you wish to interrupt writing this disc?"
+msgstr "Kas tahad plaadikirjutamise katkestada?"
+
+msgid "This may result in an unusable disc."
+msgstr "See võib muuta plaadi kasutuskõlbmatuks."
+
+msgid "_Cancel"
+msgstr "_Loobu"
+
+msgid "_Interrupt"
+msgstr "_Katkesta"
+
+msgid "Could not create audio CD"
+msgstr "Audioplaati pole võimalik luua"
+
+msgid "Please make sure another application is not using the drive."
+msgstr "Veendu, et ükski teine rakendus ei kasutaks ajamit."
+
+msgid "Drive is busy"
+msgstr "Ajam on hõivatud"
+
+msgid "Please put a rewritable or blank CD in the drive."
+msgstr "Aseta tühi või lugejasse ülekirjutatav CD-plaat."
+
+msgid "Insert a rewritable or blank CD"
+msgstr "Sisesta tühi või ülekirjutatav CD"
+
+msgid "Please put a blank CD in the drive."
+msgstr "Aseta lugejasse tühi CD-plaat."
+
+msgid "Insert a blank CD"
+msgstr "Sisesta tühi CD"
+
+msgid "Please replace the disc in the drive with a rewritable or blank CD."
+msgstr "Asenda lugejas olev plaat tühja või ülekirjutatava CD-plaadiga."
+
+msgid "Reload a rewritable or blank CD"
+msgstr "Sisesta tühi või ülekirjutatav CD uuesti"
+
+msgid "Please replace the disc in the drive with a blank CD."
+msgstr "Vaheta lugejas olev plaat tühja CD vastu."
+
+msgid "Reload a blank CD"
+msgstr "Sisesta tühi CD uuesti"
+
+msgid "Converting audio tracks"
+msgstr "Audiofailide teisendamine"
+
+msgid "Preparing to write CD"
+msgstr "CD kirjutamise ettevalmistus"
+
+msgid "Writing CD"
+msgstr "CD kirjutamine"
+
+msgid "Finishing write"
+msgstr "Kirjutamise lõpetamine"
+
+msgid "Erasing CD"
+msgstr "CD kustutamine"
+
+msgid "Unhandled action in burn_action_changed_cb"
+msgstr "Käsitsematu tegevus kohas burn_action_changed_cb"
+
+#, c-format
+msgid "This %s appears to have information already recorded on it."
+msgstr "Tundub, et sellele %s-plaadile on juba kirjutatud."
+
+msgid "Erase information on this disc?"
+msgstr "Kas kustutada sellel plaadil olevad andmed?"
+
+msgid "_Try Another"
+msgstr "_Proovi teist"
+
+msgid "_Erase Disc"
+msgstr "_Kustuta plaat"
+
+msgid "C_reate"
+msgstr "_Loo"
+
+#, c-format
+msgid "Failed to create the recorder: %s"
+msgstr "Lindistaja loomine nurjus: %s"
+
+#, c-format
+msgid "Could not remove temporary directory '%s': %s"
+msgstr "Ajutist kataloogi '%s' pole võimalik eemaldada: %s"
+
+msgid "Create Audio CD"
+msgstr "Audio-CD loomine"
+
+#, c-format
+msgid "Create audio CD from '%s'?"
+msgstr "Kas luua '%s'-st audioplaat?"
+
+#, c-format
+msgid "Unable to build an audio track list."
+msgstr "Ei suutnud koostada helipalade loendit."
+
+#, c-format
+msgid "This playlist is too long to write to an audio CD."
+msgstr "See esitusloend on liiga pikk audioplaadile kirjutamiseks."
+
+#, c-format
+msgid ""
+"This playlist is %s minutes long.  This exceeds the length of a standard "
+"audio CD.  If the destination medium is larger than a standard audio CD "
+"please insert it in the drive and try again."
+msgstr ""
+"Selle esitusloendi pikkus on  %s minutit.  See ületab tavalise audioplaadi "
+"pikkuse. Kui sihtmeedia on suurem, kui tavaline audioplaat, sisesta see "
+"kirjutajasse ning proovi uuesti."
+
+msgid "Playlist too long"
+msgstr "Esitusnimekiri on liiga pikk"
+
+msgid "Could not find temporary space!"
+msgstr "Ajutise kasutuse jaoks ei leitud ruumi!"
+
+#, c-format
+msgid ""
+"Could not find enough temporary space to convert audio tracks.  %s MB "
+"required."
+msgstr ""
+"Audioradade teisendamise jaoks ei leitud piisavalt vaba ruumi. Vaja on %s MB."
+
+msgid "Create audio CD from playlist?"
+msgstr "Kas luua esitusnimekirja järgi audioplaat?"
+
+msgid "Options"
+msgstr "Valikud"
+
+msgid "Progress"
+msgstr "Edenemine"
+
+msgid "Write _speed:"
+msgstr "Kirjutamise _kiirus:"
+
+msgid "Write disc _to:"
+msgstr "Plaat, _millele kirjutada:"
+
+msgid "_Make multiple copies"
+msgstr "_Tee mitu koopiat"
+
+msgid ""
+"Adds support for playing media from and sending media to DLNA/UPnP network "
+"devices, and enables Rhythmbox to be controlled by a DLNA/UPnP ControlPoint"
+msgstr ""
+"Esitatava meedia üle DLNA/UPnP võrgu jagamise tugi. Rhythmboxi saab siis "
+"juhtida DLNA/UPnP juhtpunktist."
+
+msgid "DLNA/UPnP sharing and control support"
+msgstr "DLNA/UPnP jagamise ja juhtimise tugi"
+
+msgid "DAAP Music Sharing"
+msgstr "DAAP muusika jagamine"
+
+msgid "Share music and play shared music on your local network"
+msgstr "Muusikat jagamine ja kuulamine üle kohtvõrgu"
+
+msgid "<b>Sharing</b>"
+msgstr "<b>Jagamine</b>"
+
+msgid "Require _password:"
+msgstr "Nõutakse _parooli:"
+
+msgid "Shared music _name:"
+msgstr "Jagatud muusika _nimi:"
+
+msgid "_Share my music"
+msgstr "_Minu muusika on jagamisel"
+
+msgid "Rhythmbox is not able to connect to iTunes 7 shares"
+msgstr "Rhythmbox ei suuda ühenduda iTunes 7 jagatud muusika külge"
+
+msgid "Invalid share name"
+msgstr "Vigane jagamise nimi"
+
+#, c-format
+msgid "The shared music name '%s' is already taken. Please choose another."
+msgstr "Jagatud muusika nimi '%s' on juba võetud. Vali uus nimi."
+
+msgid "mDNS service is not running"
+msgstr "mDNS teenus ei tööta"
+
+msgid "Browser already active"
+msgstr "Brauser on juba aktiivne"
+
+msgid "Unable to activate browser"
+msgstr "Ei suutnud sirvijat aktiveerida"
+
+msgid "Browser is not active"
+msgstr "Sirvija pole aktiivne"
+
+msgid "Could not create AvahiEntryGroup for publishing"
+msgstr "Avaldamise jaoks ei ole võimalik luua AvahiEntryGroup-i"
+
+msgid "Could not add service"
+msgstr "Ei suutnud teenust lisada"
+
+#, fuzzy
+msgid "Could not commit service"
+msgstr "Ei suutnud teenuseoperatsiooni sooritada"
+
+msgid "The avahi mDNS service is not running"
+msgstr "Avahi mDNS teenus ei tööta"
+
+msgid "The mDNS service is not published"
+msgstr "mDNS teenus ei ole avaldatud"
+
+msgid "_Disconnect"
+msgstr "_Ühenda lahti"
+
+msgid "Disconnect from DAAP share"
+msgstr "DAAP-i jagatud ressursi lahtiühendamine"
+
+msgid "Connect to _DAAP share..."
+msgstr "Ühendu _DAAP-i jagaja otsa..."
+
+msgid "Connect to a new DAAP share"
+msgstr "Uue DAAP-i jagatud ressursiga ühendumine"
+
+msgid "New DAAP share"
+msgstr "Uus DAAP-i jagaja"
+
+msgid "Host:port of DAAP share:"
+msgstr "DAAP-i jagatud ressurssi host:port:"
+
+msgid "DAAP Music Sharing Preferences"
+msgstr "DAAP muusikajagamise eelistused"
+
+#, c-format
+msgid "%s's Music"
+msgstr "%s muusika"
+
+#, c-format
+msgid "The music share '%s' requires a password to connect"
+msgstr "Jagatud muusika ressurss '%s' nõuab ühendumiseks parooli"
+
+msgid "Password Required"
+msgstr "Parool nõutud"
+
+msgid "Connecting to music share"
+msgstr "Jagatud muusikaressursiga ühendumine"
+
+msgid "Retrieving songs from music share"
+msgstr "Jagatud laulude loendi hankimine"
+
+msgid "Could not connect to shared music"
+msgstr "Ei suutnud jagatud muusikaga ühenduda"
+
+#, c-format
+msgid "Connection to %s:%d refused."
+msgstr "Masin %s:%d keeldus ühendusest."
+
+msgid "FM Radio"
+msgstr "FM-raadio"
+
+msgid "Support for FM radio broadcasting services"
+msgstr "FM-raadio edastusteenuse tugi"
+
+msgid "New FM R_adio Station"
+msgstr "Uus FM-raadiojaam"
+
+msgid "Create a new FM Radio station"
+msgstr "Uue FM-raadiojaama loomine"
+
+msgid "New FM Radio Station"
+msgstr "Uus FM-raadiojaam"
+
+msgid "Frequency of radio station"
+msgstr "Raadiojaama sagedus"
+
+msgid "Portable Players"
+msgstr "Taskumängija"
+
+msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
+msgstr "Tavaliste muusikamängijate tugi (lisaks PSP ja Nokia 770)"
+
+msgid "New Playlist"
+msgstr "Uus esitusnimekiri"
+
+msgid "Create a new playlist on this device"
+msgstr "Loo sellele seadmele uus esitusnimekiri"
+
+msgid "Delete Playlist"
+msgstr "Kustuta esitusnimekiri"
+
+msgid "Delete this playlist"
+msgstr "Kustuta see esitusnimekiri"
+
+#, c-format
+msgid "Importing (%d/%d)"
+msgstr "Importimine (%d/%d)"
+
+msgid "IM Status"
+msgstr "Kiirsuhtluse olekuteade"
+
+msgid ""
+"Updates IM status according to the current song (works with Empathy & Gossip)"
+msgstr ""
+"Kiirsuhtlusprogrammi olekuteate uuendamine vastavalt esitatavale laulule "
+"(töötab rakendustega Empathy ja Gossip)"
+
+#. Translators: do not translate %(artist)s or %(title)s, they are
+#. string substitution markers (like %s) for the artist and title of
+#. the current playing song.  They can be reordered if necessary.
+#, python-format
+msgid "♫ %(artist)s - %(title)s ♫"
+msgstr "♫ %(artist)s - %(title)s ♫"
+
+#. Translators: do not translate %(artist)s or %(album)s, they are
+#. string substitution markers (like %s) for the artist and album name
+#. of the current playing song.  They can be reordered if necessary.
+#, python-format
+msgid "♫ %(artist)s - %(album)s ♫"
+msgstr "♫ %(artist)s - %(album)s ♫"
+
+#. Translators: do not translate %(album)s, it is a string substitution
+#. marker (like %s) for the album name of the current playing song.
+#, python-format
+msgid "♫ %(album)s ♫"
+msgstr "♫ %(album)s ♫"
+
+#. Translators: do not translate %(title)s, it is a string substitution
+#. marker (like %s) for the title of the current playing song.
+#, python-format
+msgid "♫ %(title)s ♫"
+msgstr "♫ %(title)s ♫"
+
+msgid "♫ Listening to music... ♫"
+msgstr "♫ Kuulan muusikat... ♫"
+
+msgid "Portable Players - iPod"
+msgstr "Taskumängija - iPod"
+
+msgid "Support for Apple iPod devices (show the content, play from device)"
+msgstr "Apple iPod seadmete tugi (näitab sisu, mängib)"
+
+msgid "<b>Content</b>"
+msgstr "<b>Sisu</b>"
+
+msgid "<b>Information</b>"
+msgstr "<b>Teave</b>"
+
+msgid "<b>System</b>"
+msgstr "<b>Süsteem</b>"
+
+msgid "Advanced"
+msgstr "Laiendatud"
+
+msgid "Database Version:"
+msgstr "Andmebaasi versioon:"
+
+msgid "Device Node:"
+msgstr "Seadme sõlm:"
+
+msgid "Firmware Version:"
+msgstr "Püsivara versioon:"
+
+msgid "Model:"
+msgstr "Mudel:"
+
+msgid "Mount Point:"
+msgstr "Haakepunkt:"
+
+msgid "Number of Playlists:"
+msgstr "Esitusnimekirjade arv:"
+
+msgid "Number of Tracks:"
+msgstr "Lugude arv:"
+
+msgid "Serial Number:"
+msgstr "Seerianumber:"
+
+#. amount of disk space used on the iPod
+msgid "Volume Usage:"
+msgstr "Kasutatud ruum:"
+
+msgid "iPod Name:"
+msgstr "iPod'i nimi:"
+
+msgid "iPod Properties"
+msgstr "iPod'i seadistused"
+
+msgid ""
+"<span size=\"x-large\" weight=\"bold\">Do you want to initialize your iPod?</"
+"span>"
+msgstr ""
+"<span size=\"x-large\" weight=\"bold\">Kas tahad oma iPodi lähtestada?</span>"
+
+msgid ""
+"Rhythmbox has detected a device that is probably an uninitialized or "
+"corrupted iPod. It must be initialized before Rhythmbox can use it, but this "
+"will destroy any song metadata already present. If you wish Rhythmbox to "
+"initialize the iPod, please fill in the information below. If the device is "
+"not an iPod, or you do not wish to initialize it, please click cancel."
+msgstr ""
+"Rhythmbox leidis seadme, mis võib olla lähtestamata või rikutud iPod. Enne "
+"kui Rhythmbox seda kasutada saab, tuleb see lähtestada, aga sellega lähevad "
+"kaduma kõik sellel olevad laulud ja metaandmed. Kui sa tahad, et Rhythmbox "
+"lähetastaks iPodi, täida järgnevad väljad. Kui see seade pole iPod või sa ei "
+"taha seda lähtestada, klõpsa Loobu."
+
+msgid "_Initialize"
+msgstr "_Lähtesta"
+
+msgid "_Model:"
+msgstr "_Mudel:"
+
+msgid "_Name:"
+msgstr "_Nimi:"
+
+msgid "iPod detected"
+msgstr "Tuvastati iPod"
+
+msgid "Unable to initialize new iPod"
+msgstr "iPodi lähtestamine pole võimalik"
+
+msgid "_Rename"
+msgstr "_Muuda nime"
+
+msgid "Rename iPod"
+msgstr "Nimeta iPod ümber"
+
+msgid "_Properties"
+msgstr "_Omadused"
+
+msgid "Display iPod properties"
+msgstr "iPodi omaduste kuvamine"
+
+msgid "_New Playlist"
+msgstr "Uus esitus_nimekiri"
+
+msgid "Add new playlist to iPod"
+msgstr "Lisa uus esitusnimekiri iPod'i"
+
+msgid "Rename playlist"
+msgstr "Nimeta esitusnimekiri ümber"
+
+msgid "_Delete"
+msgstr "_Kustuta"
+
+msgid "Delete playlist"
+msgstr "Kustuta esitusnimekiri"
+
+msgid "Podcasts"
+msgstr "Podcastid"
+
+msgid "New playlist"
+msgstr "Uus esitusnimekiri"
+
+#  Translators: the format is "X hours and X minutes"
+#. Translators: this is used to display the amount of storage space
+#. * used and the total storage space on an iPod.
+#.
+#, c-format
+msgid "%s of %s"
+msgstr "%s %s-st"
+
+msgid "Internet Radio"
+msgstr "Internetiraadio"
+
+msgid "Support for broadcasting services transmitted via the Internet"
+msgstr "Üle interneti edastatavate teenuste tugi"
+
+msgid "<b>Download</b>"
+msgstr "<b>Allalaadimine</b>"
+
+msgid "Jamendo Preferences"
+msgstr "Jamendo eelistused"
+
+msgid "MP3 (200Kbps)"
+msgstr "MP3 (200Kbps)"
+
+msgid "Ogg Vorbis (300Kbps)"
+msgstr "Ogg Vorbis (300Kbps)"
+
+msgid "Visit Jamendo at "
+msgstr "Külasta Jamendot aadressil"
+
+msgid "_Format:"
+msgstr "_Vorming:"
+
+msgid "http://www.jamendo.com/"
+msgstr "http://www.jamendo.com/"
+
+#. This text comes from http://www.jamendo.com/en/static/concept/ and was already translated in many languages. You should take a look on this site and check if you can't reuse it.
+msgid ""
+"     * A legal framework protecting the artists (thanks to the Creative "
+"Commons licenses)."
+msgstr ""
+"     * Õigusraamistiku, mis kaitseb artiste (tänu Creative Commons "
+"litsentsidele)."
+
+msgid ""
+"     * An adaptive music recommendation system based on iRATE to help "
+"listeners discover new artists based on their tastes\n"
+"       and on other criteria such as their location."
+msgstr ""
+"     * Iseõppiva iRATE baasil muusikasoovitussüsteemi, mis aitab kuulajatel "
+"avastada uusi esitajaid, vastavalt nende maitsele,\n"
+"       asukohale ja teistele kriteeriumitele."
+
+msgid "     * Free, simple and quick access to the music, for everyone."
+msgstr "     * Tasuta, kiire ja lihtsa ligipääsu muusikale. Kõigi jaoks."
+
+msgid "     * The possibility of making direct donations to the artists."
+msgstr "     * Esitajatele otsetoetuse saatmise võimaluse."
+
+msgid "     * The use of the latest Peer-to-Peer technologies"
+msgstr "     * Kõige värskema kasutajalt-kasutajale P2P tehnoloogia kasutamise"
+
+msgid "<b>Jamendo</b>"
+msgstr "<b>Jamendo</b>"
+
+msgid ""
+"Jamendo is a new model for artists to promote, publish, and be paid for "
+"their music."
+msgstr ""
+"Jamendo on artistide uus viis reklaamis, oma muusika avaldamiseks ning selle "
+"eest raha saamiseks."
+
+msgid "Jamendo is the only platform that joins together :"
+msgstr "Jamendo on ainukene platvorm, mis ühendab endas:"
+
+msgid ""
+"Jamendo users can discover and share albums, but also review them or start a "
+"discussion on the forums.\n"
+"Albums are democratically rated based on the visitors&#x2019; reviews.\n"
+"If they fancy an artist they can support him by making a donation."
+msgstr ""
+"Jamendo kasutajad avastavad, jagavad ning arvustavad albumeid või arutlevad "
+"nende üle foorumites.\n"
+"Albumeid hinnatakse demokraatlikult külastajate arvustuste järgi.\n"
+"Kui neile meeldib mõni artist, saavad nad teda toetada."
+
+msgid ""
+"On Jamendo, the artists distribute their music under Creative Commons "
+"licenses.\n"
+"In a nutshell, they allow you to download, remix and share their music "
+"freely.\n"
+"It's a \"Some rights reserved\" agreement, perfectly suited for the new "
+"century."
+msgstr ""
+"Jamendos saavad artistid oma muusikat jagada Creative Commons litsentsi "
+"alusel.\n"
+"Lihtsamalt öeldes, lubavad nad sul oma muusikat vabalt alla laadida, miksida "
+"ning jagada.\n"
+"See on \"Mõnede õiguste säilitamisega\" lepe, mis sobib hästi uude "
+"sajandisse."
+
+msgid ""
+"These new rules make Jamendo able to use the new powerful means of digital "
+"distribution like\n"
+"Peer-to-Peer networks such as BitTorrent or eMule to legally distribute "
+"albums at near-zero cost."
+msgstr ""
+"Need reeglid võimaldavad selliste uute digijaotuse võimaluste kasutamise "
+"Jamendos, nagu seda on\n"
+"P2P võrgud BitTorrent ja eMule ning õiguspäraselt jaotada albumeid peaaegu "
+"nullkulutusega."
+
+msgid "You can find more information at http://www.jamendo.com/"
+msgstr "Rohkem teavet leiad aadressil http://www.jamendo.com/"
+
+msgid ""
+"Adds support to Rhythmbox for playing and downloading albums from Jamendo"
+msgstr "Lisab Rhythmboxile Jamendo albumite kuulamise ja esitamise toe"
+
+msgid "Jamendo"
+msgstr "Jamendo"
+
+msgid "Stores"
+msgstr "Kaubamajad"
+
+msgid "_Download Album"
+msgstr "_Laadi alla"
+
+msgid "Download this album using BitTorrent"
+msgstr "Laadi see album BitTorrentist alla"
+
+#. Add Button for Donate
+msgid "_Donate to Artist"
+msgstr "_Toeta artisti"
+
+msgid "Donate Money to this Artist"
+msgstr "Toeta seda artisti rahaga"
+
+msgid "Loading Jamendo catalog"
+msgstr "Jamendo kataloogi laadimine"
+
+#, python-format
+msgid "Error looking up p2plink for album %s on jamendo.com"
+msgstr "Viga albumi %s jaoks jamendo.com-ist p2plink otsimisel"
+
+#, python-format
+msgid "Error looking up artist %s on jamendo.com"
+msgstr "Viga esitaja %s otsimisel jamendo.com-ist"
+
+msgid "New Internet _Radio Station..."
+msgstr "Uus _internetiraadiojaam..."
+
+msgid "Create a new Internet Radio station"
+msgstr "Loo a uus internetiraadio"
+
+#. Translators: this is the toolbar button label for
+#. New Internet Radio Station action.
+msgctxt "Radio"
+msgid "New"
+msgstr "Uus"
+
+msgid "Genre"
+msgstr "Stiil"
+
+msgid "Radio"
+msgstr "Raadio"
+
+#, c-format
+msgid "%d station"
+msgid_plural "%d stations"
+msgstr[0] "%d raadiojaam"
+msgstr[1] "%d raadiojaama"
+
+msgid "New Internet Radio Station"
+msgstr "Uus internetiraadiojaam"
+
+msgid "URL of internet radio station:"
+msgstr "Internetiraadiojaama URL:"
+
+#, c-format
+msgid "%s Properties"
+msgstr "%s omadused"
+
+#, c-format
+msgid "%lu kbps"
+msgstr "%lu kbps"
+
+msgid "Unable to change station property"
+msgstr "Jaama omadusi pole võimalik muuta"
+
+#, c-format
+msgid "Unable to change station URI to %s, as that station already exists"
+msgstr ""
+"Jaama URI-ks pole võimalik määrata %s, kuna selline jaam on juba olemas"
+
+msgid "L_ocation:"
+msgstr "As_ukoht:"
+
+msgid "Control Rhythmbox using an infrared remote control"
+msgstr "Rhythmboxi juhtimine infrapuna puldiga"
+
+msgid "LIRC "
+msgstr "LIRC "
+
+msgid "No lyrics found"
+msgstr "Laulusõnu ei leitud"
+
+msgid "_Save"
+msgstr "_Salvesta"
+
+msgid "_Edit"
+msgstr "_Redaktor"
+
+#  this string can only be so long, or there wont be a search entry :)
+msgid "_Search again"
+msgstr "_Otsi uuesti"
+
+msgid "Lyrics"
+msgstr "Laulusõnad"
+
+msgid "Searching for lyrics..."
+msgstr "Laulusõnade otsimine..."
+
+msgid "Song L_yrics"
+msgstr "_Laulusõnad"
+
+msgid "Display lyrics for the playing song"
+msgstr "Esitatava laulu jaoks näidatakse laulusõnu"
+
+msgid "Choose lyrics folder..."
+msgstr "Laulusõnade kataloogi valimine..."
+
+msgid "Fetch song lyrics from the Internet"
+msgstr "Laulusõnad tõmmatakse internetist"
+
+msgid "Song Lyrics"
+msgstr "Laulusõnad"
+
+msgid "<b>Lyrics Folder</b>"
+msgstr "<b>Laulusõnade kaust</b>"
+
+msgid "<b>Search engines</b>"
+msgstr "<b>Otsimootorid</b>"
+
+msgid "Browse..."
+msgstr "Sirvi..."
+
+msgid "Lyrics Plugin Preferences"
+msgstr "Laulusõnade plugina eelistused"
+
+msgid "     * Founder/owner runs it -- support a small business"
+msgstr "     * Asutaja/omanik ise töötab -- toeta väikeettevõtlust"
+
+#, no-c-format
+msgid ""
+"    * 50% of payment goes to artist (makes buyer feel good: they're helping "
+"the world)"
+msgstr ""
+"    * 50% summast jõuab esitajani (annab ostjale hea tunde: ta aitab maailma)"
+
+msgid "    * All albums and artists hand-picked"
+msgstr "    * Kõik albumid ja esitajad on käsitsi valitud"
+
+msgid ""
+"    * Downloads and CDs are both available (no other site on the internet "
+"sells both)"
+msgstr ""
+"    * Saadaval on nii allalaadimised kui CD-d (ükski teine sait Internetis "
+"ei müü mõlemaid)"
+
+msgid ""
+"    * Extensive biographical info about each musician, and artist photo -- "
+"feel a strong connection to the artist"
+msgstr ""
+"    * Laialdane biograafiline teave iga muusiku kohta ja foto esitajast -- "
+"tunne tugevat ühendust esitajaga"
+
+msgid "    * Free listening of all songs"
+msgstr "    * Kõigi laulude tasuta kuulamine"
+
+msgid ""
+"    * Full color, high quality cover art PDF available for most albums - "
+"easy to print"
+msgstr ""
+"    * Täisvärviline, kõrgekvaliteediline ümbrise PDF enamiku albumite jaoks, "
+"mida on lihte printida"
+
+msgid ""
+"    * Low pressure environment - nothing flashing, no audio ads while "
+"listening to albums"
+msgstr ""
+"    * Vähe survet avaldav keskkond -- midagi ei vilgu, albumitel pole "
+"mingeid reklaame"
+
+msgid ""
+"    * Music selection is unique to Magnatune, unlike most on-line stores "
+"that have more-or-less the same (gigantic) selection\n"
+msgstr ""
+"    * Magnatunel on unikaalne muusikavalik, erinevalt enamikust "
+"veebipoodidest, mis rõhuvad enam-vähem samale (gigantsele) valikule\n"
+
+msgid ""
+"    * No copy protection on the music (DRM) which allows playing music on "
+"any device (unlike iTunes/MSN/etc)"
+msgstr ""
+"    * Muusikal ei ole koopiakaitset (DRM), mistõttu seda saab kuulata "
+"suvalisel seadmel (erinevalt iTunesist/MSN-ist/teistest)"
+
+msgid "    * No need to \"register\" to listen or buy"
+msgstr "    * Kuulamiseks või ostmiseks pole vaja \"registreeruda\""
+
+msgid ""
+"    * Not part of the \"evil\" major label machine - for those that hate the "
+"music biz and want to help topple it"
+msgstr ""
+"    * Ei kuulu ühtegi \"kurja\" suurtööstusesse - neile, kes vihkavad "
+"muusikaäri ja tahavad seda kukutada"
+
+msgid "    * Not venture-capital backed big business"
+msgstr "    * Ei ole riskikapitaliga tagatud suuräri"
+
+msgid ""
+"    * Our genres are hard to find in record stores and not on radio (though "
+"do appear on college radio)"
+msgstr ""
+"    * Meie muusikat on plaadipoest keeruline leida, seda ei mängita raadios "
+"(kuigi võib kuulda keskkooliraadiotest)"
+
+msgid ""
+"    * Perfect quality downloads (CD copy) are available when you download "
+"(not inferior quality sound)"
+msgstr ""
+"    * Täiskvaliteetsed failid (CD-koopiad) on saadaval allalaadijatele (pole "
+"madalakvaliteediline heli)"
+
+msgid ""
+"    * Radio stations and \"genre mix\" playlists allow background listening "
+"- can do work while listening to our music"
+msgstr ""
+"    * Raadiojaamad ja \"stiilisegamise\" esitusloendid sobivad muusikaliseks "
+"fooniks - sa võid teha muusika kuulamise ajal tööd"
+
+msgid "    * Smaller selection means easier to find good music"
+msgstr "    * Väiksem valik lihtsustab hea muusika leidmist"
+
+msgid ""
+"    * Variable pricing scheme means you can pay as little as $5 for an album "
+"if you choose"
+msgstr ""
+"    * Erinevad hinnaskeemid võimaldavad sul maksata albumi eest kõigest $5, "
+"kui sulle nii meeldib"
+
+msgid "    * Very simple user interface, quick to play music"
+msgstr "    * Väga lihtne kasutajaliides, muusika kuulamine on lihtne"
+
+msgid "    * Wide variety of genres, can fit any mood"
+msgstr "    * Lai stiilide valik, sobib igale tujule"
+
+msgid "<b>Magnatune online music store</b>"
+msgstr "<b>Magnatune muusika veebipood</b>"
+
+msgid ""
+"Magnatune is an online record label that is not evil. Some of their key "
+"attributes are:\n"
+msgstr ""
+"Magnatune veebilindistuse kaubamärk, mis ei ole kurjast. Mõned nende "
+"võtmemärksõnad on:\n"
+
+msgid "You can find more information at http://www.magnatune.com/"
+msgstr "Rohkem teavet leiad lehelt http://www.magnatune.com/"
+
+msgid "$10 US (better than average)"
+msgstr "$10 US (üle keskmise)"
+
+msgid "$11 US"
+msgstr "$11 US"
+
+msgid "$12 US (generous)"
+msgstr "$12 US (lahke)"
+
+msgid "$13 US"
+msgstr "$13 US"
+
+msgid "$14 US"
+msgstr "$14 US"
+
+msgid "$15 US (VERY generous!)"
+msgstr "$15 US (VÄGA lahke!)"
+
+msgid "$16 US"
+msgstr "$16 US"
+
+msgid "$17 US"
+msgstr "$17 US"
+
+msgid "$18 US (We love you!)"
+msgstr "$18 US (Me armastame Sind!)"
+
+msgid "$5 US"
+msgstr "$5 US"
+
+msgid "$6 US"
+msgstr "$6 US"
+
+msgid "$7 US"
+msgstr "$7 US"
+
+msgid "$8 US (typical)"
+msgstr "$8 US (tavaline)"
+
+msgid "$9 US"
+msgstr "$9 US"
+
+msgid "128K MP3"
+msgstr "128K MP3"
+
+msgid ""
+"<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
+"expiration date listed.</span>"
+msgstr ""
+"<span weight=\"bold\" foreground=\"red\">Sinu krediitkaart on vananenud.</"
+"span>"
+
+msgid "April (04)"
+msgstr "Aprill (04)"
+
+msgid "August (08)"
+msgstr "August (08)"
+
+msgid "C_redit Card:"
+msgstr "_Krediitkaart:"
+
+msgid "December (12)"
+msgstr "Detsember (12)"
+
+msgid "Default _amount to pay:"
+msgstr "Vaikimisi makstav _summa:"
+
+msgid "Expiry:"
+msgstr "Aegumine:"
+
+msgid "FLAC"
+msgstr "FLAC"
+
+msgid "February (02)"
+msgstr "Veebruar (02)"
+
+msgid "Find out about Magnatune at "
+msgstr "Uuri Magnatune kohta lähemalt aadressil "
+
+msgid "January (01)"
+msgstr "Jaanuar (01)"
+
+msgid "July (07)"
+msgstr "Juuli (07)"
+
+msgid "June (06)"
+msgstr "Juuni (06)"
+
+msgid "Magnatune Information"
+msgstr "Teave Magnatune kohte"
+
+msgid "Magnatune Preferences"
+msgstr "Magnatune eelistused"
+
+msgid "March (03)"
+msgstr "Märts (03)"
+
+msgid "May (05)"
+msgstr "Mai (05)"
+
+msgid "November (11)"
+msgstr "November (11)"
+
+msgid "October (10)"
+msgstr "Oktoober (10)"
+
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+msgid "Preferred audio _format:"
+msgstr "Eelistatud audio_vorming:"
+
+msgid "Redownload purchased music at "
+msgstr "Laadi ostetud muusika uuesti alla aadressil "
+
+msgid "Remember my credit card details"
+msgstr "Pea krediitkaardi andmeid meeles"
+
+msgid "September (09)"
+msgstr "September (09)"
+
+msgid "VBR MP3"
+msgstr "VBR MP3"
+
+msgid "Visit Magnatune at "
+msgstr "Külasta Magnatune'i aadressil "
+
+msgid "WAV"
+msgstr "WAV"
+
+msgid "_Email:"
+msgstr "_E-post:"
+
+msgid "_Month:"
+msgstr "_Kuu:"
+
+msgid "http://www.magnatune.com/"
+msgstr "http://www.magnatune.com/"
+
+msgid "http://www.magnatune.com/info/"
+msgstr "http://www.magnatune.com/info/"
+
+msgid "http://www.magnatune.com/info/redownload"
+msgstr "http://www.magnatune.com/info/redownload"
+
+msgid "Audio _format:"
+msgstr "Audio_vorming:"
+
+msgid "C_redit Card number:"
+msgstr "_Krediitkaardi number:"
+
+msgid "Credit Card"
+msgstr "Krediitkaart"
+
+msgid "Expiry _month:"
+msgstr "Aegumise _kuu:"
+
+msgid "Expiry _year (last two digits):"
+msgstr "Aegumise _aasta (vähemalt kaks numbrit):"
+
+msgid "Gift Card"
+msgstr "Kinkekaart"
+
+msgid "Gift card number:"
+msgstr "Kinkekaardi number:"
+
+msgid "Purchase Magnatune Tracks"
+msgstr "Magnatune'ist laulude ostmine"
+
+msgid "_Amount to pay (US Dollars):"
+msgstr "_Makstav summa (USA dollarid):"
+
+msgid "_Email address:"
+msgstr "_Meiliaddress:"
+
+msgid "_Name (as printed on card):"
+msgstr "_Nimi (nagu see on trükitud kaardile):"
+
+msgid "_Purchase"
+msgstr "_Osta"
+
+msgid "_Remember my credit card details"
+msgstr "_Pea minu krediitkaardi andmeid meeles"
+
+msgid ""
+"Adds support to Rhythmbox for playing and purchasing from the Magnatune "
+"online music store"
+msgstr ""
+"Lisab Rhythmboxile Magnatune muusika veebipoest kuulamise ja ostmise toe"
+
+msgid "Magnatune Store"
+msgstr "Magnatune'i pood"
+
+msgid "Magnatune"
+msgstr "Magnatune"
+
+msgid "Loading Magnatune catalog"
+msgstr "Magnatune kataloogi laadimine"
+
+msgid "Downloading Magnatune Album(s)"
+msgstr "Magnatune albumi(te) allalaadimine"
+
+msgid "Couldn't purchase album"
+msgstr "Ei suutnud albumit osta"
+
+msgid "You must have a library location set to purchase an album."
+msgstr "Albumi ostmiseks peab fonoteegi kataloog olema määratud"
+
+#, python-format
+msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
+msgstr "Kas sa tahaksid osta albumi <i>%(album)s</i> esitajalt '%(artist)s'?"
+
+msgid "Unable to load catalog"
+msgstr "Kataloogi laadimine pole võimalik"
+
+msgid ""
+"Rhythmbox could not understand the Magnatune catalog, please file a bug."
+msgstr "Ei suutnud mõista Magnatune kataloogi, palun raporteeri veast."
+
+msgid "Authorizing Purchase"
+msgstr "Ostu autoriseerimine"
+
+msgid "Authorizing purchase with the Magnatune server. Please wait..."
+msgstr "Ostu autoriseerimine Magnatune serveris. Palun oota..."
+
+msgid "Purchase Error"
+msgstr "Viga ostmisel"
+
+#, python-format
+msgid ""
+"An error occurred while trying to purchase the album.\n"
+"The Magnatune server returned:\n"
+"%s"
+msgstr ""
+"Albumi ostmise katsel esines viga.\n"
+"Magnatune server vastas:\n"
+"%s"
+
+msgid "Error"
+msgstr "Viga"
+
+#, python-format
+msgid ""
+"An error occurred while trying to purchase the album.\n"
+"The error text is:\n"
+"%s"
+msgstr ""
+"Albumi ostmise katsel esines viga.\n"
+"Veatekst on:\n"
+"%s"
+
+#. Add the popup menu actions
+msgid "Purchase Album"
+msgstr "Osta album"
+
+msgid "Purchase this album from Magnatune"
+msgstr "Selle albumi otsmine Magnatune'st"
+
+msgid "Purchase Physical CD"
+msgstr "Osta päris CD"
+
+msgid "Purchase a physical CD from Magnatune"
+msgstr "Füüsilise CD ostmine Magnatune'st"
+
+msgid "Artist Information"
+msgstr "Esitaja andmed"
+
+msgid "Get information about this artist"
+msgstr "Selle artisti kohta info hankimine"
+
+msgid "Cancel Downloads"
+msgstr "Allalaadimiste katkestamine"
+
+msgid "Stop downloading purchased albums"
+msgstr "Katkesta ostetud albumite allalaadimine"
+
+msgid "Control Rhythmbox using key shortcuts"
+msgstr "Rhythmboxi juhtimine kiirklahvidega"
+
+msgid "Media Player Keys"
+msgstr "Muusikamängija klahvid"
+
+msgid "Portable Players - MTP"
+msgstr "Taskumängija - MTP"
+
+msgid "Support for MTP devices (show the content, transfer, play from device)"
+msgstr "MTP seadmete tugi (näitab sisu, edastab, esitab seadmelt)"
+
+#, c-format
+msgid "Unable to copy file from MTP device: %s"
+msgstr "Ei suutnud kopeerida MTP-seadmest faili: %s"
+
+#, c-format
+msgid "Not enough space in %s"
+msgstr "Seadmes %s pole piisavalt vaba ruumi"
+
+#, c-format
+msgid "Unable to open temporary file: %s"
+msgstr "Ei suutnud avada ajutist faili: %s"
+
+msgid "_Eject"
+msgstr "_Väljasta"
+
+msgid "Eject MTP-device"
+msgstr "MTP-seadme väljastamine"
+
+msgid "Rename MTP-device"
+msgstr "Nimeta MTP-seade ümber"
+
+msgid "Media player device error"
+msgstr "Meediaesitaja viga"
+
+msgid "Digital Audio Player"
+msgstr "Digitaalne audiopleier"
+
+msgid "Inhibit Power Manager from suspending the machine while playing"
+msgstr "Keela vooluhalduril muusika esitamise ajal masinat uinutada"
+
+msgid "Power Manager"
+msgstr "Vooluhaldur"
+
+msgid "Playing"
+msgstr "Hetkel mängib"
+
+msgid "_Python Console"
+msgstr "_Pythoni konsool"
+
+msgid "Show Rhythmbox's python console"
+msgstr "Rhythmboxi pythoni konsooli näitamine"
+
+msgid "Python Debugger"
+msgstr "Pythoni siluja"
+
+msgid "Enable remote python debugging with rpdb2"
+msgstr "Pythoni silumise lubamine rpdb2 kaudu"
+
+msgid "You can access the main window through the 'shell' variable :"
+msgstr "Peaaknale pääseb ligi kasutades 'kesta' muutjat :"
+
+msgid ""
+"After you press OK, Rhythmbox will wait until you connect to it with winpdb "
+"or rpdb2. If you have not set a debugger password in GConf, it will use the "
+"default password ('rhythmbox')."
+msgstr ""
+"Kui sa vajutad OK, ootab Rhythmbox kuni sa ühendud sellega winpdb või rpdb2 "
+"kaudu. Kui sa pole GConfis silumise parooli määranud, kasuta vaikimisi "
+"parooli ('rhythmbox')."
+
+#. ex:noet:ts=8:
+msgid "Interactive python console"
+msgstr "Interaktiivne pythoni konsool"
+
+msgid "Python Console"
+msgstr "Pythoni konsool"
+
+msgid "Plugin"
+msgstr "Plugin"
+
+msgid "Enabled"
+msgstr "Lubatud"
+
+msgid "Plugin Error"
+msgstr "Plugina viga"
+
+#, c-format
+msgid "Unable to activate plugin %s"
+msgstr "Ei suutnud pluginat %s aktiveerida"
+
+msgid "Python Source"
+msgstr "Pythoni lähtekood"
+
+msgid "A sample plugin in Python with no features"
+msgstr "Pythoni näidisplugin, mis ei tee midagi"
+
+msgid "Python Sample Plugin"
+msgstr "Pythoni näidisplugin"
+
+msgid "Sample Plugin"
+msgstr "Näidiplugin"
+
+msgid "A sample plugin in C with no features"
+msgstr "Näidisplugin keeles C, millel ei tee midagi"
+
+msgid "A sample plugin in Vala with no features"
+msgstr "Näidisplugin keeles Vala, mis ei tee midagi"
+
+msgid "Vala Sample Plugin"
+msgstr "Vala näidisplugin"
+
+msgid "Orientation"
+msgstr "Suund"
+
+msgid "The orientation of the tray."
+msgstr "Salve suund."
+
+msgid "_Close"
+msgstr "_Sulge"
+
+msgid "Hide the music player window"
+msgstr "Peida muusikamängija aken"
+
+msgid "_Show Music Player"
+msgstr "_Muusikamängijat näidatakse"
+
+msgid "Choose music to play"
+msgstr "Vali, millist muusikat kuulata"
+
+msgid "Show N_otifications"
+msgstr "_Teateid näidatakse"
+
+msgid "Show notifications of song changes and other events"
+msgstr "Lugude vahetumisel ja teiste sündmuste korral kuvatakse teade"
+
+msgid "Next"
+msgstr "Järgmine"
+
+msgid "Not playing"
+msgstr "Ei mängi"
+
+#  Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
+#. Translators: the %s is the elapsed and total time
+#, c-format
+msgid "Paused, %s"
+msgstr "Peatatud, %s"
+
+#. Translators: by Artist
+#, c-format
+msgid "by <i>%s</i>"
+msgstr "esitajalt <i>%s</i>"
+
+#. Translators: from Album
+#, c-format
+msgid "from <i>%s</i>"
+msgstr "albumilt <i>%s</i>"
+
+msgid "Status Icon"
+msgstr "Olekuikoon"
+
+msgid "Status icon and notification popups"
+msgstr "Teateikoon ja hüpikteated"
+
+msgid "Always shown"
+msgstr "Näidatakse alati"
+
+msgid "Always visible"
+msgstr "Alati nähtav"
+
+msgid "Never shown"
+msgstr "Ei näidata mitte kunagi"
+
+msgid "Never visible"
+msgstr "Mitte kunagi nähtav"
+
+msgid "Owns the main window"
+msgstr "Omab põhiakent"
+
+msgid "Shown when the main window is hidden"
+msgstr "Näidatakse, kui põhiaken on varjatud"
+
+msgid "Status icon preferences"
+msgstr "Olekuikooni eelistused"
+
+msgid "Visible with notifications"
+msgstr "Nähtav + teated"
+
+msgid "_Notifications"
+msgstr "_Teated"
+
+msgid "_Status Icon:"
+msgstr "_Olekuikoon:"
+
+msgid "_Visualization"
+msgstr "_Visualiseerimine"
+
+msgid "Start or stop visualization"
+msgstr "Visualiseerimise käivitamine või peatamine"
+
+msgid "Small"
+msgstr "Väike"
+
+msgid "Normal"
+msgstr "Keskmine"
+
+msgid "Large"
+msgstr "Suur"
+
+msgid "Extra Large"
+msgstr "Eriti suur"
+
+msgid "Embedded"
+msgstr "Muusikamängija aknas"
+
+msgid "Fullscreen"
+msgstr "Täiskeraanil"
+
+msgid "Desktop"
+msgstr "Töölaual"
+
+msgid "Window"
+msgstr "Eraldi aknas"
+
+#, c-format
+msgid "Unable to start video output"
+msgstr "Videoväljundit pole võimalik käivitada"
+
+#, c-format
+msgid "Failed to link new visual effect into the GStreamer pipeline"
+msgstr "Uue kuvaefekti linkimine GStreameri toru külge nurjus"
+
+msgid "Unable to start visualization"
+msgstr "Visualiseerimise käivitamine pole võimalik"
+
+msgid "Enable visual effects?"
+msgstr "Kas lubada kuvaefektid?"
+
+msgid ""
+"It seems you are running Rhythmbox remotely.\n"
+"Are you sure you want to enable the visual effects?"
+msgstr ""
+"Tundub, et käivitasid Rhythmboxi üle võrgu.\n"
+"Kas sa oled kindel, et tahad kuvaefektid sisse lülitada?"
+
+msgid "Music Player Visualization"
+msgstr "Muusika visualiseerimine"
+
+msgid "Disable"
+msgstr "Keela"
+
+msgid "Mode:"
+msgstr "Režiim:"
+
+msgid "Quality:"
+msgstr "Kvaliteet:"
+
+msgid "Screen:"
+msgstr "Ekraan:"
+
+msgid "Visualization:"
+msgstr "Visualiseerimine:"
+
+msgid "Displays visualizations"
+msgstr "Kuvab visualisatsiooni"
+
+msgid "Visualization"
+msgstr "Visualiseerimine"
+
+msgid "Error creating podcast download directory"
+msgstr "Viga podcast'ide allalaadimise kataloogi loomisel"
+
+#, c-format
+msgid "Unable to create the download directory for %s: %s"
+msgstr "Ei suudetud luua allalaadimise  kausta %s jaoks: %s"
+
+msgid "Invalid URL"
+msgstr "Vigane URL"
+
+#, c-format
+msgid "The URL \"%s\" is not valid, please check it."
+msgstr "URL \"%s\" pole sobiv, kontrolli see üle."
+
+#. added as something else, probably iradio
+msgid "URL already added"
+msgstr "URL on juba lisatud"
+
+#, c-format
+msgid ""
+"The URL \"%s\" has already been added as a radio station. If this is a "
+"podcast feed, please remove the radio station."
+msgstr ""
+"URL \"%s\" on juba lisatud raadiojaamana. Kui tegemist on podcast'i vooga, "
+"eemalda enne raadiojaam."
+
+#, c-format
+msgid ""
+"The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
+"or the feed may be broken. Would you like Rhythmbox to attempt to use it "
+"anyway?"
+msgstr ""
+"Tundub, et URI '%s' ei pole podcasti voog. See võib olla vale URL, või on "
+"voog katki. Kas sa tahad, et Rhythmbox prooviks sellest hoolimata seda "
+"kasutada?"
+
+msgid "Podcast"
+msgstr "Podcast"
+
+#, c-format
+msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
+msgstr "Podcasti %s lisamisel esines viga. Kontrolli URL-i: %s"
+
+#, c-format
+msgid "Unable to check file type: %s"
+msgstr "Ei suudetud failitüüpi kontrollida: %s"
+
+#, c-format
+msgid "Unexpected file type: %s"
+msgstr "Ootamatu failitüüp: %s"
+
+#, c-format
+msgid "Unable to parse the feed contents"
+msgstr "Ei suudetud voo sisu töötelda"
+
+#, c-format
+msgid "The feed does not contain any downloadable items"
+msgstr "Voog ei sisalda ühtegi allalaaditavad kirjet"
+
+msgid "Not Downloaded"
+msgstr "Allalaadimata"
+
+msgid "Don't start a new instance of Rhythmbox"
+msgstr "Rhythmboxi uut eksemplari ei käivitata"
+
+msgid "Quit Rhythmbox"
+msgstr "Välju Rhythmboxist"
+
+#, fuzzy
+msgid "Don't present an existing Rhythmbox window"
+msgstr "Olemasolevat Rhythmboxi akent ei esitleta"
+
+msgid "Hide the Rhythmbox window"
+msgstr "Peida Rhythmboxi aken"
+
+msgid "Jump to next song"
+msgstr "Hüppa järgmisele loole"
+
+msgid "Jump to previous song"
+msgstr "Hüppa eelmisele loole"
+
+msgid "Show notification of the playing song"
+msgstr "Esitatava loo kohta näidatakse teadet"
+
+msgid "Resume playback if currently paused"
+msgstr "Jätkab taasesitust, kui parasjagu on pausil"
+
+msgid "Pause playback if currently playing"
+msgstr "Peatab taasesituse, kui parasjagu esitatakse"
+
+msgid "Toggle play/pause mode"
+msgstr "Esitus/paus režiimi vahetamine"
+
+#. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
+msgid "Play a specified URI, importing it if necessary"
+msgstr "Esitab määratud URI, impordides selle, kui vajalik"
+
+msgid "URI to play"
+msgstr "URI, mida esitada"
+
+msgid "Add specified tracks to the play queue"
+msgstr "Määratud lugude lisamine ootejärjekorda"
+
+msgid "Empty the play queue before adding new tracks"
+msgstr "Tühjenda ootejärjekord enne uute laulude lisamist"
+
+msgid "Print the title and artist of the playing song"
+msgstr "Trüki esitatava laulu pealkiri ja esitaja"
+
+msgid "Print formatted details of the song"
+msgstr "Trüki laulu vormindatud teave"
+
+msgid "Set the playback volume"
+msgstr "Taasesituse valjuse määramine"
+
+msgid "Increase the playback volume"
+msgstr "Taasesituse valjuse suurendamine"
+
+msgid "Decrease the playback volume"
+msgstr "Taasesituse valjuse vähendamine"
+
+msgid "Print the current playback volume"
+msgstr "Praeguse esitusvaljuse trükkimine"
+
+msgid "Mute playback"
+msgstr "Vaigista esitus"
+
+msgid "Unmute playback"
+msgstr "Luba esitus"
+
+msgid "Set the rating of the current song"
+msgstr "Käesoleva laulu hinnangu määramine"
+
+#, c-format
+msgid "Playback is muted.\n"
+msgstr "Esitus on vaigistatud.\n"
+
+#, c-format
+msgid "Playback volume is %f.\n"
+msgstr "Taasesituse valjus on %f.\n"
+
+msgid "All"
+msgstr "Kõik"
+
+#, c-format
+msgid ""
+"The database was created by a later version of Rhythmbox.  This version of "
+"Rhythmbox cannot read the database."
+msgstr ""
+"Andmebaas loodi Rhythmboxi hilisema versiooniga. Rhythmboxi see versioon ei "
+"suuda andmebaasi lugeda."
+
+#, c-format
+msgid "Couldn't access %s: %s"
+msgstr "Ei saadud ligipääsu %s-le: %s"
+
+#. Translators: this is an example artist name.  It should
+#. * not be translated literally, but could be replaced with
+#. * a local artist name if desired.  Ensure the album name
+#. * and song title are also replaced in this case.
+#.
+msgid "The Beatles"
+msgstr "The Beatles"
+
+#. Translators: this is an example album name.  If the
+#. * example artist name is localised, this should be replaced
+#. * with the name of an album by that artist.
+#.
+msgid "Help!"
+msgstr "Help!"
+
+#. Translators: this is an example song title.  If the example
+#. * artist and album names are localised, this should be replaced
+#. * with the name of the seventh song from the localised album.
+#.
+msgid "Ticket To Ride"
+msgstr "Ticket To Ride"
+
+msgid "invalid unicode in error message"
+msgstr "Veateates oli sobimatu unicode"
+
+#, c-format
+msgid "Empty file"
+msgstr "Tühi fail"
+
+#. Translators: the parameter here is a list of GStreamer plugins.
+#. * The plugin names are already translated.
+#.
+#, c-format
+msgid "Additional GStreamer plugins are required to play this file: %s"
+msgstr "Selle faili esitamiseks on vaja puuduvat GStreameri pluginat: %s"
+
+msgid "Could not load the music database:"
+msgstr "Ei suutnud laadida muusika andmebaasi:"
+
+#, c-format
+msgid "%ld minute"
+msgid_plural "%ld minutes"
+msgstr[0] "%ld minut"
+msgstr[1] "%ld minutit"
+
+#, c-format
+msgid "%ld hour"
+msgid_plural "%ld hours"
+msgstr[0] "%ld tund"
+msgstr[1] "%ld tundi"
+
+#, c-format
+msgid "%ld day"
+msgid_plural "%ld days"
+msgstr[0] "%ld päev"
+msgstr[1] "%ld päeva"
+
+#  Translators: the format is "X days, X hours and X minutes"
+#. Translators: the format is "X days, X hours and X minutes"
+#, c-format
+msgid "%s, %s and %s"
+msgstr "%s, %s ja %s"
+
+#  Translators: the format is "X hours and X minutes"
+#. Translators: the format is "X days and X hours"
+#. Translators: the format is "X days and X minutes"
+#. Translators: the format is "X hours and X minutes"
+#, c-format
+msgid "%s and %s"
+msgstr "%s ja %s"
+
+msgid "Enable debug output"
+msgstr "Silumisinfo lubamine"
+
+msgid "Enable debug output matching a specified string"
+msgstr "Silumise väljund viiakse kokku määratud sõnega"
+
+msgid "Do not update the library with file changes"
+msgstr "Failide muutumisel fonoteeki ei uuendata"
+
+msgid "Do not register the shell"
+msgstr "Kesta ei registreerita"
+
+msgid "Don't save any data permanently (implies --no-registration)"
+msgstr "Mingeid andmeid ei salvestata jäädavalt (--no-registration)"
+
+msgid "Path for database file to use"
+msgstr "Otsingutee kasutatava andmebaasifailini"
+
+msgid "Path for playlists file to use"
+msgstr "Kasutatavate esitusloendite otsitee"
+
+msgid "[URI...]"
+msgstr "[URI...]"
+
+#, c-format
+msgid ""
+"%s\n"
+"Run '%s --help' to see a full list of available command line options.\n"
+msgstr ""
+"%s\n"
+"Kõigi saadavate käsureavalikute nägemiseks kasuta '%s --help'.\n"
+
+msgid "MPEG Version 3.0 URL"
+msgstr "MPEG versioon 3.0 URL"
+
+msgid "Shoutcast playlist"
+msgstr "Shoutcast'i esitusloend"
+
+msgid "XML Shareable Playlist Format"
+msgstr "XML jagatava esitusloendi vorming"
+
+#. Submenu of Music
+msgid "_Playlist"
+msgstr "_Esitusnimekiri"
+
+msgid "_New Playlist..."
+msgstr "Uus esitus_nimekiri..."
+
+msgid "Create a new playlist"
+msgstr "Uue esitusnimekirja loomine"
+
+msgid "New _Automatic Playlist..."
+msgstr "Uus _automaatne esitusnimekiri..."
+
+msgid "Create a new automatically updating playlist"
+msgstr "Uue automaatselt uuendatava esitusnimekirja loomine"
+
+msgid "_Load from File..."
+msgstr "_Laadi failist..."
+
+msgid "Choose a playlist to be loaded"
+msgstr "Vali esitusnimekiri, mida laadida"
+
+msgid "_Save to File..."
+msgstr "_Salvesta faili..."
+
+msgid "Save a playlist to a file"
+msgstr "Esitusnimekirja salvestamine faili"
+
+msgid "Change this automatic playlist"
+msgstr "Muuda seda automaatset esitusnimekirja"
+
+msgid "_Queue All Tracks"
+msgstr "_Kõik laulud ootele"
+
+msgid "Add all tracks in this playlist to the queue"
+msgstr "Kõigi selle esitusloendi laulude ootejärjekorda lisamine"
+
+msgid "_Shuffle Playlist"
+msgstr "_Sega lugude nimekiri"
+
+msgid "Shuffle the tracks in this playlist"
+msgstr "Selle esitusloendi laulude segamine"
+
+msgid "Save the play queue to a file"
+msgstr "Ootejärjekorra salvestamine faili"
+
+msgid "Unnamed playlist"
+msgstr "Nimetu esitusnimekiri"
+
+msgid "The playlist file may be in an unknown format or corrupted."
+msgstr "Esitusloendi fail võib olla tundmatus vormingus või rikutud."
+
+msgid "Untitled Playlist"
+msgstr "Pealkirjatu esitusnimekiri"
+
+msgid "Couldn't read playlist"
+msgstr "Ei suutnud lugeda lugude nimekirja"
+
+msgid "Playlists"
+msgstr "Esitusnimekirjad"
+
+msgid "All Files"
+msgstr "Kõik failid"
+
+msgid "Load Playlist"
+msgstr "Esitusnimekirja laadimine"
+
+msgid "Couldn't save playlist"
+msgstr "Ei suutnud salvestada lugude nimekirja"
+
+msgid "Unsupported file extension given."
+msgstr "Anti toetamata faililaiend"
+
+#, c-format
+msgid "Playlist %s already exists"
+msgstr "Esitusloend %s on juba olemas"
+
+#, c-format
+msgid "Unknown playlist: %s"
+msgstr "Tundmatu esitusloend: %s"
+
+#, c-format
+msgid "Playlist %s is an automatic playlist"
+msgstr "Esitusloend %s on automaatne esitusloend"
+
+msgid "Eject this medium"
+msgstr "Väljasta see meedia"
+
+msgid "_Extract to Library"
+msgstr "_Lisa fonoteeki"
+
+msgid "Copy all tracks to the library"
+msgstr "Kõikide rajadade fonoteeki kopeerimine"
+
+msgid "_Scan Removable Media"
+msgstr "_Skaneeri eemaldatavat meediat"
+
+msgid "Scan for new Removable Media"
+msgstr "Eemaldatavate andmekandjate skaneerimine"
+
+#. Translators: this is the toolbar button label
+#. for Copy to Library action.
+msgid "Extract"
+msgstr "Paki lahti"
+
+msgid "Unable to eject"
+msgstr "Ei suutnud väljastada"
+
+msgid "Unable to unmount"
+msgstr "Ei suutnud lahti haakida"
+
+msgid "Error transferring track"
+msgstr "Viga pala edastamisel"
+
+msgid "Select _All"
+msgstr "_Vali kõik"
+
+msgid "Select all songs"
+msgstr "Kõigi laulude valimine"
+
+msgid "D_eselect All"
+msgstr "_Tühista valik"
+
+msgid "Deselect all songs"
+msgstr "Valiku tühistamine"
+
+msgid "Cu_t"
+msgstr "_Lõika"
+
+msgid "Cut selection"
+msgstr "Valiku lõikamine"
+
+msgid "_Copy"
+msgstr "_Kopeeri"
+
+msgid "Copy selection"
+msgstr "Valiku kopeerimine"
+
+msgid "_Paste"
+msgstr "_Aseta"
+
+msgid "Paste selection"
+msgstr "Valiku asetamine"
+
+msgid "_Remove"
+msgstr "_Eemalda"
+
+msgid "Remove selection"
+msgstr "Eemalda valik"
+
+msgid "_Move to Trash"
+msgstr "_Viska prügikasti"
+
+msgid "Move selection to the trash"
+msgstr "Valiku prügikasti tõstmine"
+
+msgid "Add to P_laylist"
+msgstr "Lisa lugude _nimekirja"
+
+msgid "Add the selected songs to a new playlist"
+msgstr "Valitud laulude lisamine esitusloendisse"
+
+msgid "Add _to Play Queue"
+msgstr "Lisa _ootejärjekorda"
+
+msgid "Add the selected songs to the play queue"
+msgstr "Valitud laulude ootejärjekorda lisamine"
+
+msgid "Remove"
+msgstr "Eemalda"
+
+msgid "Pr_operties"
+msgstr "_Omadused"
+
+msgid "Show information on the selected song"
+msgstr "Valitud loo kohta teabe näitamine"
+
+msgid "Pre_vious"
+msgstr "_Eelmine"
+
+msgid "Start playing the previous song"
+msgstr "Eelmise loo mängimine"
+
+msgid "_Next"
+msgstr "_Järgmine"
+
+msgid "Start playing the next song"
+msgstr "Järgmise loo mängimine"
+
+msgid "_Increase Volume"
+msgstr "_Heli valjemaks"
+
+msgid "Increase playback volume"
+msgstr "Valjuse suurendamine"
+
+msgid "_Decrease Volume"
+msgstr "_Heli vaiksemaks"
+
+msgid "Decrease playback volume"
+msgstr "Valjuse vähendamine"
+
+msgid "_Play"
+msgstr "_Mängi"
+
+msgid "Start playback"
+msgstr "Esituse alustamine"
+
+msgid "Sh_uffle"
+msgstr "_Segatud"
+
+msgid "Play songs in a random order"
+msgstr "Lugude suvalises järjekorras esitamine"
+
+msgid "_Repeat"
+msgstr "Ko_rdus"
+
+msgid "Play first song again after all songs are played"
+msgstr "Esimese loo juurde naasmine, kui kõik lood on mängitud"
+
+msgid "_Song Position Slider"
+msgstr "_Laulu asukoha riba"
+
+msgid "Change the visibility of the song position slider"
+msgstr "Laulu asukoha riba nähtavuse muutmine"
+
+msgid "Stream error"
+msgstr "Viga voos"
+
+msgid "Unexpected end of stream!"
+msgstr "Ootamatu voo lõpp!"
+
+msgid "Linear"
+msgstr "Lineaarne"
+
+msgid "Linear looping"
+msgstr "Lineaarne tsükkel"
+
+msgid "Shuffle"
+msgstr "Segatud"
+
+msgid "Random with equal weights"
+msgstr "Juhuslik võrdsete kaaludega"
+
+msgid "Random by time since last play"
+msgstr "Juhuslik viimase mängimise alusel"
+
+msgid "Random by rating"
+msgstr "Juhuslik reitingu alusel"
+
+msgid "Random by time since last play and rating"
+msgstr "Juhuslik viimase esituse ja hinnangu järgi"
+
+msgid "Linear, removing entries once played"
+msgstr "Lineaarne, eemaldatakse kord esitatud kirjed"
+
+#, c-format
+msgid "Failed to create the player: %s"
+msgstr "Mängija loomine nurjus: %s"
+
+#, c-format
+msgid "Playlist was empty"
+msgstr "Esitusnimekiri oli tühi"
+
+#, c-format
+msgid "Not currently playing"
+msgstr "Praegu ei esitata"
+
+#, c-format
+msgid "No previous song"
+msgstr "Eelmist lugu pole"
+
+#, c-format
+msgid "No next song"
+msgstr "Järgmist lugu pole"
+
+msgid "Couldn't start playback"
+msgstr "Esituse alustamine nurjus"
+
+msgid "Couldn't stop playback"
+msgstr "Esituse peatamine nurjus"
+
+#, c-format
+msgid "Playback position not available"
+msgstr "Taasesituse järg pole saadaval"
+
+#, c-format
+msgid "Current song is not seekable"
+msgstr "Esitatav laul pole keritav"
+
+msgid "Stop playback"
+msgstr "Esituse lõpetamine"
+
+msgid "Couldn't display help"
+msgstr "Abi pole võimalik kuvada"
+
+msgid "Music Player Preferences"
+msgstr "Muusikamängija seadistused"
+
+msgid "General"
+msgstr "Üldine"
+
+msgid "Playback"
+msgstr "Esitus"
+
+msgid "_Music"
+msgstr "_Muusika"
+
+msgid "_View"
+msgstr "_Vaade"
+
+msgid "_Control"
+msgstr "_Juhtimine"
+
+msgid "_Tools"
+msgstr "_Tööriistad"
+
+msgid "_Help"
+msgstr "_Abi"
+
+msgid "_Import Folder..."
+msgstr "_Impordi kataloog..."
+
+msgid "Choose folder to be added to the Library"
+msgstr "Fonoteeki lisatava kataloogi valimine"
+
+msgid "Import _File..."
+msgstr "Impordi _fail..."
+
+msgid "Choose file to be added to the Library"
+msgstr "Fonoteeki lisatava fail valimine"
+
+msgid "_About"
+msgstr "_Info"
+
+msgid "Show information about the music player"
+msgstr "Muusikamängija kohta info näitamine"
+
+msgid "_Contents"
+msgstr "_Sisukord"
+
+msgid "Display music player help"
+msgstr "Muusikamängija abi kuvamine"
+
+msgid "_Quit"
+msgstr "_Lahku"
+
+msgid "Quit the music player"
+msgstr "Muusikamängijast väljumine"
+
+msgid "Prefere_nces"
+msgstr "_Eelistused"
+
+msgid "Edit music player preferences"
+msgstr "Muusikamängija eelistuste muutmine"
+
+msgid "Plu_gins"
+msgstr "_Pluginad"
+
+msgid "Change and configure plugins"
+msgstr "Pluginate vahetamine ja seadistamine"
+
+msgid "Show _All Tracks"
+msgstr "Näita _kõiki lugusid"
+
+msgid "Show all tracks in this music source"
+msgstr "Näidatakse selle muusikaallika kõiki lugusid"
+
+msgid "_Jump to Playing Song"
+msgstr "_Hüppa mängiva loo peale"
+
+msgid "Scroll the view to the currently playing song"
+msgstr "Vaate kerimine parasjagu esitatavale laulule"
+
+msgid "Side _Pane"
+msgstr "Külg_paan"
+
+msgid "Change the visibility of the side pane"
+msgstr "Külgpaani nähtavuse muutmine"
+
+msgid "T_oolbar"
+msgstr "_Tööriistariba"
+
+msgid "Change the visibility of the toolbar"
+msgstr "Tööriistariba nähtavuse muutmine"
+
+msgid "_Small Display"
+msgstr "_Väike vaade"
+
+msgid "Make the main window smaller"
+msgstr "Põhiakna väiksemaks tegemine"
+
+msgid "Party _Mode"
+msgstr "_Peorežiim"
+
+msgid "Change the status of the party mode"
+msgstr "Peorežiimi oleku vahetamine"
+
+msgid "Play _Queue as Side Pane"
+msgstr "_Ootejärjekord külgpaneelil"
+
+msgid "Change whether the queue is visible as a source or a sidebar"
+msgstr "Vahetab ootejärjekorra nähtavuse kas põhiliseks või külgribale"
+
+msgid "S_tatusbar"
+msgstr "_Olekuriba"
+
+msgid "Change the visibility of the statusbar"
+msgstr "Olekuriba nähtavuse muutmine"
+
+msgid "Unable to move user data files"
+msgstr "Kasutaja andmefaile pole võimalik liigutada"
+
+msgid "Change the music volume"
+msgstr "Muusika helitugevuse muutmine"
+
+msgid "Error while saving song information"
+msgstr "Viga laulu andmete salvestamisel"
+
+#, c-format
+msgid "Transferring track %d out of %d (%.0f%%)"
+msgstr "%d. loo edastamine %d-st (%.0f%%)"
+
+#, c-format
+msgid "Transferring track %d out of %d"
+msgstr "%d. loo edastamine %d-st"
+
+#  Translators: %s is the song name
+#. Translators: %s is the song name
+#, c-format
+msgid "%s (Paused)"
+msgstr "%s (peatatud)"
+
+msgid "translator-credits"
+msgstr ""
+"Priit Laes <amd@linux.ee>, 2004.\n"
+"Mattias Põldaru <mahfiaz@gmail.com>, 2009."
+
+msgid ""
+"Rhythmbox is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+msgstr ""
+"Rhythmbox on vaba tarkvara; te võite seda edasi levitada ja/või muuta\n"
+"vastavalt GNU Üldise Avaliku Litsentsi tingimustele, nagu need on\n"
+" Vaba Tarkvara Fondi poolt avaldatud; kas Litsentsi versioon number 2\n"
+"või (vastavalt teie valikule) ükskõik milline hilisem versioon.\n"
+"\n"
+
+msgid ""
+"Rhythmbox is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+msgstr ""
+"Rhythmboxi levitatakse lootuses, et see on kasulik, kuid\n"
+"ILMA IGASUGUSE GARANTIITA; isegi ilma KESKMISE/TAVALISE\n"
+"KVALITEEDI GARANTIITA või SOBIVUSELE TEATUD KINDLAKS,\n"
+"EESMÄRGIKS. Üksikasjade suhtes vaata\n"
+"GNU Üldist Avalikku Litsentsi.\n"
+
+msgid ""
+"You should have received a copy of the GNU General Public License\n"
+"along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
+"51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
+msgstr ""
+"Te peaks olema saanud GNU Üldise Avaliku Litsentsi koopia koos\n"
+"Rhythmboxiga. Kui ei, siis kirjutage aadressil Free Software\n"
+"Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,\n"
+"MA 02110-1301  USA\n"
+
+msgid "Maintainers:"
+msgstr "Arendajad:"
+
+msgid "Former Maintainers:"
+msgstr "Endised arendajad:"
+
+msgid "Contributors:"
+msgstr "Kaasautorid:"
+
+msgid "Music management and playback software for GNOME."
+msgstr "Muusikahaldus ja -esitus tarkvara GNOME töölaua jaoks."
+
+msgid "Rhythmbox Website"
+msgstr "Rhythmboxi veebileht"
+
+msgid "Configure Plugins"
+msgstr "Pluginate seadistamine"
+
+msgid "Import Folder into Library"
+msgstr "Kausta importimine fonoteeki"
+
+msgid "Import File into Library"
+msgstr "Faili importimine fonoteeki"
+
+#, c-format
+msgid "No registered source can handle URI %s"
+msgstr "Ükski registreeritud allikas ei oska kasutada URI-d %s"
+
+#, c-format
+msgid "Unknown song URI: %s"
+msgstr "Laulu URI tundmatu: %s"
+
+#, c-format
+msgid "Unknown property %s"
+msgstr "Tundmatu omadus %s"
+
+#, c-format
+msgid "Invalid property type %s for property %s"
+msgstr "Sobimatu tüüp %s omadusel %s"
+
+msgid "_Browse"
+msgstr "_Sirvija"
+
+msgid "Change the visibility of the browser"
+msgstr "Sirvija nähtavuse muutmine"
+
+msgid "Filter music display by genre, artist, album, or title"
+msgstr "Muusika filtreerimine stiili, artisti, albumi või pealkirja alusel"
+
+msgid "Loading..."
+msgstr "Laadimine..."
+
+msgid "Search all fields"
+msgstr "Kõigi väljade järgi otsimine"
+
+msgid "Artists"
+msgstr "Esitajad"
+
+msgid "Search artists"
+msgstr "Artistide otsimine"
+
+msgid "Albums"
+msgstr "Albumid"
+
+msgid "Search albums"
+msgstr "Albumite otsimine"
+
+msgid "Titles"
+msgstr "Pealkirjad"
+
+msgid "Search titles"
+msgstr "Pealkirjade otsimine"
+
+msgid "Browse This _Genre"
+msgstr "Sirvi seda _stiili"
+
+msgid "Set the browser to view only this genre"
+msgstr "Sirvija näitab ainult seda stiili"
+
+msgid "Browse This _Artist"
+msgstr "Sirvi seda _artisti"
+
+msgid "Set the browser to view only this artist"
+msgstr "Sirvija näitab ainult seda esitajat"
+
+msgid "Browse This A_lbum"
+msgstr "Sirvi seda a_lbumit"
+
+msgid "Set the browser to view only this album"
+msgstr "Sirvija näitab ainult seda albumit"
+
+msgid "Import Errors"
+msgstr "Vead importimisel"
+
+#, c-format
+msgid "%d import errors"
+msgid_plural "%d import errors"
+msgstr[0] "%d viga importimisel"
+msgstr[1] "%d viga importimisel"
+
+msgid "Artist/Artist - Album"
+msgstr "Esitaja/Esitaja - Album"
+
+msgid "Artist/Album"
+msgstr "Esitaja/Album"
+
+msgid "Artist - Album"
+msgstr "Esitaja - Album"
+
+msgid "Album"
+msgstr "Album"
+
+msgid "Number - Title"
+msgstr "Number - Pealkiri"
+
+msgid "Artist - Title"
+msgstr "Esitaja - Pealkiri"
+
+msgid "Artist - Number - Title"
+msgstr "Esitaja - Number - Pealkiri"
+
+msgid "Artist (Album) - Number - Title"
+msgstr "Esitaja (Album) - Number - Pealkiri"
+
+msgid "Number. Artist - Title"
+msgstr "Number. Esitaja - Pealkiri"
+
+msgid "Music"
+msgstr "Muusika"
+
+msgid "Choose Library Location"
+msgstr "Fonoteegi asukoht"
+
+msgid "Multiple locations set"
+msgstr "Määratud mitu asukohta"
+
+msgid "Example Path:"
+msgstr "Näidisasukoht:"
+
+msgid "Missing Files"
+msgstr "Puuduvad failid"
+
+#, c-format
+msgid "%d missing file"
+msgid_plural "%d missing files"
+msgstr[0] "%d puuduv fail"
+msgstr[1] "%d puuduvat faili"
+
+msgid "Clear _Queue"
+msgstr "Puhasta _ootejärjekord"
+
+msgid "Remove all songs from the play queue"
+msgstr "Kõigi laulude ootejärjekorrast eemaldamine"
+
+msgid "Shuffle Queue"
+msgstr "Sega ootejärjekorda"
+
+msgid "Shuffle the tracks in the play queue"
+msgstr "Ootejärjekorra lugude segamine"
+
+#. Translators: this is the toolbutton label for Clear Queue action
+msgid "Clear"
+msgstr "Puhasta"
+
+msgid "Play Queue"
+msgstr "Ootejärjekord"
+
+msgid "from"
+msgstr "albumilt"
+
+msgid "by"
+msgstr "esitajalt"
+
+msgid "_New Podcast Feed..."
+msgstr "_Uus Podcast'i voog..."
+
+msgid "Subscribe to a new Podcast Feed"
+msgstr "Uue podcasti voo tellimine"
+
+msgid "Download _Episode"
+msgstr "_Laadi osa alla"
+
+msgid "Download Podcast Episode"
+msgstr "Podcasti osa allalaadimine"
+
+msgid "_Cancel Download"
+msgstr "_Katkesta allalaadimine"
+
+msgid "Cancel Episode Download"
+msgstr "Osa allalaadimise katkestamine"
+
+msgid "Episode Properties"
+msgstr "Osa omadused"
+
+msgid "_Update Podcast Feed"
+msgstr "_Uuenda Podcast'i voogu"
+
+msgid "Update Feed"
+msgstr "Voo uuendamine"
+
+msgid "_Delete Podcast Feed"
+msgstr "_Kustuta Podcast'i voog"
+
+msgid "Delete Feed"
+msgstr "Voo kustutamine"
+
+msgid "_Update All Feeds"
+msgstr "_Uuenda kõiki vooge"
+
+msgid "Update all feeds"
+msgstr "Kõikide voogude uuendamine"
+
+msgid "Feeds"
+msgstr "Vood"
+
+msgid "Search podcast feeds"
+msgstr "Podcasti voogude otsimine"
+
+msgid "Episodes"
+msgstr "Osad"
+
+msgid "Search podcast episodes"
+msgstr "Podcast'i osade otsimine"
+
+#. Translators: this is the toolbar button label
+#. for New Podcast Feed action.
+msgctxt "Podcast"
+msgid "New"
+msgstr "Uus"
+
+#. Translators: this is the toolbar button label
+#. for Update All Feeds action.
+msgid "Update"
+msgstr "Uuenda"
+
+msgid "Date"
+msgstr "Kuupäev"
+
+msgid "Feed"
+msgstr "Voog"
+
+msgid "Status"
+msgstr "Olek"
+
+msgid "Downloaded"
+msgstr "Allalaaditud"
+
+msgid "Waiting"
+msgstr "Ootamine"
+
+msgid "Failed"
+msgstr "Nurjus"
+
+msgid "Delete the podcast episode and downloaded file?"
+msgstr "Kas kustutada Podcast'i osa ja allalaaditud fail?"
+
+msgid ""
+"If you choose to delete the episode and file, they will be permanently "
+"lost.  Please note that you can delete the episode but keep the downloaded "
+"file by choosing to delete the episode only."
+msgstr ""
+"Kui sa valid osa ja faili kustutamise, kaovad need jäädavalt. Valides osa "
+"kustutamise, kustutatakse küll osa, aga allalaaditud fail jääb alles."
+
+msgid "Delete _Episode Only"
+msgstr "Kustuta ainult _osa"
+
+msgid "_Delete Episode And File"
+msgstr "Kustuta osa ja _fail"
+
+msgid "Delete the podcast feed and downloaded files?"
+msgstr "Kas kustutada Podcast'i voog ja allalaaditud failid?"
+
+msgid ""
+"If you choose to delete the feed and files, they will be permanently lost.  "
+"Please note that you can delete the feed but keep the downloaded files by "
+"choosing to delete the feed only."
+msgstr ""
+"Kui sa valid voo ja failide kustutamise, kaovad need jäädavalt. Valides "
+"ainult voo kustutamise, kustutatakse küll voog, aga failid jäävad alles."
+
+msgid "Delete _Feed Only"
+msgstr "Kustuta ainult _voog"
+
+msgid "_Delete Feed And Files"
+msgstr "_Kustuta voog ja failid"
+
+#, c-format
+msgid "%d feed"
+msgid_plural "All %d feeds"
+msgstr[0] "%d voog"
+msgstr[1] "Kõik %d voogu"
+
+msgid "Downloading podcast"
+msgstr "Podcast'i allalaadimine"
+
+msgid "Finished downloading podcast"
+msgstr "Podcasti allalaadimine lõpetatud"
+
+msgid "New updates available from"
+msgstr "Uuendused on saadaval serverist"
+
+msgid "Error in podcast"
+msgstr "Viga podcastis"
+
+#, c-format
+msgid "%s. Would you like to add the podcast feed anyway?"
+msgstr "%s. Kas tahad sellest hoolimata podcasti voo lisada?"
+
+msgid "New Podcast Feed"
+msgstr "Uus podcasti voog"
+
+msgid "URL of podcast feed:"
+msgstr "Podcasti voo URL:"
+
+#, c-format
+msgid "%d episode"
+msgid_plural "%d episodes"
+msgstr[0] "%d osa"
+msgstr[1] "%d osa"
+
+msgid "Podcast Error"
+msgstr "Podcasti viga"
+
+#, c-format
+msgid "%d song"
+msgid_plural "%d songs"
+msgstr[0] "%d lugu"
+msgstr[1] "%d lugu"
+
+msgid "Library"
+msgstr "Fonoteek"
+
+msgid "Devices"
+msgstr "Seadmed"
+
+msgid "Shared"
+msgstr "Jagatud"
+
+msgid "S_ource"
+msgstr "Allika_s"
+
+msgid "Connecting"
+msgstr "Ühendumine"
+
+msgid "Buffering"
+msgstr "Puhverdamine"
+
+msgid "Pixbuf Object"
+msgstr "Pixbuf objekt"
+
+msgid "The pixbuf to render."
+msgstr "Renderdatav pixbuf."
+
+msgid "Lossless"
+msgstr "Kadudeta"
+
+msgid "Track"
+msgstr "Lugu"
+
+msgid "Time"
+msgstr "Aeg"
+
+msgid "Year"
+msgstr "Aasta"
+
+msgid "Quality"
+msgstr "Kvaliteet"
+
+msgid "000 kbps"
+msgstr "000 kbps"
+
 msgid "Rating"
 msgstr "Reiting"
 
-#: widgets/rb-query-creator.c:62
+msgid "Play Count"
+msgstr "Mängimiste arv"
+
+msgid "Last Played"
+msgstr "Viimati mängitud"
+
+msgid "Date Added"
+msgstr "Lisamise kuupäev"
+
+msgid "Last Seen"
+msgstr "Viimati nähtud"
+
+msgid "Location"
+msgstr "Asukoht"
+
+msgid "Now Playing"
+msgstr "Hetkel mängib"
+
+msgid "Playback Error"
+msgstr "Viga esitamisel"
+
+msgid "Not Playing"
+msgstr "Ei mängi"
+
+#, c-format
+msgid "%d artist (%d)"
+msgid_plural "All %d artists (%d)"
+msgstr[0] "%d esitaja (%d)"
+msgstr[1] "Kõik %d esitajat (%d)"
+
+#, c-format
+msgid "%d album (%d)"
+msgid_plural "All %d albums (%d)"
+msgstr[0] "%d album (%d)"
+msgstr[1] "Kõik %d albumit (%d)"
+
+#, c-format
+msgid "%d genre (%d)"
+msgid_plural "All %d genres (%d)"
+msgstr[0] "%d stiil (%d)"
+msgstr[1] "Kõik %d stiili (%d)"
+
+#, c-format
+msgid "%d (%d)"
+msgid_plural "All %d (%d)"
+msgstr[0] "%d (%d)"
+msgstr[1] "Kõik %d (%d)"
+
+#  Translators: %s is the song name
+#, c-format
+msgid "%s (%d)"
+msgstr "%s (%d)"
+
+msgid "Path"
+msgstr "Otsingutee"
+
+msgid "Track Number"
+msgstr "Loo number"
+
+msgid "Disc Number"
+msgstr "Plaadi number"
+
+msgid "Bitrate"
+msgstr "Bitikiirus"
+
+msgid "Duration"
+msgstr "Kestus"
+
+msgid "Time of Last Play"
+msgstr "Viimati mängitud"
+
+msgid "Time Added to Library"
+msgstr "Fonoteeki lisamise kuupäev"
+
+msgid "_In reverse alphabetical order"
+msgstr "_Pööratud tähestikulises järjekorras"
+
+msgid "W_ith more highly rated tracks first"
+msgstr "_Kõrgelt hinnatud lood eespool"
+
+msgid "W_ith more often played songs first"
+msgstr "_Sagedasti mängitud lood eespool"
+
+msgid "W_ith newer tracks first"
+msgstr "_Uued lood eespool"
+
+msgid "W_ith longer tracks first"
+msgstr "_Pikemad lood eespool"
+
+msgid "_In decreasing order"
+msgstr "_Kahanevas järjekorras"
+
+msgid "W_ith more recently played tracks first"
+msgstr "_Hiljuti mängitud lood eespool"
+
+msgid "W_ith more recently added tracks first"
+msgstr "_Hiljuti lisatud lood eespool"
+
 msgid "contains"
 msgstr "sisaldab"
 
-#: widgets/rb-query-creator.c:63
 msgid "does not contain"
 msgstr "ei sisalda"
 
-#: widgets/rb-query-creator.c:64
-#: widgets/rb-query-creator.c:69
 msgid "equals"
 msgstr "võrdub"
 
-#: widgets/rb-query-creator.c:70
-msgid "greater than"
-msgstr "suurem kui"
+msgid "starts with"
+msgstr "algab"
 
-#: widgets/rb-query-creator.c:71
-msgid "less than"
-msgstr "väiksem kui"
+msgid "ends with"
+msgstr "lõpeb"
 
-#: widgets/rb-query-creator.c:243
+msgid "at least"
+msgstr "vähemalt"
+
+#. matches if A >= B
+msgid "at most"
+msgstr "ülimalt"
+
+msgid "in"
+msgstr ""
+
+#. matches if within 1-JAN-YEAR to 31-DEC-YEAR
+msgid "after"
+msgstr "pärast"
+
+#. matches if >= 31-DEC-YEAR
+msgid "before"
+msgstr "enne"
+
+#.
+#. * Translators: this will match when within <value> of the current time
+#. * e.g. "in the last" "7 days" will match if within 7 days of the current time
+#.
+msgid "in the last"
+msgstr "viimase"
+
+#.
+#. * Translators: this is the opposite of the above, and will match if not
+#. * within <value> of the current time
+#.
+msgid "not in the last"
+msgstr "mitte viimase"
+
+msgid "seconds"
+msgstr "sekundit"
+
+msgid "minutes"
+msgstr "minutit"
+
+msgid "hours"
+msgstr "tundi"
+
+msgid "days"
+msgstr "päeva"
+
+msgid "weeks"
+msgstr "nädalat"
+
 msgid "Create Automatic Playlist"
-msgstr "Loo automaatne lugude nimekiri"
+msgstr "Automaatse esitusnimekirja loomine"
+
+msgid "Edit Automatic Playlist"
+msgstr "Automaatse esitusnimekirja muutmine"
+
+msgid "No Stars"
+msgstr "Ilma tärnideta"
+
+#, c-format
+msgid "%d Star"
+msgid_plural "%d Stars"
+msgstr[0] "%d tärn"
+msgstr[1] "%d tärni"
 
 #  this string can only be so long, or there wont be a search entry :)
 #. this string can only be so long, or there wont be a search entry :)
-#: widgets/rb-search-entry.c:118
 msgid "_Search:"
 msgstr "_Otsi:"
 
-#: widgets/rb-song-display-box.c:113
-#, fuzzy
-msgid "from"
-msgstr "%s paketist %s\n"
+msgid "Clear the search text"
+msgstr "Puhasta otsingutekst"
 
-#: widgets/rb-song-display-box.c:115
-#, fuzzy
-msgid "by"
-msgstr "Autor: %1"
-
-#: widgets/rb-song-info.c:267
 msgid "Song Properties"
 msgstr "Loo omadused"
 
-#: widgets/rb-song-info.c:359
 msgid "Multiple Song Properties"
-msgstr "Mitme laulu omadused"
+msgstr "Mitme loo omadused"
 
-#: widgets/rb-song-info.c:799
-#, c-format
-msgid "%d kbps"
-msgstr "%d kbps"
+msgid "Unknown file name"
+msgstr "Tundmatu failinimi"
 
-#: widgets/rb-song-info.c:862
-msgid "on the desktop"
-msgstr "töölaual"
+msgid "On the desktop"
+msgstr "Töölaual"
 
-#  Translators - The + and - refer to increasing and decreasing the volume.
-#  ** I don't know if there are sensible alternatives in other languages
-#  Translators - The + and - refer to increasing and decreasing the volume.
-#  ** I don't know if there are sensible alternatives in other languages
-#. Translators - The + and - refer to increasing and decreasing the volume.
-#. ** I don't know if there are sensible alternatives in other languages
-#: widgets/rb-volume.c:234
-msgid "+"
-msgstr "+"
-
-#: widgets/rb-volume.c:235
-msgid "-"
-msgstr "-"
-
+msgid "Unknown location"
+msgstr "Tundmatu asukoht"
