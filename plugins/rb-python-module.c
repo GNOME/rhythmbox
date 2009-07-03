@@ -254,7 +254,7 @@ rb_python_module_init_python (void)
 
 		func = PyCFunction_New (&pyrb_functions[res], rb);
 		if (func == NULL) {
-			g_warning ("unable object for function '%s' create", pyrb_functions[res].ml_name);
+			g_warning ("unable to create object for function '%s'", pyrb_functions[res].ml_name);
 			PyErr_Print ();
 			return;
 		}
