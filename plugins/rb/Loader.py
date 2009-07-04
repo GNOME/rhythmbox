@@ -29,9 +29,14 @@ import gtk
 
 def callback_with_gdk_lock(callback, data, args):
 	gtk.gdk.threads_enter()
-	v = callback(data, *args)
-	gtk.gdk.threads_leave()
-	return v
+	try:
+		v = callback(data, *args)
+		gtk.gdk.threads_leave()
+		return v
+	except Exception, e:
+		print "Exception caught in loader callback: %s" % str(e)
+		gtk.gdk.threads_leave()
+		raise e
 
 
 class GioLoader(object):
@@ -70,9 +75,13 @@ class GioChunkLoader(object):
 
 	def _callback_gdk(self, result):
 		gtk.gdk.threads_enter()
-		v = self._callback(result)
-		gtk.gdk.threads_leave()
-		return v
+		try:
+			v = self._callback(result)
+			gtk.gdk.threads_leave()
+			return v
+		except Exception, e:
+			gtk.gdk.threads_leave()
+			raise e
 
 	def _error_idle_cb(self, error):
 		self._callback_gdk(error)
@@ -220,9 +229,13 @@ class GnomeVFSChunkLoader (object):
 
 	def _callback_gdk(self, result):
 		gtk.gdk.threads_enter()
-		v = self._callback(result)
-		gtk.gdk.threads_leave()
-		return v
+		try:
+			v = self._callback(result)
+			gtk.gdk.threads_leave()
+			return v
+		except Exception, e:
+			gtk.gdk.threads_leave()
+			raise e
 
 	def _read_cb (self, handle, buffer, exc_type, bytes_requested):
 		if exc_type:
