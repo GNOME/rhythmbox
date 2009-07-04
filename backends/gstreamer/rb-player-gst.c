@@ -651,6 +651,15 @@ impl_close (RBPlayer *player, const char *uri, GError **error)
 		return TRUE;
 	}
 
+	if (mp->priv->current_track_finishing) {
+		/* this is a bit of a hack.
+		 * about-to-finish should result in either a track change or nothing.
+		 */
+		rb_debug ("not closing in about-to-finish callback");
+		mp->priv->current_track_finishing = FALSE;
+		return TRUE;
+	}
+
 	mp->priv->playing = FALSE;
 	mp->priv->buffering = FALSE;
 
