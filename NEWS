@@ -58,6 +58,10 @@ Bugs fixed:
 586803 - translator comment addition
 586922 - proxy authentication not working for last.fm
 586985 - crash when playback pipeline shutdown fails
+587329 - allocating GValues in metadata helper incorrectly
+587479 - crash when processing some metadata load errors
+587595 - crash at end of playlist (playbin2)
+587691 - always release gdk lock after calling loader callbacks
 
 Contributors:
 
@@ -76,9 +80,11 @@ New and updated translations:
 - as, courtesy of Amitakhya Phukan
 - de, courtesy of Mario Blättermann
 - es, courtesy of Jorge González
+- et, courtesy of Mattias Põldaru
 - fr, courtesy of Claude Paroz
 - gu, courtesy of Sweta Kothari
 - he, courtesy of Mark Krapivner
+- hu, courtesy of Gabor Kelemen
 - it, courtesy of Luca Ferretti
 - lt, courtesy of Žygimantas Beručka
 - mr, courtesy of Sandeep Shedmake
@@ -87,6 +93,7 @@ New and updated translations:
 - pl, courtesy of Tomasz Dominikowski
 - pt_BR, courtesy of Leonardo Ferreira Fontenelle
 - sv, courtesy of Daniel Nylander
+- ta, courtesy of I. Felix
 - vi, courtesy of Phạm Thành Long
 
 
