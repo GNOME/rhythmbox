@@ -1787,7 +1787,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			stream->needs_unlink = TRUE;
 			if (stream->state != REUSING) {
 				rb_debug ("got EOS message for stream %s -> PENDING_REMOVE", stream->uri);
-				_rb_player_emit_eos (RB_PLAYER (player), stream->stream_data);
+				_rb_player_emit_eos (RB_PLAYER (player), stream->stream_data, FALSE);
 				stream->state = PENDING_REMOVE;
 
 				unlink_blocked_cb (stream->src_pad, TRUE, stream);

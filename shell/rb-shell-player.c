@@ -880,6 +880,7 @@ rb_shell_player_slider_dragging_cb (GObject *header, GParamSpec *pspec, RBShellP
 static void
 rb_shell_player_handle_eos (RBPlayer *player,
 			    RhythmDBEntry *entry,
+			    gboolean early,
 			    RBShellPlayer *shell_player)
 {
 	const char *location;
@@ -901,7 +902,8 @@ rb_shell_player_handle_eos (RBPlayer *player,
 		rb_debug ("got unexpected eos for %s", location);
 	} else {
 		rb_debug ("handling eos for %s", location);
-		rb_shell_player_handle_eos_unlocked (shell_player, entry, TRUE);
+		/* don't allow playback to be stopped on early EOS notifications */
+		rb_shell_player_handle_eos_unlocked (shell_player, entry, (early == FALSE));
 	}
 
 	GDK_THREADS_LEAVE ();
@@ -1624,7 +1626,7 @@ static gboolean
 do_next_idle (RBShellPlayer *player)
 {
 	/* use the EOS callback, so that EOF_SOURCE_ conditions are handled properly */
-	rb_shell_player_handle_eos (NULL, NULL, player);
+	rb_shell_player_handle_eos (NULL, NULL, FALSE, player);
 	player->priv->do_next_idle_id = 0;
 
 	return FALSE;
@@ -3635,7 +3637,7 @@ missing_plugins_cb (RBPlayer *player,
 		rb_player_close (retry_data->player->priv->mmplayer, NULL, NULL);
 	} else {
 		rb_debug ("not processing missing plugins; simulating EOS");
-		rb_shell_player_handle_eos (NULL, NULL, retry_data->player);
+		rb_shell_player_handle_eos (NULL, NULL, FALSE, retry_data->player);
 	}
 
 	g_closure_sink (retry);

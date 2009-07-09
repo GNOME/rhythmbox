@@ -149,7 +149,7 @@ about_to_finish_cb (GstElement *playbin, RBPlayerGst *player)
 	/* emit EOS now and hope we get something to play */
 	player->priv->current_track_finishing = TRUE;
 
-	_rb_player_emit_eos (RB_PLAYER (player), player->priv->stream_data);
+	_rb_player_emit_eos (RB_PLAYER (player), player->priv->stream_data, TRUE);
 }
 
 static gboolean
@@ -278,8 +278,7 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 	}
 
 	case GST_MESSAGE_EOS:
-		rb_debug ("got EOS.. why haven't you told me what to do yet?");
-		_rb_player_emit_eos (RB_PLAYER (mp), mp->priv->stream_data);
+		_rb_player_emit_eos (RB_PLAYER (mp), mp->priv->stream_data, FALSE);
 		break;
 
 	case GST_MESSAGE_TAG: {
@@ -648,15 +647,6 @@ impl_close (RBPlayer *player, const char *uri, GError **error)
 
 	if ((uri != NULL) && (mp->priv->uri != NULL) && strcmp (mp->priv->uri, uri) == 0) {
 		rb_debug ("URI doesn't match current playing URI; ignoring");
-		return TRUE;
-	}
-
-	if (mp->priv->current_track_finishing) {
-		/* this is a bit of a hack.
-		 * about-to-finish should result in either a track change or nothing.
-		 */
-		rb_debug ("not closing in about-to-finish callback");
-		mp->priv->current_track_finishing = FALSE;
 		return TRUE;
 	}
 

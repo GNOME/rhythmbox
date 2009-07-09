@@ -114,7 +114,8 @@ struct _RBPlayerIface
 	void		(*playing_stream)	(RBPlayer *player,
 						 gpointer stream_data);
 	void		(*eos)			(RBPlayer *player,
-						 gpointer stream_data);
+						 gpointer stream_data,
+						 gboolean early);
 	void		(*info)			(RBPlayer *player,
 						 gpointer stream_data,
 						 RBMetaDataField field,
@@ -174,7 +175,7 @@ gint64		rb_player_get_time   (RBPlayer *player);
 gboolean	rb_player_multiple_open (RBPlayer *player);
 
 /* only to be used by subclasses */
-void	_rb_player_emit_eos (RBPlayer *player, gpointer stream_data);
+void	_rb_player_emit_eos (RBPlayer *player, gpointer stream_data, gboolean early);
 void	_rb_player_emit_info (RBPlayer *player, gpointer stream_data, RBMetaDataField field, GValue *value);
 void	_rb_player_emit_buffering (RBPlayer *player, gpointer stream_data, guint progress);
 void	_rb_player_emit_error (RBPlayer *player, gpointer stream_data, GError *error);

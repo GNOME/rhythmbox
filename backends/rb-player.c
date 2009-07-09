@@ -92,8 +92,11 @@ rb_player_interface_init (RBPlayerIface *iface)
 	 * RBPlayer::eos:
 	 * @player: the #RBPlayer
 	 * @stream_data: the data associated with the stream that finished
+	 * @early: if %TRUE, the EOS notification should only be used for track changes.
 	 *
-	 * The 'eos' signal is emitted when a stream finishes.
+	 * The 'eos' signal is emitted when a stream finishes, or in some cases, when it
+	 * is about to finish (with @early set to %TRUE) to allow for a new track to be
+	 * played immediately afterwards.
 	 **/
 	signals[EOS] =
 		g_signal_new ("eos",
@@ -101,9 +104,9 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
 			      G_STRUCT_OFFSET (RBPlayerIface, eos),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
+			      rb_marshal_VOID__POINTER_BOOLEAN,
 			      G_TYPE_NONE,
-			      1, G_TYPE_POINTER);
+			      2, G_TYPE_POINTER, G_TYPE_BOOLEAN);
 
 	/**
 	 * RBPlayer::info:
@@ -565,14 +568,15 @@ rb_player_new (gboolean want_crossfade, GError **error)
  * _rb_player_emit_eos:
  * @player: a #RBPlayer implementation
  * @stream_data: data associated with the stream
+ * @early: whether this is an early EOS notification
  *
  * Emits the 'eos' signal for a stream.  To be used by
  * implementations only.
  */
 void
-_rb_player_emit_eos (RBPlayer *player, gpointer stream_data)
+_rb_player_emit_eos (RBPlayer *player, gpointer stream_data, gboolean early)
 {
-	g_signal_emit (player, signals[EOS], 0, stream_data);
+	g_signal_emit (player, signals[EOS], 0, stream_data, early);
 }
 
 /**
