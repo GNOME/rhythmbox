@@ -1036,7 +1036,6 @@ rhythmdb_shutdown (RhythmDB *db)
 		rhythmdb_action_free (db, action);
 	}
 
-	g_object_unref (db->priv->exiting);
 }
 
 static void
@@ -1078,6 +1077,11 @@ rhythmdb_dispose (GObject *object)
 	if (db->priv->metadata != NULL) {
 		g_object_unref (db->priv->metadata);
 		db->priv->metadata = NULL;
+	}
+
+	if (db->priv->exiting != NULL) {
+		g_object_unref (db->priv->exiting);
+		db->priv->exiting = NULL;
 	}
 
 	G_OBJECT_CLASS (rhythmdb_parent_class)->dispose (object);
