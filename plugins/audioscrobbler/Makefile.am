@@ -18,7 +18,8 @@ libaudioscrobbler_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libaudioscrobbler_la_LIBTOOLFLAGS = --tag=disable-static
 libaudioscrobbler_la_LIBADD = 				\
 	$(top_builddir)/corelib/librhythmbox-core.la	\
-	$(TOTEM_PLPARSER_LIBS)
+	$(TOTEM_PLPARSER_LIBS)				\
+	$(RHYTHMBOX_LIBS)
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
