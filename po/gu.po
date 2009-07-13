@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.master.gu\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-06-27 05:02+0000\n"
-"PO-Revision-Date: 2009-07-06 02:15-0400\n"
+"POT-Creation-Date: 2009-07-06 06:21+0000\n"
+"PO-Revision-Date: 2009-07-13 05:48-0400\n"
 "Last-Translator: Sweta Kothari <swkothar@redhat.com>\n"
 "Language-Team: Gujarati\n"
 "MIME-Version: 1.0\n"
@@ -494,7 +494,7 @@ msgstr "તમારા સંગીત સંગ્રહને વ્યવસ
 
 #: ../data/rhythmbox.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
-msgstr "Rhythmbox Music Player"
+msgstr "Rhythmbox સંગીત પ્લેયર"
 
 #: ../lib/eggdesktopfile.c:165
 #, c-format
@@ -761,7 +761,6 @@ msgid "Support for playing of audio CDs as music source"
 msgstr "સંગીત સ્ત્રોત તરીકે ઓડિયો CDs ને વગાડવા માટે આધાર"
 
 #: ../plugins/audiocd/album-info.ui.h:1
-#| msgid "A_lbum"
 msgid "A_lbum:"
 msgstr "આલ્બમ (_l):"
 
@@ -770,7 +769,6 @@ msgid "Artist s_ort order:"
 msgstr "કલાકાર ક્રમમાં (_o):"
 
 #: ../plugins/audiocd/album-info.ui.h:4
-#| msgid "_Disc number:"
 msgid "_Disc:"
 msgstr "ડિસ્ક (_D):"
 
@@ -801,7 +799,7 @@ msgstr "ટ્રેક %u"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:483
 #: ../plugins/audiocd/rb-audiocd-source.c:491
-#: ../plugins/audiocd/rb-audiocd-source.c:853
+#: ../plugins/audiocd/rb-audiocd-source.c:859
 msgid "Couldn't load Audio CD"
 msgstr "ઓડિયો CD ને લોડ કરી શકાયુ નહિં"
 
@@ -828,7 +826,7 @@ msgstr "શીર્ષક"
 msgid "Artist"
 msgstr "કલાકાર"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:854
+#: ../plugins/audiocd/rb-audiocd-source.c:860
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox એ CD ઉપકરણમાં પ્રવેશ મેળવી શક્યુ નહિં."
 
@@ -925,7 +923,7 @@ msgstr "છેલ્લો રજૂઆત કરવાનો સમય:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:980
 #: ../plugins/iradio/rb-station-properties-dialog.c:502
-#: ../rhythmdb/rhythmdb.c:3701 ../widgets/rb-entry-view.c:992
+#: ../rhythmdb/rhythmdb.c:3702 ../widgets/rb-entry-view.c:992
 #: ../widgets/rb-entry-view.c:1579 ../widgets/rb-entry-view.c:1592
 #: ../widgets/rb-song-info.c:1345
 msgid "Never"
@@ -3419,7 +3417,6 @@ msgid "Unmute playback"
 msgstr "પ્લેબેકને મૂંગુ ન કરો"
 
 #: ../remote/dbus/rb-client.c:111
-#| msgid "Scroll the view to the currently playing song"
 msgid "Set the rating of the current song"
 msgstr "હાલનાં ગીતનાં રેટિંગને સુયોજિત કરો"
 
@@ -3496,25 +3493,25 @@ msgstr "ખાલી ફાઇલ"
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "વધારાનાં GStreamer પલ્ગઇનો આ ફાઇલને વગાડવા માટેની જરૂરિયાત છે: %s"
 
-#: ../rhythmdb/rhythmdb.c:3186
+#: ../rhythmdb/rhythmdb.c:3187
 msgid "Could not load the music database:"
 msgstr "સંગીત ડેટાબેઝને લોડ કરી શકાયુ નહિં:"
 
-#: ../rhythmdb/rhythmdb.c:4554
+#: ../rhythmdb/rhythmdb.c:4555
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld મિનિટ"
 msgstr[1] "%ld મિનિટો"
 
-#: ../rhythmdb/rhythmdb.c:4555
+#: ../rhythmdb/rhythmdb.c:4556
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld કલાક"
 msgstr[1] "%ld કલાકો"
 
-#: ../rhythmdb/rhythmdb.c:4556
+#: ../rhythmdb/rhythmdb.c:4557
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3522,7 +3519,7 @@ msgstr[0] "%ld દિવસ"
 msgstr[1] "%ld દિવસો"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4562
+#: ../rhythmdb/rhythmdb.c:4563
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s અને %s"
@@ -3530,8 +3527,8 @@ msgstr "%s, %s અને %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4568 ../rhythmdb/rhythmdb.c:4576
-#: ../rhythmdb/rhythmdb.c:4587
+#: ../rhythmdb/rhythmdb.c:4569 ../rhythmdb/rhythmdb.c:4577
+#: ../rhythmdb/rhythmdb.c:4588
 #, c-format
 msgid "%s and %s"
 msgstr "%s અને %s"
