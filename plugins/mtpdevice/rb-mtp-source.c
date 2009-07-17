@@ -673,6 +673,9 @@ load_mtp_db_idle_cb (RBMtpSource* source)
 		LIBMTP_album_t *album;
 
 		for (album = albums; album != NULL; album = album->next) {
+			if (album->name == NULL)
+				continue;
+
 			rb_debug ("album: %s, %d tracks", album->name, album->no_tracks);
 			g_hash_table_insert (priv->album_map, album->name, album);
 			if (album->no_tracks != 0) {
