@@ -50,6 +50,7 @@ ui_str = """
 LYRIC_TITLE_STRIP=["\(live[^\)]*\)", "\(acoustic[^\)]*\)", "\([^\)]*mix\)", "\([^\)]*version\)", "\([^\)]*edit\)", "\(feat[^\)]*\)"]
 LYRIC_TITLE_REPLACE=[("/", "-"), (" & ", " and ")]
 LYRIC_ARTIST_REPLACE=[("/", "-"), (" & ", " and ")]
+STREAM_SONG_TITLE='rb:stream-song-title'
 
 gconf_keys = {	'engines' : '/apps/rhythmbox/plugins/lyrics/engines',
 		'folder': '/apps/rhythmbox/plugins/lyrics/folder'
@@ -73,7 +74,8 @@ def create_lyrics_view():
 	
 	return (vbox, tview.get_buffer(), tview)
 
-def parse_song_data(artist, title):
+def parse_song_data(db, entry):
+	(artist, title) = get_artist_and_title(db, entry)
 
 	# don't search for 'unknown' when we don't have the artist or title information
 	if artist == _("Unknown"):
@@ -100,6 +102,30 @@ def parse_song_data(artist, title):
 	artist = artist.strip()	
 	
 	return (artist, title)
+
+def get_artist_and_title(db, entry):
+	stream_song_title = db.entry_request_extra_metadata(entry, STREAM_SONG_TITLE)
+	if stream_song_title is not None:
+		(artist, title) = extract_artist_and_title(stream_song_title)
+	else:
+		artist = db.entry_get(entry, rhythmdb.PROP_ARTIST)
+		title = db.entry_get(entry, rhythmdb.PROP_TITLE)
+	return (artist, title)
+
+def extract_artist_and_title(stream_song_title):
+	details = stream_song_title.split('-')
+	if len(details) > 1:
+		artist = details[0].strip()
+		title = details[1].strip()
+	else:
+		details = stream_song_title.split('(')
+		if len(details) > 1:
+			title = details[0].strip()
+			artist = details[1].strip(') ')
+		else:
+			title = stream_song_title
+			artist = ""
+	return (artist, title)
 	
 def build_cache_path(artist, title):
 	folder = gconf.client_get_default().get_string(gconf_keys['folder'])
@@ -121,10 +147,7 @@ class LyricGrabber(object):
 		self.db = db
 		self.entry = entry
 		
-		self.artist = self.db.entry_get(self.entry, rhythmdb.PROP_ARTIST)
-		self.title = self.db.entry_get(self.entry, rhythmdb.PROP_TITLE)
-
-		(self.artist, self.title) = parse_song_data(self.artist, self.title)
+		(self.artist, self.title) = parse_song_data(self.db, self.entry)
 
 		self.cache_path = build_cache_path(self.artist, self.title)
 
@@ -234,10 +257,7 @@ class LyricPane(object):
 		#self.get_lyrics()
 
 	def build_path(self):
-
-		artist = self.db.entry_get(self.entry, rhythmdb.PROP_ARTIST)
-		title = self.db.entry_get(self.entry, rhythmdb.PROP_TITLE)
-		(artist, title) = parse_song_data(artist, title)
+		(artist, title) = parse_song_data(self.db, self.entry)
 		cache_path = build_cache_path(artist, title)
 		self.cache_path = cache_path
 
@@ -269,7 +289,7 @@ class LyricPane(object):
 		self.buffer.set_text(_("Searching for lyrics..."));
 		lyrics_grabber = LyricGrabber(self.db, self.entry)
 		lyrics_grabber.search_lyrics(self.__got_lyrics)
-			
+
 
 class LyricWindow (gtk.Window):
 
@@ -316,8 +336,8 @@ class LyricsDisplayPlugin(rb.Plugin):
 		uim.ensure_update ()
 
 		sp = shell.get_player ()
+		self.ppc_id = sp.connect('playing-song-property-changed', self.playing_property_changed)
 		self.pec_id = sp.connect('playing-song-changed', self.playing_entry_changed)
-		self.current_entry = None
 		self.playing_entry_changed (sp, sp.get_playing_entry ())
 
 		self.csi_id = shell.connect('create_song_info', self.create_song_info)
@@ -332,6 +352,7 @@ class LyricsDisplayPlugin(rb.Plugin):
 		self.action = None
 
 		sp = shell.get_player ()
+		sp.disconnect (self.ppc_id)
 		sp.disconnect (self.pec_id)
 		shell.disconnect (self.csi_id)
 
@@ -345,6 +366,11 @@ class LyricsDisplayPlugin(rb.Plugin):
 			dialog = LyricsConfigureDialog (builder_file, gconf_keys).get_dialog()
 		dialog.present()
 		return dialog
+
+	def playing_property_changed(self, player, uri, prop, old_val, new_val):
+		if (prop == STREAM_SONG_TITLE):
+			self.update_song_lyrics(player.get_playing_entry())
+
 	
 	def playing_entry_changed (self, sp, entry):
 		if entry is not None:
@@ -359,20 +385,12 @@ class LyricsDisplayPlugin(rb.Plugin):
 			self.window.buffer.set_text (text)
 
 	def update_song_lyrics(self, entry):
-		if entry == self.current_entry:
-			return
-		
-		db = self.shell.get_property ("db")
-		
-		if self.window is None:
-			return
-
-		title = db.entry_get(entry, rhythmdb.PROP_TITLE)
-		artist = db.entry_get(entry, rhythmdb.PROP_ARTIST)
-
-		self.window.s_title(title, artist)
-		lyrics_grabber = LyricGrabber(db, entry)
-		lyrics_grabber.search_lyrics(self.__got_lyrics)
+		if self.window is not None:
+			db = self.shell.get_property ("db")
+			(artist, title) = get_artist_and_title(db, entry)
+			self.window.s_title(title, artist)
+			lyrics_grabber = LyricGrabber(db, entry)
+			lyrics_grabber.search_lyrics(self.__got_lyrics)
 
 	def show_song_lyrics (self, action, shell):
 
@@ -384,17 +402,10 @@ class LyricsDisplayPlugin(rb.Plugin):
 		sp = shell.get_player ()
 		entry = sp.get_playing_entry ()
 
-		if entry is None:
-			return
-		
-		title = db.entry_get(entry, rhythmdb.PROP_TITLE)
-		artist = db.entry_get(entry, rhythmdb.PROP_ARTIST)
-
-		self.window = LyricWindow()
-		self.window.s_title(title, artist)
-		self.window.connect("destroy", self.window_deleted)
-		lyrics_grabber = LyricGrabber(db, entry)
-		lyrics_grabber.search_lyrics(self.__got_lyrics)
+		if entry is not None:
+			self.window = LyricWindow()
+			self.window.connect("destroy", self.window_deleted)
+			self.update_song_lyrics( entry )
 
 	def window_deleted (self, window):
 		print "lyrics window destroyed"
