@@ -67,10 +67,6 @@ GType		rb_header_get_type		(void);
 RBHeader *	rb_header_new			(RBShellPlayer *shell_player,
 						 RhythmDB *db);
 
-void		rb_header_set_playing_entry	(RBHeader *header,
-						 RhythmDBEntry *entry,
-						 gboolean seekable);
-
 void		rb_header_set_show_position_slider (RBHeader *header,
                                                     gboolean show);
 

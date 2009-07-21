@@ -116,7 +116,6 @@ enum
 	PROP_0,
 	PROP_DB,
 	PROP_SHELL_PLAYER,
-	PROP_ENTRY,
 	PROP_SEEKABLE,
 	PROP_SLIDER_DRAGGING
 };
@@ -154,18 +153,6 @@ rb_header_class_init (RBHeaderClass *klass)
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE));
 
-	/**
-	 * RBHeader:entry:
-	 *
-	 * The #RhythmDBEntry to display
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_ENTRY,
-					 g_param_spec_boxed ("entry",
-							     "RhythmDBEntry",
-							     "RhythmDBEntry pointer",
-							     RHYTHMDB_TYPE_ENTRY,
-							     G_PARAM_READWRITE));
 	/**
 	 * RBHeader:shell-player:
 	 *
@@ -283,6 +270,11 @@ rb_header_init (RBHeader *header)
 	gtk_scale_set_draw_value (GTK_SCALE (header->priv->scale), FALSE);
 	gtk_widget_set_size_request (header->priv->scale, 150, -1);
 	gtk_box_pack_start (GTK_BOX (header->priv->scaleline), header->priv->scale, TRUE, TRUE, 0);
+
+	/* currently, nothing sets this.  it should be set on track changes. */
+	header->priv->seekable = TRUE;
+
+	rb_header_sync (header);
 }
 
 static void
@@ -300,7 +292,7 @@ rb_header_finalize (GObject *object)
 }
 
 static void
-rb_header_set_playing_entry_internal (RBHeader *header, RhythmDBEntry *entry)
+rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBHeader *header)
 {
 	if (header->priv->entry == entry)
 		return;
@@ -315,6 +307,8 @@ rb_header_set_playing_entry_internal (RBHeader *header, RhythmDBEntry *entry)
 
 	header->priv->adjustment->upper = header->priv->duration;
 	gtk_adjustment_changed (header->priv->adjustment);
+
+	rb_header_sync (header);
 }
 
 static void
@@ -329,15 +323,16 @@ rb_header_set_property (GObject *object,
 	case PROP_DB:
 		header->priv->db = g_value_get_object (value);
 		break;
-	case PROP_ENTRY:
-		rb_header_set_playing_entry_internal (header, g_value_get_boxed (value));
-		break;
 	case PROP_SHELL_PLAYER:
 		header->priv->shell_player = g_value_get_object (value);
-		g_signal_connect (G_OBJECT (header->priv->shell_player),
-				  "elapsed-nano-changed",
-				  (GCallback) rb_header_elapsed_changed_cb,
-				  header);
+		g_signal_connect_object (header->priv->shell_player,
+					 "elapsed-nano-changed",
+					 G_CALLBACK (rb_header_elapsed_changed_cb),
+					 header, 0);
+		g_signal_connect_object (header->priv->shell_player,
+					 "playing-song-changed",
+					 G_CALLBACK (rb_header_playing_song_changed_cb),
+					 header, 0);
 		break;
 	case PROP_SEEKABLE:
 		header->priv->seekable = g_value_get_boolean (value);
@@ -359,9 +354,6 @@ rb_header_get_property (GObject *object,
 	switch (prop_id) {
 	case PROP_DB:
 		g_value_set_object (value, header->priv->db);
-		break;
-	case PROP_ENTRY:
-		g_value_set_boxed (value, header->priv->entry);
 		break;
 	case PROP_SHELL_PLAYER:
 		g_value_set_object (value, header->priv->shell_player);
@@ -398,25 +390,6 @@ rb_header_new (RBShellPlayer *shell_player, RhythmDB *db)
 	g_return_val_if_fail (header->priv != NULL, NULL);
 
 	return header;
-}
-
-/**
- * rb_header_set_playing_entry:
- * @header: the #RBHeader
- * @entry: the new playing #RhythmDBEntry
- * @seekable: whether the new playing entry is seekable
- *
- * Sets a new playing entry to be displayed in the header.
- */
-void
-rb_header_set_playing_entry (RBHeader *header,
-			     RhythmDBEntry *entry,
-			     gboolean seekable)
-{
-	g_object_set (header,
-		      "entry", entry,
-		      "seekable", seekable,
-		      NULL);
 }
 
 static void

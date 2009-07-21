@@ -2928,6 +2928,8 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 			/* override artist from entry */
 			artist = streaming_artist;
 		}
+
+		rhythmdb_entry_unref (entry);
 	}
 
 	if ((artist && artist[0] != '\0') || entry_title || stream_name) {
@@ -2957,16 +2959,6 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 
 	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[ELAPSED_CHANGED], 0,
 		       player->priv->elapsed);
-
-	/* Sync the header */
-	rb_header_set_playing_entry (player->priv->header_widget,
-				     entry,
-				     TRUE /*rb_player_seekable (player->priv->mmplayer)*/);
-	rb_header_sync (player->priv->header_widget);
-
-	if (entry != NULL) {
-		rhythmdb_entry_unref (entry);
-	}
 
 	g_free (streaming_artist);
 	g_free (streaming_title);
