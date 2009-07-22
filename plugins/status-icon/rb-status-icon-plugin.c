@@ -65,6 +65,7 @@
 #define CONF_PLUGIN_SETTINGS	"/apps/rhythmbox/plugins/status-icon"
 #define CONF_NOTIFICATION_MODE	CONF_PLUGIN_SETTINGS "/notification-mode"
 #define CONF_STATUS_ICON_MODE	CONF_PLUGIN_SETTINGS "/status-icon-mode"
+#define CONF_MOUSE_WHEEL_MODE	CONF_PLUGIN_SETTINGS "/mouse-wheel-mode"
 #define CONF_WINDOW_VISIBILITY	CONF_PLUGIN_SETTINGS "/window-visible"
 
 #define CONF_OLD_ICON_MODE	"/apps/rhythmbox/plugins/dontreallyclose/active"
@@ -100,6 +101,10 @@ struct _RBStatusIconPluginPrivate
 		NOTIFY_HIDDEN,
 		NOTIFY_ALWAYS
 	} notify_mode;
+	enum {
+		WHEEL_VOLUME = 0,
+		WHEEL_SONG
+	} wheel_mode;
 
 	/* current playing data */
 	char *current_title;
@@ -121,6 +126,7 @@ struct _RBStatusIconPluginPrivate
 	GtkWidget *config_dialog;
 	GtkWidget *notify_combo;
 	GtkWidget *icon_combo;
+	GtkWidget *wheel_combo;
 
 	RBShellPlayer *shell_player;
 	RBShell *shell;
@@ -220,18 +226,33 @@ rb_status_icon_plugin_scroll_event (RBStatusIconPlugin *plugin,
 {
 	gdouble adjust;
 
-	switch (event->direction) {
-	case GDK_SCROLL_UP:
-		adjust = 0.02;
+	switch (plugin->priv->wheel_mode) {
+	case WHEEL_VOLUME:
+		switch (event->direction) {
+		case GDK_SCROLL_UP:
+			adjust = 0.02;
+			break;
+		case GDK_SCROLL_DOWN:
+			adjust = -0.02;
+			break;
+		default:
+			return;
+		}
+		rb_shell_player_set_volume_relative (plugin->priv->shell_player, adjust, NULL);
 		break;
-	case GDK_SCROLL_DOWN:
-		adjust = -0.02;
+	case WHEEL_SONG:
+		switch (event->direction) {
+		case GDK_SCROLL_UP:
+			rb_shell_player_do_next (plugin->priv->shell_player, NULL);
+			break;
+		case GDK_SCROLL_DOWN:
+			rb_shell_player_do_previous (plugin->priv->shell_player, NULL);
+			break;
+		default:
+			return;
+		}
 		break;
-	default:
-		return;
 	}
-
-	rb_shell_player_set_volume_relative (plugin->priv->shell_player, adjust, NULL);
 }
 
 void
@@ -1093,6 +1114,15 @@ status_icon_config_changed_cb (GtkComboBox *widget, RBStatusIconPlugin *plugin)
 }
 
 static void
+mouse_wheel_config_changed_cb (GtkComboBox *widget, RBStatusIconPlugin *plugin)
+{
+	if (plugin->priv->syncing_config_widgets)
+		return;
+
+	eel_gconf_set_integer (CONF_MOUSE_WHEEL_MODE, gtk_combo_box_get_active (widget));
+}
+
+static void
 config_response_cb (GtkWidget *dialog, gint response, RBStatusIconPlugin *plugin)
 {
 	gtk_widget_hide (dialog);
@@ -1157,6 +1187,17 @@ config_notify_cb (GConfClient *client, guint connection_id, GConfEntry *entry, R
 			gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->notify_combo), plugin->priv->notify_mode);
 			plugin->priv->syncing_config_widgets = FALSE;
 		}
+	} else if (g_str_equal (gconf_entry_get_key (entry), CONF_MOUSE_WHEEL_MODE)) {
+		plugin->priv->wheel_mode = gconf_value_get_int (gconf_entry_get_value (entry));
+		rb_debug ("wheel mode changed to %d", plugin->priv->wheel_mode);
+
+		sync_actions (plugin);
+
+		if (plugin->priv->wheel_combo != NULL) {
+			plugin->priv->syncing_config_widgets = TRUE;
+			gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->wheel_combo), plugin->priv->wheel_mode);
+			plugin->priv->syncing_config_widgets = FALSE;
+		}
 	}
 }
 
@@ -1195,6 +1236,7 @@ impl_get_config_widget (RBPlugin *bplugin)
 
 	plugin->priv->icon_combo = GTK_WIDGET (gtk_builder_get_object (builder, "statusiconmode"));
 	plugin->priv->notify_combo = GTK_WIDGET (gtk_builder_get_object (builder, "notificationmode"));
+	plugin->priv->wheel_combo = GTK_WIDGET (gtk_builder_get_object (builder, "mousewheelmode"));
 	g_signal_connect_object (plugin->priv->notify_combo,
 				 "changed",
 				 G_CALLBACK (notification_config_changed_cb),
@@ -1203,8 +1245,13 @@ impl_get_config_widget (RBPlugin *bplugin)
 				 "changed",
 				 G_CALLBACK (status_icon_config_changed_cb),
 				 plugin, 0);
+	g_signal_connect_object (plugin->priv->wheel_combo,
+				 "changed",
+				 G_CALLBACK (mouse_wheel_config_changed_cb),
+				 plugin, 0);
 	gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->notify_combo), plugin->priv->notify_mode);
 	gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->icon_combo), plugin->priv->icon_mode);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->wheel_combo), plugin->priv->wheel_mode);
 
 	g_object_unref (builder);
 	return plugin->priv->config_dialog;
@@ -1284,6 +1331,7 @@ impl_activate (RBPlugin *bplugin,
 
 	plugin->priv->icon_mode = eel_gconf_get_integer (CONF_STATUS_ICON_MODE);
 	plugin->priv->notify_mode = eel_gconf_get_integer (CONF_NOTIFICATION_MODE);
+	plugin->priv->wheel_mode = eel_gconf_get_integer (CONF_MOUSE_WHEEL_MODE);
 
 	/* create status icon */
 	create_status_icon (plugin);

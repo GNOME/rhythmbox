@@ -1521,6 +1521,20 @@
 	</locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/plugins/status-icon/mouse-wheel-mode</key>
+        <applyto>/apps/rhythmbox/plugins/status-icon/mouse-wheel-mode</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+        <short>Mouse wheel action mode.</short>
+	<long>
+          If 0, the mouse wheel action will change the rhythmbox volume.
+          If 1, the mouse wheel action will change to the next/previous song.
+        </long>
+	</locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/plugins/status-icon/window-visible</key>
         <applyto>/apps/rhythmbox/plugins/status-icon/window-visible</applyto>
         <owner>rhythmbox</owner>
