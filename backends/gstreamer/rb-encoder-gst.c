@@ -69,6 +69,8 @@ struct _RBEncoderGstPrivate {
 	gint64 total_length;
 	guint progress_id;
 	char *dest_uri;
+
+	GOutputStream *outstream;
 };
 
 G_DEFINE_TYPE_WITH_CODE(RBEncoderGst, rb_encoder_gst, G_TYPE_OBJECT,
@@ -155,6 +157,12 @@ rb_encoder_gst_finalize (GObject *object)
 		gst_element_set_state (encoder->priv->pipeline, GST_STATE_NULL);
 		g_object_unref (encoder->priv->pipeline);
 		encoder->priv->pipeline = NULL;
+	}
+
+	if (encoder->priv->outstream) {
+		g_output_stream_close (encoder->priv->outstream, NULL, NULL);
+		g_object_unref (encoder->priv->outstream);
+		encoder->priv->outstream = NULL;
 	}
 
 	g_free (encoder->priv->dest_uri);
@@ -255,6 +263,16 @@ bus_watch_cb (GstBus *bus, GstMessage *message, gpointer data)
 		rb_debug ("received EOS");
 
 		gst_element_set_state (encoder->priv->pipeline, GST_STATE_NULL);
+		if (encoder->priv->outstream != NULL) {
+			GError *error = NULL;
+			g_output_stream_close (encoder->priv->outstream, NULL, &error);
+			if (error != NULL) {
+				rb_debug ("error closing output stream: %s", error->message);
+				g_error_free (error);
+			}
+			g_object_unref (encoder->priv->outstream);
+			encoder->priv->outstream = NULL;
+		}
 
 		rb_encoder_gst_emit_completed (encoder);
 
@@ -632,6 +650,7 @@ attach_output_pipeline (RBEncoderGst *encoder,
 
 		if (stream != NULL) {
 			g_object_set (sink, "stream", stream, NULL);
+			encoder->priv->outstream = G_OUTPUT_STREAM (stream);
 		}
 	} else {
 		rb_debug ("unable to create giostreamsink, falling back to default sink for %s", dest);
@@ -952,6 +971,17 @@ rb_encoder_gst_cancel (RBEncoder *encoder)
 	gst_element_set_state (priv->pipeline, GST_STATE_NULL);
 	g_object_unref (priv->pipeline);
 	priv->pipeline = NULL;
+
+	if (priv->outstream != NULL) {
+		GError *error = NULL;
+		g_output_stream_close (priv->outstream, NULL, &error);
+		if (error != NULL) {
+			rb_debug ("error closing output stream: %s", error->message);
+			g_error_free (error);
+		}
+		g_object_unref (priv->outstream);
+		priv->outstream = NULL;
+	}
 
 	rb_encoder_gst_emit_completed (RB_ENCODER_GST (encoder));
 }
