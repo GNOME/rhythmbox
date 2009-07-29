@@ -349,9 +349,13 @@ start_metadata_service (GError **error)
 		return FALSE;
 	}
 
-	saveable_type_list = g_strjoinv (", ", saveable_types);
-	rb_debug ("saveable types from metadata helper: %s", saveable_type_list);
-	g_free (saveable_type_list);
+	if (saveable_types != NULL) {
+		saveable_type_list = g_strjoinv (", ", saveable_types);
+		rb_debug ("saveable types from metadata helper: %s", saveable_type_list);
+		g_free (saveable_type_list);
+	} else {
+		rb_debug ("unable to save metadata for any file types");
+	}
 
 	if (message)
 		dbus_message_unref (message);
@@ -704,10 +708,12 @@ rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 		}
 	}
 
-	for (i = 0; saveable_types[i] != NULL; i++) {
-		if (g_str_equal (mimetype, saveable_types[i])) {
-			result = TRUE;
-			break;
+	if (saveable_types != NULL) {
+		for (i = 0; saveable_types[i] != NULL; i++) {
+			if (g_str_equal (mimetype, saveable_types[i])) {
+				result = TRUE;
+				break;
+			}
 		}
 	}
 
