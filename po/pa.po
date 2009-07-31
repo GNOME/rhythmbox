@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug."
 "cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-06-27 05:02+0000\n"
-"PO-Revision-Date: 2009-07-02 06:44+0530\n"
+"POT-Creation-Date: 2009-07-22 13:41+0000\n"
+"PO-Revision-Date: 2009-07-31 07:39+0530\n"
 "Last-Translator: A S Alam <aalam@users.sf.net>\n"
 "Language-Team: Punjabi/Panjabi <punjabi-users@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -29,19 +29,19 @@ msgstr "ਕੀ ਤੁਸੀਂ \"%s\" ਫਾਇਲ ਉੱਤੇ ਲਿਖਣਾ 
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "ਜੀਸਟਰੀਮਰ ਸਿੰਕ ਐਲੀਮੈਂਟ %s ਲਿਖਣ ਲਈ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ"
 
-#: ../backends/gstreamer/rb-player-gst.c:369
+#: ../backends/gstreamer/rb-player-gst.c:368
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr "ਐਲੀਮੈਂਟ playbin2 ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ; ਆਪਣੀ GStreamer ਇੰਸਟਾਲੇਸ਼ਨ ਚੈੱਕ ਕਰੋ ਜੀ"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:583
+#: ../backends/gstreamer/rb-player-gst.c:582
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2754
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "ਆਉਟਪੁੱਟ ਜੰਤਰ ਖੋਲ੍ਹਣ ਲਈ ਫੇਲ੍ਹ: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:628
+#: ../backends/gstreamer/rb-player-gst.c:627
 #, c-format
 msgid "Unable to start playback pipeline"
 msgstr "ਪਾਈਪਲਾਈਨ ਪਲੇਅਬੈਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
@@ -618,20 +618,20 @@ msgstr "%b %d %Y"
 #: ../plugins/iradio/rb-iradio-source.c:527
 #: ../plugins/iradio/rb-iradio-source.c:1092
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
-#: ../plugins/lyrics/lyrics/__init__.py:79
 #: ../plugins/lyrics/lyrics/__init__.py:81
+#: ../plugins/lyrics/lyrics/__init__.py:83
 #: ../plugins/mtpdevice/rb-mtp-source.c:552
-#: ../plugins/mtpdevice/rb-mtp-source.c:924
-#: ../plugins/mtpdevice/rb-mtp-source.c:1015
-#: ../plugins/status-icon/rb-status-icon-plugin.c:706
+#: ../plugins/mtpdevice/rb-mtp-source.c:927
+#: ../plugins/mtpdevice/rb-mtp-source.c:1018
+#: ../plugins/status-icon/rb-status-icon-plugin.c:727
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
 #: ../podcast/rb-podcast-manager.c:1873
 #: ../podcast/rb-podcast-properties-dialog.c:483
 #: ../podcast/rb-podcast-properties-dialog.c:535
 #: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1287
 #: ../rhythmdb/rhythmdb-tree.c:1291 ../rhythmdb/rhythmdb-tree.c:1295
-#: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb.c:1813
-#: ../shell/rb-shell-player.c:1670 ../sources/rb-podcast-source.c:1657
+#: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb.c:1817
+#: ../shell/rb-shell-player.c:1672 ../sources/rb-podcast-source.c:1657
 #: ../widgets/rb-entry-view.c:1044 ../widgets/rb-entry-view.c:1066
 #: ../widgets/rb-entry-view.c:1520 ../widgets/rb-entry-view.c:1532
 #: ../widgets/rb-entry-view.c:1544 ../widgets/rb-song-info.c:882
@@ -763,7 +763,6 @@ msgid "Support for playing of audio CDs as music source"
 msgstr "ਆਡੀਓ CD ਨੂੰ ਸੰਗੀਤ ਸਰੋਤ ਵਾਂਗ ਚਲਾਉਣ ਲਈ ਸਹਿਯੋਗ"
 
 #: ../plugins/audiocd/album-info.ui.h:1
-#| msgid "A_lbum"
 msgid "A_lbum:"
 msgstr "ਐਲਬਮ(_l):"
 
@@ -772,7 +771,6 @@ msgid "Artist s_ort order:"
 msgstr "ਕਲਾਕਾਰ ਲੜੀਬੱਧ ਕ੍ਰਮ(_o):"
 
 #: ../plugins/audiocd/album-info.ui.h:4
-#| msgid "_Disc number:"
 msgid "_Disc:"
 msgstr "ਡਿਸਕ(_D):"
 
@@ -802,7 +800,7 @@ msgstr "ਟਰੈਕ %u"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:483
 #: ../plugins/audiocd/rb-audiocd-source.c:491
-#: ../plugins/audiocd/rb-audiocd-source.c:853
+#: ../plugins/audiocd/rb-audiocd-source.c:859
 msgid "Couldn't load Audio CD"
 msgstr "ਆਡੀਓ CD ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ"
 
@@ -829,7 +827,7 @@ msgstr "ਟਾਈਟਲ"
 msgid "Artist"
 msgstr "ਕਲਾਕਾਰ"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:854
+#: ../plugins/audiocd/rb-audiocd-source.c:860
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "ਰੀਥਮਬਾਕਸ CD ਡਰਾਇਵ ਨੂੰ ਨਹੀਂ ਵਰਤ ਸਕਿਆ ਹੈ।"
 
@@ -926,7 +924,7 @@ msgstr "ਆਖਰੀ ਭੇਜਣ ਸਮਾਂ:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:980
 #: ../plugins/iradio/rb-station-properties-dialog.c:502
-#: ../rhythmdb/rhythmdb.c:3701 ../widgets/rb-entry-view.c:992
+#: ../rhythmdb/rhythmdb.c:3706 ../widgets/rb-entry-view.c:992
 #: ../widgets/rb-entry-view.c:1579 ../widgets/rb-entry-view.c:1592
 #: ../widgets/rb-song-info.c:1345
 msgid "Never"
@@ -2294,39 +2292,39 @@ msgstr "ਰੀਥਮਬਾਕਸ ਨੂੰ ਇੰਫਰਾਰੈੱਡ ਰਿਮ
 msgid "LIRC "
 msgstr "LIRC "
 
-#: ../plugins/lyrics/lyrics/__init__.py:143
-#: ../plugins/lyrics/lyrics/__init__.py:145
-#: ../plugins/lyrics/lyrics/__init__.py:154
+#: ../plugins/lyrics/lyrics/__init__.py:166
+#: ../plugins/lyrics/lyrics/__init__.py:168
+#: ../plugins/lyrics/lyrics/__init__.py:177
 msgid "No lyrics found"
 msgstr "ਕੋਈ ਬੋਲ ਨਹੀਂ ਮਿਲੇ"
 
-#: ../plugins/lyrics/lyrics/__init__.py:188
+#: ../plugins/lyrics/lyrics/__init__.py:211
 msgid "_Save"
 msgstr "ਸੰਭਾਲੋ(_S)"
 
-#: ../plugins/lyrics/lyrics/__init__.py:193
-#: ../plugins/lyrics/lyrics/__init__.py:206 ../shell/rb-shell.c:390
+#: ../plugins/lyrics/lyrics/__init__.py:216
+#: ../plugins/lyrics/lyrics/__init__.py:229 ../shell/rb-shell.c:390
 msgid "_Edit"
 msgstr "ਸੋਧ(_E)"
 
-#: ../plugins/lyrics/lyrics/__init__.py:208
+#: ../plugins/lyrics/lyrics/__init__.py:231
 msgid "_Search again"
 msgstr "ਮੁੜ ਖੋਜ(_S)"
 
-#: ../plugins/lyrics/lyrics/__init__.py:226
-#: ../plugins/lyrics/lyrics/__init__.py:295
+#: ../plugins/lyrics/lyrics/__init__.py:249
+#: ../plugins/lyrics/lyrics/__init__.py:315
 msgid "Lyrics"
 msgstr "ਬੋਲ"
 
-#: ../plugins/lyrics/lyrics/__init__.py:269
+#: ../plugins/lyrics/lyrics/__init__.py:289
 msgid "Searching for lyrics..."
 msgstr "ਬੋਲਾਂ ਦੀ ਖੋਜ ਜਾਰੀ ਹੈ..."
 
-#: ../plugins/lyrics/lyrics/__init__.py:305
+#: ../plugins/lyrics/lyrics/__init__.py:325
 msgid "Song L_yrics"
 msgstr "ਸੰਗੀਤ ਬੋਲ(_y)"
 
-#: ../plugins/lyrics/lyrics/__init__.py:306
+#: ../plugins/lyrics/lyrics/__init__.py:326
 msgid "Display lyrics for the playing song"
 msgstr "ਚੱਲ ਰਹੇ ਗੀਤ ਲਈ ਬੋਲ ਵੇਖਾਓ"
 
@@ -2933,7 +2931,7 @@ msgstr "MTP-ਜੰਤਰ ਨਾਂ ਬਦਲੋ"
 msgid "Media player device error"
 msgstr "ਮੀਡਿਆ ਪਲੇਅਰ ਜੰਤਰ ਗਲਤੀ"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:750
+#: ../plugins/mtpdevice/rb-mtp-source.c:753
 msgid "Digital Audio Player"
 msgstr "ਡਿਜ਼ਿਟਲ ਆਡੀਓ ਪਲੇਅਰ"
 
@@ -3043,53 +3041,53 @@ msgstr "ਸਥਿਤੀ"
 msgid "The orientation of the tray."
 msgstr "ਟਰੇ ਦੀ ਸਥਿਤੀ ਹੈ।"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:136
+#: ../plugins/status-icon/rb-status-icon-plugin.c:142
 msgid "_Close"
 msgstr "ਬੰਦ ਕਰੋ(_C)"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:137
+#: ../plugins/status-icon/rb-status-icon-plugin.c:143
 msgid "Hide the music player window"
 msgstr "ਸੰਗੀਤ-ਪਲੇਅਰ ਵਿੰਡੋ ਓਹਲੇ"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:143
+#: ../plugins/status-icon/rb-status-icon-plugin.c:149
 msgid "_Show Music Player"
 msgstr "ਸੰਗੀਤ ਪਲੇਅਰ ਵੇਖਾਓ(_S)"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:144
+#: ../plugins/status-icon/rb-status-icon-plugin.c:150
 msgid "Choose music to play"
 msgstr "ਚਲਾਉਣ ਸਮੇਂ ਸੰਗੀਤ ਚੁਣੋ"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:146
+#: ../plugins/status-icon/rb-status-icon-plugin.c:152
 msgid "Show N_otifications"
 msgstr "ਸੂਚਨਾਵਾਂ ਵੇਖਾਓ(_o)"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:147
+#: ../plugins/status-icon/rb-status-icon-plugin.c:153
 msgid "Show notifications of song changes and other events"
 msgstr "ਗੀਤ ਤਬਦੀਲੀ ਅਤੇ ਹੋਰ ਘਟਨਾਵਾਂ ਲਈ ਸੂਚਨਾ ਵੇਖਾਓ"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:406
+#: ../plugins/status-icon/rb-status-icon-plugin.c:427
 msgid "Next"
 msgstr "ਅੱਗੇ"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:557
+#: ../plugins/status-icon/rb-status-icon-plugin.c:578
 #: ../remote/dbus/rb-client.c:454 ../remote/dbus/rb-client.c:480
 msgid "Not playing"
 msgstr "ਚੱਲ ਨਹੀ ਰਿਹਾ"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:560
+#: ../plugins/status-icon/rb-status-icon-plugin.c:581
 #, c-format
 msgid "Paused, %s"
 msgstr "ਵਿਰਾਮ, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:649
+#: ../plugins/status-icon/rb-status-icon-plugin.c:670
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "<i>%s</i> ਵਲੋਂ"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:670
+#: ../plugins/status-icon/rb-status-icon-plugin.c:691
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "<i>%s</i> ਵਿੱਚੋਂ"
@@ -3111,34 +3109,48 @@ msgid "Always visible"
 msgstr "ਹਮੇਸ਼ਾ ਵੇਖਾਓ"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:3
+#| msgid "Banning song"
+msgid "Change song"
+msgstr "ਗਾਣਾ ਬਦਲੋ"
+
+#: ../plugins/status-icon/status-icon-preferences.ui.h:4
+#| msgid "Change the music volume"
+msgid "Change volume"
+msgstr "ਆਵਾਜ਼ ਬਦਲੋ"
+
+#: ../plugins/status-icon/status-icon-preferences.ui.h:5
 msgid "Never shown"
 msgstr "ਕਦੇ ਨਹੀਂ ਵੇਖਾਓ"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:4
+#: ../plugins/status-icon/status-icon-preferences.ui.h:6
 msgid "Never visible"
 msgstr "ਕਦੇ ਨਾ ਵੇਖਾਓ"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:5
+#: ../plugins/status-icon/status-icon-preferences.ui.h:7
 msgid "Owns the main window"
 msgstr "ਮੁੱਖ ਵਿੰਡੋ ਰੱਖਦਾ ਹੈ"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:6
+#: ../plugins/status-icon/status-icon-preferences.ui.h:8
 msgid "Shown when the main window is hidden"
 msgstr "ਜਦੋਂ ਮੁੱਖ ਵਿੰਡੋ ਓਹਲੇ ਹੋਵੇ ਤਾਂ ਵੇਖਾਓ"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:7
+#: ../plugins/status-icon/status-icon-preferences.ui.h:9
 msgid "Status icon preferences"
 msgstr "ਹਾਲਤ ਆਈਕਾਨ ਪਸੰਦ"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:8
+#: ../plugins/status-icon/status-icon-preferences.ui.h:10
 msgid "Visible with notifications"
 msgstr "ਨੋਟੀਫਿਕੇਸ਼ਨ ਨਾਲ ਵੇਖੋ"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:9
+#: ../plugins/status-icon/status-icon-preferences.ui.h:11
+msgid "_Mouse Wheel"
+msgstr "ਮਾਊਸ ਵੀਲ੍ਹ(_M)"
+
+#: ../plugins/status-icon/status-icon-preferences.ui.h:12
 msgid "_Notifications"
 msgstr "ਨੋਟੀਫਿਕੇਸ਼ਨ(_N)"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:10
+#: ../plugins/status-icon/status-icon-preferences.ui.h:13
 msgid "_Status Icon:"
 msgstr "ਹਾਲਤ ਆਈਕਾਨ(_S):"
 
@@ -3405,7 +3417,6 @@ msgid "Unmute playback"
 msgstr "ਪਲੇਅਬੈਕ ਸੁਣਾਓ"
 
 #: ../remote/dbus/rb-client.c:111
-#| msgid "Scroll the view to the currently playing song"
 msgid "Set the rating of the current song"
 msgstr "ਮੌਜੂਦਾ ਚੱਲ ਰਹੇ ਗੀਤ ਦੀ ਰੇਟਿੰਗ ਦਿਓ"
 
@@ -3445,7 +3456,7 @@ msgstr "%s ਨੂੰ ਖੋਲਣਾ ਸੰਭਵ ਨਹੀਂ: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1694
+#: ../rhythmdb/rhythmdb.c:1698
 msgid "The Beatles"
 msgstr "ਬੀਟਲਜ਼"
 
@@ -3453,7 +3464,7 @@ msgstr "ਬੀਟਲਜ਼"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1700
+#: ../rhythmdb/rhythmdb.c:1704
 msgid "Help!"
 msgstr "ਮੱਦਦ!"
 
@@ -3461,15 +3472,15 @@ msgstr "ਮੱਦਦ!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1706
+#: ../rhythmdb/rhythmdb.c:1710
 msgid "Ticket To Ride"
 msgstr "ਚੜ੍ਹਨ ਲਈ ਟਿਕਟ"
 
-#: ../rhythmdb/rhythmdb.c:2255
+#: ../rhythmdb/rhythmdb.c:2259
 msgid "invalid unicode in error message"
 msgstr "ਗਲਤੀ ਸੁਨੇਹੇ 'ਚ ਗਲਤ ਯੂਨੀਕੋਡ"
 
-#: ../rhythmdb/rhythmdb.c:2316
+#: ../rhythmdb/rhythmdb.c:2320
 #, c-format
 msgid "Empty file"
 msgstr "ਖਾਲੀ ਫਾਇਲ"
@@ -3477,30 +3488,30 @@ msgstr "ਖਾਲੀ ਫਾਇਲ"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2427
+#: ../rhythmdb/rhythmdb.c:2431
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "ਇਹ ਫਾਇਲ ਚਲਾਉਣ ਲਈ ਹੋਰ ਜੀਸਟਰੀਮਰ ਪਲੱਗਇਨ ਦੀ ਲੋੜ ਹੈ: %s"
 
-#: ../rhythmdb/rhythmdb.c:3186
+#: ../rhythmdb/rhythmdb.c:3191
 msgid "Could not load the music database:"
 msgstr "ਸੰਗੀਤ ਡਾਟਾਬੇਸ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ:"
 
-#: ../rhythmdb/rhythmdb.c:4554
+#: ../rhythmdb/rhythmdb.c:4559
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld ਮਿੰਟ"
 msgstr[1] "%ld ਮਿੰਟ"
 
-#: ../rhythmdb/rhythmdb.c:4555
+#: ../rhythmdb/rhythmdb.c:4560
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld ਘੰਟਾ"
 msgstr[1] "%ld ਘੰਟੇ"
 
-#: ../rhythmdb/rhythmdb.c:4556
+#: ../rhythmdb/rhythmdb.c:4561
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3508,7 +3519,7 @@ msgstr[0] "%ld ਦਿਨ"
 msgstr[1] "%ld ਦਿਨ"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4562
+#: ../rhythmdb/rhythmdb.c:4567
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s ਅਤੇ %s"
@@ -3516,8 +3527,8 @@ msgstr "%s, %s ਅਤੇ %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4568 ../rhythmdb/rhythmdb.c:4576
-#: ../rhythmdb/rhythmdb.c:4587
+#: ../rhythmdb/rhythmdb.c:4573 ../rhythmdb/rhythmdb.c:4581
+#: ../rhythmdb/rhythmdb.c:4592
 #, c-format
 msgid "%s and %s"
 msgstr "%s ਅਤੇ %s"
@@ -3846,7 +3857,7 @@ msgstr "ਸੰਗੀਤ ਆਵਾਜ਼ ਘਟਾਓ"
 msgid "_Play"
 msgstr "ਚਲਾਓ(_P)"
 
-#: ../shell/rb-shell-player.c:327 ../shell/rb-shell-player.c:3738
+#: ../shell/rb-shell-player.c:327 ../shell/rb-shell-player.c:3732
 msgid "Start playback"
 msgstr "ਚਲਾਉਣਾ ਸ਼ੁਰੂ"
 
@@ -3882,82 +3893,82 @@ msgstr "ਸਟਰੀਮ ਗਲਤੀ"
 msgid "Unexpected end of stream!"
 msgstr "ਸਟਰੀਮ ਦਾ ਅਣ-ਚਾਹਿਆ ਅੰਤ!"
 
-#: ../shell/rb-shell-player.c:919
+#: ../shell/rb-shell-player.c:921
 msgid "Linear"
 msgstr "ਲਗਾਤਾਰ"
 
-#: ../shell/rb-shell-player.c:921
+#: ../shell/rb-shell-player.c:923
 msgid "Linear looping"
 msgstr "ਰੇਖਿਕ ਚੱਕਰ"
 
-#: ../shell/rb-shell-player.c:923
+#: ../shell/rb-shell-player.c:925
 msgid "Shuffle"
 msgstr "ਰਲਵਾਂ"
 
-#: ../shell/rb-shell-player.c:925
+#: ../shell/rb-shell-player.c:927
 msgid "Random with equal weights"
 msgstr "ਸਮਾਨ ਰੂਪ ਨਾਲ ਬੇਤਰਤੀਬ"
 
-#: ../shell/rb-shell-player.c:927
+#: ../shell/rb-shell-player.c:929
 msgid "Random by time since last play"
 msgstr "ਆਖਰੀ ਵਾਰ ਚਲਾਉਣ 'ਤੇ ਸਮੇਂ ਨਾਲ ਬੇਤਰਤੀਬ"
 
-#: ../shell/rb-shell-player.c:929
+#: ../shell/rb-shell-player.c:931
 msgid "Random by rating"
 msgstr "ਰੇਟ ਨਾਲ ਬੇਤਰਤੀਬ"
 
-#: ../shell/rb-shell-player.c:931
+#: ../shell/rb-shell-player.c:933
 msgid "Random by time since last play and rating"
 msgstr "ਸਮੇਂ ਨਾਲ ਬੇਤਰਤੀਬ, ਜਦੋਂ ਕਿ ਆਖਰੀ ਵਾਰ ਚਲਾਇਆ ਅਤੇ ਰੇਟਿੰਗ ਸੀ"
 
-#: ../shell/rb-shell-player.c:933
+#: ../shell/rb-shell-player.c:935
 msgid "Linear, removing entries once played"
 msgstr "ਰੇਖਿਕ, ਇੱਕ ਵਾਰ ਚਲਾਏ ਗਾਣੇ ਹਟਾ ਦਿਓ"
 
-#: ../shell/rb-shell-player.c:943
+#: ../shell/rb-shell-player.c:945
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "ਪਲੇਅਰ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ: %s"
 
-#: ../shell/rb-shell-player.c:1489
+#: ../shell/rb-shell-player.c:1491
 #, c-format
 msgid "Playlist was empty"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਖਾਲੀ ਸੀ"
 
-#: ../shell/rb-shell-player.c:1978
+#: ../shell/rb-shell-player.c:1980
 #, c-format
 msgid "Not currently playing"
 msgstr "ਕੋਈ ਚੱਲ ਰਿਹਾ ਗੀਤ ਨਹੀਂ"
 
-#: ../shell/rb-shell-player.c:2036
+#: ../shell/rb-shell-player.c:2038
 #, c-format
 msgid "No previous song"
 msgstr "ਕੋਈ ਪਿਛਲਾ ਗੀਤ ਨਹੀਂ"
 
-#: ../shell/rb-shell-player.c:2136
+#: ../shell/rb-shell-player.c:2138
 #, c-format
 msgid "No next song"
 msgstr "ਅੱਗੇ ਕੋਈ ਗੀਤ ਨਹੀਂ"
 
-#: ../shell/rb-shell-player.c:2257 ../shell/rb-shell-player.c:3389
+#: ../shell/rb-shell-player.c:2259 ../shell/rb-shell-player.c:3383
 msgid "Couldn't start playback"
 msgstr "ਪਲੇਅਬੈਕ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਸਕਿਆ"
 
-#: ../shell/rb-shell-player.c:3151
+#: ../shell/rb-shell-player.c:3145
 msgid "Couldn't stop playback"
 msgstr "ਗੀਤ ਨੂੰ ਰੋਕਿਆ ਨਹੀ ਕੀਤਾ ਜਾ ਸਕਿਆ"
 
-#: ../shell/rb-shell-player.c:3261
+#: ../shell/rb-shell-player.c:3255
 #, c-format
 msgid "Playback position not available"
 msgstr "ਪਲੇਅਬੈਕ ਸਥਿਤੀ ਉਪਲੱਬਧ ਨਹੀਂ"
 
-#: ../shell/rb-shell-player.c:3293
+#: ../shell/rb-shell-player.c:3287
 #, c-format
 msgid "Current song is not seekable"
 msgstr "ਮੌਜੂਦਾ ਗੀਤ ਪ੍ਰਾਪਤੀਯੋਗ ਨਹੀਂ"
 
-#: ../shell/rb-shell-player.c:3736
+#: ../shell/rb-shell-player.c:3730
 msgid "Stop playback"
 msgstr "ਚਲਾਉਣਾ ਬੰਦ ਕਰੋ"
 
@@ -4416,11 +4427,11 @@ msgstr "ਸਾਫ਼ ਕਰੋ"
 msgid "Play Queue"
 msgstr "ਚਲਾਉਣ ਕਤਾਰ"
 
-#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:125
+#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:124
 msgid "from"
 msgstr "ਤੋਂ"
 
-#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:126
+#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:125
 msgid "by"
 msgstr "ਰਾਹੀਂ"
 
@@ -4722,7 +4733,7 @@ msgstr "ਹੁਣ ਚੱਲ ਰਿਹਾ ਹੈ"
 msgid "Playback Error"
 msgstr "ਵਜਾਉਣ ਦੌਰਾਨ ਗਲਤੀ"
 
-#: ../widgets/rb-header.c:538
+#: ../widgets/rb-header.c:511
 msgid "Not Playing"
 msgstr "ਚੱਲ ਨਹੀਂ ਰਿਹਾ"
 
