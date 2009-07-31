@@ -270,6 +270,8 @@ rb_ipod_source_new (RBPlugin *plugin,
 
 	volume = g_mount_get_volume (mount);
 	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+	if (path == NULL)
+		path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UUID);
 	g_object_unref (volume);
 	
 	g_object_get (shell, "db", &db, NULL);

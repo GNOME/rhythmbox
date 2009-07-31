@@ -489,6 +489,16 @@ rb_ipod_helpers_is_ipod (GMount *mount)
 {
 	gboolean result;
 	GVolume *volume;
+	GFile *root;
+
+	root = g_mount_get_root (mount);
+	if (root != NULL) {
+		if (g_file_has_uri_scheme (root, "afc") != FALSE) {
+			g_object_unref (root);
+			return TRUE;
+		}
+		g_object_unref (root);
+	}
 
 	volume = g_mount_get_volume (mount);
 	if (volume == NULL)
