@@ -367,7 +367,7 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 			  g_type_name (G_VALUE_TYPE (val)),
 			  g_type_name (G_VALUE_TYPE (newval)));
 		g_value_unset (newval);
-		g_free (newval);
+		g_slice_free (GValue, newval);
 		return;
 	}
 
@@ -384,7 +384,7 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 			rb_debug ("Got invalid UTF-8 tag data");
 			g_free (str);
 			g_value_unset (newval);
-			g_free (newval);
+			g_slice_free (GValue, newval);
 			return;
 		}
 		str = g_strstrip (str);
@@ -402,7 +402,7 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 					rb_debug ("Got shorter duplicate tag");
 					g_free (str);
 					g_value_unset (newval);
-					g_free (newval);
+					g_slice_free (GValue, newval);
 					return;
 				}
 			}
