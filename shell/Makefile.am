@@ -47,6 +47,7 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(DBUS_CFLAGS)					\
+	$(GUDEV_CFLAGS)					\
 	-D_XOPEN_SOURCE -D__EXTENSIONS__ -D_BSD_SOURCE
 
 librhythmbox_core_la_SOURCES =				\
@@ -112,6 +113,7 @@ librhythmbox_core_la_LIBADD =				\
 	$(top_builddir)/lib/libmediaplayerid/libmediaplayerid.la		\
 	$(DBUS_LIBS)					\
 	$(TOTEM_PLPARSER_LIBS)				\
+	$(GUDEV_LIBS)					\
 	$(RHYTHMBOX_LIBS)				\
 	-lgstpbutils-0.10				\
 	-lgstcontroller-0.10

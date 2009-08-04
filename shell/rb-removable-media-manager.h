@@ -69,6 +69,9 @@ struct _RBRemovableMediaManagerClass
 					 gint done,
 					 gint total,
 					 double fraction);
+
+	RBSource * (*create_source_device) (RBRemovableMediaManager *mgr,
+					 GObject *device);		/* actually a GUdevDevice */
 	RBSource * (*create_source_mount) (RBRemovableMediaManager *mgr,
 					 GMount *mount,
 					 MPIDDevice *device_info);

@@ -79,7 +79,7 @@ static gboolean rb_removable_media_manager_source_can_eject (RBRemovableMediaMan
 static void rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 					     GtkUIManager *uimanager);
 
-static void rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RBRemovableMediaSource *source);
+static void rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RBSource *source);
 
 static void rb_removable_media_manager_add_volume (RBRemovableMediaManager *mgr, GVolume *volume);
 static void rb_removable_media_manager_remove_volume (RBRemovableMediaManager *mgr, GVolume *volume);
@@ -90,6 +90,9 @@ static void volume_added_cb (GVolumeMonitor *monitor, GVolume *volume, RBRemovab
 static void volume_removed_cb (GVolumeMonitor *monitor, GVolume *volume, RBRemovableMediaManager *manager);
 static void mount_added_cb (GVolumeMonitor *monitor, GMount *mount, RBRemovableMediaManager *manager);
 static void mount_removed_cb (GVolumeMonitor *monitor, GMount *mount, RBRemovableMediaManager *manager);
+#if defined(HAVE_GUDEV)
+static void uevent_cb (GUdevClient *client, const char *action, GUdevDevice *device, RBRemovableMediaManager *manager);
+#endif
 
 static void do_transfer (RBRemovableMediaManager *manager);
 static void rb_removable_media_manager_cmd_copy_tracks (GtkAction *action,
@@ -107,6 +110,7 @@ typedef struct
 	GList *sources;
 	GHashTable *volume_mapping;
 	GHashTable *mount_mapping;
+	GHashTable *device_mapping;
 	gboolean scanned;
 
 	GAsyncQueue *transfer_queue;
@@ -121,6 +125,11 @@ typedef struct
 	guint mount_removed_id;
 	guint volume_added_id;
 	guint volume_removed_id;
+
+#if defined(HAVE_GUDEV)
+	GUdevClient *gudev_client;
+	guint uevent_id;
+#endif
 } RBRemovableMediaManagerPrivate;
 
 G_DEFINE_TYPE (RBRemovableMediaManager, rb_removable_media_manager, G_TYPE_OBJECT)
@@ -138,6 +147,7 @@ enum
 {
 	MEDIUM_ADDED,
 	TRANSFER_PROGRESS,
+	CREATE_SOURCE_DEVICE,
 	CREATE_SOURCE_VOLUME,
 	CREATE_SOURCE_MOUNT,
 	LAST_SIGNAL
@@ -248,6 +258,25 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      3, G_TYPE_INT, G_TYPE_INT, G_TYPE_DOUBLE);
 
 	/**
+	 * RBRemovableMediaManager::create-source-device
+	 * @mgr: the #RBRemovableMediaManager
+	 * @device: the device (actually a #GUdevDevice)
+	 *
+	 * Emitted when a new device is detected to allow plugins to create a
+	 * corresponding #RBSource.  The first signal handler that returns a
+	 * source wins.  Plugins should only use this signal if there will be
+	 * no #GVolume or #GMount created for the device.
+	 */
+	rb_removable_media_manager_signals[CREATE_SOURCE_DEVICE] =
+		g_signal_new ("create-source-device",
+			      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBRemovableMediaManagerClass, create_source_device),
+			      rb_signal_accumulator_object_handled, NULL,
+			      rb_marshal_OBJECT__OBJECT,
+			      RB_TYPE_SOURCE,
+			      1, G_TYPE_OBJECT);
+	/**
 	 * RBRemovableMediaManager::create-source-volume
 	 * @mgr: the #RBRemovableMediaManager
 	 * @volume: the #GVolume 
@@ -299,6 +328,7 @@ rb_removable_media_manager_init (RBRemovableMediaManager *mgr)
 
 	priv->volume_mapping = g_hash_table_new (NULL, NULL);
 	priv->mount_mapping = g_hash_table_new (NULL, NULL);
+	priv->device_mapping = g_hash_table_new (g_direct_hash, g_direct_equal);
 	priv->transfer_queue = g_async_queue_new ();
 
 	/*
@@ -333,6 +363,27 @@ rb_removable_media_manager_init (RBRemovableMediaManager *mgr)
 							  "mount-removed",
 							  G_CALLBACK (mount_removed_cb),
 							  mgr, 0);
+
+#if defined(HAVE_GUDEV)
+	/*
+	 * Monitor udev device events - we're only really interested in events
+	 * for USB devices.
+	 */
+	{
+		const char * const subsystems[] = { "usb", NULL };
+		priv->gudev_client = g_udev_client_new (subsystems);
+	}
+
+	priv->uevent_id = g_signal_connect_object (priv->gudev_client,
+						   "uevent",
+						   G_CALLBACK (uevent_cb),
+						   mgr, 0);
+#endif
+
+	/* enable debugging of media player device lookups if requested */
+	if (rb_debug_matches ("mpid", "")) {
+		mpid_enable_debug (TRUE);
+	}
 }
 
 static void
@@ -363,6 +414,17 @@ rb_removable_media_manager_dispose (GObject *object)
 		priv->volume_monitor = NULL;
 	}
 
+#if defined(HAVE_GUDEV)
+	if (priv->gudev_client != NULL) {
+		g_signal_handler_disconnect (priv->gudev_client,
+					     priv->uevent_id);
+		priv->uevent_id = 0;
+
+		g_object_unref (priv->gudev_client);
+		priv->gudev_client = NULL;
+	}
+#endif
+
 	if (priv->sources) {
 		g_list_free (priv->sources);
 		priv->sources = NULL;
@@ -376,6 +438,7 @@ rb_removable_media_manager_finalize (GObject *object)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (object);
 
+	g_hash_table_destroy (priv->device_mapping);
 	g_hash_table_destroy (priv->volume_mapping);
 	g_hash_table_destroy (priv->mount_mapping);
 	g_async_queue_unref (priv->transfer_queue);
@@ -494,6 +557,41 @@ mount_removed_cb (GVolumeMonitor *monitor,
 }
 
 
+static void
+uevent_cb (GUdevClient *client, const char *action, GUdevDevice *device, RBRemovableMediaManager *mgr)
+{
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
+	GUdevDeviceNumber devnum;
+	devnum = g_udev_device_get_device_number (device);
+	rb_debug ("%s event for %s (%x)", action, g_udev_device_get_sysfs_path (device), devnum);
+
+	if (g_str_equal (action, "add")) {
+		RBSource *source = NULL;
+
+		/* probably need to filter out devices related to things we've already seen.. */
+		if (g_hash_table_lookup (priv->device_mapping, GINT_TO_POINTER (devnum)) != NULL) {
+			rb_debug ("already have a source for this device");
+			return;
+		}
+
+		g_signal_emit (mgr, rb_removable_media_manager_signals[CREATE_SOURCE_DEVICE], 0, device, &source);
+		if (source != NULL) {
+			rb_debug ("created a source for this device");
+			g_hash_table_insert (priv->device_mapping, GINT_TO_POINTER (devnum), source);
+			rb_removable_media_manager_append_media_source (mgr, source);
+		}
+	} else if (g_str_equal (action, "remove")) {
+		RBSource *source;
+
+		source = g_hash_table_lookup (priv->device_mapping, GINT_TO_POINTER (devnum));
+		if (source) {
+			rb_debug ("removing the source created for this device");
+			rb_source_delete_thyself (source);
+		}
+	}
+}
+#endif
+
 static gboolean
 remove_by_source (gpointer thing, RBSource *source, RBSource *ref_source)
 {
@@ -510,6 +608,9 @@ rb_removable_media_manager_source_deleted_cb (RBSource *source, RBRemovableMedia
 				     (GHRFunc)remove_by_source,
 				     source);
 	g_hash_table_foreach_remove (priv->mount_mapping,
+				     (GHRFunc)remove_by_source,
+				     source);
+	g_hash_table_foreach_remove (priv->device_mapping,
 				     (GHRFunc)remove_by_source,
 				     source);
 	priv->sources = g_list_remove (priv->sources, source);
@@ -569,7 +670,7 @@ rb_removable_media_manager_add_volume (RBRemovableMediaManager *mgr, GVolume *vo
 
 	if (source) {
 		g_hash_table_insert (priv->volume_mapping, volume, source);
-		rb_removable_media_manager_append_media_source (mgr, source);
+		rb_removable_media_manager_append_media_source (mgr, RB_SOURCE (source));
 	} else {
 		rb_debug ("Unhandled media");
 	}
@@ -597,6 +698,9 @@ rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *moun
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 	RBRemovableMediaSource *source = NULL;
 	GVolume *volume;
+	GFile *mount_root;
+	char *mountpoint;
+	MPIDDevice *device_info;
 
 	g_assert (mount != NULL);
 
@@ -638,7 +742,7 @@ rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *moun
 
 	if (source) {
 		g_hash_table_insert (priv->mount_mapping, mount, source);
-		rb_removable_media_manager_append_media_source (mgr, source);
+		rb_removable_media_manager_append_media_source (mgr, RB_SOURCE (source));
 	} else {
 		rb_debug ("Unhandled media");
 	}
@@ -662,7 +766,7 @@ rb_removable_media_manager_remove_mount (RBRemovableMediaManager *mgr, GMount *m
 }
 
 static void
-rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RBRemovableMediaSource *source)
+rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RBSource *source)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 
@@ -930,6 +1034,16 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 		g_object_unref (mount);
 	}
 	g_list_free (list);
+
+	/* - check devices */
+#if defined(HAVE_GUDEV)
+	list = g_udev_client_query_by_subsystem (priv->gudev_client, "usb");
+	for (it = list; it != NULL; it = g_list_next (it)) {
+		/* pretend the device was just added */
+		uevent_cb (priv->gudev_client, "add", G_UDEV_DEVICE (it->data), manager);
+	}
+	g_list_free (list);
+#endif
 }
 
 /* Track transfer */
