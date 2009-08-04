@@ -84,6 +84,7 @@ static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
 static RBSource * create_source_cb (RBRemovableMediaManager *rmm,
 				    GMount *mount,
+				    MPIDDevice *device_info,
 				    RBIpodPlugin *plugin);
 static void  rb_ipod_plugin_cmd_rename (GtkAction *action,
 					RBIpodPlugin *plugin);
@@ -229,7 +230,7 @@ rb_ipod_plugin_source_deleted (RBiPodSource *source, RBIpodPlugin *plugin)
 }
 
 static RBSource *
-create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, RBIpodPlugin *plugin)
+create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *device_info, RBIpodPlugin *plugin)
 {
 	RBSource *src;
 	if (!rb_ipod_helpers_is_ipod (mount)) {

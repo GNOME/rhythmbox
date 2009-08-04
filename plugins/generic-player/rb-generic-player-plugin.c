@@ -196,7 +196,7 @@ rb_generic_player_plugin_delete_playlist (GtkAction *actino, RBGenericPlayerPlug
 }
 
 static RBSource *
-create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, RBGenericPlayerPlugin *plugin)
+create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *device_info, RBGenericPlayerPlugin *plugin)
 {
 	RBSource *source = NULL;
 

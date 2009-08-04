@@ -70,7 +70,8 @@ struct _RBRemovableMediaManagerClass
 					 gint total,
 					 double fraction);
 	RBSource * (*create_source_mount) (RBRemovableMediaManager *mgr,
-					 GMount *mount);
+					 GMount *mount,
+					 MPIDDevice *device_info);
 	RBSource * (*create_source_volume) (RBRemovableMediaManager *mgr,
 					 GVolume *volume);
 };

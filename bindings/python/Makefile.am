@@ -17,6 +17,7 @@ rb_la_LIBADD = \
 rb_la_CFLAGS = \
 	-I$(top_srcdir)			\
 	-I$(top_srcdir)/lib             \
+	-I$(top_srcdir)/lib/libmediaplayerid \
 	-I$(top_srcdir)/metadata	\
 	-I$(top_srcdir)/player		\
 	-I$(top_srcdir)/rhythmdb	\

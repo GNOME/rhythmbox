@@ -20,8 +20,9 @@ INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\
-	-I$(top_srcdir)/backends				\
+	-I$(top_srcdir)/backends			\
 	-I$(top_srcdir)/lib                        	\
+	-I$(top_srcdir)/lib/libmediaplayerid          	\
 	-I$(top_srcdir)/metadata                       	\
 	-I$(top_srcdir)/player                       	\
 	-I$(top_srcdir)/rhythmdb                       	\

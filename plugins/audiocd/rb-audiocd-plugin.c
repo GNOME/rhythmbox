@@ -240,6 +240,7 @@ rb_audiocd_plugin_source_deleted (RBAudioCdSource *source,
 static RBSource *
 create_source_cb (RBRemovableMediaManager *rmm,
 		  GMount                  *mount,
+		  MPIDDevice              *device_info,
 		  RBAudioCdPlugin         *plugin)
 {
 	RBSource *source = NULL;

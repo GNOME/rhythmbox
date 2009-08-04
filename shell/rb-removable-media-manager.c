@@ -271,6 +271,7 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 	/**
 	 * RBRemovableMediaManager::create-source-mount
 	 * @mgr: the #RBRemovableMediaManager
+	 * @device_info: a #MPIDDevice containing information on the device
 	 * @mount: the #GMount
 	 *
 	 * Emitted when a new mount is added to allow plugins to create a
@@ -284,9 +285,9 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBRemovableMediaManagerClass, create_source_mount),
 			      rb_signal_accumulator_object_handled, NULL,
-			      rb_marshal_OBJECT__OBJECT,
+			      rb_marshal_OBJECT__OBJECT_OBJECT,
 			      RB_TYPE_SOURCE,
-			      1, G_TYPE_MOUNT);
+			      2, G_TYPE_MOUNT, MPID_TYPE_DEVICE);
 
 	g_type_class_add_private (klass, sizeof (RBRemovableMediaManagerPrivate));
 }
@@ -619,13 +620,21 @@ rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *moun
 	}
 
 	dump_volume_identifiers (volume);
+	g_object_unref (volume);
 
-	/* might be worth trying to create a source for the volume again,
-	 * in case something wants to, but requires a mount to exist first.
-	 */
+	/* look the device up in the device info database */
+	mount_root = g_mount_get_root (mount);
+	if (mount_root == NULL) {
+		rb_debug ("unable to get mount root, can't create a source for this mount");
+		return;
+	}
+	mountpoint = g_file_get_path (mount_root);
+	g_object_unref (mount_root);
 
+	device_info = mpid_device_new (mountpoint);
+	g_free (mountpoint);
 
-	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[CREATE_SOURCE_MOUNT], 0, mount, &source);
+	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[CREATE_SOURCE_MOUNT], 0, mount, device_info, &source);
 
 	if (source) {
 		g_hash_table_insert (priv->mount_mapping, mount, source);
@@ -634,9 +643,7 @@ rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *moun
 		rb_debug ("Unhandled media");
 	}
 
-	if (volume != NULL) {
-		g_object_unref (volume);
-	}
+	g_object_unref (device_info);
 }
 
 static void

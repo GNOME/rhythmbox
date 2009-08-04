@@ -48,6 +48,7 @@ INCLUDES =						\
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
+	-I$(top_srcdir)/lib/libmediaplayerid		\
 	-I$(top_builddir)/lib 				\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/metadata 			\

@@ -70,6 +70,7 @@ INCLUDES=\
 	-I$(top_srcdir)/metadata \
 	-I$(top_srcdir)/widgets \
 	-I$(top_srcdir)/lib \
+	-I$(top_srcdir)/lib/libmediaplayerid \
 	-I$(top_srcdir)/plugins \
 	-I$(top_srcdir)/backends \
 	$(DBUS_CFLAGS) \
@@ -87,12 +88,8 @@ GTKDOC_LIBS=\
 	$(BINDING_LIBS)					\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)					\
-	$(LIBNAUTILUS_BURN_LIBS)			\
 	$(DBUS_LIBS)					\
 	$(SOUP_LIBS)					\
-	$(MDNS_LIBS)					\
-	$(IPOD_LIBS)					\
-	$(NOTIFY_LIBS)					\
 	$(RHYTHMBOX_LIBS)				\
 	$(MORE_GTKDOC_LIBS)
 

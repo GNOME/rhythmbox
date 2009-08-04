@@ -15,7 +15,6 @@ libcd_recorder_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libcd_recorder_la_LIBTOOLFLAGS = --tag=disable-static
 libcd_recorder_la_LIBADD = 				\
 	$(top_builddir)/shell/librhythmbox-core.la	\
-	$(HAL_LIBS)					\
 	$(LIBNAUTILUS_BURN_LIBS)			\
 	$(NULL)
 
@@ -38,7 +37,6 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(HAL_CFLAGS)					\
 	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE			\
 	$(NULL)
