@@ -6,21 +6,16 @@ libgeneric_player_la_SOURCES =				\
 	rb-generic-player-source.c 			\
 	rb-generic-player-source.h	 		\
 	rb-generic-player-playlist-source.c		\
-	rb-generic-player-playlist-source.h
-
-if HAVE_HAL
-libgeneric_player_la_SOURCES +=				\
+	rb-generic-player-playlist-source.h		\
 	rb-nokia770-source.c				\
 	rb-nokia770-source.h				\
 	rb-psp-source.c					\
 	rb-psp-source.h
-endif
 
 libgeneric_player_la_LIBTOOLFLAGS = --tag=disable-static
 libgeneric_player_la_LDFLAGS = 				\
 	$(top_builddir)/shell/librhythmbox-core.la	\
 	$(TOTEM_PLPARSER_LIBS)				\
-	$(HAL_LIBS)				        \
 	$(PLUGIN_LIBTOOL_FLAGS)
 
 INCLUDES = 						\
@@ -44,7 +39,6 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(TOTEM_PLPARSER_CFLAGS)			\
-	$(HAL_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 

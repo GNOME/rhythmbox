@@ -78,7 +78,7 @@ rb_psp_source_init (RBPspSource *source)
 }
 
 RBRemovableMediaSource *
-rb_psp_source_new (RBShell *shell, GMount *mount)
+rb_psp_source_new (RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBPspSource *source;
 	RhythmDBEntryType entry_type;
@@ -87,7 +87,7 @@ rb_psp_source_new (RBShell *shell, GMount *mount)
 	char *path;
 	GVolume *volume;
 
-	g_assert (rb_psp_is_mount_player (mount));
+	g_assert (rb_psp_is_mount_player (mount, device_info));
 
 	volume = g_mount_get_volume (mount);
 
@@ -107,6 +107,7 @@ rb_psp_source_new (RBShell *shell, GMount *mount)
 					  "mount", mount,
 					  "shell", shell,
 					  "source-group", RB_SOURCE_GROUP_DEVICES,
+					  "device-info", device_info,
 					  NULL));
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
@@ -271,92 +272,18 @@ rb_psp_source_create_playlists (RBGenericPlayerSource *source)
 	}
 }
 
-static gboolean
-volume_is_psp (GVolume *volume)
+gboolean
+rb_psp_is_mount_player (GMount *mount, MPIDDevice *device_info)
 {
-	LibHalContext *ctx;
-	DBusConnection *conn;
-	char *parent_udi, *udi;
-	char *parent_name;
+	char *model;
 	gboolean result;
-	DBusError error;
-	gboolean inited = FALSE;
 
-	result = FALSE;
-	dbus_error_init (&error);
-
-	udi = NULL;
-	parent_udi = NULL;
-	parent_name = NULL;
-
-	conn = NULL;
-	ctx = libhal_ctx_new ();
-	if (ctx == NULL) {
-		rb_debug ("cannot connect to HAL");
-		goto end;
-	}
-	conn = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
-	if (conn == NULL || dbus_error_is_set (&error))
-		goto end;
-
-	libhal_ctx_set_dbus_connection (ctx, conn);
-	if (!libhal_ctx_init (ctx, &error) || dbus_error_is_set (&error))
-		goto end;
-
-	udi = rb_gvolume_get_udi (volume, ctx);
-	if (udi == NULL)
-		goto end;
-
-	inited = TRUE;
-	parent_udi = libhal_device_get_property_string (ctx, udi,
-			"info.parent", &error);
-	if (parent_udi == NULL || dbus_error_is_set (&error))
-		goto end;
-
-	parent_name = libhal_device_get_property_string (ctx, parent_udi,
-			"storage.model", &error);
-	if (parent_name == NULL || dbus_error_is_set (&error))
-		goto end;
-
-	if (strcmp (parent_name, "PSP") == 0 || strcmp (parent_name, "\"PSP\" MS") == 0) {
+	g_object_get (device_info, "model", &model, NULL);
+	if (model != NULL && (g_str_equal (model, "PSP") || g_str_equal (model, "\"PSP\" MS"))) {
 		result = TRUE;
 	}
+	g_free (model);
 
-end:
-	g_free (udi);
-	g_free (parent_udi);
-	g_free (parent_name);
-
-	if (dbus_error_is_set (&error)) {
-		rb_debug ("Error: %s\n", error.message);
-		dbus_error_free (&error);
-		dbus_error_init (&error);
-	}
-
-	if (ctx) {
-		if (inited)
-			libhal_ctx_shutdown (ctx, &error);
-		libhal_ctx_free(ctx);
-	}
-
-	dbus_error_free (&error);
-
-	return result;
-}
-
-gboolean
-rb_psp_is_mount_player (GMount *mount)
-{
-	GVolume *volume;
-	gboolean result;
-
-	volume = g_mount_get_volume (mount);
-	if (volume == NULL)
-		return FALSE;
-
-	result = volume_is_psp (volume);
-	g_object_unref (volume);
-
-	return result;
+	return FALSE;
 }
 

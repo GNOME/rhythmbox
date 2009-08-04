@@ -80,7 +80,7 @@ rb_nokia770_source_init (RBNokia770Source *source)
 }
 
 RBRemovableMediaSource *
-rb_nokia770_source_new (RBShell *shell, GMount *mount)
+rb_nokia770_source_new (RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBNokia770Source *source;
 	RhythmDBEntryType entry_type;
@@ -89,7 +89,7 @@ rb_nokia770_source_new (RBShell *shell, GMount *mount)
 	char *name;
 	char *path;
 
-	g_assert (rb_nokia770_is_mount_player (mount));
+	g_assert (rb_nokia770_is_mount_player (mount, device_info));
 
 	volume = g_mount_get_volume (mount);
 
@@ -109,6 +109,7 @@ rb_nokia770_source_new (RBShell *shell, GMount *mount)
 						   "mount", mount,
 						   "shell", shell,
 						   "source-group", RB_SOURCE_GROUP_DEVICES,
+						   "device-info", device_info,
 						   NULL));
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
@@ -135,114 +136,23 @@ impl_uri_from_playlist_uri (RBGenericPlayerSource *source, const char *uri)
 	return local_uri;
 }
 
-
-static gboolean
-volume_is_nokia770 (GVolume *volume)
+gboolean
+rb_nokia770_is_mount_player (GMount *mount, MPIDDevice *device_info)
 {
-	LibHalContext *ctx;
-	DBusConnection *conn;
-	char *parent_udi, *udi;
-	char *parent_name;
 	gboolean result;
-	DBusError error;
-	gboolean inited = FALSE;
+	char *vendor;
+	char *model;
 
+	g_object_get (device_info, "vendor", &vendor, "model", &model, NULL);
 	result = FALSE;
-	dbus_error_init (&error);
-
-	conn = NULL;
-	udi = NULL;
-	parent_udi = NULL;
-	parent_name = NULL;
-
-	ctx = libhal_ctx_new ();
-	if (ctx == NULL) {
-		rb_debug ("cannot connect to HAL");
-		goto end;
-	}
-	conn = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
-	if (conn == NULL || dbus_error_is_set (&error))
-		goto end;
-
-	libhal_ctx_set_dbus_connection (ctx, conn);
-	if (!libhal_ctx_init (ctx, &error) || dbus_error_is_set (&error))
-		goto end;
-
-	udi = rb_gvolume_get_udi (volume, ctx);
-	if (udi == NULL)
-		goto end;
-
-	inited = TRUE;
-	parent_udi = libhal_device_get_property_string (ctx,
-							udi,
-							"info.parent",
-							&error);
-	if (parent_udi == NULL || dbus_error_is_set (&error))
-		goto end;
-
-
-	rb_debug ("Nokia detection: info.parent=%s", parent_udi);
-	parent_name = libhal_device_get_property_string (ctx,
-							 parent_udi,
-							 "info.vendor",
-							 &error);
-	rb_debug ("Nokia detection: info.vendor=%s", parent_name);
-	if (parent_name == NULL || dbus_error_is_set (&error))
-		goto end;
-
-	if (strcmp (parent_name, "Nokia") == 0) {
-		g_free (parent_name);
-
-		parent_name = libhal_device_get_property_string (ctx,
-								 parent_udi,
-								 "info.product",
-								 &error);
-		rb_debug ("Nokia detection: info.product=%s", parent_name);
-		if (parent_name == NULL || dbus_error_is_set (&error))
-			goto end;
-
-		if (strcmp (parent_name, "770") == 0) {
-			result = TRUE;
-		} else if (strcmp (parent_name, "N800") == 0) {
+	if (vendor != NULL && g_str_equal (vendor, "Nokia")) {
+		if (model != NULL && (g_str_equal (model, "770") || g_str_equal (model, "N800") || g_str_equal (model, "N810"))) {
 			result = TRUE;
 		}
 	}
 
-end:
-	g_free (udi);
-	g_free (parent_name);
-	g_free (parent_udi);
-
-	if (dbus_error_is_set (&error)) {
-		rb_debug ("Error: %s\n", error.message);
-		dbus_error_free (&error);
-		dbus_error_init (&error);
-	}
-
-	if (ctx) {
-		if (inited)
-			libhal_ctx_shutdown (ctx, &error);
-		libhal_ctx_free (ctx);
-	}
-
-	dbus_error_free (&error);
-
-	return result;
-}
-
-gboolean
-rb_nokia770_is_mount_player (GMount *mount)
-{
-	gboolean result;
-	GVolume *volume;
-
-	volume = g_mount_get_volume (mount);
-	if (volume == NULL)
-		return FALSE;
-
-	result = volume_is_nokia770 (volume);
-	g_object_unref (volume);
-
+	g_free (vendor);
+	g_free (model);
 	return result;
 }
 

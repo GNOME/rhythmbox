@@ -65,7 +65,9 @@ typedef struct
 	char *		(*impl_build_filename) (RBGenericPlayerSource *source, RhythmDBEntry *entry);
 } RBGenericPlayerSourceClass;
 
-RBRemovableMediaSource *rb_generic_player_source_new			(RBShell *shell, GMount *mount);
+RBRemovableMediaSource *rb_generic_player_source_new			(RBShell *shell,
+									 GMount *mount,
+									 MPIDDevice *device_info);
 GType			rb_generic_player_source_get_type		(void);
 GType			rb_generic_player_source_register_type		(GTypeModule *module);
 
@@ -79,7 +81,7 @@ void			rb_generic_player_source_set_supported_formats  (RBGenericPlayerSource *s
 TotemPlParserType	rb_generic_player_source_get_playlist_format	(RBGenericPlayerSource *source);
 char *			rb_generic_player_source_get_playlist_path	(RBGenericPlayerSource *source);
 
-gboolean		rb_generic_player_is_mount_player		(GMount *mount);
+gboolean		rb_generic_player_is_mount_player		(GMount *mount, MPIDDevice *device_info);
 
 void			rb_generic_player_source_trash_or_delete_entries (RBGenericPlayerSource *source,
 									 GList *entries,

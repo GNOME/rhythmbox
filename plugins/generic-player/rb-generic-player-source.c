@@ -71,7 +71,6 @@ static void impl_get_property (GObject *object,
 			       GParamSpec *pspec);
 
 static void load_songs (RBGenericPlayerSource *source);
-static void get_device_info (RBGenericPlayerSource *source);
 
 static gboolean impl_show_popup (RBSource *source);
 static void impl_delete_thyself (RBSource *source);
@@ -95,18 +94,12 @@ static char * default_uri_from_playlist_uri (RBGenericPlayerSource *source,
 static char * default_uri_to_playlist_uri (RBGenericPlayerSource *source,
 					   const char *uri);
 
-#if HAVE_HAL
-static LibHalContext *get_hal_context (void);
-static void cleanup_hal_context (LibHalContext *ctx);
-static char * get_hal_udi_for_player (LibHalContext *ctx, GMount *mount);
-static void free_dbus_error (const char *what, DBusError *error);
-#endif
-
 enum
 {
 	PROP_0,
 	PROP_IGNORE_ENTRY_TYPE,
-	PROP_ERROR_ENTRY_TYPE
+	PROP_ERROR_ENTRY_TYPE,
+	PROP_DEVICE_INFO
 };
 
 typedef struct
@@ -127,15 +120,7 @@ typedef struct
 	/* information derived from volume */
 	gboolean read_only;
 
-	/* information derived from HAL */
-	char **audio_folders;
-	char **output_mime_types;
-	gboolean playlist_format_unknown;
-	gboolean playlist_format_pls;
-	gboolean playlist_format_m3u;
-	gboolean playlist_format_iriver_pla;
-	char *playlist_path;
-	gint folder_depth;
+	MPIDDevice *device_info;
 
 } RBGenericPlayerSourcePrivate;
 
@@ -176,17 +161,26 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_ERROR_ENTRY_TYPE,
 					 g_param_spec_boxed ("error-entry-type",
-						 	     "Error entry type",
+							     "Error entry type",
 							     "Entry type to use for import error entries added by this source",
 							     RHYTHMDB_TYPE_ENTRY_TYPE,
 							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_IGNORE_ENTRY_TYPE,
 					 g_param_spec_boxed ("ignore-entry-type",
-						 	     "Ignore entry type",
+							     "Ignore entry type",
 							     "Entry type to use for ignore entries added by this source",
 							     RHYTHMDB_TYPE_ENTRY_TYPE,
 							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_DEVICE_INFO,
+					 g_param_spec_object ("device-info",
+							      "device info",
+							      "device information object",
+							      MPID_TYPE_DEVICE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+
 
 	g_type_class_add_private (klass, sizeof (RBGenericPlayerSourcePrivate));
 }
@@ -205,6 +199,7 @@ impl_constructor (GType type,
 	RBGenericPlayerSource *source;
 	RBGenericPlayerSourcePrivate *priv;
 	GMount *mount;
+	char **playlist_formats;
 	char *mount_name;
 	RBShell *shell;
 	GFile *root;
@@ -243,10 +238,15 @@ impl_constructor (GType type,
 	g_object_unref (root);
 	g_object_unref (mount);
 
-	priv->folder_depth = -1;	/* 0 is a possible value, I guess */
-	priv->playlist_format_unknown = TRUE;
+	g_object_get (priv->device_info, "playlist-formats", &playlist_formats, NULL);
+	if (playlist_formats != NULL && g_strv_length (playlist_formats) > 0) {
+		RhythmDBEntryType entry_type;
 
-	get_device_info (source);
+		g_object_get (source, "entry-type", &entry_type, NULL);
+		entry_type->has_playlists = TRUE;
+		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	}
+	g_strfreev (playlist_formats);
 
 	load_songs (source);
 
@@ -264,6 +264,9 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 		break;
 	case PROP_ERROR_ENTRY_TYPE:
 		priv->error_type = g_value_get_boxed (value);
+		break;
+	case PROP_DEVICE_INFO:
+		priv->device_info = g_value_dup_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -283,322 +286,13 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 	case PROP_ERROR_ENTRY_TYPE:
 		g_value_set_boxed (value, priv->error_type);
 		break;
+	case PROP_DEVICE_INFO:
+		g_value_set_object (value, priv->device_info);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
-}
-
-static GFile *
-get_is_audio_player_file (GMount *mount)
-{
-	GFile *root;
-	GFile *is_audio_player;
-
-	root = g_mount_get_root (mount);
-	is_audio_player = g_file_resolve_relative_path (root, ".is_audio_player");
-
-	if (g_file_query_exists (is_audio_player, NULL) == FALSE) {
-		g_object_unref (is_audio_player);
-		is_audio_player = NULL;
-	}
-
-	g_object_unref (root);
-	return is_audio_player;
-}
-
-static void
-set_playlist_path (RBGenericPlayerSource *source, const char *path)
-{
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-
-	g_free (priv->playlist_path);
-
-	/*
-	 * The HAL spec allows the use of a '%File' variable to substitute
-	 * the playlist name.  All current examples are of the form 'playlists/%File',
-	 * so we'll just make that work.
-	 */
-	if (g_str_has_suffix (path, "/%File")) {
-
-		priv->playlist_path = g_strdup (path);
-		priv->playlist_path[strlen (path) - strlen("/%File")] = '\0';
-	} else {
-		priv->playlist_path = g_strdup (path);
-	}
-	rb_debug ("playlist path set to %s", priv->playlist_path);
-}
-
-static void
-set_playlist_formats (RBGenericPlayerSource *source, char **formats)
-{
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	RhythmDBEntryType entry_type;
-	int fmt;
-
-	priv->playlist_format_unknown = TRUE;
-	priv->playlist_format_m3u = FALSE;
-	priv->playlist_format_pls = FALSE;
-	priv->playlist_format_iriver_pla = FALSE;
-	for (fmt = 0; formats[fmt] != NULL; fmt++) {
-		char *format;
-		char *stripped;
-
-		format = g_strdup (formats[fmt]);
-		stripped = g_strstrip (format);
-
-		if (strcmp (stripped, "audio/x-mpegurl") == 0) {
-			priv->playlist_format_unknown = FALSE;
-			priv->playlist_format_m3u = TRUE;
-		} else if (strcmp (stripped, "audio/x-scpls") == 0) {
-			priv->playlist_format_unknown = FALSE;
-			priv->playlist_format_pls = TRUE;
-		} else if (strcmp (stripped, "audio/x-iriver-pla") == 0) {
-			priv->playlist_format_unknown = FALSE;
-			priv->playlist_format_iriver_pla = TRUE;
-		} else {
-			rb_debug ("unrecognized playlist format: %s", stripped);
-		}
-
-		g_free (format);
-	}
-
-	g_object_get (source, "entry-type", &entry_type, NULL);
-	entry_type->has_playlists = (priv->playlist_format_unknown == FALSE);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
-}
-
-static void
-debug_device_info (RBGenericPlayerSource *source, GMount *mount, const char *what)
-{
-	char *dbg;
-	char *path;
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	GVolume *volume;
-
-	volume = g_mount_get_volume (mount);
-	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
-	rb_debug ("device information for %s from %s", path, what);
-	g_free (path);
-	g_object_unref (volume);
-
-	if (priv->audio_folders != NULL) {
-		dbg = g_strjoinv (", ", priv->audio_folders);
-		rb_debug ("audio folders: %s", dbg);
-		g_free (dbg);
-	} else {
-		rb_debug ("no audio folders set");
-	}
-
-	if (priv->output_mime_types != NULL) {
-		dbg = g_strjoinv (", ", priv->output_mime_types);
-		rb_debug ("output types: %s", dbg);
-		g_free (dbg);
-	} else {
-		rb_debug ("no output types set");
-	}
-
-	if (priv->playlist_format_unknown) {
-		rb_debug ("playlist format is unknown");
-	} else {
-		if (priv->playlist_format_m3u)
-			rb_debug ("M3U playlist format is supported");
-		if (priv->playlist_format_pls)
-			rb_debug ("PLS playlist format is supported");
-		if (priv->playlist_format_iriver_pla)
-			rb_debug ("iRiver PLA playlist format is supported");
-	}
-
-	if (priv->playlist_path != NULL) {
-		rb_debug ("playlist path: %s", priv->playlist_path);
-	} else {
-		rb_debug ("no playlist path is set");
-	}
-
-	if (priv->folder_depth == -1) {
-		rb_debug ("audio folder depth is not set");
-	} else {
-		rb_debug ("audio folder depth: %d", priv->folder_depth);
-	}
-}
-
-static void
-get_device_info (RBGenericPlayerSource *source)
-{
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	GMount *mount;
-	GFile *is_audio_player;
-	GError *error = NULL;
-#ifdef HAVE_HAL
-	LibHalContext *ctx;
-#endif
-	g_object_get (source, "mount", &mount, NULL);
-
-#ifdef HAVE_HAL
-	ctx = get_hal_context ();
-	if (ctx != NULL) {
-		char *udi;
-
-		udi = get_hal_udi_for_player (ctx, mount);
-
-		if (udi != NULL) {
-			DBusError error;
-			char *prop;
-			char **proplist;
-			int value;
-
-			/* get audio folders */
-			dbus_error_init (&error);
-			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.audio_folders", &error);
-			if (proplist) {
-				if (!dbus_error_is_set (&error)) {
-					priv->audio_folders = g_strdupv (proplist);
-				}
-				libhal_free_string_array (proplist);
-			}
-			free_dbus_error ("getting audio folder list", &error);
-
-			/* get supported mime-types */
-			dbus_error_init (&error);
-			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.output_formats", &error);
-			if (proplist) {
-				if (!dbus_error_is_set (&error)) {
-					priv->output_mime_types = g_strdupv (proplist);
-				}
-				libhal_free_string_array (proplist);
-			}
-			free_dbus_error ("getting supported mime-type list", &error);
-
-			/* get playlist format */
-			dbus_error_init (&error);
-			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.playlist_format", &error);
-			if (proplist) {
-				if (!dbus_error_is_set (&error)) {
-					set_playlist_formats (source, proplist);
-				}
-				libhal_free_string_array (proplist);
-			}
-			free_dbus_error ("getting playlist format", &error);
-
-			/* get playlist path - in current hal-info packages, this is sometimes a string
-			 * and sometimes a strlist, so try both. 
-			 * http://bugs.freedesktop.org/show_bug.cgi?id=19961
-			 */
-			dbus_error_init (&error);
-			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.playlist_path", &error);
-			if (proplist && !dbus_error_is_set (&error)) {
-				set_playlist_path (source, proplist[0]);
-				libhal_free_string_array (proplist);
-			}
-			free_dbus_error ("getting playlist path (strlist)", &error);
-			
-			dbus_error_init (&error);
-			prop = libhal_device_get_property_string (ctx, udi, "portable_audio_player.playlist_path", &error);
-			if (prop && !dbus_error_is_set (&error)) {
-				set_playlist_path (source, prop);
-				libhal_free_string (prop);
-			}
-			free_dbus_error ("getting playlist path (string)", &error);
-
-			/* get max folder depth */
-			dbus_error_init (&error);
-			value = libhal_device_get_property_int (ctx, udi, "portable_audio_player.folder_depth", &error);
-			if (!dbus_error_is_set (&error)) {
-				priv->folder_depth = value;
-			}
-			free_dbus_error ("getting max folder depth", &error);
-
-			debug_device_info (source, mount, "HAL");
-		} else {
-			rb_debug ("no player info available (HAL doesn't recognise it as a player");
-		}
-		g_free (udi);
-	}
-	cleanup_hal_context (ctx);
-#endif
-
-	/* allow HAL info to be overridden with .is_audio_player file */
-	is_audio_player = get_is_audio_player_file (mount);
-	if (is_audio_player != NULL) {
-		char *data = NULL;
-		gsize data_size = 0;
-
-		rb_debug ("reading .is_audio_player file");
-
-		g_file_load_contents (is_audio_player, NULL, &data, &data_size, NULL, &error);
-		if (error != NULL) {
-			/* can we sensibly report this anywhere? */
-			rb_debug ("error reading .is_audio_player file: %s", error->message);
-			g_clear_error (&error);
-		} else {
-			GKeyFile *keyfile;
-			GError *error = NULL;
-			char *munged;
-			gsize munged_size;
-			const char *fake_group = "[x-rb-data]\n";
-			char *group;
-
-			/* prepend a group name to the file contents */
-			munged_size = data_size + strlen (fake_group);
-			munged = g_malloc0 (munged_size + 1);
-			strcpy (munged, fake_group);
-			memcpy (munged + strlen (fake_group), data, data_size);
-
-			keyfile = g_key_file_new ();
-			g_key_file_set_list_separator (keyfile, ',');
-			if (g_key_file_load_from_data (keyfile, munged, munged_size, G_KEY_FILE_NONE, &error) == FALSE) {
-				/* and this */
-				rb_debug ("error loading .is_audio_player file: %s", error->message);
-				g_error_free (error);
-			} else {
-				char *value;
-				char **list;
-
-				group = g_key_file_get_start_group (keyfile);
-				
-				list = g_key_file_get_string_list (keyfile, group, "audio_folders", NULL, NULL);
-				if (list != NULL) {
-					g_strfreev (priv->audio_folders);
-					priv->audio_folders = list;
-				}
-
-				list = g_key_file_get_string_list (keyfile, group, "output_formats", NULL, NULL);
-				if (list != NULL) {
-					g_strfreev (priv->output_mime_types);
-					priv->output_mime_types = list;
-				}
-				
-				list = g_key_file_get_string_list (keyfile, group, "playlist_format", NULL, NULL);
-				if (list != NULL) {
-					set_playlist_formats (source, list);
-					g_strfreev (list);
-				}
-
-				value = g_key_file_get_string (keyfile, group, "playlist_path", NULL);
-				if (value != NULL) {
-					set_playlist_path (source, value);
-					g_free (value);
-				}
-
-				if (g_key_file_has_key (keyfile, group, "folder_depth", NULL)) {
-					priv->folder_depth = g_key_file_get_integer (keyfile, group, "folder_depth", NULL);
-				}
-				g_free (group);
-			}
-
-			g_key_file_free (keyfile);
-			g_free (munged);
-			
-			debug_device_info (source, mount, ".is_audio_player file");
-		}
-		g_free (data);
-
-		g_object_unref (is_audio_player);
-	} else {
-		rb_debug ("no .is_audio_player file found on this device");
-	}
-
-	g_object_unref (mount);
 }
 
 static void
@@ -633,6 +327,11 @@ impl_dispose (GObject *object)
 		priv->import_job = NULL;
 	}
 
+	if (priv->device_info != NULL) {
+		g_object_unref (priv->device_info);
+		priv->device_info = NULL;
+	}
+
 	G_OBJECT_CLASS (rb_generic_player_source_parent_class)->dispose (object);
 }
 
@@ -643,15 +342,10 @@ impl_finalize (GObject *object)
 
 	g_return_if_fail (RB_IS_GENERIC_PLAYER_SOURCE (object));
 	priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (object);
-
-	g_free (priv->mount_path);
-	g_strfreev (priv->audio_folders);
-	g_strfreev (priv->output_mime_types);
-	g_free (priv->playlist_path);
 }
 
 RBRemovableMediaSource *
-rb_generic_player_source_new (RBShell *shell, GMount *mount)
+rb_generic_player_source_new (RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBGenericPlayerSource *source;
 	RhythmDBEntryType entry_type;
@@ -662,11 +356,9 @@ rb_generic_player_source_new (RBShell *shell, GMount *mount)
 	char *name;
 	char *path;
 
-	g_assert (rb_generic_player_is_mount_player (mount));
-
 	volume = g_mount_get_volume (mount);
 
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	g_object_get (shell, "db", &db, NULL);
 	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 
 	name = g_strdup_printf ("generic audio player: %s", path);
@@ -692,6 +384,7 @@ rb_generic_player_source_new (RBShell *shell, GMount *mount)
 							 "mount", mount,
 							 "shell", shell,
 							 "source-group", RB_SOURCE_GROUP_DEVICES,
+							 "device-info", device_info,
 							 NULL));
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
@@ -759,12 +452,13 @@ load_songs (RBGenericPlayerSource *source)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 	RhythmDBEntryType entry_type;
+	char **audio_folders;
 	char *mount_path;
 
 	mount_path = rb_generic_player_source_get_mount_path (source);
-	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+	g_object_get (source, "entry-type", &entry_type, NULL);
 
-	/* if HAL gives us a set of folders on the device containing audio files,
+	/* if we have a set of folders on the device containing audio files,
 	 * load only those folders, otherwise add the whole volume.
 	 */
 	priv->import_job = rhythmdb_import_job_new (priv->db, entry_type, priv->ignore_type, priv->error_type);
@@ -772,11 +466,12 @@ load_songs (RBGenericPlayerSource *source)
 	g_signal_connect_object (priv->import_job, "complete", G_CALLBACK (import_complete_cb), source, 0);
 	g_signal_connect_object (priv->import_job, "status-changed", G_CALLBACK (import_status_changed_cb), source, 0);
 
-	if (priv->audio_folders) {
+	g_object_get (priv->device_info, "audio-folders", &audio_folders, NULL);
+	if (audio_folders != NULL && g_strv_length (audio_folders) > 0) {
 		int af;
-		for (af=0; priv->audio_folders[af] != NULL; af++) {
+		for (af=0; audio_folders[af] != NULL; af++) {
 			char *path;
-			path = rb_uri_append_path (mount_path, priv->audio_folders[af]);
+			path = rb_uri_append_path (mount_path, audio_folders[af]);
 			rb_debug ("loading songs from device audio folder %s", path);
 			rhythmdb_import_job_add_uri (priv->import_job, path);
 			g_free (path);
@@ -785,6 +480,7 @@ load_songs (RBGenericPlayerSource *source)
 		rb_debug ("loading songs from device mount path %s", mount_path);
 		rhythmdb_import_job_add_uri (priv->import_job, mount_path);
 	}
+	g_strfreev (audio_folders);
 
 	rhythmdb_import_job_start (priv->import_job);
 
@@ -824,71 +520,22 @@ default_get_mount_path (RBGenericPlayerSource *source)
 }
 
 gboolean
-rb_generic_player_is_mount_player (GMount *mount)
+rb_generic_player_is_mount_player (GMount *mount, MPIDDevice *device_info)
 {
+	char **protocols;
 	gboolean result = FALSE;
+	int i;
 #ifdef HAVE_HAL
-	LibHalContext *ctx;
-
-	ctx = get_hal_context ();
-	if (ctx != NULL) {
-		char *udi = get_hal_udi_for_player (ctx, mount);
-		if (udi != NULL) {
-			DBusError error;
-			char **proplist;
-			char *prop;
-
-			rb_debug ("Checking udi %s", udi);
-			/* check that it can be accessed as mass-storage */
-			dbus_error_init (&error);
-			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.access_method.protocols", &error);
-			if (proplist != NULL && !dbus_error_is_set (&error)) {
-				int i;
-				for (i = 0; proplist[i] != NULL; i++) {
-					rb_debug ("device access method: %s", proplist[i]);
-					if (strcmp (proplist[i], "storage") == 0) {
-						result = TRUE;
-						break;
-					}
-				}
-
-				libhal_free_string_array (proplist);
+	/* claim anything with 'storage' as an access protocol */
+	g_object_get (device_info, "access-protocols", &protocols, NULL);
+	if (protocols != NULL) {
+		for (i = 0; protocols[i] != NULL; i++) {
+			if (g_str_equal (protocols[i], "storage")) {
+				result = TRUE;
+				break;
 			}
-			free_dbus_error ("checking device access method", &error);
-
-			if (result == FALSE) {
-				dbus_error_init (&error);
-				prop = libhal_device_get_property_string (ctx, udi, "portable_audio_player.access_method", &error);
-				if (prop != NULL && strcmp (prop, "storage") == 0 && !dbus_error_is_set (&error)) {
-					/* the device has passed all tests, so it should be a usable player */
-					result = TRUE;
-				}
-
-				libhal_free_string (prop);
-				free_dbus_error ("checking device access method", &error);
-			}
-
-			if (result == FALSE) {
-				rb_debug ("device cannot be accessed via storage");
-			}
-
-		} else {
-			rb_debug ("device is not an audio player");
 		}
-		g_free (udi);
-	}
-	cleanup_hal_context (ctx);
-
-#endif /* HAVE_HAL */
-
-	/* treat as audio player if ".is_audio_player" exists in the root of the volume  */
-	if (!result) {
-		GFile *is_audio_player;
-		is_audio_player = get_is_audio_player_file (mount);
-		if (is_audio_player != NULL) {
-			result = TRUE;
-			g_object_unref (is_audio_player);
-		}
+		g_strfreev (protocols);
 	}
 
 	return result;
@@ -1075,7 +722,7 @@ load_playlist_file (RBGenericPlayerSource *source,
 	RBShell *shell;
 	char *mount_path;
 
-	g_object_get (G_OBJECT (source),
+	g_object_get (source,
 		      "shell", &shell,
 		      "entry-type", &entry_type,
 		      NULL);
@@ -1124,7 +771,7 @@ visit_playlist_dirs (GFile *file,
 
 		is_song = FALSE;
 
-		g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+		g_object_get (source, "entry-type", &entry_type, NULL);
 		is_song = (rhythmdb_entry_get_entry_type (entry) == entry_type);
 		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
@@ -1153,41 +800,51 @@ default_load_playlists (RBGenericPlayerSource *source)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 	char *mount_path;
-	char *playlist_path = NULL;
+	char *playlist_path;
+	char *full_playlist_path;
+	char **playlist_formats;
 
 	mount_path = rb_generic_player_source_get_mount_path (source);
-	if (priv->playlist_path) {
+
+	g_object_get (priv->device_info, "playlist-path", &playlist_path, NULL);
+	if (playlist_path) {
 
 		/* If the device only supports a single playlist, just load that */
-		if (g_str_has_suffix (priv->playlist_path, ".m3u") ||
-		    g_str_has_suffix (priv->playlist_path, ".pls")) {
-			char *playlist_path = rb_uri_append_path (mount_path, priv->playlist_path);
-			if (rb_uri_exists (playlist_path)) {
-				load_playlist_file (source, playlist_path, priv->playlist_path);
+		if (g_str_has_suffix (playlist_path, ".m3u") ||
+		    g_str_has_suffix (playlist_path, ".pls")) {
+			full_playlist_path = rb_uri_append_path (mount_path, playlist_path);
+			if (rb_uri_exists (full_playlist_path)) {
+				load_playlist_file (source, full_playlist_path, playlist_path);
 			}
 
+			g_free (full_playlist_path);
+			g_free (playlist_path);
 			return;
 		}
 
-		/* Otherwise, limit the search to the device's playlist folder.
-		 * The optional trailing '/%File' is stripped in set_playlist_path
-		 */
-		playlist_path = rb_uri_append_path (mount_path, priv->playlist_path);
-		rb_debug ("constructed playlist search path %s", playlist_path);
+		/* Otherwise, limit the search to the device's playlist folder */
+		if (g_str_has_suffix (playlist_path, "/%File")) {
+			playlist_path[strlen (playlist_path) - strlen("/%File")] = '\0';
+		}
+		full_playlist_path = rb_uri_append_path (mount_path, playlist_path);
+		rb_debug ("constructed playlist search path %s", full_playlist_path);
 	} else {
-		playlist_path = g_strdup (mount_path);
+		full_playlist_path = g_strdup (mount_path);
 	}
 
-	/* if we don't have any information about playlist support, don't go looking for playlists */
-	if (priv->playlist_path != NULL || priv->playlist_format_unknown == FALSE) {
+	/* only try to load playlists if the device has at least one playlist format */
+	g_object_get (priv->device_info, "playlist-formats", &playlist_formats, NULL);
+	if (playlist_formats != NULL && g_strv_length (playlist_formats) > 0) {
 		rb_debug ("searching for playlists in %s", playlist_path);
-		rb_uri_handle_recursively (playlist_path,
+		rb_uri_handle_recursively (full_playlist_path,
 					   NULL,
 					   (RBUriRecurseFunc) visit_playlist_dirs,
 					   source);
 	}
+	g_strfreev (playlist_formats);
 
 	g_free (playlist_path);
+	g_free (full_playlist_path);
 	g_free (mount_path);
 }
 
@@ -1214,6 +871,7 @@ can_delete_directory (RBGenericPlayerSource *source, GFile *dir)
 	gboolean result;
 	GMount *mount;
 	GFile *root;
+	char **audio_folders;
 	int i;
 
 	g_object_get (source, "mount", &mount, NULL);
@@ -1229,18 +887,20 @@ can_delete_directory (RBGenericPlayerSource *source, GFile *dir)
 
 	/* can't delete the device's audio folders */
 	result = TRUE;
-	if (priv->audio_folders != NULL) {
-		for (i = 0; priv->audio_folders[i] != NULL; i++) {
+	g_object_get (priv->device_info, "audio-folders", &audio_folders, NULL);
+	if (audio_folders != NULL && g_strv_length (audio_folders) > 0) {
+		for (i = 0; audio_folders[i] != NULL; i++) {
 			GFile *check;
 
-			check = g_file_resolve_relative_path (root, priv->audio_folders[i]);
+			check = g_file_resolve_relative_path (root, audio_folders[i]);
 			if (g_file_equal (dir, check)) {
-				rb_debug ("refusing to delete device audio folder %s", priv->audio_folders[i]);
+				rb_debug ("refusing to delete device audio folder %s", audio_folders[i]);
 				result = FALSE;
 			}
 			g_object_unref (check);
 		}
 	}
+	g_strfreev (audio_folders);
 
 	/* can delete anything else */
 	g_object_unref (root);
@@ -1359,11 +1019,14 @@ impl_get_mime_types (RBRemovableMediaSource *source)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 	GList *list = NULL;
+	char **output_formats;
 	char **mime;
 
-	for (mime = priv->output_mime_types; mime && *mime != NULL; mime++) {
+	g_object_get (priv->device_info, "output-formats", &output_formats, NULL);
+	for (mime = output_formats; mime && *mime != NULL; mime++) {
 		list = g_list_prepend (list, g_strdup (*mime));
 	}
+	g_strfreev (output_formats);
 	return g_list_reverse (list);
 }
 
@@ -1377,6 +1040,7 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	char *artist, *album, *title;
 	gulong track_number, disc_number;
 	const char *folders;
+	char **audio_folders;
 	char *mount_path;
 	char *number;
 	char *file = NULL;
@@ -1411,6 +1075,8 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	}
 
 	if (file == NULL) {
+		int folder_depth;
+
 		track_number = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
 		disc_number = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
 		if (disc_number > 0)
@@ -1418,7 +1084,8 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 		else
 			number = g_strdup_printf ("%.02u", (guint)track_number);
 
-		switch (priv->folder_depth) {
+		g_object_get (priv->device_info, "folder-depth", &folder_depth, NULL);
+		switch (folder_depth) {
 		case 0:
 			/* artist - album - number - title */
 			file = g_strdup_printf ("%s - %s - %s - %s%s",
@@ -1449,10 +1116,13 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	if (file == NULL)
 		return NULL;
 
-	if (priv->audio_folders && priv->audio_folders[0])
-		folders = priv->audio_folders[0];
-	else
+	g_object_get (priv->device_info, "audio-folders", &audio_folders, NULL);
+	if (audio_folders != NULL && g_strv_length (audio_folders) > 0) {
+		folders = g_strdup (audio_folders[0]);
+	} else {
 		folders = "";
+	}
+	g_strfreev (audio_folders);
 
 	mount_path = rb_generic_player_source_get_mount_path (RB_GENERIC_PLAYER_SOURCE (source));
 	path = g_build_filename (mount_path, folders, file, NULL);
@@ -1464,19 +1134,35 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	return path;
 }
 
+static gboolean
+strv_contains (char **strv, const char *s)
+{
+	int i;
+	for (i = 0; strv[i] != NULL; i++) {
+		if (g_str_equal (strv[i], s))
+			return TRUE;
+	}
+	return FALSE;
+}
+
 void
 rb_generic_player_source_set_supported_formats (RBGenericPlayerSource *source, TotemPlParser *parser)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	char **playlist_formats;
+	const char *check[] = { "audio/x-mpegurl", "audio/x-scpls", "audio/x-iriver-pla" };
 
-	if (priv->playlist_format_unknown == FALSE) {
-		if (priv->playlist_format_m3u == FALSE)
-			totem_pl_parser_add_ignored_mimetype (parser, "audio/x-mpegurl");
-		if (priv->playlist_format_pls == FALSE)
-			totem_pl_parser_add_ignored_mimetype (parser, "audio/x-scpls");
-		if (priv->playlist_format_iriver_pla == FALSE)
-			totem_pl_parser_add_ignored_mimetype (parser, "audio/x-iriver-pla");
+	g_object_get (priv->device_info, "playlist-formats", &playlist_formats, NULL);
+	if (playlist_formats != NULL && g_strv_length (playlist_formats) > 0) {
+		int i;
+		for (i = 0; i < G_N_ELEMENTS (check); i++) {
+			if (strv_contains (playlist_formats, check[i])) {
+				totem_pl_parser_add_ignored_mimetype (parser, check[i]);
+			}
+		}
 	}
+	g_strfreev (playlist_formats);
+
 	totem_pl_parser_add_ignored_mimetype (parser, "x-directory/normal");
 }
 
@@ -1484,149 +1170,33 @@ TotemPlParserType
 rb_generic_player_source_get_playlist_format (RBGenericPlayerSource *source)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	TotemPlParserType result;
+	char **playlist_formats;
 
-	if (priv->playlist_format_unknown || priv->playlist_format_pls) {
-		return TOTEM_PL_PARSER_PLS;
+	g_object_get (priv->device_info, "playlist-formats", &playlist_formats, NULL);
+
+	if (playlist_formats == NULL || g_strv_length (playlist_formats) == 0 || strv_contains (playlist_formats, "audio/x-scpls")) {
+		result = TOTEM_PL_PARSER_PLS;
+	} else if (strv_contains (playlist_formats, "audio/x-mpegurl")) {
+		result = TOTEM_PL_PARSER_M3U;
+	} else if (strv_contains (playlist_formats, "audio/x-iriver-pla")) {
+		result = TOTEM_PL_PARSER_IRIVER_PLA;
+	} else {
+		/* now what? */
+		result = TOTEM_PL_PARSER_PLS;
 	}
 
-	if (priv->playlist_format_m3u) {
-		/* FIXME
-		 * we probably need to use TOTEM_PL_PARSER_M3U_DOS
-		 * for some devices..
-		 */
-		return TOTEM_PL_PARSER_M3U;
-	}
-
-	if (priv->playlist_format_iriver_pla) {
-		return TOTEM_PL_PARSER_IRIVER_PLA;
-	}
-
-	/* now what? */
-	return TOTEM_PL_PARSER_PLS;
+	g_strfreev (playlist_formats);
+	return result;
 }
 
 char *
 rb_generic_player_source_get_playlist_path (RBGenericPlayerSource *source)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	char *path;
 
-	return g_strdup (priv->playlist_path);
+	g_object_get (priv->device_info, "playlist-path", &path, NULL);
+	return path;
 }
-
-
-/* generic HAL-related code */
-
-#ifdef HAVE_HAL
-static LibHalContext *
-get_hal_context (void)
-{
-	LibHalContext *ctx = NULL;
-	DBusConnection *conn = NULL;
-	DBusError error;
-	gboolean result = FALSE;
-
-	dbus_error_init (&error);
-	ctx = libhal_ctx_new ();
-	if (ctx == NULL)
-		return NULL;
-
-	conn = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
-	if (conn != NULL && !dbus_error_is_set (&error)) {
-		libhal_ctx_set_dbus_connection (ctx, conn);
-		if (libhal_ctx_init (ctx, &error))
-			result = TRUE;
-	}
-
-	if (dbus_error_is_set (&error)) {
-		free_dbus_error ("setting up hal context", &error);
-		result = FALSE;
-	}
-
-	if (!result) {
-		libhal_ctx_free (ctx);
-		ctx = NULL;
-	}
-	return ctx;
-}
-
-static void
-cleanup_hal_context (LibHalContext *ctx)
-{
-	DBusError error;
-	if (ctx == NULL)
-		return;
-
-	dbus_error_init (&error);
-	libhal_ctx_shutdown (ctx, &error);
-	libhal_ctx_free (ctx);
-	free_dbus_error ("cleaning up hal context", &error);
-}
-
-static char *
-get_hal_udi_for_player (LibHalContext *ctx, GMount *mount)
-{
-	DBusError error;
-	char *udi;
-	GVolume *volume;
-
-	volume = g_mount_get_volume (mount);
-	if (volume == NULL) {
-		return NULL;
-	}
-
-	udi = rb_gvolume_get_udi (volume, ctx);
-
-	if (udi == NULL) {
-		g_object_unref (volume);
-		return NULL;
-	}
-
-	dbus_error_init (&error);
-	/* find the udi of the player itself */
-	rb_debug ("searching for player udi from %s", udi);
-	while (!libhal_device_query_capability (ctx, udi, "portable_audio_player", &error) &&
-	       !dbus_error_is_set (&error)) {
-		char *new_udi;
-
-		new_udi = libhal_device_get_property_string (ctx, udi, "info.parent", &error);
-		if (dbus_error_is_set (&error))
-			break;
-
-		rb_debug ("parent of udi %s: %s", udi, new_udi);
-		g_free (udi);
-		udi = NULL;
-
-		if (new_udi == NULL) {
-			break;
-		}
-		if (strcmp (new_udi, "/") == 0) {
-			libhal_free_string (new_udi);
-			break;
-		}
-
-		udi = g_strdup (new_udi);
-		libhal_free_string (new_udi);
-	}
-
-	if (dbus_error_is_set (&error)) {
-		g_free (udi);
-		udi = NULL;
-		free_dbus_error ("finding audio player udi", &error);
-	}
-
-	g_object_unref (volume);
-	return udi;
-}
-
-static void
-free_dbus_error (const char *what, DBusError *error)
-{
-	if (dbus_error_is_set (error)) {
-		rb_debug ("%s: dbus error: %s", what, error->message);
-		dbus_error_free (error);
-	}
-}
-
-
-#endif
 
