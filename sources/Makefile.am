@@ -64,7 +64,6 @@ INCLUDES =						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(TOTEM_PLPARSER_CFLAGS)			\
-	$(HAL_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(NO_STRICT_ALIASING_CFLAGS)
 

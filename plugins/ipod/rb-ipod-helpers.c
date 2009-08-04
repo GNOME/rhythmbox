@@ -405,143 +405,57 @@ rb_ipod_helpers_mount_has_ipod_db (GMount *mount)
         return result;
 }
 
-#ifdef HAVE_HAL
-static gboolean
-volume_is_ipod (GVolume *volume)
-{
-	LibHalContext *ctx;
-	DBusConnection *conn;
-	char *parent_udi, *udi;
-	char **methods_list;
-	guint i;
-	gboolean result;
-	DBusError error;
-	gboolean inited = FALSE;
-
-	result = FALSE;
-	dbus_error_init (&error);
-
-	udi = NULL;
-	conn = NULL;
-	parent_udi = NULL;
-	methods_list = NULL;
-
-	ctx = libhal_ctx_new ();
-	if (ctx == NULL) {
-		/* FIXME: should we return an error somehow so that we can
-		 * fall back to a check for iTunesDB presence instead ?
-		 */
-		rb_debug ("cannot connect to HAL");
-		goto end;
-	}
-	conn = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
-	if (conn == NULL || dbus_error_is_set (&error))
-		goto end;
-
-	libhal_ctx_set_dbus_connection (ctx, conn);
-	if (!libhal_ctx_init (ctx, &error) || dbus_error_is_set (&error))
-		goto end;
-
-	udi = rb_gvolume_get_udi (volume, ctx);
-	if (udi == NULL)
-		goto end;
-
-	inited = TRUE;
-	parent_udi = libhal_device_get_property_string (ctx, udi,
-							"info.parent", &error);
-	if (parent_udi == NULL || dbus_error_is_set (&error))
-		goto end;
-	methods_list = libhal_device_get_property_strlist (ctx, parent_udi,
-							   "portable_audio_player.access_method.protocols", &error);
-	if (methods_list == NULL || dbus_error_is_set (&error))
-		goto end;
-	for (i = 0; methods_list[i] != NULL; i++) {
-		if (strcmp ("ipod", methods_list[i]) == 0) {
-			result = TRUE;
-			break;
-		}
-	}
-
-end:
-	g_free (udi);
-	g_free (parent_udi);
-	libhal_free_string_array (methods_list);
-
-	if (dbus_error_is_set (&error)) {
-		rb_debug ("Error: %s\n", error.message);
-		dbus_error_free (&error);
-		dbus_error_init (&error);
-	}
-
-	if (ctx) {
-		if (inited)
-			libhal_ctx_shutdown (ctx, &error);
-		libhal_ctx_free(ctx);
-	}
-
-	dbus_error_free (&error);
-
-	return result;
-}
-
 gboolean
-rb_ipod_helpers_is_ipod (GMount *mount)
-{
-	gboolean result;
-	GVolume *volume;
-	GFile *root;
-
-	root = g_mount_get_root (mount);
-	if (root != NULL) {
-		if (g_file_has_uri_scheme (root, "afc") != FALSE) {
-			g_object_unref (root);
-			return TRUE;
-		}
-		g_object_unref (root);
-	}
-
-	volume = g_mount_get_volume (mount);
-	if (volume == NULL)
-		return FALSE;
-
-	result = volume_is_ipod (volume);
-	g_object_unref (volume);
-
-	return result;
-}
-
-#else
-
-gboolean
-rb_ipod_helpers_is_ipod (GMount *mount)
+rb_ipod_helpers_is_ipod (GMount *mount, MPIDDevice *device_info)
 {
 	GFile *root;
-	gchar *mount_point;
 	gboolean result = FALSE;
+	char **protocols;
 
-	root = g_mount_get_root (mount);
-	if (root != NULL) {
-		gchar *device_dir;
+	/* if we have specific information about the device, use it.
+	 * otherwise, check if the device has an ipod device directory on it.
+	 */
+	g_object_get (device_info, "access-protocols", &protocols, NULL);
+	if (protocols != NULL && g_strv_length (protocols) > 0) {
+		int i;
 
-		mount_point = g_file_get_path (root);
-		if (mount_point != NULL) {
-			device_dir = itdb_get_device_dir (mount_point);
-			if (device_dir != NULL)  {
-				result = g_file_test (device_dir,
-						      G_FILE_TEST_IS_DIR);
-				g_free (device_dir);
+		for (i = 0; protocols[i] != NULL; i++) {
+			if (g_str_equal (protocols[i], "ipod")) {
+				result = TRUE;
+				break;
 			}
 		}
+	} else {
+		root = g_mount_get_root (mount);
+		if (root != NULL) {
+			gchar *device_dir;
 
-		g_free (mount_point);
-		g_object_unref (root);
+			if (g_file_has_uri_scheme (root, "afc") != FALSE) {
+				result = TRUE;
+			} else {
+				gchar *mount_point;
+				mount_point = g_file_get_path (root);
+				if (mount_point != NULL) {
+					device_dir = itdb_get_device_dir (mount_point);
+					if (device_dir != NULL)  {
+						result = g_file_test (device_dir,
+								      G_FILE_TEST_IS_DIR);
+						g_free (device_dir);
+					}
+				}
+
+				g_free (mount_point);
+			}
+			g_object_unref (root);
+		}
 	}
 
+	g_strfreev (protocols);
 	return result;
 }
 #endif
-
-gboolean rb_ipod_helpers_needs_init (GMount *mount)
+gboolean
+rb_ipod_helpers_needs_init (GMount *mount)
 {
 	/* This function is a useless one-liner for now, but it should check
 	 * for the existence of the firsttime file on the ipod to tell if
@@ -549,3 +463,4 @@ gboolean rb_ipod_helpers_needs_init (GMount *mount)
 	 */
 	return (!rb_ipod_helpers_mount_has_ipod_db (mount));
 }
+

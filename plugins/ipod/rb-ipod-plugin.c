@@ -233,7 +233,7 @@ static RBSource *
 create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *device_info, RBIpodPlugin *plugin)
 {
 	RBSource *src;
-	if (!rb_ipod_helpers_is_ipod (mount)) {
+	if (!rb_ipod_helpers_is_ipod (mount, device_info)) {
 		return NULL;
 	}
 
