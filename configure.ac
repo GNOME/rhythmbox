@@ -79,10 +79,12 @@ PKG_CHECK_EXISTS(gtk+-2.0 >= 2.16, [
 AM_CONDITIONAL(USE_GTK_STATUS_ICON, test x"$use_gtk_status_icon" = xyes)
 
 
+dnl  note: gio-unix-2.0 is here for libmediaplayerid
 PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  gtk+-2.0 >= $GTK_REQS			\
 		  glib-2.0 >= $GLIB_REQS		\
 		  gio-2.0 >= $GLIB_REQS			\
+		  gio-unix-2.0 >= $GLIB_REQS		\
 		  gnome-media-profiles >= $GNOME_MEDIA_PROFILES_REQS \
 		  libsoup-2.4 >= $LIBSOUP_REQS		\
 		  libsoup-gnome-2.4 >= $LIBSOUP_REQS	\
@@ -768,6 +770,7 @@ AC_OUTPUT([
 Makefile
 macros/Makefile
 lib/Makefile
+lib/libmediaplayerid/Makefile
 metadata/Makefile
 rhythmdb/Makefile
 widgets/Makefile

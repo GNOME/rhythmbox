@@ -1,4 +1,6 @@
 
+SUBDIRS = libmediaplayerid
+
 noinst_LTLIBRARIES = librb.la
 
 if MKDTEMP_MISSING
