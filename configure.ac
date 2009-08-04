@@ -43,6 +43,7 @@ TOTEM_PLPARSER_REQS=2.26.0
 VALA_REQS=0.1.0
 AVAHI_REQS=0.6
 LIBSOUP_REQS=2.26.0
+GUDEV_REQS=143
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
@@ -99,6 +100,31 @@ else
    fi
 fi
 
+dnl gudev
+AC_ARG_WITH(gudev,
+	    AC_HELP_STRING([--with-gudev],
+			   [Enable GUdev for hardware detection]),,
+	    with_gudev=auto)
+if test x"$with_gudev" != "xno"; then
+	PKG_CHECK_MODULES(GUDEV, gudev-1.0 >= $GUDEV_REQS,
+			  have_gudev=yes, have_gudev=no)
+	if test x"$have_gudev" = "xno" -a x"$with_gudev" = "xyes"; then
+	  AC_MSG_ERROR([GUdev explicitly requested, but is not available])
+	fi
+	if test x"$have_gudev" = "xyes"; then
+	  use_gudev=yes
+	  AC_SUBST(GUDEV_CFLAGS)
+	  AC_SUBST(GUDEV_LIBS)
+	  AC_DEFINE(HAVE_GUDEV, 1, [something])
+	else
+	  use_gudev=no
+	fi
+else
+  use_gudev=no
+fi
+AM_CONDITIONAL(USE_GUDEV, test x"$use_gudev" = xyes)
+
+dnl hal remnants
 AC_ARG_WITH(hal,
 	      AC_HELP_STRING([--without-hal],
 			     [Disable HAL support]))
@@ -907,10 +933,12 @@ if test x"$have_libnotify" = xyes; then
 else
 	AC_MSG_NOTICE([   libnotify support is disabled])
 fi
-if test x"$enable_hal" = xyes; then
+if test x"$use_gudev" = xyes; then
+	AC_MSG_NOTICE([** GUdev support enabled])
+elif test x"$enable_hal" = xyes; then
 	AC_MSG_NOTICE([** HAL support enabled])
 else
-	AC_MSG_NOTICE([   HAL support disabled])
+	AC_MSG_NOTICE([   GUdev support disabled])
 fi
 if test x"$enable_python" = xyes; then
 	AC_MSG_NOTICE([** Python plugin support enabled])
