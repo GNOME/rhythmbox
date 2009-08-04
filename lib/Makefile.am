@@ -47,10 +47,9 @@ INCLUDES =						\
 	-DEGG_SM_CLIENT_BACKEND_XSMP			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/widgets				\
-	$(HAL_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
-librb_la_LIBADD = $(HAL_LIBS) -lSM -lICE
+librb_la_LIBADD = -lSM -lICE
 
 BUILT_SOURCES=
 

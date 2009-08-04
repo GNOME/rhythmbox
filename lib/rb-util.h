@@ -100,8 +100,6 @@ void rb_set_tree_view_column_fixed_width (GtkWidget *treeview,
 GdkPixbuf *rb_scale_pixbuf_to_size (GdkPixbuf *pixbuf,
 				    GtkIconSize size);
 
-char *rb_gvolume_get_udi (GVolume *volume, gpointer ctx);
-
 G_END_DECLS
 
 #endif /* __RB_UTIL_H */
