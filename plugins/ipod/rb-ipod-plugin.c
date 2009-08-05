@@ -36,6 +36,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "mediaplayerid.h"
+
 #include "rb-ipod-helpers.h"
 #include "rb-removable-media-manager.h"
 #include "rb-sourcelist.h"

@@ -46,13 +46,11 @@
 #include "rb-removable-media-manager.h"
 #include "rb-generic-player-source.h"
 #include "rb-generic-player-playlist-source.h"
-#ifdef HAVE_HAL
-#include "rb-nokia770-source.h"
-#include "rb-psp-source.h"
-#endif
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-sourcelist.h"
+#include "rb-nokia770-source.h"
+#include "rb-psp-source.h"
 
 
 #define RB_TYPE_GENERIC_PLAYER_PLUGIN		(rb_generic_player_plugin_get_type ())

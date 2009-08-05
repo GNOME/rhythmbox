@@ -37,11 +37,9 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#ifdef HAVE_HAL
-#include <libhal.h>
-#include <dbus/dbus.h>
-#endif
 #include <totem-pl-parser.h>
+
+#include "mediaplayerid.h"
 
 #include "eel-gconf-extensions.h"
 #include "rb-generic-player-source.h"
@@ -525,7 +523,7 @@ rb_generic_player_is_mount_player (GMount *mount, MPIDDevice *device_info)
 	char **protocols;
 	gboolean result = FALSE;
 	int i;
-#ifdef HAVE_HAL
+
 	/* claim anything with 'storage' as an access protocol */
 	g_object_get (device_info, "access-protocols", &protocols, NULL);
 	if (protocols != NULL) {

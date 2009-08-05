@@ -38,11 +38,6 @@
 #include <gobject/gvaluecollector.h>
 #include <gio/gio.h>
 
-#ifdef HAVE_HAL
-#include <libhal.h>
-#include <dbus/dbus.h>
-#endif
-
 #include "rb-util.h"
 #include "rb-debug.h"
 

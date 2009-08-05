@@ -36,6 +36,8 @@
 #include "rhythmdb.h"
 #include "rb-shell.h"
 
+#include "mediaplayerid.h"
+
 G_BEGIN_DECLS
 
 #define RB_TYPE_REMOVABLE_MEDIA_MANAGER         (rb_removable_media_manager_get_type ())

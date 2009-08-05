@@ -30,6 +30,8 @@
 #ifndef __RB_NOKIA770_SOURCE_H
 #define __RB_NOKIA770_SOURCE_H
 
+#include "mediaplayerid.h"
+
 #include "rb-shell.h"
 #include "rb-generic-player-source.h"
 #include "rhythmdb.h"

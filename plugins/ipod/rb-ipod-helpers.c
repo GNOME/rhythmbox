@@ -37,10 +37,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <gpod/itdb.h>
-#ifdef HAVE_HAL
-#include <libhal.h>
-#include <dbus/dbus.h>
-#endif
 
 #include "rb-ipod-helpers.h"
 #include "rb-util.h"
@@ -453,7 +449,7 @@ rb_ipod_helpers_is_ipod (GMount *mount, MPIDDevice *device_info)
 	g_strfreev (protocols);
 	return result;
 }
-#endif
+
 gboolean
 rb_ipod_helpers_needs_init (GMount *mount)
 {

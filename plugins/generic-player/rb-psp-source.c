@@ -37,8 +37,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <libhal.h>
-#include <dbus/dbus.h>
+#include "mediaplayerid.h"
 
 #include "eel-gconf-extensions.h"
 #include "rb-psp-source.h"
@@ -48,6 +47,7 @@
 #include "rb-auto-playlist-source.h"
 #include "rhythmdb.h"
 #include "rb-plugin.h"
+
 
 static void rb_psp_source_create_playlists (RBGenericPlayerSource *source);
 

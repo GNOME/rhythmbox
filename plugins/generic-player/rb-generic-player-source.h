@@ -34,6 +34,8 @@
 #include "rb-removable-media-source.h"
 #include "rhythmdb.h"
 
+#include "mediaplayerid.h"
+
 #include <totem-pl-parser.h>
 
 G_BEGIN_DECLS

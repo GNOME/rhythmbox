@@ -44,6 +44,11 @@
 #include <gtk/gtk.h>
 #include <gio/gio.h>
 
+#if defined(HAVE_GUDEV)
+#define G_UDEV_API_IS_SUBJECT_TO_CHANGE
+#include <gudev/gudev.h>
+#endif
+
 #include "rb-removable-media-manager.h"
 #include "rb-library-source.h"
 #include "rb-removable-media-source.h"
@@ -556,7 +561,7 @@ mount_removed_cb (GVolumeMonitor *monitor,
 	rb_removable_media_manager_remove_mount (mgr, mount);
 }
 
-
+#if defined(HAVE_GUDEV)
 static void
 uevent_cb (GUdevClient *client, const char *action, GUdevDevice *device, RBRemovableMediaManager *mgr)
 {

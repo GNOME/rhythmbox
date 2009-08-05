@@ -30,6 +30,8 @@
 #ifndef __RB_PSP_SOURCE_H
 #define __RB_PSP_SOURCE_H
 
+#include "mediaplayerid.h"
+
 #include "rb-shell.h"
 #include "rb-generic-player-source.h"
 #include "rhythmdb.h"

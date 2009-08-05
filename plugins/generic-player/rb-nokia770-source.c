@@ -36,8 +36,8 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <dbus/dbus.h>
-#include <libhal.h>
+
+#include "mediaplayerid.h"
 
 #include "eel-gconf-extensions.h"
 #include "rb-nokia770-source.h"
