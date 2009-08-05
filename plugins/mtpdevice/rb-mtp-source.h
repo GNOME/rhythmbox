@@ -54,7 +54,12 @@ typedef struct
 	RBRemovableMediaSourceClass parent;
 } RBMtpSourceClass;
 
-RBBrowserSource *	rb_mtp_source_new		(RBShell *shell, LIBMTP_mtpdevice_t *device, const char *udi);
+#if defined(HAVE_GUDEV)
+RBSource *		rb_mtp_source_new		(RBShell *shell, LIBMTP_mtpdevice_t *device);
+#else
+RBSource *		rb_mtp_source_new		(RBShell *shell, LIBMTP_mtpdevice_t *device, const char *udi);
+#endif
+
 GType			rb_mtp_source_get_type		(void);
 GType			rb_mtp_source_register_type	(GTypeModule *module);
 

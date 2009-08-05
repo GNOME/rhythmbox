@@ -44,6 +44,7 @@ VALA_REQS=0.1.0
 AVAHI_REQS=0.6
 LIBSOUP_REQS=2.26.0
 GUDEV_REQS=143
+LIBMTP_REQS=0.3.0
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
@@ -168,27 +169,26 @@ AC_ARG_WITH(mtp,
 			   [Enable MTP support]),,
 	      with_mtp=auto)
 if test "x$with_mtp" != "xno"; then
-
-	PKG_CHECK_MODULES(MTP, libmtp, have_libmtp=yes, have_libmtp=no)
-	if test "x$have_libmtp" = "xno" -a "x$with_mtp" = "xyes"; then
-	  AC_MSG_ERROR([MTP explicitly requested but libmtp couldn't be found])
+	can_use_mtp=no
+	if test x"$use_gudev" = "xyes" -o x"$enable_hal" = "xyes"; then
+	  can_use_mtp=yes
 	fi
-	if test "x$have_libmtp" = "xyes"; then
-          if test "x$with_hal" = xyes && test "x$enable_hal" = xno; then
-	     AC_MSG_ERROR([MTP explicitly requested but HAL not found or too old])
+
+	PKG_CHECK_MODULES(MTP, libmtp >= $LIBMTP_REQS, have_libmtp=yes, have_libmtp=no)
+	if test x"$with_mtp" = "xyes"; then
+	  if test x"$have_libmtp" = "xno"; then
+	    AC_MSG_ERROR([MTP explicitly requested but libmtp is not available])
 	  fi
-          if test "x$enable_hal" = xyes; then
-	     use_mtp=yes
-	     dnl Check for libmtp 0.3.0+
-	     PKG_CHECK_EXISTS(libmtp >= 0.3.0, found_libmtp_030_pkg=yes, found_libmtp_030_pkg=no)
-	     if test x"$found_libmtp_030_pkg" = "xyes" ; then
-	       AC_DEFINE([HAVE_LIBMTP_030], 1, [indicates whether libmtp 0.3.0 is installed])
-	     fi
-          fi
+	  if test x"$can_use_mtp" = "xno"; then
+	    AC_MSG_ERROR([MTP explicitly requested but GUdev and HAL are not available])
+	  fi
+	fi
+	if test "x$have_libmtp" = "xyes" -a "x$can_use_mtp" = "xyes"; then
+	  use_mtp=yes
 	  AC_SUBST(MTP_CFLAGS)
 	  AC_SUBST(MTP_LIBS)
 	fi
-fi			  
+fi
 AM_CONDITIONAL(USE_MTP, test x"$use_mtp" = xyes)
 
 

@@ -37,10 +37,16 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <libmtp.h>
+
+#if defined(HAVE_GUDEV)
+#define G_UDEV_API_IS_SUBJECT_TO_CHANGE
+#include <gudev/gudev.h>
+#else
 #include <hal/libhal.h>
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib.h>
 #include <dbus/dbus-glib-lowlevel.h>
+#endif
 
 #include "rb-source.h"
 #include "rb-sourcelist.h"
@@ -51,6 +57,7 @@
 #include "rb-util.h"
 #include "rb-shell.h"
 #include "rb-stock-icons.h"
+#include "rb-removable-media-manager.h"
 
 
 #define RB_TYPE_MTP_PLUGIN		(rb_mtp_plugin_get_type ())
@@ -69,10 +76,14 @@ typedef struct
 	GtkActionGroup *action_group;
 	guint ui_merge_id;
 
+	guint create_device_source_id;
+
 	GList *mtp_sources;
 
+#if !defined(HAVE_GUDEV)
 	LibHalContext *hal_context;
 	DBusConnection *dbus_connection;
+#endif
 } RBMtpPlugin;
 
 typedef struct
@@ -89,11 +100,14 @@ static void rb_mtp_plugin_finalize (GObject *object);
 static void impl_activate (RBPlugin *plugin, RBShell *shell);
 static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
+#if defined(HAVE_GUDEV)
+static RBSource* create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device, RBMtpPlugin *plugin);
+#else
 static void rb_mtp_plugin_device_added (LibHalContext *context, const char *udi);
 static void rb_mtp_plugin_device_removed (LibHalContext *context, const char *udi);
 static gboolean rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin);
-
 static RBSource* create_source_cb (RBMtpPlugin *plugin, LIBMTP_mtpdevice_t *device, const char *udi);
+#endif
 static void rb_mtp_plugin_eject  (GtkAction *action, RBMtpPlugin *plugin);
 static void rb_mtp_plugin_rename (GtkAction *action, RBMtpPlugin *plugin);
 
@@ -149,16 +163,22 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 {
 	RBMtpPlugin *plugin = RB_MTP_PLUGIN (bplugin);
 	GtkUIManager *uimanager = NULL;
+	RBRemovableMediaManager *rmm;
 	char *file = NULL;
+#if defined(HAVE_GUDEV)
+	gboolean rmm_scanned = FALSE;
+#else
 	int num, i, ret;
 	char **devices;
 	LIBMTP_device_entry_t *entries;
 	int numentries;
+#endif
 
 	plugin->shell = shell;
 
 	g_object_get (G_OBJECT (shell),
 		     "ui-manager", &uimanager,
+		     "removable-media-manager", &rmm,
 		     NULL);
 
 	/* ui */
@@ -174,9 +194,22 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 	g_object_unref (G_OBJECT (uimanager));
 
 	/* device detection */
+#if defined(HAVE_GUDEV)
+	plugin->create_device_source_id =
+		g_signal_connect_object (rmm,
+					 "create-source-device",
+					 G_CALLBACK (create_source_device_cb),
+					 plugin,
+					 0);
 
+	/* only scan if we're being loaded after the initial scan has been done */
+	g_object_get (rmm, "scanned", &rmm_scanned, NULL);
+	if (rmm_scanned)
+		rb_removable_media_manager_scan (rmm);
+#else
 	if (rb_mtp_plugin_setup_dbus_hal_connection (plugin) == FALSE) {
 		rb_debug ("not scanning for MTP devices because we couldn't get a HAL context");
+		g_object_unref (rmm);
 		return;
 	}
 
@@ -213,6 +246,10 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 
 	libhal_free_string_array (devices);
 	rb_profile_end ("scanning for MTP devices");
+
+#endif
+
+	g_object_unref (rmm);
 }
 
 static void
@@ -220,9 +257,11 @@ impl_deactivate (RBPlugin *bplugin, RBShell *shell)
 {
 	RBMtpPlugin *plugin = RB_MTP_PLUGIN (bplugin);
 	GtkUIManager *uimanager = NULL;
+	RBRemovableMediaManager *rmm = NULL;
 
 	g_object_get (G_OBJECT (shell),
 		      "ui-manager", &uimanager,
+		      "removable-media-manager", &rmm,
 		      NULL);
 
 	gtk_ui_manager_remove_ui (uimanager, plugin->ui_merge_id);
@@ -232,6 +271,10 @@ impl_deactivate (RBPlugin *bplugin, RBShell *shell)
 	g_list_free (plugin->mtp_sources);
 	plugin->mtp_sources = NULL;
 
+#if defined(HAVE_GUDEV)
+	g_signal_handler_disconnect (rmm, plugin->create_device_source_id);
+	plugin->create_device_source_id = 0;
+#else
 	if (plugin->hal_context != NULL) {
 		DBusError error;
 		dbus_error_init (&error);
@@ -246,15 +289,88 @@ impl_deactivate (RBPlugin *bplugin, RBShell *shell)
 		dbus_connection_unref (plugin->dbus_connection);
 		plugin->dbus_connection = NULL;
 	}
+#endif
 
-	g_object_unref (G_OBJECT (uimanager));
+	g_object_unref (uimanager);
+	g_object_unref (rmm);
 }
 
 static void
-rb_mtp_plugin_source_deleted (RBMtpSource *source, RBMtpPlugin *plugin)
+source_deleted_cb (RBMtpSource *source, RBMtpPlugin *plugin)
 {
 	plugin->mtp_sources = g_list_remove (plugin->mtp_sources, source);
 }
+
+#if defined(HAVE_GUDEV)
+static RBSource *
+create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device, RBMtpPlugin *plugin)
+{
+	GUdevDeviceNumber device_number;
+	int i;
+	int num_raw_devices;
+	const char *devnum_str;
+	int devnum;
+	LIBMTP_raw_device_t *raw_devices;
+
+	/* check subsystem == usb? */
+	if (g_strcmp0 (g_udev_device_get_subsystem (G_UDEV_DEVICE (device)), "usb") != 0) {
+		rb_debug ("this is not a USB device");
+		return NULL;
+	}
+
+	device_number = g_udev_device_get_device_number (G_UDEV_DEVICE (device));
+	if (device_number == 0) {
+		rb_debug ("can't get udev device number for this device");
+		return NULL;
+	}
+	/* fun thing: usb device numbers are zero padded, which causes strtol to
+	 * interpret them as octal if you don't specify a base.
+	 */
+	devnum_str = g_udev_device_get_property (G_UDEV_DEVICE (device), "DEVNUM");
+	if (devnum_str == NULL) {
+		rb_debug ("device doesn't have a USB device number");
+		return NULL;
+	}
+	devnum = strtol (devnum_str, NULL, 10);
+
+	rb_debug ("trying to match device %x (usb device %d) against detected mtp devices",
+		  device_number, devnum);
+
+	/* see what devices libmtp can find */
+	if (LIBMTP_Detect_Raw_Devices (&raw_devices, &num_raw_devices) == 0) {
+		for (i = 0; i < num_raw_devices; i++) {
+			LIBMTP_mtpdevice_t *device;
+			RBSource *source;
+
+			rb_debug ("detected mtp device: device number %d", raw_devices[i].devnum);
+
+			/* check bus number/device location somehow */
+			if (devnum != raw_devices[i].devnum) {
+				rb_debug ("device number mismatches: %d vs %d", devnum, raw_devices[i].devnum);
+				continue;
+			}
+
+			device = LIBMTP_Open_Raw_Device (&raw_devices[i]);
+			if (device == NULL) {
+				rb_debug ("unable to open device.  weird.");
+				break;
+			}
+
+			rb_debug ("device matched, creating a source");
+			source = rb_mtp_source_new (plugin->shell, device);
+			plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
+			g_signal_connect_object (G_OBJECT (source),
+						"deleted", G_CALLBACK (source_deleted_cb),
+						plugin, 0);
+			return source;
+		}
+	}
+
+	rb_debug ("device didn't match anything");
+	return NULL;
+}
+
+#else
 
 static RBSource *
 create_source_cb (RBMtpPlugin *plugin, LIBMTP_mtpdevice_t *device, const char *udi)
@@ -267,15 +383,17 @@ create_source_cb (RBMtpPlugin *plugin, LIBMTP_mtpdevice_t *device, const char *u
 	plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
 
 	g_signal_connect_object (G_OBJECT (source),
-				"deleted", G_CALLBACK (rb_mtp_plugin_source_deleted),
+				"deleted", G_CALLBACK (source_deleted_cb),
 				plugin, 0);
 
 	return source;
 }
 
+#endif
+
+
 static void
-rb_mtp_plugin_eject (GtkAction *action,
-			   RBMtpPlugin *plugin)
+rb_mtp_plugin_eject (GtkAction *action, RBMtpPlugin *plugin)
 {
 	RBSourceList *sourcelist = NULL;
 	RBSource *source = NULL;
@@ -299,8 +417,7 @@ rb_mtp_plugin_eject (GtkAction *action,
 }
 
 static void
-rb_mtp_plugin_rename (GtkAction *action,
-			   RBMtpPlugin *plugin)
+rb_mtp_plugin_rename (GtkAction *action, RBMtpPlugin *plugin)
 {
 	RBSourceList *sourcelist = NULL;
 	RBSource *source = NULL;
@@ -322,6 +439,8 @@ rb_mtp_plugin_rename (GtkAction *action,
 	g_object_unref (sourcelist);
 	g_object_unref (source);
 }
+
+#if !defined(HAVE_GUDEV)
 
 static void
 rb_mtp_plugin_device_added (LibHalContext *context, const char *udi)
@@ -428,3 +547,4 @@ rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin)
 	return TRUE;
 }
 
+#endif

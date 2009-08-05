@@ -54,40 +54,6 @@
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/mtp/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/mtp/show_browser"
 
-#ifndef HAVE_LIBMTP_030
-/*
- * Helpful macros to determine filetype properties
- */
-#define LIBMTP_FILETYPE_IS_AUDIO(a)\
-(a == LIBMTP_FILETYPE_WAV ||\
- a == LIBMTP_FILETYPE_MP3 ||\
- a == LIBMTP_FILETYPE_MP2 ||\
- a == LIBMTP_FILETYPE_WMA ||\
- a == LIBMTP_FILETYPE_OGG ||\
- a == LIBMTP_FILETYPE_FLAC ||\
- a == LIBMTP_FILETYPE_AAC ||\
- a == LIBMTP_FILETYPE_M4A ||\
- a == LIBMTP_FILETYPE_UNDEF_AUDIO)
-
-#define LIBMTP_FILETYPE_IS_VIDEO(a)\
-(a == LIBMTP_FILETYPE_WMV ||\
- a == LIBMTP_FILETYPE_AVI ||\
- a == LIBMTP_FILETYPE_MPEG ||\
- a == LIBMTP_FILETYPE_UNDEF_VIDEO)
-
-#define LIBMTP_FILETYPE_IS_AUDIOVIDEO(a)\
-(a == LIBMTP_FILETYPE_MP4 ||\
- a == LIBMTP_FILETYPE_ASF ||\
- a == LIBMTP_FILETYPE_QT)
-
-#define LIBMTP_FILETYPE_IS_TRACK(a)\
-(LIBMTP_FILETYPE_IS_AUDIO(a) ||\
- LIBMTP_FILETYPE_IS_VIDEO(a) ||\
- LIBMTP_FILETYPE_IS_AUDIOVIDEO(a))
-
-#endif
-
-
 static GObject *rb_mtp_source_constructor (GType type,
 					   guint n_construct_properties,
 					   GObjectConstructParam *construct_properties);
@@ -146,7 +112,9 @@ typedef struct
 	GHashTable *entry_map;
 	GHashTable *album_map;
 	GHashTable *artwork_request_map;
+#if !defined(HAVE_GUDEV)
 	char *udi;
+#endif
 	uint16_t supported_types[LIBMTP_FILETYPE_UNKNOWN+1];
 	GList *mediatypes;
 	gboolean album_art_supported;
@@ -227,6 +195,7 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 							       "libmtp-device",
 							       "libmtp device",
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+#if !defined(HAVE_GUDEV)
 	g_object_class_install_property (object_class,
 					 PROP_UDI,
 					 g_param_spec_string ("udi",
@@ -234,6 +203,7 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 							      "udi",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+#endif
 
 	g_type_class_add_private (klass, sizeof (RBMtpSourcePrivate));
 }
@@ -422,9 +392,11 @@ rb_mtp_source_set_property (GObject *object,
 	case PROP_LIBMTP_DEVICE:
 		priv->device = g_value_get_pointer (value);
 		break;
+#if !defined(HAVE_GUDEV)
 	case PROP_UDI:
 		priv->udi = g_value_dup_string (value);
 		break;
+#endif
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -443,9 +415,11 @@ rb_mtp_source_get_property (GObject *object,
 	case PROP_LIBMTP_DEVICE:
 		g_value_set_pointer (value, priv->device);
 		break;
+#if !defined(HAVE_GUDEV)
 	case PROP_UDI:
 		g_value_set_string (value, priv->udi);
 		break;
+#endif
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -486,7 +460,9 @@ rb_mtp_source_finalize (GObject *object)
 	g_hash_table_destroy (priv->album_map);
 	g_hash_table_destroy (priv->artwork_request_map);
 
+#if !defined(HAVE_GUDEV)
 	g_free (priv->udi);
+#endif
 
 	LIBMTP_Release_Device (priv->device);
 
@@ -505,10 +481,16 @@ impl_get_paned_key (RBBrowserSource *source)
 	return g_strdup (CONF_STATE_PANED_POSITION);
 }
 
-RBBrowserSource *
+#if defined(HAVE_GUDEV)
+RBSource *
+rb_mtp_source_new (RBShell *shell,
+		   LIBMTP_mtpdevice_t *device)
+#else
+RBSource *
 rb_mtp_source_new (RBShell *shell,
 		   LIBMTP_mtpdevice_t *device,
 		   const char *udi)
+#endif
 {
 	RBMtpSource *source = NULL;
 	RhythmDBEntryType entry_type;
@@ -532,12 +514,14 @@ rb_mtp_source_new (RBShell *shell,
 					      "volume", NULL,
 					      "source-group", RB_SOURCE_GROUP_DEVICES,
 					      "libmtp-device", device,
+#if !defined(HAVE_GUDEV)
 					      "udi", udi,
+#endif
 					      NULL));
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
-	return RB_BROWSER_SOURCE (source);
+	return RB_SOURCE (source);
 }
 
 static void
@@ -691,11 +675,7 @@ load_mtp_db_idle_cb (RBMtpSource* source)
 		device_forgets_albums = FALSE;
 	}
 
-#ifdef HAVE_LIBMTP_030
 	tracks = LIBMTP_Get_Tracklisting_With_Callback (priv->device, NULL, NULL);
-#else
-	tracks = LIBMTP_Get_Tracklisting (priv->device);
-#endif
 	report_libmtp_errors (priv->device, FALSE);
 	if (tracks != NULL) {
 		LIBMTP_track_t *track;
@@ -1003,11 +983,7 @@ transfer_track (RBMtpSource *source,
 		  LIBMTP_Get_Filetype_Description (trackmeta->filetype),
 		  mimetype);
 
-#ifdef HAVE_LIBMTP_030
 	ret = LIBMTP_Send_Track_From_File (device, filename, trackmeta, NULL, NULL);
-#else
-	ret = LIBMTP_Send_Track_From_File (device, filename, trackmeta, NULL, NULL, 0);
-#endif
 	rb_debug ("LIBMTP_Send_Track_From_File (%s) returned %d", filename, ret);
 	if (ret != 0) {
 		report_libmtp_errors (device, TRUE);
