@@ -353,8 +353,8 @@ have_sj_metadata_getter=no
 AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
 				[don't build with MusicBrainz support]))
 if test x"$enable_musicbrainz" != "xno"; then
-	PKG_CHECK_MODULES(MUSICBRAINZ3, libmusicbrainz3 >= $MUSICBRAINZ3_REQS, [have_musicbrainz3=yes], [have_musicbrainz3=no])
-	PKG_CHECK_MODULES(MUSICBRAINZ, libmusicbrainz >= $MUSICBRAINZ_REQS, [have_musicbrainz=yes], [have_musicbrainz=no])
+	PKG_CHECK_MODULES(MUSICBRAINZ3, libmusicbrainz3 >= $MUSICBRAINZ3_REQS gtk+-2.0 >= 2.17.6, [have_musicbrainz3=yes], [have_musicbrainz3=no])
+	PKG_CHECK_MODULES(MUSICBRAINZ, libmusicbrainz >= $MUSICBRAINZ_REQS gtk+-2.0 >= 2.17.6, [have_musicbrainz=yes], [have_musicbrainz=no])
 
 	AC_SUBST(MUSICBRAINZ3_CFLAGS)
 	AC_SUBST(MUSICBRAINZ3_LIBS)

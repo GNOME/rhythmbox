@@ -93,6 +93,9 @@ static gboolean update_album_cb (GtkWidget *widget, GdkEventFocus *event, RBAudi
 static gboolean update_genre_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
 static gboolean update_year_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
 static gboolean update_disc_number_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
+#ifdef HAVE_SJ_METADATA_GETTER
+static void info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *source);
+#endif
 
 typedef struct
 {
@@ -114,6 +117,11 @@ typedef struct
 #ifdef HAVE_SJ_METADATA_GETTER
 	GtkActionGroup *action_group;
 	SjMetadataGetter *metadata;
+
+	GtkWidget *info_bar;
+	GtkWidget *info_bar_label;
+
+	char *submit_url;
 #endif
 } RBAudioCdSourcePrivate;
 
@@ -126,7 +134,7 @@ static AlbumDetails* multiple_album_dialog (GList *albums, RBAudioCdSource *sour
 static GtkActionEntry rb_audiocd_source_actions [] =
 {
 	{ "AudioCdSourceReloadMetadata", GTK_STOCK_REFRESH, N_("Reload"), NULL,
-	N_("Reload Metadata"),
+	N_("Reload Album Information"),
 	G_CALLBACK (rb_audiocd_source_cmd_reload_metadata) },
 };
 #endif
@@ -198,6 +206,8 @@ rb_audiocd_source_finalize (GObject *object)
 		g_object_unref (priv->action_group);
 		priv->action_group = NULL;
 	}
+	g_free (priv->submit_url);
+	priv->submit_url = NULL;
 #endif
 
 	if (priv->tracks) {
@@ -279,6 +289,10 @@ rb_audiocd_source_constructor (GType type,
 		RBAudioCdSourcePrivate *priv;
 		GtkWidget *table;
 		GtkBuilder *builder;
+#ifdef HAVE_SJ_METADATA_GETTER
+		GtkWidget *box;
+		char *message;
+#endif
 
 		priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 
@@ -287,6 +301,26 @@ rb_audiocd_source_constructor (GType type,
 
 		table = GTK_WIDGET (gtk_builder_get_object (builder, "album_info"));
 		g_assert (table != NULL);
+
+#ifdef HAVE_SJ_METADATA_GETTER
+		/* Info bar for non-Musicbrainz data */
+		priv->info_bar = gtk_info_bar_new_with_buttons (_("S_ubmit Album"), GTK_RESPONSE_OK,
+								_("Hide"), GTK_RESPONSE_CANCEL,
+								NULL);
+		message = g_strdup_printf ("<b>%s</b>\n%s", _("Could not find this album on MusicBrainz."),
+					   _("You can improve the MusicBrainz database by adding this album."));
+		priv->info_bar_label = gtk_label_new (NULL);
+		gtk_label_set_markup (GTK_LABEL (priv->info_bar_label), message);
+		gtk_label_set_justify (GTK_LABEL (priv->info_bar_label), GTK_JUSTIFY_LEFT);
+		g_free (message);
+		box = gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->info_bar));
+		gtk_container_add (GTK_CONTAINER (box), priv->info_bar_label);
+		gtk_widget_show_all (box);
+		gtk_widget_set_no_show_all (priv->info_bar, TRUE);
+		g_signal_connect (G_OBJECT (priv->info_bar), "response",
+				  G_CALLBACK (info_bar_response_cb), source);
+		gtk_table_attach_defaults (GTK_TABLE (table), priv->info_bar, 0, 2, 0, 1);
+#endif
 
 		priv->artist_entry = GTK_WIDGET (gtk_builder_get_object (builder, "artist_entry"));
 		priv->artist_sort_entry = GTK_WIDGET (gtk_builder_get_object (builder, "artist_sort_entry"));
@@ -708,6 +742,9 @@ metadata_cb (SjMetadataGetter *metadata,
 	g_value_init (&true_value, G_TYPE_BOOLEAN);
 	g_value_set_boolean (&true_value, TRUE);
 
+	g_free (priv->submit_url);
+	priv->submit_url = NULL;
+
 	/* if we have multiple results, ask the user to pick one */
 	if (g_list_length (albums) > 1) {
 		album = multiple_album_dialog (albums, source);
@@ -715,6 +752,12 @@ metadata_cb (SjMetadataGetter *metadata,
 			album = (AlbumDetails *)albums->data;
 	} else
 		album = (AlbumDetails *)albums->data;
+
+	if (album->metadata_source != SOURCE_MUSICBRAINZ) {
+		priv->submit_url = sj_metadata_getter_get_submit_url (metadata);
+		if (priv->submit_url != NULL)
+			gtk_widget_show (priv->info_bar);
+	}
 
 	if (album->metadata_source == SOURCE_FALLBACK) {
 		rb_debug ("ignoring CD metadata from fallback source");
@@ -1176,4 +1219,25 @@ update_disc_number_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource 
 
 	return FALSE;
 }
+
+#ifdef HAVE_SJ_METADATA_GETTER
+static void
+info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *source)
+{
+	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
+	GError *error = NULL;
+
+	g_return_if_fail (priv->submit_url != NULL);
+
+	if (response_id == GTK_RESPONSE_OK) {
+		if (!gtk_show_uri (NULL, priv->submit_url, GDK_CURRENT_TIME, &error)) {
+			rb_debug ("Could not launch submit URL %s: %s", priv->submit_url, error->message);
+			g_error_free (error);
+			return;
+		}
+	}
+
+	gtk_widget_hide (priv->info_bar);
+}
+#endif
 
