@@ -78,6 +78,9 @@ static GList* impl_get_ui_actions (RBSource *source);
 
 static void impl_pack_paned (RBBrowserSource *source, GtkWidget *paned);
 
+static void rb_audiocd_source_cmd_reload_metadata (GtkAction *action,
+						   RBAudioCdSource *source);
+
 static gpointer rb_audiocd_load_songs (RBAudioCdSource *source);
 static void rb_audiocd_load_metadata (RBAudioCdSource *source, RhythmDB *db);
 static void rb_audiocd_load_metadata_cancel (RBAudioCdSource *source);
@@ -109,6 +112,7 @@ typedef struct
 	GtkWidget *disc_number_entry;
 
 #ifdef HAVE_SJ_METADATA_GETTER
+	GtkActionGroup *action_group;
 	SjMetadataGetter *metadata;
 #endif
 } RBAudioCdSourcePrivate;
@@ -118,6 +122,13 @@ RB_PLUGIN_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MED
 
 #ifdef HAVE_SJ_METADATA_GETTER
 static AlbumDetails* multiple_album_dialog (GList *albums, RBAudioCdSource *source);
+
+static GtkActionEntry rb_audiocd_source_actions [] =
+{
+	{ "AudioCdSourceReloadMetadata", GTK_STOCK_REFRESH, N_("Reload"), NULL,
+	N_("Reload Metadata"),
+	G_CALLBACK (rb_audiocd_source_cmd_reload_metadata) },
+};
 #endif
 
 static RhythmDB *
@@ -182,6 +193,13 @@ rb_audiocd_source_finalize (GObject *object)
 
 	g_free (priv->device_path);
 
+#ifdef HAVE_SJ_METADATA_GETTER
+	if (priv->action_group != NULL) {
+		g_object_unref (priv->action_group);
+		priv->action_group = NULL;
+	}
+#endif
+
 	if (priv->tracks) {
 		g_list_free (priv->tracks);
 		priv->tracks = NULL;
@@ -208,6 +226,7 @@ rb_audiocd_source_constructor (GType type,
 			       guint n_construct_properties,
 			       GObjectConstructParam *construct_properties)
 {
+	RBAudioCdSourcePrivate *priv;
 	RBAudioCdSource *source;
 	RBEntryView *entry_view;
 	RhythmDB *db;
@@ -216,9 +235,17 @@ rb_audiocd_source_constructor (GType type,
 
 	source = RB_AUDIOCD_SOURCE (G_OBJECT_CLASS (rb_audiocd_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
+	priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 
 	g_object_set (G_OBJECT (source), "name", "Unknown Audio", NULL);
 
+#ifdef HAVE_SJ_METADATA_GETTER
+	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
+							       "AudiocdActions",
+							       rb_audiocd_source_actions,
+							       G_N_ELEMENTS (rb_audiocd_source_actions),
+							       source);
+#endif
 	/* we want audio cds to sort by track# by default */
 	entry_view = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_set_sorting_order (entry_view, "Track", GTK_SORT_ASCENDING);
@@ -515,6 +542,15 @@ rb_audiocd_scan_songs (RBAudioCdSource *source,
 }
 
 #ifdef HAVE_SJ_METADATA_GETTER
+static void
+rb_audiocd_source_cmd_reload_metadata (GtkAction *action, RBAudioCdSource *source)
+{
+	RhythmDB *db;
+
+	db = get_db_for_source (source);
+	rb_audiocd_load_metadata (source, db);
+	g_object_unref (db);
+}
 
 /*
  * Called by the Multiple Album dialog when the user hits return in
@@ -952,6 +988,10 @@ impl_get_ui_actions (RBSource *source)
 
 	actions = g_list_prepend (actions, g_strdup ("RemovableSourceCopyAllTracks"));
 	actions = g_list_prepend (actions, g_strdup ("RemovableSourceEject"));
+
+#ifdef HAVE_SJ_METADATA_GETTER
+	actions = g_list_prepend (actions, g_strdup ("AudioCdSourceReloadMetadata"));
+#endif
 
 	return actions;
 }
