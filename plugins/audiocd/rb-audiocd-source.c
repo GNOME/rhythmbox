@@ -93,7 +93,7 @@ static gboolean update_album_cb (GtkWidget *widget, GdkEventFocus *event, RBAudi
 static gboolean update_genre_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
 static gboolean update_year_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
 static gboolean update_disc_number_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
-#ifdef HAVE_SJ_METADATA_GETTER
+#if defined(HAVE_SJ_METADATA_GETTER) && GTK_CHECK_VERSION(2,17,6)
 static void info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *source);
 #endif
 
@@ -289,7 +289,7 @@ rb_audiocd_source_constructor (GType type,
 		RBAudioCdSourcePrivate *priv;
 		GtkWidget *table;
 		GtkBuilder *builder;
-#ifdef HAVE_SJ_METADATA_GETTER
+#if defined(HAVE_SJ_METADATA_GETTER) && GTK_CHECK_VERSION(2,17,6)
 		GtkWidget *box;
 		char *message;
 #endif
@@ -302,7 +302,7 @@ rb_audiocd_source_constructor (GType type,
 		table = GTK_WIDGET (gtk_builder_get_object (builder, "album_info"));
 		g_assert (table != NULL);
 
-#ifdef HAVE_SJ_METADATA_GETTER
+#if defined(HAVE_SJ_METADATA_GETTER) && GTK_CHECK_VERSION(2,17,6)
 		/* Info bar for non-Musicbrainz data */
 		priv->info_bar = gtk_info_bar_new_with_buttons (_("S_ubmit Album"), GTK_RESPONSE_OK,
 								_("Hide"), GTK_RESPONSE_CANCEL,
@@ -753,11 +753,13 @@ metadata_cb (SjMetadataGetter *metadata,
 	} else
 		album = (AlbumDetails *)albums->data;
 
+#if GTK_CHECK_VERSION(2,17,6)
 	if (album->metadata_source != SOURCE_MUSICBRAINZ) {
 		priv->submit_url = sj_metadata_getter_get_submit_url (metadata);
 		if (priv->submit_url != NULL)
 			gtk_widget_show (priv->info_bar);
 	}
+#endif
 
 	if (album->metadata_source == SOURCE_FALLBACK) {
 		rb_debug ("ignoring CD metadata from fallback source");
@@ -1220,7 +1222,7 @@ update_disc_number_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource 
 	return FALSE;
 }
 
-#ifdef HAVE_SJ_METADATA_GETTER
+#if defined(HAVE_SJ_METADATA_GETTER) && GTK_CHECK_VERSION(2,17,6)
 static void
 info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *source)
 {
