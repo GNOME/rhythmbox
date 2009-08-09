@@ -95,6 +95,7 @@ void		rb_file_helpers_init	(gboolean uninstalled);
 void		rb_file_helpers_shutdown(void);
 
 char *		rb_uri_get_filesystem_type (const char *uri);
+void		rb_sanitize_path_for_msdos_filesystem (char *path);
 char *		rb_sanitize_uri_for_filesystem(const char *uri);
 
 G_END_DECLS

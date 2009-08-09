@@ -1200,6 +1200,17 @@ rb_uri_get_filesystem_type (const char *uri)
 }
 
 /**
+ * rb_sanitize_path_for_msdos_filesystem:
+ * @path: a path to sanitize (modified in place)
+ */
+void
+rb_sanitize_path_for_msdos_filesystem (char *path)
+{
+	g_strdelimit (path, "\"", '\'');
+	g_strdelimit (path, ":|<>*?\\", '_');
+}
+
+/**
  * rb_sanitize_uri_for_filesystem:
  * @uri: a URI to sanitize
  *
@@ -1229,8 +1240,7 @@ rb_sanitize_uri_for_filesystem (const char *uri)
 			return g_strdup (uri);
 		}
 
-		g_strdelimit (full_path, "\"", '\'');
-		g_strdelimit (full_path, ":|<>*?\\", '_');
+		rb_sanitize_path_for_msdos_filesystem (full_path);
 
 		/* create a new uri from this */
 		sane_uri = g_filename_to_uri (full_path, hostname, &error);
