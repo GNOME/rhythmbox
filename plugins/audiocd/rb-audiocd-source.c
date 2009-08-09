@@ -78,8 +78,10 @@ static GList* impl_get_ui_actions (RBSource *source);
 
 static void impl_pack_paned (RBBrowserSource *source, GtkWidget *paned);
 
+#ifdef HAVE_SJ_METADATA_GETTER
 static void rb_audiocd_source_cmd_reload_metadata (GtkAction *action,
 						   RBAudioCdSource *source);
+#endif
 
 static gpointer rb_audiocd_load_songs (RBAudioCdSource *source);
 static void rb_audiocd_load_metadata (RBAudioCdSource *source, RhythmDB *db);
