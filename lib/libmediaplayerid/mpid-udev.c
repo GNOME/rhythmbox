@@ -45,9 +45,10 @@ mpid_device_db_lookup (MPIDDevice *device)
 		udevice = g_udev_client_query_by_device_file (client, devpath);
 		if (udevice != NULL) {
 
-			/* get vendor and model names */
+			/* get vendor and model names and the UUID */
 			device->model = g_strdup (g_udev_device_get_property (udevice, "ID_MODEL"));
 			device->vendor = g_strdup (g_udev_device_get_property (udevice, "ID_VENDOR"));
+			device->fs_uuid = g_strdup (g_udev_device_get_property (udevice, "ID_FS_UUID"));
 
 			/* get media player information */
 			device_file = g_udev_device_get_property (udevice, "ID_MEDIA_PLAYER");

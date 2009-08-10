@@ -35,6 +35,7 @@ enum
 	PROP_SOURCE,
 	PROP_MODEL,
 	PROP_VENDOR,
+	PROP_FS_UUID,
 	PROP_DRIVE_TYPE,
 	PROP_REQUIRES_EJECT,
 	PROP_ACCESS_PROTOCOLS,
@@ -69,6 +70,7 @@ mpid_device_debug (MPIDDevice *device, const char *what)
 	}
 	mpid_debug_str ("model", device->model);
 	mpid_debug_str ("vendor", device->vendor);
+	mpid_debug_str ("filesystem uuid", device->fs_uuid);
 	mpid_debug_str ("drive type", device->drive_type);
 	mpid_debug ("requires eject: %s\n", device->requires_eject ? "true" : "false");
 	mpid_debug_strv ("access protocols", device->access_protocols);
@@ -207,6 +209,9 @@ mpid_device_get_property (GObject *object, guint prop_id, GValue *value, GParamS
 	case PROP_VENDOR:
 		g_value_set_string (value, device->vendor);
 		break;
+	case PROP_FS_UUID:
+		g_value_set_string (value, device->fs_uuid);
+		break;
 	case PROP_DRIVE_TYPE:
 		g_value_set_string (value, device->drive_type);
 		break;
@@ -247,6 +252,7 @@ mpid_device_finalize (GObject *object)
 
 	g_free (device->model);
 	g_free (device->vendor);
+	g_free (device->fs_uuid);
 	g_free (device->drive_type);
 
 	g_strfreev (device->access_protocols);
@@ -333,6 +339,13 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 					 g_param_spec_string ("vendor",
 							      "device vendor",
 							      "device vendor name",
+							      NULL,
+							      G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_FS_UUID,
+					 g_param_spec_string ("fs-uuid",
+							      "device filesystem UUID",
+							      "device filesystem UUID",
 							      NULL,
 							      G_PARAM_READABLE));
 	g_object_class_install_property (object_class,

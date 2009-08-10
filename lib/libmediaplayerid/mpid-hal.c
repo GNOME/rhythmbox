@@ -101,6 +101,10 @@ find_portable_audio_player_udi (LibHalContext *context, MPIDDevice *device, cons
 	udi = g_strdup (udis[0]);
 	libhal_free_string_array (udis);
 
+	/* while we're here, grab the volume UUID */
+	device->fs_uuid = libhal_device_get_property_string (context, udi, "volume.uuid", &error);
+	free_dbus_error ("finding volume UUID", &error);
+
 	/* walk up the device hierarchy until we find something with the portable_audio_player
 	 * capability.  if we don't find anything, give up.
 	 */
