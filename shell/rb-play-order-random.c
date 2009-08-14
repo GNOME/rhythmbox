@@ -164,22 +164,24 @@ get_query_model_contents (RBRandomPlayOrder *rorder, RhythmDBQueryModel *model)
 	double weight = 0.0;
 	double cumulative_weight = 0.0;
 	GtkTreeIter iter;
-	GArray *result = g_array_new (FALSE, FALSE, sizeof (EntryWeight));
+	GArray *result;
 
-	if (model == NULL)
-		return result;
+	if (model == NULL) {
+		return NULL;
+	}
 
 	num_entries = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
-	if (num_entries == 0)
-		return result;
-
-	g_array_set_size (result, num_entries);
-	db = rb_play_order_get_db (RB_PLAY_ORDER (rorder));
+	if (num_entries == 0) {
+		return NULL;
+	}
 
 	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter))
-		return result;
+		return NULL;
 
 	i = 0;
+	result = g_array_new (FALSE, FALSE, sizeof (EntryWeight));
+	g_array_set_size (result, num_entries);
+	db = rb_play_order_get_db (RB_PLAY_ORDER (rorder));
 	do {
 		RhythmDBEntry *entry = rhythmdb_query_model_iter_to_entry (model, &iter);
 
@@ -274,12 +276,20 @@ rb_random_play_order_pick_entry (RBRandomPlayOrder *rorder)
 	RhythmDBQueryModel *model;
 
 	model = rb_play_order_get_query_model (RB_PLAY_ORDER (rorder));
-
 	entry_weights = get_query_model_contents (rorder, model);
+	if (entry_weights == NULL) {
+		rb_debug ("nothing to choose from");
+		return NULL;
+	}
 
 	total_weight = rb_random_get_total_weight (entry_weights);
-	if (total_weight == 0.0)
-		return NULL;
+	if (total_weight == 0.0) {
+		low = g_random_int_range (0, entry_weights->len);
+		rb_debug ("total weight is 0; picked entry %d of %d randomly", low, entry_weights->len);
+		entry = g_array_index (entry_weights, EntryWeight, low).entry;
+		g_array_free (entry_weights, TRUE);
+		return entry;
+	}
 
 	rnd = g_random_double_range (0, total_weight);
 	/* Binary search for the entry with cumulative weight closest to but
@@ -293,6 +303,8 @@ rb_random_play_order_pick_entry (RBRandomPlayOrder *rorder)
 			low = mid;
 	}
 	entry = g_array_index (entry_weights, EntryWeight, low).entry;
+	rb_debug ("picked entry %d of %d (total weight %f) for random value %f",
+		  low, entry_weights->len, total_weight, rnd);
 
 	g_array_free (entry_weights, TRUE);
 
