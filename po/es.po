@@ -10,15 +10,14 @@
 # maria <maria.majadas@hispalinux.es>, 2006, 2007.
 # Francisco Javier F. Serrador <serrador@tecknolabs.com>, 2004, 2005, 2006.
 # Claudio Saavedra <csaavedra@alumnos.utalca.cl>, 2007.
-# Jorge Gonzalez <jorgegonz@svn.gnome.org>, 2008.
 # Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-08-07 14:22+0000\n"
-"PO-Revision-Date: 2009-08-07 19:13+0200\n"
+"POT-Creation-Date: 2009-08-10 23:39+0000\n"
+"PO-Revision-Date: 2009-08-14 16:17+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -626,7 +625,7 @@ msgstr "%d %b %Y"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:95
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:180
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:181
-#: ../plugins/audiocd/rb-audiocd-source.c:434
+#: ../plugins/audiocd/rb-audiocd-source.c:436
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:493
@@ -642,7 +641,7 @@ msgstr "%d %b %Y"
 #: ../plugins/lyrics/lyrics/__init__.py:83
 #: ../plugins/mtpdevice/rb-mtp-source.c:536
 #: ../plugins/mtpdevice/rb-mtp-source.c:907
-#: ../plugins/mtpdevice/rb-mtp-source.c:994
+#: ../plugins/mtpdevice/rb-mtp-source.c:995
 #: ../plugins/status-icon/rb-status-icon-plugin.c:727
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
 #: ../podcast/rb-podcast-manager.c:1873
@@ -776,11 +775,11 @@ msgstr "Soltar aquí la portada"
 
 #: ../plugins/audiocd/audiocd.rb-plugin.in.h:1
 msgid "Audio CD Player"
-msgstr "Reproductor de CD de audio"
+msgstr "Reproductor de CD de sonido"
 
 #: ../plugins/audiocd/audiocd.rb-plugin.in.h:2
 msgid "Support for playing of audio CDs as music source"
-msgstr "Soporte para reproducción de audio CDs como fuente de música"
+msgstr "Soporte para reproducción de audio CD como fuente de música"
 
 #: ../plugins/audiocd/album-info.ui.h:1
 msgid "A_lbum:"
@@ -810,64 +809,62 @@ msgstr ""
 msgid "_Continue"
 msgstr "_Continuar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:136
+#: ../plugins/audiocd/rb-audiocd-source.c:138
 msgid "Reload"
 msgstr "Recargar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:137
-#| msgid "Magnatune Information"
+#: ../plugins/audiocd/rb-audiocd-source.c:139
 msgid "Reload Album Information"
 msgstr "Recargar la información del álbum"
 
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:307
-#| msgid "_Album:"
+#: ../plugins/audiocd/rb-audiocd-source.c:309
 msgid "S_ubmit Album"
 msgstr "_Enviar á_lbum"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:308
+#: ../plugins/audiocd/rb-audiocd-source.c:310
 msgid "Hide"
 msgstr "Ocultar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:310
+#: ../plugins/audiocd/rb-audiocd-source.c:312
 msgid "Could not find this album on MusicBrainz."
 msgstr "No se pudo obtener información acerca de este álbum en MusicBrainz."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:311
+#: ../plugins/audiocd/rb-audiocd-source.c:313
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Puede mejorar la base de datos de MusicBrainz añadiendo este álbum."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:438
+#: ../plugins/audiocd/rb-audiocd-source.c:440
 msgid "<Invalid unicode>"
 msgstr "<Unicode inválido>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:484
+#: ../plugins/audiocd/rb-audiocd-source.c:486
 #, c-format
 msgid "Track %u"
 msgstr "Pista %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:544
-#: ../plugins/audiocd/rb-audiocd-source.c:552
-#: ../plugins/audiocd/rb-audiocd-source.c:938
+#: ../plugins/audiocd/rb-audiocd-source.c:546
+#: ../plugins/audiocd/rb-audiocd-source.c:554
+#: ../plugins/audiocd/rb-audiocd-source.c:942
 msgid "Couldn't load Audio CD"
-msgstr "No se pudo cargar un CD de audio"
+msgstr "No se pudo cargar un CD de sonido"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:545
+#: ../plugins/audiocd/rb-audiocd-source.c:547
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox no pudo acceder al CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:553
+#: ../plugins/audiocd/rb-audiocd-source.c:555
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox pudo leer la información del CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:651
+#: ../plugins/audiocd/rb-audiocd-source.c:653
 #: ../sources/rb-library-source.c:150 ../widgets/rb-entry-view.c:1476
 #: ../widgets/rb-query-creator-properties.c:75
 #: ../widgets/rb-query-creator-properties.c:105
 msgid "Title"
 msgstr "Título"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:658
+#: ../plugins/audiocd/rb-audiocd-source.c:660
 #: ../sources/rb-library-source.c:141 ../widgets/rb-entry-view.c:1486
 #: ../widgets/rb-library-browser.c:143
 #: ../widgets/rb-query-creator-properties.c:76
@@ -875,7 +872,7 @@ msgstr "Título"
 msgid "Artist"
 msgstr "Artista"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:939
+#: ../plugins/audiocd/rb-audiocd-source.c:943
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox no pudo obtener acceso al dispositivo CD."
 
@@ -1266,7 +1263,7 @@ msgstr "Añadiendo canción a sus pistas preferidas"
 #: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:1
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:1
 msgid "Audio CD Recorder"
-msgstr "Grabadora de CD de audio"
+msgstr "Grabadora de CD de sonido"
 
 #: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:2
 msgid "Record audio CDs from playlists and duplicate audio CDs"
@@ -1276,12 +1273,12 @@ msgstr ""
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:98
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:89
 msgid "_Create Audio CD..."
-msgstr "_Crear CD de audio…"
+msgstr "_Crear CD de sonido…"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:99
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:90
 msgid "Create an audio CD from playlist"
-msgstr "Crear un CD de audio desde la lista de reproducción"
+msgstr "Crear un CD de sonido desde la lista de reproducción"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:101
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:92
@@ -1339,11 +1336,11 @@ msgstr "Copiar CD"
 
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:2
 msgid "Support for recording audio CDs from playlists"
-msgstr "Soporte para grabar un CD de audio desde listas de reproducción"
+msgstr "Soporte para grabar un CD de sonido desde listas de reproducción"
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:193
 msgid "Unable to create audio CD"
-msgstr "No se pudo crear un CD de audio"
+msgstr "No se pudo crear un CD de sonido"
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:246
 msgid "Could not duplicate disc"
@@ -1497,7 +1494,7 @@ msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
 msgstr ""
-"Se terminó la creación del CD de audio.\n"
+"Se terminó la creación del CD de sonido.\n"
 "¿Quiere crear otra copia?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:549
@@ -1538,7 +1535,7 @@ msgstr "_Interrumpir"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:831
 msgid "Could not create audio CD"
-msgstr "No se pudo crear un CD de audio"
+msgstr "No se pudo crear un CD de sonido"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:853
 msgid "Please make sure another application is not using the drive."
@@ -1637,12 +1634,12 @@ msgstr "No se ha podido eliminar el directorio temporal «%s»: %s"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1365
 msgid "Create Audio CD"
-msgstr "Crear CD de audio"
+msgstr "Crear CD de sonido"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1383
 #, c-format
 msgid "Create audio CD from '%s'?"
-msgstr "¿Desea crear un CD de audio desde «%s»?"
+msgstr "¿Desea crear un CD de sonido desde «%s»?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1429
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1447
@@ -1687,7 +1684,7 @@ msgstr ""
 
 #: ../plugins/cd-recorder/recorder.ui.h:1
 msgid "Create audio CD from playlist?"
-msgstr "¿Crear un CD de audio con la  lista de reproducción?"
+msgstr "¿Crear un CD de sonido con la lista de reproducción?"
 
 #: ../plugins/cd-recorder/recorder.ui.h:2
 msgid "Options"
@@ -2464,7 +2461,7 @@ msgid ""
 "    * Downloads and CDs are both available (no other site on the internet "
 "sells both)"
 msgstr ""
-"    * Tanto descargas como CDs están disponibles (ningún otro sitio en la "
+"    * Tanto descargas como CD están disponibles (ningún otro sitio en la "
 "Internet vende ambos)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:6
@@ -3231,15 +3228,18 @@ msgid "Visible with notifications"
 msgstr "Visibles con notificaciones"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:11
-msgid "_Mouse Wheel"
-msgstr "Rueda del _ratón"
+#| msgid "_Mouse Wheel"
+msgid "_Mouse wheel:"
+msgstr "Rueda del _ratón:"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:12
-msgid "_Notifications"
-msgstr "_Notificaciones"
+#| msgid "_Notifications"
+msgid "_Notifications:"
+msgstr "_Notificaciones:"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:13
-msgid "_Status Icon:"
+#| msgid "_Status Icon:"
+msgid "_Status icon:"
 msgstr "Icono de _estado:"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:229
