@@ -1145,7 +1145,7 @@ construct_widgets (RBShell *shell)
 				 vbox2, TRUE, TRUE);
 		gtk_paned_pack2 (GTK_PANED (shell->priv->right_paned),
 				 GTK_WIDGET (shell->priv->right_sidebar_container),
-				 FALSE, TRUE);
+				 FALSE, FALSE);
 		gtk_widget_hide (GTK_WIDGET(shell->priv->right_sidebar_container));
 
 		gtk_box_pack_start (shell->priv->sidebar_container,
