@@ -126,6 +126,7 @@ rb_itdb_save (RbIpodDb *ipod_db, GError **error)
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 	GError *err = NULL;
 
+	rb_debug ("Writing iPod database to disk");
 	if (itdb_write (priv->itdb, &err) == FALSE) {
 		g_warning ("Could not write database to iPod: %s", err->message);
 		g_propagate_error (error, err);
@@ -828,7 +829,6 @@ saving_thread (RbIpodDb *ipod_db)
 
 	g_assert (priv->read_only);
 
-	rb_debug ("Writing iPod database to disk");
 	rb_itdb_save (ipod_db, NULL);
 	priv->save_idle_id = g_idle_add ((GSourceFunc)ipod_db_saved_idle_cb, 
 					 ipod_db);
