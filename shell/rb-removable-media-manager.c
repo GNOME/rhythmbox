@@ -712,7 +712,11 @@ rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *moun
 	if (g_hash_table_lookup (priv->mount_mapping, mount) != NULL) {
 		return;
 	}
-
+#if GLIB_CHECK_VERSION(2, 20, 0)
+	if (g_mount_is_shadowed (mount) != FALSE) {
+		return;
+	}
+#endif
 	volume = g_mount_get_volume (mount);
 	if (volume == NULL) {
 		rb_debug ("Unhandled media, no volume for mount");
