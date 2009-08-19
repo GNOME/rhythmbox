@@ -1300,23 +1300,41 @@ build_ipod_dir_name (const char *mountpoint)
 	 */
 	char *dirname;
 	char *relpath;
+	char *ctrl_path, *ctrl_dir;
 	gint32 suffix;
 
-	suffix = g_random_int_range (0, 100);
+	/* Get the control directory first */
+	ctrl_path = itdb_get_control_dir (mountpoint);
+	if (ctrl_path == NULL) {
+		g_debug ("Couldn't find control directory for iPod at '%s'", mountpoint);
+		return NULL;
+	}
+	ctrl_dir = g_path_get_basename (ctrl_path);
+	if (ctrl_dir == NULL || *ctrl_dir == '.') {
+		g_free (ctrl_dir);
+		g_debug ("Couldn't find control directory for iPod at '%s' (got full path '%s'", mountpoint, ctrl_path);
+		g_free (ctrl_path);
+		return NULL;
+	}
+	g_free (ctrl_path);
+
+	suffix = g_random_int_range (0, 49);
 	dirname = g_strdup_printf ("F%02d", suffix);
-	relpath = g_build_filename (G_DIR_SEPARATOR_S, "iPod_Control",
+	relpath = g_build_filename (G_DIR_SEPARATOR_S, ctrl_dir,
 				    "Music", dirname, NULL);
 	g_free (dirname);
 
 	if (test_dir_on_ipod (mountpoint, relpath) != FALSE) {
+		g_free (ctrl_dir);
 		return relpath;
 	}
 
 	g_free (relpath);
-	dirname = g_strdup_printf ("f%02d", g_random_int_range (0, 100));
-	relpath = g_build_filename (G_DIR_SEPARATOR_S, "iPod_Control",
+	dirname = g_strdup_printf ("f%02d", suffix);
+	relpath = g_build_filename (G_DIR_SEPARATOR_S, ctrl_dir,
 				    "Music", dirname, NULL);
 	g_free (dirname);
+	g_free (ctrl_dir);
 
 	if (test_dir_on_ipod (mountpoint, relpath) != FALSE) {
 		return relpath;
