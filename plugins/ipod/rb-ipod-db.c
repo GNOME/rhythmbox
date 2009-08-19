@@ -124,9 +124,11 @@ static void
 rb_itdb_save (RbIpodDb *ipod_db, GError **error)
 {
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
+	GError *err = NULL;
 
-	itdb_write (priv->itdb, error);
-	if ((error != NULL) && (*error != NULL)) {
+	if (itdb_write (priv->itdb, &err) == FALSE) {
+		g_warning ("Could not write database to iPod: %s", err->message);
+		g_propagate_error (error, err);
 		return;
 	}
 	if (priv->needs_shuffle_db) {
