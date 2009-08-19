@@ -287,7 +287,11 @@ rb_ipod_helpers_show_first_time_dialog (GMount *mount, const char *builder_file)
 
 	/* get model number and name */
 	tree_model = gtk_combo_box_get_model (GTK_COMBO_BOX (widget));
-	gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter);
+	if (!gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter)) {
+		gtk_widget_destroy (dialog);
+		g_free (mountpoint);
+		return FALSE;
+	}
 	gtk_tree_model_get (tree_model, &iter, COL_INFO, &info, -1);
 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "name_entry"));
 	ipod_name = g_strdup (gtk_entry_get_text (GTK_ENTRY (widget)));
