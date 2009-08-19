@@ -2966,6 +2966,7 @@ rb_shell_load_uri (RBShell *shell,
 
 		totem_pl_parser_add_ignored_mimetype (parser, "x-directory/normal");
 		totem_pl_parser_add_ignored_mimetype (parser, "inode/directory");
+		totem_pl_parser_add_ignored_scheme (parser, "cdda");
 		g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
 
 		result = totem_pl_parser_parse (parser, uri, FALSE);
