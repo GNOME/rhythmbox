@@ -660,6 +660,13 @@ rb_removable_media_manager_add_volume (RBRemovableMediaManager *mgr, GVolume *vo
 
 	mount = g_volume_get_mount (volume);
 	if (mount != NULL) {
+#if GLIB_CHECK_VERSION(2, 20, 0)
+		if (g_mount_is_shadowed (mount) != FALSE) {
+			rb_debug ("mount is shadowed, so ignoring the volume");
+			g_object_unref (mount);
+			return;
+		}
+#endif
 		if (g_hash_table_lookup (priv->mount_mapping, mount) != NULL) {
 			/* this can probably never happen, but it's OK */
 			rb_debug ("already created a source for the mount, so ignoring the volume");
