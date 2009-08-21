@@ -1,16 +1,14 @@
 plugindir = $(PLUGINDIR)/sample-vala
-#plugin_LTLIBRARIES = libsample-vala.la
-noinst_LTLIBRARIES = libsample-vala.la
-
-nodist_libsample_vala_la_SOURCES = \
-	rb-sample-vala-plugin.c				\
-	rb-sample-vala-plugin.h
+plugin_LTLIBRARIES = libsample-vala.la
+#noinst_LTLIBRARIES = libsample-vala.la
 
 libsample_vala_la_SOURCES = \
 	rb-sample-vala-plugin.vala
 	
 libsample_vala_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
-libsample_vala_la_LIBTOOLFLAGS = --tag=disable-static
+
+# this causes automake to barf confusingly
+# libsample_vala_la_LIBTOOLFLAGS = --tag=disable-static
 
 libsample_vala_la_CFLAGS = $(WNOERROR_CFLAGS)
 
@@ -39,8 +37,10 @@ plugin_in_files = sample-vala.rb-plugin.in
 
 %.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po); $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
+VALAFLAGS = --vapidir=$(top_srcdir)/bindings/vala --pkg=rhythmdb --pkg=rb
+
 %.c %.h: %.vala
-	$(VALAC) -C --vapidir=$(top_srcdir)/bindings/vala --pkg=rhythmdb --pkg=rb $^
+	$(VALAC) -C $(VALAFLAGS) $^
 	
 # plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 
