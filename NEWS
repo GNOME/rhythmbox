@@ -1,3 +1,63 @@
+Overview of changes in Rhythmbox 0.12.4  "Raft"
+===============================================
+
+* New HAL-free media player detection code (using GUdev and
+  the media-player-id collection of device info files); improved MTP
+  device detection allowing multiple devices and devices not explicitly
+  supported by libmtp (Jonathan Matthew)
+* Audio CD improvements: allow metadata retrieval to be retried,
+  link to the musicbrainz submission page when data is missing
+  (Bastien Nocera, Matt N)
+* Configurable action for mouse-wheel events on the status icon
+  (volume control or next/previous track) (Gustavo Mora)
+* Rearranged to link properly (should help building on Windows or
+  with -Wl,-as-needed, probably) (Jonathan Matthew)
+* Variety of crashes fixed (Jonathan Matthew)
+* Occasional transfer problems with MTP devices fixed (Jonathan Matthew)
+
+Bugs fixed:
+
+322265 - Can't reload CD metadata
+376863 - option to configure default action of mouse roll event on tray icon
+437110 - librhythmbox-core.so missing some library links
+535065 - If a cd is not listed in musicbrainz it can not be added
+561953 - Scan Removable Devices don't works with MTP music players
+563544 - rework MTP device detection for libmtp 0.3.0
+580440 - lists with only one song don't repeat with both "repeat" and "shuffle" selected
+585595 - crash at end of playlist with crossfading disabled
+586598 - use streaming song titles for lyrics searches
+587662 - improved warning message in python plugin support code
+588248 - link last.fm plugin with libsoup-gnome
+588257 - occasional crash on shutdown
+590108 - crashes if there are no saveable metadata types
+591874 - pack right sidebar with shrinking disabled
+592325 - crashes initialising an iPod Touch
+
+New and updated translations:
+
+- ca, courtesy of Joan Duran
+- da, courtesy of Mads Lundby
+- de, courtesy of Christian Kirbach
+- en_GB, courtesy of Bruce Cowan
+- es, courtesy of Jorge González
+- et, courtesy of Mattias Põldaru
+- fi, courtesy of Tommi Vainikainen
+- fr, courtesy of Claude Paroz
+- gl, courtesy of Fran Dieguez
+- gu, courtesy of Sweta Kothari
+- hu, courtesy of Gabor Kelemen
+- it, courtesy of Luca Ferretti
+- ja, courtesy of Takayuki KUSANO
+- kn, courtesy of Shankar Prasad
+- nb, courtesy of Kjartan Maraas
+- pa, courtesy of A S Alam
+- pt_BR, courtesy of Og Maciel
+- sv, courtesy of Daniel Nylander
+- te, courtesy of Krishna Babu K
+- th, courtesy of Theppitak Karoonboonyanan
+- zh_CN, courtesy of fujianwzh
+
+
 Overview of changes in Rhythmbox 0.12.3  "Perfect Depth"
 ========================================================
 
