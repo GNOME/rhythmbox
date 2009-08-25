@@ -24,6 +24,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
+#
+# As of August 15, 2009, this search engine no longer works.
+# Amazon requires that requests be signed with a private key, which we cannot do.
+#
+
 from xml.dom import minidom
 import re
 import locale
