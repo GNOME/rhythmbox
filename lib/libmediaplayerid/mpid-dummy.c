@@ -18,6 +18,7 @@
  */
 
 #include "mediaplayerid.h"
+#include "mpid-private.h"
 
 void
 mpid_device_db_lookup (MPIDDevice *device)
