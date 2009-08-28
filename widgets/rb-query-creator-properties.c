@@ -164,12 +164,12 @@ const RBQueryCreatorCriteriaOption numeric_criteria_options[] =
 
 const RBQueryCreatorCriteriaOption year_criteria_options[] =
 {
+	/* Translators: this matches songs within 1-Jan-YEAR to 31-Dec-YEAR */
 	{ N_("in"), 1, RHYTHMDB_QUERY_PROP_YEAR_EQUALS },
-	/* matches if within 1-JAN-YEAR to 31-DEC-YEAR */
+	/* Translators: this matches songs after 31-Dec-YEAR */
 	{ N_("after"), 1, RHYTHMDB_QUERY_PROP_YEAR_GREATER },
-	/* matches if >= 31-DEC-YEAR */
+	/* Translators: this matches songs before 1-Jan-YEAR */
 	{ N_("before"), 1, RHYTHMDB_QUERY_PROP_YEAR_LESS }
-	/* matches if < 1-DEC-YEAR */
 };
 
 const RBQueryCreatorPropertyType rating_property_type =
