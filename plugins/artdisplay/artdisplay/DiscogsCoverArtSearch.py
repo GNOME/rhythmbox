@@ -217,6 +217,7 @@ class DiscogsCoverArtSearch (object):
 		for tag in parsed.getElementsByTagName('image'):
 			type = tag.attributes['type'].value
 			if type != 'primary':
+				continue
 
 			url = tag.attributes['uri'].value
 			url.strip()
