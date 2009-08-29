@@ -8,6 +8,7 @@ plugin_PYTHON = 			\
 	LocalCoverArtSearchGIO.py	\
 	CoverArtDatabase.py		\
 	DiscogsCoverArtSearch.py	\
+	MusicBrainzCoverArtSearch.py	\
 	__init__.py
 
 # the amazon cover art search no longer works
