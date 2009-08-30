@@ -804,8 +804,8 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 			e = rb_player_gst_find_element_with_property (mp->priv->audio_sink, "volume");
 			if (e != NULL) {
 				mp->priv->volume_applied = 1;
+				gst_object_unref (e);
 			}
-			gst_object_unref (e);
 
 			if (mp->priv->volume_applied < mp->priv->volume_changed) {
 				float volume = mp->priv->cur_volume * mp->priv->replaygain_scale;
