@@ -80,7 +80,7 @@ mpid_find_and_read_device_file (MPIDDevice *device, const char *device_file)
 		char *path;
 
 		filename = g_strdup_printf ("%s.mpi", device_file);
-		path = g_build_filename (data_dirs[i], "media-player-id", filename, NULL);
+		path = g_build_filename (data_dirs[i], "media-player-info", filename, NULL);
 		g_free (filename);
 		if (g_file_test (path, G_FILE_TEST_EXISTS)) {
 			device->source = MPID_SOURCE_SYSTEM;
@@ -88,6 +88,7 @@ mpid_find_and_read_device_file (MPIDDevice *device, const char *device_file)
 			g_free (path);
 			return;
 		}
+		g_free (path);
 	}
 
 	/* device info file is missing */
