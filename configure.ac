@@ -118,7 +118,7 @@ if test x"$with_gudev" != "xno"; then
 	  use_gudev=yes
 	  AC_SUBST(GUDEV_CFLAGS)
 	  AC_SUBST(GUDEV_LIBS)
-	  AC_DEFINE(HAVE_GUDEV, 1, [something])
+	  AC_DEFINE(HAVE_GUDEV, 1, [Use GUdev for hardware detection])
 	else
 	  use_gudev=no
 	fi
