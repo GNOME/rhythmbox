@@ -9,22 +9,22 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug."
 "cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-07-22 13:41+0000\n"
-"PO-Revision-Date: 2009-07-31 07:39+0530\n"
+"POT-Creation-Date: 2009-08-10 23:39+0000\n"
+"PO-Revision-Date: 2009-09-01 07:08+0530\n"
 "Last-Translator: A S Alam <aalam@users.sf.net>\n"
 "Language-Team: Punjabi/Panjabi <punjabi-users@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 0.3\n"
+"X-Generator: Lokalize 1.0\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:573
+#: ../backends/gstreamer/rb-encoder-gst.c:591
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "ਕੀ ਤੁਸੀਂ \"%s\" ਫਾਇਲ ਉੱਤੇ ਲਿਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:644
+#: ../backends/gstreamer/rb-encoder-gst.c:663
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "ਜੀਸਟਰੀਮਰ ਸਿੰਕ ਐਲੀਮੈਂਟ %s ਲਿਖਣ ਲਈ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ"
@@ -600,29 +600,29 @@ msgstr "%b %d %Y"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:581
-#: ../lib/rb-util.c:821
+#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:576
+#: ../lib/rb-util.c:816
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:93
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:95
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:180
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:181
-#: ../plugins/audiocd/rb-audiocd-source.c:373
+#: ../plugins/audiocd/rb-audiocd-source.c:436
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:493
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:497
 #: ../plugins/daap/rb-daap-connection.c:698
-#: ../plugins/generic-player/rb-generic-player-source.c:1401
-#: ../plugins/ipod/rb-ipod-source.c:305
+#: ../plugins/generic-player/rb-generic-player-source.c:1063
+#: ../plugins/ipod/rb-ipod-source.c:307
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:527
 #: ../plugins/iradio/rb-iradio-source.c:1092
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
 #: ../plugins/lyrics/lyrics/__init__.py:81
 #: ../plugins/lyrics/lyrics/__init__.py:83
-#: ../plugins/mtpdevice/rb-mtp-source.c:552
-#: ../plugins/mtpdevice/rb-mtp-source.c:927
-#: ../plugins/mtpdevice/rb-mtp-source.c:1018
+#: ../plugins/mtpdevice/rb-mtp-source.c:536
+#: ../plugins/mtpdevice/rb-mtp-source.c:907
+#: ../plugins/mtpdevice/rb-mtp-source.c:995
 #: ../plugins/status-icon/rb-status-icon-plugin.c:727
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
 #: ../podcast/rb-podcast-manager.c:1873
@@ -654,45 +654,45 @@ msgstr "ਬਹੁਤ ਸਾਰੇ ਸਿੰਮਲਿੰਕ"
 msgid "Cannot get free space at %s: %s"
 msgstr "%s 'ਤੇ ਖਾਲੀ ਥਾਂ ਮਿਲ ਨਹੀਂ ਸਕਦੀ ਹੈ: %s"
 
-#: ../lib/rb-util.c:583 ../remote/dbus/rb-client.c:144
+#: ../lib/rb-util.c:578 ../remote/dbus/rb-client.c:144
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:585 ../remote/dbus/rb-client.c:146
+#: ../lib/rb-util.c:580 ../remote/dbus/rb-client.c:146
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:620
+#: ../lib/rb-util.c:615
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d ਵਿਚੋਂ %d:%02d ਬਕਾਇਆ"
 
-#: ../lib/rb-util.c:624
+#: ../lib/rb-util.c:619
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d ਵਿੱਚੋਂ %d:%02d:%02d ਬਾਕੀ"
 
-#: ../lib/rb-util.c:629
+#: ../lib/rb-util.c:624
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d ਵਿਚੋਂ %d:%02d"
 
-#: ../lib/rb-util.c:633
+#: ../lib/rb-util.c:628
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d ਵਿੱਚੋਂ %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-dbus-client.c:377
+#: ../metadata/rb-metadata-dbus-client.c:381
 #, c-format
 msgid "Internal GStreamer problem; file a bug"
 msgstr "ਅੰਦਰੂਨੀ ਜੀ-ਸਟਰੀਮਰ ਗਲਤੀ, ਇੱਕ ਬੱਗ ਜਾਣਕਾਰੀ ਦਿਓ"
 
-#: ../metadata/rb-metadata-dbus-client.c:395
-#: ../metadata/rb-metadata-dbus-client.c:431
-#: ../metadata/rb-metadata-dbus-client.c:767
-#: ../metadata/rb-metadata-dbus-client.c:777
+#: ../metadata/rb-metadata-dbus-client.c:399
+#: ../metadata/rb-metadata-dbus-client.c:435
+#: ../metadata/rb-metadata-dbus-client.c:773
+#: ../metadata/rb-metadata-dbus-client.c:783
 #, c-format
 msgid "D-BUS communication error"
 msgstr "D-BUS ਕਮਿਊਨੀਕੇਸ਼ਨ ਗਲਤੀ"
@@ -789,37 +789,64 @@ msgstr ""
 msgid "_Continue"
 msgstr "ਜਾਰੀ ਰੱਖੋ(_C)"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:377
+#: ../plugins/audiocd/rb-audiocd-source.c:138
+msgid "Reload"
+msgstr "ਮੁੜ-ਲੋਡ ਕਰੋ"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:139
+#| msgid "Magnatune Information"
+msgid "Reload Album Information"
+msgstr "ਐਲਬਮ ਜਾਣਕਾਰੀ ਮੁੜ-ਲੋਡ ਕਰੋ"
+
+#. Info bar for non-Musicbrainz data
+#: ../plugins/audiocd/rb-audiocd-source.c:309
+#| msgid "_Album:"
+msgid "S_ubmit Album"
+msgstr "ਐਲਬਮ ਭੇਜੋ(_u)"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:310
+msgid "Hide"
+msgstr "ਓਹਲੇ"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:312
+msgid "Could not find this album on MusicBrainz."
+msgstr "MusicBrainz ਉੱਤੇ ਇਹ ਐਲਬਮ ਨਹੀਂ ਲੱਭੀ।"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:313
+msgid "You can improve the MusicBrainz database by adding this album."
+msgstr "ਤੁਸੀਂ ਇਹ ਐਲਬਮ MusicBrainz ਡਾਟਾ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਕੇ ਸੁਧਾਰ ਕਰ ਸਕਦੇ ਹੋ।"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:440
 msgid "<Invalid unicode>"
 msgstr "<ਗਲਤ ਯੂਨੀਕੋਡ>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:423
+#: ../plugins/audiocd/rb-audiocd-source.c:486
 #, c-format
 msgid "Track %u"
 msgstr "ਟਰੈਕ %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:483
-#: ../plugins/audiocd/rb-audiocd-source.c:491
-#: ../plugins/audiocd/rb-audiocd-source.c:859
+#: ../plugins/audiocd/rb-audiocd-source.c:546
+#: ../plugins/audiocd/rb-audiocd-source.c:554
+#: ../plugins/audiocd/rb-audiocd-source.c:942
 msgid "Couldn't load Audio CD"
 msgstr "ਆਡੀਓ CD ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:484
+#: ../plugins/audiocd/rb-audiocd-source.c:547
 msgid "Rhythmbox couldn't access the CD."
 msgstr "ਰੀਥਮਬਾਕਸ CD ਨੂੰ ਵਰਤ ਨਹੀਂ ਸਕਿਆ।"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:492
+#: ../plugins/audiocd/rb-audiocd-source.c:555
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "ਰੀਥਮਬਾਕਸ CD ਜਾਣਕਾਰੀ ਨੂੰ ਨਹੀਂ ਪੜ੍ਹ ਸਕਿਆ ਹੈ।"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:581
+#: ../plugins/audiocd/rb-audiocd-source.c:653
 #: ../sources/rb-library-source.c:150 ../widgets/rb-entry-view.c:1476
 #: ../widgets/rb-query-creator-properties.c:75
 #: ../widgets/rb-query-creator-properties.c:105
 msgid "Title"
 msgstr "ਟਾਈਟਲ"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:588
+#: ../plugins/audiocd/rb-audiocd-source.c:660
 #: ../sources/rb-library-source.c:141 ../widgets/rb-entry-view.c:1486
 #: ../widgets/rb-library-browser.c:143
 #: ../widgets/rb-query-creator-properties.c:76
@@ -827,7 +854,7 @@ msgstr "ਟਾਈਟਲ"
 msgid "Artist"
 msgstr "ਕਲਾਕਾਰ"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:860
+#: ../plugins/audiocd/rb-audiocd-source.c:943
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "ਰੀਥਮਬਾਕਸ CD ਡਰਾਇਵ ਨੂੰ ਨਹੀਂ ਵਰਤ ਸਕਿਆ ਹੈ।"
 
@@ -1822,24 +1849,24 @@ msgstr "ਪੋਰਟੇਬਲ ਪਲੇਅਰ"
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "ਸਧਾਰਨ ਆਡੀਓ ਪਲੇਅਰ ਜੰਤਰਾਂ (ਅਤੇ PSP ਅਤੇ ਨੋਕੀਆ 770) ਲਈ ਸਹਿਯੋਗ"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:98
+#: ../plugins/generic-player/rb-generic-player-plugin.c:96
 #: ../shell/rb-playlist-manager.c:1150 ../shell/rb-playlist-manager.c:1193
 msgid "New Playlist"
 msgstr "ਨਵੀਂ ਪਲੇਅਲਿਸਟ"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:99
+#: ../plugins/generic-player/rb-generic-player-plugin.c:97
 msgid "Create a new playlist on this device"
 msgstr "ਇਸ ਜੰਤਰ ਉੱਤੇ ਨਵੀਂ ਪਲੇਅਲਿਸਟ ਬਣਾਓ"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:101
+#: ../plugins/generic-player/rb-generic-player-plugin.c:99
 msgid "Delete Playlist"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਹਟਾਓ"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:102
+#: ../plugins/generic-player/rb-generic-player-plugin.c:100
 msgid "Delete this playlist"
 msgstr "ਇਹ ਸੰਗੀਤ-ਸੂਚੀ ਹਟਾਓ"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:982
+#: ../plugins/generic-player/rb-generic-player-source.c:627
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "ਇੰਪੋਰਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ (%d/%d)"
@@ -1993,60 +2020,60 @@ msgstr "ਨਾਂ(_N):"
 msgid "iPod detected"
 msgstr "iPod ਖੋਜਿਆ"
 
-#: ../plugins/ipod/rb-ipod-helpers.c:304
+#: ../plugins/ipod/rb-ipod-helpers.c:300
 msgid "Unable to initialize new iPod"
 msgstr "ਨਵਾਂ iPod ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਅਸਮਰੱਥ"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:104 ../plugins/ipod/rb-ipod-plugin.c:113
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:109 ../shell/rb-playlist-manager.c:184
+#: ../plugins/ipod/rb-ipod-plugin.c:107 ../plugins/ipod/rb-ipod-plugin.c:116
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:123 ../shell/rb-playlist-manager.c:184
 msgid "_Rename"
 msgstr "ਨਾਂ ਬਦਲੋ(_R)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:105
+#: ../plugins/ipod/rb-ipod-plugin.c:108
 msgid "Rename iPod"
 msgstr "iPod ਨਾਂ ਬਦਲੋ"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:107 ../shell/rb-shell-clipboard.c:188
+#: ../plugins/ipod/rb-ipod-plugin.c:110 ../shell/rb-shell-clipboard.c:188
 #: ../sources/rb-podcast-source.c:317
 msgid "_Properties"
 msgstr "ਵਿਸ਼ੇਸ਼ਤਾ(_P)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:108
+#: ../plugins/ipod/rb-ipod-plugin.c:111
 msgid "Display iPod properties"
 msgstr "iPod ਵਿਸ਼ੇਸ਼ਤਾ ਵੇਖੋ"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:110 ../shell/rb-shell-clipboard.c:175
+#: ../plugins/ipod/rb-ipod-plugin.c:113 ../shell/rb-shell-clipboard.c:175
 msgid "_New Playlist"
 msgstr "ਨਵੀਂ ਸੰਗੀਤ-ਸੂਚੀ(_N)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:111
+#: ../plugins/ipod/rb-ipod-plugin.c:114
 msgid "Add new playlist to iPod"
 msgstr "ਨਵੀਂ ਪਲੇਅਲਿਸਟ iPod ਵਿੱਚ ਸ਼ਾਮਲ"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:114 ../shell/rb-playlist-manager.c:185
+#: ../plugins/ipod/rb-ipod-plugin.c:117 ../shell/rb-playlist-manager.c:185
 msgid "Rename playlist"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਨਾਂ-ਤਬਦੀਲ"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:116 ../shell/rb-playlist-manager.c:187
+#: ../plugins/ipod/rb-ipod-plugin.c:119 ../shell/rb-playlist-manager.c:187
 msgid "_Delete"
 msgstr "ਹਟਾਓ(_D)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:117 ../shell/rb-playlist-manager.c:188
+#: ../plugins/ipod/rb-ipod-plugin.c:120 ../shell/rb-playlist-manager.c:188
 msgid "Delete playlist"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਹਟਾਓ"
 
-#: ../plugins/ipod/rb-ipod-source.c:1210 ../sources/rb-podcast-source.c:843
+#: ../plugins/ipod/rb-ipod-source.c:1212 ../sources/rb-podcast-source.c:843
 msgid "Podcasts"
 msgstr "ਪੋਡ-ਕਾਸਟ"
 
-#: ../plugins/ipod/rb-ipod-source.c:1563
+#: ../plugins/ipod/rb-ipod-source.c:1565
 msgid "New playlist"
 msgstr "ਨਵੀਂ ਪਲੇਅਲਿਸਟ"
 
 #. Translators: this is used to display the amount of storage space
 #. * used and the total storage space on an iPod.
 #.
-#: ../plugins/ipod/rb-ipod-source.c:1673
+#: ../plugins/ipod/rb-ipod-source.c:1675
 #, c-format
 msgid "%s of %s"
 msgstr "%2$s ਵਿੱਚੋਂ %1$s"
@@ -2914,24 +2941,24 @@ msgstr "%s ਵਿੱਚ ਲੋੜੀਦੀ ਥਾਂ ਨਹੀਂ"
 msgid "Unable to open temporary file: %s"
 msgstr "ਆਰਜ਼ੀ ਫਾਇਲਾਂ ਖੋਲ੍ਹਣ ਲਈ ਅਸਮਰੱਥ: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:106
-#: ../shell/rb-removable-media-manager.c:150
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:120
+#: ../shell/rb-removable-media-manager.c:165
 msgid "_Eject"
 msgstr "ਬਾਹਰ ਕੱਢੋ(_E)"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:107
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:121
 msgid "Eject MTP-device"
 msgstr "MTP-ਜੰਤਰ ਹਟਾਓ"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:110
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:124
 msgid "Rename MTP-device"
 msgstr "MTP-ਜੰਤਰ ਨਾਂ ਬਦਲੋ"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:177
+#: ../plugins/mtpdevice/rb-mtp-source.c:145
 msgid "Media player device error"
 msgstr "ਮੀਡਿਆ ਪਲੇਅਰ ਜੰਤਰ ਗਲਤੀ"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:753
+#: ../plugins/mtpdevice/rb-mtp-source.c:733
 msgid "Digital Audio Player"
 msgstr "ਡਿਜ਼ਿਟਲ ਆਡੀਓ ਪਲੇਅਰ"
 
@@ -2985,23 +3012,6 @@ msgstr "ਇੰਟਰਐਕਟਿਵ ਪਾਈਥਨ ਕੰਨਸੋਂਲ"
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:2
 msgid "Python Console"
 msgstr "ਪਾਈਥਨ ਕਨਸੋਲ"
-
-#: ../plugins/rb-plugin-manager.c:54
-msgid "Plugin"
-msgstr "ਪਲੱਗਇਨ"
-
-#: ../plugins/rb-plugin-manager.c:55
-msgid "Enabled"
-msgstr "ਯੋਗ ਕੀਤਾ"
-
-#: ../plugins/rb-plugins-engine.c:556
-msgid "Plugin Error"
-msgstr "ਪਲੱਗਇਨ ਗਲਤੀ"
-
-#: ../plugins/rb-plugins-engine.c:556
-#, c-format
-msgid "Unable to activate plugin %s"
-msgstr "ਪਲੱਗਇਨ %s ਨੂੰ ਸਰਗਰਮ ਲਈ ਅਸਫ਼ਲ"
 
 #: ../plugins/sample-python/sample-python.py:14
 msgid "Python Source"
@@ -3109,12 +3119,10 @@ msgid "Always visible"
 msgstr "ਹਮੇਸ਼ਾ ਵੇਖਾਓ"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:3
-#| msgid "Banning song"
 msgid "Change song"
 msgstr "ਗਾਣਾ ਬਦਲੋ"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:4
-#| msgid "Change the music volume"
 msgid "Change volume"
 msgstr "ਆਵਾਜ਼ ਬਦਲੋ"
 
@@ -3143,15 +3151,18 @@ msgid "Visible with notifications"
 msgstr "ਨੋਟੀਫਿਕੇਸ਼ਨ ਨਾਲ ਵੇਖੋ"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:11
-msgid "_Mouse Wheel"
-msgstr "ਮਾਊਸ ਵੀਲ੍ਹ(_M)"
+#| msgid "_Mouse Wheel"
+msgid "_Mouse wheel:"
+msgstr "ਮਾਊਸ ਵੀਲ੍ਹ(_M):"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:12
-msgid "_Notifications"
-msgstr "ਨੋਟੀਫਿਕੇਸ਼ਨ(_N)"
+#| msgid "_Notifications"
+msgid "_Notifications:"
+msgstr "ਨੋਟੀਫਿਕੇਸ਼ਨ(_N):"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:13
-msgid "_Status Icon:"
+#| msgid "_Status Icon:"
+msgid "_Status icon:"
 msgstr "ਹਾਲਤ ਆਈਕਾਨ(_S):"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:229
@@ -3699,41 +3710,58 @@ msgstr "ਅਣਜਾਣ ਸੰਗੀਤ-ਸੂਚੀ: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ %s ਇੱਕ ਸਵੈ-ਚਾਲਤ ਗੀਤ-ਸੂਚੀ ਹੈ"
 
-#: ../shell/rb-removable-media-manager.c:151
+#: ../shell/rb-plugin-manager.c:54
+msgid "Plugin"
+msgstr "ਪਲੱਗਇਨ"
+
+#: ../shell/rb-plugin-manager.c:55
+msgid "Enabled"
+msgstr "ਯੋਗ ਕੀਤਾ"
+
+#: ../shell/rb-plugins-engine.c:556
+msgid "Plugin Error"
+msgstr "ਪਲੱਗਇਨ ਗਲਤੀ"
+
+#: ../shell/rb-plugins-engine.c:556
+#, c-format
+msgid "Unable to activate plugin %s"
+msgstr "ਪਲੱਗਇਨ %s ਨੂੰ ਸਰਗਰਮ ਲਈ ਅਸਫ਼ਲ"
+
+#: ../shell/rb-removable-media-manager.c:166
 msgid "Eject this medium"
 msgstr "ਇਹ ਮੀਡਿਆ ਬਾਹਰ ਕੱਢੋ"
 
-#: ../shell/rb-removable-media-manager.c:153
+#: ../shell/rb-removable-media-manager.c:168
 msgid "_Extract to Library"
 msgstr "ਲਾਇਬਰੇਰੀ 'ਚ ਐਸਟਰੈਕਟਰ(_E)"
 
-#: ../shell/rb-removable-media-manager.c:154
+#: ../shell/rb-removable-media-manager.c:169
 msgid "Copy all tracks to the library"
 msgstr "ਸਭ ਟਰੈਕਾਂ ਨੂੰ ਲਾਇਬਰੇਰੀ 'ਚ ਨਕਲ ਕਰੋ"
 
-#: ../shell/rb-removable-media-manager.c:156
+#: ../shell/rb-removable-media-manager.c:171
 msgid "_Scan Removable Media"
 msgstr "ਹਟਾਉਣ ਯੋਗ ਮੀਡਿਏ ਦੀ ਜਾਂਚ(_S)"
 
-#: ../shell/rb-removable-media-manager.c:157
+#: ../shell/rb-removable-media-manager.c:172
 msgid "Scan for new Removable Media"
 msgstr "ਨਵੇਂ ਹਟਾਉਣਯੋਗ ਮੀਡਿਆ ਦੀਂ ਜਾਂਚ"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../shell/rb-removable-media-manager.c:710
+#: ../shell/rb-removable-media-manager.c:826
 msgid "Extract"
 msgstr "ਐਕਸਟਰੈਕਟ"
 
-#: ../shell/rb-removable-media-manager.c:741
+#: ../shell/rb-removable-media-manager.c:857
 msgid "Unable to eject"
 msgstr "ਬਾਹਰ ਕੱਢਣ ਲਈ ਅਸਮਰੱਥ"
 
-#: ../shell/rb-removable-media-manager.c:762
+#: ../shell/rb-removable-media-manager.c:878
 msgid "Unable to unmount"
 msgstr "ਅਣ-ਮਾਊਂਟ ਕਰਨ ਲਈ ਅਸਮਰੱਥ"
 
-#: ../shell/rb-removable-media-manager.c:963
+#: ../shell/rb-removable-media-manager.c:1089
 msgid "Error transferring track"
 msgstr "ਟਰੈਕ ਭੇਜਣ ਦੌਰਾਨ ਗਲਤੀ"
 
