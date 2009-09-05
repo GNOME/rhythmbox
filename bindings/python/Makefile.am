@@ -19,11 +19,9 @@ rb_la_CFLAGS = \
 	-I$(top_srcdir)/lib             \
 	-I$(top_srcdir)/lib/libmediaplayerid \
 	-I$(top_srcdir)/metadata	\
-	-I$(top_srcdir)/player		\
 	-I$(top_srcdir)/rhythmdb	\
 	-I$(top_srcdir)/widgets		\
 	-I$(top_srcdir)/sources		\
-	-I$(top_srcdir)/iradio		\
 	-I$(top_srcdir)/podcast		\
 	-I$(top_srcdir)/plugins		\
 	-I$(top_srcdir)/backends	\
@@ -52,7 +50,6 @@ rb.c: rb.defs rb.override
 BINDING_HEADERS_SRCDIR_IN = \
 	backends/rb-player.h			\
 	backends/gstreamer/rb-player-gst.h	\
-	plugins/rb-plugin.h			\
 	lib/rb-string-value-map.h		\
 	lib/rb-cut-and-paste-code.h		\
 	lib/rb-file-helpers.h			\
@@ -61,9 +58,10 @@ BINDING_HEADERS_SRCDIR_IN = \
 	rhythmdb/rhythmdb-query-model.h		\
 	rhythmdb/rhythmdb-query-results.h	\
 	rhythmdb/rhythmdb-import-job.h		\
+	shell/rb-plugin.h			\
+	shell/rb-removable-media-manager.h	\
 	shell/rb-shell.h			\
 	shell/rb-shell-player.h			\
-	shell/rb-removable-media-manager.h	\
 	sources/rb-source.h			\
 	sources/rb-auto-playlist-source.h	\
 	sources/rb-browser-source.h		\
