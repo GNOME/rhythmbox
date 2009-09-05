@@ -316,7 +316,7 @@ rb_uri_resolve_symlink (const char *uri, GError **error)
 	while (link_count < MAX_LINK_LEVEL) {
 		GFile *parent;
 		GFile *new_file;
-		char *target;
+		const char *target;
 
 		/* look for a symlink target */
 		file_info = g_file_query_info (file,
@@ -347,10 +347,8 @@ rb_uri_resolve_symlink (const char *uri, GError **error)
 			break;
 		}
 
-		target = g_file_info_get_attribute_as_string (file_info, attr);
-
+		target = g_file_info_get_attribute_byte_string (file_info, attr);
 		new_file = g_file_resolve_relative_path (parent, target);
-		g_free (target);
 		g_object_unref (parent);
 
 		g_object_unref (file_info);
