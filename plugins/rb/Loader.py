@@ -140,7 +140,7 @@ class GioChunkLoader(object):
 			if want_size:
 				file.query_info_async(self._info_cb, gio.FILE_ATTRIBUTE_STANDARD_SIZE, cancellable=self._cancel)
 			else:
-				file.read_async(self._open_cb, cancellable=self.cancel)
+				file.read_async(self._open_cb, cancellable=self._cancel)
 		except gio.Error, e:
 			print "error reading file %s: %s" % (uri, e.message)
 			self._callback(e)
