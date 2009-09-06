@@ -367,7 +367,14 @@ integerCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 static GtkWidget *
 yearCriteriaCreateWidget (gboolean *constrain)
 {
-	return gtk_spin_button_new_with_range (0.0, (double)G_MAXINT, 1.0);
+	GtkWidget *spin;
+	GDate date = {0, };
+	spin = gtk_spin_button_new_with_range (0.0, (double)G_MAXINT, 1.0);
+
+	/* set it to the current year */
+	g_date_set_time_t (&date, time (NULL));
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin), g_date_get_year (&date));
+	return spin;
 }
 
 static void
