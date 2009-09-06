@@ -788,6 +788,8 @@ download_file_info_cb (GFile *source,
 	feed_folder = g_uri_escape_string (rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_ALBUM),
 					   G_URI_RESERVED_CHARS_ALLOWED_IN_PATH,
 					   TRUE);
+	g_strdelimit (feed_folder, "/", '_');
+	g_strdelimit (esc_local_file_name, "/", '_');
 
 	/* construct local filename */
 	conf_dir_uri = rb_podcast_manager_get_podcast_dir (data->pd);
