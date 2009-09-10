@@ -892,7 +892,7 @@ impl_set_replaygain (RBPlayer *player,
 	mp->priv->replaygain_scale = scale;
 
 	if (mp->priv->playbin != NULL) {
-		g_object_set (mp->priv->playbin, "volume", mp->priv->cur_volume * scale, NULL);
+		set_playbin_volume (mp, mp->priv->cur_volume * scale);
 	}
 }
 
