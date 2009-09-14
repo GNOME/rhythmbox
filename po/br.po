@@ -1,14 +1,18 @@
 # Breton translation for rhythmbox
 # Copyright (c) 2006 Canonical Ltd, and Rosetta Contributors 2006
 # This file is distributed under the same license as the rhythmbox package.
+#
+# Giulia Fraboulet <djoulia@gmail.com>, 2006.
+# Gwennin Le Bourdonnec <>, 2008"
+# Ronan Le Déroff <>, 2007"
 # Jamy <jamybzh@free.fr>, 2009.
-#"Last-Translator: Breizh <Unknown>\n"
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-09-01 01:46+0000\n"
-"PO-Revision-Date: 2009-09-11 05:13+0100\n"
+"POT-Creation-Date: 2009-09-11 04:23+0000\n"
+"PO-Revision-Date: 2009-09-14 05:06+0100\n"
 "Last-Translator: Denis\n"
 "Language-Team: Breton <br@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -27,9 +31,9 @@ msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "N'eus ket tu da grouiñ un elfenn dastum GStreamer evit skrivañ ouzh %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:368
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
-msgstr "N'eus ket bet tu da grouiñ an elfenn %s; gwiriekait ho staliadur"
+msgstr "C'hwitadenn war krouiñ an elfenn playbin ; gwiriit ho staliadur Gstreamer"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:582
@@ -39,9 +43,9 @@ msgid "Failed to open output device: %s"
 msgstr "N'eus ket bet tu da zigeriñ an drobarzhell er-maez: %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:627
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to start playback pipeline"
-msgstr "Ne c'hall ket bezañ al lañs lenn %s"
+msgstr ""
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1151
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1165
@@ -100,7 +104,7 @@ msgstr "O_uzhpennañ ma'z eus un dezverk mat"
 
 #: ../data/ui/create-playlist.ui.h:3
 msgid "Create automatically updating playlist where:"
-msgstr "Krouiñ ur roll tonioù emhizivadus e-lec'h ma :"
+msgstr "Krouiñ ur roll-tonioù emhizivadus e-lec'h ma :"
 
 #: ../data/ui/create-playlist.ui.h:4
 msgid "GB"
@@ -124,7 +128,7 @@ msgstr "_P'emaint renket dre:"
 
 #: ../data/ui/create-playlist.ui.h:9
 msgid "songs"
-msgstr ""
+msgstr "kanennoù"
 
 #: ../data/ui/general-prefs.ui.h:1
 msgid "A_lbum"
@@ -176,7 +180,7 @@ msgstr "Tikedennoù e barenn ostilhoù"
 
 #: ../data/ui/general-prefs.ui.h:13
 msgid "Track _number"
-msgstr "_Niverenn roudad"
+msgstr "_Niverenn al loabr"
 
 #: ../data/ui/general-prefs.ui.h:14
 msgid "Visible Columns"
@@ -253,7 +257,7 @@ msgstr "_Restroù sonerezh zo lec'hiet e:"
 
 #: ../data/ui/library-prefs.ui.h:9
 msgid "_Preferred format:"
-msgstr "_Mentrezh a gavit gwell :"
+msgstr "_Mentrezh gwellañ :"
 
 #: ../data/ui/library-prefs.ui.h:10
 msgid "_Watch my library for new files"
@@ -265,7 +269,7 @@ msgstr "Pad an treveuz (Eilennoù)"
 
 #: ../data/ui/playback-prefs.ui.h:2
 msgid "Network Buffer Size (kB)"
-msgstr "Ment Skurzer Rouedad (kB)"
+msgstr "Ment ar skurzer douedad (kB)"
 
 #: ../data/ui/playback-prefs.ui.h:3
 msgid "Player Backend"
@@ -277,20 +281,19 @@ msgstr "_Implij lusker steuziadenn staget (Ret eo adloc'hañ)"
 
 #: ../data/ui/playlist-save.ui.h:1
 msgid "<b>Playlist format</b>"
-msgstr "<b>Mentrezh ar roll tonioù</b>"
+msgstr "<b>Mentrezh ar roll-tonioù</b>"
 
 #: ../data/ui/playlist-save.ui.h:2
-#, fuzzy
 msgid "By extension"
-msgstr "Dre astenn"
+msgstr "Dre askouezhadenn"
 
 #: ../data/ui/playlist-save.ui.h:3
 msgid "Save Playlist"
-msgstr "Enrollañ ar roll tonioù"
+msgstr "Enrollañ ar roll-tonioù"
 
 #: ../data/ui/playlist-save.ui.h:4
 msgid "Select playlist format:"
-msgstr "Diuzit mentrezh ar roll tonioù :"
+msgstr "Diuzit mentrezh ar roll-tonioù :"
 
 #: ../data/ui/plugins.ui.h:1
 #: ../data/ui/podcast-feed-properties.ui.h:1
@@ -354,9 +357,8 @@ msgid "Title:"
 msgstr "Titl :"
 
 #: ../data/ui/podcast-prefs.ui.h:1
-#, fuzzy
 msgid "<b>Download Manager</b>"
-msgstr "<b>Merour pellgargoù</b>"
+msgstr "<b>Ardoer pellgargadurioù</b>"
 
 #: ../data/ui/podcast-prefs.ui.h:2
 msgid "Check for _new episodes:"
@@ -368,20 +370,19 @@ msgstr ""
 
 #: ../data/ui/podcast-prefs.ui.h:4
 msgid "Every hour"
-msgstr ""
+msgstr "Bep eurvezh"
 
 #: ../data/ui/podcast-prefs.ui.h:5
 msgid "Every week"
 msgstr "Bep sizhun"
 
 #: ../data/ui/podcast-prefs.ui.h:6
-#, fuzzy
 msgid "Manually"
-msgstr "Gant an dorn"
+msgstr "Dre zorn"
 
 #: ../data/ui/podcast-prefs.ui.h:7
 msgid "Select Folder For Podcasts"
-msgstr "Dibab ar restr evit ar podcastoù"
+msgstr "Dibab ar restr evit ar podskignañ"
 
 #: ../data/ui/podcast-prefs.ui.h:8
 msgid "_Download location:"
@@ -408,7 +409,7 @@ msgstr "Padelezh :"
 
 #: ../data/ui/podcast-properties.ui.h:8
 msgid "Feed:"
-msgstr "Neud :"
+msgstr "Lanv :"
 
 #: ../data/ui/podcast-properties.ui.h:9
 #: ../data/ui/song-info.ui.h:9
@@ -443,7 +444,7 @@ msgstr "_Arzour :"
 #: ../data/ui/song-info-multiple.ui.h:3
 #: ../data/ui/song-info.ui.h:14
 msgid "_Disc number:"
-msgstr "Niverenn ar _bladenn :"
+msgstr "Niverenn ar _gantenn :"
 
 #: ../data/ui/song-info-multiple.ui.h:4
 #: ../data/ui/song-info.ui.h:15
@@ -487,7 +488,7 @@ msgstr "_Titl :"
 
 #: ../data/ui/song-info.ui.h:18
 msgid "_Track number:"
-msgstr "Niverenn _roudad:"
+msgstr "Niverenn al _loabr :"
 
 #: ../data/playlists.xml.in.h:1
 msgid "My Top Rated"
@@ -515,18 +516,22 @@ msgid "Play and organize your music collection"
 msgstr "Lenn hag urzhian ho tastumadeg sonerezh"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: ../data/rhythmbox.desktop.in.in.h:4
 msgid "Rhythmbox Music Player"
 msgstr "Lenner sonerezh Rhythmbox"
 
 #: ../lib/eggdesktopfile.c:165
 #, c-format
 msgid "File is not a valid .desktop file"
-msgstr ""
+msgstr "N'eo ket ur restr mod .desktop talvoudek"
 
 #: ../lib/eggdesktopfile.c:188
-#, fuzzy, c-format
+#, c-format
 msgid "Unrecognized desktop file Version '%s'"
-msgstr "N'eo ket anavet an handelv restr desktop '%s'"
+msgstr "Handelv '%s' restr ar burev n'eo ket bet anavezet"
 
 #: ../lib/eggdesktopfile.c:958
 #, c-format
@@ -534,41 +539,38 @@ msgid "Starting %s"
 msgstr "O kregiñ gant %s"
 
 #: ../lib/eggdesktopfile.c:1100
-#, fuzzy, c-format
+#, c-format
 msgid "Application does not accept documents on command line"
 msgstr "An arload ne zedegemer ket an teulioù dre arroudennoù arc'had"
 
 #: ../lib/eggdesktopfile.c:1168
-#, fuzzy, c-format
+#, c-format
 msgid "Unrecognized launch option: %d"
 msgstr "Dibarzh lañsañ dianavezet : %d"
 
 #: ../lib/eggdesktopfile.c:1373
-#, fuzzy, c-format
+#, c-format
 msgid "Can't pass document URIs to a 'Type=Link' desktop entry"
 msgstr "N'haller lakaat URIoù an teul da dremen d'un enankad war ar burev evel 'Type=Link'"
 
 #: ../lib/eggdesktopfile.c:1392
-#, fuzzy, c-format
+#, c-format
 msgid "Not a launchable item"
 msgstr "N'eo ket un dra a c'haller lañsañ"
 
 #: ../lib/eggsmclient.c:225
-#, fuzzy
 msgid "Disable connection to session manager"
 msgstr "Deweredekaat ar gevreadur er merour estezioù"
 
 #: ../lib/eggsmclient.c:228
-#, fuzzy
 msgid "Specify file containing saved configuration"
-msgstr "Gwehentadiñ ma z'eus kelfluniadur enrollet en ar restr"
+msgstr "Erspizit ar restr gant ar c'hefluniadur enrollet enni"
 
 #: ../lib/eggsmclient.c:228
 msgid "FILE"
 msgstr "RESTR"
 
 #: ../lib/eggsmclient.c:231
-#, fuzzy
 msgid "Specify session management ID"
 msgstr "Dibab ID ardoadur an estez"
 
@@ -577,12 +579,10 @@ msgid "ID"
 msgstr "Hennader (ID)"
 
 #: ../lib/eggsmclient.c:252
-#, fuzzy
 msgid "Session management options:"
 msgstr "Dibarzhioù ardoadur an estez :"
 
 #: ../lib/eggsmclient.c:253
-#, fuzzy
 msgid "Show session management options"
 msgstr "Diskouez dibarzhioù ardeiñ an estez :"
 
@@ -630,6 +630,8 @@ msgstr "%d %b %Y"
 #: ../lib/rb-util.c:816
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:98
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
+#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:238
+#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:242
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:181
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:182
 #: ../plugins/audiocd/rb-audiocd-source.c:436
@@ -651,7 +653,7 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:995
 #: ../plugins/status-icon/rb-status-icon-plugin.c:727
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
-#: ../podcast/rb-podcast-manager.c:1873
+#: ../podcast/rb-podcast-manager.c:1875
 #: ../podcast/rb-podcast-properties-dialog.c:483
 #: ../podcast/rb-podcast-properties-dialog.c:535
 #: ../remote/dbus/rb-client.c:142
@@ -676,14 +678,14 @@ msgstr "Dianav"
 #: ../lib/rb-file-helpers.c:211
 #, c-format
 msgid "Unable to move %s to %s: %s"
-msgstr "N'eus ket tu da ziblasañ %s ouzh %s: %s"
+msgstr "N'eus ket tu da zilec'hiañ %s ouzh %s: %s"
 
-#: ../lib/rb-file-helpers.c:380
+#: ../lib/rb-file-helpers.c:378
 #, c-format
 msgid "Too many symlinks"
-msgstr "Re a liammoù arouezek"
+msgstr "Re a ereoù arouezel"
 
-#: ../lib/rb-file-helpers.c:988
+#: ../lib/rb-file-helpers.c:986
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "N'eus ket tu da gaout egor diac'hub war %s: %s"
@@ -758,10 +760,10 @@ msgstr "Ne oa ket tu da anavezout doare MIME ar restr-mañ"
 #: ../metadata/rb-metadata-gst.c:991
 #, c-format
 msgid "Unsupported file type: %s"
-msgstr "Doare restr diembreget: %s"
+msgstr "Rizh restr anskoret : %s"
 
 #: ../metadata/rb-metadata-gst.c:1000
-#, c-format
+#, fuzzy, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "N'eus ket tu da grouiñ elfenn skrivadur war balizennoù"
 
@@ -773,7 +775,7 @@ msgstr "Amzer tremenet e-pad an despizadur piplin e NULL"
 #: ../metadata/rb-metadata-gst.c:1039
 #, c-format
 msgid "File corrupted during write"
-msgstr "Ne ya ket ar restr e-pad ar gravadur"
+msgstr "Restr kontronet e-kerzh an engravadur"
 
 #: ../plugins/artdisplay/artdisplay.rb-plugin.in.h:1
 msgid "Cover art"
@@ -809,15 +811,15 @@ msgstr ""
 
 #: ../plugins/audiocd/album-info.ui.h:4
 msgid "_Disc:"
-msgstr "Kantenn :"
+msgstr "_Kantenn :"
 
 #: ../plugins/audiocd/multiple-album.ui.h:1
 msgid "Multiple Albums Found"
-msgstr "Kavet eo bet albumoù bennak"
+msgstr "Kavet eo bet albomoù bennak"
 
 #: ../plugins/audiocd/multiple-album.ui.h:2
 msgid "This CD could be more than one album. Please select which album it is below and press <i>Continue</i>."
-msgstr "Ar bladenn-mañ a c'hell bezañ muioc'h eget ur bladenn-zastum. Dibabit amañ dindan peseurt hini eo ha klikit war <i>Kenderc'hel</i>"
+msgstr "Ar gantenn-mañ a c'hell bezañ muioc'h eget ur gantenn-zastum. Dibabit amañ dindan peseurt hini eo ha klikit war <i>Kenderc'hel</i>"
 
 #: ../plugins/audiocd/multiple-album.ui.h:3
 msgid "_Continue"
@@ -828,13 +830,11 @@ msgid "Reload"
 msgstr "Adkargañ"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:139
-#, fuzzy
 msgid "Reload Album Information"
-msgstr "Stlennoù Magnatune"
+msgstr "Adkargañ stlennoù an albom"
 
 #. Info bar for non-Musicbrainz data
 #: ../plugins/audiocd/rb-audiocd-source.c:309
-#, fuzzy
 msgid "S_ubmit Album"
 msgstr "Ki_nnig an albom"
 
@@ -852,12 +852,12 @@ msgstr ""
 
 #: ../plugins/audiocd/rb-audiocd-source.c:440
 msgid "<Invalid unicode>"
-msgstr " (Unicode didalvoudek)"
+msgstr "<Unicode didalvoudek>"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:486
 #, c-format
 msgid "Track %u"
-msgstr "Roudad %u"
+msgstr "Loabr %u"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:546
 #: ../plugins/audiocd/rb-audiocd-source.c:554
@@ -892,7 +892,7 @@ msgstr "Arzour"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:943
 msgid "Rhythmbox could not get access to the CD device."
-msgstr "Ne oa ket tu da Rhythmbox tizout an drobarzhell CD."
+msgstr "Ne oa ket tu da Rhythmbox tizhout an drobarzhell CD."
 
 #: ../plugins/audiocd/sj-metadata-getter.c:249
 #, c-format
@@ -902,7 +902,7 @@ msgstr "Dibosupl eo kas da benn an enklask CD-où"
 #: ../plugins/audiocd/sj-metadata-gvfs.c:86
 #, c-format
 msgid "Cannot access CD"
-msgstr "N'eus ket tu da dizout ar CD"
+msgstr "N'eus ket tu da dizhout ar CD"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:105
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:344
@@ -918,7 +918,7 @@ msgstr "Arzour dianav"
 #: ../plugins/audiocd/sj-metadata-gvfs.c:129
 #, c-format
 msgid "Track %d"
-msgstr "Roudad %d"
+msgstr "Loabr %d"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:150
 #, c-format
@@ -938,7 +938,7 @@ msgstr "Lies"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:369
 msgid "Incomplete metadata for this CD"
-msgstr "Diellerezh diglok evit ar CD-mañ"
+msgstr "Metaroadennoù diglok evit ar CD-mañ"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:399
 msgid "[Untitled]"
@@ -947,12 +947,12 @@ msgstr "[Hep titl]"
 #: ../plugins/audiocd/sj-metadata.c:190
 #, c-format
 msgid "Device '%s' does not contain any media"
-msgstr "N'eus media ebet en trobarzhell '%s'"
+msgstr "N'eus media ebet en drobarzhell '%s'"
 
 #: ../plugins/audiocd/sj-metadata.c:193
 #, c-format
 msgid "Device '%s' could not be opened. Check the access permissions on the device."
-msgstr "Dibosupl eo digeriñ an trobarzhell '%s'. Gwiriekait aotreoù tizhout an trobarzhell."
+msgstr "Dibosupl eo digeriñ an drobarzhell '%s'. Gwiriekait aotreoù tizhout an drobarzhell."
 
 #: ../plugins/audiocd/sj-metadata.c:196
 #: ../plugins/audiocd/sj-metadata.c:208
@@ -966,13 +966,12 @@ msgid "Last.fm"
 msgstr "Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:2
-#, fuzzy
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
-msgstr "Kinnig titouroù an tonioù da last.fm ha seniñ gwazhioù radio last.fm"
+msgstr "Kinnig titouroù ar kanennoù da last.fm ha seniñ lanvioù radio last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:1
 msgid "Account Login"
-msgstr "Kennaskañ kont"
+msgstr "Anv arveriad ar gont"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:2
 msgid "Disabled"
@@ -1003,7 +1002,7 @@ msgstr "Nevez war Last.fm?"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:7
 msgid "Queued tracks:"
-msgstr "Kanaouennoù o c'hortoz:"
+msgstr "Kanennoù o c'hortoz :"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:8
 msgid "Sign up for an account"
@@ -1015,7 +1014,7 @@ msgstr "Stadegoù"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:10
 msgid "Status:"
-msgstr "Stad:"
+msgstr "Stad :"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:11
 msgid "Tracks submitted:"
@@ -1027,7 +1026,7 @@ msgstr "_Ger-tremen :"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:13
 msgid "_Username:"
-msgstr "Anv _implijer:"
+msgstr "Anv an ar_veriad :"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:211
 msgid "Last.fm Preferences"
@@ -1047,9 +1046,8 @@ msgid "Request failed"
 msgstr ""
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1012
-#, fuzzy
 msgid "Incorrect username or password"
-msgstr "Anv implijer direizh"
+msgstr "Anv an arveriad pe ger-tremen direizh"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1015
 msgid "Clock is not set correctly"
@@ -1143,12 +1141,12 @@ msgstr ""
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:200
 msgid "Playlist"
-msgstr "Roll tonioù"
+msgstr "Roll-tonioù"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:200
-#, fuzzy, c-format
+#, c-format
 msgid "%s's playlist"
-msgstr "Roll tonioù"
+msgstr ""
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:284
 msgid "Love"
@@ -1156,11 +1154,11 @@ msgstr "Ton priziet"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:285
 msgid "Mark this song as loved"
-msgstr "Merkañ an ton-se evel priziet"
+msgstr "Merkañ ar ganenn-se evel priziet"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:287
 msgid "Ban"
-msgstr "Forbannañ"
+msgstr ""
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:288
 msgid "Ban the current track from being played again"
@@ -1176,11 +1174,11 @@ msgstr "Dilemel ar savlec'h diuzet"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:293
 msgid "Download song"
-msgstr "Pellgargañ ar ganaouenn"
+msgstr "Pellgargañ ar ganenn"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:294
 msgid "Download this song"
-msgstr "Pellgargañ an ton-se"
+msgstr "Pellgargañ ar ganenn-se"
 
 #. awful
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:501
@@ -1193,7 +1191,7 @@ msgstr "Ouzhpennañ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:851
 msgid "Account Settings"
-msgstr "Dibarzhioù ar c'hont"
+msgstr "Arventennoù ar c'hont"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:876
 msgid "Account details are needed before you can connect.  Check your settings."
@@ -1201,7 +1199,7 @@ msgstr ""
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:884
 msgid "Unable to connect"
-msgstr "N'eus ket tu da gevreañ"
+msgstr "N'haller ket kennaskañ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1258
 #, c-format
@@ -1214,15 +1212,15 @@ msgid "%s's Recommended Radio: %s percent"
 msgstr ""
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1285
-#, fuzzy, c-format
+#, c-format
 msgid "%s's Playlist"
-msgstr "Roll tonioù"
+msgstr ""
 
 #. Translators: variables are 1: user name, 2: tag name; for user tag radio
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1291
-#, fuzzy, c-format
+#, c-format
 msgid "%s's %s Radio"
-msgstr "Skingomz"
+msgstr ""
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1295
 #, c-format
@@ -1260,7 +1258,7 @@ msgstr ""
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:2176
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:2186
 msgid "Retrieving playlist"
-msgstr ""
+msgstr "Oc'h adtapout ar roll-tonioù"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:2280
 msgid "Banning song"
@@ -1283,17 +1281,17 @@ msgstr ""
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:98
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:89
 msgid "_Create Audio CD..."
-msgstr "_Krouiñ ur CD-klevet..."
+msgstr "_Krouiñ ur CD aodio..."
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:99
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:90
 msgid "Create an audio CD from playlist"
-msgstr "Krouiñ ur CD-klevet adalek ur roll tonioù"
+msgstr "Krouiñ ur CD aodio adalek ar roll-tonioù"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:101
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:92
 msgid "Duplicate Audio CD..."
-msgstr ""
+msgstr "Eilañ ar CD aodio..."
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:102
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:93
@@ -1310,9 +1308,9 @@ msgid "Rhythmbox could not record the audio disc"
 msgstr ""
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:228
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to build an audio track list"
-msgstr "Dic'houest da sevel ur roll roudadoù audio."
+msgstr "Dic'houest da sevel roll al loabroù aodio."
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:239
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:431
@@ -1350,7 +1348,7 @@ msgstr ""
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:193
 msgid "Unable to create audio CD"
-msgstr "Dic'houest da grouiñ ur CD audio"
+msgstr ""
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:246
 msgid "Could not duplicate disc"
@@ -1377,17 +1375,17 @@ msgstr ""
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:601
 msgid "Could not get current track position"
-msgstr "Ne oa ket tu tapout lec'hiadur ar roudad-red"
+msgstr "Ne oa ket tu tapout lec'hiadur al loabr en implij"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:649
 #, c-format
 msgid "Could not start pipeline playing"
-msgstr "Dibosupl eo kregiñ da seniñ"
+msgstr ""
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:660
 #, c-format
 msgid "Could not pause playback"
-msgstr "Ne oa ket tu da ehanañ ar playback"
+msgstr "Ne oa ket tu da ehanañ ar seniñ"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:841
 #, c-format
@@ -1406,9 +1404,9 @@ msgstr "N'eo ket al lenner %s un engraver"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1018
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1203
-#, fuzzy, c-format
+#, c-format
 msgid "No writable drives found"
-msgstr "Pladenn skrivadus ebet kavet."
+msgstr "Kantenn skrivadus ebet kavet."
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1153
 #, c-format
@@ -1416,9 +1414,9 @@ msgid "Could not get track time for file: %s"
 msgstr "Dibosupl eo kaout padelezh ar restr: %s"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1212
-#, fuzzy, c-format
+#, c-format
 msgid "Could not determine audio track durations"
-msgstr "Dibosupl eo reiñ padelezh ar roudadoù-klevet."
+msgstr "Dibosupl eo reiñ padelezh al loabroù aodio"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1254
 #, c-format
@@ -1440,7 +1438,7 @@ msgstr "Ar muiañ posubl"
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:346
 #, c-format
 msgid "Invalid writer device: %s"
-msgstr "Didalvudek eo an engraver : %s"
+msgstr "Didalvoudek eo an engraver : %s"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:447
 #, c-format
@@ -1517,19 +1515,19 @@ msgstr "Nullet eo ar skrivañ. Klask en-dro?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:619
 msgid "Audio recording error"
-msgstr "Fazi enrollañ audio"
+msgstr "Fazi oc'h enrollañ an aodio"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:648
 msgid "Audio Conversion Error"
-msgstr "Fazi amdreiñ-klevet"
+msgstr "Fazi amdreiñ an aodio"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:678
 msgid "Recording error"
-msgstr "Fazi enrollañ"
+msgstr "Fazi oc'h enrollañ"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:798
 msgid "Do you wish to interrupt writing this disc?"
-msgstr "Ha fellout a ra deoc'h chom a-sav da skrivañ war ar bladenn-mañ?"
+msgstr "Ha fellout a ra deoc'h chom a-sav da skrivañ war ar gantenn-mañ?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:801
 msgid "This may result in an unusable disc."
@@ -1541,7 +1539,7 @@ msgstr "_Nullañ"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:809
 msgid "_Interrupt"
-msgstr "_Troc'hañ"
+msgstr ""
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:831
 msgid "Could not create audio CD"
@@ -1553,43 +1551,43 @@ msgstr "Marplij, bezit sur n'emañ ket un arload all oc'h implij al lenner."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:854
 msgid "Drive is busy"
-msgstr "En implij emañ al lenner"
+msgstr "Ac'hubet eo an drobarzhell"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:856
 msgid "Please put a rewritable or blank CD in the drive."
-msgstr "Lakait ur CD gwec'h pe adskrivadus e-barzh al lenner marplij."
+msgstr "Enlakait ur CD gwerc'h pe adskrivus e-barzh al lenner marplij."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:857
 msgid "Insert a rewritable or blank CD"
-msgstr "Lakait ur CD gwec'h pe adskrivadus."
+msgstr "Enlakait ur CD adskrivus pe gwerc'h"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:859
 msgid "Please put a blank CD in the drive."
-msgstr "Marplij, lakait ur CD gwec'h el lenner."
+msgstr "Marplij, enlakait ur CD gwerc'h el lenner."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:860
 msgid "Insert a blank CD"
-msgstr "Enlakait ur CD gwec'h"
+msgstr "Enlakait ur CD gwerc'h"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:862
 msgid "Please replace the disc in the drive with a rewritable or blank CD."
-msgstr "Lakait ur CD gwec'h pe adskrivadus e plas ar bladenn a zo el lenner, marplij."
+msgstr "Lakait ur CD gwerc'h pe adskrivus e plas ar gantenn a zo el lenner, marplij."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:863
 msgid "Reload a rewritable or blank CD"
-msgstr "Adkargañ ur CD gwec'h pe adskrivadus"
+msgstr "Adkargañ ur CD gwerc'h pe adskrivus"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:865
 msgid "Please replace the disc in the drive with a blank CD."
-msgstr "Marplij erlec'hiit ar bladenn el lenner gant ur CD gwec'h."
+msgstr ""
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:866
 msgid "Reload a blank CD"
-msgstr "Adkargañ ur CD goullo"
+msgstr "Adkargañ ur CD gwerc'h"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:917
 msgid "Converting audio tracks"
-msgstr "Oc'h amdreiñ roudadoù-klevet"
+msgstr "Oc'h amdreiñ al loabroù aodio"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:920
 msgid "Preparing to write CD"
@@ -1614,11 +1612,11 @@ msgstr ""
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:956
 #, c-format
 msgid "This %s appears to have information already recorded on it."
-msgstr "Ar %s-mañ a ziskouezh kaout titouroù enrollet warnañ dija."
+msgstr "Ar %s-mañ a ziskouez kaout titouroù enrollet warnañ endeo."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:963
 msgid "Erase information on this disc?"
-msgstr "Diverkañ an titouroù diwar ar bladenn-mañ?"
+msgstr "Diverkañ an titouroù diwar ar gantenn-mañ?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:972
 msgid "_Try Another"
@@ -1626,7 +1624,7 @@ msgstr "_Klask gant un all"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:979
 msgid "_Erase Disc"
-msgstr "_Diverkañ ar bladenn"
+msgstr "_Diverkañ ar gantenn"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1144
 msgid "C_reate"
@@ -1640,27 +1638,27 @@ msgstr "C'hwitet e oa krouiñ an enroller: %s"
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1345
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
-msgstr "Ne oa ket tu da ziverkañ ar renkell mareadus '%s': %s"
+msgstr "Ne oa ket tu da ziverkañ an teuliad padennek '%s': %s"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1365
 msgid "Create Audio CD"
-msgstr "Krouiñ ur CD audio"
+msgstr "Krouiñ ur CD aodio"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1383
 #, c-format
 msgid "Create audio CD from '%s'?"
-msgstr ""
+msgstr "Krouiñ ur CD aodio gant '%s' ?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1429
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1447
 #, c-format
 msgid "Unable to build an audio track list."
-msgstr "Dic'houest da sevel ur roll roudadoù audio."
+msgstr "Dic'houest da sevel ur roll loabroù aodio."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1457
 #, c-format
 msgid "This playlist is too long to write to an audio CD."
-msgstr "Re hir eo ar roll-seniñ-mañ evit skrivañ war ur CD audio."
+msgstr "Re hir eo ar roll-tonioù-mañ evit skrivañ war ur CD aodio."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1593
 #, c-format
@@ -1669,11 +1667,11 @@ msgstr ""
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1604
 msgid "Playlist too long"
-msgstr "Roll-seniñ re hir"
+msgstr "Roll-tonioù re hir"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1644
 msgid "Could not find temporary space!"
-msgstr "Dibosupl eo kaout un egor mareadus!"
+msgstr "Dibosupl eo kaout un egor padennek !"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1645
 #, c-format
@@ -1682,11 +1680,11 @@ msgstr ""
 
 #: ../plugins/cd-recorder/recorder.ui.h:1
 msgid "Create audio CD from playlist?"
-msgstr "Krouin ur CD-klevet adalek ar roll-tonioù?"
+msgstr "Krouin ur CD aodio adalek ar roll-tonioù ?"
 
 #: ../plugins/cd-recorder/recorder.ui.h:2
 msgid "Options"
-msgstr "Dibaboù"
+msgstr "Dibarzhioù"
 
 #: ../plugins/cd-recorder/recorder.ui.h:3
 msgid "Progress"
@@ -1694,15 +1692,15 @@ msgstr "Araokadur"
 
 #: ../plugins/cd-recorder/recorder.ui.h:4
 msgid "Write _speed:"
-msgstr "Tizh _skrivañ:"
+msgstr "Tizh ar _skrivadur :"
 
 #: ../plugins/cd-recorder/recorder.ui.h:5
 msgid "Write disc _to:"
-msgstr "Skrivañ ar bladenn _war:"
+msgstr "Skrivañ ar gantenn _war :"
 
 #: ../plugins/cd-recorder/recorder.ui.h:6
 msgid "_Make multiple copies"
-msgstr "_Krouiñ liesskouerioù"
+msgstr "_Krouiñ lieseiladoù"
 
 #: ../plugins/coherence/coherence.rb-plugin.in.h:1
 msgid "Adds support for playing media from and sending media to DLNA/UPnP network devices, and enables Rhythmbox to be controlled by a DLNA/UPnP ControlPoint"
@@ -1726,12 +1724,12 @@ msgstr "<b>E kenimplij</b>"
 
 #: ../plugins/daap/daap-prefs.ui.h:2
 msgid "Require _password:"
-msgstr ""
+msgstr "Rekis eo ur _ger-tremen :"
 
 #: ../plugins/daap/daap-prefs.ui.h:3
 #: ../plugins/daap/rb-daap-dialog.c:82
 msgid "Shared music _name:"
-msgstr "_Anv ar sonerezh kenimplijet:"
+msgstr "_Anv ar sonerezh kenimplijet :"
 
 #: ../plugins/daap/daap-prefs.ui.h:4
 msgid "_Share my music"
@@ -1743,12 +1741,12 @@ msgstr ""
 
 #: ../plugins/daap/rb-daap-dialog.c:55
 msgid "Invalid share name"
-msgstr "Anv kenimplij direizh"
+msgstr "Anv kenimplij didalvoudek"
 
 #: ../plugins/daap/rb-daap-dialog.c:74
 #, c-format
 msgid "The shared music name '%s' is already taken. Please choose another."
-msgstr "An anv kenimplij sonerezh '%s' a zo kemeret dija. Dibabit un all marplij."
+msgstr "An anv kenimplij sonerezh '%s' a zo kemeret endeo. Dibabit un hini all marplij."
 
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:237
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:280
@@ -1756,18 +1754,16 @@ msgid "mDNS service is not running"
 msgstr ""
 
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:245
-#, fuzzy
 msgid "Browser already active"
-msgstr "Furcher a labour c'hoazh"
+msgstr ""
 
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:263
 msgid "Unable to activate browser"
 msgstr ""
 
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:288
-#, fuzzy
 msgid "Browser is not active"
-msgstr "Ne labour ket ar furcher"
+msgstr ""
 
 #: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:130
 msgid "Could not create AvahiEntryGroup for publishing"
@@ -1800,7 +1796,7 @@ msgstr ""
 
 #: ../plugins/daap/rb-daap-plugin.c:128
 msgid "Connect to _DAAP share..."
-msgstr ""
+msgstr "Kennaskañ ouzh _DAAP..."
 
 #: ../plugins/daap/rb-daap-plugin.c:129
 msgid "Connect to a new DAAP share"
@@ -1827,11 +1823,11 @@ msgstr "Sonerezh %s"
 #: ../plugins/daap/rb-daap-source.c:414
 #, c-format
 msgid "The music share '%s' requires a password to connect"
-msgstr "Ret eo d'ar c'henimplij sonerezh '%s' kaout ur ger-tremen evit en em lugañ"
+msgstr ""
 
 #: ../plugins/daap/rb-daap-source.c:416
 msgid "Password Required"
-msgstr "Ger-tremen ret"
+msgstr "Ger-tremen rekis"
 
 #: ../plugins/daap/rb-daap-source.c:528
 msgid "Connecting to music share"
@@ -1848,12 +1844,12 @@ msgstr ""
 #: ../plugins/daap/rb-daap-src.c:495
 #, c-format
 msgid "Connection to %s:%d refused."
-msgstr "Lugadenn da %s: nac'het %d"
+msgstr "Kennask ouzh %s: nac'het %d"
 
 #: ../plugins/fmradio/fmradio.rb-plugin.in.h:1
 #: ../plugins/fmradio/rb-fm-radio-source.c:203
 msgid "FM Radio"
-msgstr ""
+msgstr "Skingomz FM"
 
 #: ../plugins/fmradio/fmradio.rb-plugin.in.h:2
 msgid "Support for FM radio broadcasting services"
@@ -1877,7 +1873,7 @@ msgstr ""
 
 #: ../plugins/generic-player/generic-player.rb-plugin.in.h:1
 msgid "Portable Players"
-msgstr ""
+msgstr "Lennerioù hezoug"
 
 #: ../plugins/generic-player/generic-player.rb-plugin.in.h:2
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
@@ -1887,7 +1883,7 @@ msgstr ""
 #: ../shell/rb-playlist-manager.c:1150
 #: ../shell/rb-playlist-manager.c:1193
 msgid "New Playlist"
-msgstr "Roll tonioù nevez"
+msgstr "Roll-tonioù nevez"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:97
 msgid "Create a new playlist on this device"
@@ -1895,11 +1891,11 @@ msgstr ""
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:99
 msgid "Delete Playlist"
-msgstr "Dilemel ar roll tonioù"
+msgstr "Dilemel ar roll-tonioù"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:100
 msgid "Delete this playlist"
-msgstr ""
+msgstr "Dilemel ar roll-tonioù-mañ"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:627
 #, c-format
@@ -1918,31 +1914,31 @@ msgstr ""
 #. string substitution markers (like %s) for the artist and title of
 #. the current playing song.  They can be reordered if necessary.
 #: ../plugins/im-status/im-status/__init__.py:153
-#, fuzzy, python-format
+#, python-format
 msgid "♫ %(artist)s - %(title)s ♫"
-msgstr "Arzour - titl"
+msgstr "♫ %(artist)s - %(title)s ♫"
 
 #. Translators: do not translate %(artist)s or %(album)s, they are
 #. string substitution markers (like %s) for the artist and album name
 #. of the current playing song.  They can be reordered if necessary.
 #: ../plugins/im-status/im-status/__init__.py:158
-#, fuzzy, python-format
+#, python-format
 msgid "♫ %(artist)s - %(album)s ♫"
-msgstr "arzour - albom"
+msgstr "♫ %(artist)s - %(album)s ♫"
 
 #. Translators: do not translate %(album)s, it is a string substitution
 #. marker (like %s) for the album name of the current playing song.
 #: ../plugins/im-status/im-status/__init__.py:162
-#, fuzzy, python-format
+#, python-format
 msgid "♫ %(album)s ♫"
-msgstr "Albom"
+msgstr "♫ %(album)s ♫"
 
 #. Translators: do not translate %(title)s, it is a string substitution
 #. marker (like %s) for the title of the current playing song.
 #: ../plugins/im-status/im-status/__init__.py:166
-#, fuzzy, python-format
+#, python-format
 msgid "♫ %(title)s ♫"
-msgstr "Titl"
+msgstr "♫ %(title)s ♫"
 
 #: ../plugins/im-status/im-status/__init__.py:168
 msgid "♫ Listening to music... ♫"
@@ -1978,11 +1974,11 @@ msgstr "Handelv ar stlennvon :"
 
 #: ../plugins/ipod/ipod-info.ui.h:7
 msgid "Device Node:"
-msgstr "Klom Trobarzhell :"
+msgstr "Klom an drobarzhell :"
 
 #: ../plugins/ipod/ipod-info.ui.h:8
 msgid "Firmware Version:"
-msgstr ""
+msgstr "Handlev ar stur perc'hennek :"
 
 #: ../plugins/ipod/ipod-info.ui.h:9
 msgid "Model:"
@@ -1994,11 +1990,11 @@ msgstr "Poent savadenn"
 
 #: ../plugins/ipod/ipod-info.ui.h:11
 msgid "Number of Playlists:"
-msgstr ""
+msgstr "Niver a rolloù tonioù :"
 
 #: ../plugins/ipod/ipod-info.ui.h:12
 msgid "Number of Tracks:"
-msgstr ""
+msgstr "Niver a loabroù :"
 
 #: ../plugins/ipod/ipod-info.ui.h:13
 msgid "Serial Number:"
@@ -2007,7 +2003,7 @@ msgstr "Steudriñv"
 #. amount of disk space used on the iPod
 #: ../plugins/ipod/ipod-info.ui.h:15
 msgid "Volume Usage:"
-msgstr ""
+msgstr "Arver ar bezhienn :"
 
 #: ../plugins/ipod/ipod-info.ui.h:16
 msgid "iPod Name:"
@@ -2015,7 +2011,7 @@ msgstr "Anv an iPod :"
 
 #: ../plugins/ipod/ipod-info.ui.h:17
 msgid "iPod Properties"
-msgstr ""
+msgstr "Perzhioù an iPod"
 
 #: ../plugins/ipod/ipod-init.ui.h:1
 msgid "<span size=\"x-large\" weight=\"bold\">Do you want to initialize your iPod?</span>"
@@ -2027,7 +2023,7 @@ msgstr ""
 
 #: ../plugins/ipod/ipod-init.ui.h:3
 msgid "_Initialize"
-msgstr ""
+msgstr "D_eraouekaat"
 
 #: ../plugins/ipod/ipod-init.ui.h:4
 msgid "_Model:"
@@ -2040,12 +2036,11 @@ msgstr "A_nv :"
 
 #: ../plugins/ipod/ipod-init.ui.h:6
 msgid "iPod detected"
-msgstr ""
+msgstr "iPod dinoet"
 
 #: ../plugins/ipod/rb-ipod-helpers.c:304
-#, fuzzy
 msgid "Unable to initialize new iPod"
-msgstr "Dic'houest da ziliamman '%s'"
+msgstr "N'haller ket deraouekaat an iPod nevez"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:107
 #: ../plugins/ipod/rb-ipod-plugin.c:116
@@ -2056,7 +2051,7 @@ msgstr "_Adenvel"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:108
 msgid "Rename iPod"
-msgstr ""
+msgstr "Adenvel an iPOd"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:110
 #: ../shell/rb-shell-clipboard.c:188
@@ -2066,21 +2061,21 @@ msgstr "_Perzhioù"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:111
 msgid "Display iPod properties"
-msgstr ""
+msgstr "Skrammañ perzioù an iPod"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:113
 #: ../shell/rb-shell-clipboard.c:175
 msgid "_New Playlist"
-msgstr "Roll tonioù _nevez"
+msgstr "Roll-tonioù _nevez"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:114
 msgid "Add new playlist to iPod"
-msgstr ""
+msgstr "Ouzhpennañ ur roll-tonioù nevez d'an iPod"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:117
 #: ../shell/rb-playlist-manager.c:185
 msgid "Rename playlist"
-msgstr "Adenvel ar roll tonioù"
+msgstr "Adenvel ar roll-tonioù"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:119
 #: ../shell/rb-playlist-manager.c:187
@@ -2090,16 +2085,16 @@ msgstr "_Lemel kuit"
 #: ../plugins/ipod/rb-ipod-plugin.c:120
 #: ../shell/rb-playlist-manager.c:188
 msgid "Delete playlist"
-msgstr "Lemel kuit ar roll tonioù"
+msgstr "Lemel kuit ar roll-tonioù"
 
 #: ../plugins/ipod/rb-ipod-source.c:1212
 #: ../sources/rb-podcast-source.c:843
 msgid "Podcasts"
-msgstr "Podcastoù"
+msgstr "Podskignañ"
 
 #: ../plugins/ipod/rb-ipod-source.c:1583
 msgid "New playlist"
-msgstr "Roll tonioù nevez"
+msgstr "Roll-tonioù nevez"
 
 #. Translators: this is used to display the amount of storage space
 #. * used and the total storage space on an iPod.
@@ -2215,7 +2210,6 @@ msgstr "Jamendo"
 
 #: ../plugins/jamendo/jamendo/__init__.py:75
 #: ../plugins/magnatune/magnatune/__init__.py:96
-#, fuzzy
 msgid "Stores"
 msgstr "Stalioù"
 
@@ -2238,7 +2232,7 @@ msgstr ""
 
 #: ../plugins/jamendo/jamendo/JamendoSource.py:120
 msgid "Loading Jamendo catalog"
-msgstr ""
+msgstr "O kargañ ar c'hatalog Jamendo"
 
 #: ../plugins/jamendo/jamendo/JamendoSource.py:303
 #, python-format
@@ -2251,13 +2245,12 @@ msgid "Error looking up artist %s on jamendo.com"
 msgstr ""
 
 #: ../plugins/iradio/rb-iradio-source.c:173
-#, fuzzy
 msgid "New Internet _Radio Station..."
-msgstr "_Skingomz gwiad nevez..."
+msgstr ""
 
 #: ../plugins/iradio/rb-iradio-source.c:174
 msgid "Create a new Internet Radio station"
-msgstr "Krouiñ ur radio gwiad nevez"
+msgstr ""
 
 #. Translators: this is the toolbar button label for
 #. New Internet Radio Station action.
@@ -2272,7 +2265,7 @@ msgstr "Nevez"
 #: ../widgets/rb-query-creator-properties.c:78
 #: ../widgets/rb-query-creator-properties.c:104
 msgid "Genre"
-msgstr "Rummad"
+msgstr "Rumm"
 
 #: ../plugins/iradio/rb-iradio-source.c:452
 msgid "Radio"
@@ -2335,17 +2328,17 @@ msgstr ""
 #: ../plugins/lyrics/lyrics/__init__.py:168
 #: ../plugins/lyrics/lyrics/__init__.py:177
 msgid "No lyrics found"
-msgstr ""
+msgstr "Komzoù ebet bet kavet"
 
 #: ../plugins/lyrics/lyrics/__init__.py:211
 msgid "_Save"
-msgstr "_Enrollañ"
+msgstr "En_rollañ"
 
 #: ../plugins/lyrics/lyrics/__init__.py:216
 #: ../plugins/lyrics/lyrics/__init__.py:229
 #: ../shell/rb-shell.c:390
 msgid "_Edit"
-msgstr "_Kemmañ"
+msgstr "K_emmañ"
 
 #: ../plugins/lyrics/lyrics/__init__.py:231
 msgid "_Search again"
@@ -2358,15 +2351,15 @@ msgstr "Komzoù"
 
 #: ../plugins/lyrics/lyrics/__init__.py:289
 msgid "Searching for lyrics..."
-msgstr ""
+msgstr "Klask komzoù..."
 
 #: ../plugins/lyrics/lyrics/__init__.py:325
 msgid "Song L_yrics"
-msgstr ""
+msgstr "Komzoù ar ganenn"
 
 #: ../plugins/lyrics/lyrics/__init__.py:326
 msgid "Display lyrics for the playing song"
-msgstr ""
+msgstr "Skrammañ komzoù evit ar ganenn o vezañ sonet"
 
 #: ../plugins/lyrics/lyrics/LyricsConfigureDialog.py:106
 msgid "Choose lyrics folder..."
@@ -2378,7 +2371,7 @@ msgstr ""
 
 #: ../plugins/lyrics/lyrics.rb-plugin.in.h:2
 msgid "Song Lyrics"
-msgstr ""
+msgstr "Komzoù ar ganenn"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:1
 msgid "<b>Lyrics Folder</b>"
@@ -2394,7 +2387,7 @@ msgstr "Furchal..."
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:4
 msgid "Lyrics Plugin Preferences"
-msgstr ""
+msgstr "Gwellvezioù an enlugellad komzoù"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
 msgid "     * Founder/owner runs it -- support a small business"
@@ -2479,7 +2472,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:23
 msgid "<b>Magnatune online music store</b>"
-msgstr ""
+msgstr "<b>Stal sonerezh enlinenn Magnatune</b>"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:24
 msgid "Magnatune is an online record label that is not evil. Some of their key attributes are:\n"
@@ -2497,7 +2490,7 @@ msgstr ""
 #: ../plugins/magnatune/magnatune-prefs.ui.h:2
 #: ../plugins/magnatune/magnatune-purchase.ui.h:2
 msgid "$11 US"
-msgstr ""
+msgstr "11 $US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:3
 #: ../plugins/magnatune/magnatune-purchase.ui.h:3
@@ -2507,12 +2500,12 @@ msgstr ""
 #: ../plugins/magnatune/magnatune-prefs.ui.h:4
 #: ../plugins/magnatune/magnatune-purchase.ui.h:4
 msgid "$13 US"
-msgstr ""
+msgstr "13 $US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:5
 #: ../plugins/magnatune/magnatune-purchase.ui.h:5
 msgid "$14 US"
-msgstr ""
+msgstr "14 $US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:6
 #: ../plugins/magnatune/magnatune-purchase.ui.h:6
@@ -2522,7 +2515,7 @@ msgstr ""
 #: ../plugins/magnatune/magnatune-prefs.ui.h:7
 #: ../plugins/magnatune/magnatune-purchase.ui.h:7
 msgid "$16 US"
-msgstr ""
+msgstr "16 $US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:8
 #: ../plugins/magnatune/magnatune-purchase.ui.h:8
@@ -2571,16 +2564,16 @@ msgstr ""
 #: ../plugins/magnatune/magnatune-prefs.ui.h:17
 #: ../plugins/magnatune/magnatune-purchase.ui.h:16
 msgid "April (04)"
-msgstr ""
+msgstr "Ebrel (04)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:18
 #: ../plugins/magnatune/magnatune-purchase.ui.h:18
 msgid "August (08)"
-msgstr ""
+msgstr "Eost (08)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:19
 msgid "C_redit Card:"
-msgstr ""
+msgstr "Ka_rtenn-gred :"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:20
 #: ../plugins/magnatune/magnatune-purchase.ui.h:21
@@ -2659,7 +2652,7 @@ msgstr "Ogg Vorbis"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:36
 msgid "Preferred audio _format:"
-msgstr ""
+msgstr "_Mentrezh aodio gwellañ :"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:37
 msgid "Redownload purchased music at "
@@ -2681,7 +2674,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:41
 msgid "Visit Magnatune at "
-msgstr ""
+msgstr "Kit da welet ouzh "
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:42
 #: ../plugins/magnatune/magnatune-purchase.ui.h:39
@@ -2698,15 +2691,15 @@ msgstr "_Miz :"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:47
 msgid "http://www.magnatune.com/"
-msgstr ""
+msgstr "http://www.magnatune.com/"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:48
 msgid "http://www.magnatune.com/info/"
-msgstr ""
+msgstr "http://www.magnatune.com/info/"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:49
 msgid "http://www.magnatune.com/info/redownload"
-msgstr ""
+msgstr "http://www.magnatune.com/info/redownload"
 
 #: ../plugins/magnatune/magnatune-purchase.ui.h:17
 msgid "Audio _format:"
@@ -2717,9 +2710,8 @@ msgid "C_redit Card number:"
 msgstr ""
 
 #: ../plugins/magnatune/magnatune-purchase.ui.h:20
-#, fuzzy
 msgid "Credit Card"
-msgstr "Kartenn-kred"
+msgstr "Kartenn-gred"
 
 #: ../plugins/magnatune/magnatune-purchase.ui.h:22
 msgid "Expiry _month:"
@@ -2767,15 +2759,15 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune.rb-plugin.in.h:2
 msgid "Magnatune Store"
-msgstr ""
+msgstr "Stal Magnatune"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:74
 msgid "Magnatune"
-msgstr ""
+msgstr "Magnatune"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:121
 msgid "Loading Magnatune catalog"
-msgstr ""
+msgstr "O kargañ ar c'hatalog"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:124
 msgid "Downloading Magnatune Album(s)"
@@ -2795,9 +2787,8 @@ msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr ""
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:372
-#, fuzzy
 msgid "Unable to load catalog"
-msgstr "N'eus ket tu da gevreañ"
+msgstr "N'haller ket kargañ ar c'hatalog"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:373
 msgid "Rhythmbox could not understand the Magnatune catalog, please file a bug."
@@ -2826,7 +2817,7 @@ msgstr ""
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:510
 #: ../widgets/rb-entry-view.c:1630
 msgid "Error"
-msgstr "fazi"
+msgstr "Fazi"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:511
 #, python-format
@@ -2862,9 +2853,8 @@ msgid "Get information about this artist"
 msgstr ""
 
 #: ../plugins/magnatune/magnatune/__init__.py:138
-#, fuzzy
 msgid "Cancel Downloads"
-msgstr "Nullañ %S a bellgargadurioù"
+msgstr ""
 
 #: ../plugins/magnatune/magnatune/__init__.py:139
 msgid "Stop downloading purchased albums"
@@ -2888,19 +2878,19 @@ msgstr ""
 
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:174
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:216
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to copy file from MTP device: %s"
-msgstr "N'eus ket bet tu da zigeriñ an drobarzhell er-maez: %s"
+msgstr "N'haller ket eilañ ar restr adalek an drobarzhell MTP : %s"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:190
 #, c-format
 msgid "Not enough space in %s"
-msgstr ""
+msgstr "N'eus ket plas a-walc'h en %s"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-src.c:202
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open temporary file: %s"
-msgstr "N'eus ket tu da ziblasañ %s ouzh %s: %s"
+msgstr "N'haller ket digeriñ ar restr padennek : %s"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:120
 #: ../shell/rb-removable-media-manager.c:165
@@ -2909,15 +2899,15 @@ msgstr "_Kas er-maez"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:121
 msgid "Eject MTP-device"
-msgstr ""
+msgstr "Kas an drobarzhell MTP er-maez"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:124
 msgid "Rename MTP-device"
-msgstr ""
+msgstr "Adenvel an drobarzhell MTP"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:145
 msgid "Media player device error"
-msgstr ""
+msgstr "Fazi trobarzhell lenner mediaoù"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:733
 msgid "Digital Audio Player"
@@ -2928,9 +2918,8 @@ msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr ""
 
 #: ../plugins/power-manager/power-manager.rb-plugin.in.h:2
-#, fuzzy
 msgid "Power Manager"
-msgstr "Merour an energiezh"
+msgstr "Ardoer an energiezh"
 
 #: ../plugins/power-manager/rb-power-manager-plugin.c:208
 msgid "Playing"
@@ -2942,15 +2931,15 @@ msgstr "Penel _Python"
 
 #: ../plugins/pythonconsole/pythonconsole.py:76
 msgid "Show Rhythmbox's python console"
-msgstr ""
+msgstr "Diskouez ar penel Python Rhytmbox"
 
 #: ../plugins/pythonconsole/pythonconsole.py:81
 msgid "Python Debugger"
-msgstr ""
+msgstr "Diveuger Python"
 
 #: ../plugins/pythonconsole/pythonconsole.py:82
 msgid "Enable remote python debugging with rpdb2"
-msgstr ""
+msgstr "Gweredekaat diveugañ python a-bell gant rpdb2"
 
 #: ../plugins/pythonconsole/pythonconsole.py:119
 msgid "You can access the main window through the 'shell' variable :"
@@ -2963,7 +2952,7 @@ msgstr ""
 #. ex:noet:ts=8:
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:1
 msgid "Interactive python console"
-msgstr ""
+msgstr "Penel python etrewezhiat"
 
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:2
 msgid "Python Console"
@@ -2979,13 +2968,13 @@ msgstr ""
 
 #: ../plugins/sample-python/sample-python.rb-plugin.in.h:2
 msgid "Python Sample Plugin"
-msgstr ""
+msgstr "Enlugellad standilhon Python"
 
 #: ../plugins/sample/rb-sample-plugin.c:123
 #: ../plugins/sample/rb-sample-plugin.c:130
 #: ../plugins/sample/sample.rb-plugin.in.h:2
 msgid "Sample Plugin"
-msgstr ""
+msgstr "Enlugellad standilhon"
 
 #: ../plugins/sample/sample.rb-plugin.in.h:1
 msgid "A sample plugin in C with no features"
@@ -3001,12 +2990,11 @@ msgstr ""
 
 #: ../plugins/status-icon/eggtrayicon.c:133
 msgid "Orientation"
-msgstr "Lec'hiadur"
+msgstr "Reteradur"
 
 #: ../plugins/status-icon/eggtrayicon.c:134
-#, fuzzy
 msgid "The orientation of the tray."
-msgstr "Tuadur an takad kelaouiñ"
+msgstr "Reteradur an takad kelaouiñ"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:142
 msgid "_Close"
@@ -3026,7 +3014,7 @@ msgstr "Dibab ar sonerezh da vezañ sonet"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:152
 msgid "Show N_otifications"
-msgstr ""
+msgstr "Diskouez ar rebuzadurioù"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:153
 msgid "Show notifications of song changes and other events"
@@ -3056,13 +3044,13 @@ msgstr "gant <i>%s</i>"
 
 #. Translators: from Album
 #: ../plugins/status-icon/rb-status-icon-plugin.c:691
-#, fuzzy, c-format
+#, c-format
 msgid "from <i>%s</i>"
-msgstr "adalek"
+msgstr "adalek <i>%s</i>"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:1
 msgid "Status Icon"
-msgstr "Arlun ar stad"
+msgstr "Arlun stad"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:2
 msgid "Status icon and notification popups"
@@ -3073,49 +3061,43 @@ msgid "Always shown"
 msgstr ""
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:2
-#, fuzzy
 msgid "Always visible"
 msgstr "Atav hewel"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:3
-#, fuzzy
 msgid "Change song"
-msgstr "Sonenn ebet da heul"
+msgstr "Kemmañ ar ganenn"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:4
-#, fuzzy
 msgid "Change volume"
-msgstr "Cheñch kreñvder ar son"
+msgstr "Kemmañ an ampled"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:5
 #, fuzzy
 msgid "Never shown"
-msgstr "Morse"
+msgstr "Morse diskouezet"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:6
 msgid "Never visible"
 msgstr ""
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:7
-#, fuzzy
 msgid "Owns the main window"
-msgstr "Bihanaat ar prenestr-penn"
+msgstr ""
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:8
-#, fuzzy
 msgid "Shown when the main window is hidden"
-msgstr "Bihanaat ar prenestr-penn"
+msgstr ""
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:9
 msgid "Status icon preferences"
-msgstr "Gwellvezioù arlun ar stad"
+msgstr "Gwellvezioù an arlun stad"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:10
 msgid "Visible with notifications"
 msgstr ""
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:11
-#, fuzzy
 msgid "_Mouse wheel:"
 msgstr "Rodig al logodenn"
 
@@ -3148,7 +3130,6 @@ msgid "Large"
 msgstr "Bras"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:239
-#, fuzzy
 msgid "Extra Large"
 msgstr "Bras kenañ"
 
@@ -3157,9 +3138,8 @@ msgid "Embedded"
 msgstr "Enkorfet"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:244
-#, fuzzy
 msgid "Fullscreen"
-msgstr "Skramm leun"
+msgstr "Skrammad a-bezh"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:245
 msgid "Desktop"
@@ -3184,9 +3164,8 @@ msgid "Unable to start visualization"
 msgstr ""
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1390
-#, fuzzy
 msgid "Enable visual effects?"
-msgstr "Enaouiñ ar skeudoù fiñv"
+msgstr "Gweredekaat efedoù gwel ?"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1392
 msgid ""
@@ -3226,44 +3205,44 @@ msgstr ""
 msgid "Visualization"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:811
+#: ../podcast/rb-podcast-manager.c:813
 msgid "Error creating podcast download directory"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:812
+#: ../podcast/rb-podcast-manager.c:814
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:938
+#: ../podcast/rb-podcast-manager.c:940
 msgid "Invalid URL"
-msgstr "URL direizh"
+msgstr "URL didalvoudek"
 
-#: ../podcast/rb-podcast-manager.c:939
+#: ../podcast/rb-podcast-manager.c:941
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
-msgstr "\"%s\" n'eo ket un URL a-feson, gwiriekait anezhañ marplij."
+msgstr ""
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:949
+#: ../podcast/rb-podcast-manager.c:951
 msgid "URL already added"
-msgstr "URL bet ouzhpennet dija"
+msgstr "URL bet ouzhpennet endeo"
 
-#: ../podcast/rb-podcast-manager.c:950
+#: ../podcast/rb-podcast-manager.c:952
 #, c-format
 msgid "The URL \"%s\" has already been added as a radio station. If this is a podcast feed, please remove the radio station."
-msgstr "Ouzhpennet eo bet an URL \"%s\" dija, evel ur radio. M'eo hennezh un neud podkast, dilamit anezhañ diouzh ar radioioù marplij."
+msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:1018
+#: ../podcast/rb-podcast-manager.c:1020
 #, c-format
 msgid "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, or the feed may be broken. Would you like Rhythmbox to attempt to use it anyway?"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:1129
+#: ../podcast/rb-podcast-manager.c:1131
 msgid "Podcast"
-msgstr "Podcast"
+msgstr "podskignañ"
 
-#: ../podcast/rb-podcast-manager.c:2053
+#: ../podcast/rb-podcast-manager.c:2055
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -3276,7 +3255,7 @@ msgstr ""
 #: ../podcast/rb-podcast-parse.c:202
 #, c-format
 msgid "Unexpected file type: %s"
-msgstr ""
+msgstr "Dic'hortozet eo rizh ar restr : %s"
 
 #: ../podcast/rb-podcast-parse.c:225
 #, c-format
@@ -3290,7 +3269,7 @@ msgstr ""
 
 #: ../podcast/rb-podcast-properties-dialog.c:431
 msgid "Not Downloaded"
-msgstr ""
+msgstr "Ket pellgarget"
 
 #: ../remote/dbus/rb-client.c:82
 msgid "Don't start a new instance of Rhythmbox"
@@ -3307,19 +3286,19 @@ msgstr ""
 
 #: ../remote/dbus/rb-client.c:86
 msgid "Hide the Rhythmbox window"
-msgstr ""
+msgstr "Kuzhat ar prenestr Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:88
 msgid "Jump to next song"
-msgstr "Mont d'an ton da heul"
+msgstr "Mont d'ar ganenn da heul"
 
 #: ../remote/dbus/rb-client.c:89
 msgid "Jump to previous song"
-msgstr "Mont d'an ton kent"
+msgstr "Mont d'ar ganenn kent"
 
 #: ../remote/dbus/rb-client.c:91
 msgid "Show notification of the playing song"
-msgstr ""
+msgstr "Diskouez rebuzadur ar ganenn o vezañ sonet"
 
 #: ../remote/dbus/rb-client.c:93
 msgid "Resume playback if currently paused"
@@ -3331,7 +3310,7 @@ msgstr "Ober un ehan m'emañ o seniñ"
 
 #: ../remote/dbus/rb-client.c:95
 msgid "Toggle play/pause mode"
-msgstr "Cheñch mod lenn/ehan"
+msgstr "Kemmañ mod lenn/ehan"
 
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
 #: ../remote/dbus/rb-client.c:98
@@ -3340,7 +3319,7 @@ msgstr ""
 
 #: ../remote/dbus/rb-client.c:98
 msgid "URI to play"
-msgstr ""
+msgstr "URI da vezañ sonet"
 
 #: ../remote/dbus/rb-client.c:99
 msgid "Add specified tracks to the play queue"
@@ -3376,21 +3355,20 @@ msgstr ""
 
 #: ../remote/dbus/rb-client.c:109
 msgid "Mute playback"
-msgstr ""
+msgstr "Seniñ mut"
 
 #: ../remote/dbus/rb-client.c:110
 msgid "Unmute playback"
-msgstr ""
+msgstr "Seniñ heglev"
 
 #: ../remote/dbus/rb-client.c:111
-#, fuzzy
 msgid "Set the rating of the current song"
-msgstr "Dibunañ ar sell betek ar sonenn o vezañ sonet"
+msgstr ""
 
 #: ../remote/dbus/rb-client.c:736
 #, c-format
 msgid "Playback is muted.\n"
-msgstr ""
+msgstr "Mut eo ar seniñ.\n"
 
 #: ../remote/dbus/rb-client.c:737
 #, c-format
@@ -3520,7 +3498,7 @@ msgstr "Chom hep enrollañ da viken road ebet (liammet gant --no-registration)"
 
 #: ../shell/main.c:116
 msgid "Path for database file to use"
-msgstr "Hent restr an diaz-titouroù da implij"
+msgstr ""
 
 #: ../shell/main.c:117
 msgid "Path for playlists file to use"
@@ -3556,17 +3534,15 @@ msgstr "_Roll tonioù"
 
 #: ../shell/rb-playlist-manager.c:172
 msgid "_New Playlist..."
-msgstr "Roll tonioù nevez..."
+msgstr "Roll-tonioù nevez..."
 
 #: ../shell/rb-playlist-manager.c:173
-#, fuzzy
 msgid "Create a new playlist"
-msgstr "Krouin ur roll tonioù nevez"
+msgstr "Krouin ur roll-tonioù nevez"
 
 #: ../shell/rb-playlist-manager.c:175
-#, fuzzy
 msgid "New _Automatic Playlist..."
-msgstr "Roll tonioù _bevek nevez"
+msgstr ""
 
 #: ../shell/rb-playlist-manager.c:176
 msgid "Create a new automatically updating playlist"
@@ -3574,12 +3550,11 @@ msgstr "Krouiñ ur roll-tonioù emhizivadus"
 
 #: ../shell/rb-playlist-manager.c:178
 msgid "_Load from File..."
-msgstr "_Kargan adalek ur restr..."
+msgstr "_Kargañ adalek ur restr..."
 
 #: ../shell/rb-playlist-manager.c:179
-#, fuzzy
 msgid "Choose a playlist to be loaded"
-msgstr "Dibab ur roll tonioù da vezan sonet"
+msgstr "Dibab ur roll-tonioù da vezañ karget"
 
 #: ../shell/rb-playlist-manager.c:181
 #: ../shell/rb-playlist-manager.c:199
@@ -3587,9 +3562,8 @@ msgid "_Save to File..."
 msgstr "_Enrollañ evel restr..."
 
 #: ../shell/rb-playlist-manager.c:182
-#, fuzzy
 msgid "Save a playlist to a file"
-msgstr "Enrollañ ur roll tonioù evel ur restr"
+msgstr "Enrollañ ur roll-tonioù en ur restr"
 
 #: ../shell/rb-playlist-manager.c:191
 msgid "Change this automatic playlist"
@@ -3597,7 +3571,7 @@ msgstr "Kemmañ ar roll-tonioù emgefre-mañ"
 
 #: ../shell/rb-playlist-manager.c:193
 msgid "_Queue All Tracks"
-msgstr ""
+msgstr "_Lakaat an holl lobroù el lostennad"
 
 #: ../shell/rb-playlist-manager.c:194
 msgid "Add all tracks in this playlist to the queue"
@@ -3617,25 +3591,24 @@ msgstr ""
 
 #: ../shell/rb-playlist-manager.c:647
 msgid "Unnamed playlist"
-msgstr ""
+msgstr "Roll- tonioù dianv"
 
 #: ../shell/rb-playlist-manager.c:690
-#, fuzzy
 msgid "The playlist file may be in an unknown format or corrupted."
-msgstr "Marteze eo dianav pe gwastet furmad ar roll-tonioù."
+msgstr "Marteze eo dianav pe kontronet mentrezh ar roll-tonioù."
 
 #: ../shell/rb-playlist-manager.c:1108
 msgid "Untitled Playlist"
-msgstr "Roll tonioù disanv"
+msgstr "Roll-tonioù disanv"
 
 #: ../shell/rb-playlist-manager.c:1380
 msgid "Couldn't read playlist"
-msgstr "Ne oa ket tu da lenn ar roll tonioù"
+msgstr "Ne oa ket tu da lenn ar roll-tonioù"
 
 #: ../shell/rb-playlist-manager.c:1399
 #: ../sources/rb-source-group.c:63
 msgid "Playlists"
-msgstr "Roll tonioù"
+msgstr "Rolloù tonioù"
 
 #: ../shell/rb-playlist-manager.c:1405
 msgid "All Files"
@@ -3643,12 +3616,12 @@ msgstr "An holl restroù"
 
 #: ../shell/rb-playlist-manager.c:1409
 msgid "Load Playlist"
-msgstr "Kargañ ar roll tonioù"
+msgstr "Kargañ ar roll-tonioù"
 
 #: ../shell/rb-playlist-manager.c:1463
 #: ../sources/rb-playlist-source.c:631
 msgid "Couldn't save playlist"
-msgstr "Ne oa ket tu da enrollañ ar roll-seniñ"
+msgstr "Ne oa ket tu da enrollañ ar roll-tonioù"
 
 #: ../shell/rb-playlist-manager.c:1463
 msgid "Unsupported file extension given."
@@ -3665,7 +3638,7 @@ msgstr ""
 #: ../shell/rb-playlist-manager.c:1912
 #, c-format
 msgid "Unknown playlist: %s"
-msgstr ""
+msgstr "Roll-tonioù dianav : %s"
 
 #: ../shell/rb-playlist-manager.c:1837
 #: ../shell/rb-playlist-manager.c:1877
@@ -3692,15 +3665,15 @@ msgstr ""
 
 #: ../shell/rb-removable-media-manager.c:166
 msgid "Eject this medium"
-msgstr ""
+msgstr "Kas ar vedia-se er maez"
 
 #: ../shell/rb-removable-media-manager.c:168
 msgid "_Extract to Library"
-msgstr ""
+msgstr "_Eztennañ d'al levraoueg"
 
 #: ../shell/rb-removable-media-manager.c:169
 msgid "Copy all tracks to the library"
-msgstr ""
+msgstr "Eilañ an holl loabroù"
 
 #: ../shell/rb-removable-media-manager.c:171
 msgid "_Scan Removable Media"
@@ -3718,11 +3691,11 @@ msgstr "Eztennañ"
 
 #: ../shell/rb-removable-media-manager.c:868
 msgid "Unable to eject"
-msgstr ""
+msgstr "N'haller ket kas er-maez"
 
 #: ../shell/rb-removable-media-manager.c:889
 msgid "Unable to unmount"
-msgstr ""
+msgstr "N'haller ket disevel"
 
 #: ../shell/rb-removable-media-manager.c:1100
 msgid "Error transferring track"
@@ -3730,27 +3703,27 @@ msgstr ""
 
 #: ../shell/rb-shell-clipboard.c:152
 msgid "Select _All"
-msgstr "Diuziñ an _holl"
+msgstr "Diuzañ an _holl"
 
 #: ../shell/rb-shell-clipboard.c:153
 msgid "Select all songs"
-msgstr "Diuziñ an holl donioù"
+msgstr "Diuzañ an holl donioù"
 
 #: ../shell/rb-shell-clipboard.c:155
 msgid "D_eselect All"
-msgstr "Ezdiuziñ an holl"
+msgstr "D_iziuzañ pep tra"
 
 #: ../shell/rb-shell-clipboard.c:156
 msgid "Deselect all songs"
-msgstr "Diziuziñ an holl sonennoù"
+msgstr "Diziuziñ an holl ganennoù"
 
 #: ../shell/rb-shell-clipboard.c:158
 msgid "Cu_t"
-msgstr "_Didroc'hañ"
+msgstr "_Troc'hañ"
 
 #: ../shell/rb-shell-clipboard.c:159
 msgid "Cut selection"
-msgstr "Didroc'hañ an diuzad"
+msgstr "Troc'hañ an diuzad"
 
 #: ../shell/rb-shell-clipboard.c:161
 msgid "_Copy"
@@ -3770,12 +3743,12 @@ msgstr "Pegañ an diuzad"
 
 #: ../shell/rb-shell-clipboard.c:167
 msgid "_Remove"
-msgstr "_Lemel"
+msgstr "_Dilemel"
 
 #: ../shell/rb-shell-clipboard.c:168
 #: ../shell/rb-shell-clipboard.c:182
 msgid "Remove selection"
-msgstr "Lemel an diuzad"
+msgstr "Dilemel an diuzad"
 
 #: ../shell/rb-shell-clipboard.c:170
 msgid "_Move to Trash"
@@ -3787,11 +3760,11 @@ msgstr "Kas an diuzad d'al lastez"
 
 #: ../shell/rb-shell-clipboard.c:174
 msgid "Add to P_laylist"
-msgstr ""
+msgstr "Ouzhpennañ d'ar ro_ll-tonioù"
 
 #: ../shell/rb-shell-clipboard.c:176
 msgid "Add the selected songs to a new playlist"
-msgstr ""
+msgstr "_Ouzhpennañ ar ganenn diuzet d'ur roll-tonioù nevez"
 
 #: ../shell/rb-shell-clipboard.c:178
 msgid "Add _to Play Queue"
@@ -3799,11 +3772,11 @@ msgstr "Ouzhpennañ d'al _lostad-seniñ"
 
 #: ../shell/rb-shell-clipboard.c:179
 msgid "Add the selected songs to the play queue"
-msgstr "Ouzhpennañ an tonioù diuzet d'al lostad-seniñ"
+msgstr "Ouzhpennañ ar kanennoù diuzet d'al lostad-seniñ"
 
 #: ../shell/rb-shell-clipboard.c:181
 msgid "Remove"
-msgstr "Lemel kuit"
+msgstr "Dilemel"
 
 #: ../shell/rb-shell-clipboard.c:185
 msgid "Pr_operties"
@@ -3812,7 +3785,7 @@ msgstr "Perzhi_où"
 #: ../shell/rb-shell-clipboard.c:186
 #: ../shell/rb-shell-clipboard.c:189
 msgid "Show information on the selected song"
-msgstr "Diskouezh an titouroù evit ar sonenn diuzet"
+msgstr "Diskouez an titouroù evit ar sonenn diuzet"
 
 #: ../shell/rb-shell-player.c:309
 msgid "Pre_vious"
@@ -3853,17 +3826,15 @@ msgstr "_Seniñ"
 #: ../shell/rb-shell-player.c:327
 #: ../shell/rb-shell-player.c:3732
 msgid "Start playback"
-msgstr "Kregiñ gant ar playback"
+msgstr "Kregiñ gant ar seniñ"
 
 #: ../shell/rb-shell-player.c:329
-#, fuzzy
 msgid "Sh_uffle"
-msgstr "Sh_uffle"
+msgstr ""
 
 #: ../shell/rb-shell-player.c:330
-#, fuzzy
 msgid "Play songs in a random order"
-msgstr "Seniñ ar sonennoù en dizurzh"
+msgstr "Seniñ ar kanennoù en ur urzh dargouezhek"
 
 #: ../shell/rb-shell-player.c:332
 msgid "_Repeat"
@@ -3871,7 +3842,7 @@ msgstr "_Adseniñ"
 
 #: ../shell/rb-shell-player.c:333
 msgid "Play first song again after all songs are played"
-msgstr "Seniñ an ton kentañ war-lerc'h eo bet sonet an holl donioù"
+msgstr "Seniñ ar ganenn kentañ war-lerc'h eo bet sonet an holl donioù"
 
 #: ../shell/rb-shell-player.c:335
 msgid "_Song Position Slider"
@@ -3882,13 +3853,12 @@ msgid "Change the visibility of the song position slider"
 msgstr ""
 
 #: ../shell/rb-shell-player.c:788
-#, fuzzy
 msgid "Stream error"
-msgstr "Fazi er red"
+msgstr ""
 
 #: ../shell/rb-shell-player.c:789
 msgid "Unexpected end of stream!"
-msgstr "Dibenn red dic'hortoz!"
+msgstr ""
 
 #: ../shell/rb-shell-player.c:921
 msgid "Linear"
@@ -3920,17 +3890,17 @@ msgstr "Dre zegouezh hervez an notenn hag ar mare diwezhañ eo bet sonet"
 
 #: ../shell/rb-shell-player.c:935
 msgid "Linear, removing entries once played"
-msgstr "Linennel, a zilam an tonioù war-lerc'h int bet sonet"
+msgstr "Linennel, a zilam ar kanennoù war-lerc'h int bet sonet"
 
 #: ../shell/rb-shell-player.c:945
 #, c-format
 msgid "Failed to create the player: %s"
-msgstr "Dibosupl eo krouiñ ar soner: %s"
+msgstr "C'hwitadenn war krouiñ ar soner: %s"
 
 #: ../shell/rb-shell-player.c:1491
 #, c-format
 msgid "Playlist was empty"
-msgstr ""
+msgstr "Goullo oa ar roll-tonioù"
 
 #: ../shell/rb-shell-player.c:1980
 #, c-format
@@ -3940,12 +3910,12 @@ msgstr ""
 #: ../shell/rb-shell-player.c:2038
 #, c-format
 msgid "No previous song"
-msgstr "Sonenn gent ebet"
+msgstr "Kanenn gent ebet"
 
 #: ../shell/rb-shell-player.c:2138
 #, c-format
 msgid "No next song"
-msgstr "Sonenn ebet da heul"
+msgstr "Kanenn da-heul ebet"
 
 #: ../shell/rb-shell-player.c:2259
 #: ../shell/rb-shell-player.c:3383
@@ -3973,11 +3943,11 @@ msgstr "Chom a-sav da seniñ"
 #: ../shell/rb-shell-preferences.c:167
 #: ../shell/rb-shell.c:2193
 msgid "Couldn't display help"
-msgstr "N'eus ket tu da ziskouezh ar skoazell"
+msgstr "N'eus ket tu da ziskouez ar skoazell"
 
 #: ../shell/rb-shell-preferences.c:202
 msgid "Music Player Preferences"
-msgstr "Dibaboù gwellañ al lenner sonerezh"
+msgstr "Gwellvezioù al lenner sonerezh"
 
 #: ../shell/rb-shell-preferences.c:255
 msgid "General"
@@ -3996,9 +3966,8 @@ msgid "_View"
 msgstr "_Gwellout"
 
 #: ../shell/rb-shell.c:392
-#, fuzzy
 msgid "_Control"
-msgstr "Reoliñ"
+msgstr ""
 
 #: ../shell/rb-shell.c:393
 msgid "_Tools"
@@ -4014,7 +3983,7 @@ msgstr "_Enporzhiañ un teuliad..."
 
 #: ../shell/rb-shell.c:397
 msgid "Choose folder to be added to the Library"
-msgstr "Dibab ur renkell da vezañ ouzhpennet er bladennaoueg"
+msgstr "Dibab un teuliad da vezañ ouzhpennet el levraoueg"
 
 #: ../shell/rb-shell.c:399
 msgid "Import _File..."
@@ -4022,7 +3991,7 @@ msgstr "Emborzhiañ ur _restr..."
 
 #: ../shell/rb-shell.c:400
 msgid "Choose file to be added to the Library"
-msgstr "Dibab ur restr da vezañ ouzhpennet er bladennaoueg"
+msgstr "Dibab ur restr da vezañ ouzhpennet el levraoueg"
 
 #: ../shell/rb-shell.c:402
 msgid "_About"
@@ -4054,7 +4023,7 @@ msgstr "Gwe_llvezvioù"
 
 #: ../shell/rb-shell.c:412
 msgid "Edit music player preferences"
-msgstr "Kemmañ dibaboù gwellañ al lenner sonerezh"
+msgstr "Kemmañ gwellvezioù al lenner sonerezh"
 
 #: ../shell/rb-shell.c:414
 msgid "Plu_gins"
@@ -4062,11 +4031,11 @@ msgstr "Enlu_gelladoù"
 
 #: ../shell/rb-shell.c:415
 msgid "Change and configure plugins"
-msgstr ""
+msgstr "Kemmañ ha kefluniañ an enlugelladoù"
 
 #: ../shell/rb-shell.c:417
 msgid "Show _All Tracks"
-msgstr ""
+msgstr "Diskouez _an holl loabroù"
 
 #: ../shell/rb-shell.c:418
 msgid "Show all tracks in this music source"
@@ -4074,7 +4043,7 @@ msgstr ""
 
 #: ../shell/rb-shell.c:420
 msgid "_Jump to Playing Song"
-msgstr "Mont d'ar sonenn o vezañ sonet"
+msgstr "Mont d'ar ganenn o vezañ sonet"
 
 #: ../shell/rb-shell.c:421
 msgid "Scroll the view to the currently playing song"
@@ -4094,7 +4063,7 @@ msgstr "Barenn _ostilhoù"
 
 #: ../shell/rb-shell.c:432
 msgid "Change the visibility of the toolbar"
-msgstr "Cheñch hewelded ar varrenn-statuz"
+msgstr "Kemmañ hewelded ar varrenn ostilhoù"
 
 #: ../shell/rb-shell.c:434
 msgid "_Small Display"
@@ -4122,11 +4091,11 @@ msgstr ""
 
 #: ../shell/rb-shell.c:443
 msgid "S_tatusbar"
-msgstr "Barrenn ar s_tad"
+msgstr "Barrenn s_tad"
 
 #: ../shell/rb-shell.c:444
 msgid "Change the visibility of the statusbar"
-msgstr "Cheñch hewelded ar varrenn-statuz"
+msgstr "Kemmañ hewelded ar varrenn-stad"
 
 #: ../shell/rb-shell.c:985
 #: ../shell/rb-shell.c:1208
@@ -4135,11 +4104,11 @@ msgstr ""
 
 #: ../shell/rb-shell.c:1294
 msgid "Change the music volume"
-msgstr "Cheñch kreñvder ar son"
+msgstr "Kemmañ ampled ar sonerezh"
 
 #: ../shell/rb-shell.c:1701
 msgid "Error while saving song information"
-msgstr "Fazi en ur enrollañ titouroù ar ganaouenn"
+msgstr "Fazi en ur enrollañ titouroù ar ganenn"
 
 #: ../shell/rb-shell.c:1806
 #, c-format
@@ -4158,12 +4127,10 @@ msgid "%s (Paused)"
 msgstr "%s (Ehanet)"
 
 #: ../shell/rb-shell.c:2113
-#, fuzzy
 msgid "translator-credits"
 msgstr ""
 "Launchpad Contributions:\n"
 "  Breizh https://launchpad.net/~jamybzh-free\n"
-"  Denis https://launchpad.net/~bibar\n"
 "  Gwennin Le Bourdonnec https://launchpad.net/~gwenninlb\n"
 "  Oublieuse https://launchpad.net/~oublieuse\n"
 "  Ronan Le Déroff https://launchpad.net/~rldmv"
@@ -4175,6 +4142,10 @@ msgid ""
 "the Free Software Foundation; either version 2 of the License, or\n"
 "(at your option) any later version.\n"
 msgstr ""
+"Ur meziant digor eo Rhythmbox ; dasparzhet pe/ha daskemmet e vez\n"
+"dindan termenoù al Lañvaz Foran Hollek GNU evel ma'z eo bet embannet\n"
+"gant Diazezadenn ar Meziantoù Digor ; da lâret eo handelv 2 eus al lañvaz\n"
+"pe (evel ma plij deoc'h) ne vern pe handelv nevesoc'h.\n"
 
 #: ../shell/rb-shell.c:2120
 msgid ""
@@ -4182,7 +4153,7 @@ msgid ""
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
-msgstr ""
+msgstr "Dasparzhet eo Rhythmbox gant ar spi e vo talvoudus met GANT GWARANT EBET ; hep ar gwarant enpleg a-fet TALVOUDEGEZH KENWERZHEL pe VARREGEZH EVIT UR PAL PERSONEL. Taolit ur sell war Lañvaz Foran Hollek GNU evit gouzout hiroc'h.\n"
 
 #: ../shell/rb-shell.c:2124
 msgid ""
@@ -4190,6 +4161,9 @@ msgid ""
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 msgstr ""
+"Moarvat hoc'h eus bet un eilad eus al Lañvaz Foran Hollek GNU\n"
+"gant Rhythmbox ; ma n'hoc'h eus ket bet,skrivit da : Free Software Foundation, Inc.\n"
+" 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA\n"
 
 #: ../shell/rb-shell.c:2131
 msgid "Maintainers:"
@@ -4200,7 +4174,6 @@ msgid "Former Maintainers:"
 msgstr ""
 
 #: ../shell/rb-shell.c:2137
-#, fuzzy
 msgid "Contributors:"
 msgstr "Perzhiaded :"
 
@@ -4210,7 +4183,7 @@ msgstr ""
 
 #: ../shell/rb-shell.c:2148
 msgid "Rhythmbox Website"
-msgstr ""
+msgstr "Lec'hienn Rhythmbox"
 
 #: ../shell/rb-shell.c:2240
 msgid "Configure Plugins"
@@ -4218,11 +4191,11 @@ msgstr "Kefluniañ an enlugadelloù"
 
 #: ../shell/rb-shell.c:2311
 msgid "Import Folder into Library"
-msgstr "Emborzhiañ ur renkell er bladennaoueg"
+msgstr "Enporzhiañ an teuliad el levraoueg"
 
 #: ../shell/rb-shell.c:2333
 msgid "Import File into Library"
-msgstr "Emborzhiañ ur restr er bladennaoueg"
+msgstr "Enpoorzhiañ ar restr el levraoueg"
 
 #: ../shell/rb-shell.c:2873
 #, c-format
@@ -4233,7 +4206,7 @@ msgstr ""
 #: ../shell/rb-shell.c:3172
 #, c-format
 msgid "Unknown song URI: %s"
-msgstr "URI kanaouenn dianav: %s"
+msgstr "URI ar ganenn dianav : %s"
 
 #: ../shell/rb-shell.c:3181
 #, c-format
@@ -4243,7 +4216,7 @@ msgstr "Perzh %s dianav"
 #: ../shell/rb-shell.c:3191
 #, c-format
 msgid "Invalid property type %s for property %s"
-msgstr "Stumm perzh direizh %s evit ar perzh %s"
+msgstr "Didalvoudek eo rizh %s evit ar perzh %s"
 
 #: ../shell/rb-source-header.c:142
 msgid "_Browse"
@@ -4251,7 +4224,7 @@ msgstr "_Furchal"
 
 #: ../shell/rb-source-header.c:143
 msgid "Change the visibility of the browser"
-msgstr "Cheñch hewelded ar furcher"
+msgstr "Kemmañ hewelded ar furcher"
 
 #: ../shell/rb-source-header.c:314
 msgid "Filter music display by genre, artist, album, or title"
@@ -4278,19 +4251,19 @@ msgstr "Arzourien"
 #: ../sources/rb-browser-source.c:174
 #: ../sources/rb-static-playlist-source.c:111
 msgid "Search artists"
-msgstr ""
+msgstr "Klask arzourien"
 
 #: ../sources/rb-auto-playlist-source.c:107
 #: ../sources/rb-browser-source.c:175
 #: ../sources/rb-static-playlist-source.c:112
 msgid "Albums"
-msgstr ""
+msgstr "Albomoù"
 
 #: ../sources/rb-auto-playlist-source.c:107
 #: ../sources/rb-browser-source.c:175
 #: ../sources/rb-static-playlist-source.c:112
 msgid "Search albums"
-msgstr ""
+msgstr "Klask albomoù"
 
 #: ../sources/rb-auto-playlist-source.c:108
 #: ../sources/rb-browser-source.c:176
@@ -4310,7 +4283,7 @@ msgstr "Furchal er rummad-mañ"
 
 #: ../sources/rb-browser-source.c:161
 msgid "Set the browser to view only this genre"
-msgstr "Lakaat ar furcher da ziskouezh ar rummad-mañ hepken"
+msgstr "Lakaat ar furcher da ziskouez ar rummad-mañ hepken"
 
 #: ../sources/rb-browser-source.c:163
 msgid "Browse This _Artist"
@@ -4330,7 +4303,7 @@ msgstr "Lakaat ar furcher da ziskouezh an albom-mañ hepken"
 
 #: ../sources/rb-import-errors-source.c:227
 msgid "Import Errors"
-msgstr ""
+msgstr "Fazioù en ur enporzhiañ"
 
 #: ../sources/rb-import-errors-source.c:263
 #, c-format
@@ -4369,15 +4342,15 @@ msgstr "Arzour - Titl"
 
 #: ../sources/rb-library-source.c:148
 msgid "Artist - Number - Title"
-msgstr ""
+msgstr "Arzour - Niverenn - Titl"
 
 #: ../sources/rb-library-source.c:149
 msgid "Artist (Album) - Number - Title"
-msgstr ""
+msgstr "Arzour (Albom) - Niverenn - Titl"
 
 #: ../sources/rb-library-source.c:151
 msgid "Number. Artist - Title"
-msgstr ""
+msgstr "Niverenn Arzour - Titl"
 
 #: ../sources/rb-library-source.c:390
 msgid "Music"
@@ -4397,7 +4370,7 @@ msgstr "Treug ur skouer :"
 
 #: ../sources/rb-missing-files-source.c:288
 msgid "Missing Files"
-msgstr ""
+msgstr "Restroù o vankout"
 
 #: ../sources/rb-missing-files-source.c:356
 #, c-format
@@ -4408,11 +4381,12 @@ msgstr[1] "%d restr o vankout"
 
 #: ../sources/rb-play-queue-source.c:115
 msgid "Clear _Queue"
-msgstr ""
+msgstr "Skarzhañ al lostennad"
 
 #: ../sources/rb-play-queue-source.c:116
+#, fuzzy
 msgid "Remove all songs from the play queue"
-msgstr ""
+msgstr "Dilemel an holl sonennoù eus al lostennad"
 
 #: ../sources/rb-play-queue-source.c:118
 msgid "Shuffle Queue"
@@ -4431,7 +4405,7 @@ msgstr "Skarzhañ"
 #: ../sources/rb-play-queue-source.c:318
 #: ../sources/rb-play-queue-source.c:460
 msgid "Play Queue"
-msgstr ""
+msgstr "Seniñ al lostennad"
 
 #: ../sources/rb-play-queue-source.c:428
 #: ../widgets/rb-header.c:124
@@ -4444,13 +4418,12 @@ msgid "by"
 msgstr "gant"
 
 #: ../sources/rb-podcast-source.c:307
-#, fuzzy
 msgid "_New Podcast Feed..."
-msgstr "Neud Podkast nevez"
+msgstr "Lanv podskignañ _nevez"
 
 #: ../sources/rb-podcast-source.c:308
 msgid "Subscribe to a new Podcast Feed"
-msgstr "Koumanantiñ d'un neudenn podcast nevez"
+msgstr "Koumanantiñ d'ul lanv podskignañ nevez"
 
 #: ../sources/rb-podcast-source.c:311
 msgid "Download _Episode"
@@ -4458,7 +4431,7 @@ msgstr "Pellgargañ ar _chabistr"
 
 #: ../sources/rb-podcast-source.c:312
 msgid "Download Podcast Episode"
-msgstr "Pellgargañ chabistr ar podkast"
+msgstr "Pellgargañ chabistr ar podskignañ"
 
 #: ../sources/rb-podcast-source.c:314
 msgid "_Cancel Download"
@@ -4466,7 +4439,7 @@ msgstr "N_ullañ ar bellgargañ"
 
 #: ../sources/rb-podcast-source.c:315
 msgid "Cancel Episode Download"
-msgstr "Nullañ pellgargadenn chabistr ar podkast"
+msgstr "Nullañ pellgargadenn chabistr ar podskignañ"
 
 #: ../sources/rb-podcast-source.c:318
 msgid "Episode Properties"
@@ -4474,27 +4447,27 @@ msgstr "Perzhioù ar chabistr"
 
 #: ../sources/rb-podcast-source.c:320
 msgid "_Update Podcast Feed"
-msgstr "_Hizivaat an neud podcast"
+msgstr "_Hizivaat al lanvioù podcast"
 
 #: ../sources/rb-podcast-source.c:321
 msgid "Update Feed"
-msgstr "Hizivaat an neud"
+msgstr "Hizivaat al lanv"
 
 #: ../sources/rb-podcast-source.c:323
 msgid "_Delete Podcast Feed"
-msgstr "_Lemel an neud potcast"
+msgstr "_Dilemel al lanv potcast"
 
 #: ../sources/rb-podcast-source.c:324
 msgid "Delete Feed"
-msgstr "Lemel an neud"
+msgstr "Dilemel al lanv"
 
 #: ../sources/rb-podcast-source.c:326
 msgid "_Update All Feeds"
-msgstr "Hizivaat an holl neudoù"
+msgstr "Hizivaat an holl lanvioù"
 
 #: ../sources/rb-podcast-source.c:327
 msgid "Update all feeds"
-msgstr "Hizivaat an holl neudoù"
+msgstr "Hizivaat an holl lanvioù"
 
 #: ../sources/rb-podcast-source.c:334
 msgid "Feeds"
@@ -4502,7 +4475,7 @@ msgstr "Lanvioù"
 
 #: ../sources/rb-podcast-source.c:334
 msgid "Search podcast feeds"
-msgstr ""
+msgstr "Klask lanvioù podskignañ"
 
 #: ../sources/rb-podcast-source.c:335
 msgid "Episodes"
@@ -4534,7 +4507,7 @@ msgstr "Deiziad"
 #: ../sources/rb-podcast-source.c:678
 #: ../sources/rb-podcast-source.c:732
 msgid "Feed"
-msgstr "Neud"
+msgstr "Lanvioù"
 
 #: ../sources/rb-podcast-source.c:629
 #: ../sources/rb-podcast-source.c:647
@@ -4558,7 +4531,7 @@ msgstr "Sac'het"
 
 #: ../sources/rb-podcast-source.c:919
 msgid "Delete the podcast episode and downloaded file?"
-msgstr "Diverkañ ar chabistr podkast hag ar restr bet pellgarget?"
+msgstr "Diverkañ ar chabistr podskignañ hag ar restr bet pellgarget?"
 
 #: ../sources/rb-podcast-source.c:922
 msgid "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the episode but keep the downloaded file by choosing to delete the episode only."
@@ -4574,7 +4547,7 @@ msgstr "_Diverkañ ar chabistr hag ar restr"
 
 #: ../sources/rb-podcast-source.c:1375
 msgid "Delete the podcast feed and downloaded files?"
-msgstr "Lemel an neudoù podcast hag ar restroù bet pellgarget?"
+msgstr "Dilemel al lanvioù podskignañ hag ar restroù bet pellgarget?"
 
 #: ../sources/rb-podcast-source.c:1378
 msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
@@ -4582,26 +4555,26 @@ msgstr ""
 
 #: ../sources/rb-podcast-source.c:1386
 msgid "Delete _Feed Only"
-msgstr "Lemel an _neudoù hepken"
+msgstr "Dilemel al _lanvioù hepken"
 
 #: ../sources/rb-podcast-source.c:1393
 msgid "_Delete Feed And Files"
-msgstr "_Lemel neudoù ha restroù"
+msgstr "Di_lemel al lanvioù hag ar restroù"
 
 #: ../sources/rb-podcast-source.c:1601
-#, fuzzy, c-format
+#, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
-msgstr[0] "Lanv"
-msgstr[1] ""
+msgstr[0] "%d lanv"
+msgstr[1] "An holl e-touez %d a lanvioù"
 
 #: ../sources/rb-podcast-source.c:1738
 msgid "Downloading podcast"
-msgstr "O pellgargañ ar podcast"
+msgstr "O pellgargañ ar podskignañ"
 
 #: ../sources/rb-podcast-source.c:1753
 msgid "Finished downloading podcast"
-msgstr "Echu eo pellgargañ ar podcast"
+msgstr "Echu eo pellgargañ ar podskignañ"
 
 #: ../sources/rb-podcast-source.c:1768
 msgid "New updates available from"
@@ -4609,7 +4582,7 @@ msgstr ""
 
 #: ../sources/rb-podcast-source.c:1886
 msgid "Error in podcast"
-msgstr "Fazi er podkast"
+msgstr "Fazi er podskignañ"
 
 #: ../sources/rb-podcast-source.c:1893
 #, c-format
@@ -4618,11 +4591,11 @@ msgstr ""
 
 #: ../sources/rb-podcast-source.c:2020
 msgid "New Podcast Feed"
-msgstr "Neud Podkast nevez"
+msgstr "Lanvioù podskignañ nevez"
 
 #: ../sources/rb-podcast-source.c:2020
 msgid "URL of podcast feed:"
-msgstr ""
+msgstr "URL al alnv podskignañ :"
 
 #: ../sources/rb-podcast-source.c:2036
 #, c-format
@@ -4633,7 +4606,7 @@ msgstr[1] ""
 
 #: ../sources/rb-podcast-source.c:2144
 msgid "Podcast Error"
-msgstr ""
+msgstr "Fazi podskignañ"
 
 #: ../sources/rb-source.c:720
 #, c-format
@@ -4652,16 +4625,15 @@ msgstr "Trobarzhelloù"
 
 #: ../sources/rb-source-group.c:65
 msgid "Shared"
-msgstr "Rannet"
+msgstr "Kenimplijet"
 
 #: ../sources/rb-sourcelist.c:710
 msgid "S_ource"
 msgstr "Orin"
 
 #: ../sources/rb-streaming-source.c:217
-#, fuzzy
 msgid "Connecting"
-msgstr "O kevreañ..."
+msgstr "O kennaskañ"
 
 #: ../sources/rb-streaming-source.c:221
 msgid "Buffering"
@@ -4679,16 +4651,15 @@ msgstr ""
 #: ../widgets/rb-entry-view.c:1545
 #: ../widgets/rb-song-info.c:1046
 msgid "Lossless"
-msgstr ""
+msgstr "Hep koll"
 
 #: ../widgets/rb-entry-view.c:1465
 msgid "Track"
 msgstr "Loabr"
 
 #: ../widgets/rb-entry-view.c:1516
-#, fuzzy
 msgid "Time"
-msgstr "Eur"
+msgstr "Amzer"
 
 #: ../widgets/rb-entry-view.c:1528
 #: ../widgets/rb-query-creator-properties.c:79
@@ -4713,9 +4684,8 @@ msgstr "Notenn"
 #: ../widgets/rb-entry-view.c:1576
 #: ../widgets/rb-query-creator-properties.c:83
 #: ../widgets/rb-query-creator-properties.c:107
-#, fuzzy
 msgid "Play Count"
-msgstr "Niver a lennadennoù :"
+msgstr ""
 
 #: ../widgets/rb-entry-view.c:1588
 #: ../widgets/rb-query-creator-properties.c:111
@@ -4751,29 +4721,29 @@ msgstr "N'emañ ket o seniñ"
 #, c-format
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d arzour (%d)"
+msgstr[1] "An holl e-touez %d a arzourien (%d)"
 
 #: ../widgets/rb-property-view.c:633
 #, c-format
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d albom (%d)"
+msgstr[1] "An holl e-touez %d a albomoù (%d)"
 
 #: ../widgets/rb-property-view.c:636
 #, c-format
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d rumm (%d)"
+msgstr[1] "An holl e-touez %d a rummoù (%d)"
 
 #: ../widgets/rb-property-view.c:639
 #, c-format
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d (%d)"
+msgstr[1] "An holl %d (%d)"
 
 #: ../widgets/rb-property-view.c:645
 #, c-format
@@ -4791,7 +4761,7 @@ msgstr "Niverenn al loabr"
 
 #: ../widgets/rb-query-creator-properties.c:85
 msgid "Disc Number"
-msgstr "Niverenn pladenn"
+msgstr "Niverenn ar gantenn"
 
 #: ../widgets/rb-query-creator-properties.c:86
 msgid "Bitrate"
@@ -4808,7 +4778,7 @@ msgstr "Eur e voe sonet ar wech diwezhañ"
 
 #: ../widgets/rb-query-creator-properties.c:91
 msgid "Time Added to Library"
-msgstr "Eur e voe ouzhpennet d'ar bladennaoueg"
+msgstr "Eur e voe ouzhpennet d'al livraoueg"
 
 #: ../widgets/rb-query-creator-properties.c:102
 #: ../widgets/rb-query-creator-properties.c:103
@@ -4818,37 +4788,32 @@ msgid "_In reverse alphabetical order"
 msgstr "En urzh kin al lizherennaoueg"
 
 #: ../widgets/rb-query-creator-properties.c:106
-#, fuzzy
 msgid "W_ith more highly rated tracks first"
-msgstr "Gant ar roudadoù notennet ar gwellañ da gentañ"
+msgstr "Gant al loabroù notennet ar gwellañ da gentañ"
 
 #: ../widgets/rb-query-creator-properties.c:107
 msgid "W_ith more often played songs first"
-msgstr "Gant ar sonennoù sonet an aliesañ da gentañ"
+msgstr ""
 
 #: ../widgets/rb-query-creator-properties.c:108
-#, fuzzy
 msgid "W_ith newer tracks first"
-msgstr "Gant ar roudennoù nevesañ da gentañ"
+msgstr "Gant aloabroù nevesañ da gentañ"
 
 #: ../widgets/rb-query-creator-properties.c:109
-#, fuzzy
 msgid "W_ith longer tracks first"
-msgstr "Gant ar roudennoù hirañ da gentañ"
+msgstr "Gant al loabroù hirañ da gentañ"
 
 #: ../widgets/rb-query-creator-properties.c:110
 msgid "_In decreasing order"
 msgstr "Urzh war ziskenn"
 
 #: ../widgets/rb-query-creator-properties.c:111
-#, fuzzy
 msgid "W_ith more recently played tracks first"
-msgstr "Gant ar roudennoù nevez sonet da gentañ"
+msgstr ""
 
 #: ../widgets/rb-query-creator-properties.c:112
-#, fuzzy
 msgid "W_ith more recently added tracks first"
-msgstr "Gant al loabroù nevez ouzhpennet da gentañ"
+msgstr ""
 
 #: ../widgets/rb-query-creator-properties.c:125
 msgid "contains"
@@ -4933,22 +4898,22 @@ msgstr "sizhunvezhioù"
 
 #: ../widgets/rb-query-creator.c:214
 msgid "Create Automatic Playlist"
-msgstr "Krouiñ ur roll-seniñ automatek"
+msgstr ""
 
 #: ../widgets/rb-query-creator.c:216
 msgid "Edit Automatic Playlist"
-msgstr "Kemmañ ar roll-seniñ automatek"
+msgstr ""
 
 #: ../widgets/rb-rating-helper.c:309
 msgid "No Stars"
-msgstr ""
+msgstr "Steredenn ebet"
 
 #: ../widgets/rb-rating-helper.c:311
-#, fuzzy, c-format
+#, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
-msgstr[0] "Steredenn"
-msgstr[1] ""
+msgstr[0] "%d steredenn"
+msgstr[1] "%d steredenn"
 
 #. this string can only be so long, or there wont be a search entry :)
 #: ../widgets/rb-search-entry.c:165
@@ -4957,19 +4922,19 @@ msgstr "_Klask :"
 
 #: ../widgets/rb-search-entry.c:176
 msgid "Clear the search text"
-msgstr ""
+msgstr "Skarzhañ an destenn klask"
 
 #: ../widgets/rb-song-info.c:369
 msgid "Song Properties"
-msgstr "Perzhioù ar ganaouenn"
+msgstr "Perzhioù ar ganenn"
 
 #: ../widgets/rb-song-info.c:417
 msgid "Multiple Song Properties"
-msgstr "Perzhioù meur a ganaouenn"
+msgstr "Perzhioù meur a ganenn"
 
 #: ../widgets/rb-song-info.c:1108
 msgid "Unknown file name"
-msgstr "Anv restr dianav"
+msgstr "Anv ar restr dianav"
 
 #: ../widgets/rb-song-info.c:1130
 msgid "On the desktop"
@@ -4978,85 +4943,4 @@ msgstr "War ar burev"
 #: ../widgets/rb-song-info.c:1139
 msgid "Unknown location"
 msgstr "Lec'hiadur dianav"
-
-#~ msgid "Unknown playback error"
-#~ msgstr "Fazi playback dianav"
-#~ msgid ""
-#~ "songs\n"
-#~ "MB\n"
-#~ "GB\n"
-#~ "Minutes"
-#~ msgstr ""
-#~ "sonioù\n"
-#~ "Mo\n"
-#~ "Go\n"
-#~ "Munutoù"
-#~ msgid ""
-#~ "Default\n"
-#~ "-\n"
-#~ "Text below icons\n"
-#~ "Text beside icons\n"
-#~ "Icons only\n"
-#~ "Text only"
-#~ msgstr ""
-#~ "Dre ziouer\n"
-#~ "-\n"
-#~ "Testenn dindan arlunioù\n"
-#~ "Testenn e-kichen arlunioù\n"
-#~ "Arlunioù hepken\n"
-#~ "Testenn hepken"
-#~ msgid "    "
-#~ msgstr "    "
-#~ msgid "C_rossfade between songs on the same album"
-#~ msgstr "Treveuz etre tonioù eus ar memes albom"
-#~ msgid "Crossfade Type"
-#~ msgstr "Doare Treveuz"
-#~ msgid "Rhythmbox Plugins"
-#~ msgstr "Pluginoù Rhythmbox"
-#~ msgid "-"
-#~ msgstr "-"
-#~ msgid ""
-#~ "Every hour\n"
-#~ "Every day\n"
-#~ "Every week\n"
-#~ "Manually"
-#~ msgstr ""
-#~ "Bep eur\n"
-#~ "Bemdez\n"
-#~ "Bep sizhun\n"
-#~ "Gant an dorn"
-#~ msgid "*"
-#~ msgstr "*"
-#~ msgid "Enter the _location (URI) of the file you would like to add:"
-#~ msgstr "Roit lec'hiadur (URI) ar restr a fell deoc'h ouzhpennañ:"
-#~ msgid "Open from URI"
-#~ msgstr "Digerin adalek un URI"
-#~ msgid "HTTP proxy configuration error"
-#~ msgstr "Fazi kefluniadur servijer proksy"
-#~ msgid "Rhythmbox does not support automatic proxy configuration"
-#~ msgstr "N'eo ket kemer e garg kefluniadur emgefreek servijerioù proksy"
-#~ msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
-#~ msgstr ""
-#~ "Ret eo kaout pluginoù GStreamer evit digodañ ar restroù \"%s\" n'int ket "
-#~ "bet kavet"
-#~ msgid "The file contains a stream of type %s, which is not decodable"
-#~ msgstr "Ar restr en deus ul lanv a seurt %s, ha n'eo ket desifrañ"
-#~ msgid "0"
-#~ msgstr "0"
-#~ msgid "Incorrect password"
-#~ msgstr "Ger kuzh direizh"
-#~ msgid ""
-#~ "Ogg Vorbis\n"
-#~ "FLAC\n"
-#~ "WAV\n"
-#~ "VBR MP3\n"
-#~ "128K MP3"
-#~ msgstr ""
-#~ "Ogg Vorbis\n"
-#~ "FLAC\n"
-#~ "WAV\n"
-#~ "VBR MP3\n"
-#~ "128K MP3"
-#~ msgid "Rhythmbox"
-#~ msgstr "Rhythmbox"
 
