@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-04 15:24+0200\n"
-"PO-Revision-Date: 2009-09-04 16:22+0200\n"
+"POT-Creation-Date: 2009-09-14 11:50+0200\n"
+"PO-Revision-Date: 2009-09-14 11:50+0200\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -497,6 +497,10 @@ msgid "Play and organize your music collection"
 msgstr "Erreproduzitu eta antolatu musika bilduma"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: ../data/rhythmbox.desktop.in.in.h:4
 msgid "Rhythmbox Music Player"
 msgstr "Rhythmbox musika erreproduzitzailea"
 
@@ -606,6 +610,8 @@ msgstr "%Y %b %d"
 #: ../lib/rb-util.c:816
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:98
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
+#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:238
+#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:242
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:181
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:182
 #: ../plugins/audiocd/rb-audiocd-source.c:436
@@ -627,7 +633,7 @@ msgstr "%Y %b %d"
 #: ../plugins/mtpdevice/rb-mtp-source.c:995
 #: ../plugins/status-icon/rb-status-icon-plugin.c:727
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
-#: ../podcast/rb-podcast-manager.c:1873
+#: ../podcast/rb-podcast-manager.c:1875
 #: ../podcast/rb-podcast-properties-dialog.c:483
 #: ../podcast/rb-podcast-properties-dialog.c:535
 #: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1287
@@ -646,12 +652,12 @@ msgstr "Ezezaguna"
 msgid "Unable to move %s to %s: %s"
 msgstr "Ezin da '%s' lekuz '%s'(e)ra aldatu: %s"
 
-#: ../lib/rb-file-helpers.c:380
+#: ../lib/rb-file-helpers.c:378
 #, c-format
 msgid "Too many symlinks"
 msgstr "Esteka sinboliko gehiegi"
 
-#: ../lib/rb-file-helpers.c:988
+#: ../lib/rb-file-helpers.c:986
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Ezin da leku librea lortu %s-(e)n: %s"
@@ -1655,8 +1661,8 @@ msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MB "
 "required."
 msgstr ""
-"Ezin izan da aldi baterako nahikoa espazio aurkitu audio pistak bihurtzeko. "
-"%s MB behar da."
+"Ezin izan da aldi baterako nahikoa espazio aurkitu audio pistak bihurtzeko. %"
+"s MB behar da."
 
 #: ../plugins/cd-recorder/recorder.ui.h:1
 msgid "Create audio CD from playlist?"
@@ -1890,7 +1896,9 @@ msgstr "BM egoera"
 
 #: ../plugins/im-status/im-status.rb-plugin.in.h:2
 msgid "Updates IM status according to the current song (works with Empathy & Gossip)"
-msgstr "BM egoera eguenratzen du uneko abestiaren arabera (Empathy eta Gossip-ekin funtzionatzen du)"
+msgstr ""
+"BM egoera eguenratzen du uneko abestiaren arabera (Empathy eta Gossip-ekin "
+"funtzionatzen du)"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -3290,30 +3298,30 @@ msgstr "Erreproduzitzen ari den kantaren hitzak bistaratzen ditu"
 msgid "Visualization"
 msgstr "Bisualizazioa"
 
-#: ../podcast/rb-podcast-manager.c:811
+#: ../podcast/rb-podcast-manager.c:813
 msgid "Error creating podcast download directory"
 msgstr "Errorea podcast-ak deskargatzeko direktorioa sortzean"
 
-#: ../podcast/rb-podcast-manager.c:812
+#: ../podcast/rb-podcast-manager.c:814
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Ezin da deskargatzeko direktorioa sortu '%s'(e)ntzako: %s"
 
-#: ../podcast/rb-podcast-manager.c:938
+#: ../podcast/rb-podcast-manager.c:940
 msgid "Invalid URL"
 msgstr "URL baliogabea"
 
-#: ../podcast/rb-podcast-manager.c:939
+#: ../podcast/rb-podcast-manager.c:941
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "\"%s\" URLa ez da baliozkoa, egiaztatu ezazu."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:949
+#: ../podcast/rb-podcast-manager.c:951
 msgid "URL already added"
 msgstr "URLa jadanik gehituta"
 
-#: ../podcast/rb-podcast-manager.c:950
+#: ../podcast/rb-podcast-manager.c:952
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3322,7 +3330,7 @@ msgstr ""
 "\"%s\" URLa jadanik irrati gisa gehituta dago. Podcast baten iturria bada "
 "kendu irratia."
 
-#: ../podcast/rb-podcast-manager.c:1018
+#: ../podcast/rb-podcast-manager.c:1020
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3332,11 +3340,11 @@ msgstr ""
 "'%s' URLa ez dirudi podcast-eko iturria denik. Agian URL okerra da, edo "
 "iturria hondatuta dago. Hala ere, nahi duzu Rhythmbox-ek hori erabiltzea?"
 
-#: ../podcast/rb-podcast-manager.c:1129
+#: ../podcast/rb-podcast-manager.c:1131
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2053
+#: ../podcast/rb-podcast-manager.c:2055
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Arazoak daude podcast hau gehitzean: %s. Egiaztatu URLa: %s"
