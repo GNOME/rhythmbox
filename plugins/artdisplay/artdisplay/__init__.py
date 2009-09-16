@@ -36,7 +36,7 @@ FADE_TOTAL_TIME = 1000
 ART_MISSING_ICON = 'rhythmbox-missing-artwork'
 WORKING_DELAY = 500
 THROBBER_RATE = 10
-THROBBER = 'gnome-spinner'
+THROBBER = 'process-working'
 ASPECT_RATIO_MIN = 0.9
 ASPECT_RATIO_MAX = 1.1
 
