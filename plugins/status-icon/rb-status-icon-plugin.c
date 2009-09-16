@@ -969,8 +969,13 @@ visibility_changing_cb (RBShell *shell,
 
 	if (visible) {
 		GtkWindow *window;
+		GdkWindow *gdkwindow;
 
 		g_object_get (shell, "window", &window, NULL);
+		gdkwindow = gtk_widget_get_window (GTK_WIDGET (window));
+		if (gdkwindow) {
+		    gdk_x11_window_move_to_current_desktop (gdkwindow);
+		}
 		gtk_window_set_skip_taskbar_hint (window, FALSE);
 		g_object_unref (window);
 	} else {
