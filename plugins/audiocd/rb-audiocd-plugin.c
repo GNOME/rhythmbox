@@ -135,8 +135,11 @@ set_source_properties (GstElement *source, const char *uri, gboolean playback_mo
 
 	device = g_utf8_strrchr (uri, -1, '#');
 	if (device != NULL) {
+		int track;
+
 		device++;	/* skip the # */
-		g_object_set (source, "device", device, NULL);
+		track = strtoul (uri + 7, NULL, 0);
+		g_object_set (source, "device", device, "track", track, NULL);
 
 		if (playback_mode) {
 			/* disable paranoia (if using cdparanoiasrc) and set read speed to 1 */
