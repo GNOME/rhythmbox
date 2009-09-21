@@ -29,11 +29,14 @@ from LyrcParser import LyrcParser
 from AstrawebParser import AstrawebParser
 from LeoslyricsParser import LeoslyricsParser
 from WinampcnParser import WinampcnParser
+from TerraParser import TerraParser
 
 lyrics_sites = [
 	{ 'id': 'lyrc.com.ar', 		'class': LyrcParser, 		'name': _("Lyrc (lyrc.com.ar)") 		},
 	{ 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
 	{ 'id': 'leoslyrics.com', 	'class': LeoslyricsParser, 	'name': _("Leo's Lyrics (www.leoslyrics.com)") 	},
-	{ 'id': 'winampcn.com', 	'class': WinampcnParser, 	'name': _("WinampCN (www.winampcn.com)") 	}
+	{ 'id': 'winampcn.com', 	'class': WinampcnParser, 	'name': _("WinampCN (www.winampcn.com)") 	},
+	{ 'id': 'terra.com.br',		'class': TerraParser,		'name': _("TerraBrasil (terra.com.br)")		}
+
 ]
 

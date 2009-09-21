@@ -10,4 +10,5 @@ plugin_PYTHON =				\
        AstrawebParser.py		\
        LeoslyricsParser.py		\
        LyricWikiParser.py		\
-       WinampcnParser.py
+       WinampcnParser.py		\
+       TerraParser.py
