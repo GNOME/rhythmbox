@@ -26,6 +26,7 @@
 
 #include "config.h"
 
+#define bool int
 #include <string.h>
 #include <npupp.h>
 
