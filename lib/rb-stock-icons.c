@@ -84,6 +84,9 @@ rb_stock_icons_init (void)
 	 * and should be removed at some point.
 	 */
 	dot_icon_dir = g_build_filename (rb_dot_dir (), "icons", NULL);
+	gtk_icon_theme_append_search_path (theme, dot_icon_dir);
+	g_free (dot_icon_dir);
+
 	dot_icon_dir = g_build_filename (rb_user_data_dir (), "icons", NULL);
 	gtk_icon_theme_append_search_path (theme, dot_icon_dir);
 	g_free (dot_icon_dir);
