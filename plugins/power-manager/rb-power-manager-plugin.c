@@ -27,7 +27,7 @@
  */
 
 /*
- * gnome-power-manager integration.
+ * gnome-session integration.
  * currently consists of inhibiting suspend while playing.
  */
 
@@ -35,6 +35,7 @@
 
 #include <glib/gi18n.h>
 #include <dbus/dbus-glib.h>
+#include <gdk/gdkx.h>
 
 #include "rb-plugin.h"
 #include "rb-debug.h"
@@ -55,6 +56,7 @@ typedef struct
 	guint32 cookie;
 	gint handler_id;
 	gint timeout_id;
+	RBShell *shell;
 } RBGPMPlugin;
 
 typedef struct
@@ -120,33 +122,15 @@ create_dbus_proxy (RBGPMPlugin *plugin)
 
 	/* try new name first */
 	plugin->proxy = dbus_g_proxy_new_for_name_owner (plugin->bus,
-						   "org.freedesktop.PowerManagement",
-						   "/org/freedesktop/PowerManagement/Inhibit",
-						   "org.freedesktop.PowerManagement.Inhibit",
+						   "org.gnome.SessionManager",
+						   "/org/gnome/SessionManager",
+						   "org.gnome.SessionManager",
 						   &error);
 	if (error != NULL && ignore_error (error) == FALSE) {
-		g_warning ("Failed to create dbus proxy for org.gnome.PowerManager: %s",
+		g_warning ("Failed to create dbus proxy for org.gnome.SessionManager: %s",
 			   error->message);
 		g_error_free (error);
 		return FALSE;
-	} else if (error != NULL) {
-		g_error_free (error);
-		error = NULL;
-
-		/* fall back to original name */
-		plugin->proxy = dbus_g_proxy_new_for_name_owner (plugin->bus,
-							   "org.gnome.PowerManager",
-							   "/org/gnome/PowerManager",
-							   "org.gnome.PowerManager",
-							   &error);
-		if (error != NULL) {
-			if (ignore_error (error) == FALSE) {
-				g_warning ("Failed to create dbus proxy for org.gnome.PowerManager: %s",
-					   error->message);
-			}
-			g_error_free (error);
-			return FALSE;
-		}
 	}
 
 	g_signal_connect_object (plugin->proxy,
@@ -187,10 +171,12 @@ inhibit_cb (DBusGProxy *proxy,
 static gboolean
 inhibit (RBGPMPlugin *plugin)
 {
+	GtkWindow *window;
 	plugin->timeout_id = 0;
+	gulong xid = 0;
 
 	if (plugin->cookie != 0) {
-		rb_debug ("Was going to inhibit gnome-power-manager, but we already have done");
+		rb_debug ("Was going to inhibit gnome-session, but we already have done");
 		return FALSE;
 	}
 
@@ -200,12 +186,16 @@ inhibit (RBGPMPlugin *plugin)
 
 	rb_debug ("inhibiting");
 	g_object_ref (plugin);
+	g_object_get (plugin->shell, "window", &window, NULL);
+	xid = GDK_WINDOW_XWINDOW (GTK_WIDGET (window)->window);
 	dbus_g_proxy_begin_call (plugin->proxy, "Inhibit",
 				 (DBusGProxyCallNotify) inhibit_cb,
 				 plugin,
 				 NULL,
-				 G_TYPE_STRING, _("Music Player"),
+				 G_TYPE_STRING, "rhythmbox",
+				 G_TYPE_UINT, xid,
 				 G_TYPE_STRING, _("Playing"),
+				 G_TYPE_UINT, 8, /* flags */
 				 G_TYPE_INVALID);
 
 	return FALSE;
@@ -245,7 +235,7 @@ uninhibit (RBGPMPlugin *plugin)
 	plugin->timeout_id = 0;
 
 	if (plugin->cookie == 0) {
-		rb_debug ("Was going to uninhibit power manager, but we haven't inhibited it");
+		rb_debug ("Was going to uninhibit session manager, but we haven't inhibited it");
 		return FALSE;
 	}
 
@@ -255,7 +245,7 @@ uninhibit (RBGPMPlugin *plugin)
 
 	rb_debug ("uninhibiting; cookie = %u", plugin->cookie);
 	g_object_ref (plugin);
-	dbus_g_proxy_begin_call (plugin->proxy, "UnInhibit",
+	dbus_g_proxy_begin_call (plugin->proxy, "Uninhibit",
 				 (DBusGProxyCallNotify) uninhibit_cb,
 				 plugin,
 				 NULL,
@@ -291,6 +281,7 @@ impl_activate (RBPlugin *rbplugin,
 
 	plugin = RB_GPM_PLUGIN (rbplugin);
 
+	plugin->shell = g_object_ref (shell);
 	plugin->bus = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
 	if (plugin->bus == NULL) {
 		g_warning ("Couldn't connect to system bus: %s", (error) ? error->message : "(null)");
@@ -338,6 +329,7 @@ impl_deactivate (RBPlugin *rbplugin,
 		plugin->handler_id = 0;
 	}
 
+	g_object_unref (plugin->shell);
 	g_object_unref (shell_player);
 
 	if (plugin->proxy != NULL) {
