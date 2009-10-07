@@ -244,6 +244,7 @@ rb_ipod_helpers_show_first_time_dialog (GMount *mount, const char *builder_file)
 	GtkBuilder *builder;
 	GtkWidget *dialog;
 	GtkWidget *widget;
+	GtkWidget *name_widget;
 	GtkTreeModel *tree_model;
 	GtkTreeIter iter;
 	int response;
@@ -273,6 +274,7 @@ rb_ipod_helpers_show_first_time_dialog (GMount *mount, const char *builder_file)
 	}
 	dialog = GTK_WIDGET (gtk_builder_get_object (builder, "ipod_init"));
 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "model_combo"));
+	name_widget = GTK_WIDGET (gtk_builder_get_object (builder, "name_entry"));
 	fill_model_combo (widget, mountpoint);
 	g_object_unref (builder);
 
@@ -293,8 +295,7 @@ rb_ipod_helpers_show_first_time_dialog (GMount *mount, const char *builder_file)
 		return FALSE;
 	}
 	gtk_tree_model_get (tree_model, &iter, COL_INFO, &info, -1);
-	widget = GTK_WIDGET (gtk_builder_get_object (builder, "name_entry"));
-	ipod_name = g_strdup (gtk_entry_get_text (GTK_ENTRY (widget)));
+	ipod_name = g_strdup (gtk_entry_get_text (GTK_ENTRY (name_widget)));
 
 	gtk_widget_destroy (dialog);
 
