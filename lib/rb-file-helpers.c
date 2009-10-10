@@ -1100,6 +1100,11 @@ rb_uri_create_parent_dirs (const char *uri, GError **error)
 	GError *l_error = NULL;
 #endif
 
+	/* ignore internal URI schemes */
+	if (g_str_has_prefix (uri, "xrb")) {
+		return TRUE;
+	}
+
 	file = g_file_new_for_uri (uri);
 	parent = g_file_get_parent (file);
 	g_object_unref (file);
@@ -1171,6 +1176,11 @@ rb_uri_get_filesystem_type (const char *uri)
 	GFileInfo *info;
 	char *fstype = NULL;
 	GError *error = NULL;
+
+	/* ignore our own internal URI schemes */
+	if (g_str_has_prefix (uri, "xrb")) {
+		return NULL;
+	}
 
 	/* if the file doesn't exist, walk up the directory structure
 	 * until we find something that does.
