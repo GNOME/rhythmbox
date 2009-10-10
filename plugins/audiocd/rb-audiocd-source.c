@@ -204,10 +204,6 @@ rb_audiocd_source_finalize (GObject *object)
 	g_free (priv->device_path);
 
 #ifdef HAVE_SJ_METADATA_GETTER
-	if (priv->action_group != NULL) {
-		g_object_unref (priv->action_group);
-		priv->action_group = NULL;
-	}
 	g_free (priv->submit_url);
 	priv->submit_url = NULL;
 #endif
@@ -224,6 +220,18 @@ static void
 rb_audiocd_source_dispose (GObject *object)
 {
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (object);
+
+#ifdef HAVE_SJ_METADATA_GETTER
+	if (priv->action_group != NULL) {
+		GtkUIManager *uimanager;
+		g_object_get (object, "ui-manager", &uimanager, NULL);
+		gtk_ui_manager_remove_action_group (uimanager, priv->action_group);
+		g_object_unref (uimanager);
+
+		g_object_unref (priv->action_group);
+		priv->action_group = NULL;
+	}
+#endif
 
 	if (priv->pipeline) {
 		gst_object_unref (GST_OBJECT (priv->pipeline));
