@@ -1206,9 +1206,17 @@ impl_can_paste (RBSource *asource)
 }
 
 static void
-completed_cb (RhythmDBEntry *entry, const char *dest, RBLibrarySource *source)
+completed_cb (RhythmDBEntry *entry, const char *dest, GError *error, RBLibrarySource *source)
 {
-	rhythmdb_add_uri (source->priv->db, dest);
+	if (error == NULL) {
+		rhythmdb_add_uri (source->priv->db, dest);
+	} else {
+		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_EXISTS)) {
+			rb_debug ("not displaying 'file exists' error for %s", dest);
+		} else {
+			rb_error_dialog (NULL, _("Error transferring track"), "%s", error->message);
+		}
+	}
 }
 
 static void

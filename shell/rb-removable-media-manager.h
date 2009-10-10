@@ -49,6 +49,7 @@ G_BEGIN_DECLS
 
 typedef void (*RBTransferCompleteCallback) (RhythmDBEntry *entry,
 					    const char *dest,
+					    GError *error,
 					    gpointer userdata);
 
 typedef struct _RBRemovableMediaManager RBRemovableMediaManager;

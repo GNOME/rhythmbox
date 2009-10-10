@@ -1386,7 +1386,7 @@ typedef struct {
 } PyCallbackData;
 
 static void
-_rb_removable_media_manager_queue_transfer_func (RhythmDBEntry *entry, const char *dest, PyCallbackData *data)
+_rb_removable_media_manager_queue_transfer_func (RhythmDBEntry *entry, const char *dest, GError *error, PyCallbackData *data)
 {
 	PyObject *args;
 	PyObject *result;
@@ -1395,6 +1395,7 @@ _rb_removable_media_manager_queue_transfer_func (RhythmDBEntry *entry, const cha
 
 	__py_state = pyg_gil_state_ensure();
 
+	/* XXX no idea what to do with the error here.. */
 	py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, FALSE, FALSE);
 	if (data->data) {
 		args = Py_BuildValue ("(OsO)", py_entry, dest, data->data);

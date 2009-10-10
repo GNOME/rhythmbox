@@ -1070,7 +1070,7 @@ typedef struct {
 	char *dest;
 	guint64 dest_size;
 	GList *mime_types;
-	gboolean failed;
+	GError *error;
 	RBTransferCompleteCallback callback;
 	gpointer userdata;
 } TransferData;
@@ -1089,17 +1089,9 @@ emit_progress (RBRemovableMediaManager *mgr)
 static void
 error_cb (RBEncoder *encoder, GError *error, TransferData *data)
 {
-	/* ignore 'file exists' */
-	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_EXISTS)) {
-		rb_debug ("ignoring 'file exists' error for %s", data->dest);
-		data->failed = TRUE;
-		return;
-	}
-
 	rb_debug ("Error transferring track to %s: %s", data->dest, error->message);
-	rb_error_dialog (NULL, _("Error transferring track"), "%s", error->message);
 
-	data->failed = TRUE;
+	data->error = g_error_copy (error);
 	rb_encoder_cancel (encoder);
 }
 
@@ -1119,8 +1111,7 @@ completed_cb (RBEncoder *encoder, TransferData *data)
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (data->manager);
 
 	rb_debug ("completed transferring track to %s", data->dest);
-	if (!data->failed)
-		(data->callback) (data->entry, data->dest, data->userdata);
+	(data->callback) (data->entry, data->dest, data->error, data->userdata);
 
 	priv->transfer_running = FALSE;
 	priv->transfer_done++;
@@ -1130,6 +1121,7 @@ completed_cb (RBEncoder *encoder, TransferData *data)
 	g_object_unref (G_OBJECT (encoder));
 	g_free (data->dest);
 	rb_list_deep_free (data->mime_types);
+	g_clear_error (&data->error);
 	g_free (data);
 }
 

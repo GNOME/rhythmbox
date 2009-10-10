@@ -61,6 +61,10 @@ typedef struct
 						 RhythmDBEntry *entry,
 						 const char *uri,
 						 const char *mimetype);
+	gboolean	(*impl_track_add_error) (RBRemovableMediaSource *source,
+						 RhythmDBEntry *entry,
+						 const char *uri,
+						 GError *error);
 	gboolean	(*impl_should_paste)	(RBRemovableMediaSource *source,
 						 RhythmDBEntry *entry);
 } RBRemovableMediaSourceClass;
@@ -78,6 +82,10 @@ void		rb_removable_media_source_track_added		(RBRemovableMediaSource *source,
 								 RhythmDBEntry *entry,
 								 const char *uri,
 								 const char *mimetype);
+void		rb_removable_media_source_track_add_error	(RBRemovableMediaSource *source,
+								 RhythmDBEntry *entry,
+								 const char *uri,
+								 GError *error);
 GList *		rb_removable_media_source_get_mime_types	(RBRemovableMediaSource *source);
 gboolean	rb_removable_media_source_should_paste		(RBRemovableMediaSource *source,
 								 RhythmDBEntry *entry);

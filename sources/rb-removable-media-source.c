@@ -313,9 +313,13 @@ struct _TrackAddedData {
 };
 
 static void
-_track_added_cb (RhythmDBEntry *entry, const char *uri, struct _TrackAddedData *data)
+_track_added_cb (RhythmDBEntry *entry, const char *uri, GError *error, struct _TrackAddedData *data)
 {
-	rb_removable_media_source_track_added (data->source, entry, uri, data->mimetype);
+	if (error == NULL) {
+		rb_removable_media_source_track_added (data->source, entry, uri, data->mimetype);
+	} else {
+		rb_removable_media_source_track_add_error (data->source, entry, uri, error);
+	}
 	g_free (data->mimetype);
 	g_free (data);
 }
@@ -721,6 +725,27 @@ rb_removable_media_source_track_added (RBRemovableMediaSource *source,
 		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 		g_object_unref (db);
+	}
+}
+
+void
+rb_removable_media_source_track_add_error (RBRemovableMediaSource *source,
+					   RhythmDBEntry *entry,
+					   const char *uri,
+					   GError *error)
+{
+	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
+	gboolean show_dialog = TRUE;
+
+	if (klass->impl_track_add_error)
+		show_dialog = klass->impl_track_add_error (source, entry, uri, error);
+
+	if (show_dialog) {
+		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_EXISTS)) {
+			rb_debug ("not displaying 'file exists' error for %s", uri);
+		} else {
+			rb_error_dialog (NULL, _("Error transferring track"), "%s", error->message);
+		}
 	}
 }
 
