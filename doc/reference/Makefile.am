@@ -75,7 +75,6 @@ INCLUDES=\
 	-I$(top_srcdir)/backends \
 	$(DBUS_CFLAGS) \
 	$(IPOD_CFLAGS) \
-	$(SOUP_CFLAGS) \
 	$(RHYTHMBOX_CFLAGS)
 	
 if ENABLE_PYTHON
@@ -89,7 +88,6 @@ GTKDOC_LIBS=\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)					\
 	$(DBUS_LIBS)					\
-	$(SOUP_LIBS)					\
 	$(RHYTHMBOX_LIBS)				\
 	$(MORE_GTKDOC_LIBS)
 

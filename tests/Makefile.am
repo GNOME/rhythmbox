@@ -51,7 +51,6 @@ INCLUDES = 							\
 	-DG_LOG_DOMAIN=\"Rhythmbox-tests\"			\
 	-I$(top_srcdir) 					\
 	$(RHYTHMBOX_CFLAGS)					\
-	$(SOUP_CFLAGS)						\
 	-I$(top_srcdir)/lib					\
 	-I$(top_srcdir)/metadata				\
 	-I$(top_srcdir)/widgets					\
