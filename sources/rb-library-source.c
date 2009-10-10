@@ -1026,6 +1026,7 @@ rb_library_source_layout_path_changed (GConfClient *client,
 	char *value;
 	int i = 0;
 
+	g_return_if_fail (entry != NULL);
 	g_return_if_fail (strcmp (entry->key, CONF_LIBRARY_LAYOUT_PATH) == 0);
 
 	rb_debug ("layout path changed");
@@ -1057,6 +1058,7 @@ rb_library_source_layout_filename_changed (GConfClient *client,
 	char *value;
 	int i = 0;
 
+	g_return_if_fail (entry != NULL);
 	g_return_if_fail (strcmp (entry->key, CONF_LIBRARY_LAYOUT_FILENAME) == 0);
 
 	rb_debug ("layout filename changed");
