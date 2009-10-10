@@ -442,8 +442,9 @@ entry_set_string_prop (RhythmDB *db,
 {
 	GValue value = {0,};
 
-	if (!str)
+	if (str == NULL || (g_utf8_validate (str, -1, NULL) == FALSE)) {
 		str = _("Unknown");
+	}
 
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_static_string (&value, str);
