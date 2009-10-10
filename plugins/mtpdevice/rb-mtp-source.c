@@ -50,6 +50,7 @@
 #include "rb-encoder.h"
 
 #include "rb-mtp-source.h"
+#include "rb-mtp-thread.h"
 
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/mtp/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/mtp/show_browser"
@@ -71,8 +72,6 @@ static void rb_mtp_source_get_property (GObject *object,
 static char *impl_get_browser_key (RBSource *source);
 static char *impl_get_paned_key (RBBrowserSource *source);
 
-static void rb_mtp_source_load_tracks (RBMtpSource*);
-
 static void impl_delete (RBSource *asource);
 static gboolean impl_show_popup (RBSource *source);
 static GList* impl_get_ui_actions (RBSource *source);
@@ -82,19 +81,23 @@ static gboolean impl_track_added (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
 				  const char *dest,
 				  const char *mimetype);
+static gboolean impl_track_add_error (RBRemovableMediaSource *source,
+				      RhythmDBEntry *entry,
+				      const char *dest,
+				      GError *error);
 static char* impl_build_dest_uri (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
 				  const char *mimetype,
 				  const char *extension);
 
+static void mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source);
+static void mtp_tracklist_cb (LIBMTP_track_t *tracks, RBMtpSource *source);
 static RhythmDB * get_db_for_source (RBMtpSource *source);
 static void artwork_notify_cb (RhythmDB *db,
 			       RhythmDBEntry *entry,
 			       const char *property_name,
 			       const GValue *metadata,
 			       RBMtpSource *source);
-
-static void add_track_to_album (RBMtpSource *source, const char *album_name, LIBMTP_track_t *track);
 
 static void prepare_player_source_cb (RBPlayer *player,
 				      const char *stream_uri,
@@ -104,13 +107,18 @@ static void prepare_encoder_source_cb (RBEncoderFactory *factory,
 				       const char *stream_uri,
 				       GObject *src,
 				       RBMtpSource *source);
+static void prepare_encoder_sink_cb (RBEncoderFactory *factory,
+				     const char *stream_uri,
+				     GObject *sink,
+				     RBMtpSource *source);
 
 typedef struct
 {
-	LIBMTP_mtpdevice_t *device;
+	RBMtpThread *device_thread;
+	LIBMTP_raw_device_t *raw_device;
 	GHashTable *entry_map;
-	GHashTable *album_map;
 	GHashTable *artwork_request_map;
+	GHashTable *track_transfer_map;
 #if !defined(HAVE_GUDEV)
 	char *udi;
 #endif
@@ -118,7 +126,6 @@ typedef struct
 	GList *mediatypes;
 	gboolean album_art_supported;
 
-	guint load_songs_idle_id;
 } RBMtpSourcePrivate;
 
 RB_PLUGIN_DEFINE_TYPE(RBMtpSource,
@@ -130,28 +137,9 @@ RB_PLUGIN_DEFINE_TYPE(RBMtpSource,
 enum
 {
 	PROP_0,
-	PROP_LIBMTP_DEVICE,
+	PROP_RAW_DEVICE,
 	PROP_UDI,
 };
-
-static void
-report_libmtp_errors (LIBMTP_mtpdevice_t *device, gboolean use_dialog)
-{
-	LIBMTP_error_t *stack;
-
-	for (stack = LIBMTP_Get_Errorstack (device); stack != NULL; stack = stack->next) {
-		if (use_dialog) {
-			rb_error_dialog (NULL, _("Media player device error"), "%s", stack->error_text);
-
-			/* only display one dialog box per error */
-			use_dialog = FALSE;
-		} else {
-			g_warning ("libmtp error: %s", stack->error_text);
-		}
-	}
-
-	LIBMTP_Clear_Errorstack (device);
-}
 
 static void
 rb_mtp_source_class_init (RBMtpSourceClass *klass)
@@ -184,15 +172,16 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 
 	rms_class->impl_track_added = impl_track_added;
+	rms_class->impl_track_add_error = impl_track_add_error;
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
 	rms_class->impl_get_mime_types = impl_get_mime_types;
 	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
 
 	g_object_class_install_property (object_class,
-					 PROP_LIBMTP_DEVICE,
-					 g_param_spec_pointer ("libmtp-device",
-							       "libmtp-device",
-							       "libmtp device",
+					 PROP_RAW_DEVICE,
+					 g_param_spec_pointer ("raw-device",
+							       "raw-device",
+							       "libmtp raw device",
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 #if !defined(HAVE_GUDEV)
 	g_object_class_install_property (object_class,
@@ -216,9 +205,7 @@ rb_mtp_source_name_changed_cb (RBMtpSource *source,
 	char *name = NULL;
 
 	g_object_get (source, "name", &name, NULL);
-	if (LIBMTP_Set_Friendlyname (priv->device, name) != 0) {
-		report_libmtp_errors (priv->device, TRUE);
-	}
+	rb_mtp_thread_set_device_name (priv->device_thread, name);
 	g_free (name);
 }
 
@@ -231,11 +218,9 @@ rb_mtp_source_init (RBMtpSource *source)
 						 g_direct_equal,
 						 NULL,
 						 (GDestroyNotify) LIBMTP_destroy_track_t);
-	priv->album_map = g_hash_table_new_full (g_str_hash,
-						 g_str_equal,
-						 NULL,
-						 (GDestroyNotify) LIBMTP_destroy_album_t);
 	priv->artwork_request_map = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+	priv->track_transfer_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 }
 
 static GObject *
@@ -251,13 +236,15 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 	GtkIconTheme *theme;
 	GdkPixbuf *pixbuf;
 	gint size;
-	guint16 *types = NULL;
-	guint16 num_types= 0;
 
 	source = RB_MTP_SOURCE (G_OBJECT_CLASS (rb_mtp_source_parent_class)->
 				constructor (type, n_construct_properties, construct_properties));
 
 	priv = MTP_SOURCE_GET_PRIVATE (source);
+
+	/* start the device thread */
+	priv->device_thread = rb_mtp_thread_new ();
+	rb_mtp_thread_open_device (priv->device_thread, priv->raw_device, (RBMtpOpenCallback)mtp_device_open_cb, g_object_ref (source), g_object_unref);
 
 	tracks = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (tracks, RB_ENTRY_VIEW_COL_RATING, FALSE);
@@ -280,6 +267,10 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 				 "prepare-source",
 				 G_CALLBACK (prepare_encoder_source_cb),
 				 source, 0);
+	g_signal_connect_object (rb_encoder_factory_get (),
+				 "prepare-sink",
+				 G_CALLBACK (prepare_encoder_sink_cb),
+				 source, 0);
 
 	/* icon */
 	theme = gtk_icon_theme_get_default ();
@@ -289,82 +280,6 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
 	g_object_unref (pixbuf);
 
-	g_signal_connect (G_OBJECT (source), "notify::name",
-			  (GCallback)rb_mtp_source_name_changed_cb, NULL);
-	
-	/* figure out supported file types */
-	if (LIBMTP_Get_Supported_Filetypes(priv->device, &types, &num_types) == 0) {
-		int i;
-		gboolean has_mp3 = FALSE;
-		for (i = 0; i < num_types; i++) {
-			const char *mediatype;
-
-			if (i <= LIBMTP_FILETYPE_UNKNOWN) {
-				priv->supported_types[types[i]] = 1;
-			}
-
-			/* this has to work with the remapping done in 
-			 * rb-removable-media-source.c:impl_paste.
-			 */
-			switch (types[i]) {
-			case LIBMTP_FILETYPE_WAV:
-				mediatype = "audio/x-wav";
-				break;
-			case LIBMTP_FILETYPE_MP3:
-				/* special handling for mp3: always put it at the front of the list
-				 * if it's supported.
-				 */
-				has_mp3 = TRUE;
-				mediatype = NULL;
-				break;
-			case LIBMTP_FILETYPE_WMA:
-				mediatype = "audio/x-ms-wma";
-				break;
-			case LIBMTP_FILETYPE_OGG:
-				mediatype = "application/ogg";
-				break;
-			case LIBMTP_FILETYPE_MP4:
-			case LIBMTP_FILETYPE_M4A:
-			case LIBMTP_FILETYPE_AAC:
-				mediatype = "audio/aac";
-				break;
-			case LIBMTP_FILETYPE_WMV:
-				mediatype = "audio/x-ms-wmv";
-				break;
-			case LIBMTP_FILETYPE_ASF:
-				mediatype = "video/x-ms-asf";
-				break;
-			case LIBMTP_FILETYPE_FLAC:
-				mediatype = "audio/flac";
-				break;
-
-			case LIBMTP_FILETYPE_JPEG:
-				rb_debug ("JPEG (album art) supported");
-				mediatype = NULL;
-				priv->album_art_supported = TRUE;
-				break;
-
-			default:
-				rb_debug ("unknown libmtp filetype %s supported", LIBMTP_Get_Filetype_Description (types[i]));
-				mediatype = NULL;
-				break;
-			}
-
-			if (mediatype != NULL) {
-				rb_debug ("media type %s supported", mediatype);
-				priv->mediatypes = g_list_prepend (priv->mediatypes,
-								   g_strdup (mediatype));
-			}
-		}
-
-		if (has_mp3) {
-			rb_debug ("audio/mpeg supported");
-			priv->mediatypes = g_list_prepend (priv->mediatypes, g_strdup ("audio/mpeg"));
-		}
-	} else {
-		report_libmtp_errors (priv->device, FALSE);
-	}
-	
 	if (priv->album_art_supported) {
 		RhythmDB *db;
 
@@ -373,8 +288,6 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 					 G_CALLBACK (artwork_notify_cb), source, 0);
 		g_object_unref (db);
 	}
-
-	rb_mtp_source_load_tracks (source);
 
 	return G_OBJECT (source);
 }
@@ -388,8 +301,8 @@ rb_mtp_source_set_property (GObject *object,
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (object);
 
 	switch (prop_id) {
-	case PROP_LIBMTP_DEVICE:
-		priv->device = g_value_get_pointer (value);
+	case PROP_RAW_DEVICE:
+		priv->raw_device = g_value_get_pointer (value);
 		break;
 #if !defined(HAVE_GUDEV)
 	case PROP_UDI:
@@ -411,8 +324,8 @@ rb_mtp_source_get_property (GObject *object,
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (object);
 
 	switch (prop_id) {
-	case PROP_LIBMTP_DEVICE:
-		g_value_set_pointer (value, priv->device);
+	case PROP_RAW_DEVICE:
+		g_value_set_pointer (value, priv->raw_device);
 		break;
 #if !defined(HAVE_GUDEV)
 	case PROP_UDI:
@@ -433,6 +346,11 @@ rb_mtp_source_dispose (GObject *object)
 	RhythmDBEntryType entry_type;
 	RhythmDB *db;
 
+	if (priv->device_thread != NULL) {
+		g_object_unref (priv->device_thread);
+		priv->device_thread = NULL;
+	}
+
 	db = get_db_for_source (source);
 
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
@@ -441,11 +359,6 @@ rb_mtp_source_dispose (GObject *object)
 
 	rhythmdb_commit (db);
 	g_object_unref (db);
-
-	if (priv->load_songs_idle_id != 0) {
-		g_source_remove (priv->load_songs_idle_id);
-		priv->load_songs_idle_id = 0;
-	}
 
 	G_OBJECT_CLASS (rb_mtp_source_parent_class)->dispose (object);
 }
@@ -456,14 +369,12 @@ rb_mtp_source_finalize (GObject *object)
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (object);
 
 	g_hash_table_destroy (priv->entry_map);
-	g_hash_table_destroy (priv->album_map);
 	g_hash_table_destroy (priv->artwork_request_map);
+	g_hash_table_destroy (priv->track_transfer_map);		/* probably need to destroy the tracks too.. */
 
 #if !defined(HAVE_GUDEV)
 	g_free (priv->udi);
 #endif
-
-	LIBMTP_Release_Device (priv->device);
 
 	G_OBJECT_CLASS (rb_mtp_source_parent_class)->finalize (object);
 }
@@ -483,11 +394,11 @@ impl_get_paned_key (RBBrowserSource *source)
 #if defined(HAVE_GUDEV)
 RBSource *
 rb_mtp_source_new (RBShell *shell,
-		   LIBMTP_mtpdevice_t *device)
+		   LIBMTP_raw_device_t *device)
 #else
 RBSource *
 rb_mtp_source_new (RBShell *shell,
-		   LIBMTP_mtpdevice_t *device,
+		   LIBMTP_raw_device_t *device,
 		   const char *udi)
 #endif
 {
@@ -497,7 +408,7 @@ rb_mtp_source_new (RBShell *shell,
 	char *name = NULL;
 
 	g_object_get (shell, "db", &db, NULL);
-	name = g_strdup_printf ("MTP-%s", LIBMTP_Get_Serialnumber (device));
+	name = g_strdup_printf ("MTP-%u-%d", device->bus_location, device->devnum);
 
 	entry_type = rhythmdb_entry_register_type (db, name);
 	entry_type->save_to_disk = FALSE;
@@ -512,7 +423,7 @@ rb_mtp_source_new (RBShell *shell,
 					      "visibility", TRUE,
 					      "volume", NULL,
 					      "source-group", RB_SOURCE_GROUP_DEVICES,
-					      "libmtp-device", device,
+					      "raw-device", device,
 #if !defined(HAVE_GUDEV)
 					      "udi", udi,
 #endif
@@ -540,7 +451,7 @@ entry_set_string_prop (RhythmDB *db,
 	g_value_unset (&value);
 }
 
-static void
+static RhythmDBEntry *
 add_mtp_track_to_db (RBMtpSource *source,
 		     RhythmDB *db,
 		     LIBMTP_track_t *track)
@@ -555,7 +466,7 @@ add_mtp_track_to_db (RBMtpSource *source,
 		rb_debug ("ignoring non-audio item %d (filetype %s)",
 			  track->item_id,
 			  LIBMTP_Get_Filetype_Description (track->filetype));
-		return;
+		return NULL;
 	}
 
 	/* Set URI */
@@ -568,7 +479,7 @@ add_mtp_track_to_db (RBMtpSource *source,
 	if (entry == NULL) {
 		rb_debug ("cannot create entry %i", track->item_id);
 		g_object_unref (G_OBJECT (db));
-		return;
+		return NULL;
 	}
 
 	/* Set track number */
@@ -635,109 +546,166 @@ add_mtp_track_to_db (RBMtpSource *source,
 
 	g_hash_table_insert (priv->entry_map, entry, track);
 	rhythmdb_commit (RHYTHMDB (db));
+
+	return entry;
 }
 
+typedef struct {
+	RBMtpSource *source;
+	char *name;
+	guint16 *types;
+	guint16 num_types;
+} DeviceOpenedData;
+
 static gboolean
-load_mtp_db_idle_cb (RBMtpSource* source)
+device_opened_idle (DeviceOpenedData *data)
 {
-	RhythmDB *db = NULL;
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	LIBMTP_track_t *tracks = NULL;
-	LIBMTP_album_t *albums;
-	gboolean device_forgets_albums = TRUE;
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (data->source);
+	int i;
+	gboolean has_mp3 = FALSE;
 
-	db = get_db_for_source (source);
-
-	g_assert (db != NULL);
-
-	albums = LIBMTP_Get_Album_List (priv->device);
-	report_libmtp_errors (priv->device, FALSE);
-	if (albums != NULL) {
-		LIBMTP_album_t *album;
-
-		for (album = albums; album != NULL; album = album->next) {
-			if (album->name == NULL)
-				continue;
-
-			rb_debug ("album: %s, %d tracks", album->name, album->no_tracks);
-			g_hash_table_insert (priv->album_map, album->name, album);
-			if (album->no_tracks != 0) {
-				device_forgets_albums = FALSE;
-			}
-		}
-
-		if (device_forgets_albums) {
-			rb_debug ("stupid mtp device detected.  will rebuild all albums.");
-		}
-	} else {
-		rb_debug ("No albums");
-		device_forgets_albums = FALSE;
+	if (data->name != NULL) {
+		g_object_set (data->source, "name", data->name, NULL);
 	}
 
-	tracks = LIBMTP_Get_Tracklisting_With_Callback (priv->device, NULL, NULL);
-	report_libmtp_errors (priv->device, FALSE);
-	if (tracks != NULL) {
-		LIBMTP_track_t *track;
-		for (track = tracks; track != NULL; track = track->next) {
-			add_mtp_track_to_db (source, db, track);
+	/* when the source name changes after this, try to update the device name */
+	g_signal_connect (G_OBJECT (data->source), "notify::name",
+			  (GCallback)rb_mtp_source_name_changed_cb, NULL);
 
-			if (device_forgets_albums && track->album != NULL) {
-				add_track_to_album (source, track->album, track);
-			}
+	for (i = 0; i < data->num_types; i++) {
+		const char *mediatype;
+
+		if (i <= LIBMTP_FILETYPE_UNKNOWN) {
+			priv->supported_types[data->types[i]] = 1;
 		}
-	} else {
-		rb_debug ("No tracks");
+
+		/* this has to work with the remapping done in
+		 * rb-removable-media-source.c:impl_paste.
+		 */
+		switch (data->types[i]) {
+		case LIBMTP_FILETYPE_WAV:
+			mediatype = "audio/x-wav";
+			break;
+		case LIBMTP_FILETYPE_MP3:
+			/* special handling for mp3: always put it at the front of the list
+			 * if it's supported.
+			 */
+			has_mp3 = TRUE;
+			mediatype = NULL;
+			break;
+		case LIBMTP_FILETYPE_WMA:
+			mediatype = "audio/x-ms-wma";
+			break;
+		case LIBMTP_FILETYPE_OGG:
+			mediatype = "application/ogg";
+			break;
+		case LIBMTP_FILETYPE_MP4:
+		case LIBMTP_FILETYPE_M4A:
+		case LIBMTP_FILETYPE_AAC:
+			mediatype = "audio/aac";
+			break;
+		case LIBMTP_FILETYPE_WMV:
+			mediatype = "audio/x-ms-wmv";
+			break;
+		case LIBMTP_FILETYPE_ASF:
+			mediatype = "video/x-ms-asf";
+			break;
+		case LIBMTP_FILETYPE_FLAC:
+			mediatype = "audio/flac";
+			break;
+
+		case LIBMTP_FILETYPE_JPEG:
+			rb_debug ("JPEG (album art) supported");
+			mediatype = NULL;
+			priv->album_art_supported = TRUE;
+			break;
+
+		default:
+			rb_debug ("unknown libmtp filetype %s supported", LIBMTP_Get_Filetype_Description (data->types[i]));
+			mediatype = NULL;
+			break;
+		}
+
+		if (mediatype != NULL) {
+			rb_debug ("media type %s supported", mediatype);
+			priv->mediatypes = g_list_prepend (priv->mediatypes,
+							   g_strdup (mediatype));
+		}
 	}
 
-	/* for stupid devices, remove any albums left with no tracks */
-	if (device_forgets_albums) {
-		GHashTableIter iter;
-		gpointer value;
-		LIBMTP_album_t *album;
-
-		g_hash_table_iter_init (&iter, priv->album_map);
-		while (g_hash_table_iter_next (&iter, NULL, &value)) {
-			int ret;
-
-			album = value;
-			if (album->no_tracks == 0) {
-				rb_debug ("pruning empty album \"%s\"", album->name); 
-				ret = LIBMTP_Delete_Object (priv->device, album->album_id);
-				if (ret != 0) {
-					report_libmtp_errors (priv->device, FALSE);
-				}
-				g_hash_table_iter_remove (&iter);
-			}
-		}
+	if (has_mp3) {
+		rb_debug ("audio/mpeg supported");
+		priv->mediatypes = g_list_prepend (priv->mediatypes, g_strdup ("audio/mpeg"));
 	}
 
+	g_object_unref (data->source);
+	free (data->types);
+	g_free (data->name);
+	g_free (data);
 
-	g_object_unref (G_OBJECT (db));
 	return FALSE;
 }
 
+static gboolean
+device_open_failed_idle (RBMtpSource *source)
+{
+	rb_source_delete_thyself (RB_SOURCE (source));
+	g_object_unref (source);
+	return FALSE;
+}
+
+/* this callback runs on the device handling thread, so it can call libmtp directly */
 static void
-rb_mtp_source_load_tracks (RBMtpSource *source)
+mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	char *name = NULL;
+	DeviceOpenedData *data;
 
-	name = LIBMTP_Get_Friendlyname (priv->device);
-	/* ignore some particular broken device names */
-	if (name == NULL || strcmp (name, "?????") == 0) {
-		g_free (name);
-		name = LIBMTP_Get_Modelname (priv->device);
-	}
-	if (name == NULL) {
-		name = g_strdup (_("Digital Audio Player"));
+	if (device == NULL) {
+		rb_mtp_thread_report_errors (priv->device_thread, TRUE);
+
+		/* can't delete the source on this thread, so move it to the main thread */
+		g_idle_add ((GSourceFunc) device_open_failed_idle, g_object_ref (source));
+		return;
 	}
 
-	g_object_set (RB_SOURCE (source),
-		      "name", name,
-		      NULL);
+	/* set the source name to match the device, ignoring some
+	 * particular broken device names.
+	 */
+	data = g_new0 (DeviceOpenedData, 1);
+	data->source = g_object_ref (source);
+	data->name = LIBMTP_Get_Friendlyname (device);
+	if (data->name == NULL || strcmp (data->name, "?????") == 0) {
+		g_free (data->name);
+		data->name = LIBMTP_Get_Modelname (device);
+	}
+	if (data->name == NULL) {
+		data->name = g_strdup (_("Digital Audio Player"));
+	}
 
-	priv->load_songs_idle_id = g_idle_add ((GSourceFunc)load_mtp_db_idle_cb, source);
-	g_free (name);
+	/* figure out the set of formats supported by the device */
+	if (LIBMTP_Get_Supported_Filetypes (device, &data->types, &data->num_types) != 0) {
+		rb_mtp_thread_report_errors (priv->device_thread, FALSE);
+	}
+
+	g_idle_add ((GSourceFunc) device_opened_idle, data);
+
+	/* now get the track list */
+	rb_mtp_thread_get_track_list (priv->device_thread, (RBMtpTrackListCallback) mtp_tracklist_cb, g_object_ref (source), g_object_unref);
+}
+
+static void
+mtp_tracklist_cb (LIBMTP_track_t *tracks, RBMtpSource *source)
+{
+	RhythmDB *db = NULL;
+	LIBMTP_track_t *track;
+
+	/* add tracks to database */
+	db = get_db_for_source (source);
+	for (track = tracks; track != NULL; track = track->next) {
+		add_mtp_track_to_db (source, db, track);
+	}
+	g_object_unref (db);
 }
 
 static char *
@@ -782,92 +750,6 @@ mimetype_to_filetype (RBMtpSource *source, const char *mimetype)
 }
 
 static void
-add_track_to_album (RBMtpSource *source, const char *album_name, LIBMTP_track_t *track)
-{
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	LIBMTP_album_t *album;
-
-	album = g_hash_table_lookup (priv->album_map, album_name);
-	if (album != NULL) {
-		/* add track to album */
-
-		album->tracks = realloc (album->tracks, sizeof(uint32_t) * (album->no_tracks+1));
-		album->tracks[album->no_tracks] = track->item_id;
-		album->no_tracks++;
-		rb_debug ("adding track ID %d to album ID %d; now %d tracks",
-			  track->item_id,
-			  album->album_id,
-			  album->no_tracks);
-
-		if (LIBMTP_Update_Album (priv->device, album) != 0) {
-			rb_debug ("LIBMTP_Update_Album failed..");
-			report_libmtp_errors (priv->device, FALSE);
-		}
-	} else {
-		/* add new album */
-		album = LIBMTP_new_album_t ();
-		album->name = strdup (album_name);
-		album->no_tracks = 1;
-		album->tracks = malloc (sizeof(uint32_t));
-		album->tracks[0] = track->item_id;
-		album->storage_id = track->storage_id;
-
-		/* fill in artist and genre? */
-
-		rb_debug ("creating new album (%s) for track ID %d", album->name, track->item_id);
-
-		if (LIBMTP_Create_New_Album (priv->device, album) != 0) {
-			LIBMTP_destroy_album_t (album);
-			rb_debug ("LIBMTP_Create_New_Album failed..");
-			report_libmtp_errors (priv->device, FALSE);
-		} else {
-			g_hash_table_insert (priv->album_map, album->name, album);
-		}
-	}
-}
-
-static void
-remove_track_from_album (RBMtpSource *source, const char *album_name, LIBMTP_track_t *track)
-{
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	LIBMTP_album_t *album;
-	int i;
-
-	album = g_hash_table_lookup (priv->album_map, album_name);
-	if (album == NULL) {
-		rb_debug ("Couldn't find an album for %s", album_name);
-		return;
-	}
-
-	for (i = 0; i < album->no_tracks; i++) {
-		if (album->tracks[i] == track->item_id) {
-			break;
-		}
-	}
-
-	if (i == album->no_tracks) {
-		rb_debug ("Couldn't find track %d in album %d", track->item_id, album->album_id);
-		return;
-	}
-
-	memmove (album->tracks + i, album->tracks + i + 1, album->no_tracks - (i+1));
-	album->no_tracks--;
-
-	if (album->no_tracks == 0) {
-		rb_debug ("deleting empty album %d", album->album_id);
-		if (LIBMTP_Delete_Object (priv->device, album->album_id) != 0) {
-			report_libmtp_errors (priv->device, FALSE);
-		}
-		g_hash_table_remove (priv->album_map, album_name);
-	} else {
-		rb_debug ("updating album %d: %d tracks remaining", album->album_id, album->no_tracks);
-		if (LIBMTP_Update_Album (priv->device, album) != 0) {
-			report_libmtp_errors (priv->device, FALSE);
-		}
-	}
-}
-
-static void
 impl_delete (RBSource *source)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
@@ -875,7 +757,6 @@ impl_delete (RBSource *source)
 	GList *tem;
 	RBEntryView *tracks;
 	RhythmDB *db;
-	int ret;
 
 	db = get_db_for_source (RB_MTP_SOURCE (source));
 
@@ -895,17 +776,11 @@ impl_delete (RBSource *source)
 			continue;
 		}
 
-		ret = LIBMTP_Delete_Object (priv->device, track->item_id);
-		if (ret != 0) {
-			rb_debug ("Delete track %d failed", track->item_id);
-			report_libmtp_errors (priv->device, TRUE);
-			continue;
-		}
-
 		album_name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
 		if (strcmp (album_name, _("Unknown")) != 0) {
-			remove_track_from_album (RB_MTP_SOURCE (source), album_name, track);
+			rb_mtp_thread_remove_from_album (priv->device_thread, track, album_name);
 		}
+		rb_mtp_thread_delete_track (priv->device_thread, track);
 
 		g_hash_table_remove (priv->entry_map, entry);
 		rhythmdb_entry_delete (db, entry);
@@ -946,55 +821,41 @@ get_db_for_source (RBMtpSource *source)
 	return db;
 }
 
-static LIBMTP_track_t *
-transfer_track (RBMtpSource *source,
-		LIBMTP_mtpdevice_t *device,
-		RhythmDBEntry *entry,
-		const char *filename,
-		const char *mimetype)
+typedef struct {
+	RBMtpSource *source;
+	RhythmDBEntry *entry;
+} RequestAlbumArtData;
+
+static gboolean
+request_album_art_idle (RequestAlbumArtData *data)
 {
-	LIBMTP_track_t *trackmeta = LIBMTP_new_track_t ();
-	GDate d;
-	int ret;
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (data->source);
+	const char *album;
 
-	trackmeta->title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
-	trackmeta->album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
-	trackmeta->artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
-	trackmeta->genre = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_GENRE);
-	trackmeta->filename = g_path_get_basename (filename);
-	rb_sanitize_path_for_msdos_filesystem (trackmeta->filename);
+	/* pretty sure we don't need any extra locking here - we only touch the artwork
+	 * request map on the main thread anyway.
+	 */
 
-	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE) > 0) { /* Entries without a date returns 0, g_date_set_julian don't accept that */
-		g_date_set_julian (&d, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE));
-		trackmeta->date	= gdate_to_char (&d);
-	}
-	trackmeta->tracknumber = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
-	trackmeta->duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION) * 1000;
-	trackmeta->rating = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_RATING) * 20;
-	trackmeta->usecount = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_PLAY_COUNT);
-	trackmeta->filesize = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
-	if (mimetype == NULL) {
-		mimetype = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
-	}
-	trackmeta->filetype = mimetype_to_filetype (source, mimetype);
-	rb_debug ("using libmtp filetype %d (%s) for source media type %s",
-		  trackmeta->filetype,
-		  LIBMTP_Get_Filetype_Description (trackmeta->filetype),
-		  mimetype);
+	album = rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_ALBUM);
+	if (g_hash_table_lookup (priv->artwork_request_map, album) == NULL) {
+		GValue *metadata;
+		RhythmDB *db = get_db_for_source (data->source);
 
-	ret = LIBMTP_Send_Track_From_File (device, filename, trackmeta, NULL, NULL);
-	rb_debug ("LIBMTP_Send_Track_From_File (%s) returned %d", filename, ret);
-	if (ret != 0) {
-		report_libmtp_errors (device, TRUE);
-		LIBMTP_destroy_track_t (trackmeta);
-		return NULL;
+		rb_debug ("requesting cover art image for album %s", album);
+		g_hash_table_insert (priv->artwork_request_map, (gpointer) album, GINT_TO_POINTER (1));
+		metadata = rhythmdb_entry_request_extra_metadata (db, data->entry, "rb:coverArt");
+		if (metadata) {
+			artwork_notify_cb (db, data->entry, "rb:coverArt", metadata, data->source);
+			g_value_unset (metadata);
+			g_free (metadata);
+		}
+		g_object_unref (db);
 	}
 
-	if (strcmp (trackmeta->album, _("Unknown")) != 0) {
-		add_track_to_album (source, trackmeta->album, trackmeta);
-	}
-
-	return trackmeta;
+	g_object_unref (data->source);
+	rhythmdb_entry_unref (data->entry);
+	g_free (data);
+	return FALSE;
 }
 
 static GList *
@@ -1005,50 +866,123 @@ impl_get_mime_types (RBRemovableMediaSource *source)
 }
 
 static gboolean
-impl_track_added (RBRemovableMediaSource *isource,
+impl_track_added (RBRemovableMediaSource *source,
 		  RhythmDBEntry *entry,
 		  const char *dest,
 		  const char *mimetype)
 {
-	RBMtpSource *source = RB_MTP_SOURCE (isource);
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	GFile *file;
-	char *path;
 	LIBMTP_track_t *track = NULL;
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	RhythmDB *db;
+	RhythmDBEntry *mtp_entry;
 
-	file = g_file_new_for_uri (dest);
-	path = g_file_get_path (file);
-	track = transfer_track (source, priv->device, entry, path, mimetype);
-	g_free (path);
+	track = g_hash_table_lookup (priv->track_transfer_map, dest);
+	if (track == NULL) {
+		rb_debug ("track-added called, but can't find a track for dest URI %s", dest);
+		return FALSE;
+	}
+	g_hash_table_remove (priv->track_transfer_map, dest);
 
-	g_file_delete (file, NULL, NULL);
+	db = get_db_for_source (RB_MTP_SOURCE (source));
+	/* entry_map takes ownership of the track here */
+	mtp_entry = add_mtp_track_to_db (RB_MTP_SOURCE (source), db, track);
+	g_object_unref (db);
 
-	if (track != NULL) {
-		RhythmDB *db = get_db_for_source (source);
-
-		if (priv->album_art_supported) {
-			const char *album;
-
-			album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
-			if (g_hash_table_lookup (priv->artwork_request_map, album) == NULL) {
-				GValue *metadata;
-
-				rb_debug ("requesting cover art image for album %s", album);
-				g_hash_table_insert (priv->artwork_request_map, (gpointer) album, GINT_TO_POINTER (1));
-				metadata = rhythmdb_entry_request_extra_metadata (db, entry, "rb:coverArt");
-				if (metadata) {
-					artwork_notify_cb (db, entry, "rb:coverArt", metadata, source);
-					g_value_unset (metadata);
-					g_free (metadata);
-				}
-			}
-		}
-
-		add_mtp_track_to_db (source, db, track);
-		g_object_unref (db);
+	if (strcmp (track->album, _("Unknown")) != 0) {
+		rb_mtp_thread_add_to_album (priv->device_thread, track, track->album);
 	}
 
+	if (priv->album_art_supported) {
+		RequestAlbumArtData *artdata;
+		artdata = g_new0 (RequestAlbumArtData, 1);
+		artdata->source = g_object_ref (source);
+		artdata->entry = rhythmdb_entry_ref (mtp_entry);
+		g_idle_add ((GSourceFunc) request_album_art_idle, artdata);
+	}
 	return FALSE;
+}
+
+static gboolean
+impl_track_add_error (RBRemovableMediaSource *source,
+		      RhythmDBEntry *entry,
+		      const char *dest,
+		      GError *error)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	/* we don't actually do anything with the error here, we just need to clean up the transfer map */
+	LIBMTP_track_t *track = g_hash_table_lookup (priv->track_transfer_map, dest);
+	if (track != NULL) {
+		LIBMTP_destroy_track_t (track);
+		g_hash_table_remove (priv->track_transfer_map, dest);
+	} else {
+		rb_debug ("track-add-error called, but can't find a track for dest URI %s", dest);
+	}
+	return TRUE;
+}
+
+static void
+prepare_encoder_sink_cb (RBEncoderFactory *factory,
+			 const char *stream_uri,
+			 GObject *sink,
+			 RBMtpSource *source)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	RhythmDBEntry *entry;
+	RhythmDB *db;
+	LIBMTP_track_t *track;
+	char **bits;
+	char *extension;
+	LIBMTP_filetype_t filetype;
+	gulong track_id;
+	GDate d;
+
+	/* make sure this stream is for a file on our device */
+	if (g_str_has_prefix (stream_uri, "xrbmtp://") == FALSE)
+		return;
+
+	/* extract the entry ID, extension, and MTP filetype from the URI */
+	bits = g_strsplit (stream_uri + strlen ("xrbmtp://"), "/", 3);
+	track_id = strtoul (bits[0], NULL, 0);
+	extension = g_strdup (bits[1]);
+	filetype = strtoul (bits[2], NULL, 0);
+	g_strfreev (bits);
+
+	db = get_db_for_source (source);
+	entry = rhythmdb_entry_lookup_by_id (db, track_id);
+	g_object_unref (db);
+	if (entry == NULL)
+		return;
+
+	track = LIBMTP_new_track_t ();
+	track->title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
+	track->album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
+	track->artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
+	track->genre = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_GENRE);
+
+	/* build up device filename; may want to reconsider if we start creating folders */
+	track->filename = g_strdup_printf ("%s - %s.%s",
+					   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
+					   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
+					   extension);
+	g_free (extension);
+
+	rb_sanitize_path_for_msdos_filesystem (track->filename);
+
+	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE) > 0) {
+		g_date_set_julian (&d, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE));
+		track->date = gdate_to_char (&d);
+	}
+	track->tracknumber = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
+	track->duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION) * 1000;
+	track->rating = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_RATING) * 20;
+	track->usecount = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_PLAY_COUNT);
+
+	track->filetype = filetype;
+
+	g_object_set (sink, "device-thread", priv->device_thread, "mtp-track", track, NULL);
+	rhythmdb_entry_unref (entry);
+
+	g_hash_table_insert (priv->track_transfer_map, g_strdup (stream_uri), track);
 }
 
 static char *
@@ -1057,12 +991,34 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 		     const char *mimetype,
 		     const char *extension)
 {
-	char* file = g_strdup_printf ("%s/%s-%s.%s", g_get_tmp_dir (),
-				      rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST),
-				      rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE),
-				      extension);
-	char* uri = g_filename_to_uri (file, NULL, NULL);
-	g_free (file);
+	gulong id;
+	char *uri;
+	LIBMTP_filetype_t filetype;
+
+	if (mimetype == NULL) {
+		mimetype = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
+	}
+	filetype = mimetype_to_filetype (RB_MTP_SOURCE (source), mimetype);
+	rb_debug ("using libmtp filetype %d (%s) for source media type %s",
+		  filetype,
+		  LIBMTP_Get_Filetype_Description (filetype),
+		  mimetype);
+
+	/* the prepare-sink callback needs the entry ID to set up the
+	 * upload data, and we want to use the supplied extension for
+	 * the filename on the device.
+	 *
+	 * this is pretty ugly - it'd be much nicer to have a source-defined
+	 * structure that got passed around (or was accessible from) the various
+	 * hooks and methods called during the track transfer process.  probably
+	 * something to address in my horribly stalled track transfer rewrite..
+	 *
+	 * the structure would either be created when queuing the track for transfer,
+	 * or here; passed to any prepare-source or prepare-sink callbacks for the
+	 * encoder; and then passed to whatever gets called when the transfer is complete.
+	 */
+	id = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID);
+	uri = g_strdup_printf ("xrbmtp://%lu/%s/%d", id, extension, filetype);
 	return uri;
 }
 
@@ -1075,13 +1031,7 @@ artwork_notify_cb (RhythmDB *db,
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 	GdkPixbuf *pixbuf;
-	LIBMTP_album_t *album;
-	LIBMTP_filesampledata_t *albumart;
-	GError *error = NULL;
 	const char *album_name;
-	char *image_data;
-	gsize image_size;
-	int ret;
 
 	album_name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
 
@@ -1094,39 +1044,9 @@ artwork_notify_cb (RhythmDB *db,
 
 	pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
 
-	/* we should already have created an album object */
-	album = g_hash_table_lookup (priv->album_map, album_name);
-	if (album == NULL) {
-		rb_debug ("couldn't find an album for %s", album_name);
-		return;
-	}
+	rb_mtp_thread_set_album_image (priv->device_thread, album_name, pixbuf);
 
-	/* probably should scale the image down, since some devices have a size limit and they all have
-	 * tiny displays anyway.
-	 */
-
-	if (gdk_pixbuf_save_to_buffer (pixbuf, &image_data, &image_size, "jpeg", &error, NULL) == FALSE) {
-		rb_debug ("unable to convert album art image to a JPEG buffer: %s", error->message);
-		g_error_free (error);
-		return;
-	}
-
-	albumart = LIBMTP_new_filesampledata_t ();
-	albumart->filetype = LIBMTP_FILETYPE_JPEG;
-	albumart->data = image_data;
-	albumart->size = image_size;
-
-	ret = LIBMTP_Send_Representative_Sample (priv->device, album->album_id, albumart);
-	if (ret != 0) {
-		report_libmtp_errors (priv->device, TRUE);
-	} else {
-		rb_debug ("successfully set album art for %s (%" G_GSIZE_FORMAT " bytes)", album_name, image_size);
-	}
-
-	/* libmtp will try to free this if we don't clear the pointer */
-	albumart->data = NULL;
-	LIBMTP_destroy_filesampledata_t (albumart);
-	g_free (image_data);
+	g_object_unref (pixbuf);		/* ? */
 }
 
 static void
@@ -1151,8 +1071,8 @@ prepare_source (RBMtpSource *source, const char *stream_uri, GObject *src)
 		return;
 	}
 
-	rb_debug ("setting device %p for stream %s", priv->device, stream_uri);
-	g_object_set (src, "device", priv->device, NULL);
+	rb_debug ("setting device-thread for stream %s", stream_uri);
+	g_object_set (src, "device-thread", priv->device_thread, NULL);
 	rhythmdb_entry_unref (entry);
 }
 

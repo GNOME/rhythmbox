@@ -55,9 +55,9 @@ typedef struct
 } RBMtpSourceClass;
 
 #if defined(HAVE_GUDEV)
-RBSource *		rb_mtp_source_new		(RBShell *shell, LIBMTP_mtpdevice_t *device);
+RBSource *		rb_mtp_source_new		(RBShell *shell, LIBMTP_raw_device_t *device);
 #else
-RBSource *		rb_mtp_source_new		(RBShell *shell, LIBMTP_mtpdevice_t *device, const char *udi);
+RBSource *		rb_mtp_source_new		(RBShell *shell, LIBMTP_raw_device_t *device, const char *udi);
 #endif
 
 GType			rb_mtp_source_get_type		(void);

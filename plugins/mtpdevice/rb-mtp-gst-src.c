@@ -34,6 +34,7 @@
 #include <libmtp.h>
 #include <gst/gst.h>
 
+#include "rb-mtp-thread.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 
@@ -50,7 +51,7 @@ struct _RBMTPSrc
 {
 	GstBin parent;
 
-	LIBMTP_mtpdevice_t *device;
+	RBMtpThread *device_thread;
 
 	char *track_uri;
 	uint32_t track_id;
@@ -58,6 +59,11 @@ struct _RBMTPSrc
 
 	GstElement *filesrc;
 	GstPad *ghostpad;
+
+	GError *download_error;
+	GMutex *download_mutex;
+	GCond *download_cond;
+	GstStateChangeReturn download_result;
 };
 
 struct _RBMTPSrcClass
@@ -69,7 +75,7 @@ enum
 {
 	PROP_0,
 	PROP_URI,
-	PROP_DEVICE
+	PROP_DEVICE_THREAD
 };
 
 static GstStaticPadTemplate srctemplate = GST_STATIC_PAD_TEMPLATE ("src",
@@ -115,6 +121,9 @@ rb_mtp_src_init (RBMTPSrc *src, RBMTPSrcClass *klass)
 {
 	GstPad *pad;
 
+	src->download_mutex = g_mutex_new ();
+	src->download_cond = g_cond_new ();
+
 	/* create actual source */
 	src->filesrc = gst_element_factory_make ("filesrc", NULL);
 	if (src->filesrc == NULL) {
@@ -152,85 +161,65 @@ rb_mtp_src_set_uri (RBMTPSrc *src, const char *uri)
 	return TRUE;
 }
 
+static void
+download_cb (LIBMTP_track_t *track, const char *filename, GError *error, RBMTPSrc *src)
+{
+	rb_debug ("mtp download callback for %s: %s", filename, error ? error->message : "OK");
+	g_mutex_lock (src->download_mutex);
+
+	if (filename == NULL) {
+		src->download_error = g_error_copy (error);
+		src->download_result = GST_STATE_CHANGE_FAILURE;
+	} else {
+		src->download_result = GST_STATE_CHANGE_SUCCESS;
+		src->tempfile = g_strdup (filename);
+	}
+
+	g_cond_signal (src->download_cond);
+	g_mutex_unlock (src->download_mutex);
+}
+
 static GstStateChangeReturn
 rb_mtp_src_get_file (RBMTPSrc *src)
 {
-	LIBMTP_file_t *fileinfo;
-	GFile *dir;
-	GError *error;
-	char *tempfile;
-	int fd;
-	gboolean check;
-	int mtpret;
+	g_mutex_lock (src->download_mutex);
+	src->download_result = GST_STATE_CHANGE_ASYNC;
+	rb_mtp_thread_download_track (src->device_thread, src->track_id, "", (RBMtpDownloadCallback)download_cb, g_object_ref (src), g_object_unref);
 
-	/* get file info */
-	fileinfo = LIBMTP_Get_Filemetadata (src->device, src->track_id);
-	if (fileinfo == NULL) {
-		rb_debug ("unable to get mtp file metadata");
-		LIBMTP_error_t *stack;
-
-		stack = LIBMTP_Get_Errorstack (src->device);
-		GST_ELEMENT_ERROR(src, RESOURCE, READ,
-				  (_("Unable to copy file from MTP device: %s"), stack->error_text),
-				  (NULL));
-		LIBMTP_Clear_Errorstack (src->device);
+	while (src->download_result == GST_STATE_CHANGE_ASYNC) {
+		g_cond_wait (src->download_cond, src->download_mutex);
 	}
+	g_mutex_unlock (src->download_mutex);
+	rb_debug ("download completed, state change return %s", gst_element_state_change_return_get_name (src->download_result));
 
-	/* check for free space */
-	dir = g_file_new_for_path (g_get_tmp_dir ());
-	rb_debug ("checking we've got %" G_GUINT64_FORMAT " bytes available in %s",
-		  fileinfo->filesize,
-		  g_get_tmp_dir ());
-	check = rb_check_dir_has_space (dir, fileinfo->filesize);
-	LIBMTP_destroy_file_t (fileinfo);
-	g_object_unref (dir);
-	if (check == FALSE) {
-		rb_debug ("not enough space to copy track from MTP device");
-		GST_ELEMENT_ERROR(src, RESOURCE, NO_SPACE_LEFT,
-				  (_("Not enough space in %s"), g_get_tmp_dir ()),
-				  (NULL));
-		g_object_unref (dir);
-		LIBMTP_destroy_file_t (fileinfo);
-		return GST_STATE_CHANGE_FAILURE;
+	if (src->download_error) {
+		int code;
+		switch (src->download_error->code) {
+		case RB_MTP_THREAD_ERROR_NO_SPACE:
+			code = GST_RESOURCE_ERROR_NO_SPACE_LEFT;
+			break;
+
+		case RB_MTP_THREAD_ERROR_TEMPFILE:
+			code = GST_RESOURCE_ERROR_OPEN_WRITE;
+			break;
+
+		default:
+		case RB_MTP_THREAD_ERROR_GET_TRACK:
+			code = GST_RESOURCE_ERROR_READ;
+			break;
+
+		}
+
+		GST_WARNING_OBJECT (src, "error: %s", src->download_error->message);
+		gst_element_message_full (GST_ELEMENT (src),
+					  GST_MESSAGE_ERROR,
+					  GST_RESOURCE_ERROR, code,
+					  src->download_error->message, NULL,
+					  __FILE__, GST_FUNCTION, __LINE__);
+	} else if (src->download_result == GST_STATE_CHANGE_SUCCESS) {
+		g_object_set (src->filesrc, "location", src->tempfile, NULL);
 	}
-
-	/* open temporary file */
-	fd = g_file_open_tmp ("rb-mtp-temp-XXXXXX", &tempfile, &error);
-	if (fd == -1) {
-		rb_debug ("failed to open temporary file");
-		GST_ELEMENT_ERROR(src, RESOURCE, OPEN_READ_WRITE,
-				  (_("Unable to open temporary file: %s"), error->message), (NULL));
-		g_error_free (error);
-		return GST_STATE_CHANGE_FAILURE;
-	}
-	rb_debug ("created temporary file %s", tempfile);
-
-	/* copy file from MTP device */
-	mtpret = LIBMTP_Get_Track_To_File_Descriptor (src->device, src->track_id, fd, NULL, NULL);
-	if (mtpret != 0) {
-		rb_debug ("failed to copy file from MTP device");
-		LIBMTP_error_t *stack;
-
-		stack = LIBMTP_Get_Errorstack (src->device);
-		GST_ELEMENT_ERROR(src, RESOURCE, READ,
-				  (_("Unable to copy file from MTP device: %s"), stack->error_text),
-				  (NULL));
-		LIBMTP_Clear_Errorstack (src->device);
-
-		close (fd);
-		remove (tempfile);
-		g_free (tempfile);
-		return GST_STATE_CHANGE_FAILURE;
-	}
-
-	rb_debug ("copied file from mtp device");
-
-	close (fd);
-	src->tempfile = tempfile;
-
-	/* point the filesrc at the file */
-	g_object_set (src->filesrc, "location", src->tempfile, NULL);
-	return GST_STATE_CHANGE_SUCCESS;
+	return src->download_result;
 }
 
 static GstStateChangeReturn
@@ -295,8 +284,8 @@ rb_mtp_src_set_property (GObject *object, guint prop_id, const GValue *value, GP
 	case PROP_URI:
 		rb_mtp_src_set_uri (src, g_value_get_string (value));
 		break;
-	case PROP_DEVICE:
-		src->device = g_value_get_pointer (value);
+	case PROP_DEVICE_THREAD:
+		src->device_thread = g_value_dup_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -313,8 +302,8 @@ rb_mtp_src_get_property (GObject *object, guint prop_id, GValue *value, GParamSp
 	case PROP_URI:
 		g_value_set_string (value, src->track_uri);
 		break;
-	case PROP_DEVICE:
-		g_value_set_pointer (value, src->device);
+	case PROP_DEVICE_THREAD:
+		g_value_set_object (value, src->device_thread);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -338,7 +327,28 @@ rb_mtp_src_dispose (GObject *object)
 		src->filesrc = NULL;
 	}
 
+	if (src->device_thread) {
+		g_object_unref (src->device_thread);
+		src->device_thread = NULL;
+	}
+
 	G_OBJECT_CLASS (parent_class)->dispose (object);
+}
+
+static void
+rb_mtp_src_finalize (GObject *object)
+{
+	RBMTPSrc *src;
+	src = RB_MTP_SRC (object);
+
+	g_mutex_free (src->download_mutex);
+	g_cond_free (src->download_cond);
+
+	if (src->download_error) {
+		g_error_free (src->download_error);
+	}
+
+	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
@@ -349,6 +359,7 @@ rb_mtp_src_class_init (RBMTPSrcClass *klass)
 
 	gobject_class = G_OBJECT_CLASS (klass);
 	gobject_class->dispose = rb_mtp_src_dispose;
+	gobject_class->finalize = rb_mtp_src_finalize;
 	gobject_class->set_property = rb_mtp_src_set_property;
 	gobject_class->get_property = rb_mtp_src_get_property;
 
@@ -363,11 +374,12 @@ rb_mtp_src_class_init (RBMTPSrcClass *klass)
 							      NULL,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
-					 PROP_DEVICE,
-					 g_param_spec_pointer ("device",
-							       "device",
-							       "libmtp device",
-							       G_PARAM_READWRITE));
+					 PROP_DEVICE_THREAD,
+					 g_param_spec_object ("device-thread",
+							      "device-thread",
+							      "device handling thread",
+							      RB_TYPE_MTP_THREAD,
+							      G_PARAM_READWRITE));
 }
 
 

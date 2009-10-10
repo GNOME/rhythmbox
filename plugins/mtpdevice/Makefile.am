@@ -6,8 +6,11 @@ plugin_LTLIBRARIES = libmtpdevice.la
 libmtpdevice_la_SOURCES = \
 	rb-mtp-plugin.c	\
 	rb-mtp-gst-src.c \
+	rb-mtp-gst-sink.c \
 	rb-mtp-source.c	\
-	rb-mtp-source.h
+	rb-mtp-source.h \
+	rb-mtp-thread.c \
+	rb-mtp-thread.h
 	
 libmtpdevice_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libmtpdevice_la_LIBTOOLFLAGS = --tag=disable-static

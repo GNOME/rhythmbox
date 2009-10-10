@@ -103,15 +103,16 @@ static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 #if defined(HAVE_GUDEV)
 static RBSource* create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device, RBMtpPlugin *plugin);
 #else
+static void rb_mtp_plugin_maybe_add_source (RBMtpPlugin *plugin, const char *udi, LIBMTP_raw_device_t *raw_devices, int num);
 static void rb_mtp_plugin_device_added (LibHalContext *context, const char *udi);
 static void rb_mtp_plugin_device_removed (LibHalContext *context, const char *udi);
 static gboolean rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin);
-static RBSource* create_source_cb (RBMtpPlugin *plugin, LIBMTP_mtpdevice_t *device, const char *udi);
 #endif
 static void rb_mtp_plugin_eject  (GtkAction *action, RBMtpPlugin *plugin);
 static void rb_mtp_plugin_rename (GtkAction *action, RBMtpPlugin *plugin);
 
 GType rb_mtp_src_get_type (void);
+GType rb_mtp_sink_get_type (void);
 
 RB_PLUGIN_REGISTER(RBMtpPlugin, rb_mtp_plugin)
 
@@ -139,8 +140,9 @@ rb_mtp_plugin_class_init (RBMtpPluginClass *klass)
 	/* register types used by the plugin */
 	RB_PLUGIN_REGISTER_TYPE (rb_mtp_source);
 
-	/* ensure the gstreamer src element gets linked in */
+	/* ensure the gstreamer elements get linked in */
 	rb_mtp_src_get_type ();
+	rb_mtp_sink_get_type ();
 }
 
 static void
@@ -168,10 +170,8 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 #if defined(HAVE_GUDEV)
 	gboolean rmm_scanned = FALSE;
 #else
-	int num, i, ret;
-	char **devices;
-	LIBMTP_device_entry_t *entries;
-	int numentries;
+	int num_mtp_devices;
+	LIBMTP_raw_device_t *mtp_devices;
 #endif
 
 	plugin->shell = shell;
@@ -214,39 +214,25 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 	}
 
 	rb_profile_start ("scanning for MTP devices");
-	devices = libhal_get_all_devices (plugin->hal_context, &num, NULL);
-	ret = LIBMTP_Get_Supported_Devices_List (&entries, &numentries);
-	if (ret == 0) {
+	LIBMTP_Detect_Raw_Devices (&mtp_devices, &num_mtp_devices);
+	if (num_mtp_devices > 0) {
+		int num_hal_devices;
+		char **hal_devices;
+		int i;
 
-		for (i = 0; i < num; i++) {
-			int vendor_id;
-			int product_id;
-			const char *tmpudi;
-			int  p;
+		rb_debug ("%d MTP devices found", num_mtp_devices);
 
-			tmpudi = devices[i];
-			vendor_id = libhal_device_get_property_int (plugin->hal_context, tmpudi, "usb.vendor_id", NULL);
-			product_id = libhal_device_get_property_int (plugin->hal_context, tmpudi, "usb.product_id", NULL);
-			for (p = 0; p < numentries; p++) {
-
-				if (entries[p].vendor_id == vendor_id && entries[p].product_id == product_id) {
-					LIBMTP_mtpdevice_t *device = LIBMTP_Get_First_Device ();
-					if (device != NULL) {
-						create_source_cb (plugin, device, tmpudi);
-						break;
-					} else {
-						rb_debug ("error, could not get a hold on the device. Reset and Restart");
-					}
-				}
-			}
+		hal_devices = libhal_get_all_devices (plugin->hal_context, &num_hal_devices, NULL);
+		for (i = 0; i < num_hal_devices; i++) {
+			/* should narrow this down a bit - usb only, for a start */
+			rb_mtp_plugin_maybe_add_source (plugin, hal_devices[i], mtp_devices, num_mtp_devices);
 		}
-	} else {
-		rb_debug ("Couldn't list mtp devices");
+		libhal_free_string_array (hal_devices);
 	}
-
-	libhal_free_string_array (devices);
+	if (mtp_devices != NULL) {
+		free (mtp_devices);
+	}
 	rb_profile_end ("scanning for MTP devices");
-
 #endif
 
 	g_object_unref (rmm);
@@ -296,103 +282,6 @@ impl_deactivate (RBPlugin *bplugin, RBShell *shell)
 }
 
 static void
-source_deleted_cb (RBMtpSource *source, RBMtpPlugin *plugin)
-{
-	plugin->mtp_sources = g_list_remove (plugin->mtp_sources, source);
-}
-
-#if defined(HAVE_GUDEV)
-static RBSource *
-create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device, RBMtpPlugin *plugin)
-{
-	GUdevDeviceNumber device_number;
-	int i;
-	int num_raw_devices;
-	const char *devnum_str;
-	int devnum;
-	LIBMTP_raw_device_t *raw_devices;
-
-	/* check subsystem == usb? */
-	if (g_strcmp0 (g_udev_device_get_subsystem (G_UDEV_DEVICE (device)), "usb") != 0) {
-		rb_debug ("this is not a USB device");
-		return NULL;
-	}
-
-	device_number = g_udev_device_get_device_number (G_UDEV_DEVICE (device));
-	if (device_number == 0) {
-		rb_debug ("can't get udev device number for this device");
-		return NULL;
-	}
-	/* fun thing: usb device numbers are zero padded, which causes strtol to
-	 * interpret them as octal if you don't specify a base.
-	 */
-	devnum_str = g_udev_device_get_property (G_UDEV_DEVICE (device), "DEVNUM");
-	if (devnum_str == NULL) {
-		rb_debug ("device doesn't have a USB device number");
-		return NULL;
-	}
-	devnum = strtol (devnum_str, NULL, 10);
-
-	rb_debug ("trying to match device %x (usb device %d) against detected mtp devices",
-		  device_number, devnum);
-
-	/* see what devices libmtp can find */
-	if (LIBMTP_Detect_Raw_Devices (&raw_devices, &num_raw_devices) == 0) {
-		for (i = 0; i < num_raw_devices; i++) {
-			LIBMTP_mtpdevice_t *device;
-			RBSource *source;
-
-			rb_debug ("detected mtp device: device number %d", raw_devices[i].devnum);
-
-			/* check bus number/device location somehow */
-			if (devnum != raw_devices[i].devnum) {
-				rb_debug ("device number mismatches: %d vs %d", devnum, raw_devices[i].devnum);
-				continue;
-			}
-
-			device = LIBMTP_Open_Raw_Device (&raw_devices[i]);
-			if (device == NULL) {
-				rb_debug ("unable to open device.  weird.");
-				break;
-			}
-
-			rb_debug ("device matched, creating a source");
-			source = rb_mtp_source_new (plugin->shell, device);
-			plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
-			g_signal_connect_object (G_OBJECT (source),
-						"deleted", G_CALLBACK (source_deleted_cb),
-						plugin, 0);
-			return source;
-		}
-	}
-
-	rb_debug ("device didn't match anything");
-	return NULL;
-}
-
-#else
-
-static RBSource *
-create_source_cb (RBMtpPlugin *plugin, LIBMTP_mtpdevice_t *device, const char *udi)
-{
-	RBSource *source;
-
-	source = RB_SOURCE (rb_mtp_source_new (plugin->shell, device, udi));
-
-	rb_shell_append_source (plugin->shell, source, NULL);
-	plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
-
-	g_signal_connect_object (G_OBJECT (source),
-				"deleted", G_CALLBACK (source_deleted_cb),
-				plugin, 0);
-
-	return source;
-}
-
-#endif
-
-
-static void
 rb_mtp_plugin_eject (GtkAction *action, RBMtpPlugin *plugin)
 {
 	RBSourceList *sourcelist = NULL;
@@ -440,50 +329,129 @@ rb_mtp_plugin_rename (GtkAction *action, RBMtpPlugin *plugin)
 	g_object_unref (source);
 }
 
-#if !defined(HAVE_GUDEV)
+
+#if defined(HAVE_GUDEV)
+static void
+source_deleted_cb (RBMtpSource *source, RBMtpPlugin *plugin)
+{
+	plugin->mtp_sources = g_list_remove (plugin->mtp_sources, source);
+}
+
+static RBSource *
+create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device, RBMtpPlugin *plugin)
+{
+	GUdevDeviceNumber device_number;
+	int i;
+	int num_raw_devices;
+	const char *devnum_str;
+	int devnum;
+	LIBMTP_raw_device_t *raw_devices;
+
+	/* check subsystem == usb? */
+	if (g_strcmp0 (g_udev_device_get_subsystem (G_UDEV_DEVICE (device)), "usb") != 0) {
+		rb_debug ("this is not a USB device");
+		return NULL;
+	}
+
+	device_number = g_udev_device_get_device_number (G_UDEV_DEVICE (device));
+	if (device_number == 0) {
+		rb_debug ("can't get udev device number for this device");
+		return NULL;
+	}
+	/* fun thing: usb device numbers are zero padded, which causes strtol to
+	 * interpret them as octal if you don't specify a base.
+	 */
+	devnum_str = g_udev_device_get_property (G_UDEV_DEVICE (device), "DEVNUM");
+	if (devnum_str == NULL) {
+		rb_debug ("device doesn't have a USB device number");
+		return NULL;
+	}
+	devnum = strtol (devnum_str, NULL, 10);
+
+	rb_debug ("trying to match device %x (usb device %d) against detected mtp devices",
+		  device_number, devnum);
+
+	/* see what devices libmtp can find */
+	if (LIBMTP_Detect_Raw_Devices (&raw_devices, &num_raw_devices) == 0) {
+		for (i = 0; i < num_raw_devices; i++) {
+			RBSource *source;
+
+			rb_debug ("detected mtp device: device number %d", raw_devices[i].devnum);
+			if (devnum != raw_devices[i].devnum) {
+				rb_debug ("device number mismatches: %d vs %d", devnum, raw_devices[i].devnum);
+				continue;
+			}
+
+			rb_debug ("device matched, creating a source");
+			source = rb_mtp_source_new (plugin->shell, &raw_devices[i]);
+			plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
+			g_signal_connect_object (G_OBJECT (source),
+						"deleted", G_CALLBACK (source_deleted_cb),
+						plugin, 0);
+			return source;
+		}
+	}
+
+	rb_debug ("device didn't match anything");
+	return NULL;
+}
+
+#else
+
+static void
+source_deleted_cb (RBMtpSource *source, RBMtpPlugin *plugin)
+{
+	plugin->mtp_sources = g_list_remove (plugin->mtp_sources, source);
+}
+
+static void
+rb_mtp_plugin_maybe_add_source (RBMtpPlugin *plugin, const char *udi, LIBMTP_raw_device_t *raw_devices, int num_raw_devices)
+{
+	int i;
+	int device_num = 0;
+	DBusError error;
+
+	rb_debug ("checking if UDI %s matches an MTP device", udi);
+
+	/* get device number */
+	dbus_error_init (&error);
+	device_num = libhal_device_get_property_int (plugin->hal_context, udi, "usb.linux.device_number", &error);
+	if (dbus_error_is_set (&error)) {
+		rb_debug ("unable to get USB device number: %s", error.message);
+		dbus_error_free (&error);
+		return;
+	}
+
+	rb_debug ("USB device number: %d", device_num);
+
+	for (i = 0; i < num_raw_devices; i++) {
+		rb_debug ("detected MTP device: device number %d (bus location %u)", raw_devices[i].devnum, raw_devices[i].bus_location);
+		if (raw_devices[i].devnum == device_num) {
+			RBSource *source;
+			rb_debug ("device matched, creating a source");
+			source = RB_SOURCE (rb_mtp_source_new (plugin->shell, &raw_devices[i], udi));
+
+			rb_shell_append_source (plugin->shell, source, NULL);
+			plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
+
+			g_signal_connect_object (G_OBJECT (source),
+						"deleted", G_CALLBACK (source_deleted_cb),
+						plugin, 0);
+		}
+	}
+}
 
 static void
 rb_mtp_plugin_device_added (LibHalContext *context, const char *udi)
 {
 	RBMtpPlugin *plugin = (RBMtpPlugin *) libhal_ctx_get_user_data (context);
-	LIBMTP_device_entry_t *entries;
-	int numentries;
-	int vendor_id;
-	int product_id;
-	int ret;
+	LIBMTP_raw_device_t *mtp_devices;
+	int num_mtp_devices;
 
-	if (g_list_length (plugin->mtp_sources) > 0) {
-		rb_debug ("plugin only supports one device at the time right now.");
-		return;
-	}
-
-	vendor_id = libhal_device_get_property_int (context, udi, "usb.vendor_id", NULL);
-	product_id = libhal_device_get_property_int (context, udi, "usb.product_id", NULL);
-
-	ret = LIBMTP_Get_Supported_Devices_List (&entries, &numentries);
-	if (ret == 0) {
-		int i, p;
-
-		for (i = 0; i < numentries; i++) {
-			if ((entries[i].vendor_id==vendor_id) && (entries[i].product_id == product_id)) {
-				/*
-				 * FIXME:
-				 *
-				 * It usualy takes a while for the device to set itself up.
-				 * Solving that by trying 10 times with some sleep in between.
-				 * There is probably a better solution, but this works.
-				 */
-				rb_debug ("adding device source");
-				for (p = 0; p < 10; p++) {
-					LIBMTP_mtpdevice_t *device = LIBMTP_Get_First_Device ();
-					if (device != NULL) {
-						create_source_cb (plugin, device, udi);
-						break;
-					}
-					usleep (200000);
-				}
-			}
-		}
+	LIBMTP_Detect_Raw_Devices (&mtp_devices, &num_mtp_devices);
+	if (mtp_devices != NULL) {
+		rb_mtp_plugin_maybe_add_source (plugin, udi, mtp_devices, num_mtp_devices);
+		free (mtp_devices);
 	}
 }
 
