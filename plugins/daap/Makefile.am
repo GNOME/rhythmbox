@@ -35,6 +35,7 @@ libdaap_la_LIBTOOLFLAGS = --tag=disable-static
 libdaap_la_LIBADD = 					\
 	$(top_builddir)/shell/librhythmbox-core.la	\
 	$(DBUS_LIBS)					\
+	$(RHYTHMBOX_LIBS)				\
 	$(MDNS_LIBS)
 
 INCLUDES = 						\
