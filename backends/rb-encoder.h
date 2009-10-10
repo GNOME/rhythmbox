@@ -82,7 +82,7 @@ struct _RBEncoderIface
 
 	/* signals */
 	void (*progress) (RBEncoder *encoder,  double fraction);
-	void (*completed) (RBEncoder *encoder, guint64 dest_size);
+	void (*completed) (RBEncoder *encoder);
 	void (*error) (RBEncoder *encoder, GError *error);
 };
 
@@ -120,7 +120,7 @@ gboolean	rb_encoder_get_preferred_mimetype (RBEncoder *encoder,
 
 /* only to be used by subclasses */
 void	_rb_encoder_emit_progress (RBEncoder *encoder, double fraction);
-void	_rb_encoder_emit_completed (RBEncoder *encoder, guint64 dest_size);
+void	_rb_encoder_emit_completed (RBEncoder *encoder);
 void	_rb_encoder_emit_error (RBEncoder *encoder, GError *error);
 
 void	_rb_encoder_emit_prepare_source (RBEncoder *encoder, const char *uri, GObject *source);

@@ -150,9 +150,9 @@ rb_encoder_interface_init (RBEncoderIface *iface)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEncoderIface, completed),
 			      NULL, NULL,
-			      rb_marshal_VOID__UINT64,
+			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
-			      1, G_TYPE_UINT64);
+			      0);
 	/**
 	 * RBEncoder::error:
 	 * @encoder: the #RBEncoder instance
@@ -299,9 +299,9 @@ _rb_encoder_emit_progress (RBEncoder *encoder, double fraction)
 }
 
 void
-_rb_encoder_emit_completed (RBEncoder *encoder, guint64 dest_size)
+_rb_encoder_emit_completed (RBEncoder *encoder)
 {
-	g_signal_emit (encoder, signals[COMPLETED], 0, dest_size);
+	g_signal_emit (encoder, signals[COMPLETED], 0);
 }
 
 void

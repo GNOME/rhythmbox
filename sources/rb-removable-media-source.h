@@ -60,7 +60,6 @@ typedef struct
 	gboolean	(*impl_track_added)	(RBRemovableMediaSource *source,
 						 RhythmDBEntry *entry,
 						 const char *uri,
-						 guint64 filesize,
 						 const char *mimetype);
 	gboolean	(*impl_should_paste)	(RBRemovableMediaSource *source,
 						 RhythmDBEntry *entry);
@@ -78,7 +77,6 @@ char*		rb_removable_media_source_build_dest_uri 	(RBRemovableMediaSource *source
 void		rb_removable_media_source_track_added		(RBRemovableMediaSource *source,
 								 RhythmDBEntry *entry,
 								 const char *uri,
-								 guint64 filesize,
 								 const char *mimetype);
 GList *		rb_removable_media_source_get_mime_types	(RBRemovableMediaSource *source);
 gboolean	rb_removable_media_source_should_paste		(RBRemovableMediaSource *source,
