@@ -55,6 +55,7 @@ enum {
 	COMPLETED,
 	ERROR,
 	PREPARE_SOURCE,		/* this is on RBEncoderFactory */
+	PREPARE_SINK,		/* this is on RBEncoderFactory */
 	LAST_SIGNAL
 };
 
@@ -91,6 +92,26 @@ rb_encoder_factory_class_init (RBEncoderFactoryClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEncoderFactoryClass, prepare_source),
+			      NULL, NULL,
+			      rb_marshal_VOID__STRING_OBJECT,
+			      G_TYPE_NONE,
+			      2, G_TYPE_STRING, G_TYPE_OBJECT);
+	/**
+	 * RBEncoderFactory::prepare-sink:
+	 * @factory: the #RBEncoderFactory instance
+	 * @uri: the URI for the sink
+	 * @sink: the sink object (a GstElement in fact)
+	 *
+	 * Emitted when creating a sink to write to the specified URI.
+	 * Plugins can use this when just creating a GStreamer element from the URI
+	 * isn't enough.  Typically this happens when there's no way to pass device
+	 * information through the URI format.
+	 */
+	signals[PREPARE_SINK] =
+		g_signal_new ("prepare-sink",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBEncoderFactoryClass, prepare_sink),
 			      NULL, NULL,
 			      rb_marshal_VOID__STRING_OBJECT,
 			      G_TYPE_NONE,
@@ -293,6 +314,12 @@ void
 _rb_encoder_emit_prepare_source (RBEncoder *encoder, const char *uri, GObject *source)
 {
 	g_signal_emit (rb_encoder_factory_get (), signals[PREPARE_SOURCE], 0, uri, source);
+}
+
+void
+_rb_encoder_emit_prepare_sink (RBEncoder *encoder, const char *uri, GObject *sink)
+{
+	g_signal_emit (rb_encoder_factory_get (), signals[PREPARE_SINK], 0, uri, sink);
 }
 
 GQuark

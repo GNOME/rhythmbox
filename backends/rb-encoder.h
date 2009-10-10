@@ -92,6 +92,7 @@ struct _RBEncoderFactoryClass
 
 	/* signals */
 	void (*prepare_source) (RBEncoderFactory *factory, const char *uri, GObject *source);
+	void (*prepare_sink) (RBEncoderFactory *factory, const char *uri, GObject *sink);
 };
 
 struct _RBEncoderFactory
@@ -123,6 +124,7 @@ void	_rb_encoder_emit_completed (RBEncoder *encoder, guint64 dest_size);
 void	_rb_encoder_emit_error (RBEncoder *encoder, GError *error);
 
 void	_rb_encoder_emit_prepare_source (RBEncoder *encoder, const char *uri, GObject *source);
+void	_rb_encoder_emit_prepare_sink (RBEncoder *encoder, const char *uri, GObject *sink);
 
 G_END_DECLS
 

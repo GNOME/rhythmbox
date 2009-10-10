@@ -666,6 +666,9 @@ attach_output_pipeline (RBEncoderGst *encoder,
 		}
 	}
 
+	/* provide a hook for setting sink properties */
+	_rb_encoder_emit_prepare_sink (RB_ENCODER (encoder), dest, G_OBJECT (sink));
+
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), sink);
 	gst_element_link (end, sink);
 
