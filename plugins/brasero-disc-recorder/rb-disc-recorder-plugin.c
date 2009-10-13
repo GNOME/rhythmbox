@@ -157,7 +157,8 @@ rb_disc_recorder_plugin_start_burning (RBDiscRecorderPlugin *pi,
 					  const char *path,
 					  gboolean copy)
 {
-	GtkWindow *main_window;
+	GtkWidget *main_window;
+	GdkScreen *screen;
 	GPtrArray *array;
 	char **args, *xid_str;
 	GError *error = NULL;
@@ -171,8 +172,9 @@ rb_disc_recorder_plugin_start_burning (RBDiscRecorderPlugin *pi,
 		g_ptr_array_add (array, "-r");
 	g_ptr_array_add (array, (gpointer) path);
 
-	main_window =GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (pi->selected_source)));
-	if (main_window && GTK_WIDGET (main_window)->window) {
+	main_window = gtk_widget_get_toplevel (GTK_WIDGET (pi->selected_source));
+	screen = gtk_widget_get_screen (main_window);
+	if (main_window && main_window->window) {
 		int xid;
 		xid = gdk_x11_drawable_get_xid (GDK_DRAWABLE (GTK_WIDGET (main_window)->window));
 		xid_str = g_strdup_printf ("%d", xid);
@@ -186,7 +188,7 @@ rb_disc_recorder_plugin_start_burning (RBDiscRecorderPlugin *pi,
 	args = (char **) g_ptr_array_free (array, FALSE);
 
 	ret = TRUE;
-	if (!g_spawn_async (NULL, args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, &error)) {
+	if (!gdk_spawn_on_screen (screen, NULL, args, NULL, G_SPAWN_SEARCH_PATH | G_SPAWN_FILE_AND_ARGV_ZERO, NULL, NULL, NULL, &error)) {
 		if (copy != FALSE) {
 			rb_error_dialog (GTK_WINDOW (main_window),
 					 _("Rhythmbox could not duplicate the disc"),
