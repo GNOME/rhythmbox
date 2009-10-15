@@ -270,6 +270,7 @@ mpid_device_finalize (GObject *object)
 static void
 mpid_device_init (MPIDDevice *device)
 {
+	device->folder_depth = -1;
 }
 
 static GObject *
