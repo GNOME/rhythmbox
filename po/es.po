@@ -16,8 +16,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-08-10 23:39+0000\n"
-"PO-Revision-Date: 2009-08-14 16:17+0200\n"
+"POT-Creation-Date: 2009-10-10 05:23+0000\n"
+"PO-Revision-Date: 2009-10-17 11:04+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -26,12 +26,12 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:591
+#: ../backends/gstreamer/rb-encoder-gst.c:572
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "¿Quiere sobreescribir el archivo «%s»?"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:663
+#: ../backends/gstreamer/rb-encoder-gst.c:644
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
@@ -501,7 +501,6 @@ msgid "Recently Played"
 msgstr "Reproducidos recientemente"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../plugins/power-manager/rb-power-manager-plugin.c:207
 #: ../plugins/status-icon/rb-status-icon-plugin.c:60
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1524 ../shell/rb-shell.c:1022
 #: ../shell/rb-shell.c:1989
@@ -513,6 +512,10 @@ msgid "Play and organize your music collection"
 msgstr "Organice y reproduzca su colección de música"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: ../data/rhythmbox.desktop.in.in.h:4
 msgid "Rhythmbox Music Player"
 msgstr "Reproductor de música Rhythmbox"
 
@@ -621,30 +624,32 @@ msgstr "%d %b %Y"
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:576
 #: ../lib/rb-util.c:816
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:93
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:95
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:180
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:98
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
+#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:238
+#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:242
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:181
-#: ../plugins/audiocd/rb-audiocd-source.c:436
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:182
+#: ../plugins/audiocd/rb-audiocd-source.c:444
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:493
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:497
 #: ../plugins/daap/rb-daap-connection.c:698
 #: ../plugins/generic-player/rb-generic-player-source.c:1063
-#: ../plugins/ipod/rb-ipod-source.c:307
+#: ../plugins/ipod/rb-ipod-source.c:306
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:527
 #: ../plugins/iradio/rb-iradio-source.c:1092
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
 #: ../plugins/lyrics/lyrics/__init__.py:81
 #: ../plugins/lyrics/lyrics/__init__.py:83
-#: ../plugins/mtpdevice/rb-mtp-source.c:536
-#: ../plugins/mtpdevice/rb-mtp-source.c:907
-#: ../plugins/mtpdevice/rb-mtp-source.c:995
+#: ../plugins/mtpdevice/rb-mtp-source.c:446
+#: ../plugins/mtpdevice/rb-mtp-source.c:780
+#: ../plugins/mtpdevice/rb-mtp-source.c:891
 #: ../plugins/status-icon/rb-status-icon-plugin.c:727
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
-#: ../podcast/rb-podcast-manager.c:1873
+#: ../podcast/rb-podcast-manager.c:1875
 #: ../podcast/rb-podcast-properties-dialog.c:483
 #: ../podcast/rb-podcast-properties-dialog.c:535
 #: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1287
@@ -663,12 +668,12 @@ msgstr "Desconocido"
 msgid "Unable to move %s to %s: %s"
 msgstr "No se pudo mover %s a %s: %s"
 
-#: ../lib/rb-file-helpers.c:380
+#: ../lib/rb-file-helpers.c:378
 #, c-format
 msgid "Too many symlinks"
 msgstr "Demasiados enlaces simbólicos"
 
-#: ../lib/rb-file-helpers.c:988
+#: ../lib/rb-file-helpers.c:986
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "No se puede obtener espacio libre en %s: %s"
@@ -818,53 +823,53 @@ msgid "Reload Album Information"
 msgstr "Recargar la información del álbum"
 
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:309
+#: ../plugins/audiocd/rb-audiocd-source.c:317
 msgid "S_ubmit Album"
 msgstr "_Enviar á_lbum"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:310
+#: ../plugins/audiocd/rb-audiocd-source.c:318
 msgid "Hide"
 msgstr "Ocultar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:312
+#: ../plugins/audiocd/rb-audiocd-source.c:320
 msgid "Could not find this album on MusicBrainz."
 msgstr "No se pudo obtener información acerca de este álbum en MusicBrainz."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:313
+#: ../plugins/audiocd/rb-audiocd-source.c:321
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Puede mejorar la base de datos de MusicBrainz añadiendo este álbum."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:440
+#: ../plugins/audiocd/rb-audiocd-source.c:448
 msgid "<Invalid unicode>"
 msgstr "<Unicode inválido>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:486
+#: ../plugins/audiocd/rb-audiocd-source.c:494
 #, c-format
 msgid "Track %u"
 msgstr "Pista %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:546
 #: ../plugins/audiocd/rb-audiocd-source.c:554
-#: ../plugins/audiocd/rb-audiocd-source.c:942
+#: ../plugins/audiocd/rb-audiocd-source.c:562
+#: ../plugins/audiocd/rb-audiocd-source.c:950
 msgid "Couldn't load Audio CD"
 msgstr "No se pudo cargar un CD de sonido"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:547
+#: ../plugins/audiocd/rb-audiocd-source.c:555
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox no pudo acceder al CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:555
+#: ../plugins/audiocd/rb-audiocd-source.c:563
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox pudo leer la información del CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:653
+#: ../plugins/audiocd/rb-audiocd-source.c:661
 #: ../sources/rb-library-source.c:150 ../widgets/rb-entry-view.c:1476
 #: ../widgets/rb-query-creator-properties.c:75
 #: ../widgets/rb-query-creator-properties.c:105
 msgid "Title"
 msgstr "Título"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:660
+#: ../plugins/audiocd/rb-audiocd-source.c:668
 #: ../sources/rb-library-source.c:141 ../widgets/rb-entry-view.c:1486
 #: ../widgets/rb-library-browser.c:143
 #: ../widgets/rb-query-creator-properties.c:76
@@ -872,7 +877,7 @@ msgstr "Título"
 msgid "Artist"
 msgstr "Artista"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:943
+#: ../plugins/audiocd/rb-audiocd-source.c:951
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox no pudo obtener acceso al dispositivo CD."
 
@@ -2064,12 +2069,12 @@ msgstr "_Nombre:"
 msgid "iPod detected"
 msgstr "iPod detectado"
 
-#: ../plugins/ipod/rb-ipod-helpers.c:300
+#: ../plugins/ipod/rb-ipod-helpers.c:305
 msgid "Unable to initialize new iPod"
 msgstr "No se pudo inicializar el nuevo iPod"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:107 ../plugins/ipod/rb-ipod-plugin.c:116
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:123 ../shell/rb-playlist-manager.c:184
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:124 ../shell/rb-playlist-manager.c:184
 msgid "_Rename"
 msgstr "_Renombrar"
 
@@ -2106,18 +2111,18 @@ msgstr "_Borrar"
 msgid "Delete playlist"
 msgstr "Borrar lista de reproducción"
 
-#: ../plugins/ipod/rb-ipod-source.c:1212 ../sources/rb-podcast-source.c:843
+#: ../plugins/ipod/rb-ipod-source.c:1211 ../sources/rb-podcast-source.c:843
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../plugins/ipod/rb-ipod-source.c:1565
+#: ../plugins/ipod/rb-ipod-source.c:1581
 msgid "New playlist"
 msgstr "Lista de reproducción nueva"
 
 #. Translators: this is used to display the amount of storage space
 #. * used and the total storage space on an iPod.
 #.
-#: ../plugins/ipod/rb-ipod-source.c:1675
+#: ../plugins/ipod/rb-ipod-source.c:1691
 #, c-format
 msgid "%s of %s"
 msgstr "%s de %s"
@@ -3001,42 +3006,49 @@ msgstr ""
 "Soporte para dispositivos MTP (mostrar el contenido, reproducir desde el "
 "dispositivo)"
 
-#: ../plugins/mtpdevice/rb-mtp-gst-src.c:174
-#: ../plugins/mtpdevice/rb-mtp-gst-src.c:216
-#, c-format
-msgid "Unable to copy file from MTP device: %s"
-msgstr "No se pudo copiar el archivo del dispositivo MTP: %s"
-
-#: ../plugins/mtpdevice/rb-mtp-gst-src.c:190
-#, c-format
-msgid "Not enough space in %s"
-msgstr "No hay espacio suficiente en %s"
-
-#: ../plugins/mtpdevice/rb-mtp-gst-src.c:202
-#, c-format
-msgid "Unable to open temporary file: %s"
-msgstr "No se puede abrir el archivo temporal: %s"
-
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:120
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:121
 #: ../shell/rb-removable-media-manager.c:165
 msgid "_Eject"
 msgstr "_Expulsar"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:121
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:122
 msgid "Eject MTP-device"
 msgstr "Expulsar el dispositivo MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:124
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:125
 msgid "Rename MTP-device"
 msgstr "Renombrar el dispositivo MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:145
-msgid "Media player device error"
-msgstr "Error del dispositivo reproductor multimedia"
-
-#: ../plugins/mtpdevice/rb-mtp-source.c:733
+#: ../plugins/mtpdevice/rb-mtp-source.c:683
 msgid "Digital Audio Player"
 msgstr "Reproductor de sonido digital"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:411
+#: ../plugins/mtpdevice/rb-mtp-thread.c:469
+#: ../plugins/mtpdevice/rb-mtp-thread.c:487
+#, c-format
+msgid "Unable to copy file from MTP device: %s"
+msgstr "No se pudo copiar el archivo del dispositivo MTP: %s"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:432
+#, c-format
+msgid "Not enough space in %s"
+msgstr "No hay espacio suficiente en %s"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:456
+#, c-format
+msgid "Unable to open temporary file: %s"
+msgstr "No se puede abrir el archivo temporal: %s"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:511
+#, c-format
+#| msgid "Unable to copy file from MTP device: %s"
+msgid "Unable to send file to MTP device: %s"
+msgstr "No se pudo copiar el archivo al dispositivo MTP: %s"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:719
+msgid "Media player device error"
+msgstr "Error del dispositivo reproductor multimedia"
 
 #: ../plugins/power-manager/power-manager.rb-plugin.in.h:1
 msgid "Inhibit Power Manager from suspending the machine while playing"
@@ -3047,7 +3059,7 @@ msgstr ""
 msgid "Power Manager"
 msgstr "Gestor de energía"
 
-#: ../plugins/power-manager/rb-power-manager-plugin.c:208
+#: ../plugins/power-manager/rb-power-manager-plugin.c:197
 msgid "Playing"
 msgstr "Reproduciendo"
 
@@ -3228,17 +3240,14 @@ msgid "Visible with notifications"
 msgstr "Visibles con notificaciones"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:11
-#| msgid "_Mouse Wheel"
 msgid "_Mouse wheel:"
 msgstr "Rueda del _ratón:"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:12
-#| msgid "_Notifications"
 msgid "_Notifications:"
 msgstr "_Notificaciones:"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:13
-#| msgid "_Status Icon:"
 msgid "_Status icon:"
 msgstr "Icono de _estado:"
 
@@ -3340,30 +3349,30 @@ msgstr "Mostrar las visualizaciones"
 msgid "Visualization"
 msgstr "Visualización"
 
-#: ../podcast/rb-podcast-manager.c:811
+#: ../podcast/rb-podcast-manager.c:813
 msgid "Error creating podcast download directory"
 msgstr "Error al crear el directorio de descarga del Podcast"
 
-#: ../podcast/rb-podcast-manager.c:812
+#: ../podcast/rb-podcast-manager.c:814
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "No se pudo crear el directorio de descarga para %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:938
+#: ../podcast/rb-podcast-manager.c:940
 msgid "Invalid URL"
 msgstr "URL inválido"
 
-#: ../podcast/rb-podcast-manager.c:939
+#: ../podcast/rb-podcast-manager.c:941
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "La URL «%s» no es válida, compruébelo."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:949
+#: ../podcast/rb-podcast-manager.c:951
 msgid "URL already added"
 msgstr "La URL ya se ha añadido"
 
-#: ../podcast/rb-podcast-manager.c:950
+#: ../podcast/rb-podcast-manager.c:952
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3372,7 +3381,7 @@ msgstr ""
 "La URL «%s» ya se ha añadido como una emisora de radio. Si esto es un "
 "proveedor de Podcast, elimine la emisora de radio."
 
-#: ../podcast/rb-podcast-manager.c:1018
+#: ../podcast/rb-podcast-manager.c:1020
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3383,11 +3392,11 @@ msgstr ""
 "o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
 "todas formas?"
 
-#: ../podcast/rb-podcast-manager.c:1129
+#: ../podcast/rb-podcast-manager.c:1131
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2053
+#: ../podcast/rb-podcast-manager.c:2055
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Hubo un problema al añadir este Podcast: %s. Compruebe el URL: %s"
@@ -3769,7 +3778,7 @@ msgstr "Todos los archivos"
 msgid "Load Playlist"
 msgstr "Cargar lista de reproducción"
 
-#: ../shell/rb-playlist-manager.c:1463 ../sources/rb-playlist-source.c:630
+#: ../shell/rb-playlist-manager.c:1463 ../sources/rb-playlist-source.c:631
 msgid "Couldn't save playlist"
 msgstr "No se ha podido guardar la lista de reproducción"
 
@@ -3832,21 +3841,17 @@ msgstr "Buscar nuevos soportes extraíbles"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../shell/rb-removable-media-manager.c:826
+#: ../shell/rb-removable-media-manager.c:837
 msgid "Extract"
 msgstr "Extraer"
 
-#: ../shell/rb-removable-media-manager.c:857
+#: ../shell/rb-removable-media-manager.c:868
 msgid "Unable to eject"
 msgstr "No se puede expulsar"
 
-#: ../shell/rb-removable-media-manager.c:878
+#: ../shell/rb-removable-media-manager.c:889
 msgid "Unable to unmount"
 msgstr "No se puede desmontar"
-
-#: ../shell/rb-removable-media-manager.c:1089
-msgid "Error transferring track"
-msgstr "Error al transferir la pista"
 
 #: ../shell/rb-shell-clipboard.c:152
 msgid "Select _All"
@@ -4352,17 +4357,17 @@ msgstr "Importar archivo en la fonoteca"
 msgid "No registered source can handle URI %s"
 msgstr "Ninguna fuente registrada puede manejar URIs %s"
 
-#: ../shell/rb-shell.c:3142 ../shell/rb-shell.c:3171
+#: ../shell/rb-shell.c:3143 ../shell/rb-shell.c:3172
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI de la canción desconocida: %s"
 
-#: ../shell/rb-shell.c:3180
+#: ../shell/rb-shell.c:3181
 #, c-format
 msgid "Unknown property %s"
 msgstr "Propiedad %s desconocida"
 
-#: ../shell/rb-shell.c:3190
+#: ../shell/rb-shell.c:3191
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "El tipo de la propiedad %s es inválido para la propiedad %s"
@@ -4508,6 +4513,10 @@ msgstr "Se han establecido múltiples lugares"
 #: ../sources/rb-library-source.c:1008
 msgid "Example Path:"
 msgstr "Ejemplo de la dirección:"
+
+#: ../sources/rb-library-source.c:1217
+msgid "Error transferring track"
+msgstr "Error al transferir la pista"
 
 #: ../sources/rb-missing-files-source.c:288
 msgid "Missing Files"
@@ -4984,17 +4993,18 @@ msgstr "al menos"
 msgid "at most"
 msgstr "como mucho"
 
-#: ../widgets/rb-query-creator-properties.c:167
+#. Translators: this matches songs within 1-Jan-YEAR to 31-Dec-YEAR
+#: ../widgets/rb-query-creator-properties.c:168
 msgid "in"
 msgstr "en"
 
-#. matches if within 1-JAN-YEAR to 31-DEC-YEAR
-#: ../widgets/rb-query-creator-properties.c:169
+#. Translators: this matches songs after 31-Dec-YEAR
+#: ../widgets/rb-query-creator-properties.c:170
 msgid "after"
 msgstr "después"
 
-#. matches if >= 31-DEC-YEAR
-#: ../widgets/rb-query-creator-properties.c:171
+#. Translators: this matches songs before 1-Jan-YEAR
+#: ../widgets/rb-query-creator-properties.c:172
 msgid "before"
 msgstr "antes"
 
@@ -5315,9 +5325,6 @@ msgstr "Dirección desconocida"
 
 #~ msgid "radio|New"
 #~ msgstr "Nueva"
-
-#~ msgid "Rhythmbox"
-#~ msgstr "Rhythmbox"
 
 #~ msgid "podcast|New"
 #~ msgstr "Nuevo"
