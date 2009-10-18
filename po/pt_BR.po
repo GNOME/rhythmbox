@@ -23,8 +23,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-17 12:30-0400\n"
-"PO-Revision-Date: 2009-08-17 12:31-0400\n"
+"POT-Creation-Date: 2009-10-18 15:36-0400\n"
+"PO-Revision-Date: 2009-10-18 15:36-0400\n"
 "Last-Translator: Og Maciel <ogmaciel@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -34,12 +34,12 @@ msgstr ""
 "X-Poedit-Language: Portuguese\n"
 "X-Poedit-Country: BRAZIL\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:591
+#: ../backends/gstreamer/rb-encoder-gst.c:572
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Você quer sobrescrever o arquivo \"%s\"?"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:663
+#: ../backends/gstreamer/rb-encoder-gst.c:644
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
@@ -503,10 +503,9 @@ msgid "Recently Played"
 msgstr "Reproduzido recentemente"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../plugins/power-manager/rb-power-manager-plugin.c:207
 #: ../plugins/status-icon/rb-status-icon-plugin.c:60
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1524 ../shell/rb-shell.c:1022
-#: ../shell/rb-shell.c:1989
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1524 ../shell/rb-shell.c:1020
+#: ../shell/rb-shell.c:1984
 msgid "Music Player"
 msgstr "Reprodutor de músicas"
 
@@ -515,6 +514,10 @@ msgid "Play and organize your music collection"
 msgstr "Reproduz e organiza a sua coleção de músicas"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: ../data/rhythmbox.desktop.in.in.h:4
 msgid "Rhythmbox Music Player"
 msgstr "Reprodutor de músicas Rhythmbox"
 
@@ -624,40 +627,42 @@ msgstr "%d de %b de %Y"
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:576
 #: ../lib/rb-util.c:816
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:93
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:95
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:180
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:98
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
+#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:238
+#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:242
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:181
-#: ../plugins/audiocd/rb-audiocd-source.c:436
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:182
+#: ../plugins/audiocd/rb-audiocd-source.c:439
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:493
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:497
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:477
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:481
 #: ../plugins/daap/rb-daap-connection.c:698
-#: ../plugins/generic-player/rb-generic-player-source.c:1063
-#: ../plugins/ipod/rb-ipod-source.c:307
+#: ../plugins/generic-player/rb-generic-player-source.c:1057
+#: ../plugins/ipod/rb-ipod-source.c:302
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
-#: ../plugins/iradio/rb-iradio-source.c:527
-#: ../plugins/iradio/rb-iradio-source.c:1092
-#: ../plugins/iradio/rb-station-properties-dialog.c:491
+#: ../plugins/iradio/rb-iradio-source.c:522
+#: ../plugins/iradio/rb-iradio-source.c:1087
+#: ../plugins/iradio/rb-station-properties-dialog.c:487
 #: ../plugins/lyrics/lyrics/__init__.py:81
 #: ../plugins/lyrics/lyrics/__init__.py:83
-#: ../plugins/mtpdevice/rb-mtp-source.c:536
-#: ../plugins/mtpdevice/rb-mtp-source.c:907
-#: ../plugins/mtpdevice/rb-mtp-source.c:995
+#: ../plugins/mtpdevice/rb-mtp-source.c:440
+#: ../plugins/mtpdevice/rb-mtp-source.c:775
+#: ../plugins/mtpdevice/rb-mtp-source.c:886
 #: ../plugins/status-icon/rb-status-icon-plugin.c:727
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
-#: ../podcast/rb-podcast-manager.c:1873
+#: ../podcast/rb-podcast-manager.c:1867
 #: ../podcast/rb-podcast-properties-dialog.c:483
 #: ../podcast/rb-podcast-properties-dialog.c:535
 #: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1287
 #: ../rhythmdb/rhythmdb-tree.c:1291 ../rhythmdb/rhythmdb-tree.c:1295
 #: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb.c:1817
-#: ../shell/rb-shell-player.c:1672 ../sources/rb-podcast-source.c:1657
-#: ../widgets/rb-entry-view.c:1044 ../widgets/rb-entry-view.c:1066
-#: ../widgets/rb-entry-view.c:1520 ../widgets/rb-entry-view.c:1532
-#: ../widgets/rb-entry-view.c:1544 ../widgets/rb-song-info.c:882
-#: ../widgets/rb-song-info.c:1048 ../widgets/rb-song-info.c:1372
+#: ../shell/rb-shell-player.c:1665 ../sources/rb-podcast-source.c:1648
+#: ../widgets/rb-entry-view.c:1043 ../widgets/rb-entry-view.c:1065
+#: ../widgets/rb-entry-view.c:1519 ../widgets/rb-entry-view.c:1531
+#: ../widgets/rb-entry-view.c:1543 ../widgets/rb-song-info.c:877
+#: ../widgets/rb-song-info.c:1043 ../widgets/rb-song-info.c:1367
 msgid "Unknown"
 msgstr "Desconhecido"
 
@@ -666,12 +671,12 @@ msgstr "Desconhecido"
 msgid "Unable to move %s to %s: %s"
 msgstr "Não foi possível mover %s para %s: %s"
 
-#: ../lib/rb-file-helpers.c:380
+#: ../lib/rb-file-helpers.c:378
 #, c-format
 msgid "Too many symlinks"
 msgstr "Links simbólicos em excesso"
 
-#: ../lib/rb-file-helpers.c:988
+#: ../lib/rb-file-helpers.c:986
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Não foi possível obter o espaço livre em %s: %s"
@@ -814,71 +819,71 @@ msgstr ""
 msgid "_Continue"
 msgstr "_Continuar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:138
+#: ../plugins/audiocd/rb-audiocd-source.c:137
 msgid "Reload"
 msgstr "Recarregar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:139
+#: ../plugins/audiocd/rb-audiocd-source.c:138
 msgid "Reload Album Information"
 msgstr "Recarrega a informações sobre o álbum"
 
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:309
+#: ../plugins/audiocd/rb-audiocd-source.c:314
 msgid "S_ubmit Album"
 msgstr "En_viar ál_bum"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:310
+#: ../plugins/audiocd/rb-audiocd-source.c:315
 msgid "Hide"
 msgstr "Ocultar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:312
+#: ../plugins/audiocd/rb-audiocd-source.c:317
 msgid "Could not find this album on MusicBrainz."
 msgstr "Não foi possível localizar este álbum no MusicBrainz."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:313
+#: ../plugins/audiocd/rb-audiocd-source.c:318
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr ""
 "Você pode melhorar o banco de dados do MusicBrainz adicionando este álbum."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:440
+#: ../plugins/audiocd/rb-audiocd-source.c:443
 msgid "<Invalid unicode>"
 msgstr "<Unicode inválido>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:486
+#: ../plugins/audiocd/rb-audiocd-source.c:489
 #, c-format
 msgid "Track %u"
 msgstr "Faixa %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:546
-#: ../plugins/audiocd/rb-audiocd-source.c:554
-#: ../plugins/audiocd/rb-audiocd-source.c:942
+#: ../plugins/audiocd/rb-audiocd-source.c:549
+#: ../plugins/audiocd/rb-audiocd-source.c:557
+#: ../plugins/audiocd/rb-audiocd-source.c:945
 msgid "Couldn't load Audio CD"
 msgstr "Não foi possível carregar o CD de áudio"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:547
+#: ../plugins/audiocd/rb-audiocd-source.c:550
 msgid "Rhythmbox couldn't access the CD."
 msgstr "O Rhythmbox não pôde acessar o CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:555
+#: ../plugins/audiocd/rb-audiocd-source.c:558
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "O Rhythmbox não pôde ler a informação do CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:653
-#: ../sources/rb-library-source.c:150 ../widgets/rb-entry-view.c:1476
+#: ../plugins/audiocd/rb-audiocd-source.c:656
+#: ../sources/rb-library-source.c:148 ../widgets/rb-entry-view.c:1475
 #: ../widgets/rb-query-creator-properties.c:75
 #: ../widgets/rb-query-creator-properties.c:105
 msgid "Title"
 msgstr "Título"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:660
-#: ../sources/rb-library-source.c:141 ../widgets/rb-entry-view.c:1486
-#: ../widgets/rb-library-browser.c:143
+#: ../plugins/audiocd/rb-audiocd-source.c:663
+#: ../sources/rb-library-source.c:139 ../widgets/rb-entry-view.c:1485
+#: ../widgets/rb-library-browser.c:142
 #: ../widgets/rb-query-creator-properties.c:76
 #: ../widgets/rb-query-creator-properties.c:102
 msgid "Artist"
 msgstr "Artista"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:943
+#: ../plugins/audiocd/rb-audiocd-source.c:946
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "O Rhythmbox não pôde obter acesso ao dispositivo de CD."
 
@@ -951,7 +956,7 @@ msgid "Cannot read CD: %s"
 msgstr "Não foi possível ler o CD: %s"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:711
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:704
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -978,11 +983,11 @@ msgid "Last submission time:"
 msgstr "Último envio em:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:980
-#: ../plugins/iradio/rb-station-properties-dialog.c:502
-#: ../rhythmdb/rhythmdb.c:3706 ../widgets/rb-entry-view.c:992
-#: ../widgets/rb-entry-view.c:1579 ../widgets/rb-entry-view.c:1592
-#: ../widgets/rb-song-info.c:1345
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:964
+#: ../plugins/iradio/rb-station-properties-dialog.c:498
+#: ../rhythmdb/rhythmdb.c:3706 ../widgets/rb-entry-view.c:991
+#: ../widgets/rb-entry-view.c:1578 ../widgets/rb-entry-view.c:1591
+#: ../widgets/rb-song-info.c:1340
 msgid "Never"
 msgstr "Nunca"
 
@@ -1022,248 +1027,248 @@ msgstr "Nome de _usuário:"
 msgid "Last.fm Preferences"
 msgstr "Preferências do Last.fm"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1003
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:987
 msgid "OK"
 msgstr "OK"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1006
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1768
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:990
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1761
 msgid "Logging in"
 msgstr "Iniciando sessão"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1009
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:993
 msgid "Request failed"
 msgstr "Solicitação falhou"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1012
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:996
 msgid "Incorrect username or password"
 msgstr "Nome de usuário ou senha incorreta"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1015
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:999
 msgid "Clock is not set correctly"
 msgstr "Relógio não está definido corretamente"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1018
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:880
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1002
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:873
 msgid "This version of Rhythmbox has been banned from Last.fm."
 msgstr "Esta versão do Rhythmbox foi banida do Last.fm."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1021
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1005
 msgid "Track submission failed too many times"
 msgstr "O envio da faixa falhou vezes demais"
 
 # O Last.fm em português chama "Similar Artists" de "Artistas Parecidos"
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:192
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:191
 msgid "Similar Artists radio"
 msgstr "Rádio de artistas parecidos"
 
 # O Last.fm em português chama "Similar Artists" de "Artistas Parecidos"
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:192
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1267
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:191
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1260
 #, c-format
 msgid "Artists similar to %s"
 msgstr "Artistas parecidos com %s"
 
 # Neste caso, "tag radio" é uma rádio de coisas que possuem uma mesma tag
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:193
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:192
 msgid "Tag radio"
 msgstr "Rádio de marcador"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:193
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:192
 #, c-format
 msgid "Tracks tagged with %s"
 msgstr "Faixas marcadas com %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:193
 msgid "Artist Fan radio"
 msgstr "Rádio de fãs de artistas"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1269
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:193
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1262
 #, c-format
 msgid "Artists liked by fans of %s"
 msgstr "Artistas apreciados por fãs de %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
 msgid "Group radio"
 msgstr "Rádio do grupo"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
 #, c-format
 msgid "Tracks liked by the %s group"
 msgstr "Faixas apreciadas pelo grupo %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
 msgid "Neighbour radio"
 msgstr "Rádio vizinha"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1277
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1270
 #, c-format
 msgid "%s's Neighbour Radio"
 msgstr "Rádio vizinha de %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
 msgid "Personal radio"
 msgstr "Rádio pessoal"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1281
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1274
 #, c-format
 msgid "%s's Personal Radio"
 msgstr "Rádio pessoal de %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
 msgid "Loved tracks"
 msgstr "Faixas favoritas"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1283
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1276
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr "Faixas favoritas de %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:199
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
 msgid "Recommended tracks"
 msgstr "Faixas recomendadas"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:199
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
 #, c-format
 msgid "Tracks recommended to %s"
 msgstr "Faixas recomendadas para %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:200
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:199
 msgid "Playlist"
 msgstr "Lista de reprodução"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:200
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:199
 #, c-format
 msgid "%s's playlist"
 msgstr "Lista de reprodução de %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:284
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:283
 msgid "Love"
 msgstr "Favorita"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:285
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:284
 msgid "Mark this song as loved"
 msgstr "Marcar esta música como favorita"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
 msgid "Ban"
 msgstr "Banir"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:288
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
 msgid "Ban the current track from being played again"
 msgstr "Impedir a faixa atual de ser reproduzida novamente"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
 msgid "Delete Station"
 msgstr "Excluir estação"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:291
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
 msgid "Delete the selected station"
 msgstr "Exclui a estação selecionada"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
 msgid "Download song"
 msgstr "Baixar música"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:294
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
 msgid "Download this song"
 msgstr "Baixe esta música"
 
 #. awful
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:501
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:496
 msgid "Enter the item to build a Last.fm station out of:"
 msgstr "Digite o item para construir a sua estação Last.fm:"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:504
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:499
 msgid "Add"
 msgstr "Adicionar"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:851
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:844
 msgid "Account Settings"
 msgstr "Configurações de conta"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:876
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:869
 msgid ""
 "Account details are needed before you can connect.  Check your settings."
 msgstr ""
 "Detalhes da conta são necessários antes que você possa conectar. Verifique "
 "as suas configurações."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:884
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:877
 msgid "Unable to connect"
 msgstr "Não foi possível conectar"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1258
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1251
 #, c-format
 msgid "Global Tag %s"
 msgstr "Marca global %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1279
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1272
 #, c-format
 msgid "%s's Recommended Radio: %s percent"
 msgstr "Rádio recomendada por %s: %s porcento"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1285
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1278
 #, c-format
 msgid "%s's Playlist"
 msgstr "Lista de reprodução de %s"
 
 #. Translators: variables are 1: user name, 2: tag name; for user tag radio
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1291
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1284
 #, c-format
 msgid "%s's %s Radio"
 msgstr "Rádio do(a) %s: %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1295
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1288
 #, c-format
 msgid "%s Group Radio"
 msgstr "Rádio do grupo %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1738
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1731
 msgid "Neighbour Radio"
 msgstr "Rádio vizinha"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1746
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1739
 msgid "Personal Radio"
 msgstr "Rádio pessoal"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1836
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1829
 msgid "Server did not respond"
 msgstr "O servidor não respondeu"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1904
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1897
 msgid "There is not enough content available to play this station."
 msgstr "Não há conteúdo suficiente disponível para reproduzir esta estação."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1909
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1902
 msgid "This station is available to subscribers only."
 msgstr "Esta estação só está disponível para assinantes."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1916
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1909
 msgid ""
 "The streaming system is offline for maintenance, please try again later."
 msgstr ""
 "O sistema de fluxo está fora do ar para manutenção; por favor tente "
 "novamente mais tarde."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1955
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1948
 msgid "Changing station"
 msgstr "Mudando de estação"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2176
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2186
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2169
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2179
 msgid "Retrieving playlist"
 msgstr "Recuperando a lista de reprodução"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2280
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2273
 msgid "Banning song"
 msgstr "Banindo música"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2298
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2291
 msgid "Adding song to your Loved tracks"
 msgstr "Adicionando música para as suas faixas favoritas"
 
@@ -1298,46 +1303,46 @@ msgstr "Duplicar CD de áudio..."
 msgid "Create a copy of this audio CD"
 msgstr "Cria uma cópia deste CD de áudio"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:192
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:194
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:247
 msgid "Rhythmbox could not duplicate the disc"
 msgstr "O Rhythmbox não pôde duplicar o disco"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:197
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:199
 msgid "Rhythmbox could not record the audio disc"
 msgstr "O Rhythmbox não pôde gravar o disco de áudio"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:228
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:230
 #, c-format
 msgid "Unable to build an audio track list"
 msgstr "Não foi possível construir uma lista de faixas de áudio"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:239
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:431
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:241
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:433
 #, c-format
 msgid "Unable to write audio project file %s: %s"
 msgstr "Falha ao escrever o arquivo de projeto de áudio %s: %s"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:257
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:438
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:259
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:440
 #, c-format
 msgid "Unable to write audio project"
 msgstr "Não foi possível escrever o projeto de áudio"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:478
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:480
 msgid "Unable to create audio CD project"
 msgstr "Não foi possível criar o projeto de CD de áudio"
 
 #. Translators: this is the toolbar button label for
 #. Create Audio CD action
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:730
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:732
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:450
 msgid "Burn"
 msgstr "Gravar"
 
 #. Translators: this is the toolbar button label for
 #. Duplicate Audio CD action
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:736
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:738
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:456
 msgid "Copy CD"
 msgstr "Copiar CD"
@@ -1431,30 +1436,30 @@ msgstr ""
 msgid "There was an error writing to the CD"
 msgstr "Houve um erro ao gravar no CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:279
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:278
 msgid "Maximum possible"
 msgstr "Máximo possível"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:346
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:345
 #, c-format
 msgid "Invalid writer device: %s"
 msgstr "Dispositivo gravador inválido: %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:447
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:446
 #, c-format
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d hora"
 msgstr[1] "%d horas"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:449
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:448
 #, c-format
 msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "%d minuto"
 msgstr[1] "%d minutos"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:452
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:451
 #, c-format
 msgid "%d second"
 msgid_plural "%d seconds"
@@ -1462,42 +1467,42 @@ msgstr[0] "%d segundo"
 msgstr[1] "%d segundos"
 
 #. hour:minutes:seconds
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:457
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:456
 #, c-format
 msgid "%s %s %s"
 msgstr "%s %s %s"
 
 #. minutes:seconds
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:460
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:459
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. seconds
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:463
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:462
 #, c-format
 msgid "%s"
 msgstr "%s"
 
 #. 0 seconds
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:466
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:465
 msgid "0 seconds"
 msgstr "0 segundo"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:485
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:484
 #, c-format
 msgid "About %s left"
 msgstr "Em torno de %s restante"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:513
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:512
 msgid "Writing audio to CD"
 msgstr "Gravando áudio no CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:529
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:528
 msgid "Finished creating audio CD."
 msgstr "Criação do CD de áudio concluída."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:547
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:546
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
@@ -1505,164 +1510,164 @@ msgstr ""
 "Criação do CD de áudio concluída.\n"
 "Você deseja criar outra cópia?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:549
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:548
 msgid "Writing failed.  Try again?"
 msgstr "A gravação falhou. Você deseja tentar novamente?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:551
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:550
 msgid "Writing canceled.  Try again?"
 msgstr "Gravação cancelada. Você deseja tentar novamente?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:619
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:618
 msgid "Audio recording error"
 msgstr "Erro na gravação do áudio"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:648
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:647
 msgid "Audio Conversion Error"
 msgstr "Erro de conversão de áudio"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:678
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:677
 msgid "Recording error"
 msgstr "Erro de gravação"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:798
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:797
 msgid "Do you wish to interrupt writing this disc?"
 msgstr "Você deseja interromper a gravação desse disco?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:801
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:800
 msgid "This may result in an unusable disc."
 msgstr "Isso pode inutilizar o disco."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:808
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:807
 msgid "_Cancel"
 msgstr "_Cancelar"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:809
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:808
 msgid "_Interrupt"
 msgstr "_Interromper"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:831
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:830
 msgid "Could not create audio CD"
 msgstr "Não foi possível criar o CD de áudio"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:853
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:852
 msgid "Please make sure another application is not using the drive."
 msgstr ""
 "Por favor, certifique-se de que não há outro aplicativo usando a unidade."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:854
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:853
 msgid "Drive is busy"
 msgstr "A unidade está ocupada"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:856
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:855
 msgid "Please put a rewritable or blank CD in the drive."
 msgstr "Por favor, insira um CD regravável ou virgem na unidade."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:857
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:856
 msgid "Insert a rewritable or blank CD"
 msgstr "Insira um CD regravável ou virgem"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:859
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:858
 msgid "Please put a blank CD in the drive."
 msgstr "Por favor, insira um CD virgem na unidade."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:860
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:859
 msgid "Insert a blank CD"
 msgstr "Inserir um CD virgem"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:862
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:861
 msgid "Please replace the disc in the drive with a rewritable or blank CD."
 msgstr ""
 "Por favor, substitua o disco na unidade por um CD regravável ou virgem."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:863
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:862
 msgid "Reload a rewritable or blank CD"
 msgstr "Recarregar um CD regravável ou virgem"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:865
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:864
 msgid "Please replace the disc in the drive with a blank CD."
 msgstr "Por favor, substitua o disco na unidade por um CD virgem."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:866
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:865
 msgid "Reload a blank CD"
 msgstr "Recarregar um CD virgem"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:917
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:916
 msgid "Converting audio tracks"
 msgstr "Convertendo as faixas de áudio"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:920
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:919
 msgid "Preparing to write CD"
 msgstr "Preparando para gravar o CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:923
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:922
 msgid "Writing CD"
 msgstr "Gravando o CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:926
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:925
 msgid "Finishing write"
 msgstr "Terminando de gravar"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:929
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:928
 msgid "Erasing CD"
 msgstr "Apagando o CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:932
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:931
 msgid "Unhandled action in burn_action_changed_cb"
 msgstr "Ação não tratada em burn_action_changed_cb"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:956
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:955
 #, c-format
 msgid "This %s appears to have information already recorded on it."
 msgstr "Esse %s parece já ter informação gravada nele."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:963
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:962
 msgid "Erase information on this disc?"
 msgstr "Apagar as informações desse disco?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:972
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:971
 msgid "_Try Another"
 msgstr "_Tentar outro"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:979
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:978
 msgid "_Erase Disc"
 msgstr "_Apagar o disco"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1144
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1141
 msgid "C_reate"
 msgstr "C_riar"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1221
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1218
 #, c-format
 msgid "Failed to create the recorder: %s"
 msgstr "Falha ao criar o gravador: %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1345
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1341
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
 msgstr "Não foi possível remover o diretório temporário \"%s\": %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1365
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1361
 msgid "Create Audio CD"
 msgstr "Criar CD de áudio"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1383
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1379
 #, c-format
 msgid "Create audio CD from '%s'?"
 msgstr "Criar um CD de áudio a partir de \"%s\"?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1429
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1447
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1425
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1443
 #, c-format
 msgid "Unable to build an audio track list."
 msgstr "Não foi possível construir uma lista de faixas de áudio."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1457
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1453
 #, c-format
 msgid "This playlist is too long to write to an audio CD."
 msgstr "Essa lista de reprodução é longa demais para gravar em um CD de áudio."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1593
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1589
 #, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
@@ -1673,15 +1678,15 @@ msgstr ""
 "um CD de áudio padrão. Se a mídia de destino for maior que um CD de áudio "
 "padrão, favor inseri-la na unidade e tentar novamente."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1604
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1600
 msgid "Playlist too long"
 msgstr "A lista de reprodução é muito longa"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1644
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1640
 msgid "Could not find temporary space!"
 msgstr "Não foi possível localizar espaço temporário!"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1645
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1641
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MB "
@@ -1864,7 +1869,7 @@ msgid "Connection to %s:%d refused."
 msgstr "Conexão com %s:%d recusada."
 
 #: ../plugins/fmradio/fmradio.rb-plugin.in.h:1
-#: ../plugins/fmradio/rb-fm-radio-source.c:203
+#: ../plugins/fmradio/rb-fm-radio-source.c:197
 msgid "FM Radio"
 msgstr "Rádio FM"
 
@@ -1872,19 +1877,19 @@ msgstr "Rádio FM"
 msgid "Support for FM radio broadcasting services"
 msgstr "Suporte para serviços de transmissão de rádio FM"
 
-#: ../plugins/fmradio/rb-fm-radio-source.c:88
+#: ../plugins/fmradio/rb-fm-radio-source.c:86
 msgid "New FM R_adio Station"
 msgstr "Nov_a estação de rádio FM"
 
-#: ../plugins/fmradio/rb-fm-radio-source.c:89
+#: ../plugins/fmradio/rb-fm-radio-source.c:87
 msgid "Create a new FM Radio station"
 msgstr "Criar uma nova estação de rádio FM"
 
-#: ../plugins/fmradio/rb-fm-radio-source.c:347
+#: ../plugins/fmradio/rb-fm-radio-source.c:341
 msgid "New FM Radio Station"
 msgstr "Nova estação de rádio FM"
 
-#: ../plugins/fmradio/rb-fm-radio-source.c:348
+#: ../plugins/fmradio/rb-fm-radio-source.c:342
 msgid "Frequency of radio station"
 msgstr "Freqüência da estação de rádio"
 
@@ -1913,7 +1918,7 @@ msgstr "Excluir lista de reprodução"
 msgid "Delete this playlist"
 msgstr "Excluir esta lista de reprodução"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:627
+#: ../plugins/generic-player/rb-generic-player-source.c:621
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Importando (%d/%d)"
@@ -2076,12 +2081,12 @@ msgstr "_Nome:"
 msgid "iPod detected"
 msgstr "iPod detectado"
 
-#: ../plugins/ipod/rb-ipod-helpers.c:300
+#: ../plugins/ipod/rb-ipod-helpers.c:305
 msgid "Unable to initialize new iPod"
 msgstr "Não foi possível inicializar o novo iPod"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:107 ../plugins/ipod/rb-ipod-plugin.c:116
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:123 ../shell/rb-playlist-manager.c:184
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:124 ../shell/rb-playlist-manager.c:184
 msgid "_Rename"
 msgstr "_Renomear"
 
@@ -2089,8 +2094,8 @@ msgstr "_Renomear"
 msgid "Rename iPod"
 msgstr "Renomear iPod"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:110 ../shell/rb-shell-clipboard.c:188
-#: ../sources/rb-podcast-source.c:317
+#: ../plugins/ipod/rb-ipod-plugin.c:110 ../shell/rb-shell-clipboard.c:186
+#: ../sources/rb-podcast-source.c:315
 msgid "_Properties"
 msgstr "_Propriedades"
 
@@ -2098,7 +2103,7 @@ msgstr "_Propriedades"
 msgid "Display iPod properties"
 msgstr "Exibir propriedades do iPod"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:113 ../shell/rb-shell-clipboard.c:175
+#: ../plugins/ipod/rb-ipod-plugin.c:113 ../shell/rb-shell-clipboard.c:173
 msgid "_New Playlist"
 msgstr "_Nova lista de reprodução"
 
@@ -2118,18 +2123,18 @@ msgstr "E_xcluir"
 msgid "Delete playlist"
 msgstr "Excluir a lista de reprodução"
 
-#: ../plugins/ipod/rb-ipod-source.c:1212 ../sources/rb-podcast-source.c:843
+#: ../plugins/ipod/rb-ipod-source.c:1207 ../sources/rb-podcast-source.c:834
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../plugins/ipod/rb-ipod-source.c:1565
+#: ../plugins/ipod/rb-ipod-source.c:1577
 msgid "New playlist"
 msgstr "Nova lista de reprodução"
 
 #. Translators: this is used to display the amount of storage space
 #. * used and the total storage space on an iPod.
 #.
-#: ../plugins/ipod/rb-ipod-source.c:1675
+#: ../plugins/ipod/rb-ipod-source.c:1687
 #, c-format
 msgid "%s of %s"
 msgstr "%s de %s"
@@ -2312,67 +2317,67 @@ msgstr "Erro ao procurar um p2plink para o álbum %s no jamendo.com"
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Erro ao procurar artista %s no jamendo.com"
 
-#: ../plugins/iradio/rb-iradio-source.c:173
+#: ../plugins/iradio/rb-iradio-source.c:172
 msgid "New Internet _Radio Station..."
 msgstr "Nova estação de _rádio na internet..."
 
-#: ../plugins/iradio/rb-iradio-source.c:174
+#: ../plugins/iradio/rb-iradio-source.c:173
 msgid "Create a new Internet Radio station"
 msgstr "Cria uma nova estação de rádio na internet"
 
 #. Translators: this is the toolbar button label for
 #. New Internet Radio Station action.
-#: ../plugins/iradio/rb-iradio-source.c:314
+#: ../plugins/iradio/rb-iradio-source.c:311
 msgctxt "Radio"
 msgid "New"
 msgstr "Nova"
 
-#: ../plugins/iradio/rb-iradio-source.c:356 ../widgets/rb-entry-view.c:1506
-#: ../widgets/rb-library-browser.c:142
+#: ../plugins/iradio/rb-iradio-source.c:353 ../widgets/rb-entry-view.c:1505
+#: ../widgets/rb-library-browser.c:141
 #: ../widgets/rb-query-creator-properties.c:78
 #: ../widgets/rb-query-creator-properties.c:104
 msgid "Genre"
 msgstr "Gênero"
 
-#: ../plugins/iradio/rb-iradio-source.c:452
+#: ../plugins/iradio/rb-iradio-source.c:447
 msgid "Radio"
 msgstr "Rádio"
 
-#: ../plugins/iradio/rb-iradio-source.c:591
+#: ../plugins/iradio/rb-iradio-source.c:586
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d estação"
 msgstr[1] "%d estações"
 
-#: ../plugins/iradio/rb-iradio-source.c:1004
-#: ../plugins/iradio/rb-station-properties-dialog.c:405
+#: ../plugins/iradio/rb-iradio-source.c:999
+#: ../plugins/iradio/rb-station-properties-dialog.c:401
 msgid "New Internet Radio Station"
 msgstr "Nova estação de rádio na internet"
 
-#: ../plugins/iradio/rb-iradio-source.c:1004
+#: ../plugins/iradio/rb-iradio-source.c:999
 msgid "URL of internet radio station:"
 msgstr "URL da estação de rádio na internet:"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:401
+#: ../plugins/iradio/rb-station-properties-dialog.c:397
 #: ../podcast/rb-feed-podcast-properties-dialog.c:212
-#: ../podcast/rb-podcast-properties-dialog.c:368 ../widgets/rb-song-info.c:986
+#: ../podcast/rb-podcast-properties-dialog.c:368 ../widgets/rb-song-info.c:981
 #, c-format
 msgid "%s Properties"
 msgstr "Propriedades de %s"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:493
+#: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../podcast/rb-podcast-properties-dialog.c:481
-#: ../widgets/rb-entry-view.c:1070 ../widgets/rb-song-info.c:1050
+#: ../widgets/rb-entry-view.c:1069 ../widgets/rb-song-info.c:1045
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:584
+#: ../plugins/iradio/rb-station-properties-dialog.c:580
 msgid "Unable to change station property"
 msgstr "Não foi possível alterar a propriedade da estação"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:584
+#: ../plugins/iradio/rb-station-properties-dialog.c:580
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
 msgstr ""
@@ -2402,7 +2407,7 @@ msgid "_Save"
 msgstr "_Salvar"
 
 #: ../plugins/lyrics/lyrics/__init__.py:216
-#: ../plugins/lyrics/lyrics/__init__.py:229 ../shell/rb-shell.c:390
+#: ../plugins/lyrics/lyrics/__init__.py:229 ../shell/rb-shell.c:388
 msgid "_Edit"
 msgstr "_Editar"
 
@@ -2951,7 +2956,7 @@ msgstr ""
 "%s"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:510
-#: ../widgets/rb-entry-view.c:1630
+#: ../widgets/rb-entry-view.c:1629
 msgid "Error"
 msgstr "Erro"
 
@@ -3017,42 +3022,49 @@ msgstr ""
 "Suporte para dispositivos MTP (mostrar o conteúdo, transferir e reproduzir "
 "do dispositivo)"
 
-#: ../plugins/mtpdevice/rb-mtp-gst-src.c:174
-#: ../plugins/mtpdevice/rb-mtp-gst-src.c:216
-#, c-format
-msgid "Unable to copy file from MTP device: %s"
-msgstr "Falha ao copiar arquivo do dispositivo MTP: %s"
-
-#: ../plugins/mtpdevice/rb-mtp-gst-src.c:190
-#, c-format
-msgid "Not enough space in %s"
-msgstr "Sem espaço suficiente em %s"
-
-#: ../plugins/mtpdevice/rb-mtp-gst-src.c:202
+#: ../plugins/mtpdevice/rb-mtp-gst-sink.c:153
+#: ../plugins/mtpdevice/rb-mtp-thread.c:456
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Não foi possível abrir o arquivo temporário: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:120
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:121
 #: ../shell/rb-removable-media-manager.c:165
 msgid "_Eject"
 msgstr "_Ejetar"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:121
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:122
 msgid "Eject MTP-device"
 msgstr "Ejetar dispositivo MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:124
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:125
 msgid "Rename MTP-device"
 msgstr "Renomear dispositivo MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:145
-msgid "Media player device error"
-msgstr "Erro de dispositivo reprodutor de mídia"
-
-#: ../plugins/mtpdevice/rb-mtp-source.c:733
+#: ../plugins/mtpdevice/rb-mtp-source.c:678
 msgid "Digital Audio Player"
 msgstr "Reprodutor de áudio digital"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:411
+#: ../plugins/mtpdevice/rb-mtp-thread.c:469
+#: ../plugins/mtpdevice/rb-mtp-thread.c:487
+#, c-format
+msgid "Unable to copy file from MTP device: %s"
+msgstr "Falha ao copiar arquivo do dispositivo MTP: %s"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:432
+#, c-format
+msgid "Not enough space in %s"
+msgstr "Sem espaço suficiente em %s"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:511
+#, c-format
+msgid "Unable to send file to MTP device: %s"
+msgstr "Falha ao enviar arquivo ao dispositivo MTP: %s"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:719
+msgid "Media player device error"
+msgstr "Erro de dispositivo reprodutor de mídia"
 
 #: ../plugins/power-manager/power-manager.rb-plugin.in.h:1
 msgid "Inhibit Power Manager from suspending the machine while playing"
@@ -3063,7 +3075,7 @@ msgstr ""
 msgid "Power Manager"
 msgstr "Gerenciador de energia"
 
-#: ../plugins/power-manager/rb-power-manager-plugin.c:208
+#: ../plugins/power-manager/rb-power-manager-plugin.c:197
 msgid "Playing"
 msgstr "Reproduzindo"
 
@@ -3354,30 +3366,30 @@ msgstr "Exibe as visualizações"
 msgid "Visualization"
 msgstr "Visualização"
 
-#: ../podcast/rb-podcast-manager.c:811
+#: ../podcast/rb-podcast-manager.c:805
 msgid "Error creating podcast download directory"
 msgstr "Erro ao criar o diretório de downloads de podcast"
 
-#: ../podcast/rb-podcast-manager.c:812
+#: ../podcast/rb-podcast-manager.c:806
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Falha ao criar o diretório de download para %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:938
+#: ../podcast/rb-podcast-manager.c:932
 msgid "Invalid URL"
 msgstr "URL inválida"
 
-#: ../podcast/rb-podcast-manager.c:939
+#: ../podcast/rb-podcast-manager.c:933
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "A URL \"%s\" não é válida, por favor verifique-a."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:949
+#: ../podcast/rb-podcast-manager.c:943
 msgid "URL already added"
 msgstr "URL já adicionada"
 
-#: ../podcast/rb-podcast-manager.c:950
+#: ../podcast/rb-podcast-manager.c:944
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3386,7 +3398,7 @@ msgstr ""
 "A URL \"%s\" já foi adicionada como uma estação de rádio. Se isso é uma "
 "fonte (\"feed\") de podcast, por favor remova a estação de rádio."
 
-#: ../podcast/rb-podcast-manager.c:1018
+#: ../podcast/rb-podcast-manager.c:1012
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3397,11 +3409,11 @@ msgstr ""
 "erro no URL ou a fonte pode estar defeituosa. Você gostaria que o Rhythmbox "
 "tentasse usá-la mesmo assim?"
 
-#: ../podcast/rb-podcast-manager.c:1129
+#: ../podcast/rb-podcast-manager.c:1123
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2053
+#: ../podcast/rb-podcast-manager.c:2047
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -3536,9 +3548,9 @@ msgid "Playback volume is %f.\n"
 msgstr "Volume de reprodução é %f.\n"
 
 #: ../rhythmdb/rhythmdb-property-model.c:473
-#: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:173
-#: ../sources/rb-podcast-source.c:333
-#: ../sources/rb-static-playlist-source.c:110
+#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:171
+#: ../sources/rb-podcast-source.c:331
+#: ../sources/rb-static-playlist-source.c:109
 msgid "All"
 msgstr "Todos"
 
@@ -3785,7 +3797,7 @@ msgstr "Todos os Arquivos"
 msgid "Load Playlist"
 msgstr "Carregar a lista de reprodução"
 
-#: ../shell/rb-playlist-manager.c:1463 ../sources/rb-playlist-source.c:630
+#: ../shell/rb-playlist-manager.c:1463 ../sources/rb-playlist-source.c:622
 msgid "Couldn't save playlist"
 msgstr "Não foi possível salvar a lista de reprodução"
 
@@ -3849,260 +3861,256 @@ msgstr "Verifica novas mídias removíveis"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../shell/rb-removable-media-manager.c:826
+#: ../shell/rb-removable-media-manager.c:837
 msgid "Extract"
 msgstr "Extrair"
 
-#: ../shell/rb-removable-media-manager.c:857
+#: ../shell/rb-removable-media-manager.c:868
 msgid "Unable to eject"
 msgstr "Não foi possível ejetar"
 
-#: ../shell/rb-removable-media-manager.c:878
+#: ../shell/rb-removable-media-manager.c:889
 msgid "Unable to unmount"
 msgstr "Não foi possível desmontar"
 
-#: ../shell/rb-removable-media-manager.c:1089
-msgid "Error transferring track"
-msgstr "Erro ao transferir faixa"
-
-#: ../shell/rb-shell-clipboard.c:152
+#: ../shell/rb-shell-clipboard.c:150
 msgid "Select _All"
 msgstr "Selecion_ar todas"
 
-#: ../shell/rb-shell-clipboard.c:153
+#: ../shell/rb-shell-clipboard.c:151
 msgid "Select all songs"
 msgstr "Selecionar todas as músicas"
 
-#: ../shell/rb-shell-clipboard.c:155
+#: ../shell/rb-shell-clipboard.c:153
 msgid "D_eselect All"
 msgstr "_Desmarcar seleção"
 
-#: ../shell/rb-shell-clipboard.c:156
+#: ../shell/rb-shell-clipboard.c:154
 msgid "Deselect all songs"
 msgstr "Desmarca a seleção de músicas"
 
-#: ../shell/rb-shell-clipboard.c:158
+#: ../shell/rb-shell-clipboard.c:156
 msgid "Cu_t"
 msgstr "Recor_tar"
 
-#: ../shell/rb-shell-clipboard.c:159
+#: ../shell/rb-shell-clipboard.c:157
 msgid "Cut selection"
 msgstr "Recorta a seleção"
 
-#: ../shell/rb-shell-clipboard.c:161
+#: ../shell/rb-shell-clipboard.c:159
 msgid "_Copy"
 msgstr "_Copiar"
 
-#: ../shell/rb-shell-clipboard.c:162
+#: ../shell/rb-shell-clipboard.c:160
 msgid "Copy selection"
 msgstr "Copiar a seleção"
 
-#: ../shell/rb-shell-clipboard.c:164
+#: ../shell/rb-shell-clipboard.c:162
 msgid "_Paste"
 msgstr "C_olar"
 
-#: ../shell/rb-shell-clipboard.c:165
+#: ../shell/rb-shell-clipboard.c:163
 msgid "Paste selection"
 msgstr "Colar a seleção"
 
-#: ../shell/rb-shell-clipboard.c:167
+#: ../shell/rb-shell-clipboard.c:165
 msgid "_Remove"
 msgstr "_Remover"
 
-#: ../shell/rb-shell-clipboard.c:168 ../shell/rb-shell-clipboard.c:182
+#: ../shell/rb-shell-clipboard.c:166 ../shell/rb-shell-clipboard.c:180
 msgid "Remove selection"
 msgstr "Remover a seleção"
 
-#: ../shell/rb-shell-clipboard.c:170
+#: ../shell/rb-shell-clipboard.c:168
 msgid "_Move to Trash"
 msgstr "_Mover para a lixeira"
 
-#: ../shell/rb-shell-clipboard.c:171
+#: ../shell/rb-shell-clipboard.c:169
 msgid "Move selection to the trash"
 msgstr "Mover a seleção para a lixeira"
 
-#: ../shell/rb-shell-clipboard.c:174
+#: ../shell/rb-shell-clipboard.c:172
 msgid "Add to P_laylist"
 msgstr "Adicionar à _lista de reprodução"
 
-#: ../shell/rb-shell-clipboard.c:176
+#: ../shell/rb-shell-clipboard.c:174
 msgid "Add the selected songs to a new playlist"
 msgstr "Adicionar as músicas selecionadas a uma nova lista de reprodução"
 
-#: ../shell/rb-shell-clipboard.c:178
+#: ../shell/rb-shell-clipboard.c:176
 msgid "Add _to Play Queue"
 msgstr "Adicionar à _fila de reprodução"
 
-#: ../shell/rb-shell-clipboard.c:179
+#: ../shell/rb-shell-clipboard.c:177
 msgid "Add the selected songs to the play queue"
 msgstr "Adicionar as músicas selecionadas à fila de reprodução"
 
-#: ../shell/rb-shell-clipboard.c:181
+#: ../shell/rb-shell-clipboard.c:179
 msgid "Remove"
 msgstr "Remover"
 
-#: ../shell/rb-shell-clipboard.c:185
+#: ../shell/rb-shell-clipboard.c:183
 msgid "Pr_operties"
 msgstr "Pr_opriedades"
 
-#: ../shell/rb-shell-clipboard.c:186 ../shell/rb-shell-clipboard.c:189
+#: ../shell/rb-shell-clipboard.c:184 ../shell/rb-shell-clipboard.c:187
 msgid "Show information on the selected song"
 msgstr "Mostrar informações sobre a música selecionada"
 
-#: ../shell/rb-shell-player.c:309
+#: ../shell/rb-shell-player.c:308
 msgid "Pre_vious"
 msgstr "A_nterior"
 
-#: ../shell/rb-shell-player.c:310
+#: ../shell/rb-shell-player.c:309
 msgid "Start playing the previous song"
 msgstr "Iniciar a reprodução da música anterior"
 
-#: ../shell/rb-shell-player.c:312
+#: ../shell/rb-shell-player.c:311
 msgid "_Next"
 msgstr "Pró_xima"
 
-#: ../shell/rb-shell-player.c:313
+#: ../shell/rb-shell-player.c:312
 msgid "Start playing the next song"
 msgstr "Iniciar a reprodução da próxima música"
 
-#: ../shell/rb-shell-player.c:315
+#: ../shell/rb-shell-player.c:314
 msgid "_Increase Volume"
 msgstr "_Aumentar o volume"
 
-#: ../shell/rb-shell-player.c:316
+#: ../shell/rb-shell-player.c:315
 msgid "Increase playback volume"
 msgstr "Aumentar o volume de reprodução"
 
-#: ../shell/rb-shell-player.c:318
+#: ../shell/rb-shell-player.c:317
 msgid "_Decrease Volume"
 msgstr "_Diminuir o volume"
 
-#: ../shell/rb-shell-player.c:319
+#: ../shell/rb-shell-player.c:318
 msgid "Decrease playback volume"
 msgstr "Diminuir o volume de reprodução"
 
-#: ../shell/rb-shell-player.c:326
+#: ../shell/rb-shell-player.c:325
 msgid "_Play"
 msgstr "R_eproduzir"
 
-#: ../shell/rb-shell-player.c:327 ../shell/rb-shell-player.c:3732
+#: ../shell/rb-shell-player.c:326 ../shell/rb-shell-player.c:3725
 msgid "Start playback"
 msgstr "Iniciar a reprodução"
 
-#: ../shell/rb-shell-player.c:329
+#: ../shell/rb-shell-player.c:328
 msgid "Sh_uffle"
 msgstr "_Embaralhar"
 
-#: ../shell/rb-shell-player.c:330
+#: ../shell/rb-shell-player.c:329
 msgid "Play songs in a random order"
 msgstr "Reproduzir as músicas em ordem aleatória"
 
-#: ../shell/rb-shell-player.c:332
+#: ../shell/rb-shell-player.c:331
 msgid "_Repeat"
 msgstr "_Repetir"
 
-#: ../shell/rb-shell-player.c:333
+#: ../shell/rb-shell-player.c:332
 msgid "Play first song again after all songs are played"
 msgstr ""
 "Reproduzir a primeira música novamente depois de que todas as músicas forem "
 "reproduzidas"
 
-#: ../shell/rb-shell-player.c:335
+#: ../shell/rb-shell-player.c:334
 msgid "_Song Position Slider"
 msgstr "Deslizador de posição de _música"
 
-#: ../shell/rb-shell-player.c:336
+#: ../shell/rb-shell-player.c:335
 msgid "Change the visibility of the song position slider"
 msgstr "Alterar a visibilidade do deslizador de posição de música"
 
-#: ../shell/rb-shell-player.c:788
+#: ../shell/rb-shell-player.c:781
 msgid "Stream error"
 msgstr "Erro de fluxo"
 
-#: ../shell/rb-shell-player.c:789
+#: ../shell/rb-shell-player.c:782
 msgid "Unexpected end of stream!"
 msgstr "Fim de fluxo inesperado!"
 
-#: ../shell/rb-shell-player.c:921
+#: ../shell/rb-shell-player.c:914
 msgid "Linear"
 msgstr "Linear"
 
-#: ../shell/rb-shell-player.c:923
+#: ../shell/rb-shell-player.c:916
 msgid "Linear looping"
 msgstr "Repetição linear"
 
-#: ../shell/rb-shell-player.c:925
+#: ../shell/rb-shell-player.c:918
 msgid "Shuffle"
 msgstr "Embaralhar"
 
-#: ../shell/rb-shell-player.c:927
+#: ../shell/rb-shell-player.c:920
 msgid "Random with equal weights"
 msgstr "Aleatória com pesos iguais"
 
-#: ../shell/rb-shell-player.c:929
+#: ../shell/rb-shell-player.c:922
 msgid "Random by time since last play"
 msgstr "Aleatória pelo tempo desde a última reprodução"
 
-#: ../shell/rb-shell-player.c:931
+#: ../shell/rb-shell-player.c:924
 msgid "Random by rating"
 msgstr "Aleatória pela avaliação"
 
-#: ../shell/rb-shell-player.c:933
+#: ../shell/rb-shell-player.c:926
 msgid "Random by time since last play and rating"
 msgstr "Aleatória pelo tempo desde a última reprodução e pela avaliação"
 
-#: ../shell/rb-shell-player.c:935
+#: ../shell/rb-shell-player.c:928
 msgid "Linear, removing entries once played"
 msgstr "Linear, removendo as entradas já reproduzidas"
 
-#: ../shell/rb-shell-player.c:945
+#: ../shell/rb-shell-player.c:938
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Falha ao criar o reprodutor: %s"
 
-#: ../shell/rb-shell-player.c:1491
+#: ../shell/rb-shell-player.c:1484
 #, c-format
 msgid "Playlist was empty"
 msgstr "A lista de reprodução estava vazia"
 
-#: ../shell/rb-shell-player.c:1980
+#: ../shell/rb-shell-player.c:1973
 #, c-format
 msgid "Not currently playing"
 msgstr "Nenhuma reprodução no momento"
 
-#: ../shell/rb-shell-player.c:2038
+#: ../shell/rb-shell-player.c:2031
 #, c-format
 msgid "No previous song"
 msgstr "Nenhuma música anterior"
 
-#: ../shell/rb-shell-player.c:2138
+#: ../shell/rb-shell-player.c:2131
 #, c-format
 msgid "No next song"
 msgstr "Nenhuma música posterior"
 
-#: ../shell/rb-shell-player.c:2259 ../shell/rb-shell-player.c:3383
+#: ../shell/rb-shell-player.c:2252 ../shell/rb-shell-player.c:3376
 msgid "Couldn't start playback"
 msgstr "Não foi possível iniciar a reprodução"
 
-#: ../shell/rb-shell-player.c:3145
+#: ../shell/rb-shell-player.c:3138
 msgid "Couldn't stop playback"
 msgstr "Não foi possível parar a reprodução"
 
-#: ../shell/rb-shell-player.c:3255
+#: ../shell/rb-shell-player.c:3248
 #, c-format
 msgid "Playback position not available"
 msgstr "Posição de reprodução não disponível"
 
-#: ../shell/rb-shell-player.c:3287
+#: ../shell/rb-shell-player.c:3280
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Você não pode mover a posição de reprodução da música atual"
 
-#: ../shell/rb-shell-player.c:3730
+#: ../shell/rb-shell-player.c:3723
 msgid "Stop playback"
 msgstr "Parar a reprodução"
 
-#: ../shell/rb-shell-preferences.c:167 ../shell/rb-shell.c:2193
+#: ../shell/rb-shell-preferences.c:167 ../shell/rb-shell.c:2188
 msgid "Couldn't display help"
 msgstr "Não foi possível exibir a ajuda"
 
@@ -4118,175 +4126,175 @@ msgstr "Geral"
 msgid "Playback"
 msgstr "Reprodução"
 
-#: ../shell/rb-shell.c:389
+#: ../shell/rb-shell.c:387
 msgid "_Music"
 msgstr "_Música"
 
-#: ../shell/rb-shell.c:391
+#: ../shell/rb-shell.c:389
 msgid "_View"
 msgstr "_Ver"
 
-#: ../shell/rb-shell.c:392
+#: ../shell/rb-shell.c:390
 msgid "_Control"
 msgstr "_Controle"
 
-#: ../shell/rb-shell.c:393
+#: ../shell/rb-shell.c:391
 msgid "_Tools"
 msgstr "_Ferramentas"
 
-#: ../shell/rb-shell.c:394
+#: ../shell/rb-shell.c:392
 msgid "_Help"
 msgstr "Aj_uda"
 
-#: ../shell/rb-shell.c:396
+#: ../shell/rb-shell.c:394
 msgid "_Import Folder..."
 msgstr "_Importar pasta..."
 
-#: ../shell/rb-shell.c:397
+#: ../shell/rb-shell.c:395
 msgid "Choose folder to be added to the Library"
 msgstr "Escolha uma pasta para adicionar à biblioteca"
 
-#: ../shell/rb-shell.c:399
+#: ../shell/rb-shell.c:397
 msgid "Import _File..."
 msgstr "Importar _arquivo..."
 
-#: ../shell/rb-shell.c:400
+#: ../shell/rb-shell.c:398
 msgid "Choose file to be added to the Library"
 msgstr "Escolha um arquivo para adicionar à biblioteca"
 
-#: ../shell/rb-shell.c:402
+#: ../shell/rb-shell.c:400
 msgid "_About"
 msgstr "_Sobre"
 
-#: ../shell/rb-shell.c:403
+#: ../shell/rb-shell.c:401
 msgid "Show information about the music player"
 msgstr "Mostrar informações sobre o reprodutor de músicas"
 
-#: ../shell/rb-shell.c:405
+#: ../shell/rb-shell.c:403
 msgid "_Contents"
 msgstr "_Conteúdo"
 
-#: ../shell/rb-shell.c:406
+#: ../shell/rb-shell.c:404
 msgid "Display music player help"
 msgstr "Mostrar a ajuda do reprodutor de músicas"
 
-#: ../shell/rb-shell.c:408
+#: ../shell/rb-shell.c:406
 msgid "_Quit"
 msgstr "Sai_r"
 
-#: ../shell/rb-shell.c:409
+#: ../shell/rb-shell.c:407
 msgid "Quit the music player"
 msgstr "Sair do reprodutor de músicas"
 
-#: ../shell/rb-shell.c:411
+#: ../shell/rb-shell.c:409
 msgid "Prefere_nces"
 msgstr "Preferê_ncias"
 
-#: ../shell/rb-shell.c:412
+#: ../shell/rb-shell.c:410
 msgid "Edit music player preferences"
 msgstr "Editar as preferências do reprodutor de músicas"
 
-#: ../shell/rb-shell.c:414
+#: ../shell/rb-shell.c:412
 msgid "Plu_gins"
 msgstr "Plu_g-ins"
 
-#: ../shell/rb-shell.c:415
+#: ../shell/rb-shell.c:413
 msgid "Change and configure plugins"
 msgstr "Alterar e configurar os plug-ins"
 
-#: ../shell/rb-shell.c:417
+#: ../shell/rb-shell.c:415
 msgid "Show _All Tracks"
 msgstr "Mostrar _todas as faixas"
 
-#: ../shell/rb-shell.c:418
+#: ../shell/rb-shell.c:416
 msgid "Show all tracks in this music source"
 msgstr "Mostrar todos os itens desta fonte de músicas"
 
-#: ../shell/rb-shell.c:420
+#: ../shell/rb-shell.c:418
 msgid "_Jump to Playing Song"
 msgstr "_Ir para música em reprodução"
 
-#: ../shell/rb-shell.c:421
+#: ../shell/rb-shell.c:419
 msgid "Scroll the view to the currently playing song"
 msgstr "Rolar a visão para a música sendo reproduzida"
 
-#: ../shell/rb-shell.c:428
+#: ../shell/rb-shell.c:426
 msgid "Side _Pane"
 msgstr "_Painel lateral"
 
-#: ../shell/rb-shell.c:429
+#: ../shell/rb-shell.c:427
 msgid "Change the visibility of the side pane"
 msgstr "Alterar a visibilidade do painel lateral"
 
-#: ../shell/rb-shell.c:431
+#: ../shell/rb-shell.c:429
 msgid "T_oolbar"
 msgstr "_Barra de ferramentas"
 
-#: ../shell/rb-shell.c:432
+#: ../shell/rb-shell.c:430
 msgid "Change the visibility of the toolbar"
 msgstr "Altera a visibilidade da barra de ferramentas"
 
-#: ../shell/rb-shell.c:434
+#: ../shell/rb-shell.c:432
 msgid "_Small Display"
 msgstr "_Janela reduzida"
 
-#: ../shell/rb-shell.c:435
+#: ../shell/rb-shell.c:433
 msgid "Make the main window smaller"
 msgstr "Tornar menor a janela principal"
 
-#: ../shell/rb-shell.c:437
+#: ../shell/rb-shell.c:435
 msgid "Party _Mode"
 msgstr "_Modo de festa"
 
-#: ../shell/rb-shell.c:438
+#: ../shell/rb-shell.c:436
 msgid "Change the status of the party mode"
 msgstr "Alterar o status do modo de festa"
 
-#: ../shell/rb-shell.c:440
+#: ../shell/rb-shell.c:438
 msgid "Play _Queue as Side Pane"
 msgstr "_Fila de reprodução como um painel lateral"
 
-#: ../shell/rb-shell.c:441
+#: ../shell/rb-shell.c:439
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Altera se a fila é visível como uma fonte ou como uma barra lateral"
 
-#: ../shell/rb-shell.c:443
+#: ../shell/rb-shell.c:441
 msgid "S_tatusbar"
 msgstr "Barra de _status"
 
-#: ../shell/rb-shell.c:444
+#: ../shell/rb-shell.c:442
 msgid "Change the visibility of the statusbar"
 msgstr "Altera a visibilidade da barra de status"
 
-#: ../shell/rb-shell.c:985 ../shell/rb-shell.c:1208
+#: ../shell/rb-shell.c:983 ../shell/rb-shell.c:1206
 msgid "Unable to move user data files"
 msgstr "Não foi possível mover os arquivos de dados do usuário"
 
-#: ../shell/rb-shell.c:1294
+#: ../shell/rb-shell.c:1292
 msgid "Change the music volume"
 msgstr "Altera o volume da música"
 
-#: ../shell/rb-shell.c:1701
+#: ../shell/rb-shell.c:1696
 msgid "Error while saving song information"
 msgstr "Erro ao salvar as informações da música"
 
-#: ../shell/rb-shell.c:1806
+#: ../shell/rb-shell.c:1801
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "Transferindo faixa %d de %d (%.0f%%)"
 
-#: ../shell/rb-shell.c:1809
+#: ../shell/rb-shell.c:1804
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Transferindo faixa %d de %d"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2009
+#: ../shell/rb-shell.c:2004
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausado)"
 
-#: ../shell/rb-shell.c:2113
+#: ../shell/rb-shell.c:2108
 msgid "translator-credits"
 msgstr ""
 "Alexandre Folle de Menezes <afmenez@terra.com.br>\n"
@@ -4305,7 +4313,7 @@ msgstr ""
 "César Veiga <tombs@linuxmail.org>\n"
 "Leonardo Ferreira Fontenelle <leonardof@gnome.org>"
 
-#: ../shell/rb-shell.c:2116
+#: ../shell/rb-shell.c:2111
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -4317,7 +4325,7 @@ msgstr ""
 "conforme publicada pela Free Software Foundation; tanto a versão 2 da\n"
 "Licença como (a seu critério) qualquer versão mais nova.\n"
 
-#: ../shell/rb-shell.c:2120
+#: ../shell/rb-shell.c:2115
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -4330,7 +4338,7 @@ msgstr ""
 "Consulte a Licença Pública Geral GNU (GNU General Public License)\n"
 "para obter mais detalhes.\n"
 
-#: ../shell/rb-shell.c:2124
+#: ../shell/rb-shell.c:2119
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -4341,54 +4349,54 @@ msgstr ""
 "escreva para a Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA\n"
 
-#: ../shell/rb-shell.c:2131
+#: ../shell/rb-shell.c:2126
 msgid "Maintainers:"
 msgstr "Mantenedores:"
 
-#: ../shell/rb-shell.c:2134
+#: ../shell/rb-shell.c:2129
 msgid "Former Maintainers:"
 msgstr "Mantenedores anteriores:"
 
-#: ../shell/rb-shell.c:2137
+#: ../shell/rb-shell.c:2132
 msgid "Contributors:"
 msgstr "Contribuições:"
 
-#: ../shell/rb-shell.c:2139
+#: ../shell/rb-shell.c:2134
 msgid "Music management and playback software for GNOME."
 msgstr "Gerenciamento e reprodução de músicas para o GNOME."
 
-#: ../shell/rb-shell.c:2148
+#: ../shell/rb-shell.c:2143
 msgid "Rhythmbox Website"
 msgstr "Site do Rhythmbox"
 
-#: ../shell/rb-shell.c:2240
+#: ../shell/rb-shell.c:2235
 msgid "Configure Plugins"
 msgstr "Configurar os plug-ins"
 
-#: ../shell/rb-shell.c:2311
+#: ../shell/rb-shell.c:2306
 msgid "Import Folder into Library"
 msgstr "Importar a pasta para a biblioteca"
 
-#: ../shell/rb-shell.c:2333
+#: ../shell/rb-shell.c:2328
 msgid "Import File into Library"
 msgstr "Importar arquivo para a biblioteca"
 
-#: ../shell/rb-shell.c:2873
+#: ../shell/rb-shell.c:2868
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Nenhuma fonte registrada pode lidar com o URI %s"
 
-#: ../shell/rb-shell.c:3142 ../shell/rb-shell.c:3171
+#: ../shell/rb-shell.c:3138 ../shell/rb-shell.c:3167
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI de música desconhecida: %s"
 
-#: ../shell/rb-shell.c:3180
+#: ../shell/rb-shell.c:3176
 #, c-format
 msgid "Unknown property %s"
 msgstr "Propriedade %s desconhecida"
 
-#: ../shell/rb-shell.c:3190
+#: ../shell/rb-shell.c:3186
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Tipo de propriedade %s inválida para a propriedade %s"
@@ -4401,296 +4409,301 @@ msgstr "_Navegar"
 msgid "Change the visibility of the browser"
 msgstr "Alterar a visibilidade do navegador"
 
-#: ../shell/rb-source-header.c:314
+#: ../shell/rb-source-header.c:292
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "Filtrar exibição de músicas pelo gênero, artista, álbum ou título"
 
-#: ../shell/rb-statusbar.c:198
+#: ../shell/rb-statusbar.c:174
 msgid "Loading..."
 msgstr "Carregando..."
 
-#: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:173
-#: ../sources/rb-podcast-source.c:333
-#: ../sources/rb-static-playlist-source.c:110
+#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:171
+#: ../sources/rb-podcast-source.c:331
+#: ../sources/rb-static-playlist-source.c:109
 msgid "Search all fields"
 msgstr "Pesquisar em todos os campos"
 
-#: ../sources/rb-auto-playlist-source.c:106 ../sources/rb-browser-source.c:174
-#: ../sources/rb-static-playlist-source.c:111
+#: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:172
+#: ../sources/rb-static-playlist-source.c:110
 msgid "Artists"
 msgstr "Artistas"
 
-#: ../sources/rb-auto-playlist-source.c:106 ../sources/rb-browser-source.c:174
-#: ../sources/rb-static-playlist-source.c:111
+#: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:172
+#: ../sources/rb-static-playlist-source.c:110
 msgid "Search artists"
 msgstr "Pesquisar artistas"
 
-#: ../sources/rb-auto-playlist-source.c:107 ../sources/rb-browser-source.c:175
-#: ../sources/rb-static-playlist-source.c:112
+#: ../sources/rb-auto-playlist-source.c:106 ../sources/rb-browser-source.c:173
+#: ../sources/rb-static-playlist-source.c:111
 msgid "Albums"
 msgstr "Álbuns"
 
-#: ../sources/rb-auto-playlist-source.c:107 ../sources/rb-browser-source.c:175
-#: ../sources/rb-static-playlist-source.c:112
+#: ../sources/rb-auto-playlist-source.c:106 ../sources/rb-browser-source.c:173
+#: ../sources/rb-static-playlist-source.c:111
 msgid "Search albums"
 msgstr "Pesquisar álbuns"
 
-#: ../sources/rb-auto-playlist-source.c:108 ../sources/rb-browser-source.c:176
-#: ../sources/rb-static-playlist-source.c:113
+#: ../sources/rb-auto-playlist-source.c:107 ../sources/rb-browser-source.c:174
+#: ../sources/rb-static-playlist-source.c:112
 msgid "Titles"
 msgstr "Títulos"
 
-#: ../sources/rb-auto-playlist-source.c:108 ../sources/rb-browser-source.c:176
-#: ../sources/rb-static-playlist-source.c:113
+#: ../sources/rb-auto-playlist-source.c:107 ../sources/rb-browser-source.c:174
+#: ../sources/rb-static-playlist-source.c:112
 msgid "Search titles"
 msgstr "Pesquisar títulos"
 
-#: ../sources/rb-browser-source.c:160
+#: ../sources/rb-removable-media-source.c:740
+#: ../sources/rb-library-source.c:1211
+msgid "Error transferring track"
+msgstr "Erro ao transferir faixa"
+
+#: ../sources/rb-browser-source.c:158
 msgid "Browse This _Genre"
 msgstr "Navegar por esse _gênero"
 
-#: ../sources/rb-browser-source.c:161
+#: ../sources/rb-browser-source.c:159
 msgid "Set the browser to view only this genre"
 msgstr "Definir o navegador para exibir somente esse gênero"
 
-#: ../sources/rb-browser-source.c:163
+#: ../sources/rb-browser-source.c:161
 msgid "Browse This _Artist"
 msgstr "Navegar por esse _artista"
 
-#: ../sources/rb-browser-source.c:164
+#: ../sources/rb-browser-source.c:162
 msgid "Set the browser to view only this artist"
 msgstr "Definir o navegador para exibir somente esse artista"
 
-#: ../sources/rb-browser-source.c:166
+#: ../sources/rb-browser-source.c:164
 msgid "Browse This A_lbum"
 msgstr "Navegar por esse á_lbum"
 
-#: ../sources/rb-browser-source.c:167
+#: ../sources/rb-browser-source.c:165
 msgid "Set the browser to view only this album"
 msgstr "Definir o navegador para exibir somente esse álbum"
 
-#: ../sources/rb-import-errors-source.c:227
+#: ../sources/rb-import-errors-source.c:221
 msgid "Import Errors"
 msgstr "Erros de importação"
 
-#: ../sources/rb-import-errors-source.c:263
+#: ../sources/rb-import-errors-source.c:257
 #, c-format
 msgid "%d import errors"
 msgid_plural "%d import errors"
 msgstr[0] "%d erro de importação"
 msgstr[1] "%d erros de importação"
 
-#: ../sources/rb-library-source.c:137
+#: ../sources/rb-library-source.c:135
 msgid "Artist/Artist - Album"
 msgstr "Artista/Artista - Álbum"
 
-#: ../sources/rb-library-source.c:138
+#: ../sources/rb-library-source.c:136
 msgid "Artist/Album"
 msgstr "Artista/Álbum"
 
-#: ../sources/rb-library-source.c:139
+#: ../sources/rb-library-source.c:137
 msgid "Artist - Album"
 msgstr "Artista - Álbum"
 
-#: ../sources/rb-library-source.c:140 ../widgets/rb-entry-view.c:1496
-#: ../widgets/rb-library-browser.c:144
+#: ../sources/rb-library-source.c:138 ../widgets/rb-entry-view.c:1495
+#: ../widgets/rb-library-browser.c:143
 #: ../widgets/rb-query-creator-properties.c:77
 #: ../widgets/rb-query-creator-properties.c:103
 msgid "Album"
 msgstr "Álbum"
 
-#: ../sources/rb-library-source.c:146
+#: ../sources/rb-library-source.c:144
 msgid "Number - Title"
 msgstr "Número - Título"
 
-#: ../sources/rb-library-source.c:147
+#: ../sources/rb-library-source.c:145
 msgid "Artist - Title"
 msgstr "Artista - Título"
 
-#: ../sources/rb-library-source.c:148
+#: ../sources/rb-library-source.c:146
 msgid "Artist - Number - Title"
 msgstr "Artista - Número - Título"
 
-#: ../sources/rb-library-source.c:149
+#: ../sources/rb-library-source.c:147
 msgid "Artist (Album) - Number - Title"
 msgstr "Artista (Álbum) - Número - Título"
 
-#: ../sources/rb-library-source.c:151
+#: ../sources/rb-library-source.c:149
 msgid "Number. Artist - Title"
 msgstr "Número. Artista - Título"
 
-#: ../sources/rb-library-source.c:390
+#: ../sources/rb-library-source.c:384
 msgid "Music"
 msgstr "Música"
 
-#: ../sources/rb-library-source.c:424
+#: ../sources/rb-library-source.c:418
 msgid "Choose Library Location"
 msgstr "Escolher o local da biblioteca"
 
-#: ../sources/rb-library-source.c:599
+#: ../sources/rb-library-source.c:593
 msgid "Multiple locations set"
 msgstr "Múltiplos locais definidos"
 
-#: ../sources/rb-library-source.c:1008
+#: ../sources/rb-library-source.c:1002
 msgid "Example Path:"
 msgstr "Exemplo de caminho:"
 
-#: ../sources/rb-missing-files-source.c:288
+#: ../sources/rb-missing-files-source.c:281
 msgid "Missing Files"
 msgstr "Arquivos perdidos"
 
-#: ../sources/rb-missing-files-source.c:356
+#: ../sources/rb-missing-files-source.c:349
 #, c-format
 msgid "%d missing file"
 msgid_plural "%d missing files"
 msgstr[0] "%d arquivo perdido"
 msgstr[1] "%d arquivos perdidos"
 
-#: ../sources/rb-play-queue-source.c:115
+#: ../sources/rb-play-queue-source.c:114
 msgid "Clear _Queue"
 msgstr "Esvaziar a _fila"
 
-#: ../sources/rb-play-queue-source.c:116
+#: ../sources/rb-play-queue-source.c:115
 msgid "Remove all songs from the play queue"
 msgstr "Remover todas as músicas da fila de reprodução"
 
-#: ../sources/rb-play-queue-source.c:118
+#: ../sources/rb-play-queue-source.c:117
 msgid "Shuffle Queue"
 msgstr "Embaralhar fila"
 
-#: ../sources/rb-play-queue-source.c:119
+#: ../sources/rb-play-queue-source.c:118
 msgid "Shuffle the tracks in the play queue"
 msgstr "Embaralha as faixas na fila de reprodução"
 
 #. Translators: this is the toolbutton label for Clear Queue action
-#: ../sources/rb-play-queue-source.c:241
+#: ../sources/rb-play-queue-source.c:242
 msgid "Clear"
 msgstr "Limpar"
 
-#: ../sources/rb-play-queue-source.c:258 ../sources/rb-play-queue-source.c:318
-#: ../sources/rb-play-queue-source.c:460
+#: ../sources/rb-play-queue-source.c:259 ../sources/rb-play-queue-source.c:317
+#: ../sources/rb-play-queue-source.c:459
 msgid "Play Queue"
 msgstr "Fila de reprodução"
 
-#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:124
+#: ../sources/rb-play-queue-source.c:427 ../widgets/rb-header.c:124
 msgid "from"
 msgstr "de"
 
-#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:125
+#: ../sources/rb-play-queue-source.c:427 ../widgets/rb-header.c:125
 msgid "by"
 msgstr "por"
 
-#: ../sources/rb-podcast-source.c:307
+#: ../sources/rb-podcast-source.c:305
 msgid "_New Podcast Feed..."
 msgstr "_Nova fonte de podcast..."
 
-#: ../sources/rb-podcast-source.c:308
+#: ../sources/rb-podcast-source.c:306
 msgid "Subscribe to a new Podcast Feed"
 msgstr "Assina uma nova fonte (\"feed\") de podcast"
 
-#: ../sources/rb-podcast-source.c:311
+#: ../sources/rb-podcast-source.c:309
 msgid "Download _Episode"
 msgstr "Baixar _episódio"
 
-#: ../sources/rb-podcast-source.c:312
+#: ../sources/rb-podcast-source.c:310
 msgid "Download Podcast Episode"
 msgstr "Baixa episódio de podcast"
 
-#: ../sources/rb-podcast-source.c:314
+#: ../sources/rb-podcast-source.c:312
 msgid "_Cancel Download"
 msgstr "_Cancelar download"
 
-#: ../sources/rb-podcast-source.c:315
+#: ../sources/rb-podcast-source.c:313
 msgid "Cancel Episode Download"
 msgstr "Cancela o download do episódio"
 
-#: ../sources/rb-podcast-source.c:318
+#: ../sources/rb-podcast-source.c:316
 msgid "Episode Properties"
 msgstr "Propriedades do episódio"
 
-#: ../sources/rb-podcast-source.c:320
+#: ../sources/rb-podcast-source.c:318
 msgid "_Update Podcast Feed"
 msgstr "_Atualizar a fonte de podcast"
 
-#: ../sources/rb-podcast-source.c:321
+#: ../sources/rb-podcast-source.c:319
 msgid "Update Feed"
 msgstr "Atualiza a fonte (\"feed\")"
 
-#: ../sources/rb-podcast-source.c:323
+#: ../sources/rb-podcast-source.c:321
 msgid "_Delete Podcast Feed"
 msgstr "_Excluir a fonte de podcast"
 
-#: ../sources/rb-podcast-source.c:324
+#: ../sources/rb-podcast-source.c:322
 msgid "Delete Feed"
 msgstr "Exclui a fonte (\"feed\")"
 
-#: ../sources/rb-podcast-source.c:326
+#: ../sources/rb-podcast-source.c:324
 msgid "_Update All Feeds"
 msgstr "_Atualizar todas as fontes"
 
-#: ../sources/rb-podcast-source.c:327
+#: ../sources/rb-podcast-source.c:325
 msgid "Update all feeds"
 msgstr "Atualiza todas as fontes (\"feeds\")"
 
-#: ../sources/rb-podcast-source.c:334
+#: ../sources/rb-podcast-source.c:332
 msgid "Feeds"
 msgstr "Fontes"
 
-#: ../sources/rb-podcast-source.c:334
+#: ../sources/rb-podcast-source.c:332
 msgid "Search podcast feeds"
 msgstr "Pesquisar fontes (\"feeds\") de podcast"
 
-#: ../sources/rb-podcast-source.c:335
+#: ../sources/rb-podcast-source.c:333
 msgid "Episodes"
 msgstr "Episódios"
 
-#: ../sources/rb-podcast-source.c:335
+#: ../sources/rb-podcast-source.c:333
 msgid "Search podcast episodes"
 msgstr "Pesquisa episódios de podcast"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
-#: ../sources/rb-podcast-source.c:528
+#: ../sources/rb-podcast-source.c:521
 msgctxt "Podcast"
 msgid "New"
 msgstr "Novo"
 
 #. Translators: this is the toolbar button label
 #. for Update All Feeds action.
-#: ../sources/rb-podcast-source.c:534
+#: ../sources/rb-podcast-source.c:527
 msgid "Update"
 msgstr "Atualizar"
 
-#: ../sources/rb-podcast-source.c:578 ../sources/rb-podcast-source.c:589
+#: ../sources/rb-podcast-source.c:571 ../sources/rb-podcast-source.c:582
 msgid "Date"
 msgstr "Data"
 
-#: ../sources/rb-podcast-source.c:610 ../sources/rb-podcast-source.c:678
-#: ../sources/rb-podcast-source.c:732
+#: ../sources/rb-podcast-source.c:603 ../sources/rb-podcast-source.c:671
+#: ../sources/rb-podcast-source.c:725
 msgid "Feed"
 msgstr "Fonte"
 
-#: ../sources/rb-podcast-source.c:629 ../sources/rb-podcast-source.c:647
+#: ../sources/rb-podcast-source.c:622 ../sources/rb-podcast-source.c:640
 msgid "Status"
 msgstr "Status"
 
-#: ../sources/rb-podcast-source.c:630 ../sources/rb-podcast-source.c:1482
+#: ../sources/rb-podcast-source.c:623 ../sources/rb-podcast-source.c:1473
 msgid "Downloaded"
 msgstr "Baixado"
 
-#: ../sources/rb-podcast-source.c:631 ../sources/rb-podcast-source.c:1490
+#: ../sources/rb-podcast-source.c:624 ../sources/rb-podcast-source.c:1481
 msgid "Waiting"
 msgstr "Esperando"
 
-#: ../sources/rb-podcast-source.c:632 ../sources/rb-podcast-source.c:1486
+#: ../sources/rb-podcast-source.c:625 ../sources/rb-podcast-source.c:1477
 msgid "Failed"
 msgstr "Falhou"
 
-#: ../sources/rb-podcast-source.c:919
+#: ../sources/rb-podcast-source.c:910
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Excluir o episódio do podcast e o arquivo baixado?"
 
-#: ../sources/rb-podcast-source.c:922
+#: ../sources/rb-podcast-source.c:913
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -4700,19 +4713,19 @@ msgstr ""
 "perdidos. Note que você pode excluir o episódio mas manter o arquivo "
 "baixado, escolhendo excluir apenas o episódio."
 
-#: ../sources/rb-podcast-source.c:930
+#: ../sources/rb-podcast-source.c:921
 msgid "Delete _Episode Only"
 msgstr "Excluir apenas o _episódio"
 
-#: ../sources/rb-podcast-source.c:936
+#: ../sources/rb-podcast-source.c:927
 msgid "_Delete Episode And File"
 msgstr "E_xcluir o episódio e o arquivo"
 
-#: ../sources/rb-podcast-source.c:1375
+#: ../sources/rb-podcast-source.c:1366
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Excluir a fonte (\"feed\") de podcast e os arquivos baixados?"
 
-#: ../sources/rb-podcast-source.c:1378
+#: ../sources/rb-podcast-source.c:1369
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -4722,58 +4735,58 @@ msgstr ""
 "perdidos permanentemente. Por favor, note que você pode excluir a fonte mas "
 "manter os arquivos baixados, escolhendo excluir apenas a fonte."
 
-#: ../sources/rb-podcast-source.c:1386
+#: ../sources/rb-podcast-source.c:1377
 msgid "Delete _Feed Only"
 msgstr "Excluir somente a _fonte"
 
-#: ../sources/rb-podcast-source.c:1393
+#: ../sources/rb-podcast-source.c:1384
 msgid "_Delete Feed And Files"
 msgstr "_Excluir a fonte e os arquivos"
 
-#: ../sources/rb-podcast-source.c:1601
+#: ../sources/rb-podcast-source.c:1592
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
 msgstr[0] "%d fonte"
 msgstr[1] "Todas %d fontes"
 
-#: ../sources/rb-podcast-source.c:1738
+#: ../sources/rb-podcast-source.c:1729
 msgid "Downloading podcast"
 msgstr "Baixando podcast"
 
-#: ../sources/rb-podcast-source.c:1753
+#: ../sources/rb-podcast-source.c:1744
 msgid "Finished downloading podcast"
 msgstr "Download do podcast concluído"
 
-#: ../sources/rb-podcast-source.c:1768
+#: ../sources/rb-podcast-source.c:1759
 msgid "New updates available from"
 msgstr "Novas atualizações disponíveis de"
 
-#: ../sources/rb-podcast-source.c:1886
+#: ../sources/rb-podcast-source.c:1877
 msgid "Error in podcast"
 msgstr "Erro no podcast"
 
-#: ../sources/rb-podcast-source.c:1893
+#: ../sources/rb-podcast-source.c:1884
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Você gostaria de adicionar a fonte do podcast mesmo assim?"
 
-#: ../sources/rb-podcast-source.c:2020
+#: ../sources/rb-podcast-source.c:2011
 msgid "New Podcast Feed"
 msgstr "Nova fonte de podcast"
 
-#: ../sources/rb-podcast-source.c:2020
+#: ../sources/rb-podcast-source.c:2011
 msgid "URL of podcast feed:"
 msgstr "URL da fonte do podcast:"
 
-#: ../sources/rb-podcast-source.c:2036
+#: ../sources/rb-podcast-source.c:2027
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d episódio"
 msgstr[1] "%d episódios"
 
-#: ../sources/rb-podcast-source.c:2144
+#: ../sources/rb-podcast-source.c:2135
 msgid "Podcast Error"
 msgstr "Erro no podcast"
 
@@ -4796,15 +4809,15 @@ msgstr "Dispositivos"
 msgid "Shared"
 msgstr "Compartilhado"
 
-#: ../sources/rb-sourcelist.c:710
+#: ../sources/rb-sourcelist.c:704
 msgid "S_ource"
 msgstr "F_onte"
 
-#: ../sources/rb-streaming-source.c:217
+#: ../sources/rb-streaming-source.c:209
 msgid "Connecting"
 msgstr "Conectando"
 
-#: ../sources/rb-streaming-source.c:221
+#: ../sources/rb-streaming-source.c:213
 msgid "Buffering"
 msgstr "Armazenando"
 
@@ -4816,65 +4829,65 @@ msgstr "Objeto pixbuf"
 msgid "The pixbuf to render."
 msgstr "O pixbuf para renderizar."
 
-#: ../widgets/rb-entry-view.c:1064 ../widgets/rb-entry-view.c:1545
-#: ../widgets/rb-song-info.c:1046
+#: ../widgets/rb-entry-view.c:1063 ../widgets/rb-entry-view.c:1544
+#: ../widgets/rb-song-info.c:1041
 msgid "Lossless"
 msgstr "Sem perdas"
 
-#: ../widgets/rb-entry-view.c:1465
+#: ../widgets/rb-entry-view.c:1464
 msgid "Track"
 msgstr "Faixa"
 
-#: ../widgets/rb-entry-view.c:1516
+#: ../widgets/rb-entry-view.c:1515
 msgid "Time"
 msgstr "Duração"
 
-#: ../widgets/rb-entry-view.c:1528 ../widgets/rb-query-creator-properties.c:79
+#: ../widgets/rb-entry-view.c:1527 ../widgets/rb-query-creator-properties.c:79
 #: ../widgets/rb-query-creator-properties.c:108
 msgid "Year"
 msgstr "Ano"
 
-#: ../widgets/rb-entry-view.c:1540
+#: ../widgets/rb-entry-view.c:1539
 msgid "Quality"
 msgstr "Qualidade"
 
-#: ../widgets/rb-entry-view.c:1543
+#: ../widgets/rb-entry-view.c:1542
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1554 ../widgets/rb-query-creator-properties.c:80
+#: ../widgets/rb-entry-view.c:1553 ../widgets/rb-query-creator-properties.c:80
 #: ../widgets/rb-query-creator-properties.c:106
 msgid "Rating"
 msgstr "Avaliação"
 
-#: ../widgets/rb-entry-view.c:1576 ../widgets/rb-query-creator-properties.c:83
+#: ../widgets/rb-entry-view.c:1575 ../widgets/rb-query-creator-properties.c:83
 #: ../widgets/rb-query-creator-properties.c:107
 msgid "Play Count"
 msgstr "Reproduções"
 
-#: ../widgets/rb-entry-view.c:1588
+#: ../widgets/rb-entry-view.c:1587
 #: ../widgets/rb-query-creator-properties.c:111
 msgid "Last Played"
 msgstr "Última reprodução"
 
-#: ../widgets/rb-entry-view.c:1600
+#: ../widgets/rb-entry-view.c:1599
 #: ../widgets/rb-query-creator-properties.c:112
 msgid "Date Added"
 msgstr "Data de inclusão"
 
-#: ../widgets/rb-entry-view.c:1611
+#: ../widgets/rb-entry-view.c:1610
 msgid "Last Seen"
 msgstr "Visto por último"
 
-#: ../widgets/rb-entry-view.c:1622
+#: ../widgets/rb-entry-view.c:1621
 msgid "Location"
 msgstr "Localização"
 
-#: ../widgets/rb-entry-view.c:1881
+#: ../widgets/rb-entry-view.c:1877
 msgid "Now Playing"
 msgstr "Reproduzindo"
 
-#: ../widgets/rb-entry-view.c:1944
+#: ../widgets/rb-entry-view.c:1938
 msgid "Playback Error"
 msgstr "Erro de reprodução"
 
@@ -4882,7 +4895,7 @@ msgstr "Erro de reprodução"
 msgid "Not Playing"
 msgstr "Nenhuma reprodução"
 
-#: ../widgets/rb-property-view.c:630
+#: ../widgets/rb-property-view.c:629
 #, c-format
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
@@ -4890,7 +4903,7 @@ msgstr[0] "%d artista (%d)"
 msgstr[1] "Todos %d artistas (%d)"
 
 # c-format
-#: ../widgets/rb-property-view.c:633
+#: ../widgets/rb-property-view.c:632
 #, c-format
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
@@ -4898,21 +4911,21 @@ msgstr[0] "%d álbum (%d)"
 msgstr[1] "Todos %d álbuns (%d)"
 
 # c-format
-#: ../widgets/rb-property-view.c:636
+#: ../widgets/rb-property-view.c:635
 #, c-format
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
 msgstr[0] "%d gênero (%d)"
 msgstr[1] "Todos %d gêneros (%d)"
 
-#: ../widgets/rb-property-view.c:639
+#: ../widgets/rb-property-view.c:638
 #, c-format
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
 msgstr[0] "%d (%d)"
 msgstr[1] "Todos %d (%d)"
 
-#: ../widgets/rb-property-view.c:645
+#: ../widgets/rb-property-view.c:644
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
@@ -5012,17 +5025,18 @@ msgstr "pelo menos"
 msgid "at most"
 msgstr "no máximo"
 
-#: ../widgets/rb-query-creator-properties.c:167
+#. Translators: this matches songs within 1-Jan-YEAR to 31-Dec-YEAR
+#: ../widgets/rb-query-creator-properties.c:168
 msgid "in"
 msgstr "em"
 
-#. matches if within 1-JAN-YEAR to 31-DEC-YEAR
-#: ../widgets/rb-query-creator-properties.c:169
+#. Translators: this matches songs after 31-Dec-YEAR
+#: ../widgets/rb-query-creator-properties.c:170
 msgid "after"
 msgstr "após"
 
-#. matches if >= 31-DEC-YEAR
-#: ../widgets/rb-query-creator-properties.c:171
+#. Translators: this matches songs before 1-Jan-YEAR
+#: ../widgets/rb-query-creator-properties.c:172
 msgid "before"
 msgstr "antes"
 
@@ -5062,11 +5076,11 @@ msgstr "dias"
 msgid "weeks"
 msgstr "semanas"
 
-#: ../widgets/rb-query-creator.c:214
+#: ../widgets/rb-query-creator.c:212
 msgid "Create Automatic Playlist"
 msgstr "Criar uma lista de reprodução automática"
 
-#: ../widgets/rb-query-creator.c:216
+#: ../widgets/rb-query-creator.c:214
 msgid "Edit Automatic Playlist"
 msgstr "Editar uma lista de reprodução automática"
 
@@ -5098,15 +5112,15 @@ msgstr "Propriedades da música"
 msgid "Multiple Song Properties"
 msgstr "Propriedades de múltiplas músicas"
 
-#: ../widgets/rb-song-info.c:1108
+#: ../widgets/rb-song-info.c:1103
 msgid "Unknown file name"
 msgstr "Nome de arquivo desconhecido"
 
-#: ../widgets/rb-song-info.c:1130
+#: ../widgets/rb-song-info.c:1125
 msgid "On the desktop"
 msgstr "Na área de trabalho"
 
-#: ../widgets/rb-song-info.c:1139
+#: ../widgets/rb-song-info.c:1134
 msgid "Unknown location"
 msgstr "Localização desconhecida"
 
@@ -5353,9 +5367,6 @@ msgstr "Localização desconhecida"
 
 #~ msgid "radio|New"
 #~ msgstr "Nova"
-
-#~ msgid "Rhythmbox"
-#~ msgstr "Rhythmbox"
 
 #~ msgid "podcast|New"
 #~ msgstr "Novo"
