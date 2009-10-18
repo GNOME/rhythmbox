@@ -55,9 +55,7 @@
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/mtp/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/mtp/show_browser"
 
-static GObject *rb_mtp_source_constructor (GType type,
-					   guint n_construct_properties,
-					   GObjectConstructParam *construct_properties);
+static void rb_mtp_source_constructed (GObject *object);
 static void rb_mtp_source_dispose (GObject *object);
 static void rb_mtp_source_finalize (GObject *object);
 
@@ -149,7 +147,7 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
-	object_class->constructor = rb_mtp_source_constructor;
+	object_class->constructed = rb_mtp_source_constructed;
 	object_class->dispose = rb_mtp_source_dispose;
 	object_class->finalize = rb_mtp_source_finalize;
 	object_class->set_property = rb_mtp_source_set_property;
@@ -223,9 +221,8 @@ rb_mtp_source_init (RBMtpSource *source)
 	priv->track_transfer_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 }
 
-static GObject *
-rb_mtp_source_constructor (GType type, guint n_construct_properties,
-			   GObjectConstructParam *construct_properties)
+static void
+rb_mtp_source_constructed (GObject *object)
 {
 	RBMtpSource *source;
 	RBMtpSourcePrivate *priv;
@@ -237,9 +234,8 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 	GdkPixbuf *pixbuf;
 	gint size;
 
-	source = RB_MTP_SOURCE (G_OBJECT_CLASS (rb_mtp_source_parent_class)->
-				constructor (type, n_construct_properties, construct_properties));
-
+	RB_CHAIN_GOBJECT_METHOD (rb_mtp_source_parent_class, constructed, object);
+	source = RB_MTP_SOURCE (object);
 	priv = MTP_SOURCE_GET_PRIVATE (source);
 
 	/* start the device thread */
@@ -288,8 +284,6 @@ rb_mtp_source_constructor (GType type, guint n_construct_properties,
 					 G_CALLBACK (artwork_notify_cb), source, 0);
 		g_object_unref (db);
 	}
-
-	return G_OBJECT (source);
 }
 
 static void

@@ -68,9 +68,7 @@
 
 static void rb_browser_source_class_init (RBBrowserSourceClass *klass);
 static void rb_browser_source_init (RBBrowserSource *source);
-static GObject *rb_browser_source_constructor (GType type,
-					       guint n_construct_properties,
-					       GObjectConstructParam *construct_properties);
+static void rb_browser_source_constructed (GObject *object);
 static void rb_browser_source_dispose (GObject *object);
 static void rb_browser_source_finalize (GObject *object);
 static void rb_browser_source_set_property (GObject *object,
@@ -200,7 +198,7 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 
 	object_class->dispose = rb_browser_source_dispose;
 	object_class->finalize = rb_browser_source_finalize;
-	object_class->constructor = rb_browser_source_constructor;
+	object_class->constructed = rb_browser_source_constructed;
 
 	object_class->set_property = rb_browser_source_set_property;
 	object_class->get_property = rb_browser_source_get_property;
@@ -341,10 +339,8 @@ default_show_entry_popup (RBBrowserSource *source)
 	_rb_source_show_popup (RB_SOURCE (source), "/BrowserSourceViewPopup");
 }
 
-static GObject *
-rb_browser_source_constructor (GType type,
-			       guint n_construct_properties,
-			       GObjectConstructParam *construct_properties)
+static void
+rb_browser_source_constructed (GObject *object)
 {
 	RBBrowserSource *source;
 	RBBrowserSourceClass *klass;
@@ -354,8 +350,9 @@ rb_browser_source_constructor (GType type,
 	char *paned_key;
 	RhythmDBEntryType entry_type;
 
-	source = RB_BROWSER_SOURCE (G_OBJECT_CLASS (rb_browser_source_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_browser_source_parent_class, constructed, object);
+
+	source = RB_BROWSER_SOURCE (object);
 
 	g_object_get (source,
 		      "shell", &shell,
@@ -487,8 +484,6 @@ rb_browser_source_constructor (GType type,
 	rb_browser_source_populate (source);
 
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
-
-	return G_OBJECT (source);
 }
 
 static void

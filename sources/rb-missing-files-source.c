@@ -53,8 +53,7 @@
 
 static void rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass);
 static void rb_missing_files_source_init (RBMissingFilesSource *source);
-static GObject *rb_missing_files_source_constructor (GType type, guint n_construct_properties,
-						     GObjectConstructParam *construct_properties);
+static void rb_missing_files_source_constructed (GObject *object);
 static void rb_missing_files_source_dispose (GObject *object);
 static void rb_missing_files_source_set_property (GObject *object,
 						  guint prop_id,
@@ -93,7 +92,7 @@ rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	object_class->dispose = rb_missing_files_source_dispose;
-	object_class->constructor = rb_missing_files_source_constructor;
+	object_class->constructed = rb_missing_files_source_constructed;
 
 	object_class->set_property = rb_missing_files_source_set_property;
 	object_class->get_property = rb_missing_files_source_get_property;
@@ -138,22 +137,18 @@ rb_missing_files_source_init (RBMissingFilesSource *source)
 	}
 }
 
-static GObject *
-rb_missing_files_source_constructor (GType type, guint n_construct_properties,
-				     GObjectConstructParam *construct_properties)
+static void
+rb_missing_files_source_constructed (GObject *object)
 {
 	GObject *shell_player;
 	RBMissingFilesSource *source;
-	RBMissingFilesSourceClass *klass;
 	RBShell *shell;
 	GPtrArray *query;
 	RhythmDBQueryModel *model;
 	RhythmDBEntryType entry_type;
 
-	klass = RB_MISSING_FILES_SOURCE_CLASS (g_type_class_peek (RB_TYPE_MISSING_FILES_SOURCE));
-
-	source = RB_MISSING_FILES_SOURCE (G_OBJECT_CLASS (rb_missing_files_source_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_missing_files_source_parent_class, constructed, object);
+	source = RB_MISSING_FILES_SOURCE (object);
 
 	g_object_get (source,
 		      "shell", &shell,
@@ -207,8 +202,6 @@ rb_missing_files_source_constructor (GType type, guint n_construct_properties,
 
 	g_object_set (source, "query-model", model, NULL);
 	g_object_unref (model);
-
-	return G_OBJECT (source);
 }
 
 static void

@@ -72,8 +72,7 @@ extern char *mkdtemp (char *template);
 
 static void rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClass *klass);
 static void rb_playlist_source_recorder_init       (RBPlaylistSourceRecorder *source);
-static GObject *rb_playlist_source_recorder_constructor(GType type, guint n_construct_properties,
-						    GObjectConstructParam *construct_properties);
+static void rb_playlist_source_recorder_constructed (GObject *object);
 static void rb_playlist_source_recorder_dispose    (GObject *object);
 static void rb_playlist_source_recorder_finalize   (GObject *object);
 
@@ -180,7 +179,7 @@ rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClass *klass)
 
         widget_class->style_set = rb_playlist_source_recorder_style_set;
 
-	object_class->constructor = rb_playlist_source_recorder_constructor;
+	object_class->constructed = rb_playlist_source_recorder_constructed;
         object_class->dispose = rb_playlist_source_recorder_dispose;
         object_class->finalize = rb_playlist_source_recorder_finalize;
 	object_class->set_property = rb_playlist_source_recorder_set_property;
@@ -1093,10 +1092,8 @@ rb_playlist_source_recorder_get_property (GObject *object,
 	}
 }
 
-static GObject *
-rb_playlist_source_recorder_constructor (GType type,
-					 guint n_construct_properties,
-					 GObjectConstructParam *construct_properties)
+static void
+rb_playlist_source_recorder_constructed (GObject *object)
 {
 	RBPlaylistSourceRecorder *source;
 	char           *builder_file;
@@ -1109,8 +1106,8 @@ rb_playlist_source_recorder_constructor (GType type,
         PangoAttribute *attr;
 	char           *value;
 
-	source = RB_PLAYLIST_SOURCE_RECORDER (G_OBJECT_CLASS (rb_playlist_source_recorder_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
+        RB_CHAIN_GOBJECT_METHOD (rb_playlist_source_recorder_parent_class, constructed, object);
+	source = RB_PLAYLIST_SOURCE_RECORDER (object);
 
         g_signal_connect (GTK_DIALOG (source),
                           "delete_event",
@@ -1258,7 +1255,6 @@ rb_playlist_source_recorder_constructor (GType type,
 
         g_signal_connect (GTK_DIALOG (source), "response",
                           G_CALLBACK (response_cb), NULL);
-	return G_OBJECT (source);
 }
 
 static RBRecorderSong *

@@ -40,6 +40,10 @@ G_BEGIN_DECLS
 #define FFWD_OFFSET 20
 #define RWD_OFFSET 10
 
+#define RB_CHAIN_GOBJECT_METHOD(klass, method, instance) \
+	if (G_OBJECT_CLASS (klass)->method != NULL) \
+		G_OBJECT_CLASS (klass)->method (instance);
+
 gboolean rb_true_function (gpointer dummy);
 gboolean rb_false_function (gpointer dummy);
 gpointer rb_null_function (gpointer dummy);

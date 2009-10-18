@@ -106,8 +106,7 @@ struct RBEntryViewColumnSortData
 
 static void rb_entry_view_class_init (RBEntryViewClass *klass);
 static void rb_entry_view_init (RBEntryView *view);
-static GObject *rb_entry_view_constructor (GType type, guint n_construct_properties,
-					   GObjectConstructParam *construct_properties);
+static void rb_entry_view_constructed (GObject *object);
 static void rb_entry_view_dispose (GObject *object);
 static void rb_entry_view_finalize (GObject *object);
 static void rb_entry_view_sort_data_finalize (gpointer column,
@@ -277,7 +276,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 
 	object_class->dispose = rb_entry_view_dispose;
 	object_class->finalize = rb_entry_view_finalize;
-	object_class->constructor = rb_entry_view_constructor;
+	object_class->constructed = rb_entry_view_constructed;
 
 	object_class->set_property = rb_entry_view_set_property;
 	object_class->get_property = rb_entry_view_get_property;
@@ -1784,17 +1783,14 @@ rb_entry_view_set_columns_clickable (RBEntryView *view,
 	g_list_free (columns);
 }
 
-static GObject *
-rb_entry_view_constructor (GType type,
-			   guint n_construct_properties,
-			   GObjectConstructParam *construct_properties)
+static void
+rb_entry_view_constructed (GObject *object)
 {
 	RBEntryView *view;
-	RBEntryViewClass *klass;
-	klass = RB_ENTRY_VIEW_CLASS (g_type_class_peek (RB_TYPE_ENTRY_VIEW));
 
-	view = RB_ENTRY_VIEW (G_OBJECT_CLASS (rb_entry_view_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_entry_view_parent_class, constructed, object);
+
+	view = RB_ENTRY_VIEW (object);
 
 	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new ());
 	gtk_tree_view_set_fixed_height_mode (GTK_TREE_VIEW (view->priv->treeview), TRUE);
@@ -1892,8 +1888,6 @@ rb_entry_view_constructor (GType type,
 		rb_entry_view_set_model (view, RHYTHMDB_QUERY_MODEL (query_model));
 		g_object_unref (query_model);
 	}
-
-	return G_OBJECT (view);
 }
 
 static void

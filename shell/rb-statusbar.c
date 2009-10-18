@@ -61,9 +61,6 @@
 
 #define EPSILON		(0.00001)
 
-static GObject* rb_statusbar_construct (GType type,
-					guint n_construct_properties,
-					GObjectConstructParam *construct_properties);
 static void rb_statusbar_class_init (RBStatusbarClass *klass);
 static void rb_statusbar_init (RBStatusbar *statusbar);
 static void rb_statusbar_dispose (GObject *object);
@@ -115,7 +112,6 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
 {
         GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-        object_class->constructor = rb_statusbar_construct;
         object_class->dispose = rb_statusbar_dispose;
         object_class->finalize = rb_statusbar_finalize;
 
@@ -160,26 +156,6 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBStatusbarPrivate));
-}
-
-static GObject*
-rb_statusbar_construct (GType                  type,
-                        guint                  n_construct_properties,
-                        GObjectConstructParam *construct_properties)
-{
-        RBStatusbarClass *klass;
-        GObject *object;
-        RBStatusbar *statusbar;
-
-        klass = RB_STATUSBAR_CLASS (g_type_class_peek (RB_TYPE_STATUSBAR));
-        object = G_OBJECT_CLASS (rb_statusbar_parent_class)->constructor
-					(type,
-					 n_construct_properties,
-					 construct_properties);
-
-        statusbar = RB_STATUSBAR (object);
-
-        return object;
 }
 
 static void

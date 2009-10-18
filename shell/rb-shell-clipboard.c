@@ -61,8 +61,6 @@
 
 static void rb_shell_clipboard_class_init (RBShellClipboardClass *klass);
 static void rb_shell_clipboard_init (RBShellClipboard *shell_clipboard);
-static GObject *rb_shell_clipboard_constructor (GType type, guint n_construct_properties,
-						GObjectConstructParam *construct_properties);
 static void rb_shell_clipboard_dispose (GObject *object);
 static void rb_shell_clipboard_finalize (GObject *object);
 static void rb_shell_clipboard_set_property (GObject *object,
@@ -207,7 +205,6 @@ rb_shell_clipboard_class_init (RBShellClipboardClass *klass)
 
 	object_class->dispose = rb_shell_clipboard_dispose;
 	object_class->finalize = rb_shell_clipboard_finalize;
-	object_class->constructor = rb_shell_clipboard_constructor;
 
 	object_class->set_property = rb_shell_clipboard_set_property;
 	object_class->get_property = rb_shell_clipboard_get_property;
@@ -335,29 +332,6 @@ rb_shell_clipboard_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_shell_clipboard_parent_class)->finalize (object);
 }
 
-static GObject *
-rb_shell_clipboard_constructor (GType type, guint n_construct_properties,
-				GObjectConstructParam *construct_properties)
-{
-	RBShellClipboard *clip;
-	RBShellClipboardClass *klass;
-	GObjectClass *parent_class;
-
-	klass = RB_SHELL_CLIPBOARD_CLASS (g_type_class_peek (RB_TYPE_SHELL_CLIPBOARD));
-
-	parent_class = G_OBJECT_CLASS (rb_shell_clipboard_parent_class);
-	clip = RB_SHELL_CLIPBOARD (parent_class->constructor (type,
-							      n_construct_properties,
-							      construct_properties));
-
-	g_signal_connect_object (G_OBJECT (clip->priv->db),
-				 "entry_deleted",
-				 G_CALLBACK (rb_shell_clipboard_entry_deleted_cb),
-				 clip, 0);
-
-	return G_OBJECT (clip);
-}
-
 static void
 rb_shell_clipboard_set_source_internal (RBShellClipboard *clipboard,
 					RBSource *source)
@@ -417,6 +391,10 @@ rb_shell_clipboard_set_property (GObject *object,
 		break;
 	case PROP_DB:
 		clipboard->priv->db = g_value_get_object (value);
+		g_signal_connect_object (clipboard->priv->db,
+					 "entry_deleted",
+					 G_CALLBACK (rb_shell_clipboard_entry_deleted_cb),
+					 clipboard, 0);
 		break;
 	case PROP_UI_MANAGER:
 		clipboard->priv->ui_mgr = g_value_get_object (value);

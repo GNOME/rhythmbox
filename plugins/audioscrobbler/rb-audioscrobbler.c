@@ -214,37 +214,22 @@ enum
 G_DEFINE_TYPE (RBAudioscrobbler, rb_audioscrobbler, G_TYPE_OBJECT)
 
 
-static GObject *
-rb_audioscrobbler_constructor (GType type,
-			       guint n_construct_properties,
-			       GObjectConstructParam *construct_properties)
+static void
+rb_audioscrobbler_constructed (GObject *object)
 {
-	GObject *obj;
 	RBAudioscrobbler *audioscrobbler;
 	RhythmDB *db;
 
-	/* Invoke parent constructor. */
-	RBAudioscrobblerClass *klass;
-	GObjectClass *parent_class;  
-	klass = RB_AUDIOSCROBBLER_CLASS (g_type_class_peek (RB_TYPE_AUDIOSCROBBLER));
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	obj = parent_class->constructor (type,
-					 n_construct_properties,
-					 construct_properties);
-
-	audioscrobbler = RB_AUDIOSCROBBLER (obj);
-	g_object_get (G_OBJECT (audioscrobbler->priv->shell_player),
-		      "db", &db, 
-		      NULL);
+	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_parent_class, constructed, object);
+	audioscrobbler = RB_AUDIOSCROBBLER (object);
+	g_object_get (audioscrobbler->priv->shell_player, "db", &db, NULL);
 
 	audioscrobbler->priv->offline_play_notify_id = 
 		g_signal_connect_object (db, 
 					 "entry-extra-metadata-notify::rb:offlinePlay",
 					 (GCallback)rb_audioscrobbler_offline_play_notify_cb, 
 					 audioscrobbler, 0);
-	g_object_unref (G_OBJECT (db));
-
-	return obj;
+	g_object_unref (db);
 }
 
 /* Class-related functions: */
@@ -253,8 +238,7 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-
-	object_class->constructor = rb_audioscrobbler_constructor;
+	object_class->constructed = rb_audioscrobbler_constructed;
 	object_class->dispose = rb_audioscrobbler_dispose;
 	object_class->finalize = rb_audioscrobbler_finalize;
 

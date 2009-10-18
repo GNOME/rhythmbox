@@ -53,8 +53,7 @@
  */
 
 
-static GObject *rb_play_queue_source_constructor (GType type, guint n_construct_properties,
-						  GObjectConstructParam *construct_properties);
+static void rb_play_queue_source_constructed (GObject *object);
 static void rb_play_queue_source_get_property (GObject *object,
 					       guint prop_id,
 					       GValue *value,
@@ -164,7 +163,7 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
-	object_class->constructor = rb_play_queue_source_constructor;
+	object_class->constructed = rb_play_queue_source_constructed;
 	object_class->get_property = rb_play_queue_source_get_property;
 	object_class->finalize = rb_play_queue_source_finalize;
 	object_class->dispose  = rb_play_queue_source_dispose;
@@ -208,21 +207,23 @@ rb_play_queue_source_init (RBPlayQueueSource *source)
 {
 }
 
-static GObject *
-rb_play_queue_source_constructor (GType type,
-				  guint n_construct_properties,
-				  GObjectConstructParam *construct_properties)
+static void
+rb_play_queue_source_constructed (GObject *object)
 {
-	GObjectClass *parent_class = G_OBJECT_CLASS (rb_play_queue_source_parent_class);
-	RBPlayQueueSource *source = RB_PLAY_QUEUE_SOURCE (
-			parent_class->constructor (type, n_construct_properties, construct_properties));
-	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
+	RBPlayQueueSource *source;
+	RBPlayQueueSourcePrivate *priv;
 	GObject *shell_player;
 	RBShell *shell;
-	RhythmDB *db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
+	RhythmDB *db;
 	GtkCellRenderer *renderer;
 	RhythmDBQueryModel *model;
 	GtkAction *action;
+
+	RB_CHAIN_GOBJECT_METHOD (rb_play_queue_source_parent_class, constructed, object);
+
+	source = RB_PLAY_QUEUE_SOURCE (object);
+	priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
+	db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
 
 	g_object_get (source, "shell", &shell, NULL);
 	shell_player = rb_shell_get_player (shell);
@@ -277,8 +278,6 @@ rb_play_queue_source_constructor (GType type,
 				 source, 0);
 
 	rb_play_queue_source_update_count (source, GTK_TREE_MODEL (model), 0);
-
-	return G_OBJECT (source);
 }
 
 static void

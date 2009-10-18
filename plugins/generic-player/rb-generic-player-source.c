@@ -54,9 +54,7 @@
 #include "rhythmdb-import-job.h"
 #include "rb-import-errors-source.h"
 
-static GObject *impl_constructor (GType type,
-				  guint n_construct_properties,
-				  GObjectConstructParam *construct_properties);
+static void impl_constructed (GObject *object);
 static void impl_dispose (GObject *object);
 static void impl_finalize (GObject *object);
 static void impl_set_property (GObject *object,
@@ -134,7 +132,7 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 
 	object_class->set_property = impl_set_property;
 	object_class->get_property = impl_get_property;
-	object_class->constructor = impl_constructor;
+	object_class->constructed = impl_constructed;
 	object_class->dispose = impl_dispose;
 	object_class->finalize = impl_finalize;
 
@@ -189,10 +187,8 @@ rb_generic_player_source_init (RBGenericPlayerSource *source)
 
 }
 
-static GObject *
-impl_constructor (GType type,
-		  guint n_construct_properties,
-		  GObjectConstructParam *construct_properties)
+static void
+impl_constructed (GObject *object)
 {
 	RBGenericPlayerSource *source;
 	RBGenericPlayerSourcePrivate *priv;
@@ -204,8 +200,8 @@ impl_constructor (GType type,
 	GFileInfo *info;
 	GError *error = NULL;
 
-	source = RB_GENERIC_PLAYER_SOURCE (G_OBJECT_CLASS (rb_generic_player_source_parent_class)->
-					   constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_generic_player_source_parent_class, constructed, object);
+	source = RB_GENERIC_PLAYER_SOURCE (object);
 
 	priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 
@@ -247,8 +243,6 @@ impl_constructor (GType type,
 	g_strfreev (playlist_formats);
 
 	load_songs (source);
-
-	return G_OBJECT (source);
 }
 
 static void

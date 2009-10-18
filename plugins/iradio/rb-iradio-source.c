@@ -65,8 +65,7 @@
 
 static void rb_iradio_source_class_init (RBIRadioSourceClass *klass);
 static void rb_iradio_source_init (RBIRadioSource *source);
-static GObject *rb_iradio_source_constructor (GType type, guint n_construct_properties,
-					      GObjectConstructParam *construct_properties);
+static void rb_iradio_source_constructed (GObject *object);
 static void rb_iradio_source_dispose (GObject *object);
 static void rb_iradio_source_set_property (GObject *object,
 			                  guint prop_id,
@@ -189,7 +188,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	object_class->dispose = rb_iradio_source_dispose;
-	object_class->constructor = rb_iradio_source_constructor;
+	object_class->constructed = rb_iradio_source_constructed;
 
 	object_class->set_property = rb_iradio_source_set_property;
 	object_class->get_property = rb_iradio_source_get_property;
@@ -280,22 +279,20 @@ rb_iradio_source_dispose (GObject *object)
 	G_OBJECT_CLASS (rb_iradio_source_parent_class)->dispose (object);
 }
 
-static GObject *
-rb_iradio_source_constructor (GType type,
-			      guint n_construct_properties,
-			      GObjectConstructParam *construct_properties)
+static void
+rb_iradio_source_constructed (GObject *object)
 {
 	RBIRadioSource *source;
 	RBShell *shell;
 	GtkAction *action;
 
-	source = RB_IRADIO_SOURCE (G_OBJECT_CLASS (rb_iradio_source_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_iradio_source_parent_class, constructed, object);
+	source = RB_IRADIO_SOURCE (object);
 
 	source->priv->paned = gtk_hpaned_new ();
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell),
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell,
 		      "db", &source->priv->db,
 		      "shell-player", &source->priv->player,
 		      NULL);
@@ -395,8 +392,6 @@ rb_iradio_source_constructor (GType type,
 	source->priv->default_search = rb_iradio_source_search_new ();
 
 	rb_iradio_source_do_query (source);
-
-	return G_OBJECT (source);
 }
 
 static void

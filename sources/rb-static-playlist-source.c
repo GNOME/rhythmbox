@@ -44,8 +44,7 @@
 #include "rb-playlist-xml.h"
 #include "rb-source-search-basic.h"
 
-static GObject *rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
-						       GObjectConstructParam *construct_properties);
+static void rb_static_playlist_source_constructed (GObject *object);
 static void rb_static_playlist_source_dispose (GObject *object);
 static void rb_static_playlist_source_finalize (GObject *object);
 static void rb_static_playlist_source_set_property (GObject *object,
@@ -149,7 +148,7 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
-	object_class->constructor = rb_static_playlist_source_constructor;
+	object_class->constructed = rb_static_playlist_source_constructed;
 	object_class->dispose = rb_static_playlist_source_dispose;
 	object_class->finalize = rb_static_playlist_source_finalize;
 	object_class->set_property = rb_static_playlist_source_set_property;
@@ -256,19 +255,21 @@ rb_static_playlist_source_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_static_playlist_source_parent_class)->finalize (object);
 }
 
-static GObject *
-rb_static_playlist_source_constructor (GType type,
-				       guint n_construct_properties,
-				       GObjectConstructParam *construct_properties)
+static void
+rb_static_playlist_source_constructed (GObject *object)
 {
-	GObjectClass *parent_class = G_OBJECT_CLASS (rb_static_playlist_source_parent_class);
-	RBStaticPlaylistSource *source = RB_STATIC_PLAYLIST_SOURCE (
-			parent_class->constructor (type, n_construct_properties, construct_properties));
-	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
-	RBPlaylistSource *psource = RB_PLAYLIST_SOURCE (source);
+	RBStaticPlaylistSource *source;
+	RBStaticPlaylistSourcePrivate *priv;
+	RBPlaylistSource *psource;
 	RBEntryView *songs;
 	RBShell *shell;
 	RhythmDBEntryType entry_type;
+
+	RB_CHAIN_GOBJECT_METHOD (rb_static_playlist_source_parent_class, constructed, object);
+
+	source = RB_STATIC_PLAYLIST_SOURCE (object);
+	priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	psource = RB_PLAYLIST_SOURCE (source);
 
 	priv->base_model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (psource));
 	g_object_set (priv->base_model, "show-hidden", TRUE, NULL);
@@ -333,8 +334,6 @@ rb_static_playlist_source_constructor (GType type,
 				 source, 0);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
-
-	return G_OBJECT (source);
 }
 
 RBSource *

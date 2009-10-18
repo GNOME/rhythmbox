@@ -93,9 +93,7 @@
 
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_init (RBShell *shell);
-static GObject *rb_shell_constructor (GType type,
-				      guint n_construct_properties,
-				      GObjectConstructParam *construct_properties);
+static void rb_shell_constructed (GObject *object);
 static void rb_shell_finalize (GObject *object);
 static void rb_shell_set_property (GObject *object,
 				   guint prop_id,
@@ -454,7 +452,7 @@ rb_shell_class_init (RBShellClass *klass)
 	object_class->set_property = rb_shell_set_property;
 	object_class->get_property = rb_shell_get_property;
         object_class->finalize = rb_shell_finalize;
-	object_class->constructor = rb_shell_constructor;
+	object_class->constructed = rb_shell_constructed;
 
 	klass->visibility_changing = rb_shell_visibility_changing;
 
@@ -1312,15 +1310,14 @@ _scan_idle (RBShell *shell)
 	return FALSE;
 }
 
-static GObject *
-rb_shell_constructor (GType type,
-		      guint n_construct_properties,
-		      GObjectConstructParam *construct_properties)
+static void
+rb_shell_constructed (GObject *object)
 {
 	RBShell *shell;
 
-	shell = RB_SHELL (((GObjectClass*)rb_shell_parent_class)
-		->constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_shell_parent_class, constructed, object);
+
+	shell = RB_SHELL (object);
 
 	rb_debug ("Constructing shell");
 	rb_profile_start ("constructing shell");
@@ -1431,8 +1428,6 @@ rb_shell_constructor (GType type,
 	}
 
 	rb_profile_end ("constructing shell");
-
-	return G_OBJECT (shell);
 }
 
 static gboolean

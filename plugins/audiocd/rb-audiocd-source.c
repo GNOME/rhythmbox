@@ -64,8 +64,7 @@ enum
 
 static void rb_audiocd_source_dispose (GObject *object);
 static void rb_audiocd_source_finalize (GObject *object);
-static GObject *rb_audiocd_source_constructor (GType type, guint n_construct_properties,
-					        GObjectConstructParam *construct_properties);
+static void rb_audiocd_source_constructed (GObject *object);
 static void impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 static void impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 
@@ -162,7 +161,7 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
-	object_class->constructor = rb_audiocd_source_constructor;
+	object_class->constructed = rb_audiocd_source_constructed;
 	object_class->dispose = rb_audiocd_source_dispose;
 	object_class->finalize = rb_audiocd_source_finalize;
 	object_class->set_property = impl_set_property;
@@ -241,10 +240,8 @@ rb_audiocd_source_dispose (GObject *object)
 	G_OBJECT_CLASS (rb_audiocd_source_parent_class)->dispose (object);
 }
 
-static GObject *
-rb_audiocd_source_constructor (GType type,
-			       guint n_construct_properties,
-			       GObjectConstructParam *construct_properties)
+static void
+rb_audiocd_source_constructed (GObject *object)
 {
 	RBAudioCdSourcePrivate *priv;
 	RBAudioCdSource *source;
@@ -253,8 +250,8 @@ rb_audiocd_source_constructor (GType type,
 	RBPlugin *plugin;
 	char *ui_file;
 
-	source = RB_AUDIOCD_SOURCE (G_OBJECT_CLASS (rb_audiocd_source_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_audiocd_source_parent_class, constructed, object);
+	source = RB_AUDIOCD_SOURCE (object);
 	priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 
 	g_object_set (G_OBJECT (source), "name", "Unknown Audio", NULL);
@@ -351,8 +348,6 @@ rb_audiocd_source_constructor (GType type,
 
 	g_object_ref (G_OBJECT (source));
 	g_thread_create ((GThreadFunc)rb_audiocd_load_songs, source, FALSE, NULL);
-
-	return G_OBJECT (source);
 }
 
 RBRemovableMediaSource *

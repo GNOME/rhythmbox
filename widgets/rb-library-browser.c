@@ -50,8 +50,7 @@ static void rb_library_browser_class_init (RBLibraryBrowserClass *klass);
 static void rb_library_browser_init (RBLibraryBrowser *entry);
 static void rb_library_browser_finalize (GObject *object);
 static void rb_library_browser_dispose (GObject *object);
-static GObject* rb_library_browser_constructor (GType type, guint n_construct_properties,
-						GObjectConstructParam *construct_properties);
+static void rb_library_browser_constructed (GObject *object);
 static void rb_library_browser_set_property (GObject *object,
 					     guint prop_id,
 					     const GValue *value,
@@ -152,7 +151,7 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 
 	object_class->finalize = rb_library_browser_finalize;
 	object_class->dispose = rb_library_browser_dispose;
-	object_class->constructor = rb_library_browser_constructor;
+	object_class->constructed = rb_library_browser_constructed;
 	object_class->set_property = rb_library_browser_set_property;
 	object_class->get_property = rb_library_browser_get_property;
 
@@ -229,20 +228,16 @@ rb_library_browser_init (RBLibraryBrowser *widget)
 	priv->selections = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)rb_list_deep_free);
 }
 
-static GObject *
-rb_library_browser_constructor (GType type,
-				guint n_construct_properties,
-				GObjectConstructParam *construct_properties)
+static void
+rb_library_browser_constructed (GObject *object)
 {
-	RBLibraryBrowserClass *klass;
 	RBLibraryBrowser *browser;
 	RBLibraryBrowserPrivate *priv;
 	int i;
 
-	klass = RB_LIBRARY_BROWSER_CLASS (g_type_class_peek (RB_TYPE_LIBRARY_BROWSER));
+	RB_CHAIN_GOBJECT_METHOD (rb_library_browser_parent_class, constructed, object);
 
-	browser = RB_LIBRARY_BROWSER (G_OBJECT_CLASS (rb_library_browser_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
+	browser = RB_LIBRARY_BROWSER (object);
 	priv = RB_LIBRARY_BROWSER_GET_PRIVATE (browser);
 
 	for (i = 0; i < num_browser_properties; i++) {
@@ -271,8 +266,6 @@ rb_library_browser_constructor (GType type,
 	priv->browser_view_notify_id =
 		eel_gconf_notification_add (CONF_UI_BROWSER_VIEWS,
 				(GConfClientNotifyFunc) rb_library_browser_views_changed, browser);
-
-	return G_OBJECT (browser);
 }
 
 static void

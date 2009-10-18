@@ -47,9 +47,7 @@
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 
-static GObject *rb_removable_media_source_constructor (GType type,
-						       guint n_construct_properties,
-						       GObjectConstructParam *construct_properties);
+static void rb_removable_media_source_constructed (GObject *object);
 static void rb_removable_media_source_dispose (GObject *object);
 
 static void rb_removable_media_source_set_property (GObject *object,
@@ -92,7 +90,7 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
-	object_class->constructor = rb_removable_media_source_constructor;
+	object_class->constructed = rb_removable_media_source_constructed;
 	object_class->dispose = rb_removable_media_source_dispose;
 	object_class->set_property = rb_removable_media_source_set_property;
 	object_class->get_property = rb_removable_media_source_get_property;
@@ -139,20 +137,17 @@ rb_removable_media_source_init (RBRemovableMediaSource *self)
 {
 }
 
-static GObject *
-rb_removable_media_source_constructor (GType type, guint n_construct_properties,
-				       GObjectConstructParam *construct_properties)
+static void
+rb_removable_media_source_constructed (GObject *object)
 {
-	GObject *source;
 	GMount *mount;
 	GIcon *icon = NULL;
 	char *display_name;
 	GdkPixbuf *pixbuf = NULL;
 	RBRemovableMediaSourcePrivate *priv;
 
-	source = G_OBJECT_CLASS(rb_removable_media_source_parent_class)
-			->constructor (type, n_construct_properties, construct_properties);
-	priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (source);
+	RB_CHAIN_GOBJECT_METHOD (rb_removable_media_source_parent_class, constructed, object);
+	priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (object);
 
 	/* prefer mount details to volume details, as the nautilus sidebar does */
 	if (priv->mount != NULL) {
@@ -176,7 +171,7 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 		icon = g_themed_icon_new ("multimedia-player");
 	}
 
-	g_object_set (source, "name", display_name, NULL);
+	g_object_set (object, "name", display_name, NULL);
 	g_free (display_name);
 
 	if (icon == NULL) {
@@ -204,7 +199,7 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 		pixbuf = NULL;
 	}
 
-	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
+	rb_source_set_pixbuf (RB_SOURCE (object), pixbuf);
 	if (pixbuf != NULL) {
 		g_object_unref (pixbuf);
 	}
@@ -212,8 +207,6 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 		g_object_unref (mount);
 	}
 	g_object_unref (icon);
-
-	return source;
 }
 
 static void

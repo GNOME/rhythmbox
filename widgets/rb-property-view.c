@@ -58,8 +58,7 @@ static void rb_property_view_get_property (GObject *object,
 					   guint prop_id,
 					   GValue *value,
 					   GParamSpec *pspec);
-static GObject * rb_property_view_constructor (GType type, guint n_construct_properties,
-					       GObjectConstructParam *construct_properties);
+static void rb_property_view_constructed (GObject *object);
 static void rb_property_view_row_activated_cb (GtkTreeView *treeview,
 					       GtkTreePath *path,
 					       GtkTreeViewColumn *column,
@@ -141,7 +140,7 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 
 	object_class->dispose = rb_property_view_dispose;
 	object_class->finalize = rb_property_view_finalize;
-	object_class->constructor = rb_property_view_constructor;
+	object_class->constructed = rb_property_view_constructed;
 
 	object_class->set_property = rb_property_view_set_property;
 	object_class->get_property = rb_property_view_get_property;
@@ -652,21 +651,16 @@ rb_property_view_cell_data_func (GtkTreeViewColumn *column,
 	g_free (title);
 }
 
-static GObject *
-rb_property_view_constructor (GType type,
-			      guint n_construct_properties,
-			      GObjectConstructParam *construct_properties)
+static void
+rb_property_view_constructed (GObject *object)
 {
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer;
-
 	RBPropertyView *view;
-	RBPropertyViewClass *klass;
 
-	klass = RB_PROPERTY_VIEW_CLASS (g_type_class_peek (RB_TYPE_PROPERTY_VIEW));
+	RB_CHAIN_GOBJECT_METHOD (rb_property_view_parent_class, constructed, object);
 
-	view = RB_PROPERTY_VIEW (G_OBJECT_CLASS (rb_property_view_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
+	view = RB_PROPERTY_VIEW (object);
 
 	view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new_with_model (GTK_TREE_MODEL (view->priv->prop_model)));
@@ -714,8 +708,6 @@ rb_property_view_constructor (GType type,
 	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview),
 				     column);
-
-	return G_OBJECT (view);
 }
 
 static void

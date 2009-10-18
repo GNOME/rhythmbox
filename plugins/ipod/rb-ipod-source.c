@@ -54,9 +54,7 @@
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/ipod/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/ipod/show_browser"
 
-static GObject *rb_ipod_source_constructor (GType type, 
-					    guint n_construct_properties,
-					    GObjectConstructParam *construct_properties);
+static void rb_ipod_source_constructed (GObject *object);
 static void rb_ipod_source_dispose (GObject *object);
 
 static char *impl_get_browser_key (RBSource *source);
@@ -133,7 +131,7 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
-	object_class->constructor = rb_ipod_source_constructor;
+	object_class->constructed = rb_ipod_source_constructed;
 	object_class->dispose = rb_ipod_source_dispose;
 
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
@@ -186,15 +184,15 @@ rb_ipod_source_init (RBiPodSource *source)
 {	
 }
 
-static GObject *
-rb_ipod_source_constructor (GType type, guint n_construct_properties,
-			    GObjectConstructParam *construct_properties)
+static void
+rb_ipod_source_constructed (GObject *object)
 {
 	RBiPodSource *source;
 	RBEntryView *songs;
+	RhythmDB *db;
 
-	source = RB_IPOD_SOURCE (G_OBJECT_CLASS (rb_ipod_source_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_ipod_source_parent_class, constructed, object);
+	source = RB_IPOD_SOURCE (object);
 
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
@@ -203,14 +201,12 @@ rb_ipod_source_constructor (GType type, guint n_construct_properties,
 
 	rb_ipod_load_songs (source);
 
-        RhythmDB *db = get_db_for_source (RB_IPOD_SOURCE (source));
+        db = get_db_for_source (source);
         g_signal_connect_object (db,
                                  "entry-extra-metadata-notify::rb:coverArt",
                                  G_CALLBACK (rb_ipod_song_artwork_add_cb),
                                  RB_IPOD_SOURCE(source), 0);
-        g_object_unref (G_OBJECT (db));
-
-	return G_OBJECT (source);
+        g_object_unref (db);
 }
 
 static void

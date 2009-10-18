@@ -74,9 +74,7 @@
 
 static void rb_playlist_source_class_init (RBPlaylistSourceClass *klass);
 static void rb_playlist_source_init (RBPlaylistSource *source);
-static GObject *rb_playlist_source_constructor (GType type,
-						guint n_construct_properties,
-						GObjectConstructParam *construct_properties);
+static void rb_playlist_source_constructed (GObject *object);
 static void rb_playlist_source_dispose (GObject *object);
 static void rb_playlist_source_finalize (GObject *object);
 static void rb_playlist_source_set_property (GObject *object,
@@ -167,7 +165,7 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 
 	object_class->dispose = rb_playlist_source_dispose;
 	object_class->finalize = rb_playlist_source_finalize;
-	object_class->constructor = rb_playlist_source_constructor;
+	object_class->constructed = rb_playlist_source_constructed;
 
 	object_class->set_property = rb_playlist_source_set_property;
 	object_class->get_property = rb_playlist_source_get_property;
@@ -271,23 +269,18 @@ rb_playlist_source_set_db (RBPlaylistSource *source,
 
 }
 
-static GObject *
-rb_playlist_source_constructor (GType type,
-				guint n_construct_properties,
-				GObjectConstructParam *construct_properties)
+static void
+rb_playlist_source_constructed (GObject *object)
 {
 	GObject *shell_player;
 	RBPlaylistSource *source;
-	RBPlaylistSourceClass *klass;
 	RBShell *shell;
 	RhythmDB *db;
 	RhythmDBQueryModel *query_model;
 	char *sorting_key;
 
-	klass = RB_PLAYLIST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PLAYLIST_SOURCE));
-
-	source = RB_PLAYLIST_SOURCE (G_OBJECT_CLASS (rb_playlist_source_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_playlist_source_parent_class, constructed, object);
+	source = RB_PLAYLIST_SOURCE (object);
 
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "db", &db, NULL);
@@ -366,8 +359,6 @@ rb_playlist_source_constructor (GType type,
 	gtk_container_add (GTK_CONTAINER (source), GTK_WIDGET (source->priv->songs));
 
 	gtk_widget_show_all (GTK_WIDGET (source));
-
-	return G_OBJECT (source);
 }
 
 static void

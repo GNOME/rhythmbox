@@ -63,8 +63,6 @@
 
 static void rb_play_order_class_init (RBPlayOrderClass *klass);
 static void rb_play_order_init (RBPlayOrder *porder);
-static GObject *rb_play_order_constructor (GType type, guint n_construct_properties,
-					   GObjectConstructParam *construct_properties);
 static void rb_play_order_dispose (GObject *object);
 static void rb_play_order_finalize (GObject *object);
 static void rb_play_order_set_property (GObject *object,
@@ -129,7 +127,6 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->constructor = rb_play_order_constructor;
 	object_class->dispose = rb_play_order_dispose;
 	object_class->finalize = rb_play_order_finalize;
 	object_class->set_property = rb_play_order_set_property;
@@ -192,19 +189,6 @@ static void
 rb_play_order_init (RBPlayOrder *porder)
 {
 	porder->priv = RB_PLAY_ORDER_GET_PRIVATE (porder);
-}
-
-static GObject *
-rb_play_order_constructor (GType type,
-			   guint n_construct_properties,
-			   GObjectConstructParam *construct_properties)
-{
-	RBPlayOrder *porder;
-
-	porder = RB_PLAY_ORDER (G_OBJECT_CLASS (rb_play_order_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
-
-	return G_OBJECT (porder);
 }
 
 static void

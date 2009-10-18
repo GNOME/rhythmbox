@@ -67,8 +67,7 @@ G_DEFINE_TYPE_WITH_CODE(RhythmDBQueryModel, rhythmdb_query_model, G_TYPE_OBJECT,
 					      rhythmdb_query_model_drag_dest_init))
 
 static void rhythmdb_query_model_init (RhythmDBQueryModel *shell_player);
-static GObject *rhythmdb_query_model_constructor (GType type, guint n_construct_properties,
-						  GObjectConstructParam *construct_properties);
+static void rhythmdb_query_model_constructed (GObject *object);
 static void rhythmdb_query_model_dispose (GObject *object);
 static void rhythmdb_query_model_finalize (GObject *object);
 static void rhythmdb_query_model_set_property (GObject *object,
@@ -291,7 +290,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 
 	object_class->dispose = rhythmdb_query_model_dispose;
 	object_class->finalize = rhythmdb_query_model_finalize;
-	object_class->constructor = rhythmdb_query_model_constructor;
+	object_class->constructed = rhythmdb_query_model_constructed;
 
 	g_object_class_install_property (object_class,
 					 PROP_RHYTHMDB,
@@ -618,15 +617,13 @@ rhythmdb_query_model_init (RhythmDBQueryModel *model)
 	model->priv->reorder_drag_and_drop = FALSE;
 }
 
-static GObject *
-rhythmdb_query_model_constructor (GType type,
-				  guint n_construct_properties,
-				  GObjectConstructParam *construct_properties)
+static void
+rhythmdb_query_model_constructed (GObject *object)
 {
 	RhythmDBQueryModel *model;
 
-	model = RHYTHMDB_QUERY_MODEL (G_OBJECT_CLASS (rhythmdb_query_model_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rhythmdb_query_model_parent_class, constructed, object);
+	model = RHYTHMDB_QUERY_MODEL (object);
 
 	g_signal_connect_object (G_OBJECT (model->priv->db),
 				 "entry_added",
@@ -640,8 +637,6 @@ rhythmdb_query_model_constructor (GType type,
 				 "entry_deleted",
 				 G_CALLBACK (rhythmdb_query_model_entry_deleted_cb),
 				 model, 0);
-
-	return G_OBJECT (model);
 }
 
 static void

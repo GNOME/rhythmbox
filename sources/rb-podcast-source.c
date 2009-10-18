@@ -77,9 +77,7 @@ static void rb_podcast_source_class_init 		(RBPodcastSourceClass *klass);
 
 static void rb_podcast_source_init 			(RBPodcastSource *source);
 
-static GObject *rb_podcast_source_constructor 		(GType type,
-							 guint n_construct_properties,
-					      		 GObjectConstructParam *construct_properties);
+static void rb_podcast_source_constructed 		(GObject *object);
 
 static void rb_podcast_source_dispose 			(GObject *object);
 
@@ -358,7 +356,7 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 
 	object_class->dispose = rb_podcast_source_dispose;
 	object_class->finalize = rb_podcast_source_finalize;
-	object_class->constructor = rb_podcast_source_constructor;
+	object_class->constructed = rb_podcast_source_constructed;
 
 	object_class->set_property = rb_podcast_source_set_property;
 	object_class->get_property = rb_podcast_source_get_property;
@@ -493,13 +491,10 @@ rb_podcast_source_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_podcast_source_parent_class)->finalize (object);
 }
 
-static GObject *
-rb_podcast_source_constructor (GType type,
-			       guint n_construct_properties,
-			       GObjectConstructParam *construct_properties)
+static void
+rb_podcast_source_constructed (GObject *object)
 {
 	RBPodcastSource *source;
-	RBPodcastSourceClass *klass;
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer;
 	RBShell *shell;
@@ -507,10 +502,8 @@ rb_podcast_source_constructor (GType type,
 	GPtrArray *query;
 	GtkAction *action;
 
-	klass = RB_PODCAST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PODCAST_SOURCE));
-
-	source = RB_PODCAST_SOURCE (G_OBJECT_CLASS (rb_podcast_source_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_podcast_source_parent_class, constructed, object);
+	source = RB_PODCAST_SOURCE (object);
 
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "db", &source->priv->db, NULL);
@@ -785,8 +778,6 @@ rb_podcast_source_constructor (GType type,
 	rb_podcast_source_state_prefs_sync (source);
 
 	rb_podcast_source_do_query (source);
-
-	return G_OBJECT (source);
 }
 
 static void

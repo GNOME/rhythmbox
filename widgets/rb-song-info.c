@@ -56,11 +56,11 @@
 #include "rb-source.h"
 #include "rb-shell.h"
 #include "rb-file-helpers.h"
+#include "rb-util.h"
 
 static void rb_song_info_class_init (RBSongInfoClass *klass);
 static void rb_song_info_init (RBSongInfo *song_info);
-static GObject *rb_song_info_constructor (GType type, guint n_construct_properties,
-					  GObjectConstructParam *construct_properties);
+static void rb_song_info_constructed (GObject *object);
 
 static void rb_song_info_show (GtkWidget *widget);
 static void rb_song_info_dispose (GObject *object);
@@ -209,7 +209,7 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 
 	object_class->set_property = rb_song_info_set_property;
 	object_class->get_property = rb_song_info_get_property;
-	object_class->constructor = rb_song_info_constructor;
+	object_class->constructed = rb_song_info_constructed;
 
 	widget_class->show = rb_song_info_show;
 
@@ -432,12 +432,10 @@ rb_song_info_add_completion (GtkEntry *entry, RhythmDBPropertyModel *propmodel)
 	g_object_unref (completion);
 }
 
-static GObject *
-rb_song_info_constructor (GType type, guint n_construct_properties,
-			  GObjectConstructParam *construct_properties)
+static void
+rb_song_info_constructed (GObject *object)
 {
 	RBSongInfo *song_info;
-	RBSongInfoClass *klass;
 	GList *selected_entries;
 	GList *tem;
 	gboolean editable = TRUE;
@@ -445,14 +443,13 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	AtkObject *lobj, *robj;
 	GtkBuilder *builder;
 
-	klass = RB_SONG_INFO_CLASS (g_type_class_peek (RB_TYPE_SONG_INFO));
+	RB_CHAIN_GOBJECT_METHOD (rb_song_info_parent_class, constructed, object);
 
-	song_info = RB_SONG_INFO (G_OBJECT_CLASS (rb_song_info_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
+	song_info = RB_SONG_INFO (object);
 
 	selected_entries = rb_entry_view_get_selected_entries (song_info->priv->entry_view);
 
-	g_return_val_if_fail (selected_entries != NULL, NULL);
+	g_return_if_fail (selected_entries != NULL);
 
 	for (tem = selected_entries; tem; tem = tem->next) {
 		if (!rhythmdb_entry_is_editable (song_info->priv->db,
@@ -567,8 +564,6 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 					 GTK_RESPONSE_CLOSE);
 
 	g_object_unref (builder);
-
-	return G_OBJECT (song_info);
 }
 
 static void

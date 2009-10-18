@@ -123,8 +123,7 @@ static void queue_ban_track (RBLastfmSource *source);
 
 static void rb_lastfm_source_class_init (RBLastfmSourceClass *klass);
 static void rb_lastfm_source_init (RBLastfmSource *source);
-static GObject *rb_lastfm_source_constructor (GType type, guint n_construct_properties,
-					      GObjectConstructParam *construct_properties);
+static void rb_lastfm_source_constructed (GObject *object);
 static void rb_lastfm_source_finalize (GObject *object);
 static void rb_lastfm_source_set_property (GObject *object,
 			                  guint prop_id,
@@ -308,7 +307,7 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 
 	object_class->finalize = rb_lastfm_source_finalize;
 	object_class->dispose = rb_lastfm_source_dispose;
-	object_class->constructor = rb_lastfm_source_constructor;
+	object_class->constructed = rb_lastfm_source_constructed;
 
 	object_class->set_property = rb_lastfm_source_set_property;
 	object_class->get_property = rb_lastfm_source_get_property;
@@ -449,12 +448,10 @@ rb_lastfm_source_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_lastfm_source_parent_class)->finalize (object);
 }
 
-static GObject *
-rb_lastfm_source_constructor (GType type, guint n_construct_properties,
-			      GObjectConstructParam *construct_properties)
+static void
+rb_lastfm_source_constructed (GObject *object)
 {
 	RBLastfmSource *source;
-	RBLastfmSourceClass *klass;
 	RBShell *shell;
 	GtkWidget *editor_vbox;
 	GtkWidget *editor_box;
@@ -464,17 +461,15 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 	RhythmDBQueryModel *station_query_model;
 	int i;
 
-	klass = RB_LASTFM_SOURCE_CLASS (g_type_class_peek (RB_TYPE_LASTFM_SOURCE));
+	RB_CHAIN_GOBJECT_METHOD (rb_lastfm_source_parent_class, constructed, object);
+	source = RB_LASTFM_SOURCE (object);
 
-	source = RB_LASTFM_SOURCE (G_OBJECT_CLASS (rb_lastfm_source_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
-
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell),
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell,
 		      "db", &source->priv->db,
 		      "shell-player", &source->priv->shell_player,
 		      NULL);
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 
 	g_signal_connect_object (source->priv->db,
 				 "entry-added",
@@ -611,8 +606,6 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_set_model (source->priv->tracks, source->priv->query_model);
 	
 	g_object_set (source, "query-model", source->priv->query_model, NULL);
-
-	return G_OBJECT (source);
 }
 
 static void

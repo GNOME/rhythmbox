@@ -70,9 +70,7 @@
 
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);
-static GObject *rb_library_source_constructor (GType type,
-					       guint n_construct_properties,
-					       GObjectConstructParam *construct_properties);
+static void rb_library_source_constructed (GObject *object);
 static void rb_library_source_dispose (GObject *object);
 static void rb_library_source_finalize (GObject *object);
 
@@ -188,7 +186,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 
 	object_class->dispose = rb_library_source_dispose;
 	object_class->finalize = rb_library_source_finalize;
-	object_class->constructor = rb_library_source_constructor;
+	object_class->constructed = rb_library_source_constructed;
 
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_config_widget = impl_get_config_widget;
@@ -287,18 +285,16 @@ db_load_complete_cb (RhythmDB *db, RBLibrarySource *source)
 	g_object_set (source, "populate", TRUE, NULL);
 }
 
-static GObject *
-rb_library_source_constructor (GType type,
-			       guint n_construct_properties,
-			       GObjectConstructParam *construct_properties)
+static void
+rb_library_source_constructed (GObject *object)
 {
 	RBLibrarySource *source;
 	RBShell *shell;
 	RBEntryView *songs;
 	GSList *list;
 
-	source = RB_LIBRARY_SOURCE (G_OBJECT_CLASS (rb_library_source_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_library_source_parent_class, constructed, object);
+	source = RB_LIBRARY_SOURCE (object);
 
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "db", &source->priv->db, NULL);
@@ -359,8 +355,6 @@ rb_library_source_constructor (GType type,
 	g_idle_add ((GSourceFunc)add_child_sources_idle, source);
 
 	g_object_unref (shell);
-
-	return G_OBJECT (source);
 }
 
 /**

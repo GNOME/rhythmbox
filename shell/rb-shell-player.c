@@ -104,8 +104,7 @@ static const char* const state_to_play_order[2][2] =
 
 static void rb_shell_player_class_init (RBShellPlayerClass *klass);
 static void rb_shell_player_init (RBShellPlayer *shell_player);
-static GObject *rb_shell_player_constructor (GType type, guint n_construct_properties,
-					     GObjectConstructParam *construct_properties);
+static void rb_shell_player_constructed (GObject *object);
 static void rb_shell_player_dispose (GObject *object);
 static void rb_shell_player_finalize (GObject *object);
 static void rb_shell_player_set_property (GObject *object,
@@ -349,7 +348,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 
 	object_class->dispose = rb_shell_player_dispose;
 	object_class->finalize = rb_shell_player_finalize;
-	object_class->constructor = rb_shell_player_constructor;
+	object_class->constructed = rb_shell_player_constructed;
 
 	object_class->set_property = rb_shell_player_set_property;
 	object_class->get_property = rb_shell_player_get_property;
@@ -625,19 +624,15 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 	g_type_class_add_private (klass, sizeof (RBShellPlayerPrivate));
 }
 
-static GObject *
-rb_shell_player_constructor (GType type,
-			     guint n_construct_properties,
-			     GObjectConstructParam *construct_properties)
+static void
+rb_shell_player_constructed (GObject *object)
 {
 	RBShellPlayer *player;
-	RBShellPlayerClass *klass;
 	GtkAction *action;
 
-	klass = RB_SHELL_PLAYER_CLASS (g_type_class_peek (RB_TYPE_SHELL_PLAYER));
+	RB_CHAIN_GOBJECT_METHOD (rb_shell_player_parent_class, constructed, object);
 
-	player = RB_SHELL_PLAYER (G_OBJECT_CLASS (rb_shell_player_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
+	player = RB_SHELL_PLAYER (object);
 
 	player->priv->header_widget = rb_header_new (player, player->priv->db);
 	gtk_widget_show (GTK_WIDGET (player->priv->header_widget));
@@ -673,8 +668,6 @@ rb_shell_player_constructor (GType type,
 			  "notify::playing",
 			  G_CALLBACK (rb_shell_player_playing_changed_cb),
 			  NULL);
-
-	return G_OBJECT (player);
 }
 
 static void

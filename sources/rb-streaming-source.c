@@ -59,8 +59,7 @@
 
 static void rb_streaming_source_class_init (RBStreamingSourceClass *klass);
 static void rb_streaming_source_init (RBStreamingSource *source);
-static GObject *rb_streaming_source_constructor (GType type, guint n_construct_properties,
-						 GObjectConstructParam *construct_properties);
+static void rb_streaming_source_constructed (GObject *object);
 static void rb_streaming_source_dispose (GObject *object);
 
 /* source methods */
@@ -112,7 +111,7 @@ rb_streaming_source_class_init (RBStreamingSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	object_class->dispose = rb_streaming_source_dispose;
-	object_class->constructor = rb_streaming_source_constructor;
+	object_class->constructed = rb_streaming_source_constructed;
 
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -151,19 +150,14 @@ rb_streaming_source_dispose (GObject *object)
 	G_OBJECT_CLASS (rb_streaming_source_parent_class)->dispose (object);
 }
 
-static GObject *
-rb_streaming_source_constructor (GType type,
-			      guint n_construct_properties,
-			      GObjectConstructParam *construct_properties)
+static void
+rb_streaming_source_constructed (GObject *object)
 {
 	RBStreamingSource *source;
-	RBStreamingSourceClass *klass;
 	RBShell *shell;
 
-	klass = RB_STREAMING_SOURCE_CLASS (g_type_class_peek (RB_TYPE_STREAMING_SOURCE));
-
-	source = RB_STREAMING_SOURCE (G_OBJECT_CLASS (rb_streaming_source_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_streaming_source_parent_class, constructed, object);
+	source = RB_STREAMING_SOURCE (object);
 
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (G_OBJECT (shell),
@@ -198,8 +192,6 @@ rb_streaming_source_constructor (GType type,
 	g_signal_connect_object (source->priv->player, "playing-song-changed",
 				 G_CALLBACK (playing_entry_changed_cb),
 				 source, 0);
-
-	return G_OBJECT (source);
 }
 
 static RBSourceEOFType

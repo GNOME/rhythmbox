@@ -36,8 +36,7 @@
 
 static void rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass);
 static void rb_import_errors_source_init (RBImportErrorsSource *source);
-static GObject *rb_import_errors_source_constructor (GType type, guint n_construct_properties,
-						     GObjectConstructParam *construct_properties);
+static void rb_import_errors_source_constructed (GObject *object);
 static void rb_import_errors_source_dispose (GObject *object);
 
 static RBEntryView *impl_get_entry_view (RBSource *source);
@@ -86,7 +85,7 @@ rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	object_class->dispose = rb_import_errors_source_dispose;
-	object_class->constructor = rb_import_errors_source_constructor;
+	object_class->constructed = rb_import_errors_source_constructed;
 
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_get_entry_view = impl_get_entry_view;
@@ -127,22 +126,19 @@ rb_import_errors_source_init (RBImportErrorsSource *source)
 	}
 }
 
-static GObject *
-rb_import_errors_source_constructor (GType type, guint n_construct_properties,
-				     GObjectConstructParam *construct_properties)
+static void
+rb_import_errors_source_constructed (GObject *object)
 {
 	GObject *shell_player;
 	RBImportErrorsSource *source;
-	RBImportErrorsSourceClass *klass;
 	RBShell *shell;
 	GPtrArray *query;
 	RhythmDBQueryModel *model;
 	RhythmDBEntryType entry_type;
 
-	klass = RB_IMPORT_ERRORS_SOURCE_CLASS (g_type_class_peek (RB_TYPE_IMPORT_ERRORS_SOURCE));
+	RB_CHAIN_GOBJECT_METHOD (rb_import_errors_source_parent_class, constructed, object);
 
-	source = RB_IMPORT_ERRORS_SOURCE (G_OBJECT_CLASS (rb_import_errors_source_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
+	source = RB_IMPORT_ERRORS_SOURCE (object);
 
 	g_object_get (source,
 		      "shell", &shell,
@@ -183,8 +179,6 @@ rb_import_errors_source_constructor (GType type, guint n_construct_properties,
 
 	g_object_set (source, "query-model", model, NULL);
 	g_object_unref (model);
-
-	return G_OBJECT (source);
 }
 
 static void

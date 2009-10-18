@@ -45,8 +45,7 @@
 #include "rb-util.h"
 
 static void rb_query_creator_class_init (RBQueryCreatorClass *klass);
-static GObject *rb_query_creator_constructor (GType type, guint n_construct_properties,
-					      GObjectConstructParam *construct_properties);
+static void rb_query_creator_constructed (GObject *object);
 static void rb_query_creator_dispose (GObject *object);
 static void rb_query_creator_set_property (GObject *object,
 					      guint prop_id,
@@ -137,7 +136,7 @@ rb_query_creator_class_init (RBQueryCreatorClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->dispose = rb_query_creator_dispose;
-	object_class->constructor = rb_query_creator_constructor;
+	object_class->constructed = rb_query_creator_constructed;
 	object_class->set_property = rb_query_creator_set_property;
 	object_class->get_property = rb_query_creator_get_property;
 
@@ -176,18 +175,17 @@ rb_query_creator_init (RBQueryCreator *creator)
 
 }
 
-static GObject *
-rb_query_creator_constructor (GType type,
-                              guint n_construct_properties,
-			      GObjectConstructParam *construct_properties)
+static void
+rb_query_creator_constructed (GObject *object)
 {
 	RBQueryCreatorPrivate *priv;
 	RBQueryCreator *creator;
 	GtkWidget *mainbox;
 	GtkBuilder *builder;
 
-	creator = RB_QUERY_CREATOR (G_OBJECT_CLASS (rb_query_creator_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_query_creator_parent_class, dispose, object);
+
+	creator = RB_QUERY_CREATOR (object);
 	priv = QUERY_CREATOR_GET_PRIVATE (creator);
 
 	if (priv->creating) {
@@ -251,8 +249,6 @@ rb_query_creator_constructor (GType type,
 	gtk_widget_show_all (GTK_WIDGET (creator));
 
 	g_object_unref (builder);
-
-	return G_OBJECT (creator);
 }
 
 static void

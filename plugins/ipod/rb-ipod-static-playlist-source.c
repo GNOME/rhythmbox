@@ -33,9 +33,7 @@
 #include "rb-ipod-static-playlist-source.h"
 #include "rb-ipod-source.h"
 
-static GObject *rb_ipod_static_playlist_source_constructor (GType type,
-					    guint n_construct_properties,
-					    GObjectConstructParam *construct_properties);
+static void rb_ipod_static_playlist_source_constructed (GObject *object);
 static void rb_ipod_static_playlist_source_dispose (GObject *object);
 static void rb_ipod_static_playlist_source_set_property (GObject *object,
 			                  guint prop_id,
@@ -81,7 +79,7 @@ rb_ipod_static_playlist_source_class_init (RBIpodStaticPlaylistSourceClass *klas
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
-	object_class->constructor = rb_ipod_static_playlist_source_constructor;
+	object_class->constructed = rb_ipod_static_playlist_source_constructed;
 	object_class->dispose = rb_ipod_static_playlist_source_dispose;
 	object_class->get_property = rb_ipod_static_playlist_source_get_property;
 	object_class->set_property = rb_ipod_static_playlist_source_set_property;
@@ -123,19 +121,11 @@ rb_ipod_static_playlist_source_init (RBIpodStaticPlaylistSource *source)
 
 }
 
-static GObject *
-rb_ipod_static_playlist_source_constructor (GType type, guint n_construct_properties,
-					    GObjectConstructParam *construct_properties)
+static void
+rb_ipod_static_playlist_source_constructed (GObject *object)
 {
-	RBIpodStaticPlaylistSource *source;
-
-	source = RB_IPOD_STATIC_PLAYLIST_SOURCE  (G_OBJECT_CLASS (rb_ipod_static_playlist_source_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
-
-	g_signal_connect (G_OBJECT (source), "notify::name",
-			  (GCallback)source_name_changed_cb, NULL);
-
-	return G_OBJECT (source);
+	RB_CHAIN_GOBJECT_METHOD (rb_ipod_static_playlist_source_parent_class, constructed, object);
+	g_signal_connect (object, "notify::name", (GCallback)source_name_changed_cb, NULL);
 }
 
 static void

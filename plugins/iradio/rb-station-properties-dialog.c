@@ -42,11 +42,11 @@
 #include "rb-dialog.h"
 #include "rb-rating.h"
 #include "rb-plugin.h"
+#include "rb-util.h"
 
 static void rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass);
 static void rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog);
-static GObject *rb_station_properties_dialog_constructor(GType type, guint n_construct_properties,
-						    GObjectConstructParam *construct_properties);
+static void rb_station_properties_dialog_constructed (GObject *object);
 static void rb_station_properties_dialog_dispose (GObject *object);
 static void rb_station_properties_dialog_finalize (GObject *object);
 static void rb_station_properties_dialog_set_property (GObject *object,
@@ -119,7 +119,7 @@ rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->constructor = rb_station_properties_dialog_constructor;
+	object_class->constructed = rb_station_properties_dialog_constructed;
 	object_class->set_property = rb_station_properties_dialog_set_property;
 	object_class->get_property = rb_station_properties_dialog_get_property;
 
@@ -152,20 +152,18 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
         dialog->priv = RB_STATION_PROPERTIES_DIALOG_GET_PRIVATE (dialog);
 }
 
-static GObject *
-rb_station_properties_dialog_constructor (GType type,
-					  guint n_construct_properties,
-					  GObjectConstructParam *construct_properties)
+static void
+rb_station_properties_dialog_constructed (GObject *object)
 {
 	RBStationPropertiesDialog *dialog;
 	GtkBuilder *builder;
 	char *builder_file;
 	AtkObject *lobj, *robj;
 
-	dialog = RB_STATION_PROPERTIES_DIALOG (G_OBJECT_CLASS (rb_station_properties_dialog_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_station_properties_dialog_parent_class, constructed, object);
+	dialog = RB_STATION_PROPERTIES_DIALOG (object);
 
-	g_signal_connect_object (G_OBJECT (dialog),
+	g_signal_connect_object (dialog,
 				 "response",
 				 G_CALLBACK (rb_station_properties_dialog_response_cb),
 				 dialog, 0);
@@ -227,8 +225,6 @@ rb_station_properties_dialog_constructor (GType type,
 	atk_object_add_relationship (robj, ATK_RELATION_LABELLED_BY, lobj);
 
 	g_object_unref (builder);
-
-	return G_OBJECT (dialog);
 }
 
 static void

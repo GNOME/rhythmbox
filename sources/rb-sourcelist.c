@@ -105,9 +105,7 @@ enum
 
 static void rb_sourcelist_class_init (RBSourceListClass *klass);
 static void rb_sourcelist_init (RBSourceList *sourcelist);
-static GObject * rb_sourcelist_constructor (GType type,
-					    guint n_construct_properties,
-					    GObjectConstructParam *construct_properties);
+static void rb_sourcelist_constructed (GObject *object);
 static void rb_sourcelist_finalize (GObject *object);
 static void rb_sourcelist_set_property (GObject *object,
 					guint prop_id,
@@ -141,7 +139,7 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 	o_class = (GObjectClass *) class;
 	object_class = (GtkObjectClass *) class;
 
-	o_class->constructor = rb_sourcelist_constructor;
+	o_class->constructed = rb_sourcelist_constructed;
 	o_class->finalize = rb_sourcelist_finalize;
 	o_class->set_property = rb_sourcelist_set_property;
 	o_class->get_property = rb_sourcelist_get_property;
@@ -249,20 +247,16 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 	g_type_class_add_private (class, sizeof (RBSourceListPrivate));
 }
 
-static GObject *
-rb_sourcelist_constructor (GType type,
-			   guint n_construct_properties,
-			   GObjectConstructParam *construct_properties)
+static void
+rb_sourcelist_constructed (GObject *object)
 {
 	RBSourceList *sourcelist;
 
-	sourcelist = RB_SOURCELIST (G_OBJECT_CLASS (rb_sourcelist_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_sourcelist_parent_class, constructed, object);
+	sourcelist = RB_SOURCELIST (object);
 
 	gtk_container_add (GTK_CONTAINER (sourcelist),
 			   sourcelist->priv->treeview);
-
-	return G_OBJECT (sourcelist);
 }
 
 static void

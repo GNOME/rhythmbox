@@ -65,8 +65,7 @@
 
 static void rb_tray_icon_class_init (RBTrayIconClass *klass);
 static void rb_tray_icon_init (RBTrayIcon *icon);
-static GObject *rb_tray_icon_constructor (GType type, guint n_construct_properties,
-					  GObjectConstructParam *construct_properties);
+static void rb_tray_icon_constructed (GObject *object);
 static void rb_tray_icon_dispose (GObject *object);
 static void rb_tray_icon_set_property (GObject *object,
 					  guint prop_id,
@@ -129,7 +128,7 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->dispose = rb_tray_icon_dispose;
-	object_class->constructor = rb_tray_icon_constructor;
+	object_class->constructed = rb_tray_icon_constructed;
 
 	object_class->set_property = rb_tray_icon_set_property;
 	object_class->get_property = rb_tray_icon_get_property;
@@ -196,18 +195,13 @@ rb_tray_icon_init (RBTrayIcon *icon)
 	gtk_widget_show_all (GTK_WIDGET (icon->priv->ebox));
 }
 
-static GObject *
-rb_tray_icon_constructor (GType type, guint n_construct_properties,
-			  GObjectConstructParam *construct_properties)
+static void
+rb_tray_icon_constructed (GObject *object)
 {
 	RBTrayIcon *tray;
-	RBTrayIconClass *klass;
 
-	klass = RB_TRAY_ICON_CLASS (g_type_class_peek (RB_TYPE_TRAY_ICON));
-
-	tray = RB_TRAY_ICON (G_OBJECT_CLASS (rb_tray_icon_parent_class)->constructor
-				(type, n_construct_properties,
-				 construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_tray_icon_parent_class, constructed, object);
+	tray = RB_TRAY_ICON (object);
 
 	g_object_get (tray->priv->shell,
 		      "shell-player", &tray->priv->shell_player,
@@ -221,8 +215,6 @@ rb_tray_icon_constructor (GType type, guint n_construct_properties,
 	g_signal_connect_object (tray, "query-tooltip",
 				 G_CALLBACK (rb_status_icon_plugin_set_tooltip),
 				 tray->priv->plugin, 0);
-
-	return G_OBJECT (tray);
 }
 
 static void

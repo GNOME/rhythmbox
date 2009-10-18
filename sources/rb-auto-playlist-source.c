@@ -62,8 +62,7 @@
  * results.
  */
 
-static GObject *rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
-						      GObjectConstructParam *construct_properties);
+static void rb_auto_playlist_source_constructed (GObject *object);
 static void rb_auto_playlist_source_dispose (GObject *object);
 static void rb_auto_playlist_source_finalize (GObject *object);
 static void rb_auto_playlist_source_set_property (GObject *object,
@@ -151,7 +150,7 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
-	object_class->constructor = rb_auto_playlist_source_constructor;
+	object_class->constructed = rb_auto_playlist_source_constructed;
 	object_class->dispose = rb_auto_playlist_source_dispose;
 	object_class->finalize = rb_auto_playlist_source_finalize;
 	object_class->set_property = rb_auto_playlist_source_set_property;
@@ -242,19 +241,18 @@ rb_auto_playlist_source_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_auto_playlist_source_parent_class)->finalize (object);
 }
 
-static GObject *
-rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
-				      GObjectConstructParam *construct_properties)
+static void
+rb_auto_playlist_source_constructed (GObject *object)
 {
 	RBEntryView *songs;
 	RBAutoPlaylistSource *source;
-	GObjectClass *parent_class = G_OBJECT_CLASS (rb_auto_playlist_source_parent_class);
 	RBAutoPlaylistSourcePrivate *priv;
 	RBShell *shell;
 	RhythmDBEntryType entry_type;
 
-	source = RB_AUTO_PLAYLIST_SOURCE (
-			parent_class->constructor (type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_auto_playlist_source_parent_class, constructed, object);
+
+	source = RB_AUTO_PLAYLIST_SOURCE (object);
 	priv = GET_PRIVATE (source);
 
 	priv->paned = gtk_vpaned_new ();
@@ -302,8 +300,6 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 	g_object_unref (songs);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
-
-	return G_OBJECT (source);
 }
 
 /**

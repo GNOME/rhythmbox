@@ -45,9 +45,7 @@
 
 static void     rb_fm_radio_source_class_init  (RBFMRadioSourceClass *class);
 static void     rb_fm_radio_source_init        (RBFMRadioSource *self);
-static GObject *rb_fm_radio_source_constructor (GType type,
-						guint n_construct_properties,
-						GObjectConstructParam *construct_properties);
+static void	rb_fm_radio_source_constructed (GObject *object);
 static void     rb_fm_radio_source_dispose     (GObject *object);
 static char    *rb_fm_radio_source_get_playback_uri (RhythmDBEntry *entry, gpointer data);
 static void     rb_fm_radio_source_do_query    (RBFMRadioSource *self);
@@ -98,7 +96,7 @@ rb_fm_radio_source_class_init (RBFMRadioSourceClass *class)
 	GObjectClass *object_class = G_OBJECT_CLASS (class);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (class);
 
-	object_class->constructor = rb_fm_radio_source_constructor;
+	object_class->constructed = rb_fm_radio_source_constructed;
 	object_class->dispose = rb_fm_radio_source_dispose;
 
 	g_type_class_add_private (class, sizeof (RBFMRadioSourcePrivate));
@@ -119,16 +117,14 @@ rb_fm_radio_source_init (RBFMRadioSource *self)
 		self, RB_TYPE_FM_RADIO_SOURCE, RBFMRadioSourcePrivate);
 }
 
-static GObject *
-rb_fm_radio_source_constructor (GType type, guint n_construct_properties,
-				GObjectConstructParam *construct_properties)
+static void
+rb_fm_radio_source_constructed (GObject *object)
 {
 	RBFMRadioSource *self;
 	RBShell *shell;
 
-	self = RB_FM_RADIO_SOURCE (
-		G_OBJECT_CLASS (rb_fm_radio_source_parent_class)->constructor
-		(type, n_construct_properties, construct_properties));
+	RB_CHAIN_GOBJECT_METHOD (rb_fm_radio_source_parent_class, constructed, object);
+	self = RB_FM_RADIO_SOURCE (object);
 
 	g_object_get (self,
 		      "shell", &shell,
@@ -178,8 +174,6 @@ rb_fm_radio_source_constructor (GType type, guint n_construct_properties,
 				 "playing-song-changed",
 				 G_CALLBACK (playing_entry_changed),
 				 self, 0);
-
-	return G_OBJECT (self);
 }
 
 RBSource *

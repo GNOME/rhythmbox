@@ -141,8 +141,7 @@ static guint rb_podcast_manager_signals[LAST_SIGNAL] = { 0 };
 /* functions */
 static void rb_podcast_manager_class_init 		(RBPodcastManagerClass *klass);
 static void rb_podcast_manager_init 			(RBPodcastManager *dp);
-static GObject *rb_podcast_manager_constructor 		(GType type, guint n_construct_properties,
-			   				 GObjectConstructParam *construct_properties);
+static void rb_podcast_manager_constructed		(GObject *object);
 static void rb_podcast_manager_dispose 			(GObject *object);
 static void rb_podcast_manager_finalize 		(GObject *object);
 static void rb_podcast_manager_set_property 		(GObject *object,
@@ -195,7 +194,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->constructor = rb_podcast_manager_constructor;
+	object_class->constructed = rb_podcast_manager_constructed;
 	object_class->dispose = rb_podcast_manager_dispose;
 	object_class->finalize = rb_podcast_manager_finalize;
 
@@ -291,21 +290,14 @@ rb_podcast_manager_init (RBPodcastManager *pd)
 	eel_gconf_monitor_add (CONF_STATE_PODCAST_PREFIX);
 }
 
-static GObject *
-rb_podcast_manager_constructor (GType type, guint n_construct_properties,
-				GObjectConstructParam *construct_properties)
+static void
+rb_podcast_manager_constructed (GObject *object)
 {
-	RBPodcastManager *pd;
-
-	pd = RB_PODCAST_MANAGER (G_OBJECT_CLASS (rb_podcast_manager_parent_class)
-			->constructor (type, n_construct_properties, construct_properties));
-
+	RBPodcastManager *pd = RB_PODCAST_MANAGER (object);
+	RB_CHAIN_GOBJECT_METHOD (rb_podcast_manager_parent_class, constructed, object);
 	pd->priv->update_interval_notify_id = eel_gconf_notification_add (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL,
 	                    			       			  rb_podcast_manager_config_changed,
 	                            		       			  pd);
-
-	return G_OBJECT (pd);
-
 }
 
 static void

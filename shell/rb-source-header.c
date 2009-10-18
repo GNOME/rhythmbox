@@ -200,27 +200,6 @@ ui_manager_add_widget_cb (GtkUIManager *ui_manager,
 	}
 }
 
-static GObject *
-rb_source_header_constructor (GType type,
-			      guint n_construct_properties,
-			      GObjectConstructParam *construct_properties)
-{
-	RBSourceHeader *header;
-	RBSourceHeaderClass *klass;
-
-	klass = RB_SOURCE_HEADER_CLASS (g_type_class_peek (RB_TYPE_SOURCE_HEADER));
-
-	header = RB_SOURCE_HEADER (G_OBJECT_CLASS (rb_source_header_parent_class)->
-				   constructor (type, n_construct_properties, construct_properties));
-
-	g_signal_connect (G_OBJECT (header->priv->ui_manager), "add_widget",
-			  G_CALLBACK (ui_manager_add_widget_cb), header);
-
-	header->priv->source_ui_merge_id = gtk_ui_manager_new_merge_id (header->priv->ui_manager);
-
-	return G_OBJECT (header);
-}
-
 static void
 rb_source_header_class_init (RBSourceHeaderClass *klass)
 {
@@ -228,7 +207,6 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 
 	object_class->finalize = rb_source_header_finalize;
 	object_class->dispose = rb_source_header_dispose;
-	object_class->constructor = rb_source_header_constructor;
 
 	object_class->set_property = rb_source_header_set_property;
 	object_class->get_property = rb_source_header_get_property;
@@ -587,6 +565,10 @@ rb_source_header_set_property (GObject *object,
 		break;
 	case PROP_UI_MANAGER:
 		header->priv->ui_manager = g_value_get_object (value);
+		g_signal_connect (G_OBJECT (header->priv->ui_manager), "add_widget",
+				  G_CALLBACK (ui_manager_add_widget_cb), header);
+
+		header->priv->source_ui_merge_id = gtk_ui_manager_new_merge_id (header->priv->ui_manager);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

@@ -273,13 +273,16 @@ mpid_device_init (MPIDDevice *device)
 	device->folder_depth = -1;
 }
 
-static GObject *
-mpid_device_constructor (GType type, guint n_properties, GObjectConstructParam *properties)
+static void
+mpid_device_constructed (GObject *object)
 {
-	GObjectClass *parent_class = G_OBJECT_CLASS (mpid_device_parent_class);
 	MPIDDevice *device;
 
-	device = MPID_DEVICE (parent_class->constructor (type, n_properties, properties));
+	if (G_OBJECT_CLASS (mpid_device_parent_class)->constructed) {
+		G_OBJECT_CLASS (mpid_device_parent_class)->constructed (object);
+	}
+
+	device = MPID_DEVICE (object);
 
 	mpid_device_db_lookup (device);
 	if (device->source == MPID_SOURCE_SYSTEM) {
@@ -290,8 +293,6 @@ mpid_device_constructor (GType type, guint n_properties, GObjectConstructParam *
 	if (device->source == MPID_SOURCE_OVERRIDE) {
 		mpid_device_debug (device, "override file");
 	}
-
-	return G_OBJECT (device);
 }
 
 static void
@@ -299,7 +300,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->constructor = mpid_device_constructor;
+	object_class->constructed = mpid_device_constructed;
 	object_class->finalize = mpid_device_finalize;
 	object_class->get_property = mpid_device_get_property;
 	object_class->set_property = mpid_device_set_property;
