@@ -149,7 +149,6 @@ mpid_device_get_device_path (MPIDDevice *device)
 		g_free (mount_path);
 		return device_path;
 	}
-	g_free (mount_path);
 
 	/* it's not a mount point, so check if it's the path to a mounted device */
 	mounts = g_unix_mounts_get (NULL);
@@ -163,6 +162,7 @@ mpid_device_get_device_path (MPIDDevice *device)
 		g_unix_mount_free (mount);
 	}
 	g_list_free (mounts);
+	g_free (mount_path);
 
 	if (device_path == NULL) {
 		mpid_debug ("unable to find device path for mount point %s\n", device->input_path);
