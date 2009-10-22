@@ -1224,7 +1224,6 @@ rb_playlist_source_recorder_constructed (GObject *object)
                                                  "%s", msg);
                 gtk_dialog_run (GTK_DIALOG (dialog));
                 g_free (msg);
-                return G_OBJECT (source);
         }
 
         update_speed_combobox (source);
