@@ -12,7 +12,10 @@ import gobject, gtk
 
 import gconf
 
-import louie
+try:
+	import louie
+except ImportError:
+	import coherence.extern.louie as louie
 
 from coherence import log
 

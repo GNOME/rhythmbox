@@ -13,7 +13,10 @@ import rhythmdb
 from coherence.upnp.core.soap_service import errorCode
 from coherence.upnp.core import DIDLLite
 
-import louie
+try:
+	import louie
+except ImportError:
+	import coherence.extern.louie as louie
 
 from coherence.extern.simple_plugin import Plugin
 

@@ -6,7 +6,11 @@
 
 import os.path
 import rhythmdb
-import louie
+try:
+	import louie
+except ImportError:
+	import coherence.extern.louie as louie
+
 import urllib
 
 from coherence import __version_info__
