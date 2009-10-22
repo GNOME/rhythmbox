@@ -212,6 +212,25 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 	_rb_encoder_emit_completed (RB_ENCODER (encoder));
 }
 
+static void
+output_close_cb (GOutputStream *stream, GAsyncResult *result, RBEncoderGst *encoder)
+{
+	GError *error = NULL;
+	rb_debug ("finished closing output stream");
+	g_output_stream_close_finish (encoder->priv->outstream, result, &error);
+	if (error != NULL) {
+		rb_debug ("error closing output stream: %s", error->message);
+		g_error_free (error);
+	}
+
+	rb_encoder_gst_emit_completed (encoder);
+
+	g_object_unref (encoder->priv->outstream);
+	encoder->priv->outstream = NULL;
+
+	g_object_unref (encoder);
+}
+
 static gboolean
 bus_watch_cb (GstBus *bus, GstMessage *message, gpointer data)
 {
@@ -241,24 +260,23 @@ bus_watch_cb (GstBus *bus, GstMessage *message, gpointer data)
 		break;
 
 	case GST_MESSAGE_EOS:
-		rb_debug ("received EOS");
 
 		gst_element_set_state (encoder->priv->pipeline, GST_STATE_NULL);
 		if (encoder->priv->outstream != NULL) {
-			GError *error = NULL;
-			g_output_stream_close (encoder->priv->outstream, NULL, &error);
-			if (error != NULL) {
-				rb_debug ("error closing output stream: %s", error->message);
-				g_error_free (error);
-			}
-			g_object_unref (encoder->priv->outstream);
-			encoder->priv->outstream = NULL;
+			rb_debug ("received EOS, closing output stream");
+			g_output_stream_close_async (encoder->priv->outstream,
+						     G_PRIORITY_DEFAULT,
+						     NULL,
+						     (GAsyncReadyCallback) output_close_cb,
+						     g_object_ref (encoder));
+		} else {
+			rb_debug ("received EOS, but there's no output stream");
+			rb_encoder_gst_emit_completed (encoder);
+
+			g_object_unref (encoder->priv->pipeline);
+			encoder->priv->pipeline = NULL;
 		}
 
-		rb_encoder_gst_emit_completed (encoder);
-
-		g_object_unref (encoder->priv->pipeline);
-		encoder->priv->pipeline = NULL;
 		break;
 
 	default:
