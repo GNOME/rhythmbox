@@ -3719,7 +3719,6 @@ rb_player_gst_xfade_set_volume (RBPlayer *iplayer, float volume)
 #if GST_CHECK_VERSION(0,10,25)
 		if (gst_element_implements_interface (player->priv->volume_handler,
 						      GST_TYPE_STREAM_VOLUME)) {
-			rb_debug ("setting volume to %f using stream volume interface", v);
 			gst_stream_volume_set_volume (GST_STREAM_VOLUME (player->priv->volume_handler),
 						      GST_STREAM_VOLUME_FORMAT_CUBIC, v);
 		} else {
