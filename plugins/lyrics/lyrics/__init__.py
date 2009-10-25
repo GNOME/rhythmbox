@@ -293,8 +293,9 @@ class LyricPane(object):
 
 class LyricWindow (gtk.Window):
 
-	def __init__(self):
+	def __init__(self, shell):
 		gtk.Window.__init__(self)
+		self.shell = shell
 		self.set_border_width(12)
 
 		close = gtk.Button(stock=gtk.STOCK_CLOSE)
@@ -306,13 +307,34 @@ class LyricWindow (gtk.Window):
 		bbox.set_layout(gtk.BUTTONBOX_END)
 		bbox.pack_start(close)
 		lyrics_view.pack_start(bbox, expand=False)
+
+		sp = shell.get_player ()
+		self.ppc_id = sp.connect('playing-song-property-changed', self.playing_property_changed)
 	
 		self.add(lyrics_view)
 		self.set_default_size(400, 300)
 		self.show_all()
 
-	def s_title(self, title, artist):
+	def destroy(self):
+		sp = self.shell.get_player ()
+		sp.disconnect (self.ppc_id)
+		gtk.Window.destroy(self)
+
+	def playing_property_changed(self, player, uri, prop, old_val, new_val):
+		if (prop == STREAM_SONG_TITLE):
+			self.update_song_lyrics(player.get_playing_entry())
+
+	
+	def __got_lyrics(self, text):
+		self.buffer.set_text (text)
+
+	def update_song_lyrics(self, entry):
+		db = self.shell.props.db
+		(artist, title) = get_artist_and_title(db, entry)
 		self.set_title(title + " - " + artist + " - " + _("Lyrics"))
+		lyrics_grabber = LyricGrabber(db, entry)
+		lyrics_grabber.search_lyrics(self.__got_lyrics)
+
 
 class LyricsDisplayPlugin(rb.Plugin):
 
@@ -336,11 +358,13 @@ class LyricsDisplayPlugin(rb.Plugin):
 		uim.ensure_update ()
 
 		sp = shell.get_player ()
-		self.ppc_id = sp.connect('playing-song-property-changed', self.playing_property_changed)
 		self.pec_id = sp.connect('playing-song-changed', self.playing_entry_changed)
 		self.playing_entry_changed (sp, sp.get_playing_entry ())
 
 		self.csi_id = shell.connect('create_song_info', self.create_song_info)
+
+		db = shell.props.db
+		self.lyric_req_id = db.connect_after ('entry-extra-metadata-request::rb:lyrics', self.lyrics_request)
 
 	def deactivate (self, shell):
 			
@@ -351,10 +375,12 @@ class LyricsDisplayPlugin(rb.Plugin):
 		self.action_group = None
 		self.action = None
 
-		sp = shell.get_player ()
+		sp = self.shell.get_player ()
 		sp.disconnect (self.ppc_id)
-		sp.disconnect (self.pec_id)
+
 		shell.disconnect (self.csi_id)
+
+		self.props.db.disconnect (self.lyric_req_id)
 
 		if self.window is not None:
 			self.window.destroy ()
@@ -367,30 +393,6 @@ class LyricsDisplayPlugin(rb.Plugin):
 		dialog.present()
 		return dialog
 
-	def playing_property_changed(self, player, uri, prop, old_val, new_val):
-		if (prop == STREAM_SONG_TITLE):
-			self.update_song_lyrics(player.get_playing_entry())
-
-	
-	def playing_entry_changed (self, sp, entry):
-		if entry is not None:
-			self.action.set_sensitive (True)
-			self.update_song_lyrics(entry)
-		else:
-			self.action.set_sensitive (False)
-
-	def __got_lyrics(self, text):
-		# don't do anything if the window has already been destroyed
-		if self.window is not None:
-			self.window.buffer.set_text (text)
-
-	def update_song_lyrics(self, entry):
-		if self.window is not None:
-			db = self.shell.get_property ("db")
-			(artist, title) = get_artist_and_title(db, entry)
-			self.window.s_title(title, artist)
-			lyrics_grabber = LyricGrabber(db, entry)
-			lyrics_grabber.search_lyrics(self.__got_lyrics)
 
 	def show_song_lyrics (self, action, shell):
 
@@ -398,20 +400,34 @@ class LyricsDisplayPlugin(rb.Plugin):
 			self.window.destroy ()
 			self.window = None
 
-		db = shell.get_property ("db")
 		sp = shell.get_player ()
 		entry = sp.get_playing_entry ()
 
 		if entry is not None:
-			self.window = LyricWindow()
+			self.window = LyricWindow(shell)
 			self.window.connect("destroy", self.window_deleted)
-			self.update_song_lyrics( entry )
+			self.window.update_song_lyrics(entry)
+
+	def playing_entry_changed (self, sp, entry):
+		if entry is not None:
+			self.action.set_sensitive (True)
+			if self.window is not None:
+				self.window.update_song_lyrics(entry)
+		else:
+			self.action.set_sensitive (False)
 
 	def window_deleted (self, window):
 		print "lyrics window destroyed"
 		self.window = None
 	
 	def create_song_info (self, shell, song_info, is_multiple):
-
 		if is_multiple is False:
 			x = LyricPane(shell.get_property ("db"), song_info)
+
+	def lyrics_request (self, db, entry):
+		def lyrics_results(text):
+			db.emit_entry_extra_metadata_notify (entry, 'rb:lyrics', text)
+
+		lyrics_grabber = LyricGrabber(db, entry)
+		lyrics_grabber.search_lyrics(lyrics_results)
+
