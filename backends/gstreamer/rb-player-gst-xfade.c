@@ -158,6 +158,9 @@
 #include <gst/gst.h>
 #include <gst/controller/gstcontroller.h>
 #include <gst/base/gstbasetransform.h>
+#if GST_CHECK_VERSION(0,10,25)
+#include <gst/interfaces/streamvolume.h>
+#endif
 #include <gst/pbutils/pbutils.h>
 
 #include "rb-player.h"
@@ -2622,7 +2625,20 @@ tick_timeout (RBPlayerGstXFade *player)
 static gboolean
 emit_volume_changed_idle (RBPlayerGstXFade *player)
 {
-	_rb_player_emit_volume_changed (RB_PLAYER (player), player->priv->cur_volume);
+	double vol;
+
+#if GST_CHECK_VERSION(0,10,25)
+	if (gst_element_implements_interface (player->priv->volume_handler, GST_TYPE_STREAM_VOLUME)) {
+		vol = gst_stream_volume_get_volume (GST_STREAM_VOLUME (player->priv->volume_handler),
+						    GST_STREAM_VOLUME_FORMAT_CUBIC);
+	} else {
+		vol = player->priv->cur_volume;
+	}
+#else
+	vol = player->priv->cur_volume;
+#endif
+
+	_rb_player_emit_volume_changed (RB_PLAYER (player), vol);
 	return FALSE;
 }
 
@@ -3700,7 +3716,18 @@ rb_player_gst_xfade_set_volume (RBPlayer *iplayer, float volume)
 		gdouble v = (gdouble)volume;
 
 		/* maybe use a controller here for smoother changes? */
+#if GST_CHECK_VERSION(0,10,25)
+		if (gst_element_implements_interface (player->priv->volume_handler,
+						      GST_TYPE_STREAM_VOLUME)) {
+			rb_debug ("setting volume to %f using stream volume interface", v);
+			gst_stream_volume_set_volume (GST_STREAM_VOLUME (player->priv->volume_handler),
+						      GST_STREAM_VOLUME_FORMAT_CUBIC, v);
+		} else {
+			g_object_set (player->priv->volume_handler, "volume", v, NULL);
+		}
+#else
 		g_object_set (player->priv->volume_handler, "volume", v, NULL);
+#endif
 		player->priv->volume_applied = player->priv->volume_changed;
 	}
 	player->priv->cur_volume = volume;
@@ -3711,6 +3738,12 @@ static float
 rb_player_gst_xfade_get_volume (RBPlayer *iplayer)
 {
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
+
+#if GST_CHECK_VERSION(0,10,25)
+	if (gst_element_implements_interface (player->priv->volume_handler, GST_TYPE_STREAM_VOLUME))
+		return gst_stream_volume_get_volume (GST_STREAM_VOLUME (player->priv->volume_handler),
+						     GST_STREAM_VOLUME_FORMAT_CUBIC);
+#endif
 
 	return player->priv->cur_volume;
 }
