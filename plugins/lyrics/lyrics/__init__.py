@@ -376,7 +376,7 @@ class LyricsDisplayPlugin(rb.Plugin):
 		self.action = None
 
 		sp = self.shell.get_player ()
-		sp.disconnect (self.ppc_id)
+		sp.disconnect (self.pec_id)
 
 		shell.disconnect (self.csi_id)
 
