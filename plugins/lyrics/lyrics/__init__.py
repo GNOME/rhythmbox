@@ -380,7 +380,7 @@ class LyricsDisplayPlugin(rb.Plugin):
 
 		shell.disconnect (self.csi_id)
 
-		self.props.db.disconnect (self.lyric_req_id)
+		shell.props.db.disconnect (self.lyric_req_id)
 
 		if self.window is not None:
 			self.window.destroy ()
