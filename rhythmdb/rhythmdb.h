@@ -36,7 +36,6 @@
 #include <stdarg.h>
 #include <libxml/tree.h>
 
-#include "config.h"
 #include "rb-refstring.h"
 #include "rb-string-value-map.h"
 #include "rhythmdb-query-results.h"

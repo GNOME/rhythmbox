@@ -30,8 +30,6 @@
 #ifndef RHYTHMDB_PRIVATE_H
 #define RHYTHMDB_PRIVATE_H
 
-#include "config.h"
-
 #include "rhythmdb.h"
 #include "rb-refstring.h"
 #include "rb-metadata.h"
