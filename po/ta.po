@@ -1,4 +1,4 @@
-# translation of rhythmbox.po.master.ta.po to Tamil
+# translation of rhythmbox.master.ta.po to Tamil
 # Tamil translation of rhythmbox.
 # Copyright (C) 2009 rhythmbox's COPYRIGHT HOLDER
 # This file is distributed under the same license as the rhythmbox package.
@@ -7,10 +7,10 @@
 # I. Felix <ifelix@redhat.com>, 2009.
 msgid ""
 msgstr ""
-"Project-Id-Version: rhythmbox.po.master.ta\n"
+"Project-Id-Version: rhythmbox.master.ta\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-06-26 00:16+0000\n"
-"PO-Revision-Date: 2009-07-03 15:56+0530\n"
+"POT-Creation-Date: 2009-10-10 05:23+0000\n"
+"PO-Revision-Date: 2009-10-29 15:32+0530\n"
 "Last-Translator: I. Felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <fedora-trans-ta@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -26,31 +26,32 @@ msgstr ""
 "\n"
 "\n"
 "\n"
+"\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:587
+#: ../backends/gstreamer/rb-encoder-gst.c:572
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "கோப்பு \"%s\"ஐ மேலெழுத வேண்டுமா?"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:658
+#: ../backends/gstreamer/rb-encoder-gst.c:644
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "ஒரு GStreamer சிங் உருப்படி %sக்கு எழுத உருவாக்க முடியவில்லை"
 
-#: ../backends/gstreamer/rb-player-gst.c:369
+#: ../backends/gstreamer/rb-player-gst.c:368
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr "playbin2 உருப்படியை உருவாக்க முடியவில்லை; உங்கள் GStreamer நிறுவலை சரிபார்க்கவும்"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:583
+#: ../backends/gstreamer/rb-player-gst.c:582
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2754
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "வெளிப்பாடு சாதனத்தை திறக்க முடியவில்லை: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:628
+#: ../backends/gstreamer/rb-player-gst.c:627
 #, c-format
 msgid "Unable to start playback pipeline"
 msgstr "playback pipelineஐ துவக்க முடியவில்லை"
@@ -492,10 +493,9 @@ msgid "Recently Played"
 msgstr "சமீபத்தில் இயக்கப்பட்டது"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../plugins/power-manager/rb-power-manager-plugin.c:207
 #: ../plugins/status-icon/rb-status-icon-plugin.c:60
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1524 ../shell/rb-shell.c:1037
-#: ../shell/rb-shell.c:2006
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1524 ../shell/rb-shell.c:1022
+#: ../shell/rb-shell.c:1989
 msgid "Music Player"
 msgstr "Music Player"
 
@@ -504,6 +504,11 @@ msgid "Play and organize your music collection"
 msgstr "உங்கள் இசை தொகுப்பை இசை அல்லது ஒழுங்குப்படுத்து"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
+#| msgid "Quit Rhythmbox"
+msgid "Rhythmbox"
+msgstr "ரிதம் பெட்டி"
+
+#: ../data/rhythmbox.desktop.in.in.h:4
 msgid "Rhythmbox Music Player"
 msgstr "ரிதம்பாக்ஸ் இசை இயக்கி"
 
@@ -609,38 +614,40 @@ msgstr "%b %d %Y"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:581
-#: ../lib/rb-util.c:821
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:93
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:95
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:180
+#: ../lib/rb-cut-and-paste-code.c:326 ../lib/rb-util.c:576
+#: ../lib/rb-util.c:816
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:98
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
+#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:238
+#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:242
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:181
-#: ../plugins/audiocd/rb-audiocd-source.c:373
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:182
+#: ../plugins/audiocd/rb-audiocd-source.c:444
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:519
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:523
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:493
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:497
 #: ../plugins/daap/rb-daap-connection.c:698
-#: ../plugins/generic-player/rb-generic-player-source.c:1401
-#: ../plugins/ipod/rb-ipod-source.c:305
+#: ../plugins/generic-player/rb-generic-player-source.c:1063
+#: ../plugins/ipod/rb-ipod-source.c:306
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:527
 #: ../plugins/iradio/rb-iradio-source.c:1092
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
-#: ../plugins/lyrics/lyrics/__init__.py:79
 #: ../plugins/lyrics/lyrics/__init__.py:81
-#: ../plugins/mtpdevice/rb-mtp-source.c:552
-#: ../plugins/mtpdevice/rb-mtp-source.c:924
-#: ../plugins/mtpdevice/rb-mtp-source.c:1015
-#: ../plugins/status-icon/rb-status-icon-plugin.c:706
+#: ../plugins/lyrics/lyrics/__init__.py:83
+#: ../plugins/mtpdevice/rb-mtp-source.c:446
+#: ../plugins/mtpdevice/rb-mtp-source.c:780
+#: ../plugins/mtpdevice/rb-mtp-source.c:891
+#: ../plugins/status-icon/rb-status-icon-plugin.c:727
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
-#: ../podcast/rb-podcast-manager.c:1873
+#: ../podcast/rb-podcast-manager.c:1875
 #: ../podcast/rb-podcast-properties-dialog.c:483
 #: ../podcast/rb-podcast-properties-dialog.c:535
 #: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1287
 #: ../rhythmdb/rhythmdb-tree.c:1291 ../rhythmdb/rhythmdb-tree.c:1295
-#: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb.c:1813
-#: ../shell/rb-shell-player.c:1670 ../sources/rb-podcast-source.c:1657
+#: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb.c:1817
+#: ../shell/rb-shell-player.c:1672 ../sources/rb-podcast-source.c:1657
 #: ../widgets/rb-entry-view.c:1044 ../widgets/rb-entry-view.c:1066
 #: ../widgets/rb-entry-view.c:1520 ../widgets/rb-entry-view.c:1532
 #: ../widgets/rb-entry-view.c:1544 ../widgets/rb-song-info.c:882
@@ -653,63 +660,55 @@ msgstr "தெரியாத"
 msgid "Unable to move %s to %s: %s"
 msgstr "%s இலிருந்து %s: %sக்கு நகர்த்த முடியவில்லை"
 
-#: ../lib/rb-file-helpers.c:380
+#: ../lib/rb-file-helpers.c:378
 #, c-format
 msgid "Too many symlinks"
 msgstr "மிக அதிக symlinks"
 
-#: ../lib/rb-file-helpers.c:988
+#: ../lib/rb-file-helpers.c:986
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "%sஇல் காலி இடத்தை பெற முடியவில்லை: %s"
 
-#: ../lib/rb-proxy-config.c:218
-msgid "HTTP proxy configuration error"
-msgstr "HTTP ப்ராக்ஸி கட்டமைப்பு பிழை"
-
-#: ../lib/rb-proxy-config.c:219
-msgid "Rhythmbox does not support automatic proxy configuration"
-msgstr "Rhythmbox தானியக்க ப்ராக்ஸி கட்டமைப்புக்கு துணைபுரியவில்லை"
-
-#: ../lib/rb-util.c:583 ../remote/dbus/rb-client.c:144
+#: ../lib/rb-util.c:578 ../remote/dbus/rb-client.c:144
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:585 ../remote/dbus/rb-client.c:146
+#: ../lib/rb-util.c:580 ../remote/dbus/rb-client.c:146
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:620
+#: ../lib/rb-util.c:615
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d இல் %d:%02d மீதமுள்ளது"
 
-#: ../lib/rb-util.c:624
+#: ../lib/rb-util.c:619
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d இல் %d:%02d:%02d மீதமுள்ளது"
 
-#: ../lib/rb-util.c:629
+#: ../lib/rb-util.c:624
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d இல் %d:%02d"
 
-#: ../lib/rb-util.c:633
+#: ../lib/rb-util.c:628
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d இல் %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-dbus-client.c:377
+#: ../metadata/rb-metadata-dbus-client.c:381
 #, c-format
 msgid "Internal GStreamer problem; file a bug"
 msgstr "உள்ளார்ந்த GStreamer பிழை, ஒரு பிழையை அறிக்கையிடவும்"
 
-#: ../metadata/rb-metadata-dbus-client.c:395
-#: ../metadata/rb-metadata-dbus-client.c:431
-#: ../metadata/rb-metadata-dbus-client.c:767
-#: ../metadata/rb-metadata-dbus-client.c:777
+#: ../metadata/rb-metadata-dbus-client.c:399
+#: ../metadata/rb-metadata-dbus-client.c:435
+#: ../metadata/rb-metadata-dbus-client.c:773
+#: ../metadata/rb-metadata-dbus-client.c:783
 #, c-format
 msgid "D-BUS communication error"
 msgstr "D-BUS தொடர்பு பிழை"
@@ -807,37 +806,64 @@ msgstr ""
 msgid "_Continue"
 msgstr "தொடரவும் (_C)"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:377
+#: ../plugins/audiocd/rb-audiocd-source.c:138
+msgid "Reload"
+msgstr "மீளேற்று"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:139
+#| msgid "Magnatune Information"
+msgid "Reload Album Information"
+msgstr "ஆல்பத் தகவல் மறுஏற்றவும்"
+
+#. Info bar for non-Musicbrainz data
+#: ../plugins/audiocd/rb-audiocd-source.c:317
+#| msgid "_Album:"
+msgid "S_ubmit Album"
+msgstr "ஆல்பத்தை சமர்பி (_u)"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:318
+msgid "Hide"
+msgstr "மறை"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:320
+msgid "Could not find this album on MusicBrainz."
+msgstr "MusicBrainzல் இந்த ஆல்பத்தில் காண முடியாது."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:321
+msgid "You can improve the MusicBrainz database by adding this album."
+msgstr "MusicBrainz தரவுதளத்தின் படி இந்த ஆல்பத்தை சேர்த்து நீங்கள் வளர்க்கலாம்."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:448
 msgid "<Invalid unicode>"
 msgstr "<Invalid unicode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:423
+#: ../plugins/audiocd/rb-audiocd-source.c:494
 #, c-format
 msgid "Track %u"
 msgstr "ட்ராக் %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:483
-#: ../plugins/audiocd/rb-audiocd-source.c:491
-#: ../plugins/audiocd/rb-audiocd-source.c:853
+#: ../plugins/audiocd/rb-audiocd-source.c:554
+#: ../plugins/audiocd/rb-audiocd-source.c:562
+#: ../plugins/audiocd/rb-audiocd-source.c:950
 msgid "Couldn't load Audio CD"
 msgstr "ஆடியோ CDஐ ஏற்ற முடியவில்லை"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:484
+#: ../plugins/audiocd/rb-audiocd-source.c:555
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox CDஐ அணுக முடியவில்லை."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:492
+#: ../plugins/audiocd/rb-audiocd-source.c:563
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox CD தகவலை வாசிக்க முடியவில்லை."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:581
+#: ../plugins/audiocd/rb-audiocd-source.c:661
 #: ../sources/rb-library-source.c:150 ../widgets/rb-entry-view.c:1476
 #: ../widgets/rb-query-creator-properties.c:75
 #: ../widgets/rb-query-creator-properties.c:105
 msgid "Title"
 msgstr "தலைப்பு"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:588
+#: ../plugins/audiocd/rb-audiocd-source.c:668
 #: ../sources/rb-library-source.c:141 ../widgets/rb-entry-view.c:1486
 #: ../widgets/rb-library-browser.c:143
 #: ../widgets/rb-query-creator-properties.c:76
@@ -845,7 +871,7 @@ msgstr "தலைப்பு"
 msgid "Artist"
 msgstr "கலைஞர்"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:854
+#: ../plugins/audiocd/rb-audiocd-source.c:951
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox CD சாதனத்தை அணுக முடியவில்லை."
 
@@ -915,7 +941,7 @@ msgid "Cannot read CD: %s"
 msgstr "%s குறுந்தட்டை·படிக்க·இயலவில்லை"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:733
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:711
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -940,9 +966,9 @@ msgid "Last submission time:"
 msgstr "கடைசியாக சமர்ப்பித்த நேரம்:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1010
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:980
 #: ../plugins/iradio/rb-station-properties-dialog.c:502
-#: ../rhythmdb/rhythmdb.c:3701 ../widgets/rb-entry-view.c:992
+#: ../rhythmdb/rhythmdb.c:3706 ../widgets/rb-entry-view.c:992
 #: ../widgets/rb-entry-view.c:1579 ../widgets/rb-entry-view.c:1592
 #: ../widgets/rb-song-info.c:1345
 msgid "Never"
@@ -980,37 +1006,37 @@ msgstr "(_P) கடவுச்சொல்:"
 msgid "_Username:"
 msgstr "(_U) பயனர் பெயர்:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:216
+#: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:211
 msgid "Last.fm Preferences"
 msgstr "Last.fm விருப்பங்கள்"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1033
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1003
 msgid "OK"
 msgstr "சரி"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1036
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1815
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1006
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1768
 msgid "Logging in"
 msgstr "புகுபதிவு செய்கிறது"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1039
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1009
 msgid "Request failed"
 msgstr "வேண்டுகோள் தோல்வியுற்றது"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1042
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1012
 msgid "Incorrect username or password"
 msgstr "தவறான பயனர்பெயர் அல்லது கடவுச்சொல்"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1045
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1015
 msgid "Clock is not set correctly"
 msgstr "கடிகாரம் சரியாக அமைக்கப்படவில்லை"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1048
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:904
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1018
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:880
 msgid "This version of Rhythmbox has been banned from Last.fm."
 msgstr "Rhythmboxஇன் பதிப்பு Last.fmஇலிருந்து விலக்கப்பட்டுள்ளது."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1051
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1021
 msgid "Track submission failed too many times"
 msgstr "ட்ராக் சமர்ப்பித்தல் அதிக தடவை தோல்வியுற்றது"
 
@@ -1019,7 +1045,7 @@ msgid "Similar Artists radio"
 msgstr "ஒரே கலைஞர்கள் ரேடியோ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:192
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1291
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1267
 #, c-format
 msgid "Artists similar to %s"
 msgstr "%sஐ போல கலைஞர்கள்"
@@ -1038,7 +1064,7 @@ msgid "Artist Fan radio"
 msgstr "கலைஞர் விசிறி ரேடியோ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:194
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1293
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1269
 #, c-format
 msgid "Artists liked by fans of %s"
 msgstr "%sஇன் விசிறிகள் கலைஞர்களால் விருப்பப்படுகிறார்கள்"
@@ -1057,7 +1083,7 @@ msgid "Neighbour radio"
 msgstr "அடுத்துள்ளவரின் ரேடியோ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:196
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1301
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1277
 #, c-format
 msgid "%s's Neighbour Radio"
 msgstr "%s's அடுத்துள்ளவரின் ரேடியோ"
@@ -1067,7 +1093,7 @@ msgid "Personal radio"
 msgstr "தனிப்பட்ட ரேடியோ"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1305
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1281
 #, c-format
 msgid "%s's Personal Radio"
 msgstr "%s'sதனிப்பட்ட ரேடியோ"
@@ -1077,7 +1103,7 @@ msgid "Loved tracks"
 msgstr "விரும்பிய ட்ராக்குகள்"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:198
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1307
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1283
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr "%s's விருப்பப்பட்ட ட்ராக்குகள்"
@@ -1100,123 +1126,123 @@ msgstr "இசைப்பட்டியல்"
 msgid "%s's playlist"
 msgstr "%s'sஇசைப்பட்டியல்"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:284
 msgid "Love"
 msgstr "விருப்பம்"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:285
 msgid "Mark this song as loved"
 msgstr "இந்த பாடலை விருப்பமானதென்று குறிக்கவும்"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
 msgid "Ban"
 msgstr "தடை"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:288
 msgid "Ban the current track from being played again"
 msgstr "நடப்பு ட்ராக்கை பாடுவதிலிருந்து தடுக்கிறது"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
 msgid "Delete Station"
 msgstr "நிலையத்தை அழிக்கவும்"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:291
 msgid "Delete the selected station"
 msgstr "தேர்ந்தெடுக்கப்பட்ட நிலையத்தை அழிக்கவும்"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:295
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
 msgid "Download song"
 msgstr "பாடலை பதிவிறக்கவும்"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:296
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:294
 msgid "Download this song"
 msgstr "இந்த பாடலை பதிவிறக்கவும்"
 
 #. awful
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:516
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:501
 msgid "Enter the item to build a Last.fm station out of:"
 msgstr "ஒரு Last.fm நிலையத்தை உருவாக்க உருப்படியை உள்ளிடவும்:"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:519
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:504
 msgid "Add"
 msgstr "சேர்"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:875
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:851
 msgid "Account Settings"
 msgstr "கணக்கு அமைப்புகள்"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:900
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:876
 msgid "Account details are needed before you can connect.  Check your settings."
 msgstr "நீங்கள் இணைப்பதற்கு முன் கணக்கு விவரங்களை தேவைப்படுகிறது.  உங்கள் அமைவுகளை சரிபார்க்கவும்."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:908
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:884
 msgid "Unable to connect"
 msgstr "இணைக்க முடியவில்லை"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1282
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1258
 #, c-format
 msgid "Global Tag %s"
 msgstr "க்ளோபல் ஒட்டு %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1303
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1279
 #, c-format
 msgid "%s's Recommended Radio: %s percent"
 msgstr "%s's பரிந்துரைக்கப்பட்ட ரேடியோ: %s சதவீதம்"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1309
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1285
 #, c-format
 msgid "%s's Playlist"
 msgstr "%s's இசைப்பட்டியல்"
 
 #. Translators: variables are 1: user name, 2: tag name; for user tag radio
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1315
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1291
 #, c-format
 msgid "%s's %s Radio"
 msgstr "%s'கள் %s ரேடியோ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1319
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1295
 #, c-format
 msgid "%s Group Radio"
 msgstr "%s குழு ரேடியோ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1785
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1738
 msgid "Neighbour Radio"
 msgstr "அடுத்த வீட்டுக்கார ரேடியோர்"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1793
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1746
 msgid "Personal Radio"
 msgstr "தனிப்பட்ட ரேடியோ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1883
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1836
 msgid "Server did not respond"
 msgstr "சேவையகம் பதிலளிக்கவில்லை"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1951
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1904
 msgid "There is not enough content available to play this station."
 msgstr "இந்த நிலையத்தை இயக்க தேவையான உள்ளடக்கம் கிடைப்பெறவில்லை."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1956
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1909
 msgid "This station is available to subscribers only."
 msgstr "சந்தாகாரர்களுக்கு மட்டுமே நிலையம் கிடைக்ககூடியதாக இருக்கிறது."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1963
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1916
 msgid "The streaming system is offline for maintenance, please try again later."
 msgstr "பராமரிப்புக்கு ஸ்ட்ரீமிங் அமைப்பு ஆஃப்லைனில் உள்ளது. மீண்டும் பின்னர் முயற்சிக்கவும்."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2002
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1955
 msgid "Changing station"
 msgstr "மாற்றப்பட்ட நிலையம்"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2223
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2233
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2176
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2186
 msgid "Retrieving playlist"
 msgstr "சீர்படுத்தப்பட்ட இசைப்பட்டியல்"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2327
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2280
 msgid "Banning song"
 msgstr "பாடல் பேனிங் செய்யப்படுகிறது"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2345
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:2298
 msgid "Adding song to your Loved tracks"
 msgstr "உங்களுக்கு விருப்பப்பட்ட ட்ராக்குகளில் பாடல் சேர்க்கப்படுகிறது"
 
@@ -1636,9 +1662,7 @@ msgstr "தற்காலிக இடைவெளியை தேட முட
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MB "
 "required."
-msgstr ""
-"ஆடியோ ட்ராக்குகளை மாற்ற தற்காலிகமாக போதிய இடம் கிடைக்கவில்லை.  %s MB "
-"தேவைப்படுகிறது."
+msgstr "ஆடியோ ட்ராக்குகளை மாற்ற தற்காலிகமாக போதிய இடம் கிடைக்கவில்லை.  %s MB தேவைப்படுகிறது."
 
 #: ../plugins/cd-recorder/recorder.ui.h:1
 msgid "Create audio CD from playlist?"
@@ -1843,24 +1867,24 @@ msgstr "போர்டபெல் ப்ளேயர்ஸ்"
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "பொதுவான ஆடியோ ப்ளேயர் சாதங்களுக்காக துணைபுரிகிறது (ப்ளஸ் PSP மற்றும் நோகியோ 770)"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:98
+#: ../plugins/generic-player/rb-generic-player-plugin.c:96
 #: ../shell/rb-playlist-manager.c:1150 ../shell/rb-playlist-manager.c:1193
 msgid "New Playlist"
 msgstr "புதிய இசைப்பட்டியல்"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:99
+#: ../plugins/generic-player/rb-generic-player-plugin.c:97
 msgid "Create a new playlist on this device"
 msgstr "இந்த சாதனத்திற்கு ஒரு புதிய இசைப்பட்டியலை உருவாக்கவும்"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:101
+#: ../plugins/generic-player/rb-generic-player-plugin.c:99
 msgid "Delete Playlist"
 msgstr "இசைப்பட்டியலை அழிக்கவும்"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:102
+#: ../plugins/generic-player/rb-generic-player-plugin.c:100
 msgid "Delete this playlist"
 msgstr "இந்த இசைப்பட்டியலை அழிக்கவும்"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:982
+#: ../plugins/generic-player/rb-generic-player-source.c:627
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "(%d/%d)ஐ இறக்குகிறது"
@@ -1913,7 +1937,9 @@ msgstr "போர்டபெல் ப்ளேயர்ஸ் - ஐபாட�
 
 #: ../plugins/ipod/ipod.rb-plugin.in.h:2
 msgid "Support for Apple iPod devices (show the content, play from device)"
-msgstr "ஆப்பில் ஐபாட் சாதனங்களுக்காக துணைபுரிகிறது (உள்ளடக்கத்தை காட்டு, சாதனத்திலிருந்து இயக்குகிறது)"
+msgstr ""
+"ஆப்பில் ஐபாட் சாதனங்களுக்காக துணைபுரிகிறது (உள்ளடக்கத்தை காட்டு, சாதனத்திலிருந்து "
+"இயக்குகிறது)"
 
 #: ../plugins/ipod/ipod-info.ui.h:1
 msgid "<b>Content</b>"
@@ -1980,9 +2006,7 @@ msgstr "ஐபாட் பண்புகள்"
 msgid ""
 "<span size=\"x-large\" weight=\"bold\">Do you want to initialize your iPod?</"
 "span>"
-msgstr ""
-"<span size=\"x-large\" weight=\"bold\">உங்கள் iPodஐ துவக்க வேண்டுமா?</"
-"span>"
+msgstr "<span size=\"x-large\" weight=\"bold\">உங்கள் iPodஐ துவக்க வேண்டுமா?</span>"
 
 #: ../plugins/ipod/ipod-init.ui.h:2
 msgid ""
@@ -1991,7 +2015,12 @@ msgid ""
 "will destroy any song metadata already present. If you wish Rhythmbox to "
 "initialize the iPod, please fill in the information below. If the device is "
 "not an iPod, or you do not wish to initialize it, please click cancel."
-msgstr "Rhythmbox ஒரு துவக்கப்படாத அல்லது அழிக்கப்பட்ட ஐபாடை போன்ற சாதனத்தை கண்டிறிந்திருக்கிறது. இது Rhythmbox பயன்படுத்துவதற்கு முன் துவக்கப்பட்டிருக்க வேண்டும், ஆனால் இது அனைத்து பாடல் மெட்டா தரவையும் அழிக்கும். Rhythmbox ஐபாடை துவக்க வேண்டுமெனில், கீழே உள்ள விவரங்களை நிரப்பவும். சாதனம் ஒரு ஐபாடாக இல்லையெனில் அல்லது நீங்களை அதை துவக்க வேண்டாம் என எண்ணினால் ரத்து செய்யவும்."
+msgstr ""
+"Rhythmbox ஒரு துவக்கப்படாத அல்லது அழிக்கப்பட்ட ஐபாடை போன்ற சாதனத்தை "
+"கண்டிறிந்திருக்கிறது. இது Rhythmbox பயன்படுத்துவதற்கு முன் துவக்கப்பட்டிருக்க வேண்டும், "
+"ஆனால் இது அனைத்து பாடல் மெட்டா தரவையும் அழிக்கும். Rhythmbox ஐபாடை துவக்க "
+"வேண்டுமெனில், கீழே உள்ள விவரங்களை நிரப்பவும். சாதனம் ஒரு ஐபாடாக இல்லையெனில் அல்லது "
+"நீங்களை அதை துவக்க வேண்டாம் என எண்ணினால் ரத்து செய்யவும்."
 
 #: ../plugins/ipod/ipod-init.ui.h:3
 msgid "_Initialize"
@@ -2010,60 +2039,60 @@ msgstr "பெயர் (_N):"
 msgid "iPod detected"
 msgstr "ஐபாட் கண்டுபிடிக்கப்பட்டது"
 
-#: ../plugins/ipod/rb-ipod-helpers.c:304
+#: ../plugins/ipod/rb-ipod-helpers.c:305
 msgid "Unable to initialize new iPod"
 msgstr "புதிய"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:104 ../plugins/ipod/rb-ipod-plugin.c:113
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:109 ../shell/rb-playlist-manager.c:184
+#: ../plugins/ipod/rb-ipod-plugin.c:107 ../plugins/ipod/rb-ipod-plugin.c:116
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:124 ../shell/rb-playlist-manager.c:184
 msgid "_Rename"
 msgstr "மறுபெயரிடு (_R)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:105
+#: ../plugins/ipod/rb-ipod-plugin.c:108
 msgid "Rename iPod"
 msgstr "ஐபாட்டை மறுபெயரிடு"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:107 ../shell/rb-shell-clipboard.c:188
+#: ../plugins/ipod/rb-ipod-plugin.c:110 ../shell/rb-shell-clipboard.c:188
 #: ../sources/rb-podcast-source.c:317
 msgid "_Properties"
 msgstr "பண்புகள் (_P)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:108
+#: ../plugins/ipod/rb-ipod-plugin.c:111
 msgid "Display iPod properties"
 msgstr "ஐபாட் பண்புகளைக் காட்டவும்"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:110 ../shell/rb-shell-clipboard.c:175
+#: ../plugins/ipod/rb-ipod-plugin.c:113 ../shell/rb-shell-clipboard.c:175
 msgid "_New Playlist"
 msgstr "புதிய இசைப்பட்டியல் (_N)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:111
+#: ../plugins/ipod/rb-ipod-plugin.c:114
 msgid "Add new playlist to iPod"
 msgstr "புதிய இசைப்பட்டியல் ஐபாட்டை சேர்க்கவும்"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:114 ../shell/rb-playlist-manager.c:185
+#: ../plugins/ipod/rb-ipod-plugin.c:117 ../shell/rb-playlist-manager.c:185
 msgid "Rename playlist"
 msgstr "இசைப்பட்டியலை மறுபெயரிடு"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:116 ../shell/rb-playlist-manager.c:187
+#: ../plugins/ipod/rb-ipod-plugin.c:119 ../shell/rb-playlist-manager.c:187
 msgid "_Delete"
 msgstr "அழிக்கவும் (_D)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:117 ../shell/rb-playlist-manager.c:188
+#: ../plugins/ipod/rb-ipod-plugin.c:120 ../shell/rb-playlist-manager.c:188
 msgid "Delete playlist"
 msgstr "இசைப்பட்டியலை நீக்கவும்"
 
-#: ../plugins/ipod/rb-ipod-source.c:1210 ../sources/rb-podcast-source.c:843
+#: ../plugins/ipod/rb-ipod-source.c:1211 ../sources/rb-podcast-source.c:843
 msgid "Podcasts"
 msgstr "போட்காஸ்ட்கள்"
 
-#: ../plugins/ipod/rb-ipod-source.c:1563
+#: ../plugins/ipod/rb-ipod-source.c:1581
 msgid "New playlist"
 msgstr "புதிய இசைப்பட்டியல்"
 
 #. Translators: this is used to display the amount of storage space
 #. * used and the total storage space on an iPod.
 #.
-#: ../plugins/ipod/rb-ipod-source.c:1673
+#: ../plugins/ipod/rb-ipod-source.c:1691
 #, c-format
 msgid "%s of %s"
 msgstr "%s %sல் "
@@ -2109,7 +2138,9 @@ msgstr "http://www.jamendo.com/"
 msgid ""
 "     * A legal framework protecting the artists (thanks to the Creative "
 "Commons licenses)."
-msgstr "     * ஒரு சட்டம் சார்ந்த ஃப்ரேம் கலைஞர்களை பாதுகாக்கிறது (Creative Commons உரிமங்களுக்கு நன்றி)."
+msgstr ""
+"     * ஒரு சட்டம் சார்ந்த ஃப்ரேம் கலைஞர்களை பாதுகாக்கிறது (Creative Commons "
+"உரிமங்களுக்கு நன்றி)."
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:3
 msgid ""
@@ -2117,8 +2148,8 @@ msgid ""
 "listeners discover new artists based on their tastes\n"
 "       and on other criteria such as their location."
 msgstr ""
-"     * iRATE அடிப்படையில் ஒரு தத்தெடுக்கும் இசை பரிந்துரை அமைப்பு கேட்போரை "
-"புதிய கலைஞர்கள் அடிப்படையில் அவர்களின் விருப்பத்திற்கேற்பவும்\n"
+"     * iRATE அடிப்படையில் ஒரு தத்தெடுக்கும் இசை பரிந்துரை அமைப்பு கேட்போரை புதிய "
+"கலைஞர்கள் அடிப்படையில் அவர்களின் விருப்பத்திற்கேற்பவும்\n"
 "       அதன் இடம் தொடர்பாகவும் தேடல் உள்ளது."
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:5
@@ -2195,7 +2226,9 @@ msgstr "http://www.jamendo.com/ இதில் நீங்கள் கூட�
 
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:1
 msgid "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
-msgstr "Rhythmbox இயங்குவதற்கும் மற்றும் Jamendoவிலிருந்து ஆல்பங்களை பதிவிறக்க துணையை சேர்க்கிறது"
+msgstr ""
+"Rhythmbox இயங்குவதற்கும் மற்றும் Jamendoவிலிருந்து ஆல்பங்களை பதிவிறக்க துணையை "
+"சேர்க்கிறது"
 
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:2
 #: ../plugins/jamendo/jamendo/JamendoSource.py:62
@@ -2315,39 +2348,39 @@ msgstr "Rhythmbox ஒரு அகச்சிவப்பு ரிமோட்
 msgid "LIRC "
 msgstr "LIRC "
 
-#: ../plugins/lyrics/lyrics/__init__.py:143
-#: ../plugins/lyrics/lyrics/__init__.py:145
-#: ../plugins/lyrics/lyrics/__init__.py:154
+#: ../plugins/lyrics/lyrics/__init__.py:166
+#: ../plugins/lyrics/lyrics/__init__.py:168
+#: ../plugins/lyrics/lyrics/__init__.py:177
 msgid "No lyrics found"
 msgstr "பாடல்கள் இல்லை"
 
-#: ../plugins/lyrics/lyrics/__init__.py:188
+#: ../plugins/lyrics/lyrics/__init__.py:211
 msgid "_Save"
 msgstr "(_S) சேமி"
 
-#: ../plugins/lyrics/lyrics/__init__.py:193
-#: ../plugins/lyrics/lyrics/__init__.py:206 ../shell/rb-shell.c:393
+#: ../plugins/lyrics/lyrics/__init__.py:216
+#: ../plugins/lyrics/lyrics/__init__.py:229 ../shell/rb-shell.c:390
 msgid "_Edit"
 msgstr "தொகு (_E)"
 
-#: ../plugins/lyrics/lyrics/__init__.py:208
+#: ../plugins/lyrics/lyrics/__init__.py:231
 msgid "_Search again"
 msgstr "மீண்டும் தேடவும் (_S)"
 
-#: ../plugins/lyrics/lyrics/__init__.py:226
-#: ../plugins/lyrics/lyrics/__init__.py:295
+#: ../plugins/lyrics/lyrics/__init__.py:249
+#: ../plugins/lyrics/lyrics/__init__.py:315
 msgid "Lyrics"
 msgstr "பாடல்கள்"
 
-#: ../plugins/lyrics/lyrics/__init__.py:269
+#: ../plugins/lyrics/lyrics/__init__.py:289
 msgid "Searching for lyrics..."
 msgstr "பாடல்களுக்காக தேடுகிறது..."
 
-#: ../plugins/lyrics/lyrics/__init__.py:305
+#: ../plugins/lyrics/lyrics/__init__.py:325
 msgid "Song L_yrics"
 msgstr "பாடலுக்கான வரிகள் (_y)"
 
-#: ../plugins/lyrics/lyrics/__init__.py:306
+#: ../plugins/lyrics/lyrics/__init__.py:326
 msgid "Display lyrics for the playing song"
 msgstr "இயங்கிக் கொண்டிருக்கிற பாடலுக்கான வரிகளைக் காட்டவும்"
 
@@ -2388,7 +2421,9 @@ msgstr "     * Founder/owner runs it -- ஒரு சிறு தொழில�
 msgid ""
 "    * 50% of payment goes to artist (makes buyer feel good: they're helping "
 "the world)"
-msgstr "    * 50% சதவீதம் ஊதியம் ஆர்டிஸ்ட்டுக்கு செல்லுகிறது (நல்லதை வாங்கவும்: அவை இந்த உலகத்துக்கு பயன்படும்)"
+msgstr ""
+"    * 50% சதவீதம் ஊதியம் ஆர்டிஸ்ட்டுக்கு செல்லுகிறது (நல்லதை வாங்கவும்: அவை இந்த "
+"உலகத்துக்கு பயன்படும்)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:4
 msgid "    * All albums and artists hand-picked"
@@ -2398,7 +2433,9 @@ msgstr "    * அனைத்து ஆல்பங்கள் மற்று�
 msgid ""
 "    * Downloads and CDs are both available (no other site on the internet "
 "sells both)"
-msgstr "    * பதிவிறக்கங்கள் மற்றும் குறுவட்டுகள் இரண்டும் கிடைக்கின்ற(இணையத்தளத்தில் விற்பதற்கு வேறெந்த தளமும் இல்லை)"
+msgstr ""
+"    * பதிவிறக்கங்கள் மற்றும் குறுவட்டுகள் இரண்டும் கிடைக்கின்ற(இணையத்தளத்தில் விற்பதற்கு "
+"வேறெந்த தளமும் இல்லை)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:6
 msgid ""
@@ -2428,13 +2465,17 @@ msgstr "    * குறைந்த அழுத்த சூழல் - ஃப�
 msgid ""
 "    * Music selection is unique to Magnatune, unlike most on-line stores "
 "that have more-or-less the same (gigantic) selection\n"
-msgstr "    * இசை தேர்வு Magnatuneக்கு தனித்தன்மையானது, ஆன்லைன் ஸ்டோர்கள் போல அல்லாமல் குறைவாக (gigantic) இருக்கும்\n"
+msgstr ""
+"    * இசை தேர்வு Magnatuneக்கு தனித்தன்மையானது, ஆன்லைன் ஸ்டோர்கள் போல அல்லாமல் குறைவாக "
+"(gigantic) இருக்கும்\n"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:12
 msgid ""
 "    * No copy protection on the music (DRM) which allows playing music on "
 "any device (unlike iTunes/MSN/etc)"
-msgstr "    * இசையில் (DRM) நகல் பாதுகாப்பு இல்லை இது இசையை இசைக்க அனுமதிக்கிறது (iTunes/MSN/etc போல் அல்ல)"
+msgstr ""
+"    * இசையில் (DRM) நகல் பாதுகாப்பு இல்லை இது இசையை இசைக்க அனுமதிக்கிறது (iTunes/"
+"MSN/etc போல் அல்ல)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:13
 msgid "    * No need to \"register\" to listen or buy"
@@ -2589,7 +2630,9 @@ msgstr "128K MP3"
 msgid ""
 "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
 "expiration date listed.</span>"
-msgstr "<span weight=\"bold\" foreground=\"red\">உங்கள் கிரிடிட் கார்ட் பட்டியலிடப்பட்ட காலவதி தேதியை கடந்தது.</span>"
+msgstr ""
+"<span weight=\"bold\" foreground=\"red\">உங்கள் கிரிடிட் கார்ட் பட்டியலிடப்பட்ட "
+"காலவதி தேதியை கடந்தது.</span>"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:17
 #: ../plugins/magnatune/magnatune-purchase.ui.h:16
@@ -2912,44 +2955,53 @@ msgstr "போர்டபல் ப்ளேயர்ஸ் - MTP"
 
 #: ../plugins/mtpdevice/mtpdevice.rb-plugin.in.h:2
 msgid "Support for MTP devices (show the content, transfer, play from device)"
-msgstr "MTP சாதனங்களுக்காக துணைபுரிகிறது (உள்ளடக்கம், இடமாற்றம்,சாதனத்திலிருந்து இசைப்பதைக் காட்டு)"
+msgstr ""
+"MTP சாதனங்களுக்காக துணைபுரிகிறது (உள்ளடக்கம், இடமாற்றம்,சாதனத்திலிருந்து இசைப்பதைக் "
+"காட்டு)"
 
-#: ../plugins/mtpdevice/rb-mtp-gst-src.c:174
-#: ../plugins/mtpdevice/rb-mtp-gst-src.c:216
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:121
+#: ../shell/rb-removable-media-manager.c:165
+msgid "_Eject"
+msgstr "வெளியேற்று (_E)"
+
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:122
+msgid "Eject MTP-device"
+msgstr " MTP-சாதனத்தை வெளியேற்றவும்"
+
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:125
+msgid "Rename MTP-device"
+msgstr "MTP-சாதனத்திற்கு மறுபெயரிடு"
+
+#: ../plugins/mtpdevice/rb-mtp-source.c:683
+msgid "Digital Audio Player"
+msgstr "இரும கேட்பொலி இசைப்பி"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:411
+#: ../plugins/mtpdevice/rb-mtp-thread.c:469
+#: ../plugins/mtpdevice/rb-mtp-thread.c:487
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr "MTP சாதனத்திலிருந்து கோப்பை நகலெடுக்க முடியவில்லை: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-gst-src.c:190
+#: ../plugins/mtpdevice/rb-mtp-thread.c:432
 #, c-format
 msgid "Not enough space in %s"
 msgstr "%sல் போதிய இடமில்லை"
 
-#: ../plugins/mtpdevice/rb-mtp-gst-src.c:202
+#: ../plugins/mtpdevice/rb-mtp-thread.c:456
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "தற்காலிக கோப்பை திறக்க முடியவில்லை: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:106
-#: ../shell/rb-removable-media-manager.c:150
-msgid "_Eject"
-msgstr "வெளியேற்று (_E)"
+#: ../plugins/mtpdevice/rb-mtp-thread.c:511
+#, c-format
+#| msgid "Unable to copy file from MTP device: %s"
+msgid "Unable to send file to MTP device: %s"
+msgstr "MTP சாதனத்திக்கு கோப்பை அனுப்ப முடியவில்லை: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:107
-msgid "Eject MTP-device"
-msgstr " MTP-சாதனத்தை வெளியேற்றவும்"
-
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:110
-msgid "Rename MTP-device"
-msgstr "MTP-சாதனத்திற்கு மறுபெயரிடு"
-
-#: ../plugins/mtpdevice/rb-mtp-source.c:177
+#: ../plugins/mtpdevice/rb-mtp-thread.c:719
 msgid "Media player device error"
 msgstr "ஊடகம் இயக்கி சாதனத்தில் பிழை"
-
-#: ../plugins/mtpdevice/rb-mtp-source.c:750
-msgid "Digital Audio Player"
-msgstr "இரும கேட்பொலி இசைப்பி"
 
 #: ../plugins/power-manager/power-manager.rb-plugin.in.h:1
 msgid "Inhibit Power Manager from suspending the machine while playing"
@@ -2959,7 +3011,7 @@ msgstr "இசைக்கும் போது Inhibit மின் மேல�
 msgid "Power Manager"
 msgstr "மின் மேலாளர்"
 
-#: ../plugins/power-manager/rb-power-manager-plugin.c:208
+#: ../plugins/power-manager/rb-power-manager-plugin.c:197
 msgid "Playing"
 msgstr "விளையாடுகிறது"
 
@@ -2988,7 +3040,10 @@ msgid ""
 "After you press OK, Rhythmbox will wait until you connect to it with winpdb "
 "or rpdb2. If you have not set a debugger password in GConf, it will use the "
 "default password ('rhythmbox')."
-msgstr "சரி என அழுத்திய பின், Rhythmbox  winpdb அல்லது rpdb2 உடன் இணைக்கும் வரை காத்திருக்கும். நீங்கள் GConfஇல் கடவுச்சொல்லை அமைக்கவில்லையெனில், அது முன்னிருப்பு கடவுச்சொல்லை எடுத்துக்கொள்ளும் ('rhythmbox')."
+msgstr ""
+"சரி என அழுத்திய பின், Rhythmbox  winpdb அல்லது rpdb2 உடன் இணைக்கும் வரை "
+"காத்திருக்கும். நீங்கள் GConfஇல் கடவுச்சொல்லை அமைக்கவில்லையெனில், அது முன்னிருப்பு "
+"கடவுச்சொல்லை எடுத்துக்கொள்ளும் ('rhythmbox')."
 
 #. ex:noet:ts=8:
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:1
@@ -2998,23 +3053,6 @@ msgstr "பைதான் பணியக ஊடாடல்"
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.in.h:2
 msgid "Python Console"
 msgstr "பைத்தான் முனையம்"
-
-#: ../plugins/rb-plugin-manager.c:54
-msgid "Plugin"
-msgstr "செருகி"
-
-#: ../plugins/rb-plugin-manager.c:55
-msgid "Enabled"
-msgstr "செயலாக்கப்பட்டது"
-
-#: ../plugins/rb-plugins-engine.c:556
-msgid "Plugin Error"
-msgstr "செருகி பிழை"
-
-#: ../plugins/rb-plugins-engine.c:556
-#, c-format
-msgid "Unable to activate plugin %s"
-msgstr "சொருகுபொருள் %s ஐ செயல்படுத்த முடியவில்லை"
 
 #: ../plugins/sample-python/sample-python.py:14
 msgid "Python Source"
@@ -3054,53 +3092,53 @@ msgstr "திசை அமைவு"
 msgid "The orientation of the tray."
 msgstr "பட்டியின் முகநோக்கு "
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:136
+#: ../plugins/status-icon/rb-status-icon-plugin.c:142
 msgid "_Close"
 msgstr "மூடு (_C)"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:137
+#: ../plugins/status-icon/rb-status-icon-plugin.c:143
 msgid "Hide the music player window"
 msgstr "இசை இயக்கி சாளரத்தை மறைக்கவும்"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:143
+#: ../plugins/status-icon/rb-status-icon-plugin.c:149
 msgid "_Show Music Player"
 msgstr "இசை இயக்கியை காட்டு (_S)"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:144
+#: ../plugins/status-icon/rb-status-icon-plugin.c:150
 msgid "Choose music to play"
 msgstr "இயக்குவதற்கு ஒரு பாடலை தேர்ந்தெடுக்கவும்"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:146
+#: ../plugins/status-icon/rb-status-icon-plugin.c:152
 msgid "Show N_otifications"
 msgstr "அறிக்கைகளைக் காட்டு (_o)"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:147
+#: ../plugins/status-icon/rb-status-icon-plugin.c:153
 msgid "Show notifications of song changes and other events"
 msgstr "பாடல் மாறும்போது அறிவிப்புகள் மற்றும் பிற நிகழ்வுகளை காட்டு"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:406
+#: ../plugins/status-icon/rb-status-icon-plugin.c:427
 msgid "Next"
 msgstr "அடுத்து"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:557
+#: ../plugins/status-icon/rb-status-icon-plugin.c:578
 #: ../remote/dbus/rb-client.c:454 ../remote/dbus/rb-client.c:480
 msgid "Not playing"
 msgstr "இயங்கவில்லை"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:560
+#: ../plugins/status-icon/rb-status-icon-plugin.c:581
 #, c-format
 msgid "Paused, %s"
 msgstr "இடைநிறுத்தப்பட்டது, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:649
+#: ../plugins/status-icon/rb-status-icon-plugin.c:670
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "<i>%s</i>ஆல்"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:670
+#: ../plugins/status-icon/rb-status-icon-plugin.c:691
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "<i>%s</i>லிருந்து"
@@ -3122,36 +3160,53 @@ msgid "Always visible"
 msgstr "எப்போதும் பார்க்கக்கூடியது"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:3
+#| msgid "Banning song"
+msgid "Change song"
+msgstr "பாடலை மாற்றவும்"
+
+#: ../plugins/status-icon/status-icon-preferences.ui.h:4
+#| msgid "Change the music volume"
+msgid "Change volume"
+msgstr "ஒலியளவை மாற்றவும்"
+
+#: ../plugins/status-icon/status-icon-preferences.ui.h:5
 msgid "Never shown"
 msgstr "இதுவரை காட்டப்படவில்லை"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:4
+#: ../plugins/status-icon/status-icon-preferences.ui.h:6
 msgid "Never visible"
 msgstr "இதுவரை பார்க்கமுடியாத"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:5
+#: ../plugins/status-icon/status-icon-preferences.ui.h:7
 msgid "Owns the main window"
 msgstr "முதன்மை சாளரத்தை சொந்தப்படுத்துகிறது"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:6
+#: ../plugins/status-icon/status-icon-preferences.ui.h:8
 msgid "Shown when the main window is hidden"
 msgstr "முதன்மை சாளரம் மறைந்ததும் காட்டுகிறது"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:7
+#: ../plugins/status-icon/status-icon-preferences.ui.h:9
 msgid "Status icon preferences"
 msgstr "நிலை சின்ன விருப்பங்கள்"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:8
+#: ../plugins/status-icon/status-icon-preferences.ui.h:10
 msgid "Visible with notifications"
 msgstr "பார்க்ககூடிய அறிக்கைகள்"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:9
-msgid "_Notifications"
-msgstr "அறிவிப்புகள் (_N)"
+#: ../plugins/status-icon/status-icon-preferences.ui.h:11
+#| msgid "_Model:"
+msgid "_Mouse wheel:"
+msgstr "சுட்டி சக்கரம் (_M):"
 
-#: ../plugins/status-icon/status-icon-preferences.ui.h:10
-msgid "_Status Icon:"
-msgstr "நிலை சின்னம் (_S):"
+#: ../plugins/status-icon/status-icon-preferences.ui.h:12
+#| msgid "_Notifications"
+msgid "_Notifications:"
+msgstr "அறிவிப்புகள் (_N):"
+
+#: ../plugins/status-icon/status-icon-preferences.ui.h:13
+#| msgid "_Status Icon:"
+msgid "_Status icon:"
+msgstr "நிலைச் சின்னம் (_S):"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:229
 msgid "_Visualization"
@@ -3251,53 +3306,53 @@ msgstr "விஸ்வலிசேஷனைக் காட்டு"
 msgid "Visualization"
 msgstr "விஸ்வலிசேஷன்"
 
-#: ../podcast/rb-podcast-manager.c:811
+#: ../podcast/rb-podcast-manager.c:813
 msgid "Error creating podcast download directory"
 msgstr "போடுகாஸ்ட் பதிவிறக்க அடைவை உருவாக்கும் பிழை"
 
-#: ../podcast/rb-podcast-manager.c:812
+#: ../podcast/rb-podcast-manager.c:814
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "%sகான பதிவிறக்க அடைவை உருவாக்க முடியவில்லை: %s"
 
-#: ../podcast/rb-podcast-manager.c:938
+#: ../podcast/rb-podcast-manager.c:940
 msgid "Invalid URL"
 msgstr "தவறான URL"
 
-#: ../podcast/rb-podcast-manager.c:939
+#: ../podcast/rb-podcast-manager.c:941
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL \"%s\" தவறானது, அதை சரிபார்க்கவும்."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:949
+#: ../podcast/rb-podcast-manager.c:951
 msgid "URL already added"
 msgstr "URL ஏற்கனவே சேர்க்கப்பட்டுவிட்டது"
 
-#: ../podcast/rb-podcast-manager.c:950
+#: ../podcast/rb-podcast-manager.c:952
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr ""
-"URL \"%s\" ஏற்கனவே ரேடியோ நிலையத்தோடு சேர்க்கப்பட்டது. இது ஒரு போடுகாஸ்ட் தரவாக இருந்தால்,"
-"ரேடியோ நிலையத்தை நீக்கவும்"
+"URL \"%s\" ஏற்கனவே ரேடியோ நிலையத்தோடு சேர்க்கப்பட்டது. இது ஒரு போடுகாஸ்ட் தரவாக "
+"இருந்தால்,ரேடியோ நிலையத்தை நீக்கவும்"
 
-#: ../podcast/rb-podcast-manager.c:1018
+#: ../podcast/rb-podcast-manager.c:1020
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
 msgstr ""
-"இந்த URL '%s' ஒரு போட்காஸ்ட் ஃபீட்டில் தோன்றாது. இது தவறான URLஆக இருக்கலாம், "
-"அல்லது ஃபீட் தவறான இருக்கலாம். நீங்கள் Rhythmboxஐ எவ்வாறு பயன்படுத்த வேண்டுமா?"
+"இந்த URL '%s' ஒரு போட்காஸ்ட் ஃபீட்டில் தோன்றாது. இது தவறான URLஆக இருக்கலாம், அல்லது ஃபீட் "
+"தவறான இருக்கலாம். நீங்கள் Rhythmboxஐ எவ்வாறு பயன்படுத்த வேண்டுமா?"
 
-#: ../podcast/rb-podcast-manager.c:1129
+#: ../podcast/rb-podcast-manager.c:1131
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2053
+#: ../podcast/rb-podcast-manager.c:2055
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "இந்த போட்காஸ்ட்டை சேர்ப்பதில் சிக்கல் உள்ளது: %s.  URLஐ சரிபார்க்கவும்: %s"
@@ -3442,8 +3497,8 @@ msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
 "Rhythmbox cannot read the database."
 msgstr ""
-"இந்த தரவுத்தளம் Rhythmboxஇன் சமீபத்திய பதிப்பால் உருவாக்கப்பட்டது.  இந்த "
-"Rhythmbox பதிப்பு தரவுத்தளத்தை வாசிக்க முடியாது."
+"இந்த தரவுத்தளம் Rhythmboxஇன் சமீபத்திய பதிப்பால் உருவாக்கப்பட்டது.  இந்த Rhythmbox "
+"பதிப்பு தரவுத்தளத்தை வாசிக்க முடியாது."
 
 #: ../rhythmdb/rhythmdb.c:751
 #, c-format
@@ -3455,7 +3510,7 @@ msgstr "%sஐ அணுக முடியவில்லை: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1694
+#: ../rhythmdb/rhythmdb.c:1698
 msgid "The Beatles"
 msgstr "பீட்லெஸ்"
 
@@ -3463,7 +3518,7 @@ msgstr "பீட்லெஸ்"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1700
+#: ../rhythmdb/rhythmdb.c:1704
 msgid "Help!"
 msgstr "உதவி!"
 
@@ -3471,15 +3526,15 @@ msgstr "உதவி!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1706
+#: ../rhythmdb/rhythmdb.c:1710
 msgid "Ticket To Ride"
 msgstr "செல்லுவதற்கான டிக்கெட்"
 
-#: ../rhythmdb/rhythmdb.c:2255
+#: ../rhythmdb/rhythmdb.c:2259
 msgid "invalid unicode in error message"
 msgstr "பிழைச் செய்தியில் தவறான யுனிகோடு"
 
-#: ../rhythmdb/rhythmdb.c:2316
+#: ../rhythmdb/rhythmdb.c:2320
 #, c-format
 msgid "Empty file"
 msgstr "கோப்பை காலியாக்கவும்"
@@ -3487,30 +3542,30 @@ msgstr "கோப்பை காலியாக்கவும்"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2427
+#: ../rhythmdb/rhythmdb.c:2431
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "கூடுதல் GStreamer கூடுதல் இணைப்புகள் இந்த கோப்புகளை இயக்க தேவைப்படுகிறது: %s"
 
-#: ../rhythmdb/rhythmdb.c:3186
+#: ../rhythmdb/rhythmdb.c:3191
 msgid "Could not load the music database:"
 msgstr "இசை தரவுதளத்தை ஏற்ற முடியவில்லை:"
 
-#: ../rhythmdb/rhythmdb.c:4554
+#: ../rhythmdb/rhythmdb.c:4559
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld நிமிடம்"
 msgstr[1] "%ld நிமிடம்"
 
-#: ../rhythmdb/rhythmdb.c:4555
+#: ../rhythmdb/rhythmdb.c:4560
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld மணி நேரம்"
 msgstr[1] "%ld மணி நேரம்"
 
-#: ../rhythmdb/rhythmdb.c:4556
+#: ../rhythmdb/rhythmdb.c:4561
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3518,7 +3573,7 @@ msgstr[0] "%ld நாள்"
 msgstr[1] "%ld நாள்கள்"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4562
+#: ../rhythmdb/rhythmdb.c:4567
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s மற்றும் %s"
@@ -3526,8 +3581,8 @@ msgstr "%s, %s மற்றும் %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4568 ../rhythmdb/rhythmdb.c:4576
-#: ../rhythmdb/rhythmdb.c:4587
+#: ../rhythmdb/rhythmdb.c:4573 ../rhythmdb/rhythmdb.c:4581
+#: ../rhythmdb/rhythmdb.c:4592
 #, c-format
 msgid "%s and %s"
 msgstr "%s மற்றும் %s"
@@ -3674,7 +3729,7 @@ msgstr "அனைத்து கோப்புகள்"
 msgid "Load Playlist"
 msgstr "இசைப்பட்டியலை ஏற்றவும்"
 
-#: ../shell/rb-playlist-manager.c:1463 ../sources/rb-playlist-source.c:630
+#: ../shell/rb-playlist-manager.c:1463 ../sources/rb-playlist-source.c:631
 msgid "Couldn't save playlist"
 msgstr "இசைப்பட்டியலை சேமிக்க முடியவில்லை"
 
@@ -3698,43 +3753,56 @@ msgstr "தெரியாத இசைப்பட்டியல்: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "இசைப்படியல் %s ஒரு தானியக்கி இசைப்பட்டியல்"
 
-#: ../shell/rb-removable-media-manager.c:151
+#: ../shell/rb-plugin-manager.c:54
+msgid "Plugin"
+msgstr "செருகி"
+
+#: ../shell/rb-plugin-manager.c:55
+msgid "Enabled"
+msgstr "செயலாக்கப்பட்டது"
+
+#: ../shell/rb-plugins-engine.c:556
+msgid "Plugin Error"
+msgstr "செருகி பிழை"
+
+#: ../shell/rb-plugins-engine.c:556
+#, c-format
+msgid "Unable to activate plugin %s"
+msgstr "சொருகுபொருள் %s ஐ செயல்படுத்த முடியவில்லை"
+
+#: ../shell/rb-removable-media-manager.c:166
 msgid "Eject this medium"
 msgstr "இந்த மீடியத்தை வெளியேற்றவும்"
 
-#: ../shell/rb-removable-media-manager.c:153
+#: ../shell/rb-removable-media-manager.c:168
 msgid "_Extract to Library"
 msgstr "நூலகத்திலிருந்து பிரித்தெடுக்கப்பட்டது (_E)"
 
-#: ../shell/rb-removable-media-manager.c:154
+#: ../shell/rb-removable-media-manager.c:169
 msgid "Copy all tracks to the library"
 msgstr "அனைத்து வட்ராக்குகளை நூலகத்திற்கு நகலெடுக்கவும்"
 
-#: ../shell/rb-removable-media-manager.c:156
+#: ../shell/rb-removable-media-manager.c:171
 msgid "_Scan Removable Media"
 msgstr "நீக்கக்கூடிய ஊடகத்தை ஸ்கேனிங் செய்யவும் (_S)"
 
-#: ../shell/rb-removable-media-manager.c:157
+#: ../shell/rb-removable-media-manager.c:172
 msgid "Scan for new Removable Media"
 msgstr "புதிய நீக்கக்கூடிய ஊடகத்தை ஸ்கேனிங் செய்யவும்"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../shell/rb-removable-media-manager.c:710
+#: ../shell/rb-removable-media-manager.c:837
 msgid "Extract"
 msgstr "பிரித்தெடுத்தல்"
 
-#: ../shell/rb-removable-media-manager.c:741
+#: ../shell/rb-removable-media-manager.c:868
 msgid "Unable to eject"
 msgstr "வெளியேற்ற முடியவில்லை"
 
-#: ../shell/rb-removable-media-manager.c:762
+#: ../shell/rb-removable-media-manager.c:889
 msgid "Unable to unmount"
 msgstr "ஏற முடியவில்லை"
-
-#: ../shell/rb-removable-media-manager.c:963
-msgid "Error transferring track"
-msgstr "இடமாற்றும் ட்ராக்கில் பிழை"
 
 #: ../shell/rb-shell-clipboard.c:152
 msgid "Select _All"
@@ -3856,7 +3924,7 @@ msgstr "ப்ளேபேக் ஒலியளவை குறைக்கவ�
 msgid "_Play"
 msgstr "இயக்கு (_P)"
 
-#: ../shell/rb-shell-player.c:327 ../shell/rb-shell-player.c:3738
+#: ../shell/rb-shell-player.c:327 ../shell/rb-shell-player.c:3732
 msgid "Start playback"
 msgstr "ப்ளேபேக்கை துவக்கவும்"
 
@@ -3892,86 +3960,86 @@ msgstr "ஸ்டீரிம் பிழை"
 msgid "Unexpected end of stream!"
 msgstr "எதிர்பார்க்காத ஸ்டரீம் முடிவு!"
 
-#: ../shell/rb-shell-player.c:919
+#: ../shell/rb-shell-player.c:921
 msgid "Linear"
 msgstr "रैखिक"
 
-#: ../shell/rb-shell-player.c:921
+#: ../shell/rb-shell-player.c:923
 msgid "Linear looping"
 msgstr "லீனியர் லூப்பிங்"
 
-#: ../shell/rb-shell-player.c:923
+#: ../shell/rb-shell-player.c:925
 msgid "Shuffle"
 msgstr "கலைத்தல்"
 
-#: ../shell/rb-shell-player.c:925
+#: ../shell/rb-shell-player.c:927
 msgid "Random with equal weights"
 msgstr "சமமான எடையுடன் குறிப்பில்லாமல்"
 
-#: ../shell/rb-shell-player.c:927
+#: ../shell/rb-shell-player.c:929
 msgid "Random by time since last play"
 msgstr "குறிப்பில்லாமல் கடைசியாக இசைக்கப்பட்ட பின்"
 
-#: ../shell/rb-shell-player.c:929
+#: ../shell/rb-shell-player.c:931
 msgid "Random by rating"
 msgstr "மதிப்பீடுபடி குறிப்பில்லாமல்"
 
-#: ../shell/rb-shell-player.c:931
+#: ../shell/rb-shell-player.c:933
 msgid "Random by time since last play and rating"
 msgstr "குறிப்பில்லாத படி கடைசியாக இசைத்த மற்றும் மதிப்பிடுதல்"
 
-#: ../shell/rb-shell-player.c:933
+#: ../shell/rb-shell-player.c:935
 msgid "Linear, removing entries once played"
 msgstr "லீனியர், இசைப்பட்டதும் உள்ளீடுகளை நீக்குகிறது"
 
-#: ../shell/rb-shell-player.c:943
+#: ../shell/rb-shell-player.c:945
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "ப்யளேரை உருவாக்குவதில் தோல்வி: %s"
 
-#: ../shell/rb-shell-player.c:1489
+#: ../shell/rb-shell-player.c:1491
 #, c-format
 msgid "Playlist was empty"
 msgstr "இசைப்பட்டியல் காலியாக இருந்தது"
 
-#: ../shell/rb-shell-player.c:1978
+#: ../shell/rb-shell-player.c:1980
 #, c-format
 msgid "Not currently playing"
 msgstr "தற்போது இயக்கத்தில் இல்லை"
 
-#: ../shell/rb-shell-player.c:2036
+#: ../shell/rb-shell-player.c:2038
 #, c-format
 msgid "No previous song"
 msgstr "முந்தைய பாடல் இல்லை"
 
-#: ../shell/rb-shell-player.c:2136
+#: ../shell/rb-shell-player.c:2138
 #, c-format
 msgid "No next song"
 msgstr "அடுத்த பாடல் இல்லை"
 
-#: ../shell/rb-shell-player.c:2257 ../shell/rb-shell-player.c:3389
+#: ../shell/rb-shell-player.c:2259 ../shell/rb-shell-player.c:3383
 msgid "Couldn't start playback"
 msgstr "ப்ளேபேக்கை துவக்க முடியவில்லை"
 
-#: ../shell/rb-shell-player.c:3151
+#: ../shell/rb-shell-player.c:3145
 msgid "Couldn't stop playback"
 msgstr "ப்ளைபேக்கை நிறுத்த முடியவில்லை"
 
-#: ../shell/rb-shell-player.c:3261
+#: ../shell/rb-shell-player.c:3255
 #, c-format
 msgid "Playback position not available"
 msgstr "ப்ளைபேக் நிலை கிடைக்கவில்லை"
 
-#: ../shell/rb-shell-player.c:3293
+#: ../shell/rb-shell-player.c:3287
 #, c-format
 msgid "Current song is not seekable"
 msgstr "நற்போதைய பாடல் பார்க்கும் படியாக இல்லை"
 
-#: ../shell/rb-shell-player.c:3736
+#: ../shell/rb-shell-player.c:3730
 msgid "Stop playback"
 msgstr "திருப்பி இசைத்தலை நிறுத்து."
 
-#: ../shell/rb-shell-preferences.c:167 ../shell/rb-shell.c:2210
+#: ../shell/rb-shell-preferences.c:167 ../shell/rb-shell.c:2193
 msgid "Couldn't display help"
 msgstr "உதவியைக் காட்ட முடியவில்லை"
 
@@ -3987,179 +4055,179 @@ msgstr "பொது"
 msgid "Playback"
 msgstr "இயக்கு"
 
-#: ../shell/rb-shell.c:392
+#: ../shell/rb-shell.c:389
 msgid "_Music"
 msgstr "இசை (_M)"
 
-#: ../shell/rb-shell.c:394
+#: ../shell/rb-shell.c:391
 msgid "_View"
 msgstr "பார்வை (_V)"
 
-#: ../shell/rb-shell.c:395
+#: ../shell/rb-shell.c:392
 msgid "_Control"
 msgstr "கட்டுப்பாடு (_C)"
 
-#: ../shell/rb-shell.c:396
+#: ../shell/rb-shell.c:393
 msgid "_Tools"
 msgstr "கருவிகள் (_T)"
 
-#: ../shell/rb-shell.c:397
+#: ../shell/rb-shell.c:394
 msgid "_Help"
 msgstr "உதவி (_H)"
 
-#: ../shell/rb-shell.c:399
+#: ../shell/rb-shell.c:396
 msgid "_Import Folder..."
 msgstr "கோப்புறையை இறக்கவும் (_I)..."
 
-#: ../shell/rb-shell.c:400
+#: ../shell/rb-shell.c:397
 msgid "Choose folder to be added to the Library"
 msgstr "நூலகத்திற்கு சேர்க்கப்பட வேண்டிய கோப்புறையை தேர்ந்தெடுக்கவும்"
 
-#: ../shell/rb-shell.c:402
+#: ../shell/rb-shell.c:399
 msgid "Import _File..."
 msgstr "கோப்பை இறக்கவும் (_F)..."
 
-#: ../shell/rb-shell.c:403
+#: ../shell/rb-shell.c:400
 msgid "Choose file to be added to the Library"
 msgstr "நூலகத்திற்கு சேர்க்கப்பட வேண்டிய கோப்பை தேர்ந்தெடுக்கவும்"
 
-#: ../shell/rb-shell.c:405
+#: ../shell/rb-shell.c:402
 msgid "_About"
 msgstr "பற்றி (_A)"
 
-#: ../shell/rb-shell.c:406
+#: ../shell/rb-shell.c:403
 msgid "Show information about the music player"
 msgstr "மியூசிக் ப்ளையர் பற்றிய தகவலைக் காட்டவும்"
 
-#: ../shell/rb-shell.c:408
+#: ../shell/rb-shell.c:405
 msgid "_Contents"
 msgstr "உள்ளடக்கங்கள் (_C)"
 
-#: ../shell/rb-shell.c:409
+#: ../shell/rb-shell.c:406
 msgid "Display music player help"
 msgstr "மியூசிக் ப்ளையர் உதவியை காட்டு"
 
-#: ../shell/rb-shell.c:411
+#: ../shell/rb-shell.c:408
 msgid "_Quit"
 msgstr "வெளியேறு (_Q)"
 
-#: ../shell/rb-shell.c:412
+#: ../shell/rb-shell.c:409
 msgid "Quit the music player"
 msgstr "மியூசிக் ப்ளையரை நிறுத்து"
 
-#: ../shell/rb-shell.c:414
+#: ../shell/rb-shell.c:411
 msgid "Prefere_nces"
 msgstr "விருப்பங்கள் (_n)"
 
-#: ../shell/rb-shell.c:415
+#: ../shell/rb-shell.c:412
 msgid "Edit music player preferences"
 msgstr "மியூசிக் ப்ளேயரின் விருப்பங்களை திருத்து"
 
-#: ../shell/rb-shell.c:417
+#: ../shell/rb-shell.c:414
 msgid "Plu_gins"
 msgstr "கூடுதல் இணைப்புகள் (_g)"
 
-#: ../shell/rb-shell.c:418
+#: ../shell/rb-shell.c:415
 msgid "Change and configure plugins"
 msgstr "கூடுதல் இணைப்பை மாற்று மற்றும் கட்டமை"
 
-#: ../shell/rb-shell.c:420
+#: ../shell/rb-shell.c:417
 msgid "Show _All Tracks"
 msgstr "அனைத்து ட்ராக்குகளையும் காட்டு (_A)"
 
-#: ../shell/rb-shell.c:421
+#: ../shell/rb-shell.c:418
 msgid "Show all tracks in this music source"
 msgstr "இந்த இசை மூலத்தில் அனைத்து ட்ராக்குகளையும் காட்டு"
 
-#: ../shell/rb-shell.c:423
+#: ../shell/rb-shell.c:420
 msgid "_Jump to Playing Song"
 msgstr "இசைக்கும் பாட்டிற்கு தாவவும் (_J)"
 
-#: ../shell/rb-shell.c:424
+#: ../shell/rb-shell.c:421
 msgid "Scroll the view to the currently playing song"
 msgstr "தற்போது இசைக்கும் பாடலும் பார்வையை உருளச் செய்யவும்"
 
-#: ../shell/rb-shell.c:431
+#: ../shell/rb-shell.c:428
 msgid "Side _Pane"
 msgstr "பக்க பலகம் (_P)"
 
-#: ../shell/rb-shell.c:432
+#: ../shell/rb-shell.c:429
 msgid "Change the visibility of the side pane"
 msgstr "பக்க பலகத்தின் தெரிவுத்திறனை மாற்றவும்"
 
-#: ../shell/rb-shell.c:434
+#: ../shell/rb-shell.c:431
 msgid "T_oolbar"
 msgstr "கருவிப்பட்டி (_o)"
 
-#: ../shell/rb-shell.c:435
+#: ../shell/rb-shell.c:432
 msgid "Change the visibility of the toolbar"
 msgstr "கருவிப்பட்டியின் காட்சிமுறையை மாற்று"
 
-#: ../shell/rb-shell.c:437
+#: ../shell/rb-shell.c:434
 msgid "_Small Display"
 msgstr "சிறிய காட்சி (_S)"
 
-#: ../shell/rb-shell.c:438
+#: ../shell/rb-shell.c:435
 msgid "Make the main window smaller"
 msgstr "சாரளத்தின் பிரதான திரையை சிறிதாக்கவும்"
 
-#: ../shell/rb-shell.c:440
+#: ../shell/rb-shell.c:437
 msgid "Party _Mode"
 msgstr "பார்டி முறைமை (_M)"
 
-#: ../shell/rb-shell.c:441
+#: ../shell/rb-shell.c:438
 msgid "Change the status of the party mode"
 msgstr "பார்டி முறைமையின் நிலையை மாற்றவும்"
 
-#: ../shell/rb-shell.c:443
+#: ../shell/rb-shell.c:440
 msgid "Play _Queue as Side Pane"
 msgstr "பக்க பலகமாக வரிசையை இசைக்கவும் (_Q)"
 
-#: ../shell/rb-shell.c:444
+#: ../shell/rb-shell.c:441
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "மூலமாக அல்லது ஒரு பக்க பட்டையாக வரிசை தெரிகிறதா என மாற்று"
 
-#: ../shell/rb-shell.c:446
+#: ../shell/rb-shell.c:443
 msgid "S_tatusbar"
 msgstr "நிலைப்பட்டை (_t)"
 
-#: ../shell/rb-shell.c:447
+#: ../shell/rb-shell.c:444
 msgid "Change the visibility of the statusbar"
 msgstr "நிலைப்பட்டையின் தெரிவுதிறனை மாற்று"
 
-#: ../shell/rb-shell.c:1000 ../shell/rb-shell.c:1225
+#: ../shell/rb-shell.c:985 ../shell/rb-shell.c:1208
 msgid "Unable to move user data files"
 msgstr "பயனர் தரவு கோப்புகளை நகர்த்த முடியவில்லை"
 
-#: ../shell/rb-shell.c:1311
+#: ../shell/rb-shell.c:1294
 msgid "Change the music volume"
 msgstr "இசை ஒலியளவை மாற்றவும்"
 
-#: ../shell/rb-shell.c:1718
+#: ../shell/rb-shell.c:1701
 msgid "Error while saving song information"
 msgstr "பாடல் தகவலை சேமிக்கும் போது பிழை"
 
-#: ../shell/rb-shell.c:1823
+#: ../shell/rb-shell.c:1806
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "ட்ராக் %d ஆனது %d (%.0f%%)இல் பரிமாற்றுகிறது"
 
-#: ../shell/rb-shell.c:1826
+#: ../shell/rb-shell.c:1809
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "ட்ராக் %d ஆனது %dஇல் பரிமாற்றுகிறது"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2026
+#: ../shell/rb-shell.c:2009
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (இடைநிறுத்தம்)"
 
-#: ../shell/rb-shell.c:2130
+#: ../shell/rb-shell.c:2113
 msgid "translator-credits"
 msgstr "மொழிபெயர்ப்பாளர்-சன்மானம்"
 
-#: ../shell/rb-shell.c:2133
+#: ../shell/rb-shell.c:2116
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -4171,7 +4239,7 @@ msgstr ""
 "the Free Software Foundation; either version 2 of the License, or\n"
 "(at your option) any later version.\n"
 
-#: ../shell/rb-shell.c:2137
+#: ../shell/rb-shell.c:2120
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -4183,7 +4251,7 @@ msgstr ""
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 
-#: ../shell/rb-shell.c:2141
+#: ../shell/rb-shell.c:2124
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -4193,54 +4261,54 @@ msgstr ""
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2148
+#: ../shell/rb-shell.c:2131
 msgid "Maintainers:"
 msgstr "நிர்வகிப்பவர்கள்:"
 
-#: ../shell/rb-shell.c:2151
+#: ../shell/rb-shell.c:2134
 msgid "Former Maintainers:"
 msgstr "முன்னாள் நிர்வாகிகள்:"
 
-#: ../shell/rb-shell.c:2154
+#: ../shell/rb-shell.c:2137
 msgid "Contributors:"
 msgstr "எழுதியவர்கள்"
 
-#: ../shell/rb-shell.c:2156
+#: ../shell/rb-shell.c:2139
 msgid "Music management and playback software for GNOME."
 msgstr "இசை மேலாண்மை  மற்றும் பின்னணி இசை மென்பொருள் GNOMEக்கு."
 
-#: ../shell/rb-shell.c:2165
+#: ../shell/rb-shell.c:2148
 msgid "Rhythmbox Website"
 msgstr "Rhythmbox இணையத்தளம்"
 
-#: ../shell/rb-shell.c:2257
+#: ../shell/rb-shell.c:2240
 msgid "Configure Plugins"
 msgstr "சொருகுபொருள்களை வடிவமை"
 
-#: ../shell/rb-shell.c:2328
+#: ../shell/rb-shell.c:2311
 msgid "Import Folder into Library"
 msgstr "நூலகத்திற்கு கோப்புறையை இறக்கவும்"
 
-#: ../shell/rb-shell.c:2350
+#: ../shell/rb-shell.c:2333
 msgid "Import File into Library"
 msgstr "நூலகத்தில் கோப்பை இறக்கவும்"
 
-#: ../shell/rb-shell.c:2890
+#: ../shell/rb-shell.c:2873
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "URI %sஐ பதிவுசெய்யப்பட்டாத மூலத்தால் கையாள முடியவில்லை"
 
-#: ../shell/rb-shell.c:3159 ../shell/rb-shell.c:3188
+#: ../shell/rb-shell.c:3143 ../shell/rb-shell.c:3172
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "தெரியாத பாடல் URI: %s"
 
-#: ../shell/rb-shell.c:3197
+#: ../shell/rb-shell.c:3181
 #, c-format
 msgid "Unknown property %s"
 msgstr "தெரியாத தன்மை %s"
 
-#: ../shell/rb-shell.c:3207
+#: ../shell/rb-shell.c:3191
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "தவறான தன்மை வகை %s கான தன்மை %s"
@@ -4387,6 +4455,10 @@ msgstr "பல்வேறு இடங்களை அமைக்கவும�
 msgid "Example Path:"
 msgstr "எடுத்துக்காட்டு பாதை:"
 
+#: ../sources/rb-library-source.c:1217
+msgid "Error transferring track"
+msgstr "இடமாற்றும் ட்ராக்கில் பிழை"
+
 #: ../sources/rb-missing-files-source.c:288
 msgid "Missing Files"
 msgstr "விடுபட்ட கோப்புகள்"
@@ -4424,11 +4496,11 @@ msgstr "துடை"
 msgid "Play Queue"
 msgstr "இசை வரிசை"
 
-#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:125
+#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:124
 msgid "from"
 msgstr "from"
 
-#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:126
+#: ../sources/rb-play-queue-source.c:428 ../widgets/rb-header.c:125
 msgid "by"
 msgstr "by"
 
@@ -4547,7 +4619,10 @@ msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
 "file by choosing to delete the episode only."
-msgstr "இந்த பாகம் மற்றும் கோப்பினை அழிக்க தேர்ந்தெடுத்தால், அவை நிரந்தரமாக இழக்கப்படும். நீங்கள் பாகத்தை அழித்து பதிவிறக்கப்பட்ட கோப்புகளை வைத்திருக்க பாகத்தை மட்டும் தேர்ந்தெடுத்து அழிக்கலாம்."
+msgstr ""
+"இந்த பாகம் மற்றும் கோப்பினை அழிக்க தேர்ந்தெடுத்தால், அவை நிரந்தரமாக இழக்கப்படும். நீங்கள் "
+"பாகத்தை அழித்து பதிவிறக்கப்பட்ட கோப்புகளை வைத்திருக்க பாகத்தை மட்டும் தேர்ந்தெடுத்து "
+"அழிக்கலாம்."
 
 #: ../sources/rb-podcast-source.c:930
 msgid "Delete _Episode Only"
@@ -4566,7 +4641,10 @@ msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
-msgstr "இந்த ஃபீட் மற்றும் கோப்பினை அழிக்க தேர்ந்தெடுத்தால், அவை நிரந்தரமாக இழக்கப்படும். நீங்கள் பாகத்தை அழித்து பதிவிறக்கப்பட்ட கோப்புகளை வைத்திருக்க ஃபீட்டை மட்டும் தேர்ந்தெடுத்து அழிக்கலாம்."
+msgstr ""
+"இந்த ஃபீட் மற்றும் கோப்பினை அழிக்க தேர்ந்தெடுத்தால், அவை நிரந்தரமாக இழக்கப்படும். நீங்கள் "
+"பாகத்தை அழித்து பதிவிறக்கப்பட்ட கோப்புகளை வைத்திருக்க ஃபீட்டை மட்டும் தேர்ந்தெடுத்து "
+"அழிக்கலாம்."
 
 #: ../sources/rb-podcast-source.c:1386
 msgid "Delete _Feed Only"
@@ -4724,7 +4802,7 @@ msgstr "இப்போது இயங்குகிறது"
 msgid "Playback Error"
 msgstr "இசை இயக்குவதில் பிழை"
 
-#: ../widgets/rb-header.c:538
+#: ../widgets/rb-header.c:511
 msgid "Not Playing"
 msgstr "இயங்கவில்லை"
 
@@ -4856,17 +4934,18 @@ msgstr "குறைந்தது"
 msgid "at most"
 msgstr "மேலான"
 
-#: ../widgets/rb-query-creator-properties.c:167
+#. Translators: this matches songs within 1-Jan-YEAR to 31-Dec-YEAR
+#: ../widgets/rb-query-creator-properties.c:168
 msgid "in"
 msgstr "in"
 
-#. matches if within 1-JAN-YEAR to 31-DEC-YEAR
-#: ../widgets/rb-query-creator-properties.c:169
+#. Translators: this matches songs after 31-Dec-YEAR
+#: ../widgets/rb-query-creator-properties.c:170
 msgid "after"
 msgstr "பின்"
 
-#. matches if >= 31-DEC-YEAR
-#: ../widgets/rb-query-creator-properties.c:171
+#. Translators: this matches songs before 1-Jan-YEAR
+#: ../widgets/rb-query-creator-properties.c:172
 msgid "before"
 msgstr "முன்னால்"
 
