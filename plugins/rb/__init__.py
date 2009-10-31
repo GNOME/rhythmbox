@@ -37,6 +37,7 @@ from Loader import Loader
 from Loader import ChunkLoader
 from Loader import UpdateCheck
 from Coroutine import Coroutine
+from URLCache import URLCache
 
 #def _excepthandler (exc_class, exc_inst, trace):
 #	import sys
