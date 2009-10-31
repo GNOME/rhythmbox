@@ -199,6 +199,9 @@ class ArtistDataSource (gobject.GObject):
             return None
 
     def fetch_top_tracks (self, artist):
+        if LastFM.user_has_account() is False:
+            return
+
         artist = artist.replace (" ", "+")
         function = self.artist['top_tracks']['function']
         cache = self.artist['top_tracks']['cache']
@@ -215,6 +218,11 @@ class ArtistDataSource (gobject.GObject):
         before any of the get_* methods.
         """
         self.current_artist = artist
+        if LastFM.user_has_account() is False:
+            self.error = LastFM.NO_ACCOUNT_ERROR
+            self.emit ('artist-info-ready')
+            return
+
         self.error = None
         artist = artist.replace(" ", "+")
         for key, value in self.artist.items():

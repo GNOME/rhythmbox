@@ -162,6 +162,11 @@ class AlbumDataSource (gobject.GObject):
         return self.error
 
     def fetch_album_list (self, artist):
+        if LastFM.user_has_account() is False:
+            self.error = LastFM.NO_ACCOUNT_ERROR
+            self.emit ('albums-ready')
+            return
+
         self.artist = artist
         self.error  = None
         url = "%sartist.gettopalbums&artist=%s&api_key=%s" % (LastFM.URL_PREFIX,
