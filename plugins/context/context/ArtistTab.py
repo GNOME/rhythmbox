@@ -93,7 +93,8 @@ class ArtistView (gobject.GObject) :
         self.shell    = shell
         self.plugin   = plugin
         self.file     = ""
-        self.basepath = 'file://' + os.path.split(plugin.find_file('AlbumTab.py'))[0]
+        plugindir = os.path.split(plugin.find_file ('context.rb-plugin'))[0]
+        self.basepath = "file://" + urllib.pathname2url (plugindir)
 
         self.load_tmpl ()
         self.connect_signals ()

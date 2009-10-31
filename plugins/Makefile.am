@@ -23,6 +23,7 @@ SUBDIRS += 						\
 	jamendo						\
 	coherence					\
 	im-status					\
+	context						\
 	rb
 endif
 

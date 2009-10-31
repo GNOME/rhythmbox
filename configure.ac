@@ -866,6 +866,8 @@ plugins/power-manager/Makefile
 plugins/status-icon/Makefile
 plugins/visualizer/Makefile
 plugins/mmkeys/Makefile
+plugins/context/Makefile
+plugins/context/context/Makefile
 bindings/Makefile
 bindings/python/Makefile
 bindings/vala/Makefile
