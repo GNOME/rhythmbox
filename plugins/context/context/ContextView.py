@@ -41,11 +41,11 @@ context_ui = """
 </ui>
 """
 
-class ContextView (gobject.GObject) :
+class ContextView (gobject.GObject):
 
-    def __init__ (self, shell, plugin) :
+    def __init__ (self, shell, plugin):
         gobject.GObject.__init__ (self)
-	self.shell = shell
+        self.shell = shell
         self.sp = shell.get_player ()
         self.db = shell.get_property ('db')
         self.plugin = plugin
@@ -56,7 +56,7 @@ class ContextView (gobject.GObject) :
         self.current_song = None
         self.visible = True
         
-	self.init_gui ()
+        self.init_gui ()
         self.init_tabs()
 
         self.connect_signals ()
@@ -78,7 +78,7 @@ class ContextView (gobject.GObject) :
         self.ui_id = uim.add_ui_from_string(context_ui)
         uim.ensure_update()
 
-    def deactivate (self, shell) :
+    def deactivate (self, shell):
         self.shell = None
         self.disconnect_signals ()
         self.player_cb_ids = None
@@ -93,41 +93,41 @@ class ContextView (gobject.GObject) :
         uim.remove_ui (self.ui_id)
         uim.remove_action_group (self.action_group)
 
-    def connect_signals(self) :
+    def connect_signals(self):
         self.player_cb_ids = ( self.sp.connect ('playing-changed', self.playing_changed_cb),
             self.sp.connect ('playing-song-changed', self.playing_changed_cb))
         self.ds_cb_id = self.ds['artist'].connect ('artist-top-tracks-ready', self.load_top_five)
         self.tab_cb_ids = []
 
         # Listen for switch-tab signal from each tab
-        for key, value in self.tab.items() :
+        for key, value in self.tab.items():
             self.tab_cb_ids.append((key, self.tab[key].connect ('switch-tab', self.change_tab)))
 
-    def disconnect_signals (self) :
-        for id in self.player_cb_ids :
+    def disconnect_signals (self):
+        for id in self.player_cb_ids:
             self.sp.disconnect (id)
 
         self.ds['artist'].disconnect (self.ds_cb_id)
 
-        for key, id in self.tab_cb_ids :
+        for key, id in self.tab_cb_ids:
             self.tab[key].disconnect (id)
 
-    def toggle_visibility (self, action) :
-        if not self.visible :
+    def toggle_visibility (self, action):
+        if not self.visible:
             self.shell.add_widget (self.vbox, rb.SHELL_UI_LOCATION_RIGHT_SIDEBAR, expand=True)
             self.visible = True
-        else :
+        else:
             self.shell.remove_widget (self.vbox, rb.SHELL_UI_LOCATION_RIGHT_SIDEBAR)
             self.visible = False
 
-    def change_tab (self, tab, newtab) :
+    def change_tab (self, tab, newtab):
         print "swaping tab from %s to %s" % (self.current, newtab)
-        if (self.current != newtab) :
+        if (self.current != newtab):
             self.tab[self.current].deactivate()
             self.tab[newtab].activate()
             self.current = newtab
 
-    def init_tabs (self) :
+    def init_tabs (self):
         self.tab = {}
         self.ds = {}
         self.view = {}
@@ -142,34 +142,35 @@ class ContextView (gobject.GObject) :
         self.view['lyrics'] = lt.LyricsView (self.shell, self.plugin, self.webview, self.ds['lyrics'])
         self.tab['lyrics']  = lt.LyricsTab (self.shell, self.buttons, self.ds['lyrics'], self.view['lyrics'])
 
-    def load_top_five (self, ds) :
+    def load_top_five (self, ds):
         top_tracks = ds.get_top_tracks ()
         ## populate liststore
-        if top_tracks is None :
+        if top_tracks is None:
             self.top_five = ['','','','','']
-            for i in range (0, 5) :
+            for i in range (0, 5):
                 self.top_five_list.append(["%d. " % (i+1), ""])
-        else :
+        else:
             num_tracks = len(top_tracks)
-            for i in range (0, 5) :
+            for i in range (0, 5):
                 if i >= num_tracks : track = ""
                 else : track = top_tracks[i]
                 self.top_five_list[(i,)] = ("%d. " % (i+1), track)
 
-    def playing_changed_cb (self, playing, user_data) :
+    def playing_changed_cb (self, playing, user_data):
         playing_entry = self.sp.get_playing_entry ()
-        if playing_entry is None : return
+        if playing_entry is None:
+            return
 
         playing_artist = self.db.entry_get (playing_entry, rhythmdb.PROP_ARTIST)
 
-        if self.current_artist != playing_artist :
+        if self.current_artist != playing_artist:
             self.current_artist = playing_artist.replace ('&', '&amp;')
             self.label.set_markup(_('Top songs by <i>%s</i>' % self.current_artist))
             self.ds['artist'].fetch_top_tracks (self.current_artist)
 
         self.tab[self.current].reload()
 
-    def init_gui(self) :
+    def init_gui(self):
         self.vbox = gtk.VBox()
         self.frame = gtk.Frame()
         self.label = gtk.Label(_('Nothing Playing'))

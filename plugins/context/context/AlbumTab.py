@@ -31,14 +31,14 @@ import os
 from mako.template import Template
 import xml.dom.minidom as dom
 
-class AlbumTab (gobject.GObject) : 
+class AlbumTab (gobject.GObject):
 
     __gsignals__ = {
         'switch-tab' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
                                 (gobject.TYPE_STRING,))
     }
     
-    def __init__ (self, shell, buttons, ds, view) :
+    def __init__ (self, shell, buttons, ds, view):
         gobject.GObject.__init__ (self)
         self.shell      = shell
         self.sp         = shell.get_player ()
@@ -55,35 +55,36 @@ class AlbumTab (gobject.GObject) :
         self.button.set_relief( gtk.RELIEF_NONE ) 
         self.button.set_focus_on_click(False)
         self.button.connect ('clicked', 
-            lambda button : self.emit ('switch-tab', 'album'))
+            lambda button: self.emit ('switch-tab', 'album'))
         buttons.pack_start (self.button, True, True)
 
-    def activate (self) :
+    def activate (self):
         self.button.set_active(True)
         self.active = True
         self.reload ()
 
-    def deactivate (self) :
+    def deactivate (self):
         self.button.set_active(False)
         self.active = False
 
-    def reload (self) :
+    def reload (self):
         entry = self.sp.get_playing_entry ()
-        if entry is None : return None
+        if entry is None:
+            return None
 
         artist = self.db.entry_get (entry, rhythmdb.PROP_ARTIST)
         album  = self.db.entry_get (entry, rhythmdb.PROP_ALBUM)
-        if self.active and artist != self.artist :
+        if self.active and artist != self.artist:
             self.view.loading(artist)
             self.ds.fetch_album_list (artist)
-        else :
+        else:
             self.view.load_view()
 
         self.artist = artist
 
-class AlbumView (gobject.GObject) :
+class AlbumView (gobject.GObject):
 
-    def __init__ (self, shell, plugin, webview, ds) :
+    def __init__ (self, shell, plugin, webview, ds):
         gobject.GObject.__init__ (self)
         self.webview = webview
         self.ds      = ds
@@ -97,13 +98,13 @@ class AlbumView (gobject.GObject) :
         self.load_tmpl ()
         self.connect_signals ()
 
-    def load_view (self) :
+    def load_view (self):
         self.webview.load_string(self.file, 'text/html', 'utf-8', self.basepath)
 
-    def connect_signals (self) :
+    def connect_signals (self):
         self.ds.connect('albums-ready', self.album_list_ready)
 
-    def loading (self, current_artist) :
+    def loading (self, current_artist):
         self.loading_file = self.loading_template.render (
             artist   = current_artist,
             info     = "Top Albums",
@@ -111,7 +112,7 @@ class AlbumView (gobject.GObject) :
             basepath = self.basepath)
         self.webview.load_string (self.loading_file, 'text/html', 'utf-8', self.basepath)
 
-    def load_tmpl (self) :
+    def load_tmpl (self):
         self.path = self.plugin.find_file ('tmpl/album-tmpl.html')
         self.loading_path = self.plugin.find_file ('tmpl/loading.html')
         self.album_template = Template (filename = self.path,
@@ -120,7 +121,7 @@ class AlbumView (gobject.GObject) :
                                           module_directory = '/tmp/context')
         self.styles = self.basepath + '/tmpl/main.css'
 
-    def album_list_ready (self, ds) :
+    def album_list_ready (self, ds):
         list = ds.get_top_albums ()
         self.file = self.album_template.render (error = ds.get_error(), 
                                                 list = list, 
@@ -129,13 +130,13 @@ class AlbumView (gobject.GObject) :
         self.load_view ()
 
 
-class AlbumDataSource (gobject.GObject) :
+class AlbumDataSource (gobject.GObject):
     
     __gsignals__ = {
         'albums-ready' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
     }
 
-    def __init__ (self) :
+    def __init__ (self):
         gobject.GObject.__init__ (self)
         self.api_key = '27151108bfce62e12c1f6341437e0e83'
         self.url_prefix = 'http://ws.audioscrobbler.com/2.0/?method='
@@ -143,43 +144,43 @@ class AlbumDataSource (gobject.GObject) :
         self.error = None
         self.max_albums_fetched = 8
 
-    def extract (self, data, position) :
+    def extract (self, data, position):
         """
         Safely extract the data from an xml node. Returns data
         at position or None if position does not exist
         """
-        try :
+        try:
             return data[position].firstChild.data
-        except Exception, e :
+        except Exception, e:
             return None
 
-    def get_artist (self) :	
-	return self.artist
+    def get_artist (self):
+        return self.artist
 
-    def get_error (self) :
+    def get_error (self):
         return self.error
 
-    def fetch_album_list (self, artist) :
-    	self.artist = artist
+    def fetch_album_list (self, artist):
+        self.artist = artist
         self.error  = None
         url = "%sartist.gettopalbums&artist=%s&api_key=%s" % (self.url_prefix,
                                                               artist.replace(" ", "+"),
                                                               self.api_key)
-        try :
+        try:
             ld = rb.Loader ()
             ld.get_url (url, self.fetch_album_list_cb, artist) 
-        except Exception, e :
+        except Exception, e:
             print "problem fetching %s: %s" % (artist, e)
             return
 
-    def fetch_album_list_cb (self, data, artist) :
-        if data is None : 
+    def fetch_album_list_cb (self, data, artist):
+        if data is None:
             print "Nothing fetched for %s top albums" % artist
             return
 
         parsed = dom.parseString (data)
         lfm = parsed.getElementsByTagName ('lfm')[0]
-        if lfm.attributes['status'].value == 'failed' :
+        if lfm.attributes['status'].value == 'failed':
             self.error = lfm.childNodes[1].firstChild.data
             self.emit ('albums-ready')
             return
@@ -187,15 +188,16 @@ class AlbumDataSource (gobject.GObject) :
         self.albums = []
         album_nodes = parsed.getElementsByTagName ('album') 
         print "num albums: %d" % len(album_nodes)
-        if len(album_nodes) == 0 :
+        if len(album_nodes) == 0:
             self.error = "No albums found for %s" % artist
             self.emit('albums-ready')
             return
             
         self.album_info_fetched = min (len (album_nodes) - 1, self.max_albums_fetched)
 
-        for i, album in enumerate (album_nodes) : 
-            if i >= self.album_info_fetched : break
+        for i, album in enumerate (album_nodes): 
+            if i >= self.album_info_fetched:
+                break
 
             album_name = self.extract(album.getElementsByTagName ('name'), 0)
             imgs = album.getElementsByTagName ('image')
@@ -203,10 +205,10 @@ class AlbumDataSource (gobject.GObject) :
             self.albums.append ({'title' : album_name, 'images' : images })
             self.fetch_album_info (artist, album_name, i)
 
-    def get_top_albums (self) :
+    def get_top_albums (self):
         return self.albums
 
-    def fetch_album_info (self, artist, album, index) :
+    def fetch_album_info (self, artist, album, index):
         url = "%salbum.getinfo&artist=%s&album=%s&api_key=%s" % (self.url_prefix,
                                                                  artist.replace(" ", "+"),
                                                                  album.replace(" ", "+"),
@@ -215,15 +217,15 @@ class AlbumDataSource (gobject.GObject) :
         ld = rb.Loader()
         ld.get_url (url, self.fetch_album_tracklist, album, index)
             
-    def fetch_album_tracklist (self, data, album, index) :
-        if data is None :
+    def fetch_album_tracklist (self, data, album, index):
+        if data is None:
             self.assemble_info(None, None, None)
 
         parsed = dom.parseString (data)
         
-        try :
+        try:
             self.albums[index]['id'] = parsed.getElementsByTagName ('id')[0].firstChild.data
-        except Exception, e :
+        except Exception, e:
             print "Problem parsing id, exiting: %s" % e
             return None
 
@@ -236,28 +238,28 @@ class AlbumDataSource (gobject.GObject) :
         ld = rb.Loader()
         ld.get_url (url, self.assemble_info, album, index)
 
-    def assemble_info (self, data, album, index) :
-        if data is None :
+    def assemble_info (self, data, album, index):
+        if data is None:
             print "nothing fetched for %s tracklist" % album
-        else :
+        else:
             parsed = dom.parseString (data)
-            try :
+            try:
                 list = parsed.getElementsByTagName ('track')
                 tracklist = []
                 album_length = 0
-                for i, track in enumerate(list) :
+                for i, track in enumerate(list):
                     title = track.getElementsByTagName ('title')[0].firstChild.data
                     duration = int(track.getElementsByTagName ('duration')[0].firstChild.data) / 1000
                     album_length += duration
                     tracklist.append ((i, title, duration))
                 self.albums[index]['tracklist'] = tracklist
                 self.albums[index]['duration']  = album_length
-            except Exception, e :
+            except Exception, e:
                 print "Problem : %s" % e
 
         gtk.gdk.threads_enter ()
         self.album_info_fetched -= 1
         print "%s albums left to process" % self.album_info_fetched
         gtk.gdk.threads_leave ()
-        if self.album_info_fetched == 0 :
+        if self.album_info_fetched == 0:
             self.emit('albums-ready')

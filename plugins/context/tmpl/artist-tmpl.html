@@ -3,8 +3,8 @@
     import re
     remove_links = re.compile ('</?a[^>]*> ',re.VERBOSE)
     
-    def cleanup(text) :
-        if text is None :
+    def cleanup(text):
+        if text is None:
             return "No information available"
         text = remove_links.sub ('', text)
         text = text.replace('\n', '</p><p>')

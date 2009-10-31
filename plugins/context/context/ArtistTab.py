@@ -32,14 +32,14 @@ import xml.dom.minidom as dom
 import webkit
 from mako.template import Template
     
-class ArtistTab (gobject.GObject) : 
+class ArtistTab (gobject.GObject):
     
     __gsignals__ = {
         'switch-tab' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
                                 (gobject.TYPE_STRING,))
     }
 
-    def __init__ (self, shell, buttons, ds, view) :
+    def __init__ (self, shell, buttons, ds, view):
         gobject.GObject.__init__ (self)
         self.shell      = shell
         self.sp         = shell.get_player ()
@@ -59,34 +59,34 @@ class ArtistTab (gobject.GObject) :
             lambda button : self.emit('switch-tab', 'artist'))
         buttons.pack_start (self.button, True, True)
 
-    def activate (self) :
+    def activate (self):
         print "activating Artist Tab"
         self.button.set_active(True)
         self.active = True
         self.reload ()
 
-    def deactivate (self) :
+    def deactivate (self):
         print "deactivating Artist Tab"
         self.button.set_active(False)
         self.active = False
 
-    def reload (self) :
+    def reload (self):
         entry = self.sp.get_playing_entry ()
-        if entry is None : 
+        if entry is None:
             print "Nothing playing"
             return None
         artist = self.db.entry_get (entry, rhythmdb.PROP_ARTIST)
 
-        if self.active and self.artist != artist  :
+        if self.active and self.artist != artist:
             self.datasource.fetch_artist_data (artist)
             self.view.loading (artist)
-        else :
+        else:
             self.view.load_view()
         self.artist = artist
 
-class ArtistView (gobject.GObject) :
+class ArtistView (gobject.GObject):
 
-    def __init__ (self, shell, plugin, webview, ds) :
+    def __init__ (self, shell, plugin, webview, ds):
         gobject.GObject.__init__ (self)
         self.webview  = webview
         self.ds       = ds
@@ -99,10 +99,10 @@ class ArtistView (gobject.GObject) :
         self.load_tmpl ()
         self.connect_signals ()
 
-    def load_view (self) :
+    def load_view (self):
         self.webview.load_string (self.file, 'text/html', 'utf-8', self.basepath)
 
-    def loading (self, current_artist) :
+    def loading (self, current_artist):
         self.loading_file = self.loading_template.render (
             artist   = current_artist,
             info     = "Bio",
@@ -110,20 +110,20 @@ class ArtistView (gobject.GObject) :
             basepath = self.basepath)
         self.webview.load_string (self.loading_file, 'text/html', 'utf-8', self.basepath)
 
-    def load_tmpl (self) :
+    def load_tmpl (self):
         self.path = self.plugin.find_file('tmpl/artist-tmpl.html')
         self.loading_path = self.plugin.find_file ('tmpl/loading.html')
         self.template = Template (filename = self.path, module_directory = '/tmp/context/')
         self.loading_template = Template (filename = self.loading_path, module_directory = '/tmp/context')
         self.styles = self.basepath + '/tmpl/main.css'
 
-    def connect_signals (self) :
+    def connect_signals (self):
         self.air_id  = self.ds.connect ('artist-info-ready', self.artist_info_ready)
 
-    def artist_info_ready (self, ds) :
+    def artist_info_ready (self, ds):
         # Can only be called after the artist-info-ready signal has fired.
         # If called any other time, the behavior is undefined
-        try :
+        try:
             info = ds.get_artist_info ()
             small, med, big = info['images']
             summary, full_bio = info['bio'] 
@@ -133,11 +133,11 @@ class ArtistView (gobject.GObject) :
                                               shortbio   = summary,
                                               stylesheet = self.styles )
             self.load_view ()
-        except Exception, e :
+        except Exception, e:
             print "Problem in info ready: %s" % e
     
 
-class ArtistDataSource (gobject.GObject) :
+class ArtistDataSource (gobject.GObject):
     
     __gsignals__ = {
         'artist-info-ready'       : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
@@ -146,7 +146,7 @@ class ArtistDataSource (gobject.GObject) :
         'artist-top-albums-ready' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
 
-    def __init__ (self) :
+    def __init__ (self):
         gobject.GObject.__init__ (self)
         self.api_key = '27151108bfce62e12c1f6341437e0e83'
         self.url_prefix = 'http://ws.audioscrobbler.com/2.0/?method='
@@ -182,25 +182,25 @@ class ArtistDataSource (gobject.GObject) :
             },
         }
        
-    def extract (self, data, position) :
+    def extract (self, data, position):
         """
         Safely extract the data from an xml node. Returns data
         at position or None if position does not exist
         """
         
-        try :
+        try:
             return data[position].firstChild.data
-        except Exception, e :
+        except Exception, e:
             return None
 
-    def fetch_top_tracks (self, artist) :
+    def fetch_top_tracks (self, artist):
         artist = artist.replace (" ", "+")
         url = '%sartist.%s&artist=%s&api_key=%s' % (self.url_prefix,
             self.artist['top_tracks']['function'], artist, self.api_key)
         ld = rb.Loader()
         ld.get_url (url, self.fetch_artist_data_cb, self.artist['top_tracks'])
 
-    def fetch_artist_data (self, artist) : 
+    def fetch_artist_data (self, artist): 
         """
         Initiate the fetching of all artist data. Fetches artist info, similar
         artists, artist top albums and top tracks. Downloads XML files from last.fm
@@ -209,27 +209,27 @@ class ArtistDataSource (gobject.GObject) :
         """
         self.current_artist = artist
         artist = artist.replace(" ", "+")
-        for key, value in self.artist.items() :
+        for key, value in self.artist.items():
             url = '%sartist.%s&artist=%s&api_key=%s' % (self.url_prefix,
                 value['function'], artist, self.api_key)
             ld = rb.Loader()
             ld.get_url (url, self.fetch_artist_data_cb, value)
 
-    def fetch_artist_data_cb (self, data, category) :
-        if data is None : 
+    def fetch_artist_data_cb (self, data, category):
+        if data is None:
             print "no data fetched for artist %s" % category['function']
             return
         category['data'] = dom.parseString (data)
         category['parsed'] = False
         self.emit (category['signal'])
 
-    def get_current_artist (self) :
+    def get_current_artist (self):
         return self.current_artist
 
-    def get_top_albums (self) :
-        if not self.artist['top_albums']['parsed'] :
+    def get_top_albums (self):
+        if not self.artist['top_albums']['parsed']:
             albums = []
-            for album in self.artist['top_albums']['data'].getElementsByTagName ('album') :
+            for album in self.artist['top_albums']['data'].getElementsByTagName ('album'):
                 album_name = self.extract(album.getElementsByTagName ('name'), 0)
                 imgs = album.getElementsByTagName ('image') 
                 images = self.extract(imgs, 0), self.extract(imgs, 1), self.extract(imgs,2)
@@ -239,17 +239,17 @@ class ArtistDataSource (gobject.GObject) :
 
         return self.artist['top_albums']['data']
 
-    def get_similar_artists (self) :
+    def get_similar_artists (self):
         """
         Returns a list of similar artists
         """
         data = self.artist['similar']['data']
-        if data is None :
+        if data is None:
             return None
 
-        if not self.artist['similar']['parsed'] :
+        if not self.artist['similar']['parsed']:
             lst = []
-            for node in data.getElementsByTagName ('artist') :
+            for node in data.getElementsByTagName ('artist'):
                 artist = self.extract(node.getElementsByTagName('name'), 0)
                 similar = self.extract(node.getElementsByTagName('match') ,0)
                 image = self.extract(node.getElementsByTagName('image'), 0)
@@ -260,37 +260,37 @@ class ArtistDataSource (gobject.GObject) :
 
         return data
 
-    def get_artist_images (self) :
+    def get_artist_images (self):
         """
         Returns tuple of image url's for small, medium, and large images.
         """
         data = self.artist['info']['data']
-        if data is None :
+        if data is None:
             return None
 
         images = data.getElementsByTagName ('image')
         return self.extract(images,0), self.extract(images,1), self.extract(images,2)
         
-    def get_artist_bio (self) :
+    def get_artist_bio (self):
         """
         Returns tuple of summary and full bio
         """
         data = self.artist['info']['data']
-        if data is None :
+        if data is None:
             return None
 
-        if not self.artist['info']['parsed'] :
+        if not self.artist['info']['parsed']:
             content = self.extract(data.getElementsByTagName ('content'), 0)
             summary = self.extract(data.getElementsByTagName ('summary'), 0)
             return summary, content
 
         return self.artist['info']['data']['bio']
 
-    def get_artist_info (self) :
+    def get_artist_info (self):
         """
         Returns the dictionary { 'images', 'bio' }
         """
-        if not self.artist['info']['parsed'] :
+        if not self.artist['info']['parsed']:
             images = self.get_artist_images()
             bio = self.get_artist_bio()
             self.artist['info']['data'] = { 'images'   : images,
@@ -299,17 +299,17 @@ class ArtistDataSource (gobject.GObject) :
 
         return self.artist['info']['data']
 
-    def get_top_tracks (self) :
+    def get_top_tracks (self):
         """
         Returns a list of the top track titles
         """
         data = self.artist['top_tracks']['data']
-        if data is None :
+        if data is None:
             return None
 
-        if not self.artist['top_tracks']['parsed'] :
+        if not self.artist['top_tracks']['parsed']:
             tracks = []
-            for track in data.getElementsByTagName ('track') :
+            for track in data.getElementsByTagName ('track'):
                 name = self.extract(track.getElementsByTagName('name'), 0)
                 tracks.append (name)
             self.artist['top_tracks']['data'] = tracks
