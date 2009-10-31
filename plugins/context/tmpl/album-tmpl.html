@@ -1,0 +1,75 @@
+<%page args="error, list, artist, stylesheet" />
+<html> <head> <meta http-equiv="content-type" content="text-html; charset=utf-8">
+<%!
+    import re
+    def cleanup(text) :
+        return re.sub(r'\([^\)]*\)', '', text)
+    def sec2hms(time) :
+        hr = time / 3600
+        if hr > 0 : time %= 3600
+        mn = time / 60
+        sec = time % 60
+        if hr > 0 : return "%d:%02d:%02d" % (hr,mn,sec)
+        else : return "%d:%02d" %(mn,sec)
+%>  
+<link rel="stylesheet" href="${stylesheet}" type="text/css" />
+<script language="javascript">
+    function swapClass (element, klass1, klass2) {
+        elt = document.getElementById(element);
+        elt.className = (elt.className == klass1) ? klass2 : klass1;
+    }
+    function swapText (element, text1, text2) {
+        elt = document.getElementById(element);
+        elt.innerHTML = (elt.innerHTML == text1) ? text2 : text1;
+    }
+    function toggle_vis (element) { 
+        swapClass(element, 'hidden', 'shown');
+        swapText('btn_'+element, 'Hide all tracks', 'Show all tracks');
+    }
+</script>
+</head>
+<body>
+<%  
+    num_albums = min(8, len(list))
+%>
+%if error is None :
+    <h1>Top albums by <em>${artist}</em></h1>
+%for i, entry in enumerate(list) :
+    <%if 'tracklist' not in entry or len(entry['tracklist']) == 0 : continue %>
+    <%if i == num_albums : break %>
+    <div id="album${entry['id']}" class="album">
+    <img width="64" src="${entry['images'][1]}" alt="${entry['images']}"/>
+    <h2>${entry['title']}</h2>
+    %if 'duration' in entry :
+    <% 
+        album_time = sec2hms(entry['duration'])
+        tracks = len(entry['tracklist'])
+    %>
+    <p class="duration">${album_time} (${tracks} tracks)</p>
+    %endif
+    %if 'tracklist' in entry :
+    <% btn_name = "btn_%s" % entry['id'] %>
+    <button id="btn_${entry['id']}"onclick="toggle_vis(${entry['id']})">
+    Show all tracks
+    </button>
+    <table class="hidden" id="${entry['id']}">
+        %for num, title, time in entry['tracklist'] :
+            <% 
+                time = sec2hms(time)
+                title = cleanup(title)
+                num = num+1
+            %>
+            <tr><td>${num}</td><td>${title}</td><td>${time}</td></tr>
+        %endfor
+    </table>
+    %else :
+    <p>Tracklist not available</p>
+    %endif
+    </div>
+%endfor
+%else :
+    <h1>Last.fm Error:</h1>
+    <p class="error">${error}</p>
+%endif
+</body>
+</html>

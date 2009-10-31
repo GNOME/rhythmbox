@@ -1,0 +1,45 @@
+<%page args="artist, image, shortbio, fullbio, stylesheet" />
+<%!
+    import re
+    remove_links = re.compile ('</?a[^>]*> ',re.VERBOSE)
+    
+    def cleanup(text) :
+        if text is None :
+            return "No information available"
+        text = remove_links.sub ('', text)
+        text = text.replace('\n', '</p><p>')
+        return text
+%>
+<html>
+<head>
+<meta http-equiv="content-type" content="text-html; charset=utf-8">
+<link rel="stylesheet" href="${stylesheet}" type="text/css" />
+<script language="javascript">
+    function swapClass (element, klass1, klass2) {
+        elt = document.getElementById(element);
+        elt.className = (elt.className == klass1) ? klass2 : klass1;
+    }
+</script>
+</head>
+<body class="artist">
+<h1>${artist}</h1>
+<img src="${image}" />
+<div id="shortbio" class="shown">
+<% shortbio = cleanup(shortbio) %>
+<button name="more" onclick="swapClass('shortbio', 'shown', 'hidden');swapClass('fullbio', 'shown', 'hidden')" />
+Read more
+</button>
+<p>${shortbio}</p>
+</div>
+<div id="fullbio" class="hidden">
+<% fullbio = cleanup(fullbio) %>
+<button name="more" onclick="swapClass('shortbio', 'shown', 'hidden');swapClass('fullbio', 'shown', 'hidden')" />
+Read less
+</button>
+<p>${fullbio}</p>
+<button name="more" onclick="swapClass('shortbio', 'shown', 'hidden');swapClass('fullbio', 'shown', 'hidden')" />
+Read less
+</button>
+</div>
+</body>
+</html>
