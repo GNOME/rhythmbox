@@ -138,7 +138,7 @@ class ContextView (gobject.GObject) :
         self.ds['album']    = abt.AlbumDataSource()
         self.view['album']  = abt.AlbumView(self.shell, self.plugin, self.webview, self.ds['album'])
         self.tab['album']   = abt.AlbumTab(self.shell, self.buttons, self.ds['album'], self.view['album'])
-        self.ds['lyrics']   = lt.LyricsDataSource ()
+        self.ds['lyrics']   = lt.LyricsDataSource (self.db)
         self.view['lyrics'] = lt.LyricsView (self.shell, self.plugin, self.webview, self.ds['lyrics'])
         self.tab['lyrics']  = lt.LyricsTab (self.shell, self.buttons, self.ds['lyrics'], self.view['lyrics'])
 
