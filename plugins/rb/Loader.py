@@ -26,6 +26,7 @@
 
 import gobject
 import gtk
+import sys
 
 def callback_with_gdk_lock(callback, data, args):
 	gtk.gdk.threads_enter()
@@ -35,8 +36,8 @@ def callback_with_gdk_lock(callback, data, args):
 		return v
 	except Exception, e:
 		print "Exception caught in loader callback: %s" % str(e)
+		sys.excepthook(*sys.exc_info())
 		gtk.gdk.threads_leave()
-		raise e
 
 
 class GioLoader(object):
