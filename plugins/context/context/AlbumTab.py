@@ -30,6 +30,7 @@ import webkit
 import os
 from mako.template import Template
 import xml.dom.minidom as dom
+import LastFM
 
 class AlbumTab (gobject.GObject):
 
@@ -138,8 +139,6 @@ class AlbumDataSource (gobject.GObject):
 
     def __init__ (self):
         gobject.GObject.__init__ (self)
-        self.api_key = '27151108bfce62e12c1f6341437e0e83'
-        self.url_prefix = 'http://ws.audioscrobbler.com/2.0/?method='
         self.albums = None
         self.error = None
         self.max_albums_fetched = 8
@@ -163,9 +162,9 @@ class AlbumDataSource (gobject.GObject):
     def fetch_album_list (self, artist):
         self.artist = artist
         self.error  = None
-        url = "%sartist.gettopalbums&artist=%s&api_key=%s" % (self.url_prefix,
+        url = "%sartist.gettopalbums&artist=%s&api_key=%s" % (LastFM.URL_PREFIX,
                                                               artist.replace(" ", "+"),
-                                                              self.api_key)
+                                                              LastFM.API_KEY)
         try:
             ld = rb.Loader ()
             ld.get_url (url, self.fetch_album_list_cb, artist) 
@@ -209,10 +208,10 @@ class AlbumDataSource (gobject.GObject):
         return self.albums
 
     def fetch_album_info (self, artist, album, index):
-        url = "%salbum.getinfo&artist=%s&album=%s&api_key=%s" % (self.url_prefix,
+        url = "%salbum.getinfo&artist=%s&album=%s&api_key=%s" % (LastFM.URL_PREFIX,
                                                                  artist.replace(" ", "+"),
                                                                  album.replace(" ", "+"),
-                                                                 self.api_key)
+                                                                 LastFM.API_KEY)
 
         ld = rb.Loader()
         ld.get_url (url, self.fetch_album_tracklist, album, index)
@@ -233,7 +232,7 @@ class AlbumDataSource (gobject.GObject):
         self.albums[index]['summary'] = self.extract(parsed.getElementsByTagName ('summary'), 0)
 
         url = "%splaylist.fetch&playlistURL=lastfm://playlist/album/%s&api_key=%s" % (
-                     self.url_prefix, self.albums[index]['id'], self.api_key)
+                     LastFM.URL_PREFIX, self.albums[index]['id'], LastFM.API_KEY)
 
         ld = rb.Loader()
         ld.get_url (url, self.assemble_info, album, index)

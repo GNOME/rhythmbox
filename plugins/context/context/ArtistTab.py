@@ -28,6 +28,7 @@ import rb, rhythmdb
 import gtk, gobject
 import re, os
 import xml.dom.minidom as dom
+import LastFM
 
 import webkit
 from mako.template import Template
@@ -148,8 +149,6 @@ class ArtistDataSource (gobject.GObject):
 
     def __init__ (self):
         gobject.GObject.__init__ (self)
-        self.api_key = '27151108bfce62e12c1f6341437e0e83'
-        self.url_prefix = 'http://ws.audioscrobbler.com/2.0/?method='
 
         self.current_artist = None
         self.artist = {
@@ -195,8 +194,8 @@ class ArtistDataSource (gobject.GObject):
 
     def fetch_top_tracks (self, artist):
         artist = artist.replace (" ", "+")
-        url = '%sartist.%s&artist=%s&api_key=%s' % (self.url_prefix,
-            self.artist['top_tracks']['function'], artist, self.api_key)
+        url = '%sartist.%s&artist=%s&api_key=%s' % (LastFM.URL_PREFIX,
+            self.artist['top_tracks']['function'], artist, LastFM.API_KEY)
         ld = rb.Loader()
         ld.get_url (url, self.fetch_artist_data_cb, self.artist['top_tracks'])
 
@@ -210,8 +209,8 @@ class ArtistDataSource (gobject.GObject):
         self.current_artist = artist
         artist = artist.replace(" ", "+")
         for key, value in self.artist.items():
-            url = '%sartist.%s&artist=%s&api_key=%s' % (self.url_prefix,
-                value['function'], artist, self.api_key)
+            url = '%sartist.%s&artist=%s&api_key=%s' % (LastFM.URL_PREFIX,
+                value['function'], artist, LastFM.API_KEY)
             ld = rb.Loader()
             ld.get_url (url, self.fetch_artist_data_cb, value)
 
