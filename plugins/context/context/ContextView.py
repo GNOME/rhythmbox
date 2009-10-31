@@ -26,8 +26,8 @@
 
 import rb, rhythmdb
 import gtk, gobject
-import pango
 import webkit
+import os
 
 import ArtistTab as at
 import AlbumTab as abt
@@ -55,7 +55,24 @@ class ContextView (gobject.GObject):
         self.current_album = None
         self.current_song = None
         self.visible = True
-        
+
+        # cache for artist/album information: valid for a month, can be used indefinitely
+        # if offline, discarded if unused for six months
+        self.info_cache = rb.URLCache(name = 'info',
+                                      path = os.path.join('context-pane', 'info'),
+                                      refresh = 30,
+                                      discard = 180)
+        # cache for rankings (artist top tracks and top albums): valid for a week,
+        # can be used for a month if offline
+        self.ranking_cache = rb.URLCache(name = 'ranking',
+                                         path = os.path.join('context-pane', 'ranking'),
+                                         refresh = 7,
+                                         lifetime = 30)
+
+        # maybe move this into an idle handler?
+        self.info_cache.clean()
+        self.ranking_cache.clean()
+
         self.init_gui ()
         self.init_tabs()
 
@@ -121,7 +138,7 @@ class ContextView (gobject.GObject):
             self.visible = False
 
     def change_tab (self, tab, newtab):
-        print "swaping tab from %s to %s" % (self.current, newtab)
+        print "swapping tab from %s to %s" % (self.current, newtab)
         if (self.current != newtab):
             self.tab[self.current].deactivate()
             self.tab[newtab].activate()
@@ -132,10 +149,10 @@ class ContextView (gobject.GObject):
         self.ds = {}
         self.view = {}
 
-        self.ds['artist'] = at.ArtistDataSource ()
+        self.ds['artist'] = at.ArtistDataSource (self.info_cache, self.ranking_cache)
         self.view['artist'] = at.ArtistView (self.shell, self.plugin, self.webview, self.ds['artist'])
         self.tab['artist']  = at.ArtistTab (self.shell, self.buttons, self.ds['artist'], self.view['artist'])
-        self.ds['album']    = abt.AlbumDataSource()
+        self.ds['album']    = abt.AlbumDataSource(self.info_cache, self.ranking_cache)
         self.view['album']  = abt.AlbumView(self.shell, self.plugin, self.webview, self.ds['album'])
         self.tab['album']   = abt.AlbumTab(self.shell, self.buttons, self.ds['album'], self.view['album'])
         self.ds['lyrics']   = lt.LyricsDataSource (self.db)

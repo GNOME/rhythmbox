@@ -123,9 +123,8 @@ class AlbumView (gobject.GObject):
         self.styles = self.basepath + '/tmpl/main.css'
 
     def album_list_ready (self, ds):
-        list = ds.get_top_albums ()
         self.file = self.album_template.render (error = ds.get_error(), 
-                                                list = list, 
+                                                list = ds.get_top_albums(), 
                                                 artist = ds.get_artist(),
                                                 stylesheet = self.styles)
         self.load_view ()
@@ -137,11 +136,14 @@ class AlbumDataSource (gobject.GObject):
         'albums-ready' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
     }
 
-    def __init__ (self):
+    def __init__ (self, info_cache, ranking_cache):
         gobject.GObject.__init__ (self)
         self.albums = None
         self.error = None
+        self.artist = None
         self.max_albums_fetched = 8
+        self.info_cache = info_cache
+        self.ranking_cache = ranking_cache
 
     def extract (self, data, position):
         """
@@ -165,19 +167,20 @@ class AlbumDataSource (gobject.GObject):
         url = "%sartist.gettopalbums&artist=%s&api_key=%s" % (LastFM.URL_PREFIX,
                                                               artist.replace(" ", "+"),
                                                               LastFM.API_KEY)
-        try:
-            ld = rb.Loader ()
-            ld.get_url (url, self.fetch_album_list_cb, artist) 
-        except Exception, e:
-            print "problem fetching %s: %s" % (artist, e)
-            return
+        cachekey = 'lastfm:artist:gettopalbums:%s' % artist
+        self.ranking_cache.fetch(cachekey, url, self.parse_album_list, artist)
 
-    def fetch_album_list_cb (self, data, artist):
+    def parse_album_list (self, data, artist):
         if data is None:
             print "Nothing fetched for %s top albums" % artist
             return
 
-        parsed = dom.parseString (data)
+        try:
+            parsed = dom.parseString (data)
+        except Exception, e:
+            print "Error parsing album list: %s" % e
+            return False
+
         lfm = parsed.getElementsByTagName ('lfm')[0]
         if lfm.attributes['status'].value == 'failed':
             self.error = lfm.childNodes[1].firstChild.data
@@ -208,41 +211,40 @@ class AlbumDataSource (gobject.GObject):
         return self.albums
 
     def fetch_album_info (self, artist, album, index):
+        cachekey = "lastfm:album:getinfo:%s:%s" % (artist, album)
         url = "%salbum.getinfo&artist=%s&album=%s&api_key=%s" % (LastFM.URL_PREFIX,
                                                                  artist.replace(" ", "+"),
                                                                  album.replace(" ", "+"),
                                                                  LastFM.API_KEY)
-
-        ld = rb.Loader()
-        ld.get_url (url, self.fetch_album_tracklist, album, index)
+        self.info_cache.fetch(cachekey, url, self.fetch_album_tracklist, album, index)
             
     def fetch_album_tracklist (self, data, album, index):
         if data is None:
             self.assemble_info(None, None, None)
 
-        parsed = dom.parseString (data)
-        
         try:
+            parsed = dom.parseString (data)
             self.albums[index]['id'] = parsed.getElementsByTagName ('id')[0].firstChild.data
         except Exception, e:
-            print "Problem parsing id, exiting: %s" % e
-            return None
+            print "Error parsing album tracklist: %s" % e
+            return False
 
         self.albums[index]['releasedate'] = self.extract(parsed.getElementsByTagName ('releasedate'),0)
         self.albums[index]['summary'] = self.extract(parsed.getElementsByTagName ('summary'), 0)
 
+        cachekey = "lastfm:album:tracks:%s" % self.albums[index]['id']
         url = "%splaylist.fetch&playlistURL=lastfm://playlist/album/%s&api_key=%s" % (
                      LastFM.URL_PREFIX, self.albums[index]['id'], LastFM.API_KEY)
 
-        ld = rb.Loader()
-        ld.get_url (url, self.assemble_info, album, index)
+        self.info_cache.fetch(cachekey, url, self.assemble_info, album, index)
 
     def assemble_info (self, data, album, index):
+        rv = True
         if data is None:
             print "nothing fetched for %s tracklist" % album
         else:
-            parsed = dom.parseString (data)
             try:
+                parsed = dom.parseString (data)
                 list = parsed.getElementsByTagName ('track')
                 tracklist = []
                 album_length = 0
@@ -254,11 +256,12 @@ class AlbumDataSource (gobject.GObject):
                 self.albums[index]['tracklist'] = tracklist
                 self.albums[index]['duration']  = album_length
             except Exception, e:
-                print "Problem : %s" % e
+                print "Error parsing album playlist: %s" % e
+                rv = False
 
-        gtk.gdk.threads_enter ()
         self.album_info_fetched -= 1
         print "%s albums left to process" % self.album_info_fetched
-        gtk.gdk.threads_leave ()
         if self.album_info_fetched == 0:
             self.emit('albums-ready')
+
+        return rv

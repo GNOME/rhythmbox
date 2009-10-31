@@ -22,6 +22,7 @@
 </script>
 </head>
 <body class="artist">
+%if error is None:
 <h1>${artist}</h1>
 <img src="${image}" />
 <div id="shortbio" class="shown">
@@ -41,5 +42,9 @@ Read less
 Read less
 </button>
 </div>
+%else:
+<h1>Unable to retrieve artist information:</h1>
+<p class="error">${error}$</p>
+%endif
 </body>
 </html>

@@ -126,9 +126,10 @@ class ArtistView (gobject.GObject):
         # If called any other time, the behavior is undefined
         try:
             info = ds.get_artist_info ()
-            small, med, big = info['images']
-            summary, full_bio = info['bio'] 
+            small, med, big = info['images'] or (None, None, None)
+            summary, full_bio = info['bio'] or (None, None)
             self.file = self.template.render (artist     = ds.get_current_artist (),
+                                              error      = ds.get_error (),
                                               image      = med,
                                               fullbio    = full_bio,
                                               shortbio   = summary,
@@ -147,15 +148,17 @@ class ArtistDataSource (gobject.GObject):
         'artist-top-albums-ready' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
 
-    def __init__ (self):
+    def __init__ (self, info_cache, ranking_cache):
         gobject.GObject.__init__ (self)
 
         self.current_artist = None
+        self.error = None
         self.artist = {
             'info' : {
                 'data'      : None, 
                 'signal'    : 'artist-info-ready', 
                 'function'  : 'getinfo',
+                'cache'     : info_cache,
                 'parsed'    : False,
             },
             
@@ -163,6 +166,7 @@ class ArtistDataSource (gobject.GObject):
                 'data'      : None, 
                 'signal'    : 'artist-similar-ready', 
                 'function'  : 'getsimilar',
+                'cache'     : info_cache,
                 'parsed'    : False,
             },
 
@@ -170,6 +174,7 @@ class ArtistDataSource (gobject.GObject):
                 'data'      : None, 
                 'signal'    : 'artist-top-albums-ready',
                 'function'  : 'gettopalbums',
+                'cache'     : ranking_cache,
                 'parsed'    : False,
             },
 
@@ -177,6 +182,7 @@ class ArtistDataSource (gobject.GObject):
                 'data'      : None, 
                 'signal'    : 'artist-top-tracks-ready',
                 'function'  : 'gettoptracks',
+                'cache'     : ranking_cache,
                 'parsed'    : False,
             },
         }
@@ -194,10 +200,12 @@ class ArtistDataSource (gobject.GObject):
 
     def fetch_top_tracks (self, artist):
         artist = artist.replace (" ", "+")
+        function = self.artist['top_tracks']['function']
+        cache = self.artist['top_tracks']['cache']
+        cachekey = "lastfm:artist:%s:%s" % (function, artist)
         url = '%sartist.%s&artist=%s&api_key=%s' % (LastFM.URL_PREFIX,
-            self.artist['top_tracks']['function'], artist, LastFM.API_KEY)
-        ld = rb.Loader()
-        ld.get_url (url, self.fetch_artist_data_cb, self.artist['top_tracks'])
+            function, artist, LastFM.API_KEY)
+        cache.fetch(cachekey, url, self.fetch_artist_data_cb, self.artist['top_tracks'])
 
     def fetch_artist_data (self, artist): 
         """
@@ -207,23 +215,32 @@ class ArtistDataSource (gobject.GObject):
         before any of the get_* methods.
         """
         self.current_artist = artist
+        self.error = None
         artist = artist.replace(" ", "+")
         for key, value in self.artist.items():
+            cachekey = "lastfm:artist:%s:%s" % (value['function'], artist)
             url = '%sartist.%s&artist=%s&api_key=%s' % (LastFM.URL_PREFIX,
                 value['function'], artist, LastFM.API_KEY)
-            ld = rb.Loader()
-            ld.get_url (url, self.fetch_artist_data_cb, value)
+            value['cache'].fetch(cachekey, url, self.fetch_artist_data_cb, value)
 
     def fetch_artist_data_cb (self, data, category):
         if data is None:
             print "no data fetched for artist %s" % category['function']
             return
-        category['data'] = dom.parseString (data)
-        category['parsed'] = False
-        self.emit (category['signal'])
+
+        try:
+            category['data'] = dom.parseString (data)
+            category['parsed'] = False
+            self.emit (category['signal'])
+        except Exception, e:
+            print "Error parsing artist %s: %s" % (category['function'], e)
+            return False
 
     def get_current_artist (self):
         return self.current_artist
+
+    def get_error (self):
+        return self.error
 
     def get_top_albums (self):
         if not self.artist['top_albums']['parsed']:
