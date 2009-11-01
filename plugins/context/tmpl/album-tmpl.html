@@ -1,7 +1,8 @@
-<%page args="error, list, artist, stylesheet" />
+<%page args="error, list, artist, stylesheet, datasource" />
 <html> <head> <meta http-equiv="content-type" content="text-html; charset=utf-8">
 <%!
     import re
+    import cgi
     def cleanup(text):
         return re.sub(r'\([^\)]*\)', '', text)
     def sec2hms(time):
@@ -38,7 +39,7 @@
 <%  
     num_albums = min(8, len(list))
 %>
-    <h1>${ _("Top albums by %s") % ("<em>" + artist + "</em>") }</h1>
+    <h1>${ _("Top albums by %s") % ("<em>" + cgi.escape(artist, True) + "</em>") }</h1>
 %for i, entry in enumerate(list) :
     <%
     if 'tracklist' not in entry or len(entry['tracklist']) == 0:
@@ -46,9 +47,9 @@
     if i == num_albums:
         break
     %>
-    <div id="album${entry['id']}" class="album">
-    <img width="64" src="${entry['images'][1]}" alt="${entry['images']}"/>
-    <h2>${entry['title']}</h2>
+    <div id="album${entry['id'] | h}" class="album">
+    <img width="64" src="${entry['images'][1] | h}" alt="${entry['images'] | h}"/>
+    <h2>${entry['title'] | h}</h2>
     %if 'duration' in entry:
     <% 
         album_time = sec2hms(entry['duration'])
@@ -57,18 +58,17 @@
     <p class="duration">${ _("%s (%d tracks)") % (album_time, tracks) }</p>
     %endif
     %if 'tracklist' in entry:
-    <% btn_name = "btn_%s" % entry['id'] %>
-    <button id="btn_${entry['id']}" onclick="toggle_vis(${entry['id']})">
+    <button id="btn_${entry['id'] | h}" onclick="toggle_vis(${entry['id'] | h})">
     ${ _("Show all tracks") }
     </button>
-    <table class="hidden" id="${entry['id']}">
+    <table class="hidden" id="${entry['id'] | h}">
         %for num, title, time in entry['tracklist'] :
             <% 
                 time = sec2hms(time)
                 title = cleanup(title)
                 num = num+1
             %>
-            <tr><td>${num}</td><td>${title}</td><td>${time}</td></tr>
+            <tr><td>${num}</td><td>${title | h}</td><td>${time}</td></tr>
         %endfor
     </table>
     %else:
@@ -79,7 +79,7 @@
     <p>${datasource}</p>
 %else:
     <h1>${ _("Unable to retrieve album information:") }</h1>
-    <p class="error">${error}</p>
+    <p class="error">${error | h}</p>
 %endif
 </body>
 </html>

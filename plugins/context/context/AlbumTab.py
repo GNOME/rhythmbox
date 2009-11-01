@@ -28,6 +28,7 @@ import rb, rhythmdb
 import gtk, gobject
 import webkit
 import os
+import cgi
 from mako.template import Template
 import xml.dom.minidom as dom
 import LastFM

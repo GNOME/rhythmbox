@@ -1,6 +1,7 @@
-<%page args="artist, image, shortbio, fullbio, stylesheet" />
+<%page args="artist, image, shortbio, fullbio, stylesheet, datasource" />
 <%!
     import re
+    import cgi
     remove_links = re.compile ('</?a[^>]*> ',re.VERBOSE)
     
     def cleanup(text):
@@ -23,8 +24,8 @@
 </head>
 <body class="artist">
 %if error is None:
-<h1>${artist}</h1>
-<img src="${image}" />
+<h1>${artist | h}</h1>
+<img src="${image | h}" />
 <div id="shortbio" class="shown">
 <% shortbio = cleanup(shortbio) %>
 <button name="more" onclick="swapClass('shortbio', 'shown', 'hidden');swapClass('fullbio', 'shown', 'hidden')" />
@@ -45,7 +46,7 @@ ${ _("Read less") }
 <p>${datasource}</p>
 %else:
 <h1>${ _("Unable to retrieve artist information:") }</h1>
-<p class="error">${error}</p>
+<p class="error">${error | h}</p>
 %endif
 </body>
 </html>

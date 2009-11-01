@@ -45,5 +45,5 @@ def user_has_account():
     return (username is not None and username != "")
 
 def datasource_link(path):
-    return "<a href='http://last.fm/'><img src='%s/img/lastfm.png'></a>" % self.basepath
+    return "<a href='http://last.fm/'><img src='%s/img/lastfm.png'></a>" % path
 

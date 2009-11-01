@@ -27,6 +27,7 @@
 import rb, rhythmdb
 import gtk, gobject
 import re, os
+import cgi
 import xml.dom.minidom as dom
 import LastFM
 
