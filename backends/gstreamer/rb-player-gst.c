@@ -105,6 +105,8 @@ struct _RBPlayerGstPrivate
 
 	gboolean emitted_error;
 
+	GList *stream_tags;
+
 	gint volume_changed;
 	gint volume_applied;
 	float cur_volume;
@@ -301,8 +303,12 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 		GstTagList *tags;
 		gst_message_parse_tag (message, &tags);
 
-		gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, mp);
-		gst_tag_list_free (tags);
+		if (mp->priv->stream_change_pending) {
+			mp->priv->stream_tags = g_list_append (mp->priv->stream_tags, tags);
+		} else {
+			gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, mp);
+			gst_tag_list_free (tags);
+		}
 		break;
 	}
 
@@ -805,6 +811,8 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 	mp->priv->stream_change_pending = FALSE;
 
 	if (result) {
+		GList *t;
+
 		mp->priv->current_track_finishing = FALSE;
 		mp->priv->buffering = FALSE;
 		mp->priv->playing = TRUE;
@@ -839,6 +847,18 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 
 			mp->priv->volume_applied = mp->priv->volume_changed;
 		}
+
+		/* process any tag lists we received while starting the stream */
+		for (t = mp->priv->stream_tags; t != NULL; t = t->next) {
+			GstTagList *tags;
+
+			tags = (GstTagList *)t->data;
+			rb_debug ("processing buffered taglist");
+			gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, mp);
+			gst_tag_list_free (tags);
+		}
+		g_list_free (mp->priv->stream_tags);
+		mp->priv->stream_tags = NULL;
 	}
 
 	return result;
