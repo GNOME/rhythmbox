@@ -11,9 +11,9 @@
         mn = time / 60
         sec = time % 60
         if hr > 0:
-            return "%d:%02d:%02d" % (hr,mn,sec)
+            return _("%d:%02d:%02d") % (hr,mn,sec)
         else:
-            return "%d:%02d" %(mn,sec)
+            return _("%d:%02d") %(mn,sec)
 %>  
 <link rel="stylesheet" href="${stylesheet}" type="text/css" />
 <script language="javascript">
@@ -27,7 +27,9 @@
     }
     function toggle_vis (element) { 
         swapClass(element, 'hidden', 'shown');
-        swapText('btn_'+element, 'Hide all tracks', 'Show all tracks');
+        hide = "${ _("Hide all tracks") }";
+        show = "${ _("Show all tracks") }";
+        swapText('btn_'+element, hide, show);
     }
 </script>
 </head>
@@ -36,7 +38,7 @@
 <%  
     num_albums = min(8, len(list))
 %>
-    <h1>Top albums by <em>${artist}</em></h1>
+    <h1>${ _("Top albums by %s") % ("<em>" + artist + "</em>") }</h1>
 %for i, entry in enumerate(list) :
     <%
     if 'tracklist' not in entry or len(entry['tracklist']) == 0:
@@ -52,12 +54,12 @@
         album_time = sec2hms(entry['duration'])
         tracks = len(entry['tracklist'])
     %>
-    <p class="duration">${album_time} (${tracks} tracks)</p>
+    <p class="duration">${ _("%s (%d tracks)") % (album_time, tracks) }</p>
     %endif
     %if 'tracklist' in entry:
     <% btn_name = "btn_%s" % entry['id'] %>
-    <button id="btn_${entry['id']}"onclick="toggle_vis(${entry['id']})">
-    Show all tracks
+    <button id="btn_${entry['id']}" onclick="toggle_vis(${entry['id']})">
+    ${ _("Show all tracks") }
     </button>
     <table class="hidden" id="${entry['id']}">
         %for num, title, time in entry['tracklist'] :
@@ -70,12 +72,12 @@
         %endfor
     </table>
     %else:
-    <p>Tracklist not available</p>
+    <p>${ _("Track list not available") }</p>
     %endif
     </div>
 %endfor
 %else:
-    <h1>Last.fm Error:</h1>
+    <h1>${ _("Unable to retrieve album information:") }</h1>
     <p class="error">${error}</p>
 %endif
 </body>

@@ -106,7 +106,7 @@ class ArtistView (gobject.GObject):
     def loading (self, current_artist):
         self.loading_file = self.loading_template.render (
             artist   = current_artist,
-            info     = "Bio",
+            info     = _("Loading biography for %s") % current_artist,
             song     = "",
             basepath = self.basepath)
         self.webview.load_string (self.loading_file, 'text/html', 'utf-8', self.basepath)

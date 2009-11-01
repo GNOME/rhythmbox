@@ -5,7 +5,7 @@
     
     def cleanup(text):
         if text is None:
-            return "No information available"
+            return _("No information available")
         text = remove_links.sub ('', text)
         text = text.replace('\n', '</p><p>')
         return text
@@ -28,23 +28,23 @@
 <div id="shortbio" class="shown">
 <% shortbio = cleanup(shortbio) %>
 <button name="more" onclick="swapClass('shortbio', 'shown', 'hidden');swapClass('fullbio', 'shown', 'hidden')" />
-Read more
+${ _("Read more") }
 </button>
 <p>${shortbio}</p>
 </div>
 <div id="fullbio" class="hidden">
 <% fullbio = cleanup(fullbio) %>
 <button name="more" onclick="swapClass('shortbio', 'shown', 'hidden');swapClass('fullbio', 'shown', 'hidden')" />
-Read less
+${ _("Read less") }
 </button>
 <p>${fullbio}</p>
 <button name="more" onclick="swapClass('shortbio', 'shown', 'hidden');swapClass('fullbio', 'shown', 'hidden')" />
-Read less
+${ _("Read less") }
 </button>
 </div>
 %else:
-<h1>Unable to retrieve artist information:</h1>
-<p class="error">${error}$</p>
+<h1>${ _("Unable to retrieve artist information:") }</h1>
+<p class="error">${error}</p>
 %endif
 </body>
 </html>

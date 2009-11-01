@@ -108,7 +108,7 @@ class AlbumView (gobject.GObject):
     def loading (self, current_artist):
         self.loading_file = self.loading_template.render (
             artist   = current_artist,
-            info     = "Top Albums",
+            info     = _("Loading top albums for %s") % current_artist,
             song     = "",
             basepath = self.basepath)
         self.webview.load_string (self.loading_file, 'text/html', 'utf-8', self.basepath)
@@ -222,7 +222,7 @@ class AlbumDataSource (gobject.GObject):
                                                                  album.replace(" ", "+"),
                                                                  LastFM.API_KEY)
         self.info_cache.fetch(cachekey, url, self.fetch_album_tracklist, album, index)
-            
+
     def fetch_album_tracklist (self, data, album, index):
         if data is None:
             self.assemble_info(None, None, None)
