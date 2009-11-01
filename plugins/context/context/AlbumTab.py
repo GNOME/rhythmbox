@@ -29,6 +29,7 @@ import gtk, gobject
 import webkit
 import os
 import cgi
+import urllib
 from mako.template import Template
 import xml.dom.minidom as dom
 import LastFM
@@ -170,11 +171,12 @@ class AlbumDataSource (gobject.GObject):
             return
 
         self.artist = artist
+        qartist = urllib.quote_plus (artist)
         self.error  = None
         url = "%sartist.gettopalbums&artist=%s&api_key=%s" % (LastFM.URL_PREFIX,
-                                                              artist.replace(" ", "+"),
+                                                              qartist,
                                                               LastFM.API_KEY)
-        cachekey = 'lastfm:artist:gettopalbums:%s' % artist
+        cachekey = 'lastfm:artist:gettopalbums:%s' % qartist
         self.ranking_cache.fetch(cachekey, url, self.parse_album_list, artist)
 
     def parse_album_list (self, data, artist):
@@ -218,10 +220,12 @@ class AlbumDataSource (gobject.GObject):
         return self.albums
 
     def fetch_album_info (self, artist, album, index):
-        cachekey = "lastfm:album:getinfo:%s:%s" % (artist, album)
+        qartist = urllib.quote_plus (artist)
+        qalbum = urllib.quote_plus (album)
+        cachekey = "lastfm:album:getinfo:%s:%s" % (qartist, qalbum)
         url = "%salbum.getinfo&artist=%s&album=%s&api_key=%s" % (LastFM.URL_PREFIX,
-                                                                 artist.replace(" ", "+"),
-                                                                 album.replace(" ", "+"),
+                                                                 qartist,
+                                                                 qalbum,
                                                                  LastFM.API_KEY)
         self.info_cache.fetch(cachekey, url, self.fetch_album_tracklist, album, index)
 

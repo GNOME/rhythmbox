@@ -28,6 +28,7 @@ import rb, rhythmdb
 import gtk, gobject
 import re, os
 import cgi
+import urllib
 import xml.dom.minidom as dom
 import LastFM
 
@@ -204,7 +205,7 @@ class ArtistDataSource (gobject.GObject):
         if LastFM.user_has_account() is False:
             return
 
-        artist = artist.replace (" ", "+")
+        artist = urllib.quote_plus (artist)
         function = self.artist['top_tracks']['function']
         cache = self.artist['top_tracks']['cache']
         cachekey = "lastfm:artist:%s:%s" % (function, artist)
@@ -226,7 +227,7 @@ class ArtistDataSource (gobject.GObject):
             return
 
         self.error = None
-        artist = artist.replace(" ", "+")
+        artist = urllib.quote_plus (artist)
         for key, value in self.artist.items():
             cachekey = "lastfm:artist:%s:%s" % (value['function'], artist)
             url = '%sartist.%s&artist=%s&api_key=%s' % (LastFM.URL_PREFIX,
