@@ -187,6 +187,15 @@ class ContextView (gobject.GObject):
 
         self.tab[self.current].reload()
 
+    def navigation_request_cb(self, view, frame, request):
+        # open HTTP URIs externally.  this isn't a web browser.
+        if request.get_uri().startswith('http'):
+            print "opening uri %s" % request.get_uri()
+            rb.show_uri(request.get_uri())
+            return 1        # WEBKIT_NAVIGATION_RESPONSE_IGNORE
+        else:
+            return 0	# WEBKIT_NAVIGATION_RESPONSE_ACCEPT
+
     def init_gui(self):
         self.vbox = gtk.VBox()
         self.frame = gtk.Frame()
@@ -220,6 +229,7 @@ class ContextView (gobject.GObject):
 
         #---- set up webkit pane -----#
         self.webview = webkit.WebView()
+        self.webview.connect("navigation-requested", self.navigation_request_cb)
         self.scroll = gtk.ScrolledWindow()
         self.scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         self.scroll.set_shadow_type(gtk.SHADOW_IN)

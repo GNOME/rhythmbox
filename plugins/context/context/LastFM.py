@@ -41,7 +41,9 @@ NO_ACCOUNT_ERROR = _("This information is only available to last.fm users. Pleas
 USERNAME_GCONF_KEY = "/apps/rhythmbox/audioscrobbler/username"
 
 def user_has_account():
-        username = gconf.client_get_default().get_string(USERNAME_GCONF_KEY)
-        return (username is not None and username != "")
+    username = gconf.client_get_default().get_string(USERNAME_GCONF_KEY)
+    return (username is not None and username != "")
 
+def datasource_link(path):
+    return "<a href='http://last.fm/'><img src='%s/img/lastfm.png'></a>" % self.basepath
 

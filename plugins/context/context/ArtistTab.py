@@ -133,6 +133,7 @@ class ArtistView (gobject.GObject):
                                               image      = med,
                                               fullbio    = full_bio,
                                               shortbio   = summary,
+                                              datasource = LastFM.datasource_link (self.basepath),
                                               stylesheet = self.styles )
             self.load_view ()
         except Exception, e:

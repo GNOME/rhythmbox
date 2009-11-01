@@ -19,6 +19,7 @@ tmpl_DATA = \
 
 imgdir = $(plugindir)/img
 img_DATA = \
+	img/lastfm.png			\
 	img/spinner.gif
 
 EXTRA_DIST = $(plugin_in_files) $(tmpl_DATA) $(img_DATA)

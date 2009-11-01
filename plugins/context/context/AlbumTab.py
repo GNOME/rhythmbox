@@ -126,6 +126,7 @@ class AlbumView (gobject.GObject):
         self.file = self.album_template.render (error = ds.get_error(), 
                                                 list = ds.get_top_albums(), 
                                                 artist = ds.get_artist(),
+                                                datasource = LastFM.datasource_link (self.basepath),
                                                 stylesheet = self.styles)
         self.load_view ()
 
