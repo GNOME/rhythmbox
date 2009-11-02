@@ -28,8 +28,8 @@
     }
     function toggle_vis (element) { 
         swapClass(element, 'hidden', 'shown');
-        hide = "${ _("Hide all tracks") }";
-        show = "${ _("Show all tracks") }";
+        hide = ${ '"' + _("Hide all tracks") + '"' };
+        show = ${ '"' + _("Show all tracks") + '"' };
         swapText('btn_'+element, hide, show);
     }
 </script>
