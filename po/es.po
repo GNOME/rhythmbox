@@ -16,8 +16,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-11-01 06:00+0000\n"
-"PO-Revision-Date: 2009-11-02 11:22+0100\n"
+"POT-Creation-Date: 2009-11-02 12:00+0000\n"
+"PO-Revision-Date: 2009-11-02 13:16+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -37,7 +37,7 @@ msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
 "No se pudo crear un elemento sumidero de GStreamer en el que escribir %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:384
+#: ../backends/gstreamer/rb-player-gst.c:390
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr ""
@@ -45,13 +45,13 @@ msgstr ""
 "de GStreamer"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:598
+#: ../backends/gstreamer/rb-player-gst.c:604
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2770
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Falló al abrir el dispositivo de salida: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:643
+#: ../backends/gstreamer/rb-player-gst.c:649
 #, c-format
 msgid "Unable to start playback pipeline"
 msgstr "No se pudo iniciar la tubería de reproducción"
@@ -1732,7 +1732,6 @@ msgid "Context Panel"
 msgstr "Panel contextual"
 
 #: ../plugins/context/context.rb-plugin.in.h:2
-#| msgid "Scroll the view to the currently playing song"
 msgid "Show information related to the currently playing artist and song."
 msgstr ""
 "Mostrar información relacionada con el artista y canción actualmente en "
@@ -1760,18 +1759,16 @@ msgid "Toggle Conte_xt Pane"
 msgstr "Conmutar el Panel conte_xtual"
 
 #: ../plugins/context/context/ContextView.py:89
-#| msgid "Change the visibility of the side pane"
 msgid "Change the visibility of the context pane"
 msgstr "Cambiar la visibilidad del panel contextual"
 
 #: ../plugins/context/context/ContextView.py:185
 #, python-format
-#| msgid "by <i>%s</i>"
-msgid "Top songs by <i>%s</i>"
-msgstr "Mejores canciones de <i>%s</i>"
+#| msgid "Top songs by <i>%s</i>"
+msgid "Top songs by %s"
+msgstr "Mejores canciones de %s"
 
 #: ../plugins/context/context/ContextView.py:202
-#| msgid "Not Playing"
 msgid "Nothing Playing"
 msgstr "No se está reproduciendo nada"
 
@@ -1797,9 +1794,18 @@ msgid "Loading lyrics for %s by %s"
 msgstr "Cargando letras para %s de %s"
 
 #: ../plugins/context/context/LyricsTab.py:117
-#| msgid "No lyrics found"
 msgid "Lyrics not found"
 msgstr "No se encontró ninguna letra"
+
+#: ../plugins/context/tmpl/album-tmpl.html:31
+#| msgid "Show all tracks"
+msgid "Hide all tracks"
+msgstr "Ocultar todas las pistas"
+
+#: ../plugins/context/tmpl/album-tmpl.html:32
+#: ../plugins/context/tmpl/album-tmpl.html:62
+msgid "Show all tracks"
+msgstr "Mostrar todas las pistas"
 
 #: ../plugins/context/tmpl/album-tmpl.html:42
 #, c-format
@@ -1808,32 +1814,22 @@ msgstr "Mejores álbumes de %s"
 
 #: ../plugins/context/tmpl/album-tmpl.html:58
 #, c-format
-#| msgid "%s (%d)"
 msgid "%s (%d tracks)"
 msgstr "%s (%d pistas)"
 
-#: ../plugins/context/tmpl/album-tmpl.html:62
-#| msgid "Show _All Tracks"
-msgid "Show all tracks"
-msgstr "Mostrar todas las pistas"
-
 #: ../plugins/context/tmpl/album-tmpl.html:75
-#| msgid "Playback position not available"
 msgid "Track list not available"
 msgstr "La lista de pistas no está disponible"
 
 #: ../plugins/context/tmpl/album-tmpl.html:81
-#| msgid "Unable to start visualization"
 msgid "Unable to retrieve album information:"
 msgstr "No se pudo obtener la información del álbum:"
 
 #: ../plugins/context/tmpl/artist-tmpl.html:9
-#| msgid "Show information about the music player"
 msgid "No information available"
 msgstr "No existe información disponible"
 
 #: ../plugins/context/tmpl/artist-tmpl.html:32
-#| msgid "Remove"
 msgid "Read more"
 msgstr "Leer más"
 
@@ -1843,7 +1839,6 @@ msgid "Read less"
 msgstr "Leer menos"
 
 #: ../plugins/context/tmpl/artist-tmpl.html:48
-#| msgid "Unable to start visualization"
 msgid "Unable to retrieve artist information:"
 msgstr "No se pudo obtener la información del artista:"
 
