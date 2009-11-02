@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-09-18 11:17+0000\n"
-"PO-Revision-Date: 2009-09-26 10:35+0300\n"
+"POT-Creation-Date: 2009-11-01 06:00+0000\n"
+"PO-Revision-Date: 2009-11-01 18:15+0300\n"
 "Last-Translator: Mattias Põldaru <mahfiaz gmail com>\n"
 "Language-Team: Estonian <gnome-et@linux.ee>\n"
 "MIME-Version: 1.0\n"
@@ -147,10 +147,10 @@ msgid "_Artists and albums"
 msgstr "_Esitajad ja albumid"
 
 msgid "_Genre"
-msgstr "_Stiil"
+msgstr "_Žanr"
 
 msgid "_Genres and artists"
-msgstr "_Stiilid ja esitajad"
+msgstr "_Žanrid ja esitajad"
 
 msgid "_Last played"
 msgstr "_Viimati esitatud"
@@ -316,7 +316,7 @@ msgid "_Disc number:"
 msgstr "_Plaadi number:"
 
 msgid "_Genre:"
-msgstr "_Stiil:"
+msgstr "_Žanr:"
 
 #  this string can only be so long, or there wont be a search entry :)
 msgid "_Year:"
@@ -648,7 +648,7 @@ msgstr "[Pealkirjata]"
 
 #, c-format
 msgid "Device '%s' does not contain any media"
-msgstr "Seade '%s' ei sisalda meediat"
+msgstr "Seade '%s' ei sisalda andmekandjat"
 
 #, c-format
 msgid ""
@@ -1193,7 +1193,7 @@ msgid ""
 "please insert it in the drive and try again."
 msgstr ""
 "Selle esitusloendi pikkus on %s minutit.  See ületab tavalise audioplaadi "
-"pikkuse. Kui sihtmeedia on suurem kui tavaline audioplaat, sisesta see "
+"pikkuse. Kui sihtmeedium on suurem kui tavaline audioplaat, sisesta see "
 "kirjutajasse ning proovi uuesti."
 
 msgid "Playlist too long"
@@ -1236,6 +1236,86 @@ msgstr ""
 
 msgid "DLNA/UPnP sharing and control support"
 msgstr "DLNA/UPnP jagamise ja juhtimise tugi"
+
+msgid "Context Panel"
+msgstr "Kontekstipaneel"
+
+msgid "Show information related to the currently playing artist and song."
+msgstr "Parasjagu esitatava artisti või lauluga seonduvate andmete kuvamine."
+
+msgid "Albums"
+msgstr "Albumid"
+
+#, python-format
+msgid "Loading top albums for %s"
+msgstr "Esitaja %s parimate albumite laadimine"
+
+#, python-format
+msgid "Loading biography for %s"
+msgstr "Esitaja %s biograafia laadimine"
+
+#. Add button to toggle visibility of panel
+msgid "Toggle Conte_xt Pane"
+msgstr "Lülita _kontekstipaneel sisse/välja"
+
+msgid "Change the visibility of the context pane"
+msgstr "Kontekstipaneeli nähtavuse muutmine"
+
+#, python-format
+msgid "Top songs by <i>%s</i>"
+msgstr "Parimad laulud esitajalt <i>%s</i>"
+
+msgid "Nothing Playing"
+msgstr "Ei mängi"
+
+#. this isn't particularly well worded; maybe that's a sign that it's too ugly
+#. maybe we could provide a form to fill in?
+msgid ""
+"This information is only available to last.fm users. Please enter your "
+"account details in the last.fm plugin configuration."
+msgstr ""
+"See teave on saadaval ainult last.fm'i kasutajatele. Palun sisesta oma konto "
+"andmed last.fm'i plugina sätetes."
+
+msgid "Lyrics"
+msgstr "Laulusõnad"
+
+#, python-format
+msgid "Loading lyrics for %s by %s"
+msgstr "Laulusõnade laadimine esitaja %s$2 laulule %s$1"
+
+msgid "Lyrics not found"
+msgstr "Laulusõnu ei leitud"
+
+#, c-format
+msgid "Top albums by %s"
+msgstr "Esitaja %s parimad albumid"
+
+#  Translators: %s is the song name
+#, c-format
+msgid "%s (%d tracks)"
+msgstr "%s (%d rada)"
+
+msgid "Show all tracks"
+msgstr "Näita kõiki radasid"
+
+msgid "Track list not available"
+msgstr "Radade loend pole saadaval"
+
+msgid "Unable to retrieve album information:"
+msgstr "Albumi andmete hankimine pole võimalik:"
+
+msgid "No information available"
+msgstr "Andmed pole saadaval"
+
+msgid "Read more"
+msgstr "Loe edasi"
+
+msgid "Read less"
+msgstr "Vähem lugemist"
+
+msgid "Unable to retrieve artist information:"
+msgstr "Esitaja andmete hankimine pole võimalik:"
 
 msgid "DAAP Music Sharing"
 msgstr "DAAP muusika jagamine"
@@ -1687,7 +1767,7 @@ msgid "New Internet _Radio Station..."
 msgstr "Uus _internetiraadiojaam..."
 
 msgid "Create a new Internet Radio station"
-msgstr "Loo a uus internetiraadio"
+msgstr "Loo uus internetiraadio"
 
 #. Translators: this is the toolbar button label for
 #. New Internet Radio Station action.
@@ -1696,7 +1776,7 @@ msgid "New"
 msgstr "Uus"
 
 msgid "Genre"
-msgstr "Stiil"
+msgstr "Žanr"
 
 msgid "Radio"
 msgstr "Raadio"
@@ -1750,9 +1830,6 @@ msgstr "_Redaktor"
 #  this string can only be so long, or there wont be a search entry :)
 msgid "_Search again"
 msgstr "_Otsi uuesti"
-
-msgid "Lyrics"
-msgstr "Laulusõnad"
 
 msgid "Searching for lyrics..."
 msgstr "Laulusõnade otsimine..."
@@ -1873,7 +1950,7 @@ msgid ""
 "    * Radio stations and \"genre mix\" playlists allow background listening "
 "- can do work while listening to our music"
 msgstr ""
-"    * Raadiojaamad ja \"stiilisegamise\" esitusloendid sobivad muusikaliseks "
+"    * Raadiojaamad ja \"žanrisegamise\" esitusloendid sobivad muusikaliseks "
 "fooniks - sa võid teha muusika kuulamise ajal tööd"
 
 msgid "    * Smaller selection means easier to find good music"
@@ -2193,14 +2270,6 @@ msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "MTP seadmete tugi (näitab sisu, edastab, esitab seadmelt)"
 
 #, c-format
-msgid "Unable to copy file from MTP device: %s"
-msgstr "MTP-seadmest ei suudetud faili kopeerida: %s"
-
-#, c-format
-msgid "Not enough space in %s"
-msgstr "Seadmes %s pole piisavalt vaba ruumi"
-
-#, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Ajutist faili ei suudetud avada: %s"
 
@@ -2213,11 +2282,23 @@ msgstr "MTP-seadme väljastamine"
 msgid "Rename MTP-device"
 msgstr "Nimeta MTP-seade ümber"
 
-msgid "Media player device error"
-msgstr "Meediaesitaja viga"
-
 msgid "Digital Audio Player"
 msgstr "Digitaalne audiopleier"
+
+#, c-format
+msgid "Unable to copy file from MTP device: %s"
+msgstr "MTP-seadmest ei suudetud faili kopeerida: %s"
+
+#, c-format
+msgid "Not enough space in %s"
+msgstr "Seadmes %s pole piisavalt vaba ruumi"
+
+#, c-format
+msgid "Unable to send file to MTP device: %s"
+msgstr "MTP-seadmesse pole võimalik faile saata: %s"
+
+msgid "Media player device error"
+msgstr "Meediaesitaja viga"
 
 msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr "Keela vooluhalduril muusika esitamise ajal masinat uinutada"
@@ -2727,7 +2808,7 @@ msgid "New _Automatic Playlist..."
 msgstr "Uus _automaatne esitusnimekiri..."
 
 msgid "Create a new automatically updating playlist"
-msgstr "Uue automaatselt uuendatava esitusnimekirja loomine"
+msgstr "Uue automaatselt uueneva esitusnimekirja loomine"
 
 msgid "_Load from File..."
 msgstr "_Laadi failist..."
@@ -2821,7 +2902,7 @@ msgid "Copy all tracks to the library"
 msgstr "Kõikide radade kopeerimine fonoteeki"
 
 msgid "_Scan Removable Media"
-msgstr "_Skaneeri eemaldatavat meediat"
+msgstr "_Skaneeri eemaldatavaid andmekandjaid"
 
 msgid "Scan for new Removable Media"
 msgstr "Eemaldatavate andmekandjate skaneerimine"
@@ -2836,9 +2917,6 @@ msgstr "Ei suudetud väljastada"
 
 msgid "Unable to unmount"
 msgstr "Ei suudetud lahti haakida"
-
-msgid "Error transferring track"
-msgstr "Viga pala edastamisel"
 
 msgid "Select _All"
 msgstr "_Vali kõik"
@@ -3100,10 +3178,10 @@ msgid "Scroll the view to the currently playing song"
 msgstr "Vaate kerimine parasjagu esitatavale laulule"
 
 msgid "Side _Pane"
-msgstr "Külg_paan"
+msgstr "Külg_paneel"
 
 msgid "Change the visibility of the side pane"
-msgstr "Külgpaani nähtavuse muutmine"
+msgstr "Külgpaneeli nähtavuse muutmine"
 
 msgid "T_oolbar"
 msgstr "_Tööriistariba"
@@ -3243,7 +3321,7 @@ msgid "Change the visibility of the browser"
 msgstr "Sirvija nähtavuse muutmine"
 
 msgid "Filter music display by genre, artist, album, or title"
-msgstr "Muusika filtreerimine stiili, esitaja, albumi või pealkirja alusel"
+msgstr "Muusika filtreerimine žanri, esitaja, albumi või pealkirja alusel"
 
 msgid "Loading..."
 msgstr "Laadimine..."
@@ -3257,9 +3335,6 @@ msgstr "Esitajad"
 msgid "Search artists"
 msgstr "Esitajate otsimine"
 
-msgid "Albums"
-msgstr "Albumid"
-
 msgid "Search albums"
 msgstr "Albumite otsimine"
 
@@ -3269,11 +3344,14 @@ msgstr "Pealkirjad"
 msgid "Search titles"
 msgstr "Pealkirjade otsimine"
 
+msgid "Error transferring track"
+msgstr "Viga pala edastamisel"
+
 msgid "Browse This _Genre"
-msgstr "Sirvi seda _stiili"
+msgstr "Sirvi seda _žanrit"
 
 msgid "Set the browser to view only this genre"
-msgstr "Sirvija näitab ainult seda stiili"
+msgstr "Sirvija näitab ainult seda žanrit"
 
 msgid "Browse This _Artist"
 msgstr "Sirvi seda _esitajat"
@@ -3610,8 +3688,8 @@ msgstr[1] "Kõik %d albumit (%d)"
 #, c-format
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
-msgstr[0] "%d stiil (%d)"
-msgstr[1] "Kõik %d stiili (%d)"
+msgstr[0] "%d žanr (%d)"
+msgstr[1] "Kõik %d žanrit (%d)"
 
 #, c-format
 msgid "%d (%d)"
