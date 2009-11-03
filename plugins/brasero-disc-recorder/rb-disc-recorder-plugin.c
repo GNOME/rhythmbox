@@ -294,14 +294,14 @@ rb_disc_recorder_plugin_write_audio_project (const gchar 	*name,
 	if (success < 0)
 		goto error;
 
-	success = xmlTextWriterStartElement (project, (xmlChar *) "audio");
-	if (success < 0)
-		goto error;
-
         do {
 		RhythmDBEntry  *entry;
 		const char *str;
 		xmlChar *escaped;
+
+		success = xmlTextWriterStartElement (project, (xmlChar *) "audio");
+		if (success < 0)
+			goto error;
 
 		gtk_tree_model_get (model, &iter, 0, &entry, -1);
 
@@ -375,11 +375,11 @@ rb_disc_recorder_plugin_write_audio_project (const gchar 	*name,
 				goto error;
 		}
 		*/
-        } while (gtk_tree_model_iter_next (model, &iter));
 
-	success = xmlTextWriterEndElement (project); /* audio */
-	if (success < 0)
-		goto error;
+		success = xmlTextWriterEndElement (project); /* audio */
+		if (success < 0)
+			goto error;
+        } while (gtk_tree_model_iter_next (model, &iter));
 
 	success = xmlTextWriterEndElement (project); /* track */
 	if (success < 0)
