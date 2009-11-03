@@ -246,7 +246,7 @@ rb_mtp_sink_handle_message (GstBin *bin, GstMessage *message)
 			gst_element_message_full (GST_ELEMENT (sink),
 						  GST_MESSAGE_ERROR,
 						  GST_RESOURCE_ERROR, code,
-						  sink->upload_error->message, NULL,
+						  g_strdup (sink->upload_error->message), NULL,
 						  __FILE__, GST_FUNCTION, __LINE__);
 		}
 	}
@@ -363,7 +363,6 @@ rb_mtp_sink_finalize (GObject *object)
 	g_mutex_free (sink->upload_mutex);
 	g_cond_free (sink->upload_cond);
 
-	/* probably isn't right */
 	if (sink->upload_error) {
 		g_error_free (sink->upload_error);
 	}
