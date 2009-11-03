@@ -396,6 +396,7 @@ do_notify (RBStatusIconPlugin *plugin,
 					 G_CALLBACK (notification_closed_cb),
 					 plugin, 0);
 	} else {
+		notify_notification_clear_hints (plugin->priv->notification);
 		notify_notification_update (plugin->priv->notification, primary, secondary, icon_name);
 	}
 
@@ -417,6 +418,7 @@ do_notify (RBStatusIconPlugin *plugin,
 	notify_notification_set_timeout (plugin->priv->notification, timeout);
 
 	if (pixbuf != NULL) {
+		notify_notification_clear_hints (plugin->priv->notification);
 		notify_notification_set_icon_from_pixbuf (plugin->priv->notification, pixbuf);
 	}
 
