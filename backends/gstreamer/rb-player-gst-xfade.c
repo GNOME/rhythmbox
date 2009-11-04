@@ -4171,7 +4171,6 @@ really_remove_filter (GstPad *pad,
 		 * the ghostpad to the previous element.
 		 */
 		gst_ghost_pad_set_target (GST_GHOST_PAD (nextpad), prevpad);
-		gst_object_unref (nextpad);
 	} else {
 		/* we are in the middle, so link the previous and next elements */
 		gst_object_unref (nextpad);
@@ -4211,7 +4210,7 @@ rb_player_gst_xfade_add_filter (RBPlayerGstFilter *iplayer, GstElement *element)
 
 	return pipeline_op (player,
 			    element,
-			    player->priv->filterbin,
+			    player->priv->volume,
 			    (GstPadBlockCallback) really_add_filter);
 }
 
@@ -4227,7 +4226,7 @@ rb_player_gst_xfade_remove_filter (RBPlayerGstFilter *iplayer, GstElement *eleme
 	}
 	return pipeline_op (player,
 			    element,
-			    player->priv->filterbin,
+			    player->priv->volume,
 			    (GstPadBlockCallback) really_remove_filter);
 }
 
