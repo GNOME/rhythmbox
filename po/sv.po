@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-28 23:38+0100\n"
-"PO-Revision-Date: 2009-10-28 23:39+0100\n"
+"POT-Creation-Date: 2009-11-05 07:32+0100\n"
+"PO-Revision-Date: 2009-11-05 07:36+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -27,19 +27,19 @@ msgstr "Vill du skriva över filen \"%s\"?"
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Kunde inte skapa ett GStreamer-sinkelement för att skriva till %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:384
+#: ../backends/gstreamer/rb-player-gst.c:390
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr "Misslyckades med att skapa playbin2-element; kontrollera din GStreamer-installation"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:598
+#: ../backends/gstreamer/rb-player-gst.c:604
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2770
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Misslyckades med att öppna utdataenhet: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:643
+#: ../backends/gstreamer/rb-player-gst.c:649
 #, c-format
 msgid "Unable to start playback pipeline"
 msgstr "Kunde inte starta uppspelningsrörledning"
@@ -647,7 +647,7 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:440
 #: ../plugins/mtpdevice/rb-mtp-source.c:775
 #: ../plugins/mtpdevice/rb-mtp-source.c:886
-#: ../plugins/status-icon/rb-status-icon-plugin.c:727
+#: ../plugins/status-icon/rb-status-icon-plugin.c:729
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
 #: ../podcast/rb-podcast-manager.c:1867
 #: ../podcast/rb-podcast-properties-dialog.c:483
@@ -687,12 +687,14 @@ msgid "Cannot get free space at %s: %s"
 msgstr "Kan inte få fritt utrymme på %s: %s"
 
 #: ../lib/rb-util.c:578
+#: ../plugins/context/tmpl/album-tmpl.html:17
 #: ../remote/dbus/rb-client.c:144
 #, c-format
 msgid "%d:%02d"
 msgstr "%d.%02d"
 
 #: ../lib/rb-util.c:580
+#: ../plugins/context/tmpl/album-tmpl.html:15
 #: ../remote/dbus/rb-client.c:146
 #, c-format
 msgid "%d:%02d:%02d"
@@ -878,6 +880,7 @@ msgid "Title"
 msgstr "Titel"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:663
+#: ../plugins/context/context/ArtistTab.py:52
 #: ../sources/rb-library-source.c:139
 #: ../widgets/rb-entry-view.c:1485
 #: ../widgets/rb-library-browser.c:142
@@ -1706,6 +1709,114 @@ msgstr "Lägger till stöd för att spela upp media från och skicka media till 
 msgid "DLNA/UPnP sharing and control support"
 msgstr "Stöd för delning och styrning med DLNA/UPnP"
 
+#: ../plugins/context/context.rb-plugin.in.h:1
+msgid "Context Panel"
+msgstr "Sammanhangspanel"
+
+#: ../plugins/context/context.rb-plugin.in.h:2
+msgid "Show information related to the currently playing artist and song."
+msgstr "Visa information relaterad till den låt och artist som spelas upp."
+
+#: ../plugins/context/context/AlbumTab.py:51
+#: ../sources/rb-auto-playlist-source.c:106
+#: ../sources/rb-browser-source.c:173
+#: ../sources/rb-static-playlist-source.c:111
+msgid "Albums"
+msgstr "Album"
+
+#: ../plugins/context/context/AlbumTab.py:113
+#, python-format
+msgid "Loading top albums for %s"
+msgstr "Läser toppalbum för %s"
+
+#: ../plugins/context/context/ArtistTab.py:111
+#, python-format
+msgid "Loading biography for %s"
+msgstr "Läser biografi för %s"
+
+#. Add button to toggle visibility of panel
+#: ../plugins/context/context/ContextView.py:88
+msgid "Toggle Conte_xt Pane"
+msgstr "Växla samman_hangspanel"
+
+#: ../plugins/context/context/ContextView.py:89
+msgid "Change the visibility of the context pane"
+msgstr "Ändra synligheten för sammanhangspanelen"
+
+#: ../plugins/context/context/ContextView.py:185
+#, python-format
+msgid "Top songs by %s"
+msgstr "Topplåtar av %s"
+
+#: ../plugins/context/context/ContextView.py:202
+msgid "Nothing Playing"
+msgstr "Ingenting spelas"
+
+#. this isn't particularly well worded; maybe that's a sign that it's too ugly
+#. maybe we could provide a form to fill in?
+#: ../plugins/context/context/LastFM.py:39
+msgid "This information is only available to last.fm users. Please enter your account details in the last.fm plugin configuration."
+msgstr "Denna information finns endast tillgänglig för last.fm-användare. Ange dina kontouppgifter i instickskonfigurationen för last.fm."
+
+#: ../plugins/context/context/LyricsTab.py:48
+#: ../plugins/lyrics/lyrics/__init__.py:249
+#: ../plugins/lyrics/lyrics/__init__.py:334
+msgid "Lyrics"
+msgstr "Låttext"
+
+#: ../plugins/context/context/LyricsTab.py:99
+#, python-format
+msgid "Loading lyrics for %s by %s"
+msgstr "Läser låttexter för %s av %s"
+
+#: ../plugins/context/context/LyricsTab.py:117
+msgid "Lyrics not found"
+msgstr "Låttexter hittades inte"
+
+#: ../plugins/context/tmpl/album-tmpl.html:31
+msgid "Hide all tracks"
+msgstr "Dölj alla spår"
+
+#: ../plugins/context/tmpl/album-tmpl.html:32
+#: ../plugins/context/tmpl/album-tmpl.html:62
+msgid "Show all tracks"
+msgstr "Visa alla spår"
+
+#: ../plugins/context/tmpl/album-tmpl.html:42
+#, c-format
+msgid "Top albums by %s"
+msgstr "Toppalbum av %s"
+
+#: ../plugins/context/tmpl/album-tmpl.html:58
+#, c-format
+msgid "%s (%d tracks)"
+msgstr "%s (%d spår)"
+
+#: ../plugins/context/tmpl/album-tmpl.html:75
+msgid "Track list not available"
+msgstr "Spårlista inte tillgänglig"
+
+#: ../plugins/context/tmpl/album-tmpl.html:81
+msgid "Unable to retrieve album information:"
+msgstr "Kunde inte hämta albuminformation:"
+
+#: ../plugins/context/tmpl/artist-tmpl.html:9
+msgid "No information available"
+msgstr "Ingen information tillgänglig"
+
+#: ../plugins/context/tmpl/artist-tmpl.html:32
+msgid "Read more"
+msgstr "Läs mer"
+
+#: ../plugins/context/tmpl/artist-tmpl.html:39
+#: ../plugins/context/tmpl/artist-tmpl.html:43
+msgid "Read less"
+msgstr "Läs mindre"
+
+#: ../plugins/context/tmpl/artist-tmpl.html:48
+msgid "Unable to retrieve artist information:"
+msgstr "Kunde inte hämta artistinformation:"
+
 #: ../plugins/daap/daap.rb-plugin.in.h:1
 msgid "DAAP Music Sharing"
 msgstr "DAAP-musikutdelning"
@@ -2349,11 +2460,6 @@ msgstr "R_edigera"
 #: ../plugins/lyrics/lyrics/__init__.py:231
 msgid "_Search again"
 msgstr "_Sök igen"
-
-#: ../plugins/lyrics/lyrics/__init__.py:249
-#: ../plugins/lyrics/lyrics/__init__.py:334
-msgid "Lyrics"
-msgstr "Låttext"
 
 #: ../plugins/lyrics/lyrics/__init__.py:289
 msgid "Searching for lyrics..."
@@ -3039,30 +3145,30 @@ msgstr "Visa n_otifieringar"
 msgid "Show notifications of song changes and other events"
 msgstr "Visa notifieringar när låt ändras och andra händelser"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:427
+#: ../plugins/status-icon/rb-status-icon-plugin.c:429
 msgid "Next"
 msgstr "Nästa"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:578
+#: ../plugins/status-icon/rb-status-icon-plugin.c:580
 #: ../remote/dbus/rb-client.c:454
 #: ../remote/dbus/rb-client.c:480
 msgid "Not playing"
 msgstr "Spelar inte"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:581
+#: ../plugins/status-icon/rb-status-icon-plugin.c:583
 #, c-format
 msgid "Paused, %s"
 msgstr "Pausad, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:670
+#: ../plugins/status-icon/rb-status-icon-plugin.c:672
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "av <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:691
+#: ../plugins/status-icon/rb-status-icon-plugin.c:693
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "från <i>%s</i>"
@@ -3868,7 +3974,7 @@ msgstr "Låtpo_sitionsväljare"
 
 #: ../shell/rb-shell-player.c:335
 msgid "Change the visibility of the song position slider"
-msgstr "Ändra synligheten på låtpositionsväljaren"
+msgstr "Ändra synligheten för låtpositionsväljaren"
 
 #: ../shell/rb-shell-player.c:781
 msgid "Stream error"
@@ -4073,7 +4179,7 @@ msgstr "Sido_panel"
 
 #: ../shell/rb-shell.c:427
 msgid "Change the visibility of the side pane"
-msgstr "Ändra synligheten på sidopanelen"
+msgstr "Ändra synligheten för sidopanelen"
 
 #: ../shell/rb-shell.c:429
 msgid "T_oolbar"
@@ -4081,7 +4187,7 @@ msgstr "Ver_ktygsrad"
 
 #: ../shell/rb-shell.c:430
 msgid "Change the visibility of the toolbar"
-msgstr "Ändra synligheten på verktygsraden"
+msgstr "Ändra synligheten för verktygsraden"
 
 #: ../shell/rb-shell.c:432
 msgid "_Small Display"
@@ -4113,7 +4219,7 @@ msgstr "S_tatusrad"
 
 #: ../shell/rb-shell.c:442
 msgid "Change the visibility of the statusbar"
-msgstr "Ändra synligheten på statusraden"
+msgstr "Ändra synligheten för statusraden"
 
 #: ../shell/rb-shell.c:983
 #: ../shell/rb-shell.c:1206
@@ -4246,7 +4352,7 @@ msgstr "_Bläddra"
 
 #: ../shell/rb-source-header.c:143
 msgid "Change the visibility of the browser"
-msgstr "Ändra synligheten på bläddraren"
+msgstr "Ändra synligheten för bläddraren"
 
 #: ../shell/rb-source-header.c:292
 msgid "Filter music display by genre, artist, album, or title"
@@ -4274,12 +4380,6 @@ msgstr "Artister"
 #: ../sources/rb-static-playlist-source.c:110
 msgid "Search artists"
 msgstr "Sök artister"
-
-#: ../sources/rb-auto-playlist-source.c:106
-#: ../sources/rb-browser-source.c:173
-#: ../sources/rb-static-playlist-source.c:111
-msgid "Albums"
-msgstr "Album"
 
 #: ../sources/rb-auto-playlist-source.c:106
 #: ../sources/rb-browser-source.c:173
