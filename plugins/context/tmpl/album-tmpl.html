@@ -3,8 +3,11 @@
 <%!
     import re
     import cgi
+    import rfc822
+
     def cleanup(text):
         return re.sub(r'\([^\)]*\)', '', text)
+
     def sec2hms(time):
         hr = time / 3600
         if hr > 0:
@@ -15,6 +18,17 @@
             return _("%d:%02d:%02d") % (hr,mn,sec)
         else:
             return _("%d:%02d") %(mn,sec)
+
+    def format_year(date):
+        try:
+            parsed = rfc822.parsedate(date)
+        except Exception, e:
+            return ""
+        if parsed is None:
+            return ""
+        else:
+            return '[' + str(parsed[0]) + ']'
+
 %>  
 <link rel="stylesheet" href="${stylesheet}" type="text/css" />
 <script language="javascript">
@@ -49,7 +63,11 @@
     %>
     <div id="album${entry['id'] | h}" class="album">
     <img width="64" src="${entry['images'][1] | h}" alt="${entry['images'] | h}"/>
-    <h2>${entry['title'] | h}</h2>
+    <h2>${entry['title'] | h}
+    %if 'releasedate' in entry:
+    ${ format_year(entry['releasedate']) }
+    %endif
+    </h2>
     %if 'duration' in entry:
     <% 
         album_time = sec2hms(entry['duration'])
