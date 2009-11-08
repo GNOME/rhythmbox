@@ -32,6 +32,7 @@
 #include <gst/gst.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
+#include "rb-player.h"
 #include "rb-metadata.h"
 
 G_BEGIN_DECLS
@@ -47,6 +48,16 @@ gboolean	rb_gst_process_tag_string	(const GstTagList *taglist,
 						 const char *tag,
 						 RBMetaDataField *field,
 						 GValue *value);
+
+/* tee and filter support */
+
+GstElement *	rb_gst_create_filter_bin (void);
+
+gboolean	rb_gst_add_filter (RBPlayer *player, GstElement *filterbin, GstElement *element);
+gboolean	rb_gst_remove_filter (RBPlayer *player, GstElement *filterbin, GstElement *element);
+
+gboolean	rb_gst_add_tee (RBPlayer *player, GstElement *tee, GstElement *element);
+gboolean	rb_gst_remove_tee (RBPlayer *player, GstElement *tee, GstElement *element);
 
 G_END_DECLS
 

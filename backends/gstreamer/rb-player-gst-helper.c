@@ -34,7 +34,16 @@
 #include <gst/tag/tag.h>
 
 #include <rb-player-gst-helper.h>
+#include <rb-player-gst-filter.h>
+#include <rb-player-gst-tee.h>
 #include <rb-debug.h>
+
+/* data structure for pipeline block-add/remove-unblock operations */
+typedef struct {
+	GObject *player;
+	GstElement *element;
+	GstElement *fixture;
+} RBGstPipelineOp;
 
 GstElement *
 rb_player_gst_try_audio_sink (const char *plugin_name, const char *name)
@@ -256,5 +265,424 @@ rb_gst_process_tag_string (const GstTagList *taglist,
 	}
 
 	return TRUE;
+}
+
+/* pipeline block-add/remove-unblock operations */
+
+static RBGstPipelineOp *
+new_pipeline_op (GObject *player, GstElement *fixture, GstElement *element)
+{
+	RBGstPipelineOp *op;
+	op = g_new0 (RBGstPipelineOp, 1);
+	op->player = g_object_ref (player);
+	op->fixture = gst_object_ref (fixture);
+	op->element = gst_object_ref (element);
+	return op;
+}
+
+static void
+free_pipeline_op (RBGstPipelineOp *op)
+{
+	g_object_unref (op->player);
+	gst_object_unref (op->element);
+	gst_object_unref (op->fixture);
+	g_free (op);
+}
+
+static void
+pipeline_op_done (GstPad *pad, gboolean blocked, GstPad *new_pad)
+{
+	GstEvent *segment;
+	if (new_pad == NULL)
+		return;
+
+	/* send a very unimaginative new segment through the new pad */
+	segment = gst_event_new_new_segment (TRUE,
+					     1.0,
+					     GST_FORMAT_DEFAULT,
+					     0,
+					     GST_CLOCK_TIME_NONE,
+					     0);
+	gst_pad_send_event (new_pad, segment);
+	gst_object_unref (new_pad);
+}
+
+static gboolean
+pipeline_op (GObject *player,
+	     GstElement *fixture,
+	     GstElement *element,
+	     gboolean playing,
+	     GstPadBlockCallback callback)
+{
+	RBGstPipelineOp *op;
+	GstPad *fixture_pad;
+	GstPad *block_pad;
+
+	op = new_pipeline_op (player, fixture, element);
+
+	/* seems like we should be able to just block the src pad connected
+	 * to the fixture's sink pad..
+	 */
+	fixture_pad = gst_element_get_static_pad (fixture, "sink");
+	block_pad = gst_pad_get_peer (fixture_pad);
+	gst_object_unref (fixture_pad);
+
+	if (playing) {
+		char *whatpad;
+		whatpad = gst_object_get_path_string (GST_OBJECT (block_pad));
+		rb_debug ("blocking pad %s to perform an operation", whatpad);
+		g_free (whatpad);
+
+		gst_pad_set_blocked_async (block_pad,
+					   TRUE,
+					   callback,
+					   op);
+	} else {
+		rb_debug ("sink not playing; calling op directly");
+		(*callback) (block_pad, FALSE, op);
+	}
+
+	gst_object_unref (block_pad);
+	return TRUE;
+}
+
+/* RBPlayerGstFilter implementation */
+
+/**
+ * rb_gst_create_filter_bin:
+ *
+ * Creates an initial bin to use for dynamically plugging filter elements into the
+ * pipeline.
+ *
+ * Return value: filter bin
+ */
+GstElement *
+rb_gst_create_filter_bin ()
+{
+	GstElement *bin;
+	GstElement *audioconvert;
+	GstElement *identity;
+	GstPad *pad;
+
+	bin = gst_bin_new ("filterbin");
+
+	audioconvert = gst_element_factory_make ("audioconvert", "filteraudioconvert");
+	identity = gst_element_factory_make ("identity", "filteridentity");
+	gst_bin_add_many (GST_BIN (bin), audioconvert, identity, NULL);
+	gst_element_link (audioconvert, identity);
+
+	pad = gst_element_get_static_pad (audioconvert, "sink");
+	gst_element_add_pad (bin, gst_ghost_pad_new ("sink", pad));
+	gst_object_unref (pad);
+
+	pad = gst_element_get_static_pad (identity, "src");
+	gst_element_add_pad (bin, gst_ghost_pad_new ("src", pad));
+	gst_object_unref (pad);
+
+	return bin;
+}
+
+static void
+really_add_filter (GstPad *pad,
+		   gboolean blocked,
+		   RBGstPipelineOp *op)
+{
+	GstPad *binsinkpad;
+	GstPad *binsrcpad;
+	GstPad *realpad;
+	GstPad *prevpad;
+	GstElement *bin;
+	GstElement *identity;
+	GstElement *audioconvert;
+	GstElement *audioconvert2;
+	GstPadLinkReturn link;
+
+	rb_debug ("adding filter %p", op->element);
+
+	/*
+	 * it kind of looks like we need audioconvert elements on either side of each filter
+	 * to prevent caps renegotiation from causing 'internal data flow error' errors.
+	 * this probably means we'd be doing a few unnecessary conversions when there are
+	 * multiple filters in the pipeline, but at least it works.
+	 */
+
+	/* create containing bin */
+	bin = gst_bin_new (NULL);
+	audioconvert = gst_element_factory_make ("audioconvert", NULL);
+	audioconvert2 = gst_element_factory_make ("audioconvert", NULL);
+	gst_bin_add_many (GST_BIN (bin), audioconvert, op->element, audioconvert2, NULL);
+	gst_element_link_many (audioconvert, op->element, audioconvert2, NULL);
+
+	/* create ghost pads */
+	realpad = gst_element_get_static_pad (audioconvert, "sink");
+	binsinkpad = gst_ghost_pad_new ("sink", realpad);
+	gst_element_add_pad (bin, binsinkpad);
+	gst_object_unref (realpad);
+
+	realpad = gst_element_get_static_pad (audioconvert2, "src");
+	binsrcpad = gst_ghost_pad_new ("src", realpad);
+	gst_element_add_pad (bin, binsrcpad);
+	gst_object_unref (realpad);
+
+	/* chuck it into the filter bin */
+	gst_bin_add (GST_BIN (op->fixture), bin);
+	identity = gst_bin_get_by_name (GST_BIN (op->fixture), "filteridentity");
+	realpad = gst_element_get_static_pad (identity, "sink");
+	prevpad = gst_pad_get_peer (realpad);
+	gst_object_unref (identity);
+
+	gst_pad_unlink (prevpad, realpad);
+
+	link = gst_pad_link (prevpad, binsinkpad);
+	gst_object_unref (prevpad);
+	if (link != GST_PAD_LINK_OK) {
+		g_warning ("couldn't link new filter into pipeline (sink): %d", link);
+		/* make some attempt at cleaning up; probably won't work though */
+		gst_pad_link (prevpad, realpad);
+		gst_object_unref (realpad);
+		gst_bin_remove (GST_BIN (op->fixture), bin);
+		gst_object_unref (bin);
+
+		free_pipeline_op (op);
+		return;
+	}
+
+	link = gst_pad_link (binsrcpad, realpad);
+	gst_object_unref (realpad);
+	if (link != GST_PAD_LINK_OK) {
+		g_warning ("couldn't link new filter into pipeline (src): %d", link);
+		/* doubt we can do anything helpful here.. */
+	}
+
+	/* if we're supposed to be playing, unblock the sink */
+	if (blocked) {
+		rb_debug ("unblocking pad after adding filter");
+		gst_element_set_state (bin, GST_STATE_PLAYING);
+		gst_pad_set_blocked_async (pad, FALSE, (GstPadBlockCallback)pipeline_op_done, NULL);
+	} else {
+		gst_element_set_state (bin, GST_STATE_PAUSED);
+	}
+
+	_rb_player_gst_filter_emit_filter_inserted (RB_PLAYER_GST_FILTER (op->player), op->element);
+
+	free_pipeline_op (op);
+}
+
+static void
+really_remove_filter (GstPad *pad,
+		      gboolean blocked,
+		      RBGstPipelineOp *op)
+{
+	GstPad *mypad;
+	GstPad *prevpad, *nextpad;
+	GstElement *bin;
+
+	/* get the containing bin and remove it */
+	bin = GST_ELEMENT (gst_element_get_parent (op->element));
+	if (bin == NULL) {
+		return;
+	}
+
+	rb_debug ("removing filter %p", op->element);
+	_rb_player_gst_filter_emit_filter_pre_remove (RB_PLAYER_GST_FILTER (op->player), op->element);
+
+	/* probably check return? */
+	gst_element_set_state (bin, GST_STATE_NULL);
+
+	/* unlink our sink */
+	mypad = gst_element_get_static_pad (bin, "sink");
+	prevpad = gst_pad_get_peer (mypad);
+	gst_pad_unlink (prevpad, mypad);
+	gst_object_unref (mypad);
+
+	/* unlink our src */
+	mypad = gst_element_get_static_pad (bin, "src");
+	nextpad = gst_pad_get_peer (mypad);
+	gst_pad_unlink (mypad, nextpad);
+	gst_object_unref (mypad);
+
+	/* link previous and next pads */
+	gst_pad_link (prevpad, nextpad);
+
+	gst_object_unref (prevpad);
+	gst_object_unref (nextpad);
+
+	gst_bin_remove (GST_BIN (op->fixture), bin);
+	gst_object_unref (bin);
+
+	/* if we're supposed to be playing, unblock the sink */
+	if (blocked) {
+		rb_debug ("unblocking pad after removing filter");
+		gst_pad_set_blocked_async (pad, FALSE, (GstPadBlockCallback)pipeline_op_done, NULL);
+	}
+
+	free_pipeline_op (op);
+}
+
+/**
+ * rb_gst_add_filter:
+ * @player: player object (must implement @RBPlayerGstFilter interface)
+ * @filterbin: the filter bin
+ * @element: the filter to add
+ *
+ * Inserts a filter into the filter bin, using pad blocking (if necessary) to
+ * avoid breaking the data flow.
+ */
+gboolean
+rb_gst_add_filter (RBPlayer *player, GstElement *filterbin, GstElement *element)
+{
+	return pipeline_op (G_OBJECT (player),
+			    filterbin,
+			    element,
+			    rb_player_playing (player),
+			    (GstPadBlockCallback) really_add_filter);
+}
+
+/**
+ * rb_gst_remove_filter:
+ * @player: player object (must implement @RBPlayerGstFilter interface)
+ * @filterbin: the filter bin
+ * @element: the filter to remove
+ *
+ * Removes a filter from the filter bin, using pad blocking (if necessary) to
+ * avoid breaking the data flow.
+ */
+gboolean
+rb_gst_remove_filter (RBPlayer *player, GstElement *filterbin, GstElement *element)
+{
+	return pipeline_op (G_OBJECT (player),
+			    filterbin,
+			    element,
+			    rb_player_playing (player),
+			    (GstPadBlockCallback) really_remove_filter);
+}
+
+/* RBPlayerGstTee implementation */
+
+static void
+really_add_tee (GstPad *pad, gboolean blocked, RBGstPipelineOp *op)
+{
+	GstElement *queue;
+	GstElement *audioconvert;
+	GstElement *bin;
+	GstElement *parent_bin;
+	GstPad *sinkpad;
+	GstPad *ghostpad;
+
+	rb_debug ("really adding tee %p", op->element);
+
+	/* set up containing bin */
+	bin = gst_bin_new (NULL);
+	queue = gst_element_factory_make ("queue", NULL);
+	audioconvert = gst_element_factory_make ("audioconvert", NULL);
+
+	/* The bin contains elements that change state asynchronously
+	 * and not as part of a state change in the entire pipeline.
+	 */
+	g_object_set (bin, "async-handling", TRUE, NULL);
+
+	g_object_set (queue, "max-size-buffers", 3, NULL);
+
+	gst_bin_add_many (GST_BIN (bin), queue, audioconvert, op->element, NULL);
+	gst_element_link_many (queue, audioconvert, op->element, NULL);
+
+	/* add ghost pad */
+	sinkpad = gst_element_get_static_pad (queue, "sink");
+	ghostpad = gst_ghost_pad_new ("sink", sinkpad);
+	gst_element_add_pad (bin, ghostpad);
+	gst_object_unref (sinkpad);
+
+	/* add it into the pipeline */
+	parent_bin = GST_ELEMENT_PARENT (op->fixture);
+	gst_bin_add (GST_BIN (parent_bin), bin);
+	gst_element_link (op->fixture, bin);
+
+	/* if we're supposed to be playing, unblock the sink */
+	if (blocked) {
+		rb_debug ("unblocking pad after adding tee");
+
+		gst_element_set_state (parent_bin, GST_STATE_PLAYING);
+		gst_object_ref (ghostpad);
+		gst_pad_set_blocked_async (pad,
+					   FALSE,
+					   (GstPadBlockCallback)pipeline_op_done,
+					   ghostpad);
+	} else {
+		gst_element_set_state (bin, GST_STATE_PAUSED);
+		gst_object_ref (ghostpad);
+		pipeline_op_done (NULL, FALSE, ghostpad);
+	}
+
+	_rb_player_gst_tee_emit_tee_inserted (RB_PLAYER_GST_TEE (op->player), op->element);
+
+	free_pipeline_op (op);
+}
+
+static void
+really_remove_tee (GstPad *pad, gboolean blocked, RBGstPipelineOp *op)
+{
+	GstElement *bin;
+	GstElement *parent;
+
+	rb_debug ("really removing tee %p", op->element);
+
+	_rb_player_gst_tee_emit_tee_pre_remove (RB_PLAYER_GST_TEE (op->player), op->element);
+
+	/* find bin, remove everything */
+	bin = GST_ELEMENT_PARENT (op->element);
+	g_object_ref (bin);
+
+	parent = GST_ELEMENT_PARENT (bin);
+	gst_bin_remove (GST_BIN (parent), bin);
+
+	gst_element_set_state (bin, GST_STATE_NULL);
+	gst_bin_remove (GST_BIN (bin), op->element);
+	g_object_unref (bin);
+
+	/* if we're supposed to be playing, unblock the sink */
+	if (blocked) {
+		rb_debug ("unblocking pad after removing tee");
+		gst_pad_set_blocked_async (pad, FALSE, (GstPadBlockCallback)pipeline_op_done, NULL);
+	}
+
+	free_pipeline_op (op);
+}
+
+/**
+ * rb_gst_add_tee:
+ * @player: player object (must implement @RBPlayerGstTee interface)
+ * @tee: a tee element
+ * @element: the tee branch to add
+ *
+ * Attaches a branch to the tee, using pad blocking (if necessary) to
+ * avoid breaking the data flow.
+ */
+gboolean
+rb_gst_add_tee (RBPlayer *player, GstElement *tee, GstElement *element)
+{
+	return pipeline_op (G_OBJECT (player),
+			    tee,
+			    element,
+			    rb_player_playing (player),
+			    (GstPadBlockCallback) really_add_tee);
+}
+
+/**
+ * rb_gst_remove_tee:
+ * @player: player object (must implement @RBPlayerGstTee interface)
+ * @tee: a tee element
+ * @element: the tee branch to remove
+ *
+ * Removes a branch from the tee, using pad blocking (if necessary) to
+ * avoid breaking the data flow.
+ */
+gboolean
+rb_gst_remove_tee (RBPlayer *player, GstElement *tee, GstElement *element)
+{
+	return pipeline_op (G_OBJECT (player),
+			    tee,
+			    element,
+			    rb_player_playing (player),
+			    (GstPadBlockCallback) really_remove_tee);
 }
 
