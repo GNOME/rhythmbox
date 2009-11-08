@@ -2018,6 +2018,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	/* kill the floating reference */
 	g_object_ref (stream);
 	gst_object_sink (stream);
+	gst_element_set_locked_state (GST_ELEMENT (stream), TRUE);
 
 	stream->source = gst_element_make_from_uri (GST_URI_SRC, stream->uri, NULL);
 	if (stream->source == NULL) {
@@ -2858,6 +2859,9 @@ start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 	rb_debug ("sink playing");
 	player->priv->sink_state = SINK_PLAYING;
 
+	/* set the pipeline to PLAYING so it selects a clock */
+	gst_element_set_state (player->priv->pipeline, GST_STATE_PLAYING);
+
 	/* now that the sink is running, start polling for playing position.
 	 * might want to replace this with a complicated set of pad probes
 	 * to avoid polling, but duration queries on the sink are better
@@ -2957,6 +2961,12 @@ stop_sink (RBPlayerGstXFade *player)
 			player->priv->volume_handler = NULL;
 		}
 
+		/* set the pipeline to READY so we can make it select a clock when we
+		 * start the sink again.  everything inside the pipeline has its state
+		 * locked, so this doesn't affect anything else.
+		 */
+		gst_element_set_state (player->priv->pipeline, GST_STATE_READY);
+
 		player->priv->sink_state = SINK_STOPPED;
 		break;
 
@@ -3009,6 +3019,7 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 	g_object_notify (G_OBJECT (player), "bus");
 
 	player->priv->outputbin = gst_bin_new ("outputbin");
+	gst_element_set_locked_state (player->priv->outputbin, TRUE);
 	player->priv->adder = gst_element_factory_make ("adder", "outputadder");
 	player->priv->capsfilter = gst_element_factory_make ("capsfilter", "outputcapsfilter");
 	audioconvert = gst_element_factory_make ("audioconvert", "outputconvert");
