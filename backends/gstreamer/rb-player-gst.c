@@ -444,24 +444,10 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 		GstPad *pad;
 		GList *l;
 		GstElement *queue;
-		GstElement *audioconvert;
 		GstPad *ghostpad;
 
-		/* setup filterbin,and insert the leading audioconvert */
-		mp->priv->filterbin = gst_bin_new (NULL);
-		audioconvert = gst_element_factory_make ("audioconvert", NULL);
-		gst_bin_add (GST_BIN (mp->priv->filterbin), audioconvert);
-
-		/* ghost it to the bin */
-		pad = gst_element_get_pad (audioconvert, "sink");
-		ghostpad = gst_ghost_pad_new ("sink", pad);
-		gst_element_add_pad (mp->priv->filterbin, ghostpad);
-		gst_object_unref (pad);
-
-		pad = gst_element_get_pad (audioconvert, "src");
-		ghostpad = gst_ghost_pad_new ("src", pad);
-		gst_element_add_pad (mp->priv->filterbin, ghostpad);
-		gst_object_unref (pad);
+		/* setup filterbin */
+		mp->priv->filterbin = rb_gst_create_filter_bin ();
 
 		/* set up the sinkbin with its tee element */
 		mp->priv->sinkbin = gst_bin_new (NULL);
@@ -1042,58 +1028,20 @@ impl_get_time (RBPlayer *player)
 static gboolean
 impl_add_tee (RBPlayerGstTee *player, GstElement *element)
 {
-	RBPlayerGst *mp;
-	GstElement *queue, *audioconvert, *bin;
-	GstPad *pad, *ghostpad;
-
-	mp = RB_PLAYER_GST (player);
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
 	if (mp->priv->tee == NULL) {
 		mp->priv->waiting_tees = g_list_prepend (mp->priv->waiting_tees, element);
 		return TRUE;
 	}
 
-	if (mp->priv->playing) {
-		GError *error = NULL;
-		if (set_state_and_wait (mp, GST_STATE_PAUSED, &error) == FALSE) {
-			g_warning ("Failed to pause pipeline before tee insertion: %s", error->message);
-			g_error_free (error);
-			return FALSE;
-		}
-	}
-
-	bin = gst_bin_new (NULL);
-	queue = gst_element_factory_make ("queue", NULL);
-	audioconvert = gst_element_factory_make ("audioconvert", NULL);
-
-	/* set up the element's containing bin */
-	gst_bin_add_many (GST_BIN (bin), queue, audioconvert, element, NULL);
-	gst_bin_add (GST_BIN (mp->priv->sinkbin), bin);
-	gst_element_link_many (queue, audioconvert, element, NULL);
-
-	/* link it to the tee */
-	pad = gst_element_get_pad (queue, "sink");
-	ghostpad = gst_ghost_pad_new ("sink", pad);
-	gst_element_add_pad (bin, ghostpad);
-	gst_object_unref (pad);
-
-	gst_element_link (mp->priv->tee, bin);
-
-	if (mp->priv->playing)
-		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
-
-	_rb_player_gst_tee_emit_tee_inserted (player, element);
-
-	return TRUE;
+	return rb_gst_add_tee (RB_PLAYER (player), mp->priv->tee, element);
 }
 
 static gboolean
 impl_remove_tee (RBPlayerGstTee *player, GstElement *element)
 {
-	RBPlayerGst *mp;
-	GstElement *bin;
-
-	mp = RB_PLAYER_GST (player);
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
 	if (mp->priv->tee == NULL) {
 		gst_object_sink (element);
@@ -1101,137 +1049,25 @@ impl_remove_tee (RBPlayerGstTee *player, GstElement *element)
 		return TRUE;
 	}
 
-	_rb_player_gst_tee_emit_tee_pre_remove (player, element);
-
-	if (mp->priv->playing) {
-		GError *error = NULL;
-		if (set_state_and_wait (mp, GST_STATE_PAUSED, &error) == FALSE) {
-			g_warning ("Failed to pause pipeline before tee removal: %s", error->message);
-			g_error_free (error);
-			return FALSE;
-		}
-	}
-
-	/* get the containing bin and unlink it */
-	bin = GST_ELEMENT (gst_element_get_parent (element));
-
-	gst_element_set_state (bin, GST_STATE_NULL);
-
-	gst_bin_remove (GST_BIN (mp->priv->sinkbin), bin);
-	gst_object_unref (bin);
-
-	if (mp->priv->playing)
-		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
-
-	return TRUE;
+	return rb_gst_remove_tee (RB_PLAYER (mp), mp->priv->tee, element);
 }
 
 static gboolean
 impl_add_filter (RBPlayerGstFilter *player, GstElement *element)
 {
-	RBPlayerGst *mp;
-	GstElement *audioconvert, *bin;
-	GstPad *ghostpad, *realpad;
-	GstPad *binsinkpad, *binsrcpad;
-	gpointer element_sink_pad;
-	GstIterator *sink_pads;
-	gboolean sink_pad_found, stop_scan;
-	GstPadLinkReturn link;
-
-	mp = RB_PLAYER_GST (player);
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
 	if (mp->priv->filterbin == NULL) {
 		mp->priv->waiting_filters = g_list_prepend (mp->priv->waiting_filters, element);
 		return TRUE;
 	}
-
-	if (mp->priv->playing) {
-		GError *error = NULL;
-		if (set_state_and_wait (mp, GST_STATE_PAUSED, &error) == FALSE) {
-			g_warning ("Failed to pause pipeline before filter insertion: %s", error->message);
-			g_error_free (error);
-			return FALSE;
-		}
-	}
-
-	bin = gst_bin_new (NULL);
-	audioconvert = gst_element_factory_make ("audioconvert", NULL);
-
-	/* set up the element's containing bin */
-	rb_debug ("adding element %p and audioconvert to bin", element);
-	gst_bin_add_many (GST_BIN (bin), element, audioconvert, NULL);
-	gst_element_link_many (element, audioconvert, NULL);
-
-	/* ghost to the bin */
-	/* retrieve the first unliked source pad */
-	sink_pad_found = FALSE;
-	stop_scan = FALSE;
-	sink_pads = gst_element_iterate_sink_pads (element);
-	while (!sink_pad_found && !stop_scan) {
-		gpointer *esp_pointer = &element_sink_pad; /* stop type-punning warnings */
-		switch (gst_iterator_next (sink_pads, esp_pointer)) {
-			case GST_ITERATOR_OK:
-				sink_pad_found = !gst_pad_is_linked (GST_PAD(element_sink_pad));
-				break;
-			case GST_ITERATOR_RESYNC:
-				gst_iterator_resync (sink_pads);
-				break;
-			case GST_ITERATOR_ERROR:
-			case GST_ITERATOR_DONE:
-				stop_scan = TRUE;
-				break;
-		}
-	}
-	gst_iterator_free (sink_pads);
-
-	if (!sink_pad_found) {
-		g_warning ("Could not find a free sink pad on filter");
-		return FALSE;
-	}
-
-	binsinkpad = gst_ghost_pad_new ("sink", GST_PAD (element_sink_pad));
-	gst_element_add_pad (bin, binsinkpad);
-
-	realpad = gst_element_get_pad (audioconvert, "src");
-	binsrcpad = gst_ghost_pad_new ("src", realpad);
-	gst_element_add_pad (bin, binsrcpad);
-	gst_object_unref (realpad);
-
-	/* replace the filter chain ghost with the new bin */
-	gst_bin_add (GST_BIN (mp->priv->filterbin), bin);
-
-	ghostpad = gst_element_get_pad (mp->priv->filterbin, "src");
-	realpad = gst_ghost_pad_get_target (GST_GHOST_PAD (ghostpad));
-	gst_ghost_pad_set_target (GST_GHOST_PAD (ghostpad), binsrcpad);
-	gst_object_unref (ghostpad);
-
-	link = gst_pad_link (realpad, binsinkpad);
-	gst_object_unref (realpad);
-	if (link != GST_PAD_LINK_OK) {
-		g_warning ("could not link new filter into pipeline");
-		return FALSE;
-	}
-
-	if (mp->priv->playing)
-		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
-
-	_rb_player_gst_filter_emit_filter_inserted (player, element);
-
-	return TRUE;
+	return rb_gst_add_filter (RB_PLAYER (mp), mp->priv->filterbin, element);
 }
 
 static gboolean
 impl_remove_filter (RBPlayerGstFilter *player, GstElement *element)
 {
-	RBPlayerGst *mp;
-	GstPad *mypad;
-	GstPad *prevpad, *nextpad;
-	GstPad *ghostpad;
-	GstPad *targetpad;
-	GstElement *bin;
-	gboolean result = TRUE;
-
-	mp = RB_PLAYER_GST (player);
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
 	if (mp->priv->filterbin == NULL) {
 		gst_object_sink (element);
@@ -1239,58 +1075,7 @@ impl_remove_filter (RBPlayerGstFilter *player, GstElement *element)
 		return TRUE;
 	}
 
-	_rb_player_gst_filter_emit_filter_pre_remove (player, element);
-
-	if (mp->priv->playing) {
-		GError *error = NULL;
-		if (set_state_and_wait (mp, GST_STATE_PAUSED, &error) == FALSE) {
-			g_warning ("Failed to pause pipeline before filter removal: %s", error->message);
-			g_error_free (error);
-			return FALSE;
-		}
-	}
-
-	/* get the containing bin and unlink it */
-	bin = GST_ELEMENT (gst_element_get_parent (element));
-
-	gst_element_set_state (bin, GST_STATE_NULL);
-
-	mypad = gst_element_get_pad (bin, "sink");
-	prevpad = gst_pad_get_peer (mypad);
-	gst_pad_unlink (prevpad, mypad);
-	gst_object_unref (mypad);
-
-	ghostpad = gst_element_get_pad (bin, "src");
-	nextpad = gst_element_get_pad (mp->priv->filterbin, "src");
-
-	targetpad = gst_ghost_pad_get_target (GST_GHOST_PAD (nextpad));
-	if (targetpad == ghostpad) {
-		/* we are at the end of the filter chain, so redirect the ghostpad to the previous element */
-		gst_ghost_pad_set_target (GST_GHOST_PAD (nextpad), prevpad);
-	} else {
-		/* we are in the middle, so link the previous and next elements */
-		mypad = gst_element_get_pad (bin, "src");
-		gst_object_unref (nextpad);
-		nextpad = gst_pad_get_peer (mypad);
-		gst_pad_unlink (mypad, nextpad);
-		gst_object_unref (mypad);
-
-		if (gst_pad_link (prevpad, nextpad) != GST_PAD_LINK_OK)
-			result = FALSE;
-	}
-
-	gst_object_unref (nextpad);
-	gst_object_unref (prevpad);
-	gst_object_unref (ghostpad);
-	gst_object_unref (targetpad);
-
-	gst_bin_remove (GST_BIN (mp->priv->filterbin), bin);
-	gst_object_unref (bin);
-
-	if (mp->priv->playing)
-		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
-
-	return result;
+	return rb_gst_remove_filter (RB_PLAYER (mp), mp->priv->filterbin, element);
 }
 
 static void
