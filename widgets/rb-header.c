@@ -639,7 +639,7 @@ slider_moved_callback (GtkWidget *widget,
 	}
 
 	progress = gtk_adjustment_get_value (header->priv->adjustment);
-	header->priv->elapsed_time = (guint) ((progress+0.5) * RB_PLAYER_SECOND);
+	header->priv->elapsed_time = (gint64) ((progress+0.5) * RB_PLAYER_SECOND);
 
 	rb_header_update_elapsed (header);
 
