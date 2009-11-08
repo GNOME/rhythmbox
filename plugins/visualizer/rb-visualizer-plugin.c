@@ -1648,6 +1648,7 @@ impl_activate (RBPlugin *plugin,
 	} else if (RB_IS_PLAYER_GST_TEE (pi->player)) {
 		GstElement *videoscale;
 		GstElement *colorspace;
+		GstElement *queue;
 		GstPad *pad;
 
 		rb_debug ("using tee-based visualization");
@@ -1670,11 +1671,14 @@ impl_activate (RBPlugin *plugin,
 		pi->capsfilter = gst_element_factory_make ("capsfilter", NULL);
 		colorspace = gst_element_factory_make ("ffmpegcolorspace", NULL);
 		videoscale = gst_element_factory_make ("videoscale", NULL);
+		queue = gst_element_factory_make ("queue", NULL);
+
+		g_object_set (queue, "max-size-buffers", 3, "max-size-bytes", 0, "max-size-time", (gint64) 0, NULL);
 
 		gst_bin_add_many (GST_BIN (pi->visualizer),
-				  pi->identity, pi->capsfilter, colorspace, videoscale, pi->video_sink,
+				  pi->identity, pi->capsfilter, queue, colorspace, videoscale, pi->video_sink,
 				  NULL);
-		gst_element_link_many (pi->capsfilter, colorspace, videoscale, pi->video_sink, NULL);
+		gst_element_link_many (pi->capsfilter, queue, colorspace, videoscale, pi->video_sink, NULL);
 		/* leave identity unlinked until we have a visualizer element */
 
 		pad = gst_element_get_static_pad (pi->identity, "sink");
