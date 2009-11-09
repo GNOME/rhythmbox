@@ -276,7 +276,7 @@ gboolean
 rb_psp_is_mount_player (GMount *mount, MPIDDevice *device_info)
 {
 	char *model;
-	gboolean result;
+	gboolean result = FALSE;
 
 	g_object_get (device_info, "model", &model, NULL);
 	if (model != NULL && (g_str_equal (model, "PSP") || g_str_equal (model, "\"PSP\" MS"))) {
@@ -284,6 +284,6 @@ rb_psp_is_mount_player (GMount *mount, MPIDDevice *device_info)
 	}
 	g_free (model);
 
-	return FALSE;
+	return result;
 }
 
