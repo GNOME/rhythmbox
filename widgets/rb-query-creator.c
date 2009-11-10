@@ -183,7 +183,7 @@ rb_query_creator_constructed (GObject *object)
 	GtkWidget *mainbox;
 	GtkBuilder *builder;
 
-	RB_CHAIN_GOBJECT_METHOD (rb_query_creator_parent_class, dispose, object);
+	RB_CHAIN_GOBJECT_METHOD (rb_query_creator_parent_class, constructed, object);
 
 	creator = RB_QUERY_CREATOR (object);
 	priv = QUERY_CREATOR_GET_PRIVATE (creator);
