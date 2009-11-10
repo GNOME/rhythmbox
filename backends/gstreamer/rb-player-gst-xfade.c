@@ -3853,6 +3853,12 @@ rb_player_gst_xfade_get_time (RBPlayer *iplayer)
 }
 
 static gboolean
+need_pad_block (RBPlayerGstXFade *player)
+{
+	return (player->priv->sink_state == SINK_PLAYING);
+}
+
+static gboolean
 rb_player_gst_xfade_add_tee (RBPlayerGstTee *iplayer, GstElement *element)
 {
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
@@ -3861,7 +3867,7 @@ rb_player_gst_xfade_add_tee (RBPlayerGstTee *iplayer, GstElement *element)
 		return TRUE;
 	}
 
-	return rb_gst_add_tee (RB_PLAYER (player), player->priv->tee, element);
+	return rb_gst_add_tee (RB_PLAYER (player), player->priv->tee, element, need_pad_block (player));
 }
 
 static gboolean
@@ -3874,7 +3880,7 @@ rb_player_gst_xfade_remove_tee (RBPlayerGstTee *iplayer, GstElement *element)
 		return TRUE;
 	}
 
-	return rb_gst_remove_tee (RB_PLAYER (player), player->priv->tee, element);
+	return rb_gst_remove_tee (RB_PLAYER (player), player->priv->tee, element, need_pad_block (player));
 }
 
 
@@ -3887,7 +3893,7 @@ rb_player_gst_xfade_add_filter (RBPlayerGstFilter *iplayer, GstElement *element)
 		return TRUE;
 	}
 
-	return rb_gst_add_filter (RB_PLAYER (player), player->priv->filterbin, element);
+	return rb_gst_add_filter (RB_PLAYER (player), player->priv->filterbin, element, need_pad_block (player));
 }
 
 
@@ -3901,6 +3907,6 @@ rb_player_gst_xfade_remove_filter (RBPlayerGstFilter *iplayer, GstElement *eleme
 		return TRUE;
 	}
 
-	return rb_gst_remove_filter (RB_PLAYER (player), player->priv->filterbin, element);
+	return rb_gst_remove_filter (RB_PLAYER (player), player->priv->filterbin, element, need_pad_block (player));
 }
 

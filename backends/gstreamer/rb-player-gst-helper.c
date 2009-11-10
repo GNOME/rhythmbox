@@ -311,7 +311,7 @@ static gboolean
 pipeline_op (GObject *player,
 	     GstElement *fixture,
 	     GstElement *element,
-	     gboolean playing,
+	     gboolean use_pad_block,
 	     GstPadBlockCallback callback)
 {
 	RBGstPipelineOp *op;
@@ -327,7 +327,7 @@ pipeline_op (GObject *player,
 	block_pad = gst_pad_get_peer (fixture_pad);
 	gst_object_unref (fixture_pad);
 
-	if (playing) {
+	if (use_pad_block) {
 		char *whatpad;
 		whatpad = gst_object_get_path_string (GST_OBJECT (block_pad));
 		rb_debug ("blocking pad %s to perform an operation", whatpad);
@@ -338,7 +338,7 @@ pipeline_op (GObject *player,
 					   callback,
 					   op);
 	} else {
-		rb_debug ("sink not playing; calling op directly");
+		rb_debug ("not using pad blocking, calling op directly");
 		(*callback) (block_pad, FALSE, op);
 	}
 
@@ -524,17 +524,20 @@ really_remove_filter (GstPad *pad,
  * @player: player object (must implement @RBPlayerGstFilter interface)
  * @filterbin: the filter bin
  * @element: the filter to add
+ * @use_pad_block: if %TRUE, block the src pad connected to the filter bin
  *
- * Inserts a filter into the filter bin, using pad blocking (if necessary) to
- * avoid breaking the data flow.
+ * Inserts a filter into the filter bin, using pad blocking (if requested) to
+ * avoid breaking the data flow.  Pad blocking should be used when the pipeline
+ * is in PLAYING state, or when in PAUSED state where a streaming thread will
+ * be holding the stream lock for the filter bin.
  */
 gboolean
-rb_gst_add_filter (RBPlayer *player, GstElement *filterbin, GstElement *element)
+rb_gst_add_filter (RBPlayer *player, GstElement *filterbin, GstElement *element, gboolean use_pad_block)
 {
 	return pipeline_op (G_OBJECT (player),
 			    filterbin,
 			    element,
-			    rb_player_playing (player),
+			    use_pad_block,
 			    (GstPadBlockCallback) really_add_filter);
 }
 
@@ -543,17 +546,20 @@ rb_gst_add_filter (RBPlayer *player, GstElement *filterbin, GstElement *element)
  * @player: player object (must implement @RBPlayerGstFilter interface)
  * @filterbin: the filter bin
  * @element: the filter to remove
+ * @use_pad_block: if %TRUE, block the src pad connected to the filter bin
  *
- * Removes a filter from the filter bin, using pad blocking (if necessary) to
- * avoid breaking the data flow.
+ * Removes a filter from the filter bin, using pad blocking (if requested) to
+ * avoid breaking the data flow.  Pad blocking should be used when the pipeline
+ * is in PLAYING state, or when in PAUSED state where a streaming thread will
+ * be holding the stream lock for the filter bin.
  */
 gboolean
-rb_gst_remove_filter (RBPlayer *player, GstElement *filterbin, GstElement *element)
+rb_gst_remove_filter (RBPlayer *player, GstElement *filterbin, GstElement *element, gboolean use_pad_block)
 {
 	return pipeline_op (G_OBJECT (player),
 			    filterbin,
 			    element,
-			    rb_player_playing (player),
+			    use_pad_block,
 			    (GstPadBlockCallback) really_remove_filter);
 }
 
@@ -653,17 +659,20 @@ really_remove_tee (GstPad *pad, gboolean blocked, RBGstPipelineOp *op)
  * @player: player object (must implement @RBPlayerGstTee interface)
  * @tee: a tee element
  * @element: the tee branch to add
+ * @use_pad_block: if %TRUE, block the src pad connected to the filter bin
  *
- * Attaches a branch to the tee, using pad blocking (if necessary) to
- * avoid breaking the data flow.
+ * Attaches a branch to the tee, using pad blocking (if requested) to
+ * avoid breaking the data flow.  Pad blocking should be used when the pipeline
+ * is in PLAYING state, or when in PAUSED state where a streaming thread will
+ * be holding the stream lock for the filter bin.
  */
 gboolean
-rb_gst_add_tee (RBPlayer *player, GstElement *tee, GstElement *element)
+rb_gst_add_tee (RBPlayer *player, GstElement *tee, GstElement *element, gboolean use_pad_block)
 {
 	return pipeline_op (G_OBJECT (player),
 			    tee,
 			    element,
-			    rb_player_playing (player),
+			    use_pad_block,
 			    (GstPadBlockCallback) really_add_tee);
 }
 
@@ -672,17 +681,20 @@ rb_gst_add_tee (RBPlayer *player, GstElement *tee, GstElement *element)
  * @player: player object (must implement @RBPlayerGstTee interface)
  * @tee: a tee element
  * @element: the tee branch to remove
+ * @use_pad_block: if %TRUE, block the src pad connected to the filter bin
  *
- * Removes a branch from the tee, using pad blocking (if necessary) to
- * avoid breaking the data flow.
+ * Removes a branch from the tee, using pad blocking (if requested) to
+ * avoid breaking the data flow.  Pad blocking should be used when the pipeline
+ * is in PLAYING state, or when in PAUSED state where a streaming thread will
+ * be holding the stream lock for the filter bin.
  */
 gboolean
-rb_gst_remove_tee (RBPlayer *player, GstElement *tee, GstElement *element)
+rb_gst_remove_tee (RBPlayer *player, GstElement *tee, GstElement *element, gboolean use_pad_block)
 {
 	return pipeline_op (G_OBJECT (player),
 			    tee,
 			    element,
-			    rb_player_playing (player),
+			    use_pad_block,
 			    (GstPadBlockCallback) really_remove_tee);
 }
 

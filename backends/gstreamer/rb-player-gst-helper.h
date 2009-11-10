@@ -53,11 +53,11 @@ gboolean	rb_gst_process_tag_string	(const GstTagList *taglist,
 
 GstElement *	rb_gst_create_filter_bin (void);
 
-gboolean	rb_gst_add_filter (RBPlayer *player, GstElement *filterbin, GstElement *element);
-gboolean	rb_gst_remove_filter (RBPlayer *player, GstElement *filterbin, GstElement *element);
+gboolean	rb_gst_add_filter (RBPlayer *player, GstElement *filterbin, GstElement *element, gboolean use_pad_block);
+gboolean	rb_gst_remove_filter (RBPlayer *player, GstElement *filterbin, GstElement *element, gboolean use_pad_block);
 
-gboolean	rb_gst_add_tee (RBPlayer *player, GstElement *tee, GstElement *element);
-gboolean	rb_gst_remove_tee (RBPlayer *player, GstElement *tee, GstElement *element);
+gboolean	rb_gst_add_tee (RBPlayer *player, GstElement *tee, GstElement *element, gboolean use_pad_block);
+gboolean	rb_gst_remove_tee (RBPlayer *player, GstElement *tee, GstElement *element, gboolean use_pad_block);
 
 G_END_DECLS
 

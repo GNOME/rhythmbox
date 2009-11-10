@@ -465,7 +465,6 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 
 		g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", mp->priv->sinkbin, NULL);
 
-
 		/* add any tees and filters that were waiting for us */
 		for (l = mp->priv->waiting_tees; l != NULL; l = g_list_next (l)) {
 			rb_player_gst_tee_add_tee (RB_PLAYER_GST_TEE (mp), GST_ELEMENT (l->data));
@@ -1026,6 +1025,12 @@ impl_get_time (RBPlayer *player)
 }
 
 static gboolean
+need_pad_blocking (RBPlayerGst *mp)
+{
+	return (mp->priv->playing || (mp->priv->uri != NULL));
+}
+
+static gboolean
 impl_add_tee (RBPlayerGstTee *player, GstElement *element)
 {
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
@@ -1035,7 +1040,7 @@ impl_add_tee (RBPlayerGstTee *player, GstElement *element)
 		return TRUE;
 	}
 
-	return rb_gst_add_tee (RB_PLAYER (player), mp->priv->tee, element);
+	return rb_gst_add_tee (RB_PLAYER (player), mp->priv->tee, element, need_pad_blocking (mp));
 }
 
 static gboolean
@@ -1049,7 +1054,7 @@ impl_remove_tee (RBPlayerGstTee *player, GstElement *element)
 		return TRUE;
 	}
 
-	return rb_gst_remove_tee (RB_PLAYER (mp), mp->priv->tee, element);
+	return rb_gst_remove_tee (RB_PLAYER (mp), mp->priv->tee, element, need_pad_blocking (mp));
 }
 
 static gboolean
@@ -1061,7 +1066,7 @@ impl_add_filter (RBPlayerGstFilter *player, GstElement *element)
 		mp->priv->waiting_filters = g_list_prepend (mp->priv->waiting_filters, element);
 		return TRUE;
 	}
-	return rb_gst_add_filter (RB_PLAYER (mp), mp->priv->filterbin, element);
+	return rb_gst_add_filter (RB_PLAYER (mp), mp->priv->filterbin, element, need_pad_blocking (mp));
 }
 
 static gboolean
@@ -1075,7 +1080,7 @@ impl_remove_filter (RBPlayerGstFilter *player, GstElement *element)
 		return TRUE;
 	}
 
-	return rb_gst_remove_filter (RB_PLAYER (mp), mp->priv->filterbin, element);
+	return rb_gst_remove_filter (RB_PLAYER (mp), mp->priv->filterbin, element, need_pad_blocking (mp));
 }
 
 static void
