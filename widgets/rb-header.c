@@ -83,6 +83,7 @@ static void slider_changed_callback (GtkWidget *widget, RBHeader *header);
 static gboolean slider_scroll_callback (GtkWidget *widget, GdkEventScroll *event, RBHeader *header);
 
 static void rb_header_elapsed_changed_cb (RBShellPlayer *player, gint64 elapsed, RBHeader *header);
+static void rb_header_extra_metadata_cb (RhythmDB *db, RhythmDBEntry *entry, const char *property_name, const GValue *metadata, RBHeader *header);
 
 struct RBHeaderPrivate
 {
@@ -322,6 +323,10 @@ rb_header_set_property (GObject *object,
 	switch (prop_id) {
 	case PROP_DB:
 		header->priv->db = g_value_get_object (value);
+		g_signal_connect_object (header->priv->db,
+					 "entry-extra-metadata-notify",
+					 G_CALLBACK (rb_header_extra_metadata_cb),
+					 header, 0);
 		break;
 	case PROP_SHELL_PLAYER:
 		header->priv->shell_player = g_value_get_object (value);
@@ -764,4 +769,21 @@ rb_header_elapsed_changed_cb (RBShellPlayer *player,
 {
 	header->priv->elapsed_time = elapsed;
 	rb_header_sync_time (header);
+}
+
+static void
+rb_header_extra_metadata_cb (RhythmDB *db,
+			     RhythmDBEntry *entry,
+			     const char *property_name,
+			     const GValue *metadata,
+			     RBHeader *header)
+{
+	if (entry != header->priv->entry)
+		return;
+
+	if (g_str_equal (property_name, RHYTHMDB_PROP_STREAM_SONG_TITLE) ||
+	    g_str_equal (property_name, RHYTHMDB_PROP_STREAM_SONG_ARTIST) ||
+	    g_str_equal (property_name, RHYTHMDB_PROP_STREAM_SONG_ALBUM)) {
+		rb_header_sync (header);
+	}
 }
