@@ -659,6 +659,7 @@ impl_close (RBPlayer *player, const char *uri, GError **error)
 
 	mp->priv->playing = FALSE;
 	mp->priv->buffering = FALSE;
+	mp->priv->current_track_finishing = FALSE;
 
 	_destroy_stream_data (mp);
 	g_free (mp->priv->uri);
