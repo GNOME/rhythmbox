@@ -1,3 +1,74 @@
+Overview of changes in Rhythmbox 0.12.6  "Range Life"
+=====================================================
+
+* Context pane plugin (John Iacona's Google Summer of Code project)
+* Power management plugin reworked to use new D-Bus API (Richard Hughes)
+* MTP plugin reworked to do everything asynchronously (Jonathan Matthew)
+* Volume slider levels match what PulseAudio displays (Bastien Nocera)
+* Playback pipeline filter interfaces actually work properly now (JM)
+* Much improved visualization performance when crossfading is enabled (JM)
+
+Bugs fixed:
+
+499048 - Filter insertion and removal on non-xfade backend is not robust.
+499051 - xfade backend doesn't play nice with LADSPA filters (or is it the reverse ?)
+499052 - Filter removal on xfade backend is not robust.
+534981 - Add multi threading to MTP Support
+564772 - MTP plugin crash when I plug-in my Creative Zen 32Gb
+564800 - GnomeGoals: Remove deprecated GTK+ symbols
+589845 - im-status: use mission control dbus interface
+590474 - Podcast entry disappears from display during download
+594901 - Rhythmbox fails to display cover image from id3 tag
+595966 - leaked string in rb_stock_icons_init
+596573 - [PATCH] Do not use gnome-power-manager for inhibits, instead use gnome-session
+597706 - rhythmbox crashed with SIGSEGV in g_object_get()
+597708 - rhythmbox crashed with SIGSEGV in rb_source_get_config_widget()
+597708 - DAAP plugin doesn't link to libsoup
+598135 - Should init error before call libhal_device_get_property_string
+598302 - Use GDK spawn functions to handle multi-screen
+598613 - Rhythmbox shows cover art of previous track in Notification Bubble if current track has no cover art
+598955 - Use Cubic volume when StreaVolume interface is available
+600058 - Feed is not parsed when title tag is empty
+600513 - Generates invalid Brasero project
+600549 - Crash when transferring a track over MTP with a slash in the track title
+600624 - track information is not displayed correctly sometimes when playing internet radios
+600995 - Elapsed time indicator is wrong when seeking
+601352 - Crash while editing automatic playlist
+601460 - Rhythmbox gets laggy when copying music to iPod
+601528 - Play button doesn't work after finishing a playlist
+602615 - rhythmbox fails to build if python bindings are built and ld's --no-add-needed is used
+
+New and updated translations:
+
+af, courtesy of F Wolff
+bn_IN, courtesy of Runa Bhattacharjee
+br, courtesy of denis
+de, courtesy of Mario Blättermann
+es, courtesy of Jorge González
+et, courtesy of Mattias Põldaru
+fr, courtesy of Claude Paroz
+gl, courtesy of Antón Méixome
+gu, courtesy of Sweta Kothari
+hi, courtesy of Rajesh Ranjan
+it, courtesy of Luca Ferretti
+ja, courtesy of Takayuki KUSANO
+kn, courtesy of Shankar Prasad
+lt, courtesy of Žygimantas Beručka
+lv, courtesy of Raivis Dejus
+nb, courtesy of Kjartan Maraas
+nds, courtesy of Nils-Christoph Fiedler
+or, courtesy of Manoj Kumar Giri
+pa, courtesy of A S Alam
+pt_BR, courtesy of Djavan Fagundes
+ro, courtesy of Adi Roiban
+sl, courtesy of Andrej Žnidaršič
+sv, courtesy of Daniel Nylander
+ta, courtesy of I. Felix
+te, courtesy of Krishna Babu K
+zh_CN, courtesy of fujianwzh
+
+
+
 Overview of changes in Rhythmbox 0.12.5  "Stop Breathin'"
 =========================================================
 

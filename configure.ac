@@ -2,8 +2,8 @@ define(arch-tag)
 # arch-tag: Toplevel Autoconf configuration script
 AC_PREREQ(2.53)
 AC_INIT([rhythmbox],
-	[0.12.5],
-	[http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox])
+	[0.12.6],
+	[https://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox])
 AC_CONFIG_MACRO_DIR(macros)
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE([1.9 dist-bzip2 no-dist-gzip])
