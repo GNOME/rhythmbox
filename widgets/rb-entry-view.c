@@ -2621,7 +2621,7 @@ rb_entry_view_set_column_editable (RBEntryView *view,
 	if (column == NULL)
 		return;
 
-	renderers = gtk_tree_view_column_get_cell_renderers (column);
+	renderers = gtk_cell_layout_get_cells (GTK_CELL_LAYOUT (column));
 	g_object_set (renderers->data, "editable", editable, NULL);
 }
 
