@@ -3494,7 +3494,7 @@ tick_cb (RBPlayer *mmplayer,
 	 * value from the entry, if any.
 	 */
 	if (duration < 1) {
-		duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION) * RB_PLAYER_SECOND;
+		duration = ((gint64)rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION)) * RB_PLAYER_SECOND;
 		duration_from_player = FALSE;
 	}
 
