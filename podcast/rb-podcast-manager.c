@@ -1799,6 +1799,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	GValue error_val = { 0, };
 	gulong last_post = 0;
 	gulong new_last_post;
+	const char *title;
 	GList *download_entries = NULL;
 	gboolean new_feed, updated, download_last;
 	RhythmDB *db = pd->priv->db;
@@ -1854,8 +1855,10 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	g_value_init (&title_val, G_TYPE_STRING);
 	if (data->title == NULL || strlen ((gchar *)data->title) == 0) {
 		g_value_set_string (&title_val, (gchar *) data->url);
+		title = data->url;
 	} else {
 		g_value_set_string (&title_val, (gchar *) data->title);
+		title = data->title;
 	}
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &title_val);
 	g_value_unset (&title_val);
@@ -1938,7 +1941,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 
 			post_entry =
 				rb_podcast_manager_add_post (db,
-							     (gchar *) data->title,
+							     title,
 							     (gchar *) item->title,
 							     (gchar *) data->url,
 							     (gchar *) (item->author ? item->author : data->author),
