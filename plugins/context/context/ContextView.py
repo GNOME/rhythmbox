@@ -182,6 +182,7 @@ class ContextView (gobject.GObject):
 
         if self.current_artist != playing_artist:
             self.current_artist = playing_artist.replace ('&', '&amp;')
+            # Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
             self.label.set_markup(_('Top songs by %s') % ('<i>' + self.current_artist + '</i>'))
             self.ds['artist'].fetch_top_tracks (self.current_artist)
 

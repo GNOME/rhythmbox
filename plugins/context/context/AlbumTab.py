@@ -110,6 +110,7 @@ class AlbumView (gobject.GObject):
     def loading (self, current_artist):
         self.loading_file = self.loading_template.render (
             artist   = current_artist,
+            # Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
             info     = _("Loading top albums for %s") % current_artist,
             song     = "",
             basepath = self.basepath)
