@@ -29,14 +29,10 @@ import rhythmdb, rb
 try:
   import dbus
   use_gossip = True
+  use_mc5 = True
 except ImportError:
   use_gossip = False
-try:
-  import empathy
-  use_empathy = True
-  empathy_idle = empathy.Idle ()
-except ImportError:
-  use_empathy = False
+  use_mc5 = False
 
 NORMAL_SONG_ARTIST = 'artist'
 NORMAL_SONG_TITLE  = 'title'
@@ -45,9 +41,16 @@ STREAM_SONG_ARTIST = 'rb:stream-song-artist'
 STREAM_SONG_TITLE  = 'rb:stream-song-title'
 STREAM_SONG_ALBUM  = 'rb:stream-song-album'
 
-BUS_NAME = 'org.gnome.Gossip'
-OBJ_PATH = '/org/gnome/Gossip'
-IFACE_NAME = 'org.gnome.Gossip'
+GOSSIP_BUS_NAME = 'org.gnome.Gossip'
+GOSSIP_OBJ_PATH = '/org/gnome/Gossip'
+GOSSIP_IFACE_NAME = 'org.gnome.Gossip'
+
+PROPERTIES_IFACE_NAME = 'org.freedesktop.DBus.Properties'
+MC5_BUS_NAME = 'org.freedesktop.Telepathy.MissionControl5'
+MC5_AM_OBJ_PATH = '/org/freedesktop/Telepathy/AccountManager'
+MC5_AM_IFACE_NAME = 'org.freedesktop.Telepathy.AccountManager'
+MC5_ACCT_IFACE_NAME = 'org.freedesktop.Telepathy.Account'
+
 
 class IMStatusPlugin (rb.Plugin):
   def __init__ (self):
@@ -168,17 +171,17 @@ class IMStatusPlugin (rb.Plugin):
       new_status = _(u"♫ Listening to music... ♫")
 
     self.set_gossip_status (new_status)
-    self.set_empathy_status (new_status)
+    self.set_mc5_status (new_status)
 
   def save_status (self):
     self.saved_gossip = self.get_gossip_status ()
-    self.saved_empathy = self.get_empathy_status ()
+    self.saved_mc5 = self.get_mc5_status ()
 
   def restore_status (self):
     if self.saved_gossip != None:
       self.set_gossip_status (self.saved_gossip)
-    if self.saved_empathy != None:
-      self.set_empathy_status (self.saved_empathy)
+    if self.saved_mc5 != None:
+      self.set_mc5_status (self.saved_mc5)
 
   def set_gossip_status (self, new_status):
     if not use_gossip:
@@ -186,8 +189,8 @@ class IMStatusPlugin (rb.Plugin):
 
     try:
       bus = dbus.SessionBus ()
-      gossip_obj = bus.get_object (BUS_NAME, OBJ_PATH)
-      gossip = dbus.Interface (gossip_obj, IFACE_NAME)
+      gossip_obj = bus.get_object (GOSSIP_BUS_NAME, GOSSIP_OBJ_PATH)
+      gossip = dbus.Interface (gossip_obj, GOSSIP_IFACE_NAME)
 
       state, status = gossip.GetPresence ("")
       gossip.SetPresence (state, new_status)
@@ -200,23 +203,52 @@ class IMStatusPlugin (rb.Plugin):
 
     try:
       bus = dbus.SessionBus ()
-      gossip_obj = bus.get_object (BUS_NAME, OBJ_PATH)
-      gossip = dbus.Interface (gossip_obj, IFACE_NAME)
+      gossip_obj = bus.get_object (GOSSIP_BUS_NAME, GOSSIP_OBJ_PATH)
+      gossip = dbus.Interface (gossip_obj, GOSSIP_IFACE_NAME)
 
       state, status = gossip.GetPresence ("")
       return status
     except dbus.DBusException:
       return None
 
-  def set_empathy_status (self, new_status):
-    if not use_empathy:
+  def set_mc5_status (self, new_status):
+    if not use_mc5:
       return
 
-    empathy_idle.set_status (new_status)
+    try:
+      bus = dbus.SessionBus ()
+      am_obj = bus.get_object (MC5_BUS_NAME, MC5_AM_OBJ_PATH)
+      am = dbus.Interface (am_obj, PROPERTIES_IFACE_NAME)
 
-  def get_empathy_status (self):
-    if not use_empathy:
+      for acct in am.Get (MC5_AM_IFACE_NAME, "ValidAccounts"):
+        acct_obj = bus.get_object (MC5_BUS_NAME, acct)
+        acct_iface = dbus.Interface (acct_obj, PROPERTIES_IFACE_NAME)
+        status = acct_iface.Get (MC5_ACCT_IFACE_NAME, "RequestedPresence")
+        acct_iface.Set (MC5_ACCT_IFACE_NAME, "RequestedPresence", (status[0], status[1], new_status))
+
+    except dbus.DBusException, e:
+      print "dbus exception while setting status: " + str(e)
+
+
+  def get_mc5_status (self):
+    if not use_mc5:
       return
 
-    return empathy_idle.get_status ()
+    try:
+      bus = dbus.SessionBus ()
+      am_obj = bus.get_object (MC5_BUS_NAME, MC5_AM_OBJ_PATH)
+      am = dbus.Interface (am_obj, PROPERTIES_IFACE_NAME)
 
+      # a bit awful: this just returns the status text from the first account
+      # that has one.
+      for acct in am.Get (MC5_AM_IFACE_NAME, "ValidAccounts"):
+        acct_obj = bus.get_object (MC5_BUS_NAME, acct)
+        acct_iface = dbus.Interface (acct_obj, PROPERTIES_IFACE_NAME)
+        status = acct_iface.Get (MC5_ACCT_IFACE_NAME, "RequestedPresence")
+        if status[2] != "":
+          return status[2]
+
+    except dbus.DBusException, e:
+      print "dbus exception while setting status: " + str(e)
+
+    return None
