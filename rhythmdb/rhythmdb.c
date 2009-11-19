@@ -2340,8 +2340,10 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 	entry = rhythmdb_entry_lookup_by_location_refstring (event->db, event->real_uri);
 
 	if (entry != NULL) {
-		if (rhythmdb_entry_get_entry_type (entry) != event->entry_type) {
-			/* switching from IGNORE to SONG or vice versa, recreate the entry */
+		RhythmDBEntryType etype;
+		etype = rhythmdb_entry_get_entry_type (entry);
+		if (etype == event->error_type || etype == event->ignore_type) {
+			/* switching from IGNORE/ERROR to SONG, recreate the entry */
 			rhythmdb_entry_delete (event->db, entry);
 			rhythmdb_add_timeout_commit (event->db, FALSE);
 			entry = NULL;
