@@ -961,7 +961,9 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 					   extension);
 	g_free (extension);
 
+	/* ensure the filename is safe for FAT filesystems and doesn't contain slashes */
 	rb_sanitize_path_for_msdos_filesystem (track->filename);
+	g_strdelimit (track->filename, "/", '_');
 
 	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE) > 0) {
 		g_date_set_julian (&d, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE));
