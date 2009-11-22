@@ -156,6 +156,10 @@ rhythmbox_LDADD = 					\
 
 rhythmbox_LDFLAGS = -export-dynamic -no-undefined
 
+if ENABLE_PYTHON
+rhythmbox_LDADD += $(PYTHON_LIBS)
+endif
+
 
 BUILT_SOURCES += $(tab_files)
 
