@@ -1085,8 +1085,9 @@ rb_song_info_update_location (RBSongInfo *song_info)
 	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_LOCATION);
 
 	if (text != NULL) {
-		char *tmp, *tmp_utf8;
-		char *basename, *dir, *desktopdir;
+		char *tmp;
+		char *tmp_utf8;
+		char *basename;
 
 		basename = g_path_get_basename (text);
 		tmp = g_uri_unescape_string (basename, NULL);
@@ -1104,27 +1105,41 @@ rb_song_info_update_location (RBSongInfo *song_info)
 		}
 
 		g_free (tmp_utf8);
+		tmp_utf8 = NULL;
 
 		if (rb_uri_is_local (text)) {
+			const char *desktopdir;
+			char *dir;
+
+			/* for local files, convert to path, extract dirname, and convert to utf8 */
 			tmp = g_filename_from_uri (text, NULL, NULL);
-		}
-		if (tmp == NULL) {
-			tmp = g_strdup (text);
-		}
 
-		dir = g_path_get_dirname (tmp);
-		g_free (tmp);
-		tmp = g_uri_unescape_string (dir, NULL);
-		g_free (dir);
-		tmp_utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, NULL);
-		g_free (tmp);
+			dir = g_path_get_dirname (tmp);
+			g_free (tmp);
+			tmp_utf8 = g_filename_to_utf8 (dir, -1, NULL, NULL, NULL);
+			g_free (dir);
 
-		desktopdir = g_build_filename (g_get_home_dir (), "Desktop", NULL);
-		if ((tmp_utf8 != NULL) && (strcmp (tmp_utf8, desktopdir) == 0)) {
-			g_free (tmp_utf8);
-			tmp_utf8 = g_strdup (_("On the desktop"));
+			/* special case for files on the desktop */
+			desktopdir = g_get_user_special_dir (G_USER_DIRECTORY_DESKTOP);
+			if (g_strcmp0 (tmp_utf8, desktopdir) == 0) {
+				g_free (tmp_utf8);
+				tmp_utf8 = g_strdup (_("On the desktop"));
+			}
+		} else {
+			GFile *file;
+			GFile *parent;
+			char *parent_uri;
+
+			/* get parent URI and unescape it */
+			file = g_file_new_for_uri (text);
+			parent = g_file_get_parent (file);
+			parent_uri = g_file_get_uri (parent);
+			g_object_unref (file);
+			g_object_unref (parent);
+
+			tmp_utf8 = g_uri_unescape_string (parent_uri, NULL);
+			g_free (parent_uri);
 		}
-		g_free (desktopdir);
 
 		if (tmp_utf8 != NULL) {
 			gtk_entry_set_text (GTK_ENTRY (song_info->priv->location),
