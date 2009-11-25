@@ -46,7 +46,7 @@ struct _SjMetadataGetterClass
   GObjectClass parent;
 
   /* Signals */
-  void         (*metadata) (SjMetadataGetter *mdg, GList *albums, GError *error);
+  void         (*metadata) (SjMetadataGetter *mdg, GList *albums, const GError *error);
 };
 
 GType sj_metadata_getter_get_type (void);

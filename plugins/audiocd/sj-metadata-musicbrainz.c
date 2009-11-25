@@ -274,7 +274,7 @@ mb_list_albums (SjMetadata *metadata, char **url, GError **error)
   SjMetadataMusicbrainzPrivate *priv;
   GList *albums = NULL;
   GList *al, *tl;
-  char data[256];
+  char data[1024];
   int num_albums, i, j;
 
   g_return_val_if_fail (metadata != NULL, NULL);

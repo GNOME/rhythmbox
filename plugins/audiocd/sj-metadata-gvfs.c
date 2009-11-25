@@ -76,7 +76,7 @@ gvfs_list_albums (SjMetadata *metadata, char **url, GError **error)
   GFile *file = NULL;
   GFileInfo *info;
   GFileEnumerator *e;
-  guint i = 0;
+  guint i = 1;
 
   g_return_val_if_fail (SJ_IS_METADATA_GVFS (metadata), NULL);
 
@@ -89,7 +89,7 @@ gvfs_list_albums (SjMetadata *metadata, char **url, GError **error)
 
   file = g_file_new_for_uri (priv->uri);
 
-  info = g_file_query_info (file, "xattr::org.gnome.audio",
+  info = g_file_query_info (file, "xattr::*",
   			    G_FILE_QUERY_INFO_NONE, NULL, &my_error);
   if (info == NULL)
     goto bail;
@@ -112,24 +112,30 @@ gvfs_list_albums (SjMetadata *metadata, char **url, GError **error)
   g_object_unref (info);
 
   /* Get tracks metadata */
-  e = g_file_enumerate_children (file, "xattr::org.gnome.audio",
+  e = g_file_enumerate_children (file, "xattr::*",
   				 G_FILE_QUERY_INFO_NONE, NULL, &my_error);
   if (e == NULL)
     goto bail;
+  g_object_unref (file);
 
   for (info = g_file_enumerator_next_file (e, NULL, NULL) ;
        info != NULL ;
-       info = g_file_enumerator_next_file (e, NULL, NULL)) {
+       info = g_file_enumerator_next_file (e, NULL, NULL), i++) {
     TrackDetails *track;
 
     track = g_new0 (TrackDetails, 1);
-    track->number = i++;
+    track->number = i;
+    track->album = album;
     track->title = g_strdup (g_file_info_get_attribute_string (info, "xattr::org.gnome.audio.title"));
     if (track->title == NULL)
       track->title = g_strdup_printf (_("Track %d"), i);
     track->artist = g_strdup (g_file_info_get_attribute_string (info, "xattr::org.gnome.audio.artist"));
-    if (track->artist == NULL)
-      track->artist = g_strdup (_("Unknown Artist"));
+    if (track->artist == NULL || track->artist[0] == '\0') {
+      if (album->artist == NULL)
+        track->artist = g_strdup (_("Unknown Artist"));
+      else
+        track->artist = g_strdup (album->artist);
+    }
     track->duration = g_file_info_get_attribute_uint64 (info, "xattr::org.gnome.audio.duration");
     album->number++;
     g_object_unref (info);
@@ -192,6 +198,7 @@ sj_metadata_gvfs_set_property (GObject *object, guint property_id,
   case PROP_DEVICE:
     g_free (priv->cdrom);
     priv->cdrom = g_value_dup_string (value);
+    g_free (priv->uri);
     priv->uri = device_to_cdda_uri (priv->cdrom);
     break;
   case PROP_PROXY_HOST:

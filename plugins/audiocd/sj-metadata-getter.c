@@ -164,6 +164,7 @@ fire_signal_idle (SjMetadataGetterSignal *signal)
     g_object_unref (signal->metadata);
   if (signal->error != NULL)
     g_error_free (signal->error);
+  g_object_unref (signal->mdg);
   g_free (signal);
 
   return FALSE;
@@ -172,7 +173,6 @@ fire_signal_idle (SjMetadataGetterSignal *signal)
 static gpointer
 lookup_cd (SjMetadataGetter *mdg)
 {
-  SjMetadata *metadata;
   guint i;
   SjMetadataGetterPrivate *priv;
   GError *error = NULL;
@@ -196,6 +196,7 @@ lookup_cd (SjMetadataGetter *mdg)
   priv->url = NULL;
 
   for (i = 0; i < G_N_ELEMENTS (types); i++) {
+    SjMetadata *metadata;
     GList *albums;
 
     metadata = g_object_new (types[i],
@@ -213,8 +214,8 @@ lookup_cd (SjMetadataGetter *mdg)
 
       signal = g_new0 (SjMetadataGetterSignal, 1);
       signal->albums = albums;
-      signal->mdg = mdg;
-      signal->metadata = metadata;
+      signal->mdg = g_object_ref (mdg);
+      signal->metadata = g_object_ref (metadata);
       g_idle_add ((GSourceFunc)fire_signal_idle, signal);
       break;
     }
@@ -228,11 +229,13 @@ lookup_cd (SjMetadataGetter *mdg)
 
       signal = g_new0 (SjMetadataGetterSignal, 1);
       signal->error = error;
-      signal->mdg = mdg;
+      signal->mdg = g_object_ref (mdg);
       g_idle_add ((GSourceFunc)fire_signal_idle, signal);
       break;
     }
   }
+
+  g_object_unref (mdg);
 
   return NULL;
 }
@@ -242,11 +245,13 @@ sj_metadata_getter_list_albums (SjMetadataGetter *mdg, GError **error)
 {
   GThread *thread;
 
+  g_object_ref (mdg);
   thread = g_thread_create ((GThreadFunc)lookup_cd, mdg, TRUE, error);
   if (thread == NULL) {
     g_set_error (error,
                  SJ_ERROR, SJ_ERROR_INTERNAL_ERROR,
                  _("Could not create CD lookup thread"));
+    g_object_unref (mdg);
     return FALSE;
   }
 

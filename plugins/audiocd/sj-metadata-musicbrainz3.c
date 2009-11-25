@@ -44,6 +44,27 @@
 		field = g_strdup (buffer);					\
 }
 
+#if HAVE_MB_EXTRACT_UUID
+#define GET_ID(field, function, obj) {						\
+	char uuid_buffer[37];							\
+        function (obj, buffer, sizeof (buffer));				\
+	mb_extract_uuid (buffer, uuid_buffer, sizeof (uuid_buffer));		\
+	if (field)								\
+		g_free (field);							\
+	if (*uuid_buffer == '\0')						\
+		field = NULL;							\
+	else									\
+		field = g_strdup (uuid_buffer);					\
+}
+#else
+#define GET_ID(field, function, obj) {						\
+	if (field)								\
+		g_free (field);							\
+	field = NULL;								\
+}
+#endif /* HAVE_MB_EXTRACT_UUID */
+
+#define GCONF_MUSICBRAINZ_SERVER "/apps/sound-juicer/musicbrainz_server"
 #define GCONF_PROXY_USE_PROXY "/system/http_proxy/use_http_proxy"
 #define GCONF_PROXY_HOST "/system/http_proxy/host"
 #define GCONF_PROXY_PORT "/system/http_proxy/port"
@@ -97,15 +118,7 @@ make_album_from_release (MbRelease *release)
 
   album = g_new0 (AlbumDetails, 1);
 
-   /* Some versions of libmusicbrainz3 seem to forget the trailing .html in the URL */
-  GET (album->album_id, mb_release_get_id, release);
-  if (album->album_id && g_str_has_suffix (album->album_id, ".html") == FALSE) {
-    char *tmp;
-    tmp = g_strdup_printf ("%s.html", album->album_id);
-    g_free (album->album_id);
-    album->album_id = tmp;
-  }
-
+  GET_ID (album->album_id, mb_release_get_id, release);
   GET (album->title, mb_release_get_title, release);
   new_title = sj_metadata_helper_scan_disc_number (album->title, &album->disc_number);
   if (new_title) {
@@ -114,7 +127,7 @@ make_album_from_release (MbRelease *release)
   }
 
   artist = mb_release_get_artist (release);
-  GET (album->artist_id, mb_artist_get_id, artist);
+  GET_ID (album->artist_id, mb_artist_get_id, artist);
   GET (album->artist, mb_artist_get_name, artist);
   GET (album->artist_sortname, mb_artist_get_sortname, artist);
 
@@ -167,7 +180,7 @@ make_album_from_release (MbRelease *release)
     track->album = album;
 
     track->number = i + 1;
-    GET (track->track_id, mb_track_get_id, mbt);
+    GET_ID (track->track_id, mb_track_get_id, mbt);
 
     GET (track->title, mb_track_get_title, mbt);
     track->duration = mb_track_get_duration (mbt) / 1000;
@@ -175,7 +188,7 @@ make_album_from_release (MbRelease *release)
     artist = mb_track_get_artist (mbt);
     if (artist == NULL)
       artist = mb_release_get_artist (release);
-    GET (track->artist_id, mb_artist_get_id, artist);
+    GET_ID (track->artist_id, mb_artist_get_id, artist);
     GET (track->artist, mb_artist_get_name, artist);
     GET (track->artist_sortname, mb_artist_get_sortname, artist);
 
@@ -220,7 +233,7 @@ mb_list_albums (SjMetadata *metadata, char **url, GError **error)
   MbResultList results;
   MbRelease release;
   char *id = NULL;
-  char buffer[512];
+  char buffer[1024];
   int i;
   g_return_val_if_fail (SJ_IS_METADATA_MUSICBRAINZ3 (metadata), NULL);
 
@@ -302,13 +315,23 @@ static void
 sj_metadata_musicbrainz3_init (SjMetadataMusicbrainz3 *self)
 {
   GConfClient *gconf_client;
+  gchar *server_name;
+
   SjMetadataMusicbrainz3Private *priv;
 
   priv = GET_PRIVATE (self);
 
-  priv->mb = mb_webservice_new();
+  priv->mb = mb_webservice_new ();
 
   gconf_client = gconf_client_get_default ();
+
+  server_name = gconf_client_get_string (gconf_client, GCONF_MUSICBRAINZ_SERVER, NULL);
+
+  if (server_name && strcmp (server_name, "") != 0) {
+    mb_webservice_set_host (priv->mb, server_name);
+  }
+
+  g_free (server_name);
 
   /* Set the HTTP proxy */
   if (gconf_client_get_bool (gconf_client, GCONF_PROXY_USE_PROXY, NULL)) {
