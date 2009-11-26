@@ -174,6 +174,14 @@ class ContextView (gobject.GObject):
                 self.top_five_list[(i,)] = ("%d. " % (i+1), track)
 
     def playing_changed_cb (self, playing, user_data):
+        # this sometimes happens on a streaming thread, so we need to
+        # move it to the main thread
+        gobject.idle_add (self.playing_changed_idle_cb)
+
+    def playing_changed_idle_cb (self):
+        if self.sp is None:
+            return
+
         playing_entry = self.sp.get_playing_entry ()
         if playing_entry is None:
             return
