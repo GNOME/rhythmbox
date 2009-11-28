@@ -94,7 +94,6 @@ find_portable_audio_player_udi (LibHalContext *context, MPIDDevice *device, cons
 		mpid_debug ("unable to find hal UDI for device %s", device_path);
 		device->error = MPID_ERROR_MECHANISM_FAILED;
 		libhal_free_string_array (udis);
-		destroy_hal_context (context);
 		return NULL;
 	}
 
