@@ -222,7 +222,7 @@ class AlbumDataSource (gobject.GObject):
 
     def fetch_album_info (self, artist, album, index):
         qartist = urllib.quote_plus (artist)
-        qalbum = urllib.quote_plus (album)
+        qalbum = urllib.quote_plus (album.encode('utf-8'))
         cachekey = "lastfm:album:getinfo:%s:%s" % (qartist, qalbum)
         url = "%salbum.getinfo&artist=%s&album=%s&api_key=%s" % (LastFM.URL_PREFIX,
                                                                  qartist,
