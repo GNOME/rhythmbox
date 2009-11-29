@@ -368,8 +368,8 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device, RBMtpPlu
 	}
 	devnum = strtol (devnum_str, NULL, 10);
 
-	rb_debug ("trying to match device %x (usb device %d) against detected mtp devices",
-		  device_number, devnum);
+	rb_debug ("trying to match device %"G_GINT64_MODIFIER"x (usb device %d) against detected mtp devices",
+		  (guint64)device_number, devnum);
 
 	/* see what devices libmtp can find */
 	if (LIBMTP_Detect_Raw_Devices (&raw_devices, &num_raw_devices) == 0) {

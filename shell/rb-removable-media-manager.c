@@ -568,7 +568,8 @@ uevent_cb (GUdevClient *client, const char *action, GUdevDevice *device, RBRemov
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 	GUdevDeviceNumber devnum;
 	devnum = g_udev_device_get_device_number (device);
-	rb_debug ("%s event for %s (%x)", action, g_udev_device_get_sysfs_path (device), devnum);
+	rb_debug ("%s event for %s (%"G_GINT64_MODIFIER"x)", action,
+                  g_udev_device_get_sysfs_path (device), (guint64)devnum);
 
 	if (g_str_equal (action, "add")) {
 		RBSource *source = NULL;
