@@ -84,7 +84,7 @@ class ContextView (gobject.GObject):
         self.current = 'artist'
         self.tab[self.current].activate ()
 
-        # Add button to toggle visibility of panel
+        # Add button to toggle visibility of pane
         self.action = ('ToggleContextView','gtk-info', _('Toggle Conte_xt Pane'),
                         None, _('Change the visibility of the context pane'),
                         self.toggle_visibility, True)
@@ -248,7 +248,7 @@ class ContextView (gobject.GObject):
         self.vbox2 = gtk.VBox()
         self.buttons = gtk.HBox()
 
-        #---- pack everything into side panel ----#
+        #---- pack everything into side pane ----#
         self.vbox.pack_start  (self.frame, expand = False)
         self.vbox2.pack_start (self.buttons, expand = False)
         self.vbox2.pack_start (self.scroll, expand = True)

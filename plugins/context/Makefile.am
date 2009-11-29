@@ -1,4 +1,4 @@
-# Context Panel Python Plugin
+# Context Pane Python Plugin
 
 SUBDIRS = context
 
