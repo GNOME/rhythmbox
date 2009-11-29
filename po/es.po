@@ -16,8 +16,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-11-02 12:00+0000\n"
-"PO-Revision-Date: 2009-11-02 13:16+0100\n"
+"POT-Creation-Date: 2009-11-29 04:30+0000\n"
+"PO-Revision-Date: 2009-11-29 23:38+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -45,68 +45,68 @@ msgstr ""
 "de GStreamer"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:604
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2770
+#: ../backends/gstreamer/rb-player-gst.c:589
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2773
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Falló al abrir el dispositivo de salida: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:649
+#: ../backends/gstreamer/rb-player-gst.c:634
 #, c-format
 msgid "Unable to start playback pipeline"
 msgstr "No se pudo iniciar la tubería de reproducción"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1154
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1168
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1156
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1170
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr ""
 "Ha ocurrido un error al enlazar un nuevo flujo dentro del pipeline de "
 "GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1196
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1198
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Ha ocurrido un error al inicializar un nuevo flujo"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2695
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2698
 #, c-format
 msgid "Failed to open output device"
 msgstr "Falló al abrir el dispositivo de salida"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3036
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3118
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3049
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3120
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear el elemento GStreamer; compruebe su instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3047
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3060
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear un elemento de salida de audio; compruebe su "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3092
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3134
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3160
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3169
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3178
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3094
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3136
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3162
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3171
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3180
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Ha ocurrido un error al enlazar la tubería de GStreamer; compruebe su "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3273
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3275
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr ""
 "Ha ocurrido un error al crear una tubería de GStreamer para reproducir %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3289
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3291
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "No se ha podido iniciar la reproducción de %s"
@@ -333,8 +333,8 @@ msgid "Site:"
 msgstr "Sitio:"
 
 #: ../data/ui/podcast-feed-properties.ui.h:2
-#: ../data/ui/podcast-properties.ui.h:1 ../data/ui/song-info.ui.h:1
-#: ../plugins/ipod/ipod-info.ui.h:5
+#: ../data/ui/podcast-properties.ui.h:1 ../data/ui/song-info-multiple.ui.h:1
+#: ../data/ui/song-info.ui.h:1 ../plugins/ipod/ipod-info.ui.h:5
 #: ../plugins/iradio/station-properties.ui.h:1
 msgid "Basic"
 msgstr "Básico"
@@ -430,31 +430,31 @@ msgstr "Última reproducción:"
 msgid "Play count:"
 msgstr "Número de reproducciones:"
 
-#: ../data/ui/podcast-properties.ui.h:13 ../data/ui/song-info-multiple.ui.h:5
+#: ../data/ui/podcast-properties.ui.h:13 ../data/ui/song-info-multiple.ui.h:6
 #: ../data/ui/song-info.ui.h:16 ../plugins/iradio/station-properties.ui.h:9
 msgid "_Rating:"
 msgstr "_Puntuación:"
 
-#: ../data/ui/song-info-multiple.ui.h:1 ../data/ui/song-info.ui.h:12
+#: ../data/ui/song-info-multiple.ui.h:2 ../data/ui/song-info.ui.h:12
 msgid "_Album:"
 msgstr "Á_lbum:"
 
-#: ../data/ui/song-info-multiple.ui.h:2 ../data/ui/song-info.ui.h:13
+#: ../data/ui/song-info-multiple.ui.h:3 ../data/ui/song-info.ui.h:13
 #: ../plugins/audiocd/album-info.ui.h:3
 msgid "_Artist:"
 msgstr "_Artista:"
 
-#: ../data/ui/song-info-multiple.ui.h:3 ../data/ui/song-info.ui.h:14
+#: ../data/ui/song-info-multiple.ui.h:4 ../data/ui/song-info.ui.h:14
 msgid "_Disc number:"
 msgstr "Número de d_isco:"
 
-#: ../data/ui/song-info-multiple.ui.h:4 ../data/ui/song-info.ui.h:15
+#: ../data/ui/song-info-multiple.ui.h:5 ../data/ui/song-info.ui.h:15
 #: ../plugins/audiocd/album-info.ui.h:5
 #: ../plugins/iradio/station-properties.ui.h:8
 msgid "_Genre:"
 msgstr "_Género:"
 
-#: ../data/ui/song-info-multiple.ui.h:6 ../data/ui/song-info.ui.h:19
+#: ../data/ui/song-info-multiple.ui.h:7 ../data/ui/song-info.ui.h:19
 #: ../plugins/audiocd/album-info.ui.h:6
 #: ../plugins/magnatune/magnatune-prefs.ui.h:46
 msgid "_Year:"
@@ -647,9 +647,9 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:440
 #: ../plugins/mtpdevice/rb-mtp-source.c:775
 #: ../plugins/mtpdevice/rb-mtp-source.c:886
-#: ../plugins/status-icon/rb-status-icon-plugin.c:727
+#: ../plugins/status-icon/rb-status-icon-plugin.c:729
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
-#: ../podcast/rb-podcast-manager.c:1867
+#: ../podcast/rb-podcast-manager.c:1870
 #: ../podcast/rb-podcast-properties-dialog.c:483
 #: ../podcast/rb-podcast-properties-dialog.c:535
 #: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1287
@@ -659,7 +659,7 @@ msgstr "%d %b %Y"
 #: ../widgets/rb-entry-view.c:1043 ../widgets/rb-entry-view.c:1065
 #: ../widgets/rb-entry-view.c:1519 ../widgets/rb-entry-view.c:1531
 #: ../widgets/rb-entry-view.c:1543 ../widgets/rb-song-info.c:877
-#: ../widgets/rb-song-info.c:1043 ../widgets/rb-song-info.c:1367
+#: ../widgets/rb-song-info.c:1043 ../widgets/rb-song-info.c:1382
 msgid "Unknown"
 msgstr "Desconocido"
 
@@ -678,13 +678,13 @@ msgstr "Demasiados enlaces simbólicos"
 msgid "Cannot get free space at %s: %s"
 msgstr "No se puede obtener espacio libre en %s: %s"
 
-#: ../lib/rb-util.c:578 ../plugins/context/tmpl/album-tmpl.html:17
+#: ../lib/rb-util.c:578 ../plugins/context/tmpl/album-tmpl.html:20
 #: ../remote/dbus/rb-client.c:144
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:580 ../plugins/context/tmpl/album-tmpl.html:15
+#: ../lib/rb-util.c:580 ../plugins/context/tmpl/album-tmpl.html:18
 #: ../remote/dbus/rb-client.c:146
 #, c-format
 msgid "%d:%02d:%02d"
@@ -884,7 +884,7 @@ msgstr "Artista"
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox no pudo obtener acceso al dispositivo CD."
 
-#: ../plugins/audiocd/sj-metadata-getter.c:249
+#: ../plugins/audiocd/sj-metadata-getter.c:253
 #, c-format
 msgid "Could not create CD lookup thread"
 msgstr "No se pudo crear un hilo de búsqueda de CD"
@@ -900,17 +900,17 @@ msgid "Unknown Title"
 msgstr "Título desconocido"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:109
-#: ../plugins/audiocd/sj-metadata-gvfs.c:132
+#: ../plugins/audiocd/sj-metadata-gvfs.c:135
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:328
 msgid "Unknown Artist"
 msgstr "Artista desconocido"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:129
+#: ../plugins/audiocd/sj-metadata-gvfs.c:131
 #, c-format
 msgid "Track %d"
 msgstr "Pista %d"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:150
+#: ../plugins/audiocd/sj-metadata-gvfs.c:156
 #, c-format
 msgid "Cannot access CD: %s"
 msgstr "No se puede acceder al CD: %s"
@@ -982,9 +982,9 @@ msgstr "Hora del último envío:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:964
 #: ../plugins/iradio/rb-station-properties-dialog.c:498
-#: ../rhythmdb/rhythmdb.c:3706 ../widgets/rb-entry-view.c:991
+#: ../rhythmdb/rhythmdb.c:3708 ../widgets/rb-entry-view.c:991
 #: ../widgets/rb-entry-view.c:1578 ../widgets/rb-entry-view.c:1591
-#: ../widgets/rb-song-info.c:1340
+#: ../widgets/rb-song-info.c:1355
 msgid "Never"
 msgstr "Nunca"
 
@@ -1728,7 +1728,8 @@ msgid "DLNA/UPnP sharing and control support"
 msgstr "Soporte para control y comparticiones DLNA/UPnP"
 
 #: ../plugins/context/context.rb-plugin.in.h:1
-msgid "Context Panel"
+#| msgid "Context Panel"
+msgid "Context Pane"
 msgstr "Panel contextual"
 
 #: ../plugins/context/context.rb-plugin.in.h:2
@@ -1743,7 +1744,8 @@ msgstr ""
 msgid "Albums"
 msgstr "Álbumes"
 
-#: ../plugins/context/context/AlbumTab.py:113
+#. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
+#: ../plugins/context/context/AlbumTab.py:114
 #, python-format
 msgid "Loading top albums for %s"
 msgstr "Cargando mejores álbumes de %s"
@@ -1753,7 +1755,7 @@ msgstr "Cargando mejores álbumes de %s"
 msgid "Loading biography for %s"
 msgstr "Cargando la biografía de %s"
 
-#. Add button to toggle visibility of panel
+#. Add button to toggle visibility of pane
 #: ../plugins/context/context/ContextView.py:88
 msgid "Toggle Conte_xt Pane"
 msgstr "Conmutar el Panel conte_xtual"
@@ -1762,13 +1764,13 @@ msgstr "Conmutar el Panel conte_xtual"
 msgid "Change the visibility of the context pane"
 msgstr "Cambiar la visibilidad del panel contextual"
 
-#: ../plugins/context/context/ContextView.py:185
+#. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
+#: ../plugins/context/context/ContextView.py:194
 #, python-format
-#| msgid "Top songs by <i>%s</i>"
 msgid "Top songs by %s"
 msgstr "Mejores canciones de %s"
 
-#: ../plugins/context/context/ContextView.py:202
+#: ../plugins/context/context/ContextView.py:211
 msgid "Nothing Playing"
 msgstr "No se está reproduciendo nada"
 
@@ -1797,31 +1799,30 @@ msgstr "Cargando letras para %s de %s"
 msgid "Lyrics not found"
 msgstr "No se encontró ninguna letra"
 
-#: ../plugins/context/tmpl/album-tmpl.html:31
-#| msgid "Show all tracks"
+#: ../plugins/context/tmpl/album-tmpl.html:45
 msgid "Hide all tracks"
 msgstr "Ocultar todas las pistas"
 
-#: ../plugins/context/tmpl/album-tmpl.html:32
-#: ../plugins/context/tmpl/album-tmpl.html:62
+#: ../plugins/context/tmpl/album-tmpl.html:46
+#: ../plugins/context/tmpl/album-tmpl.html:80
 msgid "Show all tracks"
 msgstr "Mostrar todas las pistas"
 
-#: ../plugins/context/tmpl/album-tmpl.html:42
+#: ../plugins/context/tmpl/album-tmpl.html:56
 #, c-format
 msgid "Top albums by %s"
 msgstr "Mejores álbumes de %s"
 
-#: ../plugins/context/tmpl/album-tmpl.html:58
+#: ../plugins/context/tmpl/album-tmpl.html:76
 #, c-format
 msgid "%s (%d tracks)"
 msgstr "%s (%d pistas)"
 
-#: ../plugins/context/tmpl/album-tmpl.html:75
+#: ../plugins/context/tmpl/album-tmpl.html:93
 msgid "Track list not available"
 msgstr "La lista de pistas no está disponible"
 
-#: ../plugins/context/tmpl/album-tmpl.html:81
+#: ../plugins/context/tmpl/album-tmpl.html:99
 msgid "Unable to retrieve album information:"
 msgstr "No se pudo obtener la información del álbum:"
 
@@ -2047,7 +2048,7 @@ msgstr ""
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
 #. the current playing song.  They can be reordered if necessary.
-#: ../plugins/im-status/im-status/__init__.py:153
+#: ../plugins/im-status/im-status/__init__.py:156
 #, python-format
 msgid "♫ %(artist)s - %(title)s ♫"
 msgstr "♫ %(artist)s - %(title)s ♫"
@@ -2055,26 +2056,26 @@ msgstr "♫ %(artist)s - %(title)s ♫"
 #. Translators: do not translate %(artist)s or %(album)s, they are
 #. string substitution markers (like %s) for the artist and album name
 #. of the current playing song.  They can be reordered if necessary.
-#: ../plugins/im-status/im-status/__init__.py:158
+#: ../plugins/im-status/im-status/__init__.py:161
 #, python-format
 msgid "♫ %(artist)s - %(album)s ♫"
 msgstr "♫ %(artist)s - %(album)s ♫"
 
 #. Translators: do not translate %(album)s, it is a string substitution
 #. marker (like %s) for the album name of the current playing song.
-#: ../plugins/im-status/im-status/__init__.py:162
+#: ../plugins/im-status/im-status/__init__.py:165
 #, python-format
 msgid "♫ %(album)s ♫"
 msgstr "♫ %(album)s ♫"
 
 #. Translators: do not translate %(title)s, it is a string substitution
 #. marker (like %s) for the title of the current playing song.
-#: ../plugins/im-status/im-status/__init__.py:166
+#: ../plugins/im-status/im-status/__init__.py:169
 #, python-format
 msgid "♫ %(title)s ♫"
 msgstr "♫ %(title)s ♫"
 
-#: ../plugins/im-status/im-status/__init__.py:168
+#: ../plugins/im-status/im-status/__init__.py:171
 msgid "♫ Listening to music... ♫"
 msgstr "♫ Escuchando música... ♫"
 
@@ -3277,29 +3278,29 @@ msgstr "Mostrar n_otificaciones"
 msgid "Show notifications of song changes and other events"
 msgstr "Mostrar notificaciones de los cambios de la canción y otros eventos"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:427
+#: ../plugins/status-icon/rb-status-icon-plugin.c:429
 msgid "Next"
 msgstr "Siguiente"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:578
+#: ../plugins/status-icon/rb-status-icon-plugin.c:580
 #: ../remote/dbus/rb-client.c:454 ../remote/dbus/rb-client.c:480
 msgid "Not playing"
 msgstr "No se está reproduciendo nada"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:581
+#: ../plugins/status-icon/rb-status-icon-plugin.c:583
 #, c-format
 msgid "Paused, %s"
 msgstr "Pausado, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:670
+#: ../plugins/status-icon/rb-status-icon-plugin.c:672
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "por <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:691
+#: ../plugins/status-icon/rb-status-icon-plugin.c:693
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
@@ -3430,7 +3431,7 @@ msgstr ""
 "Parece que está ejecutando Rhythmbox de forma remota.\n"
 "¿Está seguro de que quiere activar los efectos visuales?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1722
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1726
 msgid "Music Player Visualization"
 msgstr "Visualización del reproductor de música"
 
@@ -3509,7 +3510,7 @@ msgstr ""
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2047
+#: ../podcast/rb-podcast-manager.c:2050
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Hubo un problema al añadir este Podcast: %s. Compruebe el URL: %s"
@@ -3699,32 +3700,32 @@ msgstr "Archivo vacío"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2431
+#: ../rhythmdb/rhythmdb.c:2433
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 "Para poder reproducir este archivo se necesitan complementos adicionales de "
 "GStreamer: %s"
 
-#: ../rhythmdb/rhythmdb.c:3191
+#: ../rhythmdb/rhythmdb.c:3193
 msgid "Could not load the music database:"
 msgstr "No se pudo cargar la base de datos de la música:"
 
-#: ../rhythmdb/rhythmdb.c:4559
+#: ../rhythmdb/rhythmdb.c:4561
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minutos"
 
-#: ../rhythmdb/rhythmdb.c:4560
+#: ../rhythmdb/rhythmdb.c:4562
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hora"
 msgstr[1] "%ld horas"
 
-#: ../rhythmdb/rhythmdb.c:4561
+#: ../rhythmdb/rhythmdb.c:4563
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3732,7 +3733,7 @@ msgstr[0] "%ld día"
 msgstr[1] "%ld días"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4567
+#: ../rhythmdb/rhythmdb.c:4569
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s y %s"
@@ -3740,8 +3741,8 @@ msgstr "%s, %s y %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4573 ../rhythmdb/rhythmdb.c:4581
-#: ../rhythmdb/rhythmdb.c:4592
+#: ../rhythmdb/rhythmdb.c:4575 ../rhythmdb/rhythmdb.c:4583
+#: ../rhythmdb/rhythmdb.c:4594
 #, c-format
 msgid "%s and %s"
 msgstr "%s y %s"
@@ -4664,11 +4665,11 @@ msgstr "Limpiar"
 msgid "Play Queue"
 msgstr "Cola de reproducción"
 
-#: ../sources/rb-play-queue-source.c:427 ../widgets/rb-header.c:124
+#: ../sources/rb-play-queue-source.c:427 ../widgets/rb-header.c:125
 msgid "from"
 msgstr "de"
 
-#: ../sources/rb-play-queue-source.c:427 ../widgets/rb-header.c:125
+#: ../sources/rb-play-queue-source.c:427 ../widgets/rb-header.c:126
 msgid "by"
 msgstr "por"
 
@@ -4970,7 +4971,7 @@ msgstr "Reproduciendo"
 msgid "Playback Error"
 msgstr "Error de reproducción"
 
-#: ../widgets/rb-header.c:511
+#: ../widgets/rb-header.c:516
 msgid "Not Playing"
 msgstr "No se reproduce nada"
 
@@ -5189,15 +5190,15 @@ msgstr "Propiedades de la canción"
 msgid "Multiple Song Properties"
 msgstr "Propiedades de canciones múltiples"
 
-#: ../widgets/rb-song-info.c:1103
+#: ../widgets/rb-song-info.c:1104
 msgid "Unknown file name"
 msgstr "Nombre de archivo desconocido"
 
-#: ../widgets/rb-song-info.c:1125
+#: ../widgets/rb-song-info.c:1126
 msgid "On the desktop"
 msgstr "En el escritorio"
 
-#: ../widgets/rb-song-info.c:1134
+#: ../widgets/rb-song-info.c:1149
 msgid "Unknown location"
 msgstr "Dirección desconocida"
 
