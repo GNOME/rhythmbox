@@ -62,14 +62,28 @@ class LocalCoverArtSearch:
 				return
 
 			for f in files:
-				ct = f.get_attribute_string("standard::fast-content-type")
-				if ct.startswith("image/") and f.get_attribute_boolean("access::can-read"):
-					results.append(f.get_name())	# hm
+				ct = f.get_attribute_string("standard::content-type")
+				# assume readable unless told otherwise
+				readable = True
+				if f.has_attribute("access::can-read"):
+					readable = f.get_attribute_boolean("access::can-read")
+				if ct is not None and ct.startswith("image/") and readable:
+					results.append(f.get_name())
 
 			fileenum.next_files_async(ITEMS_PER_NOTIFICATION, callback = self._enum_dir_cb, user_data=(results, on_search_completed_cb, entry, args))
 		except Exception, e:
 			print "okay, probably done: %s" % e
 			on_search_completed_cb(self, entry, results, *args)
+
+
+	def _enum_children_cb(self, parent, result, (on_search_completed_cb, entry, args)):
+		try:
+			enumfiles = parent.enumerate_children_finish(result)
+			enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, callback = self._enum_dir_cb, user_data=([], on_search_completed_cb, entry, args))
+		except Exception, e:
+			print "okay, probably done: %s" % e
+			on_search_completed_cb(self, entry, [], *args)
+
 
 	def search (self, db, entry, is_playing, on_search_completed_cb, *args):
 
@@ -84,8 +98,7 @@ class LocalCoverArtSearch:
 
 		print 'searching for local art for %s' % (self.file.get_uri())
 		parent = self.file.get_parent()
-		enumfiles = parent.enumerate_children(attributes="standard::fast-content-type,access::can-read,standard::name")
-		enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, callback = self._enum_dir_cb, user_data=([], on_search_completed_cb, entry, args))
+		enumfiles = parent.enumerate_children_async(attributes="standard::content-type,access::can-read,standard::name", callback = self._enum_children_cb, user_data=(on_search_completed_cb, entry, args))
 
 	def search_next (self):
 		return False
