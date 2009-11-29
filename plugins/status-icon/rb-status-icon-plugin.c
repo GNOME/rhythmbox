@@ -281,6 +281,13 @@ rb_status_icon_plugin_button_press_event (RBStatusIconPlugin *plugin,
 		rb_tray_icon_menu_popup (plugin->priv->tray_icon, popup, 3);
 		g_object_unref (ui_manager);
 		break;
+
+	case 8:
+		rb_shell_player_do_previous (plugin->priv->shell_player, NULL);
+		break;
+	case 9:
+		rb_shell_player_do_next (plugin->priv->shell_player, NULL);
+		break;
 	}
 }
 
