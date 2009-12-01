@@ -78,6 +78,7 @@ G_DEFINE_ABSTRACT_TYPE(RhythmDB, rhythmdb, G_TYPE_OBJECT)
 /* file attributes requested in RHYTHMDB_ACTION_ENUM_DIR */
 #define RHYTHMDB_FILE_CHILD_INFO_ATTRIBUTES		\
 	RHYTHMDB_FILE_INFO_ATTRIBUTES ","		\
+	G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN ","		\
 	G_FILE_ATTRIBUTE_STANDARD_NAME
 
 /*
@@ -2855,6 +2856,12 @@ rhythmdb_execute_enum_dir (RhythmDB *db,
 
 			g_warning ("error getting next file: %s", error->message);
 			g_clear_error (&error);
+			continue;
+		}
+
+		if (g_file_info_get_attribute_boolean (file_info, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN)) {
+			rb_debug ("ignoring hidden file %s", g_file_info_get_name (file_info));
+			g_object_unref (file_info);
 			continue;
 		}
 
