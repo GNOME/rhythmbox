@@ -11,15 +11,15 @@
 # Jochen Skulj <jochen@jochenskulj.de>, 2008, 2009.
 # Mario Blättermann <mariobl@gnome.org>, 2008, 2009.
 # Christian Kirbach <Christian.Kirbach@googlemail.com>, 2009.
-# Christian Kirbach <Christian.Kirbach@googlemail.com>, 2009.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-11-29 10:49+0000\n"
-"PO-Revision-Date: 2009-11-20 20:39+0530\n"
-"Last-Translator: Christian Kirbach <Christian.Kirbach@googlemail.com>\n"
+"POT-Creation-Date: 2009-12-01 12:39+0000\n"
+"PO-Revision-Date: 2009-11-29 13:31+0530\n"
+"Last-Translator: Mario Blättermann <mariobl@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -652,14 +652,14 @@ msgstr "%d. %B %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:440
 #: ../plugins/mtpdevice/rb-mtp-source.c:775
 #: ../plugins/mtpdevice/rb-mtp-source.c:886
-#: ../plugins/status-icon/rb-status-icon-plugin.c:729
+#: ../plugins/status-icon/rb-status-icon-plugin.c:736
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
 #: ../podcast/rb-podcast-manager.c:1870
 #: ../podcast/rb-podcast-properties-dialog.c:483
 #: ../podcast/rb-podcast-properties-dialog.c:535
 #: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1287
 #: ../rhythmdb/rhythmdb-tree.c:1291 ../rhythmdb/rhythmdb-tree.c:1295
-#: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb.c:1817
+#: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb.c:1818
 #: ../shell/rb-shell-player.c:1665 ../sources/rb-podcast-source.c:1648
 #: ../widgets/rb-entry-view.c:1043 ../widgets/rb-entry-view.c:1065
 #: ../widgets/rb-entry-view.c:1519 ../widgets/rb-entry-view.c:1531
@@ -994,7 +994,7 @@ msgstr "Letztes Übermittlungsdatum:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:964
 #: ../plugins/iradio/rb-station-properties-dialog.c:498
-#: ../rhythmdb/rhythmdb.c:3708 ../widgets/rb-entry-view.c:991
+#: ../rhythmdb/rhythmdb.c:3715 ../widgets/rb-entry-view.c:991
 #: ../widgets/rb-entry-view.c:1578 ../widgets/rb-entry-view.c:1591
 #: ../widgets/rb-song-info.c:1355
 msgid "Never"
@@ -1748,7 +1748,7 @@ msgstr "DLNA/UPnP-Freigabe und Steuerung unterstützen"
 #, fuzzy
 #| msgid "Context Panel"
 msgid "Context Pane"
-msgstr "Kontext-Panel"
+msgstr "Kontextleiste"
 
 #: ../plugins/context/context.rb-plugin.in.h:2
 msgid "Show information related to the currently playing artist and song."
@@ -3317,29 +3317,29 @@ msgstr ""
 "Benachrichtigungen anzeigen, wenn ein neuer Titel beginnt oder andere "
 "Ereignisse eintreten"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:429
+#: ../plugins/status-icon/rb-status-icon-plugin.c:436
 msgid "Next"
 msgstr "Nächster"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:580
+#: ../plugins/status-icon/rb-status-icon-plugin.c:587
 #: ../remote/dbus/rb-client.c:454 ../remote/dbus/rb-client.c:480
 msgid "Not playing"
 msgstr "Keine Wiedergabe"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:583
+#: ../plugins/status-icon/rb-status-icon-plugin.c:590
 #, c-format
 msgid "Paused, %s"
 msgstr "Angehalten, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:672
+#: ../plugins/status-icon/rb-status-icon-plugin.c:679
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "von <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:693
+#: ../plugins/status-icon/rb-status-icon-plugin.c:700
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "aus <i>%s</i>"
@@ -3700,7 +3700,7 @@ msgstr ""
 "Die Datenbank wurde von einer neueren Rhythmbox-Version erstellt und kann "
 "von dieser Version nicht gelesen werden."
 
-#: ../rhythmdb/rhythmdb.c:751
+#: ../rhythmdb/rhythmdb.c:752
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Zugriff auf %s nicht möglich: %s"
@@ -3710,7 +3710,7 @@ msgstr "Zugriff auf %s nicht möglich: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1698
+#: ../rhythmdb/rhythmdb.c:1699
 msgid "The Beatles"
 msgstr "The Beatles"
 
@@ -3718,7 +3718,7 @@ msgstr "The Beatles"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1704
+#: ../rhythmdb/rhythmdb.c:1705
 msgid "Help!"
 msgstr "Hilfe!"
 
@@ -3726,15 +3726,15 @@ msgstr "Hilfe!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1710
+#: ../rhythmdb/rhythmdb.c:1711
 msgid "Ticket To Ride"
 msgstr "Ticket To Ride"
 
-#: ../rhythmdb/rhythmdb.c:2259
+#: ../rhythmdb/rhythmdb.c:2260
 msgid "invalid unicode in error message"
 msgstr "Ungültiger Unicode in Fehlermeldung"
 
-#: ../rhythmdb/rhythmdb.c:2320
+#: ../rhythmdb/rhythmdb.c:2321
 #, c-format
 msgid "Empty file"
 msgstr "Leere Datei"
@@ -3742,32 +3742,32 @@ msgstr "Leere Datei"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2433
+#: ../rhythmdb/rhythmdb.c:2434
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 "Es werden zusätzliche GStreamer-Plugins zur Wiedergabe dieser Datei "
 "benötigt: %s"
 
-#: ../rhythmdb/rhythmdb.c:3193
+#: ../rhythmdb/rhythmdb.c:3200
 msgid "Could not load the music database:"
 msgstr "Die Musikdatenbank konnte nicht geladen werden:"
 
-#: ../rhythmdb/rhythmdb.c:4561
+#: ../rhythmdb/rhythmdb.c:4568
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld Minute"
 msgstr[1] "%ld Minuten"
 
-#: ../rhythmdb/rhythmdb.c:4562
+#: ../rhythmdb/rhythmdb.c:4569
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld Stunde"
 msgstr[1] "%ld Stunden"
 
-#: ../rhythmdb/rhythmdb.c:4563
+#: ../rhythmdb/rhythmdb.c:4570
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3775,7 +3775,7 @@ msgstr[0] "%ld Tag"
 msgstr[1] "%ld Tage"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4569
+#: ../rhythmdb/rhythmdb.c:4576
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s und %s"
@@ -3783,8 +3783,8 @@ msgstr "%s, %s und %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4575 ../rhythmdb/rhythmdb.c:4583
-#: ../rhythmdb/rhythmdb.c:4594
+#: ../rhythmdb/rhythmdb.c:4582 ../rhythmdb/rhythmdb.c:4590
+#: ../rhythmdb/rhythmdb.c:4601
 #, c-format
 msgid "%s and %s"
 msgstr "%s, %s"
