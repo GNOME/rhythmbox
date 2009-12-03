@@ -1230,7 +1230,11 @@ static void
 mapped_file_message_finished (SoupMessage *message, GMappedFile *file)
 {
 	rb_debug ("finished sending mmapped file");
+#if GLIB_CHECK_VERSION (2,22,0)
+	g_mapped_file_unref (file);
+#else
 	g_mapped_file_free (file);
+#endif
 }
 
 static void
