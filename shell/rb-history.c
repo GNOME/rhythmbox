@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of Song History List
- *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
  *
  *  This program is free software; you can redistribute it and/or modify

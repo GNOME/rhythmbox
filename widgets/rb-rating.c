@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of rating renderer object
- *
  *  Copyright (C) 2002 Olivier Martin <olive.martin@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify

@@ -1,5 +1,3 @@
-## arch-tag: Automake rules for main help directory
-
 include $(top_srcdir)/gnome-doc-utils.make
 dist-hook: doc-dist-hook
 

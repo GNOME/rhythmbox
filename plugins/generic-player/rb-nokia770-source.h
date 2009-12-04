@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for Nokia 770 source object
- *
  *  Copyright (C) 2006 James Livingston  <doclivingston@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify

@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header file for Rhythmbox Audioscrobbler support
- *
  *  Copyright (C) 2005 Alex Revo <xiphoiadappendix@gmail.com>
  *					   Ruben Vermeersch <ruben@Lambda1.be>
  *

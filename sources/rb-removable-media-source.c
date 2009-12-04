@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of removable media source object (based of the ipod source)
- *
  *  Copyright (C) 2004 Christophe Fergeau  <teuf@gnome.org>
  *  Copyright (C) 2005 James Livingston  <doclivingston@gmail.com>
  *

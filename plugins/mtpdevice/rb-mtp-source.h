@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for mtp source object
- *
  *  Copyright (C) 2006 Peter Grundström  <pete@openfestis.org>
  *
  *  This program is free software; you can redistribute it and/or modify

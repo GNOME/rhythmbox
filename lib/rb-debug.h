@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for simple Rhythmbox debugging interface
- *
  *  Copyright (C) 2002 Jorn Baayen
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *

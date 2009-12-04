@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*- */
 /*
- * arch-tag: Interface to audio encoder backend
- *
  * Copyright (C) 2006 James Livingston <doclivingston@gmail.com>
  *
  * This program is free software; you can redistribute it and/or

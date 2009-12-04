@@ -1,5 +1,3 @@
-## arch-tag: Automake rules for backends library
-
 noinst_LTLIBRARIES = librbbackends.la
 
 SUBDIRS = gstreamer 

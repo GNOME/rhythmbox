@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Interface to audio backend
- *
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *

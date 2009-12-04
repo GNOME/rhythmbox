@@ -1,4 +1,3 @@
-## arch-tag: Automake rules for test programs
 ## Process this file with automake to produce Makefile.in
 
 TESTS = 

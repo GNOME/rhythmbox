@@ -1,5 +1,3 @@
-## arch-tag: Automake rules for Rhythmbox DBus interface
-
 bin_PROGRAMS = rhythmbox-client
 rhythmbox_client_SOURCES = rb-client.c
 rhythmbox_client_LDADD =				\

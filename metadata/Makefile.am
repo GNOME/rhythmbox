@@ -1,5 +1,3 @@
-## arch-tag: Automake rules for metadata library
-
 SUBDIRS =
 
 INCLUDES = 						\

@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for generic audio player source object
- *
  *  Copyright (C) 2005 James Livingston <doclivingston@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify

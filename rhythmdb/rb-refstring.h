@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for reference-counted string functions
- *
  *  Copyright (C) 2004 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify

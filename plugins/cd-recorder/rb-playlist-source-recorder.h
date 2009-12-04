@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*- */
 /*
- *  arch-tag: Header for playlist recorder object
- *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003,2004 Colin Walters <walters@redhat.com>
  *  Copyright (C) 2004 William Jon McCann <mccann@jhu.edu>

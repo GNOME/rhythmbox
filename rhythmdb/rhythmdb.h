@@ -1,6 +1,4 @@
- /*
- *  arch-tag: Header for RhythmDB - Rhythmbox backend queryable database
- *
+/*
  *  Copyright (C) 2003,2004 Colin Walters <walters@rhythmbox.org>
  *
  *  This program is free software; you can redistribute it and/or modify

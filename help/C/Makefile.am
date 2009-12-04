@@ -1,5 +1,3 @@
-## arch-tag: Automake rules for English help files
-
 figdir = figures
 docname = rhythmbox
 lang = C

@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of Internet Radio source object
- *
  *  Copyright (C) 2002,2003 Colin Walters <walters@debian.org>
  *
  *  This program is free software; you can redistribute it and/or modify

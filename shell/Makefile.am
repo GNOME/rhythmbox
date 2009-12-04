@@ -1,5 +1,3 @@
-## arch-tag: Automake rules for main Rhythmbox shell
-
 BUILT_SOURCES = 
 CLEANFILES =
 EXTRA_DIST =

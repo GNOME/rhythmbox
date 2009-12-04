@@ -1,8 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* rbcellrendererpixbuf.c
  *
- * arch-tag: Implementation of Rhythmbox pixbuf GtkTreeView cell renderer
- *
  * Copyright (C) 2000  Red Hat, Inc.,  Jonathan Blandford <jrb@redhat.com>
  * Copyright (C) 2002  Jorn Baayen <jorn@nl.linux.org>
  *

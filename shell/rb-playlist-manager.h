@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for Rhythmbox playlist management object
- *
  *  Copyright (C) 2003,2004 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify

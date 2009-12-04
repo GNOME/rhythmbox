@@ -1,5 +1,3 @@
-## arch-tag: Automake rules for podcast library
-
 noinst_LTLIBRARIES = librbpodcast.la librbpodcast_parse.la
 
 librbpodcast_parse_la_SOURCES = 			\

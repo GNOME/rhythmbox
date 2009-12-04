@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Headfile of rss parse of podcast
- *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho - INdT <renato.filho@indt.org.br>
  *
  *  This program is free software; you can redistribute it and/or modify

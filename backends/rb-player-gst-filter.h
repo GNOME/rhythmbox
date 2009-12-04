@@ -1,7 +1,4 @@
 /*
- *  arch-tag: Interface for audio backends capable of dynamic plugging of
- *            gstreamer filter elements
- *
  *  Copyright (C) 2006 James Livingston <doclivingston@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify

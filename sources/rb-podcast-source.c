@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of Internet Podcast source object
- *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho <renato.filho@indt.org.br>
  *
  *  This program is free software; you can redistribute it and/or modify

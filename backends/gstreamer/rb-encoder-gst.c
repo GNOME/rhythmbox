@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * arch-tag: Implementation of GStreamer encoding backend
- *
  * Based on Sound-Juicer's ripping code
  *
  * Copyright (C) 2003 Ross Burton <ross@burtonini.com>

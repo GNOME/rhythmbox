@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- *  arch-tag: Implementation of playlist source object
- *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
  *

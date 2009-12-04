@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of main Rhythmbox shell
- *
  *  Copyright (C) 2002, 2003 Jorn Baayen
  *  Copyright (C) 2003, 2004 Colin Walters <walters@gnome.org>
  *

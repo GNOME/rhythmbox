@@ -1,6 +1,4 @@
 /* 
- *  arch-tag: Simple test for the RBEntryView widget
- *
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify

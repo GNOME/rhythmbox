@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of last.fm station source object
- *
  *  Copyright (C) 2006 Matt Novenstern <fisxoj@gmail.com>
  *  Copyright (C) 2008 Jonathan Matthew <jonathan@d14n.org>
  *

@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for iPod source object
- *
  *  Copyright (C) 2004 Christophe Fergeau  <teuf@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify

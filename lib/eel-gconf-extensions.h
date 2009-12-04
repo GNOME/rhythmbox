@@ -1,7 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 
-/* arch-tag: Header file for stuff to make GConf easier to use.
-
+/*
    Copyright (C) 2000, 2001 Eazel, Inc.
 
    The Gnome Library is free software; you can redistribute it and/or

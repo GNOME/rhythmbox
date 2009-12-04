@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for widget to display RhythmDB entries
- *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *

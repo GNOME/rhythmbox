@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for object implementing main playback logic
- *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003,2004 Colin Walters <walters@verbum.org>
  *

@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of totally random functions that didn't fit elsewhere
- *
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify

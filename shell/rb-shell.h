@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for main Rhythmbox shell
- *
  *  Copyright (C) 2002 Jorn Baayen
  *  Copyright (C) 2004 Colin Walters <walters@redhat.com>
  *

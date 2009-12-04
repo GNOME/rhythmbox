@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of search entry/browse toggle container
- *
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003,2004 Colin Walters <walters@redhat.com>
  *

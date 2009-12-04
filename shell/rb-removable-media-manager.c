@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- *  arch-tag: Implementation of Rhythmbox removable media manager
- *
  *  Copyright (C) 2005 James Livingston  <doclivingston@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify

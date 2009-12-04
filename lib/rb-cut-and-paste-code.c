@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: File containing code cut and pasted from elsewhere
- *
  *  Copyright (C) 2000 Eazel, Inc.
  *  Copyright (C) 2002 Jorn Baayen
  *

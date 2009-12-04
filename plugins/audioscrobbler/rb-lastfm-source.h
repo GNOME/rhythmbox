@@ -1,6 +1,4 @@
 /* 
- *  arch-tag: Header for last.fm station source
- *
  *  Copyright (C) 2006 Matt Novenstern  <fisxoj@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify

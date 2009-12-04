@@ -1,5 +1,3 @@
-define(arch-tag)
-# arch-tag: Toplevel Autoconf configuration script
 AC_PREREQ(2.53)
 AC_INIT([rhythmbox],
 	[0.12.6],

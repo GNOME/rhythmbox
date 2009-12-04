@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header with definitions for Rhythmbox icon loading
- *
  *  Copyright (C) 2002 Jorn Baayen
  *  Copyright (C) 2004 Colin Walters <walters@verbum.org>
  *

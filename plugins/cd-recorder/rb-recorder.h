@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*- */
 /*
- * arch-tag: Interface to audio recorder backend  
- *
  * Copyright (C) 2004 William Jon McCann <mccann@jhu.edu>
  *
  * This program is free software; you can redistribute it and/or

@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for RhythmDB property GtkTreeModel impl.
- *
  *  Copyright (C) 2003 Colin Walters <walters@rhythmbox.org>
  *
  *  This program is free software; you can redistribute it and/or modify

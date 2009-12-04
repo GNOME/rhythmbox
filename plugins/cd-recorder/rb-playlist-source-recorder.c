@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of playlist source recorder object
- *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
  *  Copyright (C) 2004-2006 William Jon McCann <mccann@jhu.edu>

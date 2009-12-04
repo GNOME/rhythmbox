@@ -1,5 +1,3 @@
-## arch-tag: Automake rules for the toplevel source
-
 AUTOMAKE_OPTIONS = 1.7
 
 DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install --enable-gtk-doc --disable-scrollkeeper

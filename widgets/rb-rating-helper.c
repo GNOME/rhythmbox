@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of functions shared by the rating widget and cell renderer.
- *
  *  Copyright (C) 2004 Christophe Fergeau <teuf@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify

@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of Rhythmbox Audioscrobbler support
- *
  *  Copyright (C) 2005 Alex Revo <xiphoidappendix@gmail.com>,
  *		       Ruben Vermeersch <ruben@Lambda1.be>
  *            (C) 2007 Christophe Fergeau <teuf@gnome.org>

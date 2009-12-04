@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  arch-tag: Implementation of internet radio station properties dialog
- *
  *  Copyright (C) 2002 Colin Walters <walters@gnu.org>
  *
  *  This program is free software; you can redistribute it and/or modify

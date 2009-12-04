@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header with definitions of various GConf keys
- *
  *  Copyright (C) 2002 Jorn Baayen
  *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
  *

@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header file for Rhythmbox dialog wrapper functions
- *
  *  Copyright (C) 2002 Jorn Baayen
  *  Copyright (C) 2004 Colin Walters <walters@redhat.com>
  *

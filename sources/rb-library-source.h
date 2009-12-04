@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for local file source object
- *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *
  *  This program is free software; you can redistribute it and/or modify

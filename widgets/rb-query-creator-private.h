@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for RhythmDB query creation internals
- *
  *  Copyright (C) 2003, 2004 Colin Walters <walters@gnome.org>
  *  Copyright (C) 2005 James Livingston <walters@gnome.org>
  *

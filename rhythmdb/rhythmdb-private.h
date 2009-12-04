@@ -1,6 +1,4 @@
- /*
- *  arch-tag: Header for RhythmDB private bits
- *
+/*
  *  Copyright (C) 2004 Colin Walters <walters@rhythmbox.org>
  *
  *  This program is free software; you can redistribute it and/or modify

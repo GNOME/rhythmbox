@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Abstraction of libgpod Itdb_ItunesDB object
- *
  *  Copyright (C) 2007 Christophe Fergeau  <teuf@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify

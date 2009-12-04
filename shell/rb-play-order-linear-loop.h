@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for linear, looping navigation method
- *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
  *
  *  This program is free software; you can redistribute it and/or modify

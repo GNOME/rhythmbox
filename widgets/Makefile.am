@@ -1,5 +1,3 @@
-## arch-tag: Automake rules for Rhythmbox's collection of various widgets
-
 noinst_LTLIBRARIES = librbwidgets.la
 
 if WITH_INTERNAL_LIBSEXY

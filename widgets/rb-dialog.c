@@ -1,7 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- *  arch-tag: Implementation of Rhythmbox dialog wrapper functions
- *
  *  Copyright (C) 2002 Jorn Baayen
  *  Copyright (C) 2004 Colin Walters <walters@redhat.com>
  *
