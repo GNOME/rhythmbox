@@ -53,10 +53,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#if !GTK_CHECK_VERSION(2,14,0)
-#include <libgnome/gnome-help.h>
-#endif
-
 #include "rb-file-helpers.h"
 #include "rb-shell-preferences.h"
 #include "rb-source.h"
@@ -151,14 +147,10 @@ help_cb (GtkWidget *widget,
 {
 	GError *error = NULL;
 
-#if GTK_CHECK_VERSION(2,14,0)
 	gtk_show_uri (gtk_widget_get_screen (widget),
 		      "ghelp:rhythmbox?prefs",
 		      gtk_get_current_event_time (),
 		      &error);
-#else
-	gnome_help_display ("rhythmbox.xml", "prefs", &error);
-#endif
 
 	if (error != NULL) {
 		rb_error_dialog (NULL,

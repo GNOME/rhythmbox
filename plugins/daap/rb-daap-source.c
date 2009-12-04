@@ -39,10 +39,6 @@
 #include <gnome-keyring.h>
 #endif
 
-#if !GTK_CHECK_VERSION(2,14,0)
-#include <libgnomeui/gnome-password-dialog.h>
-#endif
-
 #include "rhythmdb.h"
 #include "rb-shell.h"
 #include "eel-gconf-extensions.h"
@@ -318,10 +314,6 @@ rb_daap_source_new (RBShell *shell,
 	return source;
 }
 
-#if GTK_CHECK_VERSION(2,14,0)
-
-/* use GtkMountOperation if available */
-
 static void
 mount_op_reply_cb (GMountOperation *op,
 		   GMountOperationResult result,
@@ -398,68 +390,6 @@ ask_password (RBDAAPSource *source, const char *name, const char *keyring)
 
 	return password;
 }
-
-#else
-
-static char *
-ask_password (RBDAAPSource *source, const char *name, const char *keyring)
-{
-	GtkWindow *parent;
-	GnomePasswordDialog *dialog;
-	char *message;
-	char *password;
-
-	parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source)));
-
-	message = g_strdup_printf (_("The music share '%s' requires a password to connect"), name);
-	dialog = GNOME_PASSWORD_DIALOG (gnome_password_dialog_new (
-				_("Password Required"), message,
-				NULL, NULL, TRUE));
-	gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
-	g_free (message);
-
-	gnome_password_dialog_set_domain (dialog, "DAAP");
-	gnome_password_dialog_set_show_username (dialog, FALSE);
-	gnome_password_dialog_set_show_domain (dialog, FALSE);
-	gnome_password_dialog_set_show_userpass_buttons (dialog, FALSE);
-#ifdef WITH_GNOME_KEYRING
-	gnome_password_dialog_set_show_remember (dialog, gnome_keyring_is_available ());
-#endif
-
-	if (gnome_password_dialog_run_and_block (dialog)) {
-		password = gnome_password_dialog_get_password (dialog);
-
-#ifdef WITH_GNOME_KEYRING
-		switch (gnome_password_dialog_get_remember (dialog)) {
-		case GNOME_PASSWORD_DIALOG_REMEMBER_SESSION:
-			keyring = "session";
-			/* fall through */
-		case GNOME_PASSWORD_DIALOG_REMEMBER_FOREVER:
-		{
-			guint32 item_id;
-			gnome_keyring_set_network_password_sync (keyring,
-				NULL,
-				"DAAP", name,
-				NULL, "daap",
-				NULL, 0,
-				password,
-				&item_id);
-			break;
-		}
-		default:
-			break;
-		}
-#endif
-	} else {
-		password = NULL;
-	}
-
-	/* buggered if I know why we don't do this...
-	g_object_unref (G_OBJECT (dialog)); */
-	return password;
-}
-
-#endif
 
 static char *
 connection_auth_cb (RBDAAPConnection *connection,

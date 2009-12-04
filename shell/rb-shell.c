@@ -43,10 +43,6 @@
 #include <X11/XF86keysym.h>
 #endif /* HAVE_MMKEYS */
 
-#if !GTK_CHECK_VERSION(2,14,0)
-#include <libgnome/libgnome.h>
-#endif
-
 #include "rb-shell.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -954,12 +950,7 @@ rb_shell_new (gboolean no_registration,
 static GMountOperation *
 rb_shell_create_mount_op_cb (RhythmDB *db, RBShell *shell)
 {
-	/* create a gtk mount operation if possible, otherwise don't use one at all */
-#if GTK_CHECK_VERSION(2,14,0)
 	return gtk_mount_operation_new (GTK_WINDOW (shell->priv->window));
-#else
-	return NULL;
-#endif
 }
 
 static void
@@ -2173,14 +2164,10 @@ rb_shell_cmd_contents (GtkAction *action,
 {
 	GError *error = NULL;
 
-#if GTK_CHECK_VERSION(2,14,0)
 	gtk_show_uri (gtk_widget_get_screen (shell->priv->window),
 		      "ghelp:rhythmbox",
 		      gtk_get_current_event_time (),
 		      &error);
-#else
-	gnome_help_display ("rhythmbox.xml", NULL, &error);
-#endif
 
 	if (error != NULL) {
 		rb_error_dialog (NULL, _("Couldn't display help"),
