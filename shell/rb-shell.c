@@ -2329,6 +2329,7 @@ static gboolean
 quit_timeout (gpointer dummy)
 {
 	GDK_THREADS_ENTER ();
+	rb_debug ("quit damn you");
 	gtk_main_quit ();
 	GDK_THREADS_LEAVE ();
 	return FALSE;

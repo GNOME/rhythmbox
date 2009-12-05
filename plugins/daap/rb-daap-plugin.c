@@ -103,7 +103,7 @@ static void impl_activate (RBPlugin *plugin, RBShell *shell);
 static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
 static GtkWidget* impl_create_configure_dialog (RBPlugin *plugin);
-static void rb_daap_plugin_cmd_disconnect (GtkAction *action, RBDaapPlugin *plugin);
+static void rb_daap_plugin_cmd_disconnect (GtkAction *action, RBSource *source);
 static void rb_daap_plugin_cmd_connect (GtkAction *action, RBDaapPlugin *plugin);
 
 static void create_pixbufs (RBDaapPlugin *plugin);
@@ -120,14 +120,18 @@ gboolean rb_daap_remove_source (RBDaapPlugin *plugin, gchar *service_name, GErro
 
 RB_PLUGIN_REGISTER(RBDaapPlugin, rb_daap_plugin)
 
-static GtkActionEntry rb_daap_source_actions [] =
+static GtkActionEntry rb_daap_plugin_actions [] =
+{
+	{ "MusicNewDAAPShare", GTK_STOCK_CONNECT, N_("Connect to _DAAP share..."), NULL,
+	  N_("Connect to a new DAAP share"),
+	  G_CALLBACK (rb_daap_plugin_cmd_connect) },
+};
+
+static GtkActionEntry rb_daap_source_actions[] =
 {
 	{ "DaapSourceDisconnect", GTK_STOCK_DISCONNECT, N_("_Disconnect"), NULL,
 	  N_("Disconnect from DAAP share"),
 	  G_CALLBACK (rb_daap_plugin_cmd_disconnect) },
-	{ "MusicNewDAAPShare", GTK_STOCK_CONNECT, N_("Connect to _DAAP share..."), NULL,
-	  N_("Connect to a new DAAP share"),
-	  G_CALLBACK (rb_daap_plugin_cmd_connect) },
 };
 
 static void
@@ -246,8 +250,12 @@ impl_activate (RBPlugin *bplugin,
 	gtk_action_group_set_translation_domain (plugin->priv->daap_action_group,
 						 GETTEXT_PACKAGE);
 	gtk_action_group_add_actions (plugin->priv->daap_action_group,
-				      rb_daap_source_actions, G_N_ELEMENTS (rb_daap_source_actions),
+				      rb_daap_plugin_actions, G_N_ELEMENTS (rb_daap_plugin_actions),
 				      plugin);
+	_rb_action_group_add_source_actions (plugin->priv->daap_action_group,
+					     G_OBJECT (shell),
+					     rb_daap_source_actions,
+					     G_N_ELEMENTS (rb_daap_source_actions));
 	gtk_ui_manager_insert_action_group (uimanager, plugin->priv->daap_action_group, 0);
 
 	/* add UI */
@@ -601,25 +609,14 @@ enable_browsing_changed_cb (GConfClient *client,
 /* daap share connect/disconnect commands */
 
 static void
-rb_daap_plugin_cmd_disconnect (GtkAction *action,
-			       RBDaapPlugin *plugin)
+rb_daap_plugin_cmd_disconnect (GtkAction *action, RBSource *source)
 {
-	RBSource *source;
-
-	g_object_get (plugin->priv->shell,
-		      "selected-source", &source,
-		      NULL);
-
 	if (!RB_IS_DAAP_SOURCE (source)) {
-		g_critical ("got non-Daap source for Daap action");
+		g_warning ("got non-Daap source for Daap action");
 		return;
 	}
 
 	rb_daap_source_disconnect (RB_DAAP_SOURCE (source));
-
-	if (source != NULL) {
-		g_object_unref (source);
-	}
 }
 
 static void

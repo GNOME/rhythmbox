@@ -85,10 +85,8 @@ static void rb_generic_player_plugin_finalize (GObject *object);
 static void impl_activate (RBPlugin *plugin, RBShell *shell);
 static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
-static void rb_generic_player_plugin_new_playlist (GtkAction *action,
-						   RBGenericPlayerPlugin *plugin);
-static void rb_generic_player_plugin_delete_playlist (GtkAction *action,
-						      RBGenericPlayerPlugin *plugin);
+static void rb_generic_player_plugin_new_playlist (GtkAction *action, RBSource *source);
+static void rb_generic_player_plugin_delete_playlist (GtkAction *action, RBSource *source);
 
 RB_PLUGIN_REGISTER(RBGenericPlayerPlugin, rb_generic_player_plugin)
 
@@ -142,53 +140,40 @@ rb_generic_player_plugin_source_deleted (RBGenericPlayerSource *source, RBGeneri
 }
 
 static void
-rb_generic_player_plugin_new_playlist (GtkAction *action, RBGenericPlayerPlugin *plugin)
+rb_generic_player_plugin_new_playlist (GtkAction *action, RBSource *source)
 {
-	RBSource *source;
+	RBShell *shell;
 	RBSourceList *sourcelist;
+	RBSource *playlist;
+	RhythmDBEntryType entry_type;
 
-	g_object_get (plugin->shell,
-		      "selected-source", &source,
-		      "sourcelist", &sourcelist,
+	g_return_if_fail (RB_IS_GENERIC_PLAYER_SOURCE (source));
+	g_object_get (source,
+		      "shell", &shell,
+		      "entry-type", &entry_type,
 		      NULL);
-	if (source != NULL && RB_IS_GENERIC_PLAYER_SOURCE (source)) {
-		RBSource *playlist;
-		RhythmDBEntryType entry_type;
 
-		g_object_get (source, "entry-type", &entry_type, NULL);
+	playlist = rb_generic_player_playlist_source_new (shell, RB_GENERIC_PLAYER_SOURCE (source), NULL, NULL, entry_type);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
-		playlist = rb_generic_player_playlist_source_new (plugin->shell, RB_GENERIC_PLAYER_SOURCE (source), NULL, NULL, entry_type);
-		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	rb_generic_player_source_add_playlist (RB_GENERIC_PLAYER_SOURCE (source),
+					       shell,
+					       playlist);
 
-		rb_generic_player_source_add_playlist (RB_GENERIC_PLAYER_SOURCE (source),
-						       plugin->shell,
-						       playlist);
-
-		rb_sourcelist_edit_source_name (sourcelist, playlist);
-	}
-
-	if (source != NULL) {
-		g_object_unref (source);
-	}
+	g_object_get (shell, "sourcelist", &sourcelist, NULL);
+	rb_sourcelist_edit_source_name (sourcelist, playlist);
 	g_object_unref (sourcelist);
+
+	g_object_unref (shell);
 }
 
 static void
-rb_generic_player_plugin_delete_playlist (GtkAction *actino, RBGenericPlayerPlugin *plugin)
+rb_generic_player_plugin_delete_playlist (GtkAction *action, RBSource *source)
 {
-	RBSource *source;
-	
-	g_object_get (plugin->shell,
-		      "selected-source", &source,
-		      NULL);
-	if (source != NULL && RB_IS_GENERIC_PLAYER_PLAYLIST_SOURCE (source)) {
-		if (RB_IS_GENERIC_PLAYER_PLAYLIST_SOURCE (source)) {
-			rb_generic_player_playlist_delete_from_player (RB_GENERIC_PLAYER_PLAYLIST_SOURCE (source));
-			rb_source_delete_thyself (source);
-		}
+	g_return_if_fail (RB_IS_GENERIC_PLAYER_PLAYLIST_SOURCE (source));
 
-		g_object_unref (source);
-	}
+	rb_generic_player_playlist_delete_from_player (RB_GENERIC_PLAYER_PLAYLIST_SOURCE (source));
+	rb_source_delete_thyself (source);
 }
 
 static RBSource *
@@ -206,10 +191,11 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 	if (plugin->actions == NULL) {
 		plugin->actions = gtk_action_group_new ("GenericPlayerActions");
 		gtk_action_group_set_translation_domain (plugin->actions, GETTEXT_PACKAGE);
-		gtk_action_group_add_actions (plugin->actions,
-					      rb_generic_player_plugin_actions,
-					      G_N_ELEMENTS (rb_generic_player_plugin_actions),
-					      plugin);
+
+		_rb_action_group_add_source_actions (plugin->actions,
+						     G_OBJECT (plugin->shell),
+						     rb_generic_player_plugin_actions,
+						     G_N_ELEMENTS (rb_generic_player_plugin_actions));
 	}
 
 	if (source) {

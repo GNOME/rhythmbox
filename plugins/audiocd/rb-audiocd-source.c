@@ -77,7 +77,7 @@ static void impl_pack_paned (RBBrowserSource *source, GtkWidget *paned);
 
 #ifdef HAVE_SJ_METADATA_GETTER
 static void rb_audiocd_source_cmd_reload_metadata (GtkAction *action,
-						   RBAudioCdSource *source);
+						   RBSource *source);
 #endif
 
 static gpointer rb_audiocd_load_songs (RBAudioCdSource *source);
@@ -220,11 +220,6 @@ rb_audiocd_source_dispose (GObject *object)
 
 #ifdef HAVE_SJ_METADATA_GETTER
 	if (priv->action_group != NULL) {
-		GtkUIManager *uimanager;
-		g_object_get (object, "ui-manager", &uimanager, NULL);
-		gtk_ui_manager_remove_action_group (uimanager, priv->action_group);
-		g_object_unref (uimanager);
-
 		g_object_unref (priv->action_group);
 		priv->action_group = NULL;
 	}
@@ -255,11 +250,19 @@ rb_audiocd_source_constructed (GObject *object)
 	g_object_set (G_OBJECT (source), "name", "Unknown Audio", NULL);
 
 #ifdef HAVE_SJ_METADATA_GETTER
-	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
-							       "AudiocdActions",
-							       rb_audiocd_source_actions,
-							       G_N_ELEMENTS (rb_audiocd_source_actions),
-							       source);
+	{
+		RBShell *shell;
+		g_object_get (source, "shell", &shell, NULL);
+		priv->action_group =
+			_rb_source_register_action_group (RB_SOURCE (source),
+							  "AudiocdActions",
+							  NULL, 0, NULL);
+		_rb_action_group_add_source_actions (priv->action_group,
+						     G_OBJECT (shell),
+						     rb_audiocd_source_actions,
+						     G_N_ELEMENTS (rb_audiocd_source_actions));
+		g_object_unref (shell);
+	}
 #endif
 	/* we want audio cds to sort by track# by default */
 	entry_view = rb_source_get_entry_view (RB_SOURCE (source));
@@ -580,12 +583,14 @@ rb_audiocd_scan_songs (RBAudioCdSource *source,
 
 #ifdef HAVE_SJ_METADATA_GETTER
 static void
-rb_audiocd_source_cmd_reload_metadata (GtkAction *action, RBAudioCdSource *source)
+rb_audiocd_source_cmd_reload_metadata (GtkAction *action, RBSource *source)
 {
 	RhythmDB *db;
 
-	db = get_db_for_source (source);
-	rb_audiocd_load_metadata (source, db);
+	g_return_if_fail (RB_IS_AUDIOCD_SOURCE (source));
+
+	db = get_db_for_source (RB_AUDIOCD_SOURCE (source));
+	rb_audiocd_load_metadata (RB_AUDIOCD_SOURCE (source), db);
 	g_object_unref (db);
 }
 

@@ -77,12 +77,9 @@ static void rb_browser_source_get_property (GObject *object,
 			                  guint prop_id,
 			                  GValue *value,
 			                  GParamSpec *pspec);
-static void rb_browser_source_cmd_choose_genre (GtkAction *action,
-						RBShell *shell);
-static void rb_browser_source_cmd_choose_artist (GtkAction *action,
-						 RBShell *shell);
-static void rb_browser_source_cmd_choose_album (GtkAction *action,
-						RBShell *shell);
+static void rb_browser_source_cmd_choose_genre (GtkAction *action, RBSource *source);
+static void rb_browser_source_cmd_choose_artist (GtkAction *action, RBSource *source);
+static void rb_browser_source_cmd_choose_album (GtkAction *action, RBSource *source);
 static void songs_view_sort_order_changed_cb (RBEntryView *view, RBBrowserSource *source);
 static void rb_browser_source_browser_changed_cb (RBLibraryBrowser *entry,
 						  GParamSpec *param,
@@ -361,9 +358,11 @@ rb_browser_source_constructed (GObject *object)
 
 	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 								       "BrowserSourceActions",
-								       rb_browser_source_actions,
-								       G_N_ELEMENTS (rb_browser_source_actions),
-								       shell);
+								       NULL, 0, NULL);
+	_rb_action_group_add_source_actions (source->priv->action_group,
+					     G_OBJECT (shell),
+					     rb_browser_source_actions,
+					     G_N_ELEMENTS (rb_browser_source_actions));
 
 	/* only add the actions if we haven't already */
 	if (gtk_action_group_get_action (source->priv->action_group,
@@ -573,65 +572,49 @@ rb_browser_source_populate (RBBrowserSource *source)
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 }
 
-
 static void
-rb_browser_source_cmd_choose_genre (GtkAction *action,
-				    RBShell *shell)
+browse_property (RBBrowserSource *source, RhythmDBPropType prop)
 {
 	GList *props;
-	RBBrowserSource *source;
 	RBPropertyView *view;
 
+	props = rb_source_gather_selected_properties (RB_SOURCE (source), prop);
+	view = rb_library_browser_get_property_view (source->priv->browser, prop);
+	if (view) {
+		rb_property_view_set_selection (view, props);
+	}
+
+	rb_list_deep_free (props);
+}
+
+static void
+rb_browser_source_cmd_choose_genre (GtkAction *action, RBSource *source)
+{
 	rb_debug ("choosing genre");
 
-	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
-	props = rb_source_gather_selected_properties (RB_SOURCE (source), RHYTHMDB_PROP_GENRE);
-	view = rb_library_browser_get_property_view (source->priv->browser, RHYTHMDB_PROP_GENRE);
-	if (view)
-		rb_property_view_set_selection (view, props);
-
-	rb_list_deep_free (props);
-	g_object_unref (source);
+	if (RB_IS_BROWSER_SOURCE (source)) {
+		browse_property (RB_BROWSER_SOURCE (source), RHYTHMDB_PROP_GENRE);
+	}
 }
 
 static void
-rb_browser_source_cmd_choose_artist (GtkAction *action,
-				     RBShell *shell)
+rb_browser_source_cmd_choose_artist (GtkAction *action, RBSource *source)
 {
-	GList *props;
-	RBBrowserSource *source;
-	RBPropertyView *view;
-
 	rb_debug ("choosing artist");
 
-	g_object_get (shell, "selected-source", &source, NULL);
-	props = rb_source_gather_selected_properties (RB_SOURCE (source), RHYTHMDB_PROP_ARTIST);
-	view = rb_library_browser_get_property_view (source->priv->browser, RHYTHMDB_PROP_ARTIST);
-	if (view)
-		rb_property_view_set_selection (view, props);
-
-	rb_list_deep_free (props);
-	g_object_unref (source);
+	if (RB_IS_BROWSER_SOURCE (source)) {
+		browse_property (RB_BROWSER_SOURCE (source), RHYTHMDB_PROP_ARTIST);
+	}
 }
 
 static void
-rb_browser_source_cmd_choose_album (GtkAction *action,
-				    RBShell *shell)
+rb_browser_source_cmd_choose_album (GtkAction *action, RBSource *source)
 {
-	GList *props;
-	RBBrowserSource *source;
-	RBPropertyView *view;
-
 	rb_debug ("choosing album");
 
-	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
-	props = rb_source_gather_selected_properties (RB_SOURCE (source), RHYTHMDB_PROP_ALBUM);
-	view = rb_library_browser_get_property_view (source->priv->browser, RHYTHMDB_PROP_ALBUM);
-	if (view)
-		rb_property_view_set_selection (view, props);
-
-	rb_list_deep_free (props);
-	g_object_unref (source);
+	if (RB_IS_BROWSER_SOURCE (source)) {
+		browse_property (RB_BROWSER_SOURCE (source), RHYTHMDB_PROP_ALBUM);
+	}
 }
 
 static void

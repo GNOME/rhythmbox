@@ -51,6 +51,12 @@ typedef enum {
 	RB_SOURCE_SEARCH_EXPLICIT,
 } RBSourceSearchType;
 
+typedef struct _RBSource	RBSource;
+typedef struct _RBSourceClass	RBSourceClass;
+typedef struct _RBSourcePrivate	RBSourcePrivate;
+
+typedef void (*RBSourceActionCallback) (GtkAction *action, RBSource *source);
+
 GType rb_source_eof_type_get_type (void);
 #define RB_TYPE_SOURCE_EOF_TYPE	(rb_source_eof_type_get_type())
 
@@ -65,10 +71,6 @@ GType rb_source_search_type_get_type (void);
 #define RB_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SOURCE, RBSourceClass))
 
 #define RB_SOURCE_ICON_SIZE	GTK_ICON_SIZE_LARGE_TOOLBAR
-
-typedef struct _RBSource	RBSource;
-typedef struct _RBSourceClass	RBSourceClass;
-typedef struct _RBSourcePrivate	RBSourcePrivate;
 
 typedef gboolean (*RBSourceFeatureFunc) (RBSource *source);
 typedef const char * (*RBSourceStringFunc) (RBSource *source);
@@ -221,6 +223,11 @@ GtkActionGroup *_rb_source_register_action_group (RBSource *source,
 						  GtkActionEntry *actions,
 						  int num_actions,
 						  gpointer user_data);
+void		_rb_action_group_add_source_actions (GtkActionGroup *group,
+						     GObject *shell,
+						     GtkActionEntry *actions,
+						     int num_actions);
+
 gboolean	_rb_source_check_entry_type	(RBSource *source,
 						 RhythmDBEntry *entry);
 

@@ -108,8 +108,8 @@ static void rb_mtp_plugin_device_added (LibHalContext *context, const char *udi)
 static void rb_mtp_plugin_device_removed (LibHalContext *context, const char *udi);
 static gboolean rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin);
 #endif
-static void rb_mtp_plugin_eject  (GtkAction *action, RBMtpPlugin *plugin);
-static void rb_mtp_plugin_rename (GtkAction *action, RBMtpPlugin *plugin);
+static void rb_mtp_plugin_eject  (GtkAction *action, RBSource *source);
+static void rb_mtp_plugin_rename (GtkAction *action, RBSource *source);
 
 GType rb_mtp_src_get_type (void);
 GType rb_mtp_sink_get_type (void);
@@ -185,9 +185,10 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 	plugin->action_group = gtk_action_group_new ("MTPActions");
 	gtk_action_group_set_translation_domain (plugin->action_group,
 						 GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (plugin->action_group,
-				      rb_mtp_plugin_actions, G_N_ELEMENTS (rb_mtp_plugin_actions),
-				      plugin);
+	_rb_action_group_add_source_actions (plugin->action_group,
+					     G_OBJECT (plugin->shell),
+					     rb_mtp_plugin_actions,
+					     G_N_ELEMENTS (rb_mtp_plugin_actions));
 	gtk_ui_manager_insert_action_group (uimanager, plugin->action_group, 0);
 	file = rb_plugin_find_file (bplugin, "mtp-ui.xml");
 	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, file, NULL);
@@ -282,51 +283,27 @@ impl_deactivate (RBPlugin *bplugin, RBShell *shell)
 }
 
 static void
-rb_mtp_plugin_eject (GtkAction *action, RBMtpPlugin *plugin)
+rb_mtp_plugin_eject (GtkAction *action, RBSource *source)
 {
-	RBSourceList *sourcelist = NULL;
-	RBSource *source = NULL;
-
-	g_object_get (G_OBJECT (plugin->shell),
-		      "selected-source", &source,
-		      NULL);
-	if ((source == NULL) || !RB_IS_MTP_SOURCE (source)) {
-		g_warning ("got MTPSourceEject action for non-mtp source");
-		if (source != NULL)
-			g_object_unref (source);
-		return;
-	}
-
-	g_object_get (plugin->shell, "sourcelist", &sourcelist, NULL);
-
+	g_return_if_fail (RB_IS_MTP_SOURCE (source));
 	rb_source_delete_thyself (source);
-
-	g_object_unref (sourcelist);
-	g_object_unref (source);
 }
 
 static void
-rb_mtp_plugin_rename (GtkAction *action, RBMtpPlugin *plugin)
+rb_mtp_plugin_rename (GtkAction *action, RBSource *source)
 {
-	RBSourceList *sourcelist = NULL;
-	RBSource *source = NULL;
+	RBShell *shell;
+	RBSourceList *sourcelist;
 
-	g_object_get (G_OBJECT (plugin->shell),
-		      "selected-source", &source,
-		      NULL);
-	if ((source == NULL) || !RB_IS_MTP_SOURCE (source)) {
-		g_warning ("got MTPSourceEject action for non-mtp source");
-		if (source != NULL)
-			g_object_unref (source);
-		return;
-	}
+	g_return_if_fail (RB_IS_MTP_SOURCE (source));
 
-	g_object_get (plugin->shell, "sourcelist", &sourcelist, NULL);
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "sourcelist", &sourcelist, NULL);
 
 	rb_sourcelist_edit_source_name (sourcelist, source);
 
 	g_object_unref (sourcelist);
-	g_object_unref (source);
+	g_object_unref (shell);
 }
 
 

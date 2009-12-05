@@ -1656,6 +1656,26 @@ rb_source_gather_selected_properties (RBSource *source,
 	return tem;
 }
 
+static GtkActionGroup *
+find_action_group (GtkUIManager *uimanager, const char *group_name)
+{
+	GList *actiongroups;
+	GList *i;
+	actiongroups = gtk_ui_manager_get_action_groups (uimanager);
+
+	/* Don't create the action group if it's already registered */
+	for (i = actiongroups; i != NULL; i = i->next) {
+		const char *name;
+
+		name = gtk_action_group_get_name (GTK_ACTION_GROUP (i->data));
+		if (name != NULL && strcmp (name, group_name) == 0) {
+			return GTK_ACTION_GROUP (i->data);
+		}
+	}
+
+	return NULL;
+}
+
 /**
  * _rb_source_register_action_group:
  * @source: a #RBSource
@@ -1676,40 +1696,121 @@ _rb_source_register_action_group (RBSource *source,
 				  gpointer user_data)
 {
 	GtkUIManager *uimanager;
-	GList *actiongroups;
-	GList *i;
 	GtkActionGroup *group;
 
 	g_return_val_if_fail (group_name != NULL, NULL);
 
 	g_object_get (source, "ui-manager", &uimanager, NULL);
-	actiongroups = gtk_ui_manager_get_action_groups (uimanager);
-
-	/* Don't create the action group if it's already registered */
-	for (i = actiongroups; i != NULL; i = i->next) {
-		const char *name;
-
-		name = gtk_action_group_get_name (GTK_ACTION_GROUP (i->data));
-		if (name != NULL && strcmp (name, group_name) == 0) {
-			group = GTK_ACTION_GROUP (i->data);
-			/* Add a reference */
-			g_object_ref (group);
-			goto out;
+	group = find_action_group (uimanager, group_name);
+	if (group == NULL) {
+		group = gtk_action_group_new (group_name);
+		gtk_action_group_set_translation_domain (group,
+							 GETTEXT_PACKAGE);
+		if (actions != NULL) {
+			gtk_action_group_add_actions (group,
+						      actions, num_actions,
+						      user_data);
 		}
+		gtk_ui_manager_insert_action_group (uimanager, group, 0);
+	} else {
+		g_object_ref (group);
 	}
-
-	group = gtk_action_group_new (group_name);
-	gtk_action_group_set_translation_domain (group,
-						 GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (group,
-				      actions, num_actions,
-				      user_data);
-	gtk_ui_manager_insert_action_group (uimanager, group, 0);
-
- out:
 	g_object_unref (uimanager);
 
 	return group;
+}
+
+typedef void (*SourceActionCallback) (GtkAction *action, RBSource *source);
+
+typedef struct {
+	SourceActionCallback callback;
+	/*RBShell *shell;*/
+	gpointer shell;
+} SourceActionData;
+
+static void
+source_action_data_destroy (SourceActionData *data)
+{
+	if (data->shell != NULL) {
+		g_object_remove_weak_pointer (G_OBJECT (data->shell), &data->shell);
+	}
+	g_slice_free (SourceActionData, data);
+}
+
+static void
+source_action_cb (GtkAction *action, SourceActionData *data)
+{
+	RBSource *source;
+
+	if (data->shell == NULL) {
+		return;
+	}
+
+	/* get current source */
+	g_object_get (G_OBJECT (data->shell), "selected-source", &source, NULL);
+	if (source != NULL) {
+		data->callback (action, source);
+		g_object_unref (source);
+	}
+}
+
+/**
+ * _rb_action_group_add_source_actions:
+ * @group: a #GtkActionGroup
+ * @shell: the #RBShell
+ * @actions: array of GtkActionEntry structures for the action group
+ * @num_actions: number of actions in the @actions array
+ *
+ * Adds actions to an action group where the action callback is
+ * called with the current selected source.  This can safely be called
+ * multiple times on the same action group.
+ */
+void
+_rb_action_group_add_source_actions (GtkActionGroup *group,
+				     GObject *shell,
+				     GtkActionEntry *actions,
+				     int num_actions)
+{
+	int i;
+	for (i = 0; i < num_actions; i++) {
+		GtkAction *action;
+		const char *label;
+		const char *tooltip;
+		SourceActionData *source_action_data;
+
+		if (gtk_action_group_get_action (group, actions[i].name) != NULL) {
+			/* action was already added */
+			continue;
+		}
+
+		label = gtk_action_group_translate_string (group, actions[i].label);
+		tooltip = gtk_action_group_translate_string (group, actions[i].tooltip);
+
+		action = gtk_action_new (actions[i].name, label, tooltip, NULL);
+		if (actions[i].stock_id != NULL) {
+			g_object_set (action, "stock-id", actions[i].stock_id, NULL);
+			if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (),
+						     actions[i].stock_id)) {
+				g_object_set (action, "icon-name", actions[i].stock_id, NULL);
+			}
+		}
+
+		if (actions[i].callback) {
+			GClosure *closure;
+			source_action_data = g_slice_new0 (SourceActionData);
+			source_action_data->callback = (SourceActionCallback) actions[i].callback;
+			source_action_data->shell = shell;
+			g_object_add_weak_pointer (shell, &source_action_data->shell);
+
+			closure = g_cclosure_new (G_CALLBACK (source_action_cb),
+						  source_action_data,
+						  (GClosureNotify) source_action_data_destroy);
+			g_signal_connect_closure (action, "activate", closure, FALSE);
+		}
+
+		gtk_action_group_add_action_with_accel (group, action, actions[i].accelerator);
+		g_object_unref (action);
+	}
 }
 
 /**
