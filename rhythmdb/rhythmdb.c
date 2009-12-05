@@ -2377,8 +2377,10 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 		g_value_unset (&value);
 	}
 
-	if ((event->entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) && (entry->type != event->entry_type))
+	if ((event->entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) && (entry->type != event->entry_type)) {
 		g_warning ("attempt to use same location in multiple entry types");
+		return TRUE;
+	}
 
 	/* mtime */
 	if (event->file_info) {
