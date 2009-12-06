@@ -324,6 +324,18 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 	g_type_class_add_private (klass, sizeof (RBRemovableMediaManagerPrivate));
 }
 
+static guint
+uint64_hash (gconstpointer v)
+{
+	return (guint) *(const guint64*)v;
+}
+
+static gboolean
+uint64_equal (gconstpointer a, gconstpointer b)
+{
+	return *((const guint64*)a) == *((const guint64*) b);
+}
+
 static void
 rb_removable_media_manager_init (RBRemovableMediaManager *mgr)
 {
@@ -331,7 +343,7 @@ rb_removable_media_manager_init (RBRemovableMediaManager *mgr)
 
 	priv->volume_mapping = g_hash_table_new (NULL, NULL);
 	priv->mount_mapping = g_hash_table_new (NULL, NULL);
-	priv->device_mapping = g_hash_table_new (g_direct_hash, g_direct_equal);
+	priv->device_mapping = g_hash_table_new_full (uint64_hash, uint64_equal, g_free, NULL);
 	priv->transfer_queue = g_async_queue_new ();
 
 	/*
@@ -560,34 +572,37 @@ mount_removed_cb (GVolumeMonitor *monitor,
 }
 
 #if defined(HAVE_GUDEV)
+
 static void
 uevent_cb (GUdevClient *client, const char *action, GUdevDevice *device, RBRemovableMediaManager *mgr)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-	GUdevDeviceNumber devnum;
-	devnum = g_udev_device_get_device_number (device);
+	guint64 devnum;
+	devnum = (guint64) g_udev_device_get_device_number (device);
 	rb_debug ("%s event for %s (%"G_GINT64_MODIFIER"x)", action,
-                  g_udev_device_get_sysfs_path (device), (guint64)devnum);
+                  g_udev_device_get_sysfs_path (device), devnum);
 
 	if (g_str_equal (action, "add")) {
 		RBSource *source = NULL;
 
 		/* probably need to filter out devices related to things we've already seen.. */
-		if (g_hash_table_lookup (priv->device_mapping, GINT_TO_POINTER (devnum)) != NULL) {
+		if (g_hash_table_lookup (priv->device_mapping, &devnum) != NULL) {
 			rb_debug ("already have a source for this device");
 			return;
 		}
 
 		g_signal_emit (mgr, rb_removable_media_manager_signals[CREATE_SOURCE_DEVICE], 0, device, &source);
 		if (source != NULL) {
+			guint64 *key = g_new0 (guint64, 1);
 			rb_debug ("created a source for this device");
-			g_hash_table_insert (priv->device_mapping, GINT_TO_POINTER (devnum), source);
+			key[0] = devnum;
+			g_hash_table_insert (priv->device_mapping, key, source);
 			rb_removable_media_manager_append_media_source (mgr, source);
 		}
 	} else if (g_str_equal (action, "remove")) {
 		RBSource *source;
 
-		source = g_hash_table_lookup (priv->device_mapping, GINT_TO_POINTER (devnum));
+		source = g_hash_table_lookup (priv->device_mapping, &devnum);
 		if (source) {
 			rb_debug ("removing the source created for this device");
 			rb_source_delete_thyself (source);
