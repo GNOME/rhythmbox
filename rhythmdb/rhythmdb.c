@@ -2415,7 +2415,7 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 	if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY) && event->entry_type == RHYTHMDB_ENTRY_TYPE_SONG)
 		rhythmdb_monitor_uri_path (event->db, rb_refstring_get (entry->location), NULL);
 
-	rhythmdb_add_timeout_commit (event->db, FALSE);
+	rhythmdb_commit (event->db);
 
 	return TRUE;
 }
