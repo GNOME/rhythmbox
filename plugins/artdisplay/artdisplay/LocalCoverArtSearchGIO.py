@@ -137,7 +137,7 @@ class LocalCoverArtSearch:
 
 
 
-	def _pixbuf_save (self, pixbuf, uri):
+	def _pixbuf_save (self, pixbuf, file):
 		def pixbuf_cb(buf, stream):
 			# can't be bothered doing this asynchronously..
 			stream.write(buf)
@@ -150,8 +150,7 @@ class LocalCoverArtSearch:
 			except Exception,e :
 				print "error creating %s: %s" % (file.get_uri(), e)
 
-		f = gio.File(uri)
-		f.replace_async(replace_cb, user_data=pixbuf)
+		file.replace_async(replace_cb, user_data=pixbuf()
 
 	def _save_dir_cb (self, enum, result, (db, entry, dir, pixbuf)):
 		artist, album = [db.entry_get (entry, x) for x in [rhythmdb.PROP_ARTIST, rhythmdb.PROP_ALBUM]]
@@ -160,7 +159,7 @@ class LocalCoverArtSearch:
 			if len(files) == 0:
 				art_file = dir.resolve_relative_path(ART_SAVE_NAME)
 				print "saving local art to \"%s\"" % art_file.get_uri()
-				self._pixbuf_save (pixbuf, art_file.get_uri ())
+				self._pixbuf_save (pixbuf, art_file)
 				enum.close()
 				return
 
