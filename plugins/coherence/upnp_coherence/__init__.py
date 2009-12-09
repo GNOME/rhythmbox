@@ -17,7 +17,7 @@ import louie
 from coherence import log
 
 # for the icon
-import os.path, urllib, gnomevfs, gtk.gdk
+import os.path, urllib, gio, gtk.gdk
 
 # the gconf configuration
 gconf_keys = {
@@ -78,8 +78,10 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
         the_icon = None
         face_path = os.path.join(os.path.expanduser('~'), ".face")
         if os.path.exists(face_path):
-            url = "file://" + urllib.pathname2url(face_path)
-            mimetype = gnomevfs.get_mime_type(url)
+            file = gio.File(file=path_path);
+            url = file.get_uri();
+            info = file.query_info("standard::fast-content-type");
+            mimetype = info.get_attribute_as_string("standard::fast-content-type");
             pixbuf = gtk.gdk.pixbuf_new_from_file(face_path)
             width = "%s" % pixbuf.get_width()
             height = "%s" % pixbuf.get_height()
