@@ -44,6 +44,7 @@ AVAHI_REQS=0.6
 LIBSOUP_REQS=2.26.0
 GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
+PYGOBJECT_REQUIRED=2.15.4
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
@@ -681,7 +682,8 @@ if test "x$have_python" != "xno"; then
 
 	PKG_CHECK_MODULES([PYGTK], [
 		pygtk-2.0 >= $PYGTK_REQUIRED] \
-		gst-python-0.10 >= $GST_PYTHON_REQUIRED,
+		gst-python-0.10 >= $GST_PYTHON_REQUIRED
+		pygobject-2.0 >= $PYGOBJECT_REQUIRED,
 		[],
 		[
 		have_python=no
