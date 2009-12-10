@@ -244,6 +244,9 @@ mb_list_albums (SjMetadata *metadata, char **url, GError **error)
   }
 
   priv->disc = mb_read_disc (priv->cdrom);
+  if (priv->disc == NULL) {
+    return NULL;
+
   if (url != NULL) {
     mb_get_submission_url (priv->disc, NULL, 0, buffer, sizeof (buffer));
     *url = g_strdup (buffer);
