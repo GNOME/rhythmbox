@@ -81,7 +81,7 @@ rb_refstring_new (const char *init)
 	ret = g_malloc (sizeof (RBRefString) + strlen (init));
 
 	strcpy (ret->value, init);
-	ret->refcount = 1;
+	g_atomic_int_set (&ret->refcount, 1);
 	ret->folded = NULL;
 	ret->sortkey = NULL;
 
@@ -111,7 +111,7 @@ rb_refstring_unref (RBRefString *val)
 	if (val == NULL)
 		return;
 
-	g_return_if_fail (val->refcount > 0);
+	g_return_if_fail (g_atomic_int_get (&val->refcount) > 0);
 
 	if (g_atomic_int_dec_and_test (&val->refcount)) {
 		g_mutex_lock (rb_refstrings_mutex);
@@ -136,7 +136,7 @@ rb_refstring_ref (RBRefString *val)
 	if (val == NULL)
 		return NULL;
 
-	g_return_val_if_fail (val->refcount > 0, NULL);
+	g_return_val_if_fail (g_atomic_int_get (&val->refcount) > 0, NULL);
 
 	g_atomic_int_inc (&val->refcount);
 	return val;

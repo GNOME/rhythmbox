@@ -51,7 +51,7 @@ G_DEFINE_TYPE_WITH_CODE(RhythmDBPropertyModel, rhythmdb_property_model, G_TYPE_O
 typedef struct {
 	RBRefString *string;
 	RBRefString *sort_string;
-	guint refcount;
+	gint refcount;
 } RhythmDBPropertyModelEntry;
 
 static void rhythmdb_property_model_dispose (GObject *object);
@@ -642,11 +642,11 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
 	iter.stamp = model->priv->stamp;
 	propstr = rhythmdb_entry_get_string (entry, model->priv->propid);
 
-	model->priv->all->refcount++;
+	g_atomic_int_inc (&model->priv->all->refcount);
 
 	if ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr))) {
 		prop = g_sequence_get (ptr);
-		prop->refcount++;
+		g_atomic_int_inc (&prop->refcount);
 		rb_debug ("adding \"%s\": refcount %d", propstr, prop->refcount);
 
 		iter.user_data = ptr;
@@ -661,7 +661,7 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
 	prop = g_new0 (RhythmDBPropertyModelEntry, 1);
 	prop->string = rb_refstring_new (propstr);
 	prop->sort_string = rb_refstring_new (rhythmdb_entry_get_string (entry, model->priv->sort_propid));
-	prop->refcount = 1;
+	g_atomic_int_set (&prop->refcount, 1);
 
 	ptr = g_sequence_insert_sorted (model->priv->properties, prop,
 					(GCompareDataFunc) rhythmdb_property_model_compare,
@@ -699,18 +699,18 @@ rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 	RhythmDBPropertyModelEntry *prop;
 	GtkTreePath *path;
 	GtkTreeIter iter;
+	gboolean ret;
 
 	g_assert ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr)));
 
 	iter.stamp = model->priv->stamp;
 	iter.user_data = ptr;
 
-	model->priv->all->refcount--;
+	ret = g_atomic_int_dec_and_test (&model->priv->all->refcount);
 
 	prop = g_sequence_get (ptr);
 	rb_debug ("deleting \"%s\": refcount: %d", propstr, prop->refcount);
-	prop->refcount--;
-	if (prop->refcount > 0) {
+	if (g_atomic_int_dec_and_test (&prop->refcount) == FALSE) {
 		path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
 		gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
 		gtk_tree_path_free (path);
@@ -724,6 +724,7 @@ rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 
 	g_sequence_remove (ptr);
 	g_hash_table_remove (model->priv->reverse_map, propstr);
+	prop->refcount = 0xdeadbeef;
 	rb_refstring_unref (prop->string);
 	rb_refstring_unref (prop->sort_string);
 
@@ -871,7 +872,7 @@ rhythmdb_property_model_get_value (GtkTreeModel *tree_model,
 			break;
 		case RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER:
 			g_value_init (value, G_TYPE_UINT);
-			g_value_set_uint (value, model->priv->all->refcount);
+			g_value_set_uint (value, g_atomic_int_get (&model->priv->all->refcount));
 			break;
 		default:
 			g_assert_not_reached ();
@@ -893,7 +894,7 @@ rhythmdb_property_model_get_value (GtkTreeModel *tree_model,
 			break;
 		case RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER:
 			g_value_init (value, G_TYPE_UINT);
-			g_value_set_uint (value, prop->refcount);
+			g_value_set_uint (value, g_atomic_int_get (&prop->refcount));
 			break;
 		default:
 			g_assert_not_reached ();
