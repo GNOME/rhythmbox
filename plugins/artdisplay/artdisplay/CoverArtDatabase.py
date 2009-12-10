@@ -38,14 +38,8 @@ from EmbeddedCoverArtSearch import EmbeddedCoverArtSearch
 
 from urllib import unquote
 
-try:
-	# try to use the gio implementation, fall back to gnome-vfs if that
-	# isn't available.
-	import gio
-	if gio.pygio_version > (2,15,2):	# probably
-		from LocalCoverArtSearchGIO import LocalCoverArtSearch
-except:
-	from LocalCoverArtSearch import LocalCoverArtSearch
+import gio
+from LocalCoverArtSearchGIO import LocalCoverArtSearch
 
 ART_SEARCHES_LOCAL = [LocalCoverArtSearch, EmbeddedCoverArtSearch]
 ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, MusicBrainzCoverArtSearch, DiscogsCoverArtSearch]
