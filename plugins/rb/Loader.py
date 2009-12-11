@@ -27,6 +27,7 @@
 import gobject
 import gtk
 import sys
+import gio
 
 def callback_with_gdk_lock(callback, data, args):
 	gtk.gdk.threads_enter()
@@ -40,7 +41,7 @@ def callback_with_gdk_lock(callback, data, args):
 		gtk.gdk.threads_leave()
 
 
-class GioLoader(object):
+class Loader(object):
 	def __init__ (self):
 		self._cancel = gio.Cancellable()
 
@@ -67,7 +68,7 @@ class GioLoader(object):
 		self._cancel.cancel()
 
 
-class GioChunkLoader(object):
+class ChunkLoader(object):
 	def __init__ (self):
 		self._cancel = gio.Cancellable()
 
@@ -150,7 +151,7 @@ class GioChunkLoader(object):
 		self._cancel.cancel()
 
 
-class GioUpdateCheck(object):
+class UpdateCheck(object):
 	def __init__ (self):
 		self._cancel = gio.Cancellable()
 
@@ -183,15 +184,4 @@ class GioUpdateCheck(object):
 
 	def cancel (self):
 		self._cancel.cancel()
-
-
-
-
-# now figure out which set of implementations to use
-
-import gio
-
-Loader = GioLoader
-ChunkLoader = GioChunkLoader
-UpdateCheck = GioUpdateCheck
 

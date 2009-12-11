@@ -28,6 +28,7 @@
 import rhythmdb, rb
 import os
 import gtk
+import gio
 import itertools
 import gobject
 
@@ -35,11 +36,9 @@ from PodcastCoverArtSearch import PodcastCoverArtSearch
 from DiscogsCoverArtSearch import DiscogsCoverArtSearch
 from MusicBrainzCoverArtSearch import MusicBrainzCoverArtSearch
 from EmbeddedCoverArtSearch import EmbeddedCoverArtSearch
+from LocalCoverArtSearch import LocalCoverArtSearch
 
 from urllib import unquote
-
-import gio
-from LocalCoverArtSearchGIO import LocalCoverArtSearch
 
 ART_SEARCHES_LOCAL = [LocalCoverArtSearch, EmbeddedCoverArtSearch]
 ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, MusicBrainzCoverArtSearch, DiscogsCoverArtSearch]
