@@ -78,10 +78,10 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
         the_icon = None
         face_path = os.path.join(os.path.expanduser('~'), ".face")
         if os.path.exists(face_path):
-            file = gio.File(file=path_path);
+            file = gio.File(face_path);
             url = file.get_uri();
-            info = file.query_info("standard::fast-content-type");
-            mimetype = info.get_attribute_as_string("standard::fast-content-type");
+            info = file.query_info("standard::content-type");
+            mimetype = info.get_attribute_as_string("standard::content-type");
             pixbuf = gtk.gdk.pixbuf_new_from_file(face_path)
             width = "%s" % pixbuf.get_width()
             height = "%s" % pixbuf.get_height()
