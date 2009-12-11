@@ -150,7 +150,7 @@ class LocalCoverArtSearch:
 			except Exception,e :
 				print "error creating %s: %s" % (file.get_uri(), e)
 
-		file.replace_async(replace_cb, user_data=pixbuf()
+		file.replace_async(replace_cb, user_data=pixbuf())
 
 	def _save_dir_cb (self, enum, result, (db, entry, dir, pixbuf)):
 		artist, album = [db.entry_get (entry, x) for x in [rhythmdb.PROP_ARTIST, rhythmdb.PROP_ALBUM]]
