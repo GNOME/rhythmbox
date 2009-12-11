@@ -4,7 +4,7 @@ plugindir = $(PLUGINDIR)/artdisplay
 plugin_PYTHON = 			\
 	EmbeddedCoverArtSearch.py	\
 	PodcastCoverArtSearch.py	\
-	LocalCoverArtSearchGIO.py	\
+	LocalCoverArtSearch.py		\
 	CoverArtDatabase.py		\
 	DiscogsCoverArtSearch.py	\
 	MusicBrainzCoverArtSearch.py	\
