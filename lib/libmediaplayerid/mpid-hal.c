@@ -112,6 +112,14 @@ find_portable_audio_player_udi (LibHalContext *context, MPIDDevice *device, cons
 	while (!libhal_device_query_capability (context, udi, "portable_audio_player", &error) && !dbus_error_is_set (&error)) {
 		char *new_udi;
 
+		/* look for the device serial along the way */
+		if (device->serial == NULL) {
+			char *parent_udi = libhal_device_get_property_string (context, udi, "info.parent", &error);
+			device->serial = libhal_device_get_property_string (context, parent_udi, "storage.serial", &error);
+			free_dbus_error ("finding device serial", &error);
+			g_free (parent_udi);
+		}
+
 		new_udi = libhal_device_get_property_string (context, udi, "info.parent", &error);
 		if (dbus_error_is_set (&error))
 			break;

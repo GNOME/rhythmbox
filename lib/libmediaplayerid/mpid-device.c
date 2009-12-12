@@ -36,6 +36,7 @@ enum
 	PROP_MODEL,
 	PROP_VENDOR,
 	PROP_FS_UUID,
+	PROP_SERIAL,
 	PROP_DRIVE_TYPE,
 	PROP_REQUIRES_EJECT,
 	PROP_ACCESS_PROTOCOLS,
@@ -212,6 +213,9 @@ mpid_device_get_property (GObject *object, guint prop_id, GValue *value, GParamS
 	case PROP_FS_UUID:
 		g_value_set_string (value, device->fs_uuid);
 		break;
+	case PROP_SERIAL:
+		g_value_set_string (value, device->serial);
+		break;
 	case PROP_DRIVE_TYPE:
 		g_value_set_string (value, device->drive_type);
 		break;
@@ -348,6 +352,13 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 					 g_param_spec_string ("fs-uuid",
 							      "device filesystem UUID",
 							      "device filesystem UUID",
+							      NULL,
+							      G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_SERIAL,
+					 g_param_spec_string ("serial",
+							      "device serial ID",
+							      "device serial ID",
 							      NULL,
 							      G_PARAM_READABLE));
 	g_object_class_install_property (object_class,

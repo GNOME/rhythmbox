@@ -80,6 +80,7 @@ struct _MPIDDevice
 	char *model;
 	char *vendor;
 	char *fs_uuid;
+	char *serial;
 	char *drive_type;
 	gboolean requires_eject;
 
