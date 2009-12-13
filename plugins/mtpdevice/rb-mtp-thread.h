@@ -82,7 +82,7 @@ typedef void (*RBMtpOpenCallback) (LIBMTP_mtpdevice_t *device, gpointer user_dat
 typedef void (*RBMtpTrackListCallback) (LIBMTP_track_t *tracklist, gpointer user_data);
 typedef void (*RBMtpUploadCallback) (LIBMTP_track_t *track, GError *error, gpointer user_data);
 typedef void (*RBMtpDownloadCallback) (uint32_t track_id, const char *filename, GError *error, gpointer user_data);
-typedef void (*RBMtpCreatePlaylistCallback) (LIBMTP_playlist_t *playlist, gpointer user_data);
+typedef void (*RBMtpThreadCallback) (LIBMTP_mtpdevice_t *device, gpointer user_data);
 
 GType		rb_mtp_thread_get_type (void);
 RBMtpThread *	rb_mtp_thread_new (void);
@@ -100,6 +100,11 @@ void		rb_mtp_thread_get_track_list (RBMtpThread *thread,
 					      GDestroyNotify destroy_data);
 
 void		rb_mtp_thread_set_device_name (RBMtpThread *thread, const char *name);
+
+void		rb_mtp_thread_queue_callback (RBMtpThread *thread,
+					      RBMtpThreadCallback func,
+					      gpointer data,
+					      GDestroyNotify destroy_data);
 
 /* albums */
 void		rb_mtp_thread_add_to_album (RBMtpThread *thread, LIBMTP_track_t *track, const char *album);

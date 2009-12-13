@@ -53,7 +53,11 @@ uixml_DATA = mtp-ui.xml
 
 plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 
-EXTRA_DIST = $(uixml_DATA) $(plugin_in_files)
+gtkbuilderdir = $(plugindir)
+gtkbuilder_DATA = 					\
+	mtp-info.ui
+
+EXTRA_DIST = $(uixml_DATA) $(plugin_in_files) $(gtkbuilder_DATA)
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

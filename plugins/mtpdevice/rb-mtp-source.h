@@ -30,6 +30,8 @@
 
 #include "rb-shell.h"
 #include "rb-removable-media-source.h"
+#include "rb-media-player-source.h"
+#include "rb-plugin.h"
 #include "rhythmdb.h"
 #include <libmtp.h>
 
@@ -44,19 +46,20 @@ G_BEGIN_DECLS
 
 typedef struct
 {
-	RBRemovableMediaSource parent;
+	RBMediaPlayerSource parent;
 } RBMtpSource;
 
 typedef struct
 {
-	RBRemovableMediaSourceClass parent;
+	RBMediaPlayerSourceClass parent;
 } RBMtpSourceClass;
 
-#if defined(HAVE_GUDEV)
-RBSource *		rb_mtp_source_new		(RBShell *shell, LIBMTP_raw_device_t *device);
-#else
-RBSource *		rb_mtp_source_new		(RBShell *shell, LIBMTP_raw_device_t *device, const char *udi);
+RBSource *		rb_mtp_source_new		(RBShell *shell,
+							 RBPlugin *plugin,
+#if !defined(HAVE_GUDEV)
+							 const char *udi,
 #endif
+							 LIBMTP_raw_device_t *device);
 
 GType			rb_mtp_source_get_type		(void);
 GType			rb_mtp_source_register_type	(GTypeModule *module);

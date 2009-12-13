@@ -37,6 +37,7 @@
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 #include "rb-plugin.h"
+#include "rb-builder-helpers.h"
 #include "rb-removable-media-manager.h"
 #include "rb-static-playlist-source.h"
 #include "rb-util.h"
@@ -95,6 +96,10 @@ static void artwork_notify_cb (RhythmDB *db,
 			       const GValue *metadata,
 			       RBMtpSource *source);
 
+static guint64		impl_get_capacity	(RBMediaPlayerSource *source);
+static guint64		impl_get_free_space	(RBMediaPlayerSource *source);
+static void		impl_show_properties	(RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
+
 static void prepare_player_source_cb (RBPlayer *player,
 				      const char *stream_uri,
 				      GstElement *src,
@@ -122,11 +127,19 @@ typedef struct
 	GList *mediatypes;
 	gboolean album_art_supported;
 
+	/* device information */
+	char *manufacturer;
+	char *serial;
+	char *device_version;
+	char *model_name;
+	guint64 capacity;
+	guint64 free_space;		/* updated by callbacks */
+
 } RBMtpSourcePrivate;
 
 RB_PLUGIN_DEFINE_TYPE(RBMtpSource,
 		       rb_mtp_source,
-		       RB_TYPE_REMOVABLE_MEDIA_SOURCE)
+		       RB_TYPE_MEDIA_PLAYER_SOURCE)
 
 #define MTP_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_MTP_SOURCE, RBMtpSourcePrivate))
 
@@ -135,6 +148,7 @@ enum
 	PROP_0,
 	PROP_RAW_DEVICE,
 	PROP_UDI,
+	PROP_DEVICE_SERIAL
 };
 
 static void
@@ -144,6 +158,7 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
+	RBMediaPlayerSourceClass *mps_class = RB_MEDIA_PLAYER_SOURCE_CLASS (klass);
 
 	object_class->constructed = rb_mtp_source_constructed;
 	object_class->dispose = rb_mtp_source_dispose;
@@ -173,6 +188,10 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	rms_class->impl_get_mime_types = impl_get_mime_types;
 	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
 
+	mps_class->impl_get_capacity = impl_get_capacity;
+	mps_class->impl_get_free_space = impl_get_free_space;
+	mps_class->impl_show_properties = impl_show_properties;
+
 	g_object_class_install_property (object_class,
 					 PROP_RAW_DEVICE,
 					 g_param_spec_pointer ("raw-device",
@@ -188,6 +207,7 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 #endif
+	g_object_class_override_property (object_class, PROP_DEVICE_SERIAL, "serial");
 
 	g_type_class_add_private (klass, sizeof (RBMtpSourcePrivate));
 }
@@ -324,6 +344,9 @@ rb_mtp_source_get_property (GObject *object,
 		g_value_set_string (value, priv->udi);
 		break;
 #endif
+	case PROP_DEVICE_SERIAL:
+		g_value_set_string (value, priv->serial);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -367,6 +390,10 @@ rb_mtp_source_finalize (GObject *object)
 #if !defined(HAVE_GUDEV)
 	g_free (priv->udi);
 #endif
+	g_free (priv->manufacturer);
+	g_free (priv->device_version);
+	g_free (priv->model_name);
+	g_free (priv->serial);
 
 	G_OBJECT_CLASS (rb_mtp_source_parent_class)->finalize (object);
 }
@@ -383,16 +410,13 @@ impl_get_paned_key (RBBrowserSource *source)
 	return g_strdup (CONF_STATE_PANED_POSITION);
 }
 
-#if defined(HAVE_GUDEV)
 RBSource *
 rb_mtp_source_new (RBShell *shell,
-		   LIBMTP_raw_device_t *device)
-#else
-RBSource *
-rb_mtp_source_new (RBShell *shell,
-		   LIBMTP_raw_device_t *device,
-		   const char *udi)
+		   RBPlugin *plugin,
+#if !defined(HAVE_GUDEV)
+		   const char *udi,
 #endif
+		   LIBMTP_raw_device_t *device)
 {
 	RBMtpSource *source = NULL;
 	RhythmDBEntryType entry_type;
@@ -410,6 +434,7 @@ rb_mtp_source_new (RBShell *shell,
 	g_object_unref (db);
 
 	source = RB_MTP_SOURCE (g_object_new (RB_TYPE_MTP_SOURCE,
+					      "plugin", plugin,
 					      "entry-type", entry_type,
 					      "shell", shell,
 					      "visibility", TRUE,
@@ -424,6 +449,33 @@ rb_mtp_source_new (RBShell *shell,
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
 	return RB_SOURCE (source);
+}
+
+static void
+update_free_space_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	LIBMTP_devicestorage_t *storage;
+	int ret;
+
+	ret = LIBMTP_Get_Storage (device, LIBMTP_STORAGE_SORTBY_NOTSORTED);
+	if (ret != 0) {
+		rb_mtp_thread_report_errors (priv->device_thread, FALSE);
+	}
+
+	/* probably need a lock for this.. */
+	priv->free_space = 0;
+	for (storage = device->storage; storage != NULL; storage = storage->next) {
+		priv->free_space += storage->FreeSpaceInBytes;
+	}
+}
+
+static void
+queue_free_space_update (RBMtpSource *source)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	rb_mtp_thread_queue_callback (priv->device_thread,
+				      (RBMtpThreadCallback) update_free_space_cb, source, NULL);
 }
 
 static void
@@ -676,6 +728,25 @@ mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source)
 		data->name = g_strdup (_("Digital Audio Player"));
 	}
 
+	/* get some other device information that doesn't change */
+	priv->manufacturer = LIBMTP_Get_Manufacturername (device);
+	priv->device_version = LIBMTP_Get_Deviceversion (device);
+	priv->model_name = LIBMTP_Get_Modelname (device);
+	priv->serial = LIBMTP_Get_Serialnumber (device);
+
+	/* calculate the device capacity */
+	priv->capacity = 0;
+	if (LIBMTP_Get_Storage (device, LIBMTP_STORAGE_SORTBY_NOTSORTED) == 0) {
+		LIBMTP_devicestorage_t *storage;
+		for (storage = device->storage;
+		     storage != NULL;
+		     storage = storage->next) {
+			priv->capacity += storage->MaxCapacity;
+		}
+	}
+
+	update_free_space_cb (device, RB_MTP_SOURCE (source));
+
 	/* figure out the set of formats supported by the device */
 	if (LIBMTP_Get_Supported_Filetypes (device, &data->types, &data->num_types) != 0) {
 		rb_mtp_thread_report_errors (priv->device_thread, FALSE);
@@ -892,6 +963,7 @@ impl_track_added (RBRemovableMediaSource *source,
 		artdata->entry = rhythmdb_entry_ref (mtp_entry);
 		g_idle_add ((GSourceFunc) request_album_art_idle, artdata);
 	}
+	queue_free_space_update (RB_MTP_SOURCE (source));
 	return FALSE;
 }
 
@@ -910,6 +982,7 @@ impl_track_add_error (RBRemovableMediaSource *source,
 	} else {
 		rb_debug ("track-add-error called, but can't find a track for dest URI %s", dest);
 	}
+
 	return TRUE;
 }
 
@@ -1040,8 +1113,110 @@ artwork_notify_cb (RhythmDB *db,
 	pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
 
 	rb_mtp_thread_set_album_image (priv->device_thread, album_name, pixbuf);
+	queue_free_space_update (source);
 
 	g_object_unref (pixbuf);		/* ? */
+}
+
+static guint64
+impl_get_capacity	(RBMediaPlayerSource *source)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	return priv->capacity;
+}
+
+static guint64
+impl_get_free_space	(RBMediaPlayerSource *source)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	/* probably need a lock for this */
+	return priv->free_space;
+}
+
+static void
+impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	GtkBuilder *builder;
+	GtkWidget *widget;
+	GHashTableIter iter;
+	gpointer key, value;
+	int num_podcasts;
+	char *device_name;
+	char *builder_file;
+	RBPlugin *plugin;
+	char *text;
+
+	g_object_get (source, "plugin", &plugin, NULL);
+	builder_file = rb_plugin_find_file (plugin, "mtp-info.ui");
+	g_object_unref (plugin);
+
+	if (builder_file == NULL) {
+		g_warning ("Couldn't find mtp-info.ui");
+		return;
+	}
+
+	builder = rb_builder_load (builder_file, NULL);
+	g_free (builder_file);
+
+	if (builder == NULL) {
+		rb_debug ("Couldn't load mtp-info.ui");
+		return;
+	}
+
+	/* 'basic' tab stuff */
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "mtp-basic-info"));
+	gtk_box_pack_start (GTK_BOX (info_box), widget, TRUE, TRUE, 0);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "entry-mtp-name"));
+	g_object_get (source, "name", &device_name, NULL);
+	gtk_entry_set_text (GTK_ENTRY (widget), device_name);
+	g_free (device_name);
+	g_signal_connect (widget, "focus-out-event",
+			  (GCallback)rb_mtp_source_name_changed_cb, source);
+
+	num_podcasts = 0;
+	g_hash_table_iter_init (&iter, priv->entry_map);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		LIBMTP_track_t *track = value;
+		if (g_strcmp0 (track->genre, "Podcast") == 0) {
+			num_podcasts++;
+		}
+	}
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "mtp-num-tracks"));
+	text = g_strdup_printf ("%d", g_hash_table_size (priv->entry_map) - num_podcasts);
+	gtk_label_set_text (GTK_LABEL (widget), text);
+	g_free (text);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "mtp-num-podcasts"));
+	text = g_strdup_printf ("%d", num_podcasts);
+	gtk_label_set_text (GTK_LABEL (widget), text);
+	g_free (text);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "mtp-num-playlists"));
+	text = g_strdup_printf ("%d", 0);						/* correct, but wrong */
+	gtk_label_set_text (GTK_LABEL (widget), text);
+	g_free (text);
+
+	/* 'advanced' tab stuff */
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "mtp-advanced-tab"));
+	gtk_notebook_append_page (GTK_NOTEBOOK (notebook), widget, gtk_label_new (_("Advanced")));
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-mtp-model-value"));
+	gtk_label_set_text (GTK_LABEL (widget), priv->model_name);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-serial-number-value"));
+	gtk_label_set_text (GTK_LABEL (widget), priv->serial);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-firmware-version-value"));
+	gtk_label_set_text (GTK_LABEL (widget), priv->device_version);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-manufacturer-value"));
+	gtk_label_set_text (GTK_LABEL (widget), priv->manufacturer);
+
+	g_object_unref (builder);
 }
 
 static void

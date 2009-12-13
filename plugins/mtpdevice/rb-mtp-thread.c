@@ -46,6 +46,7 @@ typedef struct {
 		OPEN_DEVICE = 1,
 		CLOSE_DEVICE,
 		SET_DEVICE_NAME,
+		THREAD_CALLBACK,
 
 		ADD_TO_ALBUM,
 		REMOVE_FROM_ALBUM,
@@ -78,6 +79,7 @@ task_name (RBMtpThreadTask *task)
 	case OPEN_DEVICE:	return g_strdup ("open device");
 	case CLOSE_DEVICE:	return g_strdup ("close device");
 	case SET_DEVICE_NAME:	return g_strdup_printf ("set device name to %s", task->name);
+	case THREAD_CALLBACK:	return g_strdup ("thread callback");
 
 	case ADD_TO_ALBUM:	return g_strdup_printf ("add track %u to album %s", task->track_id, task->album);
 	case REMOVE_FROM_ALBUM:	return g_strdup_printf ("remove track %u from album %s", task->track_id, task->album);
@@ -538,6 +540,13 @@ run_task (RBMtpThread *thread, RBMtpThreadTask *task)
 		}
 		break;
 
+	case THREAD_CALLBACK:
+		{
+			RBMtpThreadCallback cb = (RBMtpThreadCallback)task->callback;
+			cb (thread->device, task->user_data);
+		}
+		break;
+
 	case ADD_TO_ALBUM:
 		add_track_to_album_and_update (thread, task);
 		break;
@@ -702,6 +711,19 @@ rb_mtp_thread_download_track (RBMtpThread *thread,
 	RBMtpThreadTask *task = create_task (DOWNLOAD_TRACK);
 	task->track_id = track_id;
 	task->filename = g_strdup (filename);
+	task->callback = func;
+	task->user_data = data;
+	task->destroy_data = destroy_data;
+	queue_task (thread, task);
+}
+
+void
+rb_mtp_thread_queue_callback (RBMtpThread *thread,
+			      RBMtpThreadCallback func,
+			      gpointer data,
+			      GDestroyNotify destroy_data)
+{
+	RBMtpThreadTask *task = create_task (THREAD_CALLBACK);
 	task->callback = func;
 	task->user_data = data;
 	task->destroy_data = destroy_data;

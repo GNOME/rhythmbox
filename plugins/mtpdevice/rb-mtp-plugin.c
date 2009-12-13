@@ -108,8 +108,10 @@ static void rb_mtp_plugin_device_added (LibHalContext *context, const char *udi)
 static void rb_mtp_plugin_device_removed (LibHalContext *context, const char *udi);
 static gboolean rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin);
 #endif
+
 static void rb_mtp_plugin_eject  (GtkAction *action, RBSource *source);
 static void rb_mtp_plugin_rename (GtkAction *action, RBSource *source);
+static void rb_mtp_plugin_properties (GtkAction *action, RBSource *source);
 
 GType rb_mtp_src_get_type (void);
 GType rb_mtp_sink_get_type (void);
@@ -123,7 +125,10 @@ static GtkActionEntry rb_mtp_plugin_actions [] =
 	  G_CALLBACK (rb_mtp_plugin_eject) },
 	{ "MTPSourceRename", NULL, N_("_Rename"), NULL,
 	  N_("Rename MTP-device"),
-	  G_CALLBACK (rb_mtp_plugin_rename) }
+	  G_CALLBACK (rb_mtp_plugin_rename) },
+	{ "MTPSourceProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), NULL,
+	  N_("Display device properties"),
+	  G_CALLBACK (rb_mtp_plugin_properties) }
 };
 
 static void
@@ -306,6 +311,13 @@ rb_mtp_plugin_rename (GtkAction *action, RBSource *source)
 	g_object_unref (shell);
 }
 
+static void
+rb_mtp_plugin_properties (GtkAction *action, RBSource *source)
+{
+	g_return_if_fail (RB_IS_MTP_SOURCE (source));
+	rb_media_player_source_show_properties (RB_MEDIA_PLAYER_SOURCE (source));
+}
+
 
 #if defined(HAVE_GUDEV)
 static void
@@ -360,7 +372,8 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device, RBMtpPlu
 			}
 
 			rb_debug ("device matched, creating a source");
-			source = rb_mtp_source_new (plugin->shell, &raw_devices[i]);
+			source = rb_mtp_source_new (plugin->shell, RB_PLUGIN (plugin), &raw_devices[i]);
+
 			plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
 			g_signal_connect_object (G_OBJECT (source),
 						"deleted", G_CALLBACK (source_deleted_cb),
@@ -405,12 +418,12 @@ rb_mtp_plugin_maybe_add_source (RBMtpPlugin *plugin, const char *udi, LIBMTP_raw
 		rb_debug ("detected MTP device: device number %d (bus location %u)", raw_devices[i].devnum, raw_devices[i].bus_location);
 		if (raw_devices[i].devnum == device_num) {
 			RBSource *source;
+
 			rb_debug ("device matched, creating a source");
-			source = RB_SOURCE (rb_mtp_source_new (plugin->shell, &raw_devices[i], udi));
+			source = RB_SOURCE (rb_mtp_source_new (plugin->shell, RB_PLUGIN (plugin), udi, &raw_devices[i]));
 
 			rb_shell_append_source (plugin->shell, source, NULL);
 			plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
-
 			g_signal_connect_object (G_OBJECT (source),
 						"deleted", G_CALLBACK (source_deleted_cb),
 						plugin, 0);
