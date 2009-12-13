@@ -6,6 +6,7 @@ GTK_BUILDER_FILES =					\
 	create-playlist.ui				\
 	general-prefs.ui				\
 	library-prefs.ui				\
+	media-player-properties.ui			\
 	playback-prefs.ui				\
 	playlist-save.ui				\
 	plugins.ui					\
