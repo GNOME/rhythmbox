@@ -48,11 +48,16 @@
 #include "rb-util.h"
 #include "rhythmdb.h"
 #include "rb-cut-and-paste-code.h"
+#include "rb-media-player-source.h"
+#include "rb-playlist-source.h"
+#include "rb-playlist-manager.h"
+#include "rb-podcast-manager.h"
 
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/ipod/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/ipod/show_browser"
 
 static void rb_ipod_source_constructed (GObject *object);
+static void rb_ipod_source_class_init (RBiPodSourceClass *klass);
 static void rb_ipod_source_dispose (GObject *object);
 
 static char *impl_get_browser_key (RBSource *source);
@@ -85,6 +90,19 @@ static gboolean rb_ipod_song_artwork_add_cb (RhythmDB *db,
                                              const GValue *metadata,
                                              RBiPodSource *isource);
 
+static guint64 impl_get_capacity (RBMediaPlayerSource *source);
+static guint64 impl_get_free_space (RBMediaPlayerSource *source);
+static void impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
+
+static void rb_ipod_source_set_property (GObject *object,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *pspec);
+static void rb_ipod_source_get_property (GObject *object,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *pspec);
+
 static RhythmDB *get_db_for_source (RBiPodSource *source);
 
 struct _PlayedEntry {
@@ -98,6 +116,8 @@ typedef struct
 {
 	RbIpodDb *ipod_db;
 	GHashTable *entry_map;
+
+	MPIDDevice *device_info;
 
 	gboolean needs_shuffle_db;
 	RBIpodStaticPlaylistSource *podcast_pl;
@@ -115,9 +135,16 @@ typedef struct {
 	GdkPixbuf *pixbuf;
 } RBiPodSongArtworkAddData;
 
+enum
+{
+	PROP_0,
+	PROP_DEVICE_INFO,
+	PROP_DEVICE_SERIAL
+};
+
 RB_PLUGIN_DEFINE_TYPE(RBiPodSource,
 		      rb_ipod_source,
-		      RB_TYPE_REMOVABLE_MEDIA_SOURCE)
+		      RB_TYPE_MEDIA_PLAYER_SOURCE)
 
 #define IPOD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IPOD_SOURCE, RBiPodSourcePrivate))
 
@@ -126,11 +153,15 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
+	RBMediaPlayerSourceClass *mps_class = RB_MEDIA_PLAYER_SOURCE_CLASS (klass);
 	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
 	object_class->constructed = rb_ipod_source_constructed;
 	object_class->dispose = rb_ipod_source_dispose;
+
+	object_class->set_property = rb_ipod_source_set_property;
+	object_class->get_property = rb_ipod_source_get_property;
 
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_browser_key  = impl_get_browser_key;
@@ -140,8 +171,12 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	source_class->impl_move_to_trash = impl_move_to_trash;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
-
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
+
+	mps_class->impl_get_capacity = impl_get_capacity;
+	mps_class->impl_get_free_space = impl_get_free_space;
+	mps_class->impl_show_properties = impl_show_properties;
+
 	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
 	rms_class->impl_track_added = impl_track_added;
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
@@ -149,9 +184,60 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 
 	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 
+	g_object_class_install_property (object_class,
+					 PROP_DEVICE_INFO,
+					 g_param_spec_object ("device-info",
+							      "device info",
+							      "device information object",
+							      MPID_TYPE_DEVICE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_override_property (object_class, PROP_DEVICE_SERIAL, "serial");
+
 	g_type_class_add_private (klass, sizeof (RBiPodSourcePrivate));
 }
 
+static void
+rb_ipod_source_set_property (GObject *object,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *pspec)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (object);
+
+	switch (prop_id) {
+	case PROP_DEVICE_INFO:
+		priv->device_info = g_value_dup_object (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_ipod_source_get_property (GObject *object,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *pspec)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (object);
+
+	switch (prop_id) {
+	case PROP_DEVICE_INFO:
+		g_value_set_object (value, priv->device_info);
+		break;
+	case PROP_DEVICE_SERIAL:
+		{
+			char *serial;
+			g_object_get (priv->device_info, "serial", &serial, NULL);
+			g_value_take_string (value, serial);
+		}
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
 
 static void
 rb_ipod_source_set_ipod_name (RBiPodSource *source, const char *name)
@@ -249,10 +335,11 @@ rb_ipod_source_dispose (GObject *object)
 	G_OBJECT_CLASS (rb_ipod_source_parent_class)->dispose (object);
 }
 
-RBRemovableMediaSource *
+RBMediaPlayerSource *
 rb_ipod_source_new (RBPlugin *plugin,
 		    RBShell *shell,
-		    GMount *mount)
+		    GMount *mount,
+		    MPIDDevice *device_info)
 {
 	RBiPodSource *source;
 	RhythmDBEntryType entry_type;
@@ -282,12 +369,13 @@ rb_ipod_source_new (RBPlugin *plugin,
 					       "mount", mount,
 					       "shell", shell,
 					       "source-group", RB_SOURCE_GROUP_DEVICES,
+					       "device-info", device_info,
 					       NULL));
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
         g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
-	return RB_REMOVABLE_MEDIA_SOURCE (source);
+	return RB_MEDIA_PLAYER_SOURCE (source);
 }
 
 static void
@@ -1588,17 +1676,6 @@ rb_ipod_source_remove_playlist (RBiPodSource *ipod_source,
 	rb_ipod_db_remove_playlist (priv->ipod_db, rb_ipod_static_playlist_source_get_itdb_playlist (playlist_source));
 }
 
-static void
-rb_ipod_info_response_cb (GtkDialog *dialog,
- 			  int response_id,
- 			  RBiPodSource *source)
-{
-	if (response_id == GTK_RESPONSE_CLOSE) {
- 		
-		gtk_widget_destroy (GTK_WIDGET (dialog));
-	}
-}
-
 static gboolean
 ipod_name_changed_cb (GtkWidget     *widget,
  		      GdkEventFocus *event,
@@ -1610,27 +1687,28 @@ ipod_name_changed_cb (GtkWidget     *widget,
 	return FALSE;
 }
 
-void
-rb_ipod_source_show_properties (RBiPodSource *source)
+
+static void
+impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook)
 {
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	GHashTableIter iter;
+	int num_podcasts;
+	gpointer key, value;
 	GtkBuilder *builder;
-	GObject *dialog;
-	GObject *label;
+	GtkWidget *widget;
 	char *text;
 	const gchar *mp;
-	char *used;
-	char *capacity;
 	char *builder_file;
- 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	Itdb_Device *ipod_dev;
 	RBPlugin *plugin;
+
+	/* probably should display an error on the basic page in most of these error cases.. */
 
 	if (priv->ipod_db == NULL) {
 		rb_debug ("can't show ipod properties with no ipod db");
 		return;
 	}
-
-	ipod_dev = rb_ipod_db_get_device (priv->ipod_db);
 
 	g_object_get (source, "plugin", &plugin, NULL);
 	builder_file = rb_plugin_find_file (plugin, "ipod-info.ui");
@@ -1649,66 +1727,91 @@ rb_ipod_source_show_properties (RBiPodSource *source)
  		return;
  	}
 	
- 	dialog = gtk_builder_get_object (builder, "ipod-information");
- 	g_signal_connect_object (dialog,
- 				 "response",
- 				 G_CALLBACK (rb_ipod_info_response_cb),
- 				 source, 0);
- 
- 	label = gtk_builder_get_object (builder, "label-number-track-number");
- 	text = g_strdup_printf ("%u", g_list_length (rb_ipod_db_get_tracks(priv->ipod_db) ));
- 	gtk_label_set_text (GTK_LABEL (label), text);
- 	g_free (text);
- 
- 	label = gtk_builder_get_object (builder, "entry-ipod-name");
- 	gtk_entry_set_text (GTK_ENTRY (label), rb_ipod_db_get_ipod_name (priv->ipod_db));
- 	g_signal_connect (label, "focus-out-event",
+	ipod_dev = rb_ipod_db_get_device (priv->ipod_db);
+
+	/* basic tab stuff */
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "ipod-basic-info"));
+	gtk_box_pack_start (GTK_BOX (info_box), widget, TRUE, TRUE, 0);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "ipod-name-entry"));
+	gtk_entry_set_text (GTK_ENTRY (widget), rb_ipod_db_get_ipod_name (priv->ipod_db));
+	g_signal_connect (widget, "focus-out-event",
  			  (GCallback)ipod_name_changed_cb, source);
- 
- 	label = gtk_builder_get_object (builder, "label-number-playlist-number");
- 	text = g_strdup_printf ("%u", g_list_length (rb_ipod_db_get_playlists (priv->ipod_db)));
- 	gtk_label_set_text (GTK_LABEL (label), text);
- 	g_free (text);
- 
- 	label = gtk_builder_get_object (builder, "label-mount-point-value");
+
+	num_podcasts = 0;
+	g_hash_table_iter_init (&iter, priv->entry_map);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		Itdb_Track *track = value;
+		if (track->mediatype == MEDIATYPE_PODCAST) {
+			num_podcasts++;
+		}
+	}
+
+	/* TODO these need to be updated as entries are added and removed. */
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "ipod-num-tracks"));
+	text = g_strdup_printf ("%d", g_hash_table_size (priv->entry_map) - num_podcasts);
+	gtk_label_set_text (GTK_LABEL (widget), text);
+	g_free (text);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "ipod-num-podcasts"));
+	text = g_strdup_printf ("%d", num_podcasts);
+	gtk_label_set_text (GTK_LABEL (widget), text);
+	g_free (text);
+
+	/* TODO probably needs to ignore the master playlist? */
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "ipod-num-playlists"));
+	text = g_strdup_printf ("%d", g_list_length (rb_ipod_db_get_playlists (priv->ipod_db)));
+	gtk_label_set_text (GTK_LABEL (widget), text);
+	g_free (text);
+
+	/* 'advanced' tab stuff */
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "ipod-advanced-tab"));
+	gtk_notebook_append_page (GTK_NOTEBOOK (notebook), widget, gtk_label_new (_("Advanced")));
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-mount-point-value"));
 	mp = rb_ipod_db_get_mount_path (priv->ipod_db);
- 	gtk_label_set_text (GTK_LABEL (label), mp);
+	gtk_label_set_text (GTK_LABEL (widget), mp);
 
-	label = gtk_builder_get_object (builder, "progressbar-ipod-usage");
-	used = g_format_size_for_display (rb_ipod_helpers_get_capacity (mp) - rb_ipod_helpers_get_free_space (mp));
-	capacity = g_format_size_for_display (rb_ipod_helpers_get_capacity(mp));
-	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (label), 
-				       (double)(rb_ipod_helpers_get_capacity (mp) - rb_ipod_helpers_get_free_space (mp))/(double)rb_ipod_helpers_get_capacity (mp));
-	/* Translators: this is used to display the amount of storage space
-	 * used and the total storage space on an iPod.
-	 */
-	text = g_strdup_printf (_("%s of %s"), used, capacity);
-	gtk_progress_bar_set_text (GTK_PROGRESS_BAR (label), text);
-	g_free (text);
-	g_free (capacity);
-	g_free (used);
-
-	label = gtk_builder_get_object (builder, "label-device-node-value");
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-device-node-value"));
 	text = rb_ipod_helpers_get_device (RB_SOURCE(source));
-	gtk_label_set_text (GTK_LABEL (label), text);
+	gtk_label_set_text (GTK_LABEL (widget), text);
 	g_free (text);
 
- 	label = gtk_builder_get_object (builder, "label-ipod-model-value");
- 	gtk_label_set_text (GTK_LABEL (label), itdb_device_get_sysinfo (ipod_dev, "ModelNumStr"));
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-ipod-model-value"));
+	gtk_label_set_text (GTK_LABEL (widget), itdb_device_get_sysinfo (ipod_dev, "ModelNumStr"));
 
- 	label = gtk_builder_get_object (builder, "label-database-version-value");
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-database-version-value"));
 	text = g_strdup_printf ("%u", rb_ipod_db_get_database_version (priv->ipod_db));
- 	gtk_label_set_text (GTK_LABEL (label), text);
+	gtk_label_set_text (GTK_LABEL (widget), text);
 	g_free (text);
 
- 	label = gtk_builder_get_object (builder, "label-serial-number-value");
-	gtk_label_set_text (GTK_LABEL (label), itdb_device_get_sysinfo (ipod_dev, "pszSerialNumber"));
+	g_object_get (priv->device_info, "serial", &text, NULL);
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-serial-number-value"));
+	gtk_label_set_text (GTK_LABEL (widget), text);
+	g_free (text);
 
- 	label = gtk_builder_get_object (builder, "label-firmware-version-value");
-	gtk_label_set_text (GTK_LABEL (label), itdb_device_get_sysinfo (ipod_dev, "VisibleBuildID"));
-
- 	gtk_widget_show (GTK_WIDGET (dialog));
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-firmware-version-value"));
+	gtk_label_set_text (GTK_LABEL (widget), itdb_device_get_sysinfo (ipod_dev, "VisibleBuildID"));
 
 	g_object_unref (builder);
+}
+
+static const gchar *
+get_mount_point	(RBiPodSource *source)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	return rb_ipod_db_get_mount_path (priv->ipod_db);
+}
+
+static guint64
+impl_get_capacity (RBMediaPlayerSource *source)
+{
+	return rb_ipod_helpers_get_capacity (get_mount_point (RB_IPOD_SOURCE (source)));
+}
+
+static guint64
+impl_get_free_space (RBMediaPlayerSource *source)
+{
+	return rb_ipod_helpers_get_free_space (get_mount_point (RB_IPOD_SOURCE (source)));
 }
 

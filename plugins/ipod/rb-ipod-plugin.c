@@ -40,6 +40,7 @@
 
 #include "rb-ipod-helpers.h"
 #include "rb-removable-media-manager.h"
+#include "rb-media-player-source.h"
 #include "rb-sourcelist.h"
 #include "rb-source.h"
 #include "rb-ipod-source.h"
@@ -249,7 +250,8 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 
 	src = RB_SOURCE (rb_ipod_source_new (RB_PLUGIN (plugin),
 					     plugin->shell,
-					     mount));
+					     mount,
+					     device_info));
 
 	plugin->ipod_sources = g_list_prepend (plugin->ipod_sources, src);
 	g_signal_connect_object (G_OBJECT (src),
@@ -263,7 +265,7 @@ static void
 rb_ipod_plugin_cmd_properties (GtkAction *action, RBSource *source)
 {
 	g_return_if_fail (RB_IS_IPOD_SOURCE (source));
-	rb_ipod_source_show_properties (RB_IPOD_SOURCE (source));
+	rb_media_player_source_show_properties (RB_MEDIA_PLAYER_SOURCE (source));
 }
  
 static void
