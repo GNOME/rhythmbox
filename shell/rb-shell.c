@@ -3166,16 +3166,24 @@ rb_shell_set_song_property (RBShell *shell,
 
 	proptype = rhythmdb_get_property_type (shell->priv->db, propid);
 	if (G_VALUE_TYPE (value) != proptype) {
-		g_set_error (error,
-			     RB_SHELL_ERROR,
-			     RB_SHELL_ERROR_INVALID_PROPERTY_TYPE,
-			     _("Invalid property type %s for property %s"),
-			     g_type_name (G_VALUE_TYPE (value)),
-			     uri);
-		return FALSE;
+		GValue convert = {0,};
+		g_value_init (&convert, proptype);
+		if (g_value_transform (value, &convert) == FALSE) {
+			g_value_unset (&convert);
+			g_set_error (error,
+				     RB_SHELL_ERROR,
+				     RB_SHELL_ERROR_INVALID_PROPERTY_TYPE,
+				     _("Invalid property type %s for property %s"),
+				     g_type_name (G_VALUE_TYPE (value)),
+				     propname);
+			return FALSE;
+		} else {
+			rhythmdb_entry_set (shell->priv->db, entry, propid, &convert);
+			g_value_unset (&convert);
+		}
+	} else {
+		rhythmdb_entry_set (shell->priv->db, entry, propid, value);
 	}
-
-	rhythmdb_entry_set (shell->priv->db, entry, propid, value);
 	return TRUE;
 }
 
