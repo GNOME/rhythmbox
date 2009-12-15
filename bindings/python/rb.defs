@@ -479,6 +479,15 @@
   )
 )
 
+(define-method get_source_by_entry_type
+  (of-object "RBShell")
+  (c-name "rb_shell_get_source_by_entry_type")
+  (return-type "RBSource*")
+  (parameters
+    '("RhythmDBEntryType_*" "type")
+  )
+)
+
 ;; From ../../shell/rb-shell-player.h
 
 (define-function rb_shell_player_error_quark
@@ -2174,7 +2183,7 @@
     '("RBShell*" "shell")
     '("const-char*" "name")
     '("gboolean" "local")
-    '("RhythmDBEntryType" "entry_type")
+    '("RhythmDBEntryType_*" "entry_type")
   )
 )
 
