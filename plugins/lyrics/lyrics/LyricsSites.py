@@ -1,6 +1,6 @@
 # -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
 #
-# Copyright (C) 2007 James Livingston
+# Copyright (C) 2009 Jonathan Matthew
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,48 +25,15 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 
-import urllib
-import re
-import gobject
-import gconf
-import rb
+from LyrcParser import LyrcParser
+from AstrawebParser import AstrawebParser
+from LeoslyricsParser import LeoslyricsParser
+from WinampcnParser import WinampcnParser
 
-from LyricsSites import lyrics_sites
-
-class Parser (object):
-	def __init__(self, gconf_keys, artist, title):
-		self.title = title
-		self.artist = artist
-
-		try:
-			self.engines = gconf.client_get_default().get_list(gconf_keys['engines'], gconf.VALUE_STRING)
-			if self.engines is None:
-				self.engines = []
-		except gobject.GError, e:
-			print e
-			self.engines = []
-
-	def searcher(self, plexer, callback, *data):
-		for site in lyrics_sites:
-			if site['id'] not in self.engines:
-				print site['id'] + " search is disabled"
-				continue
-
-			plexer.clear()
-			parser = site['class'] (self.artist, self.title)
-			print "searching " + site['id'] + " for lyrics"
-
-			parser.search(plexer.send())
-			yield None
-
-			_, (lyrics,) = plexer.receive()
-			if lyrics is not None:
-				callback (lyrics, *data)
-				return
-
-		callback (None, *data)
-
-	def get_lyrics(self, callback, *data):
-		rb.Coroutine (self.searcher, callback, *data).begin ()
-
+lyrics_sites = [
+	{ 'id': 'lyrc.com.ar', 		'class': LyrcParser, 		'name': _("Lyrc (lyrc.com.ar)") 		},
+	{ 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
+	{ 'id': 'leoslyrics.com', 	'class': LeoslyricsParser, 	'name': _("Leo's Lyrics (www.leoslyrics.com)") 	},
+	{ 'id': 'winampcn.com', 	'class': WinampcnParser, 	'name': _("WinampCN (www.winampcn.com)") 	}
+]
 

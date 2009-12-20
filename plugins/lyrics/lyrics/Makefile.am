@@ -3,6 +3,7 @@
 plugindir = $(PLUGINDIR)/lyrics
 plugin_PYTHON =				\
        LyricsParse.py			\
+       LyricsSites.py			\
        LyricsConfigureDialog.py		\
        __init__.py			\
        LyrcParser.py			\

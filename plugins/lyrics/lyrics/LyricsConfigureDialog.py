@@ -25,7 +25,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-
+from LyricsSites import lyrics_sites
 
 import gobject, gtk
 import gconf
@@ -41,11 +41,6 @@ class LyricsConfigureDialog (object):
 			
 		self.dialog = builder.get_object("preferences_dialog")
 
-		self.toggle1 = builder.get_object("engine1")
-		self.toggle2 = builder.get_object("engine2")
-		self.toggle3 = builder.get_object("engine3")
-		self.toggle4 = builder.get_object("engine4")
-		self.toggle5 = builder.get_object("engine5")
 		self.choose_button = builder.get_object("choose_button")
 		self.path_display = builder.get_object("path_display")
 
@@ -57,11 +52,18 @@ class LyricsConfigureDialog (object):
 		if self.folder is None:
 			self.folder = '~/.lyrics'
 		self.path_display.set_text(self.folder)
-		self.toggle1.set_active('astraweb.com' in engines)
-		self.toggle2.set_active('lyrc.com.ar' in engines)
-		self.toggle3.set_active('leoslyrics.com' in engines)
-		self.toggle4.set_active('lyricwiki.org' in engines)
-		self.toggle5.set_active('winampcn.com' in engines)
+
+		# build site list
+		site_box = builder.get_object("sites")
+		self.site_checks = {}
+		for s in lyrics_sites:
+			site_id = s['id']
+			checkbutton = gtk.CheckButton(label = s['name'])
+			checkbutton.set_active(s['id'] in engines)
+			self.site_checks[site_id] = checkbutton
+			site_box.pack_start(checkbutton)
+
+		site_box.show_all()
 
 	def dialog_response(self, dialog, response):
 		if response == gtk.RESPONSE_OK:
@@ -75,16 +77,13 @@ class LyricsConfigureDialog (object):
 
 	def set_values(self):
 		engines = []
-		if self.toggle1.get_active():
-			engines.append('astraweb.com')
-		if self.toggle2.get_active():
-			engines.append('lyrc.com.ar')
-		if self.toggle3.get_active():
-			engines.append('leoslyrics.com')
-		if self.toggle4.get_active():
-			engines.append('lyricwiki.org')
-		if self.toggle5.get_active():
-			engines.append('winampcn.com')
+		for s in lyrics_sites:
+			check = self.site_checks[s['id']]
+			if check is None:
+				continue
+
+			if check.get_active():
+				engines.append(s['id'])
 
 		if len(self.path_display.get_text()) is not 0:
 			self.folder = self.path_display.get_text()
