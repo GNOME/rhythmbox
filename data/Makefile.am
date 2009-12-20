@@ -14,6 +14,8 @@ playlists_in_files = playlists.xml.in
 playlists_DATA = playlists.xml
 playlistsdir = $(datadir)/rhythmbox
 
+man_MANS = rhythmbox.1 rhythmbox-client.1
+
 # Dbus service file
 servicedir = $(datadir)/dbus-1/services
 service_in_files = org.gnome.Rhythmbox.service.in

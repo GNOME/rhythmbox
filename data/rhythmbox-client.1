@@ -1,0 +1,171 @@
+.\" Copyright (C) 2006 Sven Arvidsson <sa@whiz.se>
+.\"
+.\" This is free software; you may redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as
+.\" published by the Free Software Foundation; either version 2,
+.\" or (at your option) any later version.
+.\"
+.\" This is distributed in the hope that it will be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\"You should have received a copy of the GNU General Public License along
+.\"with this program; if not, write to the Free Software Foundation, Inc.,
+.\"51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+.TH rhythmbox 1 "2007\-06\-28" "GNOME"
+.SH NAME
+rhythmbox-client \- controls a running instance of rhythmbox
+.SH SYNOPSIS
+.B rhythmbox-client
+.RI [ option... ] [ file... ]
+.SH DESCRIPTION
+.B rhythmbox-client
+is a tool for controlling an already running instance of
+.B rhythmbox. 
+It's useful for remote control scripting, adding specific files to the library
+from the shell, or printing details of what's playing. Any files specified after
+the option arguments will be added to the library.  If the
+.B \-\-enqueue
+option is given, the files will also be added to the play queue.
+.SH OPTIONS
+.TP
+.B \-?,\-\-help
+Show help options
+.TP
+.B \-\-debug
+Enable debug output
+.TP
+.B \-\-no-start
+Do not start a new instance of rhythmbox
+.TP
+.B \-\-quit
+Quit rhythmbox
+.TP
+.B \-\-no-present
+Don't present an existing rhythmbox window
+.TP
+.B \-\-hide
+Hide the rhythmbox window
+.TP
+.B \-\-next
+Jump to next song
+.TP
+.B \-\-previous
+Jump to previous song
+.TP
+.B \-\-notify
+Show notification of the playing song
+.TP
+.B \-\-play
+Resume playback if currently paused
+.TP
+.B \-\-pause
+Pause playback if currently playing
+.TP
+.B \-\-play-pause
+Toggle play/pause mode
+.TP
+.BI "\-\-play-uri="URI
+Play a specified URI, importing it if necessary
+.TP
+.BI \-\-enqueue
+Add specified tracks already in the library to the play queue
+.TP
+.B \-\-clear-queue
+Empty the play queue before adding new tracks
+.TP
+.B \-\-print-playing
+Print the title and artist of the playing song
+.TP
+.BI "\-\-print-playing-format="format
+Print formatted details of the song (see
+.SM
+.B FORMAT OPTIONS
+below).
+.TP
+.B \-\-set-volume
+Set the playback volume
+.TP
+.B \-\-volume-up
+Increase the playback volume
+.TP
+.B \-\-volume-down
+Decrease the playback volume
+.TP
+.B \-\-print-volume
+Print the current playback volume
+.TP
+.B \-\-mute
+Mute playback
+.TP
+.B \-\-unmute
+Unmute playback
+.SH FORMAT OPTIONS
+.TP
+%at
+album title
+.TP
+%aa
+album artist
+.TP
+%aA
+album artist (lowercase)
+.TP
+%as
+album artist sortname
+.TP
+%aS
+album artist sortname (lowercase)
+.TP
+%ay
+album year
+.TP
+%ag
+album genre
+.TP
+%aG
+album genre (lowercase)
+.TP
+%an
+album disc number
+.TP
+%aN
+album disc number, zero padded
+.TP
+%st
+stream title
+.TP
+%tn
+track number (i.e 8)
+.TP
+%tN
+track number, zero padded (i.e 08)
+.TP
+%tt
+track title
+.TP
+%ta
+track artist
+.TP
+%tA
+track artist (lowercase)
+.TP
+%ts
+track artist sortname
+.TP
+%tS
+track artist sortname (lowercase)
+.TP
+%td
+track duration
+.TP
+%te
+track elapsed time
+.TP
+Variables can be combined using quotes. For example "%tn %aa %tt", will print the track number followed by the artist and the title of the track.
+.SH AUTHOR
+This manual page was written by Sven Arvidsson <sa@whiz.se>,
+for the Debian system (but may be used by others).
+.SH SEE ALSO
+.BR "rhythmbox" (1).
