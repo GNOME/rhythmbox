@@ -532,6 +532,11 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 	} else {
 		/* no selected source -> hide source header */
 		gtk_widget_hide (GTK_WIDGET (header));
+		header->priv->have_browser = FALSE;
+		header->priv->disclosed = FALSE;
+
+		g_free (header->priv->browser_key);
+		header->priv->browser_key = NULL;
 	}
 
 	rb_source_header_refresh_search_bar (header);
