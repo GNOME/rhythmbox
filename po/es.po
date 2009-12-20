@@ -16,8 +16,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-12-16 13:11+0000\n"
-"PO-Revision-Date: 2009-12-19 14:50+0100\n"
+"POT-Creation-Date: 2009-12-20 11:02+0000\n"
+"PO-Revision-Date: 2009-12-20 16:01+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -284,7 +284,6 @@ msgid "<b>Information</b>"
 msgstr "<b>Información</b>"
 
 #: ../data/ui/media-player-properties.ui.h:2
-#| msgid "Volume Usage:"
 msgid "<b>Volume usage</b>"
 msgstr "<b>Uso del volumen</b>"
 
@@ -2122,12 +2121,10 @@ msgid "Mount Point:"
 msgstr "Punto de montaje:"
 
 #: ../plugins/ipod/ipod-info.ui.h:7 ../plugins/mtpdevice/mtp-info.ui.h:6
-#| msgid "Playlists"
 msgid "Playlists:"
 msgstr "Listas de reproducción:"
 
 #: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
-#| msgid "Podcasts"
 msgid "Podcasts:"
 msgstr "Podcasts:"
 
@@ -2136,7 +2133,6 @@ msgid "Serial Number:"
 msgstr "Número de serie:"
 
 #: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:9
-#| msgid "Track"
 msgid "Tracks:"
 msgstr "Pistas:"
 
@@ -2522,9 +2518,29 @@ msgstr "_Letras de canciones"
 msgid "Display lyrics for the playing song"
 msgstr "Muestra la letra para la canción en reproducción"
 
-#: ../plugins/lyrics/lyrics/LyricsConfigureDialog.py:106
+#: ../plugins/lyrics/lyrics/LyricsConfigureDialog.py:105
 msgid "Choose lyrics folder..."
 msgstr "Elegir la carpeta de las letras…"
+
+#: ../plugins/lyrics/lyrics/LyricsSites.py:35
+msgid "Lyrc (lyrc.com.ar)"
+msgstr "Lyrc (lyrc.com.ar)"
+
+#: ../plugins/lyrics/lyrics/LyricsSites.py:36
+msgid "Astraweb (www.astraweb.com)"
+msgstr "Astraweb (www.astraweb.com)"
+
+#: ../plugins/lyrics/lyrics/LyricsSites.py:37
+msgid "Leo's Lyrics (www.leoslyrics.com)"
+msgstr "Letras de Leo (www.leoslyrics.com)"
+
+#: ../plugins/lyrics/lyrics/LyricsSites.py:38
+msgid "WinampCN (www.winampcn.com)"
+msgstr "WinampCN (www.winampcn.com)"
+
+#: ../plugins/lyrics/lyrics/LyricsSites.py:39
+msgid "TerraBrasil (terra.com.br)"
+msgstr "TerraBrasil (terra.com.br)"
 
 #: ../plugins/lyrics/lyrics.rb-plugin.in.h:1
 msgid "Fetch song lyrics from the Internet"
@@ -3113,12 +3129,10 @@ msgstr ""
 "dispositivo)"
 
 #: ../plugins/mtpdevice/mtp-info.ui.h:2
-#| msgid "Device Node:"
 msgid "Device Name:"
 msgstr "Nombre del dispositivo:"
 
 #: ../plugins/mtpdevice/mtp-info.ui.h:4
-#| msgid "Magnatune"
 msgid "Manufacturer:"
 msgstr "Fabricante:"
 
@@ -3142,7 +3156,6 @@ msgid "Rename MTP-device"
 msgstr "Renombrar el dispositivo MTP"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:130
-#| msgid "Display iPod properties"
 msgid "Display device properties"
 msgstr "Mostrar las propiedades del dispositivo"
 
