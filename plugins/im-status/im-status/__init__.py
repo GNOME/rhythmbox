@@ -30,9 +30,11 @@ try:
   import dbus
   use_gossip = True
   use_mc5 = True
+  use_purple = True
 except ImportError:
   use_gossip = False
   use_mc5 = False
+  use_purple = False
 
 NORMAL_SONG_ARTIST = 'artist'
 NORMAL_SONG_TITLE  = 'title'
@@ -51,6 +53,9 @@ MC5_AM_OBJ_PATH = '/org/freedesktop/Telepathy/AccountManager'
 MC5_AM_IFACE_NAME = 'org.freedesktop.Telepathy.AccountManager'
 MC5_ACCT_IFACE_NAME = 'org.freedesktop.Telepathy.Account'
 
+PURPLE_BUS_NAME = 'im.pidgin.purple.PurpleService'
+PURPLE_OBJ_PATH = '/im/pidgin/purple/PurpleObject'
+PURPLE_IFACE_NAME = 'im.pidgin.purple.PurpleInterface'
 
 class IMStatusPlugin (rb.Plugin):
   def __init__ (self):
@@ -172,16 +177,20 @@ class IMStatusPlugin (rb.Plugin):
 
     self.set_gossip_status (new_status)
     self.set_mc5_status (new_status)
+    self.set_purple_status (new_status)
 
   def save_status (self):
     self.saved_gossip = self.get_gossip_status ()
     self.saved_mc5 = self.get_mc5_status ()
+    self.saved_purple = self.get_purple_status ()
 
   def restore_status (self):
     if self.saved_gossip != None:
       self.set_gossip_status (self.saved_gossip)
     if self.saved_mc5 != None:
       self.set_mc5_status (self.saved_mc5)
+    if self.saved_purple != None:
+      self.set_purple_status (self.saved_purple)
 
   def set_gossip_status (self, new_status):
     if not use_gossip:
@@ -252,3 +261,33 @@ class IMStatusPlugin (rb.Plugin):
       print "dbus exception while setting status: " + str(e)
 
     return None
+
+  def set_purple_status (self, new_status):
+    if not use_purple:
+      return
+
+    try:
+      bus = dbus.SessionBus ()
+      purple_obj = bus.get_object (PURPLE_BUS_NAME, PURPLE_OBJ_PATH)
+      purple = dbus.Interface (purple_obj, PURPLE_IFACE_NAME)
+
+      status = purple.PurpleSavedstatusGetCurrent ()
+      purple.PurpleSavedstatusSetMessage (status, new_status)
+      purple.PurpleSavedstatusActivate (status)
+    except dbus.DBusException:
+      pass
+
+  def get_purple_status (self):
+    if not use_purple:
+      return
+
+    try:
+      bus = dbus.SessionBus ()
+      purple_obj = bus.get_object (PURPLE_BUS_NAME, PURPLE_OBJ_PATH)
+      purple = dbus.Interface (purple_obj, PURPLE_IFACE_NAME)
+
+      current = purple.PurpleSavedstatusGetCurrent ()
+      status = purple.PurpleSavedstatusGetMessage (current)
+      return status
+    except dbus.DBusException:
+      return None
