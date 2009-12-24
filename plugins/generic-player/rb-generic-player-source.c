@@ -1146,7 +1146,7 @@ rb_generic_player_source_set_supported_formats (RBGenericPlayerSource *source, T
 	if (playlist_formats != NULL && g_strv_length (playlist_formats) > 0) {
 		int i;
 		for (i = 0; i < G_N_ELEMENTS (check); i++) {
-			if (strv_contains (playlist_formats, check[i])) {
+			if (strv_contains (playlist_formats, check[i]) == FALSE) {
 				totem_pl_parser_add_ignored_mimetype (parser, check[i]);
 			}
 		}
