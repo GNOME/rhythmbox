@@ -51,6 +51,7 @@ magnatune_partner_id = "rhythmbox"
 
 # URIs
 magnatune_song_info_uri = "http://magnatune.com/info/song_info_xml.zip"
+magnatune_buy_album_uri = "https://magnatune.com/buy/choose?"
 
 magnatune_in_progress_dir = os.path.join(rb.user_data_dir(), 'magnatune')
 magnatune_cache_dir = os.path.join(rb.user_cache_dir(), 'magnatune')
@@ -77,7 +78,6 @@ class MagnatuneSource(rb.BrowserSource):
 		# track data
 		self.__sku_dict = {}
 		self.__home_dict = {}
-		self.__buy_dict = {}
 		self.__art_dict = {}
 
 		# catalogue stuff
@@ -205,31 +205,20 @@ class MagnatuneSource(rb.BrowserSource):
 				gtk.show_uri(screen, url, gtk.gdk.CURRENT_TIME)
 				urls.add(url)
 
-	def buy_cd(self):
+	def purchase_album(self):
 		screen = self.props.shell.props.window.get_screen()
 		tracks = self.get_entry_view().get_selected_entries()
 		urls = set([])
 
 		for tr in tracks:
 			sku = self.__sku_dict[self.__db.entry_get(tr, rhythmdb.PROP_LOCATION)]
-			url = self.__buy_dict[sku]
+			url = magnatune_buy_album_uri + urllib.urlencode({ 'sku': sku })
 			if url not in urls:
 				gtk.show_uri(screen, url, gtk.gdk.CURRENT_TIME)
 				urls.add(url)
-
-	def radio_toggled(self, builder):
-		gc = builder.get_object("radio_gc").get_active()
-		builder.get_object("remember_cc_details").set_sensitive(not gc)
-		builder.get_object("name_entry").set_sensitive(not gc)
-		builder.get_object("cc_entry").set_sensitive(not gc)
-		builder.get_object("mm_entry").set_sensitive(not gc)
-		builder.get_object("yy_entry").set_sensitive(not gc)
-		
-		builder.get_object("gc_entry").set_sensitive(gc)
-		if not gc:
-			builder.get_object("gc_entry").set_text("")
 	
-	def purchase_album(self):
+	# This method isn't called at the moment. We'll need it later to add download accounts though...
+	def download_album(self):
 		try:
 			library_location = self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0] # Just use the first library location
 		except IndexError, e:
@@ -351,7 +340,7 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__has_loaded = True
 
 		parser = xml.sax.make_parser()
-		parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict, self.__buy_dict, self.__art_dict))
+		parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict, self.__art_dict))
 		
 		self.__catalogue_loader = rb.ChunkLoader()
 		self.__catalogue_loader.get_url_chunks(magnatune_song_info, 64*1024, True, self.__catalogue_chunk_cb, parser)
@@ -442,6 +431,7 @@ class MagnatuneSource(rb.BrowserSource):
 
 	#
 	# internal purchasing code
+	# not used at the moment, but it will be used again when we have download accounts...
 	#
 	def __buy_album(self, sku, pay, format, ccnumber, ccyear, ccmonth, name, email, gc, gc_text): # http://magnatune.com/info/api#purchase
 		print "purchasing tracks:", sku, pay, format, name, email

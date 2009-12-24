@@ -31,13 +31,12 @@ import datetime
 
 class TrackListHandler(xml.sax.handler.ContentHandler):
 
-	def __init__(self, db, entry_type, sku_dict, home_dict, buy_dict, art_dict):
+	def __init__(self, db, entry_type, sku_dict, home_dict, art_dict):
 		xml.sax.handler.ContentHandler.__init__(self)
 		self.__db = db
 		self.__entry_type = entry_type
 		self.__sku_dict = sku_dict
 		self.__home_dict = home_dict
-		self.__buy_dict = buy_dict
 		self.__art_dict = art_dict
 		self.__track = {}
 
@@ -88,7 +87,6 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 				sku = intern(str(self.__track['albumsku']))
 				self.__sku_dict[key] = sku
 				self.__home_dict[sku] = str(self.__track['home'])
-				self.__buy_dict[sku] = str(self.__track['buy'].replace("buy_album", "buy_cd", 1))
 				self.__art_dict[sku] = str(self.__track['cover_small'])
 
 				self.__db.commit()
