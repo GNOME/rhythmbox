@@ -237,6 +237,7 @@ mpid_device_read_override_file (MPIDDevice *device)
 
 	mpid_override_strv_from_keyfile (&device->output_formats, keyfile, start_group, "output_formats");
 	mpid_override_strv_from_keyfile (&device->input_formats, keyfile, start_group, "input_formats");
+	mpid_override_strv_from_keyfile (&device->playlist_formats, keyfile, start_group, "playlist_formats");
 	mpid_override_strv_from_keyfile (&device->audio_folders, keyfile, start_group, "audio_folders");
 
 	str = g_key_file_get_string (keyfile, start_group, "playlist_path", NULL);
