@@ -341,20 +341,31 @@ impl_mark_dirty (RBPlaylistSource *source)
 
 RBSource *
 rb_generic_player_playlist_source_new (RBShell *shell,
-				       RBGenericPlayerSource *source,
+				       RBGenericPlayerSource *player_source,
 				       const char *playlist_file,
 				       const char *device_root,
 				       RhythmDBEntryType entry_type)
 {
-	return RB_SOURCE (g_object_new (RB_TYPE_GENERIC_PLAYER_PLAYLIST_SOURCE,
-					"shell", shell,
-					"is-local", FALSE,
-					"entry-type", entry_type,
-					"source-group", RB_SOURCE_GROUP_DEVICES,
-					"player-source", source,
-					"playlist-path", playlist_file,
-					"device-root", device_root,
-					NULL));
+	RBSource *source;
+	source = RB_SOURCE (g_object_new (RB_TYPE_GENERIC_PLAYER_PLAYLIST_SOURCE,
+					  "shell", shell,
+					  "is-local", FALSE,
+					  "entry-type", entry_type,
+					  "source-group", RB_SOURCE_GROUP_DEVICES,
+					  "player-source", player_source,
+					  "playlist-path", playlist_file,
+					  "device-root", device_root,
+					  NULL));
+
+	if (load_playlist (RB_GENERIC_PLAYER_PLAYLIST_SOURCE (source)) == FALSE) {
+		rb_debug ("playlist didn't parse; killing the source");
+		if (g_object_is_floating (source))
+			g_object_ref_sink (source);
+		g_object_unref (source);
+		return NULL;
+	}
+
+	return source;
 }
 
 void
@@ -381,24 +392,6 @@ rb_generic_player_playlist_delete_from_player (RBGenericPlayerPlaylistSource *so
 static void
 rb_generic_player_playlist_source_init (RBGenericPlayerPlaylistSource *source)
 {
-}
-
-static GObject *
-impl_constructor (GType type, guint n_construct_properties, GObjectConstructParam *construct_properties)
-{
-	RBGenericPlayerPlaylistSource *source;
-
-	source = RB_GENERIC_PLAYER_PLAYLIST_SOURCE (G_OBJECT_CLASS (rb_generic_player_playlist_source_parent_class) -> constructor (type, n_construct_properties, construct_properties));
-
-	if (load_playlist (source) == FALSE) {
-		rb_debug ("playlist didn't parse; killing the source");
-		if (g_object_is_floating (source))
-			g_object_ref_sink (source);
-		g_object_unref (source);
-		return NULL;
-	}
-
-	return G_OBJECT (source);
 }
 
 static void
@@ -520,7 +513,6 @@ rb_generic_player_playlist_source_class_init (RBGenericPlayerPlaylistSourceClass
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
-	object_class->constructor = impl_constructor;
 	object_class->dispose = impl_dispose;
 	object_class->finalize = impl_finalize;
 	object_class->get_property = impl_get_property;
