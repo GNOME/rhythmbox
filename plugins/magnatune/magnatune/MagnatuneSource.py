@@ -128,7 +128,7 @@ class MagnatuneSource(rb.BrowserSource):
 
 	def do_impl_get_ui_actions(self):
 		return ["MagnatunePurchaseAlbum",
-			"MagnatunePurchaseCD",
+			"MagnatuneDownloadAlbum",
 			"MagnatuneArtistInfo",
 			"MagnatuneCancelDownload"]
 
@@ -340,7 +340,7 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__has_loaded = True
 
 		parser = xml.sax.make_parser()
-		parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict, self.__art_dict))
+		parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict, self.__art_dict, self.__plugin))
 		
 		self.__catalogue_loader = rb.ChunkLoader()
 		self.__catalogue_loader.get_url_chunks(magnatune_song_info, 64*1024, True, self.__catalogue_chunk_cb, parser)
