@@ -28,6 +28,8 @@ libsourcesimpl_la_SOURCES =		\
 	rb-removable-media-source.h	\
 	rb-media-player-source.c	\
 	rb-media-player-source.h	\
+	rb-media-player-sync-settings.c	\
+	rb-media-player-sync-settings.h	\
 	rb-playlist-source.c            \
 	rb-playlist-source.h		\
 	rb-playlist-xml.h		\

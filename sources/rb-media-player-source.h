@@ -60,14 +60,34 @@ struct _RBMediaPlayerSourceClass
 	RBRemovableMediaSourceClass parent_class;
 
 	/* class members */
+	void		(*impl_get_entries)	(RBMediaPlayerSource *source, const char *category, GHashTable *map);
 	guint64		(*impl_get_capacity)	(RBMediaPlayerSource *source);
 	guint64		(*impl_get_free_space)	(RBMediaPlayerSource *source);
+	void		(*impl_delete_entries)	(RBMediaPlayerSource *source,
+						 GList *entries,
+						 RBMediaPlayerSourceDeleteCallback callback,
+						 gpointer data,
+						 GDestroyNotify destroy_data);
+	void		(*impl_add_playlist)	(RBMediaPlayerSource *source, gchar *name, GList *entries);
+	void		(*impl_remove_playlists) (RBMediaPlayerSource *source);
 	void		(*impl_show_properties)	(RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
 };
 
 GType	rb_media_player_source_get_type	(void);
 
+void	rb_media_player_source_load		(RBMediaPlayerSource *source);
+
+void	rb_media_player_source_delete_entries	(RBMediaPlayerSource *source,
+						 GList *entries,
+						 RBMediaPlayerSourceDeleteCallback callback,
+						 gpointer user_data,
+						 GDestroyNotify destroy_data);
+
 void	rb_media_player_source_show_properties (RBMediaPlayerSource *source);
+
+void	rb_media_player_source_sync (RBMediaPlayerSource *source);
+
+void	_rb_media_player_source_add_to_map 	(GHashTable *device_map, RhythmDBEntry *entry);
 
 G_END_DECLS
 
