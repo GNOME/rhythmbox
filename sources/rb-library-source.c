@@ -1198,7 +1198,7 @@ impl_can_paste (RBSource *asource)
 }
 
 static void
-completed_cb (RhythmDBEntry *entry, const char *dest, GError *error, RBLibrarySource *source)
+completed_cb (RhythmDBEntry *entry, const char *dest, guint64 dest_size, GError *error, RBLibrarySource *source)
 {
 	if (error == NULL) {
 		rhythmdb_add_uri (source->priv->db, dest);

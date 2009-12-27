@@ -73,6 +73,7 @@ static GList * impl_get_mime_types (RBRemovableMediaSource *source);
 static gboolean impl_track_added (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
 				  const char *dest,
+				  guint64 filesize,
 				  const char *mimetype);
 static char* impl_build_dest_uri (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
@@ -535,7 +536,7 @@ load_ipod_playlists (RBiPodSource *source)
 #define MEDIATYPE_PODCAST       0x0004
 
 static Itdb_Track *
-create_ipod_song_from_entry (RhythmDBEntry *entry, const char *mimetype)
+create_ipod_song_from_entry (RhythmDBEntry *entry, guint64 filesize, const char *mimetype)
 {
 	Itdb_Track *track;
 
@@ -550,7 +551,7 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, const char *mimetype)
 	                                                RHYTHMDB_PROP_ALBUM_SORTNAME);
 	track->genre = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_GENRE);
 	track->filetype = g_strdup (mimetype);
-	track->size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
+	track->size = filesize;
 	track->tracklen = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 	track->tracklen *= 1000;
 	track->cd_nr = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
@@ -1306,6 +1307,7 @@ static gboolean
 impl_track_added (RBRemovableMediaSource *source,
 		  RhythmDBEntry *entry,
 		  const char *dest,
+		  guint64 filesize,
 		  const char *mimetype)
 {
 	RBiPodSource *isource = RB_IPOD_SOURCE (source);
@@ -1314,7 +1316,7 @@ impl_track_added (RBRemovableMediaSource *source,
 
 	db = get_db_for_source (isource);
 
-	song = create_ipod_song_from_entry (entry, mimetype);
+	song = create_ipod_song_from_entry (entry, filesize, mimetype);
 	if (song != NULL) {
 		RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 		char *filename;

@@ -47,6 +47,7 @@ G_BEGIN_DECLS
 
 typedef void (*RBTransferCompleteCallback) (RhythmDBEntry *entry,
 					    const char *dest,
+					    guint64 dest_size,
 					    GError *error,
 					    gpointer userdata);
 
