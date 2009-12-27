@@ -897,11 +897,7 @@ rb_removable_media_manager_unmount_cb (GObject *object,
 	GError *error = NULL;
 
 	rb_debug ("finishing unmount of mount");
-#if GLIB_CHECK_VERSION(2,22,0)
-	g_mount_unmount_with_operation_finish (mount, finish, &error);
-#else
 	g_mount_unmount_finish (mount, result, &error);
-#endif
 	if (error != NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_FAILED_HANDLED)) {
 			rb_error_dialog (NULL, _("Unable to unmount"), "%s", error->message);
@@ -985,28 +981,12 @@ rb_removable_media_manager_cmd_eject_medium (GtkAction *action, RBRemovableMedia
 				       (GAsyncReadyCallback) rb_removable_media_manager_eject_cb,
 				       g_object_ref (mgr));
 		} else if (g_mount_can_unmount (mount)) {
-#if GLIB_CHECK_VERSION(2,22,0)
-			GMountOperation *op;
-			GtkWindow *window;
-			g_object_get (mgr->priv->shell, "window", &window, NULL);
-			op = gtk_mount_operation_new (window);
-			g_object_unref (window);
-
-			rb_debug ("unmounting mount");
-			g_mount_unmount_with_operation (mount,
-							G_MOUNT_UNMOUNT_NONE,
-							op,
-							NULL,
-							(GAsyncReadyCallback) rb_removable_media_manager_unmount_cb,
-							g_object_ref (mgr));
-#else
 			rb_debug ("unmounting mount");
 			g_mount_unmount (mount,
 					 G_MOUNT_UNMOUNT_NONE,
 					 NULL,
 					 (GAsyncReadyCallback) rb_removable_media_manager_unmount_cb,
 					 g_object_ref (mgr));
-#endif
 		} else {
 			/* this should never happen; the eject command will be
 			 * insensitive if the selected source cannot be ejected.
