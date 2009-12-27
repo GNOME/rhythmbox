@@ -2102,7 +2102,7 @@ rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, gboo
 		rb_play_order_go_next (player->priv->queue_play_order);
 		if (queue_entry != NULL) {
 			rb_debug ("got new entry %s from queue play order",
-				  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+				  rhythmdb_entry_get_string (queue_entry, RHYTHMDB_PROP_LOCATION));
 			if (entry != NULL) {
 				rhythmdb_entry_unref (entry);
 			}
