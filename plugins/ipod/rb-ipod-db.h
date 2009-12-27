@@ -72,6 +72,7 @@ void rb_ipod_db_set_ipod_name (RbIpodDb *db, const char *name);
 const char *rb_ipod_db_get_ipod_name (RbIpodDb *db);
 
 GList *rb_ipod_db_get_playlists (RbIpodDb *ipod_db);
+Itdb_Playlist *rb_ipod_db_get_playlist_by_name (RbIpodDb *ipod_db, gchar *name);
 GList *rb_ipod_db_get_tracks (RbIpodDb *ipod_db);
 const char *rb_ipod_db_get_mount_path (RbIpodDb *ipod_db);
 Itdb_Device *rb_ipod_db_get_device (RbIpodDb *ipod_db);
