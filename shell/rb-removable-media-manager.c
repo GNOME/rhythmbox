@@ -61,6 +61,17 @@
 #include "rb-util.h"
 #include "rb-encoder.h"
 
+#if !GLIB_CHECK_VERSION(2,22,0)
+#define g_mount_unmount_with_operation_finish g_mount_unmount_finish
+#define g_mount_unmount_with_operation(m,f,mo,ca,cb,ud) g_mount_unmount(m,f,ca,cb,ud)
+
+#define g_mount_eject_with_operation_finish g_mount_eject_finish
+#define g_mount_eject_with_operation(m,f,mo,ca,cb,ud) g_mount_eject(m,f,ca,cb,ud)
+
+#define g_volume_eject_with_operation_finish g_volume_eject_finish
+#define g_volume_eject_with_operation(v,f,mo,ca,cb,ud) g_volume_eject(v,f,ca,cb,ud)
+#endif
+
 static void rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass);
 static void rb_removable_media_manager_init (RBRemovableMediaManager *mgr);
 static void rb_removable_media_manager_dispose (GObject *object);
@@ -863,7 +874,7 @@ rb_removable_media_manager_eject_cb (GObject *object,
 		GVolume *volume = G_VOLUME (object);
 
 		rb_debug ("finishing ejection of volume");
-		g_volume_eject_finish (volume, result, &error);
+		g_volume_eject_with_operation_finish (volume, result, &error);
 		if (error == NULL) {
 			rb_removable_media_manager_remove_volume (mgr, volume);
 		}
@@ -871,7 +882,7 @@ rb_removable_media_manager_eject_cb (GObject *object,
 		GMount *mount = G_MOUNT (object);
 
 		rb_debug ("finishing ejection of mount");
-		g_mount_eject_finish (mount, result, &error);
+		g_mount_eject_with_operation_finish (mount, result, &error);
 		if (error == NULL) {
 			rb_removable_media_manager_remove_mount (mgr, mount);
 		}
@@ -897,7 +908,7 @@ rb_removable_media_manager_unmount_cb (GObject *object,
 	GError *error = NULL;
 
 	rb_debug ("finishing unmount of mount");
-	g_mount_unmount_finish (mount, result, &error);
+	g_mount_unmount_with_operation_finish (mount, result, &error);
 	if (error != NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_FAILED_HANDLED)) {
 			rb_error_dialog (NULL, _("Unable to unmount"), "%s", error->message);
@@ -956,11 +967,12 @@ rb_removable_media_manager_cmd_eject_medium (GtkAction *action, RBRemovableMedia
 	if (volume != NULL) {
 		if (g_volume_can_eject (volume)) {
 			rb_debug ("ejecting volume");
-			g_volume_eject (volume,
-					G_MOUNT_UNMOUNT_NONE,
-					NULL,
-					(GAsyncReadyCallback) rb_removable_media_manager_eject_cb,
-					g_object_ref (mgr));
+			g_volume_eject_with_operation (volume,
+						       G_MOUNT_UNMOUNT_NONE,
+						       NULL,
+						       NULL,
+						       (GAsyncReadyCallback) rb_removable_media_manager_eject_cb,
+						       g_object_ref (mgr));
 		} else {
 			/* this should never happen; the eject command will be
 			 * insensitive if the selected source cannot be ejected.
@@ -975,18 +987,20 @@ rb_removable_media_manager_cmd_eject_medium (GtkAction *action, RBRemovableMedia
 	if (mount != NULL) {
 		if (g_mount_can_eject (mount)) {
 			rb_debug ("ejecting mount");
-			g_mount_eject (mount,
-				       G_MOUNT_UNMOUNT_NONE,
-				       NULL,
-				       (GAsyncReadyCallback) rb_removable_media_manager_eject_cb,
-				       g_object_ref (mgr));
+			g_mount_eject_with_operation (mount,
+						      G_MOUNT_UNMOUNT_NONE,
+						      NULL,
+						      NULL,
+						      (GAsyncReadyCallback) rb_removable_media_manager_eject_cb,
+						      g_object_ref (mgr));
 		} else if (g_mount_can_unmount (mount)) {
 			rb_debug ("unmounting mount");
-			g_mount_unmount (mount,
-					 G_MOUNT_UNMOUNT_NONE,
-					 NULL,
-					 (GAsyncReadyCallback) rb_removable_media_manager_unmount_cb,
-					 g_object_ref (mgr));
+			g_mount_unmount_with_operation (mount,
+							G_MOUNT_UNMOUNT_NONE,
+							NULL,
+							NULL,
+							(GAsyncReadyCallback) rb_removable_media_manager_unmount_cb,
+							g_object_ref (mgr));
 		} else {
 			/* this should never happen; the eject command will be
 			 * insensitive if the selected source cannot be ejected.
