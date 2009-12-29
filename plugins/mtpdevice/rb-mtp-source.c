@@ -725,7 +725,7 @@ mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source)
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 	DeviceOpenedData *data;
 
-	if (device != NULL) {
+	if (device == NULL) {
 		/* can't delete the source on this thread, so move it to the main thread */
 		g_idle_add ((GSourceFunc) device_open_failed_idle, g_object_ref (source));
 		return;
