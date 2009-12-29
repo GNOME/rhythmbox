@@ -117,7 +117,7 @@ static void prepare_encoder_sink_cb (RBEncoderFactory *factory,
 typedef struct
 {
 	RBMtpThread *device_thread;
-	LIBMTP_raw_device_t *raw_device;
+	LIBMTP_raw_device_t raw_device;
 	GHashTable *entry_map;
 	GHashTable *artwork_request_map;
 	GHashTable *track_transfer_map;
@@ -259,7 +259,11 @@ rb_mtp_source_constructed (GObject *object)
 
 	/* start the device thread */
 	priv->device_thread = rb_mtp_thread_new ();
-	rb_mtp_thread_open_device (priv->device_thread, priv->raw_device, (RBMtpOpenCallback)mtp_device_open_cb, g_object_ref (source), g_object_unref);
+	rb_mtp_thread_open_device (priv->device_thread,
+				   &priv->raw_device,
+				   (RBMtpOpenCallback)mtp_device_open_cb,
+				   g_object_ref (source),
+				   g_object_unref);
 
 	tracks = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (tracks, RB_ENTRY_VIEW_COL_RATING, FALSE);
@@ -312,10 +316,12 @@ rb_mtp_source_set_property (GObject *object,
 			    GParamSpec *pspec)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (object);
+	LIBMTP_raw_device_t *raw_device;
 
 	switch (prop_id) {
 	case PROP_RAW_DEVICE:
-		priv->raw_device = g_value_get_pointer (value);
+		raw_device = g_value_get_pointer (value);
+		priv->raw_device = *raw_device;
 		break;
 #if !defined(HAVE_GUDEV)
 	case PROP_UDI:
@@ -338,7 +344,7 @@ rb_mtp_source_get_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_RAW_DEVICE:
-		g_value_set_pointer (value, priv->raw_device);
+		g_value_set_pointer (value, &priv->raw_device);
 		break;
 #if !defined(HAVE_GUDEV)
 	case PROP_UDI:
