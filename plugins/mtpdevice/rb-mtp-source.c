@@ -701,6 +701,18 @@ device_opened_idle (DeviceOpenedData *data)
 static gboolean
 device_open_failed_idle (RBMtpSource *source)
 {
+	/* libmtp doesn't give us a useful error message in this case, so
+	 * all we can offer is this generic message.
+	 */
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	rb_error_dialog (NULL,
+			 _("Media player device error"),
+			 /* Translators: first %s is the device manufacturer,
+			  * second is the product name.
+			  */
+			 _("Unable to open the %s %s device"),
+			 priv->raw_device.device_entry.vendor,
+			 priv->raw_device.device_entry.product);
 	rb_source_delete_thyself (RB_SOURCE (source));
 	g_object_unref (source);
 	return FALSE;
@@ -713,9 +725,7 @@ mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source)
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 	DeviceOpenedData *data;
 
-	if (device == NULL) {
-		rb_mtp_thread_report_errors (priv->device_thread, TRUE);
-
+	if (device != NULL) {
 		/* can't delete the source on this thread, so move it to the main thread */
 		g_idle_add ((GSourceFunc) device_open_failed_idle, g_object_ref (source));
 		return;
