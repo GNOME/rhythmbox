@@ -327,9 +327,10 @@ source_deleted_cb (RBMtpSource *source, RBMtpPlugin *plugin)
 }
 
 static RBSource *
-create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device, RBMtpPlugin *plugin)
+create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMtpPlugin *plugin)
 {
 	GUdevDeviceNumber device_number;
+	GUdevDevice *device = G_UDEV_DEVICE (device_obj);
 	int i;
 	int num_raw_devices;
 	const char *devnum_str;
@@ -337,22 +338,22 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device, RBMtpPlu
 	LIBMTP_raw_device_t *raw_devices;
 
 	/* check subsystem == usb? */
-	if (g_strcmp0 (g_udev_device_get_subsystem (G_UDEV_DEVICE (device)), "usb") != 0) {
-		rb_debug ("this is not a USB device");
+	if (g_strcmp0 (g_udev_device_get_subsystem (device), "usb") != 0) {
+		rb_debug ("device %s is not a USB device", g_udev_device_get_name (device));
 		return NULL;
 	}
 
-	device_number = g_udev_device_get_device_number (G_UDEV_DEVICE (device));
+	device_number = g_udev_device_get_device_number (device);
 	if (device_number == 0) {
-		rb_debug ("can't get udev device number for this device");
+		rb_debug ("can't get udev device number for device %s", g_udev_device_get_name (device));
 		return NULL;
 	}
 	/* fun thing: usb device numbers are zero padded, which causes strtol to
 	 * interpret them as octal if you don't specify a base.
 	 */
-	devnum_str = g_udev_device_get_property (G_UDEV_DEVICE (device), "DEVNUM");
+	devnum_str = g_udev_device_get_property (device, "DEVNUM");
 	if (devnum_str == NULL) {
-		rb_debug ("device doesn't have a USB device number");
+		rb_debug ("device %s doesn't have a USB device number", g_udev_device_get_name (device));
 		return NULL;
 	}
 	devnum = strtol (devnum_str, NULL, 10);
