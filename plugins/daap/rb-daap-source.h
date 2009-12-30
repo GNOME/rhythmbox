@@ -34,6 +34,8 @@
 #include "rb-browser-source.h"
 #include "rb-plugin.h"
 
+#include <gst/gst.h>
+
 G_BEGIN_DECLS
 
 #define RB_TYPE_DAAP_SOURCE         (rb_daap_source_get_type ())
@@ -67,9 +69,8 @@ RBSource *	rb_daap_source_new 		(RBShell *shell,
 
 void 		rb_daap_source_disconnect 	(RBDAAPSource *daap_source);
 
-gchar *		rb_daap_source_get_headers 	(RBDAAPSource *source,
-					    	 const gchar *uri,
-					    	 gint64 bytes);
+GstStructure *	rb_daap_source_get_headers 	(RBDAAPSource *source,
+						 const gchar *uri);
 
 G_END_DECLS
 

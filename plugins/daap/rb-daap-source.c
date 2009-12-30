@@ -726,17 +726,16 @@ rb_daap_source_show_popup (RBSource *source)
 	return TRUE;
 }
 
-char *
+GstStructure *
 rb_daap_source_get_headers (RBDAAPSource *source,
-			    const char *uri,
-			    gint64 bytes)
+			    const char *uri)
 {
 	/* If there is no connection then bail */
 	if (source->priv->connection == NULL) {
 		return NULL;
 	}
 
-	return rb_daap_connection_get_headers (source->priv->connection, uri, bytes);
+	return rb_daap_connection_get_headers (source->priv->connection, uri);
 }
 
 static char *
