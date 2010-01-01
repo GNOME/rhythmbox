@@ -3718,7 +3718,11 @@ rb_shell_player_playing_changed_cb (RBShellPlayer *player,
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlPlay");
 	if (playing) {
-		tooltip = g_strdup (_("Stop playback"));
+		if (rb_source_can_pause (player->priv->source)) {
+			tooltip = g_strdup (_("Pause playback"));
+		} else {
+			tooltip = g_strdup (_("Stop playback"));
+		}
 	} else {
 		tooltip = g_strdup (_("Start playback"));
 	}
