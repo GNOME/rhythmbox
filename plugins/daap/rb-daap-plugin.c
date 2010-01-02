@@ -887,7 +887,8 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 				  plugin);
 		gtk_widget_hide_on_delete (plugin->priv->preferences);
 
-		gtk_container_add (GTK_CONTAINER (GTK_DIALOG (plugin->priv->preferences)->vbox), widget);
+		gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (plugin->priv->preferences))),
+				   widget);
 	} else {
 		update_config_widget (plugin);
 	}

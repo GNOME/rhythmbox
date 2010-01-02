@@ -165,6 +165,7 @@ static void
 rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 {
 	GtkWidget *tmp;
+	GtkWidget *content_area;
 	GtkBuilder *builder;
 
 	shell_preferences->priv = RB_SHELL_PREFERENCES_GET_PRIVATE (shell_preferences);
@@ -195,11 +196,13 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	shell_preferences->priv->notebook = GTK_WIDGET (gtk_notebook_new ());
 	gtk_container_set_border_width (GTK_CONTAINER (shell_preferences->priv->notebook), 5);
 
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (shell_preferences)->vbox),
+	content_area = gtk_dialog_get_content_area (GTK_DIALOG (shell_preferences));
+
+	gtk_container_add (GTK_CONTAINER (content_area),
 			   shell_preferences->priv->notebook);
 
 	gtk_container_set_border_width (GTK_CONTAINER (shell_preferences), 5);
-	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (shell_preferences)->vbox), 2);
+	gtk_box_set_spacing (GTK_BOX (content_area), 2);
 	gtk_dialog_set_has_separator (GTK_DIALOG (shell_preferences), FALSE);
 
 	builder = rb_builder_load ("general-prefs.ui", shell_preferences);

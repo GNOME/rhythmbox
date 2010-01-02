@@ -33,6 +33,8 @@
 
 #include "gossip-cell-renderer-expander.h"
 
+#include "gseal-gtk-compat.h"
+
 #define GET_PRIV(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GOSSIP_TYPE_CELL_RENDERER_EXPANDER, GossipCellRendererExpanderPriv))
 
 static void     gossip_cell_renderer_expander_init         (GossipCellRendererExpander      *expander);
@@ -106,9 +108,10 @@ gossip_cell_renderer_expander_init (GossipCellRendererExpander *expander)
 	priv->activatable = TRUE;
 	priv->animation_node = NULL;
 
-	GTK_CELL_RENDERER (expander)->xpad = 2;
-	GTK_CELL_RENDERER (expander)->ypad = 2;
-	GTK_CELL_RENDERER (expander)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
+	gtk_cell_renderer_set_padding (GTK_CELL_RENDERER (expander), 2, 2);
+	g_object_set (expander,
+		      "mode", GTK_CELL_RENDERER_MODE_ACTIVATABLE,
+		      NULL);
 }
 
 static void
@@ -257,18 +260,24 @@ gossip_cell_renderer_expander_get_size (GtkCellRenderer *cell,
 {
 	GossipCellRendererExpander     *expander;
 	GossipCellRendererExpanderPriv *priv;
+	gint                            xpad, ypad;
+	gfloat                          xalign, yalign;
 
 	expander = (GossipCellRendererExpander*) cell;
 	priv = GET_PRIV (expander);
+	gtk_cell_renderer_get_padding (cell, &xpad, &ypad);
 
 	if (cell_area) {
+
+		gtk_cell_renderer_get_alignment (cell, &xalign, &yalign);
+
 		if (x_offset) {
-			*x_offset = cell->xalign * (cell_area->width - (priv->expander_size + (2 * cell->xpad)));
+			*x_offset = xalign * (cell_area->width - (priv->expander_size + (2 * xpad)));
 			*x_offset = MAX (*x_offset, 0);
 		}
 
 		if (y_offset) {
-			*y_offset = cell->yalign * (cell_area->height - (priv->expander_size + (2 * cell->ypad)));
+			*y_offset = yalign * (cell_area->height - (priv->expander_size + (2 * ypad)));
 			*y_offset = MAX (*y_offset, 0);
 		}
 	} else {
@@ -280,10 +289,10 @@ gossip_cell_renderer_expander_get_size (GtkCellRenderer *cell,
 	}
 
 	if (width)
-		*width = cell->xpad * 2 + priv->expander_size;
+		*width = xpad * 2 + priv->expander_size;
 
 	if (height)
-		*height = cell->ypad * 2 + priv->expander_size;
+		*height = ypad * 2 + priv->expander_size;
 }
 
 static void
@@ -299,6 +308,7 @@ gossip_cell_renderer_expander_render (GtkCellRenderer      *cell,
 	GossipCellRendererExpanderPriv *priv;
 	GtkExpanderStyle                expander_style;
 	gint                            x_offset, y_offset;
+	gint                            xpad, ypad;
 
 	expander = (GossipCellRendererExpander*) cell;
 	priv = GET_PRIV (expander);
@@ -323,15 +333,16 @@ gossip_cell_renderer_expander_render (GtkCellRenderer      *cell,
 	gossip_cell_renderer_expander_get_size (cell, widget, cell_area,
 						&x_offset, &y_offset,
 						NULL, NULL);
+	gtk_cell_renderer_get_padding (cell, &xpad, &ypad);
 
-	gtk_paint_expander (widget->style,
+	gtk_paint_expander (gtk_widget_get_style (widget),
 			    window,
 			    GTK_STATE_NORMAL,
 			    expose_area,
 			    widget,
 			    "treeview",
-			    cell_area->x + x_offset + cell->xpad + priv->expander_size / 2,
-			    cell_area->y + y_offset + cell->ypad + priv->expander_size / 2,
+			    cell_area->x + x_offset + xpad + priv->expander_size / 2,
+			    cell_area->y + y_offset + ypad + priv->expander_size / 2,
 			    expander_style);
 }
 
@@ -339,15 +350,17 @@ static void
 invalidate_node (GtkTreeView *tree_view,
 		 GtkTreePath *path)
 {
-       GdkWindow    *bin_window;
-       GdkRectangle  rect;
+       GtkAllocation  allocation;
+       GdkWindow     *bin_window;
+       GdkRectangle   rect;
 
        bin_window = gtk_tree_view_get_bin_window (tree_view);
 
        gtk_tree_view_get_background_area (tree_view, path, NULL, &rect);
+       gtk_widget_get_allocation (GTK_WIDGET (tree_view), &allocation);
 
        rect.x = 0;
-       rect.width = GTK_WIDGET (tree_view)->allocation.width;
+       rect.width = allocation.width;
 
        gdk_window_invalidate_rect (bin_window, &rect, TRUE);
 }

@@ -30,8 +30,10 @@
 
 #include <math.h>
 
+#include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
+#include "gseal-gtk-compat.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-rating-helper.h"
 #include "rb-stock-icons.h"
@@ -179,18 +181,19 @@ rb_rating_render_stars (GtkWidget *widget,
 	for (i = 0; i < RB_RATING_MAX_SCORE; i++) {
 		GdkPixbuf *buf;
 		GtkStateType state;
+		GtkStyle *style;
 		gint star_offset;
 		int offset;
 
 		if (selected == TRUE) {
 			offset = 0;
-			if (GTK_WIDGET_HAS_FOCUS (widget))
+			if (gtk_widget_has_focus (widget))
 				state = GTK_STATE_SELECTED;
 			else
 				state = GTK_STATE_ACTIVE;
 		} else {
 			offset = 120;
-			if (GTK_WIDGET_STATE (widget) == GTK_STATE_INSENSITIVE)
+			if (gtk_widget_get_state (widget) == GTK_STATE_INSENSITIVE)
 				state = GTK_STATE_INSENSITIVE;
 			else
 				state = GTK_STATE_NORMAL;
@@ -207,10 +210,11 @@ rb_rating_render_stars (GtkWidget *widget,
 			return FALSE;
 		}
 
+		style = gtk_widget_get_style (widget);
 		buf = eel_create_colorized_pixbuf (buf,
-						   (widget->style->text[state].red + offset) >> 8,
-						   (widget->style->text[state].green + offset) >> 8,
-						   (widget->style->text[state].blue + offset) >> 8);
+						   (style->text[state].red + offset) >> 8,
+						   (style->text[state].green + offset) >> 8,
+						   (style->text[state].blue + offset) >> 8);
 		if (buf == NULL) {
 			return FALSE;
 		}

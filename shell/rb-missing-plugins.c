@@ -211,7 +211,7 @@ missing_plugins_event (RBShell *shell, RBPluginInstallContext *ctx)
 	if (window != NULL && GTK_WIDGET_REALIZED (window)) {
 #ifdef GDK_WINDOWING_X11
 		gulong xid = 0;
-		xid = GDK_WINDOW_XWINDOW (GTK_WIDGET (window)->window);
+		xid = gdk_x11_drawable_get_xid (gtk_widget_get_window (GTK_WIDGET (window)));
 		gst_install_plugins_context_set_xid (install_ctx, xid);
 #endif
 		g_object_unref (window);

@@ -77,6 +77,8 @@
 #include "rb-play-order.h"
 #include "rb-lastfm-play-order.h"
 
+#include "gseal-gtk-compat.h"
+
 #define LASTFM_URL "ws.audioscrobbler.com"
 #define RB_LASTFM_PLATFORM "linux"
 #define RB_LASTFM_VERSION "1.5"
@@ -765,7 +767,7 @@ set_message_area_text_and_icon (RBLastfmSource *source,
 	gtk_label_set_use_markup (GTK_LABEL (primary_label), TRUE);
 	gtk_label_set_line_wrap (GTK_LABEL (primary_label), TRUE);
 	gtk_misc_set_alignment (GTK_MISC (primary_label), 0, 0.5);
-	GTK_WIDGET_SET_FLAGS (primary_label, GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus (primary_label, TRUE);
 	gtk_label_set_selectable (GTK_LABEL (primary_label), TRUE);
 
   	if (secondary_text != NULL) {
@@ -775,7 +777,7 @@ set_message_area_text_and_icon (RBLastfmSource *source,
 		g_free (secondary_markup);
 		gtk_widget_show (secondary_label);
 		gtk_box_pack_start (GTK_BOX (vbox), secondary_label, TRUE, TRUE, 0);
-		GTK_WIDGET_SET_FLAGS (secondary_label, GTK_CAN_FOCUS);
+		gtk_widget_set_can_focus (secondary_label, TRUE);
 		gtk_label_set_use_markup (GTK_LABEL (secondary_label), TRUE);
 		gtk_label_set_line_wrap (GTK_LABEL (secondary_label), TRUE);
 		gtk_label_set_selectable (GTK_LABEL (secondary_label), TRUE);
@@ -1187,7 +1189,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *selection_data)
 	char *title = NULL;
 	RBLastfmSource *source = RB_LASTFM_SOURCE (asource);
 
-	uri = (char *)selection_data->data;
+	uri = (char *) gtk_selection_data_get_data (selection_data);
 	rb_debug ("parsing uri %s", uri);
 
 	if (strstr (uri, "lastfm://") == NULL)

@@ -43,6 +43,8 @@
 #include "rb-debug.h"
 #include "rb-builder-helpers.h"
 
+#include "gseal-gtk-compat.h"
+
 enum
 {
 	ACTIVE_COLUMN,
@@ -199,12 +201,15 @@ cursor_changed_cb (GtkTreeSelection *selection,
 	icon = rb_plugins_engine_get_plugin_icon (info);
 	if (icon != NULL) {
 		/* rescale icon to fit header if needed */
+		GtkAllocation allocation;
 		GdkPixbuf *icon_scaled;
 		gint width, height, header_height;
 
+		gtk_widget_get_allocation (pm->priv->header_hbox, &allocation);
+
 		width = gdk_pixbuf_get_width (icon);
 		height = gdk_pixbuf_get_height (icon);
-		header_height = pm->priv->header_hbox->allocation.height;
+		header_height = allocation.height;
 		if (height > header_height) {
 			icon_scaled = gdk_pixbuf_scale_simple (icon,
 							       (gfloat)width/height*header_height, header_height,

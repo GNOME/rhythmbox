@@ -1048,6 +1048,7 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (dragsource);
 	guint target;
 	GtkTargetList *drag_target_list;
+	GdkAtom selection_data_target;
 
 	switch (model->priv->propid) {
 	case RHYTHMDB_PROP_GENRE:
@@ -1066,8 +1067,9 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 		g_assert_not_reached ();
 	}
 
+	selection_data_target = gtk_selection_data_get_target (selection_data);
 	if (!gtk_target_list_find (drag_target_list,
-				   selection_data->target,
+				   selection_data_target,
 				   &target)) {
 		return FALSE;
 	}
@@ -1160,7 +1162,7 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 		g_object_unref (query_model);
 
  		gtk_selection_data_set (selection_data,
- 		                        selection_data->target,
+					selection_data_target,
  		                        8, (guchar *)reply->str,
  		                        reply->len);
  		g_string_free (reply, TRUE);
@@ -1188,7 +1190,7 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 			gtk_tree_path_free (path);
 		}
 		gtk_selection_data_set (selection_data,
-					selection_data->target,
+					selection_data_target,
 					8, (guchar *)reply->str,
 					reply->len);
 		g_string_free (reply, TRUE);

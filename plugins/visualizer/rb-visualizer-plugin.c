@@ -825,10 +825,13 @@ actually_hide_controls (RBVisualizerPlugin *plugin)
 		gtk_widget_grab_focus (plugin->vis_widget);
 
 		if (GTK_WIDGET_REALIZED (plugin->vis_widget)) {
+			GdkWindow *window;
 			GdkCursor *cursor;
 
-			cursor = get_blank_cursor (plugin->vis_widget->window);
-			gdk_window_set_cursor (plugin->vis_widget->window, cursor);
+			window = gtk_widget_get_window (plugin->vis_widget);
+
+			cursor = get_blank_cursor (window);
+			gdk_window_set_cursor (window, cursor);
 			gdk_cursor_unref (cursor);
 		}
 		/* fall through */
@@ -884,7 +887,8 @@ show_controls (RBVisualizerPlugin *plugin, gboolean play_controls_only)
 			gtk_widget_show (plugin->play_control_widget);
 			gtk_widget_show (plugin->disable_button);
 			if (GTK_WIDGET_REALIZED (plugin->vis_widget)) {
-				gdk_window_set_cursor (plugin->vis_widget->window, NULL);
+				gdk_window_set_cursor (gtk_widget_get_window (plugin->vis_widget),
+						       NULL);
 			}
 			break;
 		case EXTERNAL_WINDOW:

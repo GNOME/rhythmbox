@@ -519,7 +519,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	char *type;
 
 	entries = NULL;
-	type = gdk_atom_name (data->type);
+	type = gdk_atom_name (gtk_selection_data_get_data_type (data));
         db = get_db_for_source (asource);
 
 	if (strcmp (type, "text/uri-list") == 0) {
@@ -527,7 +527,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		GList *i;
 
 		rb_debug ("parsing uri list");
-		list = rb_uri_list_parse ((const char *) data->data);
+		list = rb_uri_list_parse ((const char *) gtk_selection_data_get_data (data));
 
 		for (i = list; i != NULL; i = g_list_next (i)) {
 			char *uri;
@@ -554,7 +554,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		char **i;
 
 		rb_debug ("parsing entry ids");
-		list = g_strsplit ((const char*)data->data, "\n", -1);
+		list = g_strsplit ((const char*) gtk_selection_data_get_data (data), "\n", -1);
 		for (i = list; *i != NULL; i++) {
 			RhythmDBEntry *entry;
 			gulong id;

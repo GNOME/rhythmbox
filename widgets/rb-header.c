@@ -304,7 +304,7 @@ rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, 
 		header->priv->duration = 0;
 	}
 
-	header->priv->adjustment->upper = header->priv->duration;
+	gtk_adjustment_set_upper (header->priv->adjustment, header->priv->duration);
 	gtk_adjustment_changed (header->priv->adjustment);
 
 	rb_header_sync (header);

@@ -179,6 +179,7 @@ rb_query_creator_constructed (GObject *object)
 	RBQueryCreatorPrivate *priv;
 	RBQueryCreator *creator;
 	GtkWidget *mainbox;
+	GtkWidget *content_area;
 	GtkBuilder *builder;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_query_creator_parent_class, constructed, object);
@@ -211,8 +212,10 @@ rb_query_creator_constructed (GObject *object)
 	else
 		gtk_window_set_title (GTK_WINDOW (creator), _("Edit Automatic Playlist"));
 
+	content_area = gtk_dialog_get_content_area (GTK_DIALOG (creator));
+
 	gtk_container_set_border_width (GTK_CONTAINER (creator), 5);
-	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (creator)->vbox), 2);
+	gtk_box_set_spacing (GTK_BOX (content_area), 2);
 	gtk_dialog_set_has_separator (GTK_DIALOG (creator), FALSE);
 
 	builder = rb_builder_load ("create-playlist.ui", creator);
@@ -243,7 +246,7 @@ rb_query_creator_constructed (GObject *object)
 		append_row (creator);
 
 	mainbox = GTK_WIDGET (gtk_builder_get_object (builder, "complex-playlist-creator"));
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (creator)->vbox), mainbox, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (content_area), mainbox, FALSE, FALSE, 0);
 	gtk_widget_show_all (GTK_WIDGET (creator));
 
 	g_object_unref (builder);

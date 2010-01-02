@@ -43,6 +43,7 @@
 #include <X11/XF86keysym.h>
 #endif /* HAVE_MMKEYS */
 
+#include "gseal-gtk-compat.h"
 #include "rb-shell.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -1432,7 +1433,7 @@ rb_shell_window_state_cb (GtkWidget *widget,
 	}
 
 	/* don't save maximized state when is hidden */
-	if (!GTK_WIDGET_VISIBLE(shell->priv->window))
+	if (!gtk_widget_get_visible (shell->priv->window))
 		return FALSE;
 
 	if (event->changed_mask & GDK_WINDOW_STATE_MAXIMIZED) {
@@ -1468,7 +1469,7 @@ rb_shell_get_visibility (RBShell *shell)
 	if (shell->priv->iconified)
 		return FALSE;
 
-	state = gdk_window_get_state (GTK_WIDGET (shell->priv->window)->window);
+	state = gdk_window_get_state (gtk_widget_get_window (GTK_WIDGET (shell->priv->window)));
 	if (state & (GDK_WINDOW_STATE_WITHDRAWN | GDK_WINDOW_STATE_ICONIFIED))
 		return FALSE;
 
@@ -2215,6 +2216,7 @@ rb_shell_cmd_plugins (GtkAction *action,
 		      RBShell *shell)
 {
 	if (shell->priv->plugins == NULL) {
+		GtkWidget *content_area;
 		GtkWidget *manager;
 
 		shell->priv->plugins = gtk_dialog_new_with_buttons (_("Configure Plugins"),
@@ -2223,8 +2225,9 @@ rb_shell_cmd_plugins (GtkAction *action,
 								    GTK_STOCK_CLOSE,
 								    GTK_RESPONSE_CLOSE,
 								    NULL);
+		content_area = gtk_dialog_get_content_area (GTK_DIALOG (shell->priv->plugins));
 	    	gtk_container_set_border_width (GTK_CONTAINER (shell->priv->plugins), 5);
-		gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (shell->priv->plugins)->vbox), 2);
+		gtk_box_set_spacing (GTK_BOX (content_area), 2);
 		gtk_dialog_set_has_separator (GTK_DIALOG (shell->priv->plugins), FALSE);
 
 		g_signal_connect_object (G_OBJECT (shell->priv->plugins),
@@ -2238,7 +2241,7 @@ rb_shell_cmd_plugins (GtkAction *action,
 
 		manager = rb_plugin_manager_new ();
 		gtk_widget_show_all (GTK_WIDGET (manager));
-		gtk_container_add (GTK_CONTAINER (GTK_DIALOG (shell->priv->plugins)->vbox),
+		gtk_container_add (GTK_CONTAINER (content_area),
 				   manager);
 	}
 

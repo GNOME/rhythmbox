@@ -628,7 +628,7 @@ rb_plugins_engine_configure_plugin (RBPluginInfo *info,
 	gtk_window_set_transient_for (GTK_WINDOW (conf_dlg),
 				      parent);
 
-	wg = parent->group;
+	wg = gtk_window_get_group (parent);
 	if (wg == NULL)
 	{
 		wg = gtk_window_group_new ();

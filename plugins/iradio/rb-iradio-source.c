@@ -939,7 +939,7 @@ stations_view_drag_data_received_cb (GtkWidget *widget,
 	GList *uri_list, *i;
 
 	rb_debug ("parsing uri list");
-	uri_list = rb_uri_list_parse ((char *)selection_data->data);
+	uri_list = rb_uri_list_parse ((char *) gtk_selection_data_get_data (selection_data));
 	if (uri_list == NULL)
 		return;
 

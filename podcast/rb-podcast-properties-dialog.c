@@ -133,6 +133,7 @@ rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass)
 static void
 rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 {
+	GtkWidget  *content_area;
 	GtkBuilder *builder;
 	AtkObject *lobj, *robj;
 
@@ -145,16 +146,18 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 				 G_CALLBACK (rb_podcast_properties_dialog_response_cb),
 				 dialog, 0);
 
+	content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
-	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
+	gtk_box_set_spacing (GTK_BOX (content_area), 2);
 
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 					 GTK_RESPONSE_OK);
 
 	builder = rb_builder_load ("podcast-properties.ui", dialog);
 
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
+	gtk_container_add (GTK_CONTAINER (content_area),
 			   GTK_WIDGET (gtk_builder_get_object (builder, "podcastproperties")));
 	dialog->priv->close_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
 							    GTK_STOCK_CLOSE,

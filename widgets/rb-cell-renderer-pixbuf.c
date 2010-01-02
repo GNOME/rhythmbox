@@ -26,6 +26,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "gseal-gtk-compat.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cut-and-paste-code.h"
 
@@ -87,9 +88,10 @@ static guint rb_cell_renderer_pixbuf_signals [LAST_SIGNAL] = { 0 };
 static void
 rb_cell_renderer_pixbuf_init (RBCellRendererPixbuf *cellpixbuf)
 {
-
 	/* set the renderer able to be activated */
-	GTK_CELL_RENDERER (cellpixbuf)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
+	g_object_set (cellpixbuf,
+		      "mode", GTK_CELL_RENDERER_MODE_ACTIVATABLE,
+		      NULL);
 }
 
 static void
@@ -210,6 +212,8 @@ rb_cell_renderer_pixbuf_get_size (GtkCellRenderer *cell,
   gint pixbuf_height = 0;
   gint calc_width;
   gint calc_height;
+  gint xpad, ypad;
+  gfloat xalign, yalign;
 
   if (cellpixbuf->pixbuf)
     {
@@ -217,23 +221,26 @@ rb_cell_renderer_pixbuf_get_size (GtkCellRenderer *cell,
       pixbuf_height = gdk_pixbuf_get_height (cellpixbuf->pixbuf);
     }
 
-  calc_width = (gint) GTK_CELL_RENDERER (cellpixbuf)->xpad * 2 + pixbuf_width;
-  calc_height = (gint) GTK_CELL_RENDERER (cellpixbuf)->ypad * 2 + pixbuf_height;
+  gtk_cell_renderer_get_padding (GTK_CELL_RENDERER (cellpixbuf), &xpad, &ypad);
+  calc_width = xpad * 2 + pixbuf_width;
+  calc_height = ypad * 2 + pixbuf_height;
 
   if (x_offset) *x_offset = 0;
   if (y_offset) *y_offset = 0;
 
   if (cell_area && pixbuf_width > 0 && pixbuf_height > 0)
     {
+      gtk_cell_renderer_get_alignment (GTK_CELL_RENDERER (cellpixbuf), &xalign, &yalign);
+
       if (x_offset)
 	{
-	  *x_offset = GTK_CELL_RENDERER (cellpixbuf)->xalign * (cell_area->width - calc_width - (2 * GTK_CELL_RENDERER (cellpixbuf)->xpad));
-	  *x_offset = MAX (*x_offset, 0) + GTK_CELL_RENDERER (cellpixbuf)->xpad;
+	  *x_offset = xalign * (cell_area->width - calc_width - (2 * xpad));
+	  *x_offset = MAX (*x_offset, 0) + xpad;
 	}
       if (y_offset)
 	{
-	  *y_offset = GTK_CELL_RENDERER (cellpixbuf)->yalign * (cell_area->height - calc_height - (2 * GTK_CELL_RENDERER (cellpixbuf)->ypad));
-	  *y_offset = MAX (*y_offset, 0) + GTK_CELL_RENDERER (cellpixbuf)->ypad;
+	  *y_offset = yalign * (cell_area->height - calc_height - (2 * ypad));
+	  *y_offset = MAX (*y_offset, 0) + ypad;
 	}
     }
 
@@ -258,17 +265,18 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
   GdkRectangle pix_rect;
   GdkRectangle draw_rect;
   GtkStateType state;
+  gint xpad, ypad;
 
   if ((flags & GTK_CELL_RENDERER_SELECTED) == GTK_CELL_RENDERER_SELECTED)
     {
-      if (GTK_WIDGET_HAS_FOCUS (widget))
+      if (gtk_widget_has_focus (widget))
         state = GTK_STATE_SELECTED;
       else
         state = GTK_STATE_ACTIVE;
     }
   else
     {
-      if (GTK_WIDGET_STATE (widget) == GTK_STATE_INSENSITIVE)
+      if (gtk_widget_get_state (widget) == GTK_STATE_INSENSITIVE)
         state = GTK_STATE_INSENSITIVE;
       else
         state = GTK_STATE_NORMAL;
@@ -285,8 +293,9 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
 
   pix_rect.x += cell_area->x;
   pix_rect.y += cell_area->y;
-  pix_rect.width -= cell->xpad * 2;
-  pix_rect.height -= cell->ypad * 2;
+  gtk_cell_renderer_get_padding (cell, &xpad, &ypad);
+  pix_rect.width -= xpad * 2;
+  pix_rect.height -= ypad * 2;
 
   if (gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect))
     gdk_draw_pixbuf (window,

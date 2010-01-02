@@ -1755,6 +1755,7 @@ rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (dragsource);
 	RhythmDBEntry *entry;
+	GdkAtom selection_data_target;
 	GString *data;
 	guint target;
 	GList *tem;
@@ -1762,8 +1763,9 @@ rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 
 	rb_debug ("getting drag data");
 
+	selection_data_target = gtk_selection_data_get_target (selection_data);
 	if (!gtk_target_list_find (rhythmdb_query_model_drag_target_list,
-				  selection_data->target, &target)) {
+				   selection_data_target, &target)) {
 		return FALSE;
 	}
 
@@ -1803,7 +1805,7 @@ rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 	}
 
 	gtk_selection_data_set (selection_data,
-				selection_data->target,
+				selection_data_target,
 				8, (guchar *) data->str,
 				data->len);
 
@@ -1849,7 +1851,8 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 	if (model->priv->sort_func != NULL)
 		return FALSE;
 
-	if (selection_data->format == 8 && selection_data->length >= 0) {
+	if ((gtk_selection_data_get_format (selection_data) == 8) &&
+	    (gtk_selection_data_get_length (selection_data) >= 0)) {
 		GtkTreeIter iter;
 		GSequenceIter *ptr;
 		char **strv;
@@ -1857,9 +1860,9 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 		gboolean uri_list;
 		int i = 0;
 
-		uri_list = (selection_data->type == gdk_atom_intern ("text/uri-list", TRUE));
+		uri_list = (gtk_selection_data_get_data_type (selection_data) == gdk_atom_intern ("text/uri-list", TRUE));
 
-		strv = g_strsplit ((char *) selection_data->data, "\r\n", -1);
+		strv = g_strsplit ((char *) gtk_selection_data_get_data (selection_data), "\r\n", -1);
 
 		if (dest == NULL || !rhythmdb_query_model_get_iter (GTK_TREE_MODEL (model), &iter, dest))
 			ptr = g_sequence_get_end_iter (model->priv->entries);

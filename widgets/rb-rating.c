@@ -37,6 +37,8 @@
 #include "rb-stock-icons.h"
 #include "rb-cut-and-paste-code.h"
 
+#include "gseal-gtk-compat.h"
+
 /* Offset at the beggining of the widget */
 #define X_OFFSET 0
 
@@ -284,15 +286,21 @@ rb_rating_new ()
 static void
 rb_rating_realize (GtkWidget *widget)
 {
+	GtkAllocation allocation;
+	GtkStyle *style;
 	GdkWindowAttr attributes;
+	GdkWindow *window;
 	int attributes_mask;
 
-	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED | GTK_CAN_FOCUS);
+	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+	gtk_widget_set_can_focus (widget, TRUE);
 
-	attributes.x = widget->allocation.x;
-	attributes.y = widget->allocation.y;
-	attributes.width = widget->allocation.width;
-	attributes.height = widget->allocation.height;
+	gtk_widget_get_allocation (widget, &allocation);
+
+	attributes.x = allocation.x;
+	attributes.y = allocation.y;
+	attributes.width = allocation.width;
+	attributes.height = allocation.height;
 	attributes.wclass = GDK_INPUT_OUTPUT;
 	attributes.window_type = GDK_WINDOW_CHILD;
 	attributes.event_mask = gtk_widget_get_events (widget) | GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_FOCUS_CHANGE_MASK;
@@ -300,12 +308,14 @@ rb_rating_realize (GtkWidget *widget)
 	attributes.colormap = gtk_widget_get_colormap (widget);
 
 	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
-	widget->window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
-	widget->style = gtk_style_attach (widget->style, widget->window);
 
-	gdk_window_set_user_data (widget->window, widget);
+	window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
+	gtk_widget_set_window (widget, window);
+	gdk_window_set_user_data (window, widget);
 
-	gtk_style_set_background (widget->style, widget->window, GTK_STATE_ACTIVE);
+	style = gtk_style_attach (gtk_widget_get_style (widget), window);
+	gtk_widget_set_style (widget, style);
+	gtk_style_set_background (style, window, GTK_STATE_ACTIVE);
 }
 
 static void
@@ -326,6 +336,7 @@ static gboolean
 rb_rating_expose (GtkWidget *widget,
 		  GdkEventExpose *event)
 {
+	GdkWindow *window;
 	gboolean ret;
 	RBRating *rating;
 	int x = 0;
@@ -335,24 +346,25 @@ rb_rating_expose (GtkWidget *widget,
 	int focus_width;
 
 	g_return_val_if_fail (RB_IS_RATING (widget), FALSE);
-	if (GTK_WIDGET_DRAWABLE (widget) == FALSE) {
+	if (!gtk_widget_is_drawable (widget)) {
 		return FALSE;
 	}
 
 	ret = FALSE;
 	rating = RB_RATING (widget);
 
-	gdk_drawable_get_size (widget->window, &width, &height);
+	window = gtk_widget_get_window (widget);
+	gdk_drawable_get_size (window, &width, &height);
 
 	gtk_widget_style_get (widget, "focus-line-width", &focus_width, NULL);
-	if (GTK_WIDGET_HAS_FOCUS (widget)) {
+	if (gtk_widget_has_focus (widget)) {
 		x += focus_width;
 		y += focus_width;
 		width -= 2 * focus_width;
 		height -= 2 * focus_width;
 	}
 
-	gtk_paint_flat_box (widget->style, widget->window,
+	gtk_paint_flat_box (gtk_widget_get_style (widget), window,
 			    GTK_STATE_NORMAL, GTK_SHADOW_IN,
 			    NULL, widget, "entry_bg", x, y,
 			    width, height);
@@ -360,7 +372,7 @@ rb_rating_expose (GtkWidget *widget,
 	/* draw the stars */
 	if (rating->priv->pixbufs != NULL) {
 		ret = rb_rating_render_stars (widget,
-					      widget->window,
+					      window,
 					      rating->priv->pixbufs,
 					      0, 0,
 					      X_OFFSET, Y_OFFSET,
@@ -378,6 +390,7 @@ rb_rating_button_press_cb (GtkWidget *widget,
 	int mouse_x, mouse_y;
 	double new_rating;
 	RBRating *rating;
+	GtkAllocation allocation;
 	
 	g_return_val_if_fail (widget != NULL, FALSE);
 	g_return_val_if_fail (RB_IS_RATING (widget), FALSE);
@@ -385,9 +398,10 @@ rb_rating_button_press_cb (GtkWidget *widget,
 	rating = RB_RATING (widget);
 
 	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
+	gtk_widget_get_allocation (widget, &allocation);
 
 	new_rating = rb_rating_get_rating_from_widget (widget, mouse_x,
-						       widget->allocation.width,
+						       allocation.width,
 						       rating->priv->rating);
 
 	if (new_rating > -0.0001) {

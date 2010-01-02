@@ -1695,7 +1695,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *selection_data)
 	GList *list, *i;
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
 
-	list = rb_uri_list_parse ((char *)selection_data->data);
+	list = rb_uri_list_parse ((const char *) gtk_selection_data_get_data (selection_data));
 
 	for (i = list; i != NULL; i = i->next) {
 		char *uri = NULL;
@@ -1706,7 +1706,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *selection_data)
 			rb_podcast_source_add_feed (source, uri);
 		}
 		
-		if (selection_data->type == gdk_atom_intern ("_NETSCAPE_URL", FALSE)) {
+		if (gtk_selection_data_get_data_type (selection_data) == gdk_atom_intern ("_NETSCAPE_URL", FALSE)) {
 			i = i->next;
 		}
 	}
