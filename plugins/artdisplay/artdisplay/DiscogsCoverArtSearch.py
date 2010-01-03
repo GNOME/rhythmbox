@@ -259,7 +259,7 @@ class DiscogsCoverArtSearch (object):
 		self.__poke()
 
 		print "searching for (%s, %s)" % (artist, album)
-		terms = artist + " " + album
+		terms = artist.encode('utf-8') + " " + album.encode('utf-8')
 		url = "http://www.discogs.com/search?type=all&f=xml&q=%s&api_key=%s" % (urllib.quote_plus(terms), API_KEY)
 
 		loader = rb.Loader()
