@@ -69,18 +69,13 @@ class Jamendo(rb.Plugin):
 		self.entry_type.can_sync_metadata = True
 		self.entry_type.sync_metadata = None
 
-		group = rb.rb_source_group_get_by_name ("stores")
- 		if not group:
- 			group = rb.rb_source_group_register ("stores",
- 							     _("Stores"),
- 							     rb.SOURCE_GROUP_CATEGORY_FIXED)
-
 		theme = gtk.icon_theme_get_default()
 		rb.append_plugin_source_path(theme, "/icons/")
 
 		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
 		icon = rb.try_load_icon(theme, "jamendo", width, 0)
 
+		group = rb.rb_source_group_get_by_name ("stores")
 		self.source = gobject.new (JamendoSource,
 					   shell=shell,
 					   entry_type=self.entry_type,

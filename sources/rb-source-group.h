@@ -65,6 +65,7 @@ GType          rb_source_group_get_type    (void);
 #define RB_SOURCE_GROUP_PLAYLISTS         (rb_source_group_playlists_get_type ())
 #define RB_SOURCE_GROUP_DEVICES           (rb_source_group_devices_get_type ())
 #define RB_SOURCE_GROUP_SHARED            (rb_source_group_shared_get_type ())
+#define RB_SOURCE_GROUP_STORES            (rb_source_group_stores_get_type ())
 
 void                  rb_source_group_init             (void);
 
@@ -77,6 +78,7 @@ RBSourceGroup        *rb_source_group_library_get_type   (void);
 RBSourceGroup        *rb_source_group_playlists_get_type (void);
 RBSourceGroup        *rb_source_group_devices_get_type   (void);
 RBSourceGroup        *rb_source_group_shared_get_type    (void);
+RBSourceGroup        *rb_source_group_stores_get_type    (void);
 
 G_END_DECLS
 

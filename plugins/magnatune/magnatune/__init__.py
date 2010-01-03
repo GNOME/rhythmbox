@@ -90,12 +90,6 @@ class Magnatune(rb.Plugin):
 		self.db = shell.get_property("db")
 		self.keyring = None
 
-		group = rb.rb_source_group_get_by_name ("stores")
- 		if not group:
- 			group = rb.rb_source_group_register ("stores",
- 							     _("Stores"),
- 							     rb.SOURCE_GROUP_CATEGORY_FIXED)
-
 		self.entry_type = self.db.entry_register_type("MagnatuneEntryType")
 		# allow changes which don't do anything
 		self.entry_type.can_sync_metadata = True
@@ -107,6 +101,7 @@ class Magnatune(rb.Plugin):
 		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
 		icon = rb.try_load_icon(theme, "magnatune", width, 0)
 
+		group = rb.rb_source_group_get_by_name ("stores")
 		self.source = gobject.new (MagnatuneSource,
  					   shell=shell,
  					   entry_type=self.entry_type,
