@@ -212,18 +212,25 @@ class DiscogsCoverArtSearch (object):
 			self.callback (self, self.entry, [], *self.callback_args)
 			return
 
-		# find image URLs.  don't think there's much point using secondary images.
+		# find image URLs.
+		# We could use secondary images, when there is no primary available.
+		# When there is a primary image, we must use that one, else the first
+		# secondary image.
 		image_urls = []
 		for tag in parsed.getElementsByTagName('image'):
 			type = tag.attributes['type'].value
-			if type != 'primary':
-				continue
 
 			url = tag.attributes['uri'].value
 			url.strip()
 			if url != "":
-				print "found image url: %s" % url
-				image_urls.append(url)
+				print "found %s image url: %s" % (type, url)
+				if type == 'primary':
+					# Put the primary image at the beginning of the list.
+					# The first in the list gets downloaded.
+					image_urls.insert(0,url)
+				else:
+					# Add the secondary images at the end of the list.
+					image_urls.append(url)
 
 		self.callback (self, self.entry, [image_urls], *self.callback_args)
 
