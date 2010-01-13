@@ -46,7 +46,7 @@ static void rb_ipod_static_playlist_source_get_property (GObject *object,
 
 static gboolean impl_show_popup (RBSource *source);
 static void impl_delete_thyself (RBSource *source);
-static void impl_move_to_trash (RBSource *source);
+static void impl_delete (RBSource *source);
 
 static void source_name_changed_cb (RBIpodStaticPlaylistSource *source,
 				    GParamSpec *spec,
@@ -86,8 +86,9 @@ rb_ipod_static_playlist_source_class_init (RBIpodStaticPlaylistSourceClass *klas
 
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
-	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_move_to_trash = impl_move_to_trash;
+	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_delete = impl_delete;
 
 	g_object_class_install_property (object_class,
 					 PROP_IPOD_SOURCE,
@@ -266,7 +267,7 @@ source_name_changed_cb (RBIpodStaticPlaylistSource *source,
 }
 
 static void
-impl_move_to_trash (RBSource *source)
+impl_delete (RBSource *source)
 {
 	RBIpodStaticPlaylistSourcePrivate *priv = IPOD_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
 	GList *sel;
@@ -274,7 +275,7 @@ impl_move_to_trash (RBSource *source)
 
 	songs = rb_source_get_entry_view (source);
 	sel = rb_entry_view_get_selected_entries (songs);
-	rb_ipod_source_trash_entries (priv->ipod_source, sel);
+	rb_ipod_source_delete_entries (priv->ipod_source, sel);
 
 	g_list_foreach (sel, (GFunc) rhythmdb_entry_unref, NULL);
 	g_list_free (sel);
