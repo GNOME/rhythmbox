@@ -29,7 +29,6 @@
       <menuitem name="EditCutMenu" action="EditCut"/>
       <menuitem name="EditCopyMenu" action="EditCopy"/>
       <menuitem name="EditPasteMenu" action="EditPaste"/>
-      <menuitem name="EditDeleteMenu" action="EditDelete"/>
       <separator/>
       <menuitem name="EditSelectAllMenu" action="EditSelectAll"/>
       <menuitem name="EditSelectNoneMenu" action="EditSelectNone"/>
@@ -41,6 +40,7 @@
         <placeholder name="EditPlaylistAddPlaceholder"/>
       </menu>
       <separator/>
+      <placeholder name="DeleteActionPlaceholder" />
       <menuitem name="EditMovetoTrash" action="EditMovetoTrash"/>
       <separator/>
       <menuitem name="EditPluginsMenu" action="EditPlugins"/>
@@ -121,7 +121,7 @@
     </menu>
     <menuitem name="CopyLibraryPopup" action="EditCopy"/>
     <separator/>
-    <menuitem name="DeleteLibraryPopup" action="EditDelete"/>
+    <placeholder name="DeleteActionPlaceholder" />
     <menuitem name="MovetoTrashPopup" action="EditMovetoTrash"/>
     <separator/>
     <menuitem name="BrowseGenreLibraryPopup" action="BrowserSrcChooseGenre"/>
@@ -134,7 +134,7 @@
   </popup>
 
   <popup name="ImportErrorsViewPopup">
-    <menuitem name="DeleteLibraryPopup" action="EditDelete"/>
+    <menuitem name="DeleteLibraryPopup" action="EditRemove"/>
     <menuitem name="MovetoTrashPopup" action="EditMovetoTrash"/>
     <separator/>
     <placeholder name="PluginPlaceholder"/>
@@ -262,7 +262,7 @@
   </popup>
 
   <popup name="MissingFilesViewPopup">
-    <menuitem name="DeleteMissingFilesPopup" action="EditDelete"/>
+    <menuitem name="DeleteMissingFilesPopup" action="EditRemove"/>
     <menuitem name="PropertiesMissingFilesPopup" action="MusicProperties"/>
     <separator/>
     <placeholder name="PluginPlaceholder"/>

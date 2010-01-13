@@ -121,6 +121,9 @@ struct RBShellClipboardPrivate
 	GtkActionGroup *actiongroup;
 	guint playlist_menu_ui_id;
 
+	guint delete_action_ui_id;
+	GtkAction *delete_action;
+
 	GHashTable *signal_hash;
 
 	GAsyncQueue *deleted_queue;
@@ -189,6 +192,11 @@ static GtkActionEntry rb_shell_clipboard_actions [] =
 	  G_CALLBACK (rb_shell_clipboard_cmd_queue_song_info) },
 };
 static guint rb_shell_clipboard_n_actions = G_N_ELEMENTS (rb_shell_clipboard_actions);
+
+static const char *delete_action_paths[] = {
+	"/MenuBar/EditMenu/DeleteActionPlaceholder",
+	"/BrowserSourceViewPopup/DeleteActionPlaceholder",
+};
 
 static const char *playlist_menu_paths[] = {
 	"/MenuBar/EditMenu/EditPlaylistAddMenu/EditPlaylistAddPlaceholder",
@@ -281,6 +289,9 @@ unset_source_internal (RBShellClipboard *clipboard)
 							      G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
 							      clipboard);
 		}
+
+		gtk_ui_manager_remove_ui (clipboard->priv->ui_mgr,
+					  clipboard->priv->delete_action_ui_id);
 	}
 	clipboard->priv->source = NULL;
 }
@@ -346,6 +357,7 @@ rb_shell_clipboard_set_source_internal (RBShellClipboard *clipboard,
 
 	if (clipboard->priv->source != NULL) {
 		RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
+		char *delete_action;
 
 		if (songs) {
 			g_signal_connect_object (G_OBJECT (songs),
@@ -365,6 +377,28 @@ rb_shell_clipboard_set_source_internal (RBShellClipboard *clipboard,
 						 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
 						 clipboard, 0);
 		}
+
+		delete_action = rb_source_get_delete_action (source);
+		if (delete_action != NULL) {
+			char *path;
+			int i;
+			for (i = 0; i < G_N_ELEMENTS (delete_action_paths); i++) {
+				gtk_ui_manager_add_ui (clipboard->priv->ui_mgr,
+						       clipboard->priv->delete_action_ui_id,
+						       delete_action_paths[i],
+						       delete_action,
+						       delete_action,
+						       GTK_UI_MANAGER_AUTO,
+						       FALSE);
+			}
+			gtk_ui_manager_ensure_update (clipboard->priv->ui_mgr);
+
+			/* locate action too */
+			path = g_strdup_printf ("%s/%s", delete_action_paths[0], delete_action);
+			clipboard->priv->delete_action = gtk_ui_manager_get_action (clipboard->priv->ui_mgr, path);
+			g_free (path);
+		}
+		g_free (delete_action);
 	}
 
 	rebuild_playlist_menu (clipboard);
@@ -399,6 +433,9 @@ rb_shell_clipboard_set_property (GObject *object,
 		break;
 	case PROP_UI_MANAGER:
 		clipboard->priv->ui_mgr = g_value_get_object (value);
+		clipboard->priv->delete_action_ui_id =
+			gtk_ui_manager_new_merge_id (clipboard->priv->ui_mgr);
+
 		break;
 	case PROP_PLAYLIST_MANAGER:
 		if (clipboard->priv->playlist_manager != NULL) {
@@ -579,8 +616,9 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditCut");
 	g_object_set (G_OBJECT (action), "sensitive", can_cut, NULL);
 
-	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditDelete");
-	g_object_set (G_OBJECT (action), "sensitive", can_delete, NULL);
+	if (clipboard->priv->delete_action != NULL) {
+		g_object_set (clipboard->priv->delete_action, "sensitive", can_delete, NULL);
+	}
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditMovetoTrash");
 	g_object_set (G_OBJECT (action), "sensitive", can_move_to_trash, NULL);
