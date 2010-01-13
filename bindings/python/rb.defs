@@ -1066,6 +1066,12 @@
   (return-type "GList*")
 )
 
+(define-method get_delete_action
+  (of-object "RBSource")
+  (c-name "rb_source_get_delete_action")
+  (return-type "char*")
+)
+
 (define-method gather_selected_properties
   (of-object "RBSource")
   (c-name "rb_source_gather_selected_properties")
@@ -1265,6 +1271,11 @@
 (define-virtual impl_get_search_actions
   (of-object "RBSource")
   (return-type "GList*")
+)
+
+(define-virtual impl_get_delete_action
+  (of-object "RBSource")
+  (return-type "char*")
 )
 
 
