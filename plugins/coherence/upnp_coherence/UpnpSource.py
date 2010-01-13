@@ -141,4 +141,7 @@ class UpnpSource(rb.BrowserSource,log.Loggable):
 
                     self.__db.commit()
 
+        def do_impl_can_delete(self):
+            return False
+
 gobject.type_register(UpnpSource)

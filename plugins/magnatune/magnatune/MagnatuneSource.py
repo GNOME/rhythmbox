@@ -159,6 +159,9 @@ class MagnatuneSource(rb.BrowserSource):
 	def do_impl_get_paned_key (self):
 		return "/apps/rhythmbox/plugins/magnatune/paned_position"
 
+	def do_impl_can_delete (self):
+		return False
+
 	def do_impl_pack_paned (self, paned):
 		self.__paned_box = gtk.VBox(False, 5)
 		self.pack_start(self.__paned_box)
