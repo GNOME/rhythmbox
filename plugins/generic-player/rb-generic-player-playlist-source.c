@@ -37,6 +37,7 @@
 #include "rb-debug.h"
 #include "rb-plugin.h"
 #include "rb-file-helpers.h"
+#include "rb-util.h"
 
 #define PLAYLIST_SAVE_TIMEOUT	1
 
@@ -471,41 +472,6 @@ impl_show_popup (RBSource *source)
 	return TRUE;
 }
 
-static gboolean
-impl_can_move_to_trash (RBSource *source)
-{
-	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (source);
-	RBEntryView *songs;
-	GList *sel;
-	gboolean ret;
-
-	songs = rb_source_get_entry_view (source);
-	sel = rb_entry_view_get_selected_entries (songs);
-
-	ret = rb_generic_player_source_can_trash_entries (priv->player_source, sel);
-
-	g_list_foreach (sel, (GFunc) rhythmdb_entry_unref, NULL);
-	g_list_free (sel);
-
-	return ret;
-}
-
-static void
-impl_move_to_trash (RBSource *source)
-{
-	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (source);
-	RBEntryView *songs;
-	GList *sel;
-
-	songs = rb_source_get_entry_view (source);
-	sel = rb_entry_view_get_selected_entries (songs);
-
-	rb_generic_player_source_trash_or_delete_entries (priv->player_source, sel, FALSE);
-
-	g_list_foreach (sel, (GFunc) rhythmdb_entry_unref, NULL);
-	g_list_free (sel);
-}
-
 static void
 rb_generic_player_playlist_source_class_init (RBGenericPlayerPlaylistSourceClass *klass)
 {
@@ -519,8 +485,7 @@ rb_generic_player_playlist_source_class_init (RBGenericPlayerPlaylistSourceClass
 	object_class->set_property = impl_set_property;
 
 	source_class->impl_show_popup = impl_show_popup;
-	source_class->impl_can_move_to_trash = impl_can_move_to_trash;
-	source_class->impl_move_to_trash = impl_move_to_trash;
+	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_to_xml;
 	playlist_class->impl_mark_dirty = impl_mark_dirty;
