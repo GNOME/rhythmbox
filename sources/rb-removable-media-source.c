@@ -64,6 +64,7 @@ static gboolean impl_should_paste (RBRemovableMediaSource *source,
 				   RhythmDBEntry *entry);
 static guint impl_want_uri (RBSource *source, const char *uri);
 static gboolean impl_uri_is_source (RBSource *source, const char *uri);
+static char *impl_get_delete_action (RBSource *source);
 
 typedef struct
 {
@@ -106,6 +107,7 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	source_class->impl_show_popup = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_uri_is_source = impl_uri_is_source;
+	source_class->impl_get_delete_action = impl_get_delete_action;
 
 	browser_source_class->impl_get_paned_key = NULL;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
@@ -741,3 +743,8 @@ rb_removable_media_source_track_add_error (RBRemovableMediaSource *source,
 	}
 }
 
+static char *
+impl_get_delete_action (RBSource *source)
+{
+	return g_strdup ("EditDelete");
+}
