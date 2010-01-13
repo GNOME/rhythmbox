@@ -170,25 +170,25 @@ static GtkActionEntry rb_shell_clipboard_actions [] =
 	  N_("Remove each selected item from the library"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_delete) },
 	{ "EditMovetoTrash", "user-trash", N_("_Move to Trash"), NULL,
-	  N_("Move selection to the trash"),
+	  N_("Move each selected item to the trash"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_move_to_trash) },
 
 	{ "EditPlaylistAdd", NULL, N_("Add to P_laylist") },
 	{ "EditPlaylistAddNew", RB_STOCK_PLAYLIST_NEW, N_("_New Playlist"), NULL,
-	  N_("Add the selected songs to a new playlist"),
+	  N_("Add each selected song to a new playlist"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_add_to_playlist_new) },
 	{ "AddToQueue", GTK_STOCK_ADD, N_("Add _to Play Queue"), NULL,
-	  N_("Add the selected songs to the play queue"),
+	  N_("Add each selected song to the play queue"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_add_song_to_queue) },
 	{ "QueueDelete", GTK_STOCK_REMOVE, N_("Remove"), NULL,
-	  N_("Remove selection"),
+	  N_("Remove each selected item from the play queue"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_queue_delete) },
 
 	{ "MusicProperties", GTK_STOCK_PROPERTIES, N_("Pr_operties"), "<Alt>Return",
-	  N_("Show information on the selected song"),
+	  N_("Show information on each selected song"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_song_info) },
 	{ "QueueMusicProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), NULL,
-	  N_("Show information on the selected song"),
+	  N_("Show information on each selected song"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_queue_song_info) },
 };
 static guint rb_shell_clipboard_n_actions = G_N_ELEMENTS (rb_shell_clipboard_actions);
@@ -614,41 +614,41 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	}
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditCut");
-	g_object_set (G_OBJECT (action), "sensitive", can_cut, NULL);
+	g_object_set (action, "sensitive", can_cut, NULL);
 
 	if (clipboard->priv->delete_action != NULL) {
 		g_object_set (clipboard->priv->delete_action, "sensitive", can_delete, NULL);
 	}
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditMovetoTrash");
-	g_object_set (G_OBJECT (action), "sensitive", can_move_to_trash, NULL);
+	g_object_set (action, "sensitive", can_move_to_trash, NULL);
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditCopy");
-	g_object_set (G_OBJECT (action), "sensitive", can_copy, NULL);
+	g_object_set (action, "sensitive", can_copy, NULL);
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup,"EditPaste");
-	g_object_set (G_OBJECT (action), "sensitive", can_paste, NULL);
+	g_object_set (action, "sensitive", can_paste, NULL);
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditPlaylistAdd");
-	g_object_set (G_OBJECT (action), "sensitive", can_copy, NULL);
+	g_object_set (action, "sensitive", can_copy, NULL);
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "AddToQueue");
-	g_object_set (G_OBJECT (action), "sensitive", can_add_to_queue, NULL);
+	g_object_set (action, "sensitive", can_add_to_queue, NULL);
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "MusicProperties");
-	g_object_set (G_OBJECT (action), "sensitive", can_show_properties, NULL);
+	g_object_set (action, "sensitive", can_show_properties, NULL);
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "QueueMusicProperties");
-	g_object_set (G_OBJECT (action), "sensitive", have_sidebar_selection, NULL);
+	g_object_set (action, "sensitive", have_sidebar_selection, NULL);
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "QueueDelete");
-	g_object_set (G_OBJECT (action), "sensitive", have_sidebar_selection, NULL);
+	g_object_set (action, "sensitive", have_sidebar_selection, NULL);
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditSelectAll");
-	g_object_set (G_OBJECT (action), "sensitive", can_select_all, NULL);
+	g_object_set (action, "sensitive", can_select_all, NULL);
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditSelectNone");
-	g_object_set (G_OBJECT (action), "sensitive", have_selection, NULL);
+	g_object_set (action, "sensitive", have_selection, NULL);
 
 	/* disable the whole add-to-playlist menu if the source's entry type doesn't have playlists */
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditPlaylistAdd");
