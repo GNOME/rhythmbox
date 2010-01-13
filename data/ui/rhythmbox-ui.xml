@@ -149,8 +149,8 @@
     </menu>
     <menuitem name="CopyPlaylistPopup" action="EditCopy"/>
     <menuitem name="CutPlaylistPopup" action="EditCut"/>
-    <menuitem name="DeletePlaylistPopup" action="EditDelete"/>
     <separator/>
+    <menuitem name="RemoveFromPlaylistPopup" action="RemoveFromPlaylist"/>
     <menuitem name="MovetoTrashPlaylistPopup" action="EditMovetoTrash"/>
     <separator/>
     <placeholder name="PluginPlaceholder"/>
@@ -159,7 +159,7 @@
   </popup>
 
   <popup name="QueuePlaylistViewPopup">
-    <menuitem name="DeletePlaylistPopup" action="EditDelete"/>
+    <menuitem name="RemoveFromPlaylistPopup" action="RemoveFromPlaylist"/>
     <menuitem name="ShufflePlaylistPopup" action="ShuffleQueue"/>
     <menuitem name="SaveQueuePopup" action="MusicPlaylistSavePlaylist"/>
     <separator/>

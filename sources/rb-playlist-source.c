@@ -118,13 +118,25 @@ static void rb_playlist_source_songs_sort_order_changed_cb (RBEntryView *view,
 						RBStaticPlaylistSource *source);
 static char *rb_playlist_source_make_sorting_key (RBPlaylistSource *source);
 
+static void remove_from_playlist_cmd (GtkAction *action, RBSource *source);
+static char *impl_get_delete_action (RBSource *source);
+
 #define CONF_STATE_SORTING_PREFIX CONF_PREFIX "/state/sorting/"
 #define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/PlaylistViewPopup"
 #define PLAYLIST_SOURCE_POPUP_PATH "/PlaylistSourcePopup"
 
+static GtkActionEntry rb_playlist_source_actions [] =
+{
+	{ "RemoveFromPlaylist", GTK_STOCK_REMOVE, N_("Remove From Playlist"), "Delete",
+	  N_("Remove each selected song from the playlist"),
+	  G_CALLBACK (remove_from_playlist_cmd) },
+};
+
+
 struct RBPlaylistSourcePrivate
 {
 	RhythmDB *db;
+	GtkActionGroup *action_group;
 
 	GHashTable *entries;
 
@@ -179,6 +191,7 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_get_delete_action = impl_get_delete_action;
 
 	klass->impl_show_entry_view_popup = default_show_entry_view_popup;
 	klass->impl_mark_dirty = default_mark_dirty;
@@ -285,6 +298,16 @@ rb_playlist_source_constructed (GObject *object)
 	shell_player = rb_shell_get_player (shell);
 	rb_playlist_source_set_db (source, db);
 	g_object_unref (db);
+
+	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
+								       "PlaylistActions",
+								       NULL, 0,
+								       shell);
+	_rb_action_group_add_source_actions (source->priv->action_group,
+					     G_OBJECT (shell),
+					     rb_playlist_source_actions,
+					     G_N_ELEMENTS (rb_playlist_source_actions));
+
 	g_object_unref (shell);
 
 	source->priv->entries = g_hash_table_new_full (rb_refstring_hash, rb_refstring_equal,
@@ -1066,3 +1089,14 @@ rb_playlist_source_make_sorting_key (RBPlaylistSource *source)
 	return sorting_key;
 }
 
+static void
+remove_from_playlist_cmd (GtkAction *action, RBSource *source)
+{
+	rb_source_delete (source);
+}
+
+static char *
+impl_get_delete_action (RBSource *source)
+{
+	return g_strdup ("RemoveFromPlaylist");
+}

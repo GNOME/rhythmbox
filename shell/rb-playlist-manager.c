@@ -416,7 +416,7 @@ rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr,
 	mgr->priv->uimanager = uimanager;
 
 	if (mgr->priv->actiongroup == NULL) {
-		mgr->priv->actiongroup = gtk_action_group_new ("PlaylistActions");
+		mgr->priv->actiongroup = gtk_action_group_new ("PlaylistManagerActions");
 		gtk_action_group_set_translation_domain (mgr->priv->actiongroup,
 							 GETTEXT_PACKAGE);
 		gtk_action_group_add_actions (mgr->priv->actiongroup,
