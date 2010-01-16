@@ -1,19 +1,20 @@
 # Bulgarian translation of rhythmbox po-file
 # Copyright (C) Free Software Foundation, Inc. 2004, 2005, 2006, 2009.
-# Copyright (C) Krasimir Chonov <mk2616@abv.bg> 2009.
+# Copyright (C) Krasimir Chonov <mk2616@abv.bg> 2009, 2010.
 # This file is distributed under the same license as the rhythmbox package.
 # Peter Slavov <pslavov@i-space.org>, 2004, 2005.
 # Vladimir "Kaladan" Petkov <vpetkov@i-space.org>, 2004.
 # Philip Dimitrov <philip.dimitrov@gmail.com>, 2005.
 # Rostislav "zbrox" Raykov <zbrox@i-space.org>, 2005, 2006.
 # Alexander Shopov <ash@contact.bg>, 2006, 2009.
-# Krasimir Chonov <mk2616@abv.bg>, 2009.
+# Krasimir Chonov <mk2616@abv.bg>, 2009, 2010.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-03 08:42+0200\n"
-"PO-Revision-Date: 2010-01-02 22:22+0200\n"
+"POT-Creation-Date: 2010-01-16 19:40+0200\n"
+"PO-Revision-Date: 2010-01-16 00:06+0200\n"
 "Last-Translator: Krasimir Chonov <mk2616@abv.bg>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
 "MIME-Version: 1.0\n"
@@ -630,8 +631,8 @@ msgstr "%d %b %Y"
 #: ../lib/rb-util.c:814
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:98
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
-#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:238
-#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:242
+#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:245
+#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:249
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:174
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:175
 #: ../plugins/audiocd/rb-audiocd-source.c:440
@@ -640,8 +641,8 @@ msgstr "%d %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:479
 #: ../plugins/daap/rb-daap-connection.c:698
-#: ../plugins/generic-player/rb-generic-player-source.c:1055
-#: ../plugins/ipod/rb-ipod-source.c:389
+#: ../plugins/generic-player/rb-generic-player-source.c:968
+#: ../plugins/ipod/rb-ipod-source.c:391
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:520
 #: ../plugins/iradio/rb-iradio-source.c:1085
@@ -2016,7 +2017,7 @@ msgstr "Изтриване на списък с песни"
 msgid "Delete this playlist"
 msgstr "Изтриване на този списък с песни"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:619
+#: ../plugins/generic-player/rb-generic-player-source.c:555
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Внасяне (%d/%d)"
@@ -2174,7 +2175,7 @@ msgid "Rename iPod"
 msgstr "Преименуване на iPod"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:106
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:129 ../shell/rb-shell-clipboard.c:184
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:129 ../shell/rb-shell-clipboard.c:190
 #: ../sources/rb-podcast-source.c:313
 msgid "_Properties"
 msgstr "Сво_йства"
@@ -2183,7 +2184,7 @@ msgstr "Сво_йства"
 msgid "Display iPod properties"
 msgstr "Показване на свойства на iPod"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:109 ../shell/rb-shell-clipboard.c:171
+#: ../plugins/ipod/rb-ipod-plugin.c:109 ../shell/rb-shell-clipboard.c:177
 msgid "_New Playlist"
 msgstr "_Нов списък с песни"
 
@@ -2196,6 +2197,7 @@ msgid "Rename playlist"
 msgstr "Преименуване на списък с песни"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:115 ../shell/rb-playlist-manager.c:185
+#: ../shell/rb-shell-clipboard.c:166
 msgid "_Delete"
 msgstr "_Изтриване"
 
@@ -2203,15 +2205,15 @@ msgstr "_Изтриване"
 msgid "Delete playlist"
 msgstr "Изтриване на списък с песни"
 
-#: ../plugins/ipod/rb-ipod-source.c:1294 ../sources/rb-podcast-source.c:832
+#: ../plugins/ipod/rb-ipod-source.c:1296 ../sources/rb-podcast-source.c:832
 msgid "Podcasts"
 msgstr "Подкасти"
 
-#: ../plugins/ipod/rb-ipod-source.c:1665
+#: ../plugins/ipod/rb-ipod-source.c:1667
 msgid "New playlist"
 msgstr "Нов списък с песни"
 
-#: ../plugins/ipod/rb-ipod-source.c:1771
+#: ../plugins/ipod/rb-ipod-source.c:1773
 #: ../plugins/mtpdevice/rb-mtp-source.c:1223
 msgid "Advanced"
 msgstr "Разширени"
@@ -2358,38 +2360,33 @@ msgstr ""
 msgid "Jamendo"
 msgstr "Jamendo"
 
-#: ../plugins/jamendo/jamendo/__init__.py:75
-#: ../plugins/magnatune/magnatune/__init__.py:96
-msgid "Stores"
-msgstr "Магазини"
-
-#: ../plugins/jamendo/jamendo/__init__.py:95
+#: ../plugins/jamendo/jamendo/__init__.py:90
 msgid "_Download Album"
 msgstr "_Изтегляне на албум"
 
-#: ../plugins/jamendo/jamendo/__init__.py:96
+#: ../plugins/jamendo/jamendo/__init__.py:91
 msgid "Download this album using BitTorrent"
 msgstr "Изтегляне на този албум с помощта на BitTorrent"
 
 #. Add Button for Donate
-#: ../plugins/jamendo/jamendo/__init__.py:103
+#: ../plugins/jamendo/jamendo/__init__.py:98
 msgid "_Donate to Artist"
 msgstr "_Дарение за изпълнителя"
 
-#: ../plugins/jamendo/jamendo/__init__.py:104
+#: ../plugins/jamendo/jamendo/__init__.py:99
 msgid "Donate Money to this Artist"
 msgstr "Даряване на пари на този изпълнител"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:120
+#: ../plugins/jamendo/jamendo/JamendoSource.py:123
 msgid "Loading Jamendo catalog"
 msgstr "Зареждане на каталога на Jamendo"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:303
+#: ../plugins/jamendo/jamendo/JamendoSource.py:306
 #, python-format
 msgid "Error looking up p2plink for album %s on jamendo.com"
 msgstr "Грешка при търсене на p2plink за албума %s в jamendo.com"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:327
+#: ../plugins/jamendo/jamendo/JamendoSource.py:330
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Грешка при търсене на изпълнителя %s в jamendo.com"
@@ -3006,43 +3003,43 @@ msgstr "Зареждане на каталога на Magnatune"
 msgid "Downloading Magnatune Album(s)"
 msgstr "Изтегляне на албум(и) от Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:231
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:234
 msgid "Couldn't purchase album"
 msgstr "Албумът не е закупен"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:232
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:235
 msgid "You must have a library location set to purchase an album."
 msgstr "Трябва да сте задали местоположение на фонотеката, за да купите албум."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:255
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:258
 #, python-format
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "Искате ли да купите албума <i>%(album)s</i> от „%(artist)s?“"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:372
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:375
 msgid "Unable to load catalog"
 msgstr "Каталогът не може да се зареди"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:373
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:376
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
 "Rhythmbox не може да анализира каталога на Magnatune, моля докладвайте "
 "грешката."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:459
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:462
 msgid "Authorizing Purchase"
 msgstr "Разрешаване на покупки"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:460
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:463
 msgid "Authorizing purchase with the Magnatune server. Please wait..."
 msgstr "Разрешаване на покупки от сървъра на Magnatune. Изчакайте…"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:506
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:509
 msgid "Purchase Error"
 msgstr "Грешка при покупка"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:507
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:510
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -3053,12 +3050,12 @@ msgstr ""
 "Сървърът на Magnatune върна:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:510
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:513
 #: ../widgets/rb-entry-view.c:1627
 msgid "Error"
 msgstr "Грешка"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:511
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:514
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -3070,35 +3067,35 @@ msgstr ""
 "%s"
 
 #. Add the popup menu actions
-#: ../plugins/magnatune/magnatune/__init__.py:122
+#: ../plugins/magnatune/magnatune/__init__.py:117
 msgid "Purchase Album"
 msgstr "Купуване на албум"
 
-#: ../plugins/magnatune/magnatune/__init__.py:123
+#: ../plugins/magnatune/magnatune/__init__.py:118
 msgid "Purchase this album from Magnatune"
 msgstr "Купуване на този албум от Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:128
+#: ../plugins/magnatune/magnatune/__init__.py:123
 msgid "Purchase Physical CD"
 msgstr "Купуване на физически диск CD"
 
-#: ../plugins/magnatune/magnatune/__init__.py:129
+#: ../plugins/magnatune/magnatune/__init__.py:124
 msgid "Purchase a physical CD from Magnatune"
 msgstr "Купуване на физически диск CD от Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:133
+#: ../plugins/magnatune/magnatune/__init__.py:128
 msgid "Artist Information"
 msgstr "Информация за изпълнителя"
 
-#: ../plugins/magnatune/magnatune/__init__.py:134
+#: ../plugins/magnatune/magnatune/__init__.py:129
 msgid "Get information about this artist"
 msgstr "Информация за изпълнителя"
 
-#: ../plugins/magnatune/magnatune/__init__.py:138
+#: ../plugins/magnatune/magnatune/__init__.py:133
 msgid "Cancel Downloads"
 msgstr "Отказване на изтеглянията"
 
-#: ../plugins/magnatune/magnatune/__init__.py:139
+#: ../plugins/magnatune/magnatune/__init__.py:134
 msgid "Stop downloading purchased albums"
 msgstr "Спиране на изтегляне на купените албуми"
 
@@ -3902,7 +3899,7 @@ msgstr "Неозаглавен списък с песни"
 msgid "Couldn't read playlist"
 msgstr "Списъкът с песни не може да бъде прочетен"
 
-#: ../shell/rb-playlist-manager.c:1405 ../sources/rb-source-group.c:63
+#: ../shell/rb-playlist-manager.c:1405 ../sources/rb-source-group.c:65
 msgid "Playlists"
 msgstr "Списъци с песни"
 
@@ -3914,7 +3911,7 @@ msgstr "Всички файлове"
 msgid "Load Playlist"
 msgstr "Зареждане на списък с песни"
 
-#: ../shell/rb-playlist-manager.c:1469 ../sources/rb-playlist-source.c:620
+#: ../shell/rb-playlist-manager.c:1469 ../sources/rb-playlist-source.c:643
 msgid "Couldn't save playlist"
 msgstr "Списъкът с песни не може да бъде запазен"
 
@@ -3989,89 +3986,97 @@ msgstr "Не може да се извади"
 msgid "Unable to unmount"
 msgstr "Не може да се демонтира"
 
-#: ../shell/rb-shell-clipboard.c:148
+#: ../shell/rb-shell-clipboard.c:151
 msgid "Select _All"
 msgstr "Из_бор на всичко"
 
-#: ../shell/rb-shell-clipboard.c:149
+#: ../shell/rb-shell-clipboard.c:152
 msgid "Select all songs"
 msgstr "Избиране на всички песни"
 
-#: ../shell/rb-shell-clipboard.c:151
+#: ../shell/rb-shell-clipboard.c:154
 msgid "D_eselect All"
 msgstr "Из_чистване на избора"
 
-#: ../shell/rb-shell-clipboard.c:152
+#: ../shell/rb-shell-clipboard.c:155
 msgid "Deselect all songs"
 msgstr "Изчистване на избора"
 
-#: ../shell/rb-shell-clipboard.c:154
+#: ../shell/rb-shell-clipboard.c:157
 msgid "Cu_t"
 msgstr "От_рязване"
 
-#: ../shell/rb-shell-clipboard.c:155
+#: ../shell/rb-shell-clipboard.c:158
 msgid "Cut selection"
 msgstr "Отрязване на избраните"
 
-#: ../shell/rb-shell-clipboard.c:157
+#: ../shell/rb-shell-clipboard.c:160
 msgid "_Copy"
 msgstr "_Копиране"
 
-#: ../shell/rb-shell-clipboard.c:158
+#: ../shell/rb-shell-clipboard.c:161
 msgid "Copy selection"
 msgstr "Копиране на избраните"
 
-#: ../shell/rb-shell-clipboard.c:160
+#: ../shell/rb-shell-clipboard.c:163
 msgid "_Paste"
 msgstr "_Поставяне"
 
-#: ../shell/rb-shell-clipboard.c:161
+#: ../shell/rb-shell-clipboard.c:164
 msgid "Paste selection"
 msgstr "Поставяне на избраните"
 
-#: ../shell/rb-shell-clipboard.c:163
+#: ../shell/rb-shell-clipboard.c:167
+msgid "Delete each selected item"
+msgstr "Изтриване на избраните елементи"
+
+#: ../shell/rb-shell-clipboard.c:169
 msgid "_Remove"
 msgstr "_Изтриване от списъка"
 
-#: ../shell/rb-shell-clipboard.c:164 ../shell/rb-shell-clipboard.c:178
-msgid "Remove selection"
-msgstr "_Изтриване на избраните от списъка"
+#: ../shell/rb-shell-clipboard.c:170
+msgid "Remove each selected item from the library"
+msgstr "Премахване на избраните елементи от библиотеката"
 
-#: ../shell/rb-shell-clipboard.c:166
+#: ../shell/rb-shell-clipboard.c:172
 msgid "_Move to Trash"
 msgstr "Преместване в ко_шчето"
 
-#: ../shell/rb-shell-clipboard.c:167
-msgid "Move selection to the trash"
+#: ../shell/rb-shell-clipboard.c:173
+msgid "Move each selected item to the trash"
 msgstr "Преместване на избраните в кошчето"
 
-#: ../shell/rb-shell-clipboard.c:170
+#: ../shell/rb-shell-clipboard.c:176
 msgid "Add to P_laylist"
 msgstr "_Добавяне към списък с песни"
 
-#: ../shell/rb-shell-clipboard.c:172
-msgid "Add the selected songs to a new playlist"
+#: ../shell/rb-shell-clipboard.c:178
+msgid "Add each selected song to a new playlist"
 msgstr "Добавяне на избраните песни към нов списък с песни"
 
-#: ../shell/rb-shell-clipboard.c:174
+#: ../shell/rb-shell-clipboard.c:180
 msgid "Add _to Play Queue"
 msgstr "Добавяне към _опашката"
 
-#: ../shell/rb-shell-clipboard.c:175
-msgid "Add the selected songs to the play queue"
+#: ../shell/rb-shell-clipboard.c:181
+msgid "Add each selected song to the play queue"
 msgstr "Добавяне на избраните песни към опашката"
 
-#: ../shell/rb-shell-clipboard.c:177
+#: ../shell/rb-shell-clipboard.c:183
 msgid "Remove"
 msgstr "Премахване"
 
-#: ../shell/rb-shell-clipboard.c:181
+#: ../shell/rb-shell-clipboard.c:184
+msgid "Remove each selected item from the play queue"
+msgstr "Премахване на избраните песни от опашката"
+
+#: ../shell/rb-shell-clipboard.c:187
 msgid "Pr_operties"
 msgstr "Сво_йства"
 
-#: ../shell/rb-shell-clipboard.c:182 ../shell/rb-shell-clipboard.c:185
-msgid "Show information on the selected song"
-msgstr "Показване на информация за избраната песен"
+#: ../shell/rb-shell-clipboard.c:188 ../shell/rb-shell-clipboard.c:191
+msgid "Show information on each selected song"
+msgstr "Показване на информация за избраните песни поотделно"
 
 #: ../shell/rb-shell-player.c:306
 msgid "Pre_vious"
@@ -4562,7 +4567,7 @@ msgstr "Заглавия"
 msgid "Search titles"
 msgstr "Търсене на заглавия"
 
-#: ../sources/rb-removable-media-source.c:739
+#: ../sources/rb-removable-media-source.c:741
 #: ../sources/rb-library-source.c:1209
 msgid "Error transferring track"
 msgstr "Грешка при пренасяне на песен"
@@ -4709,6 +4714,14 @@ msgstr "от"
 #: ../sources/rb-play-queue-source.c:427 ../widgets/rb-header.c:124
 msgid "by"
 msgstr "на"
+
+#: ../sources/rb-playlist-source.c:130
+msgid "Remove From Playlist"
+msgstr "Премахване от списъка с песни"
+
+#: ../sources/rb-playlist-source.c:131
+msgid "Remove each selected song from the playlist"
+msgstr "Премахване на избраните песни от списъка с песни"
 
 #: ../sources/rb-podcast-source.c:303
 msgid "_New Podcast Feed..."
@@ -4906,22 +4919,26 @@ msgstr[1] "%d епизоди"
 msgid "Podcast Error"
 msgstr "Грешка на подкаст"
 
-#: ../sources/rb-source.c:718
+#: ../sources/rb-source.c:719
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d песен"
 msgstr[1] "%d песни"
 
-#: ../sources/rb-source-group.c:62
+#: ../sources/rb-source-group.c:63
 msgid "Library"
 msgstr "Фонотека"
 
 #: ../sources/rb-source-group.c:64
+msgid "Stores"
+msgstr "Магазини"
+
+#: ../sources/rb-source-group.c:66
 msgid "Devices"
 msgstr "Устройства"
 
-#: ../sources/rb-source-group.c:65
+#: ../sources/rb-source-group.c:67
 msgid "Shared"
 msgstr "Споделени"
 
@@ -5237,3 +5254,6 @@ msgstr "Върху работния плот"
 #: ../widgets/rb-song-info.c:1149
 msgid "Unknown location"
 msgstr "Неизвестно местоположение"
+
+#~ msgid "Remove selection"
+#~ msgstr "_Изтриване на избраните от списъка"
