@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-01-13 13:11+0000\n"
-"PO-Revision-Date: 2010-01-15 19:22+0100\n"
+"POT-Creation-Date: 2010-01-17 15:07+0000\n"
+"PO-Revision-Date: 2010-01-17 18:48+0100\n"
 "Last-Translator: Mario Blättermann <mariobl@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -284,7 +284,6 @@ msgid "<b>Information</b>"
 msgstr "<b>Information</b>"
 
 #: ../data/ui/media-player-properties.ui.h:2
-#| msgid "Volume Usage:"
 msgid "<b>Volume usage</b>"
 msgstr "<b>Lautstärke</b>"
 
@@ -296,8 +295,9 @@ msgid "Basic"
 msgstr "Grundlegend"
 
 #: ../data/ui/media-player-properties.ui.h:4
-msgid "iPod Properties"
-msgstr "iPod-Eigenschaften"
+#| msgid "Media Player Keys"
+msgid "Media Player Properties"
+msgstr "Medienwiedergabe-Eigenschaften"
 
 #: ../data/ui/playback-prefs.ui.h:1
 msgid "Crossfade Duration (Seconds)"
@@ -1780,21 +1780,21 @@ msgid "Loading biography for %s"
 msgstr "Biografie für %s wird geladen"
 
 #. Add button to toggle visibility of pane
-#: ../plugins/context/context/ContextView.py:88
+#: ../plugins/context/context/ContextView.py:89
 msgid "Toggle Conte_xt Pane"
 msgstr "Konte_xtleiste anzeigen/verbergen"
 
-#: ../plugins/context/context/ContextView.py:89
+#: ../plugins/context/context/ContextView.py:90
 msgid "Change the visibility of the context pane"
 msgstr "Sichtbarkeit der Kontextleiste verändern"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
-#: ../plugins/context/context/ContextView.py:194
+#: ../plugins/context/context/ContextView.py:197
 #, python-format
 msgid "Top songs by %s"
 msgstr "Top-Titel von %s"
 
-#: ../plugins/context/context/ContextView.py:211
+#: ../plugins/context/context/ContextView.py:227
 msgid "Nothing Playing"
 msgstr "Keine Wiedergabe"
 
@@ -2060,9 +2060,6 @@ msgid "IM Status"
 msgstr "Sofortnachrichten-Status"
 
 #: ../plugins/im-status/im-status.rb-plugin.in.h:2
-#| msgid ""
-#| "Updates IM status according to the current song (works with Empathy & "
-#| "Gossip)"
 msgid ""
 "Updates IM status according to the current song (works with Empathy, Gossip, "
 "and Pidgin)"
@@ -2119,16 +2116,19 @@ msgid "<b>System</b>"
 msgstr "<b>System</b>"
 
 #: ../plugins/ipod/ipod-info.ui.h:2
-msgid "Database Version:"
-msgstr "Datenbank-Version:"
+#| msgid "Database Version:"
+msgid "Database version:"
+msgstr "Datenbankversion:"
 
 # CHECK
 #: ../plugins/ipod/ipod-info.ui.h:3
-msgid "Device Node:"
+#| msgid "Device Node:"
+msgid "Device node:"
 msgstr "Geräteknoten:"
 
 #: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:3
-msgid "Firmware Version:"
+#| msgid "Firmware Version:"
+msgid "Firmware version:"
 msgstr "Firmware-Version:"
 
 #: ../plugins/ipod/ipod-info.ui.h:5 ../plugins/mtpdevice/mtp-info.ui.h:5
@@ -2136,31 +2136,31 @@ msgid "Model:"
 msgstr "Modell:"
 
 #: ../plugins/ipod/ipod-info.ui.h:6
-msgid "Mount Point:"
+#| msgid "Mount Point:"
+msgid "Mount point:"
 msgstr "Einhängepunkt:"
 
 #: ../plugins/ipod/ipod-info.ui.h:7 ../plugins/mtpdevice/mtp-info.ui.h:6
-#| msgid "Playlists"
 msgid "Playlists:"
 msgstr "Wiedergabelisten:"
 
 #: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
-#| msgid "Podcasts"
 msgid "Podcasts:"
 msgstr "Podcasts:"
 
 #: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:8
-msgid "Serial Number:"
+#| msgid "Serial Number:"
+msgid "Serial number:"
 msgstr "Seriennummer:"
 
 #: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:9
-#| msgid "Track"
 msgid "Tracks:"
 msgstr "Titel:"
 
 #: ../plugins/ipod/ipod-info.ui.h:11
-msgid "iPod Name:"
-msgstr "iPod-Name:"
+#| msgid "iPod Name:"
+msgid "iPod _name:"
+msgstr "iPod-_Name:"
 
 #: ../plugins/ipod/ipod-init.ui.h:1
 msgid ""
@@ -2475,7 +2475,8 @@ msgstr "Adresse des Internet-Radiosenders:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:398
 #: ../podcast/rb-feed-podcast-properties-dialog.c:212
-#: ../podcast/rb-podcast-properties-dialog.c:369 ../widgets/rb-song-info.c:981
+#: ../podcast/rb-podcast-properties-dialog.c:369
+#: ../sources/rb-media-player-source.c:202 ../widgets/rb-song-info.c:981
 #, c-format
 msgid "%s Properties"
 msgstr "Eigenschaften von %s"
@@ -2554,7 +2555,6 @@ msgid "Astraweb (www.astraweb.com)"
 msgstr "Astraweb (www.astraweb.com)"
 
 #: ../plugins/lyrics/lyrics/LyricsSites.py:37
-#| msgid "Lyrics provided by leoslyrics.com"
 msgid "Leo's Lyrics (www.leoslyrics.com)"
 msgstr "Leo's Lyrics (www.leoslyrics.com)"
 
@@ -3156,12 +3156,11 @@ msgstr "Unterstützung für MTP-Geräte (den Inhalt anzeigen, vom Gerät abspiel
 
 # CHECK
 #: ../plugins/mtpdevice/mtp-info.ui.h:2
-#| msgid "Device Node:"
-msgid "Device Name:"
-msgstr "Gerätename:"
+#| msgid "Device Name:"
+msgid "Device _name:"
+msgstr "Geräte_name:"
 
 #: ../plugins/mtpdevice/mtp-info.ui.h:4
-#| msgid "Magnatune"
 msgid "Manufacturer:"
 msgstr "Hersteller:"
 
@@ -3185,7 +3184,6 @@ msgid "Rename MTP-device"
 msgstr "MTP-Gerät umbennen"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:130
-#| msgid "Display iPod properties"
 msgid "Display device properties"
 msgstr "Geräteeigenschaften anzeigen"
 
@@ -3199,7 +3197,6 @@ msgstr "Fehler des Medienwiedergabegerätes"
 #.
 #: ../plugins/mtpdevice/rb-mtp-source.c:713
 #, c-format
-#| msgid "Unable to move %s to %s: %s"
 msgid "Unable to open the %s %s device"
 msgstr "Das Gerät %s %s konnte nicht geöffnet werden"
 
@@ -4077,7 +4074,6 @@ msgid "Paste selection"
 msgstr "Auswahl einfügen"
 
 #: ../shell/rb-shell-clipboard.c:167
-#| msgid "Delete the selected station"
 msgid "Delete each selected item"
 msgstr "Ausgewählte Einträge löschen"
 
@@ -4094,7 +4090,6 @@ msgid "_Move to Trash"
 msgstr "In den _Müll verschieben"
 
 #: ../shell/rb-shell-clipboard.c:173
-#| msgid "Move selection to the trash"
 msgid "Move each selected item to the trash"
 msgstr "Auswahl in den Müll verschieben"
 
@@ -4103,7 +4098,6 @@ msgid "Add to P_laylist"
 msgstr "Zur W_iedergabeliste hinzufügen"
 
 #: ../shell/rb-shell-clipboard.c:178
-#| msgid "Add the selected songs to a new playlist"
 msgid "Add each selected song to a new playlist"
 msgstr "Ausgewählte Titel zu einer neuen Wiedergabeliste hinzufügen"
 
@@ -4112,7 +4106,6 @@ msgid "Add _to Play Queue"
 msgstr "In die _Warteschlange aufnehmen"
 
 #: ../shell/rb-shell-clipboard.c:181
-#| msgid "Add the selected songs to the play queue"
 msgid "Add each selected song to the play queue"
 msgstr "Die ausgewählten Titel in die Warteschlange aufnehmen"
 
@@ -4121,7 +4114,6 @@ msgid "Remove"
 msgstr "Entfernen"
 
 #: ../shell/rb-shell-clipboard.c:184
-#| msgid "Remove all songs from the play queue"
 msgid "Remove each selected item from the play queue"
 msgstr "Alle ausgewählten Titel aus der Warteschlange entfernen"
 
@@ -4130,7 +4122,6 @@ msgid "Pr_operties"
 msgstr "_Eigenschaften"
 
 #: ../shell/rb-shell-clipboard.c:188 ../shell/rb-shell-clipboard.c:191
-#| msgid "Show information on the selected song"
 msgid "Show information on each selected song"
 msgstr "Informationen zu jedem der gewählten Titel anzeigen"
 
@@ -4282,7 +4273,6 @@ msgid "Current song is not seekable"
 msgstr "Der aktuelle Titel kann nicht durchsucht werden"
 
 #: ../shell/rb-shell-player.c:3722
-#| msgid "Mute playback"
 msgid "Pause playback"
 msgstr "Wiedergabe unterbrechen"
 
@@ -4720,7 +4710,7 @@ msgstr "Beispielpfad:"
 #. Translators: this is used to display the amount of storage space
 #. * used and the total storage space on an device.
 #.
-#: ../sources/rb-media-player-source.c:214
+#: ../sources/rb-media-player-source.c:221
 #, c-format
 msgid "%s of %s"
 msgstr "%s von %s"
@@ -4771,12 +4761,10 @@ msgid "by"
 msgstr "von"
 
 #: ../sources/rb-playlist-source.c:130
-#| msgid "Rename playlist"
 msgid "Remove From Playlist"
 msgstr "Aus Wiedergabeliste löschen"
 
 #: ../sources/rb-playlist-source.c:131
-#| msgid "Remove all songs from the play queue"
 msgid "Remove each selected song from the playlist"
 msgstr "Alle ausgewählten Titel aus der Wiedergabeliste entfernen"
 
@@ -5312,6 +5300,9 @@ msgstr "Auf der Arbeitsfläche"
 #: ../widgets/rb-song-info.c:1149
 msgid "Unknown location"
 msgstr "Unbekannter Speicherort"
+
+#~ msgid "iPod Properties"
+#~ msgstr "iPod-Eigenschaften"
 
 #~ msgid "Password Required"
 #~ msgstr "Passwort erforderlich"
