@@ -25,7 +25,9 @@
       <object class="GtkLabel" id="label-mtp-name">
         <property name="visible">True</property>
         <property name="xalign">0</property>
-        <property name="label" translatable="yes">Device Name:</property>
+        <property name="label" translatable="yes">Device _name:</property>
+        <property name="use_underline">True</property>
+        <property name="mnemonic_widget">entry-mtp-name</property>
       </object>
       <packing>
         <property name="x_options">GTK_FILL</property>
@@ -35,6 +37,7 @@
     <child>
       <object class="GtkLabel" id="label-num-tracks">
         <property name="visible">True</property>
+        <property name="xalign">0</property>
         <property name="label" translatable="yes">Tracks:</property>
       </object>
       <packing>
@@ -45,6 +48,7 @@
     <child>
       <object class="GtkLabel" id="label-num-podcasts">
         <property name="visible">True</property>
+        <property name="xalign">0</property>
         <property name="label" translatable="yes">Podcasts:</property>
       </object>
       <packing>
@@ -55,6 +59,7 @@
     <child>
       <object class="GtkLabel" id="label-num-playlists">
         <property name="visible">True</property>
+        <property name="xalign">0</property>
         <property name="label" translatable="yes">Playlists:</property>
       </object>
       <packing>
@@ -65,6 +70,7 @@
     <child>
       <object class="GtkLabel" id="mtp-num-tracks">
         <property name="visible">True</property>
+        <property name="xalign">0</property>
       </object>
       <packing>
         <property name="left_attach">1</property>
@@ -76,6 +82,7 @@
     <child>
       <object class="GtkLabel" id="mtp-num-podcasts">
         <property name="visible">True</property>
+        <property name="xalign">0</property>
       </object>
       <packing>
         <property name="left_attach">1</property>
@@ -87,6 +94,7 @@
     <child>
       <object class="GtkLabel" id="mtp-num-playlists">
         <property name="visible">True</property>
+        <property name="xalign">0</property>
       </object>
       <packing>
         <property name="left_attach">1</property>
@@ -152,7 +160,7 @@
           <object class="GtkLabel" id="label-serial-number">
             <property name="visible">True</property>
             <property name="xalign">0</property>
-            <property name="label" translatable="yes">Serial Number:</property>
+            <property name="label" translatable="yes">Serial number:</property>
           </object>
           <packing>
             <property name="top_attach">2</property>
@@ -165,7 +173,7 @@
           <object class="GtkLabel" id="label-firmware-version">
             <property name="visible">True</property>
             <property name="xalign">0</property>
-            <property name="label" translatable="yes">Firmware Version:</property>
+            <property name="label" translatable="yes">Firmware version:</property>
           </object>
           <packing>
             <property name="top_attach">3</property>
