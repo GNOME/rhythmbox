@@ -106,7 +106,9 @@ class ContextView (gobject.GObject):
         self.plugin = None
         self.top_five = None
         self.tab = None
-        shell.remove_widget (self.vbox, rb.SHELL_UI_LOCATION_RIGHT_SIDEBAR)
+        if self.visible:
+            shell.remove_widget (self.vbox, rb.SHELL_UI_LOCATION_RIGHT_SIDEBAR)
+            self.visible = False
         uim = shell.get_ui_manager ()
         uim.remove_ui (self.ui_id)
         uim.remove_action_group (self.action_group)
