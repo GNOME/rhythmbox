@@ -2470,7 +2470,7 @@ rb_shell_sync_toolbar_state (RBShell *shell)
 		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_ICONS);
 		break;
 	case 4:
-		/* test only */
+		/* text only */
 		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_TEXT);
 		break;
 	default:
