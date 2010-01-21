@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-16 19:40+0200\n"
-"PO-Revision-Date: 2010-01-16 19:46+0200\n"
+"POT-Creation-Date: 2010-01-21 15:21+0200\n"
+"PO-Revision-Date: 2010-01-21 15:20+0200\n"
 "Last-Translator: Krasimir Chonov <mk2616@abv.bg>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
 "MIME-Version: 1.0\n"
@@ -289,8 +289,8 @@ msgid "Basic"
 msgstr "Основен"
 
 #: ../data/ui/media-player-properties.ui.h:4
-msgid "iPod Properties"
-msgstr "Свойства на iPod"
+msgid "Media Player Properties"
+msgstr "Свойства на плеър"
 
 #: ../data/ui/playback-prefs.ui.h:1
 msgid "Crossfade Duration (Seconds)"
@@ -1755,21 +1755,21 @@ msgid "Loading biography for %s"
 msgstr "Зареждане на биографията на %s"
 
 #. Add button to toggle visibility of pane
-#: ../plugins/context/context/ContextView.py:88
+#: ../plugins/context/context/ContextView.py:89
 msgid "Toggle Conte_xt Pane"
 msgstr "_Превключване на контекстния панел"
 
-#: ../plugins/context/context/ContextView.py:89
+#: ../plugins/context/context/ContextView.py:90
 msgid "Change the visibility of the context pane"
 msgstr "Променяне на видимостта на контекстния панел"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
-#: ../plugins/context/context/ContextView.py:194
+#: ../plugins/context/context/ContextView.py:197
 #, python-format
 msgid "Top songs by %s"
 msgstr "Най-популярните песни на %s"
 
-#: ../plugins/context/context/ContextView.py:211
+#: ../plugins/context/context/ContextView.py:227
 msgid "Nothing Playing"
 msgstr "Не се изпълнява нищо"
 
@@ -2083,23 +2083,23 @@ msgid "<b>System</b>"
 msgstr "<b>Система</b>"
 
 #: ../plugins/ipod/ipod-info.ui.h:2
-msgid "Database Version:"
-msgstr "Версия на база от данни:"
+msgid "Database version:"
+msgstr "Версия на базата от данни:"
 
 #: ../plugins/ipod/ipod-info.ui.h:3
-msgid "Device Node:"
+msgid "Device node:"
 msgstr "Устройство:"
 
 #: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:3
-msgid "Firmware Version:"
-msgstr "Версия на софтуера:"
+msgid "Firmware version:"
+msgstr "Версия на фърмуера:"
 
 #: ../plugins/ipod/ipod-info.ui.h:5 ../plugins/mtpdevice/mtp-info.ui.h:5
 msgid "Model:"
 msgstr "Модел:"
 
 #: ../plugins/ipod/ipod-info.ui.h:6
-msgid "Mount Point:"
+msgid "Mount point:"
 msgstr "Точка на монтиране:"
 
 #: ../plugins/ipod/ipod-info.ui.h:7 ../plugins/mtpdevice/mtp-info.ui.h:6
@@ -2111,7 +2111,7 @@ msgid "Podcasts:"
 msgstr "Подкасти:"
 
 #: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:8
-msgid "Serial Number:"
+msgid "Serial number:"
 msgstr "Сериен номер:"
 
 #: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:9
@@ -2119,8 +2119,8 @@ msgid "Tracks:"
 msgstr "Песни:"
 
 #: ../plugins/ipod/ipod-info.ui.h:11
-msgid "iPod Name:"
-msgstr "Име на iPod:"
+msgid "iPod _name:"
+msgstr "Име на _iPod:"
 
 #: ../plugins/ipod/ipod-init.ui.h:1
 msgid ""
@@ -2435,7 +2435,8 @@ msgstr "Адрес на радиостанция:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:398
 #: ../podcast/rb-feed-podcast-properties-dialog.c:212
-#: ../podcast/rb-podcast-properties-dialog.c:369 ../widgets/rb-song-info.c:981
+#: ../podcast/rb-podcast-properties-dialog.c:369
+#: ../sources/rb-media-player-source.c:202 ../widgets/rb-song-info.c:981
 #, c-format
 msgid "%s Properties"
 msgstr "Настройки на %s"
@@ -3118,8 +3119,8 @@ msgstr ""
 "слушане от устройството)"
 
 #: ../plugins/mtpdevice/mtp-info.ui.h:2
-msgid "Device Name:"
-msgstr "Устройство:"
+msgid "Device _name:"
+msgstr "_Име на устройство:"
 
 #: ../plugins/mtpdevice/mtp-info.ui.h:4
 msgid "Manufacturer:"
@@ -4665,7 +4666,7 @@ msgstr "Примерен път:"
 #. Translators: this is used to display the amount of storage space
 #. * used and the total storage space on an device.
 #.
-#: ../sources/rb-media-player-source.c:214
+#: ../sources/rb-media-player-source.c:221
 #, c-format
 msgid "%s of %s"
 msgstr "%s от %s"
