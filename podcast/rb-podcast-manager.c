@@ -1171,7 +1171,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 
 	/* initialize the rating */
 	g_value_init (&val, G_TYPE_DOUBLE);
-	g_value_set_double (&val, 2.5);
+	g_value_set_double (&val, 0.0);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &val);
 	g_value_unset (&val);
 
