@@ -30,15 +30,15 @@
 #ifndef RB_SEGMENTED_BAR_H
 #define RB_SEGMENTED_BAR_H
 
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
 #define RB_TYPE_SEGMENTED_BAR     		(rb_segmented_bar_get_type ())
-#define RB_SEGMENTED_BAR(obj)     		(GTK_CHECK_CAST ((obj), RB_TYPE_SEGMENTED_BAR, RBSegmentedBar))
-#define RB_SEGMENTED_BAR_CLASS(klass)		(GTK_CHECK_CLASS_CAST ((klass), RB_TYPE_SEGMENTED_BAR, RBSegmenterBarClass))
-#define RB_IS_SEGMENTED_BAR(obj)		(GTK_CHECK_TYPE ((obj), RB_TYPE_SEGMENTED_BAR))
-#define RB_IS_SEGMENTER_BAR_CLASS(klass) 	(GTK_CHECK_CLASS_TYPE ((klass), RB_TYPE_SEGMENTED_BAR))
+#define RB_SEGMENTED_BAR(obj)     		(G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_SEGMENTED_BAR, RBSegmentedBar))
+#define RB_SEGMENTED_BAR_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST ((klass), RB_TYPE_SEGMENTED_BAR, RBSegmenterBarClass))
+#define RB_IS_SEGMENTED_BAR(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_SEGMENTED_BAR))
+#define RB_IS_SEGMENTER_BAR_CLASS(klass) 	(G_TYPE_CHECK_CLASS_TYPE ((klass), RB_TYPE_SEGMENTED_BAR))
 
 typedef struct _RBSegmentedBar RBSegmentedBar;
 typedef struct _RBSegmentedBarClass RBSegmentedBarClass;
@@ -59,7 +59,7 @@ struct _RBSegmentedBarClass
 
 typedef gchar *(*RBSegmentedBarValueFormatter) (gdouble percent, gpointer data);
 
-GtkType    	rb_segmented_bar_get_type (void);
+GType    	rb_segmented_bar_get_type (void);
 
 GtkWidget  	*rb_segmented_bar_new     (void);
 guint rb_segmented_bar_add_segment (RBSegmentedBar *bar,
