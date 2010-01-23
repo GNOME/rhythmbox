@@ -1333,7 +1333,7 @@ _wrap_RBRemovableMediaSource__do_impl_get_mime_types(PyObject *cls, PyObject *ar
 %%
 override RBRemovableMediaSource__proxy_do_impl_get_mime_types
 static GList *
-_wrap_RBRemovableMediaSource__proxy_do_impl_get_mime_types (RBSource *self)
+_wrap_RBRemovableMediaSource__proxy_do_impl_get_mime_types (RBRemovableMediaSource *self)
 {
 	PyGILState_STATE __py_state;
 	PyObject *py_self;
