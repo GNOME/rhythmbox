@@ -465,6 +465,7 @@ scroll_row_timeout (gpointer data)
 	gint y, x;
 	gint offset;
 	gfloat value;
+	gdouble vadj_value;
 	GtkAdjustment* vadj;
 	RbTreeDndData *priv_data;
 
@@ -500,11 +501,14 @@ scroll_row_timeout (gpointer data)
 	}
 
 	vadj = gtk_tree_view_get_vadjustment (tree_view);
-	value = CLAMP (vadj->value + offset, vadj->lower, vadj->upper - vadj->page_size);
+	vadj_value = gtk_adjustment_get_value (vadj);
+	value = CLAMP (vadj_value + offset,
+		       gtk_adjustment_get_lower (vadj),
+		       gtk_adjustment_get_upper (vadj) - gtk_adjustment_get_page_size (vadj));
 	gtk_adjustment_set_value (vadj, value);
 
 	/* don't remove it if we're on the edge and not scrolling */
-	if (ABS (vadj->value - value) > 0.0001)
+	if (ABS (vadj_value - value) > 0.0001)
 		remove_select_on_drag_timeout(tree_view);
 
 	GDK_THREADS_LEAVE ();
@@ -848,7 +852,7 @@ rb_tree_dnd_drag_data_received_cb (GtkWidget        *widget,
 		if (!filter_drop_position (widget, context, dest_row, &pos))
 			filtered = FALSE;
 
-	if (filtered && selection_data->length >= 0)
+	if (filtered && (gtk_selection_data_get_length (selection_data) >= 0))
 	{
 		if (rb_tree_drag_dest_drag_data_received (RB_TREE_DRAG_DEST (model),
                 					  dest_row,

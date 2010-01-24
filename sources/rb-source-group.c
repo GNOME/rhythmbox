@@ -52,6 +52,7 @@ G_LOCK_DEFINE_STATIC (source_groups);
 static GHashTable *source_groups_map;
 
 static RBSourceGroup *library_group = NULL;
+static RBSourceGroup *stores_group = NULL;
 static RBSourceGroup *playlists_group = NULL;
 static RBSourceGroup *devices_group = NULL;
 static RBSourceGroup *shared_group = NULL;
@@ -60,6 +61,7 @@ static void
 register_core_source_groups (void)
 {
 	library_group = rb_source_group_register ("library", _("Library"), RB_SOURCE_GROUP_CATEGORY_FIXED);
+	stores_group = rb_source_group_register ("stores", _("Stores"), RB_SOURCE_GROUP_CATEGORY_FIXED);
 	playlists_group = rb_source_group_register ("playlists", _("Playlists"), RB_SOURCE_GROUP_CATEGORY_PERSISTENT);
 	devices_group = rb_source_group_register ("devices", _("Devices"), RB_SOURCE_GROUP_CATEGORY_REMOVABLE);
 	shared_group = rb_source_group_register ("shared", _("Shared"), RB_SOURCE_GROUP_CATEGORY_TRANSIENT);
@@ -228,4 +230,15 @@ RBSourceGroup *
 rb_source_group_shared_get_type (void)
 {
 	return shared_group;
+}
+
+/**
+ * rb_source_group_stores_get_type:
+ *
+ * Return value: the predefined stores source group
+ */
+RBSourceGroup *
+rb_source_group_stores_get_type (void)
+{
+	return stores_group;
 }

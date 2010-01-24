@@ -43,6 +43,7 @@
 
 #include <nautilus-burn.h>
 
+#include "gseal-gtk-compat.h"
 #include "rb-file-helpers.h"
 #include "rb-builder-helpers.h"
 #include "rb-preferences.h"
@@ -1120,7 +1121,7 @@ rb_playlist_source_recorder_constructed (GObject *object)
                                                               GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 
         source->priv->burn_button = gtk_button_new ();
-        GTK_WIDGET_SET_FLAGS (source->priv->burn_button, GTK_CAN_DEFAULT);
+        gtk_widget_set_can_default (source->priv->burn_button, TRUE);
 
         widget = gtk_alignment_new (0.5, 0.5, 0, 0);
         gtk_container_add (GTK_CONTAINER (source->priv->burn_button), widget);

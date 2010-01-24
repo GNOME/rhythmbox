@@ -67,6 +67,10 @@ void			rb_ipod_source_remove_playlist	(RBiPodSource *ipod_source,
 
 Itdb_Playlist *		rb_ipod_source_get_playlist	(RBiPodSource *source,
 							 gchar *name);
+void			rb_ipod_source_show_properties	(RBiPodSource *source);
+
+void			rb_ipod_source_delete_entries	(RBiPodSource *source,
+							 GList *entries);
 
 G_END_DECLS
 

@@ -91,6 +91,8 @@ struct _RBPlayerGstPrivate
 	char *uri;
 	gpointer stream_data;
 	GDestroyNotify stream_data_destroy;
+	gpointer next_stream_data;
+	GDestroyNotify next_stream_data_destroy;
 
 	GstElement *playbin;
 	GstElement *audio_sink;
@@ -101,7 +103,7 @@ struct _RBPlayerGstPrivate
 
 	gboolean stream_change_pending;
 	gboolean current_track_finishing;
-	gboolean fake_playing_position;
+	gboolean playbin_stream_changing;
 
 	gboolean emitted_error;
 
@@ -122,19 +124,25 @@ struct _RBPlayerGstPrivate
 	GstElement *filterbin;
 };
 
-static gboolean
-tick_timeout (RBPlayerGst *mp)
+static void
+_destroy_stream_data (RBPlayerGst *player)
 {
-	if (mp->priv->playing) {
-		_rb_player_emit_tick (RB_PLAYER (mp),
-				      mp->priv->stream_data,
-				      rb_player_get_time (RB_PLAYER (mp)),
-				      -1);
-		mp->priv->fake_playing_position = FALSE;
+	if (player->priv->stream_data && player->priv->stream_data_destroy) {
+		player->priv->stream_data_destroy (player->priv->stream_data);
 	}
-	return TRUE;
+	player->priv->stream_data = NULL;
+	player->priv->stream_data_destroy = NULL;
 }
 
+static void
+_destroy_next_stream_data (RBPlayerGst *player)
+{
+	if (player->priv->next_stream_data && player->priv->next_stream_data_destroy) {
+		player->priv->next_stream_data_destroy (player->priv->next_stream_data);
+	}
+	player->priv->next_stream_data = NULL;
+	player->priv->next_stream_data_destroy = NULL;
+}
 
 static void
 about_to_finish_cb (GstElement *playbin, RBPlayerGst *player)
@@ -211,6 +219,35 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 				      &value);
 		g_value_unset (&value);
 	}
+}
+
+static void
+emit_playing_stream_and_tags (RBPlayerGst *player, gboolean track_change)
+{
+	GList *t;
+
+	if (track_change) {
+		/* swap stream data */
+		_destroy_stream_data (player);
+		player->priv->stream_data = player->priv->next_stream_data;
+		player->priv->stream_data_destroy = player->priv->next_stream_data_destroy;
+		player->priv->next_stream_data = NULL;
+		player->priv->next_stream_data_destroy = NULL;
+	}
+
+	_rb_player_emit_playing_stream (RB_PLAYER (player), player->priv->stream_data);
+
+	/* process any tag lists we received while starting the stream */
+	for (t = player->priv->stream_tags; t != NULL; t = t->next) {
+		GstTagList *tags;
+
+		tags = (GstTagList *)t->data;
+		rb_debug ("processing buffered taglist");
+		gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, player);
+		gst_tag_list_free (tags);
+	}
+	g_list_free (player->priv->stream_tags);
+	player->priv->stream_tags = NULL;
 }
 
 static void
@@ -351,8 +388,14 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 		break;
 
 	case GST_MESSAGE_ELEMENT:
+		structure = gst_message_get_structure (message);
 		if (gst_is_missing_plugin_message (message)) {
 			handle_missing_plugin_message (mp, message);
+		} else if (mp->priv->playbin_stream_changing &&
+			   gst_structure_has_name (structure, "playbin2-stream-changed")) {
+			rb_debug ("got playbin2-stream-changed message");
+			mp->priv->playbin_stream_changing = FALSE;
+			emit_playing_stream_and_tags (mp, TRUE);
 		}
 		break;
 
@@ -637,15 +680,31 @@ set_state_and_wait (RBPlayerGst *player, GstState target, GError **error)
 	return result;
 }
 
-static void
-_destroy_stream_data (RBPlayerGst *player)
+static gboolean
+tick_timeout (RBPlayerGst *mp)
 {
-	if (player->priv->stream_data && player->priv->stream_data_destroy) {
-		player->priv->stream_data_destroy (player->priv->stream_data);
+	if (mp->priv->playing) {
+		gint64 position;
+
+		position = rb_player_get_time (RB_PLAYER (mp));
+
+		/* if we don't have stream-changed messages, do the track change when
+		 * the playback position is less than one second into the current track,
+		 * which pretty much has to be the new one.
+		 */
+		if (mp->priv->playbin_stream_changing && (position < GST_SECOND)) {
+			emit_playing_stream_and_tags (mp, TRUE);
+			mp->priv->playbin_stream_changing = FALSE;
+		}
+
+		_rb_player_emit_tick (RB_PLAYER (mp),
+				      mp->priv->stream_data,
+				      position,
+				      -1);
 	}
-	player->priv->stream_data = NULL;
-	player->priv->stream_data_destroy = NULL;
+	return TRUE;
 }
+
 
 static gboolean
 impl_close (RBPlayer *player, const char *uri, GError **error)
@@ -662,6 +721,9 @@ impl_close (RBPlayer *player, const char *uri, GError **error)
 	mp->priv->current_track_finishing = FALSE;
 
 	_destroy_stream_data (mp);
+	if (uri == NULL) {
+		_destroy_next_stream_data (mp);
+	}
 	g_free (mp->priv->uri);
 	g_free (mp->priv->prev_uri);
 	mp->priv->uri = NULL;
@@ -701,12 +763,12 @@ impl_open (RBPlayer *player,
 	}
 
 	rb_debug ("setting new uri to %s", uri);
-	_destroy_stream_data (mp);
+	_destroy_next_stream_data (mp);
 	g_free (mp->priv->prev_uri);
 	mp->priv->prev_uri = mp->priv->uri;
 	mp->priv->uri = g_strdup (uri);
-	mp->priv->stream_data = stream_data;
-	mp->priv->stream_data_destroy = stream_data_destroy;
+	mp->priv->next_stream_data = stream_data;
+	mp->priv->next_stream_data_destroy = stream_data_destroy;
 	mp->priv->emitted_error = FALSE;
 	mp->priv->stream_change_pending = TRUE;
 
@@ -745,23 +807,21 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 {
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
 	gboolean result;
+	gboolean track_change = TRUE;
 
 	g_return_val_if_fail (mp->priv->playbin != NULL, FALSE);
 
 	if (mp->priv->stream_change_pending == FALSE) {
 		rb_debug ("no stream change pending, just restarting playback");
 		result = set_state_and_wait (mp, GST_STATE_PLAYING, error);
+		track_change = FALSE;
 
 	} else if (mp->priv->current_track_finishing) {
 		rb_debug ("current track finishing -> just setting URI on playbin");
 		g_object_set (mp->priv->playbin, "uri", mp->priv->uri, NULL);
 		result = TRUE;
 
-		/* since we don't know exactly when the change occurs, pretend the playing position
-		 * is 0 until the next tick.  otherwise we sometimes get the playing position from the
-		 * previous track.
-		 */
-		mp->priv->fake_playing_position = TRUE;
+		mp->priv->playbin_stream_changing = TRUE;
 
 	} else {
 		gboolean reused = FALSE;
@@ -797,13 +857,13 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 	mp->priv->stream_change_pending = FALSE;
 
 	if (result) {
-		GList *t;
-
 		mp->priv->current_track_finishing = FALSE;
 		mp->priv->buffering = FALSE;
 		mp->priv->playing = TRUE;
 
-		_rb_player_emit_playing_stream (RB_PLAYER (mp), mp->priv->stream_data);
+		if (mp->priv->playbin_stream_changing == FALSE) {
+			emit_playing_stream_and_tags (mp, track_change);
+		}
 
 		if (mp->priv->tick_timeout_id == 0) {
 			mp->priv->tick_timeout_id =
@@ -833,18 +893,6 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 
 			mp->priv->volume_applied = mp->priv->volume_changed;
 		}
-
-		/* process any tag lists we received while starting the stream */
-		for (t = mp->priv->stream_tags; t != NULL; t = t->next) {
-			GstTagList *tags;
-
-			tags = (GstTagList *)t->data;
-			rb_debug ("processing buffered taglist");
-			gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, mp);
-			gst_tag_list_free (tags);
-		}
-		g_list_free (mp->priv->stream_tags);
-		mp->priv->stream_tags = NULL;
 	}
 
 	return result;
@@ -1011,10 +1059,7 @@ impl_get_time (RBPlayer *player)
 {
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
-	if (mp->priv->fake_playing_position) {
-		/* track transition occurring, so pretend we're at the start of the new one */
-		return 0;
-	} else if (mp->priv->playbin != NULL) {
+	if (mp->priv->playbin != NULL) {
 		gint64 position = -1;
 		GstFormat fmt = GST_FORMAT_TIME;
 

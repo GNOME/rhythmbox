@@ -1871,7 +1871,7 @@ rb_entry_view_constructed (GObject *object)
 					  G_CALLBACK (rb_entry_view_pixbuf_clicked_cb),
 					  view);
 
-		gtk_widget_set_tooltip_text (GTK_WIDGET (column->button),
+		gtk_widget_set_tooltip_text (gtk_tree_view_column_get_widget (column),
 					     _("Now Playing"));
 	}
 

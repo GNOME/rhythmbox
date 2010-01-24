@@ -154,6 +154,7 @@ static void
 rb_station_properties_dialog_constructed (GObject *object)
 {
 	RBStationPropertiesDialog *dialog;
+	GtkWidget *content_area;
 	GtkBuilder *builder;
 	char *builder_file;
 	AtkObject *lobj, *robj;
@@ -166,16 +167,18 @@ rb_station_properties_dialog_constructed (GObject *object)
 				 G_CALLBACK (rb_station_properties_dialog_response_cb),
 				 dialog, 0);
 
+	content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
-	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
+	gtk_box_set_spacing (GTK_BOX (content_area), 2);
 
 	builder_file = rb_plugin_find_file (dialog->priv->plugin, "station-properties.ui");
 	g_assert (builder_file != NULL);
 	builder = rb_builder_load (builder_file, dialog);
 	g_free (builder_file);
 
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
+	gtk_container_add (GTK_CONTAINER (content_area),
 			   GTK_WIDGET (gtk_builder_get_object (builder, "stationproperties")));
 
 	dialog->priv->close_button = gtk_dialog_add_button (GTK_DIALOG (dialog),

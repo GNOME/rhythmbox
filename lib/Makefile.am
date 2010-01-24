@@ -21,6 +21,7 @@ librb_la_SOURCES =					\
 	eggsmclient.h					\
 	eggsmclient-private.h				\
 	eggsmclient-xsmp.c				\
+	gseal-gtk-compat.h				\
 	rb-file-helpers.c				\
 	rb-file-helpers.h				\
 	rb-builder-helpers.c				\

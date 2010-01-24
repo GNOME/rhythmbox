@@ -7,5 +7,5 @@ bus = dbus.SessionBus()
 rbshellobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Shell')
 rbshell = dbus.Interface(rbshellobj, 'org.gnome.Rhythmbox.Shell')
 
-rbshell.setSongProperty(sys.argv[1], "rating", dbus.Variant(float(sys.argv[2])))
+rbshell.setSongProperty(sys.argv[1], "rating", dbus.Double(float(sys.argv[2])))
 

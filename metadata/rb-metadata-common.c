@@ -30,52 +30,6 @@
 #include "rb-metadata.h"
 #include "rb-debug.h"
 
-struct RBMetaDataFieldInfo {
-	GType type;
-	const char *name;
-};
-
-/*
- * Note: the field names are the same as those used by GStreamer.  We
- * could have just use the GST_TAG_X defines, but that would suck if we
- * ever got a non-GStreamer metadata backend.
- */
-static struct RBMetaDataFieldInfo field_info[RB_METADATA_FIELD_LAST] = {
-	/* RB_METADATA_FIELD_TITLE */ 			{ G_TYPE_STRING, "title" },
-	/* RB_METADATA_FIELD_ARTIST */ 			{ G_TYPE_STRING, "artist" },
-	/* RB_METADATA_FIELD_ALBUM */ 			{ G_TYPE_STRING, "album" },
-	/* RB_METADATA_FIELD_DATE */ 			{ G_TYPE_ULONG, "date" },
-	/* RB_METADATA_FIELD_GENRE */ 			{ G_TYPE_STRING, "genre" },
-	/* RB_METADATA_FIELD_COMMENT */			{ G_TYPE_STRING, "comment" },
-	/* RB_METADATA_FIELD_TRACK_NUMBER */		{ G_TYPE_ULONG, "track-number" },
-	/* RB_METADATA_FIELD_MAX_TRACK_NUMBER */	{ G_TYPE_ULONG, "track-count" },
-	/* RB_METADATA_FIELD_DISC_NUMBER */ 		{ G_TYPE_ULONG, "album-disc-number" },
-	/* RB_METADATA_FIELD_MAX_DISC_NUMBER */ 	{ G_TYPE_ULONG, "album-disc-count" },
-	/* RB_METADATA_FIELD_DESCRIPTION */ 		{ G_TYPE_STRING, "description" },
-	/* RB_METADATA_FIELD_VERSION */ 		{ G_TYPE_STRING, "version" },
-	/* RB_METADATA_FIELD_IRSC */	 		{ G_TYPE_STRING, "isrc" },
-	/* RB_METADATA_FIELD_ORGANIZATION */ 		{ G_TYPE_STRING, "organization" },
-	/* RB_METADATA_FIELD_COPYRIGHT */ 		{ G_TYPE_STRING, "copyright" },
-	/* RB_METADATA_FIELD_CONTACT */ 		{ G_TYPE_STRING, "contact" },
-	/* RB_METADATA_FIELD_LICENSE */ 		{ G_TYPE_STRING, "license" },
-	/* RB_METADATA_FIELD_PERFORMER */ 		{ G_TYPE_STRING, "performer" },
-	/* RB_METADATA_FIELD_DURATION */ 		{ G_TYPE_ULONG, "duration" },
-	/* RB_METADATA_FIELD_CODEC */	 		{ G_TYPE_STRING, "codec" },
-	/* RB_METADATA_FIELD_BITRATE */ 		{ G_TYPE_ULONG, "bitrate" },
-	/* RB_METADATA_FIELD_TRACK_GAIN */ 		{ G_TYPE_DOUBLE, "replaygain-track-gain" },
-	/* RB_METADATA_FIELD_TRACK_PEAK */ 		{ G_TYPE_DOUBLE, "replaygain-track-peak" },
-	/* RB_METADATA_FIELD_ALBUM_GAIN */ 		{ G_TYPE_DOUBLE, "replaygain-album-gain" },
-	/* RB_METADATA_FIELD_ALBUM_PEAK */ 		{ G_TYPE_DOUBLE, "replaygain-album-peak" },
-	/* RB_METADATA_FIELD_LANGUAGE_CODE */		{ G_TYPE_STRING, "language-code" },
-	/* RB_METADATA_FIELD_MUSICBRAINZ_TRACKID */	{ G_TYPE_STRING, "musicbrainz-trackid" },
-	/* RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID */	{ G_TYPE_STRING, "musicbrainz-artistid" },
-	/* RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID */	{ G_TYPE_STRING, "musicbrainz-albumid" },
-	/* RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID */ { G_TYPE_STRING, "musicbrainz-albumartistid" },
-	/* RB_METADATA_FIELD_ARTIST_SORTNAME */         { G_TYPE_STRING, "musicbrainz-sortname" },
-	/* RB_METADATA_FIELD_ALBUM_SORTNAME */         { G_TYPE_STRING, "album-sortname" },
-
-};
-
 /**
  * RBMetaDataField:
  * @RB_METADATA_FIELD_TITLE: Title of the recording
@@ -123,8 +77,48 @@ static struct RBMetaDataFieldInfo field_info[RB_METADATA_FIELD_LAST] = {
 GType
 rb_metadata_get_field_type (RBMetaDataField field)
 {
-	g_assert (field >= 0 && field < RB_METADATA_FIELD_LAST);
-	return field_info[field].type;
+	switch (field) {
+	case RB_METADATA_FIELD_TITLE:
+	case RB_METADATA_FIELD_ARTIST:
+	case RB_METADATA_FIELD_ALBUM:
+	case RB_METADATA_FIELD_GENRE:
+	case RB_METADATA_FIELD_COMMENT:
+	case RB_METADATA_FIELD_DESCRIPTION:
+	case RB_METADATA_FIELD_VERSION:
+	case RB_METADATA_FIELD_ISRC:
+	case RB_METADATA_FIELD_ORGANIZATION:
+	case RB_METADATA_FIELD_COPYRIGHT:
+	case RB_METADATA_FIELD_CONTACT:
+	case RB_METADATA_FIELD_LICENSE:
+	case RB_METADATA_FIELD_PERFORMER:
+	case RB_METADATA_FIELD_CODEC:
+	case RB_METADATA_FIELD_LANGUAGE_CODE:
+	case RB_METADATA_FIELD_MUSICBRAINZ_TRACKID:
+	case RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID:
+	case RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID:
+	case RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID:
+	case RB_METADATA_FIELD_ARTIST_SORTNAME:
+	case RB_METADATA_FIELD_ALBUM_SORTNAME:
+		return G_TYPE_STRING;
+
+	case RB_METADATA_FIELD_DATE:
+	case RB_METADATA_FIELD_TRACK_NUMBER:
+	case RB_METADATA_FIELD_MAX_TRACK_NUMBER:
+	case RB_METADATA_FIELD_DISC_NUMBER:
+	case RB_METADATA_FIELD_MAX_DISC_NUMBER:
+	case RB_METADATA_FIELD_DURATION:
+	case RB_METADATA_FIELD_BITRATE:
+		return G_TYPE_ULONG;
+
+	case RB_METADATA_FIELD_TRACK_GAIN:
+	case RB_METADATA_FIELD_TRACK_PEAK:
+	case RB_METADATA_FIELD_ALBUM_GAIN:
+	case RB_METADATA_FIELD_ALBUM_PEAK:
+		return G_TYPE_DOUBLE;
+
+	default:
+		g_assert_not_reached ();
+	}
 }
 
 /**
@@ -136,8 +130,11 @@ rb_metadata_get_field_type (RBMetaDataField field)
 const char *
 rb_metadata_get_field_name (RBMetaDataField field)
 {
-	g_assert (field >= 0 && field < RB_METADATA_FIELD_LAST);
-	return field_info[field].name;
+	GEnumClass *klass;
+
+	klass = g_type_class_ref (RB_TYPE_METADATA_FIELD);
+	g_assert (field >= 0 && field < klass->n_values);
+	return klass->values[field].value_nick;
 }
 
 GQuark
@@ -148,4 +145,85 @@ rb_metadata_error_quark (void)
 		quark = g_quark_from_static_string ("rb_metadata_error");
 
 	return quark;
+}
+
+
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+
+GType
+rb_metadata_field_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0) {
+		static const GEnumValue values[] =
+		{
+			/* Note: field names are the GStreamer tag names.
+			 * We could have just used the GST_TAG_X defines, but that
+			 * would suck if we ever got a non-GStreamer metadata backend.
+			 *
+			 * maybe pack the field types in here too, like RhythmDBPropType?
+			 */
+			ENUM_ENTRY (RB_METADATA_FIELD_TITLE, "title"),
+			ENUM_ENTRY (RB_METADATA_FIELD_ARTIST, "artist"),
+			ENUM_ENTRY (RB_METADATA_FIELD_ALBUM, "album"),
+			ENUM_ENTRY (RB_METADATA_FIELD_DATE, "date"),
+			ENUM_ENTRY (RB_METADATA_FIELD_GENRE, "genre"),
+			ENUM_ENTRY (RB_METADATA_FIELD_COMMENT, "comment"),
+			ENUM_ENTRY (RB_METADATA_FIELD_TRACK_NUMBER, "track-number"),
+			ENUM_ENTRY (RB_METADATA_FIELD_MAX_TRACK_NUMBER, "track-count"),
+			ENUM_ENTRY (RB_METADATA_FIELD_DISC_NUMBER, "album-disc-number"),
+			ENUM_ENTRY (RB_METADATA_FIELD_MAX_DISC_NUMBER, "album-disc-count"),
+			ENUM_ENTRY (RB_METADATA_FIELD_DESCRIPTION, "description"),
+			ENUM_ENTRY (RB_METADATA_FIELD_VERSION, "version"),
+			ENUM_ENTRY (RB_METADATA_FIELD_ISRC, "isrc"),
+			ENUM_ENTRY (RB_METADATA_FIELD_ORGANIZATION, "organization"),
+			ENUM_ENTRY (RB_METADATA_FIELD_COPYRIGHT, "copyright"),
+			ENUM_ENTRY (RB_METADATA_FIELD_CONTACT, "contact"),
+			ENUM_ENTRY (RB_METADATA_FIELD_LICENSE, "license"),
+			ENUM_ENTRY (RB_METADATA_FIELD_PERFORMER, "performer"),
+			ENUM_ENTRY (RB_METADATA_FIELD_DURATION, "duration"),
+			ENUM_ENTRY (RB_METADATA_FIELD_CODEC, "codec"),
+			ENUM_ENTRY (RB_METADATA_FIELD_BITRATE, "bitrate"),
+			ENUM_ENTRY (RB_METADATA_FIELD_TRACK_GAIN, "replaygain-track-gain"),
+			ENUM_ENTRY (RB_METADATA_FIELD_TRACK_PEAK, "replaygain-track-peak"),
+			ENUM_ENTRY (RB_METADATA_FIELD_ALBUM_GAIN, "replaygain-album-gain"),
+			ENUM_ENTRY (RB_METADATA_FIELD_ALBUM_PEAK, "replaygain-album-peak"),
+			ENUM_ENTRY (RB_METADATA_FIELD_LANGUAGE_CODE, "language-code"),
+			ENUM_ENTRY (RB_METADATA_FIELD_MUSICBRAINZ_TRACKID, "musicbrainz-trackid"),
+			ENUM_ENTRY (RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID, "musicbrainz-artistid"),
+			ENUM_ENTRY (RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID, "musicbrainz-albumid"),
+			ENUM_ENTRY (RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID, "musicbrainz-albumartistid"),
+			ENUM_ENTRY (RB_METADATA_FIELD_ARTIST_SORTNAME, "musicbrainz-sortname"),
+			ENUM_ENTRY (RB_METADATA_FIELD_ALBUM_SORTNAME, "album-sortname"),
+			{ 0, 0, 0 }
+		};
+		etype = g_enum_register_static ("RBMetadataFieldType", values);
+	}
+
+	return etype;
+}
+
+GType
+rb_metadata_error_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0) {
+		static const GEnumValue values[] =
+		{
+			ENUM_ENTRY(RB_METADATA_ERROR_IO, "IO error"),
+			ENUM_ENTRY(RB_METADATA_ERROR_MISSING_PLUGIN, "Missing plugins required to read the file"),
+			ENUM_ENTRY(RB_METADATA_ERROR_UNRECOGNIZED, "Unable to identify the file type"),
+			ENUM_ENTRY(RB_METADATA_ERROR_UNSUPPORTED, "Unsupported file type"),
+			ENUM_ENTRY(RB_METADATA_ERROR_GENERAL, "General error"),
+			ENUM_ENTRY(RB_METADATA_ERROR_INTERNAL, "Internal error"),
+			ENUM_ENTRY(RB_METADATA_ERROR_EMPTY_FILE, "Empty file"),
+			{ 0, 0, 0 }
+		};
+		etype = g_enum_register_static ("RBMetadataErrorType", values);
+	}
+
+	return etype;
 }

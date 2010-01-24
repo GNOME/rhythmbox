@@ -570,19 +570,22 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 {
 	RBAutoPlaylistSource *source = RB_AUTO_PLAYLIST_SOURCE (asource);
 
+	GdkAtom type;
 	GPtrArray *subquery = NULL;
 	gchar **names;
 	guint propid;
 	int i;
 	RhythmDB *db;
 
+	type = gtk_selection_data_get_data_type (data);
+
 	/* ignore URI and entry ID lists */
-	if (data->type == gdk_atom_intern ("text/uri-list", TRUE) ||
-	    data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE))
+	if (type == gdk_atom_intern ("text/uri-list", TRUE) ||
+	    type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE))
 		return TRUE;
 
-	names = g_strsplit ((char *)data->data, "\r\n", 0);
-	propid = rb_auto_playlist_source_drag_atom_to_prop (data->type);
+	names = g_strsplit ((char *) gtk_selection_data_get_data (data), "\r\n", 0);
+	propid = rb_auto_playlist_source_drag_atom_to_prop (type);
 
 	g_object_get (asource, "db", &db, NULL);
 

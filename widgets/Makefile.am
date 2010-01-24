@@ -29,6 +29,8 @@ librbwidgets_la_SOURCES =				\
 	rb-rating.c					\
 	rb-rating.h					\
 	rb-rating-helper.c				\
+	rb-segmented-bar.c				\
+	rb-segmented-bar.h				\
 	rb-library-browser.h				\
 	rb-library-browser.c				\
 	rb-rating-helper.h				\
@@ -60,3 +62,6 @@ INCLUDES =						\
 librbwidgets_la_LDFLAGS = -export-dynamic
 librbwidgets_la_LIBADD = $(NOTIFY_LIBS) $(LIBSEXY_LIBS)
 
+noinst_PROGRAMS = test-rb-segmented-bar
+test_rb_segmented_bar_SOURCES = test-rb-segmented-bar.c
+test_rb_segmented_bar_LDADD = librbwidgets.la

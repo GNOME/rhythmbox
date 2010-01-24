@@ -24,6 +24,7 @@ SUBDIRS += 						\
 	coherence					\
 	im-status					\
 	context						\
+	sendto						\
 	rb
 endif
 

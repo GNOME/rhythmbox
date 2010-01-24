@@ -64,6 +64,7 @@ static gboolean impl_should_paste (RBRemovableMediaSource *source,
 				   RhythmDBEntry *entry);
 static guint impl_want_uri (RBSource *source, const char *uri);
 static gboolean impl_uri_is_source (RBSource *source, const char *uri);
+static char *impl_get_delete_action (RBSource *source);
 
 typedef struct
 {
@@ -106,6 +107,7 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	source_class->impl_show_popup = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_uri_is_source = impl_uri_is_source;
+	source_class->impl_get_delete_action = impl_get_delete_action;
 
 	browser_source_class->impl_get_paned_key = NULL;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
@@ -519,7 +521,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	char *type;
 
 	entries = NULL;
-	type = gdk_atom_name (data->type);
+	type = gdk_atom_name (gtk_selection_data_get_data_type (data));
         db = get_db_for_source (asource);
 
 	if (strcmp (type, "text/uri-list") == 0) {
@@ -527,7 +529,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		GList *i;
 
 		rb_debug ("parsing uri list");
-		list = rb_uri_list_parse ((const char *) data->data);
+		list = rb_uri_list_parse ((const char *) gtk_selection_data_get_data (data));
 
 		for (i = list; i != NULL; i = g_list_next (i)) {
 			char *uri;
@@ -554,7 +556,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		char **i;
 
 		rb_debug ("parsing entry ids");
-		list = g_strsplit ((const char*)data->data, "\n", -1);
+		list = g_strsplit ((const char*) gtk_selection_data_get_data (data), "\n", -1);
 		for (i = list; *i != NULL; i++) {
 			RhythmDBEntry *entry;
 			gulong id;
@@ -741,3 +743,8 @@ rb_removable_media_source_track_add_error (RBRemovableMediaSource *source,
 	}
 }
 
+static char *
+impl_get_delete_action (RBSource *source)
+{
+	return g_strdup ("EditDelete");
+}

@@ -1656,16 +1656,15 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 	return FALSE;
 }
 
-char *
+GstStructure *
 rb_daap_connection_get_headers (RBDAAPConnection *connection,
-				const gchar *uri,
-				gint64 bytes)
+				const gchar *uri)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
-	GString *headers;
+	GstStructure *headers;
 	char hash[33] = {0};
 	char *norb_daap_uri = (char *)uri;
-	char *s;
+	char *request_id_str;
 
 	priv->request_id++;
 
@@ -1678,37 +1677,39 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 			       (guchar*)hash,
 			       priv->request_id);
 
-	headers = g_string_new ("Accept: */*\r\n"
-				"Cache-Control: no-cache\r\n"
-				"User-Agent: " RB_DAAP_USER_AGENT "\r\n"
-				"Accept-Language: en-us, en;q=5.0\r\n"
-				"Client-DAAP-Access-Index: 2\r\n"
-				"Client-DAAP-Version: 3.0\r\n");
-	g_string_append_printf (headers,
-				"Client-DAAP-Validation: %s\r\n"
-				"Client-DAAP-Request-ID: %d\r\n"
-				"Connection: close\r\n",
-				hash, priv->request_id);
+	request_id_str = g_strdup_printf ("%d", priv->request_id);
+	headers = gst_structure_new ("extra-headers",
+				     "Accept",                   G_TYPE_STRING, "*/*",
+				     "Cache-Control",            G_TYPE_STRING, "no-cache",
+				     "User-Agent",               G_TYPE_STRING, RB_DAAP_USER_AGENT,
+				     "Accept-Language",          G_TYPE_STRING, "en-us, en;q=5.0",
+				     "Client-DAAP-Access-Index", G_TYPE_STRING, "2",
+				     "Client-DAAP-Version",      G_TYPE_STRING, "3.0",
+				     "Client-DAAP-Validation",   G_TYPE_STRING, hash,
+				     "Client-DAAP-Request-ID",   G_TYPE_STRING, request_id_str,
+				     "Connection",               G_TYPE_STRING, "close",
+				     NULL);
+	g_free (request_id_str);
 
 	if (priv->password_protected) {
 		char *user_pass;
 		char *token;
+		char *auth_str;
 
 		user_pass = g_strdup_printf ("%s:%s", priv->username, priv->password);
 		token = g_base64_encode ((guchar *)user_pass, strlen (user_pass));
-		g_string_append_printf (headers, "Authentication: Basic %s\r\n", token);
+		auth_str = g_strdup_printf ("Basic %s", token);
+
+		gst_structure_set (headers,
+				   "Authentication", G_TYPE_STRING, auth_str,
+				   NULL);
+
+		g_free (auth_str);
 		g_free (token);
 		g_free (user_pass);
 	}
 
-	if (bytes != 0) {
-		g_string_append_printf (headers,"Range: bytes=%"G_GINT64_FORMAT"-\r\n", bytes);
-	}
-
-	s = headers->str;
-	g_string_free (headers, FALSE);
-
-	return s;
+	return headers;
 }
 
 GSList *

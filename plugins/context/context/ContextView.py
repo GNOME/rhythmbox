@@ -26,6 +26,7 @@
 
 import rb, rhythmdb
 import gtk, gobject
+import pango
 import webkit
 import os
 
@@ -105,7 +106,9 @@ class ContextView (gobject.GObject):
         self.plugin = None
         self.top_five = None
         self.tab = None
-        shell.remove_widget (self.vbox, rb.SHELL_UI_LOCATION_RIGHT_SIDEBAR)
+        if self.visible:
+            shell.remove_widget (self.vbox, rb.SHELL_UI_LOCATION_RIGHT_SIDEBAR)
+            self.visible = False
         uim = shell.get_ui_manager ()
         uim.remove_ui (self.ui_id)
         uim.remove_action_group (self.action_group)
@@ -203,7 +206,20 @@ class ContextView (gobject.GObject):
             rb.show_uri(request.get_uri())
             return 1        # WEBKIT_NAVIGATION_RESPONSE_IGNORE
         else:
-            return 0	# WEBKIT_NAVIGATION_RESPONSE_ACCEPT
+            return 0        # WEBKIT_NAVIGATION_RESPONSE_ACCEPT
+
+    def style_set_cb(self, widget, prev_style):
+        self.apply_font_settings()
+
+    def apply_font_settings(self):
+        style = self.webview.style
+
+        font_size = style.font_desc.get_size()
+        if style.font_desc.get_size_is_absolute() is False:
+            font_size /= pango.SCALE
+        self.websettings.props.default_font_size = font_size
+        self.websettings.props.default_font_family = style.font_desc.get_family()
+        print "web view font settings: %s, %d" % (style.font_desc.get_family(), font_size)
 
     def init_gui(self):
         self.vbox = gtk.VBox()
@@ -242,7 +258,13 @@ class ContextView (gobject.GObject):
         self.scroll = gtk.ScrolledWindow()
         self.scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         self.scroll.set_shadow_type(gtk.SHADOW_IN)
-        self.scroll.add( self.webview )
+        self.scroll.add (self.webview)
+
+        # set up webkit settings to match gtk font settings
+        self.websettings = webkit.WebSettings()
+        self.webview.set_settings(self.websettings)
+        self.apply_font_settings()
+        self.webview.connect("style-set", self.style_set_cb)
 
         #----- set up button group -----#
         self.vbox2 = gtk.VBox()

@@ -29,6 +29,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "gseal-gtk-compat.h"
 #include "rb-cell-renderer-rating.h"
 #include "rb-marshal.h"
 #include "rb-rating-helper.h"
@@ -111,7 +112,9 @@ rb_cell_renderer_rating_init (RBCellRendererRating *cellrating)
 	cellrating->priv = RB_CELL_RENDERER_RATING_GET_PRIVATE (cellrating);
 
 	/* set the renderer able to be activated */
-	GTK_CELL_RENDERER (cellrating)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
+	g_object_set (cellrating,
+		      "mode", GTK_CELL_RENDERER_MODE_ACTIVATABLE,
+		      NULL);
 
 	/* create the needed icons */
 }
@@ -237,10 +240,12 @@ rb_cell_renderer_rating_get_size (GtkCellRenderer *cell,
 				  gint *width,
 				  gint *height)
 {
-	int icon_width;
+	gint icon_width;
+	gint xpad, ypad;
 	RBCellRendererRating *cellrating = (RBCellRendererRating *) cell;
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_width, NULL);
+	gtk_cell_renderer_get_padding (GTK_CELL_RENDERER (cellrating), &xpad, &ypad);
 
 	if (x_offset)
 		*x_offset = 0;
@@ -249,10 +254,10 @@ rb_cell_renderer_rating_get_size (GtkCellRenderer *cell,
 		*y_offset = 0;
 
 	if (width)
-		*width = (gint) GTK_CELL_RENDERER (cellrating)->xpad * 2 + icon_width * RB_RATING_MAX_SCORE;
+		*width = xpad * 2 + icon_width * RB_RATING_MAX_SCORE;
 
 	if (height)
-		*height = (gint) GTK_CELL_RENDERER (cellrating)->ypad * 2 + icon_width;
+		*height = ypad * 2 + icon_width;
 }
 
 static void
@@ -265,6 +270,7 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 				GtkCellRendererState flags)
 
 {
+	gint xpad, ypad;
 	gboolean selected;
 	GdkRectangle pix_rect, draw_rect;
 	RBCellRendererRating *cellrating = (RBCellRendererRating *) cell;
@@ -280,8 +286,9 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 
 	pix_rect.x += cell_area->x;
 	pix_rect.y += cell_area->y;
-	pix_rect.width -= cell->xpad * 2;
-	pix_rect.height -= cell->ypad * 2;
+	gtk_cell_renderer_get_padding (cell, &xpad, &ypad);
+	pix_rect.width -= xpad * 2;
+	pix_rect.height -= ypad * 2;
 
 	if (gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect) == FALSE)
 		return;

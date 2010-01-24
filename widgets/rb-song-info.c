@@ -331,7 +331,7 @@ rb_song_info_init (RBSongInfo *song_info)
 
 	gtk_container_set_border_width (GTK_CONTAINER (song_info), 5);
 	gtk_window_set_resizable (GTK_WINDOW (song_info), TRUE);
-	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (song_info)->vbox), 2);
+	gtk_box_set_spacing (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (song_info))), 2);
 }
 
 static void
@@ -440,6 +440,7 @@ rb_song_info_constructed (GObject *object)
 	RBShell *shell;
 	AtkObject *lobj, *robj;
 	GtkBuilder *builder;
+	GtkWidget *content_area;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_song_info_parent_class, constructed, object);
 
@@ -470,13 +471,14 @@ rb_song_info_constructed (GObject *object)
 		song_info->priv->selected_entries = selected_entries;
 	}
 
+	content_area = gtk_dialog_get_content_area (GTK_DIALOG (song_info));
 	if (song_info->priv->current_entry) {
 		builder = rb_builder_load ("song-info.ui", song_info);
-		gtk_container_add (GTK_CONTAINER (GTK_DIALOG (song_info)->vbox),
+		gtk_container_add (GTK_CONTAINER (content_area),
 				   GTK_WIDGET (gtk_builder_get_object (builder, "song_info_vbox")));
 	} else {
 		builder = rb_builder_load ("song-info-multiple.ui", song_info);
-		gtk_container_add (GTK_CONTAINER (GTK_DIALOG (song_info)->vbox),
+		gtk_container_add (GTK_CONTAINER (content_area),
 				   GTK_WIDGET (gtk_builder_get_object (builder, "song_info_notebook")));
 	}
 

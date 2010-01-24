@@ -53,6 +53,7 @@ BINDING_HEADERS_SRCDIR_IN = \
 	lib/rb-string-value-map.h		\
 	lib/rb-cut-and-paste-code.h		\
 	lib/rb-file-helpers.h			\
+	metadata/rb-metadata.h			\
 	rhythmdb/rhythmdb.h			\
 	rhythmdb/rhythmdb-property-model.h	\
 	rhythmdb/rhythmdb-query-model.h		\

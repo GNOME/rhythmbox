@@ -769,7 +769,9 @@ impl_finalize (GObject *object)
 
 	g_hash_table_destroy (thread->albums);
 
-	LIBMTP_Release_Device (thread->device);
+	if (thread->device != NULL) {
+		LIBMTP_Release_Device (thread->device);
+	}
 
 	G_OBJECT_CLASS (rb_mtp_thread_parent_class)->finalize (object);
 }

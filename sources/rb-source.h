@@ -139,6 +139,7 @@ struct _RBSourceClass
 	void		(*impl_deactivate)	(RBSource *source);
 	GList *		(*impl_get_ui_actions)	(RBSource *source);
 	GList *		(*impl_get_search_actions) (RBSource *source);
+	char *		(*impl_get_delete_action) (RBSource *source);
 };
 
 GType		rb_source_get_type		(void);
@@ -209,6 +210,7 @@ void		rb_source_deactivate		(RBSource *source);
 
 GList *		rb_source_get_ui_actions	(RBSource *source);
 GList *		rb_source_get_search_actions	(RBSource *source);
+char *		rb_source_get_delete_action	(RBSource *source);
 
 GList *		rb_source_gather_selected_properties (RBSource *source, RhythmDBPropType prop);
 

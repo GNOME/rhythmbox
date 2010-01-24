@@ -101,6 +101,7 @@ rb_feed_podcast_properties_dialog_class_init (RBFeedPodcastPropertiesDialogClass
 static void
 rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 {
+	GtkWidget  *content_area;
 	GtkBuilder *builder;
 
 	dialog->priv = RB_FEED_PODCAST_PROPERTIES_DIALOG_GET_PRIVATE (dialog);
@@ -111,14 +112,15 @@ rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 				 dialog, 0);
 
 	gtk_window_set_default_size (GTK_WINDOW (dialog), 600, 400);
+	content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
-	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
+	gtk_box_set_spacing (GTK_BOX (content_area), 2);
 
 	builder = rb_builder_load ("podcast-feed-properties.ui", dialog);
 
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
+	gtk_container_add (GTK_CONTAINER (content_area),
 			   GTK_WIDGET (gtk_builder_get_object (builder, "podcastproperties")));
 
 	dialog->priv->close_button = gtk_dialog_add_button (GTK_DIALOG (dialog),

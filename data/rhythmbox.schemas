@@ -291,7 +291,7 @@
 	<default>0</default>
 	<locale name="C">
 	<short>Toolbar style</short>
-	<long>0=Gnome default, 1=Icons only, 2=Text only, 3=Text below icons, 4=Text beside icons</long>
+	<long>0=GNOME default, 1=Text below icons, 2=Text beside icons, 3=Icons only, 4=Text only</long>
 	</locale>
       </schema>
       <schema>
@@ -1479,8 +1479,8 @@
 	</locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/plugins/tray-icon/hidden</key>
-        <applyto>/apps/rhythmbox/plugins/tray-icon/hidden</applyto>
+        <key>/schemas/apps/rhythmbox/plugins/status-icon/hidden</key>
+        <applyto>/apps/rhythmbox/plugins/status-icon/hidden</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
         <default>FALSE</default>
@@ -1544,6 +1544,28 @@
 	<short>Whether the window is visible</short>
 	<long>When set to false, causes Rhythmbox to start only as a tray icon with the window hidden.</long>
         </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/sendto/active</key>
+        <applyto>/apps/rhythmbox/plugins/sendto/active</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the send tracks plugin is enabled.</short>
+	<long>True if the send tracks plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/sendto/hidden</key>
+        <applyto>/apps/rhythmbox/plugins/sendto/hidden</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the send tracks plugin is hidden.</short>
+	<long>True if the send tracks plugin is hidden.</long>
+	</locale>
       </schema>
     </schemalist>
 </gconfschemafile>

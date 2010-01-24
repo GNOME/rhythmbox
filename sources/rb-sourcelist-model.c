@@ -327,12 +327,14 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 					GtkSelectionData *selection_data)
 {
 	RBSourceListModel *model;
+	GdkAtom type;
 
 	g_return_val_if_fail (RB_IS_SOURCELIST_MODEL (drag_dest), FALSE);
 	model = RB_SOURCELIST_MODEL (drag_dest);
+	type = gtk_selection_data_get_data_type (selection_data);
 
-	if (selection_data->type == gdk_atom_intern ("text/uri-list", TRUE) ||
-	    selection_data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE)) {
+	if (type == gdk_atom_intern ("text/uri-list", TRUE) ||
+	    type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE)) {
 		GtkTreeIter iter;
 		RBSource *target = NULL;
 
@@ -353,16 +355,16 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 	}
 
         /* if artist, album or genre, only allow new playlists */
-        if (selection_data->type == gdk_atom_intern ("text/x-rhythmbox-album", TRUE) ||
-            selection_data->type == gdk_atom_intern ("text/x-rhythmbox-artist", TRUE) ||
-            selection_data->type == gdk_atom_intern ("text/x-rhythmbox-genre", TRUE)) {
+        if (type == gdk_atom_intern ("text/x-rhythmbox-album", TRUE) ||
+            type == gdk_atom_intern ("text/x-rhythmbox-artist", TRUE) ||
+            type == gdk_atom_intern ("text/x-rhythmbox-genre", TRUE)) {
                 rb_debug ("text/x-rhythmbox-(album|artist|genre) drag data received");
                 g_signal_emit (G_OBJECT (model), rb_sourcelist_model_signals[DROP_RECEIVED],
                                0, NULL, pos, selection_data);
                 return TRUE;
         }
 
-	if (selection_data->type == gdk_atom_intern ("application/x-rhythmbox-source", TRUE)) {
+	if (type == gdk_atom_intern ("application/x-rhythmbox-source", TRUE)) {
 		/* don't support dnd of sources */
 		return FALSE;
 	}
@@ -491,14 +493,16 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 {
 	char *path_str;
 	GtkTreePath *path;
+	GdkAtom selection_data_target;
 	guint target;
 
+	selection_data_target = gtk_selection_data_get_target (selection_data);
 	path = gtk_tree_row_reference_get_path (path_list->data);
 	if (path == NULL)
 		return FALSE;
 
 	if (!gtk_target_list_find (sourcelist_drag_target_list,
-				   selection_data->target,
+				   selection_data_target,
 				   &target)) {
 		return FALSE;
 	}
@@ -508,7 +512,7 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 		rb_debug ("getting drag data as rb source path");
 		path_str = gtk_tree_path_to_string (path);
 		gtk_selection_data_set (selection_data,
-					selection_data->target,
+					selection_data_target,
 					8, (guchar *) path_str,
 					strlen (path_str));
 		g_free (path_str);
@@ -562,7 +566,7 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 		g_object_unref (query_model);
 
 		gtk_selection_data_set (selection_data,
-					selection_data->target,
+					selection_data_target,
 					8, (guchar *) data->str,
 					data->len);
 

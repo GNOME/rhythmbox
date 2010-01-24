@@ -932,7 +932,7 @@ close_to_tray (RBStatusIconPlugin *plugin)
 	rb_tray_icon_get_geom (plugin->priv->tray_icon,
 			       &x, &y, &width, &height);
 	if (GTK_WIDGET_REALIZED (window))
-		set_icon_geometry (GTK_WIDGET (window)->window,
+		set_icon_geometry (gtk_widget_get_window (GTK_WIDGET (window)),
 				   x, y, width, height);
 
 	/* ask the tasklist not to show our window */

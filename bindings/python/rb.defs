@@ -165,6 +165,14 @@
   (gtype-id "RB_TYPE_SOURCE_SEARCH_BASIC")
 )
 
+(define-object MetaData
+  (in-module "RB")
+  (parent "GObject")
+  (c-name "RBMetaData")
+  (gtype-id "RB_TYPE_METADATA")
+)
+
+
 ;; Enumerations and flags ...
 
 (define-enum ShellPlayerError
@@ -282,6 +290,62 @@
     '("main-top" "RB_SHELL_UI_LOCATION_MAIN_TOP")
     '("main-bottom" "RB_SHELL_UI_LOCATION_MAIN_BOTTOM")
     '("main-notebook" "RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK")
+  )
+)
+
+(define-enum MetaDataField
+  (in-module "RB")
+  (c-name "RBMetaDataField")
+  (gtype-id "RB_TYPE_METADATA_FIELD")
+  (values
+    '("title" "RB_METADATA_FIELD_TITLE")
+    '("artist" "RB_METADATA_FIELD_ARTIST")
+    '("album" "RB_METADATA_FIELD_ALBUM")
+    '("date" "RB_METADATA_FIELD_DATE")
+    '("genre" "RB_METADATA_FIELD_GENRE")
+    '("comment" "RB_METADATA_FIELD_COMMENT")
+    '("track-number" "RB_METADATA_FIELD_TRACK_NUMBER")
+    '("max-track-number" "RB_METADATA_FIELD_MAX_TRACK_NUMBER")
+    '("disc-number" "RB_METADATA_FIELD_DISC_NUMBER")
+    '("max-disc-number" "RB_METADATA_FIELD_MAX_DISC_NUMBER")
+    '("description" "RB_METADATA_FIELD_DESCRIPTION")
+    '("version" "RB_METADATA_FIELD_VERSION")
+    '("isrc" "RB_METADATA_FIELD_ISRC")
+    '("organization" "RB_METADATA_FIELD_ORGANIZATION")
+    '("copyright" "RB_METADATA_FIELD_COPYRIGHT")
+    '("contact" "RB_METADATA_FIELD_CONTACT")
+    '("license" "RB_METADATA_FIELD_LICENSE")
+    '("performer" "RB_METADATA_FIELD_PERFORMER")
+    '("duration" "RB_METADATA_FIELD_DURATION")
+    '("codec" "RB_METADATA_FIELD_CODEC")
+    '("bitrate" "RB_METADATA_FIELD_BITRATE")
+    '("track-gain" "RB_METADATA_FIELD_TRACK_GAIN")
+    '("track-peak" "RB_METADATA_FIELD_TRACK_PEAK")
+    '("album-gain" "RB_METADATA_FIELD_ALBUM_GAIN")
+    '("album-peak" "RB_METADATA_FIELD_ALBUM_PEAK")
+    '("language-code" "RB_METADATA_FIELD_LANGUAGE_CODE")
+    '("musicbrainz-trackid" "RB_METADATA_FIELD_MUSICBRAINZ_TRACKID")
+    '("musicbrainz-artistid" "RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID")
+    '("musicbrainz-albumid" "RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID")
+    '("musicbrainz-albumartistid" "RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID")
+    '("artist-sortname" "RB_METADATA_FIELD_ARTIST_SORTNAME")
+    '("album-sortname" "RB_METADATA_FIELD_ALBUM_SORTNAME")
+    '("last" "RB_METADATA_FIELD_LAST")
+  )
+)
+
+(define-enum MetaDataError
+  (in-module "RB")
+  (c-name "RBMetaDataError")
+  (gtype-id "RB_TYPE_METADATA_ERROR")
+  (values
+    '("io" "RB_METADATA_ERROR_IO")
+    '("missing-plugin" "RB_METADATA_ERROR_MISSING_PLUGIN")
+    '("unrecognized" "RB_METADATA_ERROR_UNRECOGNIZED")
+    '("unsupported" "RB_METADATA_ERROR_UNSUPPORTED")
+    '("general" "RB_METADATA_ERROR_GENERAL")
+    '("internal" "RB_METADATA_ERROR_INTERNAL")
+    '("empty-file" "RB_METADATA_ERROR_EMPTY_FILE")
   )
 )
 
@@ -1066,6 +1130,12 @@
   (return-type "GList*")
 )
 
+(define-method get_delete_action
+  (of-object "RBSource")
+  (c-name "rb_source_get_delete_action")
+  (return-type "char*")
+)
+
 (define-method gather_selected_properties
   (of-object "RBSource")
   (c-name "rb_source_gather_selected_properties")
@@ -1265,6 +1335,11 @@
 (define-virtual impl_get_search_actions
   (of-object "RBSource")
   (return-type "GList*")
+)
+
+(define-virtual impl_get_delete_action
+  (of-object "RBSource")
+  (return-type "char*")
 )
 
 
@@ -2625,5 +2700,138 @@
     '("GtkActionGroup*" "action_group")
     '("GtkRadioActionEntry*" "actions")
     '("int" "n_actions")
+  )
+)
+
+;; From rb-metadata.h
+
+(define-function rb_metadata_error_quark
+  (c-name "rb_metadata_error_quark")
+  (return-type "GQuark")
+)
+
+(define-function rb_metadata_get_type
+  (c-name "rb_metadata_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_metadata_field_get_type
+  (c-name "rb_metadata_field_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_metadata_get_field_type
+  (c-name "rb_metadata_get_field_type")
+  (return-type "GType")
+  (parameters
+    '("RBMetaDataField" "field")
+  )
+)
+
+(define-function rb_metadata_get_field_name
+  (c-name "rb_metadata_get_field_name")
+  (return-type "const-char*")
+  (parameters
+    '("RBMetaDataField" "field")
+  )
+)
+
+(define-function rb_metadata_new
+  (c-name "rb_metadata_new")
+  (is-constructor-of "RbMetadata")
+  (return-type "RBMetaData*")
+)
+
+(define-method can_save
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_can_save")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "mimetype")
+  )
+)
+
+(define-method get_saveable_types
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_get_saveable_types")
+  (return-type "char**")
+)
+
+(define-method load
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_load")
+  (return-type "none")
+  (parameters
+    '("const-char*" "uri")
+    '("GError**" "error")
+  )
+)
+
+(define-method save
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_save")
+  (return-type "none")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-method get_mime
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_get_mime")
+  (return-type "const-char*")
+)
+
+(define-method has_missing_plugins
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_has_missing_plugins")
+  (return-type "gboolean")
+)
+
+(define-method get_missing_plugins
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_get_missing_plugins")
+  (return-type "gboolean")
+  (parameters
+    '("char***" "missing_plugins")
+    '("char***" "plugin_descriptions")
+  )
+)
+
+(define-method has_audio
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_has_audio")
+  (return-type "gboolean")
+)
+
+(define-method has_video
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_has_video")
+  (return-type "gboolean")
+)
+
+(define-method has_other_data
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_has_other_data")
+  (return-type "gboolean")
+)
+
+(define-method get
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_get")
+  (return-type "gboolean")
+  (parameters
+    '("RBMetaDataField" "field")
+    '("GValue*" "val")
+  )
+)
+
+(define-method set
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_set")
+  (return-type "gboolean")
+  (parameters
+    '("RBMetaDataField" "field")
+    '("const-GValue*" "val")
   )
 )

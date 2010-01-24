@@ -40,6 +40,8 @@
 #include "rb-vis-widget.h"
 #include "rb-debug.h"
 
+#include "gseal-gtk-compat.h"
+
 enum
 {
 	PROP_0,
@@ -54,23 +56,27 @@ G_DEFINE_TYPE(RBVisWidget, rb_vis_widget, GTK_TYPE_WIDGET)
 static void
 rb_vis_widget_init (RBVisWidget *rbvw)
 {
-	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (rbvw), GTK_CAN_FOCUS);
-	GTK_WIDGET_UNSET_FLAGS (GTK_WIDGET (rbvw), GTK_DOUBLE_BUFFERED);
+	gtk_widget_set_can_focus (GTK_WIDGET (rbvw), TRUE);
+	gtk_widget_set_double_buffered (GTK_WIDGET (rbvw), FALSE);
 }
 
 static void
 rb_vis_widget_realize (GtkWidget *widget)
 {
-	GdkWindowAttr attributes;
-	gint attributes_mask;
+	GtkAllocation  allocation;
+	GtkStyle      *style;
+	GdkWindowAttr  attributes;
+	GdkWindow     *window;
+	gint           attributes_mask;
 
 	rb_debug ("realizing container window");
+	gtk_widget_get_allocation (widget, &allocation);
 
 	attributes.window_type = GDK_WINDOW_CHILD;
-	attributes.x = widget->allocation.x;
-	attributes.y = widget->allocation.y;
-	attributes.width = widget->allocation.width;
-	attributes.height = widget->allocation.height;
+	attributes.x = allocation.x;
+	attributes.y = allocation.y;
+	attributes.width = allocation.width;
+	attributes.height = allocation.height;
 	attributes.wclass = GDK_INPUT_OUTPUT;
 	attributes.visual = gtk_widget_get_visual (widget);
 	attributes.colormap = gtk_widget_get_colormap (widget);
@@ -78,13 +84,15 @@ rb_vis_widget_realize (GtkWidget *widget)
 	attributes.event_mask |= GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK;
 	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
 
-	widget->window = gdk_window_new (gtk_widget_get_parent_window (widget),
-					 &attributes, attributes_mask);
-	gdk_window_set_user_data (widget->window, widget);
-	gdk_window_show (widget->window);
+	window = gdk_window_new (gtk_widget_get_parent_window (widget),
+				 &attributes, attributes_mask);
+	gtk_widget_set_window (widget, window);
+	gdk_window_set_user_data (window, widget);
+	gdk_window_show (window);
 
-	widget->style = gtk_style_attach (widget->style, widget->window);
-	gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
+	style = gtk_style_attach (gtk_widget_get_style (widget), window);
+	gtk_widget_set_style (widget, style);
+	gtk_style_set_background (style, window, GTK_STATE_NORMAL);
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 }
@@ -94,7 +102,7 @@ rb_vis_widget_size_allocate (GtkWidget *widget,
 			     GtkAllocation *allocation)
 {
 	RBVisWidget *rbvw = RB_VIS_WIDGET (widget);
-	widget->allocation = *allocation;
+	gtk_widget_set_allocation (widget, allocation);
 
 	if (!GTK_WIDGET_REALIZED (widget))
 		return;
@@ -102,7 +110,7 @@ rb_vis_widget_size_allocate (GtkWidget *widget,
 	rb_debug ("handling size allocate event ([%d,%d] - [%d,%d])",
 		  allocation->x, allocation->y,
 		  allocation->width, allocation->height);
-	gdk_window_move_resize (widget->window,
+	gdk_window_move_resize (gtk_widget_get_window (widget),
 				allocation->x, allocation->y,
 				allocation->width, allocation->height);
 
@@ -120,12 +128,15 @@ static gboolean
 rb_vis_widget_expose_event (GtkWidget *widget,
 			    GdkEventExpose *event)
 {
+	GdkWindow   *window;
 	RBVisWidget *rbvw = RB_VIS_WIDGET (widget);
 
-	if (rbvw->window_xid != GDK_WINDOW_XWINDOW (widget->window)) {
-		rbvw->window_xid = GDK_WINDOW_XWINDOW (widget->window);
+	window = gtk_widget_get_window (widget);
 
-		gdk_display_sync (gdk_drawable_get_display (GDK_DRAWABLE (widget->window)));
+	if (rbvw->window_xid != GDK_WINDOW_XWINDOW (window)) {
+		rbvw->window_xid = GDK_WINDOW_XWINDOW (window);
+
+		gdk_display_sync (gdk_drawable_get_display (GDK_DRAWABLE (window)));
 
 		rb_debug ("got new window ID %lu", rbvw->window_xid);
 		g_object_notify (G_OBJECT (rbvw), "window-xid");
@@ -137,9 +148,13 @@ rb_vis_widget_expose_event (GtkWidget *widget,
 static void
 rb_vis_widget_hide (GtkWidget *widget)
 {
-	if (widget->window != NULL) {
+	GdkWindow *window;
+
+	window = gtk_widget_get_window (widget);
+
+	if (window != NULL) {
 		rb_debug ("hiding output window");
-		gdk_window_hide (widget->window);
+		gdk_window_hide (window);
 	}
 
 	GTK_WIDGET_CLASS (rb_vis_widget_parent_class)->hide (widget);
@@ -148,9 +163,13 @@ rb_vis_widget_hide (GtkWidget *widget)
 static void
 rb_vis_widget_show (GtkWidget *widget)
 {
-	if (widget->window != NULL) {
+	GdkWindow *window;
+
+	window = gtk_widget_get_window (widget);
+
+	if (window != NULL) {
 		rb_debug ("showing output window");
-		gdk_window_show (widget->window);
+		gdk_window_show (window);
 	} else {
 		rb_debug ("got show event before realized..");
 	}

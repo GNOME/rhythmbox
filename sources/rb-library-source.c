@@ -681,8 +681,8 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	gboolean is_id;
 
 	rb_debug ("parsing uri list");
-	list = rb_uri_list_parse ((const char *) data->data);
-	is_id = (data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE));
+	list = rb_uri_list_parse ((const char *) gtk_selection_data_get_data (data));
+	is_id = (gtk_selection_data_get_data_type (data) == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE));
 
 	for (i = list; i != NULL; i = g_list_next (i)) {
 		if (i->data != NULL) {

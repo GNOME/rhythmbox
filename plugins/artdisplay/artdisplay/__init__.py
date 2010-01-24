@@ -26,6 +26,7 @@
 
 import rhythmdb, rb
 import gtk, gobject
+import gio
 from warnings import warn
 
 from CoverArtDatabase import CoverArtDatabase
@@ -360,6 +361,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.art_widget.connect ('pixbuf-dropped', self.on_set_pixbuf)
 		self.art_widget.connect ('uri-dropped', self.on_set_uri)
 		self.art_widget.connect ('get-max-size', self.get_max_art_size)
+		self.art_widget.connect ('button-press-event', self.on_button_press)
 		self.art_container = gtk.VBox ()
 		self.art_container.pack_start (self.art_widget, padding=6)
 		shell.add_widget (self.art_container, rb.SHELL_UI_LOCATION_SIDEBAR)
@@ -488,3 +490,14 @@ class ArtDisplayPlugin (rb.Plugin):
 		(width, height) = self.shell.props.window.get_size()
 		return height / 3
 
+	def on_button_press (self, widget, event):
+		# on double clicks, open the cover image (if there is one) in the default
+		# image viewer
+		if event.type != gtk.gdk._2BUTTON_PRESS or event.button != 1:
+			return
+
+		if self.art_widget.current_uri is None:
+			return
+
+		f = gio.File(self.art_widget.current_uri)
+		gtk.show_uri(self.shell.props.window.get_screen(), f.get_uri(), event.time)

@@ -9,6 +9,7 @@ AM_INIT_AUTOMAKE([1.9 dist-bzip2 no-dist-gzip])
 AC_SUBST(ACLOCAL_AMFLAGS, "-I macros")
 
 AM_MAINTAINER_MODE
+GNOME_MAINTAINER_MODE_DEFINES
 
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
 
@@ -863,6 +864,7 @@ plugins/visualizer/Makefile
 plugins/mmkeys/Makefile
 plugins/context/Makefile
 plugins/context/context/Makefile
+plugins/sendto/Makefile
 bindings/Makefile
 bindings/python/Makefile
 bindings/vala/Makefile

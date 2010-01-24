@@ -609,7 +609,7 @@ rb_ipod_db_queue_remove_track (RbIpodDb *ipod_db,
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 	
 	g_assert (priv->read_only);
-	rb_debug ("Queueing move to trash action since the iPod database is currently read-only");
+	rb_debug ("Queueing track remove action since the iPod database is currently read-only");
 	action = g_new0 (RbIpodDelayedAction, 1);
 	action->type = RB_IPOD_ACTION_REMOVE_TRACK;
 	action->track = track;

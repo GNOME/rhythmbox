@@ -76,6 +76,7 @@ static void default_get_status (RBSource *source, char **text, char **progress_t
 static void default_move_to_trash (RBSource *source);
 static GList * default_get_ui_actions (RBSource *source);
 static GList * default_get_search_actions (RBSource *source);
+static char *default_get_delete_action (RBSource *source);
 
 static void rb_source_post_entry_deleted_cb (GtkTreeModel *model,
 					     RhythmDBEntry *entry,
@@ -189,6 +190,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_get_status = default_get_status;
 	klass->impl_get_ui_actions = default_get_ui_actions;
 	klass->impl_get_search_actions = default_get_search_actions;
+	klass->impl_get_delete_action = default_get_delete_action;
 	klass->impl_move_to_trash = default_move_to_trash;
 
 	/**
@@ -365,7 +367,6 @@ rb_source_class_init (RBSourceClass *klass)
 							    RB_TYPE_SOURCE_SEARCH_TYPE,
 							    RB_SOURCE_SEARCH_NONE,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
-
 	/**
 	 * RBSource::deleted:
 	 * @source: the #RBSource
@@ -1571,6 +1572,29 @@ rb_source_get_search_actions (RBSource *source)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	return klass->impl_get_search_actions (source);
+}
+
+static char *
+default_get_delete_action (RBSource *source)
+{
+	return g_strdup ("EditRemove");
+}
+
+/**
+ * rb_source_get_delete_action:
+ * @source: a #RBSource
+ *
+ * Returns the name of the UI action to use for 'delete'.
+ * This allows the source to customise the visible action name
+ * and description to better describe what deletion actually does.
+ *
+ * Return value: allocated string holding UI action name
+ */
+char *
+rb_source_get_delete_action (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+	return klass->impl_get_delete_action (source);
 }
 
 static gboolean

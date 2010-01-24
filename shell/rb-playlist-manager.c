@@ -416,7 +416,7 @@ rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr,
 	mgr->priv->uimanager = uimanager;
 
 	if (mgr->priv->actiongroup == NULL) {
-		mgr->priv->actiongroup = gtk_action_group_new ("PlaylistActions");
+		mgr->priv->actiongroup = gtk_action_group_new ("PlaylistManagerActions");
 		gtk_action_group_set_translation_domain (mgr->priv->actiongroup,
 							 GETTEXT_PACKAGE);
 		gtk_action_group_add_actions (mgr->priv->actiongroup,
@@ -1018,14 +1018,19 @@ static char *
 create_name_from_selection_data (RBPlaylistManager *mgr,
 				 GtkSelectionData *data)
 {
-	char  *name = NULL;
-	GList *list;
+	GdkAtom       type;
+	char         *name = NULL;
+	const guchar *selection_data_data;
+	GList        *list;
 
-        if (data->type == gdk_atom_intern ("text/uri-list", TRUE) ||
-	    data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE)) {
+	type = gtk_selection_data_get_data_type (data);
+	selection_data_data = gtk_selection_data_get_data (data);
+
+        if (type == gdk_atom_intern ("text/uri-list", TRUE) ||
+	    type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE)) {
 		gboolean is_id;
-		list = rb_uri_list_parse ((const char *)data->data);
-		is_id = (data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE));
+		list = rb_uri_list_parse ((const char *) selection_data_data);
+		is_id = (type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE));
 
 		if (list != NULL) {
 			GList   *l;
@@ -1097,7 +1102,7 @@ create_name_from_selection_data (RBPlaylistManager *mgr,
 	} else {
 		char **names;
 
-		names = g_strsplit ((char *)data->data, "\r\n", 0);
+		names = g_strsplit ((char *) selection_data_data, "\r\n", 0);
 		name = g_strjoinv (", ", names);
 		g_strfreev (names);
 	}
@@ -1125,11 +1130,14 @@ rb_playlist_manager_new_playlist_from_selection_data (RBPlaylistManager *mgr,
 						      GtkSelectionData *data)
 {
 	RBSource *playlist;
+	GdkAtom   type;
 	gboolean  automatic = TRUE;
 	char     *suggested_name;
 
-	if (data->type == gdk_atom_intern ("text/uri-list", TRUE) ||
-	    data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE))
+	type = gtk_selection_data_get_data_type (data);
+
+	if (type == gdk_atom_intern ("text/uri-list", TRUE) ||
+	    type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE))
 		automatic = FALSE;
 	suggested_name = create_name_from_selection_data (mgr, data);
 

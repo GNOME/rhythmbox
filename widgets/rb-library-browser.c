@@ -35,6 +35,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "gseal-gtk-compat.h"
 #include "rb-library-browser.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
@@ -397,7 +398,7 @@ update_browser_property_visibilty (RhythmDBPropType prop,
 {
 	gboolean old_vis, new_vis;
 
-	old_vis = GTK_WIDGET_VISIBLE (view);
+	old_vis = gtk_widget_get_visible (GTK_WIDGET (view));
 	new_vis = (g_list_find (properties, (gpointer)prop) != NULL);
 
 	if (old_vis != new_vis) {

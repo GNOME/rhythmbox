@@ -474,6 +474,7 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	const char *ui_file;
 	char *used_str;
 	char *capacity_str;
+	char *name;
 	char *text;
 	GList *l;
 	GList *playlists;
@@ -512,6 +513,12 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 				 "response",
 				 G_CALLBACK (properties_dialog_response_cb),
 				 source, 0);
+
+	g_object_get (source, "name", &name, NULL);
+	text = g_strdup_printf (_("%s Properties"), name);
+	gtk_window_set_title (GTK_WINDOW (priv->properties_dialog), text);
+	g_free (text);
+	g_free (name);
 
 	/*
 	 * fill in some common details:

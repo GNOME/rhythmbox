@@ -33,6 +33,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <gst/gst.h>
 #include "rhythmdb.h"
 
 G_BEGIN_DECLS
@@ -109,9 +110,8 @@ void               rb_daap_connection_disconnect      (RBDAAPConnection        *
 						       RBDAAPConnectionCallback callback,
 						       gpointer                 user_data);
 
-char *             rb_daap_connection_get_headers     (RBDAAPConnection         *connection,
-						       const char               *uri,
-						       gint64                    bytes);
+GstStructure *     rb_daap_connection_get_headers     (RBDAAPConnection         *connection,
+						       const char               *uri);
 
 GSList *           rb_daap_connection_get_playlists   (RBDAAPConnection         *connection);
 

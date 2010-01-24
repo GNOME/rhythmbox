@@ -589,16 +589,19 @@ rb_static_playlist_source_browser_changed_cb (RBLibraryBrowser *browser,
 static gboolean
 impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 {
+	GdkAtom type;
 	GList *list;
 	RBStaticPlaylistSource *source = RB_STATIC_PLAYLIST_SOURCE (asource);
 
-        if (data->type == gdk_atom_intern ("text/uri-list", TRUE) ||
-	    data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE)) {
-		list = rb_uri_list_parse ((char *)data->data);
+	type = gtk_selection_data_get_data_type (data);
+
+        if (type == gdk_atom_intern ("text/uri-list", TRUE) ||
+	    type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE)) {
+		list = rb_uri_list_parse ((char *)gtk_selection_data_get_data (data));
 		if (list == NULL)
 			return FALSE;
 
-		if (data->type == gdk_atom_intern ("text/uri-list", TRUE))
+		if (type == gdk_atom_intern ("text/uri-list", TRUE))
 			rb_static_playlist_source_add_uri_list (source, list);
 		else
 			rb_static_playlist_source_add_id_list (source, list);

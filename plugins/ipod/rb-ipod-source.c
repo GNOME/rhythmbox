@@ -65,7 +65,7 @@ static char *impl_get_browser_key (RBSource *source);
 static char *impl_get_paned_key (RBBrowserSource *source);
 
 static gboolean impl_show_popup (RBSource *source);
-static void impl_move_to_trash (RBSource *asource);
+static void impl_delete (RBSource *asource);
 static void rb_ipod_load_songs (RBiPodSource *source);
 static void impl_delete_thyself (RBSource *source);
 static GList* impl_get_ui_actions (RBSource *source);
@@ -174,10 +174,12 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
-	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_move_to_trash = impl_move_to_trash;
+	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
+	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_delete = impl_delete;
+
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
 
 	mps_class->impl_get_entries = impl_get_entries;
@@ -1159,7 +1161,7 @@ impl_delete_entries (RBMediaPlayerSource *source, GList *entries, RBMediaPlayerS
 }
 
 static void
-impl_move_to_trash (RBSource *source)
+impl_delete (RBSource *source)
 {
 	GList *sel;
 	RBEntryView *songs;

@@ -124,7 +124,7 @@ static void prepare_encoder_sink_cb (RBEncoderFactory *factory,
 typedef struct
 {
 	RBMtpThread *device_thread;
-	LIBMTP_raw_device_t *raw_device;
+	LIBMTP_raw_device_t raw_device;
 	GHashTable *entry_map;
 	GHashTable *artwork_request_map;
 	GHashTable *track_transfer_map;
@@ -268,7 +268,11 @@ rb_mtp_source_constructed (GObject *object)
 
 	/* start the device thread */
 	priv->device_thread = rb_mtp_thread_new ();
-	rb_mtp_thread_open_device (priv->device_thread, priv->raw_device, (RBMtpOpenCallback)mtp_device_open_cb, g_object_ref (source), g_object_unref);
+	rb_mtp_thread_open_device (priv->device_thread,
+				   &priv->raw_device,
+				   (RBMtpOpenCallback)mtp_device_open_cb,
+				   g_object_ref (source),
+				   g_object_unref);
 
 	tracks = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (tracks, RB_ENTRY_VIEW_COL_RATING, FALSE);
@@ -321,10 +325,12 @@ rb_mtp_source_set_property (GObject *object,
 			    GParamSpec *pspec)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (object);
+	LIBMTP_raw_device_t *raw_device;
 
 	switch (prop_id) {
 	case PROP_RAW_DEVICE:
-		priv->raw_device = g_value_get_pointer (value);
+		raw_device = g_value_get_pointer (value);
+		priv->raw_device = *raw_device;
 		break;
 #if !defined(HAVE_GUDEV)
 	case PROP_UDI:
@@ -347,7 +353,7 @@ rb_mtp_source_get_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_RAW_DEVICE:
-		g_value_set_pointer (value, priv->raw_device);
+		g_value_set_pointer (value, &priv->raw_device);
 		break;
 #if !defined(HAVE_GUDEV)
 	case PROP_UDI:
@@ -706,6 +712,18 @@ device_opened_idle (DeviceOpenedData *data)
 static gboolean
 device_open_failed_idle (RBMtpSource *source)
 {
+	/* libmtp doesn't give us a useful error message in this case, so
+	 * all we can offer is this generic message.
+	 */
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	rb_error_dialog (NULL,
+			 _("Media player device error"),
+			 /* Translators: first %s is the device manufacturer,
+			  * second is the product name.
+			  */
+			 _("Unable to open the %s %s device"),
+			 priv->raw_device.device_entry.vendor,
+			 priv->raw_device.device_entry.product);
 	rb_source_delete_thyself (RB_SOURCE (source));
 	g_object_unref (source);
 	return FALSE;
@@ -719,8 +737,6 @@ mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source)
 	DeviceOpenedData *data;
 
 	if (device == NULL) {
-		rb_mtp_thread_report_errors (priv->device_thread, TRUE);
-
 		/* can't delete the source on this thread, so move it to the main thread */
 		g_idle_add ((GSourceFunc) device_open_failed_idle, g_object_ref (source));
 		return;

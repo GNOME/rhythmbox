@@ -68,11 +68,9 @@ static void load_songs (RBGenericPlayerSource *source);
 
 static gboolean impl_show_popup (RBSource *source);
 static void impl_delete_thyself (RBSource *source);
-static gboolean impl_can_move_to_trash (RBSource *source);
 static gboolean impl_can_paste (RBSource *source);
 static gboolean impl_can_delete (RBSource *source);
 static void impl_delete (RBSource *source);
-static void impl_move_to_trash (RBSource *source);
 static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 
 static GList* impl_get_mime_types (RBRemovableMediaSource *source);
@@ -138,8 +136,7 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	source_class->impl_delete_thyself = impl_delete_thyself;
 	source_class->impl_can_delete = impl_can_delete;
 	source_class->impl_delete = impl_delete;
-	source_class->impl_can_move_to_trash = impl_can_move_to_trash;
-	source_class->impl_move_to_trash = impl_move_to_trash;
+	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_paste = impl_can_paste;
 	source_class->impl_get_status = impl_get_status;
 
@@ -538,67 +535,6 @@ impl_show_popup (RBSource *source)
 	return TRUE;
 }
 
-gboolean
-rb_generic_player_source_can_trash_entries (RBGenericPlayerSource *source,
-					    GList *entries)
-{
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	GList *tem;
-	gboolean ret;
-
-	if (priv->read_only != FALSE)
-		return FALSE;
-
-	ret = FALSE;
-
-	for (tem = entries; tem != NULL; tem = tem->next) {
-		RhythmDBEntry *entry;
-		const char *uri;
-		GFile *file;
-		GFileInfo *info;
-
-		entry = tem->data;
-		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-		file = g_file_new_for_uri (uri);
-		info = g_file_query_info (file,
-					  G_FILE_ATTRIBUTE_ACCESS_CAN_TRASH,
-					  G_FILE_QUERY_INFO_NONE,
-					  NULL,
-					  NULL);
-		g_object_unref (file);
-		if (info == NULL) {
-			ret = FALSE;
-			break;
-		}
-		ret = g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_ACCESS_CAN_TRASH);
-		g_object_unref (info);
-		if (ret == FALSE)
-			break;
-	}
-
-	return ret;
-}
-
-static gboolean
-impl_can_move_to_trash (RBSource *source)
-{
-	RBEntryView *view;
-	GList *sel;
-	gboolean ret;
-
-
-	view = rb_source_get_entry_view (source);
-	sel = rb_entry_view_get_selected_entries (view);
-
-	ret = rb_generic_player_source_can_trash_entries (RB_GENERIC_PLAYER_SOURCE (source),
-							  sel);
-
-	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
-	g_list_free (sel);
-
-	return ret;
-}
-
 static void
 impl_get_status (RBSource *source, char **text, char **progress_text, float *progress)
 {
@@ -898,9 +834,7 @@ can_delete_directory (RBGenericPlayerSource *source, GFile *dir)
 }
 
 void
-rb_generic_player_source_trash_or_delete_entries (RBGenericPlayerSource *source,
-						  GList *entries,
-						  gboolean _delete)
+rb_generic_player_source_delete_entries (RBGenericPlayerSource *source, GList *entries)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 	GList *tem;
@@ -917,10 +851,7 @@ rb_generic_player_source_trash_or_delete_entries (RBGenericPlayerSource *source,
 		entry = tem->data;
 		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		file = g_file_new_for_uri (uri);
-		if (_delete)
-			g_file_delete (file, NULL, NULL);
-		else
-			g_file_trash (file, NULL, NULL);
+		g_file_delete (file, NULL, NULL);
 
 		/* now walk up the directory structure and delete empty dirs
 		 * until we reach the root or one of the device's audio folders.
@@ -956,22 +887,6 @@ rb_generic_player_source_trash_or_delete_entries (RBGenericPlayerSource *source,
 }
 
 static void
-impl_move_to_trash (RBSource *source)
-{
-	RBEntryView *view;
-	GList *sel;
-
-	view = rb_source_get_entry_view (source);
-	sel = rb_entry_view_get_selected_entries (view);
-
-	rb_generic_player_source_trash_or_delete_entries (RB_GENERIC_PLAYER_SOURCE (source),
-							  sel,
-							  FALSE);
-	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
-	g_list_free (sel);
-}
-
-static void
 impl_delete (RBSource *source)
 {
 	RBEntryView *view;
@@ -980,9 +895,7 @@ impl_delete (RBSource *source)
 	view = rb_source_get_entry_view (source);
 	sel = rb_entry_view_get_selected_entries (view);
 
-	rb_generic_player_source_trash_or_delete_entries (RB_GENERIC_PLAYER_SOURCE (source),
-							  sel,
-							  TRUE);
+	rb_generic_player_source_delete_entries (RB_GENERIC_PLAYER_SOURCE (source), sel);
 	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (sel);
 }

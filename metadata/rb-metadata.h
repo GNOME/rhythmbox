@@ -70,6 +70,8 @@ typedef enum
 	RB_METADATA_FIELD_LAST			   /* nothing */
 } RBMetaDataField;
 
+#define RB_TYPE_METADATA_FIELD (rb_metadata_field_get_type ())
+
 typedef enum
 {
 	RB_METADATA_ERROR_IO,
@@ -82,6 +84,7 @@ typedef enum
 } RBMetaDataError;
 
 #define RB_METADATA_ERROR rb_metadata_error_quark ()
+#define RB_TYPE_METADATA_ERROR (rb_metadata_error_get_type ())
 
 GQuark rb_metadata_error_quark (void);
 
@@ -110,6 +113,9 @@ struct _RBMetaDataClass
 };
 
 GType		rb_metadata_get_type	(void);
+
+GType		rb_metadata_field_get_type (void);
+GType		rb_metadata_error_get_type (void);
 
 GType		rb_metadata_get_field_type (RBMetaDataField field);
 
