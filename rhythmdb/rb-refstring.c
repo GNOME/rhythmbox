@@ -195,10 +195,11 @@ rb_refstring_get_sort_key (RBRefString *val)
 	string = (const char *)g_atomic_pointer_get (ptr);
 	if (string == NULL) {
 		char *newstring;
-		const char *s;
+		char *s;
 
-		s = rb_refstring_get_folded (val);
+		s = g_utf8_casefold (val->value, -1);
 		newstring = g_utf8_collate_key_for_filename (s, -1);
+		g_free (s);
 
 		if (g_atomic_pointer_compare_and_exchange (ptr, NULL, newstring)) {
 			string = newstring;
