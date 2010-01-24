@@ -208,7 +208,7 @@ rb_media_player_source_constructed (GObject *object)
 					     G_OBJECT (shell),
 					     rb_media_player_source_actions,
 					     G_N_ELEMENTS (rb_media_player_source_actions));
-	priv->sync_action = gtk_action_group_get_action (priv->action_group, "MediaPlayerSync");
+	priv->sync_action = gtk_action_group_get_action (priv->action_group, "MediaPlayerSourceSync");
 }
 
 static gboolean
