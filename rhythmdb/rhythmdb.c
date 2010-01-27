@@ -4320,11 +4320,15 @@ rhythmdb_prop_type_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_GENRE_SORT_KEY, "Genre sort key (gchararray) [genre-sort-key]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORT_KEY, "Artist sort key (gchararray) [artist-sort-key]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORT_KEY, "Album sort key (gchararray) [album-sort-key]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORTNAME_SORT_KEY, "Artist Sortname sort key (gchararray) [artist-sortname-sort-key]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY, "Album Sortname sort key (gchararray) [album-sortname-sort-key]"),
 
 			ENUM_ENTRY (RHYTHMDB_PROP_TITLE_FOLDED, "Title folded (gchararray) [title-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_GENRE_FOLDED, "Genre folded (gchararray) [genre-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_FOLDED, "Artist folded (gchararray) [artist-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_FOLDED, "Album folded (gchararray) [album-folded]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORTNAME_FOLDED, "Artist Sortname folded (gchararray) [artist-sortname-folded]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED, "Album Sortname folded (gchararray) [album-sortname-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED_STR, "Last Played (gchararray) [last-played-str]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAYBACK_ERROR, "Playback error string (gchararray) [playback-error]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_HIDDEN, "Hidden (gboolean) [hidden]"),
@@ -5086,6 +5090,10 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get_sort_key (entry->artist);
 	case RHYTHMDB_PROP_GENRE_SORT_KEY:
 		return rb_refstring_get_sort_key (entry->genre);
+	case RHYTHMDB_PROP_ARTIST_SORTNAME_SORT_KEY:
+		return rb_refstring_get_sort_key (entry->artist_sortname);
+	case RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY:
+		return rb_refstring_get_sort_key (entry->album_sortname);
 	case RHYTHMDB_PROP_TITLE_FOLDED:
 		return rb_refstring_get_folded (entry->title);
 	case RHYTHMDB_PROP_ALBUM_FOLDED:
@@ -5094,6 +5102,10 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get_folded (entry->artist);
 	case RHYTHMDB_PROP_GENRE_FOLDED:
 		return rb_refstring_get_folded (entry->genre);
+	case RHYTHMDB_PROP_ARTIST_SORTNAME_FOLDED:
+		return rb_refstring_get_folded (entry->artist_sortname);
+	case RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED:
+		return rb_refstring_get_folded (entry->album_sortname);
 	case RHYTHMDB_PROP_LOCATION:
 		return rb_refstring_get (entry->location);
 	case RHYTHMDB_PROP_MOUNTPOINT:
