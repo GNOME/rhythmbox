@@ -2757,6 +2757,12 @@
   (return-type "char**")
 )
 
+(define-method reset
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_reset")
+  (return-type "none")
+)
+
 (define-method load
   (of-object "RBMetaData")
   (c-name "rb_metadata_load")
@@ -2772,6 +2778,7 @@
   (c-name "rb_metadata_save")
   (return-type "none")
   (parameters
+    '("const-char*" "uri")
     '("GError**" "error")
   )
 )

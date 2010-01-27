@@ -51,8 +51,6 @@ static void rb_metadata_finalize (GObject *object);
 
 struct RBMetaDataPrivate
 {
-	char *uri;
-
 	GHashTable *metadata;
 
 	GstElement *pipeline;
@@ -72,6 +70,43 @@ struct RBMetaDataPrivate
 };
 
 #define RB_METADATA_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_METADATA, RBMetaDataPrivate))
+
+void
+rb_metadata_reset (RBMetaData *md)
+{
+	if (md->priv->metadata)
+		g_hash_table_destroy (md->priv->metadata);
+	md->priv->metadata = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+						    NULL, (GDestroyNotify) rb_value_free);
+
+	if (md->priv->pipeline) {
+		gst_object_unref (md->priv->pipeline);
+		md->priv->pipeline = NULL;
+	}
+	if (md->priv->sink) {
+		gst_object_unref (md->priv->sink);
+		md->priv->sink = NULL;
+	}
+	md->priv->typefind_cb_id = 0;
+	if (md->priv->tags) {
+		gst_tag_list_free (md->priv->tags);
+		md->priv->tags = NULL;
+	}
+
+	g_free (md->priv->type);
+	md->priv->type = NULL;
+	md->priv->eos = FALSE;
+	md->priv->has_audio = FALSE;
+	md->priv->has_non_audio = FALSE;
+	md->priv->has_video = FALSE;
+	if (md->priv->missing_plugins != NULL) {
+		g_slist_foreach (md->priv->missing_plugins, (GFunc) gst_message_unref, NULL);
+		g_slist_free (md->priv->missing_plugins);
+		md->priv->missing_plugins = NULL;
+	}
+
+	g_clear_error (&md->priv->error);
+}
 
 
 static GstElement *
@@ -314,18 +349,10 @@ rb_metadata_finalize (GObject *object)
 
 	md = RB_METADATA (object);
 
-	if (md->priv->metadata)
-		g_hash_table_destroy (md->priv->metadata);
-
-	if (md->priv->pipeline)
-		gst_object_unref (GST_OBJECT (md->priv->pipeline));
-
+	rb_metadata_reset (md);
 	if (md->priv->taggers)
 		g_hash_table_destroy (md->priv->taggers);
 
-	g_free (md->priv->type);
-	g_free (md->priv->uri);
-	g_clear_error (&md->priv->error);
 
 	G_OBJECT_CLASS (rb_metadata_parent_class)->finalize (object);
 }
@@ -455,6 +482,7 @@ rb_metadata_gst_typefind_cb (GstElement *typefind, guint probability, GstCaps *c
 	}
 
 	g_signal_handler_disconnect (typefind, md->priv->typefind_cb_id);
+	md->priv->typefind_cb_id = 0;
 }
 
 static void
@@ -689,32 +717,11 @@ rb_metadata_load (RBMetaData *md,
 	int change_timeout;
 	GstBus *bus;
 
-	g_free (md->priv->uri);
-	md->priv->uri = NULL;
-	g_free (md->priv->type);
-	md->priv->type = NULL;
-	md->priv->error = NULL;
-	md->priv->eos = FALSE;
-	md->priv->has_audio = FALSE;
-	md->priv->has_non_audio = FALSE;
-	md->priv->has_video = FALSE;
-	md->priv->missing_plugins = NULL;
-
-	if (md->priv->pipeline) {
-		gst_object_unref (GST_OBJECT (md->priv->pipeline));
-		md->priv->pipeline = NULL;
-	}
-
+	rb_metadata_reset (md);
 	if (uri == NULL)
 		return;
 
 	rb_debug ("loading metadata for uri: %s", uri);
-	md->priv->uri = g_strdup (uri);
-
-	if (md->priv->metadata)
-		g_hash_table_destroy (md->priv->metadata);
-	md->priv->metadata = g_hash_table_new_full (g_direct_hash, g_direct_equal,
-						    NULL, (GDestroyNotify) rb_value_free);
 
 	/* The main tagfinding pipeline looks like this:
  	 * <src> ! decodebin ! fakesink
@@ -913,7 +920,7 @@ rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, RBMetaData *md)
 }
 
 static gboolean
-rb_metadata_file_valid (char *original, char *newfile)
+rb_metadata_file_valid (const char *original, const char *newfile)
 {
 	RBMetaData *md = rb_metadata_new ();
 	GError *error = NULL;
@@ -930,25 +937,75 @@ rb_metadata_file_valid (char *original, char *newfile)
 	return ret;
 }
 
+static void
+metadata_save_type_found (GstElement *typefind, guint probability, GstCaps *caps, RBMetaData *md)
+{
+	RBAddTaggerElem add_tagger_func;
+        GstElement *retag_end;
+	GstMessage *message;
+	const char *type;
+	GError *error = NULL;
+
+	g_signal_handler_disconnect (typefind, md->priv->typefind_cb_id);
+	md->priv->typefind_cb_id = 0;
+
+	if (gst_caps_is_empty (caps) || gst_caps_is_any (caps)) {
+		rb_debug ("got empty/no caps from typefind");
+		g_set_error (&error,
+			     RB_METADATA_ERROR,
+			     RB_METADATA_ERROR_UNSUPPORTED,
+			     _("Unable to identify file type"));
+		goto out_error;
+	}
+
+	type = gst_structure_get_name (gst_caps_get_structure (caps, 0));
+
+	/* Tagger element(s) */
+	add_tagger_func = g_hash_table_lookup (md->priv->taggers, type);
+	if (!add_tagger_func) {
+		rb_debug ("found unsupported type %s", type);
+		g_set_error (&error,
+			     RB_METADATA_ERROR,
+			     RB_METADATA_ERROR_UNSUPPORTED,
+			     _("Unsupported file type: %s"), type);
+		goto out_error;
+	}
+
+	rb_debug ("adding tagger for type %s", type);
+	retag_end = add_tagger_func (md->priv->pipeline, typefind, md->priv->tags);
+	if (!retag_end) {
+		g_set_error (&error,
+			     RB_METADATA_ERROR,
+			     RB_METADATA_ERROR_UNSUPPORTED,
+			     _("Unable to create tag-writing elements"));
+		goto out_error;
+	}
+
+	gst_element_link_many (retag_end, md->priv->sink, NULL);
+	return;
+
+out_error:
+	message = gst_message_new_error (GST_OBJECT (typefind), error, NULL);
+	gst_element_post_message (typefind, message);
+	g_clear_error (&error);
+}
+
 void
-rb_metadata_save (RBMetaData *md, GError **error)
+rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 {
 	GstElement *pipeline = NULL;
 	GstElement *source = NULL;
-        GstElement *retag_end = NULL; /* the last element after retagging subpipeline */
+	GstElement *typefind = NULL;
 	const char *plugin_name = NULL;
 	char *tmpname_prefix = NULL;
 	char *tmpname = NULL;
 	GOutputStream *stream = NULL;
 	GError *io_error = NULL;
-	RBAddTaggerElem add_tagger_func;
 
-	g_return_if_fail (md->priv->uri != NULL);
-	g_return_if_fail (md->priv->type != NULL);
+	g_return_if_fail (uri != NULL);
+	rb_debug ("saving metadata for uri: %s", uri);
 
-	rb_debug ("saving metadata for uri: %s", md->priv->uri);
-
-	tmpname_prefix = rb_uri_make_hidden (md->priv->uri);
+	tmpname_prefix = rb_uri_make_hidden (uri);
 	rb_debug ("temporary file name prefix: %s", tmpname_prefix);
 
 	rb_uri_mkstemp (tmpname_prefix, &tmpname, &stream, &io_error);
@@ -961,46 +1018,39 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	md->priv->pipeline = pipeline;
 
 	/* Source */
-	source = gst_element_make_from_uri (GST_URI_SRC, md->priv->uri, "urisrc");
+	source = gst_element_make_from_uri (GST_URI_SRC, uri, "urisrc");
 	if (source == NULL) {
 		plugin_name = "urisrc";
 		goto missing_plugin;	
 	}
 	gst_bin_add (GST_BIN (pipeline), source);
 
+	/* typefind */
+	plugin_name = "typefind";
+	typefind = gst_element_factory_make (plugin_name, NULL);
+	if (typefind == NULL)
+		goto missing_plugin;
+	gst_bin_add (GST_BIN (pipeline), typefind);
+	md->priv->typefind_cb_id = g_signal_connect_object (typefind,
+							    "have_type",
+							    G_CALLBACK (metadata_save_type_found),
+							    md,
+							    0);
+
 	/* Sink */
 	plugin_name = "giostreamsink";
-	if (!(md->priv->sink = gst_element_factory_make (plugin_name, plugin_name)))
+	if (!(md->priv->sink = gst_element_factory_make (plugin_name, NULL)))
 		goto missing_plugin;
 
-	g_object_set (G_OBJECT (md->priv->sink), "stream", stream, NULL);
+	g_object_set (md->priv->sink, "stream", stream, NULL);
 
 	md->priv->tags = gst_tag_list_new ();
 	g_hash_table_foreach (md->priv->metadata,
 			      (GHFunc) rb_metadata_gst_add_tag_data,
 			      md);
 
-	/* Tagger element(s) */
-	add_tagger_func = g_hash_table_lookup (md->priv->taggers, md->priv->type);
-	if (!add_tagger_func) {
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_UNSUPPORTED,
-			     _("Unsupported file type: %s"), md->priv->type);
-		goto out_error;
-	}
-
-	retag_end = add_tagger_func (md->priv->pipeline, source, md->priv->tags);
-	if (!retag_end) {
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_UNSUPPORTED,
-			     _("Unable to create tag-writing elements"));
-		goto out_error;
-	}
-
 	gst_bin_add (GST_BIN (pipeline), md->priv->sink);
-	gst_element_link_many (retag_end, md->priv->sink, NULL);
+	gst_element_link (source, typefind);
 
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
 
@@ -1030,7 +1080,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		stream = NULL;
 
 		/* check to ensure the file isn't corrupt */
-		if (!rb_metadata_file_valid (md->priv->uri, tmpname)) {
+		if (!rb_metadata_file_valid (uri, tmpname)) {
 			g_set_error (error,
 				     RB_METADATA_ERROR,
 				     RB_METADATA_ERROR_INTERNAL,
@@ -1039,7 +1089,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		}
 
 		src = g_file_new_for_uri (tmpname);
-		dest = g_file_new_for_uri (md->priv->uri);
+		dest = g_file_new_for_uri (uri);
 		g_file_move (src, dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &io_error);
 		if (io_error != NULL) {
 			goto gio_error;

@@ -4628,16 +4628,11 @@ default_sync_metadata (RhythmDB *db,
 	GError *local_error = NULL;
 
 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-	rb_metadata_load (db->priv->metadata,
-			  uri, &local_error);
-	if (local_error != NULL) {
-		g_propagate_error (error, local_error);
-		return;
-	}
+	rb_metadata_reset (db->priv->metadata);
 
 	entry_to_rb_metadata (db, entry, db->priv->metadata);
 
-	rb_metadata_save (db->priv->metadata, &local_error);
+	rb_metadata_save (db->priv->metadata, uri, &local_error);
 	if (local_error != NULL) {
 		RhythmDBAction *load_action;
 

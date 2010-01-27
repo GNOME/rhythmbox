@@ -241,30 +241,38 @@ rb_metadata_dbus_save (DBusConnection *connection,
 		       DBusMessage *message,
 		       ServiceData *svc)
 {
+	char *uri;
 	DBusMessageIter iter;
 	DBusMessage *reply;
 	GHashTable *data;
 	GError *error = NULL;
 
-	/* get metadata from message */
+	/* get URI and metadata from message */
 	if (!dbus_message_iter_init (message, &iter)) {
 		return DBUS_HANDLER_RESULT_NEED_MEMORY;
 	}
+	if (!rb_metadata_dbus_get_string (&iter, &uri)) {
+		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+	}
+
 	data = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)rb_value_free);
 	if (!rb_metadata_dbus_read_from_message (svc->metadata,
 						 data,
 						 &iter)) {
 		/* make translatable? */
+		g_free (uri);
 		return send_error (connection, message,
 				   RB_METADATA_ERROR_INTERNAL,
 				   "Unable to read metadata from message");
 	}
 
 	/* pass to real metadata instance, and save it */
+	rb_metadata_reset (svc->metadata);
 	g_hash_table_foreach_remove (data, (GHRFunc) _set_metadata, svc->metadata);
 	g_hash_table_destroy (data);
 
-	rb_metadata_save (svc->metadata, &error);
+	rb_metadata_save (svc->metadata, uri, &error);
+	g_free (uri);
 
 	if (error) {
 		DBusHandlerResult r;
