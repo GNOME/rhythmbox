@@ -668,6 +668,8 @@ set_state_and_wait (RBPlayerGst *player, GstState target, GError **error)
 			bus_cb (bus, message, player);
 			break;
 		}
+
+		gst_message_unref (message);
 	}
 
 	if (result == FALSE && error != NULL && *error == NULL) {
