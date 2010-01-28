@@ -70,6 +70,61 @@ impl_save_to_xml (RBPlaylistSource *source, xmlNodePtr node)
 	/* do nothing; just to prevent weirdness */
 }
 
+#if TOTEM_PL_PARSER_CHECK_VERSION(2,29,1)
+
+typedef struct {
+	RBGenericPlayerPlaylistSource *source;
+	TotemPlPlaylist *playlist;
+} SavePlaylistData;
+
+static void
+set_field_from_property (TotemPlPlaylist *playlist,
+			 TotemPlPlaylistIter *iter,
+			 RhythmDBEntry *entry,
+			 RhythmDBPropType property,
+			 const char *field)
+{
+	const char *value;
+
+	value = rhythmdb_entry_get_string (entry, property);
+	if (value != NULL) {
+		totem_pl_playlist_set (playlist, iter, field, value, NULL);
+	}
+}
+
+static gboolean
+save_playlist_foreach (GtkTreeModel *model,
+		       GtkTreePath *path,
+		       GtkTreeIter *iter,
+		       SavePlaylistData *data)
+{
+	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (data->source);
+	RhythmDBEntry *entry;
+	TotemPlPlaylistIter pl_iter;
+	const char *host_uri;
+	char *uri;
+
+	entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model), iter);
+	if (entry == NULL) {
+		return FALSE;
+	}
+
+	host_uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	uri = rb_generic_player_source_uri_to_playlist_uri (priv->player_source, host_uri);
+
+	totem_pl_playlist_append (data->playlist, &pl_iter);
+	totem_pl_playlist_set (data->playlist, &pl_iter, TOTEM_PL_PARSER_FIELD_URI, uri, NULL);
+	set_field_from_property (data->playlist, &pl_iter, entry, RHYTHMDB_PROP_ARTIST, TOTEM_PL_PARSER_FIELD_AUTHOR);
+	set_field_from_property (data->playlist, &pl_iter, entry, RHYTHMDB_PROP_GENRE, TOTEM_PL_PARSER_FIELD_GENRE);
+	set_field_from_property (data->playlist, &pl_iter, entry, RHYTHMDB_PROP_ALBUM, TOTEM_PL_PARSER_FIELD_ALBUM);
+	set_field_from_property (data->playlist, &pl_iter, entry, RHYTHMDB_PROP_TITLE, TOTEM_PL_PARSER_FIELD_TITLE);
+
+	g_free (uri);
+	return FALSE;
+}
+
+#else
+
 static void
 save_playlist_entry (GtkTreeModel *model, GtkTreeIter *iter,
 		     char **uri, char **title,
@@ -91,6 +146,8 @@ save_playlist_entry (GtkTreeModel *model, GtkTreeIter *iter,
 	*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
 	*custom_title = TRUE;
 }
+
+#endif
 
 /* this probably belongs more in totem than here */
 static const char *
@@ -122,9 +179,15 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 	TotemPlParserType playlist_type;
 	RhythmDBQueryModel *query_model;
 	char *name;
-	char *temp_uri;
+	char *temp_path;
 	GError *error = NULL;
 	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (source);
+	GFile *file;
+	gboolean result;
+#if TOTEM_PL_PARSER_CHECK_VERSION(2,29,1)
+	TotemPlPlaylist *playlist;
+	SavePlaylistData data;
+#endif
 
 	priv->save_playlist_id = 0;
 	playlist_type = rb_generic_player_source_get_playlist_format (priv->player_source);
@@ -173,42 +236,60 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 		g_object_unref (dir);
 	}
 
-	temp_uri = g_strdup_printf ("%s%06X", priv->playlist_path, g_random_int_range (0, 0xFFFFFF));
+	temp_path = g_strdup_printf ("%s%06X", priv->playlist_path, g_random_int_range (0, 0xFFFFFF));
+	file = g_file_new_for_path (temp_path);
 
 	parser = totem_pl_parser_new ();
+#if TOTEM_PL_PARSER_CHECK_VERSION(2,29,1)
+	playlist = totem_pl_playlist_new ();
+	data.source = source;
+	data.playlist = playlist;
+
+	gtk_tree_model_foreach (GTK_TREE_MODEL (query_model),
+				(GtkTreeModelForeachFunc) save_playlist_foreach,
+				&data);
+	if (rb_debug_matches ("totem_pl_parser_save", "totem-pl-parser.c")) {
+		g_object_set (parser, "debug", TRUE, NULL);
+	}
+
+	result = totem_pl_parser_save (parser, playlist, file, name, playlist_type, &error);
+	g_object_unref (playlist);
+#else
 	if (rb_debug_matches ("totem_pl_parser_write_with_title", "totem-pl-parser.c")) {
 		g_object_set (parser, "debug", TRUE, NULL);
 	}
-	if (totem_pl_parser_write_with_title (parser,
-					      GTK_TREE_MODEL (query_model),
-					      (TotemPlParserIterFunc) save_playlist_entry,
-					      temp_uri,
-					      name,
-					      playlist_type,
-					      source,
-					      &error) == FALSE) {
+
+	result = totem_pl_parser_write_with_title (parser,
+						   GTK_TREE_MODEL (query_model),
+						   (TotemPlParserIterFunc) save_playlist_entry,
+						   temp_path,
+						   name,
+						   playlist_type,
+						   source,
+						   &error);
+#endif
+	if (result == FALSE) {
 		/* XXX report this more usefully */
 		g_warning ("Playlist save failed: %s", error->message);
 	} else {
 		GFile *dest;
-		GFile *src;
 
 		dest = g_file_new_for_path (priv->playlist_path);
-		src = g_file_new_for_path (temp_uri);
-		g_file_move (src, dest, G_FILE_COPY_OVERWRITE | G_FILE_COPY_NO_FALLBACK_FOR_MOVE, NULL, NULL, NULL, &error);
+		g_file_move (file, dest, G_FILE_COPY_OVERWRITE | G_FILE_COPY_NO_FALLBACK_FOR_MOVE, NULL, NULL, NULL, &error);
 		if (error != NULL) {
 			/* XXX report this more usefully */
-			g_warning ("Replacing playlist failed: %s", error->message);
+			g_warning ("moving %s => %s failed: %s", temp_path, priv->playlist_path, error->message);
 		}
 
 		g_object_unref (dest);
-		g_object_unref (src);
 	}
 
 	g_clear_error (&error);
 	g_free (name);
-	g_free (temp_uri);
+	g_free (temp_path);
 	g_object_unref (query_model);
+	g_object_unref (parser);
+	g_object_unref (file);
 
 	return FALSE;
 }
