@@ -133,9 +133,14 @@ typedef struct
 		RHYTHMDB_ACTION_QUIT,
 	} type;
 	RBRefString *uri;
- 	RhythmDBEntryType entry_type;
-	RhythmDBEntryType ignore_type;
-	RhythmDBEntryType error_type;
+	union {
+		struct {
+			RhythmDBEntryType entry_type;
+			RhythmDBEntryType ignore_type;
+			RhythmDBEntryType error_type;
+		} types;
+		GSList *changes;
+	} data;
 } RhythmDBAction;
 
 static void rhythmdb_dispose (GObject *object);
@@ -186,6 +191,7 @@ static void rhythmdb_add_to_stat_list (RhythmDB *db,
 				       RhythmDBEntryType type,
 				       RhythmDBEntryType ignore_type,
 				       RhythmDBEntryType error_type);
+static void free_entry_changes (GSList *entry_changes);
 
 enum
 {
@@ -933,6 +939,9 @@ rhythmdb_action_free (RhythmDB *db,
 		      RhythmDBAction *action)
 {
 	rb_refstring_unref (action->uri);
+	if (action->type == RHYTHMDB_ACTION_SYNC) {
+		free_entry_changes (action->data.changes);
+	}
 	g_slice_free (RhythmDBAction, action);
 }
 
@@ -1264,6 +1273,27 @@ free_entry_changes (GSList *entry_changes)
 	g_slist_free (entry_changes);
 }
 
+static GSList *
+copy_entry_changes (GSList *entry_changes)
+{
+	GSList *r = NULL;
+	GSList *t;
+	for (t = entry_changes; t; t = t->next) {
+		RhythmDBEntryChange *change = t->data;
+		RhythmDBEntryChange *c = g_slice_new0 (RhythmDBEntryChange);
+
+		c->prop = change->prop;
+		g_value_init (&c->old, G_VALUE_TYPE (&change->old));
+		g_value_init (&c->new, G_VALUE_TYPE (&change->new));
+		g_value_copy (&change->old, &c->old);
+		g_value_copy (&change->new, &c->new);
+
+		r = g_slist_prepend (r, c);
+	}
+
+	return g_slist_reverse (r);
+}
+
 static gboolean
 rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 {
@@ -1430,6 +1460,7 @@ sync_entry_changed (RhythmDBEntry *entry,
 			action = g_slice_new0 (RhythmDBAction);
 			action->type = RHYTHMDB_ACTION_SYNC;
 			action->uri = rb_refstring_ref (entry->location);
+			action->data.changes = copy_entry_changes (changes);
 			g_async_queue_push (db->priv->action_queue, action);
 			break;
 		}
@@ -2136,9 +2167,9 @@ rhythmdb_process_stat_event (RhythmDB *db,
 			action = g_slice_new0 (RhythmDBAction);
 			action->type = RHYTHMDB_ACTION_LOAD;
 			action->uri = rb_refstring_ref (event->real_uri);
-			action->entry_type = event->entry_type;
-			action->ignore_type = event->ignore_type;
-			action->error_type = event->error_type;
+			action->data.types.entry_type = event->entry_type;
+			action->data.types.ignore_type = event->ignore_type;
+			action->data.types.error_type = event->error_type;
 			rb_debug ("queuing a RHYTHMDB_ACTION_LOAD: %s", rb_refstring_get (action->uri));
 			g_async_queue_push (db->priv->action_queue, action);
 		}
@@ -2150,9 +2181,9 @@ rhythmdb_process_stat_event (RhythmDB *db,
 		action = g_slice_new0 (RhythmDBAction);
 		action->type = RHYTHMDB_ACTION_ENUM_DIR;
 		action->uri = rb_refstring_ref (event->real_uri);
-		action->entry_type = event->entry_type;
-		action->ignore_type = event->ignore_type;
-		action->error_type = event->error_type;
+		action->data.types.entry_type = event->entry_type;
+		action->data.types.ignore_type = event->ignore_type;
+		action->data.types.error_type = event->error_type;
 		rb_debug ("queuing a RHYTHMDB_ACTION_ENUM_DIR: %s", rb_refstring_get (action->uri));
 		g_async_queue_push (db->priv->action_queue, action);
 		break;
@@ -2443,9 +2474,9 @@ rhythmdb_missing_plugins_cb (gpointer duh, gboolean should_retry, RhythmDBEvent 
 		load_action = g_slice_new0 (RhythmDBAction);
 		load_action->type = RHYTHMDB_ACTION_LOAD;
 		load_action->uri = rb_refstring_ref (event->real_uri);
-		load_action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-		load_action->ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-		load_action->error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 		g_async_queue_push (event->db->priv->action_queue, load_action);
 	} else {
 		/* plugin installation failed or was cancelled, so add an import error for the file */
@@ -2546,9 +2577,9 @@ rhythmdb_process_file_created_or_modified (RhythmDB *db,
 	action = g_slice_new0 (RhythmDBAction);
 	action->type = RHYTHMDB_ACTION_LOAD;
 	action->uri = rb_refstring_ref (event->uri);
-	action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-	action->ignore_type = RHYTHMDB_ENTRY_TYPE_IGNORE;
-	action->error_type = RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR;
+	action->data.types.entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+	action->data.types.ignore_type = RHYTHMDB_ENTRY_TYPE_IGNORE;
+	action->data.types.error_type = RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR;
 	g_async_queue_push (db->priv->action_queue, action);
 }
 
@@ -2856,9 +2887,9 @@ rhythmdb_execute_enum_dir (RhythmDB *db,
 		result = g_slice_new0 (RhythmDBEvent);
 		result->db = db;
 		result->type = RHYTHMDB_EVENT_STAT;
-		result->entry_type = action->entry_type;
-		result->error_type = action->error_type;
-		result->ignore_type = action->ignore_type;
+		result->entry_type = action->data.types.entry_type;
+		result->error_type = action->data.types.error_type;
+		result->ignore_type = action->data.types.ignore_type;
 		result->real_uri = rb_refstring_new (child_uri);
 		result->file_info = file_info;
 		result->error = error;
@@ -2984,9 +3015,9 @@ action_thread_main (RhythmDB *db)
 				result = g_slice_new0 (RhythmDBEvent);
 				result->db = db;
 				result->type = RHYTHMDB_EVENT_STAT;
-				result->entry_type = action->entry_type;
-				result->error_type = action->error_type;
-				result->ignore_type = action->ignore_type;
+				result->entry_type = action->data.types.entry_type;
+				result->error_type = action->data.types.error_type;
+				result->ignore_type = action->data.types.ignore_type;
 
 				rb_debug ("executing RHYTHMDB_ACTION_STAT for \"%s\"", rb_refstring_get (action->uri));
 
@@ -2997,9 +3028,9 @@ action_thread_main (RhythmDB *db)
 				result = g_slice_new0 (RhythmDBEvent);
 				result->db = db;
 				result->type = RHYTHMDB_EVENT_METADATA_LOAD;
-				result->entry_type = action->entry_type;
-				result->error_type = action->error_type;
-				result->ignore_type = action->ignore_type;
+				result->entry_type = action->data.types.entry_type;
+				result->error_type = action->data.types.error_type;
+				result->ignore_type = action->data.types.ignore_type;
 
 				rb_debug ("executing RHYTHMDB_ACTION_LOAD for \"%s\"", rb_refstring_get (action->uri));
 
@@ -3153,9 +3184,9 @@ rhythmdb_add_uri_with_types (RhythmDB *db,
 		action = g_slice_new0 (RhythmDBAction);
 		action->type = RHYTHMDB_ACTION_STAT;
 		action->uri = rb_refstring_new (uri);
-		action->entry_type = type;
-		action->ignore_type = ignore_type;
-		action->error_type = error_type;
+		action->data.types.entry_type = type;
+		action->data.types.ignore_type = ignore_type;
+		action->data.types.error_type = error_type;
 
 		g_async_queue_push (db->priv->action_queue, action);
 	} else {
@@ -4643,9 +4674,9 @@ default_sync_metadata (RhythmDB *db,
 		load_action = g_slice_new0 (RhythmDBAction);
 		load_action->type = RHYTHMDB_ACTION_LOAD;
 		load_action->uri = rb_refstring_ref (entry->location);
-		load_action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-		load_action->error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-		load_action->ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 		g_async_queue_push (db->priv->action_queue, load_action);
 
 		g_propagate_error (error, local_error);
