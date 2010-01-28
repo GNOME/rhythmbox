@@ -632,7 +632,7 @@ playlist_iter_func (GtkTreeModel *model,
 		*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
 	}
 	if (custom_title != NULL) {
-		*custom_title = FALSE;
+		*custom_title = TRUE;
 	}
 
 	if (entry != NULL) {
