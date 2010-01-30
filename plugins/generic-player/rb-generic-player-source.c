@@ -732,7 +732,7 @@ default_load_playlists (RBGenericPlayerSource *source)
 
 	mount_path = rb_generic_player_source_get_mount_path (source);
 
-	g_object_get (priv->device_info, "playlist-path", &playlist_path, NULL);
+	playlist_path = rb_generic_player_source_get_playlist_path (RB_GENERIC_PLAYER_SOURCE (source));
 	if (playlist_path) {
 
 		/* If the device only supports a single playlist, just load that */
@@ -749,9 +749,6 @@ default_load_playlists (RBGenericPlayerSource *source)
 		}
 
 		/* Otherwise, limit the search to the device's playlist folder */
-		if (g_str_has_suffix (playlist_path, "/%File")) {
-			playlist_path[strlen (playlist_path) - strlen("/%File")] = '\0';
-		}
 		full_playlist_path = rb_uri_append_path (mount_path, playlist_path);
 		rb_debug ("constructed playlist search path %s", full_playlist_path);
 	} else {
@@ -1100,6 +1097,9 @@ rb_generic_player_source_get_playlist_path (RBGenericPlayerSource *source)
 	char *path;
 
 	g_object_get (priv->device_info, "playlist-path", &path, NULL);
+	if (g_str_has_suffix (path, "%File")) {
+		path[strlen (path) - strlen("%File")] = '\0';
+	}
 	return path;
 }
 
