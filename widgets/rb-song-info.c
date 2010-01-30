@@ -133,6 +133,9 @@ struct RBSongInfoPrivate
 	GtkWidget   *playback_error_box;
 	GtkWidget   *playback_error_label;
 
+	GtkWidget   *artist_sortname;
+	GtkWidget   *album_sortname;
+
 	GtkWidget   *bitrate;
 	GtkWidget   *duration;
 	GtkWidget   *name;
@@ -490,6 +493,9 @@ rb_song_info_constructed (GObject *object)
 	song_info->priv->playback_error_label = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_error_label"));
 	song_info->priv->disc_cur = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_disc_cur"));
 
+	song_info->priv->artist_sortname = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_artist_sortname"));
+	song_info->priv->album_sortname = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_album_sortname"));
+
 	rb_song_info_add_completion (GTK_ENTRY (song_info->priv->genre), song_info->priv->genres);
 	rb_song_info_add_completion (GTK_ENTRY (song_info->priv->artist), song_info->priv->artists);
 	rb_song_info_add_completion (GTK_ENTRY (song_info->priv->album), song_info->priv->albums);
@@ -500,6 +506,8 @@ rb_song_info_constructed (GObject *object)
 	rb_builder_boldify_label (builder, "year_label");
 	rb_builder_boldify_label (builder, "rating_label");
 	rb_builder_boldify_label (builder, "discn_label");
+	rb_builder_boldify_label (builder, "artist_sortname_label");
+	rb_builder_boldify_label (builder, "album_sortname_label");
 
 	g_signal_connect_object (G_OBJECT (song_info->priv->artist),
 				 "mnemonic-activate",
@@ -518,6 +526,14 @@ rb_song_info_constructed (GObject *object)
 				 G_CALLBACK (rb_song_info_mnemonic_cb),
 				 NULL, 0);
 	g_signal_connect_object (G_OBJECT (song_info->priv->disc_cur),
+				 "mnemonic-activate",
+				 G_CALLBACK (rb_song_info_mnemonic_cb),
+				 NULL, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->artist_sortname),
+				 "mnemonic-activate",
+				 G_CALLBACK (rb_song_info_mnemonic_cb),
+				 NULL, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->album_sortname),
 				 "mnemonic-activate",
 				 G_CALLBACK (rb_song_info_mnemonic_cb),
 				 NULL, 0);
@@ -888,12 +904,16 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 	gboolean mixed_years = FALSE;
 	gboolean mixed_disc_numbers = FALSE;
 	gboolean mixed_ratings = FALSE;
+	gboolean mixed_artist_sortnames = FALSE;
+	gboolean mixed_album_sortnames = FALSE;
 	const char *artist = NULL;
 	const char *album = NULL;
 	const char *genre = NULL;
 	int year = 0;
 	int disc_number = 0;
 	double rating = 0.0; /* Zero is used for both "unrated" and "mixed ratings" too */
+	const char *artist_sortname = NULL;
+	const char *album_sortname = NULL;
 	GList *l;
 
 	g_assert (song_info->priv->selected_entries);
@@ -906,6 +926,8 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 		int entry_year;
 		int entry_disc_number;
 		double entry_rating;
+		const char *entry_artist_sortname;
+		const char *entry_album_sortname;
 
 		entry = (RhythmDBEntry*)l->data;
 		entry_artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
@@ -914,6 +936,8 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 		entry_year = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_YEAR);
 		entry_disc_number = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
 		entry_rating = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_RATING);
+		entry_artist_sortname = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME);
+		entry_album_sortname = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME);
 
 		/* grab first valid values */
 		if (artist == NULL)
@@ -928,6 +952,10 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 			disc_number = entry_disc_number;
 		if (fabs(rating) < EPSILON)
 			rating = entry_rating;
+		if (artist_sortname == NULL)
+			artist_sortname = entry_artist_sortname;
+		if (album_sortname == NULL)
+			album_sortname = entry_album_sortname;
 
 		/* locate mixed values */
 		if (artist != entry_artist)
@@ -942,10 +970,15 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 			mixed_disc_numbers = TRUE;
 		if (fabs(rating - entry_rating) >= EPSILON)
 			mixed_ratings = TRUE;
+		if (artist_sortname != entry_artist_sortname)
+			mixed_artist_sortnames = TRUE;
+		if (album_sortname != entry_album_sortname)
+			mixed_album_sortnames = TRUE;
 
 		/* don't continue search if everything is mixed */
 		if (mixed_artists && mixed_albums && mixed_genres &&
-		    mixed_years && mixed_disc_numbers && mixed_ratings)
+		    mixed_years && mixed_disc_numbers && mixed_ratings &&
+		    mixed_artist_sortnames && mixed_album_sortnames)
 			break;
 	}
 
@@ -961,6 +994,10 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 		rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->disc_cur), disc_number);
 	if (!mixed_ratings && fabs(rating) >= EPSILON)
 		g_object_set (G_OBJECT (song_info->priv->rating), "rating", rating, NULL);
+	if (!mixed_artist_sortnames && artist_sortname != NULL)
+		gtk_entry_set_text (GTK_ENTRY (song_info->priv->artist_sortname), artist_sortname);
+	if (!mixed_album_sortnames && album_sortname != NULL)
+		gtk_entry_set_text (GTK_ENTRY (song_info->priv->album_sortname), album_sortname);
 }
 
 static void
@@ -1004,6 +1041,11 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	rb_song_info_update_rating (song_info);
 	rb_song_info_update_year (song_info);
 	rb_song_info_update_playback_error (song_info);
+
+	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_ARTIST_SORTNAME);
+	gtk_entry_set_text (GTK_ENTRY (song_info->priv->artist_sortname), text);
+	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_ALBUM_SORTNAME);
+	gtk_entry_set_text (GTK_ENTRY (song_info->priv->album_sortname), text);
 }
 
 static void
@@ -1401,6 +1443,8 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 	const char *album = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album));
 	const char *year_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->year));
 	const char *discn_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->disc_cur));
+	const char *artist_sortname = gtk_entry_get_text (GTK_ENTRY (dialog->priv->artist_sortname));
+	const char *album_sortname = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album_sortname));
 
 	char *endptr;
 	GValue val = {0,};
@@ -1514,6 +1558,42 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 		g_value_unset (&val);
 	}
 
+	if (strlen (artist_sortname) > 0) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, artist_sortname);
+		for (tem = dialog->priv->selected_entries; tem; tem = tem->next) {
+			const char *entry_artist_sortname;
+
+			entry = (RhythmDBEntry *)tem->data;
+			entry_artist_sortname = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME);
+
+			if (strcmp (artist_sortname, entry_artist_sortname) == 0)
+				continue;
+			rhythmdb_entry_set (dialog->priv->db, entry,
+					    RHYTHMDB_PROP_ARTIST_SORTNAME, &val);
+			changed = TRUE;
+		}
+		g_value_unset (&val);
+	}
+
+	if (strlen (album_sortname) > 0) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, album_sortname);
+		for (tem = dialog->priv->selected_entries; tem; tem = tem->next) {
+			const char *entry_album_sortname;
+
+			entry = (RhythmDBEntry *)tem->data;
+			entry_album_sortname = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME);
+
+			if (strcmp (album_sortname, entry_album_sortname) == 0)
+				continue;
+			rhythmdb_entry_set (dialog->priv->db, entry,
+					    RHYTHMDB_PROP_ALBUM_SORTNAME, &val);
+			changed = TRUE;
+		}
+		g_value_unset (&val);
+	}
+
 	if (changed)
 		rhythmdb_commit (dialog->priv->db);
 }
@@ -1528,6 +1608,8 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	const char *tracknum_str;
 	const char *discnum_str;
 	const char *year_str;
+	const char *artist_sortname;
+	const char *album_sortname;
 	const char *entry_string;
 	char *endptr;
 	GType type;
@@ -1546,6 +1628,8 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	tracknum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->track_cur));
 	discnum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->disc_cur));
 	year_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->year));
+	artist_sortname = gtk_entry_get_text (GTK_ENTRY (dialog->priv->artist_sortname));
+	album_sortname = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album_sortname));
 
 	g_signal_emit (dialog, rb_song_info_signals[PRE_METADATA_CHANGE], 0,
 		       entry);
@@ -1649,6 +1733,30 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 		g_value_set_string (&val, genre);
 		rhythmdb_entry_set (dialog->priv->db, entry,
 				    RHYTHMDB_PROP_GENRE, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
+
+	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME);
+	if (strcmp (artist_sortname, entry_string)) {
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_ARTIST_SORTNAME);
+		g_value_init (&val, type);
+		g_value_set_string (&val, artist_sortname);
+		rhythmdb_entry_set (dialog->priv->db, entry,
+				    RHYTHMDB_PROP_ARTIST_SORTNAME, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
+
+	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME);
+	if (strcmp (album_sortname, entry_string)) {
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_ALBUM_SORTNAME);
+		g_value_init (&val, type);
+		g_value_set_string (&val, album_sortname);
+		rhythmdb_entry_set (dialog->priv->db, entry,
+				    RHYTHMDB_PROP_ALBUM_SORTNAME, &val);
 		g_value_unset (&val);
 		changed = TRUE;
 	}
