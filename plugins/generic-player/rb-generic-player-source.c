@@ -1081,7 +1081,7 @@ rb_generic_player_source_get_playlist_format (RBGenericPlayerSource *source)
 	if (playlist_formats == NULL || g_strv_length (playlist_formats) == 0 || strv_contains (playlist_formats, "audio/x-scpls")) {
 		result = TOTEM_PL_PARSER_PLS;
 	} else if (strv_contains (playlist_formats, "audio/x-mpegurl")) {
-		result = TOTEM_PL_PARSER_M3U;
+		result = TOTEM_PL_PARSER_M3U_DOS;
 	} else if (strv_contains (playlist_formats, "audio/x-iriver-pla")) {
 		result = TOTEM_PL_PARSER_IRIVER_PLA;
 	} else {
