@@ -84,7 +84,8 @@ static void default_load_playlists (RBGenericPlayerSource *source);
 static char * default_uri_from_playlist_uri (RBGenericPlayerSource *source,
 					     const char *uri);
 static char * default_uri_to_playlist_uri (RBGenericPlayerSource *source,
-					   const char *uri);
+					   const char *uri,
+					   TotemPlParserType playlist_type);
 
 enum
 {
@@ -607,19 +608,30 @@ default_uri_from_playlist_uri (RBGenericPlayerSource *source, const char *uri)
 }
 
 static char *
-default_uri_to_playlist_uri (RBGenericPlayerSource *source, const char *uri)
+default_uri_to_playlist_uri (RBGenericPlayerSource *source, const char *uri, TotemPlParserType playlist_type)
 {
 	char *mount_uri;
 	char *playlist_uri;
 
-	mount_uri = rb_generic_player_source_get_mount_path (source);
-	if (g_str_has_prefix (uri, mount_uri) == FALSE) {
-		rb_debug ("uri %s is not under device mount uri %s", uri, mount_uri);
-		return NULL;
-	}
+	switch (playlist_type) {
+	case TOTEM_PL_PARSER_IRIVER_PLA:
+		/* we need absolute paths within the device filesystem for this format */
+		mount_uri = rb_generic_player_source_get_mount_path (source);
+		if (g_str_has_prefix (uri, mount_uri) == FALSE) {
+			rb_debug ("uri %s is not under device mount uri %s", uri, mount_uri);
+			return NULL;
+		}
 
-	playlist_uri = g_strdup_printf ("file://%s", uri + strlen (mount_uri));
-	return playlist_uri;
+		playlist_uri = g_strdup_printf ("file://%s", uri + strlen (mount_uri));
+		return playlist_uri;
+
+	case TOTEM_PL_PARSER_M3U_DOS:
+	case TOTEM_PL_PARSER_M3U:
+	case TOTEM_PL_PARSER_PLS:
+	default:
+		/* leave the URI as-is, so we end up with relative paths in the playlist file */
+		return g_strdup (uri);
+	}
 }
 
 char *
@@ -631,11 +643,11 @@ rb_generic_player_source_uri_from_playlist_uri (RBGenericPlayerSource *source, c
 }
 
 char *
-rb_generic_player_source_uri_to_playlist_uri (RBGenericPlayerSource *source, const char *uri)
+rb_generic_player_source_uri_to_playlist_uri (RBGenericPlayerSource *source, const char *uri, TotemPlParserType playlist_type)
 {
 	RBGenericPlayerSourceClass *klass = RB_GENERIC_PLAYER_SOURCE_GET_CLASS (source);
 
-	return klass->impl_uri_to_playlist_uri (source, uri);
+	return klass->impl_uri_to_playlist_uri (source, uri, playlist_type);
 }
 
 static void

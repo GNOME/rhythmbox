@@ -59,7 +59,7 @@ typedef struct
 	char **		(*impl_get_audio_folders) (RBGenericPlayerSource *source);
 
 	char *		(*impl_uri_from_playlist_uri) (RBGenericPlayerSource *source, const char *uri);
-	char *		(*impl_uri_to_playlist_uri) (RBGenericPlayerSource *source, const char *uri);
+	char *		(*impl_uri_to_playlist_uri) (RBGenericPlayerSource *source, const char *uri, TotemPlParserType playlist_type);
 
 	/* used for track transfer - returns the filename relative to the audio folder on the device */
 	char *		(*impl_build_filename) (RBGenericPlayerSource *source, RhythmDBEntry *entry);
@@ -75,7 +75,8 @@ char *			rb_generic_player_source_get_mount_path		(RBGenericPlayerSource *source
 char *			rb_generic_player_source_uri_from_playlist_uri  (RBGenericPlayerSource *source,
 									 const char *uri);
 char *			rb_generic_player_source_uri_to_playlist_uri    (RBGenericPlayerSource *source,
-									 const char *uri);
+									 const char *uri,
+									 TotemPlParserType playlist_type);
 void			rb_generic_player_source_set_supported_formats  (RBGenericPlayerSource *source,
 									 TotemPlParser *parser);
 TotemPlParserType	rb_generic_player_source_get_playlist_format	(RBGenericPlayerSource *source);
