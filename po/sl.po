@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-01-15 18:30+0000\n"
-"PO-Revision-Date: 2010-01-16 16:02+0100\n"
+"POT-Creation-Date: 2010-01-31 09:46+0000\n"
+"PO-Revision-Date: 2010-01-31 11:58+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -41,7 +41,7 @@ msgstr "Ustvarjanje elementa playbin2 je spodletelo, preverite vašo namestitev 
 msgid "Failed to open output device: %s"
 msgstr "Odpiranje izhodne naprave je spodletelo: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:677
+#: ../backends/gstreamer/rb-player-gst.c:679
 #, c-format
 msgid "Unable to start playback pipeline"
 msgstr "Cevovoda predvajanja ni mogoče zagnati"
@@ -273,15 +273,15 @@ msgstr "<b>Uporaba nosilca:</b>"
 #: ../data/ui/media-player-properties.ui.h:3
 #: ../data/ui/podcast-feed-properties.ui.h:2
 #: ../data/ui/podcast-properties.ui.h:1
-#: ../data/ui/song-info-multiple.ui.h:1
-#: ../data/ui/song-info.ui.h:1
+#: ../data/ui/song-info-multiple.ui.h:2
+#: ../data/ui/song-info.ui.h:2
 #: ../plugins/iradio/station-properties.ui.h:1
 msgid "Basic"
 msgstr "Osnovno"
 
 #: ../data/ui/media-player-properties.ui.h:4
-msgid "iPod Properties"
-msgstr "Lastnosti iPoda"
+msgid "Media Player Properties"
+msgstr "Lastnosti medijskega predvajalnika"
 
 #: ../data/ui/playback-prefs.ui.h:1
 msgid "Crossfade Duration (Seconds)"
@@ -341,7 +341,7 @@ msgstr "Spletišče:"
 
 #: ../data/ui/podcast-feed-properties.ui.h:5
 #: ../data/ui/podcast-properties.ui.h:5
-#: ../data/ui/song-info.ui.h:4
+#: ../data/ui/song-info.ui.h:5
 #: ../plugins/iradio/station-properties.ui.h:3
 msgid "Details"
 msgstr "Podrobnosti"
@@ -401,7 +401,7 @@ msgid "_Download location:"
 msgstr "_Mesto prejema:"
 
 #: ../data/ui/podcast-properties.ui.h:2
-#: ../data/ui/song-info.ui.h:2
+#: ../data/ui/song-info.ui.h:3
 #: ../plugins/iradio/station-properties.ui.h:2
 msgid "Bitrate:"
 msgstr "Bitna hitrost:"
@@ -415,7 +415,7 @@ msgid "Download location:"
 msgstr "Mesto prejema:"
 
 #: ../data/ui/podcast-properties.ui.h:7
-#: ../data/ui/song-info.ui.h:5
+#: ../data/ui/song-info.ui.h:6
 msgid "Duration:"
 msgstr "Trajanje:"
 
@@ -424,81 +424,96 @@ msgid "Feed:"
 msgstr "Vir:"
 
 #: ../data/ui/podcast-properties.ui.h:9
-#: ../data/ui/song-info.ui.h:9
+#: ../data/ui/song-info.ui.h:10
 #: ../plugins/iradio/station-properties.ui.h:6
 msgid "Last played:"
 msgstr "Zadnjič predvajano"
 
 #: ../data/ui/podcast-properties.ui.h:10
-#: ../data/ui/song-info.ui.h:11
+#: ../data/ui/song-info.ui.h:12
 #: ../plugins/iradio/station-properties.ui.h:7
 msgid "Play count:"
 msgstr "Števec predvajanj:"
 
 #: ../data/ui/podcast-properties.ui.h:13
-#: ../data/ui/song-info-multiple.ui.h:6
-#: ../data/ui/song-info.ui.h:16
+#: ../data/ui/song-info-multiple.ui.h:9
+#: ../data/ui/song-info.ui.h:19
 #: ../plugins/iradio/station-properties.ui.h:9
 msgid "_Rating:"
 msgstr "_Ocena:"
 
-#: ../data/ui/song-info-multiple.ui.h:2
-#: ../data/ui/song-info.ui.h:12
-msgid "_Album:"
-msgstr "_Album:"
+#: ../data/ui/song-info-multiple.ui.h:1
+#: ../data/ui/song-info.ui.h:1
+msgid "Albu_m sort order:"
+msgstr "Red razvrščanja _albumov:"
 
 #: ../data/ui/song-info-multiple.ui.h:3
 #: ../data/ui/song-info.ui.h:13
+msgid "Sorting"
+msgstr "Razvrščanje"
+
+#: ../data/ui/song-info-multiple.ui.h:4
+#: ../data/ui/song-info.ui.h:14
+msgid "_Album:"
+msgstr "_Album:"
+
+#: ../data/ui/song-info-multiple.ui.h:5
+#: ../data/ui/song-info.ui.h:15
+msgid "_Artist sort order:"
+msgstr "Red razvrščanja _izvajalcev:"
+
+#: ../data/ui/song-info-multiple.ui.h:6
+#: ../data/ui/song-info.ui.h:16
 #: ../plugins/audiocd/album-info.ui.h:3
 msgid "_Artist:"
 msgstr "_Izvajalec:"
 
-#: ../data/ui/song-info-multiple.ui.h:4
-#: ../data/ui/song-info.ui.h:14
+#: ../data/ui/song-info-multiple.ui.h:7
+#: ../data/ui/song-info.ui.h:17
 msgid "_Disc number:"
 msgstr "_Številka diska:"
 
-#: ../data/ui/song-info-multiple.ui.h:5
-#: ../data/ui/song-info.ui.h:15
+#: ../data/ui/song-info-multiple.ui.h:8
+#: ../data/ui/song-info.ui.h:18
 #: ../plugins/audiocd/album-info.ui.h:5
 #: ../plugins/iradio/station-properties.ui.h:8
 msgid "_Genre:"
 msgstr "_Zvrst:"
 
-#: ../data/ui/song-info-multiple.ui.h:7
-#: ../data/ui/song-info.ui.h:19
+#: ../data/ui/song-info-multiple.ui.h:10
+#: ../data/ui/song-info.ui.h:22
 #: ../plugins/audiocd/album-info.ui.h:6
 #: ../plugins/magnatune/magnatune-prefs.ui.h:46
 msgid "_Year:"
 msgstr "_Leto:"
 
-#: ../data/ui/song-info.ui.h:3
+#: ../data/ui/song-info.ui.h:4
 msgid "Date added:"
 msgstr "Datum dodajanja:"
 
-#: ../data/ui/song-info.ui.h:6
+#: ../data/ui/song-info.ui.h:7
 #: ../plugins/iradio/station-properties.ui.h:4
 msgid "Error message"
 msgstr "Sporočilo o napaki"
 
-#: ../data/ui/song-info.ui.h:7
+#: ../data/ui/song-info.ui.h:8
 msgid "File name:"
 msgstr "Ime datoteke:"
 
-#: ../data/ui/song-info.ui.h:8
+#: ../data/ui/song-info.ui.h:9
 msgid "File size:"
 msgstr "Velikost datoteke:"
 
-#: ../data/ui/song-info.ui.h:10
+#: ../data/ui/song-info.ui.h:11
 msgid "Location:"
 msgstr "Mesto:"
 
-#: ../data/ui/song-info.ui.h:17
+#: ../data/ui/song-info.ui.h:20
 #: ../plugins/iradio/station-properties.ui.h:10
 msgid "_Title:"
 msgstr "_Naslov:"
 
-#: ../data/ui/song-info.ui.h:18
+#: ../data/ui/song-info.ui.h:21
 msgid "_Track number:"
 msgstr "Š_tevilka skladbe:"
 
@@ -645,13 +660,13 @@ msgstr "%d. %b. %Y"
 #: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:249
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:174
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:175
-#: ../plugins/audiocd/rb-audiocd-source.c:440
+#: ../plugins/audiocd/rb-audiocd-source.c:443
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:479
 #: ../plugins/daap/rb-daap-connection.c:698
-#: ../plugins/generic-player/rb-generic-player-source.c:968
+#: ../plugins/generic-player/rb-generic-player-source.c:977
 #: ../plugins/ipod/rb-ipod-source.c:391
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:520
@@ -668,11 +683,13 @@ msgstr "%d. %b. %Y"
 #: ../podcast/rb-podcast-properties-dialog.c:484
 #: ../podcast/rb-podcast-properties-dialog.c:536
 #: ../remote/dbus/rb-client.c:142
-#: ../rhythmdb/rhythmdb-tree.c:1285
-#: ../rhythmdb/rhythmdb-tree.c:1289
-#: ../rhythmdb/rhythmdb-tree.c:1293
-#: ../rhythmdb/rhythmdb-tree.c:1297
-#: ../rhythmdb/rhythmdb.c:1816
+#: ../rhythmdb/rhythmdb-tree.c:1295
+#: ../rhythmdb/rhythmdb-tree.c:1299
+#: ../rhythmdb/rhythmdb-tree.c:1303
+#: ../rhythmdb/rhythmdb-tree.c:1307
+#: ../rhythmdb/rhythmdb.c:1961
+#: ../rhythmdb/rhythmdb.c:1967
+#: ../rhythmdb/rhythmdb.c:1972
 #: ../shell/rb-shell-player.c:1663
 #: ../sources/rb-podcast-source.c:1646
 #: ../widgets/rb-entry-view.c:1041
@@ -680,9 +697,9 @@ msgstr "%d. %b. %Y"
 #: ../widgets/rb-entry-view.c:1517
 #: ../widgets/rb-entry-view.c:1529
 #: ../widgets/rb-entry-view.c:1541
-#: ../widgets/rb-song-info.c:877
-#: ../widgets/rb-song-info.c:1043
-#: ../widgets/rb-song-info.c:1382
+#: ../widgets/rb-song-info.c:893
+#: ../widgets/rb-song-info.c:1085
+#: ../widgets/rb-song-info.c:1424
 msgid "Unknown"
 msgstr "Neznano"
 
@@ -798,11 +815,11 @@ msgstr "Ovitki"
 msgid "Fetch album covers from the Internet"
 msgstr "Pridobi naslovnice albumov s spleta"
 
-#: ../plugins/artdisplay/artdisplay/__init__.py:308
+#: ../plugins/artdisplay/artdisplay/__init__.py:309
 msgid "Searching... drop artwork here"
 msgstr "Iskanje... spustite grafično podobo tukaj"
 
-#: ../plugins/artdisplay/artdisplay/__init__.py:310
+#: ../plugins/artdisplay/artdisplay/__init__.py:311
 msgid "Drop artwork here"
 msgstr "Spustite grafično podobo tukaj"
 
@@ -863,30 +880,30 @@ msgstr "Tega albuma na MusicBrainz ni mogoče najti."
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Z dodajanjem tega albuma lahko izboljšate MusicBrainz podatkovno zbirko."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:444
+#: ../plugins/audiocd/rb-audiocd-source.c:449
 msgid "<Invalid unicode>"
 msgstr "<neveljaven unicode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:490
+#: ../plugins/audiocd/rb-audiocd-source.c:492
 #, c-format
 msgid "Track %u"
 msgstr "Skladba %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:550
-#: ../plugins/audiocd/rb-audiocd-source.c:558
-#: ../plugins/audiocd/rb-audiocd-source.c:948
+#: ../plugins/audiocd/rb-audiocd-source.c:552
+#: ../plugins/audiocd/rb-audiocd-source.c:560
+#: ../plugins/audiocd/rb-audiocd-source.c:950
 msgid "Couldn't load Audio CD"
 msgstr "Zvočnega CD-ja ni mogoče naložiti"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:551
+#: ../plugins/audiocd/rb-audiocd-source.c:553
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox ne more dostopati do CD-ja."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:559
+#: ../plugins/audiocd/rb-audiocd-source.c:561
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox ne more prebrati podatkov CD-ja."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:659
+#: ../plugins/audiocd/rb-audiocd-source.c:661
 #: ../sources/rb-library-source.c:146
 #: ../widgets/rb-entry-view.c:1473
 #: ../widgets/rb-query-creator-properties.c:73
@@ -894,7 +911,7 @@ msgstr "Rhythmbox ne more prebrati podatkov CD-ja."
 msgid "Title"
 msgstr "Naslov"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:666
+#: ../plugins/audiocd/rb-audiocd-source.c:668
 #: ../plugins/context/context/ArtistTab.py:52
 #: ../sources/rb-library-source.c:137
 #: ../widgets/rb-entry-view.c:1483
@@ -904,7 +921,7 @@ msgstr "Naslov"
 msgid "Artist"
 msgstr "Izvajalec"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:949
+#: ../plugins/audiocd/rb-audiocd-source.c:951
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Dostop do CD naprave ni mogoč."
 
@@ -1002,11 +1019,11 @@ msgstr "Čas zadnjega pošiljanja:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:962
 #: ../plugins/iradio/rb-station-properties-dialog.c:499
-#: ../rhythmdb/rhythmdb.c:3715
+#: ../rhythmdb/rhythmdb.c:3700
 #: ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1576
 #: ../widgets/rb-entry-view.c:1589
-#: ../widgets/rb-song-info.c:1355
+#: ../widgets/rb-song-info.c:1397
 msgid "Never"
 msgstr "Nikoli"
 
@@ -1757,21 +1774,21 @@ msgid "Loading biography for %s"
 msgstr "Nalaganje biografije %s"
 
 #. Add button to toggle visibility of pane
-#: ../plugins/context/context/ContextView.py:88
+#: ../plugins/context/context/ContextView.py:89
 msgid "Toggle Conte_xt Pane"
 msgstr "Preklop vse_binskega pladnja"
 
-#: ../plugins/context/context/ContextView.py:89
+#: ../plugins/context/context/ContextView.py:90
 msgid "Change the visibility of the context pane"
 msgstr "Sprememba vidnosti vsebinskega pulta"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
-#: ../plugins/context/context/ContextView.py:194
+#: ../plugins/context/context/ContextView.py:197
 #, python-format
 msgid "Top songs by %s"
 msgstr "Najboljše skladbe od %s"
 
-#: ../plugins/context/context/ContextView.py:211
+#: ../plugins/context/context/ContextView.py:227
 msgid "Nothing Playing"
 msgstr "Ni predvajanja"
 
@@ -2017,7 +2034,7 @@ msgstr "Izbriši seznam predvajanja"
 msgid "Delete this playlist"
 msgstr "Izbris tega seznama predvajanja"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:555
+#: ../plugins/generic-player/rb-generic-player-source.c:556
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Uvažanje (%d/%d)"
@@ -2078,17 +2095,17 @@ msgid "<b>System</b>"
 msgstr "<b>Sistem</b>"
 
 #: ../plugins/ipod/ipod-info.ui.h:2
-msgid "Database Version:"
-msgstr "Različica podatkovne zbirke:"
+msgid "Database version:"
+msgstr "Različica zbirke podatkov:"
 
 #: ../plugins/ipod/ipod-info.ui.h:3
-msgid "Device Node:"
+msgid "Device node:"
 msgstr "Vozlišče naprave:"
 
 #: ../plugins/ipod/ipod-info.ui.h:4
 #: ../plugins/mtpdevice/mtp-info.ui.h:3
-msgid "Firmware Version:"
-msgstr "Različica strojne programske opreme:"
+msgid "Firmware version:"
+msgstr "Različica programske strojne opreme:"
 
 #: ../plugins/ipod/ipod-info.ui.h:5
 #: ../plugins/mtpdevice/mtp-info.ui.h:5
@@ -2096,7 +2113,7 @@ msgid "Model:"
 msgstr "Model:"
 
 #: ../plugins/ipod/ipod-info.ui.h:6
-msgid "Mount Point:"
+msgid "Mount point:"
 msgstr "Priklopna točka:"
 
 #: ../plugins/ipod/ipod-info.ui.h:7
@@ -2111,7 +2128,7 @@ msgstr "Podcasti:"
 
 #: ../plugins/ipod/ipod-info.ui.h:9
 #: ../plugins/mtpdevice/mtp-info.ui.h:8
-msgid "Serial Number:"
+msgid "Serial number:"
 msgstr "Serijska številka:"
 
 #: ../plugins/ipod/ipod-info.ui.h:10
@@ -2120,8 +2137,8 @@ msgid "Tracks:"
 msgstr "Skladbe:"
 
 #: ../plugins/ipod/ipod-info.ui.h:11
-msgid "iPod Name:"
-msgstr "Ime iPoda:"
+msgid "iPod _name:"
+msgstr "Ime _iPoda:"
 
 #: ../plugins/ipod/ipod-init.ui.h:1
 msgid "<span size=\"x-large\" weight=\"bold\">Do you want to initialize your iPod?</span>"
@@ -2406,7 +2423,8 @@ msgstr "URL spletne radijske postaje:"
 #: ../plugins/iradio/rb-station-properties-dialog.c:398
 #: ../podcast/rb-feed-podcast-properties-dialog.c:212
 #: ../podcast/rb-podcast-properties-dialog.c:369
-#: ../widgets/rb-song-info.c:981
+#: ../sources/rb-media-player-source.c:202
+#: ../widgets/rb-song-info.c:1018
 #, c-format
 msgid "%s Properties"
 msgstr "Lastnosti %s"
@@ -2414,7 +2432,7 @@ msgstr "Lastnosti %s"
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
 #: ../podcast/rb-podcast-properties-dialog.c:482
 #: ../widgets/rb-entry-view.c:1067
-#: ../widgets/rb-song-info.c:1045
+#: ../widgets/rb-song-info.c:1087
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
@@ -3014,8 +3032,8 @@ msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "Podpora za MTP naprave (prikaz vsebine, prenos in predvajanje z naprave)"
 
 #: ../plugins/mtpdevice/mtp-info.ui.h:2
-msgid "Device Name:"
-msgstr "Ime naprave:"
+msgid "Device _name:"
+msgstr "Ime _naprave:"
 
 #: ../plugins/mtpdevice/mtp-info.ui.h:4
 msgid "Manufacturer:"
@@ -3152,6 +3170,22 @@ msgstr "Vzorčni vstavek v Vala-ju brez zmožnosti"
 #: ../plugins/sample-vala/sample-vala.rb-plugin.in.h:2
 msgid "Vala Sample Plugin"
 msgstr "Vzorčni vstavek Vala"
+
+#: ../plugins/sendto/__init__.py:51
+msgid "Send to..."
+msgstr "Pošlji ..."
+
+#: ../plugins/sendto/__init__.py:52
+msgid "Send files by mail, instant message..."
+msgstr "Pošlji datoteke preko e-pošte, takojšnjega sporočanja .."
+
+#: ../plugins/sendto/sendto.rb-plugin.in.h:1
+msgid "Send selected tracks by email or instant message"
+msgstr "Pošiljanje izbranih skladb preko elektronske pošte ali takojšnjega sporočanja"
+
+#: ../plugins/sendto/sendto.rb-plugin.in.h:2
+msgid "Send tracks"
+msgstr "Pošlji skladbe"
 
 #: ../plugins/status-icon/eggtrayicon.c:133
 msgid "Orientation"
@@ -3541,7 +3575,7 @@ msgstr "Predvajanje je nemo.\n"
 msgid "Playback volume is %f.\n"
 msgstr "Glasnost predvajanja je %f.\n"
 
-#: ../rhythmdb/rhythmdb-property-model.c:471
+#: ../rhythmdb/rhythmdb-property-model.c:494
 #: ../sources/rb-auto-playlist-source.c:104
 #: ../sources/rb-browser-source.c:166
 #: ../sources/rb-podcast-source.c:329
@@ -3584,11 +3618,11 @@ msgstr "Pomoč!"
 msgid "Ticket To Ride"
 msgstr "Bog ne daj da bi crknu televizor"
 
-#: ../rhythmdb/rhythmdb.c:2258
+#: ../rhythmdb/rhythmdb.c:2243
 msgid "invalid unicode in error message"
 msgstr "neveljaven unicode v sporočilu o napaki"
 
-#: ../rhythmdb/rhythmdb.c:2319
+#: ../rhythmdb/rhythmdb.c:2304
 #, c-format
 msgid "Empty file"
 msgstr "Prazna datoteka"
@@ -3596,16 +3630,16 @@ msgstr "Prazna datoteka"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2434
+#: ../rhythmdb/rhythmdb.c:2419
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Za predvajanje datoteke so zahtevani dodatni Gstreamer vstavki: %s"
 
-#: ../rhythmdb/rhythmdb.c:3200
+#: ../rhythmdb/rhythmdb.c:3185
 msgid "Could not load the music database:"
 msgstr "Ni mogoče naložiti glasbene podatkovne zbirke: "
 
-#: ../rhythmdb/rhythmdb.c:4568
+#: ../rhythmdb/rhythmdb.c:4557
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3614,7 +3648,7 @@ msgstr[1] "%ld minuta"
 msgstr[2] "%ld minuti"
 msgstr[3] "%ld minute"
 
-#: ../rhythmdb/rhythmdb.c:4569
+#: ../rhythmdb/rhythmdb.c:4558
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3623,7 +3657,7 @@ msgstr[1] "%ld ura"
 msgstr[2] "%ld uri"
 msgstr[3] "%ld ure"
 
-#: ../rhythmdb/rhythmdb.c:4570
+#: ../rhythmdb/rhythmdb.c:4559
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3633,7 +3667,7 @@ msgstr[2] "%ld dni"
 msgstr[3] "%ld dni"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4576
+#: ../rhythmdb/rhythmdb.c:4565
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s in %s"
@@ -3641,9 +3675,9 @@ msgstr "%s, %s in %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4582
+#: ../rhythmdb/rhythmdb.c:4571
+#: ../rhythmdb/rhythmdb.c:4579
 #: ../rhythmdb/rhythmdb.c:4590
-#: ../rhythmdb/rhythmdb.c:4601
 #, c-format
 msgid "%s and %s"
 msgstr "%s in %s"
@@ -3793,7 +3827,7 @@ msgid "Load Playlist"
 msgstr "Naloži seznam predvajanja"
 
 #: ../shell/rb-playlist-manager.c:1469
-#: ../sources/rb-playlist-source.c:643
+#: ../sources/rb-playlist-source.c:707
 msgid "Couldn't save playlist"
 msgstr "Seznama predvajanja ni mogoče shraniti"
 
@@ -4554,7 +4588,7 @@ msgstr "Primer poti:"
 #. Translators: this is used to display the amount of storage space
 #. * used and the total storage space on an device.
 #.
-#: ../sources/rb-media-player-source.c:214
+#: ../sources/rb-media-player-source.c:221
 #, c-format
 msgid "%s of %s"
 msgstr "%s od %s"
@@ -4602,12 +4636,12 @@ msgstr "Predvajalna vrsta"
 #: ../sources/rb-play-queue-source.c:427
 #: ../widgets/rb-header.c:123
 msgid "from"
-msgstr "od"
+msgstr "iz"
 
 #: ../sources/rb-play-queue-source.c:427
 #: ../widgets/rb-header.c:124
 msgid "by"
-msgstr "iz"
+msgstr "od"
 
 #: ../sources/rb-playlist-source.c:130
 msgid "Remove From Playlist"
@@ -4859,7 +4893,7 @@ msgstr "Sličica za izris."
 
 #: ../widgets/rb-entry-view.c:1061
 #: ../widgets/rb-entry-view.c:1542
-#: ../widgets/rb-song-info.c:1041
+#: ../widgets/rb-song-info.c:1083
 msgid "Lossless"
 msgstr "Brez izgub"
 
@@ -5144,26 +5178,28 @@ msgstr "I_skanje:"
 msgid "Clear the search text"
 msgstr "Počisti besedilo iskanja"
 
-#: ../widgets/rb-song-info.c:367
+#: ../widgets/rb-song-info.c:370
 msgid "Song Properties"
 msgstr "Lastnosti skladbe"
 
-#: ../widgets/rb-song-info.c:415
+#: ../widgets/rb-song-info.c:418
 msgid "Multiple Song Properties"
 msgstr "Lastnosti več skladb"
 
-#: ../widgets/rb-song-info.c:1104
+#: ../widgets/rb-song-info.c:1146
 msgid "Unknown file name"
 msgstr "Neznano ime datoteke"
 
-#: ../widgets/rb-song-info.c:1126
+#: ../widgets/rb-song-info.c:1168
 msgid "On the desktop"
 msgstr "Na namizju"
 
-#: ../widgets/rb-song-info.c:1149
+#: ../widgets/rb-song-info.c:1191
 msgid "Unknown location"
 msgstr "Neznano mesto"
 
+#~ msgid "iPod Properties"
+#~ msgstr "Lastnosti iPoda"
 #~ msgid "Connection to %s:%d refused."
 #~ msgstr "Povezava z %s:%d je zavrnjena."
 #~ msgid "Remove selection"
