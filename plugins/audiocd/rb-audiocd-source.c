@@ -430,14 +430,19 @@ impl_pack_paned (RBBrowserSource *source, GtkWidget *paned)
 static void
 entry_set_string_prop (RhythmDB *db,
 		       RhythmDBEntry *entry,
-		       gboolean is_inserted,
 		       RhythmDBPropType propid,
+		       gboolean default_to_empty,
 		       const char *str)
 {
 	GValue value = {0,};
 
-	if (!str)
-		str = _("Unknown");
+	if (!str) {
+		if (default_to_empty) {
+			str = "";
+		} else {
+			str = _("Unknown");
+		}
+	}
 
 	if (!g_utf8_validate (str, -1, NULL)) {
 		rb_debug ("Got invalid UTF-8 tag data");
@@ -446,10 +451,7 @@ entry_set_string_prop (RhythmDB *db,
 
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, str);
-	if (is_inserted)
-		rhythmdb_entry_set (RHYTHMDB (db), entry, propid, &value);
-	else
-		rhythmdb_entry_set (RHYTHMDB (db), entry, propid, &value);
+	rhythmdb_entry_set (RHYTHMDB (db), entry, propid, &value);
 	g_value_unset (&value);
 }
 
@@ -507,10 +509,10 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 		g_warning ("Failed to query cd track duration");
 	}
 
-	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_ARTIST, NULL);
-	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_ALBUM, NULL);
-	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_GENRE, NULL);
-	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_MIMETYPE, "audio/x-raw-int");
+	entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST, FALSE, NULL);
+	entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM, FALSE, NULL);
+	entry_set_string_prop (db, entry, RHYTHMDB_PROP_GENRE, FALSE, NULL);
+	entry_set_string_prop (db, entry, RHYTHMDB_PROP_MIMETYPE, TRUE, "audio/x-raw-int");
 
 	rhythmdb_commit (db);
 	g_free (audio_path);
@@ -821,15 +823,15 @@ metadata_cb (SjMetadataGetter *metadata,
 		rb_debug ("artist sortname: %s", track->artist_sortname);
 
 		/* record track info in entry*/
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_TITLE, track->title);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ARTIST, track->artist);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ALBUM, album->title);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_GENRE, album->genre);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, track->track_id);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, track->artist_id);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, album->album_id);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, album->artist_id);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ARTIST_SORTNAME, track->artist_sortname);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_TITLE, FALSE, track->title);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST, FALSE, track->artist);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM, FALSE, album->title);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_GENRE, FALSE, album->genre);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, TRUE, track->track_id);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, TRUE, track->artist_id);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, TRUE, album->album_id);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, TRUE, album->artist_id);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST_SORTNAME, TRUE, track->artist_sortname);
 
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, track->duration);
