@@ -293,7 +293,6 @@ rb_rating_realize (GtkWidget *widget)
 	int attributes_mask;
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
-	gtk_widget_set_can_focus (widget, TRUE);
 
 	gtk_widget_get_allocation (widget, &allocation);
 
@@ -312,6 +311,8 @@ rb_rating_realize (GtkWidget *widget)
 	window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
 	gtk_widget_set_window (widget, window);
 	gdk_window_set_user_data (window, widget);
+
+	gtk_widget_set_can_focus (widget, TRUE);
 
 	style = gtk_style_attach (gtk_widget_get_style (widget), window);
 	gtk_widget_set_style (widget, style);
