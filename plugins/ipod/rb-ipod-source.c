@@ -1203,7 +1203,9 @@ impl_remove_playlists (RBMediaPlayerSource *source)
 	for (p = playlists; p != NULL; p = p->next) {
 		Itdb_Playlist *playlist = (Itdb_Playlist *)p->data;
 		/* XXX might need to exclude more playlists here.. */
-		if (!itdb_playlist_is_mpl (playlist) && !playlist->is_spl) {
+		if (!itdb_playlist_is_mpl (playlist) &&
+		    !itdb_playlist_is_podcasts (playlist) &&
+		    !playlist->is_spl) {
 
 			/* destroy the playlist source */
 			RBSource *rb_playlist = RB_SOURCE (playlist->userdata);
