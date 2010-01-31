@@ -10,21 +10,21 @@
 # maria <maria.majadas@hispalinux.es>, 2006, 2007.
 # Francisco Javier F. Serrador <serrador@tecknolabs.com>, 2004, 2005, 2006.
 # Claudio Saavedra <csaavedra@alumnos.utalca.cl>, 2007.
-# Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008, 200, 2010.
+# Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008, 2010, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-01-24 11:30+0000\n"
-"PO-Revision-Date: 2010-01-26 19:43+0100\n"
+"POT-Creation-Date: 2010-01-30 11:35+0000\n"
+"PO-Revision-Date: 2010-01-31 17:40+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
-"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:607
 #, c-format
@@ -51,7 +51,7 @@ msgstr ""
 msgid "Failed to open output device: %s"
 msgstr "Falló al abrir el dispositivo de salida: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:677
+#: ../backends/gstreamer/rb-player-gst.c:679
 #, c-format
 msgid "Unable to start playback pipeline"
 msgstr "No se pudo iniciar la tubería de reproducción"
@@ -289,8 +289,8 @@ msgstr "<b>Uso del volumen</b>"
 
 #: ../data/ui/media-player-properties.ui.h:3
 #: ../data/ui/podcast-feed-properties.ui.h:2
-#: ../data/ui/podcast-properties.ui.h:1 ../data/ui/song-info-multiple.ui.h:1
-#: ../data/ui/song-info.ui.h:1 ../plugins/iradio/station-properties.ui.h:1
+#: ../data/ui/podcast-properties.ui.h:1 ../data/ui/song-info-multiple.ui.h:2
+#: ../data/ui/song-info.ui.h:2 ../plugins/iradio/station-properties.ui.h:1
 msgid "Basic"
 msgstr "Básico"
 
@@ -352,7 +352,7 @@ msgid "Site:"
 msgstr "Sitio:"
 
 #: ../data/ui/podcast-feed-properties.ui.h:5
-#: ../data/ui/podcast-properties.ui.h:5 ../data/ui/song-info.ui.h:4
+#: ../data/ui/podcast-properties.ui.h:5 ../data/ui/song-info.ui.h:5
 #: ../plugins/iradio/station-properties.ui.h:3
 msgid "Details"
 msgstr "Detalles"
@@ -411,7 +411,7 @@ msgstr "Seleccione una carpeta para los Podcasts"
 msgid "_Download location:"
 msgstr "Lugar de _descarga:"
 
-#: ../data/ui/podcast-properties.ui.h:2 ../data/ui/song-info.ui.h:2
+#: ../data/ui/podcast-properties.ui.h:2 ../data/ui/song-info.ui.h:3
 #: ../plugins/iradio/station-properties.ui.h:2
 msgid "Bitrate:"
 msgstr "Tasa de bits:"
@@ -424,7 +424,7 @@ msgstr "Fecha:"
 msgid "Download location:"
 msgstr "Lugar de descarga:"
 
-#: ../data/ui/podcast-properties.ui.h:7 ../data/ui/song-info.ui.h:5
+#: ../data/ui/podcast-properties.ui.h:7 ../data/ui/song-info.ui.h:6
 msgid "Duration:"
 msgstr "Duración:"
 
@@ -432,71 +432,86 @@ msgstr "Duración:"
 msgid "Feed:"
 msgstr "Proveedor:"
 
-#: ../data/ui/podcast-properties.ui.h:9 ../data/ui/song-info.ui.h:9
+#: ../data/ui/podcast-properties.ui.h:9 ../data/ui/song-info.ui.h:10
 #: ../plugins/iradio/station-properties.ui.h:6
 msgid "Last played:"
 msgstr "Última reproducción:"
 
-#: ../data/ui/podcast-properties.ui.h:10 ../data/ui/song-info.ui.h:11
+#: ../data/ui/podcast-properties.ui.h:10 ../data/ui/song-info.ui.h:12
 #: ../plugins/iradio/station-properties.ui.h:7
 msgid "Play count:"
 msgstr "Número de reproducciones:"
 
-#: ../data/ui/podcast-properties.ui.h:13 ../data/ui/song-info-multiple.ui.h:6
-#: ../data/ui/song-info.ui.h:16 ../plugins/iradio/station-properties.ui.h:9
+#: ../data/ui/podcast-properties.ui.h:13 ../data/ui/song-info-multiple.ui.h:9
+#: ../data/ui/song-info.ui.h:19 ../plugins/iradio/station-properties.ui.h:9
 msgid "_Rating:"
 msgstr "_Puntuación:"
 
-#: ../data/ui/song-info-multiple.ui.h:2 ../data/ui/song-info.ui.h:12
+#: ../data/ui/song-info-multiple.ui.h:1 ../data/ui/song-info.ui.h:1
+#| msgid "Artist s_ort order:"
+msgid "Albu_m sort order:"
+msgstr "Orden de los álbu_mes:"
+
+#: ../data/ui/song-info-multiple.ui.h:3 ../data/ui/song-info.ui.h:13
+#| msgid "Starting %s"
+msgid "Sorting"
+msgstr "Ordenar"
+
+#: ../data/ui/song-info-multiple.ui.h:4 ../data/ui/song-info.ui.h:14
 msgid "_Album:"
 msgstr "Á_lbum:"
 
-#: ../data/ui/song-info-multiple.ui.h:3 ../data/ui/song-info.ui.h:13
+#: ../data/ui/song-info-multiple.ui.h:5 ../data/ui/song-info.ui.h:15
+#| msgid "Artist s_ort order:"
+msgid "_Artist sort order:"
+msgstr "Orden de los _artistas:"
+
+#: ../data/ui/song-info-multiple.ui.h:6 ../data/ui/song-info.ui.h:16
 #: ../plugins/audiocd/album-info.ui.h:3
 msgid "_Artist:"
 msgstr "_Artista:"
 
-#: ../data/ui/song-info-multiple.ui.h:4 ../data/ui/song-info.ui.h:14
+#: ../data/ui/song-info-multiple.ui.h:7 ../data/ui/song-info.ui.h:17
 msgid "_Disc number:"
 msgstr "Número de d_isco:"
 
-#: ../data/ui/song-info-multiple.ui.h:5 ../data/ui/song-info.ui.h:15
+#: ../data/ui/song-info-multiple.ui.h:8 ../data/ui/song-info.ui.h:18
 #: ../plugins/audiocd/album-info.ui.h:5
 #: ../plugins/iradio/station-properties.ui.h:8
 msgid "_Genre:"
 msgstr "_Género:"
 
-#: ../data/ui/song-info-multiple.ui.h:7 ../data/ui/song-info.ui.h:19
+#: ../data/ui/song-info-multiple.ui.h:10 ../data/ui/song-info.ui.h:22
 #: ../plugins/audiocd/album-info.ui.h:6
 #: ../plugins/magnatune/magnatune-prefs.ui.h:46
 msgid "_Year:"
 msgstr "Añ_o:"
 
-#: ../data/ui/song-info.ui.h:3
+#: ../data/ui/song-info.ui.h:4
 msgid "Date added:"
 msgstr "Fecha de adición:"
 
-#: ../data/ui/song-info.ui.h:6 ../plugins/iradio/station-properties.ui.h:4
+#: ../data/ui/song-info.ui.h:7 ../plugins/iradio/station-properties.ui.h:4
 msgid "Error message"
 msgstr "Mensaje de error"
 
-#: ../data/ui/song-info.ui.h:7
+#: ../data/ui/song-info.ui.h:8
 msgid "File name:"
 msgstr "Nombre del archivo:"
 
-#: ../data/ui/song-info.ui.h:8
+#: ../data/ui/song-info.ui.h:9
 msgid "File size:"
 msgstr "Tamaño del archivo:"
 
-#: ../data/ui/song-info.ui.h:10
+#: ../data/ui/song-info.ui.h:11
 msgid "Location:"
 msgstr "Lugar:"
 
-#: ../data/ui/song-info.ui.h:17 ../plugins/iradio/station-properties.ui.h:10
+#: ../data/ui/song-info.ui.h:20 ../plugins/iradio/station-properties.ui.h:10
 msgid "_Title:"
 msgstr "Tít_ulo:"
 
-#: ../data/ui/song-info.ui.h:18
+#: ../data/ui/song-info.ui.h:21
 msgid "_Track number:"
 msgstr "_Número de pista:"
 
@@ -648,7 +663,7 @@ msgstr "%d %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:479
 #: ../plugins/daap/rb-daap-connection.c:698
-#: ../plugins/generic-player/rb-generic-player-source.c:968
+#: ../plugins/generic-player/rb-generic-player-source.c:977
 #: ../plugins/ipod/rb-ipod-source.c:391
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:520
@@ -664,14 +679,14 @@ msgstr "%d %b %Y"
 #: ../podcast/rb-podcast-manager.c:1868
 #: ../podcast/rb-podcast-properties-dialog.c:484
 #: ../podcast/rb-podcast-properties-dialog.c:536
-#: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1285
-#: ../rhythmdb/rhythmdb-tree.c:1289 ../rhythmdb/rhythmdb-tree.c:1293
-#: ../rhythmdb/rhythmdb-tree.c:1297 ../rhythmdb/rhythmdb.c:1816
+#: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1289
+#: ../rhythmdb/rhythmdb-tree.c:1293 ../rhythmdb/rhythmdb-tree.c:1297
+#: ../rhythmdb/rhythmdb-tree.c:1301 ../rhythmdb/rhythmdb.c:1816
 #: ../shell/rb-shell-player.c:1663 ../sources/rb-podcast-source.c:1646
 #: ../widgets/rb-entry-view.c:1041 ../widgets/rb-entry-view.c:1063
 #: ../widgets/rb-entry-view.c:1517 ../widgets/rb-entry-view.c:1529
-#: ../widgets/rb-entry-view.c:1541 ../widgets/rb-song-info.c:877
-#: ../widgets/rb-song-info.c:1043 ../widgets/rb-song-info.c:1382
+#: ../widgets/rb-entry-view.c:1541 ../widgets/rb-song-info.c:893
+#: ../widgets/rb-song-info.c:1085 ../widgets/rb-song-info.c:1424
 msgid "Unknown"
 msgstr "Desconocido"
 
@@ -996,7 +1011,7 @@ msgstr "Hora del último envío:"
 #: ../plugins/iradio/rb-station-properties-dialog.c:499
 #: ../rhythmdb/rhythmdb.c:3715 ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1576 ../widgets/rb-entry-view.c:1589
-#: ../widgets/rb-song-info.c:1355
+#: ../widgets/rb-song-info.c:1397
 msgid "Never"
 msgstr "Nunca"
 
@@ -2031,7 +2046,7 @@ msgstr "Borrar lista de reproducción"
 msgid "Delete this playlist"
 msgstr "Borrar esta lista de reproducción"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:555
+#: ../plugins/generic-player/rb-generic-player-source.c:556
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Importando (%d/%d)"
@@ -2446,14 +2461,14 @@ msgstr "URL de la emisora de radio de Internet:"
 #: ../plugins/iradio/rb-station-properties-dialog.c:398
 #: ../podcast/rb-feed-podcast-properties-dialog.c:212
 #: ../podcast/rb-podcast-properties-dialog.c:369
-#: ../sources/rb-media-player-source.c:202 ../widgets/rb-song-info.c:981
+#: ../sources/rb-media-player-source.c:202 ../widgets/rb-song-info.c:1018
 #, c-format
 msgid "%s Properties"
 msgstr "Propiedades de %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
 #: ../podcast/rb-podcast-properties-dialog.c:482
-#: ../widgets/rb-entry-view.c:1067 ../widgets/rb-song-info.c:1045
+#: ../widgets/rb-entry-view.c:1067 ../widgets/rb-song-info.c:1087
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
@@ -3269,7 +3284,6 @@ msgid "Vala Sample Plugin"
 msgstr "Complemento de ejemplo de Vala"
 
 #: ../plugins/sendto/__init__.py:51
-#| msgid "_Save to File..."
 msgid "Send to..."
 msgstr "Enviar a…"
 
@@ -3282,7 +3296,6 @@ msgid "Send selected tracks by email or instant message"
 msgstr "Enviar las pistas seleccionadas por correo-e o mensajería instantánea"
 
 #: ../plugins/sendto/sendto.rb-plugin.in.h:2
-#| msgid "Loved tracks"
 msgid "Send tracks"
 msgstr "Enviar pistas"
 
@@ -3751,21 +3764,21 @@ msgstr ""
 msgid "Could not load the music database:"
 msgstr "No se pudo cargar la base de datos de la música:"
 
-#: ../rhythmdb/rhythmdb.c:4568
+#: ../rhythmdb/rhythmdb.c:4572
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minutos"
 
-#: ../rhythmdb/rhythmdb.c:4569
+#: ../rhythmdb/rhythmdb.c:4573
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hora"
 msgstr[1] "%ld horas"
 
-#: ../rhythmdb/rhythmdb.c:4570
+#: ../rhythmdb/rhythmdb.c:4574
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3773,7 +3786,7 @@ msgstr[0] "%ld día"
 msgstr[1] "%ld días"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4576
+#: ../rhythmdb/rhythmdb.c:4580
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s y %s"
@@ -3781,8 +3794,8 @@ msgstr "%s, %s y %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4582 ../rhythmdb/rhythmdb.c:4590
-#: ../rhythmdb/rhythmdb.c:4601
+#: ../rhythmdb/rhythmdb.c:4586 ../rhythmdb/rhythmdb.c:4594
+#: ../rhythmdb/rhythmdb.c:4605
 #, c-format
 msgid "%s and %s"
 msgstr "%s y %s"
@@ -3932,7 +3945,7 @@ msgstr "Todos los archivos"
 msgid "Load Playlist"
 msgstr "Cargar lista de reproducción"
 
-#: ../shell/rb-playlist-manager.c:1469 ../sources/rb-playlist-source.c:643
+#: ../shell/rb-playlist-manager.c:1469 ../sources/rb-playlist-source.c:707
 msgid "Couldn't save playlist"
 msgstr "No se ha podido guardar la lista de reproducción"
 
@@ -4982,7 +4995,7 @@ msgid "The pixbuf to render."
 msgstr "El pixbuf a renderizar."
 
 #: ../widgets/rb-entry-view.c:1061 ../widgets/rb-entry-view.c:1542
-#: ../widgets/rb-song-info.c:1041
+#: ../widgets/rb-song-info.c:1083
 msgid "Lossless"
 msgstr "Sin pérdida"
 
@@ -5254,23 +5267,23 @@ msgstr "_Buscar:"
 msgid "Clear the search text"
 msgstr "Limpiar el texto de búsqueda"
 
-#: ../widgets/rb-song-info.c:367
+#: ../widgets/rb-song-info.c:370
 msgid "Song Properties"
 msgstr "Propiedades de la canción"
 
-#: ../widgets/rb-song-info.c:415
+#: ../widgets/rb-song-info.c:418
 msgid "Multiple Song Properties"
 msgstr "Propiedades de canciones múltiples"
 
-#: ../widgets/rb-song-info.c:1104
+#: ../widgets/rb-song-info.c:1146
 msgid "Unknown file name"
 msgstr "Nombre de archivo desconocido"
 
-#: ../widgets/rb-song-info.c:1126
+#: ../widgets/rb-song-info.c:1168
 msgid "On the desktop"
 msgstr "En el escritorio"
 
-#: ../widgets/rb-song-info.c:1149
+#: ../widgets/rb-song-info.c:1191
 msgid "Unknown location"
 msgstr "Dirección desconocida"
 
