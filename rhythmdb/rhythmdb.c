@@ -1807,24 +1807,24 @@ rhythmdb_entry_is_editable (RhythmDB *db,
 }
 
 static void
-set_metadata_string_default_unknown (RhythmDB *db,
-				     RBMetaData *metadata,
-				     RhythmDBEntry *entry,
-				     RBMetaDataField field,
-				     RhythmDBPropType prop)
+set_metadata_string_with_default (RhythmDB *db,
+				  RBMetaData *metadata,
+				  RhythmDBEntry *entry,
+				  RBMetaDataField field,
+				  RhythmDBPropType prop,
+				  const char *default_value)
 {
-	const char *unknown = _("Unknown");
 	GValue val = {0, };
 
 	if (!(rb_metadata_get (metadata,
 			       field,
 			       &val))) {
 		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_static_string (&val, unknown);
+		g_value_set_static_string (&val, default_value);
 	} else {
                 const gchar *str = g_value_get_string (&val);
                 if (str == NULL || str[0] == '\0')
-	        	g_value_set_static_string (&val, unknown);
+			g_value_set_static_string (&val, default_value);
         }
 	rhythmdb_entry_set_internal (db, entry, TRUE, prop, &val);
 	g_value_unset (&val);
@@ -1898,58 +1898,40 @@ set_props_from_metadata (RhythmDB *db,
 	}
 
 	/* musicbrainz trackid */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_MUSICBRAINZ_TRACKID,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_MUSICBRAINZ_TRACKID,
+					  RHYTHMDB_PROP_MUSICBRAINZ_TRACKID,
+					  "");
 
 	/* musicbrainz artistid */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID,
+					  RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID,
+					  "");
 
 	/* musicbrainz albumid */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID,
+					  RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID,
+					  "");
 
 	/* musicbrainz albumartistid */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID,
+					  RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID,
+					  "");
 
 	/* artist sortname */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_ARTIST_SORTNAME,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_ARTIST_SORTNAME, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_ARTIST_SORTNAME,
+					  RHYTHMDB_PROP_ARTIST_SORTNAME,
+					  "");
 
 	/* album sortname */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_ALBUM_SORTNAME,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_ALBUM_SORTNAME, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_ALBUM_SORTNAME,
+					  RHYTHMDB_PROP_ALBUM_SORTNAME,
+					  "");
 
 	/* filesize */
 	g_value_init (&val, G_TYPE_UINT64);
@@ -1973,18 +1955,21 @@ set_props_from_metadata (RhythmDB *db,
 	g_value_unset (&val);
 
 	/* genre */
-	set_metadata_string_default_unknown (db, metadata, entry,
-					     RB_METADATA_FIELD_GENRE,
-					     RHYTHMDB_PROP_GENRE);
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_GENRE,
+					  RHYTHMDB_PROP_GENRE,
+					  _("Unknown"));
 
 	/* artist */
-	set_metadata_string_default_unknown (db, metadata, entry,
-					     RB_METADATA_FIELD_ARTIST,
-					     RHYTHMDB_PROP_ARTIST);
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_ARTIST,
+					  RHYTHMDB_PROP_ARTIST,
+					  _("Unknown"));
 	/* album */
-	set_metadata_string_default_unknown (db, metadata, entry,
-					     RB_METADATA_FIELD_ALBUM,
-					     RHYTHMDB_PROP_ALBUM);
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_ALBUM,
+					  RHYTHMDB_PROP_ALBUM,
+					  _("Unknown"));
 
 	/* replaygain track gain */
         if (rb_metadata_get (metadata,
