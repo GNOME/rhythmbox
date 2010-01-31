@@ -359,6 +359,11 @@ if test x"$enable_musicbrainz" != "xno"; then
 	AC_SUBST(MUSICBRAINZ_LIBS)
 
 	if test x"$have_musicbrainz3" = xyes; then
+		oldlibs=$LIBS
+		LIBS="$LIBS $MUSICBRAINZ3_LIBS"
+		AC_CHECK_FUNCS(mb_extract_uuid)
+		LIBS="$oldlibs"
+
 		AC_DEFINE([HAVE_MUSICBRAINZ3], 1, [Whether libmusicbrainz3 is available])
 	fi
 	if test x"$have_musicbrainz" = xyes; then
