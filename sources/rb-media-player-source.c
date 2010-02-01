@@ -109,6 +109,30 @@ enum
 	PROP_DEVICE_SERIAL
 };
 
+static GtkActionGroup *action_group = NULL;
+
+void
+rb_media_player_source_init_actions (RBShell *shell)
+{
+	GtkUIManager *uimanager;
+
+	if (action_group != NULL) {
+		return;
+	}
+
+	action_group = gtk_action_group_new ("MediaPlayerActions");
+	gtk_action_group_set_translation_domain (action_group, GETTEXT_PACKAGE);
+
+	g_object_get (shell, "ui-manager", &uimanager, NULL);
+	gtk_ui_manager_insert_action_group (uimanager, action_group, 0);
+	g_object_unref (uimanager);
+
+	_rb_action_group_add_source_actions (action_group,
+					     G_OBJECT (shell),
+					     rb_media_player_source_actions,
+					     G_N_ELEMENTS (rb_media_player_source_actions));
+}
+
 static void
 rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
 {
@@ -200,15 +224,10 @@ rb_media_player_source_constructed (GObject *object)
 	RB_CHAIN_GOBJECT_METHOD (rb_media_player_source_parent_class, constructed, object);
 
 	g_object_get (object, "shell", &shell, NULL);
-	priv->action_group = _rb_source_register_action_group (RB_SOURCE (object),
-							       "MediaPlayerActions",
-							       NULL, 0,
-							       NULL);
-	_rb_action_group_add_source_actions (priv->action_group,
-					     G_OBJECT (shell),
-					     rb_media_player_source_actions,
-					     G_N_ELEMENTS (rb_media_player_source_actions));
-	priv->sync_action = gtk_action_group_get_action (priv->action_group, "MediaPlayerSourceSync");
+	rb_media_player_source_init_actions (shell);
+	g_object_unref (shell);
+
+	priv->sync_action = gtk_action_group_get_action (action_group, "MediaPlayerSourceSync");
 }
 
 static gboolean

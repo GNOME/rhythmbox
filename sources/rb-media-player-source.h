@@ -75,6 +75,8 @@ struct _RBMediaPlayerSourceClass
 
 GType	rb_media_player_source_get_type	(void);
 
+void	rb_media_player_source_init_actions	(RBShell *shell);
+
 void	rb_media_player_source_load		(RBMediaPlayerSource *source);
 
 void	rb_media_player_source_delete_entries	(RBMediaPlayerSource *source,
