@@ -113,7 +113,7 @@ save_playlist_foreach (GtkTreeModel *model,
 	}
 
 	host_uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-	uri = rb_generic_player_source_uri_to_playlist_uri (priv->player_source, host_uri, data->format);
+	uri = rb_generic_player_source_uri_to_playlist_uri (priv->player_source, host_uri, data->playlist_type);
 
 	totem_pl_playlist_append (data->playlist, &pl_iter);
 	totem_pl_playlist_set (data->playlist, &pl_iter, TOTEM_PL_PARSER_FIELD_URI, uri, NULL);
@@ -252,7 +252,7 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 		g_object_set (parser, "debug", TRUE, NULL);
 	}
 
-	result = totem_pl_parser_save (parser, playlist, file, name, playlist_type, &error);
+	result = totem_pl_parser_save (parser, data.playlist, file, name, playlist_type, &error);
 	g_object_unref (data.playlist);
 	data.playlist = NULL;
 #else
