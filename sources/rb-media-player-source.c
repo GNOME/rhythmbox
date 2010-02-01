@@ -57,7 +57,6 @@ typedef struct {
 	GtkWidget *preview_bar;
 
 	/* sync state */
-	gboolean sync_needs_update;
 	guint64 sync_space_needed;
 	GList *sync_to_add;
 	GList *sync_to_remove;
@@ -1005,7 +1004,6 @@ update_sync (RBMediaPlayerSource *source)
 	g_hash_table_destroy (itinerary);
 
 	update_sync_space_needed (source);
-	priv->sync_needs_update = FALSE;
 }
 
 static void
@@ -1101,7 +1099,6 @@ sync_idle_cb_cleanup (RBMediaPlayerSource *source)
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
 
 	rb_debug ("cleaning up after sync process");
-	priv->sync_needs_update = TRUE;
 
 	gtk_action_set_sensitive (priv->sync_action, TRUE);
 
@@ -1174,9 +1171,7 @@ sync_idle_cb_update_sync (RBMediaPlayerSource *source)
 {
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
 
-	if (priv->sync_needs_update) {
-		update_sync (source);
-	}
+	update_sync (source);
 
 	/* Check we have enough space on the device. */
 	if (priv->sync_space_needed > get_capacity (source)) {
