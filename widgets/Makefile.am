@@ -64,4 +64,4 @@ librbwidgets_la_LIBADD = $(NOTIFY_LIBS) $(LIBSEXY_LIBS)
 
 noinst_PROGRAMS = test-rb-segmented-bar
 test_rb_segmented_bar_SOURCES = test-rb-segmented-bar.c
-test_rb_segmented_bar_LDADD = librbwidgets.la
+test_rb_segmented_bar_LDADD = librbwidgets.la $(RHYTHMBOX_LIBS)
