@@ -55,6 +55,8 @@ typedef struct {
 	GtkDialog *properties_dialog;
 	GtkTreeStore *sync_tree_store;
 	GtkWidget *preview_bar;
+	GtkWidget *added_files_count;
+	GtkWidget *removed_files_count;
 
 	/* sync state */
 	guint64 sync_space_needed;
@@ -347,6 +349,14 @@ update_sync_preview_bar (RBMediaPlayerSource *source)
 	g_free (text);
 	g_free (capacity);
 	g_free (used);
+
+	text = g_strdup_printf ("%d", g_list_length (priv->sync_to_add));
+	gtk_label_set_text (GTK_LABEL (priv->added_files_count), text);
+	g_free (text);
+
+	text = g_strdup_printf ("%d", g_list_length (priv->sync_to_remove));
+	gtk_label_set_text (GTK_LABEL (priv->removed_files_count), text);
+	g_free (text);
 }
 
 static void
@@ -558,6 +568,8 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	}
 
 	/* set up sync widgetry */
+	priv->added_files_count = GTK_WIDGET (gtk_builder_get_object (builder, "added-tracks"));
+	priv->removed_files_count = GTK_WIDGET (gtk_builder_get_object (builder, "removed-tracks"));
 	priv->preview_bar = GTK_WIDGET (gtk_builder_get_object (builder, "progressbar-sync-preview"));
 
 	/* tree_store columns are: active, inconsistent, name, display-name, is-category, category name */
