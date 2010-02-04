@@ -353,26 +353,29 @@ static void
 set_treeview_children (RBMediaPlayerSource *source,
 		       GtkTreeIter *parent,
 		       const char *category,
-		       gboolean value)
+		       gboolean value,
+		       gboolean apply_to_settings)
 {
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
 	GtkTreeIter iter;
-	gchar *name;
+	char *group;
 	gboolean valid;
 
 	valid = gtk_tree_model_iter_children (GTK_TREE_MODEL (priv->sync_tree_store), &iter, parent);
 
 	while (valid) {
 		gtk_tree_model_get (GTK_TREE_MODEL (priv->sync_tree_store), &iter,
-				    1, &name,
+				    2, &group,
 				    -1);
 
+		if (apply_to_settings) {
+			rb_media_player_sync_settings_set_group (priv->sync_settings, category, group, value);
+		}
 		gtk_tree_store_set (priv->sync_tree_store, &iter,
-		/* Active */	    0, rb_media_player_sync_settings_sync_group (priv->sync_settings, category, name),
-		/* Activatable */   2, value,
+		/* Active */	    0, value,
 				    -1);
 
-		g_free (name);
+		g_free (group);
 		valid = gtk_tree_model_iter_next (GTK_TREE_MODEL (priv->sync_tree_store), &iter);
 	}
 }
@@ -384,96 +387,84 @@ sync_entries_changed_cb (GtkCellRendererToggle *cell_renderer,
 {
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
 	GtkTreeIter iter;
-	if (gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL (priv->sync_tree_store), &iter, path) == TRUE) {
-		char *name;
-		char *category_name;
-		gboolean is_category;
-		gboolean value;
+	char *group;
+	char *category_name;
+	gboolean is_category;
+	gboolean value;
 
-		gtk_tree_model_get (GTK_TREE_MODEL (priv->sync_tree_store),
-				    &iter,
-				    1, &name,
-				    3, &is_category,
-				    4, &category_name,
-				    -1);
-		value = !gtk_cell_renderer_toggle_get_active (cell_renderer);
+	if (gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL (priv->sync_tree_store), &iter, path) == FALSE) {
+		return;
+	}
+
+	gtk_tree_model_get (GTK_TREE_MODEL (priv->sync_tree_store),
+			    &iter,
+			    2, &group,
+			    4, &is_category,
+			    5, &category_name,
+			    -1);
+
+	value = !gtk_cell_renderer_toggle_get_active (cell_renderer);
+
+	if (is_category) {
+		rb_debug ("state for category %s changed to %d", category_name, value);
+		rb_media_player_sync_settings_set_category (priv->sync_settings, category_name, value);
+		rb_media_player_sync_settings_clear_groups (priv->sync_settings, category_name);
 
 		gtk_tree_store_set (priv->sync_tree_store,
 				    &iter,
 				    0, value,
-				    -1 );
+				    1, FALSE,		/* category is no longer inconsistent */
+				    -1);
+		set_treeview_children (source, &iter, category_name, value, FALSE);
+	} else {
+		gboolean parent_value;
+		gboolean parent_inconsistent;
+		GtkTreeIter parent;
+		rb_debug ("state for group %s in category %s changed to %d", group, category_name, value);
 
-		if (is_category) {
-			rb_media_player_sync_settings_set_category (priv->sync_settings, category_name, value);
-			set_treeview_children (source, &iter, category_name, value);
-		} else {
-			rb_media_player_sync_settings_set_group (priv->sync_settings, category_name, name, value);
+		/* update parent state.  if the parent was previously enabled or disabled, then we
+		 * set all the other groups to that state before setting the row that was just changed,
+		 * and set the parent to inconsistent state.
+		 */
+		gtk_tree_model_iter_parent (GTK_TREE_MODEL (priv->sync_tree_store), &parent, &iter);
+		gtk_tree_model_get (GTK_TREE_MODEL (priv->sync_tree_store), &parent,
+				    0, &parent_value,
+				    1, &parent_inconsistent,
+				    -1);
+		if (parent_inconsistent == FALSE) {
+			/* category is now inconsistent */
+			rb_debug ("setting category %s to disabled, inconsistent", category_name);
+			rb_media_player_sync_settings_set_category (priv->sync_settings, category_name, FALSE);
+			gtk_tree_store_set (priv->sync_tree_store,
+					    &parent,
+					    0, FALSE,
+					    1, TRUE,
+					    -1);
+
+			/* set all groups in the category to the parent's state */
+			set_treeview_children (source, &parent, category_name, parent_value, TRUE);
 		}
-		g_free (category_name);
-	}
 
-	update_sync_preview_bar (source);
-}
-
-static void
-sync_music_all_changed_cb (GtkWidget *togglebutton,
-			   RBMediaPlayerSource *source)
-{
-	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
-	GtkTreeIter iter;
-	gboolean value;
-	gboolean sync_all_playlists;
-
-	value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (togglebutton));
-	rb_media_player_sync_settings_set_category (priv->sync_settings, SYNC_CATEGORY_MUSIC, value);
-	sync_all_playlists = rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_PLAYLIST);
-
-	if (gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL (priv->sync_tree_store), &iter, "0") == TRUE) {
+		rb_media_player_sync_settings_set_group (priv->sync_settings, category_name, group, value);
 		gtk_tree_store_set (priv->sync_tree_store, &iter,
-		/* Active */	    0, sync_all_playlists || value,
-		/* Activatable */   2, !value,
+				    0, value,
 				    -1);
 
-		set_treeview_children (source,
-				       &iter,
-				       SYNC_CATEGORY_PLAYLIST,
-				       !value && sync_all_playlists);
+		/* if no groups are enabled, the category is no longer inconsistent */
+		if (value == FALSE && rb_media_player_sync_settings_has_enabled_groups (priv->sync_settings, category_name) == FALSE) {
+			rb_debug ("no enabled groups left in category %s", category_name);
+			gtk_tree_store_set (priv->sync_tree_store, &parent,
+					    1, FALSE,
+					    -1);
+		} else if (value == FALSE) {
+			rb_debug ("category %s still has some groups", category_name);
+		}
 	}
 
+	g_free (category_name);
+	g_free (group);
 	update_sync_preview_bar (source);
 }
-
-/* i'm not really sure why we have 'sync all podcasts'; selecting the
- * podcast container does the same thing..
- */
-static void
-sync_podcasts_all_changed_cb (GtkWidget *togglebutton,
-			      RBMediaPlayerSource *source)
-{
-	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
-	GtkTreeIter iter;
-	gboolean value;
-	gboolean sync_podcasts;
-
-	value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (togglebutton));
-	rb_media_player_sync_settings_set_category (priv->sync_settings, SYNC_CATEGORY_ALL_PODCASTS, value);
-	sync_podcasts = rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_PODCAST);
-
-	if (gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL (priv->sync_tree_store), &iter, "1") == TRUE) {
-		gtk_tree_store_set (priv->sync_tree_store, &iter,
-		/* Active */	    0, sync_podcasts || value,
-		/* Activatable */   2, !value,
-				    -1);
-
-		set_treeview_children (source,
-				       &iter,
-				       SYNC_CATEGORY_PODCAST,
-				       !value && sync_podcasts);
-	}
-
-	update_sync_preview_bar (source);
-}
-
 
 
 void
@@ -499,8 +490,6 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	guint64 capacity;
 	guint64 free_space;
 	gboolean valid;
-	gboolean sync_category;
-	gboolean sync_all;
 	RBShell *shell;
 	RhythmDB *db;
 	RBPlaylistManager *playlist_manager;
@@ -568,27 +557,37 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 					     GTK_WIDGET (gtk_builder_get_object (builder, "media-player-notebook")));
 	}
 
-	/* set up sync widgetry.
-	 * tree_store columns are: Active, Name, Activatable, is-category, category name
-	 */
+	/* set up sync widgetry */
 	priv->preview_bar = GTK_WIDGET (gtk_builder_get_object (builder, "progressbar-sync-preview"));
-	priv->sync_tree_store = gtk_tree_store_new (5, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_STRING);
+
+	/* tree_store columns are: active, inconsistent, name, display-name, is-category, category name */
+	priv->sync_tree_store = gtk_tree_store_new (6, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_STRING);
 
 	/* music library parent */
-	sync_all = rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_MUSIC);
-	sync_category = rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_PLAYLIST);
 	gtk_tree_store_append (priv->sync_tree_store, &parent_iter, NULL);
 	gtk_tree_store_set (priv->sync_tree_store, &parent_iter,
-			    0, sync_all || sync_category,
-			    1, _("Music Playlists"),
-			    2, sync_all == FALSE,
-			    3, TRUE,
-			    4, SYNC_CATEGORY_PLAYLIST,
+			    0, rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_MUSIC),
+			    1, rb_media_player_sync_settings_has_enabled_groups (priv->sync_settings, SYNC_CATEGORY_MUSIC),
+			    2, _("Music"),
+			    3, _("Music"),
+			    4, TRUE,
+			    5, SYNC_CATEGORY_MUSIC,
+			    -1);
+
+	/* 'all music' entry */
+	gtk_tree_store_append (priv->sync_tree_store, &tree_iter, &parent_iter);
+	gtk_tree_store_set (priv->sync_tree_store, &tree_iter,
+			    0, rb_media_player_sync_settings_sync_group (priv->sync_settings, SYNC_CATEGORY_MUSIC, SYNC_GROUP_ALL_MUSIC),
+			    1, FALSE,
+			    2, SYNC_GROUP_ALL_MUSIC,
+			    3, _("All Music"),
+			    4, FALSE,
+			    5, SYNC_CATEGORY_MUSIC,
 			    -1);
 
 	/* playlist entries */
 	playlists = rb_playlist_manager_get_playlists (playlist_manager);
-	for (l = playlists; l != NULL; l=l->next) {
+	for (l = playlists; l != NULL; l = l->next) {
 		char *name;
 
 		gtk_tree_store_append (priv->sync_tree_store, &tree_iter, &parent_iter);
@@ -597,11 +596,12 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 
 		/* set this row's data */
 		gtk_tree_store_set (priv->sync_tree_store, &tree_iter,
-				    0, rb_media_player_sync_settings_sync_group (priv->sync_settings, SYNC_CATEGORY_PLAYLIST, name),
-				    1, name,
-				    2, sync_category && !sync_all,
-				    3, FALSE,
-				    4, SYNC_CATEGORY_PLAYLIST,
+				    0, rb_media_player_sync_settings_sync_group (priv->sync_settings, SYNC_CATEGORY_MUSIC, name),
+				    1, FALSE,
+				    2, name,
+				    3, name,
+				    4, FALSE,
+				    5, SYNC_CATEGORY_MUSIC,
 				    -1);
 
 		g_free (name);
@@ -611,18 +611,20 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	gtk_tree_store_append (priv->sync_tree_store,
 			       &parent_iter,
 			       NULL);
-	sync_all = rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_ALL_PODCASTS);
-	sync_category = rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_PODCAST);
 	gtk_tree_store_set (priv->sync_tree_store, &parent_iter,
-			    0, sync_category || sync_all,
-			    1, _("Podcasts"),
-			    2, sync_all == FALSE,
-			    3, TRUE,
-			    4, SYNC_CATEGORY_PODCAST,
+			    0, rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_PODCAST),
+			    1, rb_media_player_sync_settings_has_enabled_groups (priv->sync_settings, SYNC_CATEGORY_PODCAST),
+			    2, _("Podcasts"),
+			    3, _("Podcasts"),
+			    4, TRUE,
+			    5, SYNC_CATEGORY_PODCAST,
 			    -1);
 
 	/* this really needs to use a live query model */
 	query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (db));
+	rhythmdb_query_model_set_sort_order (RHYTHMDB_QUERY_MODEL (query_model),
+					     (GCompareDataFunc) rhythmdb_query_model_title_sort_func,
+					     NULL, NULL, FALSE);
 	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (query_model),
 				RHYTHMDB_QUERY_PROP_EQUALS,
 				RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
@@ -632,18 +634,22 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 		RhythmDBEntry *entry;
 		GtkTreeIter tree_iter2;
 		const char *name;
+		const char *feed;
 
 		entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (query_model), &tree_iter);
 		gtk_tree_store_append (priv->sync_tree_store, &tree_iter2, &parent_iter);
 
 		/* set up this row */
 		name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
+		feed = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		rb_debug ("adding feed %s (name %s)", feed, name);
 		gtk_tree_store_set (priv->sync_tree_store, &tree_iter2,
 				    0, rb_media_player_sync_settings_sync_group (priv->sync_settings, SYNC_CATEGORY_PODCAST, name),
-				    1, name,
-				    2, sync_category && !sync_all,
-				    3, FALSE,
-				    4, SYNC_CATEGORY_PODCAST,
+				    1, FALSE,
+				    2, feed,
+				    3, name,
+				    4, FALSE,
+				    5, SYNC_CATEGORY_PODCAST,
 				    -1);
 
 		valid = gtk_tree_model_iter_next (query_model, &tree_iter);
@@ -657,8 +663,7 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	col = gtk_tree_view_column_new_with_attributes (NULL,
 							renderer,
 							"active", 0,
-							"sensitive", 2,
-							"activatable", 2,
+							"inconsistent", 1,
 							NULL);
 	g_signal_connect (G_OBJECT (renderer),
 			  "toggled", G_CALLBACK (sync_entries_changed_cb),
@@ -669,28 +674,13 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	renderer = gtk_cell_renderer_text_new ();
 	col = gtk_tree_view_column_new_with_attributes (NULL,
 							renderer,
-							"text", 1,
-							"sensitive", 2,
+							"text", 3,
 							NULL);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), col);
 	gtk_tree_view_set_model (GTK_TREE_VIEW (tree_view),
 				 GTK_TREE_MODEL (priv->sync_tree_store));
 	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view)),
 				    GTK_SELECTION_NONE);
-
-	widget = GTK_WIDGET (gtk_builder_get_object (builder, "checkbutton-sync-music-all"));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget),
-				      rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_MUSIC));
-	g_signal_connect (widget, "toggled",
-			  (GCallback)sync_music_all_changed_cb,
-			  source);
-
-	widget = GTK_WIDGET (gtk_builder_get_object (builder, "checkbutton-sync-podcasts-all"));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget),
-				      rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_ALL_PODCASTS));
-	g_signal_connect (widget, "toggled",
-			  (GCallback)sync_podcasts_all_changed_cb,
-			  source);
 
 	update_sync_preview_bar (source);
 
@@ -810,7 +800,7 @@ itinerary_insert_some_playlists (RBMediaPlayerSource *source,
 		g_object_get (G_OBJECT (list_iter->data), "name", &name, NULL);
 
 		/* See if we should sync it */
-		if (rb_media_player_sync_settings_sync_group (priv->sync_settings, SYNC_CATEGORY_PLAYLIST, name)) {
+		if (rb_media_player_sync_settings_sync_group (priv->sync_settings, SYNC_CATEGORY_MUSIC, name)) {
 			GtkTreeModel *query_model;
 
 			rb_debug ("adding entries from playlist %s to itinerary", name);
@@ -841,13 +831,13 @@ itinerary_insert_some_podcasts (RBMediaPlayerSource *source,
 	podcasts = rb_media_player_sync_settings_get_enabled_groups (priv->sync_settings, SYNC_CATEGORY_PODCAST);
 	for (i = podcasts; i != NULL; i = i->next) {
 		GtkTreeModel *query_model;
-		rb_debug ("adding entries from podcast  %s to itinerary", (char *)i->data);
+		rb_debug ("adding entries from podcast %s to itinerary", (char *)i->data);
 		query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (db));
 		rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (query_model),
 					RHYTHMDB_QUERY_PROP_EQUALS,
 					RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
 					RHYTHMDB_QUERY_PROP_EQUALS,
-					RHYTHMDB_PROP_ALBUM, i->data,	/* album? */
+					RHYTHMDB_PROP_SUBTITLE, i->data,
 					RHYTHMDB_QUERY_END);
 
 		/* TODO: exclude undownloaded episodes, sort by post date, set limit, optionally exclude things with play count > 0
@@ -882,29 +872,25 @@ build_sync_itinerary (RBMediaPlayerSource *source)
 					   g_free,
 					   (GDestroyNotify)rhythmdb_entry_unref);
 
-	/* duplicating the original logic here; doesn't seem right to me though */
-	if (rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_PLAYLIST)) {
-		if (rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_MUSIC)) {
-			rb_debug ("adding all music to the itinerary");
-			itinerary_insert_all_of_type (db, RHYTHMDB_ENTRY_TYPE_SONG, itinerary);
-		} else {
-			rb_debug ("adding selected playlists to the itinerary");
-			itinerary_insert_some_playlists (source, itinerary);
-		}
+	if (rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_MUSIC) ||
+	    rb_media_player_sync_settings_sync_group (priv->sync_settings, SYNC_CATEGORY_MUSIC, SYNC_GROUP_ALL_MUSIC)) {
+		rb_debug ("adding all music to the itinerary");
+		itinerary_insert_all_of_type (db, RHYTHMDB_ENTRY_TYPE_SONG, itinerary);
+	} else if (rb_media_player_sync_settings_has_enabled_groups (priv->sync_settings, SYNC_CATEGORY_MUSIC)) {
+		rb_debug ("adding selected playlists to the itinerary");
+		itinerary_insert_some_playlists (source, itinerary);
 	}
 
 	if (rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_PODCAST)) {
-		if (rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_ALL_PODCASTS)) {
-			rb_debug ("adding all podcasts to the itinerary");
-			/* TODO: when we get #episodes/not-if-played settings, use
-			 * equivalent of insert_some_podcasts, iterating through all feeds
-			 * (use a query for all entries of type PODCAST_FEED to find them)
-			 */
-			itinerary_insert_all_of_type (db, RHYTHMDB_ENTRY_TYPE_PODCAST_POST, itinerary);
-		} else {
-			rb_debug ("adding selected podcasts to the itinerary");
-			itinerary_insert_some_podcasts (source, db, itinerary);
-		}
+		rb_debug ("adding all podcasts to the itinerary");
+		/* TODO: when we get #episodes/not-if-played settings, use
+		 * equivalent of insert_some_podcasts, iterating through all feeds
+		 * (use a query for all entries of type PODCAST_FEED to find them)
+		 */
+		itinerary_insert_all_of_type (db, RHYTHMDB_ENTRY_TYPE_PODCAST_POST, itinerary);
+	} else if (rb_media_player_sync_settings_has_enabled_groups (priv->sync_settings, SYNC_CATEGORY_PODCAST)) {
+		rb_debug ("adding selected podcasts to the itinerary");
+		itinerary_insert_some_podcasts (source, db, itinerary);
 	}
 
 	g_object_unref (shell);
@@ -938,11 +924,7 @@ build_device_state (RBMediaPlayerSource *source)
 
 	device = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify)rhythmdb_entry_unref);
 
-	/* TODO: could do this by retrieving the list of enabled sync categories, probably.
-	 * would probably require the 'sync all music' option to work differently though.
-	 */
-
-	if (rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_PLAYLIST)) {
+	if (rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_MUSIC)) {
 		GHashTable *entries;
 		rb_debug ("getting music entries from device");
 		entries = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) rhythmdb_entry_unref);
@@ -1046,7 +1028,7 @@ sync_playlists (RBMediaPlayerSource *source)
 
 		/* is this playlist selected for syncing? */
 		g_object_get (playlist_source, "name", &name, NULL);
-		if (rb_media_player_sync_settings_group_enabled (priv->sync_settings, SYNC_CATEGORY_PLAYLIST, name) == FALSE) {
+		if (rb_media_player_sync_settings_group_enabled (priv->sync_settings, SYNC_CATEGORY_MUSIC, name) == FALSE) {
 			rb_debug ("not syncing playlist %s", name);
 			g_free (name);
 			continue;

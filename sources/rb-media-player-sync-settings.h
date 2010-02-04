@@ -41,10 +41,11 @@ G_BEGIN_DECLS
 #define RB_MEDIA_PLAYER_SYNC_SETTINGS_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_MEDIA_PLAYER_SYNC_SETTINGS, RBMediaPlayerSyncSettingsClass))
 
 /* defined sync categories */
-#define 	SYNC_CATEGORY_MUSIC		"music"
-#define 	SYNC_CATEGORY_PLAYLIST		"playlist"
-#define		SYNC_CATEGORY_ALL_PODCASTS	"all-podcasts"		/* XXX seems a bit meaningless */
+#define		SYNC_CATEGORY_MUSIC		"music"
 #define 	SYNC_CATEGORY_PODCAST		"podcast"
+
+/* defined sync groups */
+#define		SYNC_GROUP_ALL_MUSIC		"x-rb-all-music"
 
 typedef struct
 {
@@ -86,8 +87,12 @@ gboolean			rb_media_player_sync_settings_group_enabled (RBMediaPlayerSyncSetting
 gboolean			rb_media_player_sync_settings_sync_group (RBMediaPlayerSyncSettings *settings,
 									  const char *category,
 									  const char *group);
+gboolean			rb_media_player_sync_settings_has_enabled_groups (RBMediaPlayerSyncSettings *settings,
+										  const char *category);
 GList *				rb_media_player_sync_settings_get_enabled_groups (RBMediaPlayerSyncSettings *settings,
 										  const char *category);
+void				rb_media_player_sync_settings_clear_groups (RBMediaPlayerSyncSettings *settings,
+									    const char *category);
 
 G_END_DECLS
 

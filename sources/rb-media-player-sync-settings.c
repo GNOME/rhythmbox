@@ -56,6 +56,7 @@
 #include "rb-util.h"
 
 #define CATEGORY_ENABLED_KEY	"enabled"
+#define CATEGORY_ALL_GROUPS_KEY "all-groups"
 #define CATEGORY_GROUPS_KEY	"groups"
 
 typedef struct {
@@ -157,7 +158,6 @@ rb_media_player_sync_settings_sync_category (RBMediaPlayerSyncSettings *settings
 					     const char *category)
 {
 	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
-	/* hrm, default? */
 	return _get_boolean_with_default (priv->key_file, category, CATEGORY_ENABLED_KEY, FALSE);
 }
 
@@ -195,6 +195,7 @@ rb_media_player_sync_settings_set_group (RBMediaPlayerSyncSettings *settings,
 
 	ngroups = 0;
 	groups = g_key_file_get_string_list (priv->key_file, category, CATEGORY_GROUPS_KEY, NULL, NULL);
+
 	if (groups != NULL) {
 		int i;
 		ngroups = g_strv_length (groups);
@@ -204,7 +205,10 @@ rb_media_player_sync_settings_set_group (RBMediaPlayerSyncSettings *settings,
 				if (enabled) {
 					return;
 				} else {
+					char *t;
+					t = groups[i];
 					groups[i] = groups[ngroups-1];
+					groups[ngroups-1] = t;
 					ngroups--;
 				}
 			}
@@ -213,12 +217,19 @@ rb_media_player_sync_settings_set_group (RBMediaPlayerSyncSettings *settings,
 
 	if (enabled) {
 		groups = g_realloc (groups, (ngroups+2) * sizeof(char *));
+		if (ngroups > 0 && groups[ngroups] != NULL) {
+			g_free (groups[ngroups]);
+		}
 		groups[ngroups] = g_strdup (group);
 		groups[ngroups+1] = NULL;
 		ngroups++;
 	}
 
-	g_key_file_set_string_list (priv->key_file, category, CATEGORY_GROUPS_KEY, (const char * const *)groups, ngroups);
+	if (ngroups == 0) {
+		g_key_file_remove_key (priv->key_file, category, CATEGORY_GROUPS_KEY, NULL);
+	} else {
+		g_key_file_set_string_list (priv->key_file, category, CATEGORY_GROUPS_KEY, (const char * const *)groups, ngroups);
+	}
 	g_strfreev (groups);
 
 	_save_idle (settings);
@@ -255,11 +266,26 @@ rb_media_player_sync_settings_sync_group (RBMediaPlayerSyncSettings *settings,
 					  const char *category,
 					  const char *group)
 {
-	if (rb_media_player_sync_settings_sync_category (settings, category) == FALSE) {
+	if (rb_media_player_sync_settings_sync_category (settings, category) == TRUE) {
+		return TRUE;
+	}
+	return rb_media_player_sync_settings_group_enabled (settings, category, group);
+}
+
+gboolean
+rb_media_player_sync_settings_has_enabled_groups (RBMediaPlayerSyncSettings *settings,
+						  const char *category)
+{
+	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	char **groups;
+
+	groups = g_key_file_get_string_list (priv->key_file, category, CATEGORY_GROUPS_KEY, NULL, NULL);
+	if (groups == NULL) {
 		return FALSE;
 	}
 
-	return rb_media_player_sync_settings_group_enabled (settings, category, group);
+	g_strfreev (groups);
+	return TRUE;
 }
 
 GList *
@@ -282,6 +308,14 @@ rb_media_player_sync_settings_get_enabled_groups (RBMediaPlayerSyncSettings *set
 
 	g_strfreev (groups);
 	return g_list_reverse (glist);
+}
+
+void
+rb_media_player_sync_settings_clear_groups (RBMediaPlayerSyncSettings *settings, const char *category)
+{
+	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	g_key_file_remove_key (priv->key_file, category, CATEGORY_GROUPS_KEY, NULL);
+	_save_idle (settings);
 }
 
 
