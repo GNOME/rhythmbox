@@ -2956,30 +2956,6 @@ rhythmdb_entry_get (RhythmDB *db,
 	}
 }
 
-static void
-entry_to_rb_metadata (RhythmDB *db,
-		      RhythmDBEntry *entry,
-		      RBMetaData *metadata)
-{
-	GValue val = {0, };
-	int i;
-
-	for (i = RHYTHMDB_PROP_TYPE; i != RHYTHMDB_NUM_PROPERTIES; i++) {
-		RBMetaDataField field;
-
-		if (metadata_field_from_prop (i, &field) == FALSE) {
-			continue;
-		}
-
-		g_value_init (&val, rhythmdb_property_type_map[i]);
-		rhythmdb_entry_get (db, entry, i, &val);
-		rb_metadata_set (metadata,
-				 field,
-				 &val);
-		g_value_unset (&val);
-	}
-}
-
 typedef struct
 {
 	RhythmDB *db;
@@ -3058,7 +3034,7 @@ action_thread_main (RhythmDB *db)
 					break;
 
 				entry_type = rhythmdb_entry_get_entry_type (entry);
-				entry_type->sync_metadata (db, entry, &error, entry_type->sync_metadata_data);
+				entry_type->sync_metadata (db, entry, action->data.changes, &error, entry_type->sync_metadata_data);
 
 				if (error != NULL) {
 					RhythmDBSaveErrorData *data;
@@ -4652,16 +4628,31 @@ rhythmdb_compute_status_normal (gint n_songs,
 static void
 default_sync_metadata (RhythmDB *db,
 		       RhythmDBEntry *entry,
+		       GSList *changes,
 		       GError **error,
 		       gpointer data)
 {
 	const char *uri;
 	GError *local_error = NULL;
+	GSList *t;
 
 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	rb_metadata_reset (db->priv->metadata);
 
-	entry_to_rb_metadata (db, entry, db->priv->metadata);
+	for (t = changes; t; t = t->next) {
+		RBMetaDataField field;
+		GValue val = {0,};
+		RhythmDBEntryChange *change = (RhythmDBEntryChange *)t->data;
+
+		if (metadata_field_from_prop (change->prop, &field) == FALSE) {
+			continue;
+		}
+
+		g_value_init (&val, rhythmdb_property_type_map[change->prop]);
+		rhythmdb_entry_get (db, entry, change->prop, &val);
+		rb_metadata_set (db->priv->metadata, field, &val);
+		g_value_unset (&val);
+	}
 
 	rb_metadata_save (db->priv->metadata, uri, &local_error);
 	if (local_error != NULL) {

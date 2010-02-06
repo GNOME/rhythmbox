@@ -60,7 +60,7 @@ GType rhythmdb_entry_get_type (void);
 typedef void (*RhythmDBEntryActionFunc) (RhythmDBEntry *entry, gpointer data);
 typedef char* (*RhythmDBEntryStringFunc) (RhythmDBEntry *entry, gpointer data);
 typedef gboolean (*RhythmDBEntryCanSyncFunc) (RhythmDB *db, RhythmDBEntry *entry, gpointer data);
-typedef void (*RhythmDBEntrySyncFunc) (RhythmDB *db, RhythmDBEntry *entry, GError **error, gpointer data);
+typedef void (*RhythmDBEntrySyncFunc) (RhythmDB *db, RhythmDBEntry *entry, GSList *changes, GError **error, gpointer data);
 
 GType rhythmdb_entry_category_get_type (void);
 #define RHYTHMDB_TYPE_ENTRY_CATEGORY (rhythmdb_entry_category_get_type ())
