@@ -127,7 +127,7 @@ static char *impl_get_delete_action (RBSource *source);
 
 static GtkActionEntry rb_playlist_source_actions [] =
 {
-	{ "RemoveFromPlaylist", GTK_STOCK_REMOVE, N_("Remove From Playlist"), "Delete",
+	{ "RemoveFromPlaylist", GTK_STOCK_REMOVE, N_("Remove From Playlist"), NULL,
 	  N_("Remove each selected song from the playlist"),
 	  G_CALLBACK (remove_from_playlist_cmd) },
 };
