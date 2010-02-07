@@ -378,6 +378,7 @@ rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 	}
 
 	actually_add_monitor (db, directory, error);
+	g_object_unref (directory);
 }
 
 typedef struct
