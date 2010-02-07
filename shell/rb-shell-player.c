@@ -147,8 +147,6 @@ static void rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 						       const char *name,
 						       RBShellPlayer *player);
 static void rb_shell_player_sync_volume (RBShellPlayer *player, gboolean notify, gboolean set_volume);
-static void rb_shell_player_sync_replaygain (RBShellPlayer *player,
-                                             RhythmDBEntry *entry);
 static void tick_cb (RBPlayer *player, RhythmDBEntry *entry, gint64 elapsed, gint64 duration, gpointer data);
 static void error_cb (RBPlayer *player, RhythmDBEntry *entry, const GError *err, gpointer data);
 static void missing_plugins_cb (RBPlayer *player, RhythmDBEntry *entry, const char **details, const char **descriptions, RBShellPlayer *sp);
@@ -1670,8 +1668,6 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 		goto lose;
 	}
 
-	rb_shell_player_sync_replaygain (player, entry);
-
 	rb_debug ("Success!");
 	/* clear error on successful playback */
 	g_value_init (&val, G_TYPE_STRING);
@@ -2430,7 +2426,6 @@ rb_shell_player_sync_volume (RBShellPlayer *player,
 
 
 	entry = rb_shell_player_get_playing_entry (player);
-	rb_shell_player_sync_replaygain (player, entry);
 	if (entry != NULL) {
 		rhythmdb_entry_unref (entry);
 	}
@@ -2450,29 +2445,6 @@ rb_shell_player_toggle_mute (RBShellPlayer *player)
 {
 	player->priv->mute = !player->priv->mute;
 	rb_shell_player_sync_volume (player, FALSE, TRUE);
-}
-
-static void
-rb_shell_player_sync_replaygain (RBShellPlayer *player,
-				 RhythmDBEntry *entry)
-{
-	double entry_track_gain = 0;
-	double entry_track_peak = 0;
-	double entry_album_gain = 0;
-	double entry_album_peak = 0;
-
-	if (entry != NULL) {
-             	entry_track_gain = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_TRACK_GAIN);
-             	entry_track_peak = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_TRACK_PEAK);
-             	entry_album_gain = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_ALBUM_GAIN);
-             	entry_album_peak = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_ALBUM_PEAK);
-	}
-
-	if (eel_gconf_get_boolean (CONF_USE_REPLAYGAIN)) {
-		rb_player_set_replaygain (player->priv->mmplayer, NULL,
-					  entry_track_gain, entry_track_peak,
-					  entry_album_gain, entry_album_peak);
-	}
 }
 
 /**

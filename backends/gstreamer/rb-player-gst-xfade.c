@@ -32,20 +32,6 @@
  */
 
 /*
- * not yet implemented:
- * - replaygain (need to figure out what to do if we set_replaygain gets
- *               called while fading in)
- * - implement RBPlayerGstTee (maybe not entirely working?)
- * - implement RBPlayerGstFilter (sort of works?)
- *
- * things that need to be fixed:
- * - error reporting is abysmal
- *
- * crack:
- * - use more interesting transition effects - filter sweeps, reverb, etc.
- */
-
-/*
  * basic design:
  *
  * we have a single output bin, beginning with an adder.
@@ -194,10 +180,6 @@ static void rb_player_gst_xfade_set_time (RBPlayer *player, gint64 time);
 static gint64 rb_player_gst_xfade_get_time (RBPlayer *player);
 static void rb_player_gst_xfade_set_volume (RBPlayer *player, float volume);
 static float rb_player_gst_xfade_get_volume (RBPlayer *player);
-static void rb_player_gst_xfade_set_replaygain (RBPlayer *player,
-						const char *uri,
-						double track_gain, double track_peak,
-						double album_gain, double album_peak);
 static gboolean rb_player_gst_xfade_add_tee (RBPlayerGstTee *player, GstElement *element);
 static gboolean rb_player_gst_xfade_add_filter (RBPlayerGstFilter *player, GstElement *element);
 static gboolean rb_player_gst_xfade_remove_tee (RBPlayerGstTee *player, GstElement *element);
@@ -369,7 +351,6 @@ typedef struct
 
 	gulong adjust_probe_id;
 
-	float replaygain_scale;
 	double fade_end;
 
 	gboolean emitted_error;
@@ -414,7 +395,6 @@ rb_xfade_stream_send_event (GstElement *element, GstEvent *event)
 static void
 rb_xfade_stream_init (RBXFadeStream *stream)
 {
-	stream->replaygain_scale = 1.0;
 	stream->lock = g_mutex_new ();
 }
 
@@ -726,7 +706,6 @@ rb_player_init (RBPlayerIface *iface)
 	iface->playing = rb_player_gst_xfade_playing;
 	iface->set_volume = rb_player_gst_xfade_set_volume;
 	iface->get_volume = rb_player_gst_xfade_get_volume;
-	iface->set_replaygain = rb_player_gst_xfade_set_replaygain;
 	iface->seekable = rb_player_gst_xfade_seekable;
 	iface->set_time = rb_player_gst_xfade_set_time;
 	iface->get_time = rb_player_gst_xfade_get_time;
@@ -1024,8 +1003,6 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
 
 	/* hmm, can we take the stream lock safely here?  probably should.. */
 
-	/* should this take replaygain scaling into account? */
-
 	gst_element_query_position (stream->volume, &format, &pos);
 	if (pos < 0) {
 		/* probably means we haven't actually started the stream yet.
@@ -1041,14 +1018,10 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
 		pos = 0;
 	}
 
-	/* apply replaygain scaling */
-	start *= stream->replaygain_scale;
-	end *= stream->replaygain_scale;
 	rb_debug ("fading stream %s: [%f, %" G_GINT64_FORMAT "] to [%f, %" G_GINT64_FORMAT "]",
 		  stream->uri,
 		  (float)start, pos,
 		  (float)end, pos + time);
-
 
 	g_signal_handlers_block_by_func (stream->volume, volume_changed_cb, stream->player);
 
@@ -2000,8 +1973,7 @@ stream_src_event_cb (GstPad *pad, GstEvent *event, RBXFadeStream *stream)
  * since people seem to get all whiny if they don't have a buffer
  * size slider to play with.
  *
- * the volume element is used for crossfading and probably replaygain
- * somehow.
+ * the volume element is used for crossfading.
  */
 static RBXFadeStream *
 create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, GDestroyNotify stream_data_destroy)
@@ -3627,84 +3599,6 @@ rb_player_gst_xfade_playing (RBPlayer *iplayer)
 	}
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 	return playing;
-}
-
-
-static void
-rb_player_gst_xfade_set_replaygain (RBPlayer *iplayer,
-				    const char *uri,
-				    double track_gain, double track_peak,
-				    double album_gain, double album_peak)
-{
-	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
-	RBXFadeStream *stream;
-	double scale;
-	double gain = 0;
-	double peak = 0;
-
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
-	stream = find_stream_by_uri (player, uri);
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
-
-	if (stream == NULL) {
-		rb_debug ("can't find stream for %s", uri);
-		return;
-	}
-
-	if (album_gain != 0)
-		gain = album_gain;
-	else
-		gain = track_gain;
-
-	if (gain == 0)
-		return;
-
-	scale = pow (10., gain / 20);
-
-	/* anti clip */
-	if (album_peak != 0)
-		peak = album_peak;
-	else
-		peak = track_peak;
-
-	if (peak != 0 && (scale * peak) > 1)
-		scale = 1.0 / peak;
-
-	/* For security */
-	if (scale > 15)
-		scale = 15;
-
-	stream->replaygain_scale = scale;
-
-	/* update the stream volume if we can */
-	switch (stream->state) {
-	case PLAYING:
-	case PAUSED:
-	case SEEKING:
-	case SEEKING_PAUSED:
-	case SEEKING_EOS:
-	case REUSING:
-	case WAITING:
-	case WAITING_EOS:
-	case PREROLLING:
-	case PREROLL_PLAY:
-	case FADING_OUT_PAUSED:
-		g_object_set (stream->volume, "volume", stream->replaygain_scale, NULL);
-		break;
-
-	case FADING_IN:
-		/* hmm.. need to reset the fade?
-		 * this probably shouldn't happen anyway..
-		 */
-		break;
-
-	case FADING_OUT:
-	case PENDING_REMOVE:
-		/* not much point doing anything here */
-		break;
-	}
-
-	g_object_unref (stream);
 }
 
 

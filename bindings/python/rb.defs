@@ -2449,19 +2449,6 @@
   (return-type "float")
 )
 
-(define-method set_replaygain
-  (of-object "RBPlayer")
-  (c-name "rb_player_set_replaygain")
-  (return-type "none")
-  (parameters
-    '("const-char*" "uri")
-    '("double" "track_gain")
-    '("double" "track_peak")
-    '("double" "album_gain")
-    '("double" "album_peak")
-  )
-)
-
 (define-method seekable
   (of-object "RBPlayer")
   (c-name "rb_player_seekable")

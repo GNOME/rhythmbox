@@ -56,7 +56,7 @@ static guint signals[LAST_SIGNAL] = { 0 };
  *
  * This is the interface implemented by the rhythmbox playback backends.
  * It allows the caller to control playback (open, play, pause, close), 
- * seek (set_time), control volume (get_volume, set_volume, set_replaygain)
+ * seek (set_time), control volume (get_volume, set_volume)
  * and receive playback state information (get_time, various signals).
  *
  * The playback interface allows for multiple streams to be playing (or at
@@ -457,28 +457,6 @@ rb_player_get_volume (RBPlayer *player)
 	RBPlayerIface *iface = RB_PLAYER_GET_IFACE (player);
 
 	return iface->get_volume (player);
-}
-
-/**
- * rb_player_set_replaygain:
- * @player:	a #RBPlayer
- * @uri:	URI of stream to adjust
- * @track_gain: ReplayGain track gain level
- * @track_peak: ReplayGain track peak level
- * @album_gain: ReplayGain album gain level
- * @album_peak: ReplayGain album peak level
- *
- * Sets ReplayGain values for a stream
- */
-void
-rb_player_set_replaygain (RBPlayer *player,
-			  const char *uri,
-			  double track_gain, double track_peak,
-			  double album_gain, double album_peak)
-{
-	RBPlayerIface *iface = RB_PLAYER_GET_IFACE (player);
-
-	iface->set_replaygain (player, uri, track_gain, track_peak, album_gain, album_peak);
 }
 
 /**
