@@ -639,6 +639,13 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 				set = TRUE;
 			}
 			break;
+			/* drop replaygain properties */
+		case RHYTHMDB_PROP_TRACK_GAIN:
+		case RHYTHMDB_PROP_TRACK_PEAK:
+		case RHYTHMDB_PROP_ALBUM_GAIN:
+		case RHYTHMDB_PROP_ALBUM_PEAK:
+			skip = TRUE;
+			break;
 		default:
 			break;
 		}
@@ -1004,18 +1011,6 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_BITRATE:
 			save_entry_int(ctx, elt_name, entry->bitrate);
 			break;
-		case RHYTHMDB_PROP_TRACK_GAIN:
-			save_entry_double(ctx, elt_name, entry->track_gain);
-			break;
-		case RHYTHMDB_PROP_TRACK_PEAK:
-			save_entry_double(ctx, elt_name, entry->track_peak);
-			break;
-		case RHYTHMDB_PROP_ALBUM_GAIN:
-			save_entry_double(ctx, elt_name, entry->album_gain);
-			break;
-		case RHYTHMDB_PROP_ALBUM_PEAK:
-			save_entry_double(ctx, elt_name, entry->album_peak);
-			break;
 		case RHYTHMDB_PROP_LOCATION:
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->location));
 			break;
@@ -1120,6 +1115,11 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_SEARCH_MATCH:
 		case RHYTHMDB_PROP_YEAR:
 		case RHYTHMDB_NUM_PROPERTIES:
+		/* obsolete replaygain properties */
+		case RHYTHMDB_PROP_TRACK_GAIN:
+		case RHYTHMDB_PROP_TRACK_PEAK:
+		case RHYTHMDB_PROP_ALBUM_GAIN:
+		case RHYTHMDB_PROP_ALBUM_PEAK:
 			break;
 		}
 	}

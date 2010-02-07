@@ -557,18 +557,6 @@ metadata_field_from_prop (RhythmDBPropType prop,
 	case RHYTHMDB_PROP_DATE:
 		*field = RB_METADATA_FIELD_DATE;
 		return TRUE;
-	case RHYTHMDB_PROP_TRACK_GAIN:
-		*field = RB_METADATA_FIELD_TRACK_GAIN;
-		return TRUE;
-	case RHYTHMDB_PROP_TRACK_PEAK:
-		*field = RB_METADATA_FIELD_TRACK_PEAK;
-		return TRUE;
-	case RHYTHMDB_PROP_ALBUM_GAIN:
-		*field = RB_METADATA_FIELD_ALBUM_GAIN;
-		return TRUE;
-	case RHYTHMDB_PROP_ALBUM_PEAK:
-		*field = RB_METADATA_FIELD_ALBUM_PEAK;
-		return TRUE;
 	case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
 		*field = RB_METADATA_FIELD_MUSICBRAINZ_TRACKID;
 		return TRUE;
@@ -2001,42 +1989,6 @@ set_props_from_metadata (RhythmDB *db,
 					  RB_METADATA_FIELD_ALBUM,
 					  RHYTHMDB_PROP_ALBUM,
 					  _("Unknown"));
-
-	/* replaygain track gain */
-        if (rb_metadata_get (metadata,
-                             RB_METADATA_FIELD_TRACK_GAIN,
-                             &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_TRACK_GAIN, &val);
-		g_value_unset (&val);
-	}
-
-	/* replaygain track peak */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_TRACK_PEAK,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_TRACK_PEAK, &val);
-		g_value_unset (&val);
-	}
-
-	/* replaygain album gain */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_ALBUM_GAIN,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_ALBUM_GAIN, &val);
-		g_value_unset (&val);
-	}
-
-	/* replaygain album peak */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_ALBUM_PEAK,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_ALBUM_PEAK, &val);
-		g_value_unset (&val);
-	}
 }
 
 static gboolean
@@ -3539,16 +3491,16 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 			break;
 		}
 		case RHYTHMDB_PROP_TRACK_GAIN:
-			entry->track_gain = g_value_get_double (value);
+			g_warning ("RHYTHMDB_PROP_TRACK_GAIN no longer supported");
 			break;
 		case RHYTHMDB_PROP_TRACK_PEAK:
-			entry->track_peak = g_value_get_double (value);
+			g_warning ("RHYTHMDB_PROP_TRACK_PEAK no longer supported");
 			break;
 		case RHYTHMDB_PROP_ALBUM_GAIN:
-			entry->album_gain = g_value_get_double (value);
+			g_warning ("RHYTHMDB_PROP_ALBUM_GAIN no longer supported");
 			break;
 		case RHYTHMDB_PROP_ALBUM_PEAK:
-			entry->album_peak = g_value_get_double (value);
+			g_warning ("RHYTHMDB_PROP_ALBUM_PEAK no longer supported");
 			break;
 		case RHYTHMDB_PROP_LOCATION:
 			rb_refstring_unref (entry->location);
@@ -5335,13 +5287,17 @@ rhythmdb_entry_get_double (RhythmDBEntry *entry,
 
 	switch (propid) {
 	case RHYTHMDB_PROP_TRACK_GAIN:
-		return entry->track_gain;
+		g_warning ("RHYTHMDB_PROP_TRACK_GAIN no longer supported");
+		return 0.0;
 	case RHYTHMDB_PROP_TRACK_PEAK:
-		return entry->track_peak;
+		g_warning ("RHYTHMDB_PROP_TRACK_PEAK no longer supported");
+		return 1.0;
 	case RHYTHMDB_PROP_ALBUM_GAIN:
-		return entry->album_gain;
+		g_warning ("RHYTHMDB_PROP_ALBUM_GAIN no longer supported");
+		return 0.0;
 	case RHYTHMDB_PROP_ALBUM_PEAK:
-		return entry->album_peak;
+		g_warning ("RHYTHMDB_PROP_ALBUM_PEAK no longer supported");
+		return 1.0;
 	case RHYTHMDB_PROP_RATING:
 		return entry->rating;
 	default:
