@@ -25,6 +25,7 @@ SUBDIRS += 						\
 	im-status					\
 	context						\
 	sendto						\
+	replaygain					\
 	rb
 endif
 

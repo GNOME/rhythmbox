@@ -870,6 +870,8 @@ plugins/mmkeys/Makefile
 plugins/context/Makefile
 plugins/context/context/Makefile
 plugins/sendto/Makefile
+plugins/replaygain/Makefile
+plugins/replaygain/replaygain/Makefile
 bindings/Makefile
 bindings/python/Makefile
 bindings/vala/Makefile
