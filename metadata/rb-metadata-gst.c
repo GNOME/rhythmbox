@@ -84,7 +84,6 @@ rb_metadata_reset (RBMetaData *md)
 		md->priv->pipeline = NULL;
 	}
 	if (md->priv->sink) {
-		gst_object_unref (md->priv->sink);
 		md->priv->sink = NULL;
 	}
 	md->priv->typefind_cb_id = 0;
