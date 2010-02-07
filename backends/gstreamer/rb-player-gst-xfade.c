@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  Copyright (C) 2006   Jonathan Matthew  <jonathan@kaolin.wh9.net>
+ *  Copyright (C) 2006,2010   Jonathan Matthew  <jonathan@d14n.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -228,6 +228,7 @@ enum
 	CAN_REUSE_STREAM,
 	REUSE_STREAM,
 	MISSING_PLUGINS,
+	GET_STREAM_FILTERS,
 	LAST_SIGNAL
 };
 
@@ -329,6 +330,7 @@ typedef struct
 	GstElement *audioresample;
 	GstElement *capsfilter;
 	GstElement *preroll;
+	GstElement *identity;
 	gboolean decoder_linked;
 	gboolean emitted_playing;
 	gboolean emitted_fake_playing;
@@ -691,6 +693,16 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_POINTER, G_TYPE_STRV, G_TYPE_STRV);
+	signals[GET_STREAM_FILTERS] =
+		g_signal_new ("get-stream-filters",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,
+			      rb_signal_accumulator_value_array, NULL,
+			      rb_marshal_BOXED__STRING,
+			      G_TYPE_VALUE_ARRAY,
+			      1,
+			      G_TYPE_STRING);
 
 	g_type_class_add_private (klass, sizeof (RBPlayerGstXFadePrivate));
 }
@@ -1866,7 +1878,7 @@ stream_new_decoded_pad_cb (GstElement *decoder, GstPad *pad, gboolean last, RBXF
 		rb_debug ("hmm, decoder is already linked");
 	} else {
 		rb_debug ("got decoded audio pad for stream %s", stream->uri);
-		vpad = gst_element_get_static_pad (stream->audioconvert, "sink");
+		vpad = gst_element_get_static_pad (stream->identity, "sink");
 		gst_pad_link (pad, vpad);
 		gst_object_unref (vpad);
 		stream->decoder_linked = TRUE;
@@ -1980,6 +1992,8 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 {
 	RBXFadeStream *stream;
 	GstCaps *caps;
+	GValueArray *stream_filters = NULL;
+	GstElement *tail;
 
 	rb_debug ("creating new stream for %s (stream data %p)", uri, stream_data);
 	stream = g_object_new (RB_TYPE_XFADE_STREAM, NULL, NULL);
@@ -2034,6 +2048,13 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				 G_CALLBACK (stream_pad_removed_cb),
 				 stream,
 				 0);
+
+	stream->identity = gst_element_factory_make ("identity", NULL);
+	if (stream->identity == NULL) {
+		rb_debug ("unable to create identity");
+		g_object_unref (stream);
+		return NULL;
+	}
 
 	stream->audioconvert = gst_element_factory_make ("audioconvert", NULL);
 	if (stream->audioconvert == NULL) {
@@ -2128,6 +2149,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				  stream->source,
 				  stream->queue,
 				  stream->decoder,
+				  stream->identity,
 				  stream->audioconvert,
 				  stream->audioresample,
 				  stream->capsfilter,
@@ -2148,6 +2170,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		gst_bin_add_many (GST_BIN (stream),
 				  stream->source,
 				  stream->decoder,
+				  stream->identity,
 				  stream->audioconvert,
 				  stream->audioresample,
 				  stream->capsfilter,
@@ -2165,26 +2188,40 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				       NULL);
 	}
 
-	/* optionally splice in an identity with
-	 * check-imperfect-timestamp and/or check-imperfect-offset set.
-	 */
 	if (rb_debug_matches ("check-imperfect", __FILE__)) {
-		GstElement *identity;
 
-		identity = gst_element_factory_make ("identity", NULL);
-		gst_bin_add (GST_BIN (stream), identity);
-		gst_element_link (stream->volume, identity);
 		if (rb_debug_matches ("check-imperfect-timestamp", __FILE__)) {
-			g_object_set (identity, "check-imperfect-timestamp", TRUE, NULL);
+			g_object_set (stream->identity, "check-imperfect-timestamp", TRUE, NULL);
 		}
 		if (rb_debug_matches ("check-imperfect-offset", __FILE__)) {
-			g_object_set (identity, "check-imperfect-offset", TRUE, NULL);
+			g_object_set (stream->identity, "check-imperfect-offset", TRUE, NULL);
+		}
+	}
+	stream->src_pad = gst_element_get_static_pad (stream->volume, "src");
+
+	/* link in any per-stream filters after the identity element, with an
+	 * audioconvert before each.
+	 */
+	tail = stream->identity;
+	g_signal_emit (player, signals[GET_STREAM_FILTERS], 0, uri, &stream_filters);
+	if (stream_filters != NULL) {
+		int i;
+		for (i = 0; i < stream_filters->n_values; i++) {
+			GValue *v = g_value_array_get_nth (stream_filters, i);
+			GstElement *filter;
+			GstElement *audioconvert;
+
+			audioconvert = gst_element_factory_make ("audioconvert", NULL);
+			filter = GST_ELEMENT (g_value_get_object (v));
+
+			gst_bin_add_many (GST_BIN (stream), audioconvert, filter, NULL);
+			gst_element_link_many (tail, audioconvert, filter, NULL);
+			tail = filter;
 		}
 
-		stream->src_pad = gst_element_get_static_pad (identity, "src");
-	} else {
-		stream->src_pad = gst_element_get_static_pad (stream->volume, "src");
+		g_value_array_free (stream_filters);
 	}
+	gst_element_link (tail, stream->audioconvert);
 
 	/* ghost the stream src pad up to the bin */
 	stream->ghost_pad = gst_ghost_pad_new ("src", stream->src_pad);
