@@ -221,65 +221,12 @@ class MagnatuneSource(rb.BrowserSource):
 		tracks = self.get_entry_view().get_selected_entries()
 		skus = []
 
-		builder = gtk.Builder()
-		builder.add_from_file(self.__plugin.find_file("magnatune-purchase.ui"))
-		# .. argh autoconnect ..
-		#cb_dict = {"rb_magnatune_on_radio_cc_toggled_cb":lambda w:self.radio_toggled(gladexml)}
-		#gladexml.signal_autoconnect(cb_dict)
-
 		for track in tracks:
 			sku = self.__sku_dict[self.__db.entry_get(track, rhythmdb.PROP_LOCATION)]
 			if sku in skus:
 				continue
 			skus.append(sku)
-			artist = self.__db.entry_get(track, rhythmdb.PROP_ARTIST)
-			album = self.__db.entry_get(track, rhythmdb.PROP_ALBUM)
-
-			builder.get_object("gc_entry").set_sensitive(False)
-			builder.get_object("pay_combobox").set_active(self.__client.get_int(self.__plugin.gconf_keys['pay']) - 5)
-			builder.get_object("audio_combobox").set_active(self.__plugin.format_list.index(self.__client.get_string(self.__plugin.gconf_keys['format'])))
-			builder.get_object("info_label").set_markup(_("Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?") % {"album":album, "artist":artist})
-
-			try:
-				(ccnumber, ccyear, ccmonth, name, email) = self.__plugin.get_cc_details()
-				builder.get_object("cc_entry").set_text(ccnumber)
-				builder.get_object("yy_entry").set_text(ccyear)
-				builder.get_object("mm_entry").set_active(ccmonth-1)
-				builder.get_object("name_entry").set_text(name)
-				builder.get_object("email_entry").set_text(email)
-
-				builder.get_object("remember_cc_details").set_active(True)
-			except Exception, e:
-				print e
-
-				builder.get_object("cc_entry").set_text("")
-				builder.get_object("yy_entry").set_text("")
-				builder.get_object("mm_entry").set_active(0)
-				builder.get_object("name_entry").set_text("")
-				builder.get_object("email_entry").set_text("")
-
-				builder.get_object("remember_cc_details").set_active(False)
-
-			window = builder.get_object("purchase_dialog")
-			if window.run() == gtk.RESPONSE_ACCEPT:
-				amount = builder.get_object("pay_combobox").get_active() + 5
-				format = self.__plugin.format_list[builder.get_object("audio_combobox").get_active()]
-				ccnumber = builder.get_object("cc_entry").get_text()
-				ccyear = builder.get_object("yy_entry").get_text()
-				ccmonth = str(builder.get_object("mm_entry").get_active() + 1).zfill(2)
-				name = builder.get_object("name_entry").get_text()
-				email = builder.get_object("email_entry").get_text()
-				gc = builder.get_object("radio_gc").get_active()
-				gc_text = builder.get_object("gc_entry").get_text()
-
-				if builder.get_object("remember_cc_details").props.active:
-					self.__plugin.store_cc_details(ccnumber, ccyear, ccmonth, name, email)
-				else:
-					self.__plugin.clear_cc_details()
-
-				self.__buy_album (sku, amount, format, ccnumber, ccyear, ccmonth, name, email, gc, gc_text)
-
-			window.destroy()
+			self.__auth_download(sku)
 
 	#
 	# internal catalogue downloading and loading
@@ -424,38 +371,21 @@ class MagnatuneSource(rb.BrowserSource):
 	# internal purchasing code
 	# not used at the moment, but it will be used again when we have download accounts...
 	#
-	def __buy_album(self, sku, pay, format, ccnumber, ccyear, ccmonth, name, email, gc, gc_text): # http://magnatune.com/info/api#purchase
-		print "purchasing tracks:", sku, pay, format, name, email
+	def __auth_download(self, sku): # http://magnatune.com/info/api#purchase
+		print "downloading album:", sku
 		url_dict = {
-						'id':	magnatune_partner_id,
-						'sku':	sku,
-						'amount': pay,
-						'name': name,
-						'email':email
-			}
-		if gc:
-			url_dict['gc'] = gc
-		else:
-			url_dict['cc'] = ccnumber
-			url_dict['yy'] = ccyear
-			url_dict['mm'] = ccmonth
-		url = "https://magnatune.com/buy/buy_dl_cc_xml?"
+			'id':	magnatune_partner_id,
+			'sku':	sku
+		}
+		url = "http://%s:%s@download.magnatune.com/buy/membership_free_dl_xml?" % (self.__client.get_string(self.__plugin.gconf_keys['username']), self.__client.get_string(self.__plugin.gconf_keys['password']))
 		url = url + urllib.urlencode(url_dict)
 
-		self.__wait_dlg = gtk.Dialog(title=_("Authorizing Purchase"), flags=gtk.DIALOG_NO_SEPARATOR|gtk.DIALOG_DESTROY_WITH_PARENT)
-		lbl = gtk.Label(_("Authorizing purchase with the Magnatune server. Please wait..."))
-		self.__wait_dlg.vbox.pack_start(lbl)
-		lbl.show()
-		self.__wait_dlg.show()
-
 		l = rb.Loader()
-		l.get_url (url, self.__auth_data_cb, format)
+		l.get_url (url, self.__auth_data_cb, sku)
 
 
-
-	def __auth_data_cb (self, data, format):
-
-		buy_album_handler = BuyAlbumHandler(format)
+	def __auth_data_cb (self, data, sku):
+		buy_album_handler = BuyAlbumHandler(self.__client.get_string(self.__plugin.gconf_keys['format']))
 		auth_parser = xml.sax.make_parser()
 		auth_parser.setContentHandler(buy_album_handler)
 
@@ -463,7 +393,6 @@ class MagnatuneSource(rb.BrowserSource):
 			# hmm.
 			return
 
-		self.__wait_dlg.destroy()
 		try:
 			data = data.replace("<br>", "") # get rid of any stray <br> tags that will mess up the parser
 			# print data
@@ -471,9 +400,8 @@ class MagnatuneSource(rb.BrowserSource):
 			auth_parser.close()
 
 			# process the URI: add authentication info, quote the filename component for some reason
-
 			parsed = urlparse.urlparse(buy_album_handler.url)
-			netloc = "%s:%s@%s" % (str(buy_album_handler.username), str(buy_album_handler.password), parsed.hostname)
+			netloc = "%s:%s@%s" % (self.__client.get_string(self.__plugin.gconf_keys['username']), self.__client.get_string(self.__plugin.gconf_keys['password']), parsed.hostname)
 
 			spath = os.path.split(urllib.url2pathname(parsed.path))
 			basename = spath[1]
@@ -482,28 +410,23 @@ class MagnatuneSource(rb.BrowserSource):
 			authed = (parsed[0], netloc, path) + parsed[3:]
 			audio_dl_uri = urlparse.urlunparse(authed)
 
-			in_progress = open(os.path.join(magnatune_in_progress_dir, "in_progress_" + basename), 'w')
+			in_progress = open(os.path.join(magnatune_in_progress_dir, "in_progress_" + sku), 'w')
 			in_progress.write(str(audio_dl_uri))
 			in_progress.close()
 
-			self.__download_album(audio_dl_uri)
+			self.__download_album(audio_dl_uri, sku)
 
 		except MagnatunePurchaseError, e:
-			rb.error_dialog(title = _("Purchase Error"),
-					message = _("An error occurred while trying to purchase the album.\nThe Magnatune server returned:\n%s") % str(e))
+			rb.error_dialog(title = _("Download Error"),
+					message = _("An error occurred while trying to authorize the download.\nThe Magnatune server returned:\n%s") % str(e))
 
 		except Exception, e:
 			rb.error_dialog(title = _("Error"),
-					message = _("An error occurred while trying to purchase the album.\nThe error text is:\n%s") % str(e))
+					message = _("An error occurred while trying to download the album.\nThe error text is:\n%s") % str(e))
 
 
-
-
-	def __download_album(self, audio_dl_uri):
-
-		fullpath = urlparse.urlparse(audio_dl_uri).path
-		basename = os.split(fullpath)[1]
-		destpath = os.path.join(magnatune_in_progress_dir, basename)
+	def __download_album(self, audio_dl_uri, sku):
+		destpath = os.path.join(magnatune_in_progress_dir, sku)
 
 		shell = self.get_property('shell')
 		manager = shell.get_player().get_property('ui-manager')
@@ -517,17 +440,17 @@ class MagnatuneSource(rb.BrowserSource):
 		out = open(destpath, 'w')
 
 		dl = rb.ChunkLoader()
-		dl.get_url_chunks(audio_dl_uri, 4*1024, True, self.__download_album_chunk, (audio_dl_uri, destpath, out))
+		dl.get_url_chunks(audio_dl_uri, 4*1024, True, self.__download_album_chunk, (audio_dl_uri, destpath, out, sku))
 
 
-	def __remove_download_files (self, dest):
+	def __remove_download_files (self, dest, sku):
 		sp = os.path.split(dest)
-		inprogress = os.path.join(sp[0], "in_progress_" + sp[1])
+		inprogress = os.path.join(sp[0], "in_progress_" + sku)
 		os.unlink(inprogress)
 		os.unlink(dest)
 
 
-	def __download_finished (self, total, audio_dl_uri, dest, out):
+	def __download_finished (self, total, audio_dl_uri, dest, out, sku):
 		try:
 			del self.__downloads[audio_dl_uri]
 		except:
@@ -561,7 +484,7 @@ class MagnatuneSource(rb.BrowserSource):
 
 		album.close()
 
-		self.__remove_download_files (dest)
+		self.__remove_download_files (dest, sku)
 
 		if self.purchase_filesize == 0:
 			self.__downloading = False
@@ -569,10 +492,9 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__db.add_uri(os.path.split(track_path)[0])
 
 
-	def __download_album_chunk(self, result, total, (audio_dl_uri, dest, out)):
-
+	def __download_album_chunk(self, result, total, (audio_dl_uri, dest, out, sku)):
 		if not result:
-			self.__download_finished (total, audio_dl_uri, dest, out)
+			self.__download_finished (total, audio_dl_uri, dest, out, sku)
 		elif isinstance(result, Exception):
 			# probably report this somehow?
 			pass
@@ -581,7 +503,7 @@ class MagnatuneSource(rb.BrowserSource):
 				del self.__downloads[audio_dl_uri]
 				self.purchase_filesize -= total
 
-				self.__remove_download_files (dest)
+				self.__remove_download_files (dest, sku)
 
 			except:
 				pass

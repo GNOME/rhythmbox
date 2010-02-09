@@ -118,7 +118,7 @@ class Magnatune(rb.Plugin):
 		action = gtk.Action('MagnatuneDownloadAlbum', _('Download Album'),
 				_("Download this album from Magnatune"),
 				'gtk-save')
-		action.connect('activate', lambda a: self.shell.get_property("selected-source").purchase_album())
+		action.connect('activate', lambda a: self.shell.get_property("selected-source").download_album())
 		self.action_group.add_action(action)
 		action = gtk.Action('MagnatuneArtistInfo', _('Artist Information'),
 				_("Get information about this artist"),
