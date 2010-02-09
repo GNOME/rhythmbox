@@ -38,14 +38,6 @@ import urllib
 import urlparse
 import zipfile
 
-has_gnome_keyring = False
-
-#try:
-#	import gnomekeyring
-#	has_gnome_keyring = True
-#except:
-#	pass
-
 
 magnatune_partner_id = "rhythmbox"
 
@@ -247,7 +239,6 @@ class MagnatuneSource(rb.BrowserSource):
 			builder.get_object("pay_combobox").set_active(self.__client.get_int(self.__plugin.gconf_keys['pay']) - 5)
 			builder.get_object("audio_combobox").set_active(self.__plugin.format_list.index(self.__client.get_string(self.__plugin.gconf_keys['format'])))
 			builder.get_object("info_label").set_markup(_("Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?") % {"album":album, "artist":artist})
-			builder.get_object("remember_cc_details").props.visible = has_gnome_keyring
 
 			try:
 				(ccnumber, ccyear, ccmonth, name, email) = self.__plugin.get_cc_details()

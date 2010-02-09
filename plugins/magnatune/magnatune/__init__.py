@@ -57,8 +57,6 @@ popup_ui = """
 </ui>
 """
 
-keyring_attributes = {"name": "rb-magnatune-cc-data"}
-
 class Magnatune(rb.Plugin):
 	client = gconf.client_get_default()
 
@@ -155,7 +153,6 @@ class Magnatune(rb.Plugin):
 		self.source.delete_thyself()
 		self.source = None
 		self.shell = None
-		self.keyring = None
 
 	def playing_entry_changed (self, sp, entry):
 		self.source.playing_entry_changed (entry)
