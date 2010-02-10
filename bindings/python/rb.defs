@@ -2601,6 +2601,25 @@
   )
 )
 
+(define-function sanitize_uri_for_filesystem
+  (in-module "rb")
+  (c-name "rb_sanitize_uri_for_filesystem")
+  (return-type "char*")
+  (parameters
+    '("const-char*" "uri")
+  )
+)
+
+(define-function uri_create_parent_dirs
+  (in-module "rb")
+  (c-name "rb_uri_create_parent_dirs")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "uri")
+    '("GError**" "error")
+  )
+)
+
 ;; From rb-source-search.h
 
 (define-function rb_source_search_get_type
