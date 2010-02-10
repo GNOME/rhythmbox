@@ -71,14 +71,6 @@ PKG_PROG_PKG_CONFIG
 
 PKG_CHECK_MODULES(RB_CLIENT, glib-2.0 >= $GLIB_REQS gio-2.0 >= $GLIB_REQS)
 
-# use gtk status icon with gtk >= 2.16
-PKG_CHECK_EXISTS(gtk+-2.0 >= 2.16, [
-	use_gtk_status_icon=yes
-	AC_DEFINE(USE_GTK_STATUS_ICON, 1, [Use GtkStatusIcon])
-], [use_gtk_status_icon=no])
-AM_CONDITIONAL(USE_GTK_STATUS_ICON, test x"$use_gtk_status_icon" = xyes)
-
-
 dnl  note: gio-unix-2.0 is here for libmediaplayerid
 PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  gtk+-2.0 >= $GTK_REQS			\

@@ -51,11 +51,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-builder-helpers.h"
 
-#if defined(USE_GTK_STATUS_ICON)
 #include "rb-tray-icon-gtk.h"
-#else
-#include "rb-tray-icon.h"
-#endif
 
 #define TRAY_ICON_DEFAULT_TOOLTIP _("Music Player")
 
@@ -1033,80 +1029,6 @@ store_window_visibility (RBStatusIconPlugin *plugin)
 	}
 }
 
-#if !defined(USE_GTK_STATUS_ICON)
-
-/* EggTrayIcon helpers */
-
-#if 0
-static void
-tray_embedded_cb (GtkPlug *plug,
-		  gpointer data)
-{
-	/* FIXME - this doesn't work */
-	RBShell *shell = RB_SHELL (data);
-
-	rb_debug ("got embedded signal");
-
-	gdk_window_set_decorations (shell->priv->window->window,
-				    GDK_DECOR_ALL | GDK_DECOR_MINIMIZE | GDK_DECOR_MAXIMIZE);
-}
-#endif
-
-static gboolean
-tray_destroy_cb (GtkObject *object, RBStatusIconPlugin *plugin)
-{
-	if (plugin->priv->tray_icon) {
-		rb_debug ("caught destroy event for icon %p", object);
-		g_object_ref_sink (object);
-		plugin->priv->tray_icon = NULL;
-		rb_debug ("finished sinking tray");
-	}
-
-	rb_debug ("creating new icon");
-	plugin->priv->tray_icon = rb_tray_icon_new (plugin, plugin->priv->shell);
-	g_signal_connect_object (plugin->priv->tray_icon, "destroy", G_CALLBACK (tray_destroy_cb), plugin, 0);
-	/* g_signal_connect_object (plugin->priv->tray_icon, "embedded", G_CALLBACK (tray_embedded_cb), plugin, 0); */
-
-	rb_debug ("done creating new icon %p", plugin->priv->tray_icon);
-	return TRUE;
-}
-
-static void
-cleanup_status_icon (RBStatusIconPlugin *plugin)
-{
-	g_signal_handlers_disconnect_by_func (plugin->priv->tray_icon,
-					      G_CALLBACK (tray_destroy_cb),
-					      plugin);
-
-	gtk_widget_hide_all (GTK_WIDGET (plugin->priv->tray_icon));
-	gtk_widget_destroy (GTK_WIDGET (plugin->priv->tray_icon));
-}
-
-static void
-create_status_icon (RBStatusIconPlugin *plugin)
-{
-	tray_destroy_cb (NULL, plugin);
-}
-
-#else
-
-/* boring equivalents for GtkStatusIcon */
-
-static void
-create_status_icon (RBStatusIconPlugin *plugin)
-{
-	plugin->priv->tray_icon = rb_tray_icon_new (plugin, plugin->priv->shell_player);
-}
-
-static void
-cleanup_status_icon (RBStatusIconPlugin *plugin)
-{
-	g_object_unref (plugin->priv->tray_icon);
-}
-
-
-#endif
-
 /* preferences dialog and gconf stuff */
 
 static void
@@ -1348,7 +1270,7 @@ impl_activate (RBPlugin *bplugin,
 	plugin->priv->wheel_mode = eel_gconf_get_integer (CONF_MOUSE_WHEEL_MODE);
 
 	/* create status icon */
-	create_status_icon (plugin);
+	plugin->priv->tray_icon = rb_tray_icon_new (plugin, plugin->priv->shell_player);
 	update_status_icon_visibility (plugin, FALSE);
 
 	/* update everything in case we're already playing something */
@@ -1401,7 +1323,7 @@ impl_deactivate	(RBPlugin *bplugin,
 
 	/* remove icon */
 	if (plugin->priv->tray_icon != NULL) {
-		cleanup_status_icon (plugin);
+		g_object_unref (plugin->priv->tray_icon);
 		plugin->priv->tray_icon = NULL;
 	}
 
