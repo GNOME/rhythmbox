@@ -1065,38 +1065,12 @@ check_file_is_directory (GFile *file, GError **error)
 }
 
 
-#if !GLIB_CHECK_VERSION(2,17,1)
-static gboolean
-create_parent_dirs (GFile *file, GError **error)
-{
-	gboolean ret;
-	GFile *parent;
-
-	ret = check_file_is_directory (file, error);
-	if (ret == TRUE || *error != NULL) {
-		return ret;
-	}
-
-	parent = g_file_get_parent (file);
-	ret = create_parent_dirs (parent, error);
-	g_object_unref (parent);
-	if (ret == FALSE) {
-		return FALSE;
-	}
-
-	return g_file_make_directory (file, NULL, error);
-}
-#endif
-
 gboolean
 rb_uri_create_parent_dirs (const char *uri, GError **error)
 {
 	GFile *file;
 	GFile *parent;
 	gboolean ret;
-#if !GLIB_CHECK_VERSION(2,17,1)
-	GError *l_error = NULL;
-#endif
 
 	/* ignore internal URI schemes */
 	if (g_str_has_prefix (uri, "xrb")) {
@@ -1111,18 +1085,11 @@ rb_uri_create_parent_dirs (const char *uri, GError **error)
 		return TRUE;
 	}
 
-#if GLIB_CHECK_VERSION(2,17,1)
 	ret = check_file_is_directory (parent, error);
 	if (ret == FALSE && *error == NULL) {
 		ret = g_file_make_directory_with_parents (parent, NULL, error);
 	}
-#else
-	ret = create_parent_dirs (parent, &l_error);
 
-	if (l_error != NULL) {
-		g_propagate_error (error, l_error);
-	}
-#endif
 	g_object_unref (parent);
 	return ret;
 }

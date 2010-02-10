@@ -1001,7 +1001,6 @@ gboolean
 rb_audiocd_is_mount_audiocd (GMount *mount)
 {
 	gboolean result = FALSE;
-#if GLIB_CHECK_VERSION(2,17,7)
 	char **types;
 	guint i;
 	GError *error = NULL;
@@ -1019,13 +1018,6 @@ rb_audiocd_is_mount_audiocd (GMount *mount)
 		}
 		g_strfreev (types);
 	}
-#else
-	GFile *file;
-	
-	file = g_mount_get_root (mount);
-	result = g_file_has_uri_scheme (file, "cdda");
-	g_object_unref (file);
-#endif /* glib 2.17.7 */
 	return result;
 }
 
