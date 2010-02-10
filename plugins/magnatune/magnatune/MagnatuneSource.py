@@ -194,6 +194,7 @@ class MagnatuneSource(rb.BrowserSource):
 	#
 
 	def display_artist_info(self):
+		screen = self.props.shell.props.window.get_screen()
 		tracks = self.get_entry_view().get_selected_entries()
 		urls = set([])
 
@@ -201,10 +202,11 @@ class MagnatuneSource(rb.BrowserSource):
 			sku = self.__sku_dict[self.__db.entry_get(tr, rhythmdb.PROP_LOCATION)]
 			url = self.__home_dict[sku]
 			if url not in urls:
-				rb.show_uri(url)
+				gtk.show_uri(screen, url, gtk.gdk.CURRENT_TIME)
 				urls.add(url)
 
 	def buy_cd(self):
+		screen = self.props.shell.props.window.get_screen()
 		tracks = self.get_entry_view().get_selected_entries()
 		urls = set([])
 
@@ -212,7 +214,7 @@ class MagnatuneSource(rb.BrowserSource):
 			sku = self.__sku_dict[self.__db.entry_get(tr, rhythmdb.PROP_LOCATION)]
 			url = self.__buy_dict[sku]
 			if url not in urls:
-				rb.show_uri(url)
+				gtk.show_uri(screen, url, gtk.gdk.CURRENT_TIME)
 				urls.add(url)
 
 	def radio_toggled(self, builder):

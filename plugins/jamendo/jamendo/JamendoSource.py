@@ -307,7 +307,7 @@ class JamendoSource(rb.BrowserSource):
 			gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, emsg).run()
 			return
 
-		rb.show_uri(result)
+		gtk.show_uri(self.shell.props.window.get_screen(), result, gtk.gdk.CURRENT_TIME)
 	
 	# Donate to Artist
 	def launch_donate (self):
@@ -330,7 +330,7 @@ class JamendoSource(rb.BrowserSource):
 			emsg = _("Error looking up artist %s on jamendo.com") % (artist)
 			gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, emsg).run()
 			return
-		rb.show_uri(result + "donate/")
+		gtk.show_uri(self.shell.props.window.get_screen(), result + "donate/", gtk.gdk.CURRENT_TIME)
 
 	def playing_entry_changed (self, entry):
 		if not self.__db or not entry:
