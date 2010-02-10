@@ -1,10 +1,5 @@
 noinst_LTLIBRARIES = librbwidgets.la
 
-if WITH_INTERNAL_LIBSEXY
-SUBDIRS = libsexy
-LIBSEXY_LIBS += $(top_builddir)/widgets/libsexy/libsexy.la
-endif
-
 librbwidgets_la_SOURCES =				\
 	rb-entry-view.c					\
 	rb-entry-view.h					\
@@ -56,11 +51,10 @@ INCLUDES =						\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/backends			\
 	$(NOTIFY_CFLAGS)				\
-	$(LIBSEXY_CFLAGS)				\
 	$(RHYTHMBOX_CFLAGS)
 
 librbwidgets_la_LDFLAGS = -export-dynamic
-librbwidgets_la_LIBADD = $(NOTIFY_LIBS) $(LIBSEXY_LIBS)
+librbwidgets_la_LIBADD = $(NOTIFY_LIBS)
 
 noinst_PROGRAMS = test-rb-segmented-bar
 test_rb_segmented_bar_SOURCES = test-rb-segmented-bar.c
