@@ -486,8 +486,11 @@ class MagnatuneSource(rb.BrowserSource):
 
 		self.__remove_download_files (dest, sku)
 
-		if self.purchase_filesize == 0:
+		if self.purchase_filesize == 0: # All downloads are complete
 			self.__downloading = False
+			shell = self.get_property('shell')
+			manager = shell.get_player().get_property('ui-manager')
+			manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(False)
 
 		self.__db.add_uri(os.path.split(track_path)[0])
 
