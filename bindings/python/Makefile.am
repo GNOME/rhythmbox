@@ -42,6 +42,7 @@ rhythmdb.c: rhythmdb.defs rhythmdb.override
 rb.c: rb.defs rb.override
 	( cd $(srcdir) && $(PYGTK_CODEGEN) \
 		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
+		--register $(PYGTK_DEFSDIR)/gdk-base-types.defs \
 		--register $(GST_PYTHON_DEFSDIR)/gst-types.defs \
 		--register rhythmdb.defs \
 		--override $*.override \
