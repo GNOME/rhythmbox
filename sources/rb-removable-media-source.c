@@ -625,6 +625,33 @@ rb_removable_media_source_get_mime_types (RBRemovableMediaSource *source)
 		return NULL;
 }
 
+GList *
+rb_removable_media_source_get_format_descriptions (RBRemovableMediaSource *source)
+{
+	GList *mime;
+	GList *desc = NULL;
+	GList *t;
+
+	mime = rb_removable_media_source_get_mime_types (source);
+	for (t = mime; t != NULL; t = t->next) {
+		const char *mimetype;
+		char *content_type;
+
+		mimetype = t->data;
+		content_type = g_content_type_from_mime_type (mimetype);
+		if (content_type != NULL) {
+			char *description;
+			description = g_content_type_get_description (content_type);
+			desc = g_list_append (desc, description);
+		} else {
+			desc = g_list_append (desc, g_strdup (mimetype));
+		}
+	}
+
+	rb_list_deep_free (mime);
+	return desc;
+}
+
 gboolean
 rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *source,
 						     RhythmDBEntry *entry)
