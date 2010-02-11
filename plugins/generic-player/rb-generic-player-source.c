@@ -51,6 +51,7 @@
 #include "rb-plugin.h"
 #include "rhythmdb-import-job.h"
 #include "rb-import-errors-source.h"
+#include "rb-builder-helpers.h"
 
 static void impl_constructed (GObject *object);
 static void impl_dispose (GObject *object);
@@ -78,6 +79,9 @@ static char* impl_build_dest_uri (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
 				  const char *mimetype,
 				  const char *extension);
+static guint64 impl_get_capacity (RBMediaPlayerSource *source);
+static guint64 impl_get_free_space (RBMediaPlayerSource *source);
+static void impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
 
 static char *default_get_mount_path (RBGenericPlayerSource *source);
 static void default_load_playlists (RBGenericPlayerSource *source);
@@ -117,14 +121,15 @@ typedef struct
 
 } RBGenericPlayerSourcePrivate;
 
-RB_PLUGIN_DEFINE_TYPE(RBGenericPlayerSource, rb_generic_player_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
-#define GENERIC_PLAYER_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_GENERIC_PLAYER_SOURCE, RBGenericPlayerSourcePrivate))
+RB_PLUGIN_DEFINE_TYPE(RBGenericPlayerSource, rb_generic_player_source, RB_TYPE_MEDIA_PLAYER_SOURCE)
+#define GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_GENERIC_PLAYER_SOURCE, RBGenericPlayerSourcePrivate))
 
 static void
 rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
+	RBMediaPlayerSourceClass *mps_class = RB_MEDIA_PLAYER_SOURCE_CLASS (klass);
 	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
 
 	object_class->set_property = impl_set_property;
@@ -140,6 +145,10 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_paste = impl_can_paste;
 	source_class->impl_get_status = impl_get_status;
+
+	mps_class->impl_get_capacity = impl_get_capacity;
+	mps_class->impl_get_free_space = impl_get_free_space;
+	mps_class->impl_show_properties = impl_show_properties;
 
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
 	rms_class->impl_get_mime_types = impl_get_mime_types;
@@ -199,7 +208,7 @@ impl_constructed (GObject *object)
 	RB_CHAIN_GOBJECT_METHOD (rb_generic_player_source_parent_class, constructed, object);
 	source = RB_GENERIC_PLAYER_SOURCE (object);
 
-	priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	priv = GET_PRIVATE (source);
 
 	g_object_get (source, "shell", &shell, NULL);
 
@@ -244,7 +253,7 @@ impl_constructed (GObject *object)
 static void
 impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (object);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (object);
 
 	switch (prop_id) {
 	case PROP_IGNORE_ENTRY_TYPE:
@@ -265,7 +274,7 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 static void
 impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (object);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (object);
 
 	switch (prop_id) {
 	case PROP_IGNORE_ENTRY_TYPE:
@@ -286,7 +295,7 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 static void
 impl_dispose (GObject *object)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (object);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (object);
 
 	if (priv->load_playlists_id != 0) {
 		g_source_remove (priv->load_playlists_id);
@@ -329,11 +338,11 @@ impl_finalize (GObject *object)
 	RBGenericPlayerSourcePrivate *priv;
 
 	g_return_if_fail (RB_IS_GENERIC_PLAYER_SOURCE (object));
-	priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (object);
+	priv = GET_PRIVATE (object);
 }
 
 RBRemovableMediaSource *
-rb_generic_player_source_new (RBShell *shell, GMount *mount, MPIDDevice *device_info)
+rb_generic_player_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBGenericPlayerSource *source;
 	RhythmDBEntryType entry_type;
@@ -366,6 +375,7 @@ rb_generic_player_source_new (RBShell *shell, GMount *mount, MPIDDevice *device_
 	g_free (path);
 
 	source = RB_GENERIC_PLAYER_SOURCE (g_object_new (RB_TYPE_GENERIC_PLAYER_SOURCE,
+							 "plugin", plugin,
 							 "entry-type", entry_type,
 							 "ignore-entry-type", ignore_type,
 							 "error-entry-type", error_type,
@@ -385,7 +395,7 @@ impl_delete_thyself (RBSource *source)
 {
 	GList *pl;
 	GList *p;
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 
 	/* take a copy of the list first, as playlist_deleted_cb modifies priv->playlists */
 	pl = g_list_copy (priv->playlists);
@@ -409,7 +419,7 @@ static void
 import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *source)
 {
 	RBGenericPlayerSourceClass *klass = RB_GENERIC_PLAYER_SOURCE_GET_CLASS (source);
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	RBShell *shell;
 
 	GDK_THREADS_ENTER ();
@@ -438,7 +448,7 @@ import_status_changed_cb (RhythmDBImportJob *job, int total, int imported, RBGen
 static void
 load_songs (RBGenericPlayerSource *source)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	RhythmDBEntryType entry_type;
 	char **audio_folders;
 	char *mount_path;
@@ -487,7 +497,7 @@ rb_generic_player_source_get_mount_path (RBGenericPlayerSource *source)
 static char *
 default_get_mount_path (RBGenericPlayerSource *source)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 
 	if (priv->mount_path == NULL) {
 		GMount *mount;
@@ -539,7 +549,7 @@ impl_show_popup (RBSource *source)
 static void
 impl_get_status (RBSource *source, char **text, char **progress_text, float *progress)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 
 	/* get default status text first */
 	RB_SOURCE_CLASS (rb_generic_player_source_parent_class)->impl_get_status (source, text, progress_text, progress);
@@ -563,7 +573,7 @@ impl_get_status (RBSource *source, char **text, char **progress_text, float *pro
 static void
 playlist_deleted_cb (RBSource *playlist, RBGenericPlayerSource *source)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	GList *p;
 
 	p = g_list_find (priv->playlists, playlist);
@@ -578,7 +588,7 @@ rb_generic_player_source_add_playlist (RBGenericPlayerSource *source,
 				       RBShell *shell,
 				       RBSource *playlist)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	g_object_ref (playlist);
 	priv->playlists = g_list_prepend (priv->playlists, playlist);
 
@@ -692,7 +702,7 @@ visit_playlist_dirs (GFile *file,
 	char *uri;
 	RhythmDBEntry *entry;
 	RhythmDBEntryType entry_type;
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 
 	if (dir) {
 		return TRUE;
@@ -736,7 +746,7 @@ visit_playlist_dirs (GFile *file,
 static void
 default_load_playlists (RBGenericPlayerSource *source)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	char *mount_path;
 	char *playlist_path;
 	char *full_playlist_path;
@@ -786,7 +796,7 @@ default_load_playlists (RBGenericPlayerSource *source)
 static gboolean
 impl_can_paste (RBSource *source)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 
 	return (priv->read_only == FALSE);
 }
@@ -794,7 +804,7 @@ impl_can_paste (RBSource *source)
 static gboolean
 impl_can_delete (RBSource *source)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 
 	return (priv->read_only == FALSE);
 }
@@ -802,7 +812,7 @@ impl_can_delete (RBSource *source)
 static gboolean
 can_delete_directory (RBGenericPlayerSource *source, GFile *dir)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	gboolean result;
 	GMount *mount;
 	GFile *root;
@@ -845,7 +855,7 @@ can_delete_directory (RBGenericPlayerSource *source, GFile *dir)
 void
 rb_generic_player_source_delete_entries (RBGenericPlayerSource *source, GList *entries)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	GList *tem;
 
 	if (priv->read_only != FALSE)
@@ -929,7 +939,7 @@ sanitize_path (const char *str)
 static GList *
 impl_get_mime_types (RBRemovableMediaSource *source)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	GList *list = NULL;
 	char **output_formats;
 	char **mime;
@@ -948,7 +958,7 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 		     const char *mimetype,
 		     const char *extension)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	char *artist, *album, *title;
 	gulong track_number, disc_number;
 	const char *folders;
@@ -1060,7 +1070,7 @@ strv_contains (char **strv, const char *s)
 void
 rb_generic_player_source_set_supported_formats (RBGenericPlayerSource *source, TotemPlParser *parser)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	char **playlist_formats;
 	const char *check[] = { "audio/x-mpegurl", "audio/x-scpls", "audio/x-iriver-pla" };
 
@@ -1081,7 +1091,7 @@ rb_generic_player_source_set_supported_formats (RBGenericPlayerSource *source, T
 TotemPlParserType
 rb_generic_player_source_get_playlist_format (RBGenericPlayerSource *source)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	TotemPlParserType result;
 	char **playlist_formats;
 
@@ -1105,7 +1115,7 @@ rb_generic_player_source_get_playlist_format (RBGenericPlayerSource *source)
 char *
 rb_generic_player_source_get_playlist_path (RBGenericPlayerSource *source)
 {
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	char *path;
 
 	g_object_get (priv->device_info, "playlist-path", &path, NULL);
@@ -1113,5 +1123,140 @@ rb_generic_player_source_get_playlist_path (RBGenericPlayerSource *source)
 		path[strlen (path) - strlen("%File")] = '\0';
 	}
 	return path;
+}
+
+static guint64
+get_fs_property (RBGenericPlayerSource *source, const char *attr)
+{
+	char *mountpoint;
+	GFile *root;
+	GFileInfo *info;
+	guint64 value = 0;
+
+	mountpoint = rb_generic_player_source_get_mount_path (source);
+	root = g_file_new_for_uri (mountpoint);
+	g_free (mountpoint);
+
+	info = g_file_query_filesystem_info (root, attr, NULL, NULL);
+	g_object_unref (root);
+	if (info != NULL) {
+		if (g_file_info_has_attribute (info, attr)) {
+			value = g_file_info_get_attribute_uint64 (info, attr);
+		}
+		g_object_unref (info);
+	}
+	return value;
+}
+static guint64
+impl_get_capacity (RBMediaPlayerSource *source)
+{
+	return get_fs_property (RB_GENERIC_PLAYER_SOURCE (source), G_FILE_ATTRIBUTE_FILESYSTEM_SIZE);
+}
+
+static guint64
+impl_get_free_space (RBMediaPlayerSource *source)
+{
+	return get_fs_property (RB_GENERIC_PLAYER_SOURCE (source), G_FILE_ATTRIBUTE_FILESYSTEM_FREE);
+}
+
+static void
+impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook)
+{
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
+	RhythmDBQueryModel *model;
+	GtkBuilder *builder;
+	GtkWidget *widget;
+	GString *str;
+	char *device_name;
+	char *builder_file;
+	char *vendor_name;
+	char *model_name;
+	char *serial_id;
+	RBPlugin *plugin;
+	char *text;
+	GList *output_formats;
+	GList *t;
+
+	g_object_get (source, "plugin", &plugin, NULL);
+	builder_file = rb_plugin_find_file (plugin, "generic-player-info.ui");
+	g_object_unref (plugin);
+
+	if (builder_file == NULL) {
+		g_warning ("Couldn't find generic-player-info.ui");
+		return;
+	}
+
+	builder = rb_builder_load (builder_file, NULL);
+	g_free (builder_file);
+
+	if (builder == NULL) {
+		rb_debug ("Couldn't load generic-player-info.ui");
+		return;
+	}
+
+	/* 'basic' tab stuff */
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "generic-player-basic-info"));
+	gtk_box_pack_start (GTK_BOX (info_box), widget, TRUE, TRUE, 0);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "entry-device-name"));
+	g_object_get (source, "name", &device_name, NULL);
+	gtk_entry_set_text (GTK_ENTRY (widget), device_name);
+	g_free (device_name);
+	/* don't think we can support this..
+	g_signal_connect (widget, "focus-out-event",
+			  (GCallback)rb_mtp_source_name_changed_cb, source);
+			  */
+
+	g_object_get (source, "base-query-model", &model, NULL);
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "num-tracks"));
+	text = g_strdup_printf ("%d", gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL));
+	gtk_label_set_text (GTK_LABEL (widget), text);
+	g_free (text);
+	g_object_unref (model);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "num-playlists"));
+	text = g_strdup_printf ("%d", g_list_length (priv->playlists));
+	gtk_label_set_text (GTK_LABEL (widget), text);
+	g_free (text);
+
+	/* 'advanced' tab stuff */
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "generic-player-advanced-tab"));
+	gtk_notebook_append_page (GTK_NOTEBOOK (notebook), widget, gtk_label_new (_("Advanced")));
+
+	g_object_get (priv->device_info,
+		      "model", &model_name,
+		      "vendor", &vendor_name,
+		      "serial", &serial_id,
+		      NULL);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-model-value"));
+	gtk_label_set_text (GTK_LABEL (widget), model_name);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-manufacturer-value"));
+	gtk_label_set_text (GTK_LABEL (widget), vendor_name);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-serial-number-value"));
+	gtk_label_set_text (GTK_LABEL (widget), serial_id);
+
+	g_free (model_name);
+	g_free (vendor_name);
+	g_free (serial_id);
+
+	str = g_string_new ("");
+	output_formats = rb_removable_media_source_get_format_descriptions (RB_REMOVABLE_MEDIA_SOURCE (source));
+	for (t = output_formats; t != NULL; t = t->next) {
+		if (t != output_formats) {
+			g_string_append (str, "\n");
+		}
+		g_string_append (str, t->data);
+	}
+	rb_list_deep_free (output_formats);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "audio-format-list"));
+	gtk_label_set_text (GTK_LABEL (widget), str->str);
+	g_string_free (str, TRUE);
+
+	g_object_unref (builder);
 }
 

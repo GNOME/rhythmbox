@@ -30,6 +30,7 @@
 
 #include "mediaplayerid.h"
 
+#include "rb-plugin.h"
 #include "rb-shell.h"
 #include "rb-generic-player-source.h"
 #include "rhythmdb.h"
@@ -53,7 +54,10 @@ typedef struct
 	RBGenericPlayerSourceClass parent;
 } RBNokia770SourceClass;
 
-RBRemovableMediaSource *	rb_nokia770_source_new		(RBShell *shell, GMount *mount, MPIDDevice *device_info);
+RBRemovableMediaSource *	rb_nokia770_source_new		(RBPlugin *plugin,
+								 RBShell *shell,
+								 GMount *mount,
+								 MPIDDevice *device_info);
 GType				rb_nokia770_source_get_type	(void);
 GType				rb_nokia770_source_register_type (GTypeModule *module);
 
