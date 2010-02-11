@@ -1164,6 +1164,9 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	char *builder_file;
 	RBPlugin *plugin;
 	char *text;
+	GList *output_formats;
+	GList *t;
+	GString *str;
 
 	g_object_get (source, "plugin", &plugin, NULL);
 	builder_file = rb_plugin_find_file (plugin, "mtp-info.ui");
@@ -1233,6 +1236,20 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 
 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-manufacturer-value"));
 	gtk_label_set_text (GTK_LABEL (widget), priv->manufacturer);
+
+	str = g_string_new ("");
+	output_formats = rb_removable_media_source_get_format_descriptions (RB_REMOVABLE_MEDIA_SOURCE (source));
+	for (t = output_formats; t != NULL; t = t->next) {
+		if (t != output_formats) {
+			g_string_append (str, "\n");
+		}
+		g_string_append (str, t->data);
+	}
+	rb_list_deep_free (output_formats);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-audio-formats-value"));
+	gtk_label_set_text (GTK_LABEL (widget), str->str);
+	g_string_free (str, TRUE);
 
 	g_object_unref (builder);
 }
