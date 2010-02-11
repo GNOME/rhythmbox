@@ -489,6 +489,9 @@ class MagnatuneSource(rb.BrowserSource):
 		if self.purchase_filesize == 0: # All downloads are complete
 			self.__downloading = False
 			shell = self.get_property('shell')
+			width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
+			icon = rb.try_load_icon(gtk.icon_theme_get_default(), "magnatune", width, 0)
+			shell.notify_custom(4000, _("Finished Downloading"), _("All Magnatune downloads have been completed."), icon, True)
 			manager = shell.get_player().get_property('ui-manager')
 			manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(False)
 
