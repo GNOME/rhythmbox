@@ -82,6 +82,7 @@ static gboolean impl_can_paste (RBSource *asource);
 static void impl_paste (RBSource *source, GList *entries);
 static guint impl_want_uri (RBSource *source, const char *uri);
 static gboolean impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre);
+static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 
 static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
@@ -117,6 +118,7 @@ static void rb_library_source_filename_changed_cb (GtkComboBox *box,
 static void rb_library_source_format_changed_cb (GtkWidget *widget,
 						 RBLibrarySource *source);
 static void layout_example_label_update (RBLibrarySource *source);
+static RhythmDBImportJob *maybe_create_import_job (RBLibrarySource *source);
 
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
 #define CONF_STATE_LIBRARY_DIR CONF_PREFIX "/state/library"
@@ -166,6 +168,9 @@ struct RBLibrarySourcePrivate
 	GtkWidget *preferred_format_menu;
 	GtkWidget *layout_example_label;
 
+	GList *import_jobs;
+	guint start_import_job_id;
+
 	guint library_location_notify_id;
 	guint ui_dir_notify_id;
 	guint layout_path_notify_id;
@@ -195,6 +200,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_paste = impl_paste;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
+	source_class->impl_get_status = impl_get_status;
 
 	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_true_function;
@@ -244,6 +250,21 @@ rb_library_source_dispose (GObject *object)
 	if (source->priv->layout_filename_notify_id != 0) {
 		eel_gconf_notification_remove (source->priv->layout_filename_notify_id);
 		source->priv->layout_filename_notify_id = 0;
+	}
+
+	if (source->priv->import_jobs != NULL) {
+		GList *t;
+		if (source->priv->start_import_job_id != 0) {
+			g_source_remove (source->priv->start_import_job_id);
+			source->priv->start_import_job_id = 0;
+		}
+		for (t = source->priv->import_jobs; t != NULL; t = t->next) {
+			RhythmDBImportJob *job = RHYTHMDB_IMPORT_JOB (t->data);
+			rhythmdb_import_job_cancel (job);
+			g_object_unref (job);
+		}
+		g_list_free (source->priv->import_jobs);
+		source->priv->import_jobs = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_library_source_parent_class)->dispose (object);
@@ -692,8 +713,10 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 			entry = rhythmdb_entry_lookup_from_string (source->priv->db, uri, is_id);
 
 			if (entry == NULL) {
+				RhythmDBImportJob *job;
 				/* add to the library */
-				rhythmdb_add_uri (source->priv->db, uri);
+				job = maybe_create_import_job (source);
+				rhythmdb_import_job_add_uri (job, uri);
 			} else {
 				/* add to list of entries to copy */
 				entries = g_list_prepend (entries, entry);
@@ -1288,13 +1311,83 @@ impl_want_uri (RBSource *source, const char *uri)
 	return 0;
 }
 
+static void
+import_job_status_changed_cb (RhythmDBImportJob *job, int total, int imported, RBLibrarySource *source)
+{
+	RhythmDBImportJob *head = RHYTHMDB_IMPORT_JOB (source->priv->import_jobs->data);
+	if (job == head) {		/* it was inevitable */
+		rb_source_notify_status_changed (RB_SOURCE (source));
+	}
+}
+
+static void
+import_job_complete_cb (RhythmDBImportJob *job, int total, RBLibrarySource *source)
+{
+	rb_debug ("import job complete");
+
+	/* maybe show a notification here? */
+
+	source->priv->import_jobs = g_list_remove (source->priv->import_jobs, job);
+	g_object_unref (job);
+}
+
+static gboolean
+start_import_job (RBLibrarySource *source)
+{
+	RhythmDBImportJob *job;
+	source->priv->start_import_job_id = 0;
+
+	rb_debug ("starting import job");
+	job = RHYTHMDB_IMPORT_JOB (source->priv->import_jobs->data);
+
+	rhythmdb_import_job_start (job);
+
+	return FALSE;
+}
+
+static RhythmDBImportJob *
+maybe_create_import_job (RBLibrarySource *source)
+{
+	RhythmDBImportJob *job;
+	if (source->priv->import_jobs == NULL || source->priv->start_import_job_id == 0) {
+		rb_debug ("creating new import job");
+		job = rhythmdb_import_job_new (source->priv->db,
+					       RHYTHMDB_ENTRY_TYPE_SONG,
+					       RHYTHMDB_ENTRY_TYPE_IGNORE,
+					       RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+		g_signal_connect_object (job,
+					 "status-changed",
+					 G_CALLBACK (import_job_status_changed_cb),
+					 source, 0);
+		g_signal_connect_object (job,
+					 "complete",
+					 G_CALLBACK (import_job_complete_cb),
+					 source, 0);
+		source->priv->import_jobs = g_list_prepend (source->priv->import_jobs, job);
+	} else {
+		rb_debug ("using existing unstarted import job");
+		job = RHYTHMDB_IMPORT_JOB (source->priv->import_jobs->data);
+	}
+
+	/* allow some time for more URIs to be added if we're importing a bunch of things */
+	if (source->priv->start_import_job_id != 0) {
+		g_source_remove (source->priv->start_import_job_id);
+	}
+	source->priv->start_import_job_id = g_timeout_add (250, (GSourceFunc) start_import_job, source);
+
+	return job;
+}
+
 static gboolean
 impl_add_uri (RBSource *asource, const char *uri, const char *title, const char *genre)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	/* FIXME should be synchronous */
+	RhythmDBImportJob *job;
+
+	job = maybe_create_import_job (source);
+
 	rb_debug ("adding uri %s to library", uri);
-	rhythmdb_add_uri (source->priv->db, uri);
+	rhythmdb_import_job_add_uri (job, uri);
 	return TRUE;
 }
 
@@ -1365,3 +1458,14 @@ rb_library_source_sync_child_sources (RBLibrarySource *source)
 	rb_slist_deep_free (list);
 }
 
+static void
+impl_get_status (RBSource *source, char **text, char **progress_text, float *progress)
+{
+	RB_SOURCE_CLASS (rb_library_source_parent_class)->impl_get_status (source, text, progress_text, progress);
+	RBLibrarySource *lsource = RB_LIBRARY_SOURCE (source);
+
+	if (lsource->priv->import_jobs != NULL) {
+		RhythmDBImportJob *job = RHYTHMDB_IMPORT_JOB (lsource->priv->import_jobs->data);
+		_rb_source_set_import_status (source, job, progress_text, progress);
+	}
+}
