@@ -204,7 +204,7 @@ class MagnatuneSource(rb.BrowserSource):
 
 		for tr in tracks:
 			sku = self.__sku_dict[self.__db.entry_get(tr, rhythmdb.PROP_LOCATION)]
-			url = magnatune_buy_album_uri + urllib.urlencode({ 'sku': sku, 'from': magnatune_partner_id })
+			url = magnatune_buy_album_uri + urllib.urlencode({ 'sku': sku, 'ref': magnatune_partner_id })
 			if url not in urls:
 				gtk.show_uri(screen, url, gtk.gdk.CURRENT_TIME)
 				urls.add(url)
