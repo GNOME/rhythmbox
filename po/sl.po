@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-01-31 09:46+0000\n"
-"PO-Revision-Date: 2010-01-31 11:58+0100\n"
+"POT-Creation-Date: 2010-02-12 09:19+0000\n"
+"PO-Revision-Date: 2010-02-12 14:09+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -29,66 +29,66 @@ msgstr "Ali želite prepisati datoteko \"%s\"?"
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Elementa GStreamer korita za zapis na %s ni mogoče ustvariti"
 
-#: ../backends/gstreamer/rb-player-gst.c:433
+#: ../backends/gstreamer/rb-player-gst.c:432
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr "Ustvarjanje elementa playbin2 je spodletelo, preverite vašo namestitev GStreamer"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:632
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2773
+#: ../backends/gstreamer/rb-player-gst.c:630
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2782
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Odpiranje izhodne naprave je spodletelo: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:679
+#: ../backends/gstreamer/rb-player-gst.c:677
 #, c-format
 msgid "Unable to start playback pipeline"
 msgstr "Cevovoda predvajanja ni mogoče zagnati"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1156
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1170
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1141
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1155
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Povezava novega toka v GStreamer cevovod je spodletela"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1198
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1183
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Zaganjanje novega toka je spodletelo"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2698
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2707
 #, c-format
 msgid "Failed to open output device"
 msgstr "Odpiranje izhodne naprave je spodletelo"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3049
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3120
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3058
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3129
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Ustvarjanje GStreamer elementa je spodletelo; preverite vašo namestitev"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3060
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3069
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Ustvarjanje elementa zvočnega izhoda je spodletelo; preverite vašo namestitev"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3094
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3136
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3162
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3103
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3145
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3171
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3180
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3189
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Povezovanje GStreamer cevovoda je spodletelo; preverite vašo namestitev"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3275
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3284
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Ustvarjanje Gstreamer cevovoda za predvajanje %s je spodletelo"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3291
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3300
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Zagon predvajanja %s je spodletel"
@@ -483,7 +483,6 @@ msgstr "_Zvrst:"
 #: ../data/ui/song-info-multiple.ui.h:10
 #: ../data/ui/song-info.ui.h:22
 #: ../plugins/audiocd/album-info.ui.h:6
-#: ../plugins/magnatune/magnatune-prefs.ui.h:46
 msgid "_Year:"
 msgstr "_Leto:"
 
@@ -530,7 +529,7 @@ msgid "Recently Played"
 msgstr "Nedavno predvajano"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../plugins/status-icon/rb-status-icon-plugin.c:60
+#: ../plugins/status-icon/rb-status-icon-plugin.c:56
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1528
 #: ../shell/rb-shell.c:1010
 #: ../shell/rb-shell.c:1974
@@ -666,7 +665,7 @@ msgstr "%d. %b. %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:479
 #: ../plugins/daap/rb-daap-connection.c:698
-#: ../plugins/generic-player/rb-generic-player-source.c:977
+#: ../plugins/generic-player/rb-generic-player-source.c:987
 #: ../plugins/ipod/rb-ipod-source.c:391
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:520
@@ -677,7 +676,7 @@ msgstr "%d. %b. %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:497
 #: ../plugins/mtpdevice/rb-mtp-source.c:861
 #: ../plugins/mtpdevice/rb-mtp-source.c:973
-#: ../plugins/status-icon/rb-status-icon-plugin.c:736
+#: ../plugins/status-icon/rb-status-icon-plugin.c:732
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
 #: ../podcast/rb-podcast-manager.c:1868
 #: ../podcast/rb-podcast-properties-dialog.c:484
@@ -687,10 +686,10 @@ msgstr "%d. %b. %Y"
 #: ../rhythmdb/rhythmdb-tree.c:1299
 #: ../rhythmdb/rhythmdb-tree.c:1303
 #: ../rhythmdb/rhythmdb-tree.c:1307
-#: ../rhythmdb/rhythmdb.c:1961
-#: ../rhythmdb/rhythmdb.c:1967
-#: ../rhythmdb/rhythmdb.c:1972
-#: ../shell/rb-shell-player.c:1663
+#: ../rhythmdb/rhythmdb.c:1980
+#: ../rhythmdb/rhythmdb.c:1986
+#: ../rhythmdb/rhythmdb.c:1991
+#: ../shell/rb-shell-player.c:1661
 #: ../sources/rb-podcast-source.c:1646
 #: ../widgets/rb-entry-view.c:1041
 #: ../widgets/rb-entry-view.c:1063
@@ -752,57 +751,63 @@ msgstr "%d:%02d od %d:%02d"
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d of %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-dbus-client.c:381
+#: ../metadata/rb-metadata-dbus-client.c:379
 #, c-format
 msgid "Internal GStreamer problem; file a bug"
 msgstr "Notranja težava Gstramerja; pošljite poročilo o hrošču"
 
-#: ../metadata/rb-metadata-dbus-client.c:399
-#: ../metadata/rb-metadata-dbus-client.c:435
-#: ../metadata/rb-metadata-dbus-client.c:773
-#: ../metadata/rb-metadata-dbus-client.c:783
+#: ../metadata/rb-metadata-dbus-client.c:397
+#: ../metadata/rb-metadata-dbus-client.c:451
+#: ../metadata/rb-metadata-dbus-client.c:785
+#: ../metadata/rb-metadata-dbus-client.c:795
+#: ../metadata/rb-metadata-dbus-client.c:803
 #, c-format
 msgid "D-BUS communication error"
 msgstr "Napaka D-BUS komunikacije"
 
-#: ../metadata/rb-metadata-gst.c:515
-#: ../metadata/rb-metadata-gst.c:1061
+#: ../metadata/rb-metadata-gst.c:542
+#: ../metadata/rb-metadata-gst.c:1110
 #: ../plugins/cd-recorder/rb-recorder-gst.c:505
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Ustvarjanje elementa %s je spodletelo; preverite vašo namestitev"
 
-#: ../metadata/rb-metadata-gst.c:733
+#: ../metadata/rb-metadata-gst.c:739
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Ustvarjanje elementa vira je spodletelo; preverite vašo namestitev"
 
-#: ../metadata/rb-metadata-gst.c:795
+#: ../metadata/rb-metadata-gst.c:801
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Napaka GStreamer: sprememba stanja je spodletela"
 
-#: ../metadata/rb-metadata-gst.c:846
+#: ../metadata/rb-metadata-gst.c:852
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "MIME vrste datoteke ni mogoče določiti"
 
-#: ../metadata/rb-metadata-gst.c:989
+#: ../metadata/rb-metadata-gst.c:956
+#, c-format
+msgid "Unable to identify file type"
+msgstr "Ni mogoče določiti vrste datoteke"
+
+#: ../metadata/rb-metadata-gst.c:969
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Nepodprta vrsta datoteke: %s"
 
-#: ../metadata/rb-metadata-gst.c:998
+#: ../metadata/rb-metadata-gst.c:979
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "Elementov zapisovanja oznake ni mogoče ustvariti"
 
-#: ../metadata/rb-metadata-gst.c:1013
+#: ../metadata/rb-metadata-gst.c:1062
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Zakasnitev med nastavljanjem cevovoda na NULL"
 
-#: ../metadata/rb-metadata-gst.c:1037
+#: ../metadata/rb-metadata-gst.c:1086
 #, c-format
 msgid "File corrupted during write"
 msgstr "Med pisanjem se je datoteka pokvarila"
@@ -1019,7 +1024,7 @@ msgstr "Čas zadnjega pošiljanja:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:962
 #: ../plugins/iradio/rb-station-properties-dialog.c:499
-#: ../rhythmdb/rhythmdb.c:3700
+#: ../rhythmdb/rhythmdb.c:3659
 #: ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1576
 #: ../widgets/rb-entry-view.c:1589
@@ -2016,28 +2021,47 @@ msgstr "Prenosni predvajalniki"
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "Podpora za izvorne predvajalnike zvoka (ter PSP in Nokia 770)"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:94
+#: ../plugins/generic-player/rb-generic-player-plugin.c:95
 #: ../shell/rb-playlist-manager.c:1156
 #: ../shell/rb-playlist-manager.c:1199
 msgid "New Playlist"
 msgstr "Nov seznam predvajanja"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:95
+#: ../plugins/generic-player/rb-generic-player-plugin.c:96
 msgid "Create a new playlist on this device"
 msgstr "Ustvarjanje novega seznam predvajanja na tej napravi"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:97
+#: ../plugins/generic-player/rb-generic-player-plugin.c:98
 msgid "Delete Playlist"
 msgstr "Izbriši seznam predvajanja"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:98
+#: ../plugins/generic-player/rb-generic-player-plugin.c:99
 msgid "Delete this playlist"
 msgstr "Izbris tega seznama predvajanja"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:556
+#: ../plugins/generic-player/rb-generic-player-plugin.c:101
+#: ../plugins/ipod/rb-ipod-plugin.c:106
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:129
+#: ../shell/rb-shell-clipboard.c:190
+#: ../sources/rb-podcast-source.c:313
+msgid "_Properties"
+msgstr "_Lastnosti"
+
+#: ../plugins/generic-player/rb-generic-player-plugin.c:102
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:130
+msgid "Display device properties"
+msgstr "Prikaži lastnosti naprave"
+
+#: ../plugins/generic-player/rb-generic-player-source.c:566
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Uvažanje (%d/%d)"
+
+#: ../plugins/generic-player/rb-generic-player-source.c:1225
+#: ../plugins/ipod/rb-ipod-source.c:1776
+#: ../plugins/mtpdevice/rb-mtp-source.c:1226
+msgid "Advanced"
+msgstr "Napredno"
 
 #: ../plugins/im-status/im-status.rb-plugin.in.h:1
 msgid "IM Status"
@@ -2095,48 +2119,53 @@ msgid "<b>System</b>"
 msgstr "<b>Sistem</b>"
 
 #: ../plugins/ipod/ipod-info.ui.h:2
+#: ../plugins/mtpdevice/mtp-info.ui.h:2
+msgid "Audio formats:"
+msgstr "Zvočni zapisi:"
+
+#: ../plugins/ipod/ipod-info.ui.h:3
 msgid "Database version:"
 msgstr "Različica zbirke podatkov:"
 
-#: ../plugins/ipod/ipod-info.ui.h:3
+#: ../plugins/ipod/ipod-info.ui.h:4
 msgid "Device node:"
 msgstr "Vozlišče naprave:"
 
-#: ../plugins/ipod/ipod-info.ui.h:4
-#: ../plugins/mtpdevice/mtp-info.ui.h:3
+#: ../plugins/ipod/ipod-info.ui.h:5
+#: ../plugins/mtpdevice/mtp-info.ui.h:4
 msgid "Firmware version:"
 msgstr "Različica programske strojne opreme:"
 
-#: ../plugins/ipod/ipod-info.ui.h:5
-#: ../plugins/mtpdevice/mtp-info.ui.h:5
+#: ../plugins/ipod/ipod-info.ui.h:6
+#: ../plugins/mtpdevice/mtp-info.ui.h:6
 msgid "Model:"
 msgstr "Model:"
 
-#: ../plugins/ipod/ipod-info.ui.h:6
+#: ../plugins/ipod/ipod-info.ui.h:7
 msgid "Mount point:"
 msgstr "Priklopna točka:"
 
-#: ../plugins/ipod/ipod-info.ui.h:7
-#: ../plugins/mtpdevice/mtp-info.ui.h:6
+#: ../plugins/ipod/ipod-info.ui.h:8
+#: ../plugins/mtpdevice/mtp-info.ui.h:7
 msgid "Playlists:"
 msgstr "Seznami predvajanja:"
 
-#: ../plugins/ipod/ipod-info.ui.h:8
-#: ../plugins/mtpdevice/mtp-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:9
+#: ../plugins/mtpdevice/mtp-info.ui.h:8
 msgid "Podcasts:"
 msgstr "Podcasti:"
 
-#: ../plugins/ipod/ipod-info.ui.h:9
-#: ../plugins/mtpdevice/mtp-info.ui.h:8
+#: ../plugins/ipod/ipod-info.ui.h:10
+#: ../plugins/mtpdevice/mtp-info.ui.h:9
 msgid "Serial number:"
 msgstr "Serijska številka:"
 
-#: ../plugins/ipod/ipod-info.ui.h:10
-#: ../plugins/mtpdevice/mtp-info.ui.h:9
+#: ../plugins/ipod/ipod-info.ui.h:11
+#: ../plugins/mtpdevice/mtp-info.ui.h:10
 msgid "Tracks:"
 msgstr "Skladbe:"
 
-#: ../plugins/ipod/ipod-info.ui.h:11
+#: ../plugins/ipod/ipod-info.ui.h:12
 msgid "iPod _name:"
 msgstr "Ime _iPoda:"
 
@@ -2157,7 +2186,6 @@ msgid "_Model:"
 msgstr "_Model:"
 
 #: ../plugins/ipod/ipod-init.ui.h:5
-#: ../plugins/magnatune/magnatune-prefs.ui.h:45
 msgid "_Name:"
 msgstr "_Ime:"
 
@@ -2179,13 +2207,6 @@ msgstr "_Preimenuj"
 #: ../plugins/ipod/rb-ipod-plugin.c:104
 msgid "Rename iPod"
 msgstr "Preimenovanje iPoda"
-
-#: ../plugins/ipod/rb-ipod-plugin.c:106
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:129
-#: ../shell/rb-shell-clipboard.c:190
-#: ../sources/rb-podcast-source.c:313
-msgid "_Properties"
-msgstr "_Lastnosti"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:107
 msgid "Display iPod properties"
@@ -2224,11 +2245,6 @@ msgstr "Podcasti"
 #: ../plugins/ipod/rb-ipod-source.c:1667
 msgid "New playlist"
 msgstr "Nov seznam predvajanja"
-
-#: ../plugins/ipod/rb-ipod-source.c:1773
-#: ../plugins/mtpdevice/rb-mtp-source.c:1223
-msgid "Advanced"
-msgstr "Napredno"
 
 #: ../plugins/iradio/iradio.rb-plugin.in.h:1
 msgid "Internet Radio"
@@ -2632,172 +2648,144 @@ msgid "You can find more information at http://www.magnatune.com/"
 msgstr "Več podrobnosti lahko najdete na http://www.magnatune.com"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
-#: ../plugins/magnatune/magnatune-purchase.ui.h:1
 msgid "$10 US (better than average)"
 msgstr "$10 US (boljše kot povprečje)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:2
-#: ../plugins/magnatune/magnatune-purchase.ui.h:2
 msgid "$11 US"
 msgstr "$11 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:3
-#: ../plugins/magnatune/magnatune-purchase.ui.h:3
 msgid "$12 US (generous)"
 msgstr "$12US (radodarno)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:4
-#: ../plugins/magnatune/magnatune-purchase.ui.h:4
 msgid "$13 US"
 msgstr "$13 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:5
-#: ../plugins/magnatune/magnatune-purchase.ui.h:5
 msgid "$14 US"
 msgstr "$14 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:6
-#: ../plugins/magnatune/magnatune-purchase.ui.h:6
 msgid "$15 US (VERY generous!)"
 msgstr "$15 US (ZELO radodarno!)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:7
-#: ../plugins/magnatune/magnatune-purchase.ui.h:7
 msgid "$16 US"
 msgstr "$16 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:8
-#: ../plugins/magnatune/magnatune-purchase.ui.h:8
 msgid "$17 US"
 msgstr "$17 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:9
-#: ../plugins/magnatune/magnatune-purchase.ui.h:9
 msgid "$18 US (We love you!)"
 msgstr "$18 US (Obožujemo te!)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:10
-#: ../plugins/magnatune/magnatune-purchase.ui.h:10
 msgid "$5 US"
 msgstr "$5 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:11
-#: ../plugins/magnatune/magnatune-purchase.ui.h:11
 msgid "$6 US"
 msgstr "$6 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:12
-#: ../plugins/magnatune/magnatune-purchase.ui.h:12
 msgid "$7 US"
 msgstr "$7 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:13
-#: ../plugins/magnatune/magnatune-purchase.ui.h:13
 msgid "$8 US (typical)"
 msgstr "$8 US (povprečno)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:14
-#: ../plugins/magnatune/magnatune-purchase.ui.h:14
 msgid "$9 US"
 msgstr "$9 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:15
-#: ../plugins/magnatune/magnatune-purchase.ui.h:15
 msgid "128K MP3"
 msgstr "128K MP3"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:16
-msgid "<span weight=\"bold\" foreground=\"red\">Your credit card is past the expiration date listed.</span>"
-msgstr "<span weight=\"bold\" foreground=\"red\">Vaša kreditna kartica je presegla naveden datum veljavnosti.</span>"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:17
-#: ../plugins/magnatune/magnatune-purchase.ui.h:16
 msgid "April (04)"
 msgstr "April (04)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:18
-#: ../plugins/magnatune/magnatune-purchase.ui.h:18
+#: ../plugins/magnatune/magnatune-prefs.ui.h:17
 msgid "August (08)"
 msgstr "Avgust (08)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:19
-msgid "C_redit Card:"
-msgstr "K_reditna kartica:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:20
-#: ../plugins/magnatune/magnatune-purchase.ui.h:21
+#: ../plugins/magnatune/magnatune-prefs.ui.h:18
 msgid "December (12)"
 msgstr "December (12)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:21
-msgid "Default _amount to pay:"
-msgstr "Privzet _znesek za plačilo:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:22
-msgid "Expiry:"
-msgstr "Poteče:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:23
-#: ../plugins/magnatune/magnatune-purchase.ui.h:24
+#: ../plugins/magnatune/magnatune-prefs.ui.h:19
 msgid "FLAC"
 msgstr "FLAC"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:24
-#: ../plugins/magnatune/magnatune-purchase.ui.h:25
+#: ../plugins/magnatune/magnatune-prefs.ui.h:20
 msgid "February (02)"
 msgstr "Februar (02)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:25
+#: ../plugins/magnatune/magnatune-prefs.ui.h:21
 msgid "Find out about Magnatune at "
 msgstr "Izvedite več o Magnatune na"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:26
-#: ../plugins/magnatune/magnatune-purchase.ui.h:28
+#: ../plugins/magnatune/magnatune-prefs.ui.h:22
+msgid "I don't have a Magnatune account"
+msgstr "Nimam računa Magnatune"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:23
+msgid "I have a download account"
+msgstr "Imam račun prejemanja"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:24
+msgid "I have a streaming account"
+msgstr "Imam račun pretakanja"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:25
 msgid "January (01)"
 msgstr "Januar (01)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:27
-#: ../plugins/magnatune/magnatune-purchase.ui.h:29
+#: ../plugins/magnatune/magnatune-prefs.ui.h:26
 msgid "July (07)"
 msgstr "Julij (07)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:28
-#: ../plugins/magnatune/magnatune-purchase.ui.h:30
+#: ../plugins/magnatune/magnatune-prefs.ui.h:27
 msgid "June (06)"
 msgstr "Junij (06)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:29
+#: ../plugins/magnatune/magnatune-prefs.ui.h:28
 msgid "Magnatune Information"
 msgstr "Podrobnosti Magnatune"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:30
+#: ../plugins/magnatune/magnatune-prefs.ui.h:29
 msgid "Magnatune Preferences"
 msgstr "Nastavitve Magnatune"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:31
-#: ../plugins/magnatune/magnatune-purchase.ui.h:31
+#: ../plugins/magnatune/magnatune-prefs.ui.h:30
 msgid "March (03)"
 msgstr "Marec (03)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:32
-#: ../plugins/magnatune/magnatune-purchase.ui.h:32
+#: ../plugins/magnatune/magnatune-prefs.ui.h:31
 msgid "May (05)"
 msgstr "Maj (05)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:33
-#: ../plugins/magnatune/magnatune-purchase.ui.h:33
+#: ../plugins/magnatune/magnatune-prefs.ui.h:32
 msgid "November (11)"
 msgstr "November (11)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:34
-#: ../plugins/magnatune/magnatune-purchase.ui.h:34
+#: ../plugins/magnatune/magnatune-prefs.ui.h:33
 msgid "October (10)"
 msgstr "Oktober (10)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:35
-#: ../plugins/magnatune/magnatune-purchase.ui.h:35
+#: ../plugins/magnatune/magnatune-prefs.ui.h:34
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:35
+msgid "Password:"
+msgstr "Geslo:"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:36
 msgid "Preferred audio _format:"
@@ -2808,16 +2796,14 @@ msgid "Redownload purchased music at "
 msgstr "Ponovno prejmite kupljeno glasbo na"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:38
-msgid "Remember my credit card details"
-msgstr "Zapomni si podrobnosti mojih kreditnih kartic"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:39
-#: ../plugins/magnatune/magnatune-purchase.ui.h:37
 msgid "September (09)"
 msgstr "September (09)"
 
+#: ../plugins/magnatune/magnatune-prefs.ui.h:39
+msgid "Username:"
+msgstr "Uporabniško ime:"
+
 #: ../plugins/magnatune/magnatune-prefs.ui.h:40
-#: ../plugins/magnatune/magnatune-purchase.ui.h:38
 msgid "VBR MP3"
 msgstr "VBR MP3"
 
@@ -2826,81 +2812,24 @@ msgid "Visit Magnatune at "
 msgstr "Obiščite Magnatune na"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:42
-#: ../plugins/magnatune/magnatune-purchase.ui.h:39
 msgid "WAV"
 msgstr "WAV"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:43
-msgid "_Email:"
-msgstr "_e-Pošta:"
+msgid "Your account details have changed. Changes will be applied the next time you start Rhythmbox."
+msgstr "Podrobnosti vašega računa so se spremenile. Spremembe bodo uporabljene ob naslednjem zagonu Rhythmbox."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:44
-msgid "_Month:"
-msgstr "_Mesec:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:47
 msgid "http://www.magnatune.com/"
 msgstr "http://www.magnatune.com/"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:48
+#: ../plugins/magnatune/magnatune-prefs.ui.h:45
 msgid "http://www.magnatune.com/info/"
 msgstr "http://www.magnatune.com/info/"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:49
+#: ../plugins/magnatune/magnatune-prefs.ui.h:46
 msgid "http://www.magnatune.com/info/redownload"
 msgstr "http://www.magnatune.com/info/redownload"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:17
-msgid "Audio _format:"
-msgstr "_Zapis zvoka:"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:19
-msgid "C_redit Card number:"
-msgstr "Števila k_reditne kartice:"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:20
-msgid "Credit Card"
-msgstr "Kreditna kartica"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:22
-msgid "Expiry _month:"
-msgstr "_Mesec izteka veljavnosti:"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:23
-msgid "Expiry _year (last two digits):"
-msgstr "_Leto izteka veljavnosti (zadnji dve številki):"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:26
-msgid "Gift Card"
-msgstr "Darilna kartica"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:27
-msgid "Gift card number:"
-msgstr "Številka darilne kartice:"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:36
-msgid "Purchase Magnatune Tracks"
-msgstr "Nakup skladb Magnatune"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:40
-msgid "_Amount to pay (US Dollars):"
-msgstr "_Znesek za plačilo (ameriški dolarji):"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:41
-msgid "_Email address:"
-msgstr "_E-poštni naslov:"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:42
-msgid "_Name (as printed on card):"
-msgstr "_Ime (kot je natisnjeno na kartici):"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:43
-msgid "_Purchase"
-msgstr "_Kupi"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:44
-msgid "_Remember my credit card details"
-msgstr "_Zapomni si podrobnosti moje kreditne kartice"
 
 #: ../plugins/magnatune/magnatune.rb-plugin.in.h:1
 msgid "Adds support to Rhythmbox for playing and purchasing from the Magnatune online music store"
@@ -2910,108 +2839,102 @@ msgstr "Rhythmboxu doda podporo za predvajanje in nakupovanje iz spletne glasben
 msgid "Magnatune Store"
 msgstr "Trgovina Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:74
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:67
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:121
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:113
 msgid "Loading Magnatune catalog"
 msgstr "Nalaganje kataloga Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:124
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:116
 msgid "Downloading Magnatune Album(s)"
 msgstr "Prejemanje album-a/ov Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:234
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:217
 msgid "Couldn't purchase album"
 msgstr "Albuma ni mogoče kupiti"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:235
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:218
 msgid "You must have a library location set to purchase an album."
 msgstr "Za nakup albuma mora biti nastavljeno mesto knjižnice."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:258
-#, python-format
-msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
-msgstr "Ali želite kupiti album <i>%(album)s</i> izvajalca '%(artist)s'?"
-
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:375
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:304
 msgid "Unable to load catalog"
 msgstr "Kataloga ni mogoče naložiti"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:376
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:305
 msgid "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr "Rhythmbox ne more razumeti kataloga Magnatune, poročajte hrošča."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:462
-msgid "Authorizing Purchase"
-msgstr "Odobritev nakupa"
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:420
+msgid "Download Error"
+msgstr "Napaka prejema"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:463
-msgid "Authorizing purchase with the Magnatune server. Please wait..."
-msgstr "Odobritev nakupa s strežnikom Magnatune. Počakajte ..."
-
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:509
-msgid "Purchase Error"
-msgstr "Napaka nakupa"
-
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:510
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:421
 #, python-format
 msgid ""
-"An error occurred while trying to purchase the album.\n"
+"An error occurred while trying to authorize the download.\n"
 "The Magnatune server returned:\n"
 "%s"
 msgstr ""
-"Med poskusom nakupa albuma je prišlo do napake.\n"
+"Med poskusom pooblastitve prejema je prišlo do napake.\n"
 "Strežnik Magnatune je vrnil:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:513
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:424
 #: ../widgets/rb-entry-view.c:1627
 msgid "Error"
 msgstr "Napaka"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:514
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:425
 #, python-format
 msgid ""
-"An error occurred while trying to purchase the album.\n"
+"An error occurred while trying to download the album.\n"
 "The error text is:\n"
 "%s"
 msgstr ""
-"Med poskusom nakupa albuma je prišlo do napake.\n"
+"Med poskusom prejema albuma je prišlo do napake.\n"
 "Besedilo napake je:\n"
 "%s"
 
-#. Add the popup menu actions
-#: ../plugins/magnatune/magnatune/__init__.py:117
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:494
+msgid "Finished Downloading"
+msgstr "Prejemanje je končano"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:494
+msgid "All Magnatune downloads have been completed."
+msgstr "Vsi prejemi Magnatune so bili končani."
+
+#: ../plugins/magnatune/magnatune/__init__.py:113
 msgid "Purchase Album"
 msgstr "Nakup albuma"
 
-#: ../plugins/magnatune/magnatune/__init__.py:118
+#: ../plugins/magnatune/magnatune/__init__.py:114
 msgid "Purchase this album from Magnatune"
 msgstr "Nakup albuma iz Magnatune"
 
+#: ../plugins/magnatune/magnatune/__init__.py:118
+msgid "Download Album"
+msgstr "Prejmi Album"
+
+#: ../plugins/magnatune/magnatune/__init__.py:119
+msgid "Download this album from Magnatune"
+msgstr "Prejem tega albuma iz Magnatune"
+
 #: ../plugins/magnatune/magnatune/__init__.py:123
-msgid "Purchase Physical CD"
-msgstr "Nakup fizičnega CD-ja"
-
-#: ../plugins/magnatune/magnatune/__init__.py:124
-msgid "Purchase a physical CD from Magnatune"
-msgstr "Nakup fizičnega CD-ja iz Magnatune"
-
-#: ../plugins/magnatune/magnatune/__init__.py:128
 msgid "Artist Information"
 msgstr "Podatki o izvajalcu"
 
-#: ../plugins/magnatune/magnatune/__init__.py:129
+#: ../plugins/magnatune/magnatune/__init__.py:124
 msgid "Get information about this artist"
 msgstr "Dobi podatke o tem izvajalcu"
 
-#: ../plugins/magnatune/magnatune/__init__.py:133
+#: ../plugins/magnatune/magnatune/__init__.py:128
 msgid "Cancel Downloads"
 msgstr "Preklic prejemanj"
 
-#: ../plugins/magnatune/magnatune/__init__.py:134
+#: ../plugins/magnatune/magnatune/__init__.py:129
 msgid "Stop downloading purchased albums"
 msgstr "Zaustavitev prejemanja kupljenih albumov"
 
@@ -3031,11 +2954,11 @@ msgstr "Prenosljivi predvajalniki - MTP"
 msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "Podpora za MTP naprave (prikaz vsebine, prenos in predvajanje z naprave)"
 
-#: ../plugins/mtpdevice/mtp-info.ui.h:2
+#: ../plugins/mtpdevice/mtp-info.ui.h:3
 msgid "Device _name:"
 msgstr "Ime _naprave:"
 
-#: ../plugins/mtpdevice/mtp-info.ui.h:4
+#: ../plugins/mtpdevice/mtp-info.ui.h:5
 msgid "Manufacturer:"
 msgstr "Proizvajalec:"
 
@@ -3057,10 +2980,6 @@ msgstr "Izvrzi MTP-napravo"
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:127
 msgid "Rename MTP-device"
 msgstr "Preimenuj MTP-napravo"
-
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:130
-msgid "Display device properties"
-msgstr "Prikaži lastnosti naprave"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:709
 #: ../plugins/mtpdevice/rb-mtp-thread.c:741
@@ -3141,6 +3060,64 @@ msgstr "Vzajemna konzola python"
 msgid "Python Console"
 msgstr "Konzola python"
 
+#. sys.excepthook = _excepthandler
+#: ../plugins/replaygain/replaygain.rb-plugin.in.h:1
+msgid "ReplayGain"
+msgstr "Pridobitev glasnosti"
+
+#: ../plugins/replaygain/replaygain.rb-plugin.in.h:2
+msgid "Use ReplayGain to provide a consistent playback volume"
+msgstr "Uporaba pridobitve glasnosti za zagotovitev dosledne glasnosti predvajanja"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:1
+msgid "Album (ideal loudness for all tracks)"
+msgstr "Album (idealna glasnost za vse skladbe)"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:2
+msgid "Learn more about ReplayGain at replaygain.org"
+msgstr "Več o pridobitvi glasnosti se je mogoče naučiti na replaygain.org"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:3
+msgid "Radio (equal loudness for all tracks)"
+msgstr "Radio (enaka glasnost za vse skladbe)"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:4
+msgid "ReplayGain _mode:"
+msgstr "Način pridobitve _glasnosti:"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:5
+msgid "ReplayGain preferences"
+msgstr "Možnosti pridobitve glasnosti"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:6
+msgid "_Apply compression to prevent clipping"
+msgstr "_Uporabi stiskanje za preprečitev obrezovanja"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:7
+msgid "_Pre-amp:"
+msgstr "_Predhodna okrepitev glasnosti:"
+
+#: ../plugins/replaygain/replaygain/config.py:78
+msgid "-15.0 dB"
+msgstr "-15,0 dB"
+
+#: ../plugins/replaygain/replaygain/config.py:79
+msgid "0.0 dB"
+msgstr "0,0 dB"
+
+#: ../plugins/replaygain/replaygain/config.py:80
+msgid "15.0 dB"
+msgstr "15,0 dB"
+
+#: ../plugins/replaygain/replaygain/player.py:48
+#, python-format
+msgid "The GStreamer elements required for ReplayGain processing are not available. The missing elements are: %s"
+msgstr "Predmeti GStreamer zahtevani za obdelavo pridobitve glasnosti niso na voljo. Manjkajoči predmeti so: %s"
+
+#: ../plugins/replaygain/replaygain/player.py:49
+msgid "ReplayGain GStreamer plugins not available"
+msgstr "Gstreamer vstavki pridobitve glasnosti niso na voljo"
+
 #: ../plugins/sample-python/sample-python.py:14
 msgid "Python Source"
 msgstr "Vir Python"
@@ -3187,62 +3164,54 @@ msgstr "Pošiljanje izbranih skladb preko elektronske pošte ali takojšnjega sp
 msgid "Send tracks"
 msgstr "Pošlji skladbe"
 
-#: ../plugins/status-icon/eggtrayicon.c:133
-msgid "Orientation"
-msgstr "Usmerjenost"
-
-#: ../plugins/status-icon/eggtrayicon.c:134
-msgid "The orientation of the tray."
-msgstr "Usmerjenost pladnja."
-
-#: ../plugins/status-icon/rb-status-icon-plugin.c:142
+#: ../plugins/status-icon/rb-status-icon-plugin.c:138
 msgid "_Close"
 msgstr "_Zapri"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:143
+#: ../plugins/status-icon/rb-status-icon-plugin.c:139
 msgid "Hide the music player window"
 msgstr "Skritje okna predvajalnika glasbe"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:149
+#: ../plugins/status-icon/rb-status-icon-plugin.c:145
 msgid "_Show Music Player"
 msgstr "P_rikaži predvajalnik glasbe"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:150
+#: ../plugins/status-icon/rb-status-icon-plugin.c:146
 msgid "Choose music to play"
 msgstr "Izbor glasbe za predvajanje"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:152
+#: ../plugins/status-icon/rb-status-icon-plugin.c:148
 msgid "Show N_otifications"
 msgstr "Prikaži o_bvestila"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:153
+#: ../plugins/status-icon/rb-status-icon-plugin.c:149
 msgid "Show notifications of song changes and other events"
 msgstr "Prikaz obvestil sprememb skladb in drugih dogodkov"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:436
+#: ../plugins/status-icon/rb-status-icon-plugin.c:432
 msgid "Next"
 msgstr "Naslednja"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:587
+#: ../plugins/status-icon/rb-status-icon-plugin.c:583
 #: ../remote/dbus/rb-client.c:454
 #: ../remote/dbus/rb-client.c:480
 msgid "Not playing"
 msgstr "Ni predvajanja"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:590
+#: ../plugins/status-icon/rb-status-icon-plugin.c:586
 #, c-format
 msgid "Paused, %s"
 msgstr "V premoru, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:679
+#: ../plugins/status-icon/rb-status-icon-plugin.c:675
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "od <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:700
+#: ../plugins/status-icon/rb-status-icon-plugin.c:696
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "iz <i>%s</i>"
@@ -3588,7 +3557,7 @@ msgstr "Vse"
 msgid "The database was created by a later version of Rhythmbox.  This version of Rhythmbox cannot read the database."
 msgstr "Podatkovna zbirka je bila ustvarjena z novejšo različico Rhythmbox. Ta različica Rhythmbox ne more brati podatkovne zbirke."
 
-#: ../rhythmdb/rhythmdb.c:750
+#: ../rhythmdb/rhythmdb.c:744
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Do %s ni mogoče dostopati: %s"
@@ -3598,7 +3567,7 @@ msgstr "Do %s ni mogoče dostopati: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1697
+#: ../rhythmdb/rhythmdb.c:1716
 msgid "The Beatles"
 msgstr "Adi Smolar"
 
@@ -3606,7 +3575,7 @@ msgstr "Adi Smolar"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1703
+#: ../rhythmdb/rhythmdb.c:1722
 msgid "Help!"
 msgstr "Pomoč!"
 
@@ -3614,15 +3583,15 @@ msgstr "Pomoč!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1709
+#: ../rhythmdb/rhythmdb.c:1728
 msgid "Ticket To Ride"
 msgstr "Bog ne daj da bi crknu televizor"
 
-#: ../rhythmdb/rhythmdb.c:2243
+#: ../rhythmdb/rhythmdb.c:2226
 msgid "invalid unicode in error message"
 msgstr "neveljaven unicode v sporočilu o napaki"
 
-#: ../rhythmdb/rhythmdb.c:2304
+#: ../rhythmdb/rhythmdb.c:2287
 #, c-format
 msgid "Empty file"
 msgstr "Prazna datoteka"
@@ -3630,16 +3599,16 @@ msgstr "Prazna datoteka"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2419
+#: ../rhythmdb/rhythmdb.c:2402
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Za predvajanje datoteke so zahtevani dodatni Gstreamer vstavki: %s"
 
-#: ../rhythmdb/rhythmdb.c:3185
+#: ../rhythmdb/rhythmdb.c:3144
 msgid "Could not load the music database:"
 msgstr "Ni mogoče naložiti glasbene podatkovne zbirke: "
 
-#: ../rhythmdb/rhythmdb.c:4557
+#: ../rhythmdb/rhythmdb.c:4516
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3648,7 +3617,7 @@ msgstr[1] "%ld minuta"
 msgstr[2] "%ld minuti"
 msgstr[3] "%ld minute"
 
-#: ../rhythmdb/rhythmdb.c:4558
+#: ../rhythmdb/rhythmdb.c:4517
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3657,7 +3626,7 @@ msgstr[1] "%ld ura"
 msgstr[2] "%ld uri"
 msgstr[3] "%ld ure"
 
-#: ../rhythmdb/rhythmdb.c:4559
+#: ../rhythmdb/rhythmdb.c:4518
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3667,7 +3636,7 @@ msgstr[2] "%ld dni"
 msgstr[3] "%ld dni"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4565
+#: ../rhythmdb/rhythmdb.c:4524
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s in %s"
@@ -3675,9 +3644,9 @@ msgstr "%s, %s in %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4571
-#: ../rhythmdb/rhythmdb.c:4579
-#: ../rhythmdb/rhythmdb.c:4590
+#: ../rhythmdb/rhythmdb.c:4530
+#: ../rhythmdb/rhythmdb.c:4538
+#: ../rhythmdb/rhythmdb.c:4549
 #, c-format
 msgid "%s and %s"
 msgstr "%s in %s"
@@ -3998,160 +3967,160 @@ msgstr "_Lastnosti"
 msgid "Show information on each selected song"
 msgstr "Prikaz podatkov o vsaki izbrani skladbi"
 
-#: ../shell/rb-shell-player.c:306
+#: ../shell/rb-shell-player.c:304
 msgid "Pre_vious"
-msgstr "_Predhodna"
+msgstr "Pre_dhodna"
 
-#: ../shell/rb-shell-player.c:307
+#: ../shell/rb-shell-player.c:305
 msgid "Start playing the previous song"
 msgstr "Predvajanje predhodne skladbe"
 
-#: ../shell/rb-shell-player.c:309
+#: ../shell/rb-shell-player.c:307
 msgid "_Next"
 msgstr "_Naslednja"
 
-#: ../shell/rb-shell-player.c:310
+#: ../shell/rb-shell-player.c:308
 msgid "Start playing the next song"
 msgstr "Predvajanje naslednje skladbe"
 
-#: ../shell/rb-shell-player.c:312
+#: ../shell/rb-shell-player.c:310
 msgid "_Increase Volume"
 msgstr "_Povečaj glasnost"
 
-#: ../shell/rb-shell-player.c:313
+#: ../shell/rb-shell-player.c:311
 msgid "Increase playback volume"
 msgstr "Povečanje glasnosti predvajanja"
 
-#: ../shell/rb-shell-player.c:315
+#: ../shell/rb-shell-player.c:313
 msgid "_Decrease Volume"
 msgstr "_Zmanjšaj glasnost"
 
-#: ../shell/rb-shell-player.c:316
+#: ../shell/rb-shell-player.c:314
 msgid "Decrease playback volume"
 msgstr "Zmanjšanje glasnosti predvajanja"
 
-#: ../shell/rb-shell-player.c:323
+#: ../shell/rb-shell-player.c:321
 msgid "_Play"
 msgstr "_Predvajanje"
 
-#: ../shell/rb-shell-player.c:324
-#: ../shell/rb-shell-player.c:3727
+#: ../shell/rb-shell-player.c:322
+#: ../shell/rb-shell-player.c:3699
 msgid "Start playback"
 msgstr "Začetek predvajanja"
 
-#: ../shell/rb-shell-player.c:326
+#: ../shell/rb-shell-player.c:324
 msgid "Sh_uffle"
 msgstr "P_remešaj"
 
-#: ../shell/rb-shell-player.c:327
+#: ../shell/rb-shell-player.c:325
 msgid "Play songs in a random order"
 msgstr "Predvajanje skladb v naključnem redu"
 
-#: ../shell/rb-shell-player.c:329
+#: ../shell/rb-shell-player.c:327
 msgid "_Repeat"
 msgstr "_Ponovi"
 
-#: ../shell/rb-shell-player.c:330
+#: ../shell/rb-shell-player.c:328
 msgid "Play first song again after all songs are played"
 msgstr "Po predvajanju vseh skladb ponovno predvaja prvo skladbo"
 
-#: ../shell/rb-shell-player.c:332
+#: ../shell/rb-shell-player.c:330
 msgid "_Song Position Slider"
 msgstr "Drsnik lege _skladbe"
 
-#: ../shell/rb-shell-player.c:333
+#: ../shell/rb-shell-player.c:331
 msgid "Change the visibility of the song position slider"
 msgstr "Sprememba vidnosti drsnika položaja skladbe"
 
-#: ../shell/rb-shell-player.c:779
+#: ../shell/rb-shell-player.c:777
 msgid "Stream error"
 msgstr "Napaka toka"
 
-#: ../shell/rb-shell-player.c:780
+#: ../shell/rb-shell-player.c:778
 msgid "Unexpected end of stream!"
 msgstr "Nepričakovan konec pretoka!"
 
-#: ../shell/rb-shell-player.c:912
+#: ../shell/rb-shell-player.c:910
 msgid "Linear"
 msgstr "Zaporedno"
 
-#: ../shell/rb-shell-player.c:914
+#: ../shell/rb-shell-player.c:912
 msgid "Linear looping"
 msgstr "Zaporedno kroženje"
 
-#: ../shell/rb-shell-player.c:916
+#: ../shell/rb-shell-player.c:914
 msgid "Shuffle"
 msgstr "Mešanje"
 
-#: ../shell/rb-shell-player.c:918
+#: ../shell/rb-shell-player.c:916
 msgid "Random with equal weights"
 msgstr "Naključno z enakimi utežmi"
 
-#: ../shell/rb-shell-player.c:920
+#: ../shell/rb-shell-player.c:918
 msgid "Random by time since last play"
 msgstr "Naključno po času od zadnjega predvajanja"
 
-#: ../shell/rb-shell-player.c:922
+#: ../shell/rb-shell-player.c:920
 msgid "Random by rating"
 msgstr "Naključno po oceni"
 
-#: ../shell/rb-shell-player.c:924
+#: ../shell/rb-shell-player.c:922
 msgid "Random by time since last play and rating"
 msgstr "Naključno po času od zadnjega predvajanja in oceni"
 
-#: ../shell/rb-shell-player.c:926
+#: ../shell/rb-shell-player.c:924
 msgid "Linear, removing entries once played"
 msgstr "Zaporedno, odstrani vnose po predvajanju"
 
-#: ../shell/rb-shell-player.c:936
+#: ../shell/rb-shell-player.c:934
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Ustvarjanje predvajalnika je spodletelo: %s"
 
-#: ../shell/rb-shell-player.c:1482
+#: ../shell/rb-shell-player.c:1480
 #, c-format
 msgid "Playlist was empty"
 msgstr "Seznam predvajanja je bil prazen"
 
-#: ../shell/rb-shell-player.c:1971
+#: ../shell/rb-shell-player.c:1967
 #, c-format
 msgid "Not currently playing"
 msgstr "Trenutno ni predvajanja"
 
-#: ../shell/rb-shell-player.c:2029
+#: ../shell/rb-shell-player.c:2025
 #, c-format
 msgid "No previous song"
 msgstr "Ni predhodne skladbe"
 
-#: ../shell/rb-shell-player.c:2129
+#: ../shell/rb-shell-player.c:2125
 #, c-format
 msgid "No next song"
 msgstr "Ni naslednje skladbe"
 
-#: ../shell/rb-shell-player.c:2250
-#: ../shell/rb-shell-player.c:3374
+#: ../shell/rb-shell-player.c:2246
+#: ../shell/rb-shell-player.c:3346
 msgid "Couldn't start playback"
 msgstr "Predvajanja ni mogoče začeti"
 
-#: ../shell/rb-shell-player.c:3136
+#: ../shell/rb-shell-player.c:3108
 msgid "Couldn't stop playback"
 msgstr "Predvajanja ni mogoče zaustaviti"
 
-#: ../shell/rb-shell-player.c:3246
+#: ../shell/rb-shell-player.c:3218
 #, c-format
 msgid "Playback position not available"
 msgstr "Lega predvajanja ni dostopna"
 
-#: ../shell/rb-shell-player.c:3278
+#: ../shell/rb-shell-player.c:3250
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Po trenutni skladbi ni mogoče iskati"
 
-#: ../shell/rb-shell-player.c:3722
+#: ../shell/rb-shell-player.c:3694
 msgid "Pause playback"
 msgstr "Premor predvajanja"
 
-#: ../shell/rb-shell-player.c:3724
+#: ../shell/rb-shell-player.c:3696
 msgid "Stop playback"
 msgstr "Zaustavitev predvajanja"
 
@@ -4487,7 +4456,7 @@ msgstr "Naslovi"
 msgid "Search titles"
 msgstr "Iskanje naslovov"
 
-#: ../sources/rb-removable-media-source.c:741
+#: ../sources/rb-removable-media-source.c:768
 #: ../sources/rb-library-source.c:1209
 msgid "Error transferring track"
 msgstr "Napaka med prenosom skladbe"
@@ -5170,11 +5139,11 @@ msgstr[2] "%d zvezdi"
 msgstr[3] "%d zvezde"
 
 #. this string can only be so long, or there wont be a search entry :)
-#: ../widgets/rb-search-entry.c:163
+#: ../widgets/rb-search-entry.c:157
 msgid "_Search:"
 msgstr "I_skanje:"
 
-#: ../widgets/rb-search-entry.c:174
+#: ../widgets/rb-search-entry.c:167
 msgid "Clear the search text"
 msgstr "Počisti besedilo iskanja"
 
@@ -5198,6 +5167,65 @@ msgstr "Na namizju"
 msgid "Unknown location"
 msgstr "Neznano mesto"
 
+#~ msgid ""
+#~ "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
+#~ "expiration date listed.</span>"
+#~ msgstr ""
+#~ "<span weight=\"bold\" foreground=\"red\">Vaša kreditna kartica je "
+#~ "presegla naveden datum veljavnosti.</span>"
+#~ msgid "C_redit Card:"
+#~ msgstr "K_reditna kartica:"
+#~ msgid "Default _amount to pay:"
+#~ msgstr "Privzet _znesek za plačilo:"
+#~ msgid "Expiry:"
+#~ msgstr "Poteče:"
+#~ msgid "Remember my credit card details"
+#~ msgstr "Zapomni si podrobnosti mojih kreditnih kartic"
+#~ msgid "_Email:"
+#~ msgstr "_e-Pošta:"
+#~ msgid "_Month:"
+#~ msgstr "_Mesec:"
+#~ msgid "C_redit Card number:"
+#~ msgstr "Števila k_reditne kartice:"
+#~ msgid "Credit Card"
+#~ msgstr "Kreditna kartica"
+#~ msgid "Expiry _month:"
+#~ msgstr "_Mesec izteka veljavnosti:"
+#~ msgid "Expiry _year (last two digits):"
+#~ msgstr "_Leto izteka veljavnosti (zadnji dve številki):"
+#~ msgid "Gift Card"
+#~ msgstr "Darilna kartica"
+#~ msgid "Gift card number:"
+#~ msgstr "Številka darilne kartice:"
+#~ msgid "Purchase Magnatune Tracks"
+#~ msgstr "Nakup skladb Magnatune"
+#~ msgid "_Amount to pay (US Dollars):"
+#~ msgstr "_Znesek za plačilo (ameriški dolarji):"
+#~ msgid "_Email address:"
+#~ msgstr "_E-poštni naslov:"
+#~ msgid "_Name (as printed on card):"
+#~ msgstr "_Ime (kot je natisnjeno na kartici):"
+#~ msgid "_Purchase"
+#~ msgstr "_Kupi"
+#~ msgid "_Remember my credit card details"
+#~ msgstr "_Zapomni si podrobnosti moje kreditne kartice"
+#~ msgid ""
+#~ "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
+#~ msgstr "Ali želite kupiti album <i>%(album)s</i> izvajalca '%(artist)s'?"
+#~ msgid "Authorizing Purchase"
+#~ msgstr "Odobritev nakupa"
+#~ msgid "Authorizing purchase with the Magnatune server. Please wait..."
+#~ msgstr "Odobritev nakupa s strežnikom Magnatune. Počakajte ..."
+#~ msgid "Purchase Error"
+#~ msgstr "Napaka nakupa"
+#~ msgid "Purchase Physical CD"
+#~ msgstr "Nakup fizičnega CD-ja"
+#~ msgid "Purchase a physical CD from Magnatune"
+#~ msgstr "Nakup fizičnega CD-ja iz Magnatune"
+#~ msgid "Orientation"
+#~ msgstr "Usmerjenost"
+#~ msgid "The orientation of the tray."
+#~ msgstr "Usmerjenost pladnja."
 #~ msgid "iPod Properties"
 #~ msgstr "Lastnosti iPoda"
 #~ msgid "Connection to %s:%d refused."
