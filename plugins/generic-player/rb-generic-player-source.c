@@ -556,15 +556,7 @@ impl_get_status (RBSource *source, char **text, char **progress_text, float *pro
 
 	/* override with bits of import status */
 	if (priv->import_job != NULL) {
-		int total;
-		int imported;
-
-		total = rhythmdb_import_job_get_total (priv->import_job);
-		imported = rhythmdb_import_job_get_imported (priv->import_job);
-
-		g_free (*progress_text);
-		*progress_text = g_strdup_printf (_("Importing (%d/%d)"), imported, total);
-		*progress = ((float)imported / (float)total);
+		_rb_source_set_import_status (source, priv->import_job, progress_text, progress);
 	}
 }
 

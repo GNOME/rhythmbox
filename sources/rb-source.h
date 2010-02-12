@@ -35,6 +35,7 @@
 #include "rb-source-search.h"
 #include "rb-entry-view.h"
 #include "rb-shell-preferences.h"
+#include "rhythmdb-import-job.h"
 
 G_BEGIN_DECLS
 
@@ -232,6 +233,11 @@ void		_rb_action_group_add_source_actions (GtkActionGroup *group,
 
 gboolean	_rb_source_check_entry_type	(RBSource *source,
 						 RhythmDBEntry *entry);
+
+void		_rb_source_set_import_status	(RBSource *source,
+						 RhythmDBImportJob *job,
+						 char **progress_text,
+						 float *progress);
 
 G_END_DECLS
 
