@@ -30,7 +30,7 @@ from TrackListHandler import TrackListHandler
 from BuyAlbumHandler import BuyAlbumHandler, MagnatunePurchaseError
 
 import os
-import gobject
+import gobject, gio
 import gtk
 import gnome, gconf
 import xml
@@ -460,31 +460,23 @@ class MagnatuneSource(rb.BrowserSource):
 		self.purchase_filesize -= total
 
 		# just use the first library location
-		# not quite prepared to use gio here directly yet, so we can only deal with
-		# local libraries here.
-		library_location = self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0]
-		if library_location.startswith("file://"):
-			urlpath = urlparse.urlparse(library_location).path
-			library_dir = urllib.url2pathname(urlpath)
-		else:
-			library_dir = rb.music_dir ()
+		library_location = gio.File(uri=self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0])
 
 		album = zipfile.ZipFile(dest)
 		for track in album.namelist():
-			track_uri = "file://" + urllib.pathname2url(os.path.join(library_dir, track))
+			track_uri = library_location.resolve_relative_path(track).get_uri()
 
 			track_uri = rb.sanitize_uri_for_filesystem(track_uri)
 			rb.uri_create_parent_dirs(track_uri)
 
-			track_path = urllib.url2pathname(urlparse.urlparse(track_uri).path)
-
-			track_out = open(track_path, 'w')
-			track_out.write(album.read(track))
-			track_out.close()
+			track_out = gio.File(uri=track_uri).create()
+			if track_out is not None:
+				track_out.write(album.read(track))
+				track_out.close()
+				self.__db.add_uri(track_uri)
 
 		album.close()
-
-		self.__remove_download_files (dest, sku)
+		self.__remove_download_files(dest, sku)
 
 		if self.purchase_filesize == 0: # All downloads are complete
 			self.__downloading = False
@@ -494,8 +486,6 @@ class MagnatuneSource(rb.BrowserSource):
 			shell.notify_custom(4000, _("Finished Downloading"), _("All Magnatune downloads have been completed."), icon, True)
 			manager = shell.get_player().get_property('ui-manager')
 			manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(False)
-
-		self.__db.add_uri(os.path.split(track_path)[0])
 
 
 	def __download_album_chunk(self, result, total, (audio_dl_uri, dest, out, sku)):
