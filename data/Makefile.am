@@ -46,6 +46,7 @@ update-icon-cache:
 
 EXTRA_DIST = $(service_in_files)    \
 	     $(schema_DATA)	    \
+	     $(man_MANS)            \
 	     $(playlists_in_files)  \
 	     rhythmbox.desktop.in.in
 
