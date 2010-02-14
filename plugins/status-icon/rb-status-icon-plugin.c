@@ -37,6 +37,8 @@
 
 #include <X11/Xatom.h>
 
+#include <pango/pango-bidi-type.h>
+
 #ifdef HAVE_NOTIFY
 #include <libnotify/notify.h>
 #endif
@@ -639,6 +641,50 @@ rb_status_icon_plugin_set_tooltip (GtkWidget        *widget,
 /* information on current track */
 
 static void
+get_artist_album_templates (const char *artist,
+			    const char *album,
+			    const char **artist_template,
+			    const char **album_template)
+{
+	PangoDirection tag_dir;
+	PangoDirection template_dir;
+
+	/* Translators: by Artist */
+	*artist_template = _("by <i>%s</i>");
+	/* Translators: from Album */
+	*album_template = _("from <i>%s</i>");
+
+	/* find the direction (left-to-right or right-to-left) of the
+	 * track's tags and the localized templates
+	 */
+	if (artist != NULL && artist[0] != '\0') {
+		tag_dir = pango_find_base_dir (artist, -1);
+		template_dir = pango_find_base_dir (*artist_template, -1);
+	} else if (album != NULL && album[0] != '\0') {
+		tag_dir = pango_find_base_dir (album, -1);
+		template_dir = pango_find_base_dir (*album_template, -1);
+	} else {
+		return;
+	}
+
+	/* if the track's tags and the localized templates have a different
+	 * direction, switch to direction-neutral templates in order to improve
+	 * display.
+	 * text can have a neutral direction, this condition only applies when
+	 * both directions are defined and they are conflicting.
+	 * https://bugzilla.gnome.org/show_bug.cgi?id=609767
+	 */
+	if (((tag_dir == PANGO_DIRECTION_LTR) && (template_dir == PANGO_DIRECTION_RTL)) ||
+	    ((tag_dir == PANGO_DIRECTION_RTL) && (template_dir == PANGO_DIRECTION_LTR))) {
+		/* these strings should not be localized, they must be
+		 * locale-neutral and direction-neutral
+		 */
+		*artist_template = "<i>%s</i>";
+		*album_template = "/ <i>%s</i>";
+	}
+}
+
+static void
 update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 {
 	GValue *value;
@@ -647,6 +693,9 @@ update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 	char *album = NULL;
 	char *title = NULL;
 	GString *secondary;
+
+	const char *artist_template = NULL;
+	const char *album_template = NULL;
 
 	g_free (plugin->priv->current_title);
 	g_free (plugin->priv->current_album_and_artist);
@@ -670,12 +719,6 @@ update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 		artist = markup_escape (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
 	}
 
-	if (artist != NULL && artist[0] != '\0') {
-		/* Translators: by Artist */
-		g_string_append_printf (secondary, _("by <i>%s</i>"), artist);
-	}
-	g_free (artist);
-
 	/* get album, preferring streaming song details */
 	value = rhythmdb_entry_request_extra_metadata (plugin->priv->db,
 						       entry,
@@ -688,12 +731,18 @@ update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 		album = markup_escape (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
 	}
 
+	get_artist_album_templates (artist, album, &artist_template, &album_template);
+
+	if (artist != NULL && artist[0] != '\0') {
+		g_string_append_printf (secondary, artist_template, artist);
+	}
+	g_free (artist);
+
 	if (album != NULL && album[0] != '\0') {
 		if (secondary->len != 0)
 			g_string_append_c (secondary, ' ');
 
-		/* Translators: from Album */
-		g_string_append_printf (secondary, _("from <i>%s</i>"), album);
+		g_string_append_printf (secondary, album_template, album);
 	}
 	g_free (album);
 
