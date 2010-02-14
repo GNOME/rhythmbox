@@ -119,6 +119,7 @@ flac_tagger (GstElement *pipeline, GstElement *link_to, GstTagList *tags)
 
 	gst_bin_add (GST_BIN (pipeline), tagger);
 	gst_element_link_many (link_to, tagger, NULL);
+	gst_element_set_state (tagger, GST_STATE_PAUSED);
 
 	gst_tag_setter_merge_tags (GST_TAG_SETTER (tagger), tags, GST_TAG_MERGE_REPLACE_ALL);
 	return tagger;
@@ -153,6 +154,8 @@ id3_tagger (GstElement *pipeline, GstElement *link_to, GstTagList *tags)
 		goto error;
 
 	g_signal_connect (demux, "pad-added", (GCallback)id3_pad_added_cb, mux);
+	gst_element_set_state (demux, GST_STATE_PAUSED);
+	gst_element_set_state (mux, GST_STATE_PAUSED);
 
 	gst_tag_setter_merge_tags (GST_TAG_SETTER (mux), tags, GST_TAG_MERGE_REPLACE_ALL);
 	return mux;
@@ -238,6 +241,7 @@ vorbis_tagger (GstElement *pipeline, GstElement *link_to, GstTagList *tags)
 	if (!gst_element_link (link_to, demux))
 		goto error;
 
+	gst_element_set_state (demux, GST_STATE_PAUSED);
 	g_object_set_data (G_OBJECT (demux), "mux", mux);
 	g_signal_connect (demux, "pad-added", (GCallback)ogg_pad_added_cb, tags);
 	return mux;
@@ -276,6 +280,8 @@ mp4_tagger (GstElement *pipeline, GstElement *link_to, GstTagList *tags)
 
 	muxpad = gst_element_get_request_pad (mux, "audio_%d");
 	g_signal_connect (demux, "pad-added", G_CALLBACK (mp4_pad_added_cb), muxpad);
+	gst_element_set_state (demux, GST_STATE_PAUSED);
+	gst_element_set_state (mux, GST_STATE_PAUSED);
 
 	gst_tag_setter_merge_tags (GST_TAG_SETTER (mux), tags, GST_TAG_MERGE_REPLACE_ALL);
 
