@@ -36,6 +36,7 @@ import gnome, gconf
 import xml
 import urllib
 import urlparse
+import threading
 import zipfile
 
 
@@ -451,33 +452,35 @@ class MagnatuneSource(rb.BrowserSource):
 
 
 	def __download_finished (self, total, audio_dl_uri, dest, out, sku):
+		def unzip_album():
+			# just use the first library location
+			library_location = gio.File(uri=self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0])
+
+			album = zipfile.ZipFile(dest)
+			for track in album.namelist():
+				track_uri = library_location.resolve_relative_path(track).get_uri()
+
+				track_uri = rb.sanitize_uri_for_filesystem(track_uri)
+				rb.uri_create_parent_dirs(track_uri)
+
+				track_out = gio.File(uri=track_uri).create()
+				if track_out is not None:
+					track_out.write(album.read(track))
+					track_out.close()
+					self.__db.add_uri(track_uri)
+
+			album.close()
+			self.__remove_download_files(dest, sku)
+		
 		try:
 			del self.__downloads[audio_dl_uri]
 		except:
 			return 0
-
+		
 		out.close()
+		threading.Thread(target=unzip_album).start()
+		
 		self.purchase_filesize -= total
-
-		# just use the first library location
-		library_location = gio.File(uri=self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0])
-
-		album = zipfile.ZipFile(dest)
-		for track in album.namelist():
-			track_uri = library_location.resolve_relative_path(track).get_uri()
-
-			track_uri = rb.sanitize_uri_for_filesystem(track_uri)
-			rb.uri_create_parent_dirs(track_uri)
-
-			track_out = gio.File(uri=track_uri).create()
-			if track_out is not None:
-				track_out.write(album.read(track))
-				track_out.close()
-				self.__db.add_uri(track_uri)
-
-		album.close()
-		self.__remove_download_files(dest, sku)
-
 		if self.purchase_filesize == 0: # All downloads are complete
 			self.__downloading = False
 			shell = self.get_property('shell')
