@@ -16,8 +16,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-02-07 11:55+0000\n"
-"PO-Revision-Date: 2010-02-07 14:30+0100\n"
+"POT-Creation-Date: 2010-02-12 19:32+0000\n"
+"PO-Revision-Date: 2010-02-15 12:02+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -41,8 +41,8 @@ msgstr ""
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr ""
-"Ha ocurrido un error al crear el elemento playbin2; compruebe su instalación "
-"de GStreamer"
+"Ocurrió un error al crear el elemento playbin2; compruebe su instalación de "
+"GStreamer"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:630
@@ -61,13 +61,12 @@ msgstr "No se pudo iniciar la tubería de reproducción"
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr ""
-"Ha ocurrido un error al enlazar un nuevo flujo dentro del pipeline de "
-"GStreamer"
+"Ocurrió un error al enlazar un nuevo flujo dentro del pipeline de GStreamer"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1183
 #, c-format
 msgid "Failed to start new stream"
-msgstr "Ha ocurrido un error al inicializar un nuevo flujo"
+msgstr "Ocurrió un error al inicializar un nuevo flujo"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2707
@@ -80,13 +79,13 @@ msgstr "Falló al abrir el dispositivo de salida"
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
-"Ha ocurrido un error al crear el elemento GStreamer; compruebe su instalación"
+"Ocurrió un error al crear el elemento GStreamer; compruebe su instalación"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3069
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
-"Ha ocurrido un error al crear un elemento de salida de audio; compruebe su "
+"Ocurrió un error al crear un elemento de salida de audio; compruebe su "
 "instalación"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3103
@@ -97,14 +96,12 @@ msgstr ""
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
-"Ha ocurrido un error al enlazar la tubería de GStreamer; compruebe su "
-"instalación"
+"Ocurrió un error al enlazar la tubería de GStreamer; compruebe su instalación"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3284
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
-msgstr ""
-"Ha ocurrido un error al crear una tubería de GStreamer para reproducir %s"
+msgstr "Ocurrió un error al crear una tubería de GStreamer para reproducir %s"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3300
 #, c-format
@@ -480,7 +477,6 @@ msgstr "_Género:"
 
 #: ../data/ui/song-info-multiple.ui.h:10 ../data/ui/song-info.ui.h:22
 #: ../plugins/audiocd/album-info.ui.h:6
-#: ../plugins/magnatune/magnatune-prefs.ui.h:46
 msgid "_Year:"
 msgstr "Añ_o:"
 
@@ -525,7 +521,7 @@ msgid "Recently Played"
 msgstr "Reproducidos recientemente"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../plugins/status-icon/rb-status-icon-plugin.c:60
+#: ../plugins/status-icon/rb-status-icon-plugin.c:56
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1528 ../shell/rb-shell.c:1010
 #: ../shell/rb-shell.c:1974
 msgid "Music Player"
@@ -660,7 +656,7 @@ msgstr "%d %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:479
 #: ../plugins/daap/rb-daap-connection.c:698
-#: ../plugins/generic-player/rb-generic-player-source.c:977
+#: ../plugins/generic-player/rb-generic-player-source.c:987
 #: ../plugins/ipod/rb-ipod-source.c:391
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:520
@@ -671,7 +667,7 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:497
 #: ../plugins/mtpdevice/rb-mtp-source.c:861
 #: ../plugins/mtpdevice/rb-mtp-source.c:973
-#: ../plugins/status-icon/rb-status-icon-plugin.c:736
+#: ../plugins/status-icon/rb-status-icon-plugin.c:732
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
 #: ../podcast/rb-podcast-manager.c:1868
 #: ../podcast/rb-podcast-properties-dialog.c:484
@@ -753,7 +749,7 @@ msgstr "Error de comunicación de D-BUS"
 #: ../plugins/cd-recorder/rb-recorder-gst.c:505
 #, c-format
 msgid "Failed to create %s element; check your installation"
-msgstr "Ha ocurrido un error al crear el elemento %s; compruebe su instalación"
+msgstr "Ocurrió un error al crear el elemento %s; compruebe su instalación"
 
 #: ../metadata/rb-metadata-gst.c:739
 #, c-format
@@ -772,7 +768,6 @@ msgstr "El tipo MIME del archivo no se pudo identificar"
 
 #: ../metadata/rb-metadata-gst.c:956
 #, c-format
-#| msgid "Unable to check file type: %s"
 msgid "Unable to identify file type"
 msgstr "No se puede identificar el tipo de archivo"
 
@@ -1393,7 +1388,7 @@ msgstr "Razón"
 #: ../plugins/cd-recorder/rb-recorder-gst.c:417
 #, c-format
 msgid "Failed to create pipeline"
-msgstr "Ha ocurrido un error al crear un pipeline"
+msgstr "Ocurrió un error al crear un pipeline"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:523
 #: ../plugins/cd-recorder/rb-recorder-gst.c:529
@@ -1456,12 +1451,12 @@ msgid ""
 "There was an error writing to the CD:\n"
 "%s"
 msgstr ""
-"Ha ocurrido un error al escribir en el CD:\n"
+"Ocurrió un error al escribir en el CD:\n"
 "%s"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1256
 msgid "There was an error writing to the CD"
-msgstr "Ha ocurrido un error al escribir en el CD"
+msgstr "Ocurrió un error al escribir en el CD"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:277
 msgid "Maximum possible"
@@ -2034,27 +2029,45 @@ msgstr ""
 "Soporte para los dispositivos de reproducción de audio genéricos (más PSP y "
 "Nokia 770)"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:94
+#: ../plugins/generic-player/rb-generic-player-plugin.c:95
 #: ../shell/rb-playlist-manager.c:1156 ../shell/rb-playlist-manager.c:1199
 msgid "New Playlist"
 msgstr "Lista de reproducción nueva"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:95
+#: ../plugins/generic-player/rb-generic-player-plugin.c:96
 msgid "Create a new playlist on this device"
 msgstr "Crear una lista de reproducción en este dispositivo"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:97
+#: ../plugins/generic-player/rb-generic-player-plugin.c:98
 msgid "Delete Playlist"
 msgstr "Borrar lista de reproducción"
 
-#: ../plugins/generic-player/rb-generic-player-plugin.c:98
+#: ../plugins/generic-player/rb-generic-player-plugin.c:99
 msgid "Delete this playlist"
 msgstr "Borrar esta lista de reproducción"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:556
+#: ../plugins/generic-player/rb-generic-player-plugin.c:101
+#: ../plugins/ipod/rb-ipod-plugin.c:106
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:129 ../shell/rb-shell-clipboard.c:190
+#: ../sources/rb-podcast-source.c:313
+msgid "_Properties"
+msgstr "_Propiedades"
+
+#: ../plugins/generic-player/rb-generic-player-plugin.c:102
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:130
+msgid "Display device properties"
+msgstr "Mostrar las propiedades del dispositivo"
+
+#: ../plugins/generic-player/rb-generic-player-source.c:566
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Importando (%d/%d)"
+
+#: ../plugins/generic-player/rb-generic-player-source.c:1225
+#: ../plugins/ipod/rb-ipod-source.c:1776
+#: ../plugins/mtpdevice/rb-mtp-source.c:1226
+msgid "Advanced"
+msgstr "Avanzado"
 
 #: ../plugins/im-status/im-status.rb-plugin.in.h:1
 msgid "IM Status"
@@ -2116,43 +2129,48 @@ msgstr ""
 msgid "<b>System</b>"
 msgstr "<b>Sistema</b>"
 
-#: ../plugins/ipod/ipod-info.ui.h:2
+#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
+#| msgid "Audio _format:"
+msgid "Audio formats:"
+msgstr "Formato de sonido:"
+
+#: ../plugins/ipod/ipod-info.ui.h:3
 msgid "Database version:"
 msgstr "Versión de la base de datos:"
 
-#: ../plugins/ipod/ipod-info.ui.h:3
+#: ../plugins/ipod/ipod-info.ui.h:4
 msgid "Device node:"
 msgstr "Nodo del dispositivo:"
 
-#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:3
+#: ../plugins/ipod/ipod-info.ui.h:5 ../plugins/mtpdevice/mtp-info.ui.h:4
 msgid "Firmware version:"
 msgstr "Versión del firmware:"
 
-#: ../plugins/ipod/ipod-info.ui.h:5 ../plugins/mtpdevice/mtp-info.ui.h:5
+#: ../plugins/ipod/ipod-info.ui.h:6 ../plugins/mtpdevice/mtp-info.ui.h:6
 msgid "Model:"
 msgstr "Modelo:"
 
-#: ../plugins/ipod/ipod-info.ui.h:6
+#: ../plugins/ipod/ipod-info.ui.h:7
 msgid "Mount point:"
 msgstr "Punto de montaje:"
 
-#: ../plugins/ipod/ipod-info.ui.h:7 ../plugins/mtpdevice/mtp-info.ui.h:6
+#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
 msgid "Playlists:"
 msgstr "Listas de reproducción:"
 
-#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:8
 msgid "Podcasts:"
 msgstr "Podcasts:"
 
-#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:8
+#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:9
 msgid "Serial number:"
 msgstr "Número de serie:"
 
-#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:9
+#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:10
 msgid "Tracks:"
 msgstr "Pistas:"
 
-#: ../plugins/ipod/ipod-info.ui.h:11
+#: ../plugins/ipod/ipod-info.ui.h:12
 msgid "iPod _name:"
 msgstr "_Nombre del iPod:"
 
@@ -2186,7 +2204,6 @@ msgid "_Model:"
 msgstr "_Modelo:"
 
 #: ../plugins/ipod/ipod-init.ui.h:5
-#: ../plugins/magnatune/magnatune-prefs.ui.h:45
 msgid "_Name:"
 msgstr "_Nombre:"
 
@@ -2206,12 +2223,6 @@ msgstr "_Renombrar"
 #: ../plugins/ipod/rb-ipod-plugin.c:104
 msgid "Rename iPod"
 msgstr "Renombrar iPod"
-
-#: ../plugins/ipod/rb-ipod-plugin.c:106
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:129 ../shell/rb-shell-clipboard.c:190
-#: ../sources/rb-podcast-source.c:313
-msgid "_Properties"
-msgstr "_Propiedades"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:107
 msgid "Display iPod properties"
@@ -2245,11 +2256,6 @@ msgstr "Podcasts"
 #: ../plugins/ipod/rb-ipod-source.c:1667
 msgid "New playlist"
 msgstr "Lista de reproducción nueva"
-
-#: ../plugins/ipod/rb-ipod-source.c:1773
-#: ../plugins/mtpdevice/rb-mtp-source.c:1223
-msgid "Advanced"
-msgstr "Avanzado"
 
 #: ../plugins/iradio/iradio.rb-plugin.in.h:1
 msgid "Internet Radio"
@@ -2727,141 +2733,115 @@ msgid "You can find more information at http://www.magnatune.com/"
 msgstr "Puede encontrar más información en http://www.magnatune.com/"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
-#: ../plugins/magnatune/magnatune-purchase.ui.h:1
 msgid "$10 US (better than average)"
 msgstr "$10 EE. UU. (más que la media)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:2
-#: ../plugins/magnatune/magnatune-purchase.ui.h:2
 msgid "$11 US"
 msgstr "$11 EE. UU."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:3
-#: ../plugins/magnatune/magnatune-purchase.ui.h:3
 msgid "$12 US (generous)"
 msgstr "$12 EE. UU. (generoso)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:4
-#: ../plugins/magnatune/magnatune-purchase.ui.h:4
 msgid "$13 US"
 msgstr "$13 EE. UU."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:5
-#: ../plugins/magnatune/magnatune-purchase.ui.h:5
 msgid "$14 US"
 msgstr "$14 EE. UU."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:6
-#: ../plugins/magnatune/magnatune-purchase.ui.h:6
 msgid "$15 US (VERY generous!)"
 msgstr "$15 EE. UU. (MUY generoso)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:7
-#: ../plugins/magnatune/magnatune-purchase.ui.h:7
 msgid "$16 US"
 msgstr "$16 EE. UU."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:8
-#: ../plugins/magnatune/magnatune-purchase.ui.h:8
 msgid "$17 US"
 msgstr "$17 EE. UU."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:9
-#: ../plugins/magnatune/magnatune-purchase.ui.h:9
 msgid "$18 US (We love you!)"
 msgstr "$18 EE. UU. (te queremos)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:10
-#: ../plugins/magnatune/magnatune-purchase.ui.h:10
 msgid "$5 US"
 msgstr "$5 EE. UU."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:11
-#: ../plugins/magnatune/magnatune-purchase.ui.h:11
 msgid "$6 US"
 msgstr "$6 EE. UU."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:12
-#: ../plugins/magnatune/magnatune-purchase.ui.h:12
 msgid "$7 US"
 msgstr "$7 EE. UU."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:13
-#: ../plugins/magnatune/magnatune-purchase.ui.h:13
 msgid "$8 US (typical)"
 msgstr "$8 EE. UU. (general)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:14
-#: ../plugins/magnatune/magnatune-purchase.ui.h:14
 msgid "$9 US"
 msgstr "$9 EE. UU."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:15
-#: ../plugins/magnatune/magnatune-purchase.ui.h:15
 msgid "128K MP3"
 msgstr "128K MP3"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:16
-msgid ""
-"<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
-"expiration date listed.</span>"
-msgstr ""
-"<span weight=\"bold\" foreground=\"red\">Su tarjeta de crédito ha pasado la "
-"fecha de caducidad.</span>"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:17
-#: ../plugins/magnatune/magnatune-purchase.ui.h:16
 msgid "April (04)"
 msgstr "Abril (04)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:18
-#: ../plugins/magnatune/magnatune-purchase.ui.h:18
+#: ../plugins/magnatune/magnatune-prefs.ui.h:17
 msgid "August (08)"
 msgstr "Agosto (08)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:19
-msgid "C_redit Card:"
-msgstr "Tarjeta de _crédito:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:20
-#: ../plugins/magnatune/magnatune-purchase.ui.h:21
+#: ../plugins/magnatune/magnatune-prefs.ui.h:18
 msgid "December (12)"
 msgstr "Diciembre (12)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:21
-msgid "Default _amount to pay:"
-msgstr "_Cantidad que pagar predeterminada:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:22
-msgid "Expiry:"
-msgstr "Caducidad:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:23
-#: ../plugins/magnatune/magnatune-purchase.ui.h:24
+#: ../plugins/magnatune/magnatune-prefs.ui.h:19
 msgid "FLAC"
 msgstr "FLAC"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:24
-#: ../plugins/magnatune/magnatune-purchase.ui.h:25
+#: ../plugins/magnatune/magnatune-prefs.ui.h:20
 msgid "February (02)"
 msgstr "Febrero (02)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:25
+#: ../plugins/magnatune/magnatune-prefs.ui.h:21
 msgid "Find out about Magnatune at "
 msgstr "Informarse acerca de de Magnatune en "
 
+#: ../plugins/magnatune/magnatune-prefs.ui.h:22
+msgid "Get an account at "
+msgstr "Obtener una cuenta de "
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:23
+#| msgid "Find out about Magnatune at "
+msgid "I don't have a Magnatune account"
+msgstr "No tengo una cuenta en Magnatune"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:24
+msgid "I have a download account"
+msgstr "Tengo una cuenta de descargas"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:25
+msgid "I have a streaming account"
+msgstr "Tengo una cuenta de «streaming»"
+
 #: ../plugins/magnatune/magnatune-prefs.ui.h:26
-#: ../plugins/magnatune/magnatune-purchase.ui.h:28
 msgid "January (01)"
 msgstr "Enero (01)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:27
-#: ../plugins/magnatune/magnatune-purchase.ui.h:29
 msgid "July (07)"
 msgstr "Julio (07)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:28
-#: ../plugins/magnatune/magnatune-purchase.ui.h:30
 msgid "June (06)"
 msgstr "Junio (06)"
 
@@ -2874,132 +2854,75 @@ msgid "Magnatune Preferences"
 msgstr "Preferencias de Magnatune"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:31
-#: ../plugins/magnatune/magnatune-purchase.ui.h:31
 msgid "March (03)"
 msgstr "Marzo (03)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:32
-#: ../plugins/magnatune/magnatune-purchase.ui.h:32
 msgid "May (05)"
 msgstr "Mayo (05)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:33
-#: ../plugins/magnatune/magnatune-purchase.ui.h:33
 msgid "November (11)"
 msgstr "Noviembre (11)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:34
-#: ../plugins/magnatune/magnatune-purchase.ui.h:34
 msgid "October (10)"
 msgstr "Octubre (10)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:35
-#: ../plugins/magnatune/magnatune-purchase.ui.h:35
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:36
+#| msgid "_Password:"
+msgid "Password:"
+msgstr "Contraseña:"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:37
 msgid "Preferred audio _format:"
 msgstr "Formato de audio _preferido:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+#: ../plugins/magnatune/magnatune-prefs.ui.h:38
 msgid "Redownload purchased music at "
 msgstr "Volver a descargar la música comprada en "
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:38
-msgid "Remember my credit card details"
-msgstr "Recordar los detalles de tarjeta de crédito"
-
 #: ../plugins/magnatune/magnatune-prefs.ui.h:39
-#: ../plugins/magnatune/magnatune-purchase.ui.h:37
 msgid "September (09)"
 msgstr "Septiembre (09)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:40
-#: ../plugins/magnatune/magnatune-purchase.ui.h:38
+#| msgid "_Username:"
+msgid "Username:"
+msgstr "Usuario:"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:41
 msgid "VBR MP3"
 msgstr "VBR MP3"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:41
-msgid "Visit Magnatune at "
-msgstr "Visite Magnatune en "
-
 #: ../plugins/magnatune/magnatune-prefs.ui.h:42
-#: ../plugins/magnatune/magnatune-purchase.ui.h:39
 msgid "WAV"
 msgstr "WAV"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:43
-msgid "_Email:"
-msgstr "_Correo-e:"
+msgid ""
+"Your account details have changed. Changes will be applied the next time you "
+"start Rhythmbox."
+msgstr ""
+"Los detalles de su cuenta han cambiado. Los cambios se aplicarán la "
+"siguiente ver que inicie Rhythmbox."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:44
-msgid "_Month:"
-msgstr "_Mes:"
+#| msgid "http://www.magnatune.com/"
+msgid "http://magnatune.com/compare_plans"
+msgstr "http://magnatune.com/compare_plans"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:47
-msgid "http://www.magnatune.com/"
-msgstr "http://www.magnatune.com/"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:48
+#: ../plugins/magnatune/magnatune-prefs.ui.h:45
 msgid "http://www.magnatune.com/info/"
 msgstr "http://www.magnatune.com/info/"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:49
+#: ../plugins/magnatune/magnatune-prefs.ui.h:46
 msgid "http://www.magnatune.com/info/redownload"
 msgstr "http://www.magnatune.com/info/redownload"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:17
-msgid "Audio _format:"
-msgstr "Formato de _audio:"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:19
-msgid "C_redit Card number:"
-msgstr "_Número de tarjeta de crédito:"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:20
-msgid "Credit Card"
-msgstr "Tarjeta de crédito"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:22
-msgid "Expiry _month:"
-msgstr "_Mes de caducidad:"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:23
-msgid "Expiry _year (last two digits):"
-msgstr "_Año de caducidad (últimos dos dígitos):"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:26
-msgid "Gift Card"
-msgstr "Tarjeta de regalo"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:27
-msgid "Gift card number:"
-msgstr "Número de la tarjeta de regalo:"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:36
-msgid "Purchase Magnatune Tracks"
-msgstr "Comprar pistas en Magnatune"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:40
-msgid "_Amount to pay (US Dollars):"
-msgstr "_Cantidad a pagar (Dólares americanos):"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:41
-msgid "_Email address:"
-msgstr "Dirección de correo-_e:"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:42
-msgid "_Name (as printed on card):"
-msgstr "_Nombre (como está impreso en la tarjeta):"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:43
-msgid "_Purchase"
-msgstr "_Comprar"
-
-#: ../plugins/magnatune/magnatune-purchase.ui.h:44
-msgid "_Remember my credit card details"
-msgstr "_Recordar los detalles de mi tarjeta de crédito"
 
 #: ../plugins/magnatune/magnatune.rb-plugin.in.h:1
 msgid ""
@@ -3013,113 +2936,119 @@ msgstr ""
 msgid "Magnatune Store"
 msgstr "Tienda Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:74
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:67
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:121
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:113
 msgid "Loading Magnatune catalog"
 msgstr "Cargando catálogo de Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:124
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:116
 msgid "Downloading Magnatune Album(s)"
 msgstr "Descargando álbum(es) Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:234
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:217
 msgid "Couldn't purchase album"
 msgstr "No se pudo comprar el álbum"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:235
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:218
 msgid "You must have a library location set to purchase an album."
 msgstr ""
 "Debe tener establecida una ubicación para la biblioteca para poder comprar "
 "un álbum."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:258
-#, python-format
-msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
-msgstr "¿Le gustaría comprar el álbum <i>%(album)s</i> de «%(artist)s»?"
-
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:375
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:304
 msgid "Unable to load catalog"
 msgstr "No se pudo cargar el catálogo"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:376
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:305
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
 "Rhythmbox no pudo entender el catálogo de Magnatune, rellene un informe de "
 "error."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:462
-msgid "Authorizing Purchase"
-msgstr "Autorizando compra"
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:420
+#| msgid "Download song"
+msgid "Download Error"
+msgstr "Error en la descarga"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:463
-msgid "Authorizing purchase with the Magnatune server. Please wait..."
-msgstr "Autorizando la compra con el servidor de Magnatune. Espere…"
-
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:509
-msgid "Purchase Error"
-msgstr "Error al comprar"
-
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:510
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:421
 #, python-format
+#| msgid ""
+#| "An error occurred while trying to purchase the album.\n"
+#| "The Magnatune server returned:\n"
+#| "%s"
 msgid ""
-"An error occurred while trying to purchase the album.\n"
+"An error occurred while trying to authorize the download.\n"
 "The Magnatune server returned:\n"
 "%s"
 msgstr ""
-"Ha ocurrido un error mientras se intentaba comprar el álbum.\n"
+"Ocurrió un error mientras se intentaba autorizar la descarga.\n"
 "El servidor de Magnatune devolvió:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:513
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:424
 #: ../widgets/rb-entry-view.c:1627
 msgid "Error"
 msgstr "Error"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:514
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:425
 #, python-format
+#| msgid ""
+#| "An error occurred while trying to purchase the album.\n"
+#| "The error text is:\n"
+#| "%s"
 msgid ""
-"An error occurred while trying to purchase the album.\n"
+"An error occurred while trying to download the album.\n"
 "The error text is:\n"
 "%s"
 msgstr ""
-"Ha ocurrido un error mientras se intentaba comprar el álbum.\n"
+"Ocurrió un error mientras se intentaba descargar el álbum.\n"
 "El texto del error es:\n"
 "%s"
 
-#. Add the popup menu actions
-#: ../plugins/magnatune/magnatune/__init__.py:117
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:494
+#| msgid "Finished downloading podcast"
+msgid "Finished Downloading"
+msgstr "Finalizó la descarga"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:494
+msgid "All Magnatune downloads have been completed."
+msgstr "Se completaron todas las descargas de Magnatune."
+
+#: ../plugins/magnatune/magnatune/__init__.py:113
 msgid "Purchase Album"
 msgstr "Comprar álbum"
 
-#: ../plugins/magnatune/magnatune/__init__.py:118
+#: ../plugins/magnatune/magnatune/__init__.py:114
 msgid "Purchase this album from Magnatune"
 msgstr "Comprar este álbum en Magnatune"
 
+#: ../plugins/magnatune/magnatune/__init__.py:118
+#| msgid "_Download Album"
+msgid "Download Album"
+msgstr "Descargar álbum"
+
+#: ../plugins/magnatune/magnatune/__init__.py:119
+#| msgid "Purchase this album from Magnatune"
+msgid "Download this album from Magnatune"
+msgstr "Descargar este álbum desde Magnatune"
+
 #: ../plugins/magnatune/magnatune/__init__.py:123
-msgid "Purchase Physical CD"
-msgstr "Comprar físicamente un CD"
-
-#: ../plugins/magnatune/magnatune/__init__.py:124
-msgid "Purchase a physical CD from Magnatune"
-msgstr "Comprar este disco físicamente en Magnatune"
-
-#: ../plugins/magnatune/magnatune/__init__.py:128
 msgid "Artist Information"
 msgstr "Información del artista"
 
-#: ../plugins/magnatune/magnatune/__init__.py:129
+#: ../plugins/magnatune/magnatune/__init__.py:124
 msgid "Get information about this artist"
 msgstr "Obtener información sobre este artista"
 
-#: ../plugins/magnatune/magnatune/__init__.py:133
+#: ../plugins/magnatune/magnatune/__init__.py:128
 msgid "Cancel Downloads"
 msgstr "Cancelar descargas"
 
-#: ../plugins/magnatune/magnatune/__init__.py:134
+#: ../plugins/magnatune/magnatune/__init__.py:129
 msgid "Stop downloading purchased albums"
 msgstr "Parar de descargar álbumes comprados"
 
@@ -3141,11 +3070,11 @@ msgstr ""
 "Soporte para dispositivos MTP (mostrar el contenido, reproducir desde el "
 "dispositivo)"
 
-#: ../plugins/mtpdevice/mtp-info.ui.h:2
+#: ../plugins/mtpdevice/mtp-info.ui.h:3
 msgid "Device _name:"
 msgstr "_Nombre del dispositivo:"
 
-#: ../plugins/mtpdevice/mtp-info.ui.h:4
+#: ../plugins/mtpdevice/mtp-info.ui.h:5
 msgid "Manufacturer:"
 msgstr "Fabricante:"
 
@@ -3167,10 +3096,6 @@ msgstr "Expulsar el dispositivo MTP"
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:127
 msgid "Rename MTP-device"
 msgstr "Renombrar el dispositivo MTP"
-
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:130
-msgid "Display device properties"
-msgstr "Mostrar las propiedades del dispositivo"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:709
 #: ../plugins/mtpdevice/rb-mtp-thread.c:741
@@ -3285,7 +3210,6 @@ msgid "ReplayGain _mode:"
 msgstr "_Modo de ReplayGain:"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:5
-#| msgid "Status icon preferences"
 msgid "ReplayGain preferences"
 msgstr "Preferencias de ReplayGain"
 
@@ -3319,7 +3243,6 @@ msgstr ""
 "están disponibles. Los elementos que faltan son:  %s"
 
 #: ../plugins/replaygain/replaygain/player.py:49
-#| msgid "Track list not available"
 msgid "ReplayGain GStreamer plugins not available"
 msgstr "Los complementos de GStreamer de ReplayGain no están disponibles"
 
@@ -3369,61 +3292,53 @@ msgstr "Enviar las pistas seleccionadas por correo-e o mensajería instantánea"
 msgid "Send tracks"
 msgstr "Enviar pistas"
 
-#: ../plugins/status-icon/eggtrayicon.c:133
-msgid "Orientation"
-msgstr "Orientación"
-
-#: ../plugins/status-icon/eggtrayicon.c:134
-msgid "The orientation of the tray."
-msgstr "La orientación de la bandeja."
-
-#: ../plugins/status-icon/rb-status-icon-plugin.c:142
+#: ../plugins/status-icon/rb-status-icon-plugin.c:138
 msgid "_Close"
 msgstr "_Cerrar"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:143
+#: ../plugins/status-icon/rb-status-icon-plugin.c:139
 msgid "Hide the music player window"
 msgstr "Ocultar la ventana del reproductor de música"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:149
+#: ../plugins/status-icon/rb-status-icon-plugin.c:145
 msgid "_Show Music Player"
 msgstr "_Mostrar el reproductor de música"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:150
+#: ../plugins/status-icon/rb-status-icon-plugin.c:146
 msgid "Choose music to play"
 msgstr "Elija la música que reproducir"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:152
+#: ../plugins/status-icon/rb-status-icon-plugin.c:148
 msgid "Show N_otifications"
 msgstr "Mostrar n_otificaciones"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:153
+#: ../plugins/status-icon/rb-status-icon-plugin.c:149
 msgid "Show notifications of song changes and other events"
 msgstr "Mostrar notificaciones de los cambios de la canción y otros eventos"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:436
+#: ../plugins/status-icon/rb-status-icon-plugin.c:432
 msgid "Next"
 msgstr "Siguiente"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:587
+#: ../plugins/status-icon/rb-status-icon-plugin.c:583
 #: ../remote/dbus/rb-client.c:454 ../remote/dbus/rb-client.c:480
 msgid "Not playing"
 msgstr "No se está reproduciendo nada"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:590
+#: ../plugins/status-icon/rb-status-icon-plugin.c:586
 #, c-format
 msgid "Paused, %s"
 msgstr "Pausado, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:679
+#: ../plugins/status-icon/rb-status-icon-plugin.c:675
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "por <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:700
+#: ../plugins/status-icon/rb-status-icon-plugin.c:696
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
@@ -4291,7 +4206,7 @@ msgstr "Lineal, quitando las entradas una vez reproducida"
 #: ../shell/rb-shell-player.c:934
 #, c-format
 msgid "Failed to create the player: %s"
-msgstr "Ha ocurrido un error al crear el reproductor: %s"
+msgstr "Ocurrió un error al crear el reproductor: %s"
 
 #: ../shell/rb-shell-player.c:1480
 #, c-format
@@ -4668,7 +4583,7 @@ msgstr "Títulos"
 msgid "Search titles"
 msgstr "Buscar títulos"
 
-#: ../sources/rb-removable-media-source.c:741
+#: ../sources/rb-removable-media-source.c:768
 #: ../sources/rb-library-source.c:1209
 msgid "Error transferring track"
 msgstr "Error al transferir la pista"
@@ -5329,11 +5244,11 @@ msgstr[0] "%d estrella"
 msgstr[1] "%d estrellas"
 
 #. this string can only be so long, or there wont be a search entry :)
-#: ../widgets/rb-search-entry.c:163
+#: ../widgets/rb-search-entry.c:157
 msgid "_Search:"
 msgstr "_Buscar:"
 
-#: ../widgets/rb-search-entry.c:174
+#: ../widgets/rb-search-entry.c:167
 msgid "Clear the search text"
 msgstr "Limpiar el texto de búsqueda"
 
@@ -5356,6 +5271,95 @@ msgstr "En el escritorio"
 #: ../widgets/rb-song-info.c:1191
 msgid "Unknown location"
 msgstr "Dirección desconocida"
+
+#~ msgid ""
+#~ "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
+#~ "expiration date listed.</span>"
+#~ msgstr ""
+#~ "<span weight=\"bold\" foreground=\"red\">Su tarjeta de crédito ha pasado "
+#~ "la fecha de caducidad.</span>"
+
+#~ msgid "C_redit Card:"
+#~ msgstr "Tarjeta de _crédito:"
+
+#~ msgid "Default _amount to pay:"
+#~ msgstr "_Cantidad que pagar predeterminada:"
+
+#~ msgid "Expiry:"
+#~ msgstr "Caducidad:"
+
+#~ msgid "Remember my credit card details"
+#~ msgstr "Recordar los detalles de tarjeta de crédito"
+
+#~ msgid "Visit Magnatune at "
+#~ msgstr "Visite Magnatune en "
+
+#~ msgid "_Email:"
+#~ msgstr "_Correo-e:"
+
+#~ msgid "_Month:"
+#~ msgstr "_Mes:"
+
+#~ msgid "C_redit Card number:"
+#~ msgstr "_Número de tarjeta de crédito:"
+
+#~ msgid "Credit Card"
+#~ msgstr "Tarjeta de crédito"
+
+#~ msgid "Expiry _month:"
+#~ msgstr "_Mes de caducidad:"
+
+#~ msgid "Expiry _year (last two digits):"
+#~ msgstr "_Año de caducidad (últimos dos dígitos):"
+
+#~ msgid "Gift Card"
+#~ msgstr "Tarjeta de regalo"
+
+#~ msgid "Gift card number:"
+#~ msgstr "Número de la tarjeta de regalo:"
+
+#~ msgid "Purchase Magnatune Tracks"
+#~ msgstr "Comprar pistas en Magnatune"
+
+#~ msgid "_Amount to pay (US Dollars):"
+#~ msgstr "_Cantidad a pagar (Dólares americanos):"
+
+#~ msgid "_Email address:"
+#~ msgstr "Dirección de correo-_e:"
+
+#~ msgid "_Name (as printed on card):"
+#~ msgstr "_Nombre (como está impreso en la tarjeta):"
+
+#~ msgid "_Purchase"
+#~ msgstr "_Comprar"
+
+#~ msgid "_Remember my credit card details"
+#~ msgstr "_Recordar los detalles de mi tarjeta de crédito"
+
+#~ msgid ""
+#~ "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
+#~ msgstr "¿Le gustaría comprar el álbum <i>%(album)s</i> de «%(artist)s»?"
+
+#~ msgid "Authorizing Purchase"
+#~ msgstr "Autorizando compra"
+
+#~ msgid "Authorizing purchase with the Magnatune server. Please wait..."
+#~ msgstr "Autorizando la compra con el servidor de Magnatune. Espere…"
+
+#~ msgid "Purchase Error"
+#~ msgstr "Error al comprar"
+
+#~ msgid "Purchase Physical CD"
+#~ msgstr "Comprar físicamente un CD"
+
+#~ msgid "Purchase a physical CD from Magnatune"
+#~ msgstr "Comprar este disco físicamente en Magnatune"
+
+#~ msgid "Orientation"
+#~ msgstr "Orientación"
+
+#~ msgid "The orientation of the tray."
+#~ msgstr "La orientación de la bandeja."
 
 #~ msgid "iPod Properties"
 #~ msgstr "Propiedades del iPod"
