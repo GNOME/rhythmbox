@@ -33,6 +33,7 @@ import os
 import gobject, gio
 import gtk
 import gnome, gconf
+import gnomekeyring as keyring
 import xml
 import urllib
 import urlparse
@@ -210,7 +211,6 @@ class MagnatuneSource(rb.BrowserSource):
 				gtk.show_uri(screen, url, gtk.gdk.CURRENT_TIME)
 				urls.add(url)
 	
-	# This method isn't called at the moment. We'll need it later to add download accounts though...
 	def download_album(self):
 		try:
 			library_location = self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0] # Just use the first library location
@@ -275,15 +275,23 @@ class MagnatuneSource(rb.BrowserSource):
 
 
 	def __load_catalogue(self):
+		def got_items(result, items):
+			account_type = self.__client.get_string(self.__plugin.gconf_keys['account_type'])
+			if result is not None and account_type != 'none':
+				rb.error_dialog(title = _("Couldn't get account details"),
+				                message = str(result))
+				return
+			username, password = items[0].secret.split('\n')
+			parser = xml.sax.make_parser()
+			parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict, self.__art_dict, account_type, username, password))
+		
+			self.__catalogue_loader = rb.ChunkLoader()
+			self.__catalogue_loader.get_url_chunks(magnatune_song_info, 64*1024, True, self.__catalogue_chunk_cb, parser)
+		
 		self.__notify_status_changed()
 		self.__has_loaded = True
 
-		parser = xml.sax.make_parser()
-		parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict, self.__art_dict, self.__plugin))
-		
-		self.__catalogue_loader = rb.ChunkLoader()
-		self.__catalogue_loader.get_url_chunks(magnatune_song_info, 64*1024, True, self.__catalogue_chunk_cb, parser)
-
+		keyring.find_items(keyring.ITEM_GENERIC_SECRET, {'rhythmbox-plugin': 'magnatune'}, got_items)
 
 
 	def __find_song_info(self, catalogue):
@@ -370,22 +378,30 @@ class MagnatuneSource(rb.BrowserSource):
 
 	#
 	# internal purchasing code
-	# not used at the moment, but it will be used again when we have download accounts...
 	#
 	def __auth_download(self, sku): # http://magnatune.com/info/api#purchase
-		print "downloading album:", sku
-		url_dict = {
-			'id':	magnatune_partner_id,
-			'sku':	sku
-		}
-		url = "http://%s:%s@download.magnatune.com/buy/membership_free_dl_xml?" % (self.__client.get_string(self.__plugin.gconf_keys['username']), self.__client.get_string(self.__plugin.gconf_keys['password']))
-		url = url + urllib.urlencode(url_dict)
+		def got_items(result, items):
+			if result is not None:
+				rb.error_dialog(title = _("Couldn't get account details"),
+				                message = str(result))
+				return
+			
+			username, password = items[0].secret.split('\n')
+			print "downloading album: " + sku
+			url_dict = {
+				'id':	magnatune_partner_id,
+				'sku':	sku
+			}
+			url = "http://%s:%s@download.magnatune.com/buy/membership_free_dl_xml?" % (username, password)
+			url = url + urllib.urlencode(url_dict)
 
-		l = rb.Loader()
-		l.get_url (url, self.__auth_data_cb, sku)
+			l = rb.Loader()
+			l.get_url (url, self.__auth_data_cb, (sku, username, password))
+		
+		keyring.find_items(keyring.ITEM_GENERIC_SECRET, {'rhythmbox-plugin': 'magnatune'}, got_items)
 
 
-	def __auth_data_cb (self, data, sku):
+	def __auth_data_cb (self, data, (sku, username, password)):
 		buy_album_handler = BuyAlbumHandler(self.__client.get_string(self.__plugin.gconf_keys['format']))
 		auth_parser = xml.sax.make_parser()
 		auth_parser.setContentHandler(buy_album_handler)
@@ -402,7 +418,7 @@ class MagnatuneSource(rb.BrowserSource):
 
 			# process the URI: add authentication info, quote the filename component for some reason
 			parsed = urlparse.urlparse(buy_album_handler.url)
-			netloc = "%s:%s@%s" % (self.__client.get_string(self.__plugin.gconf_keys['username']), self.__client.get_string(self.__plugin.gconf_keys['password']), parsed.hostname)
+			netloc = "%s:%s@%s" % (username, password, parsed.hostname)
 
 			spath = os.path.split(urllib.url2pathname(parsed.path))
 			basename = spath[1]

@@ -26,12 +26,13 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import rhythmdb
+import gnomekeyring as keyring
 import xml.sax, xml.sax.handler
 import datetime, re, urllib
 
 class TrackListHandler(xml.sax.handler.ContentHandler):
 
-	def __init__(self, db, entry_type, sku_dict, home_dict, art_dict, plugin):
+	def __init__(self, db, entry_type, sku_dict, home_dict, art_dict, account_type, username, password):
 		xml.sax.handler.ContentHandler.__init__(self)
 		self.__db = db
 		self.__entry_type = entry_type
@@ -39,9 +40,9 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 		self.__home_dict = home_dict
 		self.__art_dict = art_dict
 		self.__track = {}
-		self.__plugin = plugin
-		self.__user = urllib.quote(self.__plugin.client.get_string(self.__plugin.gconf_keys['username']))
-		self.__pw = urllib.quote(self.__plugin.client.get_string(self.__plugin.gconf_keys['password']))
+		self.__account_type = account_type
+		self.__user = urllib.quote(username)
+		self.__pw = urllib.quote(password)
 		self.__URIre = re.compile(r'^http://[^.]+\.magnatune\.com/')
 		self.__nsre = re.compile(r'\.(mp3|ogg)$')
 
@@ -62,7 +63,7 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 				else:
 					trackurl = self.__track['url']
 				# use ad-free tracks if available
-				if self.__plugin.client.get_string(self.__plugin.gconf_keys['account_type']) != 'none':
+				if self.__account_type != 'none':
 					trackurl = self.fix_trackurl(trackurl)
 	
 				# add the track to the source

@@ -29,6 +29,7 @@ import rhythmdb, rb
 import gobject
 import gtk
 import gconf, gnome
+import gnomekeyring as keyring
 
 import urllib
 import zipfile
@@ -67,9 +68,7 @@ class Magnatune(rb.Plugin):
 		'pay': "/apps/rhythmbox/plugins/magnatune/pay",
 		'ccauthtoken': "/apps/rhythmbox/plugins/magnatune/ccauthtoken",
 		'continue': "/apps/rhythmbox/plugins/magnatune/continue",
-		'account_type': "/apps/rhythmbox/plugins/magnatune/account_type",
-		'username': "/apps/rhythmbox/plugins/magnatune/username",
-		'password': "/apps/rhythmbox/plugins/magnatune/password"
+		'account_type': "/apps/rhythmbox/plugins/magnatune/account_type"
 	}
 
 
@@ -158,6 +157,42 @@ class Magnatune(rb.Plugin):
 		self.source.playing_entry_changed (entry)
 	
 	def create_configure_dialog(self, dialog=None):
+		keyring_data = {}
+		
+		def got_items(result, items):
+			def created_item(result, id):
+				if result is None: # Item successfully created
+					keyring_data['id'] = id
+					keyring.item_get_info(None, id, got_item)
+				else:
+					rb.error_dialog(title = _("Couldn't create keyring item"),
+					                message = str(result))
+			def got_item(result, item):
+				if result is None: # Item retrieved successfully
+					keyring_data['item'] = item
+					fill_account_details()
+					dialog.present()
+				else:
+					rb.error_dialog(title = _("Couldn't access keyring"),
+					                message = str(result))
+			
+			
+			if result is None: # Got list of search results
+				keyring_data['id'] = items[0].item_id
+				keyring.item_get_info(None, keyring_data['id'], got_item)
+			elif result == keyring.NoMatchError: # No items were found, so we'll create one
+				keyring.item_create(None,
+				                    keyring.ITEM_GENERIC_SECRET,
+				                    "Rhythmbox: Magnatune account information",
+				                    {'rhythmbox-plugin': 'magnatune'},
+				                    "", # Empty secret for now
+				                    True,
+				                    created_item)
+			else: # Some other error occurred
+				rb.error_dialog(title = _("Couldn't access keyring"),
+				                message = str(result))
+		
+		
 		if dialog == None:
 			def fill_account_details():
 				account_type = self.client.get_string(self.gconf_keys['account_type'])
@@ -165,8 +200,9 @@ class Magnatune(rb.Plugin):
 				builder.get_object("stream_account_radio").set_active(account_type == "stream")
 				builder.get_object("download_account_radio").set_active(account_type == "download")
 				
-				builder.get_object("username_entry").set_text(self.client.get_string(self.gconf_keys['username']))
-				builder.get_object("password_entry").set_text(self.client.get_string(self.gconf_keys['password']))
+				username, password = keyring_data['item'].get_secret().split('\n')
+				builder.get_object("username_entry").set_text(username)
+				builder.get_object("password_entry").set_text(password)
 				
 				has_account = account_type != "none"
 				builder.get_object("username_entry").set_sensitive(has_account)
@@ -194,9 +230,21 @@ class Magnatune(rb.Plugin):
 					builder.get_object("account_changed_label").show()
 			
 			def account_details_changed(entry):
-				self.client.set_string(self.gconf_keys['username'], builder.get_object("username_entry").get_text())
-				self.client.set_string(self.gconf_keys['password'], builder.get_object("password_entry").get_text())
+				username = builder.get_object("username_entry").get_text()
+				password = builder.get_object("password_entry").get_text()
+				keyring_data['item'].set_secret('\n'.join((username, password)))
+				
 				builder.get_object("account_changed_label").show()
+			
+			def close_button_pressed(x, y):
+				# The async version is not in the python bindings, grr...
+				try:
+					keyring.item_set_info_sync(None, keyring_data['id'], keyring_data['item'])
+				except Exception, e:
+					rb.error_dialog(title = _("Couldn't store account information"),
+					                message = str(e))
+				dialog.hide()
+				
 
 			self.configure_callback_dic = {
 				"rb_magnatune_audio_combobox_changed_cb" : lambda w: self.client.set_string(self.gconf_keys['format'], self.format_list[w.get_active()]),
@@ -213,10 +261,10 @@ class Magnatune(rb.Plugin):
 			dialog = builder.get_object('preferences_dialog')
 			
 			builder.get_object("audio_combobox").set_active(self.format_list.index(self.client.get_string(self.gconf_keys['format'])))
-			fill_account_details()
 			
 			builder.connect_signals(self.configure_callback_dic)
-			dialog.connect("response", lambda x,y: dialog.hide())
-
-		dialog.present()
+			dialog.connect("response", close_button_pressed)
+		
+		keyring.find_items(keyring.ITEM_GENERIC_SECRET, {'rhythmbox-plugin': 'magnatune'}, got_items)
 		return dialog
+
