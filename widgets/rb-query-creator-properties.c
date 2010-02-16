@@ -70,23 +70,23 @@ static void relativeTimeCriteriaGetWidgetData (GtkWidget *widget, GValue *val);
  */
 const RBQueryCreatorPropertyOption property_options[] =
 {
-	{ N_("Title"), RHYTHMDB_PROP_TITLE, RHYTHMDB_PROP_TITLE_FOLDED, &string_property_type },
-	{ N_("Artist"), RHYTHMDB_PROP_ARTIST, RHYTHMDB_PROP_ARTIST_FOLDED, &string_property_type },
-	{ N_("Album"), RHYTHMDB_PROP_ALBUM, RHYTHMDB_PROP_ALBUM_FOLDED, &string_property_type },
-	{ N_("Genre"), RHYTHMDB_PROP_GENRE, RHYTHMDB_PROP_GENRE_FOLDED, &string_property_type },
-	{ N_("Year"), RHYTHMDB_PROP_DATE, RHYTHMDB_PROP_DATE, &year_property_type },
-	{ N_("Rating"), RHYTHMDB_PROP_RATING, RHYTHMDB_PROP_RATING, &rating_property_type },
-	{ N_("Path"), RHYTHMDB_PROP_LOCATION, RHYTHMDB_PROP_LOCATION, &escaped_string_property_type },
+	{ NC_("query-criteria", "Title"), RHYTHMDB_PROP_TITLE, RHYTHMDB_PROP_TITLE_FOLDED, &string_property_type },
+	{ NC_("query-criteria", "Artist"), RHYTHMDB_PROP_ARTIST, RHYTHMDB_PROP_ARTIST_FOLDED, &string_property_type },
+	{ NC_("query-criteria", "Album"), RHYTHMDB_PROP_ALBUM, RHYTHMDB_PROP_ALBUM_FOLDED, &string_property_type },
+	{ NC_("query-criteria", "Genre"), RHYTHMDB_PROP_GENRE, RHYTHMDB_PROP_GENRE_FOLDED, &string_property_type },
+	{ NC_("query-criteria", "Year"), RHYTHMDB_PROP_DATE, RHYTHMDB_PROP_DATE, &year_property_type },
+	{ NC_("query-criteria", "Rating"), RHYTHMDB_PROP_RATING, RHYTHMDB_PROP_RATING, &rating_property_type },
+	{ NC_("query-criteria", "Path"), RHYTHMDB_PROP_LOCATION, RHYTHMDB_PROP_LOCATION, &escaped_string_property_type },
 
-	{ N_("Play Count"), RHYTHMDB_PROP_PLAY_COUNT, RHYTHMDB_PROP_PLAY_COUNT, &integer_property_type },
-	{ N_("Track Number"), RHYTHMDB_PROP_TRACK_NUMBER, RHYTHMDB_PROP_TRACK_NUMBER, &integer_property_type },
-	{ N_("Disc Number"), RHYTHMDB_PROP_DISC_NUMBER, RHYTHMDB_PROP_DISC_NUMBER, &integer_property_type },
-	{ N_("Bitrate"), RHYTHMDB_PROP_BITRATE, RHYTHMDB_PROP_BITRATE, &integer_property_type },
+	{ NC_("query-criteria", "Play Count"), RHYTHMDB_PROP_PLAY_COUNT, RHYTHMDB_PROP_PLAY_COUNT, &integer_property_type },
+	{ NC_("query-criteria", "Track Number"), RHYTHMDB_PROP_TRACK_NUMBER, RHYTHMDB_PROP_TRACK_NUMBER, &integer_property_type },
+	{ NC_("query-criteria", "Disc Number"), RHYTHMDB_PROP_DISC_NUMBER, RHYTHMDB_PROP_DISC_NUMBER, &integer_property_type },
+	{ NC_("query-criteria", "Bitrate"), RHYTHMDB_PROP_BITRATE, RHYTHMDB_PROP_BITRATE, &integer_property_type },
 
-	{ N_("Duration"), RHYTHMDB_PROP_DURATION, RHYTHMDB_PROP_DURATION, &duration_property_type },
+	{ NC_("query-criteria", "Duration"), RHYTHMDB_PROP_DURATION, RHYTHMDB_PROP_DURATION, &duration_property_type },
 
-	{ N_("Time of Last Play"), RHYTHMDB_PROP_LAST_PLAYED, RHYTHMDB_PROP_LAST_PLAYED, &relative_time_property_type },
-	{ N_("Time Added to Library"), RHYTHMDB_PROP_FIRST_SEEN, RHYTHMDB_PROP_FIRST_SEEN, &relative_time_property_type },
+	{ NC_("query-criteria", "Time of Last Play"), RHYTHMDB_PROP_LAST_PLAYED, RHYTHMDB_PROP_LAST_PLAYED, &relative_time_property_type },
+	{ NC_("query-criteria", "Time Added to Library"), RHYTHMDB_PROP_FIRST_SEEN, RHYTHMDB_PROP_FIRST_SEEN, &relative_time_property_type },
 };
 
 const int num_property_options = G_N_ELEMENTS (property_options);
@@ -97,17 +97,17 @@ const int num_property_options = G_N_ELEMENTS (property_options);
  */
 const RBQueryCreatorSortOption sort_options[] =
 {
-	{ N_("Artist"), "Artist", N_("_In reverse alphabetical order") },
-	{ N_("Album"), "Album", N_("_In reverse alphabetical order") },
-	{ N_("Genre"), "Genre", N_("_In reverse alphabetical order") },
-	{ N_("Title"), "Title", N_("_In reverse alphabetical order") },
-	{ N_("Rating"), "Rating", N_("W_ith more highly rated tracks first") },
-	{ N_("Play Count"), "PlayCount", N_("W_ith more often played songs first") },
-	{ N_("Year"), "Year", N_("W_ith newer tracks first") },
-	{ N_("Duration"), "Time", N_("W_ith longer tracks first") },
-	{ N_("Track Number"), "Track", N_("_In decreasing order")},
-	{ N_("Last Played"), "LastPlayed", N_("W_ith more recently played tracks first") },
-	{ N_("Date Added"), "FirstSeen", N_("W_ith more recently added tracks first") },
+	{ NC_("query-sort", "Artist"), "Artist", N_("_In reverse alphabetical order") },
+	{ NC_("query-sort", "Album"), "Album", N_("_In reverse alphabetical order") },
+	{ NC_("query-sort", "Genre"), "Genre", N_("_In reverse alphabetical order") },
+	{ NC_("query-sort", "Title"), "Title", N_("_In reverse alphabetical order") },
+	{ NC_("query-sort", "Rating"), "Rating", N_("W_ith more highly rated tracks first") },
+	{ NC_("query-sort", "Play Count"), "PlayCount", N_("W_ith more often played songs first") },
+	{ NC_("query-sort", "Year"), "Year", N_("W_ith newer tracks first") },
+	{ NC_("query-sort", "Duration"), "Time", N_("W_ith longer tracks first") },
+	{ NC_("query-sort", "Track Number"), "Track", N_("_In decreasing order")},
+	{ NC_("query-sort", "Last Played"), "LastPlayed", N_("W_ith more recently played tracks first") },
+	{ NC_("query-sort", "Date Added"), "FirstSeen", N_("W_ith more recently added tracks first") },
 };
 
 const int num_sort_options = G_N_ELEMENTS (sort_options);
