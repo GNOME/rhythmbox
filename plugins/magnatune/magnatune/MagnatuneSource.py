@@ -277,11 +277,19 @@ class MagnatuneSource(rb.BrowserSource):
 	def __load_catalogue(self):
 		def got_items(result, items):
 			account_type = self.__client.get_string(self.__plugin.gconf_keys['account_type'])
-			if result is not None and account_type != 'none':
+			username = ""
+			password = ""
+			if account_type == 'none':
+				pass
+			elif result is not None or len(items) == 0:
 				rb.error_dialog(title = _("Couldn't get account details"),
 				                message = str(result))
 				return
-			username, password = items[0].secret.split('\n')
+			else:
+				try:
+					username, password = items[0].secret.split('\n')
+				except ValueError: # Couldn't parse secret, possibly because it's empty
+					pass
 			parser = xml.sax.make_parser()
 			parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict, self.__art_dict, account_type, username, password))
 		
@@ -381,12 +389,16 @@ class MagnatuneSource(rb.BrowserSource):
 	#
 	def __auth_download(self, sku): # http://magnatune.com/info/api#purchase
 		def got_items(result, items):
-			if result is not None:
+			if result is not None or len(items) == 0:
 				rb.error_dialog(title = _("Couldn't get account details"),
 				                message = str(result))
 				return
 			
-			username, password = items[0].secret.split('\n')
+			try:
+				username, password = items[0].secret.split('\n')
+			except ValueError: # Couldn't parse secret, possibly because it's empty
+				username = ""
+				password = ""
 			print "downloading album: " + sku
 			url_dict = {
 				'id':	magnatune_partner_id,

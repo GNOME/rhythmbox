@@ -157,7 +157,10 @@ class Magnatune(rb.Plugin):
 		self.source.playing_entry_changed (entry)
 	
 	def create_configure_dialog(self, dialog=None):
-		keyring_data = {}
+		keyring_data = {
+			'id': 0,
+			'item': None
+		}
 		
 		def got_items(result, items):
 			def created_item(result, id):
@@ -165,22 +168,22 @@ class Magnatune(rb.Plugin):
 					keyring_data['id'] = id
 					keyring.item_get_info(None, id, got_item)
 				else:
-					rb.error_dialog(title = _("Couldn't create keyring item"),
-					                message = str(result))
+					print "Couldn't create keyring item: " + str(result)
+					fill_account_details()
+					dialog.present()
 			def got_item(result, item):
 				if result is None: # Item retrieved successfully
 					keyring_data['item'] = item
-					fill_account_details()
-					dialog.present()
 				else:
-					rb.error_dialog(title = _("Couldn't access keyring"),
-					                message = str(result))
+					print "Couldn't retrieve keyring item: " + str(result)
+				fill_account_details()
+				dialog.present()
 			
 			
-			if result is None: # Got list of search results
+			if result is None and len(items) != 0: # Got list of search results
 				keyring_data['id'] = items[0].item_id
 				keyring.item_get_info(None, keyring_data['id'], got_item)
-			elif result == keyring.NoMatchError: # No items were found, so we'll create one
+			elif result == keyring.NoMatchError or len(items) == 0: # No items were found, so we'll create one
 				keyring.item_create(None,
 				                    keyring.ITEM_GENERIC_SECRET,
 				                    "Rhythmbox: Magnatune account information",
@@ -189,8 +192,9 @@ class Magnatune(rb.Plugin):
 				                    True,
 				                    created_item)
 			else: # Some other error occurred
-				rb.error_dialog(title = _("Couldn't access keyring"),
-				                message = str(result))
+				print "Couldn't access keyring: " + str(result)
+				fill_account_details()
+				dialog.present()
 		
 		
 		if dialog == None:
@@ -200,7 +204,13 @@ class Magnatune(rb.Plugin):
 				builder.get_object("stream_account_radio").set_active(account_type == "stream")
 				builder.get_object("download_account_radio").set_active(account_type == "download")
 				
-				username, password = keyring_data['item'].get_secret().split('\n')
+				username = ""
+				password = ""
+				try:
+					if keyring_data['item']:
+						username, password = keyring_data['item'].get_secret().split('\n')
+				except ValueError: # Couldn't parse the secret, probably because it's empty
+					pass
 				builder.get_object("username_entry").set_text(username)
 				builder.get_object("password_entry").set_text(password)
 				
@@ -232,14 +242,19 @@ class Magnatune(rb.Plugin):
 			def account_details_changed(entry):
 				username = builder.get_object("username_entry").get_text()
 				password = builder.get_object("password_entry").get_text()
-				keyring_data['item'].set_secret('\n'.join((username, password)))
+				if keyring_data['item']:
+					keyring_data['item'].set_secret('\n'.join((username, password)))
 				
 				builder.get_object("account_changed_label").show()
 			
 			def close_button_pressed(x, y):
-				# The async version is not in the python bindings, grr...
 				try:
-					keyring.item_set_info_sync(None, keyring_data['id'], keyring_data['item'])
+					if keyring_data['id'] and keyring_data['item']:
+						# The async version is not in the python bindings, grr...
+						keyring.item_set_info_sync(None, keyring_data['id'], keyring_data['item'])
+					else:
+						rb.error_dialog(title = _("Couldn't store account information"),
+						                message = _("There was a problem accessing the keyring. Check the debug output for more information."))
 				except Exception, e:
 					rb.error_dialog(title = _("Couldn't store account information"),
 					                message = str(e))
