@@ -16,8 +16,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-02-16 12:01+0000\n"
-"PO-Revision-Date: 2010-02-16 18:32+0100\n"
+"POT-Creation-Date: 2010-02-17 02:21+0000\n"
+"PO-Revision-Date: 2010-02-17 22:38+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -2025,6 +2025,46 @@ msgstr ""
 "Soporte para los dispositivos de reproducción de audio genéricos (más PSP y "
 "Nokia 770)"
 
+#: ../plugins/generic-player/generic-player-info.ui.h:1
+#: ../plugins/ipod/ipod-info.ui.h:1 ../plugins/mtpdevice/mtp-info.ui.h:1
+msgid "<b>System</b>"
+msgstr "<b>Sistema</b>"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:2
+#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
+msgid "Audio formats:"
+msgstr "Formato de sonido:"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:3
+#: ../plugins/mtpdevice/mtp-info.ui.h:3
+msgid "Device _name:"
+msgstr "_Nombre del dispositivo:"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:4
+#: ../plugins/mtpdevice/mtp-info.ui.h:5
+msgid "Manufacturer:"
+msgstr "Fabricante:"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:5
+#: ../plugins/ipod/ipod-info.ui.h:6 ../plugins/mtpdevice/mtp-info.ui.h:6
+msgid "Model:"
+msgstr "Modelo:"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:6
+#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
+msgid "Playlists:"
+msgstr "Listas de reproducción:"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:9
+msgid "Serial number:"
+msgstr "Número de serie:"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:8
+#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:10
+msgid "Tracks:"
+msgstr "Pistas:"
+
 #: ../plugins/generic-player/rb-generic-player-plugin.c:95
 #: ../shell/rb-playlist-manager.c:1156 ../shell/rb-playlist-manager.c:1199
 msgid "New Playlist"
@@ -2116,14 +2156,6 @@ msgstr ""
 "Soporte para dispositivos Apple iPod (mostrar el contenido, reproducir desde "
 "el dispositivo)"
 
-#: ../plugins/ipod/ipod-info.ui.h:1 ../plugins/mtpdevice/mtp-info.ui.h:1
-msgid "<b>System</b>"
-msgstr "<b>Sistema</b>"
-
-#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
-msgid "Audio formats:"
-msgstr "Formato de sonido:"
-
 #: ../plugins/ipod/ipod-info.ui.h:3
 msgid "Database version:"
 msgstr "Versión de la base de datos:"
@@ -2136,29 +2168,13 @@ msgstr "Nodo del dispositivo:"
 msgid "Firmware version:"
 msgstr "Versión del firmware:"
 
-#: ../plugins/ipod/ipod-info.ui.h:6 ../plugins/mtpdevice/mtp-info.ui.h:6
-msgid "Model:"
-msgstr "Modelo:"
-
 #: ../plugins/ipod/ipod-info.ui.h:7
 msgid "Mount point:"
 msgstr "Punto de montaje:"
 
-#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
-msgid "Playlists:"
-msgstr "Listas de reproducción:"
-
 #: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:8
 msgid "Podcasts:"
 msgstr "Podcasts:"
-
-#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:9
-msgid "Serial number:"
-msgstr "Número de serie:"
-
-#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:10
-msgid "Tracks:"
-msgstr "Pistas:"
 
 #: ../plugins/ipod/ipod-info.ui.h:12
 msgid "iPod _name:"
@@ -2920,15 +2936,15 @@ msgstr ""
 msgid "Magnatune Store"
 msgstr "Tienda Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:68
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:69
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:114
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:115
 msgid "Loading Magnatune catalog"
 msgstr "Cargando catálogo de Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:117
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:118
 msgid "Downloading Magnatune Album(s)"
 msgstr "Descargando álbum(es) Magnatune"
 
@@ -2942,22 +2958,28 @@ msgstr ""
 "Debe tener establecida una ubicación para la biblioteca para poder comprar "
 "un álbum."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:305
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:285
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:393
+#| msgid "Could not get current track position"
+msgid "Couldn't get account details"
+msgstr "No se pudieron obtener los detalles de la cuenta"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:321
 msgid "Unable to load catalog"
 msgstr "No se pudo cargar el catálogo"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:306
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:322
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
 "Rhythmbox no pudo entender el catálogo de Magnatune, rellene un informe de "
 "error."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:421
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:449
 msgid "Download Error"
 msgstr "Error en la descarga"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:422
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:450
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2968,12 +2990,12 @@ msgstr ""
 "El servidor de Magnatune devolvió:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:425
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:453
 #: ../widgets/rb-entry-view.c:1627
 msgid "Error"
 msgstr "Error"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:426
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:454
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -2984,45 +3006,59 @@ msgstr ""
 "El texto del error es:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:489
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:517
 msgid "Finished Downloading"
 msgstr "Finalizó la descarga"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:489
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:517
 msgid "All Magnatune downloads have been completed."
 msgstr "Se completaron todas las descargas de Magnatune."
 
-#: ../plugins/magnatune/magnatune/__init__.py:113
+#: ../plugins/magnatune/magnatune/__init__.py:112
 msgid "Purchase Album"
 msgstr "Comprar álbum"
 
-#: ../plugins/magnatune/magnatune/__init__.py:114
+#: ../plugins/magnatune/magnatune/__init__.py:113
 msgid "Purchase this album from Magnatune"
 msgstr "Comprar este álbum en Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:118
+#: ../plugins/magnatune/magnatune/__init__.py:117
 msgid "Download Album"
 msgstr "Descargar álbum"
 
-#: ../plugins/magnatune/magnatune/__init__.py:119
+#: ../plugins/magnatune/magnatune/__init__.py:118
 msgid "Download this album from Magnatune"
 msgstr "Descargar este álbum desde Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:123
+#: ../plugins/magnatune/magnatune/__init__.py:122
 msgid "Artist Information"
 msgstr "Información del artista"
 
-#: ../plugins/magnatune/magnatune/__init__.py:124
+#: ../plugins/magnatune/magnatune/__init__.py:123
 msgid "Get information about this artist"
 msgstr "Obtener información sobre este artista"
 
-#: ../plugins/magnatune/magnatune/__init__.py:128
+#: ../plugins/magnatune/magnatune/__init__.py:127
 msgid "Cancel Downloads"
 msgstr "Cancelar descargas"
 
-#: ../plugins/magnatune/magnatune/__init__.py:129
+#: ../plugins/magnatune/magnatune/__init__.py:128
 msgid "Stop downloading purchased albums"
 msgstr "Parar de descargar álbumes comprados"
+
+#: ../plugins/magnatune/magnatune/__init__.py:256
+#: ../plugins/magnatune/magnatune/__init__.py:259
+#| msgid "Rhythmbox couldn't read the CD information."
+msgid "Couldn't store account information"
+msgstr "No se pudo almacenar la información de la cuenta"
+
+#: ../plugins/magnatune/magnatune/__init__.py:257
+msgid ""
+"There was a problem accessing the keyring. Check the debug output for more "
+"information."
+msgstr ""
+"Hubo un problema al acceder al depósito de claves. Para obtener más "
+"información compruebe la salida de depuración."
 
 #: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
@@ -3041,14 +3077,6 @@ msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr ""
 "Soporte para dispositivos MTP (mostrar el contenido, reproducir desde el "
 "dispositivo)"
-
-#: ../plugins/mtpdevice/mtp-info.ui.h:3
-msgid "Device _name:"
-msgstr "_Nombre del dispositivo:"
-
-#: ../plugins/mtpdevice/mtp-info.ui.h:5
-msgid "Manufacturer:"
-msgstr "Fabricante:"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:153
 #: ../plugins/mtpdevice/rb-mtp-thread.c:458
@@ -5049,91 +5077,76 @@ msgid "%s (%d)"
 msgstr "%s (%d)"
 
 #: ../widgets/rb-query-creator-properties.c:73
-#| msgid "Title"
 msgctxt "query-criteria"
 msgid "Title"
 msgstr "Título"
 
 #: ../widgets/rb-query-creator-properties.c:74
-#| msgid "Artist"
 msgctxt "query-criteria"
 msgid "Artist"
 msgstr "Artista"
 
 #: ../widgets/rb-query-creator-properties.c:75
-#| msgid "Album"
 msgctxt "query-criteria"
 msgid "Album"
 msgstr "Álbum"
 
 #: ../widgets/rb-query-creator-properties.c:76
-#| msgid "Genre"
 msgctxt "query-criteria"
 msgid "Genre"
 msgstr "Género"
 
 #: ../widgets/rb-query-creator-properties.c:77
-#| msgid "Year"
 msgctxt "query-criteria"
 msgid "Year"
 msgstr "Año"
 
 #: ../widgets/rb-query-creator-properties.c:78
-#| msgid "Rating"
 msgctxt "query-criteria"
 msgid "Rating"
 msgstr "Evaluación"
 
 #: ../widgets/rb-query-creator-properties.c:79
-#| msgid "Path"
 msgctxt "query-criteria"
 msgid "Path"
 msgstr "Ruta"
 
 #: ../widgets/rb-query-creator-properties.c:81
-#| msgid "Play Count"
 msgctxt "query-criteria"
 msgid "Play Count"
 msgstr "Número de reproducciones"
 
 #: ../widgets/rb-query-creator-properties.c:82
-#| msgid "Track Number"
 msgctxt "query-criteria"
 msgid "Track Number"
 msgstr "Número de pista"
 
 #: ../widgets/rb-query-creator-properties.c:83
-#| msgid "Disc Number"
 msgctxt "query-criteria"
 msgid "Disc Number"
 msgstr "Número de disco"
 
 #: ../widgets/rb-query-creator-properties.c:84
-#| msgid "Bitrate"
 msgctxt "query-criteria"
 msgid "Bitrate"
 msgstr "Tasa de bits"
 
 #: ../widgets/rb-query-creator-properties.c:86
-#| msgid "Duration"
 msgctxt "query-criteria"
 msgid "Duration"
 msgstr "Duración"
 
 #: ../widgets/rb-query-creator-properties.c:88
-#| msgid "Time of Last Play"
 msgctxt "query-criteria"
 msgid "Time of Last Play"
 msgstr "Hora de última reproducción"
 
 #: ../widgets/rb-query-creator-properties.c:89
-#| msgid "Time Added to Library"
 msgctxt "query-criteria"
 msgid "Time Added to Library"
 msgstr "Hora de adición a la fonoteca"
 
 #: ../widgets/rb-query-creator-properties.c:100
-#| msgid "Artist"
 msgctxt "query-sort"
 msgid "Artist"
 msgstr "Artista"
@@ -5146,25 +5159,21 @@ msgid "_In reverse alphabetical order"
 msgstr "_En orden alfabético inverso"
 
 #: ../widgets/rb-query-creator-properties.c:101
-#| msgid "Album"
 msgctxt "query-sort"
 msgid "Album"
 msgstr "Álbum"
 
 #: ../widgets/rb-query-creator-properties.c:102
-#| msgid "Genre"
 msgctxt "query-sort"
 msgid "Genre"
 msgstr "Género"
 
 #: ../widgets/rb-query-creator-properties.c:103
-#| msgid "Title"
 msgctxt "query-sort"
 msgid "Title"
 msgstr "Título"
 
 #: ../widgets/rb-query-creator-properties.c:104
-#| msgid "Rating"
 msgctxt "query-sort"
 msgid "Rating"
 msgstr "Evaluación"
@@ -5174,7 +5183,6 @@ msgid "W_ith more highly rated tracks first"
 msgstr "Con pistas con puntuación más _alta primero"
 
 #: ../widgets/rb-query-creator-properties.c:105
-#| msgid "Play Count"
 msgctxt "query-sort"
 msgid "Play Count"
 msgstr "Número de reproducciones"
@@ -5184,7 +5192,6 @@ msgid "W_ith more often played songs first"
 msgstr "Con _canciones reproducidas más frecuentemente primero"
 
 #: ../widgets/rb-query-creator-properties.c:106
-#| msgid "Year"
 msgctxt "query-sort"
 msgid "Year"
 msgstr "Año"
@@ -5194,7 +5201,6 @@ msgid "W_ith newer tracks first"
 msgstr "Con pistas más _nuevas primero"
 
 #: ../widgets/rb-query-creator-properties.c:107
-#| msgid "Duration"
 msgctxt "query-sort"
 msgid "Duration"
 msgstr "Duración"
@@ -5204,7 +5210,6 @@ msgid "W_ith longer tracks first"
 msgstr "Con pistas más _largas primero"
 
 #: ../widgets/rb-query-creator-properties.c:108
-#| msgid "Track Number"
 msgctxt "query-sort"
 msgid "Track Number"
 msgstr "Número de pista"
@@ -5214,7 +5219,6 @@ msgid "_In decreasing order"
 msgstr "En orden _decreciente"
 
 #: ../widgets/rb-query-creator-properties.c:109
-#| msgid "Last Played"
 msgctxt "query-sort"
 msgid "Last Played"
 msgstr "Última reproducción"
@@ -5224,7 +5228,6 @@ msgid "W_ith more recently played tracks first"
 msgstr "Con más pistas _recientemente reproducidas primero"
 
 #: ../widgets/rb-query-creator-properties.c:110
-#| msgid "Date Added"
 msgctxt "query-sort"
 msgid "Date Added"
 msgstr "Fecha de adición"
