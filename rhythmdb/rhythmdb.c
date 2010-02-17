@@ -4437,6 +4437,17 @@ rhythmdb_entry_gather_metadata (RhythmDB *db,
 			continue;
 		}
 
+		/* skip deprecated properties */
+		switch (prop) {
+		case RHYTHMDB_PROP_TRACK_GAIN:
+		case RHYTHMDB_PROP_TRACK_PEAK:
+		case RHYTHMDB_PROP_ALBUM_GAIN:
+		case RHYTHMDB_PROP_ALBUM_PEAK:
+			continue;
+		default:
+			break;
+		}
+
 		g_value_init (&value, value_type);
 		rhythmdb_entry_get (db, entry, prop, &value);
 		name = (char *)rhythmdb_nice_elt_name_from_propid (db, prop);
