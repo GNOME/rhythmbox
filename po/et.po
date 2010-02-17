@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2009-11-22 07:22+0000\n"
-"PO-Revision-Date: 2010-02-01 12:32+0300\n"
+"POT-Creation-Date: 2010-02-16 17:40+0000\n"
+"PO-Revision-Date: 2010-02-16 22:34+0300\n"
 "Last-Translator: Mattias Põldaru <mahfiaz gmail com>\n"
 "Language-Team: Estonian <gnome-et@linux.ee>\n"
 "MIME-Version: 1.0\n"
@@ -198,6 +198,18 @@ msgstr "_Eelistatud vorming:"
 msgid "_Watch my library for new files"
 msgstr "_Fonoteeki lisatud uute failide jälgimine"
 
+msgid "<b>Information</b>"
+msgstr "<b>Teave</b>"
+
+msgid "<b>Volume usage</b>"
+msgstr "<b>Kasutatud ruum</b>"
+
+msgid "Basic"
+msgstr "Põhiline"
+
+msgid "Media Player Properties"
+msgstr "Muusikamängija eelistused"
+
 msgid "Crossfade Duration (Seconds)"
 msgstr "Sulatamise kestus (sekundites)"
 
@@ -229,16 +241,13 @@ msgid "C_onfigure..."
 msgstr "_Seadista..."
 
 msgid "Copyright:"
-msgstr "Autoriõigus:"
+msgstr "Autoriõigused:"
 
 msgid "Description:"
 msgstr "Kirjeldus:"
 
 msgid "Site:"
 msgstr "Sait:"
-
-msgid "Basic"
-msgstr "Põhiline"
 
 msgid "Details"
 msgstr "Üksikasjad"
@@ -306,8 +315,17 @@ msgstr "Mängimiste arv:"
 msgid "_Rating:"
 msgstr "_Reiting:"
 
+msgid "Albu_m sort order:"
+msgstr "Albumite _järjestamise kord:"
+
+msgid "Sorting"
+msgstr "Järjestamine"
+
 msgid "_Album:"
 msgstr "_Album:"
+
+msgid "_Artist sort order:"
+msgstr "Esitaja _järjestamise kord:"
 
 msgid "_Artist:"
 msgstr "_Esitaja:"
@@ -510,6 +528,10 @@ msgstr "GStreameri viga: oleku muutmine nurjus"
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "Faili MIME-tüüpi polnud võimalik tuvastada"
+
+#, c-format
+msgid "Unable to identify file type"
+msgstr "Ei suudetud failitüüpi tuvastada"
 
 #, c-format
 msgid "Unsupported file type: %s"
@@ -1237,7 +1259,7 @@ msgstr ""
 msgid "DLNA/UPnP sharing and control support"
 msgstr "DLNA/UPnP jagamise ja juhtimise tugi"
 
-msgid "Context Panel"
+msgid "Context Pane"
 msgstr "Kontekstipaneel"
 
 msgid "Show information related to the currently playing artist and song."
@@ -1255,7 +1277,7 @@ msgstr "Esitaja %s parimate albumite laadimine"
 msgid "Loading biography for %s"
 msgstr "Esitaja %s biograafia laadimine"
 
-#. Add button to toggle visibility of panel
+#. Add button to toggle visibility of pane
 msgid "Toggle Conte_xt Pane"
 msgstr "Lülita _kontekstipaneel sisse/välja"
 
@@ -1377,17 +1399,17 @@ msgstr "Avahi mDNS teenus ei tööta"
 msgid "The mDNS service is not published"
 msgstr "mDNS teenus ei ole avaldatud"
 
-msgid "_Disconnect"
-msgstr "_Ühenda lahti"
-
-msgid "Disconnect from DAAP share"
-msgstr "DAAP-i jagatud ressursi lahtiühendamine"
-
 msgid "Connect to _DAAP share..."
 msgstr "Ühendu _DAAP-i jagaja otsa..."
 
 msgid "Connect to a new DAAP share"
 msgstr "Uue DAAP-i jagatud ressursiga ühendumine"
+
+msgid "_Disconnect"
+msgstr "_Ühenda lahti"
+
+msgid "Disconnect from DAAP share"
+msgstr "DAAP-i jagatud ressursi lahtiühendamine"
 
 msgid "New DAAP share"
 msgstr "Uus DAAP-i jagaja"
@@ -1406,9 +1428,6 @@ msgstr "Muusika (%s)"
 msgid "The music share '%s' requires a password to connect"
 msgstr "Jagatud muusika ressurss '%s' nõuab ühendumiseks parooli"
 
-msgid "Password Required"
-msgstr "Parool nõutud"
-
 msgid "Connecting to music share"
 msgstr "Jagatud muusikaressursiga ühendumine"
 
@@ -1417,10 +1436,6 @@ msgstr "Jagatud laulude loendi hankimine"
 
 msgid "Could not connect to shared music"
 msgstr "Jagatud muusikaga ei suudetud ühenduda"
-
-#, c-format
-msgid "Connection to %s:%d refused."
-msgstr "Masin %s:%d keeldus ühendusest."
 
 msgid "FM Radio"
 msgstr "FM-raadio"
@@ -1446,6 +1461,30 @@ msgstr "Taskumängija"
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "Tavaliste muusikamängijate tugi (lisaks PSP ja Nokia 770)"
 
+msgid "<b>System</b>"
+msgstr "<b>Süsteem</b>"
+
+msgid "Audio formats:"
+msgstr "Audiovormingud:"
+
+msgid "Device _name:"
+msgstr "Seadme _nimi:"
+
+msgid "Manufacturer:"
+msgstr "Tootja:"
+
+msgid "Model:"
+msgstr "Mudel:"
+
+msgid "Playlists:"
+msgstr "Esitusnimekirjad:"
+
+msgid "Serial number:"
+msgstr "Seerianumber:"
+
+msgid "Tracks:"
+msgstr "Rajad:"
+
 msgid "New Playlist"
 msgstr "Uus esitusnimekiri"
 
@@ -1458,18 +1497,24 @@ msgstr "Kustuta esitusnimekiri"
 msgid "Delete this playlist"
 msgstr "Kustuta see esitusnimekiri"
 
-#, c-format
-msgid "Importing (%d/%d)"
-msgstr "Importimine (%d/%d)"
+msgid "_Properties"
+msgstr "_Omadused"
+
+msgid "Display device properties"
+msgstr "Seadme omaduste kuvamine"
+
+msgid "Advanced"
+msgstr "Laiendatud"
 
 msgid "IM Status"
 msgstr "Kiirsuhtluse olekuteade"
 
 msgid ""
-"Updates IM status according to the current song (works with Empathy & Gossip)"
+"Updates IM status according to the current song (works with Empathy, Gossip, "
+"and Pidgin)"
 msgstr ""
 "Kiirsuhtlusprogrammi olekuteate uuendamine vastavalt esitatavale laulule "
-"(töötab rakendustega Empathy ja Gossip)"
+"(töötab rakendustega Empathy, Gossip ja Pidgin)"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -1506,51 +1551,23 @@ msgstr "Taskumängija - iPod"
 msgid "Support for Apple iPod devices (show the content, play from device)"
 msgstr "Apple iPod seadmete tugi (näitab sisu, mängib)"
 
-msgid "<b>Content</b>"
-msgstr "<b>Sisu</b>"
-
-msgid "<b>Information</b>"
-msgstr "<b>Teave</b>"
-
-msgid "<b>System</b>"
-msgstr "<b>Süsteem</b>"
-
-msgid "Advanced"
-msgstr "Laiendatud"
-
-msgid "Database Version:"
+msgid "Database version:"
 msgstr "Andmebaasi versioon:"
 
-msgid "Device Node:"
-msgstr "Seadme sõlm:"
+msgid "Device node:"
+msgstr "Seadme asukoht:"
 
-msgid "Firmware Version:"
+msgid "Firmware version:"
 msgstr "Püsivara versioon:"
 
-msgid "Model:"
-msgstr "Mudel:"
-
-msgid "Mount Point:"
+msgid "Mount point:"
 msgstr "Haakepunkt:"
 
-msgid "Number of Playlists:"
-msgstr "Esitusnimekirjade arv:"
+msgid "Podcasts:"
+msgstr "Podcastid:"
 
-msgid "Number of Tracks:"
-msgstr "Lugude arv:"
-
-msgid "Serial Number:"
-msgstr "Seerianumber:"
-
-#. amount of disk space used on the iPod
-msgid "Volume Usage:"
-msgstr "Kasutatud ruum:"
-
-msgid "iPod Name:"
-msgstr "iPod'i nimi:"
-
-msgid "iPod Properties"
-msgstr "iPod'i seadistused"
+msgid "iPod _name:"
+msgstr "iPodi _nimi:"
 
 msgid ""
 "<span size=\"x-large\" weight=\"bold\">Do you want to initialize your iPod?</"
@@ -1592,9 +1609,6 @@ msgstr "_Muuda nime"
 msgid "Rename iPod"
 msgstr "Nimeta iPod ümber"
 
-msgid "_Properties"
-msgstr "_Omadused"
-
 msgid "Display iPod properties"
 msgstr "iPodi omaduste kuvamine"
 
@@ -1618,14 +1632,6 @@ msgstr "Podcastid"
 
 msgid "New playlist"
 msgstr "Uus esitusnimekiri"
-
-#  Translators: the format is "X hours and X minutes"
-#. Translators: this is used to display the amount of storage space
-#. * used and the total storage space on an iPod.
-#.
-#, c-format
-msgid "%s of %s"
-msgstr "%s %s-st"
 
 msgid "Internet Radio"
 msgstr "Internetiraadio"
@@ -1741,9 +1747,6 @@ msgstr "Lisab Rhythmboxile Jamendo albumite kuulamise ja esitamise toe"
 msgid "Jamendo"
 msgstr "Jamendo"
 
-msgid "Stores"
-msgstr "Kaubamajad"
-
 msgid "_Download Album"
 msgstr "_Laadi alla"
 
@@ -1847,6 +1850,21 @@ msgstr "Esitatava laulu jaoks näidatakse laulusõnu"
 
 msgid "Choose lyrics folder..."
 msgstr "Laulusõnade kataloogi valimine..."
+
+msgid "Lyrc (lyrc.com.ar)"
+msgstr "Lyrc (lyrc.com.ar)"
+
+msgid "Astraweb (www.astraweb.com)"
+msgstr "Astraweb (www.astraweb.com)"
+
+msgid "Leo's Lyrics (www.leoslyrics.com)"
+msgstr "Leo's Lyrics (www.leoslyrics.com)"
+
+msgid "WinampCN (www.winampcn.com)"
+msgstr "WinampCN (www.winampcn.com)"
+
+msgid "TerraBrasil (terra.com.br)"
+msgstr "TerraBrasil (terra.com.br)"
 
 msgid "Fetch song lyrics from the Internet"
 msgstr "Laulusõnad tõmmatakse internetist"
@@ -2032,29 +2050,14 @@ msgstr "$9 US"
 msgid "128K MP3"
 msgstr "128K MP3"
 
-msgid ""
-"<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
-"expiration date listed.</span>"
-msgstr ""
-"<span weight=\"bold\" foreground=\"red\">Sinu krediitkaart on aegunud.</span>"
-
 msgid "April (04)"
 msgstr "Aprill (04)"
 
 msgid "August (08)"
 msgstr "August (08)"
 
-msgid "C_redit Card:"
-msgstr "_Krediitkaart:"
-
 msgid "December (12)"
 msgstr "Detsember (12)"
-
-msgid "Default _amount to pay:"
-msgstr "Vaikimisi makstav _summa:"
-
-msgid "Expiry:"
-msgstr "Aegumine:"
 
 msgid "FLAC"
 msgstr "FLAC"
@@ -2064,6 +2067,18 @@ msgstr "Veebruar (02)"
 
 msgid "Find out about Magnatune at "
 msgstr "Uuri Magnatune kohta lähemalt aadressil "
+
+msgid "Get an account at "
+msgstr "Konto hankimine serverisse "
+
+msgid "I don't have a Magnatune account"
+msgstr "Mul pole Magnatune kontot"
+
+msgid "I have a download account"
+msgstr "Mul on allalaadimise konto"
+
+msgid "I have a streaming account"
+msgstr "Mul on vookuulamise konto"
 
 msgid "January (01)"
 msgstr "Jaanuar (01)"
@@ -2095,80 +2110,42 @@ msgstr "Oktoober (10)"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
+msgid "Password:"
+msgstr "Parool:"
+
 msgid "Preferred audio _format:"
 msgstr "Eelistatud audio_vorming:"
 
 msgid "Redownload purchased music at "
 msgstr "Laadi ostetud muusika uuesti alla aadressil "
 
-msgid "Remember my credit card details"
-msgstr "Krediitkaardi andmeid peetakse meeles"
-
 msgid "September (09)"
 msgstr "September (09)"
+
+msgid "Username:"
+msgstr "Kasutajanimi:"
 
 msgid "VBR MP3"
 msgstr "VBR MP3"
 
-msgid "Visit Magnatune at "
-msgstr "Külasta Magnatune poodi aadressil "
-
 msgid "WAV"
 msgstr "WAV"
 
-msgid "_Email:"
-msgstr "_E-post:"
+msgid ""
+"Your account details have changed. Changes will be applied the next time you "
+"start Rhythmbox."
+msgstr ""
+"Sinu konto andmed muudeti. Muudatused jõustuvad Rhythmboxi järgmisel "
+"käivitamisel."
 
-msgid "_Month:"
-msgstr "_Kuu:"
-
-msgid "http://www.magnatune.com/"
-msgstr "http://www.magnatune.com/"
+msgid "http://magnatune.com/compare_plans"
+msgstr "http://www.magnatune.com/compare_plans"
 
 msgid "http://www.magnatune.com/info/"
 msgstr "http://www.magnatune.com/info/"
 
 msgid "http://www.magnatune.com/info/redownload"
 msgstr "http://www.magnatune.com/info/redownload"
-
-msgid "Audio _format:"
-msgstr "Audio_vorming:"
-
-msgid "C_redit Card number:"
-msgstr "_Krediitkaardi number:"
-
-msgid "Credit Card"
-msgstr "Krediitkaart"
-
-msgid "Expiry _month:"
-msgstr "Aegumise _kuu:"
-
-msgid "Expiry _year (last two digits):"
-msgstr "Aegumise _aasta (viimased kaks numbrit):"
-
-msgid "Gift Card"
-msgstr "Kinkekaart"
-
-msgid "Gift card number:"
-msgstr "Kinkekaardi number:"
-
-msgid "Purchase Magnatune Tracks"
-msgstr "Magnatune'ist laulude ostmine"
-
-msgid "_Amount to pay (US Dollars):"
-msgstr "_Makstav summa (USA dollarites):"
-
-msgid "_Email address:"
-msgstr "_Meiliaddress:"
-
-msgid "_Name (as printed on card):"
-msgstr "_Nimi (nagu see on trükitud kaardile):"
-
-msgid "_Purchase"
-msgstr "_Osta"
-
-msgid "_Remember my credit card details"
-msgstr "_Pea minu krediitkaardi andmeid meeles"
 
 msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
@@ -2194,10 +2171,6 @@ msgstr "Albumit ei suudetud osta"
 msgid "You must have a library location set to purchase an album."
 msgstr "Albumi ostmiseks peab fonoteegi kataloog olema määratud"
 
-#, python-format
-msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
-msgstr "Kas sa tahad osta albumi <i>%(album)s</i> esitajalt '%(artist)s'?"
-
 msgid "Unable to load catalog"
 msgstr "Kataloogi laadimine pole võimalik"
 
@@ -2205,22 +2178,16 @@ msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr "Magnatune kataloogi ei suudetud mõista, palun raporteeri veast."
 
-msgid "Authorizing Purchase"
-msgstr "Ostu autoriseerimine"
-
-msgid "Authorizing purchase with the Magnatune server. Please wait..."
-msgstr "Ostu autoriseerimine Magnatune serveris. Palun oota..."
-
-msgid "Purchase Error"
-msgstr "Viga ostmisel"
+msgid "Download Error"
+msgstr "Tõrge allalaadimisel"
 
 #, python-format
 msgid ""
-"An error occurred while trying to purchase the album.\n"
+"An error occurred while trying to authorize the download.\n"
 "The Magnatune server returned:\n"
 "%s"
 msgstr ""
-"Albumi ostmise katsel esines viga.\n"
+"Allalaadimise autoriseerimisel esines viga.\n"
 "Magnatune server vastas:\n"
 "%s"
 
@@ -2229,26 +2196,31 @@ msgstr "Viga"
 
 #, python-format
 msgid ""
-"An error occurred while trying to purchase the album.\n"
+"An error occurred while trying to download the album.\n"
 "The error text is:\n"
 "%s"
 msgstr ""
-"Albumi ostmise katsel esines viga.\n"
+"Allalaadimise katsel esines viga.\n"
 "Veatekst on:\n"
 "%s"
 
-#. Add the popup menu actions
+msgid "Finished Downloading"
+msgstr "Allalaadimine lõpetatud"
+
+msgid "All Magnatune downloads have been completed."
+msgstr "Kõik Magnatune allalaadimised on lõpetatud."
+
 msgid "Purchase Album"
 msgstr "Osta album"
 
 msgid "Purchase this album from Magnatune"
 msgstr "Selle albumi otsmine Magnatune'st"
 
-msgid "Purchase Physical CD"
-msgstr "Osta päris CD"
+msgid "Download Album"
+msgstr "Albumi allalaadimine"
 
-msgid "Purchase a physical CD from Magnatune"
-msgstr "Füüsilise CD ostmine Magnatune'st"
+msgid "Download this album from Magnatune"
+msgstr "Selle albumi allalaadimine Magnatunest"
 
 msgid "Artist Information"
 msgstr "Esitaja andmed"
@@ -2287,6 +2259,16 @@ msgstr "MTP-seadme väljastamine"
 msgid "Rename MTP-device"
 msgstr "Nimeta MTP-seade ümber"
 
+msgid "Media player device error"
+msgstr "Meediaesitaja seadme viga"
+
+#. Translators: first %s is the device manufacturer,
+#. * second is the product name.
+#.
+#, c-format
+msgid "Unable to open the %s %s device"
+msgstr "%s %s seadme avamine pole võimalik"
+
 msgid "Digital Audio Player"
 msgstr "Digitaalne audiopleier"
 
@@ -2301,9 +2283,6 @@ msgstr "Seadmes %s pole piisavalt vaba ruumi"
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "MTP-seadmesse pole võimalik faile saata: %s"
-
-msgid "Media player device error"
-msgstr "Meediaesitaja viga"
 
 msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr "Keela vooluhalduril muusika esitamise ajal masinat uinutada"
@@ -2345,6 +2324,54 @@ msgstr "Interaktiivne pythoni konsool"
 msgid "Python Console"
 msgstr "Pythoni konsool"
 
+#. sys.excepthook = _excepthandler
+msgid "ReplayGain"
+msgstr "ReplayGain"
+
+msgid "Use ReplayGain to provide a consistent playback volume"
+msgstr "ReplayGain tagab ühtlase valjusega taasesituse"
+
+msgid "Album (ideal loudness for all tracks)"
+msgstr "Album (kõigil radadel ideaalne valjus)"
+
+msgid "Learn more about ReplayGain at replaygain.org"
+msgstr "Uuri lähemalt ReplayGaini kohta aadressilt replaygain.org"
+
+msgid "Radio (equal loudness for all tracks)"
+msgstr "Raadio (kõigil radadel võrdne valjus)"
+
+msgid "ReplayGain _mode:"
+msgstr "ReplayGaini _režiim:"
+
+msgid "ReplayGain preferences"
+msgstr "ReplayGain eelistused"
+
+msgid "_Apply compression to prevent clipping"
+msgstr "_Kompressori kasutamine piiri ületamise vältimiseks"
+
+msgid "_Pre-amp:"
+msgstr "_Eelvõimendus:"
+
+msgid "-15.0 dB"
+msgstr "-15,0 dB"
+
+msgid "0.0 dB"
+msgstr "0,0 dB"
+
+msgid "15.0 dB"
+msgstr "15,0 dB"
+
+#, python-format
+msgid ""
+"The GStreamer elements required for ReplayGain processing are not available. "
+"The missing elements are: %s"
+msgstr ""
+"GStreameri komponendid, mis on vajalikud ReplayGaini toimimiseks pole "
+"saadaval. Puuduvad komponendid on: %s"
+
+msgid "ReplayGain GStreamer plugins not available"
+msgstr "ReplayGain GStreameri pluginad pole saadaval"
+
 msgid "Python Source"
 msgstr "Pythoni lähtekood"
 
@@ -2366,11 +2393,17 @@ msgstr "Näidisplugin keeles Vala, mis ei tee midagi"
 msgid "Vala Sample Plugin"
 msgstr "Vala näidisplugin"
 
-msgid "Orientation"
-msgstr "Suund"
+msgid "Send to..."
+msgstr "Saada kuhu..."
 
-msgid "The orientation of the tray."
-msgstr "Salve suund."
+msgid "Send files by mail, instant message..."
+msgstr "Failide saatmine meiliga, välksõnumiga..."
+
+msgid "Send selected tracks by email or instant message"
+msgstr "Valitud radade saatmine meiliga või välksõnumiga"
+
+msgid "Send tracks"
+msgstr "Lugude saatmine"
 
 msgid "_Close"
 msgstr "_Sulge"
@@ -2953,38 +2986,44 @@ msgstr "_Aseta"
 msgid "Paste selection"
 msgstr "Valiku asetamine"
 
+msgid "Delete each selected item"
+msgstr "Kõigi valitud kirjete kustutamine"
+
 msgid "_Remove"
 msgstr "_Eemalda"
 
-msgid "Remove selection"
-msgstr "Valiku eemaldamine"
+msgid "Remove each selected item from the library"
+msgstr "Kõigi valitud kirjete eemaldamine fonoteegist"
 
 msgid "_Move to Trash"
 msgstr "_Viska prügikasti"
 
-msgid "Move selection to the trash"
-msgstr "Valiku tõstmine prügikasti"
+msgid "Move each selected item to the trash"
+msgstr "Valitud kirjete tõstmine prügikasti"
 
 msgid "Add to P_laylist"
 msgstr "Lisa lugude _nimekirja"
 
-msgid "Add the selected songs to a new playlist"
+msgid "Add each selected song to a new playlist"
 msgstr "Valitud laulude lisamine esitusloendisse"
 
 msgid "Add _to Play Queue"
 msgstr "Lisa _ootejärjekorda"
 
-msgid "Add the selected songs to the play queue"
+msgid "Add each selected song to the play queue"
 msgstr "Valitud laulude lisamine ootejärjekorda"
 
 msgid "Remove"
 msgstr "Eemalda"
 
+msgid "Remove each selected item from the play queue"
+msgstr "Kõigi laulude eemaldamine ootejärjekorrast"
+
 msgid "Pr_operties"
 msgstr "_Omadused"
 
-msgid "Show information on the selected song"
-msgstr "Valitud loo kohta teabe näitamine"
+msgid "Show information on each selected song"
+msgstr "Iga valitud loo kohta teabe näitamine"
 
 msgid "Pre_vious"
 msgstr "_Eelmine"
@@ -3097,6 +3136,9 @@ msgstr "Taasesituse järg pole saadaval"
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Esitatav laul pole keritav"
+
+msgid "Pause playback"
+msgstr "Peata esitus"
 
 msgid "Stop playback"
 msgstr "Esituse lõpetamine"
@@ -3418,6 +3460,14 @@ msgstr "Määratud mitu asukohta"
 msgid "Example Path:"
 msgstr "Näidisasukoht:"
 
+#  Translators: the format is "X hours and X minutes"
+#. Translators: this is used to display the amount of storage space
+#. * used and the total storage space on an device.
+#.
+#, c-format
+msgid "%s of %s"
+msgstr "%s %s-st"
+
 msgid "Missing Files"
 msgstr "Puuduvad failid"
 
@@ -3451,6 +3501,12 @@ msgstr "albumilt"
 
 msgid "by"
 msgstr "esitajalt"
+
+msgid "Remove From Playlist"
+msgstr "Eemalda esitusnimekirjast"
+
+msgid "Remove each selected song from the playlist"
+msgstr "Kõigi valitud laulude eemaldamine esitusnimekirjast"
 
 msgid "_New Podcast Feed..."
 msgstr "_Uus Podcasti voog..."
@@ -3609,8 +3665,15 @@ msgid_plural "%d songs"
 msgstr[0] "%d lugu"
 msgstr[1] "%d lugu"
 
+#, c-format
+msgid "Importing (%d/%d)"
+msgstr "Importimine (%d/%d)"
+
 msgid "Library"
 msgstr "Fonoteek"
+
+msgid "Stores"
+msgstr "Kaubamajad"
 
 msgid "Devices"
 msgstr "Seadmed"
@@ -3707,47 +3770,126 @@ msgstr[1] "Kõik %d (%d)"
 msgid "%s (%d)"
 msgstr "%s (%d)"
 
-msgid "Path"
-msgstr "Otsingutee"
+msgctxt "query-criteria"
+msgid "Title"
+msgstr "Pealkiri"
 
+msgctxt "query-criteria"
+msgid "Artist"
+msgstr "Esitaja"
+
+msgctxt "query-criteria"
+msgid "Album"
+msgstr "Album"
+
+msgctxt "query-criteria"
+msgid "Genre"
+msgstr "Žanr"
+
+msgctxt "query-criteria"
+msgid "Year"
+msgstr "Aasta"
+
+msgctxt "query-criteria"
+msgid "Rating"
+msgstr "Reiting"
+
+msgctxt "query-criteria"
+msgid "Path"
+msgstr "Kataloog"
+
+msgctxt "query-criteria"
+msgid "Play Count"
+msgstr "Esituste arv"
+
+msgctxt "query-criteria"
 msgid "Track Number"
 msgstr "Loo number"
 
+msgctxt "query-criteria"
 msgid "Disc Number"
 msgstr "Plaadi number"
 
+msgctxt "query-criteria"
 msgid "Bitrate"
 msgstr "Bitikiirus"
 
+msgctxt "query-criteria"
 msgid "Duration"
 msgstr "Kestus"
 
+msgctxt "query-criteria"
 msgid "Time of Last Play"
-msgstr "Viimati mängitud"
+msgstr "Viimati esitatud"
 
+msgctxt "query-criteria"
 msgid "Time Added to Library"
 msgstr "Fonoteeki lisamise kuupäev"
+
+msgctxt "query-sort"
+msgid "Artist"
+msgstr "Esitaja"
 
 msgid "_In reverse alphabetical order"
 msgstr "_Pööratud tähestikulises järjekorras"
 
+msgctxt "query-sort"
+msgid "Album"
+msgstr "Album"
+
+msgctxt "query-sort"
+msgid "Genre"
+msgstr "Žanr"
+
+msgctxt "query-sort"
+msgid "Title"
+msgstr "Pealkiri"
+
+msgctxt "query-sort"
+msgid "Rating"
+msgstr "Reiting"
+
 msgid "W_ith more highly rated tracks first"
 msgstr "_Kõrgelt hinnatud lood eespool"
+
+msgctxt "query-sort"
+msgid "Play Count"
+msgstr "Esituste arv"
 
 msgid "W_ith more often played songs first"
 msgstr "_Sagedasti mängitud lood eespool"
 
+msgctxt "query-sort"
+msgid "Year"
+msgstr "Aasta"
+
 msgid "W_ith newer tracks first"
 msgstr "_Uued lood eespool"
+
+msgctxt "query-sort"
+msgid "Duration"
+msgstr "Kestus"
 
 msgid "W_ith longer tracks first"
 msgstr "_Pikemad lood eespool"
 
+msgctxt "query-sort"
+msgid "Track Number"
+msgstr "Loo number"
+
 msgid "_In decreasing order"
 msgstr "_Kahanevas järjekorras"
 
+msgctxt "query-sort"
+msgid "Last Played"
+msgstr "Viimati esitatud"
+
 msgid "W_ith more recently played tracks first"
 msgstr "_Hiljuti mängitud lood eespool"
+
+msgctxt "query-sort"
+msgid "Date Added"
+msgstr "Lisamise kuupäev"
 
 msgid "W_ith more recently added tracks first"
 msgstr "_Hiljuti lisatud lood eespool"
