@@ -84,11 +84,7 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__load_current_size = 0
 		self.__load_total_size = 0
 
-		self.__downloads = {} # keeps track of amount downloaded for each file
-		self.__downloading = False # keeps track of whether we are currently downloading an album
-		self.__download_progress = 0.0 # progress of current download(s)
-		self.purchase_filesize = 0 # total amount of bytes to download
-
+		self.__downloads = {} # keeps track of download progress for each file
 		self.__cancellables = {} # keeps track of gio.Cancellable objects so we can abort album downloads
 
 
@@ -112,8 +108,12 @@ class MagnatuneSource(rb.BrowserSource):
 			else:
 				progress = -1.0
 			return (_("Loading Magnatune catalog"), None, progress)
-		elif self.__downloading:
-			progress = min(self.__download_progress, 1.0)
+		elif len(self.__downloads) > 0:
+			complete, total = map(sum, zip(*self.__downloads.itervalues()))
+			if total > 0:
+				progress = min(float(complete) / total, 1.0)
+			else:
+				progress = -1.0
 			return (_("Downloading Magnatune Album(s)"), None, progress)
 		else:
 			qm = self.get_property("query-model")
@@ -445,20 +445,13 @@ class MagnatuneSource(rb.BrowserSource):
 		keyring.find_items(keyring.ITEM_GENERIC_SECRET, {'rhythmbox-plugin': 'magnatune'}, got_items)
 
 	def __download_album(self, audio_dl_uri, sku):
-		# dictionary used so we can update the values
-		download_info = {'size': 0}
-
 		def download_progress(current, total):
-			if self.__downloads[str_uri] == 0:
-					self.purchase_filesize += total
-					download_info['size'] = total
-			self.__downloads[str_uri] = current
-
-			self.__download_progress = sum(self.__downloads.values()) / float(self.purchase_filesize)
+			self.__downloads[str_uri] = (current, total)
 			self.__notify_status_changed()
 
 		def download_finished(uri, result):
 			del self.__cancellables[str_uri]
+			del self.__downloads[str_uri]
 
 			try:
 				success = uri.copy_finish(result)
@@ -466,16 +459,12 @@ class MagnatuneSource(rb.BrowserSource):
 				success = False
 				print "Download not completed: " + str(e)
 
-			del self.__downloads[str_uri]
-			self.purchase_filesize -= download_info['size']
-
 			if success:
 				threading.Thread(target=unzip_album).start()
 			else:
 				remove_download_files()
 
-			if self.purchase_filesize == 0: # All downloads are complete
-				self.__downloading = False
+			if len(self.__downloads) == 0: # All downloads are complete
 				shell = self.get_property('shell')
 				manager = shell.get_player().get_property('ui-manager')
 				manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(False)
@@ -520,9 +509,8 @@ class MagnatuneSource(rb.BrowserSource):
 		shell = self.get_property('shell')
 		manager = shell.get_player().get_property('ui-manager')
 		manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(True)
-		self.__downloading = True
 
-		self.__downloads[str_uri] = 0
+		self.__downloads[str_uri] = (0, 0) # (current, total)
 
 		cancel = gio.Cancellable()
 		self.__cancellables[str_uri] = cancel
