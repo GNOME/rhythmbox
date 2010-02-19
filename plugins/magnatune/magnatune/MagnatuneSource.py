@@ -44,7 +44,7 @@ import zipfile
 magnatune_partner_id = "rhythmbox"
 
 # URIs
-magnatune_song_info_uri = "http://magnatune.com/info/song_info_xml.zip"
+magnatune_song_info_uri = gio.File(uri="http://magnatune.com/info/song_info_xml.zip")
 magnatune_buy_album_uri = "https://magnatune.com/buy/choose?"
 magnatune_api_download_uri = "http://%s:%s@download.magnatune.com/buy/membership_free_dl_xml?"
 
@@ -65,7 +65,12 @@ class MagnatuneSource(rb.BrowserSource):
 
 	def __init__(self):
 		rb.BrowserSource.__init__(self, name=_("Magnatune"))
-		self.__db = None
+
+		# source state
+		self.__activated = False
+		self.__db = None # rhythmdb
+		self.__notify_id = 0 # gobject.idle_add id for status notifications
+		self.__info_screen = None # the loading screen
 
 		# track data
 		self.__sku_dict = {}
@@ -73,17 +78,14 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__art_dict = {}
 
 		# catalogue stuff
-		self.__activated = False
-		self.__notify_id = 0
-		self.__update_id = 0
+		self.__updating = True # whether we're loading the catalog right now
+		self.__has_loaded = False # whether the catalog has been loaded yet
+		self.__update_id = 0 # gobject.idle_add id for catalog updates
 		self.__catalogue_loader = None
 		self.__catalogue_check = None
-		self.__info_screen = None
-		self.__updating = True
-		self.__has_loaded = False
-		self.__load_current_size = 0
-		self.__load_total_size = 0
+		self.__load_progress = (0, 0) # (complete, total)
 
+		# album download stuff
 		self.__downloads = {} # keeps track of download progress for each file
 		self.__cancellables = {} # keeps track of gio.Cancellable objects so we can abort album downloads
 
@@ -103,8 +105,9 @@ class MagnatuneSource(rb.BrowserSource):
 
 	def do_impl_get_status(self):
 		if self.__updating:
-			if self.__load_total_size > 0:
-				progress = min(float(self.__load_current_size) / self.__load_total_size, 1.0)
+			complete, total = self.__load_progress
+			if total > 0:
+				progress = min(float(complete) / total, 1.0)
 			else:
 				progress = -1.0
 			return (_("Loading Magnatune catalog"), None, progress)
@@ -247,42 +250,53 @@ class MagnatuneSource(rb.BrowserSource):
 						return info.filename;
 				return None
 
-			def download_catalogue_chunk_cb(result, total):
-				if not result:
-					# done downloading, unzip to real location
-					out.close()
-
-					catalog_zip = zipfile.ZipFile(magnatune_song_info_temp)
-					catalog = open(magnatune_song_info, 'w')
-					filename = find_song_info(catalog_zip)
-					if filename is None:
-						rb.error_dialog(title=_("Unable to load catalog"),
-								message=_("Rhythmbox could not understand the Magnatune catalog, please file a bug."))
-						return
-					catalog.write(catalog_zip.read(filename))
-					catalog.close()
-					catalog_zip.close()
-
-					os.unlink(magnatune_song_info_temp)
-					self.__updating = False
-					self.__catalogue_loader = None
-					load_catalogue()
-				elif isinstance(result, Exception):
-					# complain
-					pass
-				else:
-					out.write(result)
-					self.__load_current_size += len(result)
-					self.__load_total_size = total
-
+			def download_progress(complete, total):
+				self.__load_progress = (complete, total)
 				self.__notify_status_changed()
+
+			def download_finished(uri, result):
+				try:
+					success = uri.copy_finish(result)
+				except:
+					success = False
+
+				if not success:
+					return
+
+				# done downloading, unzip to real location
+				catalog_zip = zipfile.ZipFile(magnatune_song_info_temp)
+				catalog = open(magnatune_song_info, 'w')
+				filename = find_song_info(catalog_zip)
+				if filename is None:
+					rb.error_dialog(title=_("Unable to load catalog"),
+							message=_("Rhythmbox could not understand the Magnatune catalog, please file a bug."))
+					return
+				catalog.write(catalog_zip.read(filename))
+				catalog.close()
+				catalog_zip.close()
+
+				dest.delete()
+				self.__updating = False
+				self.__catalogue_loader = None
+				self.__notify_status_changed()
+
+				load_catalogue()
 
 
 			self.__updating = True
-			out = open(magnatune_song_info_temp, 'w')
 
-			self.__catalogue_loader = rb.ChunkLoader()
-			self.__catalogue_loader.get_url_chunks(magnatune_song_info_uri, 4*1024, True, download_catalogue_chunk_cb)
+			dest = gio.File(magnatune_song_info_temp)
+			self.__catalogue_loader = gio.Cancellable()
+			try:
+				# For some reason, gio.FILE_COPY_OVERWRITE doesn't work for copy_async
+				dest.delete()
+			except:
+				pass
+			magnatune_song_info_uri.copy_async(dest,
+			                                   download_finished,
+							   progress_callback=download_progress,
+							   flags=gio.FILE_COPY_OVERWRITE,
+							   cancellable=self.__catalogue_loader)
 
 		def load_catalogue():
 			def got_items(result, items):
@@ -341,20 +355,23 @@ class MagnatuneSource(rb.BrowserSource):
 					except xml.sax.SAXParseException, e:
 						print "error parsing catalogue: %s" % e
 
-					self.__load_current_size += len(result)
-					self.__load_total_size = total
+					load_size['size'] += len(result)
+					self.__load_progress = (load_size['size'], total)
 
 				self.__notify_status_changed()
 
 
-			self.__notify_status_changed()
 			self.__has_loaded = True
+			self.__updating = True
+			self.__load_progress = (0, 0) # (complete, total)
+			self.__notify_status_changed()
 
+			load_size = {'size': 0}
 			keyring.find_items(keyring.ITEM_GENERIC_SECRET, {'rhythmbox-plugin': 'magnatune'}, got_items)
 
 
 		self.__catalogue_check = rb.UpdateCheck()
-		self.__catalogue_check.check_for_update(magnatune_song_info, magnatune_song_info_uri, update_cb)
+		self.__catalogue_check.check_for_update(magnatune_song_info, magnatune_song_info_uri.get_uri(), update_cb)
 
 
 	def __show_loading_screen(self, show):
