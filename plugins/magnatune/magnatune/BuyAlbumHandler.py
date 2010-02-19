@@ -28,7 +28,6 @@
 import xml.sax, xml.sax.handler
 
 class BuyAlbumHandler(xml.sax.handler.ContentHandler): # Class to download the track, etc.
-
 	format_map =	{
 			'ogg'		:	'URL_OGGZIP',
 			'flac'		:	'URL_FLACZIP',

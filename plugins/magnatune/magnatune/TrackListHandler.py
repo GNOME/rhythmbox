@@ -31,7 +31,6 @@ import xml.sax, xml.sax.handler
 import datetime, re, urllib
 
 class TrackListHandler(xml.sax.handler.ContentHandler):
-
 	def __init__(self, db, entry_type, sku_dict, home_dict, art_dict, account_type, username, password):
 		xml.sax.handler.ContentHandler.__init__(self)
 		self.__db = db
@@ -65,7 +64,7 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 				# use ad-free tracks if available
 				if self.__account_type != 'none':
 					trackurl = self.fix_trackurl(trackurl)
-	
+
 				# add the track to the source
 				entry = self.__db.entry_lookup_by_location (trackurl)
 				if entry == None:

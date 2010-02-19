@@ -75,7 +75,7 @@ class Magnatune(rb.Plugin):
 	#
 	# Core methods
 	#
-	
+
 	def __init__(self):
 		rb.Plugin.__init__(self)
 
@@ -94,21 +94,21 @@ class Magnatune(rb.Plugin):
 		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
 		icon = rb.try_load_icon(theme, "magnatune", width, 0)
 
-		group = rb.rb_source_group_get_by_name ("stores")
-		self.source = gobject.new (MagnatuneSource,
- 					   shell=shell,
- 					   entry_type=self.entry_type,
- 					   source_group=group,
-					   icon=icon,
- 					   plugin=self)
+		group = rb.rb_source_group_get_by_name("stores")
+		self.source = gobject.new(MagnatuneSource,
+					  shell=shell,
+					  entry_type=self.entry_type,
+					  source_group=group,
+					  icon=icon,
+					  plugin=self)
 
 		shell.register_entry_type_for_source(self.source, self.entry_type)
 		shell.append_source(self.source, None) # Add the source to the list
-		
+
 		manager = shell.get_player().get_property('ui-manager')
 		# Add the popup menu actions
 		self.action_group = gtk.ActionGroup('MagnatunePluginActions')
-		
+
 		action = gtk.Action('MagnatunePurchaseAlbum', _('Purchase Album'),
 				_("Purchase this album from Magnatune"),
 				'gtk-add')
@@ -130,7 +130,7 @@ class Magnatune(rb.Plugin):
 		action.connect('activate', lambda a: self.shell.get_property("selected-source").cancel_downloads())
 		action.set_sensitive(False)
 		self.action_group.add_action(action)
-		
+
 		manager.insert_action_group(self.action_group, 0)
 		self.ui_id = manager.add_ui_from_string(popup_ui)
 
@@ -139,11 +139,11 @@ class Magnatune(rb.Plugin):
 
 	def deactivate(self, shell):
 		manager = shell.get_player().get_property('ui-manager')
-		manager.remove_ui (self.ui_id)
+		manager.remove_ui(self.ui_id)
 		manager.remove_action_group(self.action_group)
 		self.action_group = None
 
-		shell.get_player().disconnect (self.pec_id)
+		shell.get_player().disconnect(self.pec_id)
 
 		self.db.entry_delete_by_type(self.entry_type)
 		self.db.commit()
@@ -154,14 +154,15 @@ class Magnatune(rb.Plugin):
 		self.shell = None
 
 	def playing_entry_changed (self, sp, entry):
-		self.source.playing_entry_changed (entry)
-	
+		self.source.playing_entry_changed(entry)
+
 	def create_configure_dialog(self, dialog=None):
+		# We use a dictionary so we can modify these values from within inner functions
 		keyring_data = {
 			'id': 0,
 			'item': None
 		}
-		
+
 		def got_items(result, items):
 			def created_item(result, id):
 				if result is None: # Item successfully created
@@ -178,8 +179,8 @@ class Magnatune(rb.Plugin):
 					print "Couldn't retrieve keyring item: " + str(result)
 				fill_account_details()
 				dialog.present()
-			
-			
+
+
 			if result is None and len(items) != 0: # Got list of search results
 				keyring_data['id'] = items[0].item_id
 				keyring.item_get_info(None, keyring_data['id'], got_item)
@@ -195,15 +196,15 @@ class Magnatune(rb.Plugin):
 				print "Couldn't access keyring: " + str(result)
 				fill_account_details()
 				dialog.present()
-		
-		
+
+
 		if dialog == None:
 			def fill_account_details():
 				account_type = self.client.get_string(self.gconf_keys['account_type'])
 				builder.get_object("no_account_radio").set_active(account_type == "none")
 				builder.get_object("stream_account_radio").set_active(account_type == "stream")
 				builder.get_object("download_account_radio").set_active(account_type == "download")
-				
+
 				username = ""
 				password = ""
 				try:
@@ -213,13 +214,13 @@ class Magnatune(rb.Plugin):
 					pass
 				builder.get_object("username_entry").set_text(username)
 				builder.get_object("password_entry").set_text(password)
-				
+
 				has_account = account_type != "none"
 				builder.get_object("username_entry").set_sensitive(has_account)
 				builder.get_object("password_entry").set_sensitive(has_account)
 				builder.get_object("username_label").set_sensitive(has_account)
 				builder.get_object("password_label").set_sensitive(has_account)
-				
+
 				builder.get_object("account_changed_label").hide()
 
 			def account_type_toggled (button):
@@ -238,15 +239,15 @@ class Magnatune(rb.Plugin):
 						builder.get_object("password_label").set_sensitive(True)
 						builder.get_object("password_entry").set_sensitive(True)
 					builder.get_object("account_changed_label").show()
-			
+
 			def account_details_changed(entry):
 				username = builder.get_object("username_entry").get_text()
 				password = builder.get_object("password_entry").get_text()
 				if keyring_data['item']:
 					keyring_data['item'].set_secret('\n'.join((username, password)))
-				
+
 				builder.get_object("account_changed_label").show()
-			
+
 			def close_button_pressed(x, y):
 				try:
 					if keyring_data['id'] and keyring_data['item']:
@@ -259,11 +260,11 @@ class Magnatune(rb.Plugin):
 					rb.error_dialog(title = _("Couldn't store account information"),
 					                message = str(e))
 				dialog.hide()
-				
+
 
 			self.configure_callback_dic = {
 				"rb_magnatune_audio_combobox_changed_cb" : lambda w: self.client.set_string(self.gconf_keys['format'], self.format_list[w.get_active()]),
-				
+
 				"rb_magnatune_radio_account_toggled_cb" : account_type_toggled,
 				"rb_magnatune_username_changed_cb" : account_details_changed,
 				"rb_magnatune_password_changed_cb" : account_details_changed
@@ -274,12 +275,11 @@ class Magnatune(rb.Plugin):
 
 			# FIXME this bit should be in builder too  (what?)
 			dialog = builder.get_object('preferences_dialog')
-			
+
 			builder.get_object("audio_combobox").set_active(self.format_list.index(self.client.get_string(self.gconf_keys['format'])))
-			
+
 			builder.connect_signals(self.configure_callback_dic)
 			dialog.connect("response", close_button_pressed)
-		
+
 		keyring.find_items(keyring.ITEM_GENERIC_SECRET, {'rhythmbox-plugin': 'magnatune'}, got_items)
 		return dialog
-
