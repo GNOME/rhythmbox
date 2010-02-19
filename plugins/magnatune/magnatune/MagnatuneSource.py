@@ -48,11 +48,11 @@ magnatune_song_info_uri = "http://magnatune.com/info/song_info_xml.zip"
 magnatune_buy_album_uri = "https://magnatune.com/buy/choose?"
 magnatune_api_download_uri = "http://%s:%s@download.magnatune.com/buy/membership_free_dl_xml?"
 
-magnatune_in_progress_dir = os.path.join(rb.user_data_dir(), 'magnatune')
-magnatune_cache_dir = os.path.join(rb.user_cache_dir(), 'magnatune')
+magnatune_in_progress_dir = gio.File(path=rb.user_data_dir()).resolve_relative_path('magnatune')
+magnatune_cache_dir = gio.File(path=rb.user_cache_dir()).resolve_relative_path('magnatune')
 
-magnatune_song_info = os.path.join(magnatune_cache_dir, 'song_info.xml')
-magnatune_song_info_temp = os.path.join(magnatune_cache_dir, 'song_info.zip.tmp')
+magnatune_song_info = os.path.join(magnatune_cache_dir.get_path(), 'song_info.xml')
+magnatune_song_info_temp = os.path.join(magnatune_cache_dir.get_path(), 'song_info.zip.tmp')
 
 
 class MagnatuneSource(rb.BrowserSource):
@@ -88,6 +88,8 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__downloading = False # keeps track of whether we are currently downloading an album
 		self.__download_progress = 0.0 # progress of current download(s)
 		self.purchase_filesize = 0 # total amount of bytes to download
+
+		self.__cancellables = {} # keeps track of gio.Cancellable objects so we can abort album downloads
 
 
 	def do_set_property(self, property, value):
@@ -130,7 +132,7 @@ class MagnatuneSource(rb.BrowserSource):
 			self.__entry_type = self.get_property('entry-type')
 
 			# move files from old ~/.gnome2 paths
-			if os.path.exists(magnatune_in_progress_dir) is False:
+			if not magnatune_in_progress_dir.query_exists():
 				self.__move_data_files()
 
 			self.__activated = True
@@ -322,12 +324,13 @@ class MagnatuneSource(rb.BrowserSource):
 
 					# restart in-progress downloads
 					# (doesn't really belong here)
-					inprogress = os.listdir(magnatune_in_progress_dir)
-					inprogress = filter(lambda x: x.startswith("in_progress_"), inprogress)
-					for ip in inprogress:
-						for uri in open(os.path.join(magnatune_in_progress_dir, ip)).readlines():
-							print "restarting download from %s" % uri
-							self.__download_album(uri, ip[12:])
+					for f in magnatune_in_progress_dir.enumerate_children('standard::name'):
+						name = f.get_name()
+						if not name.startswith("in_progress_"):
+							continue
+						uri = magnatune_in_progress_dir.resolve_relative_path(name).load_contents()[0]
+						print "restarting download from %s" % uri
+						self.__download_album(gio.File(uri=uri), name[12:])
 				else:
 					# hack around some weird chars that show up in the catalogue for some reason
 					result = result.replace("\x19", "'")
@@ -379,6 +382,7 @@ class MagnatuneSource(rb.BrowserSource):
 	#
 	# internal purchasing code
 	#
+
 	def __auth_download(self, sku): # http://magnatune.com/info/api
 		def got_items(result, items):
 			if result is not None or len(items) == 0:
@@ -428,7 +432,7 @@ class MagnatuneSource(rb.BrowserSource):
 				authed = (parsed[0], netloc, path) + parsed[3:]
 				audio_dl_uri = urlparse.urlunparse(authed)
 
-				self.__download_album(audio_dl_uri, sku)
+				self.__download_album(gio.File(audio_dl_uri), sku)
 
 			except MagnatunePurchaseError, e:
 				rb.error_dialog(title = _("Download Error"),
@@ -441,33 +445,30 @@ class MagnatuneSource(rb.BrowserSource):
 		keyring.find_items(keyring.ITEM_GENERIC_SECRET, {'rhythmbox-plugin': 'magnatune'}, got_items)
 
 	def __download_album(self, audio_dl_uri, sku):
-		def download_album_chunk(result, total):
-			if not result:
-				download_finished(total, True)
-			elif isinstance(result, Exception):
-				# probably report this somehow?
-				pass
-			elif self.cancelled:
-				download_finished(total, False)
-				return False
-			else:
-				if self.__downloads[audio_dl_uri] == 0:
+		# dictionary used so we can update the values
+		download_info = {'size': 0}
+
+		def download_progress(current, total):
+			if self.__downloads[str_uri] == 0:
 					self.purchase_filesize += total
+					download_info['size'] = total
+			self.__downloads[str_uri] = current
 
-				out.write(result)
-				self.__downloads[audio_dl_uri] += len(result)
+			self.__download_progress = sum(self.__downloads.values()) / float(self.purchase_filesize)
+			self.__notify_status_changed()
 
-				self.__download_progress = sum(self.__downloads.values()) / float(self.purchase_filesize)
-				self.__notify_status_changed()
+		def download_finished(uri, result):
+			del self.__cancellables[str_uri]
 
-		def download_finished(total, success):
 			try:
-				del self.__downloads[audio_dl_uri]
-				self.purchase_filesize -= total
-			except:
-				pass
+				success = uri.copy_finish(result)
+			except Exception, e:
+				success = False
+				print "Download not completed: " + str(e)
 
-			out.close()
+			del self.__downloads[str_uri]
+			self.purchase_filesize -= download_info['size']
+
 			if success:
 				threading.Thread(target=unzip_album).start()
 			else:
@@ -483,11 +484,13 @@ class MagnatuneSource(rb.BrowserSource):
 					icon = rb.try_load_icon(gtk.icon_theme_get_default(), "magnatune", width, 0)
 					shell.notify_custom(4000, _("Finished Downloading"), _("All Magnatune downloads have been completed."), icon, True)
 
+			self.__notify_status_changed()
+
 		def unzip_album():
 			# just use the first library location
 			library_location = gio.File(uri=self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0])
 
-			album = zipfile.ZipFile(dest)
+			album = zipfile.ZipFile(dest.get_path())
 			for track in album.namelist():
 				track_uri = library_location.resolve_relative_path(track).get_uri()
 
@@ -504,34 +507,43 @@ class MagnatuneSource(rb.BrowserSource):
 			remove_download_files()
 
 		def remove_download_files():
-			os.unlink(in_progress)
-			os.unlink(dest)
+			in_progress.delete()
+			dest.delete()
 
 
-		in_progress = os.path.join(magnatune_in_progress_dir, "in_progress_" + sku)
-		dest = os.path.join(magnatune_in_progress_dir, sku)
+		in_progress = magnatune_in_progress_dir.resolve_relative_path("in_progress_" + sku)
+		dest = magnatune_in_progress_dir.resolve_relative_path(sku)
 
-		ip = open(in_progress, 'w')
-		ip.write(str(audio_dl_uri))
-		ip.close()
+		str_uri = audio_dl_uri.get_uri()
+		in_progress.replace_contents(str_uri, None, False, flags=gio.FILE_CREATE_PRIVATE|gio.FILE_CREATE_REPLACE_DESTINATION)
 
 		shell = self.get_property('shell')
 		manager = shell.get_player().get_property('ui-manager')
 		manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(True)
 		self.__downloading = True
-		self.cancelled = False
 
-		self.__downloads[audio_dl_uri] = 0
+		self.__downloads[str_uri] = 0
+
+		cancel = gio.Cancellable()
+		self.__cancellables[str_uri] = cancel
+		try:
+			# For some reason, gio.FILE_COPY_OVERWRITE doesn't work for copy_async
+			dest.delete()
+		except:
+			pass
 
 		# no way to resume downloads, sadly
-		out = open(dest, 'w')
-
-		dl = rb.ChunkLoader()
-		dl.get_url_chunks(audio_dl_uri, 4*1024, True, download_album_chunk)
+		audio_dl_uri.copy_async(dest,
+		                        download_finished,
+					progress_callback=download_progress,
+					flags=gio.FILE_COPY_OVERWRITE,
+					cancellable=cancel)
 
 
 	def cancel_downloads(self):
-		self.cancelled = True
+		for cancel in self.__cancellables.values():
+			cancel.cancel()
+
 		shell = self.get_property('shell')
 		manager = shell.get_player().get_property('ui-manager')
 		manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(False)
@@ -552,6 +564,9 @@ class MagnatuneSource(rb.BrowserSource):
 
 	def __move_data_files(self):
 		# create cache and data directories
+		magnatune_in_progress_dir = magnatune_in_progress_dir.get_path()
+		magnatune_cache_dir = magnatune_cache_dir.get_path()
+
 		# (we know they don't already exist, and we know the parent dirs do)
 		os.mkdir(magnatune_in_progress_dir, 0700)
 		if os.path.exists(magnatune_cache_dir) is False:
