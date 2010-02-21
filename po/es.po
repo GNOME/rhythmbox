@@ -16,8 +16,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-02-17 02:21+0000\n"
-"PO-Revision-Date: 2010-02-17 22:38+0100\n"
+"POT-Creation-Date: 2010-02-21 07:28+0000\n"
+"PO-Revision-Date: 2010-02-21 11:32+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -646,16 +646,14 @@ msgstr "%d %b %Y"
 #: ../lib/rb-util.c:814
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:98
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
-#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:245
-#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:249
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:173
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:174
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:175
-#: ../plugins/audiocd/rb-audiocd-source.c:443
+#: ../plugins/audiocd/rb-audiocd-source.c:502
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:479
-#: ../plugins/daap/rb-daap-connection.c:698
+#: ../plugins/daap/rb-daap-connection.c:699
 #: ../plugins/generic-player/rb-generic-player-source.c:979
 #: ../plugins/ipod/rb-ipod-source.c:391
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
@@ -745,48 +743,48 @@ msgstr "Problema interno de GStreamer, archive un error"
 msgid "D-BUS communication error"
 msgstr "Error de comunicación de D-BUS"
 
-#: ../metadata/rb-metadata-gst.c:548 ../metadata/rb-metadata-gst.c:1116
+#: ../metadata/rb-metadata-gst.c:551 ../metadata/rb-metadata-gst.c:1119
 #: ../plugins/cd-recorder/rb-recorder-gst.c:505
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Ocurrió un error al crear el elemento %s; compruebe su instalación"
 
-#: ../metadata/rb-metadata-gst.c:745
+#: ../metadata/rb-metadata-gst.c:748
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Falló al crear un elemento de origen; compruebe su instalación"
 
-#: ../metadata/rb-metadata-gst.c:807
+#: ../metadata/rb-metadata-gst.c:810
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Error de GStreamer: falló al cambiar el estado"
 
-#: ../metadata/rb-metadata-gst.c:858
+#: ../metadata/rb-metadata-gst.c:861
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "El tipo MIME del archivo no se pudo identificar"
 
-#: ../metadata/rb-metadata-gst.c:962
+#: ../metadata/rb-metadata-gst.c:965
 #, c-format
 msgid "Unable to identify file type"
 msgstr "No se puede identificar el tipo de archivo"
 
-#: ../metadata/rb-metadata-gst.c:975
+#: ../metadata/rb-metadata-gst.c:978
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Tipo de archivo no soportado: %s"
 
-#: ../metadata/rb-metadata-gst.c:985
+#: ../metadata/rb-metadata-gst.c:988
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "No se pueden crear elementos tag-writing"
 
-#: ../metadata/rb-metadata-gst.c:1068
+#: ../metadata/rb-metadata-gst.c:1071
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Tiempo cumplido mientras se ponía el conducto en NULO"
 
-#: ../metadata/rb-metadata-gst.c:1092
+#: ../metadata/rb-metadata-gst.c:1095
 #, c-format
 msgid "File corrupted during write"
 msgstr "El archivo ha sido corrompido mientras se grababa"
@@ -843,67 +841,86 @@ msgstr ""
 msgid "_Continue"
 msgstr "_Continuar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:135
+#: ../plugins/audiocd/rb-audiocd-source.c:152
+msgid "_Extract to Library"
+msgstr "_Extraer a la fonoteca"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:153
+#| msgid "Copy all tracks to the library"
+msgid "Copy tracks to the library"
+msgstr "Copiar pistas a la biblioteca"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:156
 msgid "Reload"
 msgstr "Recargar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:136
+#: ../plugins/audiocd/rb-audiocd-source.c:157
 msgid "Reload Album Information"
 msgstr "Recargar la información del álbum"
 
+#. Translators: this is the toolbar button label
+#. for Copy to Library action.
+#: ../plugins/audiocd/rb-audiocd-source.c:291
+msgid "Extract"
+msgstr "Extraer"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:332
+msgid "Select tracks to be extracted"
+msgstr "Seleccionar las pistas que extraer"
+
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:315
+#: ../plugins/audiocd/rb-audiocd-source.c:373
 msgid "S_ubmit Album"
 msgstr "_Enviar á_lbum"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:316
+#: ../plugins/audiocd/rb-audiocd-source.c:374
 msgid "Hide"
 msgstr "Ocultar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:318
+#: ../plugins/audiocd/rb-audiocd-source.c:376
 msgid "Could not find this album on MusicBrainz."
 msgstr "No se pudo obtener información acerca de este álbum en MusicBrainz."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:319
+#: ../plugins/audiocd/rb-audiocd-source.c:377
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Puede mejorar la base de datos de MusicBrainz añadiendo este álbum."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:449
+#: ../plugins/audiocd/rb-audiocd-source.c:508
 msgid "<Invalid unicode>"
 msgstr "<Unicode inválido>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:492
+#: ../plugins/audiocd/rb-audiocd-source.c:552
 #, c-format
 msgid "Track %u"
 msgstr "Pista %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:552
-#: ../plugins/audiocd/rb-audiocd-source.c:560
-#: ../plugins/audiocd/rb-audiocd-source.c:950
+#: ../plugins/audiocd/rb-audiocd-source.c:615
+#: ../plugins/audiocd/rb-audiocd-source.c:623
+#: ../plugins/audiocd/rb-audiocd-source.c:1014
 msgid "Couldn't load Audio CD"
 msgstr "No se pudo cargar un CD de sonido"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:553
+#: ../plugins/audiocd/rb-audiocd-source.c:616
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox no pudo acceder al CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:561
+#: ../plugins/audiocd/rb-audiocd-source.c:624
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox pudo leer la información del CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:661
+#: ../plugins/audiocd/rb-audiocd-source.c:725
 #: ../sources/rb-library-source.c:148 ../widgets/rb-entry-view.c:1473
 msgid "Title"
 msgstr "Título"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:668
+#: ../plugins/audiocd/rb-audiocd-source.c:732
 #: ../plugins/context/context/ArtistTab.py:52
 #: ../sources/rb-library-source.c:139 ../widgets/rb-entry-view.c:1483
 #: ../widgets/rb-library-browser.c:141
 msgid "Artist"
 msgstr "Artista"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:951
+#: ../plugins/audiocd/rb-audiocd-source.c:1015
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox no pudo obtener acceso al dispositivo CD."
 
@@ -1889,7 +1906,7 @@ msgstr "_Nombre de música compartida:"
 msgid "_Share my music"
 msgstr "_Compartir mi música"
 
-#: ../plugins/daap/rb-daap-connection.c:543
+#: ../plugins/daap/rb-daap-connection.c:544
 msgid "Rhythmbox is not able to connect to iTunes 7 shares"
 msgstr "Rhythmbox no puede conectar con las comparticiones de iTunes 7"
 
@@ -2936,50 +2953,49 @@ msgstr ""
 msgid "Magnatune Store"
 msgstr "Tienda Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:69
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:67
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:115
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:113
 msgid "Loading Magnatune catalog"
 msgstr "Cargando catálogo de Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:118
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:120
 msgid "Downloading Magnatune Album(s)"
 msgstr "Descargando álbum(es) Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:218
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:220
 msgid "Couldn't purchase album"
 msgstr "No se pudo comprar el álbum"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:219
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:221
 msgid "You must have a library location set to purchase an album."
 msgstr ""
 "Debe tener establecida una ubicación para la biblioteca para poder comprar "
 "un álbum."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:285
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:393
-#| msgid "Could not get current track position"
-msgid "Couldn't get account details"
-msgstr "No se pudieron obtener los detalles de la cuenta"
-
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:321
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:271
 msgid "Unable to load catalog"
 msgstr "No se pudo cargar el catálogo"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:322
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:272
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
 "Rhythmbox no pudo entender el catálogo de Magnatune, rellene un informe de "
 "error."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:449
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:309
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:406
+msgid "Couldn't get account details"
+msgstr "No se pudieron obtener los detalles de la cuenta"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:455
 msgid "Download Error"
 msgstr "Error en la descarga"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:450
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:456
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2990,12 +3006,12 @@ msgstr ""
 "El servidor de Magnatune devolvió:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:453
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:458
 #: ../widgets/rb-entry-view.c:1627
 msgid "Error"
 msgstr "Error"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:454
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:459
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -3006,11 +3022,11 @@ msgstr ""
 "El texto del error es:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:517
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
 msgid "Finished Downloading"
 msgstr "Finalizó la descarga"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:517
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
 msgid "All Magnatune downloads have been completed."
 msgstr "Se completaron todas las descargas de Magnatune."
 
@@ -3046,13 +3062,12 @@ msgstr "Cancelar descargas"
 msgid "Stop downloading purchased albums"
 msgstr "Parar de descargar álbumes comprados"
 
-#: ../plugins/magnatune/magnatune/__init__.py:256
-#: ../plugins/magnatune/magnatune/__init__.py:259
-#| msgid "Rhythmbox couldn't read the CD information."
+#: ../plugins/magnatune/magnatune/__init__.py:257
+#: ../plugins/magnatune/magnatune/__init__.py:260
 msgid "Couldn't store account information"
 msgstr "No se pudo almacenar la información de la cuenta"
 
-#: ../plugins/magnatune/magnatune/__init__.py:257
+#: ../plugins/magnatune/magnatune/__init__.py:258
 msgid ""
 "There was a problem accessing the keyring. Check the debug output for more "
 "information."
@@ -3085,7 +3100,7 @@ msgid "Unable to open temporary file: %s"
 msgstr "No se puede abrir el archivo temporal: %s"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:123
-#: ../shell/rb-removable-media-manager.c:174
+#: ../shell/rb-removable-media-manager.c:172
 msgid "_Eject"
 msgstr "_Expulsar"
 
@@ -3749,21 +3764,21 @@ msgstr ""
 msgid "Could not load the music database:"
 msgstr "No se pudo cargar la base de datos de la música:"
 
-#: ../rhythmdb/rhythmdb.c:4516
+#: ../rhythmdb/rhythmdb.c:4527
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minutos"
 
-#: ../rhythmdb/rhythmdb.c:4517
+#: ../rhythmdb/rhythmdb.c:4528
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hora"
 msgstr[1] "%ld horas"
 
-#: ../rhythmdb/rhythmdb.c:4518
+#: ../rhythmdb/rhythmdb.c:4529
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3771,7 +3786,7 @@ msgstr[0] "%ld día"
 msgstr[1] "%ld días"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4524
+#: ../rhythmdb/rhythmdb.c:4535
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s y %s"
@@ -3779,8 +3794,8 @@ msgstr "%s, %s y %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4530 ../rhythmdb/rhythmdb.c:4538
-#: ../rhythmdb/rhythmdb.c:4549
+#: ../rhythmdb/rhythmdb.c:4541 ../rhythmdb/rhythmdb.c:4549
+#: ../rhythmdb/rhythmdb.c:4560
 #, c-format
 msgid "%s and %s"
 msgstr "%s y %s"
@@ -3971,37 +3986,23 @@ msgstr "Error del complemento"
 msgid "Unable to activate plugin %s"
 msgstr "No se pudo activar el complemento %s"
 
-#: ../shell/rb-removable-media-manager.c:175
+#: ../shell/rb-removable-media-manager.c:173
 msgid "Eject this medium"
 msgstr "Expulsa este soporte"
 
-#: ../shell/rb-removable-media-manager.c:177
-msgid "_Extract to Library"
-msgstr "_Extraer a la fonoteca"
-
-#: ../shell/rb-removable-media-manager.c:178
-msgid "Copy all tracks to the library"
-msgstr "Copiar todas las pistas a la fonoteca"
-
-#: ../shell/rb-removable-media-manager.c:180
+#: ../shell/rb-removable-media-manager.c:175
 msgid "_Scan Removable Media"
 msgstr "Inspeccionar _soporte extraíble"
 
-#: ../shell/rb-removable-media-manager.c:181
+#: ../shell/rb-removable-media-manager.c:176
 msgid "Scan for new Removable Media"
 msgstr "Buscar nuevos soportes extraíbles"
 
-#. Translators: this is the toolbar button label
-#. for Copy to Library action.
-#: ../shell/rb-removable-media-manager.c:862
-msgid "Extract"
-msgstr "Extraer"
-
-#: ../shell/rb-removable-media-manager.c:893
+#: ../shell/rb-removable-media-manager.c:880
 msgid "Unable to eject"
 msgstr "No se puede expulsar"
 
-#: ../shell/rb-removable-media-manager.c:914
+#: ../shell/rb-removable-media-manager.c:901
 msgid "Unable to unmount"
 msgstr "No se puede desmontar"
 
@@ -4583,7 +4584,7 @@ msgstr "Títulos"
 msgid "Search titles"
 msgstr "Buscar títulos"
 
-#: ../sources/rb-removable-media-source.c:768
+#: ../sources/rb-removable-media-source.c:772
 #: ../sources/rb-library-source.c:1232
 msgid "Error transferring track"
 msgstr "Error al transferir la pista"
@@ -5031,15 +5032,15 @@ msgstr "Última visita"
 msgid "Location"
 msgstr "Situación"
 
-#: ../widgets/rb-entry-view.c:1875
+#: ../widgets/rb-entry-view.c:1876
 msgid "Now Playing"
 msgstr "Reproduciendo"
 
-#: ../widgets/rb-entry-view.c:1936
+#: ../widgets/rb-entry-view.c:1937
 msgid "Playback Error"
 msgstr "Error de reproducción"
 
-#: ../widgets/rb-header.c:514
+#: ../widgets/rb-header.c:521
 msgid "Not Playing"
 msgstr "No se reproduce nada"
 
