@@ -482,9 +482,16 @@ rb_header_sync (RBHeader *header)
 
 		label_str = g_string_sized_new (100);
 
-		/* stick a right-to-left mark in the string for RTL display */
+		/* force the string to have the same direction as the widget.
+		 * this fixes the display when the head of the text (usually
+		 * the track name) has a different direction than the widget.
+		 */
 		if (gtk_widget_get_direction (GTK_WIDGET (header->priv->song)) == GTK_TEXT_DIR_RTL) {
+			/* insert a unicode RLM */
 			g_string_append (label_str, "\xE2\x80\x8F");
+		} else {
+			/* insert a unicode LRM */
+			g_string_append (label_str, "\xE2\x80\x8E");
 		}
 
 		append_and_free (label_str, TITLE_MARKUP (title));
