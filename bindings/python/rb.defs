@@ -172,6 +172,13 @@
   (gtype-id "RB_TYPE_METADATA")
 )
 
+(define-object SearchEntry
+  (in-module "RB")
+  (parent "GtkHBox")
+  (c-name "RBSearchEntry")
+  (gtype-id "RB_TYPE_SEARCH_ENTRY")
+)
+
 
 ;; Enumerations and flags ...
 
@@ -2847,4 +2854,44 @@
     '("RBMetaDataField" "field")
     '("const-GValue*" "val")
   )
+)
+
+;; From rb-search-entry.h
+
+(define-function rb_search_entry_get_type
+  (c-name "rb_search_entry_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_search_entry_new
+  (c-name "rb_search_entry_new")
+  (is-constructor-of "RbSearchEntry")
+  (return-type "RBSearchEntry*")
+)
+
+(define-method clear
+  (of-object "RBSearchEntry")
+  (c-name "rb_search_entry_clear")
+  (return-type "none")
+)
+
+(define-method set_text
+  (of-object "RBSearchEntry")
+  (c-name "rb_search_entry_set_text")
+  (return-type "none")
+  (parameters
+    '("const-char*" "text")
+  )
+)
+
+(define-method searching
+  (of-object "RBSearchEntry")
+  (c-name "rb_search_entry_searching")
+  (return-type "gboolean")
+)
+
+(define-method grab_focus
+  (of-object "RBSearchEntry")
+  (c-name "rb_search_entry_grab_focus")
+  (return-type "none")
 )
