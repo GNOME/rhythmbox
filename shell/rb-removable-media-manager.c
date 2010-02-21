@@ -109,8 +109,6 @@ static void uevent_cb (GUdevClient *client, const char *action, GUdevDevice *dev
 #endif
 
 static void do_transfer (RBRemovableMediaManager *manager);
-static void rb_removable_media_manager_cmd_copy_tracks (GtkAction *action,
-							RBRemovableMediaManager *mgr);
 
 typedef struct
 {
@@ -174,9 +172,6 @@ static GtkActionEntry rb_removable_media_manager_actions [] =
 	{ "RemovableSourceEject", GNOME_MEDIA_EJECT, N_("_Eject"), NULL,
 	  N_("Eject this medium"),
 	  G_CALLBACK (rb_removable_media_manager_cmd_eject_medium) },
-	{ "RemovableSourceCopyAllTracks", GTK_STOCK_CDROM, N_("_Extract to Library"), NULL,
-	  N_("Copy all tracks to the library"),
-	  G_CALLBACK (rb_removable_media_manager_cmd_copy_tracks) },
 	{ "MusicScanMedia", NULL, N_("_Scan Removable Media"), NULL,
 	  N_("Scan for new Removable Media"),
 	  G_CALLBACK (rb_removable_media_manager_cmd_scan_media) },
@@ -824,7 +819,6 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 					  GtkUIManager *uimanager)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-	GtkAction *action;
 
 	if (priv->uimanager != NULL) {
 		if (priv->actiongroup != NULL) {
@@ -854,13 +848,6 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 	gtk_ui_manager_insert_action_group (priv->uimanager,
 					    priv->actiongroup,
 					    0);
-
-	action = gtk_action_group_get_action (priv->actiongroup,
-					      "RemovableSourceCopyAllTracks");
-	/* Translators: this is the toolbar button label
-	   for Copy to Library action. */
-	g_object_set (G_OBJECT (action), "short-label", _("Extract"), NULL);
-
 }
 
 static void
@@ -1238,35 +1225,3 @@ rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *manager,
 	do_transfer (manager);
 }
 
-static gboolean
-copy_entry (RhythmDBQueryModel *model,
-	    GtkTreePath *path,
-	    GtkTreeIter *iter,
-	    GList **list)
-{
-	GList *l;
-	l = g_list_append (*list, rhythmdb_query_model_iter_to_entry (model, iter));
-	*list = l;
-	return FALSE;
-}
-
-static void
-rb_removable_media_manager_cmd_copy_tracks (GtkAction *action, RBRemovableMediaManager *mgr)
-{
-	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-	RBRemovableMediaSource *source;
-	RBLibrarySource *library;
-	RhythmDBQueryModel *model;
-	GList *list = NULL;
-
-	source = RB_REMOVABLE_MEDIA_SOURCE (priv->selected_source);
-	g_object_get (source, "query-model", &model, NULL);
-	g_object_get (priv->shell, "library-source", &library, NULL);
-
-	gtk_tree_model_foreach (GTK_TREE_MODEL (model), (GtkTreeModelForeachFunc)copy_entry, &list);
-	rb_source_paste (RB_SOURCE (library), list);
-	g_list_free (list);
-
-	g_object_unref (model);
-	g_object_unref (library);
-}

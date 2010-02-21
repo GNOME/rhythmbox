@@ -75,11 +75,6 @@ static GList* impl_get_ui_actions (RBSource *source);
 
 static void impl_pack_paned (RBBrowserSource *source, GtkWidget *paned);
 
-#ifdef HAVE_SJ_METADATA_GETTER
-static void rb_audiocd_source_cmd_reload_metadata (GtkAction *action,
-						   RBSource *source);
-#endif
-
 static gpointer rb_audiocd_load_songs (RBAudioCdSource *source);
 static void rb_audiocd_load_metadata (RBAudioCdSource *source, RhythmDB *db);
 static void rb_audiocd_load_metadata_cancel (RBAudioCdSource *source);
@@ -95,6 +90,11 @@ static gboolean update_disc_number_cb (GtkWidget *widget, GdkEventFocus *event, 
 #if defined(HAVE_SJ_METADATA_GETTER) && GTK_CHECK_VERSION(2,17,6)
 static void info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *source);
 #endif
+
+#if defined(HAVE_SJ_METADATA_GETTER)
+static void reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source);
+#endif
+static void copy_tracks_cmd (GtkAction *action, RBAudioCdSource *source);
 
 typedef struct
 {
@@ -114,7 +114,6 @@ typedef struct
 	GtkWidget *disc_number_entry;
 
 #ifdef HAVE_SJ_METADATA_GETTER
-	GtkActionGroup *action_group;
 	SjMetadataGetter *metadata;
 
 	GtkWidget *info_bar;
@@ -122,6 +121,8 @@ typedef struct
 
 	char *submit_url;
 #endif
+
+	GtkActionGroup *action_group;
 } RBAudioCdSourcePrivate;
 
 RB_PLUGIN_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
@@ -129,14 +130,18 @@ RB_PLUGIN_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MED
 
 #ifdef HAVE_SJ_METADATA_GETTER
 static AlbumDetails* multiple_album_dialog (GList *albums, RBAudioCdSource *source);
+#endif
 
-static GtkActionEntry rb_audiocd_source_actions [] =
-{
+static GtkActionEntry rb_audiocd_source_actions[] = {
+	{ "AudioCdCopyTracks", GTK_STOCK_CDROM, N_("_Extract to Library"), NULL,
+	  N_("Copy tracks to the library"),
+	  G_CALLBACK (copy_tracks_cmd) },
+#if defined(HAVE_SJ_METADATA_GETTER)
 	{ "AudioCdSourceReloadMetadata", GTK_STOCK_REFRESH, N_("Reload"), NULL,
 	N_("Reload Album Information"),
-	G_CALLBACK (rb_audiocd_source_cmd_reload_metadata) },
-};
+	G_CALLBACK (reload_metadata_cmd) },
 #endif
+};
 
 static RhythmDB *
 get_db_for_source (RBAudioCdSource *source)
@@ -218,12 +223,10 @@ rb_audiocd_source_dispose (GObject *object)
 {
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (object);
 
-#ifdef HAVE_SJ_METADATA_GETTER
 	if (priv->action_group != NULL) {
 		g_object_unref (priv->action_group);
 		priv->action_group = NULL;
 	}
-#endif
 
 	if (priv->pipeline) {
 		gst_object_unref (GST_OBJECT (priv->pipeline));
@@ -241,6 +244,7 @@ rb_audiocd_source_constructed (GObject *object)
 	RBEntryView *entry_view;
 	RhythmDB *db;
 	RBPlugin *plugin;
+	RBShell *shell;
 	char *ui_file;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audiocd_source_parent_class, constructed, object);
@@ -249,21 +253,28 @@ rb_audiocd_source_constructed (GObject *object)
 
 	g_object_set (G_OBJECT (source), "name", "Unknown Audio", NULL);
 
-#ifdef HAVE_SJ_METADATA_GETTER
-	{
-		RBShell *shell;
-		g_object_get (source, "shell", &shell, NULL);
-		priv->action_group =
-			_rb_source_register_action_group (RB_SOURCE (source),
-							  "AudiocdActions",
-							  NULL, 0, NULL);
-		_rb_action_group_add_source_actions (priv->action_group,
-						     G_OBJECT (shell),
-						     rb_audiocd_source_actions,
-						     G_N_ELEMENTS (rb_audiocd_source_actions));
-		g_object_unref (shell);
-	}
+	g_object_get (source, "shell", &shell, NULL);
+	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
+							       "AudioCdActions",
+							       NULL, 0, NULL);
+	_rb_action_group_add_source_actions (priv->action_group,
+					     G_OBJECT (shell),
+					     rb_audiocd_source_actions,
+					     G_N_ELEMENTS (rb_audiocd_source_actions));
+	g_object_unref (shell);
+
+	action = gtk_action_group_get_action (priv->action_group,
+					      "AudioCdCopyTracks");
+	/* Translators: this is the toolbar button label
+	   for Copy to Library action. */
+	g_object_set (action, "short-label", _("Extract"), NULL);
+
+#if !defined(HAVE_SJ_METADATA_GETTER)
+	action = gtk_action_group_get_action (source->action_group, "AudioCdSourceReloadMetadata");
+	g_object_set (action, "visible", FALSE, NULL);
 #endif
+
+
 	/* we want audio cds to sort by track# by default */
 	entry_view = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_set_sorting_order (entry_view, "Track", GTK_SORT_ASCENDING);
@@ -584,8 +595,9 @@ rb_audiocd_scan_songs (RBAudioCdSource *source,
 }
 
 #ifdef HAVE_SJ_METADATA_GETTER
+
 static void
-rb_audiocd_source_cmd_reload_metadata (GtkAction *action, RBSource *source)
+reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source)
 {
 	RhythmDB *db;
 
@@ -1033,7 +1045,7 @@ impl_get_ui_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
-	actions = g_list_prepend (actions, g_strdup ("RemovableSourceCopyAllTracks"));
+	actions = g_list_prepend (actions, g_strdup ("AudioCdCopyTracks"));
 	actions = g_list_prepend (actions, g_strdup ("RemovableSourceEject"));
 
 #ifdef HAVE_SJ_METADATA_GETTER
@@ -1250,4 +1262,45 @@ info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *s
 	gtk_widget_hide (priv->info_bar);
 }
 #endif
+
+static gboolean
+copy_entry (RhythmDBQueryModel *model,
+	    GtkTreePath *path,
+	    GtkTreeIter *iter,
+	    GList **list)
+{
+	RhythmDBEntry *entry;
+	GList *l;
+
+	entry = rhythmdb_query_model_iter_to_entry (model, iter);
+	rb_debug ("adding track %s to transfer list",
+		  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+	l = g_list_append (*list, entry);
+	*list = l;
+	return FALSE;
+}
+
+static void
+copy_tracks_cmd (GtkAction *action, RBAudioCdSource *source)
+{
+	RBShell *shell;
+	RBSource *library;
+	RhythmDBQueryModel *model;
+	GList *list = NULL;
+
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "library-source", &library, NULL);
+	g_object_unref (shell);
+
+	g_object_get (source, "query-model", &model, NULL);
+
+	gtk_tree_model_foreach (GTK_TREE_MODEL (model), (GtkTreeModelForeachFunc)copy_entry, &list);
+	if (list != NULL) {
+		rb_source_paste (library, list);
+		g_list_free (list);
+	}
+
+	g_object_unref (model);
+	g_object_unref (library);
+}
 
