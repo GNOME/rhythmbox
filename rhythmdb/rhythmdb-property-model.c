@@ -730,7 +730,7 @@ update_sort_string (RhythmDBPropertyModel *model,
 	}
 
 	/* if we found one, replace the current sort string */
-	if (newvalue != NULL && (prop->sort_string == NULL || pi < prop->sort_string_from)) {
+	if (newvalue != NULL && newvalue[0] != '\0' && (prop->sort_string == NULL || pi < prop->sort_string_from)) {
 		rb_debug ("replacing current sort string %s with %s (%d -> %d)",
 			  prop->sort_string ? rb_refstring_get (prop->sort_string) : "NULL",
 			  newvalue,
@@ -740,9 +740,16 @@ update_sort_string (RhythmDBPropertyModel *model,
 			rb_refstring_unref (prop->sort_string);
 		}
 		prop->sort_string = rb_refstring_new (newvalue);
+		g_assert (pi < model->priv->sort_propids->len);
 		prop->sort_string_from = pi;
 		return TRUE;
 	}
+
+	/* if we can't find a sort string at all, use the display string as fallback */
+	if (prop->sort_string == NULL) {
+		prop->sort_string = rb_refstring_ref (prop->string);
+	}
+
 	return FALSE;
 }
 
