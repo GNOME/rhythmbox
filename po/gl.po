@@ -8,18 +8,19 @@
 # Ignacio Casal Quinteiro <icq@svn.gnome.org>, 2007, 2008.
 # Ignacio Casal Quinteiro <nacho.resa@gmail.com>, 2008.
 # Antón Méixome <meixome@mancomun.org>, 20, 2010.
+# Fran Diéguez <frandieguez@ubuntu.com>, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-12 10:18+0100\n"
-"PO-Revision-Date: 2010-02-09 15:02+0100\n"
-"Last-Translator: Antón Méixome <meixome@mancomun.org>\n"
-"Language-Team: Galician <gnome@g11n.net>\n"
+"POT-Creation-Date: 2010-02-21 11:58+0100\n"
+"PO-Revision-Date: 2010-02-13 11:59+0100\n"
+"Last-Translator: Fran Diéguez <frandieguez@ubuntu.com>\n"
+"Language-Team: Galician <proxecto@trasno.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: KBabel 1.11.4\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:607
@@ -521,7 +522,7 @@ msgid "Recently Played"
 msgstr "Reproducido recentemente"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../plugins/status-icon/rb-status-icon-plugin.c:56
+#: ../plugins/status-icon/rb-status-icon-plugin.c:58
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1528 ../shell/rb-shell.c:1010
 #: ../shell/rb-shell.c:1974
 msgid "Music Player"
@@ -647,17 +648,15 @@ msgstr "%d de %b de %Y"
 #: ../lib/rb-util.c:814
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:98
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
-#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:245
-#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:249
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:173
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:174
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:175
-#: ../plugins/audiocd/rb-audiocd-source.c:443
+#: ../plugins/audiocd/rb-audiocd-source.c:502
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:479
-#: ../plugins/daap/rb-daap-connection.c:698
-#: ../plugins/generic-player/rb-generic-player-source.c:987
+#: ../plugins/daap/rb-daap-connection.c:699
+#: ../plugins/generic-player/rb-generic-player-source.c:979
 #: ../plugins/ipod/rb-ipod-source.c:391
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:520
@@ -668,7 +667,7 @@ msgstr "%d de %b de %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:497
 #: ../plugins/mtpdevice/rb-mtp-source.c:861
 #: ../plugins/mtpdevice/rb-mtp-source.c:973
-#: ../plugins/status-icon/rb-status-icon-plugin.c:732
+#: ../plugins/status-icon/rb-status-icon-plugin.c:781
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
 #: ../podcast/rb-podcast-manager.c:1868
 #: ../podcast/rb-podcast-properties-dialog.c:484
@@ -746,49 +745,49 @@ msgstr "Hai un problema interno de GStreamer; arquive un erro"
 msgid "D-BUS communication error"
 msgstr "Produciuse un erro de comunicación de D-BUS"
 
-#: ../metadata/rb-metadata-gst.c:542 ../metadata/rb-metadata-gst.c:1110
+#: ../metadata/rb-metadata-gst.c:551 ../metadata/rb-metadata-gst.c:1119
 #: ../plugins/cd-recorder/rb-recorder-gst.c:505
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Produciuse un erro ao crear o elemento %s; comprobe a súa instalación"
 
-#: ../metadata/rb-metadata-gst.c:739
+#: ../metadata/rb-metadata-gst.c:748
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr ""
 "Produciuse un erro ao crear o elemento de orixe; comprobe a súa instalación"
 
-#: ../metadata/rb-metadata-gst.c:801
+#: ../metadata/rb-metadata-gst.c:810
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Produciuse un erro de GStreamer: fallou ao cambiar o estado"
 
-#: ../metadata/rb-metadata-gst.c:852
+#: ../metadata/rb-metadata-gst.c:861
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "Non foi posíbel identificar o tipo MIME do ficheiro"
 
-#: ../metadata/rb-metadata-gst.c:956
+#: ../metadata/rb-metadata-gst.c:965
 #, c-format
 msgid "Unable to identify file type"
 msgstr "Non foi posíbel identificar o tipo de ficheiro"
 
-#: ../metadata/rb-metadata-gst.c:969
+#: ../metadata/rb-metadata-gst.c:978
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "O tipo de ficheiro non é compatíbel: %s"
 
-#: ../metadata/rb-metadata-gst.c:979
+#: ../metadata/rb-metadata-gst.c:988
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "É imposíbel crear elementos tag-writing"
 
-#: ../metadata/rb-metadata-gst.c:1062
+#: ../metadata/rb-metadata-gst.c:1071
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Cumpriuse o tempo mentres se establecía o conduto como NULO"
 
-#: ../metadata/rb-metadata-gst.c:1086
+#: ../metadata/rb-metadata-gst.c:1095
 #, c-format
 msgid "File corrupted during write"
 msgstr "O ficheiro danouse mentres se escribía"
@@ -845,72 +844,87 @@ msgstr ""
 msgid "_Continue"
 msgstr "_Continuar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:135
+#: ../plugins/audiocd/rb-audiocd-source.c:152
+msgid "_Extract to Library"
+msgstr "_Extraer á fonoteca"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:153
+#, fuzzy
+msgid "Copy tracks to the library"
+msgstr "Copiar todas as pistas á fonoteca"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:156
 msgid "Reload"
 msgstr "Recargar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:136
+#: ../plugins/audiocd/rb-audiocd-source.c:157
 msgid "Reload Album Information"
 msgstr "Recargar información do álbum"
 
+#. Translators: this is the toolbar button label
+#. for Copy to Library action.
+#: ../plugins/audiocd/rb-audiocd-source.c:291
+msgid "Extract"
+msgstr "Extraer"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:332
+msgid "Select tracks to be extracted"
+msgstr ""
+
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:315
+#: ../plugins/audiocd/rb-audiocd-source.c:373
 msgid "S_ubmit Album"
 msgstr "En_viar o álbum"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:316
+#: ../plugins/audiocd/rb-audiocd-source.c:374
 msgid "Hide"
 msgstr "Ocultar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:318
+#: ../plugins/audiocd/rb-audiocd-source.c:376
 msgid "Could not find this album on MusicBrainz."
 msgstr "Non foi posíbel atopar este álbum en MusicBranz."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:319
+#: ../plugins/audiocd/rb-audiocd-source.c:377
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr ""
 "Vostede pode mellorar a base de datos de MusicBrainz engadindo este álbum."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:449
+#: ../plugins/audiocd/rb-audiocd-source.c:508
 msgid "<Invalid unicode>"
 msgstr "<unicode incorrecto>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:492
+#: ../plugins/audiocd/rb-audiocd-source.c:552
 #, c-format
 msgid "Track %u"
 msgstr "Pista %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:552
-#: ../plugins/audiocd/rb-audiocd-source.c:560
-#: ../plugins/audiocd/rb-audiocd-source.c:950
+#: ../plugins/audiocd/rb-audiocd-source.c:615
+#: ../plugins/audiocd/rb-audiocd-source.c:623
+#: ../plugins/audiocd/rb-audiocd-source.c:1014
 msgid "Couldn't load Audio CD"
 msgstr "Non foi posíbel cargar o CD de audio"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:553
+#: ../plugins/audiocd/rb-audiocd-source.c:616
 msgid "Rhythmbox couldn't access the CD."
 msgstr "O Rhythmbox non puido acceder ao CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:561
+#: ../plugins/audiocd/rb-audiocd-source.c:624
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "O Rhythmbox non puido ler a información do CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:661
-#: ../sources/rb-library-source.c:146 ../widgets/rb-entry-view.c:1473
-#: ../widgets/rb-query-creator-properties.c:73
-#: ../widgets/rb-query-creator-properties.c:103
+#: ../plugins/audiocd/rb-audiocd-source.c:725
+#: ../sources/rb-library-source.c:148 ../widgets/rb-entry-view.c:1473
 msgid "Title"
 msgstr "Título"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:668
+#: ../plugins/audiocd/rb-audiocd-source.c:732
 #: ../plugins/context/context/ArtistTab.py:52
-#: ../sources/rb-library-source.c:137 ../widgets/rb-entry-view.c:1483
+#: ../sources/rb-library-source.c:139 ../widgets/rb-entry-view.c:1483
 #: ../widgets/rb-library-browser.c:141
-#: ../widgets/rb-query-creator-properties.c:74
-#: ../widgets/rb-query-creator-properties.c:100
 msgid "Artist"
 msgstr "Artista"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:951
+#: ../plugins/audiocd/rb-audiocd-source.c:1015
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "O Rhythmbox non puido acceder ao dispositivo de CD."
 
@@ -1895,7 +1909,7 @@ msgstr "_Nome da música compartida:"
 msgid "_Share my music"
 msgstr "_Compartir a miña música"
 
-#: ../plugins/daap/rb-daap-connection.c:543
+#: ../plugins/daap/rb-daap-connection.c:544
 msgid "Rhythmbox is not able to connect to iTunes 7 shares"
 msgstr "Rhythmbox non pode conectarse a comparticións de  iTunes 7"
 
@@ -2032,6 +2046,46 @@ msgstr ""
 "Compatibilidade cos dispositivos de reprodución de audio xenéricos (máis PSP "
 "e Nokia 770)"
 
+#: ../plugins/generic-player/generic-player-info.ui.h:1
+#: ../plugins/ipod/ipod-info.ui.h:1 ../plugins/mtpdevice/mtp-info.ui.h:1
+msgid "<b>System</b>"
+msgstr "<b>Sistema</b>"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:2
+#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
+msgid "Audio formats:"
+msgstr "_Formato de audio:"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:3
+#: ../plugins/mtpdevice/mtp-info.ui.h:3
+msgid "Device _name:"
+msgstr "Nodo do dispositivo:"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:4
+#: ../plugins/mtpdevice/mtp-info.ui.h:5
+msgid "Manufacturer:"
+msgstr "Magnatune"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:5
+#: ../plugins/ipod/ipod-info.ui.h:6 ../plugins/mtpdevice/mtp-info.ui.h:6
+msgid "Model:"
+msgstr "Modelo:"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:6
+#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
+msgid "Playlists:"
+msgstr "Listaxes de reprodución"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:9
+msgid "Serial number:"
+msgstr "Número de serie:"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:8
+#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:10
+msgid "Tracks:"
+msgstr "Pista"
+
 #: ../plugins/generic-player/rb-generic-player-plugin.c:95
 #: ../shell/rb-playlist-manager.c:1156 ../shell/rb-playlist-manager.c:1199
 msgid "New Playlist"
@@ -2061,12 +2115,7 @@ msgstr "_Propiedades"
 msgid "Display device properties"
 msgstr "Mostrar propiedades do iPod"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:566
-#, c-format
-msgid "Importing (%d/%d)"
-msgstr "Importando (%d/%d)"
-
-#: ../plugins/generic-player/rb-generic-player-source.c:1225
+#: ../plugins/generic-player/rb-generic-player-source.c:1217
 #: ../plugins/ipod/rb-ipod-source.c:1776
 #: ../plugins/mtpdevice/rb-mtp-source.c:1226
 msgid "Advanced"
@@ -2128,15 +2177,6 @@ msgstr ""
 "Compatibilidade con dispositivos iPod de Apple (mostrar o contido, "
 "reproducir desde o dispositivo)"
 
-#: ../plugins/ipod/ipod-info.ui.h:1 ../plugins/mtpdevice/mtp-info.ui.h:1
-msgid "<b>System</b>"
-msgstr "<b>Sistema</b>"
-
-#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
-#, fuzzy
-msgid "Audio formats:"
-msgstr "_Formato de audio:"
-
 #: ../plugins/ipod/ipod-info.ui.h:3
 msgid "Database version:"
 msgstr "Versión da base de datos:"
@@ -2149,29 +2189,13 @@ msgstr "Nodo do dispositivo:"
 msgid "Firmware version:"
 msgstr "Versión do firmware:"
 
-#: ../plugins/ipod/ipod-info.ui.h:6 ../plugins/mtpdevice/mtp-info.ui.h:6
-msgid "Model:"
-msgstr "Modelo:"
-
 #: ../plugins/ipod/ipod-info.ui.h:7
 msgid "Mount point:"
 msgstr "Punto de montaxe:"
 
-#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
-msgid "Playlists:"
-msgstr "Listaxes de reprodución"
-
 #: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:8
 msgid "Podcasts:"
 msgstr "Podcasts"
-
-#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:9
-msgid "Serial number:"
-msgstr "Número de serie:"
-
-#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:10
-msgid "Tracks:"
-msgstr "Pista"
 
 #: ../plugins/ipod/ipod-info.ui.h:12
 msgid "iPod _name:"
@@ -2447,8 +2471,6 @@ msgstr "Novo"
 
 #: ../plugins/iradio/rb-iradio-source.c:351 ../widgets/rb-entry-view.c:1503
 #: ../widgets/rb-library-browser.c:140
-#: ../widgets/rb-query-creator-properties.c:76
-#: ../widgets/rb-query-creator-properties.c:102
 msgid "Genre"
 msgstr "Xénero"
 
@@ -2825,87 +2847,84 @@ msgid "Find out about Magnatune at "
 msgstr "Informarse sobre o Magnatune en"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:22
-#, fuzzy
+msgid "Get an account at "
+msgstr "Obteña unha conta en "
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:23
 msgid "I don't have a Magnatune account"
 msgstr "Informarse sobre o Magnatune en"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:23
-msgid "I have a download account"
-msgstr ""
-
 #: ../plugins/magnatune/magnatune-prefs.ui.h:24
-msgid "I have a streaming account"
-msgstr ""
+msgid "I have a download account"
+msgstr "Teño unha conta de descarga"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:25
+msgid "I have a streaming account"
+msgstr "Teño unha conta de streaming"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:26
 msgid "January (01)"
 msgstr "xaneiro (01)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:26
+#: ../plugins/magnatune/magnatune-prefs.ui.h:27
 msgid "July (07)"
 msgstr "xullo (07)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:27
+#: ../plugins/magnatune/magnatune-prefs.ui.h:28
 msgid "June (06)"
 msgstr "xuño (06)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:28
+#: ../plugins/magnatune/magnatune-prefs.ui.h:29
 msgid "Magnatune Information"
 msgstr "Información do Magnatune"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:29
+#: ../plugins/magnatune/magnatune-prefs.ui.h:30
 msgid "Magnatune Preferences"
 msgstr "Preferencias do Magnatune"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:30
+#: ../plugins/magnatune/magnatune-prefs.ui.h:31
 msgid "March (03)"
 msgstr "marzo (03)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:31
+#: ../plugins/magnatune/magnatune-prefs.ui.h:32
 msgid "May (05)"
 msgstr "maio (05)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:32
+#: ../plugins/magnatune/magnatune-prefs.ui.h:33
 msgid "November (11)"
 msgstr "novembro (11)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:33
+#: ../plugins/magnatune/magnatune-prefs.ui.h:34
 msgid "October (10)"
 msgstr "outubro (10)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:34
+#: ../plugins/magnatune/magnatune-prefs.ui.h:35
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:35
-#, fuzzy
+#: ../plugins/magnatune/magnatune-prefs.ui.h:36
 msgid "Password:"
 msgstr "_Contrasinal:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:36
+#: ../plugins/magnatune/magnatune-prefs.ui.h:37
 msgid "Preferred audio _format:"
 msgstr "_Formato de audio preferido:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+#: ../plugins/magnatune/magnatune-prefs.ui.h:38
 msgid "Redownload purchased music at "
 msgstr "Volver descargar a música comprada en"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:38
+#: ../plugins/magnatune/magnatune-prefs.ui.h:39
 msgid "September (09)"
 msgstr "setembro (09)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:39
-#, fuzzy
+#: ../plugins/magnatune/magnatune-prefs.ui.h:40
 msgid "Username:"
 msgstr "Nome de _usuario:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:40
+#: ../plugins/magnatune/magnatune-prefs.ui.h:41
 msgid "VBR MP3"
 msgstr "VBR MP3"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:41
-msgid "Visit Magnatune at "
-msgstr "Visite o Magnatune en "
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:42
 msgid "WAV"
@@ -2916,9 +2935,11 @@ msgid ""
 "Your account details have changed. Changes will be applied the next time you "
 "start Rhythmbox."
 msgstr ""
+"Os detalles da súa conta cambiaron. Os cambios aplicaranse a seguinte vez "
+"que inicie Rhythmbox."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:44
-msgid "http://www.magnatune.com/"
+msgid "http://magnatune.com/compare_plans"
 msgstr "http://www.magnatune.com/"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:45
@@ -2949,36 +2970,41 @@ msgstr "Magnatune"
 msgid "Loading Magnatune catalog"
 msgstr "Cargando o catálogo de Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:116
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:120
 msgid "Downloading Magnatune Album(s)"
 msgstr "Descargando álbums de Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:217
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:220
 msgid "Couldn't purchase album"
 msgstr "Non foi posíbel mercar o álbum"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:218
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:221
 msgid "You must have a library location set to purchase an album."
 msgstr "Debe ter unha localización para a fonoteca para poder mercar un álbum."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:304
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:271
 msgid "Unable to load catalog"
 msgstr "Non foi posíbel cargar o catálogo"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:305
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:272
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
 "Rhythmbox non puido entender o catálogo Magnatune, por favor mande un "
 "informe de erro."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:420
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:309
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:406
 #, fuzzy
+msgid "Couldn't get account details"
+msgstr "Non foi posíbel obter a posición da pista actual"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:455
 msgid "Download Error"
 msgstr "Descargar canción"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:421
-#, fuzzy, python-format
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:456
+#, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
 "The Magnatune server returned:\n"
@@ -2988,13 +3014,13 @@ msgstr ""
 "O servidor Magnatune devolveu:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:424
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:458
 #: ../widgets/rb-entry-view.c:1627
 msgid "Error"
 msgstr "Erro"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:425
-#, fuzzy, python-format
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:459
+#, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
 "The error text is:\n"
@@ -3004,48 +3030,57 @@ msgstr ""
 "O texto do erro é:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:494
-#, fuzzy
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
 msgid "Finished Downloading"
 msgstr "Rematou a descarga do podcast"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:494
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
 msgid "All Magnatune downloads have been completed."
-msgstr ""
+msgstr "Todas as descargas de Magnatune remataron."
 
-#: ../plugins/magnatune/magnatune/__init__.py:113
+#: ../plugins/magnatune/magnatune/__init__.py:112
 msgid "Purchase Album"
 msgstr "Mercar un álbum"
 
-#: ../plugins/magnatune/magnatune/__init__.py:114
+#: ../plugins/magnatune/magnatune/__init__.py:113
 msgid "Purchase this album from Magnatune"
 msgstr "Mercar este álbum en Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:118
-#, fuzzy
+#: ../plugins/magnatune/magnatune/__init__.py:117
 msgid "Download Album"
 msgstr "_Descargar álbum"
 
-#: ../plugins/magnatune/magnatune/__init__.py:119
-#, fuzzy
+#: ../plugins/magnatune/magnatune/__init__.py:118
 msgid "Download this album from Magnatune"
 msgstr "Mercar este álbum en Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:123
+#: ../plugins/magnatune/magnatune/__init__.py:122
 msgid "Artist Information"
 msgstr "Información do artista"
 
-#: ../plugins/magnatune/magnatune/__init__.py:124
+#: ../plugins/magnatune/magnatune/__init__.py:123
 msgid "Get information about this artist"
 msgstr "Obter información sobre este artista"
 
-#: ../plugins/magnatune/magnatune/__init__.py:128
+#: ../plugins/magnatune/magnatune/__init__.py:127
 msgid "Cancel Downloads"
 msgstr "Cancelar as descargas"
 
-#: ../plugins/magnatune/magnatune/__init__.py:129
+#: ../plugins/magnatune/magnatune/__init__.py:128
 msgid "Stop downloading purchased albums"
 msgstr "Deter a descarga dos álbums comprados"
+
+#: ../plugins/magnatune/magnatune/__init__.py:257
+#: ../plugins/magnatune/magnatune/__init__.py:260
+#, fuzzy
+msgid "Couldn't store account information"
+msgstr "O Rhythmbox non puido ler a información do CD."
+
+#: ../plugins/magnatune/magnatune/__init__.py:258
+msgid ""
+"There was a problem accessing the keyring. Check the debug output for more "
+"information."
+msgstr ""
 
 #: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
@@ -3065,14 +3100,6 @@ msgstr ""
 "Asistencia para dispositivos de MTP (mostrar o contido, transferir, "
 "reproducir desde o dispositivo)"
 
-#: ../plugins/mtpdevice/mtp-info.ui.h:3
-msgid "Device _name:"
-msgstr "Nodo do dispositivo:"
-
-#: ../plugins/mtpdevice/mtp-info.ui.h:5
-msgid "Manufacturer:"
-msgstr "Magnatune"
-
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:153
 #: ../plugins/mtpdevice/rb-mtp-thread.c:458
 #, c-format
@@ -3080,7 +3107,7 @@ msgid "Unable to open temporary file: %s"
 msgstr "Produciuse un erro ao abrir o dispositivo temporal: %s"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:123
-#: ../shell/rb-removable-media-manager.c:174
+#: ../shell/rb-removable-media-manager.c:172
 msgid "_Eject"
 msgstr "_Expulsar"
 
@@ -3249,13 +3276,13 @@ msgstr "Un engadido de exemplo en Python sen características"
 
 #: ../plugins/sample-python/sample-python.rb-plugin.in.h:2
 msgid "Python Sample Plugin"
-msgstr "Complemento de exemplo de Python"
+msgstr "Engadido de exemplo de Python"
 
 #: ../plugins/sample/rb-sample-plugin.c:123
 #: ../plugins/sample/rb-sample-plugin.c:130
 #: ../plugins/sample/sample.rb-plugin.in.h:2
 msgid "Sample Plugin"
-msgstr "Complemento de exemplo"
+msgstr "Engadido de exemplo"
 
 #: ../plugins/sample/sample.rb-plugin.in.h:1
 msgid "A sample plugin in C with no features"
@@ -3267,7 +3294,7 @@ msgstr "Un engadido de exemplo en Vala sen características"
 
 #: ../plugins/sample-vala/sample-vala.rb-plugin.in.h:2
 msgid "Vala Sample Plugin"
-msgstr "Complemento de exemplo Vala"
+msgstr "Engadido de exemplo Vala"
 
 #: ../plugins/sendto/__init__.py:51
 msgid "Send to..."
@@ -3287,53 +3314,53 @@ msgstr ""
 msgid "Send tracks"
 msgstr "Pistas preferidas"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:138
+#: ../plugins/status-icon/rb-status-icon-plugin.c:140
 msgid "_Close"
 msgstr "_Pechar"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:139
+#: ../plugins/status-icon/rb-status-icon-plugin.c:141
 msgid "Hide the music player window"
 msgstr "Ocultar a xanela do reprodutor de música"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:145
+#: ../plugins/status-icon/rb-status-icon-plugin.c:147
 msgid "_Show Music Player"
 msgstr "_Mostrarr o reprodutor de música"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:146
+#: ../plugins/status-icon/rb-status-icon-plugin.c:148
 msgid "Choose music to play"
 msgstr "Escoller a música para reproducir"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:148
+#: ../plugins/status-icon/rb-status-icon-plugin.c:150
 msgid "Show N_otifications"
 msgstr "Mostrar as _notificacións"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:149
+#: ../plugins/status-icon/rb-status-icon-plugin.c:151
 msgid "Show notifications of song changes and other events"
 msgstr "Mostrar as notificacións de cambios de canción ou outros eventos"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:432
+#: ../plugins/status-icon/rb-status-icon-plugin.c:434
 msgid "Next"
 msgstr "Seguinte"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:583
+#: ../plugins/status-icon/rb-status-icon-plugin.c:585
 #: ../remote/dbus/rb-client.c:454 ../remote/dbus/rb-client.c:480
 msgid "Not playing"
 msgstr "Non se está a reproducir nada"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:586
+#: ../plugins/status-icon/rb-status-icon-plugin.c:588
 #, c-format
 msgid "Paused, %s"
 msgstr "Pausado, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:675
+#: ../plugins/status-icon/rb-status-icon-plugin.c:653
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "por <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:696
+#: ../plugins/status-icon/rb-status-icon-plugin.c:655
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
@@ -3746,21 +3773,21 @@ msgstr ""
 msgid "Could not load the music database:"
 msgstr "Non foi posíbel cargar a base de datos de música:"
 
-#: ../rhythmdb/rhythmdb.c:4516
+#: ../rhythmdb/rhythmdb.c:4527
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minutos"
 
-#: ../rhythmdb/rhythmdb.c:4517
+#: ../rhythmdb/rhythmdb.c:4528
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hora"
 msgstr[1] "%ld horas"
 
-#: ../rhythmdb/rhythmdb.c:4518
+#: ../rhythmdb/rhythmdb.c:4529
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3768,7 +3795,7 @@ msgstr[0] "%ld día"
 msgstr[1] "%ld días"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4524
+#: ../rhythmdb/rhythmdb.c:4535
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s e %s"
@@ -3776,8 +3803,8 @@ msgstr "%s, %s e %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4530 ../rhythmdb/rhythmdb.c:4538
-#: ../rhythmdb/rhythmdb.c:4549
+#: ../rhythmdb/rhythmdb.c:4541 ../rhythmdb/rhythmdb.c:4549
+#: ../rhythmdb/rhythmdb.c:4560
 #, c-format
 msgid "%s and %s"
 msgstr "%s e %s"
@@ -3953,7 +3980,7 @@ msgstr "A lista de reprodución %s é de reprodución automática"
 
 #: ../shell/rb-plugin-manager.c:56
 msgid "Plugin"
-msgstr "Complemento"
+msgstr "Engadido"
 
 #: ../shell/rb-plugin-manager.c:57
 msgid "Enabled"
@@ -3968,37 +3995,23 @@ msgstr "Erro do engadido"
 msgid "Unable to activate plugin %s"
 msgstr "Non foi posíbel activar o engadido %s"
 
-#: ../shell/rb-removable-media-manager.c:175
+#: ../shell/rb-removable-media-manager.c:173
 msgid "Eject this medium"
 msgstr "Expulsar este medio"
 
-#: ../shell/rb-removable-media-manager.c:177
-msgid "_Extract to Library"
-msgstr "_Extraer á fonoteca"
-
-#: ../shell/rb-removable-media-manager.c:178
-msgid "Copy all tracks to the library"
-msgstr "Copiar todas as pistas á fonoteca"
-
-#: ../shell/rb-removable-media-manager.c:180
+#: ../shell/rb-removable-media-manager.c:175
 msgid "_Scan Removable Media"
 msgstr "_Escanear o soporte extraíble"
 
-#: ../shell/rb-removable-media-manager.c:181
+#: ../shell/rb-removable-media-manager.c:176
 msgid "Scan for new Removable Media"
 msgstr "Buscar novos soportes extraíbles"
 
-#. Translators: this is the toolbar button label
-#. for Copy to Library action.
-#: ../shell/rb-removable-media-manager.c:862
-msgid "Extract"
-msgstr "Extraer"
-
-#: ../shell/rb-removable-media-manager.c:893
+#: ../shell/rb-removable-media-manager.c:880
 msgid "Unable to eject"
 msgstr "Non é posíbel expulsar"
 
-#: ../shell/rb-removable-media-manager.c:914
+#: ../shell/rb-removable-media-manager.c:901
 msgid "Unable to unmount"
 msgstr "Non é posíbel desmontar"
 
@@ -4577,8 +4590,8 @@ msgstr "Títulos"
 msgid "Search titles"
 msgstr "Procurar títulos"
 
-#: ../sources/rb-removable-media-source.c:768
-#: ../sources/rb-library-source.c:1209
+#: ../sources/rb-removable-media-source.c:772
+#: ../sources/rb-library-source.c:1232
 msgid "Error transferring track"
 msgstr "Produciuse un erro ao transferir a pista"
 
@@ -4617,58 +4630,56 @@ msgid_plural "%d import errors"
 msgstr[0] "%d erro de importación"
 msgstr[1] "%d erros de importación"
 
-#: ../sources/rb-library-source.c:133
+#: ../sources/rb-library-source.c:135
 msgid "Artist/Artist - Album"
 msgstr "Artista/Artista - Álbum"
 
-#: ../sources/rb-library-source.c:134
+#: ../sources/rb-library-source.c:136
 msgid "Artist/Album"
 msgstr "Artista/Álbum"
 
-#: ../sources/rb-library-source.c:135
+#: ../sources/rb-library-source.c:137
 msgid "Artist - Album"
 msgstr "Artista - Álbum"
 
-#: ../sources/rb-library-source.c:136 ../widgets/rb-entry-view.c:1493
+#: ../sources/rb-library-source.c:138 ../widgets/rb-entry-view.c:1493
 #: ../widgets/rb-library-browser.c:142
-#: ../widgets/rb-query-creator-properties.c:75
-#: ../widgets/rb-query-creator-properties.c:101
 msgid "Album"
 msgstr "Álbum"
 
-#: ../sources/rb-library-source.c:142
+#: ../sources/rb-library-source.c:144
 msgid "Number - Title"
 msgstr "Número - Título"
 
-#: ../sources/rb-library-source.c:143
+#: ../sources/rb-library-source.c:145
 msgid "Artist - Title"
 msgstr "Artista - Título"
 
-#: ../sources/rb-library-source.c:144
+#: ../sources/rb-library-source.c:146
 msgid "Artist - Number - Title"
 msgstr "Artista - Número - Título"
 
-#: ../sources/rb-library-source.c:145
+#: ../sources/rb-library-source.c:147
 msgid "Artist (Album) - Number - Title"
 msgstr "Artista (Álbum) - Número - Título"
 
-#: ../sources/rb-library-source.c:147
+#: ../sources/rb-library-source.c:149
 msgid "Number. Artist - Title"
 msgstr "Número. Artista - Título"
 
-#: ../sources/rb-library-source.c:382
+#: ../sources/rb-library-source.c:403
 msgid "Music"
 msgstr "Música"
 
-#: ../sources/rb-library-source.c:416
+#: ../sources/rb-library-source.c:437
 msgid "Choose Library Location"
 msgstr "Escolla o lugar da fonoteca"
 
-#: ../sources/rb-library-source.c:591
+#: ../sources/rb-library-source.c:612
 msgid "Multiple locations set"
 msgstr "Establecéronse múltiples lugares"
 
-#: ../sources/rb-library-source.c:1000
+#: ../sources/rb-library-source.c:1023
 msgid "Example Path:"
 msgstr "Camiño de exemplo:"
 
@@ -4937,6 +4948,11 @@ msgid_plural "%d songs"
 msgstr[0] "%d canción"
 msgstr[1] "%d cancións"
 
+#: ../sources/rb-source.c:1884
+#, c-format
+msgid "Importing (%d/%d)"
+msgstr "Importando (%d/%d)"
+
 #: ../sources/rb-source-group.c:63
 msgid "Library"
 msgstr "Fonoteca"
@@ -4986,8 +5002,7 @@ msgstr "Pista"
 msgid "Time"
 msgstr "Tempo"
 
-#: ../widgets/rb-entry-view.c:1525 ../widgets/rb-query-creator-properties.c:77
-#: ../widgets/rb-query-creator-properties.c:106
+#: ../widgets/rb-entry-view.c:1525
 msgid "Year"
 msgstr "Ano"
 
@@ -4999,23 +5014,19 @@ msgstr "Calidade"
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1551 ../widgets/rb-query-creator-properties.c:78
-#: ../widgets/rb-query-creator-properties.c:104
+#: ../widgets/rb-entry-view.c:1551
 msgid "Rating"
 msgstr "Puntuación"
 
-#: ../widgets/rb-entry-view.c:1573 ../widgets/rb-query-creator-properties.c:81
-#: ../widgets/rb-query-creator-properties.c:105
+#: ../widgets/rb-entry-view.c:1573
 msgid "Play Count"
 msgstr "Número de reproducións"
 
 #: ../widgets/rb-entry-view.c:1585
-#: ../widgets/rb-query-creator-properties.c:109
 msgid "Last Played"
 msgstr "Última reprodución"
 
 #: ../widgets/rb-entry-view.c:1597
-#: ../widgets/rb-query-creator-properties.c:110
 msgid "Date Added"
 msgstr "Data en que se engadiu"
 
@@ -5027,15 +5038,15 @@ msgstr "Visto por última vez"
 msgid "Location"
 msgstr "Localización"
 
-#: ../widgets/rb-entry-view.c:1875
+#: ../widgets/rb-entry-view.c:1876
 msgid "Now Playing"
 msgstr "Estase a reproducir"
 
-#: ../widgets/rb-entry-view.c:1936
+#: ../widgets/rb-entry-view.c:1937
 msgid "Playback Error"
 msgstr "Erro de reprodución"
 
-#: ../widgets/rb-header.c:514
+#: ../widgets/rb-header.c:521
 msgid "Not Playing"
 msgstr "Non se está a reproducir"
 
@@ -5072,35 +5083,95 @@ msgstr[1] "Todo %d (%d)"
 msgid "%s (%d)"
 msgstr "%s (%d)"
 
+#: ../widgets/rb-query-creator-properties.c:73
+#, fuzzy
+msgctxt "query-criteria"
+msgid "Title"
+msgstr "Título"
+
+#: ../widgets/rb-query-creator-properties.c:74
+#, fuzzy
+msgctxt "query-criteria"
+msgid "Artist"
+msgstr "Artista"
+
+#: ../widgets/rb-query-creator-properties.c:75
+#, fuzzy
+msgctxt "query-criteria"
+msgid "Album"
+msgstr "Álbum"
+
+#: ../widgets/rb-query-creator-properties.c:76
+#, fuzzy
+msgctxt "query-criteria"
+msgid "Genre"
+msgstr "Xénero"
+
+#: ../widgets/rb-query-creator-properties.c:77
+#, fuzzy
+msgctxt "query-criteria"
+msgid "Year"
+msgstr "Ano"
+
+#: ../widgets/rb-query-creator-properties.c:78
+#, fuzzy
+msgctxt "query-criteria"
+msgid "Rating"
+msgstr "Puntuación"
+
 #: ../widgets/rb-query-creator-properties.c:79
+#, fuzzy
+msgctxt "query-criteria"
 msgid "Path"
 msgstr "Camiño"
 
+#: ../widgets/rb-query-creator-properties.c:81
+#, fuzzy
+msgctxt "query-criteria"
+msgid "Play Count"
+msgstr "Número de reproducións"
+
 #: ../widgets/rb-query-creator-properties.c:82
-#: ../widgets/rb-query-creator-properties.c:108
+#, fuzzy
+msgctxt "query-criteria"
 msgid "Track Number"
 msgstr "Número de pista"
 
 #: ../widgets/rb-query-creator-properties.c:83
+#, fuzzy
+msgctxt "query-criteria"
 msgid "Disc Number"
 msgstr "Número de disco"
 
 #: ../widgets/rb-query-creator-properties.c:84
+#, fuzzy
+msgctxt "query-criteria"
 msgid "Bitrate"
 msgstr "Taxa de bits"
 
 #: ../widgets/rb-query-creator-properties.c:86
-#: ../widgets/rb-query-creator-properties.c:107
+#, fuzzy
+msgctxt "query-criteria"
 msgid "Duration"
 msgstr "Duración"
 
 #: ../widgets/rb-query-creator-properties.c:88
+#, fuzzy
+msgctxt "query-criteria"
 msgid "Time of Last Play"
 msgstr "Tempo da última reprodución"
 
 #: ../widgets/rb-query-creator-properties.c:89
+#, fuzzy
+msgctxt "query-criteria"
 msgid "Time Added to Library"
 msgstr "Tempo que leva engadido á fonoteca"
+
+#: ../widgets/rb-query-creator-properties.c:100
+#, fuzzy
+msgctxt "query-sort"
+msgid "Artist"
+msgstr "Artista"
 
 #: ../widgets/rb-query-creator-properties.c:100
 #: ../widgets/rb-query-creator-properties.c:101
@@ -5109,29 +5180,89 @@ msgstr "Tempo que leva engadido á fonoteca"
 msgid "_In reverse alphabetical order"
 msgstr "_En orde alfabética inversa"
 
+#: ../widgets/rb-query-creator-properties.c:101
+#, fuzzy
+msgctxt "query-sort"
+msgid "Album"
+msgstr "Álbum"
+
+#: ../widgets/rb-query-creator-properties.c:102
+#, fuzzy
+msgctxt "query-sort"
+msgid "Genre"
+msgstr "Xénero"
+
+#: ../widgets/rb-query-creator-properties.c:103
+#, fuzzy
+msgctxt "query-sort"
+msgid "Title"
+msgstr "Título"
+
+#: ../widgets/rb-query-creator-properties.c:104
+#, fuzzy
+msgctxt "query-sort"
+msgid "Rating"
+msgstr "Puntuación"
+
 #: ../widgets/rb-query-creator-properties.c:104
 msgid "W_ith more highly rated tracks first"
 msgstr "_Coas pistas cunha puntuación máis alta primeiro"
+
+#: ../widgets/rb-query-creator-properties.c:105
+#, fuzzy
+msgctxt "query-sort"
+msgid "Play Count"
+msgstr "Número de reproducións"
 
 #: ../widgets/rb-query-creator-properties.c:105
 msgid "W_ith more often played songs first"
 msgstr "C_oas cancións que se reproduciron máis frecuentemente primeiro"
 
 #: ../widgets/rb-query-creator-properties.c:106
+#, fuzzy
+msgctxt "query-sort"
+msgid "Year"
+msgstr "Ano"
+
+#: ../widgets/rb-query-creator-properties.c:106
 msgid "W_ith newer tracks first"
 msgstr "Coa pistas máis _novas primeiro"
+
+#: ../widgets/rb-query-creator-properties.c:107
+#, fuzzy
+msgctxt "query-sort"
+msgid "Duration"
+msgstr "Duración"
 
 #: ../widgets/rb-query-creator-properties.c:107
 msgid "W_ith longer tracks first"
 msgstr "Co_a pistas máis longas primeiro"
 
 #: ../widgets/rb-query-creator-properties.c:108
+#, fuzzy
+msgctxt "query-sort"
+msgid "Track Number"
+msgstr "Número de pista"
+
+#: ../widgets/rb-query-creator-properties.c:108
 msgid "_In decreasing order"
 msgstr "_En orde decrecente"
 
 #: ../widgets/rb-query-creator-properties.c:109
+#, fuzzy
+msgctxt "query-sort"
+msgid "Last Played"
+msgstr "Última reprodución"
+
+#: ../widgets/rb-query-creator-properties.c:109
 msgid "W_ith more recently played tracks first"
 msgstr "Coas _pistas que se reproduciron máis recentemente primeiro"
+
+#: ../widgets/rb-query-creator-properties.c:110
+#, fuzzy
+msgctxt "query-sort"
+msgid "Date Added"
+msgstr "Data en que se engadiu"
 
 #: ../widgets/rb-query-creator-properties.c:110
 msgid "W_ith more recently added tracks first"
@@ -5265,6 +5396,9 @@ msgstr "No escritorio"
 #: ../widgets/rb-song-info.c:1191
 msgid "Unknown location"
 msgstr "Descoñécese a localización"
+
+#~ msgid "Visit Magnatune at "
+#~ msgstr "Visite o Magnatune en "
 
 #~ msgid ""
 #~ "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
