@@ -1733,9 +1733,6 @@ rb_entry_view_insert_column_custom (RBEntryView *view,
 	gtk_tree_view_column_set_title (column, title);
 	gtk_tree_view_column_set_reorderable (column, FALSE);
 
-	g_signal_connect_object (column, "clicked",
-				 G_CALLBACK (rb_entry_view_column_clicked_cb),
-				 view, 0);
 
 	g_object_set_data_full (G_OBJECT (column), "rb-entry-view-key",
 				g_strdup (key), g_free);
@@ -1750,6 +1747,10 @@ rb_entry_view_insert_column_custom (RBEntryView *view,
 		sortdata->data = data;
 		sortdata->data_destroy = data_destroy;
 		g_hash_table_insert (view->priv->column_sort_data_map, column, sortdata);
+
+		g_signal_connect_object (column, "clicked",
+					 G_CALLBACK (rb_entry_view_column_clicked_cb),
+					 view, 0);
 	}
 	g_hash_table_insert (view->priv->column_key_map, g_strdup (key), column);
 
