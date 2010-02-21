@@ -2827,6 +2827,11 @@ rb_shell_player_extra_metadata_cb (RhythmDB *db,
 	/* emit dbus signals for changes with easily marshallable types */
 	switch (G_VALUE_TYPE (metadata)) {
 	case G_TYPE_STRING:
+		/* make sure it's valid utf8, otherwise dbus barfs */
+		if (g_utf8_validate (g_value_get_string (metadata), -1, NULL) == FALSE) {
+			rb_debug ("not emitting extra metadata field %s as value is not valid utf8", field);
+			return;
+		}
 	case G_TYPE_BOOLEAN:
 	case G_TYPE_ULONG:
 	case G_TYPE_UINT64:
