@@ -351,7 +351,7 @@ rb_audiocd_source_constructed (GObject *object)
 	g_thread_create ((GThreadFunc)rb_audiocd_load_songs, source, FALSE, NULL);
 }
 
-RBRemovableMediaSource *
+RBSource *
 rb_audiocd_source_new (RBPlugin *plugin,
 		       RBShell *shell,
 		       GVolume *volume)
@@ -387,7 +387,7 @@ rb_audiocd_source_new (RBPlugin *plugin,
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
-	return RB_REMOVABLE_MEDIA_SOURCE (source);
+	return RB_SOURCE (source);
 }
 
 static void

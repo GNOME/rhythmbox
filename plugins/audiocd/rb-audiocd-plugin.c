@@ -253,7 +253,7 @@ create_source_cb (RBRemovableMediaManager *rmm,
 
 		volume = g_mount_get_volume (mount);
 		if (volume != NULL) {
-			source = RB_SOURCE (rb_audiocd_source_new (RB_PLUGIN (plugin), plugin->shell, volume));
+			source = rb_audiocd_source_new (RB_PLUGIN (plugin), plugin->shell, volume);
 			g_object_unref (volume);
 		}
 	}
