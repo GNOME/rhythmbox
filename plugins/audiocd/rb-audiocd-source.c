@@ -1195,11 +1195,17 @@ update_genre_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *sourc
 static gboolean
 update_year_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source)
 {
+	const char *text;
 	int year;
 	GDate date;
 	GValue v = {0, };
 
-	year = strtol (gtk_entry_get_text (GTK_ENTRY (widget)), NULL, 10);
+	text = gtk_entry_get_text (GTK_ENTRY (widget));
+	if (text[0] == '\0') {
+		return FALSE;
+	}
+
+	year = strtol (text, NULL, 10);
 	g_date_clear (&date, 1);
 	g_date_set_dmy (&date, 1, 1, year);
 
