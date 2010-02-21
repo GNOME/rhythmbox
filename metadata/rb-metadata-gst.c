@@ -99,7 +99,10 @@ rb_metadata_reset (RBMetaData *md)
 	md->priv->has_non_audio = FALSE;
 	md->priv->has_video = FALSE;
 	if (md->priv->missing_plugins != NULL) {
-		g_slist_foreach (md->priv->missing_plugins, (GFunc) gst_message_unref, NULL);
+		GSList *t;
+		for (t = md->priv->missing_plugins; t != NULL; t = t->next) {
+			gst_message_unref (GST_MESSAGE (t->data));
+		}
 		g_slist_free (md->priv->missing_plugins);
 		md->priv->missing_plugins = NULL;
 	}
