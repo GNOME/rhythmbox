@@ -33,6 +33,8 @@
 
 #include "config.h"
 
+#define NO_IMPORT_PYGOBJECT
+#define NO_IMPORT_PYGTK
 #include <pygobject.h>
 #include <pygtk/pygtk.h>
 
