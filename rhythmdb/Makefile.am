@@ -1,7 +1,7 @@
 noinst_LTLIBRARIES = librhythmdb.la
 
 librhythmdb_la_LDFLAGS = -export-dynamic
-librhythmdb_la_LIBADD =
+librhythmdb_la_LIBADD = -lm
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
