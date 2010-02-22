@@ -677,6 +677,10 @@ rb_source_state_sync (RBSourceHeader *header,
 	gboolean do_search = FALSE;
 	char *old_text = NULL;
 
+	if (header->priv->selected_source == NULL) {
+		return;
+	}
+
 	state = g_hash_table_lookup (header->priv->source_states,
 				     header->priv->selected_source);
 	if (state == NULL) {
