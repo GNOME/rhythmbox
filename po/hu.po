@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-16 13:59+0100\n"
-"PO-Revision-Date: 2010-02-16 14:00+0100\n"
+"POT-Creation-Date: 2010-02-21 12:07+0100\n"
+"PO-Revision-Date: 2010-02-21 12:09+0100\n"
 "Last-Translator: Gabor Kelemen <kelemeng at gnome dot hu>\n"
 "Language-Team: Hungarian <gnome at fsf dot hu>\n"
 "MIME-Version: 1.0\n"
@@ -631,16 +631,14 @@ msgstr "%Y %b %e"
 #: ../lib/rb-util.c:814
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:98
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
-#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:245
-#: ../plugins/artdisplay/artdisplay/DiscogsCoverArtSearch.py:249
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:173
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:174
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:175
-#: ../plugins/audiocd/rb-audiocd-source.c:443
+#: ../plugins/audiocd/rb-audiocd-source.c:502
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:479
-#: ../plugins/daap/rb-daap-connection.c:698
+#: ../plugins/daap/rb-daap-connection.c:699
 #: ../plugins/generic-player/rb-generic-player-source.c:979
 #: ../plugins/ipod/rb-ipod-source.c:391
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
@@ -730,48 +728,48 @@ msgstr "Belső GStreamer probléma, küldjön be hibajelentést"
 msgid "D-BUS communication error"
 msgstr "D-BUS kommunikációs hiba"
 
-#: ../metadata/rb-metadata-gst.c:548 ../metadata/rb-metadata-gst.c:1116
+#: ../metadata/rb-metadata-gst.c:551 ../metadata/rb-metadata-gst.c:1119
 #: ../plugins/cd-recorder/rb-recorder-gst.c:505
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Nem sikerült létrehozni a(z) %s elemet; ellenőrizze a telepítését"
 
-#: ../metadata/rb-metadata-gst.c:745
+#: ../metadata/rb-metadata-gst.c:748
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Nem sikerült létrehozni a forráselemet; ellenőrizze a telepítését"
 
-#: ../metadata/rb-metadata-gst.c:807
+#: ../metadata/rb-metadata-gst.c:810
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "GStreamer hiba: az állapot módosítása meghiúsult"
 
-#: ../metadata/rb-metadata-gst.c:858
+#: ../metadata/rb-metadata-gst.c:861
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "A fájl MIME típusa nem azonosítható"
 
-#: ../metadata/rb-metadata-gst.c:962
+#: ../metadata/rb-metadata-gst.c:965
 #, c-format
 msgid "Unable to identify file type"
 msgstr "Nem azonosítható a fájltípus"
 
-#: ../metadata/rb-metadata-gst.c:975
+#: ../metadata/rb-metadata-gst.c:978
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Nem támogatott fájltípus: %s"
 
-#: ../metadata/rb-metadata-gst.c:985
+#: ../metadata/rb-metadata-gst.c:988
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "Nem hozhatók létre címkeíró elemek"
 
-#: ../metadata/rb-metadata-gst.c:1068
+#: ../metadata/rb-metadata-gst.c:1071
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Időtúllépés az adatcsatorna NULL értékre állítása közben"
 
-#: ../metadata/rb-metadata-gst.c:1092
+#: ../metadata/rb-metadata-gst.c:1095
 #, c-format
 msgid "File corrupted during write"
 msgstr "A fájl megsérült az írás közben"
@@ -828,67 +826,85 @@ msgstr ""
 msgid "_Continue"
 msgstr "_Folytatás"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:135
+#: ../plugins/audiocd/rb-audiocd-source.c:152
+msgid "_Extract to Library"
+msgstr "Beolvasás a _gyűjteménybe"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:153
+msgid "Copy tracks to the library"
+msgstr "Számok másolása a gyűjteménybe"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:156
 msgid "Reload"
 msgstr "Újratöltés"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:136
+#: ../plugins/audiocd/rb-audiocd-source.c:157
 msgid "Reload Album Information"
 msgstr "Albuminformációk újratöltése"
 
+#. Translators: this is the toolbar button label
+#. for Copy to Library action.
+#: ../plugins/audiocd/rb-audiocd-source.c:291
+msgid "Extract"
+msgstr "Beolvasás"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:332
+msgid "Select tracks to be extracted"
+msgstr "Válassza ki a beolvasandó számokat"
+
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:315
+#: ../plugins/audiocd/rb-audiocd-source.c:373
 msgid "S_ubmit Album"
 msgstr "Album b_eküldése"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:316
+#: ../plugins/audiocd/rb-audiocd-source.c:374
 msgid "Hide"
 msgstr "Elrejtés"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:318
+#: ../plugins/audiocd/rb-audiocd-source.c:376
 msgid "Could not find this album on MusicBrainz."
 msgstr "Nem található az album a MusicBrainz-en."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:319
+#: ../plugins/audiocd/rb-audiocd-source.c:377
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Az album hozzáadásával tökéletesítheti a MusicBrainz adatbázisát."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:449
+#: ../plugins/audiocd/rb-audiocd-source.c:508
 msgid "<Invalid unicode>"
 msgstr "<érvénytelen unicode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:492
+#: ../plugins/audiocd/rb-audiocd-source.c:552
 #, c-format
 msgid "Track %u"
 msgstr "%u. szám"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:552
-#: ../plugins/audiocd/rb-audiocd-source.c:560
-#: ../plugins/audiocd/rb-audiocd-source.c:950
+#: ../plugins/audiocd/rb-audiocd-source.c:615
+#: ../plugins/audiocd/rb-audiocd-source.c:623
+#: ../plugins/audiocd/rb-audiocd-source.c:1014
 msgid "Couldn't load Audio CD"
 msgstr "Nem tölthető be a hang CD"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:553
+#: ../plugins/audiocd/rb-audiocd-source.c:616
 msgid "Rhythmbox couldn't access the CD."
 msgstr "A Rhythmbox nem tudta elérni a CD-t."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:561
+#: ../plugins/audiocd/rb-audiocd-source.c:624
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "A Rhythmbox nem tudta beolvasni a CD információkat."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:661
+#: ../plugins/audiocd/rb-audiocd-source.c:725
 #: ../sources/rb-library-source.c:148 ../widgets/rb-entry-view.c:1473
 msgid "Title"
 msgstr "Cím"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:668
+#: ../plugins/audiocd/rb-audiocd-source.c:732
 #: ../plugins/context/context/ArtistTab.py:52
 #: ../sources/rb-library-source.c:139 ../widgets/rb-entry-view.c:1483
 #: ../widgets/rb-library-browser.c:141
 msgid "Artist"
 msgstr "Előadó"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:951
+#: ../plugins/audiocd/rb-audiocd-source.c:1015
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "A Rhythmbox nem képes elérni a CD eszközt."
 
@@ -1861,7 +1877,7 @@ msgstr "Megosztott _zene neve:"
 msgid "_Share my music"
 msgstr "_Zenéim megosztása"
 
-#: ../plugins/daap/rb-daap-connection.c:543
+#: ../plugins/daap/rb-daap-connection.c:544
 msgid "Rhythmbox is not able to connect to iTunes 7 shares"
 msgstr "A Rhythmbox nem tud az iTunes 7 megosztásokhoz csatlakozni"
 
@@ -2901,41 +2917,46 @@ msgstr ""
 msgid "Magnatune Store"
 msgstr "Magnatune bolt"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:68
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:67
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:114
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:113
 msgid "Loading Magnatune catalog"
 msgstr "A Magnatune katalógus betöltése"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:117
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:120
 msgid "Downloading Magnatune Album(s)"
 msgstr "Magnatune albumok letöltése"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:218
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:220
 msgid "Couldn't purchase album"
 msgstr "Az album nem vásárolható meg"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:219
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:221
 msgid "You must have a library location set to purchase an album."
 msgstr "Album megvásárlásához be kell állítania a gyűjtemény helyét."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:305
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:271
 msgid "Unable to load catalog"
 msgstr "A katalógus nem tölthető be"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:306
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:272
 msgid "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
 "A Rhythmbox nem tudta értelmezni a Magnatune katalógust, küldjön be "
 "hibajelentést."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:421
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:309
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:406
+msgid "Couldn't get account details"
+msgstr "Nem kérhetők le a fiók részletei"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:455
 msgid "Download Error"
 msgstr "Letöltési hiba"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:422
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:456
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2946,12 +2967,12 @@ msgstr ""
 "A Magnatune kiszolgáló válasza:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:425
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:458
 #: ../widgets/rb-entry-view.c:1627
 msgid "Error"
 msgstr "Hiba"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:426
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:459
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -2962,45 +2983,56 @@ msgstr ""
 "A hibaüzenet:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:489
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
 msgid "Finished Downloading"
 msgstr "A letöltés kész"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:489
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
 msgid "All Magnatune downloads have been completed."
 msgstr "Minden Magnatune letöltés kész."
 
-#: ../plugins/magnatune/magnatune/__init__.py:113
+#: ../plugins/magnatune/magnatune/__init__.py:112
 msgid "Purchase Album"
 msgstr "Album megvásárlása"
 
-#: ../plugins/magnatune/magnatune/__init__.py:114
+#: ../plugins/magnatune/magnatune/__init__.py:113
 msgid "Purchase this album from Magnatune"
 msgstr "Az album megvásárlása a Magnatune-tól"
 
-#: ../plugins/magnatune/magnatune/__init__.py:118
+#: ../plugins/magnatune/magnatune/__init__.py:117
 msgid "Download Album"
 msgstr "Album letöltése"
 
-#: ../plugins/magnatune/magnatune/__init__.py:119
+#: ../plugins/magnatune/magnatune/__init__.py:118
 msgid "Download this album from Magnatune"
 msgstr "Az album letöltése a Magnatune-tól"
 
-#: ../plugins/magnatune/magnatune/__init__.py:123
+#: ../plugins/magnatune/magnatune/__init__.py:122
 msgid "Artist Information"
 msgstr "Előadó-információk"
 
-#: ../plugins/magnatune/magnatune/__init__.py:124
+#: ../plugins/magnatune/magnatune/__init__.py:123
 msgid "Get information about this artist"
 msgstr "Információk lekérése az előadóról"
 
-#: ../plugins/magnatune/magnatune/__init__.py:128
+#: ../plugins/magnatune/magnatune/__init__.py:127
 msgid "Cancel Downloads"
 msgstr "Letöltések megszakítása"
 
-#: ../plugins/magnatune/magnatune/__init__.py:129
+#: ../plugins/magnatune/magnatune/__init__.py:128
 msgid "Stop downloading purchased albums"
 msgstr "A megvásárolt albumok letöltésének leállítása"
+
+#: ../plugins/magnatune/magnatune/__init__.py:257
+#: ../plugins/magnatune/magnatune/__init__.py:260
+msgid "Couldn't store account information"
+msgstr "Nem sikerült tárolni a fiókinformációkat"
+
+#: ../plugins/magnatune/magnatune/__init__.py:258
+msgid ""
+"There was a problem accessing the keyring. Check the debug output for more "
+"information."
+msgstr "Hiba történt a kulcstartó elérésekor. További információkért nézze meg a hibakeresési kimenetet."
 
 #: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
@@ -3025,7 +3057,7 @@ msgid "Unable to open temporary file: %s"
 msgstr "Nem nyitható meg az átmeneti fájl: %s"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:123
-#: ../shell/rb-removable-media-manager.c:174
+#: ../shell/rb-removable-media-manager.c:172
 msgid "_Eject"
 msgstr "_Kiadás"
 
@@ -3686,21 +3718,21 @@ msgstr "A fájl lejátszásához további GStreamer bővítmények szükségesek
 msgid "Could not load the music database:"
 msgstr "A zeneadatbázis nem tölthető be:"
 
-#: ../rhythmdb/rhythmdb.c:4516
+#: ../rhythmdb/rhythmdb.c:4527
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld perc"
 msgstr[1] "%ld perc"
 
-#: ../rhythmdb/rhythmdb.c:4517
+#: ../rhythmdb/rhythmdb.c:4528
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld óra"
 msgstr[1] "%ld óra"
 
-#: ../rhythmdb/rhythmdb.c:4518
+#: ../rhythmdb/rhythmdb.c:4529
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3708,7 +3740,7 @@ msgstr[0] "%ld nap"
 msgstr[1] "%ld nap"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4524
+#: ../rhythmdb/rhythmdb.c:4535
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s és %s"
@@ -3716,8 +3748,8 @@ msgstr "%s, %s és %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4530 ../rhythmdb/rhythmdb.c:4538
-#: ../rhythmdb/rhythmdb.c:4549
+#: ../rhythmdb/rhythmdb.c:4541 ../rhythmdb/rhythmdb.c:4549
+#: ../rhythmdb/rhythmdb.c:4560
 #, c-format
 msgid "%s and %s"
 msgstr "%s %s"
@@ -3908,37 +3940,23 @@ msgstr "Bővítményhiba"
 msgid "Unable to activate plugin %s"
 msgstr "A következő bővítmény nem aktiválható: %s"
 
-#: ../shell/rb-removable-media-manager.c:175
+#: ../shell/rb-removable-media-manager.c:173
 msgid "Eject this medium"
 msgstr "Ezen adathordozó kiadása"
 
-#: ../shell/rb-removable-media-manager.c:177
-msgid "_Extract to Library"
-msgstr "Beolvasás a _gyűjteménybe"
-
-#: ../shell/rb-removable-media-manager.c:178
-msgid "Copy all tracks to the library"
-msgstr "Minden szám hozzáadása a gyűjteményhez"
-
-#: ../shell/rb-removable-media-manager.c:180
+#: ../shell/rb-removable-media-manager.c:175
 msgid "_Scan Removable Media"
 msgstr "_Cserélhető adathordozók vizsgálata"
 
-#: ../shell/rb-removable-media-manager.c:181
+#: ../shell/rb-removable-media-manager.c:176
 msgid "Scan for new Removable Media"
 msgstr "Új cserélhető adathordozó keresése"
 
-#. Translators: this is the toolbar button label
-#. for Copy to Library action.
-#: ../shell/rb-removable-media-manager.c:862
-msgid "Extract"
-msgstr "Beolvasás"
-
-#: ../shell/rb-removable-media-manager.c:893
+#: ../shell/rb-removable-media-manager.c:880
 msgid "Unable to eject"
 msgstr "Nem adható ki"
 
-#: ../shell/rb-removable-media-manager.c:914
+#: ../shell/rb-removable-media-manager.c:901
 msgid "Unable to unmount"
 msgstr "Nem lehet leválasztani"
 
@@ -4516,7 +4534,7 @@ msgstr "Címek"
 msgid "Search titles"
 msgstr "Címek keresése"
 
-#: ../sources/rb-removable-media-source.c:768
+#: ../sources/rb-removable-media-source.c:772
 #: ../sources/rb-library-source.c:1232
 msgid "Error transferring track"
 msgstr "Hiba a szám átvitele közben"
@@ -4964,15 +4982,15 @@ msgstr "Utoljára látott"
 msgid "Location"
 msgstr "Hely"
 
-#: ../widgets/rb-entry-view.c:1875
+#: ../widgets/rb-entry-view.c:1876
 msgid "Now Playing"
 msgstr "Most játszott"
 
-#: ../widgets/rb-entry-view.c:1936
+#: ../widgets/rb-entry-view.c:1937
 msgid "Playback Error"
 msgstr "Lejátszási hiba"
 
-#: ../widgets/rb-header.c:514
+#: ../widgets/rb-header.c:521
 msgid "Not Playing"
 msgstr "Nincs lejátszás"
 
