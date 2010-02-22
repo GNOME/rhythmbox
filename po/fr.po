@@ -22,7 +22,7 @@ msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-02-21 07:28+0000\n"
+"POT-Creation-Date: 2010-02-22 10:38+0100\n"
 "PO-Revision-Date: 2010-02-22 10:37+0100\n"
 "Last-Translator: Claude Paroz <claude@2xlibre.net>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
@@ -773,8 +773,9 @@ msgid "The MIME type of the file could not be identified"
 msgstr "Le type MIME du fichier n'a pas pu être reconnu"
 
 #: ../metadata/rb-metadata-gst.c:965
+#, c-format
 msgid "Unable to identify file type"
-msgstr "Impossible de détecter le type de fichier : %s"
+msgstr "Impossible de détecter le type de fichier"
 
 #: ../metadata/rb-metadata-gst.c:978
 #, c-format
@@ -2956,8 +2957,8 @@ msgid ""
 "Your account details have changed. Changes will be applied the next time you "
 "start Rhythmbox."
 msgstr ""
-"Les détails de votre compte ont été modifiés. Ces modifications seront prises "
-"en compte au prochain démarrage de Rhythmbox."
+"Les détails de votre compte ont été modifiés. Ces modifications seront "
+"prises en compte au prochain démarrage de Rhythmbox."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:44
 msgid "http://magnatune.com/compare_plans"
@@ -3332,7 +3333,8 @@ msgstr "Envoie des fichiers par courriel, messagerie instantanée..."
 
 #: ../plugins/sendto/sendto.rb-plugin.in.h:1
 msgid "Send selected tracks by email or instant message"
-msgstr "Envoie des morceaux sélectionnés par courriel ou messagerie instantanée"
+msgstr ""
+"Envoie des morceaux sélectionnés par courriel ou messagerie instantanée"
 
 #: ../plugins/sendto/sendto.rb-plugin.in.h:2
 msgid "Send tracks"
@@ -3368,7 +3370,7 @@ msgid "Next"
 msgstr "Suivant"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:585
-#: ../remote/dbus/rb-client.c:454 ../remote/dbus/rb-client.c:480
+#: ../remote/dbus/rb-client.c:453 ../remote/dbus/rb-client.c:478
 msgid "Not playing"
 msgstr "Pas de lecture en cours"
 
@@ -3725,12 +3727,12 @@ msgstr "Désactive la sourdine"
 msgid "Set the rating of the current song"
 msgstr "Définit la notation du morceau actuel"
 
-#: ../remote/dbus/rb-client.c:736
+#: ../remote/dbus/rb-client.c:734
 #, c-format
 msgid "Playback is muted.\n"
 msgstr "La lecture est mise en sourdine.\n"
 
-#: ../remote/dbus/rb-client.c:737
+#: ../remote/dbus/rb-client.c:735
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Le volume de lecture est %f.\n"
@@ -4113,7 +4115,8 @@ msgstr "Ajouter à la liste de _lecture"
 
 #: ../shell/rb-shell-clipboard.c:178
 msgid "Add each selected song to a new playlist"
-msgstr "Ajoute tous les morceaux sélectionnés dans une nouvelle liste de lecture"
+msgstr ""
+"Ajoute tous les morceaux sélectionnés dans une nouvelle liste de lecture"
 
 #: ../shell/rb-shell-clipboard.c:180
 msgid "Add _to Play Queue"
@@ -4175,7 +4178,7 @@ msgstr "Diminue le volume de lecture"
 msgid "_Play"
 msgstr "_Lire"
 
-#: ../shell/rb-shell-player.c:322 ../shell/rb-shell-player.c:3699
+#: ../shell/rb-shell-player.c:322 ../shell/rb-shell-player.c:3704
 msgid "Start playback"
 msgstr "Démarre la lecture"
 
@@ -4266,30 +4269,33 @@ msgid "No previous song"
 msgstr "Aucun morceau précédent"
 
 #: ../shell/rb-shell-player.c:2125
+#, c-format
 msgid "No next song"
 msgstr "Aucun morceau suivant"
 
-#: ../shell/rb-shell-player.c:2246 ../shell/rb-shell-player.c:3346
+#: ../shell/rb-shell-player.c:2246 ../shell/rb-shell-player.c:3351
 msgid "Couldn't start playback"
 msgstr "Impossible de démarrer la lecture"
 
-#: ../shell/rb-shell-player.c:3108
+#: ../shell/rb-shell-player.c:3113
 msgid "Couldn't stop playback"
 msgstr "Impossible d'arrêter la lecture"
 
-#: ../shell/rb-shell-player.c:3218
+#: ../shell/rb-shell-player.c:3223
+#, c-format
 msgid "Playback position not available"
 msgstr "La position de lecture n'est pas disponible"
 
-#: ../shell/rb-shell-player.c:3250
+#: ../shell/rb-shell-player.c:3255
+#, c-format
 msgid "Current song is not seekable"
 msgstr "Le morceau actuel ne peut pas être parcouru"
 
-#: ../shell/rb-shell-player.c:3694
+#: ../shell/rb-shell-player.c:3699
 msgid "Pause playback"
 msgstr "Met la lecture en pause"
 
-#: ../shell/rb-shell-player.c:3696
+#: ../shell/rb-shell-player.c:3701
 msgid "Stop playback"
 msgstr "Arrête la lecture"
 
