@@ -833,6 +833,11 @@ sanitize_pattern (const char *pat)
  * %aA -- album artist (lowercase)
  * %as -- album artist sortname
  * %aS -- album artist sortname (lowercase)
+ * %aY -- album release year
+ * %an -- album disc number
+ * %aN -- album disc number, zero padded
+ * %ag -- album genre
+ * %aG -- album genre (lowercase)
  * %tn -- track number (i.e 8)
  * %tN -- track number, zero padded (i.e 08)
  * %tt -- track title
@@ -912,6 +917,21 @@ filepath_parse_pattern (RhythmDB *db,
 				t = g_utf8_strdown (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME), -1);
 				string = sanitize_path (t);
 				g_free (t);
+				break;
+			case 'y':
+				string = g_strdup_printf ("%u", (guint)rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_YEAR));
+				break;
+			case 'n':
+				string = g_strdup_printf ("%u", (guint)rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER));
+				break;
+			case 'N':
+				string = g_strdup_printf ("%02u", (guint)rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER));
+				break;
+			case 'g':
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE));
+				break;
+			case 'G':
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE_FOLDED));
 				break;
 			default:
 				string = g_strdup_printf ("%%a%c", *p);
