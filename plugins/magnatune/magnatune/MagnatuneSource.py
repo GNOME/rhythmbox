@@ -142,7 +142,7 @@ class MagnatuneSource(rb.BrowserSource):
 			self.__show_loading_screen(True)
 
 			# start our catalogue updates
-			self.__update_id = gobject.timeout_add(6 * 60 * 60 * 1000, self.__update_catalogue)
+			self.__update_id = gobject.timeout_add_seconds(6 * 60 * 60, self.__update_catalogue)
 			self.__update_catalogue()
 
 			self.get_entry_view().set_sorting_type(self.__client.get_string("/apps/rhythmbox/plugins/magnatune/sorting"))
