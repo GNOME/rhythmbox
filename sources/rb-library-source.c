@@ -751,8 +751,10 @@ rb_library_source_path_changed_cb (GtkComboBox *box, RBLibrarySource *source)
 	gint index;
 
 	index = gtk_combo_box_get_active (box);
-	path = (index >= 0) ? library_layout_paths[index].path : "";
-	eel_gconf_set_string (CONF_LIBRARY_LAYOUT_PATH, path);
+	if (index >= 0) {
+		path = library_layout_paths[index].path;
+		eel_gconf_set_string (CONF_LIBRARY_LAYOUT_PATH, path);
+	}
 }
 
 static void
@@ -762,8 +764,10 @@ rb_library_source_filename_changed_cb (GtkComboBox *box, RBLibrarySource *source
 	gint index;
 
 	index = gtk_combo_box_get_active (box);
-	filename = (index >= 0) ? library_layout_filenames[index].path : "";
-	eel_gconf_set_string (CONF_LIBRARY_LAYOUT_FILENAME, filename);
+	if (index >= 0) {
+		filename = library_layout_filenames[index].path;
+		eel_gconf_set_string (CONF_LIBRARY_LAYOUT_FILENAME, filename);
+	}
 }
 
 static void
@@ -1059,7 +1063,8 @@ rb_library_source_layout_path_changed (GConfClient *client,
 				       RBLibrarySource *source)
 {
 	char *value;
-	int i = 0;
+	int active;
+	int i;
 
 	g_return_if_fail (entry != NULL);
 	g_return_if_fail (strcmp (entry->key, CONF_LIBRARY_LAYOUT_PATH) == 0);
@@ -1074,12 +1079,16 @@ rb_library_source_layout_path_changed (GConfClient *client,
 		return;
 	}
 
-	while (library_layout_paths[i].path && strcmp (library_layout_paths[i].path, value) != 0) {
-		i++;
+	active = -1;
+	for (i = 0; library_layout_paths[i].path != NULL; i++) {
+		if (strcmp (library_layout_paths[i].path, value) == 0) {
+			active = i;
+			break;
+		}
 	}
 
 	g_free (value);
-	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->layout_path_menu), i);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->layout_path_menu), active);
 
 	layout_example_label_update (source);
 }
@@ -1091,7 +1100,8 @@ rb_library_source_layout_filename_changed (GConfClient *client,
 					   RBLibrarySource *source)
 {
 	char *value;
-	int i = 0;
+	int active;
+	int i;
 
 	g_return_if_fail (entry != NULL);
 	g_return_if_fail (strcmp (entry->key, CONF_LIBRARY_LAYOUT_FILENAME) == 0);
@@ -1106,12 +1116,16 @@ rb_library_source_layout_filename_changed (GConfClient *client,
 		return;
 	}
 
-	while (library_layout_filenames[i].path && strcmp (library_layout_filenames[i].path, value) != 0) {
-		i++;
+	active = -1;
+	for (i = 0; library_layout_filenames[i].path != NULL; i++) {
+		if (strcmp (library_layout_filenames[i].path, value) == 0) {
+			active = i;
+			break;
+		}
 	}
-
 	g_free (value);
-	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->layout_filename_menu), i);
+
+	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->layout_filename_menu), active);
 
 	layout_example_label_update (source);
 }
