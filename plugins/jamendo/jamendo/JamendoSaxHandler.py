@@ -26,7 +26,7 @@ data = {"artist" : ["name"],
         "album" : ["name","id","releasedate","id3genre"],
         "track" : ["name","id","numalbum","duration","id3genre"]}
         
-stream_url = "http://api.jamendo.com/get2/stream/track/redirect/?id=%s&streamencoding=ogg2"
+stream_url = "http://api.jamendo.com/get2/stream/track/redirect/?id=%s&streamencoding=mp31"
 
 class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def __init__(self,db,entry_type):
