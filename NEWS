@@ -1,3 +1,108 @@
+Overview of changes in Rhythmbox 0.12.7  "It's a Hectic World"
+==============================================================
+
+* New ReplayGain plugin, replacing the old broken ReplayGain code (Jonathan Matthew)
+* Nautilus-sendto plugin (Filipp Ivanov)
+* Support for Magnatune streaming and download accounts (Adam Zimmerman)
+* Support for pidgin in the IM status plugin (Mohamad Elrashidin Sajeli)
+* Context pane plugin now uses the GTK+ font settings (JM)
+* Support for artist and album sort names (Jamie Nicol)
+* Now depends on GTK+ 2.16, GLib 2.18, and pygobject 2.16
+  (no more libgnome, libgnomeui, gnome-vfs, or libsexy code anywhere)
+* As GSEAL-ready as we can make it for now (Javier Jardón)
+* Compatible with the new totem-plparser save API (Carlos Garnacho)
+* Disentangled 'delete', 'remove', and 'remove from playlist' actions (JM)
+* Improvements to display of mixed-direction text (Uri Sivan)
+* Simplified selection of audio CD tracks to extract (JM)
+* Playlist creation should work on more generic player devices now (JM)
+
+Bugs fixed:
+
+133444 - Use album and artist sort names ("Sort band list without 'The'")
+316257 - forward / back mouse buttons should trigger next / previous songs
+338221 - Rhythmbox ignores replaygain tags in DAAP streamed media
+378355 - Magnatune plugin should not print CC# in debug output
+384483 - Open cover in Image Viewer
+424878 - The play button's tool tip "Stop playback" is misleading
+485730 - Better labels for remove/move to trash
+518540 - RTL Song title displayed on wrong side of other track info.
+533727 - Support new Magnatune accounts
+537483 - should be possible to import only selected audio cd songs
+542055 - Sort order is not localized
+547174 - Separate the filesystem scanning from the metadata content reading
+559582 - Cleanups for -DG_DISABLE_DEPRECATED
+564800 - GnomeGoals: Remove deprecated GTK+ symbols (again)
+584593 - sample-vala plugin does not build
+584704 - External MP3 players should delete files rether than move to trash
+593188 - Manpages for rhythmbox and rhythmbox-client
+594132 - python binding lacks enum RBMetaDataField
+595795 - Portugu?s Lyrics - Patch to grab lyrics from letras.terra.com.br
+601524 - Slider jumps around at the end of songs
+602015 - Default 'label1' naming of the first Multiple Song info window
+602140 - thread-related segfault in context panel plugin
+602615 - fails to build if ld's --no-add-needed is used
+602616 - strings being URI-unescaped twice in song info window
+602679 - context: encode album names received from last.fm in utf8
+603258 - mpid: don't destroy HAL context twice
+603263 - compilation errors because of wrong g_print format
+603444 - ignore hidden files while enumerating directories
+603876 - LyricWiki should be deleted from the "Song lyrics" plugin
+603929 - Rhythmbox unnecessarily modifying sound files
+604186 - Remove gnome-vfs use in plugins
+604188 - [upnp] Use GIO to get the face icon's mime-type
+604189 - [artdisplay] Simplify save_pixbuf code
+604292 - Use g_atomic_int_* when possible to handle refcounts
+604771 - Adding context to some strings
+605023 - IM Status Plugin patch for Pidgin support
+605038 - Seg Fault When Going to Play List; Visualisation; Browse
+605031 - add "Send to..." button to right click on the song
+605313 - Use totem_pl_parser_save()
+605583 - segfault if MTP device open fails
+605584 - Race condition in MTP causes devices to fail to open
+605725 - [context] doesn't use gtk font settings
+606470 - Wrong title for MTP properties dialog
+606472 - Bad alignment for labes in media player properties dialog
+607263 - Playlist creation ignores playlist_format from .is_audio_player
+607265 - M3U playlist is missing #EXTINF info
+607538 - incorrect description for toolbar_style gconf key
+607672 - Podcasts default to rating 3*
+607897 - fix build with warnings=all
+607935 - Crashes with SIGSEGV when trying to enable visualization
+608397 - Rhythmbox does not create working playlists for Sansa Clip+
+609306 - Changing between two sources without query models causes warnings
+609767 - RTL tags in status icon bubble
+609908 - compare track number when checking if tracks already exist on devices
+609916 - CBC Radio 1 & 2 Live Feeds don't work
+610440 - The user agent string must be used when connecting to DAAP shares
+610643 - Fix linkage against librhythmdb.la
+610655 - [patch] enum type mismatch
+610657 - [patch] Linking fails due to multiple definition of _PyGObject_API, etc.
+
+New and updated translations:
+bg, courtesy of Krasimir Chonov
+cs, courtesy of Marek Černocký
+de, courtesy of Mario Blättermann
+el, courtesy of Thanos Lefteris
+en_GB, courtesy of Bruce Cowan
+es, courtesy of Jorge González
+et, courtesy of Mattias Põldaru
+fr, courtesy of Claude Paroz
+gl, courtesy of Fran Diéguez
+hu, courtesy of Gabor Kelemen
+it, courtesy of Luca Ferretti
+lt, courtesy of Žygimantas Beručka
+lv, courtesy of Peteris Krisjanis
+pl, courtesy of Tomasz Dominikowski
+pt_BR, courtesy of Rodrigo Flores
+ro, courtesy of Adi Roiban
+sl, courtesy of Andrej Žnidaršič
+sr, courtesy of Милош Поповић
+sr@latin, courtesy of Miloš Popović
+sv, courtesy of Daniel Nylander
+uk, courtesy of Sergiy Gavrylov
+uk, courtesy of Сергій Гаврилов
+
+
 Overview of changes in Rhythmbox 0.12.6  "Range Life"
 =====================================================
 
