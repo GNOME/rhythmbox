@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-02-20 01:46+0000\n"
-"PO-Revision-Date: 2010-02-20 21:44+0100\n"
+"POT-Creation-Date: 2010-02-27 19:09+0000\n"
+"PO-Revision-Date: 2010-02-28 14:24+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -657,7 +657,7 @@ msgstr "%d. %b. %Y"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:173
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:174
-#: ../plugins/audiocd/rb-audiocd-source.c:443
+#: ../plugins/audiocd/rb-audiocd-source.c:502
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
@@ -710,7 +710,7 @@ msgstr "%s ni mogoče premakniti v %s: %s"
 msgid "Too many symlinks"
 msgstr "Preveč simbolnih povezav"
 
-#: ../lib/rb-file-helpers.c:984
+#: ../lib/rb-file-helpers.c:1002
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Na %s ni mogoče dobiti praznega prostora: %s"
@@ -763,49 +763,49 @@ msgstr "Notranja težava Gstramerja; pošljite poročilo o hrošču"
 msgid "D-BUS communication error"
 msgstr "Napaka D-BUS komunikacije"
 
-#: ../metadata/rb-metadata-gst.c:548
-#: ../metadata/rb-metadata-gst.c:1116
+#: ../metadata/rb-metadata-gst.c:551
+#: ../metadata/rb-metadata-gst.c:1119
 #: ../plugins/cd-recorder/rb-recorder-gst.c:505
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Ustvarjanje elementa %s je spodletelo; preverite vašo namestitev"
 
-#: ../metadata/rb-metadata-gst.c:745
+#: ../metadata/rb-metadata-gst.c:748
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Ustvarjanje elementa vira je spodletelo; preverite vašo namestitev"
 
-#: ../metadata/rb-metadata-gst.c:807
+#: ../metadata/rb-metadata-gst.c:810
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Napaka GStreamer: sprememba stanja je spodletela"
 
-#: ../metadata/rb-metadata-gst.c:858
+#: ../metadata/rb-metadata-gst.c:861
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "MIME vrste datoteke ni mogoče določiti"
 
-#: ../metadata/rb-metadata-gst.c:962
+#: ../metadata/rb-metadata-gst.c:965
 #, c-format
 msgid "Unable to identify file type"
 msgstr "Ni mogoče določiti vrste datoteke"
 
-#: ../metadata/rb-metadata-gst.c:975
+#: ../metadata/rb-metadata-gst.c:978
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Nepodprta vrsta datoteke: %s"
 
-#: ../metadata/rb-metadata-gst.c:985
+#: ../metadata/rb-metadata-gst.c:988
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "Elementov zapisovanja oznake ni mogoče ustvariti"
 
-#: ../metadata/rb-metadata-gst.c:1068
+#: ../metadata/rb-metadata-gst.c:1071
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Zakasnitev med nastavljanjem cevovoda na NULL"
 
-#: ../metadata/rb-metadata-gst.c:1092
+#: ../metadata/rb-metadata-gst.c:1095
 #, c-format
 msgid "File corrupted during write"
 msgstr "Med pisanjem se je datoteka pokvarila"
@@ -858,61 +858,79 @@ msgstr "Na tem CD-ju je lahko več kot en album. Izberite pravi album spodaj in 
 msgid "_Continue"
 msgstr "_Nadaljuj"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:135
+#: ../plugins/audiocd/rb-audiocd-source.c:152
+msgid "_Extract to Library"
+msgstr "_Razširi v knjižnico"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:153
+msgid "Copy tracks to the library"
+msgstr "Kopiranje skladb v knjižnico"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:156
 msgid "Reload"
 msgstr "Osveži"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:136
+#: ../plugins/audiocd/rb-audiocd-source.c:157
 msgid "Reload Album Information"
 msgstr "Osvežitev podatkov albuma"
 
+#. Translators: this is the toolbar button label
+#. for Copy to Library action.
+#: ../plugins/audiocd/rb-audiocd-source.c:291
+msgid "Extract"
+msgstr "Razširi"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:332
+msgid "Select tracks to be extracted"
+msgstr "Izberite skladbe za pretvarjanje"
+
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:315
+#: ../plugins/audiocd/rb-audiocd-source.c:373
 msgid "S_ubmit Album"
 msgstr "P_ošlji album"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:316
+#: ../plugins/audiocd/rb-audiocd-source.c:374
 msgid "Hide"
 msgstr "Skrij"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:318
+#: ../plugins/audiocd/rb-audiocd-source.c:376
 msgid "Could not find this album on MusicBrainz."
 msgstr "Tega albuma na MusicBrainz ni mogoče najti."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:319
+#: ../plugins/audiocd/rb-audiocd-source.c:377
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Z dodajanjem tega albuma lahko izboljšate MusicBrainz podatkovno zbirko."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:449
+#: ../plugins/audiocd/rb-audiocd-source.c:508
 msgid "<Invalid unicode>"
 msgstr "<neveljaven unicode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:492
+#: ../plugins/audiocd/rb-audiocd-source.c:552
 #, c-format
 msgid "Track %u"
 msgstr "Skladba %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:552
-#: ../plugins/audiocd/rb-audiocd-source.c:560
-#: ../plugins/audiocd/rb-audiocd-source.c:950
+#: ../plugins/audiocd/rb-audiocd-source.c:615
+#: ../plugins/audiocd/rb-audiocd-source.c:623
+#: ../plugins/audiocd/rb-audiocd-source.c:1014
 msgid "Couldn't load Audio CD"
 msgstr "Zvočnega CD-ja ni mogoče naložiti"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:553
+#: ../plugins/audiocd/rb-audiocd-source.c:616
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox ne more dostopati do CD-ja."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:561
+#: ../plugins/audiocd/rb-audiocd-source.c:624
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox ne more prebrati podatkov CD-ja."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:661
+#: ../plugins/audiocd/rb-audiocd-source.c:725
 #: ../sources/rb-library-source.c:148
 #: ../widgets/rb-entry-view.c:1473
 msgid "Title"
 msgstr "Naslov"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:668
+#: ../plugins/audiocd/rb-audiocd-source.c:732
 #: ../plugins/context/context/ArtistTab.py:52
 #: ../sources/rb-library-source.c:139
 #: ../widgets/rb-entry-view.c:1483
@@ -920,7 +938,7 @@ msgstr "Naslov"
 msgid "Artist"
 msgstr "Izvajalec"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:951
+#: ../plugins/audiocd/rb-audiocd-source.c:1015
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Dostop do CD naprave ni mogoč."
 
@@ -2978,7 +2996,7 @@ msgid "Unable to open temporary file: %s"
 msgstr "Začasne datoteke ni mogoče odpreti: %s"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:123
-#: ../shell/rb-removable-media-manager.c:174
+#: ../shell/rb-removable-media-manager.c:172
 msgid "_Eject"
 msgstr "_Izvrzi"
 
@@ -3163,11 +3181,11 @@ msgstr "Pošlji ..."
 
 #: ../plugins/sendto/__init__.py:52
 msgid "Send files by mail, instant message..."
-msgstr "Pošlji datoteke preko e-pošte, takojšnjega sporočanja .."
+msgstr "Pošlji datoteke preko e-pošte, hipnega sporočanja .."
 
 #: ../plugins/sendto/sendto.rb-plugin.in.h:1
 msgid "Send selected tracks by email or instant message"
-msgstr "Pošiljanje izbranih skladb preko elektronske pošte ali takojšnjega sporočanja"
+msgstr "Pošiljanje izbranih skladb preko elektronske pošte ali hipnega sporočanja"
 
 #: ../plugins/sendto/sendto.rb-plugin.in.h:2
 msgid "Send tracks"
@@ -3202,8 +3220,8 @@ msgid "Next"
 msgstr "Naslednja"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:585
-#: ../remote/dbus/rb-client.c:454
-#: ../remote/dbus/rb-client.c:480
+#: ../remote/dbus/rb-client.c:453
+#: ../remote/dbus/rb-client.c:478
 msgid "Not playing"
 msgstr "Ni predvajanja"
 
@@ -3454,7 +3472,7 @@ msgid "Don't start a new instance of Rhythmbox"
 msgstr "Ne zaženi novega primera programa"
 
 #: ../remote/dbus/rb-client.c:83
-#: ../shell/main.c:116
+#: ../shell/main.c:118
 msgid "Quit Rhythmbox"
 msgstr "Končaj Rhythmbox"
 
@@ -3543,12 +3561,12 @@ msgstr "Povrnitev glasnosti predvajanja"
 msgid "Set the rating of the current song"
 msgstr "Nastavitev ocene trenutne skladbe"
 
-#: ../remote/dbus/rb-client.c:736
+#: ../remote/dbus/rb-client.c:734
 #, c-format
 msgid "Playback is muted.\n"
 msgstr "Predvajanje je nemo.\n"
 
-#: ../remote/dbus/rb-client.c:737
+#: ../remote/dbus/rb-client.c:735
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Glasnost predvajanja je %f.\n"
@@ -3660,39 +3678,39 @@ msgstr "%s, %s in %s"
 msgid "%s and %s"
 msgstr "%s in %s"
 
-#: ../shell/main.c:109
+#: ../shell/main.c:111
 msgid "Enable debug output"
 msgstr "Omogoči odvod razhroščevanja"
 
-#: ../shell/main.c:110
+#: ../shell/main.c:112
 msgid "Enable debug output matching a specified string"
 msgstr "Omogočanje z določenim nizom skladajoč odvod razhroščevalnika "
 
-#: ../shell/main.c:111
+#: ../shell/main.c:113
 msgid "Do not update the library with file changes"
 msgstr "Knjižnice ne posodobi s spremembami datotek"
 
-#: ../shell/main.c:112
+#: ../shell/main.c:114
 msgid "Do not register the shell"
 msgstr "Ne vpiši lupine"
 
-#: ../shell/main.c:113
+#: ../shell/main.c:115
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Podatkov ne shrani trajno (privzame --no-registration)"
 
-#: ../shell/main.c:114
+#: ../shell/main.c:116
 msgid "Path for database file to use"
 msgstr "Pot, ki naj jo uporablja datoteka podatkovne zbirke"
 
-#: ../shell/main.c:115
+#: ../shell/main.c:117
 msgid "Path for playlists file to use"
 msgstr "Pot, ki naj jo uporablja datoteka seznama predvajanja"
 
-#: ../shell/main.c:117
+#: ../shell/main.c:119
 msgid "[URI...]"
 msgstr "[URI ...]"
 
-#: ../shell/main.c:147
+#: ../shell/main.c:149
 #, c-format
 msgid ""
 "%s\n"
@@ -3849,37 +3867,23 @@ msgstr "Napaka vstavka"
 msgid "Unable to activate plugin %s"
 msgstr "Vstavka %s ni mogoče zagnati "
 
-#: ../shell/rb-removable-media-manager.c:175
+#: ../shell/rb-removable-media-manager.c:173
 msgid "Eject this medium"
-msgstr "Izvrzi ta medij"
+msgstr "Izvrzi ta nosilec"
 
-#: ../shell/rb-removable-media-manager.c:177
-msgid "_Extract to Library"
-msgstr "_Razširi v knjižnico"
-
-#: ../shell/rb-removable-media-manager.c:178
-msgid "Copy all tracks to the library"
-msgstr "Kopiranje vseh skladb v knjižnico"
-
-#: ../shell/rb-removable-media-manager.c:180
+#: ../shell/rb-removable-media-manager.c:175
 msgid "_Scan Removable Media"
 msgstr "_Preišči odstranljive medije"
 
-#: ../shell/rb-removable-media-manager.c:181
+#: ../shell/rb-removable-media-manager.c:176
 msgid "Scan for new Removable Media"
 msgstr "Preiskovanje za odstranljive medije"
 
-#. Translators: this is the toolbar button label
-#. for Copy to Library action.
-#: ../shell/rb-removable-media-manager.c:862
-msgid "Extract"
-msgstr "Razširi"
-
-#: ../shell/rb-removable-media-manager.c:893
+#: ../shell/rb-removable-media-manager.c:880
 msgid "Unable to eject"
 msgstr "Ni mogoče izvreči"
 
-#: ../shell/rb-removable-media-manager.c:914
+#: ../shell/rb-removable-media-manager.c:901
 msgid "Unable to unmount"
 msgstr "Ni mogoče odklopiti"
 
@@ -4013,7 +4017,7 @@ msgid "_Play"
 msgstr "_Predvajanje"
 
 #: ../shell/rb-shell-player.c:322
-#: ../shell/rb-shell-player.c:3699
+#: ../shell/rb-shell-player.c:3704
 msgid "Start playback"
 msgstr "Začetek predvajanja"
 
@@ -4107,29 +4111,29 @@ msgid "No next song"
 msgstr "Ni naslednje skladbe"
 
 #: ../shell/rb-shell-player.c:2246
-#: ../shell/rb-shell-player.c:3346
+#: ../shell/rb-shell-player.c:3351
 msgid "Couldn't start playback"
 msgstr "Predvajanja ni mogoče začeti"
 
-#: ../shell/rb-shell-player.c:3108
+#: ../shell/rb-shell-player.c:3113
 msgid "Couldn't stop playback"
 msgstr "Predvajanja ni mogoče zaustaviti"
 
-#: ../shell/rb-shell-player.c:3218
+#: ../shell/rb-shell-player.c:3223
 #, c-format
 msgid "Playback position not available"
 msgstr "Lega predvajanja ni dostopna"
 
-#: ../shell/rb-shell-player.c:3250
+#: ../shell/rb-shell-player.c:3255
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Po trenutni skladbi ni mogoče iskati"
 
-#: ../shell/rb-shell-player.c:3694
+#: ../shell/rb-shell-player.c:3699
 msgid "Pause playback"
 msgstr "Premor predvajanja"
 
-#: ../shell/rb-shell-player.c:3696
+#: ../shell/rb-shell-player.c:3701
 msgid "Stop playback"
 msgstr "Zaustavitev predvajanja"
 
@@ -4922,15 +4926,15 @@ msgstr "Zadnjič videno"
 msgid "Location"
 msgstr "Mesto"
 
-#: ../widgets/rb-entry-view.c:1875
+#: ../widgets/rb-entry-view.c:1876
 msgid "Now Playing"
 msgstr "Se predvaja"
 
-#: ../widgets/rb-entry-view.c:1936
+#: ../widgets/rb-entry-view.c:1937
 msgid "Playback Error"
 msgstr "Napaka predvajanja"
 
-#: ../widgets/rb-header.c:514
+#: ../widgets/rb-header.c:521
 msgid "Not Playing"
 msgstr "Ni predvajanja"
 
