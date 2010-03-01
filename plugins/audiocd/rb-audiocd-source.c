@@ -291,7 +291,7 @@ rb_audiocd_source_constructed (GObject *object)
 	g_object_set (action, "short-label", _("Extract"), NULL);
 
 #if !defined(HAVE_SJ_METADATA_GETTER)
-	action = gtk_action_group_get_action (source->action_group, "AudioCdSourceReloadMetadata");
+	action = gtk_action_group_get_action (priv->action_group, "AudioCdSourceReloadMetadata");
 	g_object_set (action, "visible", FALSE, NULL);
 #endif
 
