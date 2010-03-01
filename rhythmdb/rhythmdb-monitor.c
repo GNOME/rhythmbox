@@ -348,6 +348,7 @@ rhythmdb_directory_change_cb (GFileMonitor *monitor,
 		break;
 	case G_FILE_MONITOR_EVENT_PRE_UNMOUNT:
 	case G_FILE_MONITOR_EVENT_UNMOUNTED:
+	default:
 		break;
 	}
 
