@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-21 13:18+0100\n"
-"PO-Revision-Date: 2010-02-21 13:30+0100\n"
+"POT-Creation-Date: 2010-03-02 12:12+0100\n"
+"PO-Revision-Date: 2010-03-02 12:16+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -442,9 +442,8 @@ msgstr "_Betyg:"
 
 #: ../data/ui/song-info-multiple.ui.h:1
 #: ../data/ui/song-info.ui.h:1
-#, fuzzy
 msgid "Albu_m sort order:"
-msgstr "S_orteringsordning för artist:"
+msgstr "Sorteringsordning för alb_um:"
 
 #: ../data/ui/song-info-multiple.ui.h:3
 #: ../data/ui/song-info.ui.h:13
@@ -458,9 +457,8 @@ msgstr "_Album:"
 
 #: ../data/ui/song-info-multiple.ui.h:5
 #: ../data/ui/song-info.ui.h:15
-#, fuzzy
 msgid "_Artist sort order:"
-msgstr "S_orteringsordning för artist:"
+msgstr "Sort_eringsordning för artist:"
 
 #: ../data/ui/song-info-multiple.ui.h:6
 #: ../data/ui/song-info.ui.h:16
@@ -684,9 +682,9 @@ msgstr "%d %b %Y"
 #: ../rhythmdb/rhythmdb-tree.c:1299
 #: ../rhythmdb/rhythmdb-tree.c:1303
 #: ../rhythmdb/rhythmdb-tree.c:1307
-#: ../rhythmdb/rhythmdb.c:1980
-#: ../rhythmdb/rhythmdb.c:1986
-#: ../rhythmdb/rhythmdb.c:1991
+#: ../rhythmdb/rhythmdb.c:1981
+#: ../rhythmdb/rhythmdb.c:1987
+#: ../rhythmdb/rhythmdb.c:1992
 #: ../shell/rb-shell-player.c:1661
 #: ../sources/rb-podcast-source.c:1646
 #: ../widgets/rb-entry-view.c:1041
@@ -710,7 +708,7 @@ msgstr "Kunde inte flytta %s till %s: %s"
 msgid "Too many symlinks"
 msgstr "För många symboliska länkar"
 
-#: ../lib/rb-file-helpers.c:984
+#: ../lib/rb-file-helpers.c:1002
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Kan inte få fritt utrymme på %s: %s"
@@ -1036,7 +1034,7 @@ msgstr "Tid för senaste inrapportering:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:962
 #: ../plugins/iradio/rb-station-properties-dialog.c:499
-#: ../rhythmdb/rhythmdb.c:3659
+#: ../rhythmdb/rhythmdb.c:3660
 #: ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1576
 #: ../widgets/rb-entry-view.c:1589
@@ -2890,13 +2888,13 @@ msgid "Download Error"
 msgstr "Hämtningsfel"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:456
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
 "The Magnatune server returned:\n"
 "%s"
 msgstr ""
-"Ett fel uppstod när albumet skulle köpas.\n"
+"Ett fel uppstod vid försök att auktorisera hämtningen.\n"
 "Magnatune-servern returnerade:\n"
 "%s"
 
@@ -2906,13 +2904,13 @@ msgid "Error"
 msgstr "Fel"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:459
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
 "The error text is:\n"
 "%s"
 msgstr ""
-"Ett fel inträffade när albumet skulle köpas.\n"
+"Ett fel inträffade vid försök att hämta albumet.\n"
 "Felmeddelandet var:\n"
 "%s"
 
@@ -3086,11 +3084,11 @@ msgstr "ReplayGain"
 
 #: ../plugins/replaygain/replaygain.rb-plugin.in.h:2
 msgid "Use ReplayGain to provide a consistent playback volume"
-msgstr ""
+msgstr "Använd ReplayGain för att tillhandahålla en konsekvent uppspelningsvolym"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:1
 msgid "Album (ideal loudness for all tracks)"
-msgstr ""
+msgstr "Album (idealisk loudness för alla spår)"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:2
 msgid "Learn more about ReplayGain at replaygain.org"
@@ -3098,7 +3096,7 @@ msgstr "Lär dig mer om ReplayGain på replaygain.org"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:3
 msgid "Radio (equal loudness for all tracks)"
-msgstr ""
+msgstr "Radio (samma loudness för alla spår)"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:4
 msgid "ReplayGain _mode:"
@@ -3110,11 +3108,11 @@ msgstr "Inställningar för ReplayGain"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:6
 msgid "_Apply compression to prevent clipping"
-msgstr ""
+msgstr "T_illämpa komprimering för att förhindra klippljud"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:7
 msgid "_Pre-amp:"
-msgstr ""
+msgstr "_Förstärk:"
 
 #: ../plugins/replaygain/replaygain/config.py:78
 msgid "-15.0 dB"
@@ -3131,12 +3129,11 @@ msgstr "15.0 dB"
 #: ../plugins/replaygain/replaygain/player.py:48
 #, python-format
 msgid "The GStreamer elements required for ReplayGain processing are not available. The missing elements are: %s"
-msgstr ""
+msgstr "GStreamer-elementen som krävs för ReplayGain-behandling finns inte tillgängliga. De saknade elementen är: %s"
 
 #: ../plugins/replaygain/replaygain/player.py:49
-#, fuzzy
 msgid "ReplayGain GStreamer plugins not available"
-msgstr "Spårlista inte tillgänglig"
+msgstr "GStreamer-instick för ReplayGain finns inte tillgängliga"
 
 #: ../plugins/sample-python/sample-python.py:14
 msgid "Python Source"
@@ -3213,8 +3210,8 @@ msgid "Next"
 msgstr "Nästa"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:585
-#: ../remote/dbus/rb-client.c:454
-#: ../remote/dbus/rb-client.c:480
+#: ../remote/dbus/rb-client.c:453
+#: ../remote/dbus/rb-client.c:478
 msgid "Not playing"
 msgstr "Spelar inte"
 
@@ -3465,7 +3462,7 @@ msgid "Don't start a new instance of Rhythmbox"
 msgstr "Starta inte en ny instans av Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:83
-#: ../shell/main.c:116
+#: ../shell/main.c:118
 msgid "Quit Rhythmbox"
 msgstr "Avsluta Rhythmbox"
 
@@ -3554,12 +3551,12 @@ msgstr "Normal uppspelningsvolym"
 msgid "Set the rating of the current song"
 msgstr "Sätt betyget för den aktuella låten"
 
-#: ../remote/dbus/rb-client.c:736
+#: ../remote/dbus/rb-client.c:734
 #, c-format
 msgid "Playback is muted.\n"
 msgstr "Uppspelningen är tystad.\n"
 
-#: ../remote/dbus/rb-client.c:737
+#: ../remote/dbus/rb-client.c:735
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Uppspelningsvolym är %f.\n"
@@ -3577,7 +3574,7 @@ msgstr "Alla"
 msgid "The database was created by a later version of Rhythmbox.  This version of Rhythmbox cannot read the database."
 msgstr "Databasen skapades av en senare version av Rhythmbox. Denna version av Rhythmbox kan inte läsa databasen."
 
-#: ../rhythmdb/rhythmdb.c:744
+#: ../rhythmdb/rhythmdb.c:745
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Kunde inte komma åt %s: %s"
@@ -3587,7 +3584,7 @@ msgstr "Kunde inte komma åt %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1716
+#: ../rhythmdb/rhythmdb.c:1717
 msgid "The Beatles"
 msgstr "Esbjörn Svenssions Trio"
 
@@ -3595,7 +3592,7 @@ msgstr "Esbjörn Svenssions Trio"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1722
+#: ../rhythmdb/rhythmdb.c:1723
 msgid "Help!"
 msgstr "Hjälp!"
 
@@ -3603,15 +3600,15 @@ msgstr "Hjälp!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1728
+#: ../rhythmdb/rhythmdb.c:1729
 msgid "Ticket To Ride"
 msgstr "Leucocyte"
 
-#: ../rhythmdb/rhythmdb.c:2226
+#: ../rhythmdb/rhythmdb.c:2227
 msgid "invalid unicode in error message"
 msgstr "ogiltig unicode i felmeddelande"
 
-#: ../rhythmdb/rhythmdb.c:2287
+#: ../rhythmdb/rhythmdb.c:2288
 #, c-format
 msgid "Empty file"
 msgstr "Tom fil"
@@ -3619,30 +3616,30 @@ msgstr "Tom fil"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2402
+#: ../rhythmdb/rhythmdb.c:2403
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Ytterligare GStreamer-insticksmoduler krävs för att spela upp denna fil: %s"
 
-#: ../rhythmdb/rhythmdb.c:3144
+#: ../rhythmdb/rhythmdb.c:3145
 msgid "Could not load the music database:"
 msgstr "Kunde inte läsa in musikdatabasen:"
 
-#: ../rhythmdb/rhythmdb.c:4527
+#: ../rhythmdb/rhythmdb.c:4528
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minut"
 msgstr[1] "%ld minuter"
 
-#: ../rhythmdb/rhythmdb.c:4528
+#: ../rhythmdb/rhythmdb.c:4529
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld timme"
 msgstr[1] "%ld timmar"
 
-#: ../rhythmdb/rhythmdb.c:4529
+#: ../rhythmdb/rhythmdb.c:4530
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3650,7 +3647,7 @@ msgstr[0] "%ld dygn"
 msgstr[1] "%ld dygn"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4535
+#: ../rhythmdb/rhythmdb.c:4536
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s och %s"
@@ -3658,46 +3655,46 @@ msgstr "%s, %s och %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4541
-#: ../rhythmdb/rhythmdb.c:4549
-#: ../rhythmdb/rhythmdb.c:4560
+#: ../rhythmdb/rhythmdb.c:4542
+#: ../rhythmdb/rhythmdb.c:4550
+#: ../rhythmdb/rhythmdb.c:4561
 #, c-format
 msgid "%s and %s"
 msgstr "%s och %s"
 
-#: ../shell/main.c:109
+#: ../shell/main.c:111
 msgid "Enable debug output"
 msgstr "Aktivera felsökningsutskrifter"
 
-#: ../shell/main.c:110
+#: ../shell/main.c:112
 msgid "Enable debug output matching a specified string"
 msgstr "Aktivera felsökningsutskrifter som matchar en speciell sträng"
 
-#: ../shell/main.c:111
+#: ../shell/main.c:113
 msgid "Do not update the library with file changes"
 msgstr "Uppdatera inte biblioteket med filändringar"
 
-#: ../shell/main.c:112
+#: ../shell/main.c:114
 msgid "Do not register the shell"
 msgstr "Registrera inte skalet"
 
-#: ../shell/main.c:113
+#: ../shell/main.c:115
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Spara inte någon data permanent (betyder --no-registration)"
 
-#: ../shell/main.c:114
+#: ../shell/main.c:116
 msgid "Path for database file to use"
 msgstr "Sökväg till databasfil att använda"
 
-#: ../shell/main.c:115
+#: ../shell/main.c:117
 msgid "Path for playlists file to use"
 msgstr "Sökväg till spellistefiler att använda"
 
-#: ../shell/main.c:117
+#: ../shell/main.c:119
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:147
+#: ../shell/main.c:149
 #, c-format
 msgid ""
 "%s\n"
@@ -4004,7 +4001,7 @@ msgid "_Play"
 msgstr "Spela _upp"
 
 #: ../shell/rb-shell-player.c:322
-#: ../shell/rb-shell-player.c:3699
+#: ../shell/rb-shell-player.c:3704
 msgid "Start playback"
 msgstr "Börja spela"
 
@@ -4098,29 +4095,29 @@ msgid "No next song"
 msgstr "Ingen nästa låt"
 
 #: ../shell/rb-shell-player.c:2246
-#: ../shell/rb-shell-player.c:3346
+#: ../shell/rb-shell-player.c:3351
 msgid "Couldn't start playback"
 msgstr "Kunde inte starta uppspelning"
 
-#: ../shell/rb-shell-player.c:3108
+#: ../shell/rb-shell-player.c:3113
 msgid "Couldn't stop playback"
 msgstr "Kunde inte stoppa uppspelning"
 
-#: ../shell/rb-shell-player.c:3218
+#: ../shell/rb-shell-player.c:3223
 #, c-format
 msgid "Playback position not available"
 msgstr "Uppspelningsposition inte tillgänglig"
 
-#: ../shell/rb-shell-player.c:3250
+#: ../shell/rb-shell-player.c:3255
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Det går inte att söka i aktuell låt"
 
-#: ../shell/rb-shell-player.c:3694
+#: ../shell/rb-shell-player.c:3699
 msgid "Pause playback"
 msgstr "Pausa uppspelningen"
 
-#: ../shell/rb-shell-player.c:3696
+#: ../shell/rb-shell-player.c:3701
 msgid "Stop playback"
 msgstr "Stoppa uppspelning"
 
@@ -4460,7 +4457,7 @@ msgid "Search titles"
 msgstr "Sök titlar"
 
 #: ../sources/rb-removable-media-source.c:772
-#: ../sources/rb-library-source.c:1232
+#: ../sources/rb-library-source.c:1266
 msgid "Error transferring track"
 msgstr "Fel vid överföring av spår"
 
@@ -4549,7 +4546,7 @@ msgstr "Välj plats för bibliotek"
 msgid "Multiple locations set"
 msgstr "Flera platser valda"
 
-#: ../sources/rb-library-source.c:1023
+#: ../sources/rb-library-source.c:1047
 msgid "Example Path:"
 msgstr "Exempelsökväg:"
 
