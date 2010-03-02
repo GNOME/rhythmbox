@@ -95,6 +95,7 @@ struct media_type_filter {
 	{ "application/x-id3", FALSE },
 	{ "application/x-apetag", FALSE },
 	{ "application/x-3gp", FALSE },
+	{ "application/x-annodex", FALSE },
 	{ "application/", TRUE },
 };
 
