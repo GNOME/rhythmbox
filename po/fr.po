@@ -16,15 +16,16 @@
 # Le Coz Florent <louizatakk@gmail.com>, 2007.
 # Robert-André Mauchin <zebob.m@pengzone.org>, 2007-2008.
 # Laurent POMAREDE <laurent.pomarede@gmail.com>, 2008.
+# Pierre-Luc Beaudoin <pierre-luc@pierlux.com>, 2010
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-02-22 10:38+0100\n"
+"POT-Creation-Date: 2010-03-03 08:23+0000\n"
 "PO-Revision-Date: 2010-02-22 10:37+0100\n"
-"Last-Translator: Claude Paroz <claude@2xlibre.net>\n"
+"Last-Translator: Pierre-Luc Beaudoin <pierre-luc@pierlux.com>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -680,8 +681,8 @@ msgstr "%d %b %Y"
 #: ../podcast/rb-podcast-properties-dialog.c:536
 #: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1295
 #: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb-tree.c:1303
-#: ../rhythmdb/rhythmdb-tree.c:1307 ../rhythmdb/rhythmdb.c:1980
-#: ../rhythmdb/rhythmdb.c:1986 ../rhythmdb/rhythmdb.c:1991
+#: ../rhythmdb/rhythmdb-tree.c:1307 ../rhythmdb/rhythmdb.c:1981
+#: ../rhythmdb/rhythmdb.c:1987 ../rhythmdb/rhythmdb.c:1992
 #: ../shell/rb-shell-player.c:1661 ../sources/rb-podcast-source.c:1646
 #: ../widgets/rb-entry-view.c:1041 ../widgets/rb-entry-view.c:1063
 #: ../widgets/rb-entry-view.c:1517 ../widgets/rb-entry-view.c:1529
@@ -700,7 +701,7 @@ msgstr "Impossible de déplacer %s vers %s : %s"
 msgid "Too many symlinks"
 msgstr "Trop de liens symboliques"
 
-#: ../lib/rb-file-helpers.c:984
+#: ../lib/rb-file-helpers.c:1002
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Impossible d'obtenir de l'espace libre sur %s : %s"
@@ -1029,7 +1030,7 @@ msgstr "Dernière soumission :"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:962
 #: ../plugins/iradio/rb-station-properties-dialog.c:499
-#: ../rhythmdb/rhythmdb.c:3659 ../widgets/rb-entry-view.c:989
+#: ../rhythmdb/rhythmdb.c:3660 ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1576 ../widgets/rb-entry-view.c:1589
 #: ../widgets/rb-song-info.c:1397
 msgid "Never"
@@ -1099,7 +1100,7 @@ msgstr "Cette version de Rhythmbox a été bannie de Last.fm."
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1003
 msgid "Track submission failed too many times"
-msgstr "La soumission du morceau a échoué trop souvent"
+msgstr "La soumission du morceau a échoué trop de fois"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:191
 msgid "Similar Artists radio"
@@ -1113,12 +1114,12 @@ msgstr "Artistes similaires à %s"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:192
 msgid "Tag radio"
-msgstr "Étiqueter la radio"
+msgstr "Radio de l'étiquette"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:192
 #, c-format
 msgid "Tracks tagged with %s"
-msgstr "Titres étiquetés avec %s"
+msgstr "Titres étiquetés « %s »"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:193
 msgid "Artist Fan radio"
@@ -1236,8 +1237,8 @@ msgstr "Paramètres de compte"
 msgid ""
 "Account details are needed before you can connect.  Check your settings."
 msgstr ""
-"Les détails du compte sont nécessaires avant de pouvoir se connecter. "
-"Vérifiez les paramètres."
+"Un compte est nécessaire avant de pouvoir se connecter. Vérifiez les "
+"paramètres."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:877
 msgid "Unable to connect"
@@ -1279,7 +1280,7 @@ msgstr "Radio personnelle"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1829
 msgid "Server did not respond"
-msgstr "Le serveur n'a pas répondu"
+msgstr "Le serveur ne répond pas"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1897
 msgid "There is not enough content available to play this station."
@@ -1293,7 +1294,7 @@ msgstr "Cette station n'est disponible que pour les abonnés."
 msgid ""
 "The streaming system is offline for maintenance, please try again later."
 msgstr ""
-"Le système de flux est hors ligne pour maintenance, veuillez essayer à "
+"Le système de diffusion est hors ligne pour maintenance, veuillez essayer à "
 "nouveau plus tard."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1948
@@ -3638,7 +3639,7 @@ msgstr "Non téléchargé"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Ne pas lancer de nouvelle instance de Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:83 ../shell/main.c:116
+#: ../remote/dbus/rb-client.c:83 ../shell/main.c:118
 msgid "Quit Rhythmbox"
 msgstr "Quitte Rhythmbox"
 
@@ -3753,7 +3754,7 @@ msgstr ""
 "La base de données a été créée par une version ultérieure de Rhythmbox. "
 "Cette version de Rhythmbox ne peut lire la base de données."
 
-#: ../rhythmdb/rhythmdb.c:744
+#: ../rhythmdb/rhythmdb.c:745
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Impossible d'accéder à %s : %s"
@@ -3763,7 +3764,7 @@ msgstr "Impossible d'accéder à %s : %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1716
+#: ../rhythmdb/rhythmdb.c:1717
 msgid "The Beatles"
 msgstr "Téléphone"
 
@@ -3771,7 +3772,7 @@ msgstr "Téléphone"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1722
+#: ../rhythmdb/rhythmdb.c:1723
 msgid "Help!"
 msgstr "Dure limite"
 
@@ -3779,15 +3780,15 @@ msgstr "Dure limite"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1728
+#: ../rhythmdb/rhythmdb.c:1729
 msgid "Ticket To Ride"
 msgstr "Jour contre jour"
 
-#: ../rhythmdb/rhythmdb.c:2226
+#: ../rhythmdb/rhythmdb.c:2227
 msgid "invalid unicode in error message"
 msgstr "Unicode non valide dans le message d'erreur"
 
-#: ../rhythmdb/rhythmdb.c:2287
+#: ../rhythmdb/rhythmdb.c:2288
 #, c-format
 msgid "Empty file"
 msgstr "Fichier vide"
@@ -3795,31 +3796,31 @@ msgstr "Fichier vide"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2402
+#: ../rhythmdb/rhythmdb.c:2403
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 "Des greffons GStreamer supplémentaires sont requis pour lire ce fichier : %s"
 
-#: ../rhythmdb/rhythmdb.c:3144
+#: ../rhythmdb/rhythmdb.c:3145
 msgid "Could not load the music database:"
 msgstr "Impossible de charger la base de données musicale :"
 
-#: ../rhythmdb/rhythmdb.c:4527
+#: ../rhythmdb/rhythmdb.c:4528
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minute"
 msgstr[1] "%ld minutes"
 
-#: ../rhythmdb/rhythmdb.c:4528
+#: ../rhythmdb/rhythmdb.c:4529
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld heure"
 msgstr[1] "%ld heures"
 
-#: ../rhythmdb/rhythmdb.c:4529
+#: ../rhythmdb/rhythmdb.c:4530
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3827,7 +3828,7 @@ msgstr[0] "%ld jour"
 msgstr[1] "%ld jours"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4535
+#: ../rhythmdb/rhythmdb.c:4536
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s et %s"
@@ -3835,46 +3836,46 @@ msgstr "%s, %s et %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4541 ../rhythmdb/rhythmdb.c:4549
-#: ../rhythmdb/rhythmdb.c:4560
+#: ../rhythmdb/rhythmdb.c:4542 ../rhythmdb/rhythmdb.c:4550
+#: ../rhythmdb/rhythmdb.c:4561
 #, c-format
 msgid "%s and %s"
 msgstr "%s et %s"
 
-#: ../shell/main.c:109
+#: ../shell/main.c:111
 msgid "Enable debug output"
 msgstr "Activer la sortie de débogage"
 
-#: ../shell/main.c:110
+#: ../shell/main.c:112
 msgid "Enable debug output matching a specified string"
 msgstr "Activer la sortie de débogage correspondant à une chaîne indiquée"
 
-#: ../shell/main.c:111
+#: ../shell/main.c:113
 msgid "Do not update the library with file changes"
 msgstr "Ne pas mettre à jour la bibliothèque"
 
-#: ../shell/main.c:112
+#: ../shell/main.c:114
 msgid "Do not register the shell"
 msgstr "Ne pas connecter le shell"
 
-#: ../shell/main.c:113
+#: ../shell/main.c:115
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr ""
 "N'enregistrer aucune donnée de façon permanente (implique --no-registration)"
 
-#: ../shell/main.c:114
+#: ../shell/main.c:116
 msgid "Path for database file to use"
 msgstr "Chemin du fichier de base de données à utiliser"
 
-#: ../shell/main.c:115
+#: ../shell/main.c:117
 msgid "Path for playlists file to use"
 msgstr "Chemin des listes de lecture à utiliser"
 
-#: ../shell/main.c:117
+#: ../shell/main.c:119
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:147
+#: ../shell/main.c:149
 #, c-format
 msgid ""
 "%s\n"
@@ -4636,7 +4637,7 @@ msgid "Search titles"
 msgstr "Recherche les morceaux"
 
 #: ../sources/rb-removable-media-source.c:772
-#: ../sources/rb-library-source.c:1232
+#: ../sources/rb-library-source.c:1266
 msgid "Error transferring track"
 msgstr "Erreur lors du transfert de la piste"
 
@@ -4724,7 +4725,7 @@ msgstr "Emplacement de la bibliothèque"
 msgid "Multiple locations set"
 msgstr "Ensemble d'emplacements multiples"
 
-#: ../sources/rb-library-source.c:1023
+#: ../sources/rb-library-source.c:1047
 msgid "Example Path:"
 msgstr "Exemple de chemin :"
 
