@@ -12,11 +12,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-21 11:58+0100\n"
-"PO-Revision-Date: 2010-02-13 11:59+0100\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=rhythmbox&component=general\n"
+"POT-Creation-Date: 2010-03-04 12:08+0000\n"
+"PO-Revision-Date: 2010-03-04 14:41+0100\n"
 "Last-Translator: Fran Diéguez <frandieguez@ubuntu.com>\n"
-"Language-Team: Galician <proxecto@trasno.net>\n"
+"Language-Team: Galician <gnome@g11n.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -674,8 +675,8 @@ msgstr "%d de %b de %Y"
 #: ../podcast/rb-podcast-properties-dialog.c:536
 #: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1295
 #: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb-tree.c:1303
-#: ../rhythmdb/rhythmdb-tree.c:1307 ../rhythmdb/rhythmdb.c:1980
-#: ../rhythmdb/rhythmdb.c:1986 ../rhythmdb/rhythmdb.c:1991
+#: ../rhythmdb/rhythmdb-tree.c:1307 ../rhythmdb/rhythmdb.c:1981
+#: ../rhythmdb/rhythmdb.c:1987 ../rhythmdb/rhythmdb.c:1992
 #: ../shell/rb-shell-player.c:1661 ../sources/rb-podcast-source.c:1646
 #: ../widgets/rb-entry-view.c:1041 ../widgets/rb-entry-view.c:1063
 #: ../widgets/rb-entry-view.c:1517 ../widgets/rb-entry-view.c:1529
@@ -694,7 +695,7 @@ msgstr "Non foi posíbel mover %s a %s: %s"
 msgid "Too many symlinks"
 msgstr "Demasiadas ligazóns"
 
-#: ../lib/rb-file-helpers.c:984
+#: ../lib/rb-file-helpers.c:1002
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Non foi posíbel obter espazo libre en %s: %s"
@@ -849,9 +850,8 @@ msgid "_Extract to Library"
 msgstr "_Extraer á fonoteca"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:153
-#, fuzzy
 msgid "Copy tracks to the library"
-msgstr "Copiar todas as pistas á fonoteca"
+msgstr "Copiar as pistas á biblioteca"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:156
 msgid "Reload"
@@ -869,7 +869,7 @@ msgstr "Extraer"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:332
 msgid "Select tracks to be extracted"
-msgstr ""
+msgstr "Seleccione as pistas a extraer"
 
 #. Info bar for non-Musicbrainz data
 #: ../plugins/audiocd/rb-audiocd-source.c:373
@@ -1026,7 +1026,7 @@ msgstr "Hora do último envío:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:962
 #: ../plugins/iradio/rb-station-properties-dialog.c:499
-#: ../rhythmdb/rhythmdb.c:3659 ../widgets/rb-entry-view.c:989
+#: ../rhythmdb/rhythmdb.c:3660 ../widgets/rb-entry-view.c:989
 #: ../widgets/rb-entry-view.c:1576 ../widgets/rb-entry-view.c:1589
 #: ../widgets/rb-song-info.c:1397
 msgid "Never"
@@ -2995,9 +2995,8 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:309
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:406
-#, fuzzy
 msgid "Couldn't get account details"
-msgstr "Non foi posíbel obter a posición da pista actual"
+msgstr "Non foi posíbel obter os detalles da conta"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:455
 msgid "Download Error"
@@ -3072,15 +3071,16 @@ msgstr "Deter a descarga dos álbums comprados"
 
 #: ../plugins/magnatune/magnatune/__init__.py:257
 #: ../plugins/magnatune/magnatune/__init__.py:260
-#, fuzzy
 msgid "Couldn't store account information"
-msgstr "O Rhythmbox non puido ler a información do CD."
+msgstr "Non foi posíbel almacenar a información da conta"
 
 #: ../plugins/magnatune/magnatune/__init__.py:258
 msgid ""
 "There was a problem accessing the keyring. Check the debug output for more "
 "information."
 msgstr ""
+"Produciuse un problema ao acceder ao anel de chaves. Comprobe a saída de "
+"depuración para obter máis información."
 
 #: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
@@ -3343,7 +3343,7 @@ msgid "Next"
 msgstr "Seguinte"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:585
-#: ../remote/dbus/rb-client.c:454 ../remote/dbus/rb-client.c:480
+#: ../remote/dbus/rb-client.c:453 ../remote/dbus/rb-client.c:478
 msgid "Not playing"
 msgstr "Non se está a reproducir nada"
 
@@ -3606,7 +3606,7 @@ msgstr "Non se descargou"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Non iniciar unha nova instancia do Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:83 ../shell/main.c:116
+#: ../remote/dbus/rb-client.c:83 ../shell/main.c:118
 msgid "Quit Rhythmbox"
 msgstr "Saír do Rhythmbox"
 
@@ -3695,12 +3695,12 @@ msgstr "Reprodución de audio"
 msgid "Set the rating of the current song"
 msgstr "Establecer a cualificación da canción actual"
 
-#: ../remote/dbus/rb-client.c:736
+#: ../remote/dbus/rb-client.c:734
 #, c-format
 msgid "Playback is muted.\n"
 msgstr "A reprodución está en silencio.\n"
 
-#: ../remote/dbus/rb-client.c:737
+#: ../remote/dbus/rb-client.c:735
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "O volume da reprodución é %f.\n"
@@ -3721,7 +3721,7 @@ msgstr ""
 "A base de datos foi creada por unha versión posterior do Rhythmbox. Esta "
 "versión do Rhythmbox non pode ler a base de datos."
 
-#: ../rhythmdb/rhythmdb.c:744
+#: ../rhythmdb/rhythmdb.c:745
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Non foi posíbel acceder a %s: %s"
@@ -3731,7 +3731,7 @@ msgstr "Non foi posíbel acceder a %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1716
+#: ../rhythmdb/rhythmdb.c:1717
 msgid "The Beatles"
 msgstr "Os Beatles"
 
@@ -3739,7 +3739,7 @@ msgstr "Os Beatles"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1722
+#: ../rhythmdb/rhythmdb.c:1723
 msgid "Help!"
 msgstr "Help!"
 
@@ -3747,15 +3747,15 @@ msgstr "Help!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1728
+#: ../rhythmdb/rhythmdb.c:1729
 msgid "Ticket To Ride"
 msgstr "Ticket To Ride"
 
-#: ../rhythmdb/rhythmdb.c:2226
+#: ../rhythmdb/rhythmdb.c:2227
 msgid "invalid unicode in error message"
 msgstr "o unicode non é correcto na mensaxe de erro"
 
-#: ../rhythmdb/rhythmdb.c:2287
+#: ../rhythmdb/rhythmdb.c:2288
 #, c-format
 msgid "Empty file"
 msgstr "O ficheiro está baleiro"
@@ -3763,31 +3763,31 @@ msgstr "O ficheiro está baleiro"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2402
+#: ../rhythmdb/rhythmdb.c:2403
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 "Requírense engadidos GStreamer adicionais para reprocudir este ficheiro: %s"
 
-#: ../rhythmdb/rhythmdb.c:3144
+#: ../rhythmdb/rhythmdb.c:3145
 msgid "Could not load the music database:"
 msgstr "Non foi posíbel cargar a base de datos de música:"
 
-#: ../rhythmdb/rhythmdb.c:4527
+#: ../rhythmdb/rhythmdb.c:4528
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minutos"
 
-#: ../rhythmdb/rhythmdb.c:4528
+#: ../rhythmdb/rhythmdb.c:4529
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hora"
 msgstr[1] "%ld horas"
 
-#: ../rhythmdb/rhythmdb.c:4529
+#: ../rhythmdb/rhythmdb.c:4530
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3795,7 +3795,7 @@ msgstr[0] "%ld día"
 msgstr[1] "%ld días"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4535
+#: ../rhythmdb/rhythmdb.c:4536
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s e %s"
@@ -3803,45 +3803,45 @@ msgstr "%s, %s e %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4541 ../rhythmdb/rhythmdb.c:4549
-#: ../rhythmdb/rhythmdb.c:4560
+#: ../rhythmdb/rhythmdb.c:4542 ../rhythmdb/rhythmdb.c:4550
+#: ../rhythmdb/rhythmdb.c:4561
 #, c-format
 msgid "%s and %s"
 msgstr "%s e %s"
 
-#: ../shell/main.c:109
+#: ../shell/main.c:111
 msgid "Enable debug output"
 msgstr "Activar a saída de depuración"
 
-#: ../shell/main.c:110
+#: ../shell/main.c:112
 msgid "Enable debug output matching a specified string"
 msgstr "Activar a saída de depuración a coincidir cunha cadea"
 
-#: ../shell/main.c:111
+#: ../shell/main.c:113
 msgid "Do not update the library with file changes"
 msgstr "Non actualizar a fonoteca con cambios de ficheiros"
 
-#: ../shell/main.c:112
+#: ../shell/main.c:114
 msgid "Do not register the shell"
 msgstr "Non rexistrar o shell"
 
-#: ../shell/main.c:113
+#: ../shell/main.c:115
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Non gardar ningún dato permanente (implica --no-registration)"
 
-#: ../shell/main.c:114
+#: ../shell/main.c:116
 msgid "Path for database file to use"
 msgstr "Camiño ao ficheiro de base de datos para usar"
 
-#: ../shell/main.c:115
+#: ../shell/main.c:117
 msgid "Path for playlists file to use"
 msgstr "Camiño para o ficheiro de listaxes de reprodución para usar"
 
-#: ../shell/main.c:117
+#: ../shell/main.c:119
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:147
+#: ../shell/main.c:149
 #, c-format
 msgid ""
 "%s\n"
@@ -4143,7 +4143,7 @@ msgstr "Reducir o volume da reprodución actual"
 msgid "_Play"
 msgstr "_Reproducir"
 
-#: ../shell/rb-shell-player.c:322 ../shell/rb-shell-player.c:3699
+#: ../shell/rb-shell-player.c:322 ../shell/rb-shell-player.c:3704
 msgid "Start playback"
 msgstr "Comezar a reprodución"
 
@@ -4238,29 +4238,29 @@ msgstr "Non hai unha canción anterior"
 msgid "No next song"
 msgstr "Non hai unha seguinte canción"
 
-#: ../shell/rb-shell-player.c:2246 ../shell/rb-shell-player.c:3346
+#: ../shell/rb-shell-player.c:2246 ../shell/rb-shell-player.c:3351
 msgid "Couldn't start playback"
 msgstr "Non foi posíbel iniciar a reprodución"
 
-#: ../shell/rb-shell-player.c:3108
+#: ../shell/rb-shell-player.c:3113
 msgid "Couldn't stop playback"
 msgstr "Non foi posíbel deter a reprodución"
 
-#: ../shell/rb-shell-player.c:3218
+#: ../shell/rb-shell-player.c:3223
 #, c-format
 msgid "Playback position not available"
-msgstr "A posición da reprodución non está dispoñible"
+msgstr "A posición da reprodución non está dispoñíbel"
 
-#: ../shell/rb-shell-player.c:3250
+#: ../shell/rb-shell-player.c:3255
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Non é posíbel buscar a canción actual"
 
-#: ../shell/rb-shell-player.c:3694
+#: ../shell/rb-shell-player.c:3699
 msgid "Pause playback"
 msgstr "Silenciar reprodución"
 
-#: ../shell/rb-shell-player.c:3696
+#: ../shell/rb-shell-player.c:3701
 msgid "Stop playback"
 msgstr "Deter a reprodución"
 
@@ -4523,22 +4523,22 @@ msgstr "Importar un cartafol na fonoteca"
 msgid "Import File into Library"
 msgstr "Importar un ficheiro na fonoteca"
 
-#: ../shell/rb-shell.c:2857
+#: ../shell/rb-shell.c:2863
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ningunha fonte rexistrada pode manexar a URI %s"
 
-#: ../shell/rb-shell.c:3127 ../shell/rb-shell.c:3156
+#: ../shell/rb-shell.c:3133 ../shell/rb-shell.c:3162
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Descoñécese o URI de canción: %s"
 
-#: ../shell/rb-shell.c:3165
+#: ../shell/rb-shell.c:3171
 #, c-format
 msgid "Unknown property %s"
 msgstr "Descoñécese a propiedade %s"
 
-#: ../shell/rb-shell.c:3179
+#: ../shell/rb-shell.c:3185
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "O tipo da propiedade %s non é correcto para a propiedade %s"
@@ -4591,7 +4591,7 @@ msgid "Search titles"
 msgstr "Procurar títulos"
 
 #: ../sources/rb-removable-media-source.c:772
-#: ../sources/rb-library-source.c:1232
+#: ../sources/rb-library-source.c:1266
 msgid "Error transferring track"
 msgstr "Produciuse un erro ao transferir a pista"
 
@@ -4679,7 +4679,7 @@ msgstr "Escolla o lugar da fonoteca"
 msgid "Multiple locations set"
 msgstr "Establecéronse múltiples lugares"
 
-#: ../sources/rb-library-source.c:1023
+#: ../sources/rb-library-source.c:1047
 msgid "Example Path:"
 msgstr "Camiño de exemplo:"
 
@@ -5084,91 +5084,76 @@ msgid "%s (%d)"
 msgstr "%s (%d)"
 
 #: ../widgets/rb-query-creator-properties.c:73
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Title"
 msgstr "Título"
 
 #: ../widgets/rb-query-creator-properties.c:74
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Artist"
 msgstr "Artista"
 
 #: ../widgets/rb-query-creator-properties.c:75
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Album"
 msgstr "Álbum"
 
 #: ../widgets/rb-query-creator-properties.c:76
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Genre"
 msgstr "Xénero"
 
 #: ../widgets/rb-query-creator-properties.c:77
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Year"
 msgstr "Ano"
 
 #: ../widgets/rb-query-creator-properties.c:78
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Rating"
 msgstr "Puntuación"
 
 #: ../widgets/rb-query-creator-properties.c:79
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Path"
 msgstr "Camiño"
 
 #: ../widgets/rb-query-creator-properties.c:81
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Play Count"
 msgstr "Número de reproducións"
 
 #: ../widgets/rb-query-creator-properties.c:82
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Track Number"
 msgstr "Número de pista"
 
 #: ../widgets/rb-query-creator-properties.c:83
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Disc Number"
 msgstr "Número de disco"
 
 #: ../widgets/rb-query-creator-properties.c:84
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Bitrate"
 msgstr "Taxa de bits"
 
 #: ../widgets/rb-query-creator-properties.c:86
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Duration"
 msgstr "Duración"
 
 #: ../widgets/rb-query-creator-properties.c:88
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Time of Last Play"
 msgstr "Tempo da última reprodución"
 
 #: ../widgets/rb-query-creator-properties.c:89
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Time Added to Library"
 msgstr "Tempo que leva engadido á fonoteca"
 
 #: ../widgets/rb-query-creator-properties.c:100
-#, fuzzy
 msgctxt "query-sort"
 msgid "Artist"
 msgstr "Artista"
@@ -5181,25 +5166,21 @@ msgid "_In reverse alphabetical order"
 msgstr "_En orde alfabética inversa"
 
 #: ../widgets/rb-query-creator-properties.c:101
-#, fuzzy
 msgctxt "query-sort"
 msgid "Album"
 msgstr "Álbum"
 
 #: ../widgets/rb-query-creator-properties.c:102
-#, fuzzy
 msgctxt "query-sort"
 msgid "Genre"
 msgstr "Xénero"
 
 #: ../widgets/rb-query-creator-properties.c:103
-#, fuzzy
 msgctxt "query-sort"
 msgid "Title"
 msgstr "Título"
 
 #: ../widgets/rb-query-creator-properties.c:104
-#, fuzzy
 msgctxt "query-sort"
 msgid "Rating"
 msgstr "Puntuación"
@@ -5209,7 +5190,6 @@ msgid "W_ith more highly rated tracks first"
 msgstr "_Coas pistas cunha puntuación máis alta primeiro"
 
 #: ../widgets/rb-query-creator-properties.c:105
-#, fuzzy
 msgctxt "query-sort"
 msgid "Play Count"
 msgstr "Número de reproducións"
@@ -5219,7 +5199,6 @@ msgid "W_ith more often played songs first"
 msgstr "C_oas cancións que se reproduciron máis frecuentemente primeiro"
 
 #: ../widgets/rb-query-creator-properties.c:106
-#, fuzzy
 msgctxt "query-sort"
 msgid "Year"
 msgstr "Ano"
@@ -5229,7 +5208,6 @@ msgid "W_ith newer tracks first"
 msgstr "Coa pistas máis _novas primeiro"
 
 #: ../widgets/rb-query-creator-properties.c:107
-#, fuzzy
 msgctxt "query-sort"
 msgid "Duration"
 msgstr "Duración"
@@ -5239,7 +5217,6 @@ msgid "W_ith longer tracks first"
 msgstr "Co_a pistas máis longas primeiro"
 
 #: ../widgets/rb-query-creator-properties.c:108
-#, fuzzy
 msgctxt "query-sort"
 msgid "Track Number"
 msgstr "Número de pista"
@@ -5249,7 +5226,6 @@ msgid "_In decreasing order"
 msgstr "_En orde decrecente"
 
 #: ../widgets/rb-query-creator-properties.c:109
-#, fuzzy
 msgctxt "query-sort"
 msgid "Last Played"
 msgstr "Última reprodución"
@@ -5259,7 +5235,6 @@ msgid "W_ith more recently played tracks first"
 msgstr "Coas _pistas que se reproduciron máis recentemente primeiro"
 
 #: ../widgets/rb-query-creator-properties.c:110
-#, fuzzy
 msgctxt "query-sort"
 msgid "Date Added"
 msgstr "Data en que se engadiu"
