@@ -7,6 +7,7 @@ iconsdir = $(themedir)/$(size)/$(context)
 icons_DATA = \
 	library-internet-radio.png	\
 	library-podcast.png		\
+	music-library.png		\
 	playlist.png			\
 	playlist-automatic.png		
 

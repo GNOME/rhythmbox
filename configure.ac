@@ -797,6 +797,7 @@ data/icons/hicolor/22x22/places/Makefile
 data/icons/hicolor/22x22/status/Makefile
 data/icons/hicolor/24x24/Makefile
 data/icons/hicolor/24x24/apps/Makefile
+data/icons/hicolor/24x24/places/Makefile
 data/icons/hicolor/32x32/Makefile
 data/icons/hicolor/32x32/actions/Makefile
 data/icons/hicolor/32x32/apps/Makefile
@@ -809,6 +810,7 @@ data/icons/hicolor/scalable/actions/Makefile
 data/icons/hicolor/scalable/apps/Makefile
 data/icons/hicolor/scalable/places/Makefile
 data/icons/hicolor/scalable/status/Makefile
+data/icons/src/Makefile
 sources/Makefile
 plugins/Makefile
 plugins/sample/Makefile
