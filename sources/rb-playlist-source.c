@@ -1056,6 +1056,7 @@ rb_playlist_source_mark_dirty (RBPlaylistSource *source)
 
 	klass = RB_PLAYLIST_SOURCE_GET_CLASS (source);
 	klass->impl_mark_dirty (source);
+	g_object_notify (G_OBJECT (source), "dirty");
 }
 
 /**
