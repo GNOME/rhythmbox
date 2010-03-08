@@ -112,7 +112,6 @@ struct _RBPlayerGstPrivate
 	gint volume_changed;
 	gint volume_applied;
 	float cur_volume;
-	float replaygain_scale;
 
 	guint tick_timeout_id;
 
@@ -535,7 +534,6 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 		mp->priv->cur_volume = 1.0;
 	if (mp->priv->cur_volume < 0.0)
 		mp->priv->cur_volume = 0;
-	mp->priv->replaygain_scale = 1.0f;
 
 	rb_debug ("pipeline construction complete");
 	return TRUE;
@@ -668,6 +666,8 @@ set_state_and_wait (RBPlayerGst *player, GstState target, GError **error)
 			bus_cb (bus, message, player);
 			break;
 		}
+
+		gst_message_unref (message);
 	}
 
 	if (result == FALSE && error != NULL && *error == NULL) {
@@ -728,8 +728,6 @@ impl_close (RBPlayer *player, const char *uri, GError **error)
 	g_free (mp->priv->prev_uri);
 	mp->priv->uri = NULL;
 	mp->priv->prev_uri = NULL;
-
-	mp->priv->replaygain_scale = 1.0f;
 
 	if (mp->priv->tick_timeout_id != 0) {
 		g_source_remove (mp->priv->tick_timeout_id);
@@ -886,9 +884,8 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 			}
 
 			if (mp->priv->volume_applied < mp->priv->volume_changed) {
-				float volume = mp->priv->cur_volume * mp->priv->replaygain_scale;
-				rb_debug ("applying initial volume: %f", volume);
-				set_playbin_volume (mp, volume);
+				rb_debug ("applying initial volume: %f", mp->priv->cur_volume);
+				set_playbin_volume (mp, mp->priv->cur_volume);
 			}
 
 			mp->priv->volume_applied = mp->priv->volume_changed;
@@ -931,50 +928,6 @@ impl_playing (RBPlayer *player)
 }
 
 static void
-impl_set_replaygain (RBPlayer *player,
-		     const char *uri,
-		     double track_gain,
-		     double track_peak,
-		     double album_gain,
-		     double album_peak)
-{
-	RBPlayerGst *mp = RB_PLAYER_GST (player);
-	double scale;
-	double gain = 0;
-	double peak = 0;
-
-	if (album_gain != 0)
-		gain = album_gain;
-	else
-		gain = track_gain;
-
-	if (gain == 0)
-		return;
-
-	scale = pow (10., gain / 20);
-
-	/* anti clip */
-	if (album_peak != 0)
-		peak = album_peak;
-	else
-		peak = track_peak;
-
-	if (peak != 0 && (scale * peak) > 1)
-		scale = 1.0 / peak;
-
-	/* For security */
-	if (scale > 15)
-		scale = 15;
-
-	rb_debug ("Scale : %f New volume : %f", scale, mp->priv->cur_volume * scale);
-	mp->priv->replaygain_scale = scale;
-
-	if (mp->priv->playbin != NULL) {
-		set_playbin_volume (mp, mp->priv->cur_volume * scale);
-	}
-}
-
-static void
 impl_set_volume (RBPlayer *player,
 		 float volume)
 {
@@ -983,7 +936,7 @@ impl_set_volume (RBPlayer *player,
 
 	mp->priv->volume_changed++;
 	if (mp->priv->volume_applied > 0) {
-		set_playbin_volume (mp, volume * mp->priv->replaygain_scale);
+		set_playbin_volume (mp, volume);
 		mp->priv->volume_applied = mp->priv->volume_changed;
 	} else {
 		/* volume will be applied in the first call to impl_play */
@@ -1256,7 +1209,6 @@ rb_player_init (RBPlayerIface *iface)
 	iface->playing = impl_playing;
 	iface->set_volume = impl_set_volume;
 	iface->get_volume = impl_get_volume;
-	iface->set_replaygain = impl_set_replaygain;
 	iface->seekable = impl_seekable;
 	iface->set_time = impl_set_time;
 	iface->get_time = impl_get_time;

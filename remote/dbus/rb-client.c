@@ -440,7 +440,6 @@ get_playing_song_info (DBusGProxy *shell_proxy, DBusGProxy *player_proxy, GError
 static void
 print_playing_song (DBusGProxy *shell_proxy, DBusGProxy *player_proxy, const char *format)
 {
-	gboolean errored;
 	GHashTable *properties;
 	guint elapsed = 0;
 	GError *error = NULL;
@@ -467,7 +466,6 @@ print_playing_song (DBusGProxy *shell_proxy, DBusGProxy *player_proxy, const cha
 static void
 print_playing_song_default (DBusGProxy *shell_proxy, DBusGProxy *player_proxy)
 {
-	gboolean errored;
 	GHashTable *properties;
 	char *string;
 	GError *error = NULL;

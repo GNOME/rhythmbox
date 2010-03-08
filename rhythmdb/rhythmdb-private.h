@@ -87,10 +87,6 @@ struct RhythmDBEntry_ {
 	gulong discnum;
 	gulong duration;
 	gulong bitrate;
-	double track_gain;
-	double track_peak;
-	double album_gain;
-	double album_peak;
 	GDate date;
 
 	/* filesystem */

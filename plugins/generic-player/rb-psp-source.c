@@ -76,7 +76,7 @@ rb_psp_source_init (RBPspSource *source)
 }
 
 RBRemovableMediaSource *
-rb_psp_source_new (RBShell *shell, GMount *mount, MPIDDevice *device_info)
+rb_psp_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBPspSource *source;
 	RhythmDBEntryType entry_type;
@@ -99,6 +99,7 @@ rb_psp_source_new (RBShell *shell, GMount *mount, MPIDDevice *device_info)
 	g_object_unref (volume);
 
 	source = RB_PSP_SOURCE (g_object_new (RB_TYPE_PSP_SOURCE,
+					  "plugin", plugin,
 					  "entry-type", entry_type,
 					  "ignore-entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,
 					  "error-entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,

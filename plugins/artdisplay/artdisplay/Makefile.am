@@ -6,7 +6,6 @@ plugin_PYTHON = 			\
 	PodcastCoverArtSearch.py	\
 	LocalCoverArtSearch.py		\
 	CoverArtDatabase.py		\
-	DiscogsCoverArtSearch.py	\
 	MusicBrainzCoverArtSearch.py	\
 	__init__.py
 

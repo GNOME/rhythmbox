@@ -4,6 +4,7 @@ headers
 #include "config.h"
 
 #define NO_IMPORT_PYGOBJECT
+#define NO_IMPORT_PYGTK
 #include <pygobject.h>
 #include <pygtk/pygtk.h>
 
@@ -28,6 +29,7 @@ headers
 #include "rb-property-view.h"
 #include "rb-removable-media-manager.h"
 #include "rb-removable-media-source.h"
+#include "rb-search-entry.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
 #include "rb-source.h"
@@ -1333,7 +1335,7 @@ _wrap_RBRemovableMediaSource__do_impl_get_mime_types(PyObject *cls, PyObject *ar
 %%
 override RBRemovableMediaSource__proxy_do_impl_get_mime_types
 static GList *
-_wrap_RBRemovableMediaSource__proxy_do_impl_get_mime_types (RBSource *self)
+_wrap_RBRemovableMediaSource__proxy_do_impl_get_mime_types (RBRemovableMediaSource *self)
 {
 	PyGILState_STATE __py_state;
 	PyObject *py_self;

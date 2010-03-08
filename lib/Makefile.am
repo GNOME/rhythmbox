@@ -38,7 +38,9 @@ librb_la_SOURCES =					\
 	rb-string-value-map.c				\
 	rb-string-value-map.h				\
 	rb-async-queue-watch.c				\
-	rb-async-queue-watch.h
+	rb-async-queue-watch.h				\
+	rb-text-helpers.c				\
+	rb-text-helpers.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

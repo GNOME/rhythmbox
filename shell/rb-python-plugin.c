@@ -35,6 +35,7 @@
 #include "rb-plugin.h"
 #include "rb-debug.h"
 
+#define NO_IMPORT_PYGOBJECT
 #include <pygobject.h>
 #include <string.h>
 

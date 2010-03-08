@@ -512,7 +512,8 @@ rb_play_order_query_model_changed (RBPlayOrder *porder)
 		g_object_get (porder->priv->source, "query-model", &new_model, NULL);
 
 	if (porder->priv->query_model == new_model) {
-		g_object_unref (new_model);
+		if (new_model != NULL)
+			g_object_unref (new_model);
 		return;
 	}
 

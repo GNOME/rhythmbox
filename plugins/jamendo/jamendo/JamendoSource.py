@@ -135,7 +135,7 @@ class JamendoSource(rb.BrowserSource):
 			self.__show_loading_screen (True)
 
 			# start our catalogue updates
-			self.__update_id = gobject.timeout_add(6 * 60 * 60 * 1000, self.__update_catalogue)
+			self.__update_id = gobject.timeout_add_seconds(6 * 60 * 60, self.__update_catalogue)
 			self.__update_catalogue()
 
 			sort_key = gconf.client_get_default().get_string(JamendoConfigureDialog.gconf_keys['sorting'])
@@ -307,8 +307,8 @@ class JamendoSource(rb.BrowserSource):
 			gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, emsg).run()
 			return
 
-		rb.show_uri(result)
-	
+		gtk.show_uri(self.props.shell.props.window.get_screen(), result, gtk.gdk.CURRENT_TIME)
+
 	# Donate to Artist
 	def launch_donate (self):
 		tracks = self.get_entry_view().get_selected_entries()
@@ -330,7 +330,7 @@ class JamendoSource(rb.BrowserSource):
 			emsg = _("Error looking up artist %s on jamendo.com") % (artist)
 			gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, emsg).run()
 			return
-		rb.show_uri(result + "donate/")
+		gtk.show_uri(self.props.shell.props.window.get_screen(), result + "donate/", gtk.gdk.CURRENT_TIME)
 
 	def playing_entry_changed (self, entry):
 		if not self.__db or not entry:

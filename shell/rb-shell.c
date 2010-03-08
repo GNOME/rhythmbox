@@ -2584,10 +2584,16 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 static void
 rb_shell_sync_statusbar_visibility (RBShell *shell)
 {
-	if (shell->priv->statusbar_hidden || shell->priv->window_small)
-		gtk_widget_hide (GTK_WIDGET (shell->priv->statusbar));
-	else
-		gtk_widget_show (GTK_WIDGET (shell->priv->statusbar));
+	gboolean visible;
+	GtkAction *action;
+
+	visible = !shell->priv->statusbar_hidden;
+
+	action = gtk_action_group_get_action (shell->priv->actiongroup, "ViewStatusbar");
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), visible);
+
+	gtk_widget_set_visible (GTK_WIDGET (shell->priv->statusbar),
+				visible && !shell->priv->window_small);
 }
 
 static void

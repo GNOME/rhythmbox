@@ -3,17 +3,9 @@ NULL =
 plugindir = $(PLUGINDIR)/status-icon
 plugin_LTLIBRARIES = libstatus-icon.la
 
-if USE_GTK_STATUS_ICON
 ICON_IMPL_FILES = \
 	rb-tray-icon-gtk.h 				\
 	rb-tray-icon-gtk.c
-else
-ICON_IMPL_FILES = \
-	eggtrayicon.c \
-	eggtrayicon.h \
-	rb-tray-icon.c \
-	rb-tray-icon.h
-endif
 
 libstatus_icon_la_SOURCES = \
 	rb-status-icon-plugin.h				\

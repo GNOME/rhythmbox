@@ -433,6 +433,235 @@ START_TEST (test_rhythmdb_property_model_query_chain)
 }
 END_TEST
 
+/* tests sort order of entries in a property model */
+START_TEST (test_rhythmdb_property_model_sorting)
+{
+	RhythmDBQueryModel *model;
+	RhythmDBPropertyModel *propmodel;
+	RhythmDBEntry *a, *the_b, *c;
+	GtkTreeIter iter1, iter2;
+
+	start_test_case ();
+
+	/* setup */
+	model = rhythmdb_query_model_new_empty (db);
+	propmodel = rhythmdb_property_model_new (db, RHYTHMDB_PROP_ARTIST);
+	g_object_set (propmodel, "query-model", model, NULL);
+
+	/* create test entries */
+	set_waiting_signal (G_OBJECT (db), "entry_added");
+	a = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///a.ogg");
+	set_entry_string (db, a, RHYTHMDB_PROP_ARTIST, "a");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	set_waiting_signal (G_OBJECT (db), "entry_added");
+	the_b = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///the-b.ogg");
+	set_entry_string (db, the_b, RHYTHMDB_PROP_ARTIST, "the b");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	set_waiting_signal (G_OBJECT (db), "entry_added");
+	c = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///c.ogg");
+	set_entry_string (db, c, RHYTHMDB_PROP_ARTIST, "c");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	/* add to model */
+	set_waiting_signal (G_OBJECT (propmodel), "row-inserted");
+	rhythmdb_query_model_add_entry (model, a, -1);
+	wait_for_signal ();
+	set_waiting_signal (G_OBJECT (propmodel), "row-inserted");
+	rhythmdb_query_model_add_entry (model, the_b, -1);
+	wait_for_signal ();
+	set_waiting_signal (G_OBJECT (propmodel), "row-inserted");
+	rhythmdb_query_model_add_entry (model, c, -1);
+	wait_for_signal ();
+
+	/* test a comes immediately before c */
+	rhythmdb_property_model_iter_from_string (propmodel, "a", &iter1);
+	rhythmdb_property_model_iter_from_string (propmodel, "c", &iter2);
+	fail_unless (iter1.user_data == g_sequence_iter_prev (iter2.user_data));
+
+	/* test c comes immediately before the_b */
+	rhythmdb_property_model_iter_from_string (propmodel, "c", &iter1);
+	rhythmdb_property_model_iter_from_string (propmodel, "the b", &iter2);
+	fail_unless (iter1.user_data == g_sequence_iter_prev (iter2.user_data));
+
+	end_step ();
+
+	/* change "the b" to sort under "b, the" */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
+	set_entry_string (db, the_b, RHYTHMDB_PROP_ARTIST_SORTNAME, "b, the");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	/* test a comes immediately before the_b */
+	rhythmdb_property_model_iter_from_string (propmodel, "a", &iter1);
+	rhythmdb_property_model_iter_from_string (propmodel, "the b", &iter2);
+	fail_unless (iter1.user_data == g_sequence_iter_prev (iter2.user_data));
+
+	/* test the_b comes immediately before c */
+	rhythmdb_property_model_iter_from_string (propmodel, "the b", &iter1);
+	rhythmdb_property_model_iter_from_string (propmodel, "c", &iter2);
+	fail_unless (iter1.user_data == g_sequence_iter_prev (iter2.user_data));
+
+	end_step();
+
+	/* change display name for b */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
+	set_entry_string (db, the_b, RHYTHMDB_PROP_ARTIST, "THE B");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	/* property model order shouldn't have changed */
+	rhythmdb_property_model_iter_from_string (propmodel, "a", &iter1);
+	rhythmdb_property_model_iter_from_string (propmodel, "THE B", &iter2);
+	fail_unless (iter1.user_data == g_sequence_iter_prev (iter2.user_data));
+
+	rhythmdb_property_model_iter_from_string (propmodel, "THE B", &iter1);
+	rhythmdb_property_model_iter_from_string (propmodel, "c", &iter2);
+	fail_unless (iter1.user_data == g_sequence_iter_prev (iter2.user_data));
+
+	end_step();
+
+	/* change sortname for b */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
+	set_entry_string (db, the_b, RHYTHMDB_PROP_ARTIST_SORTNAME, "B, THE");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	/* property model order shouldn't have changed */
+	rhythmdb_property_model_iter_from_string (propmodel, "a", &iter1);
+	rhythmdb_property_model_iter_from_string (propmodel, "THE B", &iter2);
+	fail_unless (iter1.user_data == g_sequence_iter_prev (iter2.user_data));
+
+	rhythmdb_property_model_iter_from_string (propmodel, "THE B", &iter1);
+	rhythmdb_property_model_iter_from_string (propmodel, "c", &iter2);
+	fail_unless (iter1.user_data == g_sequence_iter_prev (iter2.user_data));
+
+	end_step();
+
+	/* change sort order for b */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
+	set_entry_string (db, the_b, RHYTHMDB_PROP_ARTIST_SORTNAME, "zzz");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	/* property model order should have changed to match */
+	rhythmdb_property_model_iter_from_string (propmodel, "a", &iter1);
+	rhythmdb_property_model_iter_from_string (propmodel, "c", &iter2);
+	fail_unless (iter1.user_data == g_sequence_iter_prev (iter2.user_data));
+
+	rhythmdb_property_model_iter_from_string (propmodel, "c", &iter1);
+	rhythmdb_property_model_iter_from_string (propmodel, "THE B", &iter2);
+	fail_unless (iter1.user_data == g_sequence_iter_prev (iter2.user_data));
+
+	end_step();
+
+	/* remove sort order for b */
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
+	set_entry_string (db, the_b, RHYTHMDB_PROP_ARTIST_SORTNAME, "");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	/* property model order should have changed to match */
+	rhythmdb_property_model_iter_from_string (propmodel, "a", &iter1);
+	rhythmdb_property_model_iter_from_string (propmodel, "c", &iter2);
+	fail_unless (iter1.user_data == g_sequence_iter_prev (iter2.user_data));
+
+	rhythmdb_property_model_iter_from_string (propmodel, "c", &iter1);
+	rhythmdb_property_model_iter_from_string (propmodel, "THE B", &iter2);
+	fail_unless (iter1.user_data == g_sequence_iter_prev (iter2.user_data));
+
+	end_step();
+
+
+	rhythmdb_entry_delete (db, a);
+	rhythmdb_entry_delete (db, the_b);
+	rhythmdb_entry_delete (db, c);
+	rhythmdb_commit (db);
+
+	end_test_case ();
+
+	g_object_unref (model);
+	g_object_unref (propmodel);
+}
+END_TEST
+
+/* tests handling of empty strings */
+START_TEST (test_rhythmdb_property_model_empty_strings)
+{
+	RhythmDBQueryModel *model;
+	RhythmDBPropertyModel *propmodel;
+	RhythmDBEntry *a, *b;
+
+	start_test_case ();
+
+	/* setup */
+	model = rhythmdb_query_model_new_empty (db);
+	propmodel = rhythmdb_property_model_new (db, RHYTHMDB_PROP_GENRE);
+	g_object_set (propmodel, "query-model", model, NULL);
+
+	/* create test entries */
+	set_waiting_signal (G_OBJECT (db), "entry_added");
+	a = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///a.ogg");
+	set_entry_string (db, a, RHYTHMDB_PROP_GENRE, "unknown");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	set_waiting_signal (G_OBJECT (db), "entry_added");
+	b = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///b.ogg");
+	set_entry_string (db, b, RHYTHMDB_PROP_GENRE, "something");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	end_step ();
+
+	/* add to model */
+	set_waiting_signal (G_OBJECT (propmodel), "row-inserted");
+	rhythmdb_query_model_add_entry (model, a, -1);
+	wait_for_signal ();
+
+	set_waiting_signal (G_OBJECT (propmodel), "row-inserted");
+	rhythmdb_query_model_add_entry (model, b, -1);
+	wait_for_signal ();
+
+	end_step ();
+
+	/* set to empty string */
+	set_waiting_signal (G_OBJECT (propmodel), "row-inserted");
+	set_entry_string (db, a, RHYTHMDB_PROP_GENRE, "");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	end_step ();
+
+	/* set to non-empty string */
+	set_waiting_signal (G_OBJECT (propmodel), "row-inserted");
+	set_entry_string (db, a, RHYTHMDB_PROP_GENRE, "junk");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	end_step ();
+
+	/* set to empty string again */
+	set_waiting_signal (G_OBJECT (propmodel), "row-inserted");
+	set_entry_string (db, a, RHYTHMDB_PROP_GENRE, "");
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	end_step ();
+
+	rhythmdb_entry_delete (db, a);
+	rhythmdb_entry_delete (db, b);
+	rhythmdb_commit (db);
+
+	end_test_case ();
+	g_object_unref (model);
+	g_object_unref (propmodel);
+}
+END_TEST
 
 static Suite *
 rhythmdb_property_model_suite (void)
@@ -450,9 +679,11 @@ rhythmdb_property_model_suite (void)
 	tcase_add_test (tc_chain, test_rhythmdb_property_model_static);
 	tcase_add_test (tc_chain, test_rhythmdb_property_model_query);
 	tcase_add_test (tc_chain, test_rhythmdb_property_model_query_chain);
+	tcase_add_test (tc_chain, test_rhythmdb_property_model_sorting);
 
 	/* tests for breakable bug fixes */
 /*	tcase_add_test (tc_bugs, test_hidden_chain_filter);*/
+	tcase_add_test (tc_chain, test_rhythmdb_property_model_empty_strings);
 
 	return s;
 }

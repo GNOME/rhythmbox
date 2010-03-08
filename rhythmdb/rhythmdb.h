@@ -60,7 +60,7 @@ GType rhythmdb_entry_get_type (void);
 typedef void (*RhythmDBEntryActionFunc) (RhythmDBEntry *entry, gpointer data);
 typedef char* (*RhythmDBEntryStringFunc) (RhythmDBEntry *entry, gpointer data);
 typedef gboolean (*RhythmDBEntryCanSyncFunc) (RhythmDB *db, RhythmDBEntry *entry, gpointer data);
-typedef void (*RhythmDBEntrySyncFunc) (RhythmDB *db, RhythmDBEntry *entry, GError **error, gpointer data);
+typedef void (*RhythmDBEntrySyncFunc) (RhythmDB *db, RhythmDBEntry *entry, GSList *changes, GError **error, gpointer data);
 
 GType rhythmdb_entry_category_get_type (void);
 #define RHYTHMDB_TYPE_ENTRY_CATEGORY (rhythmdb_entry_category_get_type ())
@@ -170,10 +170,10 @@ typedef enum
 	RHYTHMDB_PROP_LAST_PLAYED,
 	RHYTHMDB_PROP_BITRATE,
 	RHYTHMDB_PROP_DATE,
-	RHYTHMDB_PROP_TRACK_GAIN,
-	RHYTHMDB_PROP_TRACK_PEAK,
-	RHYTHMDB_PROP_ALBUM_GAIN,
-	RHYTHMDB_PROP_ALBUM_PEAK,
+	RHYTHMDB_PROP_TRACK_GAIN,			/* obsolete */
+	RHYTHMDB_PROP_TRACK_PEAK,			/* obsolete */
+	RHYTHMDB_PROP_ALBUM_GAIN,			/* obsolete */
+	RHYTHMDB_PROP_ALBUM_PEAK,			/* obsolete */
 	RHYTHMDB_PROP_MIMETYPE,
 	RHYTHMDB_PROP_TITLE_SORT_KEY,
 	RHYTHMDB_PROP_GENRE_SORT_KEY,
@@ -210,6 +210,11 @@ typedef enum
 	RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID,
 	RHYTHMDB_PROP_ARTIST_SORTNAME,
 	RHYTHMDB_PROP_ALBUM_SORTNAME,
+
+	RHYTHMDB_PROP_ARTIST_SORTNAME_SORT_KEY,
+	RHYTHMDB_PROP_ARTIST_SORTNAME_FOLDED,
+	RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY,
+	RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED,
 
 	RHYTHMDB_NUM_PROPERTIES
 } RhythmDBPropType;

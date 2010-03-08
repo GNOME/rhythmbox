@@ -36,7 +36,6 @@ IGNORE_HFILES= \
 	rb-cut-and-paste-code.h \
 	rb-marshal.h \
 	rhythmdb-private.h \
-	sexy-icon-entry.h \
 	\
 	rb-shell-glue.h \
 	rb-shell-binding.h \

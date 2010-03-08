@@ -46,15 +46,6 @@ file11=http://wknc.sma.ncsu.edu:8000/wknchq.ogg.m3u
 title11=WKNC 88.1 FM (NC State) (High Quality)
 genre11=Music
 
-# http://www.cbc.ca/listen/ogg.html
-file12=http://www.cbc.ca/livemedia/cbcr1-toronto.m3u
-title12=CBC Radio One (Canada)
-genre12=General
-
-file13=http://www.cbc.ca/livemedia/cbcr2-toronto.m3u
-title13=CBC Radio Two (Canada)
-genre13=General
-
 # http://www.nrk.no/lyd/
 file14=http://media.hiof.no/streams/m3u/nrk-p1-172.ogg.m3u
 title14=NRK P1 (Norway)

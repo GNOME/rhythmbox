@@ -348,6 +348,7 @@ rhythmdb_directory_change_cb (GFileMonitor *monitor,
 		break;
 	case G_FILE_MONITOR_EVENT_PRE_UNMOUNT:
 	case G_FILE_MONITOR_EVENT_UNMOUNTED:
+	default:
 		break;
 	}
 
@@ -378,6 +379,7 @@ rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 	}
 
 	actually_add_monitor (db, directory, error);
+	g_object_unref (directory);
 }
 
 typedef struct

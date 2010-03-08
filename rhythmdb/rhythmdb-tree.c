@@ -639,6 +639,13 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 				set = TRUE;
 			}
 			break;
+			/* drop replaygain properties */
+		case RHYTHMDB_PROP_TRACK_GAIN:
+		case RHYTHMDB_PROP_TRACK_PEAK:
+		case RHYTHMDB_PROP_ALBUM_GAIN:
+		case RHYTHMDB_PROP_ALBUM_PEAK:
+			skip = TRUE;
+			break;
 		default:
 			break;
 		}
@@ -836,6 +843,16 @@ save_entry_string (struct RhythmDBTreeSaveContext *ctx,
 }
 
 static void
+save_entry_string_if_set (struct RhythmDBTreeSaveContext *ctx,
+			  const xmlChar *elt_name,
+			  const char *str)
+{
+	if (str == NULL || str[0] == '\0')
+		return;
+	save_entry_string (ctx, elt_name, str);
+}
+
+static void
 save_entry_int (struct RhythmDBTreeSaveContext *ctx,
 		const xmlChar *elt_name,
 		int num)
@@ -959,22 +976,22 @@ save_entry (RhythmDBTree *db,
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->genre));
 			break;
 		case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
-			save_entry_string(ctx, elt_name, rb_refstring_get (entry->musicbrainz_trackid));
+			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->musicbrainz_trackid));
 			break;
 		case RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID:
-			save_entry_string(ctx, elt_name, rb_refstring_get (entry->musicbrainz_artistid));
+			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->musicbrainz_artistid));
 			break;
 		case RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID:
-			save_entry_string(ctx, elt_name, rb_refstring_get (entry->musicbrainz_albumid));
+			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->musicbrainz_albumid));
 			break;
 		case RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID:
-			save_entry_string(ctx, elt_name, rb_refstring_get (entry->musicbrainz_albumartistid));
+			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->musicbrainz_albumartistid));
 			break;
 		case RHYTHMDB_PROP_ARTIST_SORTNAME:
-			save_entry_string(ctx, elt_name, rb_refstring_get (entry->artist_sortname));
+			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->artist_sortname));
 			break;
 		case RHYTHMDB_PROP_ALBUM_SORTNAME:
-			save_entry_string(ctx, elt_name, rb_refstring_get (entry->album_sortname));
+			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->album_sortname));
 			break;
 		case RHYTHMDB_PROP_TRACK_NUMBER:
 			save_entry_ulong (ctx, elt_name, entry->tracknum, FALSE);
@@ -994,27 +1011,11 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_BITRATE:
 			save_entry_int(ctx, elt_name, entry->bitrate);
 			break;
-		case RHYTHMDB_PROP_TRACK_GAIN:
-			save_entry_double(ctx, elt_name, entry->track_gain);
-			break;
-		case RHYTHMDB_PROP_TRACK_PEAK:
-			save_entry_double(ctx, elt_name, entry->track_peak);
-			break;
-		case RHYTHMDB_PROP_ALBUM_GAIN:
-			save_entry_double(ctx, elt_name, entry->album_gain);
-			break;
-		case RHYTHMDB_PROP_ALBUM_PEAK:
-			save_entry_double(ctx, elt_name, entry->album_peak);
-			break;
 		case RHYTHMDB_PROP_LOCATION:
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->location));
 			break;
 		case RHYTHMDB_PROP_MOUNTPOINT:
-			/* Avoid crashes on exit when upgrading from 0.8
-			 * and no mountpoint is available from some entries */
-			if (entry->mountpoint) {
-				save_entry_string(ctx, elt_name, rb_refstring_get (entry->mountpoint));
-			}
+			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->mountpoint));
 			break;
 		case RHYTHMDB_PROP_FILE_SIZE:
 			save_entry_uint64(ctx, elt_name, entry->file_size);
@@ -1099,10 +1100,14 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_GENRE_SORT_KEY:
 		case RHYTHMDB_PROP_ARTIST_SORT_KEY:
 		case RHYTHMDB_PROP_ALBUM_SORT_KEY:
+		case RHYTHMDB_PROP_ARTIST_SORTNAME_SORT_KEY:
+		case RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY:
 		case RHYTHMDB_PROP_TITLE_FOLDED:
 		case RHYTHMDB_PROP_GENRE_FOLDED:
 		case RHYTHMDB_PROP_ARTIST_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_FOLDED:
+		case RHYTHMDB_PROP_ARTIST_SORTNAME_FOLDED:
+		case RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED:
 		case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		case RHYTHMDB_PROP_FIRST_SEEN_STR:
@@ -1110,6 +1115,11 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_SEARCH_MATCH:
 		case RHYTHMDB_PROP_YEAR:
 		case RHYTHMDB_NUM_PROPERTIES:
+		/* obsolete replaygain properties */
+		case RHYTHMDB_PROP_TRACK_GAIN:
+		case RHYTHMDB_PROP_TRACK_PEAK:
+		case RHYTHMDB_PROP_ALBUM_GAIN:
+		case RHYTHMDB_PROP_ALBUM_PEAK:
 			break;
 		}
 	}

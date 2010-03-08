@@ -95,6 +95,7 @@ struct media_type_filter {
 	{ "application/x-id3", FALSE },
 	{ "application/x-apetag", FALSE },
 	{ "application/x-3gp", FALSE },
+	{ "application/x-annodex", FALSE },
 	{ "application/", TRUE },
 };
 
@@ -133,9 +134,14 @@ typedef struct
 		RHYTHMDB_ACTION_QUIT,
 	} type;
 	RBRefString *uri;
- 	RhythmDBEntryType entry_type;
-	RhythmDBEntryType ignore_type;
-	RhythmDBEntryType error_type;
+	union {
+		struct {
+			RhythmDBEntryType entry_type;
+			RhythmDBEntryType ignore_type;
+			RhythmDBEntryType error_type;
+		} types;
+		GSList *changes;
+	} data;
 } RhythmDBAction;
 
 static void rhythmdb_dispose (GObject *object);
@@ -186,6 +192,7 @@ static void rhythmdb_add_to_stat_list (RhythmDB *db,
 				       RhythmDBEntryType type,
 				       RhythmDBEntryType ignore_type,
 				       RhythmDBEntryType error_type);
+static void free_entry_changes (GSList *entry_changes);
 
 enum
 {
@@ -550,18 +557,6 @@ metadata_field_from_prop (RhythmDBPropType prop,
 		return TRUE;
 	case RHYTHMDB_PROP_DATE:
 		*field = RB_METADATA_FIELD_DATE;
-		return TRUE;
-	case RHYTHMDB_PROP_TRACK_GAIN:
-		*field = RB_METADATA_FIELD_TRACK_GAIN;
-		return TRUE;
-	case RHYTHMDB_PROP_TRACK_PEAK:
-		*field = RB_METADATA_FIELD_TRACK_PEAK;
-		return TRUE;
-	case RHYTHMDB_PROP_ALBUM_GAIN:
-		*field = RB_METADATA_FIELD_ALBUM_GAIN;
-		return TRUE;
-	case RHYTHMDB_PROP_ALBUM_PEAK:
-		*field = RB_METADATA_FIELD_ALBUM_PEAK;
 		return TRUE;
 	case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
 		*field = RB_METADATA_FIELD_MUSICBRAINZ_TRACKID;
@@ -933,6 +928,9 @@ rhythmdb_action_free (RhythmDB *db,
 		      RhythmDBAction *action)
 {
 	rb_refstring_unref (action->uri);
+	if (action->type == RHYTHMDB_ACTION_SYNC) {
+		free_entry_changes (action->data.changes);
+	}
 	g_slice_free (RhythmDBAction, action);
 }
 
@@ -1264,6 +1262,27 @@ free_entry_changes (GSList *entry_changes)
 	g_slist_free (entry_changes);
 }
 
+static GSList *
+copy_entry_changes (GSList *entry_changes)
+{
+	GSList *r = NULL;
+	GSList *t;
+	for (t = entry_changes; t; t = t->next) {
+		RhythmDBEntryChange *change = t->data;
+		RhythmDBEntryChange *c = g_slice_new0 (RhythmDBEntryChange);
+
+		c->prop = change->prop;
+		g_value_init (&c->old, G_VALUE_TYPE (&change->old));
+		g_value_init (&c->new, G_VALUE_TYPE (&change->new));
+		g_value_copy (&change->old, &c->old);
+		g_value_copy (&change->new, &c->new);
+
+		r = g_slist_prepend (r, c);
+	}
+
+	return g_slist_reverse (r);
+}
+
 static gboolean
 rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 {
@@ -1430,6 +1449,7 @@ sync_entry_changed (RhythmDBEntry *entry,
 			action = g_slice_new0 (RhythmDBAction);
 			action->type = RHYTHMDB_ACTION_SYNC;
 			action->uri = rb_refstring_ref (entry->location);
+			action->data.changes = copy_entry_changes (changes);
 			g_async_queue_push (db->priv->action_queue, action);
 			break;
 		}
@@ -1807,24 +1827,24 @@ rhythmdb_entry_is_editable (RhythmDB *db,
 }
 
 static void
-set_metadata_string_default_unknown (RhythmDB *db,
-				     RBMetaData *metadata,
-				     RhythmDBEntry *entry,
-				     RBMetaDataField field,
-				     RhythmDBPropType prop)
+set_metadata_string_with_default (RhythmDB *db,
+				  RBMetaData *metadata,
+				  RhythmDBEntry *entry,
+				  RBMetaDataField field,
+				  RhythmDBPropType prop,
+				  const char *default_value)
 {
-	const char *unknown = _("Unknown");
 	GValue val = {0, };
 
 	if (!(rb_metadata_get (metadata,
 			       field,
 			       &val))) {
 		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_static_string (&val, unknown);
+		g_value_set_static_string (&val, default_value);
 	} else {
                 const gchar *str = g_value_get_string (&val);
                 if (str == NULL || str[0] == '\0')
-	        	g_value_set_static_string (&val, unknown);
+			g_value_set_static_string (&val, default_value);
         }
 	rhythmdb_entry_set_internal (db, entry, TRUE, prop, &val);
 	g_value_unset (&val);
@@ -1898,58 +1918,40 @@ set_props_from_metadata (RhythmDB *db,
 	}
 
 	/* musicbrainz trackid */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_MUSICBRAINZ_TRACKID,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_MUSICBRAINZ_TRACKID,
+					  RHYTHMDB_PROP_MUSICBRAINZ_TRACKID,
+					  "");
 
 	/* musicbrainz artistid */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID,
+					  RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID,
+					  "");
 
 	/* musicbrainz albumid */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID,
+					  RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID,
+					  "");
 
 	/* musicbrainz albumartistid */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID,
+					  RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID,
+					  "");
 
 	/* artist sortname */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_ARTIST_SORTNAME,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_ARTIST_SORTNAME, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_ARTIST_SORTNAME,
+					  RHYTHMDB_PROP_ARTIST_SORTNAME,
+					  "");
 
 	/* album sortname */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_ALBUM_SORTNAME,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_ALBUM_SORTNAME, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_ALBUM_SORTNAME,
+					  RHYTHMDB_PROP_ALBUM_SORTNAME,
+					  "");
 
 	/* filesize */
 	g_value_init (&val, G_TYPE_UINT64);
@@ -1973,54 +1975,21 @@ set_props_from_metadata (RhythmDB *db,
 	g_value_unset (&val);
 
 	/* genre */
-	set_metadata_string_default_unknown (db, metadata, entry,
-					     RB_METADATA_FIELD_GENRE,
-					     RHYTHMDB_PROP_GENRE);
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_GENRE,
+					  RHYTHMDB_PROP_GENRE,
+					  _("Unknown"));
 
 	/* artist */
-	set_metadata_string_default_unknown (db, metadata, entry,
-					     RB_METADATA_FIELD_ARTIST,
-					     RHYTHMDB_PROP_ARTIST);
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_ARTIST,
+					  RHYTHMDB_PROP_ARTIST,
+					  _("Unknown"));
 	/* album */
-	set_metadata_string_default_unknown (db, metadata, entry,
-					     RB_METADATA_FIELD_ALBUM,
-					     RHYTHMDB_PROP_ALBUM);
-
-	/* replaygain track gain */
-        if (rb_metadata_get (metadata,
-                             RB_METADATA_FIELD_TRACK_GAIN,
-                             &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_TRACK_GAIN, &val);
-		g_value_unset (&val);
-	}
-
-	/* replaygain track peak */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_TRACK_PEAK,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_TRACK_PEAK, &val);
-		g_value_unset (&val);
-	}
-
-	/* replaygain album gain */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_ALBUM_GAIN,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_ALBUM_GAIN, &val);
-		g_value_unset (&val);
-	}
-
-	/* replaygain album peak */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_ALBUM_PEAK,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_ALBUM_PEAK, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_ALBUM,
+					  RHYTHMDB_PROP_ALBUM,
+					  _("Unknown"));
 }
 
 static gboolean
@@ -2151,9 +2120,9 @@ rhythmdb_process_stat_event (RhythmDB *db,
 			action = g_slice_new0 (RhythmDBAction);
 			action->type = RHYTHMDB_ACTION_LOAD;
 			action->uri = rb_refstring_ref (event->real_uri);
-			action->entry_type = event->entry_type;
-			action->ignore_type = event->ignore_type;
-			action->error_type = event->error_type;
+			action->data.types.entry_type = event->entry_type;
+			action->data.types.ignore_type = event->ignore_type;
+			action->data.types.error_type = event->error_type;
 			rb_debug ("queuing a RHYTHMDB_ACTION_LOAD: %s", rb_refstring_get (action->uri));
 			g_async_queue_push (db->priv->action_queue, action);
 		}
@@ -2165,9 +2134,9 @@ rhythmdb_process_stat_event (RhythmDB *db,
 		action = g_slice_new0 (RhythmDBAction);
 		action->type = RHYTHMDB_ACTION_ENUM_DIR;
 		action->uri = rb_refstring_ref (event->real_uri);
-		action->entry_type = event->entry_type;
-		action->ignore_type = event->ignore_type;
-		action->error_type = event->error_type;
+		action->data.types.entry_type = event->entry_type;
+		action->data.types.ignore_type = event->ignore_type;
+		action->data.types.error_type = event->error_type;
 		rb_debug ("queuing a RHYTHMDB_ACTION_ENUM_DIR: %s", rb_refstring_get (action->uri));
 		g_async_queue_push (db->priv->action_queue, action);
 		break;
@@ -2458,9 +2427,9 @@ rhythmdb_missing_plugins_cb (gpointer duh, gboolean should_retry, RhythmDBEvent 
 		load_action = g_slice_new0 (RhythmDBAction);
 		load_action->type = RHYTHMDB_ACTION_LOAD;
 		load_action->uri = rb_refstring_ref (event->real_uri);
-		load_action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-		load_action->ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-		load_action->error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 		g_async_queue_push (event->db->priv->action_queue, load_action);
 	} else {
 		/* plugin installation failed or was cancelled, so add an import error for the file */
@@ -2561,9 +2530,9 @@ rhythmdb_process_file_created_or_modified (RhythmDB *db,
 	action = g_slice_new0 (RhythmDBAction);
 	action->type = RHYTHMDB_ACTION_LOAD;
 	action->uri = rb_refstring_ref (event->uri);
-	action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-	action->ignore_type = RHYTHMDB_ENTRY_TYPE_IGNORE;
-	action->error_type = RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR;
+	action->data.types.entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+	action->data.types.ignore_type = RHYTHMDB_ENTRY_TYPE_IGNORE;
+	action->data.types.error_type = RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR;
 	g_async_queue_push (db->priv->action_queue, action);
 }
 
@@ -2871,9 +2840,9 @@ rhythmdb_execute_enum_dir (RhythmDB *db,
 		result = g_slice_new0 (RhythmDBEvent);
 		result->db = db;
 		result->type = RHYTHMDB_EVENT_STAT;
-		result->entry_type = action->entry_type;
-		result->error_type = action->error_type;
-		result->ignore_type = action->ignore_type;
+		result->entry_type = action->data.types.entry_type;
+		result->error_type = action->data.types.error_type;
+		result->ignore_type = action->data.types.ignore_type;
 		result->real_uri = rb_refstring_new (child_uri);
 		result->file_info = file_info;
 		result->error = error;
@@ -2940,30 +2909,6 @@ rhythmdb_entry_get (RhythmDB *db,
 	}
 }
 
-static void
-entry_to_rb_metadata (RhythmDB *db,
-		      RhythmDBEntry *entry,
-		      RBMetaData *metadata)
-{
-	GValue val = {0, };
-	int i;
-
-	for (i = RHYTHMDB_PROP_TYPE; i != RHYTHMDB_NUM_PROPERTIES; i++) {
-		RBMetaDataField field;
-
-		if (metadata_field_from_prop (i, &field) == FALSE) {
-			continue;
-		}
-
-		g_value_init (&val, rhythmdb_property_type_map[i]);
-		rhythmdb_entry_get (db, entry, i, &val);
-		rb_metadata_set (metadata,
-				 field,
-				 &val);
-		g_value_unset (&val);
-	}
-}
-
 typedef struct
 {
 	RhythmDB *db;
@@ -2999,9 +2944,9 @@ action_thread_main (RhythmDB *db)
 				result = g_slice_new0 (RhythmDBEvent);
 				result->db = db;
 				result->type = RHYTHMDB_EVENT_STAT;
-				result->entry_type = action->entry_type;
-				result->error_type = action->error_type;
-				result->ignore_type = action->ignore_type;
+				result->entry_type = action->data.types.entry_type;
+				result->error_type = action->data.types.error_type;
+				result->ignore_type = action->data.types.ignore_type;
 
 				rb_debug ("executing RHYTHMDB_ACTION_STAT for \"%s\"", rb_refstring_get (action->uri));
 
@@ -3012,9 +2957,9 @@ action_thread_main (RhythmDB *db)
 				result = g_slice_new0 (RhythmDBEvent);
 				result->db = db;
 				result->type = RHYTHMDB_EVENT_METADATA_LOAD;
-				result->entry_type = action->entry_type;
-				result->error_type = action->error_type;
-				result->ignore_type = action->ignore_type;
+				result->entry_type = action->data.types.entry_type;
+				result->error_type = action->data.types.error_type;
+				result->ignore_type = action->data.types.ignore_type;
 
 				rb_debug ("executing RHYTHMDB_ACTION_LOAD for \"%s\"", rb_refstring_get (action->uri));
 
@@ -3042,7 +2987,7 @@ action_thread_main (RhythmDB *db)
 					break;
 
 				entry_type = rhythmdb_entry_get_entry_type (entry);
-				entry_type->sync_metadata (db, entry, &error, entry_type->sync_metadata_data);
+				entry_type->sync_metadata (db, entry, action->data.changes, &error, entry_type->sync_metadata_data);
 
 				if (error != NULL) {
 					RhythmDBSaveErrorData *data;
@@ -3168,9 +3113,9 @@ rhythmdb_add_uri_with_types (RhythmDB *db,
 		action = g_slice_new0 (RhythmDBAction);
 		action->type = RHYTHMDB_ACTION_STAT;
 		action->uri = rb_refstring_new (uri);
-		action->entry_type = type;
-		action->ignore_type = ignore_type;
-		action->error_type = error_type;
+		action->data.types.entry_type = type;
+		action->data.types.ignore_type = ignore_type;
+		action->data.types.error_type = error_type;
 
 		g_async_queue_push (db->priv->action_queue, action);
 	} else {
@@ -3547,16 +3492,16 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 			break;
 		}
 		case RHYTHMDB_PROP_TRACK_GAIN:
-			entry->track_gain = g_value_get_double (value);
+			g_warning ("RHYTHMDB_PROP_TRACK_GAIN no longer supported");
 			break;
 		case RHYTHMDB_PROP_TRACK_PEAK:
-			entry->track_peak = g_value_get_double (value);
+			g_warning ("RHYTHMDB_PROP_TRACK_PEAK no longer supported");
 			break;
 		case RHYTHMDB_PROP_ALBUM_GAIN:
-			entry->album_gain = g_value_get_double (value);
+			g_warning ("RHYTHMDB_PROP_ALBUM_GAIN no longer supported");
 			break;
 		case RHYTHMDB_PROP_ALBUM_PEAK:
-			entry->album_peak = g_value_get_double (value);
+			g_warning ("RHYTHMDB_PROP_ALBUM_PEAK no longer supported");
 			break;
 		case RHYTHMDB_PROP_LOCATION:
 			rb_refstring_unref (entry->location);
@@ -4320,11 +4265,15 @@ rhythmdb_prop_type_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_GENRE_SORT_KEY, "Genre sort key (gchararray) [genre-sort-key]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORT_KEY, "Artist sort key (gchararray) [artist-sort-key]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORT_KEY, "Album sort key (gchararray) [album-sort-key]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORTNAME_SORT_KEY, "Artist Sortname sort key (gchararray) [artist-sortname-sort-key]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY, "Album Sortname sort key (gchararray) [album-sortname-sort-key]"),
 
 			ENUM_ENTRY (RHYTHMDB_PROP_TITLE_FOLDED, "Title folded (gchararray) [title-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_GENRE_FOLDED, "Genre folded (gchararray) [genre-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_FOLDED, "Artist folded (gchararray) [artist-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_FOLDED, "Album folded (gchararray) [album-folded]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORTNAME_FOLDED, "Artist Sortname folded (gchararray) [artist-sortname-folded]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED, "Album Sortname folded (gchararray) [album-sortname-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED_STR, "Last Played (gchararray) [last-played-str]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAYBACK_ERROR, "Playback error string (gchararray) [playback-error]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_HIDDEN, "Hidden (gboolean) [hidden]"),
@@ -4489,6 +4438,17 @@ rhythmdb_entry_gather_metadata (RhythmDB *db,
 			continue;
 		}
 
+		/* skip deprecated properties */
+		switch (prop) {
+		case RHYTHMDB_PROP_TRACK_GAIN:
+		case RHYTHMDB_PROP_TRACK_PEAK:
+		case RHYTHMDB_PROP_ALBUM_GAIN:
+		case RHYTHMDB_PROP_ALBUM_PEAK:
+			continue;
+		default:
+			break;
+		}
+
 		g_value_init (&value, value_type);
 		rhythmdb_entry_get (db, entry, prop, &value);
 		name = (char *)rhythmdb_nice_elt_name_from_propid (db, prop);
@@ -4632,23 +4592,33 @@ rhythmdb_compute_status_normal (gint n_songs,
 static void
 default_sync_metadata (RhythmDB *db,
 		       RhythmDBEntry *entry,
+		       GSList *changes,
 		       GError **error,
 		       gpointer data)
 {
 	const char *uri;
 	GError *local_error = NULL;
+	GSList *t;
 
 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-	rb_metadata_load (db->priv->metadata,
-			  uri, &local_error);
-	if (local_error != NULL) {
-		g_propagate_error (error, local_error);
-		return;
+	rb_metadata_reset (db->priv->metadata);
+
+	for (t = changes; t; t = t->next) {
+		RBMetaDataField field;
+		GValue val = {0,};
+		RhythmDBEntryChange *change = (RhythmDBEntryChange *)t->data;
+
+		if (metadata_field_from_prop (change->prop, &field) == FALSE) {
+			continue;
+		}
+
+		g_value_init (&val, rhythmdb_property_type_map[change->prop]);
+		rhythmdb_entry_get (db, entry, change->prop, &val);
+		rb_metadata_set (db->priv->metadata, field, &val);
+		g_value_unset (&val);
 	}
 
-	entry_to_rb_metadata (db, entry, db->priv->metadata);
-
-	rb_metadata_save (db->priv->metadata, &local_error);
+	rb_metadata_save (db->priv->metadata, uri, &local_error);
 	if (local_error != NULL) {
 		RhythmDBAction *load_action;
 
@@ -4659,9 +4629,9 @@ default_sync_metadata (RhythmDB *db,
 		load_action = g_slice_new0 (RhythmDBAction);
 		load_action->type = RHYTHMDB_ACTION_LOAD;
 		load_action->uri = rb_refstring_ref (entry->location);
-		load_action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-		load_action->error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-		load_action->ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 		g_async_queue_push (db->priv->action_queue, load_action);
 
 		g_propagate_error (error, local_error);
@@ -5086,6 +5056,10 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get_sort_key (entry->artist);
 	case RHYTHMDB_PROP_GENRE_SORT_KEY:
 		return rb_refstring_get_sort_key (entry->genre);
+	case RHYTHMDB_PROP_ARTIST_SORTNAME_SORT_KEY:
+		return rb_refstring_get_sort_key (entry->artist_sortname);
+	case RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY:
+		return rb_refstring_get_sort_key (entry->album_sortname);
 	case RHYTHMDB_PROP_TITLE_FOLDED:
 		return rb_refstring_get_folded (entry->title);
 	case RHYTHMDB_PROP_ALBUM_FOLDED:
@@ -5094,6 +5068,10 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get_folded (entry->artist);
 	case RHYTHMDB_PROP_GENRE_FOLDED:
 		return rb_refstring_get_folded (entry->genre);
+	case RHYTHMDB_PROP_ARTIST_SORTNAME_FOLDED:
+		return rb_refstring_get_folded (entry->artist_sortname);
+	case RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED:
+		return rb_refstring_get_folded (entry->album_sortname);
 	case RHYTHMDB_PROP_LOCATION:
 		return rb_refstring_get (entry->location);
 	case RHYTHMDB_PROP_MOUNTPOINT:
@@ -5321,13 +5299,17 @@ rhythmdb_entry_get_double (RhythmDBEntry *entry,
 
 	switch (propid) {
 	case RHYTHMDB_PROP_TRACK_GAIN:
-		return entry->track_gain;
+		g_warning ("RHYTHMDB_PROP_TRACK_GAIN no longer supported");
+		return 0.0;
 	case RHYTHMDB_PROP_TRACK_PEAK:
-		return entry->track_peak;
+		g_warning ("RHYTHMDB_PROP_TRACK_PEAK no longer supported");
+		return 1.0;
 	case RHYTHMDB_PROP_ALBUM_GAIN:
-		return entry->album_gain;
+		g_warning ("RHYTHMDB_PROP_ALBUM_GAIN no longer supported");
+		return 0.0;
 	case RHYTHMDB_PROP_ALBUM_PEAK:
-		return entry->album_peak;
+		g_warning ("RHYTHMDB_PROP_ALBUM_PEAK no longer supported");
+		return 1.0;
 	case RHYTHMDB_PROP_RATING:
 		return entry->rating;
 	default:

@@ -172,6 +172,13 @@
   (gtype-id "RB_TYPE_METADATA")
 )
 
+(define-object SearchEntry
+  (in-module "RB")
+  (parent "GtkHBox")
+  (c-name "RBSearchEntry")
+  (gtype-id "RB_TYPE_SEARCH_ENTRY")
+)
+
 
 ;; Enumerations and flags ...
 
@@ -2449,19 +2456,6 @@
   (return-type "float")
 )
 
-(define-method set_replaygain
-  (of-object "RBPlayer")
-  (c-name "rb_player_set_replaygain")
-  (return-type "none")
-  (parameters
-    '("const-char*" "uri")
-    '("double" "track_gain")
-    '("double" "track_peak")
-    '("double" "album_gain")
-    '("double" "album_peak")
-  )
-)
-
 (define-method seekable
   (of-object "RBPlayer")
   (c-name "rb_player_seekable")
@@ -2614,6 +2608,25 @@
   )
 )
 
+(define-function sanitize_uri_for_filesystem
+  (in-module "rb")
+  (c-name "rb_sanitize_uri_for_filesystem")
+  (return-type "char*")
+  (parameters
+    '("const-char*" "uri")
+  )
+)
+
+(define-function uri_create_parent_dirs
+  (in-module "rb")
+  (c-name "rb_uri_create_parent_dirs")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "uri")
+    '("GError**" "error")
+  )
+)
+
 ;; From rb-source-search.h
 
 (define-function rb_source_search_get_type
@@ -2757,6 +2770,12 @@
   (return-type "char**")
 )
 
+(define-method reset
+  (of-object "RBMetaData")
+  (c-name "rb_metadata_reset")
+  (return-type "none")
+)
+
 (define-method load
   (of-object "RBMetaData")
   (c-name "rb_metadata_load")
@@ -2772,6 +2791,7 @@
   (c-name "rb_metadata_save")
   (return-type "none")
   (parameters
+    '("const-char*" "uri")
     '("GError**" "error")
   )
 )
@@ -2834,4 +2854,44 @@
     '("RBMetaDataField" "field")
     '("const-GValue*" "val")
   )
+)
+
+;; From rb-search-entry.h
+
+(define-function rb_search_entry_get_type
+  (c-name "rb_search_entry_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_search_entry_new
+  (c-name "rb_search_entry_new")
+  (is-constructor-of "RbSearchEntry")
+  (return-type "RBSearchEntry*")
+)
+
+(define-method clear
+  (of-object "RBSearchEntry")
+  (c-name "rb_search_entry_clear")
+  (return-type "none")
+)
+
+(define-method set_text
+  (of-object "RBSearchEntry")
+  (c-name "rb_search_entry_set_text")
+  (return-type "none")
+  (parameters
+    '("const-char*" "text")
+  )
+)
+
+(define-method searching
+  (of-object "RBSearchEntry")
+  (c-name "rb_search_entry_searching")
+  (return-type "gboolean")
+)
+
+(define-method grab_focus
+  (of-object "RBSearchEntry")
+  (c-name "rb_search_entry_grab_focus")
+  (return-type "none")
 )

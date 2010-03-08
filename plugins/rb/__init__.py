@@ -64,14 +64,6 @@ def append_plugin_source_path(theme, iconpath):
 		icondir = plugindir + iconpath
 		theme.append_search_path(icondir)
 
-def show_uri(uri):
-	# use gtk_show_uri if available, otherwise use gnome-vfs
-	if hasattr(gtk, 'show_uri'):
-		gtk.show_uri(gtk.gdk.Screen(), uri, 0)
-	else:
-		import gnomevfs
-		gnomevfs.url_show(uri)
-
 
 class _rbdebugfile:
 	def __init__(self, fn):

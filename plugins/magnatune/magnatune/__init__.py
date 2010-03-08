@@ -29,6 +29,7 @@ import rhythmdb, rb
 import gobject
 import gtk
 import gconf, gnome
+import gnomekeyring as keyring
 
 import urllib
 import zipfile
@@ -39,19 +40,12 @@ import string
 
 from MagnatuneSource import MagnatuneSource
 
-has_gnome_keyring = False
-#try:
-#	import gnomekeyring
-#	has_gnome_keyring = True
-#except:
-#	pass	
-
 popup_ui = """
 <ui>
   <popup name="MagnatuneSourceViewPopup">
     <menuitem name="AddToQueueLibraryPopup" action="AddToQueue"/>
     <menuitem name="MagnatunePurchaseAlbum" action="MagnatunePurchaseAlbum"/>
-    <menuitem name="MagnatunePurchaseCD" action="MagnatunePurchaseCD"/>
+    <menuitem name="MagnatuneDownloadAlbum" action="MagnatuneDownloadAlbum"/>
     <menuitem name="MagnatuneArtistInfo" action="MagnatuneArtistInfo"/>
     <menuitem name="MagnatuneCancelDownload" action="MagnatuneCancelDownload"/>
     <separator/>
@@ -64,8 +58,6 @@ popup_ui = """
 </ui>
 """
 
-keyring_attributes = {"name": "rb-magnatune-cc-data"}
-
 class Magnatune(rb.Plugin):
 	client = gconf.client_get_default()
 
@@ -74,21 +66,22 @@ class Magnatune(rb.Plugin):
 	gconf_keys = {
 		'format': "/apps/rhythmbox/plugins/magnatune/format",
 		'pay': "/apps/rhythmbox/plugins/magnatune/pay",
-		'ccauthtoken': "/apps/rhythmbox/plugins/magnatune/ccauthtoken"
+		'ccauthtoken': "/apps/rhythmbox/plugins/magnatune/ccauthtoken",
+		'continue': "/apps/rhythmbox/plugins/magnatune/continue",
+		'account_type': "/apps/rhythmbox/plugins/magnatune/account_type"
 	}
 
 
 	#
 	# Core methods
 	#
-	
+
 	def __init__(self):
 		rb.Plugin.__init__(self)
 
 	def activate(self, shell):
 		self.shell = shell # so the source can update the progress bar
 		self.db = shell.get_property("db")
-		self.keyring = None
 
 		self.entry_type = self.db.entry_register_type("MagnatuneEntryType")
 		# allow changes which don't do anything
@@ -101,29 +94,30 @@ class Magnatune(rb.Plugin):
 		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
 		icon = rb.try_load_icon(theme, "magnatune", width, 0)
 
-		group = rb.rb_source_group_get_by_name ("stores")
-		self.source = gobject.new (MagnatuneSource,
- 					   shell=shell,
- 					   entry_type=self.entry_type,
- 					   source_group=group,
-					   icon=icon,
- 					   plugin=self)
+		group = rb.rb_source_group_get_by_name("stores")
+		self.source = gobject.new(MagnatuneSource,
+					  shell=shell,
+					  entry_type=self.entry_type,
+					  source_group=group,
+					  icon=icon,
+					  plugin=self)
 
 		shell.register_entry_type_for_source(self.source, self.entry_type)
 		shell.append_source(self.source, None) # Add the source to the list
-		
+
 		manager = shell.get_player().get_property('ui-manager')
 		# Add the popup menu actions
+		self.action_group = gtk.ActionGroup('MagnatunePluginActions')
+
 		action = gtk.Action('MagnatunePurchaseAlbum', _('Purchase Album'),
 				_("Purchase this album from Magnatune"),
-				'gtk-save')
+				'gtk-add')
 		action.connect('activate', lambda a: self.shell.get_property("selected-source").purchase_album())
-		self.action_group = gtk.ActionGroup('MagnatunePluginActions')
 		self.action_group.add_action(action)
-		action = gtk.Action('MagnatunePurchaseCD', _('Purchase Physical CD'),
-				_("Purchase a physical CD from Magnatune"),
-				'gtk-cdrom')
-		action.connect('activate', lambda a: self.shell.get_property("selected-source").buy_cd())
+		action = gtk.Action('MagnatuneDownloadAlbum', _('Download Album'),
+				_("Download this album from Magnatune"),
+				'gtk-save')
+		action.connect('activate', lambda a: self.shell.get_property("selected-source").download_album())
 		self.action_group.add_action(action)
 		action = gtk.Action('MagnatuneArtistInfo', _('Artist Information'),
 				_("Get information about this artist"),
@@ -136,7 +130,7 @@ class Magnatune(rb.Plugin):
 		action.connect('activate', lambda a: self.shell.get_property("selected-source").cancel_downloads())
 		action.set_sensitive(False)
 		self.action_group.add_action(action)
-		
+
 		manager.insert_action_group(self.action_group, 0)
 		self.ui_id = manager.add_ui_from_string(popup_ui)
 
@@ -145,11 +139,11 @@ class Magnatune(rb.Plugin):
 
 	def deactivate(self, shell):
 		manager = shell.get_player().get_property('ui-manager')
-		manager.remove_ui (self.ui_id)
+		manager.remove_ui(self.ui_id)
 		manager.remove_action_group(self.action_group)
 		self.action_group = None
 
-		shell.get_player().disconnect (self.pec_id)
+		shell.get_player().disconnect(self.pec_id)
 
 		self.db.entry_delete_by_type(self.entry_type)
 		self.db.commit()
@@ -158,134 +152,134 @@ class Magnatune(rb.Plugin):
 		self.source.delete_thyself()
 		self.source = None
 		self.shell = None
-		self.keyring = None
 
 	def playing_entry_changed (self, sp, entry):
-		self.source.playing_entry_changed (entry)
+		self.source.playing_entry_changed(entry)
 
-	def get_keyring(self):
-		if self.keyring is None:
-			self.keyring = gnomekeyring.get_default_keyring_sync()
-		return self.keyring
-
-	def store_cc_details(self, *details):
-		if has_gnome_keyring:
-			print "storing CC details"
-			try:
-				id = gnomekeyring.item_create_sync(self.get_keyring(),
-						gnomekeyring.ITEM_GENERIC_SECRET,
-						"Magnatune credit card info", keyring_attributes,
-						string.join (details, '\n'), True)
-			except Exception, e:
-				print e
-
-	def clear_cc_details(self):
-		if has_gnome_keyring:
-			print "clearing CC details"
-			try:
-				ids = gnomekeyring.find_items_sync (gnomekeyring.ITEM_GENERIC_SECRET, keyring_attributes)
-				gnomekeyring.item_delete_sync (self.get_keyring(), id[0])
-			except Exception, e:
-				print e
-	
-	def get_cc_details(self):
-		if has_gnome_keyring:
-			print "getting CC details"
-			try:
-				ids = gnomekeyring.find_items_sync (gnomekeyring.ITEM_GENERIC_SECRET, keyring_attributes)
-				data =  gnomekeyring.item_get_info_sync(self.get_keyring(), ids[0]).get_secret()
-				return string.split(data, "\n")
-			except Exception, e:
-				print e
-		return ("", "", 0, "", "")
-	
 	def create_configure_dialog(self, dialog=None):
-		if dialog == None:
-			def fill_cc_details():
-				try:
-					(ccnumber, ccyear, ccmonth, name, email) = self.get_cc_details()
-					builder.get_object("cc_entry").set_text(ccnumber)
-					builder.get_object("yy_entry").set_text(ccyear)
-					builder.get_object("mm_entry").set_active(int(ccmonth)-1)
-					builder.get_object("name_entry").set_text(name)
-					builder.get_object("email_entry").set_text(email)
-					builder.get_object("remember_cc_details").set_active(True)
-				except Exception, e:
-					print e
+		# We use a dictionary so we can modify these values from within inner functions
+		keyring_data = {
+			'id': 0,
+			'item': None
+		}
 
-					builder.get_object("cc_entry").set_text("")
-					builder.get_object("yy_entry").set_text("")
-					builder.get_object("mm_entry").set_active(0)
-					builder.get_object("name_entry").set_text("")
-					builder.get_object("email_entry").set_text("")
-					builder.get_object("remember_cc_details").set_active(False)
-
-			def update_expired():
-				mm = builder.get_object("mm_entry").get_active() + 1
-				yy = 0
-				try:
-					yy = int(builder.get_object("yy_entry").get_text())
-				except Exception, e:
-					print e
-					builder.get_object("cc_expired_label").hide()
-					return
-
-				if yy < (datetime.date.today().year % 100):
-					builder.get_object("cc_expired_label").show()
-				elif (yy == (datetime.date.today().year % 100) and mm < datetime.date.today().month):
-					builder.get_object("cc_expired_label").show()
+		def got_items(result, items):
+			def created_item(result, id):
+				if result is None: # Item successfully created
+					keyring_data['id'] = id
+					keyring.item_get_info(None, id, got_item)
 				else:
-					builder.get_object("cc_expired_label").hide()
-			
-			def remember_checkbox_toggled (button):
-				print "remember CC details toggled " + str(button.get_active())
-				builder.get_object("cc_entry").set_sensitive(button.get_active())
-				builder.get_object("mm_entry").set_sensitive(button.get_active())
-				builder.get_object("yy_entry").set_sensitive(button.get_active())
-				builder.get_object("name_entry").set_sensitive(button.get_active())
-				builder.get_object("email_entry").set_sensitive(button.get_active())
-
-				if not button.get_active():
-					try:
-						self.clear_cc_details ()
-					except Exception, e:
-						print e
-#				fill_cc_details()
+					print "Couldn't create keyring item: " + str(result)
+					fill_account_details()
+					dialog.present()
+			def got_item(result, item):
+				if result is None: # Item retrieved successfully
+					keyring_data['item'] = item
+				else:
+					print "Couldn't retrieve keyring item: " + str(result)
+				fill_account_details()
+				dialog.present()
 
 
-			# shit
+			if result is None and len(items) != 0: # Got list of search results
+				keyring_data['id'] = items[0].item_id
+				keyring.item_get_info(None, keyring_data['id'], got_item)
+			elif result == keyring.NoMatchError or len(items) == 0: # No items were found, so we'll create one
+				keyring.item_create(None,
+				                    keyring.ITEM_GENERIC_SECRET,
+				                    "Rhythmbox: Magnatune account information",
+				                    {'rhythmbox-plugin': 'magnatune'},
+				                    "", # Empty secret for now
+				                    True,
+				                    created_item)
+			else: # Some other error occurred
+				print "Couldn't access keyring: " + str(result)
+				fill_account_details()
+				dialog.present()
+
+
+		if dialog == None:
+			def fill_account_details():
+				account_type = self.client.get_string(self.gconf_keys['account_type'])
+				builder.get_object("no_account_radio").set_active(account_type == "none")
+				builder.get_object("stream_account_radio").set_active(account_type == "stream")
+				builder.get_object("download_account_radio").set_active(account_type == "download")
+
+				username = ""
+				password = ""
+				try:
+					if keyring_data['item']:
+						username, password = keyring_data['item'].get_secret().split('\n')
+				except ValueError: # Couldn't parse the secret, probably because it's empty
+					pass
+				builder.get_object("username_entry").set_text(username)
+				builder.get_object("password_entry").set_text(password)
+
+				has_account = account_type != "none"
+				builder.get_object("username_entry").set_sensitive(has_account)
+				builder.get_object("password_entry").set_sensitive(has_account)
+				builder.get_object("username_label").set_sensitive(has_account)
+				builder.get_object("password_label").set_sensitive(has_account)
+
+				builder.get_object("account_changed_label").hide()
+
+			def account_type_toggled (button):
+				print "account type radiobutton toggled: " + button.props.name
+				account_type = {"no_account_radio": "none", "stream_account_radio": "stream", "download_account_radio": "download"}
+				if button.get_active():
+					self.client.set_string(self.gconf_keys['account_type'], account_type[button.props.name])
+					if account_type[button.props.name] == 'none':
+						builder.get_object("username_label").set_sensitive(False)
+						builder.get_object("username_entry").set_sensitive(False)
+						builder.get_object("password_label").set_sensitive(False)
+						builder.get_object("password_entry").set_sensitive(False)
+					else:
+						builder.get_object("username_label").set_sensitive(True)
+						builder.get_object("username_entry").set_sensitive(True)
+						builder.get_object("password_label").set_sensitive(True)
+						builder.get_object("password_entry").set_sensitive(True)
+					builder.get_object("account_changed_label").show()
+
+			def account_details_changed(entry):
+				username = builder.get_object("username_entry").get_text()
+				password = builder.get_object("password_entry").get_text()
+				if keyring_data['item']:
+					keyring_data['item'].set_secret('\n'.join((username, password)))
+
+				builder.get_object("account_changed_label").show()
+
+			def close_button_pressed(x, y):
+				try:
+					if keyring_data['id'] and keyring_data['item']:
+						# The async version is not in the python bindings, grr...
+						keyring.item_set_info_sync(None, keyring_data['id'], keyring_data['item'])
+					else:
+						rb.error_dialog(title = _("Couldn't store account information"),
+						                message = _("There was a problem accessing the keyring. Check the debug output for more information."))
+				except Exception, e:
+					rb.error_dialog(title = _("Couldn't store account information"),
+					                message = str(e))
+				dialog.hide()
+
+
 			self.configure_callback_dic = {
-#				"rb_magnatune_yy_entry_changed_cb" : lambda w: update_expired(),
-#				"rb_magnatune_mm_entry_changed_cb" : lambda w: update_expired(),
-#				"rb_magnatune_name_entry_changed_cb" : lambda w: None,
-#				"rb_magnatune_cc_entry_changed_cb" : lambda w: None,
-#				"rb_magnatune_email_entry_changed_cb" : lambda w: None,
-				"rb_magnatune_pay_combobox_changed_cb" : lambda w: self.client.set_int(self.gconf_keys['pay'], w.get_active() + 5),
 				"rb_magnatune_audio_combobox_changed_cb" : lambda w: self.client.set_string(self.gconf_keys['format'], self.format_list[w.get_active()]),
-				"rb_magnatune_remember_cc_details_toggled_cb" : remember_checkbox_toggled
+
+				"rb_magnatune_radio_account_toggled_cb" : account_type_toggled,
+				"rb_magnatune_username_changed_cb" : account_details_changed,
+				"rb_magnatune_password_changed_cb" : account_details_changed
 			}
 
 			builder = gtk.Builder()
 			builder.add_from_file(self.find_file("magnatune-prefs.ui"))
-			# gladexml.signal_autoconnect(self.configure_callback_dic)
 
 			# FIXME this bit should be in builder too  (what?)
 			dialog = builder.get_object('preferences_dialog')
-			def dialog_response (dialog, response):
-				if builder.get_object("remember_cc_details").get_active():
-					ccnumber = builder.get_object("cc_entry").get_text()
-					ccyear = builder.get_object("yy_entry").get_text()
-					ccmonth = str(builder.get_object("mm_entry").get_active() + 1)
-					name = builder.get_object("name_entry").get_text()
-					email = builder.get_object("email_entry").get_text()
-					self.store_cc_details(ccnumber, ccyear, ccmonth, name, email)
-				dialog.hide()
-			dialog.connect("response", dialog_response)
-			
-			builder.get_object("cc_details_box").props.visible = has_gnome_keyring
-			builder.get_object("pay_combobox").set_active(self.client.get_int(self.gconf_keys['pay']) - 5)
-			builder.get_object("audio_combobox").set_active(self.format_list.index(self.client.get_string(self.gconf_keys['format'])))
-			fill_cc_details()
 
-		dialog.present()
+			builder.get_object("audio_combobox").set_active(self.format_list.index(self.client.get_string(self.gconf_keys['format'])))
+
+			builder.connect_signals(self.configure_callback_dic)
+			dialog.connect("response", close_button_pressed)
+
+		keyring.find_items(keyring.ITEM_GENERIC_SECRET, {'rhythmbox-plugin': 'magnatune'}, got_items)
 		return dialog

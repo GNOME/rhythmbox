@@ -31,6 +31,7 @@
 #include "mediaplayerid.h"
 
 #include "rb-shell.h"
+#include "rb-plugin.h"
 #include "rb-generic-player-source.h"
 #include "rhythmdb.h"
 
@@ -53,7 +54,10 @@ typedef struct
 	RBGenericPlayerSourceClass parent;
 } RBPspSourceClass;
 
-RBRemovableMediaSource *rb_psp_source_new		(RBShell *shell, GMount *mount, MPIDDevice *device_info);
+RBRemovableMediaSource *rb_psp_source_new		(RBPlugin *plugin,
+							 RBShell *shell,
+							 GMount *mount,
+							 MPIDDevice *device_info);
 GType			rb_psp_source_get_type		(void);
 GType			rb_psp_source_register_type	(GTypeModule *module);
 

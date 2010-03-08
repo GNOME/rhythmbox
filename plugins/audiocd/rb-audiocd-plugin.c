@@ -253,7 +253,7 @@ create_source_cb (RBRemovableMediaManager *rmm,
 
 		volume = g_mount_get_volume (mount);
 		if (volume != NULL) {
-			source = RB_SOURCE (rb_audiocd_source_new (RB_PLUGIN (plugin), plugin->shell, volume));
+			source = rb_audiocd_source_new (RB_PLUGIN (plugin), plugin->shell, volume);
 			g_object_unref (volume);
 		}
 	}
@@ -263,6 +263,24 @@ create_source_cb (RBRemovableMediaManager *rmm,
 		g_signal_connect_object (G_OBJECT (source),
 					 "deleted", G_CALLBACK (rb_audiocd_plugin_source_deleted),
 					 plugin, 0);
+
+		if (plugin->ui_merge_id == 0) {
+			char *filename;
+			GtkUIManager *uimanager;
+
+			g_object_get (plugin->shell, "ui-manager", &uimanager, NULL);
+
+			filename = rb_plugin_find_file (RB_PLUGIN (plugin), "audiocd-ui.xml");
+			if (filename != NULL) {
+				plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, filename, NULL);
+				gtk_ui_manager_ensure_update (uimanager);
+			} else {
+				g_warning ("Unable to find file: audiocd-ui.xml");
+			}
+
+			g_free (filename);
+			g_object_unref (uimanager);
+		}
 	}
 
 	return source;
@@ -277,8 +295,6 @@ impl_activate (RBPlugin *plugin,
 	gboolean                 scanned;
 	GObject                 *shell_player;
 	RBPlayer                *player_backend;
-	GtkUIManager            *uimanager;
-	char                    *filename;
 
 	pi->sources = g_hash_table_new_full (g_direct_hash,
 					     g_direct_equal,
@@ -286,22 +302,8 @@ impl_activate (RBPlugin *plugin,
 					     g_object_unref);
 
 	pi->shell = shell;
-	g_object_get (shell,
-		      "removable-media-manager", &rmm,
-		      "ui-manager", &uimanager,
-		      NULL);
+	g_object_get (shell, "removable-media-manager", &rmm, NULL);
 
-	filename = rb_plugin_find_file (plugin, "audiocd-ui.xml");
-	if (filename != NULL) {
-		pi->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
-								   filename,
-								   NULL);
-	} else {
-		g_warning ("Unable to find file: audiocd-ui.xml");
-	}
-
-	g_free (filename);
-	g_object_unref (uimanager);
 
 	/* watch for new removable media.  use connect_after so
 	 * plugins for more specific device types can get in first.

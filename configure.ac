@@ -1,6 +1,6 @@
 AC_PREREQ(2.53)
 AC_INIT([rhythmbox],
-	[0.12.6],
+	[0.12.7],
 	[https://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox])
 AC_CONFIG_MACRO_DIR(macros)
 AM_CONFIG_HEADER(config.h)
@@ -30,8 +30,8 @@ AC_CHECK_SIZEOF(long)
 
 DBUS_MIN_REQS=0.35
 GST_0_10_REQS=0.10.20
-GTK_REQS=2.14.0
-GLIB_REQS=2.16.0
+GTK_REQS=2.16.0
+GLIB_REQS=2.18.0
 GNOME_MEDIA_PROFILES_REQS=2.8
 LIBNOTIFY_REQS=0.4.1
 LIBGPOD_REQS=0.6
@@ -70,14 +70,6 @@ AM_CONDITIONAL(MKDTEMP_MISSING, test x$mkdtemp_missing = xtrue)
 PKG_PROG_PKG_CONFIG
 
 PKG_CHECK_MODULES(RB_CLIENT, glib-2.0 >= $GLIB_REQS gio-2.0 >= $GLIB_REQS)
-
-# use gtk status icon with gtk >= 2.16
-PKG_CHECK_EXISTS(gtk+-2.0 >= 2.16, [
-	use_gtk_status_icon=yes
-	AC_DEFINE(USE_GTK_STATUS_ICON, 1, [Use GtkStatusIcon])
-], [use_gtk_status_icon=no])
-AM_CONDITIONAL(USE_GTK_STATUS_ICON, test x"$use_gtk_status_icon" = xyes)
-
 
 dnl  note: gio-unix-2.0 is here for libmediaplayerid
 PKG_CHECK_MODULES(RHYTHMBOX,				\
@@ -359,6 +351,11 @@ if test x"$enable_musicbrainz" != "xno"; then
 	AC_SUBST(MUSICBRAINZ_LIBS)
 
 	if test x"$have_musicbrainz3" = xyes; then
+		oldlibs=$LIBS
+		LIBS="$LIBS $MUSICBRAINZ3_LIBS"
+		AC_CHECK_FUNCS(mb_extract_uuid)
+		LIBS="$oldlibs"
+
 		AC_DEFINE([HAVE_MUSICBRAINZ3], 1, [Whether libmusicbrainz3 is available])
 	fi
 	if test x"$have_musicbrainz" = xyes; then
@@ -522,22 +519,6 @@ AC_DEFINE_UNQUOTED(SHARE_UNINSTALLED_DIR,"`pwd`/$srcdir/data",[path to source da
 AC_DEFINE_UNQUOTED(SHARE_UNINSTALLED_BUILDDIR,"`pwd`/data",[path to built source data dir])
 AC_DEFINE_UNQUOTED(METADATA_UNINSTALLED_DIR,"`pwd`/metadata",[path to metadata build dir])
 AC_SUBST(ROOT_UNINSTALLED_DIR)
-
-dnl libsexy is only required with gtk < 2.16
-PKG_CHECK_EXISTS(gtk+-2.0 >= 2.16, [need_libsexy=no], [need_libsexy=yes])
-
-AC_ARG_WITH(internal-libsexy,
-            AC_HELP_STRING([--with-internal-libsexy],
-			   [Build using internal libsexy library]),,
-	      with_internal_libsexy=no)
-if test "x$need_libsexy" = "xyes" && test "x$with_internal_libsexy" = "xno"; then
-	PKG_CHECK_MODULES(LIBSEXY, libsexy >= 0.1.5,
-		          with_internal_libsexy=no,
-		          with_internal_libsexy=yes)
-fi
-AC_SUBST(LIBSEXY_CFLAGS)
-AC_SUBST(LIBSEXY_LIBS)
-AM_CONDITIONAL(WITH_INTERNAL_LIBSEXY, test "x$with_internal_libsexy" = "xyes")
 
 
 dnl warnings bits, copied from gnome-keyring configure.in
@@ -797,7 +778,6 @@ lib/libmediaplayerid/Makefile
 metadata/Makefile
 rhythmdb/Makefile
 widgets/Makefile
-widgets/libsexy/Makefile
 podcast/Makefile
 shell/Makefile
 data/Makefile
@@ -817,6 +797,7 @@ data/icons/hicolor/22x22/places/Makefile
 data/icons/hicolor/22x22/status/Makefile
 data/icons/hicolor/24x24/Makefile
 data/icons/hicolor/24x24/apps/Makefile
+data/icons/hicolor/24x24/places/Makefile
 data/icons/hicolor/32x32/Makefile
 data/icons/hicolor/32x32/actions/Makefile
 data/icons/hicolor/32x32/apps/Makefile
@@ -829,6 +810,7 @@ data/icons/hicolor/scalable/actions/Makefile
 data/icons/hicolor/scalable/apps/Makefile
 data/icons/hicolor/scalable/places/Makefile
 data/icons/hicolor/scalable/status/Makefile
+data/icons/src/Makefile
 sources/Makefile
 plugins/Makefile
 plugins/sample/Makefile
@@ -865,6 +847,8 @@ plugins/mmkeys/Makefile
 plugins/context/Makefile
 plugins/context/context/Makefile
 plugins/sendto/Makefile
+plugins/replaygain/Makefile
+plugins/replaygain/replaygain/Makefile
 bindings/Makefile
 bindings/python/Makefile
 bindings/vala/Makefile
@@ -954,13 +938,6 @@ if test x"$use_gnome_keyring" = xyes; then
 	AC_MSG_NOTICE([** gnome-keyring support enabled])
 else
 	AC_MSG_NOTICE([   gnome-keyring support disabled])
-fi
-if test x"$need_libsexy" = xyes; then
-	if test x"$with_internal_libsexy" = xyes; then
-		AC_MSG_NOTICE([   using internal libsexy])
-	else
-		AC_MSG_NOTICE([** using system-wide libsexy])
-	fi
 fi
 if test "x$enable_fm_radio" != xno; then
 	AC_MSG_NOTICE([** FM radio support enabled])

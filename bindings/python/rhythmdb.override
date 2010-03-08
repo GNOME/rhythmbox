@@ -3,6 +3,7 @@ headers
 #include "config.h"
 
 #define NO_IMPORT_PYGOBJECT
+#define NO_IMPORT_PYGTK
 #include <pygobject.h>
 #include <pygtk/pygtk.h>
 
@@ -628,8 +629,6 @@ static int
 _wrap_rhythmdb_entry_type__set_save_to_disk(PyGBoxed *self, PyObject *value)
 {
 	RhythmDBEntryType et;
-	gboolean save_to_disk;
-	int ret;
 
 	if (pyg_boxed_check(self, RHYTHMDB_TYPE_ENTRY_TYPE)) {
 		et = pyg_boxed_get(self, RhythmDBEntryType_);

@@ -87,7 +87,6 @@ static char **saveable_types = NULL;
 
 struct RBMetaDataPrivate
 {
-	char       *uri;
 	char       *mimetype;
 	char      **missing_plugins;
 	char      **plugin_descriptions;
@@ -124,7 +123,6 @@ rb_metadata_finalize (GObject *object)
 
 	md = RB_METADATA (object);
 
-	g_free (md->priv->uri);
 	g_free (md->priv->mimetype);
 	if (md->priv->metadata)
 		g_hash_table_destroy (md->priv->metadata);
@@ -407,6 +405,24 @@ read_error_from_message (RBMetaData *md, DBusMessageIter *iter, GError **error)
 }
 
 /**
+ * rb_metadata_reset:
+ * @md: a #RBMetaData
+ *
+ * Resets the state of the metadata interface.  Call this before
+ * setting tags to be written to a file.
+ */
+void
+rb_metadata_reset (RBMetaData *md)
+{
+	if (md->priv->metadata)
+		g_hash_table_destroy (md->priv->metadata);
+	md->priv->metadata = g_hash_table_new_full (g_direct_hash,
+						    g_direct_equal,
+						    NULL,
+						    (GDestroyNotify)rb_value_free);
+}
+
+/**
  * rb_metadata_load:
  * @md: a #RBMetaData
  * @uri: URI from which to load metadata
@@ -440,14 +456,10 @@ rb_metadata_load (RBMetaData *md,
 	g_free (md->priv->mimetype);
 	md->priv->mimetype = NULL;
 
-	g_free (md->priv->uri);
-	md->priv->uri = g_strdup (uri);
 	if (uri == NULL)
 		return;
 
-	if (md->priv->metadata)
-		g_hash_table_destroy (md->priv->metadata);
-	md->priv->metadata = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)rb_value_free);
+	rb_metadata_reset (md);
 
 	g_static_mutex_lock (&conn_mutex);
 
@@ -746,7 +758,7 @@ rb_metadata_get_saveable_types (RBMetaData *md)
  * target URI.
  */
 void
-rb_metadata_save (RBMetaData *md, GError **error)
+rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 {
 	GError *fake_error = NULL;
 	DBusMessage *message = NULL;
@@ -776,6 +788,14 @@ rb_metadata_save (RBMetaData *md, GError **error)
 
 	if (*error == NULL) {
 		dbus_message_iter_init_append (message, &iter);
+		if (!dbus_message_iter_append_basic (&iter, DBUS_TYPE_STRING, &uri)) {
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_INTERNAL,
+				     _("D-BUS communication error"));
+		}
+	}
+	if (*error == NULL) {
 		if (!rb_metadata_dbus_add_to_message (md, &iter)) {
 			g_set_error (error,
 				     RB_METADATA_ERROR,

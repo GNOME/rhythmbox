@@ -87,6 +87,7 @@ static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
 static void rb_generic_player_plugin_new_playlist (GtkAction *action, RBSource *source);
 static void rb_generic_player_plugin_delete_playlist (GtkAction *action, RBSource *source);
+static void rb_generic_player_plugin_properties (GtkAction *action, RBSource *source);
 
 RB_PLUGIN_REGISTER(RBGenericPlayerPlugin, rb_generic_player_plugin)
 
@@ -97,6 +98,9 @@ static GtkActionEntry rb_generic_player_plugin_actions[] = {
 	{ "GenericPlayerPlaylistDelete", GTK_STOCK_DELETE, N_("Delete Playlist"), NULL,
 	  N_("Delete this playlist"),
 	  G_CALLBACK (rb_generic_player_plugin_delete_playlist) },
+	{ "GenericPlayerSourceProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), NULL,
+	  N_("Display device properties"),
+	  G_CALLBACK (rb_generic_player_plugin_properties) }
 };
 
 static void
@@ -182,11 +186,11 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 	RBSource *source = NULL;
 
 	if (rb_psp_is_mount_player (mount, device_info))
-		source = RB_SOURCE (rb_psp_source_new (plugin->shell, mount, device_info));
+		source = RB_SOURCE (rb_psp_source_new (RB_PLUGIN (plugin), plugin->shell, mount, device_info));
 	if (source == NULL && rb_nokia770_is_mount_player (mount, device_info))
-		source = RB_SOURCE (rb_nokia770_source_new (plugin->shell, mount, device_info));
+		source = RB_SOURCE (rb_nokia770_source_new (RB_PLUGIN (plugin), plugin->shell, mount, device_info));
 	if (source == NULL && rb_generic_player_is_mount_player (mount, device_info))
-		source = RB_SOURCE (rb_generic_player_source_new (plugin->shell, mount, device_info));
+		source = RB_SOURCE (rb_generic_player_source_new (RB_PLUGIN (plugin), plugin->shell, mount, device_info));
 
 	if (plugin->actions == NULL) {
 		plugin->actions = gtk_action_group_new ("GenericPlayerActions");
@@ -282,3 +286,9 @@ impl_deactivate	(RBPlugin *bplugin,
 	g_object_unref (G_OBJECT (rmm));
 }
 
+static void
+rb_generic_player_plugin_properties (GtkAction *action, RBSource *source)
+{
+	g_return_if_fail (RB_IS_GENERIC_PLAYER_SOURCE (source));
+	rb_media_player_source_show_properties (RB_MEDIA_PLAYER_SOURCE (source));
+}

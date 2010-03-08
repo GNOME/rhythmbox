@@ -44,6 +44,7 @@
 #include "rb-util.h"
 #include "rhythmdb.h"
 #include "rb-player.h"
+#include "rb-text-helpers.h"
 
 /**
  * SECTION:rb-header
@@ -119,10 +120,10 @@ enum
 	PROP_SLIDER_DRAGGING
 };
 
-#define TITLE_MARKUP(xTITLE) g_markup_printf_escaped ("<big><b>%s</b></big>", xTITLE)
-#define ALBUM_MARKUP(xALBUM) g_markup_printf_escaped (" %s <i>%s</i>", _("from"), xALBUM)
-#define ARTIST_MARKUP(xARTIST) g_markup_printf_escaped (" %s <i>%s</i>", _("by"), xARTIST)
-#define STREAM_MARKUP(xSTREAM) g_markup_printf_escaped (" (%s)", xSTREAM)
+#define TITLE_FORMAT  "<big><b>%s</b></big>"
+#define ALBUM_FORMAT  "<i>%s</i>"
+#define ARTIST_FORMAT "<i>%s</i>"
+#define STREAM_FORMAT "(%s)"
 
 #define SCROLL_UP_SEEK_OFFSET	5
 #define SCROLL_DOWN_SEEK_OFFSET -5
@@ -396,14 +397,6 @@ rb_header_new (RBShellPlayer *shell_player, RhythmDB *db)
 }
 
 static void
-append_and_free (GString *str,
-		 char *text)
-{
-	g_string_append (str, text);
-	g_free (text);
-}
-
-static void
 get_extra_metadata (RhythmDB *db, RhythmDBEntry *entry, const char *field, char **value)
 {
 	GValue *v;
@@ -416,6 +409,61 @@ get_extra_metadata (RhythmDB *db, RhythmDBEntry *entry, const char *field, char 
 	} else {
 		*value = NULL;
 	}
+}
+
+/* unicode graphic characters, encoded in UTF-8 */
+static const char const *UNICODE_MIDDLE_DOT = "\xC2\xB7";
+
+static char *
+write_header (PangoDirection native_dir,
+	      const char *title,
+	      const char *artist,
+	      const char *album,
+	      const char *stream)
+{
+	const char *by;
+	const char *from;
+	PangoDirection tags_dir;
+	PangoDirection header_dir;
+
+	if (!title)
+		title  = "";
+	if (!artist)
+		artist = "";
+	if (!album )
+		album  = "";
+	if (!stream)
+		stream = "";
+
+	tags_dir = rb_text_common_direction (title, artist, album, stream, NULL);
+
+	/* if the tags have a defined direction that conflicts with the native
+	 * direction, show them in their natural direction with a neutral
+	 * separator
+	 */
+	if (!rb_text_direction_conflict (tags_dir, native_dir)) {
+		header_dir = native_dir;
+		by = _("by");
+		from = _("from");
+	} else {
+		header_dir = tags_dir;
+		by = UNICODE_MIDDLE_DOT;
+		from = UNICODE_MIDDLE_DOT;
+	}
+
+	if (!artist[0])
+		by = "";
+	if (!album[0])
+		from = "";
+
+	return rb_text_cat (header_dir,
+			 title,  TITLE_FORMAT,
+			 by,     "%s",
+			 artist, ARTIST_FORMAT,
+			 from,   "%s",
+			 album,  ALBUM_FORMAT,
+			 stream, STREAM_FORMAT,
+			 NULL);
 }
 
 /**
@@ -444,7 +492,7 @@ rb_header_sync (RBHeader *header)
 		char *streaming_title;
 		char *streaming_artist;
 		char *streaming_album;
-		GString *label_str;
+		PangoDirection widget_dir;
 
 		gboolean have_duration = (header->priv->duration > 0);
 
@@ -480,25 +528,11 @@ rb_header_sync (RBHeader *header)
 			album = streaming_album;
 		}
 
-		label_str = g_string_sized_new (100);
+		widget_dir = (gtk_widget_get_direction (GTK_WIDGET (header->priv->song)) == GTK_TEXT_DIR_LTR) ?
+			     PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
 
-		/* stick a right-to-left mark in the string for RTL display */
-		if (gtk_widget_get_direction (GTK_WIDGET (header->priv->song)) == GTK_TEXT_DIR_RTL) {
-			g_string_append (label_str, "\xE2\x80\x8F");
-		}
+		label_text = write_header (widget_dir, title, artist, album, stream_name);
 
-		append_and_free (label_str, TITLE_MARKUP (title));
-
-		if (artist != NULL && artist[0] != '\0')
-			append_and_free (label_str, ARTIST_MARKUP (artist));
-
-		if (album != NULL && album[0] != '\0')
-			append_and_free (label_str, ALBUM_MARKUP (album));
-
-		if (stream_name && stream_name[0] != '\0')
-			append_and_free (label_str, STREAM_MARKUP (stream_name));
-
-		label_text = g_string_free (label_str, FALSE);
 		gtk_label_set_markup (GTK_LABEL (header->priv->song), label_text);
 		g_free (label_text);
 
@@ -511,7 +545,7 @@ rb_header_sync (RBHeader *header)
 		g_free (streaming_title);
 	} else {
 		rb_debug ("not playing");
-		label_text = TITLE_MARKUP (_("Not Playing"));
+		label_text = g_markup_printf_escaped (TITLE_FORMAT, _("Not Playing"));
 		gtk_label_set_markup (GTK_LABEL (header->priv->song), label_text);
 		g_free (label_text);
 

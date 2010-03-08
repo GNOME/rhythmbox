@@ -141,7 +141,8 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="cc_details_box">
+              <object class="GtkVBox" id="account_details_box">
+                <property name="visible">True</property>
                 <property name="spacing">6</property>
                 <child>
                   <object class="GtkLabel" id="magnatune_label">
@@ -156,221 +157,104 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkHBox" id="hbox14">
+                  <object class="GtkVBox" id="vbox1">
                     <property name="visible">True</property>
+                    <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkLabel" id="label20">
+                      <object class="GtkRadioButton" id="no_account_radio">
+                        <property name="label" translatable="yes">I don't have a Magnatune account</property>
                         <property name="visible">True</property>
-                        <property name="xpad">8</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="rb_magnatune_radio_account_toggled_cb"/>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkFrame" id="frame1">
+                      <object class="GtkRadioButton" id="stream_account_radio">
+                        <property name="label" translatable="yes">I have a streaming account</property>
                         <property name="visible">True</property>
-                        <property name="label_xalign">0</property>
-                        <child>
-                          <object class="GtkAlignment" id="alignment1">
-                            <property name="visible">True</property>
-                            <property name="top_padding">6</property>
-                            <property name="bottom_padding">6</property>
-                            <property name="left_padding">12</property>
-                            <property name="right_padding">6</property>
-                            <child>
-                              <object class="GtkTable" id="table1">
-                                <property name="visible">True</property>
-                                <property name="n_rows">4</property>
-                                <property name="n_columns">2</property>
-                                <property name="column_spacing">12</property>
-                                <property name="row_spacing">6</property>
-                                <child>
-                                  <object class="GtkLabel" id="username_label">
-                                    <property name="visible">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">_Name:</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="mnemonic_widget">name_entry</property>
-                                  </object>
-                                  <packing>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkEntry" id="name_entry">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <signal name="changed" handler="rb_magnatune_name_entry_changed_cb"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkEntry" id="email_entry">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <signal name="changed" handler="rb_magnatune_email_entry_changed_cb"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="password_label">
-                                    <property name="visible">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">_Email:</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="mnemonic_widget">email_entry</property>
-                                  </object>
-                                  <packing>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="cc_label">
-                                    <property name="visible">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">C_redit Card:</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="mnemonic_widget">cc_entry</property>
-                                  </object>
-                                  <packing>
-                                    <property name="top_attach">2</property>
-                                    <property name="bottom_attach">3</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkEntry" id="cc_entry">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="invisible_char">&#x25CF;</property>
-                                    <signal name="changed" handler="rb_magnatune_cc_entry_changed_cb"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                    <property name="top_attach">2</property>
-                                    <property name="bottom_attach">3</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkHBox" id="hbox20">
-                                    <property name="visible">True</property>
-                                    <child>
-                                      <object class="GtkLabel" id="mm_label">
-                                        <property name="visible">True</property>
-                                        <property name="xpad">8</property>
-                                        <property name="label" translatable="yes">_Month:</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="mnemonic_widget">mm_entry</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">False</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkComboBox" id="mm_entry">
-                                        <property name="visible">True</property>
-                                        <property name="model">model1</property>
-                                        <signal name="changed" handler="rb_magnatune_mm_entry_changed_cb"/>
-                                        <child>
-                                          <object class="GtkCellRendererText" id="renderer1"/>
-                                          <attributes>
-                                            <attribute name="text">0</attribute>
-                                          </attributes>
-                                        </child>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="yy_label">
-                                        <property name="visible">True</property>
-                                        <property name="xpad">8</property>
-                                        <property name="label" translatable="yes">_Year:</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="mnemonic_widget">yy_entry</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">False</property>
-                                        <property name="position">2</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkEntry" id="yy_entry">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="max_length">2</property>
-                                        <property name="invisible_char">&#x25CF;</property>
-                                        <signal name="changed" handler="rb_magnatune_yy_entry_changed_cb"/>
-                                      </object>
-                                      <packing>
-                                        <property name="position">3</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                    <property name="top_attach">3</property>
-                                    <property name="bottom_attach">4</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="exp_label">
-                                    <property name="visible">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Expiry:</property>
-                                  </object>
-                                  <packing>
-                                    <property name="top_attach">3</property>
-                                    <property name="bottom_attach">4</property>
-                                    <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"></property>
-                                  </packing>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child type="label">
-                          <object class="GtkCheckButton" id="remember_cc_details">
-                            <property name="label" translatable="yes">Remember my credit card details</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="rb_magnatune_remember_cc_details_toggled_cb"/>
-                          </object>
-                        </child>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">no_account_radio</property>
+                        <signal name="toggled" handler="rb_magnatune_radio_account_toggled_cb"/>
                       </object>
                       <packing>
                         <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="download_account_radio">
+                        <property name="label" translatable="yes">I have a download account</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">no_account_radio</property>
+                        <signal name="toggled" handler="rb_magnatune_radio_account_toggled_cb"/>
+                      </object>
+                      <packing>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkTable" id="table1">
+                        <property name="visible">True</property>
+                        <property name="n_rows">2</property>
+                        <property name="n_columns">2</property>
+                        <child>
+                          <object class="GtkLabel" id="username_label">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Username:</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="password_label">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Password:</property>
+                          </object>
+                          <packing>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="username_entry">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
+                            <signal name="changed" handler="rb_magnatune_username_changed_cb"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="password_entry">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="visibility">False</property>
+                            <property name="invisible_char">&#x25CF;</property>
+                            <signal name="changed" handler="rb_magnatune_password_changed_cb"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                   </object>
@@ -383,48 +267,6 @@
                 <property name="expand">False</property>
                 <property name="fill">False</property>
                 <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkHBox" id="hbox22">
-                <property name="visible">True</property>
-                <child>
-                  <object class="GtkLabel" id="pay_label">
-                    <property name="visible">True</property>
-                    <property name="xpad">8</property>
-                    <property name="label" translatable="yes">Default _amount to pay:</property>
-                    <property name="use_underline">True</property>
-                    <property name="mnemonic_widget">pay_combobox</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkComboBox" id="pay_combobox">
-                    <property name="visible">True</property>
-                    <property name="model">model2</property>
-                    <signal name="changed" handler="rb_magnatune_pay_combobox_changed_cb"/>
-                    <child>
-                      <object class="GtkCellRendererText" id="renderer2"/>
-                      <attributes>
-                        <attribute name="text">0</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-              </object>
-              <packing>
-                <property name="position">2</property>
               </packing>
             </child>
             <child>
@@ -463,7 +305,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">3</property>
+                <property name="position">2</property>
               </packing>
             </child>
             <child>
@@ -475,7 +317,7 @@
                     <child>
                       <object class="GtkLabel" id="label57">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Visit Magnatune at </property>
+                        <property name="label" translatable="yes">Get an account at </property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -485,11 +327,11 @@
                     </child>
                     <child>
                       <object class="GtkLinkButton" id="href1">
-                        <property name="label" translatable="yes">http://www.magnatune.com/</property>
+                        <property name="label" translatable="yes">http://magnatune.com/compare_plans</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
-                        <property name="uri">http://www.magnatune.com/</property>
+                        <property name="uri">http://magnatune.com/compare_plans?referal_id=rhythmbox</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -573,19 +415,17 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="cc_expired_label">
-                    <property name="label" translatable="yes">&lt;span weight="bold" foreground="red"&gt;Your credit card is past the expiration date listed.&lt;/span&gt;</property>
-                    <property name="use_markup">True</property>
+                  <object class="GtkLabel" id="account_changed_label">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Your account details have changed. Changes will be applied the next time you start Rhythmbox.</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
                     <property name="position">3</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="position">4</property>
+                <property name="position">3</property>
               </packing>
             </child>
           </object>

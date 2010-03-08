@@ -36,7 +36,7 @@ typedef struct
 {
 	const char *name;
 	gboolean strict;
-	RhythmDBPropType val;
+	RhythmDBQueryType val;
 } RBQueryCreatorCriteriaOption;
 
 typedef struct

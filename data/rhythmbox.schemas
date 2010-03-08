@@ -111,17 +111,6 @@
           <long>If true, the locations listed in /apps/rhythmbox/library_locations are monitored for new files</long>
         </locale>
       </schema>
-      <schema>
-        <key>/schemas/apps/rhythmbox/use_replaygain</key>
-        <applyto>/apps/rhythmbox/use_replaygain</applyto>
-        <owner>rhythmbox</owner>
-        <type>bool</type>
-        <default>0</default>
-        <locale name="C">
-          <short>Whether to use replay gain</short>
-          <long>If true, the replay gain will be used</long>
-        </locale>
-      </schema>
 
       <schema>
         <key>/schemas/apps/rhythmbox/state/paned_position</key>
@@ -1154,17 +1143,6 @@
 	</locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/plugins/magnatune/pay</key>
-        <applyto>/apps/rhythmbox/plugins/magnatune/pay</applyto>
-        <owner>rhythmbox</owner>
-        <type>int</type>
-        <default>8</default>
-        <locale name="C">
-        <short>US Dollar amount to pay by default for an album.</short>
-	<long>US Dollar amount to pay by default for an album.</long>
-	</locale>
-      </schema>
-      <schema>
         <key>/schemas/apps/rhythmbox/plugins/magnatune/sorting</key>
         <applyto>/apps/rhythmbox/plugins/magnatune/sorting</applyto>
         <owner>rhythmbox</owner>
@@ -1196,6 +1174,17 @@
         <locale name="C">
 	<short>The size of the browser.</short>
 	<long>The size of the browser.</long>
+        </locale>
+      </schema>
+       <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/account_type</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/account_type</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>none</default>
+        <locale name="C">
+    <short>Magnatune account type.</short>
+    <long>Magnatune account type.</long>
         </locale>
       </schema>
       <schema>
@@ -1565,6 +1554,64 @@
         <locale name="C">
         <short>True if the send tracks plugin is hidden.</short>
 	<long>True if the send tracks plugin is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/replaygain/active</key>
+        <applyto>/apps/rhythmbox/plugins/replaygain/active</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the ReplayGain plugin is enabled.</short>
+	<long>True if the ReplayGain plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/replaygain/hidden</key>
+        <applyto>/apps/rhythmbox/plugins/replaygain/hidden</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the ReplayGain plugin is hidden.</short>
+	<long>True if the ReplayGain plugin is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/replaygain/mode</key>
+        <applyto>/apps/rhythmbox/plugins/replaygain/mode</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+        <short>ReplayGain adjustment mode.</short>
+	<long>
+          If 0, use 'radio' mode, where all tracks should have equal loudness.
+          If 1, use 'album' mode, where all tracks should have their ideal loudness.
+        </long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/replaygain/preamp</key>
+        <applyto>/apps/rhythmbox/plugins/replaygain/preamp</applyto>
+        <owner>rhythmbox</owner>
+        <type>float</type>
+        <default>0.0</default>
+        <locale name="C">
+        <short>ReplayGain pre-amp gain.</short>
+	<long>ReplayGain pre-amp gain, applied before the ReplayGain adjustment.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/replaygain/limiter</key>
+        <applyto>/apps/rhythmbox/plugins/replaygain/limiter</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>TRUE</default>
+        <locale name="C">
+        <short>Apply compression to prevent clipping due to ReplayGain adjustment</short>
+        <long>Apply compression to prevent clipping due to ReplayGain adjustment</long>
 	</locale>
       </schema>
     </schemalist>

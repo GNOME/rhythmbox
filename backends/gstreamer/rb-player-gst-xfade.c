@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  Copyright (C) 2006   Jonathan Matthew  <jonathan@kaolin.wh9.net>
+ *  Copyright (C) 2006,2010   Jonathan Matthew  <jonathan@d14n.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,20 +29,6 @@
 /*
  * GStreamer player backend with crossfading and gaplessness and trees and
  * flowers and bunnies.
- */
-
-/*
- * not yet implemented:
- * - replaygain (need to figure out what to do if we set_replaygain gets
- *               called while fading in)
- * - implement RBPlayerGstTee (maybe not entirely working?)
- * - implement RBPlayerGstFilter (sort of works?)
- *
- * things that need to be fixed:
- * - error reporting is abysmal
- *
- * crack:
- * - use more interesting transition effects - filter sweeps, reverb, etc.
  */
 
 /*
@@ -194,10 +180,6 @@ static void rb_player_gst_xfade_set_time (RBPlayer *player, gint64 time);
 static gint64 rb_player_gst_xfade_get_time (RBPlayer *player);
 static void rb_player_gst_xfade_set_volume (RBPlayer *player, float volume);
 static float rb_player_gst_xfade_get_volume (RBPlayer *player);
-static void rb_player_gst_xfade_set_replaygain (RBPlayer *player,
-						const char *uri,
-						double track_gain, double track_peak,
-						double album_gain, double album_peak);
 static gboolean rb_player_gst_xfade_add_tee (RBPlayerGstTee *player, GstElement *element);
 static gboolean rb_player_gst_xfade_add_filter (RBPlayerGstFilter *player, GstElement *element);
 static gboolean rb_player_gst_xfade_remove_tee (RBPlayerGstTee *player, GstElement *element);
@@ -246,6 +228,7 @@ enum
 	CAN_REUSE_STREAM,
 	REUSE_STREAM,
 	MISSING_PLUGINS,
+	GET_STREAM_FILTERS,
 	LAST_SIGNAL
 };
 
@@ -347,6 +330,7 @@ typedef struct
 	GstElement *audioresample;
 	GstElement *capsfilter;
 	GstElement *preroll;
+	GstElement *identity;
 	gboolean decoder_linked;
 	gboolean emitted_playing;
 	gboolean emitted_fake_playing;
@@ -369,7 +353,6 @@ typedef struct
 
 	gulong adjust_probe_id;
 
-	float replaygain_scale;
 	double fade_end;
 
 	gboolean emitted_error;
@@ -414,7 +397,6 @@ rb_xfade_stream_send_event (GstElement *element, GstEvent *event)
 static void
 rb_xfade_stream_init (RBXFadeStream *stream)
 {
-	stream->replaygain_scale = 1.0;
 	stream->lock = g_mutex_new ();
 }
 
@@ -711,6 +693,16 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_POINTER, G_TYPE_STRV, G_TYPE_STRV);
+	signals[GET_STREAM_FILTERS] =
+		g_signal_new ("get-stream-filters",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,
+			      rb_signal_accumulator_value_array, NULL,
+			      rb_marshal_BOXED__STRING,
+			      G_TYPE_VALUE_ARRAY,
+			      1,
+			      G_TYPE_STRING);
 
 	g_type_class_add_private (klass, sizeof (RBPlayerGstXFadePrivate));
 }
@@ -726,7 +718,6 @@ rb_player_init (RBPlayerIface *iface)
 	iface->playing = rb_player_gst_xfade_playing;
 	iface->set_volume = rb_player_gst_xfade_set_volume;
 	iface->get_volume = rb_player_gst_xfade_get_volume;
-	iface->set_replaygain = rb_player_gst_xfade_set_replaygain;
 	iface->seekable = rb_player_gst_xfade_seekable;
 	iface->set_time = rb_player_gst_xfade_set_time;
 	iface->get_time = rb_player_gst_xfade_get_time;
@@ -1024,8 +1015,6 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
 
 	/* hmm, can we take the stream lock safely here?  probably should.. */
 
-	/* should this take replaygain scaling into account? */
-
 	gst_element_query_position (stream->volume, &format, &pos);
 	if (pos < 0) {
 		/* probably means we haven't actually started the stream yet.
@@ -1041,14 +1030,10 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
 		pos = 0;
 	}
 
-	/* apply replaygain scaling */
-	start *= stream->replaygain_scale;
-	end *= stream->replaygain_scale;
 	rb_debug ("fading stream %s: [%f, %" G_GINT64_FORMAT "] to [%f, %" G_GINT64_FORMAT "]",
 		  stream->uri,
 		  (float)start, pos,
 		  (float)end, pos + time);
-
 
 	g_signal_handlers_block_by_func (stream->volume, volume_changed_cb, stream->player);
 
@@ -1893,7 +1878,7 @@ stream_new_decoded_pad_cb (GstElement *decoder, GstPad *pad, gboolean last, RBXF
 		rb_debug ("hmm, decoder is already linked");
 	} else {
 		rb_debug ("got decoded audio pad for stream %s", stream->uri);
-		vpad = gst_element_get_static_pad (stream->audioconvert, "sink");
+		vpad = gst_element_get_static_pad (stream->identity, "sink");
 		gst_pad_link (pad, vpad);
 		gst_object_unref (vpad);
 		stream->decoder_linked = TRUE;
@@ -2000,14 +1985,15 @@ stream_src_event_cb (GstPad *pad, GstEvent *event, RBXFadeStream *stream)
  * since people seem to get all whiny if they don't have a buffer
  * size slider to play with.
  *
- * the volume element is used for crossfading and probably replaygain
- * somehow.
+ * the volume element is used for crossfading.
  */
 static RBXFadeStream *
 create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, GDestroyNotify stream_data_destroy)
 {
 	RBXFadeStream *stream;
 	GstCaps *caps;
+	GValueArray *stream_filters = NULL;
+	GstElement *tail;
 
 	rb_debug ("creating new stream for %s (stream data %p)", uri, stream_data);
 	stream = g_object_new (RB_TYPE_XFADE_STREAM, NULL, NULL);
@@ -2062,6 +2048,13 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				 G_CALLBACK (stream_pad_removed_cb),
 				 stream,
 				 0);
+
+	stream->identity = gst_element_factory_make ("identity", NULL);
+	if (stream->identity == NULL) {
+		rb_debug ("unable to create identity");
+		g_object_unref (stream);
+		return NULL;
+	}
 
 	stream->audioconvert = gst_element_factory_make ("audioconvert", NULL);
 	if (stream->audioconvert == NULL) {
@@ -2156,6 +2149,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				  stream->source,
 				  stream->queue,
 				  stream->decoder,
+				  stream->identity,
 				  stream->audioconvert,
 				  stream->audioresample,
 				  stream->capsfilter,
@@ -2176,6 +2170,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		gst_bin_add_many (GST_BIN (stream),
 				  stream->source,
 				  stream->decoder,
+				  stream->identity,
 				  stream->audioconvert,
 				  stream->audioresample,
 				  stream->capsfilter,
@@ -2193,26 +2188,40 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				       NULL);
 	}
 
-	/* optionally splice in an identity with
-	 * check-imperfect-timestamp and/or check-imperfect-offset set.
-	 */
 	if (rb_debug_matches ("check-imperfect", __FILE__)) {
-		GstElement *identity;
 
-		identity = gst_element_factory_make ("identity", NULL);
-		gst_bin_add (GST_BIN (stream), identity);
-		gst_element_link (stream->volume, identity);
 		if (rb_debug_matches ("check-imperfect-timestamp", __FILE__)) {
-			g_object_set (identity, "check-imperfect-timestamp", TRUE, NULL);
+			g_object_set (stream->identity, "check-imperfect-timestamp", TRUE, NULL);
 		}
 		if (rb_debug_matches ("check-imperfect-offset", __FILE__)) {
-			g_object_set (identity, "check-imperfect-offset", TRUE, NULL);
+			g_object_set (stream->identity, "check-imperfect-offset", TRUE, NULL);
+		}
+	}
+	stream->src_pad = gst_element_get_static_pad (stream->volume, "src");
+
+	/* link in any per-stream filters after the identity element, with an
+	 * audioconvert before each.
+	 */
+	tail = stream->identity;
+	g_signal_emit (player, signals[GET_STREAM_FILTERS], 0, uri, &stream_filters);
+	if (stream_filters != NULL) {
+		int i;
+		for (i = 0; i < stream_filters->n_values; i++) {
+			GValue *v = g_value_array_get_nth (stream_filters, i);
+			GstElement *filter;
+			GstElement *audioconvert;
+
+			audioconvert = gst_element_factory_make ("audioconvert", NULL);
+			filter = GST_ELEMENT (g_value_get_object (v));
+
+			gst_bin_add_many (GST_BIN (stream), audioconvert, filter, NULL);
+			gst_element_link_many (tail, audioconvert, filter, NULL);
+			tail = filter;
 		}
 
-		stream->src_pad = gst_element_get_static_pad (identity, "src");
-	} else {
-		stream->src_pad = gst_element_get_static_pad (stream->volume, "src");
+		g_value_array_free (stream_filters);
 	}
+	gst_element_link (tail, stream->audioconvert);
 
 	/* ghost the stream src pad up to the bin */
 	stream->ghost_pad = gst_ghost_pad_new ("src", stream->src_pad);
@@ -3627,84 +3636,6 @@ rb_player_gst_xfade_playing (RBPlayer *iplayer)
 	}
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 	return playing;
-}
-
-
-static void
-rb_player_gst_xfade_set_replaygain (RBPlayer *iplayer,
-				    const char *uri,
-				    double track_gain, double track_peak,
-				    double album_gain, double album_peak)
-{
-	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
-	RBXFadeStream *stream;
-	double scale;
-	double gain = 0;
-	double peak = 0;
-
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
-	stream = find_stream_by_uri (player, uri);
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
-
-	if (stream == NULL) {
-		rb_debug ("can't find stream for %s", uri);
-		return;
-	}
-
-	if (album_gain != 0)
-		gain = album_gain;
-	else
-		gain = track_gain;
-
-	if (gain == 0)
-		return;
-
-	scale = pow (10., gain / 20);
-
-	/* anti clip */
-	if (album_peak != 0)
-		peak = album_peak;
-	else
-		peak = track_peak;
-
-	if (peak != 0 && (scale * peak) > 1)
-		scale = 1.0 / peak;
-
-	/* For security */
-	if (scale > 15)
-		scale = 15;
-
-	stream->replaygain_scale = scale;
-
-	/* update the stream volume if we can */
-	switch (stream->state) {
-	case PLAYING:
-	case PAUSED:
-	case SEEKING:
-	case SEEKING_PAUSED:
-	case SEEKING_EOS:
-	case REUSING:
-	case WAITING:
-	case WAITING_EOS:
-	case PREROLLING:
-	case PREROLL_PLAY:
-	case FADING_OUT_PAUSED:
-		g_object_set (stream->volume, "volume", stream->replaygain_scale, NULL);
-		break;
-
-	case FADING_IN:
-		/* hmm.. need to reset the fade?
-		 * this probably shouldn't happen anyway..
-		 */
-		break;
-
-	case FADING_OUT:
-	case PENDING_REMOVE:
-		/* not much point doing anything here */
-		break;
-	}
-
-	g_object_unref (stream);
 }
 
 

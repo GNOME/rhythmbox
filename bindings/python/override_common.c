@@ -33,6 +33,8 @@
 
 #include "config.h"
 
+#define NO_IMPORT_PYGOBJECT
+#define NO_IMPORT_PYGTK
 #include <pygobject.h>
 #include <pygtk/pygtk.h>
 
@@ -303,7 +305,7 @@ _rhythmdb_query_model_sort_func (RhythmDBEntry *a, RhythmDBEntry *b, PyRhythmDBQ
 
 	if (!py_result) {
 		PyErr_Print();
-		return NULL;
+		return 0;
 	}
 	result = PyInt_AsLong (py_result);
 

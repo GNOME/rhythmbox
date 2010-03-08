@@ -75,11 +75,6 @@ static GList* impl_get_ui_actions (RBSource *source);
 
 static void impl_pack_paned (RBBrowserSource *source, GtkWidget *paned);
 
-#ifdef HAVE_SJ_METADATA_GETTER
-static void rb_audiocd_source_cmd_reload_metadata (GtkAction *action,
-						   RBSource *source);
-#endif
-
 static gpointer rb_audiocd_load_songs (RBAudioCdSource *source);
 static void rb_audiocd_load_metadata (RBAudioCdSource *source, RhythmDB *db);
 static void rb_audiocd_load_metadata_cancel (RBAudioCdSource *source);
@@ -95,6 +90,27 @@ static gboolean update_disc_number_cb (GtkWidget *widget, GdkEventFocus *event, 
 #if defined(HAVE_SJ_METADATA_GETTER) && GTK_CHECK_VERSION(2,17,6)
 static void info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *source);
 #endif
+
+#if defined(HAVE_SJ_METADATA_GETTER)
+static void reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source);
+#endif
+static void copy_tracks_cmd (GtkAction *action, RBAudioCdSource *source);
+
+static void extract_cell_data_func (GtkTreeViewColumn *column,
+				    GtkCellRenderer *renderer,
+				    GtkTreeModel *model,
+				    GtkTreeIter *iter,
+				    RBAudioCdSource *source);
+static void extract_toggled_cb (GtkCellRendererToggle *renderer,
+				char *path,
+				RBAudioCdSource *source);
+static void extract_column_clicked_cb (GtkTreeViewColumn *column,
+				       RBAudioCdSource *source);
+
+typedef struct
+{
+	gboolean extract;
+} RBAudioCDEntryData;
 
 typedef struct
 {
@@ -114,7 +130,6 @@ typedef struct
 	GtkWidget *disc_number_entry;
 
 #ifdef HAVE_SJ_METADATA_GETTER
-	GtkActionGroup *action_group;
 	SjMetadataGetter *metadata;
 
 	GtkWidget *info_bar;
@@ -122,6 +137,8 @@ typedef struct
 
 	char *submit_url;
 #endif
+
+	GtkActionGroup *action_group;
 } RBAudioCdSourcePrivate;
 
 RB_PLUGIN_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
@@ -129,14 +146,18 @@ RB_PLUGIN_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MED
 
 #ifdef HAVE_SJ_METADATA_GETTER
 static AlbumDetails* multiple_album_dialog (GList *albums, RBAudioCdSource *source);
+#endif
 
-static GtkActionEntry rb_audiocd_source_actions [] =
-{
+static GtkActionEntry rb_audiocd_source_actions[] = {
+	{ "AudioCdCopyTracks", GTK_STOCK_CDROM, N_("_Extract to Library"), NULL,
+	  N_("Copy tracks to the library"),
+	  G_CALLBACK (copy_tracks_cmd) },
+#if defined(HAVE_SJ_METADATA_GETTER)
 	{ "AudioCdSourceReloadMetadata", GTK_STOCK_REFRESH, N_("Reload"), NULL,
 	N_("Reload Album Information"),
-	G_CALLBACK (rb_audiocd_source_cmd_reload_metadata) },
-};
+	G_CALLBACK (reload_metadata_cmd) },
 #endif
+};
 
 static RhythmDB *
 get_db_for_source (RBAudioCdSource *source)
@@ -218,12 +239,10 @@ rb_audiocd_source_dispose (GObject *object)
 {
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (object);
 
-#ifdef HAVE_SJ_METADATA_GETTER
 	if (priv->action_group != NULL) {
 		g_object_unref (priv->action_group);
 		priv->action_group = NULL;
 	}
-#endif
 
 	if (priv->pipeline) {
 		gst_object_unref (GST_OBJECT (priv->pipeline));
@@ -239,9 +258,15 @@ rb_audiocd_source_constructed (GObject *object)
 	RBAudioCdSourcePrivate *priv;
 	RBAudioCdSource *source;
 	RBEntryView *entry_view;
+	GtkCellRenderer *renderer;
+	GtkTreeViewColumn *extract;
+	GtkWidget *widget;
+	GtkAction *action;
 	RhythmDB *db;
 	RBPlugin *plugin;
+	RBShell *shell;
 	char *ui_file;
+	int toggle_width;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audiocd_source_parent_class, constructed, object);
 	source = RB_AUDIOCD_SOURCE (object);
@@ -249,32 +274,65 @@ rb_audiocd_source_constructed (GObject *object)
 
 	g_object_set (G_OBJECT (source), "name", "Unknown Audio", NULL);
 
-#ifdef HAVE_SJ_METADATA_GETTER
-	{
-		RBShell *shell;
-		g_object_get (source, "shell", &shell, NULL);
-		priv->action_group =
-			_rb_source_register_action_group (RB_SOURCE (source),
-							  "AudiocdActions",
-							  NULL, 0, NULL);
-		_rb_action_group_add_source_actions (priv->action_group,
-						     G_OBJECT (shell),
-						     rb_audiocd_source_actions,
-						     G_N_ELEMENTS (rb_audiocd_source_actions));
-		g_object_unref (shell);
-	}
+	g_object_get (source, "shell", &shell, NULL);
+	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
+							       "AudioCdActions",
+							       NULL, 0, NULL);
+	_rb_action_group_add_source_actions (priv->action_group,
+					     G_OBJECT (shell),
+					     rb_audiocd_source_actions,
+					     G_N_ELEMENTS (rb_audiocd_source_actions));
+	g_object_unref (shell);
+
+	action = gtk_action_group_get_action (priv->action_group,
+					      "AudioCdCopyTracks");
+	/* Translators: this is the toolbar button label
+	   for Copy to Library action. */
+	g_object_set (action, "short-label", _("Extract"), NULL);
+
+#if !defined(HAVE_SJ_METADATA_GETTER)
+	action = gtk_action_group_get_action (priv->action_group, "AudioCdSourceReloadMetadata");
+	g_object_set (action, "visible", FALSE, NULL);
 #endif
+
+
 	/* we want audio cds to sort by track# by default */
 	entry_view = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_set_sorting_order (entry_view, "Track", GTK_SORT_ASCENDING);
-
-	/* hide the 'album' column */
-	gtk_tree_view_column_set_visible (rb_entry_view_get_column (entry_view, RB_ENTRY_VIEW_COL_ALBUM), FALSE);
 
 	/* enable in-place editing for titles, artists, and genres */
 	rb_entry_view_set_column_editable (entry_view, RB_ENTRY_VIEW_COL_TITLE, TRUE);
 	rb_entry_view_set_column_editable (entry_view, RB_ENTRY_VIEW_COL_ARTIST, TRUE);
 	rb_entry_view_set_column_editable (entry_view, RB_ENTRY_VIEW_COL_GENRE, TRUE);
+
+	/* create the 'extract' column */
+	renderer = gtk_cell_renderer_toggle_new ();
+	extract = gtk_tree_view_column_new ();
+	gtk_tree_view_column_pack_start (extract, renderer, FALSE);
+	gtk_tree_view_column_set_cell_data_func (extract,
+						 renderer,
+						 (GtkTreeCellDataFunc) extract_cell_data_func,
+						 source,
+						 NULL);
+	gtk_tree_view_column_set_clickable (extract, TRUE);
+	widget = gtk_check_button_new ();
+	g_object_set (widget, "active", TRUE, NULL);
+	gtk_widget_show_all (widget);
+	g_signal_connect_object (extract, "clicked", G_CALLBACK (extract_column_clicked_cb), source, 0);
+	gtk_tree_view_column_set_widget (extract, widget);
+
+	g_signal_connect_object (renderer, "toggled", G_CALLBACK (extract_toggled_cb), source, 0);
+
+	/* set column width */
+	gtk_cell_renderer_get_size (renderer, GTK_WIDGET (entry_view), NULL, NULL, NULL, &toggle_width, NULL);
+	gtk_tree_view_column_set_sizing (extract, GTK_TREE_VIEW_COLUMN_FIXED);
+	gtk_tree_view_column_set_fixed_width (extract, toggle_width + 5);
+
+	rb_entry_view_insert_column_custom (entry_view, extract, "", "Extract", NULL, NULL, NULL, 1);
+	gtk_widget_set_tooltip_text (GTK_WIDGET (extract->button), _("Select tracks to be extracted"));
+
+	/* hide the 'album' column */
+	gtk_tree_view_column_set_visible (rb_entry_view_get_column (entry_view, RB_ENTRY_VIEW_COL_ALBUM), FALSE);
 
 	/* handle extra metadata requests for album artist and album artist sortname */
 	db = get_db_for_source (source);
@@ -351,7 +409,7 @@ rb_audiocd_source_constructed (GObject *object)
 	g_thread_create ((GThreadFunc)rb_audiocd_load_songs, source, FALSE, NULL);
 }
 
-RBRemovableMediaSource *
+RBSource *
 rb_audiocd_source_new (RBPlugin *plugin,
 		       RBShell *shell,
 		       GVolume *volume)
@@ -375,6 +433,7 @@ rb_audiocd_source_new (RBPlugin *plugin,
 	entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
 	/* TODO save the metadata somewhere */
 	entry_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;
+	entry_type->entry_type_data_size = sizeof(RBAudioCDEntryData);
 
 	source = g_object_new (RB_TYPE_AUDIOCD_SOURCE,
 			       "entry-type", entry_type,
@@ -387,7 +446,7 @@ rb_audiocd_source_new (RBPlugin *plugin,
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
-	return RB_REMOVABLE_MEDIA_SOURCE (source);
+	return RB_SOURCE (source);
 }
 
 static void
@@ -430,14 +489,19 @@ impl_pack_paned (RBBrowserSource *source, GtkWidget *paned)
 static void
 entry_set_string_prop (RhythmDB *db,
 		       RhythmDBEntry *entry,
-		       gboolean is_inserted,
 		       RhythmDBPropType propid,
+		       gboolean default_to_empty,
 		       const char *str)
 {
 	GValue value = {0,};
 
-	if (!str)
-		str = _("Unknown");
+	if (!str) {
+		if (default_to_empty) {
+			str = "";
+		} else {
+			str = _("Unknown");
+		}
+	}
 
 	if (!g_utf8_validate (str, -1, NULL)) {
 		rb_debug ("Got invalid UTF-8 tag data");
@@ -446,10 +510,7 @@ entry_set_string_prop (RhythmDB *db,
 
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, str);
-	if (is_inserted)
-		rhythmdb_entry_set (RHYTHMDB (db), entry, propid, &value);
-	else
-		rhythmdb_entry_set (RHYTHMDB (db), entry, propid, &value);
+	rhythmdb_entry_set (RHYTHMDB (db), entry, propid, &value);
 	g_value_unset (&value);
 }
 
@@ -465,6 +526,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 	GValue value = {0, };
 	gchar *str;
 	RhythmDBEntryType entry_type;
+	RBAudioCDEntryData *extra_data;
 
 	audio_path = g_strdup_printf ("cdda://%d#%s", track_number, priv->device_path);
 
@@ -507,10 +569,13 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 		g_warning ("Failed to query cd track duration");
 	}
 
-	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_ARTIST, NULL);
-	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_ALBUM, NULL);
-	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_GENRE, NULL);
-	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_MIMETYPE, "audio/x-raw-int");
+	entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST, FALSE, NULL);
+	entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM, FALSE, NULL);
+	entry_set_string_prop (db, entry, RHYTHMDB_PROP_GENRE, FALSE, NULL);
+	entry_set_string_prop (db, entry, RHYTHMDB_PROP_MIMETYPE, TRUE, "audio/x-raw-int");
+
+	extra_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioCDEntryData);
+	extra_data->extract = TRUE;
 
 	rhythmdb_commit (db);
 	g_free (audio_path);
@@ -582,8 +647,9 @@ rb_audiocd_scan_songs (RBAudioCdSource *source,
 }
 
 #ifdef HAVE_SJ_METADATA_GETTER
+
 static void
-rb_audiocd_source_cmd_reload_metadata (GtkAction *action, RBSource *source)
+reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source)
 {
 	RhythmDB *db;
 
@@ -821,15 +887,15 @@ metadata_cb (SjMetadataGetter *metadata,
 		rb_debug ("artist sortname: %s", track->artist_sortname);
 
 		/* record track info in entry*/
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_TITLE, track->title);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ARTIST, track->artist);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ALBUM, album->title);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_GENRE, album->genre);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, track->track_id);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, track->artist_id);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, album->album_id);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, album->artist_id);
-		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ARTIST_SORTNAME, track->artist_sortname);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_TITLE, FALSE, track->title);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST, FALSE, track->artist);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM, FALSE, album->title);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_GENRE, FALSE, album->genre);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, TRUE, track->track_id);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, TRUE, track->artist_id);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, TRUE, album->album_id);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, TRUE, album->artist_id);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST_SORTNAME, TRUE, track->artist_sortname);
 
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, track->duration);
@@ -999,7 +1065,6 @@ gboolean
 rb_audiocd_is_mount_audiocd (GMount *mount)
 {
 	gboolean result = FALSE;
-#if GLIB_CHECK_VERSION(2,17,7)
 	char **types;
 	guint i;
 	GError *error = NULL;
@@ -1017,13 +1082,6 @@ rb_audiocd_is_mount_audiocd (GMount *mount)
 		}
 		g_strfreev (types);
 	}
-#else
-	GFile *file;
-	
-	file = g_mount_get_root (mount);
-	result = g_file_has_uri_scheme (file, "cdda");
-	g_object_unref (file);
-#endif /* glib 2.17.7 */
 	return result;
 }
 
@@ -1039,7 +1097,7 @@ impl_get_ui_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
-	actions = g_list_prepend (actions, g_strdup ("RemovableSourceCopyAllTracks"));
+	actions = g_list_prepend (actions, g_strdup ("AudioCdCopyTracks"));
 	actions = g_list_prepend (actions, g_strdup ("RemovableSourceEject"));
 
 #ifdef HAVE_SJ_METADATA_GETTER
@@ -1201,11 +1259,17 @@ update_genre_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *sourc
 static gboolean
 update_year_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source)
 {
+	const char *text;
 	int year;
 	GDate date;
 	GValue v = {0, };
 
-	year = strtol (gtk_entry_get_text (GTK_ENTRY (widget)), NULL, 10);
+	text = gtk_entry_get_text (GTK_ENTRY (widget));
+	if (text[0] == '\0') {
+		return FALSE;
+	}
+
+	year = strtol (text, NULL, 10);
 	g_date_clear (&date, 1);
 	g_date_set_dmy (&date, 1, 1, year);
 
@@ -1251,3 +1315,135 @@ info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *s
 }
 #endif
 
+static void
+extract_cell_data_func (GtkTreeViewColumn *column,
+			GtkCellRenderer *renderer,
+			GtkTreeModel *tree_model,
+			GtkTreeIter *iter,
+			RBAudioCdSource *source)
+{
+	RBAudioCDEntryData *extra_data;
+	RhythmDBEntry *entry;
+
+	entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (tree_model), iter);
+	if (entry != NULL) {
+		extra_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioCDEntryData);
+		gtk_cell_renderer_toggle_set_active (GTK_CELL_RENDERER_TOGGLE (renderer), extra_data->extract);
+		rhythmdb_entry_unref (entry);
+	}
+}
+
+static void
+extract_toggled_cb (GtkCellRendererToggle *renderer, char *path_str, RBAudioCdSource *source)
+{
+	RhythmDBQueryModel *model;
+	GtkTreePath *path;
+	GtkTreeIter iter;
+
+	g_object_get (source, "query-model", &model, NULL);
+
+	path = gtk_tree_path_new_from_string (path_str);
+	if (gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path)) {
+		RhythmDBEntry *entry;
+
+		entry = rhythmdb_query_model_iter_to_entry (model, &iter);
+		if (entry != NULL) {
+			RBAudioCDEntryData *extra_data;
+
+			extra_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioCDEntryData);
+			extra_data->extract = !extra_data->extract;
+			rhythmdb_entry_unref (entry);
+
+			gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
+		}
+	}
+	gtk_tree_path_free (path);
+	g_object_unref (model);
+}
+
+
+static gboolean
+set_extract (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer data)
+{
+	RBAudioCDEntryData *extra_data;
+	RhythmDBEntry *entry;
+
+	entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model),
+						    iter);
+	if (entry != NULL) {
+		extra_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioCDEntryData);
+		extra_data->extract = GPOINTER_TO_INT (data);
+
+		gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, iter);
+	}
+	return FALSE;
+}
+
+static void
+extract_column_clicked_cb (GtkTreeViewColumn *column, RBAudioCdSource *source)
+{
+	RhythmDBQueryModel *model;
+	gboolean extract;
+	GtkWidget *checkbox;
+
+	/* toggle the state of the checkbox in the header */
+	checkbox = gtk_tree_view_column_get_widget (column);
+
+	g_object_get (checkbox, "active", &extract, NULL);
+	extract = !extract;
+	g_object_set (checkbox, "active", extract, NULL);
+
+	/* set the extraction state for all tracks to match */
+	g_object_get (source, "query-model", &model, NULL);
+	gtk_tree_model_foreach (GTK_TREE_MODEL (model), set_extract, GINT_TO_POINTER (extract));
+	g_object_unref (model);
+}
+
+static gboolean
+copy_entry (RhythmDBQueryModel *model,
+	    GtkTreePath *path,
+	    GtkTreeIter *iter,
+	    GList **list)
+{
+	RBAudioCDEntryData *extra_data;
+	RhythmDBEntry *entry;
+	GList *l;
+
+	entry = rhythmdb_query_model_iter_to_entry (model, iter);
+	extra_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioCDEntryData);
+	if (extra_data->extract) {
+		rb_debug ("adding track %s to transfer list",
+			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+		l = g_list_append (*list, entry);
+		*list = l;
+	} else {
+		rb_debug ("skipping track %s",
+			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+		rhythmdb_entry_unref (entry);
+	}
+	return FALSE;
+}
+
+static void
+copy_tracks_cmd (GtkAction *action, RBAudioCdSource *source)
+{
+	RBShell *shell;
+	RBSource *library;
+	RhythmDBQueryModel *model;
+	GList *list = NULL;
+
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "library-source", &library, NULL);
+	g_object_unref (shell);
+
+	g_object_get (source, "query-model", &model, NULL);
+
+	gtk_tree_model_foreach (GTK_TREE_MODEL (model), (GtkTreeModelForeachFunc)copy_entry, &list);
+	if (list != NULL) {
+		rb_source_paste (library, list);
+		g_list_free (list);
+	}
+
+	g_object_unref (model);
+	g_object_unref (library);
+}

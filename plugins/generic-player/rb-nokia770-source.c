@@ -78,7 +78,7 @@ rb_nokia770_source_init (RBNokia770Source *source)
 }
 
 RBRemovableMediaSource *
-rb_nokia770_source_new (RBShell *shell, GMount *mount, MPIDDevice *device_info)
+rb_nokia770_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBNokia770Source *source;
 	RhythmDBEntryType entry_type;
@@ -101,6 +101,7 @@ rb_nokia770_source_new (RBShell *shell, GMount *mount, MPIDDevice *device_info)
 	g_object_unref (volume);
 
 	source = RB_NOKIA770_SOURCE (g_object_new (RB_TYPE_NOKIA770_SOURCE,
+						   "plugin", plugin,
 						   "entry-type", entry_type,
 						   "ignore-entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,
 						   "error-entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,

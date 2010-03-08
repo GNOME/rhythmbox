@@ -37,6 +37,8 @@
 
 #include <X11/Xatom.h>
 
+#include <pango/pango-bidi-type.h>
+
 #ifdef HAVE_NOTIFY
 #include <libnotify/notify.h>
 #endif
@@ -51,11 +53,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-builder-helpers.h"
 
-#if defined(USE_GTK_STATUS_ICON)
 #include "rb-tray-icon-gtk.h"
-#else
-#include "rb-tray-icon.h"
-#endif
 
 #define TRAY_ICON_DEFAULT_TOOLTIP _("Music Player")
 
@@ -643,6 +641,50 @@ rb_status_icon_plugin_set_tooltip (GtkWidget        *widget,
 /* information on current track */
 
 static void
+get_artist_album_templates (const char *artist,
+			    const char *album,
+			    const char **artist_template,
+			    const char **album_template)
+{
+	PangoDirection tag_dir;
+	PangoDirection template_dir;
+
+	/* Translators: by Artist */
+	*artist_template = _("by <i>%s</i>");
+	/* Translators: from Album */
+	*album_template = _("from <i>%s</i>");
+
+	/* find the direction (left-to-right or right-to-left) of the
+	 * track's tags and the localized templates
+	 */
+	if (artist != NULL && artist[0] != '\0') {
+		tag_dir = pango_find_base_dir (artist, -1);
+		template_dir = pango_find_base_dir (*artist_template, -1);
+	} else if (album != NULL && album[0] != '\0') {
+		tag_dir = pango_find_base_dir (album, -1);
+		template_dir = pango_find_base_dir (*album_template, -1);
+	} else {
+		return;
+	}
+
+	/* if the track's tags and the localized templates have a different
+	 * direction, switch to direction-neutral templates in order to improve
+	 * display.
+	 * text can have a neutral direction, this condition only applies when
+	 * both directions are defined and they are conflicting.
+	 * https://bugzilla.gnome.org/show_bug.cgi?id=609767
+	 */
+	if (((tag_dir == PANGO_DIRECTION_LTR) && (template_dir == PANGO_DIRECTION_RTL)) ||
+	    ((tag_dir == PANGO_DIRECTION_RTL) && (template_dir == PANGO_DIRECTION_LTR))) {
+		/* these strings should not be localized, they must be
+		 * locale-neutral and direction-neutral
+		 */
+		*artist_template = "<i>%s</i>";
+		*album_template = "/ <i>%s</i>";
+	}
+}
+
+static void
 update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 {
 	GValue *value;
@@ -651,6 +693,9 @@ update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 	char *album = NULL;
 	char *title = NULL;
 	GString *secondary;
+
+	const char *artist_template = NULL;
+	const char *album_template = NULL;
 
 	g_free (plugin->priv->current_title);
 	g_free (plugin->priv->current_album_and_artist);
@@ -674,12 +719,6 @@ update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 		artist = markup_escape (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
 	}
 
-	if (artist != NULL && artist[0] != '\0') {
-		/* Translators: by Artist */
-		g_string_append_printf (secondary, _("by <i>%s</i>"), artist);
-	}
-	g_free (artist);
-
 	/* get album, preferring streaming song details */
 	value = rhythmdb_entry_request_extra_metadata (plugin->priv->db,
 						       entry,
@@ -692,12 +731,18 @@ update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 		album = markup_escape (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
 	}
 
+	get_artist_album_templates (artist, album, &artist_template, &album_template);
+
+	if (artist != NULL && artist[0] != '\0') {
+		g_string_append_printf (secondary, artist_template, artist);
+	}
+	g_free (artist);
+
 	if (album != NULL && album[0] != '\0') {
 		if (secondary->len != 0)
 			g_string_append_c (secondary, ' ');
 
-		/* Translators: from Album */
-		g_string_append_printf (secondary, _("from <i>%s</i>"), album);
+		g_string_append_printf (secondary, album_template, album);
 	}
 	g_free (album);
 
@@ -1033,80 +1078,6 @@ store_window_visibility (RBStatusIconPlugin *plugin)
 	}
 }
 
-#if !defined(USE_GTK_STATUS_ICON)
-
-/* EggTrayIcon helpers */
-
-#if 0
-static void
-tray_embedded_cb (GtkPlug *plug,
-		  gpointer data)
-{
-	/* FIXME - this doesn't work */
-	RBShell *shell = RB_SHELL (data);
-
-	rb_debug ("got embedded signal");
-
-	gdk_window_set_decorations (shell->priv->window->window,
-				    GDK_DECOR_ALL | GDK_DECOR_MINIMIZE | GDK_DECOR_MAXIMIZE);
-}
-#endif
-
-static gboolean
-tray_destroy_cb (GtkObject *object, RBStatusIconPlugin *plugin)
-{
-	if (plugin->priv->tray_icon) {
-		rb_debug ("caught destroy event for icon %p", object);
-		g_object_ref_sink (object);
-		plugin->priv->tray_icon = NULL;
-		rb_debug ("finished sinking tray");
-	}
-
-	rb_debug ("creating new icon");
-	plugin->priv->tray_icon = rb_tray_icon_new (plugin, plugin->priv->shell);
-	g_signal_connect_object (plugin->priv->tray_icon, "destroy", G_CALLBACK (tray_destroy_cb), plugin, 0);
-	/* g_signal_connect_object (plugin->priv->tray_icon, "embedded", G_CALLBACK (tray_embedded_cb), plugin, 0); */
-
-	rb_debug ("done creating new icon %p", plugin->priv->tray_icon);
-	return TRUE;
-}
-
-static void
-cleanup_status_icon (RBStatusIconPlugin *plugin)
-{
-	g_signal_handlers_disconnect_by_func (plugin->priv->tray_icon,
-					      G_CALLBACK (tray_destroy_cb),
-					      plugin);
-
-	gtk_widget_hide_all (GTK_WIDGET (plugin->priv->tray_icon));
-	gtk_widget_destroy (GTK_WIDGET (plugin->priv->tray_icon));
-}
-
-static void
-create_status_icon (RBStatusIconPlugin *plugin)
-{
-	tray_destroy_cb (NULL, plugin);
-}
-
-#else
-
-/* boring equivalents for GtkStatusIcon */
-
-static void
-create_status_icon (RBStatusIconPlugin *plugin)
-{
-	plugin->priv->tray_icon = rb_tray_icon_new (plugin, plugin->priv->shell_player);
-}
-
-static void
-cleanup_status_icon (RBStatusIconPlugin *plugin)
-{
-	g_object_unref (plugin->priv->tray_icon);
-}
-
-
-#endif
-
 /* preferences dialog and gconf stuff */
 
 static void
@@ -1348,7 +1319,7 @@ impl_activate (RBPlugin *bplugin,
 	plugin->priv->wheel_mode = eel_gconf_get_integer (CONF_MOUSE_WHEEL_MODE);
 
 	/* create status icon */
-	create_status_icon (plugin);
+	plugin->priv->tray_icon = rb_tray_icon_new (plugin, plugin->priv->shell_player);
 	update_status_icon_visibility (plugin, FALSE);
 
 	/* update everything in case we're already playing something */
@@ -1401,7 +1372,7 @@ impl_deactivate	(RBPlugin *bplugin,
 
 	/* remove icon */
 	if (plugin->priv->tray_icon != NULL) {
-		cleanup_status_icon (plugin);
+		g_object_unref (plugin->priv->tray_icon);
 		plugin->priv->tray_icon = NULL;
 	}
 

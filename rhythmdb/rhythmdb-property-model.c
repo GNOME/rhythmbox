@@ -48,9 +48,17 @@ G_DEFINE_TYPE_WITH_CODE(RhythmDBPropertyModel, rhythmdb_property_model, G_TYPE_O
 			G_IMPLEMENT_INTERFACE(RB_TYPE_TREE_DRAG_SOURCE,
 					      rhythmdb_property_model_drag_source_init))
 
+/*
+ * Structure for entries in the property model.
+ * The sort string is derived from one of a list of properties, so we
+ * store the index in the list of the property that gave us the current
+ * sort string, so that if a newly added entry has a value for a more preferred
+ * property, we can use that instead.
+ */
 typedef struct {
 	RBRefString *string;
 	RBRefString *sort_string;
+	gint sort_string_from;
 	gint refcount;
 } RhythmDBPropertyModelEntry;
 
@@ -76,6 +84,12 @@ static void rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry
 static void rhythmdb_property_model_entry_removed_cb (RhythmDBQueryModel *model,
 						      RhythmDBEntry *entry,
 						      RhythmDBPropertyModel *propmodel);
+static gboolean update_sort_string (RhythmDBPropertyModel *model,
+                                    RhythmDBPropertyModelEntry *prop,
+                                    RhythmDBEntry *entry);
+static void property_sort_changed (RhythmDBPropertyModel *model,
+                                   GSequenceIter *ptr,
+                                   GtkTreeIter *iter);
 static RhythmDBPropertyModelEntry* rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
 								   RhythmDBEntry *entry);
 static void rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
@@ -158,7 +172,7 @@ struct RhythmDBPropertyModelPrivate
 	GHashTable *entries;
 
 	RhythmDBPropType propid;
-	RhythmDBPropType sort_propid;
+	GArray *sort_propids;
 
 	guint stamp;
 
@@ -388,6 +402,13 @@ rhythmdb_property_model_set_query_model_internal (RhythmDBPropertyModel *model,
 }
 
 static void
+append_sort_property (RhythmDBPropertyModel *model, RhythmDBPropType prop)
+{
+	RhythmDBPropType p = prop;
+	g_array_append_val (model->priv->sort_propids, p);
+}
+
+static void
 rhythmdb_property_model_set_property (GObject *object,
 				      guint prop_id,
 				      const GValue *value,
@@ -403,20 +424,22 @@ rhythmdb_property_model_set_property (GObject *object,
 		model->priv->propid = g_value_get_int (value);
 		switch (model->priv->propid) {
 		case RHYTHMDB_PROP_GENRE:
-			model->priv->sort_propid = RHYTHMDB_PROP_GENRE;
+			append_sort_property (model, RHYTHMDB_PROP_GENRE);
 			break;
 		case RHYTHMDB_PROP_ARTIST:
-			model->priv->sort_propid = RHYTHMDB_PROP_ARTIST;
+			append_sort_property (model, RHYTHMDB_PROP_ARTIST_SORTNAME);
+			append_sort_property (model, RHYTHMDB_PROP_ARTIST);
 			break;
 		case RHYTHMDB_PROP_ALBUM:
-			model->priv->sort_propid = RHYTHMDB_PROP_ALBUM;
+			append_sort_property (model, RHYTHMDB_PROP_ALBUM_SORTNAME);
+			append_sort_property (model, RHYTHMDB_PROP_ALBUM);
 			break;
 		case RHYTHMDB_PROP_SUBTITLE:
-			model->priv->sort_propid = RHYTHMDB_PROP_SUBTITLE;
+			append_sort_property (model, RHYTHMDB_PROP_SUBTITLE);
 			break;
 		case RHYTHMDB_PROP_TITLE:
 		case RHYTHMDB_PROP_LOCATION:
-			model->priv->sort_propid = RHYTHMDB_PROP_TITLE;
+			append_sort_property (model, RHYTHMDB_PROP_TITLE);
 			break;
 		default:
 			g_assert_not_reached ();
@@ -469,6 +492,8 @@ rhythmdb_property_model_init (RhythmDBPropertyModel *model)
 
 	model->priv->all = g_new0 (RhythmDBPropertyModelEntry, 1);
 	model->priv->all->string = rb_refstring_new (_("All"));
+
+	model->priv->sort_propids = g_array_new (FALSE, FALSE, sizeof (RhythmDBPropType));
 }
 
 static void
@@ -529,6 +554,8 @@ rhythmdb_property_model_finalize (GObject *object)
 
 	g_free (model->priv->all);
 
+	g_array_free (model->priv->sort_propids, TRUE);
+
 	G_OBJECT_CLASS (rhythmdb_property_model_parent_class)->finalize (object);
 }
 
@@ -587,21 +614,44 @@ rhythmdb_property_model_prop_changed_cb (RhythmDB *db,
 				rhythmdb_property_model_delete (propmodel, entry);
 				g_hash_table_insert (propmodel->priv->entries, entry, GINT_TO_POINTER (1));
 			}
+			rhythmdb_property_model_sync (propmodel);
 		}
-	} else {
+	} else if (g_hash_table_lookup (propmodel->priv->entries, entry) == NULL) {
 		RhythmDBPropertyModelEntry *prop;
 
-		if (propid != propmodel->priv->propid)
-			return;
+		if (propid == propmodel->priv->propid) {
+			/* the updated property is the propmodel's prop */
+			rhythmdb_property_model_delete_prop (propmodel, g_value_get_string (old));
+			prop = rhythmdb_property_model_insert (propmodel, entry);
+			rhythmdb_property_model_sync (propmodel);
+		} else {
+			int pi;
+			const char *propstr;
+			GtkTreeIter iter;
+			GSequenceIter *ptr;
 
-		if (g_hash_table_lookup (propmodel->priv->entries, entry) != NULL)
-			return;
+			/* check if the updated property is one of the propmodel's sort props */
+			for (pi = 0; pi < propmodel->priv->sort_propids->len; pi++) {
+				if (propid == g_array_index (propmodel->priv->sort_propids, RhythmDBPropType, pi)) {
+					propstr = rhythmdb_entry_get_string (entry, propmodel->priv->propid);
+					ptr = g_hash_table_lookup (propmodel->priv->reverse_map, propstr);
+					prop = g_sequence_get (ptr);
+					iter.stamp = propmodel->priv->stamp;
+					iter.user_data = ptr;
 
-		rhythmdb_property_model_delete_prop (propmodel, g_value_get_string (old));
-		prop = rhythmdb_property_model_insert (propmodel, entry);
+					/* check if the sort prop needs updated and the propmodel needs resorting */
+					if (update_sort_string (propmodel, prop, entry)) {
+						property_sort_changed (propmodel, ptr, &iter);
+					} else if (pi == prop->sort_string_from) {
+						rb_refstring_unref (prop->sort_string);
+						prop->sort_string = rb_refstring_new (g_value_get_string (new));
+						property_sort_changed (propmodel, ptr, &iter);
+					}
+					break;
+				}
+			}
+		}
 	}
-
-	rhythmdb_property_model_sync (propmodel);
 }
 
 static void
@@ -629,6 +679,102 @@ rhythmdb_property_model_compare (RhythmDBPropertyModelEntry *a,
 	return strcmp (a_str, b_str);
 }
 
+/*
+ * looks for an updated sort string in a new entry for the specified
+ * property.  if the new entry provides a value for a higher priority
+ * sort property, updates the property to use the new sort string and
+ * returns TRUE.  otherwise, returns FALSE.
+ */
+static gboolean
+update_sort_string (RhythmDBPropertyModel *model,
+		    RhythmDBPropertyModelEntry *prop,
+		    RhythmDBEntry *entry)
+{
+	const char *newvalue = NULL;
+	int pi;
+	int upto;
+
+	/* if the property that gave us the current sort string is being cleared,
+	 * forget about the current string.
+	 */
+	if (prop->sort_string != NULL) {
+		RhythmDBPropType propid;
+		const char *newvalue;
+
+		propid = g_array_index (model->priv->sort_propids, RhythmDBPropType, prop->sort_string_from);
+		newvalue = rhythmdb_entry_get_string (entry, propid);
+		if (newvalue == NULL || newvalue[0] == '\0') {
+			rb_debug ("current sort string %s is being removed", rb_refstring_get (prop->sort_string));
+			rb_refstring_unref (prop->sort_string);
+			prop->sort_string = NULL;
+		}
+	}
+
+	/* we only need to check properties that are preferred to the one that
+	 * gave us the current sort string.
+	 */
+	upto = model->priv->sort_propids->len;
+	if (prop->sort_string != NULL) {
+		upto = prop->sort_string_from;
+	}
+
+	/* search for a non-empty sort string value */
+	for (pi = 0; pi < upto; pi++) {
+		RhythmDBPropType propid;
+
+		propid = g_array_index (model->priv->sort_propids, RhythmDBPropType, pi);
+		newvalue = rhythmdb_entry_get_string (entry, propid);
+		if (newvalue != NULL && newvalue[0] != '\0') {
+			break;
+		}
+	}
+
+	/* if we found one, replace the current sort string */
+	if (newvalue != NULL && newvalue[0] != '\0' && (prop->sort_string == NULL || pi < prop->sort_string_from)) {
+		rb_debug ("replacing current sort string %s with %s (%d -> %d)",
+			  prop->sort_string ? rb_refstring_get (prop->sort_string) : "NULL",
+			  newvalue,
+			  prop->sort_string_from,
+			  pi);
+		if (prop->sort_string != NULL) {
+			rb_refstring_unref (prop->sort_string);
+		}
+		prop->sort_string = rb_refstring_new (newvalue);
+		g_assert (pi < model->priv->sort_propids->len);
+		prop->sort_string_from = pi;
+		return TRUE;
+	}
+
+	/* if we can't find a sort string at all, use the display string as fallback */
+	if (prop->sort_string == NULL) {
+		prop->sort_string = rb_refstring_ref (prop->string);
+	}
+
+	return FALSE;
+}
+
+/*
+ * to be called when a property's position in the sorted order may have changed.
+ * emits row-deleted, resorts the property sequence, and emits row-inserted.
+ */
+static void
+property_sort_changed (RhythmDBPropertyModel *model, GSequenceIter *ptr, GtkTreeIter *iter)
+{
+	GtkTreePath *path;
+
+	path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), iter);
+	gtk_tree_model_row_deleted (GTK_TREE_MODEL (model), path);
+	gtk_tree_path_free (path);
+
+	g_sequence_sort_changed (ptr,
+				 (GCompareDataFunc) rhythmdb_property_model_compare,
+				 model);
+
+	path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), iter);
+	gtk_tree_model_row_inserted (GTK_TREE_MODEL (model), path, iter);
+	gtk_tree_path_free (path);
+}
+
 static RhythmDBPropertyModelEntry *
 rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
 				RhythmDBEntry *entry)
@@ -645,11 +791,15 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
 	g_atomic_int_inc (&model->priv->all->refcount);
 
 	if ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr))) {
+		iter.user_data = ptr;
 		prop = g_sequence_get (ptr);
 		g_atomic_int_inc (&prop->refcount);
 		rb_debug ("adding \"%s\": refcount %d", propstr, prop->refcount);
 
-		iter.user_data = ptr;
+		if (update_sort_string (model, prop, entry)) {
+			property_sort_changed (model, ptr, &iter);
+		}
+
 		path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
 		gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
 		gtk_tree_path_free (path);
@@ -660,7 +810,7 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
 
 	prop = g_new0 (RhythmDBPropertyModelEntry, 1);
 	prop->string = rb_refstring_new (propstr);
-	prop->sort_string = rb_refstring_new (rhythmdb_entry_get_string (entry, model->priv->sort_propid));
+	update_sort_string (model, prop, entry);
 	g_atomic_int_set (&prop->refcount, 1);
 
 	ptr = g_sequence_insert_sorted (model->priv->properties, prop,

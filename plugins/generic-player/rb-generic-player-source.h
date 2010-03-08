@@ -29,7 +29,8 @@
 #define __RB_GENERIC_PLAYER_SOURCE_H
 
 #include "rb-shell.h"
-#include "rb-removable-media-source.h"
+#include "rb-plugin.h"
+#include "rb-media-player-source.h"
 #include "rhythmdb.h"
 
 #include "mediaplayerid.h"
@@ -47,25 +48,26 @@ G_BEGIN_DECLS
 
 typedef struct
 {
-	RBRemovableMediaSource parent;
+	RBMediaPlayerSource parent;
 } RBGenericPlayerSource;
 
 typedef struct
 {
-	RBRemovableMediaSourceClass parent;
+	RBMediaPlayerSourceClass parent;
 
 	char *		(*impl_get_mount_path) (RBGenericPlayerSource *source);
 	void		(*impl_load_playlists) (RBGenericPlayerSource *source);
 	char **		(*impl_get_audio_folders) (RBGenericPlayerSource *source);
 
 	char *		(*impl_uri_from_playlist_uri) (RBGenericPlayerSource *source, const char *uri);
-	char *		(*impl_uri_to_playlist_uri) (RBGenericPlayerSource *source, const char *uri);
+	char *		(*impl_uri_to_playlist_uri) (RBGenericPlayerSource *source, const char *uri, TotemPlParserType playlist_type);
 
 	/* used for track transfer - returns the filename relative to the audio folder on the device */
 	char *		(*impl_build_filename) (RBGenericPlayerSource *source, RhythmDBEntry *entry);
 } RBGenericPlayerSourceClass;
 
-RBRemovableMediaSource *rb_generic_player_source_new			(RBShell *shell,
+RBRemovableMediaSource *rb_generic_player_source_new			(RBPlugin *plugin,
+									 RBShell *shell,
 									 GMount *mount,
 									 MPIDDevice *device_info);
 GType			rb_generic_player_source_get_type		(void);
@@ -75,7 +77,8 @@ char *			rb_generic_player_source_get_mount_path		(RBGenericPlayerSource *source
 char *			rb_generic_player_source_uri_from_playlist_uri  (RBGenericPlayerSource *source,
 									 const char *uri);
 char *			rb_generic_player_source_uri_to_playlist_uri    (RBGenericPlayerSource *source,
-									 const char *uri);
+									 const char *uri,
+									 TotemPlParserType playlist_type);
 void			rb_generic_player_source_set_supported_formats  (RBGenericPlayerSource *source,
 									 TotemPlParser *parser);
 TotemPlParserType	rb_generic_player_source_get_playlist_format	(RBGenericPlayerSource *source);

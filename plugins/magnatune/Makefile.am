@@ -12,7 +12,6 @@ plugin_in_files = magnatune.rb-plugin.in
 
 gtkbuilder_DATA =	\
 		magnatune-loading.ui			\
-		magnatune-purchase.ui			\
 		magnatune-prefs.ui			\
 		magnatune_logo_color_small.png		\
 		magnatune_logo_color_tiny.png

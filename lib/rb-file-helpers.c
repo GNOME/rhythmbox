@@ -582,6 +582,14 @@ typedef struct {
 	GList *dir_results;
 } RBUriHandleRecursivelyAsyncData;
 
+static gboolean
+_should_process (GFileInfo *info)
+{
+	/* check that the file is non-hidden and readable */
+	return (g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_ACCESS_CAN_READ) &&
+		(g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN) == FALSE));
+}
+
 static void
 _uri_handle_recurse (GFile *dir,
 		     GCancellable *cancel,
@@ -605,6 +613,20 @@ _uri_handle_recurse (GFile *dir,
 	files = g_file_enumerate_children (dir, attributes, G_FILE_QUERY_INFO_NONE, cancel, &error);
 	if (error != NULL) {
 		char *where;
+
+		/* handle the case where we're given a single file to process */
+		if (error->code == G_IO_ERROR_NOT_DIRECTORY) {
+			g_clear_error (&error);
+			info = g_file_query_info (dir, attributes, G_FILE_QUERY_INFO_NONE, cancel, &error);
+			if (error == NULL) {
+				if (_should_process (info)) {
+					(func) (dir, FALSE, user_data);
+				}
+				g_object_unref (info);
+				return;
+			}
+		}
+
 		where = g_file_get_uri (dir);
 		rb_debug ("error enumerating %s: %s", where, error->message);
 		g_free (where);
@@ -626,13 +648,8 @@ _uri_handle_recurse (GFile *dir,
 			break;
 		}
 
-		child = g_file_get_child (dir, g_file_info_get_name (info));
-
-		/* is non-hidden and readable? */
-		if (g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_ACCESS_CAN_READ) == FALSE ||
-		    g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN)) {
+		if (_should_process (info) == FALSE) {
 			g_object_unref (info);
-			g_object_unref (child);
 			continue;
 		}
 
@@ -662,15 +679,16 @@ _uri_handle_recurse (GFile *dir,
 		}
 
 		if (file_handled == FALSE) {
+			child = g_file_get_child (dir, g_file_info_get_name (info));
 			ret = (func) (child, is_dir, user_data);
 
 			if (is_dir) {
 				_uri_handle_recurse (child, cancel, handled, func, user_data);
 			}
+			g_object_unref (child);
 		}
 	
 		g_object_unref (info);
-		g_object_unref (child);
 
 		if (ret == FALSE)
 			break;
@@ -1065,38 +1083,12 @@ check_file_is_directory (GFile *file, GError **error)
 }
 
 
-#if !GLIB_CHECK_VERSION(2,17,1)
-static gboolean
-create_parent_dirs (GFile *file, GError **error)
-{
-	gboolean ret;
-	GFile *parent;
-
-	ret = check_file_is_directory (file, error);
-	if (ret == TRUE || *error != NULL) {
-		return ret;
-	}
-
-	parent = g_file_get_parent (file);
-	ret = create_parent_dirs (parent, error);
-	g_object_unref (parent);
-	if (ret == FALSE) {
-		return FALSE;
-	}
-
-	return g_file_make_directory (file, NULL, error);
-}
-#endif
-
 gboolean
 rb_uri_create_parent_dirs (const char *uri, GError **error)
 {
 	GFile *file;
 	GFile *parent;
 	gboolean ret;
-#if !GLIB_CHECK_VERSION(2,17,1)
-	GError *l_error = NULL;
-#endif
 
 	/* ignore internal URI schemes */
 	if (g_str_has_prefix (uri, "xrb")) {
@@ -1111,18 +1103,11 @@ rb_uri_create_parent_dirs (const char *uri, GError **error)
 		return TRUE;
 	}
 
-#if GLIB_CHECK_VERSION(2,17,1)
 	ret = check_file_is_directory (parent, error);
 	if (ret == FALSE && *error == NULL) {
 		ret = g_file_make_directory_with_parents (parent, NULL, error);
 	}
-#else
-	ret = create_parent_dirs (parent, &l_error);
 
-	if (l_error != NULL) {
-		g_propagate_error (error, l_error);
-	}
-#endif
 	g_object_unref (parent);
 	return ret;
 }

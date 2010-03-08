@@ -94,12 +94,6 @@ struct _RBPlayerIface
 	void		(*set_volume)		(RBPlayer *player,
 						 float volume);
 	float		(*get_volume)		(RBPlayer *player);
-	void		(*set_replaygain)	(RBPlayer *player,
-						 const char *uri,
-						 double track_gain,
-						 double track_peak,
-						 double album_gain,
-						 double album_peak);
 
 	gboolean	(*seekable)		(RBPlayer *player);
 	void		(*set_time)		(RBPlayer *player,
@@ -161,10 +155,6 @@ gboolean	rb_player_playing    (RBPlayer *player);
 
 void		rb_player_set_volume (RBPlayer *player, float volume);
 float		rb_player_get_volume (RBPlayer *player);
-void		rb_player_set_replaygain (RBPlayer *player,
-					  const char *uri,
-					  double track_gain, double track_peak,
-					  double album_gain, double album_peak);
 
 gboolean	rb_player_seekable   (RBPlayer *player);
 void		rb_player_set_time   (RBPlayer *player, gint64 newtime);

@@ -1842,6 +1842,9 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	char *builder_file;
 	Itdb_Device *ipod_dev;
 	RBPlugin *plugin;
+	GList *output_formats;
+	GList *t;
+	GString *str;
 
 	/* probably should display an error on the basic page in most of these error cases.. */
 
@@ -1932,6 +1935,20 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 
 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-firmware-version-value"));
 	gtk_label_set_text (GTK_LABEL (widget), itdb_device_get_sysinfo (ipod_dev, "VisibleBuildID"));
+
+	str = g_string_new ("");
+	output_formats = rb_removable_media_source_get_format_descriptions (RB_REMOVABLE_MEDIA_SOURCE (source));
+	for (t = output_formats; t != NULL; t = t->next) {
+		if (t != output_formats) {
+			g_string_append (str, "\n");
+		}
+		g_string_append (str, t->data);
+	}
+	rb_list_deep_free (output_formats);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "label-audio-formats-value"));
+	gtk_label_set_text (GTK_LABEL (widget), str->str);
+	g_string_free (str, TRUE);
 
 	g_object_unref (builder);
 }

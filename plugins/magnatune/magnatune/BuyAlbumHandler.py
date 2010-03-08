@@ -28,7 +28,6 @@
 import xml.sax, xml.sax.handler
 
 class BuyAlbumHandler(xml.sax.handler.ContentHandler): # Class to download the track, etc.
-
 	format_map =	{
 			'ogg'		:	'URL_OGGZIP',
 			'flac'		:	'URL_FLACZIP',
@@ -47,12 +46,11 @@ class BuyAlbumHandler(xml.sax.handler.ContentHandler): # Class to download the t
 	def endElement(self, name):
 		if name == "ERROR": # Something went wrong. Display error message to user.
 			raise MagnatunePurchaseError(self._text)
-		elif name == "DL_USERNAME":
-			self.username = self._text
-		elif name == "DL_PASSWORD":
-			self.password = self._text
 		elif name == self._format_tag:
 			self.url = self._text
+		# Response also contains:
+		#  DL_MSG  - Message to the user, with promo stuff, etc.
+		#  DL_PAGE - URL that the user can go to to manually download the album.
 
 	def characters(self, content):
 		self._text = self._text + content

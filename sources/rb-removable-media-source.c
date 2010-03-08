@@ -625,6 +625,33 @@ rb_removable_media_source_get_mime_types (RBRemovableMediaSource *source)
 		return NULL;
 }
 
+GList *
+rb_removable_media_source_get_format_descriptions (RBRemovableMediaSource *source)
+{
+	GList *mime;
+	GList *desc = NULL;
+	GList *t;
+
+	mime = rb_removable_media_source_get_mime_types (source);
+	for (t = mime; t != NULL; t = t->next) {
+		const char *mimetype;
+		char *content_type;
+
+		mimetype = t->data;
+		content_type = g_content_type_from_mime_type (mimetype);
+		if (content_type != NULL) {
+			char *description;
+			description = g_content_type_get_description (content_type);
+			desc = g_list_append (desc, description);
+		} else {
+			desc = g_list_append (desc, g_strdup (mimetype));
+		}
+	}
+
+	rb_list_deep_free (mime);
+	return desc;
+}
+
 gboolean
 rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *source,
 						     RhythmDBEntry *entry)
@@ -635,6 +662,7 @@ rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *sou
 	const char *title;
 	const char *album;
 	const char *artist;
+	gulong track_number;
 	GtkTreeModel *query_model;
 	GtkTreeIter iter;
 	gboolean no_match;
@@ -652,6 +680,7 @@ rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *sou
 	title = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
 	album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
 	artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+	track_number = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
 	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (query_model),
 				RHYTHMDB_QUERY_PROP_EQUALS,
 				RHYTHMDB_PROP_TYPE, entry_type,
@@ -661,6 +690,8 @@ rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *sou
 				RHYTHMDB_PROP_ALBUM, album,
 				RHYTHMDB_QUERY_PROP_EQUALS,
 				RHYTHMDB_PROP_TITLE, title,
+				RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_TRACK_NUMBER, track_number,
 				RHYTHMDB_QUERY_END);
 
 	no_match = (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (query_model),
@@ -669,7 +700,7 @@ rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *sou
 	g_object_unref(query_model);
 	g_object_unref (db);
 	if (no_match == FALSE) {
-		rb_debug ("not adding %s - %s - %s to  removable device since it's already present\n", title, album, artist);
+		rb_debug ("not adding %lu - %s - %s - %s to removable device since it's already present", track_number, title, album, artist);
 	}
 	return no_match;
 }

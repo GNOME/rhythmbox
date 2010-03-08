@@ -1861,6 +1861,30 @@ _rb_source_check_entry_type (RBSource *source, RhythmDBEntry *entry)
 	return ret;
 }
 
+/**
+ * _rb_source_set_import_status:
+ * @source: an #RBSource
+ * @job: a #RhythmDBImportJob
+ * @progress_text: used to return progress text
+ * @progress: used to return progress fraction
+ *
+ * Used in implementations of the get_status method to provide source
+ * status information based on a #RhythmDBImportJob.
+ */
+void
+_rb_source_set_import_status (RBSource *source, RhythmDBImportJob *job, char **progress_text, float *progress)
+{
+	int total;
+	int imported;
+
+	total = rhythmdb_import_job_get_total (job);
+	imported = rhythmdb_import_job_get_imported (job);
+
+	g_free (*progress_text);
+	*progress_text = g_strdup_printf (_("Importing (%d/%d)"), imported, total);
+	*progress = ((float)imported / (float)total);
+}
+
 /* This should really be standard. */
 #define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
 

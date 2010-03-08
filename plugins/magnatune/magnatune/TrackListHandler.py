@@ -26,23 +26,32 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import rhythmdb
+import gnomekeyring as keyring
 import xml.sax, xml.sax.handler
-import datetime
+import datetime, re, urllib
 
 class TrackListHandler(xml.sax.handler.ContentHandler):
-
-	def __init__(self, db, entry_type, sku_dict, home_dict, buy_dict, art_dict):
+	def __init__(self, db, entry_type, sku_dict, home_dict, art_dict, account_type, username, password):
 		xml.sax.handler.ContentHandler.__init__(self)
 		self.__db = db
 		self.__entry_type = entry_type
 		self.__sku_dict = sku_dict
 		self.__home_dict = home_dict
-		self.__buy_dict = buy_dict
 		self.__art_dict = art_dict
 		self.__track = {}
+		self.__account_type = account_type
+		self.__user = urllib.quote(username)
+		self.__pw = urllib.quote(password)
+		self.__URIre = re.compile(r'^http://[^.]+\.magnatune\.com/')
+		self.__nsre = re.compile(r'\.(mp3|ogg)$')
 
 	def startElement(self, name, attrs):
 		self.__text = ""
+
+	def fix_trackurl(self, trackurl):
+		trackurl = self.__URIre.sub("http://%s:%s@stream.magnatune.com/" % (self.__user, self.__pw), trackurl)
+		trackurl = self.__nsre.sub(r"_nospeech.\1", trackurl)
+		return trackurl
 
 	def endElement(self, name):
 		if name == "Track":
@@ -52,7 +61,10 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 					trackurl = self.__track['oggurl']
 				else:
 					trackurl = self.__track['url']
-	
+				# use ad-free tracks if available
+				if self.__account_type != 'none':
+					trackurl = self.fix_trackurl(trackurl)
+
 				# add the track to the source
 				entry = self.__db.entry_lookup_by_location (trackurl)
 				if entry == None:
@@ -88,7 +100,6 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 				sku = intern(str(self.__track['albumsku']))
 				self.__sku_dict[key] = sku
 				self.__home_dict[sku] = str(self.__track['home'])
-				self.__buy_dict[sku] = str(self.__track['buy'].replace("buy_album", "buy_cd", 1))
 				self.__art_dict[sku] = str(self.__track['cover_small'])
 
 				self.__db.commit()

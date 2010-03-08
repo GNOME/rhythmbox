@@ -42,6 +42,7 @@ rhythmdb.c: rhythmdb.defs rhythmdb.override
 rb.c: rb.defs rb.override
 	( cd $(srcdir) && $(PYGTK_CODEGEN) \
 		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
+		--register $(PYGTK_DEFSDIR)/gdk-base-types.defs \
 		--register $(GST_PYTHON_DEFSDIR)/gst-types.defs \
 		--register rhythmdb.defs \
 		--override $*.override \
@@ -77,6 +78,7 @@ BINDING_HEADERS_SRCDIR_IN = \
 	widgets/rb-entry-view.h			\
 	widgets/rb-library-browser.h		\
 	widgets/rb-property-view.h		\
+	widgets/rb-search-entry.h		\
 	widgets/rb-song-info.h			\
 	widgets/rb-uri-dialog.h			\
 	$(NULL)

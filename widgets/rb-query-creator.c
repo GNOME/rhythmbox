@@ -915,7 +915,7 @@ create_property_option_menu (RBQueryCreator *creator,
 
 	combo = gtk_combo_box_new_text ();
 	for (i = 0; i < length; i++) {
-		gtk_combo_box_append_text (GTK_COMBO_BOX (combo), _(options[i].name));
+		gtk_combo_box_append_text (GTK_COMBO_BOX (combo), g_dpgettext2 (NULL, "query-criteria", options[i].name));
 	}
 
 	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
@@ -970,7 +970,7 @@ setup_sort_option_menu (RBQueryCreator *creator,
 		GtkTreeIter iter;
 
 		gtk_list_store_append (store, &iter);
-		gtk_list_store_set (store, &iter, 0, _(options[i].name), -1);
+		gtk_list_store_set (store, &iter, 0, g_dpgettext2 (NULL, "query-sort", options[i].name), -1);
 	}
 
 	gtk_combo_box_set_model (GTK_COMBO_BOX (option_menu), GTK_TREE_MODEL (store));
