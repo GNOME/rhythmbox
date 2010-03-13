@@ -1082,7 +1082,12 @@ rb_source_cut (RBSource *source)
 static GList *
 default_copy (RBSource *source)
 {
-	return rb_entry_view_get_selected_entries (rb_source_get_entry_view (source));
+	RBEntryView *entry_view;
+	entry_view = rb_source_get_entry_view (source);
+	if (entry_view == NULL)
+		return NULL;
+
+	return rb_entry_view_get_selected_entries (entry_view);
 }
 
 /**
@@ -1134,10 +1139,15 @@ static void
 default_add_to_queue (RBSource *source,
 		      RBSource *queue)
 {
-	RBEntryView *songs = rb_source_get_entry_view (source);
-	GList *selection = rb_entry_view_get_selected_entries (songs);
+	RBEntryView *songs;
+	GList *selection;
 	GList *iter;
 
+	songs = rb_source_get_entry_view (source);
+	if (songs == NULL)
+		return;
+
+	selection = rb_entry_view_get_selected_entries (songs);
 	if (selection == NULL)
 		return;
 
@@ -1190,8 +1200,11 @@ default_move_to_trash (RBSource *source)
 
 	g_object_get (priv->shell, "db", &db, NULL);
 
+	sel = NULL;
 	entry_view = rb_source_get_entry_view (source);
-	sel = rb_entry_view_get_selected_entries (entry_view);
+	if (entry_view != NULL) {
+		sel = rb_entry_view_get_selected_entries (entry_view);
+	}
 
 	for (tem = sel; tem != NULL; tem = tem->next) {
 		rhythmdb_entry_move_to_trash (db, (RhythmDBEntry *)tem->data);
@@ -1658,11 +1671,16 @@ GList *
 rb_source_gather_selected_properties (RBSource *source,
 				      RhythmDBPropType prop)
 {
+	RBEntryView *entryview;
 	GList *selected, *tem;
 	GHashTable *selected_set;
 
+	entryview = rb_source_get_entry_view (source);
+	if (entryview == NULL)
+		return NULL;
+
 	selected_set = g_hash_table_new (g_str_hash, g_str_equal);
-	selected = rb_entry_view_get_selected_entries (rb_source_get_entry_view (RB_SOURCE (source)));
+	selected = rb_entry_view_get_selected_entries (entryview);
 
 	for (tem = selected; tem; tem = tem->next) {
 		RhythmDBEntry *entry = tem->data;

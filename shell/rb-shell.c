@@ -1414,7 +1414,9 @@ rb_shell_constructed (GObject *object)
 		RBEntryView *view;
 
 		view = rb_source_get_entry_view (RB_SOURCE (shell->priv->library_source));
-		gtk_widget_grab_focus (GTK_WIDGET (view));
+		if (view != NULL) {
+			gtk_widget_grab_focus (GTK_WIDGET (view));
+		}
 	}
 
 	rb_profile_end ("constructing shell");
@@ -1881,9 +1883,10 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 			RBEntryView *songs;
 
 			songs = rb_source_get_entry_view (source);
-
-			state = from_queue ? RB_ENTRY_VIEW_PLAYING : RB_ENTRY_VIEW_NOT_PLAYING;
-			rb_entry_view_set_state (songs, state);
+			if (songs != NULL) {
+				state = from_queue ? RB_ENTRY_VIEW_PLAYING : RB_ENTRY_VIEW_NOT_PLAYING;
+				rb_entry_view_set_state (songs, state);
+			}
 		}
 		rhythmdb_entry_unref (entry);
 
@@ -2721,8 +2724,10 @@ rb_shell_jump_to_entry_with_source (RBShell *shell,
 	songs = rb_source_get_entry_view (source);
 	rb_shell_select_source (shell, source);
 
-	rb_entry_view_scroll_to_entry (songs, entry);
-	rb_entry_view_select_entry (songs, entry);
+	if (songs != NULL) {
+		rb_entry_view_scroll_to_entry (songs, entry);
+		rb_entry_view_select_entry (songs, entry);
+	}
 }
 
 static void
