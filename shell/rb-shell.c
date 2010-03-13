@@ -1819,7 +1819,8 @@ rb_shell_source_deleted_cb (RBSource *source,
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 
-	if (source == rb_shell_player_get_playing_source (shell->priv->player_shell)) {
+	if (source == rb_shell_player_get_playing_source (shell->priv->player_shell) ||
+	    source == rb_shell_player_get_active_source (shell->priv->player_shell)) {
 		rb_shell_player_stop (shell->priv->player_shell);
 	}
 	if (source == shell->priv->selected_source) {
