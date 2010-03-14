@@ -1941,18 +1941,6 @@ set_props_from_metadata (RhythmDB *db,
 					  RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID,
 					  "");
 
-	/* artist sortname */
-	set_metadata_string_with_default (db, metadata, entry,
-					  RB_METADATA_FIELD_ARTIST_SORTNAME,
-					  RHYTHMDB_PROP_ARTIST_SORTNAME,
-					  "");
-
-	/* album sortname */
-	set_metadata_string_with_default (db, metadata, entry,
-					  RB_METADATA_FIELD_ALBUM_SORTNAME,
-					  RHYTHMDB_PROP_ALBUM_SORTNAME,
-					  "");
-
 	/* filesize */
 	g_value_init (&val, G_TYPE_UINT64);
 	g_value_set_uint64 (&val, g_file_info_get_attribute_uint64 (fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE));
@@ -1990,6 +1978,18 @@ set_props_from_metadata (RhythmDB *db,
 					  RB_METADATA_FIELD_ALBUM,
 					  RHYTHMDB_PROP_ALBUM,
 					  _("Unknown"));
+	/* artist sortname */
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_ARTIST_SORTNAME,
+					  RHYTHMDB_PROP_ARTIST_SORTNAME,
+					  "");
+
+	/* album sortname */
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_ALBUM_SORTNAME,
+					  RHYTHMDB_PROP_ALBUM_SORTNAME,
+					  "");
+
 }
 
 static gboolean
