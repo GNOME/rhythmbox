@@ -1416,6 +1416,7 @@ process_changed_entries_cb (RhythmDBEntry *entry,
 			    GSList *changes,
 			    RhythmDB *db)
 {
+	GSList *existing;
 	if (db->priv->changed_entries_to_emit == NULL) {
 		db->priv->changed_entries_to_emit = g_hash_table_new_full (NULL,
 									   NULL,
@@ -1423,7 +1424,22 @@ process_changed_entries_cb (RhythmDBEntry *entry,
 									   (GDestroyNotify) free_entry_changes);
 	}
 
-	g_hash_table_insert (db->priv->changed_entries_to_emit, rhythmdb_entry_ref (entry), changes);
+	/* if the entry is already in the change map from a previous commit, add the
+	 * new changes to the end of the existing list.
+	 */
+	existing = g_hash_table_lookup (db->priv->changed_entries_to_emit, entry);
+	if (existing != NULL) {
+		changes = g_slist_concat (existing, changes);
+
+		/* steal the hash entry so it doesn't free the changes; also means we
+		 * don't need to add a reference on the entry.
+		 */
+		g_hash_table_steal (db->priv->changed_entries_to_emit, entry);
+	} else {
+		rhythmdb_entry_ref (entry);
+	}
+
+	g_hash_table_insert (db->priv->changed_entries_to_emit, entry, changes);
 	return TRUE;
 }
 
