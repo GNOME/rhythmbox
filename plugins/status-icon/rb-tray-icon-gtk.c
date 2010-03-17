@@ -152,6 +152,7 @@ rb_tray_icon_init (RBTrayIcon *tray)
 
 	tray->priv->icon = gtk_status_icon_new_from_icon_name (RB_STOCK_TRAY_ICON_NOT_PLAYING);
 	gtk_status_icon_set_visible (tray->priv->icon, FALSE);
+	gtk_status_icon_set_title (GTK_STATUS_ICON (tray->priv->icon), _("Rhythmbox"));
 
 	g_signal_connect_object (tray->priv->icon, "button-press-event",
 				 G_CALLBACK (rb_tray_icon_button_press_event_cb),
