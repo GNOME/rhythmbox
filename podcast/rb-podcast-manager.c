@@ -611,19 +611,24 @@ static void
 download_error (RBPodcastManagerInfo *data, GError *error)
 {
 	GValue val = {0,};
-	rb_debug ("error downloading %s: %s",
-		  get_remote_location (data->entry),
-		  error->message);
 
-	g_value_init (&val, G_TYPE_ULONG);
-	g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
-	rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
-	g_value_unset (&val);
+	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) == FALSE) {
+		rb_debug ("error downloading %s: %s",
+			  get_remote_location (data->entry),
+			  error->message);
 
-	g_value_init (&val, G_TYPE_STRING);
-	g_value_set_string (&val, error->message);
-	rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
-	g_value_unset (&val);
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
+		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
+		g_value_unset (&val);
+
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, error->message);
+		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
+		g_value_unset (&val);
+	} else {
+		rb_debug ("download of %s was cancelled", get_remote_location (data->entry));
+	}
 
 	rhythmdb_commit (data->pd->priv->db);
 	g_idle_add ((GSourceFunc)end_job, data);
@@ -1517,11 +1522,11 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 		download_progress (data, downloaded, data->download_size, FALSE);
 	}
 
-	/* close everything */
-	g_input_stream_close (G_INPUT_STREAM (data->in_stream), data->cancel, NULL);
+	/* close everything - don't allow these operations to be cancelled */
+	g_input_stream_close (G_INPUT_STREAM (data->in_stream), NULL, NULL);
 	g_object_unref (data->in_stream);
 
-	g_output_stream_close (G_OUTPUT_STREAM (data->out_stream), data->cancel, &error);
+	g_output_stream_close (G_OUTPUT_STREAM (data->out_stream), NULL, &error);
 	g_object_unref (data->out_stream);
 
 	if (error != NULL) {
