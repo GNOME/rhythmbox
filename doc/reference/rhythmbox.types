@@ -45,7 +45,10 @@
 #include "rb-shell-preferences.h"
 #include "rb-song-info.h"
 #include "rb-source.h"
+#include "rb-source-group.h"
 #include "rb-source-header.h"
+#include "rb-source-search.h"
+#include "rb-source-search-basic.h"
 #include "rb-sourcelist.h"
 #include "rb-sourcelist-model.h"
 #include "rb-static-playlist-source.h"
@@ -106,6 +109,8 @@ rb_source_get_type
 rb_source_group_category_get_type
 rb_source_group_get_type
 rb_source_header_get_type
+rb_source_search_get_type
+rb_source_search_basic_get_type
 rb_sourcelist_get_type
 rb_sourcelist_model_column_get_type
 rb_sourcelist_model_get_type
