@@ -146,6 +146,7 @@ rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 /**
  * rhythmdb_query_parse:
  * @db: a #RhythmDB instance
+ * @Varargs: query criteria to parse
  *
  * Creates a query from a list of criteria.
  *
@@ -203,6 +204,7 @@ rhythmdb_query_parse (RhythmDB *db, ...)
  * rhythmdb_query_append:
  * @db: a #RhythmDB instance
  * @query: a query.
+ * @Varargs: query criteria to append
  *
  * Appends new criteria to the query @query.
  *
@@ -815,6 +817,8 @@ rhythmdb_query_is_time_relative (RhythmDB *db, GPtrArray *query)
  *
  * Returns a supposedly human-readable form of the query.
  * This is only intended for debug usage.
+ *
+ * Returns: allocated string form of the query
  **/
 char *
 rhythmdb_query_to_string (RhythmDB *db, GPtrArray *query)

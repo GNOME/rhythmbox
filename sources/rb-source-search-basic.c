@@ -26,6 +26,15 @@
  *
  */
 
+/**
+ * SECTION:rb-source-search-basic
+ * @short_description: Simple implementation of #RBSourceSearch
+ *
+ * This implementation of #RBSourceSearch constructs queries that
+ * search on a single #RhythmDBEntry property.  It's useful for
+ * providing basic searches.
+ */
+
 #include "config.h"
 
 #include "rb-source-search-basic.h"
@@ -115,12 +124,13 @@ rb_source_search_basic_init (RBSourceSearchBasic *search)
 
 /**
  * rb_source_search_basic_new:
+ * @prop:	the #RhythmDBPropType to search
  *
  * Creates a new #RBSourceSearchBasic instance.
  * This performs simple string matching on a specified
  * property.
  *
- * @prop:	the #RhythmDBPropType to search
+ * Return value: newly created #RBSourceSearchBasic
  */
 RBSourceSearch *
 rb_source_search_basic_new (RhythmDBPropType prop)
@@ -130,15 +140,14 @@ rb_source_search_basic_new (RhythmDBPropType prop)
 
 /**
  * rb_source_search_basic_create_for_actions:
+ * @action_group:	the GtkActionGroup containing the actions
+ * @actions:		the GtkRadioActionEntries for the actions
+ * @n_actions:		the number of actions
  *
  * Creates #RBSourceSearchBasic instances for a set of
  * search actions and associates them with the actions.
  * The property to match on is taken from the action
  * value in the GtkRadioActionEntry structure.
- *
- * @action_group:	the GtkActionGroup containing the actions
- * @actions:		the GtkRadioActionEntries for the actions
- * @n_actions:		the number of actions
  */
 void
 rb_source_search_basic_create_for_actions (GtkActionGroup *action_group,

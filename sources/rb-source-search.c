@@ -26,6 +26,22 @@
  *
  */
 
+/**
+ * SECTION:rb-source-search
+ * @short_description: Base class for source search implementations
+ *
+ * These translate the text in the search entry box into a
+ * RhythmDBQuery.  The basic implementation will return
+ * a query like RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_SEARCH_MATCH,
+ * text.  Simple variants can restrict the search to single
+ * properties (artist, album, genre).  More complicated searches
+ * could implement something like the Xesam User Query spec.
+ *
+ * The source header finds the search instance to use by looking
+ * for the 'rb-source-search' data item on the active search
+ * action.
+ */
+
 #include "config.h"
 
 #include "rb-source-search.h"
@@ -60,16 +76,16 @@ rb_source_search_init (RBSourceSearch *search)
 
 /**
  * rb_source_search_is_subset:
+ * @search: a #RBSourceSearch
+ * @current: the current search text (or NULL if the current search was done with a different
+ *    search implementation and so cannot be considered)
+ * @next: the new search text
  *
  * Determines whether the new search text will result in a
  * subset of entries matched by the previous search.  This is
  * used to optimise the search query.
  *
- * @search: a #RBSourceSearch
- * @current: the current search text (or NULL if the current search was done with a different
- *    search implementation and so cannot be considered)
- * @next: the new search text
- * @return: TRUE iff the new search text will match a subset of those matched by the current search.
+ * Return value: TRUE iff the new search text will match a subset of those matched by the current search.
  */
 gboolean
 rb_source_search_is_subset (RBSourceSearch *search, const char *current, const char *next)
@@ -80,13 +96,13 @@ rb_source_search_is_subset (RBSourceSearch *search, const char *current, const c
 
 /**
  * rb_source_search_create_query:
- *
- * Creates a #RhythmDBQuery from the user's search text.
- *
  * @search: a #RBSourceSearch
  * @db: the #RhythmDB
  * @search_text: the search text
- * @return: #RhythmDBQuery for the source to use
+ *
+ * Creates a #RhythmDBQuery from the user's search text.
+ *
+ * Return value: #RhythmDBQuery for the source to use
  */
 RhythmDBQuery *
 rb_source_search_create_query (RBSourceSearch *search, RhythmDB *db, const char *search_text)
@@ -98,14 +114,14 @@ rb_source_search_create_query (RBSourceSearch *search, RhythmDB *db, const char 
 
 /**
  * _rb_source_search_create_simple_query:
- *
- * Creates a basic search query.
- *
  * @search: the #RBSourceSearch
  * @db: the #RhythmDB
  * @search_text: the search text such as RHYTHMDB_PROP_SEARCH_MATCH
  * @search_prop: the search property
- * @return: the #RhythmDBQuery for the search text and property, or NULL
+ *
+ * Creates a basic search query.
+ *
+ * Return value: the #RhythmDBQuery for the search text and property, or NULL
  *   if no search text is specified.
  */
 RhythmDBQuery *
@@ -123,12 +139,11 @@ _rb_source_search_create_simple_query (RBSourceSearch *search, RhythmDB *db, con
 
 /**
  * rb_source_search_action_attach:
+ * @search: #RBSourceSearch to associate with the action
+ * @action: UI action to associate the search with
  *
  * Attaches a #RBSourceSearch to a UI action so that
  * the search implementation will be used when the action is active.
- *
- * @search: #RBSourceSearch to associate with the action
- * @action: UI action to associate the search with
  */
 void
 rb_source_search_action_attach (RBSourceSearch *search, GObject *action)
@@ -141,12 +156,12 @@ rb_source_search_action_attach (RBSourceSearch *search, GObject *action)
 
 /**
  * rb_source_search_get_from_action:
+ * @action: the action to find the #RBSourceSearch for
  *
  * Returns the #RBSourceSearch associated with the
  * specified UI action.
  *
- * @action: the action to find the #RBSourceSearch for
- * @return: associated #RBSourceSearch
+ * Return value: associated #RBSourceSearch
  */
 RBSourceSearch *
 rb_source_search_get_from_action (GObject *action)

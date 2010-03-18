@@ -933,7 +933,9 @@ rb_source_can_rename (RBSource *source)
 /**
  * rb_source_search:
  * @source: a #RBSource
- * @text: new search text
+ * @search: the active #RBSourceSearch instance
+ * @cur_text: the current search text
+ * @new_text: the new search text
  *
  * Updates the source with new search text.  The source
  * should recreate the database query that feeds into the

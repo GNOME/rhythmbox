@@ -41,12 +41,15 @@ G_BEGIN_DECLS
 #define RB_IS_REMOVABLE_MEDIA_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_REMOVABLE_MEDIA_SOURCE))
 #define RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_REMOVABLE_MEDIA_SOURCE, RBRemovableMediaSourceClass))
 
-typedef struct
+typedef struct _RBRemovableMediaSource RBRemovableMediaSource;
+typedef struct _RBRemovableMediaSourceClass RBRemovableMediaSourceClass;
+
+struct _RBRemovableMediaSource
 {
 	RBBrowserSource parent;
-} RBRemovableMediaSource;
+};
 
-typedef struct
+struct _RBRemovableMediaSourceClass
 {
 	RBBrowserSourceClass parent;
 
@@ -66,7 +69,7 @@ typedef struct
 						 GError *error);
 	gboolean	(*impl_should_paste)	(RBRemovableMediaSource *source,
 						 RhythmDBEntry *entry);
-} RBRemovableMediaSourceClass;
+};
 
 typedef gboolean	(*RBRemovableMediaSourceShouldPasteFunc) (RBRemovableMediaSource *source,
 								  RhythmDBEntry *entry);
