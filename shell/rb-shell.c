@@ -27,6 +27,15 @@
  *
  */
 
+/**
+ * SECTION:rb-shell
+ * @short_description: holds the Rhythmbox main window and everything else
+ *
+ * RBShell is the main application class in Rhythmbox.  It creates and holds
+ * references to the other main objects (#RBShellPlayer, #RhythmDB, #RBSourcelist),
+ * constructs the main window UI, and provides the basic DBus interface.
+ */
+
 #include <config.h>
 
 #include <string.h>
@@ -283,7 +292,7 @@ static guint rb_shell_signals[LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE (RBShell, rb_shell, G_TYPE_OBJECT)
 
-struct RBShellPrivate
+struct _RBShellPrivate
 {
 	GtkWidget *window;
 	gboolean iconified;
@@ -451,6 +460,11 @@ rb_shell_class_init (RBShellClass *klass)
 
 	klass->visibility_changing = rb_shell_visibility_changing;
 
+	/**
+	 * RBShell:no-registration:
+	 *
+	 * If %TRUE, disable single-instance features.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_NO_REGISTRATION,
 					 g_param_spec_boolean ("no-registration",
@@ -458,7 +472,11 @@ rb_shell_class_init (RBShellClass *klass)
 							       "Whether or not to register",
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
+	/**
+	 * RBShell:no-update:
+	 *
+	 * If %TRUE, don't update the database.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_NO_UPDATE,
 					 g_param_spec_boolean ("no-update",
@@ -466,7 +484,11 @@ rb_shell_class_init (RBShellClass *klass)
 							       "Whether or not to update the library",
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
+	/**
+	 * RBShell:dry-run:
+	 *
+	 * If TRUE, don't write back file metadata changes.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DRY_RUN,
 					 g_param_spec_boolean ("dry-run",
@@ -474,7 +496,11 @@ rb_shell_class_init (RBShellClass *klass)
 							       "Whether or not this is a dry run",
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
+	/**
+	 * RBShell:rhythmdb-file:
+	 *
+	 * The path to the rhythmdb file
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_RHYTHMDB_FILE,
 					 g_param_spec_string ("rhythmdb-file",
@@ -487,7 +513,11 @@ rb_shell_class_init (RBShellClass *klass)
 #endif
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
-
+	/**
+	 * RBShell:playlists-file:
+	 *
+	 * The path to the playlist file
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLAYLISTS_FILE,
 					 g_param_spec_string ("playlists-file", 
@@ -497,7 +527,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 
-
+	/**
+	 * RBShell:selected-source:
+	 *
+	 * The currently selected source object
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SELECTED_SOURCE,
 					 g_param_spec_object ("selected-source",
@@ -505,7 +539,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      "Source which is currently selected",
 							      RB_TYPE_SOURCE,
 							      G_PARAM_READABLE));
-
+	/**
+	 * RBShell:db:
+	 *
+	 * The #RhythmDB instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DB,
 					 g_param_spec_object ("db",
@@ -513,7 +551,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      "RhythmDB object",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READABLE));
-
+	/**
+	 * RBShell:ui-manager:
+	 *
+	 * The #GtkUIManager instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_UI_MANAGER,
 					 g_param_spec_object ("ui-manager",
@@ -521,7 +563,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      "GtkUIManager object",
 							      GTK_TYPE_UI_MANAGER,
 							      G_PARAM_READABLE));
-
+	/**
+	 * RBShell:clipboard:
+	 *
+	 * The #RBShellClipboard instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_CLIPBOARD,
 					 g_param_spec_object ("clipboard",
@@ -529,6 +575,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      "RBShellClipboard object",
 							      RB_TYPE_SHELL_CLIPBOARD,
 							      G_PARAM_READABLE));
+	/**
+	 * RBShell:playlist-manager:
+	 *
+	 * The #RBPlaylistManager instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLAYLIST_MANAGER,
 					 g_param_spec_object ("playlist-manager",
@@ -536,6 +587,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      "RBPlaylistManager object",
 							      RB_TYPE_PLAYLIST_MANAGER,
 							      G_PARAM_READABLE));
+	/**
+	 * RBShell:shell-player:
+	 *
+	 * The #RBShellPlayer instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SHELL_PLAYER,
 					 g_param_spec_object ("shell-player",
@@ -543,6 +599,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      "RBShellPlayer object",
 							      RB_TYPE_SHELL_PLAYER,
 							      G_PARAM_READABLE));
+	/**
+	 * RBShell:removable-media-manager:
+	 *
+	 * The #RBRemovableMediaManager instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_REMOVABLE_MEDIA_MANAGER,
 					 g_param_spec_object ("removable-media-manager",
@@ -550,6 +611,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      "RBRemovableMediaManager object",
 							      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
 							      G_PARAM_READABLE));
+	/**
+	 * RBShell:window:
+	 *
+	 * The main Rhythmbox window.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_WINDOW,
 					 g_param_spec_object ("window",
@@ -557,6 +623,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      "GtkWindow object",
 							      GTK_TYPE_WINDOW,
 							      G_PARAM_READABLE));
+	/**
+	 * RBShell:prefs:
+	 *
+	 * The #RBShellPreferences instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PREFS,
 					 g_param_spec_object ("prefs",
@@ -564,6 +635,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      "RBShellPreferences object",
 							      RB_TYPE_SHELL_PREFERENCES,
 							      G_PARAM_READABLE));
+	/**
+	 * RBShell:queue-source:
+	 *
+	 * The play queue source
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_QUEUE_SOURCE,
 					 g_param_spec_object ("queue-source",
@@ -571,6 +647,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      "Queue source",
 							      RB_TYPE_PLAY_QUEUE_SOURCE,
 							      G_PARAM_READABLE));
+	/**
+	 * RBShell:library-source:
+	 *
+	 * The library source
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY_SOURCE,
 					 g_param_spec_object ("library-source",
@@ -578,6 +659,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      "Library source",
 							      RB_TYPE_LIBRARY_SOURCE,
 							      G_PARAM_READABLE));
+	/**
+	 * RBShell:sourcelist-model:
+	 *
+	 * The tree model underlying the source list.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SOURCELIST_MODEL,
 					 g_param_spec_object ("sourcelist-model",
@@ -586,6 +672,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      RB_TYPE_SOURCELIST_MODEL,
 							      G_PARAM_READABLE));
 
+	/**
+	 * RBShell:sourcelist:
+	 *
+	 * The #RBSourcelist instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SOURCELIST,
 					 g_param_spec_object ("sourcelist",
@@ -594,6 +685,11 @@ rb_shell_class_init (RBShellClass *klass)
 							      RB_TYPE_SOURCELIST,
 							      G_PARAM_READABLE));
 
+	/**
+	 * RBShell:visibility:
+	 *
+	 * Whether the main window is currently visible.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_VISIBILITY,
 					 g_param_spec_boolean ("visibility",
@@ -601,6 +697,11 @@ rb_shell_class_init (RBShellClass *klass)
 							       "Current window visibility",
 							       TRUE,
 							       G_PARAM_READWRITE));
+	/**
+	 * RBShell:source-header:
+	 *
+	 * The #RBSourceHeader instance
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SOURCE_HEADER,
 					 g_param_spec_object ("source-header",
@@ -934,6 +1035,19 @@ rb_shell_finalize (GObject *object)
 	rb_debug ("shell shutdown complete");
 }
 
+/**
+ * rb_shell_new:
+ * @no_registration: if %TRUE, single-instance features are disabled
+ * @no_update: if %TRUE, don't update the database file
+ * @dry_run: if %TRUE, don't write back file metadata changes
+ * @rhythmdb: path to the database file
+ * @playlists: path to the playlist file
+ *
+ * Creates the Rhythmbox shell.  This is effectively a singleton, so it doesn't
+ * make sense to call this from anywhere other than main.c.
+ *
+ * Return value: the #RBShell instance
+ */
 RBShell *
 rb_shell_new (gboolean no_registration,
 	      gboolean no_update,
@@ -1709,6 +1823,16 @@ rb_shell_db_entry_added_cb (RhythmDB *db,
 	}
 }
 
+/**
+ * rb_shell_get_source_by_entry_type:
+ * @shell: the #RBShell
+ * @type: entry type for which to find a source
+ *
+ * Looks up and returns the source that owns entries of the specified
+ * type.
+ *
+ * Return value: source instance, if any
+ */
 RBSource *
 rb_shell_get_source_by_entry_type (RBShell *shell,
 				   RhythmDBEntryType type)
@@ -1716,6 +1840,17 @@ rb_shell_get_source_by_entry_type (RBShell *shell,
 	return g_hash_table_lookup (shell->priv->sources_hash, type);
 }
 
+/**
+ * rb_shell_register_entry_type_for_source:
+ * @shell: the #RBShell
+ * @source: the #RBSource to register
+ * @type: the #RhythmDBEntryType to register for
+ *
+ * Registers a source as the owner of entries of the specified type.
+ * The main effect of this is that calling #rb_shell_get_source_by_entry_type
+ * with the same entry type will return the source.  A source should only
+ * be registered as the owner of a single entry type.
+ */
 void
 rb_shell_register_entry_type_for_source (RBShell *shell,
 					 RBSource *source,
@@ -1729,6 +1864,15 @@ rb_shell_register_entry_type_for_source (RBShell *shell,
 	g_hash_table_insert (shell->priv->sources_hash, type, source);
 }
 
+/**
+ * rb_shell_append_source:
+ * @shell: the #RBShell
+ * @source: the new #RBSource
+ * @parent: the parent source for the new source (optional)
+ *
+ * Registers a new source with the shell.  All sources must be
+ * registered.
+ */
 void
 rb_shell_append_source (RBShell *shell,
 			RBSource *source,
@@ -2146,6 +2290,12 @@ rb_shell_cmd_about (GtkAction *action,
 	g_free (license_trans);
 }
 
+/**
+ * rb_shell_toggle_visibility:
+ * @shell: the #RBShell
+ *
+ * Toggles the visibility of the main Rhythmbox window.
+ */
 void
 rb_shell_toggle_visibility (RBShell *shell)
 {
@@ -2342,6 +2492,17 @@ quit_timeout (gpointer dummy)
 	return FALSE;
 }
 
+/**
+ * rb_shell_quit:
+ * @shell: the #RBShell
+ * @error: not used
+ *
+ * Begins the process of shutting down Rhythmbox.  This function will
+ * return.  The error parameter and return value only exist because this
+ * function is part of the DBus interface.
+ *
+ * Return value: not important
+ */
 gboolean
 rb_shell_quit (RBShell *shell,
 	       GError **error)
@@ -2775,6 +2936,16 @@ rb_shell_notify_custom (RBShell *shell,
 	g_signal_emit (shell, rb_shell_signals[NOTIFY_CUSTOM], 0, timeout, primary, secondary, pixbuf, requested);
 }
 
+/**
+ * rb_shell_do_notify:
+ * @shell: the #RBShell
+ * @requested: if %TRUE, the notification was requested by some explicit user action
+ * @error: not used
+ *
+ * Displays a notification of the current playing track.
+ *
+ * Return value: not important
+ */
 gboolean
 rb_shell_do_notify (RBShell *shell, gboolean requested, GError **error)
 {
@@ -2782,6 +2953,11 @@ rb_shell_do_notify (RBShell *shell, gboolean requested, GError **error)
 	return TRUE;
 }
 
+/**
+ * rb_shell_error_quark:
+ *
+ * Return value: the #GQuark used for #RBShell errors
+ */
 GQuark
 rb_shell_error_quark (void)
 {
@@ -2819,6 +2995,17 @@ rb_shell_session_init (RBShell *shell)
 	g_signal_connect (sm_client, "quit", G_CALLBACK (session_quit_cb), shell);
 }
 
+/**
+ * rb_shell_guess_source_for_uri:
+ * @shell: the #RBSource
+ * @uri: the URI to guess a source for
+ *
+ * Attempts to locate the source that should handle the specified URI.
+ * This iterates through all sources, calling #rb_source_want_uri,
+ * returning the source that returns the highest value.
+ *
+ * Return value: the most appropriate #RBSource for the uri
+ */
 RBSource *
 rb_shell_guess_source_for_uri (RBShell *shell,
 			       const char *uri)
@@ -2851,6 +3038,20 @@ rb_shell_guess_source_for_uri (RBShell *shell,
 
 /* Load a URI representing an element of the given type, with
  * optional metadata
+ */
+/**
+ * rb_shell_add_uri:
+ * @shell: the #RBShell
+ * @uri: the URI to add
+ * @title: optional title value for the URI
+ * @genre: optional genre value for the URI
+ * @error: returns error information
+ *
+ * Adds the specified URI to the Rhythmbox database.  Whether the
+ * title and genre specified are actually used is up to the source
+ * that handles the URI
+ *
+ * Return value: TRUE if the URI was added successfully
  */
 gboolean
 rb_shell_add_uri (RBShell *shell,
@@ -2913,8 +3114,15 @@ handle_playlist_entry_cb (TotemPlParser *playlist,
 	}
 }
 
-/* Load a URI representing a single song, a directory, a playlist, or
- * an internet radio station, and optionally start playing it.
+/**
+ * rb_shell_load_uri:
+ * @shell: the #RBShell
+ * @uri: the URI to load
+ * @play: if TRUE, start playing the URI (if possible)
+ * @error: returns error information
+ *
+ * Loads a URI representing a single song, a directory, a playlist, or
+ * an internet radio station, and optionally starts playing it.
  *
  * For playlists containing only stream URLs, we either add the playlist
  * itself (if it's remote) or each URL from it (if it's local).  The main
@@ -2922,6 +3130,8 @@ handle_playlist_entry_cb (TotemPlParser *playlist,
  * works properly - the playlist file will be downloaded to /tmp/, and
  * we can't add that to the database, so we need to add the stream URLs
  * instead.
+ *
+ * Return value: TRUE if the URI was added successfully
  */
 gboolean
 rb_shell_load_uri (RBShell *shell,
@@ -3039,42 +3249,101 @@ rb_shell_load_uri (RBShell *shell,
 	return TRUE;
 }
 
+/**
+ * rb_shell_get_party_mode:
+ * @shell: the #RBShell
+ *
+ * Returns %TRUE if the shell is in party mode
+ *
+ * Return value: %TRUE if the shell is in party mode
+ */
 gboolean
 rb_shell_get_party_mode (RBShell *shell)
 {
 	return shell->priv->party_mode;
 }
 
+/**
+ * rb_shell_get_player:
+ * @shell: the #RBShell
+ *
+ * Returns the #RBShellPlayer object
+ *
+ * Return value: the #RBShellPlayer object
+ */
 GObject *
 rb_shell_get_player (RBShell *shell)
 {
 	return G_OBJECT (shell->priv->player_shell);
 }
 
+/**
+ * rb_shell_get_player_path:
+ * @shell: the #RBShell
+ *
+ * Returns the DBus object path for the #RBShellPlayer
+ *
+ * Return value: the DBus object path for the #RBShellPlayer
+ */
 const char *
 rb_shell_get_player_path (RBShell *shell)
 {
 	return "/org/gnome/Rhythmbox/Player";
 }
 
+/**
+ * rb_shell_get_playlist_manager:
+ * @shell: the #RBShell
+ *
+ * Returns the #RBPlaylistManager object
+ *
+ * Return value: the #RBPlaylistManager object
+ */
 GObject *
 rb_shell_get_playlist_manager (RBShell *shell)
 {
 	return G_OBJECT (shell->priv->playlist_manager);
 }
 
+/**
+ * rb_shell_get_playlist_manager_path:
+ * @shell: the #RBShell
+ *
+ * Returns the DBus path for the #RBPlaylistManager object
+ *
+ * Return value: the DBus object path for the #RBPlaylistManager
+ */
 const char *
 rb_shell_get_playlist_manager_path (RBShell *shell)
 {
 	return "/org/gnome/Rhythmbox/PlaylistManager";
 }
 
+/**
+ * rb_shell_get_ui_manager:
+ * @shell: the #RBShell
+ *
+ * Returns the main #GtkUIManager object
+ *
+ * Return value: the main #GtkUIManager object
+ */
 GObject *
 rb_shell_get_ui_manager (RBShell *shell)
 {
 	return G_OBJECT (shell->priv->ui_manager);
 }
 
+/**
+ * rb_shell_add_to_queue:
+ * @shell: the #RBShell
+ * @uri: the URI to add to the play queue
+ * @error: not used
+ *
+ * Adds the specified URI to the play queue.  This only works if URI is already
+ * in the database.
+ *
+ * Return value: not used
+ */
 gboolean
 rb_shell_add_to_queue (RBShell *shell,
 		       const gchar *uri,
@@ -3085,6 +3354,17 @@ rb_shell_add_to_queue (RBShell *shell,
 	return TRUE;
 }
 
+/**
+ * rb_shell_remove_from_queue:
+ * @shell: the #RBShell
+ * @uri: the URI to remove from the play queue
+ * @error: not used
+ *
+ * Removes the specified URI from the play queue.  If the URI is not
+ * in the play queue, nothing happens.
+ *
+ * Return value: not used.
+ */
 gboolean
 rb_shell_remove_from_queue (RBShell *shell,
 			    const gchar *uri,
@@ -3096,6 +3376,15 @@ rb_shell_remove_from_queue (RBShell *shell,
 	return TRUE;
 }
 
+/**
+ * rb_shell_clear_queue:
+ * @shell: the #RBShell
+ * @error: not used
+ *
+ * Removes all entries from the play queue.
+ *
+ * Return value: not used
+ */
 gboolean
 rb_shell_clear_queue (RBShell *shell,
 		      GError **error)
@@ -3104,6 +3393,16 @@ rb_shell_clear_queue (RBShell *shell,
 	return TRUE;
 }
 
+/**
+ * rb_shell_present:
+ * @shell: the #RBShell
+ * @timestamp: GTK timestamp to use (for focus-stealing prevention)
+ * @error: not used
+ *
+ * Attempts to display the main window to the user.  See #gtk_window_present for details.
+ *
+ * Return value: not used.
+ */
 gboolean
 rb_shell_present (RBShell *shell,
 		  guint32 timestamp,
@@ -3121,6 +3420,18 @@ rb_shell_present (RBShell *shell,
 	return TRUE;
 }
 
+/**
+ * rb_shell_get_song_properties:
+ * @shell: the #RBShell
+ * @uri: the URI to query
+ * @properties: returns the properties of the specified URI
+ * @error: returns error information
+ *
+ * Gathers and returns all metadata (including extra metadata such as album
+ * art URIs and lyrics) for the specified URI.
+ *
+ * Return value: %TRUE if the URI is found in the database
+ */
 gboolean
 rb_shell_get_song_properties (RBShell *shell,
 			      const char *uri,
@@ -3148,6 +3459,20 @@ rb_shell_get_song_properties (RBShell *shell,
 	return (*properties != NULL);
 }
 
+/**
+ * rb_shell_set_song_property:
+ * @shell: the #RBShell
+ * @uri: the URI to modify
+ * @propname: the name of the property to modify
+ * @value: the new value to set
+ * @error: returns error information
+ *
+ * Attempts to set a property of a database entry identified by its URI.
+ * If the URI identifies a file and the property is one associated with a
+ * file metadata tag, the new value will be written to the file.
+ *
+ * Return value: %TRUE if the property was set successfully.
+ */
 gboolean
 rb_shell_set_song_property (RBShell *shell,
 			    const char *uri,
@@ -3199,6 +3524,7 @@ rb_shell_set_song_property (RBShell *shell,
 	} else {
 		rhythmdb_entry_set (shell->priv->db, entry, propid, value);
 	}
+	rhythmdb_commit (shell->priv->db);
 	return TRUE;
 }
 
@@ -3251,6 +3577,17 @@ rb_shell_get_box_for_ui_location (RBShell *shell, RBShellUILocation location)
 	return box;
 }
 
+/**
+ * rb_shell_add_widget:
+ * @shell: the #RBShell
+ * @widget: the #GtkWidget to insert into the main window
+ * @location: the location at which to insert the widget
+ * @expand: whether the widget should be given extra space
+ * @fill: whether the widget should fill all space allocated to it
+ *
+ * Adds a widget to the main Rhythmbox window.  See #gtk_box_pack_start for
+ * details on how the expand and fill parameters work.
+ */
 void
 rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location, gboolean expand, gboolean fill)
 {
@@ -3275,6 +3612,14 @@ rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation locati
 	}
 }
 
+/**
+ * rb_shell_remove_widget:
+ * @shell: the #RBShell
+ * @widget: the #GtkWidget to remove from the main window
+ * @location: the UI location to which the widget was originally added
+ *
+ * Removes a widget added with #rb_shell_add_widget from the main window.
+ */
 void
 rb_shell_remove_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location)
 {
@@ -3302,6 +3647,14 @@ rb_shell_remove_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation loc
 	}
 }
 
+/**
+ * rb_shell_notebook_set_page:
+ * @shell: the #RBShell
+ * @widget: #GtkWidget for the page to display
+ *
+ * Changes the visible page in the main window notebook widget.  Use this to
+ * display widgets added to the #RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK location.
+ */
 void
 rb_shell_notebook_set_page (RBShell *shell, GtkWidget *widget)
 {

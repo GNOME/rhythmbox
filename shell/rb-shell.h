@@ -67,16 +67,18 @@ typedef enum
 GType rb_shell_ui_location_get_type (void);
 #define RB_TYPE_SHELL_UI_LOCATION	(rb_shell_ui_location_get_type())
 
-typedef struct RBShellPrivate RBShellPrivate;
+typedef struct _RBShell RBShell;
+typedef struct _RBShellClass RBShellClass;
+typedef struct _RBShellPrivate RBShellPrivate;
 
-typedef struct
+struct _RBShell
 {
         GObject parent;
 
 	RBShellPrivate *priv;
-} RBShell;
+};
 
-typedef struct
+struct _RBShellClass
 {
         GObjectClass parent_class;
 
@@ -85,7 +87,7 @@ typedef struct
 	void	 (*visibility_changed)	(RBShell *shell, gboolean visible);
 	void	 (*create_song_info)	(RBShell *shell, RBSongInfo *song_info, gboolean multi);
 	void	 (*removable_media_scan_finished) (RBShell *shell);
-} RBShellClass;
+};
 
 GType		rb_shell_get_type	(void);
 
