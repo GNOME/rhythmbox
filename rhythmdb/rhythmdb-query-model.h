@@ -54,18 +54,20 @@ typedef enum {
 	RHYTHMDB_QUERY_MODEL_LIMIT_TIME,
 } RhythmDBQueryModelLimitType;
 
-typedef struct RhythmDBQueryModelPrivate RhythmDBQueryModelPrivate;
+typedef struct _RhythmDBQueryModel RhythmDBQueryModel;
+typedef struct _RhythmDBQueryModelClass RhythmDBQueryModelClass;
+typedef struct _RhythmDBQueryModelPrivate RhythmDBQueryModelPrivate;
 
 #define RHYTHMDB_QUERY_MODEL_SUGGESTED_UPDATE_CHUNK 1024
 
-typedef struct
+struct _RhythmDBQueryModel
 {
 	GObject parent;
 
 	RhythmDBQueryModelPrivate *priv;
-} RhythmDBQueryModel;
+};
 
-typedef struct
+struct _RhythmDBQueryModelClass
 {
 	GObjectClass parent;
 
@@ -86,7 +88,7 @@ typedef struct
 	gboolean (*filter_entry_drop)	(RhythmDBQueryModel *model,
 					 RhythmDBEntry *entry);
 
-} RhythmDBQueryModelClass;
+};
 
 GType			rhythmdb_query_model_get_type		(void);
 
@@ -102,7 +104,7 @@ RhythmDBQueryModel *	rhythmdb_query_model_new_empty		(RhythmDB *db);
 void			rhythmdb_query_model_copy_contents	(RhythmDBQueryModel *dest,
 								 RhythmDBQueryModel *src);
 
-void			rhythmdb_query_model_chain		(RhythmDBQueryModel *child,
+void			rhythmdb_query_model_chain		(RhythmDBQueryModel *model,
 								 RhythmDBQueryModel *base,
 								 gboolean import_entries);
 
