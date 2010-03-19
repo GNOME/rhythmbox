@@ -52,6 +52,7 @@
 #include "rhythmdb-import-job.h"
 #include "rb-import-errors-source.h"
 #include "rb-builder-helpers.h"
+#include "rb-media-player-sync-settings.h"
 
 static void impl_constructed (GObject *object);
 static void impl_dispose (GObject *object);
@@ -81,7 +82,15 @@ static char* impl_build_dest_uri (RBRemovableMediaSource *source,
 				  const char *extension);
 static guint64 impl_get_capacity (RBMediaPlayerSource *source);
 static guint64 impl_get_free_space (RBMediaPlayerSource *source);
+static void impl_get_entries (RBMediaPlayerSource *source, const char *category, GHashTable *map);
+static void impl_delete_entries (RBMediaPlayerSource *source,
+				 GList *entries,
+				 RBMediaPlayerSourceDeleteCallback callback,
+				 gpointer data,
+				 GDestroyNotify destroy_data);
 static void impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
+static void impl_add_playlist (RBMediaPlayerSource *source, char *name, GList *entries);
+static void impl_remove_playlists (RBMediaPlayerSource *source);
 
 static char *default_get_mount_path (RBGenericPlayerSource *source);
 static void default_load_playlists (RBGenericPlayerSource *source);
@@ -146,9 +155,13 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	source_class->impl_can_paste = impl_can_paste;
 	source_class->impl_get_status = impl_get_status;
 
+	mps_class->impl_get_entries = impl_get_entries;
 	mps_class->impl_get_capacity = impl_get_capacity;
 	mps_class->impl_get_free_space = impl_get_free_space;
+	mps_class->impl_delete_entries = impl_delete_entries;
 	mps_class->impl_show_properties = impl_show_properties;
+	mps_class->impl_add_playlist = impl_add_playlist;
+	mps_class->impl_remove_playlists = impl_remove_playlists;
 
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
 	rms_class->impl_get_mime_types = impl_get_mime_types;
@@ -1152,6 +1165,57 @@ impl_get_free_space (RBMediaPlayerSource *source)
 }
 
 static void
+impl_get_entries (RBMediaPlayerSource *source,
+		  const char *category,
+		  GHashTable *map)
+{
+	RhythmDBQueryModel *model;
+	GtkTreeIter iter;
+	gboolean podcast;
+
+	/* we don't have anything else to distinguish podcasts from regular
+	 * tracks, so just use the genre.
+	 */
+	podcast = (g_str_equal (category, SYNC_CATEGORY_PODCAST));
+
+	g_object_get (source, "base-query-model", &model, NULL);
+	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter) == FALSE) {
+		g_object_unref (model);
+		return;
+	}
+
+	do {
+		RhythmDBEntry *entry;
+		const char *genre;
+		entry = rhythmdb_query_model_iter_to_entry (model, &iter);
+		genre = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
+		if (g_str_equal (genre, "Podcast") == podcast) {
+			_rb_media_player_source_add_to_map (map, entry);
+		}
+	} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (model), &iter));
+
+	g_object_unref (model);
+}
+
+static void
+impl_delete_entries (RBMediaPlayerSource *source,
+		     GList *entries,
+		     RBMediaPlayerSourceDeleteCallback callback,
+		     gpointer callback_data,
+		     GDestroyNotify destroy_data)
+{
+	rb_generic_player_source_delete_entries (RB_GENERIC_PLAYER_SOURCE (source), entries);
+
+	if (callback) {
+		callback (source, callback_data);
+	}
+	if (destroy_data) {
+		destroy_data (callback_data);
+	}
+}
+
+
+static void
 impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook)
 {
 	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
@@ -1252,3 +1316,49 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	g_object_unref (builder);
 }
 
+static void
+impl_add_playlist (RBMediaPlayerSource *source, char *name, GList *entries)
+{
+	RBSource *playlist;
+	RhythmDBEntryType entry_type;
+	RBShell *shell;
+	GList *i;
+
+	g_object_get (source,
+		      "shell", &shell,
+		      "entry-type", &entry_type,
+		      NULL);
+
+	playlist = rb_generic_player_playlist_source_new (shell, RB_GENERIC_PLAYER_SOURCE (source), NULL, NULL, entry_type);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+
+	rb_generic_player_source_add_playlist (RB_GENERIC_PLAYER_SOURCE (source),
+					       shell,
+					       playlist);
+	g_object_set (playlist, "name", name, NULL);
+
+	for (i = entries; i != NULL; i = i->next) {
+		rb_static_playlist_source_add_entry (RB_STATIC_PLAYLIST_SOURCE (playlist),
+						     i->data,
+						     -1);
+	}
+
+	g_object_unref (shell);
+}
+
+static void
+impl_remove_playlists (RBMediaPlayerSource *source)
+{
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
+	GList *playlists;
+	GList *t;
+
+	playlists = g_list_copy (priv->playlists);
+	for (t = playlists; t != NULL; t = t->next) {
+		RBGenericPlayerPlaylistSource *p = RB_GENERIC_PLAYER_PLAYLIST_SOURCE (t->data);
+		rb_generic_player_playlist_delete_from_player (p);
+		rb_source_delete_thyself (RB_SOURCE (p));
+	}
+
+	g_list_free (playlists);
+}
