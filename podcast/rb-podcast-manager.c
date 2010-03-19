@@ -1778,10 +1778,14 @@ remove_if_not_downloaded (GtkTreeModel *model,
 
 	entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model),
 						    iter);
-	if (entry != NULL && rb_podcast_manager_entry_downloaded (entry) == FALSE) {
-		rb_debug ("entry %s is no longer present in the feed and has not been downloaded",
-			  get_remote_location (entry));
-		*remove = g_list_prepend (*remove, entry);
+	if (entry != NULL) {
+		if (rb_podcast_manager_entry_downloaded (entry) == FALSE) {
+			rb_debug ("entry %s is no longer present in the feed and has not been downloaded",
+				  get_remote_location (entry));
+			*remove = g_list_prepend (*remove, entry);
+		} else {
+			rhythmdb_entry_unref (entry);
+		}
 	}
 
 	return FALSE;
@@ -1926,8 +1930,10 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 				do {
 					entry = rhythmdb_query_model_iter_to_entry (existing_entries, &iter);
 					if (strcmp (get_remote_location (entry), item->url) == 0) {
+						rhythmdb_entry_unref (entry);
 						break;
 					}
+					rhythmdb_entry_unref (entry);
 					entry = NULL;
 
 				} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (existing_entries), &iter));

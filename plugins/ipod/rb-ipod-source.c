@@ -1177,6 +1177,7 @@ rb_add_artwork_whole_album_cb (GtkTreeModel *query_model,
 	entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (query_model), iter);
 
 	song = g_hash_table_lookup (artwork_data->priv->entry_map, entry);
+	rhythmdb_entry_unref (entry);
 	g_return_val_if_fail (song != NULL, FALSE);
 
 	if (song->has_artwork == 0x01) {		   

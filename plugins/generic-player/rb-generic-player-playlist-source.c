@@ -121,6 +121,7 @@ save_playlist_foreach (GtkTreeModel *model,
 	set_field_from_property (data->playlist, &pl_iter, entry, RHYTHMDB_PROP_GENRE, TOTEM_PL_PARSER_FIELD_GENRE);
 	set_field_from_property (data->playlist, &pl_iter, entry, RHYTHMDB_PROP_ALBUM, TOTEM_PL_PARSER_FIELD_ALBUM);
 	set_field_from_property (data->playlist, &pl_iter, entry, RHYTHMDB_PROP_TITLE, TOTEM_PL_PARSER_FIELD_TITLE);
+	rhythmdb_entry_unref (entry);
 
 	g_free (uri);
 	return FALSE;
@@ -148,6 +149,7 @@ save_playlist_entry (GtkTreeModel *model, GtkTreeIter *iter,
 	*uri = rb_generic_player_source_uri_to_playlist_uri (priv->player_source, host_uri, data->playlist_type);
 	*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
 	*custom_title = TRUE;
+	rhythmdb_entry_unref (entry);
 }
 
 #endif
