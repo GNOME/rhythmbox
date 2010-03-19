@@ -45,6 +45,9 @@
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 
+/* arbitrary length limit for file extensions */
+#define EXTENSION_LENGTH_LIMIT	8
+
 static void rb_removable_media_source_constructed (GObject *object);
 static void rb_removable_media_source_dispose (GObject *object);
 
@@ -391,6 +394,11 @@ impl_paste (RBSource *source, GList *entries)
 			s = g_strrstr (path, ".");
 			extension = (s != NULL) ? g_strdup (s + 1) : NULL;
 			g_free (path);
+		}
+
+		/* make sure the extension isn't ludicrously long */
+		if (strlen (extension) > EXTENSION_LENGTH_LIMIT) {
+			extension[EXTENSION_LENGTH_LIMIT] = '\0';
 		}
 
 		dest = rb_removable_media_source_build_dest_uri (RB_REMOVABLE_MEDIA_SOURCE (source), entry, mimetype, extension);

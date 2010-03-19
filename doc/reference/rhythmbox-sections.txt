@@ -93,7 +93,6 @@ rb_removable_media_manager_get_type
 RB_REMOVABLE_MEDIA_MANAGER_CLASS
 RB_IS_REMOVABLE_MEDIA_MANAGER_CLASS
 RB_REMOVABLE_MEDIA_MANAGER_GET_CLASS
-RBRemovableMediaManagerPrivate
 </SECTION>
 
 <SECTION>
@@ -261,8 +260,9 @@ RBStatusbarPrivate
 
 <SECTION>
 <FILE>rb-shell</FILE>
-RBShellError
-RBShellPrivate
+<TITLE>RBShell</TITLE>
+RBShell
+RBShellClass
 rb_shell_new
 rb_shell_present
 rb_shell_guess_source_for_uri
@@ -280,9 +280,6 @@ rb_shell_add_to_queue
 rb_shell_remove_from_queue
 rb_shell_clear_queue
 rb_shell_quit
-rb_shell_hidden_notify
-rb_shell_hidden_notify_markup
-rb_shell_notify_playing_entry
 rb_shell_do_notify
 rb_shell_register_entry_type_for_source
 rb_shell_get_source_by_entry_type
@@ -301,6 +298,7 @@ RB_IS_SHELL_CLASS
 RB_SHELL_GET_CLASS
 RB_SHELL_ERROR
 rb_shell_error_quark
+RBShellPrivate
 </SECTION>
 
 <SECTION>
@@ -308,8 +306,6 @@ rb_shell_error_quark
 <TITLE>RBPlayOrder</TITLE>
 RBPlayOrder
 RBPlayOrderClass
-rb_play_order_new
-RBPlayOrderDescription
 rb_play_order_playing_source_changed
 rb_play_order_query_model_changed
 rb_play_order_has_next
@@ -415,7 +411,7 @@ rb_sourcelist_edit_source_name
 rb_sourcelist_remove
 rb_sourcelist_select
 <SUBSECTION Standard>
-RBSourceListPriv
+RBSourceListPrivate
 RB_SOURCELIST
 RB_IS_SOURCELIST
 RB_TYPE_SOURCELIST
@@ -445,6 +441,7 @@ RB_SOURCELIST_MODEL_GET_CLASS
 
 <SECTION>
 <FILE>rb-removable-media-source</FILE>
+<TITLE>RBRemovableMediaSource</TITLE>
 RBRemovableMediaSource
 RBRemovableMediaSourceClass
 rb_removable_media_source_build_dest_uri
@@ -465,11 +462,9 @@ RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS
 <TITLE>RBPlaylistSource</TITLE>
 RBPlaylistSource
 RBPlaylistSourceClass
-rb_playlist_source_new
 rb_playlist_source_new_from_xml
 rb_playlist_source_save_playlist
 rb_playlist_source_save_to_xml
-rb_playlist_source_set_entry_view
 rb_playlist_source_set_query_model
 rb_playlist_source_get_query_model
 rb_playlist_source_get_db
@@ -505,7 +500,6 @@ rb_source_browser_toggled
 rb_source_get_entry_view
 rb_source_get_property_views
 rb_source_can_rename
-rb_source_can_search
 rb_source_search
 rb_source_reset_filters
 rb_source_get_config_widget
@@ -538,15 +532,13 @@ rb_source_get_ui_actions
 rb_source_get_search_actions
 rb_source_gather_selected_properties
 rb_source_set_hidden_when_empty
-_rb_source_show_popup
-_rb_source_register_action_group
 <SUBSECTION Standard>
 RBSourcePrivate
 RB_SOURCE
 RB_IS_SOURCE
 RB_TYPE_SOURCE
 rb_source_get_type
-rb_source_eof_get_type
+rb_source_eof_type_get_type
 RB_SOURCE_CLASS
 RB_IS_SOURCE_CLASS
 RB_SOURCE_GET_CLASS
@@ -572,13 +564,6 @@ rb_player_seekable
 rb_player_set_time
 rb_player_get_time
 rb_player_multiple_open
-_rb_player_emit_eos
-_rb_player_emit_info
-_rb_player_emit_buffering
-_rb_player_emit_error
-_rb_player_emit_tick
-_rb_player_emit_event
-_rb_player_emit_playing_stream
 <SUBSECTION Standard>
 rb_player_error_quark
 rb_player_get_type
@@ -613,25 +598,11 @@ RhythmDBPropertyModelPrivate
 </SECTION>
 
 <SECTION>
-<FILE>rhythmdb-tree</FILE>
-RhythmDBTreePrivate
-rhythmdb_tree_new
-<SUBSECTION Standard>
-RHYTHMDB_TREE
-RHYTHMDB_IS_TREE
-RHYTHMDB_TYPE_TREE
-rhythmdb_tree_get_type
-RHYTHMDB_TREE_CLASS
-RHYTHMDB_IS_TREE_CLASS
-RHYTHMDB_TREE_GET_CLASS
-</SECTION>
-
-<SECTION>
 <FILE>rhythmdb-query-model</FILE>
+<TITLE>RhythmDBQueryModel</TITLE>
 RhythmDBQueryModel
 RhythmDBQueryModelClass
 RhythmDBQueryModelLimitType
-RhythmDBQueryModelPrivate
 RHYTHMDB_QUERY_MODEL_SUGGESTED_UPDATE_CHUNK
 rhythmdb_query_model_new
 rhythmdb_query_model_new_empty
@@ -670,6 +641,7 @@ rhythmdb_query_model_get_type
 RHYTHMDB_QUERY_MODEL_CLASS
 RHYTHMDB_IS_QUERY_MODEL_CLASS
 RHYTHMDB_QUERY_MODEL_GET_CLASS
+RhythmDBQueryModelPrivate
 </SECTION>
 
 <SECTION>
@@ -923,7 +895,6 @@ RB_CELL_RENDERER_PIXBUF_GET_CLASS
 <TITLE>RBQueryCreator</TITLE>
 RBQueryCreator
 RBQueryCreatorClass
-RBQueryCreatorLimitType
 rb_query_creator_new
 rb_query_creator_new_from_query
 rb_query_creator_get_query
@@ -985,8 +956,7 @@ RBEntryViewPrivate
 RBHeader
 RBHeaderClass
 rb_header_new
-rb_header_set_playing_entry
-rb_header_show_position_slider
+rb_header_set_show_position_slider
 rb_header_sync
 rb_header_sync_time
 rb_header_get_elapsed_string
@@ -1060,7 +1030,6 @@ rb_uri_mkstemp
 rb_uri_resolve_symlink
 rb_uri_is_directory
 rb_uri_exists
-rb_uri_resolve_relative
 rb_uri_is_readable
 rb_uri_is_writable
 rb_uri_is_local
@@ -1092,7 +1061,6 @@ rb_make_elapsed_time_string
 rb_gtk_action_popup_menu
 rb_image_new_from_stock
 rb_uri_get_mount_point
-rb_uri_is_mounted
 rb_threads_init
 rb_is_main_thread
 rb_search_fold
@@ -1130,36 +1098,6 @@ rb_refstring_hash
 rb_refstring_equal
 <SUBSECTION Standard>
 rb_refstring_get_type
-</SECTION>
-
-<SECTION>
-<FILE>eel-gconf-extensions</FILE>
-EEL_GCONF_UNDEFINED_CONNECTION
-eel_gconf_client_get_global
-eel_gconf_handle_error
-eel_gconf_set_boolean
-eel_gconf_get_boolean
-eel_gconf_get_integer
-eel_gconf_set_integer
-eel_gconf_get_float
-eel_gconf_set_float
-eel_gconf_get_string
-eel_gconf_set_string
-eel_gconf_get_string_list
-eel_gconf_set_string_list
-eel_gconf_is_default
-eel_gconf_monitor_add
-eel_gconf_monitor_remove
-eel_gconf_suggest_sync
-eel_gconf_get_value
-eel_gconf_value_is_equal
-eel_gconf_set_value
-eel_gconf_value_free
-eel_gconf_get_integer_list
-eel_gconf_set_integer_list
-eel_gconf_notification_add
-eel_gconf_notification_remove
-eel_gconf_unset
 </SECTION>
 
 <SECTION>
@@ -1417,25 +1355,6 @@ RB_STREAMING_SOURCE_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>rb-podcast-source</FILE>
-<TITLE>RBPodcastSource</TITLE>
-RBPodcastSource
-RBPodcastSourceClass
-rb_podcast_source_new
-rb_podcast_source_add_feed
-rb_podcast_source_shutdown
-<SUBSECTION Standard>
-RB_PODCAST_SOURCE
-RB_IS_PODCAST_SOURCE
-RB_TYPE_PODCAST_SOURCE
-rb_podcast_source_get_type
-RB_PODCAST_SOURCE_CLASS
-RB_IS_PODCAST_SOURCE_CLASS
-RB_PODCAST_SOURCE_GET_CLASS
-RBPodcastSourcePrivate
-</SECTION>
-
-<SECTION>
 <FILE>rb-auto-playlist-source</FILE>
 <TITLE>RBAutoPlaylistSource</TITLE>
 RBAutoPlaylistSource
@@ -1465,7 +1384,6 @@ rb_static_playlist_source_add_location
 rb_static_playlist_source_add_locations
 rb_static_playlist_source_remove_location
 rb_static_playlist_source_move_entry
-rb_static_playlist_source_shuffle_playlist
 <SUBSECTION Standard>
 RB_STATIC_PLAYLIST_SOURCE
 RB_IS_STATIC_PLAYLIST_SOURCE
@@ -1568,4 +1486,40 @@ rb_async_queue_watch_new
 rb_text_direction_conflict
 rb_text_common_direction
 rb_text_cat
+</SECTION>
+
+<SECTION>
+<FILE>rb-source-search</FILE>
+<TITLE>RBSourceSearch</TITLE>
+RBSourceSearch
+RBSourceSearchClass
+rb_source_search_is_subset
+rb_source_search_create_query
+rb_source_search_action_attach
+rb_source_search_get_from_action
+<SUBSECTION Standard>
+rb_source_search_get_type
+RB_TYPE_SOURCE_SEARCH
+RB_SOURCE_SEARCH
+RB_SOURCE_SEARCH_CLASS
+RB_IS_SOURCE_SEARCH
+RB_IS_SOURCE_SEARCH_CLASS
+RB_SOURCE_SEARCH_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>rb-source-search-basic</FILE>
+<TITLE>RBSourceSearchBasic</TITLE>
+RBSourceSearchBasic
+RBSourceSearchBasicClass
+rb_source_search_basic_new
+rb_source_search_basic_create_for_actions
+<SUBSECTION Standard>
+rb_source_search_basic_get_type
+RB_TYPE_SOURCE_SEARCH_BASIC
+RB_SOURCE_SEARCH_BASIC
+RB_SOURCE_SEARCH_BASIC_CLASS
+RB_IS_SOURCE_SEARCH_BASIC
+RB_IS_SOURCE_SEARCH_BASIC_CLASS
+RB_SOURCE_SEARCH_BASIC_GET_CLASS
 </SECTION>

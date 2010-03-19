@@ -194,7 +194,7 @@ rb_audiocd_plugin_can_reuse_stream_cb (RBPlayer *player,
 	/* check the device matches */
 	new_device = g_utf8_strrchr (new_uri, -1, '#');
 	old_device = g_utf8_strrchr (stream_uri, -1, '#');
-	if (strcmp (old_device, new_device) != 0) {
+	if (new_device == NULL || old_device == NULL || strcmp (old_device, new_device) != 0) {
 		return FALSE;
 	}
 
@@ -217,6 +217,7 @@ rb_audiocd_plugin_reuse_stream_cb (RBPlayer *player,
 	/* get the new track number */
 	cdda_len = strlen ("cdda://");
 	new_device = g_utf8_strrchr (new_uri, -1, '#');
+	g_assert (new_device != NULL);
 	track_str = g_strndup (new_uri + cdda_len, new_device - (new_uri + cdda_len));
 	track = atoi (track_str);
 	g_free (track_str);

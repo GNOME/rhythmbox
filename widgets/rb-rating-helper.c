@@ -241,7 +241,7 @@ rb_rating_render_stars (GtkWidget *widget,
 /**
  * rb_rating_get_rating_from_widget:
  * @widget: the #GtkWidget displaying the rating
- * @widget_x: 
+ * @widget_x: x component of the position to query
  * @widget_width: width of the widget
  * @current_rating: the current rating displayed in the widget
  *

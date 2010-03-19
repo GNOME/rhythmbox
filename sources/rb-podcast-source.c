@@ -255,6 +255,7 @@ static void impl_get_status				(RBSource *source,
 							 float *progress);
 static guint impl_want_uri				(RBSource *source, const char *uri);
 static gboolean impl_add_uri				(RBSource *source, const char *uri, const char *title, const char *genre);
+static char *impl_get_delete_action			(RBSource *source);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_STATION "/commands/CurrentStation"
@@ -380,6 +381,7 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	source_class->impl_get_status = impl_get_status;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
+	source_class->impl_get_delete_action = impl_get_delete_action;
 
 	g_object_class_install_property (object_class,
 					 PROP_PODCAST_MANAGER,
@@ -2140,3 +2142,8 @@ rb_podcast_source_pixbuf_clicked_cb (RBCellRendererPixbuf *renderer,
 	gtk_tree_path_free (path);
 }
 
+static char *
+impl_get_delete_action (RBSource *source)
+{
+	return g_strdup ("EditDelete");
+}

@@ -752,6 +752,7 @@ rb_metadata_get_saveable_types (RBMetaData *md)
 /**
  * rb_metadata_save:
  * @md: a #RBMetaData
+ * @uri: the target URI
  * @error: returns error information
  *
  * Saves all metadata changes made with rb_metadata_set to the

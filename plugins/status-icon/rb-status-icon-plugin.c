@@ -1014,7 +1014,7 @@ visibility_changing_cb (RBShell *shell,
 
 	if (initial) {
 		/* restore visibility from gconf setting */
-		visible = eel_gconf_get_boolean (CONF_WINDOW_VISIBILITY);
+		visible = eel_gconf_get_boolean (CONF_WINDOW_VISIBILITY) || eel_gconf_is_default (CONF_WINDOW_VISIBILITY);
 		rb_debug ("setting initial visibility %d from gconf", visible);
 		return visible;
 	}

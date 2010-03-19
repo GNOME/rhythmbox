@@ -28,21 +28,6 @@
 #ifndef __RB_SOURCE_SEARCH_H
 #define __RB_SOURCE_SEARCH_H
 
-/*
- * Base class for source search implementations.
- *
- * These translate the text in the search entry box into a
- * RhythmDBQuery.  The basic implementation will return
- * a query like RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_SEARCH_MATCH,
- * text.  Simple variants can restrict the search to single
- * properties (artist, album, genre).  More complicated searches
- * could implement something like the Xesam User Query spec.
- *
- * The source header finds the search instance to use by looking
- * for the 'rb-source-search' data item on the active search
- * action.
- */
-
 #include <glib-object.h>
 #include <rhythmdb.h>
 
@@ -55,12 +40,15 @@ G_BEGIN_DECLS
 #define RB_IS_SOURCE_SEARCH_CLASS(o)  (G_TYPE_CHECK_CLASS_TYPE ((o), RB_TYPE_SOURCE_SEARCH))
 #define RB_SOURCE_SEARCH_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SOURCE_SEARCH, RBSourceSearchClass))
 
-typedef struct
+typedef struct _RBSourceSearch RBSourceSearch;
+typedef struct _RBSourceSearchClass RBSourceSearchClass;
+
+struct _RBSourceSearch
 {
 	GObject parent;
-} RBSourceSearch;
+};
 
-typedef struct
+struct _RBSourceSearchClass
 {
 	GObjectClass parent_class;
 
@@ -72,7 +60,7 @@ typedef struct
 					 RhythmDB *db,
 					 const char *search_text);
 
-} RBSourceSearchClass;
+};
 
 GType		rb_source_search_get_type	(void);
 

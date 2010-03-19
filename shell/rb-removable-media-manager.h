@@ -85,7 +85,7 @@ GType			rb_removable_media_manager_get_type	(void);
 
 void			rb_removable_media_manager_scan (RBRemovableMediaManager *manager);
 
-void	rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *mgr,
+void	rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *manager,
 						   RhythmDBEntry *entry,
 						   const char *dest,
 						   GList *mime_types,

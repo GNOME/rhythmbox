@@ -764,8 +764,12 @@ rb_song_info_new (RBSource *source, RBEntryView *entry_view)
 	RBSongInfo *song_info;
 
         g_return_val_if_fail (RB_IS_SOURCE (source), NULL);
-	if (!entry_view)
+	if (entry_view == NULL) {
 		entry_view = rb_source_get_entry_view (source);
+		if (entry_view == NULL) {
+			return NULL;
+		}
+	}
 
 	if (rb_entry_view_have_selection (entry_view) == FALSE)
 		return NULL;

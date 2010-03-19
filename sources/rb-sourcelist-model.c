@@ -613,6 +613,7 @@ rb_sourcelist_model_row_deleted_cb (GtkTreeModel *model,
  * @RB_SOURCELIST_MODEL_COLUMN_VISIBILITY: the source's visibility
  * @RB_SOURCELIST_MODEL_COLUMN_IS_GROUP: whether the row identifies a group or a source
  * @RB_SOURCELIST_MODEL_COLUMN_GROUP_CATEGORY: if the row is a group, the category for the group
+ * @RB_SOURCELIST_MODEL_N_COLUMNS: the number of columns
  *
  * Columns present in the source list model.
  */

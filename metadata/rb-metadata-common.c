@@ -63,6 +63,7 @@
  * @RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID: MusicBrainz album ID
  * @RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID: MusicBrainz album artist ID
  * @RB_METADATA_FIELD_ARTIST_SORTNAME: Person(s) responsible for the recording, as used for sorting
+ * @RB_METADATA_FIELD_ALBUM_SORTNAME: Album containing the recording, as used for sorting
  * @RB_METADATA_FIELD_LAST:  invalid field
  *
  * Metadata fields that can be read from and written to files.

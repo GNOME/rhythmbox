@@ -349,6 +349,11 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 	object_class->set_property = rb_shell_player_set_property;
 	object_class->get_property = rb_shell_player_get_property;
 
+	/**
+	 * RBShellPlayer:source:
+	 *
+	 * The current source that is selected for playback.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SOURCE,
 					 g_param_spec_object ("source",
@@ -357,6 +362,11 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      RB_TYPE_SOURCE,
 							      G_PARAM_READWRITE));
 
+	/**
+	 * RBShellPlayer:ui-manager:
+	 *
+	 * The GtkUIManager
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_UI_MANAGER,
 					 g_param_spec_object ("ui-manager",
@@ -365,6 +375,11 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      GTK_TYPE_UI_MANAGER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RBShellPlayer:db:
+	 *
+	 * The #RhythmDB
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DB,
 					 g_param_spec_object ("db",
@@ -373,6 +388,11 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RBShellPlayer:action-group:
+	 *
+	 * The #GtkActionGroup to use for player actions
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_ACTION_GROUP,
 					 g_param_spec_object ("action-group",
@@ -381,14 +401,24 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      GTK_TYPE_ACTION_GROUP,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RBShellPlayer:queue-source:
+	 *
+	 * The play queue source
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_QUEUE_SOURCE,
 					 g_param_spec_object ("queue-source",
-						 	      "RBPlaylistSource",
-							      "RBPlaylistSource object",
+							      "RBPlayQueueSource",
+							      "RBPlayQueueSource object",
 							      RB_TYPE_PLAYLIST_SOURCE,
 							      G_PARAM_READWRITE));
 
+	/**
+	 * RBShellPlayer:queue-only:
+	 *
+	 * If %TRUE, activating an entry should only add it to the play queue.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_QUEUE_ONLY,
 					 g_param_spec_boolean ("queue-only",
@@ -397,6 +427,11 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							       FALSE,
 							       G_PARAM_READWRITE));
 
+	/**
+	 * RBShellPlayer:playing-from-queue:
+	 *
+	 * If %TRUE, the current playing entry came from the play queue.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLAYING_FROM_QUEUE,
 					 g_param_spec_boolean ("playing-from-queue",
@@ -405,6 +440,11 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							       FALSE,
 							       G_PARAM_READABLE));
 
+	/**
+	 * RBShellPlayer:player:
+	 *
+	 * The player backend object (an object implementing the #RBPlayer interface).
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLAYER,
 					 g_param_spec_object ("player",
@@ -413,6 +453,11 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      G_TYPE_OBJECT,
 							      G_PARAM_READABLE));
 
+	/**
+	 * RBShellPlayer:play-order:
+	 *
+	 * The current play order object.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLAY_ORDER,
 					 g_param_spec_string ("play-order",
@@ -420,6 +465,11 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      "What play order to use",
 							      "linear",
 							      G_PARAM_READABLE));
+	/**
+	 * RBShellPlayer:playing:
+	 *
+	 * Whether Rhythmbox is currently playing something
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLAYING,
 					 g_param_spec_boolean ("playing",
@@ -427,7 +477,11 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      "Whether Rhythmbox is currently playing",
 							       FALSE,
 							       G_PARAM_READABLE));
-
+	/**
+	 * RBShellPlayer:volume:
+	 *
+	 * The current playback volume (between 0.0 and 1.0)
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_VOLUME,
 					 g_param_spec_float ("volume",
@@ -436,6 +490,11 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							     0.0f, 1.0f, 1.0f,
 							     G_PARAM_READWRITE));
 
+	/**
+	 * RBShellPlayer:statusbar:
+	 *
+	 * The #RBStatusbar object
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_STATUSBAR,
 					 g_param_spec_object ("statusbar",
@@ -2494,6 +2553,8 @@ rb_shell_player_set_volume_relative (RBShellPlayer *player,
  * @volume: returns the volume level
  * @error: returns error information
  *
+ * Returns the current volume level
+ *
  * Return value: the current volume level.
  */
 gboolean
@@ -2539,6 +2600,8 @@ rb_shell_player_set_mute (RBShellPlayer *player,
  * @player: the #RBShellPlayer
  * @mute: returns the current mute setting
  * @error: returns error information
+ *
+ * Returns %TRUE if currently muted
  *
  * Return value: %TRUE if currently muted
  */
@@ -3266,7 +3329,7 @@ rb_shell_player_set_playing_time (RBShellPlayer *player,
  * Does not return error information.
  */
 void
-rb_shell_player_seek (RBShellPlayer *player, long offset)
+rb_shell_player_seek (RBShellPlayer *player, glong offset)
 {
 	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
 

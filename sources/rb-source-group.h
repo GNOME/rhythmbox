@@ -46,15 +46,15 @@ GType rb_source_group_category_get_type (void);
 
 #define RB_TYPE_SOURCE_GROUP_CATEGORY (rb_source_group_category_get_type())
 
+typedef struct _RBSourceGroup RBSourceGroup;
 
-struct RBSourceGroup
+struct _RBSourceGroup
 {
 	char                 *name;
 	char                 *display_name;
 	RBSourceGroupCategory category;
 };
 
-typedef struct RBSourceGroup RBSourceGroup;
 
 GType          rb_source_group_get_type    (void);
 #define RB_TYPE_SOURCE_GROUP	(rb_source_group_get_type ())

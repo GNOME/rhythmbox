@@ -770,19 +770,7 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 						 NULL);
 	g_signal_connect_object (renderer, "edited", G_CALLBACK (source_name_edited_cb), sourcelist, 0);
 
-	if (g_object_class_find_property (G_OBJECT_GET_CLASS (sourcelist->priv->treeview), "show-expanders") != NULL) {
-		g_object_set (sourcelist->priv->treeview, "show-expanders", FALSE, NULL);
-	} else {
-		/* Hidden column for the normal treeview expander (gtk 2.8 compatibility) */
-		GtkTreeViewColumn *hidden;
-
-		hidden = gtk_tree_view_column_new ();
-
-		g_object_set (hidden, "visible", FALSE, NULL);
-
-		gtk_tree_view_append_column (GTK_TREE_VIEW (sourcelist->priv->treeview), hidden);
-		gtk_tree_view_set_expander_column (GTK_TREE_VIEW (sourcelist->priv->treeview), hidden);
-	}
+	g_object_set (sourcelist->priv->treeview, "show-expanders", FALSE, NULL);
 
 	/* Expander */
 	renderer = gossip_cell_renderer_expander_new ();

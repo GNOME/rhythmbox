@@ -339,6 +339,7 @@ _remove_entry_cb (GtkTreeModel *model,
 	rhythmdb_property_model_entry_removed_cb (RHYTHMDB_QUERY_MODEL (model),
 						  entry,
 						  propmodel);
+	rhythmdb_entry_unref (entry);
 	return FALSE;
 }
 

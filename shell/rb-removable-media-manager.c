@@ -536,6 +536,8 @@ rb_removable_media_manager_get_property (GObject *object,
  * @shell: the #RBShell
  *
  * Creates the #RBRemovableMediaManager instance.
+ *
+ * Return value: the #RBRemovableMediaManager
  */
 RBRemovableMediaManager *
 rb_removable_media_manager_new (RBShell *shell)

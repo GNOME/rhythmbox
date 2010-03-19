@@ -46,16 +46,19 @@ G_BEGIN_DECLS
 #define RB_IS_SOURCE_SEARCH_BASIC_CLASS(o)  (G_TYPE_CHECK_CLASS_TYPE ((o), RB_TYPE_SOURCE_SEARCH_BASIC))
 #define RB_SOURCE_SEARCH_BASIC_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SOURCE_SEARCH_BASIC, RBSourceSearchBasicClass))
 
-typedef struct
+typedef struct _RBSourceSearchBasic RBSourceSearchBasic;
+typedef struct _RBSourceSearchBasicClass RBSourceSearchBasicClass;
+
+struct _RBSourceSearchBasic
 {
 	RBSourceSearch parent;
 	RhythmDBPropType search_prop;
-} RBSourceSearchBasic;
+};
 
-typedef struct
+struct _RBSourceSearchBasicClass
 {
 	RBSourceSearchClass parent_class;
-} RBSourceSearchBasicClass;
+};
 
 GType		rb_source_search_basic_get_type	(void);
 

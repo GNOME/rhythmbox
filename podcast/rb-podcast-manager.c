@@ -611,19 +611,24 @@ static void
 download_error (RBPodcastManagerInfo *data, GError *error)
 {
 	GValue val = {0,};
-	rb_debug ("error downloading %s: %s",
-		  get_remote_location (data->entry),
-		  error->message);
 
-	g_value_init (&val, G_TYPE_ULONG);
-	g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
-	rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
-	g_value_unset (&val);
+	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) == FALSE) {
+		rb_debug ("error downloading %s: %s",
+			  get_remote_location (data->entry),
+			  error->message);
 
-	g_value_init (&val, G_TYPE_STRING);
-	g_value_set_string (&val, error->message);
-	rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
-	g_value_unset (&val);
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
+		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
+		g_value_unset (&val);
+
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, error->message);
+		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
+		g_value_unset (&val);
+	} else {
+		rb_debug ("download of %s was cancelled", get_remote_location (data->entry));
+	}
 
 	rhythmdb_commit (data->pd->priv->db);
 	g_idle_add ((GSourceFunc)end_job, data);
@@ -1517,11 +1522,11 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 		download_progress (data, downloaded, data->download_size, FALSE);
 	}
 
-	/* close everything */
-	g_input_stream_close (G_INPUT_STREAM (data->in_stream), data->cancel, NULL);
+	/* close everything - don't allow these operations to be cancelled */
+	g_input_stream_close (G_INPUT_STREAM (data->in_stream), NULL, NULL);
 	g_object_unref (data->in_stream);
 
-	g_output_stream_close (G_OUTPUT_STREAM (data->out_stream), data->cancel, &error);
+	g_output_stream_close (G_OUTPUT_STREAM (data->out_stream), NULL, &error);
 	g_object_unref (data->out_stream);
 
 	if (error != NULL) {
@@ -1773,10 +1778,14 @@ remove_if_not_downloaded (GtkTreeModel *model,
 
 	entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model),
 						    iter);
-	if (entry != NULL && rb_podcast_manager_entry_downloaded (entry) == FALSE) {
-		rb_debug ("entry %s is no longer present in the feed and has not been downloaded",
-			  get_remote_location (entry));
-		*remove = g_list_prepend (*remove, entry);
+	if (entry != NULL) {
+		if (rb_podcast_manager_entry_downloaded (entry) == FALSE) {
+			rb_debug ("entry %s is no longer present in the feed and has not been downloaded",
+				  get_remote_location (entry));
+			*remove = g_list_prepend (*remove, entry);
+		} else {
+			rhythmdb_entry_unref (entry);
+		}
 	}
 
 	return FALSE;
@@ -1921,8 +1930,10 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 				do {
 					entry = rhythmdb_query_model_iter_to_entry (existing_entries, &iter);
 					if (strcmp (get_remote_location (entry), item->url) == 0) {
+						rhythmdb_entry_unref (entry);
 						break;
 					}
+					rhythmdb_entry_unref (entry);
 					entry = NULL;
 
 				} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (existing_entries), &iter));

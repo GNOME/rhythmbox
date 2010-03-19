@@ -2677,3 +2677,21 @@ rb_entry_view_state_get_type (void)
 
 	return etype;
 }
+
+/**
+ * RBEntryViewColumn:
+ * @RB_ENTRY_VIEW_COL_TRACK_NUMBER: the track number column
+ * @RB_ENTRY_VIEW_COL_TITLE: the title column
+ * @RB_ENTRY_VIEW_COL_ARTIST: the artist column
+ * @RB_ENTRY_VIEW_COL_ALBUM: the album column
+ * @RB_ENTRY_VIEW_COL_GENRE: the genre column
+ * @RB_ENTRY_VIEW_COL_DURATION: the duration column
+ * @RB_ENTRY_VIEW_COL_QUALITY: the quality (bitrate) column
+ * @RB_ENTRY_VIEW_COL_RATING: the rating column
+ * @RB_ENTRY_VIEW_COL_YEAR: the year (release date) column
+ * @RB_ENTRY_VIEW_COL_LAST_PLAYED: the last played time column
+ * @RB_ENTRY_VIEW_COL_FIRST_SEEN: the first seen (imported) column
+ * @RB_ENTRY_VIEW_COL_LAST_SEEN: the last seen column
+ * @RB_ENTRY_VIEW_COL_LOCATION: the location column
+ * @RB_ENTRY_VIEW_COL_ERROR: the error column
+ */

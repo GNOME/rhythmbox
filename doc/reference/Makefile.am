@@ -30,7 +30,11 @@ CFILE_GLOB=$(top_srcdir)/lib/*.c
 # Header files to ignore when scanning.
 IGNORE_HFILES= \
 	config.h \
-	gsequence.h \
+	eel-gconf-extensions.h \
+	eggdesktopfile.h \
+	eggsmclient-private.h \
+	eggsmclient.h \
+	gseal-gtk-compat.h \
 	md5.h \
 	mkdtemp.h \
 	rb-cut-and-paste-code.h \
@@ -41,7 +45,24 @@ IGNORE_HFILES= \
 	rb-shell-binding.h \
 	rb-shell-player-glue.h \
 	rb-shell-player-binding.h \
-	rb-playlist-manager-glue.h
+	rb-playlist-manager-glue.h \
+	\
+	npapi.h \
+	npruntime.h \
+	npupp.h \
+	\
+	gedit-message-area.h \
+	gossip-cell-renderer-expander.h \
+	\
+	sj-error.h \
+	sj-metadata-getter.h \
+	sj-metadata-gvfs.h \
+	sj-metadata-marshal.h \
+	sj-metadata-musicbrainz.h \
+	sj-metadata-musicbrainz3.h \
+	sj-metadata.h \
+	sj-structures.h
+
 
 
 # Images to copy into HTML directory.

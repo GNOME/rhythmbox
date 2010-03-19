@@ -802,7 +802,7 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
  * @limit_type: the playlist limit type
  * @limit_value: the playlist limit value
  * @sort_key: the sorting key
- * @sort_direction: the sorting direction (as a #GtkSortType)
+ * @sort_order: the sorting direction (as a #GtkSortType)
  *
  * Sets the database query used to populate the playlist, and also the limit on
  * playlist size, and the sorting type used.
@@ -813,7 +813,7 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 				   RhythmDBQueryModelLimitType limit_type,
 				   GValueArray *limit_value,
 				   const char *sort_key,
-				   gint sort_direction)
+				   gint sort_order)
 {
 	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 	RhythmDB *db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
@@ -834,7 +834,7 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 
 	/* playlists that aren't limited, with a particular sort order, are user-orderable */
 	rb_entry_view_set_columns_clickable (songs, (limit_type == RHYTHMDB_QUERY_MODEL_LIMIT_NONE));
-	rb_entry_view_set_sorting_order (songs, sort_key, sort_direction);
+	rb_entry_view_set_sorting_order (songs, sort_key, sort_order);
 
 	priv->query = rhythmdb_query_copy (query);
 	priv->limit_type = limit_type;
@@ -860,7 +860,7 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
  * @limit_type: returns the playlist limit type
  * @limit_value: returns the playlist limit value
  * @sort_key: returns the playlist sorting key
- * @sort_direction: returns the playlist sorting direction (as a GtkSortOrder)
+ * @sort_order: returns the playlist sorting direction (as a GtkSortOrder)
  *
  * Extracts the current query, playlist limit, and sorting settings for the playlist.
  */
@@ -870,7 +870,7 @@ rb_auto_playlist_source_get_query (RBAutoPlaylistSource *source,
 				   RhythmDBQueryModelLimitType *limit_type,
 				   GValueArray **limit_value,
 				   char **sort_key,
-				   gint *sort_direction)
+				   gint *sort_order)
 {
 	RBAutoPlaylistSourcePrivate *priv;
 	RBEntryView *songs;
@@ -884,7 +884,7 @@ rb_auto_playlist_source_get_query (RBAutoPlaylistSource *source,
 	*limit_type = priv->limit_type;
 	*limit_value = (priv->limit_value) ? g_value_array_copy (priv->limit_value) : NULL;
 
-	rb_entry_view_get_sorting_order (songs, sort_key, sort_direction);
+	rb_entry_view_get_sorting_order (songs, sort_key, sort_order);
 }
 
 static void

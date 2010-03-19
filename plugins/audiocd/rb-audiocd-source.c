@@ -1375,6 +1375,7 @@ set_extract (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer
 		extra_data->extract = GPOINTER_TO_INT (data);
 
 		gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, iter);
+		rhythmdb_entry_unref (entry);
 	}
 	return FALSE;
 }

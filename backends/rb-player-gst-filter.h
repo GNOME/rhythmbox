@@ -40,8 +40,9 @@ G_BEGIN_DECLS
 #define RB_PLAYER_GST_FILTER_GET_IFACE(o) (G_TYPE_INSTANCE_GET_INTERFACE ((o), RB_TYPE_PLAYER_GST_FILTER, RBPlayerGstFilterIface))
 
 typedef struct _RBPlayerGstFilter RBPlayerGstFilter;
+typedef struct _RBPlayerGstFilterIface RBPlayerGstFilterIface;
 
-typedef struct
+struct _RBPlayerGstFilterIface
 {
 	GTypeInterface	g_iface;
 
@@ -52,7 +53,7 @@ typedef struct
 	/* signals */
 	void		(*filter_inserted)	(RBPlayerGstFilter *player, GstElement *filter);
 	void		(*filter_pre_remove)	(RBPlayerGstFilter *player, GstElement *filter);
-} RBPlayerGstFilterIface;
+};
 
 GType		rb_player_gst_filter_get_type   (void);
 

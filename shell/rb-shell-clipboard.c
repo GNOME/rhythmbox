@@ -692,7 +692,9 @@ rb_shell_clipboard_cmd_select_all (GtkAction *action,
 	} else {
 		/* select all tracks in the entry view */
 		entryview = rb_source_get_entry_view (clipboard->priv->source);
-		rb_entry_view_select_all (entryview);
+		if (entryview != NULL) {
+			rb_entry_view_select_all (entryview);
+		}
 	}
 }
 
@@ -709,7 +711,9 @@ rb_shell_clipboard_cmd_select_none (GtkAction *action,
 		gtk_editable_select_region (GTK_EDITABLE (widget), -1, -1);
 	} else {
 		entryview = rb_source_get_entry_view (clipboard->priv->source);
-		rb_entry_view_select_none (entryview);
+		if (entryview != NULL) {
+			rb_entry_view_select_none (entryview);
+		}
 	}
 }
 
