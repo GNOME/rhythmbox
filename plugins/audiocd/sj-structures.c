@@ -24,7 +24,7 @@
 #include "sj-structures.h"
 #include <glib.h>
 
-/**
+/*
  * Free a TrackDetails*
  */
 void track_details_free(TrackDetails *track)
@@ -38,7 +38,7 @@ void track_details_free(TrackDetails *track)
   g_free (track);
 }
 
-/**
+/*
  * Free a AlbumDetails*
  */
 void album_details_free(AlbumDetails *album)

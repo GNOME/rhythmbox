@@ -54,7 +54,7 @@ G_DEFINE_TYPE_WITH_CODE (SjMetadataGvfs, sj_metadata_gvfs,
                          G_IMPLEMENT_INTERFACE (SJ_TYPE_METADATA, metadata_iface_init));
 
 
-/**
+/*
  * Private methods
  */
 
@@ -159,7 +159,7 @@ bail:
   return NULL;
 }
 
-/**
+/*
  * GObject methods
  */
 

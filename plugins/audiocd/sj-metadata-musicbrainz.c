@@ -85,7 +85,7 @@ get_duration_from_sectors (int sectors)
   return (sectors * BYTES_PER_SECTOR / BYTES_PER_SECOND);
 }
 
-/**
+/*
  * Virtual methods
  */
 
@@ -113,7 +113,7 @@ artist_and_title_from_title (TrackDetails *track, gpointer data)
 }
 
 #if WITH_CACHE
-/**
+/*
  * Write the RDF in the MusicBrainz object to the file specified.
  */
 static void
@@ -145,7 +145,7 @@ cache_rdf (musicbrainz_t mb, const char *filename)
   g_free (rdf);
 }
 
-/**
+/*
  * Load into the MusicBrainz object the RDF from the specified cache file if it
  * exists and is valid then return TRUE, otherwise return FALSE.
  */
@@ -188,7 +188,7 @@ cache_rdf (musicbrainz_t mb, const char *filename) {
 }
 #endif
 
-/**
+/*
  * Fill the MusicBrainz object with RDF.  Basically get the CD Index and check
  * the local cache, if that fails then lookup the data online.
  */
@@ -270,7 +270,7 @@ convert_encoding(char **str)
 static GList *
 mb_list_albums (SjMetadata *metadata, char **url, GError **error)
 {
-  /** The size of the buffer used in MusicBrainz lookups */
+  /* The size of the buffer used in MusicBrainz lookups */
   SjMetadataMusicbrainzPrivate *priv;
   GList *albums = NULL;
   GList *al, *tl;

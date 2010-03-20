@@ -219,7 +219,7 @@ get_release_includes (void)
     return includes;
 }
 
-/**
+/*
  * Virtual methods
  */
 
