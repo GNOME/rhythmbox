@@ -1100,6 +1100,8 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	RhythmDBEntry *entry;
 	GValue val = {0,};
 	GTimeVal time;
+	RhythmDBQueryModel *mountpoint_entries;
+	GtkTreeIter iter;
 
 	if (!uri || !name || !title || !g_utf8_validate(uri, -1, NULL)) {
 		return NULL;
@@ -1107,6 +1109,30 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	entry = rhythmdb_entry_lookup_by_location (db, uri);
 	if (entry)
 		return NULL;
+
+	/*
+	 * Does the uri exist as the mount-point?
+	 * This check is necessary since after an entry's file is downloaded,
+	 * the location stored in the db changes to the local file path
+	 * instead of the uri. The uri moves to the mount-point attribute.
+	 * Consequently, without this check, every downloaded entry will be
+	 * re-added to the db.
+	 */
+	mountpoint_entries = rhythmdb_query_model_new_empty (db);
+	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (mountpoint_entries),
+		RHYTHMDB_QUERY_PROP_EQUALS,
+		RHYTHMDB_PROP_TYPE,
+		RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
+		RHYTHMDB_QUERY_PROP_EQUALS,
+		RHYTHMDB_PROP_MOUNTPOINT,
+		uri,
+		RHYTHMDB_QUERY_END);
+
+	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (mountpoint_entries), &iter)) {
+		g_object_unref (mountpoint_entries);
+		return NULL;
+	}
+	g_object_unref (mountpoint_entries);
 
 	entry = rhythmdb_entry_new (db,
 				    RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
@@ -1445,7 +1471,8 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 
 	/* set the downloaded location for the episode
 	 * and do it before opening the file, so that the monitor
-	 * doesn't add a normal entry for us */
+	 * doesn't add a normal entry for us
+	 */
 	if (get_download_location (data->entry) == NULL) {
 		GValue val = {0,};
 		char *uri = g_file_get_uri (data->destination);
@@ -1663,10 +1690,17 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 		g_object_unref (file);
 
 	} else if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
+		RhythmDBQueryModel *query;
 		GtkTreeModel *query_model;
 		GtkTreeIter iter;
 
-		query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (pd->priv->db));
+		/* include deleted posts (which will be hidden)
+		 * these need to be deleted so they will properly be
+		 * readded should the feed be readded.
+		 */
+		query = rhythmdb_query_model_new_empty (pd->priv->db);
+		g_object_set (query, "show-hidden", TRUE, NULL);
+		query_model = GTK_TREE_MODEL (query);
 		rhythmdb_do_full_query (pd->priv->db,
 					RHYTHMDB_QUERY_RESULTS (query_model),
                 	                RHYTHMDB_QUERY_PROP_EQUALS,
@@ -1836,6 +1870,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		 * that haven't been downloaded and are no longer present in the feed.
 		 */
 		existing_entries = rhythmdb_query_model_new_empty (db);
+		g_object_set (existing_entries, "show-hidden", TRUE, NULL);
 		rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (existing_entries),
 				 	RHYTHMDB_QUERY_PROP_EQUALS,
 					  RHYTHMDB_PROP_TYPE,
@@ -1945,29 +1980,30 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 			}
 		}
 
-		if (item->pub_date > last_post || item->pub_date == 0) {
+
+		post_entry =
+		    rb_podcast_manager_add_post (db,
+			    title,
+			    (gchar *) item->title,
+			    (gchar *) data->url,
+			    (gchar *) (item->author ? item->author : data->author),
+			    (gchar *) item->url,
+			    (gchar *) item->description,
+			    (gulong) (item->pub_date > 0 ? item->pub_date : data->pub_date),
+			    (gulong) item->duration,
+			    item->filesize);
+
+		if (post_entry)
 			updated = TRUE;
 
-			post_entry =
-				rb_podcast_manager_add_post (db,
-							     title,
-							     (gchar *) item->title,
-							     (gchar *) data->url,
-							     (gchar *) (item->author ? item->author : data->author),
-							     (gchar *) item->url,
-							     (gchar *) item->description,
-							     (gulong) (item->pub_date > 0 ? item->pub_date : data->pub_date),
-							     (gulong) item->duration,
-							     item->filesize);
-			if (post_entry && item->pub_date >= new_last_post) {
-				if (item->pub_date > new_last_post) {
-					g_list_free (download_entries);
-					download_entries = NULL;
-				}
-				download_entries = g_list_prepend (download_entries, post_entry);
-				new_last_post = item->pub_date;
+                if (post_entry && item->pub_date >= new_last_post) {
+			if (item->pub_date > new_last_post) {
+				g_list_free (download_entries);
+				download_entries = NULL;
 			}
-		}
+			download_entries = g_list_prepend (download_entries, post_entry);
+			new_last_post = item->pub_date;
+                }
 	}
 
 	if (download_last) {

@@ -941,7 +941,14 @@ impl_delete (RBSource *asource)
 
 	entries = rb_entry_view_get_selected_entries (source->priv->posts);
 	for (l = entries; l != NULL; l = g_list_next (l)) {
-		rhythmdb_entry_delete (source->priv->db, l->data);
+		/* set podcast entries to invisible instead of deleted so they will
+		 * not reappear after the podcast has been updated
+		 */
+		GValue v = {0,};
+		g_value_init (&v, G_TYPE_BOOLEAN);
+		g_value_set_boolean (&v, TRUE);
+		rhythmdb_entry_set (source->priv->db, l->data, RHYTHMDB_PROP_HIDDEN, &v);
+		g_value_unset (&v);
 	}
 
 	g_list_foreach (entries, (GFunc)rhythmdb_entry_unref, NULL);
