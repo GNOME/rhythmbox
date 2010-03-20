@@ -133,6 +133,8 @@ rb_metadata_finalize (GObject *object)
 /**
  * rb_metadata_new:
  *
+ * Creates a new metadata backend instance.
+ *
  * Return value: new #RBMetaData instance
  */
 RBMetaData *

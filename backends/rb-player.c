@@ -328,6 +328,8 @@ rb_player_open (RBPlayer *player, const char *uri, gpointer stream_data, GDestro
  * rb_player_opened:
  * @player: 	a #RBPlayer
  *
+ * Determines whether a stream has been prepared for playback.
+ *
  * Return value: TRUE if a stream is prepared for playback
  */
 gboolean
@@ -417,8 +419,10 @@ rb_player_pause (RBPlayer *player)
  * rb_player_playing:
  * @player:	a #RBPlayer.
  *
- * Return value: TRUE if a stream is currently being played (not paused
- *  or being faded out).
+ * Determines whether the player is currently playing a stream.
+ * A stream is playing if it's not paused or being faded out.
+ *
+ * Return value: TRUE if playing
  */
 gboolean
 rb_player_playing (RBPlayer *player)
@@ -449,6 +453,8 @@ rb_player_set_volume (RBPlayer *player, float volume)
  * rb_player_get_volume:
  * @player:	a #RBPlayer
  *
+ * Returns the current volume level, between 0.0 and 1.0.
+ *
  * Return value: current output volume level
  */
 float
@@ -462,6 +468,8 @@ rb_player_get_volume (RBPlayer *player)
 /**
  * rb_player_seekable:
  * @player:	a #RBPlayer
+ *
+ * Determines whether seeking is supported for the current stream.
  *
  * Return value: TRUE if the current stream is seekable
  */
@@ -494,8 +502,9 @@ rb_player_set_time (RBPlayer *player, gint64 newtime)
  * rb_player_get_time:
  * @player:	a #RBPlayer
  *
- * Return value: the current playback position in the current stream
- *  in nanoseconds.
+ * Returns the current playback for the current stream in nanoseconds.
+ *
+ * Return value: playback position
  */
 gint64
 rb_player_get_time (RBPlayer *player)
@@ -509,8 +518,9 @@ rb_player_get_time (RBPlayer *player)
  * rb_player_multiple_open:
  * @player:	a #RBPlayer
  *
- * Return value: TRUE if the player supports multiple open streams
- * 		(not necessarily multiple playing streams, though)
+ * Determines whether the player supports multiple open streams.
+ *
+ * Return value: TRUE if multiple open is supported
  */
 gboolean
 rb_player_multiple_open (RBPlayer *player)

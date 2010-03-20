@@ -521,7 +521,9 @@ rb_property_view_reset (RBPropertyView *view)
  * rb_property_view_get_model:
  * @view: a #RBPropertyView
  * 
- * Return value: the #RhythmDBPropertyModel backing the view; no reference is taken
+ * Returns the #RhythmDBPropertyModel backing the view; no reference is taken
+ *
+ * Return value: property model
  */
 RhythmDBPropertyModel *
 rb_property_view_get_model (RBPropertyView *view)
@@ -586,7 +588,9 @@ rb_property_view_post_row_deleted_cb (GtkTreeModel *model,
  * rb_property_view_get_num_properties
  * @view: a #RBPropertyView
  *
- * Return value: the number of property values present in the view
+ * Returns the number of property values present in the view.
+ *
+ * Return value: number of properties
  */
 guint
 rb_property_view_get_num_properties (RBPropertyView *view)
@@ -778,8 +782,10 @@ rb_property_view_set_selection (RBPropertyView *view,
  * rb_property_view_get_selection:
  * @view: a #RBPropertyView
  *
- * Return value: a #GList containing the selected property values.  The list must
+ * Returns a #GList containing the selected property values.  The list must
  * be freed by the caller.
+ *
+ * Return value: list of selected values
  */
 GList *
 rb_property_view_get_selection (RBPropertyView *view)

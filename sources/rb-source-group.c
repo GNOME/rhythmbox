@@ -202,7 +202,9 @@ rb_source_group_library_get_type (void)
 /**
  * rb_source_group_playlists_get_type:
  *
- * Return value: the predefined playlists source group
+ * Returns the predefined playlists source group
+ *
+ * Return value: playlists source group
  */
 RBSourceGroup *
 rb_source_group_playlists_get_type (void)
@@ -213,7 +215,9 @@ rb_source_group_playlists_get_type (void)
 /**
  * rb_source_group_devices_get_type:
  *
- * Return value: the predefined devices source group
+ * Returns the predefined devices source group
+ *
+ * Return value: devices source group
  */
 RBSourceGroup *
 rb_source_group_devices_get_type (void)
@@ -224,7 +228,9 @@ rb_source_group_devices_get_type (void)
 /**
  * rb_source_group_shared_get_type:
  *
- * Return value: the predefined shared source group
+ * Returns the predefined shared source group
+ *
+ * Return value: shared source group
  */
 RBSourceGroup *
 rb_source_group_shared_get_type (void)
@@ -235,7 +241,9 @@ rb_source_group_shared_get_type (void)
 /**
  * rb_source_group_stores_get_type:
  *
- * Return value: the predefined stores source group
+ * Returns the predefined stores source group
+ *
+ * Return value: stores source group
  */
 RBSourceGroup *
 rb_source_group_stores_get_type (void)

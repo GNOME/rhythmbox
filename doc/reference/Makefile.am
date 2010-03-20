@@ -53,6 +53,7 @@ IGNORE_HFILES= \
 	\
 	gedit-message-area.h \
 	gossip-cell-renderer-expander.h \
+	rb-query-creator-private.h \
 	\
 	sj-error.h \
 	sj-metadata-getter.h \

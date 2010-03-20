@@ -73,7 +73,9 @@
  * rb_metadata_get_field_type:
  * @field: a #RBMetaDataField
  *
- * Return value: the #GType of the value for the metadata field
+ * Returns the #GType of the value for a metadata field.
+ *
+ * Return value: value type
  */
 GType
 rb_metadata_get_field_type (RBMetaDataField field)
@@ -126,7 +128,9 @@ rb_metadata_get_field_type (RBMetaDataField field)
  * rb_metadata_get_field_name:
  * @field: a #RBMetaDataField
  *
- * Return value: the name of the metadata field
+ * Returns the name of a metadata field.
+ *
+ * Return value: field name
  */
 const char *
 rb_metadata_get_field_name (RBMetaDataField field)

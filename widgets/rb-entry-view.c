@@ -54,6 +54,21 @@
 
 /**
  * RBEntryViewColumn:
+ * @RB_ENTRY_VIEW_COL_TRACK_NUMBER: the track number column
+ * @RB_ENTRY_VIEW_COL_TITLE: the title column
+ * @RB_ENTRY_VIEW_COL_ARTIST: the artist column
+ * @RB_ENTRY_VIEW_COL_ALBUM: the album column
+ * @RB_ENTRY_VIEW_COL_GENRE: the genre column
+ * @RB_ENTRY_VIEW_COL_DURATION: the duration column
+ * @RB_ENTRY_VIEW_COL_QUALITY: the quality (bitrate) column
+ * @RB_ENTRY_VIEW_COL_RATING: the rating column
+ * @RB_ENTRY_VIEW_COL_PLAY_COUNT: the play count column
+ * @RB_ENTRY_VIEW_COL_YEAR: the year (release date) column
+ * @RB_ENTRY_VIEW_COL_LAST_PLAYED: the last played time column
+ * @RB_ENTRY_VIEW_COL_FIRST_SEEN: the first seen (imported) column
+ * @RB_ENTRY_VIEW_COL_LAST_SEEN: the last seen column
+ * @RB_ENTRY_VIEW_COL_LOCATION: the location column
+ * @RB_ENTRY_VIEW_COL_ERROR: the error column
  *
  * Predefined column types to use in #RBEntryView<!-- -->s.  Use
  * #rb_entry_view_append_column to add these to an entry view.
@@ -1995,8 +2010,10 @@ harvest_entries (GtkTreeModel *model,
  * rb_entry_view_get_selected_entries:
  * @view: a #RBEntryView
  *
- * Return value: a #GList containing the currently selected entries in the view
- *  (must be freed)
+ * Gathers the selected entries from the view.
+ *
+ * Return value: a #GList of selected entries in the view
+ *  (must be freed and the entries unreffed)
  */
 GList *
 rb_entry_view_get_selected_entries (RBEntryView *view)
@@ -2092,7 +2109,9 @@ rb_entry_view_selection_changed_cb (GtkTreeSelection *selection,
  * rb_entry_view_have_selection:
  * @view: a #RBEntryView
  *
- * Return value: TRUE if one or more rows are selected in the view
+ * Determines whether there is an active selection in the view.
+ *
+ * Return value: TRUE if one or more rows are selected
  */
 gboolean
 rb_entry_view_have_selection (RBEntryView *view)
@@ -2103,6 +2122,8 @@ rb_entry_view_have_selection (RBEntryView *view)
 /**
  * rb_entry_view_have_complete_selection:
  * @view: a #RBEntryView
+ *
+ * Determines whether all entries in the view are selected.
  *
  * Return value: TRUE if all rows in the view are selected
  */
@@ -2307,7 +2328,10 @@ rb_entry_view_scroll_to_iter (RBEntryView *view,
  * @view: a #RBEntryView
  * @entry: a #RhythmDBEntry to check
  *
- * Return value: TRUE if the entry is present in the view and is currently visible
+ * Determines whether a specified entry is present in the view
+ * and is currently visible.
+ *
+ * Return value: TRUE if the entry is visible
  */
 gboolean
 rb_entry_view_get_entry_visible (RBEntryView *view,
@@ -2328,6 +2352,8 @@ rb_entry_view_get_entry_visible (RBEntryView *view,
  * rb_entry_view_get_entry_contained:
  * @view: a #RBEntryView
  * @entry: a #RhythmDBEntry to check
+ *
+ * Determines whether a specified entry is present in the view.
  *
  * Return value: TRUE if the entry is present in the view
  */
@@ -2677,21 +2703,3 @@ rb_entry_view_state_get_type (void)
 
 	return etype;
 }
-
-/**
- * RBEntryViewColumn:
- * @RB_ENTRY_VIEW_COL_TRACK_NUMBER: the track number column
- * @RB_ENTRY_VIEW_COL_TITLE: the title column
- * @RB_ENTRY_VIEW_COL_ARTIST: the artist column
- * @RB_ENTRY_VIEW_COL_ALBUM: the album column
- * @RB_ENTRY_VIEW_COL_GENRE: the genre column
- * @RB_ENTRY_VIEW_COL_DURATION: the duration column
- * @RB_ENTRY_VIEW_COL_QUALITY: the quality (bitrate) column
- * @RB_ENTRY_VIEW_COL_RATING: the rating column
- * @RB_ENTRY_VIEW_COL_YEAR: the year (release date) column
- * @RB_ENTRY_VIEW_COL_LAST_PLAYED: the last played time column
- * @RB_ENTRY_VIEW_COL_FIRST_SEEN: the first seen (imported) column
- * @RB_ENTRY_VIEW_COL_LAST_SEEN: the last seen column
- * @RB_ENTRY_VIEW_COL_LOCATION: the location column
- * @RB_ENTRY_VIEW_COL_ERROR: the error column
- */

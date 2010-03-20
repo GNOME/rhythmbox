@@ -379,6 +379,8 @@ rb_header_get_property (GObject *object,
  * @shell_player: the #RBShellPlayer instance
  * @db: the #RhythmDB instance
  *
+ * Creates a new header widget.
+ *
  * Return value: the header widget
  */
 RBHeader *

@@ -543,8 +543,10 @@ queue_update_visibility (RBSource *source)
 /**
  * rb_source_set_hidden_when_empty:
  * @source: a #RBSource
- * @hidden: if TRUE, the source should not be displayed in
- *   the source list when there are no entries in it
+ * @hidden: if TRUE, automatically hide the source
+ *
+ * Enables or disables automatic hiding of the source when
+ * there are no entries in it.
  */
 void
 rb_source_set_hidden_when_empty (RBSource *source,
@@ -763,8 +765,9 @@ default_get_browser_key (RBSource *source)
  * rb_source_get_browser_key:
  * @source: a #RBSource
  *
- * Return value: the GConf key that determines browser visibility
- * for this source (allocated)
+ * Gets the GConf key controlling browser visibility
+ *
+ * Return value: the GConf key name (allocated)
  */
 char *
 rb_source_get_browser_key (RBSource *source)
@@ -777,6 +780,8 @@ rb_source_get_browser_key (RBSource *source)
 /**
  * rb_source_can_browse:
  * @source: a #RBSource
+ *
+ * Determines whether the source has a browser
  *
  * Return value: TRUE if this source has a browser
  */
@@ -874,6 +879,8 @@ rb_source_update_play_statistics (RBSource *source,
  * rb_source_get_entry_view:
  * @source: a #RBSource
  *
+ * Returns the entry view widget for the source.
+ *
  * Return value: the #RBEntryView instance for the source
  */
 RBEntryView *
@@ -894,8 +901,10 @@ default_get_property_views (RBSource *source)
  * rb_source_get_property_views:
  * @source: a #RBSource
  *
- * Return value:  a list containing the #RBPropertyView<!-- -->s that
- * make up the browser for this source, if any.
+ * Returns a list containing the #RBPropertyView instances for the
+ * source, if any.
+ *
+ * Return value:  list of property views
  */
 GList *
 rb_source_get_property_views (RBSource *source)
@@ -914,6 +923,8 @@ default_can_rename (RBSource *source)
 /**
  * rb_source_can_rename:
  * @source: a #RBSource.
+ *
+ * Determines whether the source can be renamed.
  *
  * Return value: TRUE if this source can be renamed
  */
@@ -982,8 +993,10 @@ rb_source_get_config_widget (RBSource *source,
  * rb_source_can_cut:
  * @source: a #RBSource
  *
- * Return value: TRUE if the source supports the typical cut
+ * Determines whether the source supporst the typical cut
  * (as in cut-and-paste) operation.
+ *
+ * Return value: TRUE if cutting is supported
  */
 gboolean
 rb_source_can_cut (RBSource *source)
@@ -997,8 +1010,9 @@ rb_source_can_cut (RBSource *source)
  * rb_source_can_paste:
  * @source: a #RBSource
  *
- * Return value: TRUE if the source supports the typical paste
- * (as in cut-and-paste) operation.
+ * Determines whether the source supports paste operations.
+ *
+ * Return value: TRUE if the pasting is supported
  */
 gboolean
 rb_source_can_paste (RBSource *source)
@@ -1012,8 +1026,10 @@ rb_source_can_paste (RBSource *source)
  * rb_source_can_delete:
  * @source: a #RBSource
  *
- * Return value: TRUE if the source allows the user to delete
+ * Determines whether the source allows the user to delete
  * a selected set of entries.
+ *
+ * Return value: TRUE if deletion is supported
  */
 gboolean
 rb_source_can_delete (RBSource *source)
@@ -1032,8 +1048,10 @@ rb_source_can_delete (RBSource *source)
  * rb_source_can_move_to_trash:
  * @source: a #RBSource
  *
- * Return value: TRUE if the source allows the user to trash
+ * Determines whether the source allows the user to trash
  * the files backing a selected set of entries.
+ *
+ * Return value: TRUE if trashing is supported
  */
 gboolean
 rb_source_can_move_to_trash (RBSource *source)
@@ -1052,8 +1070,10 @@ rb_source_can_move_to_trash (RBSource *source)
  * rb_source_can_copy:
  * @source: a #RBSource
  *
- * Return value: TRUE if the source supports the copy part
+ * Determines whether the source supports the copy part
  * of a copy-and-paste operation.
+ *
+ * Return value: TRUE if copying is supported
  */
 gboolean
 rb_source_can_copy (RBSource *source)
@@ -1096,6 +1116,8 @@ default_copy (RBSource *source)
  * rb_source_copy:
  * @source: a #RBSource
  *
+ * Copies the selected entries to the clipboard.
+ *
  * Return value: a list containing the currently selected entries from
  * the source.
  */
@@ -1127,8 +1149,10 @@ rb_source_paste (RBSource *source, GList *entries)
  * rb_source_can_add_to_queue:
  * @source: a #RBSource
  *
- * Return value: TRUE if this source can add the current selected
- * set of entries to the play queue
+ * Determines whether the source can add the selected entries to
+ * the play queue.
+ *
+ * Return value: TRUE if adding to the play queue is supported
  */
 gboolean
 rb_source_can_add_to_queue (RBSource *source)
@@ -1258,8 +1282,10 @@ rb_source_reset_filters (RBSource *source)
  * rb_source_can_show_properties:
  * @source: a #RBSource
  *
- * Return value: TRUE if the source can display a properties
+ * Determines whether the source can display a properties
  * window for the currently selected entry (or set of entries)
+ *
+ * Return value: TRUE if showing properties is supported
  */
 gboolean
 rb_source_can_show_properties (RBSource *source)
@@ -1288,8 +1314,10 @@ rb_source_song_properties (RBSource *source)
  * rb_source_try_playlist:
  * @source: a #RBSource
  *
- * Return value: TRUE if the playback URIs for entries in the source
- *  should be parsed as playlists, rather than just played.
+ * Determines whether playback URIs for entries in the source should
+ * be parsed as playlists rather than just played.
+ *
+ * Return value: TRUE to attempt playlist parsing
  */
 gboolean
 rb_source_try_playlist (RBSource *source)
@@ -1366,7 +1394,10 @@ rb_source_add_uri (RBSource *source, const char *uri, const char *title, const c
  * rb_source_can_pause:
  * @source: a #RBSource
  *
- * Return value: TRUE if playback of entries from the source can be paused.
+ * Determines whether playback of entries from the source can
+ * be paused.
+ *
+ * Return value: TRUE if pausing is supported
  */
 gboolean
 rb_source_can_pause (RBSource *source)
@@ -1392,7 +1423,10 @@ default_handle_eos (RBSource *source)
  * rb_source_handle_eos:
  * @source: a #RBSource
  *
- * Return value: how EOS events should be handled for entries from this source
+ * Determines how EOS events should be handled when playing entries
+ * from the source.
+ *
+ * Return value: EOS event handling type
  */
 RBSourceEOFType
 rb_source_handle_eos (RBSource *source)

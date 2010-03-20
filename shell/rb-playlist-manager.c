@@ -1641,7 +1641,9 @@ list_playlists_cb (GtkTreeModel *model,
  * rb_playlist_manager_get_playlists
  * @mgr: the #RBPlaylistManager
  *
- * Return value: a #GList containing all local playlist source objects.
+ * Returns a #GList containing all local playlist source objects.
+ *
+ * Return value: list of playlists
  **/
 GList *
 rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)

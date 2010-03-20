@@ -1064,7 +1064,9 @@ rb_playlist_source_mark_dirty (RBPlaylistSource *source)
  * @source: a #RBPlaylistSource
  * @location: a URI to check
  *
- * Return value: TRUE if the specified URI is in the playlist entry map
+ * Returns TRUE if the specified URI is in the playlist entry map
+ *
+ * Return value: %TRUE if the URI is present
  */
 gboolean
 rb_playlist_source_location_in_map (RBPlaylistSource *source,

@@ -339,6 +339,8 @@ rb_query_creator_get_property (GObject *object,
  * rb_query_creator_new:
  * @db: the #RhythmDB instance
  *
+ * Creates a new query creator widget.
+ *
  * Return value: new query creator widget
  */
 GtkWidget *

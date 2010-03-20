@@ -375,6 +375,8 @@ rb_library_browser_get_property (GObject *object,
  * @db: the #RhythmDB instance
  * @entry_type: the entry type to use in the browser
  *
+ * Creates a new library browser.
+ *
  * Return value: a new RBLibraryBrowser
  */
 RBLibraryBrowser *
@@ -536,6 +538,8 @@ rb_library_browser_construct_query (RBLibraryBrowser *widget)
 /**
  * rb_library_browser_has_selection:
  * @widget: a #RBLibraryBrowser
+ *
+ * Determines whether the browser has an active selection.
  *
  * Return value: TRUE if any items in the browser are selected.
  */
@@ -808,7 +812,9 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget,
  * rb_library_browser_get_property_views:
  * @widget: a #RBLibraryBrowser
  *
- * Return value: a GList containing the #RBPropertyView<!-- -->s
+ * Retrieves the property view widgets from the browser.
+ *
+ * Return value: a GList containing the #RBPropertyView widgets
  *  in the browser.
  */
 GList*
@@ -824,8 +830,10 @@ rb_library_browser_get_property_views (RBLibraryBrowser *widget)
  * @widget: a #RBLibraryBrowser
  * @type: the property
  *
- * Return value: the #RBPropertyView for the specified property, or
- *  NULL if there isn't one
+ * Retrieves the property view widget for the specified property,
+ * if there is one.
+ *
+ * Return value: #RBPropertyView widget, or NULL
  */
 RBPropertyView *
 rb_library_browser_get_property_view (RBLibraryBrowser *widget,

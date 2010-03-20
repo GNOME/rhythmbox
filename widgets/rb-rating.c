@@ -269,6 +269,8 @@ rb_rating_set_property (GObject *object,
 /**
  * rb_rating_new:
  *
+ * Creates a new rating widget
+ *
  * Return value: a new #RBRating widget.
  */
 RBRating *
