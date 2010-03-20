@@ -1751,7 +1751,7 @@ rhythmdb_tree_evaluate_query (RhythmDB *adb,
 #define RHYTHMDB_PROPERTY_COMPARE(OP) \
 			switch (rhythmdb_get_property_type (db, data->propid)) { \
 			case G_TYPE_STRING: \
-				if (strcmp (rhythmdb_entry_get_string (entry, data->propid), \
+				if (g_strcmp0 (rhythmdb_entry_get_string (entry, data->propid), \
 					    g_value_get_string (data->val)) OP 0) \
 					return FALSE; \
 				break; \
