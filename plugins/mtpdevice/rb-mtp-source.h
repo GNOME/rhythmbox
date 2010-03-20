@@ -56,7 +56,9 @@ typedef struct
 
 RBSource *		rb_mtp_source_new		(RBShell *shell,
 							 RBPlugin *plugin,
-#if !defined(HAVE_GUDEV)
+#if defined(HAVE_GUDEV)
+							 GUdevDevice *udev_device,
+#else
 							 const char *udi,
 #endif
 							 LIBMTP_raw_device_t *device);

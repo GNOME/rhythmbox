@@ -181,7 +181,7 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 
 	plugin->shell = shell;
 
-	g_object_get (G_OBJECT (shell),
+	g_object_get (shell,
 		     "ui-manager", &uimanager,
 		     "removable-media-manager", &rmm,
 		     NULL);
@@ -197,7 +197,7 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 	gtk_ui_manager_insert_action_group (uimanager, plugin->action_group, 0);
 	file = rb_plugin_find_file (bplugin, "mtp-ui.xml");
 	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, file, NULL);
-	g_object_unref (G_OBJECT (uimanager));
+	g_object_unref (uimanager);
 
 	/* device detection */
 #if defined(HAVE_GUDEV)
@@ -251,7 +251,7 @@ impl_deactivate (RBPlugin *bplugin, RBShell *shell)
 	GtkUIManager *uimanager = NULL;
 	RBRemovableMediaManager *rmm = NULL;
 
-	g_object_get (G_OBJECT (shell),
+	g_object_get (shell,
 		      "ui-manager", &uimanager,
 		      "removable-media-manager", &rmm,
 		      NULL);
@@ -373,7 +373,7 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMt
 			}
 
 			rb_debug ("device matched, creating a source");
-			source = rb_mtp_source_new (plugin->shell, RB_PLUGIN (plugin), &raw_devices[i]);
+			source = rb_mtp_source_new (plugin->shell, RB_PLUGIN (plugin), device, &raw_devices[i]);
 
 			plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
 			g_signal_connect_object (G_OBJECT (source),
@@ -425,7 +425,7 @@ rb_mtp_plugin_maybe_add_source (RBMtpPlugin *plugin, const char *udi, LIBMTP_raw
 
 			rb_shell_append_source (plugin->shell, source, NULL);
 			plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
-			g_signal_connect_object (G_OBJECT (source),
+			g_signal_connect_object (source,
 						"deleted", G_CALLBACK (source_deleted_cb),
 						plugin, 0);
 		}

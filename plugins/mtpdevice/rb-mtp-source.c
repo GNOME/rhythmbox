@@ -32,6 +32,11 @@
 #include <glib/gi18n.h>
 #include <gst/gst.h>
 
+#if defined(HAVE_GUDEV)
+#define G_UDEV_API_IS_SUBJECT_TO_CHANGE
+#include <gudev/gudev.h>
+#endif
+
 #include "rhythmdb.h"
 #include "eel-gconf-extensions.h"
 #include "rb-debug.h"
@@ -50,6 +55,11 @@
 
 #include "rb-mtp-source.h"
 #include "rb-mtp-thread.h"
+
+#if !GLIB_CHECK_VERSION(2,22,0)
+#define g_mount_unmount_with_operation_finish g_mount_unmount_finish
+#define g_mount_unmount_with_operation(m,f,mo,ca,cb,ud) g_mount_unmount(m,f,ca,cb,ud)
+#endif
 
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/mtp/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/mtp/show_browser"
@@ -113,6 +123,9 @@ static void prepare_encoder_sink_cb (RBEncoderFactory *factory,
 				     const char *stream_uri,
 				     GObject *sink,
 				     RBMtpSource *source);
+#if defined(HAVE_GUDEV)
+static GMount *find_mount_for_device (GUdevDevice *device);
+#endif
 
 typedef struct
 {
@@ -121,7 +134,10 @@ typedef struct
 	GHashTable *entry_map;
 	GHashTable *artwork_request_map;
 	GHashTable *track_transfer_map;
-#if !defined(HAVE_GUDEV)
+#if defined(HAVE_GUDEV)
+	GUdevDevice *udev_device;
+	GVolume *remount_volume;
+#else
 	char *udi;
 #endif
 	uint16_t supported_types[LIBMTP_FILETYPE_UNKNOWN+1];
@@ -148,6 +164,7 @@ enum
 {
 	PROP_0,
 	PROP_RAW_DEVICE,
+	PROP_UDEV_DEVICE,
 	PROP_UDI,
 	PROP_DEVICE_SERIAL
 };
@@ -199,7 +216,15 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 							       "raw-device",
 							       "libmtp raw device",
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-#if !defined(HAVE_GUDEV)
+#if defined(HAVE_GUDEV)
+	g_object_class_install_property (object_class,
+					 PROP_UDEV_DEVICE,
+					 g_param_spec_object ("udev-device",
+							      "udev-device",
+							      "GUdev device object",
+							      G_UDEV_TYPE_DEVICE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+#else
 	g_object_class_install_property (object_class,
 					 PROP_UDI,
 					 g_param_spec_string ("udi",
@@ -240,6 +265,52 @@ rb_mtp_source_init (RBMtpSource *source)
 	priv->track_transfer_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 }
 
+
+static void
+open_device (RBMtpSource *source)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+
+	rb_debug ("actually opening device");
+	priv->device_thread = rb_mtp_thread_new ();
+	rb_mtp_thread_open_device (priv->device_thread,
+				   &priv->raw_device,
+				   (RBMtpOpenCallback)mtp_device_open_cb,
+				   g_object_ref (source),
+				   g_object_unref);
+}
+
+#if defined(HAVE_GUDEV)
+static void
+unmount_done_cb (GObject *object, GAsyncResult *result, gpointer psource)
+{
+	GMount *mount;
+	RBMtpSource *source;
+	gboolean ok;
+	GError *error = NULL;
+	RBMtpSourcePrivate *priv;
+
+	mount = G_MOUNT (object);
+	source = RB_MTP_SOURCE (psource);
+	priv = MTP_SOURCE_GET_PRIVATE (source);
+
+	ok = g_mount_unmount_with_operation_finish (mount, result, &error);
+	if (ok) {
+		rb_debug ("successfully unmounted mtp device");
+		priv->remount_volume = g_mount_get_volume (mount);
+
+		open_device (source);
+	} else {
+		g_warning ("Unable to unmount MTP device: %s", error->message);
+		g_error_free (error);
+	}
+
+	g_object_unref (mount);
+	g_object_unref (source);
+}
+
+#endif
+
 static void
 rb_mtp_source_constructed (GObject *object)
 {
@@ -251,19 +322,30 @@ rb_mtp_source_constructed (GObject *object)
 	GObject *player_backend;
 	GtkIconTheme *theme;
 	GdkPixbuf *pixbuf;
+#if defined(HAVE_GUDEV)
+	GMount *mount;
+#endif
 	gint size;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_mtp_source_parent_class, constructed, object);
 	source = RB_MTP_SOURCE (object);
 	priv = MTP_SOURCE_GET_PRIVATE (source);
 
-	/* start the device thread */
-	priv->device_thread = rb_mtp_thread_new ();
-	rb_mtp_thread_open_device (priv->device_thread,
-				   &priv->raw_device,
-				   (RBMtpOpenCallback)mtp_device_open_cb,
-				   g_object_ref (source),
-				   g_object_unref);
+	/* try to open the device.  if gvfs has mounted it, unmount it first */
+#if defined(HAVE_GUDEV)
+	mount = find_mount_for_device (priv->udev_device);
+	if (mount != NULL) {
+		rb_debug ("device is already mounted, waiting until activated");
+		g_mount_unmount_with_operation (mount,
+						G_MOUNT_UNMOUNT_NONE,
+						NULL,
+						NULL,
+						unmount_done_cb,
+						g_object_ref (source));
+		/* mount gets unreffed in callback */
+	} else
+#endif
+	open_device (source);
 
 	tracks = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (tracks, RB_ENTRY_VIEW_COL_RATING, FALSE);
@@ -323,7 +405,11 @@ rb_mtp_source_set_property (GObject *object,
 		raw_device = g_value_get_pointer (value);
 		priv->raw_device = *raw_device;
 		break;
-#if !defined(HAVE_GUDEV)
+#if defined(HAVE_GUDEV)
+	case PROP_UDEV_DEVICE:
+		priv->udev_device = g_value_dup_object (value);
+		break;
+#else
 	case PROP_UDI:
 		priv->udi = g_value_dup_string (value);
 		break;
@@ -346,7 +432,11 @@ rb_mtp_source_get_property (GObject *object,
 	case PROP_RAW_DEVICE:
 		g_value_set_pointer (value, &priv->raw_device);
 		break;
-#if !defined(HAVE_GUDEV)
+#if defined(HAVE_GUDEV)
+	case PROP_UDEV_DEVICE:
+		g_value_set_object (value, priv->udev_device);
+		break;
+#else
 	case PROP_UDI:
 		g_value_set_string (value, priv->udi);
 		break;
@@ -360,6 +450,24 @@ rb_mtp_source_get_property (GObject *object,
 	}
 }
 
+#if defined(HAVE_GUDEV)
+static void
+remount_done_cb (GObject *object, GAsyncResult *result, gpointer no)
+{
+	gboolean ok;
+	GError *error = NULL;
+
+	ok = g_volume_mount_finish (G_VOLUME (object), result, &error);
+	if (ok) {
+		rb_debug ("volume remounted successfully");
+	} else {
+		g_warning ("Unable to remount MTP device: %s", error->message);
+		g_error_free (error);
+	}
+	g_object_unref (object);
+}
+#endif
+
 static void
 rb_mtp_source_dispose (GObject *object)
 {
@@ -372,6 +480,18 @@ rb_mtp_source_dispose (GObject *object)
 		g_object_unref (priv->device_thread);
 		priv->device_thread = NULL;
 	}
+
+#if defined(HAVE_GUDEV)
+	if (priv->remount_volume != NULL) {
+		rb_debug ("remounting gvfs volume for mtp device");
+		g_volume_mount (priv->remount_volume,
+				G_MOUNT_MOUNT_NONE,
+				NULL,
+				NULL,
+				remount_done_cb,
+				NULL);
+	}
+#endif
 
 	db = get_db_for_source (source);
 
@@ -420,7 +540,9 @@ impl_get_paned_key (RBBrowserSource *source)
 RBSource *
 rb_mtp_source_new (RBShell *shell,
 		   RBPlugin *plugin,
-#if !defined(HAVE_GUDEV)
+#if defined(HAVE_GUDEV)
+		   GUdevDevice *udev_device,
+#else
 		   const char *udi,
 #endif
 		   LIBMTP_raw_device_t *device)
@@ -448,7 +570,9 @@ rb_mtp_source_new (RBShell *shell,
 					      "volume", NULL,
 					      "source-group", RB_SOURCE_GROUP_DEVICES,
 					      "raw-device", device,
-#if !defined(HAVE_GUDEV)
+#if defined(HAVE_GUDEV)
+					      "udev-device", udev_device,
+#else
 					      "udi", udi,
 #endif
 					      NULL));
@@ -1299,3 +1423,45 @@ prepare_encoder_source_cb (RBEncoderFactory *factory,
 	prepare_source (source, stream_uri, src);
 }
 
+#if defined(HAVE_GUDEV)
+
+static GMount *
+find_mount_for_device (GUdevDevice *device)
+{
+	GMount *mount = NULL;
+	const char *device_file;
+	GVolumeMonitor *volmon;
+	GList *mounts;
+	GList *i;
+
+	device_file = g_udev_device_get_device_file (device);
+
+	volmon = g_volume_monitor_get ();
+	mounts = g_volume_monitor_get_mounts (volmon);
+	g_object_unref (volmon);
+
+	for (i = mounts; i != NULL; i = i->next) {
+		GVolume *v;
+
+		mount = G_MOUNT (i->data);
+		v = g_mount_get_volume (mount);
+		if (v != NULL) {
+			char *devname = NULL;
+			gboolean match;
+
+			devname = g_volume_get_identifier (v, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+			match = g_str_equal (devname, device_file);
+			g_free (devname);
+			g_object_unref (v);
+
+			if (match)
+				break;
+		}
+		g_object_unref (mount);
+		mount = NULL;
+	}
+	g_list_free (mounts);
+	return mount;
+}
+
+#endif
