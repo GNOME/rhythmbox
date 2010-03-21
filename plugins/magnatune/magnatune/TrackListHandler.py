@@ -49,7 +49,7 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 		self.__text = ""
 
 	def fix_trackurl(self, trackurl):
-		trackurl = self.__URIre.sub("http://%s:%s@stream.magnatune.com/" % (self.__user, self.__pw), trackurl)
+		trackurl = self.__URIre.sub("http://%s:%s@%s.magnatune.com/" % (self.__user, self.__pw, self.__account_type), trackurl)
 		trackurl = self.__nsre.sub(r"_nospeech.\1", trackurl)
 		return trackurl
 

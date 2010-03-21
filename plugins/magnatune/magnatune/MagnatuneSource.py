@@ -569,13 +569,13 @@ class MagnatuneSource(rb.BrowserSource):
 
 	def __move_data_files(self):
 		# create cache and data directories
-		magnatune_in_progress_dir = magnatune_in_progress_dir.get_path()
-		magnatune_cache_dir = magnatune_cache_dir.get_path()
+		magnatune_in_progress_path = magnatune_in_progress_dir.get_path()
+		magnatune_cache_path = magnatune_cache_dir.get_path()
 
 		# (we know they don't already exist, and we know the parent dirs do)
-		os.mkdir(magnatune_in_progress_dir, 0700)
-		if os.path.exists(magnatune_cache_dir) is False:
-			os.mkdir(magnatune_cache_dir, 0700)
+		os.mkdir(magnatune_in_progress_path, 0700)
+		if os.path.exists(magnatune_cache_path) is False:
+			os.mkdir(magnatune_cache_path, 0700)
 
 		# move song info to cache dir
 		old_magnatune_dir = os.path.join(rb.dot_dir(), 'magnatune')
@@ -595,7 +595,7 @@ class MagnatuneSource(rb.BrowserSource):
 		for f in otherfiles:
 			print "moving file %s to new in-progress dir" % f
 			os.rename(os.path.join(old_magnatune_dir, f),
-				  os.path.join(magnatune_in_progress_dir, f))
+				  os.path.join(magnatune_in_progress_path, f))
 
 
 gobject.type_register(MagnatuneSource)
