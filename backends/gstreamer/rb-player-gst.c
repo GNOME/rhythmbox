@@ -339,7 +339,7 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 		GstTagList *tags;
 		gst_message_parse_tag (message, &tags);
 
-		if (mp->priv->stream_change_pending) {
+		if (mp->priv->stream_change_pending || mp->priv->playbin_stream_changing) {
 			mp->priv->stream_tags = g_list_append (mp->priv->stream_tags, tags);
 		} else {
 			gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, mp);
