@@ -10,7 +10,7 @@ plugin_in_files = artdisplay.rb-plugin.in
 plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
 
 artworkdir = $(plugindir)
-artwork_DATA = rhythmbox-missing-artwork.svg
+artwork_DATA = rhythmbox-missing-artwork.svg lastfm_red_small.png
 
 EXTRA_DIST = $(plugin_in_files) $(artwork_DATA)
 

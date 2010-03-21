@@ -34,13 +34,14 @@ import gobject
 
 from PodcastCoverArtSearch import PodcastCoverArtSearch
 from MusicBrainzCoverArtSearch import MusicBrainzCoverArtSearch
+from LastFMCoverArtSearch import LastFMCoverArtSearch
 from EmbeddedCoverArtSearch import EmbeddedCoverArtSearch
 from LocalCoverArtSearch import LocalCoverArtSearch
 
 from urllib import unquote
 
 ART_SEARCHES_LOCAL = [LocalCoverArtSearch, EmbeddedCoverArtSearch]
-ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, MusicBrainzCoverArtSearch]
+ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, LastFMCoverArtSearch, MusicBrainzCoverArtSearch]
 OLD_ART_FOLDER = '~/.gnome2/rhythmbox/covers'
 
 ART_FOLDER = os.path.join(rb.user_cache_dir(), 'covers')
