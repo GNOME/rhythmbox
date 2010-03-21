@@ -103,6 +103,9 @@ class LocalCoverArtSearch:
 	def search_next (self):
 		return False
 
+	def get_result_meta (self, results):
+		return (None, None)
+
 	def get_result_pixbuf (self, results):
 		return None
 

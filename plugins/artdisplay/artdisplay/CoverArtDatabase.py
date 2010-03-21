@@ -46,6 +46,7 @@ OLD_ART_FOLDER = '~/.gnome2/rhythmbox/covers'
 ART_FOLDER = os.path.join(rb.user_cache_dir(), 'covers')
 ART_CACHE_EXTENSION_JPG = 'jpg'
 ART_CACHE_EXTENSION_PNG = 'png'
+ART_CACHE_EXTENSION_META = 'rb-meta'
 ART_CACHE_FORMAT_JPG = 'jpeg'
 ART_CACHE_FORMAT_PNG = 'png'
 ART_CACHE_SETTINGS_JPG = {"quality": "100"}
@@ -145,6 +146,10 @@ class CoverArtDatabase (object):
 	def set_pixbuf (self, db, entry, pixbuf, callback):
 		if entry is None or pixbuf is None:
 			return
+
+		meta_location = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_META)
+		self.write_meta_file (meta_location, None, None)
+
 		if pixbuf.get_has_alpha():
 			art_location = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_PNG)
 			art_cache_format = ART_CACHE_FORMAT_PNG
@@ -155,7 +160,7 @@ class CoverArtDatabase (object):
 			art_cache_settings = ART_CACHE_SETTINGS_JPG
 		self.ticket.purge (entry)
 		pixbuf.save (art_location, art_cache_format, art_cache_settings)
-		callback (entry, pixbuf, art_location)
+		callback (entry, pixbuf, art_location, None, None)
 		for Engine in ART_SEARCHES_LOCAL:
 			try:
 				Engine ().save_pixbuf (db, entry, pixbuf)
@@ -167,7 +172,7 @@ class CoverArtDatabase (object):
   
 	def get_pixbuf (self, db, entry, is_playing, callback):
 		if entry is None:
-			callback (entry, None, None)
+			callback (entry, None, None, None, None)
 			return
             
 		st_artist = db.entry_get (entry, rhythmdb.PROP_ARTIST) or _("Unknown")
@@ -184,6 +189,7 @@ class CoverArtDatabase (object):
 	def image_search (self, plexer, db, st_album, st_artist, entry, is_playing, callback):
 		art_location_jpg = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_JPG)
 		art_location_png = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_PNG)
+		art_location_meta = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_META)
 		blist_location = self.build_art_cache_filename (db, entry, "rb-blist")
 
 		art_location = None
@@ -196,7 +202,8 @@ class CoverArtDatabase (object):
 		if art_location:
 			self.ticket.purge (entry)
 			pixbuf = gtk.gdk.pixbuf_new_from_file (art_location)
-			callback (entry, pixbuf, art_location)
+			(tooltip_image, tooltip_text) = self.read_meta_file (art_location_meta)
+			callback (entry, pixbuf, art_location, tooltip_image, tooltip_text)
 			return
 
 		# Check if we're already searching for art for this album
@@ -227,7 +234,7 @@ class CoverArtDatabase (object):
 				if not results:
 					break
 
-				def handle_result_pixbuf (pixbuf, engine_uri, should_save):
+				def handle_result_pixbuf (pixbuf, engine_uri, tooltip_image, tooltip_text, should_save):
 					if self.ticket.release (entry, ticket):
 						if should_save:
 							if pixbuf.get_has_alpha ():
@@ -236,23 +243,27 @@ class CoverArtDatabase (object):
 							else:
 								pixbuf.save (art_location_jpg, ART_CACHE_FORMAT_JPG, ART_CACHE_SETTINGS_JPG)
 								uri = art_location_jpg
+
+							self.write_meta_file (art_location_meta, tooltip_image, tooltip_text)
 						else:
 							uri = engine_uri
 
 						print "found image for %s" % (db.entry_get(entry, rhythmdb.PROP_LOCATION))
-						callback (entry, pixbuf, uri)
+						callback (entry, pixbuf, uri, tooltip_image, tooltip_text)
 						for m in self.same_search.pop(entry, []):
 							print "and for same search %s" % (db.entry_get(m, rhythmdb.PROP_LOCATION))
-							callback (m, pixbuf, uri)
+							callback (m, pixbuf, uri, tooltip_image, tooltip_text)
 
 					self.write_blist (blist_location, blist)
 					self.same_search.pop (entry, None)
 
+				# fetch the meta details for the engine
+				(tooltip_image, tooltip_text) = engine.get_result_meta (results)
 
 				# first check if the engine gave us a pixbuf
 				pixbuf = engine.get_result_pixbuf (results)
 				if pixbuf:
-					handle_result_pixbuf (pixbuf, None, True)
+					handle_result_pixbuf (pixbuf, None, tooltip_image, tooltip_text, True)
 					return
 
 				# then check URIs
@@ -266,7 +277,7 @@ class CoverArtDatabase (object):
 					_, (data, ) = plexer.receive ()
 					pixbuf = self.image_data_load (data)
 					if pixbuf:
-						handle_result_pixbuf (pixbuf, url, engine_remote)
+						handle_result_pixbuf (pixbuf, url, tooltip_image, tooltip_text, engine_remote)
 						return
 
 				if not engine.search_next ():
@@ -286,13 +297,30 @@ class CoverArtDatabase (object):
 
 		if self.ticket.forget (entry, ticket):
 			print "didn't find image for %s" % (db.entry_get(entry, rhythmdb.PROP_LOCATION))
-			callback (entry, None, None)
+			callback (entry, None, None, None, None)
 			for m in self.same_search.pop (entry, []):
 				print "or for same search %s" % (db.entry_get(m, rhythmdb.PROP_LOCATION))
-				callback (m, None, None)
+				callback (m, None, None, None, None)
 
 		self.write_blist (blist_location, blist)
 		self.same_search.pop (entry, None)
+
+
+	def read_meta_file (self, meta_location):
+		if os.path.exists (meta_location):
+			data = [line.strip () for line in file (meta_location)]
+			return (data[0], data[1])
+		else:
+			return (None, None)
+
+	def write_meta_file (self, meta_location, tooltip_image, tooltip_text):
+		if tooltip_text is not None:
+			meta_file = file (meta_location, 'w')
+			meta_file.writelines([tooltip_image, "\n", tooltip_text, "\n"])
+			meta_file.close()
+		elif os.path.exists (meta_location):
+			os.unlink (meta_location)
+
 
 	def read_blist (self, blist_location):
 		if os.path.exists (blist_location):

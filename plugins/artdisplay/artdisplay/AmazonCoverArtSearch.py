@@ -233,6 +233,9 @@ class AmazonCoverArtSearch (object):
 		return (hasattr (item, "LargeImage") or hasattr (item, "MediumImage")) \
 		       and hasattr (item, "ItemAttributes")
 
+	def get_result_meta (self, search_results):
+		return (None, None)
+
 	def get_result_pixbuf (self, search_results):
 		return None
 

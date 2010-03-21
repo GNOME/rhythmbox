@@ -273,6 +273,8 @@ class ArtDisplayWidget (FadingImage):
 		self.set_padding (0, 5)
 		self.ddg_id = self.connect ('drag-data-get', self.drag_data_get)
 		self.ddr_id = self.connect ('drag-data-received', self.drag_data_received)
+		self.qt_id = self.connect ('query-tooltip', self.query_tooltip)
+		self.props.has_tooltip = True
 		self.current_entry, self.working = None, False
 		self.current_pixbuf, self.current_uri = None, None
 
@@ -302,21 +304,32 @@ class ArtDisplayWidget (FadingImage):
 		else:
 			self.drag_source_unset ()
 
-	def update_tooltips (self, working):
-		if not self.current_entry:
-			self.set_tooltip_text (None)
-		elif working:
-			self.set_tooltip_text (_("Searching... drop artwork here"))
+	def query_tooltip (self, widget, x, y, keyboard_mode, tooltip):
+		if (self.tooltip_image, self.tooltip_text) != (None, None):
+			tooltip.set_text(self.tooltip_text)
+			tooltip.set_icon(self.tooltip_image)
+			return True
 		else:
-			self.set_tooltip_text (_("Drop artwork here"))
+			return False
 
-	def set (self, entry, pixbuf, uri, working):
+	def set (self, entry, pixbuf, uri, tooltip_image, tooltip_text, working):
 		self.current_entry = entry
 		self.current_pixbuf = pixbuf
 		self.current_uri = uri
 		self.set_current_art (pixbuf, working)
 		self.update_dnd_targets ()
-		self.update_tooltips (working)
+
+		self.tooltip_image = None
+		if not self.current_entry:
+			self.tooltip_text = None
+		elif working:
+			self.tooltip_text = _("Searching... drop artwork here")
+		elif (tooltip_image, tooltip_text) != (None, None):
+			self.tooltip_image = tooltip_image
+			self.tooltip_text = tooltip_text
+		else:
+			self.tooltip_text = _("Drop artwork here")
+
 
 	def drag_data_get (self, widget, drag_context, selection_data, info, timestamp):
 		if self.current_pixbuf:
@@ -398,18 +411,27 @@ class ArtDisplayPlugin (rb.Plugin):
 			return
 		db = self.shell.get_property ("db")
 
-		self.art_widget.set (entry, None, None, True)
+		self.art_widget.set (entry, None, None, None, None, True)
 		self.art_container.show_all ()
 		# Intitates search in the database (which checks art cache, internet etc.)
 		self.current_entry = entry
 		self.current_pixbuf = None
 		self.art_db.get_pixbuf(db, entry, True, self.on_get_pixbuf_completed)
 
-	def on_get_pixbuf_completed(self, entry, pixbuf, uri):
+	def on_get_pixbuf_completed(self, entry, pixbuf, uri, tooltip_image, tooltip_text):
 		# Set the pixbuf for the entry returned from the art db
 		if entry == self.current_entry:
 			self.current_pixbuf = pixbuf
-			self.art_widget.set (entry, pixbuf, uri, False)
+
+			if tooltip_image is None:
+				pb = None
+			elif tooltip_image.startswith("/"):
+				pb = gtk.gdk.pixbuf_new_from_file(tooltip_image)
+			else:
+				f = self.find_file(tooltip_image)
+				pb = gtk.gdk.pixbuf_new_from_file(f)
+			self.art_widget.set (entry, pixbuf, uri, pb, tooltip_text, False)
+
 		if pixbuf:
 			db = self.shell.get_property ("db")
 			# This might be from a playing-changed signal,
@@ -421,9 +443,9 @@ class ArtDisplayPlugin (rb.Plugin):
 
 	def cover_art_request (self, db, entry):
 		a = [None]
-		def callback(entry, pixbuf, uri):
+		def callback(entry, pixbuf, uri, tooltip_image, tooltip_text):
 			a[0] = pixbuf
-			self.on_get_pixbuf_completed(entry, pixbuf, uri)
+			self.on_get_pixbuf_completed(entry, pixbuf, uri, tooltip_image, tooltip_text)
 
 		playing = (entry == self.current_entry)
 		self.art_db.get_pixbuf(db, entry, playing, callback)
@@ -439,7 +461,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.art_db.cancel_get_pixbuf (entry)
 		if self.current_pixbuf == metadata:
 			return
-		self.art_widget.set (entry, metadata, None, False)
+		self.art_widget.set (entry, metadata, None, None, None, False)
 
 	def cover_art_uri_notify (self, db, entry, field, metadata):
 		if entry != self.current_entry:
@@ -460,7 +482,7 @@ class ArtDisplayPlugin (rb.Plugin):
 						pixbuf = pbl.get_pixbuf ()
 						if pixbuf:
 							self.art_db.cancel_get_pixbuf (entry)
-							self.on_get_pixbuf_completed (entry, pixbuf, uri)
+							self.on_get_pixbuf_completed (entry, pixbuf, uri, None, None)
 				except GError:
 					pass
 
