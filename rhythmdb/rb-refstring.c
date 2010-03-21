@@ -55,6 +55,11 @@ rb_refstring_free (RBRefString *refstr)
 	g_free (refstr);
 }
 
+/**
+ * rb_refstring_system_init:
+ *
+ * Sets up the refstring system.  Called on startup.
+ */
 void
 rb_refstring_system_init ()
 {
@@ -64,6 +69,16 @@ rb_refstring_system_init ()
 					       NULL, (GDestroyNotify) rb_refstring_free);
 }
 
+/**
+ * rb_refstring_new:
+ * @init: string to intern
+ *
+ * Returns an #RBRefString for the specified string.
+ * If one already exists, its reference count is incremented and it is
+ * returned.  Otherwise, a new #RBRefString is created and returned.
+ *
+ * Return value: #RBRefString for @init
+ */
 RBRefString *
 rb_refstring_new (const char *init)
 {
@@ -90,6 +105,16 @@ rb_refstring_new (const char *init)
 	return ret;
 }
 
+/**
+ * rb_refstring_find:
+ * @init: string to find
+ *
+ * Returns an existing #RBRefString for @init if one exists,
+ * otherwise returns NULL.  If an existing refstring is found,
+ * its reference count is increased.
+ *
+ * Return value: existing #RBRefString, or NULL
+ */
 RBRefString *
 rb_refstring_find (const char *init)
 {
@@ -105,6 +130,13 @@ rb_refstring_find (const char *init)
 	return ret;
 }
 
+/**
+ * rb_refstring_unref:
+ * @val: #RBRefString to unref
+ *
+ * Drops a reference to an #RBRefString.  If this is the last
+ * reference, the string will be freed.
+ */
 void
 rb_refstring_unref (RBRefString *val)
 {
@@ -123,6 +155,12 @@ rb_refstring_unref (RBRefString *val)
 	}
 }
 
+/**
+ * rb_refstring_system_shutdown:
+ *
+ * Frees all data associated with the refstring system.
+ * Only called on shutdown.
+ */
 void
 rb_refstring_system_shutdown (void)
 {
@@ -130,6 +168,15 @@ rb_refstring_system_shutdown (void)
 	g_mutex_free (rb_refstrings_mutex);
 }
 
+/**
+ * rb_refstring_ref:
+ * @val: a #RBRefString to reference
+ *
+ * Increases the reference count for an existing #RBRefString.
+ * The refstring is returned for convenience.
+ *
+ * Return value: the same refstring
+ */
 RBRefString *
 rb_refstring_ref (RBRefString *val)
 {
@@ -142,6 +189,14 @@ rb_refstring_ref (RBRefString *val)
 	return val;
 }
 
+/**
+ * rb_refstring_get:
+ * @val: an #RBRefString
+ *
+ * Returns the actual string for a #RBRefString.
+ *
+ * Return value: underlying string, must not be freed
+ */
 const char *
 rb_refstring_get (const RBRefString *val)
 {
@@ -155,6 +210,17 @@ rb_refstring_get (const RBRefString *val)
  * get called often.
  */
 
+/**
+ * rb_refstring_get_folded:
+ * @val: an #RBRefString
+ *
+ * Returns the case-folded version of the string underlying @val.
+ * The case-folded string is cached inside the #RBRefString for
+ * speed.  See @rb_search_fold for information on case-folding
+ * strings.
+ *
+ * Return value: case-folded string, must not be freed
+ */
 const char *
 rb_refstring_get_folded (RBRefString *val)
 {
@@ -182,6 +248,18 @@ rb_refstring_get_folded (RBRefString *val)
 	return string;
 }
 
+/**
+ * rb_refstring_get_sort_key:
+ * @val: an #RBRefString
+ *
+ * Returns the sort key version of the string underlying @val.
+ * The sort key string is cached inside the #RBRefString for speed.
+ * Sort key strings are not generally human readable, so don't display
+ * them anywhere.  See @g_utf8_collate_key_for_filename for information
+ * on sort keys.
+ *
+ * Return value: sort key string, must not be freed.
+ */
 const char *
 rb_refstring_get_sort_key (RBRefString *val)
 {
@@ -213,6 +291,14 @@ rb_refstring_get_sort_key (RBRefString *val)
 	return string;
 }
 
+/**
+ * rb_refstring_hash:
+ * @p: an #RBRefString
+ *
+ * Hash function suitable for use with @GHashTable.
+ *
+ * Return value: hash value for the string underlying @p
+ */
 guint
 rb_refstring_hash (gconstpointer p)
 {
@@ -220,6 +306,17 @@ rb_refstring_hash (gconstpointer p)
 	return g_str_hash (rb_refstring_get (ref));
 }
 
+/**
+ * rb_refstring_equal:
+ * @ap: an #RBRefString
+ * @bp: another #RBRefstring
+ *
+ * Key equality function suitable for use with #GHashTable.
+ * Equality checks for #RBRefString are just pointer comparisons,
+ * since there can only be one refstring for a given string.
+ *
+ * Return value: %TRUE if the strings are the same
+ */
 gboolean
 rb_refstring_equal (gconstpointer ap, gconstpointer bp)
 {

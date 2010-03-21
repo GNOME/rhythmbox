@@ -33,6 +33,9 @@
 /**
  * SECTION:rb-async-queue-watch
  * @short_description: GSource for watching a GAsyncQueue in the main loop
+ *
+ * This provides a way to feed work items to the main loop using a #GAsyncQueue
+ * without polling it.
  */
 
 /**

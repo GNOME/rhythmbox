@@ -27,6 +27,16 @@
  *
  */
 
+/**
+ * SECTION:rb-removable-media-source
+ * @short_description: Base class for sources representing removable media
+ *
+ * This class provides support for transferring (and transcoding) entries to
+ * the device using drag and drop or cut and paste.  The implementation must
+ * at minimum provide methods for returning a list of supported media types,
+ * and for constructing destination URIs for transfers.
+ */
+
 #include <config.h>
 
 #include <string.h>
@@ -117,6 +127,11 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 
 	klass->impl_should_paste = impl_should_paste;
 
+	/**
+	 * RBRemovableMediaSource:volume
+	 *
+	 * The #GVolume object that the source represents (optional)
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_VOLUME,
 					 g_param_spec_object ("volume",
@@ -124,6 +139,11 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 							      "GIO Volume",
 							      G_TYPE_VOLUME,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBRemovableMediaSource:mount
+	 *
+	 * The #GMount object that the source represents
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_MOUNT,
 					 g_param_spec_object ("mount",
@@ -593,6 +613,24 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	return TRUE;
 }
 
+/**
+ * rb_removable_media_source_build_dest_uri:
+ * @source: an #RBRemovableMediaSource
+ * @entry: the #RhythmDBEntry to build a URI for
+ * @mimetype: destination media type
+ * @extension: extension associated with destination media type
+ *
+ * Constructs a URI to use as the destination for a transfer or transcoding
+ * operation.  The URI may be on the device itself, if the device is mounted
+ * into the normal filesystem or through gvfs, or it may be a temporary
+ * location used to store the file before uploading it to the device.
+ *
+ * The destination URI should conform to the device's normal URI format,
+ * and should use the provided extension instead of the extension from
+ * the source entry.
+ *
+ * Return value: constructed URI
+ */
 char *
 rb_removable_media_source_build_dest_uri (RBRemovableMediaSource *source,
 					  RhythmDBEntry *entry,
@@ -622,6 +660,21 @@ rb_removable_media_source_build_dest_uri (RBRemovableMediaSource *source,
 	return uri;
 }
 
+/**
+ * rb_removable_media_source_get_mime_types:
+ * @source: an #RBRemovableMediaSource
+ *
+ * Returns a #GList of allocated media type strings describing the
+ * formats supported by the device.  If possible, these should be
+ * sorted in order of preference, as the first entry in the list
+ * for which an encoder is available will be used.
+ *
+ * Common media types include "audio/mpeg" for MP3, "application/ogg"
+ * for Ogg Vorbis, "audio/x-flac" for FLAC, and "audio/x-aac" for
+ * MP4/AAC.
+ *
+ * Return value: list of media types
+ */
 GList *
 rb_removable_media_source_get_mime_types (RBRemovableMediaSource *source)
 {
@@ -633,6 +686,16 @@ rb_removable_media_source_get_mime_types (RBRemovableMediaSource *source)
 		return NULL;
 }
 
+/**
+ * rb_removable_media_source_get_format_descriptions:
+ * @source: a #RBRemovableMediaSource
+ *
+ * Returns a #GList of allocated media format descriptions for
+ * the formats supported by the device.  The list and the strings
+ * it holds must be freed by the caller.
+ *
+ * Return value: list of descriptions.
+ */
 GList *
 rb_removable_media_source_get_format_descriptions (RBRemovableMediaSource *source)
 {
@@ -660,6 +723,17 @@ rb_removable_media_source_get_format_descriptions (RBRemovableMediaSource *sourc
 	return desc;
 }
 
+/**
+ * rb_removablem_media_source_should_paste_no_duplicate:
+ * @source: an #RBRemovableMediaSource
+ * @entry: a #RhythmDBEntry to consider pasting
+ *
+ * This implementation of #rb_removable_media_should_paste checks for
+ * an existing entry on the device that matches the title, album, artist,
+ * and track number of the entry being considered.
+ *
+ * Return value: %TRUE if the entry should be transferred to the device.
+ */
 gboolean
 rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *source,
 						     RhythmDBEntry *entry)
@@ -722,6 +796,18 @@ impl_should_paste (RBRemovableMediaSource *source, RhythmDBEntry *entry)
 	return should_paste;
 }
 
+/**
+ * rb_removable_media_source_should_paste:
+ * @source: an #RBRemovableMediaSource
+ * @entry: a #RhythmDBEntry to consider pasting
+ *
+ * Checks whether @entry should be transferred to the device.
+ * The source can check whether a matching entry already exists on the device,
+ * for instance.  See @rb_removable_media_source_should_paste_no_duplicate
+ * a useful implementation.
+ *
+ * Return value: %TRUE if the entry should be transferred to the device
+ */
 gboolean
 rb_removable_media_source_should_paste (RBRemovableMediaSource *source,
 					RhythmDBEntry *entry)
@@ -731,6 +817,22 @@ rb_removable_media_source_should_paste (RBRemovableMediaSource *source,
 	return klass->impl_should_paste (source, entry);
 }
 
+/**
+ * rb_removable_media_source_track_added:
+ * @source: an #RBRemovableMediaSource
+ * @entry: the source #RhythmDBEntry for the transfer
+ * @uri: the destination URI
+ * @filesize: size of the destination file
+ * @mimetype: media type of the destination file
+ *
+ * This is called when a transfer to the device has completed.
+ * If the source's impl_track_added method returns %TRUE, the destination
+ * URI will be added to the database using the entry type for the device.
+ *
+ * If the source uses a temporary area as the destination for transfers,
+ * it can instead upload the destination file to the device and create an
+ * entry for it, then return %FALSE.
+ */
 void
 rb_removable_media_source_track_added (RBRemovableMediaSource *source,
 				       RhythmDBEntry *entry,
@@ -761,6 +863,18 @@ rb_removable_media_source_track_added (RBRemovableMediaSource *source,
 	}
 }
 
+/**
+ * rb_removable_media_source_track_add_error:
+ * @source: an #RBRemovableMediaSource
+ * @entry: the source #RhythmDBEntry for the transfer
+ * @uri: the destination URI
+ * @error: the transfer error information
+ *
+ * This is called when a transfer fails.  If the source's
+ * impl_track_add_error implementation returns %TRUE, an error dialog
+ * will be displayed to the user containing the error message, unless
+ * the error indicates that the destination file already exists.
+ */
 void
 rb_removable_media_source_track_add_error (RBRemovableMediaSource *source,
 					   RhythmDBEntry *entry,

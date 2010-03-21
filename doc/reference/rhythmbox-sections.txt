@@ -446,7 +446,11 @@ RBRemovableMediaSource
 RBRemovableMediaSourceClass
 rb_removable_media_source_build_dest_uri
 rb_removable_media_source_track_added
+rb_removable_media_source_track_add_error
 rb_removable_media_source_get_mime_types
+rb_removable_media_source_get_format_descriptions
+rb_removable_media_source_should_paste
+rb_removable_media_source_should_paste_no_duplicate
 <SUBSECTION Standard>
 RB_REMOVABLE_MEDIA_SOURCE
 RB_IS_REMOVABLE_MEDIA_SOURCE
@@ -1100,18 +1104,6 @@ rb_refstring_get_type
 </SECTION>
 
 <SECTION>
-<FILE>rb-query-creator-private</FILE>
-CriteriaCreateWidget
-CriteriaSetWidgetData
-CriteriaGetWidgetData
-num_property_options
-num_sort_options
-DEFAULT_SORTING_COLUMN
-DEFAULT_SORTING_ORDER
-get_box_widget_at_pos
-</SECTION>
-
-<SECTION>
 <FILE>rb-dialog</FILE>
 rb_error_dialog
 rb_file_chooser_new
@@ -1338,7 +1330,9 @@ RB_IMPORT_ERRORS_SOURCE_GET_CLASS
 
 <SECTION>
 <FILE>rb-streaming-source</FILE>
-RBStreamingSourcePrivate
+<TITLE>RBStreamingSource</TITLE>
+RBStreamingSource
+RBStreamingSourceClass
 rb_streaming_source_get_progress
 rb_streaming_source_set_streaming_title
 rb_streaming_source_set_streaming_artist
@@ -1351,6 +1345,7 @@ rb_streaming_source_get_type
 RB_STREAMING_SOURCE_CLASS
 RB_IS_STREAMING_SOURCE_CLASS
 RB_STREAMING_SOURCE_GET_CLASS
+RBStreamingSourcePrivate
 </SECTION>
 
 <SECTION>
@@ -1374,6 +1369,9 @@ RB_AUTO_PLAYLIST_SOURCE_GET_CLASS
 
 <SECTION>
 <FILE>rb-static-playlist-source</FILE>
+<TITLE>RBStaticPlaylistSource</TITLE>
+RBStaticPlaylistSource
+RBStaticPlaylistSourceClass
 rb_static_playlist_source_new
 rb_static_playlist_source_new_from_xml
 rb_static_playlist_source_load_from_xml

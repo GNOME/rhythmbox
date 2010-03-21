@@ -139,6 +139,8 @@ rb_history_class_init (RBHistoryClass *klass)
  * @destroyer: function to call when removing an entry from the history
  * @destroy_userdata: data to pass to @destroyer
  *
+ * Creates a new history instance.
+ *
  * Return value: a new #RBHistory
  */
 RBHistory *
@@ -286,7 +288,9 @@ rb_history_set_maximum_size (RBHistory *hist, guint maximum_size)
  * rb_history_length:
  * @hist: a #RBHistory
  *
- * Return value: the number of entries in the history
+ * Returns the number of entries in the history.
+ *
+ * Return value: number of entries
  */
 guint
 rb_history_length (RBHistory *hist)
@@ -300,7 +304,9 @@ rb_history_length (RBHistory *hist)
  * rb_history_first:
  * @hist: a #RBHistory
  *
- * Return value: the first entry in the history
+ * Returns the first entry in the history.
+ *
+ * Return value: first entry
  */
 RhythmDBEntry *
 rb_history_first (RBHistory *hist)
@@ -316,7 +322,9 @@ rb_history_first (RBHistory *hist)
  * rb_history_previous:
  * @hist: a #RBHistory
  *
- * Return value: the #RhythmDBEntry before the current position
+ * Returns the #RhythmDBEntry before the current position.
+ *
+ * Return value: previous entry
  */
 RhythmDBEntry *
 rb_history_previous (RBHistory *hist)
@@ -333,7 +341,9 @@ rb_history_previous (RBHistory *hist)
  * rb_history_current:
  * @hist: a #RBHistory
  *
- * Return value: the current #RhythmDBEntry, or NULL if there is no current position
+ * Returns the current #RhythmDBEntry, or NULL if there is no current position
+ *
+ * Return value: current entry or NULL
  */
 RhythmDBEntry *
 rb_history_current (RBHistory *hist)
@@ -347,7 +357,9 @@ rb_history_current (RBHistory *hist)
  * rb_history_next:
  * @hist: a #RBHistory
  *
- * Return value: the #RhythmDBEntry after the current position
+ * Returns the #RhythmDBEntry after the current position
+ *
+ * Return value: next entry
  */
 RhythmDBEntry *
 rb_history_next (RBHistory *hist)
@@ -363,7 +375,9 @@ rb_history_next (RBHistory *hist)
  * rb_history_last:
  * @hist: a #RBHistory
  *
- * Return value: the last #RhythmDBEntry in the history
+ * Returns the last #RhythmDBEntry in the history
+ *
+ * Return value: last entry
  */
 RhythmDBEntry *
 rb_history_last (RBHistory *hist)
@@ -677,7 +691,9 @@ rb_history_dump (RBHistory *hist)
  * @hist: a #RBHistory
  * @entry: a #RhythmDBEntry to check for
  *
- * Return value: TRUE if the entry is present in the history list.
+ * Returns %TRUE if the entry is present in the history list.
+ *
+ * Return value: %TRUE if found
  */
 gboolean
 rb_history_contains_entry (RBHistory *hist, RhythmDBEntry *entry)

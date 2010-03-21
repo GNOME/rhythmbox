@@ -120,7 +120,7 @@ main (int argc, char **argv)
 
 	db = rhythmdb_tree_new ("test.xml");
 
-	/**
+	/*
 	 *  TEST 1: Save with no entries
 	 */
 	g_print ("Test 1\n");
@@ -135,7 +135,7 @@ main (int argc, char **argv)
 	rhythmdb_read_unlock (db);
 	g_print ("Test 1: PASS\n");
 
-	/**
+	/*
 	 *  TEST 2: Save with a single entry
 	 */
 	g_print ("Test 1\n");
@@ -149,7 +149,7 @@ main (int argc, char **argv)
 
 	rhythmdb_write_unlock (db);
 
-	/**
+	/*
 	 * THE END
 	 */
 	rhythmdb_shutdown (db);

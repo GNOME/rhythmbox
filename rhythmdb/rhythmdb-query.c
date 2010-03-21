@@ -54,6 +54,7 @@
 #define RB_PARSE_YEAR_EQUALS RB_PARSE_EQUALS
 #define RB_PARSE_YEAR_GREATER RB_PARSE_GREATER
 #define RB_PARSE_YEAR_LESS RB_PARSE_LESS
+
 /**
  * rhythmdb_query_copy:
  * @array: the query to copy.
@@ -76,6 +77,13 @@ rhythmdb_query_copy (GPtrArray *array)
 	return ret;
 }
 
+/**
+ * rhythmdb_query_concatenate:
+ * @query1: query to append to
+ * @query2: query to append
+ *
+ * Appends @query2 to @query1.
+ */
 void
 rhythmdb_query_concatenate (GPtrArray *query1, GPtrArray *query2)
 {
@@ -101,6 +109,16 @@ rhythmdb_query_concatenate (GPtrArray *query1, GPtrArray *query2)
 	}
 }
 
+/**
+ * rhythmdb_query_parse_valist:
+ * @db: the #RhythmDB
+ * @args: the arguments to parse
+ *
+ * Converts a va_list into a parsed query in the form of a @GPtrArray.
+ * See @rhythmdb_query_parse for more information on the parsing process.
+ *
+ * Return value: converted query
+ */
 GPtrArray *
 rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 {
@@ -230,6 +248,16 @@ rhythmdb_query_append (RhythmDB *db, GPtrArray *query, ...)
 	va_end (args);
 }
 
+/**
+ * rhythmdb_query_append_params:
+ * @db: the #RhythmDB
+ * @query: the query to append to
+ * @type: query type
+ * @prop: query property
+ * @value: query value
+ *
+ * Appends a new query term to @query.
+ */
 void
 rhythmdb_query_append_params (RhythmDB *db, GPtrArray *query,
 			      RhythmDBQueryType type, RhythmDBPropType prop, const GValue *value)
@@ -273,7 +301,7 @@ rhythmdb_query_append_params (RhythmDB *db, GPtrArray *query,
  * @query: a query.
  *
  * Frees the query @query
- **/
+ */
 void
 rhythmdb_query_free (GPtrArray *query)
 {
@@ -373,6 +401,19 @@ write_encoded_gvalue (RhythmDB *db,
 	g_free (quoted);
 }
 
+/**
+ * rhythmdb_read_encoded_property:
+ * @db: the #RhythmDB
+ * @content: encoded property value
+ * @propid: property ID
+ * @val: returns the property value
+ *
+ * Converts a string containing a property value into a #GValue
+ * containing the native form of the property value.  For boolean
+ * and numeric properties, this converts the string to a number.
+ * For #RHYTHMDB_PROP_TYPE, this looks up the entry type by name.
+ * For strings, no conversion is required.
+ */
 void
 rhythmdb_read_encoded_property (RhythmDB *db,
 				const char *content,
@@ -433,6 +474,15 @@ rhythmdb_read_encoded_property (RhythmDB *db,
 	}
 }
 
+/**
+ * rhythmdb_query_serialize:
+ * @db: the #RhythmDB
+ * @query: query to serialize
+ * @parent: XML node to attach the query to
+ *
+ * Converts @query into XML form as a child of @parent.  It can be converted
+ * back into a query by passing @parent to @rhythmdb_query_deserialize.
+ */
 void
 rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 			  xmlNodePtr parent)
@@ -518,6 +568,15 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 	}
 }
 
+/**
+ * rhythmdb_query_deserialize:
+ * @db: the #RhythmDB
+ * @parent: parent XML node of serialized query
+ *
+ * Converts a serialized query back into a @GPtrArray query.
+ *
+ * Return value: deserialized query.
+ */
 GPtrArray *
 rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 {
@@ -629,6 +688,26 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
  *    actually implements. e.g. RHYTHMDB_QUERY_YEAR_*
  **/
 
+/**
+ * rhythmdb_query_preprocess:
+ * @db: the #RhythmDB
+ * @query: query to preprocess
+ *
+ * Preprocesses a query to prepare it for execution.  This has two main
+ * roles: to perform expensive data transformations once per query, rather
+ * than once per entry, and converting criteria to lower-level forms that
+ * are implemented by the database backend.
+ *
+ * For RHYTHMDB_PROP_SEARCH_MATCH, this converts the search terms into
+ * an array of case-folded words.
+ *
+ * When matching against case-folded properties such as
+ * #RHYTHMDB_PROP_TITLE_FOLDED, this case-folds the query value.
+ *
+ * When performing year-based criteria such as #RHYTHMDB_QUERY_PROP_YEAR_LESS,
+ * it converts the year into the Julian date such that a simple numeric
+ * comparison will work.
+ */
 void
 rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 {
@@ -740,6 +819,16 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 	}
 }
 
+/**
+ * rhythmdb_query_append_prop_multiple:
+ * @db: the #RhythmDB
+ * @query: the query to append to
+ * @propid: property ID to match
+ * @items: #GList of values to match against
+ *
+ * Appends a set of criteria to a query to match against any of the values
+ * listed in @items.
+ */
 void
 rhythmdb_query_append_prop_multiple (RhythmDB *db, GPtrArray *query, RhythmDBPropType propid, GList *items)
 {
@@ -781,6 +870,15 @@ rhythmdb_query_append_prop_multiple (RhythmDB *db, GPtrArray *query, RhythmDBPro
 			       RHYTHMDB_QUERY_END);
 }
 
+/**
+ * rhythmdb_query_is_time_relative
+ * @db: the #RhythmDB
+ * @query: the query to check
+ *
+ * Checks if a query contains any time-relative criteria.
+ *
+ * Return value: %TRUE if time-relative criteria found
+ */
 gboolean
 rhythmdb_query_is_time_relative (RhythmDB *db, GPtrArray *query)
 {

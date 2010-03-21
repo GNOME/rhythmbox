@@ -45,6 +45,9 @@
 /**
  * SECTION:rb-dialog
  * @short_description: helper functions for creating gtk+ dialog windows
+ *
+ * This provides a couple of shortcuts for creating dialogs.  If you want
+ * to annoy the user by displaying an error message, this is the way to do it.
  */
 
 /**

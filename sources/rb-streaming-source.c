@@ -27,12 +27,12 @@
  *
  */
 
-/*
- * base class for streaming sources (internet radio, last.fm streams)
- * provides handling of:
- *  - buffering signals (done)
- *  - streaming song metadata (done)
- *  - possibly updating play count etc.?
+/**
+ * SECTION:rb-streaming-source
+ * @short_description: Base class for streaming sources such as internet radio
+ *
+ * This class provides handling of buffering signals and streaming song metadata
+ * common to different types of sources that play continuous streaming media.
  */
 
 #include "config.h"
@@ -82,7 +82,7 @@ static void extra_metadata_gather_cb (RhythmDB *db,
 				      RBStringValueMap *data,
 				      RBStreamingSource *source);
 
-struct RBStreamingSourcePrivate
+struct _RBStreamingSourcePrivate
 {
 	RhythmDB *db;
 
@@ -200,6 +200,15 @@ impl_handle_eos (RBSource *asource)
 	return RB_SOURCE_EOF_RETRY;
 }
 
+/**
+ * rb_streaming_source_get_progress:
+ * @source: a #RBStreamingSource
+ * @text: returns buffering status text
+ * @progress: returns buffering progress fraction
+ *
+ * Provides status text and progress fraction suitable for use in
+ * a streaming source's @rb_source_get_status method.
+ */
 void
 rb_streaming_source_get_progress (RBStreamingSource *source, char **text, float *progress)
 {
@@ -383,6 +392,14 @@ set_streaming_metadata (RBStreamingSource *source,
 						      source);
 }
 
+/**
+ * rb_streaming_source_set_streaming_title:
+ * @source: a #RBStreamingSource
+ * @title: the new streaming song title
+ *
+ * Updates the streaming song title.  Call this when an updated
+ * streaming song title is received from the stream.
+ */
 void
 rb_streaming_source_set_streaming_title (RBStreamingSource *source,
 					 const char *title)
@@ -394,6 +411,14 @@ rb_streaming_source_set_streaming_title (RBStreamingSource *source,
 				title);
 }
 
+/**
+ * rb_streaming_source_set_streaming_artist:
+ * @source: a #RBStreamingSource
+ * @artist: the new streaming song artist name
+ *
+ * Updates the streaming song artist name.  Call this when an updated
+ * streaming song artist name is received from the stream.
+ */
 void
 rb_streaming_source_set_streaming_artist (RBStreamingSource *source,
 					  const char *artist)
@@ -405,6 +430,14 @@ rb_streaming_source_set_streaming_artist (RBStreamingSource *source,
 				artist);
 }
 
+/**
+ * rb_streaming_source_set_streaming_album:
+ * @source: a #RBStreamingSource
+ * @album: the new streaming song album name
+ *
+ * Updates the streaming song album name.  Call this when an updated
+ * streaming song album name is received from the stream.
+ */
 void
 rb_streaming_source_set_streaming_album (RBStreamingSource *source,
 					 const char *album)
@@ -471,4 +504,3 @@ playing_entry_changed_cb (RBShellPlayer *player,
 
 	g_object_unref (backend);
 }
-

@@ -45,15 +45,18 @@ G_BEGIN_DECLS
 #define RB_IS_STATIC_PLAYLIST_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_STATIC_PLAYLIST_SOURCE))
 #define RB_STATIC_PLAYLIST_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_STATIC_PLAYLIST_SOURCE, RBStaticPlaylistSourceClass))
 
-typedef struct
+typedef struct _RBStaticPlaylistSource RBStaticPlaylistSource;
+typedef struct _RBStaticPlaylistSourceClass RBStaticPlaylistSourceClass;
+
+struct _RBStaticPlaylistSource
 {
 	RBPlaylistSource parent;
-} RBStaticPlaylistSource;
+};
 
-typedef struct
+struct _RBStaticPlaylistSourceClass
 {
 	RBPlaylistSourceClass parent;
-} RBStaticPlaylistSourceClass;
+};
 
 GType		rb_static_playlist_source_get_type 	(void);
 

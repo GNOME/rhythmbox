@@ -83,7 +83,7 @@ char*		rb_removable_media_source_build_dest_uri 	(RBRemovableMediaSource *source
 void		rb_removable_media_source_track_added		(RBRemovableMediaSource *source,
 								 RhythmDBEntry *entry,
 								 const char *uri,
-								 guint64 dest_size,
+								 guint64 filesize,
 								 const char *mimetype);
 void		rb_removable_media_source_track_add_error	(RBRemovableMediaSource *source,
 								 RhythmDBEntry *entry,

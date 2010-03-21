@@ -39,25 +39,27 @@ G_BEGIN_DECLS
 #define RB_IS_STREAMING_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_STREAMING_SOURCE))
 #define RB_STREAMING_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_STREAMING_SOURCE, RBStreamingSourceClass))
 
-typedef struct RBStreamingSourcePrivate RBStreamingSourcePrivate;
+typedef struct _RBStreamingSource RBStreamingSource;
+typedef struct _RBStreamingSourceClass RBStreamingSourceClass;
+typedef struct _RBStreamingSourcePrivate RBStreamingSourcePrivate;
 
-typedef struct
+struct _RBStreamingSource
 {
 	RBSource parent;
 
 	RBStreamingSourcePrivate *priv;
-} RBStreamingSource;
+};
 
-typedef struct
+struct _RBStreamingSourceClass
 {
 	RBSourceClass parent;
-} RBStreamingSourceClass;
+};
 
 GType		rb_streaming_source_get_type	(void);
 
 /* methods for subclasses */
 void		rb_streaming_source_get_progress (RBStreamingSource *source,
-						  char **progress_text,
+						  char **text,
 						  float *progress);
 void		rb_streaming_source_set_streaming_title (RBStreamingSource *source,
 							 const char *title);
@@ -69,4 +71,3 @@ void		rb_streaming_source_set_streaming_album (RBStreamingSource *source,
 G_END_DECLS
 
 #endif /* __RB_STREAMING_SOURCE_H */
-

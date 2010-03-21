@@ -33,6 +33,9 @@
 /**
  * SECTION:rb-text-helpers
  * @short_description: text direction (LTR/RTL) functions
+ *
+ * Provides some helper functions for constructing strings that
+ * may include both left-to-right and right-to-left text.
  */
 
 /* unicode direction markup characters

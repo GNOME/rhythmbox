@@ -473,9 +473,9 @@ RhythmDBQuery *	rhythmdb_query_copy			(RhythmDBQuery *array);
 void		rhythmdb_query_preprocess		(RhythmDB *db, RhythmDBQuery *query);
 
 void		rhythmdb_query_serialize		(RhythmDB *db, RhythmDBQuery *query,
-							 xmlNodePtr node);
+							 xmlNodePtr parent);
 
-RhythmDBQuery *	rhythmdb_query_deserialize		(RhythmDB *db, xmlNodePtr node);
+RhythmDBQuery *	rhythmdb_query_deserialize		(RhythmDB *db, xmlNodePtr parent);
 
 char *		rhythmdb_query_to_string		(RhythmDB *db, RhythmDBQuery *query);
 
