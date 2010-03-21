@@ -862,6 +862,8 @@ db_art_metadata_cb (RhythmDB *db,
 		if (time < PLAYING_ENTRY_NOTIFY_TIME) {
 			notify_playing_entry (plugin, FALSE);
 		}
+	} else {
+		notify_playing_entry (plugin, FALSE);
 	}
 }
 
