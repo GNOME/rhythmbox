@@ -936,7 +936,7 @@ build_device_state (RBMediaPlayerSource *source)
 
 	device = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify)rhythmdb_entry_unref);
 
-	if (rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_MUSIC)) {
+	if (rb_media_player_sync_settings_has_enabled_groups (priv->sync_settings, SYNC_CATEGORY_MUSIC)) {
 		GHashTable *entries;
 		rb_debug ("getting music entries from device");
 		entries = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) rhythmdb_entry_unref);
@@ -946,7 +946,7 @@ build_device_state (RBMediaPlayerSource *source)
 		rb_debug ("done getting music entries from device");
 	}
 
-	if (rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_PODCAST)) {
+	if (rb_media_player_sync_settings_has_enabled_groups (priv->sync_settings, SYNC_CATEGORY_PODCAST)) {
 		GHashTable *podcasts;
 		rb_debug ("getting podcast entries from device");
 		podcasts = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) rhythmdb_entry_unref);
