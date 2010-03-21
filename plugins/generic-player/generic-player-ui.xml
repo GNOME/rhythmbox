@@ -1,7 +1,11 @@
 <ui>
   <popup name="GenericPlayerSourcePopup">
-    <menuitem name="GenericPlayerSourcePopupEject" action="RemovableSourceEject"/>
+    <menuitem name="GenericPlayerSourcePopupSync" action="MediaPlayerSourceSync"/>
+    <separator />
     <menuitem name="GenericPlayerSourcePopupNewPlaylist" action="GenericPlayerSourceNewPlaylist"/>
+    <separator />
+    <menuitem name="GenericPlayerSourcePopupEject" action="RemovableSourceEject"/>
+    <separator />
     <menuitem name="GenericPlayerSourcePopupProperties" action="GenericPlayerSourceProperties"/>
   </popup>
 

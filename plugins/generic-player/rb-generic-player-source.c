@@ -260,6 +260,7 @@ impl_constructed (GObject *object)
 	}
 	g_strfreev (playlist_formats);
 
+        rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
 	load_songs (source);
 }
 
