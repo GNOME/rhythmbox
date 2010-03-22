@@ -343,6 +343,12 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMt
 		return NULL;
 	}
 
+	/* check that it's not an iPhone or iPod Touch */
+	if (g_udev_device_get_property_as_boolean (device, "USBMUX_SUPPORTED")) {
+		rb_debug ("device %s is supported through AFC, ignore", g_udev_device_get_name (device));
+		return NULL;
+	}
+
 	device_number = g_udev_device_get_device_number (device);
 	if (device_number == 0) {
 		rb_debug ("can't get udev device number for device %s", g_udev_device_get_name (device));
