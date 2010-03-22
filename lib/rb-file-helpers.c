@@ -25,6 +25,15 @@
  *
  */
 
+/**
+ * SECTION:rb-file-helpers
+ * @short_description: An assortment of file and URI helper functions
+ *
+ * This is a variety of functions for dealing with files and URIs, including
+ * locating installed files, finding user cache and config directories,
+ * and dealing with file naming restrictions for various filesystems.
+ */
+
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib/gi18n.h>
@@ -66,6 +75,15 @@ static char *installed_paths[] = {
 static char **search_paths;
 
 
+/**
+ * rb_file:
+ * @filename: name of file to search for
+ *
+ * Searches for an installed file, returning the full path name
+ * if found, NULL otherwise.
+ *
+ * Return value: Full file name, if found.  Must not be freed.
+ */
 const char *
 rb_file (const char *filename)
 {
@@ -90,6 +108,13 @@ rb_file (const char *filename)
 	return NULL;
 }
 
+/**
+ * rb_dot_dir:
+ *
+ * Deprecated.
+ *
+ * Return value: user's ~/.gnome2/rhythmbox/ dir
+ */
 const char *
 rb_dot_dir (void)
 {
@@ -156,6 +181,14 @@ rb_user_cache_dir (void)
 }
 
 
+/**
+ * rb_music_dir:
+ *
+ * Returns the default directory for the user's music library.
+ * This will usually be the 'Music' directory under the home directory.
+ *
+ * Return value: user's music directory.  must not be freed.
+ */
 const char *
 rb_music_dir (void)
 {
@@ -272,6 +305,13 @@ rb_find_user_cache_file (const char *name,
 	return rb_find_user_file (rb_user_cache_dir (), name, error);
 }
 
+/**
+ * rb_file_helpers_init:
+ * @uninstalled: if %TRUE, search in source and build directories
+ * as well as installed locations
+ *
+ * Sets up file search paths for @rb_file.  Must be called on startup.
+ */
 void
 rb_file_helpers_init (gboolean uninstalled)
 {
@@ -286,6 +326,12 @@ rb_file_helpers_init (gboolean uninstalled)
 				       (GDestroyNotify) g_free);
 }
 
+/**
+ * rb_file_helpers_shutdown:
+ *
+ * Frees various data allocated by file helper functions.
+ * Should be called on shutdown.
+ */
 void
 rb_file_helpers_shutdown (void)
 {
@@ -299,6 +345,16 @@ rb_file_helpers_shutdown (void)
 
 /* not sure this is really useful */
 
+/**
+ * rb_uri_resolve_symlink:
+ * @uri: the URI to process
+ * @error: returns error information
+ *
+ * Attempts to resolve symlinks in @uri and return a canonical URI for the file
+ * it identifies.
+ *
+ * Return value: resolved URI, or NULL on error
+ */
 char *
 rb_uri_resolve_symlink (const char *uri, GError **error)
 {
@@ -382,6 +438,14 @@ rb_uri_resolve_symlink (const char *uri, GError **error)
 	return result;
 }
 
+/**
+ * rb_uri_is_directory:
+ * @uri: the URI to check
+ *
+ * Checks if @uri identifies a directory.
+ *
+ * Return value: %TRUE if @uri is a directory
+ */
 gboolean
 rb_uri_is_directory (const char *uri)
 {
@@ -402,6 +466,14 @@ rb_uri_is_directory (const char *uri)
 	return (ftype == G_FILE_TYPE_DIRECTORY);
 }
 
+/**
+ * rb_uri_exists:
+ * @uri: a URI to check
+ *
+ * Checks if a URI identifies a resource that exists
+ *
+ * Return value: %TRUE if @uri exists
+ */
 gboolean
 rb_uri_exists (const char *uri)
 {
@@ -438,30 +510,76 @@ get_uri_perm (const char *uri, const char *perm_attribute)
 	return result;
 }
 
+/**
+ * rb_uri_is_readable:
+ * @uri: a URI to check
+ *
+ * Checks if the user can read the resource identified by @uri
+ *
+ * Return value: %TRUE if @uri is readable
+ */
 gboolean
-rb_uri_is_readable (const char *text_uri)
+rb_uri_is_readable (const char *uri)
 {
-	return get_uri_perm (text_uri, G_FILE_ATTRIBUTE_ACCESS_CAN_READ);
+	return get_uri_perm (uri, G_FILE_ATTRIBUTE_ACCESS_CAN_READ);
 }
 
+/**
+ * rb_uri_is_writable:
+ * @uri: a URI to check
+ *
+ * Checks if the user can write to the resource identified by @uri
+ *
+ * Return value: %TRUE if @uri is writable
+ */
 gboolean
-rb_uri_is_writable (const char *text_uri)
+rb_uri_is_writable (const char *uri)
 {
-	return get_uri_perm (text_uri, G_FILE_ATTRIBUTE_ACCESS_CAN_WRITE);
+	return get_uri_perm (uri, G_FILE_ATTRIBUTE_ACCESS_CAN_WRITE);
 }
 
+/**
+ * rb_uri_is_local:
+ * @uri: a URI to check
+ *
+ * Checks if @uri identifies a local resource.  Currently this just
+ * checks that it uses the 'file' URI scheme.
+ *
+ * Return value: %TRUE if @uri is local
+ */
 gboolean
-rb_uri_is_local (const char *text_uri)
+rb_uri_is_local (const char *uri)
 {
-	return g_str_has_prefix (text_uri, "file://");
+	return g_str_has_prefix (uri, "file://");
 }
 
+/**
+ * rb_uri_is_hidden:
+ * @uri: a URI to check
+ *
+ * Checks if @uri is hidden, according to the Unix filename convention.
+ * If the filename component of @uri begins with a dot, the file is considered
+ * hidden.
+ *
+ * Return value: %TRUE if @uri is hidden
+ */
 gboolean
-rb_uri_is_hidden (const char *text_uri)
+rb_uri_is_hidden (const char *uri)
 {
-	return g_utf8_strrchr (text_uri, -1, '/')[1] == '.';
+	return g_utf8_strrchr (uri, -1, '/')[1] == '.';
 }
 
+/**
+ * rb_uri_could_be_podcast:
+ * @uri: a URI to check
+ * @is_opml: returns whether the URI identifies an OPML document
+ *
+ * Checks if @uri identifies a resource that is probably a podcast
+ * (RSS or Atom feed).  This does not perform any IO, it just guesses
+ * based on the URI itself.
+ *
+ * Return value: %TRUE if @uri may be a podcast
+ */
 gboolean
 rb_uri_could_be_podcast (const char *uri, gboolean *is_opml)
 {
@@ -527,8 +645,18 @@ rb_uri_could_be_podcast (const char *uri, gboolean *is_opml)
 	return FALSE;
 }
 
+/**
+ * rb_uri_make_hidden:
+ * @uri: a URI to construct a hidden version of
+ *
+ * Constructs a URI that is similar to @uri but which identifies
+ * a hidden file.  This can be used for temporary files that should not
+ * be visible to the user while they are in use.
+ *
+ * Return value: hidden URI, must be freed by the caller.
+ */
 char *
-rb_uri_make_hidden (const char *text_uri)
+rb_uri_make_hidden (const char *uri)
 {
 	GFile *file;
 	GFile *parent;
@@ -536,10 +664,10 @@ rb_uri_make_hidden (const char *text_uri)
 	char *dotted;
 	char *ret = NULL;
 
-	if (rb_uri_is_hidden (text_uri))
-		return g_strdup (text_uri);
+	if (rb_uri_is_hidden (uri))
+		return g_strdup (uri);
 
-	file = g_file_new_for_uri (text_uri);
+	file = g_file_new_for_uri (uri);
 
 	shortname = g_file_get_basename (file);
 	if (shortname == NULL) {
@@ -697,8 +825,18 @@ _uri_handle_recurse (GFile *dir,
 	g_object_unref (files);
 }
 
+/**
+ * rb_uri_handle_recursively:
+ * @uri: URI to visit
+ * @cancel: an optional #GCancellable to allow cancellation
+ * @func: Callback function
+ * @user_data: Data for callback function
+ *
+ * Calls @func for each file found under the directory identified by @uri.
+ * If @uri identifies a file, calls @func for that instead.
+ */
 void
-rb_uri_handle_recursively (const char *text_uri,
+rb_uri_handle_recursively (const char *uri,
 			   GCancellable *cancel,
 			   RBUriRecurseFunc func,
 			   gpointer user_data)
@@ -706,7 +844,7 @@ rb_uri_handle_recursively (const char *text_uri,
 	GFile *file;
 	GHashTable *handled;
 
-	file = g_file_new_for_uri (text_uri);
+	file = g_file_new_for_uri (uri);
 	handled = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
 	_uri_handle_recurse (file, cancel, handled, func, user_data);
@@ -805,8 +943,26 @@ _recurse_async_func (RBUriHandleRecursivelyAsyncData *data)
 	return NULL;
 }
 
+/**
+ * rb_uri_handle_recursively_async:
+ * @uri: the URI to visit
+ * @cancel: a #GCancellable to allow cancellation
+ * @func: callback function
+ * @user_data: data to pass to callback
+ * @data_destroy: function to call to free @user_data
+ *
+ * Calls @func for each file found under the directory identified
+ * by @uri, or if @uri identifies a file, calls it once
+ * with that.
+ *
+ * Directory recursion happens on a separate thread, but the callbacks
+ * are called on the main thread.
+ *
+ * If non-NULL, @destroy_data will be called once all files have been
+ * processed, or when the operation is cancelled.
+ */
 void
-rb_uri_handle_recursively_async (const char *text_uri,
+rb_uri_handle_recursively_async (const char *uri,
 				 GCancellable *cancel,
 			         RBUriRecurseFunc func,
 			         gpointer user_data,
@@ -814,7 +970,7 @@ rb_uri_handle_recursively_async (const char *text_uri,
 {
 	RBUriHandleRecursivelyAsyncData *data = g_new0 (RBUriHandleRecursivelyAsyncData, 1);
 	
-	data->uri = g_strdup (text_uri);
+	data->uri = g_strdup (uri);
 	data->user_data = user_data;
 	if (cancel != NULL) {
 		data->cancel = g_object_ref (cancel);
@@ -828,6 +984,18 @@ rb_uri_handle_recursively_async (const char *text_uri,
 	g_thread_create ((GThreadFunc)_recurse_async_func, data, FALSE, NULL);
 }
 
+/**
+ * rb_uri_mkstemp:
+ * @prefix: URI prefix
+ * @uri_ret: returns the temporary file URI
+ * @stream: returns a @GOutputStream for the temporary file
+ * @error: returns error information
+ *
+ * Creates a temporary file whose URI begins with @prefix, returning
+ * the file URI and an output stream for writing to it.
+ *
+ * Return value: %TRUE if successful
+ */
 gboolean
 rb_uri_mkstemp (const char *prefix, char **uri_ret, GOutputStream **stream, GError **error)
 {
@@ -860,7 +1028,16 @@ rb_uri_mkstemp (const char *prefix, char **uri_ret, GOutputStream **stream, GErr
 	}
 }
 
-
+/**
+ * rb_canonicalise_uri:
+ * @uri: URI to canonicalise
+ *
+ * Converts @uri to canonical URI form, ensuring it doesn't contain
+ * any redundant directory fragments or unnecessarily escaped characters.
+ * All URIs passed to #RhythmDB functions should be canonicalised.
+ *
+ * Return value: canonical URI, must be freed by caller
+ */
 char *
 rb_canonicalise_uri (const char *uri)
 {
@@ -877,6 +1054,15 @@ rb_canonicalise_uri (const char *uri)
 	return result;
 }
 
+/**
+ * rb_uri_append_path:
+ * @uri: the URI to append to
+ * @path: the path fragment to append
+ *
+ * Creates a new URI consisting of @path appended to @uri.
+ *
+ * Return value: new URI, must be freed by caller
+ */
 char*
 rb_uri_append_path (const char *uri, const char *path)
 {
@@ -900,6 +1086,16 @@ rb_uri_append_path (const char *uri, const char *path)
 	return result;
 }
 
+/**
+ * rb_uri_append_uri:
+ * @uri: the URI to append to
+ * @fragment: the URI fragment to append
+ *
+ * Creates a new URI consisting of @fragment appended to @uri.
+ * Generally isn't a good idea.
+ *
+ * Return value: new URI, must be freed by caller
+ */
 char*
 rb_uri_append_uri (const char *uri, const char *fragment)
 {
@@ -920,6 +1116,15 @@ rb_uri_append_uri (const char *uri, const char *fragment)
 	return rv;
 }
 
+/**
+ * rb_uri_get_dir_name:
+ * @uri: a URI
+ *
+ * Returns the directory component of @uri, that is, everything up
+ * to the start of the filename.
+ *
+ * Return value: new URI for parent of @uri, must be freed by caller.
+ */
 char *
 rb_uri_get_dir_name (const char *uri)
 {
@@ -937,6 +1142,15 @@ rb_uri_get_dir_name (const char *uri)
 	return dirname;
 }
 
+/**
+ * rb_uri_get_short_path_name:
+ * @uri: a URI
+ *
+ * Returns the filename component of @uri, that is, everything after the
+ * final slash and before the start of the query string or fragment.
+ *
+ * Return value: filename component of @uri, must be freed by caller
+ */
 char *
 rb_uri_get_short_path_name (const char *uri)
 {
@@ -973,8 +1187,18 @@ rb_uri_get_short_path_name (const char *uri)
 	}
 }
 
+/**
+ * rb_check_dir_has_space:
+ * @dir: a #GFile to check
+ * @bytes_needed: number of bytes to check for
+ *
+ * Checks that the filesystem holding @file has at least @bytes_needed
+ * bytes available.
+ *
+ * Return value: %TRUE if enough space is available.
+ */
 gboolean
-rb_check_dir_has_space (GFile *file,
+rb_check_dir_has_space (GFile *dir,
 			guint64 bytes_needed)
 {
 	GFile *extant;
@@ -982,9 +1206,9 @@ rb_check_dir_has_space (GFile *file,
 	GError *error = NULL;
 	guint64 free_bytes;
 
-	extant = rb_file_find_extant_parent (file);
+	extant = rb_file_find_extant_parent (dir);
 	if (extant == NULL) {
-		char *uri = g_file_get_uri (file);
+		char *uri = g_file_get_uri (dir);
 		g_warning ("Cannot get free space at %s: none of the directory structure exists", uri);
 		g_free (uri);
 		return FALSE;
@@ -998,7 +1222,7 @@ rb_check_dir_has_space (GFile *file,
 
 	if (error != NULL) {
 		char *uri;
-		uri = g_file_get_uri (file);
+		uri = g_file_get_uri (dir);
 		g_warning (_("Cannot get free space at %s: %s"), uri, error->message);
 		g_free (uri);
 		return FALSE;
@@ -1013,6 +1237,16 @@ rb_check_dir_has_space (GFile *file,
 	return TRUE;
 }
 
+/**
+ * rb_check_dir_has_space_uri:
+ * @uri: a URI to check
+ * @bytes_needed: number of bytes to check for
+ *
+ * Checks that the filesystem holding @uri has at least @bytes_needed
+ * bytes available.
+ *
+ * Return value: %TRUE if enough space is available.
+ */
 gboolean
 rb_check_dir_has_space_uri (const char *uri,
 			    guint64 bytes_needed)
@@ -1027,6 +1261,17 @@ rb_check_dir_has_space_uri (const char *uri,
 	return result;
 }
 
+/**
+ * rb_uri_get_mount_point:
+ * @uri: a URI
+ *
+ * Returns the mount point of the filesystem holding @uri.
+ * If @uri is on a normal filesystem mount (such as /, /home,
+ * /var, etc.) this will be NULL.
+ *
+ * Return value: filesystem mount point (must be freed by caller)
+ *  or NULL.
+ */
 gchar *
 rb_uri_get_mount_point (const char *uri)
 {
@@ -1083,6 +1328,16 @@ check_file_is_directory (GFile *file, GError **error)
 }
 
 
+/**
+ * rb_uri_create_parent_dirs:
+ * @uri: a URI for which to create parent directories
+ * @error: returns error information
+ *
+ * Ensures that all parent directories of @uri exist so that
+ * @uri itself can be created directly.
+ *
+ * Return value: %TRUE if successful
+ */
 gboolean
 rb_uri_create_parent_dirs (const char *uri, GError **error)
 {
@@ -1149,7 +1404,9 @@ rb_file_find_extant_parent (GFile *file)
  * rb_uri_get_filesystem_type:
  * @uri: URI to get filesystem type for
  *
- * Return value: a string describing the type of the filesystem containing the URI
+ * Returns a string describing the type of the filesystem containing @uri.
+ *
+ * Return value: filesystem type string, must be freed by caller.
  */
 char *
 rb_uri_get_filesystem_type (const char *uri)
@@ -1193,6 +1450,9 @@ rb_uri_get_filesystem_type (const char *uri)
 /**
  * rb_sanitize_path_for_msdos_filesystem:
  * @path: a path to sanitize (modified in place)
+ *
+ * Modifies @path such that it represents a legal path for MS DOS
+ * filesystems.
  */
 void
 rb_sanitize_path_for_msdos_filesystem (char *path)
@@ -1205,8 +1465,11 @@ rb_sanitize_path_for_msdos_filesystem (char *path)
  * rb_sanitize_uri_for_filesystem:
  * @uri: a URI to sanitize
  *
- * Return value: a copy of the URI with characters not allowed by the target filesystem
- *   replaced
+ * Removes characters from @uri that are not allowed by the filesystem
+ * on which it would be stored.  At present, this only supports MS DOS
+ * filesystems.
+ *
+ * Return value: sanitized copy of @uri, must be freed by caller.
  */
 char *
 rb_sanitize_uri_for_filesystem (const char *uri)

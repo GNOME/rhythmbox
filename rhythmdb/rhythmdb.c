@@ -429,7 +429,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      0);
 
 	/**
-	 * RhythmDB::save-completed:
+	 * RhythmDB::save-complete:
 	 * @db: the #RhythmDB
 	 *
 	 * Emitted when the database has been saved.

@@ -199,6 +199,8 @@ rb_encoder_get_type (void)
 /**
  * rb_encoder_factory_get:
  *
+ * Returns the #RBEncoderFactory instance.
+ *
  * Return value: the #RBEncoderFactory
  */
 RBEncoderFactory *

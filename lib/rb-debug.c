@@ -62,8 +62,9 @@ static const char *debug_match = NULL;
  * @func: function to check
  * @file: filename to check
  *
- * Return value: TRUE if @func or @file match the current
- * debug output settings.
+ * Checks if @file or @func matches the current debug output settings.
+ *
+ * Return value: %TRUE if matched
  */
 gboolean
 rb_debug_matches (const char *func,
@@ -80,7 +81,7 @@ rb_debug_matches (const char *func,
 
 /**
  * rb_debug:
- * @...: printf-style format string followed by any substitution values
+ * @Varargs: printf-style format string followed by any substitution values
  *
  * If the call site function or file name matches the current debug output
  * settings, the message will be formatted and printed to standard error,
@@ -96,6 +97,7 @@ rb_debug_matches (const char *func,
  * @line: line number
  * @newline: if TRUE, add a newline to the output
  * @format: printf style format specifier
+ * @Varargs: substitution values for @format
  *
  * If the debug output settings match the function or file names,
  * the debug message will be formatted and written to standard error.

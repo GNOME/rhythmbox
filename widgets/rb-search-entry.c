@@ -207,6 +207,8 @@ rb_search_entry_finalize (GObject *object)
 /**
  * rb_search_entry_new:
  *
+ * Creates a new search entry widget.
+ *
  * Return value: new search entry widget.
  */
 RBSearchEntry *
@@ -340,7 +342,9 @@ rb_search_entry_focus_out_event_cb (GtkWidget *widget,
  * rb_search_entry_searching:
  * @entry: a #RBSearchEntry
  *
- * Return value: TRUE if there is search text
+ * Returns %TRUE if there is search text in the entry widget.
+ *
+ * Return value: %TRUE if searching
  */
 gboolean
 rb_search_entry_searching (RBSearchEntry *entry)

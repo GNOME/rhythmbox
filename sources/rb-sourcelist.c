@@ -844,6 +844,8 @@ rb_sourcelist_get_property (GObject    *object,
  * rb_sourcelist_new:
  * @shell: the #RBShell instance
  *
+ * Creates the source list widget.
+ *
  * Return value: the source list widget.
  */
 GtkWidget *

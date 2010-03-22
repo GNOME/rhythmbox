@@ -46,8 +46,8 @@ char *		rb_find_user_cache_file	(const char *name,
 
 char *		rb_canonicalise_uri	(const char *uri);
 
-gboolean	rb_uri_mkstemp		(const char *prefix, char **uri,
-					 GOutputStream **handle, GError **error);
+gboolean	rb_uri_mkstemp		(const char *prefix, char **uri_ret,
+					 GOutputStream **stream, GError **error);
 
 char *		rb_uri_resolve_symlink	(const char *uri, GError **error);
 gboolean	rb_uri_is_directory	(const char *uri);

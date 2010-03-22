@@ -147,6 +147,13 @@ rb_rating_class_init (RBRatingClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_DOUBLE);
+	/**
+	 * RBRating::set-rating:
+	 * @rating: the #RBRating
+	 * @score: the new rating
+	 *
+	 * Action signal used to change the rating.
+	 */
 	rb_rating_signals[SET_RATING] =
 		g_signal_new ("set-rating",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -157,6 +164,14 @@ rb_rating_class_init (RBRatingClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_DOUBLE);
+	/**
+	 * RBRating::adjust-rating:
+	 * @rating: the #RBRating
+	 * @adjust: value to add to the rating
+	 *
+	 * Action signal used to make a relative adjustment to the
+	 * rating.
+	 */
 	rb_rating_signals[ADJUST_RATING] =
 		g_signal_new ("adjust-rating",
 			      G_OBJECT_CLASS_TYPE (object_class),

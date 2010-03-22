@@ -1026,10 +1026,13 @@ CONF_STATE_BURN_DEVICE
 <SECTION>
 <FILE>rb-file-helpers</FILE>
 rb_file
-rb_dot_dir
+rb_user_data_dir
+rb_user_cache_dir
 rb_music_dir
-rb_canonicalise_uri
-rb_uri_mkstemp
+rb_find_user_data_file
+rb_find_user_cache_file
+rb_file_helpers_init
+rb_file_helpers_shutdown
 rb_uri_resolve_symlink
 rb_uri_is_directory
 rb_uri_exists
@@ -1039,15 +1042,25 @@ rb_uri_is_local
 rb_uri_is_hidden
 rb_uri_could_be_podcast
 rb_uri_make_hidden
-rb_uri_get_dir_name
-rb_uri_get_short_path_name
-RBUriRecurseFunc
 rb_uri_handle_recursively
 rb_uri_handle_recursively_async
+rb_uri_mkstemp
+rb_canonicalise_uri
 rb_uri_append_path
 rb_uri_append_uri
-rb_file_helpers_init
-rb_file_helpers_shutdown
+rb_uri_get_dir_name
+rb_uri_get_short_path_name
+rb_check_dir_has_space
+rb_check_dir_has_space_uri
+rb_uri_get_mount_point
+rb_uri_create_parent_dirs
+rb_file_find_extant_parent
+rb_uri_get_filesystem_type
+rb_sanitize_path_for_msdos_filesystem
+rb_sanitize_uri_for_filesystem
+RBUriRecurseFunc
+<SUBSECTION Private>
+rb_dot_dir
 </SECTION>
 
 <SECTION>
@@ -1058,32 +1071,34 @@ rb_null_function
 rb_copy_function
 rb_gvalue_compare
 rb_compare_gtimeval
-rb_safe_strcmp
+rb_image_new_from_stock
+rb_gtk_action_popup_menu
+rb_is_main_thread
+rb_assert_locked
+rb_threads_init
+rb_string_split_words
+rb_search_fold
 rb_make_duration_string
 rb_make_elapsed_time_string
-rb_gtk_action_popup_menu
-rb_image_new_from_stock
-rb_uri_get_mount_point
-rb_threads_init
-rb_is_main_thread
-rb_search_fold
-rb_string_split_words
 rb_string_list_equal
-rb_string_list_contains
 rb_string_list_copy
-rb_list_deep_free
+rb_string_list_contains
 rb_list_destroy_free
+rb_list_deep_free
 rb_slist_deep_free
-rb_str_in_strv
 rb_collate_hash_table_keys
 rb_collate_hash_table_values
 rb_uri_list_parse
 rb_mime_get_friendly_name
 rb_signal_accumulator_object_handled
+rb_signal_accumulator_value_array
 rb_value_array_append_data
 rb_value_free
-rb_assert_locked
+rb_str_in_strv
 rb_set_tree_view_column_fixed_width
+rb_scale_pixbuf_to_size
+<SUBSECTION Private>
+rb_safe_strcmp
 </SECTION>
 
 <SECTION>
@@ -1186,7 +1201,9 @@ RB_LIBRARY_BROWSER_GET_CLASS
 
 <SECTION>
 <FILE>rb-plugin</FILE>
-RB_PLUGIN_CONST
+<TITLE>RBPlugin</TITLE>
+RBPlugin
+RBPluginClass
 RBPluginActivationFunc
 RBPluginWidgetFunc
 RBPluginBooleanFunc
@@ -1207,6 +1224,7 @@ rb_plugin_get_type
 RB_PLUGIN_CLASS
 RB_IS_PLUGIN_CLASS
 RB_PLUGIN_GET_CLASS
+RB_PLUGIN_CONST
 </SECTION>
 
 <SECTION>

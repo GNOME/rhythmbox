@@ -50,10 +50,14 @@ G_BEGIN_DECLS
 /*
  * Main object structure
  */
-typedef struct
+
+typedef struct _RBPlugin RBPlugin;
+typedef struct _RBPluginClass RBPluginClass;
+
+struct _RBPlugin
 {
 	GObject parent;
-} RBPlugin;
+};
 
 typedef void		(*RBPluginActivationFunc)	(RBPlugin *plugin, RBShell *shell);
 typedef GtkWidget *	(*RBPluginWidgetFunc)		(RBPlugin *plugin);
@@ -62,7 +66,7 @@ typedef gboolean	(*RBPluginBooleanFunc)		(RBPlugin *plugin);
 /*
  * Class definition
  */
-typedef struct
+struct _RBPluginClass
 {
 	GObjectClass parent_class;
 
@@ -75,7 +79,7 @@ typedef struct
 	/* Plugins should not override this, it's handled automatically by
 	   the RbPluginClass */
 	RBPluginBooleanFunc		is_configurable;
-} RBPluginClass;
+};
 
 /*
  * Public methods
@@ -99,7 +103,7 @@ GList *          rb_get_plugin_paths            (void);
 /*
  * Utility macro used to register plugins
  *
- * use: RBT_PLUGIN_REGISTER(RBSamplePlugin, rb_sample_plugin)
+ * use: RB_PLUGIN_REGISTER(RBSamplePlugin, rb_sample_plugin)
  */
 
 #define RB_PLUGIN_REGISTER(PluginName, plugin_name)				\

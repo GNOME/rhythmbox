@@ -384,7 +384,7 @@ rb_source_class_init (RBSourceClass *klass)
 			      0);
 
 	/**
-	 * RBSource::status_changed:
+	 * RBSource::status-changed:
 	 * @source: the #RBSource
 	 *
 	 * Emitted when the source's status changes.
@@ -400,7 +400,7 @@ rb_source_class_init (RBSourceClass *klass)
 			      0);
 
 	/**
-	 * RBSource::filter_changed:
+	 * RBSource::filter-changed:
 	 * @source: the #RBSource
 	 *
 	 * Fires when the user changes the filter, either by changing the

@@ -792,8 +792,10 @@ rb_play_order_go_next (RBPlayOrder *porder)
  * rb_play_order_has_previous:
  * @porder: RBPlayOrder instance
  *
- * Returns: true if there is an entry before the current entry in the play order.
- * If not currently playing, returns false.
+ * Returns %TRUE if there is an entry before the current entry in the play order.
+ * If not currently playing, returns %FALSE.
+ *
+ * Return value: %TRUE if previous entry exists
  */
 gboolean
 rb_play_order_has_previous (RBPlayOrder *porder)

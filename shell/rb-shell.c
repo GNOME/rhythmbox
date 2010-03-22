@@ -710,6 +710,14 @@ rb_shell_class_init (RBShellClass *klass)
 							      RB_TYPE_SOURCE_HEADER,
 							      G_PARAM_READABLE));
 
+	/**
+	 * RBShell::visibility-changed:
+	 * @shell: the #RBShell
+	 * @visibile: new visibility
+	 *
+	 * Emitted after the visibility of the main Rhythmbox window has
+	 * changed.
+	 */
 	rb_shell_signals[VISIBILITY_CHANGED] =
 		g_signal_new ("visibility_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -720,6 +728,16 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
+	/**
+	 * RBShell::visibility-changing:
+	 * @shell: the #RBShell
+	 * @initial: if %TRUE, this is the initial visibility for the window
+	 * @visible: new shell visibility
+	 *
+	 * Emitted before the visibility of the main window changes.  The return
+	 * value overrides the visibility setting.  If multiple signal handlers
+	 * are attached, the last one wins.
+	 */
 	rb_shell_signals[VISIBILITY_CHANGING] =
 		g_signal_new ("visibility_changing",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -732,6 +750,16 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_TYPE_BOOLEAN,
 			      G_TYPE_BOOLEAN);
 
+	/**
+	 * RBShell::create-song-info:
+	 * @shell: the #RBShell
+	 * @song_info: the new #RBSongInfo window
+	 * @multi: if %TRUE, the song info window is for multiple entries
+	 *
+	 * Emitted when creating a new #RBSongInfo window.  Signal handlers can
+	 * add pages to the song info window notebook to display additional
+	 * information.
+	 */
 	rb_shell_signals[CREATE_SONG_INFO] =
 		g_signal_new ("create_song_info",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -742,6 +770,17 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_TYPE_NONE,
 			      2,
 			      RB_TYPE_SONG_INFO, G_TYPE_BOOLEAN);
+	/**
+	 * RBShell::removable-media-scan-finished:
+	 * @shell: the #RBShell
+	 *
+	 * Emitted when the initial scan for removable media devices is
+	 * complete.  This is intended to allow plugins to request a
+	 * device scan only if the scan on startup has already been done,
+	 * but it isn't very useful for that.
+	 * See #RBRemovableMediaManager:scanned for a better approach to
+	 * this problem.
+	 */
 	rb_shell_signals[REMOVABLE_MEDIA_SCAN_FINISHED] =
 		g_signal_new ("removable_media_scan_finished",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -751,6 +790,13 @@ rb_shell_class_init (RBShellClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+	/**
+	 * RBShell::notify-playing-entry:
+	 * @shell: the #RBShell
+	 *
+	 * Emitted when a notification should be displayed showing the current
+	 * playing entry.
+	 */
 	rb_shell_signals[NOTIFY_PLAYING_ENTRY] =
 		g_signal_new ("notify-playing-entry",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -761,6 +807,17 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
+	/**
+	 * RBShell::notify-custom:
+	 * @shell: the #RBShell
+	 * @timeout: length of time (in seconds) to display the notification
+	 * @primary: main notification text
+	 * @secondary: secondary notification text
+	 * @pixbuf: an image to include in the notification (optional)
+	 * @requested: if %TRUE, the notification was triggered by an explicit user action
+	 *
+	 * Emitted when a custom notification should be displayed to the user.
+	 */
 	rb_shell_signals[NOTIFY_CUSTOM] =
 		g_signal_new ("notify-custom",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -2956,7 +3013,9 @@ rb_shell_do_notify (RBShell *shell, gboolean requested, GError **error)
 /**
  * rb_shell_error_quark:
  *
- * Return value: the #GQuark used for #RBShell errors
+ * Returns the #GQuark used for #RBShell errors
+ *
+ * Return value: shell error #GQuark
  */
 GQuark
 rb_shell_error_quark (void)

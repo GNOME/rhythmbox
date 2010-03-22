@@ -84,6 +84,8 @@ rb_string_value_map_finalize (GObject *obj)
 /**
  * rb_string_value_map_new:
  *
+ * Creates a new #RBStringValueMap
+ *
  * Return value: new empty #RBStringValueMap
  */
 RBStringValueMap*
@@ -134,7 +136,9 @@ rb_string_value_map_remove (RBStringValueMap *map,
  * rb_string_value_map_size:
  * @map: a #RBStringValueMap
  *
- * Return value: the number of entries in the map
+ * Returns the number of entries in the map.
+ *
+ * Return value: number of entries
  */
 guint
 rb_string_value_map_size (RBStringValueMap *map)

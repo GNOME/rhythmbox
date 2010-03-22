@@ -724,7 +724,7 @@ rb_removable_media_source_get_format_descriptions (RBRemovableMediaSource *sourc
 }
 
 /**
- * rb_removablem_media_source_should_paste_no_duplicate:
+ * rb_removable_media_source_should_paste_no_duplicate:
  * @source: an #RBRemovableMediaSource
  * @entry: a #RhythmDBEntry to consider pasting
  *

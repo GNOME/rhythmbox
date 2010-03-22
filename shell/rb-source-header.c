@@ -248,6 +248,13 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 							      GTK_TYPE_UI_MANAGER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RBSourceHeader::get-search-actions:
+	 * @header: the #RBSourceHeader
+	 *
+	 * Allows signal handlers to add search actions to the search
+	 * bar by returning an array of search action names.
+	 */
 	rb_source_header_signals[GET_SEARCH_ACTIONS] =
 		g_signal_new ("get-search-actions",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -259,6 +266,15 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 			      1,
 			      RB_TYPE_SOURCE);
 
+	/**
+	 * RBSourceHeader::refresh-search-bar:
+	 * @header: the #RBSourceHeader
+	 *
+	 * An action signal used to repopulate the search bar.
+	 * This should be called after a signal handler for
+	 * #::get-search-actions has been connected
+	 * or disconnected.
+	 */
 	rb_source_header_signals[REFRESH_SEARCH_BAR] =
 		g_signal_new ("refresh-search-bar",
 			      G_OBJECT_CLASS_TYPE (object_class),

@@ -191,7 +191,9 @@ rb_source_group_register (const char           *name,
 /**
  * rb_source_group_library_get_type:
  *
- * Return value: the predefined library source group
+ * Returns the predefined library source group
+ *
+ * Return value: library source group
  */
 RBSourceGroup *
 rb_source_group_library_get_type (void)

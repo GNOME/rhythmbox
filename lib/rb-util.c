@@ -25,6 +25,16 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
  *
  */
+
+/**
+ * SECTION:rb-util
+ * @short_description: assorted utility functions
+ *
+ * This is a dumping ground for utility functions that may or may not
+ * be generally useful in Rhythmbox or elsewhere.  Things end up here
+ * if they're clever or if they're used all over the place.
+ */
+
 #include "config.h"
 
 #include <string.h>
@@ -41,24 +51,56 @@
 
 static GPrivate * private_is_primary_thread;
 
+/**
+ * rb_true_function:
+ * @dummy: unused
+ *
+ * Just returns %TRUE, useful as a callback function.
+ *
+ * Return value: %TRUE
+ */
 gboolean
 rb_true_function (gpointer dummy)
 {
 	return TRUE;
 }
 
+/**
+ * rb_false_function:
+ * @dummy: unused
+ *
+ * Just returns %FALSE, useful as a callback function.
+ *
+ * Return value: %FALSE
+ */
 gboolean
 rb_false_function (gpointer dummy)
 {
 	return FALSE;
 }
 
+/**
+ * rb_null_function:
+ * @dummy: unused
+ *
+ * Just returns NULL.  Useful as a callback function.
+ *
+ * Return value: NULL
+ */
 gpointer
 rb_null_function (gpointer dummy)
 {
 	return NULL;
 }
 
+/**
+ * rb_copy_function:
+ * @data: generic argument
+ *
+ * Just returns its first argument.  Useful as a callback function.
+ *
+ * Return value: @data
+ */
 gpointer
 rb_copy_function (gpointer data)
 {
@@ -66,6 +108,17 @@ rb_copy_function (gpointer data)
 }
 
 
+/**
+ * rb_gvalue_compare:
+ * @a: left hand side
+ * @b: right hand size
+ *
+ * Compares @a and @b for sorting.  @a and @b must contain the same value
+ * type for the comparison to be valid.  Comparisons for some value types
+ * are not particularly useful.
+ *
+ * Return value: -1 if @a < @b, 0 if @a == @b, 1 if @a > @b
+ */
 int
 rb_gvalue_compare (GValue *a, GValue *b)
 {
@@ -207,6 +260,15 @@ rb_gvalue_compare (GValue *a, GValue *b)
 	return retval;
 }
 
+/**
+ * rb_compare_gtimeval:
+ * @a: left hand side
+ * @b: right hand size
+ *
+ * Compares two #GTimeval structures for sorting.
+ *
+ * Return value: -1 if @a < @b, 0 if @a == @b, 1 if @a > @b
+ */
 int
 rb_compare_gtimeval (GTimeVal *a, GTimeVal *b)
 {
@@ -222,6 +284,7 @@ rb_compare_gtimeval (GTimeVal *a, GTimeVal *b)
 		return -1;
 }
 
+/* this is obsoleted by g_strcmp0, don't use it */
 int
 rb_safe_strcmp (const char *a,
                 const char *b)
@@ -266,8 +329,15 @@ totem_pixbuf_mirror (GdkPixbuf *pixbuf)
 
 
 
-/* Same as gtk_image_new_from_stock except that it mirrors the icons for RTL 
- * languages
+/**
+ * rb_image_new_from_stock:
+ * @stock_id: stock image id
+ * @size: requested icon size
+ *
+ * Same as @gtk_image_new_from_stock except that it mirrors the icons for RTL
+ * languages.
+ *
+ * Return value: a #GtkImage of the requested stock item
  */
 GtkWidget *
 rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size)
@@ -306,6 +376,14 @@ rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size)
 	return NULL;
 }
 
+/**
+ * rb_gtk_action_popup_menu:
+ * @uimanager: a #GtkUIManager
+ * @path: UI path for the popup to display
+ *
+ * Simple shortcut for getting a popup menu from a #GtkUIManager and
+ * displaying it.
+ */
 void
 rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path)
 {
@@ -320,7 +398,13 @@ rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path)
 	}
 }
 
-
+/**
+ * rb_is_main_thread:
+ *
+ * Checks if currently executing on the main thread.
+ *
+ * Return value: %TRUE if on the main thread
+ */
 gboolean
 rb_is_main_thread (void)
 {
@@ -355,13 +439,25 @@ _threads_leave (void)
 }
 
 
+/**
+ * rb_assert_locked:
+ * @mutex: a #GMutex
+ *
+ * Asserts that @mutex is currently locked.  Does not work with all
+ * mutex implementations.
+ */
 void
-rb_assert_locked (GMutex *m)
+rb_assert_locked (GMutex *mutex)
 {
 	if (!mutex_recurses)
-		g_assert (!g_mutex_trylock (m));
+		g_assert (!g_mutex_trylock (mutex));
 }
 
+/**
+ * rb_threads_init:
+ *
+ * Initializes various thread helpers.  Must be called on startup.
+ */
 void
 rb_threads_init (void)
 {
@@ -389,6 +485,14 @@ rb_threads_init (void)
 	g_timeout_add_seconds (30, purge_useless_threads, NULL);
 }
 
+/**
+ * rb_string_split_words:
+ * @string: the string to split
+ *
+ * Splits @string on word boundaries using Unicode character definitions.
+ *
+ * Return value: NULL-terminated array of strings, must be freed by caller (see @g_strfreev)
+ */
 gchar **
 rb_string_split_words (const gchar *string)
 {
@@ -494,6 +598,15 @@ rb_string_split_words (const gchar *string)
 	return ret;
 }
 
+/**
+ * rb_search_fold:
+ * @original: the string to fold
+ *
+ * Returns a case-folded and punctuation-stripped version of @original, useful
+ * for performing text searches.
+ *
+ * Return value: case-folded string, must be freed by caller.
+ */
 gchar*
 rb_search_fold (const char *original)
 {
@@ -560,6 +673,15 @@ rb_search_fold (const char *original)
 	return g_string_free (string, FALSE);
 }
 
+/**
+ * rb_make_duration_string:
+ * @duration: duration in seconds
+ *
+ * Constructs a string describing the specified duration.  The string
+ * describes hours, minutes, and seconds, and its format is localised.
+ *
+ * Return value: duration string, must be freed by caller.
+ */
 char *
 rb_make_duration_string (guint duration)
 {
@@ -580,6 +702,18 @@ rb_make_duration_string (guint duration)
 	return str;
 }
 
+/**
+ * rb_make_elapsed_time_string:
+ * @elapsed: elapsed time (in seconds)
+ * @duration: duration (in seconds)
+ * @show_remaining: if %TRUE, show the remaining time, otherwise show elapsed time
+ *
+ * Constructs a string describing a playback position.  The string describes hours,
+ * minutes, and seconds, and its format is localised.  The string can describe either
+ * the elapsed time or the time remaining.
+ *
+ * Return value: elapsed/remaining time string, must be freed by caller
+ */
 char *
 rb_make_elapsed_time_string (guint elapsed, guint duration, gboolean show_remaining)
 {
@@ -629,6 +763,16 @@ rb_make_elapsed_time_string (guint elapsed, guint duration, gboolean show_remain
 	}
 }
 
+/**
+ * rb_string_list_equal:
+ * @a: list of strings to compare
+ * @b: other list of strings to compare
+ *
+ * Checks if @a and @b contain exactly the same set of strings,
+ * regardless of order.
+ *
+ * Return value: %TRUE if the lists contain all the same strings
+ */
 gboolean
 rb_string_list_equal (GList *a, GList *b)
 {
@@ -674,6 +818,15 @@ list_copy_cb (const char *s, GList **list)
 	*list = g_list_prepend (*list, g_strdup (s));
 }
 
+/**
+ * rb_string_list_copy:
+ * @list: list of strings to copy
+ *
+ * Creates a deep copy of @list.
+ *
+ * Return value: copied list, must be freed (and its contents freed)
+ *  by caller
+ */
 GList *
 rb_string_list_copy (GList *list)
 {
@@ -688,6 +841,15 @@ rb_string_list_copy (GList *list)
 	return copy;
 }
 
+/**
+ * rb_string_list_contains:
+ * @list: list to check
+ * @s: string to check for
+ *
+ * Checks if @list contains the string @s.
+ *
+ * Return value: %TRUE if found
+ */
 gboolean
 rb_string_list_contains (GList *list, const char *s)
 {
@@ -701,20 +863,38 @@ rb_string_list_contains (GList *list, const char *s)
 	return FALSE;
 }
 
+/**
+ * rb_list_destroy_free:
+ * @list: list to destroy
+ * @destroyer: function to call to free elements of @list
+ *
+ * Calls @destroyer for each element in @list, then frees @list.
+ */
 void
 rb_list_destroy_free (GList *list, GDestroyNotify destroyer)
 {
 	g_list_foreach (list, (GFunc)destroyer, NULL);
 	g_list_free (list);
-
 }
 
+/**
+ * rb_list_deep_free:
+ * @list: list to free
+ *
+ * Frees each element of @list and @list itself.
+ */
 void
 rb_list_deep_free (GList *list)
 {
 	rb_list_destroy_free (list, (GDestroyNotify)g_free);
 }
 
+/**
+ * rb_slist_deep_free:
+ * @list: list to free
+ *
+ * Frees each element of @list and @list itself.
+ */
 void
 rb_slist_deep_free (GSList *list)
 {
@@ -734,6 +914,15 @@ collate_values_cb (gpointer key, gpointer value, GList **list)
 	*list = g_list_prepend (*list, value);
 }
 
+/**
+ * rb_collate_hash_table_keys:
+ * @table: #GHashTable to collate
+ *
+ * Returns a #GList containing all keys from @table.  The keys are
+ * not copied.
+ *
+ * Return value: #GList of keys, must be freed by caller
+ */
 GList*
 rb_collate_hash_table_keys (GHashTable *table)
 {
@@ -745,6 +934,15 @@ rb_collate_hash_table_keys (GHashTable *table)
 	return list;
 }
 
+/**
+ * rb_collate_hash_table_values:
+ * @table: #GHashTable to collate
+ *
+ * Returns a #GList containing all values from @table.  The values are
+ * not copied.
+ *
+ * Return value: #GList of values, must be freed by caller
+ */
 GList*
 rb_collate_hash_table_values (GHashTable *table)
 {
@@ -756,11 +954,15 @@ rb_collate_hash_table_values (GHashTable *table)
 	return list;
 }
 
-/*
- * hacked up version of gnome_vfs_uri_list_parse,
- * that it doesn't strip #s and and returns strings. 
+/**
+ * rb_uri_list_parse:
+ * @uri_list: string containing URIs to parse
+ *
+ * Converts a single string containing a list of URIs into
+ * a #GList of URI strings.
+ *
+ * Return value: #GList of URI strings, must be deep-freed by caller
  */
-
 GList *
 rb_uri_list_parse (const char *uri_list)
 {
@@ -803,6 +1005,14 @@ rb_uri_list_parse (const char *uri_list)
 	return g_list_reverse (result);
 }
 
+/**
+ * rb_mime_get_friendly_name:
+ * @mime_type: a MIME type
+ *
+ * Returns a human-friendly description of the MIME type @mime_type.
+ *
+ * Return value: type description, must be freed by caller
+ */
 char*
 rb_mime_get_friendly_name (const char *mime_type)
 {
@@ -811,11 +1021,25 @@ rb_mime_get_friendly_name (const char *mime_type)
 	if (name == NULL && mime_type)
 		name = g_content_type_get_description (mime_type);
 	if (name == NULL)
-		name = _("Unknown");
+		name = g_strdup (_("Unknown"));
 
 	return name;
 }
 
+/**
+ * rb_signal_accumulator_object_handled:
+ * @hint: a #GSignalInvocationHint
+ * @return_accu: holds the accumulated return value
+ * @handler_return: holds the return value to be accumulated
+ * @dummy: user data (unused)
+ *
+ * A #GSignalAccumulator that aborts the signal emission after the
+ * first handler to return a value, and returns the value returned by
+ * that handler.  This is the opposite behaviour from what you get when
+ * no accumulator is specified, where the last signal handler wins.
+ *
+ * Return value: %FALSE to abort signal emission, %TRUE to continue
+ */
 gboolean
 rb_signal_accumulator_object_handled (GSignalInvocationHint *hint,
 				      GValue *return_accu,
@@ -834,11 +1058,23 @@ rb_signal_accumulator_object_handled (GSignalInvocationHint *hint,
 	return FALSE;
 }
 
+/**
+ * rb_signal_accumulator_value_array:
+ * @hint: a #GSignalInvocationHint
+ * @return_accu: holds the accumulated return value
+ * @handler_return: holds the return value to be accumulated
+ * @dummy: user data (unused)
+ *
+ * A #GSignalAccumulator used to combine all returned values into
+ * a #GValueArray.
+ *
+ * Return value: %FALSE to abort signal emission, %TRUE to continue
+ */
 gboolean
 rb_signal_accumulator_value_array (GSignalInvocationHint *hint,
 				   GValue *return_accu,
 				   const GValue *handler_return,
-				   gpointer bleh)
+				   gpointer dummy)
 {
 	GValueArray *a;
 	GValueArray *b;
@@ -873,6 +1109,14 @@ rb_signal_accumulator_value_array (GSignalInvocationHint *hint,
 	return TRUE;
 }
 
+/**
+ * rb_value_array_append_data:
+ * @array: #GValueArray to append to
+ * @type: #GType of the value being appended
+ * @Varargs: value to append
+ *
+ * Appends a single value to @array, collecting it from @Varargs.
+ */
 void
 rb_value_array_append_data (GValueArray *array, GType type, ...)
 {
@@ -893,6 +1137,13 @@ rb_value_array_append_data (GValueArray *array, GType type, ...)
 	va_end (va);
 }
 
+/**
+ * rb_value_free:
+ * @val: a #GValue
+ *
+ * Unsets and frees @val.  @val must have been allocated using
+ * @g_slice_new or @g_slice_new0.
+ */
 void
 rb_value_free (GValue *val)
 {
@@ -900,6 +1151,16 @@ rb_value_free (GValue *val)
 	g_slice_free (GValue, val);
 }
 
+/**
+ * rb_str_in_strv:
+ * @needle: string to search for
+ * @haystack: array of strings to search
+ *
+ * Checks if @needle is present in the NULL-terminated string
+ * array @haystack.
+ *
+ * Return value: %TRUE if found
+ */
 gboolean
 rb_str_in_strv (const char *needle, char **haystack)
 {
@@ -962,6 +1223,8 @@ rb_set_tree_view_column_fixed_width (GtkWidget  *treeview,
  *
  * Creates a new #GdkPixbuf from the original one, for a target of
  * size, respecting the aspect ratio of the image.
+ *
+ * Return value: scaled #GdkPixbuf
  */
 GdkPixbuf *
 rb_scale_pixbuf_to_size (GdkPixbuf *pixbuf, GtkIconSize size)
@@ -988,4 +1251,3 @@ rb_scale_pixbuf_to_size (GdkPixbuf *pixbuf, GtkIconSize size)
 
 	return gdk_pixbuf_scale_simple (pixbuf, d_width, d_height, GDK_INTERP_BILINEAR);
 }
-

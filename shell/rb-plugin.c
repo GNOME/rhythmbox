@@ -28,6 +28,14 @@
  * Boston, MA 02110-1301  USA.
  */
 
+/**
+ * SECTION:rb-plugin
+ * @short_description: Base class for plugins
+ *
+ * This is the base class for all plugins.  It provides methods called
+ * when activating, deactivating, and configuring plugins.
+ */
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -150,6 +158,14 @@ rb_plugin_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_plugin_activate:
+ * @plugin: the #RBPlugin being activated
+ * @shell: the #RBShell
+ *
+ * Called when a plugin is being activated, either on startup or when
+ * enabled in the plugin configuration dialog.
+ */
 void
 rb_plugin_activate (RBPlugin *plugin,
 		    RBShell *shell)
@@ -161,6 +177,18 @@ rb_plugin_activate (RBPlugin *plugin,
 		RB_PLUGIN_GET_CLASS (plugin)->activate (plugin, shell);
 }
 
+/**
+ * rb_plugin_deactivate:
+ * @plugin: the #RBPlugin being deactivated
+ * @shell: the #RBShell
+ *
+ * Called when a plugin is being deactivated, either on shutdown or
+ * when disabled in the plugin configuration dialog.
+ *
+ * Note that plugin instances are never destroyed, so the same plugin
+ * instance can be deactivated and then reactivated.  After deactivation,
+ * the plugin must be in a state where it can be reactivated.
+ */
 void
 rb_plugin_deactivate	(RBPlugin *plugin,
 			 RBShell *shell)
@@ -172,6 +200,14 @@ rb_plugin_deactivate	(RBPlugin *plugin,
 		RB_PLUGIN_GET_CLASS (plugin)->deactivate (plugin, shell);
 }
 
+/**
+ * rb_plugin_is_configurable
+ * @plugin: the #RBPlugin
+ *
+ * Determines whether the plugin is configurable.
+ *
+ * Return value: %TRUE if configurable
+ */
 gboolean
 rb_plugin_is_configurable (RBPlugin *plugin)
 {
@@ -180,6 +216,16 @@ rb_plugin_is_configurable (RBPlugin *plugin)
 	return RB_PLUGIN_GET_CLASS (plugin)->is_configurable (plugin);
 }
 
+/**
+ * rb_plugin_create_configure_dialog:
+ * @plugin: the #RBPlugin
+ *
+ * Creates a configuration dialog for @plugin.  The plugin can store
+ * the dialog instance the first time it is created and just return it
+ * thereafter.
+ *
+ * Return value: configuration widget for @plugin
+ */
 GtkWidget *
 rb_plugin_create_configure_dialog (RBPlugin *plugin)
 {
@@ -193,6 +239,13 @@ rb_plugin_create_configure_dialog (RBPlugin *plugin)
 
 #define UNINSTALLED_PLUGINS_LOCATION "plugins"
 
+/**
+ * rb_get_plugin_paths:
+ *
+ * Returns a list containing the paths to search for plugins.
+ *
+ * Return value: #GList of paths, must be freed by caller
+ */
 GList *
 rb_get_plugin_paths (void)
 {
@@ -225,7 +278,16 @@ rb_get_plugin_paths (void)
 	return paths;
 }
 
-
+/**
+ * rb_plugin_find_file:
+ * @plugin: the #RBPlugin
+ * @file: file to search for
+ *
+ * Searches for @file in the install directory for @plugin.
+ * Plugins should use this to locate any data files they install.
+ *
+ * Return value: path to the file, must be freed by caller.
+ */
 char *
 rb_plugin_find_file (RBPlugin *plugin,
 		     const char *file)
@@ -276,3 +338,60 @@ rb_plugin_find_file (RBPlugin *plugin,
 	}
 	return ret;
 }
+
+/**
+ * RB_PLUGIN_REGISTER:
+ * @PluginName: plugin name in CamelCase
+ * @plugin_name: plugin name in lowercase with words separated by '_'
+ *
+ * Registers a Rhythmbox plugin type.  Use this instead of G_DEFINE_TYPE
+ * (or similar) for RBPlugin implementations.
+ */
+
+/**
+ * RB_PLUGIN_REGISTER_TYPE:
+ * @type_name: CamelCase name of the type to register
+ *
+ * Registers additional types for the plugin.  This should be called in
+ * the plugin class_init function for types besides the plugin itself that
+ * need to be registered with the GObject type system.
+ */
+
+/**
+ * RB_PLUGIN_DEFINE_TYPE:
+ * @TypeName: type name in CamelCase
+ * @type_name: type name in lowercase with words separated by '_'
+ * @TYPE_PARENT: GType macro for the parent type
+ *
+ * Defines additional types for the plugin.  This should be used instead
+ * of G_DEFINE_TYPE for additional object types that need to be registered
+ * with the GObject type system.
+ */
+
+/**
+ * RBPluginActivationFunc:
+ * @plugin: the #RBPlugin
+ * @shell: the #RBShell
+ *
+ * Typedef for plugin activation and deactivation functions.
+ * These functions include the #RBShell as an argument to allow
+ * the plugin to locate other parts of Rhythmbox.
+ */
+
+/**
+ * RBPluginWidgetFunc:
+ * @plugin: the #RBPlugin
+ *
+ * Typedef for plugin configuration functions.
+ *
+ * Return value: a #GtkWidget for the plugin
+ */
+
+/**
+ * RBPluginBooleanFunc
+ * @plugin: the #RBPlugin
+ *
+ * Typedef for plugin functions that return a gboolean.
+ *
+ * Return value: something
+ */

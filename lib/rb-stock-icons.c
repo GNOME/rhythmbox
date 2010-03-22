@@ -70,6 +70,12 @@ static RBInlineIconData inline_icons[] = {
 	{ rhythmbox_no_star_inline, RB_STOCK_NO_STAR }
 };
 
+/**
+ * rb_stock_icons_init:
+ *
+ * Initializes the stock icons, adding the necessary filesystem
+ * locations to the GTK icon search path.  Must be called on startup.
+ */
 void
 rb_stock_icons_init (void)
 {
@@ -111,6 +117,13 @@ rb_stock_icons_init (void)
 	}
 }
 
+/**
+ * rb_stock_icons_shutdown:
+ *
+ * If anything was necessary to clean up the stock icons, this function
+ * would do it.  Doesn't do anything, but should be called on shutdown
+ * anyway.
+ */
 void
 rb_stock_icons_shutdown (void)
 {
