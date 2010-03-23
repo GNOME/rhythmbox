@@ -1158,8 +1158,10 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 	db = get_db_for_source (source);
 	entry = rhythmdb_entry_lookup_by_id (db, track_id);
 	g_object_unref (db);
-	if (entry == NULL)
+	if (entry == NULL) {
+		g_free (extension);
 		return;
+	}
 
 	track = LIBMTP_new_track_t ();
 	track->title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);

@@ -1074,8 +1074,10 @@ acb_wave_time (const char *filename)
         if (fd < 0)
                 return ACB_ERROR_OPEN;
 
-        if (read (fd, buffer, WAV_SIGNATURE_SIZE) != WAV_SIGNATURE_SIZE)
+        if (read (fd, buffer, WAV_SIGNATURE_SIZE) != WAV_SIGNATURE_SIZE) {
+		close (fd);
                 return ACB_ERROR_NOT_WAVE_TOO_SMALL;
+	}
 
         if ((buffer [0] != 'R') ||
             (buffer [1] != 'I') ||
@@ -1088,8 +1090,10 @@ acb_wave_time (const char *filename)
             (buffer [12] != 'f') ||
             (buffer [13] != 'm') ||
             (buffer [14] != 't') ||
-            (buffer [15] != ' '))
+            (buffer [15] != ' ')) {
+		close (fd);
                 return ACB_ERROR_NOT_WAVE_FORMAT;
+	}
 
         if (read (fd, &len, sizeof(len)) != sizeof (len)) {
                 close (fd);
