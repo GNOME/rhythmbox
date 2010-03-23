@@ -1435,6 +1435,9 @@ find_mount_for_device (GUdevDevice *device)
 	GList *i;
 
 	device_file = g_udev_device_get_device_file (device);
+	if (device_file == NULL) {
+		return NULL;
+	}
 
 	volmon = g_volume_monitor_get ();
 	mounts = g_volume_monitor_get_mounts (volmon);
@@ -1443,23 +1446,27 @@ find_mount_for_device (GUdevDevice *device)
 	for (i = mounts; i != NULL; i = i->next) {
 		GVolume *v;
 
-		mount = G_MOUNT (i->data);
-		v = g_mount_get_volume (mount);
+		v = g_mount_get_volume (G_MOUNT (i->data));
 		if (v != NULL) {
 			char *devname = NULL;
 			gboolean match;
 
 			devname = g_volume_get_identifier (v, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+			g_object_unref (v);
+			if (devname == NULL)
+				continue;
+
 			match = g_str_equal (devname, device_file);
 			g_free (devname);
-			g_object_unref (v);
 
-			if (match)
+			if (match) {
+				mount = G_MOUNT (i->data);
+				g_object_ref (G_OBJECT (mount));
 				break;
+			}
 		}
-		g_object_unref (mount);
-		mount = NULL;
 	}
+	g_list_foreach (mounts, (GFunc)g_object_unref, NULL);
 	g_list_free (mounts);
 	return mount;
 }
