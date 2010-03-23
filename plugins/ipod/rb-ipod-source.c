@@ -553,10 +553,6 @@ load_ipod_playlists (RBiPodSource *source)
 
 }
 
-/* FIXME:  these should go away once we compile against new-enough libgpod */
-#define MEDIATYPE_AUDIO         0x0001
-#define MEDIATYPE_PODCAST       0x0004
-
 static Itdb_Track *
 create_ipod_song_from_entry (RhythmDBEntry *entry, guint64 filesize, const char *mimetype)
 {
@@ -591,10 +587,10 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, guint64 filesize, const char 
 	track->playcount = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_PLAY_COUNT);
 
 	if (rhythmdb_entry_get_entry_type (entry) == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
-		track->mediatype = MEDIATYPE_PODCAST;
+		track->mediatype = ITDB_MEDIATYPE_PODCAST;
 		track->time_released = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_POST_TIME);
 	} else {
-		track->mediatype = MEDIATYPE_AUDIO;
+		track->mediatype = ITDB_MEDIATYPE_AUDIO;
 	}
 
 	return track;
@@ -1471,7 +1467,7 @@ impl_track_added (RBRemovableMediaSource *source,
 							    filename);
 		g_free (filename);
 
-		if (song->mediatype == MEDIATYPE_PODCAST) {
+		if (song->mediatype == ITDB_MEDIATYPE_PODCAST) {
 			add_to_podcasts (isource, song);
 		}
 		device = rb_ipod_db_get_device (priv->ipod_db);
@@ -1900,7 +1896,7 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	g_hash_table_iter_init (&iter, priv->entry_map);
 	while (g_hash_table_iter_next (&iter, &key, &value)) {
 		Itdb_Track *track = value;
-		if (track->mediatype == MEDIATYPE_PODCAST) {
+		if (track->mediatype == ITDB_MEDIATYPE_PODCAST) {
 			num_podcasts++;
 		}
 	}
