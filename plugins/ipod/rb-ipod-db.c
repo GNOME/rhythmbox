@@ -859,13 +859,15 @@ rb_ipod_db_save_async (RbIpodDb *ipod_db)
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
 	if (priv->save_timeout_id == 0) {
-		rb_debug ("Scheduling iPod database save in 15 seconds");
-		priv->save_timeout_id = g_timeout_add_seconds (15, 
-							       (GSourceFunc)save_timeout_cb,
-							       ipod_db);
+		RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
+		rb_debug ("Scheduling iPod database save in 2 seconds");
 	} else {
-		rb_debug ("Database save already scheduled");
+		g_source_remove (priv->save_timeout_id);
+		rb_debug ("Database save already scheduled, pushing back save in 2 seconds from now");
 	}
+	priv->save_timeout_id = g_timeout_add_seconds (2,
+			                               (GSourceFunc)save_timeout_cb,
+						       ipod_db);
 }
 
 GList *
