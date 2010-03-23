@@ -26,6 +26,19 @@
  *
  */
 
+/**
+ * SECTION:rhythmdb
+ * @short_description: Rhythmbox database functions
+ *
+ * RhythmDB is an in-memory database containing #RhythmDBEntry items.  It
+ * runs queries represented as #GPtrArray<!-- -->s containing query criteria,
+ * feeding the results into #RhythmDBQueryResults implementations such as
+ * #RhythmDBQueryModel.  From there, entries are grouped by particular property
+ * values to form #RhythmDBPropertyModel<!-- -->s.
+ *
+ * #RhythmDBEntry contains a fixed set of properties, defined by #RhythmDBPropType,
+ */
+
 #include "config.h"
 
 #define	G_IMPLEMENT_INLINES 1
@@ -234,6 +247,11 @@ rhythmdb_class_init (RhythmDBClass *klass)
 	object_class->set_property = rhythmdb_set_property;
 	object_class->get_property = rhythmdb_get_property;
 
+	/**
+	 * RhythmDB:name
+	 *
+	 * Database name.  Not sure whta this is used for.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_NAME,
 					 g_param_spec_string ("name",
@@ -241,7 +259,11 @@ rhythmdb_class_init (RhythmDBClass *klass)
 							      "name",
 							      NULL,
 							      G_PARAM_READWRITE));
-
+	/**
+	 * RhythmDB:dry-run
+	 *
+	 * If %TRUE, no metadata changes will be written back to media fies.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DRY_RUN,
 					 g_param_spec_boolean ("dry-run",
@@ -249,6 +271,11 @@ rhythmdb_class_init (RhythmDBClass *klass)
 							       "Whether or not changes should be saved",
 							       FALSE,
 							       G_PARAM_READWRITE));
+	/**
+	 * RhythmDB:no-update
+	 *
+	 * If %TRUE, the database will not be updated.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_NO_UPDATE,
 					 g_param_spec_boolean ("no-update",
@@ -902,6 +929,12 @@ stat_thread_main (RhythmDBStatThreadData *data)
 	return NULL;
 }
 
+/**
+ * rhythmdb_start_action_thread:
+ * @db: the #RhythmDB
+ *
+ * Starts the #RhythmDB processing thread. Needs to be called during startup.
+ */
 void
 rhythmdb_start_action_thread (RhythmDB *db)
 {
@@ -985,7 +1018,7 @@ _shutdown_foreach_swapped (RhythmDBEvent *event, RhythmDB *db)
  *
  * Ceases all #RhythmDB operations, including stopping all directory monitoring, and
  * removing all actions and events currently queued.
- **/
+ */
 void
 rhythmdb_shutdown (RhythmDB *db)
 {
@@ -1535,13 +1568,20 @@ rhythmdb_add_timeout_commit (RhythmDB *db,
  * Apply all database changes, and send notification of changes and new entries.
  * This needs to be called after any changes have been made, such as a group of
  * rhythmdb_entry_set() calls, or a new entry has been added.
- **/
+ */
 void
 rhythmdb_commit (RhythmDB *db)
 {
 	rhythmdb_commit_internal (db, TRUE, g_thread_self ());
 }
 
+/**
+ * rhythmdb_error_quark:
+ *
+ * Returns the #GQuark used for #RhythmDBError information
+ *
+ * Return value: error quark
+ */
 GQuark
 rhythmdb_error_quark (void)
 {
@@ -1570,7 +1610,7 @@ rhythmdb_error_quark (void)
  * This should only be used by RhythmDB itself, or a backend (such as rhythmdb-tree).
  *
  * Returns: the newly allocated #RhythmDBEntry
- **/
+ */
 RhythmDBEntry *
 rhythmdb_entry_allocate (RhythmDB *db,
 			 RhythmDBEntryType type)
@@ -1643,7 +1683,7 @@ rhythmdb_entry_get_type_data (RhythmDBEntry *entry,
  *
  * Note that you must call rhythmdb_commit() at some point after invoking
  * this function.
- **/
+ */
 void
 rhythmdb_entry_insert (RhythmDB *db,
 		       RhythmDBEntry *entry)
@@ -1675,7 +1715,7 @@ rhythmdb_entry_insert (RhythmDB *db,
  * already an entry with the given uri.
  *
  * Returns: the newly created #RhythmDBEntry
- **/
+ */
 RhythmDBEntry *
 rhythmdb_entry_new (RhythmDB *db,
 		    RhythmDBEntryType type,
@@ -1711,7 +1751,7 @@ rhythmdb_entry_new (RhythmDB *db,
  * This may return NULL if entry creation fails.
  *
  * Returns: the newly created #RhythmDBEntry
- **/
+ */
 RhythmDBEntry *
 rhythmdb_entry_example_new (RhythmDB *db,
 			    RhythmDBEntryType type,
@@ -1757,7 +1797,7 @@ rhythmdb_entry_example_new (RhythmDB *db,
  * Increase the reference count of the entry.
  *
  * Returns: the entry
- **/
+ */
 RhythmDBEntry *
 rhythmdb_entry_ref (RhythmDBEntry *entry)
 {
@@ -1800,9 +1840,9 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
  * rhythmdb_entry_unref:
  * @entry: a #RhythmDBEntry.
  *
- * Decrease the reference count of the entry, and destroy it if there are
+ * Decrease the reference count of the entry, and destroys it if there are
  * no references left.
- **/
+ */
 void
 rhythmdb_entry_unref (RhythmDBEntry *entry)
 {
@@ -1826,9 +1866,8 @@ rhythmdb_entry_unref (RhythmDBEntry *entry)
  * Usually this is only true for entries backed by files, where tag-writing is
  * enabled, and the appropriate tag-writing facilities are available.
  *
- * Returns: whether the entries metadata can be changed.
- **/
-
+ * Returns: whether the entry's metadata can be changed.
+ */
 gboolean
 rhythmdb_entry_is_editable (RhythmDB *db,
 			    RhythmDBEntry *entry)
@@ -2886,7 +2925,7 @@ rhythmdb_execute_enum_dir (RhythmDB *db,
  * @val: return location for the property value.
  *
  * Gets a property of an entry, storing it in the given #GValue.
- **/
+ */
 void
 rhythmdb_entry_get (RhythmDB *db,
 		    RhythmDBEntry *entry,
@@ -3050,7 +3089,7 @@ action_thread_main (RhythmDB *db)
  * Adds the file(s) pointed to by @uri to the database, as entries of type
  * RHYTHMDB_ENTRY_TYPE_SONG. If the URI is that of a file, it will be added.
  * If the URI is that of a directory, everything under it will be added recursively.
- **/
+ */
 void
 rhythmdb_add_uri (RhythmDB *db,
 		  const char *uri)
@@ -3207,7 +3246,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
  * @db: a #RhythmDB.
  *
  * Load the database from disk.
- **/
+ */
 void
 rhythmdb_load (RhythmDB *db)
 {
@@ -3268,7 +3307,7 @@ out:
  * @db: a #RhythmDB.
  *
  * Save the database to disk, asynchronously.
- **/
+ */
 void
 rhythmdb_save_async (RhythmDB *db)
 {
@@ -3284,7 +3323,7 @@ rhythmdb_save_async (RhythmDB *db)
  * @db: a #RhythmDB.
  *
  * Save the database to disk, not returning until it has been saved.
- **/
+ */
 void
 rhythmdb_save (RhythmDB *db)
 {
@@ -3332,7 +3371,7 @@ rhythmdb_save (RhythmDB *db)
  * Note that you must call rhythmdb_commit() at some point after invoking
  * this function, and that even after the commit, your change may not
  * have taken effect.
- **/
+ */
 void
 rhythmdb_entry_set (RhythmDB *db,
 		    RhythmDBEntry *entry,
@@ -3663,8 +3702,7 @@ rhythmdb_entry_set_internal (RhythmDB *db,
  * original property.
  *
  * This should only be used by RhythmDB itself, or a backend (such as rhythmdb-tree).
- **/
-
+ */
 static void
 rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
 			      guint propid)
@@ -3768,7 +3806,7 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
  * Delete entry @entry from the database, sending notification of its deletion.
  * This is usually used by sources where entries can disappear randomly, such
  * as a network source.
- **/
+ */
 void
 rhythmdb_entry_delete (RhythmDB *db,
 		       RhythmDBEntry *entry)
@@ -3793,6 +3831,15 @@ rhythmdb_entry_delete (RhythmDB *db,
 	db->priv->dirty = TRUE;
 }
 
+/**
+ * rhythmdb_entry_move_to_trash:
+ * @db: the #RhythmDB
+ * @entry: #RhythmDBEntry to trash
+ *
+ * Trashes the file represented by #entry.  If possible, the file is
+ * moved to the user's trash directory and the entry is set to hidden,
+ * otherwise the error will be stored as the playback error for the entry.
+ */
 void
 rhythmdb_entry_move_to_trash (RhythmDB *db,
 			      RhythmDBEntry *entry)
@@ -3832,7 +3879,7 @@ rhythmdb_entry_move_to_trash (RhythmDB *db,
  * Delete all entries from the database of the given type.
  * This is usually used by non-permanent sources when they disappear, such as
  * removable media being removed, or a network share becoming unavailable.
- **/
+ */
 void
 rhythmdb_entry_delete_by_type (RhythmDB *db,
 			       RhythmDBEntryType type)
@@ -3846,6 +3893,16 @@ rhythmdb_entry_delete_by_type (RhythmDB *db,
 	}
 }
 
+/**
+ * rhythmdb_nice_elt_name_from_propid:
+ * @db: the #RhythmDB
+ * @propid: property ID
+ *
+ * Returns a short non-translated name for the property #propid.
+ * This name is suitable for use as an XML tag name, for example.
+ *
+ * Return value: property ID name, must not be freed
+ */
 const xmlChar *
 rhythmdb_nice_elt_name_from_propid (RhythmDB *db,
 				    RhythmDBPropType propid)
@@ -3853,6 +3910,17 @@ rhythmdb_nice_elt_name_from_propid (RhythmDB *db,
 	return db->priv->column_xml_names[propid];
 }
 
+/**
+ * rhythmdb_propid_from_nice_elt_name:
+ * @db: the #RhythmDB
+ * @name: a property ID name
+ *
+ * Converts a property name returned by @rhythmdb_propid_from_nice_elt_name
+ * back to a #RhythmDBPropType.  If the name does not match a property ID,
+ * -1 will be returned instead.
+ *
+ * Return value: a #RhythmDBPropType, or -1
+ */
 int
 rhythmdb_propid_from_nice_elt_name (RhythmDB *db,
 				    const xmlChar *name)
@@ -3873,7 +3941,7 @@ rhythmdb_propid_from_nice_elt_name (RhythmDB *db,
  * Looks up the entry with location @uri.
  *
  * Returns: the entry with location @uri, or NULL if no such entry exists.
- **/
+ */
 RhythmDBEntry *
 rhythmdb_entry_lookup_by_location (RhythmDB *db,
 				   const char *uri)
@@ -3888,6 +3956,15 @@ rhythmdb_entry_lookup_by_location (RhythmDB *db,
 	}
 }
 
+/**
+ * rhythmdb_entry_lookup_by_location_refstring:
+ * @db: the #RhythmDB
+ * @uri: #RBRefString for the entry location
+ *
+ * Looks up the entry with location @uri.
+ *
+ * Returns: the entry with location @uri, or NULL if no such entry exists.
+ */
 RhythmDBEntry *
 rhythmdb_entry_lookup_by_location_refstring (RhythmDB *db,
 					     RBRefString *uri)
@@ -3898,7 +3975,7 @@ rhythmdb_entry_lookup_by_location_refstring (RhythmDB *db,
 }
 
 /**
- *rhythmdb_entry_lookup_by_id:
+ * rhythmdb_entry_lookup_by_id:
  * @db: a #RhythmDB.
  * @id: entry ID
  *
@@ -3916,7 +3993,7 @@ rhythmdb_entry_lookup_by_id (RhythmDB *db,
 }
 
 /**
- *rhythmdb_entry_lookup_from_string:
+ * rhythmdb_entry_lookup_from_string:
  * @db: a #RhythmDB.
  * @str: string
  * @is_id: whether the string is an entry ID or a location.
@@ -3945,13 +4022,13 @@ rhythmdb_entry_lookup_from_string (RhythmDB *db,
 }
 
 /**
- *rhythmdb_entry_foreach:
+ * rhythmdb_entry_foreach:
  * @db: a #RhythmDB.
  * @func: the function to call with each entry.
  * @data: user data to pass to the function.
  *
  * Calls the given function for each of the entries in the database.
- **/
+ */
 void
 rhythmdb_entry_foreach (RhythmDB *db,
 			GFunc func,
@@ -3963,10 +4040,12 @@ rhythmdb_entry_foreach (RhythmDB *db,
 }
 
 /**
- *rhythmdb_entry_count:
+ * rhythmdb_entry_count:
  * @db: a #RhythmDB.
  *
- * Returns: the number of entries in the database.
+ * Returns the number of entries in the database.
+ *
+ * Return value: number of entries
  */
 gint64
 rhythmdb_entry_count (RhythmDB *db)
@@ -3977,7 +4056,7 @@ rhythmdb_entry_count (RhythmDB *db)
 }
 
 /**
- *rhythmdb_entry_foreach_by_type:
+ * rhythmdb_entry_foreach_by_type:
  * @db: a #RhythmdB.
  * @entry_type: the type of entry to retrieve
  * @func: the function to call with each entry
@@ -3998,11 +4077,13 @@ rhythmdb_entry_foreach_by_type (RhythmDB *db,
 }
 
 /**
- *rhythmdb_entry_count_by_type:
+ * rhythmdb_entry_count_by_type:
  * @db: a #RhythmDB.
  * @entry_type: a #RhythmDBEntryType.
  *
- * Returns: the number of entries in the database of a particular type.
+ * Returns the number of entries in the database of a particular type.
+ *
+ * Return value: entry count
  */
 gint64
 rhythmdb_entry_count_by_type (RhythmDB *db,
@@ -4023,7 +4104,7 @@ rhythmdb_entry_count_by_type (RhythmDB *db,
  * Evaluates the given entry against the given query.
  *
  * Returns: whether the given entry matches the criteria of the given query.
- **/
+ */
 gboolean
 rhythmdb_evaluate_query (RhythmDB *db,
 			 GPtrArray *query,
@@ -4077,6 +4158,20 @@ query_thread_main (RhythmDBQueryThreadData *data)
 	return NULL;
 }
 
+/**
+ * rhythmdb_do_full_query_async_parsed:
+ * @db: the #RhythmDB
+ * @results: a #RhythmDBQueryResults instance to feed results to
+ * @query: the query to run
+ *
+ * Asynchronously runs a parsed query across the database, feeding matching
+ * entries to @results in chunks.  This can only be called from the
+ * main thread.
+ *
+ * Since @results is always a @RhythmDBQueryModel,
+ * use the RhythmDBQueryModel::complete signal to identify when the
+ * query is complete.
+ */
 void
 rhythmdb_do_full_query_async_parsed (RhythmDB *db,
 				     RhythmDBQueryResults *results,
@@ -4102,6 +4197,22 @@ rhythmdb_do_full_query_async_parsed (RhythmDB *db,
 	g_thread_pool_push (db->priv->query_thread_pool, data, NULL);
 }
 
+/**
+ * rhythmdb_do_full_query_async:
+ * @db: the #RhythmDB
+ * @results: a #RhythmDBQueryResults to feed results to
+ * @Varargs: query parameters
+ *
+ * Asynchronously runs a query specified in the function arguments
+ * across the database, feeding matching entries to @results in chunks.
+ * This can only be called from the main thread.
+ *
+ * Since @results is always a @RhythmDBQueryModel,
+ * use the RhythmDBQueryModel::complete signal to identify when the
+ * query is complete.
+ *
+ * FIXME: example
+ */
 void
 rhythmdb_do_full_query_async (RhythmDB *db,
 			      RhythmDBQueryResults *results,
@@ -4143,6 +4254,15 @@ rhythmdb_do_full_query_internal (RhythmDB *db,
 	g_free (data);
 }
 
+/**
+ * rhythmdb_do_full_query_parsed:
+ * @db: the #RhythmDB
+ * @results: a #RhythmDBQueryResults instance to feed results to
+ * @query: a parsed query
+ *
+ * Synchronously evaluates the parsed query @query, feeding results
+ * to @results in chunks.  Does not return until the query is complete.
+ */
 void
 rhythmdb_do_full_query_parsed (RhythmDB *db,
 			       RhythmDBQueryResults *results,
@@ -4151,6 +4271,18 @@ rhythmdb_do_full_query_parsed (RhythmDB *db,
 	rhythmdb_do_full_query_internal (db, results, query);
 }
 
+/**
+ * rhythmdb_do_full_query:
+ * @db: the #RhythmDB
+ * @results: a #RhythmDBQueryResults instance to feed results to
+ * @Varargs: query parameters
+ *
+ * Synchronously evaluates @query, feeding results to @results in
+ * chunks.  Does not return until the query is complete.
+ * This can only be called from the main thread.
+ *
+ * FIXME: example
+ */
 void
 rhythmdb_do_full_query (RhythmDB *db,
 			RhythmDBQueryResults *results,
@@ -4361,7 +4493,7 @@ rhythmdb_entry_extra_metadata_accumulator (GSignalInvocationHint *ihint,
  * #GValue if non-%NULL when finished with it.
  *
  * Returns: an allocated, initialised, set #GValue, or NULL
- **/
+ */
 GValue *
 rhythmdb_entry_request_extra_metadata (RhythmDB *db,
 				       RhythmDBEntry *entry,
@@ -4392,7 +4524,7 @@ rhythmdb_entry_request_extra_metadata (RhythmDB *db,
  * appropriate ::detail part when connecting to the signal.  If handlers are
  * interested in the metadata they should ref or copy the contents of @metadata
  * and unref or free it when they are finished with it.
- **/
+ */
 void
 rhythmdb_emit_entry_extra_metadata_notify (RhythmDB *db,
 					   RhythmDBEntry *entry,
@@ -4492,8 +4624,11 @@ queue_is_empty (GAsyncQueue *queue)
  * rhythmdb_is_busy:
  * @db: a #RhythmDB.
  *
+ * Checks if the database has events to process.  This probably isn't
+ * very useful.
+ *
  * Returns: whether the #RhythmDB has events to process.
- **/
+ */
 gboolean
 rhythmdb_is_busy (RhythmDB *db)
 {
@@ -4517,7 +4652,7 @@ rhythmdb_is_busy (RhythmDB *db)
  * elsewhere in order for them to be marked for translation correctly.
  *
  * Returns: the string, which should be freed with g_free.
- **/
+ */
 char *
 rhythmdb_compute_status_normal (gint n_songs,
 				glong duration,
@@ -4663,7 +4798,7 @@ default_sync_metadata (RhythmDB *db,
  * entry type for non-permanent sources.
  *
  * Returns: the new #RhythmDBEntryType.
- **/
+ */
 RhythmDBEntryType
 rhythmdb_entry_register_type (RhythmDB *db,
 			      const char *name)
@@ -5026,6 +5161,15 @@ rhythmdb_entry_dup_string (RhythmDBEntry *entry,
 	}
 }
 
+/**
+ * rhythmdb_entry_get_string:
+ * @entry: a #RhythmDBEntry
+ * @propid: the #RhythmDBPropType to return
+ *
+ * Returns the value of a string property of #entry.
+ *
+ * Return value: property value, must not be freed
+ */
 const char *
 rhythmdb_entry_get_string (RhythmDBEntry *entry,
 			   RhythmDBPropType propid)
@@ -5145,6 +5289,15 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 	}
 }
 
+/**
+ * rhythmdb_entry_get_refstring:
+ * @entry: a #RhythmDBEntry
+ * @propid: the property to return
+ *
+ * Returns an #RBRefString containing a string property of @entry.
+ *
+ * Return value: a #RBRefString, must be unreffed by caller.
+ */
 RBRefString *
 rhythmdb_entry_get_refstring (RhythmDBEntry *entry,
 			      RhythmDBPropType propid)
@@ -5195,6 +5348,15 @@ rhythmdb_entry_get_refstring (RhythmDBEntry *entry,
 	}
 }
 
+/**
+ * rhythmdb_entry_get_boolean:
+ * @entry: a #RhythmDBEntry
+ * @propid: property to return
+ *
+ * Returns the value of a boolean property of @entry.
+ *
+ * Return value: property value
+ */
 gboolean
 rhythmdb_entry_get_boolean (RhythmDBEntry *entry,
 			    RhythmDBPropType propid)
@@ -5210,6 +5372,15 @@ rhythmdb_entry_get_boolean (RhythmDBEntry *entry,
 	}
 }
 
+/**
+ * rhythmdb_entry_get_uint64:
+ * @entry: a #RhythmDBEntry
+ * @propid: property to return
+ *
+ * Returns the value of a 64bit unsigned integer property.
+ *
+ * Return value: property value
+ */
 guint64
 rhythmdb_entry_get_uint64 (RhythmDBEntry *entry,
 			   RhythmDBPropType propid)
@@ -5225,6 +5396,16 @@ rhythmdb_entry_get_uint64 (RhythmDBEntry *entry,
 	}
 }
 
+/**
+ * rhythmdb_entry_get_entry_type:
+ * @entry: a #RhythmDBEntry
+ *
+ * Returns the #RhythmDBEntryType for @entry.  This is used to access
+ * entry type properties, to check that entries are of the same type,
+ * and to call entry type methods.
+ *
+ * Return value: the #RhythmDBEntryType for @entry
+ */
 RhythmDBEntryType
 rhythmdb_entry_get_entry_type (RhythmDBEntry *entry)
 {
@@ -5233,6 +5414,15 @@ rhythmdb_entry_get_entry_type (RhythmDBEntry *entry)
 	return entry->type;
 }
 
+/**
+ * rhythmdb_entry_get_pointer:
+ * @entry: a #RhythmDBEntry
+ * @propid: the property to return
+ *
+ * Returns the value of a pointer property of @entry.
+ *
+ * Return value: property value
+ */
 gpointer
 rhythmdb_entry_get_pointer (RhythmDBEntry *entry,
 			    RhythmDBPropType propid)
@@ -5248,6 +5438,15 @@ rhythmdb_entry_get_pointer (RhythmDBEntry *entry,
 	}
 }
 
+/**
+ * rhythmdb_entry_get_ulong:
+ * @entry: a #RhythmDBEntry
+ * @propid: property to return
+ *
+ * Returns the value of an unsigned long integer property of @entry.
+ *
+ * Return value: property value
+ */
 gulong
 rhythmdb_entry_get_ulong (RhythmDBEntry *entry,
 			  RhythmDBPropType propid)
@@ -5307,6 +5506,15 @@ rhythmdb_entry_get_ulong (RhythmDBEntry *entry,
 	}
 }
 
+/**
+ * rhythmdb_entry_get_double:
+ * @entry: a #RhythmDBEntry
+ * @propid: the property to return
+ *
+ * Returns the value of a double-precision floating point property of @value.
+ *
+ * Return value: property value
+ */
 double
 rhythmdb_entry_get_double (RhythmDBEntry *entry,
 			   RhythmDBPropType propid)
@@ -5334,6 +5542,17 @@ rhythmdb_entry_get_double (RhythmDBEntry *entry,
 	}
 }
 
+/**
+ * rhythmdb_entry_get_playback_uri:
+ * @entry: a #RhythmDBEntry
+ *
+ * Returns the playback URI for @entry.
+ *
+ * FIXME: establish guidelines for deciding when to use this and
+ * when to use RHYTHMDB_PROP_LOCATION..
+ *
+ * Return value: the playback URI for @entry, must be freed by caller
+ */
 char *
 rhythmdb_entry_get_playback_uri (RhythmDBEntry *entry)
 {
@@ -5358,7 +5577,7 @@ rhythmdb_entry_get_playback_uri (RhythmDBEntry *entry)
  * Adds a keyword to an entry.
  *
  * Returns: whether the keyword was already on the entry
- **/
+ */
 gboolean
 rhythmdb_entry_keyword_add	(RhythmDB *db,
 				 RhythmDBEntry *entry,
@@ -5383,7 +5602,7 @@ rhythmdb_entry_keyword_add	(RhythmDB *db,
  * Removed a keyword from an entry.
  *
  * Returns: whether the keyword had previously been added to the entry.
- **/
+ */
 gboolean
 rhythmdb_entry_keyword_remove	(RhythmDB *db,
 				 RhythmDBEntry *entry,
@@ -5408,7 +5627,7 @@ rhythmdb_entry_keyword_remove	(RhythmDB *db,
  * Checks whether a keyword is has been added to an entry.
  *
  * Returns: whether the keyword had been added to the entry.
- **/
+ */
 gboolean
 rhythmdb_entry_keyword_has	(RhythmDB *db,
 				 RhythmDBEntry *entry,
@@ -5429,7 +5648,7 @@ rhythmdb_entry_keyword_has	(RhythmDB *db,
  * Returns: the list of keywords that have been added to the entry.
  *          The caller is responsible for unref'ing the RBRefStrings and
  *          freeing the list with g_list_free.
- **/
+ */
 GList* /*<RBRefString>*/
 rhythmdb_entry_keywords_get	(RhythmDB *db,
 				 RhythmDBEntry *entry)
@@ -5439,7 +5658,15 @@ rhythmdb_entry_keywords_get	(RhythmDB *db,
 	return klass->impl_entry_keywords_get (db, entry);
 }
 
-
+/**
+ * rhythmdb_get_property_type:
+ * @db: the #RhythmDB
+ * @property_id: a property ID (#RhythmDBPropType)
+ *
+ * Returns the #GType for the value of the property.
+ *
+ * Return value: property value type
+ */
 GType
 rhythmdb_get_property_type (RhythmDB *db,
 			    guint property_id)
@@ -5448,6 +5675,15 @@ rhythmdb_get_property_type (RhythmDB *db,
 	return rhythmdb_property_type_map[property_id];
 }
 
+/**
+ * rhythmdb_entry_get_type:
+ *
+ * Returns the #GType for #RhythmDBEntry.  The #GType for #RhythmDBEntry is a
+ * boxed type, where copying the value references the entry and freeing it
+ * unrefs it.
+ *
+ * Return value: value type
+ */
 GType
 rhythmdb_entry_get_type (void)
 {
@@ -5462,6 +5698,15 @@ rhythmdb_entry_get_type (void)
 	return type;
 }
 
+/**
+ * rhythmdb_entry_type_get_type:
+ *
+ * Returns the #GType for #RhythmDBEntryType.  #RhythmDBEntryType is stored as a boxed
+ * value, where copying the value just copies the pointer, and freeing it does nothing.
+ * Entry types cannot be destroyed, so they are not reference counted.
+ *
+ * Return value: entry type value type
+ */
 GType
 rhythmdb_entry_type_get_type (void)
 {
@@ -5476,6 +5721,17 @@ rhythmdb_entry_type_get_type (void)
 	return type;
 }
 
+/**
+ * rhythmdb_entry_is_lossless:
+ * @entry: a #RhythmDBEntry
+ *
+ * Checks if @entry represents a file that is losslessly encoded.
+ * An entry is considered lossless if it has no bitrate value and
+ * its media type is "audio/x-flac".  Other lossless encoding types
+ * may be added in the future.
+ *
+ * Return value: %TRUE if @entry is lossless
+ */
 gboolean
 rhythmdb_entry_is_lossless (RhythmDBEntry *entry)
 {
@@ -5491,4 +5747,3 @@ rhythmdb_entry_is_lossless (RhythmDBEntry *entry)
 	mime_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
 	return (g_str_equal (mime_type, "audio/x-flac"));
 }
-

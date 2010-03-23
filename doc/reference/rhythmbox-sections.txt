@@ -1,24 +1,4 @@
 <SECTION>
-<FILE>rb-thread</FILE>
-RBThreadPrivate
-RBThreadActionFunc
-RBThreadResultFunc
-RBThreadActionDestroyFunc
-RBThreadResultDestroyFunc
-rb_thread_new
-rb_thread_push_action
-rb_thread_terminate
-<SUBSECTION Standard>
-RB_THREAD
-RB_IS_THREAD
-RB_TYPE_THREAD
-rb_thread_get_type
-RB_THREAD_CLASS
-RB_IS_THREAD_CLASS
-RB_THREAD_GET_CLASS
-</SECTION>
-
-<SECTION>
 <FILE>rb-tree-dnd</FILE>
 RbTreeDragSource
 RbTreeDragSourceIface
@@ -683,7 +663,6 @@ rhythmdb_entry_get_double
 rhythmdb_entry_get_pointer
 rhythmdb_entry_get_entry_type
 RhythmDBError
-RhythmDBPrivate
 rhythmdb_new
 rhythmdb_shutdown
 rhythmdb_load
@@ -733,8 +712,6 @@ rhythmdb_query_to_string
 rhythmdb_query_is_time_relative
 rhythmdb_nice_elt_name_from_propid
 rhythmdb_propid_from_nice_elt_name
-rhythmdb_emit_entry_added
-rhythmdb_emit_entry_deleted
 rhythmdb_entry_request_extra_metadata
 rhythmdb_entry_gather_metadata
 rhythmdb_emit_entry_extra_metadata_notify
@@ -750,6 +727,7 @@ rhythmdb_entry_ignore_get_type
 rhythmdb_get_property_type
 rhythmdb_entry_ref
 rhythmdb_entry_unref
+rhythmdb_entry_is_lossless
 <SUBSECTION Standard>
 RHYTHMDB_CLASS
 RHYTHMDB_IS_CLASS
@@ -777,6 +755,9 @@ RHYTHMDB_TYPE_PROP_TYPE
 RHYTHMDB_ERROR
 rhythmdb_error_quark
 rhythmdb_get_type
+RhythmDBPrivate
+rhythmdb_emit_entry_added
+rhythmdb_emit_entry_deleted
 </SECTION>
 
 <SECTION>
