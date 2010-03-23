@@ -163,6 +163,11 @@ if test "x$with_ipod" != "xno"; then
 	  AC_MSG_ERROR([iPod explicitly requested but libgpod couldn't be found])
 	fi
 	if test "x$have_libgpod" = "xyes"; then
+	  PKG_CHECK_EXISTS(libgpod-1.0 >= 0.7.92, have_itdb_start_stop_sync=yes,
+						  have_itdb_start_stop_sync=no)
+          if test "x$have_itdb_start_stop_sync" = "xyes"; then
+	    AC_DEFINE([HAVE_ITDB_START_STOP_SYNC], 1, [Indicates whether libgpod is new enough to have its itdb_start/stop_sync API])
+          fi
 	  use_ipod=yes
 	  AC_SUBST(IPOD_CFLAGS)
 	  AC_SUBST(IPOD_LIBS)
