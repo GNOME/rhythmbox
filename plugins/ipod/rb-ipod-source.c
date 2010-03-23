@@ -640,6 +640,12 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 		return;
 	}
 
+	if ((song->mediatype != ITDB_MEDIATYPE_AUDIO)
+	    && (song->mediatype != ITDB_MEDIATYPE_PODCAST)) {
+		rb_debug ("iPod track is neither an audio track nor a podcast, skipping");
+		return;
+	}
+
 	rb_debug ("Adding %s from iPod", pc_path);
 	g_free (pc_path);
 
