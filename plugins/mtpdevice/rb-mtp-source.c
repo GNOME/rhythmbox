@@ -484,12 +484,14 @@ rb_mtp_source_dispose (GObject *object)
 #if defined(HAVE_GUDEV)
 	if (priv->remount_volume != NULL) {
 		rb_debug ("remounting gvfs volume for mtp device");
+		/* the callback will unref remount_volume */
 		g_volume_mount (priv->remount_volume,
 				G_MOUNT_MOUNT_NONE,
 				NULL,
 				NULL,
 				remount_done_cb,
 				NULL);
+		priv->remount_volume = NULL;
 	}
 #endif
 
@@ -514,7 +516,11 @@ rb_mtp_source_finalize (GObject *object)
 	g_hash_table_destroy (priv->artwork_request_map);
 	g_hash_table_destroy (priv->track_transfer_map);		/* probably need to destroy the tracks too.. */
 
-#if !defined(HAVE_GUDEV)
+#if defined(HAVE_GUDEV)
+	if (priv->udev_device) {
+		g_object_unref (G_OBJECT (priv->udev_device));
+	}
+#else
 	g_free (priv->udi);
 #endif
 	g_free (priv->manufacturer);
