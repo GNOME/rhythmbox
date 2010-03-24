@@ -1119,6 +1119,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	 * re-added to the db.
 	 */
 	mountpoint_entries = rhythmdb_query_model_new_empty (db);
+	g_object_set (mountpoint_entries, "show-hidden", TRUE, NULL);
 	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (mountpoint_entries),
 		RHYTHMDB_QUERY_PROP_EQUALS,
 		RHYTHMDB_PROP_TYPE,
