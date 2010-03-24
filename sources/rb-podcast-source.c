@@ -936,18 +936,22 @@ impl_delete (RBSource *asource)
 	if (ret == GTK_RESPONSE_CANCEL || ret == GTK_RESPONSE_DELETE_EVENT)
 		return;
 
-	rb_podcast_manager_set_remove_files (source->priv->podcast_mgr,
-					     (ret == GTK_RESPONSE_YES));
-
 	entries = rb_entry_view_get_selected_entries (source->priv->posts);
 	for (l = entries; l != NULL; l = g_list_next (l)) {
+		RhythmDBEntry *entry = l->data;
+
+		rb_podcast_manager_cancel_download (source->priv->podcast_mgr, entry);
+		if (ret == GTK_RESPONSE_YES) {
+			rb_podcast_manager_delete_download (source->priv->podcast_mgr, entry);
+		}
+
 		/* set podcast entries to invisible instead of deleted so they will
 		 * not reappear after the podcast has been updated
 		 */
 		GValue v = {0,};
 		g_value_init (&v, G_TYPE_BOOLEAN);
 		g_value_set_boolean (&v, TRUE);
-		rhythmdb_entry_set (source->priv->db, l->data, RHYTHMDB_PROP_HIDDEN, &v);
+		rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_HIDDEN, &v);
 		g_value_unset (&v);
 	}
 

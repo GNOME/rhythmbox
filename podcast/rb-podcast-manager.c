@@ -127,8 +127,6 @@ struct RBPodcastManagerPrivate
 	guint update_interval_notify_id;
 	guint next_file_id;
 	gboolean shutdown;
-
-	gboolean remove_files;
 };
 
 #define RB_PODCAST_MANAGER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PODCAST_MANAGER, RBPodcastManagerPrivate))
@@ -162,8 +160,6 @@ static gboolean rb_podcast_manager_head_query_cb 	(GtkTreeModel *query_model,
 static void rb_podcast_manager_save_metadata		(RBPodcastManager *pd,
 						  	 RhythmDBEntry *entry);
 static void rb_podcast_manager_db_entry_added_cb 	(RBPodcastManager *pd,
-							 RhythmDBEntry *entry);
-static void rb_podcast_manager_db_entry_deleted_cb 	(RBPodcastManager *pd,
 							 RhythmDBEntry *entry);
 static gboolean rb_podcast_manager_next_file 		(RBPodcastManager * pd);
 static void rb_podcast_manager_insert_feed 		(RBPodcastManager *pd, RBPodcastChannel *data);
@@ -366,10 +362,6 @@ rb_podcast_manager_set_property (GObject *object,
 			g_signal_handlers_disconnect_by_func (pd->priv->db,
 							      G_CALLBACK (rb_podcast_manager_db_entry_added_cb),
 							      pd);
-
-			g_signal_handlers_disconnect_by_func (pd->priv->db,
-							      G_CALLBACK (rb_podcast_manager_db_entry_deleted_cb),
-							      pd);
 			g_object_unref (pd->priv->db);
 		}
 
@@ -380,12 +372,6 @@ rb_podcast_manager_set_property (GObject *object,
 	                                 "entry-added",
 	                                 G_CALLBACK (rb_podcast_manager_db_entry_added_cb),
 	                                 pd, G_CONNECT_SWAPPED);
-
-	        g_signal_connect_object (pd->priv->db,
-	                                 "entry_deleted",
-	                                 G_CALLBACK (rb_podcast_manager_db_entry_deleted_cb),
-	                                 pd, G_CONNECT_SWAPPED);
-
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1632,105 +1618,104 @@ rb_podcast_manager_unsubscribe_feed (RhythmDB *db, const char *url)
 gboolean
 rb_podcast_manager_remove_feed (RBPodcastManager *pd, const char *url, gboolean remove_files)
 {
-	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (pd->priv->db, url);
+	RhythmDBQueryModel *query;
+	GtkTreeModel *query_model;
+	GtkTreeIter iter;
+	RhythmDBEntry *entry;
 
-	if (entry) {
-		rb_debug ("Removing podcast feed: %s remove_files: %d", url, remove_files);
-
-		rb_podcast_manager_set_remove_files (pd, remove_files);
-		rhythmdb_entry_delete (pd->priv->db, entry);
-		rhythmdb_commit (pd->priv->db);
-		return TRUE;
+	entry = rhythmdb_entry_lookup_by_location (pd->priv->db, url);
+	if (entry == NULL) {
+		rb_debug ("unable to find entry for podcast feed %s", url);
+		return FALSE;
 	}
 
-	return FALSE;
+	rb_debug ("removing podcast feed: %s remove_files: %d", url, remove_files);
+
+	/* first remove the posts from the feed. include deleted posts (which will be hidden).
+	 * these need to be deleted so they will properly be readded should the feed be readded.
+	 */
+	query = rhythmdb_query_model_new_empty (pd->priv->db);
+	g_object_set (query, "show-hidden", TRUE, NULL);
+	query_model = GTK_TREE_MODEL (query);
+	rhythmdb_do_full_query (pd->priv->db,
+				RHYTHMDB_QUERY_RESULTS (query_model),
+				RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
+				RHYTHMDB_QUERY_PROP_LIKE,
+				RHYTHMDB_PROP_SUBTITLE, get_remote_location (entry),
+				RHYTHMDB_QUERY_END);
+
+	if (gtk_tree_model_get_iter_first (query_model, &iter)) {
+		gboolean has_next;
+		do {
+			RhythmDBEntry *entry;
+
+			gtk_tree_model_get (query_model, &iter, 0, &entry, -1);
+			has_next = gtk_tree_model_iter_next (query_model, &iter);
+
+			/* make sure we're not downloading it */
+			rb_podcast_manager_cancel_download (pd, entry);
+			if (remove_files) {
+				rb_podcast_manager_delete_download (pd, entry);
+			}
+
+			rhythmdb_entry_delete (pd->priv->db, entry);
+			rhythmdb_entry_unref (entry);
+
+		} while (has_next);
+
+		rhythmdb_commit (pd->priv->db);
+	}
+
+	g_object_unref (query_model);
+
+	/* now delete the feed */
+	rhythmdb_entry_delete (pd->priv->db, entry);
+	rhythmdb_commit (pd->priv->db);
+	return TRUE;
 }
 
-static void
-rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
-					RhythmDBEntry *entry)
+void
+rb_podcast_manager_delete_download (RBPodcastManager *pd, RhythmDBEntry *entry)
 {
+	const char *file_name;
+	GFile *file;
+	GError *error = NULL;
 	RhythmDBEntryType type = rhythmdb_entry_get_entry_type (entry);
 
-	if ((type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) && (pd->priv->remove_files == TRUE)) {
-		const char *file_name;
-		GFile *feed_dir;
-		GFile *file;
-		GError *error = NULL;
+	/* make sure it's a podcast post */
+	g_assert (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST);
 
-		/* make sure we're not downloading it */
-		rb_podcast_manager_cancel_download (pd, entry);
-
-		file_name = get_download_location (entry);
-		if (file_name == NULL) {
-			/* episode has not been downloaded */
-			rb_debug ("Episode not downloaded, skipping.");
-			return;
-		}
-
-		rb_debug ("deleting downloaded episode %s", file_name);
-		file = g_file_new_for_uri (file_name);
-		g_file_delete (file, NULL, &error);
-
-		if (error != NULL) {
-			rb_debug ("Removing episode failed: %s", error->message);
-			g_clear_error (&error);
-		} else {
-			/* try to remove the directory
-			 * (will only work once it's empty)
-			 */
-			feed_dir = g_file_get_parent (file);
-			g_file_delete (feed_dir, NULL, &error);
-			if (error != NULL) {
-				rb_debug ("couldn't remove podcast feed directory: %s",
-					  error->message);
-				g_clear_error (&error);
-			}
-			g_object_unref (feed_dir);
-		}
-		g_object_unref (file);
-
-	} else if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
-		RhythmDBQueryModel *query;
-		GtkTreeModel *query_model;
-		GtkTreeIter iter;
-
-		/* include deleted posts (which will be hidden)
-		 * these need to be deleted so they will properly be
-		 * readded should the feed be readded.
-		 */
-		query = rhythmdb_query_model_new_empty (pd->priv->db);
-		g_object_set (query, "show-hidden", TRUE, NULL);
-		query_model = GTK_TREE_MODEL (query);
-		rhythmdb_do_full_query (pd->priv->db,
-					RHYTHMDB_QUERY_RESULTS (query_model),
-                	                RHYTHMDB_QUERY_PROP_EQUALS,
-                        	        RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
-                	                RHYTHMDB_QUERY_PROP_LIKE,
-					RHYTHMDB_PROP_SUBTITLE, get_remote_location (entry),
-                                	RHYTHMDB_QUERY_END);
-
-		if (gtk_tree_model_get_iter_first (query_model, &iter)) {
-			gboolean has_next;
-			do {
-				RhythmDBEntry *entry;
-
-				gtk_tree_model_get (query_model, &iter, 0, &entry, -1);
-				has_next = gtk_tree_model_iter_next (query_model, &iter);
-
-				/* make sure we're not downloading it */
-				rb_podcast_manager_cancel_download (pd, entry);
-
-				rhythmdb_entry_delete (pd->priv->db, entry);
-				rhythmdb_entry_unref (entry);
-
-			} while (has_next);
-
-			rhythmdb_commit (pd->priv->db);
-		}
-
-		g_object_unref (query_model);
+	file_name = get_download_location (entry);
+	if (file_name == NULL) {
+		/* episode has not been downloaded */
+		rb_debug ("Episode %s not downloaded",
+			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+		return;
 	}
+
+	rb_debug ("deleting downloaded episode %s", file_name);
+	file = g_file_new_for_uri (file_name);
+	g_file_delete (file, NULL, &error);
+
+	if (error != NULL) {
+		rb_debug ("Removing episode failed: %s", error->message);
+		g_clear_error (&error);
+	} else {
+		GFile *feed_dir;
+		/* try to remove the directory
+		 * (will only work once it's empty)
+		 */
+		feed_dir = g_file_get_parent (file);
+		g_file_delete (feed_dir, NULL, &error);
+		if (error != NULL) {
+			rb_debug ("couldn't remove podcast feed directory: %s",
+				  error->message);
+			g_clear_error (&error);
+		}
+		g_object_unref (feed_dir);
+	}
+	g_object_unref (file);
 }
 
 void
@@ -1789,19 +1774,6 @@ rb_podcast_manager_config_changed (GConfClient* client,
 }
 
 /* this bit really wants to die */
-
-void
-rb_podcast_manager_set_remove_files (RBPodcastManager *pd, gboolean flag)
-{
-	pd->priv->remove_files = flag;
-
-}
-
-gboolean
-rb_podcast_manager_get_remove_files (RBPodcastManager *pd)
-{
-	return pd->priv->remove_files;
-}
 
 static gboolean
 remove_if_not_downloaded (GtkTreeModel *model,

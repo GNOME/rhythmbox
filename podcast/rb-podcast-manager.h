@@ -69,8 +69,7 @@ void                    rb_podcast_manager_download_entry  	(RBPodcastManager *p
 void		        rb_podcast_manager_cancel_download	(RBPodcastManager *pd, RhythmDBEntry *entry);
 void 			rb_podcast_manager_update_feeds 	(RBPodcastManager *pd);
 void                    rb_podcast_manager_start_sync  		(RBPodcastManager *pd);
-void            	rb_podcast_manager_set_remove_files    	(RBPodcastManager *pd, gboolean flag);
-gboolean 		rb_podcast_manager_get_remove_files	(RBPodcastManager *pd);
+void			rb_podcast_manager_delete_download	(RBPodcastManager *pd, RhythmDBEntry *entry);
 gboolean                rb_podcast_manager_remove_feed 		(RBPodcastManager *pd,
 								 const gchar* url,
 								 gboolean remove_files);
