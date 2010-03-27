@@ -1607,3 +1607,107 @@ _wrap_rb_metadata_set(PyGObject *self, PyObject *args, PyObject *kwargs)
 	g_value_unset (&value);
 	Py_RETURN_NONE;
 }
+%%
+override RBSource__proxy_do_impl_search
+static void
+_wrap_RBSource__proxy_do_impl_search(RBSource *self, RBSourceSearch*search, const char*cur_text, const char*new_text)
+{
+    PyGILState_STATE __py_state;
+    PyObject *py_self;
+    PyObject *py_search = NULL;
+    PyObject *py_cur_text;
+    PyObject *py_new_text;
+    PyObject *py_retval;
+    PyObject *py_args;
+    PyObject *py_method;
+
+    __py_state = pyg_gil_state_ensure();
+    py_self = pygobject_new((GObject *) self);
+    if (!py_self) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+
+    if (search)
+        py_search = pygobject_new((GObject *) search);
+    else {
+        Py_INCREF(Py_None);
+        py_search = Py_None;
+    }
+
+    if(cur_text)
+        py_cur_text = PyString_FromString(cur_text);
+    else {
+        Py_INCREF(Py_None);
+        py_cur_text = Py_None;
+    }
+    if (!py_cur_text) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_search);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+
+    if(new_text)
+        py_new_text = PyString_FromString(new_text);
+    else {
+        Py_INCREF(Py_None);
+        py_new_text = Py_None;
+    }
+    if (!py_new_text) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_cur_text);
+        Py_DECREF(py_search);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+
+    py_args = PyTuple_New(3);
+    PyTuple_SET_ITEM(py_args, 0, py_search);
+    PyTuple_SET_ITEM(py_args, 1, py_cur_text);
+    PyTuple_SET_ITEM(py_args, 2, py_new_text);
+
+    py_method = PyObject_GetAttrString(py_self, "do_impl_search");
+    if (!py_method) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_args);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+    py_retval = PyObject_CallObject(py_method, py_args);
+    if (!py_retval) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_XDECREF(py_retval);
+        Py_DECREF(py_method);
+        Py_DECREF(py_args);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+    if (py_retval != Py_None) {
+        PyErr_SetString(PyExc_TypeError, "virtual method should return None");
+        PyErr_Print();
+        Py_XDECREF(py_retval);
+        Py_DECREF(py_method);
+        Py_DECREF(py_args);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+
+
+    Py_XDECREF(py_retval);
+    Py_DECREF(py_method);
+    Py_DECREF(py_args);
+    Py_DECREF(py_self);
+    pyg_gil_state_release(__py_state);
+}
