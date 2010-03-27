@@ -978,8 +978,8 @@
   (c-name "rb_source_search")
   (return-type "none")
   (parameters
-    '("RBSourceSearch*" "search")
-    '("const-char*" "cur_text")
+    '("RBSourceSearch*" "search" (null-ok))
+    '("const-char*" "cur_text" (null-ok))
     '("const-char*" "new_text")
   )
 )
@@ -1209,8 +1209,8 @@
   (of-object "RBSource")
   (return-type "none")
   (parameters
-    '("RBSourceSearch*" "search")
-    '("const-char*" "cur_text")
+    '("RBSourceSearch*" "search" (null-ok))
+    '("const-char*" "cur_text" (null-ok))
     '("const-char*" "new_text")
   )
 )
@@ -2675,7 +2675,7 @@
   (of-object "RBSourceSearch")
   (return-type "gboolean")
   (parameters
-    '("const-char*" "cur_text")
+    '("const-char*" "cur_text" (null-ok))
     '("const-char*" "new_text")
   )
 )
