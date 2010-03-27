@@ -944,8 +944,8 @@ rb_source_can_rename (RBSource *source)
 /**
  * rb_source_search:
  * @source: a #RBSource
- * @search: the active #RBSourceSearch instance
- * @cur_text: the current search text
+ * @search: the active #RBSourceSearch instance (may be NULL)
+ * @cur_text: the current search text (may be NULL)
  * @new_text: the new search text
  *
  * Updates the source with new search text.  The source
@@ -959,6 +959,7 @@ rb_source_search (RBSource *source,
 		  const char *new_text)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+	g_assert (new_text != NULL);
 
 	/* several sources don't have a search ability */
 	if (klass->impl_search != NULL)
