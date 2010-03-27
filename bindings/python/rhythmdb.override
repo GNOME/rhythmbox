@@ -113,12 +113,12 @@ _wrap_rhythmdb_entry_count_by_type(PyGObject *self, PyObject *args, PyObject *kw
 	RhythmDBEntryType et;
 	gint64 ret;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO:RhythmDB.entry_count_by_type", kwlist, &py_entrytype))
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RhythmDB.entry_count_by_type", kwlist, &py_entrytype))
 		return NULL;
 	if (pyg_boxed_check(py_entrytype, RHYTHMDB_TYPE_ENTRY_TYPE))
-		et = pyg_boxed_get(self, RhythmDBEntryType_);
+		et = pyg_boxed_get(py_entrytype, RhythmDBEntryType_);
 	else {
-		char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
+		char *s = g_strdup_printf ("entrytype should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)py_entrytype)));
 		PyErr_SetString(PyExc_TypeError, s);
 		g_free (s);
 		return NULL;
