@@ -141,14 +141,22 @@ static void
 open_device (RBMtpThread *thread, RBMtpThreadTask *task)
 {
 	RBMtpOpenCallback cb = task->callback;
+	int retry;
 
 	/* open the device */
-	thread->device = LIBMTP_Open_Raw_Device (task->raw_device);
-	if (thread->device == NULL) {
-		/* hm. any error information we can give here? */
-		/* maybe retry a few times since apparently that can help? */
-		cb (NULL, task->user_data);
-		return;
+	rb_debug ("attempting to open retry device");
+	for (retry = 0; retry < 5; retry++) {
+		if (retry > 0) {
+			/* sleep a while before trying again */
+			g_usleep (G_USEC_PER_SEC);
+		}
+
+		thread->device = LIBMTP_Open_Raw_Device (task->raw_device);
+		if (thread->device != NULL) {
+			break;
+		}
+
+		rb_debug ("attempt %d failed..", retry+1);
 	}
 
 	cb (thread->device, task->user_data);
