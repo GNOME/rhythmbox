@@ -1,3 +1,64 @@
+Overview of changes in Rhythmbox 0.12.8  "Extradition"
+======================================================
+
+* Last.fm cover art search (Jonathan Matthew)
+* Automatically unmount MTP devices mounted by gvfs (François Jaouen)
+* More improvements to mixed-direction text display (Uri Sivan)
+
+Bugs fixed:
+
+482955 - rhythmbox crashed with SIGSEGV in rb_source_try_playlist()
+520121 - MTP plugin fights with gvfs' gphoto2 backend
+527898 - Assertion in rhythmdb_property_model_delete_prop()
+528513 - have to run rhythmbox twice to see the main window
+551402 - Cannot update list of episodes in podcasts
+600494 - crash in Rhythmbox Music Player: (something to do with CD playback)
+603261 - rhythmbox crashes during drag n drop of mp3 to iPod
+607073 - rhythmbox crashed with SIGSEGV in rb_entry_view_scroll_to_entry()
+609651 - Album Artwork Does Not Display Immediately For Embedded Artwork
+610753 - Fix mixed-direction text in header widget
+611541 - OGG files with skeleton stream are not imported
+611714 - missing stock icons
+611772 - Menubar: "show statusbar" menu entry doesn't get sync properly
+612570 - rhythmbox crashed with SIGSEGV in g_closure_invoke()
+613163 - Add a11y name to the status icon
+613540 - [cppcheck] found a memory leak in /rhythmbox/plugins/mtpdevice/rb-mtp-source.c
+613542 - [cppcheck] found a resource leak in rhythmbox/plugins/cd-recorder/rb-recorder-gst.
+613606 - Don't load AFC devices using the MTP plugin
+613658 - null string checking in RBSource_do_impl_search python binding
+613715 - Rhythmbox crashes when iPhone is plugged in and MTP plugin is enabled
+613784 - Reloads deleted podcasts
+
+New and updated translations:
+
+- af, courtesy of F Wolff
+- bg, courtesy of Krasimir Chonov
+- br, courtesy of Jérémy AR FLOC'H
+- cs, courtesy of Lucas Lommer
+- cs, courtesy of Marek Černocký
+- de, courtesy of Christian Kirbach
+- el, courtesy of Simos Xenitellis
+- es, courtesy of Jorge González
+- et, courtesy of Mattias Põldaru
+- eu, courtesy of Iñaki Larrañaga Murgoitio
+- fi, courtesy of Jiri Grönroos
+- fr, courtesy of Pierre-Luc Beaudoin
+- gl, courtesy of Fran Diéguez
+- hu, courtesy of Gabor Kelemen
+- it, courtesy of Luca Ferretti
+- ja, courtesy of Hajime Taira
+- lt, courtesy of Žygimantas Beručka
+- nb, courtesy of Kjartan Maraas
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Rodrigo Flores
+- pt, courtesy of Filipe Gomes
+- ro, courtesy of Adi Roiban
+- ru, courtesy of Yuri Kozlov
+- sl, courtesy of Andrej Žnidaršič
+- sv, courtesy of Daniel Nylander
+- uk, courtesy of Sergiy Gavrylov
+
+
 Overview of changes in Rhythmbox 0.12.7  "It's a Hectic World"
 ==============================================================
 

@@ -1,13 +1,1099 @@
-commit 06e59272db5b6afb6bd9c6ee9d6133ed654c8cf4
+commit 6bab24a143c3b8ec73da556d734721bdf948ee62
+Author: Daniel S. Koda <danielskoda@gmail.com>
+Date:   Sat Mar 27 22:37:49 2010 -0300
+
+    Updated Brazilian Portuguese translation
+
+ po/pt_BR.po | 1954 +++++++++++++++++++++++++++++++++--------------------------
+ 1 files changed, 1095 insertions(+), 859 deletions(-)
+
+commit aa68da260070e0195d3f9b4da0c6b4768d982c4d
+Author: Simos Xenitellis <simos@gnome.org>
+Date:   Sat Mar 27 23:26:53 2010 +0200
+
+    Updated Greek translation for rhythmbox
+
+ po/el.po |  799 +++++++++++++++++++++++---------------------------------------
+ 1 files changed, 292 insertions(+), 507 deletions(-)
+
+commit e93f13f26ff9092a1bac777a6e95e9eeec1c6d31
+Author: Friedel Wolff <friedel@translate.org.za>
+Date:   Sat Mar 27 15:31:09 2010 +0100
+
+    Update Afrikaans translation
+
+ po/af.po | 2119 +++++++++++++++++++++++++++++++++-----------------------------
+ 1 files changed, 1130 insertions(+), 989 deletions(-)
+
+commit 53c9c286a21111eb3d888f9757748350627f85a1
+Author: Marek Černocký <marek@manet.cz>
+Date:   Sat Mar 27 13:37:54 2010 +0100
+
+    Update Czech translation
+
+ po/cs.po |  537 +++++++++++++++++++++++++++++++-------------------------------
+ 1 files changed, 272 insertions(+), 265 deletions(-)
+
+commit 52b51228da57bb70a5ca2029c87e4feda3e2a2df
 Author: Jonathan Matthew <jonathan@d14n.org>
-Date:   Sun Feb 28 23:38:39 2010 +1000
+Date:   Sat Mar 27 20:32:22 2010 +1000
+
+    mtp: if we can't open the device immediately, try again a few times
+
+ plugins/mtpdevice/rb-mtp-thread.c |   20 ++++++++++++++------
+ 1 files changed, 14 insertions(+), 6 deletions(-)
+
+commit 55b5950423deb14627a49349d055ea2a8ef52269
+Author: Kjartan Maraas <kmaraas@gnome.org>
+Date:   Sat Mar 27 11:31:15 2010 +0100
+
+    Updated Norwegian bokmål translation
+
+ po/nb.po |  538 ++++++++++++++++++++++++++++++-------------------------------
+ 1 files changed, 265 insertions(+), 273 deletions(-)
+
+commit e94b0366308cb7c624705883da55ae2feff05af9
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sat Mar 27 14:02:22 2010 +1000
+
+    python: add null-ok to various search-related method parameters
+    
+    This allows us to get rid of the custom override for
+    proxy_do_impl_search when pygobject is capable of generating the right
+    wrapper for us.
+
+ bindings/python/rb.defs |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+commit 4dc9c239c761cb033c3d8f1503d6256a63384f84
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sat Mar 27 14:01:27 2010 +1000
+
+    source: cur_text and search parameters to rb_source_search can be NULL
+    
+    This just clarifies the API documentation and adds an assertion check to
+    ensure that new_text is not NULL, as it must always be provided.
+
+ sources/rb-source.c |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+commit 7bf70b50ae1d4b919ce7a04dec5b264652f0be58
+Author: Max Ulidtko <ulidtko@gmail.com>
+Date:   Sat Mar 27 13:59:23 2010 +1000
+
+    python: add override for virtual RBSource.do_impl_search (bug #613658)
+    
+    pygobject can't currently generate virtual method wrappers that check
+    for strings being NULL (bug #589253), so for now we need a custom
+    override to do the checking for us.  This allows sources implemented in
+    python to provide their own search implementations safely.
+
+ bindings/python/rb.override |  104 +++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 104 insertions(+), 0 deletions(-)
+
+commit 579ce745567fedaedd715d9e1f7d43cf5cdaa479
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sat Mar 27 11:10:45 2010 +1000
+
+    python: fix override for rhythmdb_entry_count_by_type
+    
+    The number of arguments for PyArg_ParseTupleAndKeywords was wrong, and
+    it was converting 'self' rather than 'entrytype' into a RhythmDBEntryType.
+
+ bindings/python/rhythmdb.override |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 86f168346c9c60381ab2f835430463e42a02a326
+Author: Piotr Drąg <piotrdrag@gmail.com>
+Date:   Fri Mar 26 23:33:41 2010 +0100
+
+    Updated Polish translation
+
+ po/pl.po |  553 +++++++++++++++++++++++++++++++-------------------------------
+ 1 files changed, 280 insertions(+), 273 deletions(-)
+
+commit 42162096f6c14777537741765733e2a5ea4bfb92
+Author: Gintautas Miliauskas <gintautas@miliauskas.lt>
+Date:   Fri Mar 26 12:13:15 2010 +0200
+
+    Updated Lithuanian translation.
+
+ po/lt.po |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit a9a7c7036774931e567f477bd095d92d929b1c86
+Author: Gintautas Miliauskas <gintautas@miliauskas.lt>
+Date:   Fri Mar 26 12:13:06 2010 +0200
+
+    Updated Lithuanian translation.
+
+ po/lt.po |  524 +++++++++++++++++++++++++++++++-------------------------------
+ 1 files changed, 265 insertions(+), 259 deletions(-)
+
+commit ec86822b58cef2396554ee55faf4ce3548bf702c
+Author: Daniel Nylander <po@danielnylander.se>
+Date:   Thu Mar 25 19:51:15 2010 +0100
+
+    Updated Swedish translation
+
+ po/sv.po |  567 +++++++++++++++++++++++++++++++-------------------------------
+ 1 files changed, 287 insertions(+), 280 deletions(-)
+
+commit 4b47ff044296006bc6c84500e996f29fc4048f2d
+Author: Luca Ferretti <lferrett@gnome.org>
+Date:   Thu Mar 25 12:12:18 2010 +0100
+
+    Updated Italian translation
+
+ po/it.po |  539 ++++++++++++++++++++++++++++---------------------------------
+ 1 files changed, 247 insertions(+), 292 deletions(-)
+
+commit 52b93aaebbe9e7bec1687697e48afe68bb9b9e92
+Author: Gabor Kelemen <kelemeng@gnome.hu>
+Date:   Thu Mar 25 09:07:04 2010 +0100
+
+    Updated Hungarian translation
+
+ po/hu.po |  580 +++++++++++++++++++++++++++++++-------------------------------
+ 1 files changed, 286 insertions(+), 294 deletions(-)
+
+commit 9b030f8976316a7e223ca04e6bbe120827fd98c3
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Wed Mar 24 22:52:28 2010 +1000
+
+    podcast: rework post and feed deletion (bug #613784)
+    
+    Instead of using the entry-deleted signal to delete downloaded posts and
+    remove posts for deleted feeds, we now do all that up front before
+    deleting anything.  This makes the code more straightforward, so
+    hopefully next time someone changes what happens when a podcast entry is
+    deleted, we won't forget to deal with half of it.
+
+ podcast/rb-podcast-manager.c |  190 ++++++++++++++++++------------------------
+ podcast/rb-podcast-manager.h |    3 +-
+ sources/rb-podcast-source.c  |   12 ++-
+ 3 files changed, 90 insertions(+), 115 deletions(-)
+
+commit 100aa428126d8a9580f8961ca4515f5b6822d9dd
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Wed Mar 24 22:51:41 2010 +1000
+
+    podcast: include hidden (deleted) entries when searching for posts
+
+ podcast/rb-podcast-manager.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit b3b25e8a54955281779d9058de16aecff93d0729
+Author: Christophe Fergeau <cfergeau@mandriva.com>
+Date:   Wed Mar 24 11:28:20 2010 +0100
+
+    mtp: don't leak udev_device
+    
+    udev_device was leaked when the MTP source object was finalized. Also
+    set remount_volume to NULL when disposing the source.
+
+ plugins/mtpdevice/rb-mtp-source.c |    8 +++++++-
+ 1 files changed, 7 insertions(+), 1 deletions(-)
+
+commit 29412a32df9a0d39590f56940184de9f2e7ea806
+Author: Filipe Gomes <filipefgomes@gmail.com>
+Date:   Tue Mar 23 23:18:49 2010 +0000
+
+    Updated Portuguese translation
+
+ help/Makefile.am |    2 +-
+ help/pt/pt.po    | 2933 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 2934 insertions(+), 1 deletions(-)
+
+commit 3e027cd01297c3308b4966b79f587fbb1f69a67f
+Author: Filipe Gomes <filipefgomes@gmail.com>
+Date:   Tue Mar 23 23:16:37 2010 +0000
+
+    Updated Portuguese translation
+
+ po/pt.po |  603 +++++++++++++++++++++++++++++++-------------------------------
+ 1 files changed, 305 insertions(+), 298 deletions(-)
+
+commit a82365a07a44aac3e9248ea8ffbe7fef5f8cdf5b
+Author: Martin Ettl <ettl.martin@gmx.de>
+Date:   Wed Mar 24 06:53:44 2010 +1000
+
+    fix a couple of leaks detected by cppcheck
+
+ plugins/cd-recorder/rb-recorder-gst.c |    8 ++++++--
+ plugins/mtpdevice/rb-mtp-source.c     |    4 +++-
+ 2 files changed, 9 insertions(+), 3 deletions(-)
+
+commit 23a343d51e2c939729683532bab4b8eff5ea3010
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Tue Mar 23 21:46:41 2010 +1000
+
+    update gtk-doc for rhythmdb
+
+ doc/reference/rhythmbox-sections.txt |   27 +---
+ rhythmdb/rhythmdb.c                  |  345 +++++++++++++++++++++++++++++-----
+ 2 files changed, 304 insertions(+), 68 deletions(-)
+
+commit 5a4c30a2b1c939b48eb1a8f86ebe95b052d5ad03
+Author: Christophe Fergeau <cfergeau@mandriva.com>
+Date:   Tue Mar 23 19:14:30 2010 +0100
+
+    [mtp] ignore mounts not associated with a device node
+    
+    The mtp plugin tries to find the GMount associated with a given unix device
+    node, but it doesn't ignore GMount which do not have an associated device
+    node which can happen with an iPhone for example. Not ignoring these causes
+    the crash described in bug #613715. This also fixes a small reference leak
+    in the "mounts" list
+
+ plugins/mtpdevice/rb-mtp-source.c |   19 +++++++++++++------
+ 1 files changed, 13 insertions(+), 6 deletions(-)
+
+commit e6898ece4755a6d6d3a9f7bf72bb1b0e78cc0b2e
+Author: Krasimir Chonov <mk2616@abv.bg>
+Date:   Tue Mar 23 13:00:35 2010 +0200
+
+    Updated Bulgarian translation
+
+ po/bg.po |  507 +++++++++++++++++++++++++++++++-------------------------------
+ 1 files changed, 257 insertions(+), 250 deletions(-)
+
+commit d5ca371eb5b7ebf9f008fec7d905f53b9f4e16c3
+Author: Bastien Nocera <hadess@hadess.net>
+Date:   Mon Mar 22 16:42:10 2010 +0000
+
+    Don't load AFC devices using the MTP plugin
+    
+    They should be handled by the iPod plugin instead.
+    
+    https://bugzilla.gnome.org/show_bug.cgi?id=613606
+
+ plugins/mtpdevice/rb-mtp-plugin.c |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+commit 448f14771710a0178c708db8c1aa43ef561c4216
+Author: Bastien Nocera <hadess@hadess.net>
+Date:   Wed Mar 17 15:39:01 2010 +0000
+
+    Add a11y name to the status icon
+    
+    https://bugzilla.gnome.org/show_bug.cgi?id=613163
+
+ plugins/status-icon/rb-tray-icon-gtk.c |    1 +
+ po/POTFILES.in                         |    1 +
+ 2 files changed, 2 insertions(+), 0 deletions(-)
+
+commit d5d6f15c945b036800f6b631c19ca89aa4af4a77
+Author: Mattias Põldaru <mahfiaz gmail com>
+Date:   Mon Mar 22 15:46:53 2010 +0200
+
+    Estonian translation updated
+
+ po/et.po |  414 ++++++++++++++++++++------------------------------------------
+ 1 files changed, 130 insertions(+), 284 deletions(-)
+
+commit fce85b08dd7b26d2fd1c7cc45553620839ac11fd
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Mon Mar 22 21:39:09 2010 +1000
+
+    fix various gtk-doc problems, add docs for rb-file-helpers and rb-util
+
+ backends/rb-encoder.c                |    2 +
+ doc/reference/rhythmbox-docs.sgml    |    1 +
+ doc/reference/rhythmbox-sections.txt |   58 ++++---
+ doc/reference/rhythmbox.types        |    2 +
+ lib/rb-debug.c                       |    8 +-
+ lib/rb-file-helpers.c                |  311 +++++++++++++++++++++++++++++++---
+ lib/rb-file-helpers.h                |    4 +-
+ lib/rb-stock-icons.c                 |   13 ++
+ lib/rb-string-value-map.c            |    6 +-
+ lib/rb-util.c                        |  288 ++++++++++++++++++++++++++++++--
+ rhythmdb/rhythmdb.c                  |    2 +-
+ shell/rb-play-order.c                |    6 +-
+ shell/rb-plugin.c                    |  121 +++++++++++++-
+ shell/rb-plugin.h                    |   14 +-
+ shell/rb-shell.c                     |   61 +++++++-
+ shell/rb-source-header.c             |   16 ++
+ sources/rb-removable-media-source.c  |    2 +-
+ sources/rb-source-group.c            |    4 +-
+ sources/rb-source.c                  |    4 +-
+ sources/rb-sourcelist.c              |    2 +
+ widgets/rb-rating.c                  |   15 ++
+ widgets/rb-search-entry.c            |    6 +-
+ 22 files changed, 868 insertions(+), 78 deletions(-)
+
+commit a0defa7c08338ef5bc27dc1971447dc3b671af51
+Author: Christian Kirbach <Christian.Kirbach@googlemail.com>
+Date:   Sun Mar 21 23:05:20 2010 +0100
+
+    Updated German translation
+
+ po/de.po |  678 +++++++++++++++++++++++++++++++-------------------------------
+ 1 files changed, 344 insertions(+), 334 deletions(-)
+
+commit b63d31d6b92e1d55a50084f5e4f7450e64cc1440
+Author: Leonid Kanter <leon@asplinux.ru>
+Date:   Sun Mar 21 19:28:29 2010 +0200
+
+    Update Russian translation
+
+ po/ru.po | 3886 ++++++++++++++++++++++++++++++++++----------------------------
+ 1 files changed, 2115 insertions(+), 1771 deletions(-)
+
+commit cf2d201c6eb1f4d65fc11c94e4fe60a59c3ca7bb
+Author: Jorge González <jorgegonz@svn.gnome.org>
+Date:   Sun Mar 21 16:47:38 2010 +0100
+
+    Updated Spanish translation
+
+ po/es.po |  517 +++++++++++++++++++++++++++++++-------------------------------
+ 1 files changed, 261 insertions(+), 256 deletions(-)
+
+commit 0a3ee42dcb8c30907d5ed924453588e2f511969b
+Author: Bruno Brouard <annoa.b@gmail.com>
+Date:   Sun Mar 21 13:38:07 2010 +0100
+
+    Updated French translation
+
+ po/fr.po |  486 +++++++++++++++++++++++++++++++-------------------------------
+ 1 files changed, 246 insertions(+), 240 deletions(-)
+
+commit fd20fa11f2eef09173e61a9d6835dc9a067d5768
+Author: Inaki Larranaga Murgoitio <dooteo@zundan.com>
+Date:   Sun Mar 21 12:48:17 2010 +0100
+
+    Updated Basque language
+
+ po/eu.po |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 1c519511aab22e75f7500a5b646295e596d7d58e
+Author: Inaki Larranaga Murgoitio <dooteo@zundan.com>
+Date:   Sun Mar 21 12:47:52 2010 +0100
+
+    Updated Basque language
+
+ po/eu.po | 2541 +++++++++++++++++++++++++++++++++++---------------------------
+ 1 files changed, 1457 insertions(+), 1084 deletions(-)
+
+commit 2ccdddcf2db71017341f3a821d647d5659601df7
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sun Mar 21 19:59:04 2010 +1000
+
+    status-icon: notify on art changes when position query fails (bug #609651)
+
+ plugins/status-icon/rb-status-icon-plugin.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit fb80b9e1e1ce113f48b19ab9872aa1deacf6fcc1
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sun Mar 21 19:58:35 2010 +1000
+
+    playbin2: buffer tags while waiting for playbin2 stream changes
+
+ backends/gstreamer/rb-player-gst.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 6a8c780bd1b340b29c1e0f3c75393835603d217c
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sun Mar 21 16:42:31 2010 +1000
+
+    add last.fm cover art search to POTFILES.in
+
+ po/POTFILES.in |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit ca807b61c8efc249f7b9ebf103208e85904bb088
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sun Mar 21 15:45:54 2010 +1000
+
+    artdisplay: add last.fm album art search
+    
+    This requires the user to have a last.fm account, and displays the
+    last.fm logo in the tooltip for album art images retrieved from last.fm.
+    I've at least made an honest effort to comply with the last.fm terms of
+    service.
+
+ plugins/artdisplay/Makefile.am                     |    2 +-
+ plugins/artdisplay/artdisplay/CoverArtDatabase.py  |    3 +-
+ .../artdisplay/artdisplay/LastFMCoverArtSearch.py  |  163 ++++++++++++++++++++
+ plugins/artdisplay/artdisplay/Makefile.am          |    1 +
+ plugins/artdisplay/lastfm_red_small.png            |  Bin 0 -> 1929 bytes
+ 5 files changed, 167 insertions(+), 2 deletions(-)
+
+commit 5752eb613457e791f48eb291e4b7547d2c45f71f
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sun Mar 21 15:42:33 2010 +1000
+
+    artdisplay: allow search engines to return tooltip details
+    
+    This allows an album art search to return a tooltip image and text to
+    display along with the album art image.  The tooltip details are written
+    to a simple text file alongside the cached art image, with the extension
+    .rb-meta.  None of the existing searches uses this.
+
+ .../artdisplay/artdisplay/AmazonCoverArtSearch.py  |    3 +
+ plugins/artdisplay/artdisplay/CoverArtDatabase.py  |   48 ++++++++++++++----
+ .../artdisplay/EmbeddedCoverArtSearch.py           |    3 +
+ .../artdisplay/artdisplay/LocalCoverArtSearch.py   |    3 +
+ .../artdisplay/artdisplay/PodcastCoverArtSearch.py |    3 +
+ plugins/artdisplay/artdisplay/__init__.py          |   52 ++++++++++++++------
+ 6 files changed, 87 insertions(+), 25 deletions(-)
+
+commit 6cf9209b7211bfe627696b645cf3048bfc355f6a
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sun Mar 21 13:34:09 2010 +1000
+
+    generic-player: fix alignment of the supported format list
+
+ plugins/generic-player/generic-player-info.ui |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit e345c010aa68fbd59c351c6ae320ab9ef5fb3a50
+Author: Uri Sivan <tartif@gmail.com>
+Date:   Sat Mar 20 19:42:17 2010 -0700
+
+    magnatune: Fix two small bugs in the plugin.
+    
+    - for streaming, use stream.magnatune.com for streaming memberships, and
+      download.magnatune.com for download memberships
+    - fix variable naming in __move_data_files()
+
+ plugins/magnatune/magnatune/MagnatuneSource.py  |   12 ++++++------
+ plugins/magnatune/magnatune/TrackListHandler.py |    2 +-
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+commit 41e3c46dc6f36612290e7c0337020455bd5b4e18
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sun Mar 21 11:34:08 2010 +1000
+
+    add gtk-doc for refstring, removable media, static playlist, streaming
+
+ doc/reference/rhythmbox-sections.txt     |   24 +++----
+ lib/rb-async-queue-watch.c               |    3 +
+ lib/rb-text-helpers.c                    |    3 +
+ rhythmdb/rb-refstring.c                  |   97 +++++++++++++++++++++++++
+ rhythmdb/rhythmdb-query.c                |  100 ++++++++++++++++++++++++++-
+ rhythmdb/rhythmdb.h                      |    4 +-
+ shell/rb-history.c                       |   30 ++++++--
+ sources/rb-removable-media-source.c      |  114 ++++++++++++++++++++++++++++++
+ sources/rb-removable-media-source.h      |    2 +-
+ sources/rb-static-playlist-source.c      |   94 ++++++++++++++++++++++++-
+ sources/rb-static-playlist-source.h      |   11 ++-
+ sources/rb-streaming-source.c            |   48 +++++++++++--
+ sources/rb-streaming-source.h            |   15 ++--
+ tests/test-rhythmdb-tree-serialization.c |    6 +-
+ widgets/rb-dialog.c                      |    3 +
+ 15 files changed, 507 insertions(+), 47 deletions(-)
+
+commit f4a7f202295da359b3f5c77d079ff6b31d2ff578
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sun Mar 21 07:11:14 2010 +1000
+
+    audiocd: remove gtk-doc-esque comments from sj metadata code
+
+ plugins/audiocd/sj-metadata-gvfs.c         |    4 ++--
+ plugins/audiocd/sj-metadata-musicbrainz.c  |   10 +++++-----
+ plugins/audiocd/sj-metadata-musicbrainz3.c |    2 +-
+ plugins/audiocd/sj-structures.c            |    4 ++--
+ 4 files changed, 10 insertions(+), 10 deletions(-)
+
+commit 99f6d8a966b259ad31b3dd614342fd8148390b5e
+Author: Chad Braun-Duin <chadbraunduin@gmail.com>
+Date:   Sat Mar 20 21:55:10 2010 +1000
+
+    podcast: add all new posts to the database (bug #551402)
+    
+    Now when updating a podcast feed, we add all posts that don't already
+    have entries, rather than only adding them if the post time is newer than
+    that of the most recent post.
+    
+    When deleting a post, we just hide the entry, rather than deleting it, so
+    it doesn't get recreated next time the feed is updated.
+
+ podcast/rb-podcast-manager.c |   80 ++++++++++++++++++++++++++++++-----------
+ sources/rb-podcast-source.c  |    9 ++++-
+ 2 files changed, 66 insertions(+), 23 deletions(-)
+
+commit f6cf2e81154bfe5b3c41ce0e6e41a37d54c533fc
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sat Mar 20 21:54:19 2010 +1000
+
+    rhythmdb: protect against property values being NULL
+
+ rhythmdb/rhythmdb-tree.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 46e21a635bd54da213ac806e90a4a35e28bcb14e
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sat Mar 20 19:58:18 2010 +1000
+
+    fix more gtk-doc issues
+
+ backends/rb-player.c                 |   22 +++++++---
+ doc/reference/Makefile.am            |    1 +
+ doc/reference/rhythmbox-sections.txt |    1 -
+ metadata/rb-metadata-common.c        |    8 +++-
+ metadata/rb-metadata-dbus-client.c   |    2 +
+ shell/rb-play-order.c                |   20 +++++++--
+ shell/rb-playlist-manager.c          |    4 +-
+ sources/rb-playlist-source.c         |    4 +-
+ sources/rb-source-group.c            |   16 ++++++--
+ sources/rb-source.c                  |   72 +++++++++++++++++++++++++---------
+ widgets/rb-entry-view.c              |   52 ++++++++++++++----------
+ widgets/rb-header.c                  |    2 +
+ widgets/rb-header.h                  |    2 -
+ widgets/rb-library-browser.c         |   14 +++++-
+ widgets/rb-property-view.c           |   12 ++++-
+ widgets/rb-query-creator.c           |    2 +
+ widgets/rb-rating.c                  |    2 +
+ 17 files changed, 167 insertions(+), 69 deletions(-)
+
+commit adcf9ea14a700f3824aa6c0b01127d4ed2308fc7
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sat Mar 20 19:49:22 2010 +1000
+
+    mtp: unmount vfs mounts before opening MTP devices (bug #520121)
+    
+    Before opening an MTP device, check if it has a gvfs mount.  If it does,
+    unmount it, then remount when the source is being disposed.
+    
+    Based on a patch by François Jaouen <francois.jaouen@laposte.net>
+
+ plugins/mtpdevice/rb-mtp-plugin.c |   10 +-
+ plugins/mtpdevice/rb-mtp-source.c |  192 ++++++++++++++++++++++++++++++++++---
+ plugins/mtpdevice/rb-mtp-source.h |    4 +-
+ 3 files changed, 187 insertions(+), 19 deletions(-)
+
+commit 9bddb9dcec5addbd35823078d8dec06283fe302f
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sat Mar 20 15:08:54 2010 +1000
+
+    update .gitignore to exclude gtk-doc stuff
+
+ .gitignore |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)
+
+commit 684e36c91ba76a9ab7ae97ba5e23cd4d7dfa1f98
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Fri Mar 19 22:02:12 2010 +1000
+
+    add some missing rhythmdb_entry_unref calls
+    
+    rhythmdb_query_model_iter_to_entry *does* ref the entry it returns after
+    all.
+
+ plugins/audiocd/rb-audiocd-source.c                |    1 +
+ .../rb-generic-player-playlist-source.c            |    2 ++
+ plugins/ipod/rb-ipod-source.c                      |    1 +
+ podcast/rb-podcast-manager.c                       |   14 ++++++++++----
+ rhythmdb/rhythmdb-property-model.c                 |    1 +
+ 5 files changed, 15 insertions(+), 4 deletions(-)
+
+commit dfe0cd97b16e603bc03a24a204fe621f8933567e
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Fri Mar 19 07:43:38 2010 +1000
+
+    schemas: add mtp plugin active and hidden keys
+
+ data/rhythmbox.schemas |   22 ++++++++++++++++++++++
+ 1 files changed, 22 insertions(+), 0 deletions(-)
+
+commit 52fa619b939954b8d8b8dc84a2a9e6f9889552af
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Fri Mar 19 07:17:27 2010 +1000
+
+    update gtk-doc sections, types, and structure
+
+ doc/reference/Makefile.am            |   25 ++++++-
+ doc/reference/rhythmbox-docs.sgml    |    5 +-
+ doc/reference/rhythmbox-sections.txt |  138 +++++++++++----------------------
+ doc/reference/rhythmbox.types        |    5 +
+ 4 files changed, 76 insertions(+), 97 deletions(-)
+
+commit d1293388ecbe2938de27ecb8aee29d657644db23
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Fri Mar 19 07:13:39 2010 +1000
+
+    fix various minor gtk-doc issues
+
+ backends/rb-player-gst-filter.h     |    5 ++-
+ metadata/rb-metadata-common.c       |    1 +
+ metadata/rb-metadata-dbus-client.c  |    1 +
+ rhythmdb/rhythmdb-query.c           |    4 +++
+ shell/rb-removable-media-manager.c  |    2 +
+ shell/rb-removable-media-manager.h  |    2 +-
+ sources/rb-auto-playlist-source.c   |   12 ++++----
+ sources/rb-removable-media-source.h |   11 +++++---
+ sources/rb-source-group.h           |    4 +-
+ sources/rb-source-search-basic.c    |   19 +++++++++---
+ sources/rb-source-search-basic.h    |   11 +++++---
+ sources/rb-source-search.c          |   51 ++++++++++++++++++++++------------
+ sources/rb-source-search.h          |   26 +++++-------------
+ sources/rb-source.c                 |    4 ++-
+ sources/rb-sourcelist-model.c       |    1 +
+ widgets/rb-entry-view.c             |   18 ++++++++++++
+ widgets/rb-rating-helper.c          |    2 +-
+ 17 files changed, 111 insertions(+), 63 deletions(-)
+
+commit 772fd202a9eba07293111151097fb51e3b1a2619
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Fri Mar 19 07:11:15 2010 +1000
+
+    query-model: add gtk-doc
+
+ rhythmdb/rhythmdb-query-model.c |  390 ++++++++++++++++++++++++++++++++++++++-
+ rhythmdb/rhythmdb-query-model.h |   14 +-
+ 2 files changed, 395 insertions(+), 9 deletions(-)
+
+commit 26d0de198c13d82b64988d3079f9c8c904e25bc6
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Fri Mar 19 07:05:29 2010 +1000
+
+    shell-player: add gtk-doc for properties, fix some other bits
+
+ shell/rb-shell-player.c |   71 ++++++++++++++++++++++++++++++++++++++++++++--
+ shell/rb-shell-player.h |    2 +-
+ 2 files changed, 68 insertions(+), 5 deletions(-)
+
+commit 78e56c2d1fcbbbc02c5dda643fdda00559595171
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Fri Mar 19 07:04:45 2010 +1000
+
+    shell: add gtk-doc
+
+ shell/rb-shell.c |  375 ++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ shell/rb-shell.h |   12 +-
+ 2 files changed, 371 insertions(+), 16 deletions(-)
+
+commit 966cc9644efc6cf611915752feacf3b2445546d5
+Author: Timo Jyrinki <timo.jyrinki@iki.fi>
+Date:   Thu Mar 18 12:03:55 2010 +0200
+
+    Updated Finnish translation by Jiri Grönroos and Jussi Aalto.
+
+ po/fi.po | 2851 ++++++++++++++++++++++++++++++++++----------------------------
+ 1 files changed, 1560 insertions(+), 1291 deletions(-)
+
+commit 896f29c250730e09e929b454e159285a3a1c9850
+Author: Hajime Taira <htaira@redhat.com>
+Date:   Thu Mar 18 08:29:19 2010 +0900
+
+    Updated Japanese translation.
+
+ po/ja.po | 2508 ++++++++++++++++++++++++++++++++++----------------------------
+ 1 files changed, 1393 insertions(+), 1115 deletions(-)
+
+commit 15051b83c851a17c1cc84a96e8fefad7d82fa2bd
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Wed Mar 17 22:54:58 2010 +1000
+
+    podcast: fix download cancellation
+    
+    We don't need to report cancellation as a download error, since the user
+    is obviously aware of it.  When exiting the download thread, we should
+    always close the read and write streams whether the download was
+    cancelled or not, so we just don't pass in the cancellable to those
+    operations.
+
+ podcast/rb-podcast-manager.c |   33 +++++++++++++++++++--------------
+ 1 files changed, 19 insertions(+), 14 deletions(-)
+
+commit 136652b672429619f04be0b0d229c9ebf805ba7d
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Wed Mar 17 22:54:29 2010 +1000
+
+    sourcelist: remove some gtk 2.8 compatibility code
+
+ sources/rb-sourcelist.c |   14 +-------------
+ 1 files changed, 1 insertions(+), 13 deletions(-)
+
+commit 1ad3d38d831a25cff3208f67cd716badfe0c7b9c
+Author: Petr Kovar <pknbe@volny.cz>
+Date:   Tue Mar 16 20:08:08 2010 +0100
+
+    Update Czech help translation by Lucas Lommer
+
+ help/cs/cs.po | 2780 +++++++++++++++++++++++++++++++++++++++------------------
+ 1 files changed, 1904 insertions(+), 876 deletions(-)
+
+commit 754a72759885d63275b1a656d8c6f3f7c29c7e9d
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Mon Mar 15 22:47:22 2010 +1000
+
+    rhythmdb: merge change lists from subsequent commits (bug #527898)
+    
+    When a second commit occurs before the changes from the first are
+    emitted (in an idle handler), and both commits contain changes to the
+    same entry, we need to combine the changes in the change map used to
+    prepare for signal emission.
+    
+    Previously, the changes from the first commit were being overwritten,
+    with the result that property models could get out of sync with the
+    entries in the backing model, which would eventually lead to an
+    assertion failure when trying to update the property model.
+
+ rhythmdb/rhythmdb.c   |   18 +++++++++++++++++-
+ tests/test-rhythmdb.c |   37 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 54 insertions(+), 1 deletions(-)
+
+commit 0e9142ba0a6ec9eccb20d4d6c0cb509bc71d3fac
+Author: Adi Roiban <adi@roiban.ro>
+Date:   Sun Mar 14 19:42:32 2010 +0200
+
+    Update Romanian translation
+
+ po/ro.po |  790 +++++++++++++++++++++++++-------------------------------------
+ 1 files changed, 312 insertions(+), 478 deletions(-)
+
+commit b489f978e1ccded39bf2da580570baa954e8442d
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sun Mar 14 11:38:55 2010 +1000
+
+    rhythmdb: update sortnames after display names (bug #612570)
+    
+    When updating the sort name, the display name must match the property
+    value stored in the property model, so the display name must be updated
+    before the sort names.
+
+ rhythmdb/rhythmdb.c |   24 ++++++++++++------------
+ 1 files changed, 12 insertions(+), 12 deletions(-)
+
+commit e60fde964b18b1c32dc22137557290bc83bc32c9
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sat Mar 13 20:54:20 2010 +1000
+
+    handle rb_source_get_entry_view returning NULL (bug #607073)
+    
+    Sources aren't actually required to have an entry view, so
+    rb_source_get_entry_view can return NULL, and code that doesn't know
+    exactly what type of source it's dealing with needs to handle that.
+
+ shell/rb-shell-clipboard.c |    8 ++++++--
+ shell/rb-shell.c           |   17 +++++++++++------
+ sources/rb-source.c        |   28 +++++++++++++++++++++++-----
+ widgets/rb-song-info.c     |    6 +++++-
+ 4 files changed, 45 insertions(+), 14 deletions(-)
+
+commit b0bfd801896c02b269c3efb8382bd8cfed5f6ade
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sat Mar 13 20:48:37 2010 +1000
+
+    audiocd: check that cdda:// URIs include the device path (bug #600494)
+    
+    Audio CD URIs are supposed to include the device path as the URI fragment.
+    We previously didn't check that it the URI fragment was actually there,
+    so we crashed on manually entered cdda:// URIs with no device path.
+
+ plugins/audiocd/rb-audiocd-plugin.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+commit 4051e272dd84d6f6da13db840b973917c1a369d0
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sat Mar 13 19:29:30 2010 +1000
+
+    removable-media: chop file extensions at 8 chars (bug #603261)
+    
+    The iPod plugin was crashing on stupidly long file extensions, as
+    they overflowed the buffer used to construct the filename.  To fix
+    this, we limit the file extension for files we're transferring to
+    removeable devices to 8 characters.
+
+ sources/rb-removable-media-source.c |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+commit 0a6c00934d0d29a701470361734e12b70813f968
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sat Mar 13 18:53:30 2010 +1000
+
+    shell: stop playback if the active source is deleted (bug #482955)
+    
+    'active' here means the source the user selected for playback,
+    whether it's actually playing or preempted by the play queue.
+    This stops us crashing because the shell player has a reference
+    to a nonexistant source when we try to move to the next track.
+
+ shell/rb-shell.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+commit 71542ae93eb98bb1d9d7e35989d4faba373ceb3c
+Author: Kjartan Maraas <kmaraas@gnome.org>
+Date:   Sat Mar 13 12:18:28 2010 +0100
+
+    Updated Norwegian bokmål translation
+
+ po/nb.po | 2139 +++++++++++++++++++++++++++++++++++---------------------------
+ 1 files changed, 1214 insertions(+), 925 deletions(-)
+
+commit 9165118e238a53b3bf46adf1c98c48274dea205a
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sat Mar 13 13:36:02 2010 +1000
+
+    podcast: implement get_delete_action
+    
+    This ensures that the podcast 'delete' action is enabled appropriately.
+    Previously it was somewhat left up to chance.
+
+ sources/rb-podcast-source.c |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+commit 167a4b37ad2e7d84467644a3ca5ba8131493e598
+Author: Denis ARNAUD <denisarnuad@yahoo.fr>
+Date:   Fri Mar 12 15:46:40 2010 +0100
+
+    updated breton translation
+
+ po/br.po |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+commit f39acd1d2fbccfe58e96d0736da2bf5fcfa93141
+Author: Denis ARNAUD <denisarnuad@yahoo.fr>
+Date:   Thu Mar 11 21:19:01 2010 +0100
+
+    po/br.po
+
+ po/br.po | 3721 ++++++++++++++++++++++++++++++++++----------------------------
+ 1 files changed, 2068 insertions(+), 1653 deletions(-)
+
+commit 97d70ce252e98ac704c2bc0ef9488f854ca892c8
+Author: Maxim V. Dziumanenko <dziumanenko@gmail.com>
+Date:   Thu Mar 11 13:56:13 2010 +0200
+
+    Updated Ukrainian translation
+
+ po/uk.po | 1254 ++++++++++++++++++++++++++++++++++----------------------------
+ 1 files changed, 692 insertions(+), 562 deletions(-)
+
+commit ceef44aa5cd095ea35cafa723bb8c595b39ef542
+Author: Gabor Kelemen <kelemeng@gnome.hu>
+Date:   Wed Mar 10 00:10:25 2010 +0100
+
+    Updated Hungarian translation
+
+ po/hu.po |  161 ++++++++++++++++++++++++++++++++++---------------------------
+ 1 files changed, 90 insertions(+), 71 deletions(-)
+
+commit e9f5b2c346584a75d26e54d3f7a866626d4d22ff
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Tue Mar 9 22:00:39 2010 +1000
+
+    status-icon: require window-visible to be set to FALSE to hide it (bug #528513)
+    
+    If the gconf schemas are somehow not installed and the window-visible
+    key is not set, we should show the main window rather than hiding it.
+    Most gconf keys don't warrant this treatment, but this one seems worth
+    it.
+
+ plugins/status-icon/rb-status-icon-plugin.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 8915571adaad794a6693a7c751ab9f105c504601
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Mon Mar 8 20:57:58 2010 +1000
+
+    remove extra copy of music-library.svg
+
+ .../hicolor/scalable/places/music-library.svg      | 3738 --------------------
+ 1 files changed, 0 insertions(+), 3738 deletions(-)
+
+commit 8ed51b0e50e41b36dc3329175665eaf4006aab39
+Author: Alexander Shopov <ash@contact.bg>
+Date:   Mon Mar 8 07:11:40 2010 +0200
+
+    Updated Bulgarian translation
+
+ po/bg.po |   20 ++++++++++----------
+ 1 files changed, 10 insertions(+), 10 deletions(-)
+
+commit 1319f924dbb148633c14fcf6c651d9d04bd73ac0
+Author: Filipe Gomes <filipefgomes@gmail.com>
+Date:   Mon Mar 8 01:13:45 2010 +0000
+
+    Updated Portuguese translation
+
+ po/pt.po | 2532 ++++++++++++++++++++++++++++++++++++--------------------------
+ 1 files changed, 1461 insertions(+), 1071 deletions(-)
+
+commit 63711f1b6e36d05addb91db0559afa72e65926c8
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sun Mar 7 22:07:49 2010 +1000
+
+    playlist: emit notify::dirty signal when a playlist becomes dirty
+
+ sources/rb-playlist-source.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit 3935792e4d4fc7617b98e796bb0949777f640881
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Sun Mar 7 21:37:05 2010 +1000
+
+    add our own copy of the 'music-library' icon (bug #611714)
+    
+    The stock_* icons are being removed from gnome-icon-theme.  Since
+    we're still (ab)using this one, we need to ship our own copy of it.
+    
+    The icon itself came from Jakub Steiner <jimmac@gmail.com>.
+
+ configure.ac                                       |    2 +
+ data/icons/Makefile.am                             |    2 +-
+ data/icons/hicolor/16x16/places/Makefile.am        |    3 +-
+ data/icons/hicolor/16x16/places/music-library.png  |  Bin 0 -> 971 bytes
+ data/icons/hicolor/24x24/Makefile.am               |    2 +-
+ data/icons/hicolor/24x24/places/Makefile.am        |   11 +
+ data/icons/hicolor/24x24/places/music-library.png  |  Bin 0 -> 1563 bytes
+ .../hicolor/scalable/places/music-library.svg      | 3738 ++++++++++++++++++++
+ data/icons/src/Makefile.am                         |    1 +
+ data/icons/src/music-library.svg                   | 3738 ++++++++++++++++++++
+ lib/rb-stock-icons.c                               |    2 +-
+ 11 files changed, 7495 insertions(+), 4 deletions(-)
+
+commit 05050be6f0af3fc2a79c8e4abef49128655c23d3
+Author: Uri Sivan <tartif@gmail.com>
+Date:   Sun Mar 7 13:11:47 2010 +1000
+
+    header: fix display of mixed-direction text (bug #610753)
+    
+    When the track details displayed in the header widget contain
+    mixed-direction text, use Unicode text direction marks to get the text
+    to display correctly, and use a direction-neutral separator rather than
+    verbal ones.
+
+ doc/reference/rhythmbox-docs.sgml    |    1 +
+ doc/reference/rhythmbox-sections.txt |    7 +
+ lib/Makefile.am                      |    4 +-
+ lib/rb-text-helpers.c                |  224 ++++++++++++++++++++++++++++++++++
+ lib/rb-text-helpers.h                |   44 +++++++
+ widgets/rb-header.c                  |  103 ++++++++++------
+ 6 files changed, 344 insertions(+), 39 deletions(-)
+
+commit 54e5d07bc865f0b2656e0a8bccd2881daee7c967
+Author: Fran Diéguez <frandieguez@ubuntu.com>
+Date:   Fri Mar 5 15:16:41 2010 +0100
+
+    Updated Galician translation
+
+ po/gl.po |  137 +++++++++++++++++++++++++------------------------------------
+ 1 files changed, 56 insertions(+), 81 deletions(-)
+
+commit d2240dde7ace0e002c741c5263cfb5dfb2946efa
+Author: Aurimas Černius <aurisc4@gmail.com>
+Date:   Fri Mar 5 15:28:52 2010 +0200
+
+    Updated Lithuanian translation
+
+ po/lt.po | 1183 ++++++++++++++++++++++++++++++++++++--------------------------
+ 1 files changed, 694 insertions(+), 489 deletions(-)
+
+commit 9a75a94d837ddc10ca25acc5c2bed70ebe738cd3
+Author: Ricardo Cruz <rpmcruz@alunos.dcc.fc.up.pt>
+Date:   Thu Mar 4 22:05:43 2010 +1000
+
+    shell: sync ViewStatusbar action state along with statusbar (bug #611772)
+
+ shell/rb-shell.c |   14 ++++++++++----
+ 1 files changed, 10 insertions(+), 4 deletions(-)
+
+commit b8355616a0ee218b2f1707559bc4383874802ed0
+Author: Pierre-Luc Beaudoin <pierre-luc@pierlux.com>
+Date:   Wed Mar 3 18:07:21 2010 +0100
+
+    Updated French translation
+
+ po/fr.po |   79 +++++++++++++++++++++++++++++++------------------------------
+ 1 files changed, 40 insertions(+), 39 deletions(-)
+
+commit 524ba5b77d05dae98e8e98037879452bf0d3621b
+Author: Alexander Shopov <ash@contact.bg>
+Date:   Wed Mar 3 10:22:54 2010 +0200
+
+    Updated Bulgarian translation
+
+ po/bg.po | 1063 ++++++++++++++++++++++++++++++++++----------------------------
+ 1 files changed, 588 insertions(+), 475 deletions(-)
+
+commit b8ed5feee8839401e0d46af604603a14aeb5f8f0
+Author: Daniel Nylander <po@danielnylander.se>
+Date:   Tue Mar 2 12:16:20 2010 +0100
+
+    Updated Swedish translation
+
+ po/sv.po |  119 ++++++++++++++++++++++++++++++--------------------------------
+ 1 files changed, 58 insertions(+), 61 deletions(-)
+
+commit 2c2f5c3d0fb53739bb9f29f4be114ed3909f5b1a
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Thu Feb 25 17:40:29 2010 +1000
+
+    library: allow setting custom file/folder patterns set in gconf (bug #379063)
+    
+    Rather than resetting the pattern to one of the predefined values, we
+    now leave it alone and don't set an active item in the combo box.  Maybe
+    some day you'll be able to set a custom pattern without resorting to
+    gconf-editor..
+
+ sources/rb-library-source.c |   40 +++++++++++++++++++++++++++-------------
+ 1 files changed, 27 insertions(+), 13 deletions(-)
+
+commit b50e62b40d5f9f54cafbf0438cb3d1b330fe74c3
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Thu Feb 25 09:25:21 2010 +1000
+
+    library: add more substitution variables to the file pattern code
+
+ sources/rb-library-source.c |   20 ++++++++++++++++++++
+ 1 files changed, 20 insertions(+), 0 deletions(-)
+
+commit 69731b5fb43215dfcb502688d031a5f938c7c0fd
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Tue Mar 2 20:19:59 2010 +1000
+
+    rhythmdb: allow ogg files with annodex data to be imported (bug #611451)
+
+ rhythmdb/rhythmdb.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit a2c07dafe359812c97d7f9b57a93fc78346170e7
+Author: Michael Scherer <misc@mandriva.org>
+Date:   Tue Mar 2 00:07:34 2010 +0100
+
+    - fix build when sound juicer code is not used for metadata extraction
+
+ plugins/audiocd/rb-audiocd-source.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit ca650b04ef038c9d028a89479b1737634ed2683f
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Mon Mar 1 21:41:04 2010 +1000
+
+    rhythmdb: fix build error with glib 2.23.4+
+    
+    It would probably be nice to support G_FILE_MONITOR_EVENT_MOVED, but for
+    now we don't request them, so it doesn't matter that we don't have any
+    code for dealing with them.
+
+ rhythmdb/rhythmdb-monitor.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit 22874e2aa73ffc69d045247b82f8cb027fbfbb36
+Author: Andrej Žnidaršič <andrej.znidarsic@gmail.com>
+Date:   Sun Feb 28 19:58:46 2010 +0100
+
+    Updated Slovenian translation
+
+ po/sl.po |  158 ++++++++++++++++++++++++++++++++------------------------------
+ 1 files changed, 81 insertions(+), 77 deletions(-)
+
+commit d6e9aabebc12090641498e6df6ec51519127ad30
+Author: Jonathan Matthew <jonathan@d14n.org>
+Date:   Mon Mar 1 00:07:28 2010 +1000
 
     Release 0.12.7
 
- NEWS         |  105 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ ChangeLog    |10524 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ NEWS         |  105 +
  README       |    2 +-
  configure.ac |    2 +-
- 3 files changed, 107 insertions(+), 2 deletions(-)
+ 4 files changed, 10270 insertions(+), 363 deletions(-)
 
 commit 306928a19d246c67589ffc23cb5ba9efef87154e
 Author: Thanos Lefteris <alefteris@gmail.com>
