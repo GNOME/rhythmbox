@@ -987,6 +987,15 @@
   )
 )
 
+(define-method copy_contents
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_copy_contents")
+  (return-type "none")
+  (parameters
+    '("RhythmDBQueryModel*" "src")
+  )
+)
+
 (define-function rhythmdb_query_model_location_sort_func
   (c-name "rhythmdb_query_model_location_sort_func")
   (return-type "gint")
