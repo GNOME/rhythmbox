@@ -52,6 +52,7 @@
 #include "rb-shell-player.h"
 #include "rb-player.h"
 #include "rb-encoder.h"
+#include "rb-media-player-sync-settings.h"
 
 #include "rb-mtp-source.h"
 #include "rb-mtp-thread.h"
@@ -107,8 +108,14 @@ static void artwork_notify_cb (RhythmDB *db,
 			       const GValue *metadata,
 			       RBMtpSource *source);
 
+static void		impl_get_entries	(RBMediaPlayerSource *source, const char *category, GHashTable *map);
 static guint64		impl_get_capacity	(RBMediaPlayerSource *source);
 static guint64		impl_get_free_space	(RBMediaPlayerSource *source);
+static void		impl_delete_entries	(RBMediaPlayerSource *source,
+						 GList *entries,
+						 RBMediaPlayerSourceDeleteCallback callback,
+						 gpointer callback_data,
+						 GDestroyNotify destroy_data);
 static void		impl_show_properties	(RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
 
 static void prepare_player_source_cb (RBPlayer *player,
@@ -206,8 +213,10 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	rms_class->impl_get_mime_types = impl_get_mime_types;
 	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
 
+	mps_class->impl_get_entries = impl_get_entries;
 	mps_class->impl_get_capacity = impl_get_capacity;
 	mps_class->impl_get_free_space = impl_get_free_space;
+	mps_class->impl_delete_entries = impl_delete_entries;
 	mps_class->impl_show_properties = impl_show_properties;
 
 	g_object_class_install_property (object_class,
@@ -754,6 +763,8 @@ device_opened_idle (DeviceOpenedData *data)
 	g_signal_connect (G_OBJECT (data->source), "notify::name",
 			  (GCallback)rb_mtp_source_name_changed_cb, NULL);
 
+	rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (data->source));
+
 	for (i = 0; i < data->num_types; i++) {
 		const char *mediatype;
 
@@ -963,43 +974,13 @@ mimetype_to_filetype (RBMtpSource *source, const char *mimetype)
 static void
 impl_delete (RBSource *source)
 {
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 	GList *sel;
-	GList *tem;
-	RBEntryView *tracks;
-	RhythmDB *db;
+	RBEntryView *songs;
 
-	db = get_db_for_source (RB_MTP_SOURCE (source));
-
-	tracks = rb_source_get_entry_view (source);
-	sel = rb_entry_view_get_selected_entries (tracks);
-	for (tem = sel; tem != NULL; tem = tem->next) {
-		LIBMTP_track_t *track;
-		RhythmDBEntry *entry;
-		const char *uri;
-		const char *album_name;
-
-		entry = (RhythmDBEntry *)tem->data;
-		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-		track = g_hash_table_lookup (priv->entry_map, entry);
-		if (track == NULL) {
-			rb_debug ("Couldn't find track on mtp-device! (%s)", uri);
-			continue;
-		}
-
-		album_name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
-		if (strcmp (album_name, _("Unknown")) != 0) {
-			rb_mtp_thread_remove_from_album (priv->device_thread, track, album_name);
-		}
-		rb_mtp_thread_delete_track (priv->device_thread, track);
-
-		g_hash_table_remove (priv->entry_map, entry);
-		rhythmdb_entry_delete (db, entry);
-	}
-	rhythmdb_commit (db);
-
-	g_list_free (sel);
-	g_list_free (tem);
+	songs = rb_source_get_entry_view (source);
+	sel = rb_entry_view_get_selected_entries (songs);
+	impl_delete_entries (RB_MEDIA_PLAYER_SOURCE (source), sel, NULL, NULL, NULL);
+	rb_list_destroy_free (sel, (GDestroyNotify) rhythmdb_entry_unref);
 }
 
 static gboolean
@@ -1015,6 +996,7 @@ impl_get_ui_actions (RBSource *source)
 	GList *actions = NULL;
 
 	actions = g_list_prepend (actions, g_strdup ("MTPSourceEject"));
+	actions = g_list_prepend (actions, g_strdup ("MediaPlayerSourceSync"));
 
 	return actions;
 }
@@ -1112,6 +1094,9 @@ impl_track_added (RBRemovableMediaSource *source,
 		g_idle_add ((GSourceFunc) request_album_art_idle, artdata);
 	}
 	queue_free_space_update (RB_MTP_SOURCE (source));
+
+	/* chain up to parent class for sync */
+	RB_REMOVABLE_MEDIA_SOURCE_CLASS (rb_mtp_source_parent_class)->impl_track_added (source, entry, dest, filesize, mimetype);
 	return FALSE;
 }
 
@@ -1131,6 +1116,8 @@ impl_track_add_error (RBRemovableMediaSource *source,
 		rb_debug ("track-add-error called, but can't find a track for dest URI %s", dest);
 	}
 
+	/* chain up to parent class for sync */
+	RB_REMOVABLE_MEDIA_SOURCE_CLASS (rb_mtp_source_parent_class)->impl_track_add_error (source, entry, dest, error);
 	return TRUE;
 }
 
@@ -1268,6 +1255,31 @@ artwork_notify_cb (RhythmDB *db,
 	g_object_unref (pixbuf);		/* ? */
 }
 
+
+static void
+impl_get_entries (RBMediaPlayerSource *source, const char *category, GHashTable *map)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	GHashTableIter iter;
+	gpointer key, value;
+	gboolean podcast;
+
+	/* sync category mapping is a bit hackish here, as MTP doesn't categorise
+	 * tracks itself.  matching specific genres is about the best we can do.
+	 */
+	podcast = (g_str_equal (category, SYNC_CATEGORY_PODCAST));
+
+	g_hash_table_iter_init (&iter, priv->entry_map);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		LIBMTP_track_t *track = value;
+
+		if ((g_strcmp0 (track->genre, "Podcast") == 0) == podcast) {
+			RhythmDBEntry *entry = key;
+			_rb_media_player_source_add_to_map (map, entry);
+		}
+	}
+}
+
 static guint64
 impl_get_capacity	(RBMediaPlayerSource *source)
 {
@@ -1281,6 +1293,99 @@ impl_get_free_space	(RBMediaPlayerSource *source)
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 	/* probably need a lock for this */
 	return priv->free_space;
+}
+
+typedef struct {
+	gboolean actually_free;
+	RBMediaPlayerSource *source;
+	RBMediaPlayerSourceDeleteCallback callback;
+	gpointer callback_data;
+	GDestroyNotify destroy_data;
+} TracksDeletedCallbackData;
+
+static void
+free_delete_data (TracksDeletedCallbackData *data)
+{
+	if (data->actually_free == FALSE) {
+		return;
+	}
+
+	g_object_unref (data->source);
+	if (data->destroy_data) {
+		data->destroy_data (data->callback_data);
+	}
+	g_free (data);
+}
+
+static gboolean
+delete_done_idle_cb (TracksDeletedCallbackData *data)
+{
+	if (data->callback) {
+		data->callback (data->source, data->callback_data);
+	}
+
+	data->actually_free = TRUE;
+	free_delete_data (data);
+	return FALSE;
+}
+
+static void
+delete_done_cb (LIBMTP_mtpdevice_t *device, TracksDeletedCallbackData *data)
+{
+	data->actually_free = FALSE;
+	update_free_space_cb (device, RB_MTP_SOURCE (data->source));
+	g_idle_add ((GSourceFunc) delete_done_idle_cb, data);
+}
+
+static void
+impl_delete_entries	(RBMediaPlayerSource *source,
+			 GList *entries,
+			 RBMediaPlayerSourceDeleteCallback callback,
+			 gpointer user_data,
+			 GDestroyNotify destroy_data)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	RhythmDB *db;
+	GList *i;
+	TracksDeletedCallbackData *cb_data;
+
+	db = get_db_for_source (RB_MTP_SOURCE (source));
+	for (i = entries; i != NULL; i = i->next) {
+		LIBMTP_track_t *track;
+		const char *uri;
+		const char *album_name;
+		RhythmDBEntry *entry;
+
+		entry = i->data;
+		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		track = g_hash_table_lookup (priv->entry_map, entry);
+		if (track == NULL) {
+			rb_debug ("Couldn't find track on mtp-device! (%s)", uri);
+			continue;
+		}
+
+		album_name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
+		if (g_strcmp0 (album_name, _("Unknown")) != 0) {
+			rb_mtp_thread_remove_from_album (priv->device_thread, track, album_name);
+		}
+		rb_mtp_thread_delete_track (priv->device_thread, track);
+
+		g_hash_table_remove (priv->entry_map, entry);
+		rhythmdb_entry_delete (db, entry);
+	}
+
+	/* callback when all tracks have been deleted */
+	cb_data = g_new0 (TracksDeletedCallbackData, 1);
+	cb_data->source = g_object_ref (source);
+	cb_data->callback_data = user_data;
+	cb_data->callback = callback;
+	cb_data->destroy_data = destroy_data;
+	rb_mtp_thread_queue_callback (priv->device_thread,
+				      (RBMtpThreadCallback) delete_done_cb,
+				      cb_data,
+				      (GDestroyNotify) free_delete_data);
+
+	rhythmdb_commit (db);
 }
 
 static void

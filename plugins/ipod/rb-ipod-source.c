@@ -49,6 +49,7 @@
 #include "rhythmdb.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-media-player-source.h"
+#include "rb-media-player-sync-settings.h"
 #include "rb-playlist-source.h"
 #include "rb-playlist-manager.h"
 #include "rb-podcast-manager.h"
@@ -93,6 +94,10 @@ static gboolean rb_ipod_song_artwork_add_cb (RhythmDB *db,
 
 static guint64 impl_get_capacity (RBMediaPlayerSource *source);
 static guint64 impl_get_free_space (RBMediaPlayerSource *source);
+static void impl_get_entries (RBMediaPlayerSource *source, const char *category, GHashTable *map);
+static void impl_delete_entries (RBMediaPlayerSource *source, GList *entries, RBMediaPlayerSourceDeleteCallback callback, gpointer callback_data, GDestroyNotify destroy_data);
+static void impl_add_playlist (RBMediaPlayerSource *source, gchar *name, GList *entries);
+static void impl_remove_playlists (RBMediaPlayerSource *source);
 static void impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
 
 static void rb_ipod_source_set_property (GObject *object,
@@ -103,6 +108,7 @@ static void rb_ipod_source_get_property (GObject *object,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *pspec);
+
 
 static RhythmDB *get_db_for_source (RBiPodSource *source);
 
@@ -176,8 +182,12 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
 
+	mps_class->impl_get_entries = impl_get_entries;
 	mps_class->impl_get_capacity = impl_get_capacity;
 	mps_class->impl_get_free_space = impl_get_free_space;
+	mps_class->impl_delete_entries = impl_delete_entries;
+	mps_class->impl_add_playlist = impl_add_playlist;
+	mps_class->impl_remove_playlists = impl_remove_playlists;
 	mps_class->impl_show_properties = impl_show_properties;
 
 	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
@@ -288,12 +298,15 @@ rb_ipod_source_constructed (GObject *object)
 
 	rb_ipod_load_songs (source);
 
-        db = get_db_for_source (source);
-        g_signal_connect_object (db,
+	db = get_db_for_source (source);
+	g_signal_connect_object (db,
                                  "entry-extra-metadata-notify::rb:coverArt",
                                  G_CALLBACK (rb_ipod_song_artwork_add_cb),
-                                 RB_IPOD_SOURCE(source), 0);
+                                 source, 0);
+
         g_object_unref (db);
+
+        rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
 }
 
 static void
@@ -452,7 +465,7 @@ playlist_track_added (GtkTreeModel *model, GtkTreePath *path,
 	rb_ipod_db_add_to_playlist (priv->ipod_db, ipod_pl, track);
 }
 
-static void
+static RBIpodStaticPlaylistSource *
 add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 {
 	RBShell *shell;
@@ -508,6 +521,8 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 		priv->podcast_pl = playlist_source;
 	rb_shell_append_source (shell, RB_SOURCE (playlist_source), RB_SOURCE (source));
 	g_object_unref (shell);
+
+	return playlist_source;
 }
 
 static void
@@ -1041,6 +1056,7 @@ impl_get_ui_actions (RBSource *source)
 	GList *actions = NULL;
 
 	actions = g_list_prepend (actions, g_strdup ("RemovableSourceEject"));
+	actions = g_list_prepend (actions, g_strdup ("MediaPlayerSourceSync"));
 
 	return actions;
 }
@@ -1064,21 +1080,57 @@ impl_show_popup (RBSource *source)
 	return TRUE;
 }
 
-void
-rb_ipod_source_delete_entries (RBiPodSource *source, GList *entries)
+typedef struct {
+	RBMediaPlayerSource *source;
+	RBMediaPlayerSourceDeleteCallback callback;
+	gpointer callback_data;
+	GDestroyNotify destroy_data;
+	GList *files;
+} DeleteFileData;
+
+static gboolean
+delete_done_cb (DeleteFileData *data)
+{
+	if (data->callback) {
+		data->callback (data->source, data->callback_data);
+	}
+	if (data->destroy_data) {
+		data->destroy_data (data->callback_data);
+	}
+	g_object_unref (data->source);
+	rb_list_deep_free (data->files);
+	return FALSE;
+}
+
+static gpointer
+delete_thread (DeleteFileData *data)
+{
+	GList *i;
+	rb_debug ("deleting %d files", g_list_length (data->files));
+	for (i = data->files; i != NULL; i = i->next) {
+		g_unlink ((const char *)i->data);
+	}
+	rb_debug ("done deleting %d files", g_list_length (data->files));
+	g_idle_add ((GSourceFunc) delete_done_cb, data);
+	return NULL;
+}
+
+static void
+impl_delete_entries (RBMediaPlayerSource *source, GList *entries, RBMediaPlayerSourceDeleteCallback callback, gpointer cb_data, GDestroyNotify destroy_data)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
-	RhythmDB *db;
-	GList *tem;
+	RhythmDB *db = get_db_for_source ((RBiPodSource *)source);
+	GList *i;
+	GList *filenames = NULL;
+	DeleteFileData *data = g_new0 (DeleteFileData, 1);
 
-	db = get_db_for_source (source);
-	for (tem = entries; tem != NULL; tem = tem->next) {
-		RhythmDBEntry *entry;
-		const gchar *uri;
-		gchar *file;
+	for (i = entries; i != NULL; i = i->next) {
+		const char *uri;
+		char *filename;
 		Itdb_Track *track;
+		RhythmDBEntry *entry;
 
-		entry = (RhythmDBEntry *)tem->data;
+		entry = i->data;
 		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		track = g_hash_table_lookup (priv->entry_map, entry);
 		if (track == NULL) {
@@ -1088,15 +1140,24 @@ rb_ipod_source_delete_entries (RBiPodSource *source, GList *entries)
 
 		rb_ipod_db_remove_track (priv->ipod_db, track);
 		g_hash_table_remove (priv->entry_map, entry);
-		file = g_filename_from_uri (uri, NULL, NULL);
-		if (file != NULL)
-			g_unlink (file);
-		g_free (file);
+		filename = g_filename_from_uri (uri, NULL, NULL);
+
+		if (filename != NULL) {
+			filenames = g_list_prepend (filenames, filename);
+		}
 		rhythmdb_entry_delete (db, entry);
 	}
 
 	rhythmdb_commit (db);
 	g_object_unref (db);
+
+	data->source = g_object_ref (source);
+	data->callback = callback;
+	data->callback_data = cb_data;
+	data->destroy_data = destroy_data;
+	data->files = filenames;
+
+	g_thread_create ((GThreadFunc) delete_thread, data, FALSE, NULL);
 }
 
 static void
@@ -1107,10 +1168,55 @@ impl_delete (RBSource *source)
 
 	songs = rb_source_get_entry_view (source);
 	sel = rb_entry_view_get_selected_entries (songs);
-	rb_ipod_source_delete_entries (RB_IPOD_SOURCE (source), sel);
+	impl_delete_entries (RB_MEDIA_PLAYER_SOURCE (source), sel, NULL, NULL, NULL);
+	rb_list_destroy_free (sel, (GDestroyNotify) rhythmdb_entry_unref);
+}
 
-	g_list_foreach (sel, (GFunc) rhythmdb_entry_unref, NULL);
-	g_list_free (sel);
+static void
+impl_add_playlist (RBMediaPlayerSource *source,
+		   char *name,
+		   GList *entries)	/* GList of RhythmDBEntry * on the device to go into the playlist */
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	RBIpodStaticPlaylistSource *playlist_source;
+	Itdb_Playlist *ipod_playlist;
+	GList *iter;
+
+	ipod_playlist = itdb_playlist_new (name, FALSE);
+	rb_ipod_db_add_playlist (priv->ipod_db, ipod_playlist);
+	playlist_source = add_rb_playlist (RB_IPOD_SOURCE (source), ipod_playlist);
+
+	for (iter = entries; iter != NULL; iter = iter->next) {
+		rb_static_playlist_source_add_entry (RB_STATIC_PLAYLIST_SOURCE (playlist_source), iter->data, -1);
+	}
+}
+
+static void
+impl_remove_playlists (RBMediaPlayerSource *source)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	GList *playlists;
+	GList *p;
+
+	playlists = rb_ipod_db_get_playlists (priv->ipod_db);
+
+	for (p = playlists; p != NULL; p = p->next) {
+		Itdb_Playlist *playlist = (Itdb_Playlist *)p->data;
+		/* XXX might need to exclude more playlists here.. */
+		if (!itdb_playlist_is_mpl (playlist) &&
+		    !itdb_playlist_is_podcasts (playlist) &&
+		    !playlist->is_spl) {
+
+			/* destroy the playlist source */
+			RBSource *rb_playlist = RB_SOURCE (playlist->userdata);
+			rb_source_delete_thyself (rb_playlist);
+
+			/* remove playlist from ipod */
+			rb_ipod_db_remove_playlist (priv->ipod_db, playlist);
+		}
+	}
+
+	g_list_free (playlists);
 }
 
 static char *
@@ -1278,6 +1384,25 @@ request_artwork (RBiPodSource *isource,
 	}
 }
 
+Itdb_Playlist *
+rb_ipod_source_get_playlist (RBiPodSource *source,
+			     gchar *name)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	Itdb_Playlist *ipod_playlist;
+
+	ipod_playlist = rb_ipod_db_get_playlist_by_name (priv->ipod_db, name);
+
+	/* Playlist doesn't exist on the iPod, create it */
+	if (ipod_playlist == NULL) {
+		ipod_playlist = itdb_playlist_new (name, FALSE);
+		rb_ipod_db_add_playlist (priv->ipod_db, ipod_playlist);
+		add_rb_playlist (source, ipod_playlist);
+	}
+
+	return ipod_playlist;
+}
+
 static void
 add_to_podcasts (RBiPodSource *source, Itdb_Track *song)
 {
@@ -1344,6 +1469,10 @@ impl_track_added (RBRemovableMediaSource *source,
 	}
 
 	g_object_unref (db);
+
+	/* chain up to parent class for sync */
+	RB_REMOVABLE_MEDIA_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_track_added (source, entry, dest, filesize, mimetype);
+
 	return FALSE;
 }
 
@@ -1606,12 +1735,19 @@ static void
 impl_delete_thyself (RBSource *source)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	RhythmDB *db;
 	GList *p;
 
         if (priv->ipod_db == NULL) {
             RB_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_delete_thyself (source);
             return;
         }
+
+	db = get_db_for_source (RB_IPOD_SOURCE (source));
+	g_signal_handlers_disconnect_by_func (db,
+					      G_CALLBACK (rb_ipod_song_artwork_add_cb),
+					      RB_IPOD_SOURCE (source));
+	g_object_unref (db);
 
 	for (p = rb_ipod_db_get_playlists (priv->ipod_db);
 	     p != NULL;
@@ -1653,8 +1789,7 @@ impl_get_mime_types (RBRemovableMediaSource *source)
 	return ret;
 }
 
-
-void
+Itdb_Playlist *
 rb_ipod_source_new_playlist (RBiPodSource *source)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
@@ -1662,12 +1797,13 @@ rb_ipod_source_new_playlist (RBiPodSource *source)
 
 	if (priv->ipod_db == NULL) {
 		rb_debug ("can't create new ipod playlist with no ipod db");
-		return;
+		return NULL;
 	}
 
 	ipod_playlist = itdb_playlist_new (_("New playlist"), FALSE);
 	rb_ipod_db_add_playlist (priv->ipod_db, ipod_playlist);
 	add_rb_playlist (source, ipod_playlist);
+	return ipod_playlist;
 }
 
 void
@@ -1837,3 +1973,31 @@ impl_get_free_space (RBMediaPlayerSource *source)
 	return rb_ipod_helpers_get_free_space (get_mount_point (RB_IPOD_SOURCE (source)));
 }
 
+static void
+impl_get_entries (RBMediaPlayerSource *source, const char *category, GHashTable *map)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	GHashTableIter iter;
+	gpointer key, value;
+	Itdb_Mediatype media_type;
+
+	/* map the sync category to an itdb media type */
+	if (g_str_equal (category, SYNC_CATEGORY_MUSIC)) {
+		media_type = ITDB_MEDIATYPE_AUDIO;
+	} else if (g_str_equal (category, SYNC_CATEGORY_PODCAST)) {
+		media_type = ITDB_MEDIATYPE_PODCAST;
+	} else {
+		g_warning ("unsupported ipod sync category %s", category);
+		return;
+	}
+
+	/* extract all entries matching the media type for the sync category */
+	g_hash_table_iter_init (&iter, priv->entry_map);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		Itdb_Track *track = value;
+		if (track->mediatype == media_type) {
+			RhythmDBEntry *entry = key;
+			_rb_media_player_source_add_to_map (map, entry);
+		}
+	}
+}

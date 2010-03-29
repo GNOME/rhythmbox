@@ -167,6 +167,8 @@ impl_activate (RBPlugin *bplugin,
 		      "ui-manager", &uimanager,
 		      NULL);
 
+	rb_media_player_source_init_actions (shell);
+
 	/* add ipod UI */
 	plugin->action_group = gtk_action_group_new ("iPodActions");
 	gtk_action_group_set_translation_domain (plugin->action_group,

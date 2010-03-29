@@ -31,6 +31,7 @@
 #include "rhythmdb.h"
 
 #include "rb-ipod-static-playlist-source.h"
+#include "rb-media-player-source.h"
 #include "rb-ipod-source.h"
 
 static void rb_ipod_static_playlist_source_constructed (GObject *object);
@@ -275,9 +276,6 @@ impl_delete (RBSource *source)
 
 	songs = rb_source_get_entry_view (source);
 	sel = rb_entry_view_get_selected_entries (songs);
-	rb_ipod_source_delete_entries (priv->ipod_source, sel);
-
-	g_list_foreach (sel, (GFunc) rhythmdb_entry_unref, NULL);
-	g_list_free (sel);
+	rb_media_player_source_delete_entries (RB_MEDIA_PLAYER_SOURCE (priv->ipod_source), sel, NULL, NULL, NULL);
+	rb_list_destroy_free (sel, (GDestroyNotify)rhythmdb_entry_unref);
 }
-

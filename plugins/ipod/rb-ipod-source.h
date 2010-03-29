@@ -33,6 +33,7 @@
 #include "rhythmdb.h"
 #include "rb-plugin.h"
 #include "mediaplayerid.h"
+#include "rb-ipod-db.h"
 
 G_BEGIN_DECLS
 
@@ -53,17 +54,19 @@ typedef struct
 	RBMediaPlayerSourceClass parent;
 } RBiPodSourceClass;
 
-RBMediaPlayerSource    *rb_ipod_source_new		(RBPlugin *plugin,
+RBMediaPlayerSource	*rb_ipod_source_new		(RBPlugin *plugin,
 							 RBShell *shell,
-                                                         GMount *mount,
+							 GMount *mount,
 							 MPIDDevice *device_info);
 GType			rb_ipod_source_get_type		(void);
 GType                   rb_ipod_source_register_type    (GTypeModule *module);
 
-void			rb_ipod_source_new_playlist	(RBiPodSource *source);
+Itdb_Playlist *		rb_ipod_source_new_playlist	(RBiPodSource *source);
 void			rb_ipod_source_remove_playlist	(RBiPodSource *ipod_source,
 							 RBSource *source);
 
+Itdb_Playlist *		rb_ipod_source_get_playlist	(RBiPodSource *source,
+							 gchar *name);
 void			rb_ipod_source_show_properties	(RBiPodSource *source);
 
 void			rb_ipod_source_delete_entries	(RBiPodSource *source,

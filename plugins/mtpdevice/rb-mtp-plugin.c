@@ -187,6 +187,7 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 		     NULL);
 
 	/* ui */
+	rb_media_player_source_init_actions (shell);
 	plugin->action_group = gtk_action_group_new ("MTPActions");
 	gtk_action_group_set_translation_domain (plugin->action_group,
 						 GETTEXT_PACKAGE);
