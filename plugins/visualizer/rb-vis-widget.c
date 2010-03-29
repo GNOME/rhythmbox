@@ -94,7 +94,7 @@ rb_vis_widget_realize (GtkWidget *widget)
 	gtk_widget_set_style (widget, style);
 	gtk_style_set_background (style, window, GTK_STATE_NORMAL);
 
-	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+	gtk_widget_set_realized (widget, TRUE);
 }
 
 static void
@@ -104,7 +104,7 @@ rb_vis_widget_size_allocate (GtkWidget *widget,
 	RBVisWidget *rbvw = RB_VIS_WIDGET (widget);
 	gtk_widget_set_allocation (widget, allocation);
 
-	if (!GTK_WIDGET_REALIZED (widget))
+	if (!gtk_widget_get_realized (widget))
 		return;
 
 	rb_debug ("handling size allocate event ([%d,%d] - [%d,%d])",

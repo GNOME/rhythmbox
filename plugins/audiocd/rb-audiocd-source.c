@@ -329,7 +329,8 @@ rb_audiocd_source_constructed (GObject *object)
 	gtk_tree_view_column_set_fixed_width (extract, toggle_width + 5);
 
 	rb_entry_view_insert_column_custom (entry_view, extract, "", "Extract", NULL, NULL, NULL, 1);
-	gtk_widget_set_tooltip_text (GTK_WIDGET (extract->button), _("Select tracks to be extracted"));
+	gtk_widget_set_tooltip_text (gtk_tree_view_column_get_widget (extract),
+	                             _("Select tracks to be extracted"));
 
 	/* hide the 'album' column */
 	gtk_tree_view_column_set_visible (rb_entry_view_get_column (entry_view, RB_ENTRY_VIEW_COL_ALBUM), FALSE);

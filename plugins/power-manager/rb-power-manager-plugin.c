@@ -187,7 +187,7 @@ inhibit (RBGPMPlugin *plugin)
 	rb_debug ("inhibiting");
 	g_object_ref (plugin);
 	g_object_get (plugin->shell, "window", &window, NULL);
-	xid = GDK_WINDOW_XWINDOW (GTK_WIDGET (window)->window);
+	xid = GDK_WINDOW_XWINDOW (gtk_widget_get_window (GTK_WIDGET (window)));
 	dbus_g_proxy_begin_call (plugin->proxy, "Inhibit",
 				 (DBusGProxyCallNotify) inhibit_cb,
 				 plugin,

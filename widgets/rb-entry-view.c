@@ -2310,7 +2310,7 @@ rb_entry_view_scroll_to_iter (RBEntryView *view,
 	 * view to the playing entry before the view has ever been displayed.
 	 * This will result in gtk+ warnings, so we avoid it in this case.
 	 */
-	if (!GTK_WIDGET_REALIZED (view))
+	if (!gtk_widget_get_realized (GTK_WIDGET (view)))
 		return;
 
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model), iter);
@@ -2382,7 +2382,7 @@ rb_entry_view_entry_is_visible (RBEntryView *view,
 
 	g_return_if_fail (entry != NULL);
 
-	if (!GTK_WIDGET_REALIZED (view))
+	if (!gtk_widget_get_realized (GTK_WIDGET (view)))
 		return;
 
 	*realized = TRUE;

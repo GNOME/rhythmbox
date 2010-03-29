@@ -159,6 +159,7 @@ rb_disc_recorder_plugin_start_burning (RBDiscRecorderPlugin *pi,
 {
 	GtkWidget *main_window;
 	GdkScreen *screen;
+	GdkWindow *window;
 	GPtrArray *array;
 	char **args, *xid_str;
 	GError *error = NULL;
@@ -174,9 +175,10 @@ rb_disc_recorder_plugin_start_burning (RBDiscRecorderPlugin *pi,
 
 	main_window = gtk_widget_get_toplevel (GTK_WIDGET (pi->selected_source));
 	screen = gtk_widget_get_screen (main_window);
-	if (main_window && main_window->window) {
+	window = gtk_widget_get_window (main_window);
+	if (window) {
 		int xid;
-		xid = gdk_x11_drawable_get_xid (GDK_DRAWABLE (GTK_WIDGET (main_window)->window));
+		xid = gdk_x11_drawable_get_xid (GDK_DRAWABLE (window));
 		xid_str = g_strdup_printf ("%d", xid);
 		g_ptr_array_add (array, "-x");
 		g_ptr_array_add (array, xid_str);

@@ -824,7 +824,7 @@ actually_hide_controls (RBVisualizerPlugin *plugin)
 		 */
 		gtk_widget_grab_focus (plugin->vis_widget);
 
-		if (GTK_WIDGET_REALIZED (plugin->vis_widget)) {
+		if (gtk_widget_get_realized (plugin->vis_widget)) {
 			GdkWindow *window;
 			GdkCursor *cursor;
 
@@ -886,7 +886,7 @@ show_controls (RBVisualizerPlugin *plugin, gboolean play_controls_only)
 		case FULLSCREEN:
 			gtk_widget_show (plugin->play_control_widget);
 			gtk_widget_show (plugin->disable_button);
-			if (GTK_WIDGET_REALIZED (plugin->vis_widget)) {
+			if (gtk_widget_get_realized (plugin->vis_widget)) {
 				gdk_window_set_cursor (gtk_widget_get_window (plugin->vis_widget),
 						       NULL);
 			}
@@ -1024,7 +1024,7 @@ resize_vis_window (RBVisualizerPlugin *plugin, int quality, gboolean resize_down
 	float ratio;
 	gboolean update = FALSE;
 
-	if (GTK_WIDGET_REALIZED (plugin->vis_window) == FALSE) {
+	if (gtk_widget_get_realized (plugin->vis_window) == FALSE) {
 		rb_debug ("window isn't realized yet; trying in size-request instead");
 		if (plugin->vis_window_size_request_id == 0) {
 			plugin->vis_window_size_request_id =

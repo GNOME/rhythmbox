@@ -1637,7 +1637,7 @@ rb_shell_get_visibility (RBShell *shell)
 {
 	GdkWindowState state;
 
-	if (!GTK_WIDGET_REALIZED (shell->priv->window))
+	if (!gtk_widget_get_realized (shell->priv->window))
 		return FALSE;
 	if (shell->priv->iconified)
 		return FALSE;
@@ -1673,7 +1673,7 @@ rb_shell_set_visibility (RBShell *shell,
 		gtk_widget_show (GTK_WIDGET (shell->priv->window));
 		gtk_window_deiconify (GTK_WINDOW (shell->priv->window));
 
-		if (GTK_WIDGET_REALIZED (GTK_WIDGET (shell->priv->window)))
+		if (gtk_widget_get_realized (GTK_WIDGET (shell->priv->window)))
 			rb_shell_present (shell, gtk_get_current_event_time (), NULL);
 		else
 			gtk_widget_show_all (GTK_WIDGET (shell->priv->window));

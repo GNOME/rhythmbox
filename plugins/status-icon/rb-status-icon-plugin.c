@@ -978,7 +978,7 @@ close_to_tray (RBStatusIconPlugin *plugin)
 	/* set the window's icon geometry to match the icon */
 	rb_tray_icon_get_geom (plugin->priv->tray_icon,
 			       &x, &y, &width, &height);
-	if (GTK_WIDGET_REALIZED (window))
+	if (gtk_widget_get_realized (GTK_WIDGET (window)))
 		set_icon_geometry (gtk_widget_get_window (GTK_WIDGET (window)),
 				   x, y, width, height);
 

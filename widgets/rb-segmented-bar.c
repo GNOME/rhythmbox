@@ -135,7 +135,7 @@ rb_segmented_bar_init (RBSegmentedBar *bar)
 	priv->segment_box_size = 12;
 	priv->segment_box_spacing = 6;
 	priv->value_formatter = rb_segmented_bar_default_value_formatter;
-	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (bar), GTK_NO_WINDOW);
+	gtk_widget_set_has_window (GTK_WIDGET (bar), FALSE);
 }
 
 static void
@@ -389,6 +389,7 @@ rb_segmented_bar_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 { 
 	gint real_height;
 	RBSegmentedBarPrivate *priv = RB_SEGMENTED_BAR_GET_PRIVATE (widget);
+	GtkAllocation new_allocation;
 
 	g_return_if_fail(RB_IS_SEGMENTED_BAR(widget)); 
 	g_return_if_fail(allocation != NULL); 
@@ -398,15 +399,16 @@ rb_segmented_bar_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 	} else {
 		real_height = priv->bar_height;
 	}
-	widget->allocation = *allocation; 
+	gtk_widget_set_allocation (widget, allocation);
 	if (priv->show_labels) {
 		compute_layout_size (RB_SEGMENTED_BAR (widget));
-		widget->allocation.height = MAX (priv->bar_height + priv->bar_label_spacing + priv->layout_height,
-						 real_height);
+		new_allocation.height = MAX (priv->bar_height + priv->bar_label_spacing + priv->layout_height,
+		                         real_height);
 	} else {
-		widget->allocation.height = real_height;
+		new_allocation.height = real_height;
 	}
-	widget->allocation.width = priv->layout_width + 2*(priv->h_padding);
+	new_allocation.width = priv->layout_width + 2*(priv->h_padding);
+	gtk_widget_set_allocation (widget, &new_allocation);
 	GTK_WIDGET_CLASS(rb_segmented_bar_parent_class)->size_allocate(widget, allocation); 
 }
 
@@ -643,6 +645,7 @@ static void rb_segmented_bar_render_labels (RBSegmentedBar *bar,
 					    cairo_t *context)
 {
 	RBSegmentedBarPrivate *priv;
+	GtkStyle *style;
 	PangoLayout *layout;
 	Color text_color;
 	GdkColor *gdk_color;
@@ -654,7 +657,8 @@ static void rb_segmented_bar_render_labels (RBSegmentedBar *bar,
 	if (priv->segments == NULL) {
 		return;
 	}
-	gdk_color = &GTK_WIDGET (bar)->style->fg[GTK_WIDGET_STATE (GTK_WIDGET (bar))];
+	style = gtk_widget_get_style (GTK_WIDGET (bar));
+	gdk_color = &style->fg[gtk_widget_get_state (GTK_WIDGET (bar))];
 	text_color.red = gdk_color->red / 65535.0;
 	text_color.green = gdk_color->green / 65535.0;
 	text_color.blue = gdk_color->blue / 65535.0;
@@ -724,33 +728,34 @@ rb_segmented_bar_expose (GtkWidget *widget,
 {
 	RBSegmentedBar *bar;
 	RBSegmentedBarPrivate *priv;
+	GtkAllocation allocation;
 	cairo_t *context;
 	cairo_pattern_t *bar_pattern;
 
 	g_return_val_if_fail (RB_IS_SEGMENTED_BAR (widget), FALSE);
-	if (GTK_WIDGET_DRAWABLE (widget) == FALSE) {
+	if (gtk_widget_is_drawable (widget) == FALSE) {
 		return FALSE;
 	}
 
 	bar = RB_SEGMENTED_BAR (widget);
 	priv = RB_SEGMENTED_BAR_GET_PRIVATE (bar);
 
-	context = gdk_cairo_create (GDK_DRAWABLE (widget->window));
+	context = gdk_cairo_create (GDK_DRAWABLE (gtk_widget_get_window (widget)));
 	
 	if (priv->reflect) {
 		cairo_push_group (context);
 	}
 
 	cairo_set_operator (context, CAIRO_OPERATOR_OVER);
-	cairo_translate (context, widget->allocation.x + priv->h_padding,
-			 widget->allocation.y);
+	gtk_widget_get_allocation (widget, &allocation);
+	cairo_translate (context, allocation.x + priv->h_padding, allocation.y);
 	cairo_rectangle (context, 0, 0,
-			 widget->allocation.width - priv->h_padding,
+			 allocation.width - priv->h_padding,
 			 MAX (2*priv->bar_height, priv->bar_height + priv->bar_label_spacing + priv->layout_height));
 	cairo_clip (context);
 
 	bar_pattern = rb_segmented_bar_render (bar, 
-					       widget->allocation.width - 2*priv->h_padding,
+					       allocation.width - 2*priv->h_padding,
 					       priv->bar_height);
 
 	cairo_save (context);
@@ -765,7 +770,7 @@ rb_segmented_bar_expose (GtkWidget *widget,
 		cairo_save (context);
 
 		cairo_rectangle (context, 0, priv->bar_height,
-				 widget->allocation.width - priv->h_padding,
+				 allocation.width - priv->h_padding,
 				 priv->bar_height);
 		cairo_clip (context);
 		cairo_matrix_init_scale (&matrix, 1, -1);
@@ -792,11 +797,11 @@ rb_segmented_bar_expose (GtkWidget *widget,
 	if (priv->show_labels) {
 		if (priv->reflect) {
 			cairo_translate (context,
-					 widget->allocation.x + (widget->allocation.width - priv->layout_width)/2,
-					 widget->allocation.y + priv->bar_height + priv->bar_label_spacing);
+					 allocation.x + (allocation.width - priv->layout_width)/2,
+					 allocation.y + priv->bar_height + priv->bar_label_spacing);
 		} else {
 			cairo_translate (context,
-					 -priv->h_padding + (widget->allocation.width - priv->layout_width)/2,
+					 -priv->h_padding + (allocation.width - priv->layout_width)/2,
 					 priv->bar_height + priv->bar_label_spacing);
 		}
 		rb_segmented_bar_render_labels (bar, context);

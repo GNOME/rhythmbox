@@ -309,7 +309,7 @@ rb_rating_realize (GtkWidget *widget)
 	GdkWindow *window;
 	int attributes_mask;
 
-	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+	gtk_widget_set_realized (widget, TRUE);
 
 	gtk_widget_get_allocation (widget, &allocation);
 
