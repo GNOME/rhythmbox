@@ -1,6 +1,4 @@
 /*
- *  arch-tag: Header for the Media Player Source object
- *
  *  Copyright (C) 2009 Paul Bellamy  <paul.a.bellamy@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
