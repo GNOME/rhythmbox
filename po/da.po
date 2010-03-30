@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-29 00:13+0200\n"
+"POT-Creation-Date: 2010-03-30 21:18+0200\n"
 "PO-Revision-Date: 2010-03-28 23:54+0200\n"
 "Last-Translator: Ask Hjorth Larsen\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -283,21 +283,45 @@ msgstr "_Overvåg mit bibliotek for nye filer"
 msgid "<b>Information</b>"
 msgstr "<b>Information</b>"
 
-# Ikke sikker på om de refererer til pladsforbrug på diskenhed, men volume giver ikke meget mening som lydstyrke i dette tilfælde
 #: ../data/ui/media-player-properties.ui.h:2
+#, fuzzy
+msgid "<b>Sync Preferences</b>"
+msgstr "<b>Søgemaskiner</b>"
+
+#: ../data/ui/media-player-properties.ui.h:3
+#, fuzzy
+msgid "<b>Sync Preview</b>"
+msgstr "<b>Søgemaskiner</b>"
+
+# Ikke sikker på om de refererer til pladsforbrug på diskenhed, men volume giver ikke meget mening som lydstyrke i dette tilfælde
+#: ../data/ui/media-player-properties.ui.h:4
 msgid "<b>Volume usage</b>"
 msgstr "<b>Pladsforbrug</b>"
 
-#: ../data/ui/media-player-properties.ui.h:3
+#: ../data/ui/media-player-properties.ui.h:5
+msgid "Added files:"
+msgstr ""
+
+#: ../data/ui/media-player-properties.ui.h:6
 #: ../data/ui/podcast-feed-properties.ui.h:2
 #: ../data/ui/podcast-properties.ui.h:1 ../data/ui/song-info-multiple.ui.h:2
 #: ../data/ui/song-info.ui.h:2 ../plugins/iradio/station-properties.ui.h:1
 msgid "Basic"
 msgstr "Basal"
 
-#: ../data/ui/media-player-properties.ui.h:4
+#: ../data/ui/media-player-properties.ui.h:7
 msgid "Media Player Properties"
 msgstr "Egenskaber for medieafspiller"
+
+#: ../data/ui/media-player-properties.ui.h:8
+#, fuzzy
+msgid "Removed files:"
+msgstr "Læs mindre"
+
+#: ../data/ui/media-player-properties.ui.h:9
+#: ../sources/rb-media-player-source.c:100
+msgid "Sync"
+msgstr ""
 
 #: ../data/ui/playback-prefs.ui.h:1
 msgid "Crossfade Duration (Seconds)"
@@ -654,23 +678,23 @@ msgstr "%d. %b %Y"
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:180
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:126
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:130
-#: ../plugins/audiocd/rb-audiocd-source.c:502
+#: ../plugins/audiocd/rb-audiocd-source.c:503
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:479
 #: ../plugins/daap/rb-daap-connection.c:699
-#: ../plugins/generic-player/rb-generic-player-source.c:979
-#: ../plugins/ipod/rb-ipod-source.c:391
+#: ../plugins/generic-player/rb-generic-player-source.c:993
+#: ../plugins/ipod/rb-ipod-source.c:404
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:520
 #: ../plugins/iradio/rb-iradio-source.c:1085
 #: ../plugins/iradio/rb-station-properties-dialog.c:488
 #: ../plugins/lyrics/lyrics/__init__.py:81
 #: ../plugins/lyrics/lyrics/__init__.py:83
-#: ../plugins/mtpdevice/rb-mtp-source.c:627
-#: ../plugins/mtpdevice/rb-mtp-source.c:991
-#: ../plugins/mtpdevice/rb-mtp-source.c:1103
+#: ../plugins/mtpdevice/rb-mtp-source.c:636
+#: ../plugins/mtpdevice/rb-mtp-source.c:1085
+#: ../plugins/mtpdevice/rb-mtp-source.c:1368
 #: ../plugins/status-icon/rb-status-icon-plugin.c:781
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
 #: ../podcast/rb-podcast-manager.c:1885
@@ -873,63 +897,63 @@ msgstr "Genindlæs album-information"
 msgid "Extract"
 msgstr "Udtræk"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:332
+#: ../plugins/audiocd/rb-audiocd-source.c:333
 msgid "Select tracks to be extracted"
 msgstr "Vælg spor, der skal udtrækkes"
 
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:373
+#: ../plugins/audiocd/rb-audiocd-source.c:374
 msgid "S_ubmit Album"
 msgstr "Indsend _Album"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:374
+#: ../plugins/audiocd/rb-audiocd-source.c:375
 msgid "Hide"
 msgstr "Skjul"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:376
+#: ../plugins/audiocd/rb-audiocd-source.c:377
 msgid "Could not find this album on MusicBrainz."
 msgstr "Kunne ikke finde dette album på MusicBrainz."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:377
+#: ../plugins/audiocd/rb-audiocd-source.c:378
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Du kan forbedre MusicBrainz-databasen ved at tilføje dette album."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:508
+#: ../plugins/audiocd/rb-audiocd-source.c:509
 msgid "<Invalid unicode>"
 msgstr "<Ugyldig ISO 10646-kode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:552
+#: ../plugins/audiocd/rb-audiocd-source.c:553
 #, c-format
 msgid "Track %u"
 msgstr "Spor %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:615
-#: ../plugins/audiocd/rb-audiocd-source.c:623
-#: ../plugins/audiocd/rb-audiocd-source.c:1014
+#: ../plugins/audiocd/rb-audiocd-source.c:616
+#: ../plugins/audiocd/rb-audiocd-source.c:624
+#: ../plugins/audiocd/rb-audiocd-source.c:1015
 msgid "Couldn't load Audio CD"
 msgstr "Kunne ikke indlæse lyd-cd"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:616
+#: ../plugins/audiocd/rb-audiocd-source.c:617
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox kunne ikke tilgå cd'en."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:624
+#: ../plugins/audiocd/rb-audiocd-source.c:625
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox kunne ikke læse cd'ens information."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:725
+#: ../plugins/audiocd/rb-audiocd-source.c:726
 #: ../sources/rb-library-source.c:148 ../widgets/rb-entry-view.c:1488
 msgid "Title"
 msgstr "Titel"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:732
+#: ../plugins/audiocd/rb-audiocd-source.c:733
 #: ../plugins/context/context/ArtistTab.py:52
 #: ../sources/rb-library-source.c:139 ../widgets/rb-entry-view.c:1498
 #: ../widgets/rb-library-browser.c:141
 msgid "Artist"
 msgstr "Kunstner"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1015
+#: ../plugins/audiocd/rb-audiocd-source.c:1016
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox kunne ikke få adgang til cd-enheden."
 
@@ -1342,46 +1366,46 @@ msgstr "Duplikér lyd-cd..."
 msgid "Create a copy of this audio CD"
 msgstr "Opret en kopi af denne lyd-cd"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:194
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:196
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:247
 msgid "Rhythmbox could not duplicate the disc"
 msgstr "Rhythmbox kunne ikke duplikere cd'en"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:199
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:201
 msgid "Rhythmbox could not record the audio disc"
 msgstr "Rhythmbox kunne ikke indspille cd'en"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:230
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:232
 #, c-format
 msgid "Unable to build an audio track list"
 msgstr "Kan ikke oprette en lydsporsliste"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:241
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:433
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:243
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:435
 #, c-format
 msgid "Unable to write audio project file %s: %s"
 msgstr "Kunne ikke oprette lydprojektfil %s: %s"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:259
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:440
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:261
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:442
 #, c-format
 msgid "Unable to write audio project"
 msgstr "Kunne ikke oprette lydprojekt"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:480
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:482
 msgid "Unable to create audio CD project"
 msgstr "Kunne ikke oprette lyd-cd-projekt"
 
 #. Translators: this is the toolbar button label for
 #. Create Audio CD action
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:732
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:734
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:450
 msgid "Burn"
 msgstr "Brænd"
 
 #. Translators: this is the toolbar button label for
 #. Duplicate Audio CD action
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:738
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:740
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:456
 msgid "Copy CD"
 msgstr "Kopiér cd"
@@ -2111,9 +2135,9 @@ msgstr "_Egenskaber"
 msgid "Display device properties"
 msgstr "Vis enhedsegenskaber"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:1217
-#: ../plugins/ipod/rb-ipod-source.c:1777
-#: ../plugins/mtpdevice/rb-mtp-source.c:1358
+#: ../plugins/generic-player/rb-generic-player-source.c:1282
+#: ../plugins/ipod/rb-ipod-source.c:1913
+#: ../plugins/mtpdevice/rb-mtp-source.c:1463
 msgid "Advanced"
 msgstr "Avanceret"
 
@@ -2272,11 +2296,13 @@ msgstr "_Slet"
 msgid "Delete playlist"
 msgstr "Slet afspilningsliste"
 
-#: ../plugins/ipod/rb-ipod-source.c:1297 ../sources/rb-podcast-source.c:834
+#: ../plugins/ipod/rb-ipod-source.c:1422
+#: ../sources/rb-media-player-source.c:627
+#: ../sources/rb-media-player-source.c:628 ../sources/rb-podcast-source.c:834
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../plugins/ipod/rb-ipod-source.c:1668
+#: ../plugins/ipod/rb-ipod-source.c:1803
 msgid "New playlist"
 msgstr "Ny afspilningsliste"
 
@@ -2493,7 +2519,7 @@ msgstr "Adresse på internet-radiostation:"
 #: ../plugins/iradio/rb-station-properties-dialog.c:398
 #: ../podcast/rb-feed-podcast-properties-dialog.c:212
 #: ../podcast/rb-podcast-properties-dialog.c:369
-#: ../sources/rb-media-player-source.c:202 ../widgets/rb-song-info.c:1022
+#: ../sources/rb-media-player-source.c:533 ../widgets/rb-song-info.c:1022
 #, c-format
 msgid "%s Properties"
 msgstr "%s egenskaber"
@@ -3108,7 +3134,7 @@ msgstr "Skub MTP-enhed ud"
 msgid "Rename MTP-device"
 msgstr "Omdøb MTP-enhed"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:839
+#: ../plugins/mtpdevice/rb-mtp-source.c:850
 #: ../plugins/mtpdevice/rb-mtp-thread.c:749
 msgid "Media player device error"
 msgstr "Enhedsfejl for musikafspiller"
@@ -3116,12 +3142,12 @@ msgstr "Enhedsfejl for musikafspiller"
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:843
+#: ../plugins/mtpdevice/rb-mtp-source.c:854
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Kan ikke åbne %s %s-enheden"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:875
+#: ../plugins/mtpdevice/rb-mtp-source.c:886
 msgid "Digital Audio Player"
 msgstr "Digital Lydafspiller"
 
@@ -4659,7 +4685,8 @@ msgstr "Kunstner (Album) - Nummer - Titel"
 msgid "Number. Artist - Title"
 msgstr "Nummer. Kunstner - Titel"
 
-#: ../sources/rb-library-source.c:403
+#: ../sources/rb-library-source.c:403 ../sources/rb-media-player-source.c:581
+#: ../sources/rb-media-player-source.c:582
 msgid "Music"
 msgstr "Musik"
 
@@ -4675,13 +4702,37 @@ msgstr "Flere placeringer valgt"
 msgid "Example Path:"
 msgstr "Eksempelsti:"
 
+#: ../sources/rb-media-player-source.c:101
+msgid "Synchronize media player with the library"
+msgstr ""
+
+#. Translators: this is used to display the amount of storage space which will be
+#. * used and the total storage space on a device after it is synced.
+#.
 #. Translators: this is used to display the amount of storage space
 #. * used and the total storage space on an device.
 #.
-#: ../sources/rb-media-player-source.c:221
+#: ../sources/rb-media-player-source.c:345
+#: ../sources/rb-media-player-source.c:552
 #, c-format
 msgid "%s of %s"
 msgstr "%s af %s"
+
+#: ../sources/rb-media-player-source.c:593
+#, fuzzy
+msgid "All Music"
+msgstr "Musik"
+
+#: ../sources/rb-media-player-source.c:1174
+#, fuzzy
+msgid "Not enough free space to sync"
+msgstr "Ikke plads nok i %s"
+
+#: ../sources/rb-media-player-source.c:1175
+msgid ""
+"There is not enough free space on this device to transfer the selected "
+"music, playlists, and podcasts."
+msgstr ""
 
 #: ../sources/rb-missing-files-source.c:281
 msgid "Missing Files"
