@@ -28,7 +28,7 @@
 #ifndef __RB_STREAMING_SOURCE_H
 #define __RB_STREAMING_SOURCE_H
 
-#include "rb-source.h"
+#include <sources/rb-source.h>
 
 G_BEGIN_DECLS
 

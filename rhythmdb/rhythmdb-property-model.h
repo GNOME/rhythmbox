@@ -29,8 +29,8 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
-#include "rhythmdb.h"
-#include "rhythmdb-query-model.h"
+#include <rhythmdb/rhythmdb.h>
+#include <rhythmdb/rhythmdb-query-model.h>
 
 #ifndef RHYTHMDB_PROPERTY_MODEL_H
 #define RHYTHMDB_PROPERTY_MODEL_H

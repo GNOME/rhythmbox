@@ -29,7 +29,7 @@
 
 #include <Python.h>
 #include <glib-object.h>
-#include "rb-plugin.h"
+#include <shell/rb-plugin.h>
 
 G_BEGIN_DECLS
 

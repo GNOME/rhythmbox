@@ -31,11 +31,11 @@
 
 #include <libxml/tree.h>
 
-#include "rb-shell.h"
-#include "rb-source.h"
-#include "rhythmdb.h"
-#include "rhythmdb-query-model.h"
-#include "rb-playlist-manager.h"
+#include <shell/rb-shell.h>
+#include <sources/rb-source.h>
+#include <rhythmdb/rhythmdb.h>
+#include <rhythmdb/rhythmdb-query-model.h>
+#include <shell/rb-playlist-manager.h>
 
 G_BEGIN_DECLS
 

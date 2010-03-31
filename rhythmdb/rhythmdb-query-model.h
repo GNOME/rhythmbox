@@ -30,7 +30,7 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
-#include "rhythmdb.h"
+#include <rhythmdb/rhythmdb.h>
 
 #ifndef RHYTHMDB_QUERY_MODEL_H
 #define RHYTHMDB_QUERY_MODEL_H

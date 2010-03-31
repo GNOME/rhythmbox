@@ -28,9 +28,9 @@
 #ifndef RHYTHMDB_TREE_H
 #define RHYTHMDB_TREE_H
 
-#include "rhythmdb-private.h"
-#include <glib-object.h>
 #include <glib.h>
+#include <glib-object.h>
+#include <rhythmdb/rhythmdb-private.h>
 
 G_BEGIN_DECLS
 

@@ -27,8 +27,8 @@
 
 #include <gtk/gtk.h>
 
-#include "rhythmdb.h"
-#include "rhythmdb-query-model.h"
+#include <rhythmdb/rhythmdb.h>
+#include <rhythmdb/rhythmdb-query-model.h>
 
 #ifndef __RB_QUERY_CREATOR_H
 #define __RB_QUERY_CREATOR_H

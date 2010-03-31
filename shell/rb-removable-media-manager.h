@@ -30,11 +30,11 @@
 
 #include <gio/gio.h>
 
-#include "rb-source.h"
-#include "rhythmdb.h"
-#include "rb-shell.h"
+#include <sources/rb-source.h>
+#include <rhythmdb/rhythmdb.h>
+#include <shell/rb-shell.h>
 
-#include "mediaplayerid.h"
+#include <lib/libmediaplayerid/mediaplayerid.h>
 
 G_BEGIN_DECLS
 

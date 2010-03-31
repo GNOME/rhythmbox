@@ -29,7 +29,7 @@
 #define __RB_SOURCE_SEARCH_H
 
 #include <glib-object.h>
-#include <rhythmdb.h>
+#include <rhythmdb/rhythmdb.h>
 
 G_BEGIN_DECLS
 

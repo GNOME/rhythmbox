@@ -27,7 +27,7 @@
 
 #include <gtk/gtk.h>
 
-#include "rhythmdb.h"
+#include <rhythmdb/rhythmdb.h>
 
 #ifndef __RB_FEED_PODCAST_PROPERTIES_DIALOG_H
 #define __RB_FEED_PODCAST_PROPERTIES_DIALOG_H

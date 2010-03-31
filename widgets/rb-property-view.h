@@ -31,9 +31,9 @@
 
 #include <gtk/gtk.h>
 
-#include "rhythmdb.h"
-#include "rhythmdb-property-model.h"
-#include "rb-entry-view.h"
+#include <rhythmdb/rhythmdb.h>
+#include <rhythmdb/rhythmdb-property-model.h>
+#include <widgets/rb-entry-view.h>
 
 G_BEGIN_DECLS
 

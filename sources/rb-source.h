@@ -31,11 +31,11 @@
 
 #include <gtk/gtk.h>
 
-#include "rb-source-group.h"
-#include "rb-source-search.h"
-#include "rb-entry-view.h"
-#include "rb-shell-preferences.h"
-#include "rhythmdb-import-job.h"
+#include <sources/rb-source-group.h>
+#include <sources/rb-source-search.h>
+#include <widgets/rb-entry-view.h>
+#include <shell/rb-shell-preferences.h>
+#include <rhythmdb/rhythmdb-import-job.h>
 
 G_BEGIN_DECLS
 

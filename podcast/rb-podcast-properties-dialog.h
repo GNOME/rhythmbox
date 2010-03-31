@@ -26,7 +26,7 @@
  */
 
 #include <gtk/gtk.h>
-#include "rb-entry-view.h"
+#include <widgets/rb-entry-view.h>
 
 #ifndef __RB_PODCAST_PROPERTIES_DIALOG_H
 #define __RB_PODCAST_PROPERTIES_DIALOG_H

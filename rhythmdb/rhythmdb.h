@@ -34,9 +34,9 @@
 #include <stdarg.h>
 #include <libxml/tree.h>
 
-#include "rb-refstring.h"
-#include "rb-string-value-map.h"
-#include "rhythmdb-query-results.h"
+#include <rhythmdb/rb-refstring.h>
+#include <lib/rb-string-value-map.h>
+#include <rhythmdb/rhythmdb-query-results.h>
 
 G_BEGIN_DECLS
 

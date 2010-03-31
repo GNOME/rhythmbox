@@ -47,7 +47,7 @@
 #include <rhythmdb/rhythmdb.h>
 #include <rhythmdb/rhythmdb-query-model.h>
 
-#include <rb-shell-player.h>
+#include <shell/rb-shell-player.h>
 
 G_BEGIN_DECLS
 

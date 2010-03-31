@@ -31,8 +31,8 @@
 
 #include <gtk/gtk.h>
 
-#include "rhythmdb.h"
-#include "rb-shell-player.h"
+#include <rhythmdb/rhythmdb.h>
+#include <shell/rb-shell-player.h>
 
 G_BEGIN_DECLS
 

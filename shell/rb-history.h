@@ -26,8 +26,7 @@
  */
 
 #include <glib.h>
-#include "rhythmdb.h"
-#include "rb-shell-player.h"
+#include <rhythmdb/rhythmdb.h>
 
 #ifndef __RB_HISTORY_H
 #define __RB_HISTORY_H

@@ -28,8 +28,8 @@
 
 #include <gtk/gtk.h>
 
-#include "rb-source.h"
-#include "rhythmdb.h"
+#include <sources/rb-source.h>
+#include <rhythmdb/rhythmdb.h>
 
 #ifndef __RB_SHELL_PLAYER_H
 #define __RB_SHELL_PLAYER_H

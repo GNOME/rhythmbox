@@ -31,8 +31,8 @@
 
 #include <gtk/gtk.h>
 
-#include "rhythmdb.h"
-#include "rhythmdb-query-model.h"
+#include <rhythmdb/rhythmdb.h>
+#include <rhythmdb/rhythmdb-query-model.h>
 
 G_BEGIN_DECLS
 

@@ -30,9 +30,9 @@
 
 #include <glib.h>
 
-#include "rb-shell.h"
-#include "rb-removable-media-source.h"
-#include "rhythmdb.h"
+#include <shell/rb-shell.h>
+#include <sources/rb-removable-media-source.h>
+#include <rhythmdb/rhythmdb.h>
 
 G_BEGIN_DECLS
 

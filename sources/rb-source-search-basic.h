@@ -34,8 +34,8 @@
 
 #include <gtk/gtk.h>
 
-#include <rb-source-search.h>
-#include <rhythmdb.h>
+#include <sources/rb-source-search.h>
+#include <rhythmdb/rhythmdb.h>
 
 G_BEGIN_DECLS
 

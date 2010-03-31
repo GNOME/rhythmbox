@@ -31,7 +31,7 @@
 #define __RB_PLUGINS_ENGINE_H__
 
 #include <glib.h>
-#include <rb-shell.h>
+#include <shell/rb-shell.h>
 
 typedef struct _RBPluginInfo RBPluginInfo;
 

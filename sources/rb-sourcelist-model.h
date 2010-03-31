@@ -31,7 +31,7 @@
 
 #include <gtk/gtk.h>
 
-#include "rb-source.h"
+#include <sources/rb-source.h>
 
 G_BEGIN_DECLS
 

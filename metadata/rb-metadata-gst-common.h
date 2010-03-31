@@ -32,7 +32,7 @@ G_BEGIN_DECLS
 
 #include <glib.h>
 
-#include "rb-metadata.h"
+#include <metadata/rb-metadata.h>
 
 typedef enum {
 	MEDIA_TYPE_NONE = 0,

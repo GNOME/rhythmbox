@@ -29,9 +29,9 @@
 #ifndef __RB_SHELL_H
 #define __RB_SHELL_H
 
-#include "rb-source.h"
-#include "rhythmdb.h"
-#include "rb-song-info.h"
+#include <sources/rb-source.h>
+#include <rhythmdb/rhythmdb.h>
+#include <widgets/rb-song-info.h>
 
 G_BEGIN_DECLS
 

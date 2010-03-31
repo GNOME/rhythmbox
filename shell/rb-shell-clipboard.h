@@ -25,9 +25,9 @@
  *
  */
 
-#include "rb-source.h"
-
 #include <gtk/gtk.h>
+
+#include <sources/rb-source.h>
 
 #ifndef __RB_SHELL_CLIPBOARD_H
 #define __RB_SHELL_CLIPBOARD_H

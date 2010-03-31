@@ -28,8 +28,8 @@
 #ifndef __RB_PODCAST_SOURCE_H
 #define __RB_PODCAST_SOURCE_H
 
-#include "rb-shell.h"
-#include "rb-source.h"
+#include <shell/rb-shell.h>
+#include <sources/rb-source.h>
 
 G_BEGIN_DECLS
 

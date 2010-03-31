@@ -28,9 +28,9 @@
 #ifndef __RB_MISSING_FILES_SOURCE_H
 #define __RB_MISSING_FILES_SOURCE_H
 
-#include "rb-shell.h"
-#include "rb-source.h"
-#include "rb-library-source.h"
+#include <shell/rb-shell.h>
+#include <sources/rb-source.h>
+#include <sources/rb-library-source.h>
 
 G_BEGIN_DECLS
 

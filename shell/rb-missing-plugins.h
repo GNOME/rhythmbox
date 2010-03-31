@@ -24,7 +24,7 @@
 #ifndef RB_MISSING_PLUGINS_H
 #define RB_MISSING_PLUGINS_H
 
-#include "rb-shell.h"
+#include <shell/rb-shell.h>
 
 G_BEGIN_DECLS
 

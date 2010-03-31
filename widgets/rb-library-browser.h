@@ -30,9 +30,9 @@
 
 #include <gtk/gtk.h>
 
-#include "rhythmdb.h"
-#include "rhythmdb-query-model.h"
-#include "rb-property-view.h"
+#include <rhythmdb/rhythmdb.h>
+#include <rhythmdb/rhythmdb-query-model.h>
+#include <widgets/rb-property-view.h>
 
 G_BEGIN_DECLS
 

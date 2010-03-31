@@ -28,9 +28,9 @@
 #ifndef RHYTHMDB_PRIVATE_H
 #define RHYTHMDB_PRIVATE_H
 
-#include "rhythmdb.h"
-#include "rb-refstring.h"
-#include "rb-metadata.h"
+#include <rhythmdb/rhythmdb.h>
+#include <rhythmdb/rb-refstring.h>
+#include <metadata/rb-metadata.h>
 
 G_BEGIN_DECLS
 

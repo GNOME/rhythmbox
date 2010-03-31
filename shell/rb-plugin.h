@@ -32,7 +32,7 @@
 
 #include <glib-object.h>
 
-#include "rb-shell.h"
+#include <shell/rb-shell.h>
 
 G_BEGIN_DECLS
 

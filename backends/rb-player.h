@@ -31,7 +31,7 @@
 
 #include <glib-object.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include "rb-metadata.h"
+#include <metadata/rb-metadata.h>
 
 G_BEGIN_DECLS
 

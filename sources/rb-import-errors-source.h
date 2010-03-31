@@ -28,9 +28,9 @@
 #ifndef __RB_IMPORT_ERRORS_SOURCE_H
 #define __RB_IMPORT_ERRORS_SOURCE_H
 
-#include "rb-shell.h"
-#include "rb-source.h"
-#include "rhythmdb.h"
+#include <shell/rb-shell.h>
+#include <sources/rb-source.h>
+#include <rhythmdb/rhythmdb.h>
 
 G_BEGIN_DECLS
 

@@ -33,8 +33,8 @@
 #ifndef __RB_STATIC_PLAYLIST_SOURCE_H
 #define __RB_STATIC_PLAYLIST_SOURCE_H
 
-#include "rb-playlist-source.h"
-#include "rhythmdb.h"
+#include <sources/rb-playlist-source.h>
+#include <rhythmdb/rhythmdb.h>
 
 G_BEGIN_DECLS
 

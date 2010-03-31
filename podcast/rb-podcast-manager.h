@@ -27,7 +27,7 @@
  */
 
 #include <glib.h>
-#include "rhythmdb.h"
+#include <rhythmdb/rhythmdb.h>
 
 #ifndef RB_PODCAST_MANAGER_H
 #define RB_PODCAST_MANAGER_H

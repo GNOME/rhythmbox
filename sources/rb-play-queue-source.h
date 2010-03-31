@@ -33,7 +33,7 @@
 #ifndef __RB_PLAY_QUEUE_SOURCE_H
 #define __RB_PLAY_QUEUE_SOURCE_H
 
-#include "rb-static-playlist-source.h"
+#include <sources/rb-static-playlist-source.h>
 
 G_BEGIN_DECLS
 

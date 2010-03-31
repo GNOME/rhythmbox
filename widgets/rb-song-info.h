@@ -26,9 +26,9 @@
  */
 
 #include <gtk/gtk.h>
-#include "rb-entry-view.h"
-#include "rhythmdb.h"
-#include "rb-source.h"
+#include <widgets/rb-entry-view.h>
+#include <rhythmdb/rhythmdb.h>
+#include <sources/rb-source.h>
 
 #ifndef __RB_SONG_INFO_H
 #define __RB_SONG_INFO_H

@@ -28,9 +28,8 @@
 #ifndef __RB_PLAY_ORDER_LINEAR_H
 #define __RB_PLAY_ORDER_LINEAR_H
 
-#include "rb-play-order.h"
-
-#include "rb-shell-player.h"
+#include <shell/rb-play-order.h>
+#include <shell/rb-shell-player.h>
 
 G_BEGIN_DECLS
 

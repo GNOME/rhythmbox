@@ -27,7 +27,7 @@
 
 #include <gtk/gtk.h>
 
-#include "rb-source.h"
+#include <sources/rb-source.h>
 
 #ifndef __RB_SOURCE_HEADER_H
 #define __RB_SOURCE_HEADER_H

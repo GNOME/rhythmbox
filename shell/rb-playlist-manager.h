@@ -28,9 +28,9 @@
 #ifndef __RB_PLAYLIST_MANAGER_H
 #define __RB_PLAYLIST_MANAGER_H
 
-#include "rb-source.h"
-#include "rhythmdb.h"
-#include "rb-sourcelist.h"
+#include <sources/rb-source.h>
+#include <sources/rb-sourcelist.h>
+#include <rhythmdb/rhythmdb.h>
 
 G_BEGIN_DECLS
 
