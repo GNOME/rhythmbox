@@ -43,6 +43,7 @@
 #include "rb-playlist-source.h"
 #include "rb-dialog.h"
 #include "rb-file-helpers.h"
+#include "gseal-gtk-compat.h"
 
 #include "rb-recorder.h"
 #include "rb-playlist-source-recorder.h"
@@ -238,16 +239,15 @@ cmd_duplicate_cd (GtkAction          *action,
 
 			toplevel = gtk_widget_get_toplevel (GTK_WIDGET (pi->selected_source));
 
-			dialog = gtk_message_dialog_new (GTK_WINDOW (toplevel),
-							 GTK_DIALOG_DESTROY_WITH_PARENT,
-							 GTK_MESSAGE_ERROR,
-							 GTK_BUTTONS_CLOSE,
-							 "<b>%s</b>\n\n%s\n%s: %s",
-							 _("Could not duplicate disc"),
-							 _("Rhythmbox could not duplicate the disc"),
-							 _("Reason"),
-							 error->message);
-			gtk_label_set_use_markup (GTK_LABEL (GTK_MESSAGE_DIALOG (dialog)->label), TRUE);
+			dialog = gtk_message_dialog_new_with_markup (GTK_WINDOW (toplevel),
+								     GTK_DIALOG_DESTROY_WITH_PARENT,
+								     GTK_MESSAGE_ERROR,
+								     GTK_BUTTONS_CLOSE,
+								     "<b>%s</b>\n\n%s\n%s: %s",
+								     _("Could not duplicate disc"),
+								     _("Rhythmbox could not duplicate the disc"),
+								     _("Reason"),
+								     error->message);
 			gtk_dialog_run (GTK_DIALOG (dialog));
 			gtk_widget_destroy (dialog);
 			g_error_free (error);

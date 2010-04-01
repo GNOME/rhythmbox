@@ -157,17 +157,21 @@ rb_playlist_source_recorder_style_set (GtkWidget *widget,
                                        GtkStyle  *previous_style)
 {
         GtkDialog *dialog;
+        GtkWidget *action_area;
+        GtkWidget *content_area;
 
         if (GTK_WIDGET_CLASS (rb_playlist_source_recorder_parent_class)->style_set)
                 GTK_WIDGET_CLASS (rb_playlist_source_recorder_parent_class)->style_set (widget, previous_style);
 
         dialog = GTK_DIALOG (widget);
 
-        gtk_container_set_border_width (GTK_CONTAINER (dialog->vbox), 12);
-        gtk_box_set_spacing (GTK_BOX (dialog->vbox), 24);
+        content_area = gtk_dialog_get_content_area (dialog);
+        gtk_container_set_border_width (GTK_CONTAINER (content_area), 12);
+        gtk_box_set_spacing (GTK_BOX (content_area), 24);
 
-        gtk_container_set_border_width (GTK_CONTAINER (dialog->action_area), 0);
-        gtk_box_set_spacing (GTK_BOX (dialog->action_area), 6);
+        action_area = gtk_dialog_get_action_area (dialog);
+        gtk_container_set_border_width (GTK_CONTAINER (action_area), 0);
+        gtk_box_set_spacing (GTK_BOX (action_area), 6);
 }
 
 static void
@@ -1104,6 +1108,7 @@ rb_playlist_source_recorder_constructed (GObject *object)
         PangoAttrList  *pattrlist;
         PangoAttribute *attr;
 	char           *value;
+        GtkStyle       *style;
 
         RB_CHAIN_GOBJECT_METHOD (rb_playlist_source_recorder_parent_class, constructed, object);
 	source = RB_PLAYLIST_SOURCE_RECORDER (object);
@@ -1196,7 +1201,8 @@ rb_playlist_source_recorder_constructed (GObject *object)
         attr->end_index = G_MAXINT;
         pango_attr_list_insert (pattrlist, attr);
 
-        font_size = pango_font_description_get_size (GTK_WIDGET (source->priv->message_label)->style->font_desc);
+        style = gtk_widget_get_style (GTK_WIDGET (source->priv->message_label));
+        font_size = pango_font_description_get_size (style->font_desc);
         attr = pango_attr_size_new (font_size * 1.2);
         attr->start_index = 0;
         attr->end_index = G_MAXINT;
@@ -1206,7 +1212,7 @@ rb_playlist_source_recorder_constructed (GObject *object)
 
         pango_attr_list_unref (pattrlist);
 
-        gtk_box_pack_start (GTK_BOX (GTK_DIALOG (source)->vbox),
+        gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (source))),
                             source->priv->vbox,
                             TRUE, TRUE, 0);
         gtk_widget_show_all (source->priv->vbox);
