@@ -93,7 +93,7 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 				self.__db.set(entry, rhythmdb.PROP_TITLE, self.__track['trackname'])
 				self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, tracknum)
 				self.__db.set(entry, rhythmdb.PROP_DATE, date)
-				self.__db.set(entry, rhythmdb.PROP_GENRE, self.__track['mp3genre'])
+				self.__db.set(entry, rhythmdb.PROP_GENRE, self.__track['magnatunegenres'])
 				self.__db.set(entry, rhythmdb.PROP_DURATION, duration)
 
 				key = str(trackurl)
