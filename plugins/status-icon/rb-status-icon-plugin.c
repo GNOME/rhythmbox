@@ -52,6 +52,7 @@
 #include "rb-stock-icons.h"
 #include "eel-gconf-extensions.h"
 #include "rb-builder-helpers.h"
+#include "gseal-gtk-compat.h"
 
 #include "rb-tray-icon-gtk.h"
 

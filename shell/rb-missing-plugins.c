@@ -29,6 +29,7 @@
 #include "rb-shell-player.h"
 #include "rb-debug.h"
 #include "rb-podcast-manager.h"
+#include "gseal-gtk-compat.h"
 
 #include <gst/pbutils/pbutils.h>
 #include <gst/pbutils/install-plugins.h>

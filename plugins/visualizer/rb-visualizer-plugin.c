@@ -81,6 +81,7 @@
 #include <dbus/dbus-glib.h>
 
 #include "rb-vis-widget.h"
+#include "gseal-gtk-compat.h"
 
 /* preferences */
 #define CONF_VIS_PREFIX  CONF_PREFIX "/plugins/visualizer"

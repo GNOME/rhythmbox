@@ -25,7 +25,7 @@ G_BEGIN_DECLS
 
 #if !GTK_CHECK_VERSION (2, 19, 5)
 #define gtk_widget_get_realized(widget)				GTK_WIDGET_REALIZED(widget)
-#define gtk_widget_set_realized(widget)				GTK_WIDGET_SET_FLAGS(widget, GTK_REALIZED)
+#define gtk_widget_set_realized(widget, TRUE)			GTK_WIDGET_SET_FLAGS(widget, GTK_REALIZED)
 #endif
 
 #if !GTK_CHECK_VERSION (2, 18, 0)
