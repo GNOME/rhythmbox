@@ -44,7 +44,6 @@ popup_ui = """
 <ui>
   <popup name="MagnatuneSourceViewPopup">
     <menuitem name="AddToQueueLibraryPopup" action="AddToQueue"/>
-    <menuitem name="MagnatunePurchaseAlbum" action="MagnatunePurchaseAlbum"/>
     <menuitem name="MagnatuneDownloadAlbum" action="MagnatuneDownloadAlbum"/>
     <menuitem name="MagnatuneArtistInfo" action="MagnatuneArtistInfo"/>
     <menuitem name="MagnatuneCancelDownload" action="MagnatuneCancelDownload"/>
@@ -109,11 +108,6 @@ class Magnatune(rb.Plugin):
 		# Add the popup menu actions
 		self.action_group = gtk.ActionGroup('MagnatunePluginActions')
 
-		action = gtk.Action('MagnatunePurchaseAlbum', _('Purchase Album'),
-				_("Purchase this album from Magnatune"),
-				'gtk-add')
-		action.connect('activate', lambda a: self.shell.get_property("selected-source").purchase_album())
-		self.action_group.add_action(action)
 		action = gtk.Action('MagnatuneDownloadAlbum', _('Download Album'),
 				_("Download this album from Magnatune"),
 				'gtk-save')

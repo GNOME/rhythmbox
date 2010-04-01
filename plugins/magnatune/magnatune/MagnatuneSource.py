@@ -123,8 +123,7 @@ class MagnatuneSource(rb.BrowserSource):
 			return (qm.compute_status_normal("%d song", "%d songs"), None, 0.0)
 
 	def do_impl_get_ui_actions(self):
-		return ["MagnatunePurchaseAlbum",
-			"MagnatuneDownloadAlbum",
+		return ["MagnatuneDownloadAlbum",
 			"MagnatuneArtistInfo",
 			"MagnatuneCancelDownload"]
 
@@ -201,7 +200,7 @@ class MagnatuneSource(rb.BrowserSource):
 				gtk.show_uri(screen, url, gtk.gdk.CURRENT_TIME)
 				urls.add(url)
 
-	def purchase_album(self):
+	def purchase_redirect(self):
 		screen = self.props.shell.props.window.get_screen()
 		tracks = self.get_entry_view().get_selected_entries()
 		urls = set([])
@@ -214,6 +213,11 @@ class MagnatuneSource(rb.BrowserSource):
 				urls.add(url)
 
 	def download_album(self):
+		if self.__client.get_string(self.__plugin.gconf_keys['account_type']) != 'download':
+			# The user doesn't have a download account, so redirect them to the purchase page.
+			self.purchase_redirect()
+			return
+
 		try:
 			library_location = self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0] # Just use the first library location
 		except IndexError, e:
