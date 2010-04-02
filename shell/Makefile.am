@@ -116,7 +116,9 @@ librhythmbox_core_la_LIBADD =				\
 	-lgstpbutils-0.10				\
 	-lgstcontroller-0.10
 
-librhythmbox_core_la_LDFLAGS = -export-dynamic -no-undefined
+librhythmbox_core_la_LDFLAGS = 				\
+	-version-info $(RHYTHMBOX_CORE_CURRENT):$(RHYTHMBOX_CORE_REVISION):$(RHYTHMBOX_CORE_AGE)	\
+	-export-dynamic -no-undefined
 librhythmbox_core_la_LIBTOOLFLAGS = --tag=disable-static
 
 if ENABLE_PYTHON

@@ -11,12 +11,23 @@ AC_SUBST(ACLOCAL_AMFLAGS, "-I macros")
 AM_MAINTAINER_MODE
 GNOME_MAINTAINER_MODE_DEFINES
 
+# plugin API versioning
+# Increment on interface addition, reset on removal
+RHYTHMBOX_CORE_AGE=1
+# Increment on interface add, remove, or change
+RHYTHMBOX_CORE_CURRENT=1
+# Increment on source change, reset when CURRENT changes.
+RHYTHMBOX_CORE_REVISION=0
+
+AC_SUBST(RHYTHMBOX_CORE_AGE)
+AC_SUBST(RHYTHMBOX_CORE_CURRENT)
+AC_SUBST(RHYTHMBOX_CORE_REVISION)
+
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
 
 dnl XXXX hack to kill off all the libtool tags ...
 dnl it isn't like we are using C++ or Fortran.
 m4_define([_LT_AC_TAGCONFIG],[])
-
 
 IT_PROG_INTLTOOL([0.35.0])
 
