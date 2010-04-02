@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-11 13:43+0200\n"
+"POT-Creation-Date: 2010-04-02 15:46+0300\n"
 "PO-Revision-Date: 2010-03-11 10:25+0200\n"
 "Last-Translator: Sergiy Gavrylov <sergiovana@bigmir.net>, 2009.>\n"
 "Language-Team: Ukrainian <linux@linux.org.ua>\n"
@@ -270,19 +270,40 @@ msgid "<b>Information</b>"
 msgstr "<b>Інформація</b>"
 
 #: ../data/ui/media-player-properties.ui.h:2
-msgid "<b>Volume usage</b>"
-msgstr "Використання тому:"
+msgid "<b>Sync Preferences</b>"
+msgstr "<b>Параметри синхронізації</b>"
 
 #: ../data/ui/media-player-properties.ui.h:3
+msgid "<b>Sync Preview</b>"
+msgstr "<b>Попередній перегляд синхронізації</b>"
+
+#: ../data/ui/media-player-properties.ui.h:4
+msgid "<b>Volume usage</b>"
+msgstr "<b>Використання тому</b>"
+
+#: ../data/ui/media-player-properties.ui.h:5
+msgid "Added files:"
+msgstr "Додані файли:"
+
+#: ../data/ui/media-player-properties.ui.h:6
 #: ../data/ui/podcast-feed-properties.ui.h:2
 #: ../data/ui/podcast-properties.ui.h:1 ../data/ui/song-info-multiple.ui.h:2
 #: ../data/ui/song-info.ui.h:2 ../plugins/iradio/station-properties.ui.h:1
 msgid "Basic"
 msgstr "Основне"
 
-#: ../data/ui/media-player-properties.ui.h:4
+#: ../data/ui/media-player-properties.ui.h:7
 msgid "Media Player Properties"
 msgstr "Властивості програвача"
+
+#: ../data/ui/media-player-properties.ui.h:8
+msgid "Removed files:"
+msgstr "Видалено файлів:"
+
+#: ../data/ui/media-player-properties.ui.h:9
+#: ../sources/rb-media-player-source.c:100
+msgid "Sync"
+msgstr "Синхронізація"
 
 #: ../data/ui/playback-prefs.ui.h:1
 msgid "Crossfade Duration (Seconds)"
@@ -510,9 +531,9 @@ msgid "Recently Played"
 msgstr "Нещодавно відтворені"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../plugins/status-icon/rb-status-icon-plugin.c:58
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1528 ../shell/rb-shell.c:1010
-#: ../shell/rb-shell.c:1974
+#: ../plugins/status-icon/rb-status-icon-plugin.c:59
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1529 ../shell/rb-shell.c:1181
+#: ../shell/rb-shell.c:2179
 msgid "Music Player"
 msgstr "Програвач"
 
@@ -521,6 +542,7 @@ msgid "Play and organize your music collection"
 msgstr "Відтворення та упорядкування збірки музичних творів"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
+#: ../plugins/status-icon/rb-tray-icon-gtk.c:155
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -630,103 +652,105 @@ msgstr "%b %d %Y"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:324 ../lib/rb-util.c:574
-#: ../lib/rb-util.c:814
+#: ../lib/rb-cut-and-paste-code.c:324 ../lib/rb-util.c:696
+#: ../lib/rb-util.c:1024
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:98
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:173
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:174
-#: ../plugins/audiocd/rb-audiocd-source.c:502
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:179
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:180
+#: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:126
+#: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:130
+#: ../plugins/audiocd/rb-audiocd-source.c:503
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:479
 #: ../plugins/daap/rb-daap-connection.c:699
-#: ../plugins/generic-player/rb-generic-player-source.c:979
-#: ../plugins/ipod/rb-ipod-source.c:391
+#: ../plugins/generic-player/rb-generic-player-source.c:993
+#: ../plugins/ipod/rb-ipod-source.c:404
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:520
 #: ../plugins/iradio/rb-iradio-source.c:1085
 #: ../plugins/iradio/rb-station-properties-dialog.c:488
 #: ../plugins/lyrics/lyrics/__init__.py:81
 #: ../plugins/lyrics/lyrics/__init__.py:83
-#: ../plugins/mtpdevice/rb-mtp-source.c:497
-#: ../plugins/mtpdevice/rb-mtp-source.c:861
-#: ../plugins/mtpdevice/rb-mtp-source.c:973
-#: ../plugins/status-icon/rb-status-icon-plugin.c:781
+#: ../plugins/mtpdevice/rb-mtp-source.c:636
+#: ../plugins/mtpdevice/rb-mtp-source.c:1085
+#: ../plugins/mtpdevice/rb-mtp-source.c:1368
+#: ../plugins/status-icon/rb-status-icon-plugin.c:782
 #: ../podcast/rb-feed-podcast-properties-dialog.c:316
-#: ../podcast/rb-podcast-manager.c:1868
+#: ../podcast/rb-podcast-manager.c:1885
 #: ../podcast/rb-podcast-properties-dialog.c:484
 #: ../podcast/rb-podcast-properties-dialog.c:536
 #: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1295
 #: ../rhythmdb/rhythmdb-tree.c:1299 ../rhythmdb/rhythmdb-tree.c:1303
-#: ../rhythmdb/rhythmdb-tree.c:1307 ../rhythmdb/rhythmdb.c:1981
-#: ../rhythmdb/rhythmdb.c:1987 ../rhythmdb/rhythmdb.c:1992
-#: ../shell/rb-shell-player.c:1661 ../sources/rb-podcast-source.c:1646
-#: ../widgets/rb-entry-view.c:1041 ../widgets/rb-entry-view.c:1063
-#: ../widgets/rb-entry-view.c:1517 ../widgets/rb-entry-view.c:1529
-#: ../widgets/rb-entry-view.c:1541 ../widgets/rb-song-info.c:893
-#: ../widgets/rb-song-info.c:1085 ../widgets/rb-song-info.c:1424
+#: ../rhythmdb/rhythmdb-tree.c:1307 ../rhythmdb/rhythmdb.c:2024
+#: ../rhythmdb/rhythmdb.c:2030 ../rhythmdb/rhythmdb.c:2035
+#: ../shell/rb-shell-player.c:1720 ../sources/rb-podcast-source.c:1659
+#: ../widgets/rb-entry-view.c:1057 ../widgets/rb-entry-view.c:1079
+#: ../widgets/rb-entry-view.c:1533 ../widgets/rb-entry-view.c:1545
+#: ../widgets/rb-entry-view.c:1557 ../widgets/rb-song-info.c:897
+#: ../widgets/rb-song-info.c:1089 ../widgets/rb-song-info.c:1428
 msgid "Unknown"
 msgstr "Невідомо"
 
-#: ../lib/rb-file-helpers.c:209
+#: ../lib/rb-file-helpers.c:242
 #, c-format
 msgid "Unable to move %s to %s: %s"
 msgstr "Не вдалося перемістити %s до %s: %s"
 
-#: ../lib/rb-file-helpers.c:376
+#: ../lib/rb-file-helpers.c:432
 #, c-format
 msgid "Too many symlinks"
 msgstr "Занадто багато символьних посилань"
 
-#: ../lib/rb-file-helpers.c:1002
+#: ../lib/rb-file-helpers.c:1226
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Не вдалося отримати вільний простір на %s: %s"
 
-#: ../lib/rb-util.c:576 ../plugins/context/tmpl/album-tmpl.html:20
+#: ../lib/rb-util.c:698 ../plugins/context/tmpl/album-tmpl.html:20
 #: ../remote/dbus/rb-client.c:144
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:578 ../plugins/context/tmpl/album-tmpl.html:18
+#: ../lib/rb-util.c:700 ../plugins/context/tmpl/album-tmpl.html:18
 #: ../remote/dbus/rb-client.c:146
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:613
+#: ../lib/rb-util.c:747
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "залишилось %d:%02d з %d:%02d"
 
-#: ../lib/rb-util.c:617
+#: ../lib/rb-util.c:751
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "залишилось %d:%02d:%02d з %d:%02d:%02d"
 
-#: ../lib/rb-util.c:622
+#: ../lib/rb-util.c:756
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d з %d:%02d"
 
-#: ../lib/rb-util.c:626
+#: ../lib/rb-util.c:760
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d з %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-dbus-client.c:379
+#: ../metadata/rb-metadata-dbus-client.c:381
 #, c-format
 msgid "Internal GStreamer problem; file a bug"
 msgstr "Внутрішня проблема GStreamer, надішліть розробникам звіт про помилку"
 
-#: ../metadata/rb-metadata-dbus-client.c:397
-#: ../metadata/rb-metadata-dbus-client.c:451
-#: ../metadata/rb-metadata-dbus-client.c:785
-#: ../metadata/rb-metadata-dbus-client.c:795
-#: ../metadata/rb-metadata-dbus-client.c:803
+#: ../metadata/rb-metadata-dbus-client.c:399
+#: ../metadata/rb-metadata-dbus-client.c:453
+#: ../metadata/rb-metadata-dbus-client.c:788
+#: ../metadata/rb-metadata-dbus-client.c:798
+#: ../metadata/rb-metadata-dbus-client.c:806
 #, c-format
 msgid "D-BUS communication error"
 msgstr "Помилка зв'язку через шину D-BUS"
@@ -786,11 +810,15 @@ msgstr "Обкладинки альбомів"
 msgid "Fetch album covers from the Internet"
 msgstr "Завантаження обкладинок альбомів з Інтернету"
 
-#: ../plugins/artdisplay/artdisplay/__init__.py:309
+#: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:41
+msgid "Image provided by Last.fm"
+msgstr "Зображення надане Last.fm"
+
+#: ../plugins/artdisplay/artdisplay/__init__.py:326
 msgid "Searching... drop artwork here"
 msgstr "Пошук... Сюди можна перетягнути зображення"
 
-#: ../plugins/artdisplay/artdisplay/__init__.py:311
+#: ../plugins/artdisplay/artdisplay/__init__.py:331
 msgid "Drop artwork here"
 msgstr "Перетягнути зображення сюди"
 
@@ -852,63 +880,63 @@ msgstr "Перезавантажити інформацію про альбом"
 msgid "Extract"
 msgstr "Копіювати"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:332
+#: ../plugins/audiocd/rb-audiocd-source.c:333
 msgid "Select tracks to be extracted"
 msgstr "Вибрати композиції для копіювання"
 
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:373
+#: ../plugins/audiocd/rb-audiocd-source.c:374
 msgid "S_ubmit Album"
 msgstr "З_апит альбому"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:374
+#: ../plugins/audiocd/rb-audiocd-source.c:375
 msgid "Hide"
 msgstr "Приховати"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:376
+#: ../plugins/audiocd/rb-audiocd-source.c:377
 msgid "Could not find this album on MusicBrainz."
 msgstr "Не можу знайти цей альбом на MusicBrainz."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:377
+#: ../plugins/audiocd/rb-audiocd-source.c:378
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Ви можете поліпшити базу даних MusicBrainz, додавши цей альбом."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:508
+#: ../plugins/audiocd/rb-audiocd-source.c:509
 msgid "<Invalid unicode>"
 msgstr "<Invalid unicode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:552
+#: ../plugins/audiocd/rb-audiocd-source.c:553
 #, c-format
 msgid "Track %u"
 msgstr "Доріжка %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:615
-#: ../plugins/audiocd/rb-audiocd-source.c:623
-#: ../plugins/audiocd/rb-audiocd-source.c:1014
+#: ../plugins/audiocd/rb-audiocd-source.c:616
+#: ../plugins/audiocd/rb-audiocd-source.c:624
+#: ../plugins/audiocd/rb-audiocd-source.c:1015
 msgid "Couldn't load Audio CD"
 msgstr "Не вдалося завантажити звуковий компакт-диск"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:616
+#: ../plugins/audiocd/rb-audiocd-source.c:617
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox не вдалося отримати доступ до компакт-диска."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:624
+#: ../plugins/audiocd/rb-audiocd-source.c:625
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox не вдалося зчитати інформацію з компакт-диска."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:725
-#: ../sources/rb-library-source.c:148 ../widgets/rb-entry-view.c:1473
+#: ../plugins/audiocd/rb-audiocd-source.c:726
+#: ../sources/rb-library-source.c:148 ../widgets/rb-entry-view.c:1489
 msgid "Title"
 msgstr "Назва"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:732
+#: ../plugins/audiocd/rb-audiocd-source.c:733
 #: ../plugins/context/context/ArtistTab.py:52
-#: ../sources/rb-library-source.c:139 ../widgets/rb-entry-view.c:1483
+#: ../sources/rb-library-source.c:139 ../widgets/rb-entry-view.c:1499
 #: ../widgets/rb-library-browser.c:141
 msgid "Artist"
 msgstr "Виконавець"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1015
+#: ../plugins/audiocd/rb-audiocd-source.c:1016
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox не зміг отримати доступ до пристрою CD."
 
@@ -1008,9 +1036,9 @@ msgstr "Останнє оновлення:"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:962
 #: ../plugins/iradio/rb-station-properties-dialog.c:499
-#: ../rhythmdb/rhythmdb.c:3660 ../widgets/rb-entry-view.c:989
-#: ../widgets/rb-entry-view.c:1576 ../widgets/rb-entry-view.c:1589
-#: ../widgets/rb-song-info.c:1397
+#: ../rhythmdb/rhythmdb.c:3714 ../widgets/rb-entry-view.c:1005
+#: ../widgets/rb-entry-view.c:1592 ../widgets/rb-entry-view.c:1605
+#: ../widgets/rb-song-info.c:1401
 msgid "Never"
 msgstr "Ніколи"
 
@@ -1324,46 +1352,46 @@ msgstr "Копіювати звуковий компакт-диск..."
 msgid "Create a copy of this audio CD"
 msgstr "Створити копію цього звукового компакт-диска"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:194
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:196
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:247
 msgid "Rhythmbox could not duplicate the disc"
 msgstr "Rhythmbox не може створити копію цього диска"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:199
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:201
 msgid "Rhythmbox could not record the audio disc"
 msgstr "Rhythmbox не вдалось записати звуковий компакт-диск"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:230
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:232
 #, c-format
 msgid "Unable to build an audio track list"
 msgstr "Не вдалося побудувати список звукових доріжок"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:241
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:433
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:243
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:435
 #, c-format
 msgid "Unable to write audio project file %s: %s"
 msgstr "Не вдалося записати файл звукового проекту %s: %s"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:259
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:440
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:261
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:442
 #, c-format
 msgid "Unable to write audio project"
 msgstr "Не вдалося записати новий проект"
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:480
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:482
 msgid "Unable to create audio CD project"
 msgstr "Не вдалося створити проект звукового CD"
 
 #. Translators: this is the toolbar button label for
 #. Create Audio CD action
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:732
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:734
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:450
 msgid "Burn"
 msgstr "Записати"
 
 #. Translators: this is the toolbar button label for
 #. Duplicate Audio CD action
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:738
+#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:740
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:456
 msgid "Copy CD"
 msgstr "Копіювати CD"
@@ -1429,22 +1457,22 @@ msgid "Drive %s is not a recorder"
 msgstr "Пристрій %s не є пристроєм запису"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1016
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1201
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1205
 #, c-format
 msgid "No writable drives found"
 msgstr "Не вдалося знайти пристроїв для запису."
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1151
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1155
 #, c-format
 msgid "Could not get track time for file: %s"
 msgstr "Не вдається отримати час відтворення для файла: %s"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1210
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1214
 #, c-format
 msgid "Could not determine audio track durations"
 msgstr "Не вдалося визначити тривалість звукового доріжки"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1252
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1256
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -1453,7 +1481,7 @@ msgstr ""
 "Помилка запису на компакт-диск:\n"
 "%s"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1256
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1260
 msgid "There was an error writing to the CD"
 msgstr "Помилка запису на компакт-диск"
 
@@ -1714,8 +1742,8 @@ msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MB "
 "required."
 msgstr ""
-"Не вдалося знайти достатньо вільного місця для конвертації аудіо-доріжок.  %s "
-"Мб потрібно."
+"Не вдалося знайти достатньо вільного місця для конвертації аудіо-доріжок.  %"
+"s Мб потрібно."
 
 #: ../plugins/cd-recorder/recorder.ui.h:1
 msgid "Create audio CD from playlist?"
@@ -1764,7 +1792,7 @@ msgstr ""
 
 #: ../plugins/context/context/AlbumTab.py:51
 #: ../sources/rb-auto-playlist-source.c:106 ../sources/rb-browser-source.c:168
-#: ../sources/rb-static-playlist-source.c:111
+#: ../sources/rb-static-playlist-source.c:126
 msgid "Albums"
 msgstr "Альбоми"
 
@@ -2086,7 +2114,7 @@ msgstr "Вилучити цей список творів"
 #: ../plugins/generic-player/rb-generic-player-plugin.c:101
 #: ../plugins/ipod/rb-ipod-plugin.c:106
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:129 ../shell/rb-shell-clipboard.c:190
-#: ../sources/rb-podcast-source.c:313
+#: ../sources/rb-podcast-source.c:314
 msgid "_Properties"
 msgstr "П_араметри"
 
@@ -2095,9 +2123,9 @@ msgstr "П_араметри"
 msgid "Display device properties"
 msgstr "Показати властивості пристрою"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:1217
-#: ../plugins/ipod/rb-ipod-source.c:1776
-#: ../plugins/mtpdevice/rb-mtp-source.c:1226
+#: ../plugins/generic-player/rb-generic-player-source.c:1282
+#: ../plugins/ipod/rb-ipod-source.c:1913
+#: ../plugins/mtpdevice/rb-mtp-source.c:1463
 msgid "Advanced"
 msgstr "Додатково"
 
@@ -2256,11 +2284,13 @@ msgstr "В_илучити"
 msgid "Delete playlist"
 msgstr "Вилучити список творів"
 
-#: ../plugins/ipod/rb-ipod-source.c:1296 ../sources/rb-podcast-source.c:832
+#: ../plugins/ipod/rb-ipod-source.c:1422
+#: ../sources/rb-media-player-source.c:627
+#: ../sources/rb-media-player-source.c:628 ../sources/rb-podcast-source.c:834
 msgid "Podcasts"
 msgstr "Подкасти"
 
-#: ../plugins/ipod/rb-ipod-source.c:1667
+#: ../plugins/ipod/rb-ipod-source.c:1803
 msgid "New playlist"
 msgstr "Новий список творів"
 
@@ -2448,7 +2478,7 @@ msgctxt "Radio"
 msgid "New"
 msgstr "Нова"
 
-#: ../plugins/iradio/rb-iradio-source.c:351 ../widgets/rb-entry-view.c:1503
+#: ../plugins/iradio/rb-iradio-source.c:351 ../widgets/rb-entry-view.c:1519
 #: ../widgets/rb-library-browser.c:140
 msgid "Genre"
 msgstr "Жанр"
@@ -2477,14 +2507,14 @@ msgstr "URL Інтернет-радіостанції:"
 #: ../plugins/iradio/rb-station-properties-dialog.c:398
 #: ../podcast/rb-feed-podcast-properties-dialog.c:212
 #: ../podcast/rb-podcast-properties-dialog.c:369
-#: ../sources/rb-media-player-source.c:202 ../widgets/rb-song-info.c:1018
+#: ../sources/rb-media-player-source.c:533 ../widgets/rb-song-info.c:1022
 #, c-format
 msgid "%s Properties"
 msgstr "Вподобання %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
 #: ../podcast/rb-podcast-properties-dialog.c:482
-#: ../widgets/rb-entry-view.c:1067 ../widgets/rb-song-info.c:1087
+#: ../widgets/rb-entry-view.c:1083 ../widgets/rb-song-info.c:1091
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu кбіт/с"
@@ -2524,7 +2554,7 @@ msgid "_Save"
 msgstr "_Зберегти"
 
 #: ../plugins/lyrics/lyrics/__init__.py:216
-#: ../plugins/lyrics/lyrics/__init__.py:229 ../shell/rb-shell.c:383
+#: ../plugins/lyrics/lyrics/__init__.py:229 ../shell/rb-shell.c:392
 msgid "_Edit"
 msgstr "_Правка"
 
@@ -2950,33 +2980,33 @@ msgstr "Завантаження каталогу Magnatune"
 msgid "Downloading Magnatune Album(s)"
 msgstr "Завантаження альбома(ів) Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:220
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:224
 msgid "Couldn't purchase album"
 msgstr "Не вдалося купити альбом"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:221
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:225
 msgid "You must have a library location set to purchase an album."
 msgstr "Щоб придбати альбом, необхідно вказати розташування фонотеки."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:271
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:275
 msgid "Unable to load catalog"
 msgstr "Не вдається завантажити каталог"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:272
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:276
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr "Rhythmbox не зміг прочитати каталог Magnatune, повідомте про помилку."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:309
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:406
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:313
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:410
 msgid "Couldn't get account details"
 msgstr "Не вдалося отримати данні з облікового запису"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:455
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:459
 msgid "Download Error"
 msgstr "Помилка завантаження"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:456
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:460
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2987,12 +3017,12 @@ msgstr ""
 "Сервер Magnatune повернув:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:458
-#: ../widgets/rb-entry-view.c:1627
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:462
+#: ../widgets/rb-entry-view.c:1643
 msgid "Error"
 msgstr "Помилка"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:459
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:463
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -3003,52 +3033,44 @@ msgstr ""
 "Текст помилки:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:495
 msgid "Finished Downloading"
 msgstr "Завершення завантаження"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:495
 msgid "All Magnatune downloads have been completed."
 msgstr "Всі завантаження з Magnatune завершені."
 
-#: ../plugins/magnatune/magnatune/__init__.py:112
-msgid "Purchase Album"
-msgstr "Купити альбом"
-
-#: ../plugins/magnatune/magnatune/__init__.py:113
-msgid "Purchase this album from Magnatune"
-msgstr "Придбати цей альбом через Magnatune"
-
-#: ../plugins/magnatune/magnatune/__init__.py:117
+#: ../plugins/magnatune/magnatune/__init__.py:111
 msgid "Download Album"
 msgstr "Завантажити альбом"
 
-#: ../plugins/magnatune/magnatune/__init__.py:118
+#: ../plugins/magnatune/magnatune/__init__.py:112
 msgid "Download this album from Magnatune"
 msgstr "Завантажити цей альбом через Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:122
+#: ../plugins/magnatune/magnatune/__init__.py:116
 msgid "Artist Information"
 msgstr "Інформація про виконавця"
 
-#: ../plugins/magnatune/magnatune/__init__.py:123
+#: ../plugins/magnatune/magnatune/__init__.py:117
 msgid "Get information about this artist"
 msgstr "Отримати інформацію про цього виконавця"
 
-#: ../plugins/magnatune/magnatune/__init__.py:127
+#: ../plugins/magnatune/magnatune/__init__.py:121
 msgid "Cancel Downloads"
 msgstr "Скасувати завантаження"
 
-#: ../plugins/magnatune/magnatune/__init__.py:128
+#: ../plugins/magnatune/magnatune/__init__.py:122
 msgid "Stop downloading purchased albums"
 msgstr "Зупинити завантаження куплених альбомів"
 
-#: ../plugins/magnatune/magnatune/__init__.py:257
-#: ../plugins/magnatune/magnatune/__init__.py:260
+#: ../plugins/magnatune/magnatune/__init__.py:251
+#: ../plugins/magnatune/magnatune/__init__.py:254
 msgid "Couldn't store account information"
 msgstr "Не можу зібрати інформацію про обліковий запис"
 
-#: ../plugins/magnatune/magnatune/__init__.py:258
+#: ../plugins/magnatune/magnatune/__init__.py:252
 msgid ""
 "There was a problem accessing the keyring. Check the debug output for more "
 "information."
@@ -3075,7 +3097,7 @@ msgstr ""
 "пристрою)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:153
-#: ../plugins/mtpdevice/rb-mtp-thread.c:458
+#: ../plugins/mtpdevice/rb-mtp-thread.c:466
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Не вдається відкрити тимчасовий файл: %s"
@@ -3093,36 +3115,36 @@ msgstr "Від'єднати MTP-пристрій"
 msgid "Rename MTP-device"
 msgstr "Перейменувати MTP-пристрій"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:709
-#: ../plugins/mtpdevice/rb-mtp-thread.c:741
+#: ../plugins/mtpdevice/rb-mtp-source.c:850
+#: ../plugins/mtpdevice/rb-mtp-thread.c:749
 msgid "Media player device error"
 msgstr "Помилка взаємодії з пристроєм"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:713
+#: ../plugins/mtpdevice/rb-mtp-source.c:854
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Не вдалося відкрити пристрій %s %s"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:745
+#: ../plugins/mtpdevice/rb-mtp-source.c:886
 msgid "Digital Audio Player"
 msgstr "Цифровий аудіоплеєр"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:413
-#: ../plugins/mtpdevice/rb-mtp-thread.c:471
-#: ../plugins/mtpdevice/rb-mtp-thread.c:489
+#: ../plugins/mtpdevice/rb-mtp-thread.c:421
+#: ../plugins/mtpdevice/rb-mtp-thread.c:479
+#: ../plugins/mtpdevice/rb-mtp-thread.c:497
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr "Неможливо скопіювати файл з пристрою MTP: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:434
+#: ../plugins/mtpdevice/rb-mtp-thread.c:442
 #, c-format
 msgid "Not enough space in %s"
 msgstr "Не достатньо місця в %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:513
+#: ../plugins/mtpdevice/rb-mtp-thread.c:521
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "Неможливо відправити файл до MTP-пристрою: %s"
@@ -3289,53 +3311,53 @@ msgstr ""
 msgid "Send tracks"
 msgstr "Надіслати композиції"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:140
+#: ../plugins/status-icon/rb-status-icon-plugin.c:141
 msgid "_Close"
 msgstr "_Закрити"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:141
+#: ../plugins/status-icon/rb-status-icon-plugin.c:142
 msgid "Hide the music player window"
 msgstr "Сховати вікно програвача"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:147
+#: ../plugins/status-icon/rb-status-icon-plugin.c:148
 msgid "_Show Music Player"
 msgstr "_Показувати вікно програвача"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:148
+#: ../plugins/status-icon/rb-status-icon-plugin.c:149
 msgid "Choose music to play"
 msgstr "Вибрати музику"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:150
+#: ../plugins/status-icon/rb-status-icon-plugin.c:151
 msgid "Show N_otifications"
 msgstr "Показувати п_овідомлення"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:151
+#: ../plugins/status-icon/rb-status-icon-plugin.c:152
 msgid "Show notifications of song changes and other events"
 msgstr "Показувати повідомлення про зміну композиції та про інші події"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:434
+#: ../plugins/status-icon/rb-status-icon-plugin.c:435
 msgid "Next"
 msgstr "Наступний"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:585
+#: ../plugins/status-icon/rb-status-icon-plugin.c:586
 #: ../remote/dbus/rb-client.c:453 ../remote/dbus/rb-client.c:478
 msgid "Not playing"
 msgstr "Не відтворюється"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:588
+#: ../plugins/status-icon/rb-status-icon-plugin.c:589
 #, c-format
 msgid "Paused, %s"
 msgstr "Призупинено,·%s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:653
+#: ../plugins/status-icon/rb-status-icon-plugin.c:654
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "у виконанні <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:655
+#: ../plugins/status-icon/rb-status-icon-plugin.c:656
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "з альбому <i>%s</i>"
@@ -3400,65 +3422,65 @@ msgstr "_Повідомлення:"
 msgid "_Status icon:"
 msgstr "Піктограма _стану:"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:229
+#: ../plugins/visualizer/rb-visualizer-plugin.c:230
 msgid "_Visualization"
 msgstr "_Візуалізація"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:230
+#: ../plugins/visualizer/rb-visualizer-plugin.c:231
 msgid "Start or stop visualization"
 msgstr "Запуск або зупинка візуалізації"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:236
+#: ../plugins/visualizer/rb-visualizer-plugin.c:237
 msgid "Small"
 msgstr "Низька"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:237
+#: ../plugins/visualizer/rb-visualizer-plugin.c:238
 msgid "Normal"
 msgstr "Нормальна"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:238
+#: ../plugins/visualizer/rb-visualizer-plugin.c:239
 msgid "Large"
 msgstr "Висока"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:239
+#: ../plugins/visualizer/rb-visualizer-plugin.c:240
 msgid "Extra Large"
 msgstr "Дуже висока"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:243
+#: ../plugins/visualizer/rb-visualizer-plugin.c:244
 msgid "Embedded"
 msgstr "Вбудований"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:244
+#: ../plugins/visualizer/rb-visualizer-plugin.c:245
 msgid "Fullscreen"
 msgstr "На повний екран"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:245
+#: ../plugins/visualizer/rb-visualizer-plugin.c:246
 msgid "Desktop"
 msgstr "На стільницю"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:246
+#: ../plugins/visualizer/rb-visualizer-plugin.c:247
 msgid "Window"
 msgstr "У вікні"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:726
+#: ../plugins/visualizer/rb-visualizer-plugin.c:727
 #, c-format
 msgid "Unable to start video output"
 msgstr "Не вдалося запустити зображення"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:761
+#: ../plugins/visualizer/rb-visualizer-plugin.c:762
 #, c-format
 msgid "Failed to link new visual effect into the GStreamer pipeline"
 msgstr "Помилка зв'язку нового візуального ефекту з конвеєром GStreamer"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:809
+#: ../plugins/visualizer/rb-visualizer-plugin.c:810
 msgid "Unable to start visualization"
 msgstr "Не вдалося запустити візуалізацію"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1394
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1395
 msgid "Enable visual effects?"
 msgstr "Увімкнути візуальні ефекти?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1396
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1397
 msgid ""
 "It seems you are running Rhythmbox remotely.\n"
 "Are you sure you want to enable the visual effects?"
@@ -3466,7 +3488,7 @@ msgstr ""
 "Можливо, Rhythmbox запущений на віддаленому комп'ютері.\n"
 "Увімкнути візуальні ефекти?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1730
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1731
 msgid "Music Player Visualization"
 msgstr "Візуалізація музичного програвача"
 
@@ -3498,30 +3520,30 @@ msgstr "Показує візуалізації"
 msgid "Visualization"
 msgstr "Візуалізація"
 
-#: ../podcast/rb-podcast-manager.c:803
+#: ../podcast/rb-podcast-manager.c:794
 msgid "Error creating podcast download directory"
 msgstr "Не вдалося створити каталог для завантаження подкастів"
 
-#: ../podcast/rb-podcast-manager.c:804
+#: ../podcast/rb-podcast-manager.c:795
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Не вдалося створити каталог для завантаження %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:930
+#: ../podcast/rb-podcast-manager.c:921
 msgid "Invalid URL"
 msgstr "Некоректний URL"
 
-#: ../podcast/rb-podcast-manager.c:931
+#: ../podcast/rb-podcast-manager.c:922
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "Некоректний URL \"%s\" перевірте правильність написання."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:941
+#: ../podcast/rb-podcast-manager.c:932
 msgid "URL already added"
 msgstr "URL вже доданий"
 
-#: ../podcast/rb-podcast-manager.c:942
+#: ../podcast/rb-podcast-manager.c:933
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3530,7 +3552,7 @@ msgstr ""
 "URL \"%s\" вже доданий як радіостанція. Якщо це подкаст-канал, вилучіть цю "
 "радіостанцію."
 
-#: ../podcast/rb-podcast-manager.c:1010
+#: ../podcast/rb-podcast-manager.c:1001
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3541,11 +3563,11 @@ msgstr ""
 "канал не працює. Хочете щоб Rhythmbox використовував його в будь-якому "
 "випадку?"
 
-#: ../podcast/rb-podcast-manager.c:1121
+#: ../podcast/rb-podcast-manager.c:1139
 msgid "Podcast"
 msgstr "Подкаст"
 
-#: ../podcast/rb-podcast-manager.c:2048
+#: ../podcast/rb-podcast-manager.c:2068
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Під час додавання подкасту виникла помилка: %s.  Перевірте URL: %s"
@@ -3677,10 +3699,10 @@ msgstr "Гучність відтворення приглушена.\n"
 msgid "Playback volume is %f.\n"
 msgstr "Гучність відтворення %f.\n"
 
-#: ../rhythmdb/rhythmdb-property-model.c:494
+#: ../rhythmdb/rhythmdb-property-model.c:495
 #: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:166
-#: ../sources/rb-podcast-source.c:329
-#: ../sources/rb-static-playlist-source.c:109
+#: ../sources/rb-podcast-source.c:330
+#: ../sources/rb-static-playlist-source.c:124
 msgid "All"
 msgstr "Все"
 
@@ -3693,7 +3715,7 @@ msgstr ""
 "База даних була створена пізнішою версією Rhythmbox.  Ця версія Rhythmbox не "
 "може прочитати базу даних."
 
-#: ../rhythmdb/rhythmdb.c:745
+#: ../rhythmdb/rhythmdb.c:772
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Не вдається отримати доступ до %s: %s"
@@ -3703,7 +3725,7 @@ msgstr "Не вдається отримати доступ до %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1717
+#: ../rhythmdb/rhythmdb.c:1773
 msgid "The Beatles"
 msgstr "Океан Ельзи"
 
@@ -3711,7 +3733,7 @@ msgstr "Океан Ельзи"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1723
+#: ../rhythmdb/rhythmdb.c:1779
 msgid "Help!"
 msgstr "Там, де нас нема"
 
@@ -3719,15 +3741,15 @@ msgstr "Там, де нас нема"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1729
+#: ../rhythmdb/rhythmdb.c:1785
 msgid "Ticket To Ride"
 msgstr "Сумна мелодія"
 
-#: ../rhythmdb/rhythmdb.c:2227
+#: ../rhythmdb/rhythmdb.c:2282
 msgid "invalid unicode in error message"
 msgstr "неправильне кодування в повідомленні про помилку"
 
-#: ../rhythmdb/rhythmdb.c:2288
+#: ../rhythmdb/rhythmdb.c:2343
 #, c-format
 msgid "Empty file"
 msgstr "Порожній файл"
@@ -3735,16 +3757,16 @@ msgstr "Порожній файл"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2403
+#: ../rhythmdb/rhythmdb.c:2458
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Потрібні додаткові модулі GStreamer, щоб відтворити цей файл: %s"
 
-#: ../rhythmdb/rhythmdb.c:3145
+#: ../rhythmdb/rhythmdb.c:3200
 msgid "Could not load the music database:"
 msgstr "Не вдалося завантажити базу даних музики:"
 
-#: ../rhythmdb/rhythmdb.c:4528
+#: ../rhythmdb/rhythmdb.c:4679
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3752,7 +3774,7 @@ msgstr[0] "%ld хвилина"
 msgstr[1] "%ld хвилини"
 msgstr[2] "%ld хвилин"
 
-#: ../rhythmdb/rhythmdb.c:4529
+#: ../rhythmdb/rhythmdb.c:4680
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3760,7 +3782,7 @@ msgstr[0] "%ld година"
 msgstr[1] "%ld години"
 msgstr[2] "%ld годин"
 
-#: ../rhythmdb/rhythmdb.c:4530
+#: ../rhythmdb/rhythmdb.c:4681
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3769,7 +3791,7 @@ msgstr[1] "%ld дні"
 msgstr[2] "%ld днів"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4536
+#: ../rhythmdb/rhythmdb.c:4687
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s та %s"
@@ -3777,8 +3799,8 @@ msgstr "%s, %s та %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4542 ../rhythmdb/rhythmdb.c:4550
-#: ../rhythmdb/rhythmdb.c:4561
+#: ../rhythmdb/rhythmdb.c:4693 ../rhythmdb/rhythmdb.c:4701
+#: ../rhythmdb/rhythmdb.c:4712
 #, c-format
 msgid "%s and %s"
 msgstr "%s та %s"
@@ -3934,18 +3956,18 @@ msgstr "Не вдається зберегти список творів"
 msgid "Unsupported file extension given."
 msgstr "Файли з вказаним розширенням не підтримуються."
 
-#: ../shell/rb-playlist-manager.c:1772
+#: ../shell/rb-playlist-manager.c:1774
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "Список творів %s вже існує"
 
-#: ../shell/rb-playlist-manager.c:1802 ../shell/rb-playlist-manager.c:1835
-#: ../shell/rb-playlist-manager.c:1875 ../shell/rb-playlist-manager.c:1918
+#: ../shell/rb-playlist-manager.c:1804 ../shell/rb-playlist-manager.c:1837
+#: ../shell/rb-playlist-manager.c:1877 ../shell/rb-playlist-manager.c:1920
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Невідомий список творів: %s"
 
-#: ../shell/rb-playlist-manager.c:1843 ../shell/rb-playlist-manager.c:1883
+#: ../shell/rb-playlist-manager.c:1845 ../shell/rb-playlist-manager.c:1885
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "Список творів %s автоматичний"
@@ -3979,11 +4001,11 @@ msgstr "_Просканувати змінні носії"
 msgid "Scan for new Removable Media"
 msgstr "Просканувати на нові змінні носії"
 
-#: ../shell/rb-removable-media-manager.c:880
+#: ../shell/rb-removable-media-manager.c:882
 msgid "Unable to eject"
 msgstr "Не вдалося витягнути носій"
 
-#: ../shell/rb-removable-media-manager.c:901
+#: ../shell/rb-removable-media-manager.c:903
 msgid "Unable to unmount"
 msgstr "Не вдалося від'єднати носій"
 
@@ -4115,7 +4137,7 @@ msgstr "Зменшити гучність відтворення"
 msgid "_Play"
 msgstr "_Відтворити"
 
-#: ../shell/rb-shell-player.c:322 ../shell/rb-shell-player.c:3704
+#: ../shell/rb-shell-player.c:322 ../shell/rb-shell-player.c:3767
 msgid "Start playback"
 msgstr "Запустити відтворення"
 
@@ -4143,98 +4165,98 @@ msgstr "Повзу_нок позиції твору"
 msgid "Change the visibility of the song position slider"
 msgstr "Показати/сховати повзунок позиції твору"
 
-#: ../shell/rb-shell-player.c:777
+#: ../shell/rb-shell-player.c:836
 msgid "Stream error"
 msgstr "Помилка потоку"
 
-#: ../shell/rb-shell-player.c:778
+#: ../shell/rb-shell-player.c:837
 msgid "Unexpected end of stream!"
 msgstr "Несподіване закінчення потоку!"
 
-#: ../shell/rb-shell-player.c:910
+#: ../shell/rb-shell-player.c:969
 msgid "Linear"
 msgstr "Лінійне"
 
-#: ../shell/rb-shell-player.c:912
+#: ../shell/rb-shell-player.c:971
 msgid "Linear looping"
 msgstr "Лінійне циклічне"
 
-#: ../shell/rb-shell-player.c:914
+#: ../shell/rb-shell-player.c:973
 msgid "Shuffle"
 msgstr "Перемішане"
 
-#: ../shell/rb-shell-player.c:916
+#: ../shell/rb-shell-player.c:975
 msgid "Random with equal weights"
 msgstr "Випадкове з однаковою вагою"
 
-#: ../shell/rb-shell-player.c:918
+#: ../shell/rb-shell-player.c:977
 msgid "Random by time since last play"
 msgstr "Випадкове за часом останнього відтворення"
 
-#: ../shell/rb-shell-player.c:920
+#: ../shell/rb-shell-player.c:979
 msgid "Random by rating"
 msgstr "Випадкове за рейтингом"
 
-#: ../shell/rb-shell-player.c:922
+#: ../shell/rb-shell-player.c:981
 msgid "Random by time since last play and rating"
 msgstr "Випадкове за часом останнього відтворення та рейтингом"
 
-#: ../shell/rb-shell-player.c:924
+#: ../shell/rb-shell-player.c:983
 msgid "Linear, removing entries once played"
 msgstr "Лінійне, крім вже відтворених композицій"
 
-#: ../shell/rb-shell-player.c:934
+#: ../shell/rb-shell-player.c:993
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Помилка створення програвача: %s"
 
-#: ../shell/rb-shell-player.c:1480
+#: ../shell/rb-shell-player.c:1539
 #, c-format
 msgid "Playlist was empty"
 msgstr "Список творів порожній"
 
-#: ../shell/rb-shell-player.c:1967
+#: ../shell/rb-shell-player.c:2026
 #, c-format
 msgid "Not currently playing"
 msgstr "Нічого не відтворюється"
 
-#: ../shell/rb-shell-player.c:2025
+#: ../shell/rb-shell-player.c:2084
 #, c-format
 msgid "No previous song"
 msgstr "Немає попередньої пісні"
 
-#: ../shell/rb-shell-player.c:2125
+#: ../shell/rb-shell-player.c:2184
 #, c-format
 msgid "No next song"
 msgstr "Немає наступної пісні"
 
-#: ../shell/rb-shell-player.c:2246 ../shell/rb-shell-player.c:3351
+#: ../shell/rb-shell-player.c:2305 ../shell/rb-shell-player.c:3414
 msgid "Couldn't start playback"
 msgstr "Не вдається почати відтворення"
 
-#: ../shell/rb-shell-player.c:3113
+#: ../shell/rb-shell-player.c:3176
 msgid "Couldn't stop playback"
 msgstr "Не вдається зупинити відтворення"
 
-#: ../shell/rb-shell-player.c:3223
+#: ../shell/rb-shell-player.c:3286
 #, c-format
 msgid "Playback position not available"
 msgstr "Позиція відтворення недоступна"
 
-#: ../shell/rb-shell-player.c:3255
+#: ../shell/rb-shell-player.c:3318
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Поточну композицію не можна перемотати"
 
-#: ../shell/rb-shell-player.c:3699
+#: ../shell/rb-shell-player.c:3762
 msgid "Pause playback"
 msgstr "Призупинити відтворення"
 
-#: ../shell/rb-shell-player.c:3701
+#: ../shell/rb-shell-player.c:3764
 msgid "Stop playback"
 msgstr "Зупинити відтворення"
 
-#: ../shell/rb-shell-preferences.c:157 ../shell/rb-shell.c:2174
+#: ../shell/rb-shell-preferences.c:157 ../shell/rb-shell.c:2385
 msgid "Couldn't display help"
 msgstr "Не вдалося показати довідку"
 
@@ -4250,182 +4272,182 @@ msgstr "Головне"
 msgid "Playback"
 msgstr "Відтворення"
 
-#: ../shell/rb-shell.c:382
+#: ../shell/rb-shell.c:391
 msgid "_Music"
 msgstr "_Музика"
 
-#: ../shell/rb-shell.c:384
+#: ../shell/rb-shell.c:393
 msgid "_View"
 msgstr "_Вигляд"
 
-#: ../shell/rb-shell.c:385
+#: ../shell/rb-shell.c:394
 msgid "_Control"
 msgstr "_Керування"
 
-#: ../shell/rb-shell.c:386
+#: ../shell/rb-shell.c:395
 msgid "_Tools"
 msgstr "_Інструменти"
 
-#: ../shell/rb-shell.c:387
+#: ../shell/rb-shell.c:396
 msgid "_Help"
 msgstr "_Довідка"
 
-#: ../shell/rb-shell.c:389
+#: ../shell/rb-shell.c:398
 msgid "_Import Folder..."
 msgstr "_Імпортувати теку..."
 
-#: ../shell/rb-shell.c:390
+#: ../shell/rb-shell.c:399
 msgid "Choose folder to be added to the Library"
 msgstr "Вибрати теку, щоб додати до фонотеки"
 
-#: ../shell/rb-shell.c:392
+#: ../shell/rb-shell.c:401
 msgid "Import _File..."
 msgstr "Імпортувати _файл..."
 
-#: ../shell/rb-shell.c:393
+#: ../shell/rb-shell.c:402
 msgid "Choose file to be added to the Library"
 msgstr "Вибрати файл, щоб додати до фонотеки"
 
-#: ../shell/rb-shell.c:395
+#: ../shell/rb-shell.c:404
 msgid "_About"
 msgstr "_Про програму"
 
-#: ../shell/rb-shell.c:396
+#: ../shell/rb-shell.c:405
 msgid "Show information about the music player"
 msgstr "Показати інформацію про програвач"
 
-#: ../shell/rb-shell.c:398
+#: ../shell/rb-shell.c:407
 msgid "_Contents"
 msgstr "_Зміст"
 
-#: ../shell/rb-shell.c:399
+#: ../shell/rb-shell.c:408
 msgid "Display music player help"
 msgstr "Показати довідку програвача"
 
-#: ../shell/rb-shell.c:401
+#: ../shell/rb-shell.c:410
 msgid "_Quit"
 msgstr "Ви_йти"
 
-#: ../shell/rb-shell.c:402
+#: ../shell/rb-shell.c:411
 msgid "Quit the music player"
 msgstr "Вийти з програвача"
 
-#: ../shell/rb-shell.c:404
+#: ../shell/rb-shell.c:413
 msgid "Prefere_nces"
 msgstr "П_араметри"
 
-#: ../shell/rb-shell.c:405
+#: ../shell/rb-shell.c:414
 msgid "Edit music player preferences"
 msgstr "Змінити параметри програвача"
 
-#: ../shell/rb-shell.c:407
+#: ../shell/rb-shell.c:416
 msgid "Plu_gins"
 msgstr "_Модулі"
 
-#: ../shell/rb-shell.c:408
+#: ../shell/rb-shell.c:417
 msgid "Change and configure plugins"
 msgstr "Додати та налаштувати модулі"
 
-#: ../shell/rb-shell.c:410
+#: ../shell/rb-shell.c:419
 msgid "Show _All Tracks"
 msgstr "Показати _всі твори"
 
-#: ../shell/rb-shell.c:411
+#: ../shell/rb-shell.c:420
 msgid "Show all tracks in this music source"
 msgstr "Показати всі твори в фонотеці"
 
-#: ../shell/rb-shell.c:413
+#: ../shell/rb-shell.c:422
 msgid "_Jump to Playing Song"
 msgstr "Пере_йти на твір, що програється"
 
-#: ../shell/rb-shell.c:414
+#: ../shell/rb-shell.c:423
 msgid "Scroll the view to the currently playing song"
 msgstr "Прокрутити список до твору, який відтворюється"
 
-#: ../shell/rb-shell.c:421
+#: ../shell/rb-shell.c:430
 msgid "Side _Pane"
 msgstr "_Бічна панель"
 
-#: ../shell/rb-shell.c:422
+#: ../shell/rb-shell.c:431
 msgid "Change the visibility of the side pane"
 msgstr "Показати/сховати бічну панель"
 
-#: ../shell/rb-shell.c:424
+#: ../shell/rb-shell.c:433
 msgid "T_oolbar"
 msgstr "Пан_ель інструментів"
 
-#: ../shell/rb-shell.c:425
+#: ../shell/rb-shell.c:434
 msgid "Change the visibility of the toolbar"
 msgstr "Показати/сховати панель інструментів"
 
-#: ../shell/rb-shell.c:427
+#: ../shell/rb-shell.c:436
 msgid "_Small Display"
 msgstr "_Зменшений розмір"
 
-#: ../shell/rb-shell.c:428
+#: ../shell/rb-shell.c:437
 msgid "Make the main window smaller"
 msgstr "Зменшити головне вікно"
 
-#: ../shell/rb-shell.c:430
+#: ../shell/rb-shell.c:439
 msgid "Party _Mode"
 msgstr "Режи_м вечірки"
 
-#: ../shell/rb-shell.c:431
+#: ../shell/rb-shell.c:440
 msgid "Change the status of the party mode"
 msgstr "Змінити статус режиму вечірки"
 
-#: ../shell/rb-shell.c:433
+#: ../shell/rb-shell.c:442
 msgid "Play _Queue as Side Pane"
 msgstr "_Черга творів як бічна панель"
 
-#: ../shell/rb-shell.c:434
+#: ../shell/rb-shell.c:443
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Змінити вигляд черги: як джерело, чи як бічна панель"
 
-#: ../shell/rb-shell.c:436
+#: ../shell/rb-shell.c:445
 msgid "S_tatusbar"
 msgstr "_Рядок стану"
 
-#: ../shell/rb-shell.c:437
+#: ../shell/rb-shell.c:446
 msgid "Change the visibility of the statusbar"
 msgstr "Показати/сховати рядок стану"
 
-#: ../shell/rb-shell.c:973 ../shell/rb-shell.c:1196
+#: ../shell/rb-shell.c:1144 ../shell/rb-shell.c:1367
 msgid "Unable to move user data files"
 msgstr "Не вдається перемістити файли даних користувача"
 
-#: ../shell/rb-shell.c:1282
+#: ../shell/rb-shell.c:1453
 msgid "Change the music volume"
 msgstr "Змінити гучність"
 
-#: ../shell/rb-shell.c:1686
+#: ../shell/rb-shell.c:1859
 msgid "Error while saving song information"
 msgstr "Помилка збереження інформації про твір"
 
-#: ../shell/rb-shell.c:1791
+#: ../shell/rb-shell.c:1994
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "Перенесення доріжки %d із %d (%.0f%%)"
 
-#: ../shell/rb-shell.c:1794
+#: ../shell/rb-shell.c:1997
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Перенесення доріжки %d із %d"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:1994
+#: ../shell/rb-shell.c:2199
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Призупинено)"
 
-#: ../shell/rb-shell.c:2098
+#: ../shell/rb-shell.c:2303
 msgid "translator-credits"
 msgstr ""
 "Ігор Піддубняк <ip@psoft.net>, 2004.\n"
 "Maxim Dziumanenko <dziumanenko@gmail.com, 2004.\n"
 "Сергій Гаврилов <sergiovana@bigmir.net>, 2009."
 
-#: ../shell/rb-shell.c:2101
+#: ../shell/rb-shell.c:2306
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -4437,7 +4459,7 @@ msgstr ""
 "опублікованій Free Software Foundation, або версії 2 цієї ліцензії, або\n"
 "(на Ваш розсуд) будь-якої більш пізньої версії.\n"
 
-#: ../shell/rb-shell.c:2105
+#: ../shell/rb-shell.c:2310
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -4449,7 +4471,7 @@ msgstr ""
 "ПРИДАТНОСТІ чи ПРАЦЕЗДАТНОСТІ.  Перегляньте\n"
 "GNU General Public License для більш докладної інформації.\n"
 
-#: ../shell/rb-shell.c:2109
+#: ../shell/rb-shell.c:2314
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -4459,54 +4481,54 @@ msgstr ""
 "Rhythmbox, якщо ні, напишіть до Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2116
+#: ../shell/rb-shell.c:2321
 msgid "Maintainers:"
 msgstr "Відповідальні:"
 
-#: ../shell/rb-shell.c:2119
+#: ../shell/rb-shell.c:2324
 msgid "Former Maintainers:"
 msgstr "Колишні відповідальні:"
 
-#: ../shell/rb-shell.c:2122
+#: ../shell/rb-shell.c:2327
 msgid "Contributors:"
 msgstr "Помічники:"
 
-#: ../shell/rb-shell.c:2124
+#: ../shell/rb-shell.c:2329
 msgid "Music management and playback software for GNOME."
 msgstr "Програма для керування та відтворення музики для GNOME."
 
-#: ../shell/rb-shell.c:2133
+#: ../shell/rb-shell.c:2338
 msgid "Rhythmbox Website"
 msgstr "Веб-сайт Rhythmbox"
 
-#: ../shell/rb-shell.c:2222
+#: ../shell/rb-shell.c:2433
 msgid "Configure Plugins"
 msgstr "Налаштування модулів"
 
-#: ../shell/rb-shell.c:2294
+#: ../shell/rb-shell.c:2505
 msgid "Import Folder into Library"
 msgstr "Імпорт теки в фонотеку"
 
-#: ../shell/rb-shell.c:2316
+#: ../shell/rb-shell.c:2527
 msgid "Import File into Library"
 msgstr "Імпорт файлу до фонотеки"
 
-#: ../shell/rb-shell.c:2863
+#: ../shell/rb-shell.c:3129
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Немає зареєстрованих джерел, які можуть обробити URI %s"
 
-#: ../shell/rb-shell.c:3133 ../shell/rb-shell.c:3162
+#: ../shell/rb-shell.c:3509 ../shell/rb-shell.c:3552
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Невідомий URI твору: %s"
 
-#: ../shell/rb-shell.c:3171
+#: ../shell/rb-shell.c:3561
 #, c-format
 msgid "Unknown property %s"
 msgstr "Невідома властивість %s"
 
-#: ../shell/rb-shell.c:3185
+#: ../shell/rb-shell.c:3575
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Невідомий тип властивості %s для властивості %s"
@@ -4519,7 +4541,7 @@ msgstr "_Браузер"
 msgid "Change the visibility of the browser"
 msgstr "Показати/сховати браузер"
 
-#: ../shell/rb-source-header.c:290
+#: ../shell/rb-source-header.c:306
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "Вибрати твори за жанром, виконавцем, альбомом або назвою"
 
@@ -4528,37 +4550,37 @@ msgid "Loading..."
 msgstr "Завантаження..."
 
 #: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:166
-#: ../sources/rb-podcast-source.c:329
-#: ../sources/rb-static-playlist-source.c:109
+#: ../sources/rb-podcast-source.c:330
+#: ../sources/rb-static-playlist-source.c:124
 msgid "Search all fields"
 msgstr "Пошук на всіх полях"
 
 #: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:167
-#: ../sources/rb-static-playlist-source.c:110
+#: ../sources/rb-static-playlist-source.c:125
 msgid "Artists"
 msgstr "Виконавці"
 
 #: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:167
-#: ../sources/rb-static-playlist-source.c:110
+#: ../sources/rb-static-playlist-source.c:125
 msgid "Search artists"
 msgstr "Пошук за виконавцями"
 
 #: ../sources/rb-auto-playlist-source.c:106 ../sources/rb-browser-source.c:168
-#: ../sources/rb-static-playlist-source.c:111
+#: ../sources/rb-static-playlist-source.c:126
 msgid "Search albums"
 msgstr "Пошук за альбомами"
 
 #: ../sources/rb-auto-playlist-source.c:107 ../sources/rb-browser-source.c:169
-#: ../sources/rb-static-playlist-source.c:112
+#: ../sources/rb-static-playlist-source.c:127
 msgid "Titles"
 msgstr "Назви"
 
 #: ../sources/rb-auto-playlist-source.c:107 ../sources/rb-browser-source.c:169
-#: ../sources/rb-static-playlist-source.c:112
+#: ../sources/rb-static-playlist-source.c:127
 msgid "Search titles"
 msgstr "Пошук за назвами"
 
-#: ../sources/rb-removable-media-source.c:772
+#: ../sources/rb-removable-media-source.c:894
 #: ../sources/rb-library-source.c:1266
 msgid "Error transferring track"
 msgstr "Помилка при перенесенні доріжки"
@@ -4611,7 +4633,7 @@ msgstr "Виконавець/Альбом"
 msgid "Artist - Album"
 msgstr "Виконавець - Альбом"
 
-#: ../sources/rb-library-source.c:138 ../widgets/rb-entry-view.c:1493
+#: ../sources/rb-library-source.c:138 ../widgets/rb-entry-view.c:1509
 #: ../widgets/rb-library-browser.c:142
 msgid "Album"
 msgstr "Альбом"
@@ -4636,7 +4658,8 @@ msgstr "Виконавець (Альбом) - Номер - Назва"
 msgid "Number. Artist - Title"
 msgstr "Номер. Виконавець - Назва"
 
-#: ../sources/rb-library-source.c:403
+#: ../sources/rb-library-source.c:403 ../sources/rb-media-player-source.c:581
+#: ../sources/rb-media-player-source.c:582
 msgid "Music"
 msgstr "Музика"
 
@@ -4652,13 +4675,37 @@ msgstr "Задані декілька місць"
 msgid "Example Path:"
 msgstr "Приклад шляху:"
 
+#: ../sources/rb-media-player-source.c:101
+msgid "Synchronize media player with the library"
+msgstr "Синхронізувати програвач з бібіліотекою"
+
+#. Translators: this is used to display the amount of storage space which will be
+#. * used and the total storage space on a device after it is synced.
+#.
 #. Translators: this is used to display the amount of storage space
 #. * used and the total storage space on an device.
 #.
-#: ../sources/rb-media-player-source.c:221
+#: ../sources/rb-media-player-source.c:345
+#: ../sources/rb-media-player-source.c:552
 #, c-format
 msgid "%s of %s"
 msgstr "%s з %s"
+
+#: ../sources/rb-media-player-source.c:593
+msgid "All Music"
+msgstr "Вся музика"
+
+#: ../sources/rb-media-player-source.c:1174
+msgid "Not enough free space to sync"
+msgstr "Бракує вільного місця для синхронізації"
+
+#: ../sources/rb-media-player-source.c:1175
+msgid ""
+"There is not enough free space on this device to transfer the selected "
+"music, playlists, and podcasts."
+msgstr ""
+"Бракує вільного місця на цьому пристрої для переносу обраної музики, списків "
+"відтворення та подкастів."
 
 #: ../sources/rb-missing-files-source.c:281
 msgid "Missing Files"
@@ -4698,11 +4745,11 @@ msgstr "Очистити"
 msgid "Play Queue"
 msgstr "Черга відтворення"
 
-#: ../sources/rb-play-queue-source.c:427 ../widgets/rb-header.c:447
+#: ../sources/rb-play-queue-source.c:427 ../widgets/rb-header.c:449
 msgid "from"
 msgstr "з альбому"
 
-#: ../sources/rb-play-queue-source.c:427 ../widgets/rb-header.c:446
+#: ../sources/rb-play-queue-source.c:427 ../widgets/rb-header.c:448
 msgid "by"
 msgstr "виконує"
 
@@ -4714,117 +4761,117 @@ msgstr "Вилучити зі списку творів"
 msgid "Remove each selected song from the playlist"
 msgstr "Вилучати кожну виділену пісню зі списку творів"
 
-#: ../sources/rb-podcast-source.c:303
+#: ../sources/rb-podcast-source.c:304
 msgid "_New Podcast Feed..."
 msgstr "_Новий подкаст-канал..."
 
-#: ../sources/rb-podcast-source.c:304
+#: ../sources/rb-podcast-source.c:305
 msgid "Subscribe to a new Podcast Feed"
 msgstr "Підписатися на новий подкаст-канал"
 
-#: ../sources/rb-podcast-source.c:307
+#: ../sources/rb-podcast-source.c:308
 msgid "Download _Episode"
 msgstr "Завантажити _епізод"
 
-#: ../sources/rb-podcast-source.c:308
+#: ../sources/rb-podcast-source.c:309
 msgid "Download Podcast Episode"
 msgstr "Завантажити епізод подкаста"
 
-#: ../sources/rb-podcast-source.c:310
+#: ../sources/rb-podcast-source.c:311
 msgid "_Cancel Download"
 msgstr "_Скасувати завантаження"
 
-#: ../sources/rb-podcast-source.c:311
+#: ../sources/rb-podcast-source.c:312
 msgid "Cancel Episode Download"
 msgstr "Скасувати завантаження епізоду"
 
-#: ../sources/rb-podcast-source.c:314
+#: ../sources/rb-podcast-source.c:315
 msgid "Episode Properties"
 msgstr "Властивості епізоду"
 
-#: ../sources/rb-podcast-source.c:316
+#: ../sources/rb-podcast-source.c:317
 msgid "_Update Podcast Feed"
 msgstr "_Оновити подкаст-канал"
 
-#: ../sources/rb-podcast-source.c:317
+#: ../sources/rb-podcast-source.c:318
 msgid "Update Feed"
 msgstr "Оновити канал"
 
-#: ../sources/rb-podcast-source.c:319
+#: ../sources/rb-podcast-source.c:320
 msgid "_Delete Podcast Feed"
 msgstr "_Вилучити подкаст-канал"
 
-#: ../sources/rb-podcast-source.c:320
+#: ../sources/rb-podcast-source.c:321
 msgid "Delete Feed"
 msgstr "Вилучити канал"
 
-#: ../sources/rb-podcast-source.c:322
+#: ../sources/rb-podcast-source.c:323
 msgid "_Update All Feeds"
 msgstr "_Оновити всі канали"
 
-#: ../sources/rb-podcast-source.c:323
+#: ../sources/rb-podcast-source.c:324
 msgid "Update all feeds"
 msgstr "Оновити всі канали"
 
-#: ../sources/rb-podcast-source.c:330
+#: ../sources/rb-podcast-source.c:331
 msgid "Feeds"
 msgstr "Канали"
 
-#: ../sources/rb-podcast-source.c:330
+#: ../sources/rb-podcast-source.c:331
 msgid "Search podcast feeds"
 msgstr "Пошук подкаст-каналів"
 
-#: ../sources/rb-podcast-source.c:331
+#: ../sources/rb-podcast-source.c:332
 msgid "Episodes"
 msgstr "Епізоди"
 
-#: ../sources/rb-podcast-source.c:331
+#: ../sources/rb-podcast-source.c:332
 msgid "Search podcast episodes"
 msgstr "Пошук подкаст-епізодів"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
-#: ../sources/rb-podcast-source.c:519
+#: ../sources/rb-podcast-source.c:521
 msgctxt "Podcast"
 msgid "New"
 msgstr "Новий"
 
 #. Translators: this is the toolbar button label
 #. for Update All Feeds action.
-#: ../sources/rb-podcast-source.c:525
+#: ../sources/rb-podcast-source.c:527
 msgid "Update"
 msgstr "Оновити"
 
-#: ../sources/rb-podcast-source.c:569 ../sources/rb-podcast-source.c:580
+#: ../sources/rb-podcast-source.c:571 ../sources/rb-podcast-source.c:582
 msgid "Date"
 msgstr "Дата"
 
-#: ../sources/rb-podcast-source.c:601 ../sources/rb-podcast-source.c:669
-#: ../sources/rb-podcast-source.c:723
+#: ../sources/rb-podcast-source.c:603 ../sources/rb-podcast-source.c:671
+#: ../sources/rb-podcast-source.c:725
 msgid "Feed"
 msgstr "Канал"
 
-#: ../sources/rb-podcast-source.c:620 ../sources/rb-podcast-source.c:638
+#: ../sources/rb-podcast-source.c:622 ../sources/rb-podcast-source.c:640
 msgid "Status"
 msgstr "Стан"
 
-#: ../sources/rb-podcast-source.c:621 ../sources/rb-podcast-source.c:1471
+#: ../sources/rb-podcast-source.c:623 ../sources/rb-podcast-source.c:1484
 msgid "Downloaded"
 msgstr "Завантажено"
 
-#: ../sources/rb-podcast-source.c:622 ../sources/rb-podcast-source.c:1479
+#: ../sources/rb-podcast-source.c:624 ../sources/rb-podcast-source.c:1492
 msgid "Waiting"
 msgstr "Очікування"
 
-#: ../sources/rb-podcast-source.c:623 ../sources/rb-podcast-source.c:1475
+#: ../sources/rb-podcast-source.c:625 ../sources/rb-podcast-source.c:1488
 msgid "Failed"
 msgstr "Не вдалось"
 
-#: ../sources/rb-podcast-source.c:908
+#: ../sources/rb-podcast-source.c:910
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Вилучити епізод подкаста і завантажений файл?"
 
-#: ../sources/rb-podcast-source.c:911
+#: ../sources/rb-podcast-source.c:913
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -4834,19 +4881,19 @@ msgstr ""
 "Будь ласка, зверніть увагу, що можна вилучити епізод, але зберегти "
 "завантажений файл, вибравши для вилучення тільки епізод."
 
-#: ../sources/rb-podcast-source.c:919
+#: ../sources/rb-podcast-source.c:921
 msgid "Delete _Episode Only"
 msgstr "Вилучити тільки _епізод"
 
-#: ../sources/rb-podcast-source.c:925
+#: ../sources/rb-podcast-source.c:927
 msgid "_Delete Episode And File"
 msgstr "Вилучити епізод і _файл"
 
-#: ../sources/rb-podcast-source.c:1364
+#: ../sources/rb-podcast-source.c:1377
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Вилучити подкаст-канал та завантажені файли?"
 
-#: ../sources/rb-podcast-source.c:1367
+#: ../sources/rb-podcast-source.c:1380
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -4856,15 +4903,15 @@ msgstr ""
 "Будь ласка, зверніть увагу, що можна вилучити канал, але зберегти "
 "завантажені файли, вибравши для вилучення тільки канал."
 
-#: ../sources/rb-podcast-source.c:1375
+#: ../sources/rb-podcast-source.c:1388
 msgid "Delete _Feed Only"
 msgstr "Вилучити _тільки канал"
 
-#: ../sources/rb-podcast-source.c:1382
+#: ../sources/rb-podcast-source.c:1395
 msgid "_Delete Feed And Files"
 msgstr "В_илучити канал і файли"
 
-#: ../sources/rb-podcast-source.c:1590
+#: ../sources/rb-podcast-source.c:1603
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
@@ -4872,36 +4919,36 @@ msgstr[0] "%d канал"
 msgstr[1] "%d канали"
 msgstr[2] "%d каналів"
 
-#: ../sources/rb-podcast-source.c:1727
+#: ../sources/rb-podcast-source.c:1740
 msgid "Downloading podcast"
 msgstr "Завантажується подкаст"
 
-#: ../sources/rb-podcast-source.c:1742
+#: ../sources/rb-podcast-source.c:1755
 msgid "Finished downloading podcast"
 msgstr "Завантаження подкаста завершене"
 
-#: ../sources/rb-podcast-source.c:1757
+#: ../sources/rb-podcast-source.c:1770
 msgid "New updates available from"
 msgstr "Нові оновлення доступні з"
 
-#: ../sources/rb-podcast-source.c:1875
+#: ../sources/rb-podcast-source.c:1888
 msgid "Error in podcast"
 msgstr "Помилка в подкасті"
 
-#: ../sources/rb-podcast-source.c:1882
+#: ../sources/rb-podcast-source.c:1895
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Додати подкаст-канал в будь-якому випадку?"
 
-#: ../sources/rb-podcast-source.c:2009
+#: ../sources/rb-podcast-source.c:2022
 msgid "New Podcast Feed"
 msgstr "Новий подкаст-канал"
 
-#: ../sources/rb-podcast-source.c:2009
+#: ../sources/rb-podcast-source.c:2022
 msgid "URL of podcast feed:"
 msgstr "URL подкаст-каналу:"
 
-#: ../sources/rb-podcast-source.c:2025
+#: ../sources/rb-podcast-source.c:2038
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -4909,11 +4956,11 @@ msgstr[0] "%d епізод"
 msgstr[1] "%d епізоди"
 msgstr[2] "%d епізодів"
 
-#: ../sources/rb-podcast-source.c:2133
+#: ../sources/rb-podcast-source.c:2146
 msgid "Podcast Error"
 msgstr "Помилка подкаста"
 
-#: ../sources/rb-source.c:719
+#: ../sources/rb-source.c:721
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -4921,7 +4968,7 @@ msgstr[0] "%d твір"
 msgstr[1] "%d твори"
 msgstr[2] "%d творів"
 
-#: ../sources/rb-source.c:1884
+#: ../sources/rb-source.c:1939
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Імпортування (%d/%d)"
@@ -4946,11 +4993,11 @@ msgstr "Доступно"
 msgid "S_ource"
 msgstr "Дж_ерело"
 
-#: ../sources/rb-streaming-source.c:209
+#: ../sources/rb-streaming-source.c:218
 msgid "Connecting"
 msgstr "З'єднання"
 
-#: ../sources/rb-streaming-source.c:213
+#: ../sources/rb-streaming-source.c:222
 msgid "Buffering"
 msgstr "Буферизація"
 
@@ -4962,68 +5009,68 @@ msgstr "Об'єкт Pixbuf"
 msgid "The pixbuf to render."
 msgstr "Об'єкт Pixbuf для візуалізації."
 
-#: ../widgets/rb-entry-view.c:1061 ../widgets/rb-entry-view.c:1542
-#: ../widgets/rb-song-info.c:1083
+#: ../widgets/rb-entry-view.c:1077 ../widgets/rb-entry-view.c:1558
+#: ../widgets/rb-song-info.c:1087
 msgid "Lossless"
 msgstr "Стиснення без втрат"
 
-#: ../widgets/rb-entry-view.c:1462
+#: ../widgets/rb-entry-view.c:1478
 msgid "Track"
 msgstr "Доріжка"
 
-#: ../widgets/rb-entry-view.c:1513
+#: ../widgets/rb-entry-view.c:1529
 msgid "Time"
 msgstr "Час"
 
-#: ../widgets/rb-entry-view.c:1525
+#: ../widgets/rb-entry-view.c:1541
 msgid "Year"
 msgstr "Рік"
 
-#: ../widgets/rb-entry-view.c:1537
+#: ../widgets/rb-entry-view.c:1553
 msgid "Quality"
 msgstr "Якість"
 
-#: ../widgets/rb-entry-view.c:1540
+#: ../widgets/rb-entry-view.c:1556
 msgid "000 kbps"
 msgstr "000 кбіт/с"
 
-#: ../widgets/rb-entry-view.c:1551
+#: ../widgets/rb-entry-view.c:1567
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: ../widgets/rb-entry-view.c:1573
+#: ../widgets/rb-entry-view.c:1589
 msgid "Play Count"
 msgstr "Кількість відтворень"
 
-#: ../widgets/rb-entry-view.c:1585
+#: ../widgets/rb-entry-view.c:1601
 msgid "Last Played"
 msgstr "Останнє відтворення"
 
-#: ../widgets/rb-entry-view.c:1597
+#: ../widgets/rb-entry-view.c:1613
 msgid "Date Added"
 msgstr "Додано"
 
-#: ../widgets/rb-entry-view.c:1608
+#: ../widgets/rb-entry-view.c:1624
 msgid "Last Seen"
 msgstr "Останнє відвідування"
 
-#: ../widgets/rb-entry-view.c:1619
+#: ../widgets/rb-entry-view.c:1635
 msgid "Location"
 msgstr "Розташування"
 
-#: ../widgets/rb-entry-view.c:1876
+#: ../widgets/rb-entry-view.c:1892
 msgid "Now Playing"
 msgstr "Зараз відтворюється"
 
-#: ../widgets/rb-entry-view.c:1937
+#: ../widgets/rb-entry-view.c:1953
 msgid "Playback Error"
 msgstr "Помилка відтворення"
 
-#: ../widgets/rb-header.c:548
+#: ../widgets/rb-header.c:550
 msgid "Not Playing"
 msgstr "Нічого не відтворюється"
 
-#: ../widgets/rb-property-view.c:627
+#: ../widgets/rb-property-view.c:631
 #, c-format
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
@@ -5031,7 +5078,7 @@ msgstr[0] "Всього %d виконавець (%d)"
 msgstr[1] "Всього %d виконавці (%d)"
 msgstr[2] "Всього %d виконавців (%d)"
 
-#: ../widgets/rb-property-view.c:630
+#: ../widgets/rb-property-view.c:634
 #, c-format
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
@@ -5039,7 +5086,7 @@ msgstr[0] "Всього %d альбом (%d)"
 msgstr[1] "Всього %d альбоми (%d)"
 msgstr[2] "Всього %d альбомів (%d)"
 
-#: ../widgets/rb-property-view.c:633
+#: ../widgets/rb-property-view.c:637
 #, c-format
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
@@ -5047,7 +5094,7 @@ msgstr[0] "Всього %d жанр (%d)"
 msgstr[1] "Всього %d жанри (%d)"
 msgstr[2] "Всього %d жанрів (%d)"
 
-#: ../widgets/rb-property-view.c:636
+#: ../widgets/rb-property-view.c:640
 #, c-format
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
@@ -5055,7 +5102,7 @@ msgstr[0] "Всього %d (%d)"
 msgstr[1] "Всього %d (%d)"
 msgstr[2] "Всього %d (%d)"
 
-#: ../widgets/rb-property-view.c:642
+#: ../widgets/rb-property-view.c:646
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
@@ -5338,15 +5385,15 @@ msgstr "Властивості твору"
 msgid "Multiple Song Properties"
 msgstr "Властивості кількох творів"
 
-#: ../widgets/rb-song-info.c:1146
+#: ../widgets/rb-song-info.c:1150
 msgid "Unknown file name"
 msgstr "Невідоме ім'я файла"
 
-#: ../widgets/rb-song-info.c:1168
+#: ../widgets/rb-song-info.c:1172
 msgid "On the desktop"
 msgstr "На стільниці"
 
-#: ../widgets/rb-song-info.c:1191
+#: ../widgets/rb-song-info.c:1195
 msgid "Unknown location"
 msgstr "Невідоме розташування"
 
