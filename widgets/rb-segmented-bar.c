@@ -649,6 +649,7 @@ static void rb_segmented_bar_render_labels (RBSegmentedBar *bar,
 	PangoLayout *layout;
 	Color text_color;
 	GdkColor *gdk_color;
+	gboolean ltr = TRUE;
 	int x = 0;
 	GList *it;
 
@@ -659,6 +660,12 @@ static void rb_segmented_bar_render_labels (RBSegmentedBar *bar,
 	}
 	style = gtk_widget_get_style (GTK_WIDGET (bar));
 	gdk_color = &style->fg[gtk_widget_get_state (GTK_WIDGET (bar))];
+
+	if (gtk_widget_get_direction (GTK_WIDGET (bar)) == GTK_TEXT_DIR_RTL) {
+		ltr = FALSE;
+		x = priv->layout_width;
+	}
+
 	text_color.red = gdk_color->red / 65535.0;
 	text_color.green = gdk_color->green / 65535.0;
 	text_color.blue = gdk_color->blue / 65535.0;
@@ -670,6 +677,10 @@ static void rb_segmented_bar_render_labels (RBSegmentedBar *bar,
 		int layout_height;
 		gchar *value_str;
 		Segment *segment;
+
+		if (ltr == FALSE) {
+			x -= priv->segment_box_size + priv->segment_box_spacing;
+		}
 
 		segment = (Segment *)it->data;
 		cairo_set_line_width (context, 1);
@@ -687,13 +698,18 @@ static void rb_segmented_bar_render_labels (RBSegmentedBar *bar,
 		cairo_stroke (context);
 		cairo_pattern_destroy (grad);
 
-		x += priv->segment_box_size + priv->segment_box_spacing;
+		if (ltr) {
+			x += priv->segment_box_size + priv->segment_box_spacing;
+		}
 
 		layout = create_adapt_layout (GTK_WIDGET (bar), layout,
 					      FALSE, TRUE);
 		pango_layout_set_text (layout, segment->label, -1);
 		pango_layout_get_pixel_size (layout,
 					     &layout_width, &layout_height);
+		if (ltr == FALSE) {
+			x -= priv->segment_box_spacing + layout_width;
+		}
 
 		cairo_move_to (context, x, 0);
 		cairo_set_source_rgba (context,
@@ -717,7 +733,11 @@ static void rb_segmented_bar_render_labels (RBSegmentedBar *bar,
 		pango_cairo_show_layout (context, layout);
 		cairo_fill (context);
 
-		x += segment->layout_width + priv->segment_label_spacing;
+		if (ltr) {
+			x += segment->layout_width + priv->segment_label_spacing;
+		} else {
+			x -= segment->layout_width - layout_width;
+		}
 	}
 	g_object_unref (G_OBJECT (layout));
 }
@@ -748,7 +768,14 @@ rb_segmented_bar_expose (GtkWidget *widget,
 
 	cairo_set_operator (context, CAIRO_OPERATOR_OVER);
 	gtk_widget_get_allocation (widget, &allocation);
-	cairo_translate (context, allocation.x + priv->h_padding, allocation.y);
+	if (gtk_widget_get_direction (GTK_WIDGET (widget)) == GTK_TEXT_DIR_LTR) {
+		cairo_translate (context, allocation.x + priv->h_padding, allocation.y);
+	} else {
+		cairo_translate (context,
+				 allocation.x + allocation.width - priv->h_padding,
+				 allocation.y);
+		cairo_scale (context, -1.0, 1.0);
+	}
 	cairo_rectangle (context, 0, 0,
 			 allocation.width - priv->h_padding,
 			 MAX (2*priv->bar_height, priv->bar_height + priv->bar_label_spacing + priv->layout_height));
