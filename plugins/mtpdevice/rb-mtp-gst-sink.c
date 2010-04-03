@@ -89,6 +89,7 @@ GST_ELEMENT_DETAILS ("RB MTP Sink",
 	"Uploads tracks to MTP devices",
 	"Jonathan Matthew <jonathan@d14n.org>");
 
+GType rb_mtp_sink_get_type (void);
 static void rb_mtp_sink_uri_handler_init (gpointer g_iface, gpointer iface_data);
 
 static void

@@ -90,6 +90,7 @@ GST_ELEMENT_DETAILS ("RB MTP Source",
 	"Jonathan Matthew <jonathan@d14n.org>");
 
 
+GType rb_mtp_src_get_type (void);
 static void rb_mtp_src_uri_handler_init (gpointer g_iface, gpointer iface_data);
 
 static void

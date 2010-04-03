@@ -67,6 +67,7 @@ GST_ELEMENT_DETAILS ("RB Silence Source",
 	"Outputs buffers of silence",
 	"James Henstridge <james@jamesh.id.au>");
 
+GType rb_fm_radio_src_get_type (void);
 static void rb_fm_radio_src_uri_handler_init (gpointer g_iface,
 					      gpointer iface_data);
 
