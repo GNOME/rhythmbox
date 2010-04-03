@@ -31,6 +31,7 @@
 #include "config.h"
 #endif
 #include <math.h>
+#include <locale.h>
 #include <cairo/cairo.h>
 #include <gtk/gtk.h>
 #include "rb-segmented-bar.h"
@@ -54,6 +55,7 @@ static gchar *rb_segmented_bar_default_value_formatter (gdouble percent,
 
 static void compute_layout_size (RBSegmentedBar *bar);
 
+static AtkObject * rb_segmented_bar_get_accessible (GtkWidget *widget);
 enum
 {
 	PROP_0,
@@ -79,6 +81,9 @@ struct _RBSegmentedBarPrivate {
 
 	RBSegmentedBarValueFormatter value_formatter;
 	gpointer value_formatter_data;
+
+	char *a11y_description;
+	char *a11y_locale;
 };
 
 G_DEFINE_TYPE (RBSegmentedBar, rb_segmented_bar, GTK_TYPE_WIDGET)
@@ -151,6 +156,7 @@ rb_segmented_bar_class_init (RBSegmentedBarClass *klass)
 	widget_class->expose_event = rb_segmented_bar_expose;
 	widget_class->size_request = rb_segmented_bar_size_request;
 	widget_class->size_allocate = rb_segmented_bar_size_allocate;
+	widget_class->get_accessible = rb_segmented_bar_get_accessible;
 
         /**
          * RBSegmentedBar::show-reflection
@@ -202,6 +208,8 @@ rb_segmented_bar_finalize (GObject *object)
 	priv = RB_SEGMENTED_BAR_GET_PRIVATE (RB_SEGMENTED_BAR (object));
 	g_list_foreach (priv->segments, (GFunc)rb_segment_free, NULL);
 	g_list_free (priv->segments);
+	g_free (priv->a11y_description);
+	g_free (priv->a11y_locale);
 	G_OBJECT_CLASS (rb_segmented_bar_parent_class)->finalize (object);
 } 
 
@@ -424,6 +432,10 @@ guint rb_segmented_bar_add_segment (RBSegmentedBar *bar,
 	Segment *segment = rb_segment_new (title, percent, &color);
 	priv->segments = g_list_append (priv->segments, segment);
 	index = g_list_index (priv->segments, segment);
+
+	g_free (priv->a11y_description);
+	priv->a11y_description = NULL;
+
 	gtk_widget_queue_draw (GTK_WIDGET (bar));
 	gtk_widget_queue_resize (GTK_WIDGET (bar));
 
@@ -445,6 +457,9 @@ void rb_segmented_bar_update_segment (RBSegmentedBar *bar,
 	Segment *segment = g_list_nth_data (priv->segments, segment_index);
 	if (segment != NULL) {
 		segment->percent = percent;
+		g_free (priv->a11y_description);
+		priv->a11y_description = NULL;
+
 		gtk_widget_queue_draw (GTK_WIDGET (bar));
 	}
 }
@@ -854,4 +869,192 @@ void rb_segmented_bar_set_value_formatter (RBSegmentedBar *bar,
 
 	priv->value_formatter = formatter;
 	priv->value_formatter_data = data;
+}
+
+static const char *
+get_a11y_description (RBSegmentedBar *bar)
+{
+	RBSegmentedBarPrivate *priv;
+
+	priv = RB_SEGMENTED_BAR_GET_PRIVATE (bar);
+	if (priv->a11y_description == NULL) {
+		GList *i;
+		GString *desc = g_string_new ("");
+
+		for (i = priv->segments; i != NULL; i = i->next) {
+			Segment *segment;
+			char *value_str;
+
+			segment = (Segment *)i->data;
+
+			g_assert (priv->value_formatter != NULL);
+			value_str = priv->value_formatter (segment->percent,
+							   priv->value_formatter_data);
+
+			g_string_append_printf (desc, "%s: %s\n", segment->label, value_str);
+			g_free (value_str);
+		}
+
+		priv->a11y_description = g_string_free (desc, FALSE);
+	}
+	return priv->a11y_description;
+}
+
+static const char *
+get_a11y_locale (RBSegmentedBar *bar)
+{
+	RBSegmentedBarPrivate *priv;
+
+	priv = RB_SEGMENTED_BAR_GET_PRIVATE (bar);
+	if (priv->a11y_locale == NULL) {
+		priv->a11y_locale = setlocale (LC_MESSAGES, "");
+	}
+	return priv->a11y_locale;
+}
+
+/* A11y type hack copied from nautilus/eel/eel-accessibility.c */
+
+static GType
+create_a11y_derived_type (const char *type_name, GType existing_type, GClassInitFunc class_init)
+{
+	GType type;
+	GType parent_atk_type;
+	GTypeQuery query;
+	AtkObjectFactory *factory;
+	GTypeInfo typeinfo = {0,};
+
+	type = g_type_from_name (type_name);
+	if (type != G_TYPE_INVALID) {
+		return type;
+	}
+
+	factory = atk_registry_get_factory (atk_get_default_registry (), existing_type);
+	parent_atk_type = atk_object_factory_get_accessible_type (factory);
+	if (parent_atk_type == G_TYPE_INVALID) {
+		return G_TYPE_INVALID;
+	}
+
+	g_type_query (parent_atk_type, &query);
+	if (class_init) {
+		typeinfo.class_init = class_init;
+	}
+	typeinfo.class_size = query.class_size;
+	typeinfo.instance_size = query.instance_size;
+
+	type = g_type_register_static (parent_atk_type, type_name, &typeinfo, 0);
+	return type;
+}
+
+/* AtkObject implementation */
+
+static gint
+a11y_impl_get_n_children (AtkObject *obj)
+{
+	return 0;
+}
+
+static AtkObject *
+a11y_impl_ref_child (AtkObject *obj, gint i)
+{
+	return NULL;
+}
+
+/* AtkImage */
+
+static void
+a11y_impl_get_image_position (AtkImage *image, gint *x, gint *y, AtkCoordType coord_type)
+{
+	atk_component_get_position (ATK_COMPONENT (image), x, y, coord_type);
+}
+
+static const char *
+a11y_impl_get_image_description (AtkImage *image)
+{
+	RBSegmentedBar *bar;
+	bar = RB_SEGMENTED_BAR (g_object_get_data (G_OBJECT (image), "rb-atk-widget"));
+	return get_a11y_description (bar);
+}
+
+static void
+a11y_impl_get_image_size (AtkImage *image, gint *width, gint *height)
+{
+	GtkAllocation alloc;
+	GtkWidget *widget;
+
+	widget = GTK_WIDGET (g_object_get_data (G_OBJECT (image), "rb-atk-widget"));
+
+	gtk_widget_get_allocation (widget, &alloc);
+	*width = alloc.width;
+	*height = alloc.height;
+}
+
+static const char *
+a11y_impl_get_image_locale (AtkImage *image)
+{
+	RBSegmentedBar *bar;
+	bar = RB_SEGMENTED_BAR (g_object_get_data (G_OBJECT (image), "rb-atk-widget"));
+	return get_a11y_locale (bar);
+}
+
+static void
+rb_segmented_bar_a11y_class_init (AtkObjectClass *klass)
+{
+	AtkObjectClass *atkobject_class = ATK_OBJECT_CLASS (klass);
+
+	atkobject_class->get_n_children = a11y_impl_get_n_children;
+	atkobject_class->ref_child = a11y_impl_ref_child;
+}
+
+static void
+rb_segmented_bar_a11y_image_init (AtkImageIface *iface)
+{
+	iface->get_image_position = a11y_impl_get_image_position;
+	iface->get_image_description = a11y_impl_get_image_description;
+	iface->get_image_size = a11y_impl_get_image_size;
+	iface->get_image_locale = a11y_impl_get_image_locale;
+	/* don't need set_image_description, do we? */
+}
+
+static void
+destroy_accessible (gpointer data, GObject *obj)
+{
+	atk_object_notify_state_change (ATK_OBJECT (data), ATK_STATE_DEFUNCT, TRUE);
+}
+
+static AtkObject *
+rb_segmented_bar_get_accessible (GtkWidget *widget)
+{
+	static GType a11ytype = G_TYPE_INVALID;
+	AtkObject *accessible;
+	accessible = g_object_get_data (G_OBJECT (widget), "rb-atk-object");
+	if (accessible != NULL) {
+		return accessible;
+	}
+
+	if (a11ytype == G_TYPE_INVALID) {
+		const GInterfaceInfo atk_image_info = {
+			(GInterfaceInitFunc) rb_segmented_bar_a11y_image_init,
+			(GInterfaceFinalizeFunc) NULL,
+			NULL
+		};
+
+		a11ytype = create_a11y_derived_type ("RBSegmentedBarA11y",
+						     GTK_TYPE_WIDGET,
+						     (GClassInitFunc) rb_segmented_bar_a11y_class_init);
+		if (a11ytype == G_TYPE_INVALID) {
+			g_warning ("unable to create a11y type for segmented bar");
+			return NULL;
+		}
+
+		g_type_add_interface_static (a11ytype, ATK_TYPE_IMAGE, &atk_image_info);
+	}
+
+	accessible = g_object_new (a11ytype, NULL);
+	atk_object_set_role (accessible, ATK_ROLE_IMAGE);
+	atk_object_initialize (accessible, widget);
+
+	g_object_set_data_full (G_OBJECT (widget), "rb-atk-object", accessible, (GDestroyNotify) destroy_accessible);
+	g_object_set_data (G_OBJECT (accessible), "rb-atk-widget", widget);
+
+	return accessible;
 }
