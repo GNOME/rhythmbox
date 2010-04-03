@@ -705,21 +705,18 @@ if test "x$have_python" != "xno"; then
 	GST_PYTHON_DEFSDIR=`$PKG_CONFIG --variable=defsdir gst-python-0.10`
 	AC_MSG_RESULT([$GST_PYTHON_DEFSDIR])
 
-	AC_MSG_CHECKING([for pygtk codegen])
-	PYGTK_CODEGEN="$PYTHON `$PKG_CONFIG --variable=codegendir pygtk-2.0`/codegen.py"
-	AC_MSG_RESULT([$PYGTK_CODEGEN])
+	AC_MSG_CHECKING([for pygobject codegen])
+	PYGOBJECT_CODEGEN="$PYTHON `$PKG_CONFIG --variable=codegendir pygobject-2.0`/codegen.py"
+	AC_MSG_RESULT([$PYGOBJECT_CODEGEN])
 
-	AC_MSG_CHECKING([for pygtk h2def])
-	PYGTK_H2DEF="$PYTHON `$PKG_CONFIG --variable=codegendir pygtk-2.0`/h2def.py"
-	AC_MSG_RESULT([$PYGTK_H2DEF])
+	AC_MSG_CHECKING([for pygobject h2def])
+	PYGOBJECT_H2DEF="$PYTHON `$PKG_CONFIG --variable=codegendir pygobject-2.0`/h2def.py"
+	AC_MSG_RESULT([$PYGOBJECT_H2DEF])
 
 	AC_SUBST([PYGTK_DEFSDIR])
 	AC_SUBST([GST_PYTHON_DEFSDIR])
-	AC_SUBST([PYGTK_CODEGEN])
-	AC_SUBST([PYGTK_H2DEF])
-
-	PKG_CHECK_EXISTS([pygobject-2.0 >= 2.13.2],
-			 AC_DEFINE([PYGOBJECT_CAN_MARSHAL_GVALUE], [1], [Define if pygobject can marshal GValues]))
+	AC_SUBST([PYGOBJECT_CODEGEN])
+	AC_SUBST([PYGOBJECT_H2DEF])
 fi
 
 if test "x$have_python" != "xno" -a "x$enable_python" != "xno"; then

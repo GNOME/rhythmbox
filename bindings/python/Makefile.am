@@ -33,14 +33,14 @@ rb_la_CFLAGS = \
 	$(WNOERROR_CFLAGS)
 
 rhythmdb.c: rhythmdb.defs rhythmdb.override
-	( cd $(srcdir) && $(PYGTK_CODEGEN) \
+	( cd $(srcdir) && $(PYGOBJECT_CODEGEN) \
 		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
 		--register $(GST_PYTHON_DEFSDIR)/gst-types.defs \
 		--override $*.override \
 		--prefix py$* $(<F) ) > $@ 
 
 rb.c: rb.defs rb.override
-	( cd $(srcdir) && $(PYGTK_CODEGEN) \
+	( cd $(srcdir) && $(PYGOBJECT_CODEGEN) \
 		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
 		--register $(PYGTK_DEFSDIR)/gdk-base-types.defs \
 		--register $(GST_PYTHON_DEFSDIR)/gst-types.defs \
@@ -89,7 +89,7 @@ BINDING_HEADERS_SRCDIR		:= $(addprefix $(top_srcdir)/,$(BINDING_HEADERS_SRCDIR_I
 BINDING_HEADERS_BUILDDIR	:= $(addprefix $(top_builddir)/,$(BINDING_HEADERS_BUILDDIR_IN))
 
 regenerate-python-binding:
-	$(PYGTK_H2DEF) $(sort $(BINDING_HEADERS_SRCDIR) $(BINDING_HEADERS_BUILDDIR)) > rhythmbox.defs.new
+	$(PYGOBJECT_H2DEF) $(sort $(BINDING_HEADERS_SRCDIR) $(BINDING_HEADERS_BUILDDIR)) > rhythmbox.defs.new
 
 BUILT_SOURCES = rhythmdb.c rb.c
 
