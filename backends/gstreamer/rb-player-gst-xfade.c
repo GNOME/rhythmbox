@@ -322,8 +322,6 @@ typedef struct
 	GDestroyNotify new_stream_data_destroy;
 
 	/* probably don't need to store pointers to all of these.. */
-	GstElement *source;
-	GstElement *queue;
 	GstElement *decoder;
 	GstElement *volume;
 	GstElement *audioconvert;
@@ -416,16 +414,6 @@ rb_xfade_stream_dispose (GObject *object)
 	RBXFadeStream *sd = RB_XFADE_STREAM (object);
 
 	rb_debug ("disposing stream %s", sd->uri);
-
-	if (sd->source != NULL) {
-		gst_object_unref (sd->source);
-		sd->source = NULL;
-	}
-
-	if (sd->queue != NULL) {
-		gst_object_unref (sd->queue);
-		sd->queue = NULL;
-	}
 
 	if (sd->decoder != NULL) {
 		gst_object_unref (sd->decoder);
@@ -1852,9 +1840,19 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 	return TRUE;
 }
 
-/* links decodebin2 src pads to the rest of the output pipeline */
 static void
-stream_new_decoded_pad_cb (GstElement *decoder, GstPad *pad, gboolean last, RBXFadeStream *stream)
+stream_notify_source_cb (GstElement *decoder, GParamSpec *pspec, RBXFadeStream *stream)
+{
+	GstElement *source;
+	rb_debug ("got source notification for stream %s", stream->uri);
+	g_object_get (decoder, "source", &source, NULL);
+	g_signal_emit (stream->player, signals[PREPARE_SOURCE], 0, stream->uri, source);
+	g_object_unref (source);
+}
+
+/* links uridecodebin src pads to the rest of the output pipeline */
+static void
+stream_pad_added_cb (GstElement *decoder, GstPad *pad, RBXFadeStream *stream)
 {
 	GstCaps *caps;
 	GstStructure *structure;
@@ -2007,40 +2005,27 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	g_object_ref (stream);
 	gst_object_sink (stream);
 	gst_element_set_locked_state (GST_ELEMENT (stream), TRUE);
-
-	stream->source = gst_element_make_from_uri (GST_URI_SRC, stream->uri, NULL);
-	if (stream->source == NULL) {
-		rb_debug ("unable to create source for %s", uri);
-		g_object_unref (stream);
-		return NULL;
-	}
-	gst_object_ref (stream->source);
-
-	/* if the source looks like it might support shoutcast/icecast metadata
-	 * extraction, ask it to do so.
-	 */
-	if (g_str_has_prefix (uri, "http://") &&
-	    g_object_class_find_property (G_OBJECT_GET_CLASS (stream->source),
-		    			  "iradio-mode")) {
-		g_object_set (stream->source, "iradio-mode", TRUE, NULL);
-	}
-
-	/* let plugins apply additional properties to the source */
-	g_signal_emit (player, signals[PREPARE_SOURCE], 0, stream->uri, stream->source);
-
-	stream->decoder = gst_element_factory_make ("decodebin2", NULL);
-
+	stream->decoder = gst_element_factory_make ("uridecodebin", NULL);
 	if (stream->decoder == NULL) {
-		rb_debug ("unable to create decodebin2");
+		rb_debug ("unable to create uridecodebin");
 		g_object_unref (stream);
 		return NULL;
 	}
 	gst_object_ref (stream->decoder);
+	g_object_set (stream->decoder, "uri", uri, NULL);
+	if (player->priv->buffer_size != 0) {
+		g_object_set (stream->decoder, "buffer-size", player->priv->buffer_size * 1024, NULL);
+	}
 
-	/* connect decodebin2 to audioconvert when it creates its output pad */
+	/* connect uridecodebin to audioconvert when it creates its output pad */
 	g_signal_connect_object (stream->decoder,
-				 "new-decoded-pad",
-				 G_CALLBACK (stream_new_decoded_pad_cb),
+				 "notify::source",
+				 G_CALLBACK (stream_notify_source_cb),
+				 stream,
+				 0);
+	g_signal_connect_object (stream->decoder,
+				 "pad-added",
+				 G_CALLBACK (stream_pad_added_cb),
 				 stream,
 				 0);
 	g_signal_connect_object (stream->decoder,
@@ -2126,67 +2111,21 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		      "max-size-buffers", 1000,
 		      NULL);
 
-	/* probably could stand to make this check a bit smarter..
-	 */
-	if (rb_uri_is_local (stream->uri) == FALSE) {
-
-		stream->queue = gst_element_factory_make ("queue2", NULL);
-		if (stream->queue == NULL) {
-			rb_debug ("unable to create queue2");
-			g_object_unref (stream);
-			return NULL;
-		}
-		gst_object_ref (stream->queue);
-
-		g_object_set (stream->queue,
-			      "max-size-buffers", 0,
-			      "max-size-bytes", player->priv->buffer_size * 1024,
-			      "max-size-time", (gint64)0,
-			      "use-buffering", TRUE,
-			      NULL);
-
-		gst_bin_add_many (GST_BIN (stream),
-				  stream->source,
-				  stream->queue,
-				  stream->decoder,
-				  stream->identity,
-				  stream->audioconvert,
-				  stream->audioresample,
-				  stream->capsfilter,
-				  stream->preroll,
-				  stream->volume,
-				  NULL);
-		gst_element_link_many (stream->source,
-				       stream->queue,
-				       stream->decoder,
-				       NULL);
-		gst_element_link_many (stream->audioconvert,
-				       stream->audioresample,
-				       stream->capsfilter,
-				       stream->preroll,
-				       stream->volume,
-				       NULL);
-	} else {
-		gst_bin_add_many (GST_BIN (stream),
-				  stream->source,
-				  stream->decoder,
-				  stream->identity,
-				  stream->audioconvert,
-				  stream->audioresample,
-				  stream->capsfilter,
-				  stream->preroll,
-				  stream->volume,
-				  NULL);
-		gst_element_link_many (stream->source,
-				       stream->decoder,
-				       NULL);
-		gst_element_link_many (stream->audioconvert,
-				       stream->audioresample,
-				       stream->capsfilter,
-				       stream->preroll,
-				       stream->volume,
-				       NULL);
-	}
+	gst_bin_add_many (GST_BIN (stream),
+			  stream->decoder,
+			  stream->identity,
+			  stream->audioconvert,
+			  stream->audioresample,
+			  stream->capsfilter,
+			  stream->preroll,
+			  stream->volume,
+			  NULL);
+	gst_element_link_many (stream->audioconvert,
+			       stream->audioresample,
+			       stream->capsfilter,
+			       stream->preroll,
+			       stream->volume,
+			       NULL);
 
 	if (rb_debug_matches ("check-imperfect", __FILE__)) {
 
@@ -2502,24 +2441,17 @@ preroll_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 		ret = FALSE;
 		/* attempting to unblock here causes deadlock */
 		break;
+
 	case GST_STATE_CHANGE_NO_PREROLL:
-		rb_debug ("no preroll for stream %s -> WAITING", stream->uri);
-		unblock = TRUE;
-		stream->state = WAITING;
+		rb_debug ("no preroll for stream %s, setting to PLAYING instead?", stream->uri);
+		gst_element_set_state (GST_ELEMENT (stream), GST_STATE_PLAYING);
 		break;
 	case GST_STATE_CHANGE_SUCCESS:
-		if (stream->decoder_linked) {
-			rb_debug ("stream %s prerolled synchronously -> WAITING", stream->uri);
-			stream->state = WAITING;
-			/* expect pad block callback to have been called */
-			g_assert (stream->src_blocked);
-			unblock = TRUE;
-		} else {
-			rb_debug ("stream %s did not preroll; probably missing a decoder", stream->uri);
-			ret = FALSE;
-		}
-		break;
 	case GST_STATE_CHANGE_ASYNC:
+		/* uridecodebin returns SUCCESS from state changes when streaming, so we can't
+		 * use that to figure out what to do next.  instead, we wait for pads to be added
+		 * and for our pad block callbacks to be called.
+		 */
 		break;
 	default:
 		g_assert_not_reached();
