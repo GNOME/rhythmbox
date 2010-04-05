@@ -57,6 +57,7 @@ LIBSOUP_REQS=2.26.0
 GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
 PYGOBJECT_REQUIRED=2.15.4
+WEBKIT_MIN_REQS=1.1.17
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
@@ -516,6 +517,22 @@ if test x"$enable_lirc" != xno; then
 	fi
 fi
 AM_CONDITIONAL(WITH_LIRC, test x"$with_lirc" = xyes)
+
+dnl WebKit
+AC_ARG_WITH(webkit,
+	    AC_HELP_STRING([--with-webkit],
+			   [Use WebKit to display HTML]),,
+	    with_webkit_gtk=auto)
+if test "x$with_webkit_gtk" != xno; then
+	PKG_CHECK_MODULES(WEBKIT, [webkit-1.0 >= $WEBKIT_MIN_REQS], have_webkit=yes, have_webkit=no)
+	if test "x$have_webkit" = "xno" -a "x$with_webkit" = "xyes"; then
+		AC_MSG_ERROR([WebKit support explicitly requested, but WebKit could not be found])
+	fi
+	if test "x$have_webkit" = "xyes"; then
+		AC_DEFINE(WITH_WEBKIT, 1, [Define if WebKit is enabled])
+	fi
+fi
+AM_CONDITIONAL(WITH_WEBKIT, test x"$have_webkit" = xyes)
 
 
 AC_ARG_ENABLE(uninstalled-build,

@@ -35,6 +35,7 @@ AM_CFLAGS =						\
 	-I$(top_srcdir)/library				\
 	-I$(top_builddir)/lib 				\
 	$(RHYTHMBOX_CFLAGS)				\
+	$(WEBKIT_CFLAGS)				\
 	$(TOTEM_PLPARSER_CFLAGS)
 
 librbpodcast_la_LDFLAGS = -export-dynamic
