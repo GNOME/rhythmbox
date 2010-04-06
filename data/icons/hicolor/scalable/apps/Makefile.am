@@ -5,10 +5,8 @@ context = apps
 iconsdir = $(themedir)/$(size)/$(context)
 
 icons_DATA = \
-	rhythmbox.svg
+	rhythmbox-symbolic.svg
 
 noinst_DATA =
 
-EXTRA_DIST = \
-	$(icons_DATA)	\
-	$(noinst_DATA)
+EXTRA_DIST = $(icons_DATA)
