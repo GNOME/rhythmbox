@@ -1247,3 +1247,41 @@ _wrap_rb_string_value_map_set (PyGObject *self, PyObject *args, PyObject *kwargs
 	Py_RETURN_NONE;
 }
 
+%%
+override-attr  RhythmDBEntryChange.old
+
+static PyObject *
+_wrap_rhythmdb_entry_change__get_old(PyGBoxed *self, void *closure)
+{
+    RhythmDBEntryChange *c;
+
+    if (pyg_boxed_check(self, RHYTHMDB_TYPE_ENTRY_CHANGE))
+	    c = pyg_boxed_get(self, RhythmDBEntryChange);
+    else {
+	    char *s = g_strdup_printf ("self should be a RhythmDBEntryChange, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
+	    PyErr_SetString(PyExc_TypeError, s);
+	    g_free (s);
+	    return NULL;
+    }
+    return pyg_value_as_pyobject(&c->old, TRUE);
+}
+
+%%
+override-attr  RhythmDBEntryChange.new
+
+static PyObject *
+_wrap_rhythmdb_entry_change__get_new(PyGBoxed *self, void *closure)
+{
+    RhythmDBEntryChange *c;
+
+    if (pyg_boxed_check(self, RHYTHMDB_TYPE_ENTRY_CHANGE))
+	    c = pyg_boxed_get(self, RhythmDBEntryChange);
+    else {
+	    char *s = g_strdup_printf ("self should be a RhythmDBEntryChange, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
+	    PyErr_SetString(PyExc_TypeError, s);
+	    g_free (s);
+	    return NULL;
+    }
+    return pyg_value_as_pyobject(&c->new, TRUE);
+}
+

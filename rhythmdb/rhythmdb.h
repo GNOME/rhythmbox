@@ -248,6 +248,9 @@ typedef struct {
 	RhythmDBQuery *subquery;
 } RhythmDBQueryData;
 
+GType rhythmdb_entry_change_get_type (void);
+#define RHYTHMDB_TYPE_ENTRY_CHANGE (rhythmdb_entry_change_get_type ())
+
 typedef struct {
 	RhythmDBPropType prop;
 	GValue old;

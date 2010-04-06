@@ -1283,14 +1283,33 @@ rhythmdb_read_leave (RhythmDB *db)
 }
 
 static void
+rhythmdb_entry_change_free (RhythmDBEntryChange *change)
+{
+	g_value_unset (&change->old);
+	g_value_unset (&change->new);
+	g_slice_free (RhythmDBEntryChange, change);
+}
+
+static RhythmDBEntryChange *
+rhythmdb_entry_change_copy (RhythmDBEntryChange *change)
+{
+	RhythmDBEntryChange *c = g_slice_new0 (RhythmDBEntryChange);
+
+	c->prop = change->prop;
+	g_value_init (&c->old, G_VALUE_TYPE (&change->old));
+	g_value_init (&c->new, G_VALUE_TYPE (&change->new));
+	g_value_copy (&change->old, &c->old);
+	g_value_copy (&change->new, &c->new);
+	return c;
+}
+
+static void
 free_entry_changes (GSList *entry_changes)
 {
 	GSList *t;
 	for (t = entry_changes; t; t = t->next) {
 		RhythmDBEntryChange *change = t->data;
-		g_value_unset (&change->old);
-		g_value_unset (&change->new);
-		g_slice_free (RhythmDBEntryChange, change);
+		rhythmdb_entry_change_free (change);
 	}
 	g_slist_free (entry_changes);
 }
@@ -1302,15 +1321,7 @@ copy_entry_changes (GSList *entry_changes)
 	GSList *t;
 	for (t = entry_changes; t; t = t->next) {
 		RhythmDBEntryChange *change = t->data;
-		RhythmDBEntryChange *c = g_slice_new0 (RhythmDBEntryChange);
-
-		c->prop = change->prop;
-		g_value_init (&c->old, G_VALUE_TYPE (&change->old));
-		g_value_init (&c->new, G_VALUE_TYPE (&change->new));
-		g_value_copy (&change->old, &c->old);
-		g_value_copy (&change->new, &c->new);
-
-		r = g_slist_prepend (r, c);
+		r = g_slist_prepend (r, rhythmdb_entry_change_copy (change));
 	}
 
 	return g_slist_reverse (r);
@@ -5695,6 +5706,27 @@ rhythmdb_entry_get_type (void)
 						     (GBoxedFreeFunc)rhythmdb_entry_unref);
 	}
 
+	return type;
+}
+
+/**
+ * rhythmdb_entry_change_get_type:
+ *
+ * Returns the #GType for #RhythmDBEntryChange.  #RhythmDBEntryChange is stored as a
+ * boxed value.  Copying the value copies the full change, including old and new values.
+ *
+ * Return value: entry change value type
+ */
+GType
+rhythmdb_entry_change_get_type (void)
+{
+	static GType type = 0;
+
+	if (G_UNLIKELY (type == 0)) {
+		type = g_boxed_type_register_static ("RhythmDBEntryChange",
+						     (GBoxedCopyFunc)rhythmdb_entry_change_copy,
+						     (GBoxedFreeFunc)rhythmdb_entry_change_free);
+	}
 	return type;
 }
 

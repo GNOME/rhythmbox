@@ -20,6 +20,17 @@
   (gtype-id "RHYTHMDB_TYPE_ENTRY")
 )
 
+(define-boxed EntryChange
+  (in-module "RhythmDB")
+  (c-name "RhythmDBEntryChange")
+  (gtype-id "RHYTHMDB_TYPE_ENTRY_CHANGE")
+  (fields
+    '("RhythmDBPropType" "prop" (access read))
+    '("GValue" "old" (access read))
+    '("GValue" "new" (access read))
+  )
+)
+
 (define-boxed EntryType
   (in-module "RhythmDB")
   (c-name "RhythmDBEntryType_")
