@@ -41,6 +41,7 @@ G_BEGIN_DECLS
 #define gtk_widget_set_can_focus(widget, TRUE)                  GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS)
 #define gtk_widget_set_double_buffered(widget, FALSE)           GTK_WIDGET_UNSET_FLAGS (widget, GTK_DOUBLE_BUFFERED)
 #define gtk_widget_set_window(widget, _window)                  ((widget)->window=_window)
+#define gtk_widget_set_visible(widget, visible)			((visible?gtk_widget_show:gtk_widget_hide)(widget))
 
 #define gtk_cell_renderer_get_padding(cell, xpad, ypad)		g_object_get (cell, "xpad", xpad, "ypad", ypad, NULL);
 #define gtk_cell_renderer_get_alignment(cell, xalign, yalign)	g_object_get (cell, "xalign", xalign, "yalign", yalign, NULL);
