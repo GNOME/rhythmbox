@@ -82,7 +82,7 @@ static void rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 static void rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 						 RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
-						   GSList *changes, RhythmDBQueryModel *model);
+						   GValueArray *changes, RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 						   RhythmDBQueryModel *model);
 
@@ -1017,11 +1017,11 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db,
 static void
 rhythmdb_query_model_entry_changed_cb (RhythmDB *db,
 				       RhythmDBEntry *entry,
-				       GSList *changes,
+				       GValueArray *changes,
 				       RhythmDBQueryModel *model)
 {
 	gboolean hidden = FALSE;
-	GSList *t;
+	int i;
 
 	hidden = (!model->priv->show_hidden && rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN));
 
@@ -1089,8 +1089,9 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db,
 	 * unless this is a chained query model, in which
 	 * case we propagate the parent model's signals instead.
 	 */
-	for (t = changes; t; t = t->next) {
-		RhythmDBEntryChange *change = t->data;
+	for (i = 0; i < changes->n_values; i++) {
+		GValue *v = g_value_array_get_nth (changes, i);
+		RhythmDBEntryChange *change = g_value_get_boxed (v);
 
 		if (model->priv->base_model == NULL) {
 			g_signal_emit (G_OBJECT (model),

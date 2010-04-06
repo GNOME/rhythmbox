@@ -1534,7 +1534,7 @@ db_entry_deleted_cb (RhythmDB *db,
 static void
 db_entry_changed_cb (RhythmDB *db,
 		     RhythmDBEntry *entry,
-		     GSList *changes,
+		     GValueArray *changes,
 		     RBDAAPShare *share)
 {
 	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN)) {

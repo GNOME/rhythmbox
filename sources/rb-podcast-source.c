@@ -223,7 +223,7 @@ static void rb_podcast_source_cmd_new_podcast	 (GtkAction *action,
 						  RBPodcastSource *source);
 static void rb_podcast_source_entry_changed_cb	(RhythmDB *db,
 						 RhythmDBEntry *entry,
-						 GSList *changes,
+						 GValueArray *changes,
 						 RBPodcastSource *source);
 static void rb_podcast_source_pixbuf_clicked_cb	(RBCellRendererPixbuf *renderer,
 						 const char *path,
@@ -2076,20 +2076,21 @@ impl_add_uri (RBSource *asource, const char *uri, const char *title, const char 
 static void
 rb_podcast_source_entry_changed_cb (RhythmDB *db,
 				    RhythmDBEntry *entry,
-				    GSList *changes,
+				    GValueArray *changes,
 				    RBPodcastSource *source)
 {
 	RhythmDBEntryType entry_type;
 	gboolean feed_changed;
-	GSList *t;
+	int i;
 
 	entry_type = rhythmdb_entry_get_entry_type (entry);
 	if (entry_type != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
 		return;
 
 	feed_changed = FALSE;
-	for (t = changes; t; t = t->next) {
-		RhythmDBEntryChange *change = t->data;
+	for (i = 0; i < changes->n_values; i++) {
+		GValue *v = g_value_array_get_nth (changes, i);
+		RhythmDBEntryChange *change = g_value_get_boxed (v);
 
 		if (change->prop == RHYTHMDB_PROP_PLAYBACK_ERROR) {
 			feed_changed = TRUE;

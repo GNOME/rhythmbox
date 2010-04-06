@@ -897,10 +897,10 @@ send_offline_plays_notification (RBiPodSource *source)
 static void
 rb_ipod_source_entry_changed_cb (RhythmDB *db,
 				 RhythmDBEntry *entry,
-				 GSList *changes,
+				 GValueArray *changes,
 				 RBiPodSource *source)
 {
-	GSList *t;
+	int i;
 
 	/* Ignore entries which are not iPod entries */
 	RhythmDBEntryType entry_type;
@@ -917,18 +917,18 @@ rb_ipod_source_entry_changed_cb (RhythmDB *db,
 	 */
 	if (entry_type != ipod_entry_type) {
 		return; 
-	};
-
+	}
 
 	/* If an interesting property was changed, update it on the iPod */
 	/* If the iPod database is being saved in a separate thread, this 
-	 * might not be 100% thread-safe, but at worse we'll modify a field
+	 * might not be 100% thread-safe, but at worst we'll modify a field
 	 * at the time it's being saved which will get a wrong value, but
-	 * that's the worse that can happen and that's pretty theoritical, 
+	 * that's the worst that can happen and that's pretty theoretical,
 	 * I don't think avoiding it is worth the effort.
 	 */
-	for (t = changes; t; t = t->next) {
-		RhythmDBEntryChange *change = t->data;
+	for (i = 0; i < changes->n_values; i++) {
+		GValue *v = g_value_array_get_nth (changes, i);
+		RhythmDBEntryChange *change = g_value_get_boxed (v);
 		switch (change->prop) {
 		case RHYTHMDB_PROP_RATING: {
 			Itdb_Track *track;
@@ -986,7 +986,7 @@ rb_ipod_source_entry_changed_cb (RhythmDB *db,
 			break;			
 		}
 		default:
-			rb_debug ("Ignoring property %d\n", change->prop);
+			rb_debug ("Ignoring property %d", change->prop);
 			break;
 		}
 	}

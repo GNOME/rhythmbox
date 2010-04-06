@@ -321,7 +321,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 	 * RhythmDB::entry-changed:
 	 * @db: the #RhythmDB
 	 * @entry: the changed #RhythmDBEntry
-	 * @changes: a #GSList of #RhythmDBEntryChanges structures describing the changes
+	 * @changes: a #GValueArray of #RhythmDBEntryChange structures describing the changes
 	 *
 	 * Emitted when a database entry is modified.  The @changes list
 	 * contains a structure for each entry property that has been modified.
@@ -332,9 +332,9 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_changed),
 			      NULL, NULL,
-			      rb_marshal_VOID__BOXED_POINTER,
+			      rb_marshal_VOID__BOXED_BOXED,
 			      G_TYPE_NONE, 2,
-			      RHYTHMDB_TYPE_ENTRY, G_TYPE_POINTER);
+			      RHYTHMDB_TYPE_ENTRY, G_TYPE_VALUE_ARRAY);
 
 	/**
 	 * RhythmDB::entry-keyword-added:
@@ -1360,7 +1360,19 @@ rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 	if (changed_entries != NULL) {
 		g_hash_table_iter_init (&iter, changed_entries);
 		while (g_hash_table_iter_next (&iter, (gpointer *)&entry, (gpointer *)&entry_changes)) {
-			g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, entry, entry_changes);
+			GValueArray *emit_changes;
+			GSList *c;
+
+			emit_changes = g_value_array_new (g_slist_length (entry_changes));
+			for (c = entry_changes; c != NULL; c = c->next) {
+				GValue v = {0,};
+				g_value_init (&v, RHYTHMDB_TYPE_ENTRY_CHANGE);
+				g_value_take_boxed (&v, c->data);
+				g_value_array_append (emit_changes, &v);
+				g_value_unset (&v);
+			}
+			g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, entry, emit_changes);
+			g_value_array_free (emit_changes);
 			g_hash_table_iter_remove (&iter);
 		}
 	}
@@ -1462,10 +1474,13 @@ process_changed_entries_cb (RhythmDBEntry *entry,
 {
 	GSList *existing;
 	if (db->priv->changed_entries_to_emit == NULL) {
+		/* the value destroy function is just g_slist_free because we
+		 * steal the actual change structures to build the value array.
+		 */
 		db->priv->changed_entries_to_emit = g_hash_table_new_full (NULL,
 									   NULL,
 									   (GDestroyNotify) rhythmdb_entry_unref,
-									   (GDestroyNotify) free_entry_changes);
+									   (GDestroyNotify) g_slist_free);
 	}
 
 	/* if the entry is already in the change map from a previous commit, add the
