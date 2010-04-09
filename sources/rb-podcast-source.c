@@ -1839,8 +1839,8 @@ rb_podcast_source_post_feed_cell_sort_func (RhythmDBEntry *a,
 	gint ret;
 
 	/* feeds */
-	a_str = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_ALBUM);
-	b_str = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_ALBUM);
+	a_str = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
 
 	ret = strcmp (a_str, b_str);
 	if (ret != 0)
@@ -1853,8 +1853,8 @@ rb_podcast_source_post_feed_cell_sort_func (RhythmDBEntry *a,
 		return (a_val > b_val) ? 1 : -1;
 
 	/* titles */
-	a_str = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE);
-	b_str = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE);
+	a_str = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE_SORT_KEY);
 
 	ret = strcmp (a_str, b_str);
 	if (ret != 0)
