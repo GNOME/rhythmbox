@@ -148,8 +148,13 @@ static void rb_podcast_manager_get_property 		(GObject *object,
 							 guint prop_id,
 		                                	 GValue *value,
                 		                	 GParamSpec *pspec);
+static void read_file_cb				(GFile *source,
+							 GAsyncResult *result,
+							 RBPodcastManagerInfo *data);
 static void download_file_info_cb			(GFile *source,
 							 GAsyncResult *result,
+							 RBPodcastManagerInfo *data);
+static void download_podcast				(GFileInfo *src_info,
 							 RBPodcastManagerInfo *data);
 static void rb_podcast_manager_abort_download		(RBPodcastManagerInfo *data);
 static gboolean rb_podcast_manager_sync_head_cb 	(gpointer data);
@@ -617,7 +622,12 @@ download_error (RBPodcastManagerInfo *data, GError *error)
 	}
 
 	rhythmdb_commit (data->pd->priv->db);
-	g_idle_add ((GSourceFunc)end_job, data);
+
+	if (rb_is_main_thread() == FALSE) {
+		g_idle_add ((GSourceFunc)end_job, data);
+	} else {
+		rb_podcast_manager_abort_download (data);
+	}
 }
 
 static gboolean
@@ -626,7 +636,6 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 	const char *location;
 	RBPodcastManagerInfo *data;
 	char *query_string;
-	const char *attrs;
 	GList *d;
 
 	g_assert (rb_is_main_thread ());
@@ -670,69 +679,101 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 
 	data->source = g_file_new_for_uri (location);
 
-	attrs = G_FILE_ATTRIBUTE_STANDARD_SIZE ","
-		G_FILE_ATTRIBUTE_STANDARD_COPY_NAME ","
-		G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME;
-	g_file_query_info_async (data->source,
-				 attrs,
-				 G_FILE_QUERY_INFO_NONE,
-				 0,
-				 data->cancel,
-				 (GAsyncReadyCallback) download_file_info_cb,
-				 data);
+	g_file_read_async (data->source,
+	                   0,
+	                   data->cancel,
+	                   (GAsyncReadyCallback) read_file_cb,
+	                   data);
 
 	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
 static void
-download_file_info_cb (GFile *source,
-		       GAsyncResult *result,
-		       RBPodcastManagerInfo *data)
+read_file_cb (GFile *source,
+              GAsyncResult *result,
+              RBPodcastManagerInfo *data)
 {
 	GError *error = NULL;
 	GFileInfo *src_info;
+
+	g_assert (rb_is_main_thread ());
+
+	rb_debug ("started read for %s",
+		  get_remote_location (data->entry));
+
+	data->in_stream = g_file_read_finish (data->source,
+	                                      result,
+	                                      &error);
+	if (error != NULL) {
+		download_error (data, error);
+		g_error_free (error);
+		return;
+	}
+
+	src_info = g_file_input_stream_query_info (data->in_stream,
+	                                           G_FILE_ATTRIBUTE_STANDARD_SIZE ","
+	                                           G_FILE_ATTRIBUTE_STANDARD_COPY_NAME ","
+	                                           G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME,
+	                                           NULL,
+	                                           &error);
+
+	/* If no stream information then probably using an old version of gvfs, fall back
+	 * to getting the stream information from the GFile.
+	 */
+	if (error != NULL) {
+		rb_debug ("file info query from input failed, trying query on file: %s", error->message);
+		g_error_free (error);
+
+		g_file_query_info_async (data->source,
+		                         G_FILE_ATTRIBUTE_STANDARD_SIZE ","
+		                         G_FILE_ATTRIBUTE_STANDARD_COPY_NAME ","
+		                         G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME,
+		                         G_FILE_QUERY_INFO_NONE,
+		                         0,
+		                         data->cancel,
+		                         (GAsyncReadyCallback) download_file_info_cb,
+		                         data);
+		return;
+	}
+
+	rb_debug ("got file info results for %s",
+		  get_remote_location (data->entry));
+
+	download_podcast (src_info, data);
+}
+
+static void
+download_file_info_cb (GFile *source,
+                       GAsyncResult *result,
+                       RBPodcastManagerInfo *data)
+{
+	GError *error = NULL;
+	GFileInfo *src_info;
+
+	src_info = g_file_query_info_finish (source, result, &error);
+
+	if (error != NULL) {
+		download_error (data, error);
+		g_error_free (error);
+	} else {
+		rb_debug ("got file info results for %s",
+			  get_remote_location (data->entry));
+
+		download_podcast (src_info, data);
+	}
+}
+
+static void
+download_podcast (GFileInfo *src_info, RBPodcastManagerInfo *data)
+{
+	GError *error = NULL;
 	char *local_file_name = NULL;
 	char *feed_folder;
 	char *esc_local_file_name;
 	char *local_file_uri;
 	char *sane_local_file_uri;
 	char *conf_dir_uri;
-
-	g_assert (rb_is_main_thread ());
-
-	rb_debug ("got file info results for %s",
-		  get_remote_location (data->entry));
-
-	src_info = g_file_query_info_finish (source, result, &error);
-
-	/* ignore G_IO_ERROR_FAILED here, as it probably just means that the server is lame.
-	 * actual problems (not found, permission denied, etc.) have specific errors codes,
-	 * so they'll still be reported.
-	 */
-	if (error != NULL && g_error_matches (error, G_IO_ERROR, G_IO_ERROR_FAILED) == FALSE) {
-		GValue val = {0,};
-
-		rb_debug ("file info query failed: %s", error->message);
-
-		g_value_init (&val, G_TYPE_ULONG);
-		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
-		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
-		g_value_unset (&val);
-
-		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val, error->message);
-		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
-		g_value_unset (&val);
-
-		rhythmdb_commit (data->pd->priv->db);
-
-		g_error_free (error);
-		rb_podcast_manager_abort_download (data);
-		return;
-	} else {
-		g_clear_error (&error);
-	}
 
 	if (src_info != NULL) {
 		data->download_size = g_file_info_get_attribute_uint64 (src_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
@@ -750,7 +791,7 @@ download_file_info_cb (GFile *source,
 
 	if (local_file_name == NULL) {
 		/* fall back to the basename from the original URI */
-		local_file_name = g_file_get_basename (source);
+		local_file_name = g_file_get_basename (data->source);
 		rb_debug ("didn't get a filename from the file info request; using basename %s", local_file_name);
 	}
 
@@ -799,7 +840,6 @@ download_file_info_cb (GFile *source,
 		rb_podcast_manager_abort_download (data);
 		return;
 	}
-
 
 	data->destination = g_file_new_for_uri (sane_local_file_uri);
 	if (g_file_query_exists (data->destination, NULL)) {
@@ -1415,14 +1455,6 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 	gssize n_read;
 	gssize n_written;
 	guint64 downloaded;
-	
-	/* open remote file */
-	data->in_stream = g_file_read (data->source, data->cancel, &error);
-	if (error != NULL) {
-		download_error (data, error);
-		g_error_free (error);
-		return NULL;
-	}
 
 	/* if we have an offset to download from, try the seek
 	 * before anything else.  if we can't seek, we'll have to
@@ -1545,6 +1577,7 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 
 	if (error != NULL) {
 		download_error (data, error);
+		g_error_free (error);
 	} else {
 		download_progress (data, downloaded, data->download_size, TRUE);
 	}
