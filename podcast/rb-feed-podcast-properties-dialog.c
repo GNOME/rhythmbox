@@ -34,6 +34,9 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <glib.h>
+/* GStreamer happens to have some language name functions */
+#include <gst/gst.h>
+#include <gst/tag/tag.h>
 
 #include "rb-feed-podcast-properties-dialog.h"
 #include "rb-file-helpers.h"
@@ -41,6 +44,7 @@
 #include "rb-dialog.h"
 #include "rb-cut-and-paste-code.h"
 #include "rhythmdb.h"
+#include "rb-debug.h"
 
 static void rb_feed_podcast_properties_dialog_class_init (RBFeedPodcastPropertiesDialogClass *klass);
 static void rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog);
@@ -259,8 +263,29 @@ static void
 rb_feed_podcast_properties_dialog_update_language (RBFeedPodcastPropertiesDialog *dialog)
 {
 	const char *language;
-
+#if GST_CHECK_VERSION(0,10,26)
+	char *separator;
+	char *iso636lang;
+	const char *langname;
+#endif
 	language = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LANG);
+#if GST_CHECK_VERSION(0,10,26)
+	/* language tag is language[-subcode]; we only care about the language bit */
+	iso636lang = g_strdup (language);
+	separator = strchr (iso636lang, '-');
+	if (separator != NULL) {
+		*separator = '\0';
+	}
+
+	/* map the language code to a language name */
+	langname = gst_tag_get_language_name (iso636lang);
+	g_free (iso636lang);
+	if (langname != NULL) {
+		rb_debug ("mapped language code %s to %s", language, langname);
+		gtk_label_set_text (GTK_LABEL (dialog->priv->language), langname);
+		return;
+	}
+#endif
 	gtk_label_set_text (GTK_LABEL (dialog->priv->language), language);
 }
 
