@@ -386,9 +386,11 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMt
 			g_signal_connect_object (G_OBJECT (source),
 						"deleted", G_CALLBACK (source_deleted_cb),
 						plugin, 0);
+			free (raw_devices);
 			return source;
 		}
 	}
+	free (raw_devices);
 
 	rb_debug ("device didn't match anything");
 	return NULL;
