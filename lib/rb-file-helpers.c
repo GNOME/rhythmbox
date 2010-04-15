@@ -1403,19 +1403,24 @@ rb_file_find_extant_parent (GFile *file)
 /**
  * rb_uri_get_filesystem_type:
  * @uri: URI to get filesystem type for
+ * @mount_point: optionally returns the mount point for the filesystem as a URI
  *
  * Returns a string describing the type of the filesystem containing @uri.
  *
  * Return value: filesystem type string, must be freed by caller.
  */
 char *
-rb_uri_get_filesystem_type (const char *uri)
+rb_uri_get_filesystem_type (const char *uri, char **mount_point)
 {
 	GFile *file;
 	GFile *extant;
 	GFileInfo *info;
 	char *fstype = NULL;
 	GError *error = NULL;
+
+	if (mount_point != NULL) {
+		*mount_point = NULL;
+	}
 
 	/* ignore our own internal URI schemes */
 	if (g_str_has_prefix (uri, "xrb")) {
@@ -1432,6 +1437,13 @@ rb_uri_get_filesystem_type (const char *uri)
 		rb_debug ("unable to get filesystem type for %s: none of the directory structure exists", uri);
 		g_object_unref (file);
 		return NULL;
+	}
+
+	if (mount_point != NULL) {
+		char *extant_uri;
+		extant_uri = g_file_get_uri (extant);
+		*mount_point = rb_uri_get_mount_point (extant_uri);
+		g_free (extant_uri);
 	}
 
 	info = g_file_query_filesystem_info (extant, G_FILE_ATTRIBUTE_FILESYSTEM_TYPE, NULL, &error);
@@ -1474,9 +1486,11 @@ rb_sanitize_path_for_msdos_filesystem (char *path)
 char *
 rb_sanitize_uri_for_filesystem (const char *uri)
 {
-	char *filesystem = rb_uri_get_filesystem_type (uri);
+	char *mountpoint = NULL;
+	char *filesystem;
 	char *sane_uri = NULL;
 
+	filesystem = rb_uri_get_filesystem_type (uri, &mountpoint);
 	if (!filesystem)
 		return g_strdup (uri);
 
@@ -1485,19 +1499,48 @@ rb_sanitize_uri_for_filesystem (const char *uri)
 	    !strcmp (filesystem, "msdos")) {
 	    	char *hostname = NULL;
 		GError *error = NULL;
-	    	char *full_path = g_filename_from_uri (uri, &hostname, &error);
+		char *full_path;
+		char *fat_path;
+
+		full_path = g_filename_from_uri (uri, &hostname, &error);
 
 		if (error) {
 			g_error_free (error);
 			g_free (filesystem);
 			g_free (full_path);
+			g_free (mountpoint);
 			return g_strdup (uri);
 		}
 
-		rb_sanitize_path_for_msdos_filesystem (full_path);
+		/* if we got a mount point, don't sanitize it.  the mountpoint must be
+		 * valid for the filesystem that contains it, but it may not be valid for
+		 * the filesystem it contains.  for example, a vfat filesystem mounted
+		 * at "/media/Pl1:".
+		 */
+		fat_path = full_path;
+		if (mountpoint != NULL) {
+			char *mount_path;
+			mount_path = g_filename_from_uri (mountpoint, NULL, &error);
+			if (error) {
+				rb_debug ("can't convert mountpoint %s to a path: %s", mountpoint, error->message);
+				g_error_free (error);
+			} else if (g_str_has_prefix (full_path, mount_path)) {
+				fat_path = full_path + strlen (mount_path);
+			} else {
+				rb_debug ("path %s doesn't begin with mount path %s somehow", full_path, mount_path);
+			}
+
+			g_free (mount_path);
+		} else {
+			rb_debug ("couldn't get mount point for %s", uri);
+		}
+
+		rb_debug ("sanitizing path %s", fat_path);
+		rb_sanitize_path_for_msdos_filesystem (fat_path);
 
 		/* create a new uri from this */
 		sane_uri = g_filename_to_uri (full_path, hostname, &error);
+		rb_debug ("sanitized URI: %s", sane_uri);
 
 		g_free (hostname);
 		g_free (full_path);
@@ -1505,6 +1548,7 @@ rb_sanitize_uri_for_filesystem (const char *uri)
 		if (error) {
 			g_error_free (error);
 			g_free (filesystem);
+			g_free (mountpoint);
 			return g_strdup (uri);
 		}
 	}
@@ -1512,6 +1556,7 @@ rb_sanitize_uri_for_filesystem (const char *uri)
 	/* add workarounds for other filesystems limitations here */
 
 	g_free (filesystem);
+	g_free (mountpoint);
 	return sane_uri ? sane_uri : g_strdup (uri);
 }
 

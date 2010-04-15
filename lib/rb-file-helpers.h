@@ -92,7 +92,7 @@ gboolean	rb_uri_create_parent_dirs (const char *uri, GError **error);
 void		rb_file_helpers_init	(gboolean uninstalled);
 void		rb_file_helpers_shutdown(void);
 
-char *		rb_uri_get_filesystem_type (const char *uri);
+char *		rb_uri_get_filesystem_type (const char *uri, char **mount_point);
 void		rb_sanitize_path_for_msdos_filesystem (char *path);
 char *		rb_sanitize_uri_for_filesystem(const char *uri);
 
