@@ -218,11 +218,11 @@ class Magnatune(rb.Plugin):
 				builder.get_object("account_changed_label").hide()
 
 			def account_type_toggled (button):
-				print "account type radiobutton toggled: " + button.props.name
+				print "account type radiobutton toggled: " + button.get_name()
 				account_type = {"no_account_radio": "none", "stream_account_radio": "stream", "download_account_radio": "download"}
 				if button.get_active():
-					self.client.set_string(self.gconf_keys['account_type'], account_type[button.props.name])
-					if account_type[button.props.name] == 'none':
+					self.client.set_string(self.gconf_keys['account_type'], account_type[button.get_name()])
+					if account_type[button.get_name()] == 'none':
 						builder.get_object("username_label").set_sensitive(False)
 						builder.get_object("username_entry").set_sensitive(False)
 						builder.get_object("password_label").set_sensitive(False)
@@ -269,6 +269,10 @@ class Magnatune(rb.Plugin):
 
 			# FIXME this bit should be in builder too  (what?)
 			dialog = builder.get_object('preferences_dialog')
+
+			# Set the names of the radio buttons so we can tell which one has been clicked
+			for name in ("no_account_radio", "stream_account_radio", "download_account_radio"):
+				builder.get_object(name).set_name(name)
 
 			builder.get_object("audio_combobox").set_active(self.format_list.index(self.client.get_string(self.gconf_keys['format'])))
 
