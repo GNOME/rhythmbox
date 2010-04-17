@@ -10,6 +10,7 @@ EXTRA_DIST = 			\
 	autogen.sh		\
 	config.h.in		\
 	gnome-doc-utils.make	\
+	rhythmbox.pc.in		\
 	MAINTAINERS		\
 	MAINTAINERS.old		\
 	DOCUMENTERS		\
@@ -23,6 +24,9 @@ DISTCLEANFILES =			\
 	intltool-update
 
 CLEANFILES = ./po/.intltool-merge-cache
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = rhythmbox.pc
 
 CHANGELOG_START = RHYTHMBOX-0_12_0
 
