@@ -49,27 +49,32 @@ INCLUDES = 						\
 	$(WEBKIT_FLAGS)				\
 	-D_XOPEN_SOURCE -D__EXTENSIONS__ -D_BSD_SOURCE
 
-librhythmbox_core_la_SOURCES =				\
-	rb-shell.c					\
+shellincludedir = $(includedir)/rhythmbox/shell
+shellinclude_HEADERS =					\
 	rb-shell.h					\
-	rb-shell-player.c				\
 	rb-shell-player.h				\
+	rb-shell-preferences.h				\
+	rb-playlist-manager.h				\
+	rb-removable-media-manager.h			\
+	rb-history.h					\
+	rb-play-order.h					\
+	rb-plugin.h
+
+librhythmbox_core_la_SOURCES =				\
+	$(shellinclude_HEADERS)				\
+	rb-shell.c					\
+	rb-shell-player.c				\
 	rb-source-header.c				\
 	rb-source-header.h				\
 	rb-statusbar.c					\
 	rb-statusbar.h					\
 	rb-shell-preferences.c				\
-	rb-shell-preferences.h				\
 	rb-shell-clipboard.c				\
 	rb-shell-clipboard.h				\
 	rb-playlist-manager.c				\
-	rb-playlist-manager.h				\
 	rb-removable-media-manager.c			\
-	rb-removable-media-manager.h			\
 	rb-history.c					\
-	rb-history.h					\
 	rb-play-order.c					\
-	rb-play-order.h					\
 	rb-play-order-linear.c				\
 	rb-play-order-linear.h				\
 	rb-play-order-linear-loop.c			\
@@ -91,7 +96,6 @@ librhythmbox_core_la_SOURCES =				\
 	rb-missing-plugins.c				\
 	rb-missing-plugins.h				\
 	\
-	rb-plugin.h					\
 	rb-plugin.c					\
 	rb-module.h					\
 	rb-module.c					\
@@ -101,9 +105,8 @@ librhythmbox_core_la_SOURCES =				\
 	rb-plugins-engine.c
 
 librhythmbox_core_la_LIBADD =				\
-	$(top_builddir)/sources/libsourcesimpl.la	\
-	$(top_builddir)/podcast/librbpodcast.la	        \
 	$(top_builddir)/sources/libsources.la	        \
+	$(top_builddir)/podcast/librbpodcast.la	        \
 	$(top_builddir)/metadata/librbmetadata.la	\
 	$(top_builddir)/widgets/librbwidgets.la         \
 	$(top_builddir)/rhythmdb/librhythmdb.la		\

@@ -1,8 +1,12 @@
 
 noinst_LTLIBRARIES = libmediaplayerid.la
 
+mpidincludedir = $(includedir)/rhythmbox/lib/libmediaplayerid
+mpidinclude_HEADERS = 			\
+	mediaplayerid.h
+
 libmediaplayerid_la_SOURCES =		\
-	mediaplayerid.h			\
+	$(mpidinclude_HEADERS)		\
 	mpid-private.h			\
 	mpid-device.c			\
 	mpid-files.c			\

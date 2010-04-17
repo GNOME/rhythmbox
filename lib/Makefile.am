@@ -9,10 +9,20 @@ else
 MKDTEMP_FILES =
 endif
 
+rbincludedir = $(includedir)/rhythmbox/lib
+rbinclude_HEADERS =					\
+	rb-builder-helpers.h				\
+	rb-debug.h					\
+	rb-file-helpers.h				\
+	rb-preferences.h				\
+	rb-stock-icons.h				\
+	rb-string-value-map.h				\
+	rb-util.h
+
 librb_la_SOURCES =					\
 	$(MKDTEMP_FILES)				\
+	$(rbinclude_HEADERS)				\
 	rb-debug.c					\
-	rb-debug.h					\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h				\
 	eggdesktopfile.c				\
@@ -23,20 +33,14 @@ librb_la_SOURCES =					\
 	eggsmclient-xsmp.c				\
 	gseal-gtk-compat.h				\
 	rb-file-helpers.c				\
-	rb-file-helpers.h				\
 	rb-builder-helpers.c				\
-	rb-builder-helpers.h				\
 	rb-stock-icons.c				\
-	rb-stock-icons.h				\
 	rb-cut-and-paste-code.c				\
 	rb-cut-and-paste-code.h				\
 	rb-util.c					\
-	rb-util.h					\
 	rb-tree-dnd.c					\
 	rb-tree-dnd.h					\
-	rb-preferences.h				\
 	rb-string-value-map.c				\
-	rb-string-value-map.h				\
 	rb-async-queue-watch.c				\
 	rb-async-queue-watch.h				\
 	rb-text-helpers.c				\

@@ -2,16 +2,21 @@ noinst_LTLIBRARIES = librbbackends.la
 
 SUBDIRS = gstreamer 
 
-librbbackends_la_SOURCES =				\
-	rb-encoder.h 					\
-	rb-encoder.c					\
+backendincludedir = $(includedir)/rhythmbox/backends
+
+backendinclude_HEADERS =					\
+	rb-encoder.h					\
 	rb-player.h					\
-	rb-player.c					\
 	rb-player-gst-filter.h				\
-	rb-player-gst-filter.c				\
 	rb-player-gst-tee.h				\
+	rb-player-gst-data-tee.h
+
+librbbackends_la_SOURCES =				\
+	$(backend_HEADERS)				\
+	rb-encoder.c					\
+	rb-player.c					\
+	rb-player-gst-filter.c				\
 	rb-player-gst-tee.c				\
-	rb-player-gst-data-tee.h			\
 	rb-player-gst-data-tee.c			\
 	$(NULL)
 
@@ -30,6 +35,5 @@ INCLUDES = 						\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/backends/gstreamer		\
 	-I$(top_builddir)/lib 				\
-	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)
 

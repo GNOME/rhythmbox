@@ -14,21 +14,25 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(NO_STRICT_ALIASING_CFLAGS)
 
-librhythmdb_la_SOURCES =				\
-	rb-refstring.c					\
+rhythmdbincludedir = $(includedir)/rhythmbox/rhythmdb
+rhythmdbinclude_HEADERS =				\
 	rb-refstring.h					\
 	rhythmdb.h					\
+	rhythmdb-property-model.h			\
+	rhythmdb-query-model.h				\
+	rhythmdb-query-results.h			\
+	rhythmdb-import-job.h
+
+librhythmdb_la_SOURCES =				\
+	$(rhythmdbinclude_HEADERS)			\
+	rb-refstring.c					\
 	rhythmdb-private.h				\
 	rhythmdb.c					\
 	rhythmdb-monitor.c				\
 	rhythmdb-query.c				\
-	rhythmdb-property-model.h			\
 	rhythmdb-property-model.c			\
-	rhythmdb-query-model.h				\
 	rhythmdb-query-model.c				\
-	rhythmdb-query-results.h			\
 	rhythmdb-query-results.c			\
-	rhythmdb-import-job.h				\
 	rhythmdb-import-job.c
 
 

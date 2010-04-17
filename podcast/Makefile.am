@@ -1,18 +1,23 @@
 noinst_LTLIBRARIES = librbpodcast.la librbpodcast_parse.la
 
+podcastincludedir = $(includedir)/rhythmbox/podcast
+podcastinclude_HEADERS =				\
+	rb-podcast-parse.h				\
+	rb-podcast-manager.h
+
+
 librbpodcast_parse_la_SOURCES = 			\
 	rb-podcast-parse.c				\
 	rb-podcast-parse.h
 
 librbpodcast_la_SOURCES =				\
+	$(podcastinclude_HEADERS)			\
 	rb-feed-podcast-properties-dialog.c		\
 	rb-feed-podcast-properties-dialog.h		\
 	rb-podcast-properties-dialog.c			\
 	rb-podcast-properties-dialog.h			\
 	rb-podcast-parse.c				\
-	rb-podcast-parse.h				\
-	rb-podcast-manager.c				\
-	rb-podcast-manager.h
+	rb-podcast-manager.c
 
 noinst_PROGRAMS = test-podcast-parse
 test_podcast_parse_SOURCES =				\

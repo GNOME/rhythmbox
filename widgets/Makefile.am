@@ -1,40 +1,44 @@
 noinst_LTLIBRARIES = librbwidgets.la
 
-librbwidgets_la_SOURCES =				\
-	rb-entry-view.c					\
+widgetincludedir = $(includedir)/rhythmbox/widgets
+widgetinclude_HEADERS =					\
 	rb-entry-view.h					\
-	rb-property-view.c				\
 	rb-property-view.h				\
+	rb-dialog.h					\
+	rb-cell-renderer-pixbuf.h			\
+	rb-cell-renderer-rating.h			\
+	rb-rating.h					\
+	rb-library-browser.h				\
+	rb-segmented-bar.h				\
+	rb-song-info.h					\
+	rb-uri-dialog.h
+
+librbwidgets_la_SOURCES =				\
+	$(widgetinclude_HEADERS)			\
+	rb-entry-view.c					\
+	rb-property-view.c				\
 	rb-search-entry.c				\
 	rb-search-entry.h				\
 	rb-header.c					\
 	rb-header.h					\
 	rb-dialog.c					\
-	rb-dialog.h					\
 	rb-cell-renderer-pixbuf.c			\
-	rb-cell-renderer-pixbuf.h			\
 	rb-cell-renderer-rating.c			\
-	rb-cell-renderer-rating.h			\
 	gossip-cell-renderer-expander.c			\
 	gossip-cell-renderer-expander.h			\
 	gedit-message-area.c				\
 	gedit-message-area.h				\
 	rb-song-info.c					\
-	rb-song-info.h					\
 	rb-rating.c					\
-	rb-rating.h					\
 	rb-rating-helper.c				\
 	rb-segmented-bar.c				\
-	rb-segmented-bar.h				\
-	rb-library-browser.h				\
 	rb-library-browser.c				\
 	rb-rating-helper.h				\
 	rb-query-creator.c				\
 	rb-query-creator.h				\
 	rb-query-creator-private.h			\
 	rb-query-creator-properties.c			\
-	rb-uri-dialog.c					\
-	rb-uri-dialog.h
+	rb-uri-dialog.c
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

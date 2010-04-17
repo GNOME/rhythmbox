@@ -15,6 +15,11 @@ INCLUDES += $(DBUS_CFLAGS)				\
 	-DLIBEXEC_DIR=\"$(libexecdir)\"			\
 	-DINSTALLED_METADATA_HELPER=\"$(INSTALLED_METADATA_HELPER)\"
 
+# API
+
+metadataincludedir = $(includedir)/rhythmbox/metadata
+metadatainclude_HEADERS = rb-metadata.h
+
 # client library
 
 noinst_LTLIBRARIES = librbmetadata.la
