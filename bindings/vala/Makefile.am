@@ -1,5 +1,9 @@
-dist_noinst_DATA = \
-	rhythmdb.deps		\
-	rhythmdb.vapi		\
+vapidir = $(VAPIDIR)
+
+vapi_VAPI = 			\
+	rb.vapi			\
+	rhythmdb.vapi
+
+dist_noinst_DATA = 		\
 	rb.deps			\
-	rb.vapi
+	rhythmdb.deps

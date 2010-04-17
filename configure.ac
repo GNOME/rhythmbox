@@ -757,7 +757,9 @@ if test "x$enable_vala" = "xyes"; then
 		          with_vala=no)
 	if test "x$with_vala" = "xyes"; then
 		VALAC="`pkg-config --variable=prefix vala-1.0`/bin/valac"
+		VAPIDIR="`pkg-config --variable=vapidir vala-1.0`"
 		AC_SUBST([VALAC])
+		AC_SUBST([VAPIDIR])
 	elif test "x$enable_vala" = "xyes"; then
 		AC_MSG_ERROR([Vala plugin support explicitly requested, but not found])
 	fi
