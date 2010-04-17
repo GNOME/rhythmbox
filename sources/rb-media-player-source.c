@@ -42,6 +42,15 @@
 #include "rb-playlist-manager.h"
 #include "rb-podcast-manager.h"
 #include "rb-util.h"
+#include "rb-segmented-bar.h"
+
+typedef struct {
+	GtkWidget *widget;
+	guint music_segment;
+	guint podcast_segment;
+	guint other_segment;
+	guint free_segment;
+} SegmentedBarData;
 
 typedef struct {
 	RBMediaPlayerSyncSettings *sync_settings;
@@ -52,9 +61,19 @@ typedef struct {
 	/* properties dialog bits */
 	GtkDialog *properties_dialog;
 	GtkTreeStore *sync_tree_store;
-	GtkWidget *preview_bar;
 	GtkWidget *added_files_count;
 	GtkWidget *removed_files_count;
+
+	/* segmented bars used in various places */
+	SegmentedBarData volume_usage;
+	SegmentedBarData sync_before;		/* probably the same as volume usage? */
+	SegmentedBarData sync_after;
+
+	/* other bits of device state */
+	guint64 total_music_size;
+	guint64 total_podcast_size;
+	guint64 sync_music_size;
+	guint64 sync_podcast_size;
 
 	/* sync state */
 	guint64 sync_space_needed;
@@ -95,6 +114,7 @@ static void track_add_done (RBMediaPlayerSource *source, RhythmDBEntry *entry);
 static void update_sync (RBMediaPlayerSource *source);
 static void sync_cmd (GtkAction *action, RBSource *source);
 static char *make_track_uuid  (RhythmDBEntry *entry);
+static GHashTable *build_device_state (RBMediaPlayerSource *source);
 
 static GtkActionEntry rb_media_player_source_actions[] = {
 	{ "MediaPlayerSourceSync", GTK_STOCK_REFRESH, N_("Sync"), NULL,
@@ -320,34 +340,91 @@ properties_dialog_response_cb (GtkDialog *dialog,
 }
 
 static void
-update_sync_preview_bar (RBMediaPlayerSource *source)
+update_volume_usage_bar (RBMediaPlayerSource *source, SegmentedBarData *bar)
+{
+	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
+	double fraction;
+	guint64 capacity;
+	guint64 total_other;
+	guint64 free_space;
+
+	capacity = get_capacity (source);
+	free_space = get_free_space (source);
+	total_other = capacity - (free_space + priv->total_music_size + priv->total_podcast_size);
+
+	fraction = (double)priv->total_music_size/(double)capacity;
+	rb_segmented_bar_update_segment (RB_SEGMENTED_BAR (bar->widget),
+					 bar->music_segment,
+					 fraction);
+	fraction = (double)priv->total_podcast_size/(double)capacity;
+	rb_segmented_bar_update_segment (RB_SEGMENTED_BAR (bar->widget),
+					 bar->podcast_segment,
+					 fraction);
+	fraction = (double)total_other/(double)capacity;
+	rb_segmented_bar_update_segment (RB_SEGMENTED_BAR (bar->widget),
+					 bar->other_segment,
+					 fraction);
+	fraction = (double)free_space/(double)capacity;
+	rb_segmented_bar_update_segment (RB_SEGMENTED_BAR (bar->widget),
+					 bar->free_segment,
+					 fraction);
+}
+
+static void
+update_sync_preview_bars (RBMediaPlayerSource *source)
 {
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
 	char *text;
-	char *used;
-	char *capacity;
-	double frac;
-
-	/* TODO use segmented bar widget here */
+	double music_fraction;
+	double podcast_fraction;
+	double other_fraction;
+	double free_fraction;
+	guint64 total_other_size;
+	guint64 device_capacity;
 
 	update_sync (source);
 
-	frac = (priv->sync_space_needed/(double) get_capacity (source));
-	frac = (frac > 1.0 ? 1.0 : frac);
-	frac = (frac < 0.0 ? 0.0 : frac);
-	used = g_format_size_for_display (priv->sync_space_needed);
-	capacity = g_format_size_for_display (get_capacity (source));
-	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->preview_bar), frac);
+	device_capacity = get_capacity (source);
+	total_other_size = device_capacity - (get_free_space (source) + priv->total_music_size + priv->total_podcast_size);
 
-	/* Translators: this is used to display the amount of storage space which will be
-	 * used and the total storage space on a device after it is synced.
-	 */
-	text = g_strdup_printf (_("%s of %s"), used, capacity);
-	gtk_progress_bar_set_text (GTK_PROGRESS_BAR (priv->preview_bar), text);
-	g_free (text);
-	g_free (capacity);
-	g_free (used);
+	/* sync before state */
+	update_volume_usage_bar (source, &priv->sync_before);
 
+	/* sync after state */
+
+	if (rb_media_player_sync_settings_has_enabled_groups (priv->sync_settings, SYNC_CATEGORY_MUSIC) ||
+	    rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_MUSIC)) {
+		music_fraction = (double)priv->sync_music_size / (double)device_capacity;
+	} else {
+		music_fraction = (double)priv->total_music_size / (double)device_capacity;
+	}
+	if (rb_media_player_sync_settings_has_enabled_groups (priv->sync_settings, SYNC_CATEGORY_PODCAST) ||
+	    rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_PODCAST)) {
+		podcast_fraction = (double)priv->sync_podcast_size / (double)device_capacity;
+	} else {
+		podcast_fraction = (double)priv->total_podcast_size / (double)device_capacity;
+	}
+	other_fraction = (double)total_other_size / (double)device_capacity;
+
+	free_fraction = 1.0 - (music_fraction + podcast_fraction + other_fraction);
+	if (free_fraction < 0.0) {
+		free_fraction = 0.0;
+	}
+
+	rb_segmented_bar_update_segment (RB_SEGMENTED_BAR (priv->sync_after.widget),
+					 priv->sync_after.music_segment,
+					 music_fraction);
+	rb_segmented_bar_update_segment (RB_SEGMENTED_BAR (priv->sync_after.widget),
+					 priv->sync_after.podcast_segment,
+					 podcast_fraction);
+	rb_segmented_bar_update_segment (RB_SEGMENTED_BAR (priv->sync_after.widget),
+					 priv->sync_after.other_segment,
+					 other_fraction);
+	rb_segmented_bar_update_segment (RB_SEGMENTED_BAR (priv->sync_after.widget),
+					 priv->sync_after.free_segment,
+					 free_fraction);
+
+	/* other stuff */
 	text = g_strdup_printf ("%d", g_list_length (priv->sync_to_add));
 	gtk_label_set_text (GTK_LABEL (priv->added_files_count), text);
 	g_free (text);
@@ -471,9 +548,47 @@ sync_entries_changed_cb (GtkCellRendererToggle *cell_renderer,
 
 	g_free (category_name);
 	g_free (group);
-	update_sync_preview_bar (source);
+	update_sync_preview_bars (source);
 }
 
+
+static char *
+value_formatter (gdouble percent, gpointer data)
+{
+	gsize total_size = GPOINTER_TO_SIZE (data);
+	return g_format_size_for_display (percent * total_size);
+}
+
+static void
+create_segmented_bar (RBMediaPlayerSource *source, GtkWidget *label, SegmentedBarData *bar)
+{
+	guint64 capacity;		/* XXX only really need to get this once on construction.. */
+
+	bar->widget = rb_segmented_bar_new ();
+	g_object_set (bar->widget, "show-labels", TRUE, NULL);
+
+	capacity = get_capacity (source);
+	rb_segmented_bar_set_value_formatter (RB_SEGMENTED_BAR (bar->widget),
+					      value_formatter,
+					      GSIZE_TO_POINTER (capacity));
+
+	bar->music_segment = rb_segmented_bar_add_segment (RB_SEGMENTED_BAR (bar->widget),_("Music"), 0.0, 0.2, 0.4, 0.65, 1.0);
+	bar->podcast_segment = rb_segmented_bar_add_segment (RB_SEGMENTED_BAR (bar->widget), _("Podcasts"), 0.0, 0.96, 0.47, 0.0, 1.0);
+	bar->other_segment = rb_segmented_bar_add_segment (RB_SEGMENTED_BAR (bar->widget), _("Other"), 0.0, 0.45, 0.82, 0.08, 1.0);
+	bar->free_segment = rb_segmented_bar_add_segment_default_color (RB_SEGMENTED_BAR (bar->widget), _("Available"), 1.0);
+
+	/* set up label relationship */
+	if (label != NULL) {
+		AtkObject *lobj;
+		AtkObject *robj;
+
+		lobj = gtk_widget_get_accessible (label);
+		robj = gtk_widget_get_accessible (bar->widget);
+
+		atk_object_add_relationship (lobj, ATK_RELATION_LABEL_FOR, robj);
+		atk_object_add_relationship (robj, ATK_RELATION_LABELLED_BY, lobj);
+	}
+}
 
 void
 rb_media_player_source_show_properties (RBMediaPlayerSource *source)
@@ -487,20 +602,17 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *col;
 	GtkWidget *tree_view;
-	GtkWidget *widget;
+	GtkContainer *container;
 	const char *ui_file;
-	char *used_str;
-	char *capacity_str;
 	char *name;
 	char *text;
 	GList *l;
 	GList *playlists;
-	guint64 capacity;
-	guint64 free_space;
 	gboolean valid;
 	RBShell *shell;
 	RhythmDB *db;
 	RBPlaylistManager *playlist_manager;
+	GHashTable *device;
 
 	if (priv->properties_dialog != NULL) {
 		gtk_window_present (GTK_WINDOW (priv->properties_dialog));
@@ -524,6 +636,7 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	g_object_get (shell, "db", &db, "playlist-manager", &playlist_manager, NULL);
 
 	priv->properties_dialog = GTK_DIALOG (gtk_builder_get_object (builder, "media-player-properties"));
+	g_object_ref (priv->properties_dialog);
 	g_signal_connect_object (priv->properties_dialog,
 				 "response",
 				 G_CALLBACK (properties_dialog_response_cb),
@@ -535,25 +648,23 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	g_free (text);
 	g_free (name);
 
+	/* constructing the device state also updates our idea of the total music
+	 * and podcast sizes on the device
+	 */
+	device = build_device_state (source);
+	g_hash_table_destroy (device);
+
 	/*
 	 * fill in some common details:
 	 * - volume usage (need to hook up signals etc. to update this live)
 	 */
-	widget = GTK_WIDGET (gtk_builder_get_object (builder, "progressbar-device-usage"));
-	capacity = get_capacity (source);
-	free_space = get_free_space (source);
-	used_str = g_format_size_for_display (capacity - free_space);
-	capacity_str = g_format_size_for_display (capacity);
-	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (widget),
-				       (double)(capacity - free_space)/(double)capacity);
-	/* Translators: this is used to display the amount of storage space
-	 * used and the total storage space on an device.
-	 */
-	text = g_strdup_printf (_("%s of %s"), used_str, capacity_str);
-	gtk_progress_bar_set_text (GTK_PROGRESS_BAR (widget), text);
-	g_free (text);
-	g_free (capacity_str);
-	g_free (used_str);
+	create_segmented_bar (source, NULL, &priv->volume_usage);
+	update_volume_usage_bar (source, &priv->volume_usage);
+
+	gtk_widget_show_all (priv->volume_usage.widget);
+	container = GTK_CONTAINER (gtk_builder_get_object (builder, "device-usage-container"));
+	gtk_container_add (container, priv->volume_usage.widget);
+
 
 	/* let the subclass fill in device type specific details (model names, device names,
 	 * .. battery levels?) and add more tabs to the notebook to display 'advanced' stuff.
@@ -568,10 +679,29 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	/* set up sync widgetry */
 	priv->added_files_count = GTK_WIDGET (gtk_builder_get_object (builder, "added-tracks"));
 	priv->removed_files_count = GTK_WIDGET (gtk_builder_get_object (builder, "removed-tracks"));
-	priv->preview_bar = GTK_WIDGET (gtk_builder_get_object (builder, "progressbar-sync-preview"));
+
+	create_segmented_bar (source,
+			      GTK_WIDGET (gtk_builder_get_object (builder, "sync-before-label")),
+			      &priv->sync_before);
+	gtk_widget_show_all (priv->sync_before.widget);
+	container = GTK_CONTAINER (gtk_builder_get_object (builder, "sync-before-container"));
+	gtk_container_add (container, priv->sync_before.widget);
+
+	create_segmented_bar (source,
+			      GTK_WIDGET (gtk_builder_get_object (builder, "sync-after-label")),
+			      &priv->sync_after);
+	gtk_widget_show_all (priv->sync_after.widget);
+	container = GTK_CONTAINER (gtk_builder_get_object (builder, "sync-after-container"));
+	gtk_container_add (container, priv->sync_after.widget);
 
 	/* tree_store columns are: active, inconsistent, name, display-name, is-category, category name */
-	priv->sync_tree_store = gtk_tree_store_new (6, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_STRING);
+	priv->sync_tree_store = gtk_tree_store_new (6,
+						    G_TYPE_BOOLEAN,
+						    G_TYPE_BOOLEAN,
+						    G_TYPE_STRING,
+						    G_TYPE_STRING,
+						    G_TYPE_BOOLEAN,
+						    G_TYPE_STRING);
 
 	/* music library parent */
 	gtk_tree_store_append (priv->sync_tree_store, &parent_iter, NULL);
@@ -692,7 +822,7 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view)),
 				    GTK_SELECTION_NONE);
 
-	update_sync_preview_bar (source);
+	update_sync_preview_bars (source);
 
 	gtk_widget_show (GTK_WIDGET (priv->properties_dialog));
 
@@ -773,6 +903,7 @@ hash_table_insert_from_tree_model_cb (GtkTreeModel *query_model,
 
 	return FALSE;
 }
+
 static void
 itinerary_insert_all_of_type (RhythmDB *db,
 			      RhythmDBEntryType entry_type,
@@ -864,6 +995,23 @@ itinerary_insert_some_podcasts (RBMediaPlayerSource *source,
 	}
 }
 
+static guint64
+_sum_entry_size (GHashTable *entries)
+{
+	GHashTableIter iter;
+	gpointer key, value;
+	guint64 sum = 0;
+
+	g_hash_table_iter_init (&iter, entries);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		RhythmDBEntry *entry = (RhythmDBEntry *)value;
+		sum += rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
+	}
+
+	return sum;
+}
+
+
 static GHashTable *
 build_sync_itinerary (RBMediaPlayerSource *source)
 {
@@ -891,6 +1039,8 @@ build_sync_itinerary (RBMediaPlayerSource *source)
 		itinerary_insert_some_playlists (source, itinerary);
 	}
 
+	priv->sync_music_size = _sum_entry_size (itinerary);
+
 	if (rb_media_player_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_PODCAST)) {
 		rb_debug ("adding all podcasts to the itinerary");
 		/* TODO: when we get #episodes/not-if-played settings, use
@@ -902,6 +1052,8 @@ build_sync_itinerary (RBMediaPlayerSource *source)
 		rb_debug ("adding selected podcasts to the itinerary");
 		itinerary_insert_some_podcasts (source, db, itinerary);
 	}
+
+	priv->sync_podcast_size = _sum_entry_size (itinerary) - priv->sync_music_size;
 
 	g_object_unref (shell);
 	g_object_unref (db);
@@ -929,30 +1081,31 @@ build_device_state (RBMediaPlayerSource *source)
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
 	GHashTable *device;
+	GHashTable *entries;
 
 	rb_debug ("building device contents hash");
 
 	device = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify)rhythmdb_entry_unref);
 
+	rb_debug ("getting music entries from device");
+	entries = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) rhythmdb_entry_unref);
+	klass->impl_get_entries (source, SYNC_CATEGORY_MUSIC, entries);
+	priv->total_music_size = _sum_entry_size (entries);
 	if (rb_media_player_sync_settings_has_enabled_groups (priv->sync_settings, SYNC_CATEGORY_MUSIC)) {
-		GHashTable *entries;
-		rb_debug ("getting music entries from device");
-		entries = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) rhythmdb_entry_unref);
-		klass->impl_get_entries (source, SYNC_CATEGORY_MUSIC, entries);
 		_g_hash_table_transfer_all (device, entries);
-		g_hash_table_destroy (entries);
-		rb_debug ("done getting music entries from device");
 	}
+	g_hash_table_destroy (entries);
+	rb_debug ("done getting music entries from device");
 
+	rb_debug ("getting podcast entries from device");
+	entries = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) rhythmdb_entry_unref);
+	klass->impl_get_entries (source, SYNC_CATEGORY_PODCAST, entries);
+	priv->total_podcast_size = _sum_entry_size (entries);
 	if (rb_media_player_sync_settings_has_enabled_groups (priv->sync_settings, SYNC_CATEGORY_PODCAST)) {
-		GHashTable *podcasts;
-		rb_debug ("getting podcast entries from device");
-		podcasts = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) rhythmdb_entry_unref);
-		klass->impl_get_entries (source, SYNC_CATEGORY_PODCAST, podcasts);
-		_g_hash_table_transfer_all (device, podcasts);
-		g_hash_table_destroy (podcasts);
-		rb_debug ("done getting podcast entries from device");
+		_g_hash_table_transfer_all (device, entries);
 	}
+	g_hash_table_destroy (entries);
+	rb_debug ("done getting podcast entries from device");
 
 	rb_debug ("done building device contents hash; has %d entries", g_hash_table_size (device));
 	return device;
@@ -1083,6 +1236,8 @@ sync_playlists (RBMediaPlayerSource *source)
 		g_list_free (tracks);
 		g_object_unref (model);
 	}
+
+	g_hash_table_destroy (device);
 }
 
 static gboolean
