@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-04-10 12:49+0000\n"
-"PO-Revision-Date: 2010-04-11 11:04+0100\n"
+"POT-Creation-Date: 2010-04-18 04:18+0000\n"
+"PO-Revision-Date: 2010-04-18 08:09+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -287,15 +287,23 @@ msgid "Basic"
 msgstr "Osnovno"
 
 #: ../data/ui/media-player-properties.ui.h:7
+msgid "Contents after sync"
+msgstr "Vsebina po usklajevanju"
+
+#: ../data/ui/media-player-properties.ui.h:8
+msgid "Current contents"
+msgstr "Trenutna vsebina"
+
+#: ../data/ui/media-player-properties.ui.h:9
 msgid "Media Player Properties"
 msgstr "Lastnosti večpredstavnostnega predvajalnika"
 
-#: ../data/ui/media-player-properties.ui.h:8
+#: ../data/ui/media-player-properties.ui.h:10
 msgid "Removed files:"
 msgstr "Odstranjene datoteke:"
 
-#: ../data/ui/media-player-properties.ui.h:9
-#: ../sources/rb-media-player-source.c:100
+#: ../data/ui/media-player-properties.ui.h:11
+#: ../sources/rb-media-player-source.c:120
 msgid "Sync"
 msgstr "Uskladi"
 
@@ -694,7 +702,7 @@ msgstr "%d. %b. %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1085
 #: ../plugins/mtpdevice/rb-mtp-source.c:1368
 #: ../plugins/status-icon/rb-status-icon-plugin.c:782
-#: ../podcast/rb-feed-podcast-properties-dialog.c:316
+#: ../podcast/rb-feed-podcast-properties-dialog.c:341
 #: ../podcast/rb-podcast-manager.c:1918
 #: ../podcast/rb-podcast-properties-dialog.c:601
 #: ../podcast/rb-podcast-properties-dialog.c:696
@@ -729,7 +737,7 @@ msgstr "%s ni mogoče premakniti v %s: %s"
 msgid "Too many symlinks"
 msgstr "Preveč simbolnih povezav"
 
-#: ../lib/rb-file-helpers.c:1226
+#: ../lib/rb-file-helpers.c:1235
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Na %s ni mogoče dobiti praznega prostora: %s"
@@ -1266,7 +1274,7 @@ msgstr "Nastavitve računa"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:869
 msgid "Account details are needed before you can connect.  Check your settings."
-msgstr "Pred povezavo so potrebni podatki računa. Preverite svoje nastavitve."
+msgstr "Pred povezavo je treba vnesti podatke računa. Preverite svoje nastavitve."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:877
 msgid "Unable to connect"
@@ -2284,8 +2292,9 @@ msgid "Delete playlist"
 msgstr "Izbris seznama predvajanja"
 
 #: ../plugins/ipod/rb-ipod-source.c:1422
-#: ../sources/rb-media-player-source.c:627
-#: ../sources/rb-media-player-source.c:628
+#: ../sources/rb-media-player-source.c:576
+#: ../sources/rb-media-player-source.c:757
+#: ../sources/rb-media-player-source.c:758
 #: ../sources/rb-podcast-source.c:834
 msgid "Podcasts"
 msgstr "Podcasti"
@@ -2483,9 +2492,9 @@ msgid "URL of internet radio station:"
 msgstr "URL spletne radijske postaje:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:398
-#: ../podcast/rb-feed-podcast-properties-dialog.c:212
+#: ../podcast/rb-feed-podcast-properties-dialog.c:216
 #: ../podcast/rb-podcast-properties-dialog.c:486
-#: ../sources/rb-media-player-source.c:533
+#: ../sources/rb-media-player-source.c:646
 #: ../widgets/rb-song-info.c:1022
 #, c-format
 msgid "%s Properties"
@@ -2643,7 +2652,7 @@ msgstr "    * Glasba ne vsebuje zaščite pred kopiranjem (DRM), kar omogoča pr
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:13
 msgid "    * No need to \"register\" to listen or buy"
-msgstr "    * Za poslušanje ali nakup se ni potrebno \"vpisati\""
+msgstr "    * Za poslušanje ali nakup se ni treba \"vpisati\""
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:14
 msgid "    * Not part of the \"evil\" major label machine - for those that hate the music biz and want to help topple it"
@@ -3532,7 +3541,7 @@ msgstr "Preklop načinov predvajanje/premor"
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
 #: ../remote/dbus/rb-client.c:98
 msgid "Play a specified URI, importing it if necessary"
-msgstr "Predvajanje ter uvoz določenega URI-ja, če je to potrebno"
+msgstr "Predvajanje ter uvoz določenega URI, kadar je to zahtevano"
 
 #: ../remote/dbus/rb-client.c:98
 msgid "URI to play"
@@ -4571,8 +4580,9 @@ msgid "Number. Artist - Title"
 msgstr "Številka. Izvajalec - Naslov"
 
 #: ../sources/rb-library-source.c:403
-#: ../sources/rb-media-player-source.c:581
-#: ../sources/rb-media-player-source.c:582
+#: ../sources/rb-media-player-source.c:575
+#: ../sources/rb-media-player-source.c:711
+#: ../sources/rb-media-player-source.c:712
 msgid "Music"
 msgstr "Glasba"
 
@@ -4588,31 +4598,27 @@ msgstr "Nastavitev več mest"
 msgid "Example Path:"
 msgstr "Primer poti:"
 
-#: ../sources/rb-media-player-source.c:101
+#: ../sources/rb-media-player-source.c:121
 msgid "Synchronize media player with the library"
 msgstr "Uskladi večpredstavnostni predvajalnik s knjižnico"
 
-#. Translators: this is used to display the amount of storage space which will be
-#. * used and the total storage space on a device after it is synced.
-#.
-#. Translators: this is used to display the amount of storage space
-#. * used and the total storage space on an device.
-#.
-#: ../sources/rb-media-player-source.c:345
-#: ../sources/rb-media-player-source.c:552
-#, c-format
-msgid "%s of %s"
-msgstr "%s od %s"
+#: ../sources/rb-media-player-source.c:577
+msgid "Other"
+msgstr "Drugo"
 
-#: ../sources/rb-media-player-source.c:593
+#: ../sources/rb-media-player-source.c:578
+msgid "Available"
+msgstr "Na voljo"
+
+#: ../sources/rb-media-player-source.c:723
 msgid "All Music"
 msgstr "Vsa glasba"
 
-#: ../sources/rb-media-player-source.c:1174
+#: ../sources/rb-media-player-source.c:1329
 msgid "Not enough free space to sync"
 msgstr "Ni dovolj prostora za usklajevanje"
 
-#: ../sources/rb-media-player-source.c:1175
+#: ../sources/rb-media-player-source.c:1330
 msgid "There is not enough free space on this device to transfer the selected music, playlists, and podcasts."
 msgstr "Na tej napravi ni dovolj prostora za prenos izbrane glasbe, seznamov predvajanja in podcastov."
 
@@ -5313,6 +5319,8 @@ msgstr "Na namizju"
 msgid "Unknown location"
 msgstr "Neznano mesto"
 
+#~ msgid "%s of %s"
+#~ msgstr "%s od %s"
 #~ msgid "Unable to start playback pipeline"
 #~ msgstr "Cevovoda predvajanja ni mogoče zagnati"
 #~ msgid "Purchase Album"
