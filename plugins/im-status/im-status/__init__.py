@@ -247,6 +247,7 @@ class IMStatusPlugin (rb.Plugin):
       bus = dbus.SessionBus ()
       am_obj = bus.get_object (MC5_BUS_NAME, MC5_AM_OBJ_PATH)
       am = dbus.Interface (am_obj, PROPERTIES_IFACE_NAME)
+      got_status = False
 
       # a bit awful: this just returns the status text from the first account
       # that has one.
@@ -254,11 +255,15 @@ class IMStatusPlugin (rb.Plugin):
         acct_obj = bus.get_object (MC5_BUS_NAME, acct)
         acct_iface = dbus.Interface (acct_obj, PROPERTIES_IFACE_NAME)
         status = acct_iface.Get (MC5_ACCT_IFACE_NAME, "RequestedPresence")
+        got_status = True
         if status[2] != "":
           return status[2]
 
+      # if all accounts have empty status, return that
+      if got_status:
+        return ""
     except dbus.DBusException, e:
-      print "dbus exception while setting status: " + str(e)
+      print "dbus exception while getting status: " + str(e)
 
     return None
 
