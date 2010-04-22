@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-12 23:35+0200\n"
-"PO-Revision-Date: 2010-04-07 15:08+0200\n"
+"POT-Creation-Date: 2010-04-22 23:59+0200\n"
+"PO-Revision-Date: 2010-04-17 23:37+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -292,15 +292,23 @@ msgid "Basic"
 msgstr "Základní"
 
 #: ../data/ui/media-player-properties.ui.h:7
+msgid "Contents after sync"
+msgstr "Obsah po synchronizaci"
+
+#: ../data/ui/media-player-properties.ui.h:8
+msgid "Current contents"
+msgstr "Současný obsah"
+
+#: ../data/ui/media-player-properties.ui.h:9
 msgid "Media Player Properties"
 msgstr "Vlastnosti přehrávače médií"
 
-#: ../data/ui/media-player-properties.ui.h:8
+#: ../data/ui/media-player-properties.ui.h:10
 msgid "Removed files:"
 msgstr "Odstraněné soubory:"
 
-#: ../data/ui/media-player-properties.ui.h:9
-#: ../sources/rb-media-player-source.c:100
+#: ../data/ui/media-player-properties.ui.h:11
+#: ../sources/rb-media-player-source.c:120
 msgid "Sync"
 msgstr "Synchronizovat"
 
@@ -703,7 +711,7 @@ msgstr "Nelze přesunout %s do %s: %s"
 msgid "Too many symlinks"
 msgstr "Příliš mnoho symbolických odkazů"
 
-#: ../lib/rb-file-helpers.c:1226
+#: ../lib/rb-file-helpers.c:1235
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Nepodařilo se zjistit volné místo na %s: %s"
@@ -2284,8 +2292,9 @@ msgid "Delete playlist"
 msgstr "Odstranit seznam skladeb"
 
 #: ../plugins/ipod/rb-ipod-source.c:1422
-#: ../sources/rb-media-player-source.c:627
-#: ../sources/rb-media-player-source.c:628 ../sources/rb-podcast-source.c:834
+#: ../sources/rb-media-player-source.c:576
+#: ../sources/rb-media-player-source.c:757
+#: ../sources/rb-media-player-source.c:758 ../sources/rb-podcast-source.c:834
 msgid "Podcasts"
 msgstr "Podcasty"
 
@@ -2501,7 +2510,7 @@ msgstr "URL stanice internetového rádia:"
 #: ../plugins/iradio/rb-station-properties-dialog.c:398
 #: ../podcast/rb-feed-podcast-properties-dialog.c:216
 #: ../podcast/rb-podcast-properties-dialog.c:486
-#: ../sources/rb-media-player-source.c:533 ../widgets/rb-song-info.c:1022
+#: ../sources/rb-media-player-source.c:646 ../widgets/rb-song-info.c:1022
 #, c-format
 msgid "%s Properties"
 msgstr "Vlastnosti %s"
@@ -4659,8 +4668,9 @@ msgstr "Umělec (Album) – Stopa – Název"
 msgid "Number. Artist - Title"
 msgstr "Stopa. Umělec – Název"
 
-#: ../sources/rb-library-source.c:403 ../sources/rb-media-player-source.c:581
-#: ../sources/rb-media-player-source.c:582
+#: ../sources/rb-library-source.c:403 ../sources/rb-media-player-source.c:575
+#: ../sources/rb-media-player-source.c:711
+#: ../sources/rb-media-player-source.c:712
 msgid "Music"
 msgstr "Hudba"
 
@@ -4676,31 +4686,27 @@ msgstr "Nastaveno několik umístění"
 msgid "Example Path:"
 msgstr "Příklad cesty:"
 
-#: ../sources/rb-media-player-source.c:101
+#: ../sources/rb-media-player-source.c:121
 msgid "Synchronize media player with the library"
 msgstr "Synchronizovat přehrávač médií s kolekcí"
 
-#. Translators: this is used to display the amount of storage space which will be
-#. * used and the total storage space on a device after it is synced.
-#.
-#. Translators: this is used to display the amount of storage space
-#. * used and the total storage space on an device.
-#.
-#: ../sources/rb-media-player-source.c:345
-#: ../sources/rb-media-player-source.c:552
-#, c-format
-msgid "%s of %s"
-msgstr "%s z %s"
+#: ../sources/rb-media-player-source.c:577
+msgid "Other"
+msgstr "Další"
 
-#: ../sources/rb-media-player-source.c:593
+#: ../sources/rb-media-player-source.c:578
+msgid "Available"
+msgstr "Dostupné"
+
+#: ../sources/rb-media-player-source.c:723
 msgid "All Music"
 msgstr "Všechna hudba"
 
-#: ../sources/rb-media-player-source.c:1174
+#: ../sources/rb-media-player-source.c:1329
 msgid "Not enough free space to sync"
 msgstr "Nedostatek volného místa pro synchronizaci"
 
-#: ../sources/rb-media-player-source.c:1175
+#: ../sources/rb-media-player-source.c:1330
 msgid ""
 "There is not enough free space on this device to transfer the selected "
 "music, playlists, and podcasts."
@@ -5397,6 +5403,9 @@ msgstr "Na ploše"
 #: ../widgets/rb-song-info.c:1195
 msgid "Unknown location"
 msgstr "Neznámé umístění"
+
+#~ msgid "%s of %s"
+#~ msgstr "%s z %s"
 
 #~ msgid "Unable to start playback pipeline"
 #~ msgstr "Nelze spustit rouru pro přehrávání"
