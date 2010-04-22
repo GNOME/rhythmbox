@@ -273,7 +273,7 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 #endif
 	if (result == FALSE) {
 		/* XXX report this more usefully */
-		g_warning ("Playlist save failed: %s", error->message);
+		g_warning ("Playlist save failed: %s", error ? error->message : "<no error>");
 	} else {
 		GFile *dest;
 
