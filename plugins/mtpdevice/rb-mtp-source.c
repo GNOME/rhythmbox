@@ -1223,6 +1223,9 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	 * encoder; and then passed to whatever gets called when the transfer is complete.
 	 */
 	id = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID);
+	if (extension == NULL) {
+		extension = "";
+	}
 	uri = g_strdup_printf ("xrbmtp://%lu/%s/%d", id, extension, filetype);
 	return uri;
 }

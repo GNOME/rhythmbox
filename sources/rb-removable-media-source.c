@@ -417,7 +417,7 @@ impl_paste (RBSource *source, GList *entries)
 		}
 
 		/* make sure the extension isn't ludicrously long */
-		if (strlen (extension) > EXTENSION_LENGTH_LIMIT) {
+		if (extension != NULL && strlen (extension) > EXTENSION_LENGTH_LIMIT) {
 			extension[EXTENSION_LENGTH_LIMIT] = '\0';
 		}
 

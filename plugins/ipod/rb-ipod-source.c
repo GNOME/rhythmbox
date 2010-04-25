@@ -1691,9 +1691,12 @@ ipod_get_filename_for_uri (const gchar *mount_point,
 		*escaped = 0;
 	}
 
-	escaped = g_strdup_printf ("%s.%s", filename, extension);
-	g_free (filename);
-
+	if (extension != NULL) {
+		escaped = g_strdup_printf ("%s.%s", filename, extension);
+		g_free (filename);
+	} else {
+		escaped = filename;
+	}
 
 	result = generate_ipod_filename (mount_point, escaped);
 	g_free (escaped);
