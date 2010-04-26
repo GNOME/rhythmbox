@@ -342,11 +342,12 @@ static int
 version_to_int (const char *version)
 {
 	float ver;
+	char *eptr;
 
-	if (sscanf (version, "%f", &ver) != 1) {
+	ver = g_ascii_strtod (version, &eptr);
+	if (eptr == version) {
 		return (int) (1.0 * 100);
 	}
-
 	return (int)roundf(ver * 100);
 }
 
