@@ -140,6 +140,8 @@ struct _RhythmDBPrivate
 	GList *outstanding_stats;
 	GMutex *stat_mutex;
 	gboolean stat_thread_running;
+	int stat_thread_count;
+	int stat_thread_done;
 
 	GVolumeMonitor *volume_monitor;
 	GHashTable *monitored_directories;

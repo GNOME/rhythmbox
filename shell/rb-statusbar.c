@@ -90,8 +90,6 @@ struct RBStatusbarPrivate
         gboolean progress_changed;
         gchar *progress_text;
 
-        gchar *loading_text;
-
         guint status_poll_id;
 };
 
@@ -169,8 +167,6 @@ rb_statusbar_init (RBStatusbar *statusbar)
 	gtk_widget_set_size_request (statusbar->priv->progress, -1, 10);
         statusbar->priv->progress_fraction = 1.0;
 
-        statusbar->priv->loading_text = g_strdup (_("Loading..."));
-
         gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (statusbar->priv->progress), 1.0);
         gtk_widget_hide (statusbar->priv->progress);
 
@@ -225,7 +221,6 @@ rb_statusbar_finalize (GObject *object)
 
         g_return_if_fail (statusbar->priv != NULL);
 
-	g_free (statusbar->priv->loading_text);
 	g_free (statusbar->priv->progress_text);
 
         G_OBJECT_CLASS (rb_statusbar_parent_class)->finalize (object);
@@ -416,7 +411,6 @@ static void
 rb_statusbar_sync_status (RBStatusbar *status)
 {
         gboolean changed = FALSE;
-        gboolean show_progress = TRUE;
         char *status_text = NULL;
 	char *progress_text = NULL;
 	float progress = 999;
@@ -431,9 +425,10 @@ rb_statusbar_sync_status (RBStatusbar *status)
         
 	/* library busy? */
         if (rhythmdb_is_busy (status->priv->db)) {
-		/*g_free (status_text);
-		status_text = g_strdup (status->priv->loading_text); */
 		progress = -1.0f;
+
+		/* see if it wants to provide more details */
+		rhythmdb_get_progress_info (status->priv->db, &progress_text, &progress);
 		changed = TRUE;
         }
 
@@ -451,7 +446,6 @@ rb_statusbar_sync_status (RBStatusbar *status)
 		progress = status->priv->progress_fraction;
 
                 status->priv->progress_changed = FALSE;
-		show_progress = TRUE;
 		changed = TRUE;
         }
 
@@ -463,12 +457,12 @@ rb_statusbar_sync_status (RBStatusbar *status)
         }
 
         /* set up the progress bar */
-	if (progress > (1.0f - EPSILON) || !show_progress) {
+	if (progress > (1.0f - EPSILON)) {
 		gtk_widget_hide (status->priv->progress);
 	} else {
                 gtk_widget_show (status->priv->progress);
 
-                if (progress < (0.0f - EPSILON)) {
+                if (progress < EPSILON) {
 			gtk_progress_bar_pulse (GTK_PROGRESS_BAR (status->priv->progress));
                         changed = TRUE;
                 } else {

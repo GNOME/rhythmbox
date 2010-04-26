@@ -819,9 +819,11 @@ stat_thread_main (RhythmDBStatThreadData *data)
 	GList *i;
 	GError *error = NULL;
 	RhythmDBEvent *result;
-	int count = 0;
 
-	rb_debug ("entering stat thread: %d to process", g_list_length (data->stat_list));
+	data->db->priv->stat_thread_count = g_list_length (data->stat_list);
+	data->db->priv->stat_thread_done = 0;
+
+	rb_debug ("entering stat thread: %d to process", data->db->priv->stat_thread_count);
 	for (i = data->stat_list; i != NULL; i = i->next) {
 		RhythmDBEvent *event = (RhythmDBEvent *)i->data;
 		GFile *file;
@@ -831,12 +833,13 @@ stat_thread_main (RhythmDBStatThreadData *data)
 		 */
 		if (g_cancellable_is_cancelled (data->db->priv->exiting)) {
 			rhythmdb_event_free (data->db, event);
-			count = 0;
 			continue;
 		}
 
-		if (count > 0 && count % 1000 == 0) {
-			rb_debug ("%d file info queries done", count);
+		if (data->db->priv->stat_thread_done > 0 &&
+		    data->db->priv->stat_thread_done % 1000 == 0) {
+			rb_debug ("%d file info queries done",
+				  data->db->priv->stat_thread_done);
 		}
 
 		file = g_file_new_for_uri (rb_refstring_get (event->uri));
@@ -912,7 +915,7 @@ stat_thread_main (RhythmDBStatThreadData *data)
 
 		g_async_queue_push (data->db->priv->event_queue, event);
 		g_object_unref (file);
-		count++;
+		g_atomic_int_inc (&data->db->priv->stat_thread_done);
 	}
 
 	g_list_free (data->stat_list);
@@ -4663,6 +4666,27 @@ rhythmdb_is_busy (RhythmDB *db)
 		!queue_is_empty (db->priv->event_queue) ||
 		!queue_is_empty (db->priv->action_queue) ||
 		(db->priv->outstanding_stats != NULL));
+}
+
+/**
+ * rhythmdb_get_progress_info:
+ * @db: a #RhythmDB.
+ * @text: used to return progress text
+ * @fraction: used to return progress fraction
+ *
+ * Provides progress information for rhythmdb operations, if any are running.
+ */
+void
+rhythmdb_get_progress_info (RhythmDB *db, char **text, float *fraction)
+{
+	if (db->priv->stat_thread_running && db->priv->stat_thread_count > 0) {
+		g_free (*text);
+		*text = g_strdup_printf (_("Checking (%d/%d)"),
+					 db->priv->stat_thread_done,
+					 db->priv->stat_thread_count);
+		*fraction = ((float)db->priv->stat_thread_done /
+			     (float)db->priv->stat_thread_count);
+	}
 }
 
 /**
