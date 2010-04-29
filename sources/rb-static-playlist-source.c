@@ -278,7 +278,7 @@ rb_static_playlist_source_constructed (GObject *object)
 	RBPlaylistSource *psource;
 	RBEntryView *songs;
 	RBShell *shell;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_static_playlist_source_parent_class, constructed, object);
 
@@ -320,7 +320,10 @@ rb_static_playlist_source_constructed (GObject *object)
 	g_object_get (source, "entry-type", &entry_type, NULL);
 	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)),
 						entry_type);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	if (entry_type != NULL) {
+		g_object_unref (entry_type);
+	}
+
 	gtk_paned_pack1 (GTK_PANED (priv->paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
 	g_signal_connect_object (priv->browser, "notify::output-model",
 				 G_CALLBACK (rb_static_playlist_source_browser_changed_cb),
@@ -364,7 +367,7 @@ rb_static_playlist_source_constructed (GObject *object)
  * Return value: new playlist.
  */
 RBSource *
-rb_static_playlist_source_new (RBShell *shell, const char *name, const char *sorting_name, gboolean local, RhythmDBEntryType entry_type)
+rb_static_playlist_source_new (RBShell *shell, const char *name, const char *sorting_name, gboolean local, RhythmDBEntryType *entry_type)
 {
 	if (name == NULL)
 		name = "";

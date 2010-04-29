@@ -73,6 +73,9 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
         print "coherence UPnP plugin activated"
         self.shell = shell
         self.sources = {}
+	if self.entry_type is None:
+            self.entry_type = rhythmdb.EntryType(name='CoherenceUpnp')
+            shell.props.db.register_entry_type(self.entry_type)
 
         # Set up our icon
         the_icon = None
@@ -249,13 +252,11 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
 
         db = self.shell.props.db
         group = rb.rb_source_group_get_by_name("shared")
-        entry_type = db.entry_register_type("CoherenceUpnp:%s" %
-                 client.device.get_id()[5:])
 
         from UpnpSource import UpnpSource
         source = gobject.new (UpnpSource,
                     shell=self.shell,
-                    entry_type=entry_type,
+                    entry_type=self.entry_type,
                     source_group=group,
                     plugin=self,
                     client=client,

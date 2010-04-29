@@ -486,7 +486,7 @@ rb_mtp_source_dispose (GObject *object)
 {
 	RBMtpSource *source = RB_MTP_SOURCE (object);
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
 
 	if (priv->device_thread != NULL) {
@@ -512,7 +512,7 @@ rb_mtp_source_dispose (GObject *object)
 
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	rhythmdb_entry_delete_by_type (db, entry_type);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 
 	rhythmdb_commit (db);
 	g_object_unref (db);
@@ -567,17 +567,19 @@ rb_mtp_source_new (RBShell *shell,
 		   LIBMTP_raw_device_t *device)
 {
 	RBMtpSource *source = NULL;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RhythmDB *db = NULL;
 	char *name = NULL;
 
 	g_object_get (shell, "db", &db, NULL);
 	name = g_strdup_printf ("MTP-%u-%d", device->bus_location, device->devnum);
 
-	entry_type = rhythmdb_entry_register_type (db, name);
-	entry_type->save_to_disk = FALSE;
-	entry_type->category = RHYTHMDB_ENTRY_NORMAL;
-
+	entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+				   "db", db,
+				   "name", name,
+				   "save-to-disk", FALSE,
+				   "category", RHYTHMDB_ENTRY_NORMAL,
+				   NULL);
 	g_free (name);
 	g_object_unref (db);
 
@@ -652,7 +654,7 @@ add_mtp_track_to_db (RBMtpSource *source,
 		     LIBMTP_track_t *track)
 {
 	RhythmDBEntry *entry = NULL;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 	char *name = NULL;
 
@@ -669,7 +671,7 @@ add_mtp_track_to_db (RBMtpSource *source,
 	name = g_strdup_printf ("xrbmtp://%i/%s", track->item_id, track->filename);
 	entry = rhythmdb_entry_new (RHYTHMDB (db), entry_type, name);
 	g_free (name);
-        g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+        g_object_unref (entry_type);
 
 	if (entry == NULL) {
 		rb_debug ("cannot create entry %i", track->item_id);

@@ -75,8 +75,8 @@ struct _RBImportErrorsSourcePrivate
 	RhythmDBQueryModel *missing_plugin_model;
 	GtkWidget *infobar;
 
-	RhythmDBEntryType normal_entry_type;
-	RhythmDBEntryType ignore_entry_type;
+	RhythmDBEntryType *normal_entry_type;
+	RhythmDBEntryType *ignore_entry_type;
 };
 
 G_DEFINE_TYPE (RBImportErrorsSource, rb_import_errors_source, RB_TYPE_SOURCE);
@@ -134,18 +134,18 @@ rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 
 	g_object_class_install_property (object_class,
 					 PROP_NORMAL_ENTRY_TYPE,
-					 g_param_spec_boxed ("normal-entry-type",
-							     "Normal entry type",
-							     "Entry type for successfully imported entries of this type",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_object ("normal-entry-type",
+							      "Normal entry type",
+							      "Entry type for successfully imported entries of this type",
+							      RHYTHMDB_TYPE_ENTRY_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_IGNORE_ENTRY_TYPE,
-					 g_param_spec_boxed ("ignore-entry-type",
-							     "Ignore entry type",
-							     "Entry type for entries of this type to be ignored",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_object ("ignore-entry-type",
+							      "Ignore entry type",
+							      "Entry type for entries of this type to be ignored",
+							      RHYTHMDB_TYPE_ENTRY_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBImportErrorsSourcePrivate));
 }
@@ -177,7 +177,7 @@ rb_import_errors_source_constructed (GObject *object)
 	RBShell *shell;
 	GPtrArray *query;
 	RhythmDBQueryModel *model;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	GtkWidget *box;
 	GtkWidget *label;
 
@@ -247,7 +247,7 @@ rb_import_errors_source_constructed (GObject *object)
 	gtk_container_add (GTK_CONTAINER (gtk_info_bar_get_content_area (GTK_INFO_BAR (source->priv->infobar))),
 			   label);
 
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 
 	box = gtk_vbox_new (FALSE, 6);
 	gtk_box_pack_start (GTK_BOX (box), GTK_WIDGET (source->priv->view), TRUE, TRUE, 0);
@@ -274,10 +274,10 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 	RBImportErrorsSource *source = RB_IMPORT_ERRORS_SOURCE (object);
 	switch (prop_id) {
 	case PROP_NORMAL_ENTRY_TYPE:
-		g_value_set_boxed (value, source->priv->normal_entry_type);
+		g_value_set_object (value, source->priv->normal_entry_type);
 		break;
 	case PROP_IGNORE_ENTRY_TYPE:
-		g_value_set_boxed (value, source->priv->ignore_entry_type);
+		g_value_set_object (value, source->priv->ignore_entry_type);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -291,10 +291,10 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 	RBImportErrorsSource *source = RB_IMPORT_ERRORS_SOURCE (object);
 	switch (prop_id) {
 	case PROP_NORMAL_ENTRY_TYPE:
-		source->priv->normal_entry_type = g_value_get_boxed (value);
+		source->priv->normal_entry_type = g_value_get_object (value);
 		break;
 	case PROP_IGNORE_ENTRY_TYPE:
-		source->priv->ignore_entry_type = g_value_get_boxed (value);
+		source->priv->ignore_entry_type = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -340,9 +340,9 @@ impl_get_entry_view (RBSource *asource)
  */
 RBSource *
 rb_import_errors_source_new (RBShell *shell,
-			     RhythmDBEntryType entry_type,
-			     RhythmDBEntryType normal_entry_type,
-			     RhythmDBEntryType ignore_entry_type)
+			     RhythmDBEntryType *entry_type,
+			     RhythmDBEntryType *normal_entry_type,
+			     RhythmDBEntryType *ignore_entry_type)
 {
 	RBSource *source;
 
@@ -423,7 +423,7 @@ static void
 missing_plugins_retry_cb (gpointer instance, gboolean installed, RBImportErrorsSource *source)
 {
 	GtkTreeIter iter;
-	RhythmDBEntryType error_entry_type;
+	RhythmDBEntryType *error_entry_type;
 
 	gtk_info_bar_set_response_sensitive (GTK_INFO_BAR (source->priv->infobar),
 					     GTK_RESPONSE_OK,
@@ -447,7 +447,7 @@ missing_plugins_retry_cb (gpointer instance, gboolean installed, RBImportErrorsS
 					     error_entry_type);
 	} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (source->priv->missing_plugin_model), &iter));
 
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, error_entry_type);
+	g_object_unref (error_entry_type);
 }
 
 static void

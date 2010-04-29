@@ -40,6 +40,7 @@
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
 #include "rb-podcast-manager.h"
+#include "rb-podcast-entry-types.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
 #include "rb-marshal.h"
@@ -486,7 +487,7 @@ rb_podcast_manager_entry_downloaded (RhythmDBEntry *entry)
 {
 	gulong status;
 	const gchar *file_name;
-	RhythmDBEntryType type = rhythmdb_entry_get_entry_type (entry);
+	RhythmDBEntryType *type = rhythmdb_entry_get_entry_type (entry);
 
 	g_assert (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST);
 
@@ -1344,7 +1345,7 @@ rb_podcast_manager_save_metadata (RBPodcastManager *pd, RhythmDBEntry *entry)
 static void
 rb_podcast_manager_db_entry_added_cb (RBPodcastManager *pd, RhythmDBEntry *entry)
 {
-	RhythmDBEntryType type = rhythmdb_entry_get_entry_type (entry);
+	RhythmDBEntryType *type = rhythmdb_entry_get_entry_type (entry);
 
 	if (type != RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
 		return;
@@ -1706,7 +1707,7 @@ rb_podcast_manager_delete_download (RBPodcastManager *pd, RhythmDBEntry *entry)
 	const char *file_name;
 	GFile *file;
 	GError *error = NULL;
-	RhythmDBEntryType type = rhythmdb_entry_get_entry_type (entry);
+	RhythmDBEntryType *type = rhythmdb_entry_get_entry_type (entry);
 
 	/* make sure it's a podcast post */
 	g_assert (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST);

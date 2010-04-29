@@ -10,6 +10,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/lib 				\
 	-I$(top_srcdir)/widgets				\
 	-I$(top_srcdir)/metadata			\
+	-I$(top_srcdir)/podcast				\
 	-I$(top_builddir)/lib                           \
 	$(RHYTHMBOX_CFLAGS)				\
 	$(NO_STRICT_ALIASING_CFLAGS)
@@ -21,7 +22,8 @@ rhythmdbinclude_HEADERS =				\
 	rhythmdb-property-model.h			\
 	rhythmdb-query-model.h				\
 	rhythmdb-query-results.h			\
-	rhythmdb-import-job.h
+	rhythmdb-import-job.h				\
+	rhythmdb-entry-type.h
 
 librhythmdb_la_SOURCES =				\
 	$(rhythmdbinclude_HEADERS)			\
@@ -33,7 +35,9 @@ librhythmdb_la_SOURCES =				\
 	rhythmdb-property-model.c			\
 	rhythmdb-query-model.c				\
 	rhythmdb-query-results.c			\
-	rhythmdb-import-job.c
+	rhythmdb-import-job.c				\
+	rhythmdb-entry-type.c				\
+	rhythmdb-song-entry-types.c
 
 
 if USE_TREEDB

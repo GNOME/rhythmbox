@@ -253,7 +253,7 @@ _rb_track_transfer_batch_start (RBTrackTransferBatch *batch, GObject *queue)
 		}
 
 		if (batch->priv->source == NULL) {
-			RhythmDBEntryType entry_type;
+			RhythmDBEntryType *entry_type;
 			RBSource *entry_origin;
 
 			entry_type = rhythmdb_entry_get_entry_type (entry);

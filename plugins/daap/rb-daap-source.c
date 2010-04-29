@@ -75,7 +75,6 @@ static gboolean rb_daap_source_show_popup (RBSource *source);
 static char * rb_daap_source_get_browser_key (RBSource *source);
 static char * rb_daap_source_get_paned_key (RBBrowserSource *source);
 static void rb_daap_source_get_status (RBSource *source, char **text, char **progress_text, float *progress);
-static char * rb_daap_source_get_playback_uri (RhythmDBEntry *entry, gpointer data);
 
 #define CONF_STATE_SORTING CONF_PREFIX "/state/daap/sorting"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/daap/paned_position"
@@ -112,6 +111,19 @@ enum {
 };
 
 G_DEFINE_TYPE (RBDAAPSource, rb_daap_source, RB_TYPE_BROWSER_SOURCE)
+
+static char *
+rb_daap_entry_type_get_playback_uri (RhythmDBEntryType *etype, RhythmDBEntry *entry)
+{
+	const char *location;
+
+	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+	if (location == NULL) {
+		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	}
+
+	return g_strdup (location);
+}
 
 static void
 rb_daap_source_dispose (GObject *object)
@@ -276,19 +288,24 @@ rb_daap_source_new (RBShell *shell,
 		    gboolean password_protected)
 {
 	RBSource *source;
-	RhythmDBEntryType type;
+	RhythmDBEntryType *entry_type;
 	GdkPixbuf *icon;
 	RhythmDB *db;
 	char *entry_type_name;
 
 	g_object_get (shell, "db", &db, NULL);
 	entry_type_name = g_strdup_printf ("daap:%s:%s:%s", service_name, name, host);
-	type = rhythmdb_entry_register_type (db, entry_type_name);
-	g_free (entry_type_name);
-	type->save_to_disk = FALSE;
-	type->category = RHYTHMDB_ENTRY_NORMAL;
-	type->get_playback_uri = (RhythmDBEntryStringFunc) rb_daap_source_get_playback_uri;
+
+	entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+				   "db", db,
+				   "name", entry_type_name,
+				   "save-to-disk", FALSE,
+				   "category", RHYTHMDB_ENTRY_NORMAL,
+				   NULL);
+	entry_type->get_playback_uri = rb_daap_entry_type_get_playback_uri;
+	rhythmdb_register_entry_type (db, entry_type);
 	g_object_unref (db);
+	g_free (entry_type_name);
 
 	icon = rb_daap_plugin_get_icon (RB_DAAP_PLUGIN (plugin), password_protected, FALSE);
 	source = RB_SOURCE (g_object_new (RB_TYPE_DAAP_SOURCE,
@@ -296,7 +313,7 @@ rb_daap_source_new (RBShell *shell,
 					  "name", name,
 					  "host", host,
 					  "port", port,
-					  "entry-type", type,
+					  "entry-type", entry_type,
 					  "icon", icon,
 					  "shell", shell,
 					  "visibility", TRUE,
@@ -311,7 +328,7 @@ rb_daap_source_new (RBShell *shell,
 	}
 
 	rb_shell_register_entry_type_for_source (shell, source,
-						 type);
+						 entry_type);
 
 	return source;
 }
@@ -544,7 +561,7 @@ rb_daap_source_connection_cb (DMAPConnection   *connection,
 	RBShell *shell = NULL;
 	GSList *playlists;
 	GSList *l;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	rb_debug ("Connection callback result: %s", result ? "success" : "failure");
 	daap_source->priv->tried_password = FALSE;
@@ -585,7 +602,7 @@ rb_daap_source_connection_cb (DMAPConnection   *connection,
 	}
 
 	g_object_unref (shell);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 }
 
 static void
@@ -597,7 +614,7 @@ rb_daap_source_activate (RBSource *source)
 	RhythmDB *rdb = NULL;
 	DMAPDb *db = NULL;
 	char *name = NULL;
-	RhythmDBEntryType type;
+	RhythmDBEntryType *entry_type;
 
 	if (daap_source->priv->connection != NULL) {
 		return;
@@ -606,10 +623,10 @@ rb_daap_source_activate (RBSource *source)
 	g_object_get (daap_source,
 		      "shell", &shell,
 		      "name", &name,
-		      "entry-type", &type,
+		      "entry-type", &entry_type,
 		      NULL);
 	g_object_get (shell, "db", &rdb, NULL);
-	db = DMAP_DB (rb_rhythmdb_dmap_db_adapter_new (rdb, type));
+	db = DMAP_DB (rb_rhythmdb_dmap_db_adapter_new (rdb, entry_type));
 
 	factory = DMAP_RECORD_FACTORY (rb_daap_record_factory_new ());
 
@@ -619,7 +636,7 @@ rb_daap_source_activate (RBSource *source)
 								daap_source->priv->password_protected,
 								db,
 								factory);
-        g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, type);
+	g_object_unref (entry_type);
 	g_object_add_weak_pointer (G_OBJECT (daap_source->priv->connection), (gpointer *)&daap_source->priv->connection);
 
 	g_free (name);
@@ -666,7 +683,7 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 	GSList *l;
 	RBShell *shell;
 	RhythmDB *db;
-	RhythmDBEntryType type;
+	RhythmDBEntryType *entry_type;
 
 	if (daap_source->priv->connection == NULL
 	 || daap_source->priv->disconnecting == TRUE) {
@@ -677,12 +694,12 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 
 	daap_source->priv->disconnecting = TRUE;
 
-	g_object_get (daap_source, "shell", &shell, "entry-type", &type, NULL);
+	g_object_get (daap_source, "shell", &shell, "entry-type", &entry_type, NULL);
 	g_object_get (shell, "db", &db, NULL);
 	g_object_unref (shell);
 
-	rhythmdb_entry_delete_by_type (db, type);
-        g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, type);
+	rhythmdb_entry_delete_by_type (db, entry_type);
+        g_object_unref (entry_type);
 	rhythmdb_commit (db);
 
 	g_object_unref (db);
@@ -780,15 +797,3 @@ rb_daap_source_get_status (RBSource *source,
 	RB_SOURCE_CLASS (rb_daap_source_parent_class)->impl_get_status (source, text, progress_text, progress);
 }
 
-static char *
-rb_daap_source_get_playback_uri (RhythmDBEntry *entry, gpointer data)
-{
-	const char *location;
-
-	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
-	if (location == NULL) {
-		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-	}
-
-	return g_strdup (location);
-}

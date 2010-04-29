@@ -119,7 +119,6 @@ static void queue_get_playlist_and_skip (RBLastfmSource *source, RhythmDBEntry *
 static void queue_love_track (RBLastfmSource *source);
 static void queue_ban_track (RBLastfmSource *source);
 
-
 static void rb_lastfm_source_class_init (RBLastfmSourceClass *klass);
 static void rb_lastfm_source_init (RBLastfmSource *source);
 static void rb_lastfm_source_constructed (GObject *object);
@@ -207,7 +206,6 @@ typedef struct
 	char *download_url;
 } RBLastfmTrackEntryData;
 
-
 struct RBLastfmSourcePrivate
 {
 	GtkWidget *main_box;
@@ -224,8 +222,8 @@ struct RBLastfmSourcePrivate
 	RBEntryView *tracks;
 
 	RBShellPlayer *shell_player;
-	RhythmDBEntryType station_entry_type;
-	RhythmDBEntryType track_entry_type;
+	RhythmDBEntryType *station_entry_type;
+	RhythmDBEntryType *track_entry_type;
 	char *session_id;
 	RhythmDBEntry *current_station;
 	RBPlayOrder *play_order;
@@ -328,18 +326,18 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
-					 g_param_spec_boxed ("entry-type",
-							     "Entry type",
-							     "Entry type for last.fm tracks",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_object ("entry-type",
+							      "Entry type",
+							      "Entry type for last.fm tracks",
+							      RHYTHMDB_TYPE_ENTRY_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_STATION_ENTRY_TYPE,
-					 g_param_spec_boxed ("station-entry-type",
-							     "Entry type",
-							     "Entry type for last.fm stations",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_object ("station-entry-type",
+							      "Entry type",
+							      "Entry type for last.fm stations",
+							      RHYTHMDB_TYPE_ENTRY_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_override_property (object_class,
 					  PROP_PLAY_ORDER,
 					  "play-order");
@@ -617,10 +615,10 @@ rb_lastfm_source_set_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
-		source->priv->track_entry_type = g_value_get_boxed (value);
+		source->priv->track_entry_type = g_value_get_object (value);
 		break;
 	case PROP_STATION_ENTRY_TYPE:
-		source->priv->station_entry_type = g_value_get_boxed (value);
+		source->priv->station_entry_type = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -638,10 +636,10 @@ rb_lastfm_source_get_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
-		g_value_set_boxed (value, source->priv->track_entry_type);
+		g_value_set_object (value, source->priv->track_entry_type);
 		break;
 	case PROP_STATION_ENTRY_TYPE:
-		g_value_set_boxed (value, source->priv->station_entry_type);
+		g_value_set_object (value, source->priv->station_entry_type);
 		break;
 	case PROP_PLAY_ORDER:
 		g_value_set_object (value, source->priv->play_order);
@@ -652,10 +650,8 @@ rb_lastfm_source_get_property (GObject *object,
 	}
 }
 
-/* entry data stuff */
-
 static void
-destroy_track_data (RhythmDBEntry *entry, gpointer meh)
+destroy_track_data (RhythmDBEntryType *etype, RhythmDBEntry *entry)
 {
 	RBLastfmTrackEntryData *data;
 
@@ -671,31 +667,38 @@ rb_lastfm_source_new (RBPlugin *plugin,
 		      RBShell  *shell)
 {
 	RBSource *source;
-	RhythmDBEntryType station_entry_type;
-	RhythmDBEntryType track_entry_type;
+	RhythmDBEntryType *station_entry_type;
+	RhythmDBEntryType *track_entry_type;
 	RhythmDB *db;
 
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
 
 	/* register entry types if they're not already registered */
 	station_entry_type = rhythmdb_entry_type_get_by_name (db, "lastfm-station");
-	if (station_entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		station_entry_type = rhythmdb_entry_register_type (db, "lastfm-station");
-		station_entry_type->save_to_disk = TRUE;
-		station_entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc) rb_true_function;
-		station_entry_type->sync_metadata = (RhythmDBEntrySyncFunc) rb_null_function;
-		station_entry_type->get_playback_uri = (RhythmDBEntryStringFunc) rb_null_function;	/* can't play stations, exactly */
-		station_entry_type->category = RHYTHMDB_ENTRY_CONTAINER;
+	if (station_entry_type == NULL) {
+		station_entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+						   "db", db,
+						   "name", "lastfm-station",
+						   "save-to-disk", TRUE,
+						   "category", RHYTHMDB_ENTRY_CONTAINER,
+						   NULL);
+		station_entry_type->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
+		station_entry_type->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+		station_entry_type->get_playback_uri = (RhythmDBEntryTypeStringFunc) rb_null_function;
+		rhythmdb_register_entry_type (db, station_entry_type);
 	}
 
 	track_entry_type = rhythmdb_entry_type_get_by_name (db, "lastfm-track");
-	if (track_entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		track_entry_type = rhythmdb_entry_register_type (db, "lastfm-track");
-		track_entry_type->save_to_disk = FALSE;
-		track_entry_type->category = RHYTHMDB_ENTRY_NORMAL;
-
-		track_entry_type->entry_type_data_size = sizeof (RBLastfmTrackEntryData);
-		track_entry_type->pre_entry_destroy = destroy_track_data;
+	if (track_entry_type == NULL) {
+		track_entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+						 "db", db,
+						 "name", "lastfm-track",
+						 "save-to-disk", FALSE,
+						 "category", RHYTHMDB_ENTRY_NORMAL,
+						 "type-data-size", sizeof (RBLastfmTrackEntryData),
+						 NULL);
+		track_entry_type->destroy_entry = destroy_track_data;
+		rhythmdb_register_entry_type (db, track_entry_type);
 	}
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_LASTFM_SOURCE,

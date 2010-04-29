@@ -64,7 +64,7 @@ RBSource *	rb_static_playlist_source_new		(RBShell *shell,
 							 const char *name,
 							 const char *sorting_name,
 							 gboolean local,
-							 RhythmDBEntryType entry_type);
+							 RhythmDBEntryType *entry_type);
 
 RBSource *	rb_static_playlist_source_new_from_xml	(RBShell *shell,
 							 xmlNodePtr node);

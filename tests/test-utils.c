@@ -133,7 +133,7 @@ gboolean waiting_db, finalised_db;
 void
 test_rhythmdb_setup (void)
 {
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	init_once (TRUE);
 
@@ -143,8 +143,8 @@ test_rhythmdb_setup (void)
 
 	/* allow SONGs to be synced to for the tests */
 	entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
-	entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
-	entry_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;
+	entry_type->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc)rb_true_function;
+	entry_type->sync_metadata = (RhythmDBEntryTypeSyncFunc)rb_null_function;
 }
 
 void

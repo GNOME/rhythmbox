@@ -109,7 +109,7 @@ struct _RBLibraryBrowserRebuildData
 typedef struct
 {
 	RhythmDB *db;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RhythmDBQueryModel *input_model;
 	RhythmDBQueryModel *output_model;
 
@@ -207,11 +207,11 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 	 */
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
-					 g_param_spec_boxed ("entry-type",
-						 	     "Entry type",
-							     "Type of entry to display in this browser",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_object ("entry-type",
+							      "Entry type",
+							      "Type of entry to display in this browser",
+							      RHYTHMDB_TYPE_ENTRY_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBLibraryBrowserPrivate));
 }
@@ -335,7 +335,7 @@ rb_library_browser_set_property (GObject *object,
 		}
 		break;
 	case PROP_ENTRY_TYPE:
-		priv->entry_type = g_value_get_boxed (value);
+		priv->entry_type = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -362,7 +362,7 @@ rb_library_browser_get_property (GObject *object,
 		g_value_set_object (value, priv->output_model);
 		break;
 	case PROP_ENTRY_TYPE:
-		g_value_set_boxed (value, priv->entry_type);
+		g_value_set_object (value, priv->entry_type);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -381,7 +381,7 @@ rb_library_browser_get_property (GObject *object,
  */
 RBLibraryBrowser *
 rb_library_browser_new (RhythmDB *db,
-			RhythmDBEntryType entry_type)
+			RhythmDBEntryType *entry_type)
 {
 	RBLibraryBrowser *widget;
 

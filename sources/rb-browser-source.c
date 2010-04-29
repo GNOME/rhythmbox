@@ -342,7 +342,7 @@ rb_browser_source_constructed (GObject *object)
 	GObject *shell_player;
 	char *browser_key;
 	char *paned_key;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_browser_source_parent_class, constructed, object);
 
@@ -481,7 +481,7 @@ rb_browser_source_constructed (GObject *object)
 	source->priv->cached_all_query = rhythmdb_query_model_new_empty (source->priv->db);
 	rb_browser_source_populate (source);
 
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 }
 
 static void
@@ -570,7 +570,7 @@ rb_browser_source_populate (RBBrowserSource *source)
 				      RHYTHMDB_QUERY_RESULTS (source->priv->cached_all_query),
 				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, entry_type,
 				      RHYTHMDB_QUERY_END);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 }
 
 static void
@@ -884,7 +884,7 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 {
 	RhythmDBQueryModel *query_model;
 	GPtrArray *query;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	/* use the cached 'all' query to optimise the no-search case */
 	if (source->priv->search_query == NULL) {
@@ -902,7 +902,7 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 				      RHYTHMDB_QUERY_SUBQUERY,
 				      source->priv->search_query,
 				      RHYTHMDB_QUERY_END);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 
 	if (subset) {
 		/* if we're appending text to an existing search string, the results will be a subset

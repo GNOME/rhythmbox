@@ -33,6 +33,7 @@
 
 #include "rhythmdb-query-model.h"
 #include "rb-podcast-manager.h"
+#include "rb-podcast-entry-types.h"
 #include "rb-playlist-manager.h"
 #include "rb-shell.h"
 
@@ -188,7 +189,7 @@ hash_table_insert_from_tree_model_cb (GtkTreeModel *query_model,
 
 static void
 itinerary_insert_all_of_type (RhythmDB *db,
-			      RhythmDBEntryType entry_type,
+			      RhythmDBEntryType *entry_type,
 			      GHashTable *target)
 {
 	GtkTreeModel *query_model;

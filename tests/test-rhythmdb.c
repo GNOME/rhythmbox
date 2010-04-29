@@ -41,6 +41,7 @@
 #include "rhythmdb.h"
 #include "rhythmdb-tree.h"
 #include "rhythmdb-query-model.h"
+#include "rb-podcast-entry-types.h"
 
 static void
 set_true (RhythmDBEntry *entry, gboolean *b)

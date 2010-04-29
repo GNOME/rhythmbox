@@ -57,7 +57,7 @@ RBSource *	rb_generic_player_playlist_source_new (RBShell *shell,
 						       RBGenericPlayerSource *source,
 						       const char *playlist_file,
 						       const char *device_root,
-						       RhythmDBEntryType entry_type);
+						       RhythmDBEntryType *entry_type);
 void		rb_generic_player_playlist_delete_from_player (RBGenericPlayerPlaylistSource *source);
 
 G_END_DECLS

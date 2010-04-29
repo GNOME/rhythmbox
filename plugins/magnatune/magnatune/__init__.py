@@ -57,6 +57,13 @@ popup_ui = """
 </ui>
 """
 
+class MagnatuneEntryType(rhythmdb.EntryType):
+	def __init__(self):
+		rhythmdb.EntryType.__init__(self, name='magnatune')
+
+	def can_sync_metadata(self, entry):
+		return True
+
 class Magnatune(rb.Plugin):
 	client = gconf.client_get_default()
 
@@ -82,10 +89,8 @@ class Magnatune(rb.Plugin):
 		self.shell = shell # so the source can update the progress bar
 		self.db = shell.get_property("db")
 
-		self.entry_type = self.db.entry_register_type("MagnatuneEntryType")
-		# allow changes which don't do anything
-		self.entry_type.can_sync_metadata = True
-		self.entry_type.sync_metadata = None
+		self.entry_type = MagnatuneEntryType()
+		self.db.register_entry_type(self.entry_type)
 
 		theme = gtk.icon_theme_get_default()
 		rb.append_plugin_source_path(theme, "/icons")

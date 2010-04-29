@@ -360,8 +360,8 @@ prop_gvalue_to_string (RhythmDB *db,
 	switch (propid) {
 	case RHYTHMDB_PROP_TYPE:
 		{
-			RhythmDBEntryType type = g_value_get_pointer (val);
-			return g_strdup (type->name);
+			RhythmDBEntryType *type = g_value_get_object (val);
+			return g_strdup (rhythmdb_entry_type_get_name (type));
 		}
 		break;
 	default:
@@ -458,12 +458,12 @@ rhythmdb_read_encoded_property (RhythmDB *db,
 			g_value_set_double (val, d);
 		}
 		break;
-	case G_TYPE_POINTER:
+	case G_TYPE_OBJECT:			/* hm, really? */
 		if (propid == RHYTHMDB_PROP_TYPE) {
-			RhythmDBEntryType entry_type;
+			RhythmDBEntryType *entry_type;
 			entry_type = rhythmdb_entry_type_get_by_name (db, content);
-			if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) {
-				g_value_set_pointer (val, entry_type);
+			if (entry_type != NULL) {
+				g_value_set_object (val, entry_type);
 				break;
 			} else {
 				g_warning ("Unexpected entry type");

@@ -326,16 +326,16 @@ impl_delete_thyself (RBSource *source)
 {
 	RhythmDB *db;
 	RBShell *shell;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "db", &db, NULL);
 	g_object_unref (shell);
 
 	g_object_get (source, "entry-type", &entry_type, NULL);
-	rb_debug ("deleting all entries of type '%s'", entry_type->name);
+	rb_debug ("deleting all entries of type '%s'", rhythmdb_entry_type_get_name (entry_type));
 	rhythmdb_entry_delete_by_type (db, entry_type);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 
 	rhythmdb_commit (db);
 	g_object_unref (db);
@@ -393,7 +393,7 @@ impl_paste (RBSource *bsource, GList *entries)
 	RBShell *shell;
 	GList *mime_types;
 	GList *l;
-	RhythmDBEntryType our_entry_type;
+	RhythmDBEntryType *our_entry_type;
 	RBTrackTransferBatch *batch;
 	gboolean start_batch = FALSE;
 
@@ -413,7 +413,7 @@ impl_paste (RBSource *bsource, GList *entries)
 
 	for (l = entries; l != NULL; l = l->next) {
 		RhythmDBEntry *entry;
-		RhythmDBEntryType entry_type;
+		RhythmDBEntryType *entry_type;
 		const char *location;
 
 		entry = (RhythmDBEntry *)l->data;
@@ -431,12 +431,8 @@ impl_paste (RBSource *bsource, GList *entries)
 		} else {
 			rb_debug ("can't copy entry %s from the device to itself", location);
 		}
-
-		if (entry_type) {
-			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
-		}
 	}
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, our_entry_type);
+	g_object_unref (our_entry_type);
 
 	if (start_batch) {
 		rb_track_transfer_queue_start_batch (xferq, batch);
@@ -733,7 +729,7 @@ gboolean
 rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *source,
 						     RhythmDBEntry *entry)
 {
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
 	RBShell *shell;
 	const char *title;
@@ -773,8 +769,8 @@ rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *sou
 
 	no_match = (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (query_model),
 						 &iter));
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
-	g_object_unref(query_model);
+	g_object_unref (entry_type);
+	g_object_unref (query_model);
 	g_object_unref (db);
 	if (no_match == FALSE) {
 		rb_debug ("not adding %lu - %s - %s - %s to removable device since it's already present", track_number, title, album, artist);
@@ -785,10 +781,12 @@ rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *sou
 static gboolean
 impl_should_paste (RBRemovableMediaSource *source, RhythmDBEntry *entry)
 {
-	RhythmDBEntryType entry_type = rhythmdb_entry_get_entry_type (entry);
-	gboolean should_paste = (entry_type->category == RHYTHMDB_ENTRY_NORMAL);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
-	return should_paste;
+	RhythmDBEntryCategory cat;
+	RhythmDBEntryType *entry_type = rhythmdb_entry_get_entry_type (entry);
+
+	g_object_get (entry_type, "category", &cat, NULL);
+
+	return (cat == RHYTHMDB_ENTRY_NORMAL);
 }
 
 /**
@@ -842,7 +840,7 @@ rb_removable_media_source_track_added (RBRemovableMediaSource *source,
 		add_to_db = klass->impl_track_added (source, entry, uri, filesize, mimetype);
 
 	if (add_to_db) {
-		RhythmDBEntryType entry_type;
+		RhythmDBEntryType *entry_type;
 		RhythmDB *db;
 		RBShell *shell;
 
@@ -851,8 +849,8 @@ rb_removable_media_source_track_added (RBRemovableMediaSource *source,
 		g_object_unref (shell);
 
 		g_object_get (source, "entry-type", &entry_type, NULL);
-		rhythmdb_add_uri_with_types (db, uri, entry_type, RHYTHMDB_ENTRY_TYPE_INVALID, RHYTHMDB_ENTRY_TYPE_INVALID);
-		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+		rhythmdb_add_uri_with_types (db, uri, entry_type, NULL, NULL);
+		g_object_unref (entry_type);
 
 		g_object_unref (db);
 	}

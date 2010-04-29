@@ -47,7 +47,6 @@ static void     rb_fm_radio_source_class_init  (RBFMRadioSourceClass *class);
 static void     rb_fm_radio_source_init        (RBFMRadioSource *self);
 static void	rb_fm_radio_source_constructed (GObject *object);
 static void     rb_fm_radio_source_dispose     (GObject *object);
-static char    *rb_fm_radio_source_get_playback_uri (RhythmDBEntry *entry, gpointer data);
 static void     rb_fm_radio_source_do_query    (RBFMRadioSource *self);
 static void     rb_fm_radio_source_songs_view_sort_order_changed (
 						RBEntryView *view,
@@ -72,7 +71,7 @@ static RBEntryView *impl_get_entry_view (RBSource *source);
 struct _RBFMRadioSourcePrivate {
 	RhythmDB *db;
 	RBShellPlayer *player;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RhythmDBEntry *playing_entry;
 
 	RBEntryView *stations;
@@ -176,23 +175,34 @@ rb_fm_radio_source_constructed (GObject *object)
 				 self, 0);
 }
 
+static char *
+rb_fm_radio_source_get_playback_uri (RhythmDBEntryType *etype, RhythmDBEntry *entry)
+{
+	return g_strdup("xrbsilence:///");
+}
+
 RBSource *
 rb_fm_radio_source_new (RBShell *shell, RBRadioTuner *tuner)
 {
 	RBFMRadioSource *self;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
 
 	g_object_get (shell, "db", &db, NULL);
 
 	entry_type = rhythmdb_entry_type_get_by_name (db, "fmradio-station");
-	if (entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		entry_type = rhythmdb_entry_register_type (db, "fmradio-station");
-		entry_type->save_to_disk = TRUE;
-		entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc) rb_true_function;
-		entry_type->sync_metadata = (RhythmDBEntrySyncFunc) rb_null_function;
+	if (entry_type == NULL) {
+		entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+					   "db", db,
+					   "name", "fmradio-station",
+					   "save-to-disk", TRUE,
+					   NULL);
+		entry_type->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
+		entry_type->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
 		entry_type->get_playback_uri = rb_fm_radio_source_get_playback_uri;
+		rhythmdb_register_entry_type (db, entry_type);
 	}
+
 	self = g_object_new (RB_TYPE_FM_RADIO_SOURCE,
 			     "name", _("FM Radio"),
 			     "shell", shell,
@@ -203,12 +213,6 @@ rb_fm_radio_source_new (RBShell *shell, RBRadioTuner *tuner)
 						 entry_type);
 	g_object_unref (db);
 	return RB_SOURCE (self);
-}
-
-static char *
-rb_fm_radio_source_get_playback_uri (RhythmDBEntry *entry, gpointer data)
-{
-	return g_strdup("xrbsilence:///");
 }
 
 static void

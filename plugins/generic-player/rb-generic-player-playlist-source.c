@@ -429,7 +429,7 @@ rb_generic_player_playlist_source_new (RBShell *shell,
 				       RBGenericPlayerSource *player_source,
 				       const char *playlist_file,
 				       const char *device_root,
-				       RhythmDBEntryType entry_type)
+				       RhythmDBEntryType *entry_type)
 {
 	RBSource *source;
 	source = RB_SOURCE (g_object_new (RB_TYPE_GENERIC_PLAYER_PLAYLIST_SOURCE,

@@ -50,6 +50,9 @@ class RhythmboxPlayer(log.Loggable):
         self.player = self.shell.get_player()
         louie.send('Coherence.UPnP.Backend.init_completed', None, backend=self)
 
+	self.entry_type = rhythmdb.EntryType(name='CoherencePlayer')
+	self.shell.props.db.register_entry_type(self.entry_type)
+
         self.playing = False
         self.state = None
         self.duration = None
@@ -263,12 +266,10 @@ class RhythmboxPlayer(log.Loggable):
                 self.info("check for entry %r %r %r", self.entry,item.server_uuid,uri)
                 if self.entry == None:
                     if item.server_uuid is not None:
-                        entry_type = self.shell.props.db.entry_register_type("CoherenceUpnp:" + item.server_uuid)
-                        self.entry = self.shell.props.db.entry_new(entry_type, uri)
+                        self.entry = self.shell.props.db.entry_new(self.entry_type, uri)
                         self.info("create new entry %r", self.entry)
                     else:
-                        entry_type = self.shell.props.db.entry_register_type("CoherencePlayer")
-                        self.entry = self.shell.props.db.entry_new(entry_type, uri)
+                        self.entry = self.shell.props.db.entry_new(self.entry_type, uri)
                         self.info("load and check for entry %r", self.entry)
 
                 duration = None
@@ -315,8 +316,7 @@ class RhythmboxPlayer(log.Loggable):
             else:
                 #self.shell.load_uri(uri,play=False)
                 #self.entry = self.shell.props.db.entry_lookup_by_location(uri)
-                entry_type = self.shell.props.db.entry_register_type("CoherencePlayer")
-                self.entry = self.shell.props.db.entry_new(entry_type, uri)
+                self.entry = self.shell.props.db.entry_new(self.entry_type, uri)
 
 
         self.playing = False

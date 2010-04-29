@@ -468,8 +468,7 @@ rb_song_info_constructed (GObject *object)
 	g_return_if_fail (selected_entries != NULL);
 
 	for (tem = selected_entries; tem; tem = tem->next) {
-		if (!rhythmdb_entry_is_editable (song_info->priv->db,
-						 selected_entries->data)) {
+		if (!rhythmdb_entry_can_sync_metadata (selected_entries->data)) {
 			editable = FALSE;
 			break;
 		}

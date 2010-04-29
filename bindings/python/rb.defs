@@ -551,7 +551,7 @@
   (return-type "none")
   (parameters
     '("RBSource*" "source")
-    '("RhythmDBEntryType_*" "type")
+    '("RhythmDBEntryType*" "type")
   )
 )
 
@@ -576,7 +576,7 @@
   (c-name "rb_shell_get_source_by_entry_type")
   (return-type "RBSource*")
   (parameters
-    '("RhythmDBEntryType_*" "type")
+    '("RhythmDBEntryType*" "type")
   )
 )
 
@@ -2317,7 +2317,7 @@
     '("RBShell*" "shell")
     '("const-char*" "name")
     '("gboolean" "local")
-    '("RhythmDBEntryType_*" "entry_type")
+    '("RhythmDBEntryType*" "entry_type")
   )
 )
 

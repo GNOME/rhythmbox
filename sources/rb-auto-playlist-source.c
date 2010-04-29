@@ -248,7 +248,7 @@ rb_auto_playlist_source_constructed (GObject *object)
 	RBAutoPlaylistSource *source;
 	RBAutoPlaylistSourcePrivate *priv;
 	RBShell *shell;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_auto_playlist_source_parent_class, constructed, object);
 
@@ -260,7 +260,7 @@ rb_auto_playlist_source_constructed (GObject *object)
 	g_object_get (RB_PLAYLIST_SOURCE (source), "entry-type", &entry_type, NULL);
 	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)),
 						entry_type);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 	gtk_paned_pack1 (GTK_PANED (priv->paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
 	g_signal_connect_object (G_OBJECT (priv->browser), "notify::output-model",
 				 G_CALLBACK (rb_auto_playlist_source_browser_changed_cb),
@@ -610,12 +610,12 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	g_strfreev (names);
 
 	if (subquery != NULL) {
-		RhythmDBEntryType qtype;
+		RhythmDBEntryType *qtype;
 		GPtrArray *query;
 
 		g_object_get (source, "entry-type", &qtype, NULL);
-		if (qtype == RHYTHMDB_ENTRY_TYPE_INVALID)
-			qtype = RHYTHMDB_ENTRY_TYPE_SONG;
+		if (qtype == NULL)
+			qtype = g_object_ref (RHYTHMDB_ENTRY_TYPE_SONG);
 
 		query = rhythmdb_query_parse (db,
 					      RHYTHMDB_QUERY_PROP_EQUALS,
@@ -630,7 +630,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 
 		rhythmdb_query_free (subquery);
 		rhythmdb_query_free (query);
-                g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, qtype);
+		g_object_unref (qtype);
 	}
 
 	g_object_unref (db);

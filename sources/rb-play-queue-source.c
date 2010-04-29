@@ -317,7 +317,7 @@ rb_play_queue_source_new (RBShell *shell)
 					"name", _("Play Queue"),
 					"shell", shell,
 					"is-local", TRUE,
-					"entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,
+					"entry-type", NULL,
 					"source-group", RB_SOURCE_GROUP_LIBRARY,
 					NULL));
 }

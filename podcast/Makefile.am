@@ -17,7 +17,8 @@ librbpodcast_la_SOURCES =				\
 	rb-podcast-properties-dialog.c			\
 	rb-podcast-properties-dialog.h			\
 	rb-podcast-parse.c				\
-	rb-podcast-manager.c
+	rb-podcast-manager.c				\
+	rb-podcast-entry-types.c
 
 noinst_PROGRAMS = test-podcast-parse
 test_podcast_parse_SOURCES =				\

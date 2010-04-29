@@ -158,7 +158,7 @@ rb_ipod_static_playlist_source_new (RBShell *shell,
 				    RBiPodSource *ipod_source,
 				    RbIpodDb *ipod_db,
 				    Itdb_Playlist *playlist,
-				    RhythmDBEntryType entry_type)
+				    RhythmDBEntryType *entry_type)
 {
 	RBIpodStaticPlaylistSource *source;
 

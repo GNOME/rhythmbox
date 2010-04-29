@@ -29,6 +29,7 @@
 #include "config.h"
 
 #include "rhythmdb-import-job.h"
+#include "rhythmdb-entry-type.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rb-marshal.h"
@@ -64,9 +65,9 @@ struct _RhythmDBImportJobPrivate
 	int		imported;
 	GHashTable	*outstanding;
 	RhythmDB	*db;
-	RhythmDBEntryType entry_type;
-	RhythmDBEntryType ignore_type;
-	RhythmDBEntryType error_type;
+	RhythmDBEntryType *entry_type;
+	RhythmDBEntryType *ignore_type;
+	RhythmDBEntryType *error_type;
 	GStaticMutex    lock;
 	GSList		*uri_list;
 	gboolean	started;
@@ -98,9 +99,9 @@ G_DEFINE_TYPE (RhythmDBImportJob, rhythmdb_import_job, G_TYPE_OBJECT)
  * @db: the #RhythmDB object
  * @entry_type: the #RhythmDBEntryType to use for normal entries
  * @ignore_type: the #RhythmDBEntryType to use for ignored files
- *   (or RHYTHMDB_ENTRY_TYPE_INVALID to not create ignore entries)
+ *   (or NULL to not create ignore entries)
  * @error_type: the #RhythmDBEntryType to use for import error
- *   entries (or RHYTHMDB_ENTRY_TYPE_INVALID for none)
+ *   entries (or NULL for none)
  *
  * Creates a new import job with the specified entry types.
  * Before starting the job, the caller must add one or more
@@ -110,9 +111,9 @@ G_DEFINE_TYPE (RhythmDBImportJob, rhythmdb_import_job, G_TYPE_OBJECT)
  */
 RhythmDBImportJob *
 rhythmdb_import_job_new (RhythmDB *db,
-			 RhythmDBEntryType entry_type,
-			 RhythmDBEntryType ignore_type,
-			 RhythmDBEntryType error_type)
+			 RhythmDBEntryType *entry_type,
+			 RhythmDBEntryType *ignore_type,
+			 RhythmDBEntryType *error_type)
 {
 	GObject *obj;
 
@@ -491,13 +492,13 @@ impl_set_property (GObject *object,
 					 job, 0);
 		break;
 	case PROP_ENTRY_TYPE:
-		job->priv->entry_type = g_value_get_boxed (value);
+		job->priv->entry_type = g_value_get_object (value);
 		break;
 	case PROP_IGNORE_TYPE:
-		job->priv->ignore_type = g_value_get_boxed (value);
+		job->priv->ignore_type = g_value_get_object (value);
 		break;
 	case PROP_ERROR_TYPE:
-		job->priv->error_type = g_value_get_boxed (value);
+		job->priv->error_type = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -518,13 +519,13 @@ impl_get_property (GObject *object,
 		g_value_set_object (value, job->priv->db);
 		break;
 	case PROP_ENTRY_TYPE:
-		g_value_set_boxed (value, job->priv->entry_type);
+		g_value_set_object (value, job->priv->entry_type);
 		break;
 	case PROP_IGNORE_TYPE:
-		g_value_set_boxed (value, job->priv->ignore_type);
+		g_value_set_object (value, job->priv->ignore_type);
 		break;
 	case PROP_ERROR_TYPE:
-		g_value_set_boxed (value, job->priv->error_type);
+		g_value_set_object (value, job->priv->error_type);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -556,10 +557,6 @@ impl_finalize (GObject *object)
 	
 	g_hash_table_destroy (job->priv->outstanding);
 
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, job->priv->entry_type);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, job->priv->ignore_type);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, job->priv->error_type);
-	
 	rb_slist_deep_free (job->priv->uri_list);
 
 	g_static_mutex_free (&job->priv->lock);
@@ -580,32 +577,32 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_DB,
 					 g_param_spec_object ("db",
-						 	      "db",
+							      "db",
 							      "RhythmDB object",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
-					 g_param_spec_boxed ("entry-type",
-						 	     "Entry type",
-							     "Entry type to use for entries added by this job",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_object ("entry-type",
+							      "Entry type",
+							      "Entry type to use for entries added by this job",
+							      RHYTHMDB_TYPE_ENTRY_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_IGNORE_TYPE,
-					 g_param_spec_boxed ("ignore-type",
-						 	     "Ignored entry type",
-							     "Entry type to use for ignored entries added by this job",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_object ("ignore-type",
+							      "Ignored entry type",
+							      "Entry type to use for ignored entries added by this job",
+							      RHYTHMDB_TYPE_ENTRY_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_ERROR_TYPE,
-					 g_param_spec_boxed ("error-type",
-						 	     "Error entry type",
-							     "Entry type to use for import error entries added by this job",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_object ("error-type",
+							      "Error entry type",
+							      "Entry type to use for import error entries added by this job",
+							      RHYTHMDB_TYPE_ENTRY_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	/**
 	 * RhythmDBImportJob::entry-added:

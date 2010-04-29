@@ -47,6 +47,7 @@
 #include <gtk/gtk.h>
 
 #include "rb-podcast-source.h"
+#include "rb-podcast-entry-types.h"
 
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
@@ -1127,7 +1128,7 @@ static GPtrArray *
 construct_query_from_selection (RBPodcastSource *source)
 {
 	GPtrArray *query;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	g_object_get (source, "entry-type", &entry_type, NULL);
 
@@ -1136,7 +1137,7 @@ construct_query_from_selection (RBPodcastSource *source)
 				      RHYTHMDB_PROP_TYPE,
 				      entry_type,
 				      RHYTHMDB_QUERY_END);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 
 	if (source->priv->search_query) {
 		rhythmdb_query_append (source->priv->db,
@@ -2078,7 +2079,7 @@ rb_podcast_source_entry_changed_cb (RhythmDB *db,
 				    GValueArray *changes,
 				    RBPodcastSource *source)
 {
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	gboolean feed_changed;
 	int i;
 

@@ -121,8 +121,8 @@ typedef struct
 	char *mount_path;
 
 	/* entry types */
-	RhythmDBEntryType ignore_type;
-	RhythmDBEntryType error_type;
+	RhythmDBEntryType *ignore_type;
+	RhythmDBEntryType *error_type;
 
 	/* information derived from volume */
 	gboolean read_only;
@@ -175,18 +175,18 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 
 	g_object_class_install_property (object_class,
 					 PROP_ERROR_ENTRY_TYPE,
-					 g_param_spec_boxed ("error-entry-type",
-							     "Error entry type",
-							     "Entry type to use for import error entries added by this source",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_object ("error-entry-type",
+							      "Error entry type",
+							      "Entry type to use for import error entries added by this source",
+							      RHYTHMDB_TYPE_ENTRY_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_IGNORE_ENTRY_TYPE,
-					 g_param_spec_boxed ("ignore-entry-type",
-							     "Ignore entry type",
-							     "Entry type to use for ignore entries added by this source",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_object ("ignore-entry-type",
+							      "Ignore entry type",
+							      "Entry type to use for ignore entries added by this source",
+							      RHYTHMDB_TYPE_ENTRY_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_DEVICE_INFO,
 					 g_param_spec_object ("device-info",
@@ -211,7 +211,7 @@ impl_constructed (GObject *object)
 {
 	RBGenericPlayerSource *source;
 	RBGenericPlayerSourcePrivate *priv;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	GMount *mount;
 	char **playlist_formats;
 	char *mount_name;
@@ -260,10 +260,10 @@ impl_constructed (GObject *object)
 
 	g_object_get (priv->device_info, "playlist-formats", &playlist_formats, NULL);
 	if (playlist_formats != NULL && g_strv_length (playlist_formats) > 0) {
-		entry_type->has_playlists = TRUE;
+		g_object_set (entry_type, "has-playlists", TRUE, NULL);
 	}
 	g_strfreev (playlist_formats);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 
         rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
 	load_songs (source);
@@ -276,10 +276,10 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 
 	switch (prop_id) {
 	case PROP_IGNORE_ENTRY_TYPE:
-		priv->ignore_type = g_value_get_boxed (value);
+		priv->ignore_type = g_value_get_object (value);
 		break;
 	case PROP_ERROR_ENTRY_TYPE:
-		priv->error_type = g_value_get_boxed (value);
+		priv->error_type = g_value_get_object (value);
 		break;
 	case PROP_DEVICE_INFO:
 		priv->device_info = g_value_dup_object (value);
@@ -297,10 +297,10 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 
 	switch (prop_id) {
 	case PROP_IGNORE_ENTRY_TYPE:
-		g_value_set_boxed (value, priv->ignore_type);
+		g_value_set_object (value, priv->ignore_type);
 		break;
 	case PROP_ERROR_ENTRY_TYPE:
-		g_value_set_boxed (value, priv->error_type);
+		g_value_set_object (value, priv->error_type);
 		break;
 	case PROP_DEVICE_INFO:
 		g_value_set_object (value, priv->device_info);
@@ -322,15 +322,15 @@ impl_dispose (GObject *object)
 	}
 
 	if (priv->db != NULL) {
-		if (priv->ignore_type != RHYTHMDB_ENTRY_TYPE_INVALID) {
+		if (priv->ignore_type != NULL) {
 			rhythmdb_entry_delete_by_type (priv->db, priv->ignore_type);
-			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, priv->ignore_type);
-			priv->ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+			g_object_unref (priv->ignore_type);
+			priv->ignore_type = NULL;
 		}
-		if (priv->error_type != RHYTHMDB_ENTRY_TYPE_INVALID) {
+		if (priv->error_type != NULL) {
 			rhythmdb_entry_delete_by_type (priv->db, priv->error_type);
-			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, priv->error_type);
-			priv->error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+			g_object_unref (priv->error_type);
+			priv->error_type = NULL;
 		}
 
 		g_object_unref (priv->db);
@@ -364,9 +364,9 @@ RBRemovableMediaSource *
 rb_generic_player_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBGenericPlayerSource *source;
-	RhythmDBEntryType entry_type;
-	RhythmDBEntryType error_type;
-	RhythmDBEntryType ignore_type;
+	RhythmDBEntryType *entry_type;
+	RhythmDBEntryType *error_type;
+	RhythmDBEntryType *ignore_type;
 	RhythmDB *db;
 	GVolume *volume;
 	char *name;
@@ -378,15 +378,33 @@ rb_generic_player_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, M
 	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 
 	name = g_strdup_printf ("generic audio player: %s", path);
-	entry_type = rhythmdb_entry_register_type (db, name);
+	entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+				   "db", db,
+				   "name", name,
+				   "save-to-disk", FALSE,
+				   "category", RHYTHMDB_ENTRY_NORMAL,
+				   NULL);
+	rhythmdb_register_entry_type (db, entry_type);
 	g_free (name);
 
 	name = g_strdup_printf ("generic audio player (ignore): %s", path);
-	ignore_type = rhythmdb_entry_register_type (db, name);
+	ignore_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+				    "db", db,
+				    "name", name,
+				    "save-to-disk", FALSE,
+				    "category", RHYTHMDB_ENTRY_VIRTUAL,
+				    NULL);
+	rhythmdb_register_entry_type (db, ignore_type);
 	g_free (name);
 
 	name = g_strdup_printf ("generic audio player (errors): %s", path);
-	error_type = rhythmdb_entry_register_type (db, name);
+	error_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+				   "db", db,
+				   "name", name,
+				   "save-to-disk", FALSE,
+				   "category", RHYTHMDB_ENTRY_VIRTUAL,
+				   NULL);
+	rhythmdb_register_entry_type (db, error_type);
 	g_free (name);
 
 	g_object_unref (db);
@@ -468,14 +486,12 @@ static void
 load_songs (RBGenericPlayerSource *source)
 {
 	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	char **audio_folders;
 	char *mount_path;
 
 	mount_path = rb_generic_player_source_get_mount_path (source);
-	g_object_get (source,
-		      "entry-type", &entry_type,
-		      NULL);
+	g_object_get (source, "entry-type", &entry_type, NULL);
 
 	/* if we have a set of folders on the device containing audio files,
 	 * load only those folders, otherwise add the whole volume.
@@ -503,7 +519,7 @@ load_songs (RBGenericPlayerSource *source)
 
 	rhythmdb_import_job_start (priv->import_job);
 
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 	g_free (mount_path);
 }
 
@@ -678,7 +694,7 @@ load_playlist_file (RBGenericPlayerSource *source,
 		    const char *playlist_path,
 		    const char *rel_path)
 {
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RBGenericPlayerPlaylistSource *playlist;
 	RBShell *shell;
 	char *mount_path;
@@ -701,7 +717,7 @@ load_playlist_file (RBGenericPlayerSource *source,
 		rb_generic_player_source_add_playlist (source, shell, RB_SOURCE (playlist));
 	}
 
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 	g_object_unref (shell);
 	g_free (mount_path);
 }
@@ -714,7 +730,7 @@ visit_playlist_dirs (GFile *file,
 	char *basename;
 	char *uri;
 	RhythmDBEntry *entry;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 
 	if (dir) {
@@ -734,7 +750,7 @@ visit_playlist_dirs (GFile *file,
 
 		g_object_get (source, "entry-type", &entry_type, NULL);
 		is_song = (rhythmdb_entry_get_entry_type (entry) == entry_type);
-		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+		g_object_unref (entry_type);
 
 		if (is_song) {
 			rb_debug ("%s was loaded as a song",
@@ -1333,7 +1349,7 @@ static void
 impl_add_playlist (RBMediaPlayerSource *source, char *name, GList *entries)
 {
 	RBSource *playlist;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RBShell *shell;
 	GList *i;
 
@@ -1343,7 +1359,7 @@ impl_add_playlist (RBMediaPlayerSource *source, char *name, GList *entries)
 		      NULL);
 
 	playlist = rb_generic_player_playlist_source_new (shell, RB_GENERIC_PLAYER_SOURCE (source), NULL, NULL, entry_type);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 
 	rb_generic_player_source_add_playlist (RB_GENERIC_PLAYER_SOURCE (source),
 					       shell,

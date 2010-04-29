@@ -81,7 +81,7 @@ RBRemovableMediaSource *
 rb_nokia770_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBNokia770Source *source;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
 	GVolume *volume;
 	char *name;
@@ -94,7 +94,14 @@ rb_nokia770_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDev
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
 	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 	name = g_strdup_printf ("nokia770: %s", path);
-	entry_type = rhythmdb_entry_register_type (db, name);
+
+	entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+				   "db", db,
+				   "name", name,
+				   "category", RHYTHMDB_ENTRY_NORMAL,
+				   "save-to-disk", FALSE,
+				   NULL);
+	rhythmdb_register_entry_type (db, entry_type);
 	g_object_unref (db);
 	g_free (name);
 	g_free (path);
@@ -103,8 +110,6 @@ rb_nokia770_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDev
 	source = RB_NOKIA770_SOURCE (g_object_new (RB_TYPE_NOKIA770_SOURCE,
 						   "plugin", plugin,
 						   "entry-type", entry_type,
-						   "ignore-entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,
-						   "error-entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,
 						   "mount", mount,
 						   "shell", shell,
 						   "source-group", RB_SOURCE_GROUP_DEVICES,

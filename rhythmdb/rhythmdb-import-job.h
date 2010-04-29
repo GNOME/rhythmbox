@@ -67,9 +67,9 @@ struct _RhythmDBImportJobClass
 GType		rhythmdb_import_job_get_type		(void);
 
 RhythmDBImportJob *rhythmdb_import_job_new		(RhythmDB *db,
-							 RhythmDBEntryType entry_type,
-							 RhythmDBEntryType ignore_type,
-							 RhythmDBEntryType error_type);
+							 RhythmDBEntryType *entry_type,
+							 RhythmDBEntryType *ignore_type,
+							 RhythmDBEntryType *error_type);
 void		rhythmdb_import_job_add_uri		(RhythmDBImportJob *job, const char *uri);
 void		rhythmdb_import_job_start		(RhythmDBImportJob *job);
 void		rhythmdb_import_job_cancel		(RhythmDBImportJob *job);

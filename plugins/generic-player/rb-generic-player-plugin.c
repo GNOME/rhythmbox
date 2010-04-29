@@ -149,7 +149,7 @@ rb_generic_player_plugin_new_playlist (GtkAction *action, RBSource *source)
 	RBShell *shell;
 	RBSourceList *sourcelist;
 	RBSource *playlist;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	g_return_if_fail (RB_IS_GENERIC_PLAYER_SOURCE (source));
 	g_object_get (source,
@@ -158,7 +158,7 @@ rb_generic_player_plugin_new_playlist (GtkAction *action, RBSource *source)
 		      NULL);
 
 	playlist = rb_generic_player_playlist_source_new (shell, RB_GENERIC_PLAYER_SOURCE (source), NULL, NULL, entry_type);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 
 	rb_generic_player_source_add_playlist (RB_GENERIC_PLAYER_SOURCE (source),
 					       shell,

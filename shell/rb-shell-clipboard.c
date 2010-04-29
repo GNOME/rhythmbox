@@ -580,7 +580,7 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	gboolean can_select_all = FALSE;
 	gboolean can_show_properties = FALSE;
 	GtkAction *action;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	if (clipboard->priv->source) {
 		view = rb_source_get_entry_view (clipboard->priv->source);
@@ -654,9 +654,11 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditPlaylistAdd");
 	if (clipboard->priv->source != NULL) {
 		g_object_get (clipboard->priv->source, "entry-type", &entry_type, NULL);
-		if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) {
-			gtk_action_set_sensitive (action, entry_type->has_playlists);
-			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+		if (entry_type != NULL) {
+			gboolean has_playlists;
+			g_object_get (entry_type, "has-playlists", &has_playlists, NULL);
+			gtk_action_set_sensitive (action, has_playlists);
+			g_object_unref (entry_type);
 		} else {
 			gtk_action_set_sensitive (action, FALSE);
 		}
@@ -949,8 +951,8 @@ add_playlist_to_menu (GtkTreeModel *model,
 		      GtkTreeIter *iter,
 		      RBShellClipboard *clipboard)
 {
-	RhythmDBEntryType entry_type;
-	RhythmDBEntryType source_entry_type;
+	RhythmDBEntryType *entry_type;
+	RhythmDBEntryType *source_entry_type;
 	RBSource *source = NULL;
 	char *action_name;
 	GtkAction *action;
@@ -976,8 +978,8 @@ add_playlist_to_menu (GtkTreeModel *model,
 	g_object_get (source, "entry-type", &source_entry_type, NULL);
 	if (source_entry_type != entry_type) {
 		g_object_unref (source);
-		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
-		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+		g_object_unref (entry_type);
+		g_object_unref (source_entry_type);
 		return FALSE;
 	}
 
@@ -1014,8 +1016,8 @@ add_playlist_to_menu (GtkTreeModel *model,
 				       GTK_UI_MANAGER_AUTO, FALSE);
 	}
 
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (source_entry_type);
+	g_object_unref (entry_type);
 	g_free (action_name);
 	g_object_unref (source);
 

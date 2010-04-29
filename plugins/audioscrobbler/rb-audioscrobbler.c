@@ -58,6 +58,7 @@
 #include "rb-cut-and-paste-code.h"
 #include "rb-plugin.h"
 #include "rb-util.h"
+#include "rb-podcast-entry-types.h"
 
 #include "rb-audioscrobbler-entry.h"
 
@@ -440,13 +441,15 @@ rb_audioscrobbler_is_queueable (RhythmDBEntry *entry)
 	const char *title;
 	const char *artist;
 	gulong duration;
-	RhythmDBEntryType type;
+	RhythmDBEntryType *type;
+	RhythmDBEntryCategory category;
 
 	/* First, check if the entry is appropriate for sending to 
 	 * audioscrobbler
 	 */
 	type = rhythmdb_entry_get_entry_type (entry);
-	if (type->category != RHYTHMDB_ENTRY_NORMAL) {
+	g_object_get (type, "category", &category, NULL);
+	if (category != RHYTHMDB_ENTRY_NORMAL) {
 		rb_debug ("entry %s is not queueable: category not NORMAL", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 		return FALSE;
 	}

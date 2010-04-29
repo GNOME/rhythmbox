@@ -53,7 +53,7 @@ typedef struct {
 	GObjectClass parent;
 } RBRhythmDBDMAPDbAdapterClass;
 
-RBRhythmDBDMAPDbAdapter *rb_rhythmdb_dmap_db_adapter_new (RhythmDB *db, RhythmDBEntryType type);
+RBRhythmDBDMAPDbAdapter *rb_rhythmdb_dmap_db_adapter_new (RhythmDB *db, RhythmDBEntryType *entry_type);
 GType rb_rhythmdb_dmap_db_adapter_get_type (void);
 
 #endif /* _RB_RHYTHMDB_DMAP_DB_ADAPTER */

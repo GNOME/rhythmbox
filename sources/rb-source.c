@@ -119,7 +119,7 @@ struct _RBSourcePrivate
 	guint hidden_when_empty : 1;
 	guint update_visibility_id;
 	guint update_status_id;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RBSourceGroup *source_group;
 	RBPlugin *plugin;
 	RBSourceSearchType search_type;
@@ -289,7 +289,7 @@ rb_source_class_init (RBSourceClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_QUERY_MODEL,
 					 g_param_spec_object ("query-model",
-						 	      "RhythmDBQueryModel",
+							      "RhythmDBQueryModel",
 							      "RhythmDBQueryModel object",
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READWRITE));
@@ -312,11 +312,11 @@ rb_source_class_init (RBSourceClass *klass)
 	 */
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
-					 g_param_spec_boxed ("entry-type",
-							     "Entry type",
-							     "Type of the entries which should be displayed by this source",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_object ("entry-type",
+							      "Entry type",
+							      "Type of the entries which should be displayed by this source",
+							      RHYTHMDB_TYPE_ENTRY_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
 	 * RBSource:plugin:
 	 *
@@ -325,7 +325,7 @@ rb_source_class_init (RBSourceClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_PLUGIN,
 					 g_param_spec_object ("plugin",
-						 	      "RBPlugin",
+							      "RBPlugin",
 							      "RBPlugin instance for the plugin that created the source",
 							      RB_TYPE_PLUGIN,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
@@ -339,7 +339,7 @@ rb_source_class_init (RBSourceClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_BASE_QUERY_MODEL,
 					 g_param_spec_object ("base-query-model",
-						 	      "RhythmDBQueryModel",
+							      "RhythmDBQueryModel",
 							      "RhythmDBQueryModel object (unfiltered)",
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READABLE));
@@ -351,7 +351,7 @@ rb_source_class_init (RBSourceClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_PLAY_ORDER,
 					 g_param_spec_object ("play-order",
-						 	      "play order",
+							      "play order",
 							      "optional play order specific to the source",
 							      RB_TYPE_PLAY_ORDER,
 							      G_PARAM_READABLE));
@@ -365,7 +365,7 @@ rb_source_class_init (RBSourceClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_SEARCH_TYPE,
 					 g_param_spec_enum ("search-type",
-						 	    "search-type",
+							    "search-type",
 							    "search type",
 							    RB_TYPE_SOURCE_SEARCH_TYPE,
 							    RB_SOURCE_SEARCH_NONE,
@@ -636,7 +636,7 @@ rb_source_set_property (GObject *object,
 		priv->source_group = g_value_get_boxed (value);
 		break;
 	case PROP_ENTRY_TYPE:
-		priv->entry_type = g_value_get_boxed (value);
+		priv->entry_type = g_value_get_object (value);
 		break;
 	case PROP_PLUGIN:
 		priv->plugin = g_value_get_object (value);
@@ -688,7 +688,7 @@ rb_source_get_property (GObject *object,
 		g_value_set_boxed (value, priv->source_group);
 		break;
 	case PROP_ENTRY_TYPE:
-		g_value_set_boxed (value, priv->entry_type);
+		g_value_set_object (value, priv->entry_type);
 		break;
 	case PROP_PLUGIN:
 		g_value_set_object (value, priv->plugin);
@@ -1923,15 +1923,16 @@ _rb_action_group_add_source_actions (GtkActionGroup *group,
 gboolean
 _rb_source_check_entry_type (RBSource *source, RhythmDBEntry *entry)
 {
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	gboolean ret = TRUE;
 
 	g_object_get (source, "entry-type", &entry_type, NULL);
-	if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID &&
-	    rhythmdb_entry_get_entry_type (entry) != entry_type) {
-		ret = FALSE;
+	if (entry_type != NULL) {
+		if (rhythmdb_entry_get_entry_type (entry) != entry_type) {
+			ret = FALSE;
+		}
+		g_object_unref (entry_type);
 	}
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	return ret;
 }
 

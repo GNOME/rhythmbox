@@ -31,19 +31,11 @@
   )
 )
 
-(define-boxed EntryType
+(define-object EntryType
   (in-module "RhythmDB")
-  (c-name "RhythmDBEntryType_")
+  (parent "GObject")
+  (c-name "RhythmDBEntryType")
   (gtype-id "RHYTHMDB_TYPE_ENTRY_TYPE")
-  (fields
-    '("gpointer" "post_entry_create" (access readwrite))
-    '("gpointer" "pre_entry_destroy" (access readwrite))
-    '("gpointer" "get_playback_uri" (access readwrite))
-    '("gboolean" "save_to_disk" (access readwrite))
-    '("char*" "can_sync_metadata" (access readwrite))
-    '("char*" "sync_metadata" (access readwrite))
-    '("RhythmDBEntryCategory" "category" (access readwrite))
-  )
 )
 
 (define-boxed Query
@@ -249,12 +241,6 @@
   (return-type "GType")
 )
 
-(define-method get_entry_type
-  (of-object "RhythmDBEntry")
-  (c-name "rhythmdb_entry_get_entry_type")
-  (return-type "RhythmDBEntryType_*")
-)
-
 (define-method shutdown
   (of-object "RhythmDB")
   (c-name "rhythmdb_shutdown")
@@ -387,12 +373,6 @@
   )
 )
 
-(define-method get_playback_uri
-  (of-object "RhythmDBEntry")
-  (c-name "rhythmdb_entry_get_playback_uri")
-  (return-type "char*")
-)
-
 (define-function rhythmdb_get_type
   (c-name "rhythmdb_get_type")
   (return-type "GType")
@@ -404,21 +384,12 @@
   (return-type "none")
 )
 
-(define-method entry_is_editable
-  (of-object "RhythmDB")
-  (c-name "rhythmdb_entry_is_editable")
-  (return-type "gboolean")
-  (parameters
-    '("RhythmDBEntry*" "entry")
-  )
-)
-
 (define-method entry_new
   (of-object "RhythmDB")
   (c-name "rhythmdb_entry_new")
   (return-type "RhythmDBEntry*")
   (parameters
-    '("RhythmDBEntryType_*" "type")
+    '("RhythmDBEntryType*" "type")
     '("const-char*" "uri")
   )
 )
@@ -438,9 +409,9 @@
   (return-type "none")
   (parameters
     '("const-char*" "uri")
-    '("RhythmDBEntryType_*" "type")
-    '("RhythmDBEntryType_*" "ignore_type")
-    '("RhythmDBEntryType_*" "error_type")
+    '("RhythmDBEntryType*" "type")
+    '("RhythmDBEntryType*" "ignore_type")
+    '("RhythmDBEntryType*" "error_type")
   )
 )
 
@@ -469,7 +440,7 @@
   (c-name "rhythmdb_entry_delete_by_type")
   (return-type "none")
   (parameters
-    '("RhythmDBEntryType_*" "type")
+    '("RhythmDBEntryType*" "type")
   )
 )
 
@@ -521,7 +492,7 @@
   (c-name "rhythmdb_entry_foreach_by_type")
   (return-type "none")
   (parameters
-    '("RhythmDBEntryType" "entry_type")
+    '("RhythmDBEntryType*" "entry_type")
     '("GFunc" "func")
     '("gpointer" "data")
   )
@@ -532,7 +503,7 @@
   (c-name "rhythmdb_entry_count_by_type")
   (return-type "gint64")
   (parameters
-    '("RhythmDBEntryType" "entry_type")
+    '("RhythmDBEntryType*" "entry_type")
   )
 )
 
@@ -572,6 +543,17 @@
   (return-type "GList*")
   (parameters
     '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method entry_write_metadata_changes
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_write_metadata_changes")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("GSList*" "changes")
+    '("GError**" "error")
   )
 )
 
@@ -627,17 +609,17 @@
   )
 )
 
-;(define-method query_append_params
-;  (of-object "RhythmDB")
-;  (c-name "rhythmdb_query_append_params")
-;  (return-type "none")
-;  (parameters
-;    '("RhythmDBQuery" "query")
-;    '("RhythmDBQueryType" "type")
-;    '("RhythmDBPropType" "propid")
-;    '("GValue*" "value")
-;  )
-;)
+(define-method query_append_params
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_query_append_params")
+  (return-type "none")
+  (parameters
+    '("RhythmDBQuery" "query")
+    '("RhythmDBQueryType" "type")
+    '("RhythmDBPropType" "propid")
+    '("GValue*" "value")
+  )
+)
 
 (define-method append_prop_multiple
   (of-object "RhythmDBQuery")
@@ -703,52 +685,22 @@
   )
 )
 
-(define-method entry_register_type
+(define-method register_entry_type
   (of-object "RhythmDB")
-  (c-name "rhythmdb_entry_register_type")
-  (return-type "RhythmDBEntryType_*")
+  (c-name "rhythmdb_register_entry_type")
+  (return-type "none")
   (parameters
-    '("const-char*" "name")
+    '("RhythmDBEntryType*" "entry_type")
   )
 )
 
 (define-method entry_type_get_by_name
   (of-object "RhythmDB")
   (c-name "rhythmdb_entry_type_get_by_name")
-  (return-type "RhythmDBEntryType_*")
+  (return-type "RhythmDBEntryType*")
   (parameters
     '("const-char*" "name")
   )
-)
-
-(define-function rhythmdb_entry_song_get_type
-  (c-name "rhythmdb_entry_song_get_type")
-  (return-type "RhythmDBEntryType_*")
-)
-
-(define-function rhythmdb_entry_iradio_get_type
-  (c-name "rhythmdb_entry_iradio_get_type")
-  (return-type "RhythmDBEntryType_*")
-)
-
-(define-function rhythmdb_entry_podcast_post_get_type
-  (c-name "rhythmdb_entry_podcast_post_get_type")
-  (return-type "RhythmDBEntryType_*")
-)
-
-(define-function rhythmdb_entry_podcast_feed_get_type
-  (c-name "rhythmdb_entry_podcast_feed_get_type")
-  (return-type "RhythmDBEntryType_*")
-)
-
-(define-function rhythmdb_entry_import_error_get_type
-  (c-name "rhythmdb_entry_import_error_get_type")
-  (return-type "RhythmDBEntryType_*")
-)
-
-(define-function rhythmdb_entry_ignore_get_type
-  (c-name "rhythmdb_entry_ignore_get_type")
-  (return-type "RhythmDBEntryType_*")
 )
 
 (define-method entry_request_extra_metadata
@@ -1234,4 +1186,121 @@
   (of-object "RhythmDBImportJob")
   (c-name "rhythmdb_import_job_get_imported")
   (return-type "int")
+)
+
+;; From rhythmdb-entry.h
+
+(define-function entry_get_type
+  (c-name "rhythmdb_entry_get_type")
+  (return-type "GType")
+)
+
+;; From rhythmdb-entry-type.h
+
+(define-function entry_category_get_type
+  (c-name "rhythmdb_entry_category_get_type")
+  (return-type "GType")
+)
+
+(define-function entry_type_get_type
+  (c-name "rhythmdb_entry_type_get_type")
+  (return-type "GType")
+)
+
+(define-method get_name
+  (of-object "RhythmDBEntryType")
+  (c-name "rhythmdb_entry_type_get_name")
+  (return-type "const-char*")
+)
+
+(define-method get_playback_uri
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_get_playback_uri")
+  (return-type "char*")
+)
+
+(define-virtual get_playback_uri
+  (of-object "RhythmDBEntryType")
+  (return-type "char*")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method created
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_created")
+  (return-type "none")
+)
+
+(define-virtual entry_created
+  (of-object "RhythmDBEntryType")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method pre_destroy
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_pre_destroy")
+  (return-type "none")
+)
+
+(define-virtual destroy_entry
+  (of-object "RhythmDBEntryType")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method can_sync_metadata
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_can_sync_metadata")
+  (return-type "gboolean")
+)
+
+(define-virtual can_sync_metadata
+  (of-object "RhythmDBEntryType")
+  (return-type "gboolean")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method sync_metadata
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_sync_metadata")
+  (return-type "none")
+  (parameters
+    '("GSList*" "changes")
+    '("GError**" "error")
+  )
+)
+
+(define-virtual sync_metadata
+  (of-object "RhythmDBEntryType")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("GSList*" "changes")
+    '("GError**" "error")
+  )
+)
+
+
+(define-function get_song_entry_type
+  (c-name "rhythmdb_get_song_entry_type")
+  (return-type "RhythmDBEntryType*")
+)
+
+(define-function get_error_entry_type
+  (c-name "rhythmdb_get_error_entry_type")
+  (return-type "RhythmDBEntryType*")
+)
+
+(define-function get_ignore_entry_type
+  (c-name "rhythmdb_get_ignore_entry_type")
+  (return-type "RhythmDBEntryType*")
 )

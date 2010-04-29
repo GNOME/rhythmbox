@@ -79,7 +79,7 @@ RBRemovableMediaSource *
 rb_psp_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBPspSource *source;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
 	char *name;
 	char *path;
@@ -92,7 +92,13 @@ rb_psp_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDevice *
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
 	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 	name = g_strdup_printf ("psp: %s", path);
-	entry_type = rhythmdb_entry_register_type (db, name);
+	entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+				   "db", db,
+				   "name", name,
+				   "save-to-disk", FALSE,
+				   "category", RHYTHMDB_ENTRY_NORMAL,
+				   NULL);
+	rhythmdb_register_entry_type (db, entry_type);
 	g_object_unref (db);
 	g_free (name);
 	g_free (path);
@@ -101,8 +107,6 @@ rb_psp_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDevice *
 	source = RB_PSP_SOURCE (g_object_new (RB_TYPE_PSP_SOURCE,
 					  "plugin", plugin,
 					  "entry-type", entry_type,
-					  "ignore-entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,
-					  "error-entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,
 					  "mount", mount,
 					  "shell", shell,
 					  "source-group", RB_SOURCE_GROUP_DEVICES,
@@ -195,7 +199,7 @@ visit_playlist_dirs (RBPspSource *source,
 {
 	RBShell *shell;
 	RhythmDB *db;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	char *playlist_path;
 	char *playlist_name;
 	RBSource *playlist;
@@ -218,7 +222,7 @@ visit_playlist_dirs (RBPspSource *source,
 				      RHYTHMDB_QUERY_PROP_PREFIX, RHYTHMDB_PROP_LOCATION, playlist_path,
 				      RHYTHMDB_QUERY_END);
 	g_free (playlist_path);
-        g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+        g_object_unref (entry_type);
 
 	playlist_name = g_file_get_basename (file);
 	playlist = rb_auto_playlist_source_new (shell, playlist_name, FALSE);

@@ -7,6 +7,7 @@ LDADD = \
 	$(top_builddir)/rhythmdb/librhythmdb.la 		\
 	$(top_builddir)/metadata/librbmetadata.la		\
 	$(top_builddir)/widgets/librbwidgets.la			\
+	$(top_builddir)/podcast/librbpodcast.la			\
 	$(top_builddir)/lib/librb.la				\
 	$(RHYTHMBOX_LIBS)
 
@@ -54,6 +55,7 @@ INCLUDES = 							\
 	-I$(top_srcdir)/metadata				\
 	-I$(top_srcdir)/widgets					\
 	-I$(top_srcdir)/rhythmdb				\
+	-I$(top_srcdir)/podcast					\
 	-I$(top_srcdir)/plugins/audioscrobbler			\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 

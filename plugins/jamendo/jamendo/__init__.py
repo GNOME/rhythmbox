@@ -52,6 +52,12 @@ popup_ui = """
 </ui>
 """
 
+class JamendoEntryType(rhythmdb.EntryType):
+	def __init__(self):
+		rhythmdb.EntryType.__init__(self, name='jamendo')
+
+	def can_sync_metadata(self, entry):
+		return True
 
 class Jamendo(rb.Plugin):
 	#
@@ -64,10 +70,8 @@ class Jamendo(rb.Plugin):
 	def activate(self, shell):
 		self.db = shell.get_property("db")
 
-		self.entry_type = self.db.entry_register_type("JamendoEntryType")
-		# allow changes which don't do anything
-		self.entry_type.can_sync_metadata = True
-		self.entry_type.sync_metadata = None
+		self.entry_type = JamendoEntryType()
+		self.db.register_entry_type(self.entry_type)
 
 		theme = gtk.icon_theme_get_default()
 		rb.append_plugin_source_path(theme, "/icons/")

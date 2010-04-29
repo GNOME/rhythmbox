@@ -241,13 +241,13 @@ buffering_cb (GObject *backend, gpointer whatever, guint progress, RBStreamingSo
 static gboolean
 check_entry_type (RBStreamingSource *source, RhythmDBEntry *entry)
 {
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	gboolean matches = FALSE;
 
 	g_object_get (source, "entry-type", &entry_type, NULL);
 	if (entry != NULL && rhythmdb_entry_get_entry_type (entry) == entry_type)
 		matches = TRUE;
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 
 	return matches;
 }

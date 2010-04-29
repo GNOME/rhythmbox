@@ -36,7 +36,7 @@
 
 struct RBRhythmDBDMAPDbAdapterPrivate {
 	RhythmDB *db;
-	RhythmDBEntryType type;
+	RhythmDBEntryType *entry_type;
 };
 
 typedef struct ForeachAdapterData {
@@ -90,7 +90,7 @@ rb_rhythmdb_dmap_db_adapter_foreach	(const DMAPDb *db,
 	foreach_adapter_data->func = func;
 
 	rhythmdb_entry_foreach_by_type (RB_RHYTHMDB_DMAP_DB_ADAPTER (db)->priv->db,
-					RB_RHYTHMDB_DMAP_DB_ADAPTER (db)->priv->type,
+					RB_RHYTHMDB_DMAP_DB_ADAPTER (db)->priv->entry_type,
 				       (GFunc) foreach_adapter,
 				        foreach_adapter_data);
 
@@ -103,7 +103,7 @@ rb_rhythmdb_dmap_db_adapter_count (const DMAPDb *db)
 	g_assert (RB_RHYTHMDB_DMAP_DB_ADAPTER (db)->priv->db != NULL);
 	return rhythmdb_entry_count_by_type (
 			RB_RHYTHMDB_DMAP_DB_ADAPTER (db)->priv->db,
-			RB_RHYTHMDB_DMAP_DB_ADAPTER (db)->priv->type);
+			RB_RHYTHMDB_DMAP_DB_ADAPTER (db)->priv->entry_type);
 }
 
 static void
@@ -163,7 +163,7 @@ rb_rhythmdb_dmap_db_adapter_add (DMAPDb *db, DMAPRecord *record)
                      "daap.songgenre", &genre,
 		      NULL);
 
-	entry = rhythmdb_entry_new (priv->db, priv->type, uri);
+	entry = rhythmdb_entry_new (priv->db, priv->entry_type, uri);
 
 	if (entry == NULL) {
 		g_warning ("cannot create entry for daap track %s", uri);
@@ -261,7 +261,7 @@ G_DEFINE_TYPE_WITH_CODE (RBRhythmDBDMAPDbAdapter, rb_rhythmdb_dmap_db_adapter, G
 			 G_IMPLEMENT_INTERFACE (TYPE_DMAP_DB, rb_rhythmdb_dmap_db_adapter_interface_init))
 
 RBRhythmDBDMAPDbAdapter *
-rb_rhythmdb_dmap_db_adapter_new (RhythmDB *rdb, RhythmDBEntryType type)
+rb_rhythmdb_dmap_db_adapter_new (RhythmDB *rdb, RhythmDBEntryType *entry_type)
 {
 	RBRhythmDBDMAPDbAdapter *db;
 
@@ -269,7 +269,7 @@ rb_rhythmdb_dmap_db_adapter_new (RhythmDB *rdb, RhythmDBEntryType type)
 					       NULL));
 
 	db->priv->db = rdb;
-	db->priv->type = type;
+	db->priv->entry_type = entry_type;
 
 	return db;
 }

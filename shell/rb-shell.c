@@ -1937,7 +1937,7 @@ rb_shell_db_entry_added_cb (RhythmDB *db,
  */
 RBSource *
 rb_shell_get_source_by_entry_type (RBShell *shell,
-				   RhythmDBEntryType type)
+				   RhythmDBEntryType *type)
 {
 	return g_hash_table_lookup (shell->priv->sources_hash, type);
 }
@@ -1956,7 +1956,7 @@ rb_shell_get_source_by_entry_type (RBShell *shell,
 void
 rb_shell_register_entry_type_for_source (RBShell *shell,
 					 RBSource *source,
-					 RhythmDBEntryType type)
+					 RhythmDBEntryType *type)
 {
 	if (shell->priv->sources_hash == NULL) {
 		shell->priv->sources_hash = g_hash_table_new (g_direct_hash,
@@ -2027,7 +2027,7 @@ static void
 rb_shell_source_deleted_cb (RBSource *source,
 			    RBShell *shell)
 {
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	rb_debug ("source deleted");
 
@@ -2036,7 +2036,7 @@ rb_shell_source_deleted_cb (RBSource *source,
 	if (rb_shell_get_source_by_entry_type (shell, entry_type) == source) {
 		g_hash_table_remove (shell->priv->sources_hash, entry_type);
 	}
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 
 
 	if (source == rb_shell_player_get_playing_source (shell->priv->player_shell) ||
@@ -2084,7 +2084,7 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 	} else {
 		RBSource *source;
 		RhythmDBEntry *entry;
-		RhythmDBEntryType entry_type;
+		RhythmDBEntryType *entry_type;
 
 		/* if playing from the queue, show the playing entry as playing in the
 		 * registered source for its type, so it makes sense when 'jump to current'
@@ -2949,7 +2949,7 @@ rb_shell_jump_to_entry_with_source (RBShell *shell,
 	if ((source == RB_SOURCE (shell->priv->queue_source) &&
 	     shell->priv->queue_as_sidebar) ||
 	     source == NULL) {
-		RhythmDBEntryType entry_type;
+		RhythmDBEntryType *entry_type;
 		entry_type = rhythmdb_entry_get_entry_type (entry);
 		source = rb_shell_get_source_by_entry_type (shell, entry_type);
 	}

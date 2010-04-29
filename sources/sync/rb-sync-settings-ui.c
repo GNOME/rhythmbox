@@ -34,6 +34,7 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-playlist-manager.h"
+#include "rb-podcast-entry-types.h"
 
 struct _RBSyncSettingsUIPrivate
 {

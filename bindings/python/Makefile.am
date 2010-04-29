@@ -37,7 +37,7 @@ rhythmdb.c: rhythmdb.defs rhythmdb.override
 		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
 		--register $(GST_PYTHON_DEFSDIR)/gst-types.defs \
 		--override $*.override \
-		--prefix py$* $(<F) ) > $@ 
+		--prefix py$* $(<F) ) > $@
 
 rb.c: rb.defs rb.override
 	( cd $(srcdir) && $(PYGOBJECT_CODEGEN) \
@@ -46,20 +46,25 @@ rb.c: rb.defs rb.override
 		--register $(GST_PYTHON_DEFSDIR)/gst-types.defs \
 		--register rhythmdb.defs \
 		--override $*.override \
-		--prefix py$* $(<F) ) > $@ 
+		--prefix py$* $(<F) ) > $@
 
-BINDING_HEADERS_SRCDIR_IN = \
+RHYTHMDB_BINDING_HEADERS_SRCDIR_IN = \
+	rhythmdb/rhythmdb.h			\
+	rhythmdb/rhythmdb-entry.h		\
+	rhythmdb/rhythmdb-entry-type.h		\
+	rhythmdb/rhythmdb-property-model.h	\
+	rhythmdb/rhythmdb-query-model.h		\
+	rhythmdb/rhythmdb-query-results.h	\
+	rhythmdb/rhythmdb-import-job.h		\
+	$(NULL)
+
+RB_BINDING_HEADERS_SRCDIR_IN = \
 	backends/rb-player.h			\
 	backends/gstreamer/rb-player-gst.h	\
 	lib/rb-string-value-map.h		\
 	lib/rb-cut-and-paste-code.h		\
 	lib/rb-file-helpers.h			\
 	metadata/rb-metadata.h			\
-	rhythmdb/rhythmdb.h			\
-	rhythmdb/rhythmdb-property-model.h	\
-	rhythmdb/rhythmdb-query-model.h		\
-	rhythmdb/rhythmdb-query-results.h	\
-	rhythmdb/rhythmdb-import-job.h		\
 	shell/rb-plugin.h			\
 	shell/rb-removable-media-manager.h	\
 	shell/rb-shell.h			\
@@ -85,13 +90,17 @@ BINDING_HEADERS_SRCDIR_IN = \
 	widgets/rb-uri-dialog.h			\
 	$(NULL)
 
-BINDING_HEADERS_BUILDDIR_IN = 
+RB_BINDING_HEADERS_BUILDDIR_IN =
+RHYTHMDB_BINDING_HEADERS_BUILDDIR_IN =
 
-BINDING_HEADERS_SRCDIR		:= $(addprefix $(top_srcdir)/,$(BINDING_HEADERS_SRCDIR_IN))
-BINDING_HEADERS_BUILDDIR	:= $(addprefix $(top_builddir)/,$(BINDING_HEADERS_BUILDDIR_IN))
+RB_BINDING_HEADERS_SRCDIR		:= $(addprefix $(top_srcdir)/,$(RB_BINDING_HEADERS_SRCDIR_IN))
+RB_BINDING_HEADERS_BUILDDIR		:= $(addprefix $(top_builddir)/,$(RB_BINDING_HEADERS_BUILDDIR_IN))
+RHYTHMDB_BINDING_HEADERS_SRCDIR		:= $(addprefix $(top_srcdir)/,$(RHYTHMDB_BINDING_HEADERS_SRCDIR_IN))
+RHYTHMDB_BINDING_HEADERS_BUILDDIR	:= $(addprefix $(top_builddir)/,$(RHYTHMDB_BINDING_HEADERS_BUILDDIR_IN))
 
 regenerate-python-binding:
-	$(PYGOBJECT_H2DEF) $(sort $(BINDING_HEADERS_SRCDIR) $(BINDING_HEADERS_BUILDDIR)) > rhythmbox.defs.new
+	$(PYGOBJECT_H2DEF) -n RB -m rb $(sort $(RB_BINDING_HEADERS_SRCDIR) $(RB_BINDING_HEADERS_BUILDDIR)) > rb.defs.new
+	$(PYGOBJECT_H2DEF) -n RhythmDB -m rhythmdb $(sort $(RHYTHMDB_BINDING_HEADERS_SRCDIR) $(RHYTHMDB_BINDING_HEADERS_BUILDDIR)) > rhythmdb.defs.new
 
 BUILT_SOURCES = rhythmdb.c rb.c
 

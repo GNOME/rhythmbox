@@ -170,7 +170,6 @@ get_db_for_source (RBAudioCdSource *source)
 	return db;
 }
 
-
 static void
 rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 {
@@ -425,25 +424,28 @@ rb_audiocd_source_new (RBPlugin *plugin,
 		       GVolume *volume)
 {
 	GObject *source;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
 	char *name;
 	char *path;
 
-	g_object_get (shell, "db", &db, NULL);
-
 	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 	name = g_strdup_printf ("audiocd: %s", path);
-	entry_type = rhythmdb_entry_register_type (db, name);
-	g_free (name);
 	g_free (path);
-	g_object_unref (db);
 
-	entry_type->category = RHYTHMDB_ENTRY_NORMAL;
-	entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
-	/* TODO save the metadata somewhere */
-	entry_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;
-	entry_type->entry_type_data_size = sizeof(RBAudioCDEntryData);
+	g_object_get (shell, "db", &db, NULL);
+	entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+				   "db", db,
+				   "name", name,
+				   "save-to-disk", FALSE,
+				   "category", RHYTHMDB_ENTRY_NORMAL,
+				   "type-data-size", sizeof(RBAudioCDEntryData),
+				   NULL);
+	entry_type->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
+	entry_type->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+	rhythmdb_register_entry_type (db, entry_type);
+	g_object_unref (db);
+	g_free (name);
 
 	source = g_object_new (RB_TYPE_AUDIOCD_SOURCE,
 			       "entry-type", entry_type,
@@ -535,15 +537,15 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 	guint64 duration;
 	GValue value = {0, };
 	gchar *str;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RBAudioCDEntryData *extra_data;
 
 	audio_path = g_strdup_printf ("cdda://%d#%s", track_number, priv->device_path);
 
-	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+	g_object_get (source, "entry-type", &entry_type, NULL);
 	rb_debug ("Audio CD - create entry for track %d from %s", track_number, audio_path);
 	entry = rhythmdb_entry_new (db, entry_type, audio_path);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 	if (entry == NULL) {
 		g_free (audio_path);
 		return NULL;
@@ -1055,7 +1057,7 @@ static void
 impl_delete_thyself (RBSource *source)
 {
 	RhythmDB *db;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	rb_debug ("audio cd ejected");
 
@@ -1066,7 +1068,7 @@ impl_delete_thyself (RBSource *source)
 
 	g_object_get (source, "entry-type", &entry_type, NULL);
 	rhythmdb_entry_delete_by_type (db, entry_type);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	g_object_unref (entry_type);
 
 	rhythmdb_commit (db);
 	g_object_unref (db);

@@ -38,6 +38,7 @@
 
 #include "rhythmdb.h"
 #include "rhythmdb-tree.h"
+#include "rb-podcast-entry-types.h"
 
 /* test utils */
 gboolean waiting, signaled;

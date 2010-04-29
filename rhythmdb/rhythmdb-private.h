@@ -34,7 +34,7 @@
 
 G_BEGIN_DECLS
 
-RhythmDBEntry * rhythmdb_entry_allocate		(RhythmDB *db, RhythmDBEntryType type);
+RhythmDBEntry * rhythmdb_entry_allocate		(RhythmDB *db, RhythmDBEntryType *type);
 void		rhythmdb_entry_insert		(RhythmDB *db, RhythmDBEntry *entry);
 
 typedef struct {
@@ -69,7 +69,7 @@ struct RhythmDBEntry_ {
 	guint flags;
 	volatile gint refcount;
 	void *data;
-	RhythmDBEntryType type;
+	RhythmDBEntryType *type;
 	guint id;
 
 	/* metadata */
@@ -201,9 +201,9 @@ typedef struct
 	} type;
 	RBRefString *uri;
 	RBRefString *real_uri; /* Target of a symlink, if any */
-	RhythmDBEntryType entry_type;
-	RhythmDBEntryType ignore_type;
-	RhythmDBEntryType error_type;
+	RhythmDBEntryType *entry_type;
+	RhythmDBEntryType *ignore_type;
+	RhythmDBEntryType *error_type;
 
 	GError *error;
 	RhythmDB *db;
@@ -241,6 +241,9 @@ void rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error);
 /* from rhythmdb-query.c */
 GPtrArray *rhythmdb_query_parse_valist (RhythmDB *db, va_list args);
 void       rhythmdb_read_encoded_property (RhythmDB *db, const char *data, RhythmDBPropType propid, GValue *val);
+
+/* from rhythmdb-song-entry-types.c */
+void       rhythmdb_register_song_entry_types (RhythmDB *db);
 
 G_END_DECLS
 
