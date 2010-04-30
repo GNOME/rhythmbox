@@ -1467,7 +1467,7 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 			entry = (RhythmDBEntry *)tem->data;
 			entry_album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
 
-			if (strcmp (album, entry_album) == 0)
+			if (g_strcmp0 (album, entry_album) == 0)
 				continue;
 			rhythmdb_entry_set (dialog->priv->db, entry,
 					    RHYTHMDB_PROP_ALBUM, &val);
@@ -1485,7 +1485,7 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 			entry = (RhythmDBEntry *)tem->data;
 			entry_artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
 
-			if (strcmp (artist, entry_artist) == 0)
+			if (g_strcmp0 (artist, entry_artist) == 0)
 				continue;
 			rhythmdb_entry_set (dialog->priv->db, entry,
 					    RHYTHMDB_PROP_ARTIST, &val);
@@ -1503,7 +1503,7 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 			entry = (RhythmDBEntry *)tem->data;
 			entry_genre = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
 
-			if (strcmp (genre, entry_genre) == 0)
+			if (g_strcmp0 (genre, entry_genre) == 0)
 				continue;
 			rhythmdb_entry_set (dialog->priv->db, entry,
 					    RHYTHMDB_PROP_GENRE, &val);
@@ -1571,7 +1571,7 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 			entry = (RhythmDBEntry *)tem->data;
 			entry_artist_sortname = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME);
 
-			if (strcmp (artist_sortname, entry_artist_sortname) == 0)
+			if (g_strcmp0 (artist_sortname, entry_artist_sortname) == 0)
 				continue;
 			rhythmdb_entry_set (dialog->priv->db, entry,
 					    RHYTHMDB_PROP_ARTIST_SORTNAME, &val);
@@ -1589,7 +1589,7 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 			entry = (RhythmDBEntry *)tem->data;
 			entry_album_sortname = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME);
 
-			if (strcmp (album_sortname, entry_album_sortname) == 0)
+			if (g_strcmp0 (album_sortname, entry_album_sortname) == 0)
 				continue;
 			rhythmdb_entry_set (dialog->priv->db, entry,
 					    RHYTHMDB_PROP_ALBUM_SORTNAME, &val);
@@ -1694,7 +1694,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	}
 
 	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
-	if (strcmp (title, entry_string)) {
+	if (g_strcmp0 (title, entry_string)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_TITLE);
 		g_value_init (&val, type);
@@ -1706,7 +1706,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	}
 
 	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
-	if (strcmp (album, entry_string)) {
+	if (g_strcmp0 (album, entry_string)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_ALBUM);
 		g_value_init (&val, type);
@@ -1718,7 +1718,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	}
 
 	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
-	if (strcmp (artist, entry_string)) {
+	if (g_strcmp0 (artist, entry_string)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_ARTIST);
 		g_value_init (&val, type);
@@ -1730,7 +1730,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	}
 
 	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
-	if (strcmp (genre, entry_string)) {
+	if (g_strcmp0 (genre, entry_string)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_GENRE);
 		g_value_init (&val, type);
@@ -1742,7 +1742,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	}
 
 	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME);
-	if (strcmp (artist_sortname, entry_string)) {
+	if (g_strcmp0 (artist_sortname, entry_string)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_ARTIST_SORTNAME);
 		g_value_init (&val, type);
@@ -1754,7 +1754,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	}
 
 	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME);
-	if (strcmp (album_sortname, entry_string)) {
+	if (g_strcmp0 (album_sortname, entry_string)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_ALBUM_SORTNAME);
 		g_value_init (&val, type);
