@@ -84,7 +84,15 @@ extern PyMethodDef pyrb_functions[];
 /* We retreive this to check for correct class hierarchy */
 static PyTypeObject *PyRBPlugin_Type;
 
+static gboolean python_init_successful;
+
 G_DEFINE_TYPE (RBPythonModule, rb_python_module, G_TYPE_TYPE_MODULE);
+
+static void
+actually_init_pygtk (void)
+{
+	init_pygtk ();
+}
 
 void
 rb_python_module_init_python (void)
@@ -98,6 +106,7 @@ rb_python_module_init_python (void)
 	char *argv[] = { "rb", "rhythmdb", NULL };
 	GList *paths;
 
+	python_init_successful = FALSE;
 	if (Py_IsInitialized ()) {
 		g_warning ("Python Should only be initialized once, since it's in class_init");
 		g_return_if_reached ();
@@ -130,7 +139,7 @@ rb_python_module_init_python (void)
 
 	PySys_SetArgv (1, argv);
 
-	/* pygtk.require("2.8") */
+	/* pygtk.require("2.0") */
 	pygtk = PyImport_ImportModule ("pygtk");
 	if (pygtk == NULL) {
 		g_warning ("Could not import pygtk");
@@ -140,11 +149,15 @@ rb_python_module_init_python (void)
 
 	mdict = PyModule_GetDict (pygtk);
 	require = PyDict_GetItemString (mdict, "require");
-	PyObject_CallObject (require, Py_BuildValue ("(S)", PyString_FromString ("2.8")));
+	PyObject_CallObject (require, Py_BuildValue ("(S)", PyString_FromString ("2.0")));
+	if (PyErr_Occurred ()) {
+		g_warning ("pygtk.require(2.0) failed");
+		PyErr_Print();
+		return;
+	}
 
 	/* import gobject */
-	init_pygobject ();
-	if (PyErr_Occurred ()) {
+	if (pygobject_init (2, 16, 0) == NULL) {
 		g_warning ("Could not initialize pygobject");
 		PyErr_Print();
 		return;
@@ -154,7 +167,7 @@ rb_python_module_init_python (void)
 	pyg_disable_warning_redirections ();
 
 	/* import gtk */
-	init_pygtk ();
+	actually_init_pygtk ();
 	if (PyErr_Occurred ()) {
 		g_warning ("Could not initialize pygtk");
 		PyErr_Print();
@@ -172,7 +185,7 @@ rb_python_module_init_python (void)
 
 	mdict = PyModule_GetDict (gtk);
 	pygtk_version = PyDict_GetItemString (mdict, "pygtk_version");
-	pygtk_required_version = Py_BuildValue ("(iii)", 2, 4, 0);
+	pygtk_required_version = Py_BuildValue ("(iii)", 2, 8, 0);
 	if (PyObject_Compare (pygtk_version, pygtk_required_version) == -1) {
 		g_warning("PyGTK %s required, but %s found.",
 				  PyString_AsString (PyObject_Repr (pygtk_required_version)),
@@ -264,6 +277,8 @@ rb_python_module_init_python (void)
 	gettext_args = Py_BuildValue ("ss", GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	PyObject_CallObject (install, gettext_args);
 	Py_DECREF (gettext_args);
+
+	python_init_successful = TRUE;
 }
 
 static gboolean
@@ -328,6 +343,11 @@ rb_python_module_load_with_gil (GTypeModule *module)
 {
 	PyGILState_STATE state;
 	gboolean ret;
+
+	if (python_init_successful == FALSE) {
+		g_warning ("unable to load module as python runtime could not be initialized");
+		return FALSE;
+	}
 
 	state = pyg_gil_state_ensure ();
 	ret = rb_python_module_load (module);
@@ -483,6 +503,12 @@ rb_python_module_new (const gchar *path,
 	g_type_module_set_name (G_TYPE_MODULE (result), module);
 
 	return result;
+}
+
+gboolean
+rb_python_init_successful (void)
+{
+	return python_init_successful;
 }
 
 /* --- these are not module methods, they are here out of convenience --- */

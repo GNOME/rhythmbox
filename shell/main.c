@@ -35,6 +35,7 @@
 #define NO_IMPORT_PYGOBJECT
 #define NO_IMPORT_PYGTK
 #include <pygobject.h>
+#include "rb-python-module.h"
 
 /* make sure it's defined somehow */
 #ifndef _XOPEN_SOURCE
@@ -327,11 +328,15 @@ main (int argc, char **argv)
 
 		rb_profile_start ("mainloop");
 #ifdef ENABLE_PYTHON
-		pyg_begin_allow_threads;
-#endif
+		if (rb_python_init_successful ()) {
+			pyg_begin_allow_threads;
+			gtk_main ();
+			pyg_end_allow_threads;
+		} else {
+			gtk_main ();
+		}
+#else
 		gtk_main ();
-#ifdef ENABLE_PYTHON
-		pyg_end_allow_threads;
 #endif
 		rb_profile_end ("mainloop");
 
