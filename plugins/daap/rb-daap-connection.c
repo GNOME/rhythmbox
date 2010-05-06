@@ -690,13 +690,18 @@ static void
 entry_set_string_prop (RhythmDB        *db,
 		       RhythmDBEntry   *entry,
 		       RhythmDBPropType propid,
-		       const char      *str)
+		       const char      *str,
+		       gboolean         use_default)
 {
 	GValue value = {0,};
 	const gchar *tmp;
 
 	if (str == NULL || *str == '\0' || !g_utf8_validate (str, -1, NULL)) {
-		tmp = _("Unknown");
+		if (use_default) {
+			tmp = _("Unknown");
+		} else {
+			return;
+		}
 	} else {
 		tmp = str;
 	}
@@ -937,6 +942,8 @@ handle_song_listing (RBDAAPConnection *connection,
 		const gchar *format = NULL;
 		const gchar *genre = NULL;
 		const gchar *streamURI = NULL;
+		const gchar *sort_artist = NULL;
+		const gchar *sort_album = NULL;
 		gint length = 0;
 		gint track_number = 0;
 		gint disc_number = 0;
@@ -988,6 +995,12 @@ handle_song_listing (RBDAAPConnection *connection,
 					break;
 				case RB_DAAP_CC_ASUL:
 					streamURI = g_value_get_string (&(meta_item->content));
+					break;
+				case RB_DAAP_CC_ASSA:
+					sort_artist = g_value_get_string (&(meta_item->content));
+					break;
+				case RB_DAAP_CC_ASSU:
+					sort_album = g_value_get_string (&(meta_item->content));
 					break;
 				default:
 					break;
@@ -1065,21 +1078,25 @@ handle_song_listing (RBDAAPConnection *connection,
 		g_value_unset (&value);
 
 		/* title */
-		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_TITLE, title);
+		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_TITLE, title, TRUE);
 
 		/* album */
-		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_ALBUM, album);
+		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_ALBUM, album, TRUE);
 
 		/* artist */
-		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_ARTIST, artist);
+		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_ARTIST, artist, TRUE);
 
 		/* genre */
-		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_GENRE, genre);
+		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_GENRE, genre, TRUE);
 
 		/* stream URI property is stored as a mountpoint for get_playback_uri */
-		if (streamURI && *streamURI != '\0') {
-			entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_MOUNTPOINT, streamURI);
-		}
+		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_MOUNTPOINT, streamURI, FALSE);
+
+		/* artist sort order */
+		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_ARTIST_SORTNAME, sort_artist, FALSE);
+
+		/* album sort order */
+		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_ALBUM_SORTNAME, sort_album, FALSE);
 
 		if (i % commit_batch == 0) {
 			connection->priv->progress = ((float)i / (float)returned_count);
@@ -1584,10 +1601,11 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 		rb_debug ("Getting DAAP song listing");
 		path = g_strdup_printf ("/databases/%i/items?session-id=%u&revision-number=%i"
 				        "&meta=dmap.itemid,dmap.itemname,daap.songalbum,"
-					"daap.songartist,daap.daap.songgenre,daap.songsize,"
+					"daap.songartist,daap.songgenre,daap.songsize,"
 					"daap.songtime,daap.songtrackcount,daap.songtracknumber,"
-					"daap.songyear,daap.songformat,daap.songgenre,"
-					"daap.songbitrate,daap.songdiscnumber,daap.songdataurl",
+					"daap.songyear,daap.songformat,"
+					"daap.songbitrate,daap.songdiscnumber,daap.songdataurl,"
+					"daap.sortartist,daap.sortalbum",
 					priv->database_id,
 					priv->session_id,
 					priv->revision_number);

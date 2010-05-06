@@ -900,7 +900,9 @@ typedef enum {
 	SONG_TRACK_COUNT,
 	SONG_TRACK_NUMBER,
 	SONG_USER_RATING,
-	SONG_YEAR
+	SONG_YEAR,
+	SONG_SORT_ARTIST,
+	SONG_SORT_ALBUM
 } DAAPMetaData;
 
 struct DAAPMetaDataMap {
@@ -910,39 +912,41 @@ struct DAAPMetaDataMap {
 
 struct DAAPMetaDataMap meta_data_map[] = {
 	{"dmap.itemid",			ITEM_ID},
-    	{"dmap.itemname",		ITEM_NAME},
-    	{"dmap.itemkind",		ITEM_KIND},
-    	{"dmap.persistentid",		PERSISTENT_ID},
+	{"dmap.itemname",		ITEM_NAME},
+	{"dmap.itemkind",		ITEM_KIND},
+	{"dmap.persistentid",		PERSISTENT_ID},
 	{"dmap.containeritemid",	CONTAINER_ITEM_ID},
-    	{"daap.songalbum",		SONG_ALBUM},
-    	{"daap.songartist",		SONG_ARTIST},
-    	{"daap.songbitrate",		SONG_BITRATE},
-    	{"daap.songbeatsperminute",	SONG_BPM},
-    	{"daap.songcomment",		SONG_COMMENT},
-    	{"daap.songcompilation",	SONG_COMPILATION},
-    	{"daap.songcomposer",		SONG_COMPOSER},
-    	{"daap.songdatakind",		SONG_DATA_KIND},
-    	{"daap.songdataurl",		SONG_DATA_URL},
-    	{"daap.songdateadded",		SONG_DATE_ADDED},
-    	{"daap.songdatemodified",	SONG_DATE_MODIFIED},
-    	{"daap.songdescription",	SONG_DESCRIPTION},
-    	{"daap.songdisabled",		SONG_DISABLED},
-    	{"daap.songdisccount",		SONG_DISC_COUNT},
-    	{"daap.songdiscnumber",		SONG_DISC_NUMBER},
-    	{"daap.songeqpreset",		SONG_EQ_PRESET},
-    	{"daap.songformat",		SONG_FORMAT},
-    	{"daap.songgenre",		SONG_GENRE},
-    	{"daap.songgrouping",		SONG_GROUPING},
-    	{"daap.songrelativevolume",	SONG_RELATIVE_VOLUME},
-    	{"daap.songsamplerate",		SONG_SAMPLE_RATE},
-    	{"daap.songsize",		SONG_SIZE},
-    	{"daap.songstarttime",		SONG_START_TIME},
-    	{"daap.songstoptime",		SONG_STOP_TIME},
-   	{"daap.songtime",		SONG_TIME},
-    	{"daap.songtrackcount",		SONG_TRACK_COUNT},
-    	{"daap.songtracknumber",	SONG_TRACK_NUMBER},
-    	{"daap.songuserrating",		SONG_USER_RATING},
-    	{"daap.songyear",		SONG_YEAR}};
+	{"daap.songalbum",		SONG_ALBUM},
+	{"daap.songartist",		SONG_ARTIST},
+	{"daap.songbitrate",		SONG_BITRATE},
+	{"daap.songbeatsperminute",	SONG_BPM},
+	{"daap.songcomment",		SONG_COMMENT},
+	{"daap.songcompilation",	SONG_COMPILATION},
+	{"daap.songcomposer",		SONG_COMPOSER},
+	{"daap.songdatakind",		SONG_DATA_KIND},
+	{"daap.songdataurl",		SONG_DATA_URL},
+	{"daap.songdateadded",		SONG_DATE_ADDED},
+	{"daap.songdatemodified",	SONG_DATE_MODIFIED},
+	{"daap.songdescription",	SONG_DESCRIPTION},
+	{"daap.songdisabled",		SONG_DISABLED},
+	{"daap.songdisccount",		SONG_DISC_COUNT},
+	{"daap.songdiscnumber",		SONG_DISC_NUMBER},
+	{"daap.songeqpreset",		SONG_EQ_PRESET},
+	{"daap.songformat",		SONG_FORMAT},
+	{"daap.songgenre",		SONG_GENRE},
+	{"daap.songgrouping",		SONG_GROUPING},
+	{"daap.songrelativevolume",	SONG_RELATIVE_VOLUME},
+	{"daap.songsamplerate",		SONG_SAMPLE_RATE},
+	{"daap.songsize",		SONG_SIZE},
+	{"daap.songstarttime",		SONG_START_TIME},
+	{"daap.songstoptime",		SONG_STOP_TIME},
+	{"daap.songtime",		SONG_TIME},
+	{"daap.songtrackcount",		SONG_TRACK_COUNT},
+	{"daap.songtracknumber",	SONG_TRACK_NUMBER},
+	{"daap.songuserrating",		SONG_USER_RATING},
+	{"daap.songyear",		SONG_YEAR},
+	{"daap.sortartist",		SONG_SORT_ARTIST},
+	{"daap.sortalbum",		SONG_SORT_ALBUM}};
 
 typedef unsigned long long bitwise;
 
@@ -1059,6 +1063,10 @@ add_entry_to_mlcl (RhythmDBEntry *entry,
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASUR, 0); /* FIXME */
 	if (client_requested (mb->bits, SONG_YEAR))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASYR, (gint32) rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_YEAR));
+	if (client_requested (mb->bits, SONG_SORT_ARTIST))
+		rb_daap_structure_add (mlit, RB_DAAP_CC_ASSA, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME));
+	if (client_requested (mb->bits, SONG_SORT_ALBUM))
+		rb_daap_structure_add (mlit, RB_DAAP_CC_ASSU, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME));
 
 	return;
 }
