@@ -9,6 +9,14 @@ file2=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=vrbb
 title2=Absolute Radio (Broadband)
 genre2=Pop
 
+file3=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=al
+title3=Absolute Radio dabbl (Modem)
+genre3=General
+
+file4=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=albb
+title4=Absolute Radio dabbl (Broadband)
+genre4=General
+
 file5=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=vc
 title5=Absolute Classic Rock (Modem)
 genre5=Rock'n'Roll
