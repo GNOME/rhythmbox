@@ -9,14 +9,6 @@ file2=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=vrbb
 title2=Absolute Radio (Broadband)
 genre2=Pop
 
-file3=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=vx
-title3=Absolute Xtreme (Modem)
-genre3=Modern Rock
-
-file4=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=vxbb
-title4=Absolute Xtreme (Broadband)
-genre4=Modern Rock
-
 file5=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=vc
 title5=Absolute Classic Rock (Modem)
 genre5=Rock'n'Roll
