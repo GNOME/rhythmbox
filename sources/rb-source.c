@@ -123,6 +123,8 @@ struct _RBSourcePrivate
 	RBSourceGroup *source_group;
 	RBPlugin *plugin;
 	RBSourceSearchType search_type;
+
+	gboolean deleted;
 };
 
 enum
@@ -1523,8 +1525,16 @@ void
 rb_source_delete_thyself (RBSource *source)
 {
 	RBSourceClass *klass;
+	RBSourcePrivate *priv;
 
 	g_return_if_fail (source != NULL);
+	priv = RB_SOURCE_GET_PRIVATE (source);
+	if (priv->deleted) {
+		rb_debug ("source has already been deleted");
+		return;
+	}
+	priv->deleted = TRUE;
+
 	klass = RB_SOURCE_GET_CLASS (source);
 	klass->impl_delete_thyself (source);
 	g_signal_emit (G_OBJECT (source), rb_source_signals[DELETED], 0);
