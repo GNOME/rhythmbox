@@ -144,7 +144,7 @@ open_device (RBMtpThread *thread, RBMtpThreadTask *task)
 	int retry;
 
 	/* open the device */
-	rb_debug ("attempting to open retry device");
+	rb_debug ("attempting to open device");
 	for (retry = 0; retry < 5; retry++) {
 		if (retry > 0) {
 			/* sleep a while before trying again */

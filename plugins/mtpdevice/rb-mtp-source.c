@@ -859,11 +859,23 @@ device_open_failed_idle (RBMtpSource *source)
 	return FALSE;
 }
 
+static gboolean
+device_open_ignore_idle (DeviceOpenedData *data)
+{
+	rb_source_delete_thyself (RB_SOURCE (data->source));
+	g_object_unref (data->source);
+	free (data->types);
+	g_free (data->name);
+	g_free (data);
+	return FALSE;
+}
+
 /* this callback runs on the device handling thread, so it can call libmtp directly */
 static void
 mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	gboolean has_audio = FALSE;
 	DeviceOpenedData *data;
 
 	if (device == NULL) {
@@ -905,9 +917,26 @@ mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source)
 
 	update_free_space_cb (device, RB_MTP_SOURCE (source));
 
-	/* figure out the set of formats supported by the device */
+	/* figure out the set of formats supported by the device, ensuring there's at least
+	 * one audio format aside from WAV.  the purpose of this is to exclude cameras and other
+	 * MTP devices that aren't interesting to us.
+	 */
 	if (LIBMTP_Get_Supported_Filetypes (device, &data->types, &data->num_types) != 0) {
 		rb_mtp_thread_report_errors (priv->device_thread, FALSE);
+	} else {
+		int i;
+		for (i = 0; i < data->num_types; i++) {
+			if (data->types[i] != LIBMTP_FILETYPE_WAV && LIBMTP_FILETYPE_IS_AUDIO (data->types[i])) {
+				has_audio = TRUE;
+				break;
+			}
+		}
+	}
+
+	if (has_audio == FALSE) {
+		rb_debug ("device doesn't support any audio formats");
+		g_idle_add ((GSourceFunc) device_open_ignore_idle, data);
+		return;
 	}
 
 	g_idle_add ((GSourceFunc) device_opened_idle, data);
