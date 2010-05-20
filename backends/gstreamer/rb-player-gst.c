@@ -55,6 +55,8 @@ static void rb_player_init (RBPlayerIface *iface);
 static void rb_player_gst_filter_init (RBPlayerGstFilterIface *iface);
 static void rb_player_gst_tee_init (RBPlayerGstTeeIface *iface);
 
+static void state_change_finished (RBPlayerGst *mp, GError *error);
+
 G_DEFINE_TYPE_WITH_CODE(RBPlayerGst, rb_player_gst, G_TYPE_OBJECT,
 			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER, rb_player_init)
 			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER_GST_FILTER, rb_player_gst_filter_init)
@@ -386,6 +388,19 @@ track_change_done (RBPlayerGst *mp, GError *error)
 }
 
 static void
+start_state_change (RBPlayerGst *mp, GstState state, enum StateChangeAction action)
+{
+	GstStateChangeReturn scr;
+
+	mp->priv->state_change_action = action;
+	scr = gst_element_set_state (mp->priv->playbin, state);
+	if (scr == GST_STATE_CHANGE_SUCCESS) {
+		rb_debug ("state change succeeded synchronously");
+		state_change_finished (mp, NULL);
+	}
+}
+
+static void
 state_change_finished (RBPlayerGst *mp, GError *error)
 {
 	enum StateChangeAction action = mp->priv->state_change_action;
@@ -407,8 +422,7 @@ state_change_finished (RBPlayerGst *mp, GError *error)
 		} else {
 			rb_debug ("setting new playback URI %s", mp->priv->uri);
 			g_object_set (mp->priv->playbin, "uri", mp->priv->uri, NULL);
-			mp->priv->state_change_action = FINISH_TRACK_CHANGE;
-			gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
+			start_state_change (mp, GST_STATE_PLAYING, FINISH_TRACK_CHANGE);
 		}
 		break;
 
@@ -463,7 +477,8 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 	switch (GST_MESSAGE_TYPE (message)) {
 	case GST_MESSAGE_ERROR: {
 		char *debug;
-		GError *error, *sig_error;
+		GError *error;
+		GError *sig_error = NULL;
 		int code;
 		gboolean emit = TRUE;
 
@@ -771,8 +786,7 @@ impl_close (RBPlayer *player, const char *uri, GError **error)
 	}
 
 	if (mp->priv->playbin != NULL) {
-		mp->priv->state_change_action = PLAYER_SHUTDOWN;
-		gst_element_set_state (mp->priv->playbin, GST_STATE_READY);
+		start_state_change (mp, GST_STATE_READY, PLAYER_SHUTDOWN);
 	}
 	return TRUE;
 }
@@ -830,9 +844,8 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 
 	if (mp->priv->stream_change_pending == FALSE) {
 		rb_debug ("no stream change pending, just restarting playback");
-		mp->priv->state_change_action = FINISH_TRACK_CHANGE;
 		mp->priv->track_change = FALSE;
-		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
+		start_state_change (mp, GST_STATE_PLAYING, FINISH_TRACK_CHANGE);
 	} else if (mp->priv->current_track_finishing) {
 		rb_debug ("current track finishing -> just setting URI on playbin");
 		g_object_set (mp->priv->playbin, "uri", mp->priv->uri, NULL);
@@ -864,8 +877,7 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 		/* no stream reuse, so stop, set the new URI, then start */
 		if (reused == FALSE) {
 			rb_debug ("not in transition, stopping current track to start the new one");
-			mp->priv->state_change_action = SET_NEXT_URI;
-			gst_element_set_state (mp->priv->playbin, GST_STATE_READY);
+			start_state_change (mp, GST_STATE_READY, SET_NEXT_URI);
 		}
 
 	}
@@ -885,8 +897,7 @@ impl_pause (RBPlayer *player)
 
 	g_return_if_fail (mp->priv->playbin != NULL);
 
-	mp->priv->state_change_action = STOP_TICK_TIMER;
-	gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED);
+	start_state_change (mp, GST_STATE_PAUSED, STOP_TICK_TIMER);
 }
 
 static gboolean
