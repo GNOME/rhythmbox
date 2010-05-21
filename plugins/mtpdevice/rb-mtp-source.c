@@ -98,6 +98,8 @@ static char* impl_build_dest_uri (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
 				  const char *mimetype,
 				  const char *extension);
+static void impl_eject (RBRemovableMediaSource *source);
+static gboolean impl_can_eject (RBRemovableMediaSource *source);
 
 static void mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source);
 static void mtp_tracklist_cb (LIBMTP_track_t *tracks, RBMtpSource *source);
@@ -212,6 +214,8 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
 	rms_class->impl_get_mime_types = impl_get_mime_types;
 	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
+	rms_class->impl_can_eject = impl_can_eject;
+	rms_class->impl_eject = impl_eject;
 
 	mps_class->impl_get_entries = impl_get_entries;
 	mps_class->impl_get_capacity = impl_get_capacity;
@@ -1024,7 +1028,7 @@ impl_get_ui_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
-	actions = g_list_prepend (actions, g_strdup ("MTPSourceEject"));
+	actions = g_list_prepend (actions, g_strdup ("RemovableSourceEject"));
 	actions = g_list_prepend (actions, g_strdup ("MediaPlayerSourceSync"));
 
 	return actions;
@@ -1566,6 +1570,18 @@ prepare_encoder_source_cb (RBEncoderFactory *factory,
 			   RBMtpSource *source)
 {
 	prepare_source (source, stream_uri, src);
+}
+
+static gboolean
+impl_can_eject (RBRemovableMediaSource *source)
+{
+	return TRUE;
+}
+
+static void
+impl_eject (RBRemovableMediaSource *source)
+{
+	rb_source_delete_thyself (RB_SOURCE (source));
 }
 
 #if defined(HAVE_GUDEV)

@@ -109,7 +109,6 @@ static void rb_mtp_plugin_device_removed (LibHalContext *context, const char *ud
 static gboolean rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin);
 #endif
 
-static void rb_mtp_plugin_eject  (GtkAction *action, RBSource *source);
 static void rb_mtp_plugin_rename (GtkAction *action, RBSource *source);
 static void rb_mtp_plugin_properties (GtkAction *action, RBSource *source);
 
@@ -120,9 +119,6 @@ RB_PLUGIN_REGISTER(RBMtpPlugin, rb_mtp_plugin)
 
 static GtkActionEntry rb_mtp_plugin_actions [] =
 {
-	{ "MTPSourceEject", GNOME_MEDIA_EJECT, N_("_Eject"), NULL,
-	  N_("Eject MTP-device"),
-	  G_CALLBACK (rb_mtp_plugin_eject) },
 	{ "MTPSourceRename", NULL, N_("_Rename"), NULL,
 	  N_("Rename MTP-device"),
 	  G_CALLBACK (rb_mtp_plugin_rename) },
@@ -286,13 +282,6 @@ impl_deactivate (RBPlugin *bplugin, RBShell *shell)
 
 	g_object_unref (uimanager);
 	g_object_unref (rmm);
-}
-
-static void
-rb_mtp_plugin_eject (GtkAction *action, RBSource *source)
-{
-	g_return_if_fail (RB_IS_MTP_SOURCE (source));
-	rb_source_delete_thyself (source);
 }
 
 static void
