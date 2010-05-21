@@ -69,6 +69,8 @@ struct _RBRemovableMediaSourceClass
 						 GError *error);
 	gboolean	(*impl_should_paste)	(RBRemovableMediaSource *source,
 						 RhythmDBEntry *entry);
+	gboolean	(*impl_can_eject)	(RBRemovableMediaSource *source);
+	void		(*impl_eject)		(RBRemovableMediaSource *source);		/* return error? */
 };
 
 typedef gboolean	(*RBRemovableMediaSourceShouldPasteFunc) (RBRemovableMediaSource *source,
@@ -95,6 +97,9 @@ gboolean	rb_removable_media_source_should_paste		(RBRemovableMediaSource *source
 								 RhythmDBEntry *entry);
 gboolean        rb_removable_media_source_should_paste_no_duplicate (RBRemovableMediaSource *source,
 								     RhythmDBEntry *entry);
+
+gboolean	rb_removable_media_source_can_eject		(RBRemovableMediaSource *source);
+void		rb_removable_media_source_eject			(RBRemovableMediaSource *source);
 
 G_END_DECLS
 

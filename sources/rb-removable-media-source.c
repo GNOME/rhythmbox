@@ -55,6 +55,18 @@
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 
+#if !GLIB_CHECK_VERSION(2,22,0)
+#define g_mount_unmount_with_operation_finish g_mount_unmount_finish
+#define g_mount_unmount_with_operation(m,f,mo,ca,cb,ud) g_mount_unmount(m,f,ca,cb,ud)
+
+#define g_mount_eject_with_operation_finish g_mount_eject_finish
+#define g_mount_eject_with_operation(m,f,mo,ca,cb,ud) g_mount_eject(m,f,ca,cb,ud)
+
+#define g_volume_eject_with_operation_finish g_volume_eject_finish
+#define g_volume_eject_with_operation(v,f,mo,ca,cb,ud) g_volume_eject(v,f,ca,cb,ud)
+#endif
+
+
 /* arbitrary length limit for file extensions */
 #define EXTENSION_LENGTH_LIMIT	8
 
@@ -78,6 +90,8 @@ static gboolean impl_should_paste (RBRemovableMediaSource *source,
 static guint impl_want_uri (RBSource *source, const char *uri);
 static gboolean impl_uri_is_source (RBSource *source, const char *uri);
 static char *impl_get_delete_action (RBSource *source);
+static gboolean default_can_eject (RBRemovableMediaSource *source);
+static void default_eject (RBRemovableMediaSource *source);
 
 typedef struct
 {
@@ -126,6 +140,8 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 
 	klass->impl_should_paste = impl_should_paste;
+	klass->impl_can_eject = default_can_eject;
+	klass->impl_eject = default_eject;
 
 	/**
 	 * RBRemovableMediaSource:volume
@@ -900,4 +916,147 @@ static char *
 impl_get_delete_action (RBSource *source)
 {
 	return g_strdup ("EditDelete");
+}
+
+static gboolean
+default_can_eject (RBRemovableMediaSource *source)
+{
+	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (source);
+	gboolean result;
+
+	if (priv->volume != NULL) {
+		result = g_volume_can_eject (priv->volume);
+		return result;
+	}
+
+	if (priv->mount != NULL) {
+		result = g_mount_can_eject (priv->mount) || g_mount_can_unmount (priv->mount);
+		return result;
+	}
+
+	return FALSE;
+}
+
+static void
+eject_cb (GObject *object,
+	  GAsyncResult *result,
+	  gpointer nothing)
+{
+	GError *error = NULL;
+
+	if (G_IS_VOLUME (object)) {
+		GVolume *volume = G_VOLUME (object);
+
+		rb_debug ("finishing ejection of volume");
+		g_volume_eject_with_operation_finish (volume, result, &error);
+	} else if (G_IS_MOUNT (object)) {
+		GMount *mount = G_MOUNT (object);
+
+		rb_debug ("finishing ejection of mount");
+		g_mount_eject_with_operation_finish (mount, result, &error);
+	}
+
+	if (error != NULL) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_FAILED_HANDLED)) {
+			rb_error_dialog (NULL, _("Unable to eject"), "%s", error->message);
+		} else {
+			rb_debug ("eject failure has already been handled");
+		}
+		g_error_free (error);
+	}
+}
+
+static void
+unmount_cb (GObject *object, GAsyncResult *result, gpointer nothing)
+{
+	GMount *mount = G_MOUNT (object);
+	GError *error = NULL;
+
+	rb_debug ("finishing unmount of mount");
+	g_mount_unmount_with_operation_finish (mount, result, &error);
+	if (error != NULL) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_FAILED_HANDLED)) {
+			rb_error_dialog (NULL, _("Unable to unmount"), "%s", error->message);
+		} else {
+			rb_debug ("unmount failure has already been handled");
+		}
+		g_error_free (error);
+	}
+}
+
+static void
+default_eject (RBRemovableMediaSource *source)
+{
+	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (source);
+
+	/* try ejecting based on volume first, then based on the mount,
+	 * and finally try unmounting.
+	 */
+	if (priv->volume != NULL) {
+		if (g_volume_can_eject (priv->volume)) {
+			rb_debug ("ejecting volume");
+			g_volume_eject_with_operation (priv->volume,
+						       G_MOUNT_UNMOUNT_NONE,
+						       NULL,
+						       NULL,
+						       (GAsyncReadyCallback) eject_cb,
+						       NULL);
+		} else {
+			/* this should never happen; the eject command will be
+			 * insensitive if the selected source cannot be ejected.
+			 */
+			rb_debug ("don't know what to do with this volume");
+		}
+	} else if (priv->mount != NULL) {
+		if (g_mount_can_eject (priv->mount)) {
+			rb_debug ("ejecting mount");
+			g_mount_eject_with_operation (priv->mount,
+						      G_MOUNT_UNMOUNT_NONE,
+						      NULL,
+						      NULL,
+						      (GAsyncReadyCallback) eject_cb,
+						      NULL);
+		} else if (g_mount_can_unmount (priv->mount)) {
+			rb_debug ("unmounting mount");
+			g_mount_unmount_with_operation (priv->mount,
+							G_MOUNT_UNMOUNT_NONE,
+							NULL,
+							NULL,
+							(GAsyncReadyCallback) unmount_cb,
+							NULL);
+		} else {
+			/* this should never happen; the eject command will be
+			 * insensitive if the selected source cannot be ejected.
+			 */
+			rb_debug ("don't know what to do with this mount");
+		}
+	}
+}
+
+/**
+ * rb_removable_media_source_can_eject:
+ * @source: a #RBRemovableMediaSource
+ *
+ * Checks if @source can be ejected.
+ *
+ * Return value: %TRUE if @source can be ejected
+ */
+gboolean
+rb_removable_media_source_can_eject (RBRemovableMediaSource *source)
+{
+	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
+	return klass->impl_can_eject (source);
+}
+
+/**
+ * rb_removable_media_source_eject:
+ * @source: a #RBRemovableMediaSource
+ *
+ * Attemsts to eject the media or device represented by @source.
+ */
+void
+rb_removable_media_source_eject (RBRemovableMediaSource *source)
+{
+	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
+	klass->impl_eject (source);
 }

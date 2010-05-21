@@ -61,17 +61,6 @@
 #include "rb-util.h"
 #include "rb-encoder.h"
 
-#if !GLIB_CHECK_VERSION(2,22,0)
-#define g_mount_unmount_with_operation_finish g_mount_unmount_finish
-#define g_mount_unmount_with_operation(m,f,mo,ca,cb,ud) g_mount_unmount(m,f,ca,cb,ud)
-
-#define g_mount_eject_with_operation_finish g_mount_eject_finish
-#define g_mount_eject_with_operation(m,f,mo,ca,cb,ud) g_mount_eject(m,f,ca,cb,ud)
-
-#define g_volume_eject_with_operation_finish g_volume_eject_finish
-#define g_volume_eject_with_operation(v,f,mo,ca,cb,ud) g_volume_eject(v,f,ca,cb,ud)
-#endif
-
 static void rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass);
 static void rb_removable_media_manager_init (RBRemovableMediaManager *mgr);
 static void rb_removable_media_manager_dispose (GObject *object);
@@ -852,152 +841,30 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 					    0);
 }
 
-static void
-rb_removable_media_manager_eject_cb (GObject *object,
-				     GAsyncResult *result,
-				     RBRemovableMediaManager *mgr)
-{
-	GError *error = NULL;
-
-	if (G_IS_VOLUME (object)) {
-		GVolume *volume = G_VOLUME (object);
-
-		rb_debug ("finishing ejection of volume");
-		g_volume_eject_with_operation_finish (volume, result, &error);
-		if (error == NULL) {
-			rb_removable_media_manager_remove_volume (mgr, volume);
-		}
-	} else if (G_IS_MOUNT (object)) {
-		GMount *mount = G_MOUNT (object);
-
-		rb_debug ("finishing ejection of mount");
-		g_mount_eject_with_operation_finish (mount, result, &error);
-		if (error == NULL) {
-			rb_removable_media_manager_remove_mount (mgr, mount);
-		}
-	}
-
-	if (error != NULL) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_FAILED_HANDLED)) {
-			rb_error_dialog (NULL, _("Unable to eject"), "%s", error->message);
-		} else {
-			rb_debug ("eject failure has already been handled");
-		}
-		g_error_free (error);
-	}
-	g_object_unref (mgr);
-}
-
-static void
-rb_removable_media_manager_unmount_cb (GObject *object,
-				       GAsyncResult *result,
-				       RBRemovableMediaManager *mgr)
-{
-	GMount *mount = G_MOUNT (object);
-	GError *error = NULL;
-
-	rb_debug ("finishing unmount of mount");
-	g_mount_unmount_with_operation_finish (mount, result, &error);
-	if (error != NULL) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_FAILED_HANDLED)) {
-			rb_error_dialog (NULL, _("Unable to unmount"), "%s", error->message);
-		} else {
-			rb_debug ("unmount failure has already been handled");
-		}
-		g_error_free (error);
-	} else {
-		rb_removable_media_manager_remove_mount (mgr, mount);
-	}
-	g_object_unref (mgr);
-}
-
 static gboolean
 rb_removable_media_manager_source_can_eject (RBRemovableMediaManager *mgr)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-	GVolume *volume;
-	GMount *mount;
-	gboolean result;
 
 	if (RB_IS_REMOVABLE_MEDIA_SOURCE (priv->selected_source) == FALSE) {
 		return FALSE;
 	}
 
-	g_object_get (priv->selected_source, "volume", &volume, NULL);
-	if (volume != NULL) {
-		result = g_volume_can_eject (volume);
-		g_object_unref (volume);
-		return result;
-	}
-
-	g_object_get (priv->selected_source, "mount", &mount, NULL);
-	if (mount != NULL) {
-		result = g_mount_can_eject (mount) || g_mount_can_unmount (mount);
-		g_object_unref (mount);
-		return result;
-	}
-
-	return FALSE;
+	return rb_removable_media_source_can_eject (RB_REMOVABLE_MEDIA_SOURCE (priv->selected_source));
 }
 
 static void
 rb_removable_media_manager_cmd_eject_medium (GtkAction *action, RBRemovableMediaManager *mgr)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-	RBRemovableMediaSource *source = RB_REMOVABLE_MEDIA_SOURCE (priv->selected_source);
-	GVolume *volume;
-	GMount *mount;
+	RBRemovableMediaSource *source;
 
-	/* try ejecting based on volume first, then based on the mount,
-	 * and finally try unmounting.
-	 */
-
-	g_object_get (source, "volume", &volume, NULL);
-	if (volume != NULL) {
-		if (g_volume_can_eject (volume)) {
-			rb_debug ("ejecting volume");
-			g_volume_eject_with_operation (volume,
-						       G_MOUNT_UNMOUNT_NONE,
-						       NULL,
-						       NULL,
-						       (GAsyncReadyCallback) rb_removable_media_manager_eject_cb,
-						       g_object_ref (mgr));
-		} else {
-			/* this should never happen; the eject command will be
-			 * insensitive if the selected source cannot be ejected.
-			 */
-			rb_debug ("don't know what to do with this volume");
-		}
-		g_object_unref (volume);
+	if (RB_IS_REMOVABLE_MEDIA_SOURCE (priv->selected_source) == FALSE) {
 		return;
 	}
 
-	g_object_get (source, "mount", &mount, NULL);
-	if (mount != NULL) {
-		if (g_mount_can_eject (mount)) {
-			rb_debug ("ejecting mount");
-			g_mount_eject_with_operation (mount,
-						      G_MOUNT_UNMOUNT_NONE,
-						      NULL,
-						      NULL,
-						      (GAsyncReadyCallback) rb_removable_media_manager_eject_cb,
-						      g_object_ref (mgr));
-		} else if (g_mount_can_unmount (mount)) {
-			rb_debug ("unmounting mount");
-			g_mount_unmount_with_operation (mount,
-							G_MOUNT_UNMOUNT_NONE,
-							NULL,
-							NULL,
-							(GAsyncReadyCallback) rb_removable_media_manager_unmount_cb,
-							g_object_ref (mgr));
-		} else {
-			/* this should never happen; the eject command will be
-			 * insensitive if the selected source cannot be ejected.
-			 */
-			rb_debug ("don't know what to do with this mount");
-		}
-		g_object_unref (mount);
-	}
+	source = RB_REMOVABLE_MEDIA_SOURCE (priv->selected_source);
+	rb_removable_media_source_eject (source);
 }
 
 static void
