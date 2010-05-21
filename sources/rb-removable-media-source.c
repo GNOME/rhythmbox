@@ -417,7 +417,7 @@ impl_paste (RBSource *source, GList *entries)
 
 		mime_types = rb_removable_media_source_get_mime_types (RB_REMOVABLE_MEDIA_SOURCE (source));
 		if (mime_types != NULL && !rb_string_list_contains (mime_types, entry_mime)) {
-			if (!rb_encoder_get_preferred_mimetype (encoder, mime_types, &mimetype, &extension)) {
+			if (!rb_encoder_get_media_type (encoder, entry, mime_types, &mimetype, &extension)) {
 				rb_debug ("failed to find acceptable mime type for %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 				goto impl_paste_end;
 			}

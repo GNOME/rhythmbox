@@ -37,7 +37,9 @@
  * @short_description: audio transcoder interface
  *
  * The RBEncoder interface provides transcoding between audio formats based on
- * MIME types.
+ * media types.  Media types are conceptually similar to MIME types, and overlap
+ * in many cases, but the media type for an encoding is not always the same as the
+ * MIME type for files using that encoding.
  *
  * The encoder picks the output format from a list provided by the caller,
  * limited by the available codecs.  It operatees asynchronously and provides
@@ -53,9 +55,9 @@ static void rb_encoder_factory_init       (RBEncoderFactory *encoder);
 enum {
 	PROGRESS,
 	COMPLETED,
-	ERROR,
 	PREPARE_SOURCE,		/* this is on RBEncoderFactory */
 	PREPARE_SINK,		/* this is on RBEncoderFactory */
+	OVERWRITE,
 	LAST_SIGNAL
 };
 
@@ -140,9 +142,13 @@ rb_encoder_interface_init (RBEncoderIface *iface)
 	/**
 	 * RBEncoder::completed:
 	 * @encoder: the #RBEncoder instance
+	 * @dest_size: size of the output file
+	 * @mediatype: output media type
+	 * @error: encoding error, or NULL if successful
 	 * 
-	 * Emitted when the encoding process is complete.  The destination file
-	 * will be closed and flushed to disk when this occurs.
+	 * Emitted when the encoding process is complete, or when a fatal error
+	 * has occurred.  The destination file, if one exists,  will be closed
+	 * and flushed to disk before this signal is emitted.
 	 */
 	signals[COMPLETED] =
 		g_signal_new ("completed",
@@ -150,26 +156,27 @@ rb_encoder_interface_init (RBEncoderIface *iface)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEncoderIface, completed),
 			      NULL, NULL,
-			      rb_marshal_VOID__UINT64,
+			      rb_marshal_VOID__UINT64_STRING_POINTER,
 			      G_TYPE_NONE,
-			      1, G_TYPE_UINT64);
+			      3, G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_POINTER);
 	/**
-	 * RBEncoder::error:
+	 * RBEncoder::overwrite:
 	 * @encoder: the #RBEncoder instance
-	 * @error: a #GError describing the error
+	 * @file: the #GFile that may be overwritten
 	 *
-	 * Emitted when an error occurs during encoding.
+	 * Emitted when a destination file already exists.  If the
+	 * return value if %TRUE, the file will be overwritten, otherwise
+	 * the transfer will be aborted.
 	 */
-	signals[ERROR] =
-		g_signal_new ("error",
+	signals[OVERWRITE] =
+		g_signal_new ("overwrite",
 			      G_TYPE_FROM_INTERFACE (iface),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBEncoderIface, error),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
-			      G_TYPE_NONE,
-			      1, G_TYPE_POINTER);
-
+			      G_STRUCT_OFFSET (RBEncoderIface, overwrite),
+			      NULL, NULL,		/* need an accumulator here? */
+			      rb_marshal_BOOLEAN__OBJECT,
+			      G_TYPE_BOOLEAN,
+			      1, G_TYPE_OBJECT);
 }
 
 GType
@@ -219,15 +226,14 @@ rb_encoder_factory_get ()
  * @encoder: the #RBEncoder
  * @entry: the #RhythmDBEntry to transcode
  * @dest: destination file URI
- * @mime_types: a #GList of target MIME types in order of preference
+ * @dest_media_type: destination media type, or NULL to just copy it
  *
- * Initiates encoding.  A target MIME type will be selected from the list
- * given.  If the source format is in the list, that will be chosen regardless
- * of order.  Otherwise, the first type in the list that the encoder can produce
- * will be selected.
+ * Initiates encoding, transcoding to the specified media type if it doesn't match
+ * the current media type of the entry.  The caller should use rb_encoder_get_media_type
+ * to select a destination media type.
  *
  * Encoding takes places asynchronously.  If the return value is TRUE, the caller
- * should wait for a 'completed' or 'error' signal to indicate that it has finished.
+ * should wait for a 'completed' signal to indicate that it has finished.
  *
  * Return value: TRUE if encoding has started
  */
@@ -235,11 +241,11 @@ gboolean
 rb_encoder_encode (RBEncoder *encoder,
 		   RhythmDBEntry *entry,
 		   const char *dest,
-		   GList *mime_types)
+		   const char *dest_media_type)
 {
 	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
 
-	return iface->encode (encoder, entry, dest, mime_types);
+	return iface->encode (encoder, entry, dest, dest_media_type);
 }
 
 /**
@@ -247,7 +253,8 @@ rb_encoder_encode (RBEncoder *encoder,
  * @encoder: a #RBEncoder
  *
  * Attempts to cancel any in progress encoding.  The encoder should
- * delete the destination file, if it created one.
+ * delete the destination file, if it created one, and emit the
+ * 'completed' signal.
  */
 void
 rb_encoder_cancel (RBEncoder *encoder)
@@ -258,27 +265,49 @@ rb_encoder_cancel (RBEncoder *encoder)
 }
 
 /**
- * rb_encoder_get_preferred_mimetype:
+ * rb_encoder_get_media_type:
  * @encoder: a #RBEncoder
- * @mime_types: a #GList of MIME type strings in order of preference
- * @mime: returns the selected MIME type, if any
- * @extension: returns the file extension associated with the selected MIME type, if any
+ * @entry: the source #RhythmDBEntry
+ * @dest_media_types: a #GList of media type strings in order of preference
+ * @media_type: returns the selected media type, if any
+ * @extension: returns the file extension associated with the selected media type, if any
  *
- * Identifies the first MIME type in the list that the encoder can actually encode to.
+ * Identifies the first media type in the list that the encoder can actually encode to.
  * The file extension (eg. '.mp3' for audio/mpeg) associated with the selected type is
  * also returned.
  *
  * Return value: TRUE if a format was identified
  */
 gboolean
-rb_encoder_get_preferred_mimetype (RBEncoder *encoder,
-				   GList *mime_types,
-				   char **mime,
-				   char **extension)
+rb_encoder_get_media_type (RBEncoder *encoder,
+			   RhythmDBEntry *entry,
+			   GList *dest_media_types,
+			   char **media_type,
+			   char **extension)
 {
 	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
 
-	return iface->get_preferred_mimetype (encoder, mime_types, mime, extension);
+	return iface->get_media_type (encoder, entry, dest_media_types, media_type, extension);
+}
+
+/**
+ * rb_encoder_get_missing_plugins:
+ * @encoder: a #RBEncoder
+ * @media_type: the media type required
+ * @details: returns plugin installer detail strings
+ *
+ * Retrieves the plugin installer detail strings for any missing plugins
+ * required to encode the specified media type.
+ *
+ * Return value: %TRUE if some detail strings are returned, %FALSE otherwise
+ */
+gboolean
+rb_encoder_get_missing_plugins (RBEncoder *encoder,
+				const char *media_type,
+				char ***details)
+{
+	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
+	return iface->get_missing_plugins (encoder, media_type, details);
 }
 
 /**
@@ -301,15 +330,17 @@ _rb_encoder_emit_progress (RBEncoder *encoder, double fraction)
 }
 
 void
-_rb_encoder_emit_completed (RBEncoder *encoder, guint64 dest_size)
+_rb_encoder_emit_completed (RBEncoder *encoder, guint64 dest_size, const char *mediatype, GError *error)
 {
-	g_signal_emit (encoder, signals[COMPLETED], 0, dest_size);
+	g_signal_emit (encoder, signals[COMPLETED], 0, dest_size, mediatype, error);
 }
 
-void
-_rb_encoder_emit_error (RBEncoder *encoder, GError *error)
+gboolean
+_rb_encoder_emit_overwrite (RBEncoder *encoder, GFile *file)
 {
-	g_signal_emit (encoder, signals[ERROR], 0, error);
+	gboolean ret = FALSE;
+	g_signal_emit (encoder, signals[OVERWRITE], 0, file, &ret);
+	return ret;
 }
 
 void
@@ -334,3 +365,25 @@ rb_encoder_error_quark (void)
 	return quark;
 }
 
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rb_encoder_error_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_ENCODER_ERROR_FORMAT_UNSUPPORTED, "Unable to find a supported destination format"),
+			ENUM_ENTRY (RB_ENCODER_ERROR_INTERNAL, "Internal encoder error"),
+			ENUM_ENTRY (RB_ENCODER_ERROR_FILE_ACCESS, "Unable to write to destination file"),
+			ENUM_ENTRY (RB_ENCODER_ERROR_OUT_OF_SPACE, "Not enough space to write destination file"),
+			ENUM_ENTRY (RB_ENCODER_ERROR_DEST_READ_ONLY, "Destination is read-only"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBPlayerError", values);
+	}
+
+	return etype;
+}

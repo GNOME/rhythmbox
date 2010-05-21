@@ -990,7 +990,7 @@ progress_cb (RBEncoder *encoder, double fraction, TransferData *data)
 }
 
 static void
-completed_cb (RBEncoder *encoder, guint64 dest_size, TransferData *data)
+completed_cb (RBEncoder *encoder, guint64 dest_size, const char *media_type, GError *error, TransferData *data)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (data->manager);
 
@@ -1050,7 +1050,7 @@ do_transfer (RBRemovableMediaManager *manager)
 	rb_debug ("starting transfer of %s to %s",
 		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION),
 		  data->dest);
-	if (rb_encoder_encode (encoder, data->entry, data->dest, data->mime_types) == FALSE) {
+	if (rb_encoder_encode (encoder, data->entry, data->dest, "application/ogg") == FALSE) {
 		rb_debug ("unable to start transfer");
 	}
 }

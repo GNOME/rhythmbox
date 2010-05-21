@@ -38,6 +38,7 @@
 #include <profiles/gnome-media-profiles.h>
 #include <gtk/gtk.h>
 #include <gio/gio.h>
+#include <gst/pbutils/missing-plugins.h>
 
 #include "rhythmdb.h"
 #include "eel-gconf-extensions.h"
@@ -60,15 +61,17 @@ struct _RBEncoderGstPrivate {
 	gboolean transcoding;
 	gint decoded_pads;
 
-	gboolean error_emitted;
 	gboolean completion_emitted;
 
 	GstFormat position_format;
 	gint64 total_length;
 	guint progress_id;
 	char *dest_uri;
+	const char *dest_mediatype;
 
 	GOutputStream *outstream;
+
+	GError *error;
 };
 
 G_DEFINE_TYPE_WITH_CODE(RBEncoderGst, rb_encoder_gst, G_TYPE_OBJECT,
@@ -79,14 +82,42 @@ G_DEFINE_TYPE_WITH_CODE(RBEncoderGst, rb_encoder_gst, G_TYPE_OBJECT,
 static gboolean rb_encoder_gst_encode (RBEncoder *encoder,
 				       RhythmDBEntry *entry,
 				       const char *dest,
-				       GList *mime_types);
+				       const char *dest_media_type);
 static void rb_encoder_gst_cancel (RBEncoder *encoder);
-static gboolean rb_encoder_gst_get_preferred_mimetype (RBEncoder *encoder,
-						       GList *mime_types,
-						       char **mime,
-						       char **extension);
+static gboolean rb_encoder_gst_get_media_type (RBEncoder *encoder,
+					       RhythmDBEntry *entry,
+					       GList *dest_media_types,
+					       char **media_type,
+					       char **extension);
+static gboolean rb_encoder_gst_get_missing_plugins (RBEncoder *encoder,
+						    const char *media_type,
+						    char ***details);
 static void rb_encoder_gst_emit_completed (RBEncoderGst *encoder);
 
+
+static const char *
+get_entry_media_type (RhythmDBEntry *entry)
+{
+	const char *entry_media_type;
+
+	/* hackish mapping of gstreamer container media types to actual
+	 * encoding media types; this should be unnecessary when we do proper
+	 * (deep) typefinding.
+	 */
+	entry_media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
+	if (rb_safe_strcmp (entry_media_type, "audio/x-wav") == 0) {
+		/* if it has a bitrate, assume it's mp3-in-wav */
+		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE) != 0) {
+			entry_media_type = "audio/mpeg";
+		}
+	} else if (rb_safe_strcmp (entry_media_type, "application/x-id3") == 0) {
+		entry_media_type = "audio/mpeg";
+	} else if (rb_safe_strcmp (entry_media_type, "audio/x-flac") == 0) {
+		entry_media_type = "audio/flac";
+	}
+
+	return entry_media_type;
+}
 
 static void
 rb_encoder_gst_class_init (RBEncoderGstClass *klass)
@@ -98,35 +129,36 @@ rb_encoder_gst_class_init (RBEncoderGstClass *klass)
 
         g_type_class_add_private (klass, sizeof (RBEncoderGstPrivate));
 
-	/* create the mimetype -> GstCaps lookup table
+	/* create the media type -> GstCaps lookup table
 	 *
 	 * The strings are static data for now, but if we allow dynamic changing
 	 * we need to change this to use g_strdup/g_free
 	 */
-	klass->mime_caps_table = g_hash_table_new_full (g_str_hash, g_str_equal,
-							NULL, (GDestroyNotify)gst_caps_unref);
+	klass->media_caps_table = g_hash_table_new_full (g_str_hash, g_str_equal,
+							 NULL,
+							 (GDestroyNotify)gst_caps_unref);
 
 	/* AAC */
 	caps = gst_caps_new_simple ("audio/mpeg",
 				    "mpegversion", G_TYPE_INT, 4,
 				    NULL);
-	g_hash_table_insert (klass->mime_caps_table, "audio/aac", caps);
+	g_hash_table_insert (klass->media_caps_table, "audio/aac", caps);
 
 	/* MP3 */
 	caps = gst_caps_new_simple ("audio/mpeg",
 				    "mpegversion", G_TYPE_INT, 1,
 				    "layer", G_TYPE_INT, 3,
 				    NULL);
-	g_hash_table_insert (klass->mime_caps_table, "audio/mpeg", caps);
+	g_hash_table_insert (klass->media_caps_table, "audio/mpeg", caps);
 
 	/* hack for HAL's application/ogg reporting, assume it's audio/vorbis */
 	caps = gst_caps_new_simple ("audio/x-vorbis",
 				    NULL);
-	g_hash_table_insert (klass->mime_caps_table, "application/ogg", caps);
+	g_hash_table_insert (klass->media_caps_table, "application/ogg", caps);
 
 	/* FLAC */
 	caps = gst_caps_new_simple ("audio/x-flac", NULL);
-	g_hash_table_insert (klass->mime_caps_table, "audio/flac", caps);
+	g_hash_table_insert (klass->media_caps_table, "audio/flac", caps);
 }
 
 static void
@@ -140,7 +172,8 @@ rb_encoder_init (RBEncoderIface *iface)
 {
 	iface->encode = rb_encoder_gst_encode;
 	iface->cancel = rb_encoder_gst_cancel;
-	iface->get_preferred_mimetype = rb_encoder_gst_get_preferred_mimetype;
+	iface->get_media_type = rb_encoder_gst_get_media_type;
+	iface->get_missing_plugins = rb_encoder_gst_get_missing_plugins;
 }
 
 static void
@@ -175,10 +208,27 @@ rb_encoder_gst_new (void)
 }
 
 static void
-rb_encoder_gst_emit_error (RBEncoderGst *encoder, GError *error)
+set_error (RBEncoderGst *encoder, GError *error)
 {
-	encoder->priv->error_emitted = TRUE;
-	_rb_encoder_emit_error (RB_ENCODER (encoder), error);
+	if (encoder->priv->error != NULL) {
+		g_warning ("got encoding error %s, but already have one: %s",
+			   error->message,
+			   encoder->priv->error->message);
+		return;
+	}
+
+	/* translate some GStreamer errors into generic ones */
+	if (g_error_matches (error, GST_RESOURCE_ERROR, GST_RESOURCE_ERROR_NO_SPACE_LEFT)) {
+		GError *old = error;
+		error = g_error_new (RB_ENCODER_ERROR, RB_ENCODER_ERROR_OUT_OF_SPACE, "%s", old->message);
+		g_error_free (old);
+	} else if (g_error_matches (error, GST_RESOURCE_ERROR, GST_RESOURCE_ERROR_OPEN_WRITE)) {
+		GError *old = error;
+		error = g_error_new (RB_ENCODER_ERROR, RB_ENCODER_ERROR_DEST_READ_ONLY, "%s", old->message);
+		g_error_free (old);
+	}
+
+	g_propagate_error (&encoder->priv->error, error);
 }
 
 static void
@@ -196,16 +246,16 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 
 	/* emit an error if no audio pad has been found and it wasn't due to an
 	 * error */
-	if (encoder->priv->error_emitted == FALSE &&
-			encoder->priv->transcoding &&
-			encoder->priv->decoded_pads == 0) {
+	if (encoder->priv->error == NULL &&
+	    encoder->priv->transcoding &&
+	    encoder->priv->decoded_pads == 0) {
 		rb_debug ("received EOS and no decoded pad");
 		g_set_error (&error,
 				RB_ENCODER_ERROR,
 				RB_ENCODER_ERROR_FORMAT_UNSUPPORTED,
 				"no decodable audio pad found");
 
-		rb_encoder_gst_emit_error (encoder, error);
+		set_error (encoder, error);
 		g_error_free (error);
 	}
 
@@ -226,7 +276,7 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 	g_object_unref (file);
 
 	encoder->priv->completion_emitted = TRUE;
-	_rb_encoder_emit_completed (RB_ENCODER (encoder), dest_size);
+	_rb_encoder_emit_completed (RB_ENCODER (encoder), dest_size, encoder->priv->dest_mediatype, encoder->priv->error);
 }
 
 static void
@@ -261,7 +311,7 @@ bus_watch_cb (GstBus *bus, GstMessage *message, gpointer data)
 	switch (GST_MESSAGE_TYPE (message)) {
 	case GST_MESSAGE_ERROR:
 		gst_message_parse_error (message, &error, &string);
-		rb_encoder_gst_emit_error (encoder, error);
+		set_error (encoder, error);
 		rb_debug ("received error %s", string);
 		g_error_free (error);
 		g_free (string);
@@ -578,45 +628,6 @@ add_decoding_pipeline (RBEncoderGst *encoder,
 }
 
 static gboolean
-prompt_for_overwrite (GFile *file)
-{
-	GtkWidget *dialog;
-	GFileInfo *info;
-	gint response;
-	char *free_name;
-	const char *display_name;
-
-	free_name = NULL;
-	display_name = NULL;
-	info = g_file_query_info (file,
-				  G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME,
-				  G_FILE_QUERY_INFO_NONE,
-				  NULL,
-				  NULL);
-	if (info != NULL) {
-		display_name = g_file_info_get_display_name (info);
-	}
-
-	if (display_name == NULL) {
-		free_name = g_file_get_uri (file);
-		display_name = free_name;
-	}
-
-	dialog = gtk_message_dialog_new (NULL, 0,
-					 GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
-					 _("Do you want to overwrite the file \"%s\"?"),
-					 display_name);
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_destroy (dialog);
-	g_free (free_name);
-	if (info != NULL) {
-		g_object_unref (info);
-	}
-
-	return (response == GTK_RESPONSE_YES);
-}
-
-static gboolean
 attach_output_pipeline (RBEncoderGst *encoder,
 			GstElement *end,
 			const char *dest,
@@ -648,7 +659,7 @@ attach_output_pipeline (RBEncoderGst *encoder,
 			} else if (g_error_matches (local_error,
 						    G_IO_ERROR,
 						    G_IO_ERROR_EXISTS)) {
-				if (prompt_for_overwrite (file)) {
+				if (_rb_encoder_emit_overwrite (RB_ENCODER (encoder), file)) {
 					g_error_free (local_error);
 					stream = g_file_replace (file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, error);
 					if (stream == NULL) {
@@ -692,7 +703,7 @@ attach_output_pipeline (RBEncoderGst *encoder,
 }
 
 static gboolean
-encoder_match_mime (RBEncoderGst *rbencoder, GstElement *encoder, const gchar *mime_type)
+encoder_match_media_type (RBEncoderGst *rbencoder, GstElement *encoder, const gchar *media_type)
 {
 	GstPad *srcpad;
 	GstCaps *element_caps = NULL;
@@ -709,15 +720,15 @@ encoder_match_mime (RBEncoderGst *rbencoder, GstElement *encoder, const gchar *m
 		goto end;
 	}
 
-	desired_caps = g_hash_table_lookup (RB_ENCODER_GST_GET_CLASS (rbencoder)->mime_caps_table, mime_type);
+	desired_caps = g_hash_table_lookup (RB_ENCODER_GST_GET_CLASS (rbencoder)->media_caps_table, media_type);
 	if (desired_caps != NULL) {
 		gst_caps_ref (desired_caps);
 	} else {
-		desired_caps = gst_caps_new_simple (mime_type, NULL);
+		desired_caps = gst_caps_new_simple (media_type, NULL);
 	}
 
 	if (desired_caps == NULL) {
-		g_warning ("couldn't create any desired caps for mimetype: %s", mime_type);
+		g_warning ("couldn't create any desired caps for media type: %s", media_type);
 		goto end;
 	}
 
@@ -791,8 +802,52 @@ profile_bin_find_encoder (GstBin *profile_bin)
 	return encoder;
 }
 
+static const char *
+get_media_type_from_profile (RBEncoderGst *rbencoder, GMAudioProfile *profile)
+{
+	GHashTableIter iter;
+	GstElement *pipeline;
+	GstElement *encoder;
+	char *pipeline_description;
+	GError *error = NULL;
+	gpointer key;
+	gpointer value;
+
+	pipeline_description =
+		g_strdup_printf ("fakesrc ! %s ! fakesink",
+			gm_audio_profile_get_pipeline (profile));
+	pipeline = gst_parse_launch (pipeline_description, &error);
+	g_free (pipeline_description);
+	if (error) {
+		g_warning ("unable to get media type for profile %s: %s",
+			   gm_audio_profile_get_name (profile),
+			   error->message);
+		g_clear_error (&error);
+		return NULL;
+	}
+
+	encoder = profile_bin_find_encoder (GST_BIN (pipeline));
+	if (encoder == NULL) {
+		g_object_unref (pipeline);
+		g_warning ("Unable to get media type for profile %s: couldn't find encoder",
+			   gm_audio_profile_get_name (profile));
+		return NULL;
+	}
+
+	g_hash_table_iter_init (&iter, RB_ENCODER_GST_GET_CLASS (rbencoder)->media_caps_table);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		const char *media_type = (const char *)key;
+		if (encoder_match_media_type (rbencoder, encoder, media_type)) {
+			return media_type;
+		}
+	}
+
+	g_warning ("couldn't identify media type for profile %s", gm_audio_profile_get_name (profile));
+	return NULL;
+}
+
 static GMAudioProfile*
-get_profile_from_mime_type (RBEncoderGst *rbencoder, const char *mime_type)
+get_profile_from_media_type (RBEncoderGst *rbencoder, const char *media_type)
 {
 	GList *profiles, *walk;
 	gchar *pipeline_description;
@@ -802,7 +857,7 @@ get_profile_from_mime_type (RBEncoderGst *rbencoder, const char *mime_type)
 	GMAudioProfile *matching_profile = NULL;
 	GError *error = NULL;
 
-	rb_debug ("Looking up profile for mimetype '%s'", mime_type);
+	rb_debug ("Looking up profile for media type '%s'", media_type);
 
 	profiles = gm_audio_profile_get_active_list ();
 	for (walk = profiles; walk; walk = g_list_next (walk)) {
@@ -824,7 +879,7 @@ get_profile_from_mime_type (RBEncoderGst *rbencoder, const char *mime_type)
 			continue;
 		}
 
-		if (encoder_match_mime (rbencoder, encoder, mime_type)) {
+		if (encoder_match_media_type (rbencoder, encoder, media_type)) {
 			matching_profile = profile;
 			gst_object_unref (GST_OBJECT (encoder));
 			gst_object_unref (GST_OBJECT (pipeline));
@@ -840,28 +895,6 @@ get_profile_from_mime_type (RBEncoderGst *rbencoder, const char *mime_type)
 	g_list_free (profiles);
 
 	return matching_profile;
-}
-
-static GMAudioProfile*
-get_profile_from_mime_types (RBEncoderGst *rbencoder, GList *mime_types)
-{
-	GMAudioProfile *profile = NULL;
-	GList *l;
-
-	if (mime_types == NULL) {
-		const char *profile_name;
-
-		profile_name = eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT);
-		profile = gm_audio_profile_lookup (profile_name);
-	} else {
-		for (l = mime_types; l != NULL; l = g_list_next (l)) {
-			profile = get_profile_from_mime_type (rbencoder, (const char *)l->data);
-			if (profile != NULL)
-				break;
-		}
-	}
-
-	return profile;
 }
 
 static GstElement *
@@ -926,7 +959,6 @@ static gboolean
 transcode_track (RBEncoderGst *encoder,
 	 	 RhythmDBEntry *entry,
 		 const char *dest,
-		 GList *mime_types,
 		 GError **error)
 {
 	/* src ! decodebin ! queue ! encoding_profile ! queue ! sink */
@@ -934,18 +966,20 @@ transcode_track (RBEncoderGst *encoder,
 	GstElement *src, *decoder, *end;
 
 	g_assert (encoder->priv->pipeline == NULL);
+	g_assert (encoder->priv->dest_mediatype != NULL);
 
-	profile = get_profile_from_mime_types (encoder, mime_types);
+	rb_debug ("transcoding to %s, media type %s", dest, encoder->priv->dest_mediatype);
+	profile = get_profile_from_media_type (encoder, encoder->priv->dest_mediatype);
 	if (profile == NULL) {
 		g_set_error (error,
 			     RB_ENCODER_ERROR,
 			     RB_ENCODER_ERROR_FORMAT_UNSUPPORTED,
-			     "Unable to locate encoding profile for mime-type "
-			     /*"'%s'", mime_type*/);
+			     "Unable to locate encoding profile for media-type %s",
+			     encoder->priv->dest_mediatype);
 		goto error;
-	} else {
-		rb_debug ("selected profile %s", gm_audio_profile_get_name (profile));
 	}
+
+	rb_debug ("selected profile %s", gm_audio_profile_get_name (profile));
 
 	src = create_pipeline_and_source (encoder, entry, error);
 	if (src == NULL)
@@ -1009,80 +1043,52 @@ static gboolean
 rb_encoder_gst_encode (RBEncoder *encoder,
 		       RhythmDBEntry *entry,
 		       const char *dest,
-		       GList *mime_types)
+		       const char *dest_media_type)
 {
 	RBEncoderGstPrivate *priv = RB_ENCODER_GST (encoder)->priv;
-	const char *entry_mime_type;
-	gboolean copy;
-	gboolean was_raw;
+	const char *entry_media_type;
 	gboolean result;
 	GError *error = NULL;
 
 	g_return_val_if_fail (priv->pipeline == NULL, FALSE);
+	g_return_val_if_fail (dest_media_type != NULL, FALSE);
 
-	entry_mime_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
-	was_raw = g_str_has_prefix (entry_mime_type, "audio/x-raw");
-
-	/* hackish mapping of gstreamer media types to mime types; this
-	 * should be easier when we do proper (deep) typefinding.
-	 */
-	if (rb_safe_strcmp (entry_mime_type, "audio/x-wav") == 0) {
-		/* if it has a bitrate, assume it's mp3-in-wav */
-		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE) != 0)
-			entry_mime_type = "audio/mpeg";
-	} else if (rb_safe_strcmp (entry_mime_type, "application/x-id3") == 0) {
-		entry_mime_type = "audio/mpeg";
-	} else if (rb_safe_strcmp (entry_mime_type, "audio/x-flac") == 0) {
-		entry_mime_type = "audio/flac";
-	}
+	entry_media_type = get_entry_media_type (entry);
 
 	if (rb_uri_create_parent_dirs (dest, &error) == FALSE) {
+		RBEncoderGst *gencoder = RB_ENCODER_GST (encoder);
 		error = g_error_new_literal (RB_ENCODER_ERROR,
 					     RB_ENCODER_ERROR_FILE_ACCESS,
 					     error->message);		/* I guess */
 
-		_rb_encoder_emit_error (encoder, error);
-		_rb_encoder_emit_completed (encoder, 0);
+		set_error (gencoder, error);
+		_rb_encoder_emit_completed (encoder, 0, NULL, gencoder->priv->error);
 		g_error_free (error);
 		return FALSE;
 	}
 
-	if (mime_types == NULL) {
-		/* don't copy raw audio */
-		copy = !was_raw;
-	} else {
-		GList *l;
-
-		/* see if it's already in any of the destination formats */
-		copy = FALSE;
-		for (l = mime_types; l != NULL; l = g_list_next (l)) {
-			rb_debug ("Comparing mimetypes '%s' '%s'", entry_mime_type, (char *)l->data);
-			if (rb_safe_strcmp (entry_mime_type, l->data) == 0) {
-				rb_debug ("Matched mimetypes '%s' '%s'", entry_mime_type, (char *)l->data);
-
-				copy = TRUE;
-				break;
-			}
-		}
-	}
-
 	priv->dest_uri = g_strdup (dest);
-	if (copy) {
+
+	/* if destination and source media types are the same, copy it */
+	if (g_strcmp0 (entry_media_type, dest_media_type) == 0) {
+		rb_debug ("source file already has required media type %s, copying rather than transcoding", dest_media_type);
 		priv->total_length = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
 		priv->position_format = GST_FORMAT_BYTES;
 
 		result = copy_track (RB_ENCODER_GST (encoder), entry, dest, &error);
+		priv->dest_mediatype = entry_media_type;
 	} else {
 		priv->total_length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 		priv->position_format = GST_FORMAT_TIME;
+		priv->dest_mediatype = dest_media_type;		/* hmm, need to strdup it? */
 
-		result = transcode_track (RB_ENCODER_GST (encoder), entry, dest, mime_types, &error);
+		result = transcode_track (RB_ENCODER_GST (encoder), entry, dest, &error);
 	}
 
 	if (error) {
 		RBEncoderGst *enc = RB_ENCODER_GST (encoder);
 
-		rb_encoder_gst_emit_error (enc, error);
+		set_error (enc, error);
 		g_error_free (error);
 		if (enc->priv->pipeline == NULL) {
 			rb_encoder_gst_emit_completed (enc);
@@ -1096,30 +1102,143 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 }
 
 static gboolean
-rb_encoder_gst_get_preferred_mimetype (RBEncoder *encoder,
-				       GList *mime_types,
-				       char **mime,
-				       char **extension)
+rb_encoder_gst_get_media_type (RBEncoder *encoder,
+			       RhythmDBEntry *entry,
+			       GList *dest_media_types,
+			       char **media_type,
+			       char **extension)
 {
 	GList *l;
+	GMAudioProfile *profile;
+	const char *src_media_type;
 
-	g_return_val_if_fail (mime_types != NULL, FALSE);
-	g_return_val_if_fail (mime != NULL, FALSE);
-	g_return_val_if_fail (extension != NULL, FALSE);
+	src_media_type = get_entry_media_type (entry);
+	g_return_val_if_fail (src_media_type != NULL, FALSE);
 
-	for (l = mime_types; l != NULL; l = g_list_next (l)) {
-		GMAudioProfile *profile;
-		const char *mimetype;
+	if (media_type != NULL)
+		*media_type = NULL;
+	if (extension != NULL)
+		*extension = NULL;
 
-		mimetype = (const char *)l->data;
-		profile = get_profile_from_mime_type (RB_ENCODER_GST (encoder), mimetype);
+
+	/* if we don't have any destination format requirements,
+	 * use preferred encoding for raw files, otherwise accept as is
+	 */
+	if (dest_media_types == NULL) {
+		if (g_str_has_prefix (src_media_type, "audio/x-raw")) {
+			const char *profile_name = eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT);
+			const char *mt;
+			profile = gm_audio_profile_lookup (profile_name);
+
+			mt = get_media_type_from_profile (RB_ENCODER_GST (encoder), profile);
+			if (mt == NULL) {
+				/* ugh */
+				return FALSE;
+			}
+			if (media_type != NULL)
+				*media_type = g_strdup (mt);
+			if (extension != NULL)
+				*extension = g_strdup (gm_audio_profile_get_extension (profile));
+		} else {
+			if (media_type != NULL)
+				*media_type = g_strdup (src_media_type);
+		}
+		return TRUE;
+	}
+
+	/* check if the source media type is in the destination list */
+	if (rb_string_list_contains (dest_media_types, src_media_type)) {
+		rb_debug ("found source media type %s in destination type list", src_media_type);
+		if (media_type != NULL)
+			*media_type = g_strdup (src_media_type);
+		profile = get_profile_from_media_type (RB_ENCODER_GST (encoder), src_media_type);
 		if (profile) {
-			*extension = g_strdup (gm_audio_profile_get_extension (profile));
-			*mime = g_strdup (mimetype);
+			if (extension != NULL)
+				*extension = g_strdup (gm_audio_profile_get_extension (profile));
+			g_object_unref (profile);
+		}
+		return TRUE;
+	}
+
+	/* now find the type in the destination media type list that we have a
+	 * profile for.
+	 */
+	for (l = dest_media_types; l != NULL; l = g_list_next (l)) {
+		GMAudioProfile *profile;
+		const char *mt;
+
+		mt = (const char *)l->data;
+		profile = get_profile_from_media_type (RB_ENCODER_GST (encoder), mt);
+		if (profile) {
+			rb_debug ("selected destination media type %s", mt);
+			if (extension != NULL)
+				*extension = g_strdup (gm_audio_profile_get_extension (profile));
+
+			if (media_type != NULL)
+				*media_type = g_strdup (mt);
 			g_object_unref (profile);
 			return TRUE;
 		}
 	}
 
 	return FALSE;
+}
+
+static int
+add_element_if_missing (char ***details, int index, const char *element_name)
+{
+	GstElementFactory *factory;
+	factory = gst_element_factory_find (element_name);
+	if (factory != NULL) {
+		rb_debug ("element factory %s is available", element_name);
+		gst_object_unref (factory);
+	} else {
+		rb_debug ("element factory %s not available, adding detail string", element_name);
+		(*details)[index++] = gst_missing_element_installer_detail_new (element_name);
+	}
+	return index;
+}
+
+static gboolean
+rb_encoder_gst_get_missing_plugins (RBEncoder *encoder,
+				    const char *media_type,
+				    char ***details)
+{
+	/*
+	 * since encoding profiles use explicit element names, we need to
+	 * check for and request installation of exactly the element names
+	 * used in the profile, rather than requesting an encoder for a media
+	 * type.  parsing the profile pipeline description is too much work,
+	 * so we'll just use the element names from the default profiles.
+	 *
+	 * mp3: 	lame, id3v2mux
+	 * aac:		faac, ffmux_mp4
+	 * ogg vorbis:	vorbisenc, oggmux
+	 * flac:	flacenc
+	 * mp2:		twolame, id3v2mux   (we don't have a media type for this)
+	 */
+
+	int i = 0;
+	*details = g_new0(char *, 3);
+
+	if (g_strcmp0 (media_type, "audio/mpeg") == 0) {
+		i = add_element_if_missing (details, i, "lame");
+		i = add_element_if_missing (details, i, "id3v2mux");
+	} else if (g_strcmp0 (media_type, "audio/x-aac") == 0) {
+		i = add_element_if_missing (details, i, "faac");
+		i = add_element_if_missing (details, i, "ffmux_mp4");
+	} else if (g_strcmp0 (media_type, "application/ogg") == 0) {
+		i = add_element_if_missing (details, i, "vorbisenc");
+		i = add_element_if_missing (details, i, "oggmux");
+	} else if (g_strcmp0 (media_type, "audio/x-flac") == 0) {
+		i = add_element_if_missing (details, i, "flacenc");
+	} else {
+		rb_debug ("unable to provide missing plugin details for unknown media type %s",
+			  media_type);
+		g_strfreev (*details);
+		*details = NULL;
+		return FALSE;
+	}
+	rb_debug ("have %d missing plugin detail strings", i);
+	return TRUE;
 }

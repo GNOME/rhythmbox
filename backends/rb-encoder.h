@@ -52,10 +52,13 @@ enum
 	RB_ENCODER_ERROR_FORMAT_UNSUPPORTED,
 	RB_ENCODER_ERROR_INTERNAL,
 	RB_ENCODER_ERROR_FILE_ACCESS,
+	RB_ENCODER_ERROR_OUT_OF_SPACE,
+	RB_ENCODER_ERROR_DEST_READ_ONLY
 };
 
+GType rb_encoder_error_get_type (void);
+#define RB_TYPE_ENCODER_ERROR	(rb_encoer_error_get_type())
 #define RB_ENCODER_ERROR rb_encoder_error_quark ()
-
 GQuark rb_encoder_error_quark (void);
 
 typedef struct _RBEncoder RBEncoder;
@@ -71,17 +74,21 @@ struct _RBEncoderIface
 	gboolean	(*encode)	(RBEncoder *encoder,
 					 RhythmDBEntry *entry,
 					 const char *dest,
-					 GList *mime_types);
+					 const char *dest_media_type);
 	void		(*cancel)	(RBEncoder *encoder);
-	gboolean	(*get_preferred_mimetype)	(RBEncoder *encoder,
-							 GList *mime_types,
-							 char **mime,
-							 char **extension);
+	gboolean	(*get_media_type) (RBEncoder *encoder,
+					 RhythmDBEntry *entry,
+					 GList *dest_media_types,
+					 char **media_type,
+					 char **extension);
+	gboolean	(*get_missing_plugins) (RBEncoder *encoder,
+					 const char *media_type,
+					 char ***details);
 
 	/* signals */
 	void (*progress) (RBEncoder *encoder,  double fraction);
-	void (*completed) (RBEncoder *encoder, guint64 dest_size);
-	void (*error) (RBEncoder *encoder, GError *error);
+	gboolean (*overwrite) (RBEncoder *encoder, GFile *file);
+	void (*completed) (RBEncoder *encoder, guint64 dest_size, const char *mediatype, GError *error);
 };
 
 struct _RBEncoderFactoryClass
@@ -108,18 +115,22 @@ GType 		rb_encoder_get_type 	(void);
 gboolean	rb_encoder_encode	(RBEncoder *encoder,
 					 RhythmDBEntry *entry,
 					 const char *dest,
-					 GList *mime_types);
+					 const char *dest_media_type);
 void		rb_encoder_cancel	(RBEncoder *encoder);
 
-gboolean	rb_encoder_get_preferred_mimetype (RBEncoder *encoder,
-						   GList *mime_types,
-						   char **mime,
-						   char **extension);
+gboolean	rb_encoder_get_media_type (RBEncoder *encoder,
+					 RhythmDBEntry *entry,
+					 GList *dest_media_types,
+					 char **media_type,
+					 char **extension);
+gboolean	rb_encoder_get_missing_plugins (RBEncoder *encoder,
+					 const char *media_type,
+					 char ***details);
 
 /* only to be used by subclasses */
 void	_rb_encoder_emit_progress (RBEncoder *encoder, double fraction);
-void	_rb_encoder_emit_completed (RBEncoder *encoder, guint64 dest_size);
-void	_rb_encoder_emit_error (RBEncoder *encoder, GError *error);
+void	_rb_encoder_emit_completed (RBEncoder *encoder, guint64 dest_size, const char *mediatype, GError *error);
+gboolean _rb_encoder_emit_overwrite (RBEncoder *encoder, GFile *file);
 
 void	_rb_encoder_emit_prepare_source (RBEncoder *encoder, const char *uri, GObject *source);
 void	_rb_encoder_emit_prepare_sink (RBEncoder *encoder, const char *uri, GObject *sink);
