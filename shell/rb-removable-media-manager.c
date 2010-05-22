@@ -31,8 +31,7 @@
  * @short_description: handling of removable media such as audio CDs and DAP devices
  * 
  * The removable media manager maintains the mapping between GIO GVolume and GMount
- * objects and rhythmbox sources, and also performs track transfers between
- * removable media sources and the library.
+ * objects and rhythmbox sources.
  */
 
 #include "config.h"
@@ -59,7 +58,6 @@
 #include "rhythmdb.h"
 #include "rb-marshal.h"
 #include "rb-util.h"
-#include "rb-encoder.h"
 
 static void rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass);
 static void rb_removable_media_manager_init (RBRemovableMediaManager *mgr);
@@ -97,8 +95,6 @@ static void mount_removed_cb (GVolumeMonitor *monitor, GMount *mount, RBRemovabl
 static void uevent_cb (GUdevClient *client, const char *action, GUdevDevice *device, RBRemovableMediaManager *manager);
 #endif
 
-static void do_transfer (RBRemovableMediaManager *manager);
-
 typedef struct
 {
 	RBShell *shell;
@@ -113,12 +109,6 @@ typedef struct
 	GHashTable *mount_mapping;
 	GHashTable *device_mapping;
 	gboolean scanned;
-
-	GAsyncQueue *transfer_queue;
-	gboolean transfer_running;
-	gint transfer_total;
-	gint transfer_done;
-	double transfer_fraction;
 
 	GVolumeMonitor *volume_monitor;
 	guint mount_added_id;
@@ -147,7 +137,6 @@ enum
 enum
 {
 	MEDIUM_ADDED,
-	TRANSFER_PROGRESS,
 	CREATE_SOURCE_DEVICE,
 	CREATE_SOURCE_VOLUME,
 	CREATE_SOURCE_MOUNT,
@@ -235,25 +224,6 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      G_TYPE_NONE,
 			      1, G_TYPE_OBJECT);
 
-	/**
-	 * RBRemovableMediaManager::transfer-progress:
-	 * @mgr: the #RBRemovableMediaManager
-	 * @done: number of tracks that have been fully transferred
-	 * @total: total number of tracks to transfer
-	 * @progress: fraction of the current track that has been transferred
-	 *
-	 * Emitted throughout the track transfer process to allow UI elements
-	 * showing transfer progress to be updated.
-	 */
-	rb_removable_media_manager_signals[TRANSFER_PROGRESS] =
-		g_signal_new ("transfer-progress",
-			      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBRemovableMediaManagerClass, transfer_progress),
-			      NULL, NULL,
-			      rb_marshal_VOID__INT_INT_DOUBLE,
-			      G_TYPE_NONE,
-			      3, G_TYPE_INT, G_TYPE_INT, G_TYPE_DOUBLE);
 
 	/**
 	 * RBRemovableMediaManager::create-source-device
@@ -339,7 +309,6 @@ rb_removable_media_manager_init (RBRemovableMediaManager *mgr)
 	priv->volume_mapping = g_hash_table_new (NULL, NULL);
 	priv->mount_mapping = g_hash_table_new (NULL, NULL);
 	priv->device_mapping = g_hash_table_new_full (uint64_hash, uint64_equal, g_free, NULL);
-	priv->transfer_queue = g_async_queue_new ();
 
 	/*
 	 * Monitor new (un)mounted file systems to look for new media;
@@ -451,7 +420,6 @@ rb_removable_media_manager_finalize (GObject *object)
 	g_hash_table_destroy (priv->device_mapping);
 	g_hash_table_destroy (priv->volume_mapping);
 	g_hash_table_destroy (priv->mount_mapping);
-	g_async_queue_unref (priv->transfer_queue);
 
 	G_OBJECT_CLASS (rb_removable_media_manager_parent_class)->finalize (object);
 }
@@ -945,152 +913,3 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 	g_list_free (list);
 #endif
 }
-
-/* Track transfer */
-
-typedef struct {
-	RBRemovableMediaManager *manager;
-	RhythmDBEntry *entry;
-	char *dest;
-	guint64 dest_size;
-	GList *mime_types;
-	GError *error;
-	RBTransferCompleteCallback callback;
-	gpointer userdata;
-} TransferData;
-
-static void
-emit_progress (RBRemovableMediaManager *mgr)
-{
-	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-
-	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[TRANSFER_PROGRESS], 0,
-		       priv->transfer_done,
-		       priv->transfer_total,
-		       priv->transfer_fraction);
-}
-
-static void
-error_cb (RBEncoder *encoder, GError *error, TransferData *data)
-{
-	rb_debug ("Error transferring track to %s: %s", data->dest, error->message);
-
-	data->error = g_error_copy (error);
-	rb_encoder_cancel (encoder);
-}
-
-static void
-progress_cb (RBEncoder *encoder, double fraction, TransferData *data)
-{
-	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (data->manager);
-
-	rb_debug ("transfer progress %f", (float)fraction);
-	priv->transfer_fraction = fraction;
-	emit_progress (data->manager);
-}
-
-static void
-completed_cb (RBEncoder *encoder, guint64 dest_size, const char *media_type, GError *error, TransferData *data)
-{
-	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (data->manager);
-
-	rb_debug ("completed transferring track to %s", data->dest);
-	(data->callback) (data->entry, data->dest, dest_size, data->error, data->userdata);
-
-	priv->transfer_running = FALSE;
-	priv->transfer_done++;
-	priv->transfer_fraction = 0.0;
-	do_transfer (data->manager);
-
-	g_object_unref (G_OBJECT (encoder));
-	g_free (data->dest);
-	rb_list_deep_free (data->mime_types);
-	g_clear_error (&data->error);
-	g_free (data);
-}
-
-static void
-do_transfer (RBRemovableMediaManager *manager)
-{
-	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (manager);
-	TransferData *data;
-	RBEncoder *encoder;
-
-	g_assert (rb_is_main_thread ());
-
-	emit_progress (manager);
-
-	if (priv->transfer_running) {
-		rb_debug ("already transferring something");
-		return;
-	}
-
-	data = g_async_queue_try_pop (priv->transfer_queue);
-	if (data == NULL) {
-		rb_debug ("transfer queue is empty");
-		priv->transfer_total = 0;
-		priv->transfer_done = 0;
-		emit_progress (manager);
-		return;
-	}
-
-	priv->transfer_running = TRUE;
-	priv->transfer_fraction = 0.0;
-
-	encoder = rb_encoder_new ();
-	g_signal_connect (G_OBJECT (encoder),
-			  "error", G_CALLBACK (error_cb),
-			  data);
-	g_signal_connect (G_OBJECT (encoder),
-			  "progress", G_CALLBACK (progress_cb),
-			  data);
-	g_signal_connect (G_OBJECT (encoder),
-			  "completed", G_CALLBACK (completed_cb),
-			  data);
-	rb_debug ("starting transfer of %s to %s",
-		  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION),
-		  data->dest);
-	if (rb_encoder_encode (encoder, data->entry, data->dest, "application/ogg") == FALSE) {
-		rb_debug ("unable to start transfer");
-	}
-}
-
-/**
- * rb_removable_media_manager_queue_transfer:
- * @manager: the #RBRemovableMediaManager
- * @entry: the #RhythmDBEntry to transfer
- * @dest: the destination URI
- * @mime_types: a list of acceptable output MIME types
- * @callback: function to call when the transfer is complete
- * @userdata: data to pass to the callback
- *
- * Initiates a track transfer.  This will transfer the track identified by the
- * #RhythmDBEntry to the given destination, transcoding it if its
- * current media type is not in the list of acceptable output types.
- */
-void
-rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *manager,
-					  RhythmDBEntry *entry,
-					  const char *dest,
-					  GList *mime_types,
-					  RBTransferCompleteCallback callback,
-					  gpointer userdata)
-{
-	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (manager);
-	TransferData *data;
-
-	g_assert (rb_is_main_thread ());
-
-	data = g_new0 (TransferData, 1);
-	data->manager = manager;
-	data->entry = entry;
-	data->dest = g_strdup (dest);
-	data->mime_types = rb_string_list_copy (mime_types);
-	data->callback = callback;
-	data->userdata = userdata;
-
-	g_async_queue_push (priv->transfer_queue, data);
-	priv->transfer_total++;
-	do_transfer (manager);
-}
-
