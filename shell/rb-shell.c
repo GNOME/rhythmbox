@@ -67,6 +67,7 @@
 #include "rb-source.h"
 #include "rb-playlist-manager.h"
 #include "rb-removable-media-manager.h"
+#include "rb-track-transfer-queue.h"
 #include "rb-preferences.h"
 #include "rb-shell-clipboard.h"
 #include "rb-shell-player.h"
@@ -148,11 +149,6 @@ static void rb_shell_db_entry_added_cb (RhythmDB *db,
 static void rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_medium_added_cb (RBRemovableMediaManager *mgr, RBSource *source, RBShell *shell);
-static void rb_shell_transfer_progress_cb (RBRemovableMediaManager *mgr,
-					   gint done,
-					   gint total,
-					   double fraction,
-					   RBShell *shell);
 static void rb_shell_source_deleted_cb (RBSource *source, RBShell *shell);
 static void rb_shell_set_window_title (RBShell *shell, const char *window_title);
 static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
@@ -263,6 +259,7 @@ enum
 	PROP_SOURCELIST,
 	PROP_SOURCE_HEADER,
 	PROP_VISIBILITY,
+	PROP_TRACK_TRANSFER_QUEUE,
 };
 
 /* prefs */
@@ -340,6 +337,7 @@ struct _RBShellPrivate
 	RBStatusbar *statusbar;
 	RBPlaylistManager *playlist_manager;
 	RBRemovableMediaManager *removable_media_manager;
+	RBTrackTransferQueue *track_transfer_queue;
 
 	RBLibrarySource *library_source;
 	RBPodcastSource *podcast_source;
@@ -711,6 +709,19 @@ rb_shell_class_init (RBShellClass *klass)
 							      G_PARAM_READABLE));
 
 	/**
+	 * RBShell:track-transfer-queue:
+	 *
+	 * The #RBTrackTransferQueue instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_TRACK_TRANSFER_QUEUE,
+					 g_param_spec_object ("track-transfer-queue",
+							      "RBTrackTransferQueue",
+							      "RBTrackTransferQueue object",
+							      RB_TYPE_TRACK_TRANSFER_QUEUE,
+							      G_PARAM_READABLE));
+
+	/**
 	 * RBShell::visibility-changed:
 	 * @shell: the #RBShell
 	 * @visibile: new visibility
@@ -958,6 +969,9 @@ rb_shell_get_property (GObject *object,
 	case PROP_SOURCE_HEADER:
 		g_value_set_object (value, shell->priv->source_header);
 		break;
+	case PROP_TRACK_TRANSFER_QUEUE:
+		g_value_set_object (value, shell->priv->track_transfer_queue);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1057,13 +1071,14 @@ rb_shell_finalize (GObject *object)
 	rb_playlist_manager_shutdown (shell->priv->playlist_manager);
 
 	rb_debug ("unreffing playlist manager");
-	g_object_unref (G_OBJECT (shell->priv->playlist_manager));
+	g_object_unref (shell->priv->playlist_manager);
 
 	rb_debug ("unreffing removable media manager");
-	g_object_unref (G_OBJECT (shell->priv->removable_media_manager));
+	g_object_unref (shell->priv->removable_media_manager);
+	g_object_unref (shell->priv->track_transfer_queue);
 
 	rb_debug ("unreffing clipboard shell");
-	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
+	g_object_unref (shell->priv->clipboard_shell);
 
 	rb_debug ("destroying prefs");
 	if (shell->priv->prefs != NULL)
@@ -1085,9 +1100,9 @@ rb_shell_finalize (GObject *object)
 	rhythmdb_shutdown (shell->priv->db);
 
 	rb_debug ("unreffing DB");
-	g_object_unref (G_OBJECT (shell->priv->db));
+	g_object_unref (shell->priv->db);
 
-        ((GObjectClass*)rb_shell_parent_class)->finalize (G_OBJECT (shell));
+        G_OBJECT_CLASS (rb_shell_parent_class)->finalize (object);
 
 	rb_debug ("shell shutdown complete");
 }
@@ -1201,6 +1216,7 @@ construct_widgets (RBShell *shell)
 
 	rb_debug ("shell: initializing shell services");
 
+	shell->priv->track_transfer_queue = rb_track_transfer_queue_new (shell);
 	shell->priv->ui_manager = gtk_ui_manager_new ();
 	shell->priv->source_ui_merge_id = gtk_ui_manager_new_merge_id (shell->priv->ui_manager);
 
@@ -1236,7 +1252,8 @@ construct_widgets (RBShell *shell)
 				 G_CALLBACK (rb_shell_show_popup_cb), shell, 0);
 
 	shell->priv->statusbar = rb_statusbar_new (shell->priv->db,
-						   shell->priv->ui_manager);
+						   shell->priv->ui_manager,
+						   shell->priv->track_transfer_queue);
 	g_object_set (shell->priv->player_shell, "statusbar", shell->priv->statusbar, NULL);
 	gtk_widget_show (GTK_WIDGET (shell->priv->statusbar));
 
@@ -1375,7 +1392,9 @@ construct_sources (RBShell *shell)
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell,
 								 RB_SOURCELIST (shell->priv->sourcelist), pathname);
 
-	g_object_set (G_OBJECT(shell->priv->clipboard_shell), "playlist-manager", shell->priv->playlist_manager, NULL);
+	g_object_set (shell->priv->clipboard_shell,
+		      "playlist-manager", shell->priv->playlist_manager,
+		      NULL);
 
 	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "playlist_added",
 				 G_CALLBACK (rb_shell_playlist_added_cb), shell, 0);
@@ -1388,8 +1407,7 @@ construct_sources (RBShell *shell)
 
 	g_signal_connect_object (G_OBJECT (shell->priv->removable_media_manager), "medium_added",
 				 G_CALLBACK (rb_shell_medium_added_cb), shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->removable_media_manager), "transfer-progress",
-				 G_CALLBACK (rb_shell_transfer_progress_cb), shell, 0);
+
 
 	g_free (pathname);
 
@@ -1976,34 +1994,6 @@ rb_shell_medium_added_cb (RBRemovableMediaManager *mgr,
 			  RBShell *shell)
 {
 	rb_shell_append_source (shell, source, NULL);
-}
-
-static void
-rb_shell_transfer_progress_cb (RBRemovableMediaManager *mgr,
-			       gint done,
-			       gint total,
-			       double fraction,
-			       RBShell *shell)
-{
-	rb_debug ("transferred %d tracks out of %d", done, total);
-
-	if (total > 0) {
-		char *s;
-
-		if (fraction >= 0)
-			s = g_strdup_printf (_("Transferring track %d out of %d (%.0f%%)"),
-						   done + 1, total, fraction * 100);
-		else
-			s = g_strdup_printf (_("Transferring track %d out of %d"),
-						   done + 1, total);
-
-		rb_statusbar_set_progress (shell->priv->statusbar,
-					   (((double)(done) + fraction)/total),
-					   s);
-		g_free (s);
-	} else {
-		rb_statusbar_set_progress (shell->priv->statusbar, -1, NULL);
-	}
 }
 
 static void

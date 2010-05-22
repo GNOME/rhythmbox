@@ -37,6 +37,7 @@
 #include <gtk/gtk.h>
 
 #include "rb-statusbar.h"
+#include "rb-track-transfer-queue.h"
 #include "rb-debug.h"
 
 /**
@@ -76,19 +77,23 @@ static gboolean poll_status (RBStatusbar *status);
 static void rb_statusbar_sync_status (RBStatusbar *status);
 static void rb_statusbar_source_status_changed_cb (RBSource *source,
 						   RBStatusbar *statusbar);
+static void rb_statusbar_transfer_progress_cb (RBTrackTransferQueue *queue,
+					       int done,
+					       int total,
+					       float fraction,
+					       int time_left,
+					       RBStatusbar *statusbar);
 
 struct RBStatusbarPrivate
 {
         RBSource *selected_source;
+	RBTrackTransferQueue *transfer_queue;
 
         RhythmDB *db;
 
         GtkUIManager *ui_manager;
 
         GtkWidget *progress;
-        double progress_fraction;
-        gboolean progress_changed;
-        gchar *progress_text;
 
         guint status_poll_id;
 };
@@ -98,7 +103,8 @@ enum
         PROP_0,
         PROP_DB,
         PROP_UI_MANAGER,
-        PROP_SOURCE
+        PROP_SOURCE,
+	PROP_TRANSFER_QUEUE
 };
 
 G_DEFINE_TYPE (RBStatusbar, rb_statusbar, GTK_TYPE_STATUSBAR)
@@ -151,6 +157,19 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
                                                               GTK_TYPE_UI_MANAGER,
                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RBStatusbar::transfer-queue:
+	 *
+	 * The #RBTrackTransferQueue instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_TRANSFER_QUEUE,
+					 g_param_spec_object ("transfer-queue",
+							      "RBTrackTransferQueue",
+							      "RBTrackTransferQueue instance",
+							      RB_TYPE_TRACK_TRANSFER_QUEUE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
 	g_type_class_add_private (klass, sizeof (RBStatusbarPrivate));
 }
 
@@ -165,7 +184,6 @@ rb_statusbar_init (RBStatusbar *statusbar)
 
         statusbar->priv->progress = gtk_progress_bar_new ();
 	gtk_widget_set_size_request (statusbar->priv->progress, -1, 10);
-        statusbar->priv->progress_fraction = 1.0;
 
         gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (statusbar->priv->progress), 1.0);
         gtk_widget_hide (statusbar->priv->progress);
@@ -206,6 +224,11 @@ rb_statusbar_dispose (GObject *object)
 		statusbar->priv->selected_source = NULL;
 	}
 
+	if (statusbar->priv->transfer_queue != NULL) {
+		g_object_unref (statusbar->priv->transfer_queue);
+		statusbar->priv->transfer_queue = NULL;
+	}
+
         G_OBJECT_CLASS (rb_statusbar_parent_class)->dispose (object);
 }
 
@@ -220,8 +243,6 @@ rb_statusbar_finalize (GObject *object)
         statusbar = RB_STATUSBAR (object);
 
         g_return_if_fail (statusbar->priv != NULL);
-
-	g_free (statusbar->priv->progress_text);
 
         G_OBJECT_CLASS (rb_statusbar_parent_class)->finalize (object);
 }
@@ -345,6 +366,14 @@ rb_statusbar_set_property (GObject *object,
                                          statusbar,
                                          G_CONNECT_SWAPPED);
                 break;
+	case PROP_TRANSFER_QUEUE:
+		statusbar->priv->transfer_queue = g_value_dup_object (value);
+		g_signal_connect_object (G_OBJECT (statusbar->priv->transfer_queue),
+					 "transfer-progress",
+					 G_CALLBACK (rb_statusbar_transfer_progress_cb),
+					 statusbar,
+					 0);
+		break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
                 break;
@@ -369,6 +398,9 @@ rb_statusbar_get_property (GObject *object,
                 break;
         case PROP_UI_MANAGER:
                 g_value_set_object (value, statusbar->priv->ui_manager);
+                break;
+        case PROP_TRANSFER_QUEUE:
+                g_value_set_object (value, statusbar->priv->transfer_queue);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -414,12 +446,13 @@ rb_statusbar_sync_status (RBStatusbar *status)
         char *status_text = NULL;
 	char *progress_text = NULL;
 	float progress = 999;
+	int time_left = 0;
 
         /*
          * Behaviour of status bar:
 	 * - use source's status text
-	 * - use source's progress value and text, unless internal progress value is set,
-	 * - if no source progress value or internal progress value and library is busy,
+	 * - use source's progress value and text, unless transfer queue provides something
+	 * - if no source progress value or transfer progress value and library is busy,
 	 *    pulse the progress bar
          */
         
@@ -439,15 +472,12 @@ rb_statusbar_sync_status (RBStatusbar *status)
 			status_text ? status_text : "", progress_text ? progress_text : "", progress);
 	}
 
-        /* internal progress bar moving? */
-        if (status->priv->progress_fraction < (1.0 - EPSILON) || status->priv->progress_changed) {
-		g_free (progress_text);
-                progress_text = g_strdup (status->priv->progress_text);
-		progress = status->priv->progress_fraction;
-
-                status->priv->progress_changed = FALSE;
-		changed = TRUE;
-        }
+	/* get transfer details */
+	rb_track_transfer_queue_get_status (status->priv->transfer_queue,
+					    &status_text,
+					    &progress_text,
+					    &progress,
+					    &time_left);
 
         /* set up the status text */
         if (status_text) {
@@ -483,6 +513,7 @@ rb_statusbar_sync_status (RBStatusbar *status)
  * rb_statusbar_new:
  * @db: the #RhythmDB instance
  * @ui_manager: the #GtkUIManager
+ * @transfer_queue: the #RBTrackTransferQueue
  *
  * Creates the status bar widget.
  *
@@ -490,11 +521,13 @@ rb_statusbar_sync_status (RBStatusbar *status)
  */
 RBStatusbar *
 rb_statusbar_new (RhythmDB *db,
-                  GtkUIManager *ui_manager)
+                  GtkUIManager *ui_manager,
+		  RBTrackTransferQueue *queue)
 {
         RBStatusbar *statusbar = g_object_new (RB_TYPE_STATUSBAR,
                                                "db", db,
                                                "ui-manager", ui_manager,
+					       "transfer-queue", queue,
                                                NULL);
 
         g_return_val_if_fail (statusbar->priv != NULL, NULL);
@@ -502,41 +535,29 @@ rb_statusbar_new (RhythmDB *db,
         return statusbar;
 }
 
-/**
- * rb_statusbar_set_progress:
- * @statusbar: the #RBStatusbar
- * @progress: progress fraction
- * @text: text to display on the progress bar
- *
- * Updates the progress bar widget.  If the progress fraction is less than zero,
- * the progress bar is hidden.
- */
-void
-rb_statusbar_set_progress (RBStatusbar *statusbar, double progress, const char *text)
+static void
+add_status_poll (RBStatusbar *statusbar)
 {
-        if (statusbar->priv->progress_text) {
-                g_free (statusbar->priv->progress_text);
-                statusbar->priv->progress_text = NULL;
-        }
-
-        if (progress > (0.0 - EPSILON)) {
-                statusbar->priv->progress_fraction = progress;
-                statusbar->priv->progress_changed = TRUE;
-		if (text)
-			statusbar->priv->progress_text = g_strdup (text);
-        } else {
-                /* trick sync_status into hiding it */
-                statusbar->priv->progress_fraction = 1.0;
-                statusbar->priv->progress_changed = FALSE;
-        }
-        rb_statusbar_sync_status (statusbar);
+        if (statusbar->priv->status_poll_id == 0)
+                statusbar->priv->status_poll_id =
+                        g_idle_add ((GSourceFunc) poll_status, statusbar);
 }
 
 static void
 rb_statusbar_source_status_changed_cb (RBSource *source, RBStatusbar *statusbar)
 {
 	rb_debug ("source status changed");
-        if (statusbar->priv->status_poll_id == 0)
-                statusbar->priv->status_poll_id =
-                        g_idle_add ((GSourceFunc) poll_status, statusbar);
+	add_status_poll (statusbar);
+}
+
+static void
+rb_statusbar_transfer_progress_cb (RBTrackTransferQueue *queue,
+				   int done,
+				   int total,
+				   float progress,
+				   int time_left,
+				   RBStatusbar *statusbar)
+{
+	rb_debug ("transfer progress changed");
+	add_status_poll (statusbar);
 }

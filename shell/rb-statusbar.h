@@ -29,6 +29,7 @@
 
 #include <sources/rb-source.h>
 #include <rhythmdb/rhythmdb.h>
+#include <shell/rb-track-transfer-queue.h>
 
 #ifndef __RB_STATUSBAR_H
 #define __RB_STATUSBAR_H
@@ -62,14 +63,11 @@ struct _RBStatusbarClass
 GType			rb_statusbar_get_type	(void);
 
 RBStatusbar *		rb_statusbar_new	(RhythmDB *db,
-						 GtkUIManager *ui_manager);
+						 GtkUIManager *ui_manager,
+						 RBTrackTransferQueue *transfer_queue);
 
 void			rb_statusbar_set_source	(RBStatusbar *statusbar,
 						 RBSource *source);
-
-void			rb_statusbar_set_progress(RBStatusbar *statusbar,
-						  double progress,
-						  const char *text);
 
 G_END_DECLS
 
