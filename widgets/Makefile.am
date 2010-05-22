@@ -2,6 +2,7 @@ noinst_LTLIBRARIES = librbwidgets.la
 
 widgetincludedir = $(includedir)/rhythmbox/widgets
 widgetinclude_HEADERS =					\
+	rb-alert-dialog.h				\
 	rb-entry-view.h					\
 	rb-property-view.h				\
 	rb-dialog.h					\
@@ -15,6 +16,7 @@ widgetinclude_HEADERS =					\
 
 librbwidgets_la_SOURCES =				\
 	$(widgetinclude_HEADERS)			\
+	rb-alert-dialog.c				\
 	rb-entry-view.c					\
 	rb-property-view.c				\
 	rb-search-entry.c				\
