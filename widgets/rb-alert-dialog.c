@@ -129,6 +129,7 @@ rb_alert_dialog_init (RBAlertDialog *dialog)
 	GtkWidget *hbox;
 	GtkWidget *vbox;
 	GtkWidget *expander;
+	GtkWidget *content;
 
 	dialog->details = g_new0 (RBAlertDialogDetails, 1);
 
@@ -176,9 +177,8 @@ rb_alert_dialog_init (RBAlertDialog *dialog)
 	gtk_box_pack_start (GTK_BOX (vbox), expander,
 			    FALSE, FALSE, 0);
 
-
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox,
-	                    FALSE, FALSE, 0);
+	content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+	gtk_box_pack_start (GTK_BOX (content), hbox, FALSE, FALSE, 0);
 
 	gtk_widget_show_all (hbox);
 	gtk_widget_hide (expander);
@@ -318,6 +318,7 @@ rb_alert_dialog_new (GtkWindow     *parent,
 {
 	GtkWidget *widget;
 	GtkDialog *dialog;
+	GtkWidget *content;
 
 	g_return_val_if_fail (parent == NULL || GTK_IS_WINDOW (parent), NULL);
 
@@ -330,7 +331,8 @@ rb_alert_dialog_new (GtkWindow     *parent,
 	dialog = GTK_DIALOG (widget);
 
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
-	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 14);
+	content = gtk_dialog_get_content_area (dialog);
+	gtk_box_set_spacing (GTK_BOX (content), 14);
 	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
 	gtk_dialog_set_has_separator (dialog, FALSE);
 
@@ -429,7 +431,7 @@ rb_alert_dialog_style_set (GtkWidget *widget,
 
 	border_width = 0;
 
-	parent = GTK_WIDGET (RB_ALERT_DIALOG (widget)->details->image->parent);
+	parent = gtk_widget_get_parent (RB_ALERT_DIALOG (widget)->details->image);
 
 	if (parent != NULL) {
 		gtk_widget_style_get (widget, "alert_border",
