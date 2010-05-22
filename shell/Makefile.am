@@ -58,22 +58,14 @@ shellinclude_HEADERS =					\
 	rb-removable-media-manager.h			\
 	rb-history.h					\
 	rb-play-order.h					\
-	rb-plugin.h
+	rb-plugin.h					\
+	rb-track-transfer-batch.h			\
+	rb-track-transfer-queue.h
 
 librhythmbox_core_la_SOURCES =				\
 	$(shellinclude_HEADERS)				\
-	rb-shell.c					\
-	rb-shell-player.c				\
-	rb-source-header.c				\
-	rb-source-header.h				\
-	rb-statusbar.c					\
-	rb-statusbar.h					\
-	rb-shell-preferences.c				\
-	rb-shell-clipboard.c				\
-	rb-shell-clipboard.h				\
-	rb-playlist-manager.c				\
-	rb-removable-media-manager.c			\
 	rb-history.c					\
+	rb-missing-plugins.c				\
 	rb-play-order.c					\
 	rb-play-order-linear.c				\
 	rb-play-order-linear.h				\
@@ -81,20 +73,32 @@ librhythmbox_core_la_SOURCES =				\
 	rb-play-order-linear-loop.h			\
 	rb-play-order-queue.c				\
 	rb-play-order-queue.h				\
-	rb-play-order-shuffle.c				\
-	rb-play-order-shuffle.h				\
 	rb-play-order-random.c				\
 	rb-play-order-random.h				\
-	rb-play-order-random-equal-weights.c		\
-	rb-play-order-random-equal-weights.h		\
 	rb-play-order-random-by-age.c			\
 	rb-play-order-random-by-age.h			\
 	rb-play-order-random-by-age-and-rating.c	\
 	rb-play-order-random-by-age-and-rating.h	\
 	rb-play-order-random-by-rating.c		\
 	rb-play-order-random-by-rating.h		\
-	rb-missing-plugins.c				\
-	rb-missing-plugins.h				\
+	rb-play-order-random-equal-weights.c		\
+	rb-play-order-random-equal-weights.h		\
+	rb-play-order-shuffle.c				\
+	rb-play-order-shuffle.h				\
+	rb-playlist-manager.c				\
+	rb-removable-media-manager.c			\
+	rb-shell.c					\
+	rb-shell-clipboard.c				\
+	rb-shell-clipboard.h				\
+	rb-shell-player.c				\
+	rb-shell-preferences.c				\
+	rb-shell-preferences.h				\
+	rb-source-header.c				\
+	rb-source-header.h				\
+	rb-statusbar.c					\
+	rb-statusbar.h					\
+	rb-track-transfer-batch.c			\
+	rb-track-transfer-queue.c			\
 	\
 	rb-plugin.c					\
 	rb-module.h					\

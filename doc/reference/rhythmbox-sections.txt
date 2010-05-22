@@ -64,7 +64,6 @@ RBRemovableMediaManager
 RBRemovableMediaManagerClass
 rb_removable_media_manager_new
 rb_removable_media_manager_scan
-rb_removable_media_manager_queue_transfer
 <SUBSECTION Standard>
 RB_REMOVABLE_MEDIA_MANAGER
 RB_IS_REMOVABLE_MEDIA_MANAGER
@@ -938,6 +937,7 @@ RBEntryViewPrivate
 
 <SECTION>
 <FILE>rb-header</FILE>
+<TITLE>RBHeader</TITLE>
 RBHeader
 RBHeaderClass
 rb_header_new
@@ -1246,7 +1246,8 @@ RBEncoderIface
 rb_encoder_new
 rb_encoder_encode
 rb_encoder_cancel
-rb_encoder_get_preferred_mimetype
+rb_encoder_get_media_type
+rb_encoder_get_missing_plugins
 <SUBSECTION Standard>
 RB_ENCODER
 RB_IS_ENCODER
@@ -1518,4 +1519,58 @@ RB_SOURCE_SEARCH_BASIC_CLASS
 RB_IS_SOURCE_SEARCH_BASIC
 RB_IS_SOURCE_SEARCH_BASIC_CLASS
 RB_SOURCE_SEARCH_BASIC_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>rb-track-transfer-batch</FILE>
+<TITLE>RBTrackTransferBatch</TITLE>
+RBTrackTransferBatch
+RBTrackTransferBatchClass
+rb_track_transfer_batch_new
+rb_track_transfer_batch_add
+rb_track_transfer_batch_start
+rb_track_transfer_batch_next
+<SUBSECTION Standard>
+rb_track_transfer_batch_get_type
+RB_TYPE_TRACK_TRANSFER_BATCH
+RB_TRACK_TRANSFER_BATCH
+RB_TRACK_TRANSFER_BATCH_CLASS
+RB_IS_TRACK_TRANSFER_BATCH
+RB_IS_TRACK_TRANSFER_BATCH_CLASS
+RB_TRACK_TRANSFER_BATCH_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>rb-track-transfer-queue</FILE>
+<TITLE>RBTrackTransferQueue</TITLE>
+RBTrackTransferQueue
+RBTrackTransferQueueClass
+rb_track_transfer_queue_new
+rb_track_transfer_queue_start_batch
+rb_track_transfer_queue_cancel_batch
+rb_track_transfer_queue_get_status
+<SUBSECTION Standard>
+rb_track_transfer_queue_get_type
+RB_TYPE_TRACK_TRANSFER_QUEUE
+RB_TRACK_TRANSFER_QUEUE
+RB_TRACK_TRANSFER_QUEUE_CLASS
+RB_IS_TRACK_TRANSFER_QUEUE
+RB_IS_TRACK_TRANSFER_QUEUE_CLASS
+RB_TRACK_TRANSFER_QUEUE_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>rb-media-player-source</FILE>
+<TITLE>RBMediaPlayerSource</TITLE>
+RBMediaPlayerSource
+RBMediaPlayerSourceClass
+rb_media_player_source_show_properties
+<SUBSECTION Standard>
+rb_media_player_source_get_type
+RB_TYPE_MEDIA_PLAYER_SOURCE
+RB_MEDIA_PLAYER_SOURCE
+RB_MEDIA_PLAYER_SOURCE_CLASS
+RB_IS_MEDIA_PLAYER_SOURCE
+RB_IS_MEDIA_PLAYER_SOURCE_CLASS
+RB_MEDIA_PLAYER_SOURCE_GET_CLASS
 </SECTION>

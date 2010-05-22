@@ -179,6 +179,19 @@
   (gtype-id "RB_TYPE_SEARCH_ENTRY")
 )
 
+(define-object TrackTransferBatch
+  (in-module "RB")
+  (parent "GObject")
+  (c-name "RBTrackTransferBatch")
+  (gtype-id "RB_TYPE_TRACK_TRANSFER_BATCH")
+)
+
+(define-object TrackTransferQueue
+  (in-module "RB")
+  (parent "GObject")
+  (c-name "RBTrackTransferQueue")
+  (gtype-id "RB_TYPE_TRACK_TRANSFER_QUEUE")
+)
 
 ;; Enumerations and flags ...
 
@@ -1996,19 +2009,6 @@
   (return-type "none")
 )
 
-(define-method queue_transfer
-  (of-object "RBRemovableMediaManager")
-  (c-name "rb_removable_media_manager_queue_transfer")
-  (return-type "none")
-  (parameters
-    '("RhythmDBEntry*" "entry")
-    '("const-char*" "dest")
-    '("GList*" "mime_types")
-    '("RBTranferCompleteCallback" "callback")
-    '("gpointer" "userdata")
-  )
-)
-
 ;; From rb-streaming-source.h
 
 (define-function rb_streaming_source_get_type
@@ -2894,4 +2894,116 @@
   (of-object "RBSearchEntry")
   (c-name "rb_search_entry_grab_focus")
   (return-type "none")
+)
+
+;; From rb-track-transfer-batch.h
+
+(define-function rb_track_transfer_batch_get_type
+  (c-name "rb_track_transfer_batch_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_track_transfer_batch_new
+  (c-name "rb_track_transfer_batch_new")
+  (is-constructor-of "RBTrackTransferBatch")
+  (return-type "RBTrackTransferBatch*")
+  (parameters
+    '("GList*" "media_type_list")
+    '("const-char*-const*" "media_types")
+    '("RBSource*" "source")
+    '("RBSource*" "destination")
+  )
+)
+
+(define-method add
+  (of-object "RBTrackTransferBatch")
+  (c-name "rb_track_transfer_batch_add")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method check_media_types
+  (of-object "RBTrackTransferBatch")
+  (c-name "rb_track_transfer_batch_check_media_types")
+  (return-type "guint")
+)
+
+(define-method start
+  (of-object "RBTrackTransferBatch")
+  (c-name "rb_track_transfer_batch_start")
+  (return-type "none")
+  (parameters
+    '("GObject*" "queue")
+  )
+)
+
+(define-method cancel
+  (of-object "RBTrackTransferBatch")
+  (c-name "rb_track_transfer_batch_cancel")
+  (return-type "none")
+)
+
+(define-method next
+  (of-object "RBTrackTransferBatch")
+  (c-name "rb_track_transfer_batch_next")
+  (return-type "gboolean")
+)
+
+
+
+;; From rb-track-transfer-queue.h
+
+(define-function rb_track_transfer_queue_new
+  (c-name "rb_track_transfer_queue_new")
+  (is-constructor-of "RBTrackTransferQueue")
+  (return-type "RBTrackTransferQueue*")
+  (parameters
+    '("RBShell*" "shell")
+  )
+)
+
+(define-function rb_track_transfer_queue_get_type
+  (c-name "rb_track_transfer_queue_get_type")
+  (return-type "GType")
+)
+
+(define-method start_batch
+  (of-object "RBTrackTransferQueue")
+  (c-name "rb_track_transfer_queue_start_batch")
+  (return-type "none")
+  (parameters
+    '("RBTrackTransferBatch*" "batch")
+  )
+)
+
+(define-method cancel_batch
+  (of-object "RBTrackTransferQueue")
+  (c-name "rb_track_transfer_queue_cancel_batch")
+  (return-type "none")
+  (parameters
+    '("RBTrackTransferBatch*" "batch")
+  )
+)
+
+(define-method get_status
+  (of-object "RBTrackTransferQueue")
+  (c-name "rb_track_transfer_queue_get_status")
+  (return-type "gboolean")
+  (parameters
+    '("char**" "text")
+    '("char**" "progress_text")
+    '("float*" "progress")
+    '("int*" "time_left")
+  )
+)
+
+(define-method find_batch_by_source
+  (of-object "RBTrackTransferQueue")
+  (c-name "rb_track_transfer_queue_find_batch_by_source")
+  (return-type "GList*")
+  (parameters
+    '("RBSource*" "source")
+  )
 )

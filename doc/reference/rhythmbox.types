@@ -19,6 +19,7 @@
 #include "rb-library-browser.h"
 #include "rb-library-source.h"
 #include "rb-marshal.h"
+#include "rb-media-player-source.h"
 #include "rb-metadata.h"
 #include "rb-missing-files-source.h"
 #include "rb-player.h"
@@ -56,6 +57,8 @@
 #include "rb-statusbar.h"
 #include "rb-stock-icons.h"
 #include "rb-streaming-source.h"
+#include "rb-track-transfer-queue.h"
+#include "rb-track-transfer-batch.h"
 #include "rb-tree-dnd.h"
 #include "rb-uri-dialog.h"
 #include "rb-util.h"
@@ -79,6 +82,7 @@ rb_history_get_type
 rb_import_errors_source_get_type
 rb_library_browser_get_type
 rb_library_source_get_type
+rb_media_player_source_get_type
 rb_metadata_get_type
 rb_missing_files_source_get_type
 rb_player_error_get_type
@@ -120,6 +124,8 @@ rb_static_playlist_source_get_type
 rb_statusbar_get_type
 rb_streaming_source_get_type
 rb_string_value_map_get_type
+rb_track_transfer_batch_get_type
+rb_track_transfer_queue_get_type
 rb_tree_drag_dest_get_type
 rb_tree_drag_source_get_type
 rb_uri_dialog_get_type
