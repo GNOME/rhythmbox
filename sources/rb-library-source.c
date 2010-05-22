@@ -52,6 +52,8 @@
 #include <glib/gi18n.h>
 #include <glib-object.h>
 
+#include "rb-track-transfer-batch.h"
+#include "rb-track-transfer-queue.h"
 #include <profiles/gnome-media-profiles.h>
 #include <profiles/audio-profile-choose.h>
 
@@ -63,8 +65,8 @@
 #include "rb-util.h"
 #include "eel-gconf-extensions.h"
 #include "rb-library-source.h"
-#include "rb-removable-media-manager.h"
 #include "rb-auto-playlist-source.h"
+#include "rb-encoder.h"
 
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);
@@ -1140,7 +1142,7 @@ rb_library_source_layout_filename_changed (GConfClient *client,
  * Stolen from Sound-Juicer
  */
 static char*
-build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
+build_filename (RBLibrarySource *source, RhythmDBEntry *entry, const char *extension)
 {
 	GFile *library_location;
 	GFile *dir;
@@ -1149,19 +1151,16 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	char *realpath;
 	char *filename;
 	char *string = NULL;
-	char *extension = NULL;
 	char *tmp;
 	GSList *list;
 	char *layout_path;
 	char *layout_filename;
-	char *preferred_format;
 
 	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 	layout_path = eel_gconf_get_string (CONF_LIBRARY_LAYOUT_PATH);
 	layout_filename = eel_gconf_get_string (CONF_LIBRARY_LAYOUT_FILENAME);
-	preferred_format = eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT);
 
-	if (list == NULL || layout_path == NULL || layout_filename == NULL || preferred_format == NULL) {
+	if (list == NULL || layout_path == NULL || layout_filename == NULL) {
 		/* emit warning */
 		rb_debug ("Could not retrieve settings from GConf");
 		goto out;
@@ -1178,33 +1177,6 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	g_object_unref (library_location);
 	g_free (realpath);
 
-	if (g_str_has_prefix (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE), "audio/x-raw")) {
-		GMAudioProfile *profile;
-		profile = gm_audio_profile_lookup (preferred_format);
-		if (profile)
-			extension = g_strdup (gm_audio_profile_get_extension (profile));
-	}
-
-	if (extension == NULL) {
-		const char *uri;
-		const char *loc;
-		char *tmp;
-
-		/* use the old extension. strip anything after a '?' for http/daap/etc */
-		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-		loc = g_utf8_strrchr (uri, -1, '.');
-		if (loc == NULL)
-			loc = g_utf8_strrchr (uri, -1, '/');
-		if (loc == NULL)
-			loc = uri;
-
-		extension = g_strdup (loc + 1);
-
-		tmp = g_utf8_strchr (extension, -1, '?');
-		if (tmp)
-			*tmp = '\0';
-	}
-
 	realfile = filepath_parse_pattern (source->priv->db, layout_filename, entry);
 	if (extension) {
 		filename = g_strdup_printf ("%s.%s", realfile, extension);
@@ -1215,7 +1187,6 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 
 	dest = g_file_resolve_relative_path (dir, filename);
 	g_object_unref (dir);
-	g_free (extension);
 	g_free (filename);
 
 	string = g_file_get_uri (dest);
@@ -1224,7 +1195,6 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	rb_slist_deep_free (list);
 	g_free (layout_path);
 	g_free (layout_filename);
-	g_free (preferred_format);
 
 	return string;
 }
@@ -1254,17 +1224,62 @@ impl_can_paste (RBSource *asource)
 	return can_paste;
 }
 
-static void
-completed_cb (RhythmDBEntry *entry, const char *dest, guint64 dest_size, GError *error, RBLibrarySource *source)
+static char *
+get_dest_uri_cb (RBTrackTransferBatch *batch,
+		 RhythmDBEntry *entry,
+		 const char *mediatype,
+		 const char *extension,
+		 RBLibrarySource *source)
 {
-	if (error == NULL) {
-		rhythmdb_add_uri (source->priv->db, dest);
-	} else {
-		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_EXISTS)) {
+	char *dest;
+	char *sane_dest;
+
+	dest = build_filename (source, entry, extension);
+	if (dest == NULL) {
+		rb_debug ("could not create destination path for entry");
+		return NULL;
+	}
+
+	sane_dest = rb_sanitize_uri_for_filesystem (dest);
+	g_free (dest);
+	rb_debug ("destination URI for %s is %s",
+		  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
+		  sane_dest);
+	return sane_dest;
+}
+
+static void
+track_done_cb (RBTrackTransferBatch *batch,
+	       RhythmDBEntry *entry,
+	       const char *dest,
+	       guint64 dest_size,
+	       const char *dest_mediatype,
+	       GError *error,
+	       RBLibrarySource *source)
+{
+	if (error != NULL) {
+		/* probably want to cancel the batch on some errors:
+		 * - out of disk space / read only
+		 * - source has vanished (hmm, how would we know?)
+		 *
+		 * and we probably want to do something intelligent about some other errors:
+		 * - encoder pipeline errors?  hmm.
+		 */
+		if (g_error_matches (error, RB_ENCODER_ERROR, RB_ENCODER_ERROR_OUT_OF_SPACE) ||
+		    g_error_matches (error, RB_ENCODER_ERROR, RB_ENCODER_ERROR_DEST_READ_ONLY)) {
+			rb_debug ("fatal transfer error: %s", error->message);
+			rb_track_transfer_batch_cancel (batch);
+			rb_error_dialog (NULL, _("Error transferring track"), "%s", error->message);
+		} else if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_EXISTS)) {
 			rb_debug ("not displaying 'file exists' error for %s", dest);
 		} else {
 			rb_error_dialog (NULL, _("Error transferring track"), "%s", error->message);
 		}
+	} else {
+		/* could probably do something smarter here to avoid
+		 * re-reading tags etc.
+		 */
+		rhythmdb_add_uri (source->priv->db, dest);
 	}
 }
 
@@ -1272,11 +1287,13 @@ static void
 impl_paste (RBSource *asource, GList *entries)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	RBRemovableMediaManager *rm_mgr;
+	RBTrackTransferQueue *xferq;
 	GList *l;
 	GSList *sl;
 	RBShell *shell;
 	RhythmDBEntryType source_entry_type;
+	RBTrackTransferBatch *batch;
+	gboolean start_batch = FALSE;
 
 	if (impl_can_paste (asource) == FALSE) {
 		g_warning ("RBLibrarySource impl_paste called when gconf keys unset");
@@ -1289,15 +1306,17 @@ impl_paste (RBSource *asource, GList *entries)
 		      "shell", &shell,
 		      "entry-type", &source_entry_type,
 		      NULL);
-	g_object_get (shell, "removable-media-manager", &rm_mgr, NULL);
+	g_object_get (shell, "track-transfer-queue", &xferq, NULL);
 	g_object_unref (shell);
+
+	batch = rb_track_transfer_batch_new (NULL, NULL, NULL, RB_SOURCE (source));
+	g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), source, 0);
+	g_signal_connect_object (batch, "track-done", G_CALLBACK (track_done_cb), source, 0);
 
 	for (l = entries; l != NULL; l = g_list_next (l)) {
 		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;
 		RhythmDBEntryType entry_type;
 		RBSource *source_source;
-		char *dest;
-		char *sane_dest;
 
 		rb_debug ("pasting entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 
@@ -1314,22 +1333,18 @@ impl_paste (RBSource *asource, GList *entries)
 			continue;
 		}
 
-		dest = build_filename (source, entry);
-		if (dest == NULL) {
-			rb_debug ("could not create destination path for entry");
-			continue;
-		}
-
-		sane_dest = rb_sanitize_uri_for_filesystem (dest);
-		g_free (dest);
-
-		rb_removable_media_manager_queue_transfer (rm_mgr, entry,
-							  sane_dest, NULL,
-							  (RBTransferCompleteCallback)completed_cb, source);
+		rb_track_transfer_batch_add (batch, entry);
+		start_batch = TRUE;
 	}
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
 
-	g_object_unref (rm_mgr);
+	if (start_batch) {
+		rb_track_transfer_queue_start_batch (xferq, batch);
+	} else {
+		g_object_unref (batch);
+	}
+
+	g_object_unref (xferq);
 }
 
 static guint

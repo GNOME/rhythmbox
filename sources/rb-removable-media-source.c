@@ -54,6 +54,8 @@
 #include "rb-dialog.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
+#include "rb-track-transfer-batch.h"
+#include "rb-track-transfer-queue.h"
 
 #if !GLIB_CHECK_VERSION(2,22,0)
 #define g_mount_unmount_with_operation_finish g_mount_unmount_finish
@@ -339,134 +341,109 @@ impl_delete_thyself (RBSource *source)
 	g_object_unref (db);
 }
 
-struct _TrackAddedData {
-	RBRemovableMediaSource *source;
-	char *mimetype;
-};
-
-static void
-_track_added_cb (RhythmDBEntry *entry, const char *uri, guint64 dest_size, GError *error, struct _TrackAddedData *data)
+static char *
+get_dest_uri_cb (RBTrackTransferBatch *batch,
+		 RhythmDBEntry *entry,
+		 const char *mediatype,
+		 const char *extension,
+		 RBRemovableMediaSource *source)
 {
-	if (error == NULL) {
-		rb_removable_media_source_track_added (data->source, entry, uri, dest_size, data->mimetype);
-	} else {
-		rb_removable_media_source_track_add_error (data->source, entry, uri, error);
+	char *free_ext = NULL;
+	char *uri;
+
+	/* make sure the extension isn't ludicrously long */
+	if (extension == NULL) {
+		extension = "";
+	} else if (strlen (extension) > EXTENSION_LENGTH_LIMIT) {
+		free_ext = g_strdup (extension);
+		free_ext[EXTENSION_LENGTH_LIMIT] = '\0';
+		extension = free_ext;
 	}
-	g_free (data->mimetype);
-	g_free (data);
+	uri = rb_removable_media_source_build_dest_uri (source, entry, mediatype, extension);
+	g_free (free_ext);
+	return uri;
 }
 
 static void
-impl_paste (RBSource *source, GList *entries)
+track_done_cb (RBTrackTransferBatch *batch,
+	       RhythmDBEntry *entry,
+	       const char *dest,
+	       guint64 dest_size,
+	       const char *dest_mediatype,
+	       GError *error,
+	       RBRemovableMediaSource *source)
 {
-	RBRemovableMediaManager *rm_mgr;
+	if (error == NULL) {
+		rb_removable_media_source_track_added (source, entry, dest, dest_size, dest_mediatype);
+	} else {
+		if (g_error_matches (error, RB_ENCODER_ERROR, RB_ENCODER_ERROR_OUT_OF_SPACE) ||
+		    g_error_matches (error, RB_ENCODER_ERROR, RB_ENCODER_ERROR_DEST_READ_ONLY)) {
+			rb_debug ("fatal transfer error: %s", error->message);
+			rb_track_transfer_batch_cancel (batch);
+		}
+		rb_removable_media_source_track_add_error (source, entry, dest, error);
+	}
+}
+
+static void
+impl_paste (RBSource *bsource, GList *entries)
+{
+	RBRemovableMediaSource *source = RB_REMOVABLE_MEDIA_SOURCE (bsource);
+	RBTrackTransferQueue *xferq;
 	RBShell *shell;
+	GList *mime_types;
 	GList *l;
 	RhythmDBEntryType our_entry_type;
-	RBEncoder *encoder;
-
-	g_object_get (source, "shell", &shell, NULL);
-	g_object_get (shell,
-		      "removable-media-manager", &rm_mgr,
-		      NULL);
-	g_object_unref (shell);
+	RBTrackTransferBatch *batch;
+	gboolean start_batch = FALSE;
 
 	g_object_get (source,
+		      "shell", &shell,
 		      "entry-type", &our_entry_type,
 		      NULL);
+	g_object_get (shell, "track-transfer-queue", &xferq, NULL);
+	g_object_unref (shell);
 
-	encoder = rb_encoder_new ();
+	mime_types = rb_removable_media_source_get_mime_types (source);
+	batch = rb_track_transfer_batch_new (mime_types, NULL, NULL, RB_SOURCE (source));
+	rb_list_deep_free (mime_types);
+
+	g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), source, 0);
+	g_signal_connect_object (batch, "track-done", G_CALLBACK (track_done_cb), source, 0);
 
 	for (l = entries; l != NULL; l = l->next) {
 		RhythmDBEntry *entry;
 		RhythmDBEntryType entry_type;
-		GList *mime_types;
-		const char *entry_mime;
-		char *mimetype;
-		char *extension;
-		char *dest;
-		struct _TrackAddedData *added_data;
+		const char *location;
 
-		dest = NULL;
-		mimetype = NULL;
-		extension = NULL;
-		mime_types = NULL;
 		entry = (RhythmDBEntry *)l->data;
+		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		entry_type = rhythmdb_entry_get_entry_type (entry);
 
-		if (entry_type == our_entry_type ||
-		    !rb_removable_media_source_should_paste (RB_REMOVABLE_MEDIA_SOURCE (source), entry)) {
-			goto impl_paste_end;
-		}
-
-		entry_mime = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
-		/* hackish mapping of gstreamer media types to mime types; this
-		 * should be easier when we do proper (deep) typefinding.
-		 */
-		if (strcmp (entry_mime, "audio/x-wav") == 0) {
-			/* if it has a bitrate, assume it's mp3-in-wav */
-			if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE) != 0)
-				entry_mime = "audio/mpeg";
-		} else if (strcmp (entry_mime, "audio/x-m4a") == 0) {
-			entry_mime = "audio/aac";
-		} else if (strcmp (entry_mime, "application/x-id3") == 0) {
-			entry_mime = "audio/mpeg";
-		} else if (strcmp (entry_mime, "audio/x-flac") == 0) {
-			entry_mime = "audio/flac";
-		}
-
-		mime_types = rb_removable_media_source_get_mime_types (RB_REMOVABLE_MEDIA_SOURCE (source));
-		if (mime_types != NULL && !rb_string_list_contains (mime_types, entry_mime)) {
-			if (!rb_encoder_get_media_type (encoder, entry, mime_types, &mimetype, &extension)) {
-				rb_debug ("failed to find acceptable mime type for %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
-				goto impl_paste_end;
+		if (entry_type != our_entry_type) {
+			if (rb_removable_media_source_should_paste (source, entry)) {
+				rb_debug ("pasting entry %s", location);
+				rb_track_transfer_batch_add (batch, entry);
+				start_batch = TRUE;
+			} else {
+				rb_debug ("device doesn't want entry %s", location);
 			}
 		} else {
-			const char *s;
-			char       *path;
-
-			rb_debug ("copying using existing format");
-			path = rb_uri_get_short_path_name (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
-			s = g_strrstr (path, ".");
-			extension = (s != NULL) ? g_strdup (s + 1) : NULL;
-			g_free (path);
+			rb_debug ("can't copy entry %s from the device to itself", location);
 		}
 
-		/* make sure the extension isn't ludicrously long */
-		if (extension != NULL && strlen (extension) > EXTENSION_LENGTH_LIMIT) {
-			extension[EXTENSION_LENGTH_LIMIT] = '\0';
-		}
-
-		dest = rb_removable_media_source_build_dest_uri (RB_REMOVABLE_MEDIA_SOURCE (source), entry, mimetype, extension);
-		if (dest == NULL) {
-			rb_debug ("could not create destination path for entry");
-			goto impl_paste_end;
-		}
-
-		rb_list_deep_free (mime_types);
-		if (mimetype != NULL)
-			mime_types = g_list_prepend (NULL, g_strdup (mimetype));
-		else
-			mime_types = NULL;
-		added_data = g_new0 (struct _TrackAddedData, 1);
-		added_data->source = RB_REMOVABLE_MEDIA_SOURCE (source);
-		added_data->mimetype = g_strdup (mimetype);
-		rb_removable_media_manager_queue_transfer (rm_mgr, entry,
-							   dest, mime_types,
-							   (RBTransferCompleteCallback)_track_added_cb, added_data);
-impl_paste_end:
-		g_free (dest);
-		g_free (mimetype);
-		g_free (extension);
-		if (mime_types)
-			rb_list_deep_free (mime_types);
-		if (entry_type)
+		if (entry_type) {
 			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+		}
 	}
-
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, our_entry_type);
-	g_object_unref (rm_mgr);
-	g_object_unref (encoder);
+
+	if (start_batch) {
+		rb_track_transfer_queue_start_batch (xferq, batch);
+	} else {
+		g_object_unref (batch);
+	}
+	g_object_unref (xferq);
 }
 
 static guint
@@ -663,8 +640,8 @@ rb_removable_media_source_build_dest_uri (RBRemovableMediaSource *source,
 		uri = NULL;
 	}
 
-	sane_uri = rb_sanitize_uri_for_filesystem(uri);
-	g_return_val_if_fail(sane_uri != NULL, NULL);
+	sane_uri = rb_sanitize_uri_for_filesystem (uri);
+	g_return_val_if_fail (sane_uri != NULL, NULL);
 	g_free(uri);
 	uri = sane_uri;
 
@@ -900,6 +877,11 @@ rb_removable_media_source_track_add_error (RBRemovableMediaSource *source,
 	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
 	gboolean show_dialog = TRUE;
 
+	/* hrm, want the subclass to decide whether to display the error and
+	 * whether to cancel the batch (may have some device-specific errors?)
+	 *
+	 * for now we'll just cancel on the most common things..
+	 */
 	if (klass->impl_track_add_error)
 		show_dialog = klass->impl_track_add_error (source, entry, uri, error);
 
