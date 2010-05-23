@@ -1700,13 +1700,11 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 	headers = gst_structure_new ("extra-headers",
 				     "Accept",                   G_TYPE_STRING, "*/*",
 				     "Cache-Control",            G_TYPE_STRING, "no-cache",
-				     "User-Agent",               G_TYPE_STRING, RB_DAAP_USER_AGENT,
 				     "Accept-Language",          G_TYPE_STRING, "en-us, en;q=5.0",
 				     "Client-DAAP-Access-Index", G_TYPE_STRING, "2",
 				     "Client-DAAP-Version",      G_TYPE_STRING, "3.0",
 				     "Client-DAAP-Validation",   G_TYPE_STRING, hash,
 				     "Client-DAAP-Request-ID",   G_TYPE_STRING, request_id_str,
-				     "Connection",               G_TYPE_STRING, "close",
 				     NULL);
 	g_free (request_id_str);
 
