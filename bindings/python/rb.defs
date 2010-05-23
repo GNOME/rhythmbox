@@ -608,6 +608,12 @@
   (return-type "RBSource*")
 )
 
+(define-method get_active_source
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_get_active_source")
+  (return-type "RBSource*")
+)
+
 (define-method jump_to_current
   (of-object "RBShellPlayer")
   (c-name "rb_shell_player_jump_to_current")
