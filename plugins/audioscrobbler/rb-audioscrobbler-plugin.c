@@ -37,7 +37,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "rb-audioscrobbler.h"
+#include "rb-audioscrobbler-account.h"
 #include "rb-plugin.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
@@ -53,9 +53,15 @@
 
 typedef struct
 {
-	RBPlugin parent;
-	RBAudioscrobbler *audioscrobbler;
+	RBAudioscrobblerAccount *account;
 	GtkWidget *preferences;
+} RBAudioscrobblerPluginPrivate;
+
+typedef struct
+{
+	RBPlugin parent;
+
+	RBAudioscrobblerPluginPrivate *priv;
 } RBAudioscrobblerPlugin;
 
 typedef struct
@@ -63,6 +69,7 @@ typedef struct
 	RBPluginClass parent_class;
 } RBAudioscrobblerPluginClass;
 
+#define RB_AUDIOSCROBBLER_PLUGIN_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPluginPrivate))
 
 G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
 GType	rb_audioscrobbler_plugin_get_type		(void) G_GNUC_CONST;
@@ -88,12 +95,16 @@ rb_audioscrobbler_plugin_class_init (RBAudioscrobblerPluginClass *klass)
 	plugin_class->activate = impl_activate;
 	plugin_class->deactivate = impl_deactivate;
 	plugin_class->create_configure_dialog = impl_create_configure_dialog;
+
+	g_type_class_add_private (klass, sizeof (RBAudioscrobblerPluginPrivate));
 }
 
 static void
 rb_audioscrobbler_plugin_init (RBAudioscrobblerPlugin *plugin)
 {
 	rb_debug ("RBAudioscrobblerPlugin initialising");
+
+	plugin->priv = RB_AUDIOSCROBBLER_PLUGIN_GET_PRIVATE (plugin);
 }
 
 static void
@@ -103,10 +114,10 @@ rb_audioscrobbler_plugin_finalize (GObject *object)
 
 	rb_debug ("RBAudioscrobblerPlugin finalising");
 
-	g_assert (plugin->audioscrobbler == NULL);
+	g_assert (plugin->priv->account == NULL);
 
-	if (plugin->preferences)
-		gtk_widget_destroy (plugin->preferences);
+	if (plugin->priv->preferences)
+		gtk_widget_destroy (plugin->priv->preferences);
 
 	G_OBJECT_CLASS (rb_audioscrobbler_plugin_parent_class)->finalize (object);
 }
@@ -118,21 +129,9 @@ impl_activate (RBPlugin *bplugin,
 	       RBShell *shell)
 {
 	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
-	gboolean no_registration;
 
-	g_assert (plugin->audioscrobbler == NULL);
-	g_object_get (G_OBJECT (shell),
-		      "no-registration", &no_registration,
-		      NULL);
-
-	/*
-	 * Don't use audioscrobbler when the no-registration flag is set.
-	 * This flag is only used to run multiple instances at the same time, and
-	 * last.fm only allows one active client per user.
-	 */
-	if (!no_registration) {
-		plugin->audioscrobbler = rb_audioscrobbler_new (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
-	}
+	g_assert (plugin->priv->account == NULL);
+	plugin->priv->account = rb_audioscrobbler_account_new (shell);
 }
 
 static void
@@ -141,10 +140,8 @@ impl_deactivate	(RBPlugin *bplugin,
 {
 	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
 
-	if (plugin->audioscrobbler) {
-		g_object_unref (plugin->audioscrobbler);
-		plugin->audioscrobbler = NULL;
-	}
+	g_object_unref (plugin->priv->account);
+	plugin->priv->account = NULL;
 }
 
 static void
@@ -157,34 +154,34 @@ static GtkWidget*
 impl_create_configure_dialog (RBPlugin *bplugin)
 {
 	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
-	if (plugin->audioscrobbler == NULL)
+	if (plugin->priv->account == NULL)
 		return NULL;
 
-	if (plugin->preferences == NULL) {
+	if (plugin->priv->preferences == NULL) {
 		GtkWidget *widget;
 
-		widget =  rb_audioscrobbler_get_config_widget (plugin->audioscrobbler, bplugin);
+		widget = rb_audioscrobbler_account_get_config_widget (plugin->priv->account, bplugin);
 
-		plugin->preferences = gtk_dialog_new_with_buttons (_("Last.fm Preferences"),
-								   NULL,
-								   GTK_DIALOG_DESTROY_WITH_PARENT,
-								   GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
-								   NULL);
-                gtk_dialog_set_has_separator (GTK_DIALOG (plugin->preferences), FALSE);
-                gtk_container_set_border_width (GTK_CONTAINER (plugin->preferences), 5);
-                gtk_window_set_resizable (GTK_WINDOW (plugin->preferences), FALSE);
+		plugin->priv->preferences = gtk_dialog_new_with_buttons (_("Last.fm Preferences"),
+		                                                         NULL,
+		                                                         GTK_DIALOG_DESTROY_WITH_PARENT,
+		                                                         GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+		                                                         NULL);
+                gtk_dialog_set_has_separator (GTK_DIALOG (plugin->priv->preferences), FALSE);
+                gtk_container_set_border_width (GTK_CONTAINER (plugin->priv->preferences), 5);
+                gtk_window_set_resizable (GTK_WINDOW (plugin->priv->preferences), FALSE);
 
-		g_signal_connect (G_OBJECT (plugin->preferences),
+		g_signal_connect (G_OBJECT (plugin->priv->preferences),
 				  "response",
 				  G_CALLBACK (preferences_response_cb),
 				  plugin);
-		gtk_widget_hide_on_delete (plugin->preferences);
+		gtk_widget_hide_on_delete (plugin->priv->preferences);
 
-		gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (plugin->preferences))),
+		gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (plugin->priv->preferences))),
 				   widget);
 	}
 
-	gtk_widget_show_all (plugin->preferences);
-	return plugin->preferences;
+	gtk_widget_show_all (plugin->priv->preferences);
+	return plugin->priv->preferences;
 }
 
