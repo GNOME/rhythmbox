@@ -38,7 +38,6 @@
 #include <glib-object.h>
 
 #include "rb-audioscrobbler.h"
-#include "rb-lastfm-source.h"
 #include "rb-plugin.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
@@ -57,9 +56,6 @@ typedef struct
 	RBPlugin parent;
 	RBAudioscrobbler *audioscrobbler;
 	GtkWidget *preferences;
-	guint ui_merge_id;
-
-	RBSource *lastfm_source;
 } RBAudioscrobblerPlugin;
 
 typedef struct
@@ -122,19 +118,11 @@ impl_activate (RBPlugin *bplugin,
 	       RBShell *shell)
 {
 	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
-	GtkUIManager *uimanager = NULL;
 	gboolean no_registration;
-	char *file;
-
-	/* Source icon data */
-	gchar *icon_filename;
-	gint icon_size;
-	GdkPixbuf *icon_pixbuf;
 
 	g_assert (plugin->audioscrobbler == NULL);
 	g_object_get (G_OBJECT (shell),
 		      "no-registration", &no_registration,
-		      "ui-manager", &uimanager,
 		      NULL);
 
 	/*
@@ -145,26 +133,6 @@ impl_activate (RBPlugin *bplugin,
 	if (!no_registration) {
 		plugin->audioscrobbler = rb_audioscrobbler_new (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
 	}
-
-	file = rb_plugin_find_file (bplugin, "audioscrobbler-ui.xml");
-	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
-							       file,
-							       NULL);
-	g_free (file);
-
-	plugin->lastfm_source = rb_lastfm_source_new (bplugin, shell);
-    
-	icon_filename = rb_plugin_find_file (bplugin, "as-icon.png");
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
-	icon_pixbuf = gdk_pixbuf_new_from_file_at_size (icon_filename, icon_size, icon_size, NULL);
-
-	g_free (icon_filename);
-	rb_source_set_pixbuf (plugin->lastfm_source, icon_pixbuf);
-	g_object_unref (icon_pixbuf);
-    
-	rb_shell_append_source (shell, plugin->lastfm_source, NULL);
-
-	g_object_unref (G_OBJECT (uimanager));
 }
 
 static void
@@ -172,17 +140,6 @@ impl_deactivate	(RBPlugin *bplugin,
 		 RBShell *shell)
 {
 	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
-	GtkUIManager *uimanager = NULL;
-
-	g_object_get (G_OBJECT (shell),
-		      "ui-manager", &uimanager,
-		      NULL);
-
-	rb_source_delete_thyself (plugin->lastfm_source);
-	plugin->lastfm_source = NULL;
-
-	gtk_ui_manager_remove_ui (uimanager, plugin->ui_merge_id);
-	g_object_unref (G_OBJECT (uimanager));
 
 	if (plugin->audioscrobbler) {
 		g_object_unref (plugin->audioscrobbler);
