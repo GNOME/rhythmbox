@@ -44,12 +44,8 @@
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
-                  <object class="GtkTable" id="table1">
+                  <object class="GtkHBox" id="hbox1">
                     <property name="visible">True</property>
-                    <property name="n_rows">2</property>
-                    <property name="n_columns">2</property>
-                    <property name="column_spacing">12</property>
-                    <property name="row_spacing">6</property>
                     <child>
                       <object class="GtkLabel" id="username_label">
                         <property name="visible">True</property>
@@ -59,8 +55,7 @@
                         <property name="mnemonic_widget">username_entry</property>
                       </object>
                       <packing>
-                        <property name="x_options">GTK_FILL</property>
-                        <property name="y_options"></property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -72,48 +67,25 @@
                         <signal name="activate" handler="rb_audioscrobbler_username_entry_activate_cb"/>
                       </object>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="right_attach">2</property>
-                        <property name="y_options"></property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="password_entry">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="visibility">False</property>
-                        <property name="invisible_char">&#x25CF;</property>
-                        <signal name="focus_out_event" handler="rb_audioscrobbler_password_entry_focus_out_event_cb"/>
-                        <signal name="activate" handler="rb_audioscrobbler_password_entry_activate_cb"/>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="right_attach">2</property>
-                        <property name="top_attach">1</property>
-                        <property name="bottom_attach">2</property>
-                        <property name="y_options"></property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="password_label">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                        <property name="label" translatable="yes">_Password:</property>
-                        <property name="use_underline">True</property>
-                        <property name="mnemonic_widget">password_entry</property>
-                      </object>
-                      <packing>
-                        <property name="top_attach">1</property>
-                        <property name="bottom_attach">2</property>
-                        <property name="x_options">GTK_FILL</property>
-                        <property name="y_options"></property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
                     <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLinkButton" id="auth_link">
+                    <property name="label" translatable="yes">Allow Rhythmbox to access your profile</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="has_tooltip">True</property>
+                    <property name="relief">none</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
@@ -150,7 +122,7 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
