@@ -190,7 +190,7 @@ rb_disc_recorder_plugin_start_burning (RBDiscRecorderPlugin *pi,
 	args = (char **) g_ptr_array_free (array, FALSE);
 
 	ret = TRUE;
-	if (!gdk_spawn_on_screen (screen, NULL, args, NULL, G_SPAWN_SEARCH_PATH | G_SPAWN_FILE_AND_ARGV_ZERO, NULL, NULL, NULL, &error)) {
+	if (!gdk_spawn_on_screen (screen, NULL, args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, &error)) {
 		if (copy != FALSE) {
 			rb_error_dialog (GTK_WINDOW (main_window),
 					 _("Rhythmbox could not duplicate the disc"),
