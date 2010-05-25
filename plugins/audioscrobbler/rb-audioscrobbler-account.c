@@ -26,6 +26,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
  */
 
+#include <string.h>
+
+#include <gconf/gconf.h>
+#include "eel-gconf-extensions.h"
+
 #include "rb-audioscrobbler-account.h"
 #include "rb-builder-helpers.h"
 #include "rb-debug.h"
@@ -36,11 +41,17 @@ struct _RBAudioscrobblerAccountPrivate
 {
 	RBShell *shell;
 
+	/* Authentication info */
+	gchar* username;
+
 	/* Widgets for the prefs pane */
 	GtkWidget *config_widget;
 	GtkWidget *username_entry;
 	GtkWidget *username_label;
 	GtkWidget *auth_link;
+
+	/* Preference notifications */
+	guint notification_username_id;
 };
 
 #define RB_AUDIOSCROBBLER_ACCOUNT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_ACCOUNT, RBAudioscrobblerAccountPrivate))
@@ -55,6 +66,14 @@ static void	     rb_audioscrobbler_account_set_property (GObject *object,
                                                              GParamSpec *pspec);
 static void          rb_audioscrobbler_account_dispose (GObject *object);
 static void          rb_audioscrobbler_account_finalize (GObject *object);
+
+static void          rb_audioscrobbler_account_import_settings (RBAudioscrobblerAccount *account);
+static void          rb_audioscrobbler_account_preferences_sync (RBAudioscrobblerAccount *account);
+
+static void          rb_audioscrobbler_account_gconf_changed_cb (GConfClient *client,
+                                                                 guint cnxn_id,
+                                                                 GConfEntry *entry,
+                                                                 RBAudioscrobblerAccount *account);
 
 enum
 {
@@ -97,17 +116,43 @@ static void
 rb_audioscrobbler_account_init (RBAudioscrobblerAccount *account)
 {
 	account->priv = RB_AUDIOSCROBBLER_ACCOUNT_GET_PRIVATE (account);
+
+	account->priv->username = NULL;
+
+	rb_audioscrobbler_account_import_settings (account);
+
+	account->priv->notification_username_id =
+		eel_gconf_notification_add (CONF_AUDIOSCROBBLER_USERNAME,
+		                            (GConfClientNotifyFunc) rb_audioscrobbler_account_gconf_changed_cb,
+		                            account);
+
+	rb_audioscrobbler_account_preferences_sync (account);
 }
 
 static void
 rb_audioscrobbler_account_dispose (GObject *object)
 {
+	RBAudioscrobblerAccount *account;
+
+	account = RB_AUDIOSCROBBLER_ACCOUNT (object);
+
+	if (account->priv->notification_username_id != 0) {
+		eel_gconf_notification_remove (account->priv->notification_username_id);
+		account->priv->notification_username_id = 0;
+	}
+
 	G_OBJECT_CLASS (rb_audioscrobbler_account_parent_class)->dispose (object);
 }
 
 static void
 rb_audioscrobbler_account_finalize (GObject *object)
 {
+	RBAudioscrobblerAccount *account;
+
+	account = RB_AUDIOSCROBBLER_ACCOUNT (object);
+
+	g_free (account->priv->username);
+
 	G_OBJECT_CLASS (rb_audioscrobbler_account_parent_class)->finalize (object);
 }
 
@@ -155,6 +200,29 @@ rb_audioscrobbler_account_set_property (GObject *object,
 	}
 }
 
+static void
+rb_audioscrobbler_account_import_settings (RBAudioscrobblerAccount *account)
+{
+	/* import gconf settings. */
+	g_free (account->priv->username);
+	account->priv->username = eel_gconf_get_string (CONF_AUDIOSCROBBLER_USERNAME);
+}
+
+static void
+rb_audioscrobbler_account_preferences_sync (RBAudioscrobblerAccount *account)
+{
+	char *v;
+
+	if (account->priv->config_widget == NULL)
+		return;
+
+	rb_debug ("Syncing data with preferences window");
+
+	v = account->priv->username;
+	gtk_entry_set_text (GTK_ENTRY (account->priv->username_entry),
+	                    v ? v : "");
+}
+
 GtkWidget *
 rb_audioscrobbler_account_get_config_widget (RBAudioscrobblerAccount *account,
                                              RBPlugin *plugin)
@@ -177,5 +245,55 @@ rb_audioscrobbler_account_get_config_widget (RBAudioscrobblerAccount *account,
 
 	rb_builder_boldify_label (builder, "audioscrobbler_label");
 
+	rb_audioscrobbler_account_preferences_sync (account);
+
 	return account->priv->config_widget;
+}
+
+static void
+rb_audioscrobbler_account_gconf_changed_cb (GConfClient *client,
+                                            guint cnxn_id,
+                                            GConfEntry *entry,
+                                            RBAudioscrobblerAccount *account)
+{
+	rb_debug ("GConf key updated: \"%s\"", entry->key);
+	if (strcmp (entry->key, CONF_AUDIOSCROBBLER_USERNAME) == 0) {
+		const char *username;
+
+		username = gconf_value_get_string (entry->value);
+		if (rb_safe_strcmp (username, account->priv->username) == 0) {
+			rb_debug ("username not modified");
+			return;
+		}
+
+		g_free (account->priv->username);
+		account->priv->username = NULL;
+
+		if (username != NULL) {
+			account->priv->username = g_strdup (username);
+		}
+
+		if (account->priv->username_entry) {
+			char *v = account->priv->username;
+			gtk_entry_set_text (GTK_ENTRY (account->priv->username_entry),
+					    v ? v : "");
+		}
+	} else {
+		rb_debug ("Unhandled GConf key updated: \"%s\"", entry->key);
+	}
+}
+
+void
+rb_audioscrobbler_account_username_entry_focus_out_event_cb (GtkWidget *widget,
+                                                             RBAudioscrobblerAccount *account)
+{
+	eel_gconf_set_string (CONF_AUDIOSCROBBLER_USERNAME,
+                              gtk_entry_get_text (GTK_ENTRY (widget)));
+}
+
+void
+rb_audioscrobbler_account_username_entry_activate_cb (GtkEntry *entry,
+                                                      RBAudioscrobblerAccount *account)
+{
+	gtk_widget_grab_focus (account->priv->auth_link);
 }

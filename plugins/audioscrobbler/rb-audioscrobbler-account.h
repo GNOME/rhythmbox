@@ -65,6 +65,11 @@ RBAudioscrobblerAccount *       rb_audioscrobbler_account_new (RBShell *shell);
 GtkWidget *                     rb_audioscrobbler_account_get_config_widget (RBAudioscrobblerAccount *account,
                                                                              RBPlugin *plugin);
 
+void                            rb_audioscrobbler_account_username_entry_focus_out_event_cb (GtkWidget *widget,
+                                                                                             RBAudioscrobblerAccount *account);
+void                            rb_audioscrobbler_account_username_entry_activate_cb (GtkEntry *entry,
+                                                                                      RBAudioscrobblerAccount *account);
+
 G_END_DECLS
 
 #endif /* __RB_AUDIOSCROBBLER_ACCOUNT_H */
