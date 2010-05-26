@@ -1180,6 +1180,25 @@
   )
 )
 
+(define-method want_uri
+  (of-object "RBSource")
+  (c-name "rb_source_want_uri")
+  (return-type "guint")
+  (parameters
+    '("const-char*" "uri")
+  )
+)
+
+(define-method add_uri
+  (of-object "RBSource")
+  (c-name "rb_source_add_uri")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "uri")
+    '("const-char*" "title")
+    '("const-char*" "genre")
+  )
+)
 
 (define-virtual impl_get_status
   (of-object "RBSource")
@@ -1368,6 +1387,23 @@
   (return-type "char*")
 )
 
+(define-virtual impl_want_uri
+  (of-object "RBSource")
+  (return-type "guint")
+  (parameters
+    '("const-char*" "uri")
+  )
+)
+
+(define-virtual impl_add_uri
+  (of-object "RBSource")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "uri")
+    '("const-char*" "title" (null-ok))
+    '("const-char*" "genre" (null-ok))
+  )
+)
 
 ;; From ../../sources/rb-sourcelist.h
 
