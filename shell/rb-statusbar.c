@@ -80,7 +80,7 @@ static void rb_statusbar_source_status_changed_cb (RBSource *source,
 static void rb_statusbar_transfer_progress_cb (RBTrackTransferQueue *queue,
 					       int done,
 					       int total,
-					       float fraction,
+					       double fraction,
 					       int time_left,
 					       RBStatusbar *statusbar);
 
@@ -554,7 +554,7 @@ static void
 rb_statusbar_transfer_progress_cb (RBTrackTransferQueue *queue,
 				   int done,
 				   int total,
-				   float progress,
+				   double progress,
 				   int time_left,
 				   RBStatusbar *statusbar)
 {
