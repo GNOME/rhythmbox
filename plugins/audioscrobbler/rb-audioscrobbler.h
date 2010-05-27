@@ -63,18 +63,9 @@ GType			rb_audioscrobbler_get_type (void);
 
 RBAudioscrobbler *	rb_audioscrobbler_new (RBShellPlayer *shell_player);
 
-GtkWidget *		rb_audioscrobbler_get_config_widget (RBAudioscrobbler *audioscrobbler,
-							     RBPlugin *plugin);
-
-void			rb_audioscrobbler_username_entry_focus_out_event_cb (GtkWidget *widget,
-                                                                             RBAudioscrobbler *audioscrobbler);
-void			rb_audioscrobbler_username_entry_activate_cb (GtkEntry *entry,
-								      RBAudioscrobbler *audioscrobbler);
-
-void			rb_audioscrobbler_password_entry_focus_out_event_cb (GtkWidget *widget,
-								     RBAudioscrobbler *audioscrobbler);
-void			rb_audioscrobbler_password_entry_activate_cb (GtkEntry *entry,
-								      RBAudioscrobbler *audioscrobbler);
+void                    rb_audioscrobbler_set_authentication_details (RBAudioscrobbler *audioscrobbler,
+                                                                      const char *username,
+                                                                      const char *session_key);
 
 void			rb_audioscrobbler_enabled_check_changed_cb (GtkCheckButton *button,
 								    RBAudioscrobbler *audioscrobbler);

@@ -34,6 +34,7 @@
 #include <libsoup/soup-gnome.h>
 
 #include "eel-gconf-extensions.h"
+#include "rb-audioscrobbler.h"
 #include "rb-audioscrobbler-account.h"
 #include "rb-builder-helpers.h"
 #include "rb-debug.h"
@@ -71,6 +72,9 @@ struct _RBAudioscrobblerAccountPrivate
 
 	/* HTTP requests session */
 	SoupSession *soup_session;
+
+	/* The scrobbler */
+	RBAudioscrobbler *audioscrobbler;
 };
 
 #define RB_AUDIOSCROBBLER_ACCOUNT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_ACCOUNT, RBAudioscrobblerAccountPrivate))
@@ -116,7 +120,20 @@ G_DEFINE_TYPE (RBAudioscrobblerAccount, rb_audioscrobbler_account, G_TYPE_OBJECT
 static void
 rb_audioscrobbler_account_constructed (GObject *object)
 {
+	RBAudioscrobblerAccount *account;
+
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_account_parent_class, constructed, object);
+	account = RB_AUDIOSCROBBLER_ACCOUNT (object);
+
+	account->priv->audioscrobbler =
+		rb_audioscrobbler_new (RB_SHELL_PLAYER (rb_shell_get_player (account->priv->shell)));
+
+	if (account->priv->username != NULL && account->priv->session_key != NULL) {
+		rb_debug ("setting audioscrobbler's authentication details");
+		rb_audioscrobbler_set_authentication_details (account->priv->audioscrobbler,
+		                                              account->priv->username,
+		                                              account->priv->session_key);
+	}
 }
 
 static void
@@ -152,8 +169,9 @@ rb_audioscrobbler_account_init (RBAudioscrobblerAccount *account)
 	account->priv->session_key = NULL;
 
 	rb_audioscrobbler_account_import_settings (account);
-	if (account->priv->username != NULL)
+	if (account->priv->username != NULL) {
 		rb_audioscrobbler_account_load_session_key (account);
+	}
 
 	account->priv->notification_username_id =
 		eel_gconf_notification_add (CONF_AUDIOSCROBBLER_USERNAME,
@@ -529,6 +547,13 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
 		/* delete authorisation token */
 		g_free (account->priv->auth_token);
 		account->priv->auth_token = NULL;
+
+		/* update the audioscrobbler's details */
+		if (account->priv->audioscrobbler != NULL) {
+			rb_audioscrobbler_set_authentication_details (account->priv->audioscrobbler,
+			                                              account->priv->username,
+			                                              account->priv->session_key);
+		}
 
 		g_strfreev (pre_split);
 		g_strfreev (post_split);
