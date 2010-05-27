@@ -69,6 +69,8 @@ void                            rb_audioscrobbler_account_username_entry_focus_o
                                                                                              RBAudioscrobblerAccount *account);
 void                            rb_audioscrobbler_account_username_entry_activate_cb (GtkEntry *entry,
                                                                                       RBAudioscrobblerAccount *account);
+void                            rb_audioscrobbler_account_auth_button_clicked_cb (GtkButton *button,
+                                                                                  RBAudioscrobblerAccount *account);
 
 G_END_DECLS
 

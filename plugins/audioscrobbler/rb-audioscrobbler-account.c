@@ -29,29 +29,48 @@
 #include <string.h>
 
 #include <gconf/gconf.h>
-#include "eel-gconf-extensions.h"
 
+#include <libsoup/soup.h>
+#include <libsoup/soup-gnome.h>
+
+#include "eel-gconf-extensions.h"
 #include "rb-audioscrobbler-account.h"
 #include "rb-builder-helpers.h"
 #include "rb-debug.h"
+#include "rb-file-helpers.h"
 #include "rb-util.h"
 
+#define LASTFM_API_KEY "0337ff3c59299b6a31d75164041860b6"
+#define LASTFM_API_SECRET "776c85a04a445efa8f9ed7705473c606"
+#define LASTFM_API_URL "http://ws.audioscrobbler.com/2.0/"
+#define LASTFM_AUTH_URL "http://www.last.fm/api/auth/"
+
+#define LASTFM_SESSION_KEY_FILE "session_key"
+#define SESSION_KEY_REQUEST_TIMEOUT 15
 
 struct _RBAudioscrobblerAccountPrivate
 {
 	RBShell *shell;
 
 	/* Authentication info */
-	gchar* username;
+	gchar *username;
+	gchar *auth_token;
+	gchar *session_key;
 
 	/* Widgets for the prefs pane */
 	GtkWidget *config_widget;
 	GtkWidget *username_entry;
 	GtkWidget *username_label;
-	GtkWidget *auth_link;
+	GtkWidget *auth_button;
 
 	/* Preference notifications */
 	guint notification_username_id;
+
+	/* Timeout notifications */
+	guint session_key_timeout_id;
+
+	/* HTTP requests session */
+	SoupSession *soup_session;
 };
 
 #define RB_AUDIOSCROBBLER_ACCOUNT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_ACCOUNT, RBAudioscrobblerAccountPrivate))
@@ -68,12 +87,23 @@ static void          rb_audioscrobbler_account_dispose (GObject *object);
 static void          rb_audioscrobbler_account_finalize (GObject *object);
 
 static void          rb_audioscrobbler_account_import_settings (RBAudioscrobblerAccount *account);
+static void          rb_audioscrobbler_account_load_session_key (RBAudioscrobblerAccount *account);
+static void          rb_audioscrobbler_account_save_session_key (RBAudioscrobblerAccount *account);
 static void          rb_audioscrobbler_account_preferences_sync (RBAudioscrobblerAccount *account);
 
 static void          rb_audioscrobbler_account_gconf_changed_cb (GConfClient *client,
                                                                  guint cnxn_id,
                                                                  GConfEntry *entry,
                                                                  RBAudioscrobblerAccount *account);
+
+static void          rb_audioscrobbler_account_got_token_cb (SoupSession *session,
+                                                             SoupMessage *msg,
+                                                             gpointer user_data);
+static void          rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
+                                                                   SoupMessage *msg,
+                                                                   gpointer user_data);
+
+static gboolean      rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data);
 
 enum
 {
@@ -118,13 +148,19 @@ rb_audioscrobbler_account_init (RBAudioscrobblerAccount *account)
 	account->priv = RB_AUDIOSCROBBLER_ACCOUNT_GET_PRIVATE (account);
 
 	account->priv->username = NULL;
+	account->priv->auth_token = NULL;
+	account->priv->session_key = NULL;
 
 	rb_audioscrobbler_account_import_settings (account);
+	if (account->priv->username != NULL)
+		rb_audioscrobbler_account_load_session_key (account);
 
 	account->priv->notification_username_id =
 		eel_gconf_notification_add (CONF_AUDIOSCROBBLER_USERNAME,
 		                            (GConfClientNotifyFunc) rb_audioscrobbler_account_gconf_changed_cb,
 		                            account);
+
+	account->priv->session_key_timeout_id = 0;
 
 	rb_audioscrobbler_account_preferences_sync (account);
 }
@@ -141,6 +177,17 @@ rb_audioscrobbler_account_dispose (GObject *object)
 		account->priv->notification_username_id = 0;
 	}
 
+	if (account->priv->session_key_timeout_id != 0) {
+		g_source_remove (account->priv->session_key_timeout_id);
+		account->priv->session_key_timeout_id = 0;
+	}
+
+	if (account->priv->soup_session != NULL) {
+		soup_session_abort (account->priv->soup_session);
+		g_object_unref (account->priv->soup_session);
+		account->priv->soup_session = NULL;
+	}
+
 	G_OBJECT_CLASS (rb_audioscrobbler_account_parent_class)->dispose (object);
 }
 
@@ -152,6 +199,8 @@ rb_audioscrobbler_account_finalize (GObject *object)
 	account = RB_AUDIOSCROBBLER_ACCOUNT (object);
 
 	g_free (account->priv->username);
+	g_free (account->priv->auth_token);
+	g_free (account->priv->session_key);
 
 	G_OBJECT_CLASS (rb_audioscrobbler_account_parent_class)->finalize (object);
 }
@@ -200,12 +249,90 @@ rb_audioscrobbler_account_set_property (GObject *object,
 	}
 }
 
+static gchar *
+mkmd5 (char *string)
+{
+	GChecksum *checksum;
+	gchar *md5_result;
+
+	checksum = g_checksum_new (G_CHECKSUM_MD5);
+	g_checksum_update (checksum, (guchar *)string, -1);
+
+	md5_result = g_strdup (g_checksum_get_string (checksum));
+	g_checksum_free (checksum);
+
+	return md5_result;
+}
+
 static void
 rb_audioscrobbler_account_import_settings (RBAudioscrobblerAccount *account)
 {
 	/* import gconf settings. */
 	g_free (account->priv->username);
 	account->priv->username = eel_gconf_get_string (CONF_AUDIOSCROBBLER_USERNAME);
+}
+
+static void
+rb_audioscrobbler_account_load_session_key (RBAudioscrobblerAccount *account)
+{
+	/* Attempt to load the saved session key if one exists */
+	const char *rb_data_dir;
+	char *file_path;
+	GFile *file;
+	GInputStream *stream;
+	GDataInputStream *data_stream;
+
+	rb_data_dir = rb_user_data_dir ();
+	if (rb_data_dir != NULL) {
+		file_path = g_build_filename (rb_data_dir, LASTFM_SESSION_KEY_FILE, NULL);
+		file = g_file_new_for_path (file_path);
+		stream = G_INPUT_STREAM (g_file_read (file, NULL, NULL));
+
+		if (stream != NULL) {
+			rb_debug ("loading session key from %s", file_path);
+			data_stream = g_data_input_stream_new (stream);
+			account->priv->session_key =
+				g_data_input_stream_read_line (data_stream, NULL, NULL, NULL);
+			g_object_unref (data_stream);
+			g_object_unref (stream);
+		}
+		g_object_unref (file);
+		g_free (file_path);
+	}
+}
+
+static void
+rb_audioscrobbler_account_save_session_key (RBAudioscrobblerAccount *account)
+{
+	/* Save the current session key to a file */
+	const char *rb_data_dir;
+	char *file_path;
+	GFile *file;
+	GOutputStream *stream;
+	GDataOutputStream *data_stream;
+
+	g_assert (account->priv->session_key != NULL);
+
+	rb_data_dir = rb_user_data_dir ();
+	if (rb_data_dir == NULL)
+		return;
+
+	file_path = g_build_filename (rb_data_dir, LASTFM_SESSION_KEY_FILE, NULL);
+	file = g_file_new_for_path (file_path);
+	stream = G_OUTPUT_STREAM (g_file_replace (file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, NULL));
+
+	if (stream != NULL) {
+		rb_debug ("saving session key to %s", file_path);
+		data_stream = g_data_output_stream_new (stream);
+		g_data_output_stream_put_string (data_stream,
+		                                 account->priv->session_key,
+		                                 NULL,
+		                                 NULL);
+		g_object_unref (data_stream);
+		g_object_unref (stream);
+	}
+	g_object_unref (file);
+	g_free (file_path);
 }
 
 static void
@@ -241,7 +368,7 @@ rb_audioscrobbler_account_get_config_widget (RBAudioscrobblerAccount *account,
 	account->priv->config_widget = GTK_WIDGET (gtk_builder_get_object (builder, "audioscrobbler_vbox"));
 	account->priv->username_entry = GTK_WIDGET (gtk_builder_get_object (builder, "username_entry"));
 	account->priv->username_label = GTK_WIDGET (gtk_builder_get_object (builder, "username_label"));
-	account->priv->auth_link = GTK_WIDGET (gtk_builder_get_object (builder, "auth_link"));
+	account->priv->auth_button = GTK_WIDGET (gtk_builder_get_object (builder, "auth_button"));
 
 	rb_builder_boldify_label (builder, "audioscrobbler_label");
 
@@ -250,6 +377,7 @@ rb_audioscrobbler_account_get_config_widget (RBAudioscrobblerAccount *account,
 	return account->priv->config_widget;
 }
 
+/* GConf callbacks */
 static void
 rb_audioscrobbler_account_gconf_changed_cb (GConfClient *client,
                                             guint cnxn_id,
@@ -283,6 +411,7 @@ rb_audioscrobbler_account_gconf_changed_cb (GConfClient *client,
 	}
 }
 
+/* UI callbacks */
 void
 rb_audioscrobbler_account_username_entry_focus_out_event_cb (GtkWidget *widget,
                                                              RBAudioscrobblerAccount *account)
@@ -295,5 +424,156 @@ void
 rb_audioscrobbler_account_username_entry_activate_cb (GtkEntry *entry,
                                                       RBAudioscrobblerAccount *account)
 {
-	gtk_widget_grab_focus (account->priv->auth_link);
+	gtk_widget_grab_focus (account->priv->auth_button);
+}
+
+void
+rb_audioscrobbler_account_auth_button_clicked_cb (GtkButton *button,
+                                                  RBAudioscrobblerAccount *account)
+{
+	char *sig_arg;
+	char *sig;
+	char *url;
+	SoupMessage *msg;
+
+	/* create soup session, if we haven't got one yet */
+	if (account->priv->soup_session == NULL) {
+		account->priv->soup_session =
+			soup_session_async_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
+                                                             SOUP_TYPE_GNOME_FEATURES_2_26,
+                                                             NULL);
+	}
+
+	/* request a token */
+	sig_arg = g_strdup_printf ("api_key%smethodauth.getToken%s", LASTFM_API_KEY, LASTFM_API_SECRET);
+	sig = mkmd5 (sig_arg);
+	url = g_strdup_printf ("%s?method=auth.getToken&api_key=%s&api_sig=%s",
+	                       LASTFM_API_URL, LASTFM_API_KEY, sig);
+
+	msg = soup_message_new ("GET", url);
+
+	rb_debug ("requesting authorisation token");
+	soup_session_queue_message (account->priv->soup_session,
+	                            msg,
+	                            rb_audioscrobbler_account_got_token_cb,
+	                            account);
+
+	g_free (sig_arg);
+	g_free (sig);
+	g_free (url);
+}
+
+/* Request callbacks */
+static void
+rb_audioscrobbler_account_got_token_cb (SoupSession *session,
+                                        SoupMessage *msg,
+                                        gpointer user_data)
+{
+	RBAudioscrobblerAccount *account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
+
+	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && msg->response_body->length != 0) {
+		char **pre_split;
+		char **post_split;
+		char *url;
+
+		/* parse the response */
+		pre_split = g_strsplit (msg->response_body->data, "<token>", -1);
+		post_split = g_strsplit (pre_split[1], "</token>", -1);
+		account->priv->auth_token = g_strdup (post_split[0]);
+		rb_debug ("granted auth token \"%s\"", account->priv->auth_token);
+
+		/* send the user to the web page using the token */
+		url = g_strdup_printf ("%s?api_key=%s&token=%s",
+		                       LASTFM_AUTH_URL,
+		                       LASTFM_API_KEY,
+		                       account->priv->auth_token);
+		rb_debug ("sending user to %s", url);
+		gtk_show_uri (NULL, url, GDK_CURRENT_TIME, NULL);
+
+		/* add timeout which will ask for session key */
+		account->priv->session_key_timeout_id =
+			g_timeout_add_seconds (SESSION_KEY_REQUEST_TIMEOUT,
+			                       rb_audioscrobbler_account_request_session_key_timeout_cb,
+			                       account);
+
+		g_strfreev (pre_split);
+		g_strfreev (post_split);
+		g_free (url);
+	}
+}
+
+static void
+rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
+                                              SoupMessage *msg,
+                                              gpointer user_data)
+{
+	RBAudioscrobblerAccount *account;
+
+	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
+
+	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && msg->response_body->length != 0) {
+		char **pre_split;
+		char **post_split;
+
+		/* parse the response */
+		pre_split = g_strsplit (msg->response_body->data, "<key>", -1);
+		post_split = g_strsplit (pre_split[1], "</key>", -1);
+		account->priv->session_key = g_strdup (post_split[0]);
+		rb_debug ("granted session key \"%s\"", account->priv->session_key);
+		rb_audioscrobbler_account_save_session_key (account);
+
+		/* remove timeout callback */
+		g_source_remove (account->priv->session_key_timeout_id);
+		account->priv->session_key_timeout_id = 0;
+
+		/* delete authorisation token */
+		g_free (account->priv->auth_token);
+		account->priv->auth_token = NULL;
+
+		g_strfreev (pre_split);
+		g_strfreev (post_split);
+	} else {
+		rb_debug ("error retrieving session key");
+	}
+}
+
+/* Periodically sends a request for the session key */
+static gboolean
+rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data)
+{
+	RBAudioscrobblerAccount *account;
+	char *sig_arg;
+	char *sig;
+	char *url;
+	SoupMessage *msg;
+
+	g_assert (RB_IS_AUDIOSCROBBLER_ACCOUNT (user_data));
+	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
+
+	g_assert (account->priv->auth_token != NULL);
+
+	sig_arg = g_strdup_printf ("api_key%smethodauth.getSessiontoken%s%s",
+	                           LASTFM_API_KEY,
+	                           account->priv->auth_token,
+	                           LASTFM_API_SECRET);
+	sig = mkmd5 (sig_arg);
+	url = g_strdup_printf ("%s?method=auth.getSession&api_key=%s&token=%s&api_sig=%s",
+	                       LASTFM_API_URL,
+	                       LASTFM_API_KEY,
+	                       account->priv->auth_token,
+	                       sig);
+
+	msg = soup_message_new ("GET", url);
+
+	rb_debug ("requesting session key");
+	soup_session_queue_message (account->priv->soup_session,
+	                            msg,
+	                            rb_audioscrobbler_account_got_session_key_cb,
+	                            account);
+
+	g_free (sig_arg);
+	g_free (sig);
+	g_free (url);
+
+	return TRUE;
 }

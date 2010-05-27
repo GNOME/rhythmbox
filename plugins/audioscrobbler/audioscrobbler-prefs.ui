@@ -76,13 +76,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLinkButton" id="auth_link">
+                  <object class="GtkButton" id="auth_button">
                     <property name="label" translatable="yes">Allow Rhythmbox to access your profile</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="has_tooltip">True</property>
-                    <property name="relief">none</property>
+                    <signal name="clicked" handler="rb_audioscrobbler_account_auth_button_clicked_cb"/>
                   </object>
                   <packing>
                     <property name="position">1</property>
