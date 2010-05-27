@@ -149,7 +149,6 @@ overwrite_prompt (RBTrackTransferBatch *batch, GFile *file, RBTrackTransferQueue
 		gtk_widget_show (GTK_WIDGET (dialog));
 		response = gtk_dialog_run (GTK_DIALOG (dialog));
 		gtk_widget_destroy (dialog);
-		g_object_unref (dialog);
 		g_free (free_name);
 		if (info != NULL) {
 			g_object_unref (info);
