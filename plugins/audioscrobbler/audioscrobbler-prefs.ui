@@ -44,36 +44,7 @@
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <child>
-                  <object class="GtkHBox" id="hbox1">
-                    <property name="visible">True</property>
-                    <child>
-                      <object class="GtkLabel" id="username_label">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                        <property name="label" translatable="yes">_Username:</property>
-                        <property name="use_underline">True</property>
-                        <property name="mnemonic_widget">username_entry</property>
-                      </object>
-                      <packing>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="username_entry">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="invisible_char">&#x25CF;</property>
-                        <signal name="focus_out_event" handler="rb_audioscrobbler_account_username_entry_focus_out_event_cb"/>
-                        <signal name="activate" handler="rb_audioscrobbler_account_username_entry_activate_cb"/>
-                      </object>
-                      <packing>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
+                  <placeholder/>
                 </child>
                 <child>
                   <object class="GtkButton" id="auth_button">
