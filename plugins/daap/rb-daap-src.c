@@ -241,6 +241,27 @@ rb_daap_src_get_property (GObject *object,
 	}
 }
 
+static void
+rb_daap_src_set_header (const char *name, const char *value, gpointer headers)
+{
+	gst_structure_set (headers, name, G_TYPE_STRING, value, NULL);
+}
+
+static GstStructure *
+rb_daap_src_soup_message_headers_to_gst_structure (SoupMessageHeaders *headers)
+{
+	GstStructure *gst_headers = gst_structure_new ("extra-headers", NULL);
+
+	if (gst_headers == NULL)
+		return gst_headers;
+
+	soup_message_headers_foreach (headers,
+				      rb_daap_src_set_header,
+				      gst_headers);
+
+	return gst_headers;
+}
+
 GstStateChangeReturn
 rb_daap_src_change_state (GstElement *element, GstStateChange transition)
 {
@@ -251,7 +272,8 @@ rb_daap_src_change_state (GstElement *element, GstStateChange transition)
 		{
 			const char *http = "http";
 			char *httpuri;
-			GstStructure *headers;
+			SoupMessageHeaders *headers;
+			GstStructure *gst_headers;
 			RBDAAPSource *source;
 
 			/* Retrieve extra headers for the HTTP connection. */
@@ -267,8 +289,15 @@ rb_daap_src_change_state (GstElement *element, GstStateChange transition)
 				return GST_STATE_CHANGE_FAILURE;
 			}
 
-			g_object_set (src->souphttpsrc, "extra-headers", headers, NULL);
-			gst_structure_free (headers);
+			gst_headers = rb_daap_src_soup_message_headers_to_gst_structure
+					(headers);
+			if (gst_headers == NULL) {
+				return GST_STATE_CHANGE_FAILURE;
+			}
+			soup_message_headers_free (headers);
+
+			g_object_set (src->souphttpsrc, "extra-headers", gst_headers, NULL);
+			gst_structure_free (gst_headers);
 
 			/* Set daap://... URI as http:// on souphttpsrc to ready connection. */
 			httpuri = g_strdup (src->daap_uri);

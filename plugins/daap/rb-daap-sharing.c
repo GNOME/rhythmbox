@@ -36,14 +36,17 @@
 #include <glib/gprintf.h>
 
 #include "rb-daap-sharing.h"
-#include "rb-daap-share.h"
+#include "rb-rhythmdb-dmap-db-adapter.h"
+#include "rb-dmap-container-db-adapter.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-playlist-manager.h"
 #include "eel-gconf-extensions.h"
 #include "rb-preferences.h"
 
-static RBDAAPShare *share = NULL;
+#include <libdmapsharing/dmap.h>
+
+static DAAPShare *share = NULL;
 static guint enable_sharing_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 static guint require_password_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 static guint share_name_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
@@ -65,7 +68,9 @@ rb_daap_sharing_default_share_name ()
 static void
 create_share (RBShell *shell)
 {
-	RhythmDB *db;
+	RhythmDB *rdb;
+	DMAPDb *db;
+	DMAPContainerDb *container_db;
 	RBPlaylistManager *playlist_manager;
 	char *name;
 	char *password;
@@ -81,8 +86,10 @@ create_share (RBShell *shell)
 	}
 
 	g_object_get (shell,
-		      "db", &db,
+		      "db", &rdb,
 		      "playlist-manager", &playlist_manager, NULL);
+	db = DMAP_DB (rb_rhythmdb_dmap_db_adapter_new (rdb, RHYTHMDB_ENTRY_TYPE_SONG));
+	container_db = DMAP_CONTAINER_DB (rb_dmap_container_db_adapter_new (playlist_manager));
 
 	require_password = eel_gconf_get_boolean (CONF_DAAP_REQUIRE_PASSWORD);
 	if (require_password) {
@@ -91,9 +98,11 @@ create_share (RBShell *shell)
 		password = NULL;
 	}
 
-	share = rb_daap_share_new (name, password, db, RHYTHMDB_ENTRY_TYPE_SONG, playlist_manager);
+	share = daap_share_new (name, password, db, container_db, NULL);
 
 	g_object_unref (db);
+	g_object_unref (container_db);
+	g_object_unref (rdb);
 	g_object_unref (playlist_manager);
 
 	g_free (name);

@@ -1,6 +1,7 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/*
+ *  RBDAAPRecord factory class
  *
- *  Copyright (C) 2008 Jonathan Matthew  <jonathan@d14n.org>
+ *  Copyright (C) 2008 W. Michael Petullo <mike@flyn.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,15 +27,51 @@
  *
  */
 
-#ifndef __RB_DAAP_MDNS_AVAHI_H
-#define __RB_DAAP_MDNS_AVAHI_H
+#include "rhythmdb.h"
+#include "rb-daap-record-factory.h"
+#include "rb-daap-record.h"
 
-#include <avahi-client/client.h>
-#include <avahi-client/publish.h>
+DMAPRecord *
+rb_daap_record_factory_create  (DMAPRecordFactory *factory,
+				gpointer user_data)
+{
+	DAAPRecord *record;
 
-AvahiClient *	rb_daap_mdns_avahi_get_client (void);
+	record = DAAP_RECORD (rb_daap_record_new ((RhythmDBEntry *) user_data));
 
-void		rb_daap_mdns_avahi_set_entry_group (AvahiEntryGroup *group);
+	return (DMAP_RECORD (record));
+}
 
-#endif
+static void
+rb_daap_record_factory_init (RBDAAPRecordFactory *factory)
+{
+}
 
+static void
+rb_daap_record_factory_class_init (RBDAAPRecordFactoryClass *klass)
+{
+}
+
+static void
+rb_daap_record_factory_interface_init (gpointer iface, gpointer data)
+{
+	DMAPRecordFactoryInterface *factory = iface;
+
+	g_assert (G_TYPE_FROM_INTERFACE (factory) == TYPE_DMAP_RECORD_FACTORY);
+
+	factory->create = rb_daap_record_factory_create;
+}
+
+G_DEFINE_TYPE_WITH_CODE (RBDAAPRecordFactory, rb_daap_record_factory, G_TYPE_OBJECT, 
+			 G_IMPLEMENT_INTERFACE (TYPE_DMAP_RECORD_FACTORY,
+					        rb_daap_record_factory_interface_init))
+
+RBDAAPRecordFactory *
+rb_daap_record_factory_new (void)
+{
+	RBDAAPRecordFactory *factory;
+
+	factory = RB_DAAP_RECORD_FACTORY (g_object_new (RB_TYPE_DAAP_RECORD_FACTORY, NULL));
+
+	return factory;
+}

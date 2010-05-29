@@ -46,7 +46,7 @@ SUBDIRS += cd-recorder
 endif # HAVE_NAUTILUS_BURN
 endif # HAVE_LIBBRASERO_MEDIA
 
-if USE_DAAP
+if USE_LIBDMAPSHARING
 SUBDIRS += daap
 endif
 

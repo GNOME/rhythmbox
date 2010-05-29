@@ -35,6 +35,7 @@
 #include "rb-plugin.h"
 
 #include <gst/gst.h>
+#include <libsoup/soup.h>
 
 G_BEGIN_DECLS
 
@@ -57,20 +58,20 @@ typedef struct {
 	RBBrowserSourceClass parent;
 } RBDAAPSourceClass;
 
-GType 		rb_daap_source_get_type 	(void);
+GType			rb_daap_source_get_type		(void);
 
-RBSource *	rb_daap_source_new 		(RBShell *shell,
-						 RBPlugin *plugin,
-						 const char *service_name,
-						 const char *name,
-						 const char *host,
-						 guint port,
-						 gboolean password_protected);
+RBSource *		rb_daap_source_new 		(RBShell *shell,
+							 RBPlugin *plugin,
+							 const char *service_name,
+							 const char *name,
+							 const char *host,
+							 guint port,
+							 gboolean password_protected);
 
-void 		rb_daap_source_disconnect 	(RBDAAPSource *daap_source);
+void			rb_daap_source_disconnect 	(RBDAAPSource *daap_source);
 
-GstStructure *	rb_daap_source_get_headers 	(RBDAAPSource *source,
-						 const gchar *uri);
+SoupMessageHeaders *	rb_daap_source_get_headers	(RBDAAPSource *source,
+							 const gchar *uri);
 
 G_END_DECLS
 

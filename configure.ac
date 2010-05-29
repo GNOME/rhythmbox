@@ -250,11 +250,6 @@ PKG_CHECK_MODULES(GSTREAMER_0_10, \
 RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $GSTREAMER_0_10_CFLAGS"
 RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $GSTREAMER_0_10_LIBS -lgstinterfaces-0.10"
 
-dnl DAAP (iTunes Music Shares)
-AC_ARG_ENABLE(daap,
-	      AC_HELP_STRING([--disable-daap],
-			     [Disable Digital Audio Access Protocol (music sharing) in rhythmbox]))
-
 AC_ARG_WITH(mdns,
    AC_HELP_STRING([--with-mdns=auto|avahi],
    [Select the mDNS/DNS-SD implementation to use (default auto)]),,
@@ -326,22 +321,6 @@ if test x$enable_libnotify = xyes ; then
     AC_SUBST(NOTIFY_CFLAGS)
     AC_SUBST(NOTIFY_LIBS)
 fi
-
-dnl daap support
-if test "x$enable_daap" != "xno"; then
-	if test x"$have_mdns" = xno; then
-		if test "x$enable_daap" = "xyes"; then
-			AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implementation found.  Install Avahi])
-		fi
-		enable_daap=no
-	else
-		AC_DEFINE(WITH_DAAP_SUPPORT, 1, [Define if DAAP should be enabled])
-		enable_daap="yes"
-		AC_SUBST(MDNS_CFLAGS)
-		AC_SUBST(MDNS_LIBS)
-	fi
-fi
-AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" != "xno")
 
 AC_CHECK_LIB(z, uncompress)
 
@@ -797,6 +776,31 @@ AC_ARG_VAR([MOZILLA_PLUGINDIR],[Where to install the browser plugin to])
 
 AM_CONDITIONAL([ENABLE_BROWSER_PLUGIN], test x$enable_browser_plugin = xyes)
 
+
+dnl ================================================================
+dnl Use libdmapsharing for DAAP?
+dnl ================================================================
+AC_ARG_ENABLE(daap,
+              AC_HELP_STRING([--disable-daap],
+                             [Disable DAAP support]),,
+              enable_daap=auto)
+if test "x$enable_daap" != "xno"; then
+	PKG_CHECK_MODULES(DMAPSHARING, libdmapsharing-1.9 >= 1.9.0.20,
+			  have_libdmapsharing=yes,
+			  have_libdmapsharing=no)
+	if test "x$have_libdmapsharing" = "xno" -a "x$enable_daap" = "xyes"; then
+		AC_MSG_ERROR([DAAP support explicitly requested, but libdmapsharing couldn't be found])
+	fi
+	if test x"$have_libdmapsharing" = "xyes"; then
+		AC_DEFINE(HAVE_LIBDMAPSHARING, 1, [Define if libdmapsharing support is enabled])
+	fi
+fi
+
+AM_CONDITIONAL(USE_LIBDMAPSHARING, test x"$have_libdmapsharing" = "xyes")
+
+AC_SUBST(DMAPSHARING_CFLAGS)
+AC_SUBST(DMAPSHARING_LIBS)
+
 dnl ================================================================
 dnl end-game
 dnl ================================================================
@@ -941,7 +945,7 @@ elif test x"$have_libnautilus_burn" != xno; then
 else
 	AC_MSG_NOTICE([   CD burning support disabled])
 fi
-if test x"$enable_daap" = xyes; then
+if test x"$have_libdmapsharing" = xyes; then
 	AC_MSG_NOTICE([** DAAP (music sharing) support is enabled])
 else
 	AC_MSG_NOTICE([   DAAP (music sharing) support is disabled])

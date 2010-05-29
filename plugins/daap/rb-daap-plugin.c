@@ -53,7 +53,7 @@
 #include "rb-daap-src.h"
 #include "rb-uri-dialog.h"
 
-#include "rb-daap-mdns-browser.h"
+#include <libdmapsharing/dmap.h>
 
 /* preferences */
 #define CONF_DAAP_PREFIX  	CONF_PREFIX "/plugins/daap"
@@ -74,7 +74,7 @@ struct RBDaapPluginPrivate
 	GtkActionGroup *daap_action_group;
 	guint daap_ui_merge_id;
 
-	RBDaapMdnsBrowser *mdns_browser;
+	DMAPMdnsBrowser *mdns_browser;
 
 	GHashTable *source_lookup;
 
@@ -113,6 +113,10 @@ static void enable_browsing_changed_cb (GConfClient *client,
 					guint cnxn_id,
 					GConfEntry *entry,
 					RBDaapPlugin *plugin);
+static void libdmapsharing_debug (const char *domain,
+				  GLogLevelFlags level,
+				  const char *message,
+				  gpointer data);
 
 gboolean rb_daap_add_source (RBDaapPlugin *plugin, gchar *service_name, gchar *host, unsigned int port, GError **error);
 gboolean rb_daap_remove_source (RBDaapPlugin *plugin, gchar *service_name, GError **error);
@@ -222,6 +226,11 @@ impl_activate (RBPlugin *bplugin,
 
 	plugin->priv->shutdown = FALSE;
 	plugin->priv->shell = g_object_ref (shell);
+
+	g_log_set_handler ("libdmapsharing",
+			    G_LOG_LEVEL_MASK,
+			    libdmapsharing_debug,
+			    NULL);
 
 	value = gconf_client_get_without_default (client,
 						  CONF_ENABLE_BROWSING, NULL);
@@ -458,33 +467,33 @@ find_source_by_service_name (RBDaapPlugin *plugin,
 }
 
 static void
-mdns_service_added (RBDaapMdnsBrowser *browser,
-		    const char        *service_name,
-		    const char        *name,
-		    const char        *host,
-		    guint              port,
-		    gboolean           password_protected,
-		    RBDaapPlugin      *plugin)
+mdns_service_added (DMAPMdnsBrowser *browser,
+		    DMAPMdnsBrowserService *service,
+		    RBDaapPlugin	*plugin)
 {
 	RBSource *source;
 
 	rb_debug ("New service: %s name=%s host=%s port=%u password=%d",
-		   service_name, name, host, port, password_protected);
+		   service->service_name,
+		   service->name,
+		   service->host,
+		   service->port,
+		   service->password_protected);
 
 	GDK_THREADS_ENTER ();
 
-	source = find_source_by_service_name (plugin, service_name);
+	source = find_source_by_service_name (plugin, service->service_name);
 
 	if (source == NULL) {
-		source = rb_daap_source_new (plugin->priv->shell, RB_PLUGIN (plugin), service_name, name, host, port, password_protected);
-		g_hash_table_insert (plugin->priv->source_lookup, g_strdup (service_name), source);
+		source = rb_daap_source_new (plugin->priv->shell, RB_PLUGIN (plugin), service->service_name, service->name, service->host, service->port, service->password_protected);
+		g_hash_table_insert (plugin->priv->source_lookup, g_strdup (service->service_name), source);
 		rb_shell_append_source (plugin->priv->shell, source, NULL);
 	} else {
 		g_object_set (G_OBJECT (source),
-			      "name", name,
-			      "host", host,
-			      "port", port,
-			      "password-protected", password_protected,
+			      "name", service->name,
+			      "host", service->host,
+			      "port", service->port,
+			      "password-protected", service->password_protected,
 			      NULL);
 	}
 
@@ -492,7 +501,7 @@ mdns_service_added (RBDaapMdnsBrowser *browser,
 }
 
 static void
-mdns_service_removed (RBDaapMdnsBrowser *browser,
+mdns_service_removed (DMAPMdnsBrowser *browser,
 		      const char        *service_name,
 		      RBDaapPlugin	*plugin)
 {
@@ -533,7 +542,7 @@ start_browsing (RBDaapPlugin *plugin)
 		return;
 	}
 
-	plugin->priv->mdns_browser = rb_daap_mdns_browser_new ();
+	plugin->priv->mdns_browser = dmap_mdns_browser_new (DMAP_MDNS_BROWSER_SERVICE_TYPE_DAAP);
 	if (plugin->priv->mdns_browser == NULL) {
 		g_warning ("Unable to start mDNS browsing");
 		return;
@@ -551,7 +560,7 @@ start_browsing (RBDaapPlugin *plugin)
 				 0);
 
 	error = NULL;
-	rb_daap_mdns_browser_start (plugin->priv->mdns_browser, &error);
+	dmap_mdns_browser_start (plugin->priv->mdns_browser, &error);
 	if (error != NULL) {
 		g_warning ("Unable to start mDNS browsing: %s", error->message);
 		g_error_free (error);
@@ -581,7 +590,7 @@ stop_browsing (RBDaapPlugin *plugin)
 	g_signal_handlers_disconnect_by_func (plugin->priv->mdns_browser, mdns_service_removed, plugin);
 
 	error = NULL;
-	rb_daap_mdns_browser_stop (plugin->priv->mdns_browser, &error);
+	dmap_mdns_browser_stop (plugin->priv->mdns_browser, &error);
 	if (error != NULL) {
 		g_warning ("Unable to stop mDNS browsing: %s", error->message);
 		g_error_free (error);
@@ -606,6 +615,19 @@ enable_browsing_changed_cb (GConfClient *client,
 	}
 }
 
+static void
+libdmapsharing_debug (const char *domain,
+		      GLogLevelFlags level,
+		      const char *message,
+		      gpointer data)
+{
+	if ((level & G_LOG_LEVEL_DEBUG) != 0) {
+		rb_debug ("%s", message);
+	} else {
+		g_log_default_handler (domain, level, message, data);
+	}
+}
+
 /* daap share connect/disconnect commands */
 
 static void
@@ -627,6 +649,7 @@ new_daap_share_location_added_cb (RBURIDialog *dialog,
 	char *host;
 	char *p;
 	int port = 3689;
+	DMAPMdnsBrowserService service;
 
 	host = g_strdup (location);
 	p = strrchr (host, ':');
@@ -636,12 +659,12 @@ new_daap_share_location_added_cb (RBURIDialog *dialog,
 	}
 
 	rb_debug ("adding manually specified DAAP share at %s", location);
+	service.name = (char *) location;
+	service.host = (char *) location;
+	service.port = port;
+	service.password_protected = FALSE;
 	mdns_service_added (NULL,
-			    g_strdup (location),
-			    g_strdup (location),
-			    g_strdup (host),
-			    port,
-			    FALSE,
+			    &service,
 			    plugin);
 
 	g_free (host);
@@ -900,6 +923,7 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 gboolean
 rb_daap_add_source (RBDaapPlugin *plugin, gchar *service_name, gchar *host, unsigned int port, GError **error)
 {
+	DMAPMdnsBrowserService service;
 
 	if (plugin->priv->shutdown)
 		return FALSE;
@@ -907,12 +931,12 @@ rb_daap_add_source (RBDaapPlugin *plugin, gchar *service_name, gchar *host, unsi
 	rb_debug ("Add DAAP source %s (%s:%d)", service_name, host, port);
 
 	rb_debug ("adding manually specified DAAP share at %s", service_name);
+	service.name = service_name;
+	service.host = host;
+	service.port = port;
+	service.password_protected = FALSE;
 	mdns_service_added (NULL,
-			    g_strdup (service_name),
-			    g_strdup (service_name),
-			    g_strdup (host),
-			    port,
-			    FALSE,
+			    &service,
 			    plugin);
 
 	return TRUE;
