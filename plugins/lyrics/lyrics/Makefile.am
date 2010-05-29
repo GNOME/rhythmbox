@@ -11,4 +11,5 @@ plugin_PYTHON =				\
        LeoslyricsParser.py		\
        LyricWikiParser.py		\
        WinampcnParser.py		\
-       TerraParser.py
+       TerraParser.py			\
+       DarkLyricsParser.py
