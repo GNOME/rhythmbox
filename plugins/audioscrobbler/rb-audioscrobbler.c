@@ -70,6 +70,8 @@
 #define INITIAL_HANDSHAKE_DELAY 60
 #define MAX_HANDSHAKE_DELAY 120*60
 
+/* this API key belongs to Jamie Nicol <jamie@thenicols.net>
+   generated May 2010 for use in the audioscrobbler plugin */
 #define LASTFM_API_KEY "0337ff3c59299b6a31d75164041860b6"
 #define LASTFM_API_SECRET "776c85a04a445efa8f9ed7705473c606"
 #define SCROBBLER_URL "http://post.audioscrobbler.com/"

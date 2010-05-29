@@ -40,6 +40,8 @@
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 
+/* this API key belongs to Jamie Nicol <jamie@thenicols.net>
+   generated May 2010 for use in the audioscrobbler plugin */
 #define LASTFM_API_KEY "0337ff3c59299b6a31d75164041860b6"
 #define LASTFM_API_SECRET "776c85a04a445efa8f9ed7705473c606"
 #define LASTFM_API_URL "http://ws.audioscrobbler.com/2.0/"
