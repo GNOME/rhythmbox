@@ -474,6 +474,11 @@ rb_audioscrobbler_account_auth_button_clicked_cb (GtkButton *button,
 
 		rb_audioscrobbler_account_save_session_settings (account);
 		rb_audioscrobbler_account_login_status_sync (account);
+		if (account->priv->audioscrobbler != NULL) {
+			rb_audioscrobbler_set_authentication_details (account->priv->audioscrobbler,
+			                                              account->priv->username,
+			                                              account->priv->session_key);
+		}
 	}
 }
 
