@@ -36,7 +36,7 @@ import sys
 
 from htmlentitydefs import name2codepoint
 
-pattern = re.compile("&(\w+?);")
+pattern = re.compile("&(#?\w+?);")
 
 def _replace_entity(match):
 	text = match.group(1)
