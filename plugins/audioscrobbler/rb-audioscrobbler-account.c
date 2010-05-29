@@ -47,7 +47,7 @@
 #define LASTFM_API_URL "http://ws.audioscrobbler.com/2.0/"
 #define LASTFM_AUTH_URL "http://www.last.fm/api/auth/"
 
-#define LASTFM_SESSION_KEY_FILE "session_key"
+#define LASTFM_SESSION_SETTINGS_FILE "lastfm_session"
 #define SESSION_KEY_REQUEST_TIMEOUT 15
 
 struct _RBAudioscrobblerAccountPrivate
@@ -298,92 +298,91 @@ mkmd5 (char *string)
 static void
 rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *account)
 {
-	/* Attempt to load the saved username and session key if one exists */
+	/* Attempt to load the saved session */
 	const char *rb_data_dir;
 	char *file_path;
-	GFile *file;
-	GInputStream *stream;
-	GDataInputStream *data_stream;
+	GKeyFile *key_file;
 
 	rb_data_dir = rb_user_data_dir ();
-	if (rb_data_dir != NULL) {
-		file_path = g_build_filename (rb_data_dir, LASTFM_SESSION_KEY_FILE, NULL);
-		file = g_file_new_for_path (file_path);
-		stream = G_INPUT_STREAM (g_file_read (file, NULL, NULL));
+	if (rb_data_dir == NULL) {
+		rb_debug ("error loading session: could not find data dir");
+		return;
+	}
 
-		if (stream != NULL) {
-			data_stream = g_data_input_stream_new (stream);
-			account->priv->username =
-				g_data_input_stream_read_line (data_stream, NULL, NULL, NULL);
-			account->priv->session_key =
-				g_data_input_stream_read_line (data_stream, NULL, NULL, NULL);
+	file_path = g_build_filename (rb_data_dir, LASTFM_SESSION_SETTINGS_FILE, NULL);
+	key_file = g_key_file_new ();
+	g_key_file_load_from_file (key_file, file_path, G_KEY_FILE_NONE, NULL);
 
-			if (account->priv->username == NULL || account->priv->session_key == NULL) {
-				/* Ensure both are null, incase file was dodgy */
-				g_free (account->priv->username);
-				account->priv->username = NULL;
-				g_free (account->priv->session_key);
-				account->priv->session_key = NULL;
-				rb_debug ("no session was loaded");
-			} else {
-				rb_debug ("loaded session settings: username=\"%s\", session key=\"%s\"",
-				          account->priv->username,
-				          account->priv->session_key);
-			}
-			g_object_unref (data_stream);
-			g_object_unref (stream);
-		}
-		g_object_unref (file);
-		g_free (file_path);
+	account->priv->username = g_key_file_get_string (key_file, "last.fm", "username", NULL);
+	account->priv->session_key = g_key_file_get_string (key_file, "last.fm", "session_key", NULL);
+
+	g_free (file_path);
+	g_key_file_free (key_file);
+
+	if (account->priv->username != NULL && account->priv->session_key != NULL) {
+		rb_debug ("loaded session: username=\"%s\", session key=\"%s\"",
+			          account->priv->username,
+			          account->priv->session_key);
+	} else {
+		rb_debug ("there is no session to load");
+
+		/* free both incase only one of them did not load */
+		g_free (account->priv->username);
+		account->priv->username = NULL;
+		g_free (account->priv->session_key);
+		account->priv->session_key = NULL;
 	}
 }
 
 static void
 rb_audioscrobbler_account_save_session_settings (RBAudioscrobblerAccount *account)
 {
-	/* Save the current username and session key to a file */
+	/* Save the current session */
 	const char *rb_data_dir;
 	char *file_path;
-	GFile *file;
-	GOutputStream *stream;
-	GDataOutputStream *data_stream;
-	char *text_out;
+	GKeyFile *key_file;
+	char *data;
+	gsize data_length;
+	GFile *out_file;
+	GError *error;
 
 	rb_data_dir = rb_user_data_dir ();
-	if (rb_data_dir == NULL)
+	if (rb_data_dir == NULL) {
+		rb_debug ("error saving session: could not find data dir");
 		return;
-
-	file_path = g_build_filename (rb_data_dir, LASTFM_SESSION_KEY_FILE, NULL);
-	file = g_file_new_for_path (file_path);
-	stream = G_OUTPUT_STREAM (g_file_replace (file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, NULL));
-
-	if (stream != NULL) {
-		data_stream = g_data_output_stream_new (stream);
-
-		if (account->priv->username != NULL) {
-			text_out = g_strconcat (account->priv->username,
-				                "\n",
-				                account->priv->session_key,
-				                NULL);
-			rb_debug ("saving session settings: username=\"%s\", session key=\"%s\"",
-		          account->priv->username,
-		          account->priv->session_key);
-		} else {
-			text_out = g_strdup ("");
-			rb_debug ("saving empty session");
-		}
-
-		g_data_output_stream_put_string (data_stream,
-		                                 text_out,
-		                                 NULL,
-		                                 NULL);
-
-		g_free (text_out);
-		g_object_unref (data_stream);
-		g_object_unref (stream);
 	}
-	g_object_unref (file);
+
+	file_path = g_build_filename (rb_data_dir, LASTFM_SESSION_SETTINGS_FILE, NULL);
+	key_file = g_key_file_new ();
+	/* load existing file contents. errors wont matter, just means file doesn't exist yet */
+	g_key_file_load_from_file (key_file, file_path, G_KEY_FILE_KEEP_COMMENTS, NULL);
+
+	/* set the new data */
+	if (account->priv->username != NULL && account->priv->session_key != NULL) {
+		g_key_file_set_string (key_file, "last.fm", "username", account->priv->username);
+		g_key_file_set_string (key_file, "last.fm", "session_key", account->priv->session_key);
+	} else {
+		g_key_file_remove_group (key_file, "last.fm", NULL);
+	}
+
+	data = g_key_file_to_data (key_file, &data_length, NULL);
+	g_key_file_free (key_file);
+
+	/* write data to the file */
+	out_file = g_file_new_for_path (file_path);
 	g_free (file_path);
+
+	error = NULL;
+	g_file_replace_contents (out_file, data, data_length, NULL, FALSE, G_FILE_CREATE_NONE, NULL, NULL, &error);
+	if (error != NULL) {
+		rb_debug ("error saving session: %s", error->message);
+		g_error_free (error);
+	} else {
+		rb_debug ("successfully saved session");
+	}
+
+	g_free (data);
+	g_object_unref (out_file);
 }
 
 GtkWidget *
