@@ -37,6 +37,16 @@
 
 G_BEGIN_DECLS
 
+typedef enum
+{
+	RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT,
+	RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN,
+	RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN
+} RBAudioscrobblerAccountLoginStatus;
+
+GType rb_audioscrobbler_account_login_status_get_type (void);
+#define RB_TYPE_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS (rb_audioscrobbler_account_login_status_get_type ())
+
 #define RB_TYPE_AUDIOSCROBBLER_ACCOUNT         (rb_audioscrobbler_account_get_type ())
 #define RB_AUDIOSCROBBLER_ACCOUNT(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_AUDIOSCROBBLER_ACCOUNT, RBAudioscrobblerAccount))
 #define RB_AUDIOSCROBBLER_ACCOUNT_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST ((k), RB_TYPE_AUDIOSCROBBLER_ACCOUNT, RBAudioscrobblerAccountClass))
@@ -56,6 +66,9 @@ typedef struct
 typedef struct
 {
 	GObjectClass parent_class;
+
+	/* signals */
+	void (*login_status_changed) (RBAudioscrobblerAccount *account, RBAudioscrobblerAccountLoginStatus status);
 } RBAudioscrobblerAccountClass;
 
 GType                           rb_audioscrobbler_account_get_type (void);
@@ -67,6 +80,9 @@ GtkWidget *                     rb_audioscrobbler_account_get_config_widget (RBA
 
 void                            rb_audioscrobbler_account_auth_button_clicked_cb (GtkButton *button,
                                                                                   RBAudioscrobblerAccount *account);
+
+void                            rb_audioscrobbler_account_authenticate (RBAudioscrobblerAccount *account);
+void                            rb_audioscrobbler_account_logout (RBAudioscrobblerAccount *account);
 
 G_END_DECLS
 

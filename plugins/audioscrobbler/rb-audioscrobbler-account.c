@@ -58,6 +58,7 @@ struct _RBAudioscrobblerAccountPrivate
 	gchar *username;
 	gchar *auth_token;
 	gchar *session_key;
+	RBAudioscrobblerAccountLoginStatus login_status;
 
 	/* Widgets for the prefs pane */
 	GtkWidget *config_widget;
@@ -87,25 +88,34 @@ static void	     rb_audioscrobbler_account_set_property (GObject *object,
 static void          rb_audioscrobbler_account_dispose (GObject *object);
 static void          rb_audioscrobbler_account_finalize (GObject *object);
 
-static void          rb_audioscrobbler_account_login_status_sync (RBAudioscrobblerAccount *account);
+static void          rb_audioscrobbler_account_on_login_status_change_cb (RBAudioscrobblerAccount *account,
+                                                                          RBAudioscrobblerAccountLoginStatus status,
+                                                                          gpointer user_data);
 
 static void          rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *account);
 static void          rb_audioscrobbler_account_save_session_settings (RBAudioscrobblerAccount *account);
 
+static void          rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account);
 static void          rb_audioscrobbler_account_got_token_cb (SoupSession *session,
                                                              SoupMessage *msg,
                                                              gpointer user_data);
+static gboolean      rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data);
 static void          rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
                                                                    SoupMessage *msg,
                                                                    gpointer user_data);
-
-static gboolean      rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data);
-
 enum
 {
 	PROP_0,
 	PROP_SHELL,
 };
+
+enum
+{
+	LOGIN_STATUS_CHANGED,
+	LAST_SIGNAL
+};
+
+static guint rb_audioscrobbler_account_signals[LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE (RBAudioscrobblerAccount, rb_audioscrobbler_account, G_TYPE_OBJECT)
 
@@ -117,17 +127,15 @@ rb_audioscrobbler_account_constructed (GObject *object)
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_account_parent_class, constructed, object);
 	account = RB_AUDIOSCROBBLER_ACCOUNT (object);
 
+	g_signal_connect (account,
+	                  "login-status-changed",
+	                  (GCallback)rb_audioscrobbler_account_on_login_status_change_cb,
+	                  NULL);
+
 	account->priv->audioscrobbler =
 		rb_audioscrobbler_new (RB_SHELL_PLAYER (rb_shell_get_player (account->priv->shell)));
 
-	if (account->priv->username != NULL) {
-		rb_debug ("setting audioscrobbler's authentication details");
-		rb_audioscrobbler_set_authentication_details (account->priv->audioscrobbler,
-		                                              account->priv->username,
-		                                              account->priv->session_key);
-	}
-
-	rb_audioscrobbler_account_login_status_sync (account);
+	rb_audioscrobbler_account_load_session_settings (account);
 }
 
 static void
@@ -150,6 +158,26 @@ rb_audioscrobbler_account_class_init (RBAudioscrobblerAccountClass *klass)
 	                                                      RB_TYPE_SHELL,
                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/**
+	 * RBAudioscrobblerAccount::login-status-changed:
+	 * @account: the #RBAudioscrobblerAccount
+	 * @status: new status
+	 *
+	 * Emitted after the login status of the account has changed.
+	 */
+	rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED] =
+		g_signal_new ("login-status-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBAudioscrobblerAccountClass, login_status_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__ENUM,
+			      G_TYPE_NONE,
+			      1,
+			      RB_TYPE_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS);
+
+	g_assert (rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED] != 0);
+
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerAccountPrivate));
 }
 
@@ -161,8 +189,7 @@ rb_audioscrobbler_account_init (RBAudioscrobblerAccount *account)
 	account->priv->username = NULL;
 	account->priv->auth_token = NULL;
 	account->priv->session_key = NULL;
-
-	rb_audioscrobbler_account_load_session_settings (account);
+	account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT;
 
 	account->priv->session_key_timeout_id = 0;
 }
@@ -252,31 +279,42 @@ rb_audioscrobbler_account_set_property (GObject *object,
 }
 
 static void
-rb_audioscrobbler_account_login_status_sync (RBAudioscrobblerAccount *account)
+rb_audioscrobbler_account_on_login_status_change_cb (RBAudioscrobblerAccount *account,
+                                                     RBAudioscrobblerAccountLoginStatus status,
+                                                     gpointer user_data)
 {
-	char *status;
+	char *status_text;
 	char *button_text;
+
+	if (account->priv->audioscrobbler != NULL) {
+		rb_audioscrobbler_set_authentication_details (account->priv->audioscrobbler,
+		                                              account->priv->username,
+		                                              account->priv->session_key);
+	}
 
 	if (account->priv->config_widget == NULL)
 		return;
 
-	if (account->priv->username == NULL) {
-		if (account->priv->auth_token == NULL) {
-			status = g_strdup (_("You are not currently logged in"));
-			button_text = g_strdup (_("Login"));
-		} else {
-			status = g_strdup (_("Waiting for authentication..."));
-			button_text = g_strdup (_("Cancel"));
-		}
-	} else {
-		status = g_strdup_printf (_("Logged in as %s"), account->priv->username);
+	switch (status) {
+	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN:
+		status_text = g_strdup_printf (_("Logged in as %s"), account->priv->username);
 		button_text = g_strdup (_("Logout"));
+		break;
+	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN:
+		status_text = g_strdup (_("Waiting for authentication..."));
+		button_text = g_strdup (_("Cancel"));
+		break;
+	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT:
+	default:
+		status_text = g_strdup (_("You are not currently logged in"));
+		button_text = g_strdup (_("Login"));
+		break;
 	}
 
-	gtk_label_set_label (GTK_LABEL (account->priv->login_status_label), status);
+	gtk_label_set_label (GTK_LABEL (account->priv->login_status_label), status_text);
 	gtk_button_set_label (GTK_BUTTON (account->priv->auth_button), button_text);
 
-	g_free (status);
+	g_free (status_text);
 	g_free (button_text);
 }
 
@@ -323,6 +361,10 @@ rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *accoun
 		rb_debug ("loaded session: username=\"%s\", session key=\"%s\"",
 			          account->priv->username,
 			          account->priv->session_key);
+
+		account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN;
+		g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
+		               0, account->priv->login_status);
 	} else {
 		rb_debug ("there is no session to load");
 
@@ -331,6 +373,10 @@ rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *accoun
 		account->priv->username = NULL;
 		g_free (account->priv->session_key);
 		account->priv->session_key = NULL;
+
+		account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT;
+		g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
+		               0, account->priv->login_status);
 	}
 }
 
@@ -385,12 +431,52 @@ rb_audioscrobbler_account_save_session_settings (RBAudioscrobblerAccount *accoun
 	g_object_unref (out_file);
 }
 
+/* public authentication functions */
+void
+rb_audioscrobbler_account_authenticate (RBAudioscrobblerAccount *account)
+{
+	/* begin the web services authentication process */
+	if (account->priv->login_status != RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT) {
+		rb_debug ("logging out before starting auth process");
+		rb_audioscrobbler_account_logout (account);
+	}
+
+	/* request an authentication token */
+	rb_audioscrobbler_account_request_token (account);
+}
+
+void
+rb_audioscrobbler_account_logout (RBAudioscrobblerAccount *account)
+{
+	g_free (account->priv->username);
+	account->priv->username = NULL;
+
+	g_free (account->priv->auth_token);
+	account->priv->auth_token = NULL;
+
+	g_free (account->priv->session_key);
+	account->priv->session_key = NULL;
+
+	if (account->priv->session_key_timeout_id != 0) {
+		g_source_remove (account->priv->session_key_timeout_id);
+		account->priv->session_key_timeout_id = 0;
+	}
+
+	rb_audioscrobbler_account_save_session_settings (account);
+
+	account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT;
+	g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
+	               0, account->priv->login_status);
+}
+
 GtkWidget *
 rb_audioscrobbler_account_get_config_widget (RBAudioscrobblerAccount *account,
                                              RBPlugin *plugin)
 {
 	GtkBuilder *builder;
 	char *builder_file;
+	char *status_text;
+	char *button_text;
 
 	if (account->priv->config_widget)
 		return account->priv->config_widget;
@@ -404,9 +490,37 @@ rb_audioscrobbler_account_get_config_widget (RBAudioscrobblerAccount *account,
 	account->priv->login_status_label = GTK_WIDGET (gtk_builder_get_object (builder, "login_status_label"));
 	account->priv->auth_button = GTK_WIDGET (gtk_builder_get_object (builder, "auth_button"));
 
-	rb_audioscrobbler_account_login_status_sync (account);
-
 	rb_builder_boldify_label (builder, "audioscrobbler_label");
+
+
+
+	if (account->priv->audioscrobbler != NULL) {
+		rb_audioscrobbler_set_authentication_details (account->priv->audioscrobbler,
+		                                              account->priv->username,
+		                                              account->priv->session_key);
+	}
+
+	switch (account->priv->login_status) {
+	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN:
+		status_text = g_strdup_printf (_("Logged in as %s"), account->priv->username);
+		button_text = g_strdup (_("Logout"));
+		break;
+	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN:
+		status_text = g_strdup (_("Waiting for authentication..."));
+		button_text = g_strdup (_("Cancel"));
+		break;
+	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT:
+	default:
+		status_text = g_strdup (_("You are not currently logged in"));
+		button_text = g_strdup (_("Login"));
+		break;
+	}
+
+	gtk_label_set_label (GTK_LABEL (account->priv->login_status_label), status_text);
+	gtk_button_set_label (GTK_BUTTON (account->priv->auth_button), button_text);
+
+	g_free (status_text);
+	g_free (button_text);
 
 	return account->priv->config_widget;
 }
@@ -415,79 +529,71 @@ void
 rb_audioscrobbler_account_auth_button_clicked_cb (GtkButton *button,
                                                   RBAudioscrobblerAccount *account)
 {
-	if (account->priv->username == NULL) {
-		if (account->priv->auth_token == NULL) {
-			/* request an authentication token */
-
-			char *sig_arg;
-			char *sig;
-			char *url;
-			SoupMessage *msg;
-
-			/* create soup session, if we haven't got one yet */
-			if (account->priv->soup_session == NULL) {
-				account->priv->soup_session =
-					soup_session_async_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-				                                             SOUP_TYPE_GNOME_FEATURES_2_26,
-				                                             NULL);
-			}
-
-			/* make the request */
-			sig_arg = g_strdup_printf ("api_key%smethodauth.getToken%s",
-			                           LASTFM_API_KEY,
-			                           LASTFM_API_SECRET);
-			sig = mkmd5 (sig_arg);
-			url = g_strdup_printf ("%s?method=auth.getToken&api_key=%s&api_sig=%s",
-					       LASTFM_API_URL, LASTFM_API_KEY, sig);
-
-			msg = soup_message_new ("GET", url);
-
-			rb_debug ("requesting authorisation token");
-			soup_session_queue_message (account->priv->soup_session,
-					            msg,
-					            rb_audioscrobbler_account_got_token_cb,
-					            account);
-
-			g_free (sig_arg);
-			g_free (sig);
-			g_free (url);
-		} else {
-			/* delete the token */
-			rb_debug ("cancelling authorisation request");
-			g_free (account->priv->auth_token);
-			account->priv->auth_token = NULL;
-
-			/* remove timeout callback */
-			g_source_remove (account->priv->session_key_timeout_id);
-			account->priv->session_key_timeout_id = 0;
-
-			rb_audioscrobbler_account_login_status_sync (account);
-		}
+	if (account->priv->login_status == RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT) {
+		rb_audioscrobbler_account_authenticate (account);
 	} else {
-		/* delete the session */
-		rb_debug ("logging out of session");
-		g_free (account->priv->username);
-		account->priv->username = NULL;
-		g_free (account->priv->session_key);
-		account->priv->session_key = NULL;
-
-		rb_audioscrobbler_account_save_session_settings (account);
-		rb_audioscrobbler_account_login_status_sync (account);
-		if (account->priv->audioscrobbler != NULL) {
-			rb_audioscrobbler_set_authentication_details (account->priv->audioscrobbler,
-			                                              account->priv->username,
-			                                              account->priv->session_key);
-		}
+		rb_audioscrobbler_account_logout (account);
 	}
 }
 
-/* Request callbacks */
+/* private authentication functions */
+static void
+rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account)
+{
+	/* requests an authentication token
+	 * first stage of the authentication process
+	 */
+	char *sig_arg;
+	char *sig;
+	char *url;
+	SoupMessage *msg;
+
+	/* create the soup session, if we haven't got one yet */
+	if (account->priv->soup_session == NULL) {
+		account->priv->soup_session =
+			soup_session_async_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
+		                                             SOUP_TYPE_GNOME_FEATURES_2_26,
+		                                             NULL);
+	}
+
+	/* create the request */
+	sig_arg = g_strdup_printf ("api_key%smethodauth.getToken%s",
+	                           LASTFM_API_KEY,
+	                           LASTFM_API_SECRET);
+	sig = mkmd5 (sig_arg);
+	url = g_strdup_printf ("%s?method=auth.getToken&api_key=%s&api_sig=%s",
+			       LASTFM_API_URL, LASTFM_API_KEY, sig);
+
+	msg = soup_message_new ("GET", url);
+
+	/* send the request */
+	rb_debug ("requesting authorisation token");
+	soup_session_queue_message (account->priv->soup_session,
+			            msg,
+			            rb_audioscrobbler_account_got_token_cb,
+			            account);
+
+	/* update status */
+	account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN;
+	g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
+	               0, account->priv->login_status);
+
+	g_free (sig_arg);
+	g_free (sig);
+	g_free (url);
+}
+
 static void
 rb_audioscrobbler_account_got_token_cb (SoupSession *session,
                                         SoupMessage *msg,
                                         gpointer user_data)
 {
-	RBAudioscrobblerAccount *account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
+	/* parses the authentication token from the response
+	 */
+	RBAudioscrobblerAccount *account;
+
+	g_assert (RB_IS_AUDIOSCROBBLER_ACCOUNT (user_data));
+	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
 
 	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && msg->response_body->length != 0) {
 		char **pre_split;
@@ -498,6 +604,7 @@ rb_audioscrobbler_account_got_token_cb (SoupSession *session,
 		pre_split = g_strsplit (msg->response_body->data, "<token>", -1);
 		post_split = g_strsplit (pre_split[1], "</token>", -1);
 		account->priv->auth_token = g_strdup (post_split[0]);
+
 		rb_debug ("granted auth token \"%s\"", account->priv->auth_token);
 
 		/* send the user to the web page using the token */
@@ -514,13 +621,54 @@ rb_audioscrobbler_account_got_token_cb (SoupSession *session,
 			                       rb_audioscrobbler_account_request_session_key_timeout_cb,
 			                       account);
 
-		/* we are now waiting for authentication - update the UI */
-		rb_audioscrobbler_account_login_status_sync (account);
-
 		g_strfreev (pre_split);
 		g_strfreev (post_split);
 		g_free (url);
+	} else {
+		/* failed. go back to being logged out */
+		rb_audioscrobbler_account_logout (account);
 	}
+}
+
+static gboolean
+rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data)
+{
+	/* Periodically sends a request for the session key */
+	RBAudioscrobblerAccount *account;
+	char *sig_arg;
+	char *sig;
+	char *url;
+	SoupMessage *msg;
+
+	g_assert (RB_IS_AUDIOSCROBBLER_ACCOUNT (user_data));
+	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
+
+	/* create the request */
+	sig_arg = g_strdup_printf ("api_key%smethodauth.getSessiontoken%s%s",
+	                           LASTFM_API_KEY,
+	                           account->priv->auth_token,
+	                           LASTFM_API_SECRET);
+	sig = mkmd5 (sig_arg);
+	url = g_strdup_printf ("%s?method=auth.getSession&api_key=%s&token=%s&api_sig=%s",
+	                       LASTFM_API_URL,
+	                       LASTFM_API_KEY,
+	                       account->priv->auth_token,
+	                       sig);
+
+	msg = soup_message_new ("GET", url);
+
+	/* send the request */
+	rb_debug ("requesting session key");
+	soup_session_queue_message (account->priv->soup_session,
+	                            msg,
+	                            rb_audioscrobbler_account_got_session_key_cb,
+	                            account);
+
+	g_free (sig_arg);
+	g_free (sig);
+	g_free (url);
+
+	return TRUE;
 }
 
 static void
@@ -528,8 +676,15 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
                                               SoupMessage *msg,
                                               gpointer user_data)
 {
+	/* parses the session details from the response.
+	 * if successful then authentication is complete.
+	 * if the error is that the token has not been authenticated
+	 * then keep trying.
+	 * on other errors stop trying and go to logged out state.
+	 */
 	RBAudioscrobblerAccount *account;
 
+	g_assert (RB_IS_AUDIOSCROBBLER_ACCOUNT (user_data));
 	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
 
 	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && msg->response_body->length != 0) {
@@ -556,9 +711,6 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
 		          account->priv->username);
 		rb_audioscrobbler_account_save_session_settings (account);
 
-		/* we are now logged in - update the UI */
-		rb_audioscrobbler_account_login_status_sync (account);
-
 		/* remove timeout callback */
 		g_source_remove (account->priv->session_key_timeout_id);
 		account->priv->session_key_timeout_id = 0;
@@ -567,12 +719,10 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
 		g_free (account->priv->auth_token);
 		account->priv->auth_token = NULL;
 
-		/* update the audioscrobbler's details */
-		if (account->priv->audioscrobbler != NULL) {
-			rb_audioscrobbler_set_authentication_details (account->priv->audioscrobbler,
-			                                              account->priv->username,
-			                                              account->priv->session_key);
-		}
+		/* update status */
+		account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN;
+		g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
+		               0, account->priv->login_status);
 	} else {
 		char **pre_split;
 		char **post_split;
@@ -590,15 +740,8 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
 			   whatever it is, we wont be retrieving a session key from it */
 			rb_debug ("error retrieving session key. giving up");
 
-			/* remove timeout callback */
-			g_source_remove (account->priv->session_key_timeout_id);
-			account->priv->session_key_timeout_id = 0;
-
-			/* delete authorisation token */
-			g_free (account->priv->auth_token);
-			account->priv->auth_token = NULL;
-
-			rb_audioscrobbler_account_login_status_sync (account);
+			/* go back to being logged out */
+			rb_audioscrobbler_account_logout (account);
 		}
 
 		g_strfreev (pre_split);
@@ -607,43 +750,24 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
 	}
 }
 
-/* Periodically sends a request for the session key */
-static gboolean
-rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data)
+/* This should really be standard. */
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rb_audioscrobbler_account_login_status_get_type (void)
 {
-	RBAudioscrobblerAccount *account;
-	char *sig_arg;
-	char *sig;
-	char *url;
-	SoupMessage *msg;
+	static GType etype = 0;
 
-	g_assert (RB_IS_AUDIOSCROBBLER_ACCOUNT (user_data));
-	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT, "Logged out"),
+			ENUM_ENTRY (RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN, "Logging in"),
+			ENUM_ENTRY (RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN, "Logged in"),
+			{ 0, 0, 0 }
+		};
 
-	g_assert (account->priv->auth_token != NULL);
+		etype = g_enum_register_static ("RBAudioscrobblerAccountLoginStatus", values);
+	}
 
-	sig_arg = g_strdup_printf ("api_key%smethodauth.getSessiontoken%s%s",
-	                           LASTFM_API_KEY,
-	                           account->priv->auth_token,
-	                           LASTFM_API_SECRET);
-	sig = mkmd5 (sig_arg);
-	url = g_strdup_printf ("%s?method=auth.getSession&api_key=%s&token=%s&api_sig=%s",
-	                       LASTFM_API_URL,
-	                       LASTFM_API_KEY,
-	                       account->priv->auth_token,
-	                       sig);
-
-	msg = soup_message_new ("GET", url);
-
-	rb_debug ("requesting session key");
-	soup_session_queue_message (account->priv->soup_session,
-	                            msg,
-	                            rb_audioscrobbler_account_got_session_key_cb,
-	                            account);
-
-	g_free (sig_arg);
-	g_free (sig);
-	g_free (url);
-
-	return TRUE;
+	return etype;
 }
