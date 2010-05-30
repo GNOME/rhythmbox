@@ -77,6 +77,7 @@ struct RhythmDBEntry_ {
 	RBRefString *artist;
 	RBRefString *album;
 	RBRefString *genre;
+	RBRefString *comment;
 	RBRefString *musicbrainz_trackid;
 	RBRefString *musicbrainz_artistid;
 	RBRefString *musicbrainz_albumid;

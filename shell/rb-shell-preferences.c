@@ -106,6 +106,7 @@ struct RBShellPreferencesPrivate
 	GtkWidget *artist_check;
 	GtkWidget *album_check;
 	GtkWidget *genre_check;
+	GtkWidget *comment_check;
 	GtkWidget *duration_check;
 	GtkWidget *track_check;
 	GtkWidget *rating_check;
@@ -216,6 +217,8 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		GTK_WIDGET (gtk_builder_get_object (builder, "album_check"));
 	shell_preferences->priv->genre_check =
 		GTK_WIDGET (gtk_builder_get_object (builder, "genre_check"));
+	shell_preferences->priv->comment_check =
+		GTK_WIDGET (gtk_builder_get_object (builder, "comment_check"));
 	shell_preferences->priv->duration_check =
 		GTK_WIDGET (gtk_builder_get_object (builder, "duration_check"));
 	shell_preferences->priv->track_check =
@@ -450,6 +453,8 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 		colname = "RHYTHMDB_PROP_ALBUM";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->genre_check))
 		colname = "RHYTHMDB_PROP_GENRE";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->comment_check))
+		colname = "RHYTHMDB_PROP_COMMENT";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->duration_check))
 		colname = "RHYTHMDB_PROP_DURATION";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->track_check))
@@ -536,6 +541,9 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 		rb_shell_preferences_sync_column_button (shell_preferences,
 			       				 shell_preferences->priv->genre_check,
 							 columns, "RHYTHMDB_PROP_GENRE");
+		rb_shell_preferences_sync_column_button (shell_preferences,
+							 shell_preferences->priv->comment_check,
+							 columns, "RHYTHMDB_PROP_COMMENT");
 		rb_shell_preferences_sync_column_button (shell_preferences,
 			       				 shell_preferences->priv->duration_check,
 							 columns, "RHYTHMDB_PROP_DURATION");

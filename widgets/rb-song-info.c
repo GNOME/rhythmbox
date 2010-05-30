@@ -130,6 +130,8 @@ struct RBSongInfoPrivate
 	GtkWidget   *track_cur;
 	GtkWidget   *disc_cur;
 	GtkWidget   *year;
+	GtkWidget   *comment;
+	GtkTextBuffer *comment_buffer;
 	GtkWidget   *playback_error_box;
 	GtkWidget   *playback_error_label;
 
@@ -489,6 +491,8 @@ rb_song_info_constructed (GObject *object)
 	song_info->priv->album = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_album"));
 	song_info->priv->genre = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_genre"));
 	song_info->priv->year = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_year"));
+	song_info->priv->comment = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_comment"));
+	song_info->priv->comment_buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (song_info->priv->comment));
 	song_info->priv->playback_error_box = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_error_box"));
 	song_info->priv->playback_error_label = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_error_label"));
 	song_info->priv->disc_cur = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_disc_cur"));
@@ -504,6 +508,7 @@ rb_song_info_constructed (GObject *object)
 	rb_builder_boldify_label (builder, "artist_label");
 	rb_builder_boldify_label (builder, "genre_label");
 	rb_builder_boldify_label (builder, "year_label");
+	rb_builder_boldify_label (builder, "comment_label");
 	rb_builder_boldify_label (builder, "rating_label");
 	rb_builder_boldify_label (builder, "discn_label");
 	rb_builder_boldify_label (builder, "artist_sortname_label");
@@ -522,6 +527,10 @@ rb_song_info_constructed (GObject *object)
 				 G_CALLBACK (rb_song_info_mnemonic_cb),
 				 NULL, 0);
 	g_signal_connect_object (G_OBJECT (song_info->priv->year),
+				 "mnemonic-activate",
+				 G_CALLBACK (rb_song_info_mnemonic_cb),
+				 NULL, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->comment),
 				 "mnemonic-activate",
 				 G_CALLBACK (rb_song_info_mnemonic_cb),
 				 NULL, 0);
@@ -558,6 +567,7 @@ rb_song_info_constructed (GObject *object)
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->album), editable);
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->genre), editable);
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->year), editable);
+	gtk_text_view_set_editable (GTK_TEXT_VIEW (song_info->priv->comment), editable);
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->disc_cur), editable);
 
 	/* Finish construction */
@@ -1034,6 +1044,9 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->track_cur), num);
 	num = rhythmdb_entry_get_ulong (song_info->priv->current_entry, RHYTHMDB_PROP_DISC_NUMBER);
 	rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->disc_cur), num);
+
+	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_COMMENT);
+	gtk_text_buffer_set_text (song_info->priv->comment_buffer, text, -1);
 
 	rb_song_info_update_duration (song_info);
 	rb_song_info_update_location (song_info);
@@ -1615,6 +1628,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	const char *artist_sortname;
 	const char *album_sortname;
 	const char *entry_string;
+	char *comment = NULL;
 	char *endptr;
 	GType type;
 	gulong tracknum;
@@ -1624,6 +1638,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	GValue val = {0,};
 	gboolean changed = FALSE;
 	RhythmDBEntry *entry = dialog->priv->current_entry;
+	GtkTextIter start, end;
 
 	title = gtk_entry_get_text (GTK_ENTRY (dialog->priv->title));
 	genre = gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre));
@@ -1634,6 +1649,10 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	year_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->year));
 	artist_sortname = gtk_entry_get_text (GTK_ENTRY (dialog->priv->artist_sortname));
 	album_sortname = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album_sortname));
+
+	/* Get comment text (string is allocated) */
+	gtk_text_buffer_get_bounds (dialog->priv->comment_buffer, &start, &end);
+	comment = gtk_text_buffer_get_text (dialog->priv->comment_buffer, &start, &end, FALSE);
 
 	g_signal_emit (dialog, rb_song_info_signals[PRE_METADATA_CHANGE], 0,
 		       entry);
@@ -1765,6 +1784,18 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 		changed = TRUE;
 	}
 
+	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_COMMENT);
+	if (strcmp (comment, entry_string)) {
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_COMMENT);
+		g_value_init (&val, type);
+		g_value_set_string (&val, comment);
+		rhythmdb_entry_set (dialog->priv->db, entry,
+				    RHYTHMDB_PROP_COMMENT, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
+
 	/* FIXME: when an entry is SYNCed, a changed signal is emitted, and
 	 * this signal is also emitted, aren't they redundant?
 	 */
@@ -1773,6 +1804,8 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 
 	if (changed)
 		rhythmdb_commit (dialog->priv->db);
+
+	g_free (comment);
 }
 
 static void

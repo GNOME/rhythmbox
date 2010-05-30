@@ -510,6 +510,7 @@ add_tags_from_entry (RBEncoderGst *encoder,
 	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_ARTIST, entry, RHYTHMDB_PROP_ARTIST);
 	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_ALBUM, entry, RHYTHMDB_PROP_ALBUM);
 	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_GENRE, entry, RHYTHMDB_PROP_GENRE);
+	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_COMMENT, entry, RHYTHMDB_PROP_COMMENT);
 
 	day = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE);
 

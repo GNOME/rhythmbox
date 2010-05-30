@@ -1348,6 +1348,9 @@ rb_entry_view_get_column (RBEntryView *view, RBEntryViewColumn coltype)
 	case RB_ENTRY_VIEW_COL_GENRE:
 		propid = RHYTHMDB_PROP_GENRE;
 		break;
+	case RB_ENTRY_VIEW_COL_COMMENT:
+		propid = RHYTHMDB_PROP_COMMENT;
+		break;
 	case RB_ENTRY_VIEW_COL_DURATION:
 		propid = RHYTHMDB_PROP_DURATION;
 		break;
@@ -1406,6 +1409,7 @@ rb_entry_view_cell_edited_cb (GtkCellRendererText *renderer,
 	case RHYTHMDB_PROP_GENRE:
 	case RHYTHMDB_PROP_ARTIST:
 	case RHYTHMDB_PROP_ALBUM:
+	case RHYTHMDB_PROP_COMMENT:
 	case RHYTHMDB_PROP_ARTIST_SORTNAME:
 	case RHYTHMDB_PROP_ALBUM_SORTNAME:
 		break;
@@ -1518,6 +1522,16 @@ rb_entry_view_append_column (RBEntryView *view,
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_genre_sort_func;
 		title = _("Genre");
 		key = "Genre";
+		ellipsize = TRUE;
+		break;
+	case RB_ENTRY_VIEW_COL_COMMENT:
+		propid = RHYTHMDB_PROP_COMMENT;
+		cell_data->propid = propid;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
+		sort_propid = cell_data->propid;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_string_sort_func;
+		title = _("Comment");
+		key = "Comment";
 		ellipsize = TRUE;
 		break;
 	case RB_ENTRY_VIEW_COL_DURATION:
@@ -1663,6 +1677,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		g_signal_connect_object (renderer, "edited",
 					 G_CALLBACK (rb_entry_view_cell_edited_cb),
 					 view, 0);
+		g_object_set (renderer, "single-paragraph-mode", TRUE, NULL);
 	} else {
 		g_free (cell_data);
 	}
@@ -2667,6 +2682,7 @@ rb_entry_view_column_get_type (void)
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_ARTIST, "Artist"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_ALBUM, "Album"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_GENRE, "Genre"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_COMMENT, "Comment"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_DURATION, "Duration"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_QUALITY, "Quality"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_RATING, "Rating"),

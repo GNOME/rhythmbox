@@ -576,6 +576,9 @@ metadata_field_from_prop (RhythmDBPropType prop,
 	case RHYTHMDB_PROP_GENRE:
 		*field = RB_METADATA_FIELD_GENRE;
 		return TRUE;
+	case RHYTHMDB_PROP_COMMENT:
+		*field = RB_METADATA_FIELD_COMMENT;
+		return TRUE;
 	case RHYTHMDB_PROP_TRACK_NUMBER:
 		*field = RB_METADATA_FIELD_TRACK_NUMBER;
 		return TRUE;
@@ -1658,6 +1661,7 @@ rhythmdb_entry_allocate (RhythmDB *db,
 	ret->genre = rb_refstring_ref (db->priv->empty_string);
 	ret->artist = rb_refstring_ref (db->priv->empty_string);
 	ret->album = rb_refstring_ref (db->priv->empty_string);
+	ret->comment = rb_refstring_ref (db->priv->empty_string);
 	ret->musicbrainz_trackid = rb_refstring_ref (db->priv->empty_string);
 	ret->musicbrainz_artistid = rb_refstring_ref (db->priv->empty_string);
 	ret->musicbrainz_albumid = rb_refstring_ref (db->priv->empty_string);
@@ -1854,6 +1858,7 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 	rb_refstring_unref (entry->genre);
 	rb_refstring_unref (entry->artist);
 	rb_refstring_unref (entry->album);
+	rb_refstring_unref (entry->comment);
 	rb_refstring_unref (entry->musicbrainz_trackid);
 	rb_refstring_unref (entry->musicbrainz_artistid);
 	rb_refstring_unref (entry->musicbrainz_albumid);
@@ -2074,6 +2079,11 @@ set_props_from_metadata (RhythmDB *db,
 					  RHYTHMDB_PROP_ALBUM_SORTNAME,
 					  "");
 
+	/* comment */
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_COMMENT,
+					  RHYTHMDB_PROP_COMMENT,
+					  "");
 }
 
 static gboolean
@@ -3553,6 +3563,12 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 			}
 			entry->genre = rb_refstring_new (g_value_get_string (value));
 			break;
+		case RHYTHMDB_PROP_COMMENT:
+			if (entry->comment != NULL) {
+				rb_refstring_unref (entry->comment);
+			}
+			entry->comment = rb_refstring_new (g_value_get_string (value));
+			break;
 		case RHYTHMDB_PROP_TRACK_NUMBER:
 			entry->tracknum = g_value_get_ulong (value);
 			break;
@@ -4412,6 +4428,7 @@ rhythmdb_prop_type_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_GENRE, "Genre (gchararray) [genre]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST, "Artist (gchararray) [artist]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM, "Album (gchararray) [album]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_COMMENT, "Comment (gchararray) [comment]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_NUMBER, "Track Number (gulong) [track-number]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_DISC_NUMBER, "Disc Number (gulong) [disc-number]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, "Musicbrainz Track ID (gchararray) [mb-trackid]"),
@@ -5244,6 +5261,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get (entry->artist);
 	case RHYTHMDB_PROP_GENRE:
 		return rb_refstring_get (entry->genre);
+	case RHYTHMDB_PROP_COMMENT:
+		return rb_refstring_get (entry->comment);
 	case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
 		return rb_refstring_get (entry->musicbrainz_trackid);
 	case RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID:
@@ -5366,6 +5385,8 @@ rhythmdb_entry_get_refstring (RhythmDBEntry *entry,
 		return rb_refstring_ref (entry->artist);
 	case RHYTHMDB_PROP_GENRE:
 		return rb_refstring_ref (entry->genre);
+	case RHYTHMDB_PROP_COMMENT:
+		return rb_refstring_ref (entry->comment);
 	case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
 		return rb_refstring_ref (entry->musicbrainz_trackid);
 	case RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID:

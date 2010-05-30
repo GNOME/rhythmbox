@@ -77,6 +77,7 @@ const RBQueryCreatorPropertyOption property_options[] =
 	{ NC_("query-criteria", "Year"), RHYTHMDB_PROP_DATE, RHYTHMDB_PROP_DATE, &year_property_type },
 	{ NC_("query-criteria", "Rating"), RHYTHMDB_PROP_RATING, RHYTHMDB_PROP_RATING, &rating_property_type },
 	{ NC_("query-criteria", "Path"), RHYTHMDB_PROP_LOCATION, RHYTHMDB_PROP_LOCATION, &escaped_string_property_type },
+	{ NC_("query-criteria", "Comment"), RHYTHMDB_PROP_COMMENT, RHYTHMDB_PROP_COMMENT, &string_property_type },
 
 	{ NC_("query-criteria", "Play Count"), RHYTHMDB_PROP_PLAY_COUNT, RHYTHMDB_PROP_PLAY_COUNT, &integer_property_type },
 	{ NC_("query-criteria", "Track Number"), RHYTHMDB_PROP_TRACK_NUMBER, RHYTHMDB_PROP_TRACK_NUMBER, &integer_property_type },
@@ -108,6 +109,7 @@ const RBQueryCreatorSortOption sort_options[] =
 	{ NC_("query-sort", "Track Number"), "Track", N_("_In decreasing order")},
 	{ NC_("query-sort", "Last Played"), "LastPlayed", N_("W_ith more recently played tracks first") },
 	{ NC_("query-sort", "Date Added"), "FirstSeen", N_("W_ith more recently added tracks first") },
+	{ NC_("query-sort", "Comment"), "Comment", N_("_In reverse alphabetical order") },
 };
 
 const int num_sort_options = G_N_ELEMENTS (sort_options);

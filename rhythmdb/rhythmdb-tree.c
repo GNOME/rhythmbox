@@ -976,6 +976,9 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_GENRE:
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->genre));
 			break;
+		case RHYTHMDB_PROP_COMMENT:
+			save_entry_string(ctx, elt_name, rb_refstring_get (entry->comment));
+			break;
 		case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
 			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->musicbrainz_trackid));
 			break;
