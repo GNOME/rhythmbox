@@ -70,11 +70,6 @@
 #define INITIAL_HANDSHAKE_DELAY 60
 #define MAX_HANDSHAKE_DELAY 120*60
 
-/* this API key belongs to Jamie Nicol <jamie@thenicols.net>
-   generated May 2010 for use in the audioscrobbler plugin */
-#define LASTFM_API_KEY "0337ff3c59299b6a31d75164041860b6"
-#define LASTFM_API_SECRET "776c85a04a445efa8f9ed7705473c606"
-#define SCROBBLER_URL "http://post.audioscrobbler.com/"
 #define SCROBBLER_VERSION "1.2.1"
 
 #define USER_AGENT	"Rhythmbox/" VERSION
@@ -111,6 +106,13 @@ struct _RBAudioscrobblerPrivate
 
 	/* Only write the queue to a file if it has been changed */
 	gboolean queue_changed;
+
+	/* API settings - These will differ depending on which scrobbler
+	 * service is being used. eg Last.fm or Libre.fm
+	 */
+	gchar *scrobbler_url;
+	gchar *api_key;
+	gchar *api_secret;
 
 	/* Authentication cookie + authentication info */
 	gchar *sessionid;
@@ -189,7 +191,10 @@ static void          rb_audioscrobbler_nowplaying (RBAudioscrobbler *audioscrobb
 enum
 {
 	PROP_0,
-	PROP_SHELL_PLAYER
+	PROP_SHELL_PLAYER,
+	PROP_SCROBBLER_URL,
+	PROP_API_KEY,
+	PROP_API_SECRET
 };
 
 G_DEFINE_TYPE (RBAudioscrobbler, rb_audioscrobbler, G_TYPE_OBJECT)
@@ -232,6 +237,30 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 							      "RBShellPlayer",
 							      "RBShellPlayer object",
 							      RB_TYPE_SHELL_PLAYER,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_SCROBBLER_URL,
+					 g_param_spec_string ("scrobbler-url",
+							      "Scrobbler URL",
+							      "URL that the scrobbling session should be created with",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_API_KEY,
+					 g_param_spec_string ("api-key",
+							      "API Key",
+							      "API key used to authenticate the application with the scrobbler service",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_API_SECRET,
+					 g_param_spec_string ("api-secret",
+							      "API Secret",
+							      "API secret used to authenticate the application with the scrobbler service",
+							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerPrivate));
@@ -316,6 +345,10 @@ rb_audioscrobbler_finalize (GObject *object)
 	/* Save any remaining entries */
 	rb_audioscrobbler_save_queue (audioscrobbler);
 
+	g_free (audioscrobbler->priv->scrobbler_url);
+	g_free (audioscrobbler->priv->api_key);
+	g_free (audioscrobbler->priv->api_secret);
+
 	g_free (audioscrobbler->priv->sessionid);
 	g_free (audioscrobbler->priv->username);
 	g_free (audioscrobbler->priv->session_key);
@@ -334,10 +367,16 @@ rb_audioscrobbler_finalize (GObject *object)
 }
 
 RBAudioscrobbler*
-rb_audioscrobbler_new (RBShellPlayer *shell_player)
+rb_audioscrobbler_new (RBShellPlayer *shell_player,
+                       const char *scrobbler_url,
+                       const char *api_key,
+                       const char *api_secret)
 {
 	return g_object_new (RB_TYPE_AUDIOSCROBBLER,
 			     "shell-player", shell_player,
+	                     "scrobbler-url", scrobbler_url,
+	                     "api-key", api_key,
+	                     "api-secret", api_secret,
 			     NULL);
 }
 
@@ -358,6 +397,18 @@ rb_audioscrobbler_set_property (GObject *object,
 					 G_CALLBACK (rb_audioscrobbler_song_changed_cb),
 					 audioscrobbler, 0);
 		break;
+	case PROP_SCROBBLER_URL:
+		g_free (audioscrobbler->priv->scrobbler_url);
+		audioscrobbler->priv->scrobbler_url = g_value_dup_string (value);
+		break;
+	case PROP_API_KEY:
+		g_free (audioscrobbler->priv->api_key);
+		audioscrobbler->priv->api_key = g_value_dup_string (value);
+		break;
+	case PROP_API_SECRET:
+		g_free (audioscrobbler->priv->api_secret);
+		audioscrobbler->priv->api_secret = g_value_dup_string (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -375,6 +426,15 @@ rb_audioscrobbler_get_property (GObject *object,
 	switch (prop_id) {
 	case PROP_SHELL_PLAYER:
 		g_value_set_object (value, audioscrobbler->priv->shell_player);
+		break;
+	case PROP_SCROBBLER_URL:
+		g_value_set_string (value, audioscrobbler->priv->scrobbler_url);
+		break;
+	case PROP_API_KEY:
+		g_value_set_string (value, audioscrobbler->priv->api_key);
+		break;
+	case PROP_API_SECRET:
+		g_value_set_string (value, audioscrobbler->priv->api_secret);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -738,7 +798,6 @@ rb_audioscrobbler_should_handshake (RBAudioscrobbler *audioscrobbler)
 static void
 rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 {
-	gchar *scrobbler_url;
 	gchar *username;
 	gchar *url;
 	gchar *auth;
@@ -749,31 +808,25 @@ rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 		return;
 	}
 
-	scrobbler_url = eel_gconf_get_string (CONF_AUDIOSCROBBLER_URL);
-	if (scrobbler_url == NULL) {
-		scrobbler_url = g_strdup (SCROBBLER_URL);
-	}
-
 	username = soup_uri_encode (audioscrobbler->priv->username, EXTRA_URI_ENCODE_CHARS);
 	timestamp = time (NULL);
 
-	autharg = g_strdup_printf ("%s%d", LASTFM_API_SECRET, timestamp);
+	autharg = g_strdup_printf ("%s%d", audioscrobbler->priv->api_secret, timestamp);
 	auth = mkmd5 (autharg);
 
 	url = g_strdup_printf ("%s?hs=true&p=%s&c=%s&v=%s&u=%s&t=%d&a=%s&api_key=%s&sk=%s",
-			       scrobbler_url,
+			       audioscrobbler->priv->scrobbler_url,
 			       SCROBBLER_VERSION,
 			       CLIENT_ID,
 			       CLIENT_VERSION,
 			       username,
 			       timestamp,
 			       auth,
-	                       LASTFM_API_KEY,
+	                       audioscrobbler->priv->api_key,
 	                       audioscrobbler->priv->session_key);
 
 	g_free (auth);
 	g_free (autharg);
-	g_free (scrobbler_url);
 	g_free (username);
 
 	rb_debug ("Performing handshake with Audioscrobbler server: %s", url);

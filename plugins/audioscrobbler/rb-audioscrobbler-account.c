@@ -46,6 +46,7 @@
 #define LASTFM_API_SECRET "776c85a04a445efa8f9ed7705473c606"
 #define LASTFM_API_URL "http://ws.audioscrobbler.com/2.0/"
 #define LASTFM_AUTH_URL "http://www.last.fm/api/auth/"
+#define LASTFM_SCROBBLER_URL "http://post.audioscrobbler.com/"
 
 #define LASTFM_SESSION_SETTINGS_FILE "lastfm_session"
 #define SESSION_KEY_REQUEST_TIMEOUT 15
@@ -133,7 +134,10 @@ rb_audioscrobbler_account_constructed (GObject *object)
 	                  NULL);
 
 	account->priv->audioscrobbler =
-		rb_audioscrobbler_new (RB_SHELL_PLAYER (rb_shell_get_player (account->priv->shell)));
+		rb_audioscrobbler_new (RB_SHELL_PLAYER (rb_shell_get_player (account->priv->shell)),
+		                       LASTFM_SCROBBLER_URL,
+		                       LASTFM_API_KEY,
+		                       LASTFM_API_SECRET);
 
 	rb_audioscrobbler_account_load_session_settings (account);
 }

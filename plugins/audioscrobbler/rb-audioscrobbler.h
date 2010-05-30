@@ -61,7 +61,10 @@ typedef struct
 
 GType			rb_audioscrobbler_get_type (void);
 
-RBAudioscrobbler *	rb_audioscrobbler_new (RBShellPlayer *shell_player);
+RBAudioscrobbler *	rb_audioscrobbler_new (RBShellPlayer *shell_player,
+                                               const char *scrobbler_url,
+                                               const char *api_key,
+                                               const char *api_secret);
 
 void                    rb_audioscrobbler_set_authentication_details (RBAudioscrobbler *audioscrobbler,
                                                                       const char *username,
