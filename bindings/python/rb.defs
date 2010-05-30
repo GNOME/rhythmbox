@@ -193,6 +193,13 @@
   (gtype-id "RB_TYPE_TRACK_TRANSFER_QUEUE")
 )
 
+(define-object Rating
+  (in-module "RB")
+  (parent "GtkWidget")
+  (c-name "RBRating")
+  (gtype-id "RB_TYPE_RATING")
+)
+
 ;; Enumerations and flags ...
 
 (define-enum ShellPlayerError
@@ -3048,4 +3055,13 @@
   (parameters
     '("RBSource*" "source")
   )
+)
+
+;; From rb-rating.h
+
+(define-function rating_new
+  (in-module "rb")
+  (c-name "rb_rating_new")
+  (is-constructor-of "RBRating")
+  (return-type "RBRating*")
 )
