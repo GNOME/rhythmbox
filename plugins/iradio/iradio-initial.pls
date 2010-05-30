@@ -78,3 +78,7 @@ genre20=
 file21=http://www.wbur.org/listen/feed/ogg.m3u
 title21=wbur.org - Boston's NPR news source
 genre21=News
+
+file22=http://www.kwur.com/icecast/kwurogg.m3u
+title22=KWUR 90.3 FM St. Louis Underground Radio
+genre22=
