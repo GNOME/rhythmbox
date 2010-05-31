@@ -240,7 +240,7 @@ batch_progress (RBTrackTransferBatch *batch,
 static void
 missing_plugins_retry_cb (gpointer inst, gboolean retry, RBTrackTransferQueue *queue)
 {
-	rb_track_transfer_batch_start (queue->priv->current, G_OBJECT (queue));
+	_rb_track_transfer_batch_start (queue->priv->current, G_OBJECT (queue));
 }
 #endif
 
@@ -259,13 +259,13 @@ actually_start_batch (RBTrackTransferQueue *queue)
 				 "track-progress",
 				 G_CALLBACK (batch_progress),
 				 queue, 0);
-	rb_track_transfer_batch_start (queue->priv->current, G_OBJECT (queue));
+	_rb_track_transfer_batch_start (queue->priv->current, G_OBJECT (queue));
 }
 
 static void
 error_response_cb (GtkDialog *dialog, gint response, RBTrackTransferQueue *queue)
 {
-	rb_track_transfer_batch_cancel (queue->priv->current);
+	_rb_track_transfer_batch_cancel (queue->priv->current);
 	g_object_unref (queue->priv->current);
 	queue->priv->current = NULL;
 
@@ -285,7 +285,7 @@ missing_encoder_response_cb (GtkDialog *dialog, gint response, RBTrackTransferQu
 	case GTK_RESPONSE_CANCEL:
 	case GTK_RESPONSE_DELETE_EVENT:
 		/* 'cancel' -> cancel the batch and start the next one */
-		rb_track_transfer_batch_cancel (queue->priv->current);
+		_rb_track_transfer_batch_cancel (queue->priv->current);
 		g_object_unref (queue->priv->current);
 		queue->priv->current = NULL;
 
@@ -454,7 +454,7 @@ rb_track_transfer_queue_cancel_batch (RBTrackTransferQueue *queue,
 	}
 
 	if (found) {
-		rb_track_transfer_batch_cancel (batch);
+		_rb_track_transfer_batch_cancel (batch);
 		g_object_unref (batch);
 
 		start_next_batch (queue);
@@ -618,13 +618,13 @@ impl_dispose (GObject *object)
 	RBTrackTransferQueue *queue = RB_TRACK_TRANSFER_QUEUE (object);
 
 	if (queue->priv->current != NULL) {
-		rb_track_transfer_batch_cancel (queue->priv->current);
+		_rb_track_transfer_batch_cancel (queue->priv->current);
 		g_object_unref (queue->priv->current);
 		queue->priv->current = NULL;
 	}
 
 	if (queue->priv->batch_queue != NULL) {
-		g_queue_foreach (queue->priv->batch_queue, (GFunc) rb_track_transfer_batch_cancel, NULL);
+		g_queue_foreach (queue->priv->batch_queue, (GFunc) _rb_track_transfer_batch_cancel, NULL);
 		g_queue_foreach (queue->priv->batch_queue, (GFunc) g_object_unref, NULL);
 		g_queue_free (queue->priv->batch_queue);
 	}

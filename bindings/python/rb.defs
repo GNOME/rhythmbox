@@ -2979,25 +2979,10 @@
   (return-type "guint")
 )
 
-(define-method start
-  (of-object "RBTrackTransferBatch")
-  (c-name "rb_track_transfer_batch_start")
-  (return-type "none")
-  (parameters
-    '("GObject*" "queue")
-  )
-)
-
 (define-method cancel
   (of-object "RBTrackTransferBatch")
   (c-name "rb_track_transfer_batch_cancel")
   (return-type "none")
-)
-
-(define-method next
-  (of-object "RBTrackTransferBatch")
-  (c-name "rb_track_transfer_batch_next")
-  (return-type "gboolean")
 )
 
 

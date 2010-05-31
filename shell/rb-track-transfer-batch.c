@@ -65,6 +65,8 @@ enum
 static void	rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass);
 static void	rb_track_transfer_batch_init (RBTrackTransferBatch *batch);
 
+static gboolean start_next (RBTrackTransferBatch *batch);
+
 static guint	signals[LAST_SIGNAL] = { 0 };
 
 struct _RBTrackTransferBatchPrivate
@@ -191,14 +193,26 @@ rb_track_transfer_batch_check_media_types (RBTrackTransferBatch *batch)
 }
 
 /**
- * rb_track_transfer_batch_start:
+ * rb_track_transfer_batch_cancel:
+ * @batch: a #RBTrackTransferBatch
+ *
+ * Cancels the batch.
+ */
+void
+rb_track_transfer_batch_cancel (RBTrackTransferBatch *batch)
+{
+	rb_track_transfer_queue_cancel_batch (batch->priv->queue, batch);
+}
+
+/**
+ * _rb_track_transfer_batch_start:
  * @batch: a #RBTrackTransferBatch
  * @queue: the #RBTrackTransferQueue
  *
  * Starts the batch transfer.  Only to be called by the #RBTrackTransferQueue.
  */
 void
-rb_track_transfer_batch_start (RBTrackTransferBatch *batch, GObject *queue)
+_rb_track_transfer_batch_start (RBTrackTransferBatch *batch, GObject *queue)
 {
 	gboolean total_duration_valid;
 	gboolean total_size_valid;
@@ -263,19 +277,20 @@ rb_track_transfer_batch_start (RBTrackTransferBatch *batch, GObject *queue)
 
 	g_signal_emit (batch, signals[STARTED], 0);
 
-	rb_track_transfer_batch_next (batch);
+	start_next (batch);
 }
 
 /**
- * rb_track_transfer_batch_cancel:
+ * _rb_track_transfer_batch_cancel:
  * @batch: a #RBTrackTransferBatch
  *
  * Cancels a batch transfer.  Only to be called by the #RBTrackTransferQueue.
  */
 void
-rb_track_transfer_batch_cancel (RBTrackTransferBatch *batch)
+_rb_track_transfer_batch_cancel (RBTrackTransferBatch *batch)
 {
 	batch->priv->cancelled = TRUE;
+	rb_debug ("batch being cancelled");
 
 	if (batch->priv->current_encoder != NULL) {
 		rb_encoder_cancel (batch->priv->current_encoder);
@@ -352,7 +367,7 @@ encoder_completed_cb (RBEncoder *encoder,
 			       mediatype,
 			       error);
 
-		rb_track_transfer_batch_next (batch);
+		start_next (batch);
 
 		g_object_unref (batch);
 	}
@@ -367,17 +382,8 @@ encoder_overwrite_cb (RBEncoder *encoder, GFile *file, RBTrackTransferBatch *bat
 	return overwrite;
 }
 
-/**
- * rb_track_transfer_batch_next:
- * @batch: a #RBTrackTransferBatch
- *
- * Starts the transfer of the next entry in the batch.
- * Only to be called by the #RBTrackTransferQueue.
- *
- * Return value: %FALSE if there were no more entries to transfer
- */
-gboolean
-rb_track_transfer_batch_next (RBTrackTransferBatch *batch)
+static gboolean
+start_next (RBTrackTransferBatch *batch)
 {
 	GList *n;
 	char *media_type;

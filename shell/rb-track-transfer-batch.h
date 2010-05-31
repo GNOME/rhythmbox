@@ -91,10 +91,13 @@ void			rb_track_transfer_batch_add		(RBTrackTransferBatch *batch,
 								 RhythmDBEntry *entry);
 
 guint			rb_track_transfer_batch_check_media_types (RBTrackTransferBatch *batch);
-void			rb_track_transfer_batch_start		(RBTrackTransferBatch *batch,
-								 GObject *queue);	/* eh */
+
 void			rb_track_transfer_batch_cancel		(RBTrackTransferBatch *batch);
-gboolean		rb_track_transfer_batch_next		(RBTrackTransferBatch *batch);
+
+/* called by the transfer queue */
+void			_rb_track_transfer_batch_start		(RBTrackTransferBatch *batch,
+								 GObject *queue);	/* eh */
+void			_rb_track_transfer_batch_cancel		(RBTrackTransferBatch *batch);
 
 G_END_DECLS
 
