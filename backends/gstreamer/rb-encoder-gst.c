@@ -1024,6 +1024,7 @@ rb_encoder_gst_cancel (RBEncoder *encoder)
 
 	if (priv->outstream != NULL) {
 		GError *error = NULL;
+		GFile *f;
 		g_output_stream_close (priv->outstream, NULL, &error);
 		if (error != NULL) {
 			rb_debug ("error closing output stream: %s", error->message);
@@ -1031,6 +1032,15 @@ rb_encoder_gst_cancel (RBEncoder *encoder)
 		}
 		g_object_unref (priv->outstream);
 		priv->outstream = NULL;
+
+		/* try to delete the output file, since it's incomplete */
+		error = NULL;
+		f = g_file_new_for_uri (priv->dest_uri);
+		if (g_file_delete (f, NULL, &error) == FALSE) {
+			rb_debug ("error deleting incomplete output file: %s", error->message);
+			g_error_free (error);
+		}
+		g_object_unref (f);
 	}
 
 	rb_encoder_gst_emit_completed (RB_ENCODER_GST (encoder));
