@@ -517,9 +517,15 @@ upload_track (RBMtpThread *thread, RBMtpThreadTask *task)
 	if (LIBMTP_Send_Track_From_File (thread->device, task->filename, task->track, NULL, NULL)) {
 		stack = LIBMTP_Get_Errorstack (thread->device);
 		rb_debug ("unable to send track: %s", stack->error_text);
-		error = g_error_new (RB_MTP_THREAD_ERROR, RB_MTP_THREAD_ERROR_SEND_TRACK,
-				     _("Unable to send file to MTP device: %s"),
-				     stack->error_text);
+
+		if (stack->errornumber == LIBMTP_ERROR_STORAGE_FULL) {
+			error = g_error_new (RB_MTP_THREAD_ERROR, RB_MTP_THREAD_ERROR_NO_SPACE,
+					     _("No space left on MTP device"));
+		} else {
+			error = g_error_new (RB_MTP_THREAD_ERROR, RB_MTP_THREAD_ERROR_SEND_TRACK,
+					     _("Unable to send file to MTP device: %s"),
+					     stack->error_text);
+		}
 		LIBMTP_Clear_Errorstack (thread->device);
 		task->track->item_id = 0;		/* is this actually an invalid item ID? */
 	}
