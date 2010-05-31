@@ -219,16 +219,12 @@ set_error (RBEncoderGst *encoder, GError *error)
 
 	/* translate some GStreamer errors into generic ones */
 	if (g_error_matches (error, GST_RESOURCE_ERROR, GST_RESOURCE_ERROR_NO_SPACE_LEFT)) {
-		GError *old = error;
-		error = g_error_new (RB_ENCODER_ERROR, RB_ENCODER_ERROR_OUT_OF_SPACE, "%s", old->message);
-		g_error_free (old);
+		encoder->priv->error = g_error_new (RB_ENCODER_ERROR, RB_ENCODER_ERROR_OUT_OF_SPACE, "%s", error->message);
 	} else if (g_error_matches (error, GST_RESOURCE_ERROR, GST_RESOURCE_ERROR_OPEN_WRITE)) {
-		GError *old = error;
-		error = g_error_new (RB_ENCODER_ERROR, RB_ENCODER_ERROR_DEST_READ_ONLY, "%s", old->message);
-		g_error_free (old);
+		encoder->priv->error = g_error_new (RB_ENCODER_ERROR, RB_ENCODER_ERROR_DEST_READ_ONLY, "%s", error->message);
+	} else {
+		encoder->priv->error = g_error_copy (error);
 	}
-
-	g_propagate_error (&encoder->priv->error, error);
 }
 
 static void
