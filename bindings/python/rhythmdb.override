@@ -1057,7 +1057,7 @@ _wrap_rhythmdb_query_append (PyGObject *self, PyObject *args, PyObject *kwargs)
 				return NULL;
 			}
 			Py_DECREF (py_type);
-	
+
 			/* Check that there are enough elements left. */
 			switch (type) {
 			case RHYTHMDB_QUERY_END:
@@ -1100,8 +1100,9 @@ _wrap_rhythmdb_query_append (PyGObject *self, PyObject *args, PyObject *kwargs)
 					return NULL;
 				}
 				Py_DECREF (obj);
-	
+
 				obj = PySequence_GetItem (criteria, index+2);
+				g_value_init (&value, rhythmdb_get_property_type (RHYTHMDB_RHYTHMDB(self->obj), propid));
 				if (propid == RHYTHMDB_PROP_TYPE) {
 					RhythmDBEntryType et;
 					if (pyg_boxed_check(obj, RHYTHMDB_TYPE_ENTRY_TYPE)) {
@@ -1113,15 +1114,8 @@ _wrap_rhythmdb_query_append (PyGObject *self, PyObject *args, PyObject *kwargs)
 						g_free (s);
 						return NULL;
 					}
-					g_value_init (&value, rhythmdb_get_property_type (RHYTHMDB_RHYTHMDB(self->obj), propid));
 					g_value_set_pointer (&value, et);
 				} else {
-					gtype = pyg_type_from_object ((PyObject *)obj->ob_type);
-					if (!gtype) {
-						PyErr_SetString (PyExc_TypeError, "can't map metadata to GType system");
-						return NULL;
-					}
-					g_value_init (&value, gtype);
 					if (pyg_value_from_pyobject  (&value, obj) < 0) {
 						Py_XDECREF (obj);
 						g_value_unset (&value);
@@ -1132,7 +1126,7 @@ _wrap_rhythmdb_query_append (PyGObject *self, PyObject *args, PyObject *kwargs)
 				Py_DECREF (obj);
 				break;
 			}
-	
+
 			rhythmdb_query_append_params (RHYTHMDB_RHYTHMDB (self->obj), query, type, propid, &value);
 			if (G_IS_VALUE (&value))
 				g_value_unset (&value);
@@ -1141,7 +1135,7 @@ _wrap_rhythmdb_query_append (PyGObject *self, PyObject *args, PyObject *kwargs)
 			remaining = remaining - increment;
 		} /* End criteria loop */
 	} /* End args loop */
-	
+
 	Py_RETURN_NONE;
 }
 %%

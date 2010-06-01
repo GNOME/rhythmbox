@@ -313,6 +313,15 @@
   )
 )
 
+(define-method query_to_string
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_query_to_string")
+  (return-type "char*")
+  (parameters
+    '("RhythmDBQuery*" "query")
+  )
+)
+
 (define-method entry_get
   (of-object "RhythmDB")
   (c-name "rhythmdb_entry_get")
