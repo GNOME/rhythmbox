@@ -47,33 +47,33 @@ title11=WKNC 88.1 FM (NC State) (High Quality)
 genre11=Music
 
 # http://www.nrk.no/lyd/
-file14=http://media.hiof.no/streams/m3u/nrk-p1-172.ogg.m3u
-title14=NRK P1 (Norway)
+file12=http://media.hiof.no/streams/m3u/nrk-p1-172.ogg.m3u
+title12=NRK P1 (Norway)
+genre12=General
+
+file13=http://media.hiof.no/streams/m3u/nrk-p2-172.ogg.m3u
+title13=NRK P2 (Norway)
+genre13=General
+
+file14=http://media.hiof.no/streams/m3u/nrk-petre-172.ogg.m3u
+title14=NRK P3 (Norway)
 genre14=General
 
-file15=http://media.hiof.no/streams/m3u/nrk-p2-172.ogg.m3u
-title15=NRK P2 (Norway)
-genre15=General
+file15=http://media.hiof.no/streams/m3u/nrk-alltid-nyheter-172.ogg.m3u
+title15=NRK Alltid Nyheter (Norway)
+genre15=
 
-file16=http://media.hiof.no/streams/m3u/nrk-petre-172.ogg.m3u
-title16=NRK P3 (Norway)
-genre16=General
+file16=http://media.hiof.no/streams/m3u/nrk-mpetre-172.ogg.m3u
+title16=NRK mP3 (Norway)
+genre16=
 
-file17=http://media.hiof.no/streams/m3u/nrk-alltid-nyheter-172.ogg.m3u
-title17=NRK Alltid Nyheter (Norway)
+file17=http://media.hiof.no/streams/m3u/nrk-alltid-klassisk-172.ogg.m3u
+title17=NRK Alltid Klassisk (Norway)
 genre17=
 
-file18=http://media.hiof.no/streams/m3u/nrk-mpetre-172.ogg.m3u
-title18=NRK mP3 (Norway)
+file18=http://media.hiof.no/streams/m3u/nrk-stortinget-172.ogg.m3u
+title18=NRK Stortinget (Norway)
 genre18=
-
-file19=http://media.hiof.no/streams/m3u/nrk-alltid-klassisk-172.ogg.m3u
-title19=NRK Alltid Klassisk (Norway)
-genre19=
-
-file20=http://media.hiof.no/streams/m3u/nrk-stortinget-172.ogg.m3u
-title20=NRK Stortinget (Norway)
-genre20=
 
 file21=http://www.kwur.com/icecast/kwurogg.m3u
 title21=KWUR 90.3 FM St. Louis Underground Radio
