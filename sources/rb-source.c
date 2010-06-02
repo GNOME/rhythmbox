@@ -177,6 +177,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
+	klass->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
 	klass->impl_get_entry_view = default_get_entry_view;
 	klass->impl_copy = default_copy;
 	klass->impl_reset_filters = default_reset_filters;

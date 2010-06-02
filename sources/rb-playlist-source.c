@@ -189,7 +189,6 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_delete_action = impl_get_delete_action;
 

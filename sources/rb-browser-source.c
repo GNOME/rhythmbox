@@ -204,7 +204,6 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	source_class->impl_get_property_views = impl_get_property_views;
 	source_class->impl_reset_filters = impl_reset_filters;
 	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
