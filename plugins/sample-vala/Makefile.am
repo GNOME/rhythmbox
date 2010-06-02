@@ -37,7 +37,7 @@ plugin_in_files = sample-vala.rb-plugin.in
 
 %.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po); $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-VALAFLAGS = --vapidir=$(top_srcdir)/bindings/vala --pkg=rhythmdb --pkg=rb
+VALAFLAGS = --vapidir=$(top_srcdir)/bindings/vala --pkg=rhythmdb --pkg=rb --pkg=gstreamer-0.10
 
 %.c %.h: %.vala
 	$(VALAC) -C $(VALAFLAGS) $^
