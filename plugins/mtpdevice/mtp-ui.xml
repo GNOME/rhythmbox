@@ -1,8 +1,11 @@
 <ui>
   <popup name="MTPSourcePopup">
     <menuitem name="MTPSrcPopupSync" action="MediaPlayerSourceSync"/>
+    <separator />
     <menuitem name="MTPSrcPopupRename" action="MTPSourceRename"/>
+    <separator />
     <menuitem name="MTPSrcPopupEject" action="RemovableSourceEject"/>
+    <separator />
     <menuitem name="MTPSrcPopupProperties" action="MTPSourceProperties"/>
   </popup>
 </ui>
