@@ -32,9 +32,6 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 
-#include "rb-plugin.h"
-#include "rb-shell.h"
-
 G_BEGIN_DECLS
 
 typedef enum
@@ -73,13 +70,7 @@ typedef struct
 
 GType                           rb_audioscrobbler_account_get_type (void);
 
-RBAudioscrobblerAccount *       rb_audioscrobbler_account_new (RBShell *shell);
-
-GtkWidget *                     rb_audioscrobbler_account_get_config_widget (RBAudioscrobblerAccount *account,
-                                                                             RBPlugin *plugin);
-
-void                            rb_audioscrobbler_account_auth_button_clicked_cb (GtkButton *button,
-                                                                                  RBAudioscrobblerAccount *account);
+RBAudioscrobblerAccount *       rb_audioscrobbler_account_new (void);
 
 void                            rb_audioscrobbler_account_authenticate (RBAudioscrobblerAccount *account);
 void                            rb_audioscrobbler_account_logout (RBAudioscrobblerAccount *account);

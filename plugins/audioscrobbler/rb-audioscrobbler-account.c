@@ -33,7 +33,6 @@
 #include <libsoup/soup.h>
 #include <libsoup/soup-gnome.h>
 
-#include "rb-audioscrobbler.h"
 #include "rb-audioscrobbler-account.h"
 #include "rb-builder-helpers.h"
 #include "rb-debug.h"
@@ -53,8 +52,6 @@
 
 struct _RBAudioscrobblerAccountPrivate
 {
-	RBShell *shell;
-
 	/* Authentication info */
 	gchar *username;
 	gchar *auth_token;
@@ -71,9 +68,6 @@ struct _RBAudioscrobblerAccountPrivate
 
 	/* HTTP requests session */
 	SoupSession *soup_session;
-
-	/* The scrobbler */
-	RBAudioscrobbler *audioscrobbler;
 };
 
 #define RB_AUDIOSCROBBLER_ACCOUNT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_ACCOUNT, RBAudioscrobblerAccountPrivate))
@@ -89,10 +83,6 @@ static void	     rb_audioscrobbler_account_set_property (GObject *object,
 static void          rb_audioscrobbler_account_dispose (GObject *object);
 static void          rb_audioscrobbler_account_finalize (GObject *object);
 
-static void          rb_audioscrobbler_account_on_login_status_change_cb (RBAudioscrobblerAccount *account,
-                                                                          RBAudioscrobblerAccountLoginStatus status,
-                                                                          gpointer user_data);
-
 static void          rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *account);
 static void          rb_audioscrobbler_account_save_session_settings (RBAudioscrobblerAccount *account);
 
@@ -107,7 +97,9 @@ static void          rb_audioscrobbler_account_got_session_key_cb (SoupSession *
 enum
 {
 	PROP_0,
-	PROP_SHELL,
+	PROP_USERNAME,
+	PROP_SESSION_KEY,
+	PROP_LOGIN_STATUS
 };
 
 enum
@@ -128,17 +120,6 @@ rb_audioscrobbler_account_constructed (GObject *object)
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_account_parent_class, constructed, object);
 	account = RB_AUDIOSCROBBLER_ACCOUNT (object);
 
-	g_signal_connect (account,
-	                  "login-status-changed",
-	                  (GCallback)rb_audioscrobbler_account_on_login_status_change_cb,
-	                  NULL);
-
-	account->priv->audioscrobbler =
-		rb_audioscrobbler_new (RB_SHELL_PLAYER (rb_shell_get_player (account->priv->shell)),
-		                       LASTFM_SCROBBLER_URL,
-		                       LASTFM_API_KEY,
-		                       LASTFM_API_SECRET);
-
 	rb_audioscrobbler_account_load_session_settings (account);
 }
 
@@ -155,12 +136,29 @@ rb_audioscrobbler_account_class_init (RBAudioscrobblerAccountClass *klass)
 	object_class->set_property = rb_audioscrobbler_account_set_property;
 
 	g_object_class_install_property (object_class,
-	                                 PROP_SHELL,
-	                                 g_param_spec_object ("shell",
-	                                                      "RBShell",
-	                                                      "RBShell object",
-	                                                      RB_TYPE_SHELL,
-                                                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	                                 PROP_USERNAME,
+	                                 g_param_spec_string ("username",
+	                                                      "Username",
+	                                                      "Username",
+	                                                      NULL,
+                                                              G_PARAM_READABLE));
+
+	g_object_class_install_property (object_class,
+	                                 PROP_SESSION_KEY,
+	                                 g_param_spec_string ("session-key",
+	                                                      "Session Key",
+	                                                      "Session key used to authenticate the user",
+	                                                      NULL,
+                                                              G_PARAM_READABLE));
+
+	g_object_class_install_property (object_class,
+	                                 PROP_LOGIN_STATUS,
+	                                 g_param_spec_enum ("login-status",
+	                                                     "Login Status",
+	                                                     "Login status",
+	                                                     RB_TYPE_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS,
+	                                                     RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT,
+                                                             G_PARAM_READABLE));
 
 	/**
 	 * RBAudioscrobblerAccount::login-status-changed:
@@ -216,11 +214,6 @@ rb_audioscrobbler_account_dispose (GObject *object)
 		account->priv->soup_session = NULL;
 	}
 
-	if (account->priv->audioscrobbler != NULL) {
-		g_object_unref (account->priv->audioscrobbler);
-		account->priv->audioscrobbler = NULL;
-	}
-
 	G_OBJECT_CLASS (rb_audioscrobbler_account_parent_class)->dispose (object);
 }
 
@@ -239,10 +232,9 @@ rb_audioscrobbler_account_finalize (GObject *object)
 }
 
 RBAudioscrobblerAccount *
-rb_audioscrobbler_account_new (RBShell *shell)
+rb_audioscrobbler_account_new (void)
 {
 	return g_object_new (RB_TYPE_AUDIOSCROBBLER_ACCOUNT,
-	                     "shell", shell,
                              NULL);
 }
 
@@ -255,8 +247,14 @@ rb_audioscrobbler_account_get_property (GObject *object,
 	RBAudioscrobblerAccount *account = RB_AUDIOSCROBBLER_ACCOUNT (object);
 
 	switch (prop_id) {
-	case PROP_SHELL:
-		g_value_set_object (value, account->priv->shell);
+	case PROP_USERNAME:
+		g_value_set_string (value, account->priv->username);
+		break;
+	case PROP_SESSION_KEY:
+		g_value_set_string (value, account->priv->session_key);
+		break;
+	case PROP_LOGIN_STATUS:
+		g_value_set_enum (value, account->priv->login_status);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -270,56 +268,11 @@ rb_audioscrobbler_account_set_property (GObject *object,
                                         const GValue *value,
                                         GParamSpec *pspec)
 {
-	RBAudioscrobblerAccount *account = RB_AUDIOSCROBBLER_ACCOUNT (object);
-
 	switch (prop_id) {
-	case PROP_SHELL:
-		account->priv->shell = g_value_get_object (value);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
-}
-
-static void
-rb_audioscrobbler_account_on_login_status_change_cb (RBAudioscrobblerAccount *account,
-                                                     RBAudioscrobblerAccountLoginStatus status,
-                                                     gpointer user_data)
-{
-	char *status_text;
-	char *button_text;
-
-	if (account->priv->audioscrobbler != NULL) {
-		rb_audioscrobbler_set_authentication_details (account->priv->audioscrobbler,
-		                                              account->priv->username,
-		                                              account->priv->session_key);
-	}
-
-	if (account->priv->config_widget == NULL)
-		return;
-
-	switch (status) {
-	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN:
-		status_text = g_strdup_printf (_("Logged in as %s"), account->priv->username);
-		button_text = g_strdup (_("Logout"));
-		break;
-	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN:
-		status_text = g_strdup (_("Waiting for authentication..."));
-		button_text = g_strdup (_("Cancel"));
-		break;
-	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT:
-	default:
-		status_text = g_strdup (_("You are not currently logged in"));
-		button_text = g_strdup (_("Login"));
-		break;
-	}
-
-	gtk_label_set_label (GTK_LABEL (account->priv->login_status_label), status_text);
-	gtk_button_set_label (GTK_BUTTON (account->priv->auth_button), button_text);
-
-	g_free (status_text);
-	g_free (button_text);
 }
 
 static gchar *
@@ -471,73 +424,6 @@ rb_audioscrobbler_account_logout (RBAudioscrobblerAccount *account)
 	account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT;
 	g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
 	               0, account->priv->login_status);
-}
-
-GtkWidget *
-rb_audioscrobbler_account_get_config_widget (RBAudioscrobblerAccount *account,
-                                             RBPlugin *plugin)
-{
-	GtkBuilder *builder;
-	char *builder_file;
-	char *status_text;
-	char *button_text;
-
-	if (account->priv->config_widget)
-		return account->priv->config_widget;
-
-	builder_file = rb_plugin_find_file (plugin, "audioscrobbler-prefs.ui");
-	g_assert (builder_file != NULL);
-	builder = rb_builder_load (builder_file, account);
-	g_free (builder_file);
-
-	account->priv->config_widget = GTK_WIDGET (gtk_builder_get_object (builder, "audioscrobbler_vbox"));
-	account->priv->login_status_label = GTK_WIDGET (gtk_builder_get_object (builder, "login_status_label"));
-	account->priv->auth_button = GTK_WIDGET (gtk_builder_get_object (builder, "auth_button"));
-
-	rb_builder_boldify_label (builder, "audioscrobbler_label");
-
-
-
-	if (account->priv->audioscrobbler != NULL) {
-		rb_audioscrobbler_set_authentication_details (account->priv->audioscrobbler,
-		                                              account->priv->username,
-		                                              account->priv->session_key);
-	}
-
-	switch (account->priv->login_status) {
-	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN:
-		status_text = g_strdup_printf (_("Logged in as %s"), account->priv->username);
-		button_text = g_strdup (_("Logout"));
-		break;
-	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN:
-		status_text = g_strdup (_("Waiting for authentication..."));
-		button_text = g_strdup (_("Cancel"));
-		break;
-	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT:
-	default:
-		status_text = g_strdup (_("You are not currently logged in"));
-		button_text = g_strdup (_("Login"));
-		break;
-	}
-
-	gtk_label_set_label (GTK_LABEL (account->priv->login_status_label), status_text);
-	gtk_button_set_label (GTK_BUTTON (account->priv->auth_button), button_text);
-
-	g_free (status_text);
-	g_free (button_text);
-
-	return account->priv->config_widget;
-}
-
-void
-rb_audioscrobbler_account_auth_button_clicked_cb (GtkButton *button,
-                                                  RBAudioscrobblerAccount *account)
-{
-	if (account->priv->login_status == RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT) {
-		rb_audioscrobbler_account_authenticate (account);
-	} else {
-		rb_audioscrobbler_account_logout (account);
-	}
 }
 
 /* private authentication functions */
