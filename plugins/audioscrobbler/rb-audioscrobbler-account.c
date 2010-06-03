@@ -426,6 +426,27 @@ rb_audioscrobbler_account_logout (RBAudioscrobblerAccount *account)
 	               0, account->priv->login_status);
 }
 
+void
+rb_audioscrobbler_account_notify_of_auth_error (RBAudioscrobblerAccount *account)
+{
+	/* After a session has been granted, no authentication methods will be called
+	 * therefore we must rely on other classes which call other methods (submissions,
+	 * radio, etc) to notify us when there is an authentication error
+	 */
+
+	g_free (account->priv->username);
+	account->priv->username = NULL;
+
+	g_free (account->priv->session_key);
+	account->priv->session_key = NULL;
+
+	rb_audioscrobbler_account_save_session_settings (account);
+
+	account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_AUTH_ERROR;
+	g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
+	               0, account->priv->login_status);
+}
+
 /* private authentication functions */
 static void
 rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account)
@@ -653,6 +674,7 @@ rb_audioscrobbler_account_login_status_get_type (void)
 			ENUM_ENTRY (RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT, "Logged out"),
 			ENUM_ENTRY (RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN, "Logging in"),
 			ENUM_ENTRY (RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN, "Logged in"),
+			ENUM_ENTRY (RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_AUTH_ERROR, "Authentication Error"),
 			{ 0, 0, 0 }
 		};
 

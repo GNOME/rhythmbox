@@ -197,6 +197,14 @@ enum
 	PROP_API_SECRET
 };
 
+enum
+{
+	AUTHENTICATION_ERROR,
+	LAST_SIGNAL
+};
+
+static guint rb_audioscrobbler_signals[LAST_SIGNAL] = { 0 };
+
 G_DEFINE_TYPE (RBAudioscrobbler, rb_audioscrobbler, G_TYPE_OBJECT)
 
 
@@ -262,6 +270,23 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 							      "API secret used to authenticate the application with the scrobbler service",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	/**
+	 * RBAudioscrobbler::authentication-error:
+	 * @account: the #RBAudioscrobblerAccount
+	 * @status: new status
+	 *
+	 * Emitted when an authentication error occurs.
+	 */
+	rb_audioscrobbler_signals[AUTHENTICATION_ERROR] =
+		g_signal_new ("authentication-error",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBAudioscrobblerClass, authentication_error),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerPrivate));
 }
@@ -685,6 +710,9 @@ rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage 
 		} else if (g_str_has_prefix (breaks[0], "BADAUTH")) {
 			rb_debug ("Bad authorization");
 			audioscrobbler->priv->status = BADAUTH;
+			/* emit an authentication error signal.
+			 * this is the only error which needs to be addressed from outside this class */
+			g_signal_emit (audioscrobbler, rb_audioscrobbler_signals[AUTHENTICATION_ERROR], 0);
 		} else if (g_str_has_prefix (breaks[0], "BADTIME")) {
 			rb_debug ("Bad timestamp");
 			audioscrobbler->priv->status = BAD_TIMESTAMP;

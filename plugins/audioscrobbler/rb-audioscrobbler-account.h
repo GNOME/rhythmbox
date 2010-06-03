@@ -38,7 +38,8 @@ typedef enum
 {
 	RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT,
 	RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN,
-	RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN
+	RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN,
+	RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_AUTH_ERROR
 } RBAudioscrobblerAccountLoginStatus;
 
 GType rb_audioscrobbler_account_login_status_get_type (void);
@@ -74,6 +75,7 @@ RBAudioscrobblerAccount *       rb_audioscrobbler_account_new (void);
 
 void                            rb_audioscrobbler_account_authenticate (RBAudioscrobblerAccount *account);
 void                            rb_audioscrobbler_account_logout (RBAudioscrobblerAccount *account);
+void                            rb_audioscrobbler_account_notify_of_auth_error (RBAudioscrobblerAccount *account);
 
 G_END_DECLS
 

@@ -56,6 +56,9 @@ typedef struct
 typedef struct
 {
 	GObjectClass parent_class;
+
+	/* signals */
+	void (*authentication_error) (RBAudioscrobbler *audioscrobbler);
 } RBAudioscrobblerClass;
 
 

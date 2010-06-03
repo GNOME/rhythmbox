@@ -70,6 +70,9 @@ static void rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscro
                                                                      RBAudioscrobblerAccountLoginStatus status,
                                                                      gpointer user_data);
 
+static void rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb (RBAudioscrobbler *audioscrobbler,
+                                                                                gpointer user_data);
+
 G_DEFINE_TYPE (RBAudioscrobblerProfileSource, rb_audioscrobbler_profile_source, RB_TYPE_SOURCE)
 
 RBSource *
@@ -163,6 +166,10 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 		                       LASTFM_SCROBBLER_URL,
 		                       LASTFM_API_KEY,
 		                       LASTFM_API_SECRET);
+	g_signal_connect (source->priv->audioscrobbler,
+	                  "authentication-error",
+	                  (GCallback)rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb,
+	                  source);
 
 	/* sync account settings to UI and scrobbler settings */
 	g_object_get (source->priv->account, "login-status", &login_status, NULL);
@@ -237,6 +244,7 @@ rb_audioscrobbler_profile_source_login_bar_response (GtkInfoBar *info_bar,
 
 	switch (status) {
 	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT:
+	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_AUTH_ERROR:
 		rb_audioscrobbler_account_authenticate (source->priv->account);
 		break;
 	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN:	
@@ -289,6 +297,12 @@ rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount
 		button_text = g_strdup (_("Logout"));
 		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->login_bar), GTK_MESSAGE_INFO);
 		break;
+	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_AUTH_ERROR:
+		gtk_widget_show_all (source->priv->login_bar);
+		label_text = g_strdup (_("Authentication error. Please try logging in again."));
+		button_text = g_strdup (_("Login"));
+		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->login_bar), GTK_MESSAGE_WARNING);
+		break;
 	default:
 		g_assert_not_reached ();
 		break;
@@ -301,4 +315,13 @@ rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount
 	g_free (session_key);
 	g_free (label_text);
 	g_free (button_text);
+}
+
+static void
+rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb (RBAudioscrobbler *audioscrobbler,
+                                                                    gpointer user_data)
+{
+	RBAudioscrobblerProfileSource *source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (user_data);
+
+	rb_audioscrobbler_account_notify_of_auth_error (source->priv->account);
 }
