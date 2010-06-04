@@ -15,6 +15,7 @@ GTK_BUILDER_FILES =					\
 	podcast-properties.ui				\
 	song-info.ui					\
 	song-info-multiple.ui				\
+	sync-dialog.ui					\
 	sync-state.ui					\
 	uri-new.ui
 

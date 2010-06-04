@@ -58,16 +58,11 @@ typedef struct {
 	GtkDialog *properties_dialog;
 	RBSyncBarData volume_usage;
 
-	/* segmented bars used in various places */
-	SegmentedBarData volume_usage;
-	SegmentedBarData sync_before;		/* probably the same as volume usage? */
-	SegmentedBarData sync_after;
-
-	/* other bits of device state */
-	guint64 total_music_size;
-	guint64 total_podcast_size;
-	guint64 sync_music_size;
-	guint64 sync_podcast_size;
+	/* sync settings dialog bits */
+	GtkWidget *sync_dialog;
+	GtkWidget *sync_dialog_label;
+	GtkWidget *sync_dialog_error_box;
+	guint sync_dialog_update_id;
 
 	/* sync state */
 	RBSyncState *sync_state;
@@ -591,7 +586,170 @@ sync_delete_done_cb (RBMediaPlayerSource *source, gpointer dontcare)
 }
 
 static gboolean
-sync_idle_cb_delete_entries (RBMediaPlayerSource *source)
+sync_has_items_enabled (RBMediaPlayerSource *source)
+{
+	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
+	if (rb_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_MUSIC) == FALSE &&
+	    rb_sync_settings_has_enabled_groups (priv->sync_settings, SYNC_CATEGORY_MUSIC) == FALSE &&
+	    rb_sync_settings_sync_category (priv->sync_settings, SYNC_CATEGORY_PODCAST) == FALSE &&
+	    rb_sync_settings_has_enabled_groups (priv->sync_settings, SYNC_CATEGORY_PODCAST) == FALSE) {
+		rb_debug ("no sync items are enabled");
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+static gboolean
+sync_has_enough_space (RBMediaPlayerSource *source)
+{
+	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
+	if (priv->sync_state->sync_space_needed > rb_media_player_source_get_capacity (source)) {
+		rb_debug ("not enough space for selected sync items");
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+static void
+update_sync_settings_dialog (RBMediaPlayerSource *source)
+{
+	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
+	gboolean can_continue;
+
+	if (sync_has_items_enabled (source) == FALSE) {
+		can_continue = FALSE;
+		gtk_label_set_text (GTK_LABEL (priv->sync_dialog_label),
+				    _("You have not selected any music, playlists, or podcasts to transfer to this device."));
+	} else if (sync_has_enough_space (source) == FALSE) {
+		can_continue = FALSE;
+		gtk_label_set_text (GTK_LABEL (priv->sync_dialog_label),
+				    _("There is not enough space on the device to transfer the selected music, playlists and podcasts."));
+	} else {
+		can_continue = TRUE;
+	}
+
+	gtk_widget_set_visible (priv->sync_dialog_error_box, !can_continue);
+	gtk_dialog_set_response_sensitive (GTK_DIALOG (priv->sync_dialog), GTK_RESPONSE_YES, can_continue);
+}
+
+static void
+sync_dialog_state_update (RBSyncState *state, RBMediaPlayerSource *source)
+{
+	update_sync_settings_dialog (source);
+}
+
+static void
+sync_confirm_dialog_cb (GtkDialog *dialog,
+			gint response_id,
+			RBMediaPlayerSource *source)
+{
+	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
+
+	g_signal_handler_disconnect (priv->sync_state, priv->sync_dialog_update_id);
+	priv->sync_dialog_update_id = 0;
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+	priv->sync_dialog = NULL;
+	priv->sync_dialog_label = NULL;
+
+	if (response_id != GTK_RESPONSE_YES) {
+		rb_debug ("user doesn't want to sync");
+		g_idle_add ((GSourceFunc)sync_idle_cb_cleanup, source);
+	} else {
+		rb_debug ("user wants to sync");
+		g_idle_add ((GSourceFunc) sync_idle_delete_entries, source);
+	}
+}
+
+
+static void
+display_sync_settings_dialog (RBMediaPlayerSource *source)
+{
+	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
+	GtkWidget *content;
+	GtkWidget *widget;
+	GtkBuilder *builder;
+	const char *ui_file;
+	char *name;
+	char *title;
+
+	g_object_get (source, "name", &name, NULL);
+	title = g_strdup_printf (_("%s Sync Settings"), name);
+
+	priv->sync_dialog = gtk_dialog_new_with_buttons (title,
+							 NULL,
+							 0,
+							 _("Sync with the device"),
+							 GTK_RESPONSE_YES,
+							 _("Cancel"),
+							 GTK_RESPONSE_CANCEL,
+							 NULL);
+	g_free (title);
+
+	priv->sync_dialog_update_id = g_signal_connect_object (priv->sync_state,
+							       "updated",
+							       G_CALLBACK (sync_dialog_state_update),
+							       source, 0);
+	g_signal_connect_object (priv->sync_dialog,
+				 "response",
+				 G_CALLBACK (sync_confirm_dialog_cb),
+				 source, 0);
+
+	/* display the sync settings, the sync state, and some helpful text indicating why
+	 * we're not syncing already
+	 */
+	content = gtk_dialog_get_content_area (GTK_DIALOG (priv->sync_dialog));
+
+	ui_file = rb_file ("sync-dialog.ui");
+	if (ui_file == NULL) {
+		g_warning ("Couldn't find sync-state.ui");
+		gtk_widget_show_all (priv->sync_dialog);
+		return;
+	}
+
+	builder = rb_builder_load (ui_file, NULL);
+	if (builder == NULL) {
+		g_warning ("Couldn't load sync-state.ui");
+		gtk_widget_show_all (priv->sync_dialog);
+		return;
+	}
+
+	priv->sync_dialog_label = GTK_WIDGET (gtk_builder_get_object (builder, "sync-dialog-reason"));
+	priv->sync_dialog_error_box = GTK_WIDGET (gtk_builder_get_object (builder, "sync-dialog-message"));
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "sync-settings-ui-container"));
+	gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (widget), rb_sync_settings_ui_new (source, priv->sync_settings));
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "sync-state-ui-container"));
+	gtk_box_pack_start (GTK_BOX (widget), rb_sync_state_ui_new (priv->sync_state), TRUE, TRUE, 0);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, "sync-dialog"));
+	gtk_box_pack_start (GTK_BOX (content), widget, TRUE, TRUE, 0);
+
+	gtk_widget_show_all (priv->sync_dialog);
+	update_sync_settings_dialog (source);
+	g_object_unref (builder);
+}
+
+static gboolean
+sync_idle_cb_update_sync (RBMediaPlayerSource *source)
+{
+	update_sync (source);
+
+	if (sync_has_items_enabled (source) == FALSE || sync_has_enough_space (source) == FALSE) {
+		rb_debug ("displaying sync settings dialog");
+		display_sync_settings_dialog (source);
+		return FALSE;
+	}
+
+	rb_debug ("sync settings are acceptable");
+	return sync_idle_delete_entries (source);
+}
+
+static gboolean
+sync_idle_delete_entries (RBMediaPlayerSource *source)
 {
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
 	rb_debug ("deleting %d files from media player", priv->sync_state->sync_remove_count);
@@ -600,29 +758,6 @@ sync_idle_cb_delete_entries (RBMediaPlayerSource *source)
 					       (RBMediaPlayerSourceDeleteCallback) sync_delete_done_cb,
 					       NULL,
 					       NULL);
-	return FALSE;
-}
-
-static gboolean
-sync_idle_cb_update_sync (RBMediaPlayerSource *source)
-{
-	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
-
-	update_sync (source);
-
-	/* Check we have enough space on the device. */
-	if (priv->sync_space_needed > get_capacity (source)) {
-		rb_debug ("not enough free space on device; need %" G_GINT64_FORMAT ", capacity is %" G_GINT64_FORMAT,
-			  priv->sync_space_needed,
-			  get_capacity (source));
-		rb_error_dialog (NULL,
-				 _("Not enough free space to sync"),
-				 _("There is not enough free space on this device to transfer the selected music, playlists, and podcasts."));
-		g_idle_add ((GSourceFunc)sync_idle_cb_cleanup, source);
-		return FALSE;
-	}
-
-	g_idle_add ((GSourceFunc)sync_idle_cb_delete_entries, source);
 	return FALSE;
 }
 
