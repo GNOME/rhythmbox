@@ -245,6 +245,7 @@ rb_audioscrobbler_profile_source_login_bar_response (GtkInfoBar *info_bar,
 	switch (status) {
 	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT:
 	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_AUTH_ERROR:
+	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_CONNECTION_ERROR:
 		rb_audioscrobbler_account_authenticate (source->priv->account);
 		break;
 	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN:	
@@ -300,6 +301,12 @@ rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount
 	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_AUTH_ERROR:
 		gtk_widget_show_all (source->priv->login_bar);
 		label_text = g_strdup (_("Authentication error. Please try logging in again."));
+		button_text = g_strdup (_("Login"));
+		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->login_bar), GTK_MESSAGE_WARNING);
+		break;
+	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_CONNECTION_ERROR:
+		gtk_widget_show_all (source->priv->login_bar);
+		label_text = g_strdup (_("Connection error. Please try logging in again."));
 		button_text = g_strdup (_("Login"));
 		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->login_bar), GTK_MESSAGE_WARNING);
 		break;

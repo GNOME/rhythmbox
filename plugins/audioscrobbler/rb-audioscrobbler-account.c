@@ -542,8 +542,14 @@ rb_audioscrobbler_account_got_token_cb (SoupSession *session,
 		g_strfreev (post_split);
 		g_free (url);
 	} else {
-		/* failed. go back to being logged out */
-		rb_audioscrobbler_account_logout (account);
+		/* failed. report connection error */
+		rb_debug ("connection error attempting to retrieve auth token");
+
+		rb_audioscrobbler_account_cancel_session (account);
+
+		account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_CONNECTION_ERROR;
+		g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
+		               0, account->priv->login_status);
 	}
 }
 
@@ -635,7 +641,7 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
 		account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN;
 		g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
 		               0, account->priv->login_status);
-	} else {
+	} else if (msg->response_body->length != 0) {
 		char **pre_split;
 		char **post_split;
 		char *error;
@@ -659,6 +665,15 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
 		g_strfreev (pre_split);
 		g_strfreev (post_split);
 		g_free (error);
+	} else {
+		/* connection error */
+		rb_debug ("connection error attempting to retrieve session key");
+
+		rb_audioscrobbler_account_cancel_session (account);
+
+		account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_CONNECTION_ERROR;
+		g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
+		               0, account->priv->login_status);
 	}
 }
 
@@ -676,6 +691,7 @@ rb_audioscrobbler_account_login_status_get_type (void)
 			ENUM_ENTRY (RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN, "Logging in"),
 			ENUM_ENTRY (RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN, "Logged in"),
 			ENUM_ENTRY (RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_AUTH_ERROR, "Authentication Error"),
+			ENUM_ENTRY (RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_CONNECTION_ERROR, "Connection Error"),
 			{ 0, 0, 0 }
 		};
 
