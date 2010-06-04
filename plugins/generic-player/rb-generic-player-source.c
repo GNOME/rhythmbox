@@ -52,7 +52,7 @@
 #include "rhythmdb-import-job.h"
 #include "rb-import-errors-source.h"
 #include "rb-builder-helpers.h"
-#include "rb-media-player-sync-settings.h"
+#include "rb-sync-settings.h"
 
 static void impl_constructed (GObject *object);
 static void impl_dispose (GObject *object);

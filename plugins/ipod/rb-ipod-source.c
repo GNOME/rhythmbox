@@ -49,7 +49,7 @@
 #include "rhythmdb.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-media-player-source.h"
-#include "rb-media-player-sync-settings.h"
+#include "rb-sync-settings.h"
 #include "rb-playlist-source.h"
 #include "rb-playlist-manager.h"
 #include "rb-podcast-manager.h"

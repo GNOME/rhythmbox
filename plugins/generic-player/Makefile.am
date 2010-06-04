@@ -29,6 +29,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/rhythmdb                       	\
 	-I$(top_srcdir)/widgets                    	\
 	-I$(top_srcdir)/sources                    	\
+	-I$(top_srcdir)/sources/sync                   	\
 	-I$(top_srcdir)/iradio                    	\
 	-I$(top_srcdir)/podcast                    	\
 	-I$(top_srcdir)/remote				\

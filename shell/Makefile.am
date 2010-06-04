@@ -111,6 +111,7 @@ librhythmbox_core_la_SOURCES =				\
 
 librhythmbox_core_la_LIBADD =				\
 	$(top_builddir)/sources/libsources.la	        \
+	$(top_builddir)/sources/sync/libsourcesync.la	\
 	$(top_builddir)/podcast/librbpodcast.la	        \
 	$(top_builddir)/metadata/librbmetadata.la	\
 	$(top_builddir)/widgets/librbwidgets.la         \

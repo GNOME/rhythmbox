@@ -850,6 +850,7 @@ data/icons/hicolor/scalable/places/Makefile
 data/icons/hicolor/scalable/status/Makefile
 data/icons/src/Makefile
 sources/Makefile
+sources/sync/Makefile
 plugins/Makefile
 plugins/sample/Makefile
 plugins/audiocd/Makefile

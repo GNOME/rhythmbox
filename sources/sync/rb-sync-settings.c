@@ -51,7 +51,7 @@
 #include <gio/gio.h>
 #include <string.h>
 
-#include "rb-media-player-sync-settings.h"
+#include "rb-sync-settings.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 
@@ -64,31 +64,38 @@ typedef struct {
 	char *key_file_path;
 
 	guint save_key_file_id;
-} RBMediaPlayerSyncSettingsPrivate;
+} RBSyncSettingsPrivate;
 
 enum {
 	PROP_0,
 	PROP_KEYFILE_PATH
 };
 
-G_DEFINE_TYPE (RBMediaPlayerSyncSettings, rb_media_player_sync_settings, G_TYPE_OBJECT)
+enum {
+	UPDATED,
+	LAST_SIGNAL
+};
 
-#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_MEDIA_PLAYER_SYNC_SETTINGS, RBMediaPlayerSyncSettingsPrivate))
+static guint signals[LAST_SIGNAL] = { 0 };
 
-RBMediaPlayerSyncSettings *
-rb_media_player_sync_settings_new (const char *keyfile)
+G_DEFINE_TYPE (RBSyncSettings, rb_sync_settings, G_TYPE_OBJECT)
+
+#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SYNC_SETTINGS, RBSyncSettingsPrivate))
+
+RBSyncSettings *
+rb_sync_settings_new (const char *keyfile)
 {
 	GObject *settings;
-	settings = g_object_new (RB_TYPE_MEDIA_PLAYER_SYNC_SETTINGS,
+	settings = g_object_new (RB_TYPE_SYNC_SETTINGS,
 				 "keyfile-path", keyfile,
 				 NULL);
-	return RB_MEDIA_PLAYER_SYNC_SETTINGS (settings);
+	return RB_SYNC_SETTINGS (settings);
 }
 
 gboolean
-rb_media_player_sync_settings_save (RBMediaPlayerSyncSettings *settings)
+rb_sync_settings_save (RBSyncSettings *settings)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (settings);
 	char *data;
 	gsize length;
 	GError *error = NULL;
@@ -113,18 +120,20 @@ rb_media_player_sync_settings_save (RBMediaPlayerSyncSettings *settings)
 }
 
 static gboolean
-_save_idle_cb (RBMediaPlayerSyncSettings *settings)
+_save_idle_cb (RBSyncSettings *settings)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (settings);
 	priv->save_key_file_id = 0;
-	rb_media_player_sync_settings_save (settings);
+	rb_sync_settings_save (settings);
+
+	g_signal_emit (settings, signals[UPDATED], 0);
 	return FALSE;
 }
 
 static void
-_save_idle (RBMediaPlayerSyncSettings *settings)
+_save_idle (RBSyncSettings *settings)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (settings);
 	if (priv->save_key_file_id == 0) {
 		priv->save_key_file_id = g_idle_add ((GSourceFunc) _save_idle_cb, settings);
 	}
@@ -144,27 +153,27 @@ _get_boolean_with_default (GKeyFile *keyfile, const char *group, const char *key
 }
 
 void
-rb_media_player_sync_settings_set_category (RBMediaPlayerSyncSettings *settings,
+rb_sync_settings_set_category (RBSyncSettings *settings,
 					    const char *category,
 					    gboolean enabled)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (settings);
 	g_key_file_set_boolean (priv->key_file, category, CATEGORY_ENABLED_KEY, enabled);
 	_save_idle (settings);
 }
 
 gboolean
-rb_media_player_sync_settings_sync_category (RBMediaPlayerSyncSettings *settings,
+rb_sync_settings_sync_category (RBSyncSettings *settings,
 					     const char *category)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (settings);
 	return _get_boolean_with_default (priv->key_file, category, CATEGORY_ENABLED_KEY, FALSE);
 }
 
 GList *
-rb_media_player_sync_settings_get_enabled_categories (RBMediaPlayerSyncSettings *settings)
+rb_sync_settings_get_enabled_categories (RBSyncSettings *settings)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (settings);
 	char **groups;
 	GList *categories;
 	int i;
@@ -184,12 +193,12 @@ rb_media_player_sync_settings_get_enabled_categories (RBMediaPlayerSyncSettings 
 }
 
 void
-rb_media_player_sync_settings_set_group (RBMediaPlayerSyncSettings *settings,
+rb_sync_settings_set_group (RBSyncSettings *settings,
 					 const char *category,
 					 const char *group,
 					 gboolean enabled)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (settings);
 	char **groups;
 	int ngroups;
 
@@ -236,11 +245,11 @@ rb_media_player_sync_settings_set_group (RBMediaPlayerSyncSettings *settings,
 }
 
 gboolean
-rb_media_player_sync_settings_group_enabled (RBMediaPlayerSyncSettings *settings,
+rb_sync_settings_group_enabled (RBSyncSettings *settings,
 					     const char *category,
 					     const char *group)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (settings);
 	char **groups;
 	int i;
 	gboolean found = FALSE;
@@ -262,21 +271,21 @@ rb_media_player_sync_settings_group_enabled (RBMediaPlayerSyncSettings *settings
 }
 
 gboolean
-rb_media_player_sync_settings_sync_group (RBMediaPlayerSyncSettings *settings,
+rb_sync_settings_sync_group (RBSyncSettings *settings,
 					  const char *category,
 					  const char *group)
 {
-	if (rb_media_player_sync_settings_sync_category (settings, category) == TRUE) {
+	if (rb_sync_settings_sync_category (settings, category) == TRUE) {
 		return TRUE;
 	}
-	return rb_media_player_sync_settings_group_enabled (settings, category, group);
+	return rb_sync_settings_group_enabled (settings, category, group);
 }
 
 gboolean
-rb_media_player_sync_settings_has_enabled_groups (RBMediaPlayerSyncSettings *settings,
+rb_sync_settings_has_enabled_groups (RBSyncSettings *settings,
 						  const char *category)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (settings);
 	char **groups;
 
 	groups = g_key_file_get_string_list (priv->key_file, category, CATEGORY_GROUPS_KEY, NULL, NULL);
@@ -289,10 +298,10 @@ rb_media_player_sync_settings_has_enabled_groups (RBMediaPlayerSyncSettings *set
 }
 
 GList *
-rb_media_player_sync_settings_get_enabled_groups (RBMediaPlayerSyncSettings *settings,
+rb_sync_settings_get_enabled_groups (RBSyncSettings *settings,
 						  const char *category)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (settings);
 	char **groups;
 	GList *glist = NULL;
 	int i;
@@ -311,9 +320,9 @@ rb_media_player_sync_settings_get_enabled_groups (RBMediaPlayerSyncSettings *set
 }
 
 void
-rb_media_player_sync_settings_clear_groups (RBMediaPlayerSyncSettings *settings, const char *category)
+rb_sync_settings_clear_groups (RBSyncSettings *settings, const char *category)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (settings);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (settings);
 	g_key_file_remove_key (priv->key_file, category, CATEGORY_GROUPS_KEY, NULL);
 	_save_idle (settings);
 }
@@ -321,7 +330,7 @@ rb_media_player_sync_settings_clear_groups (RBMediaPlayerSyncSettings *settings,
 
 
 static void
-rb_media_player_sync_settings_init (RBMediaPlayerSyncSettings *settings)
+rb_sync_settings_init (RBSyncSettings *settings)
 {
 	/* nothing */
 }
@@ -329,7 +338,7 @@ rb_media_player_sync_settings_init (RBMediaPlayerSyncSettings *settings)
 static void
 impl_constructed (GObject *object)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (object);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (object);
 	GError *error = NULL;
 
 	priv->key_file = g_key_file_new ();
@@ -346,13 +355,13 @@ impl_constructed (GObject *object)
 		 */
 	}
 
-	RB_CHAIN_GOBJECT_METHOD(rb_media_player_sync_settings_parent_class, constructed, object);
+	RB_CHAIN_GOBJECT_METHOD(rb_sync_settings_parent_class, constructed, object);
 }
 
 static void
 impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (object);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (object);
 	switch (prop_id) {
 	case PROP_KEYFILE_PATH:
 		priv->key_file_path = g_value_dup_string (value);
@@ -366,7 +375,7 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 static void
 impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (object);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (object);
 	switch (prop_id) {
 	case PROP_KEYFILE_PATH:
 		g_value_set_string (value, priv->key_file_path);
@@ -380,31 +389,31 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 static void
 impl_dispose (GObject *object)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (object);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (object);
 
 	/* if a save is pending, do it now */
 	if (priv->save_key_file_id != 0) {
 		g_source_remove (priv->save_key_file_id);
 		priv->save_key_file_id = 0;
-		rb_media_player_sync_settings_save (RB_MEDIA_PLAYER_SYNC_SETTINGS (object));
+		rb_sync_settings_save (RB_SYNC_SETTINGS (object));
 	}
 
-	G_OBJECT_CLASS (rb_media_player_sync_settings_parent_class)->dispose (object);
+	G_OBJECT_CLASS (rb_sync_settings_parent_class)->dispose (object);
 }
 
 static void
 impl_finalize (GObject *object)
 {
-	RBMediaPlayerSyncSettingsPrivate *priv = GET_PRIVATE (object);
+	RBSyncSettingsPrivate *priv = GET_PRIVATE (object);
 
 	g_key_file_free (priv->key_file);
 	g_free (priv->key_file_path);
 
-	G_OBJECT_CLASS (rb_media_player_sync_settings_parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_sync_settings_parent_class)->finalize (object);
 }
 
 static void
-rb_media_player_sync_settings_class_init (RBMediaPlayerSyncSettingsClass *klass)
+rb_sync_settings_class_init (RBSyncSettingsClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
@@ -422,5 +431,13 @@ rb_media_player_sync_settings_class_init (RBMediaPlayerSyncSettingsClass *klass)
 							      "path to the key file storing the sync settings",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_type_class_add_private (object_class, sizeof (RBMediaPlayerSyncSettingsPrivate));
+	signals[UPDATED] = g_signal_new ("updated",
+					 RB_TYPE_SYNC_SETTINGS,
+					 G_SIGNAL_RUN_LAST,
+					 G_STRUCT_OFFSET (RBSyncSettingsClass, updated),
+					 NULL, NULL,
+					 g_cclosure_marshal_VOID__VOID,
+					 G_TYPE_NONE,
+					 0);
+	g_type_class_add_private (object_class, sizeof (RBSyncSettingsPrivate));
 }

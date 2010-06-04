@@ -1,5 +1,7 @@
 NULL =
 
+SUBDIRS = sync
+
 noinst_LTLIBRARIES = libsources.la
 
 sourceincludedir = $(includedir)/rhythmbox/sources
@@ -34,8 +36,6 @@ libsources_la_SOURCES = 		\
 	rb-podcast-source.h		\
 	rb-removable-media-source.c	\
 	rb-media-player-source.c	\
-	rb-media-player-sync-settings.c	\
-	rb-media-player-sync-settings.h	\
 	rb-playlist-source.c            \
 	rb-auto-playlist-source.c	\
 	rb-static-playlist-source.c	\
@@ -58,13 +58,10 @@ INCLUDES =						\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/metadata 			\
 	-I$(top_srcdir)/widgets 			\
-	-I$(top_srcdir)/library 			\
-	-I$(top_srcdir)/player	 			\
-	-I$(top_srcdir)/iradio				\
 	-I$(top_srcdir)/podcast				\
 	-I$(top_srcdir)/shell				\
+	-I$(top_srcdir)/sources/sync			\
 	-I$(top_srcdir)/backends			\
-	-I$(top_srcdir)/plugins				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\

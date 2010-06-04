@@ -52,7 +52,7 @@
 #include "rb-shell-player.h"
 #include "rb-player.h"
 #include "rb-encoder.h"
-#include "rb-media-player-sync-settings.h"
+#include "rb-sync-settings.h"
 
 #include "rb-mtp-source.h"
 #include "rb-mtp-thread.h"
