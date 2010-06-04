@@ -86,6 +86,7 @@ static void          rb_audioscrobbler_account_finalize (GObject *object);
 static void          rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *account);
 static void          rb_audioscrobbler_account_save_session_settings (RBAudioscrobblerAccount *account);
 
+static void          rb_audioscrobbler_account_cancel_session (RBAudioscrobblerAccount *account);
 static void          rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account);
 static void          rb_audioscrobbler_account_got_token_cb (SoupSession *session,
                                                              SoupMessage *msg,
@@ -405,20 +406,7 @@ rb_audioscrobbler_account_authenticate (RBAudioscrobblerAccount *account)
 void
 rb_audioscrobbler_account_logout (RBAudioscrobblerAccount *account)
 {
-	g_free (account->priv->username);
-	account->priv->username = NULL;
-
-	g_free (account->priv->auth_token);
-	account->priv->auth_token = NULL;
-
-	g_free (account->priv->session_key);
-	account->priv->session_key = NULL;
-
-	if (account->priv->session_key_timeout_id != 0) {
-		g_source_remove (account->priv->session_key_timeout_id);
-		account->priv->session_key_timeout_id = 0;
-	}
-
+	rb_audioscrobbler_account_cancel_session (account);
 	rb_audioscrobbler_account_save_session_settings (account);
 
 	account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT;
@@ -434,12 +422,7 @@ rb_audioscrobbler_account_notify_of_auth_error (RBAudioscrobblerAccount *account
 	 * radio, etc) to notify us when there is an authentication error
 	 */
 
-	g_free (account->priv->username);
-	account->priv->username = NULL;
-
-	g_free (account->priv->session_key);
-	account->priv->session_key = NULL;
-
+	rb_audioscrobbler_account_cancel_session (account);
 	rb_audioscrobbler_account_save_session_settings (account);
 
 	account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_AUTH_ERROR;
@@ -448,6 +431,29 @@ rb_audioscrobbler_account_notify_of_auth_error (RBAudioscrobblerAccount *account
 }
 
 /* private authentication functions */
+static void
+rb_audioscrobbler_account_cancel_session (RBAudioscrobblerAccount *account)
+{
+	/* cancels the current session, freeing the username,
+	 * session key, auth token. removing timeout callbacks etc.
+	 * Basically log out without setting state to logged out:
+	 * eg error states will also want to cancel the session
+	 */
+	g_free (account->priv->username);
+	account->priv->username = NULL;
+
+	g_free (account->priv->auth_token);
+	account->priv->auth_token = NULL;
+
+	g_free (account->priv->session_key);
+	account->priv->session_key = NULL;
+
+	if (account->priv->session_key_timeout_id != 0) {
+		g_source_remove (account->priv->session_key_timeout_id);
+		account->priv->session_key_timeout_id = 0;
+	}
+}
+
 static void
 rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account)
 {
@@ -602,6 +608,9 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
 		char **pre_split;
 		char **post_split;
 
+		/* cancel the old session (and remove timeout) */
+		rb_audioscrobbler_account_cancel_session (account);
+
 		/* parse the username */
 		pre_split = g_strsplit (msg->response_body->data, "<name>", -1);
 		post_split = g_strsplit (pre_split[1], "</name>", -1);
@@ -621,14 +630,6 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
 		          account->priv->session_key,
 		          account->priv->username);
 		rb_audioscrobbler_account_save_session_settings (account);
-
-		/* remove timeout callback */
-		g_source_remove (account->priv->session_key_timeout_id);
-		account->priv->session_key_timeout_id = 0;
-
-		/* delete authorisation token */
-		g_free (account->priv->auth_token);
-		account->priv->auth_token = NULL;
 
 		/* update status */
 		account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN;
