@@ -113,7 +113,7 @@ rb_daap_container_record_get_entry_count (DMAPContainerRecord *record)
 	return count;
 }
 
-const DMAPDb *
+DMAPDb *
 rb_daap_container_record_get_entries (DMAPContainerRecord *record)
 {
 	RhythmDBQueryModel *model;

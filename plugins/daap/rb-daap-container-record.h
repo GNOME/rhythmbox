@@ -65,7 +65,7 @@ void	      rb_daap_container_record_add_entry       (DMAPContainerRecord *contai
 
 guint64       rb_daap_container_record_get_entry_count (DMAPContainerRecord *record);
 
-const DMAPDb *rb_daap_container_record_get_entries     (DMAPContainerRecord *record);
+DMAPDb *rb_daap_container_record_get_entries     (DMAPContainerRecord *record);
 
 RBDAAPContainerRecord *rb_daap_container_record_new (char *name,
 						     RBPlaylistSource *model);
