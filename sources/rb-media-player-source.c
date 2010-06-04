@@ -683,7 +683,7 @@ display_sync_settings_dialog (RBMediaPlayerSource *source)
 							 0,
 							 _("Sync with the device"),
 							 GTK_RESPONSE_YES,
-							 _("Cancel"),
+							 _("Don't sync"),
 							 GTK_RESPONSE_CANCEL,
 							 NULL);
 	g_free (title);
