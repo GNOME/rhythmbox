@@ -7,9 +7,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-06-04 06:06+0000\n"
-"PO-Revision-Date: 2010-06-05 18:57+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-06-05 19:21+0200\n"
+"PO-Revision-Date: 2010-06-05 19:22+0200\n"
 "Last-Translator: Gabor Kelemen <kelemeng at gnome dot hu>\n"
 "Language-Team: Hungarian <gnome at fsf dot hu>\n"
 "MIME-Version: 1.0\n"
@@ -495,7 +495,6 @@ msgid "Location:"
 msgstr "Hely:"
 
 #: ../data/ui/song-info.ui.h:17
-#| msgid "_Contents"
 msgid "_Comment:"
 msgstr "_Megjegyzés:"
 
@@ -2551,7 +2550,6 @@ msgid "TerraBrasil (terra.com.br)"
 msgstr "TerraBrasil (terra.com.br)"
 
 #: ../plugins/lyrics/lyrics/LyricsSites.py:41
-#| msgid "Leo's Lyrics (www.leoslyrics.com)"
 msgid "Dark Lyrics (darklyrics.com)"
 msgstr "Dark Lyrics (darklyrics.com)"
 
@@ -3089,7 +3087,6 @@ msgstr "Nincs elég hely a következőn: %s"
 
 #: ../plugins/mtpdevice/rb-mtp-thread.c:523
 #, c-format
-#| msgid "Unable to send file to MTP device: %s"
 msgid "No space left on MTP device"
 msgstr "Nincs több hely az MTP eszközön"
 
@@ -3719,7 +3716,6 @@ msgstr "A zeneadatbázis nem tölthető be:"
 
 #: ../rhythmdb/rhythmdb.c:4701
 #, c-format
-#| msgid "Importing (%d/%d)"
 msgid "Checking (%d/%d)"
 msgstr "Ellenőrzés (%d/%d)"
 
@@ -4498,7 +4494,6 @@ msgid "_Skip"
 msgstr "_Kihagyás"
 
 #: ../shell/rb-track-transfer-queue.c:144
-#| msgid "_Rename"
 msgid "_Replace"
 msgstr "_Csere"
 
@@ -4507,12 +4502,10 @@ msgid "S_kip All"
 msgstr "Összes ki_hagyása"
 
 #: ../shell/rb-track-transfer-queue.c:146
-#| msgid "Select _All"
 msgid "Replace _All"
 msgstr "Öss_zes cseréje"
 
 #: ../shell/rb-track-transfer-queue.c:368
-#| msgid "Error transferring track"
 msgid "Unable to transfer tracks"
 msgstr "A számok nem vihetők át"
 
@@ -4520,21 +4513,24 @@ msgstr "A számok nem vihetők át"
 msgid ""
 "None of the tracks to be transferred are in a format supported by the target "
 "device, and no encoders are available  for the supported formats."
-msgstr "Egyik átvinni kívánt szám sincs a céleszköz által támogatott formátumban, és nem érhetők el kódolók a támogatott formátumokhoz."
+msgstr ""
+"Egyik átvinni kívánt szám sincs a céleszköz által támogatott formátumban, és "
+"nem érhetők el kódolók a támogatott formátumokhoz."
 
 #: ../shell/rb-track-transfer-queue.c:386
 #, c-format
 msgid ""
 "%d of the %d files to be transferred are not in a format supported by the "
 "target device, and no encoders are available for the supported formats."
-msgstr "Az átvinni kívánt %2$d szám közül %1$d nincs a céleszköz által támogatott formátumban, és nem érhetők el kódolók a támogatott formátumokhoz."
+msgstr ""
+"Az átvinni kívánt %2$d szám közül %1$d nincs a céleszköz által támogatott "
+"formátumban, és nem érhetők el kódolók a támogatott formátumokhoz."
 
 #: ../shell/rb-track-transfer-queue.c:395
 msgid "Unable to transfer all tracks. Do you want to continue?"
 msgstr "Nem vihető át minden szám. Kívánja folytatni?"
 
 #: ../shell/rb-track-transfer-queue.c:403
-#| msgid "_Continue"
 msgid "C_ontinue"
 msgstr "_Folytatás"
 
@@ -4691,20 +4687,20 @@ msgstr "Médialejátszó szinkronizálása a gyűjteménnyel"
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
-msgstr "Nem választott ki egyetlen zenét, lejátszólistát vagy podcastot az eszközre átvitelhez."
+msgstr ""
+"Nem választott ki egyetlen zenét, lejátszólistát vagy podcastot az eszközre "
+"átvitelhez."
 
 #: ../sources/rb-media-player-source.c:628
-#| msgid ""
-#| "There is not enough free space on this device to transfer the selected "
-#| "music, playlists, and podcasts."
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
-msgstr "Nincs elég hely az eszközön a kijelölt zenék, lejátszólisták és podcastok átviteléhez."
+msgstr ""
+"Nincs elég hely az eszközön a kijelölt zenék, lejátszólisták és podcastok "
+"átviteléhez."
 
 #: ../sources/rb-media-player-source.c:679
 #, c-format
-#| msgid "Account Settings"
 msgid "%s Sync Settings"
 msgstr "%s szinkronizálási beállításai"
 
@@ -4713,9 +4709,8 @@ msgid "Sync with the device"
 msgstr "Szinkronizálás az eszközzel"
 
 #: ../sources/rb-media-player-source.c:686
-#| msgid "_Cancel"
-msgid "Cancel"
-msgstr "Mégse"
+msgid "Don't sync"
+msgstr "Ne szinkronizáljon"
 
 #: ../sources/rb-missing-files-source.c:281
 msgid "Missing Files"
@@ -5065,7 +5060,6 @@ msgid "Track"
 msgstr "Szám"
 
 #: ../widgets/rb-entry-view.c:1533
-#| msgid "_Contents"
 msgid "Comment"
 msgstr "Megjegyzés"
 
@@ -5190,7 +5184,6 @@ msgid "Path"
 msgstr "Útvonal"
 
 #: ../widgets/rb-query-creator-properties.c:80
-#| msgid "_Contents"
 msgctxt "query-criteria"
 msgid "Comment"
 msgstr "Megjegyzés"
@@ -5322,7 +5315,6 @@ msgid "W_ith more recently added tracks first"
 msgstr "Legutóbb h_ozzáadott számokat előre"
 
 #: ../widgets/rb-query-creator-properties.c:112
-#| msgid "_Contents"
 msgctxt "query-sort"
 msgid "Comment"
 msgstr "Megjegyzés"
