@@ -48,7 +48,7 @@
 #define LASTFM_SCROBBLER_URL "http://post.audioscrobbler.com/"
 
 #define LASTFM_SESSION_SETTINGS_FILE "lastfm_session"
-#define SESSION_KEY_REQUEST_TIMEOUT 15
+#define SESSION_KEY_REQUEST_TIMEOUT 5
 
 struct _RBAudioscrobblerAccountPrivate
 {
