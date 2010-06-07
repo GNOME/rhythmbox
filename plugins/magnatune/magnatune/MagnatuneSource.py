@@ -120,7 +120,7 @@ class MagnatuneSource(rb.BrowserSource):
 			return (_("Downloading Magnatune Album(s)"), None, progress)
 		else:
 			qm = self.get_property("query-model")
-			return (qm.compute_status_normal("%d song", "%d songs"), None, 0.0)
+			return (qm.compute_status_normal("%d song", "%d songs"), None, 2.0)
 
 	def do_impl_get_ui_actions(self):
 		return ["MagnatuneDownloadAlbum",

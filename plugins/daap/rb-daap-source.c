@@ -765,16 +765,6 @@ rb_daap_source_get_status (RBSource *source,
 {
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
 
-	if (text != NULL) {
-		*text = NULL;
-	}
-	if (progress_text != NULL) {
-		*progress_text = NULL;
-	}
-	if (progress != NULL) {
-		*progress = 1.0;
-	}
-
 	if (daap_source->priv->connection_status != NULL) {
 		if (text != NULL) {
 			*text = g_strdup (daap_source->priv->connection_status);

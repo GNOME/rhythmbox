@@ -212,8 +212,8 @@ impl_handle_eos (RBSource *asource)
 void
 rb_streaming_source_get_progress (RBStreamingSource *source, char **text, float *progress)
 {
-	*progress = 0.0;
 	if (source->priv->buffering == -1) {
+		*progress = 0.0;
 		g_free (*text);
 		*text = g_strdup (_("Connecting"));
 	} else if (source->priv->buffering > 0) {

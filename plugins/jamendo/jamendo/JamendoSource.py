@@ -123,7 +123,7 @@ class JamendoSource(rb.BrowserSource):
 			return (_("Loading Jamendo catalog"), None, progress)
 		else:
 			qm = self.get_property("query-model")
-			return (qm.compute_status_normal("%d song", "%d songs"), None, 0.0)
+			return (qm.compute_status_normal("%d song", "%d songs"), None, 2.0)
 
 	def do_impl_activate(self):
 		if not self.__activated:
