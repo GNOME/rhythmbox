@@ -37,6 +37,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "rb-audioscrobbler-service.h"
 #include "rb-audioscrobbler-profile-source.h"
 #include "rb-plugin.h"
 #include "rb-debug.h"
@@ -107,11 +108,17 @@ static void
 impl_activate (RBPlugin *bplugin,
 	       RBShell *shell)
 {
-	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
+	RBAudioscrobblerPlugin *plugin;
+	RBAudioscrobblerService *service;
 
-	plugin->source = rb_audioscrobbler_profile_source_new (shell, bplugin);
+	plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
+
+	service = rb_audioscrobbler_service_new ();
+	plugin->source = rb_audioscrobbler_profile_source_new (shell, bplugin, service);
 
 	rb_shell_append_source (shell, plugin->source, NULL);
+
+	g_object_unref (service);
 }
 
 static void

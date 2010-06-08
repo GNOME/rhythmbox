@@ -32,6 +32,7 @@
 #include "rb-source.h"
 #include "rb-shell.h"
 #include "rb-plugin.h"
+#include "rb-audioscrobbler-service.h"
 
 G_BEGIN_DECLS
 
@@ -57,7 +58,9 @@ typedef struct
 } RBAudioscrobblerProfileSourceClass;
 
 GType rb_audioscrobbler_profile_source_get_type (void);
-RBSource *rb_audioscrobbler_profile_source_new (RBShell *shell, RBPlugin *plugin);
+RBSource *rb_audioscrobbler_profile_source_new (RBShell *shell,
+                                                RBPlugin *plugin,
+                                                RBAudioscrobblerService *service);
 
 G_END_DECLS
 

@@ -29,8 +29,9 @@
 #ifndef __RB_AUDIOSCROBBLER_ACCOUNT_H
 #define __RB_AUDIOSCROBBLER_ACCOUNT_H
 
-#include <gtk/gtk.h>
-#include <glib.h>
+#include <glib-object.h>
+
+#include "rb-audioscrobbler-service.h"
 
 G_BEGIN_DECLS
 
@@ -72,7 +73,7 @@ typedef struct
 
 GType                           rb_audioscrobbler_account_get_type (void);
 
-RBAudioscrobblerAccount *       rb_audioscrobbler_account_new (void);
+RBAudioscrobblerAccount *       rb_audioscrobbler_account_new (RBAudioscrobblerService *service);
 
 void                            rb_audioscrobbler_account_authenticate (RBAudioscrobblerAccount *account);
 void                            rb_audioscrobbler_account_logout (RBAudioscrobblerAccount *account);

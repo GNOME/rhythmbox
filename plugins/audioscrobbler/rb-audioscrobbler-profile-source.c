@@ -34,15 +34,8 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 
-/* this API key belongs to Jamie Nicol <jamie@thenicols.net>
-   generated May 2010 for use in the audioscrobbler plugin */
-#define LASTFM_API_KEY "0337ff3c59299b6a31d75164041860b6"
-#define LASTFM_API_SECRET "776c85a04a445efa8f9ed7705473c606"
-#define LASTFM_API_URL "http://ws.audioscrobbler.com/2.0/"
-#define LASTFM_AUTH_URL "http://www.last.fm/api/auth/"
-#define LASTFM_SCROBBLER_URL "http://post.audioscrobbler.com/"
-
 struct _RBAudioscrobblerProfileSourcePrivate {
+	RBAudioscrobblerService *service;
 	RBAudioscrobblerAccount *account;
 	RBAudioscrobbler *audioscrobbler;
 
@@ -60,6 +53,14 @@ static void rb_audioscrobbler_profile_source_init (RBAudioscrobblerProfileSource
 static void rb_audioscrobbler_profile_source_constructed (GObject *object);
 static void rb_audioscrobbler_profile_source_dispose (GObject* object);
 static void rb_audioscrobbler_profile_source_finalize (GObject *object);
+static void rb_audioscrobbler_profile_source_get_property (GObject *object,
+                                                           guint prop_id,
+                                                           GValue *value,
+                                                           GParamSpec *pspec);
+static void rb_audioscrobbler_profile_source_set_property (GObject *object,
+                                                           guint prop_id,
+                                                           const GValue *value,
+                                                           GParamSpec *pspec);
 
 static void rb_audioscrobbler_profile_source_init_login_ui (RBAudioscrobblerProfileSource *source);
 static void rb_audioscrobbler_profile_source_login_bar_response (GtkInfoBar *info_bar,
@@ -73,19 +74,26 @@ static void rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscro
 static void rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb (RBAudioscrobbler *audioscrobbler,
                                                                                 gpointer user_data);
 
+enum {
+	PROP_0,
+	PROP_SERVICE
+};
+
 G_DEFINE_TYPE (RBAudioscrobblerProfileSource, rb_audioscrobbler_profile_source, RB_TYPE_SOURCE)
 
 RBSource *
-rb_audioscrobbler_profile_source_new (RBShell *shell, RBPlugin *plugin)
+rb_audioscrobbler_profile_source_new (RBShell *shell, RBPlugin *plugin, RBAudioscrobblerService *service)
 {
 	RBSource *source;
 	RhythmDB *db;
+	char *name;
 	RhythmDBEntryType entry_type;
 	gchar *icon_filename;
 	gint icon_size;
 	GdkPixbuf *icon_pixbuf;
 
 	g_object_get (shell, "db", &db, NULL);
+	g_object_get (service, "name", &name, NULL);
 
 	entry_type = rhythmdb_entry_type_get_by_name (db, "audioscrobbler-radio-track");
 	if (entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
@@ -101,15 +109,17 @@ rb_audioscrobbler_profile_source_new (RBShell *shell, RBPlugin *plugin)
 	source = RB_SOURCE (g_object_new (RB_TYPE_AUDIOSCROBBLER_PROFILE_SOURCE,
 	                                  "shell", shell,
 	                                  "plugin", plugin,
-	                                  "name", _("Last.fm"),
+	                                  "name", name,
 	                                  "source-group", RB_SOURCE_GROUP_LIBRARY,
 	                                  "entry-type", entry_type,
 	                                  "icon", icon_pixbuf,
+	                                  "service", service,
 	                                  NULL));
 
 	rb_shell_register_entry_type_for_source (shell, source, entry_type);
 
 	g_object_unref (db);
+	g_free (name);
 	g_free (icon_filename);
 	g_object_unref (icon_pixbuf);
 
@@ -124,6 +134,16 @@ rb_audioscrobbler_profile_source_class_init (RBAudioscrobblerProfileSourceClass 
 	object_class->constructed = rb_audioscrobbler_profile_source_constructed;
 	object_class->dispose = rb_audioscrobbler_profile_source_dispose;
 	object_class->finalize = rb_audioscrobbler_profile_source_finalize;
+	object_class->get_property = rb_audioscrobbler_profile_source_get_property;
+	object_class->set_property = rb_audioscrobbler_profile_source_set_property;
+
+	g_object_class_install_property (object_class,
+	                                 PROP_SERVICE,
+	                                 g_param_spec_object ("service",
+	                                                      "Service",
+	                                                      "Audioscrobbler service that this is a source for",
+	                                                      RB_TYPE_AUDIOSCROBBLER_SERVICE,
+                                                              G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerProfileSourcePrivate));
 }
@@ -154,7 +174,7 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 	g_object_get (source, "shell", &shell, NULL);
 
 	/* create the account */
-	source->priv->account = rb_audioscrobbler_account_new ();
+	source->priv->account = rb_audioscrobbler_account_new (source->priv->service);
 	g_signal_connect (source->priv->account,
 	                  "login-status-changed",
 	                  (GCallback)rb_audioscrobbler_profile_source_login_status_change_cb,
@@ -162,10 +182,8 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 
 	/* create the scrobbler */
 	source->priv->audioscrobbler =
-		rb_audioscrobbler_new (RB_SHELL_PLAYER (rb_shell_get_player (shell)),
-		                       LASTFM_SCROBBLER_URL,
-		                       LASTFM_API_KEY,
-		                       LASTFM_API_SECRET);
+		rb_audioscrobbler_new (source->priv->service,
+		                       RB_SHELL_PLAYER (rb_shell_get_player (shell)));
 	g_signal_connect (source->priv->audioscrobbler,
 	                  "authentication-error",
 	                  (GCallback)rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb,
@@ -186,6 +204,11 @@ rb_audioscrobbler_profile_source_dispose (GObject* object)
 	RBAudioscrobblerProfileSource *source;
 
 	source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (object);
+
+	if (source->priv->service != NULL) {
+		g_object_unref (source->priv->service);
+		source->priv->service = NULL;
+	}
 
 	if (source->priv->audioscrobbler != NULL) {
 		g_object_unref (source->priv->audioscrobbler);
@@ -208,6 +231,36 @@ rb_audioscrobbler_profile_source_finalize (GObject *object)
 	source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (object);
 
 	G_OBJECT_CLASS (rb_audioscrobbler_profile_source_parent_class)->finalize (object);
+}
+
+static void
+rb_audioscrobbler_profile_source_get_property (GObject *object,
+                                               guint prop_id,
+                                               GValue *value,
+                                               GParamSpec *pspec)
+{
+	switch (prop_id) {
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_audioscrobbler_profile_source_set_property (GObject *object,
+                                               guint prop_id,
+                                               const GValue *value,
+                                               GParamSpec *pspec)
+{
+	RBAudioscrobblerProfileSource *source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (object);
+	switch (prop_id) {
+	case PROP_SERVICE:
+		source->priv->service = g_value_dup_object (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void

@@ -39,19 +39,13 @@
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 
-/* this API key belongs to Jamie Nicol <jamie@thenicols.net>
-   generated May 2010 for use in the audioscrobbler plugin */
-#define LASTFM_API_KEY "0337ff3c59299b6a31d75164041860b6"
-#define LASTFM_API_SECRET "776c85a04a445efa8f9ed7705473c606"
-#define LASTFM_API_URL "http://ws.audioscrobbler.com/2.0/"
-#define LASTFM_AUTH_URL "http://www.last.fm/api/auth/"
-#define LASTFM_SCROBBLER_URL "http://post.audioscrobbler.com/"
-
-#define LASTFM_SESSION_SETTINGS_FILE "lastfm_session"
+#define SESSION_SETTINGS_FILE "audioscrobbler_sessions"
 #define SESSION_KEY_REQUEST_TIMEOUT 5
 
 struct _RBAudioscrobblerAccountPrivate
 {
+	RBAudioscrobblerService *service;
+
 	/* Authentication info */
 	gchar *username;
 	gchar *auth_token;
@@ -98,6 +92,7 @@ static void          rb_audioscrobbler_account_got_session_key_cb (SoupSession *
 enum
 {
 	PROP_0,
+	PROP_SERVICE,
 	PROP_USERNAME,
 	PROP_SESSION_KEY,
 	PROP_LOGIN_STATUS
@@ -135,6 +130,14 @@ rb_audioscrobbler_account_class_init (RBAudioscrobblerAccountClass *klass)
 
 	object_class->get_property = rb_audioscrobbler_account_get_property;
 	object_class->set_property = rb_audioscrobbler_account_set_property;
+
+	g_object_class_install_property (object_class,
+	                                 PROP_SERVICE,
+	                                 g_param_spec_object ("service",
+	                                                      "Service",
+	                                                      "Audioscrobbler service the account is with",
+	                                                      RB_TYPE_AUDIOSCROBBLER_SERVICE,
+                                                              G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
 	                                 PROP_USERNAME,
@@ -179,8 +182,6 @@ rb_audioscrobbler_account_class_init (RBAudioscrobblerAccountClass *klass)
 			      1,
 			      RB_TYPE_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS);
 
-	g_assert (rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED] != 0);
-
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerAccountPrivate));
 }
 
@@ -200,9 +201,12 @@ rb_audioscrobbler_account_init (RBAudioscrobblerAccount *account)
 static void
 rb_audioscrobbler_account_dispose (GObject *object)
 {
-	RBAudioscrobblerAccount *account;
+	RBAudioscrobblerAccount *account = RB_AUDIOSCROBBLER_ACCOUNT (object);
 
-	account = RB_AUDIOSCROBBLER_ACCOUNT (object);
+	if (account->priv->service != NULL) {
+		g_object_unref (account->priv->service);
+		account->priv->service = NULL;
+	}
 
 	if (account->priv->session_key_timeout_id != 0) {
 		g_source_remove (account->priv->session_key_timeout_id);
@@ -221,9 +225,7 @@ rb_audioscrobbler_account_dispose (GObject *object)
 static void
 rb_audioscrobbler_account_finalize (GObject *object)
 {
-	RBAudioscrobblerAccount *account;
-
-	account = RB_AUDIOSCROBBLER_ACCOUNT (object);
+	RBAudioscrobblerAccount *account = RB_AUDIOSCROBBLER_ACCOUNT (object);
 
 	g_free (account->priv->username);
 	g_free (account->priv->auth_token);
@@ -233,10 +235,11 @@ rb_audioscrobbler_account_finalize (GObject *object)
 }
 
 RBAudioscrobblerAccount *
-rb_audioscrobbler_account_new (void)
+rb_audioscrobbler_account_new (RBAudioscrobblerService *service)
 {
 	return g_object_new (RB_TYPE_AUDIOSCROBBLER_ACCOUNT,
-                             NULL);
+                             "service", service,
+	                     NULL);
 }
 
 static void
@@ -269,7 +272,11 @@ rb_audioscrobbler_account_set_property (GObject *object,
                                         const GValue *value,
                                         GParamSpec *pspec)
 {
+	RBAudioscrobblerAccount *account = RB_AUDIOSCROBBLER_ACCOUNT (object);
 	switch (prop_id) {
+	case PROP_SERVICE:
+		account->priv->service = g_value_dup_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -298,6 +305,7 @@ rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *accoun
 	const char *rb_data_dir;
 	char *file_path;
 	GKeyFile *key_file;
+	char *service_name;
 
 	rb_data_dir = rb_user_data_dir ();
 	if (rb_data_dir == NULL) {
@@ -305,15 +313,19 @@ rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *accoun
 		return;
 	}
 
-	file_path = g_build_filename (rb_data_dir, LASTFM_SESSION_SETTINGS_FILE, NULL);
+	file_path = g_build_filename (rb_data_dir, SESSION_SETTINGS_FILE, NULL);
 	key_file = g_key_file_new ();
 	g_key_file_load_from_file (key_file, file_path, G_KEY_FILE_NONE, NULL);
 
-	account->priv->username = g_key_file_get_string (key_file, "last.fm", "username", NULL);
-	account->priv->session_key = g_key_file_get_string (key_file, "last.fm", "session_key", NULL);
+	/* get the service name */
+	g_object_get (account->priv->service, "name", &service_name, NULL);
+
+	account->priv->username = g_key_file_get_string (key_file, service_name, "username", NULL);
+	account->priv->session_key = g_key_file_get_string (key_file, service_name, "session_key", NULL);
 
 	g_free (file_path);
 	g_key_file_free (key_file);
+	g_free (service_name);
 
 	if (account->priv->username != NULL && account->priv->session_key != NULL) {
 		rb_debug ("loaded session: username=\"%s\", session key=\"%s\"",
@@ -345,6 +357,7 @@ rb_audioscrobbler_account_save_session_settings (RBAudioscrobblerAccount *accoun
 	const char *rb_data_dir;
 	char *file_path;
 	GKeyFile *key_file;
+	char *service_name;
 	char *data;
 	gsize data_length;
 	GFile *out_file;
@@ -356,18 +369,23 @@ rb_audioscrobbler_account_save_session_settings (RBAudioscrobblerAccount *accoun
 		return;
 	}
 
-	file_path = g_build_filename (rb_data_dir, LASTFM_SESSION_SETTINGS_FILE, NULL);
+	file_path = g_build_filename (rb_data_dir, SESSION_SETTINGS_FILE, NULL);
 	key_file = g_key_file_new ();
 	/* load existing file contents. errors wont matter, just means file doesn't exist yet */
 	g_key_file_load_from_file (key_file, file_path, G_KEY_FILE_KEEP_COMMENTS, NULL);
 
+	/* get the service name */
+	g_object_get (account->priv->service, "name", &service_name, NULL);
+
 	/* set the new data */
 	if (account->priv->username != NULL && account->priv->session_key != NULL) {
-		g_key_file_set_string (key_file, "last.fm", "username", account->priv->username);
-		g_key_file_set_string (key_file, "last.fm", "session_key", account->priv->session_key);
+		g_key_file_set_string (key_file, service_name, "username", account->priv->username);
+		g_key_file_set_string (key_file, service_name, "session_key", account->priv->session_key);
 	} else {
-		g_key_file_remove_group (key_file, "last.fm", NULL);
+		g_key_file_remove_group (key_file, service_name, NULL);
 	}
+
+	g_free (service_name);
 
 	data = g_key_file_to_data (key_file, &data_length, NULL);
 	g_key_file_free (key_file);
@@ -460,6 +478,9 @@ rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account)
 	/* requests an authentication token
 	 * first stage of the authentication process
 	 */
+	char *api_url;
+	char *api_key;
+	char *api_secret;
 	char *sig_arg;
 	char *sig;
 	char *url;
@@ -473,13 +494,20 @@ rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account)
 		                                             NULL);
 	}
 
+	/* get the service details */
+	g_object_get (account->priv->service,
+	              "api-url", &api_url,
+	              "api-key", &api_key,
+	              "api-secret", &api_secret,
+	              NULL);
+
 	/* create the request */
 	sig_arg = g_strdup_printf ("api_key%smethodauth.getToken%s",
-	                           LASTFM_API_KEY,
-	                           LASTFM_API_SECRET);
+	                           api_key,
+	                           api_secret);
 	sig = mkmd5 (sig_arg);
 	url = g_strdup_printf ("%s?method=auth.getToken&api_key=%s&api_sig=%s",
-			       LASTFM_API_URL, LASTFM_API_KEY, sig);
+			       api_url, api_key, sig);
 
 	msg = soup_message_new ("GET", url);
 
@@ -495,6 +523,9 @@ rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account)
 	g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
 	               0, account->priv->login_status);
 
+	g_free (api_url);
+	g_free (api_key);
+	g_free (api_secret);
 	g_free (sig_arg);
 	g_free (sig);
 	g_free (url);
@@ -507,14 +538,13 @@ rb_audioscrobbler_account_got_token_cb (SoupSession *session,
 {
 	/* parses the authentication token from the response
 	 */
-	RBAudioscrobblerAccount *account;
-
-	g_assert (RB_IS_AUDIOSCROBBLER_ACCOUNT (user_data));
-	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
+	RBAudioscrobblerAccount *account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
 
 	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && msg->response_body->length != 0) {
 		char **pre_split;
 		char **post_split;
+		char *auth_url;
+		char *api_key;
 		char *url;
 
 		/* parse the response */
@@ -524,10 +554,16 @@ rb_audioscrobbler_account_got_token_cb (SoupSession *session,
 
 		rb_debug ("granted auth token \"%s\"", account->priv->auth_token);
 
+		/* get the service details */
+		g_object_get (account->priv->service,
+			      "auth-url", &auth_url,
+			      "api-key", &api_key,
+			      NULL);
+
 		/* send the user to the web page using the token */
 		url = g_strdup_printf ("%s?api_key=%s&token=%s",
-		                       LASTFM_AUTH_URL,
-		                       LASTFM_API_KEY,
+		                       auth_url,
+		                       api_key,
 		                       account->priv->auth_token);
 		rb_debug ("sending user to %s", url);
 		gtk_show_uri (NULL, url, GDK_CURRENT_TIME, NULL);
@@ -540,6 +576,8 @@ rb_audioscrobbler_account_got_token_cb (SoupSession *session,
 
 		g_strfreev (pre_split);
 		g_strfreev (post_split);
+		g_free (auth_url);
+		g_free (api_key);
 		g_free (url);
 	} else {
 		/* failed. report connection error */
@@ -558,6 +596,9 @@ rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data)
 {
 	/* Periodically sends a request for the session key */
 	RBAudioscrobblerAccount *account;
+	char *api_url;
+	char *api_key;
+	char *api_secret;
 	char *sig_arg;
 	char *sig;
 	char *url;
@@ -566,15 +607,22 @@ rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data)
 	g_assert (RB_IS_AUDIOSCROBBLER_ACCOUNT (user_data));
 	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
 
+	/* get the service details */
+	g_object_get (account->priv->service,
+	              "api-url", &api_url,
+	              "api-key", &api_key,
+	              "api-secret", &api_secret,
+	              NULL);
+
 	/* create the request */
 	sig_arg = g_strdup_printf ("api_key%smethodauth.getSessiontoken%s%s",
-	                           LASTFM_API_KEY,
+	                           api_key,
 	                           account->priv->auth_token,
-	                           LASTFM_API_SECRET);
+	                           api_secret);
 	sig = mkmd5 (sig_arg);
 	url = g_strdup_printf ("%s?method=auth.getSession&api_key=%s&token=%s&api_sig=%s",
-	                       LASTFM_API_URL,
-	                       LASTFM_API_KEY,
+	                       api_url,
+	                       api_key,
 	                       account->priv->auth_token,
 	                       sig);
 
@@ -587,6 +635,9 @@ rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data)
 	                            rb_audioscrobbler_account_got_session_key_cb,
 	                            account);
 
+	g_free (api_url);
+	g_free (api_key);
+	g_free (api_secret);
 	g_free (sig_arg);
 	g_free (sig);
 	g_free (url);

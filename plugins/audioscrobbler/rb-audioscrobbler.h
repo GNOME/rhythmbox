@@ -35,6 +35,7 @@ G_BEGIN_DECLS
 
 #include "rb-shell-player.h"
 #include "rb-plugin.h"
+#include "rb-audioscrobbler-service.h"
 
 #define RB_TYPE_AUDIOSCROBBLER			(rb_audioscrobbler_get_type ())
 #define RB_AUDIOSCROBBLER(o)			(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_AUDIOSCROBBLER, RBAudioscrobbler))
@@ -64,10 +65,8 @@ typedef struct
 
 GType			rb_audioscrobbler_get_type (void);
 
-RBAudioscrobbler *	rb_audioscrobbler_new (RBShellPlayer *shell_player,
-                                               const char *scrobbler_url,
-                                               const char *api_key,
-                                               const char *api_secret);
+RBAudioscrobbler *	rb_audioscrobbler_new (RBAudioscrobblerService *service,
+                                               RBShellPlayer *shell_player);
 
 void                    rb_audioscrobbler_set_authentication_details (RBAudioscrobbler *audioscrobbler,
                                                                       const char *username,

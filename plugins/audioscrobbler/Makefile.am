@@ -11,6 +11,8 @@ libaudioscrobbler_la_SOURCES = \
 	rb-audioscrobbler-profile-source.c		\
 	rb-audioscrobbler-account.h			\
 	rb-audioscrobbler-account.c			\
+	rb-audioscrobbler-service.h			\
+	rb-audioscrobbler-service.c			\
 	rb-audioscrobbler.c				\
 	rb-audioscrobbler.h				\
 	rb-lastfm-source.c				\
