@@ -125,7 +125,7 @@ rb_audioscrobbler_profile_source_class_init (RBAudioscrobblerProfileSourceClass 
 	object_class->dispose = rb_audioscrobbler_profile_source_dispose;
 	object_class->finalize = rb_audioscrobbler_profile_source_finalize;
 
-	g_type_class_add_private (klass, sizeof (RBAudioscrobblerProfileSource));
+	g_type_class_add_private (klass, sizeof (RBAudioscrobblerProfileSourcePrivate));
 }
 
 static void
