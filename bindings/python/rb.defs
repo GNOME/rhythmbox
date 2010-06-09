@@ -52,14 +52,14 @@
 
 (define-object StaticPlaylistSource
   (in-module "RB")
-  (parent "RBSource")
+  (parent "RBPlaylistSource")
   (c-name "RBStaticPlaylistSource")
   (gtype-id "RB_TYPE_STATIC_PLAYLIST_SOURCE")
 )
 
 (define-object AutoPlaylistSource
   (in-module "RB")
-  (parent "RBSource")
+  (parent "RBPlaylistSource")
   (c-name "RBAutoPlaylistSource")
   (gtype-id "RB_TYPE_AUTO_PLAYLIST_SOURCE")
 )
