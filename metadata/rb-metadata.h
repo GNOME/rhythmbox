@@ -65,7 +65,9 @@ typedef enum
 	RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID,     /* string */
 	RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID,   /* string */
 	RB_METADATA_FIELD_ARTIST_SORTNAME,         /* string */
-	RB_METADATA_FIELD_ALBUM_SORTNAME,         /* string */
+	RB_METADATA_FIELD_ALBUM_SORTNAME,          /* string */
+	RB_METADATA_FIELD_ALBUM_ARTIST,            /* string */
+	RB_METADATA_FIELD_ALBUM_ARTIST_SORTNAME,   /* string */
 
 	RB_METADATA_FIELD_LAST			   /* nothing */
 } RBMetaDataField;

@@ -606,6 +606,12 @@ metadata_field_from_prop (RhythmDBPropType prop,
 	case RHYTHMDB_PROP_ALBUM_SORTNAME:
 		*field = RB_METADATA_FIELD_ALBUM_SORTNAME;
 		return TRUE;
+	case RHYTHMDB_PROP_ALBUM_ARTIST:
+		*field = RB_METADATA_FIELD_ALBUM_ARTIST;
+		return TRUE;
+	case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME:
+		*field = RB_METADATA_FIELD_ALBUM_ARTIST_SORTNAME;
+		return TRUE;
 	default:
 		return FALSE;
 	}
@@ -1662,12 +1668,14 @@ rhythmdb_entry_allocate (RhythmDB *db,
 	ret->artist = rb_refstring_ref (db->priv->empty_string);
 	ret->album = rb_refstring_ref (db->priv->empty_string);
 	ret->comment = rb_refstring_ref (db->priv->empty_string);
+	ret->album_artist = rb_refstring_ref (db->priv->empty_string);
 	ret->musicbrainz_trackid = rb_refstring_ref (db->priv->empty_string);
 	ret->musicbrainz_artistid = rb_refstring_ref (db->priv->empty_string);
 	ret->musicbrainz_albumid = rb_refstring_ref (db->priv->empty_string);
 	ret->musicbrainz_albumartistid = rb_refstring_ref (db->priv->empty_string);
 	ret->artist_sortname = rb_refstring_ref (db->priv->empty_string);
 	ret->album_sortname = rb_refstring_ref (db->priv->empty_string);
+	ret->album_artist_sortname = rb_refstring_ref (db->priv->empty_string);
 	ret->mimetype = rb_refstring_ref (db->priv->octet_stream_str);
 
 	ret->flags |= RHYTHMDB_ENTRY_LAST_PLAYED_DIRTY |
@@ -2083,6 +2091,17 @@ set_props_from_metadata (RhythmDB *db,
 	set_metadata_string_with_default (db, metadata, entry,
 					  RB_METADATA_FIELD_COMMENT,
 					  RHYTHMDB_PROP_COMMENT,
+					  "");
+	/* album artist */
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_ALBUM_ARTIST,
+					  RHYTHMDB_PROP_ALBUM_ARTIST,
+					  "");
+
+	/* album artist sortname */
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_ALBUM_ARTIST_SORTNAME,
+					  RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME,
 					  "");
 }
 
@@ -3674,6 +3693,14 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 			rb_refstring_unref (entry->album_sortname);
 			entry->album_sortname = rb_refstring_new (g_value_get_string (value));
 			break;
+		case RHYTHMDB_PROP_ALBUM_ARTIST:
+			rb_refstring_unref (entry->album_artist);
+			entry->album_artist = rb_refstring_new (g_value_get_string (value));
+			break;
+		case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME:
+			rb_refstring_unref (entry->album_artist_sortname);
+			entry->album_artist_sortname = rb_refstring_new (g_value_get_string (value));
+			break;
 		case RHYTHMDB_PROP_HIDDEN:
 			if (g_value_get_boolean (value)) {
 				entry->flags |= RHYTHMDB_ENTRY_HIDDEN;
@@ -4437,6 +4464,8 @@ rhythmdb_prop_type_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, "Musicbrainz Album Artist ID (gchararray) [mb-albumartistid]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORTNAME, "Artist Sortname (gchararray) [mb-artistsortname]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORTNAME, "Album Sortname (gchararray) [album-sortname]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_ARTIST, "Album Artist (gchararray) [album-artist]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, "Album Artist Sortname (gchararray) [album-artist-sortname]"),
 
 			ENUM_ENTRY (RHYTHMDB_PROP_DURATION, "Duration (gulong) [duration]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_FILE_SIZE, "File Size (guint64) [file-size]"),
@@ -4461,6 +4490,8 @@ rhythmdb_prop_type_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORT_KEY, "Album sort key (gchararray) [album-sort-key]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORTNAME_SORT_KEY, "Artist Sortname sort key (gchararray) [artist-sortname-sort-key]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY, "Album Sortname sort key (gchararray) [album-sortname-sort-key]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_ARTIST_SORT_KEY, "Album Artist sort key (gchararray) [album-artist-sort-key]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_SORT_KEY, "Album Artist Sortname sort key (gchararray) [album-artist-sortname-sort-key]"),
 
 			ENUM_ENTRY (RHYTHMDB_PROP_TITLE_FOLDED, "Title folded (gchararray) [title-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_GENRE_FOLDED, "Genre folded (gchararray) [genre-folded]"),
@@ -4468,6 +4499,8 @@ rhythmdb_prop_type_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_FOLDED, "Album folded (gchararray) [album-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORTNAME_FOLDED, "Artist Sortname folded (gchararray) [artist-sortname-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED, "Album Sortname folded (gchararray) [album-sortname-folded]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_ARTIST_FOLDED, "Album Artist folded (gchararray) [album-artist-sortname-folded]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_FOLDED, "Album Artist Sortname folded (gchararray) [album-artist-sortname-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED_STR, "Last Played (gchararray) [last-played-str]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAYBACK_ERROR, "Playback error string (gchararray) [playback-error]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_HIDDEN, "Hidden (gboolean) [hidden]"),
@@ -5275,6 +5308,10 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get (entry->artist_sortname);
 	case RHYTHMDB_PROP_ALBUM_SORTNAME:
 		return rb_refstring_get (entry->album_sortname);
+	case RHYTHMDB_PROP_ALBUM_ARTIST:
+		return rb_refstring_get (entry->album_artist);
+	case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME:
+		return rb_refstring_get (entry->album_artist_sortname);
 	case RHYTHMDB_PROP_MIMETYPE:
 		return rb_refstring_get (entry->mimetype);
 	case RHYTHMDB_PROP_TITLE_SORT_KEY:
@@ -5289,6 +5326,10 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get_sort_key (entry->artist_sortname);
 	case RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY:
 		return rb_refstring_get_sort_key (entry->album_sortname);
+	case RHYTHMDB_PROP_ALBUM_ARTIST_SORT_KEY:
+		return rb_refstring_get_sort_key (entry->album_artist);
+	case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_SORT_KEY:
+		return rb_refstring_get_sort_key (entry->album_artist_sortname);
 	case RHYTHMDB_PROP_TITLE_FOLDED:
 		return rb_refstring_get_folded (entry->title);
 	case RHYTHMDB_PROP_ALBUM_FOLDED:
@@ -5301,6 +5342,10 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get_folded (entry->artist_sortname);
 	case RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED:
 		return rb_refstring_get_folded (entry->album_sortname);
+	case RHYTHMDB_PROP_ALBUM_ARTIST_FOLDED:
+		return rb_refstring_get_folded (entry->album_artist);
+	case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_FOLDED:
+		return rb_refstring_get_folded (entry->album_artist_sortname);
 	case RHYTHMDB_PROP_LOCATION:
 		return rb_refstring_get (entry->location);
 	case RHYTHMDB_PROP_MOUNTPOINT:
@@ -5383,6 +5428,8 @@ rhythmdb_entry_get_refstring (RhythmDBEntry *entry,
 		return rb_refstring_ref (entry->album);
 	case RHYTHMDB_PROP_ARTIST:
 		return rb_refstring_ref (entry->artist);
+	case RHYTHMDB_PROP_ALBUM_ARTIST:
+		return rb_refstring_ref (entry->album_artist);
 	case RHYTHMDB_PROP_GENRE:
 		return rb_refstring_ref (entry->genre);
 	case RHYTHMDB_PROP_COMMENT:
@@ -5399,6 +5446,8 @@ rhythmdb_entry_get_refstring (RhythmDBEntry *entry,
 		return rb_refstring_ref (entry->artist_sortname);
 	case RHYTHMDB_PROP_ALBUM_SORTNAME:
 		return rb_refstring_ref (entry->album_sortname);
+	case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME:
+		return rb_refstring_ref (entry->album_artist_sortname);
 	case RHYTHMDB_PROP_MIMETYPE:
 		return rb_refstring_ref (entry->mimetype);
 	case RHYTHMDB_PROP_MOUNTPOINT:

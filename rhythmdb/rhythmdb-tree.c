@@ -973,11 +973,14 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_ARTIST:
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->artist));
 			break;
+		case RHYTHMDB_PROP_ALBUM_ARTIST:
+			save_entry_string_if_set(ctx, elt_name, rb_refstring_get (entry->album_artist));
+			break;
 		case RHYTHMDB_PROP_GENRE:
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->genre));
 			break;
 		case RHYTHMDB_PROP_COMMENT:
-			save_entry_string(ctx, elt_name, rb_refstring_get (entry->comment));
+			save_entry_string_if_set(ctx, elt_name, rb_refstring_get (entry->comment));
 			break;
 		case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
 			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->musicbrainz_trackid));
@@ -996,6 +999,9 @@ save_entry (RhythmDBTree *db,
 			break;
 		case RHYTHMDB_PROP_ALBUM_SORTNAME:
 			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->album_sortname));
+			break;
+		case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME:
+			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->album_artist_sortname));
 			break;
 		case RHYTHMDB_PROP_TRACK_NUMBER:
 			save_entry_ulong (ctx, elt_name, entry->tracknum, FALSE);
@@ -1104,14 +1110,18 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_GENRE_SORT_KEY:
 		case RHYTHMDB_PROP_ARTIST_SORT_KEY:
 		case RHYTHMDB_PROP_ALBUM_SORT_KEY:
+		case RHYTHMDB_PROP_ALBUM_ARTIST_SORT_KEY:
 		case RHYTHMDB_PROP_ARTIST_SORTNAME_SORT_KEY:
 		case RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY:
+		case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_SORT_KEY:
 		case RHYTHMDB_PROP_TITLE_FOLDED:
 		case RHYTHMDB_PROP_GENRE_FOLDED:
 		case RHYTHMDB_PROP_ARTIST_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_FOLDED:
+		case RHYTHMDB_PROP_ALBUM_ARTIST_FOLDED:
 		case RHYTHMDB_PROP_ARTIST_SORTNAME_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED:
+		case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_FOLDED:
 		case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		case RHYTHMDB_PROP_FIRST_SEEN_STR:

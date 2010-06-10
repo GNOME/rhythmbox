@@ -861,20 +861,20 @@ filepath_parse_pattern (RhythmDB *db,
 	const char *p;
 	char *temp;
 	GString *s;
-	GValue *value;
 	RBRefString *albumartist;
+	RBRefString *albumartist_sort;
 
 	if (pattern == NULL || pattern[0] == 0)
 		return g_strdup (" ");
 
-	/* request album artist (this is sort of temporary) */
-	value = rhythmdb_entry_request_extra_metadata (db, entry, RHYTHMDB_PROP_ALBUM_ARTIST);
-	if (value != NULL) {
-		albumartist = rb_refstring_new (g_value_get_string (value));
-		g_value_unset (value);
-		g_free (value);
-	} else {
+	/* figure out album artist - use the plain artist field if not specified */
+	albumartist = rhythmdb_entry_get_refstring (entry, RHYTHMDB_PROP_ALBUM_ARTIST);
+	if (albumartist == NULL || g_strcmp0 (rb_refstring_get (albumartist), "") == 0) {
 		albumartist = rhythmdb_entry_get_refstring (entry, RHYTHMDB_PROP_ARTIST);
+	}
+	albumartist_sort = rhythmdb_entry_get_refstring (entry, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME);
+	if (albumartist_sort == NULL || g_strcmp0 (rb_refstring_get (albumartist_sort), "") == 0) {
+		albumartist_sort = rhythmdb_entry_get_refstring (entry, RHYTHMDB_PROP_ARTIST_SORTNAME);
 	}
 
 	s = g_string_new (NULL);
@@ -882,7 +882,6 @@ filepath_parse_pattern (RhythmDB *db,
 	p = pattern;
 	while (*p) {
 		char *string = NULL;
-		char *t;
 
 		/* If not a % marker, copy and continue */
 		if (*p != '%') {
@@ -917,12 +916,10 @@ filepath_parse_pattern (RhythmDB *db,
 				string = sanitize_path (rb_refstring_get_folded (albumartist));
 				break;
 			case 's':
-				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME));
+				string = sanitize_path (rb_refstring_get (albumartist_sort));
 				break;
 			case 'S':
-				t = g_utf8_strdown (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME), -1);
-				string = sanitize_path (t);
-				g_free (t);
+				string = sanitize_path (rb_refstring_get_folded (albumartist_sort));
 				break;
 			case 'y':
 				string = g_strdup_printf ("%u", (guint)rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_YEAR));
@@ -966,9 +963,7 @@ filepath_parse_pattern (RhythmDB *db,
 				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME));
 				break;
 			case 'S':
-				t = g_utf8_strdown (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME), -1);
-				string = sanitize_path (t);
-				g_free (t);
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME_FOLDED));
 				break;
 			case 'n':
 				/* Track number */
