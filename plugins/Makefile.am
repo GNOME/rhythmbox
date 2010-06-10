@@ -58,3 +58,7 @@ if ENABLE_FM_RADIO
 SUBDIRS += fmradio
 endif
 
+if USE_GDBUS
+SUBDIRS += mpris
+endif
+

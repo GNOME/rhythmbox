@@ -59,6 +59,7 @@ GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
 PYGOBJECT_REQUIRED=2.15.4
 WEBKIT_MIN_REQS=1.1.17
+GLIB_GDBUS_REQS=2.25.6
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
@@ -82,7 +83,7 @@ AM_CONDITIONAL(MKDTEMP_MISSING, test x$mkdtemp_missing = xtrue)
 
 PKG_PROG_PKG_CONFIG
 
-PKG_CHECK_MODULES(RB_CLIENT, glib-2.0 >= $GLIB_REQS gio-2.0 >= $GLIB_REQS)
+PKG_CHECK_MODULES(RB_CLIENT, glib-2.0 >= $GLIB_REQS gio-2.0 >= $GLIB_REQS gio-unix-2.0 >= $GLIB_REQS)
 
 dnl  note: gio-unix-2.0 is here for libmediaplayerid
 PKG_CHECK_MODULES(RHYTHMBOX,				\
@@ -102,6 +103,10 @@ else
        AC_MSG_ERROR([totem playlist parsing library has Podcast parsing disabled])
    fi
 fi
+
+dnl check for GDBus
+PKG_CHECK_EXISTS(glib-2.0 >= $GLIB_GDBUS_REQS, [have_gdbus=yes], [have_gdbus=no])
+AM_CONDITIONAL(USE_GDBUS, test x"$have_gdbus" = xyes)
 
 dnl gudev
 AC_ARG_WITH(gudev,
@@ -888,6 +893,7 @@ plugins/context/context/Makefile
 plugins/sendto/Makefile
 plugins/replaygain/Makefile
 plugins/replaygain/replaygain/Makefile
+plugins/mpris/Makefile
 bindings/Makefile
 bindings/python/Makefile
 bindings/vala/Makefile
