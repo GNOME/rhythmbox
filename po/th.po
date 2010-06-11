@@ -2,7 +2,7 @@
 # Copyright (C) 2005-2010 Free Software Foundation, Inc.
 # This file is distributed under the same license as the rhythmbox package.
 # Isriya Paireepairit <markpeak@gmail.com>, 2005.
-# Theppitak Karoonboonyanan <thep@linux.thai.net>, 2009.
+# Theppitak Karoonboonyanan <thep@linux.thai.net>, 2009-2010.
 # Sira Nokyoongtong <gumaraa@gmail.com>, 2010.
 #
 msgid ""
@@ -10,9 +10,9 @@ msgstr ""
 "Project-Id-Version: rhythmbox 0.8.99\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-06-10 10:20+0000\n"
-"PO-Revision-Date: 2010-06-11 15:44+0700\n"
-"Last-Translator: Sira Nokyoongtong <gumaraa@gmail.com>\n"
+"POT-Creation-Date: 2010-06-11 08:58+0000\n"
+"PO-Revision-Date: 2010-06-11 18:51+0700\n"
+"Last-Translator: Theppitak Karoonboonyanan <thep@linux.thai.net>\n"
 "Language-Team: Thai <thai-l10n@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -129,7 +129,7 @@ msgstr "มุมมองเบราว์เซอร์"
 
 #: ../data/ui/general-prefs.ui.h:3
 msgid "C_omment"
-msgstr ""
+msgstr "ความคิดเ_ห็น"
 
 #: ../data/ui/general-prefs.ui.h:4
 msgid "Da_te added"
@@ -141,7 +141,7 @@ msgstr "ปริยาย"
 
 #: ../data/ui/general-prefs.ui.h:6
 msgid "G_enres, artists and albums"
-msgstr "แ_นวเพลง ศิลปินและอัลบั้ม"
+msgstr "แนวเพล_ง ศิลปิน และอัลบั้ม"
 
 #: ../data/ui/general-prefs.ui.h:7
 msgid "Icons only"
@@ -149,7 +149,7 @@ msgstr "ไอคอนเท่านั้น"
 
 #: ../data/ui/general-prefs.ui.h:8
 msgid "Lo_cation"
-msgstr "_ตำแหน่งที่ตั้ง:"
+msgstr "_ตำแหน่งเก็บ:"
 
 #: ../data/ui/general-prefs.ui.h:9
 msgid "Text below icons"
@@ -165,7 +165,7 @@ msgstr "ข้อความเท่านั้น"
 
 #: ../data/ui/general-prefs.ui.h:12
 msgid "Ti_me"
-msgstr "เ_วลา"
+msgstr "_เวลา"
 
 #: ../data/ui/general-prefs.ui.h:13
 msgid "Toolbar Button Labels"
@@ -185,15 +185,15 @@ msgstr "ศิลปิ_น"
 
 #: ../data/ui/general-prefs.ui.h:17
 msgid "_Artists and albums"
-msgstr "_ศิลปินและอัลบั้ม"
+msgstr "ศิลปิน_และอัลบั้ม"
 
 #: ../data/ui/general-prefs.ui.h:18
 msgid "_Genre"
-msgstr "แนวเพล_ง"
+msgstr "แนวเ_พลง"
 
 #: ../data/ui/general-prefs.ui.h:19
 msgid "_Genres and artists"
-msgstr "_แนวเพลงและศิลปิน"
+msgstr "แน_วเพลงและศิลปิน"
 
 #: ../data/ui/general-prefs.ui.h:20
 msgid "_Last played"
@@ -205,7 +205,7 @@ msgstr "_จำนวนครั้งที่เล่น"
 
 #: ../data/ui/general-prefs.ui.h:22
 msgid "_Quality"
-msgstr "คุณภา_พ"
+msgstr "คุณ_ภาพ"
 
 #: ../data/ui/general-prefs.ui.h:23
 msgid "_Rating"
@@ -260,23 +260,17 @@ msgid "<b>Information</b>"
 msgstr "<b>ข้อมูล</b>"
 
 #: ../data/ui/media-player-properties.ui.h:2 ../data/ui/sync-dialog.ui.h:1
-#, fuzzy
-#| msgid "<b>Search engines</b>"
 msgid "<b>Sync Preferences</b>"
-msgstr "<b>เครื่องมือค้นหา</b>"
+msgstr "<b>ปรับค่าการ Sync</b>"
 
 #: ../data/ui/media-player-properties.ui.h:3 ../data/ui/sync-dialog.ui.h:2
-#, fuzzy
-#| msgid "<b>Search engines</b>"
 msgid "<b>Sync Preview</b>"
-msgstr "<b>เครื่องมือค้นหา</b>"
+msgstr "<b>ตัวอย่างก่อน Sync</b>"
 
 #. Translators: This refers to the usage of media space
 #: ../data/ui/media-player-properties.ui.h:5
-#, fuzzy
-#| msgid "Volume Usage:"
 msgid "<b>Volume usage</b>"
-msgstr "การใช้เนื้อที่:"
+msgstr "<b>การใช้เนื้อที่</b>"
 
 #: ../data/ui/media-player-properties.ui.h:6
 #: ../data/ui/podcast-feed-properties.ui.h:2
@@ -286,15 +280,13 @@ msgid "Basic"
 msgstr "ทั่วไป"
 
 #: ../data/ui/media-player-properties.ui.h:7
-#, fuzzy
-#| msgid "Media Player Keys"
 msgid "Media Player Properties"
-msgstr "ปุ่มเล่นสื่อ"
+msgstr "คุณสมบัติของเครื่องเล่นสื่อ"
 
 #: ../data/ui/media-player-properties.ui.h:8
 #: ../sources/rb-media-player-source.c:108
 msgid "Sync"
-msgstr ""
+msgstr "Sync"
 
 #: ../data/ui/playback-prefs.ui.h:1
 msgid "Crossfade Duration (Seconds)"
@@ -446,43 +438,33 @@ msgid "_Rating:"
 msgstr "_คะแนน:"
 
 #: ../data/ui/song-info-multiple.ui.h:1 ../data/ui/song-info.ui.h:1
-#, fuzzy
-#| msgid "Artist s_ort order:"
 msgid "Albu_m sort order:"
-msgstr "ลำดับการเ_รียงชื่อศิลปิน:"
+msgstr "ลำดับการเรียง_อัลบั้ม:"
 
 #: ../data/ui/song-info-multiple.ui.h:2 ../data/ui/song-info.ui.h:2
-#, fuzzy
-#| msgid "_Album:"
 msgid "Albu_m:"
 msgstr "_อัลบั้ม:"
 
 #: ../data/ui/song-info-multiple.ui.h:3 ../data/ui/song-info.ui.h:3
-#, fuzzy
-#| msgid "Artist s_ort order:"
 msgid "Album a_rtist sort order:"
-msgstr "ลำดับการเ_รียงชื่อศิลปิน:"
+msgstr "ลำดับการเรียงชื่อศิลปิ_นของอัลบั้ม:"
 
 #: ../data/ui/song-info-multiple.ui.h:4 ../data/ui/song-info.ui.h:4
-#, fuzzy
-#| msgid "_Artist:"
 msgid "Album a_rtist:"
-msgstr "ศิลปิ_น:"
+msgstr "ศิลปิ_นของอัลบั้ม:"
 
 #: ../data/ui/song-info-multiple.ui.h:6 ../data/ui/song-info.ui.h:16
 msgid "Sorting"
 msgstr "การเรียงลำดับ"
 
 #: ../data/ui/song-info-multiple.ui.h:7 ../data/ui/song-info.ui.h:18
-#, fuzzy
-#| msgid "Artist s_ort order:"
 msgid "_Artist sort order:"
-msgstr "ลำดับการเ_รียงชื่อศิลปิน:"
+msgstr "ลำดับการเรียงชื่อศิ_ลปิน:"
 
 #: ../data/ui/song-info-multiple.ui.h:8 ../data/ui/song-info.ui.h:19
 #: ../plugins/audiocd/album-info.ui.h:3
 msgid "_Artist:"
-msgstr "ศิลปิ_น:"
+msgstr "ศิ_ลปิน:"
 
 #: ../data/ui/song-info-multiple.ui.h:9 ../data/ui/song-info.ui.h:21
 msgid "_Disc number:"
@@ -520,16 +502,12 @@ msgid "Location:"
 msgstr "ตำแหน่งที่ตั้ง:"
 
 #: ../data/ui/song-info.ui.h:17
-#, fuzzy
-#| msgid "Track _number"
 msgid "Track _number:"
-msgstr "_ลำดับเพลง"
+msgstr "ลำ_ดับเพลง:"
 
 #: ../data/ui/song-info.ui.h:20
-#, fuzzy
-#| msgid "_Contents"
 msgid "_Comment:"
-msgstr "_ความคิดเห็น:"
+msgstr "ความคิดเ_ห็น:"
 
 #: ../data/ui/song-info.ui.h:24 ../plugins/iradio/station-properties.ui.h:10
 msgid "_Title:"
@@ -541,7 +519,7 @@ msgstr "แฟ้มที่เพิ่ม:"
 
 #: ../data/ui/sync-state.ui.h:2
 msgid "Contents after sync"
-msgstr "เนื้อหาหลังการปรับข้อมูล"
+msgstr "เนื้อหาหลังการ sync"
 
 #: ../data/ui/sync-state.ui.h:3
 msgid "Current contents"
@@ -689,10 +667,8 @@ msgstr "%d %b %Ey"
 #: ../lib/rb-util.c:1024
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:98
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:179
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:180
-#: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:126
-#: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:130
+#: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:128
+#: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:132
 #: ../plugins/audiocd/rb-audiocd-source.c:492
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
@@ -810,10 +786,9 @@ msgid "The MIME type of the file could not be identified"
 msgstr "ไม่สามารถระบุชนิด MIME ของแฟ้มได้"
 
 #: ../metadata/rb-metadata-gst.c:965
-#, fuzzy, c-format
-#| msgid "Unable to check file type: %s"
+#, c-format
 msgid "Unable to identify file type"
-msgstr "ไม่สามารถตรวจสอบชนิดของแฟ้ม: %s"
+msgstr "ไม่สามารถระบุชนิดของแฟ้ม"
 
 #: ../metadata/rb-metadata-gst.c:978
 #, c-format
@@ -845,7 +820,7 @@ msgstr "ดึงภาพปกอัลบั้มจากอินเทอ
 
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:41
 msgid "Image provided by Last.fm"
-msgstr ""
+msgstr "รูปภาพจาก Last.fm"
 
 #: ../plugins/artdisplay/artdisplay/__init__.py:326
 msgid "Searching... drop artwork here"
@@ -913,14 +888,12 @@ msgstr "คัดลอก"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:330
 msgid "Select tracks to be extracted"
-msgstr ""
+msgstr "เลือกเพลงที่จะคัดลอก"
 
 #. Info bar for non-Musicbrainz data
 #: ../plugins/audiocd/rb-audiocd-source.c:361
-#, fuzzy
-#| msgid "_Album"
 msgid "S_ubmit Album"
-msgstr "_อัลบั้ม"
+msgstr "_ส่งอัลบั้ม"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:362
 msgid "Hide"
@@ -928,11 +901,11 @@ msgstr "ซ่อน"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:364
 msgid "Could not find this album on MusicBrainz."
-msgstr ""
+msgstr "ไม่พบอัลบั้มนี้ใน Musicbrainz"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:365
 msgid "You can improve the MusicBrainz database by adding this album."
-msgstr ""
+msgstr "คุณสามารถช่วยปรับปรุงฐานข้อมูล Musicbrainz ได้โดยเพิ่มข้อมูลของอัลบั้มนี้"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:498
 msgid "<Invalid unicode>"
@@ -1801,13 +1774,11 @@ msgstr "การรองรับการแบ่งปันและคว
 
 #: ../plugins/context/context.rb-plugin.in.h:1
 msgid "Context Pane"
-msgstr ""
+msgstr "ช่องข้อมูลข้างเคียง"
 
 #: ../plugins/context/context.rb-plugin.in.h:2
-#, fuzzy
-#| msgid "Scroll the view to the currently playing song"
 msgid "Show information related to the currently playing artist and song."
-msgstr "เลื่อนไปแสดงเพลงที่กำลังเล่น"
+msgstr "แสดงข้อมูลที่เกี่ยวข้องกับศิลปินและเพลงที่กำลังเล่น"
 
 #: ../plugins/context/context/AlbumTab.py:51
 #: ../sources/rb-auto-playlist-source.c:106 ../sources/rb-browser-source.c:168
@@ -1819,36 +1790,31 @@ msgstr "อัลบั้ม"
 #: ../plugins/context/context/AlbumTab.py:114
 #, python-format
 msgid "Loading top albums for %s"
-msgstr ""
+msgstr "กำลังโหลดอัลบั้มยอดนิยมของ %s"
 
 #: ../plugins/context/context/ArtistTab.py:111
 #, python-format
 msgid "Loading biography for %s"
-msgstr ""
+msgstr "กำลังโหลดชีวประวัติของ %s"
 
 #. Add button to toggle visibility of pane
 #: ../plugins/context/context/ContextView.py:89
 msgid "Toggle Conte_xt Pane"
-msgstr ""
+msgstr "ปิด-เปิดช่อง_ข้อมูลข้างเคียง"
 
 #: ../plugins/context/context/ContextView.py:90
-#, fuzzy
-#| msgid "Change the visibility of the side pane"
 msgid "Change the visibility of the context pane"
-msgstr "ซ่อนหรือแสดงช่องด้านข้าง"
+msgstr "ซ่อนหรือแสดงช่องข้อมูลข้างเคียง"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
 #: ../plugins/context/context/ContextView.py:197
-#, fuzzy, python-format
-#| msgid "%s by %s"
+#, python-format
 msgid "Top songs by %s"
-msgstr "%s โดย %s"
+msgstr "เพลงยอดนิยมของ %s"
 
 #: ../plugins/context/context/ContextView.py:227
-#, fuzzy
-#| msgid "Not Playing"
 msgid "Nothing Playing"
-msgstr "ไม่ได้เล่น"
+msgstr "ไม่ได้เล่นเพลงใดอยู่"
 
 #. this isn't particularly well worded; maybe that's a sign that it's too ugly
 #. maybe we could provide a form to fill in?
@@ -1857,6 +1823,7 @@ msgid ""
 "This information is only available to last.fm users. Please enter your "
 "account details in the last.fm plugin configuration."
 msgstr ""
+"ข้อมูลนี้ใช้ได้เฉพาะผู้ใช้ last.fm เท่านั้น กรุณาป้อนรายละเอียดบัญชีของคุณในค่าตั้งปลั๊กอิน last.fm"
 
 #: ../plugins/context/context/LyricsTab.py:48
 #: ../plugins/lyrics/lyrics/__init__.py:249
@@ -1867,7 +1834,7 @@ msgstr "เนื้อเพลง"
 #: ../plugins/context/context/LyricsTab.py:99
 #, python-format
 msgid "Loading lyrics for %s by %s"
-msgstr ""
+msgstr "กำลังโหลดเนื้อเพลง %s ของ %s"
 
 #: ../plugins/context/context/LyricsTab.py:117
 msgid "Lyrics not found"
@@ -1885,31 +1852,24 @@ msgstr "แสดงเพลงทั้งหมด"
 #: ../plugins/context/tmpl/album-tmpl.html:56
 #, c-format
 msgid "Top albums by %s"
-msgstr ""
+msgstr "อัลบั้มยอดนิยมของ %s"
 
 #: ../plugins/context/tmpl/album-tmpl.html:76
-#, fuzzy, c-format
-#| msgid "%s (%d)"
+#, c-format
 msgid "%s (%d tracks)"
-msgstr "%s (%d)"
+msgstr "%s (%d เพลง)"
 
 #: ../plugins/context/tmpl/album-tmpl.html:93
-#, fuzzy
-#| msgid "Playback position not available"
 msgid "Track list not available"
-msgstr "ไม่มีข้อมูลตำแหน่งการเล่นเพลง"
+msgstr "ไม่มีรายชื่อเพลง"
 
 #: ../plugins/context/tmpl/album-tmpl.html:99
-#, fuzzy
-#| msgid "Unable to start visualization"
 msgid "Unable to retrieve album information:"
-msgstr "ไม่สามารถเริ่มแสดงภาพเอ็ฟเฟ็กต์เสียงได้"
+msgstr "ไม่สามารถอ่านข้อมูลอัลบั้ม:"
 
 #: ../plugins/context/tmpl/artist-tmpl.html:9
-#, fuzzy
-#| msgid "Show information about the music player"
 msgid "No information available"
-msgstr "แสดงข้อมูลของโปรแกรมเล่นเพลง"
+msgstr "ไม่มีข้อมูล"
 
 #: ../plugins/context/tmpl/artist-tmpl.html:32
 msgid "Read more"
@@ -1921,10 +1881,8 @@ msgid "Read less"
 msgstr "อ่านแบบตัดทอน"
 
 #: ../plugins/context/tmpl/artist-tmpl.html:48
-#, fuzzy
-#| msgid "Unable to start visualization"
 msgid "Unable to retrieve artist information:"
-msgstr "ไม่สามารถเริ่มแสดงภาพเอ็ฟเฟ็กต์เสียงได้"
+msgstr "ไม่สามารถอ่านข้อมูลของศิลปิน:"
 
 #: ../plugins/daap/daap.rb-plugin.in.h:1
 msgid "DAAP Music Sharing"
@@ -2903,7 +2861,7 @@ msgstr "WAV"
 msgid ""
 "Your account details have changed. Changes will be applied the next time you "
 "start Rhythmbox."
-msgstr ""
+msgstr "ข้อมูลบัญชีของคุณมีการเปลี่ยนแปลง ซึ่งจะเริ่มมีผลเมื่อคุณเปิด Rhythmbox ครั้งต่อไป"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:44
 msgid "http://magnatune.com/compare_plans"
@@ -2958,10 +2916,8 @@ msgstr "Rhythmbox อ่านสารบัญเพลงของ Magnatune 
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:313
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:410
-#, fuzzy
-#| msgid "Could not get current track position"
 msgid "Couldn't get account details"
-msgstr "ไม่สามารถอ่านตำแหน่งเพลงปัจจุบัน"
+msgstr "ไม่สามารถอ่านข้อมูลของบัญชี"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:459
 msgid "Download Error"
@@ -3000,7 +2956,7 @@ msgstr "ดาวน์โหลดเสร็จแล้ว"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:495
 msgid "All Magnatune downloads have been completed."
-msgstr ""
+msgstr "รายการดาวน์โหลดจาก Magnatune เสร็จหมดแล้ว"
 
 #: ../plugins/magnatune/magnatune/__init__.py:111
 msgid "Download Album"
@@ -3028,16 +2984,14 @@ msgstr "หยุดดาวน์โหลดอัลบั้มที่ซ
 
 #: ../plugins/magnatune/magnatune/__init__.py:251
 #: ../plugins/magnatune/magnatune/__init__.py:254
-#, fuzzy
-#| msgid "Rhythmbox couldn't read the CD information."
 msgid "Couldn't store account information"
-msgstr "Rhythmbox ไม่สามารถอ่านข้อมูลของซีดี"
+msgstr "ไม่สามารถเก็บบันทึกข้อมูลของบัญชี"
 
 #: ../plugins/magnatune/magnatune/__init__.py:252
 msgid ""
 "There was a problem accessing the keyring. Check the debug output for more "
 "information."
-msgstr ""
+msgstr "มีปัญหาในการเข้าใช้พวงกุญแจ กรุณาตรวจสอบข้อมูลเพิ่มเติมได้จากข้อความดีบั๊ก"
 
 #: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
@@ -3074,10 +3028,9 @@ msgstr "เกิดข้อผิดพลาดเกี่ยวกับอ
 #. * second is the product name.
 #.
 #: ../plugins/mtpdevice/rb-mtp-source.c:858
-#, fuzzy, c-format
-#| msgid "Unable to move %s to %s: %s"
+#, c-format
 msgid "Unable to open the %s %s device"
-msgstr "ไม่สามารถย้าย %s ไปยัง %s: %s"
+msgstr "ไม่สามารถเปิดอุปกรณ์ %s %s"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:902
 msgid "Digital Audio Player"
@@ -3098,13 +3051,12 @@ msgstr "ที่ว่างมีไม่พอใน %s"
 #: ../plugins/mtpdevice/rb-mtp-thread.c:523
 #, c-format
 msgid "No space left on MTP device"
-msgstr ""
+msgstr "ไม่มีที่ว่างเหลือในอุปกรณ์ MTP"
 
 #: ../plugins/mtpdevice/rb-mtp-thread.c:526
-#, fuzzy, c-format
-#| msgid "Unable to copy file from MTP device: %s"
+#, c-format
 msgid "Unable to send file to MTP device: %s"
-msgstr "ไม่สามารถคัดลอกแฟ้มจากอุปกรณ์ MTP: %s"
+msgstr "ไม่สามารถส่งแฟ้มไปยังอุปกรณ์ MTP: %s"
 
 #: ../plugins/power-manager/power-manager.rb-plugin.in.h:1
 msgid "Inhibit Power Manager from suspending the machine while playing"
@@ -3160,41 +3112,39 @@ msgstr "คอนโซลไพธอน"
 #. sys.excepthook = _excepthandler
 #: ../plugins/replaygain/replaygain.rb-plugin.in.h:1
 msgid "ReplayGain"
-msgstr ""
+msgstr "คุมความดังเพลง"
 
 #: ../plugins/replaygain/replaygain.rb-plugin.in.h:2
 msgid "Use ReplayGain to provide a consistent playback volume"
-msgstr ""
+msgstr "ใช้ปลั๊กอินคุมความดังเพลงเพื่อให้ได้ความดังเพลงที่สม่ำเสมอกัน"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:1
 msgid "Album (ideal loudness for all tracks)"
-msgstr ""
+msgstr "อัลบั้ม (ความดังที่ดีที่สุดสำหรับทุกเพลง)"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:2
 msgid "Learn more about ReplayGain at replaygain.org"
-msgstr ""
+msgstr "ศึกษาเพิ่มเติมเกี่ยวกับปลั๊กอินคุมความดังเพลงได้ที่ replaygain.org"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:3
 msgid "Radio (equal loudness for all tracks)"
-msgstr ""
+msgstr "วิทยุ (ความดังเท่ากันทุกเพลง)"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:4
 msgid "ReplayGain _mode:"
-msgstr ""
+msgstr "โห_มดคุมความดังเพลง:"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:5
-#, fuzzy
-#| msgid "Status icon preferences"
 msgid "ReplayGain preferences"
-msgstr "ปรับแต่งไอคอนสถานะ"
+msgstr "ปรับแต่งปลั๊กอินคุมความดังเพลง"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:6
 msgid "_Apply compression to prevent clipping"
-msgstr ""
+msgstr "ใ_ช้การบีบสัญญาณเพื่อไม่ให้มีการตัดยอดสัญญาณ"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:7
 msgid "_Pre-amp:"
-msgstr ""
+msgstr "_พรีแอมป์:"
 
 #: ../plugins/replaygain/replaygain/config.py:78
 msgid "-15.0 dB"
@@ -3214,12 +3164,11 @@ msgid ""
 "The GStreamer elements required for ReplayGain processing are not available. "
 "The missing elements are: %s"
 msgstr ""
+"ขาดองค์ประกอบของ GStreamer ที่จำเป็นสำหรับการทำงานของปลั๊กอินคุมความดังเพลง คือ: %s"
 
 #: ../plugins/replaygain/replaygain/player.py:49
-#, fuzzy
-#| msgid "Playback position not available"
 msgid "ReplayGain GStreamer plugins not available"
-msgstr "ไม่มีข้อมูลตำแหน่งการเล่นเพลง"
+msgstr "ไม่มีปลั๊กอิน GStreamer สำหรับปลั๊กอินคุมความดังเพลง"
 
 #: ../plugins/sample-python/sample-python.py:14
 msgid "Python Source"
@@ -3549,7 +3498,7 @@ msgstr "การป้อนไม่มีรายการใดที่ด
 
 #: ../podcast/rb-podcast-properties-dialog.c:176
 msgid "Unable to display requested URI"
-msgstr ""
+msgstr "ไม่สามารถแสดง URI ที่ร้องขอได้"
 
 #: ../podcast/rb-podcast-properties-dialog.c:549
 msgid "Not Downloaded"
@@ -4002,10 +3951,8 @@ msgid "Paste selection"
 msgstr "แปะสิ่งที่เลือก"
 
 #: ../shell/rb-shell-clipboard.c:167
-#, fuzzy
-#| msgid "Delete the selected station"
 msgid "Delete each selected item"
-msgstr "ลบสถานีที่เลือก"
+msgstr "ลบแต่ละรายการที่เลือก"
 
 #: ../shell/rb-shell-clipboard.c:169
 msgid "_Remove"
@@ -4013,47 +3960,39 @@ msgstr "เอาออ_ก"
 
 #: ../shell/rb-shell-clipboard.c:170
 msgid "Remove each selected item from the library"
-msgstr ""
+msgstr "เอาแต่ละรายการที่เลือกออกจากคลังเพลง"
 
 #: ../shell/rb-shell-clipboard.c:172
 msgid "_Move to Trash"
 msgstr "_ทิ้งลงถังขยะ"
 
 #: ../shell/rb-shell-clipboard.c:173
-#, fuzzy
-#| msgid "Move selection to the trash"
 msgid "Move each selected item to the trash"
-msgstr "ทิ้งสิ่งที่เลือกลงถังขยะ"
+msgstr "ทิ้งแต่ละรายการที่เลือกลงถังขยะ"
 
 #: ../shell/rb-shell-clipboard.c:176
 msgid "Add to P_laylist"
 msgstr "เพิ่มเข้าใน_รายการเพลง"
 
 #: ../shell/rb-shell-clipboard.c:178
-#, fuzzy
-#| msgid "Add the selected songs to a new playlist"
 msgid "Add each selected song to a new playlist"
-msgstr "เพิ่มเพลงที่เลือกเข้าในรายการเพลงสร้างใหม่"
+msgstr "เพิ่มเพลงแต่ละเพลงที่เลือกเข้าในรายการเพลงสร้างใหม่"
 
 #: ../shell/rb-shell-clipboard.c:180
 msgid "Add _to Play Queue"
 msgstr "เ_พิ่มไปยังคิวเพลง"
 
 #: ../shell/rb-shell-clipboard.c:181
-#, fuzzy
-#| msgid "Add the selected songs to the play queue"
 msgid "Add each selected song to the play queue"
-msgstr "เพิ่มเพลงที่เลือกเข้าในคิวเพลง"
+msgstr "เพิ่มเพลงแต่ละเพลงที่เลือกเข้าในคิวเพลง"
 
 #: ../shell/rb-shell-clipboard.c:183
 msgid "Remove"
-msgstr "ลบ"
+msgstr "เอาออก"
 
 #: ../shell/rb-shell-clipboard.c:184
-#, fuzzy
-#| msgid "Remove all songs from the play queue"
 msgid "Remove each selected item from the play queue"
-msgstr "ลบเพลงทุกเพลงออกจากคิวเพลง"
+msgstr "เอาเพลงแต่ละเพลงที่เลือกออกจากคิวเพลง"
 
 #: ../shell/rb-shell-clipboard.c:187
 msgid "Pr_operties"
@@ -4517,16 +4456,16 @@ msgid "Replace _All"
 msgstr "เขียนทั_บทั้งหมด"
 
 #: ../shell/rb-track-transfer-queue.c:368
-#, fuzzy
-#| msgid "Error transferring track"
 msgid "Unable to transfer tracks"
-msgstr "เกิดข้อผิดพลาดขณะถ่ายโอนเพลง"
+msgstr "ไม่สามารถถ่ายโอนเพลง"
 
 #: ../shell/rb-track-transfer-queue.c:369
 msgid ""
 "None of the tracks to be transferred are in a format supported by the target "
 "device, and no encoders are available  for the supported formats."
 msgstr ""
+"ไม่มีเพลงใดในบรรดาเพลงที่จะถ่ายโอนที่อยู่ในรูปแบบที่อุปกรณ์ปลายทางรองรับ "
+"และก็ไม่มีตัวลงรหัสสำหรับรูปแบบที่รองรับด้วย"
 
 #: ../shell/rb-track-transfer-queue.c:386
 #, c-format
@@ -4534,6 +4473,8 @@ msgid ""
 "%d of the %d files to be transferred are not in a format supported by the "
 "target device, and no encoders are available for the supported formats."
 msgstr ""
+"เพลง %d ใน %d เพลงที่จะถ่ายโอนไม่ได้อยู่ในรูปแบบที่อุปกรณ์ปลายทางรองรับ "
+"และก็ไม่มีตัวลงรหัสสำหรับรูปแบบที่รองรับด้วย"
 
 #: ../shell/rb-track-transfer-queue.c:395
 msgid "Unable to transfer all tracks. Do you want to continue?"
@@ -4689,32 +4630,32 @@ msgstr "ตัวอย่างพาธ:"
 
 #: ../sources/rb-media-player-source.c:109
 msgid "Synchronize media player with the library"
-msgstr ""
+msgstr "ปรับข้อมูลระหว่างเครื่องเล่นสื่อกับคลังเพลงให้ตรงกัน"
 
 #: ../sources/rb-media-player-source.c:624
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
-msgstr ""
+msgstr "คุณยังไม่ได้เลือกเพลง รายการเพลง หรือพอดแคสต์ใดๆ ที่จะถ่ายโอนมายังอุปกรณ์นี้เลย"
 
 #: ../sources/rb-media-player-source.c:628
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
-msgstr ""
+msgstr "เหลือเนื้อที่ในอุปกรณ์ไม่พอสำหรับถ่ายโอนเพลง รายการเพลง และพอดแคสต์ที่เลือก"
 
 #: ../sources/rb-media-player-source.c:679
 #, c-format
 msgid "%s Sync Settings"
-msgstr "ตั้งค่าการปรับข้อมูล %s ให้ตรงกัน"
+msgstr "ตั้งค่าการ Sync %s"
 
 #: ../sources/rb-media-player-source.c:684
 msgid "Sync with the device"
-msgstr "ปรับข้อมูลกับอุปกรณ์ให้ตรงกัน"
+msgstr "sync กับอุปกรณ์"
 
 #: ../sources/rb-media-player-source.c:686
 msgid "Don't sync"
-msgstr "ไม่ต้องปรับ"
+msgstr "ไม่ต้อง sync"
 
 #: ../sources/rb-missing-files-source.c:281
 msgid "Missing Files"
@@ -5009,34 +4950,32 @@ msgid "Other"
 msgstr "อื่นๆ"
 
 #: ../sources/sync/rb-sync-state-ui.c:80
-#, fuzzy
-#| msgid "Disable"
 msgid "Available"
-msgstr "ปิดใช้งาน"
+msgstr "เนื้อที่ว่าง"
 
 #: ../widgets/rb-alert-dialog.c:87
 msgid "Image/label border"
-msgstr ""
+msgstr "ขอบของรูป/ป้ายชื่อ"
 
 #: ../widgets/rb-alert-dialog.c:88
 msgid "Width of border around the label and image in the alert dialog"
-msgstr ""
+msgstr "ความกว้างของขอบรอบป้ายชื่อและรูปภาพในกล่องโต้ตอบแจ้งเตือน"
 
 #: ../widgets/rb-alert-dialog.c:97
 msgid "Alert Type"
-msgstr ""
+msgstr "ชนิดการแจ้งเตือน"
 
 #: ../widgets/rb-alert-dialog.c:98
 msgid "The type of alert"
-msgstr ""
+msgstr "ชนิดของการแจ้งเตือน"
 
 #: ../widgets/rb-alert-dialog.c:106
 msgid "Alert Buttons"
-msgstr ""
+msgstr "ปุ่มในการแจ้งเตือน"
 
 #: ../widgets/rb-alert-dialog.c:107
 msgid "The buttons shown in the alert dialog"
-msgstr ""
+msgstr "ปุ่มที่แสดงในกล่องโต้ตอบแจ้งเตือน"
 
 #: ../widgets/rb-alert-dialog.c:172
 msgid "Show more _details"
