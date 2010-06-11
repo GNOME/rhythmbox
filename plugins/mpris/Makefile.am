@@ -5,6 +5,7 @@ plugin_LTLIBRARIES = libmpris.la
 
 libmpris_la_SOURCES = \
 	rb-mpris-plugin.c				\
+	mpris-spec.h					\
 	$(NULL)
 
 libmpris_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
