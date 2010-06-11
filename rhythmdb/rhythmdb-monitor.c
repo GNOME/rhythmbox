@@ -44,6 +44,10 @@
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
 
+#if !GLIB_CHECK_VERSION(2,24,0)
+#define G_FILE_MONITOR_SEND_MOVED	0
+#endif
+
 #define RHYTHMDB_FILE_MODIFY_PROCESS_TIME 2
 
 static void rhythmdb_directory_change_cb (GFileMonitor *monitor,
@@ -136,7 +140,7 @@ actually_add_monitor (RhythmDB *db, GFile *directory, GError **error)
 		return;
 	}
 
-	monitor = g_file_monitor_directory (directory, 0, db->priv->exiting, error);
+	monitor = g_file_monitor_directory (directory, G_FILE_MONITOR_SEND_MOVED, db->priv->exiting, error);
 	if (monitor != NULL) {
 		g_signal_connect_object (G_OBJECT (monitor),
 					 "changed",
@@ -216,14 +220,8 @@ rhythmdb_check_changed_file (RBRefString *uri, gpointer data, RhythmDB *db)
 
 	g_get_current_time (&time);
 	if (time.tv_sec >= time_sec + RHYTHMDB_FILE_MODIFY_PROCESS_TIME) {
-		/* process and remove from table */
-		RhythmDBEvent *event = g_slice_new0 (RhythmDBEvent);
-		event->db = db;
-		event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
-		event->uri = rb_refstring_ref (uri);
-
-		g_async_queue_push (db->priv->event_queue, event);
 		rb_debug ("adding newly located file %s", rb_refstring_get (uri));
+		rhythmdb_add_uri (db, rb_refstring_get (uri));
 		return TRUE;
 	}
 
@@ -293,7 +291,14 @@ rhythmdb_directory_change_cb (GFileMonitor *monitor,
 			      RhythmDB *db)
 {
 	char *canon_uri;
+	char *other_canon_uri = NULL;
+	RhythmDBEntry *entry;
+
 	canon_uri = g_file_get_uri (file);
+	if (other_file != NULL) {
+		other_canon_uri = g_file_get_uri (other_file);
+	}
+
 	rb_debug ("directory event %d for %s", event_type, canon_uri);
 
 	switch (event_type) {
@@ -338,14 +343,40 @@ rhythmdb_directory_change_cb (GFileMonitor *monitor,
 		/* hmm.. */
 		break;
 	case G_FILE_MONITOR_EVENT_DELETED:
-		if (rhythmdb_entry_lookup_by_location (db, canon_uri)) {
-			RhythmDBEvent *event = g_slice_new0 (RhythmDBEvent);
-			event->db = db;
-			event->type = RHYTHMDB_EVENT_FILE_DELETED;
-			event->uri = rb_refstring_new (canon_uri);
-			g_async_queue_push (db->priv->event_queue, event);
+		entry = rhythmdb_entry_lookup_by_location (db, canon_uri);
+		if (entry != NULL) {
+			g_hash_table_remove (db->priv->changed_files, entry->location);
+			rhythmdb_entry_set_visibility (db, entry, FALSE);
+			rhythmdb_commit (db);
 		}
 		break;
+#if GLIB_CHECK_VERSION(2,24,0)
+	case G_FILE_MONITOR_EVENT_MOVED:
+		if (other_canon_uri == NULL) {
+			break;
+		}
+
+		entry = rhythmdb_entry_lookup_by_location (db, other_canon_uri);
+		if (entry != NULL) {
+			rb_debug ("file move target %s already exists in database", other_canon_uri);
+			entry = rhythmdb_entry_lookup_by_location (db, canon_uri);
+			if (entry != NULL) {
+				g_hash_table_remove (db->priv->changed_files, entry->location);
+				rhythmdb_entry_set_visibility (db, entry, FALSE);
+				rhythmdb_commit (db);
+			}
+		} else {
+			entry = rhythmdb_entry_lookup_by_location (db, canon_uri);
+			if (entry != NULL) {
+				GValue v = {0,};
+				g_value_init (&v, G_TYPE_STRING);
+				g_value_set_string (&v, other_canon_uri);
+				rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_LOCATION, &v);
+				g_value_unset (&v);
+			}
+		}
+		break;
+#endif
 	case G_FILE_MONITOR_EVENT_PRE_UNMOUNT:
 	case G_FILE_MONITOR_EVENT_UNMOUNTED:
 	default:
@@ -353,6 +384,7 @@ rhythmdb_directory_change_cb (GFileMonitor *monitor,
 	}
 
 	g_free (canon_uri);
+	g_free (other_canon_uri);
 }
 
 void

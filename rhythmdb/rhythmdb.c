@@ -995,8 +995,6 @@ rhythmdb_event_free (RhythmDB *db,
 	case RHYTHMDB_EVENT_DB_LOAD:
 	case RHYTHMDB_EVENT_DB_SAVED:
 	case RHYTHMDB_EVENT_QUERY_COMPLETE:
-	case RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED:
-	case RHYTHMDB_EVENT_FILE_DELETED:
 		break;
 	case RHYTHMDB_EVENT_ENTRY_SET:
 		g_value_unset (&result->change.new);
@@ -2219,14 +2217,14 @@ rhythmdb_process_stat_event (RhythmDB *db,
 			if (entry->mtime == new_mtime && (new_size == 0 || entry->file_size == new_size)) {
 				rb_debug ("not modified: %s", rb_refstring_get (event->real_uri));
 			} else {
-				RhythmDBEvent *new_event;
-
 				rb_debug ("changed: %s", rb_refstring_get (event->real_uri));
-				new_event = g_slice_new0 (RhythmDBEvent);
-				new_event->db = db;
-				new_event->uri = rb_refstring_ref (event->real_uri);
-				new_event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
-				rhythmdb_push_event (db, new_event);
+				action = g_slice_new0 (RhythmDBAction);
+				action->type = RHYTHMDB_ACTION_LOAD;
+				action->uri = rb_refstring_ref (event->real_uri);
+				action->data.types.entry_type = event->entry_type;
+				action->data.types.ignore_type = event->ignore_type;
+				action->data.types.error_type = event->error_type;
+				g_async_queue_push (db->priv->action_queue, action);
 			}
 		} else {
 			/* push a LOAD action */
@@ -2635,36 +2633,6 @@ rhythmdb_process_queued_entry_set_event (RhythmDB *db,
 }
 
 static void
-rhythmdb_process_file_created_or_modified (RhythmDB *db,
-					   RhythmDBEvent *event)
-{
-	RhythmDBAction *action;
-
-	action = g_slice_new0 (RhythmDBAction);
-	action->type = RHYTHMDB_ACTION_LOAD;
-	action->uri = rb_refstring_ref (event->uri);
-	action->data.types.entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-	action->data.types.ignore_type = RHYTHMDB_ENTRY_TYPE_IGNORE;
-	action->data.types.error_type = RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR;
-	g_async_queue_push (db->priv->action_queue, action);
-}
-
-static void
-rhythmdb_process_file_deleted (RhythmDB *db,
-			       RhythmDBEvent *event)
-{
-	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location_refstring (db, event->uri);
-
-	g_hash_table_remove (db->priv->changed_files, event->uri);
-
-	if (entry) {
-		rb_debug ("deleting entry for %s", rb_refstring_get (event->uri));
-		rhythmdb_entry_set_visibility (db, entry, FALSE);
-		rhythmdb_commit (db);
-	}
-}
-
-static void
 rhythmdb_process_one_event (RhythmDBEvent *event, RhythmDB *db)
 {
 	gboolean free = TRUE;
@@ -2721,14 +2689,6 @@ rhythmdb_process_one_event (RhythmDBEvent *event, RhythmDB *db)
 	case RHYTHMDB_EVENT_QUERY_COMPLETE:
 		rb_debug ("processing RHYTHMDB_EVENT_QUERY_COMPLETE");
 		rhythmdb_read_leave (db);
-		break;
-	case RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED:
-		rb_debug ("processing RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED");
-		rhythmdb_process_file_created_or_modified (db, event);
-		break;
-	case RHYTHMDB_EVENT_FILE_DELETED:
-		rb_debug ("processing RHYTHMDB_EVENT_FILE_DELETED");
-		rhythmdb_process_file_deleted (db, event);
 		break;
 	}
 	if (free)
