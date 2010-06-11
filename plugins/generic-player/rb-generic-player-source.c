@@ -965,6 +965,7 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 		     const char *extension)
 {
 	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
+	const char *in_artist;
 	char *artist, *album, *title;
 	gulong track_number, disc_number;
 	const char *folders;
@@ -983,7 +984,11 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 		ext = g_strdup ("");
 	}
 
-	artist = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+	in_artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_ARTIST);
+	if (in_artist[0] == '\0') {
+		in_artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+	}
+	artist = sanitize_path (in_artist);
 	album = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
 	title = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
 
