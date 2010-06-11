@@ -122,7 +122,9 @@ class LastFMCoverArtSearch (object):
 			callback (self, entry, None, *args)
 			return
 
-		artist = db.entry_get (entry, rhythmdb.PROP_ARTIST)
+		artist = db.entry_get (entry, rhythmdb.PROP_ALBUM_ARTIST)
+		if artist == "":
+			artist = db.entry_get (entry, rhythmdb.PROP_ARTIST)
 		if artist == _("Unknown"):
 			artist = ""
 

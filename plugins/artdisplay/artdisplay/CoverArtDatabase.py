@@ -107,6 +107,13 @@ class TicketSystem:
 			self.dead.remove (ticket)
 			return False
 
+def get_search_props(db, entry):
+	artist = db.entry_get(entry, rhythmdb.PROP_ALBUM_ARTIST)
+	if artist == "":
+		artist = db.entry_get(entry, rhythmdb.PROP_ARTIST)
+	album = db.entry_get(entry, rhythmdb.PROP_ALBUM)
+	return (artist, album)
+
 
 class CoverArtDatabase (object):
 	def __init__ (self):
@@ -114,8 +121,7 @@ class CoverArtDatabase (object):
 		self.same_search = {}
 
 	def build_art_cache_filename (self, db, entry, extension):
-		artist = db.entry_get (entry, rhythmdb.PROP_ARTIST)
-		album = db.entry_get (entry, rhythmdb.PROP_ALBUM)
+		artist, album = get_search_props(db, entry)
 		art_folder = os.path.expanduser (ART_FOLDER)
 		old_art_folder = os.path.expanduser (OLD_ART_FOLDER)
 		if not os.path.exists (art_folder) and os.path.exists (old_art_folder):
@@ -175,9 +181,8 @@ class CoverArtDatabase (object):
 		if entry is None:
 			callback (entry, None, None, None, None)
 			return
-            
-		st_artist = db.entry_get (entry, rhythmdb.PROP_ARTIST) or _("Unknown")
-		st_album = db.entry_get (entry, rhythmdb.PROP_ALBUM) or _("Unknown")
+
+		st_artist, st_album = get_search_props(db, entry)
 
 		# replace quote characters
 		# don't replace single quote: could be important punctuation
@@ -210,11 +215,9 @@ class CoverArtDatabase (object):
 		# Check if we're already searching for art for this album
 		# (this won't work for compilations, but there isn't much we can do about that)
 		def find_same_search(a, b, db):
-			for prop in (rhythmdb.PROP_ARTIST, rhythmdb.PROP_ALBUM):
-				if db.entry_get(a, prop) != db.entry_get(b, prop):
-					return False
-
-			return True
+			a_artist, a_album = get_search_props(db, a)
+			b_artist, b_album = get_search_props(db, b)
+			return (a_artist == b_artist) and (a_album == b_album)
 
 		match_entry = self.ticket.find(entry, find_same_search, db)
 		if match_entry is not None:

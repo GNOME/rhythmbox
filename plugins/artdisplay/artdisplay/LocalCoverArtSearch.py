@@ -48,6 +48,13 @@ def shared_prefix_length (a, b):
 		l = l+1
 	return l
 
+def get_search_props(db, entry):
+	artist = db.entry_get(entry, rhythmdb.PROP_ALBUM_ARTIST)
+	if artist == "":
+		artist = db.entry_get(entry, rhythmdb.PROP_ARTIST)
+	album = db.entry_get(entry, rhythmdb.PROP_ALBUM)
+	return (artist, album)
+
 
 class LocalCoverArtSearch:
 	def __init__ (self):
@@ -93,8 +100,7 @@ class LocalCoverArtSearch:
 			on_search_completed_cb (self, entry, [], *args)
 			return
 
-		self.artist = db.entry_get (entry, rhythmdb.PROP_ARTIST)
-		self.album = db.entry_get (entry, rhythmdb.PROP_ALBUM)
+		self.artist, self.album = get_search_props(db, entry)
 
 		print 'searching for local art for %s' % (self.file.get_uri())
 		parent = self.file.get_parent()
@@ -156,7 +162,8 @@ class LocalCoverArtSearch:
 		file.replace_async(replace_cb, user_data=pixbuf())
 
 	def _save_dir_cb (self, enum, result, (db, entry, dir, pixbuf)):
-		artist, album = [db.entry_get (entry, x) for x in [rhythmdb.PROP_ARTIST, rhythmdb.PROP_ALBUM]]
+		artist, album = get_search_props(db, entry)
+
 		try:
 			files = enum.next_files_finish(result)
 			if len(files) == 0:
@@ -174,7 +181,7 @@ class LocalCoverArtSearch:
 				uri = dir.resolve_relative_path(f.get_name()).get_uri()
 				u_entry = db.entry_lookup_by_location (uri)
 				if u_entry:
-					u_artist, u_album = [db.entry_get (u_entry, x) for x in [rhythmdb.PROP_ARTIST, rhythmdb.PROP_ALBUM]]
+					u_artist, u_album = get_search_props(db, u_entry)
 					if album != u_album:
 						print "Not saving local art; encountered media with different album (%s, %s, %s)" % (uri, u_artist, u_album)
 						enum.close()
