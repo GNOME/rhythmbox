@@ -57,6 +57,7 @@
  * @RB_METADATA_FIELD_TRACK_PEAK: Track peak volume level
  * @RB_METADATA_FIELD_ALBUM_GAIN: Album gain in dB for replaygain
  * @RB_METADATA_FIELD_ALBUM_PEAK: Album peak volume level
+ * @RB_METADATA_FIELD_BPM: Beats Per Minute
  * @RB_METADATA_FIELD_LANGUAGE_CODE: Language code (ISO-639-1)
  * @RB_METADATA_FIELD_MUSICBRAINZ_TRACKID: MusicBrainz track ID
  * @RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID: MusicBrainz artist ID
@@ -121,6 +122,7 @@ rb_metadata_get_field_type (RBMetaDataField field)
 	case RB_METADATA_FIELD_TRACK_PEAK:
 	case RB_METADATA_FIELD_ALBUM_GAIN:
 	case RB_METADATA_FIELD_ALBUM_PEAK:
+	case RB_METADATA_FIELD_BPM:
 		return G_TYPE_DOUBLE;
 
 	default:
@@ -199,6 +201,7 @@ rb_metadata_field_get_type (void)
 			ENUM_ENTRY (RB_METADATA_FIELD_TRACK_PEAK, "replaygain-track-peak"),
 			ENUM_ENTRY (RB_METADATA_FIELD_ALBUM_GAIN, "replaygain-album-gain"),
 			ENUM_ENTRY (RB_METADATA_FIELD_ALBUM_PEAK, "replaygain-album-peak"),
+			ENUM_ENTRY (RB_METADATA_FIELD_BPM, "beats-per-minute"),
 			ENUM_ENTRY (RB_METADATA_FIELD_LANGUAGE_CODE, "language-code"),
 			ENUM_ENTRY (RB_METADATA_FIELD_MUSICBRAINZ_TRACKID, "musicbrainz-trackid"),
 			ENUM_ENTRY (RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID, "musicbrainz-artistid"),

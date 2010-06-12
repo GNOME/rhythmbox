@@ -963,6 +963,31 @@ rb_entry_view_rating_cell_data_func (GtkTreeViewColumn *column,
 }
 
 static void
+rb_entry_view_bpm_cell_data_func (GtkTreeViewColumn *column,
+				   GtkCellRenderer *renderer,
+				   GtkTreeModel *tree_model,
+				   GtkTreeIter *iter,
+				   struct RBEntryViewCellDataFuncData *data)
+{
+	RhythmDBEntry *entry;
+	char *str;
+	gdouble val;
+
+	entry = rhythmdb_query_model_iter_to_entry (data->view->priv->model, iter);
+
+	val = rhythmdb_entry_get_double (entry, data->propid);
+
+	if (val > 0.001)
+		str = g_strdup_printf ("%.2f", val);
+	else
+		str = g_strdup ("");
+
+	g_object_set (renderer, "text", str, NULL);
+	g_free (str);
+	rhythmdb_entry_unref (entry);
+}
+
+static void
 rb_entry_view_long_cell_data_func (GtkTreeViewColumn *column,
 				   GtkCellRenderer *renderer,
 				   GtkTreeModel *tree_model,
@@ -1649,6 +1674,16 @@ rb_entry_view_append_column (RBEntryView *view,
 		title = _("Location");
 		key = "Location";
 		ellipsize = TRUE;
+		break;
+	case RB_ENTRY_VIEW_COL_BPM:
+		propid = RHYTHMDB_PROP_BPM;
+		cell_data->propid = propid;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_bpm_cell_data_func;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_double_ceiling_sort_func;
+		title = _("BPM");
+		key = "BPM";
+		strings[0] = title;
+		strings[1] = "999.99";
 		break;
 	case RB_ENTRY_VIEW_COL_ERROR:
 		propid = RHYTHMDB_PROP_PLAYBACK_ERROR;
@@ -2692,6 +2727,7 @@ rb_entry_view_column_get_type (void)
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_FIRST_SEEN, "First Seen"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_LAST_SEEN, "Last Seen"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_LOCATION, "Location"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_BPM, "BPM"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_ERROR, "Error"),
 			{ 0, 0, 0 }
 		};

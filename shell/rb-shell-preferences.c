@@ -113,6 +113,7 @@ struct RBShellPreferencesPrivate
 	GtkWidget *play_count_check;
 	GtkWidget *last_played_check;
 	GtkWidget *first_seen_check;
+	GtkWidget *bpm_check;
 	GtkWidget *quality_check;
 	GtkWidget *year_check;
 	GtkWidget *location_check;
@@ -231,6 +232,8 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		GTK_WIDGET (gtk_builder_get_object (builder, "last_played_check"));
 	shell_preferences->priv->quality_check =
 		GTK_WIDGET (gtk_builder_get_object (builder, "quality_check"));
+	shell_preferences->priv->bpm_check =
+		GTK_WIDGET (gtk_builder_get_object (builder, "bpm_check"));
 	shell_preferences->priv->year_check =
 		GTK_WIDGET (gtk_builder_get_object (builder, "year_check"));
 	shell_preferences->priv->first_seen_check =
@@ -467,6 +470,8 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 		colname = "RHYTHMDB_PROP_LAST_PLAYED";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->year_check))
 		colname = "RHYTHMDB_PROP_DATE";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->bpm_check))
+		colname = "RHYTHMDB_PROP_BPM";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->quality_check))
 		colname = "RHYTHMDB_PROP_BITRATE";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->first_seen_check))
@@ -566,8 +571,11 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 			       				 shell_preferences->priv->first_seen_check,
 							 columns, "RHYTHMDB_PROP_FIRST_SEEN");
 		rb_shell_preferences_sync_column_button (shell_preferences,
-			       				 shell_preferences->priv->quality_check,
+							 shell_preferences->priv->quality_check,
 							 columns, "RHYTHMDB_PROP_BITRATE");
+		rb_shell_preferences_sync_column_button (shell_preferences,
+							 shell_preferences->priv->bpm_check,
+							 columns, "RHYTHMDB_PROP_BPM");
 		rb_shell_preferences_sync_column_button (shell_preferences,
 			       				 shell_preferences->priv->location_check,
 							 columns, "RHYTHMDB_PROP_LOCATION");

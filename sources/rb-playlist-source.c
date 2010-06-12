@@ -373,6 +373,7 @@ rb_playlist_source_constructed (GObject *object)
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LOCATION, FALSE);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_FIRST_SEEN, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_BPM, FALSE);
 	rb_entry_view_set_columns_clickable (source->priv->songs, FALSE);
 
 	rb_playlist_source_setup_entry_view (source, source->priv->songs);

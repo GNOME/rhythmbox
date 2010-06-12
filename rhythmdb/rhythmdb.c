@@ -588,6 +588,9 @@ metadata_field_from_prop (RhythmDBPropType prop,
 	case RHYTHMDB_PROP_DATE:
 		*field = RB_METADATA_FIELD_DATE;
 		return TRUE;
+	case RHYTHMDB_PROP_BPM:
+		*field = RB_METADATA_FIELD_BPM;
+		return TRUE;
 	case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
 		*field = RB_METADATA_FIELD_MUSICBRAINZ_TRACKID;
 		return TRUE;
@@ -930,7 +933,7 @@ stat_thread_main (RhythmDBStatThreadData *data)
 	g_list_free (data->stat_list);
 
 	data->db->priv->stat_thread_running = FALSE;
-	
+
 	rb_debug ("exiting stat thread");
 	result = g_slice_new0 (RhythmDBEvent);
 	result->db = data->db;			/* need to unref? */
@@ -1548,7 +1551,7 @@ rhythmdb_commit_internal (RhythmDB *db,
 			  GThread *thread)
 {
 	g_mutex_lock (db->priv->change_mutex);
-	
+
 	if (sync_changes) {
 		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) sync_entry_changed, db);
 	}
@@ -2068,6 +2071,16 @@ set_props_from_metadata (RhythmDB *db,
 					  RB_METADATA_FIELD_ARTIST,
 					  RHYTHMDB_PROP_ARTIST,
 					  _("Unknown"));
+
+	/* beats per minute */
+	if (rb_metadata_get (metadata,
+			     RB_METADATA_FIELD_BPM,
+			     &val)) {
+		rhythmdb_entry_set_internal (db, entry, TRUE,
+					     RHYTHMDB_PROP_BPM, &val);
+		g_value_unset (&val);
+	}
+
 	/* album */
 	set_metadata_string_with_default (db, metadata, entry,
 					  RB_METADATA_FIELD_ALBUM,
@@ -2147,7 +2160,7 @@ rhythmdb_process_stat_event (RhythmDB *db,
 	RhythmDBEntry *entry;
 	RhythmDBAction *action;
 	GFileType file_type;
-	
+
 	if (event->entry != NULL) {
 		entry = event->entry;
 	} else {
@@ -2578,7 +2591,7 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 		gboolean processing;
 
 		rb_metadata_get_missing_plugins (event->metadata, &missing_plugins, &plugin_descriptions);
-		
+
 		rb_debug ("missing plugins during metadata load for %s", rb_refstring_get (event->real_uri));
 
 		g_mutex_lock (event->db->priv->metadata_lock);
@@ -2720,7 +2733,7 @@ static void
 rhythmdb_execute_stat_mount_ready_cb (GObject *source, GAsyncResult *result, RhythmDBEvent *event)
 {
 	GError *error = NULL;
-	
+
 	g_file_mount_enclosing_volume_finish (G_FILE (source), result, &error);
 	if (error != NULL) {
 		event->error = make_access_failed_error (rb_refstring_get (event->real_uri), error);
@@ -2752,7 +2765,7 @@ rhythmdb_execute_stat (RhythmDB *db,
 
 	event->real_uri = rb_refstring_new (uri);
 	file = g_file_new_for_uri (uri);
-	
+
 	g_mutex_lock (db->priv->stat_mutex);
 	db->priv->outstanding_stats = g_list_prepend (db->priv->outstanding_stats, event);
 	g_mutex_unlock (db->priv->stat_mutex);
@@ -2794,7 +2807,7 @@ rhythmdb_execute_stat (RhythmDB *db,
 	g_mutex_lock (event->db->priv->stat_mutex);
 	event->db->priv->outstanding_stats = g_list_remove (event->db->priv->outstanding_stats, event);
 	g_mutex_unlock (event->db->priv->stat_mutex);
-	
+
 	rhythmdb_push_event (event->db, event);
 	g_object_unref (file);
 }
@@ -2810,7 +2823,7 @@ rhythmdb_execute_load (RhythmDB *db,
 	resolved = rb_uri_resolve_symlink (uri, &error);
 	if (resolved != NULL) {
 		GFile *file;
-	
+
 		file = g_file_new_for_uri (uri);
 		event->file_info = g_file_query_info (file,
 						      RHYTHMDB_FILE_INFO_ATTRIBUTES,
@@ -3135,7 +3148,7 @@ rhythmdb_add_to_stat_list (RhythmDB *db,
 	result->entry_type = type;
 	result->ignore_type = ignore_type;
 	result->error_type = error_type;
-		
+
 	if (entry != NULL) {
 		result->entry = rhythmdb_entry_ref (entry);
 	}
@@ -3346,19 +3359,19 @@ void
 rhythmdb_save (RhythmDB *db)
 {
 	int new_save_count;
-	
+
 	rb_debug("saving the rhythmdb and blocking");
 
 	g_mutex_lock (db->priv->saving_mutex);
 	new_save_count = db->priv->save_count + 1;
-	
+
 	rhythmdb_save_async (db);
-	
+
 	/* wait until this save request is being processed */
 	while (db->priv->save_count < new_save_count) {
 		g_cond_wait (db->priv->saving_condition, db->priv->saving_mutex);
 	}
-	
+
 	/* wait until it's done */
 	while (db->priv->saving) {
 		g_cond_wait (db->priv->saving_condition, db->priv->saving_mutex);
@@ -3497,7 +3510,7 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 		g_assert_not_reached ();
 		break;
 	}
-	
+
 	if (nop == FALSE && (entry->flags & RHYTHMDB_ENTRY_INSERTED) && notify_if_inserted) {
 		record_entry_change (db, entry, propid, &old_value, value);
 	}
@@ -3628,6 +3641,9 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 		case RHYTHMDB_PROP_LAST_PLAYED:
 			entry->last_played = g_value_get_ulong (value);
 			entry->flags |= RHYTHMDB_ENTRY_LAST_PLAYED_DIRTY;
+			break;
+		case RHYTHMDB_PROP_BPM:
+			entry->bpm = g_value_get_double (value);
 			break;
 		case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
 			rb_refstring_unref (entry->musicbrainz_trackid);
@@ -3896,7 +3912,7 @@ rhythmdb_entry_move_to_trash (RhythmDB *db,
 			  uri,
 			  error->message);
 		g_error_free (error);
-				
+
 	} else {
 		rhythmdb_entry_set_visibility (db, entry, FALSE);
 	}
@@ -4479,6 +4495,7 @@ rhythmdb_prop_type_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_POST_TIME, "Podcast time of post (gulong) [post-time]"),
 
 			ENUM_ENTRY (RHYTHMDB_PROP_KEYWORD, "Keywords applied to track (gchararray) [keyword]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_BPM, "Beats per minute (gdouble) [beats-per-minute]"),
 			{ 0, 0, 0 }
 		};
 		g_assert ((sizeof (values) / sizeof (values[0]) - 1) == RHYTHMDB_NUM_PROPERTIES);
@@ -5616,6 +5633,8 @@ rhythmdb_entry_get_double (RhythmDBEntry *entry,
 		return 1.0;
 	case RHYTHMDB_PROP_RATING:
 		return entry->rating;
+	case RHYTHMDB_PROP_BPM:
+		return entry->bpm;
 	default:
 		g_assert_not_reached ();
 		return 0.0;

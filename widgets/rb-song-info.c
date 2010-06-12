@@ -135,6 +135,7 @@ struct RBSongInfoPrivate
 	GtkTextBuffer *comment_buffer;
 	GtkWidget   *playback_error_box;
 	GtkWidget   *playback_error_label;
+	GtkWidget   *bpm;
 
 	GtkWidget   *artist_sortname;
 	GtkWidget   *album_sortname;
@@ -379,6 +380,7 @@ rb_song_info_construct_single (RBSongInfo *song_info, GtkBuilder *builder, gbool
 	song_info->priv->track_cur     = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_track_cur"));
 	song_info->priv->bitrate       = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_bitrate"));
 	song_info->priv->duration      = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_duration"));
+	song_info->priv->bpm           = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_bpm"));
 	song_info->priv->location = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_location"));
 	song_info->priv->filesize = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_filesize"));
 	song_info->priv->date_added    = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_dateadded"));
@@ -396,6 +398,7 @@ rb_song_info_construct_single (RBSongInfo *song_info, GtkBuilder *builder, gbool
 	rb_builder_boldify_label (builder, "play_count_label");
 	rb_builder_boldify_label (builder, "duration_label");
 	rb_builder_boldify_label (builder, "bitrate_label");
+	rb_builder_boldify_label (builder, "bpm_label");
 
 	/* whenever you press a mnemonic, the associated GtkEntry's text gets highlighted */
 	g_signal_connect_object (G_OBJECT (song_info->priv->title),
@@ -925,6 +928,18 @@ rb_song_info_populate_num_field (GtkEntry *field, gulong num)
 }
 
 static void
+rb_song_info_populate_dnum_field (GtkEntry *field, gdouble num)
+{
+	char *tmp;
+	if (num > 0)
+		tmp = g_strdup_printf ("%.2f", num);
+	else
+		tmp = g_strdup (_("Unknown"));
+	gtk_entry_set_text (field, tmp);
+	g_free (tmp);
+}
+
+static void
 rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 {
 	gboolean mixed_artists = FALSE;
@@ -1055,6 +1070,7 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	const char *text;
 	char *tmp;
 	gulong num;
+	gdouble dnum;
 
 	g_assert (song_info->priv->current_entry);
 
@@ -1081,7 +1097,8 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->track_cur), num);
 	num = rhythmdb_entry_get_ulong (song_info->priv->current_entry, RHYTHMDB_PROP_DISC_NUMBER);
 	rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->disc_cur), num);
-
+	dnum = rhythmdb_entry_get_double (song_info->priv->current_entry, RHYTHMDB_PROP_BPM);
+	rb_song_info_populate_dnum_field (GTK_ENTRY (song_info->priv->bpm), dnum);
 	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_COMMENT);
 	gtk_text_buffer_set_text (song_info->priv->comment_buffer, text, -1);
 
@@ -1612,6 +1629,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	const char *album_sortname;
 	const char *album_artist_sortname;
 	const char *entry_string;
+	const char *bpm_str;
 	char *comment = NULL;
 	char *endptr;
 	GType type;
@@ -1619,6 +1637,8 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	gulong discnum;
 	gulong year;
 	gulong entry_val;
+	gdouble bpm;
+	gdouble dentry_val;
 	GValue val = {0,};
 	gboolean changed = FALSE;
 	RhythmDBEntry *entry = dialog->priv->current_entry;
@@ -1697,7 +1717,18 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 		if (date)
 			g_date_free (date);
 	}
-
+	bpm_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->bpm));
+	bpm = g_strtod (bpm_str, &endptr);
+	dentry_val = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_BPM);
+	if ((endptr != bpm_str) && (bpm != dentry_val)) {
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_BPM);
+		g_value_init (&val, type);
+		g_value_set_double (&val, bpm);
+		rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_BPM, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
 	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
 	if (g_strcmp0 (title, entry_string)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,

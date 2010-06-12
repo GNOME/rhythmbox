@@ -39,6 +39,7 @@
 const RBQueryCreatorPropertyType string_property_type;
 const RBQueryCreatorPropertyType escaped_string_property_type;
 const RBQueryCreatorPropertyType rating_property_type;
+const RBQueryCreatorPropertyType double_property_type;
 const RBQueryCreatorPropertyType integer_property_type;
 const RBQueryCreatorPropertyType year_property_type;
 const RBQueryCreatorPropertyType duration_property_type;
@@ -52,6 +53,9 @@ static void escapedStringCriteriaGetWidgetData (GtkWidget *widget, GValue *val);
 static GtkWidget * ratingCriteriaCreateWidget (gboolean *constrain);
 static void ratingCriteriaSetWidgetData (GtkWidget *widget, GValue *val);
 static void ratingCriteriaGetWidgetData (GtkWidget *widget, GValue *val);
+static GtkWidget * doubleCriteriaCreateWidget (gboolean *constrain);
+static void doubleCriteriaSetWidgetData (GtkWidget *widget, GValue *val);
+static void doubleCriteriaGetWidgetData (GtkWidget *widget, GValue *val);
 static GtkWidget * integerCriteriaCreateWidget (gboolean *constrain);
 static void integerCriteriaSetWidgetData (GtkWidget *widget, GValue *val);
 static void integerCriteriaGetWidgetData (GtkWidget *widget, GValue *val);
@@ -86,7 +90,7 @@ const RBQueryCreatorPropertyOption property_options[] =
 	{ NC_("query-criteria", "Bitrate"), RHYTHMDB_PROP_BITRATE, RHYTHMDB_PROP_BITRATE, &integer_property_type },
 
 	{ NC_("query-criteria", "Duration"), RHYTHMDB_PROP_DURATION, RHYTHMDB_PROP_DURATION, &duration_property_type },
-
+	{ NC_("query-criteria", "Beats Per Minute"), RHYTHMDB_PROP_BPM, RHYTHMDB_PROP_BPM, &double_property_type },
 	{ NC_("query-criteria", "Time of Last Play"), RHYTHMDB_PROP_LAST_PLAYED, RHYTHMDB_PROP_LAST_PLAYED, &relative_time_property_type },
 	{ NC_("query-criteria", "Time Added to Library"), RHYTHMDB_PROP_FIRST_SEEN, RHYTHMDB_PROP_FIRST_SEEN, &relative_time_property_type },
 };
@@ -112,6 +116,7 @@ const RBQueryCreatorSortOption sort_options[] =
 	{ NC_("query-sort", "Last Played"), "LastPlayed", N_("W_ith more recently played tracks first") },
 	{ NC_("query-sort", "Date Added"), "FirstSeen", N_("W_ith more recently added tracks first") },
 	{ NC_("query-sort", "Comment"), "Comment", N_("_In reverse alphabetical order") },
+	{ NC_("query-sort", "Beats Per Minute"), "BPM", N_("W_ith faster tempo tracks first") },
 };
 
 const int num_sort_options = G_N_ELEMENTS (sort_options);
@@ -181,6 +186,15 @@ const RBQueryCreatorPropertyType rating_property_type =
 	ratingCriteriaCreateWidget,
 	ratingCriteriaSetWidgetData,
 	ratingCriteriaGetWidgetData
+};
+
+const RBQueryCreatorPropertyType double_property_type =
+{
+	G_N_ELEMENTS (numeric_criteria_options),
+	numeric_criteria_options,
+	doubleCriteriaCreateWidget,
+	doubleCriteriaSetWidgetData,
+	doubleCriteriaGetWidgetData
 };
 
 const RBQueryCreatorPropertyType integer_property_type =
@@ -335,6 +349,37 @@ ratingCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 	g_value_set_double (val, rating);
 }
 
+/*
+ * Implementation for the double properties, using a single GtkSpinButton.
+ */
+
+static GtkWidget *
+doubleCriteriaCreateWidget (gboolean *constrain)
+{
+	GtkWidget *spin;
+	spin = gtk_spin_button_new_with_range (0.0, G_MAXDOUBLE, 1.0);
+	gtk_spin_button_set_digits(GTK_SPIN_BUTTON(spin), 2);
+	return spin;
+}
+
+static void
+doubleCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
+{
+	gdouble num = g_value_get_double (val);
+	g_assert (num <= G_MAXDOUBLE);
+
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (widget), num );
+}
+
+static void
+doubleCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
+{
+	gdouble num = gtk_spin_button_get_value (GTK_SPIN_BUTTON (widget));
+	g_assert (num >= 0);
+
+	g_value_init (val, G_TYPE_DOUBLE);
+	g_value_set_double (val, num);
+}
 /*
  * Implementation for the integer properties, using a single GtkSpinButton.
  */
@@ -519,7 +564,7 @@ relativeTimeCriteriaCreateWidget (gboolean *constrain)
 	timeOption = create_time_unit_option_menu (time_unit_options, G_N_ELEMENTS (time_unit_options));
 	gtk_combo_box_set_active (GTK_COMBO_BOX (timeOption), time_unit_options_default);
 	gtk_box_pack_start (box, timeOption, TRUE, TRUE, 0);
-	
+
 	g_signal_connect_object (timeOption, "changed",
 				 G_CALLBACK (update_time_unit_limits),
 				 timeSpin, 0);

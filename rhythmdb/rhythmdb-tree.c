@@ -1024,6 +1024,9 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_LOCATION:
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->location));
 			break;
+		case RHYTHMDB_PROP_BPM:
+			save_entry_double(ctx, elt_name, entry->bpm);
+			break;
 		case RHYTHMDB_PROP_MOUNTPOINT:
 			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->mountpoint));
 			break;

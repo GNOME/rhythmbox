@@ -492,6 +492,7 @@ add_tags_from_entry (RBEncoderGst *encoder,
 	GstTagList *tags;
 	gboolean result = TRUE;
 	gulong day;
+	gdouble bpm;
 
 	tags = gst_tag_list_new ();
 
@@ -525,6 +526,12 @@ add_tags_from_entry (RBEncoderGst *encoder,
 	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_MUSICBRAINZ_ALBUMARTISTID, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID);
 	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_ARTIST_SORTNAME, entry, RHYTHMDB_PROP_ARTIST_SORTNAME);
 	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_ALBUM_SORTNAME, entry, RHYTHMDB_PROP_ALBUM_SORTNAME);
+
+	/* is zero a valid BPM? */
+	bpm = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_BPM);
+	if (bpm > 0.001) {
+		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND, GST_TAG_BEATS_PER_MINUTE, bpm, NULL);
+	}
 
 	{
 		GstIterator *iter;

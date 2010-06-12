@@ -406,8 +406,8 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton" id="location_check">
-                                <property name="label" translatable="yes">Lo_cation</property>
+                              <object class="GtkCheckButton" id="bpm_check">
+                                <property name="label" translatable="yes">BPM</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -418,14 +418,28 @@
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
-                                <property name="top_attach">5</property>
-                                <property name="bottom_attach">6</property>
+                                <property name="top_attach">6</property>
+                                <property name="bottom_attach">7</property>
                                 <property name="x_options">GTK_FILL</property>
                                 <property name="y_options"></property>
                               </packing>
                             </child>
                             <child>
-                              <placeholder/>
+                              <object class="GtkCheckButton" id="location_check">
+                                <property name="label" translatable="yes">Lo_cation</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
+                              </object>
+                              <packing>
+                                <property name="top_attach">6</property>
+                                <property name="bottom_attach">7</property>
+                                <property name="x_options">GTK_FILL</property>
+                                <property name="y_options"></property>
+                              </packing>
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="comment_check">
@@ -438,8 +452,10 @@
                                 <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
                               </object>
                               <packing>
-                                <property name="top_attach">6</property>
-                                <property name="bottom_attach">7</property>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
+                                <property name="top_attach">5</property>
+                                <property name="bottom_attach">6</property>
                                 <property name="x_options">GTK_FILL</property>
                                 <property name="y_options"></property>
                               </packing>
