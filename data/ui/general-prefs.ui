@@ -150,6 +150,7 @@
         </child>
       </object>
       <packing>
+        <property name="expand">False</property>
         <property name="position">0</property>
       </packing>
     </child>
@@ -210,8 +211,8 @@
                         <child>
                           <object class="GtkTable" id="table1">
                             <property name="visible">True</property>
-                            <property name="n_rows">7</property>
-                            <property name="n_columns">2</property>
+                            <property name="n_rows">5</property>
+                            <property name="n_columns">3</property>
                             <property name="column_spacing">12</property>
                             <property name="row_spacing">6</property>
                             <property name="homogeneous">True</property>
@@ -262,61 +263,6 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton" id="duration_check">
-                                <property name="label" translatable="yes">Ti_me</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="rating_check">
-                                <property name="label" translatable="yes">_Rating</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="play_count_check">
-                                <property name="label" translatable="yes">_Play count</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="top_attach">4</property>
-                                <property name="bottom_attach">5</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
                               <object class="GtkCheckButton" id="year_check">
                                 <property name="label" translatable="yes">_Year</property>
                                 <property name="visible">True</property>
@@ -329,61 +275,6 @@
                               <packing>
                                 <property name="top_attach">4</property>
                                 <property name="bottom_attach">5</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="quality_check">
-                                <property name="label" translatable="yes">_Quality</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
-                              </object>
-                              <packing>
-                                <property name="top_attach">5</property>
-                                <property name="bottom_attach">6</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="first_seen_check">
-                                <property name="label" translatable="yes">Da_te added</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="top_attach">3</property>
-                                <property name="bottom_attach">4</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"></property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="genre_check">
-                                <property name="label" translatable="yes">_Genre</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="top_attach">2</property>
-                                <property name="bottom_attach">3</property>
                                 <property name="x_options">GTK_FILL</property>
                                 <property name="y_options"></property>
                               </packing>
@@ -406,8 +297,8 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton" id="bpm_check">
-                                <property name="label" translatable="yes">BPM</property>
+                              <object class="GtkCheckButton" id="genre_check">
+                                <property name="label" translatable="yes">_Genre</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -418,15 +309,15 @@
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
-                                <property name="top_attach">6</property>
-                                <property name="bottom_attach">7</property>
+                                <property name="top_attach">4</property>
+                                <property name="bottom_attach">5</property>
                                 <property name="x_options">GTK_FILL</property>
                                 <property name="y_options"></property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton" id="location_check">
-                                <property name="label" translatable="yes">Lo_cation</property>
+                              <object class="GtkCheckButton" id="first_seen_check">
+                                <property name="label" translatable="yes">Da_te added</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -435,8 +326,27 @@
                                 <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
                               </object>
                               <packing>
-                                <property name="top_attach">6</property>
-                                <property name="bottom_attach">7</property>
+                                <property name="left_attach">2</property>
+                                <property name="right_attach">3</property>
+                                <property name="x_options">GTK_FILL</property>
+                                <property name="y_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="play_count_check">
+                                <property name="label" translatable="yes">_Play count</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="right_attach">3</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
                                 <property name="x_options">GTK_FILL</property>
                                 <property name="y_options"></property>
                               </packing>
@@ -452,13 +362,109 @@
                                 <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
                               </object>
                               <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="top_attach">5</property>
-                                <property name="bottom_attach">6</property>
+                                <property name="left_attach">2</property>
+                                <property name="right_attach">3</property>
+                                <property name="top_attach">2</property>
+                                <property name="bottom_attach">3</property>
                                 <property name="x_options">GTK_FILL</property>
                                 <property name="y_options"></property>
                               </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="bpm_check">
+                                <property name="label" translatable="yes">BPM</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="right_attach">3</property>
+                                <property name="top_attach">3</property>
+                                <property name="bottom_attach">4</property>
+                                <property name="x_options">GTK_FILL</property>
+                                <property name="y_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="rating_check">
+                                <property name="label" translatable="yes">_Rating</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
+                                <property name="top_attach">3</property>
+                                <property name="bottom_attach">4</property>
+                                <property name="x_options">GTK_FILL</property>
+                                <property name="y_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="duration_check">
+                                <property name="label" translatable="yes">Ti_me</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
+                                <property name="top_attach">2</property>
+                                <property name="bottom_attach">3</property>
+                                <property name="x_options">GTK_FILL</property>
+                                <property name="y_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="location_check">
+                                <property name="label" translatable="yes">Lo_cation</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
+                                <property name="x_options">GTK_FILL</property>
+                                <property name="y_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="quality_check">
+                                <property name="label" translatable="yes">_Quality</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="rb_shell_preferences_column_check_changed_cb"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
+                                <property name="x_options">GTK_FILL</property>
+                                <property name="y_options"></property>
+                              </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
                             </child>
                           </object>
                           <packing>
@@ -576,6 +582,7 @@
         </child>
       </object>
       <packing>
+        <property name="expand">False</property>
         <property name="position">2</property>
       </packing>
     </child>
