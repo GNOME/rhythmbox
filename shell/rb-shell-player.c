@@ -3795,11 +3795,11 @@ rb_shell_player_error_get_type (void)
 
 	if (etype == 0)	{
 		static const GEnumValue values[] = {
-			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_PLAYLIST_PARSE_ERROR, "Playing parsing error"),
-			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST, "End of playlist reached"),
-			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_NOT_PLAYING, "Not playing"),
-			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE, "Not seekable"),
-			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_POSITION_NOT_AVAILABLE, "Playback position not available"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_PLAYLIST_PARSE_ERROR, "playlist-parse-failed"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST, "end-of-playlist"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_NOT_PLAYING, "not-playing"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE, "not-seekable"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_POSITION_NOT_AVAILABLE, "position-not-available"),
 			{ 0, 0, 0 }
 		};
 

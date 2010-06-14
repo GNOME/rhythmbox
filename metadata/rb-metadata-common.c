@@ -173,8 +173,6 @@ rb_metadata_field_get_type (void)
 			/* Note: field names are the GStreamer tag names.
 			 * We could have just used the GST_TAG_X defines, but that
 			 * would suck if we ever got a non-GStreamer metadata backend.
-			 *
-			 * maybe pack the field types in here too, like RhythmDBPropType?
 			 */
 			ENUM_ENTRY (RB_METADATA_FIELD_TITLE, "title"),
 			ENUM_ENTRY (RB_METADATA_FIELD_ARTIST, "artist"),
@@ -227,13 +225,13 @@ rb_metadata_error_get_type (void)
 	if (etype == 0) {
 		static const GEnumValue values[] =
 		{
-			ENUM_ENTRY(RB_METADATA_ERROR_IO, "IO error"),
-			ENUM_ENTRY(RB_METADATA_ERROR_MISSING_PLUGIN, "Missing plugins required to read the file"),
-			ENUM_ENTRY(RB_METADATA_ERROR_UNRECOGNIZED, "Unable to identify the file type"),
-			ENUM_ENTRY(RB_METADATA_ERROR_UNSUPPORTED, "Unsupported file type"),
-			ENUM_ENTRY(RB_METADATA_ERROR_GENERAL, "General error"),
-			ENUM_ENTRY(RB_METADATA_ERROR_INTERNAL, "Internal error"),
-			ENUM_ENTRY(RB_METADATA_ERROR_EMPTY_FILE, "Empty file"),
+			ENUM_ENTRY(RB_METADATA_ERROR_IO, "io-error"),
+			ENUM_ENTRY(RB_METADATA_ERROR_MISSING_PLUGIN, "missing-plugins"),
+			ENUM_ENTRY(RB_METADATA_ERROR_UNRECOGNIZED, "identify-failed"),
+			ENUM_ENTRY(RB_METADATA_ERROR_UNSUPPORTED, "unsupported-filetype"),
+			ENUM_ENTRY(RB_METADATA_ERROR_GENERAL, "general-error"),
+			ENUM_ENTRY(RB_METADATA_ERROR_INTERNAL, "internal-error"),
+			ENUM_ENTRY(RB_METADATA_ERROR_EMPTY_FILE, "empty-file"),
 			{ 0, 0, 0 }
 		};
 		etype = g_enum_register_static ("RBMetadataErrorType", values);

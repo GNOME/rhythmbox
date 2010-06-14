@@ -3335,10 +3335,10 @@ rhythmdb_query_model_limit_type_get_type (void)
 		static const GEnumValue values[] =
 		{
 
-			ENUM_ENTRY (RHYTHMDB_QUERY_MODEL_LIMIT_NONE, "No limit"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_MODEL_LIMIT_COUNT, "Limit by number of entries (count)"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_MODEL_LIMIT_SIZE, "Limit by data size (Mb)"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_MODEL_LIMIT_TIME, "Limit by duration (seconds)"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_MODEL_LIMIT_NONE, "no-limit"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_MODEL_LIMIT_COUNT, "limit-count"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_MODEL_LIMIT_SIZE, "limit-size"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_MODEL_LIMIT_TIME, "limit-duration"),
 			{ 0, 0, 0 }
 		};
 

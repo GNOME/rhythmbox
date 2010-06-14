@@ -3737,11 +3737,11 @@ rb_shell_ui_location_get_type (void)
 
 	if (etype == 0)	{
 		static const GEnumValue values[] = {
-			ENUM_ENTRY (RB_SHELL_UI_LOCATION_SIDEBAR, "Sidebar"),
-			ENUM_ENTRY (RB_SHELL_UI_LOCATION_RIGHT_SIDEBAR, "Right Sidebar"),
-			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_TOP, "Main Top"),
-			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_BOTTOM, "Main Bottom"),
-			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK, "Main Notebook"),
+			ENUM_ENTRY (RB_SHELL_UI_LOCATION_SIDEBAR, "sidebar"),
+			ENUM_ENTRY (RB_SHELL_UI_LOCATION_RIGHT_SIDEBAR, "right-sidebar"),
+			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_TOP, "main-top"),
+			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_BOTTOM, "main-bottom"),
+			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK, "main-notebook"),
 			{ 0, 0, 0 }
 		};
 

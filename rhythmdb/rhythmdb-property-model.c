@@ -1431,9 +1431,9 @@ rhythmdb_property_model_column_get_type (void)
 
 	if (etype == 0)	{
 		static const GEnumValue values[] = {
-			ENUM_ENTRY (RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, "Property title"),
-			ENUM_ENTRY (RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, "Value priority"),
-			ENUM_ENTRY (RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER, "Track count"),
+			ENUM_ENTRY (RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, "property-title"),
+			ENUM_ENTRY (RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, "value-priority"),
+			ENUM_ENTRY (RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER, "track-count"),
 			{ 0, 0, 0 }
 		};
 

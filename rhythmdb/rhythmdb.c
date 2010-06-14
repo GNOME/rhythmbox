@@ -4363,21 +4363,21 @@ rhythmdb_query_type_get_type (void)
 		static const GEnumValue values[] =
 		{
 
-			ENUM_ENTRY (RHYTHMDB_QUERY_END, "Query end marker"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_DISJUNCTION, "Disjunctive marker"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_SUBQUERY, "Subquery"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_EQUALS, "Property equivalence"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_LIKE, "Fuzzy property matching"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_NOT_LIKE, "Inverted fuzzy property matching"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_PREFIX, "Starts with"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_SUFFIX, "Ends with"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_GREATER, "True if property1 >= property2"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_LESS, "True if property1 <= property2"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN, "True if property1 is within property2 of the current time"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN, "True if property1 is not within property2 of the current time"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_EQUALS, "Year equivalence: true if date within year"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_GREATER, "True if date greater than year"),
-			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_LESS, "True if date less than year"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_END, "query-end"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_DISJUNCTION, "disjunctive-marker"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_SUBQUERY, "subquery"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_EQUALS, "equals"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_LIKE, "fuzzy-match"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_NOT_LIKE, "inverted-fuzzy-match"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_PREFIX, "starts-with"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_SUFFIX, "ends-with"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_GREATER, "greater-than"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_LESS, "less-than"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN, "within-current-time"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN, "not-within-current-time"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_EQUALS, "year-equals"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_GREATER, "year-greater-than"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_LESS, "year-less-than"),
 			{ 0, 0, 0 }
 		};
 
@@ -4396,10 +4396,10 @@ rhythmdb_entry_category_get_type (void)
 	{
 		static const GEnumValue values[] =
 		{
-			ENUM_ENTRY (RHYTHMDB_ENTRY_NORMAL, "Anything that doesn't match the other categories"),
-			ENUM_ENTRY (RHYTHMDB_ENTRY_STREAM, "Endless streams (eg. shoutcast, last.fm)"),
-			ENUM_ENTRY (RHYTHMDB_ENTRY_CONTAINER, "Entries that point to other entries (eg. podcast feeds)"),
-			ENUM_ENTRY (RHYTHMDB_ENTRY_VIRTUAL, "Import errors, ignored files"),
+			ENUM_ENTRY (RHYTHMDB_ENTRY_NORMAL, "normal"),
+			ENUM_ENTRY (RHYTHMDB_ENTRY_STREAM, "stream"),
+			ENUM_ENTRY (RHYTHMDB_ENTRY_CONTAINER, "container"),
+			ENUM_ENTRY (RHYTHMDB_ENTRY_VIRTUAL, "virtual"),
 			{ 0, 0, 0 }
 		};
 

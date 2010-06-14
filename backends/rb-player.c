@@ -711,9 +711,9 @@ rb_player_error_get_type (void)
 
 	if (etype == 0)	{
 		static const GEnumValue values[] = {
-			ENUM_ENTRY (RB_PLAYER_ERROR_NO_AUDIO, "Stream contains no audio"),
-			ENUM_ENTRY (RB_PLAYER_ERROR_GENERAL, "General error"),
-			ENUM_ENTRY (RB_PLAYER_ERROR_INTERNAL, "Internal backend error"),
+			ENUM_ENTRY (RB_PLAYER_ERROR_NO_AUDIO, "no-audio"),
+			ENUM_ENTRY (RB_PLAYER_ERROR_GENERAL, "general-error"),
+			ENUM_ENTRY (RB_PLAYER_ERROR_INTERNAL, "internal-error"),
 			{ 0, 0, 0 }
 		};
 
@@ -730,9 +730,9 @@ rb_player_play_type_get_type (void)
 
 	if (etype == 0)	{
 		static const GEnumValue values[] = {
-			ENUM_ENTRY (RB_PLAYER_PLAY_REPLACE, "Replace existing stream"),
-			ENUM_ENTRY (RB_PLAYER_PLAY_AFTER_EOS, "Start new stream after EOS of existing stream"),
-			ENUM_ENTRY (RB_PLAYER_PLAY_CROSSFADE, "Crossfade between streams"),
+			ENUM_ENTRY (RB_PLAYER_PLAY_REPLACE, "replace"),
+			ENUM_ENTRY (RB_PLAYER_PLAY_AFTER_EOS, "start-after-eos"),
+			ENUM_ENTRY (RB_PLAYER_PLAY_CROSSFADE, "crossfade"),
 			{ 0, 0, 0 }
 		};
 

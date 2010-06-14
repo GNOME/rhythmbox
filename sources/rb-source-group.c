@@ -117,10 +117,10 @@ rb_source_group_category_get_type (void)
 
 	if (etype == 0) {
 		static const GEnumValue values[] = {
-			ENUM_ENTRY (RB_SOURCE_GROUP_CATEGORY_FIXED, "Fixed single instance source"),
-			ENUM_ENTRY (RB_SOURCE_GROUP_CATEGORY_PERSISTENT, "Persistent multiple-instance source"),
-			ENUM_ENTRY (RB_SOURCE_GROUP_CATEGORY_REMOVABLE, "Source representing a removable device"),
-			ENUM_ENTRY (RB_SOURCE_GROUP_CATEGORY_TRANSIENT, "Transient source (eg. network shares)"),
+			ENUM_ENTRY (RB_SOURCE_GROUP_CATEGORY_FIXED, "fixed"),
+			ENUM_ENTRY (RB_SOURCE_GROUP_CATEGORY_PERSISTENT, "persistent"),
+			ENUM_ENTRY (RB_SOURCE_GROUP_CATEGORY_REMOVABLE, "removable"),
+			ENUM_ENTRY (RB_SOURCE_GROUP_CATEGORY_TRANSIENT, "transient"),
 			{ 0, 0, 0 }
 		};
 

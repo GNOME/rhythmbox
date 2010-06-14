@@ -37,10 +37,10 @@ mpid_error_get_type (void)
 	if (etype == 0) {
 		static const GEnumValue values[] = {
 			ENUM_ENTRY(MPID_ERROR_NONE, "OK"),
-			ENUM_ENTRY(MPID_ERROR_NO_DEVICE_PATH, "No such device"),
-			ENUM_ENTRY(MPID_ERROR_MECHANISM_FAILED, "Failed to access device database"),
-			ENUM_ENTRY(MPID_ERROR_NOT_MEDIA_PLAYER, "Device is not a media player"),
-			ENUM_ENTRY(MPID_ERROR_DEVICE_INFO_MISSING, "Device information is missing from database"),
+			ENUM_ENTRY(MPID_ERROR_NO_DEVICE_PATH, "no-such-device"),
+			ENUM_ENTRY(MPID_ERROR_MECHANISM_FAILED, "device-db-failed"),
+			ENUM_ENTRY(MPID_ERROR_NOT_MEDIA_PLAYER, "not-media-player"),
+			ENUM_ENTRY(MPID_ERROR_DEVICE_INFO_MISSING, "device-info-missing"),
 			{ 0, 0, 0 }
 		};
 
@@ -57,9 +57,9 @@ mpid_source_get_type (void)
 
 	if (etype == 0) {
 		static const GEnumValue values[] = {
-			ENUM_ENTRY(MPID_SOURCE_NONE, "No device information"),
-			ENUM_ENTRY(MPID_SOURCE_SYSTEM, "Device information from system database"),
-			ENUM_ENTRY(MPID_SOURCE_OVERRIDE, "Device information from override file"),
+			ENUM_ENTRY(MPID_SOURCE_NONE, "no-device-info"),
+			ENUM_ENTRY(MPID_SOURCE_SYSTEM, "system-device-info"),
+			ENUM_ENTRY(MPID_SOURCE_OVERRIDE, "override-device-info"),
 			{ 0, 0, 0 }
 		};
 

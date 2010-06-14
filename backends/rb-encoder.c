@@ -374,15 +374,15 @@ rb_encoder_error_get_type (void)
 
 	if (etype == 0)	{
 		static const GEnumValue values[] = {
-			ENUM_ENTRY (RB_ENCODER_ERROR_FORMAT_UNSUPPORTED, "Unable to find a supported destination format"),
-			ENUM_ENTRY (RB_ENCODER_ERROR_INTERNAL, "Internal encoder error"),
-			ENUM_ENTRY (RB_ENCODER_ERROR_FILE_ACCESS, "Unable to write to destination file"),
-			ENUM_ENTRY (RB_ENCODER_ERROR_OUT_OF_SPACE, "Not enough space to write destination file"),
-			ENUM_ENTRY (RB_ENCODER_ERROR_DEST_READ_ONLY, "Destination is read-only"),
+			ENUM_ENTRY (RB_ENCODER_ERROR_FORMAT_UNSUPPORTED, "format-unsupported"),
+			ENUM_ENTRY (RB_ENCODER_ERROR_INTERNAL, "internal-error"),
+			ENUM_ENTRY (RB_ENCODER_ERROR_FILE_ACCESS, "file-access-error"),
+			ENUM_ENTRY (RB_ENCODER_ERROR_OUT_OF_SPACE, "out-of-space"),
+			ENUM_ENTRY (RB_ENCODER_ERROR_DEST_READ_ONLY, "destination-read-only"),
 			{ 0, 0, 0 }
 		};
 
-		etype = g_enum_register_static ("RBPlayerError", values);
+		etype = g_enum_register_static ("RBEncoderError", values);
 	}
 
 	return etype;

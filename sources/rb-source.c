@@ -1961,10 +1961,10 @@ rb_source_eof_type_get_type (void)
 
 	if (etype == 0)	{
 		static const GEnumValue values[] = {
-			ENUM_ENTRY (RB_SOURCE_EOF_ERROR, "Display error when playing entry ends"),
-			ENUM_ENTRY (RB_SOURCE_EOF_STOP, "Stop playback when playing entry ends"),
-			ENUM_ENTRY (RB_SOURCE_EOF_RETRY, "Restart playing when playing entry ends"),
-			ENUM_ENTRY (RB_SOURCE_EOF_NEXT, "Start next entry when playing entry ends"),
+			ENUM_ENTRY (RB_SOURCE_EOF_ERROR, "error"),
+			ENUM_ENTRY (RB_SOURCE_EOF_STOP, "stop"),
+			ENUM_ENTRY (RB_SOURCE_EOF_RETRY, "retry"),
+			ENUM_ENTRY (RB_SOURCE_EOF_NEXT, "next"),
 			{ 0, 0, 0 }
 		};
 
@@ -1981,9 +1981,9 @@ rb_source_search_type_get_type (void)
 
 	if (etype == 0) {
 		static const GEnumValue values[] = {
-			ENUM_ENTRY (RB_SOURCE_SEARCH_NONE, "No search capability"),
-			ENUM_ENTRY (RB_SOURCE_SEARCH_INCREMENTAL, "Immediate incremental search"),
-			ENUM_ENTRY (RB_SOURCE_SEARCH_EXPLICIT, "Explicitly activated search"),
+			ENUM_ENTRY (RB_SOURCE_SEARCH_NONE, "none"),
+			ENUM_ENTRY (RB_SOURCE_SEARCH_INCREMENTAL, "incremental"),
+			ENUM_ENTRY (RB_SOURCE_SEARCH_EXPLICIT, "explicit"),
 			{ 0, 0, 0 }
 		};
 

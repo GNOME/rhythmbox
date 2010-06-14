@@ -833,9 +833,9 @@ rb_mtp_thread_error_get_type (void)
 
 	if (etype == 0)	{
 		static const GEnumValue values[] = {
-			ENUM_ENTRY (RB_MTP_THREAD_ERROR_NO_SPACE, "Not enough space to download track"),
-			ENUM_ENTRY (RB_MTP_THREAD_ERROR_TEMPFILE, "Unable to create temporary file"),
-			ENUM_ENTRY (RB_MTP_THREAD_ERROR_GET_TRACK, "Unable to retrieve track"),
+			ENUM_ENTRY (RB_MTP_THREAD_ERROR_NO_SPACE, "no-space"),
+			ENUM_ENTRY (RB_MTP_THREAD_ERROR_TEMPFILE, "tempfile-failed"),
+			ENUM_ENTRY (RB_MTP_THREAD_ERROR_GET_TRACK, "track-get-failed"),
 			{ 0, 0, 0 }
 		};
 
