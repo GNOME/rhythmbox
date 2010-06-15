@@ -177,16 +177,27 @@ class ReplayGainPlayer(object):
 		else:
 			playbin.connect("notify::uri", self.playbin2_uri_notify_cb)
 
-		self.rgfilter = gst.Bin()
-		self.rgfilter.add(self.rgvolume, self.rglimiter)
-		self.rgvolume.link(self.rglimiter)
-		self.rgfilter.add_pad(gst.GhostPad("sink", self.rgvolume.get_static_pad("sink")))
-		self.rgfilter.add_pad(gst.GhostPad("src", self.rglimiter.get_static_pad("src")))
-		self.player.add_filter(self.rgfilter)
+		# try to work around bug #621632
+		if gobject.pygobject_version > (2,21,1):
+			print "working around pygobject/gst-python refcount bug.."
+			self.player.add_filter(self.rgvolume)
+			self.player.add_filter(self.rglimiter)
+			self.rgfilter = None
+		else:
+			self.rgfilter = gst.Bin()
+			self.rgfilter.add(self.rgvolume, self.rglimiter)
+			self.rgvolume.link(self.rglimiter)
+			self.rgfilter.add_pad(gst.GhostPad("sink", self.rgvolume.get_static_pad("sink")))
+			self.rgfilter.add_pad(gst.GhostPad("src", self.rglimiter.get_static_pad("src")))
+			self.player.add_filter(self.rgfilter)
 
 	def deactivate_playbin2_mode(self):
-		self.player.remove_filter(self.rgfilter)
-		self.rgfilter = None
+		if self.rgfilter == None:
+			self.player.remove_filter(self.rglimiter)
+			self.player.remove_filter(self.rgvolume)
+		else:
+			self.player.remove_filter(self.rgfilter)
+			self.rgfilter = None
 
 		self.shell_player.disconnect(self.pec_id)
 		self.pec_id = None
