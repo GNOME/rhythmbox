@@ -115,8 +115,8 @@ static void rhythmdb_hash_tree_foreach (RhythmDB *adb,
 					gpointer data);
 
 /* Update both of those! */
-#define RHYTHMDB_TREE_XML_VERSION "1.6"
-#define RHYTHMDB_TREE_XML_VERSION_INT 160
+#define RHYTHMDB_TREE_XML_VERSION "1.7"
+#define RHYTHMDB_TREE_XML_VERSION_INT 170
 
 static void destroy_tree_property (RhythmDBTreeProperty *prop);
 static RhythmDBTreeProperty *get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
@@ -334,6 +334,7 @@ struct RhythmDBTreeLoadContext
 	guint canonicalise_uris : 1;
 	guint reload_all_metadata : 1;
 	guint update_podcasts : 1;
+	guint update_local_mountpoints : 1;
 };
 
 /* Returns the version as an int, multiplied by 100,
@@ -395,6 +396,10 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 					case 150:
 						rb_debug ("Upgrade Podcasts remote vs. local locations");
 						ctx->update_podcasts = TRUE;
+					case 160:
+						rb_debug ("reloading all file metadata to get sortnames, album artist, comments, bpm and updating mountpoints");
+						ctx->reload_all_metadata = TRUE;
+						ctx->update_local_mountpoints = TRUE;
 					case RHYTHMDB_TREE_XML_VERSION_INT:
 						/* current version */
 						break;
@@ -534,6 +539,28 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 				tmp = ctx->entry->location;
 				ctx->entry->location = ctx->entry->mountpoint;
 				ctx->entry->mountpoint = tmp;
+			}
+		}
+		if (ctx->entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
+			/* Since we now care about mountpoints for all local entries, not just
+			 * those on things that actually get mounted and unmounted, we need to
+			 * ensure they're all correct.
+			 */
+			if (ctx->update_local_mountpoints) {
+				const char *loc = rb_refstring_get (ctx->entry->location);
+				if (loc == NULL || g_str_has_prefix (loc, "file:///")) {
+					char *nmp;
+					nmp = rb_uri_get_mount_point (loc);
+					if (ctx->entry->mountpoint != NULL) {
+						rb_refstring_unref (ctx->entry->mountpoint);
+						ctx->entry->mountpoint = NULL;
+					}
+
+					if (nmp != NULL) {
+						ctx->entry->mountpoint = rb_refstring_new (nmp);
+						g_free (nmp);
+					}
+				}
 			}
 		}
 
