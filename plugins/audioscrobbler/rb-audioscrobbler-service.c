@@ -179,22 +179,22 @@ rb_audioscrobbler_service_get_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_NAME:
-		g_value_set_string (value, service->priv->name);
+		g_value_set_string (value, rb_audioscrobbler_service_get_name (service));
 		break;
 	case PROP_AUTH_URL:
-		g_value_set_string (value, service->priv->auth_url);
+		g_value_set_string (value, rb_audioscrobbler_service_get_auth_url (service));
 		break;
 	case PROP_SCROBBLER_URL:
-		g_value_set_string (value, service->priv->scrobbler_url);
+		g_value_set_string (value, rb_audioscrobbler_service_get_scrobbler_url (service));
 		break;
 	case PROP_API_URL:
-		g_value_set_string (value, service->priv->api_url);
+		g_value_set_string (value, rb_audioscrobbler_service_get_api_url (service));
 		break;
 	case PROP_API_KEY:
-		g_value_set_string (value, service->priv->api_key);
+		g_value_set_string (value, rb_audioscrobbler_service_get_api_key (service));
 		break;
 	case PROP_API_SECRET:
-		g_value_set_string (value, service->priv->api_secret);
+		g_value_set_string (value, rb_audioscrobbler_service_get_api_secret (service));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -239,4 +239,40 @@ rb_audioscrobbler_service_set_property (GObject *object,
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
+}
+
+const char *
+rb_audioscrobbler_service_get_name (RBAudioscrobblerService *service)
+{
+	return service->priv->name;
+}
+
+const char *
+rb_audioscrobbler_service_get_auth_url (RBAudioscrobblerService *service)
+{
+	return service->priv->auth_url;
+}
+
+const char *
+rb_audioscrobbler_service_get_scrobbler_url (RBAudioscrobblerService *service)
+{
+	return service->priv->scrobbler_url;
+}
+
+const char *
+rb_audioscrobbler_service_get_api_url (RBAudioscrobblerService *service)
+{
+	return service->priv->api_url;
+}
+
+const char *
+rb_audioscrobbler_service_get_api_key (RBAudioscrobblerService *service)
+{
+	return service->priv->api_key;
+}
+
+const char *
+rb_audioscrobbler_service_get_api_secret (RBAudioscrobblerService *service)
+{
+	return service->priv->api_secret;
 }

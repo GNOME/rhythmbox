@@ -56,6 +56,13 @@ GType rb_audioscrobbler_service_get_type (void);
 
 RBAudioscrobblerService *rb_audioscrobbler_service_new (void);
 
+const char *rb_audioscrobbler_service_get_name (RBAudioscrobblerService *service);
+const char *rb_audioscrobbler_service_get_auth_url (RBAudioscrobblerService *service);
+const char *rb_audioscrobbler_service_get_scrobbler_url (RBAudioscrobblerService *service);
+const char *rb_audioscrobbler_service_get_api_url (RBAudioscrobblerService *service);
+const char *rb_audioscrobbler_service_get_api_key (RBAudioscrobblerService *service);
+const char *rb_audioscrobbler_service_get_api_secret (RBAudioscrobblerService *service);
+
 G_END_DECLS
 
 #endif /* __RB_AUDIOSCROBBLER_SERVICE_H */
