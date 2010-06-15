@@ -252,13 +252,13 @@ rb_audioscrobbler_account_get_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_USERNAME:
-		g_value_set_string (value, account->priv->username);
+		g_value_set_string (value, rb_audioscrobbler_account_get_username (account));
 		break;
 	case PROP_SESSION_KEY:
-		g_value_set_string (value, account->priv->session_key);
+		g_value_set_string (value, rb_audioscrobbler_account_get_session_key (account));
 		break;
 	case PROP_LOGIN_STATUS:
-		g_value_set_enum (value, account->priv->login_status);
+		g_value_set_enum (value, rb_audioscrobbler_account_get_login_status (account));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -281,6 +281,24 @@ rb_audioscrobbler_account_set_property (GObject *object,
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
+}
+
+const char *
+rb_audioscrobbler_account_get_username (RBAudioscrobblerAccount *account)
+{
+	return account->priv->username;
+}
+
+const char *
+rb_audioscrobbler_account_get_session_key (RBAudioscrobblerAccount *account)
+{
+	return account->priv->session_key;
+}
+
+RBAudioscrobblerAccountLoginStatus
+rb_audioscrobbler_account_get_login_status (RBAudioscrobblerAccount *account)
+{
+	return account->priv->login_status;
 }
 
 static gchar *

@@ -75,6 +75,10 @@ GType                           rb_audioscrobbler_account_get_type (void);
 
 RBAudioscrobblerAccount *       rb_audioscrobbler_account_new (RBAudioscrobblerService *service);
 
+const char *                       rb_audioscrobbler_account_get_username (RBAudioscrobblerAccount *account);
+const char *                       rb_audioscrobbler_account_get_session_key (RBAudioscrobblerAccount *account);
+RBAudioscrobblerAccountLoginStatus rb_audioscrobbler_account_get_login_status (RBAudioscrobblerAccount *account);
+
 void                            rb_audioscrobbler_account_authenticate (RBAudioscrobblerAccount *account);
 void                            rb_audioscrobbler_account_logout (RBAudioscrobblerAccount *account);
 void                            rb_audioscrobbler_account_notify_of_auth_error (RBAudioscrobblerAccount *account);
