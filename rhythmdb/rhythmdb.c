@@ -70,11 +70,97 @@
 #include "rb-string-value-map.h"
 #include "rb-async-queue-watch.h"
 
+#define PROP_ENTRY(p,t,n) { RHYTHMDB_PROP_ ## p, "RHYTHMDB_PROP_" #p "", t, n }
+
+typedef struct _RhythmDBPropertyDef {
+	RhythmDBPropType prop_id;
+	const char *prop_name;
+	GType prop_type;
+	const char *elt_name;
+} RhythmDBPropertyDef;
+
+static const RhythmDBPropertyDef rhythmdb_properties[] = {
+	PROP_ENTRY(TYPE, G_TYPE_POINTER, "type"),
+	PROP_ENTRY(ENTRY_ID, G_TYPE_ULONG, "entry-id"),
+	PROP_ENTRY(TITLE, G_TYPE_STRING, "title"),
+	PROP_ENTRY(GENRE, G_TYPE_STRING, "genre"),
+	PROP_ENTRY(ARTIST, G_TYPE_STRING, "artist"),
+	PROP_ENTRY(ALBUM, G_TYPE_STRING, "album"),
+	PROP_ENTRY(TRACK_NUMBER, G_TYPE_ULONG, "track-number"),
+	PROP_ENTRY(DISC_NUMBER, G_TYPE_ULONG, "disc-number"),
+	PROP_ENTRY(DURATION, G_TYPE_ULONG, "duration"),
+	PROP_ENTRY(FILE_SIZE, G_TYPE_UINT64, "file-size"),
+	PROP_ENTRY(LOCATION, G_TYPE_STRING, "location"),
+	PROP_ENTRY(MOUNTPOINT, G_TYPE_STRING, "mountpoint"),
+	PROP_ENTRY(MTIME, G_TYPE_ULONG, "mtime"),
+	PROP_ENTRY(FIRST_SEEN, G_TYPE_ULONG, "first-seen"),
+	PROP_ENTRY(LAST_SEEN, G_TYPE_ULONG, "last-seen"),
+	PROP_ENTRY(RATING, G_TYPE_DOUBLE, "rating"),
+	PROP_ENTRY(PLAY_COUNT, G_TYPE_ULONG, "play-count"),
+	PROP_ENTRY(LAST_PLAYED, G_TYPE_ULONG, "last-played"),
+	PROP_ENTRY(BITRATE, G_TYPE_ULONG, "bitrate"),
+	PROP_ENTRY(DATE, G_TYPE_ULONG, "date"),
+	PROP_ENTRY(TRACK_GAIN, G_TYPE_DOUBLE, "replaygain-track-gain"),
+	PROP_ENTRY(TRACK_PEAK, G_TYPE_DOUBLE, "replaygain-track-peak"),
+	PROP_ENTRY(ALBUM_GAIN, G_TYPE_DOUBLE, "replaygain-album-gain"),
+	PROP_ENTRY(ALBUM_PEAK, G_TYPE_DOUBLE, "replaygain-album-peak"),
+	PROP_ENTRY(MIMETYPE, G_TYPE_STRING, "mimetype"),
+	PROP_ENTRY(TITLE_SORT_KEY, G_TYPE_STRING, "title-sort-key"),
+	PROP_ENTRY(GENRE_SORT_KEY, G_TYPE_STRING, "genre-sort-key"),
+	PROP_ENTRY(ARTIST_SORT_KEY, G_TYPE_STRING, "artist-sort-key"),
+	PROP_ENTRY(ALBUM_SORT_KEY, G_TYPE_STRING, "album-sort-key"),
+	PROP_ENTRY(TITLE_FOLDED, G_TYPE_STRING, "title-folded"),
+	PROP_ENTRY(GENRE_FOLDED, G_TYPE_STRING, "genre-folded"),
+	PROP_ENTRY(ARTIST_FOLDED, G_TYPE_STRING, "artist-folded"),
+	PROP_ENTRY(ALBUM_FOLDED, G_TYPE_STRING, "album-folded"),
+	PROP_ENTRY(LAST_PLAYED_STR, G_TYPE_STRING, "last-played-str"),
+	PROP_ENTRY(HIDDEN, G_TYPE_BOOLEAN, "hidden"),
+	PROP_ENTRY(PLAYBACK_ERROR, G_TYPE_STRING, "playback-error"),
+	PROP_ENTRY(FIRST_SEEN_STR, G_TYPE_STRING, "first-seen-str"),
+	PROP_ENTRY(LAST_SEEN_STR, G_TYPE_STRING, "last-seen-str"),
+
+	PROP_ENTRY(SEARCH_MATCH, G_TYPE_STRING, "search-match"),
+	PROP_ENTRY(YEAR, G_TYPE_ULONG, "year"),
+	PROP_ENTRY(KEYWORD, G_TYPE_STRING, "keyword"),
+
+	PROP_ENTRY(STATUS, G_TYPE_ULONG, "status"),
+	PROP_ENTRY(DESCRIPTION, G_TYPE_STRING, "description"),
+	PROP_ENTRY(SUBTITLE, G_TYPE_STRING, "subtitle"),
+	PROP_ENTRY(SUMMARY, G_TYPE_STRING, "summary"),
+	PROP_ENTRY(LANG, G_TYPE_STRING, "lang"),
+	PROP_ENTRY(COPYRIGHT, G_TYPE_STRING, "copyright"),
+	PROP_ENTRY(IMAGE, G_TYPE_STRING, "image"),
+	PROP_ENTRY(POST_TIME, G_TYPE_ULONG, "post-time"),
+
+	PROP_ENTRY(MUSICBRAINZ_TRACKID, G_TYPE_STRING, "mb-trackid"),
+	PROP_ENTRY(MUSICBRAINZ_ARTISTID, G_TYPE_STRING, "mb-artistid"),
+	PROP_ENTRY(MUSICBRAINZ_ALBUMID, G_TYPE_STRING, "mb-albumid"),
+	PROP_ENTRY(MUSICBRAINZ_ALBUMARTISTID, G_TYPE_STRING, "mb-albumartistid"),
+	PROP_ENTRY(ARTIST_SORTNAME, G_TYPE_STRING, "mb-artistsortname"),
+	PROP_ENTRY(ALBUM_SORTNAME, G_TYPE_STRING, "album-sortname"),
+
+	PROP_ENTRY(ARTIST_SORTNAME_SORT_KEY, G_TYPE_STRING, "artist-sortname-sort-key"),
+	PROP_ENTRY(ARTIST_SORTNAME_FOLDED, G_TYPE_STRING, "artist-sortname-folded"),
+	PROP_ENTRY(ALBUM_SORTNAME_SORT_KEY, G_TYPE_STRING, "album-sortname-sort-key"),
+	PROP_ENTRY(ALBUM_SORTNAME_FOLDED, G_TYPE_STRING, "album-sortname-folded"),
+
+	PROP_ENTRY(COMMENT, G_TYPE_STRING, "comment"),
+
+	PROP_ENTRY(ALBUM_ARTIST, G_TYPE_STRING, "album-artist"),
+	PROP_ENTRY(ALBUM_ARTIST_SORT_KEY, G_TYPE_STRING, "album-artist-sort-key"),
+	PROP_ENTRY(ALBUM_ARTIST_FOLDED, G_TYPE_STRING, "album-artist-folded"),
+	PROP_ENTRY(ALBUM_ARTIST_SORTNAME, G_TYPE_STRING, "album-artist-sortname"),
+	PROP_ENTRY(ALBUM_ARTIST_SORTNAME_SORT_KEY, G_TYPE_STRING, "album-artist-sortname-sort-key"),
+	PROP_ENTRY(ALBUM_ARTIST_SORTNAME_FOLDED, G_TYPE_STRING, "album-artist-sortname-folded"),
+
+	PROP_ENTRY(BPM, G_TYPE_DOUBLE, "beats-per-minute"),
+
+	{ 0, 0, 0, 0 }
+};
 
 #define RB_PARSE_NICK_START (xmlChar *) "["
 #define RB_PARSE_NICK_END (xmlChar *) "]"
 
-GType rhythmdb_property_type_map[RHYTHMDB_NUM_PROPERTIES];
 
 #define RHYTHMDB_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE, RhythmDBPrivate))
 G_DEFINE_ABSTRACT_TYPE(RhythmDB, rhythmdb, G_TYPE_OBJECT)
@@ -620,58 +706,6 @@ metadata_field_from_prop (RhythmDBPropType prop,
 	}
 }
 
-static GType
-extract_gtype_from_enum_entry (RhythmDB *db,
-			       GEnumClass *klass,
-			       guint i)
-{
-	GType ret;
-	GEnumValue *value;
-	RBMetaDataField field;
-	char *typename;
-	char *typename_end;
-
-	value = g_enum_get_value (klass, i);
-
-	typename = strstr (value->value_nick, "(");
-	g_assert (typename != NULL);
-
-	typename_end = strstr (typename, ")");
-	g_assert (typename_end);
-
-	typename++;
-	typename = g_strndup (typename, typename_end-typename);
-	ret = g_type_from_name (typename);
-	g_free (typename);
-
-	/* Check to see whether this is a property that maps to
-	   a RBMetaData property. */
-	if (metadata_field_from_prop (value->value, &field))
-		g_assert (ret == rb_metadata_get_field_type (field));
-	return ret;
-}
-
-static xmlChar *
-extract_nice_name_from_enum_entry (RhythmDB *db,
-				   GEnumClass *klass,
-				   guint i)
-{
-	GEnumValue *value;
-	xmlChar *nick;
-	const xmlChar *name;
-	const xmlChar *name_end;
-
-	value = g_enum_get_value (klass, i);
-	nick = BAD_CAST value->value_nick;
-
-	name = xmlStrstr (nick, RB_PARSE_NICK_START);
-	g_return_val_if_fail (name != NULL, NULL);
-	name_end = xmlStrstr (name, RB_PARSE_NICK_END);
-	name++;
-
-	return xmlStrndup (name, name_end - name);
-}
-
 static void
 rhythmdb_init (RhythmDB *db)
 {
@@ -704,17 +738,6 @@ rhythmdb_init (RhythmDB *db)
 	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP_TYPE);
 
 	g_assert (prop_class->n_values == RHYTHMDB_NUM_PROPERTIES);
-	db->priv->column_xml_names = g_new0 (xmlChar *, RHYTHMDB_NUM_PROPERTIES);
-
-	/* Now, extract the GType and XML tag of each column from the
-	 * enum descriptions, and cache that for later use. */
-	for (i = 0; i < prop_class->n_values; i++) {
-		rhythmdb_property_type_map[i] = extract_gtype_from_enum_entry (db, prop_class, i);
-		g_assert (rhythmdb_property_type_map[i] != G_TYPE_INVALID);
-
-		db->priv->column_xml_names[i] = extract_nice_name_from_enum_entry (db, prop_class, i);
-		g_assert (db->priv->column_xml_names[i]);
-	}
 
 	g_type_class_unref (prop_class);
 
@@ -1134,7 +1157,6 @@ static void
 rhythmdb_finalize (GObject *object)
 {
 	RhythmDB *db;
-	int  i;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RHYTHMDB_IS (object));
@@ -1172,11 +1194,6 @@ rhythmdb_finalize (GObject *object)
 	g_hash_table_destroy (db->priv->entry_type_map);
 	g_mutex_free (db->priv->entry_type_map_mutex);
 	g_mutex_free (db->priv->entry_type_mutex);
-
-	for (i = 0; i < RHYTHMDB_NUM_PROPERTIES; i++) {
-		xmlFree (db->priv->column_xml_names[i]);
-	}
-	g_free (db->priv->column_xml_names);
 
 	g_free (db->priv->name);
 
@@ -2970,7 +2987,7 @@ rhythmdb_entry_get (RhythmDB *db,
 	rhythmdb_entry_sync_mirrored (entry, propid);
 
 	g_assert (G_VALUE_TYPE (val) == rhythmdb_get_property_type (db, propid));
-	switch (rhythmdb_property_type_map[propid]) {
+	switch (rhythmdb_properties[propid].prop_type) {
 	case G_TYPE_STRING:
 		g_value_set_string (val, rhythmdb_entry_get_string (entry, propid));
 		break;
@@ -3955,7 +3972,7 @@ const xmlChar *
 rhythmdb_nice_elt_name_from_propid (RhythmDB *db,
 				    RhythmDBPropType propid)
 {
-	return db->priv->column_xml_names[propid];
+	return (xmlChar *)rhythmdb_properties[propid].elt_name;
 }
 
 /**
@@ -4416,89 +4433,15 @@ rhythmdb_prop_type_get_type (void)
 
 	if (etype == 0)
 	{
-		static const GEnumValue values[] =
-		{
-			/* We reuse the description to store extra data about
-			* a property.  The first part is just a generic
-			* human-readable description.  Next, there is
-			* a string describing the GType of the property, in
-			* parenthesis.
-			* Finally, there is the XML element name in brackets.
-			*/
-			ENUM_ENTRY (RHYTHMDB_PROP_TYPE, "Type of entry (gpointer) [type]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ENTRY_ID, "Numeric ID (gulong) [entry-id]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_TITLE, "Title (gchararray) [title]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_GENRE, "Genre (gchararray) [genre]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST, "Artist (gchararray) [artist]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM, "Album (gchararray) [album]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_COMMENT, "Comment (gchararray) [comment]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_NUMBER, "Track Number (gulong) [track-number]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_DISC_NUMBER, "Disc Number (gulong) [disc-number]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, "Musicbrainz Track ID (gchararray) [mb-trackid]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, "Musicbrainz Artist ID (gchararray) [mb-artistid]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, "Musicbrainz Album ID (gchararray) [mb-albumid]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, "Musicbrainz Album Artist ID (gchararray) [mb-albumartistid]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORTNAME, "Artist Sortname (gchararray) [mb-artistsortname]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORTNAME, "Album Sortname (gchararray) [album-sortname]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_ARTIST, "Album Artist (gchararray) [album-artist]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, "Album Artist Sortname (gchararray) [album-artist-sortname]"),
-
-			ENUM_ENTRY (RHYTHMDB_PROP_DURATION, "Duration (gulong) [duration]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_FILE_SIZE, "File Size (guint64) [file-size]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_LOCATION, "Location (gchararray) [location]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_MOUNTPOINT, "Mount point it's located in (gchararray) [mountpoint]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_MTIME, "Modification time (gulong) [mtime]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_FIRST_SEEN, "Time the song was added to the library (gulong) [first-seen]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_LAST_SEEN, "Last time the song was available (gulong) [last-seen]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_RATING, "Rating (gdouble) [rating]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_PLAY_COUNT, "Play Count (gulong) [play-count]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED, "Last Played (gulong) [last-played]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_BITRATE, "Bitrate (gulong) [bitrate]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_DATE, "Date of release (gulong) [date]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_GAIN, "Replaygain track gain (gdouble) [replaygain-track-gain]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_PEAK, "Replaygain track peak (gdouble) [replaygain-track-peak]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_GAIN, "Replaygain album pain (gdouble) [replaygain-album-gain]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_PEAK, "Replaygain album peak (gdouble) [replaygain-album-peak]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_MIMETYPE, "Mime Type (gchararray) [mimetype]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_TITLE_SORT_KEY, "Title sort key (gchararray) [title-sort-key]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_GENRE_SORT_KEY, "Genre sort key (gchararray) [genre-sort-key]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORT_KEY, "Artist sort key (gchararray) [artist-sort-key]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORT_KEY, "Album sort key (gchararray) [album-sort-key]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORTNAME_SORT_KEY, "Artist Sortname sort key (gchararray) [artist-sortname-sort-key]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY, "Album Sortname sort key (gchararray) [album-sortname-sort-key]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_ARTIST_SORT_KEY, "Album Artist sort key (gchararray) [album-artist-sort-key]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_SORT_KEY, "Album Artist Sortname sort key (gchararray) [album-artist-sortname-sort-key]"),
-
-			ENUM_ENTRY (RHYTHMDB_PROP_TITLE_FOLDED, "Title folded (gchararray) [title-folded]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_GENRE_FOLDED, "Genre folded (gchararray) [genre-folded]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_FOLDED, "Artist folded (gchararray) [artist-folded]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_FOLDED, "Album folded (gchararray) [album-folded]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORTNAME_FOLDED, "Artist Sortname folded (gchararray) [artist-sortname-folded]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED, "Album Sortname folded (gchararray) [album-sortname-folded]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_ARTIST_FOLDED, "Album Artist folded (gchararray) [album-artist-sortname-folded]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_FOLDED, "Album Artist Sortname folded (gchararray) [album-artist-sortname-folded]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED_STR, "Last Played (gchararray) [last-played-str]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_PLAYBACK_ERROR, "Playback error string (gchararray) [playback-error]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_HIDDEN, "Hidden (gboolean) [hidden]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_FIRST_SEEN_STR, "Time Added to Library (gchararray) [first-seen-str]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_LAST_SEEN_STR, "Last time the song was available (gchararray) [last-seen-str]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_SEARCH_MATCH, "Search matching key (gchararray) [search-match]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_YEAR, "Year of date (gulong) [year]"),
-
-			ENUM_ENTRY (RHYTHMDB_PROP_STATUS, "Status of file (gulong) [status]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_DESCRIPTION, "Podcast description(gchararray) [description]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_SUBTITLE, "Podcast subtitle (gchararray) [subtitle]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_SUMMARY, "Podcast summary (gchararray) [summary]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_LANG, "Podcast language (gchararray) [lang]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_COPYRIGHT, "Podcast copyright (gchararray) [copyright]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_IMAGE, "Podcast image(gchararray) [image]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_POST_TIME, "Podcast time of post (gulong) [post-time]"),
-
-			ENUM_ENTRY (RHYTHMDB_PROP_KEYWORD, "Keywords applied to track (gchararray) [keyword]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_BPM, "Beats per minute (gdouble) [beats-per-minute]"),
-			{ 0, 0, 0 }
-		};
-		g_assert ((sizeof (values) / sizeof (values[0]) - 1) == RHYTHMDB_NUM_PROPERTIES);
+		int i;
+		static GEnumValue values[G_N_ELEMENTS(rhythmdb_properties)];
+		g_assert(G_N_ELEMENTS(rhythmdb_properties)-1 == RHYTHMDB_NUM_PROPERTIES);
+		for (i = 0; i < G_N_ELEMENTS(rhythmdb_properties)-1; i++) {
+			g_assert (i == rhythmdb_properties[i].prop_id);
+			values[i].value = rhythmdb_properties[i].prop_id;
+			values[i].value_name = rhythmdb_properties[i].prop_name;
+			values[i].value_nick = rhythmdb_properties[i].elt_name;
+		}
 		etype = g_enum_register_static ("RhythmDBPropType", values);
 	}
 
@@ -4840,7 +4783,7 @@ default_sync_metadata (RhythmDB *db,
 			continue;
 		}
 
-		g_value_init (&val, rhythmdb_property_type_map[change->prop]);
+		g_value_init (&val, rhythmdb_properties[change->prop].prop_type);
 		rhythmdb_entry_get (db, entry, change->prop, &val);
 		rb_metadata_set (db->priv->metadata, field, &val);
 		g_value_unset (&val);
@@ -5771,7 +5714,7 @@ rhythmdb_get_property_type (RhythmDB *db,
 			    guint property_id)
 {
 	g_assert (property_id >= 0 && property_id < RHYTHMDB_NUM_PROPERTIES);
-	return rhythmdb_property_type_map[property_id];
+	return rhythmdb_properties[property_id].prop_type;
 }
 
 /**

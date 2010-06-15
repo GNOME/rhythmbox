@@ -127,8 +127,6 @@ struct _RhythmDBPrivate
 	GMutex *metadata_lock;
 	GCond *metadata_cond;
 
-	xmlChar **column_xml_names;
-
 	RBRefString *empty_string;
 	RBRefString *octet_stream_str;
 
