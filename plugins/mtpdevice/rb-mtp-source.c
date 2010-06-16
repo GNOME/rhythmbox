@@ -1155,6 +1155,13 @@ impl_track_add_error (RBRemovableMediaSource *source,
 }
 
 static void
+sanitize_for_mtp (char *str)
+{
+	rb_sanitize_path_for_msdos_filesystem (str);
+	g_strdelimit (str, "/", '_');
+}
+
+static void
 prepare_encoder_sink_cb (RBEncoderFactory *factory,
 			 const char *stream_uri,
 			 GObject *sink,
@@ -1169,6 +1176,7 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 	LIBMTP_filetype_t filetype;
 	gulong track_id;
 	GDate d;
+	char **folder_path;
 
 	/* make sure this stream is for a file on our device */
 	if (g_str_has_prefix (stream_uri, "xrbmtp://") == FALSE)
@@ -1195,16 +1203,26 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 	track->artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
 	track->genre = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_GENRE);
 
-	/* build up device filename; may want to reconsider if we start creating folders */
+	/* build up device filename */
 	track->filename = g_strdup_printf ("%s - %s.%s",
 					   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
 					   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
 					   extension);
 	g_free (extension);
 
+	/* construct folder path: artist/album */
+	folder_path = g_new0 (char *, 3);
+	folder_path[0] = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM_ARTIST);
+	if (folder_path[0] == NULL || folder_path[0][0] == '\0') {
+		g_free (folder_path[0]);
+		folder_path[0] = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
+	}
+	folder_path[1] = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
+
 	/* ensure the filename is safe for FAT filesystems and doesn't contain slashes */
-	rb_sanitize_path_for_msdos_filesystem (track->filename);
-	g_strdelimit (track->filename, "/", '_');
+	sanitize_for_mtp (track->filename);
+	sanitize_for_mtp (folder_path[0]);
+	sanitize_for_mtp (folder_path[1]);
 
 	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE) > 0) {
 		g_date_set_julian (&d, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE));
@@ -1217,8 +1235,13 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 
 	track->filetype = filetype;
 
-	g_object_set (sink, "device-thread", priv->device_thread, "mtp-track", track, NULL);
+	g_object_set (sink,
+		      "device-thread", priv->device_thread,
+		      "folder-path", folder_path,
+		      "mtp-track", track,
+		      NULL);
 	rhythmdb_entry_unref (entry);
+	g_strfreev (folder_path);
 
 	g_hash_table_insert (priv->track_transfer_map, g_strdup (stream_uri), track);
 }
