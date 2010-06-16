@@ -1356,6 +1356,7 @@ impl_get_free_space	(RBMediaPlayerSource *source)
 
 typedef struct {
 	gboolean actually_free;
+	GHashTable *check_folders;
 	RBMediaPlayerSource *source;
 	RBMediaPlayerSourceDeleteCallback callback;
 	gpointer callback_data;
@@ -1369,6 +1370,7 @@ free_delete_data (TracksDeletedCallbackData *data)
 		return;
 	}
 
+	g_hash_table_destroy (data->check_folders);
 	g_object_unref (data->source);
 	if (data->destroy_data) {
 		data->destroy_data (data->callback_data);
@@ -1391,8 +1393,86 @@ delete_done_idle_cb (TracksDeletedCallbackData *data)
 static void
 delete_done_cb (LIBMTP_mtpdevice_t *device, TracksDeletedCallbackData *data)
 {
+	LIBMTP_folder_t *folders;
+	LIBMTP_file_t *files;
+
 	data->actually_free = FALSE;
 	update_free_space_cb (device, RB_MTP_SOURCE (data->source));
+
+	/* if any of the folders we just deleted from are now empty, delete them */
+	folders = LIBMTP_Get_Folder_List (device);
+	files = LIBMTP_Get_Filelisting_With_Callback (device, NULL, NULL);
+	if (folders != NULL) {
+		GHashTableIter iter;
+		gpointer key;
+		g_hash_table_iter_init (&iter, data->check_folders);
+		while (g_hash_table_iter_next (&iter, &key, NULL)) {
+			LIBMTP_folder_t *f;
+			LIBMTP_folder_t *c;
+			LIBMTP_file_t *file;
+			uint32_t folder_id = GPOINTER_TO_UINT(key);
+
+			while (folder_id != device->default_music_folder && folder_id != 0) {
+
+				f = LIBMTP_Find_Folder (folders, folder_id);
+				if (f == NULL) {
+					rb_debug ("unable to find folder %u", folder_id);
+					break;
+				}
+
+				/* don't delete folders with children that we didn't just delete */
+				for (c = f->child; c != NULL; c = c->sibling) {
+					if (g_hash_table_lookup (data->check_folders,
+								 GUINT_TO_POINTER (c->folder_id)) == NULL) {
+						break;
+					}
+				}
+				if (c != NULL) {
+					rb_debug ("folder %s has children", f->name);
+					break;
+				}
+
+				/* don't delete folders that contain files */
+				for (file = files; file != NULL; file = file->next) {
+					if (file->parent_id == folder_id) {
+						break;
+					}
+				}
+
+				if (file != NULL) {
+					rb_debug ("folder %s contains at least one file: %s", f->name, file->filename);
+					break;
+				}
+
+				/* ok, the folder is empty */
+				rb_debug ("deleting empty folder %s", f->name);
+				LIBMTP_Delete_Object (device, f->folder_id);
+
+				/* if the folder we just deleted has siblings, the parent
+				 * can't be empty.
+				 */
+				if (f->sibling != NULL) {
+					rb_debug ("folder %s has siblings, can't delete parent", f->name);
+					break;
+				}
+				folder_id = f->parent_id;
+			}
+		}
+
+		LIBMTP_destroy_folder_t (folders);
+	} else {
+		rb_debug ("unable to get device folder list");
+	}
+
+	/* clean up the file list */
+	while (files != NULL) {
+		LIBMTP_file_t *n;
+
+		n = files->next;
+		LIBMTP_destroy_file_t (files);
+		files = n;
+	}
+
 	g_idle_add ((GSourceFunc) delete_done_idle_cb, data);
 }
 
@@ -1407,6 +1487,13 @@ impl_delete_entries	(RBMediaPlayerSource *source,
 	RhythmDB *db;
 	GList *i;
 	TracksDeletedCallbackData *cb_data;
+
+	cb_data = g_new0 (TracksDeletedCallbackData, 1);
+	cb_data->source = g_object_ref (source);
+	cb_data->callback_data = user_data;
+	cb_data->callback = callback;
+	cb_data->destroy_data = destroy_data;
+	cb_data->check_folders = g_hash_table_new (g_direct_hash, g_direct_equal);
 
 	db = get_db_for_source (RB_MTP_SOURCE (source));
 	for (i = entries; i != NULL; i = i->next) {
@@ -1429,16 +1516,15 @@ impl_delete_entries	(RBMediaPlayerSource *source,
 		}
 		rb_mtp_thread_delete_track (priv->device_thread, track);
 
+		g_hash_table_insert (cb_data->check_folders,
+				     GUINT_TO_POINTER (track->parent_id),
+				     GINT_TO_POINTER (1));
+
 		g_hash_table_remove (priv->entry_map, entry);
 		rhythmdb_entry_delete (db, entry);
 	}
 
 	/* callback when all tracks have been deleted */
-	cb_data = g_new0 (TracksDeletedCallbackData, 1);
-	cb_data->source = g_object_ref (source);
-	cb_data->callback_data = user_data;
-	cb_data->callback = callback;
-	cb_data->destroy_data = destroy_data;
 	rb_mtp_thread_queue_callback (priv->device_thread,
 				      (RBMtpThreadCallback) delete_done_cb,
 				      cb_data,
