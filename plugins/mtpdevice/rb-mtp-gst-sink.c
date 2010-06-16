@@ -54,6 +54,7 @@ struct _RBMTPSink
 	RBMtpThread *device_thread;
 
 	LIBMTP_track_t *track;
+	char **folder_path;
 	char *tempfile;
 
 	GstElement *fdsink;
@@ -62,6 +63,7 @@ struct _RBMTPSink
 	GError *upload_error;
 	GMutex *upload_mutex;
 	GCond *upload_cond;
+	gboolean got_folder;
 	gboolean upload_done;
 };
 
@@ -75,6 +77,7 @@ enum
 	PROP_0,
 	PROP_URI,
 	PROP_MTP_TRACK,
+	PROP_FOLDER_PATH,
 	PROP_DEVICE_THREAD
 };
 
@@ -174,6 +177,23 @@ rb_mtp_sink_close_tempfile (RBMTPSink *sink)
 }
 
 static void
+folder_callback (uint32_t folder_id, RBMTPSink *sink)
+{
+	g_mutex_lock (sink->upload_mutex);
+	if (folder_id == 0) {
+		rb_debug ("mtp folder create failed");
+	} else {
+		rb_debug ("mtp folder for upload: %u", folder_id);
+		sink->track->parent_id = folder_id;
+	}
+
+	sink->got_folder = TRUE;
+
+	g_cond_signal (sink->upload_cond);
+	g_mutex_unlock (sink->upload_mutex);
+}
+
+static void
 upload_callback (LIBMTP_track_t *track, GError *error, RBMTPSink *sink)
 {
 	rb_debug ("mtp upload callback for %s: item ID %d", track->filename, track->item_id);
@@ -208,11 +228,28 @@ rb_mtp_sink_handle_message (GstBin *bin, GstMessage *message)
 
 		rb_debug ("handling EOS from fdsink; file size is %" G_GUINT64_FORMAT, sink->track->filesize);
 
-		/* start the upload, then wait for it to finish.
-		 * we're on a streaming thread here, so blocking is no problem.
+		/* we can just block waiting for mtp thread operations to finish here
+		 * as we're on a streaming thread.
 		 */
 		g_mutex_lock (sink->upload_mutex);
 
+		if (sink->folder_path != NULL) {
+			/* find or create the target folder.
+			 * if this fails, we just upload to the default music folder
+			 * rather than giving up entirely.
+			 */
+			sink->got_folder = FALSE;
+			rb_mtp_thread_create_folder (sink->device_thread,
+						     (const char **)sink->folder_path,
+						     (RBMtpCreateFolderCallback) folder_callback,
+						     g_object_ref (sink),
+						     g_object_unref);
+			while (sink->got_folder == FALSE) {
+				g_cond_wait (sink->upload_cond, sink->upload_mutex);
+			}
+		}
+
+		/* and upload the file */
 		sink->upload_done = FALSE;
 		rb_mtp_thread_upload_track (sink->device_thread,
 					    sink->track,
@@ -299,10 +336,15 @@ static void
 rb_mtp_sink_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {
 	RBMTPSink *sink = RB_MTP_SINK (object);
+	char **path;
 
 	switch (prop_id) {
 	case PROP_MTP_TRACK:
 		sink->track = g_value_get_pointer (value);
+		break;
+	case PROP_FOLDER_PATH:
+		path = g_value_get_pointer (value);
+		sink->folder_path = g_strdupv (path);
 		break;
 	case PROP_DEVICE_THREAD:
 		sink->device_thread = g_value_dup_object (value);
@@ -321,6 +363,9 @@ rb_mtp_sink_get_property (GObject *object, guint prop_id, GValue *value, GParamS
 	switch (prop_id) {
 	case PROP_MTP_TRACK:
 		g_value_set_pointer (value, sink->track);
+		break;
+	case PROP_FOLDER_PATH:
+		g_value_set_pointer (value, sink->folder_path);
 		break;
 	case PROP_DEVICE_THREAD:
 		g_value_set_object (value, sink->device_thread);
@@ -368,6 +413,10 @@ rb_mtp_sink_finalize (GObject *object)
 		g_error_free (sink->upload_error);
 	}
 
+	if (sink->folder_path) {
+		g_strfreev (sink->folder_path);
+	}
+
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
@@ -395,6 +444,12 @@ rb_mtp_sink_class_init (RBMTPSinkClass *klass)
 					 g_param_spec_pointer ("mtp-track",
 						 	       "libmtp track",
 							       "libmtp track",
+							       G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+					 PROP_FOLDER_PATH,
+					 g_param_spec_pointer ("folder-path",
+							       "folder path",
+							       "upload folder path",
 							       G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 					 PROP_DEVICE_THREAD,
