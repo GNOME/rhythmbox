@@ -48,6 +48,8 @@ typedef struct {
 		SET_DEVICE_NAME,
 		THREAD_CALLBACK,
 
+		CREATE_FOLDER,
+
 		ADD_TO_ALBUM,
 		REMOVE_FROM_ALBUM,
 		SET_ALBUM_IMAGE,
@@ -66,6 +68,7 @@ typedef struct {
 	char *filename;
 	GdkPixbuf *image;
 	char *name;
+	char **path;
 
 	gpointer callback;
 	gpointer user_data;
@@ -80,6 +83,8 @@ task_name (RBMtpThreadTask *task)
 	case CLOSE_DEVICE:	return g_strdup ("close device");
 	case SET_DEVICE_NAME:	return g_strdup_printf ("set device name to %s", task->name);
 	case THREAD_CALLBACK:	return g_strdup ("thread callback");
+
+	case CREATE_FOLDER:	return g_strdup_printf ("create folder %s", task->path[g_strv_length (task->path)-1]);
 
 	case ADD_TO_ALBUM:	return g_strdup_printf ("add track %u to album %s", task->track_id, task->album);
 	case REMOVE_FROM_ALBUM:	return g_strdup_printf ("remove track %u from album %s", task->track_id, task->album);
@@ -114,6 +119,7 @@ destroy_task (RBMtpThreadTask *task)
 	g_free (task->album);
 	g_free (task->filename);
 	g_free (task->name);
+	g_strfreev (task->path);
 
 	if (task->image) {
 		g_object_unref (task->image);
@@ -160,6 +166,77 @@ open_device (RBMtpThread *thread, RBMtpThreadTask *task)
 	}
 
 	cb (thread->device, task->user_data);
+}
+
+static void
+create_folder (RBMtpThread *thread, RBMtpThreadTask *task)
+{
+	RBMtpCreateFolderCallback cb = task->callback;
+	LIBMTP_folder_t *folders;
+	LIBMTP_folder_t *f;
+	LIBMTP_folder_t *target = NULL;
+	uint32_t folder_id;
+	uint32_t storage_id;
+	int i;
+
+	folders = LIBMTP_Get_Folder_List (thread->device);
+	if (folders == NULL) {
+		rb_debug ("unable to get folder list");
+		rb_mtp_thread_report_errors (thread, FALSE);
+		cb (0, task->user_data);
+		return;
+	}
+
+	/* first find the default music folder */
+	f = LIBMTP_Find_Folder (folders, thread->device->default_music_folder);
+	if (f == NULL) {
+		rb_debug ("unable to find default music folder");
+		cb (0, task->user_data);
+		LIBMTP_destroy_folder_t (folders);
+		return;
+	}
+	storage_id = f->storage_id;
+	folder_id = f->folder_id;
+
+	/* descend through the folder tree, following the path */
+	i = 0;
+	while (task->path[i] != NULL) {
+
+		/* look for a folder at this level with the same name as the
+		 * next path component
+		 */
+		target = f->child;
+		while (target != NULL) {
+			if (g_strcmp0 (target->name, task->path[i]) == 0) {
+				rb_debug ("found path element %d: %s", i, target->name);
+				break;
+			}
+			target = target->sibling;
+		}
+
+		if (target == NULL) {
+			rb_debug ("path element %d (%s) not found", i, task->path[i]);
+			break;
+		}
+		f = target;
+		folder_id = f->folder_id;
+		i++;
+	}
+
+	/* now create any path elements that don't already exist */
+	while (task->path[i] != NULL) {
+		folder_id = LIBMTP_Create_Folder (thread->device, task->path[i], folder_id, storage_id);
+		if (folder_id == 0) {
+			rb_debug ("couldn't create path element %d: %s", i, task->path[i]);
+			rb_mtp_thread_report_errors (thread, FALSE);
+			break;
+		}
+		rb_debug ("created path element %d: %s with folder ID %u", i, task->path[i], folder_id);
+		i++;
+	}
+
+	cb (folder_id, task->user_data);
+	LIBMTP_destroy_folder_t (folders);
 }
 
 static LIBMTP_album_t *
@@ -561,6 +638,10 @@ run_task (RBMtpThread *thread, RBMtpThreadTask *task)
 		}
 		break;
 
+	case CREATE_FOLDER:
+		create_folder (thread, task);
+		break;
+
 	case ADD_TO_ALBUM:
 		add_track_to_album_and_update (thread, task);
 		break;
@@ -643,6 +724,21 @@ rb_mtp_thread_set_device_name (RBMtpThread *thread, const char *name)
 {
 	RBMtpThreadTask *task = create_task (SET_DEVICE_NAME);
 	task->name = g_strdup (name);
+	queue_task (thread, task);
+}
+
+void
+rb_mtp_thread_create_folder (RBMtpThread *thread,
+			     const char **path,
+			     RBMtpCreateFolderCallback func,
+			     gpointer data,
+			     GDestroyNotify destroy_data)
+{
+	RBMtpThreadTask *task = create_task (CREATE_FOLDER);
+	task->path = g_strdupv ((char **)path);
+	task->callback = func;
+	task->user_data = data;
+	task->destroy_data = destroy_data;
 	queue_task (thread, task);
 }
 
