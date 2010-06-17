@@ -2568,9 +2568,9 @@ rhythmdb_missing_plugins_cb (gpointer duh, gboolean should_retry, RhythmDBEvent 
 		load_action = g_slice_new0 (RhythmDBAction);
 		load_action->type = RHYTHMDB_ACTION_LOAD;
 		load_action->uri = rb_refstring_ref (event->real_uri);
-		load_action->data.types.entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-		load_action->data.types.ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-		load_action->data.types.error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		load_action->data.types.entry_type = event->entry_type;
+		load_action->data.types.ignore_type = event->ignore_type;
+		load_action->data.types.error_type = event->error_type;
 		g_async_queue_push (event->db->priv->action_queue, load_action);
 	} else {
 		/* plugin installation failed or was cancelled, so add an import error for the file */
