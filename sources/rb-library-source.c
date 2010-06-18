@@ -67,6 +67,7 @@
 #include "rb-library-source.h"
 #include "rb-auto-playlist-source.h"
 #include "rb-encoder.h"
+#include "rb-missing-plugins.h"
 
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);
@@ -1394,11 +1395,18 @@ maybe_create_import_job (RBLibrarySource *source)
 {
 	RhythmDBImportJob *job;
 	if (source->priv->import_jobs == NULL || source->priv->start_import_job_id == 0) {
+		RBShell *shell;
+
 		rb_debug ("creating new import job");
 		job = rhythmdb_import_job_new (source->priv->db,
 					       RHYTHMDB_ENTRY_TYPE_SONG,
 					       RHYTHMDB_ENTRY_TYPE_IGNORE,
 					       RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+
+		g_object_get (source, "shell", &shell, NULL);
+		rb_missing_plugins_init_import_job (shell, job);
+		g_object_unref (shell);
+
 		g_signal_connect_object (job,
 					 "status-changed",
 					 G_CALLBACK (import_job_status_changed_cb),

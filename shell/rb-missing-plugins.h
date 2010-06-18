@@ -25,10 +25,13 @@
 #define RB_MISSING_PLUGINS_H
 
 #include <shell/rb-shell.h>
+#include <rhythmdb/rhythmdb-import-job.h>
 
 G_BEGIN_DECLS
 
 void rb_missing_plugins_init (RBShell *shell);
+
+void rb_missing_plugins_init_import_job (RBShell *shell, RhythmDBImportJob *job);
 
 G_END_DECLS
 

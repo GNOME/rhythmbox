@@ -49,6 +49,7 @@ enum
 	STATUS_CHANGED,
 	SCAN_COMPLETE,
 	COMPLETE,
+	MISSING_PLUGINS,
 	LAST_SIGNAL
 };
 
@@ -70,6 +71,9 @@ struct _RhythmDBImportJobPrivate
 	GSList		*uri_list;
 	gboolean	started;
 	GCancellable    *cancel;
+
+	GSList		*retry_entries;
+	gboolean	retried;
 
 	int		status_changed_id;
 	gboolean	scan_complete;
@@ -139,6 +143,54 @@ rhythmdb_import_job_add_uri (RhythmDBImportJob *job, const char *uri)
 	g_static_mutex_unlock (&job->priv->lock);
 }
 
+static void
+missing_plugins_retry_cb (gpointer instance, gboolean installed, RhythmDBImportJob *job)
+{
+	GSList *retry = NULL;
+	GSList *i;
+
+	g_static_mutex_lock (&job->priv->lock);
+	g_assert (job->priv->retried == FALSE);
+	if (installed == FALSE) {
+		rb_debug ("plugin installation was not successful; job complete");
+		g_signal_emit (job, signals[COMPLETE], 0, job->priv->total);
+	} else {
+		job->priv->retried = TRUE;
+
+		/* reset the job state to just show the retry information */
+		job->priv->total = g_slist_length (job->priv->retry_entries);
+		rb_debug ("plugin installation was successful, retrying %d entries", job->priv->total);
+		job->priv->imported = 0;
+
+		/* remove the import error entries and build the list of URIs to retry */
+		for (i = job->priv->retry_entries; i != NULL; i = i->next) {
+			RhythmDBEntry *entry = (RhythmDBEntry *)i->data;
+			char *uri;
+
+			uri = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
+			rhythmdb_entry_delete (job->priv->db, entry);
+
+			g_hash_table_insert (job->priv->outstanding, g_strdup (uri), GINT_TO_POINTER (1));
+			retry = g_slist_prepend (retry, uri);
+		}
+		rhythmdb_commit (job->priv->db);
+		retry = g_slist_reverse (retry);
+	}
+	g_static_mutex_unlock (&job->priv->lock);
+
+	for (i = retry; i != NULL; i = i->next) {
+		char *uri = (char *)i->data;
+
+		rhythmdb_add_uri_with_types (job->priv->db,
+					     uri,
+					     job->priv->entry_type,
+					     job->priv->ignore_type,
+					     job->priv->error_type);
+	}
+
+	rb_slist_deep_free (retry);
+}
+
 static gboolean
 emit_status_changed (RhythmDBImportJob *job)
 {
@@ -153,8 +205,52 @@ emit_status_changed (RhythmDBImportJob *job)
 	 */
 	g_object_ref (job);
 	if (job->priv->scan_complete && job->priv->imported >= job->priv->total) {
-		rb_debug ("emitting job complete");
-		g_signal_emit (job, signals[COMPLETE], 0, job->priv->total);
+
+		if (job->priv->retry_entries != NULL && job->priv->retried == FALSE) {
+			gboolean processing = FALSE;
+			char **details = NULL;
+			GClosure *retry;
+			GSList *l;
+			int i;
+
+			/* gather missing plugin details etc. */
+			i = 0;
+			for (l = job->priv->retry_entries; l != NULL; l = l->next) {
+				RhythmDBEntry *entry;
+				char **bits;
+				int j;
+
+				entry = (RhythmDBEntry *)l->data;
+				bits = g_strsplit (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_COMMENT), "\n", 0);
+				for (j = 0; bits[j] != NULL; j++) {
+					if (rb_str_in_strv (bits[j], details) == FALSE) {
+						details = g_realloc (details, sizeof (char *) * (i+2));
+						details[i++] = g_strdup (bits[j]);
+						details[i] = NULL;
+					}
+				}
+				g_strfreev (bits);
+			}
+
+			retry = g_cclosure_new ((GCallback) missing_plugins_retry_cb,
+						g_object_ref (job),
+						(GClosureNotify)g_object_unref);
+			g_closure_set_marshal (retry, g_cclosure_marshal_VOID__BOOLEAN);
+
+			rb_debug ("emitting missing-plugins");
+			g_signal_emit (job, signals[MISSING_PLUGINS], 0, details, retry, &processing);
+			g_strfreev (details);
+			if (processing) {
+				rb_debug ("plugin installation is in progress");
+			} else {
+				rb_debug ("no plugin installation attempted; job complete");
+				g_signal_emit (job, signals[COMPLETE], 0, job->priv->total);
+			}
+			g_closure_sink (retry);
+		} else {
+			rb_debug ("emitting job complete");
+			g_signal_emit (job, signals[COMPLETE], 0, job->priv->total);
+		}
 	}
 	g_static_mutex_unlock (&job->priv->lock);
 	g_object_unref (job);
@@ -339,9 +435,19 @@ entry_added_cb (RhythmDB *db,
 	ours = g_hash_table_remove (job->priv->outstanding, uri);
 
 	if (ours) {
+		const char *details;
+
 		job->priv->imported++;
 		rb_debug ("got entry %s; %d now imported", uri, job->priv->imported);
 		g_signal_emit (job, signals[ENTRY_ADDED], 0, entry);
+
+		/* if it's an import error with missing plugins, add it to the retry list */
+		details = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_COMMENT);
+		if (rhythmdb_entry_get_entry_type (entry) == job->priv->error_type &&
+		    (details != NULL || details[0] != '\0')) {
+			rb_debug ("entry %s is an import error with missing plugin details: %s", uri, details);
+			job->priv->retry_entries = g_slist_prepend (job->priv->retry_entries, rhythmdb_entry_ref (entry));
+		}
 
 		if (job->priv->status_changed_id == 0) {
 			job->priv->status_changed_id = g_idle_add ((GSourceFunc) emit_status_changed, job);
@@ -562,7 +668,29 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 			      g_cclosure_marshal_VOID__INT,
 			      G_TYPE_NONE,
 			      1, G_TYPE_INT);
+	/**
+	 * RhythmDBImportJob::missing-plugins:
+	 * @job: the #RhythmDBImportJob
+	 * @details: NULL-terminated array of installer detail strings
+	 * @closure: a closure to invoke once the installer has finished
+	 *
+	 * Emitted when the whole import job is complete (but before the
+	 * 'complete' signal) but additional plugins are required to
+	 * import some of the files.
+	 *
+	 * If a handler initiates plugin installation, it should return TRUE
+	 * and invoke the closure when the installation finishes.
+	 * Otherwise it should return FALSE.
+	 */
+	signals[MISSING_PLUGINS] =
+		g_signal_new ("missing-plugins",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0, /* no internal handler */
+			      NULL, NULL,
+			      rb_marshal_BOOLEAN__POINTER_POINTER,
+			      G_TYPE_BOOLEAN,
+			      2, G_TYPE_STRV, G_TYPE_CLOSURE);
 
 	g_type_class_add_private (klass, sizeof (RhythmDBImportJobPrivate));
 }
-

@@ -53,6 +53,7 @@
 #include "rb-import-errors-source.h"
 #include "rb-builder-helpers.h"
 #include "rb-sync-settings.h"
+#include "rb-missing-plugins.h"
 
 static void impl_constructed (GObject *object);
 static void impl_dispose (GObject *object);
@@ -466,14 +467,20 @@ load_songs (RBGenericPlayerSource *source)
 	RhythmDBEntryType entry_type;
 	char **audio_folders;
 	char *mount_path;
+	RBShell *shell;
 
 	mount_path = rb_generic_player_source_get_mount_path (source);
-	g_object_get (source, "entry-type", &entry_type, NULL);
+	g_object_get (source,
+		      "entry-type", &entry_type,
+		      "shell", &shell,
+		      NULL);
 
 	/* if we have a set of folders on the device containing audio files,
 	 * load only those folders, otherwise add the whole volume.
 	 */
 	priv->import_job = rhythmdb_import_job_new (priv->db, entry_type, priv->ignore_type, priv->error_type);
+	rb_missing_plugins_init_import_job (shell, priv->import_job);
+	g_object_unref (shell);
 
 	g_signal_connect_object (priv->import_job, "complete", G_CALLBACK (import_complete_cb), source, 0);
 	g_signal_connect_object (priv->import_job, "status-changed", G_CALLBACK (import_status_changed_cb), source, 0);

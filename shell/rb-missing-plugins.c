@@ -292,3 +292,12 @@ rb_missing_plugins_init (RBShell *shell)
 
 	GST_INFO ("Set up support for automatic missing plugin installation");
 }
+
+void
+rb_missing_plugins_init_import_job (RBShell *shell, RhythmDBImportJob *job)
+{
+	g_signal_connect (job,
+			  "missing-plugins",
+			  G_CALLBACK (missing_plugins_cb),
+			  shell);
+}
