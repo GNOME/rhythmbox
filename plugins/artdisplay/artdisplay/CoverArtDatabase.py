@@ -38,7 +38,7 @@ from LastFMCoverArtSearch import LastFMCoverArtSearch
 from EmbeddedCoverArtSearch import EmbeddedCoverArtSearch
 from LocalCoverArtSearch import LocalCoverArtSearch
 
-from urllib import unquote
+from urllib import unquote, pathname2url
 
 ART_SEARCHES_LOCAL = [LocalCoverArtSearch, EmbeddedCoverArtSearch]
 ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, LastFMCoverArtSearch, MusicBrainzCoverArtSearch]
@@ -209,7 +209,8 @@ class CoverArtDatabase (object):
 			self.ticket.purge (entry)
 			pixbuf = gtk.gdk.pixbuf_new_from_file (art_location)
 			(tooltip_image, tooltip_text) = self.read_meta_file (art_location_meta)
-			callback (entry, pixbuf, art_location, tooltip_image, tooltip_text)
+			art_location_url = "file://" + pathname2url(art_location)
+			callback (entry, pixbuf, art_location_url, tooltip_image, tooltip_text)
 			return
 
 		# Check if we're already searching for art for this album
@@ -243,10 +244,10 @@ class CoverArtDatabase (object):
 						if should_save:
 							if pixbuf.get_has_alpha ():
 								pixbuf.save (art_location_png, ART_CACHE_FORMAT_PNG, ART_CACHE_SETTINGS_PNG)
-								uri = art_location_png
+								uri = "file://" + pathname2url(art_location_png)
 							else:
 								pixbuf.save (art_location_jpg, ART_CACHE_FORMAT_JPG, ART_CACHE_SETTINGS_JPG)
-								uri = art_location_jpg
+								uri = "file://" + pathname2url(art_location_jpg)
 
 							self.write_meta_file (art_location_meta, tooltip_image, tooltip_text)
 						else:
