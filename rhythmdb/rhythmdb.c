@@ -2335,31 +2335,37 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 		if (entry == NULL)
 			return;
 
-		if (error_entry_type == event->error_type && event->error->message) {
+		/* if we have missing plugin details, store them in the
+		 * comment field so we can collect them later, and set a
+		 * suitable error message
+		 */
+		if (event->metadata != NULL && rb_metadata_has_missing_plugins (event->metadata)) {
+			char **missing_plugins;
+			char **plugin_descriptions;
+			char *comment;
+			if (rb_metadata_has_audio (event->metadata) == TRUE &&
+				   rb_metadata_has_video (event->metadata) == FALSE &&
+				   rb_metadata_has_missing_plugins (event->metadata) == TRUE) {
+				rb_metadata_get_missing_plugins (event->metadata, &missing_plugins, &plugin_descriptions);
+				comment = g_strjoinv ("\n", missing_plugins);
+				rb_debug ("storing missing plugin details: %s", comment);
+				g_strfreev (missing_plugins);
+				g_strfreev (plugin_descriptions);
+
+				g_value_init (&value, G_TYPE_STRING);
+				g_value_take_string (&value, comment);
+				rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_COMMENT, &value);
+				g_value_unset (&value);
+			} else if (rb_metadata_has_missing_plugins (event->metadata)) {
+				rb_debug ("ignoring missing plugins for non-audio file");
+			}
+		} else if (error_entry_type == event->error_type && event->error->message) {
 			g_value_init (&value, G_TYPE_STRING);
 			if (g_utf8_validate (event->error->message, -1, NULL))
 				g_value_set_string (&value, event->error->message);
 			else
 				g_value_set_static_string (&value, _("invalid unicode in error message"));
 			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
-			g_value_unset (&value);
-		}
-
-		/* store missing plugin details in the comment field */
-		if (event->metadata != NULL && rb_metadata_has_missing_plugins (event->metadata)) {
-			char **missing_plugins;
-			char **plugin_descriptions;
-			char *comment;
-
-			rb_metadata_get_missing_plugins (event->metadata, &missing_plugins, &plugin_descriptions);
-			comment = g_strjoinv ("\n", missing_plugins);
-			rb_debug ("storing missing plugin details: %s", comment);
-			g_strfreev (missing_plugins);
-			g_strfreev (plugin_descriptions);
-
-			g_value_init (&value, G_TYPE_STRING);
-			g_value_take_string (&value, comment);
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_COMMENT, &value);
 			g_value_unset (&value);
 		}
 
@@ -2382,7 +2388,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 }
 
 static gboolean
-rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
+rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry;
 	GValue value = {0,};
@@ -2401,8 +2407,9 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 	if (event->metadata != NULL) {
 		const char *media_type = rb_metadata_get_mime (event->metadata);
 		if (rb_metadata_has_video (event->metadata) ||
+                    rb_metadata_has_audio (event->metadata) == FALSE ||
 		    (media_type != NULL && rhythmdb_ignore_media_type (media_type))) {
-			rhythmdb_add_import_error_entry (event->db, event, event->ignore_type);
+			rhythmdb_add_import_error_entry (db, event, event->ignore_type);
 			return TRUE;
 		}
 	}
@@ -2421,40 +2428,34 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 				     RB_METADATA_ERROR_EMPTY_FILE,
 				     _("Empty file"));
 		} else if (file_size < REALLY_SMALL_FILE_SIZE) {
-			rhythmdb_add_import_error_entry (event->db, event, event->ignore_type);
+			rhythmdb_add_import_error_entry (db, event, event->ignore_type);
 			return TRUE;
 		}
 	}
 
 	if (event->error) {
-		rhythmdb_add_import_error_entry (event->db, event, event->error_type);
-		return TRUE;
-	}
-
-	/* check if this is something we want in the library */
-	if (rb_metadata_has_audio (event->metadata) == FALSE) {
-		rhythmdb_add_import_error_entry (event->db, event, event->ignore_type);
+		rhythmdb_add_import_error_entry (db, event, event->error_type);
 		return TRUE;
 	}
 
 	g_get_current_time (&time);
 
-	entry = rhythmdb_entry_lookup_by_location_refstring (event->db, event->real_uri);
+	entry = rhythmdb_entry_lookup_by_location_refstring (db, event->real_uri);
 
 	if (entry != NULL) {
 		RhythmDBEntryType etype;
 		etype = rhythmdb_entry_get_entry_type (entry);
 		if (etype == event->error_type || etype == event->ignore_type) {
 			/* switching from IGNORE/ERROR to SONG, recreate the entry */
-			rhythmdb_entry_delete (event->db, entry);
-			rhythmdb_add_timeout_commit (event->db, FALSE);
+			rhythmdb_entry_delete (db, entry);
+			rhythmdb_add_timeout_commit (db, FALSE);
 			entry = NULL;
 		}
 	}
 
 	if (entry == NULL) {
 
-		entry = rhythmdb_entry_new (event->db, event->entry_type, rb_refstring_get (event->real_uri));
+		entry = rhythmdb_entry_new (db, event->entry_type, rb_refstring_get (event->real_uri));
 		if (entry == NULL) {
 			rb_debug ("entry already exists");
 			return TRUE;
@@ -2463,20 +2464,20 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 		/* initialize the last played date to 0=never */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, 0);
-		rhythmdb_entry_set (event->db, entry,
+		rhythmdb_entry_set (db, entry,
 				    RHYTHMDB_PROP_LAST_PLAYED, &value);
 		g_value_unset (&value);
 
 		/* initialize the rating */
 		g_value_init (&value, G_TYPE_DOUBLE);
 		g_value_set_double (&value, 0);
-		rhythmdb_entry_set (event->db, entry, RHYTHMDB_PROP_RATING, &value);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &value);
 		g_value_unset (&value);
 
 	        /* first seen */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, time.tv_sec);
-		rhythmdb_entry_set (event->db, entry, RHYTHMDB_PROP_FIRST_SEEN, &value);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &value);
 		g_value_unset (&value);
 	}
 
@@ -2493,84 +2494,35 @@ rhythmdb_process_metadata_load_real (RhythmDBEvent *event)
 
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, (gulong)mtime);
-		rhythmdb_entry_set_internal (event->db, entry, TRUE, RHYTHMDB_PROP_MTIME, &value);
+		rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_MTIME, &value);
 		g_value_unset (&value);
 	}
 
 	if (event->entry_type != event->ignore_type &&
 	    event->entry_type != event->error_type) {
-		set_props_from_metadata (event->db, entry, event->file_info, event->metadata);
+		set_props_from_metadata (db, entry, event->file_info, event->metadata);
 	}
 
 	/* we've seen this entry */
-	rhythmdb_entry_set_visibility (event->db, entry, TRUE);
+	rhythmdb_entry_set_visibility (db, entry, TRUE);
 
 	g_value_init (&value, G_TYPE_ULONG);
 	g_value_set_ulong (&value, time.tv_sec);
-	rhythmdb_entry_set_internal (event->db, entry, TRUE, RHYTHMDB_PROP_LAST_SEEN, &value);
+	rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_LAST_SEEN, &value);
 	g_value_unset (&value);
 
 	/* Remember the mount point of the volume the song is on */
-	rhythmdb_entry_set_mount_point (event->db, entry, rb_refstring_get (event->real_uri));
+	rhythmdb_entry_set_mount_point (db, entry, rb_refstring_get (event->real_uri));
 
 	/* monitor the file for changes */
 	/* FIXME: watch for errors */
 	if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY) && event->entry_type == RHYTHMDB_ENTRY_TYPE_SONG)
-		rhythmdb_monitor_uri_path (event->db, rb_refstring_get (entry->location), NULL);
+		rhythmdb_monitor_uri_path (db, rb_refstring_get (entry->location), NULL);
 
-	rhythmdb_commit_internal (event->db, FALSE, g_thread_self ());
+	rhythmdb_commit_internal (db, FALSE, g_thread_self ());
 
 	return TRUE;
 }
-
-static void
-set_missing_plugin_error (RhythmDBEvent *event)
-{
-	char **missing_plugins;
-	char **plugin_descriptions;
-	char *list;
-	const char *msg;
-
-	/* Translators: the parameter here is a list of GStreamer plugins.
-	 * The plugin names are already translated.
-	 */
-	msg = _("Additional GStreamer plugins are required to play this file: %s");
-
-	g_clear_error (&event->error);
-
-	rb_metadata_get_missing_plugins (event->metadata, &missing_plugins, &plugin_descriptions);
-	list = g_strjoinv (", ", plugin_descriptions);
-	g_set_error (&event->error,
-		     RB_METADATA_ERROR,
-		     RB_METADATA_ERROR_MISSING_PLUGIN,
-		     msg, list);
-	g_free (list);
-	g_strfreev (missing_plugins);
-	g_strfreev (plugin_descriptions);
-}
-
-static gboolean
-rhythmdb_process_metadata_load (RhythmDB *db,
-				RhythmDBEvent *event)
-{
-	/* should move this stuff inside load_real .. */
-	if (event->metadata == NULL) {
-		/* obviously can't process missing plugins here */
-	} else if (rb_metadata_has_audio (event->metadata) == TRUE &&
-		   rb_metadata_has_video (event->metadata) == FALSE &&
-		   rb_metadata_has_missing_plugins (event->metadata) == TRUE) {
-		set_missing_plugin_error (event);
-	} else if (rb_metadata_has_missing_plugins (event->metadata)) {
-		rb_debug ("ignoring missing plugins for %s; not audio (%d %d %d)",
-			  rb_refstring_get (event->real_uri),
-			  rb_metadata_has_audio (event->metadata),
-			  rb_metadata_has_video (event->metadata),
-			  rb_metadata_has_other_data (event->metadata));
-	}
-
-	return rhythmdb_process_metadata_load_real (event);
-}
-
 
 static void
 rhythmdb_process_queued_entry_set_event (RhythmDB *db,
