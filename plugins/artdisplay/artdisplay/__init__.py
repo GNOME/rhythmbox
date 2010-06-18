@@ -461,7 +461,11 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.art_db.cancel_get_pixbuf (entry)
 		if self.current_pixbuf == metadata:
 			return
-		self.art_widget.set (entry, metadata, None, None, None, False)
+
+		# cache the pixbuf so we can provide a url
+		uri = self.art_db.cache_pixbuf (db, entry, metadata)
+		self.art_widget.set (entry, metadata, uri, None, None, False)
+		db.emit_entry_extra_metadata_notify (entry, "rb:coverArt-uri", uri)
 
 	def cover_art_uri_notify (self, db, entry, field, metadata):
 		if entry != self.current_entry:

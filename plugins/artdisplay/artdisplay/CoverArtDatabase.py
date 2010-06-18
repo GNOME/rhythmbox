@@ -154,6 +154,18 @@ class CoverArtDatabase (object):
 		if entry is None or pixbuf is None:
 			return
 
+		art_location_url = self.cache_pixbuf(db, entry, pixbuf)
+		callback (entry, pixbuf, art_location_url, None, None)
+		for Engine in ART_SEARCHES_LOCAL:
+			try:
+				Engine ().save_pixbuf (db, entry, pixbuf)
+			except AttributeError:
+				pass
+
+	def cache_pixbuf (self, db, entry, pixbuf):
+		if entry is None or pixbuf is None:
+			return None
+
 		meta_location = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_META)
 		self.write_meta_file (meta_location, None, None)
 
@@ -167,12 +179,7 @@ class CoverArtDatabase (object):
 			art_cache_settings = ART_CACHE_SETTINGS_JPG
 		self.ticket.purge (entry)
 		pixbuf.save (art_location, art_cache_format, art_cache_settings)
-		callback (entry, pixbuf, art_location, None, None)
-		for Engine in ART_SEARCHES_LOCAL:
-			try:
-				Engine ().save_pixbuf (db, entry, pixbuf)
-			except AttributeError:
-				pass
+		return "file://" + pathname2url(art_location)
 
 	def cancel_get_pixbuf (self, entry):
 		self.ticket.purge (entry)
