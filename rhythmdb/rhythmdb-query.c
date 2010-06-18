@@ -46,12 +46,14 @@
 #define RB_PARSE_PREFIX (xmlChar *) "prefix"
 #define RB_PARSE_SUFFIX (xmlChar *) "suffix"
 #define RB_PARSE_EQUALS (xmlChar *) "equals"
+#define RB_PARSE_NOT_EQUAL (xmlChar *) "not-equal"
 #define RB_PARSE_DISJ (xmlChar *) "disjunction"
 #define RB_PARSE_GREATER (xmlChar *) "greater"
 #define RB_PARSE_LESS (xmlChar *) "less"
 #define RB_PARSE_CURRENT_TIME_WITHIN (xmlChar *) "current-time-within"
 #define RB_PARSE_CURRENT_TIME_NOT_WITHIN (xmlChar *) "current-time-not-within"
 #define RB_PARSE_YEAR_EQUALS RB_PARSE_EQUALS
+#define RB_PARSE_YEAR_NOT_EQUAL RB_PARSE_NOT_EQUAL
 #define RB_PARSE_YEAR_GREATER RB_PARSE_GREATER
 #define RB_PARSE_YEAR_LESS RB_PARSE_LESS
 
@@ -136,6 +138,7 @@ rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 			data->subquery = rhythmdb_query_copy (va_arg (args, GPtrArray *));
 			break;
 		case RHYTHMDB_QUERY_PROP_EQUALS:
+		case RHYTHMDB_QUERY_PROP_NOT_EQUAL:
 		case RHYTHMDB_QUERY_PROP_LIKE:
 		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
 		case RHYTHMDB_QUERY_PROP_PREFIX:
@@ -145,6 +148,7 @@ rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
 		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
+		case RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL:
 		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
 		case RHYTHMDB_QUERY_PROP_YEAR_LESS:
 			data->propid = va_arg (args, guint);
@@ -275,6 +279,7 @@ rhythmdb_query_append_params (RhythmDB *db, GPtrArray *query,
 		data->subquery = rhythmdb_query_copy (g_value_get_pointer (value));
 		break;
 	case RHYTHMDB_QUERY_PROP_EQUALS:
+	case RHYTHMDB_QUERY_PROP_NOT_EQUAL:
 	case RHYTHMDB_QUERY_PROP_LIKE:
 	case RHYTHMDB_QUERY_PROP_NOT_LIKE:
 	case RHYTHMDB_QUERY_PROP_PREFIX:
@@ -284,6 +289,7 @@ rhythmdb_query_append_params (RhythmDB *db, GPtrArray *query,
 	case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
 	case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
 	case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
+	case RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL:
 	case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
 	case RHYTHMDB_QUERY_PROP_YEAR_LESS:
 		data->propid = prop;
@@ -319,6 +325,7 @@ rhythmdb_query_free (GPtrArray *query)
 			rhythmdb_query_free (data->subquery);
 			break;
 		case RHYTHMDB_QUERY_PROP_EQUALS:
+		case RHYTHMDB_QUERY_PROP_NOT_EQUAL:
 		case RHYTHMDB_QUERY_PROP_LIKE:
 		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
 		case RHYTHMDB_QUERY_PROP_PREFIX:
@@ -328,6 +335,7 @@ rhythmdb_query_free (GPtrArray *query)
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
 		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
+		case RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL:
 		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
 		case RHYTHMDB_QUERY_PROP_YEAR_LESS:
 			g_value_unset (data->val);
@@ -524,8 +532,18 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
+		case RHYTHMDB_QUERY_PROP_NOT_EQUAL:
+			subnode = xmlNewChild (node, NULL, RB_PARSE_NOT_EQUAL, NULL);
+			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
+			break;
 		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_YEAR_EQUALS, NULL);
+			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
+			break;
+		case RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL:
+			subnode = xmlNewChild (node, NULL, RB_PARSE_YEAR_NOT_EQUAL, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
@@ -620,6 +638,15 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 			else
 				data->type = RHYTHMDB_QUERY_PROP_EQUALS;
 			xmlFree (prop);
+		} else if (!xmlStrcmp (child->name, RB_PARSE_NOT_EQUAL)) {
+			xmlChar* prop;
+
+			prop = xmlGetProp(child, RB_PARSE_PROP);
+			if (!xmlStrcmp(prop, (xmlChar *)"date"))
+				data->type = RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL;
+			else
+				data->type = RHYTHMDB_QUERY_PROP_NOT_EQUAL;
+			xmlFree (prop);
 		} else if (!xmlStrcmp (child->name, RB_PARSE_GREATER)) {
 			xmlChar* prop;
 
@@ -650,6 +677,7 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 		    || !xmlStrcmp (child->name, RB_PARSE_PREFIX)
 		    || !xmlStrcmp (child->name, RB_PARSE_SUFFIX)
 		    || !xmlStrcmp (child->name, RB_PARSE_EQUALS)
+		    || !xmlStrcmp (child->name, RB_PARSE_NOT_EQUAL)
 		    || !xmlStrcmp (child->name, RB_PARSE_GREATER)
 		    || !xmlStrcmp (child->name, RB_PARSE_LESS)
 		    || !xmlStrcmp (child->name, RB_PARSE_YEAR_EQUALS)
@@ -787,6 +815,15 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 					data->subquery = rhythmdb_query_parse (db,
 									       RHYTHMDB_QUERY_PROP_GREATER, data->propid, begin,
 									       RHYTHMDB_QUERY_PROP_LESS, data->propid, end,
+									       RHYTHMDB_QUERY_END);
+					break;
+				case RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL:
+					restart_criteria = TRUE;
+					data->type = RHYTHMDB_QUERY_SUBQUERY;
+					data->subquery = rhythmdb_query_parse (db,
+									       RHYTHMDB_QUERY_PROP_LESS, data->propid, begin-1,
+									       RHYTHMDB_QUERY_DISJUNCTION,
+									       RHYTHMDB_QUERY_PROP_GREATER, data->propid, end+1,
 									       RHYTHMDB_QUERY_END);
 					break;
 
@@ -954,8 +991,14 @@ rhythmdb_query_to_string (RhythmDB *db, GPtrArray *query)
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 			fmt = "(%s == %s)";
 			break;
+		case RHYTHMDB_QUERY_PROP_NOT_EQUAL:
+			fmt = "(%s != %s)";
+			break;
 		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
 			fmt = "(year(%s) == %s)";
+			break;
+		case RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL:
+			fmt = "(year(%s) != %s)";
 			break;
 		case RHYTHMDB_QUERY_DISJUNCTION:
 			g_string_append_printf (buf, " || ");

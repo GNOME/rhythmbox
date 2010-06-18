@@ -132,6 +132,7 @@ const RBQueryCreatorCriteriaOption string_criteria_options[] =
 	{ N_("contains"), 0, RHYTHMDB_QUERY_PROP_LIKE },
 	{ N_("does not contain"), 0, RHYTHMDB_QUERY_PROP_NOT_LIKE },
 	{ N_("equals"), 1, RHYTHMDB_QUERY_PROP_EQUALS },
+	{ N_("not equal to"), 1, RHYTHMDB_QUERY_PROP_NOT_EQUAL },
 	{ N_("starts with"), 0, RHYTHMDB_QUERY_PROP_PREFIX },
 	{ N_("ends with"), 0, RHYTHMDB_QUERY_PROP_SUFFIX },
 };
@@ -161,6 +162,7 @@ const RBQueryCreatorPropertyType escaped_string_property_type =
 const RBQueryCreatorCriteriaOption numeric_criteria_options[] =
 {
 	{ N_("equals"), 1, RHYTHMDB_QUERY_PROP_EQUALS },
+	{ N_("not equal to"), 1, RHYTHMDB_QUERY_PROP_NOT_EQUAL },
 	{ N_("at least"), 1, RHYTHMDB_QUERY_PROP_GREATER },	/* matches if A >= B */
 	{ N_("at most"), 1, RHYTHMDB_QUERY_PROP_LESS }		/* matches if A <= B */
 };
@@ -173,6 +175,8 @@ const RBQueryCreatorCriteriaOption year_criteria_options[] =
 {
 	/* Translators: this matches songs within 1-Jan-YEAR to 31-Dec-YEAR */
 	{ N_("in"), 1, RHYTHMDB_QUERY_PROP_YEAR_EQUALS },
+	/* Translators: this matches songs before 1-Jan-YEAR or after 31-Dec-YEAR */
+	{ N_("not in"), 1, RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL },
 	/* Translators: this matches songs after 31-Dec-YEAR */
 	{ N_("after"), 1, RHYTHMDB_QUERY_PROP_YEAR_GREATER },
 	/* Translators: this matches songs before 1-Jan-YEAR */

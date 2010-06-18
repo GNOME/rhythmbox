@@ -36,11 +36,40 @@
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 
+static void
+test_query_eval (RhythmDB *db, RhythmDBQuery *query, RhythmDBEntry *entry, gboolean expected, const char *what)
+{
+	RhythmDBQueryModel *model;
+	RhythmDBQuery *processed;
+	GtkTreeIter iter = {0,};
+
+	/* direct evaluation - need to preprocess it first */
+	processed = rhythmdb_query_copy (query);
+	rhythmdb_query_preprocess (db, processed);
+	fail_unless (rhythmdb_evaluate_query (db, processed, entry) == expected, what);
+	rhythmdb_query_free (processed);
+
+	/* query evaluation - query is preprocessed by rhythmdb */
+	model = rhythmdb_query_model_new_empty (db);
+	rhythmdb_do_full_query_parsed (db, RHYTHMDB_QUERY_RESULTS (model), query);
+	fail_unless (rhythmdb_query_model_entry_to_iter (model, entry, &iter) == expected, what);
+	g_object_unref (model);
+}
+
+static guint32
+year_to_julian (guint32 year)
+{
+	GDate v = {0,};
+	g_date_set_dmy (&v, 1, G_DATE_JANUARY, year);
+	return g_date_get_julian (&v);
+}
+
 START_TEST (test_rhythmdb_db_queries)
 {
 	RhythmDBEntry *entry = NULL;
 	RhythmDBQuery *query;
 	GValue val = {0,};
+	GDate testdate = {0,};
 
 	start_test_case ();
 
@@ -67,6 +96,12 @@ START_TEST (test_rhythmdb_db_queries)
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
 	g_value_unset (&val);
 
+	g_date_set_dmy (&testdate, 1, 1, 1989);
+	g_value_init (&val, G_TYPE_ULONG);
+	g_value_set_ulong (&val, g_date_get_julian (&testdate));
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DATE, &val);
+	g_value_unset (&val);
+
 	rhythmdb_commit (db);
 
 	/* basic queries and conjunctions */
@@ -74,7 +109,7 @@ START_TEST (test_rhythmdb_db_queries)
 				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_IGNORE,
 				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TITLE, "Sin",
 				      RHYTHMDB_QUERY_END);
-	fail_unless (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
+	test_query_eval (db, query, entry, TRUE, "title query evaluated incorrectly");
 	rhythmdb_query_free (query);
 
 	end_step ();
@@ -82,7 +117,7 @@ START_TEST (test_rhythmdb_db_queries)
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_ARTIST, "Nine Inch",
 				      RHYTHMDB_QUERY_END);
-	fail_unless (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
+	test_query_eval (db, query, entry, TRUE, "artist query evaluated incorrectly");
 	rhythmdb_query_free (query);
 
 	end_step ();
@@ -90,7 +125,7 @@ START_TEST (test_rhythmdb_db_queries)
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_ALBUM, "Load",
 				      RHYTHMDB_QUERY_END);
-	fail_if (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
+	test_query_eval (db, query, entry, FALSE, "album query evaluated incorrectly");
 	rhythmdb_query_free (query);
 
 	end_step ();
@@ -98,8 +133,47 @@ START_TEST (test_rhythmdb_db_queries)
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_SEARCH_MATCH, "Pretty Nine",
 				      RHYTHMDB_QUERY_END);
-	rhythmdb_query_preprocess (db, query);
-	fail_unless (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
+	test_query_eval (db, query, entry, TRUE, "search query evaluated incorrectly");
+	rhythmdb_query_free (query);
+
+	end_step ();
+
+	query = rhythmdb_query_parse (db,
+				      RHYTHMDB_QUERY_PROP_NOT_EQUAL, RHYTHMDB_PROP_TITLE, "Head Like A Hole",
+				      RHYTHMDB_QUERY_END);
+	test_query_eval (db, query, entry, TRUE, "title != query evaluated incorrectly");
+	rhythmdb_query_free (query);
+
+	end_step ();
+
+	query = rhythmdb_query_parse (db,
+				      RHYTHMDB_QUERY_PROP_YEAR_EQUALS, RHYTHMDB_PROP_DATE, year_to_julian (1989),
+				      RHYTHMDB_QUERY_END);
+	test_query_eval (db, query, entry, TRUE, "year == query evaluated incorrectly");
+	rhythmdb_query_free (query);
+
+	end_step ();
+
+	query = rhythmdb_query_parse (db,
+				      RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL, RHYTHMDB_PROP_DATE, year_to_julian (1990),
+				      RHYTHMDB_QUERY_END);
+	test_query_eval (db, query, entry, TRUE, "year != query evaluated incorrectly");
+	rhythmdb_query_free (query);
+
+	end_step ();
+
+	query = rhythmdb_query_parse (db,
+				      RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL, RHYTHMDB_PROP_DATE, year_to_julian (1988),
+				      RHYTHMDB_QUERY_END);
+	test_query_eval (db, query, entry, TRUE, "year != query evaluated incorrectly");
+	rhythmdb_query_free (query);
+
+	end_step ();
+
+	query = rhythmdb_query_parse (db,
+				      RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL, RHYTHMDB_PROP_DATE, year_to_julian (1989),
+				      RHYTHMDB_QUERY_END);
+	test_query_eval (db, query, entry, FALSE, "year != query evaluated incorrectly");
 	rhythmdb_query_free (query);
 
 	end_step ();
@@ -110,7 +184,7 @@ START_TEST (test_rhythmdb_db_queries)
 				      RHYTHMDB_QUERY_DISJUNCTION,
 				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_TITLE, "Son",
 				      RHYTHMDB_QUERY_END);
-	fail_unless (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
+	test_query_eval (db, query, entry, TRUE, "title disjunction query evaluated incorrectly");
 	rhythmdb_query_free (query);
 
 	end_step ();
@@ -120,7 +194,7 @@ START_TEST (test_rhythmdb_db_queries)
 				      RHYTHMDB_QUERY_DISJUNCTION,
 				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_TITLE, "Sin",
 				      RHYTHMDB_QUERY_END);
-	fail_unless (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
+	test_query_eval (db, query, entry, TRUE, "title disjunction query evaluated incorrectly");
 	rhythmdb_query_free (query);
 
 	end_step ();
@@ -130,7 +204,7 @@ START_TEST (test_rhythmdb_db_queries)
 				      RHYTHMDB_QUERY_DISJUNCTION,
 				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_TITLE, "Son",
 				      RHYTHMDB_QUERY_END);
-	fail_if (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
+	test_query_eval (db, query, entry, FALSE, "title disjunction query evaluated incorrectly");
 	rhythmdb_query_free (query);
 
 	/* TODO: subqueries */

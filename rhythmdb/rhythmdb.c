@@ -4384,6 +4384,7 @@ rhythmdb_query_type_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_QUERY_DISJUNCTION, "disjunctive-marker"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_SUBQUERY, "subquery"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_EQUALS, "equals"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_NOT_EQUAL, "not-equal"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_LIKE, "fuzzy-match"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_NOT_LIKE, "inverted-fuzzy-match"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_PREFIX, "starts-with"),
@@ -4393,6 +4394,7 @@ rhythmdb_query_type_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN, "within-current-time"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN, "not-within-current-time"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_EQUALS, "year-equals"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL, "year-not-equals"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_GREATER, "year-greater-than"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_LESS, "year-less-than"),
 			{ 0, 0, 0 }

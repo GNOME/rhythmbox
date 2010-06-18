@@ -1993,6 +1993,9 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree,
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 			RHYTHMDB_PROPERTY_COMPARE (!=)
 			break;
+		case RHYTHMDB_QUERY_PROP_NOT_EQUAL:
+			RHYTHMDB_PROPERTY_COMPARE (==)
+			break;
 		case RHYTHMDB_QUERY_PROP_GREATER:
 			RHYTHMDB_PROPERTY_COMPARE (<)
 			break;
@@ -2002,6 +2005,7 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree,
 		case RHYTHMDB_QUERY_END:
 		case RHYTHMDB_QUERY_DISJUNCTION:
 		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
+		case RHYTHMDB_QUERY_PROP_YEAR_NOT_EQUAL:
 		case RHYTHMDB_QUERY_PROP_YEAR_LESS:
 		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
 			g_assert_not_reached ();
