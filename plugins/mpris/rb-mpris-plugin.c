@@ -481,7 +481,7 @@ emit_track_change (RBMprisPlugin *plugin, RhythmDBEntry *entry)
 				       g_variant_new ("(a{sv})", builder),
 				       &error);
 	if (error != NULL) {
-		g_warning ("Unable to emit MPRIS StatusChange signal: %s", error->message);
+		g_warning ("Unable to emit MPRIS TrackChange signal: %s", error->message);
 		g_error_free (error);
 	}
 }
@@ -489,14 +489,17 @@ emit_track_change (RBMprisPlugin *plugin, RhythmDBEntry *entry)
 static void
 playing_entry_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBMprisPlugin *plugin)
 {
+	rb_debug ("emitting track change due to playing entry change");
 	emit_track_change (plugin, entry);
 }
 
 static void
 entry_extra_metadata_notify_cb (RhythmDB *db, RhythmDBEntry *entry, const char *field, GValue *metadata, RBMprisPlugin *plugin)
 {
-	if (entry == rb_shell_player_get_playing_entry (plugin->player))
+	if (entry == rb_shell_player_get_playing_entry (plugin->player)) {
+		rb_debug ("emitting track change due to extra metadata field %s", field);
 		emit_track_change (plugin, entry);
+	}
 }
 
 static void
