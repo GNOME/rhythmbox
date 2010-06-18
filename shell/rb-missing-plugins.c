@@ -265,13 +265,11 @@ missing_plugins_cb (gpointer instance,
 void
 rb_missing_plugins_init (RBShell *shell)
 {
-	RhythmDB *db;
 	RBShellPlayer *player;
 	RBSource *podcast_source;
 	RBPodcastManager *podcast_mgr;
 
 	g_object_get (shell,
-		      "db", &db,
 		      "shell-player", &player,
 		      NULL);
 	g_signal_connect (player,
@@ -279,12 +277,6 @@ rb_missing_plugins_init (RBShell *shell)
 			  G_CALLBACK (missing_plugins_cb),
 			  shell);
 
-	g_signal_connect (db,
-			  "missing-plugins",
-			  G_CALLBACK (missing_plugins_cb),
-			  shell);
-
-	g_object_unref (db);
 	g_object_unref (player);
 
 	podcast_source = rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED);
@@ -301,4 +293,3 @@ rb_missing_plugins_init (RBShell *shell)
 
 	GST_INFO ("Set up support for automatic missing plugin installation");
 }
-

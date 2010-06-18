@@ -123,9 +123,6 @@ struct _RhythmDBPrivate
 	gint read_counter;
 
 	RBMetaData *metadata;
-	gboolean metadata_blocked;
-	GMutex *metadata_lock;
-	GCond *metadata_cond;
 
 	RBRefString *empty_string;
 	RBRefString *octet_stream_str;

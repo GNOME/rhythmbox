@@ -315,7 +315,6 @@ enum
 	SAVE_COMPLETE,
 	SAVE_ERROR,
 	READ_ONLY,
-	MISSING_PLUGINS,
 	CREATE_MOUNT_OP,
 	LAST_SIGNAL
 };
@@ -597,27 +596,6 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_BOOLEAN);
 
 	/**
-	 * RhythmDB::missing-plugins:
-	 * @db: the #RhythmDB
-	 * @details: a NULL-terminated array of missing plugin detail strings
-	 * @descriptions: a NULL-terminated array of missing plugin description strings
-	 * @closure: a #GClosure to be invoked when missing plugin processing is finished
-	 *
-	 * Emitted to request installation of GStreamer plugins required to import a file
-	 * into the database.
-	 */
-	rhythmdb_signals[MISSING_PLUGINS] =
-		g_signal_new ("missing-plugins",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      0,		/* no need for an internal handler */
-			      NULL, NULL,
-			      rb_marshal_BOOLEAN__POINTER_POINTER_POINTER,
-			      G_TYPE_BOOLEAN,
-			      3,
-			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);
-
-	/**
 	 * RhythmDB::create-mount-op:
 	 * @db: the #RhythmDB
 	 *
@@ -731,9 +709,6 @@ rhythmdb_init (RhythmDB *db)
 							 -1, FALSE, NULL);
 
 	db->priv->metadata = rb_metadata_new ();
-	db->priv->metadata_blocked = FALSE;
-	db->priv->metadata_cond = g_cond_new ();
-	db->priv->metadata_lock = g_mutex_new ();
 
 	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP_TYPE);
 
@@ -2370,6 +2345,24 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 			g_value_unset (&value);
 		}
 
+		/* store missing plugin details in the comment field */
+		if (event->metadata != NULL && rb_metadata_has_missing_plugins (event->metadata)) {
+			char **missing_plugins;
+			char **plugin_descriptions;
+			char *comment;
+
+			rb_metadata_get_missing_plugins (event->metadata, &missing_plugins, &plugin_descriptions);
+			comment = g_strjoinv ("\n", missing_plugins);
+			rb_debug ("storing missing plugin details: %s", comment);
+			g_strfreev (missing_plugins);
+			g_strfreev (plugin_descriptions);
+
+			g_value_init (&value, G_TYPE_STRING);
+			g_value_take_string (&value, comment);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_COMMENT, &value);
+			g_value_unset (&value);
+		}
+
 		/* mtime */
 		if (event->file_info) {
 			guint64 new_mtime = g_file_info_get_attribute_uint64 (event->file_info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
@@ -2556,91 +2549,23 @@ set_missing_plugin_error (RhythmDBEvent *event)
 	g_strfreev (plugin_descriptions);
 }
 
-static void
-rhythmdb_missing_plugins_cb (gpointer duh, gboolean should_retry, RhythmDBEvent *event)
-{
-	rb_debug ("missing-plugin retry closure called: event %p, retry %d", event, should_retry);
-
-	if (should_retry) {
-		RhythmDBAction *load_action;
-
-		rb_debug ("retrying RHYTHMDB_ACTION_LOAD for %s", rb_refstring_get (event->real_uri));
-		load_action = g_slice_new0 (RhythmDBAction);
-		load_action->type = RHYTHMDB_ACTION_LOAD;
-		load_action->uri = rb_refstring_ref (event->real_uri);
-		load_action->data.types.entry_type = event->entry_type;
-		load_action->data.types.ignore_type = event->ignore_type;
-		load_action->data.types.error_type = event->error_type;
-		g_async_queue_push (event->db->priv->action_queue, load_action);
-	} else {
-		/* plugin installation failed or was cancelled, so add an import error for the file */
-		rb_debug ("not retrying RHYTHMDB_ACTION_LOAD for %s", rb_refstring_get (event->real_uri));
-		set_missing_plugin_error (event);
-		rhythmdb_process_metadata_load_real (event);
-	}
-}
-
-static void
-rhythmdb_missing_plugin_event_cleanup (RhythmDBEvent *event)
-{
-	rb_debug ("cleaning up missing plugin event %p", event);
-
-	event->db->priv->metadata_blocked = FALSE;
-	g_cond_signal (event->db->priv->metadata_cond);
-
-	g_mutex_unlock (event->db->priv->metadata_lock);
-	rhythmdb_event_free (event->db, event);
-}
-
 static gboolean
 rhythmdb_process_metadata_load (RhythmDB *db,
 				RhythmDBEvent *event)
 {
-	/* only process missing plugins for audio files */
+	/* should move this stuff inside load_real .. */
 	if (event->metadata == NULL) {
 		/* obviously can't process missing plugins here */
 	} else if (rb_metadata_has_audio (event->metadata) == TRUE &&
 		   rb_metadata_has_video (event->metadata) == FALSE &&
 		   rb_metadata_has_missing_plugins (event->metadata) == TRUE) {
-		char **missing_plugins;
-		char **plugin_descriptions;
-		GClosure *closure;
-		gboolean processing;
-
-		rb_metadata_get_missing_plugins (event->metadata, &missing_plugins, &plugin_descriptions);
-
-		rb_debug ("missing plugins during metadata load for %s", rb_refstring_get (event->real_uri));
-
-		g_mutex_lock (event->db->priv->metadata_lock);
-
-		closure = g_cclosure_new ((GCallback) rhythmdb_missing_plugins_cb,
-					  event,
-					  (GClosureNotify) rhythmdb_missing_plugin_event_cleanup);
-		g_closure_set_marshal (closure, g_cclosure_marshal_VOID__BOOLEAN);
-		g_signal_emit (db, rhythmdb_signals[MISSING_PLUGINS], 0, missing_plugins, plugin_descriptions, closure, &processing);
-		if (processing) {
-			rb_debug ("processing missing plugins");
-		} else {
-			/* not installing plugins because the requested plugins are blacklisted,
-			 * so just add an import error for the file.
-			 */
-			set_missing_plugin_error (event);
-			rhythmdb_process_metadata_load_real (event);
-		}
-
-		g_closure_sink (closure);
-		return FALSE;
+		set_missing_plugin_error (event);
 	} else if (rb_metadata_has_missing_plugins (event->metadata)) {
 		rb_debug ("ignoring missing plugins for %s; not audio (%d %d %d)",
 			  rb_refstring_get (event->real_uri),
 			  rb_metadata_has_audio (event->metadata),
 			  rb_metadata_has_video (event->metadata),
 			  rb_metadata_has_other_data (event->metadata));
-
-		g_mutex_lock (db->priv->metadata_lock);
-		db->priv->metadata_blocked = FALSE;
-		g_cond_signal (db->priv->metadata_cond);
-		g_mutex_unlock (db->priv->metadata_lock);
 	}
 
 	return rhythmdb_process_metadata_load_real (event);
@@ -2862,24 +2787,10 @@ rhythmdb_execute_load (RhythmDB *db,
 			event->file_info = NULL;
 		}
 	} else if (event->type == RHYTHMDB_EVENT_METADATA_LOAD) {
-		g_mutex_lock (event->db->priv->metadata_lock);
-		while (event->db->priv->metadata_blocked) {
-			g_cond_wait (event->db->priv->metadata_cond, event->db->priv->metadata_lock);
-		}
-
 		event->metadata = rb_metadata_new ();
 		rb_metadata_load (event->metadata,
 				  rb_refstring_get (event->real_uri),
 				  &event->error);
-
-		/* if we're missing some plugins, block further attempts to
-		 * read metadata until we've processed them.
-		 */
-		if (rb_metadata_has_missing_plugins (event->metadata)) {
-			event->db->priv->metadata_blocked = TRUE;
-		}
-
-		g_mutex_unlock (event->db->priv->metadata_lock);
 	}
 
 	rhythmdb_push_event (db, event);
