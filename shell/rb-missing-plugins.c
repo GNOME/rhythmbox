@@ -244,7 +244,6 @@ missing_plugins_event (RBShell *shell, RBPluginInstallContext *ctx)
 static gboolean
 missing_plugins_cb (gpointer instance,
 		    const char **details,
-		    const char **descriptions,
 		    GClosure *closure,
 		    RBShell *shell)
 {

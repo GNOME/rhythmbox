@@ -271,10 +271,10 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,		/* no internal handler */
 			      NULL, NULL,
-			      rb_marshal_BOOLEAN__POINTER_POINTER_POINTER,
+			      rb_marshal_BOOLEAN__POINTER_POINTER,
 			      G_TYPE_BOOLEAN,
-			      3,
-			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);
+			      2,
+			      G_TYPE_STRV, G_TYPE_CLOSURE);
 
 	g_type_class_add_private (klass, sizeof (RBPodcastManagerPrivate));
 }

@@ -638,7 +638,6 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 	 * RBShellPlayer::missing-plugins:
 	 * @player: the #RBShellPlayer
 	 * @details: the list of plugin detail strings describing the missing plugins
-	 * @descriptions: the list of descriptions for the missing plugins
 	 * @closure: a #GClosure to be called when the plugin installation is complete
 	 *
 	 * Emitted when the player backend requires some plugins to be installed in
@@ -651,10 +650,10 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,	/* no need for an internal handler */
 			      NULL, NULL,
-			      rb_marshal_BOOLEAN__POINTER_POINTER_POINTER,
+			      rb_marshal_BOOLEAN__POINTER_POINTER,
 			      G_TYPE_BOOLEAN,
-			      3,
-			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);
+			      2,
+			      G_TYPE_STRV, G_TYPE_CLOSURE);
 
 	/**
 	 * RBShellPlayer::elapsed-nano-changed:
@@ -3651,7 +3650,7 @@ missing_plugins_cb (RBPlayer *player,
 	g_closure_set_marshal (retry, g_cclosure_marshal_VOID__BOOLEAN);
 	g_signal_emit (sp,
 		       rb_shell_player_signals[MISSING_PLUGINS], 0,
-		       details, descriptions, retry,
+		       details, retry,
 		       &processing);
 	if (processing) {
 		/* don't handle any further errors */
