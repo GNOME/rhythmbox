@@ -2287,7 +2287,10 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 	RhythmDBEntry *entry;
 	GValue value = {0,};
 
-	rb_debug ("adding import error for %s: %s", rb_refstring_get (event->real_uri), event->error ? event->error->message : "<no error>");
+	rb_debug ("adding import error type %s for %s: %s",
+		  error_entry_type->name,
+		  rb_refstring_get (event->real_uri),
+		  event->error ? event->error->message : "<no error>");
 	if (error_entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		/* we don't have an error entry type, so we can't add an import error */
 		return;
@@ -2397,20 +2400,24 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	if (event->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID)
 		event->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 
-	/*
-	 * always ignore anything with video in it, or anything
-	 * matching one of the media types we don't care about.
-	 * if we can identify it that much, we know it's not interesting.
-	 * otherwise, add an import error entry if there was an error,
-	 * or just ignore it if it doesn't contain audio.
-	 */
 	if (event->metadata != NULL) {
-		const char *media_type = rb_metadata_get_mime (event->metadata);
-		if (rb_metadata_has_video (event->metadata) ||
-                    rb_metadata_has_audio (event->metadata) == FALSE ||
-		    (media_type != NULL && rhythmdb_ignore_media_type (media_type))) {
+		/* always ignore anything with video in it */
+		if (rb_metadata_has_video (event->metadata)) {
 			rhythmdb_add_import_error_entry (db, event, event->ignore_type);
 			return TRUE;
+		}
+
+		/* if we identified the media type, we can ignore anything
+		 * that matches one of the media types we don't care about,
+		 * as well as anything that doesn't contain audio.
+		 */
+		const char *media_type = rb_metadata_get_mime (event->metadata);
+		if (media_type != NULL && media_type[0] != '\0') {
+			if (rhythmdb_ignore_media_type (media_type) ||
+			    rb_metadata_has_audio (event->metadata) == FALSE) {
+				rhythmdb_add_import_error_entry (db, event, event->ignore_type);
+				return TRUE;
+			}
 		}
 	}
 

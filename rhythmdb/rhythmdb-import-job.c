@@ -197,7 +197,7 @@ emit_status_changed (RhythmDBImportJob *job)
 	g_static_mutex_lock (&job->priv->lock);
 	job->priv->status_changed_id = 0;
 
-	rb_debug ("emitting status changed: %d/%d", job->priv->total, job->priv->imported);
+	rb_debug ("emitting status changed: %d/%d", job->priv->imported, job->priv->total);
 	g_signal_emit (job, signals[STATUS_CHANGED], 0, job->priv->total, job->priv->imported);
 
 	/* temporary ref while emitting this signal as we're expecting the caller
@@ -444,7 +444,7 @@ entry_added_cb (RhythmDB *db,
 		/* if it's an import error with missing plugins, add it to the retry list */
 		details = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_COMMENT);
 		if (rhythmdb_entry_get_entry_type (entry) == job->priv->error_type &&
-		    (details != NULL || details[0] != '\0')) {
+		    (details != NULL && details[0] != '\0')) {
 			rb_debug ("entry %s is an import error with missing plugin details: %s", uri, details);
 			job->priv->retry_entries = g_slist_prepend (job->priv->retry_entries, rhythmdb_entry_ref (entry));
 		}
