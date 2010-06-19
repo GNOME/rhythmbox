@@ -72,7 +72,6 @@
 #include "rb-dialog.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
-#include "gedit-message-area.h"
 #include "rb-shell-player.h"
 #include "rb-play-order.h"
 #include "rb-lastfm-play-order.h"
@@ -746,6 +745,7 @@ set_message_area_text_and_icon (RBLastfmSource *source,
 	char      *secondary_markup;
 	GtkWidget *primary_label;
 	GtkWidget *secondary_label;
+	GtkWidget *content;
 
 	hbox_content = gtk_hbox_new (FALSE, 8);
 	gtk_widget_show (hbox_content);
@@ -785,8 +785,8 @@ set_message_area_text_and_icon (RBLastfmSource *source,
 	}
 
 	gtk_widget_show (source->priv->message_area);
-	gedit_message_area_set_contents (GEDIT_MESSAGE_AREA (source->priv->message_area),
-					 hbox_content);
+	content = gtk_info_bar_get_content_area (GTK_INFO_BAR (source->priv->message_area));
+	gtk_container_add (GTK_CONTAINER (content), hbox_content);
 }
 
 static void
@@ -818,9 +818,9 @@ set_message_area (RBLastfmSource *source,
 }
 
 static void
-on_message_area_response (GeditMessageArea *area,
-			  int               response_id,
-			  RBLastfmSource   *source)
+on_message_area_response (GtkInfoBar     *infobar,
+			  int             response_id,
+			  RBLastfmSource *source)
 {
 	RBPlugin  *plugin;
 	GtkWidget *dialog;
@@ -841,9 +841,9 @@ show_error_message (RBLastfmSource *source,
 		return;
 	}
 
-	area = gedit_message_area_new_with_buttons (_("Account Settings"),
-						    GTK_RESPONSE_ACCEPT,
-						    NULL);
+	area = gtk_info_bar_new_with_buttons (_("Account Settings"),
+					      GTK_RESPONSE_ACCEPT,
+					      NULL);
 	set_message_area (source, area);
 	set_message_area_text_and_icon (source,
 					"gtk-dialog-error",

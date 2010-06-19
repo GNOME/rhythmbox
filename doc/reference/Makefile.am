@@ -51,7 +51,6 @@ IGNORE_HFILES= \
 	npruntime.h \
 	npupp.h \
 	\
-	gedit-message-area.h \
 	gossip-cell-renderer-expander.h \
 	rb-query-creator-private.h \
 	\
