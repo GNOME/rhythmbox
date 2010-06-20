@@ -18,36 +18,30 @@
     </license>
   </info>
 
-  <title>Import your music</title>
+  <title>Import songs</title>
   <p>
-    <app>Rhythmbox</app> can automatically import your music collection.
+    <app>Rhythmbox</app> can automatically import your music collection stored
+    in your personal <file style="directory">Music</file> folder.
   </p>
-  <!-- Stub paragraph, need to check with the most vanilla GNOME possible
-   what happens when you start Rhythmbox for the first time, what is the default
-   folder that it will look into. -->
   <p>
-    To import manually your music into you can:
+    To manually import songs, you can:
   </p>
-  <list>
+  <list type="none">
     <item>
       <p>
-        <link xref="#import-music-single-file">Import a single file</link>
+        <link xref="#import-music-single-song">Import a single song</link>
       </p>
-    </item>
-    <item>
       <p>
-        <link xref="#import-music-folder">Import a folder from your computer</link>
+        <link xref="#import-music-folder">Import a songs folder</link>
       </p>
-    </item>
-    <item>
       <p>
-        <link xref="#import-music-copy">Copy music from a CD</link>
+        <link xref="#import-music-copy">Copy songs from a CD</link>
       </p>
     </item>
   </list>
   
-  <section id="import-music-single-file">
-    <title>Import a single file</title>
+  <section id="import-music-single-song">
+    <title>Import a single song</title>
       <steps>
         <item>
           <p>
@@ -56,14 +50,14 @@
         </item>
         <item>
           <p>
-            Select the file to import, and click <gui style="button">Open</gui>.
+            Select the song file to import, and click <gui style="button">Open</gui>.
           </p>
         </item>
       </steps>
   </section>
   
   <section id="import-music-folder">
-    <title>Import a local folder</title>
+    <title>Import a songs folder</title>
       <steps>
         <item>
           <p>
@@ -72,14 +66,21 @@
         </item>
         <item>
           <p>
-            Select the folder containing music, and press <gui style="button">Open</gui>.
+            Select the folder containing the music, and click <gui style="button">Open</gui>.
           </p>
         </item>
       </steps>
   </section>
   
   <section id="import-music-copy">
-    <title>Copy music from a CD</title>
+    <title>Copy songs from a CD</title>
+    <steps>
+      <item>
+        <p>
+          Insert the CD into your computer.
+        </p>
+      </item>
+    </steps>
   </section>
   
 </page>
