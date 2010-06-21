@@ -25,6 +25,8 @@
 
 #include "rb-debug.h"
 
+#include "gseal-gtk-compat.h"
+
 #define RB_TREE_DND_STRING "RbTreeDndString"
 /* must be the same value as in gtk_tree_view.c */
 #define SCROLL_EDGE_SIZE 15
@@ -448,7 +450,7 @@ filter_drop_position (GtkWidget *widget, GdkDragContext *context, GtkTreePath *p
 
 	ret = rb_tree_drag_dest_row_drop_position (RB_TREE_DRAG_DEST (model),
 						   path,
-						   context->targets,
+						   gdk_drag_context_list_targets (context),
 						   pos);
   
 	rb_debug ("filtered drop position: %s", ret ? "TRUE" : "FALSE");	
@@ -737,10 +739,10 @@ rb_tree_dnd_drag_motion_cb (GtkWidget        *widget,
 	}
 
 	if (GTK_WIDGET (tree_view) == gtk_drag_get_source_widget (context) &&
-	    context->actions & GDK_ACTION_MOVE)
+	    gdk_drag_context_get_actions (context) & GDK_ACTION_MOVE)
 		action = GDK_ACTION_MOVE;
 	else
-		action = context->suggested_action;
+		action = gdk_drag_context_get_suggested_action (context);
 
 	if (path) {
 		gtk_tree_view_set_drag_dest_row (tree_view, path, pos);
@@ -863,7 +865,7 @@ rb_tree_dnd_drag_data_received_cb (GtkWidget        *widget,
 
 	gtk_drag_finish (context,
         		 accepted,
-			 (context->action == GDK_ACTION_MOVE),
+			 (gdk_drag_context_get_selected_action (context) == GDK_ACTION_MOVE),
 			 time);
 
 	if (dest_row)

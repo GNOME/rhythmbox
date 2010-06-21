@@ -41,6 +41,8 @@
 #include "rb-marshal.h"
 #include "rb-playlist-source.h"
 
+#include "gseal-gtk-compat.h"
+
 /**
  * SECTION:rb-sourcelist-model
  * @short_description: models backing the source list widget
@@ -459,7 +461,8 @@ rb_sourcelist_model_get_drag_target (RbTreeDragDest *drag_dest,
 				     GtkTreePath *path,
 				     GtkTargetList *target_list)
 {
-	if (g_list_find (context->targets, gdk_atom_intern ("application/x-rhythmbox-source", TRUE))) {
+	if (g_list_find (gdk_drag_context_list_targets (context),
+	    gdk_atom_intern ("application/x-rhythmbox-source", TRUE))) {
 		/* always accept rb source path if offered */
 		return gdk_atom_intern ("application/x-rhythmbox-source", TRUE);
 	}
@@ -469,7 +472,7 @@ rb_sourcelist_model_get_drag_target (RbTreeDragDest *drag_dest,
 		GdkAtom entry_atom;
 
 		entry_atom = gdk_atom_intern ("application/x-rhythmbox-entry", FALSE);
-		if (g_list_find (context->targets, entry_atom))
+		if (g_list_find (gdk_drag_context_list_targets (context), entry_atom))
 			return entry_atom;
 
 		return gdk_atom_intern ("text/uri-list", FALSE);
