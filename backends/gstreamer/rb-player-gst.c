@@ -613,6 +613,9 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 			rb_debug ("got playbin2-stream-changed message");
 			mp->priv->playbin_stream_changing = FALSE;
 			emit_playing_stream_and_tags (mp, TRUE);
+		} else if (gst_structure_has_name (structure, "redirect")) {
+			const char *uri = gst_structure_get_string (structure, "new-location");
+			_rb_player_emit_redirect (RB_PLAYER (mp), mp->priv->stream_data, uri);
 		}
 		break;
 
@@ -786,7 +789,7 @@ impl_close (RBPlayer *player, const char *uri, GError **error)
 	}
 
 	if (mp->priv->playbin != NULL) {
-		start_state_change (mp, GST_STATE_READY, PLAYER_SHUTDOWN);
+		start_state_change (mp, GST_STATE_NULL, PLAYER_SHUTDOWN);
 	}
 	return TRUE;
 }

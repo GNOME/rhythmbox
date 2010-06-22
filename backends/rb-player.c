@@ -44,6 +44,7 @@ enum {
 	PLAYING_STREAM,
 	VOLUME_CHANGED,
 	IMAGE,
+	REDIRECT,
 	LAST_SIGNAL
 };
 
@@ -274,6 +275,25 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_POINTER, GDK_TYPE_PIXBUF);
+
+	/**
+	 * RBPlayer::redirect:
+	 * @player: the #RBPlayer
+	 * @stream_data: data associated with the stream
+	 * @uri: URI to redirect to
+	 *
+	 * The 'redirect' signal is emitted to indicate when a stream has change URI.
+	 */
+	signals[REDIRECT] =
+		g_signal_new ("redirect",
+			      G_TYPE_FROM_INTERFACE (iface),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlayerIface, redirect),
+			      NULL, NULL,
+			      rb_marshal_VOID__POINTER_STRING,
+			      G_TYPE_NONE,
+			      2,
+			      G_TYPE_POINTER, G_TYPE_STRING);
 }
 
 GType
@@ -689,6 +709,21 @@ void
 _rb_player_emit_image (RBPlayer *player, gpointer stream_data, GdkPixbuf *image)
 {
 	g_signal_emit (player, signals[IMAGE], 0, stream_data, image);
+}
+
+/**
+ * _rb_player_emit_redirect:
+ * @player: a #RBPlayer implementation
+ * @stream_data: data associated with the stream
+ * @uri: URI to redirect to
+ *
+ * Emits the 'redirect' signal to notify listeners that the stream has been
+ * redirected. To be used by implementations only.
+ */
+void
+_rb_player_emit_redirect (RBPlayer *player, gpointer stream_data, const char *uri)
+{
+	g_signal_emit (player, signals[REDIRECT], 0, stream_data, uri);
 }
 
 GQuark

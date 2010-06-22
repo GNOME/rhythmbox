@@ -130,6 +130,9 @@ struct _RBPlayerIface
 	void		(*image)		(RBPlayer *player,
 						 gpointer stream_data,
 						 GdkPixbuf *image);
+	void		(*redirect)		(RBPlayer *player,
+						 gpointer stream_data,
+						 const gchar *uri);
 };
 
 GType		rb_player_get_type   (void);
@@ -172,6 +175,7 @@ void	_rb_player_emit_event (RBPlayer *player, gpointer stream_data, const char *
 void	_rb_player_emit_playing_stream (RBPlayer *player, gpointer stream_data);
 void	_rb_player_emit_volume_changed (RBPlayer *player, float volume);
 void	_rb_player_emit_image (RBPlayer *player, gpointer stream_data, GdkPixbuf *image);
+void	_rb_player_emit_redirect (RBPlayer *player, gpointer stream_data, const char *uri);
 
 G_END_DECLS
 

@@ -183,6 +183,10 @@ static void rb_shell_player_extra_metadata_cb (RhythmDB *db,
 					       GValue *metadata,
 					       RBShellPlayer *player);
 
+static gboolean rb_shell_player_open_location (RBShellPlayer *player,
+					       RhythmDBEntry *entry,
+					       RBPlayerPlayType play_type,
+					       GError **error);
 static gboolean rb_shell_player_do_next_internal (RBShellPlayer *player,
 						  gboolean from_eos,
 						  gboolean allow_stop,
@@ -956,6 +960,31 @@ rb_shell_player_handle_eos (RBPlayer *player,
 	GDK_THREADS_LEAVE ();
 }
 
+
+static void
+rb_shell_player_handle_redirect (RBPlayer *player,
+				 RhythmDBEntry *entry,
+				 const gchar *uri,
+				 RBShellPlayer *shell_player)
+{
+	GValue val = { 0 };
+
+	rb_debug ("redirect to %s", uri);
+
+	/* Stop existing stream */
+	rb_player_close (shell_player->priv->mmplayer, NULL, NULL);
+
+	/* Update entry */
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, uri);
+	rhythmdb_entry_set (shell_player->priv->db, entry, RHYTHMDB_PROP_LOCATION, &val);
+	g_value_unset (&val);
+	rhythmdb_commit (shell_player->priv->db);
+
+	/* Play new URI */
+	rb_shell_player_open_location (shell_player, entry, RB_PLAYER_PLAY_REPLACE, NULL);
+}
+
 static void
 rb_shell_player_init (RBShellPlayer *player)
 {
@@ -1001,6 +1030,11 @@ rb_shell_player_init (RBShellPlayer *player)
 	g_signal_connect_object (player->priv->mmplayer,
 				 "eos",
 				 G_CALLBACK (rb_shell_player_handle_eos),
+				 player, 0);
+
+	g_signal_connect_object (player->priv->mmplayer,
+				 "redirect",
+				 G_CALLBACK (rb_shell_player_handle_redirect),
 				 player, 0);
 
 	g_signal_connect_object (player->priv->mmplayer,
@@ -1565,7 +1599,6 @@ rb_shell_player_open_location (RBShellPlayer *player,
 			       GError **error)
 {
 	char *location;
-	gboolean was_playing;
 	gboolean ret = TRUE;
 
 	/* dispose of any existing playlist urls */
@@ -1584,8 +1617,6 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	if (location == NULL) {
 		return FALSE;
 	}
-
-	was_playing = rb_player_playing (player->priv->mmplayer);
 
 	if (rb_source_try_playlist (player->priv->source)) {
 		OpenLocationThreadData *data;
