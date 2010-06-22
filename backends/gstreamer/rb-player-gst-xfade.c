@@ -1824,6 +1824,13 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			details = gst_structure_to_string (s);
 			rb_debug_real ("check-imperfect", __FILE__, __LINE__, TRUE, "%s: %s", stream->uri, details);
 			g_free (details);
+		} else if (strcmp (name, "redirect") == 0) {
+			const char *uri = gst_structure_get_string (s, "new-location");
+			if (stream != NULL) {
+				_rb_player_emit_redirect (RB_PLAYER (player), stream->stream_data, uri);
+			} else {
+				rb_debug ("got redirect to %s, but no active stream found", uri);
+			}
 		}
 		break;
 	}
@@ -2420,12 +2427,13 @@ stream_src_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
  *
  * must be called *without* the stream list lock?
  */
-static gboolean
+static void
 preroll_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 {
 	GstStateChangeReturn state;
-	gboolean ret = TRUE;
 	gboolean unblock = FALSE;
+	GstMessage *message;
+	GstBus *bus;
 
 	gst_pad_set_blocked_async (stream->src_pad,
 				   TRUE,
@@ -2438,8 +2446,17 @@ preroll_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 	switch (state) {
 	case GST_STATE_CHANGE_FAILURE:
 		rb_debug ("preroll for stream %s failed (state change failed)", stream->uri);
-		ret = FALSE;
 		/* attempting to unblock here causes deadlock */
+
+		/* process bus messages in case we got a redirect for this stream */
+		bus = gst_element_get_bus (GST_ELEMENT (player->priv->pipeline));
+		message = gst_bus_pop (bus);
+		while (message != NULL) {
+			rb_player_gst_xfade_bus_cb (bus, message, player);
+			gst_message_unref (message);
+			message = gst_bus_pop (bus);
+		}
+		g_object_unref (bus);
 		break;
 
 	case GST_STATE_CHANGE_NO_PREROLL:
@@ -2464,8 +2481,6 @@ preroll_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 					   NULL,
 					   NULL);
 	}
-
-	return ret;
 }
 
 /*
@@ -3224,15 +3239,7 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	/* start prerolling it */
-	if (preroll_stream (player, stream) == FALSE) {
-		rb_debug ("unable to preroll stream %s", uri);
-		g_set_error (error,
-			     RB_PLAYER_ERROR,
-			     RB_PLAYER_ERROR_GENERAL,
-			     _("Failed to start playback of %s"),
-			     uri);
-		return FALSE;
-	}
+	preroll_stream (player, stream);
 
 	return TRUE;
 }
