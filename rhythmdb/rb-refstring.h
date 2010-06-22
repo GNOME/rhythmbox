@@ -26,6 +26,7 @@
  */
 
 #include <glib.h>
+#include <glib-object.h>
 
 #ifndef __RB_REFSTRING_H
 #define __RB_REFSTRING_H
