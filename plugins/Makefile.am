@@ -1,6 +1,5 @@
 SUBDIRS = 						\
 	audiocd						\
-	audioscrobbler					\
 	generic-player					\
 	iradio						\
 	mmkeys						\
@@ -64,3 +63,6 @@ SUBDIRS += 						\
 	mpris
 endif
 
+if ENABLE_LASTFM
+SUBDIRS += audioscrobbler
+endif

@@ -13,6 +13,8 @@ libaudioscrobbler_la_SOURCES = \
 	rb-audioscrobbler-account.c			\
 	rb-audioscrobbler-service.h			\
 	rb-audioscrobbler-service.c			\
+	rb-audioscrobbler-user.h			\
+	rb-audioscrobbler-user.c			\
 	rb-audioscrobbler.c				\
 	rb-audioscrobbler.h				\
 	rb-lastfm-source.c				\
@@ -25,6 +27,7 @@ libaudioscrobbler_la_LIBTOOLFLAGS = --tag=disable-static
 libaudioscrobbler_la_LIBADD = 				\
 	$(top_builddir)/shell/librhythmbox-core.la	\
 	$(TOTEM_PLPARSER_LIBS)				\
+	$(JSON_GLIB_LIBS)				\
 	$(RHYTHMBOX_LIBS)
 
 INCLUDES = 						\
@@ -45,6 +48,7 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(TOTEM_PLPARSER_CFLAGS)			\
+	$(JSON_GLIB_CFLAGS)				\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
