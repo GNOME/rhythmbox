@@ -387,6 +387,8 @@ rb_song_info_construct_single (RBSongInfo *song_info, GtkBuilder *builder, gbool
 	song_info->priv->play_count    = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_playcount"));
 	song_info->priv->last_played   = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_lastplayed"));
 	song_info->priv->name = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_name"));
+	song_info->priv->comment = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_comment"));
+	song_info->priv->comment_buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (song_info->priv->comment));
 
 	rb_builder_boldify_label (builder, "title_label");
 	rb_builder_boldify_label (builder, "trackn_label");
@@ -399,6 +401,7 @@ rb_song_info_construct_single (RBSongInfo *song_info, GtkBuilder *builder, gbool
 	rb_builder_boldify_label (builder, "duration_label");
 	rb_builder_boldify_label (builder, "bitrate_label");
 	rb_builder_boldify_label (builder, "bpm_label");
+	rb_builder_boldify_label (builder, "comment_label");
 
 	/* whenever you press a mnemonic, the associated GtkEntry's text gets highlighted */
 	g_signal_connect_object (G_OBJECT (song_info->priv->title),
@@ -409,13 +412,17 @@ rb_song_info_construct_single (RBSongInfo *song_info, GtkBuilder *builder, gbool
 				 "mnemonic-activate",
 				 G_CALLBACK (rb_song_info_mnemonic_cb),
 				 NULL, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->comment),
+				 "mnemonic-activate",
+				 G_CALLBACK (rb_song_info_mnemonic_cb),
+				 NULL, 0);
 
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->title), editable);
 	gtk_editable_set_editable  (GTK_EDITABLE (song_info->priv->track_cur), editable);
+	gtk_text_view_set_editable (GTK_TEXT_VIEW (song_info->priv->comment), editable);
 
 	/* default focus */
 	gtk_widget_grab_focus (song_info->priv->title);
-
 }
 
 static void
@@ -497,8 +504,6 @@ rb_song_info_constructed (GObject *object)
 	song_info->priv->album_artist = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_album_artist"));
 	song_info->priv->genre = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_genre"));
 	song_info->priv->year = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_year"));
-	song_info->priv->comment = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_comment"));
-	song_info->priv->comment_buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (song_info->priv->comment));
 	song_info->priv->playback_error_box = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_error_box"));
 	song_info->priv->playback_error_label = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_error_label"));
 	song_info->priv->disc_cur = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_disc_cur"));
@@ -516,7 +521,6 @@ rb_song_info_constructed (GObject *object)
 	rb_builder_boldify_label (builder, "album_artist_label");
 	rb_builder_boldify_label (builder, "genre_label");
 	rb_builder_boldify_label (builder, "year_label");
-	rb_builder_boldify_label (builder, "comment_label");
 	rb_builder_boldify_label (builder, "rating_label");
 	rb_builder_boldify_label (builder, "discn_label");
 	rb_builder_boldify_label (builder, "artist_sortname_label");
@@ -540,10 +544,6 @@ rb_song_info_constructed (GObject *object)
 				 G_CALLBACK (rb_song_info_mnemonic_cb),
 				 NULL, 0);
 	g_signal_connect_object (G_OBJECT (song_info->priv->year),
-				 "mnemonic-activate",
-				 G_CALLBACK (rb_song_info_mnemonic_cb),
-				 NULL, 0);
-	g_signal_connect_object (G_OBJECT (song_info->priv->comment),
 				 "mnemonic-activate",
 				 G_CALLBACK (rb_song_info_mnemonic_cb),
 				 NULL, 0);
@@ -585,11 +585,11 @@ rb_song_info_constructed (GObject *object)
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->album_artist), editable);
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->genre), editable);
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->year), editable);
-	gtk_text_view_set_editable (GTK_TEXT_VIEW (song_info->priv->comment), editable);
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->disc_cur), editable);
 
 	/* Finish construction */
 	if (song_info->priv->current_entry) {
+
 		rb_song_info_construct_single (song_info, builder, editable);
 		rb_song_info_populate_dialog (song_info);
 	} else {
