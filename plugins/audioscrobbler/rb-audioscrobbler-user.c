@@ -1551,36 +1551,46 @@ rb_audioscrobbler_user_image_download_cb (GObject *source_object, GAsyncResult *
 			               0, data);
 		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK) {
 			int i;
-			for (i = 0; i < user->priv->recent_tracks->len; i++) {
-				if (g_ptr_array_index (user->priv->recent_tracks, i) == data) {
-					g_signal_emit (user, rb_audioscrobbler_user_signals[RECENT_TRACKS_UPDATED],
-						       0, user->priv->recent_tracks);
+			if (user->priv->recent_tracks != NULL) {
+				for (i = 0; i < user->priv->recent_tracks->len; i++) {
+					if (g_ptr_array_index (user->priv->recent_tracks, i) == data) {
+						g_signal_emit (user, rb_audioscrobbler_user_signals[RECENT_TRACKS_UPDATED],
+							       0, user->priv->recent_tracks);
+					}
 				}
 			}
-			for (i = 0; i < user->priv->top_tracks->len; i++) {
-				if (g_ptr_array_index (user->priv->top_tracks, i) == data) {
-					g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_TRACKS_UPDATED],
-						       0, user->priv->top_tracks);
+			if (user->priv->top_tracks != NULL) {
+				for (i = 0; i < user->priv->top_tracks->len; i++) {
+					if (g_ptr_array_index (user->priv->top_tracks, i) == data) {
+						g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_TRACKS_UPDATED],
+							       0, user->priv->top_tracks);
+					}
 				}
 			}
-			for (i = 0; i < user->priv->loved_tracks->len; i++) {
-				if (g_ptr_array_index (user->priv->loved_tracks, i) == data) {
-					g_signal_emit (user, rb_audioscrobbler_user_signals[LOVED_TRACKS_UPDATED],
-						       0, user->priv->loved_tracks);
+			if (user->priv->loved_tracks != NULL) {
+				for (i = 0; i < user->priv->loved_tracks->len; i++) {
+					if (g_ptr_array_index (user->priv->loved_tracks, i) == data) {
+						g_signal_emit (user, rb_audioscrobbler_user_signals[LOVED_TRACKS_UPDATED],
+							       0, user->priv->loved_tracks);
+					}
 				}
 			}
 		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
 			int i;
-			for (i = 0; i < user->priv->top_artists->len; i++) {
-				if (g_ptr_array_index (user->priv->top_artists, i) == data) {
-					g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_ARTISTS_UPDATED],
-						       0, user->priv->top_artists);
+			if (user->priv->top_artists != NULL) {
+				for (i = 0; i < user->priv->top_artists->len; i++) {
+					if (g_ptr_array_index (user->priv->top_artists, i) == data) {
+						g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_ARTISTS_UPDATED],
+							       0, user->priv->top_artists);
+					}
 				}
 			}
-			for (i = 0; i < user->priv->recommended_artists->len; i++) {
-				if (g_ptr_array_index (user->priv->recommended_artists, i) == data) {
-					g_signal_emit (user, rb_audioscrobbler_user_signals[RECOMMENDED_ARTISTS_UPDATED],
-						       0, user->priv->recommended_artists);
+			if (user->priv->recommended_artists != NULL) {
+				for (i = 0; i < user->priv->recommended_artists->len; i++) {
+					if (g_ptr_array_index (user->priv->recommended_artists, i) == data) {
+						g_signal_emit (user, rb_audioscrobbler_user_signals[RECOMMENDED_ARTISTS_UPDATED],
+							       0, user->priv->recommended_artists);
+					}
 				}
 			}
 		}
