@@ -2346,19 +2346,36 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 			char **missing_plugins;
 			char **plugin_descriptions;
 			char *comment;
+			char *list;
+			const char *msg;
+
+			/* Translators: the parameter here is a list of GStreamer plugins.
+			 * The plugin names are already translated.
+			 */
+			msg = _("Additional GStreamer plugins are required to play this file: %s");
+
 			if (rb_metadata_has_audio (event->metadata) == TRUE &&
 				   rb_metadata_has_video (event->metadata) == FALSE &&
 				   rb_metadata_has_missing_plugins (event->metadata) == TRUE) {
 				rb_metadata_get_missing_plugins (event->metadata, &missing_plugins, &plugin_descriptions);
 				comment = g_strjoinv ("\n", missing_plugins);
 				rb_debug ("storing missing plugin details: %s", comment);
-				g_strfreev (missing_plugins);
-				g_strfreev (plugin_descriptions);
 
 				g_value_init (&value, G_TYPE_STRING);
 				g_value_take_string (&value, comment);
 				rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_COMMENT, &value);
 				g_value_unset (&value);
+
+				g_value_init (&value, G_TYPE_STRING);
+				list = g_strjoinv (", ", plugin_descriptions);
+				g_value_take_string (&value, g_strdup_printf (msg, list));
+				g_free (list);
+				rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
+				g_value_unset (&value);
+
+				g_strfreev (missing_plugins);
+				g_strfreev (plugin_descriptions);
+
 			} else if (rb_metadata_has_missing_plugins (event->metadata)) {
 				rb_debug ("ignoring missing plugins for non-audio file");
 			}
