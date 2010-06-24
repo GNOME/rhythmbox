@@ -1000,7 +1000,6 @@ visibility_changing_cb (RBShell *shell,
 			gboolean visible,
 			RBStatusIconPlugin *plugin)
 {
-
 	switch (plugin->priv->icon_mode) {
 	case ICON_NEVER:
 	case ICON_WITH_NOTIFY:
@@ -1016,9 +1015,16 @@ visibility_changing_cb (RBShell *shell,
 	}
 
 	if (initial) {
-		/* restore visibility from gconf setting */
-		visible = eel_gconf_get_boolean (CONF_WINDOW_VISIBILITY) || eel_gconf_is_default (CONF_WINDOW_VISIBILITY);
-		rb_debug ("setting initial visibility %d from gconf", visible);
+		gboolean autostarted;
+		g_object_get (shell, "autostarted", &autostarted, NULL);
+		if (autostarted) {
+			/* restore visibility from gconf setting */
+			visible = eel_gconf_get_boolean (CONF_WINDOW_VISIBILITY) || eel_gconf_is_default (CONF_WINDOW_VISIBILITY);
+			rb_debug ("setting initial visibility %d from gconf", visible);
+		} else {
+			rb_debug ("ignoring stored visibility as we weren't autostarted");
+			visible = TRUE;
+		}
 		return visible;
 	}
 
