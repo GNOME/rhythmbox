@@ -260,6 +260,7 @@ enum
 	PROP_SOURCE_HEADER,
 	PROP_VISIBILITY,
 	PROP_TRACK_TRANSFER_QUEUE,
+	PROP_AUTOSTARTED
 };
 
 /* prefs */
@@ -325,6 +326,7 @@ struct _RBShellPrivate
 	gboolean no_registration;
 	gboolean no_update;
 	gboolean dry_run;
+	gboolean autostarted;
 	char *rhythmdb_file;
 	char *playlists_file;
 
@@ -720,6 +722,18 @@ rb_shell_class_init (RBShellClass *klass)
 							      "RBTrackTransferQueue object",
 							      RB_TYPE_TRACK_TRANSFER_QUEUE,
 							      G_PARAM_READABLE));
+	/**
+	 * RBShell:autostarted:
+	 *
+	 * Whether Rhythmbox was automatically started by the session manager
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_AUTOSTARTED,
+					 g_param_spec_boolean ("autostarted",
+							       "autostarted",
+							       "TRUE if autostarted",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	/**
 	 * RBShell::visibility-changed:
@@ -887,6 +901,9 @@ rb_shell_set_property (GObject *object,
 	case PROP_VISIBILITY:
 		rb_shell_set_visibility (shell, FALSE, g_value_get_boolean (value));
 		break;
+	case PROP_AUTOSTARTED:
+		shell->priv->autostarted = g_value_get_boolean (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -971,6 +988,9 @@ rb_shell_get_property (GObject *object,
 		break;
 	case PROP_TRACK_TRANSFER_QUEUE:
 		g_value_set_object (value, shell->priv->track_transfer_queue);
+		break;
+	case PROP_AUTOSTARTED:
+		g_value_set_boolean (value, shell->priv->autostarted);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1112,6 +1132,7 @@ rb_shell_finalize (GObject *object)
  * @no_registration: if %TRUE, single-instance features are disabled
  * @no_update: if %TRUE, don't update the database file
  * @dry_run: if %TRUE, don't write back file metadata changes
+ * @autostarted: %TRUE if autostarted by the session manager
  * @rhythmdb: path to the database file
  * @playlists: path to the playlist file
  *
@@ -1124,6 +1145,7 @@ RBShell *
 rb_shell_new (gboolean no_registration,
 	      gboolean no_update,
 	      gboolean dry_run,
+	      gboolean autostarted,
 	      char *rhythmdb,
 	      char *playlists)
 {
@@ -1131,7 +1153,9 @@ rb_shell_new (gboolean no_registration,
 			  "no-registration", no_registration,
 			  "no-update", no_update,
 			  "dry-run", dry_run, "rhythmdb-file", rhythmdb, 
-			  "playlists-file", playlists, NULL);
+			  "playlists-file", playlists,
+			  "autostarted", autostarted,
+			  NULL);
 }
 
 static GMountOperation *

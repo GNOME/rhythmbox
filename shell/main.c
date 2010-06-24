@@ -104,6 +104,7 @@ main (int argc, char **argv)
 	GError *error = NULL;
 	RBShell *rb_shell;
 	gboolean activated;
+	gboolean autostarted;
 	char *accel_map_file = NULL;
 	char *desktop_file_path;
 
@@ -124,6 +125,8 @@ main (int argc, char **argv)
 	g_thread_init (NULL);
 
 	rb_profile_start ("starting rhythmbox");
+
+	autostarted = (g_getenv ("DESKTOP_AUTOSTART_ID") != NULL);
 
 #ifdef USE_UNINSTALLED_DIRS
 	desktop_file_path = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "rhythmbox.desktop", NULL);
@@ -270,7 +273,7 @@ main (int argc, char **argv)
 
 		g_setenv ("PULSE_PROP_media.role", "music", TRUE);
 
-		rb_shell = rb_shell_new (no_registration, no_update, dry_run, rhythmdb_file, playlists_file);
+		rb_shell = rb_shell_new (no_registration, no_update, dry_run, autostarted, rhythmdb_file, playlists_file);
 		g_object_weak_ref (G_OBJECT (rb_shell), main_shell_weak_ref_cb, NULL);
 		if (!no_registration && session_bus != NULL) {
 			GObject *obj;
