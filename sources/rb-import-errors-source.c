@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- *  Copyright (C) 2006  Jonathan Matthew <jonathan@kaolin.wh9.net>
+ *  Copyright (C) 2006-2010  Jonathan Matthew <jonathan@d14n.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,11 +33,16 @@
 #include "rb-entry-view.h"
 #include "rb-import-errors-source.h"
 #include "rb-util.h"
+#include "rb-debug.h"
+#include "rb-missing-plugins.h"
 
 static void rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass);
 static void rb_import_errors_source_init (RBImportErrorsSource *source);
 static void rb_import_errors_source_constructed (GObject *object);
 static void rb_import_errors_source_dispose (GObject *object);
+
+static void impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
+static void impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_delete (RBSource *source);
@@ -46,11 +51,32 @@ static void impl_get_status (RBSource *source, char **text, char **progress_text
 static void rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
 							 gboolean over_entry,
 							 RBImportErrorsSource *source);
+static void infobar_response_cb (GtkInfoBar *bar, gint response, RBImportErrorsSource *source);
+
+static void missing_plugin_row_inserted_cb (GtkTreeModel *model,
+					    GtkTreePath *path,
+					    GtkTreeIter *iter,
+					    RBImportErrorsSource *source);
+static void missing_plugin_row_deleted_cb (GtkTreeModel *model,
+					   GtkTreePath *path,
+					   RBImportErrorsSource *source);
+
+enum {
+	PROP_0,
+	PROP_NORMAL_ENTRY_TYPE,
+	PROP_IGNORE_ENTRY_TYPE
+};
 
 struct _RBImportErrorsSourcePrivate
 {
 	RhythmDB *db;
 	RBEntryView *view;
+
+	RhythmDBQueryModel *missing_plugin_model;
+	GtkWidget *infobar;
+
+	RhythmDBEntryType normal_entry_type;
+	RhythmDBEntryType ignore_entry_type;
 };
 
 G_DEFINE_TYPE (RBImportErrorsSource, rb_import_errors_source, RB_TYPE_SOURCE);
@@ -86,6 +112,8 @@ rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 
 	object_class->dispose = rb_import_errors_source_dispose;
 	object_class->constructed = rb_import_errors_source_constructed;
+	object_class->get_property = impl_get_property;
+	object_class->set_property = impl_set_property;
 
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_get_entry_view = impl_get_entry_view;
@@ -103,6 +131,21 @@ rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
 
 	source_class->impl_get_status = impl_get_status;
+
+	g_object_class_install_property (object_class,
+					 PROP_NORMAL_ENTRY_TYPE,
+					 g_param_spec_boxed ("normal-entry-type",
+							     "Normal entry type",
+							     "Entry type for successfully imported entries of this type",
+							     RHYTHMDB_TYPE_ENTRY_TYPE,
+							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_IGNORE_ENTRY_TYPE,
+					 g_param_spec_boxed ("ignore-entry-type",
+							     "Ignore entry type",
+							     "Entry type for entries of this type to be ignored",
+							     RHYTHMDB_TYPE_ENTRY_TYPE,
+							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBImportErrorsSourcePrivate));
 }
@@ -135,6 +178,8 @@ rb_import_errors_source_constructed (GObject *object)
 	GPtrArray *query;
 	RhythmDBQueryModel *model;
 	RhythmDBEntryType entry_type;
+	GtkWidget *box;
+	GtkWidget *label;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_import_errors_source_parent_class, constructed, object);
 
@@ -154,7 +199,6 @@ rb_import_errors_source_constructed (GObject *object)
 				      	RHYTHMDB_PROP_TYPE,
 					entry_type,
 				      RHYTHMDB_QUERY_END);
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	model = rhythmdb_query_model_new (source->priv->db, query,
 					  (GCompareDataFunc) rhythmdb_query_model_string_sort_func,
@@ -173,12 +217,89 @@ rb_import_errors_source_constructed (GObject *object)
 	g_signal_connect_object (source->priv->view, "show_popup",
 				 G_CALLBACK (rb_import_errors_source_songs_show_popup_cb), source, 0);
 
-	gtk_container_add (GTK_CONTAINER (source), GTK_WIDGET (source->priv->view));
-
-	gtk_widget_show_all (GTK_WIDGET (source));
-
 	g_object_set (source, "query-model", model, NULL);
 	g_object_unref (model);
+
+	/* set up query model for tracking missing plugin information */
+	query = rhythmdb_query_parse (source->priv->db,
+				      RHYTHMDB_QUERY_PROP_EQUALS,
+				        RHYTHMDB_PROP_TYPE,
+					entry_type,
+				      RHYTHMDB_QUERY_PROP_NOT_EQUAL,
+				        RHYTHMDB_PROP_COMMENT,
+					"",
+				      RHYTHMDB_QUERY_END);
+
+	source->priv->missing_plugin_model = rhythmdb_query_model_new_empty (source->priv->db);
+	rhythmdb_do_full_query_async_parsed (source->priv->db,
+					     RHYTHMDB_QUERY_RESULTS (source->priv->missing_plugin_model),
+					     query);
+	rhythmdb_query_free (query);
+
+	/* set up info bar for triggering codec installation */
+	source->priv->infobar = gtk_info_bar_new_with_buttons (_("Install Plugins"), GTK_RESPONSE_OK, NULL);
+	g_signal_connect_object (source->priv->infobar,
+				 "response",
+				 G_CALLBACK (infobar_response_cb),
+				 source, 0);
+
+	label = gtk_label_new (_("Additional GStreamer plugins are required to play some of these files."));
+	gtk_container_add (GTK_CONTAINER (gtk_info_bar_get_content_area (GTK_INFO_BAR (source->priv->infobar))),
+			   label);
+
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+
+	box = gtk_vbox_new (FALSE, 6);
+	gtk_box_pack_start (GTK_BOX (box), GTK_WIDGET (source->priv->view), TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (box), source->priv->infobar, FALSE, FALSE, 0);
+
+	gtk_container_add (GTK_CONTAINER (source), box);
+	gtk_widget_show_all (GTK_WIDGET (source));
+	gtk_widget_hide (source->priv->infobar);
+
+	/* show the info bar when there are missing plugin entries */
+	g_signal_connect_object (source->priv->missing_plugin_model,
+				 "row-inserted",
+				 G_CALLBACK (missing_plugin_row_inserted_cb),
+				 source, 0);
+	g_signal_connect_object (source->priv->missing_plugin_model,
+				 "row-deleted",
+				 G_CALLBACK (missing_plugin_row_deleted_cb),
+				 source, 0);
+}
+
+static void
+impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	RBImportErrorsSource *source = RB_IMPORT_ERRORS_SOURCE (object);
+	switch (prop_id) {
+	case PROP_NORMAL_ENTRY_TYPE:
+		g_value_set_boxed (value, source->priv->normal_entry_type);
+		break;
+	case PROP_IGNORE_ENTRY_TYPE:
+		g_value_set_boxed (value, source->priv->ignore_entry_type);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	RBImportErrorsSource *source = RB_IMPORT_ERRORS_SOURCE (object);
+	switch (prop_id) {
+	case PROP_NORMAL_ENTRY_TYPE:
+		source->priv->normal_entry_type = g_value_get_boxed (value);
+		break;
+	case PROP_IGNORE_ENTRY_TYPE:
+		source->priv->ignore_entry_type = g_value_get_boxed (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -187,8 +308,12 @@ rb_import_errors_source_dispose (GObject *object)
 	RBImportErrorsSource *source = RB_IMPORT_ERRORS_SOURCE (object);
 
 	if (source->priv->db) {
-		g_object_unref (G_OBJECT (source->priv->db));
+		g_object_unref (source->priv->db);
 		source->priv->db = NULL;
+	}
+	if (source->priv->missing_plugin_model) {
+		g_object_unref (source->priv->missing_plugin_model);
+		source->priv->missing_plugin_model = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_import_errors_source_parent_class)->dispose (object);
@@ -205,6 +330,8 @@ impl_get_entry_view (RBSource *asource)
  * rb_import_errors_source_new:
  * @shell: the #RBShell instance
  * @entry_type: the entry type to display in the source
+ * @normal_entry_type: entry type for successfully imported entries of this type
+ * @ignore_entry_type: entry type for entries of this type to be ignored
  *
  * Creates a new source for displaying import errors of the
  * specified type.
@@ -213,7 +340,9 @@ impl_get_entry_view (RBSource *asource)
  */
 RBSource *
 rb_import_errors_source_new (RBShell *shell,
-			     RhythmDBEntryType entry_type)
+			     RhythmDBEntryType entry_type,
+			     RhythmDBEntryType normal_entry_type,
+			     RhythmDBEntryType ignore_entry_type)
 {
 	RBSource *source;
 
@@ -224,6 +353,8 @@ rb_import_errors_source_new (RBShell *shell,
 					  "hidden-when-empty", TRUE,
 					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  "entry-type", entry_type,
+					  "normal-entry-type", normal_entry_type,
+					  "ignore-entry-type", ignore_entry_type,
 					  NULL));
 	return source;
 }
@@ -264,4 +395,110 @@ rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
 					     RBImportErrorsSource *source)
 {
 	_rb_source_show_popup (RB_SOURCE (source), "/ImportErrorsViewPopup");
+}
+
+static void
+missing_plugin_row_inserted_cb (GtkTreeModel *model,
+				GtkTreePath *path,
+				GtkTreeIter *iter,
+				RBImportErrorsSource *source)
+{
+	gtk_widget_show (source->priv->infobar);
+}
+
+static void
+missing_plugin_row_deleted_cb (GtkTreeModel *model,
+			       GtkTreePath *path,
+			       RBImportErrorsSource *source)
+{
+	/* row hasn't been deleted from the model yet, so the count
+	 * still includes it.
+	 */
+	if (gtk_tree_model_iter_n_children (model, NULL) == 1) {
+		gtk_widget_hide (source->priv->infobar);
+	}
+}
+
+static void
+missing_plugins_retry_cb (gpointer instance, gboolean installed, RBImportErrorsSource *source)
+{
+	GtkTreeIter iter;
+	RhythmDBEntryType error_entry_type;
+
+	gtk_info_bar_set_response_sensitive (GTK_INFO_BAR (source->priv->infobar),
+					     GTK_RESPONSE_OK,
+					     TRUE);
+
+	if (installed == FALSE) {
+		rb_debug ("installer failed, not retrying imports");
+		return;
+	}
+
+	g_object_get (source, "entry-type", &error_entry_type, NULL);
+
+	do {
+		RhythmDBEntry *entry;
+
+		entry = rhythmdb_query_model_iter_to_entry (source->priv->missing_plugin_model, &iter);
+		rhythmdb_add_uri_with_types (source->priv->db,
+					     rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
+					     source->priv->normal_entry_type,
+					     source->priv->ignore_entry_type,
+					     error_entry_type);
+	} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (source->priv->missing_plugin_model), &iter));
+
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, error_entry_type);
+}
+
+static void
+missing_plugins_retry_cleanup (RBImportErrorsSource *source)
+{
+	g_object_unref (source);
+}
+
+static void
+infobar_response_cb (GtkInfoBar *infobar, gint response, RBImportErrorsSource *source)
+{
+	char **details = NULL;
+	GtkTreeIter iter;
+	GClosure *closure;
+	int i;
+
+	/* gather plugin installer detail strings */
+	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->missing_plugin_model), &iter) == FALSE) {
+		return;
+	}
+
+	i = 0;
+	do {
+		RhythmDBEntry *entry;
+		char **bits;
+		int j;
+
+		entry = rhythmdb_query_model_iter_to_entry (source->priv->missing_plugin_model, &iter);
+		bits = g_strsplit (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_COMMENT), "\n", 0);
+
+		for (j = 0; bits[j] != NULL; j++) {
+			if (rb_str_in_strv (bits[j], details) == FALSE) {
+				details = g_realloc (details, sizeof (char *) * i+2);
+				details[i++] = g_strdup (bits[j]);
+				details[i] = NULL;
+			}
+		}
+
+		g_strfreev (bits);
+	} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (source->priv->missing_plugin_model), &iter));
+
+	/* run the installer */
+	closure = g_cclosure_new ((GCallback) missing_plugins_retry_cb,
+				  g_object_ref (source),
+				  (GClosureNotify) missing_plugins_retry_cleanup);
+	g_closure_set_marshal (closure, g_cclosure_marshal_VOID__BOOLEAN);
+	if (rb_missing_plugins_install ((const char **)details, TRUE, closure) == TRUE) {
+		/* disable the button while the installer is running */
+		gtk_info_bar_set_response_sensitive (infobar, response, FALSE);
+	}
+	g_closure_sink (closure);
+
+	g_strfreev (details);
 }

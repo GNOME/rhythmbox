@@ -211,6 +211,7 @@ impl_constructed (GObject *object)
 {
 	RBGenericPlayerSource *source;
 	RBGenericPlayerSourcePrivate *priv;
+	RhythmDBEntryType entry_type;
 	GMount *mount;
 	char **playlist_formats;
 	char *mount_name;
@@ -224,11 +225,17 @@ impl_constructed (GObject *object)
 
 	priv = GET_PRIVATE (source);
 
-	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (source,
+		      "shell", &shell,
+		      "entry-type", &entry_type,
+		      NULL);
 
 	g_object_get (shell, "db", &priv->db, NULL);
 	
-	priv->import_errors = rb_import_errors_source_new (shell, priv->error_type);
+	priv->import_errors = rb_import_errors_source_new (shell,
+							   priv->error_type,
+							   entry_type,
+							   priv->ignore_type);
 
 	g_object_unref (shell);
 
@@ -253,13 +260,10 @@ impl_constructed (GObject *object)
 
 	g_object_get (priv->device_info, "playlist-formats", &playlist_formats, NULL);
 	if (playlist_formats != NULL && g_strv_length (playlist_formats) > 0) {
-		RhythmDBEntryType entry_type;
-
-		g_object_get (source, "entry-type", &entry_type, NULL);
 		entry_type->has_playlists = TRUE;
-		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	}
 	g_strfreev (playlist_formats);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
         rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
 	load_songs (source);

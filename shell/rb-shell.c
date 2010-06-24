@@ -1395,7 +1395,10 @@ construct_sources (RBShell *shell)
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->podcast_source), NULL);
 	shell->priv->missing_files_source = rb_missing_files_source_new (shell, shell->priv->library_source);
 	rb_shell_append_source (shell, shell->priv->missing_files_source, NULL);
-	shell->priv->import_errors_source = rb_import_errors_source_new (shell, RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+	shell->priv->import_errors_source = rb_import_errors_source_new (shell,
+									 RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR,
+									 RHYTHMDB_ENTRY_TYPE_SONG,
+									 RHYTHMDB_ENTRY_TYPE_IGNORE);
 	rb_shell_append_source (shell, shell->priv->import_errors_source, NULL);
 
 	/* Find the playlist name if none supplied */
