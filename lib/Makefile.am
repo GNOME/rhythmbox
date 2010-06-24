@@ -44,7 +44,9 @@ librb_la_SOURCES =					\
 	rb-async-queue-watch.c				\
 	rb-async-queue-watch.h				\
 	rb-text-helpers.c				\
-	rb-text-helpers.h
+	rb-text-helpers.h				\
+	rb-missing-plugins.c				\
+	rb-missing-plugins.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

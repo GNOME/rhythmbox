@@ -49,6 +49,7 @@
 #include "rb-dialog.h"
 #include "rb-metadata.h"
 #include "rb-util.h"
+#include "rb-missing-plugins.h"
 
 #define CONF_STATE_PODCAST_PREFIX		CONF_PREFIX "/state/podcast"
 #define CONF_STATE_PODCAST_DOWNLOAD_DIR		CONF_STATE_PODCAST_PREFIX "/download_prefix"
@@ -76,7 +77,6 @@ enum
 	FINISH_DOWNLOAD,
 	PROCESS_ERROR,
 	FEED_UPDATES_AVAILABLE,
-	MISSING_PLUGINS,
 	LAST_SIGNAL
 };
 
@@ -264,17 +264,6 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				2,
 				G_TYPE_STRING,
 				G_TYPE_BOOLEAN);
-
-	rb_podcast_manager_signals[MISSING_PLUGINS] =
-		g_signal_new ("missing-plugins",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      0,		/* no internal handler */
-			      NULL, NULL,
-			      rb_marshal_BOOLEAN__POINTER_POINTER,
-			      G_TYPE_BOOLEAN,
-			      2,
-			      G_TYPE_STRV, G_TYPE_CLOSURE);
 
 	g_type_class_add_private (klass, sizeof (RBPodcastManagerPrivate));
 }
@@ -1293,7 +1282,8 @@ rb_podcast_manager_save_metadata (RBPodcastManager *pd, RhythmDBEntry *entry)
 					  data,
 					  (GClosureNotify) missing_plugins_retry_cleanup);
 		g_closure_set_marshal (closure, g_cclosure_marshal_VOID__BOOLEAN);
-		g_signal_emit (pd, rb_podcast_manager_signals[MISSING_PLUGINS], 0, missing_plugins, plugin_descriptions, closure, &processing);
+
+		processing = rb_missing_plugins_install ((const char **)missing_plugins, FALSE, closure);
 		g_closure_sink (closure);
 
 		if (processing) {

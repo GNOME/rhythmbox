@@ -25,10 +25,7 @@
 
 #include "rb-missing-plugins.h"
 
-#include "rhythmdb.h"
-#include "rb-shell-player.h"
 #include "rb-debug.h"
-#include "rb-podcast-manager.h"
 #include "gseal-gtk-compat.h"
 
 #include <gst/pbutils/pbutils.h>
@@ -47,11 +44,13 @@
 /* list of blacklisted detail strings */
 static GList *blacklisted_plugins = NULL;
 
+/* parent window for installer */
+static gpointer parent_window = NULL;
+
 typedef struct
 {
 	GClosure   *closure;
 	gchar     **details;
-	RBShell    *shell;
 } RBPluginInstallContext;
 
 static gboolean
@@ -80,7 +79,6 @@ rb_plugin_install_context_free (RBPluginInstallContext *ctx)
 {
 	rb_debug ("cleaning up plugin install context %p", ctx);
 	g_strfreev (ctx->details);
-	g_object_unref (ctx->shell);
 	g_closure_unref (ctx->closure);
 	g_free (ctx);
 }
@@ -178,17 +176,24 @@ on_plugin_installation_done (GstInstallPluginsReturn res, gpointer user_data)
 	rb_plugin_install_context_free (ctx);
 }
 
-static gboolean
-missing_plugins_event (RBShell *shell, RBPluginInstallContext *ctx)
+gboolean
+rb_missing_plugins_install (const char **details, gboolean ignore_blacklist, GClosure *closure)
 {
+	RBPluginInstallContext *ctx;
 	GstInstallPluginsContext *install_ctx;
 	GstInstallPluginsReturn status;
 	int i, num;
-	GtkWindow *window;
+
+	num = g_strv_length ((char **)details);
+	g_return_val_if_fail (num > 0, FALSE);
+
+	ctx = g_new0 (RBPluginInstallContext, 1);
+	ctx->closure = g_closure_ref (closure);
+	ctx->details = g_strdupv ((char **)details);
 
 	num = g_strv_length (ctx->details);
 	for (i = 0; i < num; ++i) {
-		if (rb_plugin_install_plugin_is_blacklisted (ctx->details[i])) {
+		if (ignore_blacklist == FALSE && rb_plugin_install_plugin_is_blacklisted (ctx->details[i])) {
 			g_message ("Missing plugin: %s (ignoring)", ctx->details[i]);
 			g_free (ctx->details[i]);
 			ctx->details[i] = ctx->details[num-1];
@@ -208,14 +213,12 @@ missing_plugins_event (RBShell *shell, RBPluginInstallContext *ctx)
 
 	install_ctx = gst_install_plugins_context_new ();
 
-	g_object_get (shell, "window", &window, NULL);
-	if (gtk_widget_get_realized (GTK_WIDGET (window))) {
+	if (parent_window != NULL && gtk_widget_get_realized (GTK_WIDGET (parent_window))) {
 #ifdef GDK_WINDOWING_X11
 		gulong xid = 0;
-		xid = gdk_x11_drawable_get_xid (gtk_widget_get_window (GTK_WIDGET (window)));
+		xid = gdk_x11_drawable_get_xid (gtk_widget_get_window (GTK_WIDGET (parent_window)));
 		gst_install_plugins_context_set_xid (install_ctx, xid);
 #endif
-		g_object_unref (window);
 	}
 
 	status = gst_install_plugins_async (ctx->details, install_ctx,
@@ -241,63 +244,13 @@ missing_plugins_event (RBShell *shell, RBPluginInstallContext *ctx)
 	return TRUE;
 }
 
-static gboolean
-missing_plugins_cb (gpointer instance,
-		    const char **details,
-		    GClosure *closure,
-		    RBShell *shell)
-{
-	RBPluginInstallContext *ctx;
-	guint num;
-
-	num = g_strv_length ((char **)details);
-	g_return_val_if_fail (num > 0, FALSE);
-
-	ctx = g_new0 (RBPluginInstallContext, 1);
-	ctx->closure = g_closure_ref (closure);
-	ctx->details = g_strdupv ((char **)details);
-	ctx->shell = g_object_ref (shell);
-
-	return missing_plugins_event (shell, ctx);
-}
-
 void
-rb_missing_plugins_init (RBShell *shell)
+rb_missing_plugins_init (GtkWindow *window)
 {
-	RBShellPlayer *player;
-	RBSource *podcast_source;
-	RBPodcastManager *podcast_mgr;
-
-	g_object_get (shell,
-		      "shell-player", &player,
-		      NULL);
-	g_signal_connect (player,
-			  "missing-plugins",
-			  G_CALLBACK (missing_plugins_cb),
-			  shell);
-
-	g_object_unref (player);
-
-	podcast_source = rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED);
-	g_object_get (podcast_source, "podcast-manager", &podcast_mgr, NULL);
-
-	g_signal_connect (podcast_mgr,
-			  "missing-plugins",
-			  G_CALLBACK (missing_plugins_cb),
-			  shell);
-
-	g_object_unref (podcast_mgr);
+	parent_window = window;
+	g_object_add_weak_pointer (G_OBJECT (parent_window), &parent_window);
 
 	gst_pb_utils_init ();
 
 	GST_INFO ("Set up support for automatic missing plugin installation");
-}
-
-void
-rb_missing_plugins_init_import_job (RBShell *shell, RhythmDBImportJob *job)
-{
-	g_signal_connect (job,
-			  "missing-plugins",
-			  G_CALLBACK (missing_plugins_cb),
-			  shell);
 }

@@ -1597,7 +1597,7 @@ rb_shell_constructed (GObject *object)
 
 	rb_plugins_engine_init (shell);
 
-	rb_missing_plugins_init (shell);
+	rb_missing_plugins_init (GTK_WINDOW (shell->priv->window));
 
 	g_idle_add ((GSourceFunc)_scan_idle, shell);
 

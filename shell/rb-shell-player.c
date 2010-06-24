@@ -85,6 +85,7 @@
 #include "rhythmdb.h"
 #include "rb-podcast-manager.h"
 #include "rb-marshal.h"
+#include "rb-missing-plugins.h"
 
 /* Play Orders */
 #include "rb-play-order-linear.h"
@@ -298,7 +299,6 @@ enum
 	PLAYING_SONG_CHANGED,
 	PLAYING_URI_CHANGED,
 	PLAYING_SONG_PROPERTY_CHANGED,
-	MISSING_PLUGINS,
 	ELAPSED_NANO_CHANGED,
 	LAST_SIGNAL
 };
@@ -637,27 +637,6 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      4,
 			      G_TYPE_STRING, G_TYPE_STRING,
 			      G_TYPE_VALUE, G_TYPE_VALUE);
-
-	/**
-	 * RBShellPlayer::missing-plugins:
-	 * @player: the #RBShellPlayer
-	 * @details: the list of plugin detail strings describing the missing plugins
-	 * @closure: a #GClosure to be called when the plugin installation is complete
-	 *
-	 * Emitted when the player backend requires some plugins to be installed in
-	 * order to play the current playing song.  When the closure included in the
-	 * signal args is called, playback will be attempted again.
-	 */
-	rb_shell_player_signals[MISSING_PLUGINS] =
-		g_signal_new ("missing-plugins",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      0,	/* no need for an internal handler */
-			      NULL, NULL,
-			      rb_marshal_BOOLEAN__POINTER_POINTER,
-			      G_TYPE_BOOLEAN,
-			      2,
-			      G_TYPE_STRV, G_TYPE_CLOSURE);
 
 	/**
 	 * RBShellPlayer::elapsed-nano-changed:
@@ -3679,10 +3658,7 @@ missing_plugins_cb (RBPlayer *player,
 				retry_data,
 				(GClosureNotify) missing_plugins_retry_cleanup);
 	g_closure_set_marshal (retry, g_cclosure_marshal_VOID__BOOLEAN);
-	g_signal_emit (sp,
-		       rb_shell_player_signals[MISSING_PLUGINS], 0,
-		       details, retry,
-		       &processing);
+	processing = rb_missing_plugins_install (details, FALSE, retry);
 	if (processing) {
 		/* don't handle any further errors */
 		sp->priv->handling_error = TRUE;

@@ -33,6 +33,7 @@
 #include "rb-file-helpers.h"
 #include "rb-marshal.h"
 #include "rb-debug.h"
+#include "rb-missing-plugins.h"
 
 enum
 {
@@ -49,7 +50,6 @@ enum
 	STATUS_CHANGED,
 	SCAN_COMPLETE,
 	COMPLETE,
-	MISSING_PLUGINS,
 	LAST_SIGNAL
 };
 
@@ -237,8 +237,7 @@ emit_status_changed (RhythmDBImportJob *job)
 						(GClosureNotify)g_object_unref);
 			g_closure_set_marshal (retry, g_cclosure_marshal_VOID__BOOLEAN);
 
-			rb_debug ("emitting missing-plugins");
-			g_signal_emit (job, signals[MISSING_PLUGINS], 0, details, retry, &processing);
+			processing = rb_missing_plugins_install ((const char **)details, FALSE, retry);
 			g_strfreev (details);
 			if (processing) {
 				rb_debug ("plugin installation is in progress");
@@ -668,29 +667,6 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 			      g_cclosure_marshal_VOID__INT,
 			      G_TYPE_NONE,
 			      1, G_TYPE_INT);
-	/**
-	 * RhythmDBImportJob::missing-plugins:
-	 * @job: the #RhythmDBImportJob
-	 * @details: NULL-terminated array of installer detail strings
-	 * @closure: a closure to invoke once the installer has finished
-	 *
-	 * Emitted when the whole import job is complete (but before the
-	 * 'complete' signal) but additional plugins are required to
-	 * import some of the files.
-	 *
-	 * If a handler initiates plugin installation, it should return TRUE
-	 * and invoke the closure when the installation finishes.
-	 * Otherwise it should return FALSE.
-	 */
-	signals[MISSING_PLUGINS] =
-		g_signal_new ("missing-plugins",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      0, /* no internal handler */
-			      NULL, NULL,
-			      rb_marshal_BOOLEAN__POINTER_POINTER,
-			      G_TYPE_BOOLEAN,
-			      2, G_TYPE_STRV, G_TYPE_CLOSURE);
 
 	g_type_class_add_private (klass, sizeof (RhythmDBImportJobPrivate));
 }
