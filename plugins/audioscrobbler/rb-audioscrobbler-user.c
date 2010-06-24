@@ -35,6 +35,8 @@
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 
+#define SMALL_IMAGE_SIZE 34
+
 static RBAudioscrobblerUserData *
 rb_audioscrobbler_user_data_copy (RBAudioscrobblerUserData *data)
 {
@@ -128,6 +130,10 @@ struct _RBAudioscrobblerUserPrivate {
 	GPtrArray *loved_tracks;
 	GPtrArray *top_artists;
 	GPtrArray *recommended_artists;
+
+	/* for image downloads */
+	GHashTable *file_to_data_map;
+	GHashTable *file_to_cancellable_map;
 };
 
 #define RB_AUDIOSCROBBLER_USER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_USER, RBAudioscrobblerUserPrivate))
@@ -148,7 +154,8 @@ static void rb_audioscrobbler_user_set_property (GObject *object,
 
 static void rb_audioscrobbler_user_load_from_cache (RBAudioscrobblerUser *user);
 
-
+static char * rb_audioscrobbler_user_calculate_cached_response_path (RBAudioscrobblerUser *user,
+                                                                     const char *request_name);
 static void rb_audioscrobbler_user_save_response_to_cache (RBAudioscrobblerUser *user,
                                                            const char *request_name,
                                                            const char *data);
@@ -200,6 +207,15 @@ static void rb_audioscrobbler_user_recommended_artists_response_cb (SoupSession 
                                                               gpointer user_data);
 static GPtrArray * rb_audioscrobbler_user_parse_recommended_artists (RBAudioscrobblerUser *user,
                                                                const char *data);
+
+static char * rb_audioscrobbler_user_calculate_cached_image_path (RBAudioscrobblerUser *user,
+                                                                  RBAudioscrobblerUserData *data);
+static void rb_audioscrobbler_user_download_image (RBAudioscrobblerUser *user,
+                                                   const char *image_url,
+                                                   RBAudioscrobblerUserData *data);
+static void rb_audioscrobbler_user_image_download_cb (GObject *source_object,
+                                                      GAsyncResult *res,
+                                                      gpointer user_data);
 enum {
 	PROP_0,
 	PROP_SERVICE
@@ -325,6 +341,9 @@ rb_audioscrobbler_user_init (RBAudioscrobblerUser *user)
 		soup_session_async_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
 		                                     SOUP_TYPE_GNOME_FEATURES_2_26,
 		                                     NULL);
+
+	user->priv->file_to_data_map = g_hash_table_new (g_direct_hash, g_direct_equal);
+	user->priv->file_to_cancellable_map = g_hash_table_new (g_direct_hash, g_direct_equal);
 }
 
 static void
@@ -376,6 +395,27 @@ rb_audioscrobbler_user_dispose (GObject* object)
 	if (user->priv->recommended_artists != NULL) {
 		g_ptr_array_unref (user->priv->recommended_artists);
 		user->priv->recommended_artists = NULL;
+	}
+
+	if (user->priv->file_to_data_map != NULL) {
+		g_hash_table_unref (user->priv->file_to_data_map);
+		user->priv->file_to_data_map = NULL;
+	}
+
+	if (user->priv->file_to_cancellable_map != NULL) {
+		GList *key;
+
+		for (key = g_hash_table_get_keys (user->priv->file_to_cancellable_map);
+		     key != NULL;
+		     key = g_list_next (key)) {
+			GCancellable *cancellable = g_hash_table_lookup (user->priv->file_to_cancellable_map, key->data);
+			g_cancellable_cancel (cancellable);
+			g_object_unref (cancellable);
+		}
+		g_list_free (key);
+
+		g_hash_table_unref (user->priv->file_to_cancellable_map);
+		user->priv->file_to_cancellable_map = NULL;
 	}
 }
 
@@ -432,82 +472,6 @@ mkmd5 (char *string)
 
 	return md5_result;
 }
-
-static char *
-rb_audioscrobbler_user_calculate_cached_response_path (RBAudioscrobblerUser *user, const char *request_name)
-{
-	const char *rb_cache_dir;
-	rb_cache_dir = rb_user_cache_dir ();
-
-	return g_build_filename (rb_cache_dir,
-	                         "audioscrobbler",
-	                         rb_audioscrobbler_service_get_name (user->priv->service),
-	                         "ws-responses",
-	                         user->priv->username,
-	                         request_name,
-	                         NULL);
-}
-
-static void
-rb_audioscrobbler_user_save_response_to_cache (RBAudioscrobblerUser *user, const char *request_name, const char *data)
-{
-	char *filename;
-	char *file_dir;
-
-	filename = rb_audioscrobbler_user_calculate_cached_response_path (user, request_name);
-	file_dir = g_path_get_dirname (filename);
-
-	g_mkdir_with_parents (file_dir, 0700);
-	if (g_file_set_contents (filename, data, -1, NULL)) {
-		rb_debug ("saved %s to cache", request_name);
-	} else {
-		rb_debug ("error saving %s to cache", request_name);
-	}
-
-	g_free (filename);
-	g_free (file_dir);
-}
-
-/*static char *
-rb_audioscrobbler_user_calculate_cached_image_path (RBAudioscrobblerUser *user, RBAudioscrobblerUserData *data)
-{
-	const char *rb_cache_dir;
-	char *cache_dir;
-	char *image_path = NULL;
-
-	rb_cache_dir = rb_user_cache_dir ();
-	cache_dir = g_build_filename (rb_cache_dir,
-	                              "audioscrobbler",
-	                              rb_audioscrobbler_service_get_name (user->priv->service),
-	                              "images",
-	                              NULL);
-
-	if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO) {
-		image_path = g_build_filename (cache_dir,
-		                               "users",
-		                               data->user_info.username,
-		                               NULL);
-
-	} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK) {
-		char *filename = g_strdup_printf ("%s - %s",
-		                                  data->track.artist,
-		                                  data->track.title);
-		image_path = g_build_filename (cache_dir,
-		                               "tracks",
-		                               filename,
-		                               NULL);
-		g_free (filename);
-
-	} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
-		image_path = g_build_filename (cache_dir,
-		                               "artists",
-		                               data->artist.name,
-		                               NULL);
-	}
-
-	g_free (cache_dir);
-	return image_path;
-}*/
 
 void
 rb_audioscrobbler_user_set_authentication_details (RBAudioscrobblerUser *user,
@@ -586,6 +550,41 @@ rb_audioscrobbler_user_load_from_cache (RBAudioscrobblerUser *user)
 		rb_audioscrobbler_user_load_cached_top_artists (user);
 		rb_audioscrobbler_user_load_cached_recommended_artists (user);
 	}
+}
+
+static char *
+rb_audioscrobbler_user_calculate_cached_response_path (RBAudioscrobblerUser *user, const char *request_name)
+{
+	const char *rb_cache_dir;
+	rb_cache_dir = rb_user_cache_dir ();
+
+	return g_build_filename (rb_cache_dir,
+	                         "audioscrobbler",
+	                         rb_audioscrobbler_service_get_name (user->priv->service),
+	                         "ws-responses",
+	                         user->priv->username,
+	                         request_name,
+	                         NULL);
+}
+
+static void
+rb_audioscrobbler_user_save_response_to_cache (RBAudioscrobblerUser *user, const char *request_name, const char *data)
+{
+	char *filename;
+	char *file_dir;
+
+	filename = rb_audioscrobbler_user_calculate_cached_response_path (user, request_name);
+	file_dir = g_path_get_dirname (filename);
+
+	g_mkdir_with_parents (file_dir, 0700);
+	if (g_file_set_contents (filename, data, -1, NULL)) {
+		rb_debug ("saved %s to cache", request_name);
+	} else {
+		rb_debug ("error saving %s to cache", request_name);
+	}
+
+	g_free (filename);
+	g_free (file_dir);
 }
 
 /* user info */
@@ -687,12 +686,23 @@ rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user, const char *
 	if (json_object_has_member (root_object, "user")) {
 		JsonObject *user_object;
 
-		user_info = g_slice_new0 (RBAudioscrobblerUserData);
 		user_object = json_object_get_object_member (root_object, "user");
 
+		user_info = g_slice_new0 (RBAudioscrobblerUserData);
+		user_info->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO;
 		user_info->user_info.username = g_strdup (json_object_get_string_member (user_object, "name"));
 		user_info->user_info.real_name = g_strdup (json_object_get_string_member (user_object, "realname"));
 		user_info->user_info.url = g_strdup (json_object_get_string_member (user_object, "url"));
+
+		user_info->user_info.image = gdk_pixbuf_new_from_file (rb_audioscrobbler_user_calculate_cached_image_path (user, user_info), NULL);
+		if (user_info->user_info.image == NULL && json_object_has_member (user_object, "image") == TRUE) {
+			JsonArray *image_array;
+			JsonObject *image_object;
+
+			image_array = json_object_get_array_member (user_object, "image");
+			image_object = json_array_get_object_element (image_array, 2);
+			rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), user_info);
+		}
 	}
 
 	g_object_unref (parser);
@@ -820,6 +830,17 @@ rb_audioscrobbler_user_parse_recent_tracks (RBAudioscrobblerUser *user, const ch
 			track->track.url = g_strdup (json_object_get_string_member (track_object, "url"));
 
 			g_ptr_array_add (recent_tracks, track);
+
+			track->track.image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
+		                                                               SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
+			if (track->track.image == NULL && json_object_has_member (track_object, "image") == TRUE) {
+				JsonArray *image_array;
+				JsonObject *image_object;
+
+				image_array = json_object_get_array_member (track_object, "image");
+				image_object = json_array_get_object_element (image_array, 0);
+				rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), track);
+			}
 		}
 	}
 
@@ -948,6 +969,17 @@ rb_audioscrobbler_user_parse_top_tracks (RBAudioscrobblerUser *user, const char 
 			track->track.url = g_strdup (json_object_get_string_member (track_object, "url"));
 
 			g_ptr_array_add (top_tracks, track);
+
+			track->track.image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
+		                                                               SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
+			if (track->track.image == NULL && json_object_has_member (track_object, "image") == TRUE) {
+				JsonArray *image_array;
+				JsonObject *image_object;
+
+				image_array = json_object_get_array_member (track_object, "image");
+				image_object = json_array_get_object_element (image_array, 0);
+				rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), track);
+			}
 		}
 	}
 
@@ -1076,6 +1108,17 @@ rb_audioscrobbler_user_parse_loved_tracks (RBAudioscrobblerUser *user, const cha
 			track->track.url = g_strdup (json_object_get_string_member (track_object, "url"));
 
 			g_ptr_array_add (loved_tracks, track);
+
+			track->track.image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
+		                                                               SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
+			if (track->track.image == NULL && json_object_has_member (track_object, "image") == TRUE) {
+				JsonArray *image_array;
+				JsonObject *image_object;
+
+				image_array = json_object_get_array_member (track_object, "image");
+				image_object = json_array_get_object_element (image_array, 0);
+				rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), track);
+			}
 		}
 	}
 
@@ -1201,6 +1244,17 @@ rb_audioscrobbler_user_parse_top_artists (RBAudioscrobblerUser *user, const char
 			artist->artist.url = g_strdup (json_object_get_string_member (artist_object, "url"));
 
 			g_ptr_array_add (top_artists, artist);
+
+			artist->artist.image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, artist),
+		                                                                 SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
+			if (artist->artist.image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
+				JsonArray *image_array;
+				JsonObject *image_object;
+
+				image_array = json_object_get_array_member (artist_object, "image");
+				image_object = json_array_get_object_element (image_array, 0);
+				rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), artist);
+			}
 		}
 	}
 
@@ -1343,6 +1397,17 @@ rb_audioscrobbler_user_parse_recommended_artists (RBAudioscrobblerUser *user, co
 				artist->artist.url = g_strdup (json_object_get_string_member (artist_object, "url"));
 
 				g_ptr_array_add (recommended_artists, artist);
+
+				artist->artist.image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, artist),
+				                                                         SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
+				if (artist->artist.image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
+					JsonArray *image_array;
+					JsonObject *image_object;
+
+					image_array = json_object_get_array_member (artist_object, "image");
+					image_object = json_array_get_object_element (image_array, 0);
+					rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), artist);
+				}
 			}
 		}
 	}
@@ -1350,4 +1415,170 @@ rb_audioscrobbler_user_parse_recommended_artists (RBAudioscrobblerUser *user, co
 	g_object_unref (parser);
 
 	return recommended_artists;
+}
+
+static char *
+rb_audioscrobbler_user_calculate_cached_image_path (RBAudioscrobblerUser *user, RBAudioscrobblerUserData *data)
+{
+	const char *rb_cache_dir;
+	char *cache_dir;
+	char *image_path = NULL;
+
+	rb_cache_dir = rb_user_cache_dir ();
+	cache_dir = g_build_filename (rb_cache_dir,
+	                              "audioscrobbler",
+	                              rb_audioscrobbler_service_get_name (user->priv->service),
+	                              "images",
+	                              NULL);
+
+	if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO) {
+		image_path = g_build_filename (cache_dir,
+		                               "users",
+		                               data->user_info.username,
+		                               NULL);
+
+	} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK) {
+		char *filename = g_strdup_printf ("%s - %s",
+		                                  data->track.artist,
+		                                  data->track.title);
+		image_path = g_build_filename (cache_dir,
+		                               "tracks",
+		                               filename,
+		                               NULL);
+		g_free (filename);
+
+	} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
+		image_path = g_build_filename (cache_dir,
+		                               "artists",
+		                               data->artist.name,
+		                               NULL);
+	}
+
+	g_free (cache_dir);
+	return image_path;
+}
+
+static void
+rb_audioscrobbler_user_download_image (RBAudioscrobblerUser *user, const char *image_url, RBAudioscrobblerUserData *data)
+{
+	GFile *src_file;
+
+	/* check image_url is not null or empty */
+	if (image_url == NULL || image_url[0] == '\0') {
+		return;
+	}
+
+	src_file = g_file_new_for_uri (image_url);
+
+	/* only start a download if the file is not already being downloaded */
+	if (g_hash_table_lookup (user->priv->file_to_data_map, src_file) == NULL) {
+		GCancellable *cancellable;
+		char *dest_filename;
+		char *dest_file_dir;
+		GFile *dest_file;
+
+		/* add data to map */
+		g_hash_table_insert (user->priv->file_to_data_map, src_file, data);
+
+		/* create a cancellable for this download */
+		cancellable = g_cancellable_new ();
+		g_hash_table_insert (user->priv->file_to_cancellable_map, src_file, cancellable);
+
+		/* ensure the dest dir exists */
+		dest_filename = rb_audioscrobbler_user_calculate_cached_image_path (user, data);
+		dest_file_dir = g_path_get_dirname (dest_filename);
+		g_mkdir_with_parents (dest_file_dir, 0700);
+
+		/* download the file */
+		rb_debug ("downloading image %s to %s", image_url, dest_filename);
+		dest_file = g_file_new_for_path (dest_filename);
+		g_file_copy_async (src_file,
+		                   dest_file,
+		                   G_FILE_COPY_OVERWRITE,
+		                   G_PRIORITY_DEFAULT,
+		                   cancellable,
+		                   NULL,
+		                   NULL,
+		                   rb_audioscrobbler_user_image_download_cb,
+		                   user);
+
+		g_free (dest_filename);
+		g_free (dest_file_dir);
+		g_object_unref (dest_file);
+	}
+}
+
+static void
+rb_audioscrobbler_user_image_download_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
+{
+	GFile *src_file = G_FILE (source_object);
+
+	if (g_file_copy_finish (src_file, res, NULL)) {
+		RBAudioscrobblerUser *user;
+		GCancellable *cancellable;
+		RBAudioscrobblerUserData *data;
+		char *dest_file_path;
+
+		user = RB_AUDIOSCROBBLER_USER (user_data);
+
+		/* free the cancellable */
+		cancellable = g_hash_table_lookup (user->priv->file_to_cancellable_map, src_file);
+		g_hash_table_remove (user->priv->file_to_cancellable_map, src_file);
+		g_object_unref (cancellable);
+
+		/* update the data */
+		data = g_hash_table_lookup (user->priv->file_to_data_map, src_file);
+		g_hash_table_remove (user->priv->file_to_data_map, src_file);
+
+		dest_file_path = rb_audioscrobbler_user_calculate_cached_image_path (user, data);
+		if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO) {
+			data->user_info.image = gdk_pixbuf_new_from_file (dest_file_path, NULL);
+		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK) {
+			data->track.image = gdk_pixbuf_new_from_file_at_size (dest_file_path, SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
+		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
+			data->artist.image = gdk_pixbuf_new_from_file_at_size (dest_file_path, SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
+		}
+
+		/* emit appropriate signal - quite ugly, surely this could be done in a nicer way */
+		if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO) {
+			g_signal_emit (user, rb_audioscrobbler_user_signals[USER_INFO_UPDATED],
+			               0, data);
+		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK) {
+			int i;
+			for (i = 0; i < user->priv->recent_tracks->len; i++) {
+				if (g_ptr_array_index (user->priv->recent_tracks, i) == data) {
+					g_signal_emit (user, rb_audioscrobbler_user_signals[RECENT_TRACKS_UPDATED],
+						       0, user->priv->recent_tracks);
+				}
+			}
+			for (i = 0; i < user->priv->top_tracks->len; i++) {
+				if (g_ptr_array_index (user->priv->top_tracks, i) == data) {
+					g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_TRACKS_UPDATED],
+						       0, user->priv->top_tracks);
+				}
+			}
+			for (i = 0; i < user->priv->loved_tracks->len; i++) {
+				if (g_ptr_array_index (user->priv->loved_tracks, i) == data) {
+					g_signal_emit (user, rb_audioscrobbler_user_signals[LOVED_TRACKS_UPDATED],
+						       0, user->priv->loved_tracks);
+				}
+			}
+		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
+			int i;
+			for (i = 0; i < user->priv->top_artists->len; i++) {
+				if (g_ptr_array_index (user->priv->top_artists, i) == data) {
+					g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_ARTISTS_UPDATED],
+						       0, user->priv->top_artists);
+				}
+			}
+			for (i = 0; i < user->priv->recommended_artists->len; i++) {
+				if (g_ptr_array_index (user->priv->recommended_artists, i) == data) {
+					g_signal_emit (user, rb_audioscrobbler_user_signals[RECOMMENDED_ARTISTS_UPDATED],
+						       0, user->priv->recommended_artists);
+				}
+			}
+		}
+	} else {
+		rb_debug ("error downloading image. possibly due to cancellation");
+	}
 }

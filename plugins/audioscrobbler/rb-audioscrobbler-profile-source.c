@@ -572,11 +572,8 @@ rb_audioscrobbler_profile_source_set_user_list (RBAudioscrobblerProfileSource *s
 	for (i = 0; i < list_data->len; i++) {
 		GtkWidget *button;
 		RBAudioscrobblerUserData *data;
-		char *button_text = NULL;
-		char *escaped_title_text = NULL;
-		char *escaped_artist_text = NULL;
 
-		button = gtk_button_new_with_label ("");
+		button = gtk_button_new ();
 		gtk_button_set_alignment (GTK_BUTTON (button),
 			                  0, 0.5);
 		gtk_button_set_focus_on_click (GTK_BUTTON (button),
@@ -589,25 +586,59 @@ rb_audioscrobbler_profile_source_set_user_list (RBAudioscrobblerProfileSource *s
 		data = g_ptr_array_index (list_data, i);
 
 		if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK) {
+			char *button_text;
+			char *escaped_title_text;
+			char *escaped_artist_text;
+			GtkWidget *contents;
+			GtkWidget *label;
+
 			escaped_title_text = g_markup_escape_text (data->track.title, -1);
 			escaped_artist_text = g_markup_escape_text (data->track.artist, -1);
 			button_text = g_strdup_printf ("%i. %s\n<small>%s</small>",
 				                       i + 1,
 				                       escaped_title_text,
 				                       escaped_artist_text);
-			gtk_label_set_markup (GTK_LABEL (gtk_bin_get_child (GTK_BIN (button))),
-				              button_text);
+
+			contents = gtk_hbox_new (FALSE, 4);
+			if (data->track.image != NULL) {
+				gtk_box_pack_start (GTK_BOX(contents),
+				                    gtk_image_new_from_pixbuf (data->track.image),
+				                    FALSE, FALSE, 0);
+			}
+			label = gtk_label_new ("");
+			gtk_label_set_markup (GTK_LABEL (label), button_text);
+			gtk_box_pack_start (GTK_BOX(contents),
+			                    label,
+			                    FALSE, FALSE, 0);
+			gtk_container_add (GTK_CONTAINER (button), contents);
+
+			g_free (escaped_title_text);
+			g_free (escaped_artist_text);
+			g_free (button_text);
 
 		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
+			char *button_text;
+			GtkWidget *contents;
+			GtkWidget *label;
+
 			button_text = g_strdup_printf ("%i. %s",
 				                       i + 1,
 				                       data->artist.name);
-			gtk_button_set_label (GTK_BUTTON (button), button_text);
-		}
 
-		g_free (escaped_title_text);
-		g_free (escaped_artist_text);
-		g_free (button_text);
+			contents = gtk_hbox_new (FALSE, 4);
+			if (data->artist.image != NULL) {
+				gtk_box_pack_start (GTK_BOX(contents),
+				                    gtk_image_new_from_pixbuf (data->artist.image),
+				                    FALSE, FALSE, 0);
+			}
+			label = gtk_label_new (button_text);
+			gtk_box_pack_start (GTK_BOX(contents),
+			                    label,
+			                    FALSE, FALSE, 0);
+			gtk_container_add (GTK_CONTAINER (button), contents);
+
+			g_free (button_text);
+		}
 	}
 }
 
@@ -766,7 +797,7 @@ rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout
 		}
 
 		/* resize the table */
-		rb_debug ("resizing table from %i to %i columns", current_num_columns, new_num_columns);
+		rb_debug ("resizing table from %i to %ix%i", current_num_columns, new_num_columns, new_num_rows);
 		gtk_table_resize (GTK_TABLE (table), new_num_columns, new_num_rows);
 
 		/* don't know why, but g_table_resize doesn't always update these properties properly */
