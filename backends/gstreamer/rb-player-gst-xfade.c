@@ -1822,7 +1822,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			}
 
 			details = gst_structure_to_string (s);
-			rb_debug_real ("check-imperfect", __FILE__, __LINE__, TRUE, "%s: %s", stream->uri, details);
+			rb_debug_real ("check-imperfect", __FILE__, __LINE__, TRUE, "%s: %s", uri, details);
 			g_free (details);
 		} else if (strcmp (name, "redirect") == 0) {
 			const char *uri = gst_structure_get_string (s, "new-location");
