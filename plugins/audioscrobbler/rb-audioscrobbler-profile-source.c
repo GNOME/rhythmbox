@@ -561,8 +561,6 @@ rb_audioscrobbler_profile_source_set_user_list (RBAudioscrobblerProfileSource *s
 	int i;
 	GList *button_node;
 
-	gtk_table_resize (GTK_TABLE (list_table), list_data->len, 1);
-
 	/* delete all existing buttons */
 	for (button_node = gtk_container_get_children (GTK_CONTAINER (list_table)); button_node != NULL; button_node = g_list_next (button_node)) {
 		gtk_widget_destroy (button_node->data);
@@ -594,8 +592,7 @@ rb_audioscrobbler_profile_source_set_user_list (RBAudioscrobblerProfileSource *s
 
 			escaped_title_text = g_markup_escape_text (data->track.title, -1);
 			escaped_artist_text = g_markup_escape_text (data->track.artist, -1);
-			button_text = g_strdup_printf ("%i. %s\n<small>%s</small>",
-				                       i + 1,
+			button_text = g_strdup_printf ("%s\n<small>%s</small>",
 				                       escaped_title_text,
 				                       escaped_artist_text);
 
@@ -617,13 +614,8 @@ rb_audioscrobbler_profile_source_set_user_list (RBAudioscrobblerProfileSource *s
 			g_free (button_text);
 
 		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
-			char *button_text;
 			GtkWidget *contents;
 			GtkWidget *label;
-
-			button_text = g_strdup_printf ("%i. %s",
-				                       i + 1,
-				                       data->artist.name);
 
 			contents = gtk_hbox_new (FALSE, 4);
 			if (data->artist.image != NULL) {
@@ -631,13 +623,11 @@ rb_audioscrobbler_profile_source_set_user_list (RBAudioscrobblerProfileSource *s
 				                    gtk_image_new_from_pixbuf (data->artist.image),
 				                    FALSE, FALSE, 0);
 			}
-			label = gtk_label_new (button_text);
+			label = gtk_label_new (data->artist.name);
 			gtk_box_pack_start (GTK_BOX(contents),
 			                    label,
 			                    FALSE, FALSE, 0);
 			gtk_container_add (GTK_CONTAINER (button), contents);
-
-			g_free (button_text);
 		}
 	}
 }
