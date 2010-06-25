@@ -45,7 +45,6 @@ rb_audioscrobbler_user_data_copy (RBAudioscrobblerUserData *data)
 	switch (d->type) {
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO:
 		d->user_info.username = g_strdup (data->user_info.username);
-		d->user_info.real_name = g_strdup (data->user_info.real_name);
 		d->user_info.url = g_strdup (data->user_info.url);
 		if (data->user_info.image != NULL) {
 			d->user_info.image = g_object_ref (data->user_info.image);
@@ -77,7 +76,6 @@ rb_audioscrobbler_user_data_free (RBAudioscrobblerUserData *data)
 	switch (data->type) {
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO:
 		g_free (data->user_info.username);
-		g_free (data->user_info.real_name);
 		g_free (data->user_info.url);
 		if (data->user_info.image != NULL) {
 			g_object_unref (data->user_info.image);
@@ -691,7 +689,6 @@ rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user, const char *
 		user_info = g_slice_new0 (RBAudioscrobblerUserData);
 		user_info->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO;
 		user_info->user_info.username = g_strdup (json_object_get_string_member (user_object, "name"));
-		user_info->user_info.real_name = g_strdup (json_object_get_string_member (user_object, "realname"));
 		user_info->user_info.url = g_strdup (json_object_get_string_member (user_object, "url"));
 
 		user_info->user_info.image = gdk_pixbuf_new_from_file (rb_audioscrobbler_user_calculate_cached_image_path (user, user_info), NULL);
@@ -1538,10 +1535,21 @@ rb_audioscrobbler_user_image_download_cb (GObject *source_object, GAsyncResult *
 
 		dest_file_path = rb_audioscrobbler_user_calculate_cached_image_path (user, data);
 		if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO) {
+			if (data->user_info.image != NULL) {
+				g_object_unref (data->user_info.image);
+			}
 			data->user_info.image = gdk_pixbuf_new_from_file (dest_file_path, NULL);
+
 		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK) {
+			if (data->track.image != NULL) {
+				g_object_unref (data->track.image);
+			}
 			data->track.image = gdk_pixbuf_new_from_file_at_size (dest_file_path, SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
+
 		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
+			if (data->artist.image != NULL) {
+				g_object_unref (data->artist.image);
+			}
 			data->artist.image = gdk_pixbuf_new_from_file_at_size (dest_file_path, SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
 		}
 
