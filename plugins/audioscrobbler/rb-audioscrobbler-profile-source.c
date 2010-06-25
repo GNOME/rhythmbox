@@ -31,6 +31,8 @@
 #include <gdk/gdk.h>
 #include <math.h>
 
+#include "eel-gconf-extensions.h"
+
 #include "rb-audioscrobbler-profile-source.h"
 #include "rb-audioscrobbler.h"
 #include "rb-audioscrobbler-account.h"
@@ -38,7 +40,10 @@
 #include "rb-debug.h"
 #include "rb-builder-helpers.h"
 #include "rb-file-helpers.h"
+#include "rb-preferences.h"
 #include "rb-util.h"
+
+#define CONF_AUDIOSCROBBLER_ENABLE_SCROBBLING CONF_PLUGINS_PREFIX "/audioscrobbler/%s/scrobbling_enabled"
 
 struct _RBAudioscrobblerProfileSourcePrivate {
 	RBAudioscrobblerService *service;
@@ -46,6 +51,8 @@ struct _RBAudioscrobblerProfileSourcePrivate {
 	RBAudioscrobbler *audioscrobbler;
 
 	RBAudioscrobblerUser *user;
+
+	guint scrobbling_enabled_notification_id;
 
 	GtkWidget *main_vbox;
 
@@ -59,6 +66,7 @@ struct _RBAudioscrobblerProfileSourcePrivate {
 	GtkWidget *profile_image;
 	GtkWidget *username_label;
 	GtkWidget *playcount_label;
+	GtkWidget *scrobbling_enabled_check;
 	GtkWidget *view_profile_link;
 
 	GtkWidget *recent_tracks_area;
@@ -97,6 +105,12 @@ static void rb_audioscrobbler_profile_source_login_bar_response (GtkInfoBar *inf
                                                                  gpointer user_data);
 void rb_audioscrobbler_profile_source_logout_button_clicked_cb (GtkButton *button,
                                                                 gpointer user_data);
+void rb_audioscrobbler_profile_source_scrobbling_enabled_check_toggled_cb (GtkToggleButton *togglebutton,
+                                                                           gpointer user_data);
+static void rb_audioscrobbler_profile_source_scrobbling_enabled_changed_cb (GConfClient *client,
+                                                                            guint cnxn_id,
+                                                                            GConfEntry *entry,
+                                                                            RBAudioscrobblerProfileSource *source);
 
 static void rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount *account,
                                                                      RBAudioscrobblerAccountLoginStatus status,
@@ -217,6 +231,7 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 {
 	RBAudioscrobblerProfileSource *source;
 	RBShell *shell;
+	char *scrobbling_enabled_conf_key;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_profile_source_parent_class, constructed, object);
 
@@ -230,15 +245,6 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 
 	rb_audioscrobbler_profile_source_init_login_ui (source);
 	rb_audioscrobbler_profile_source_init_profile_ui (source);
-
-	/* create the scrobbler - submits listening data */
-	source->priv->audioscrobbler =
-		rb_audioscrobbler_new (source->priv->service,
-		                       RB_SHELL_PLAYER (rb_shell_get_player (shell)));
-	g_signal_connect (source->priv->audioscrobbler,
-	                  "authentication-error",
-	                  (GCallback)rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb,
-	                  source);
 
 	/* create the user */
 	source->priv->user = rb_audioscrobbler_user_new (source->priv->service);
@@ -277,7 +283,18 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 	                                                         rb_audioscrobbler_account_get_login_status (source->priv->account),
 	                                                         source);
 
+	/* create the scrobbler, if it is enabled */
+	scrobbling_enabled_conf_key = g_strdup_printf (CONF_AUDIOSCROBBLER_ENABLE_SCROBBLING,
+	                                               rb_audioscrobbler_service_get_name (source->priv->service));
+	source->priv->scrobbling_enabled_notification_id =
+		eel_gconf_notification_add (scrobbling_enabled_conf_key,
+				            (GConfClientNotifyFunc) rb_audioscrobbler_profile_source_scrobbling_enabled_changed_cb,
+				            source);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (source->priv->scrobbling_enabled_check),
+	                              eel_gconf_get_boolean (scrobbling_enabled_conf_key));
+
 	g_object_unref (shell);
+	g_free (scrobbling_enabled_conf_key);
 }
 
 static void
@@ -390,6 +407,7 @@ rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource 
 	source->priv->profile_image = GTK_WIDGET (gtk_builder_get_object (builder, "profile_image"));
 	source->priv->username_label = GTK_WIDGET (gtk_builder_get_object (builder, "username_label"));
 	source->priv->playcount_label = GTK_WIDGET (gtk_builder_get_object (builder, "playcount_label"));
+	source->priv->scrobbling_enabled_check = GTK_WIDGET (gtk_builder_get_object (builder, "scrobbling_enabled_check"));
 	source->priv->view_profile_link = GTK_WIDGET (gtk_builder_get_object (builder, "view_profile_link"));
 
 	source->priv->recent_tracks_area = GTK_WIDGET (gtk_builder_get_object (builder, "recent_tracks_area"));
@@ -461,6 +479,51 @@ rb_audioscrobbler_profile_source_logout_button_clicked_cb (GtkButton *button,
 	rb_audioscrobbler_account_logout (source->priv->account);
 }
 
+void
+rb_audioscrobbler_profile_source_scrobbling_enabled_check_toggled_cb (GtkToggleButton *togglebutton,
+                                                                      gpointer user_data)
+{
+	RBAudioscrobblerProfileSource *source;
+	char *conf_key;
+
+	source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (user_data);
+	conf_key = g_strdup_printf (CONF_AUDIOSCROBBLER_ENABLE_SCROBBLING,
+	                            rb_audioscrobbler_service_get_name (source->priv->service));
+	eel_gconf_set_boolean (conf_key,
+			       gtk_toggle_button_get_active (togglebutton));
+	g_free (conf_key);
+}
+
+static void
+rb_audioscrobbler_profile_source_scrobbling_enabled_changed_cb (GConfClient *client,
+                                                                guint cnxn_id,
+                                                                GConfEntry *entry,
+                                                                RBAudioscrobblerProfileSource *source)
+{
+	gboolean enabled = gconf_value_get_bool (entry->value);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (source->priv->scrobbling_enabled_check),
+	                              enabled);
+
+	if (source->priv->audioscrobbler != NULL && enabled == FALSE) {
+		g_object_unref (source->priv->audioscrobbler);
+		source->priv->audioscrobbler = NULL;
+	} else if (source->priv->audioscrobbler == NULL && enabled == TRUE) {
+		RBShell *shell;
+		g_object_get (source, "shell", &shell, NULL);
+		source->priv->audioscrobbler =
+			rb_audioscrobbler_new (source->priv->service,
+				               RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+		rb_audioscrobbler_set_authentication_details (source->priv->audioscrobbler,
+			                                      rb_audioscrobbler_account_get_username (source->priv->account),
+			                                      rb_audioscrobbler_account_get_session_key (source->priv->account));
+		g_signal_connect (source->priv->audioscrobbler,
+			          "authentication-error",
+			          (GCallback)rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb,
+			          source);
+		g_object_unref (shell);
+	}
+}
+
 static void
 rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount *account,
                                                          RBAudioscrobblerAccountLoginStatus status,
@@ -480,9 +543,11 @@ rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount
 	session_key = rb_audioscrobbler_account_get_session_key (source->priv->account);
 
 	/* update the audioscrobbler with new authentication */
-	rb_audioscrobbler_set_authentication_details (source->priv->audioscrobbler,
-	                                              username,
-	                                              session_key);
+	if (source->priv->audioscrobbler != NULL) {
+		rb_audioscrobbler_set_authentication_details (source->priv->audioscrobbler,
+			                                      username,
+			                                      session_key);
+	}
 
 	/* set the new user details */
 	rb_audioscrobbler_user_set_authentication_details (source->priv->user, username, session_key);

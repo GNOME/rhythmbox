@@ -206,6 +206,7 @@ rb_audioscrobbler_constructed (GObject *object)
 {
 	RBAudioscrobbler *audioscrobbler;
 	RhythmDB *db;
+	RhythmDBEntry *playing_entry;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_parent_class, constructed, object);
 	audioscrobbler = RB_AUDIOSCROBBLER (object);
@@ -216,6 +217,16 @@ rb_audioscrobbler_constructed (GObject *object)
 					 "entry-extra-metadata-notify::rb:offlinePlay",
 					 (GCallback)rb_audioscrobbler_offline_play_notify_cb, 
 					 audioscrobbler, 0);
+
+	/* if an entry is currently being played then handle it */
+	playing_entry = rb_shell_player_get_playing_entry (audioscrobbler->priv->shell_player);
+	if (playing_entry != NULL) {
+		rb_audioscrobbler_song_changed_cb (audioscrobbler->priv->shell_player,
+		                                   playing_entry,
+		                                   audioscrobbler);
+		rhythmdb_entry_unref (playing_entry);
+	}
+
 	g_object_unref (db);
 }
 

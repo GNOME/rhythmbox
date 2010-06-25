@@ -88,6 +88,29 @@
                 <property name="visible">True</property>
                 <property name="xalign">0</property>
                 <property name="xscale">0</property>
+                <property name="left_padding">4</property>
+                <child>
+                  <object class="GtkCheckButton" id="scrobbling_enabled_check">
+                    <property name="label" translatable="yes">Submit listening data</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="rb_audioscrobbler_profile_source_scrobbling_enabled_check_toggled_cb"/>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkAlignment" id="alignment3">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="xscale">0</property>
                 <child>
                   <object class="GtkLinkButton" id="view_profile_link">
                     <property name="label" translatable="yes">View your profile</property>
@@ -101,7 +124,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="position">2</property>
+                <property name="position">3</property>
               </packing>
             </child>
             <child>
