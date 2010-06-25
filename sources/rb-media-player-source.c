@@ -105,7 +105,7 @@ static void sync_cmd (GtkAction *action, RBSource *source);
 static gboolean sync_idle_delete_entries (RBMediaPlayerSource *source);
 
 static GtkActionEntry rb_media_player_source_actions[] = {
-	{ "MediaPlayerSourceSync", GTK_STOCK_REFRESH, N_("Sync"), NULL,
+	{ "MediaPlayerSourceSync", GTK_STOCK_REFRESH, N_("Sync with Library"), NULL,
 	  N_("Synchronize media player with the library"),
 	  G_CALLBACK (sync_cmd) },
 };
