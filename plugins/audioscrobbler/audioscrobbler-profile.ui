@@ -23,12 +23,14 @@
           <object class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
             <property name="orientation">vertical</property>
+            <property name="spacing">4</property>
             <child>
               <object class="GtkHBox" id="hbox3">
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="username_label">
                     <property name="visible">True</property>
+                    <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                       <attribute name="scale" value="2.000000"/>
@@ -68,6 +70,24 @@
                 <property name="visible">True</property>
                 <property name="xalign">0</property>
                 <property name="xscale">0</property>
+                <property name="left_padding">4</property>
+                <child>
+                  <object class="GtkLabel" id="playcount_label">
+                    <property name="visible">True</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkAlignment" id="alignment2">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="xscale">0</property>
                 <child>
                   <object class="GtkLinkButton" id="view_profile_link">
                     <property name="label" translatable="yes">View your profile</property>
@@ -81,7 +101,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
             <child>

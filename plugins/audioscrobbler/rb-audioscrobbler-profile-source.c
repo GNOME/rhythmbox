@@ -58,6 +58,7 @@ struct _RBAudioscrobblerProfileSourcePrivate {
 	GtkWidget *user_info_area;
 	GtkWidget *profile_image;
 	GtkWidget *username_label;
+	GtkWidget *playcount_label;
 	GtkWidget *view_profile_link;
 
 	GtkWidget *recent_tracks_area;
@@ -388,6 +389,7 @@ rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource 
 	source->priv->user_info_area = GTK_WIDGET (gtk_builder_get_object (builder, "user_info_area"));
 	source->priv->profile_image = GTK_WIDGET (gtk_builder_get_object (builder, "profile_image"));
 	source->priv->username_label = GTK_WIDGET (gtk_builder_get_object (builder, "username_label"));
+	source->priv->playcount_label = GTK_WIDGET (gtk_builder_get_object (builder, "playcount_label"));
 	source->priv->view_profile_link = GTK_WIDGET (gtk_builder_get_object (builder, "view_profile_link"));
 
 	source->priv->recent_tracks_area = GTK_WIDGET (gtk_builder_get_object (builder, "recent_tracks_area"));
@@ -639,18 +641,24 @@ rb_audioscrobbler_profile_source_user_info_updated_cb (RBAudioscrobblerUser *use
 {
 	RBAudioscrobblerProfileSource *source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (user_data);
 	if (data != NULL) {
+		char *playcount_text;
+
 		gtk_label_set_label (GTK_LABEL (source->priv->username_label),
 			             data->user_info.username);
+
+		playcount_text = g_strdup_printf (_("%s plays"), data->user_info.playcount);
+		gtk_label_set_label (GTK_LABEL (source->priv->playcount_label),
+		                     playcount_text);
+
 		gtk_link_button_set_uri (GTK_LINK_BUTTON (source->priv->view_profile_link),
 		                         data->user_info.url);
+
 		gtk_image_set_from_pixbuf (GTK_IMAGE (source->priv->profile_image), data->user_info.image);
 
 		gtk_widget_show_all (source->priv->user_info_area);
-	} else {
-		gtk_label_set_label (GTK_LABEL (source->priv->username_label),
-			             "");
-		gtk_image_set_from_pixbuf (GTK_IMAGE (source->priv->profile_image), NULL);
 
+		g_free (playcount_text);
+	} else {
 		gtk_widget_hide_all (source->priv->user_info_area);
 	}
 }

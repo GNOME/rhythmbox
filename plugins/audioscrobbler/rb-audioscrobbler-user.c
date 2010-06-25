@@ -46,6 +46,7 @@ rb_audioscrobbler_user_data_copy (RBAudioscrobblerUserData *data)
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO:
 		d->user_info.username = g_strdup (data->user_info.username);
 		d->user_info.url = g_strdup (data->user_info.url);
+		d->user_info.playcount = g_strdup (data->user_info.playcount);
 		if (data->user_info.image != NULL) {
 			d->user_info.image = g_object_ref (data->user_info.image);
 		}
@@ -77,6 +78,7 @@ rb_audioscrobbler_user_data_free (RBAudioscrobblerUserData *data)
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO:
 		g_free (data->user_info.username);
 		g_free (data->user_info.url);
+		g_free (data->user_info.playcount);
 		if (data->user_info.image != NULL) {
 			g_object_unref (data->user_info.image);
 		}
@@ -487,9 +489,6 @@ rb_audioscrobbler_user_set_authentication_details (RBAudioscrobblerUser *user,
 
 	/* load new user from cache (or set to NULL) */
 	rb_audioscrobbler_user_load_from_cache (user);
-
-	/* request new info */
-	//rb_audioscrobbler_user_update (user);
 }
 
 void
@@ -690,6 +689,7 @@ rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user, const char *
 		user_info->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO;
 		user_info->user_info.username = g_strdup (json_object_get_string_member (user_object, "name"));
 		user_info->user_info.url = g_strdup (json_object_get_string_member (user_object, "url"));
+		user_info->user_info.playcount = g_strdup (json_object_get_string_member (user_object, "playcount"));
 
 		user_info->user_info.image = gdk_pixbuf_new_from_file (rb_audioscrobbler_user_calculate_cached_image_path (user, user_info), NULL);
 		if (user_info->user_info.image == NULL && json_object_has_member (user_object, "image") == TRUE) {

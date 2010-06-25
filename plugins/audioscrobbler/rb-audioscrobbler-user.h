@@ -48,8 +48,8 @@ typedef struct {
 	union {
 		struct {
 			char *username;
-			char *real_name;
 			char *url;
+			char *playcount;
 			GdkPixbuf *image;
 		} user_info;
 
