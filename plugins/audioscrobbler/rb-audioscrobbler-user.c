@@ -35,36 +35,33 @@
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 
-#define SMALL_IMAGE_SIZE 34
+#define USER_PROFILE_IMAGE_SIZE 126
+#define LIST_ITEM_IMAGE_SIZE 34
 
 static RBAudioscrobblerUserData *
 rb_audioscrobbler_user_data_copy (RBAudioscrobblerUserData *data)
 {
 	RBAudioscrobblerUserData *d = g_slice_new0 (RBAudioscrobblerUserData);
 
+	d->type = data->type;
+	if (data->image != NULL) {
+		d->image = g_object_ref (data->image);
+	}
+
 	switch (d->type) {
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO:
 		d->user_info.username = g_strdup (data->user_info.username);
 		d->user_info.url = g_strdup (data->user_info.url);
 		d->user_info.playcount = g_strdup (data->user_info.playcount);
-		if (data->user_info.image != NULL) {
-			d->user_info.image = g_object_ref (data->user_info.image);
-		}
 		break;
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK:
 		d->track.title = g_strdup (data->track.title);
 		d->track.artist = g_strdup (data->track.artist);
 		d->track.url = g_strdup (data->track.url);
-		if (data->track.image != NULL) {
-			d->track.image = g_object_ref (data->track.image);
-		}
 		break;
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST:
 		d->artist.name = g_strdup (data->artist.name);
 		d->artist.url = g_strdup (data->artist.url);
-		if (data->artist.image != NULL) {
-			d->artist.image = g_object_ref (data->artist.image);
-		}
 		break;
 	}
 
@@ -74,29 +71,23 @@ rb_audioscrobbler_user_data_copy (RBAudioscrobblerUserData *data)
 static void
 rb_audioscrobbler_user_data_free (RBAudioscrobblerUserData *data)
 {
+	if (data->image != NULL) {
+		g_object_unref (data->image);
+	}
 	switch (data->type) {
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO:
 		g_free (data->user_info.username);
 		g_free (data->user_info.url);
 		g_free (data->user_info.playcount);
-		if (data->user_info.image != NULL) {
-			g_object_unref (data->user_info.image);
-		}
 		break;
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK:
 		g_free (data->track.title);
 		g_free (data->track.artist);
 		g_free (data->track.url);
-		if (data->track.image != NULL) {
-			g_object_unref (data->track.image);
-		}
 		break;
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST:
 		g_free (data->artist.name);
 		g_free (data->artist.url);
-		if (data->track.image != NULL) {
-			g_object_unref (data->artist.image);
-		}
 		break;
 	}
 
@@ -691,8 +682,9 @@ rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user, const char *
 		user_info->user_info.url = g_strdup (json_object_get_string_member (user_object, "url"));
 		user_info->user_info.playcount = g_strdup (json_object_get_string_member (user_object, "playcount"));
 
-		user_info->user_info.image = gdk_pixbuf_new_from_file (rb_audioscrobbler_user_calculate_cached_image_path (user, user_info), NULL);
-		if (user_info->user_info.image == NULL && json_object_has_member (user_object, "image") == TRUE) {
+		user_info->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, user_info),
+		                                                     USER_PROFILE_IMAGE_SIZE, -1, NULL);
+		if (user_info->image == NULL && json_object_has_member (user_object, "image") == TRUE) {
 			JsonArray *image_array;
 			JsonObject *image_object;
 
@@ -829,9 +821,9 @@ rb_audioscrobbler_user_parse_recent_tracks (RBAudioscrobblerUser *user, const ch
 
 			g_ptr_array_add (recent_tracks, track);
 
-			track->track.image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
-		                                                               SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
-			if (track->track.image == NULL && json_object_has_member (track_object, "image") == TRUE) {
+			track->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
+		                                                         LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+			if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
 				JsonArray *image_array;
 				JsonObject *image_object;
 
@@ -969,9 +961,9 @@ rb_audioscrobbler_user_parse_top_tracks (RBAudioscrobblerUser *user, const char 
 
 			g_ptr_array_add (top_tracks, track);
 
-			track->track.image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
-		                                                               SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
-			if (track->track.image == NULL && json_object_has_member (track_object, "image") == TRUE) {
+			track->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
+		                                                         LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+			if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
 				JsonArray *image_array;
 				JsonObject *image_object;
 
@@ -1109,9 +1101,9 @@ rb_audioscrobbler_user_parse_loved_tracks (RBAudioscrobblerUser *user, const cha
 
 			g_ptr_array_add (loved_tracks, track);
 
-			track->track.image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
-		                                                               SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
-			if (track->track.image == NULL && json_object_has_member (track_object, "image") == TRUE) {
+			track->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
+		                                                         LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+			if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
 				JsonArray *image_array;
 				JsonObject *image_object;
 
@@ -1246,9 +1238,9 @@ rb_audioscrobbler_user_parse_top_artists (RBAudioscrobblerUser *user, const char
 
 			g_ptr_array_add (top_artists, artist);
 
-			artist->artist.image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, artist),
-		                                                                 SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
-			if (artist->artist.image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
+			artist->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, artist),
+		                                                          LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+			if (artist->image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
 				JsonArray *image_array;
 				JsonObject *image_object;
 
@@ -1401,9 +1393,9 @@ rb_audioscrobbler_user_parse_recommended_artists (RBAudioscrobblerUser *user, co
 
 				g_ptr_array_add (recommended_artists, artist);
 
-				artist->artist.image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, artist),
-				                                                         SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
-				if (artist->artist.image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
+				artist->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, artist),
+				                                                  LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+				if (artist->image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
 					JsonArray *image_array;
 					JsonObject *image_object;
 
@@ -1534,23 +1526,15 @@ rb_audioscrobbler_user_image_download_cb (GObject *source_object, GAsyncResult *
 		g_hash_table_remove (user->priv->file_to_data_map, src_file);
 
 		dest_file_path = rb_audioscrobbler_user_calculate_cached_image_path (user, data);
+		if (data->image != NULL) {
+			g_object_unref (data->image);
+		}
+
+		/* load image at correct size for the data type */
 		if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO) {
-			if (data->user_info.image != NULL) {
-				g_object_unref (data->user_info.image);
-			}
-			data->user_info.image = gdk_pixbuf_new_from_file (dest_file_path, NULL);
-
-		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK) {
-			if (data->track.image != NULL) {
-				g_object_unref (data->track.image);
-			}
-			data->track.image = gdk_pixbuf_new_from_file_at_size (dest_file_path, SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
-
-		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
-			if (data->artist.image != NULL) {
-				g_object_unref (data->artist.image);
-			}
-			data->artist.image = gdk_pixbuf_new_from_file_at_size (dest_file_path, SMALL_IMAGE_SIZE, SMALL_IMAGE_SIZE, NULL);
+			data->image = gdk_pixbuf_new_from_file_at_size (dest_file_path, USER_PROFILE_IMAGE_SIZE, -1, NULL);
+		} else {
+			data->image = gdk_pixbuf_new_from_file_at_size (dest_file_path, LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
 		}
 
 		/* emit appropriate signal - quite ugly, surely this could be done in a nicer way */

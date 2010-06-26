@@ -45,25 +45,24 @@ typedef struct {
 		RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST
 	} type;
 
+	GdkPixbuf *image;
+
 	union {
 		struct {
 			char *username;
 			char *url;
 			char *playcount;
-			GdkPixbuf *image;
 		} user_info;
 
 		struct {
 			char *title;
 			char *artist;
 			char *url;
-			GdkPixbuf *image;
 		} track;
 
 		struct {
 			char *name;
 			char *url;
-			GdkPixbuf *image;
 		} artist;
 	};
 } RBAudioscrobblerUserData;

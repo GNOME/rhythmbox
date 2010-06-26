@@ -10,8 +10,14 @@
       <object class="GtkHBox" id="user_info_area">
         <property name="visible">True</property>
         <child>
-          <object class="GtkImage" id="profile_image">
+          <object class="GtkViewport" id="viewport1">
             <property name="visible">True</property>
+            <property name="resize_mode">queue</property>
+            <child>
+              <object class="GtkImage" id="profile_image">
+                <property name="visible">True</property>
+              </object>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
