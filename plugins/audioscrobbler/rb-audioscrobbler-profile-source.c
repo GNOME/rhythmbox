@@ -291,8 +291,20 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 		eel_gconf_notification_add (scrobbling_enabled_conf_key,
 				            (GConfClientNotifyFunc) rb_audioscrobbler_profile_source_scrobbling_enabled_changed_cb,
 				            source);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (source->priv->scrobbling_enabled_check),
-	                              eel_gconf_get_boolean (scrobbling_enabled_conf_key));
+	if (eel_gconf_get_boolean (scrobbling_enabled_conf_key)) {
+		source->priv->audioscrobbler =
+			rb_audioscrobbler_new (source->priv->service,
+				               RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+		rb_audioscrobbler_set_authentication_details (source->priv->audioscrobbler,
+			                                      rb_audioscrobbler_account_get_username (source->priv->account),
+			                                      rb_audioscrobbler_account_get_session_key (source->priv->account));
+		g_signal_connect (source->priv->audioscrobbler,
+			          "authentication-error",
+			          (GCallback)rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb,
+			          source);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (source->priv->scrobbling_enabled_check),
+		                              TRUE);
+	}
 
 	g_object_unref (shell);
 	g_free (scrobbling_enabled_conf_key);
@@ -323,6 +335,11 @@ rb_audioscrobbler_profile_source_dispose (GObject* object)
 	if (source->priv->user != NULL) {
 		g_object_unref (source->priv->user);
 		source->priv->user = NULL;
+	}
+
+	if (source->priv->scrobbling_enabled_notification_id != 0) {
+		eel_gconf_notification_remove (source->priv->scrobbling_enabled_notification_id);
+		source->priv->scrobbling_enabled_notification_id = 0;
 	}
 
 	G_OBJECT_CLASS (rb_audioscrobbler_profile_source_parent_class)->dispose (object);
