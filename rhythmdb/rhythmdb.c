@@ -2287,14 +2287,14 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 	RhythmDBEntry *entry;
 	GValue value = {0,};
 
-	rb_debug ("adding import error type %s for %s: %s",
-		  error_entry_type->name,
-		  rb_refstring_get (event->real_uri),
-		  event->error ? event->error->message : "<no error>");
 	if (error_entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		/* we don't have an error entry type, so we can't add an import error */
 		return;
 	}
+	rb_debug ("adding import error type %s for %s: %s",
+		  error_entry_type->name,
+		  rb_refstring_get (event->real_uri),
+		  event->error ? event->error->message : "<no error>");
 
 	entry = rhythmdb_entry_lookup_by_location_refstring (db, event->real_uri);
 	if (entry) {
