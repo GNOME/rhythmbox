@@ -70,6 +70,11 @@ struct _RBAudioscrobblerProfileSourcePrivate {
 	GtkWidget *scrobbling_enabled_check;
 	GtkWidget *view_profile_link;
 
+	GtkWidget *scrobbler_status_msg_label;
+	GtkWidget *scrobbler_queue_count_label;
+	GtkWidget *scrobbler_submit_count_label;
+	GtkWidget *scrobbler_submit_time_label;
+
 	GtkWidget *recent_tracks_area;
 	GtkWidget *recent_tracks_table;
 	GtkWidget *top_tracks_area;
@@ -119,6 +124,12 @@ static void rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscro
 
 static void rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb (RBAudioscrobbler *audioscrobbler,
                                                                                 gpointer user_data);
+static void rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb (RBAudioscrobbler *audioscrobbler,
+                                                                              const char *status_msg,
+                                                                              guint queue_count,
+                                                                              guint submit_count,
+                                                                              const char *submit_time,
+                                                                              gpointer user_data);
 
 static void rb_audioscrobbler_profile_source_user_info_updated_cb (RBAudioscrobblerUser *user,
                                                                    RBAudioscrobblerUserData *info,
@@ -302,6 +313,11 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 			          "authentication-error",
 			          (GCallback)rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb,
 			          source);
+		g_signal_connect (source->priv->audioscrobbler,
+			          "statistics-changed",
+			          (GCallback)rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb,
+			          source);
+		rb_audioscrobbler_statistics_changed (source->priv->audioscrobbler);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (source->priv->scrobbling_enabled_check),
 		                              TRUE);
 	}
@@ -428,6 +444,13 @@ rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource 
 	source->priv->scrobbling_enabled_check = GTK_WIDGET (gtk_builder_get_object (builder, "scrobbling_enabled_check"));
 	source->priv->view_profile_link = GTK_WIDGET (gtk_builder_get_object (builder, "view_profile_link"));
 
+	/* scrobbler statistics */
+	source->priv->scrobbler_status_msg_label = GTK_WIDGET (gtk_builder_get_object (builder, "scrobbler_status_msg_label"));
+	source->priv->scrobbler_queue_count_label = GTK_WIDGET (gtk_builder_get_object (builder, "scrobbler_queue_count_label"));
+	source->priv->scrobbler_submit_count_label = GTK_WIDGET (gtk_builder_get_object (builder, "scrobbler_submit_count_label"));
+	source->priv->scrobbler_submit_time_label = GTK_WIDGET (gtk_builder_get_object (builder, "scrobbler_submit_time_label"));
+
+	/* lists of data */
 	source->priv->recent_tracks_area = GTK_WIDGET (gtk_builder_get_object (builder, "recent_tracks_area"));
 	source->priv->recent_tracks_table = GTK_WIDGET (gtk_builder_get_object (builder, "recent_tracks_table"));
 
@@ -525,6 +548,8 @@ rb_audioscrobbler_profile_source_scrobbling_enabled_changed_cb (GConfClient *cli
 	if (source->priv->audioscrobbler != NULL && enabled == FALSE) {
 		g_object_unref (source->priv->audioscrobbler);
 		source->priv->audioscrobbler = NULL;
+		gtk_label_set_label (GTK_LABEL (source->priv->scrobbler_status_msg_label),
+		                     _("Disabled"));
 	} else if (source->priv->audioscrobbler == NULL && enabled == TRUE) {
 		RBShell *shell;
 		g_object_get (source, "shell", &shell, NULL);
@@ -538,6 +563,11 @@ rb_audioscrobbler_profile_source_scrobbling_enabled_changed_cb (GConfClient *cli
 			          "authentication-error",
 			          (GCallback)rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb,
 			          source);
+		g_signal_connect (source->priv->audioscrobbler,
+			          "statistics-changed",
+			          (GCallback)rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb,
+			          source);
+		rb_audioscrobbler_statistics_changed (source->priv->audioscrobbler);
 		g_object_unref (shell);
 	}
 }
@@ -636,6 +666,34 @@ rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb (RBAudioscrob
 	RBAudioscrobblerProfileSource *source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (user_data);
 
 	rb_audioscrobbler_account_notify_of_auth_error (source->priv->account);
+}
+
+static void
+rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb (RBAudioscrobbler *audioscrobbler,
+                                                                  const char *status_msg,
+                                                                  guint queue_count,
+                                                                  guint submit_count,
+                                                                  const char *submit_time,
+                                                                  gpointer user_data)
+{
+	RBAudioscrobblerProfileSource *source;
+	char *queue_count_text;
+	char *submit_count_text;
+
+	source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (user_data);
+
+	gtk_label_set_text (GTK_LABEL (source->priv->scrobbler_status_msg_label), status_msg);
+
+	queue_count_text = g_strdup_printf ("%u", queue_count);
+	gtk_label_set_text (GTK_LABEL (source->priv->scrobbler_queue_count_label), queue_count_text);
+
+	submit_count_text = g_strdup_printf ("%u", submit_count);
+	gtk_label_set_text (GTK_LABEL (source->priv->scrobbler_submit_count_label), submit_count_text);
+
+	gtk_label_set_text (GTK_LABEL (source->priv->scrobbler_submit_time_label), submit_time);
+
+	g_free (queue_count_text);
+	g_free (submit_count_text);
 }
 
 static void

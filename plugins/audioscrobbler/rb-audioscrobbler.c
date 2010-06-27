@@ -59,7 +59,7 @@
 #include "rb-plugin.h"
 #include "rb-util.h"
 #include "rb-podcast-entry-types.h"
-
+#include "rb-marshal.h"
 #include "rb-audioscrobbler-entry.h"
 
 #define CLIENT_ID "rbx"
@@ -193,6 +193,7 @@ enum
 enum
 {
 	AUTHENTICATION_ERROR,
+	STATISTICS_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -276,6 +277,29 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 			      G_TYPE_NONE,
 			      0);
 
+	/**
+	 * RBAudioscrobbler::statistics-changed:
+	 * @status_msg: description of the status
+	 * @queued_count: the number of tracks queued for submission
+	 * @submit_count: the number of tracks already submitted this session
+	 * @submit_time: the time at which the last submission was made
+	 *
+	 * Emitted when the scrobbling session's statistics change.
+	 */
+	rb_audioscrobbler_signals[STATISTICS_CHANGED] =
+		g_signal_new ("statistics-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBAudioscrobblerClass, statistics_changed),
+			      NULL, NULL,
+			      rb_marshal_VOID__STRING_UINT_UINT_STRING,
+			      G_TYPE_NONE,
+		              4,
+			      G_TYPE_STRING,
+		              G_TYPE_UINT,
+		              G_TYPE_UINT,
+		              G_TYPE_STRING);
+
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerPrivate));
 }
 
@@ -299,6 +323,8 @@ rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 	rb_audioscrobbler_load_queue (audioscrobbler);
 
 	rb_audioscrobbler_add_timeout (audioscrobbler);
+
+	rb_audioscrobbler_statistics_changed (audioscrobbler);
 }
 
 static void
@@ -450,6 +476,53 @@ rb_audioscrobbler_set_authentication_details (RBAudioscrobbler *audioscrobbler,
 	audioscrobbler->priv->handshake_next = 0;
 }
 
+/* emits the statistics-changed signal */
+void
+rb_audioscrobbler_statistics_changed (RBAudioscrobbler *audioscrobbler)
+{
+	const char *status;
+	char *status_msg;
+
+	switch (audioscrobbler->priv->status) {
+	case STATUS_OK:
+		status = _("OK");
+		break;
+	case HANDSHAKING:
+		status = _("Logging in");
+		break;
+	case REQUEST_FAILED:
+		status = _("Request failed");
+		break;
+	case BADAUTH:
+		status = _("Authentication error");
+		break;
+	case BAD_TIMESTAMP:
+		status = _("Clock is not set correctly");
+		break;
+	case CLIENT_BANNED:
+		status = _("This version of Rhythmbox has been banned.");
+		break;
+	case GIVEN_UP:
+		status = _("Track submission failed too many times");
+		break;
+	default:
+		g_assert_not_reached ();
+		break;
+	}
+
+	if (audioscrobbler->priv->status_msg && audioscrobbler->priv->status_msg[0] != '\0') {
+		status_msg = g_strdup_printf ("%s: %s", status, audioscrobbler->priv->status_msg);
+	} else {
+		status_msg = g_strdup (status);
+	}
+
+	g_signal_emit_by_name (audioscrobbler, "statistics-changed",
+	                       status_msg, audioscrobbler->priv->queue_count,
+	                       audioscrobbler->priv->submit_count, audioscrobbler->priv->submit_time);
+
+	g_free (status_msg);
+}
+
 /* Add the audioscrobbler thread timer */
 static void
 rb_audioscrobbler_add_timeout (RBAudioscrobbler *audioscrobbler)
@@ -559,6 +632,7 @@ maybe_add_current_song_to_queue (RBAudioscrobbler *audioscrobbler)
 			rb_audioscrobbler_add_to_queue (audioscrobbler, cur_entry);
 			audioscrobbler->priv->currently_playing = NULL;
 
+			rb_audioscrobbler_statistics_changed (audioscrobbler);
 		} else if (elapsed_delta > 20) {
 			rb_debug ("Skipping detected; not submitting current song");
 			/* not sure about this - what if I skip to somewhere towards
@@ -839,6 +913,7 @@ rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 	rb_debug ("Performing handshake with Audioscrobbler server: %s", url);
 
 	audioscrobbler->priv->status = HANDSHAKING;
+	rb_audioscrobbler_statistics_changed (audioscrobbler);
 
 	rb_audioscrobbler_perform (audioscrobbler,
 				   url,
@@ -856,6 +931,7 @@ rb_audioscrobbler_do_handshake_cb (SoupSession *session, SoupMessage *msg, gpoin
 
 	rb_debug ("Handshake response");
 	rb_audioscrobbler_parse_response (audioscrobbler, msg, TRUE);
+	rb_audioscrobbler_statistics_changed (audioscrobbler);
 
 	switch (audioscrobbler->priv->status) {
 	case STATUS_OK:
@@ -994,6 +1070,7 @@ rb_audioscrobbler_submit_queue_cb (SoupSession *session, SoupMessage *msg, gpoin
 		}
 	}
 
+	rb_audioscrobbler_statistics_changed (audioscrobbler);
 	g_idle_add ((GSourceFunc) idle_unref_cb, audioscrobbler);
 }
 

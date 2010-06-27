@@ -60,6 +60,11 @@ typedef struct
 
 	/* signals */
 	void (*authentication_error) (RBAudioscrobbler *audioscrobbler);
+	void (*statistics_changed) (RBAudioscrobbler *audioscrobbler,
+	                            const char *status_msg,
+	                            guint queue_count,
+	                            guint submit_count,
+	                            const char *submit_time);
 } RBAudioscrobblerClass;
 
 
@@ -72,8 +77,7 @@ void                    rb_audioscrobbler_set_authentication_details (RBAudioscr
                                                                       const char *username,
                                                                       const char *session_key);
 
-void			rb_audioscrobbler_enabled_check_changed_cb (GtkCheckButton *button,
-								    RBAudioscrobbler *audioscrobbler);
+void                    rb_audioscrobbler_statistics_changed (RBAudioscrobbler *audioscrobbler);
 
 
 G_END_DECLS
