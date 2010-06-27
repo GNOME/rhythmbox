@@ -1,14 +1,14 @@
 # translation of rhythmbox.po to Estonian
 # Copyright (C) 2009 Free Software Foundation, Inc.
 # Priit Laes <amd@tt.ee>, 2004.
-# Mattias Põldaru <mahfiaz@gmail.com>, 2009.
+# Mattias Põldaru <mahfiaz@gmail.com>, 2009-2010.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-02-16 17:40+0000\n"
-"PO-Revision-Date: 2010-04-11 11:45+0300\n"
+"POT-Creation-Date: 2010-06-24 12:34+0000\n"
+"PO-Revision-Date: 2010-06-27 20:54+0300\n"
 "Last-Translator: Mattias Põldaru <mahfiaz gmail com>\n"
 "Language-Team: Estonian <gnome-et@linux.ee>\n"
 "MIME-Version: 1.0\n"
@@ -17,16 +17,8 @@ msgstr ""
 "Plural-Forms: nplurals=2;plural=(n!=1);\n"
 
 #, c-format
-msgid "Do you want to overwrite the file \"%s\"?"
-msgstr "Kas tahad faili \"%s\" üle kirjutada?"
-
-#, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "%s kirjutamiseks ei suudetud luua GStreamer sink elementi"
-
-#, c-format
-msgid "Failed to create playbin2 element; check your GStreamer installation"
-msgstr "Playbin2 elementi ei õnnestunud luua; kontrolli GStreameri paigaldust"
 
 #. ?
 #, c-format
@@ -34,8 +26,8 @@ msgid "Failed to open output device: %s"
 msgstr "Väljundseadme avamine nurjus: %s"
 
 #, c-format
-msgid "Unable to start playback pipeline"
-msgstr "Taasesituse toru ei õnnestunud käivitada"
+msgid "Failed to create playbin2 element; check your GStreamer installation"
+msgstr "Playbin2 elementi ei õnnestunud luua; kontrolli GStreameri paigaldust"
 
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
@@ -65,10 +57,6 @@ msgstr "GStreameri toru ühendamine nurjus; kontrolli paigaldust"
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "GStreameri toru loomine %s esitamiseks nurjus"
-
-#, c-format
-msgid "Failed to start playback of %s"
-msgstr "%s esituse alustamine nurjus"
 
 msgid " "
 msgstr " "
@@ -100,9 +88,15 @@ msgstr "laulu"
 msgid "A_lbum"
 msgstr "A_lbum"
 
+msgid "BPM"
+msgstr "BPM"
+
 # Eelistused → Üldine
 msgid "Browser Views"
 msgstr "Sirvija vaade"
+
+msgid "C_omment"
+msgstr "_Kommenteeri"
 
 msgid "Da_te added"
 msgstr "Lisamise _kuupäev"
@@ -201,6 +195,13 @@ msgstr "_Fonoteeki lisatud uute failide jälgimine"
 msgid "<b>Information</b>"
 msgstr "<b>Teave</b>"
 
+msgid "<b>Sync Preferences</b>"
+msgstr "<b>Sünkroniseerimise eelistused</b>"
+
+msgid "<b>Sync Preview</b>"
+msgstr "<b>Sünkroniseerimise eelvaade</b>"
+
+#. Translators: This refers to the usage of media space
 msgid "<b>Volume usage</b>"
 msgstr "<b>Kasutatud ruum</b>"
 
@@ -209,6 +210,9 @@ msgstr "Põhiline"
 
 msgid "Media Player Properties"
 msgstr "Muusikamängija eelistused"
+
+msgid "Sync"
+msgstr ""
 
 msgid "Crossfade Duration (Seconds)"
 msgstr "Sulatamise kestus (sekundites)"
@@ -318,11 +322,17 @@ msgstr "_Reiting:"
 msgid "Albu_m sort order:"
 msgstr "Albumite _järjestamise kord:"
 
+msgid "Albu_m:"
+msgstr "_Album:"
+
+msgid "Album a_rtist sort order:"
+msgstr "Albumi esitaja _järjestamise kord:"
+
+msgid "Album a_rtist:"
+msgstr "Albumi _artist:"
+
 msgid "Sorting"
 msgstr "Järjestus"
-
-msgid "_Album:"
-msgstr "_Album:"
 
 msgid "_Artist sort order:"
 msgstr "Esitaja _järjestamise kord:"
@@ -340,6 +350,9 @@ msgstr "_Žanr:"
 msgid "_Year:"
 msgstr "Aa_sta:"
 
+msgid "BPM:"
+msgstr "Tempo:"
+
 msgid "Date added:"
 msgstr "Lisati:"
 
@@ -355,11 +368,26 @@ msgstr "Faili suurus:"
 msgid "Location:"
 msgstr "Asukoht:"
 
+msgid "Track _number:"
+msgstr "Loo _number:"
+
+msgid "_Comment:"
+msgstr "_Kommentaar:"
+
 msgid "_Title:"
 msgstr "_Pealkiri:"
 
-msgid "_Track number:"
-msgstr "_Loo number:"
+msgid "Added files:"
+msgstr "Lisatud failid:"
+
+msgid "Contents after sync"
+msgstr "Sisu pärast sünkroniseerimist"
+
+msgid "Current contents"
+msgstr "Praegune sisukord"
+
+msgid "Removed files:"
+msgstr "Eemaldatud failid:"
 
 msgid "My Top Rated"
 msgstr "Kõrgelt hinnatud"
@@ -557,6 +585,9 @@ msgstr "Plaadiümbrised"
 msgid "Fetch album covers from the Internet"
 msgstr "Plaadiümbriste tõmbamine internetist"
 
+msgid "Image provided by Last.fm"
+msgstr "Pildi allikas Last.fm"
+
 msgid "Searching... drop artwork here"
 msgstr "Otsimine... lohista plaadiümbris siia"
 
@@ -587,11 +618,27 @@ msgstr "Sellel plaadil võib olla mitu albumit. Vali, milline album see on ja kl
 msgid "_Continue"
 msgstr "_Jätka"
 
+#, fuzzy
+msgid "_Extract to Library"
+msgstr "_Lisa fonoteeki"
+
+msgid "Copy tracks to the library"
+msgstr "Kõikide radade kopeerimine fonoteeki"
+
 msgid "Reload"
 msgstr "Laadi uuesti"
 
 msgid "Reload Album Information"
 msgstr "Albumi teabe taaslaadimine"
+
+#. Translators: this is the toolbar button label
+#. for Copy to Library action.
+#, fuzzy
+msgid "Extract"
+msgstr "Paki lahti"
+
+msgid "Select tracks to be extracted"
+msgstr "Valitud rajad, mida eraldada"
 
 #. Info bar for non-Musicbrainz data
 msgid "S_ubmit Album"
@@ -1338,42 +1385,12 @@ msgstr "Jagatud muusika _nimi:"
 msgid "_Share my music"
 msgstr "_Minu muusika on jagamisel"
 
-msgid "Rhythmbox is not able to connect to iTunes 7 shares"
-msgstr "Rhythmbox ei suuda ühenduda iTunes 7 jagatud muusika külge"
-
 msgid "Invalid share name"
 msgstr "Vigane jagamise nimi"
 
 #, c-format
 msgid "The shared music name '%s' is already taken. Please choose another."
 msgstr "Jagatud muusika nimi '%s' on juba võetud. Vali uus nimi."
-
-msgid "mDNS service is not running"
-msgstr "mDNS teenus ei tööta"
-
-msgid "Browser already active"
-msgstr "Sirvija on juba aktiivne"
-
-msgid "Unable to activate browser"
-msgstr "Sirvijat ei suudetud aktiveerida"
-
-msgid "Browser is not active"
-msgstr "Sirvija pole aktiivne"
-
-msgid "Could not create AvahiEntryGroup for publishing"
-msgstr "Avaldamise jaoks ei ole võimalik luua AvahiEntryGroup-i"
-
-msgid "Could not add service"
-msgstr "Teenust ei suudetud lisada"
-
-msgid "Could not commit service"
-msgstr "Teenuseoperatsiooni ei suudetud sooritada"
-
-msgid "The avahi mDNS service is not running"
-msgstr "Avahi mDNS teenus ei tööta"
-
-msgid "The mDNS service is not published"
-msgstr "mDNS teenus ei ole avaldatud"
 
 msgid "Connect to _DAAP share..."
 msgstr "Ühendu _DAAP-i jagaja otsa..."
@@ -1800,6 +1817,9 @@ msgstr "WinampCN (www.winampcn.com)"
 msgid "TerraBrasil (terra.com.br)"
 msgstr "TerraBrasil (terra.com.br)"
 
+msgid "Dark Lyrics (darklyrics.com)"
+msgstr "Dark Lyrics (darklyrics.com)"
+
 msgid "Fetch song lyrics from the Internet"
 msgstr "Laulusõnad tõmmatakse internetist"
 
@@ -2053,6 +2073,9 @@ msgstr "Kataloogi laadimine pole võimalik"
 msgid "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr "Magnatune kataloogi ei suudetud mõista, palun raporteeri veast."
 
+msgid "Couldn't get account details"
+msgstr "Konto andmeid ei suudetud hankida"
+
 msgid "Download Error"
 msgstr "Tõrge allalaadimisel"
 
@@ -2085,12 +2108,6 @@ msgstr "Allalaadimine lõpetatud"
 msgid "All Magnatune downloads have been completed."
 msgstr "Kõik Magnatune allalaadimised on lõpetatud."
 
-msgid "Purchase Album"
-msgstr "Osta album"
-
-msgid "Purchase this album from Magnatune"
-msgstr "Selle albumi otsmine Magnatune'st"
-
 msgid "Download Album"
 msgstr "Albumi allalaadimine"
 
@@ -2109,6 +2126,12 @@ msgstr "Allalaadimiste katkestamine"
 msgid "Stop downloading purchased albums"
 msgstr "Katkesta ostetud albumite allalaadimine"
 
+msgid "Couldn't store account information"
+msgstr "Konto andmeid ei suudetud salvestada"
+
+msgid "There was a problem accessing the keyring. Check the debug output for more information."
+msgstr "Esines viga võtmerõngaga ühendumisel. Rohkem infot võib leida silumise väljundist."
+
 msgid "Control Rhythmbox using key shortcuts"
 msgstr "Rhythmboxi juhtimine kiirklahvidega"
 
@@ -2124,12 +2147,6 @@ msgstr "MTP seadmete tugi (näitab sisu, edastab, esitab seadmelt)"
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Ajutist faili ei suudetud avada: %s"
-
-msgid "_Eject"
-msgstr "_Väljasta"
-
-msgid "Eject MTP-device"
-msgstr "MTP-seadme väljastamine"
 
 msgid "Rename MTP-device"
 msgstr "Nimeta MTP-seade ümber"
@@ -2154,6 +2171,10 @@ msgstr "MTP-seadmest ei suudetud faili kopeerida: %s"
 #, c-format
 msgid "Not enough space in %s"
 msgstr "Seadmes %s pole piisavalt vaba ruumi"
+
+#, c-format
+msgid "No space left on MTP device"
+msgstr "MTP-seadmes pole enam vaba ruumi"
 
 #, c-format
 msgid "Unable to send file to MTP device: %s"
@@ -2483,6 +2504,9 @@ msgstr "Ei suudetud voo sisu töötelda"
 msgid "The feed does not contain any downloadable items"
 msgstr "Voog ei sisalda ühtegi allalaaditavad kirjet"
 
+msgid "Unable to display requested URI"
+msgstr "Nõutud URI-d pole võimalik kuvada"
+
 msgid "Not Downloaded"
 msgstr "Allalaadimata"
 
@@ -2597,6 +2621,13 @@ msgstr "Help!"
 msgid "Ticket To Ride"
 msgstr "Ticket To Ride"
 
+#. Translators: the parameter here is a list of GStreamer plugins.
+#. * The plugin names are already translated.
+#.
+#, c-format
+msgid "Additional GStreamer plugins are required to play this file: %s"
+msgstr "Selle faili esitamiseks on vaja uut GStreameri pluginat: %s"
+
 msgid "invalid unicode in error message"
 msgstr "Veateates oli sobimatu unicode"
 
@@ -2604,15 +2635,12 @@ msgstr "Veateates oli sobimatu unicode"
 msgid "Empty file"
 msgstr "Tühi fail"
 
-#. Translators: the parameter here is a list of GStreamer plugins.
-#. * The plugin names are already translated.
-#.
-#, c-format
-msgid "Additional GStreamer plugins are required to play this file: %s"
-msgstr "Selle faili esitamiseks on vaja puuduvat GStreameri pluginat: %s"
-
 msgid "Could not load the music database:"
 msgstr "Muusika andmebaasi ei suudetud laadida:"
+
+#, c-format
+msgid "Checking (%d/%d)"
+msgstr "Kontrollimine (%d/%d)"
 
 #, c-format
 msgid "%ld minute"
@@ -2785,31 +2813,17 @@ msgstr "Plugina viga"
 msgid "Unable to activate plugin %s"
 msgstr "Pluginat %s ei suudetud aktiveerida"
 
+msgid "_Eject"
+msgstr "_Väljasta"
+
 msgid "Eject this medium"
 msgstr "Väljasta see andmekandja"
-
-msgid "_Extract to Library"
-msgstr "_Lisa fonoteeki"
-
-msgid "Copy all tracks to the library"
-msgstr "Kõikide radade kopeerimine fonoteeki"
 
 msgid "_Scan Removable Media"
 msgstr "_Skaneeri eemaldatavaid andmekandjaid"
 
 msgid "Scan for new Removable Media"
 msgstr "Eemaldatavate andmekandjate skaneerimine"
-
-#. Translators: this is the toolbar button label
-#. for Copy to Library action.
-msgid "Extract"
-msgstr "Paki lahti"
-
-msgid "Unable to eject"
-msgstr "Ei suudetud väljastada"
-
-msgid "Unable to unmount"
-msgstr "Ei suudetud lahti haakida"
 
 msgid "Select _All"
 msgstr "_Vali kõik"
@@ -3124,14 +3138,6 @@ msgstr "Muusika helitugevuse muutmine"
 msgid "Error while saving song information"
 msgstr "Viga laulu andmete salvestamisel"
 
-#, c-format
-msgid "Transferring track %d out of %d (%.0f%%)"
-msgstr "%d. loo edastamine %d-st (%.0f%%)"
-
-#, c-format
-msgid "Transferring track %d out of %d"
-msgstr "%d. loo edastamine %d-st"
-
 #  Translators: %s is the song name
 #. Translators: %s is the song name
 #, c-format
@@ -3225,8 +3231,45 @@ msgstr "Sirvija nähtavuse muutmine"
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "Muusika filtreerimine žanri, esitaja, albumi või pealkirja alusel"
 
-msgid "Loading..."
-msgstr "Laadimine..."
+#, c-format
+msgid "The file \"%s\" already exists. Do you want to replace it?"
+msgstr "Fail \"%s\" on juba olemas. Kas tahad selle asendada?"
+
+msgid "_Skip"
+msgstr "_Jäta vahele"
+
+msgid "_Replace"
+msgstr "_Asenda"
+
+msgid "S_kip All"
+msgstr "Jäta _kõik vahele"
+
+msgid "Replace _All"
+msgstr "Asenda _kõik"
+
+msgid "Unable to transfer tracks"
+msgstr "Lugude edastamine pole võimalik"
+
+msgid "None of the tracks to be transferred are in a format supported by the target device, and no encoders are available  for the supported formats."
+msgstr "Mitte ükski ülekantavatest radadest ei ole vormingus, mida sihtseade toetaks, ning toetatud vormingutele pole saadaval ka ühtegi enkooderit."
+
+#, c-format
+msgid "%d of the %d files to be transferred are not in a format supported by the target device, and no encoders are available for the supported formats."
+msgstr "%d %d-st failist, mis kantakse seadmele, on vormingus, mida sihtseade ei toeta, ning nende ümberkodeerimiseks toetatud vormingusse pole saadaval ka enkoodereid."
+
+msgid "Unable to transfer all tracks. Do you want to continue?"
+msgstr "Kõigi radade ülekanne pole võimalik. Kas tahad jätkata?"
+
+msgid "C_ontinue"
+msgstr "_Jätka"
+
+#, c-format
+msgid "Transferring track %d out of %d (%.0f%%)"
+msgstr "%d. loo edastamine %d-st (%.0f%%)"
+
+#, c-format
+msgid "Transferring track %d out of %d"
+msgstr "%d. loo edastamine %d-st"
 
 msgid "Search all fields"
 msgstr "Kõigi väljade järgi otsimine"
@@ -3249,6 +3292,12 @@ msgstr "Pealkirjade otsimine"
 msgid "Error transferring track"
 msgstr "Viga pala edastamisel"
 
+msgid "Unable to eject"
+msgstr "Ei suudetud väljastada"
+
+msgid "Unable to unmount"
+msgstr "Ei suudetud lahti haakida"
+
 msgid "Browse This _Genre"
 msgstr "Sirvi seda _žanrit"
 
@@ -3266,6 +3315,13 @@ msgstr "Sirvi seda a_lbumit"
 
 msgid "Set the browser to view only this album"
 msgstr "Sirvija näitab ainult seda albumit"
+
+#. set up info bar for triggering codec installation
+msgid "Install Plugins"
+msgstr "Pluginate paigaldamine"
+
+msgid "Additional GStreamer plugins are required to play some of these files."
+msgstr "Neist failidest mõne esitamiseks on vaja uusi GStreameri pluginaid."
 
 msgid "Import Errors"
 msgstr "Vead importimisel"
@@ -3315,13 +3371,24 @@ msgstr "Määratud mitu asukohta"
 msgid "Example Path:"
 msgstr "Näidisasukoht:"
 
-#  Translators: the format is "X hours and X minutes"
-#. Translators: this is used to display the amount of storage space
-#. * used and the total storage space on an device.
-#.
+msgid "Synchronize media player with the library"
+msgstr "Sünkroniseeri meediaesitajat fonoteegiga"
+
+msgid "You have not selected any music, playlists, or podcasts to transfer to this device."
+msgstr "Sa ei ole valinud ei muusikat, esitusnimekirju ega podcaste, mida kanda üle sellele seadmele."
+
+msgid "There is not enough space on the device to transfer the selected music, playlists and podcasts."
+msgstr "Sellel seadmel pole piisaval vaba ruumi, et sinna üle kanda valitud muusika, esitusnimekirjad ja podcastid."
+
 #, c-format
-msgid "%s of %s"
-msgstr "%s %s-st"
+msgid "%s Sync Settings"
+msgstr "%s sünkroniseerimise sätted"
+
+msgid "Sync with the device"
+msgstr "Sünkroniseerimine seadmega"
+
+msgid "Don't sync"
+msgstr "Ära sünkroniseeri"
 
 msgid "Missing Files"
 msgstr "Puuduvad failid"
@@ -3535,6 +3602,38 @@ msgstr "Ühendumine"
 msgid "Buffering"
 msgstr "Puhverdamine"
 
+msgid "All Music"
+msgstr "Kogu muusika"
+
+msgid "Other"
+msgstr "Muu"
+
+msgid "Available"
+msgstr "Saadaval"
+
+#, fuzzy
+msgid "Image/label border"
+msgstr "Pildi/sildi ääred"
+
+#, fuzzy
+msgid "Width of border around the label and image in the alert dialog"
+msgstr "Hoiatusdialoogi pildi või sildi äärise laius"
+
+msgid "Alert Type"
+msgstr "Hoiatuse liik"
+
+msgid "The type of alert"
+msgstr "Hoiatuse liik"
+
+msgid "Alert Buttons"
+msgstr "Hoiatuse nupud"
+
+msgid "The buttons shown in the alert dialog"
+msgstr "Hoiatuse dialoogis kuvatavad nupud"
+
+msgid "Show more _details"
+msgstr "Näita rohkem _üksikasju"
+
 msgid "Pixbuf Object"
 msgstr "Pixbuf objekt"
 
@@ -3546,6 +3645,9 @@ msgstr "Kadudeta"
 
 msgid "Track"
 msgstr "Lugu"
+
+msgid "Comment"
+msgstr "Kommentaar"
 
 msgid "Time"
 msgstr "Kestus"
@@ -3628,6 +3730,10 @@ msgid "Album"
 msgstr "Album"
 
 msgctxt "query-criteria"
+msgid "Album Artist"
+msgstr "Albumi esitaja"
+
+msgctxt "query-criteria"
 msgid "Genre"
 msgstr "Žanr"
 
@@ -3642,6 +3748,10 @@ msgstr "Reiting"
 msgctxt "query-criteria"
 msgid "Path"
 msgstr "Kataloog"
+
+msgctxt "query-criteria"
+msgid "Comment"
+msgstr "Kommentaar"
 
 msgctxt "query-criteria"
 msgid "Play Count"
@@ -3664,6 +3774,10 @@ msgid "Duration"
 msgstr "Kestus"
 
 msgctxt "query-criteria"
+msgid "Beats Per Minute"
+msgstr "Lööki minutis"
+
+msgctxt "query-criteria"
 msgid "Time of Last Play"
 msgstr "Viimati esitatud"
 
@@ -3681,6 +3795,10 @@ msgstr "_Pööratud tähestikulises järjekorras"
 msgctxt "query-sort"
 msgid "Album"
 msgstr "Album"
+
+msgctxt "query-sort"
+msgid "Album Artist"
+msgstr "Albumi esitaja"
 
 msgctxt "query-sort"
 msgid "Genre"
@@ -3739,6 +3857,17 @@ msgstr "Lisamise kuupäev"
 msgid "W_ith more recently added tracks first"
 msgstr "_Hiljuti lisatud lood eespool"
 
+msgctxt "query-sort"
+msgid "Comment"
+msgstr "Kommentaar"
+
+msgctxt "query-sort"
+msgid "Beats Per Minute"
+msgstr "Lööki minutis"
+
+msgid "W_ith faster tempo tracks first"
+msgstr "_Kiiremad lood eespool"
+
 msgid "contains"
 msgstr "sisaldab"
 
@@ -3747,6 +3876,9 @@ msgstr "ei sisalda"
 
 msgid "equals"
 msgstr "võrdub"
+
+msgid "not equal to"
+msgstr "pole võrdne"
 
 msgid "starts with"
 msgstr "algab"
@@ -3764,6 +3896,10 @@ msgstr "ülimalt"
 #. Translators: this matches songs within 1-Jan-YEAR to 31-Dec-YEAR
 msgid "in"
 msgstr "on"
+
+#. Translators: this matches songs before 1-Jan-YEAR or after 31-Dec-YEAR
+msgid "not in"
+msgstr "pole"
 
 #. Translators: this matches songs after 31-Dec-YEAR
 msgid "after"
@@ -3839,4 +3975,3 @@ msgstr "Töölaual"
 
 msgid "Unknown location"
 msgstr "Tundmatu asukoht"
-
