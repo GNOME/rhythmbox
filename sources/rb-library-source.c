@@ -840,7 +840,7 @@ sanitize_pattern (const char *pat)
  * %aA -- album artist (lowercase)
  * %as -- album artist sortname
  * %aS -- album artist sortname (lowercase)
- * %aY -- album release year
+ * %ay -- album release year
  * %an -- album disc number
  * %aN -- album disc number, zero padded
  * %ag -- album genre
