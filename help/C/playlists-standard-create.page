@@ -5,7 +5,7 @@
   <info>
     <link type="seealso" xref="playlists-standard"/>    
     <link type="guide" xref="playlists#playlists-manage" group="one"/>
-    <desc>Create standard playlists and add music.</desc>
+    <desc>Create standard playlists, add and remove songs.</desc>
     <revision pkgversion="3.0" version="0.1" date="2010-06-24" status="draft"/>
     <credit type="author">
       <name>Milo Casagrande</name>
@@ -20,16 +20,75 @@
 
   <title>Manage standard playlists</title>
   
-  <p>
-    To create a standard playlist:
-  </p>
+  <section id="create">
+    <title>Create a standard playlist</title>
+    <steps>
+      <item>
+        <p>
+          Choose <guiseq><gui style="menu">Music</gui><gui style="menuitem">Playlist</gui><gui style="menuitem">New Playlist</gui></guiseq>.
+        </p>
+      </item>
+      <item>
+        <p>
+           Type a name for the new empty playlist, and press <gui style="button">Enter</gui>.
+        </p>
+      </item>
+    </steps>
+  </section>
+
+  <section id="add">
+    <title>Add songs to a playlist</title>
+    <steps>
+      <item>
+        <p>
+          From the <gui style="">Music</gui> library, select the songs you like to
+          add to the playlist.
+        </p>
+      </item>
+      <item>
+        <p>
+          Right-click on the selected songs, choose <gui style="menuitem">Add to
+          Playlist</gui>, and select the playlist you would like to add the songs into.
+        </p>
+      </item>
+    </steps>
+    
+  </section>
   
-  <steps>
-    <item>
+  <section id="remove">
+    <title>Remove songs from a playlist</title>
+    
+    <steps>
+      <item>
+        <p>
+          Select the desired playlist.
+        </p>
+      </item>
+      <item>
+        <p>
+          Select the songs you would like to remove, right-click on them, and
+          choose <gui style="menuitem">Remove</gui>.
+        </p>
+      </item>
+    </steps>
+    
+    <note>
       <p>
-        
+        The songs you remove will not be removed from your computer, but only from
+        the playlist. They will still be available in your music library.
       </p>
-    </item>
-  </steps>
+      <p>
+        To remove a song from the computer, choose <gui style="menuitem">Move to Trash</gui>.
+      </p>
+    </note>
+    
+  </section>  
+  
+  <note style="tip">
+    <p>
+      You can select multiple songs from the same playlist or album by pressing the
+      <key>Ctrl</key> or <key>Shift</key> key when doing your selection.
+    </p>
+  </note>
 
 </page>
