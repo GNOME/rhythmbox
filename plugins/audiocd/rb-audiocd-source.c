@@ -250,6 +250,25 @@ rb_audiocd_source_dispose (GObject *object)
 	G_OBJECT_CLASS (rb_audiocd_source_parent_class)->dispose (object);
 }
 
+static inline void
+force_no_spacing (GtkWidget *widget)
+{
+	static gboolean first_time = TRUE;
+	if (first_time) {
+		gtk_rc_parse_string ("\n"
+				     "   style \"audiocd-extract-header-style\"\n"
+				     "   {\n"
+				     "      GtkCheckButton::indicator-spacing=0\n"
+				     "   }\n"
+				     "\n"
+				     "   widget \"*.audiocd-extract-header\" style \"audiocd-extract-header-style\"\n"
+				     "\n");
+		first_time = FALSE;
+	}
+
+	gtk_widget_set_name (widget, "audiocd-extract-header");
+}
+
 static void
 rb_audiocd_source_constructed (GObject *object)
 {
@@ -314,6 +333,7 @@ rb_audiocd_source_constructed (GObject *object)
 	gtk_tree_view_column_set_clickable (extract, TRUE);
 	widget = gtk_check_button_new ();
 	g_object_set (widget, "active", TRUE, NULL);
+	force_no_spacing (widget);
 	gtk_widget_show_all (widget);
 	g_signal_connect_object (extract, "clicked", G_CALLBACK (extract_column_clicked_cb), source, 0);
 	gtk_tree_view_column_set_widget (extract, widget);
@@ -323,7 +343,7 @@ rb_audiocd_source_constructed (GObject *object)
 	/* set column width */
 	gtk_cell_renderer_get_size (renderer, GTK_WIDGET (entry_view), NULL, NULL, NULL, &toggle_width, NULL);
 	gtk_tree_view_column_set_sizing (extract, GTK_TREE_VIEW_COLUMN_FIXED);
-	gtk_tree_view_column_set_fixed_width (extract, toggle_width + 5);
+	gtk_tree_view_column_set_fixed_width (extract, toggle_width + 10);
 
 	rb_entry_view_insert_column_custom (entry_view, extract, "", "Extract", NULL, NULL, NULL, 1);
 	gtk_widget_set_tooltip_text (gtk_tree_view_column_get_widget (extract),
