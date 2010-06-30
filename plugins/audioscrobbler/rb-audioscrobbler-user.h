@@ -46,23 +46,21 @@ typedef struct {
 	} type;
 
 	GdkPixbuf *image;
+	char *url;
 
 	union {
 		struct {
 			char *username;
-			char *url;
 			char *playcount;
 		} user_info;
 
 		struct {
 			char *title;
 			char *artist;
-			char *url;
 		} track;
 
 		struct {
 			char *name;
-			char *url;
 		} artist;
 	};
 } RBAudioscrobblerUserData;

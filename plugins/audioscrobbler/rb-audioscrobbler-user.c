@@ -47,21 +47,19 @@ rb_audioscrobbler_user_data_copy (RBAudioscrobblerUserData *data)
 	if (data->image != NULL) {
 		d->image = g_object_ref (data->image);
 	}
+	d->url = g_strdup (data->url);
 
 	switch (d->type) {
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO:
 		d->user_info.username = g_strdup (data->user_info.username);
-		d->user_info.url = g_strdup (data->user_info.url);
 		d->user_info.playcount = g_strdup (data->user_info.playcount);
 		break;
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK:
 		d->track.title = g_strdup (data->track.title);
 		d->track.artist = g_strdup (data->track.artist);
-		d->track.url = g_strdup (data->track.url);
 		break;
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST:
 		d->artist.name = g_strdup (data->artist.name);
-		d->artist.url = g_strdup (data->artist.url);
 		break;
 	}
 
@@ -74,20 +72,19 @@ rb_audioscrobbler_user_data_free (RBAudioscrobblerUserData *data)
 	if (data->image != NULL) {
 		g_object_unref (data->image);
 	}
+	g_free (data->url);
+
 	switch (data->type) {
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO:
 		g_free (data->user_info.username);
-		g_free (data->user_info.url);
 		g_free (data->user_info.playcount);
 		break;
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK:
 		g_free (data->track.title);
 		g_free (data->track.artist);
-		g_free (data->track.url);
 		break;
 	case RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST:
 		g_free (data->artist.name);
-		g_free (data->artist.url);
 		break;
 	}
 
@@ -679,8 +676,8 @@ rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user, const char *
 		user_info = g_slice_new0 (RBAudioscrobblerUserData);
 		user_info->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO;
 		user_info->user_info.username = g_strdup (json_object_get_string_member (user_object, "name"));
-		user_info->user_info.url = g_strdup (json_object_get_string_member (user_object, "url"));
 		user_info->user_info.playcount = g_strdup (json_object_get_string_member (user_object, "playcount"));
+		user_info->url = g_strdup (json_object_get_string_member (user_object, "url"));
 
 		user_info->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, user_info),
 		                                                     USER_PROFILE_IMAGE_SIZE, -1, NULL);
@@ -817,7 +814,7 @@ rb_audioscrobbler_user_parse_recent_tracks (RBAudioscrobblerUser *user, const ch
 			track->track.title = g_strdup (json_object_get_string_member (track_object, "name"));
 			artist_object = json_object_get_object_member (track_object, "artist");
 			track->track.artist = g_strdup (json_object_get_string_member (artist_object, "#text"));
-			track->track.url = g_strdup (json_object_get_string_member (track_object, "url"));
+			track->url = g_strdup (json_object_get_string_member (track_object, "url"));
 
 			g_ptr_array_add (recent_tracks, track);
 
@@ -957,7 +954,7 @@ rb_audioscrobbler_user_parse_top_tracks (RBAudioscrobblerUser *user, const char 
 			track->track.title = g_strdup (json_object_get_string_member (track_object, "name"));
 			artist_object = json_object_get_object_member (track_object, "artist");
 			track->track.artist = g_strdup (json_object_get_string_member (artist_object, "name"));
-			track->track.url = g_strdup (json_object_get_string_member (track_object, "url"));
+			track->url = g_strdup (json_object_get_string_member (track_object, "url"));
 
 			g_ptr_array_add (top_tracks, track);
 
@@ -1097,7 +1094,7 @@ rb_audioscrobbler_user_parse_loved_tracks (RBAudioscrobblerUser *user, const cha
 			track->track.title = g_strdup (json_object_get_string_member (track_object, "name"));
 			artist_object = json_object_get_object_member (track_object, "artist");
 			track->track.artist = g_strdup (json_object_get_string_member (artist_object, "name"));
-			track->track.url = g_strdup (json_object_get_string_member (track_object, "url"));
+			track->url = g_strdup (json_object_get_string_member (track_object, "url"));
 
 			g_ptr_array_add (loved_tracks, track);
 
@@ -1234,7 +1231,7 @@ rb_audioscrobbler_user_parse_top_artists (RBAudioscrobblerUser *user, const char
 			artist = g_slice_new0 (RBAudioscrobblerUserData);
 			artist->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST;
 			artist->artist.name = g_strdup (json_object_get_string_member (artist_object, "name"));
-			artist->artist.url = g_strdup (json_object_get_string_member (artist_object, "url"));
+			artist->url = g_strdup (json_object_get_string_member (artist_object, "url"));
 
 			g_ptr_array_add (top_artists, artist);
 
@@ -1389,7 +1386,7 @@ rb_audioscrobbler_user_parse_recommended_artists (RBAudioscrobblerUser *user, co
 				artist = g_slice_new0 (RBAudioscrobblerUserData);
 				artist->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST;
 				artist->artist.name = g_strdup (json_object_get_string_member (artist_object, "name"));
-				artist->artist.url = g_strdup (json_object_get_string_member (artist_object, "url"));
+				artist->url = g_strdup (json_object_get_string_member (artist_object, "url"));
 
 				g_ptr_array_add (recommended_artists, artist);
 
