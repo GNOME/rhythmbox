@@ -1,3 +1,104 @@
+Overview of changes in Rhythmbox 0.13.0  "Albatross"
+====================================================
+
+* Improved GStreamer codec installation (Jonathan Matthew)
+* New metadata fields: comment (Josh Green), BPM (Mattias Eriksson),
+  Album artist (JM)
+* MMS and RTSP streams should work properly now (Robert Ancell)
+* Always visible on startup when started manually (JM)
+* New implementation of the MPRIS D-Bus interface spec (JM)
+* Creates nested folders on MTP devices (JM)
+* Installs header, VAPI and pkg-config files for external plugins (JM)
+* DAAP plugin now uses libdmapsharing (W. Michael Petullo)
+* Library, playlist and podcast syncing for media players (based on Paul
+   Bellamy's Summer of Code project)
+* Fixed interaction with Brasero for CD burning (Philippe Rouquier)
+* New application icon (Lapo Calamandrei)
+* Displays HTML podcast episode descriptions using WebKit (JM)
+* Updates for Magnatune's new purchase process (Adam Zimmerman)
+
+Bugs fixed:
+
+310774 - Music player sync
+320507 - Deal with HTML in Podcast Descriptions
+324845 - Podcast syncing
+341702 - Clobbers empty/nonexistent tags
+404698 - Track transfer fails with "failed to find acceptable mime type"
+454889 - Support for the BPM tag
+457088 - track transfer on out of space messages stack up
+501554 - generic audio player synchronization support
+520046 - copying files to full iPod leaves 0-byte files scattered on the device
+525094 - Grab lyrics from darklyrics.com
+527898 - Assertion in rhythmdb_property_model_delete_prop()
+530775 - Crossfade backend can't play Real Audio streams
+537868 - Restore window when rhythmbox is closed from tray icon
+538240 - Progress bar while copying to storage media is non-sensical
+559849 - Human friendly names instead of language codes
+560940 - support "Comment" id3 tag in rhythmbox
+566852 - Move DAAP code to use common libdmapsharing
+581885 - rhythmbox can't play mms radio
+592470 - "Do you want to overwrite..." dialogue box lacks yes/no to all and cancel buttons
+593641 - Folder support for MTP-Devices
+593968 - problematic way of asking to skip files on copy
+595425 - Use accessor functions instead direct access (use GSEAL GnomeGoal)
+596615 - Use a single HTTP connection for podcast downloads where possible
+612714 - IM Status plugin does not reset status message on end playback
+612867 - Automatic playlists editor is missing "does not equal" in Rating criterions
+612942 - After one error in radio streaming, rhythmbox fails with all radios channels.
+613526 - Crash due to MTP device disappearing immediately after access
+613941 - genre tab displays numbers in magnatune catalogue instead of genre names
+614084 - Translatable string fixes
+614139 - New icon
+614184 - No python binding for rhythmdb_query_model_copy_contents
+614351 - Crash due to playing stream signal emitted on non-main thread
+616411 - crash when transferring files with no extension
+616636 - use g_ascii_strtod to read the db version
+617157 - use g_strcmp0 when checking properties in song info widget
+617587 - fix python initialization code for python 2.6.6
+618025 - Add KWUR to initial internet radio station playlist
+618520 - implement MPRIS dbus spec
+619247 - TerraParser does not catch all HTML entities
+619576 - Brasero does not remove temporary projects because of G_SPAWN_FILE_AND_ARGV_ZERO in the plugin
+619677 - Expose file grabbing functions to python plugins
+619907 - Add more bindings for Vala
+619925 - Add translator comment for "Volume usage"
+620069 - add python bindings for the rating widget
+620199 - fails to build: "pause" already used by eglibc <unistd.h>
+620256 - RBSource has no default implementation for rb_source_can_pause
+620857 - Support detection of files in the library being renamed/moved while rhythmbox is running
+621434 - Source code typo in sources/rb-library-source.c
+622215 - [Patch] Allow building rhythmbox with gtk+ 2.21.1 or newer
+622613 - segfault in rb_player_gst_xfade_bus_cb
+622723 - Sync string is used in two different contexts
+622753 - segfault in rhythmdb_add_import_error_entry
+
+New and updated translations:
+
+- bg, courtesy of Krasimir Chonov
+- cs, courtesy of Marek Černocký
+- da, courtesy of Ask Hjorth Larsen
+- de, courtesy of Mario Blättermann
+- el, courtesy of Simos Xenitellis
+- es, courtesy of Jorge González
+- et, courtesy of Mattias Põldaru
+- fr, courtesy of Claude Paroz
+- gl, courtesy of Fran Diéguez
+- hi, courtesy of karthik
+- hu, courtesy of Gabor Kelemen
+- it, courtesy of Luca Ferretti
+- ko, courtesy of Kang Bundo
+- lt, courtesy of Aurimas Černius
+- pa, courtesy of A S Alam
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Daniel S. Koda
+- sl, courtesy of Andrej Žnidaršič
+- sr, courtesy of Милош Поповић
+- sr@latin, courtesy of Miloš Popović
+- th, courtesy of Theppitak Karoonboonyanan
+- uk, courtesy of Sergiy Gavrylov
+- zh_CN, courtesy of Funda Wang
+
+
 Overview of changes in Rhythmbox 0.12.8  "Extradition"
 ======================================================
 
