@@ -369,7 +369,7 @@ start_next_batch (RBTrackTransferQueue *queue)
 					      _("None of the tracks to be transferred "
 					        "are in a format supported by the target "
 						"device, and no encoders are available "
-						" for the supported formats."));
+						"for the supported formats."));
 		rb_alert_dialog_set_details_label (RB_ALERT_DIALOG (dialog), NULL);
 		g_object_unref (window);
 		g_signal_connect_object (dialog, "response", G_CALLBACK (error_response_cb), queue, 0);
