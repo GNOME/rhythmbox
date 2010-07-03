@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-06-26 07:59+0000\n"
-"PO-Revision-Date: 2010-06-26 10:21+0200\n"
+"POT-Creation-Date: 2010-07-02 10:10+0000\n"
+"PO-Revision-Date: 2010-07-03 12:33+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -684,7 +684,7 @@ msgstr "%d %b %Y"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:128
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:132
-#: ../plugins/audiocd/rb-audiocd-source.c:492
+#: ../plugins/audiocd/rb-audiocd-source.c:512
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
@@ -900,67 +900,67 @@ msgstr "Recargar la información del álbum"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../plugins/audiocd/rb-audiocd-source.c:288
+#: ../plugins/audiocd/rb-audiocd-source.c:307
 msgid "Extract"
 msgstr "Extraer"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:330
+#: ../plugins/audiocd/rb-audiocd-source.c:350
 msgid "Select tracks to be extracted"
 msgstr "Seleccionar las pistas que extraer"
 
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:361
+#: ../plugins/audiocd/rb-audiocd-source.c:381
 msgid "S_ubmit Album"
 msgstr "_Enviar á_lbum"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:362
+#: ../plugins/audiocd/rb-audiocd-source.c:382
 msgid "Hide"
 msgstr "Ocultar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:364
+#: ../plugins/audiocd/rb-audiocd-source.c:384
 msgid "Could not find this album on MusicBrainz."
 msgstr "No se pudo obtener información acerca de este álbum en MusicBrainz."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:365
+#: ../plugins/audiocd/rb-audiocd-source.c:385
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Puede mejorar la base de datos de MusicBrainz añadiendo este álbum."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:498
+#: ../plugins/audiocd/rb-audiocd-source.c:518
 msgid "<Invalid unicode>"
 msgstr "<Unicode inválido>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:542
+#: ../plugins/audiocd/rb-audiocd-source.c:562
 #, c-format
 msgid "Track %u"
 msgstr "Pista %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:605
-#: ../plugins/audiocd/rb-audiocd-source.c:613
-#: ../plugins/audiocd/rb-audiocd-source.c:1005
+#: ../plugins/audiocd/rb-audiocd-source.c:625
+#: ../plugins/audiocd/rb-audiocd-source.c:633
+#: ../plugins/audiocd/rb-audiocd-source.c:1025
 msgid "Couldn't load Audio CD"
 msgstr "No se pudo cargar un CD de sonido"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:606
+#: ../plugins/audiocd/rb-audiocd-source.c:626
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox no pudo acceder al CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:614
+#: ../plugins/audiocd/rb-audiocd-source.c:634
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox pudo leer la información del CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:715
+#: ../plugins/audiocd/rb-audiocd-source.c:735
 #: ../sources/rb-library-source.c:151 ../widgets/rb-entry-view.c:1518
 msgid "Title"
 msgstr "Título"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:722
+#: ../plugins/audiocd/rb-audiocd-source.c:742
 #: ../plugins/context/context/ArtistTab.py:52
 #: ../sources/rb-library-source.c:142 ../widgets/rb-entry-view.c:1528
 #: ../widgets/rb-library-browser.c:141
 msgid "Artist"
 msgstr "Artista"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1006
+#: ../plugins/audiocd/rb-audiocd-source.c:1026
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox no pudo obtener acceso al dispositivo CD."
 
@@ -4565,9 +4565,12 @@ msgid "Unable to transfer tracks"
 msgstr "No se pudieron transferir las pistas"
 
 #: ../shell/rb-track-transfer-queue.c:369
+#| msgid ""
+#| "None of the tracks to be transferred are in a format supported by the "
+#| "target device, and no encoders are available  for the supported formats."
 msgid ""
 "None of the tracks to be transferred are in a format supported by the target "
-"device, and no encoders are available  for the supported formats."
+"device, and no encoders are available for the supported formats."
 msgstr ""
 "Ninguna de las pistas que se van a transferir está en un formato que soporte "
 "el dispositivo objetivo y no existen codificadores disponibles para los "
@@ -4671,12 +4674,10 @@ msgstr "Hace que el examinador sólo muestre este álbum"
 
 #. set up info bar for triggering codec installation
 #: ../sources/rb-import-errors-source.c:240
-#| msgid "Sample Plugin"
 msgid "Install Plugins"
 msgstr "Instalar complementos"
 
 #: ../sources/rb-import-errors-source.c:246
-#| msgid "Additional GStreamer plugins are required to play this file: %s"
 msgid "Additional GStreamer plugins are required to play some of these files."
 msgstr ""
 "Para poder reproducir algunos de estos archivos se necesitan complementos "
@@ -4750,7 +4751,6 @@ msgid "Example Path:"
 msgstr "Ejemplo de la dirección:"
 
 #: ../sources/rb-media-player-source.c:108
-#| msgid "_Extract to Library"
 msgid "Sync with Library"
 msgstr "Sincronizar con la biblioteca"
 
@@ -5462,7 +5462,6 @@ msgstr "en"
 
 #. Translators: this matches songs before 1-Jan-YEAR or after 31-Dec-YEAR
 #: ../widgets/rb-query-creator-properties.c:179
-#| msgid "Sorting"
 msgid "not in"
 msgstr "no en"
 
