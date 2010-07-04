@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-06-25 13:14+0000\n"
+"POT-Creation-Date: 2010-07-02 10:10+0000\n"
 "PO-Revision-Date: 2010-06-27 19:33+0100\n"
 "Last-Translator: Mario Blättermann <mariobl@gnome.org>\n"
 "Language-Team: Deutsch <gnome-de@gnome.org>\n"
@@ -691,7 +691,7 @@ msgstr "%d. %B %Y"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:128
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:132
-#: ../plugins/audiocd/rb-audiocd-source.c:492
+#: ../plugins/audiocd/rb-audiocd-source.c:512
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
@@ -712,16 +712,17 @@ msgstr "%d. %B %Y"
 #: ../podcast/rb-feed-podcast-properties-dialog.c:341
 #: ../podcast/rb-podcast-manager.c:1908
 #: ../podcast/rb-podcast-properties-dialog.c:601
-#: ../podcast/rb-podcast-properties-dialog.c:696 ../remote/dbus/rb-client.c:142
-#: ../rhythmdb/rhythmdb-tree.c:1339 ../rhythmdb/rhythmdb-tree.c:1343
-#: ../rhythmdb/rhythmdb-tree.c:1347 ../rhythmdb/rhythmdb-tree.c:1351
-#: ../rhythmdb/rhythmdb.c:2059 ../rhythmdb/rhythmdb.c:2065
-#: ../rhythmdb/rhythmdb.c:2080 ../shell/rb-shell-player.c:1729
-#: ../sources/rb-podcast-source.c:1658 ../widgets/rb-entry-view.c:1082
-#: ../widgets/rb-entry-view.c:1104 ../widgets/rb-entry-view.c:1572
-#: ../widgets/rb-entry-view.c:1584 ../widgets/rb-entry-view.c:1596
-#: ../widgets/rb-song-info.c:925 ../widgets/rb-song-info.c:937
-#: ../widgets/rb-song-info.c:1158 ../widgets/rb-song-info.c:1497
+#: ../podcast/rb-podcast-properties-dialog.c:696
+#: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1339
+#: ../rhythmdb/rhythmdb-tree.c:1343 ../rhythmdb/rhythmdb-tree.c:1347
+#: ../rhythmdb/rhythmdb-tree.c:1351 ../rhythmdb/rhythmdb.c:2059
+#: ../rhythmdb/rhythmdb.c:2065 ../rhythmdb/rhythmdb.c:2080
+#: ../shell/rb-shell-player.c:1729 ../sources/rb-podcast-source.c:1658
+#: ../widgets/rb-entry-view.c:1082 ../widgets/rb-entry-view.c:1104
+#: ../widgets/rb-entry-view.c:1572 ../widgets/rb-entry-view.c:1584
+#: ../widgets/rb-entry-view.c:1596 ../widgets/rb-song-info.c:925
+#: ../widgets/rb-song-info.c:937 ../widgets/rb-song-info.c:1158
+#: ../widgets/rb-song-info.c:1497
 msgid "Unknown"
 msgstr "Unbekannt"
 
@@ -886,8 +887,8 @@ msgid ""
 "This CD could be more than one album. Please select which album it is below "
 "and press <i>Continue</i>."
 msgstr ""
-"Diese CD kann auf mehrere Alben zutreffen. Bitte wählen Sie hier das richtige "
-"Album aus und klicken Sie auf <i>Weiter</i>."
+"Diese CD kann auf mehrere Alben zutreffen. Bitte wählen Sie hier das "
+"richtige Album aus und klicken Sie auf <i>Weiter</i>."
 
 #: ../plugins/audiocd/multiple-album.ui.h:3
 msgid "_Continue"
@@ -911,69 +912,69 @@ msgstr "Albuminformationen neu laden"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../plugins/audiocd/rb-audiocd-source.c:288
+#: ../plugins/audiocd/rb-audiocd-source.c:307
 msgid "Extract"
 msgstr "Entpacken"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:330
+#: ../plugins/audiocd/rb-audiocd-source.c:350
 msgid "Select tracks to be extracted"
 msgstr "Zu entpackende Titel auswählen"
 
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:361
+#: ../plugins/audiocd/rb-audiocd-source.c:381
 msgid "S_ubmit Album"
 msgstr "Album _einsenden"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:362
+#: ../plugins/audiocd/rb-audiocd-source.c:382
 msgid "Hide"
 msgstr "Verbergen"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:364
+#: ../plugins/audiocd/rb-audiocd-source.c:384
 msgid "Could not find this album on MusicBrainz."
 msgstr "Dieses Album konnte nicht auf MusicBrainz gefunden werden."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:365
+#: ../plugins/audiocd/rb-audiocd-source.c:385
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr ""
 "Sie können die Datenbank von MusicBrainz verbessern, indem Sie dieses Album "
 "hinzufügen."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:498
+#: ../plugins/audiocd/rb-audiocd-source.c:518
 msgid "<Invalid unicode>"
 msgstr "<ungültiger Unicode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:542
+#: ../plugins/audiocd/rb-audiocd-source.c:562
 #, c-format
 msgid "Track %u"
 msgstr "Titel %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:605
-#: ../plugins/audiocd/rb-audiocd-source.c:613
-#: ../plugins/audiocd/rb-audiocd-source.c:1005
+#: ../plugins/audiocd/rb-audiocd-source.c:625
+#: ../plugins/audiocd/rb-audiocd-source.c:633
+#: ../plugins/audiocd/rb-audiocd-source.c:1025
 msgid "Couldn't load Audio CD"
 msgstr "Audio-CD konnte nicht geladen werden"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:606
+#: ../plugins/audiocd/rb-audiocd-source.c:626
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox konnte nicht auf die CD zugreifen."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:614
+#: ../plugins/audiocd/rb-audiocd-source.c:634
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox konnte die CD-Informationen nicht einlesen."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:715
+#: ../plugins/audiocd/rb-audiocd-source.c:735
 #: ../sources/rb-library-source.c:151 ../widgets/rb-entry-view.c:1518
 msgid "Title"
 msgstr "Titel"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:722
+#: ../plugins/audiocd/rb-audiocd-source.c:742
 #: ../plugins/context/context/ArtistTab.py:52
 #: ../sources/rb-library-source.c:142 ../widgets/rb-entry-view.c:1528
 #: ../widgets/rb-library-browser.c:141
 msgid "Artist"
 msgstr "Interpret"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1006
+#: ../plugins/audiocd/rb-audiocd-source.c:1026
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox konnte nicht auf das CD-Laufwerk zugreifen."
 
@@ -1269,8 +1270,8 @@ msgstr "Diesen Titel herunterladen"
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:495
 msgid "Enter the item to build a Last.fm station out of:"
 msgstr ""
-"Bitte geben Sie den Eintrag ein, aus dem eine last.fm-Station erstellt werden "
-"soll"
+"Bitte geben Sie den Eintrag ein, aus dem eine last.fm-Station erstellt "
+"werden soll"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:498
 msgid "Add"
@@ -1281,10 +1282,11 @@ msgid "Account Settings"
 msgstr "Konto-Einstellungen"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:869
-msgid "Account details are needed before you can connect.  Check your settings."
+msgid ""
+"Account details are needed before you can connect.  Check your settings."
 msgstr ""
-"Kontodetails sind erforderlich, bevor die Verbindung hergestellt werden kann. "
-"Prüfen Sie Ihre Einstellungen."
+"Kontodetails sind erforderlich, bevor die Verbindung hergestellt werden "
+"kann. Prüfen Sie Ihre Einstellungen."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:877
 msgid "Unable to connect"
@@ -1338,7 +1340,8 @@ msgid "This station is available to subscribers only."
 msgstr "Der Sender ist nur für Abonnenten verfügbar"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1909
-msgid "The streaming system is offline for maintenance, please try again later."
+msgid ""
+"The streaming system is offline for maintenance, please try again later."
 msgstr ""
 "Das Streaming-System ist wegen Wartungsarbeiten nicht verfügbar. Bitte "
 "versuchen Sie es später wieder."
@@ -1817,9 +1820,9 @@ msgid ""
 "Adds support for playing media from and sending media to DLNA/UPnP network "
 "devices, and enables Rhythmbox to be controlled by a DLNA/UPnP ControlPoint"
 msgstr ""
-"Fügt Unterstützung zur Wiedergabe von Medien und dem Versenden von Medien auf "
-"DLNA/UPnP-Netzwerkgeräten hinzu und erlaubt Rhythmbox, von einem DLNA/UPnP-"
-"Gerät gesteuert zu werden"
+"Fügt Unterstützung zur Wiedergabe von Medien und dem Versenden von Medien "
+"auf DLNA/UPnP-Netzwerkgeräten hinzu und erlaubt Rhythmbox, von einem DLNA/"
+"UPnP-Gerät gesteuert zu werden"
 
 #: ../plugins/coherence/coherence.rb-plugin.in.h:2
 msgid "DLNA/UPnP sharing and control support"
@@ -2012,7 +2015,8 @@ msgstr "Musik von %s"
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr ""
-"Für das Verbinden zum freigegebenen Musikordner »%s« wird ein Passwort benötigt"
+"Für das Verbinden zum freigegebenen Musikordner »%s« wird ein Passwort "
+"benötigt"
 
 #: ../plugins/daap/rb-daap-source.c:460
 msgid "Connecting to music share"
@@ -2236,11 +2240,11 @@ msgid ""
 "not an iPod, or you do not wish to initialize it, please click cancel."
 msgstr ""
 "Rhythmbox hat ein Gerät erkannt, das vielleicht ein nicht initialisierter "
-"oder fehlerhafter iPod ist. Bevor Rhythmbox dieses Gerät verwenden kann, muss "
-"es initialisiert werden, aber dadurch werden bereits vorhandene Titel-"
+"oder fehlerhafter iPod ist. Bevor Rhythmbox dieses Gerät verwenden kann, "
+"muss es initialisiert werden, aber dadurch werden bereits vorhandene Titel-"
 "Metadaten zerstört. Falls Sie wünschen, dass Rhythmbox den iPod "
-"initialisiert, geben Sie die folgenden Informationen ein. Falls Sie das Gerät "
-"nicht initialisieren wollen, oder es sich nicht um einen iPod handelt, "
+"initialisiert, geben Sie die folgenden Informationen ein. Falls Sie das "
+"Gerät nicht initialisieren wollen, oder es sich nicht um einen iPod handelt, "
 "klicken Sie auf »Abbrechen«."
 
 #: ../plugins/ipod/ipod-init.ui.h:3
@@ -2381,8 +2385,8 @@ msgstr "<b>Jamendo</b>"
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:9
 msgid ""
-"Jamendo is a new model for artists to promote, publish, and be paid for their "
-"music."
+"Jamendo is a new model for artists to promote, publish, and be paid for "
+"their music."
 msgstr ""
 "Jamendo ist ein neues Modell für Interpreten, um ihre Musik bekannt zu "
 "machen, zu veröffentlichen und für ihre Musik bezahlt zu werden."
@@ -2429,8 +2433,8 @@ msgid ""
 "albums at near-zero cost."
 msgstr ""
 "Diese neuen Regeln erlauben es Jamendo, neue, leistungsfähige digitale "
-"Verteilungswege über Peer-to-Peer-Netzwerke wie BitTorrent und eMule legal zu "
-"nutzen, um Alben fast kostenlos zu verteilen."
+"Verteilungswege über Peer-to-Peer-Netzwerke wie BitTorrent und eMule legal "
+"zu nutzen, um Alben fast kostenlos zu verteilen."
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:19
 msgid "You can find more information at http://www.jamendo.com/"
@@ -2440,8 +2444,8 @@ msgstr "Weitere Informationen finden Sie auf http://www.jamendo.com/"
 msgid ""
 "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
 msgstr ""
-"Erweitert Rhythmbox um die Möglichkeit, Musik von Jamendo herunterzuladen und "
-"abzuspielen"
+"Erweitert Rhythmbox um die Möglichkeit, Musik von Jamendo herunterzuladen "
+"und abzuspielen"
 
 #: ../plugins/jamendo/jamendo.rb-plugin.in.h:2
 #: ../plugins/jamendo/jamendo/JamendoSource.py:62
@@ -2542,8 +2546,8 @@ msgstr "Sendereigenschaften können nicht geändert werden"
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
 msgstr ""
-"Die Senderadresse kann nicht auf %s geändert werden, da diese Station bereits "
-"existiert"
+"Die Senderadresse kann nicht auf %s geändert werden, da diese Station "
+"bereits existiert"
 
 #: ../plugins/iradio/station-properties.ui.h:5
 msgid "L_ocation:"
@@ -2680,8 +2684,8 @@ msgstr "\t* Kostenloses Anhören aller Titel"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:8
 msgid ""
-"    * Full color, high quality cover art PDF available for most albums - easy "
-"to print"
+"    * Full color, high quality cover art PDF available for most albums - "
+"easy to print"
 msgstr ""
 "    * Die CD-Cover liegen in Vollfarben und hoher Qualität als PDF vor - "
 "dadurch ist es einfach, diese auszudrucken"
@@ -2696,8 +2700,8 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:10
 msgid ""
-"    * Music selection is unique to Magnatune, unlike most on-line stores that "
-"have more-or-less the same (gigantic) selection\n"
+"    * Music selection is unique to Magnatune, unlike most on-line stores "
+"that have more-or-less the same (gigantic) selection\n"
 msgstr ""
 "    * Die Musikauswahl auf Magnatune ist einmalig - anders als bei den "
 "meisten Online-Läden, die alle mehr oder weniger die gleiche (riesige) "
@@ -2705,8 +2709,8 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:12
 msgid ""
-"    * No copy protection on the music (DRM) which allows playing music on any "
-"device (unlike iTunes/MSN/etc)"
+"    * No copy protection on the music (DRM) which allows playing music on "
+"any device (unlike iTunes/MSN/etc)"
 msgstr ""
 "    * Die Musik ist frei von einem Kopierschutz (DRM), so dass Sie sie immer "
 "und überall abspielen können (anders als iTunes, MSN usw.)"
@@ -2722,8 +2726,8 @@ msgid ""
 "music biz and want to help topple it"
 msgstr ""
 "    * Kein Teil der »bösen« Maschinerie der Musikkonzerne - für all "
-"diejenigen, die die Musikindustrie verachten und dabei helfen möchten, sie zu "
-"überwinden"
+"diejenigen, die die Musikindustrie verachten und dabei helfen möchten, sie "
+"zu überwinden"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:15
 msgid "    * Not venture-capital backed big business"
@@ -2748,8 +2752,8 @@ msgstr ""
 # CHECK: Bedeutung der Aussage? (Übersetzung aus vorh. Version übernommen)
 #: ../plugins/magnatune/magnatune-loading.ui.h:18
 msgid ""
-"    * Radio stations and \"genre mix\" playlists allow background listening - "
-"can do work while listening to our music"
+"    * Radio stations and \"genre mix\" playlists allow background listening "
+"- can do work while listening to our music"
 msgstr ""
 "    * Radiosender und »Genre-Mix«-Wiedergabelisten erlauben Ihnen "
 "Hintergrundmusik während der Arbeit, während wir die Musik zusammenstellen"
@@ -2764,8 +2768,8 @@ msgid ""
 "    * Variable pricing scheme means you can pay as little as $5 for an album "
 "if you choose"
 msgstr ""
-"    * Ein flexibles Preissystem ermöglicht es Ihnen, für ein Album nicht mehr "
-"als 5 € zu bezahlen - wenn Sie sich dafür entscheiden"
+"    * Ein flexibles Preissystem ermöglicht es Ihnen, für ein Album nicht "
+"mehr als 5 € zu bezahlen - wenn Sie sich dafür entscheiden"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:21
 msgid "    * Very simple user interface, quick to play music"
@@ -3018,7 +3022,8 @@ msgid "Unable to load catalog"
 msgstr "Katalog kann nicht geladen werden"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:276
-msgid "Rhythmbox could not understand the Magnatune catalog, please file a bug."
+msgid ""
+"Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
 "Rhythmbox konnte den Magnatune-Katalog nicht verarbeiten, bitte melden Sie "
 "einen Fehler."
@@ -3101,8 +3106,8 @@ msgid ""
 "There was a problem accessing the keyring. Check the debug output for more "
 "information."
 msgstr ""
-"Beim Zugriff auf den Schlüsselbund ist ein Fehler aufgetreten. Überprüfen Sie "
-"die Ausgabe der Fehlerdiagnose für weitere Informationen."
+"Beim Zugriff auf den Schlüsselbund ist ein Fehler aufgetreten. Überprüfen "
+"Sie die Ausgabe der Fehlerdiagnose für weitere Informationen."
 
 #: ../plugins/mmkeys/mmkeys.rb-plugin.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
@@ -3118,7 +3123,8 @@ msgstr "Tragbare Wiedergabegeräte - MTP"
 
 #: ../plugins/mtpdevice/mtpdevice.rb-plugin.in.h:2
 msgid "Support for MTP devices (show the content, transfer, play from device)"
-msgstr "Unterstützung für MTP-Geräte (den Inhalt anzeigen, vom Gerät abspielen)"
+msgstr ""
+"Unterstützung für MTP-Geräte (den Inhalt anzeigen, vom Gerät abspielen)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:157
 #: ../plugins/mtpdevice/rb-mtp-thread.c:543
@@ -3281,8 +3287,8 @@ msgid ""
 "The GStreamer elements required for ReplayGain processing are not available. "
 "The missing elements are: %s"
 msgstr ""
-"Die für die ReplayGain-Verarbeitung notwendigen GStreamer-Elemente sind nicht "
-"verfügbar. Die fehlenden Elemente sind: %s"
+"Die für die ReplayGain-Verarbeitung notwendigen GStreamer-Elemente sind "
+"nicht verfügbar. Die fehlenden Elemente sind: %s"
 
 #: ../plugins/replaygain/replaygain/player.py:49
 msgid "ReplayGain GStreamer plugins not available"
@@ -3575,8 +3581,8 @@ msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr ""
-"Die Adresse »%s« wurde bereits als Internet-Radiosender hinzugefügt. Wenn dies "
-"ein Podcast-Feed ist, dann entfernen Sie bitte den Radiosender."
+"Die Adresse »%s« wurde bereits als Internet-Radiosender hinzugefügt. Wenn "
+"dies ein Podcast-Feed ist, dann entfernen Sie bitte den Radiosender."
 
 #: ../podcast/rb-podcast-manager.c:1030
 #, c-format
@@ -3585,8 +3591,8 @@ msgid ""
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
 msgstr ""
-"Die URL »%s« scheint kein gültiger Podcast-Feed zu sein. Dabei kann es sich um "
-"eine falsche URL handeln, oder der Feed ist beschädigt. Soll Rhythmbox "
+"Die URL »%s« scheint kein gültiger Podcast-Feed zu sein. Dabei kann es sich "
+"um eine falsche URL handeln, oder der Feed ist beschädigt. Soll Rhythmbox "
 "trotzdem versuchen, diesen zu verwenden?"
 
 #: ../podcast/rb-podcast-manager.c:1168
@@ -3744,8 +3750,8 @@ msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
 "Rhythmbox cannot read the database."
 msgstr ""
-"Die Datenbank wurde von einer neueren Rhythmbox-Version erstellt und kann von "
-"dieser Version nicht gelesen werden."
+"Die Datenbank wurde von einer neueren Rhythmbox-Version erstellt und kann "
+"von dieser Version nicht gelesen werden."
 
 #: ../rhythmdb/rhythmdb.c:782
 #, c-format
@@ -3784,8 +3790,8 @@ msgstr "Ticket To Ride"
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
-"Es werden zusätzliche GStreamer-Plugins zur Wiedergabe dieser Datei benötigt: "
-"%s"
+"Es werden zusätzliche GStreamer-Plugins zur Wiedergabe dieser Datei "
+"benötigt: %s"
 
 #: ../rhythmdb/rhythmdb.c:2387
 msgid "invalid unicode in error message"
@@ -4487,7 +4493,8 @@ msgid ""
 msgstr ""
 "Rhythmbox ist freie Software, Sie können das Programm weiter verteilen\n"
 "oder verändern unter Beachtung der GNU General Public License , so wie\n"
-"sie von der Free Software Foundation festgelegt wurde. Entweder in Version 2\n"
+"sie von der Free Software Foundation festgelegt wurde. Entweder in Version "
+"2\n"
 "der Lizenz oder (nach Ihrem Ermessen) in jeder späteren Version.\n"
 
 #: ../shell/rb-shell.c:2327
@@ -4606,7 +4613,7 @@ msgstr "Übertragung von Titeln nicht möglich"
 #: ../shell/rb-track-transfer-queue.c:369
 msgid ""
 "None of the tracks to be transferred are in a format supported by the target "
-"device, and no encoders are available  for the supported formats."
+"device, and no encoders are available for the supported formats."
 msgstr ""
 "Keiner der zu übertragenden Titel liegt in einem vom Zielgerät unterstützten "
 "Format vor, und für die unterstützten Formate sind keine Kodierer verfügbar."
@@ -4617,8 +4624,9 @@ msgid ""
 "%d of the %d files to be transferred are not in a format supported by the "
 "target device, and no encoders are available for the supported formats."
 msgstr ""
-"%d von %d zu übertragenden Dateien liegt in einem vom Zielgerät unterstützten "
-"Format vor, und für die unterstützten Formate sind keine Kodierer verfügbar."
+"%d von %d zu übertragenden Dateien liegt in einem vom Zielgerät "
+"unterstützten Format vor, und für die unterstützten Formate sind keine "
+"Kodierer verfügbar."
 
 #: ../shell/rb-track-transfer-queue.c:395
 msgid "Unable to transfer all tracks. Do you want to continue?"
@@ -4714,8 +4722,8 @@ msgstr "Plugins installieren"
 #: ../sources/rb-import-errors-source.c:246
 msgid "Additional GStreamer plugins are required to play some of these files."
 msgstr ""
-"Es werden zusätzliche GStreamer-Plugins zur Wiedergabe einiger dieser Dateien "
-"benötigt."
+"Es werden zusätzliche GStreamer-Plugins zur Wiedergabe einiger dieser "
+"Dateien benötigt."
 
 #: ../sources/rb-import-errors-source.c:350
 msgid "Import Errors"
@@ -4765,7 +4773,8 @@ msgstr "Interpret (Album) - Nummer - Titel"
 msgid "Number. Artist - Title"
 msgstr "Nummer. Interpret - Titel"
 
-#: ../sources/rb-library-source.c:406 ../sources/sync/rb-sync-settings-ui.c:215
+#: ../sources/rb-library-source.c:406
+#: ../sources/sync/rb-sync-settings-ui.c:215
 #: ../sources/sync/rb-sync-settings-ui.c:216
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
@@ -4986,9 +4995,9 @@ msgstr ""
 
 #: ../sources/rb-podcast-source.c:912
 msgid ""
-"If you choose to delete the episode and file, they will be permanently lost.  "
-"Please note that you can delete the episode but keep the downloaded file by "
-"choosing to delete the episode only."
+"If you choose to delete the episode and file, they will be permanently "
+"lost.  Please note that you can delete the episode but keep the downloaded "
+"file by choosing to delete the episode only."
 msgstr ""
 "Wenn Sie sich für das Löschen der Podcast-Folge und zugehöriger Dateien "
 "entscheiden, gehen diese dauerhaft verloren. Bitte beachten Sie, dass Sie "
@@ -5660,8 +5669,8 @@ msgstr "Unbekannter Speicherort"
 #~ "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
 #~ "expiration date listed.</span>"
 #~ msgstr ""
-#~ "<span weight=\"bold\" foreground=\"red\">Ihre Kreditkarte ist abgelaufen.</"
-#~ "span>"
+#~ "<span weight=\"bold\" foreground=\"red\">Ihre Kreditkarte ist abgelaufen."
+#~ "</span>"
 
 #~ msgid "C_redit Card:"
 #~ msgstr "K_reditkarte:"
@@ -6051,8 +6060,8 @@ msgstr "Unbekannter Speicherort"
 
 #~ msgid "Could not log in to Last.fm.  Check your username and password."
 #~ msgstr ""
-#~ "Anmeldung an Last.fm nicht möglich. Überprüfen Sie Ihren Benutzernamen und "
-#~ "Kennwort"
+#~ "Anmeldung an Last.fm nicht möglich. Überprüfen Sie Ihren Benutzernamen "
+#~ "und Kennwort"
 
 #~ msgid "Cannot create MusicBrainz client"
 #~ msgstr "Der MusicBrainz-Client konnte nicht erzeugt werden"
@@ -6155,8 +6164,8 @@ msgstr "Unbekannter Speicherort"
 #~ msgstr "Alle %d (%d Titel)"
 
 #~ msgid ""
-#~ "Rhythmbox manages all of your music in a central music \"library\", so you "
-#~ "can easily view, search, and organize it.\n"
+#~ "Rhythmbox manages all of your music in a central music \"library\", so "
+#~ "you can easily view, search, and organize it.\n"
 #~ "In order to use this feature, you need to tell Rhythmbox where to find "
 #~ "your music.  You may choose to skip this step; instead, you can add music "
 #~ "to your library at any point later.\n"
@@ -6198,8 +6207,8 @@ msgstr "Unbekannter Speicherort"
 #~ "(not inferior quality sound)\n"
 #~ "    * No copy protection on the music (DRM) which allows playing music on "
 #~ "any device (unlike iTunes/MSN/etc)\n"
-#~ "    * Extensive biographical info about each musician, and artist photo -- "
-#~ "feel a strong connection to the artist\n"
+#~ "    * Extensive biographical info about each musician, and artist photo "
+#~ "-- feel a strong connection to the artist\n"
 #~ "    * Full color, high quality cover art PDF available for most albums - "
 #~ "easy to print\n"
 #~ "    * Variable pricing scheme means you can pay as little as $5 for an "
@@ -6281,9 +6290,9 @@ msgstr "Unbekannter Speicherort"
 #~ msgstr "Willkommen zu Rhythmbox"
 
 #~ msgid ""
-#~ "Rhythmbox is the GNOME music player that lets you do everything: play your "
-#~ "music files, listen to Internet Radio, import music from CDs, and much "
-#~ "more.\n"
+#~ "Rhythmbox is the GNOME music player that lets you do everything: play "
+#~ "your music files, listen to Internet Radio, import music from CDs, and "
+#~ "much more.\n"
 #~ "\n"
 #~ "This assistant will help you get started by asking you some simple "
 #~ "questions."
@@ -6292,8 +6301,8 @@ msgstr "Unbekannter Speicherort"
 #~ "ermöglicht, Ihre Musikdateien wiederzugeben, Internet-Radio zu empfangen "
 #~ "sowie Musik von CDs zu importieren.\n"
 #~ "\n"
-#~ "Dieser Assistent hilft Ihnen beim Einstieg, indem er Ihnen einige einfache "
-#~ "Fragen stellt."
+#~ "Dieser Assistent hilft Ihnen beim Einstieg, indem er Ihnen einige "
+#~ "einfache Fragen stellt."
 
 #~ msgid "Music library setup"
 #~ msgstr "Musikbibliothek einrichten"
