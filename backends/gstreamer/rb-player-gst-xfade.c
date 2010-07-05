@@ -3059,7 +3059,7 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 	/* create silence bin */
 	player->priv->silencebin = gst_bin_new ("silencebin");
 	audiotestsrc = gst_element_factory_make ("audiotestsrc", "silence");
-	g_object_set (audiotestsrc, "wave", 4, "samplesperbuffer", 8192, NULL);
+	g_object_set (audiotestsrc, "wave", 4, NULL);
 
 	audioconvert = gst_element_factory_make ("audioconvert", "silenceconvert");
 
