@@ -362,6 +362,7 @@ class ArtDisplayPlugin (rb.Plugin):
 			sp.connect ('playing-song-changed', self.playing_entry_changed),
 			sp.connect ('playing-changed', self.playing_changed)
 		)
+		self.emitting_uri_notify = False
 		db = shell.get_property ("db")
 		self.db_cb_ids = (
 			db.connect_after ('entry-extra-metadata-request::rb:coverArt', self.cover_art_request),
@@ -438,6 +439,10 @@ class ArtDisplayPlugin (rb.Plugin):
 			# in which case consumers won't be ready yet.
 			def idle_emit_art():
 				db.emit_entry_extra_metadata_notify (entry, "rb:coverArt", pixbuf)
+				if uri:
+					self.emitting_uri_notify = True
+					db.emit_entry_extra_metadata_notify (entry, "rb:coverArt-uri", uri)
+					self.emitting_uri_notify = False
 				return False
 			gobject.idle_add(idle_emit_art)
 
@@ -465,10 +470,15 @@ class ArtDisplayPlugin (rb.Plugin):
 		# cache the pixbuf so we can provide a url
 		uri = self.art_db.cache_pixbuf (db, entry, metadata)
 		self.art_widget.set (entry, metadata, uri, None, None, False)
+		self.emitting_uri_notify = True
 		db.emit_entry_extra_metadata_notify (entry, "rb:coverArt-uri", uri)
+		self.emitting_uri_notify = False
 
 	def cover_art_uri_notify (self, db, entry, field, metadata):
 		if entry != self.current_entry:
+			return
+
+		if self.emitting_uri_notify:
 			return
 
 		if not metadata:
