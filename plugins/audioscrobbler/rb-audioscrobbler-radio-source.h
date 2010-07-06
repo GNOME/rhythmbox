@@ -29,7 +29,7 @@
 #ifndef __RB_AUDIOSCROBBLER_RADIO_SOURCE_H
 #define __RB_AUDIOSCROBBLER_RADIO_SOURCE_H
 
-#include "rb-source.h"
+#include "rb-streaming-source.h"
 #include "rb-audioscrobbler-profile-source.h"
 #include "rb-audioscrobbler-service.h"
 #include "rb-audioscrobbler-account.h"
@@ -47,14 +47,14 @@ typedef struct _RBAudioscrobblerRadioSourcePrivate RBAudioscrobblerRadioSourcePr
 
 typedef struct
 {
-	RBSource parent;
+	RBStreamingSource parent;
 
 	RBAudioscrobblerRadioSourcePrivate *priv;
 } RBAudioscrobblerRadioSource;
 
 typedef struct
 {
-	RBSourceClass parent_class;
+	RBStreamingSourceClass parent_class;
 } RBAudioscrobblerRadioSourceClass;
 
 GType rb_audioscrobbler_radio_source_get_type (void);

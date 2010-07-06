@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <libsoup/soup.h>
 #include <libsoup/soup-gnome.h>
+#include <glib/gi18n.h>
 #include <glib/gstdio.h>
 
 #include <totem-pl-parser.h>
@@ -128,6 +129,8 @@ static gboolean emit_coverart_uri_cb (RBAudioscrobblerRadioSource *source);
 /* RBSource implementations */
 static void impl_activate (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *asource);
+static void impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress);
+static RBSourceEOFType impl_handle_eos (RBSource *asource);
 static void impl_delete_thyself (RBSource *asource);
 
 enum {
@@ -140,7 +143,7 @@ enum {
 	PROP_PLAY_ORDER
 };
 
-G_DEFINE_TYPE (RBAudioscrobblerRadioSource, rb_audioscrobbler_radio_source, RB_TYPE_SOURCE)
+G_DEFINE_TYPE (RBAudioscrobblerRadioSource, rb_audioscrobbler_radio_source, RB_TYPE_STREAMING_SOURCE)
 
 RBSource *
 rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfileSource *parent,
@@ -202,8 +205,14 @@ rb_audioscrobbler_radio_source_class_init (RBAudioscrobblerRadioSourceClass *kla
 	object_class->set_property = rb_audioscrobbler_radio_source_set_property;
 
 	source_class = RB_SOURCE_CLASS (klass);
+	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_activate = impl_activate;
 	source_class->impl_get_entry_view = impl_get_entry_view;
+	source_class->impl_get_status = impl_get_status;
+	source_class->impl_handle_eos = impl_handle_eos;
 	source_class->impl_delete_thyself = impl_delete_thyself;
 
 	g_object_class_install_property (object_class,
@@ -873,6 +882,29 @@ impl_get_entry_view (RBSource *asource)
 	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (asource);
 
 	return source->priv->track_view;
+}
+
+static void
+impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress)
+{
+	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (asource);
+
+	/* pulse progressbar if we're busy, otherwise see what the streaming source part of us has to say */
+	if (source->priv->is_fetching_playlist) {
+		/* Actually, we could be calling either radio.tune or radio.getPlaylist methods,
+		 * but "Tuning station" seems like a user friendly message to display.
+		 */
+		*progress_text = g_strdup (_("Tuning station"));
+		*progress = -1.0f;
+	} else {
+		rb_streaming_source_get_progress (RB_STREAMING_SOURCE (source), progress_text, progress);
+	}
+}
+
+static RBSourceEOFType
+impl_handle_eos (RBSource *asource)
+{
+	return RB_SOURCE_EOF_NEXT;
 }
 
 static void
