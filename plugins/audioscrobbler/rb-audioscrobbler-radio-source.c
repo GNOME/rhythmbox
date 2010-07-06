@@ -550,8 +550,8 @@ xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata,
 
 	RhythmDBEntry *entry;
 	RBAudioscrobblerRadioTrackEntryData *track_data;
-	const char *val_text;
-	GValue val = {0,};
+	const char *value;
+	GValue v = {0,};
 	int i;
 	struct {
 		const char *field;
@@ -577,43 +577,43 @@ xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata,
 
 	/* straightforward string copying */
 	for (i = 0; i < G_N_ELEMENTS (field_mapping); i++) {
-		val_text = g_hash_table_lookup (metadata, field_mapping[i].field);
-		if (val_text != NULL) {
-			g_value_init (&val, G_TYPE_STRING);
-			g_value_set_string (&val, val_text);
-			rhythmdb_entry_set (db, entry, field_mapping[i].prop, &val);
-			g_value_unset (&val);
+		value = g_hash_table_lookup (metadata, field_mapping[i].field);
+		if (value != NULL) {
+			g_value_init (&v, G_TYPE_STRING);
+			g_value_set_string (&v, value);
+			rhythmdb_entry_set (db, entry, field_mapping[i].prop, &v);
+			g_value_unset (&v);
 		}
 	}
 
 	/* duration needs some conversion */
-	val_text = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_DURATION_MS);
-	if (val_text != NULL) {
+	value = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_DURATION_MS);
+	if (value != NULL) {
 		gint64 duration;
 
-		duration = totem_pl_parser_parse_duration (val_text, FALSE);
+		duration = totem_pl_parser_parse_duration (value, FALSE);
 		if (duration > 0) {
-			g_value_init (&val, G_TYPE_ULONG);
-			g_value_set_ulong (&val, (gulong) duration / 1000);		/* ms -> s */
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &val);
-			g_value_unset (&val);
+			g_value_init (&v, G_TYPE_ULONG);
+			g_value_set_ulong (&v, (gulong) duration / 1000);		/* ms -> s */
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &v);
+			g_value_unset (&v);
 		}
 	}
 
 	/* image URL and track auth ID are stored in entry type specific data */
-	val_text = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_IMAGE_URI);
-	if (val_text != NULL) {
-		track_data->image_url = g_strdup (val_text);
+	value = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_IMAGE_URI);
+	if (value != NULL) {
+		track_data->image_url = g_strdup (value);
 	}
 
-	val_text = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_ID);
-	if (val_text != NULL) {
-		track_data->track_auth = g_strdup (val_text);
+	value = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_ID);
+	if (value != NULL) {
+		track_data->track_auth = g_strdup (value);
 	}
 
-	val_text = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_DOWNLOAD_URI);
-	if (val_text != NULL) {
-		track_data->download_url = g_strdup (val_text);
+	value = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_DOWNLOAD_URI);
+	if (value != NULL) {
+		track_data->download_url = g_strdup (value);
 		rb_debug ("track %s has a download url: %s", uri, track_data->download_url);
 	}
 
@@ -722,12 +722,13 @@ rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
 		source->priv->playing_entry = NULL;
 	}
 
-	/* stop requesting cover art */
+	/* stop requesting cover art for old entry */
 	if (source->priv->emit_coverart_id != 0) {
 		g_source_remove (source->priv->emit_coverart_id);
 		source->priv->emit_coverart_id = 0;
 	}
 
+	/* check if the new playing entry is from this source */
 	if (rhythmdb_query_model_entry_to_iter (source->priv->track_model, entry, &playing_iter) == TRUE) {
 		GtkTreeIter iter;
 		gboolean reached_playing = FALSE;
@@ -738,7 +739,7 @@ rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
 		/* update our playing entry */
 		source->priv->playing_entry = entry;
 
-		/* remove invalidated entries and count remaining */
+		/* mark invalidated entries for removal and count remaining */
 		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->track_model), &iter);
 		do {
 			RhythmDBEntry *iter_entry;
@@ -757,7 +758,7 @@ rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
 
 		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (source->priv->track_model), &iter));
 
-		/* remove entries */
+		/* remove invalidated entries */
 		for (i = remove; i != NULL; i = i->next) {
 			rhythmdb_query_model_remove_entry (source->priv->track_model, i->data);
 			rhythmdb_entry_delete (db, i->data);
@@ -778,6 +779,7 @@ rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
 	g_object_unref (db);
 }
 
+/* cover art */
 static const char *
 get_image_url_for_entry (RBAudioscrobblerRadioSource *source, RhythmDBEntry *entry)
 {
@@ -865,11 +867,13 @@ emit_coverart_uri_cb (RBAudioscrobblerRadioSource *source)
 	return FALSE;
 }
 
+/* RBSource implementations */
 static void
 impl_activate (RBSource *asource)
 {
 	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (asource);
 
+	/* if the query model is empty then attempt to add some tracks to it */
 	if (rhythmdb_query_model_get_duration (source->priv->track_model) == 0) {
 		rb_audioscrobbler_radio_source_tune (source);
 		rb_audioscrobbler_radio_source_fetch_playlist (source);
@@ -923,12 +927,12 @@ impl_delete_thyself (RBSource *asource)
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "db", &db, NULL);
 
-	/* only delete playing entry here, other wise it will be deleted here
-	 * and also deleted when the playing entry changes as a result of it being deleted here
+	/* Ensure playing entry is only deleted here, and not also when the playing entry changes
+	 * because it is deleted here.
 	 */
 	source->priv->playing_entry = NULL;
 
-	/* delete all playing entries */
+	/* delete all entries */
 	loop = gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->track_model), &iter);
 	while (loop) {
 		RhythmDBEntry *entry;
