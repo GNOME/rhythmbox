@@ -37,6 +37,7 @@
 #include "rb-audioscrobbler.h"
 #include "rb-audioscrobbler-account.h"
 #include "rb-audioscrobbler-user.h"
+#include "rb-audioscrobbler-radio-source.h"
 #include "rb-debug.h"
 #include "rb-builder-helpers.h"
 #include "rb-file-helpers.h"
@@ -52,6 +53,8 @@ struct _RBAudioscrobblerProfileSourcePrivate {
 	RBAudioscrobbler *audioscrobbler;
 
 	RBAudioscrobblerUser *user;
+
+	GList *radio_sources;
 
 	guint scrobbling_enabled_notification_id;
 
@@ -134,6 +137,8 @@ static void rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb (RB
                                                                               const char *submit_time,
                                                                               gpointer user_data);
 
+static void rb_audioscrobbler_profile_source_create_radio_sources (RBAudioscrobblerProfileSource *source);
+
 static void rb_audioscrobbler_profile_source_user_info_updated_cb (RBAudioscrobblerUser *user,
                                                                    RBAudioscrobblerUserData *info,
                                                                    gpointer user_data);
@@ -168,6 +173,7 @@ void rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *l
                                                                     GtkAllocation *allocation,
                                                                     gpointer user_data);
 
+static void impl_delete_thyself (RBSource *asource);
 
 
 
@@ -184,20 +190,12 @@ rb_audioscrobbler_profile_source_new (RBShell *shell, RBPlugin *plugin, RBAudios
 	RBSource *source;
 	RhythmDB *db;
 	char *name;
-	RhythmDBEntryType entry_type;
 	gchar *icon_filename;
 	gint icon_size;
 	GdkPixbuf *icon_pixbuf;
 
 	g_object_get (shell, "db", &db, NULL);
 	g_object_get (service, "name", &name, NULL);
-
-	entry_type = rhythmdb_entry_type_get_by_name (db, "audioscrobbler-radio-track");
-	if (entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		entry_type = rhythmdb_entry_register_type (db, "audioscrobbler-radio-track");
-		entry_type->save_to_disk = FALSE;
-		entry_type->category = RHYTHMDB_ENTRY_NORMAL;
-	}
 
 	icon_filename = rb_plugin_find_file (plugin, "as-icon.png");
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
@@ -208,12 +206,10 @@ rb_audioscrobbler_profile_source_new (RBShell *shell, RBPlugin *plugin, RBAudios
 	                                  "plugin", plugin,
 	                                  "name", name,
 	                                  "source-group", RB_SOURCE_GROUP_LIBRARY,
-	                                  "entry-type", entry_type,
+	                                  "entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,
 	                                  "icon", icon_pixbuf,
 	                                  "service", service,
 	                                  NULL));
-
-	rb_shell_register_entry_type_for_source (shell, source, entry_type);
 
 	g_object_unref (db);
 	g_free (name);
@@ -226,13 +222,18 @@ rb_audioscrobbler_profile_source_new (RBShell *shell, RBPlugin *plugin, RBAudios
 static void
 rb_audioscrobbler_profile_source_class_init (RBAudioscrobblerProfileSourceClass *klass)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GObjectClass *object_class;
+	RBSourceClass *source_class;
 
+	object_class = G_OBJECT_CLASS (klass);
 	object_class->constructed = rb_audioscrobbler_profile_source_constructed;
 	object_class->dispose = rb_audioscrobbler_profile_source_dispose;
 	object_class->finalize = rb_audioscrobbler_profile_source_finalize;
 	object_class->get_property = rb_audioscrobbler_profile_source_get_property;
 	object_class->set_property = rb_audioscrobbler_profile_source_set_property;
+
+	source_class = RB_SOURCE_CLASS (klass);
+	source_class->impl_delete_thyself = impl_delete_thyself;
 
 	g_object_class_install_property (object_class,
 	                                 PROP_SERVICE,
@@ -265,6 +266,8 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 
 	source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (object);
 	g_object_get (source, "shell", &shell, NULL);
+
+	rb_shell_append_source (shell, RB_SOURCE (source), NULL);
 
 	/* create the UI */
 	source->priv->main_vbox = gtk_vbox_new (FALSE, 4);
@@ -629,6 +632,8 @@ rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount
 		rb_audioscrobbler_user_update (source->priv->user);
 	}
 
+	rb_audioscrobbler_profile_source_create_radio_sources (source);
+
 	/* update the login ui */
 	switch (status) {
 	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT:
@@ -720,6 +725,54 @@ rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb (RBAudioscrobbl
 
 	g_free (queue_count_text);
 	g_free (submit_count_text);
+}
+
+static void
+rb_audioscrobbler_profile_source_create_radio_sources (RBAudioscrobblerProfileSource *source)
+{
+	const char *username;
+	const char *session_key;
+
+	/* destroy existing sources */
+	while (source->priv->radio_sources != NULL) {
+		rb_source_delete_thyself (source->priv->radio_sources->data);
+		source->priv->radio_sources = g_list_remove (source->priv->radio_sources, source->priv->radio_sources->data);
+	}
+
+	username = rb_audioscrobbler_account_get_username (source->priv->account);
+	session_key = rb_audioscrobbler_account_get_session_key (source->priv->account);
+	if (username != NULL) {
+		RBSource *radio;
+		RBShell *shell;
+
+		g_object_get (source, "shell", &shell, NULL);
+
+		radio = rb_audioscrobbler_radio_source_new (source,
+		                                            source->priv->service,
+		                                            username,
+		                                            session_key,
+		                                            "Recommendations",
+		                                            "lastfm://user/easyonthev/recommended");
+		source->priv->radio_sources = g_list_append (source->priv->radio_sources, radio);
+
+		radio = rb_audioscrobbler_radio_source_new (source,
+		                                            source->priv->service,
+		                                            username,
+		                                            session_key,
+		                                            "Loved Tracks",
+		                                            "lastfm://user/easyonthev/loved");
+		source->priv->radio_sources = g_list_append (source->priv->radio_sources, radio);
+
+		radio = rb_audioscrobbler_radio_source_new (source,
+		                                            source->priv->service,
+		                                            username,
+		                                            session_key,
+		                                            "My Library",
+		                                            "lastfm://user/easyonthev/library");
+		source->priv->radio_sources = g_list_append (source->priv->radio_sources, radio);
+
+		g_object_unref (shell);
+	}
 }
 
 static void
@@ -1086,4 +1139,20 @@ rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout
 	gtk_widget_get_requisition (table, &table_requisition);
 	gtk_widget_set_size_request (layout, 0, table_requisition.height);
 	gtk_layout_set_size (GTK_LAYOUT (layout), table_requisition.width, table_requisition.height);
+}
+
+/* RBSource implementations */
+static void
+impl_delete_thyself (RBSource *asource)
+{
+	RBAudioscrobblerProfileSource *source;
+	GList *i;
+
+	rb_debug ("deleting profile source");
+
+	source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (asource);
+
+	for (i = source->priv->radio_sources; i != NULL; i = i->next) {
+		rb_source_delete_thyself (i->data);
+	}
 }

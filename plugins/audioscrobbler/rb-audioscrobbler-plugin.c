@@ -116,8 +116,6 @@ impl_activate (RBPlugin *bplugin,
 	service = rb_audioscrobbler_service_new ();
 	plugin->source = rb_audioscrobbler_profile_source_new (shell, bplugin, service);
 
-	rb_shell_append_source (shell, plugin->source, NULL);
-
 	g_object_unref (service);
 }
 

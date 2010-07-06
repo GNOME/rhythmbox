@@ -17,8 +17,8 @@ libaudioscrobbler_la_SOURCES = \
 	rb-audioscrobbler-user.c			\
 	rb-audioscrobbler.c				\
 	rb-audioscrobbler.h				\
-	rb-lastfm-source.c				\
-	rb-lastfm-source.h				\
+	rb-audioscrobbler-radio-source.c		\
+	rb-audioscrobbler-radio-source.h		\
 	rb-lastfm-play-order.c				\
 	rb-lastfm-play-order.h
 
