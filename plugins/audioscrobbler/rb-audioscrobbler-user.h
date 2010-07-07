@@ -96,6 +96,13 @@ void rb_audioscrobbler_user_set_authentication_details (RBAudioscrobblerUser *us
 
 void rb_audioscrobbler_user_update (RBAudioscrobblerUser *user);
 
+void rb_audioscrobbler_user_love_track (RBAudioscrobblerUser *user,
+                                        const char *title,
+                                        const char *artist);
+void rb_audioscrobbler_user_ban_track (RBAudioscrobblerUser *user,
+                                       const char *title,
+                                       const char *artist);
+
 G_END_DECLS
 
 #endif /* __RB_AUDIOSCROBBLER_USER_H */

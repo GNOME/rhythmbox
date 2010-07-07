@@ -131,6 +131,7 @@ static void impl_activate (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *asource);
 static void impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress);
 static RBSourceEOFType impl_handle_eos (RBSource *asource);
+static GList *impl_get_ui_actions (RBSource *asource);
 static void impl_delete_thyself (RBSource *asource);
 
 enum {
@@ -213,6 +214,7 @@ rb_audioscrobbler_radio_source_class_init (RBAudioscrobblerRadioSourceClass *kla
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_get_status = impl_get_status;
 	source_class->impl_handle_eos = impl_handle_eos;
+	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_delete_thyself = impl_delete_thyself;
 
 	g_object_class_install_property (object_class,
@@ -909,6 +911,14 @@ static RBSourceEOFType
 impl_handle_eos (RBSource *asource)
 {
 	return RB_SOURCE_EOF_NEXT;
+}
+
+static GList *
+impl_get_ui_actions (RBSource *asource)
+{
+	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (asource);
+
+	return rb_source_get_ui_actions (RB_SOURCE (source->priv->parent));
 }
 
 static void

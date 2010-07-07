@@ -91,6 +91,8 @@ struct _RBAudioscrobblerProfileSourcePrivate {
 
 	GHashTable *button_to_popup_menu_map;
 	GHashTable *popup_menu_to_data_map;
+
+	GtkActionGroup *action_group;
 };
 
 #define RB_AUDIOSCROBBLER_PROFILE_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_PROFILE_SOURCE, RBAudioscrobblerProfileSourcePrivate))
@@ -111,6 +113,7 @@ static void rb_audioscrobbler_profile_source_set_property (GObject *object,
 
 static void rb_audioscrobbler_profile_source_init_login_ui (RBAudioscrobblerProfileSource *source);
 static void rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource *source);
+static void rb_audioscrobbler_profile_source_init_actions (RBAudioscrobblerProfileSource *source);
 
 static void rb_audioscrobbler_profile_source_login_bar_response (GtkInfoBar *info_bar,
                                                                  gint response_id,
@@ -136,6 +139,9 @@ static void rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb (RB
                                                                               guint submit_count,
                                                                               const char *submit_time,
                                                                               gpointer user_data);
+static void rb_audioscrobbler_profile_source_playing_song_changed_cb (RBShellPlayer *player,
+                                                                     RhythmDBEntry *entry,
+                                                                     RBAudioscrobblerProfileSource *source);
 
 static void rb_audioscrobbler_profile_source_create_radio_sources (RBAudioscrobblerProfileSource *source);
 
@@ -173,6 +179,12 @@ void rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *l
                                                                     GtkAllocation *allocation,
                                                                     gpointer user_data);
 
+static void rb_audioscrobbler_profile_source_love_track_action_cb (GtkAction *action,
+                                                                   RBAudioscrobblerProfileSource *source);
+static void rb_audioscrobbler_profile_source_ban_track_action_cb (GtkAction *action,
+                                                                  RBAudioscrobblerProfileSource *source);
+
+static GList *impl_get_ui_actions (RBSource *asource);
 static void impl_delete_thyself (RBSource *asource);
 
 
@@ -233,6 +245,7 @@ rb_audioscrobbler_profile_source_class_init (RBAudioscrobblerProfileSourceClass 
 	object_class->set_property = rb_audioscrobbler_profile_source_set_property;
 
 	source_class = RB_SOURCE_CLASS (klass);
+	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_delete_thyself = impl_delete_thyself;
 
 	g_object_class_install_property (object_class,
@@ -269,6 +282,11 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 
 	rb_shell_append_source (shell, RB_SOURCE (source), NULL);
 
+	g_signal_connect_object (rb_shell_get_player (shell),
+				 "playing-song-changed",
+				 G_CALLBACK (rb_audioscrobbler_profile_source_playing_song_changed_cb),
+				 source, 0);
+
 	/* create the UI */
 	source->priv->main_vbox = gtk_vbox_new (FALSE, 4);
 	gtk_box_pack_start (GTK_BOX (source), source->priv->main_vbox, TRUE, TRUE, 0);
@@ -276,6 +294,7 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 
 	rb_audioscrobbler_profile_source_init_login_ui (source);
 	rb_audioscrobbler_profile_source_init_profile_ui (source);
+	rb_audioscrobbler_profile_source_init_actions (source);
 
 	/* create the user */
 	source->priv->user = rb_audioscrobbler_user_new (source->priv->service);
@@ -518,6 +537,43 @@ rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource 
 }
 
 static void
+rb_audioscrobbler_profile_source_init_actions (RBAudioscrobblerProfileSource *source)
+{
+	/* Unfortunately we can't use the usual trick of declaring a static array of GtkActionEntry,
+	 * and simply using _rb_source_register_action_group with that array.
+	 * This is because each instance of this source needs its own love and ban actions
+	 * so tracks can be loved/banned differently for different audioscrobbler services.
+	 */
+
+	char *group_name;
+	char *love_name;
+	char *ban_name;
+
+	group_name = g_strdup_printf ("%sActions", rb_audioscrobbler_service_get_name (source->priv->service));
+	love_name = g_strdup_printf ("%sLoveTrack", rb_audioscrobbler_service_get_name (source->priv->service));
+	ban_name = g_strdup_printf ("%sBanTrack", rb_audioscrobbler_service_get_name (source->priv->service));
+
+	GtkActionEntry actions [] =
+	{
+		{ love_name, "emblem-favorite", N_("Love"), NULL,
+		  N_("Mark this song as loved"),
+		  G_CALLBACK (rb_audioscrobbler_profile_source_love_track_action_cb) },
+		{ ban_name, GTK_STOCK_CANCEL, N_("Ban"), NULL,
+		  N_("Ban the current track from being played again"),
+		  G_CALLBACK (rb_audioscrobbler_profile_source_ban_track_action_cb) },
+	};
+
+	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
+								       group_name,
+								       actions,
+								       G_N_ELEMENTS (actions),
+								       source);
+	g_free (group_name);
+	g_free (love_name);
+	g_free (ban_name);
+}
+
+static void
 rb_audioscrobbler_profile_source_login_bar_response (GtkInfoBar *info_bar,
                                                      gint response_id,
                                                      gpointer user_data)
@@ -725,6 +781,26 @@ rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb (RBAudioscrobbl
 
 	g_free (queue_count_text);
 	g_free (submit_count_text);
+}
+
+static void
+rb_audioscrobbler_profile_source_playing_song_changed_cb (RBShellPlayer *player,
+                                                         RhythmDBEntry *entry,
+                                                         RBAudioscrobblerProfileSource *source)
+{
+	char *action_name;
+	GtkAction *action;
+
+	/* re-enable love/ban */
+	action_name = g_strdup_printf ("%sLoveTrack", rb_audioscrobbler_service_get_name (source->priv->service));
+	action = gtk_action_group_get_action (source->priv->action_group, action_name);
+	gtk_action_set_sensitive (action, TRUE);
+	g_free (action_name);
+
+	action_name = g_strdup_printf ("%sBanTrack", rb_audioscrobbler_service_get_name (source->priv->service));
+	action = gtk_action_group_get_action (source->priv->action_group, action_name);
+	gtk_action_set_sensitive (action, TRUE);
+	g_free (action_name);
 }
 
 static void
@@ -1141,7 +1217,76 @@ rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout
 	gtk_layout_set_size (GTK_LAYOUT (layout), table_requisition.width, table_requisition.height);
 }
 
+/* GtkAction callbacks */
+static void
+rb_audioscrobbler_profile_source_love_track_action_cb (GtkAction *action,
+                                                       RBAudioscrobblerProfileSource *source)
+{
+	RBShell *shell;
+	RhythmDBEntry *entry;
+	char *ban_action_name;
+	GtkAction *ban_action;
+
+	g_object_get (source, "shell", &shell, NULL);
+
+	entry = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+
+	if (entry != NULL) {
+		rb_audioscrobbler_user_love_track (source->priv->user,
+			                           rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
+			                           rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+		rhythmdb_entry_unref (entry);
+	}
+
+	/* disable love/ban */
+	gtk_action_set_sensitive (action, FALSE);
+	ban_action_name = g_strdup_printf ("%sBanSong", rb_audioscrobbler_service_get_name (source->priv->service));
+	ban_action = gtk_action_group_get_action (source->priv->action_group, ban_action_name);
+	gtk_action_set_sensitive (ban_action, FALSE);
+
+	g_free (ban_action_name);
+	g_object_unref (shell);
+}
+
+static void
+rb_audioscrobbler_profile_source_ban_track_action_cb (GtkAction *action,
+                                                      RBAudioscrobblerProfileSource *source)
+{
+	RBShell *shell;
+	RhythmDBEntry *entry;
+
+	g_object_get (source, "shell", &shell, NULL);
+
+	entry = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+
+	if (entry != NULL) {
+		rb_audioscrobbler_user_ban_track (source->priv->user,
+			                          rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
+			                          rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+		rhythmdb_entry_unref (entry);
+	}
+
+	/* skip to next track */
+	rb_shell_player_do_next (RB_SHELL_PLAYER (rb_shell_get_player (shell)), NULL);
+
+	g_object_unref (shell);
+}
+
 /* RBSource implementations */
+static GList *
+impl_get_ui_actions (RBSource *asource)
+{
+	RBAudioscrobblerProfileSource *source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (asource);
+	GList *actions = NULL;
+
+	actions = g_list_append (actions,
+	                          g_strdup_printf ("%sLoveTrack", rb_audioscrobbler_service_get_name (source->priv->service)));
+	actions = g_list_append (actions,
+	                          g_strdup_printf ("%sBanTrack", rb_audioscrobbler_service_get_name (source->priv->service)));
+
+	return actions;
+}
+
 static void
 impl_delete_thyself (RBSource *asource)
 {

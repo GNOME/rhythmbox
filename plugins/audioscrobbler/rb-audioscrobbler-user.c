@@ -26,6 +26,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
  */
 
+#include <string.h>
 #include <libsoup/soup.h>
 #include <libsoup/soup-gnome.h>
 #include <json-glib/json-glib.h>
@@ -204,6 +205,13 @@ static void rb_audioscrobbler_user_download_image (RBAudioscrobblerUser *user,
 static void rb_audioscrobbler_user_image_download_cb (GObject *source_object,
                                                       GAsyncResult *res,
                                                       gpointer user_data);
+
+static void rb_audioscrobbler_user_love_track_response_cb (SoupSession *session,
+                                                           SoupMessage *msg,
+                                                           gpointer user_data);
+static void rb_audioscrobbler_user_ban_track_response_cb (SoupSession *session,
+                                                          SoupMessage *msg,
+                                                          gpointer user_data);
 enum {
 	PROP_0,
 	PROP_SERVICE
@@ -1586,4 +1594,112 @@ rb_audioscrobbler_user_image_download_cb (GObject *source_object, GAsyncResult *
 	} else {
 		rb_debug ("error downloading image. possibly due to cancellation");
 	}
+}
+
+void
+rb_audioscrobbler_user_love_track (RBAudioscrobblerUser *user,
+                                   const char *title,
+                                   const char *artist)
+{
+	char *sig_arg;
+	char *sig;
+	char *request;
+	SoupMessage *msg;
+
+	rb_debug ("loving track %s - %s", artist, title);
+
+	sig_arg = g_strdup_printf ("api_key%sartist%smethodtrack.lovesk%strack%s%s",
+	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
+	                           artist,
+	                           user->priv->session_key,
+	                           title,
+	                           rb_audioscrobbler_service_get_api_secret (user->priv->service));
+
+	sig = mkmd5 (sig_arg);
+
+	request = g_strdup_printf ("method=track.love&track=%s&artist=%s&api_key=%s&api_sig=%s&sk=%s",
+	                           title,
+	                           artist,
+	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
+	                           sig,
+	                           user->priv->session_key);
+
+	msg = soup_message_new ("POST", rb_audioscrobbler_service_get_api_url (user->priv->service));
+	soup_message_set_request (msg,
+	                          "application/x-www-form-urlencoded",
+	                          SOUP_MEMORY_COPY,
+	                          request,
+	                          strlen (request));
+	soup_session_queue_message (user->priv->soup_session,
+	                            msg,
+	                            rb_audioscrobbler_user_love_track_response_cb,
+	                            user);
+
+	g_free (sig_arg);
+	g_free (sig);
+	g_free (request);
+}
+
+static void
+rb_audioscrobbler_user_love_track_response_cb (SoupSession *session,
+                                               SoupMessage *msg,
+                                               gpointer user_data)
+{
+	/* Don't know if there's anything to do here,
+	 * might want a debug message indicating success or failure?
+	 */
+}
+
+void
+rb_audioscrobbler_user_ban_track (RBAudioscrobblerUser *user,
+                                  const char *title,
+                                  const char *artist)
+{
+	char *sig_arg;
+	char *sig;
+	char *request;
+	SoupMessage *msg;
+
+	rb_debug ("banning track %s - %s", artist, title);
+
+	sig_arg = g_strdup_printf ("api_key%sartist%smethodtrack.bansk%strack%s%s",
+	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
+	                           artist,
+	                           user->priv->session_key,
+	                           title,
+	                           rb_audioscrobbler_service_get_api_secret (user->priv->service));
+
+	sig = mkmd5 (sig_arg);
+
+	request = g_strdup_printf ("method=track.ban&track=%s&artist=%s&api_key=%s&api_sig=%s&sk=%s",
+	                           title,
+	                           artist,
+	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
+	                           sig,
+	                           user->priv->session_key);
+
+	msg = soup_message_new ("POST", rb_audioscrobbler_service_get_api_url (user->priv->service));
+	soup_message_set_request (msg,
+	                          "application/x-www-form-urlencoded",
+	                          SOUP_MEMORY_COPY,
+	                          request,
+	                          strlen (request));
+	soup_session_queue_message (user->priv->soup_session,
+	                            msg,
+	                            rb_audioscrobbler_user_ban_track_response_cb,
+	                            user);
+
+	g_free (sig_arg);
+	g_free (sig);
+	g_free (request);
+}
+
+static void
+rb_audioscrobbler_user_ban_track_response_cb (SoupSession *session,
+                                              SoupMessage *msg,
+                                              gpointer user_data)
+{
+	/* Don't know if there's anything to do here,
+	 * might want a debug message indicating success or failure?
+	 */
 }
