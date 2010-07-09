@@ -42,6 +42,7 @@
 #include "rb-builder-helpers.h"
 #include "rb-file-helpers.h"
 #include "rb-preferences.h"
+#include "rb-sourcelist.h"
 #include "rb-util.h"
 
 #define CONF_AUDIOSCROBBLER_ENABLE_SCROBBLING CONF_PLUGINS_PREFIX "/audioscrobbler/%s/scrobbling_enabled"
@@ -143,7 +144,10 @@ static void rb_audioscrobbler_profile_source_playing_song_changed_cb (RBShellPla
                                                                      RhythmDBEntry *entry,
                                                                      RBAudioscrobblerProfileSource *source);
 
-static void rb_audioscrobbler_profile_source_create_radio_sources (RBAudioscrobblerProfileSource *source);
+static void rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSource *source);
+static RBSource *rb_audioscrobbler_profile_source_add_radio_station (RBAudioscrobblerProfileSource *source,
+                                                                     const char *url,
+                                                                     const char *name);
 
 static void rb_audioscrobbler_profile_source_user_info_updated_cb (RBAudioscrobblerUser *user,
                                                                    RBAudioscrobblerUserData *info,
@@ -174,6 +178,11 @@ static GtkWidget *rb_audioscrobbler_profile_source_create_popup_menu (RBAudioscr
 static void rb_audioscrobbler_profile_source_list_item_clicked_cb (GtkButton *button, gpointer user_data);
 static void rb_audioscrobbler_profile_source_list_item_view_url_activated_cb (GtkMenuItem *menuitem,
                                                                               gpointer user_data);
+static void rb_audioscrobbler_profile_source_list_item_listen_similar_artists_activated_cb (GtkMenuItem *menuitem,
+                                                                                            gpointer user_data);
+static void rb_audioscrobbler_profile_source_list_item_listen_top_fans_activated_cb (GtkMenuItem *menuitem,
+                                                                                     gpointer user_data);
+
 static void rb_audioscrobbler_profile_source_list_table_pack_start (GtkTable *list_table, GtkWidget *item);
 void rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout,
                                                                     GtkAllocation *allocation,
@@ -688,7 +697,7 @@ rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount
 		rb_audioscrobbler_user_update (source->priv->user);
 	}
 
-	rb_audioscrobbler_profile_source_create_radio_sources (source);
+	rb_audioscrobbler_profile_source_load_radio_stations (source);
 
 	/* update the login ui */
 	switch (status) {
@@ -803,8 +812,9 @@ rb_audioscrobbler_profile_source_playing_song_changed_cb (RBShellPlayer *player,
 	g_free (action_name);
 }
 
+/* remove old radio sources and load ones for new user */
 static void
-rb_audioscrobbler_profile_source_create_radio_sources (RBAudioscrobblerProfileSource *source)
+rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSource *source)
 {
 	const char *username;
 	const char *session_key;
@@ -818,37 +828,60 @@ rb_audioscrobbler_profile_source_create_radio_sources (RBAudioscrobblerProfileSo
 	username = rb_audioscrobbler_account_get_username (source->priv->account);
 	session_key = rb_audioscrobbler_account_get_session_key (source->priv->account);
 	if (username != NULL) {
-		RBSource *radio;
+		/* TODO: load user's saved radio stations */
+
+		rb_audioscrobbler_profile_source_add_radio_station (source,
+		                                                    "lastfm://user/easyonthev/recommended",
+		                                                    "Recommendations");
+
+		rb_audioscrobbler_profile_source_add_radio_station (source,
+		                                                    "lastfm://user/easyonthev/loved",
+		                                                    "Loved Tracks");
+	}
+}
+
+/* adds a new radio station for the user, if it doesn't already exist */
+static RBSource *
+rb_audioscrobbler_profile_source_add_radio_station (RBAudioscrobblerProfileSource *source,
+                                                    const char *url,
+                                                    const char *name)
+{
+	GList *i;
+	RBSource *radio = NULL;
+
+	/* check for existing station */
+	for (i = source->priv->radio_sources; i != NULL; i = i->next) {
+		char *existing_url;
+		g_object_get (i->data, "station-url", &existing_url, NULL);
+
+		if (strcmp (existing_url, url) == 0) {
+			radio = i->data;
+		}
+
+		g_free (existing_url);
+	}
+
+	if (radio == NULL) {
+		const char *username;
+		const char *session_key;
 		RBShell *shell;
 
+		username = rb_audioscrobbler_account_get_username (source->priv->account);
+		session_key = rb_audioscrobbler_account_get_session_key (source->priv->account);
 		g_object_get (source, "shell", &shell, NULL);
 
 		radio = rb_audioscrobbler_radio_source_new (source,
 		                                            source->priv->service,
 		                                            username,
 		                                            session_key,
-		                                            "Recommendations",
-		                                            "lastfm://user/easyonthev/recommended");
-		source->priv->radio_sources = g_list_append (source->priv->radio_sources, radio);
-
-		radio = rb_audioscrobbler_radio_source_new (source,
-		                                            source->priv->service,
-		                                            username,
-		                                            session_key,
-		                                            "Loved Tracks",
-		                                            "lastfm://user/easyonthev/loved");
-		source->priv->radio_sources = g_list_append (source->priv->radio_sources, radio);
-
-		radio = rb_audioscrobbler_radio_source_new (source,
-		                                            source->priv->service,
-		                                            username,
-		                                            session_key,
-		                                            "My Library",
-		                                            "lastfm://user/easyonthev/library");
+		                                            name,
+		                                            url);
 		source->priv->radio_sources = g_list_append (source->priv->radio_sources, radio);
 
 		g_object_unref (shell);
 	}
+
+	return radio;
 }
 
 static void
@@ -1081,6 +1114,7 @@ rb_audioscrobbler_profile_source_create_popup_menu (RBAudioscrobblerProfileSourc
 
 	menu = gtk_menu_new ();
 
+	/* Visit on website */
 	if (data->url != NULL && data->url[0] != '\0') {
 		GtkWidget *view_url_item;
 		char *item_text;
@@ -1095,6 +1129,34 @@ rb_audioscrobbler_profile_source_create_popup_menu (RBAudioscrobblerProfileSourc
 
 		gtk_menu_shell_append (GTK_MENU_SHELL (menu), view_url_item);
 		g_free (item_text);
+	}
+
+	/* Similar artists radio */
+	if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK ||
+	    data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
+		GtkWidget *similar_artists_item;
+
+		similar_artists_item = gtk_menu_item_new_with_mnemonic (("Listen to _Similar Artists Radio"));
+		g_signal_connect (similar_artists_item,
+				  "activate",
+				  (GCallback) rb_audioscrobbler_profile_source_list_item_listen_similar_artists_activated_cb,
+				  source);
+
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), similar_artists_item);
+	}
+
+	/* Top fans radio */
+	if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK ||
+	    data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
+		GtkWidget *top_fans_item;
+
+		top_fans_item = gtk_menu_item_new_with_mnemonic (("Listen to _Top Fans Radio"));
+		g_signal_connect (top_fans_item,
+				  "activate",
+				  (GCallback) rb_audioscrobbler_profile_source_list_item_listen_top_fans_activated_cb,
+				  source);
+
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), top_fans_item);
 	}
 
 	gtk_widget_show_all (menu);
@@ -1138,6 +1200,84 @@ rb_audioscrobbler_profile_source_list_item_view_url_activated_cb (GtkMenuItem *m
 		gtk_show_uri (NULL, url, GDK_CURRENT_TIME, NULL);
 		g_free (url);
 	}
+}
+
+static void
+rb_audioscrobbler_profile_source_list_item_listen_similar_artists_activated_cb (GtkMenuItem *menuitem,
+                                                                                gpointer user_data)
+{
+	RBAudioscrobblerProfileSource *source;
+	GtkWidget *menu;
+	RBAudioscrobblerUserData *data;
+	const char *artist = NULL;
+	char *radio_url;
+	char *radio_name;
+	RBSource *radio;
+	RBShell *shell;
+	RBSourceList *sourcelist;
+
+	source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (user_data);
+	menu = gtk_widget_get_parent (GTK_WIDGET (menuitem));
+	data = g_hash_table_lookup (source->priv->popup_menu_to_data_map, menu);
+	if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
+		artist = data->artist.name;
+	} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK) {
+		artist = data->track.artist;
+	}
+
+	radio_url = g_strdup_printf (rb_audioscrobbler_radio_type_get_url (RB_AUDIOSCROBBLER_RADIO_TYPE_SIMILAR_ARTISTS),
+	                             artist);
+	radio_name = g_strdup_printf (rb_audioscrobbler_radio_type_get_default_name (RB_AUDIOSCROBBLER_RADIO_TYPE_SIMILAR_ARTISTS),
+	                              artist);
+
+	radio = rb_audioscrobbler_profile_source_add_radio_station (source, radio_url, radio_name);
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "sourcelist", &sourcelist, NULL);
+	rb_sourcelist_select (sourcelist, radio);
+
+	g_free (radio_url);
+	g_free (radio_name);
+	g_object_unref (shell);
+	g_object_unref (sourcelist);
+}
+
+static void
+rb_audioscrobbler_profile_source_list_item_listen_top_fans_activated_cb (GtkMenuItem *menuitem,
+                                                                         gpointer user_data)
+{
+	RBAudioscrobblerProfileSource *source;
+	GtkWidget *menu;
+	RBAudioscrobblerUserData *data;
+	const char *artist = NULL;
+	char *radio_url;
+	char *radio_name;
+	RBSource *radio;
+	RBShell *shell;
+	RBSourceList *sourcelist;
+
+	source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (user_data);
+	menu = gtk_widget_get_parent (GTK_WIDGET (menuitem));
+	data = g_hash_table_lookup (source->priv->popup_menu_to_data_map, menu);
+	if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
+		artist = data->artist.name;
+	} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK) {
+		artist = data->track.artist;
+	}
+
+	radio_url = g_strdup_printf (rb_audioscrobbler_radio_type_get_url (RB_AUDIOSCROBBLER_RADIO_TYPE_TOP_FANS),
+	                             artist);
+	radio_name = g_strdup_printf (rb_audioscrobbler_radio_type_get_default_name (RB_AUDIOSCROBBLER_RADIO_TYPE_TOP_FANS),
+	                              artist);
+
+	radio = rb_audioscrobbler_profile_source_add_radio_station (source, radio_url, radio_name);
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "sourcelist", &sourcelist, NULL);
+	rb_sourcelist_select (sourcelist, radio);
+
+	g_free (radio_url);
+	g_free (radio_name);
+	g_object_unref (shell);
+	g_object_unref (sourcelist);
 }
 
 static void
@@ -1240,7 +1380,7 @@ rb_audioscrobbler_profile_source_love_track_action_cb (GtkAction *action,
 
 	/* disable love/ban */
 	gtk_action_set_sensitive (action, FALSE);
-	ban_action_name = g_strdup_printf ("%sBanSong", rb_audioscrobbler_service_get_name (source->priv->service));
+	ban_action_name = g_strdup_printf ("%sBanTrack", rb_audioscrobbler_service_get_name (source->priv->service));
 	ban_action = gtk_action_group_get_action (source->priv->action_group, ban_action_name);
 	gtk_action_set_sensitive (ban_action, FALSE);
 

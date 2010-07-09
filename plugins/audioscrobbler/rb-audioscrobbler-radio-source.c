@@ -40,6 +40,41 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 
+/* radio type stuff */
+static const char* radio_names[] = {
+	N_("%s Radio"),
+	N_("%s Fan Radio"),
+	N_("%s's Library"),
+	N_("%s's Neighbourhood"),
+	N_("%s's Loved Tracks"),
+	N_("%s's Recommended Radio"),
+	N_("%s's Tag Radio"),
+	NULL
+};
+
+static const char* radio_urls[] = {
+	"lastfm://artist/%s/similarartists",
+	"lastfm://artist/%s/fans",
+	"lastfm://user/%s/library",
+	"lastfm://user/%s/neighbours",
+	"lastfm://user/%s/loved",
+	"lastfm://user/%s/recommended",
+	"lastfm://globaltags/%s",
+	NULL
+};
+
+const char *
+rb_audioscrobbler_radio_type_get_default_name (RBAudioscrobblerRadioType type)
+{
+	return radio_names[type];
+}
+
+const char *
+rb_audioscrobbler_radio_type_get_url (RBAudioscrobblerRadioType type)
+{
+	return radio_urls[type];
+}
+
 /* entry data stuff */
 
 typedef struct
@@ -255,7 +290,7 @@ rb_audioscrobbler_radio_source_class_init (RBAudioscrobblerRadioSourceClass *kla
 	                                                      "Station URL",
 	                                                      "Last.fm radio URL of the station this source will stream",
 	                                                      NULL,
-                                                              G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+                                                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_override_property (object_class,
 					  PROP_PLAY_ORDER,
@@ -379,6 +414,9 @@ rb_audioscrobbler_radio_source_get_property (GObject *object,
 {
 	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (object);
 	switch (prop_id) {
+	case PROP_STATION_URL:
+		g_value_set_string (value, source->priv->station_url);
+		break;
 	case PROP_PLAY_ORDER:
 		g_value_set_object (value, source->priv->play_order);
 		break;
