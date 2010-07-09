@@ -63,6 +63,7 @@ typedef struct {
 	LIBMTP_raw_device_t *raw_device;
 	LIBMTP_track_t *track;
 	uint32_t track_id;
+	uint32_t folder_id;
 	uint32_t storage_id;
 	char *album;
 	char *filename;
@@ -240,7 +241,7 @@ create_folder (RBMtpThread *thread, RBMtpThreadTask *task)
 }
 
 static LIBMTP_album_t *
-add_track_to_album (RBMtpThread *thread, const char *album_name, uint32_t track_id, uint32_t storage_id, gboolean *new_album)
+add_track_to_album (RBMtpThread *thread, const char *album_name, uint32_t track_id, uint32_t folder_id, uint32_t storage_id, gboolean *new_album)
 {
 	LIBMTP_album_t *album;
 
@@ -265,6 +266,7 @@ add_track_to_album (RBMtpThread *thread, const char *album_name, uint32_t track_
 		album->no_tracks = 1;
 		album->tracks = malloc (sizeof(uint32_t));
 		album->tracks[0] = track_id;
+		album->parent_id = folder_id;
 		album->storage_id = storage_id;
 
 		rb_debug ("creating new album (%s) for track ID %d", album->name, track_id);
@@ -301,7 +303,7 @@ add_track_to_album_and_update (RBMtpThread *thread, RBMtpThreadTask *task)
 	LIBMTP_album_t *album;
 	gboolean new_album = FALSE;
 
-	album = add_track_to_album (thread, task->album, task->track_id, task->storage_id, &new_album);
+	album = add_track_to_album (thread, task->album, task->track_id, task->folder_id, task->storage_id, &new_album);
 	write_album_to_device (thread, album, new_album);
 }
 
@@ -435,7 +437,7 @@ get_track_list (RBMtpThread *thread, RBMtpThreadTask *task)
 		for (track = tracks; track != NULL; track = track->next) {
 			if (track->album != NULL) {
 				gboolean new_album = FALSE;
-				album = add_track_to_album (thread, track->album, track->item_id, track->storage_id, &new_album);
+				album = add_track_to_album (thread, track->album, track->item_id, track->parent_id, track->storage_id, &new_album);
 				g_hash_table_insert (update_albums, album, GINT_TO_POINTER (new_album));
 			}
 		}
@@ -747,6 +749,7 @@ rb_mtp_thread_add_to_album (RBMtpThread *thread, LIBMTP_track_t *track, const ch
 {
 	RBMtpThreadTask *task = create_task (ADD_TO_ALBUM);
 	task->track_id = track->item_id;
+	task->folder_id = track->parent_id;
 	task->storage_id = track->storage_id;
 	task->album = g_strdup (album);
 	queue_task (thread, task);
