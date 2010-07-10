@@ -56,6 +56,7 @@ typedef struct
 {
 	RBPlugin parent;
 
+	guint ui_merge_id;
 	RBSource *source;
 } RBAudioscrobblerPlugin;
 
@@ -109,13 +110,23 @@ impl_activate (RBPlugin *bplugin,
 	       RBShell *shell)
 {
 	RBAudioscrobblerPlugin *plugin;
+	GtkUIManager *ui_manager;
+	char *file;
 	RBAudioscrobblerService *service;
 
 	plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
 
+	g_object_get (shell, "ui-manager", &ui_manager, NULL);
+	file = rb_plugin_find_file (bplugin, "audioscrobbler-ui.xml");
+	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (ui_manager,
+							       file,
+							       NULL);
+	g_free (file);
+
 	service = rb_audioscrobbler_service_new ();
 	plugin->source = rb_audioscrobbler_profile_source_new (shell, bplugin, service);
 
+	g_object_unref (ui_manager);
 	g_object_unref (service);
 }
 
@@ -124,7 +135,13 @@ impl_deactivate	(RBPlugin *bplugin,
 		 RBShell *shell)
 {
 	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
+	GtkUIManager *ui_manager;
+
+	g_object_get (shell, "ui-manager", &ui_manager, NULL);
+	gtk_ui_manager_remove_ui (ui_manager, plugin->ui_merge_id);
 
 	rb_source_delete_thyself (plugin->source);
 	plugin->source = NULL;
+
+	g_object_unref (ui_manager);
 }

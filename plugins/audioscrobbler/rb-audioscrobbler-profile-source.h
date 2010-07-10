@@ -61,6 +61,8 @@ GType rb_audioscrobbler_profile_source_get_type (void);
 RBSource *rb_audioscrobbler_profile_source_new (RBShell *shell,
                                                 RBPlugin *plugin,
                                                 RBAudioscrobblerService *service);
+void rb_audioscrobbler_profile_source_remove_radio_station (RBAudioscrobblerProfileSource *source,
+                                                            RBSource *station);
 
 G_END_DECLS
 

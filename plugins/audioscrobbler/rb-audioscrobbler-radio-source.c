@@ -123,6 +123,8 @@ struct _RBAudioscrobblerRadioSourcePrivate
 	RhythmDBEntry *playing_entry;
 
 	guint emit_coverart_id;
+
+	GtkActionGroup *action_group;
 };
 
 #define RB_AUDIOSCROBBLER_RADIO_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_RADIO_SOURCE, RBAudioscrobblerRadioSourcePrivate))
@@ -155,6 +157,9 @@ static void rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlaye
                                                                     RhythmDBEntry *entry,
                                                                     RBAudioscrobblerRadioSource *source);
 
+static void rb_audioscrobbler_radio_source_delete_station_action_cb (GtkAction *action,
+                                                                     RBAudioscrobblerRadioSource *source);
+
 /* cover art */
 static GValue *coverart_uri_request (RhythmDB *db,
                                      RhythmDBEntry *entry,
@@ -171,6 +176,7 @@ static RBEntryView *impl_get_entry_view (RBSource *asource);
 static void impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress);
 static RBSourceEOFType impl_handle_eos (RBSource *asource);
 static GList *impl_get_ui_actions (RBSource *asource);
+static gboolean impl_show_popup (RBSource *asource);
 static void impl_delete_thyself (RBSource *asource);
 
 enum {
@@ -181,6 +187,15 @@ enum {
 	PROP_SESSION_KEY,
 	PROP_STATION_URL,
 	PROP_PLAY_ORDER
+};
+
+#define AUDIOSCROBBLER_RADIO_SOURCE_POPUP_PATH "/AudioscrobblerRadioSourcePopup"
+
+static GtkActionEntry rb_audioscrobbler_radio_source_actions [] =
+{
+	{ "AudioscrobblerRadioDeleteStation", GTK_STOCK_DELETE, N_("Delete Station"), NULL,
+	  N_("Delete the selected station"),
+	  G_CALLBACK (rb_audioscrobbler_radio_source_delete_station_action_cb) }
 };
 
 G_DEFINE_TYPE (RBAudioscrobblerRadioSource, rb_audioscrobbler_radio_source, RB_TYPE_STREAMING_SOURCE)
@@ -254,6 +269,7 @@ rb_audioscrobbler_radio_source_class_init (RBAudioscrobblerRadioSourceClass *kla
 	source_class->impl_get_status = impl_get_status;
 	source_class->impl_handle_eos = impl_handle_eos;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
+	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
 
 	g_object_class_install_property (object_class,
@@ -374,6 +390,16 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 				 "entry-extra-metadata-gather",
 				 G_CALLBACK (extra_metadata_gather_cb),
 				 source, 0);
+
+	/* actions */
+	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
+								       "AudioscrobblerRadioActions",
+								       NULL, 0,
+								       shell);
+	_rb_action_group_add_source_actions (source->priv->action_group,
+					     G_OBJECT (shell),
+					     rb_audioscrobbler_radio_source_actions,
+					     G_N_ELEMENTS (rb_audioscrobbler_radio_source_actions));
 
 	rb_shell_append_source (shell, RB_SOURCE (source), RB_SOURCE (source->priv->parent));
 
@@ -878,6 +904,14 @@ rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
 	g_object_unref (db);
 }
 
+static void
+rb_audioscrobbler_radio_source_delete_station_action_cb (GtkAction *action,
+                                                         RBAudioscrobblerRadioSource *source)
+{
+	rb_debug ("deleting station %s", source->priv->station_url);
+	rb_audioscrobbler_profile_source_remove_radio_station (source->priv->parent, RB_SOURCE (source));
+}
+
 /* cover art */
 static const char *
 get_image_url_for_entry (RBAudioscrobblerRadioSource *source, RhythmDBEntry *entry)
@@ -1016,6 +1050,13 @@ impl_get_ui_actions (RBSource *asource)
 	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (asource);
 
 	return rb_source_get_ui_actions (RB_SOURCE (source->priv->parent));
+}
+
+static gboolean
+impl_show_popup (RBSource *asource)
+{
+	_rb_source_show_popup (asource, AUDIOSCROBBLER_RADIO_SOURCE_POPUP_PATH);
+	return TRUE;
 }
 
 static void

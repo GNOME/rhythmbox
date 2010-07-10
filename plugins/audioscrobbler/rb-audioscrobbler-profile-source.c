@@ -812,7 +812,7 @@ rb_audioscrobbler_profile_source_playing_song_changed_cb (RBShellPlayer *player,
 	g_free (action_name);
 }
 
-/* remove old radio sources and load ones for new user */
+/* delete old user's radio sources and load ones for new user */
 static void
 rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSource *source)
 {
@@ -882,6 +882,21 @@ rb_audioscrobbler_profile_source_add_radio_station (RBAudioscrobblerProfileSourc
 	}
 
 	return radio;
+}
+
+/* removes a station from user's list of radio stations, deletes the source */
+void
+rb_audioscrobbler_profile_source_remove_radio_station (RBAudioscrobblerProfileSource *source,
+                                                       RBSource *station)
+{
+	GList *i;
+
+	i = g_list_find (source->priv->radio_sources, station);
+
+	if (i != NULL) {
+		rb_source_delete_thyself (i->data);
+		source->priv->radio_sources = g_list_remove (source->priv->radio_sources, i->data);
+	}
 }
 
 static void
