@@ -1310,8 +1310,6 @@ artwork_notify_cb (RhythmDB *db,
 
 	rb_mtp_thread_set_album_image (priv->device_thread, album_name, pixbuf);
 	queue_free_space_update (source);
-
-	g_object_unref (pixbuf);		/* ? */
 }
 
 
