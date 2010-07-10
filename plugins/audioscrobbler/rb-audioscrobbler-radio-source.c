@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <libsoup/soup.h>
 #include <libsoup/soup-gnome.h>
+#include <json-glib/json-glib.h>
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
 
@@ -107,6 +108,9 @@ struct _RBAudioscrobblerRadioSourcePrivate
 	char *station_url;
 
 	SoupSession *soup_session;
+
+	GtkWidget *info_bar;
+	GtkWidget *info_bar_label;
 
 	RBEntryView *track_view;
 	RhythmDBQueryModel *track_model;
@@ -319,12 +323,24 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	RBAudioscrobblerRadioSource *source;
 	RBShell *shell;
 	RhythmDB *db;
+	GtkWidget *main_vbox;
+	GtkWidget *info_bar_content_area;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_radio_source_parent_class, constructed, object);
 
 	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (object);
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "db", &db, NULL);
+
+	main_vbox = gtk_vbox_new (FALSE, 0);
+	gtk_widget_show (main_vbox);
+	gtk_container_add (GTK_CONTAINER (source), main_vbox);
+
+	source->priv->info_bar = gtk_info_bar_new ();
+	source->priv->info_bar_label = gtk_label_new ("");
+	info_bar_content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (source->priv->info_bar));
+	gtk_container_add (GTK_CONTAINER (info_bar_content_area), source->priv->info_bar_label);
+	gtk_box_pack_start (GTK_BOX (main_vbox), source->priv->info_bar, FALSE, FALSE, 0);
 
 	/* entry view */
 	source->priv->track_view = rb_entry_view_new (db, rb_shell_get_player (shell), NULL, FALSE, FALSE);
@@ -333,9 +349,9 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	rb_entry_view_append_column (source->priv->track_view, RB_ENTRY_VIEW_COL_ALBUM, FALSE);
 	rb_entry_view_append_column (source->priv->track_view, RB_ENTRY_VIEW_COL_DURATION, FALSE);
 	rb_entry_view_set_columns_clickable (source->priv->track_view, FALSE);
+	gtk_widget_show_all (GTK_WIDGET (source->priv->track_view));
 
-	gtk_container_add (GTK_CONTAINER (source), GTK_WIDGET (source->priv->track_view));
-	gtk_widget_show_all (GTK_WIDGET (source));
+	gtk_box_pack_start (GTK_BOX (main_vbox), GTK_WIDGET (source->priv->track_view), TRUE, TRUE, 0);
 
 	/* query model */
 	source->priv->track_model = rhythmdb_query_model_new_empty (db);
@@ -493,11 +509,9 @@ rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source)
 	                           sig,
 	                           source->priv->session_key);
 
-	/* The Last.fm API docs say to send requests to the api root url, but that doesn't work.
-	 * We need to send the arguments in the url as well as in the request body */
-	msg_url = g_strdup_printf ("%s%s",
-	                           rb_audioscrobbler_service_get_api_url (source->priv->service),
-	                           request);
+	/* The format parameter needs to go here instead of in the request body */
+	msg_url = g_strdup_printf ("%s?format=json",
+	                           rb_audioscrobbler_service_get_api_url (source->priv->service));
 
 	msg = soup_message_new ("POST", msg_url);
 	soup_message_set_request (msg,
@@ -524,10 +538,61 @@ rb_audioscrobbler_radio_source_tune_response_cb (SoupSession *session,
                                                  gpointer user_data)
 {
 	RBAudioscrobblerRadioSource *source;
+	JsonParser *parser;
+	JsonObject *root_object;
 
 	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (user_data);
+	parser = json_parser_new ();
+	json_parser_load_from_data (parser, msg->response_body->data, msg->response_body->length, NULL);
+	root_object = json_node_get_object (json_parser_get_root (parser));
 
-	/* TODO: deal with response */
+	if (json_object_has_member (root_object, "station")) {
+		JsonObject *station_object;
+
+		station_object = json_object_get_object_member (root_object, "station");
+		/* TODO: do something fun with this information */
+
+	} else if (json_object_has_member (root_object, "error")) {
+		int code;
+		const char *message;
+
+		code = json_object_get_int_member (root_object, "error");
+		message = json_object_get_string_member (root_object, "message");
+
+		rb_debug ("radio.tune responded with error: %s", message);
+
+		if (code == 12) {
+			/* Subscriber only station */
+			char *info_message;
+
+			info_message = g_strdup_printf (_("This station is only available to %s subscribers"),
+			                                rb_audioscrobbler_service_get_name (source->priv->service));
+			gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), info_message);
+			gtk_widget_show_all (source->priv->info_bar);
+
+			g_free (info_message);
+		} else if (code == 4) {
+			/* different: The station is not a subscriber-only station, just Last.fm will not stream any stations
+			 * to non subscribers. TODO: Fall back to using old API
+			 */
+			char *info_message;
+
+			info_message = g_strdup_printf (_("This station is only available to %s subscribers"),
+			                                rb_audioscrobbler_service_get_name (source->priv->service));
+			gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), info_message);
+			gtk_widget_show_all (source->priv->info_bar);
+
+			g_free (info_message);
+		} else {
+			char *info_message;
+
+			info_message = g_strdup_printf ("Error tuning station: %i - %s", code, message);
+			gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), info_message);
+			gtk_widget_show_all (source->priv->info_bar);
+
+			g_free (info_message);
+		}
+	}
 }
 
 static void
@@ -536,7 +601,6 @@ rb_audioscrobbler_radio_source_fetch_playlist (RBAudioscrobblerRadioSource *sour
 	char *sig_arg;
 	char *sig;
 	char *request;
-	char *msg_url;
 	SoupMessage *msg;
 
 	if (source->priv->is_fetching_playlist == TRUE) {
@@ -558,13 +622,7 @@ rb_audioscrobbler_radio_source_fetch_playlist (RBAudioscrobblerRadioSource *sour
 	                           sig,
 	                           source->priv->session_key);
 
-	/* The Last.fm API docs say to send requests to the api root url, but that doesn't work.
-	 * We need to send the arguments in the url as well as in the request body */
-	msg_url = g_strdup_printf ("%s%s",
-	                           rb_audioscrobbler_service_get_api_url (source->priv->service),
-	                           request);
-
-	msg = soup_message_new ("POST", msg_url);
+	msg = soup_message_new ("POST", rb_audioscrobbler_service_get_api_url (source->priv->service));
 	soup_message_set_request (msg,
 	                          "application/x-www-form-urlencoded",
 	                          SOUP_MEMORY_COPY,
@@ -578,7 +636,6 @@ rb_audioscrobbler_radio_source_fetch_playlist (RBAudioscrobblerRadioSource *sour
 	g_free (sig_arg);
 	g_free (sig);
 	g_free (request);
-	g_free (msg_url);
 }
 
 static void
@@ -685,6 +742,8 @@ rb_audioscrobbler_radio_source_fetch_playlist_response_cb (SoupSession *session,
 		rb_debug ("didn't get a response");
 		return;
 	}
+
+	rb_debug ("%s", msg->response_body->data);
 
 	/* until totem-pl-parser can parse playlists from in-memory data, we save it to a
 	 * temporary file.
