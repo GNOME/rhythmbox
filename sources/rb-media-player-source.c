@@ -314,7 +314,7 @@ rb_media_player_source_get_entries (RBMediaPlayerSource *source,
 				    GHashTable *map)
 {
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
-	return klass->impl_get_entries (source, category, map);
+	klass->impl_get_entries (source, category, map);
 }
 
 void
@@ -326,7 +326,7 @@ rb_media_player_source_delete_entries	(RBMediaPlayerSource *source,
 {
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
 
-	return klass->impl_delete_entries (source, entries, callback, callback_data, destroy_data);
+	klass->impl_delete_entries (source, entries, callback, callback_data, destroy_data);
 }
 
 static void
