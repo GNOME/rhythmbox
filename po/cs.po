@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-30 15:54+0200\n"
-"PO-Revision-Date: 2010-06-28 11:15+0200\n"
+"POT-Creation-Date: 2010-07-11 17:47+0200\n"
+"PO-Revision-Date: 2010-07-08 10:48+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -691,7 +691,7 @@ msgstr "%e. %b %Y"
 #: ../plugins/lyrics/lyrics/__init__.py:83
 #: ../plugins/mtpdevice/rb-mtp-source.c:640
 #: ../plugins/mtpdevice/rb-mtp-source.c:1118
-#: ../plugins/mtpdevice/rb-mtp-source.c:1514
+#: ../plugins/mtpdevice/rb-mtp-source.c:1512
 #: ../plugins/status-icon/rb-status-icon-plugin.c:782
 #: ../podcast/rb-feed-podcast-properties-dialog.c:341
 #: ../podcast/rb-podcast-manager.c:1908
@@ -2101,7 +2101,7 @@ msgstr "Zobrazit vlastnosti zařízení"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1294
 #: ../plugins/ipod/rb-ipod-source.c:1931
-#: ../plugins/mtpdevice/rb-mtp-source.c:1608
+#: ../plugins/mtpdevice/rb-mtp-source.c:1606
 msgid "Advanced"
 msgstr "Pokročilé"
 
@@ -3071,7 +3071,7 @@ msgstr ""
 "zařízení)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:157
-#: ../plugins/mtpdevice/rb-mtp-thread.c:543
+#: ../plugins/mtpdevice/rb-mtp-thread.c:545
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Nelze otevřít dočasný soubor: %s"
@@ -3081,7 +3081,7 @@ msgid "Rename MTP-device"
 msgstr "Přejmenovat zařízení MTP"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:854
-#: ../plugins/mtpdevice/rb-mtp-thread.c:851
+#: ../plugins/mtpdevice/rb-mtp-thread.c:854
 msgid "Media player device error"
 msgstr "Chyba zařízení na přehrávání médii"
 
@@ -3097,24 +3097,24 @@ msgstr "Nelze otevřít zařízení %s %s"
 msgid "Digital Audio Player"
 msgstr "Digitální hudební přehrávač"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:498
-#: ../plugins/mtpdevice/rb-mtp-thread.c:556
-#: ../plugins/mtpdevice/rb-mtp-thread.c:574
+#: ../plugins/mtpdevice/rb-mtp-thread.c:500
+#: ../plugins/mtpdevice/rb-mtp-thread.c:558
+#: ../plugins/mtpdevice/rb-mtp-thread.c:576
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr "Nelze zkopírovat soubor ze zařízení MTP: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:519
+#: ../plugins/mtpdevice/rb-mtp-thread.c:521
 #, c-format
 msgid "Not enough space in %s"
 msgstr "Nedostatek místa na zařízení %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:600
+#: ../plugins/mtpdevice/rb-mtp-thread.c:602
 #, c-format
 msgid "No space left on MTP device"
 msgstr "Na zařízen MTP není žádné volné místo"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:603
+#: ../plugins/mtpdevice/rb-mtp-thread.c:605
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "Nelze odeslat soubor do zařízen MTP: %s"
@@ -4543,7 +4543,7 @@ msgstr "Nelze přesunout stopy"
 #: ../shell/rb-track-transfer-queue.c:369
 msgid ""
 "None of the tracks to be transferred are in a format supported by the target "
-"device, and no encoders are available  for the supported formats."
+"device, and no encoders are available for the supported formats."
 msgstr ""
 "Žádná ze stop, které se mají přesouvat, není ve formátu podporovaném cílovým "
 "zařízením a není k dispozici žádný kodér pro podporované formáty."
@@ -4645,16 +4645,14 @@ msgstr "Nastavit prohlížeč na zobrazování jen tohoto alba"
 
 #. set up info bar for triggering codec installation
 #: ../sources/rb-import-errors-source.c:240
-#, fuzzy
 msgid "Install Plugins"
-msgstr "Vzorový přídavný modul"
+msgstr "Instalovat zásuvný modul"
 
 #: ../sources/rb-import-errors-source.c:246
-#, fuzzy
 msgid "Additional GStreamer plugins are required to play some of these files."
 msgstr ""
-"K přehrávání tohoto souboru jsou zapotřebí dodatečné zásuvné moduly "
-"GStreamer: %s"
+"K přehrávání těchto souborů jsou zapotřebí dodatečné zásuvné moduly "
+"GStreamer."
 
 #: ../sources/rb-import-errors-source.c:350
 msgid "Import Errors"
@@ -4725,9 +4723,8 @@ msgid "Example Path:"
 msgstr "Příklad cesty:"
 
 #: ../sources/rb-media-player-source.c:108
-#, fuzzy
 msgid "Sync with Library"
-msgstr "Z_kopírovat do kolekce"
+msgstr "Synchronizovat s knihovnou"
 
 #: ../sources/rb-media-player-source.c:109
 msgid "Synchronize media player with the library"
