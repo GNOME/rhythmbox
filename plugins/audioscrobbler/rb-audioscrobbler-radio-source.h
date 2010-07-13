@@ -49,8 +49,9 @@ typedef enum
 	RB_AUDIOSCROBBLER_RADIO_TYPE_LAST
 } RBAudioscrobblerRadioType;
 
-const char *rb_audioscrobbler_radio_type_get_default_name (RBAudioscrobblerRadioType type);
+const char *rb_audioscrobbler_radio_type_get_text (RBAudioscrobblerRadioType type);
 const char *rb_audioscrobbler_radio_type_get_url (RBAudioscrobblerRadioType type);
+const char *rb_audioscrobbler_radio_type_get_default_name (RBAudioscrobblerRadioType type);
 
 #define RB_TYPE_AUDIOSCROBBLER_RADIO_SOURCE         (rb_audioscrobbler_radio_source_get_type ())
 #define RB_AUDIOSCROBBLER_RADIO_SOURCE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_AUDIOSCROBBLER_RADIO_SOURCE, RBAudioscrobblerRadioSource))

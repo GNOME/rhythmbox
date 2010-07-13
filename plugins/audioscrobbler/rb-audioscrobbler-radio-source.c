@@ -41,17 +41,24 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 
+
 /* radio type stuff */
-static const char* radio_names[] = {
-	N_("%s Radio"),
-	N_("%s Fan Radio"),
-	N_("%s's Library"),
-	N_("%s's Neighbourhood"),
-	N_("%s's Loved Tracks"),
-	N_("%s's Recommended Radio"),
-	N_("%s's Tag Radio"),
+static const char* radio_types[] = {
+	N_("Similar Artists"),
+	N_("Top Fans"),
+	N_("Library"),
+	N_("Neighbourhood"),
+	N_("Loved Tracks"),
+	N_("Recommendations"),
+	N_("Tag Radio"),
 	NULL
 };
+
+const char *
+rb_audioscrobbler_radio_type_get_text (RBAudioscrobblerRadioType type)
+{
+	return radio_types[type];
+}
 
 static const char* radio_urls[] = {
 	"lastfm://artist/%s/similarartists",
@@ -65,15 +72,26 @@ static const char* radio_urls[] = {
 };
 
 const char *
-rb_audioscrobbler_radio_type_get_default_name (RBAudioscrobblerRadioType type)
-{
-	return radio_names[type];
-}
-
-const char *
 rb_audioscrobbler_radio_type_get_url (RBAudioscrobblerRadioType type)
 {
 	return radio_urls[type];
+}
+
+static const char* radio_names[] = {
+	N_("%s Radio"),
+	N_("%s Fan Radio"),
+	N_("%s's Library"),
+	N_("%s's Neighbourhood"),
+	N_("%s's Loved Tracks"),
+	N_("%s's Recommended Radio"),
+	N_("%s Tag Radio"),
+	NULL
+};
+
+const char *
+rb_audioscrobbler_radio_type_get_default_name (RBAudioscrobblerRadioType type)
+{
+	return radio_names[type];
 }
 
 /* entry data stuff */
