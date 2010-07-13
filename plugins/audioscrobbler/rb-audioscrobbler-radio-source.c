@@ -134,6 +134,8 @@ struct _RBAudioscrobblerRadioSourcePrivate
 	RhythmDBQueryModel *track_model;
 
 	gboolean is_fetching_playlist;
+	/* keep pointer to request so it can be cancelled if tuning fails */
+	SoupMessage *fetch_playlist_request;
 
 	RBPlayOrder *play_order;
 
@@ -568,8 +570,6 @@ rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source)
 	                            rb_audioscrobbler_radio_source_tune_response_cb,
 	                            source);
 
-	rb_audioscrobbler_radio_source_fetch_playlist (source);
-
 	g_free (sig_arg);
 	g_free (sig);
 	g_free (request);
@@ -636,6 +636,14 @@ rb_audioscrobbler_radio_source_tune_response_cb (SoupSession *session,
 
 			g_free (info_message);
 		}
+
+		/* if a playlist request is queued then cancel it */
+		if (source->priv->fetch_playlist_request != NULL) {
+			soup_session_cancel_message (source->priv->soup_session,
+			                             source->priv->fetch_playlist_request,
+			                             SOUP_STATUS_CANCELLED);
+			source->priv->fetch_playlist_request = NULL;
+		}
 	}
 }
 
@@ -676,6 +684,9 @@ rb_audioscrobbler_radio_source_fetch_playlist (RBAudioscrobblerRadioSource *sour
 	                            msg,
 	                            rb_audioscrobbler_radio_source_fetch_playlist_response_cb,
 	                            source);
+
+	/* keep pointer to message so it can be cancelled if need be */
+	source->priv->fetch_playlist_request = msg;
 
 	g_free (sig_arg);
 	g_free (sig);
