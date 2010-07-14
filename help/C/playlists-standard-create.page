@@ -7,6 +7,7 @@
     <link type="guide" xref="playlists#playlists-manage" group="one"/>
     <desc>Create standard playlists, add and remove songs.</desc>
     <revision pkgversion="3.0" version="0.1" date="2010-06-24" status="draft"/>
+    <revision pkgversion="3.0" version="0.2" date="2010-07-14" status="draft"/>
     <credit type="author">
       <name>Milo Casagrande</name>
       <email>milo@ubuntu.com</email>
@@ -19,6 +20,13 @@
   </info>
 
   <title>Manage standard playlists</title>
+  
+  <note style="tip">
+    <p>
+      You can select multiple songs from the same playlist or album by pressing the
+      <key>Ctrl</key> or <key>Shift</key> key when doing your selection.
+    </p>
+  </note>
   
   <section id="create">
     <title>Create a standard playlist</title>
@@ -41,7 +49,7 @@
     <steps>
       <item>
         <p>
-          From the <gui style="">Music</gui> library, select the songs you like to
+          From the <gui>Music</gui> library, select the songs you like to
           add to the playlist.
         </p>
       </item>
@@ -84,11 +92,31 @@
     
   </section>  
   
-  <note style="tip">
-    <p>
-      You can select multiple songs from the same playlist or album by pressing the
-      <key>Ctrl</key> or <key>Shift</key> key when doing your selection.
-    </p>
-  </note>
+  <section id="save">
+  <title>Save a playlist to a file</title>
+  <steps>
+    <item>
+      <p>
+        Select the desired playlist from <app>Rhythmbox</app> main window.
+      </p>
+    </item>
+    <item>
+      <p>
+        Right-click on it, and choose <gui style="menuitem">Save to File</gui>.
+      </p>
+    </item>
+    <item>
+      <p>
+        If you desire, change the name and the saving location, and choose a different
+        playlist format.
+      </p>
+    </item>
+    <item>
+      <p>
+        Click <gui style="button">Save</gui>.
+      </p>
+    </item>
+  </steps>
+  </section>
 
 </page>

@@ -7,6 +7,7 @@
     <link type="guide" xref="playlists#playlists-manage" group="two"/>
     <desc>Create automatic playlists.</desc>
     <revision pkgversion="3.0" version="0.1" date="2010-06-24" status="draft"/>
+    <revision pkgversion="3.0" version="0.2" date="2010-07-14" status="draft"/>
     <credit type="author">
       <name>Milo Casagrande</name>
       <email>milo@ubuntu.com</email>
@@ -35,13 +36,35 @@
         Make your choices, and when done click <gui style="button">New</gui>.
       </p>
     </item>
-    <item>
-      <p>
-        The new playlist will be added 
-      </p>
-    </item>
   </steps>
 
   <media type="image" mime="image/png" src="figures/rb-playlists-automatic-create.png" style="center"><p>Automatic playlists creation dialog</p></media>
+  
+  <section id="save">
+  <title>Save a playlist to a file</title>
+  <steps>
+    <item>
+      <p>
+        Select the desired playlist from <app>Rhythmbox</app> main window.
+      </p>
+    </item>
+    <item>
+      <p>
+        Right-click on it, and choose <gui style="menuitem">Save to File</gui>.
+      </p>
+    </item>
+    <item>
+      <p>
+        If you desire, change the name and the saving location, and choose a different
+        playlist format.
+      </p>
+    </item>
+    <item>
+      <p>
+        Click <gui style="button">Save</gui>.
+      </p>
+    </item>
+  </steps>
+  </section>
 
 </page>
