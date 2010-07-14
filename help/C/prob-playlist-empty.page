@@ -1,0 +1,59 @@
+<page xmlns="http://projectmallard.org/1.0/"
+  type="topic"
+  id="prob-playlist-empty">
+      
+  <info>
+    <link type="guide" xref="radio-stations#common-problems"/>
+    <link type="seealso" xref="radio-stations-listen"/>    
+    <desc>An error message which says "Playlist was empty" appears.</desc>
+    <revision pkgversion="3.0" version="0.1" date="2010-07-14" status="draft"/>
+    <credit type="author">
+      <name>Milo Casagrande</name>
+      <email>milo@ubuntu.com</email>
+    </credit>
+    <license>
+      <p>
+        Creative Commons Share Alike 3.0
+      </p>
+    </license>
+  </info>
+
+  <title>I get a message that says "Playlist was empty"</title>
+  
+  <p>
+    This kind of error happens when you are trying to listen to an Internet radio
+    station, but <app>Rhythmbox</app> is not able to download the audio stream.
+  </p>
+  
+  <steps>
+    <item>
+      <p>
+        Make sure you are connected to the Internet.
+      </p>
+    </item>
+    <item>
+      <p>
+        Right-click on the radio station name, and select
+        <gui style="menuitem">Properties</gui>.
+      </p>
+    </item>
+    <item>
+      <p>
+        Select the <gui style="tab">Details</gui> tab, and check that the 
+        Internet address, or part of it, in the <gui style="input">Location</gui> 
+        text-box is reachable, and is valid. 
+      </p>
+      <p>
+        To do so, copy and paste the address into a web browser.
+      </p>
+    </item>
+    <item>
+      <p>
+        If the Internet address of the radio is not valid, try to search the new
+        one from the radio website, and copy it in the <gui style="input">Location</gui>
+        text-box.
+      </p>
+    </item>
+  </steps>
+
+</page>
