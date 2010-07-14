@@ -1,0 +1,84 @@
+<page xmlns="http://projectmallard.org/1.0/"
+  type="topic"
+  id="radio-stations-add">
+      
+  <info>
+    <link type="guide" xref="radio-stations" group="two"/>
+    <desc>Add a new Internet radio station.</desc>
+    <revision pkgversion="3.0" version="0.1" date="2010-07-14" status="draft"/>
+    <credit type="author">
+      <name>Milo Casagrande</name>
+      <email>milo@ubuntu.com</email>
+    </credit>
+    <license>
+      <p>
+        Creative Commons Share Alike 3.0
+      </p>
+    </license>
+  </info>
+
+  <title>Add a radio station</title>
+  
+  <p>
+    Before you can add a new Internet radio station, it is necessary to have the
+    Internet address of the radio station you want to add.
+  </p>
+  <p>
+    The Internet address should be available on the radio station website.
+  </p>
+  
+  <note>
+    <p>
+      The radio station address is not the radio station website address. Usually
+      this address is provided as an <app>iTunes</app>, <app>Windows Media Player</app>,
+      or <app>Winamp</app> address.
+    </p>
+  </note>
+  
+  <p>
+    With the radio station Internet address available:
+  </p>
+  
+  <steps>
+    <item>
+      <p>
+        Select <guiseq><gui style="menu">Music</gui>
+        <gui style="menuitem">New Internet Radio Station</gui></guiseq>.
+      </p>
+    </item>
+    <item>
+      <p>
+        Type or paste the address in the text-box, and 
+        click <gui style="button">Add</gui>.
+      </p>
+    </item>
+  </steps>
+  
+  <section id="radio-stations-edit-info">
+    <title>Edit the radio station information</title>
+    
+    <p>
+      When you add a new Internet radio station, the title it assumes in the
+      <gui>Radio</gui> library is its Internet address.
+    </p>
+    <p>
+      To provide a more meaningful title:
+    </p>
+    <steps>
+      <item>
+        <p>
+          Right-click on the radio station, and 
+          select <gui style="menuitem">Properties</gui>.
+        </p>
+      </item>
+      <item>
+        <p>
+          In the <gui style="input">Title</gui> text-box, type the new name
+          for the radio station.
+        </p>
+      </item>
+    </steps>
+    
+  </section>
+  
+</page>
