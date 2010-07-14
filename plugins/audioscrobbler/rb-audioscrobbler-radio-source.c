@@ -368,7 +368,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "db", &db, NULL);
 
-	main_vbox = gtk_vbox_new (FALSE, 0);
+	main_vbox = gtk_vbox_new (FALSE, 4);
 	gtk_widget_show (main_vbox);
 	gtk_container_add (GTK_CONTAINER (source), main_vbox);
 
@@ -599,43 +599,12 @@ rb_audioscrobbler_radio_source_tune_response_cb (SoupSession *session,
 	} else if (json_object_has_member (root_object, "error")) {
 		int code;
 		const char *message;
+		char *error_message = NULL;
 
 		code = json_object_get_int_member (root_object, "error");
 		message = json_object_get_string_member (root_object, "message");
 
 		rb_debug ("radio.tune responded with error: %s", message);
-
-		if (code == 12) {
-			/* Subscriber only station */
-			char *info_message;
-
-			info_message = g_strdup_printf (_("This station is only available to %s subscribers"),
-			                                rb_audioscrobbler_service_get_name (source->priv->service));
-			gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), info_message);
-			gtk_widget_show_all (source->priv->info_bar);
-
-			g_free (info_message);
-		} else if (code == 4) {
-			/* different: The station is not a subscriber-only station, just Last.fm will not stream any stations
-			 * to non subscribers. TODO: Fall back to using old API
-			 */
-			char *info_message;
-
-			info_message = g_strdup_printf (_("This station is only available to %s subscribers"),
-			                                rb_audioscrobbler_service_get_name (source->priv->service));
-			gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), info_message);
-			gtk_widget_show_all (source->priv->info_bar);
-
-			g_free (info_message);
-		} else {
-			char *info_message;
-
-			info_message = g_strdup_printf ("Error tuning station: %i - %s", code, message);
-			gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), info_message);
-			gtk_widget_show_all (source->priv->info_bar);
-
-			g_free (info_message);
-		}
 
 		/* if a playlist request is queued then cancel it */
 		if (source->priv->fetch_playlist_request != NULL) {
@@ -644,6 +613,34 @@ rb_audioscrobbler_radio_source_tune_response_cb (SoupSession *session,
 			                             SOUP_STATUS_CANCELLED);
 			source->priv->fetch_playlist_request = NULL;
 		}
+
+		/* show appropriate error message */
+		if (code == 4) {
+			/* Our API key only allows streaming of radio to subscribers.
+			 * TODO: Fall back to using old API
+			 */
+			error_message = g_strdup_printf (_("This station is only available to %s subscribers"),
+			                                 rb_audioscrobbler_service_get_name (source->priv->service));
+		} else if (code == 6) {
+			/* Invalid station url */
+			error_message = g_strdup (_("Invalid station URL"));
+		} else if (code == 12) {
+			/* Subscriber only station */
+			error_message = g_strdup_printf (_("This station is only available to %s subscribers"),
+			                                 rb_audioscrobbler_service_get_name (source->priv->service));
+		} else if (code == 20) {
+			/* Not enough content */
+			error_message = g_strdup (_("Not enough content to play station"));
+		} else {
+			/* Other error */
+			error_message = g_strdup_printf ("Error tuning station: %i - %s", code, message);
+		}
+
+		gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), error_message);
+		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->info_bar), GTK_MESSAGE_WARNING);
+		gtk_widget_show_all (source->priv->info_bar);
+
+		g_free (error_message);
 	}
 }
 
