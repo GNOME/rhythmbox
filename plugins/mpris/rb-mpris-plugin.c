@@ -253,7 +253,7 @@ build_track_metadata (RBMprisPlugin *plugin,
 
 	add_int_property (builder, entry, RHYTHMDB_PROP_TRACK_NUMBER, "tracknumber");
 	add_int_property (builder, entry, RHYTHMDB_PROP_DISC_NUMBER, "discnumber");	/* extension */
-	add_int_property (builder, entry, RHYTHMDB_PROP_DURATION, "duration");
+	add_int_property (builder, entry, RHYTHMDB_PROP_DURATION, "time");
 	add_int_property (builder, entry, RHYTHMDB_PROP_BITRATE, "audio-bitrate");
 	add_int_property (builder, entry, RHYTHMDB_PROP_YEAR, "year");
 	/* missing: date */
