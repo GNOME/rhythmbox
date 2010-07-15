@@ -1568,6 +1568,7 @@ impl_delete_thyself (RBSource *asource)
 {
 	RBAudioscrobblerProfileSource *source;
 	GList *i;
+	GtkUIManager *ui_manager;
 
 	rb_debug ("deleting profile source");
 
@@ -1576,4 +1577,9 @@ impl_delete_thyself (RBSource *asource)
 	for (i = source->priv->radio_sources; i != NULL; i = i->next) {
 		rb_source_delete_thyself (i->data);
 	}
+
+	g_object_get (source, "ui-manager", &ui_manager, NULL);
+	gtk_ui_manager_remove_action_group (ui_manager, source->priv->action_group);
+
+	g_object_unref (ui_manager);
 }
