@@ -28,7 +28,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <gdk/gdk.h>
+#include <json-glib/json-glib.h>
 #include <math.h>
 
 #include "eel-gconf-extensions.h"
@@ -916,27 +916,48 @@ rb_audioscrobbler_profile_source_station_creator_button_clicked_cb (GtkButton *b
 static void
 rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSource *source)
 {
-	const char *username;
-	const char *session_key;
-
 	/* destroy existing sources */
 	while (source->priv->radio_sources != NULL) {
 		rb_source_delete_thyself (source->priv->radio_sources->data);
 		source->priv->radio_sources = g_list_remove (source->priv->radio_sources, source->priv->radio_sources->data);
 	}
 
-	username = rb_audioscrobbler_account_get_username (source->priv->account);
-	session_key = rb_audioscrobbler_account_get_session_key (source->priv->account);
-	if (username != NULL) {
-		/* TODO: load user's saved radio stations */
+	/* load the user's saved stations */
+	if (rb_audioscrobbler_account_get_username (source->priv->account) != NULL) {
+		JsonParser *parser;
+		char *filename;
 
-		rb_audioscrobbler_profile_source_add_radio_station (source,
-		                                                    "lastfm://user/easyonthev/recommended",
-		                                                    "Recommendations");
+		parser = json_parser_new ();
+		filename = g_build_filename (rb_user_data_dir (),
+		                             "audioscrobbler",
+		                             "stations",
+		                             rb_audioscrobbler_service_get_name (source->priv->service),
+		                             rb_audioscrobbler_account_get_username (source->priv->account),
+		                             NULL);
 
-		rb_audioscrobbler_profile_source_add_radio_station (source,
-		                                                    "lastfm://user/easyonthev/loved",
-		                                                    "Loved Tracks");
+		if (json_parser_load_from_file (parser, filename, NULL)) {
+			JsonObject *root;
+			JsonArray *stations;
+			int i;
+
+			root = json_node_get_object (json_parser_get_root (parser));
+			stations = json_object_get_array_member (root, "stations");
+
+			for (i = 0; i < json_array_get_length (stations); i++) {
+				JsonObject *station;
+				const char *name;
+				const char *url;
+
+				station = json_array_get_object_element (stations, i);
+				name = json_object_get_string_member (station, "name");
+				url = json_object_get_string_member (station, "url");
+
+				rb_audioscrobbler_profile_source_add_radio_station (source, url, name);
+			}
+		}
+
+		g_object_unref (parser);
+		g_free (filename);
 	}
 }
 
