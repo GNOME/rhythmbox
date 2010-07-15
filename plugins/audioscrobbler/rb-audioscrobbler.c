@@ -187,7 +187,9 @@ enum
 {
 	PROP_0,
 	PROP_SERVICE,
-	PROP_SHELL_PLAYER
+	PROP_SHELL_PLAYER,
+	PROP_USERNAME,
+	PROP_SESSION_KEY
 };
 
 enum
@@ -259,6 +261,22 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 							      "RBShellPlayer object",
 							      RB_TYPE_SHELL_PLAYER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+	                                 PROP_USERNAME,
+	                                 g_param_spec_string ("username",
+	                                                      "Username",
+	                                                      "Username of the user who is scrobbling data",
+	                                                      NULL,
+                                                              G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+	                                 PROP_SESSION_KEY,
+	                                 g_param_spec_string ("session-key",
+	                                                      "Session Key",
+	                                                      "Session key used to authenticate the user",
+	                                                      NULL,
+                                                              G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
 
 	/**
 	 * RBAudioscrobbler::authentication-error:
@@ -408,11 +426,15 @@ rb_audioscrobbler_finalize (GObject *object)
 
 RBAudioscrobbler*
 rb_audioscrobbler_new (RBAudioscrobblerService *service,
-                       RBShellPlayer *shell_player)
+                       RBShellPlayer *shell_player,
+                       const char *username,
+                       const char *session_key)
 {
 	return g_object_new (RB_TYPE_AUDIOSCROBBLER,
 	                     "service", service,
 			     "shell-player", shell_player,
+	                     "username", username,
+	                     "session_key", session_key,
 			     NULL);
 }
 
@@ -436,6 +458,12 @@ rb_audioscrobbler_set_property (GObject *object,
 					 G_CALLBACK (rb_audioscrobbler_song_changed_cb),
 					 audioscrobbler, 0);
 		break;
+	case PROP_USERNAME:
+		audioscrobbler->priv->username = g_value_dup_string (value);
+		break;
+	case PROP_SESSION_KEY:
+		audioscrobbler->priv->session_key = g_value_dup_string (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -458,22 +486,6 @@ rb_audioscrobbler_get_property (GObject *object,
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
-}
-
-void
-rb_audioscrobbler_set_authentication_details (RBAudioscrobbler *audioscrobbler,
-                                              const char *username,
-                                              const char *session_key)
-{
-	g_free (audioscrobbler->priv->username);
-	audioscrobbler->priv->username = g_strdup (username);
-
-	g_free (audioscrobbler->priv->session_key);
-	audioscrobbler->priv->session_key = g_strdup (session_key);
-
-	/* need a new handshake with new details */
-	audioscrobbler->priv->handshake = FALSE;
-	audioscrobbler->priv->handshake_next = 0;
 }
 
 /* emits the statistics-changed signal */
@@ -828,9 +840,7 @@ rb_audioscrobbler_should_handshake (RBAudioscrobbler *audioscrobbler)
 	/* Perform handshake if necessary. Only perform handshake if
 	 *   - we have no current handshake; AND
 	 *   - we have waited the appropriate amount of time between
-	 *     handshakes; AND
-	 *   - we have a non-empty username AND
-	 *   - we have a non-empty session key
+	 *     handshakes;
 	 */
 	if (audioscrobbler->priv->handshake) {
 		return FALSE;
@@ -840,24 +850,6 @@ rb_audioscrobbler_should_handshake (RBAudioscrobbler *audioscrobbler)
 		rb_debug ("Too soon; time=%lu, handshake_next=%lu",
 			  time (NULL),
 			  audioscrobbler->priv->handshake_next);
-		return FALSE;
-	}
-
-	if ((audioscrobbler->priv->username == NULL) ||
-	    (strcmp (audioscrobbler->priv->username, "") == 0)) {
-		rb_debug ("No username set");
-		return FALSE;
-	}
-
-	if ((audioscrobbler->priv->username == NULL) ||
-	    (strcmp (audioscrobbler->priv->username, "") == 0)) {
-		rb_debug ("No username set");
-		return FALSE;
-	}
-
-	if ((audioscrobbler->priv->session_key == NULL) ||
-	    (strcmp (audioscrobbler->priv->username, "") == 0)) {
-		rb_debug ("No session key set");
 		return FALSE;
 	}
 

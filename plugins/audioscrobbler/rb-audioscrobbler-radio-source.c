@@ -280,6 +280,7 @@ rb_audioscrobbler_radio_source_class_init (RBAudioscrobblerRadioSourceClass *kla
 	object_class->set_property = rb_audioscrobbler_radio_source_set_property;
 
 	source_class = RB_SOURCE_CLASS (klass);
+	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
