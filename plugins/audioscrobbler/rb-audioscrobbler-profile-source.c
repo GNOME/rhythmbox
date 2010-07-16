@@ -157,6 +157,9 @@ static void rb_audioscrobbler_profile_source_save_radio_stations (RBAudioscrobbl
 static RBSource *rb_audioscrobbler_profile_source_add_radio_station (RBAudioscrobblerProfileSource *source,
                                                                      const char *url,
                                                                      const char *name);
+static void rb_audioscrobbler_profile_source_radio_station_name_changed_cb (RBAudioscrobblerRadioSource *radio,
+                                                                            GParamSpec *spec,
+                                                                            RBAudioscrobblerProfileSource *source);
 
 static void rb_audioscrobbler_profile_source_user_info_updated_cb (RBAudioscrobblerUser *user,
                                                                    RBAudioscrobblerUserData *info,
@@ -959,6 +962,9 @@ rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSou
 				                                            name,
 				                                            url);
 				source->priv->radio_sources = g_list_append (source->priv->radio_sources, radio);
+				g_signal_connect (radio, "notify::name",
+						  G_CALLBACK (rb_audioscrobbler_profile_source_radio_station_name_changed_cb),
+						  source);
 			}
 		}
 
@@ -1057,12 +1063,25 @@ rb_audioscrobbler_profile_source_add_radio_station (RBAudioscrobblerProfileSourc
 		                                            name,
 		                                            url);
 		source->priv->radio_sources = g_list_append (source->priv->radio_sources, radio);
+		g_signal_connect (radio, "notify::name",
+		                  G_CALLBACK (rb_audioscrobbler_profile_source_radio_station_name_changed_cb),
+		                  source);
 		rb_audioscrobbler_profile_source_save_radio_stations (source);
 
 		g_object_unref (shell);
 	}
 
 	return radio;
+}
+
+/* callback from notify::name for each radio station owned by this profile source */
+static void
+rb_audioscrobbler_profile_source_radio_station_name_changed_cb (RBAudioscrobblerRadioSource *radio,
+                                                                GParamSpec *spec,
+                                                                RBAudioscrobblerProfileSource *source)
+{
+	/* save list of stations with new name */
+	rb_audioscrobbler_profile_source_save_radio_stations (source);
 }
 
 /* removes a station from user's list of radio stations, deletes the source */

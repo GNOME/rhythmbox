@@ -39,6 +39,7 @@
 #include "rb-audioscrobbler-radio-source.h"
 #include "rb-lastfm-play-order.h"
 #include "rb-debug.h"
+#include "rb-sourcelist.h"
 #include "rb-util.h"
 
 
@@ -177,6 +178,8 @@ static void rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlaye
                                                                     RhythmDBEntry *entry,
                                                                     RBAudioscrobblerRadioSource *source);
 
+static void rb_audioscrobbler_radio_source_rename_station_action_cb (GtkAction *action,
+                                                                     RBAudioscrobblerRadioSource *source);
 static void rb_audioscrobbler_radio_source_delete_station_action_cb (GtkAction *action,
                                                                      RBAudioscrobblerRadioSource *source);
 
@@ -213,8 +216,11 @@ enum {
 
 static GtkActionEntry rb_audioscrobbler_radio_source_actions [] =
 {
-	{ "AudioscrobblerRadioDeleteStation", GTK_STOCK_DELETE, N_("Delete Station"), NULL,
-	  N_("Delete the selected station"),
+	{ "AudioscrobblerRadioRenameStation", NULL, N_("_Rename Station"), NULL,
+	  N_("Rename station"),
+	  G_CALLBACK (rb_audioscrobbler_radio_source_rename_station_action_cb) },
+	{ "AudioscrobblerRadioDeleteStation", GTK_STOCK_DELETE, N_("_Delete Station"), NULL,
+	  N_("Delete station"),
 	  G_CALLBACK (rb_audioscrobbler_radio_source_delete_station_action_cb) }
 };
 
@@ -929,6 +935,22 @@ rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
 	rhythmdb_commit (db);
 
 	g_object_unref (db);
+}
+
+static void
+rb_audioscrobbler_radio_source_rename_station_action_cb (GtkAction *action,
+                                                         RBAudioscrobblerRadioSource *source)
+{
+	RBShell *shell;
+	RBSourceList *sourcelist;
+
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "sourcelist", &sourcelist, NULL);
+
+	rb_sourcelist_edit_source_name (sourcelist, RB_SOURCE (source));
+
+	g_object_unref (shell);
+	g_object_unref (sourcelist);
 }
 
 static void
