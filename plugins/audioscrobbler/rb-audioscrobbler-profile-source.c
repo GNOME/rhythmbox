@@ -153,6 +153,7 @@ static void rb_audioscrobbler_profile_source_station_creator_type_combo_changed_
 void rb_audioscrobbler_profile_source_station_creator_button_clicked_cb (GtkButton *button,
                                                                          RBAudioscrobblerProfileSource *source);
 static void rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSource *source);
+static void rb_audioscrobbler_profile_source_save_radio_stations (RBAudioscrobblerProfileSource *source);
 static RBSource *rb_audioscrobbler_profile_source_add_radio_station (RBAudioscrobblerProfileSource *source,
                                                                      const char *url,
                                                                      const char *name);
@@ -936,29 +937,87 @@ rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSou
 		                             NULL);
 
 		if (json_parser_load_from_file (parser, filename, NULL)) {
-			JsonObject *root;
 			JsonArray *stations;
 			int i;
 
-			root = json_node_get_object (json_parser_get_root (parser));
-			stations = json_object_get_array_member (root, "stations");
+			stations = json_node_get_array (json_parser_get_root (parser));
 
 			for (i = 0; i < json_array_get_length (stations); i++) {
 				JsonObject *station;
 				const char *name;
 				const char *url;
+				RBSource *radio;
 
 				station = json_array_get_object_element (stations, i);
 				name = json_object_get_string_member (station, "name");
 				url = json_object_get_string_member (station, "url");
 
-				rb_audioscrobbler_profile_source_add_radio_station (source, url, name);
+				radio = rb_audioscrobbler_radio_source_new (source,
+				                                            source->priv->service,
+				                                            rb_audioscrobbler_account_get_username (source->priv->account),
+				                                            rb_audioscrobbler_account_get_session_key (source->priv->account),
+				                                            name,
+				                                            url);
+				source->priv->radio_sources = g_list_append (source->priv->radio_sources, radio);
 			}
 		}
 
 		g_object_unref (parser);
 		g_free (filename);
 	}
+}
+
+/* save user's radio stations */
+static void
+rb_audioscrobbler_profile_source_save_radio_stations (RBAudioscrobblerProfileSource *source)
+{
+	JsonNode *root;
+	JsonArray *stations;
+	GList *i;
+	JsonGenerator *generator;
+	char *filename;
+	char *uri;
+	GError *error;
+
+	root = json_node_new (JSON_NODE_ARRAY);
+	stations = json_array_new ();
+
+	for (i = source->priv->radio_sources; i != NULL; i = i->next) {
+		JsonObject *station;
+		char *name;
+		char *url;
+
+		g_object_get (i->data, "name", &name, "station-url", &url, NULL);
+		station = json_object_new ();
+		json_object_set_string_member (station, "name", name);
+		json_object_set_string_member (station, "url", url);
+		json_array_add_object_element (stations, station);
+
+		g_free (name);
+		g_free (url);
+	}
+
+	json_node_take_array (root, stations);
+
+	generator = json_generator_new ();
+	json_generator_set_root (generator, root);
+
+	filename = g_build_filename (rb_user_data_dir (),
+	                             "audioscrobbler",
+	                             "stations",
+	                             rb_audioscrobbler_service_get_name (source->priv->service),
+	                             rb_audioscrobbler_account_get_username (source->priv->account),
+	                             NULL);
+
+	uri = g_filename_to_uri (filename, NULL, NULL);
+	error = NULL;
+	rb_uri_create_parent_dirs (uri, &error);
+	json_generator_to_file (generator, filename, NULL);
+
+	json_node_free (root);
+	g_object_unref (generator);
+	g_free (filename);
+	g_free (uri);
 }
 
 /* adds a new radio station for the user, if it doesn't already exist */
@@ -998,6 +1057,7 @@ rb_audioscrobbler_profile_source_add_radio_station (RBAudioscrobblerProfileSourc
 		                                            name,
 		                                            url);
 		source->priv->radio_sources = g_list_append (source->priv->radio_sources, radio);
+		rb_audioscrobbler_profile_source_save_radio_stations (source);
 
 		g_object_unref (shell);
 	}
@@ -1017,6 +1077,7 @@ rb_audioscrobbler_profile_source_remove_radio_station (RBAudioscrobblerProfileSo
 	if (i != NULL) {
 		rb_source_delete_thyself (i->data);
 		source->priv->radio_sources = g_list_remove (source->priv->radio_sources, i->data);
+		rb_audioscrobbler_profile_source_save_radio_stations (source);
 	}
 }
 
