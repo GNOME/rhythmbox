@@ -66,6 +66,11 @@ struct _RBAudioscrobblerAccountPrivate
 
 #define RB_AUDIOSCROBBLER_ACCOUNT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_ACCOUNT, RBAudioscrobblerAccountPrivate))
 
+static void          rb_audioscrobbler_account_class_init (RBAudioscrobblerAccountClass *klass);
+static void          rb_audioscrobbler_account_init (RBAudioscrobblerAccount *account);
+static void          rb_audioscrobbler_account_constructed (GObject *object);
+static void          rb_audioscrobbler_account_dispose (GObject *object);
+static void          rb_audioscrobbler_account_finalize (GObject *object);
 static void	     rb_audioscrobbler_account_get_property (GObject *object,
                                                              guint prop_id,
                                                              GValue *value,
@@ -74,12 +79,12 @@ static void	     rb_audioscrobbler_account_set_property (GObject *object,
                                                              guint prop_id,
                                                              const GValue *value,
                                                              GParamSpec *pspec);
-static void          rb_audioscrobbler_account_dispose (GObject *object);
-static void          rb_audioscrobbler_account_finalize (GObject *object);
 
+/* load/save session to file to avoid having to reauthenticate */
 static void          rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *account);
 static void          rb_audioscrobbler_account_save_session_settings (RBAudioscrobblerAccount *account);
 
+/* private functions used in authentication process */
 static void          rb_audioscrobbler_account_cancel_session (RBAudioscrobblerAccount *account);
 static void          rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account);
 static void          rb_audioscrobbler_account_got_token_cb (SoupSession *session,
@@ -108,15 +113,12 @@ static guint rb_audioscrobbler_account_signals[LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE (RBAudioscrobblerAccount, rb_audioscrobbler_account, G_TYPE_OBJECT)
 
-static void
-rb_audioscrobbler_account_constructed (GObject *object)
+RBAudioscrobblerAccount *
+rb_audioscrobbler_account_new (RBAudioscrobblerService *service)
 {
-	RBAudioscrobblerAccount *account;
-
-	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_account_parent_class, constructed, object);
-	account = RB_AUDIOSCROBBLER_ACCOUNT (object);
-
-	rb_audioscrobbler_account_load_session_settings (account);
+	return g_object_new (RB_TYPE_AUDIOSCROBBLER_ACCOUNT,
+                             "service", service,
+	                     NULL);
 }
 
 static void
@@ -158,11 +160,11 @@ rb_audioscrobbler_account_class_init (RBAudioscrobblerAccountClass *klass)
 	g_object_class_install_property (object_class,
 	                                 PROP_LOGIN_STATUS,
 	                                 g_param_spec_enum ("login-status",
-	                                                     "Login Status",
-	                                                     "Login status",
-	                                                     RB_TYPE_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS,
-	                                                     RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT,
-                                                             G_PARAM_READABLE));
+	                                                    "Login Status",
+	                                                    "Login status",
+	                                                    RB_TYPE_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS,
+	                                                    RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT,
+                                                            G_PARAM_READABLE));
 
 	/**
 	 * RBAudioscrobblerAccount::login-status-changed:
@@ -199,6 +201,17 @@ rb_audioscrobbler_account_init (RBAudioscrobblerAccount *account)
 }
 
 static void
+rb_audioscrobbler_account_constructed (GObject *object)
+{
+	RBAudioscrobblerAccount *account;
+
+	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_account_parent_class, constructed, object);
+	account = RB_AUDIOSCROBBLER_ACCOUNT (object);
+
+	rb_audioscrobbler_account_load_session_settings (account);
+}
+
+static void
 rb_audioscrobbler_account_dispose (GObject *object)
 {
 	RBAudioscrobblerAccount *account = RB_AUDIOSCROBBLER_ACCOUNT (object);
@@ -232,14 +245,6 @@ rb_audioscrobbler_account_finalize (GObject *object)
 	g_free (account->priv->session_key);
 
 	G_OBJECT_CLASS (rb_audioscrobbler_account_parent_class)->finalize (object);
-}
-
-RBAudioscrobblerAccount *
-rb_audioscrobbler_account_new (RBAudioscrobblerService *service)
-{
-	return g_object_new (RB_TYPE_AUDIOSCROBBLER_ACCOUNT,
-                             "service", service,
-	                     NULL);
 }
 
 static void
@@ -425,7 +430,6 @@ rb_audioscrobbler_account_save_session_settings (RBAudioscrobblerAccount *accoun
 	g_object_unref (out_file);
 }
 
-/* public authentication functions */
 void
 rb_audioscrobbler_account_authenticate (RBAudioscrobblerAccount *account)
 {
@@ -466,7 +470,6 @@ rb_audioscrobbler_account_notify_of_auth_error (RBAudioscrobblerAccount *account
 	               0, account->priv->login_status);
 }
 
-/* private authentication functions */
 static void
 rb_audioscrobbler_account_cancel_session (RBAudioscrobblerAccount *account)
 {

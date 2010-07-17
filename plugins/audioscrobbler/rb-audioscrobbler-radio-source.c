@@ -96,7 +96,6 @@ rb_audioscrobbler_radio_type_get_default_name (RBAudioscrobblerRadioType type)
 }
 
 /* entry data stuff */
-
 typedef struct
 {
 	char *image_url;
@@ -115,8 +114,7 @@ destroy_track_data (RhythmDBEntry *entry, gpointer meh)
 	g_free (data->download_url);
 }
 
-/* source declerations */
-
+/* source declarations */
 struct _RBAudioscrobblerRadioSourcePrivate
 {
 	RBAudioscrobblerProfileSource *parent;
@@ -140,7 +138,7 @@ struct _RBAudioscrobblerRadioSourcePrivate
 
 	RBPlayOrder *play_order;
 
-	/* the currently playing entry of this source, if there is one */
+	/* the currently playing entry from this source, if there is one */
 	RhythmDBEntry *playing_entry;
 
 	guint emit_coverart_id;
@@ -164,20 +162,25 @@ static void rb_audioscrobbler_radio_source_set_property (GObject *object,
                                                          const GValue *value,
                                                          GParamSpec *pspec);
 
-static void rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source);
-static void rb_audioscrobbler_radio_source_tune_response_cb (SoupSession *session,
-                                                             SoupMessage *msg,
-                                                             gpointer user_data);
-
-static void rb_audioscrobbler_radio_source_fetch_playlist (RBAudioscrobblerRadioSource *source);
-static void rb_audioscrobbler_radio_source_fetch_playlist_response_cb (SoupSession *session,
-                                                                       SoupMessage *msg,
-                                                                       gpointer user_data);
-
 static void rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
                                                                     RhythmDBEntry *entry,
                                                                     RBAudioscrobblerRadioSource *source);
 
+/* last.fm api requests */
+static void rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source);
+static void rb_audioscrobbler_radio_source_tune_response_cb (SoupSession *session,
+                                                             SoupMessage *msg,
+                                                             gpointer user_data);
+static void rb_audioscrobbler_radio_source_fetch_playlist (RBAudioscrobblerRadioSource *source);
+static void rb_audioscrobbler_radio_source_fetch_playlist_response_cb (SoupSession *session,
+                                                                       SoupMessage *msg,
+                                                                       gpointer user_data);
+static void rb_audioscrobbler_radio_source_xspf_entry_parsed (TotemPlParser *parser,
+                                                              const char *uri,
+                                                              GHashTable *metadata,
+                                                              RBAudioscrobblerRadioSource *source);
+
+/* action callbacks */
 static void rb_audioscrobbler_radio_source_rename_station_action_cb (GtkAction *action,
                                                                      RBAudioscrobblerRadioSource *source);
 static void rb_audioscrobbler_radio_source_delete_station_action_cb (GtkAction *action,
@@ -540,6 +543,80 @@ mkmd5 (char *string)
 }
 
 static void
+rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
+                                                        RhythmDBEntry *entry,
+                                                        RBAudioscrobblerRadioSource *source)
+{
+	RhythmDB *db;
+	GtkTreeIter playing_iter;
+
+	g_object_get (player, "db", &db, NULL);
+
+	/* delete old entry */
+	if (source->priv->playing_entry != NULL) {
+		rhythmdb_query_model_remove_entry (source->priv->track_model, source->priv->playing_entry);
+		rhythmdb_entry_delete (db, source->priv->playing_entry);
+		source->priv->playing_entry = NULL;
+	}
+
+	/* stop requesting cover art for old entry */
+	if (source->priv->emit_coverart_id != 0) {
+		g_source_remove (source->priv->emit_coverart_id);
+		source->priv->emit_coverart_id = 0;
+	}
+
+	/* check if the new playing entry is from this source */
+	if (rhythmdb_query_model_entry_to_iter (source->priv->track_model, entry, &playing_iter) == TRUE) {
+		GtkTreeIter iter;
+		gboolean reached_playing = FALSE;
+		int entries_after_playing = 0;
+		GList *remove = NULL;
+		GList *i;
+
+		/* update our playing entry */
+		source->priv->playing_entry = entry;
+
+		/* mark invalidated entries for removal and count remaining */
+		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->track_model), &iter);
+		do {
+			RhythmDBEntry *iter_entry;
+			iter_entry = rhythmdb_query_model_iter_to_entry (source->priv->track_model, &iter);
+
+			if (reached_playing == TRUE) {
+				entries_after_playing++;
+			} else if (iter_entry == entry) {
+				reached_playing = TRUE;
+			} else {
+				/* add to list of entries marked for removal */
+				remove = g_list_append (remove, iter_entry);
+			}
+
+			rhythmdb_entry_unref (iter_entry);
+
+		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (source->priv->track_model), &iter));
+
+		/* remove invalidated entries */
+		for (i = remove; i != NULL; i = i->next) {
+			rhythmdb_query_model_remove_entry (source->priv->track_model, i->data);
+			rhythmdb_entry_delete (db, i->data);
+		}
+
+		/* request more if needed */
+		if (entries_after_playing <= 2) {
+			rb_audioscrobbler_radio_source_tune (source);
+			rb_audioscrobbler_radio_source_fetch_playlist (source);
+		}
+
+		/* emit cover art notification */
+		source->priv->emit_coverart_id = g_idle_add ((GSourceFunc) emit_coverart_uri_cb, source);
+	}
+
+	rhythmdb_commit (db);
+
+	g_object_unref (db);
+}
+
+static void
 rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source)
 {
 	char *sig_arg;
@@ -698,7 +775,96 @@ rb_audioscrobbler_radio_source_fetch_playlist (RBAudioscrobblerRadioSource *sour
 }
 
 static void
-xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata, RBAudioscrobblerRadioSource *source)
+rb_audioscrobbler_radio_source_fetch_playlist_response_cb (SoupSession *session,
+                                                           SoupMessage *msg,
+                                                           gpointer user_data)
+{
+	RBAudioscrobblerRadioSource *source;
+	int tmp_fd;
+	char *tmp_name;
+	char *tmp_uri = NULL;
+	GIOChannel *channel = NULL;
+	TotemPlParser *parser = NULL;
+	TotemPlParserResult result;
+	GError *error = NULL;
+
+	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (user_data);
+
+	source->priv->is_fetching_playlist = FALSE;
+
+	if (msg->response_body->length == 0) {
+		rb_debug ("didn't get a response");
+		return;
+	}
+
+	rb_debug ("%s", msg->response_body->data);
+
+	/* until totem-pl-parser can parse playlists from in-memory data, we save it to a
+	 * temporary file.
+	 */
+
+	tmp_fd = g_file_open_tmp ("rb-audioscrobbler-playlist-XXXXXX.xspf", &tmp_name, &error);
+	if (error != NULL) {
+		rb_debug ("unable to save playlist: %s", error->message);
+		goto cleanup;
+	}
+
+	channel = g_io_channel_unix_new (tmp_fd);
+	g_io_channel_write_chars (channel, msg->response_body->data, msg->response_body->length, NULL, &error);
+	if (error != NULL) {
+		rb_debug ("unable to save playlist: %s", error->message);
+		goto cleanup;
+	}
+	g_io_channel_flush (channel, NULL);		/* ignore errors.. */
+
+	tmp_uri = g_filename_to_uri (tmp_name, NULL, &error);
+	if (error != NULL) {
+		rb_debug ("unable to parse playlist: %s", error->message);
+		goto cleanup;
+	}
+
+	rb_debug ("parsing playlist %s", tmp_uri);
+
+	parser = totem_pl_parser_new ();
+	g_signal_connect_data (parser, "entry-parsed",
+	                       G_CALLBACK (rb_audioscrobbler_radio_source_xspf_entry_parsed),
+	                       source, NULL, 0);
+	result = totem_pl_parser_parse (parser, tmp_uri, FALSE);
+
+	switch (result) {
+	default:
+	case TOTEM_PL_PARSER_RESULT_UNHANDLED:
+	case TOTEM_PL_PARSER_RESULT_IGNORED:
+	case TOTEM_PL_PARSER_RESULT_ERROR:
+		rb_debug ("playlist didn't parse");
+		break;
+
+	case TOTEM_PL_PARSER_RESULT_SUCCESS:
+		rb_debug ("playlist parsed successfully");
+		break;
+	}
+
+ cleanup:
+	if (channel != NULL) {
+		g_io_channel_unref (channel);
+	}
+	if (parser != NULL) {
+		g_object_unref (parser);
+	}
+	if (error != NULL) {
+		g_error_free (error);
+	}
+	close (tmp_fd);
+	g_unlink (tmp_name);
+	g_free (tmp_name);
+	g_free (tmp_uri);
+}
+
+static void
+rb_audioscrobbler_radio_source_xspf_entry_parsed (TotemPlParser *parser,
+                                                  const char *uri,
+                                                  GHashTable *metadata,
+                                                  RBAudioscrobblerRadioSource *source)
 {
 	RBShell *shell;
 	RhythmDBEntryType entry_type;
@@ -780,164 +946,6 @@ xspf_entry_parsed (TotemPlParser *parser, const char *uri, GHashTable *metadata,
 }
 
 static void
-rb_audioscrobbler_radio_source_fetch_playlist_response_cb (SoupSession *session,
-                                                           SoupMessage *msg,
-                                                           gpointer user_data)
-{
-	RBAudioscrobblerRadioSource *source;
-	int tmp_fd;
-	char *tmp_name;
-	char *tmp_uri = NULL;
-	GIOChannel *channel = NULL;
-	TotemPlParser *parser = NULL;
-	TotemPlParserResult result;
-	GError *error = NULL;
-
-	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (user_data);
-
-	source->priv->is_fetching_playlist = FALSE;
-
-	if (msg->response_body->length == 0) {
-		rb_debug ("didn't get a response");
-		return;
-	}
-
-	rb_debug ("%s", msg->response_body->data);
-
-	/* until totem-pl-parser can parse playlists from in-memory data, we save it to a
-	 * temporary file.
-	 */
-
-	tmp_fd = g_file_open_tmp ("rb-audioscrobbler-playlist-XXXXXX.xspf", &tmp_name, &error);
-	if (error != NULL) {
-		rb_debug ("unable to save playlist: %s", error->message);
-		goto cleanup;
-	}
-
-	channel = g_io_channel_unix_new (tmp_fd);
-	g_io_channel_write_chars (channel, msg->response_body->data, msg->response_body->length, NULL, &error);
-	if (error != NULL) {
-		rb_debug ("unable to save playlist: %s", error->message);
-		goto cleanup;
-	}
-	g_io_channel_flush (channel, NULL);		/* ignore errors.. */
-
-	tmp_uri = g_filename_to_uri (tmp_name, NULL, &error);
-	if (error != NULL) {
-		rb_debug ("unable to parse playlist: %s", error->message);
-		goto cleanup;
-	}
-
-	rb_debug ("parsing playlist %s", tmp_uri);
-
-	parser = totem_pl_parser_new ();
-	g_signal_connect_data (parser, "entry-parsed", G_CALLBACK (xspf_entry_parsed), source, NULL, 0);
-	result = totem_pl_parser_parse (parser, tmp_uri, FALSE);
-
-	switch (result) {
-	default:
-	case TOTEM_PL_PARSER_RESULT_UNHANDLED:
-	case TOTEM_PL_PARSER_RESULT_IGNORED:
-	case TOTEM_PL_PARSER_RESULT_ERROR:
-		rb_debug ("playlist didn't parse");
-		break;
-
-	case TOTEM_PL_PARSER_RESULT_SUCCESS:
-		rb_debug ("playlist parsed successfully");
-		break;
-	}
-
- cleanup:
-	if (channel != NULL) {
-		g_io_channel_unref (channel);
-	}
-	if (parser != NULL) {
-		g_object_unref (parser);
-	}
-	if (error != NULL) {
-		g_error_free (error);
-	}
-	close (tmp_fd);
-	g_unlink (tmp_name);
-	g_free (tmp_name);
-	g_free (tmp_uri);
-}
-
-static void
-rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
-                                                        RhythmDBEntry *entry,
-                                                        RBAudioscrobblerRadioSource *source)
-{
-	RhythmDB *db;
-	GtkTreeIter playing_iter;
-
-	g_object_get (player, "db", &db, NULL);
-
-	/* delete old entry */
-	if (source->priv->playing_entry != NULL) {
-		rhythmdb_query_model_remove_entry (source->priv->track_model, source->priv->playing_entry);
-		rhythmdb_entry_delete (db, source->priv->playing_entry);
-		source->priv->playing_entry = NULL;
-	}
-
-	/* stop requesting cover art for old entry */
-	if (source->priv->emit_coverart_id != 0) {
-		g_source_remove (source->priv->emit_coverart_id);
-		source->priv->emit_coverart_id = 0;
-	}
-
-	/* check if the new playing entry is from this source */
-	if (rhythmdb_query_model_entry_to_iter (source->priv->track_model, entry, &playing_iter) == TRUE) {
-		GtkTreeIter iter;
-		gboolean reached_playing = FALSE;
-		int entries_after_playing = 0;
-		GList *remove = NULL;
-		GList *i;
-
-		/* update our playing entry */
-		source->priv->playing_entry = entry;
-
-		/* mark invalidated entries for removal and count remaining */
-		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->track_model), &iter);
-		do {
-			RhythmDBEntry *iter_entry;
-			iter_entry = rhythmdb_query_model_iter_to_entry (source->priv->track_model, &iter);
-
-			if (reached_playing == TRUE) {
-				entries_after_playing++;
-			} else if (iter_entry == entry) {
-				reached_playing = TRUE;
-			} else {
-				/* add to list of entries marked for removal */
-				remove = g_list_append (remove, iter_entry);
-			}
-
-			rhythmdb_entry_unref (iter_entry);
-
-		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (source->priv->track_model), &iter));
-
-		/* remove invalidated entries */
-		for (i = remove; i != NULL; i = i->next) {
-			rhythmdb_query_model_remove_entry (source->priv->track_model, i->data);
-			rhythmdb_entry_delete (db, i->data);
-		}
-
-		/* request more if needed */
-		if (entries_after_playing <= 2) {
-			rb_audioscrobbler_radio_source_tune (source);
-			rb_audioscrobbler_radio_source_fetch_playlist (source);
-		}
-
-		/* emit cover art notification */
-		source->priv->emit_coverart_id = g_idle_add ((GSourceFunc) emit_coverart_uri_cb, source);
-	}
-
-	rhythmdb_commit (db);
-
-	g_object_unref (db);
-}
-
-static void
 rb_audioscrobbler_radio_source_rename_station_action_cb (GtkAction *action,
                                                          RBAudioscrobblerRadioSource *source)
 {
@@ -957,7 +965,6 @@ static void
 rb_audioscrobbler_radio_source_delete_station_action_cb (GtkAction *action,
                                                          RBAudioscrobblerRadioSource *source)
 {
-	rb_debug ("deleting station %s", source->priv->station_url);
 	rb_audioscrobbler_profile_source_remove_radio_station (source->priv->parent, RB_SOURCE (source));
 }
 
@@ -1049,7 +1056,6 @@ emit_coverart_uri_cb (RBAudioscrobblerRadioSource *source)
 	return FALSE;
 }
 
-/* RBSource implementations */
 static void
 impl_activate (RBSource *asource)
 {
@@ -1077,8 +1083,8 @@ impl_get_status (RBSource *asource, char **text, char **progress_text, float *pr
 
 	/* pulse progressbar if we're busy, otherwise see what the streaming source part of us has to say */
 	if (source->priv->is_fetching_playlist) {
-		/* Actually, we could be calling either radio.tune or radio.getPlaylist methods,
-		 * but "Tuning station" seems like a user friendly message to display.
+		/* We could be calling either radio.tune or radio.getPlaylist methods.
+		 * "Tuning station" seems like a user friendly message to display for both cases.
 		 */
 		*progress_text = g_strdup (_("Tuning station"));
 		*progress = -1.0f;
@@ -1124,9 +1130,7 @@ impl_delete_thyself (RBSource *asource)
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "db", &db, NULL);
 
-	/* Ensure playing entry is only deleted here, and not also when the playing entry changes
-	 * because it is deleted here.
-	 */
+	/* Ensure playing entry isn't deleted twice */
 	source->priv->playing_entry = NULL;
 
 	/* delete all entries */
