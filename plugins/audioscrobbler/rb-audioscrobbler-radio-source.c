@@ -621,6 +621,7 @@ rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source)
 {
 	char *sig_arg;
 	char *sig;
+	char *escaped_station_url;
 	char *request;
 	char *msg_url;
 	SoupMessage *msg;
@@ -633,8 +634,12 @@ rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source)
 
 	sig = mkmd5 (sig_arg);
 
+	escaped_station_url = g_uri_escape_string (source->priv->station_url,
+	                                   NULL,
+	                                   FALSE);
+
 	request = g_strdup_printf ("method=radio.tune&station=%s&api_key=%s&api_sig=%s&sk=%s",
-	                           source->priv->station_url,
+	                           escaped_station_url,
 	                           rb_audioscrobbler_service_get_api_key (source->priv->service),
 	                           sig,
 	                           source->priv->session_key);
@@ -654,6 +659,7 @@ rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source)
 	                            rb_audioscrobbler_radio_source_tune_response_cb,
 	                            source);
 
+	g_free (escaped_station_url);
 	g_free (sig_arg);
 	g_free (sig);
 	g_free (request);
