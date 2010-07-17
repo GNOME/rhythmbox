@@ -1030,6 +1030,45 @@ rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSou
 			}
 		}
 
+		/* if the list of stations is still empty then add some defaults */
+		if (source->priv->radio_sources == NULL) {
+			char *url;
+			char *name;
+
+			/* user's library */
+			url = g_strdup_printf (rb_audioscrobbler_radio_type_get_url (RB_AUDIOSCROBBLER_RADIO_TYPE_LIBRARY),
+			                       rb_audioscrobbler_account_get_username (source->priv->account));
+			name = g_strdup (_("My Library"));
+			rb_audioscrobbler_profile_source_add_radio_station (source, url, name);
+			g_free (url);
+			g_free (name);
+
+			/* user's recommendations */
+			url = g_strdup_printf (rb_audioscrobbler_radio_type_get_url (RB_AUDIOSCROBBLER_RADIO_TYPE_RECOMMENDATION),
+			                       rb_audioscrobbler_account_get_username (source->priv->account));
+			name = g_strdup (_("My Recommendations"));
+			rb_audioscrobbler_profile_source_add_radio_station (source, url, name);
+			g_free (url);
+			g_free (name);
+
+			/* user's neighbourhood */
+			url = g_strdup_printf (rb_audioscrobbler_radio_type_get_url (RB_AUDIOSCROBBLER_RADIO_TYPE_NEIGHBOURS),
+			                       rb_audioscrobbler_account_get_username (source->priv->account));
+			name = g_strdup (_("My Neighbourhood"));
+			rb_audioscrobbler_profile_source_add_radio_station (source, url, name);
+			g_free (url);
+			g_free (name);
+
+			/* rhythmbox group */
+			url = g_strdup_printf (rb_audioscrobbler_radio_type_get_url (RB_AUDIOSCROBBLER_RADIO_TYPE_GROUP),
+			                       "rhythmbox");
+			name = g_strdup_printf (rb_audioscrobbler_radio_type_get_default_name (RB_AUDIOSCROBBLER_RADIO_TYPE_GROUP),
+			                       "Rhythmbox");
+			rb_audioscrobbler_profile_source_add_radio_station (source, url, name);
+			g_free (url);
+			g_free (name);
+		}
+
 		g_object_unref (parser);
 		g_free (filename);
 	}
