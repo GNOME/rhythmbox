@@ -936,6 +936,9 @@ rb_audioscrobbler_profile_source_station_creator_type_combo_changed_cb (GtkCombo
 	case RB_AUDIOSCROBBLER_RADIO_TYPE_GLOBAL_TAG:
 		text = _("Tag name:");
 		break;
+	case RB_AUDIOSCROBBLER_RADIO_TYPE_GROUP:
+		text = _("for Group:");
+		break;
 	default:
 		text = "";
 		break;

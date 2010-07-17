@@ -52,6 +52,7 @@ static const char* radio_types[] = {
 	N_("Loved Tracks"),
 	N_("Recommendations"),
 	N_("Tag Radio"),
+	N_("Group Radio"),
 	NULL
 };
 
@@ -69,6 +70,7 @@ static const char* radio_urls[] = {
 	"lastfm://user/%s/loved",
 	"lastfm://user/%s/recommended",
 	"lastfm://globaltags/%s",
+	"lastfm://group/%s",
 	NULL
 };
 
@@ -86,6 +88,7 @@ static const char* radio_names[] = {
 	N_("%s's Loved Tracks"),
 	N_("%s's Recommended Radio"),
 	N_("%s Tag Radio"),
+	N_("%s Group Radio"),
 	NULL
 };
 
