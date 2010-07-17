@@ -564,20 +564,26 @@ static void
 rb_audioscrobbler_user_save_response_to_cache (RBAudioscrobblerUser *user, const char *request_name, const char *data)
 {
 	char *filename;
-	char *file_dir;
+	char *file_uri;
+	GError *error;
 
 	filename = rb_audioscrobbler_user_calculate_cached_response_path (user, request_name);
-	file_dir = g_path_get_dirname (filename);
+	file_uri = g_filename_to_uri (filename, NULL, NULL);
 
-	g_mkdir_with_parents (file_dir, 0700);
-	if (g_file_set_contents (filename, data, -1, NULL)) {
+	error = NULL;
+	if (rb_uri_create_parent_dirs (file_uri, &error)) {
+		g_file_set_contents (filename, data, -1, &error);
+	}
+
+	if (error == NULL) {
 		rb_debug ("saved %s to cache", request_name);
 	} else {
-		rb_debug ("error saving %s to cache", request_name);
+		rb_debug ("error saving %s to cache: %s", request_name, error->message);
+		g_error_free (error);
 	}
 
 	g_free (filename);
-	g_free (file_dir);
+	g_free (file_uri);
 }
 
 /* user info */
@@ -1472,39 +1478,48 @@ rb_audioscrobbler_user_download_image (RBAudioscrobblerUser *user, const char *i
 
 	/* only start a download if the file is not already being downloaded */
 	if (g_hash_table_lookup (user->priv->file_to_data_map, src_file) == NULL) {
-		GCancellable *cancellable;
 		char *dest_filename;
-		char *dest_file_dir;
-		GFile *dest_file;
-
-		/* add data to map */
-		g_hash_table_insert (user->priv->file_to_data_map, src_file, data);
-
-		/* create a cancellable for this download */
-		cancellable = g_cancellable_new ();
-		g_hash_table_insert (user->priv->file_to_cancellable_map, src_file, cancellable);
+		char *dest_file_uri;
+		GError *error;
 
 		/* ensure the dest dir exists */
 		dest_filename = rb_audioscrobbler_user_calculate_cached_image_path (user, data);
-		dest_file_dir = g_path_get_dirname (dest_filename);
-		g_mkdir_with_parents (dest_file_dir, 0700);
+		dest_file_uri = g_filename_to_uri (dest_filename, NULL, NULL);
+		error = NULL;
+		rb_uri_create_parent_dirs (dest_file_uri, &error);
 
-		/* download the file */
-		rb_debug ("downloading image %s to %s", image_url, dest_filename);
-		dest_file = g_file_new_for_path (dest_filename);
-		g_file_copy_async (src_file,
-		                   dest_file,
-		                   G_FILE_COPY_OVERWRITE,
-		                   G_PRIORITY_DEFAULT,
-		                   cancellable,
-		                   NULL,
-		                   NULL,
-		                   rb_audioscrobbler_user_image_download_cb,
-		                   user);
+		if (error == NULL) {
+			GCancellable *cancellable;
+			GFile *dest_file;
+
+			/* add data to map */
+			g_hash_table_insert (user->priv->file_to_data_map, src_file, data);
+
+			/* create a cancellable for this download */
+			cancellable = g_cancellable_new ();
+			g_hash_table_insert (user->priv->file_to_cancellable_map, src_file, cancellable);
+
+			/* download the file */
+			rb_debug ("downloading image %s to %s", image_url, dest_filename);
+			dest_file = g_file_new_for_path (dest_filename);
+			g_file_copy_async (src_file,
+				           dest_file,
+				           G_FILE_COPY_OVERWRITE,
+				           G_PRIORITY_DEFAULT,
+				           cancellable,
+				           NULL,
+				           NULL,
+				           rb_audioscrobbler_user_image_download_cb,
+				           user);
+
+			g_object_unref (dest_file);
+		} else {
+			rb_debug ("not downloading image: error creating dest dir");
+			g_error_free (error);
+		}
 
 		g_free (dest_filename);
-		g_free (dest_file_dir);
-		g_object_unref (dest_file);
+		g_free (dest_file_uri);
 	}
 }
 
