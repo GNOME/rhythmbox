@@ -1516,12 +1516,10 @@ rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout
 	button_width = 1;
 	for (i = buttons; i != NULL; i = i->next) {
 		GtkRequisition button_requisition;
-		gtk_widget_get_requisition (i->data, &button_requisition);
 
-		rb_debug ("button_width: %i", button_requisition.width);
+		gtk_widget_get_requisition (i->data, &button_requisition);
 		if (button_requisition.width > button_width) {
 			button_width = button_requisition.width;
-			rb_debug ("new biggest button width: %i", button_width);
 		}
 	}
 
@@ -1547,7 +1545,6 @@ rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout
 		}
 
 		/* resize the table */
-		rb_debug ("resizing table from %i to %ix%i", current_num_columns, new_num_columns, new_num_rows);
 		gtk_table_resize (GTK_TABLE (table), new_num_columns, new_num_rows);
 
 		/* don't know why, but g_table_resize doesn't always update these properties properly */
