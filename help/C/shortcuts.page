@@ -4,7 +4,7 @@
       
   <info>
     <link type="guide" xref="index#rb-advanced-actions"/>
-    <desc>Use <app>Rhytmbox</app> with the keyboard.</desc>
+    <desc>Control <app>Rhythmbox</app> with the keyboard.</desc>
     <revision pkgversion="3.0" version="0.1" date="2010-06-29" status="draft"/>
     <credit type="author">
       <name>Milo Casagrande</name>
@@ -17,8 +17,221 @@
     </license>
   </info>
 
-  <title>Keyboard Shortcuts</title>
+  <title>Keyboard shortcuts</title>
   
   <!-- Use the tables form the old Rhythmbox help. -->
+  <section id="shortcuts-player">
+    <title>Player shortcuts</title>
+  <table frame="top bottom" shade="rows">
+    <thead>
+      <tr>
+        <td><p>Shortcut</p></td>
+        <td><p>Action</p></td>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td><p><keyseq><key>Ctrl</key><key>Space</key></keyseq></p></td>
+      <td><p>Play / Pause</p></td>
+    </tr>
+    <tr>
+      <td><p><keyseq><key>Alt</key><key>Left</key></keyseq></p></td>
+      <td><p>Jump to the previous track / Back to the beginning of the track</p></td>
+    </tr>
+    <tr>
+      <td><p><keyseq><key>Alt</key><key>Right</key></keyseq></p></td>
+      <td><p>Jump to the next track</p></td>
+    </tr>
+    <tr>
+      <td><p><keyseq><key>Ctrl</key><key>R</key></keyseq></p></td>
+      <td><p>Enable / Disable repeat play</p></td>
+    </tr>
+    <tr>
+      <td><p><keyseq><key>Ctrl</key><key>U</key></keyseq></p></td>
+      <td><p>Enable / Disable shuffle play</p></td>
+    </tr>
+    </tbody>
+  </table>
+  </section>
+  
+  <section id="shortcuts-general">
+    <title>General shortcuts</title>
+    <table frame="top bottom" shade="rows">
+    <thead>
+      <tr>
+        <td><p>Shortcut</p></td>
+        <td><p>Action</p></td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>A</key></keyseq></p></td>
+        <td><p>Select all</p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Shift</key><key>Ctrl</key><key>A</key></keyseq></p></td>
+        <td><p>Deselect all</p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>E</key></keyseq></p></td>
+        <td><p>Extract songs from a CD</p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>J</key></keyseq></p></td>
+        <td><p>Jump to playing song</p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>Y</key></keyseq></p></td>
+        <td>
+          <p>
+            Clear the search field text and remove all filters in the 
+            browser
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>N</key></keyseq></p></td>
+        <td><p>Create a new playlist</p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>I</key></keyseq></p></td>
+        <td><p>Add a new Internet radio station</p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>P</key></keyseq></p></td>
+        <td><p>Add a new podcast feed</p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>O</key></keyseq></p></td>
+        <td><p>Add a folder to the library</p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Alt</key><key>Enter</key></keyseq></p></td>
+        <td><p>Display the track properties</p></td>
+      </tr>
+    </tbody>
+    </table>
+  </section>
+  
+  <section id="shortucts-window">
+    <title>Window shortcuts</title>
+    <table frame="top bottom" shade="rows">
+    <thead>
+      <tr>
+        <td><p>Shortcut</p></td>
+        <td><p>Action</p></td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>W</key></keyseq></p></td>
+        <td><p>Close <app>Rhythmbox</app> window</p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>Q</key></keyseq></p></td>
+        <td><p>Quit <app>Rhythmbox</app></p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>B</key></keyseq></p></td>
+        <td><p>Show / Hide the browser</p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>D</key></keyseq></p></td>
+        <td><p>Enable / Disable the small display mode</p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>K</key></keyseq></p></td>
+        <td><p>Show / Hide the queue sidebar</p></td>
+      </tr>
+<!-- Need to check these: the version I have doesn't seem to support these
+     shortcuts.      
+      <tr>
+        <td><p><keyseq><key>Ctrl</key><key>S</key></keyseq></p></td>
+        <td><p>Show / Hide the song position slider</p></td>
+      </tr>
+      <tr>
+        <td><p><keyseq><key>Shift</key><key>Ctrl</key></keyseq>T</p></td>
+        <td><p>Show / Hide the queue sidebar</p></td>
+      </tr>
+-->
+      <tr>
+        <td><p><key>F9</key></p></td>
+        <td><p>Show / Hide the side pane</p></td>
+      </tr>
+      <tr>
+        <td><p><key>F11</key></p></td>
+        <td><p>Enable / Disable full screen mode</p></td>
+      </tr>
+    </tbody>
+    </table>
+  </section>
+  
+  <!-- Maybe think about adding a separate topic for this one -->
+  <section id="shortcuts-lirc">
+    <title>Linux Infrared Remote Control</title>
+    <p>
+      <app>Rhythmbox</app> includes support for the Linux Infrared Remote
+      Control (LIRC). The following command strings are supported: 
+    </p>
+    <table frame="top bottom" shade="rows">
+    <thead>
+      <tr>
+        <td><p>Command string</p></td>
+        <td><p>Action</p></td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><p><input>play</input></p></td>
+        <td><p>Start playback</p></td>
+      </tr>
+      <tr>
+        <td><p><input>pause</input></p></td>
+        <td><p>Pause playback</p></td>
+      </tr>
+      <tr>
+        <td><p><input>playpause</input></p></td>
+        <td><p>Toggle between playing and paused</p></td>
+      </tr>
+      <tr>
+        <td><p><input>shuffle</input></p></td>
+        <td><p>Toggle the shuffle play order</p></td>
+      </tr>
+      <tr>
+        <td><p><input>repeat</input></p></td>
+        <td><p>Toggle the repeat play order</p></td>
+      </tr>
+      <tr>
+        <td><p><input>next</input></p></td>
+        <td><p>Skip to the next track</p></td>
+      </tr>
+      <tr>
+        <td><p><input>previous</input></p></td>
+        <td><p>Skip to the previous track</p></td>
+      </tr>
+      <tr>
+        <td><p><input>seek_forward</input></p></td>
+        <td><p>Skip 10 seconds forward in the playing track</p></td>
+      </tr>
+      <tr>
+        <td><p><input>seek_backward</input></p></td>
+        <td><p>Skip 10 seconds backward in the playing track</p></td>
+      </tr>
+      <tr>
+        <td><p><input>volume_up</input></p></td>
+        <td><p>Increase the playback volume by 10</p></td>
+      </tr>
+      <tr>
+        <td><p><input>volume_down</input></p></td>
+        <td><p>Decrease the playback volume by 10</p></td>
+      </tr>
+      <tr>
+        <td><p><input>mute</input></p></td>
+        <td><p>Mute the playback</p></td>
+      </tr>
+    </tbody>
+    </table>
+  </section>
+  
 
 </page>
