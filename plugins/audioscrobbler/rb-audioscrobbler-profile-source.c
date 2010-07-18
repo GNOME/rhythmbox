@@ -1501,7 +1501,8 @@ rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout
 	GtkWidget *table = gtk_container_get_children (GTK_CONTAINER (layout))->data;
 	GList *buttons = gtk_container_get_children (GTK_CONTAINER (table));
 	int num_buttons;
-	GtkAllocation button_allocation;
+	GList *i;
+	int button_width;
 	int current_num_columns;
 	int new_num_columns;
 	int spacing;
@@ -1511,26 +1512,38 @@ rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout
 	if (num_buttons == 0)
 		return;
 
-	gtk_widget_get_allocation (buttons->data, &button_allocation);
+	/* find the desired width of the widest button */
+	button_width = 1;
+	for (i = buttons; i != NULL; i = i->next) {
+		GtkRequisition button_requisition;
+		gtk_widget_get_requisition (i->data, &button_requisition);
+
+		rb_debug ("button_width: %i", button_requisition.width);
+		if (button_requisition.width > button_width) {
+			button_width = button_requisition.width;
+			rb_debug ("new biggest button width: %i", button_width);
+		}
+	}
 
 	g_object_get (table, "n-columns", &current_num_columns, NULL);
-	spacing = gtk_table_get_default_col_spacing (GTK_TABLE (table));
 
-	new_num_columns = allocation->width / (button_allocation.width + spacing);
+	/* calculate the number of colums there should be */
+	spacing = gtk_table_get_default_col_spacing (GTK_TABLE (table));
+	new_num_columns = allocation->width / (button_width + spacing);
 	if (new_num_columns == 0) {
 		new_num_columns = 1;
 	}
 
+	/* if there's a change in the number of columns we need to move buttons around */
 	if (new_num_columns != current_num_columns) {
 		int new_num_rows;
-		GList *button;
 
 		new_num_rows = (double)ceil ((double)num_buttons / (double)new_num_columns);
 
 		/* remove each button from the table, reffing it first so that it is not destroyed */
-		for (button = g_list_first (buttons); button != NULL; button = g_list_next (button)) {
-			g_object_ref (button->data);
-			gtk_container_remove (GTK_CONTAINER (table), button->data);
+		for (i = buttons; i != NULL; i = i->next) {
+			g_object_ref (i->data);
+			gtk_container_remove (GTK_CONTAINER (table), i->data);
 		}
 
 		/* resize the table */
@@ -1541,17 +1554,19 @@ rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout
 		g_object_set (table, "n-columns", new_num_columns, "n-rows", new_num_rows, NULL);
 
 		/* re-attach each button to the table */
-		for (button = g_list_last (buttons); button != NULL; button = g_list_previous (button)) {
+		for (i = g_list_last (buttons); i != NULL; i = i->prev) {
 
 			rb_audioscrobbler_profile_source_list_table_pack_start (GTK_TABLE (table),
-			                                                        button->data);
-			g_object_unref (button->data);
+			                                                        i->data);
+			g_object_unref (i->data);
 		}
 	}
 
+	/* set size requests */
 	gtk_widget_get_requisition (table, &table_requisition);
+	gtk_widget_set_size_request (table, allocation->width, table_requisition.height);
 	gtk_widget_set_size_request (layout, 0, table_requisition.height);
-	gtk_layout_set_size (GTK_LAYOUT (layout), table_requisition.width, table_requisition.height);
+	gtk_layout_set_size (GTK_LAYOUT (layout), allocation->width, table_requisition.height);
 }
 
 /* popup the appropriate menu */
