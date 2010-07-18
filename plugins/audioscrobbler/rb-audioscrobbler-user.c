@@ -674,17 +674,15 @@ rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user, const char *
 {
 	RBAudioscrobblerUserData *user_info;
 	JsonParser *parser;
-	JsonObject *root_object;
 
 	user_info = NULL;
 
 	parser = json_parser_new ();
-	json_parser_load_from_data (parser, data, -1, NULL);
-	root_object = json_node_get_object (json_parser_get_root (parser));
-
-	if (json_object_has_member (root_object, "user")) {
+	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
+		JsonObject *root_object;
 		JsonObject *user_object;
 
+		root_object = json_node_get_object (json_parser_get_root (parser));
 		user_object = json_object_get_object_member (root_object, "user");
 
 		user_info = g_slice_new0 (RBAudioscrobblerUserData);
@@ -694,7 +692,7 @@ rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user, const char *
 		user_info->url = g_strdup (json_object_get_string_member (user_object, "url"));
 
 		user_info->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, user_info),
-		                                                     USER_PROFILE_IMAGE_SIZE, -1, NULL);
+			                                             USER_PROFILE_IMAGE_SIZE, -1, NULL);
 		if (user_info->image == NULL && json_object_has_member (user_object, "image") == TRUE) {
 			JsonArray *image_array;
 			JsonObject *image_object;
@@ -703,6 +701,8 @@ rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user, const char *
 			image_object = json_array_get_object_element (image_array, 2);
 			rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), user_info);
 		}
+	} else {
+		rb_debug ("error parsing user info response");
 	}
 
 	g_object_unref (parser);
@@ -799,50 +799,54 @@ rb_audioscrobbler_user_parse_recent_tracks (RBAudioscrobblerUser *user, const ch
 {
 	GPtrArray *recent_tracks;
 	JsonParser *parser;
-	JsonObject *root_object;
-	JsonObject *recent_tracks_object;
 
 	recent_tracks = NULL;
 
 	parser = json_parser_new ();
-	json_parser_load_from_data (parser, data, -1, NULL);
-	root_object = json_node_get_object (json_parser_get_root (parser));
-	recent_tracks_object = json_object_get_object_member (root_object, "recenttracks");
+	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
+		JsonObject *root_object;
+		JsonObject *recent_tracks_object;
 
-	if (json_object_has_member (recent_tracks_object, "track") == TRUE) {
-		JsonArray *track_array;
-		int i;
+		root_object = json_node_get_object (json_parser_get_root (parser));
+		recent_tracks_object = json_object_get_object_member (root_object, "recenttracks");
 
-		recent_tracks = g_ptr_array_new_with_free_func ((GDestroyNotify)rb_audioscrobbler_user_data_free);
+		if (json_object_has_member (recent_tracks_object, "track") == TRUE) {
+			JsonArray *track_array;
+			int i;
 
-		track_array = json_object_get_array_member (recent_tracks_object, "track");
-		for (i = 0; i < json_array_get_length (track_array); i++) {
-			JsonObject *track_object;
-			JsonObject *artist_object;
-			RBAudioscrobblerUserData *track;
+			recent_tracks = g_ptr_array_new_with_free_func ((GDestroyNotify)rb_audioscrobbler_user_data_free);
 
-			track_object = json_array_get_object_element (track_array, i);
+			track_array = json_object_get_array_member (recent_tracks_object, "track");
+			for (i = 0; i < json_array_get_length (track_array); i++) {
+				JsonObject *track_object;
+				JsonObject *artist_object;
+				RBAudioscrobblerUserData *track;
 
-			track = g_slice_new0 (RBAudioscrobblerUserData);
-			track->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK;
-			track->track.title = g_strdup (json_object_get_string_member (track_object, "name"));
-			artist_object = json_object_get_object_member (track_object, "artist");
-			track->track.artist = g_strdup (json_object_get_string_member (artist_object, "#text"));
-			track->url = g_strdup (json_object_get_string_member (track_object, "url"));
+				track_object = json_array_get_object_element (track_array, i);
 
-			g_ptr_array_add (recent_tracks, track);
+				track = g_slice_new0 (RBAudioscrobblerUserData);
+				track->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK;
+				track->track.title = g_strdup (json_object_get_string_member (track_object, "name"));
+				artist_object = json_object_get_object_member (track_object, "artist");
+				track->track.artist = g_strdup (json_object_get_string_member (artist_object, "#text"));
+				track->url = g_strdup (json_object_get_string_member (track_object, "url"));
 
-			track->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
-		                                                         LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
-			if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
-				JsonArray *image_array;
-				JsonObject *image_object;
+				g_ptr_array_add (recent_tracks, track);
 
-				image_array = json_object_get_array_member (track_object, "image");
-				image_object = json_array_get_object_element (image_array, 0);
-				rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), track);
+				track->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
+				                                                 LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+				if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
+					JsonArray *image_array;
+					JsonObject *image_object;
+
+					image_array = json_object_get_array_member (track_object, "image");
+					image_object = json_array_get_object_element (image_array, 0);
+					rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), track);
+				}
 			}
 		}
+	} else {
+		rb_debug ("error parsing recent tracks response");
 	}
 
 	g_object_unref (parser);
@@ -939,50 +943,54 @@ rb_audioscrobbler_user_parse_top_tracks (RBAudioscrobblerUser *user, const char 
 {
 	GPtrArray *top_tracks;
 	JsonParser *parser;
-	JsonObject *root_object;
-	JsonObject *top_tracks_object;
 
 	top_tracks = NULL;
 
 	parser = json_parser_new ();
-	json_parser_load_from_data (parser, data, -1, NULL);
-	root_object = json_node_get_object (json_parser_get_root (parser));
-	top_tracks_object = json_object_get_object_member (root_object, "tracks");
+	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
+		JsonObject *root_object;
+		JsonObject *top_tracks_object;
 
-	if (json_object_has_member (top_tracks_object, "track") == TRUE) {
-		JsonArray *track_array;
-		int i;
+		root_object = json_node_get_object (json_parser_get_root (parser));
+		top_tracks_object = json_object_get_object_member (root_object, "tracks");
 
-		top_tracks = g_ptr_array_new_with_free_func ((GDestroyNotify)rb_audioscrobbler_user_data_free);
+		if (json_object_has_member (top_tracks_object, "track") == TRUE) {
+			JsonArray *track_array;
+			int i;
 
-		track_array = json_object_get_array_member (top_tracks_object, "track");
-		for (i = 0; i < json_array_get_length (track_array); i++) {
-			JsonObject *track_object;
-			JsonObject *artist_object;
-			RBAudioscrobblerUserData *track;
+			top_tracks = g_ptr_array_new_with_free_func ((GDestroyNotify)rb_audioscrobbler_user_data_free);
 
-			track_object = json_array_get_object_element (track_array, i);
+			track_array = json_object_get_array_member (top_tracks_object, "track");
+			for (i = 0; i < json_array_get_length (track_array); i++) {
+				JsonObject *track_object;
+				JsonObject *artist_object;
+				RBAudioscrobblerUserData *track;
 
-			track = g_slice_new0 (RBAudioscrobblerUserData);
-			track->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK;
-			track->track.title = g_strdup (json_object_get_string_member (track_object, "name"));
-			artist_object = json_object_get_object_member (track_object, "artist");
-			track->track.artist = g_strdup (json_object_get_string_member (artist_object, "name"));
-			track->url = g_strdup (json_object_get_string_member (track_object, "url"));
+				track_object = json_array_get_object_element (track_array, i);
 
-			g_ptr_array_add (top_tracks, track);
+				track = g_slice_new0 (RBAudioscrobblerUserData);
+				track->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK;
+				track->track.title = g_strdup (json_object_get_string_member (track_object, "name"));
+				artist_object = json_object_get_object_member (track_object, "artist");
+				track->track.artist = g_strdup (json_object_get_string_member (artist_object, "name"));
+				track->url = g_strdup (json_object_get_string_member (track_object, "url"));
 
-			track->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
-		                                                         LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
-			if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
-				JsonArray *image_array;
-				JsonObject *image_object;
+				g_ptr_array_add (top_tracks, track);
 
-				image_array = json_object_get_array_member (track_object, "image");
-				image_object = json_array_get_object_element (image_array, 0);
-				rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), track);
+				track->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
+				                                                 LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+				if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
+					JsonArray *image_array;
+					JsonObject *image_object;
+
+					image_array = json_object_get_array_member (track_object, "image");
+					image_object = json_array_get_object_element (image_array, 0);
+					rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), track);
+				}
 			}
 		}
+	} else {
+		rb_debug ("error parsing top tracks response");
 	}
 
 	g_object_unref (parser);
@@ -1079,50 +1087,54 @@ rb_audioscrobbler_user_parse_loved_tracks (RBAudioscrobblerUser *user, const cha
 {
 	GPtrArray *loved_tracks;
 	JsonParser *parser;
-	JsonObject *root_object;
-	JsonObject *loved_tracks_object;
 
 	loved_tracks = NULL;
 
 	parser = json_parser_new ();
-	json_parser_load_from_data (parser, data, -1, NULL);
-	root_object = json_node_get_object (json_parser_get_root (parser));
-	loved_tracks_object = json_object_get_object_member (root_object, "lovedtracks");
+	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
+		JsonObject *root_object;
+		JsonObject *loved_tracks_object;
 
-	if (json_object_has_member (loved_tracks_object, "track") == TRUE) {
-		JsonArray *track_array;
-		int i;
+		root_object = json_node_get_object (json_parser_get_root (parser));
+		loved_tracks_object = json_object_get_object_member (root_object, "lovedtracks");
 
-		loved_tracks = g_ptr_array_new_with_free_func ((GDestroyNotify)rb_audioscrobbler_user_data_free);
+		if (json_object_has_member (loved_tracks_object, "track") == TRUE) {
+			JsonArray *track_array;
+			int i;
 
-		track_array = json_object_get_array_member (loved_tracks_object, "track");
-		for (i = 0; i < json_array_get_length (track_array); i++) {
-			JsonObject *track_object;
-			JsonObject *artist_object;
-			RBAudioscrobblerUserData *track;
+			loved_tracks = g_ptr_array_new_with_free_func ((GDestroyNotify)rb_audioscrobbler_user_data_free);
 
-			track_object = json_array_get_object_element (track_array, i);
+			track_array = json_object_get_array_member (loved_tracks_object, "track");
+			for (i = 0; i < json_array_get_length (track_array); i++) {
+				JsonObject *track_object;
+				JsonObject *artist_object;
+				RBAudioscrobblerUserData *track;
 
-			track = g_slice_new0 (RBAudioscrobblerUserData);
-			track->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK;
-			track->track.title = g_strdup (json_object_get_string_member (track_object, "name"));
-			artist_object = json_object_get_object_member (track_object, "artist");
-			track->track.artist = g_strdup (json_object_get_string_member (artist_object, "name"));
-			track->url = g_strdup (json_object_get_string_member (track_object, "url"));
+				track_object = json_array_get_object_element (track_array, i);
 
-			g_ptr_array_add (loved_tracks, track);
+				track = g_slice_new0 (RBAudioscrobblerUserData);
+				track->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK;
+				track->track.title = g_strdup (json_object_get_string_member (track_object, "name"));
+				artist_object = json_object_get_object_member (track_object, "artist");
+				track->track.artist = g_strdup (json_object_get_string_member (artist_object, "name"));
+				track->url = g_strdup (json_object_get_string_member (track_object, "url"));
 
-			track->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
-		                                                         LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
-			if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
-				JsonArray *image_array;
-				JsonObject *image_object;
+				g_ptr_array_add (loved_tracks, track);
 
-				image_array = json_object_get_array_member (track_object, "image");
-				image_object = json_array_get_object_element (image_array, 0);
-				rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), track);
+				track->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
+				                                                 LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+				if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
+					JsonArray *image_array;
+					JsonObject *image_object;
+
+					image_array = json_object_get_array_member (track_object, "image");
+					image_object = json_array_get_object_element (image_array, 0);
+					rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), track);
+				}
 			}
 		}
+	} else {
+		rb_debug ("error parsing loved tracks response");
 	}
 
 	g_object_unref (parser);
@@ -1219,47 +1231,51 @@ rb_audioscrobbler_user_parse_top_artists (RBAudioscrobblerUser *user, const char
 {
 	GPtrArray *top_artists;
 	JsonParser *parser;
-	JsonObject *root_object;
-	JsonObject *top_artists_object;
 
 	top_artists = NULL;
 
 	parser = json_parser_new ();
-	json_parser_load_from_data (parser, data, -1, NULL);
-	root_object = json_node_get_object (json_parser_get_root (parser));
-	top_artists_object = json_object_get_object_member (root_object, "artists");
+	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
+		JsonObject *root_object;
+		JsonObject *top_artists_object;
 
-	if (json_object_has_member (top_artists_object, "artist") == TRUE) {
-		JsonArray *artist_array;
-		int i;
+		root_object = json_node_get_object (json_parser_get_root (parser));
+		top_artists_object = json_object_get_object_member (root_object, "artists");
 
-		top_artists = g_ptr_array_new_with_free_func ((GDestroyNotify)rb_audioscrobbler_user_data_free);
+		if (json_object_has_member (top_artists_object, "artist") == TRUE) {
+			JsonArray *artist_array;
+			int i;
 
-		artist_array = json_object_get_array_member (top_artists_object, "artist");
-		for (i = 0; i < json_array_get_length (artist_array); i++) {
-			JsonObject *artist_object;
-			RBAudioscrobblerUserData *artist;
+			top_artists = g_ptr_array_new_with_free_func ((GDestroyNotify)rb_audioscrobbler_user_data_free);
 
-			artist_object = json_array_get_object_element (artist_array, i);
+			artist_array = json_object_get_array_member (top_artists_object, "artist");
+			for (i = 0; i < json_array_get_length (artist_array); i++) {
+				JsonObject *artist_object;
+				RBAudioscrobblerUserData *artist;
 
-			artist = g_slice_new0 (RBAudioscrobblerUserData);
-			artist->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST;
-			artist->artist.name = g_strdup (json_object_get_string_member (artist_object, "name"));
-			artist->url = g_strdup (json_object_get_string_member (artist_object, "url"));
+				artist_object = json_array_get_object_element (artist_array, i);
 
-			g_ptr_array_add (top_artists, artist);
+				artist = g_slice_new0 (RBAudioscrobblerUserData);
+				artist->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST;
+				artist->artist.name = g_strdup (json_object_get_string_member (artist_object, "name"));
+				artist->url = g_strdup (json_object_get_string_member (artist_object, "url"));
 
-			artist->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, artist),
-		                                                          LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
-			if (artist->image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
-				JsonArray *image_array;
-				JsonObject *image_object;
+				g_ptr_array_add (top_artists, artist);
 
-				image_array = json_object_get_array_member (artist_object, "image");
-				image_object = json_array_get_object_element (image_array, 0);
-				rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), artist);
+				artist->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, artist),
+				                                                  LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+				if (artist->image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
+					JsonArray *image_array;
+					JsonObject *image_object;
+
+					image_array = json_object_get_array_member (artist_object, "image");
+					image_object = json_array_get_object_element (image_array, 0);
+					rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), artist);
+				}
 			}
 		}
+	} else {
+		rb_debug ("error parsing top artists response");
 	}
 
 	g_object_unref (parser);
@@ -1368,54 +1384,59 @@ rb_audioscrobbler_user_parse_recommended_artists (RBAudioscrobblerUser *user, co
 {
 	GPtrArray *recommended_artists;
 	JsonParser *parser;
-	JsonObject *root_object;
 
 	recommended_artists = NULL;
 
 	parser = json_parser_new ();
-	json_parser_load_from_data (parser, data, -1, NULL);
-	root_object = json_node_get_object (json_parser_get_root (parser));
+	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
+		JsonObject *root_object;
 
-	if (json_object_has_member (root_object, "error")) {
-		/* probably bad authentication. Unlike with scrobbling or radio playback,
-		 * this is not a problem: we'll just live with no recommendations */
-		rb_debug ("user.getRecommendedArtists failed due to bad authentication");
-	} else {
-		JsonObject *recommended_artists_object;
-		recommended_artists_object = json_object_get_object_member (root_object, "recommendations");
+		root_object = json_node_get_object (json_parser_get_root (parser));
 
-		if (json_object_has_member (recommended_artists_object, "artist") == TRUE) {
-			JsonArray *artist_array;
-			int i;
+		if (json_object_has_member (root_object, "error")) {
+			/* probably bad authentication. Unlike with scrobbling or radio playback,
+			 * this is not a problem: we'll just live with no recommendations */
+			rb_debug ("user.getRecommendedArtists failed due to bad authentication");
+		} else {
+			JsonObject *recommended_artists_object;
+			recommended_artists_object = json_object_get_object_member (root_object, "recommendations");
 
-			recommended_artists = g_ptr_array_new_with_free_func ((GDestroyNotify)rb_audioscrobbler_user_data_free);
+			if (json_object_has_member (recommended_artists_object, "artist") == TRUE) {
+				JsonArray *artist_array;
+				int i;
 
-			artist_array = json_object_get_array_member (recommended_artists_object, "artist");
-			for (i = 0; i < json_array_get_length (artist_array); i++) {
-				JsonObject *artist_object;
-				RBAudioscrobblerUserData *artist;
+				recommended_artists = g_ptr_array_new_with_free_func ((GDestroyNotify)rb_audioscrobbler_user_data_free);
 
-				artist_object = json_array_get_object_element (artist_array, i);
+				artist_array = json_object_get_array_member (recommended_artists_object, "artist");
+				for (i = 0; i < json_array_get_length (artist_array); i++) {
+					JsonObject *artist_object;
+					RBAudioscrobblerUserData *artist;
 
-				artist = g_slice_new0 (RBAudioscrobblerUserData);
-				artist->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST;
-				artist->artist.name = g_strdup (json_object_get_string_member (artist_object, "name"));
-				artist->url = g_strdup (json_object_get_string_member (artist_object, "url"));
+					artist_object = json_array_get_object_element (artist_array, i);
 
-				g_ptr_array_add (recommended_artists, artist);
+					artist = g_slice_new0 (RBAudioscrobblerUserData);
+					artist->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST;
+					artist->artist.name = g_strdup (json_object_get_string_member (artist_object, "name"));
+					artist->url = g_strdup (json_object_get_string_member (artist_object, "url"));
 
-				artist->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, artist),
-				                                                  LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
-				if (artist->image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
-					JsonArray *image_array;
-					JsonObject *image_object;
+					g_ptr_array_add (recommended_artists, artist);
 
-					image_array = json_object_get_array_member (artist_object, "image");
-					image_object = json_array_get_object_element (image_array, 0);
-					rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), artist);
+					artist->image =
+						gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, artist),
+						                                  LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+					if (artist->image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
+						JsonArray *image_array;
+						JsonObject *image_object;
+
+						image_array = json_object_get_array_member (artist_object, "image");
+						image_object = json_array_get_object_element (image_array, 0);
+						rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), artist);
+					}
 				}
 			}
 		}
+	} else {
+		rb_debug ("error parsing recommended artists response");
 	}
 
 	g_object_unref (parser);
