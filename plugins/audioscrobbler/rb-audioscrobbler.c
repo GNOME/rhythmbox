@@ -113,6 +113,7 @@ struct _RBAudioscrobblerPrivate
 	gchar *sessionid;
 	gchar *username;
 	gchar *session_key;
+	gchar *password;
 	gchar *submit_url;
 	gchar *nowplaying_url;
 
@@ -189,7 +190,8 @@ enum
 	PROP_SERVICE,
 	PROP_SHELL_PLAYER,
 	PROP_USERNAME,
-	PROP_SESSION_KEY
+	PROP_SESSION_KEY,
+	PROP_PASSWORD
 };
 
 enum
@@ -278,6 +280,14 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 	                                                      NULL,
                                                               G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
 
+	g_object_class_install_property (object_class,
+	                                 PROP_PASSWORD,
+	                                 g_param_spec_string ("password",
+	                                                      "Password",
+	                                                      "Password used to authenticate the user optionally instead of a session key",
+	                                                      NULL,
+                                                              G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+
 	/**
 	 * RBAudioscrobbler::authentication-error:
 	 * @account: the #RBAudioscrobblerAccount
@@ -335,6 +345,7 @@ rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 	audioscrobbler->priv->sessionid = g_strdup ("");
 	audioscrobbler->priv->username = NULL;
 	audioscrobbler->priv->session_key = NULL;
+	audioscrobbler->priv->password = NULL;
 	audioscrobbler->priv->submit_url = g_strdup ("");
 	audioscrobbler->priv->nowplaying_url = g_strdup ("");
 
@@ -410,6 +421,7 @@ rb_audioscrobbler_finalize (GObject *object)
 	g_free (audioscrobbler->priv->sessionid);
 	g_free (audioscrobbler->priv->username);
 	g_free (audioscrobbler->priv->session_key);
+	g_free (audioscrobbler->priv->password);
 	g_free (audioscrobbler->priv->submit_url);
 	g_free (audioscrobbler->priv->nowplaying_url);
 
@@ -438,6 +450,21 @@ rb_audioscrobbler_new (RBAudioscrobblerService *service,
 			     NULL);
 }
 
+/* create a scrobbler which used a password for authentication rather than web auth */
+RBAudioscrobbler *
+rb_audioscrobbler_new_from_password (RBAudioscrobblerService *service,
+                                     RBShellPlayer *shell_player,
+                                     const char *username,
+                                     const char *password)
+{
+	return g_object_new (RB_TYPE_AUDIOSCROBBLER,
+	                     "service", service,
+			     "shell-player", shell_player,
+	                     "username", username,
+	                     "password", password,
+			     NULL);
+}
+
 static void
 rb_audioscrobbler_set_property (GObject *object,
 				guint prop_id,
@@ -463,6 +490,9 @@ rb_audioscrobbler_set_property (GObject *object,
 		break;
 	case PROP_SESSION_KEY:
 		audioscrobbler->priv->session_key = g_value_dup_string (value);
+		break;
+	case PROP_PASSWORD:
+		audioscrobbler->priv->password = g_value_dup_string (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -840,7 +870,9 @@ rb_audioscrobbler_should_handshake (RBAudioscrobbler *audioscrobbler)
 	/* Perform handshake if necessary. Only perform handshake if
 	 *   - we have no current handshake; AND
 	 *   - we have waited the appropriate amount of time between
-	 *     handshakes;
+	 *     handshakes; AND
+	 *   - we have a username; AND
+	 *   - we have a session key OR we have a password
 	 */
 	if (audioscrobbler->priv->handshake) {
 		return FALSE;
@@ -853,15 +885,27 @@ rb_audioscrobbler_should_handshake (RBAudioscrobbler *audioscrobbler)
 		return FALSE;
 	}
 
+	if ((audioscrobbler->priv->username == NULL) ||
+	    (strcmp (audioscrobbler->priv->username, "") == 0)) {
+		rb_debug ("No username set");
+		return FALSE;
+	}
+
+	if ((audioscrobbler->priv->session_key == NULL) ||
+	    (strcmp (audioscrobbler->priv->session_key, "") == 0)) {
+		if ((audioscrobbler->priv->password == NULL) ||
+		    (strcmp (audioscrobbler->priv->password, "") == 0)) {
+			rb_debug ("No session key or password set");
+			return FALSE;
+		}
+	}
+
 	return TRUE;
 }
 
 static void
 rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 {
-	gchar *api_key;
-	gchar *api_secret;
-	gchar *scrobbler_url;
 	gchar *username;
 	gchar *url;
 	gchar *auth;
@@ -872,32 +916,43 @@ rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 		return;
 	}
 
-	/* get the service details */
-	g_object_get (audioscrobbler->priv->service,
-	              "api-key", &api_key,
-	              "api-secret", &api_secret,
-	              "scrobbler-url", &scrobbler_url,
-	              NULL);
-
 	username = soup_uri_encode (audioscrobbler->priv->username, EXTRA_URI_ENCODE_CHARS);
 	timestamp = time (NULL);
 
-	autharg = g_strdup_printf ("%s%d", api_secret, timestamp);
-	auth = mkmd5 (autharg);
+	if (audioscrobbler->priv->session_key != NULL) {
+		/* use web services auth */
+		autharg = g_strdup_printf ("%s%d",
+			                   rb_audioscrobbler_service_get_api_secret (audioscrobbler->priv->service),
+			                   timestamp);
+		auth = mkmd5 (autharg);
 
-	url = g_strdup_printf ("%s?hs=true&p=%s&c=%s&v=%s&u=%s&t=%d&a=%s&api_key=%s&sk=%s",
-			       scrobbler_url,
-			       SCROBBLER_VERSION,
-			       CLIENT_ID,
-			       CLIENT_VERSION,
-			       username,
-			       timestamp,
-			       auth,
-	                       api_key,
-	                       audioscrobbler->priv->session_key);
-	g_free (api_key);
-	g_free (api_secret);
-	g_free (scrobbler_url);
+		url = g_strdup_printf ("%s?hs=true&p=%s&c=%s&v=%s&u=%s&t=%d&a=%s&api_key=%s&sk=%s",
+				       rb_audioscrobbler_service_get_scrobbler_url (audioscrobbler->priv->service),
+				       SCROBBLER_VERSION,
+				       CLIENT_ID,
+				       CLIENT_VERSION,
+				       username,
+				       timestamp,
+				       auth,
+			               rb_audioscrobbler_service_get_api_key (audioscrobbler->priv->service),
+			               audioscrobbler->priv->session_key);
+	} else {
+		/* password auth */
+		autharg = g_strdup_printf ("%s%d",
+		                           mkmd5 (audioscrobbler->priv->password),
+		                           timestamp);
+		auth = mkmd5 (autharg);
+
+		url = g_strdup_printf ("%s?hs=true&p=%s&c=%s&v=%s&u=%s&t=%d&a=%s",
+				       rb_audioscrobbler_service_get_scrobbler_url (audioscrobbler->priv->service),
+				       SCROBBLER_VERSION,
+				       CLIENT_ID,
+				       CLIENT_VERSION,
+				       username,
+				       timestamp,
+				       auth);
+	}
+
 	g_free (auth);
 	g_free (autharg);
 	g_free (username);

@@ -75,6 +75,11 @@ RBAudioscrobbler *	rb_audioscrobbler_new (RBAudioscrobblerService *service,
                                                const char *username,
                                                const char *session_key);
 
+RBAudioscrobbler *	rb_audioscrobbler_new_from_password (RBAudioscrobblerService *service,
+                                                             RBShellPlayer *shell_player,
+                                                             const char *username,
+                                                             const char *password);
+
 void                    rb_audioscrobbler_statistics_changed (RBAudioscrobbler *audioscrobbler);
 
 
