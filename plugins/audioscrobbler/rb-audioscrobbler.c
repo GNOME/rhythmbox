@@ -157,7 +157,6 @@ static void	     rb_audioscrobbler_finalize (GObject *object);
 static void	     rb_audioscrobbler_add_timeout (RBAudioscrobbler *audioscrobbler);
 static gboolean	     rb_audioscrobbler_timeout_cb (RBAudioscrobbler *audioscrobbler);
 
-static gchar *	     mkmd5 (char *string);
 static void	     rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage *msg, gboolean handshake);
 
 static void	     rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler);
@@ -733,24 +732,6 @@ rb_audioscrobbler_offline_play_notify_cb (RhythmDB *db,
 	}
 }
 
-
-
-/* Audioscrobbler functions: */
-static gchar *
-mkmd5 (char *string)
-{
-	GChecksum *checksum;
-	gchar *md5_result;
-	
-	checksum = g_checksum_new(G_CHECKSUM_MD5);	
-	g_checksum_update(checksum, (guchar *)string, -1);
-	
-	md5_result = g_strdup(g_checksum_get_string(checksum));
-	g_checksum_free(checksum);
-	
-	return (md5_result);
-}
-
 static void
 rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage *msg, gboolean handshake)
 {
@@ -924,7 +905,7 @@ rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 		autharg = g_strdup_printf ("%s%d",
 			                   rb_audioscrobbler_service_get_api_secret (audioscrobbler->priv->service),
 			                   timestamp);
-		auth = mkmd5 (autharg);
+		auth = g_compute_checksum_for_string (G_CHECKSUM_MD5, autharg, -1);
 
 		url = g_strdup_printf ("%s?hs=true&p=%s&c=%s&v=%s&u=%s&t=%d&a=%s&api_key=%s&sk=%s",
 				       rb_audioscrobbler_service_get_scrobbler_url (audioscrobbler->priv->service),
@@ -939,9 +920,9 @@ rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 	} else {
 		/* password auth */
 		autharg = g_strdup_printf ("%s%d",
-		                           mkmd5 (audioscrobbler->priv->password),
+		                           g_compute_checksum_for_string (G_CHECKSUM_MD5, audioscrobbler->priv->password, 1),
 		                           timestamp);
-		auth = mkmd5 (autharg);
+		auth = g_compute_checksum_for_string (G_CHECKSUM_MD5, autharg, -1);
 
 		url = g_strdup_printf ("%s?hs=true&p=%s&c=%s&v=%s&u=%s&t=%d&a=%s",
 				       rb_audioscrobbler_service_get_scrobbler_url (audioscrobbler->priv->service),

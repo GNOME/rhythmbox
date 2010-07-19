@@ -454,21 +454,6 @@ rb_audioscrobbler_user_set_property (GObject *object,
 	}
 }
 
-static gchar *
-mkmd5 (char *string)
-{
-	GChecksum *checksum;
-	gchar *md5_result;
-
-	checksum = g_checksum_new (G_CHECKSUM_MD5);
-	g_checksum_update (checksum, (guchar *)string, -1);
-
-	md5_result = g_strdup (g_checksum_get_string (checksum));
-	g_checksum_free (checksum);
-
-	return md5_result;
-}
-
 void
 rb_audioscrobbler_user_set_authentication_details (RBAudioscrobblerUser *user,
                                                    const char *username,
@@ -1327,7 +1312,7 @@ rb_audioscrobbler_user_request_recommended_artists (RBAudioscrobblerUser *user, 
 	                           limit,
 	                           user->priv->session_key,
 	                           rb_audioscrobbler_service_get_api_secret (user->priv->service));
-	sig = mkmd5 (sig_arg);
+	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 
 	msg_url = g_strdup_printf ("%s?method=user.getRecommendedArtists&api_key=%s&api_sig=%s&sk=%s&limit=%i&format=json",
 	                           rb_audioscrobbler_service_get_api_url (user->priv->service),
@@ -1651,7 +1636,7 @@ rb_audioscrobbler_user_love_track (RBAudioscrobblerUser *user,
 	                           title,
 	                           rb_audioscrobbler_service_get_api_secret (user->priv->service));
 
-	sig = mkmd5 (sig_arg);
+	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 
 	request = g_strdup_printf ("method=track.love&track=%s&artist=%s&api_key=%s&api_sig=%s&sk=%s",
 	                           title,
@@ -1705,7 +1690,7 @@ rb_audioscrobbler_user_ban_track (RBAudioscrobblerUser *user,
 	                           title,
 	                           rb_audioscrobbler_service_get_api_secret (user->priv->service));
 
-	sig = mkmd5 (sig_arg);
+	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 
 	request = g_strdup_printf ("method=track.ban&track=%s&artist=%s&api_key=%s&api_sig=%s&sk=%s",
 	                           title,

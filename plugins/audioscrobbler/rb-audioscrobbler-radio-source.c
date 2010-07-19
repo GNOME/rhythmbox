@@ -530,21 +530,6 @@ rb_audioscrobbler_radio_source_set_property (GObject *object,
 	}
 }
 
-static gchar *
-mkmd5 (char *string)
-{
-	GChecksum *checksum;
-	gchar *md5_result;
-
-	checksum = g_checksum_new (G_CHECKSUM_MD5);
-	g_checksum_update (checksum, (guchar *)string, -1);
-
-	md5_result = g_strdup (g_checksum_get_string (checksum));
-	g_checksum_free (checksum);
-
-	return md5_result;
-}
-
 static void
 rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
                                                         RhythmDBEntry *entry,
@@ -635,7 +620,7 @@ rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source)
 	                           source->priv->station_url,
 	                           rb_audioscrobbler_service_get_api_secret (source->priv->service));
 
-	sig = mkmd5 (sig_arg);
+	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 
 	escaped_station_url = g_uri_escape_string (source->priv->station_url,
 	                                   NULL,
@@ -757,7 +742,7 @@ rb_audioscrobbler_radio_source_fetch_playlist (RBAudioscrobblerRadioSource *sour
 	                           source->priv->session_key,
 	                           rb_audioscrobbler_service_get_api_secret (source->priv->service));
 
-	sig = mkmd5 (sig_arg);
+	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 
 	request = g_strdup_printf ("method=radio.getPlaylist&api_key=%s&api_sig=%s&sk=%s&raw=true",
 	                           rb_audioscrobbler_service_get_api_key (source->priv->service),

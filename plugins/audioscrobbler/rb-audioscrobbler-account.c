@@ -306,21 +306,6 @@ rb_audioscrobbler_account_get_login_status (RBAudioscrobblerAccount *account)
 	return account->priv->login_status;
 }
 
-static gchar *
-mkmd5 (char *string)
-{
-	GChecksum *checksum;
-	gchar *md5_result;
-
-	checksum = g_checksum_new (G_CHECKSUM_MD5);
-	g_checksum_update (checksum, (guchar *)string, -1);
-
-	md5_result = g_strdup (g_checksum_get_string (checksum));
-	g_checksum_free (checksum);
-
-	return md5_result;
-}
-
 static void
 rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *account)
 {
@@ -526,7 +511,7 @@ rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account)
 	sig_arg = g_strdup_printf ("api_key%smethodauth.getToken%s",
 	                           api_key,
 	                           api_secret);
-	sig = mkmd5 (sig_arg);
+	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 	url = g_strdup_printf ("%s?method=auth.getToken&api_key=%s&api_sig=%s",
 			       api_url, api_key, sig);
 
@@ -640,7 +625,7 @@ rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data)
 	                           api_key,
 	                           account->priv->auth_token,
 	                           api_secret);
-	sig = mkmd5 (sig_arg);
+	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 	url = g_strdup_printf ("%s?method=auth.getSession&api_key=%s&token=%s&api_sig=%s",
 	                       api_url,
 	                       api_key,
