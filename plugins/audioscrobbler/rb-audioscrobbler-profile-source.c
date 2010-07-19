@@ -69,7 +69,7 @@ struct _RBAudioscrobblerProfileSourcePrivate {
 	GtkWidget *login_response_button;
 
 	/* Profile UI */
-	GtkWidget *profile_vbox;
+	GtkWidget *profile_window;
 
 	GtkWidget *user_info_area;
 	GtkWidget *profile_image;
@@ -494,8 +494,6 @@ rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource 
 	GtkBuilder *builder;
 	GtkWidget *combo_container;
 	int i;
-	GtkWidget *viewport;
-	GtkWidget *scrolled_win;
 
 	g_object_get (source, "plugin", &plugin, NULL);
 
@@ -503,7 +501,7 @@ rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource 
 	g_assert (builder_file != NULL);
 	builder = rb_builder_load (builder_file, source);
 
-	source->priv->profile_vbox = GTK_WIDGET (gtk_builder_get_object (builder, "profile_vbox"));
+	source->priv->profile_window = GTK_WIDGET (gtk_builder_get_object (builder, "profile_window"));
 
 	source->priv->user_info_area = GTK_WIDGET (gtk_builder_get_object (builder, "user_info_area"));
 	source->priv->profile_image = GTK_WIDGET (gtk_builder_get_object (builder, "profile_image"));
@@ -545,21 +543,8 @@ rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource 
 	source->priv->recommended_artists_area = GTK_WIDGET (gtk_builder_get_object (builder, "recommended_artists_area"));
 	source->priv->recommended_artists_table = GTK_WIDGET (gtk_builder_get_object (builder, "recommended_artists_table"));
 
-
-	viewport = gtk_viewport_new (NULL, NULL);
-	gtk_viewport_set_shadow_type (GTK_VIEWPORT (viewport),
-	                              GTK_SHADOW_NONE);
-	scrolled_win = gtk_scrolled_window_new (NULL, NULL);
-	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrolled_win),
-	                                     GTK_SHADOW_NONE);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_win),
-	                                GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_container_add (GTK_CONTAINER (scrolled_win),
-	                   viewport);
-	gtk_container_add (GTK_CONTAINER (viewport),
-	                   source->priv->profile_vbox);
-	gtk_widget_show_all (scrolled_win);
-	gtk_box_pack_start (GTK_BOX (source->priv->main_vbox), scrolled_win, TRUE, TRUE, 0);
+	/* pack profile into main vbox */
+	gtk_box_pack_start (GTK_BOX (source->priv->main_vbox), source->priv->profile_window, TRUE, TRUE, 0);
 
 
 	g_object_unref (plugin);
@@ -733,9 +718,9 @@ rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount
 		gtk_widget_hide_all (source->priv->login_bar);
 	}
 	if (show_profile == TRUE) {
-		gtk_widget_show (source->priv->profile_vbox);
+		gtk_widget_show (source->priv->profile_window);
 	} else {
-		gtk_widget_hide (source->priv->profile_vbox);
+		gtk_widget_hide (source->priv->profile_window);
 	}
 
 	g_free (scrobbling_enabled_conf_key);
