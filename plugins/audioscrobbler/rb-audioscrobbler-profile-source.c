@@ -125,101 +125,97 @@ static void rb_audioscrobbler_profile_source_set_property (GObject *object,
                                                            GParamSpec *pspec);
 
 /* UI initialisation functions */
-static void rb_audioscrobbler_profile_source_init_login_ui (RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_init_actions (RBAudioscrobblerProfileSource *source);
+static void init_login_ui (RBAudioscrobblerProfileSource *source);
+static void init_profile_ui (RBAudioscrobblerProfileSource *source);
+static void init_actions (RBAudioscrobblerProfileSource *source);
 
 /* login related callbacks */
-static void rb_audioscrobbler_profile_source_login_bar_response (GtkInfoBar *info_bar,
-                                                                 gint response_id,
-                                                                 RBAudioscrobblerProfileSource *source);
-void rb_audioscrobbler_profile_source_logout_button_clicked_cb (GtkButton *button,
-                                                                RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount *account,
-                                                                     RBAudioscrobblerAccountLoginStatus status,
-                                                                     RBAudioscrobblerProfileSource *source);
+static void login_bar_response_cb (GtkInfoBar *info_bar,
+                                   gint response_id,
+                                   RBAudioscrobblerProfileSource *source);
+void logout_button_clicked_cb (GtkButton *button, RBAudioscrobblerProfileSource *source);
+static void login_status_change_cb (RBAudioscrobblerAccount *account,
+                                    RBAudioscrobblerAccountLoginStatus status,
+                                    RBAudioscrobblerProfileSource *source);
 
 /* scrobbling enabled preference */
-void rb_audioscrobbler_profile_source_scrobbling_enabled_check_toggled_cb (GtkToggleButton *togglebutton,
-                                                                           RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_scrobbling_enabled_changed_cb (GConfClient *client,
-                                                                            guint cnxn_id,
-                                                                            GConfEntry *entry,
-                                                                            RBAudioscrobblerProfileSource *source);
+void scrobbling_enabled_check_toggled_cb (GtkToggleButton *togglebutton,
+                                          RBAudioscrobblerProfileSource *source);
+static void scrobbling_enabled_changed_cb (GConfClient *client,
+                                           guint cnxn_id,
+                                           GConfEntry *entry,
+                                           RBAudioscrobblerProfileSource *source);
 
 /* callbacks from scrobbler object */
-static void rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb (RBAudioscrobbler *audioscrobbler,
-                                                                                RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb (RBAudioscrobbler *audioscrobbler,
-                                                                              const char *status_msg,
-                                                                              guint queue_count,
-                                                                              guint submit_count,
-                                                                              const char *submit_time,
-                                                                              RBAudioscrobblerProfileSource *source);
+static void scrobbler_authentication_error_cb (RBAudioscrobbler *audioscrobbler,
+                                               RBAudioscrobblerProfileSource *source);
+static void scrobbler_statistics_changed_cb (RBAudioscrobbler *audioscrobbler,
+                                             const char *status_msg,
+                                             guint queue_count,
+                                             guint submit_count,
+                                             const char *submit_time,
+                                             RBAudioscrobblerProfileSource *source);
 
-static void rb_audioscrobbler_profile_source_playing_song_changed_cb (RBShellPlayer *player,
-                                                                      RhythmDBEntry *entry,
-                                                                      RBAudioscrobblerProfileSource *source);
+static void playing_song_changed_cb (RBShellPlayer *player,
+                                     RhythmDBEntry *entry,
+                                     RBAudioscrobblerProfileSource *source);
 
 /* GtkAction callbacks */
-static void rb_audioscrobbler_profile_source_love_track_action_cb (GtkAction *action,
-                                                                   RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_ban_track_action_cb (GtkAction *action,
-                                                                  RBAudioscrobblerProfileSource *source);
+static void love_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source);
+static void ban_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source);
 
 /* radio station creation/deletion */
-void rb_audioscrobbler_profile_source_station_creator_button_clicked_cb (GtkButton *button,
-                                                                         RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_save_radio_stations (RBAudioscrobblerProfileSource *source);
-static RBSource *rb_audioscrobbler_profile_source_add_radio_station (RBAudioscrobblerProfileSource *source,
-                                                                     const char *url,
-                                                                     const char *name);
-static void rb_audioscrobbler_profile_source_radio_station_name_changed_cb (RBAudioscrobblerRadioSource *radio,
-                                                                            GParamSpec *spec,
-                                                                            RBAudioscrobblerProfileSource *source);
+void station_creator_button_clicked_cb (GtkButton *button, RBAudioscrobblerProfileSource *source);
+static void load_radio_stations (RBAudioscrobblerProfileSource *source);
+static void save_radio_stations (RBAudioscrobblerProfileSource *source);
+static RBSource *add_radio_station (RBAudioscrobblerProfileSource *source,
+                                    const char *url,
+                                    const char *name);
+static void radio_station_name_changed_cb (RBAudioscrobblerRadioSource *radio,
+                                           GParamSpec *spec,
+                                           RBAudioscrobblerProfileSource *source);
 
 /* callbacks from user profile data requests */
-static void rb_audioscrobbler_profile_source_user_info_updated_cb (RBAudioscrobblerUser *user,
-                                                                   RBAudioscrobblerUserData *info,
-                                                                   RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_recent_tracks_updated_cb (RBAudioscrobblerUser *user,
-                                                                       GPtrArray *recent_tracks,
-                                                                       RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_top_tracks_updated_cb (RBAudioscrobblerUser *user,
-                                                                    GPtrArray *top_tracks,
-                                                                    RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_loved_tracks_updated_cb (RBAudioscrobblerUser *user,
-                                                                      GPtrArray *loved_tracks,
-                                                                      RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_top_artists_updated_cb (RBAudioscrobblerUser *user,
-                                                                     GPtrArray *top_artists,
-                                                                     RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_recommended_artists_updated_cb (RBAudioscrobblerUser *user,
-                                                                             GPtrArray *recommended_artists,
-                                                                             RBAudioscrobblerProfileSource *source);
+static void user_info_updated_cb (RBAudioscrobblerUser *user,
+                                  RBAudioscrobblerUserData *info,
+                                  RBAudioscrobblerProfileSource *source);
+static void recent_tracks_updated_cb (RBAudioscrobblerUser *user,
+                                      GPtrArray *recent_tracks,
+                                      RBAudioscrobblerProfileSource *source);
+static void top_tracks_updated_cb (RBAudioscrobblerUser *user,
+                                   GPtrArray *top_tracks,
+                                   RBAudioscrobblerProfileSource *source);
+static void loved_tracks_updated_cb (RBAudioscrobblerUser *user,
+                                     GPtrArray *loved_tracks,
+                                     RBAudioscrobblerProfileSource *source);
+static void top_artists_updated_cb (RBAudioscrobblerUser *user,
+                                    GPtrArray *top_artists,
+                                    RBAudioscrobblerProfileSource *source);
+static void recommended_artists_updated_cb (RBAudioscrobblerUser *user,
+                                            GPtrArray *recommended_artists,
+                                            RBAudioscrobblerProfileSource *source);
 
 /* UI creation for profile data lists, eg top artists, loved tracks */
-static void rb_audioscrobbler_profile_source_set_user_list (RBAudioscrobblerProfileSource *source,
-                                                            GtkWidget *list_table,
-                                                            GPtrArray *list_data);
-static GtkWidget *rb_audioscrobbler_profile_source_create_list_button (RBAudioscrobblerProfileSource *source,
-                                                                       RBAudioscrobblerUserData *data);
-static GtkWidget *rb_audioscrobbler_profile_source_create_popup_menu (RBAudioscrobblerProfileSource *source,
-                                                                      RBAudioscrobblerUserData *data);
-static void rb_audioscrobbler_profile_source_list_table_pack_start (GtkTable *list_table, GtkWidget *item);
-void rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout,
-                                                                    GtkAllocation *allocation,
-                                                                    gpointer user_data);
+static void set_user_list (RBAudioscrobblerProfileSource *source,
+                           GtkWidget *list_table,
+                           GPtrArray *list_data);
+static GtkWidget *create_list_button (RBAudioscrobblerProfileSource *source,
+                                      RBAudioscrobblerUserData *data);
+static GtkWidget *create_popup_menu (RBAudioscrobblerProfileSource *source,
+                                     RBAudioscrobblerUserData *data);
+static void list_table_pack_start (GtkTable *list_table, GtkWidget *item);
+void list_layout_size_allocate_cb (GtkWidget *layout,
+                                   GtkAllocation *allocation,
+                                   gpointer user_data);
 
 /* callbacks from data list buttons and related popup menus */
-static void rb_audioscrobbler_profile_source_list_item_clicked_cb (GtkButton *button, RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_list_item_view_url_activated_cb (GtkMenuItem *menuitem,
-                                                                              RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_list_item_listen_similar_artists_activated_cb (GtkMenuItem *menuitem,
-                                                                                            RBAudioscrobblerProfileSource *source);
-static void rb_audioscrobbler_profile_source_list_item_listen_top_fans_activated_cb (GtkMenuItem *menuitem,
-                                                                                     RBAudioscrobblerProfileSource *source);
+static void list_item_clicked_cb (GtkButton *button, RBAudioscrobblerProfileSource *source);
+static void list_item_view_url_activated_cb (GtkMenuItem *menuitem,
+                                             RBAudioscrobblerProfileSource *source);
+static void list_item_listen_similar_artists_activated_cb (GtkMenuItem *menuitem,
+                                                           RBAudioscrobblerProfileSource *source);
+static void list_item_listen_top_fans_activated_cb (GtkMenuItem *menuitem,
+                                                    RBAudioscrobblerProfileSource *source);
 
 /* RBSource implementations */
 static GList *impl_get_ui_actions (RBSource *asource);
@@ -320,7 +316,7 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 
 	g_signal_connect_object (rb_shell_get_player (shell),
 				 "playing-song-changed",
-				 G_CALLBACK (rb_audioscrobbler_profile_source_playing_song_changed_cb),
+				 G_CALLBACK (playing_song_changed_cb),
 				 source, 0);
 
 	/* create the UI */
@@ -328,53 +324,53 @@ rb_audioscrobbler_profile_source_constructed (GObject *object)
 	gtk_box_pack_start (GTK_BOX (source), source->priv->main_vbox, TRUE, TRUE, 0);
 	gtk_widget_show (source->priv->main_vbox);
 
-	rb_audioscrobbler_profile_source_init_login_ui (source);
-	rb_audioscrobbler_profile_source_init_profile_ui (source);
-	rb_audioscrobbler_profile_source_init_actions (source);
+	init_login_ui (source);
+	init_profile_ui (source);
+	init_actions (source);
 
 	/* create the user */
 	source->priv->user = rb_audioscrobbler_user_new (source->priv->service);
 	g_signal_connect (source->priv->user,
 	                  "user-info-updated",
-	                  (GCallback)rb_audioscrobbler_profile_source_user_info_updated_cb,
+	                  G_CALLBACK (user_info_updated_cb),
 	                  source);
 	g_signal_connect (source->priv->user,
 	                  "recent-tracks-updated",
-	                  (GCallback)rb_audioscrobbler_profile_source_recent_tracks_updated_cb,
+	                  G_CALLBACK (recent_tracks_updated_cb),
 	                  source);
 	g_signal_connect (source->priv->user,
 	                  "top-tracks-updated",
-	                  (GCallback)rb_audioscrobbler_profile_source_top_tracks_updated_cb,
+	                  G_CALLBACK (top_tracks_updated_cb),
 	                  source);
 	g_signal_connect (source->priv->user,
 	                  "loved-tracks-updated",
-	                  (GCallback)rb_audioscrobbler_profile_source_loved_tracks_updated_cb,
+	                  G_CALLBACK (loved_tracks_updated_cb),
 	                  source);
 	g_signal_connect (source->priv->user,
 	                  "top-artists-updated",
-	                  (GCallback)rb_audioscrobbler_profile_source_top_artists_updated_cb,
+	                  G_CALLBACK (top_artists_updated_cb),
 	                  source);
 	g_signal_connect (source->priv->user,
 	                  "recommended-artists-updated",
-	                  (GCallback)rb_audioscrobbler_profile_source_recommended_artists_updated_cb,
+	                  G_CALLBACK (recommended_artists_updated_cb),
 	                  source);
 
 	/* create the account */
 	source->priv->account = rb_audioscrobbler_account_new (source->priv->service);
 	g_signal_connect (source->priv->account,
 	                  "login-status-changed",
-	                  (GCallback)rb_audioscrobbler_profile_source_login_status_change_cb,
+	                  (GCallback)login_status_change_cb,
 	                  source);
-	rb_audioscrobbler_profile_source_login_status_change_cb (source->priv->account,
-	                                                         rb_audioscrobbler_account_get_login_status (source->priv->account),
-	                                                         source);
+	login_status_change_cb (source->priv->account,
+	                        rb_audioscrobbler_account_get_login_status (source->priv->account),
+	                        source);
 
 	/* scrobbling enabled gconf stuff */
 	scrobbling_enabled_conf_key = g_strdup_printf (CONF_AUDIOSCROBBLER_ENABLE_SCROBBLING,
 	                                               rb_audioscrobbler_service_get_name (source->priv->service));
 	source->priv->scrobbling_enabled_notification_id =
 		eel_gconf_notification_add (scrobbling_enabled_conf_key,
-				            (GConfClientNotifyFunc) rb_audioscrobbler_profile_source_scrobbling_enabled_changed_cb,
+				            (GConfClientNotifyFunc) scrobbling_enabled_changed_cb,
 				            source);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (source->priv->scrobbling_enabled_check),
 	                              eel_gconf_get_boolean (scrobbling_enabled_conf_key));
@@ -472,7 +468,7 @@ rb_audioscrobbler_profile_source_set_property (GObject *object,
 }
 
 static void
-rb_audioscrobbler_profile_source_init_login_ui (RBAudioscrobblerProfileSource *source)
+init_login_ui (RBAudioscrobblerProfileSource *source)
 {
 	GtkWidget *content_area;
 
@@ -486,13 +482,13 @@ rb_audioscrobbler_profile_source_init_login_ui (RBAudioscrobblerProfileSource *s
 		                         "", GTK_RESPONSE_OK);
 	g_signal_connect (source->priv->login_bar,
 	                  "response",
-	                  G_CALLBACK (rb_audioscrobbler_profile_source_login_bar_response),
+	                  G_CALLBACK (login_bar_response_cb),
 	                  source);
 	gtk_box_pack_start (GTK_BOX (source->priv->main_vbox), source->priv->login_bar, FALSE, FALSE, 0);
 }
 
 static void
-rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource *source)
+init_profile_ui (RBAudioscrobblerProfileSource *source)
 {
 	RBPlugin *plugin;
 	char *builder_file;
@@ -531,6 +527,7 @@ rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource 
 		                           rb_audioscrobbler_radio_type_get_text (i));
 	}
 	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->station_creator_type_combo), 0);
+	gtk_widget_show (source->priv->station_creator_type_combo);
 
 	/* lists of data */
 	source->priv->recent_tracks_area = GTK_WIDGET (gtk_builder_get_object (builder, "recent_tracks_area"));
@@ -558,7 +555,7 @@ rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource 
 }
 
 static void
-rb_audioscrobbler_profile_source_init_actions (RBAudioscrobblerProfileSource *source)
+init_actions (RBAudioscrobblerProfileSource *source)
 {
 	/* Unfortunately we can't use the usual trick of declaring a static array of GtkActionEntry,
 	 * and simply using _rb_source_register_action_group with that array.
@@ -576,10 +573,10 @@ rb_audioscrobbler_profile_source_init_actions (RBAudioscrobblerProfileSource *so
 	{
 		{ source->priv->love_action_name, "emblem-favorite", N_("Love"), NULL,
 		  N_("Mark this song as loved"),
-		  G_CALLBACK (rb_audioscrobbler_profile_source_love_track_action_cb) },
+		  G_CALLBACK (love_track_action_cb) },
 		{ source->priv->ban_action_name, GTK_STOCK_CANCEL, N_("Ban"), NULL,
 		  N_("Ban the current track from being played again"),
-		  G_CALLBACK (rb_audioscrobbler_profile_source_ban_track_action_cb) },
+		  G_CALLBACK (ban_track_action_cb) },
 	};
 
 	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
@@ -591,9 +588,9 @@ rb_audioscrobbler_profile_source_init_actions (RBAudioscrobblerProfileSource *so
 }
 
 static void
-rb_audioscrobbler_profile_source_login_bar_response (GtkInfoBar *info_bar,
-                                                     gint response_id,
-                                                     RBAudioscrobblerProfileSource *source)
+login_bar_response_cb (GtkInfoBar *info_bar,
+                       gint response_id,
+                       RBAudioscrobblerProfileSource *source)
 {
 	switch (rb_audioscrobbler_account_get_login_status (source->priv->account)) {
 	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT:
@@ -612,16 +609,16 @@ rb_audioscrobbler_profile_source_login_bar_response (GtkInfoBar *info_bar,
 }
 
 void
-rb_audioscrobbler_profile_source_logout_button_clicked_cb (GtkButton *button,
-                                                           RBAudioscrobblerProfileSource *source)
+logout_button_clicked_cb (GtkButton *button,
+                          RBAudioscrobblerProfileSource *source)
 {
 	rb_audioscrobbler_account_logout (source->priv->account);
 }
 
 static void
-rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount *account,
-                                                         RBAudioscrobblerAccountLoginStatus status,
-                                                         RBAudioscrobblerProfileSource *source)
+login_status_change_cb (RBAudioscrobblerAccount *account,
+                        RBAudioscrobblerAccountLoginStatus status,
+                        RBAudioscrobblerProfileSource *source)
 {
 	const char *username;
 	const char *session_key;
@@ -654,11 +651,11 @@ rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount
 			                       rb_audioscrobbler_account_get_session_key (source->priv->account));
 		g_signal_connect (source->priv->audioscrobbler,
 			          "authentication-error",
-			          (GCallback)rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb,
+			          G_CALLBACK (scrobbler_authentication_error_cb),
 			          source);
 		g_signal_connect (source->priv->audioscrobbler,
 			          "statistics-changed",
-			          (GCallback)rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb,
+			          G_CALLBACK (scrobbler_statistics_changed_cb),
 			          source);
 		rb_audioscrobbler_statistics_changed (source->priv->audioscrobbler);
 		g_object_unref (shell);
@@ -670,7 +667,7 @@ rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount
 		rb_audioscrobbler_user_update (source->priv->user);
 	}
 
-	rb_audioscrobbler_profile_source_load_radio_stations (source);
+	load_radio_stations (source);
 
 	/* update the login ui */
 	switch (status) {
@@ -730,8 +727,8 @@ rb_audioscrobbler_profile_source_login_status_change_cb (RBAudioscrobblerAccount
 }
 
 void
-rb_audioscrobbler_profile_source_scrobbling_enabled_check_toggled_cb (GtkToggleButton *togglebutton,
-                                                                      RBAudioscrobblerProfileSource *source)
+scrobbling_enabled_check_toggled_cb (GtkToggleButton *togglebutton,
+                                     RBAudioscrobblerProfileSource *source)
 {
 	char *conf_key;
 
@@ -743,10 +740,10 @@ rb_audioscrobbler_profile_source_scrobbling_enabled_check_toggled_cb (GtkToggleB
 }
 
 static void
-rb_audioscrobbler_profile_source_scrobbling_enabled_changed_cb (GConfClient *client,
-                                                                guint cnxn_id,
-                                                                GConfEntry *entry,
-                                                                RBAudioscrobblerProfileSource *source)
+scrobbling_enabled_changed_cb (GConfClient *client,
+                               guint cnxn_id,
+                               GConfEntry *entry,
+                               RBAudioscrobblerProfileSource *source)
 {
 	gboolean enabled = gconf_value_get_bool (entry->value);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (source->priv->scrobbling_enabled_check),
@@ -767,11 +764,11 @@ rb_audioscrobbler_profile_source_scrobbling_enabled_changed_cb (GConfClient *cli
 			                       rb_audioscrobbler_account_get_session_key (source->priv->account));
 		g_signal_connect (source->priv->audioscrobbler,
 			          "authentication-error",
-			          (GCallback)rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb,
+			          G_CALLBACK (scrobbler_authentication_error_cb),
 			          source);
 		g_signal_connect (source->priv->audioscrobbler,
 			          "statistics-changed",
-			          (GCallback)rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb,
+			          G_CALLBACK (scrobbler_statistics_changed_cb),
 			          source);
 		rb_audioscrobbler_statistics_changed (source->priv->audioscrobbler);
 		g_object_unref (shell);
@@ -779,19 +776,19 @@ rb_audioscrobbler_profile_source_scrobbling_enabled_changed_cb (GConfClient *cli
 }
 
 static void
-rb_audioscrobbler_profile_source_scrobbler_authentication_error_cb (RBAudioscrobbler *audioscrobbler,
-                                                                    RBAudioscrobblerProfileSource *source)
+scrobbler_authentication_error_cb (RBAudioscrobbler *audioscrobbler,
+                                   RBAudioscrobblerProfileSource *source)
 {
 	rb_audioscrobbler_account_notify_of_auth_error (source->priv->account);
 }
 
 static void
-rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb (RBAudioscrobbler *audioscrobbler,
-                                                                  const char *status_msg,
-                                                                  guint queue_count,
-                                                                  guint submit_count,
-                                                                  const char *submit_time,
-                                                                  RBAudioscrobblerProfileSource *source)
+scrobbler_statistics_changed_cb (RBAudioscrobbler *audioscrobbler,
+                                 const char *status_msg,
+                                 guint queue_count,
+                                 guint submit_count,
+                                 const char *submit_time,
+                                 RBAudioscrobblerProfileSource *source)
 {
 	char *queue_count_text;
 	char *submit_count_text;
@@ -812,9 +809,9 @@ rb_audioscrobbler_profile_source_scrobbler_statistics_changed_cb (RBAudioscrobbl
 
 /* re-enabled the love and ban GtkActions when a new song is played */
 static void
-rb_audioscrobbler_profile_source_playing_song_changed_cb (RBShellPlayer *player,
-                                                          RhythmDBEntry *entry,
-                                                          RBAudioscrobblerProfileSource *source)
+playing_song_changed_cb (RBShellPlayer *player,
+                         RhythmDBEntry *entry,
+                         RBAudioscrobblerProfileSource *source)
 {
 	GtkAction *action;
 
@@ -827,8 +824,7 @@ rb_audioscrobbler_profile_source_playing_song_changed_cb (RBShellPlayer *player,
 }
 
 static void
-rb_audioscrobbler_profile_source_love_track_action_cb (GtkAction *action,
-                                                       RBAudioscrobblerProfileSource *source)
+love_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source)
 {
 	RBShell *shell;
 	RhythmDBEntry *entry;
@@ -854,8 +850,7 @@ rb_audioscrobbler_profile_source_love_track_action_cb (GtkAction *action,
 }
 
 static void
-rb_audioscrobbler_profile_source_ban_track_action_cb (GtkAction *action,
-                                                      RBAudioscrobblerProfileSource *source)
+ban_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source)
 {
 	RBShell *shell;
 	RhythmDBEntry *entry;
@@ -878,8 +873,8 @@ rb_audioscrobbler_profile_source_ban_track_action_cb (GtkAction *action,
 }
 
 void
-rb_audioscrobbler_profile_source_station_creator_button_clicked_cb (GtkButton *button,
-                                                                    RBAudioscrobblerProfileSource *source)
+station_creator_button_clicked_cb (GtkButton *button,
+                                   RBAudioscrobblerProfileSource *source)
 {
 	const char *arg;
 
@@ -897,9 +892,7 @@ rb_audioscrobbler_profile_source_station_creator_button_clicked_cb (GtkButton *b
 		name = g_strdup_printf (rb_audioscrobbler_radio_type_get_default_name (type),
 		                        arg);
 
-		rb_audioscrobbler_profile_source_add_radio_station (source,
-		                                                    url,
-		                                                    name);
+		add_radio_station (source, url, name);
 
 		gtk_entry_set_text (GTK_ENTRY (source->priv->station_creator_arg_entry), "");
 
@@ -910,7 +903,7 @@ rb_audioscrobbler_profile_source_station_creator_button_clicked_cb (GtkButton *b
 
 /* delete old user's radio sources and load ones for new user */
 static void
-rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSource *source)
+load_radio_stations (RBAudioscrobblerProfileSource *source)
 {
 	/* destroy existing sources */
 	while (source->priv->radio_sources != NULL) {
@@ -955,7 +948,7 @@ rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSou
 				                                            url);
 				source->priv->radio_sources = g_list_append (source->priv->radio_sources, radio);
 				g_signal_connect (radio, "notify::name",
-						  G_CALLBACK (rb_audioscrobbler_profile_source_radio_station_name_changed_cb),
+						  G_CALLBACK (radio_station_name_changed_cb),
 						  source);
 			}
 		}
@@ -969,7 +962,7 @@ rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSou
 			url = g_strdup_printf (rb_audioscrobbler_radio_type_get_url (RB_AUDIOSCROBBLER_RADIO_TYPE_LIBRARY),
 			                       rb_audioscrobbler_account_get_username (source->priv->account));
 			name = g_strdup (_("My Library"));
-			rb_audioscrobbler_profile_source_add_radio_station (source, url, name);
+			add_radio_station (source, url, name);
 			g_free (url);
 			g_free (name);
 
@@ -977,7 +970,7 @@ rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSou
 			url = g_strdup_printf (rb_audioscrobbler_radio_type_get_url (RB_AUDIOSCROBBLER_RADIO_TYPE_RECOMMENDATION),
 			                       rb_audioscrobbler_account_get_username (source->priv->account));
 			name = g_strdup (_("My Recommendations"));
-			rb_audioscrobbler_profile_source_add_radio_station (source, url, name);
+			add_radio_station (source, url, name);
 			g_free (url);
 			g_free (name);
 
@@ -985,7 +978,7 @@ rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSou
 			url = g_strdup_printf (rb_audioscrobbler_radio_type_get_url (RB_AUDIOSCROBBLER_RADIO_TYPE_NEIGHBOURS),
 			                       rb_audioscrobbler_account_get_username (source->priv->account));
 			name = g_strdup (_("My Neighbourhood"));
-			rb_audioscrobbler_profile_source_add_radio_station (source, url, name);
+			add_radio_station (source, url, name);
 			g_free (url);
 			g_free (name);
 
@@ -994,7 +987,7 @@ rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSou
 			                       "rhythmbox");
 			name = g_strdup_printf (rb_audioscrobbler_radio_type_get_default_name (RB_AUDIOSCROBBLER_RADIO_TYPE_GROUP),
 			                       "Rhythmbox");
-			rb_audioscrobbler_profile_source_add_radio_station (source, url, name);
+			add_radio_station (source, url, name);
 			g_free (url);
 			g_free (name);
 		}
@@ -1006,7 +999,7 @@ rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSou
 
 /* save user's radio stations */
 static void
-rb_audioscrobbler_profile_source_save_radio_stations (RBAudioscrobblerProfileSource *source)
+save_radio_stations (RBAudioscrobblerProfileSource *source)
 {
 	JsonNode *root;
 	JsonArray *stations;
@@ -1059,9 +1052,9 @@ rb_audioscrobbler_profile_source_save_radio_stations (RBAudioscrobblerProfileSou
 
 /* adds a new radio station for the user, if it doesn't already exist */
 static RBSource *
-rb_audioscrobbler_profile_source_add_radio_station (RBAudioscrobblerProfileSource *source,
-                                                    const char *url,
-                                                    const char *name)
+add_radio_station (RBAudioscrobblerProfileSource *source,
+                   const char *url,
+                   const char *name)
 {
 	GList *i;
 	RBSource *radio = NULL;
@@ -1095,9 +1088,9 @@ rb_audioscrobbler_profile_source_add_radio_station (RBAudioscrobblerProfileSourc
 		                                            url);
 		source->priv->radio_sources = g_list_append (source->priv->radio_sources, radio);
 		g_signal_connect (radio, "notify::name",
-		                  G_CALLBACK (rb_audioscrobbler_profile_source_radio_station_name_changed_cb),
+		                  G_CALLBACK (radio_station_name_changed_cb),
 		                  source);
-		rb_audioscrobbler_profile_source_save_radio_stations (source);
+		save_radio_stations (source);
 
 		g_object_unref (shell);
 	}
@@ -1107,12 +1100,12 @@ rb_audioscrobbler_profile_source_add_radio_station (RBAudioscrobblerProfileSourc
 
 /* called when a radio station's name changes */
 static void
-rb_audioscrobbler_profile_source_radio_station_name_changed_cb (RBAudioscrobblerRadioSource *radio,
-                                                                GParamSpec *spec,
-                                                                RBAudioscrobblerProfileSource *source)
+radio_station_name_changed_cb (RBAudioscrobblerRadioSource *radio,
+                               GParamSpec *spec,
+                               RBAudioscrobblerProfileSource *source)
 {
 	/* save list of stations with new name */
-	rb_audioscrobbler_profile_source_save_radio_stations (source);
+	save_radio_stations (source);
 }
 
 /* removes a station from user's list of radio stations, deletes the source */
@@ -1127,14 +1120,14 @@ rb_audioscrobbler_profile_source_remove_radio_station (RBAudioscrobblerProfileSo
 	if (i != NULL) {
 		rb_source_delete_thyself (i->data);
 		source->priv->radio_sources = g_list_remove (source->priv->radio_sources, i->data);
-		rb_audioscrobbler_profile_source_save_radio_stations (source);
+		save_radio_stations (source);
 	}
 }
 
 static void
-rb_audioscrobbler_profile_source_user_info_updated_cb (RBAudioscrobblerUser *user,
-                                                       RBAudioscrobblerUserData *data,
-                                                       RBAudioscrobblerProfileSource *source)
+user_info_updated_cb (RBAudioscrobblerUser *user,
+                      RBAudioscrobblerUserData *data,
+                      RBAudioscrobblerProfileSource *source)
 {
 	if (data != NULL) {
 		char *playcount_text;
@@ -1160,12 +1153,12 @@ rb_audioscrobbler_profile_source_user_info_updated_cb (RBAudioscrobblerUser *use
 }
 
 static void
-rb_audioscrobbler_profile_source_recent_tracks_updated_cb (RBAudioscrobblerUser *user,
-                                                           GPtrArray *recent_tracks,
-                                                           RBAudioscrobblerProfileSource *source)
+recent_tracks_updated_cb (RBAudioscrobblerUser *user,
+                          GPtrArray *recent_tracks,
+                          RBAudioscrobblerProfileSource *source)
 {
 	if (recent_tracks != NULL) {
-		rb_audioscrobbler_profile_source_set_user_list (source, source->priv->recent_tracks_table, recent_tracks);
+		set_user_list (source, source->priv->recent_tracks_table, recent_tracks);
 		gtk_widget_show_all (source->priv->recent_tracks_area);
 	} else {
 		gtk_widget_hide_all (source->priv->recent_tracks_area);
@@ -1173,12 +1166,12 @@ rb_audioscrobbler_profile_source_recent_tracks_updated_cb (RBAudioscrobblerUser 
 }
 
 static void
-rb_audioscrobbler_profile_source_top_tracks_updated_cb (RBAudioscrobblerUser *user,
-                                                        GPtrArray *top_tracks,
-                                                        RBAudioscrobblerProfileSource *source)
+top_tracks_updated_cb (RBAudioscrobblerUser *user,
+                       GPtrArray *top_tracks,
+                       RBAudioscrobblerProfileSource *source)
 {
 	if (top_tracks != NULL) {
-		rb_audioscrobbler_profile_source_set_user_list (source, source->priv->top_tracks_table, top_tracks);
+		set_user_list (source, source->priv->top_tracks_table, top_tracks);
 		gtk_widget_show_all (source->priv->top_tracks_area);
 	} else {
 		gtk_widget_hide_all (source->priv->top_tracks_area);
@@ -1186,12 +1179,12 @@ rb_audioscrobbler_profile_source_top_tracks_updated_cb (RBAudioscrobblerUser *us
 }
 
 static void
-rb_audioscrobbler_profile_source_loved_tracks_updated_cb (RBAudioscrobblerUser *user,
-                                                          GPtrArray *loved_tracks,
-                                                          RBAudioscrobblerProfileSource *source)
+loved_tracks_updated_cb (RBAudioscrobblerUser *user,
+                         GPtrArray *loved_tracks,
+                         RBAudioscrobblerProfileSource *source)
 {
 	if (loved_tracks != NULL) {
-		rb_audioscrobbler_profile_source_set_user_list (source, source->priv->loved_tracks_table, loved_tracks);
+		set_user_list (source, source->priv->loved_tracks_table, loved_tracks);
 		gtk_widget_show_all (source->priv->loved_tracks_area);
 	} else {
 		gtk_widget_hide_all (source->priv->loved_tracks_area);
@@ -1199,12 +1192,12 @@ rb_audioscrobbler_profile_source_loved_tracks_updated_cb (RBAudioscrobblerUser *
 }
 
 static void
-rb_audioscrobbler_profile_source_top_artists_updated_cb (RBAudioscrobblerUser *user,
-                                                         GPtrArray *top_artists,
-                                                         RBAudioscrobblerProfileSource *source)
+top_artists_updated_cb (RBAudioscrobblerUser *user,
+                        GPtrArray *top_artists,
+                        RBAudioscrobblerProfileSource *source)
 {
 	if (top_artists != NULL) {
-		rb_audioscrobbler_profile_source_set_user_list (source, source->priv->top_artists_table, top_artists);
+		set_user_list (source, source->priv->top_artists_table, top_artists);
 		gtk_widget_show_all (source->priv->top_artists_area);
 	} else {
 		gtk_widget_hide_all (source->priv->top_artists_area);
@@ -1212,12 +1205,12 @@ rb_audioscrobbler_profile_source_top_artists_updated_cb (RBAudioscrobblerUser *u
 }
 
 static void
-rb_audioscrobbler_profile_source_recommended_artists_updated_cb (RBAudioscrobblerUser *user,
-                                                                 GPtrArray *recommended_artists,
-                                                                 RBAudioscrobblerProfileSource *source)
+recommended_artists_updated_cb (RBAudioscrobblerUser *user,
+                                GPtrArray *recommended_artists,
+                                RBAudioscrobblerProfileSource *source)
 {
 	if (recommended_artists != NULL) {
-		rb_audioscrobbler_profile_source_set_user_list (source, source->priv->recommended_artists_table, recommended_artists);
+		set_user_list (source, source->priv->recommended_artists_table, recommended_artists);
 		gtk_widget_show_all (source->priv->recommended_artists_area);
 	} else {
 		gtk_widget_hide_all (source->priv->recommended_artists_area);
@@ -1228,9 +1221,9 @@ rb_audioscrobbler_profile_source_recommended_artists_updated_cb (RBAudioscrobble
  * eg user's top tracks or recommended artists
  */
 static void
-rb_audioscrobbler_profile_source_set_user_list (RBAudioscrobblerProfileSource *source,
-                                                GtkWidget *list_table,
-                                                GPtrArray *list_data)
+set_user_list (RBAudioscrobblerProfileSource *source,
+               GtkWidget *list_table,
+               GPtrArray *list_data)
 {
 	int i;
 	GList *button_node;
@@ -1253,20 +1246,20 @@ rb_audioscrobbler_profile_source_set_user_list (RBAudioscrobblerProfileSource *s
 		GtkWidget *menu;
 
 		data = g_ptr_array_index (list_data, i);
-		button = rb_audioscrobbler_profile_source_create_list_button (source, data);
-		menu = rb_audioscrobbler_profile_source_create_popup_menu (source, data);
+		button = create_list_button (source, data);
+		menu = create_popup_menu (source, data);
 
 		g_hash_table_insert (source->priv->button_to_popup_menu_map, button, g_object_ref_sink (menu));
 		g_hash_table_insert (source->priv->popup_menu_to_data_map, menu, data);
 
-		rb_audioscrobbler_profile_source_list_table_pack_start (GTK_TABLE (list_table), button);
+		list_table_pack_start (GTK_TABLE (list_table), button);
 	}
 }
 
 /* creates a button for use in a list */
 static GtkWidget *
-rb_audioscrobbler_profile_source_create_list_button (RBAudioscrobblerProfileSource *source,
-                                                     RBAudioscrobblerUserData *data)
+create_list_button (RBAudioscrobblerProfileSource *source,
+                    RBAudioscrobblerUserData *data)
 {
 	GtkWidget *button;
 	GtkWidget *button_contents;
@@ -1340,7 +1333,7 @@ rb_audioscrobbler_profile_source_create_list_button (RBAudioscrobblerProfileSour
 
 	g_signal_connect (button,
 		          "clicked",
-		          (GCallback) rb_audioscrobbler_profile_source_list_item_clicked_cb,
+		          G_CALLBACK (list_item_clicked_cb),
 		          source);
 
 	return button;
@@ -1348,8 +1341,8 @@ rb_audioscrobbler_profile_source_create_list_button (RBAudioscrobblerProfileSour
 
 /* creates a menu to be popped up when a button is clicked */
 static GtkWidget *
-rb_audioscrobbler_profile_source_create_popup_menu (RBAudioscrobblerProfileSource *source,
-                                                    RBAudioscrobblerUserData *data)
+create_popup_menu (RBAudioscrobblerProfileSource *source,
+                   RBAudioscrobblerUserData *data)
 {
 	GtkWidget *menu;
 
@@ -1365,7 +1358,7 @@ rb_audioscrobbler_profile_source_create_popup_menu (RBAudioscrobblerProfileSourc
 		view_url_item = gtk_menu_item_new_with_mnemonic (item_text);
 		g_signal_connect (view_url_item,
 				  "activate",
-				  (GCallback) rb_audioscrobbler_profile_source_list_item_view_url_activated_cb,
+				  G_CALLBACK (list_item_view_url_activated_cb),
 				  source);
 
 		gtk_menu_shell_append (GTK_MENU_SHELL (menu), view_url_item);
@@ -1380,7 +1373,7 @@ rb_audioscrobbler_profile_source_create_popup_menu (RBAudioscrobblerProfileSourc
 		similar_artists_item = gtk_menu_item_new_with_mnemonic (("Listen to _Similar Artists Radio"));
 		g_signal_connect (similar_artists_item,
 				  "activate",
-				  (GCallback) rb_audioscrobbler_profile_source_list_item_listen_similar_artists_activated_cb,
+				  G_CALLBACK (list_item_listen_similar_artists_activated_cb),
 				  source);
 
 		gtk_menu_shell_append (GTK_MENU_SHELL (menu), similar_artists_item);
@@ -1394,7 +1387,7 @@ rb_audioscrobbler_profile_source_create_popup_menu (RBAudioscrobblerProfileSourc
 		top_fans_item = gtk_menu_item_new_with_mnemonic (("Listen to _Top Fans Radio"));
 		g_signal_connect (top_fans_item,
 				  "activate",
-				  (GCallback) rb_audioscrobbler_profile_source_list_item_listen_top_fans_activated_cb,
+				  G_CALLBACK (list_item_listen_top_fans_activated_cb),
 				  source);
 
 		gtk_menu_shell_append (GTK_MENU_SHELL (menu), top_fans_item);
@@ -1407,7 +1400,7 @@ rb_audioscrobbler_profile_source_create_popup_menu (RBAudioscrobblerProfileSourc
 
 /* packs a button into a GtkTable, from right to left then top to bottom */
 static void
-rb_audioscrobbler_profile_source_list_table_pack_start (GtkTable *list_table, GtkWidget *item)
+list_table_pack_start (GtkTable *list_table, GtkWidget *item)
 {
 	int num_columns;
 	int num_rows;
@@ -1424,7 +1417,7 @@ rb_audioscrobbler_profile_source_list_table_pack_start (GtkTable *list_table, Gt
 
 /* allocates the correct amount of size for a table containing a list of buttons */
 void
-rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout,
+list_layout_size_allocate_cb (GtkWidget *layout,
                                                                GtkAllocation *allocation,
                                                                gpointer user_data)
 {
@@ -1483,7 +1476,7 @@ rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout
 		/* re-attach each button to the table */
 		for (i = g_list_last (buttons); i != NULL; i = i->prev) {
 
-			rb_audioscrobbler_profile_source_list_table_pack_start (GTK_TABLE (table),
+			list_table_pack_start (GTK_TABLE (table),
 			                                                        i->data);
 			g_object_unref (i->data);
 		}
@@ -1498,7 +1491,7 @@ rb_audioscrobbler_profile_source_list_layout_size_allocate_cb (GtkWidget *layout
 
 /* popup the appropriate menu */
 static void
-rb_audioscrobbler_profile_source_list_item_clicked_cb (GtkButton *button, RBAudioscrobblerProfileSource *source)
+list_item_clicked_cb (GtkButton *button, RBAudioscrobblerProfileSource *source)
 {
 	GtkWidget *menu;
 
@@ -1511,8 +1504,8 @@ rb_audioscrobbler_profile_source_list_item_clicked_cb (GtkButton *button, RBAudi
 }
 
 static void
-rb_audioscrobbler_profile_source_list_item_view_url_activated_cb (GtkMenuItem *menuitem,
-                                                                  RBAudioscrobblerProfileSource *source)
+list_item_view_url_activated_cb (GtkMenuItem *menuitem,
+                                 RBAudioscrobblerProfileSource *source)
 {
 	GtkWidget *menu;
 	RBAudioscrobblerUserData *data;
@@ -1532,8 +1525,8 @@ rb_audioscrobbler_profile_source_list_item_view_url_activated_cb (GtkMenuItem *m
 }
 
 static void
-rb_audioscrobbler_profile_source_list_item_listen_similar_artists_activated_cb (GtkMenuItem *menuitem,
-                                                                                RBAudioscrobblerProfileSource *source)
+list_item_listen_similar_artists_activated_cb (GtkMenuItem *menuitem,
+                                               RBAudioscrobblerProfileSource *source)
 {
 	GtkWidget *menu;
 	RBAudioscrobblerUserData *data;
@@ -1557,7 +1550,7 @@ rb_audioscrobbler_profile_source_list_item_listen_similar_artists_activated_cb (
 	radio_name = g_strdup_printf (rb_audioscrobbler_radio_type_get_default_name (RB_AUDIOSCROBBLER_RADIO_TYPE_SIMILAR_ARTISTS),
 	                              artist);
 
-	radio = rb_audioscrobbler_profile_source_add_radio_station (source, radio_url, radio_name);
+	radio = add_radio_station (source, radio_url, radio_name);
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "sourcelist", &sourcelist, NULL);
 	rb_sourcelist_select (sourcelist, radio);
@@ -1569,8 +1562,8 @@ rb_audioscrobbler_profile_source_list_item_listen_similar_artists_activated_cb (
 }
 
 static void
-rb_audioscrobbler_profile_source_list_item_listen_top_fans_activated_cb (GtkMenuItem *menuitem,
-                                                                         RBAudioscrobblerProfileSource *source)
+list_item_listen_top_fans_activated_cb (GtkMenuItem *menuitem,
+                                        RBAudioscrobblerProfileSource *source)
 {
 	GtkWidget *menu;
 	RBAudioscrobblerUserData *data;
@@ -1594,7 +1587,7 @@ rb_audioscrobbler_profile_source_list_item_listen_top_fans_activated_cb (GtkMenu
 	radio_name = g_strdup_printf (rb_audioscrobbler_radio_type_get_default_name (RB_AUDIOSCROBBLER_RADIO_TYPE_TOP_FANS),
 	                              artist);
 
-	radio = rb_audioscrobbler_profile_source_add_radio_station (source, radio_url, radio_name);
+	radio = add_radio_station (source, radio_url, radio_name);
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "sourcelist", &sourcelist, NULL);
 	rb_sourcelist_select (sourcelist, radio);

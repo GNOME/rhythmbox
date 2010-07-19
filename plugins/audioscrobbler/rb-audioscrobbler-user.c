@@ -141,77 +141,77 @@ static void rb_audioscrobbler_user_set_property (GObject *object,
                                                  const GValue *value,
                                                  GParamSpec *pspec);
 
-static void rb_audioscrobbler_user_load_from_cache (RBAudioscrobblerUser *user);
+static void load_from_cache (RBAudioscrobblerUser *user);
 
-static char * rb_audioscrobbler_user_calculate_cached_response_path (RBAudioscrobblerUser *user,
-                                                                     const char *request_name);
-static void rb_audioscrobbler_user_save_response_to_cache (RBAudioscrobblerUser *user,
-                                                           const char *request_name,
-                                                           const char *data);
+static char * calculate_cached_response_path (RBAudioscrobblerUser *user,
+                                              const char *request_name);
+static void save_response_to_cache (RBAudioscrobblerUser *user,
+                                    const char *request_name,
+                                    const char *data);
 
-static void rb_audioscrobbler_user_load_cached_user_info (RBAudioscrobblerUser *user);
-static void rb_audioscrobbler_user_request_user_info (RBAudioscrobblerUser *user);
-static void rb_audioscrobbler_user_user_info_response_cb (SoupSession *session,
-                                                          SoupMessage *msg,
-                                                          gpointer user_data);
-static RBAudioscrobblerUserData * rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user,
-                                                                          const char *data);
+static void load_cached_user_info (RBAudioscrobblerUser *user);
+static void request_user_info (RBAudioscrobblerUser *user);
+static void user_info_response_cb (SoupSession *session,
+                                   SoupMessage *msg,
+                                   gpointer user_data);
+static RBAudioscrobblerUserData * parse_user_info (RBAudioscrobblerUser *user,
+                                                   const char *data);
 
-static void rb_audioscrobbler_user_load_cached_recent_tracks (RBAudioscrobblerUser *user);
-static void rb_audioscrobbler_user_request_recent_tracks (RBAudioscrobblerUser *user, int limit);
-static void rb_audioscrobbler_user_recent_tracks_response_cb (SoupSession *session,
-                                                              SoupMessage *msg,
-                                                              gpointer user_data);
-static GPtrArray * rb_audioscrobbler_user_parse_recent_tracks (RBAudioscrobblerUser *user,
-                                                               const char *data);
+static void load_cached_recent_tracks (RBAudioscrobblerUser *user);
+static void request_recent_tracks (RBAudioscrobblerUser *user, int limit);
+static void recent_tracks_response_cb (SoupSession *session,
+                                       SoupMessage *msg,
+                                       gpointer user_data);
+static GPtrArray * parse_recent_tracks (RBAudioscrobblerUser *user,
+                                        const char *data);
 
-static void rb_audioscrobbler_user_load_cached_top_tracks (RBAudioscrobblerUser *user);
-static void rb_audioscrobbler_user_request_top_tracks (RBAudioscrobblerUser *user, int limit);
-static void rb_audioscrobbler_user_top_tracks_response_cb (SoupSession *session,
-                                                           SoupMessage *msg,
-                                                           gpointer user_data);
-static GPtrArray * rb_audioscrobbler_user_parse_top_tracks (RBAudioscrobblerUser *user,
-                                                            const char *data);
+static void load_cached_top_tracks (RBAudioscrobblerUser *user);
+static void request_top_tracks (RBAudioscrobblerUser *user, int limit);
+static void top_tracks_response_cb (SoupSession *session,
+                                    SoupMessage *msg,
+                                    gpointer user_data);
+static GPtrArray * parse_top_tracks (RBAudioscrobblerUser *user,
+                                     const char *data);
 
-static void rb_audioscrobbler_user_load_cached_loved_tracks (RBAudioscrobblerUser *user);
-static void rb_audioscrobbler_user_request_loved_tracks (RBAudioscrobblerUser *user, int limit);
-static void rb_audioscrobbler_user_loved_tracks_response_cb (SoupSession *session,
-                                                             SoupMessage *msg,
-                                                             gpointer user_data);
-static GPtrArray * rb_audioscrobbler_user_parse_loved_tracks (RBAudioscrobblerUser *user,
-                                                              const char *data);
+static void load_cached_loved_tracks (RBAudioscrobblerUser *user);
+static void request_loved_tracks (RBAudioscrobblerUser *user, int limit);
+static void loved_tracks_response_cb (SoupSession *session,
+                                      SoupMessage *msg,
+                                      gpointer user_data);
+static GPtrArray * parse_loved_tracks (RBAudioscrobblerUser *user,
+                                       const char *data);
 
-static void rb_audioscrobbler_user_load_cached_top_artists (RBAudioscrobblerUser *user);
-static void rb_audioscrobbler_user_request_top_artists (RBAudioscrobblerUser *user, int limit);
-static void rb_audioscrobbler_user_top_artists_response_cb (SoupSession *session,
-                                                            SoupMessage *msg,
-                                                            gpointer user_data);
-static GPtrArray * rb_audioscrobbler_user_parse_top_artists (RBAudioscrobblerUser *user,
-                                                             const char *data);
+static void load_cached_top_artists (RBAudioscrobblerUser *user);
+static void request_top_artists (RBAudioscrobblerUser *user, int limit);
+static void top_artists_response_cb (SoupSession *session,
+                                     SoupMessage *msg,
+                                     gpointer user_data);
+static GPtrArray * parse_top_artists (RBAudioscrobblerUser *user,
+                                      const char *data);
 
-static void rb_audioscrobbler_user_load_cached_recommended_artists (RBAudioscrobblerUser *user);
-static void rb_audioscrobbler_user_request_recommended_artists (RBAudioscrobblerUser *user, int limit);
-static void rb_audioscrobbler_user_recommended_artists_response_cb (SoupSession *session,
-                                                                    SoupMessage *msg,
-                                                                    gpointer user_data);
-static GPtrArray * rb_audioscrobbler_user_parse_recommended_artists (RBAudioscrobblerUser *user,
-                                                                     const char *data);
+static void load_cached_recommended_artists (RBAudioscrobblerUser *user);
+static void request_recommended_artists (RBAudioscrobblerUser *user, int limit);
+static void recommended_artists_response_cb (SoupSession *session,
+                                             SoupMessage *msg,
+                                             gpointer user_data);
+static GPtrArray * parse_recommended_artists (RBAudioscrobblerUser *user,
+                                              const char *data);
 
-static char * rb_audioscrobbler_user_calculate_cached_image_path (RBAudioscrobblerUser *user,
-                                                                  RBAudioscrobblerUserData *data);
-static void rb_audioscrobbler_user_download_image (RBAudioscrobblerUser *user,
-                                                   const char *image_url,
-                                                   RBAudioscrobblerUserData *data);
-static void rb_audioscrobbler_user_image_download_cb (GObject *source_object,
-                                                      GAsyncResult *res,
-                                                      gpointer user_data);
+static char * calculate_cached_image_path (RBAudioscrobblerUser *user,
+                                           RBAudioscrobblerUserData *data);
+static void download_image (RBAudioscrobblerUser *user,
+                            const char *image_url,
+                            RBAudioscrobblerUserData *data);
+static void image_download_cb (GObject *source_object,
+                               GAsyncResult *res,
+                               gpointer user_data);
 
-static void rb_audioscrobbler_user_love_track_response_cb (SoupSession *session,
-                                                           SoupMessage *msg,
-                                                           gpointer user_data);
-static void rb_audioscrobbler_user_ban_track_response_cb (SoupSession *session,
-                                                          SoupMessage *msg,
-                                                          gpointer user_data);
+static void love_track_response_cb (SoupSession *session,
+                                    SoupMessage *msg,
+                                    gpointer user_data);
+static void ban_track_response_cb (SoupSession *session,
+                                   SoupMessage *msg,
+                                   gpointer user_data);
 enum {
 	PROP_0,
 	PROP_SERVICE
@@ -469,24 +469,24 @@ rb_audioscrobbler_user_set_authentication_details (RBAudioscrobblerUser *user,
 	soup_session_abort (user->priv->soup_session);
 
 	/* load new user from cache (or set to NULL) */
-	rb_audioscrobbler_user_load_from_cache (user);
+	load_from_cache (user);
 }
 
 void
 rb_audioscrobbler_user_update (RBAudioscrobblerUser *user)
 {
 	if (user->priv->username != NULL) {
-		rb_audioscrobbler_user_request_user_info (user);
-		rb_audioscrobbler_user_request_recent_tracks (user, 15);
-		rb_audioscrobbler_user_request_top_tracks (user, 15);
-		rb_audioscrobbler_user_request_loved_tracks (user, 15);
-		rb_audioscrobbler_user_request_top_artists (user, 15);
-		rb_audioscrobbler_user_request_recommended_artists (user, 15);
+		request_user_info (user);
+		request_recent_tracks (user, 15);
+		request_top_tracks (user, 15);
+		request_loved_tracks (user, 15);
+		request_top_artists (user, 15);
+		request_recommended_artists (user, 15);
 	}
 }
 
 static void
-rb_audioscrobbler_user_load_from_cache (RBAudioscrobblerUser *user)
+load_from_cache (RBAudioscrobblerUser *user)
 {
 	/* delete old data */
 	if (user->priv->user_info != NULL) {
@@ -521,17 +521,17 @@ rb_audioscrobbler_user_load_from_cache (RBAudioscrobblerUser *user)
 
 	/* if a username is set then attempt to load cached data */
 	if (user->priv->username != NULL) {
-		rb_audioscrobbler_user_load_cached_user_info (user);
-		rb_audioscrobbler_user_load_cached_recent_tracks (user);
-		rb_audioscrobbler_user_load_cached_top_tracks (user);
-		rb_audioscrobbler_user_load_cached_loved_tracks (user);
-		rb_audioscrobbler_user_load_cached_top_artists (user);
-		rb_audioscrobbler_user_load_cached_recommended_artists (user);
+		load_cached_user_info (user);
+		load_cached_recent_tracks (user);
+		load_cached_top_tracks (user);
+		load_cached_loved_tracks (user);
+		load_cached_top_artists (user);
+		load_cached_recommended_artists (user);
 	}
 }
 
 static char *
-rb_audioscrobbler_user_calculate_cached_response_path (RBAudioscrobblerUser *user, const char *request_name)
+calculate_cached_response_path (RBAudioscrobblerUser *user, const char *request_name)
 {
 	const char *rb_cache_dir;
 	rb_cache_dir = rb_user_cache_dir ();
@@ -546,13 +546,13 @@ rb_audioscrobbler_user_calculate_cached_response_path (RBAudioscrobblerUser *use
 }
 
 static void
-rb_audioscrobbler_user_save_response_to_cache (RBAudioscrobblerUser *user, const char *request_name, const char *data)
+save_response_to_cache (RBAudioscrobblerUser *user, const char *request_name, const char *data)
 {
 	char *filename;
 	char *file_uri;
 	GError *error;
 
-	filename = rb_audioscrobbler_user_calculate_cached_response_path (user, request_name);
+	filename = calculate_cached_response_path (user, request_name);
 	file_uri = g_filename_to_uri (filename, NULL, NULL);
 
 	error = NULL;
@@ -573,12 +573,12 @@ rb_audioscrobbler_user_save_response_to_cache (RBAudioscrobblerUser *user, const
 
 /* user info */
 static void
-rb_audioscrobbler_user_load_cached_user_info (RBAudioscrobblerUser *user)
+load_cached_user_info (RBAudioscrobblerUser *user)
 {
 	char *filename;
 	char *data;
 
-	filename = rb_audioscrobbler_user_calculate_cached_response_path (user, "user_info");
+	filename = calculate_cached_response_path (user, "user_info");
 
 	/* delete old data */
 	if (user->priv->user_info != NULL) {
@@ -589,7 +589,7 @@ rb_audioscrobbler_user_load_cached_user_info (RBAudioscrobblerUser *user)
 	/* load cached data if it exists */
 	if (g_file_get_contents (filename, &data, NULL, NULL) == TRUE) {
 		rb_debug ("loading cached user_info");
-		user->priv->user_info = rb_audioscrobbler_user_parse_user_info (user, data);
+		user->priv->user_info = parse_user_info (user, data);
 	}
 
 	/* emit updated signal */
@@ -601,7 +601,7 @@ rb_audioscrobbler_user_load_cached_user_info (RBAudioscrobblerUser *user)
 }
 
 static void
-rb_audioscrobbler_user_request_user_info (RBAudioscrobblerUser *user)
+request_user_info (RBAudioscrobblerUser *user)
 {
 	char *msg_url;
 	SoupMessage *msg;
@@ -616,23 +616,23 @@ rb_audioscrobbler_user_request_user_info (RBAudioscrobblerUser *user)
 	msg = soup_message_new ("GET", msg_url);
 	soup_session_queue_message (user->priv->soup_session,
 	                            msg,
-	                            rb_audioscrobbler_user_user_info_response_cb,
+	                            user_info_response_cb,
 	                            user);
 
 	g_free (msg_url);
 }
 
 static void
-rb_audioscrobbler_user_user_info_response_cb (SoupSession *session,
-                                              SoupMessage *msg,
-                                              gpointer user_data)
+user_info_response_cb (SoupSession *session,
+                       SoupMessage *msg,
+                       gpointer user_data)
 {
 	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
 		RBAudioscrobblerUser *user;
 		RBAudioscrobblerUserData *user_info;
 
 		user = RB_AUDIOSCROBBLER_USER (user_data);
-		user_info = rb_audioscrobbler_user_parse_user_info (user, msg->response_body->data);
+		user_info = parse_user_info (user, msg->response_body->data);
 
 		if (user_info != NULL) {
 			rb_debug ("user info request was successful");
@@ -642,7 +642,7 @@ rb_audioscrobbler_user_user_info_response_cb (SoupSession *session,
 			}
 			user->priv->user_info = user_info;
 
-			rb_audioscrobbler_user_save_response_to_cache (user, "user_info", msg->response_body->data);
+			save_response_to_cache (user, "user_info", msg->response_body->data);
 
 			g_signal_emit (user, rb_audioscrobbler_user_signals[USER_INFO_UPDATED],
 			               0, user->priv->user_info);
@@ -655,7 +655,7 @@ rb_audioscrobbler_user_user_info_response_cb (SoupSession *session,
 }
 
 static RBAudioscrobblerUserData *
-rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user, const char *data)
+parse_user_info (RBAudioscrobblerUser *user, const char *data)
 {
 	RBAudioscrobblerUserData *user_info;
 	JsonParser *parser;
@@ -676,7 +676,7 @@ rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user, const char *
 		user_info->user_info.playcount = g_strdup (json_object_get_string_member (user_object, "playcount"));
 		user_info->url = g_strdup (json_object_get_string_member (user_object, "url"));
 
-		user_info->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, user_info),
+		user_info->image = gdk_pixbuf_new_from_file_at_size (calculate_cached_image_path (user, user_info),
 			                                             USER_PROFILE_IMAGE_SIZE, -1, NULL);
 		if (user_info->image == NULL && json_object_has_member (user_object, "image") == TRUE) {
 			JsonArray *image_array;
@@ -684,7 +684,7 @@ rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user, const char *
 
 			image_array = json_object_get_array_member (user_object, "image");
 			image_object = json_array_get_object_element (image_array, 2);
-			rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), user_info);
+			download_image (user, json_object_get_string_member (image_object, "#text"), user_info);
 		}
 	} else {
 		rb_debug ("error parsing user info response");
@@ -697,12 +697,12 @@ rb_audioscrobbler_user_parse_user_info (RBAudioscrobblerUser *user, const char *
 
 /* recent tracks */
 static void
-rb_audioscrobbler_user_load_cached_recent_tracks (RBAudioscrobblerUser *user)
+load_cached_recent_tracks (RBAudioscrobblerUser *user)
 {
 	char *filename;
 	char *data;
 
-	filename = rb_audioscrobbler_user_calculate_cached_response_path (user, "recent_tracks");
+	filename = calculate_cached_response_path (user, "recent_tracks");
 
 	/* delete old data */
 	if (user->priv->recent_tracks != NULL) {
@@ -713,7 +713,7 @@ rb_audioscrobbler_user_load_cached_recent_tracks (RBAudioscrobblerUser *user)
 	/* load cached data if it exists */
 	if (g_file_get_contents (filename, &data, NULL, NULL) == TRUE) {
 		rb_debug ("loading cached recent tracks");
-		user->priv->recent_tracks = rb_audioscrobbler_user_parse_recent_tracks (user, data);
+		user->priv->recent_tracks = parse_recent_tracks (user, data);
 	}
 
 	/* emit updated signal */
@@ -725,7 +725,7 @@ rb_audioscrobbler_user_load_cached_recent_tracks (RBAudioscrobblerUser *user)
 }
 
 static void
-rb_audioscrobbler_user_request_recent_tracks (RBAudioscrobblerUser *user, int limit)
+request_recent_tracks (RBAudioscrobblerUser *user, int limit)
 {
 	char *msg_url;
 	SoupMessage *msg;
@@ -741,23 +741,23 @@ rb_audioscrobbler_user_request_recent_tracks (RBAudioscrobblerUser *user, int li
 	msg = soup_message_new ("GET", msg_url);
 	soup_session_queue_message (user->priv->soup_session,
 	                            msg,
-	                            rb_audioscrobbler_user_recent_tracks_response_cb,
+	                            recent_tracks_response_cb,
 	                            user);
 
 	g_free (msg_url);
 }
 
 static void
-rb_audioscrobbler_user_recent_tracks_response_cb (SoupSession *session,
-                                              SoupMessage *msg,
-                                              gpointer user_data)
+recent_tracks_response_cb (SoupSession *session,
+                           SoupMessage *msg,
+                           gpointer user_data)
 {
 	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
 		RBAudioscrobblerUser *user;
 		GPtrArray *recent_tracks;
 
 		user = RB_AUDIOSCROBBLER_USER (user_data);
-		recent_tracks = rb_audioscrobbler_user_parse_recent_tracks (user, msg->response_body->data);
+		recent_tracks = parse_recent_tracks (user, msg->response_body->data);
 
 		if (recent_tracks != NULL) {
 			rb_debug ("recent tracks request was successful");
@@ -767,7 +767,7 @@ rb_audioscrobbler_user_recent_tracks_response_cb (SoupSession *session,
 			}
 			user->priv->recent_tracks = recent_tracks;
 
-			rb_audioscrobbler_user_save_response_to_cache (user, "recent_tracks", msg->response_body->data);
+			save_response_to_cache (user, "recent_tracks", msg->response_body->data);
 
 			g_signal_emit (user, rb_audioscrobbler_user_signals[RECENT_TRACKS_UPDATED],
 			               0, user->priv->recent_tracks);
@@ -780,7 +780,7 @@ rb_audioscrobbler_user_recent_tracks_response_cb (SoupSession *session,
 }
 
 static GPtrArray *
-rb_audioscrobbler_user_parse_recent_tracks (RBAudioscrobblerUser *user, const char *data)
+parse_recent_tracks (RBAudioscrobblerUser *user, const char *data)
 {
 	GPtrArray *recent_tracks;
 	JsonParser *parser;
@@ -818,7 +818,7 @@ rb_audioscrobbler_user_parse_recent_tracks (RBAudioscrobblerUser *user, const ch
 
 				g_ptr_array_add (recent_tracks, track);
 
-				track->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
+				track->image = gdk_pixbuf_new_from_file_at_size (calculate_cached_image_path (user, track),
 				                                                 LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
 				if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
 					JsonArray *image_array;
@@ -826,7 +826,7 @@ rb_audioscrobbler_user_parse_recent_tracks (RBAudioscrobblerUser *user, const ch
 
 					image_array = json_object_get_array_member (track_object, "image");
 					image_object = json_array_get_object_element (image_array, 0);
-					rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), track);
+					download_image (user, json_object_get_string_member (image_object, "#text"), track);
 				}
 			}
 		}
@@ -841,12 +841,12 @@ rb_audioscrobbler_user_parse_recent_tracks (RBAudioscrobblerUser *user, const ch
 
 /* top tracks */
 static void
-rb_audioscrobbler_user_load_cached_top_tracks (RBAudioscrobblerUser *user)
+load_cached_top_tracks (RBAudioscrobblerUser *user)
 {
 	char *filename;
 	char *data;
 
-	filename = rb_audioscrobbler_user_calculate_cached_response_path (user, "top_tracks");
+	filename = calculate_cached_response_path (user, "top_tracks");
 
 	/* delete old data */
 	if (user->priv->top_tracks != NULL) {
@@ -857,7 +857,7 @@ rb_audioscrobbler_user_load_cached_top_tracks (RBAudioscrobblerUser *user)
 	/* load cached data if it exists */
 	if (g_file_get_contents (filename, &data, NULL, NULL) == TRUE) {
 		rb_debug ("loading cached top tracks");
-		user->priv->top_tracks = rb_audioscrobbler_user_parse_top_tracks (user, data);
+		user->priv->top_tracks = parse_top_tracks (user, data);
 	}
 
 	/* emit updated signal */
@@ -869,7 +869,7 @@ rb_audioscrobbler_user_load_cached_top_tracks (RBAudioscrobblerUser *user)
 }
 
 static void
-rb_audioscrobbler_user_request_top_tracks (RBAudioscrobblerUser *user, int limit)
+request_top_tracks (RBAudioscrobblerUser *user, int limit)
 {
 	char *msg_url;
 	SoupMessage *msg;
@@ -885,23 +885,23 @@ rb_audioscrobbler_user_request_top_tracks (RBAudioscrobblerUser *user, int limit
 	msg = soup_message_new ("GET", msg_url);
 	soup_session_queue_message (user->priv->soup_session,
 	                            msg,
-	                            rb_audioscrobbler_user_top_tracks_response_cb,
+	                            top_tracks_response_cb,
 	                            user);
 
 	g_free (msg_url);
 }
 
 static void
-rb_audioscrobbler_user_top_tracks_response_cb (SoupSession *session,
-                                               SoupMessage *msg,
-                                               gpointer user_data)
+top_tracks_response_cb (SoupSession *session,
+                        SoupMessage *msg,
+                        gpointer user_data)
 {
 	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
 		RBAudioscrobblerUser *user;
 		GPtrArray *top_tracks;
 
 		user = RB_AUDIOSCROBBLER_USER (user_data);
-		top_tracks = rb_audioscrobbler_user_parse_top_tracks (user, msg->response_body->data);
+		top_tracks = parse_top_tracks (user, msg->response_body->data);
 
 		if (top_tracks != NULL) {
 			rb_debug ("top tracks request was successful");
@@ -911,7 +911,7 @@ rb_audioscrobbler_user_top_tracks_response_cb (SoupSession *session,
 			}
 			user->priv->top_tracks = top_tracks;
 
-			rb_audioscrobbler_user_save_response_to_cache (user, "top_tracks", msg->response_body->data);
+			save_response_to_cache (user, "top_tracks", msg->response_body->data);
 
 			g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_TRACKS_UPDATED],
 			               0, user->priv->top_tracks);
@@ -924,7 +924,7 @@ rb_audioscrobbler_user_top_tracks_response_cb (SoupSession *session,
 }
 
 static GPtrArray *
-rb_audioscrobbler_user_parse_top_tracks (RBAudioscrobblerUser *user, const char *data)
+parse_top_tracks (RBAudioscrobblerUser *user, const char *data)
 {
 	GPtrArray *top_tracks;
 	JsonParser *parser;
@@ -962,7 +962,7 @@ rb_audioscrobbler_user_parse_top_tracks (RBAudioscrobblerUser *user, const char 
 
 				g_ptr_array_add (top_tracks, track);
 
-				track->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
+				track->image = gdk_pixbuf_new_from_file_at_size (calculate_cached_image_path (user, track),
 				                                                 LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
 				if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
 					JsonArray *image_array;
@@ -970,7 +970,7 @@ rb_audioscrobbler_user_parse_top_tracks (RBAudioscrobblerUser *user, const char 
 
 					image_array = json_object_get_array_member (track_object, "image");
 					image_object = json_array_get_object_element (image_array, 0);
-					rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), track);
+					download_image (user, json_object_get_string_member (image_object, "#text"), track);
 				}
 			}
 		}
@@ -985,12 +985,12 @@ rb_audioscrobbler_user_parse_top_tracks (RBAudioscrobblerUser *user, const char 
 
 /* loved tracks */
 static void
-rb_audioscrobbler_user_load_cached_loved_tracks (RBAudioscrobblerUser *user)
+load_cached_loved_tracks (RBAudioscrobblerUser *user)
 {
 	char *filename;
 	char *data;
 
-	filename = rb_audioscrobbler_user_calculate_cached_response_path (user, "loved_tracks");
+	filename = calculate_cached_response_path (user, "loved_tracks");
 
 	/* delete old data */
 	if (user->priv->loved_tracks != NULL) {
@@ -1001,7 +1001,7 @@ rb_audioscrobbler_user_load_cached_loved_tracks (RBAudioscrobblerUser *user)
 	/* load cached data if it exists */
 	if (g_file_get_contents (filename, &data, NULL, NULL) == TRUE) {
 		rb_debug ("loading cached loved tracks");
-		user->priv->loved_tracks = rb_audioscrobbler_user_parse_loved_tracks (user, data);
+		user->priv->loved_tracks = parse_loved_tracks (user, data);
 	}
 
 	/* emit updated signal */
@@ -1013,7 +1013,7 @@ rb_audioscrobbler_user_load_cached_loved_tracks (RBAudioscrobblerUser *user)
 }
 
 static void
-rb_audioscrobbler_user_request_loved_tracks (RBAudioscrobblerUser *user, int limit)
+request_loved_tracks (RBAudioscrobblerUser *user, int limit)
 {
 	char *msg_url;
 	SoupMessage *msg;
@@ -1029,23 +1029,23 @@ rb_audioscrobbler_user_request_loved_tracks (RBAudioscrobblerUser *user, int lim
 	msg = soup_message_new ("GET", msg_url);
 	soup_session_queue_message (user->priv->soup_session,
 	                            msg,
-	                            rb_audioscrobbler_user_loved_tracks_response_cb,
+	                            loved_tracks_response_cb,
 	                            user);
 
 	g_free (msg_url);
 }
 
 static void
-rb_audioscrobbler_user_loved_tracks_response_cb (SoupSession *session,
-                                                 SoupMessage *msg,
-                                                 gpointer user_data)
+loved_tracks_response_cb (SoupSession *session,
+                          SoupMessage *msg,
+                          gpointer user_data)
 {
 	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
 		RBAudioscrobblerUser *user;
 		GPtrArray *loved_tracks;
 
 		user = RB_AUDIOSCROBBLER_USER (user_data);
-		loved_tracks = rb_audioscrobbler_user_parse_loved_tracks (user, msg->response_body->data);
+		loved_tracks = parse_loved_tracks (user, msg->response_body->data);
 
 		if (loved_tracks != NULL) {
 			rb_debug ("loved tracks request was successful");
@@ -1055,7 +1055,7 @@ rb_audioscrobbler_user_loved_tracks_response_cb (SoupSession *session,
 			}
 			user->priv->loved_tracks = loved_tracks;
 
-			rb_audioscrobbler_user_save_response_to_cache (user, "loved_tracks", msg->response_body->data);
+			save_response_to_cache (user, "loved_tracks", msg->response_body->data);
 
 			g_signal_emit (user, rb_audioscrobbler_user_signals[LOVED_TRACKS_UPDATED],
 			               0, user->priv->loved_tracks);
@@ -1068,7 +1068,7 @@ rb_audioscrobbler_user_loved_tracks_response_cb (SoupSession *session,
 }
 
 static GPtrArray *
-rb_audioscrobbler_user_parse_loved_tracks (RBAudioscrobblerUser *user, const char *data)
+parse_loved_tracks (RBAudioscrobblerUser *user, const char *data)
 {
 	GPtrArray *loved_tracks;
 	JsonParser *parser;
@@ -1106,7 +1106,7 @@ rb_audioscrobbler_user_parse_loved_tracks (RBAudioscrobblerUser *user, const cha
 
 				g_ptr_array_add (loved_tracks, track);
 
-				track->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, track),
+				track->image = gdk_pixbuf_new_from_file_at_size (calculate_cached_image_path (user, track),
 				                                                 LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
 				if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
 					JsonArray *image_array;
@@ -1114,7 +1114,7 @@ rb_audioscrobbler_user_parse_loved_tracks (RBAudioscrobblerUser *user, const cha
 
 					image_array = json_object_get_array_member (track_object, "image");
 					image_object = json_array_get_object_element (image_array, 0);
-					rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), track);
+					download_image (user, json_object_get_string_member (image_object, "#text"), track);
 				}
 			}
 		}
@@ -1129,12 +1129,12 @@ rb_audioscrobbler_user_parse_loved_tracks (RBAudioscrobblerUser *user, const cha
 
 /* top artists */
 static void
-rb_audioscrobbler_user_load_cached_top_artists (RBAudioscrobblerUser *user)
+load_cached_top_artists (RBAudioscrobblerUser *user)
 {
 	char *filename;
 	char *data;
 
-	filename = rb_audioscrobbler_user_calculate_cached_response_path (user, "top_artists");
+	filename = calculate_cached_response_path (user, "top_artists");
 
 	/* delete old data */
 	if (user->priv->top_artists != NULL) {
@@ -1145,7 +1145,7 @@ rb_audioscrobbler_user_load_cached_top_artists (RBAudioscrobblerUser *user)
 	/* load cached data if it exists */
 	if (g_file_get_contents (filename, &data, NULL, NULL) == TRUE) {
 		rb_debug ("loading cached top artists");
-		user->priv->top_artists = rb_audioscrobbler_user_parse_top_artists (user, data);
+		user->priv->top_artists = parse_top_artists (user, data);
 	}
 
 	/* emit updated signal */
@@ -1157,7 +1157,7 @@ rb_audioscrobbler_user_load_cached_top_artists (RBAudioscrobblerUser *user)
 }
 
 static void
-rb_audioscrobbler_user_request_top_artists (RBAudioscrobblerUser *user, int limit)
+request_top_artists (RBAudioscrobblerUser *user, int limit)
 {
 	char *msg_url;
 	SoupMessage *msg;
@@ -1173,23 +1173,23 @@ rb_audioscrobbler_user_request_top_artists (RBAudioscrobblerUser *user, int limi
 	msg = soup_message_new ("GET", msg_url);
 	soup_session_queue_message (user->priv->soup_session,
 	                            msg,
-	                            rb_audioscrobbler_user_top_artists_response_cb,
+	                            top_artists_response_cb,
 	                            user);
 
 	g_free (msg_url);
 }
 
 static void
-rb_audioscrobbler_user_top_artists_response_cb (SoupSession *session,
-                                                SoupMessage *msg,
-                                                gpointer user_data)
+top_artists_response_cb (SoupSession *session,
+                         SoupMessage *msg,
+                         gpointer user_data)
 {
 	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
 		RBAudioscrobblerUser *user;
 		GPtrArray *top_artists;
 
 		user = RB_AUDIOSCROBBLER_USER (user_data);
-		top_artists = rb_audioscrobbler_user_parse_top_artists (user, msg->response_body->data);
+		top_artists = parse_top_artists (user, msg->response_body->data);
 
 		if (top_artists != NULL) {
 			rb_debug ("top artists request was successful");
@@ -1199,7 +1199,7 @@ rb_audioscrobbler_user_top_artists_response_cb (SoupSession *session,
 			}
 			user->priv->top_artists = top_artists;
 
-			rb_audioscrobbler_user_save_response_to_cache (user, "top_artists", msg->response_body->data);
+			save_response_to_cache (user, "top_artists", msg->response_body->data);
 
 			g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_ARTISTS_UPDATED],
 			               0, user->priv->top_artists);
@@ -1212,7 +1212,7 @@ rb_audioscrobbler_user_top_artists_response_cb (SoupSession *session,
 }
 
 static GPtrArray *
-rb_audioscrobbler_user_parse_top_artists (RBAudioscrobblerUser *user, const char *data)
+parse_top_artists (RBAudioscrobblerUser *user, const char *data)
 {
 	GPtrArray *top_artists;
 	JsonParser *parser;
@@ -1247,7 +1247,7 @@ rb_audioscrobbler_user_parse_top_artists (RBAudioscrobblerUser *user, const char
 
 				g_ptr_array_add (top_artists, artist);
 
-				artist->image = gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, artist),
+				artist->image = gdk_pixbuf_new_from_file_at_size (calculate_cached_image_path (user, artist),
 				                                                  LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
 				if (artist->image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
 					JsonArray *image_array;
@@ -1255,7 +1255,7 @@ rb_audioscrobbler_user_parse_top_artists (RBAudioscrobblerUser *user, const char
 
 					image_array = json_object_get_array_member (artist_object, "image");
 					image_object = json_array_get_object_element (image_array, 0);
-					rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), artist);
+					download_image (user, json_object_get_string_member (image_object, "#text"), artist);
 				}
 			}
 		}
@@ -1270,12 +1270,12 @@ rb_audioscrobbler_user_parse_top_artists (RBAudioscrobblerUser *user, const char
 
 /* recommended artists */
 static void
-rb_audioscrobbler_user_load_cached_recommended_artists (RBAudioscrobblerUser *user)
+load_cached_recommended_artists (RBAudioscrobblerUser *user)
 {
 	char *filename;
 	char *data;
 
-	filename = rb_audioscrobbler_user_calculate_cached_response_path (user, "recommended_artists");
+	filename = calculate_cached_response_path (user, "recommended_artists");
 
 	/* delete old data */
 	if (user->priv->recommended_artists != NULL) {
@@ -1286,7 +1286,7 @@ rb_audioscrobbler_user_load_cached_recommended_artists (RBAudioscrobblerUser *us
 	/* load cached data if it exists */
 	if (g_file_get_contents (filename, &data, NULL, NULL) == TRUE) {
 		rb_debug ("loading cached recommended artists");
-		user->priv->recommended_artists = rb_audioscrobbler_user_parse_recommended_artists (user, data);
+		user->priv->recommended_artists = parse_recommended_artists (user, data);
 	}
 
 	/* emit updated signal */
@@ -1298,7 +1298,7 @@ rb_audioscrobbler_user_load_cached_recommended_artists (RBAudioscrobblerUser *us
 }
 
 static void
-rb_audioscrobbler_user_request_recommended_artists (RBAudioscrobblerUser *user, int limit)
+request_recommended_artists (RBAudioscrobblerUser *user, int limit)
 {
 	char *sig_arg;
 	char *sig;
@@ -1324,7 +1324,7 @@ rb_audioscrobbler_user_request_recommended_artists (RBAudioscrobblerUser *user, 
 	msg = soup_message_new ("GET", msg_url);
 	soup_session_queue_message (user->priv->soup_session,
 	                            msg,
-	                            rb_audioscrobbler_user_recommended_artists_response_cb,
+	                            recommended_artists_response_cb,
 	                            user);
 
 	g_free (sig_arg);
@@ -1333,16 +1333,16 @@ rb_audioscrobbler_user_request_recommended_artists (RBAudioscrobblerUser *user, 
 }
 
 static void
-rb_audioscrobbler_user_recommended_artists_response_cb (SoupSession *session,
-                                                        SoupMessage *msg,
-                                                        gpointer user_data)
+recommended_artists_response_cb (SoupSession *session,
+                                 SoupMessage *msg,
+                                 gpointer user_data)
 {
 	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
 		RBAudioscrobblerUser *user;
 		GPtrArray *recommended_artists;
 
 		user = RB_AUDIOSCROBBLER_USER (user_data);
-		recommended_artists = rb_audioscrobbler_user_parse_recommended_artists (user, msg->response_body->data);
+		recommended_artists = parse_recommended_artists (user, msg->response_body->data);
 
 		if (recommended_artists != NULL) {
 			rb_debug ("recommended artists request was successful");
@@ -1352,7 +1352,7 @@ rb_audioscrobbler_user_recommended_artists_response_cb (SoupSession *session,
 			}
 			user->priv->recommended_artists = recommended_artists;
 
-			rb_audioscrobbler_user_save_response_to_cache (user, "recommended_artists", msg->response_body->data);
+			save_response_to_cache (user, "recommended_artists", msg->response_body->data);
 
 			g_signal_emit (user, rb_audioscrobbler_user_signals[RECOMMENDED_ARTISTS_UPDATED],
 			               0, user->priv->recommended_artists);
@@ -1365,7 +1365,7 @@ rb_audioscrobbler_user_recommended_artists_response_cb (SoupSession *session,
 }
 
 static GPtrArray *
-rb_audioscrobbler_user_parse_recommended_artists (RBAudioscrobblerUser *user, const char *data)
+parse_recommended_artists (RBAudioscrobblerUser *user, const char *data)
 {
 	GPtrArray *recommended_artists;
 	JsonParser *parser;
@@ -1407,7 +1407,7 @@ rb_audioscrobbler_user_parse_recommended_artists (RBAudioscrobblerUser *user, co
 					g_ptr_array_add (recommended_artists, artist);
 
 					artist->image =
-						gdk_pixbuf_new_from_file_at_size (rb_audioscrobbler_user_calculate_cached_image_path (user, artist),
+						gdk_pixbuf_new_from_file_at_size (calculate_cached_image_path (user, artist),
 						                                  LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
 					if (artist->image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
 						JsonArray *image_array;
@@ -1415,7 +1415,7 @@ rb_audioscrobbler_user_parse_recommended_artists (RBAudioscrobblerUser *user, co
 
 						image_array = json_object_get_array_member (artist_object, "image");
 						image_object = json_array_get_object_element (image_array, 0);
-						rb_audioscrobbler_user_download_image (user, json_object_get_string_member (image_object, "#text"), artist);
+						download_image (user, json_object_get_string_member (image_object, "#text"), artist);
 					}
 				}
 			}
@@ -1430,7 +1430,7 @@ rb_audioscrobbler_user_parse_recommended_artists (RBAudioscrobblerUser *user, co
 }
 
 static char *
-rb_audioscrobbler_user_calculate_cached_image_path (RBAudioscrobblerUser *user, RBAudioscrobblerUserData *data)
+calculate_cached_image_path (RBAudioscrobblerUser *user, RBAudioscrobblerUserData *data)
 {
 	const char *rb_cache_dir;
 	char *cache_dir;
@@ -1471,7 +1471,7 @@ rb_audioscrobbler_user_calculate_cached_image_path (RBAudioscrobblerUser *user, 
 }
 
 static void
-rb_audioscrobbler_user_download_image (RBAudioscrobblerUser *user, const char *image_url, RBAudioscrobblerUserData *data)
+download_image (RBAudioscrobblerUser *user, const char *image_url, RBAudioscrobblerUserData *data)
 {
 	GFile *src_file;
 
@@ -1489,7 +1489,7 @@ rb_audioscrobbler_user_download_image (RBAudioscrobblerUser *user, const char *i
 		GError *error;
 
 		/* ensure the dest dir exists */
-		dest_filename = rb_audioscrobbler_user_calculate_cached_image_path (user, data);
+		dest_filename = calculate_cached_image_path (user, data);
 		dest_file_uri = g_filename_to_uri (dest_filename, NULL, NULL);
 		error = NULL;
 		rb_uri_create_parent_dirs (dest_file_uri, &error);
@@ -1515,7 +1515,7 @@ rb_audioscrobbler_user_download_image (RBAudioscrobblerUser *user, const char *i
 				           cancellable,
 				           NULL,
 				           NULL,
-				           rb_audioscrobbler_user_image_download_cb,
+				           image_download_cb,
 				           user);
 
 			g_object_unref (dest_file);
@@ -1530,7 +1530,7 @@ rb_audioscrobbler_user_download_image (RBAudioscrobblerUser *user, const char *i
 }
 
 static void
-rb_audioscrobbler_user_image_download_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
+image_download_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
 	GFile *src_file = G_FILE (source_object);
 
@@ -1551,7 +1551,7 @@ rb_audioscrobbler_user_image_download_cb (GObject *source_object, GAsyncResult *
 		data = g_hash_table_lookup (user->priv->file_to_data_map, src_file);
 		g_hash_table_remove (user->priv->file_to_data_map, src_file);
 
-		dest_file_path = rb_audioscrobbler_user_calculate_cached_image_path (user, data);
+		dest_file_path = calculate_cached_image_path (user, data);
 		if (data->image != NULL) {
 			g_object_unref (data->image);
 		}
@@ -1658,7 +1658,7 @@ rb_audioscrobbler_user_love_track (RBAudioscrobblerUser *user,
 	                          strlen (request));
 	soup_session_queue_message (user->priv->soup_session,
 	                            msg,
-	                            rb_audioscrobbler_user_love_track_response_cb,
+	                            love_track_response_cb,
 	                            user);
 
 	g_free (sig_arg);
@@ -1669,9 +1669,9 @@ rb_audioscrobbler_user_love_track (RBAudioscrobblerUser *user,
 }
 
 static void
-rb_audioscrobbler_user_love_track_response_cb (SoupSession *session,
-                                               SoupMessage *msg,
-                                               gpointer user_data)
+love_track_response_cb (SoupSession *session,
+                        SoupMessage *msg,
+                        gpointer user_data)
 {
 	/* Don't know if there's anything to do here,
 	 * might want a debug message indicating success or failure?
@@ -1719,7 +1719,7 @@ rb_audioscrobbler_user_ban_track (RBAudioscrobblerUser *user,
 	                          strlen (request));
 	soup_session_queue_message (user->priv->soup_session,
 	                            msg,
-	                            rb_audioscrobbler_user_ban_track_response_cb,
+	                            ban_track_response_cb,
 	                            user);
 
 	g_free (sig_arg);
@@ -1730,9 +1730,9 @@ rb_audioscrobbler_user_ban_track (RBAudioscrobblerUser *user,
 }
 
 static void
-rb_audioscrobbler_user_ban_track_response_cb (SoupSession *session,
-                                              SoupMessage *msg,
-                                              gpointer user_data)
+ban_track_response_cb (SoupSession *session,
+                       SoupMessage *msg,
+                       gpointer user_data)
 {
 	/* Don't know if there's anything to do here,
 	 * might want a debug message indicating success or failure?

@@ -81,19 +81,19 @@ static void	     rb_audioscrobbler_account_set_property (GObject *object,
                                                              GParamSpec *pspec);
 
 /* load/save session to file to avoid having to reauthenticate */
-static void          rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *account);
-static void          rb_audioscrobbler_account_save_session_settings (RBAudioscrobblerAccount *account);
+static void          load_session_settings (RBAudioscrobblerAccount *account);
+static void          save_session_settings (RBAudioscrobblerAccount *account);
 
 /* private functions used in authentication process */
-static void          rb_audioscrobbler_account_cancel_session (RBAudioscrobblerAccount *account);
-static void          rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account);
-static void          rb_audioscrobbler_account_got_token_cb (SoupSession *session,
-                                                             SoupMessage *msg,
-                                                             gpointer user_data);
-static gboolean      rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data);
-static void          rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
-                                                                   SoupMessage *msg,
-                                                                   gpointer user_data);
+static void          cancel_session (RBAudioscrobblerAccount *account);
+static void          request_token (RBAudioscrobblerAccount *account);
+static void          got_token_cb (SoupSession *session,
+                                   SoupMessage *msg,
+                                   gpointer user_data);
+static gboolean      request_session_key_timeout_cb (gpointer user_data);
+static void          got_session_key_cb (SoupSession *session,
+                                         SoupMessage *msg,
+                                         gpointer user_data);
 enum
 {
 	PROP_0,
@@ -208,7 +208,7 @@ rb_audioscrobbler_account_constructed (GObject *object)
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_account_parent_class, constructed, object);
 	account = RB_AUDIOSCROBBLER_ACCOUNT (object);
 
-	rb_audioscrobbler_account_load_session_settings (account);
+	load_session_settings (account);
 }
 
 static void
@@ -307,7 +307,7 @@ rb_audioscrobbler_account_get_login_status (RBAudioscrobblerAccount *account)
 }
 
 static void
-rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *account)
+load_session_settings (RBAudioscrobblerAccount *account)
 {
 	/* Attempt to load the saved session */
 	const char *rb_data_dir;
@@ -359,7 +359,7 @@ rb_audioscrobbler_account_load_session_settings (RBAudioscrobblerAccount *accoun
 }
 
 static void
-rb_audioscrobbler_account_save_session_settings (RBAudioscrobblerAccount *account)
+save_session_settings (RBAudioscrobblerAccount *account)
 {
 	/* Save the current session */
 	const char *rb_data_dir;
@@ -425,14 +425,14 @@ rb_audioscrobbler_account_authenticate (RBAudioscrobblerAccount *account)
 	}
 
 	/* request an authentication token */
-	rb_audioscrobbler_account_request_token (account);
+	request_token (account);
 }
 
 void
 rb_audioscrobbler_account_logout (RBAudioscrobblerAccount *account)
 {
-	rb_audioscrobbler_account_cancel_session (account);
-	rb_audioscrobbler_account_save_session_settings (account);
+	cancel_session (account);
+	save_session_settings (account);
 
 	account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_OUT;
 	g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
@@ -447,8 +447,8 @@ rb_audioscrobbler_account_notify_of_auth_error (RBAudioscrobblerAccount *account
 	 * radio, etc) to notify us when there is an authentication error
 	 */
 
-	rb_audioscrobbler_account_cancel_session (account);
-	rb_audioscrobbler_account_save_session_settings (account);
+	cancel_session (account);
+	save_session_settings (account);
 
 	account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_AUTH_ERROR;
 	g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
@@ -456,7 +456,7 @@ rb_audioscrobbler_account_notify_of_auth_error (RBAudioscrobblerAccount *account
 }
 
 static void
-rb_audioscrobbler_account_cancel_session (RBAudioscrobblerAccount *account)
+cancel_session (RBAudioscrobblerAccount *account)
 {
 	/* cancels the current session, freeing the username,
 	 * session key, auth token. removing timeout callbacks etc.
@@ -479,7 +479,7 @@ rb_audioscrobbler_account_cancel_session (RBAudioscrobblerAccount *account)
 }
 
 static void
-rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account)
+request_token (RBAudioscrobblerAccount *account)
 {
 	/* requests an authentication token
 	 * first stage of the authentication process
@@ -521,7 +521,7 @@ rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account)
 	rb_debug ("requesting authorisation token");
 	soup_session_queue_message (account->priv->soup_session,
 			            msg,
-			            rb_audioscrobbler_account_got_token_cb,
+			            got_token_cb,
 			            account);
 
 	/* update status */
@@ -538,9 +538,7 @@ rb_audioscrobbler_account_request_token (RBAudioscrobblerAccount *account)
 }
 
 static void
-rb_audioscrobbler_account_got_token_cb (SoupSession *session,
-                                        SoupMessage *msg,
-                                        gpointer user_data)
+got_token_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
 {
 	/* parses the authentication token from the response
 	 */
@@ -577,7 +575,7 @@ rb_audioscrobbler_account_got_token_cb (SoupSession *session,
 		/* add timeout which will ask for session key */
 		account->priv->session_key_timeout_id =
 			g_timeout_add_seconds (SESSION_KEY_REQUEST_TIMEOUT,
-			                       rb_audioscrobbler_account_request_session_key_timeout_cb,
+			                       request_session_key_timeout_cb,
 			                       account);
 
 		g_strfreev (pre_split);
@@ -589,7 +587,7 @@ rb_audioscrobbler_account_got_token_cb (SoupSession *session,
 		/* failed. report connection error */
 		rb_debug ("connection error attempting to retrieve auth token");
 
-		rb_audioscrobbler_account_cancel_session (account);
+		cancel_session (account);
 
 		account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_CONNECTION_ERROR;
 		g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
@@ -598,7 +596,7 @@ rb_audioscrobbler_account_got_token_cb (SoupSession *session,
 }
 
 static gboolean
-rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data)
+request_session_key_timeout_cb (gpointer user_data)
 {
 	/* Periodically sends a request for the session key */
 	RBAudioscrobblerAccount *account;
@@ -638,7 +636,7 @@ rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data)
 	rb_debug ("requesting session key");
 	soup_session_queue_message (account->priv->soup_session,
 	                            msg,
-	                            rb_audioscrobbler_account_got_session_key_cb,
+	                            got_session_key_cb,
 	                            account);
 
 	g_free (api_url);
@@ -652,9 +650,7 @@ rb_audioscrobbler_account_request_session_key_timeout_cb (gpointer user_data)
 }
 
 static void
-rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
-                                              SoupMessage *msg,
-                                              gpointer user_data)
+got_session_key_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
 {
 	/* parses the session details from the response.
 	 * if successful then authentication is complete.
@@ -672,7 +668,7 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
 		char **post_split;
 
 		/* cancel the old session (and remove timeout) */
-		rb_audioscrobbler_account_cancel_session (account);
+		cancel_session (account);
 
 		/* parse the username */
 		pre_split = g_strsplit (msg->response_body->data, "<name>", -1);
@@ -692,7 +688,7 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
 		rb_debug ("granted session key \"%s\" for user \"%s",
 		          account->priv->session_key,
 		          account->priv->username);
-		rb_audioscrobbler_account_save_session_settings (account);
+		save_session_settings (account);
 
 		/* update status */
 		account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN;
@@ -726,7 +722,7 @@ rb_audioscrobbler_account_got_session_key_cb (SoupSession *session,
 		/* connection error */
 		rb_debug ("connection error attempting to retrieve session key");
 
-		rb_audioscrobbler_account_cancel_session (account);
+		cancel_session (account);
 
 		account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_CONNECTION_ERROR;
 		g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],

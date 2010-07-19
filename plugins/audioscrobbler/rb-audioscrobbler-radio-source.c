@@ -165,29 +165,29 @@ static void rb_audioscrobbler_radio_source_set_property (GObject *object,
                                                          const GValue *value,
                                                          GParamSpec *pspec);
 
-static void rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
-                                                                    RhythmDBEntry *entry,
-                                                                    RBAudioscrobblerRadioSource *source);
+static void playing_song_changed_cb (RBShellPlayer *player,
+                                     RhythmDBEntry *entry,
+                                     RBAudioscrobblerRadioSource *source);
 
 /* last.fm api requests */
-static void rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source);
-static void rb_audioscrobbler_radio_source_tune_response_cb (SoupSession *session,
-                                                             SoupMessage *msg,
-                                                             gpointer user_data);
-static void rb_audioscrobbler_radio_source_fetch_playlist (RBAudioscrobblerRadioSource *source);
-static void rb_audioscrobbler_radio_source_fetch_playlist_response_cb (SoupSession *session,
-                                                                       SoupMessage *msg,
-                                                                       gpointer user_data);
-static void rb_audioscrobbler_radio_source_xspf_entry_parsed (TotemPlParser *parser,
-                                                              const char *uri,
-                                                              GHashTable *metadata,
-                                                              RBAudioscrobblerRadioSource *source);
+static void tune (RBAudioscrobblerRadioSource *source);
+static void tune_response_cb (SoupSession *session,
+                              SoupMessage *msg,
+                              gpointer user_data);
+static void fetch_playlist (RBAudioscrobblerRadioSource *source);
+static void fetch_playlist_response_cb (SoupSession *session,
+                                        SoupMessage *msg,
+                                        gpointer user_data);
+static void xspf_entry_parsed (TotemPlParser *parser,
+                               const char *uri,
+                               GHashTable *metadata,
+                               RBAudioscrobblerRadioSource *source);
 
 /* action callbacks */
-static void rb_audioscrobbler_radio_source_rename_station_action_cb (GtkAction *action,
-                                                                     RBAudioscrobblerRadioSource *source);
-static void rb_audioscrobbler_radio_source_delete_station_action_cb (GtkAction *action,
-                                                                     RBAudioscrobblerRadioSource *source);
+static void rename_station_action_cb (GtkAction *action,
+                                      RBAudioscrobblerRadioSource *source);
+static void delete_station_action_cb (GtkAction *action,
+                                      RBAudioscrobblerRadioSource *source);
 
 /* cover art */
 static GValue *coverart_uri_request (RhythmDB *db,
@@ -224,10 +224,10 @@ static GtkActionEntry rb_audioscrobbler_radio_source_actions [] =
 {
 	{ "AudioscrobblerRadioRenameStation", NULL, N_("_Rename Station"), NULL,
 	  N_("Rename station"),
-	  G_CALLBACK (rb_audioscrobbler_radio_source_rename_station_action_cb) },
+	  G_CALLBACK (rename_station_action_cb) },
 	{ "AudioscrobblerRadioDeleteStation", GTK_STOCK_DELETE, N_("_Delete Station"), NULL,
 	  N_("Delete station"),
-	  G_CALLBACK (rb_audioscrobbler_radio_source_delete_station_action_cb) }
+	  G_CALLBACK (delete_station_action_cb) }
 };
 
 G_DEFINE_TYPE (RBAudioscrobblerRadioSource, rb_audioscrobbler_radio_source, RB_TYPE_STREAMING_SOURCE)
@@ -413,7 +413,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	/* signals */
 	g_signal_connect_object (rb_shell_get_player (shell),
 				 "playing-song-changed",
-				 G_CALLBACK (rb_audioscrobbler_radio_source_playing_song_changed_cb),
+				 G_CALLBACK (playing_song_changed_cb),
 				 source, 0);
 	g_signal_connect_object (db,
 				 "entry-extra-metadata-request::" RHYTHMDB_PROP_COVER_ART_URI,
@@ -531,9 +531,9 @@ rb_audioscrobbler_radio_source_set_property (GObject *object,
 }
 
 static void
-rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
-                                                        RhythmDBEntry *entry,
-                                                        RBAudioscrobblerRadioSource *source)
+playing_song_changed_cb (RBShellPlayer *player,
+                         RhythmDBEntry *entry,
+                         RBAudioscrobblerRadioSource *source)
 {
 	RhythmDB *db;
 	GtkTreeIter playing_iter;
@@ -591,8 +591,8 @@ rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
 
 		/* request more if needed */
 		if (entries_after_playing <= 2) {
-			rb_audioscrobbler_radio_source_tune (source);
-			rb_audioscrobbler_radio_source_fetch_playlist (source);
+			tune (source);
+			fetch_playlist (source);
 		}
 
 		/* emit cover art notification */
@@ -605,7 +605,7 @@ rb_audioscrobbler_radio_source_playing_song_changed_cb (RBShellPlayer *player,
 }
 
 static void
-rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source)
+tune (RBAudioscrobblerRadioSource *source)
 {
 	char *sig_arg;
 	char *sig;
@@ -642,7 +642,7 @@ rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source)
 	                          strlen (request));
 	soup_session_queue_message (source->priv->soup_session,
 	                            msg,
-	                            rb_audioscrobbler_radio_source_tune_response_cb,
+	                            tune_response_cb,
 	                            source);
 
 	g_free (escaped_station_url);
@@ -653,9 +653,9 @@ rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source)
 }
 
 static void
-rb_audioscrobbler_radio_source_tune_response_cb (SoupSession *session,
-                                                 SoupMessage *msg,
-                                                 gpointer user_data)
+tune_response_cb (SoupSession *session,
+                  SoupMessage *msg,
+                  gpointer user_data)
 {
 	RBAudioscrobblerRadioSource *source;
 	JsonParser *parser;
@@ -721,7 +721,7 @@ rb_audioscrobbler_radio_source_tune_response_cb (SoupSession *session,
 }
 
 static void
-rb_audioscrobbler_radio_source_fetch_playlist (RBAudioscrobblerRadioSource *source)
+fetch_playlist (RBAudioscrobblerRadioSource *source)
 {
 	char *sig_arg;
 	char *sig;
@@ -755,7 +755,7 @@ rb_audioscrobbler_radio_source_fetch_playlist (RBAudioscrobblerRadioSource *sour
 	                          strlen (request));
 	soup_session_queue_message (source->priv->soup_session,
 	                            msg,
-	                            rb_audioscrobbler_radio_source_fetch_playlist_response_cb,
+	                            fetch_playlist_response_cb,
 	                            source);
 
 	/* keep pointer to message so it can be cancelled if need be */
@@ -767,9 +767,9 @@ rb_audioscrobbler_radio_source_fetch_playlist (RBAudioscrobblerRadioSource *sour
 }
 
 static void
-rb_audioscrobbler_radio_source_fetch_playlist_response_cb (SoupSession *session,
-                                                           SoupMessage *msg,
-                                                           gpointer user_data)
+fetch_playlist_response_cb (SoupSession *session,
+                            SoupMessage *msg,
+                            gpointer user_data)
 {
 	RBAudioscrobblerRadioSource *source;
 	int tmp_fd;
@@ -819,7 +819,7 @@ rb_audioscrobbler_radio_source_fetch_playlist_response_cb (SoupSession *session,
 
 	parser = totem_pl_parser_new ();
 	g_signal_connect_data (parser, "entry-parsed",
-	                       G_CALLBACK (rb_audioscrobbler_radio_source_xspf_entry_parsed),
+	                       G_CALLBACK (xspf_entry_parsed),
 	                       source, NULL, 0);
 	result = totem_pl_parser_parse (parser, tmp_uri, FALSE);
 
@@ -853,10 +853,10 @@ rb_audioscrobbler_radio_source_fetch_playlist_response_cb (SoupSession *session,
 }
 
 static void
-rb_audioscrobbler_radio_source_xspf_entry_parsed (TotemPlParser *parser,
-                                                  const char *uri,
-                                                  GHashTable *metadata,
-                                                  RBAudioscrobblerRadioSource *source)
+xspf_entry_parsed (TotemPlParser *parser,
+                   const char *uri,
+                   GHashTable *metadata,
+                   RBAudioscrobblerRadioSource *source)
 {
 	RBShell *shell;
 	RhythmDBEntryType entry_type;
@@ -938,8 +938,7 @@ rb_audioscrobbler_radio_source_xspf_entry_parsed (TotemPlParser *parser,
 }
 
 static void
-rb_audioscrobbler_radio_source_rename_station_action_cb (GtkAction *action,
-                                                         RBAudioscrobblerRadioSource *source)
+rename_station_action_cb (GtkAction *action, RBAudioscrobblerRadioSource *source)
 {
 	RBShell *shell;
 	RBSourceList *sourcelist;
@@ -954,8 +953,7 @@ rb_audioscrobbler_radio_source_rename_station_action_cb (GtkAction *action,
 }
 
 static void
-rb_audioscrobbler_radio_source_delete_station_action_cb (GtkAction *action,
-                                                         RBAudioscrobblerRadioSource *source)
+delete_station_action_cb (GtkAction *action, RBAudioscrobblerRadioSource *source)
 {
 	rb_audioscrobbler_profile_source_remove_radio_station (source->priv->parent, RB_SOURCE (source));
 }
@@ -982,7 +980,9 @@ get_image_url_for_entry (RBAudioscrobblerRadioSource *source, RhythmDBEntry *ent
 }
 
 static GValue *
-coverart_uri_request (RhythmDB *db, RhythmDBEntry *entry, RBAudioscrobblerRadioSource *source)
+coverart_uri_request (RhythmDB *db,
+                      RhythmDBEntry *entry,
+                      RBAudioscrobblerRadioSource *source)
 {
 	const char *image_url;
 
@@ -1000,7 +1000,10 @@ coverart_uri_request (RhythmDB *db, RhythmDBEntry *entry, RBAudioscrobblerRadioS
 }
 
 static void
-extra_metadata_gather_cb (RhythmDB *db, RhythmDBEntry *entry, RBStringValueMap *map, RBAudioscrobblerRadioSource *source)
+extra_metadata_gather_cb (RhythmDB *db,
+                          RhythmDBEntry *entry,
+                          RBStringValueMap *map,
+                          RBAudioscrobblerRadioSource *source)
 {
 	const char *image_url;
 
@@ -1055,8 +1058,8 @@ impl_activate (RBSource *asource)
 
 	/* if the query model is empty then attempt to add some tracks to it */
 	if (rhythmdb_query_model_get_duration (source->priv->track_model) == 0) {
-		rb_audioscrobbler_radio_source_tune (source);
-		rb_audioscrobbler_radio_source_fetch_playlist (source);
+		tune (source);
+		fetch_playlist (source);
 	}
 }
 

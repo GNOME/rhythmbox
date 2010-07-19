@@ -75,7 +75,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="relief">half</property>
-                            <signal name="clicked" handler="rb_audioscrobbler_profile_source_logout_button_clicked_cb"/>
+                            <signal name="clicked" handler="logout_button_clicked_cb"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -143,7 +143,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="rb_audioscrobbler_profile_source_scrobbling_enabled_check_toggled_cb"/>
+                            <signal name="toggled" handler="scrobbling_enabled_check_toggled_cb"/>
                           </object>
                         </child>
                       </object>
@@ -384,7 +384,7 @@
                         <property name="can_default">True</property>
                         <property name="has_default">True</property>
                         <property name="receives_default">True</property>
-                        <signal name="clicked" handler="rb_audioscrobbler_profile_source_station_creator_button_clicked_cb"/>
+                        <signal name="clicked" handler="station_creator_button_clicked_cb"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -441,7 +441,7 @@
                     <property name="visible">True</property>
                     <property name="width">0</property>
                     <property name="height">0</property>
-                    <signal name="size_allocate" handler="rb_audioscrobbler_profile_source_list_layout_size_allocate_cb"/>
+                    <signal name="size_allocate" handler="list_layout_size_allocate_cb"/>
                     <child>
                       <object class="GtkTable" id="recent_tracks_table">
                         <property name="visible">True</property>
@@ -522,7 +522,7 @@
                     <property name="visible">True</property>
                     <property name="width">0</property>
                     <property name="height">0</property>
-                    <signal name="size_allocate" handler="rb_audioscrobbler_profile_source_list_layout_size_allocate_cb"/>
+                    <signal name="size_allocate" handler="list_layout_size_allocate_cb"/>
                     <child>
                       <object class="GtkTable" id="top_artists_table">
                         <property name="visible">True</property>
@@ -603,7 +603,7 @@
                     <property name="visible">True</property>
                     <property name="width">0</property>
                     <property name="height">0</property>
-                    <signal name="size_allocate" handler="rb_audioscrobbler_profile_source_list_layout_size_allocate_cb"/>
+                    <signal name="size_allocate" handler="list_layout_size_allocate_cb"/>
                     <child>
                       <object class="GtkTable" id="recommended_artists_table">
                         <property name="visible">True</property>
@@ -684,7 +684,7 @@
                     <property name="visible">True</property>
                     <property name="width">0</property>
                     <property name="height">0</property>
-                    <signal name="size_allocate" handler="rb_audioscrobbler_profile_source_list_layout_size_allocate_cb"/>
+                    <signal name="size_allocate" handler="list_layout_size_allocate_cb"/>
                     <child>
                       <object class="GtkTable" id="top_tracks_table">
                         <property name="visible">True</property>
@@ -765,7 +765,7 @@
                     <property name="visible">True</property>
                     <property name="width">0</property>
                     <property name="height">0</property>
-                    <signal name="size_allocate" handler="rb_audioscrobbler_profile_source_list_layout_size_allocate_cb"/>
+                    <signal name="size_allocate" handler="list_layout_size_allocate_cb"/>
                     <child>
                       <object class="GtkTable" id="loved_tracks_table">
                         <property name="visible">True</property>
