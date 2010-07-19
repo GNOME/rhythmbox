@@ -622,9 +622,7 @@ rb_audioscrobbler_radio_source_tune (RBAudioscrobblerRadioSource *source)
 
 	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 
-	escaped_station_url = g_uri_escape_string (source->priv->station_url,
-	                                   NULL,
-	                                   FALSE);
+	escaped_station_url = g_uri_escape_string (source->priv->station_url, NULL, FALSE);
 
 	request = g_strdup_printf ("method=radio.tune&station=%s&api_key=%s&api_sig=%s&sk=%s",
 	                           escaped_station_url,

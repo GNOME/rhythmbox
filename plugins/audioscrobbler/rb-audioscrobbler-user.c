@@ -1624,6 +1624,8 @@ rb_audioscrobbler_user_love_track (RBAudioscrobblerUser *user,
 {
 	char *sig_arg;
 	char *sig;
+	char *escaped_title;
+	char *escaped_artist;
 	char *request;
 	SoupMessage *msg;
 
@@ -1638,9 +1640,12 @@ rb_audioscrobbler_user_love_track (RBAudioscrobblerUser *user,
 
 	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 
+	escaped_title = g_uri_escape_string (title, NULL, FALSE);
+	escaped_artist = g_uri_escape_string (artist, NULL, FALSE);
+
 	request = g_strdup_printf ("method=track.love&track=%s&artist=%s&api_key=%s&api_sig=%s&sk=%s",
-	                           title,
-	                           artist,
+	                           escaped_title,
+	                           escaped_artist,
 	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
 	                           sig,
 	                           user->priv->session_key);
@@ -1658,6 +1663,8 @@ rb_audioscrobbler_user_love_track (RBAudioscrobblerUser *user,
 
 	g_free (sig_arg);
 	g_free (sig);
+	g_free (escaped_title);
+	g_free (escaped_artist);
 	g_free (request);
 }
 
@@ -1678,6 +1685,8 @@ rb_audioscrobbler_user_ban_track (RBAudioscrobblerUser *user,
 {
 	char *sig_arg;
 	char *sig;
+	char *escaped_title;
+	char *escaped_artist;
 	char *request;
 	SoupMessage *msg;
 
@@ -1692,9 +1701,12 @@ rb_audioscrobbler_user_ban_track (RBAudioscrobblerUser *user,
 
 	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 
+	escaped_title = g_uri_escape_string (title, NULL, FALSE);
+	escaped_artist = g_uri_escape_string (artist, NULL, FALSE);
+
 	request = g_strdup_printf ("method=track.ban&track=%s&artist=%s&api_key=%s&api_sig=%s&sk=%s",
-	                           title,
-	                           artist,
+	                           escaped_title,
+	                           escaped_artist,
 	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
 	                           sig,
 	                           user->priv->session_key);
@@ -1712,6 +1724,8 @@ rb_audioscrobbler_user_ban_track (RBAudioscrobblerUser *user,
 
 	g_free (sig_arg);
 	g_free (sig);
+	g_free (escaped_title);
+	g_free (escaped_artist);
 	g_free (request);
 }
 
