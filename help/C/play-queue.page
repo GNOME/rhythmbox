@@ -1,0 +1,60 @@
+<page xmlns="http://projectmallard.org/1.0/"
+  type="topic"
+  id="play-queue">
+      
+  <info>
+    <link type="guide" xref="index#rb-music" group="one"/>
+    <desc>What is and how to use it.</desc>
+    <revision pkgversion="3.0" version="0.1" date="2010-07-19" status="draft"/>
+    <credit type="author">
+      <name>Milo Casagrande</name>
+      <email>milo@ubuntu.com</email>
+    </credit>
+    <license>
+      <p>
+        Creative Commons Share Alike 3.0
+      </p>
+    </license>
+  </info>
+
+  <title>Play Queue</title>
+  
+  <p>
+    The <gui>Play Queue</gui> is a special 
+    <link xref="playlists-what-is">playlist</link>: it controls the play 
+    order of your songs in the <link xref="music"><gui>Music</gui></link> library.
+  </p>
+  <p>
+    With the <gui>Play Queue</gui> you can temporally change what songs are
+    being played by <app>Rhythmbox</app>: when one songs end, the first one
+    found in the <gui>Play Queue</gui> will be played.
+  </p>
+  <p>
+    Once all songs in the <gui>Play Queue</gui> have been played,
+    <app>Rhythmbox</app> resumes the normal playback.
+  </p>
+  
+  <section id="play-queue-add" style="2column">
+    <title>Add songs to the play queue</title>
+    <steps>
+      <item>
+        <p>
+          Right-click on the desired track.
+        </p>
+      </item>
+      <item>
+        <p>
+          Select <gui style="menuitem">Add to Play Queue</gui>.
+        </p>
+      </item>
+    </steps>
+    <p>
+      You can add tracks from your <gui>Music</gui> and <gui>Podcasts</gui>
+      libraries.
+    </p>
+    <p>
+      Once a track has been played, it is removed from the <gui>Play Queue</gui>.
+    </p>
+  </section>
+
+</page>
