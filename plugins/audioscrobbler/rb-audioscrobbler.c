@@ -213,7 +213,13 @@ rb_audioscrobbler_constructed (GObject *object)
 	RhythmDBEntry *playing_entry;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_parent_class, constructed, object);
+
 	audioscrobbler = RB_AUDIOSCROBBLER (object);
+
+	rb_audioscrobbler_load_queue (audioscrobbler);
+	rb_audioscrobbler_add_timeout (audioscrobbler);
+	rb_audioscrobbler_statistics_changed (audioscrobbler);
+
 	g_object_get (audioscrobbler->priv->shell_player, "db", &db, NULL);
 
 	audioscrobbler->priv->offline_play_notify_id = 
@@ -347,12 +353,6 @@ rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 	audioscrobbler->priv->password = NULL;
 	audioscrobbler->priv->submit_url = g_strdup ("");
 	audioscrobbler->priv->nowplaying_url = g_strdup ("");
-
-	rb_audioscrobbler_load_queue (audioscrobbler);
-
-	rb_audioscrobbler_add_timeout (audioscrobbler);
-
-	rb_audioscrobbler_statistics_changed (audioscrobbler);
 }
 
 static void
@@ -1158,7 +1158,12 @@ rb_audioscrobbler_load_queue (RBAudioscrobbler *audioscrobbler)
 	gsize size;
 
 	/* we don't really care about errors enough to report them here */
-	pathname = rb_find_user_data_file ("audioscrobbler.queue", NULL);
+	pathname = g_build_filename (rb_user_data_dir (),
+	                             "audioscrobbler",
+	                             "submission-queues",
+	                             rb_audioscrobbler_service_get_name (audioscrobbler->priv->service),
+	                             audioscrobbler->priv->username,
+	                             NULL);
 	file = g_file_new_for_path (pathname);
 	rb_debug ("loading Audioscrobbler queue from \"%s\"", pathname);
 	g_free (pathname);
@@ -1197,6 +1202,7 @@ static gboolean
 rb_audioscrobbler_save_queue (RBAudioscrobbler *audioscrobbler)
 {
 	char *pathname;
+	char *uri;
 	GFile *file;
 	GError *error = NULL;
 	GList *l;
@@ -1215,12 +1221,22 @@ rb_audioscrobbler_save_queue (RBAudioscrobbler *audioscrobbler)
 	}
 
 	/* we don't really care about errors enough to report them here */
-	pathname = rb_find_user_data_file ("audioscrobbler.queue", NULL);
+	pathname = g_build_filename (rb_user_data_dir (),
+	                             "audioscrobbler",
+	                             "submission-queues",
+	                             rb_audioscrobbler_service_get_name (audioscrobbler->priv->service),
+	                             audioscrobbler->priv->username,
+	                             NULL);
 	rb_debug ("Saving Audioscrobbler queue to \"%s\"", pathname);
+
+	uri = g_filename_to_uri (pathname, NULL, NULL);
+	rb_uri_create_parent_dirs (uri, &error);
 
 	file = g_file_new_for_path (pathname);
 	g_free (pathname);
+	g_free (uri);
 
+	error = NULL;
 	g_file_replace_contents (file,
 				 str->str, str->len,
 				 NULL,
