@@ -276,14 +276,29 @@ build_track_metadata (RBMprisPlugin *plugin,
 static GVariant *
 get_player_state (RBMprisPlugin *plugin, GError **error)
 {
-	gboolean playing;
+	RhythmDBEntry *entry;
+	int playback_state;
 	gboolean random;
 	gboolean repeat;
 	gboolean loop;
 
-	playing = FALSE;
-	if (rb_shell_player_get_playing (plugin->player, &playing, error) == FALSE) {
-		return NULL;
+	entry = rb_shell_player_get_playing_entry (plugin->player);
+	if (entry != NULL) {
+		gboolean playing;
+
+		rhythmdb_entry_unref (entry);
+		playing = FALSE;
+		if (rb_shell_player_get_playing (plugin->player, &playing, error) == FALSE) {
+			return NULL;
+		}
+
+		if (playing) {
+			playback_state = 0;
+		} else {
+			playback_state = 1;
+		}
+	} else {
+		playback_state = 2;
 	}
 
 	random = FALSE;
@@ -293,7 +308,7 @@ get_player_state (RBMprisPlugin *plugin, GError **error)
 	/* repeat is not supported */
 	repeat = FALSE;
 
-	return g_variant_new ("((iiii))", playing, random, repeat, loop);
+	return g_variant_new ("((iiii))", playback_state, random, repeat, loop);
 }
 
 static void
