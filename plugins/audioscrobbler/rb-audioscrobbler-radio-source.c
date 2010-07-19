@@ -45,14 +45,14 @@
 
 /* radio type stuff */
 static const char* radio_types[] = {
-	N_("Similar Artists"),
-	N_("Top Fans"),
-	N_("Library"),
-	N_("Neighbourhood"),
-	N_("Loved Tracks"),
-	N_("Recommendations"),
-	N_("Tag Radio"),
-	N_("Group Radio"),
+	N_("Similar to Artist:"),
+	N_("Top Fans of Artist:"),
+	N_("Library of User:"),
+	N_("Neighbourhood of User:"),
+	N_("Tracks Loved by User:"),
+	N_("Recommendations for User:"),
+	N_("Tracks Tagged with:"),
+	N_("Listended by Group:"),
 	NULL
 };
 

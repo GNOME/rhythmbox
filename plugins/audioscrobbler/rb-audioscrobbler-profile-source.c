@@ -86,7 +86,6 @@ struct _RBAudioscrobblerProfileSourcePrivate {
 
 	/* Station creation UI */
 	GtkWidget *station_creator_type_combo;
-	GtkWidget *station_creator_arg_label;
 	GtkWidget *station_creator_arg_entry;
 
 	/* Profile data lists */
@@ -166,13 +165,9 @@ static void rb_audioscrobbler_profile_source_love_track_action_cb (GtkAction *ac
 static void rb_audioscrobbler_profile_source_ban_track_action_cb (GtkAction *action,
                                                                   RBAudioscrobblerProfileSource *source);
 
-/* Radio station creation UI callbacks */
-static void rb_audioscrobbler_profile_source_station_creator_type_combo_changed_cb (GtkComboBox *combo_box,
-                                                                                    RBAudioscrobblerProfileSource *source);
+/* radio station creation/deletion */
 void rb_audioscrobbler_profile_source_station_creator_button_clicked_cb (GtkButton *button,
                                                                          RBAudioscrobblerProfileSource *source);
-
-/* radio station creation/deletion */
 static void rb_audioscrobbler_profile_source_load_radio_stations (RBAudioscrobblerProfileSource *source);
 static void rb_audioscrobbler_profile_source_save_radio_stations (RBAudioscrobblerProfileSource *source);
 static RBSource *rb_audioscrobbler_profile_source_add_radio_station (RBAudioscrobblerProfileSource *source,
@@ -524,7 +519,6 @@ rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource 
 	source->priv->scrobbler_submit_time_label = GTK_WIDGET (gtk_builder_get_object (builder, "scrobbler_submit_time_label"));
 
 	/* station creator */
-	source->priv->station_creator_arg_label = GTK_WIDGET (gtk_builder_get_object (builder, "station_creator_arg_label"));
 	source->priv->station_creator_arg_entry = GTK_WIDGET (gtk_builder_get_object (builder, "station_creator_arg_entry"));
 	combo_container = GTK_WIDGET (gtk_builder_get_object (builder, "station_creator_combo_container"));
 	source->priv->station_creator_type_combo = gtk_combo_box_new_text ();
@@ -533,9 +527,6 @@ rb_audioscrobbler_profile_source_init_profile_ui (RBAudioscrobblerProfileSource 
 		gtk_combo_box_append_text (GTK_COMBO_BOX (source->priv->station_creator_type_combo),
 		                           rb_audioscrobbler_radio_type_get_text (i));
 	}
-	g_signal_connect_object (source->priv->station_creator_type_combo, "changed",
-	                         G_CALLBACK (rb_audioscrobbler_profile_source_station_creator_type_combo_changed_cb),
-	                         source, 0);
 	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->station_creator_type_combo), 0);
 
 	/* lists of data */
@@ -906,45 +897,6 @@ rb_audioscrobbler_profile_source_ban_track_action_cb (GtkAction *action,
 	rb_shell_player_do_next (RB_SHELL_PLAYER (rb_shell_get_player (shell)), NULL);
 
 	g_object_unref (shell);
-}
-
-static void
-rb_audioscrobbler_profile_source_station_creator_type_combo_changed_cb (GtkComboBox *combo_box,
-                                                                        RBAudioscrobblerProfileSource *source)
-{
-	const char *text;
-
-	switch (gtk_combo_box_get_active (combo_box)) {
-	case RB_AUDIOSCROBBLER_RADIO_TYPE_SIMILAR_ARTISTS:
-		text = _("to Artist:");
-		break;
-	case RB_AUDIOSCROBBLER_RADIO_TYPE_TOP_FANS:
-		text = _("of Artist:");
-		break;
-	case RB_AUDIOSCROBBLER_RADIO_TYPE_LIBRARY:
-		text = _("of User:");
-		break;
-	case RB_AUDIOSCROBBLER_RADIO_TYPE_NEIGHBOURS:
-		text = _("of User:");
-		break;
-	case RB_AUDIOSCROBBLER_RADIO_TYPE_LOVED_TRACKS:
-		text = _("by User:");
-		break;
-	case RB_AUDIOSCROBBLER_RADIO_TYPE_RECOMMENDATION:
-		text = _("for User:");
-		break;
-	case RB_AUDIOSCROBBLER_RADIO_TYPE_GLOBAL_TAG:
-		text = _("Tag name:");
-		break;
-	case RB_AUDIOSCROBBLER_RADIO_TYPE_GROUP:
-		text = _("for Group:");
-		break;
-	default:
-		text = "";
-		break;
-	}
-
-	gtk_label_set_label (GTK_LABEL (source->priv->station_creator_arg_label), text);
 }
 
 void
