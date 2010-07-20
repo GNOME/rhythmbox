@@ -38,6 +38,13 @@
 #define LASTFM_API_KEY "0337ff3c59299b6a31d75164041860b6"
 #define LASTFM_API_SECRET "776c85a04a445efa8f9ed7705473c606"
 
+#define LIBREFM_NAME "Libre.fm"
+#define LIBREFM_AUTH_URL "http://alpha.libre.fm/api/auth/"
+#define LIBREFM_SCROBBLER_URL "http://turtle.libre.fm/"
+#define LIBREFM_API_URL "http://alpha.libre.fm/2.0/"
+#define LIBREFM_API_KEY "a string 32 characters in length"
+#define LIBREFM_API_SECRET "a string 32 characters in length"
+
 struct _RBAudioscrobblerServicePrivate {
 	char *name;
 	char *auth_url;
@@ -75,7 +82,7 @@ enum
 G_DEFINE_TYPE (RBAudioscrobblerService, rb_audioscrobbler_service, G_TYPE_OBJECT)
 
 RBAudioscrobblerService *
-rb_audioscrobbler_service_new (void)
+rb_audioscrobbler_service_new_lastfm (void)
 {
 	/* create a Last.fm service */
 	return g_object_new (RB_TYPE_AUDIOSCROBBLER_SERVICE,
@@ -85,6 +92,20 @@ rb_audioscrobbler_service_new (void)
 	                     "api-url", LASTFM_API_URL,
 	                     "api-key", LASTFM_API_KEY,
 	                     "api-secret", LASTFM_API_SECRET,
+	                     NULL);
+}
+
+RBAudioscrobblerService *
+rb_audioscrobbler_service_new_librefm (void)
+{
+	/* create a Libre.fm service */
+	return g_object_new (RB_TYPE_AUDIOSCROBBLER_SERVICE,
+	                     "name", LIBREFM_NAME,
+	                     "auth-url", LIBREFM_AUTH_URL,
+	                     "scrobbler-url", LIBREFM_SCROBBLER_URL,
+	                     "api-url", LIBREFM_API_URL,
+	                     "api-key", LIBREFM_API_KEY,
+	                     "api-secret", LIBREFM_API_SECRET,
 	                     NULL);
 }
 

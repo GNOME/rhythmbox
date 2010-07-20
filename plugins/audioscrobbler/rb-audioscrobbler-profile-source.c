@@ -234,16 +234,19 @@ rb_audioscrobbler_profile_source_new (RBShell *shell, RBPlugin *plugin, RBAudios
 	RBSource *source;
 	RhythmDB *db;
 	char *name;
-	gchar *icon_filename;
+	gchar *icon_name;
+	gchar *icon_path;
 	gint icon_size;
 	GdkPixbuf *icon_pixbuf;
 
 	g_object_get (shell, "db", &db, NULL);
 	g_object_get (service, "name", &name, NULL);
 
-	icon_filename = rb_plugin_find_file (plugin, "as-icon.png");
+
+	icon_name = g_strconcat (rb_audioscrobbler_service_get_name (service), "-icon.png", NULL);
+	icon_path = rb_plugin_find_file (plugin, icon_name);
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
-	icon_pixbuf = gdk_pixbuf_new_from_file_at_size (icon_filename, icon_size, icon_size, NULL);
+	icon_pixbuf = gdk_pixbuf_new_from_file_at_size (icon_path, icon_size, icon_size, NULL);
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_AUDIOSCROBBLER_PROFILE_SOURCE,
 	                                  "shell", shell,
@@ -257,7 +260,8 @@ rb_audioscrobbler_profile_source_new (RBShell *shell, RBPlugin *plugin, RBAudios
 
 	g_object_unref (db);
 	g_free (name);
-	g_free (icon_filename);
+	g_free (icon_name);
+	g_free (icon_path);
 	g_object_unref (icon_pixbuf);
 
 	return source;

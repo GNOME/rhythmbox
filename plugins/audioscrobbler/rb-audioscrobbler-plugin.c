@@ -57,7 +57,8 @@ typedef struct
 	RBPlugin parent;
 
 	guint ui_merge_id;
-	RBSource *source;
+	RBSource *lastfm_source;
+	RBSource *librefm_source;
 } RBAudioscrobblerPlugin;
 
 typedef struct
@@ -112,7 +113,8 @@ impl_activate (RBPlugin *bplugin,
 	RBAudioscrobblerPlugin *plugin;
 	GtkUIManager *ui_manager;
 	char *file;
-	RBAudioscrobblerService *service;
+	RBAudioscrobblerService *lastfm;
+	RBAudioscrobblerService *librefm;
 
 	plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
 
@@ -123,11 +125,15 @@ impl_activate (RBPlugin *bplugin,
 							       NULL);
 	g_free (file);
 
-	service = rb_audioscrobbler_service_new ();
-	plugin->source = rb_audioscrobbler_profile_source_new (shell, bplugin, service);
+	lastfm = rb_audioscrobbler_service_new_lastfm ();
+	plugin->lastfm_source = rb_audioscrobbler_profile_source_new (shell, bplugin, lastfm);
+
+	librefm = rb_audioscrobbler_service_new_librefm ();
+	plugin->librefm_source = rb_audioscrobbler_profile_source_new (shell, bplugin, librefm);
 
 	g_object_unref (ui_manager);
-	g_object_unref (service);
+	g_object_unref (lastfm);
+	g_object_unref (librefm);
 }
 
 static void
@@ -140,8 +146,11 @@ impl_deactivate	(RBPlugin *bplugin,
 	g_object_get (shell, "ui-manager", &ui_manager, NULL);
 	gtk_ui_manager_remove_ui (ui_manager, plugin->ui_merge_id);
 
-	rb_source_delete_thyself (plugin->source);
-	plugin->source = NULL;
+	rb_source_delete_thyself (plugin->lastfm_source);
+	plugin->lastfm_source = NULL;
+
+	rb_source_delete_thyself (plugin->librefm_source);
+	plugin->librefm_source = NULL;
 
 	g_object_unref (ui_manager);
 }
