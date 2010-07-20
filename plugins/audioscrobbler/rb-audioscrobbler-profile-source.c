@@ -1161,8 +1161,9 @@ recent_tracks_updated_cb (RBAudioscrobblerUser *user,
                           GPtrArray *recent_tracks,
                           RBAudioscrobblerProfileSource *source)
 {
-	if (recent_tracks != NULL) {
-		set_user_list (source, source->priv->recent_tracks_table, recent_tracks);
+	set_user_list (source, source->priv->recent_tracks_table, recent_tracks);
+
+	if (recent_tracks != NULL && recent_tracks->len != 0) {
 		gtk_widget_show_all (source->priv->recent_tracks_area);
 	} else {
 		gtk_widget_hide_all (source->priv->recent_tracks_area);
@@ -1174,8 +1175,9 @@ top_tracks_updated_cb (RBAudioscrobblerUser *user,
                        GPtrArray *top_tracks,
                        RBAudioscrobblerProfileSource *source)
 {
-	if (top_tracks != NULL) {
-		set_user_list (source, source->priv->top_tracks_table, top_tracks);
+	set_user_list (source, source->priv->top_tracks_table, top_tracks);
+
+	if (top_tracks != NULL && top_tracks->len != 0) {
 		gtk_widget_show_all (source->priv->top_tracks_area);
 	} else {
 		gtk_widget_hide_all (source->priv->top_tracks_area);
@@ -1187,8 +1189,9 @@ loved_tracks_updated_cb (RBAudioscrobblerUser *user,
                          GPtrArray *loved_tracks,
                          RBAudioscrobblerProfileSource *source)
 {
-	if (loved_tracks != NULL) {
-		set_user_list (source, source->priv->loved_tracks_table, loved_tracks);
+	set_user_list (source, source->priv->loved_tracks_table, loved_tracks);
+
+	if (loved_tracks != NULL && loved_tracks->len != 0) {
 		gtk_widget_show_all (source->priv->loved_tracks_area);
 	} else {
 		gtk_widget_hide_all (source->priv->loved_tracks_area);
@@ -1200,8 +1203,9 @@ top_artists_updated_cb (RBAudioscrobblerUser *user,
                         GPtrArray *top_artists,
                         RBAudioscrobblerProfileSource *source)
 {
-	if (top_artists != NULL) {
-		set_user_list (source, source->priv->top_artists_table, top_artists);
+	set_user_list (source, source->priv->top_artists_table, top_artists);
+
+	if (top_artists != NULL && top_artists->len != 0) {
 		gtk_widget_show_all (source->priv->top_artists_area);
 	} else {
 		gtk_widget_hide_all (source->priv->top_artists_area);
@@ -1213,8 +1217,9 @@ recommended_artists_updated_cb (RBAudioscrobblerUser *user,
                                 GPtrArray *recommended_artists,
                                 RBAudioscrobblerProfileSource *source)
 {
-	if (recommended_artists != NULL) {
-		set_user_list (source, source->priv->recommended_artists_table, recommended_artists);
+	set_user_list (source, source->priv->recommended_artists_table, recommended_artists);
+
+	if (recommended_artists != NULL && recommended_artists->len != 0) {
 		gtk_widget_show_all (source->priv->recommended_artists_area);
 	} else {
 		gtk_widget_hide_all (source->priv->recommended_artists_area);
@@ -1243,20 +1248,22 @@ set_user_list (RBAudioscrobblerProfileSource *source,
 		gtk_widget_destroy (button_node->data);
 	}
 
-	/* add a new button for each item in the list */
-	for (i = 0; i < list_data->len; i++) {
-		RBAudioscrobblerUserData *data;
-		GtkWidget *button;
-		GtkWidget *menu;
+	if (list_data != NULL) {
+		/* add a new button for each item in the list */
+		for (i = 0; i < list_data->len; i++) {
+			RBAudioscrobblerUserData *data;
+			GtkWidget *button;
+			GtkWidget *menu;
 
-		data = g_ptr_array_index (list_data, i);
-		button = create_list_button (source, data);
-		menu = create_popup_menu (source, data);
+			data = g_ptr_array_index (list_data, i);
+			button = create_list_button (source, data);
+			menu = create_popup_menu (source, data);
 
-		g_hash_table_insert (source->priv->button_to_popup_menu_map, button, g_object_ref_sink (menu));
-		g_hash_table_insert (source->priv->popup_menu_to_data_map, menu, data);
+			g_hash_table_insert (source->priv->button_to_popup_menu_map, button, g_object_ref_sink (menu));
+			g_hash_table_insert (source->priv->popup_menu_to_data_map, menu, data);
 
-		list_table_pack_start (GTK_TABLE (list_table), button);
+			list_table_pack_start (GTK_TABLE (list_table), button);
+		}
 	}
 }
 
