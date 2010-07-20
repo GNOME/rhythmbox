@@ -49,7 +49,8 @@ typedef enum
 {
 	RB_PLAYER_ERROR_NO_AUDIO,
 	RB_PLAYER_ERROR_GENERAL,
-	RB_PLAYER_ERROR_INTERNAL
+	RB_PLAYER_ERROR_INTERNAL,
+	RB_PLAYER_ERROR_NOT_FOUND
 } RBPlayerError;
 
 GType rb_player_error_get_type (void);

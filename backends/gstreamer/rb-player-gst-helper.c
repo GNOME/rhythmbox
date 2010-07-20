@@ -267,6 +267,31 @@ rb_gst_process_tag_string (const GstTagList *taglist,
 	return TRUE;
 }
 
+/**
+ * rb_gst_error_get_error_code:
+ * @error: error received from GStreamer
+ *
+ * Maps a GStreamer error to an #RBPlayerError error code.
+ *
+ * Return value: the #RBPlayerError value to use
+ */
+int
+rb_gst_error_get_error_code (const GError *error)
+{
+	if (error->domain == GST_RESOURCE_ERROR &&
+	    (error->code == GST_RESOURCE_ERROR_NOT_FOUND ||
+	     error->code == GST_RESOURCE_ERROR_OPEN_READ ||
+	     error->code == GST_RESOURCE_ERROR_READ)) {
+		return RB_PLAYER_ERROR_NOT_FOUND;
+	} else if ((error->domain == GST_CORE_ERROR)
+		|| (error->domain == GST_LIBRARY_ERROR)
+		|| (error->domain == GST_RESOURCE_ERROR && error->code == GST_RESOURCE_ERROR_BUSY)) {
+		return RB_PLAYER_ERROR_NO_AUDIO;
+	} else {
+		return RB_PLAYER_ERROR_GENERAL;
+	}
+}
+
 /* pipeline block-add/remove-unblock operations */
 
 static RBGstPipelineOp *

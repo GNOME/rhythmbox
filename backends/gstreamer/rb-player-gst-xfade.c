@@ -1645,13 +1645,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			emit = FALSE;
 		}
 
-		if ((error->domain == GST_CORE_ERROR)
-			|| (error->domain == GST_LIBRARY_ERROR)
-			|| (error->domain == GST_RESOURCE_ERROR && error->code == GST_RESOURCE_ERROR_BUSY)) {
-			code = RB_PLAYER_ERROR_NO_AUDIO;
-		} else {
-			code = RB_PLAYER_ERROR_GENERAL;
-		}
+		code = rb_gst_error_get_error_code (error);
 
 		if (emit) {
 			rb_debug ("emitting error %s for stream %s", error->message, stream->uri);

@@ -749,6 +749,7 @@ rb_player_error_get_type (void)
 			ENUM_ENTRY (RB_PLAYER_ERROR_NO_AUDIO, "no-audio"),
 			ENUM_ENTRY (RB_PLAYER_ERROR_GENERAL, "general-error"),
 			ENUM_ENTRY (RB_PLAYER_ERROR_INTERNAL, "internal-error"),
+			ENUM_ENTRY (RB_PLAYER_ERROR_NOT_FOUND, "not-found"),
 			{ 0, 0, 0 }
 		};
 

@@ -477,7 +477,7 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 	switch (GST_MESSAGE_TYPE (message)) {
 	case GST_MESSAGE_ERROR: {
 		char *debug;
-		GError *error;
+		GError *error = NULL;
 		GError *sig_error = NULL;
 		int code;
 		gboolean emit = TRUE;
@@ -494,13 +494,7 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 			emit = FALSE;
 		}
 
-		if ((error->domain == GST_CORE_ERROR)
-			|| (error->domain == GST_LIBRARY_ERROR)
-			|| (error->domain == GST_RESOURCE_ERROR && error->code == GST_RESOURCE_ERROR_BUSY)) {
-			code = RB_PLAYER_ERROR_NO_AUDIO;
-		} else {
-			code = RB_PLAYER_ERROR_GENERAL;
-		}
+		code = rb_gst_error_get_error_code (error);
 
 		if (emit) {
 			if (message_from_sink (mp->priv->audio_sink, message)) {

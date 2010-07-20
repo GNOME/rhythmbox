@@ -49,6 +49,8 @@ gboolean	rb_gst_process_tag_string	(const GstTagList *taglist,
 						 RBMetaDataField *field,
 						 GValue *value);
 
+int		rb_gst_error_get_error_code	(const GError *error);
+
 /* tee and filter support */
 
 GstElement *	rb_gst_create_filter_bin (void);
