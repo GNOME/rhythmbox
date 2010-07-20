@@ -428,11 +428,6 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 	RBRefString *mount_point;
 	const char *location;
 
-	if (entry->type != RHYTHMDB_ENTRY_TYPE_SONG &&
-	    entry->type != RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
-		return;
-	}
-
 	mount_point = rhythmdb_entry_get_refstring (entry, RHYTHMDB_PROP_MOUNTPOINT);
 	if (mount_point == NULL || !rb_refstring_equal (mount_point, ctxt->mount_point)) {
 		return;
@@ -495,9 +490,14 @@ rhythmdb_mount_added_cb (GVolumeMonitor *monitor,
 	ctxt.db = db;
 	ctxt.mounted = TRUE;
 	rb_debug ("volume %s mounted", rb_refstring_get (ctxt.mount_point));
-	rhythmdb_entry_foreach (db,
-				(GFunc)entry_volume_mounted_or_unmounted,
-				&ctxt);
+	rhythmdb_entry_foreach_by_type (db,
+					RHYTHMDB_ENTRY_TYPE_SONG,
+					(GFunc) entry_volume_mounted_or_unmounted,
+					&ctxt);
+	rhythmdb_entry_foreach_by_type (db,
+					RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR,
+					(GFunc) entry_volume_mounted_or_unmounted,
+					&ctxt);
 	rhythmdb_commit (db);
 	rb_refstring_unref (ctxt.mount_point);
 }
@@ -521,9 +521,14 @@ rhythmdb_mount_removed_cb (GVolumeMonitor *monitor,
 	ctxt.db = db;
 	ctxt.mounted = FALSE;
 	rb_debug ("volume %s unmounted", rb_refstring_get (ctxt.mount_point));
-	rhythmdb_entry_foreach (db,
-				(GFunc)entry_volume_mounted_or_unmounted,
-				&ctxt);
+	rhythmdb_entry_foreach_by_type (db,
+					RHYTHMDB_ENTRY_TYPE_SONG,
+					(GFunc) entry_volume_mounted_or_unmounted,
+					&ctxt);
+	rhythmdb_entry_foreach_by_type (db,
+					RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR,
+					(GFunc) entry_volume_mounted_or_unmounted,
+					&ctxt);
 	rhythmdb_commit (db);
 	rb_refstring_unref (ctxt.mount_point);
 }
