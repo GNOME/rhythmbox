@@ -200,18 +200,38 @@ add_string_property_2 (GVariantBuilder *builder,
 }
 
 static void
-add_int_property (GVariantBuilder *builder,
-		  RhythmDBEntry *entry,
-		  RhythmDBPropType prop,
-		  const char *name)
+add_ulong_property (GVariantBuilder *builder,
+		    RhythmDBEntry *entry,
+		    RhythmDBPropType prop,
+		    const char *name)
 {
-	int v;
+	ulong v;
 	v = rhythmdb_entry_get_ulong (entry, prop);
-	rb_debug ("adding %s = %u", name, v);
+	rb_debug ("adding %s = %lu", name, v);
 	g_variant_builder_add (builder,
 			       "{sv}",
 			       name,
-			       g_variant_new ("i", v));
+			       g_variant_new ("u", v));
+}
+
+static void
+add_ulong_string_property (GVariantBuilder *builder,
+			   RhythmDBEntry *entry,
+			   RhythmDBPropType prop,
+			   const char *name)
+{
+	ulong v;
+	char *str;
+
+	v = rhythmdb_entry_get_ulong (entry, prop);
+	rb_debug ("adding %s = %lu", name, v);
+
+	str = g_strdup_printf ("%lu", v);
+	g_variant_builder_add (builder,
+			       "{sv}",
+			       name,
+			       g_variant_new ("s", str));
+	g_free (str);
 }
 
 static void
@@ -251,12 +271,13 @@ build_track_metadata (RBMprisPlugin *plugin,
 	add_string_property (builder, entry, RHYTHMDB_PROP_ARTIST_SORTNAME, "mb artist sort name");
 	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_SORTNAME, "mb album sort name");	/* extension */
 
-	add_int_property (builder, entry, RHYTHMDB_PROP_TRACK_NUMBER, "tracknumber");
-	add_int_property (builder, entry, RHYTHMDB_PROP_DISC_NUMBER, "discnumber");	/* extension */
-	add_int_property (builder, entry, RHYTHMDB_PROP_DURATION, "time");
-	add_int_property (builder, entry, RHYTHMDB_PROP_BITRATE, "audio-bitrate");
-	add_int_property (builder, entry, RHYTHMDB_PROP_YEAR, "year");
+	add_ulong_property (builder, entry, RHYTHMDB_PROP_DURATION, "time");
+	add_ulong_property (builder, entry, RHYTHMDB_PROP_BITRATE, "audio-bitrate");
+	add_ulong_property (builder, entry, RHYTHMDB_PROP_YEAR, "year");
 	/* missing: date */
+
+	add_ulong_string_property (builder, entry, RHYTHMDB_PROP_TRACK_NUMBER, "tracknumber");
+	add_ulong_string_property (builder, entry, RHYTHMDB_PROP_DISC_NUMBER, "discnumber");	/* extension */
 
 	add_double_property (builder, entry, RHYTHMDB_PROP_RATING, "rating");
 
