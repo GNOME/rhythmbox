@@ -15,10 +15,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-25 22:31+0200\n"
-"PO-Revision-Date: 2010-06-25 22:33+0200\n"
+"POT-Creation-Date: 2010-07-22 11:35+0200\n"
+"PO-Revision-Date: 2010-07-22 11:35+0200\n"
 "Last-Translator: Fran Diéguez <frandieguez@ubuntu.com>\n"
-"Language-Team: Galician <gnome@g11n.net>\n"
+"Language-Team: Galician <gnome-gl-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -32,13 +32,13 @@ msgstr ""
 "Non foi posíbel crear a liña de procesamento do GStreamer para escribir %s"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:512
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2729
+#: ../backends/gstreamer/rb-player-gst.c:506
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2723
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Produciuse un erro ao abrir o dispositivo de saída: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:653
+#: ../backends/gstreamer/rb-player-gst.c:647
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr ""
@@ -59,37 +59,37 @@ msgid "Failed to start new stream"
 msgstr "Produciuse un erro ao iniciar un novo fluxo"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2654
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2648
 #, c-format
 msgid "Failed to open output device"
 msgstr "Produciuse un erro ao abrir o dispositivo de saída"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3005
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3076
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2999
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3070
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Produciuse un erro ao crear o elemento GStreamer; comprobe a súa instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3016
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3010
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Produciuse un erro ao crear o elemento de saída de son; comprobe a súa "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3050
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3092
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3118
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3127
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3136
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3044
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3086
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3112
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3121
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3130
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Produciuse un erro ao ligar a liña de procesamento do GStreamer; comprobe a "
 "súa instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3231
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3225
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr ""
@@ -687,7 +687,7 @@ msgstr "%d de %b de %Y"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:128
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:132
-#: ../plugins/audiocd/rb-audiocd-source.c:492
+#: ../plugins/audiocd/rb-audiocd-source.c:512
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
@@ -703,7 +703,7 @@ msgstr "%d de %b de %Y"
 #: ../plugins/lyrics/lyrics/__init__.py:83
 #: ../plugins/mtpdevice/rb-mtp-source.c:640
 #: ../plugins/mtpdevice/rb-mtp-source.c:1118
-#: ../plugins/mtpdevice/rb-mtp-source.c:1514
+#: ../plugins/mtpdevice/rb-mtp-source.c:1512
 #: ../plugins/status-icon/rb-status-icon-plugin.c:782
 #: ../podcast/rb-feed-podcast-properties-dialog.c:341
 #: ../podcast/rb-podcast-manager.c:1908
@@ -904,68 +904,68 @@ msgstr "Recargar información do álbum"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../plugins/audiocd/rb-audiocd-source.c:288
+#: ../plugins/audiocd/rb-audiocd-source.c:307
 msgid "Extract"
 msgstr "Extraer"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:330
+#: ../plugins/audiocd/rb-audiocd-source.c:350
 msgid "Select tracks to be extracted"
 msgstr "Seleccione as pistas a extraer"
 
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:361
+#: ../plugins/audiocd/rb-audiocd-source.c:381
 msgid "S_ubmit Album"
 msgstr "En_viar o álbum"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:362
+#: ../plugins/audiocd/rb-audiocd-source.c:382
 msgid "Hide"
 msgstr "Ocultar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:364
+#: ../plugins/audiocd/rb-audiocd-source.c:384
 msgid "Could not find this album on MusicBrainz."
 msgstr "Non foi posíbel atopar este álbum en MusicBranz."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:365
+#: ../plugins/audiocd/rb-audiocd-source.c:385
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr ""
 "Vostede pode mellorar a base de datos de MusicBrainz engadindo este álbum."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:498
+#: ../plugins/audiocd/rb-audiocd-source.c:518
 msgid "<Invalid unicode>"
 msgstr "<unicode incorrecto>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:542
+#: ../plugins/audiocd/rb-audiocd-source.c:562
 #, c-format
 msgid "Track %u"
 msgstr "Pista %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:605
-#: ../plugins/audiocd/rb-audiocd-source.c:613
-#: ../plugins/audiocd/rb-audiocd-source.c:1005
+#: ../plugins/audiocd/rb-audiocd-source.c:625
+#: ../plugins/audiocd/rb-audiocd-source.c:633
+#: ../plugins/audiocd/rb-audiocd-source.c:1025
 msgid "Couldn't load Audio CD"
 msgstr "Non foi posíbel cargar o CD de son"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:606
+#: ../plugins/audiocd/rb-audiocd-source.c:626
 msgid "Rhythmbox couldn't access the CD."
 msgstr "O Rhythmbox non puido acceder ao CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:614
+#: ../plugins/audiocd/rb-audiocd-source.c:634
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "O Rhythmbox non puido ler a información do CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:715
+#: ../plugins/audiocd/rb-audiocd-source.c:735
 #: ../sources/rb-library-source.c:151 ../widgets/rb-entry-view.c:1518
 msgid "Title"
 msgstr "Título"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:722
+#: ../plugins/audiocd/rb-audiocd-source.c:742
 #: ../plugins/context/context/ArtistTab.py:52
 #: ../sources/rb-library-source.c:142 ../widgets/rb-entry-view.c:1528
 #: ../widgets/rb-library-browser.c:141
 msgid "Artist"
 msgstr "Artista"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1006
+#: ../plugins/audiocd/rb-audiocd-source.c:1026
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "O Rhythmbox non puido acceder ao dispositivo de CD."
 
@@ -2115,7 +2115,7 @@ msgstr "Mostrar propiedades do iPod"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1294
 #: ../plugins/ipod/rb-ipod-source.c:1931
-#: ../plugins/mtpdevice/rb-mtp-source.c:1608
+#: ../plugins/mtpdevice/rb-mtp-source.c:1606
 msgid "Advanced"
 msgstr "Avanzado"
 
@@ -3098,7 +3098,7 @@ msgstr ""
 "reproducir desde o dispositivo)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:157
-#: ../plugins/mtpdevice/rb-mtp-thread.c:543
+#: ../plugins/mtpdevice/rb-mtp-thread.c:545
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Produciuse un erro ao abrir o dispositivo temporal: %s"
@@ -3108,7 +3108,7 @@ msgid "Rename MTP-device"
 msgstr "Renomear o dispositivo-MTP"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:854
-#: ../plugins/mtpdevice/rb-mtp-thread.c:851
+#: ../plugins/mtpdevice/rb-mtp-thread.c:854
 msgid "Media player device error"
 msgstr "Produciuse un erro no dispositivo reproductor de medios"
 
@@ -3124,24 +3124,24 @@ msgstr "Non foi posíbel abrir o dispositivo %s %s"
 msgid "Digital Audio Player"
 msgstr "Reprodutor de son dixital"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:498
-#: ../plugins/mtpdevice/rb-mtp-thread.c:556
-#: ../plugins/mtpdevice/rb-mtp-thread.c:574
+#: ../plugins/mtpdevice/rb-mtp-thread.c:500
+#: ../plugins/mtpdevice/rb-mtp-thread.c:558
+#: ../plugins/mtpdevice/rb-mtp-thread.c:576
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr "Produciuse un erro ao copiar o ficheiro desde o dispositivo MTP: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:519
+#: ../plugins/mtpdevice/rb-mtp-thread.c:521
 #, c-format
 msgid "Not enough space in %s"
 msgstr "Non hai espazo suficiente en %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:600
+#: ../plugins/mtpdevice/rb-mtp-thread.c:602
 #, c-format
 msgid "No space left on MTP device"
 msgstr "Non hai máis espazo dispoñíbel no dispositivo MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:603
+#: ../plugins/mtpdevice/rb-mtp-thread.c:605
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "Non foi posíbel enviar o ficheiro ao dispositivo MTP: %s"
@@ -4573,7 +4573,7 @@ msgstr "Produciuse un erro ao transferir a pista"
 #: ../shell/rb-track-transfer-queue.c:369
 msgid ""
 "None of the tracks to be transferred are in a format supported by the target "
-"device, and no encoders are available  for the supported formats."
+"device, and no encoders are available for the supported formats."
 msgstr ""
 "Ningunha das pistas a transferir está nun formato compatíbel polo "
 "dispositivo de destino e non hai codificadores dispoñíbeis para os formatos "
