@@ -931,7 +931,7 @@ rb_iradio_source_first_time_changed (GConfClient *client,
 		return;
 
 	g_object_get (source, "plugin", &plugin, NULL);
-	file = rb_plugin_find_file (plugin, "iradio-initial.pls");
+	file = rb_plugin_find_file (plugin, "iradio-initial.xspf");
 	if (file != NULL) {
 		GFile *f;
 

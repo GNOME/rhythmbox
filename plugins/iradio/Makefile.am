@@ -55,14 +55,14 @@ BUILT_SOURCES =							\
 
 plugin_DATA = 			\
 	$(BUILT_SOURCES)	\
-	iradio-initial.pls	\
+	iradio-initial.xspf	\
 	$(NULL)
 
 EXTRA_DIST = 			\
 	$(gtkbuilder_DATA)	\
 	$(uixml_DATA)		\
 	$(plugin_in_files)	\
-	iradio-initial.pls	\
+	iradio-initial.xspf	\
 	$(NULL)
 
 CLEANFILES = 			\
