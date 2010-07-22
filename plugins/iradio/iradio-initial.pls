@@ -78,3 +78,19 @@ genre18=
 file21=http://www.kwur.com/icecast/kwurogg.m3u
 title21=KWUR 90.3 FM St. Louis Underground Radio
 genre21=
+
+title22=Absolute Radio 80s (Broadband)
+file22=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=a8bb
+genre22=80's
+
+title23=Absolute Radio 80s (Modem)
+file23=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=a8
+genre23=80's
+
+title24=Absolute Radio 90s (Broadband)
+file24=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=a9bb
+genre24=90's
+
+title25=Absolute Radio 90s (Modem)
+file25=http://network.absoluteradio.co.uk/core/audio/ogg/live.pls?service=a9
+genre25=90's
