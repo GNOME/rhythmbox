@@ -67,7 +67,7 @@ struct _RBEncoderGstPrivate {
 	gint64 total_length;
 	guint progress_id;
 	char *dest_uri;
-	const char *dest_mediatype;
+	char *dest_mediatype;
 
 	GOutputStream *outstream;
 
@@ -197,6 +197,7 @@ rb_encoder_gst_finalize (GObject *object)
 	}
 
 	g_free (encoder->priv->dest_uri);
+	g_free (encoder->priv->dest_mediatype);
 
         G_OBJECT_CLASS (rb_encoder_gst_parent_class)->finalize (object);
 }
@@ -1081,6 +1082,8 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 		return FALSE;
 	}
 
+	g_free (priv->dest_mediatype);
+	g_free (priv->dest_uri);
 	priv->dest_uri = g_strdup (dest);
 
 	/* if destination and source media types are the same, copy it */
@@ -1090,11 +1093,11 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 		priv->position_format = GST_FORMAT_BYTES;
 
 		result = copy_track (RB_ENCODER_GST (encoder), entry, dest, &error);
-		priv->dest_mediatype = entry_media_type;
+		priv->dest_mediatype = g_strdup (entry_media_type);
 	} else {
 		priv->total_length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 		priv->position_format = GST_FORMAT_TIME;
-		priv->dest_mediatype = dest_media_type;		/* hmm, need to strdup it? */
+		priv->dest_mediatype = g_strdup (dest_media_type);
 
 		result = transcode_track (RB_ENCODER_GST (encoder), entry, dest, &error);
 	}
