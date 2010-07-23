@@ -135,9 +135,7 @@ struct _RBAudioscrobblerRadioSourcePrivate
 	RBEntryView *track_view;
 	RhythmDBQueryModel *track_model;
 
-	gboolean is_fetching_playlist;
-	/* keep pointer to request so it can be cancelled if tuning fails */
-	SoupMessage *fetch_playlist_request;
+	gboolean is_busy;
 
 	RBPlayOrder *play_order;
 
@@ -147,6 +145,13 @@ struct _RBAudioscrobblerRadioSourcePrivate
 	guint emit_coverart_id;
 
 	GtkActionGroup *action_group;
+
+	/* used when streaming radio using old api */
+	char *old_api_password;
+	char *old_api_session_id;
+	char *old_api_base_url;
+	char *old_api_base_path;
+	gboolean old_api_is_banned;
 };
 
 #define RB_AUDIOSCROBBLER_RADIO_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_RADIO_SOURCE, RBAudioscrobblerRadioSourcePrivate))
@@ -182,6 +187,17 @@ static void xspf_entry_parsed (TotemPlParser *parser,
                                const char *uri,
                                GHashTable *metadata,
                                RBAudioscrobblerRadioSource *source);
+
+/* old api */
+static void old_api_shake_hands (RBAudioscrobblerRadioSource *source);
+static void old_api_handshake_response_cb (SoupSession *session,
+                                           SoupMessage *msg,
+                                           gpointer user_data);
+static void old_api_tune (RBAudioscrobblerRadioSource *source);
+static void old_api_tune_response_cb (SoupSession *session,
+                                      SoupMessage *msg,
+                                      gpointer user_data);
+static void old_api_fetch_playlist (RBAudioscrobblerRadioSource *source);
 
 /* action callbacks */
 static void rename_station_action_cb (GtkAction *action,
@@ -361,9 +377,6 @@ rb_audioscrobbler_radio_source_init (RBAudioscrobblerRadioSource *source)
 		soup_session_async_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
 		                                     SOUP_TYPE_GNOME_FEATURES_2_26,
 		                                     NULL);
-
-	/* one connection at a time means getPlaylist will only be sent after tune has returned */
-	g_object_set (source->priv->soup_session, "max-conns", 1, NULL);
 }
 
 static void
@@ -477,6 +490,11 @@ rb_audioscrobbler_radio_source_finalize (GObject *object)
 	g_free (source->priv->username);
 	g_free (source->priv->session_key);
 	g_free (source->priv->station_url);
+
+	g_free (source->priv->old_api_password);
+	g_free (source->priv->old_api_session_id);
+	g_free (source->priv->old_api_base_url);
+	g_free (source->priv->old_api_base_path);
 
 	G_OBJECT_CLASS (rb_audioscrobbler_radio_source_parent_class)->finalize (object);
 }
@@ -592,7 +610,6 @@ playing_song_changed_cb (RBShellPlayer *player,
 		/* request more if needed */
 		if (entries_after_playing <= 2) {
 			tune (source);
-			fetch_playlist (source);
 		}
 
 		/* emit cover art notification */
@@ -614,6 +631,14 @@ tune (RBAudioscrobblerRadioSource *source)
 	char *msg_url;
 	SoupMessage *msg;
 
+	/* only go through the tune + get playlist process once at a time */
+	if (source->priv->is_busy == TRUE) {
+		return;
+	}
+
+	source->priv->is_busy = TRUE;
+	gtk_widget_hide (source->priv->info_bar);
+
 	sig_arg = g_strdup_printf ("api_key%smethodradio.tunesk%sstation%s%s",
 	                           rb_audioscrobbler_service_get_api_key (source->priv->service),
 	                           source->priv->session_key,
@@ -634,6 +659,7 @@ tune (RBAudioscrobblerRadioSource *source)
 	msg_url = g_strdup_printf ("%s?format=json",
 	                           rb_audioscrobbler_service_get_api_url (source->priv->service));
 
+	rb_debug ("sending tune request: %s", request);
 	msg = soup_message_new ("POST", msg_url);
 	soup_message_set_request (msg,
 	                          "application/x-www-form-urlencoded",
@@ -659,64 +685,78 @@ tune_response_cb (SoupSession *session,
 {
 	RBAudioscrobblerRadioSource *source;
 	JsonParser *parser;
-	JsonObject *root_object;
 
 	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (user_data);
 	parser = json_parser_new ();
-	json_parser_load_from_data (parser, msg->response_body->data, msg->response_body->length, NULL);
-	root_object = json_node_get_object (json_parser_get_root (parser));
 
-	if (json_object_has_member (root_object, "station")) {
-		JsonObject *station_object;
-
-		station_object = json_object_get_object_member (root_object, "station");
-		/* TODO: do something fun with this information */
-
-	} else if (json_object_has_member (root_object, "error")) {
-		int code;
-		const char *message;
-		char *error_message = NULL;
-
-		code = json_object_get_int_member (root_object, "error");
-		message = json_object_get_string_member (root_object, "message");
-
-		rb_debug ("radio.tune responded with error: %s", message);
-
-		/* if a playlist request is queued then cancel it */
-		if (source->priv->fetch_playlist_request != NULL) {
-			soup_session_cancel_message (source->priv->soup_session,
-			                             source->priv->fetch_playlist_request,
-			                             SOUP_STATUS_CANCELLED);
-			source->priv->fetch_playlist_request = NULL;
-		}
-
-		/* show appropriate error message */
-		if (code == 4) {
-			/* Our API key only allows streaming of radio to subscribers.
-			 * TODO: Fall back to using old API
-			 */
-			error_message = g_strdup_printf (_("This station is only available to %s subscribers"),
-			                                 rb_audioscrobbler_service_get_name (source->priv->service));
-		} else if (code == 6) {
-			/* Invalid station url */
-			error_message = g_strdup (_("Invalid station URL"));
-		} else if (code == 12) {
-			/* Subscriber only station */
-			error_message = g_strdup_printf (_("This station is only available to %s subscribers"),
-			                                 rb_audioscrobbler_service_get_name (source->priv->service));
-		} else if (code == 20) {
-			/* Not enough content */
-			error_message = g_strdup (_("Not enough content to play station"));
-		} else {
-			/* Other error */
-			error_message = g_strdup_printf ("Error tuning station: %i - %s", code, message);
-		}
-
-		gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), error_message);
+	if (msg->response_body->data == NULL) {
+		rb_debug ("no response from tune request");
+		gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), _("Error tuning station: no response"));
 		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->info_bar), GTK_MESSAGE_WARNING);
 		gtk_widget_show_all (source->priv->info_bar);
+		source->priv->is_busy = FALSE;
 
-		g_free (error_message);
+	} else if (json_parser_load_from_data (parser, msg->response_body->data, msg->response_body->length, NULL)) {
+		JsonObject *root_object;
+		root_object = json_node_get_object (json_parser_get_root (parser));
+
+		if (json_object_has_member (root_object, "station")) {
+			JsonObject *station_object;
+
+			station_object = json_object_get_object_member (root_object, "station");
+			/* TODO: do something fun with this information */
+
+			rb_debug ("tune request was successful");
+
+			/* get the playlist */
+			fetch_playlist (source);
+		} else if (json_object_has_member (root_object, "error")) {
+			int code;
+			const char *message;
+
+			code = json_object_get_int_member (root_object, "error");
+			message = json_object_get_string_member (root_object, "message");
+
+			rb_debug ("tune request responded with error: %s", message);
+
+			if (code == 4) {
+				/* Our API key only allows streaming of radio to subscribers */
+				rb_debug ("attempting to use old API to tune radio");
+				old_api_tune (source);
+			} else {
+				/* show appropriate error message */
+				char *error_message = NULL;
+
+				if (code == 6) {
+					/* Invalid station url */
+					error_message = g_strdup (_("Invalid station URL"));
+				} else if (code == 12) {
+					/* Subscriber only station */
+					error_message = g_strdup_printf (_("This station is only available to %s subscribers"),
+							                 rb_audioscrobbler_service_get_name (source->priv->service));
+				} else if (code == 20) {
+					/* Not enough content */
+					error_message = g_strdup (_("Not enough content to play station"));
+				} else {
+					/* Other error */
+					error_message = g_strdup_printf ("Error tuning station: %i - %s", code, message);
+				}
+
+				gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), error_message);
+				gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->info_bar), GTK_MESSAGE_WARNING);
+				gtk_widget_show_all (source->priv->info_bar);
+
+				g_free (error_message);
+
+				source->priv->is_busy = FALSE;
+			}
+		}
+	} else {
+		rb_debug ("invalid response from tune request: %s", msg->response_body->data);
+		gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), _("Error tuning station: invalid response"));
+		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->info_bar), GTK_MESSAGE_WARNING);
+		gtk_widget_show_all (source->priv->info_bar);
+		source->priv->is_busy = FALSE;
 	}
 }
 
@@ -727,13 +767,6 @@ fetch_playlist (RBAudioscrobblerRadioSource *source)
 	char *sig;
 	char *request;
 	SoupMessage *msg;
-
-	if (source->priv->is_fetching_playlist == TRUE) {
-		rb_debug ("already fetching playlist");
-		return;
-	}
-
-	source->priv->is_fetching_playlist = TRUE;
 
 	sig_arg = g_strdup_printf ("api_key%smethodradio.getPlaylistrawtruesk%s%s",
 	                           rb_audioscrobbler_service_get_api_key (source->priv->service),
@@ -747,6 +780,7 @@ fetch_playlist (RBAudioscrobblerRadioSource *source)
 	                           sig,
 	                           source->priv->session_key);
 
+	rb_debug ("sending playlist request: %s", request);
 	msg = soup_message_new ("POST", rb_audioscrobbler_service_get_api_url (source->priv->service));
 	soup_message_set_request (msg,
 	                          "application/x-www-form-urlencoded",
@@ -757,9 +791,6 @@ fetch_playlist (RBAudioscrobblerRadioSource *source)
 	                            msg,
 	                            fetch_playlist_response_cb,
 	                            source);
-
-	/* keep pointer to message so it can be cancelled if need be */
-	source->priv->fetch_playlist_request = msg;
 
 	g_free (sig_arg);
 	g_free (sig);
@@ -782,14 +813,12 @@ fetch_playlist_response_cb (SoupSession *session,
 
 	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (user_data);
 
-	source->priv->is_fetching_playlist = FALSE;
+	source->priv->is_busy = FALSE;
 
-	if (msg->response_body->length == 0) {
-		rb_debug ("didn't get a response");
+	if (msg->response_body->data == NULL) {
+		rb_debug ("no response from get playlist request");
 		return;
 	}
-
-	rb_debug ("%s", msg->response_body->data);
 
 	/* until totem-pl-parser can parse playlists from in-memory data, we save it to a
 	 * temporary file.
@@ -937,6 +966,217 @@ xspf_entry_parsed (TotemPlParser *parser,
 	g_object_unref (db);
 }
 
+void
+rb_audioscrobbler_radio_source_set_old_api_password (RBAudioscrobblerRadioSource *source,
+                                                     const char *password)
+{
+	g_free (source->priv->old_api_password);
+	source->priv->old_api_password = g_strdup (password);
+
+	g_free (source->priv->old_api_session_id);
+	source->priv->old_api_session_id = NULL;
+}
+
+static void
+old_api_shake_hands (RBAudioscrobblerRadioSource *source)
+{
+	if (source->priv->old_api_password != NULL) {
+		char *password_hash;
+		char *msg_url;
+		SoupMessage *msg;
+
+		password_hash = g_compute_checksum_for_string (G_CHECKSUM_MD5, source->priv->old_api_password, -1);
+
+		msg_url = g_strdup_printf ("%sradio/handshake.php?username=%s&passwordmd5=%s",
+			                   rb_audioscrobbler_service_get_old_radio_api_url (source->priv->service),
+			                   source->priv->username,
+			                   password_hash);
+
+		rb_debug ("sending old api handshake request: %s", msg_url);
+		msg = soup_message_new ("GET", msg_url);
+		soup_session_queue_message (source->priv->soup_session,
+			                    msg,
+			                    old_api_handshake_response_cb,
+			                    source);
+
+		g_free (password_hash);
+		g_free (msg_url);
+	} else {
+		rb_debug ("cannot shake hands: no old api password is set");
+		source->priv->is_busy = FALSE;
+	}
+}
+
+static void
+old_api_handshake_response_cb (SoupSession *session,
+                               SoupMessage *msg,
+                               gpointer user_data)
+{
+	RBAudioscrobblerRadioSource *source;
+
+	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (user_data);
+
+	if (msg->response_body->data == NULL) {
+		g_free (source->priv->old_api_session_id);
+		source->priv->old_api_session_id = NULL;
+		rb_debug ("handshake failed: no response");
+	} else {
+		char **pieces;
+		int i;
+
+		pieces = g_strsplit (msg->response_body->data, "\n", 0);
+		for (i = 0; pieces[i] != NULL; i++) {
+			gchar **values = g_strsplit (pieces[i], "=", 2);
+
+			if (values[0] == NULL) {
+				rb_debug ("unexpected response content: %s", pieces[i]);
+			} else if (strcmp (values[0], "session") == 0) {
+				if (strcmp (values[1], "FAILED") == 0) {
+					g_free (source->priv->old_api_session_id);
+					source->priv->old_api_session_id = NULL;
+					rb_debug ("handshake failed");
+				} else {
+					g_free (source->priv->old_api_session_id);
+					source->priv->old_api_session_id = g_strdup (values[1]);
+					rb_debug ("session ID: %s", source->priv->old_api_session_id);
+				}
+			} else if (strcmp (values[0], "base_url") == 0) {
+				g_free (source->priv->old_api_base_url);
+				source->priv->old_api_base_url = g_strdup (values[1]);
+				rb_debug ("base url: %s", source->priv->old_api_base_url);
+			} else if (strcmp (values[0], "base_path") == 0) {
+				g_free (source->priv->old_api_base_path);
+				source->priv->old_api_base_path = g_strdup (values[1]);
+				rb_debug ("base path: %s", source->priv->old_api_base_path);
+			} else if (strcmp (values[0], "banned") == 0) {
+				if (strcmp (values[1], "0") != 0) {
+					source->priv->old_api_is_banned = TRUE;
+				} else {
+					source->priv->old_api_is_banned = FALSE;
+				}
+				rb_debug ("banned: %i", source->priv->old_api_is_banned);
+			}
+
+			g_strfreev (values);
+		}
+		g_strfreev (pieces);
+	}
+
+	/* if handshake was successful then tune */
+	if (source->priv->old_api_session_id != NULL) {
+		old_api_tune (source);
+	} else {
+		source->priv->is_busy = FALSE;
+	}
+}
+
+static void
+old_api_tune (RBAudioscrobblerRadioSource *source)
+{
+	/* get a handshake first if we don't have one */
+	if (source->priv->old_api_session_id == NULL) {
+		old_api_shake_hands (source);
+	} else {
+		char *escaped_station_url;
+		char *msg_url;
+		SoupMessage *msg;
+
+		escaped_station_url = g_uri_escape_string (source->priv->station_url, NULL, FALSE);
+
+		msg_url = g_strdup_printf("http://%s%s/adjust.php?session=%s&url=%s",
+			                  source->priv->old_api_base_url,
+			                  source->priv->old_api_base_path,
+			                  source->priv->old_api_session_id,
+			                  escaped_station_url);
+
+		rb_debug ("sending old api tune request: %s", msg_url);
+		msg = soup_message_new ("GET", msg_url);
+		soup_session_queue_message (source->priv->soup_session,
+			                    msg,
+			                    old_api_tune_response_cb,
+			                    source);
+
+		g_free (escaped_station_url);
+		g_free (msg_url);
+	}
+}
+
+static void
+old_api_tune_response_cb (SoupSession *session,
+                          SoupMessage *msg,
+                          gpointer user_data)
+{
+	RBAudioscrobblerRadioSource *source;
+
+	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (user_data);
+
+	if (msg->response_body->data != NULL) {
+		char **pieces;
+		int i;
+
+		pieces = g_strsplit (msg->response_body->data, "\n", 0);
+		for (i = 0; pieces[i] != NULL; i++) {
+			gchar **values = g_strsplit (pieces[i], "=", 2);
+
+			if (values[0] == NULL) {
+				rb_debug ("unexpected response from old api tune request: %s", pieces[i]);
+			} else if (strcmp (values[0], "response") == 0) {
+				if (strcmp (values[1], "OK") == 0) {
+					rb_debug ("old api tune request was successful");
+					/* no problems tuning, get the playlist */
+					old_api_fetch_playlist (source);
+				}
+			} else if (strcmp (values[0], "error") == 0) {
+				char *error_message;
+				rb_debug ("old api tune request responded with error: %s", pieces[i]);
+
+				error_message = g_strdup_printf (_("Error tuning station: %s"), values[1]);
+				gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), error_message);
+				gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->info_bar), GTK_MESSAGE_WARNING);
+				gtk_widget_show_all (source->priv->info_bar);
+
+				g_free (error_message);
+
+				source->priv->is_busy = FALSE;
+			}
+			/* TODO: do something with other information given here */
+
+			g_strfreev (values);
+		}
+
+		g_strfreev (pieces);
+	} else {
+		rb_debug ("no response from old api tune request");
+		gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), _("Error tuning station: no response"));
+		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->info_bar), GTK_MESSAGE_WARNING);
+		gtk_widget_show_all (source->priv->info_bar);
+		source->priv->is_busy = FALSE;
+	}
+}
+
+static void
+old_api_fetch_playlist (RBAudioscrobblerRadioSource *source)
+{
+	char *msg_url;
+	SoupMessage *msg;
+
+	msg_url = g_strdup_printf("http://%s%s/xspf.php?sk=%s&discovery=%i&desktop=%s",
+		                  source->priv->old_api_base_url,
+		                  source->priv->old_api_base_path,
+		                  source->priv->old_api_session_id,
+		                  0,
+		                  "1.5");
+
+	rb_debug ("sending old api playlist request: %s", msg_url);
+	msg = soup_message_new ("GET", msg_url);
+	soup_session_queue_message (source->priv->soup_session,
+		                    msg,
+		                    fetch_playlist_response_cb,
+		                    source);
+
+	g_free (msg_url);
+}
+
 static void
 rename_station_action_cb (GtkAction *action, RBAudioscrobblerRadioSource *source)
 {
@@ -1059,7 +1299,6 @@ impl_activate (RBSource *asource)
 	/* if the query model is empty then attempt to add some tracks to it */
 	if (rhythmdb_query_model_get_duration (source->priv->track_model) == 0) {
 		tune (source);
-		fetch_playlist (source);
 	}
 }
 
@@ -1077,7 +1316,7 @@ impl_get_status (RBSource *asource, char **text, char **progress_text, float *pr
 	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (asource);
 
 	/* pulse progressbar if we're busy, otherwise see what the streaming source part of us has to say */
-	if (source->priv->is_fetching_playlist) {
+	if (source->priv->is_busy) {
 		/* We could be calling either radio.tune or radio.getPlaylist methods.
 		 * "Tuning station" seems like a user friendly message to display for both cases.
 		 */

@@ -83,6 +83,9 @@ RBSource *rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfileSource *par
                                               const char *station_name,
                                               const char *station_url);
 
+void rb_audioscrobbler_radio_source_set_old_api_password (RBAudioscrobblerRadioSource *source,
+                                                          const char *password);
+
 G_END_DECLS
 
 #endif /* __RB_AUDIOSCROBBLER_RADIO_SOURCE_H */

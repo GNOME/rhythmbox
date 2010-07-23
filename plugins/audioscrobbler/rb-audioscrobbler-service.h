@@ -61,6 +61,7 @@ const char *rb_audioscrobbler_service_get_name (RBAudioscrobblerService *service
 const char *rb_audioscrobbler_service_get_auth_url (RBAudioscrobblerService *service);
 const char *rb_audioscrobbler_service_get_scrobbler_url (RBAudioscrobblerService *service);
 const char *rb_audioscrobbler_service_get_api_url (RBAudioscrobblerService *service);
+const char *rb_audioscrobbler_service_get_old_radio_api_url (RBAudioscrobblerService *service);
 const char *rb_audioscrobbler_service_get_api_key (RBAudioscrobblerService *service);
 const char *rb_audioscrobbler_service_get_api_secret (RBAudioscrobblerService *service);
 
