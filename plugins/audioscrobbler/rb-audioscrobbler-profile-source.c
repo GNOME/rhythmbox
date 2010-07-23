@@ -888,6 +888,9 @@ station_creator_button_clicked_cb (GtkButton *button,
 		RBAudioscrobblerRadioType type;
 		char *url;
 		char *name;
+		RBSource *radio;
+		RBShell *shell;
+		RBSourceList *sourcelist;
 
 		type = gtk_combo_box_get_active (GTK_COMBO_BOX (source->priv->station_creator_type_combo));
 
@@ -896,12 +899,17 @@ station_creator_button_clicked_cb (GtkButton *button,
 		name = g_strdup_printf (rb_audioscrobbler_radio_type_get_default_name (type),
 		                        arg);
 
-		add_radio_station (source, url, name);
+		radio = add_radio_station (source, url, name);
+		g_object_get (source, "shell", &shell, NULL);
+		g_object_get (shell, "sourcelist", &sourcelist, NULL);
+		rb_sourcelist_select (sourcelist, radio);
 
 		gtk_entry_set_text (GTK_ENTRY (source->priv->station_creator_arg_entry), "");
 
 		g_free (url);
 		g_free (name);
+		g_object_unref (shell);
+		g_object_unref (sourcelist);
 	}
 }
 
