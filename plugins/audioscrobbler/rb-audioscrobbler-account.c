@@ -32,6 +32,7 @@
 
 #include <libsoup/soup.h>
 #include <libsoup/soup-gnome.h>
+#include <json-glib/json-glib.h>
 
 #include "rb-audioscrobbler-account.h"
 #include "rb-builder-helpers.h"
@@ -484,9 +485,6 @@ request_token (RBAudioscrobblerAccount *account)
 	/* requests an authentication token
 	 * first stage of the authentication process
 	 */
-	char *api_url;
-	char *api_key;
-	char *api_secret;
 	char *sig_arg;
 	char *sig;
 	char *url;
@@ -500,20 +498,15 @@ request_token (RBAudioscrobblerAccount *account)
 		                                             NULL);
 	}
 
-	/* get the service details */
-	g_object_get (account->priv->service,
-	              "api-url", &api_url,
-	              "api-key", &api_key,
-	              "api-secret", &api_secret,
-	              NULL);
-
 	/* create the request */
 	sig_arg = g_strdup_printf ("api_key%smethodauth.getToken%s",
-	                           api_key,
-	                           api_secret);
+	                           rb_audioscrobbler_service_get_api_key (account->priv->service),
+	                           rb_audioscrobbler_service_get_api_secret (account->priv->service));
 	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
-	url = g_strdup_printf ("%s?method=auth.getToken&api_key=%s&api_sig=%s",
-			       api_url, api_key, sig);
+	url = g_strdup_printf ("%s?method=auth.getToken&api_key=%s&api_sig=%s&format=json",
+			       rb_audioscrobbler_service_get_api_url (account->priv->service),
+	                       rb_audioscrobbler_service_get_api_key (account->priv->service),
+	                       sig);
 
 	msg = soup_message_new ("GET", url);
 
@@ -529,9 +522,6 @@ request_token (RBAudioscrobblerAccount *account)
 	g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
 	               0, account->priv->login_status);
 
-	g_free (api_url);
-	g_free (api_key);
-	g_free (api_secret);
 	g_free (sig_arg);
 	g_free (sig);
 	g_free (url);
@@ -542,50 +532,49 @@ got_token_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
 {
 	/* parses the authentication token from the response
 	 */
-	RBAudioscrobblerAccount *account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
+	RBAudioscrobblerAccount *account;
+	JsonParser *parser;
 
-	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && msg->response_body->length != 0) {
-		char **pre_split;
-		char **post_split;
-		char *auth_url;
-		char *api_key;
-		char *url;
+	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
 
-		/* parse the response */
-		pre_split = g_strsplit (msg->response_body->data, "<token>", -1);
-		post_split = g_strsplit (pre_split[1], "</token>", -1);
-		account->priv->auth_token = g_strdup (post_split[0]);
+	parser = json_parser_new ();
 
-		rb_debug ("granted auth token \"%s\"", account->priv->auth_token);
+	if (msg->response_body->data != NULL &&
+	    json_parser_load_from_data (parser, msg->response_body->data, msg->response_body->length, NULL)) {
+		JsonObject *root_object;
 
-		/* get the service details */
-		g_object_get (account->priv->service,
-			      "auth-url", &auth_url,
-			      "api-key", &api_key,
-			      NULL);
+		root_object = json_node_get_object (json_parser_get_root (parser));
+		if (json_object_has_member (root_object, "token")) {
+			char *url;
 
-		/* send the user to the web page using the token */
-		url = g_strdup_printf ("%s?api_key=%s&token=%s",
-		                       auth_url,
-		                       api_key,
-		                       account->priv->auth_token);
-		rb_debug ("sending user to %s", url);
-		gtk_show_uri (NULL, url, GDK_CURRENT_TIME, NULL);
+			account->priv->auth_token = g_strdup (json_object_get_string_member (root_object, "token"));
+			rb_debug ("granted auth token \"%s\"", account->priv->auth_token);
 
-		/* add timeout which will ask for session key */
-		account->priv->session_key_timeout_id =
-			g_timeout_add_seconds (SESSION_KEY_REQUEST_TIMEOUT,
-			                       request_session_key_timeout_cb,
-			                       account);
+			/* send the user to the web page using the token */
+			url = g_strdup_printf ("%s?api_key=%s&token=%s",
+				               rb_audioscrobbler_service_get_auth_url (account->priv->service),
+				               rb_audioscrobbler_service_get_api_key (account->priv->service),
+				               account->priv->auth_token);
+			rb_debug ("sending user to %s", url);
+			gtk_show_uri (NULL, url, GDK_CURRENT_TIME, NULL);
 
-		g_strfreev (pre_split);
-		g_strfreev (post_split);
-		g_free (auth_url);
-		g_free (api_key);
-		g_free (url);
+			/* add timeout which will ask for session key */
+			account->priv->session_key_timeout_id =
+				g_timeout_add_seconds (SESSION_KEY_REQUEST_TIMEOUT,
+					               request_session_key_timeout_cb,
+					               account);
+
+			g_free (url);
+		} else {
+			rb_debug ("error retrieving auth token: %s",
+			          json_object_get_string_member (root_object, "message"));
+
+			/* go back to being logged out */
+			rb_audioscrobbler_account_logout (account);
+		}
 	} else {
-		/* failed. report connection error */
-		rb_debug ("connection error attempting to retrieve auth token");
+		/* treat as connection error */
+		rb_debug ("empty or invalid response retrieving auth token. treating as connection error");
 
 		cancel_session (account);
 
@@ -593,6 +582,8 @@ got_token_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
 		g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
 		               0, account->priv->login_status);
 	}
+
+	g_object_unref (parser);
 }
 
 static gboolean
@@ -600,9 +591,6 @@ request_session_key_timeout_cb (gpointer user_data)
 {
 	/* Periodically sends a request for the session key */
 	RBAudioscrobblerAccount *account;
-	char *api_url;
-	char *api_key;
-	char *api_secret;
 	char *sig_arg;
 	char *sig;
 	char *url;
@@ -611,22 +599,15 @@ request_session_key_timeout_cb (gpointer user_data)
 	g_assert (RB_IS_AUDIOSCROBBLER_ACCOUNT (user_data));
 	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
 
-	/* get the service details */
-	g_object_get (account->priv->service,
-	              "api-url", &api_url,
-	              "api-key", &api_key,
-	              "api-secret", &api_secret,
-	              NULL);
-
 	/* create the request */
 	sig_arg = g_strdup_printf ("api_key%smethodauth.getSessiontoken%s%s",
-	                           api_key,
+	                           rb_audioscrobbler_service_get_api_key (account->priv->service),
 	                           account->priv->auth_token,
-	                           api_secret);
+	                           rb_audioscrobbler_service_get_api_secret (account->priv->service));
 	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
-	url = g_strdup_printf ("%s?method=auth.getSession&api_key=%s&token=%s&api_sig=%s",
-	                       api_url,
-	                       api_key,
+	url = g_strdup_printf ("%s?method=auth.getSession&api_key=%s&token=%s&api_sig=%s&format=json",
+	                       rb_audioscrobbler_service_get_api_url (account->priv->service),
+	                       rb_audioscrobbler_service_get_api_key (account->priv->service),
 	                       account->priv->auth_token,
 	                       sig);
 
@@ -639,9 +620,6 @@ request_session_key_timeout_cb (gpointer user_data)
 	                            got_session_key_cb,
 	                            account);
 
-	g_free (api_url);
-	g_free (api_key);
-	g_free (api_secret);
 	g_free (sig_arg);
 	g_free (sig);
 	g_free (url);
@@ -659,68 +637,65 @@ got_session_key_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
 	 * on other errors stop trying and go to logged out state.
 	 */
 	RBAudioscrobblerAccount *account;
+	JsonParser *parser;
 
 	g_assert (RB_IS_AUDIOSCROBBLER_ACCOUNT (user_data));
 	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
 
-	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && msg->response_body->length != 0) {
-		char **pre_split;
-		char **post_split;
+	parser = json_parser_new ();
 
-		/* cancel the old session (and remove timeout) */
-		cancel_session (account);
+	if (msg->response_body->data != NULL &&
+	    json_parser_load_from_data (parser, msg->response_body->data, msg->response_body->length, NULL)) {
+		JsonObject *root_object;
 
-		/* parse the username */
-		pre_split = g_strsplit (msg->response_body->data, "<name>", -1);
-		post_split = g_strsplit (pre_split[1], "</name>", -1);
-		account->priv->username = g_strdup (post_split[0]);
-		g_strfreev (pre_split);
-		g_strfreev (post_split);
+		root_object = json_node_get_object (json_parser_get_root (parser));
+		if (json_object_has_member (root_object, "session")) {
+			JsonObject *session_object;
 
-		/* parse the session key */
-		pre_split = g_strsplit (msg->response_body->data, "<key>", -1);
-		post_split = g_strsplit (pre_split[1], "</key>", -1);
-		account->priv->session_key = g_strdup (post_split[0]);
-		g_strfreev (pre_split);
-		g_strfreev (post_split);
+			/* cancel the old session (and remove timeout) */
+			cancel_session (account);
 
-		/* save our session for future use */
-		rb_debug ("granted session key \"%s\" for user \"%s",
-		          account->priv->session_key,
-		          account->priv->username);
-		save_session_settings (account);
+			session_object = json_object_get_object_member (root_object, "session");
+			account->priv->username = g_strdup (json_object_get_string_member (session_object, "name"));
+			account->priv->session_key = g_strdup (json_object_get_string_member (session_object, "key"));
 
-		/* update status */
-		account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN;
-		g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
-		               0, account->priv->login_status);
-	} else if (msg->response_body->length != 0) {
-		char **pre_split;
-		char **post_split;
-		char *error;
+			rb_debug ("granted session key \"%s\" for user \"%s\"",
+				  account->priv->session_key,
+				  account->priv->username);
 
-		/* parse the error code */
-		pre_split = g_strsplit (msg->response_body->data, "<error code=\"", -1);
-		post_split = g_strsplit (pre_split[1], "\">", -1);
-		error = g_strdup (post_split[0]);
+			/* save our session for future use */
+			save_session_settings (account);
 
-		if (g_strcmp0 (error, "14") == 0) {
-			rb_debug ("auth token has not been authorised yet. will try again");
+			/* update status */
+			account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN;
+			g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
+				       0, account->priv->login_status);
 		} else {
-			/* some other error. most likely 4 (invalid token) or 15 (token has expired)
-			   whatever it is, we wont be retrieving a session key from it */
-			rb_debug ("error retrieving session key. giving up");
+			int code;
+			const char *message;
 
-			/* go back to being logged out */
-			rb_audioscrobbler_account_logout (account);
+			code = json_object_get_int_member (root_object, "error");
+			message = json_object_get_string_member (root_object, "message");
+
+			switch (code) {
+			case 14:
+				rb_debug ("auth token has not been authorised yet. will try again");
+				break;
+			default:
+				/* some other error. most likely 4 (invalid token) or 15 (token has expired)
+				 * whatever it is, we wont be retrieving a session key from it
+				 */
+				rb_debug ("error retrieving session key: %s", message);
+
+				/* go back to being logged out */
+				rb_audioscrobbler_account_logout (account);
+				break;
+			}
 		}
 
-		g_strfreev (pre_split);
-		g_strfreev (post_split);
-		g_free (error);
 	} else {
-		/* connection error */
-		rb_debug ("connection error attempting to retrieve session key");
+		/* treat as connection error */
+		rb_debug ("empty or invalid response retrieving session key. treating as connection error");
 
 		cancel_session (account);
 
@@ -728,6 +703,8 @@ got_session_key_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
 		g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
 		               0, account->priv->login_status);
 	}
+
+	g_object_unref (parser);
 }
 
 /* This should really be standard. */
