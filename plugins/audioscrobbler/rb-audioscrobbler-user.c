@@ -714,30 +714,26 @@ user_info_response_cb (SoupSession *session,
                        SoupMessage *msg,
                        gpointer user_data)
 {
-	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
-		RBAudioscrobblerUser *user;
-		RBAudioscrobblerUserData *user_info;
+	RBAudioscrobblerUser *user;
+	RBAudioscrobblerUserData *user_info;
 
-		user = RB_AUDIOSCROBBLER_USER (user_data);
-		user_info = parse_user_info (user, msg->response_body->data);
+	user = RB_AUDIOSCROBBLER_USER (user_data);
+	user_info = parse_user_info (user, msg->response_body->data);
 
-		if (user_info != NULL) {
-			rb_debug ("user info request was successful");
+	if (user_info != NULL) {
+		rb_debug ("user info request was successful");
 
-			if (user->priv->user_info != NULL) {
-				g_boxed_free (RB_TYPE_AUDIOSCROBBLER_USER_DATA, user->priv->user_info);
-			}
-			user->priv->user_info = user_info;
-
-			save_response_to_cache (user, "user_info", msg->response_body->data);
-
-			g_signal_emit (user, rb_audioscrobbler_user_signals[USER_INFO_UPDATED],
-			               0, user->priv->user_info);
-		} else {
-			rb_debug ("invalid response from user info request");
+		if (user->priv->user_info != NULL) {
+			g_boxed_free (RB_TYPE_AUDIOSCROBBLER_USER_DATA, user->priv->user_info);
 		}
+		user->priv->user_info = user_info;
+
+		save_response_to_cache (user, "user_info", msg->response_body->data);
+
+		g_signal_emit (user, rb_audioscrobbler_user_signals[USER_INFO_UPDATED],
+		               0, user->priv->user_info);
 	} else {
-		rb_debug ("user info request responded with error");
+		rb_debug ("invalid response from user info request");
 	}
 }
 
@@ -752,29 +748,33 @@ parse_user_info (RBAudioscrobblerUser *user, const char *data)
 	parser = json_parser_new ();
 	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
 		JsonObject *root_object;
-		JsonObject *user_object;
-
 		root_object = json_node_get_object (json_parser_get_root (parser));
-		user_object = json_object_get_object_member (root_object, "user");
 
-		user_info = g_slice_new0 (RBAudioscrobblerUserData);
-		user_info->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO;
-		user_info->user_info.username = g_strdup (json_object_get_string_member (user_object, "name"));
-		user_info->user_info.playcount = g_strdup (json_object_get_string_member (user_object, "playcount"));
-		user_info->url = g_strdup (json_object_get_string_member (user_object, "url"));
+		if (json_object_has_member (root_object, "user")) {
+			JsonObject *user_object;
+			user_object = json_object_get_object_member (root_object, "user");
 
-		user_info->image = gdk_pixbuf_new_from_file_at_size (calculate_cached_image_path (user, user_info),
-			                                             USER_PROFILE_IMAGE_SIZE, -1, NULL);
-		if (user_info->image == NULL && json_object_has_member (user_object, "image") == TRUE) {
-			JsonArray *image_array;
-			JsonObject *image_object;
+			user_info = g_slice_new0 (RBAudioscrobblerUserData);
+			user_info->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO;
+			user_info->user_info.username = g_strdup (json_object_get_string_member (user_object, "name"));
+			user_info->user_info.playcount = g_strdup (json_object_get_string_member (user_object, "playcount"));
+			user_info->url = g_strdup (json_object_get_string_member (user_object, "url"));
 
-			image_array = json_object_get_array_member (user_object, "image");
-			image_object = json_array_get_object_element (image_array, 2);
-			download_image (user, json_object_get_string_member (image_object, "#text"), user_info);
+			user_info->image = gdk_pixbuf_new_from_file_at_size (calculate_cached_image_path (user, user_info),
+					                                     USER_PROFILE_IMAGE_SIZE, -1, NULL);
+			if (user_info->image == NULL && json_object_has_member (user_object, "image") == TRUE) {
+				JsonArray *image_array;
+				JsonObject *image_object;
+
+				image_array = json_object_get_array_member (user_object, "image");
+				image_object = json_array_get_object_element (image_array, 2);
+				download_image (user, json_object_get_string_member (image_object, "#text"), user_info);
+			}
+		} else {
+			rb_debug ("error parsing user info response: no user object exists");
 		}
 	} else {
-		rb_debug ("error parsing user info response");
+		rb_debug ("error parsing user info response: empty or invalid response");
 	}
 
 	g_object_unref (parser);
@@ -839,30 +839,26 @@ recent_tracks_response_cb (SoupSession *session,
                            SoupMessage *msg,
                            gpointer user_data)
 {
-	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
-		RBAudioscrobblerUser *user;
-		GPtrArray *recent_tracks;
+	RBAudioscrobblerUser *user;
+	GPtrArray *recent_tracks;
 
-		user = RB_AUDIOSCROBBLER_USER (user_data);
-		recent_tracks = parse_recent_tracks (user, msg->response_body->data);
+	user = RB_AUDIOSCROBBLER_USER (user_data);
+	recent_tracks = parse_recent_tracks (user, msg->response_body->data);
 
-		if (recent_tracks != NULL) {
-			rb_debug ("recent tracks request was successful");
+	if (recent_tracks != NULL) {
+		rb_debug ("recent tracks request was successful");
 
-			if (user->priv->recent_tracks != NULL) {
-				g_ptr_array_unref (user->priv->recent_tracks);
-			}
-			user->priv->recent_tracks = recent_tracks;
-
-			save_response_to_cache (user, "recent_tracks", msg->response_body->data);
-
-			g_signal_emit (user, rb_audioscrobbler_user_signals[RECENT_TRACKS_UPDATED],
-			               0, user->priv->recent_tracks);
-		} else {
-			rb_debug ("invalid response from recent tracks request");
+		if (user->priv->recent_tracks != NULL) {
+			g_ptr_array_unref (user->priv->recent_tracks);
 		}
+		user->priv->recent_tracks = recent_tracks;
+
+		save_response_to_cache (user, "recent_tracks", msg->response_body->data);
+
+		g_signal_emit (user, rb_audioscrobbler_user_signals[RECENT_TRACKS_UPDATED],
+		               0, user->priv->recent_tracks);
 	} else {
-		rb_debug ("recent tracks request responded with error");
+		rb_debug ("invalid response from recent tracks request");
 	}
 }
 
@@ -877,19 +873,23 @@ parse_recent_tracks (RBAudioscrobblerUser *user, const char *data)
 	parser = json_parser_new ();
 	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
 		JsonObject *root_object;
-		JsonObject *recent_tracks_object;
-
 		root_object = json_node_get_object (json_parser_get_root (parser));
-		recent_tracks_object = json_object_get_object_member (root_object, "recenttracks");
 
-		if (json_object_has_member (recent_tracks_object, "track") == TRUE) {
-			JsonArray *track_array;
+		if (json_object_has_member (root_object, "recenttracks")) {
+			JsonObject *recent_tracks_object;
+			recent_tracks_object = json_object_get_object_member (root_object, "recenttracks");
 
-			track_array = json_object_get_array_member (recent_tracks_object, "track");
-			recent_tracks = parse_track_array (user, track_array);
+			if (json_object_has_member (recent_tracks_object, "track") == TRUE) {
+				JsonArray *track_array;
+
+				track_array = json_object_get_array_member (recent_tracks_object, "track");
+				recent_tracks = parse_track_array (user, track_array);
+			}
+		} else {
+			rb_debug ("error parsing recent tracks response: no recenttracks object exists");
 		}
 	} else {
-		rb_debug ("error parsing recent tracks response");
+		rb_debug ("error parsing recent tracks response: empty or invalid response");
 	}
 
 	g_object_unref (parser);
@@ -954,30 +954,26 @@ top_tracks_response_cb (SoupSession *session,
                         SoupMessage *msg,
                         gpointer user_data)
 {
-	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
-		RBAudioscrobblerUser *user;
-		GPtrArray *top_tracks;
+	RBAudioscrobblerUser *user;
+	GPtrArray *top_tracks;
 
-		user = RB_AUDIOSCROBBLER_USER (user_data);
-		top_tracks = parse_top_tracks (user, msg->response_body->data);
+	user = RB_AUDIOSCROBBLER_USER (user_data);
+	top_tracks = parse_top_tracks (user, msg->response_body->data);
 
-		if (top_tracks != NULL) {
-			rb_debug ("top tracks request was successful");
+	if (top_tracks != NULL) {
+		rb_debug ("top tracks request was successful");
 
-			if (user->priv->top_tracks != NULL) {
-				g_ptr_array_unref (user->priv->top_tracks);
-			}
-			user->priv->top_tracks = top_tracks;
-
-			save_response_to_cache (user, "top_tracks", msg->response_body->data);
-
-			g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_TRACKS_UPDATED],
-			               0, user->priv->top_tracks);
-		} else {
-			rb_debug ("invalid response from top tracks request");
+		if (user->priv->top_tracks != NULL) {
+			g_ptr_array_unref (user->priv->top_tracks);
 		}
+		user->priv->top_tracks = top_tracks;
+
+		save_response_to_cache (user, "top_tracks", msg->response_body->data);
+
+		g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_TRACKS_UPDATED],
+		               0, user->priv->top_tracks);
 	} else {
-		rb_debug ("top tracks request responded with error");
+		rb_debug ("invalid response from top tracks request");
 	}
 }
 
@@ -992,19 +988,23 @@ parse_top_tracks (RBAudioscrobblerUser *user, const char *data)
 	parser = json_parser_new ();
 	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
 		JsonObject *root_object;
-		JsonObject *top_tracks_object;
-
 		root_object = json_node_get_object (json_parser_get_root (parser));
-		top_tracks_object = json_object_get_object_member (root_object, "tracks");
 
-		if (json_object_has_member (top_tracks_object, "track") == TRUE) {
-			JsonArray *track_array;
+		if (json_object_has_member (root_object, "tracks")) {
+			JsonObject *top_tracks_object;
+			top_tracks_object = json_object_get_object_member (root_object, "tracks");
 
-			track_array = json_object_get_array_member (top_tracks_object, "track");
-			top_tracks = parse_track_array (user, track_array);
+			if (json_object_has_member (top_tracks_object, "track") == TRUE) {
+				JsonArray *track_array;
+
+				track_array = json_object_get_array_member (top_tracks_object, "track");
+				top_tracks = parse_track_array (user, track_array);
+			}
+		} else {
+			rb_debug ("error parsing top tracks response: no tracks object exists");
 		}
 	} else {
-		rb_debug ("error parsing top tracks response");
+		rb_debug ("error parsing top tracks response: empty or invalid response");
 	}
 
 	g_object_unref (parser);
@@ -1069,30 +1069,26 @@ loved_tracks_response_cb (SoupSession *session,
                           SoupMessage *msg,
                           gpointer user_data)
 {
-	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
-		RBAudioscrobblerUser *user;
-		GPtrArray *loved_tracks;
+	RBAudioscrobblerUser *user;
+	GPtrArray *loved_tracks;
 
-		user = RB_AUDIOSCROBBLER_USER (user_data);
-		loved_tracks = parse_loved_tracks (user, msg->response_body->data);
+	user = RB_AUDIOSCROBBLER_USER (user_data);
+	loved_tracks = parse_loved_tracks (user, msg->response_body->data);
 
-		if (loved_tracks != NULL) {
-			rb_debug ("loved tracks request was successful");
+	if (loved_tracks != NULL) {
+		rb_debug ("loved tracks request was successful");
 
-			if (user->priv->loved_tracks != NULL) {
-				g_ptr_array_unref (user->priv->loved_tracks);
-			}
-			user->priv->loved_tracks = loved_tracks;
-
-			save_response_to_cache (user, "loved_tracks", msg->response_body->data);
-
-			g_signal_emit (user, rb_audioscrobbler_user_signals[LOVED_TRACKS_UPDATED],
-			               0, user->priv->loved_tracks);
-		} else {
-			rb_debug ("invalid response from loved tracks request");
+		if (user->priv->loved_tracks != NULL) {
+			g_ptr_array_unref (user->priv->loved_tracks);
 		}
+		user->priv->loved_tracks = loved_tracks;
+
+		save_response_to_cache (user, "loved_tracks", msg->response_body->data);
+
+		g_signal_emit (user, rb_audioscrobbler_user_signals[LOVED_TRACKS_UPDATED],
+		               0, user->priv->loved_tracks);
 	} else {
-		rb_debug ("loved tracks request responded with error");
+		rb_debug ("invalid response from loved tracks request");
 	}
 }
 
@@ -1107,19 +1103,23 @@ parse_loved_tracks (RBAudioscrobblerUser *user, const char *data)
 	parser = json_parser_new ();
 	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
 		JsonObject *root_object;
-		JsonObject *loved_tracks_object;
-
 		root_object = json_node_get_object (json_parser_get_root (parser));
-		loved_tracks_object = json_object_get_object_member (root_object, "lovedtracks");
 
-		if (json_object_has_member (loved_tracks_object, "track") == TRUE) {
-			JsonArray *track_array;
+		if (json_object_has_member (root_object, "lovedtracks")) {
+			JsonObject *loved_tracks_object;
+			loved_tracks_object = json_object_get_object_member (root_object, "lovedtracks");
 
-			track_array = json_object_get_array_member (loved_tracks_object, "track");
-			loved_tracks = parse_track_array (user, track_array);
+			if (json_object_has_member (loved_tracks_object, "track") == TRUE) {
+				JsonArray *track_array;
+
+				track_array = json_object_get_array_member (loved_tracks_object, "track");
+				loved_tracks = parse_track_array (user, track_array);
+			}
+		} else {
+			rb_debug ("error parsing loved tracks response: no lovedtracks object exists");
 		}
 	} else {
-		rb_debug ("error parsing loved tracks response");
+		rb_debug ("error parsing loved tracks response: empty or invalid response");
 	}
 
 	g_object_unref (parser);
@@ -1184,30 +1184,26 @@ top_artists_response_cb (SoupSession *session,
                          SoupMessage *msg,
                          gpointer user_data)
 {
-	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
-		RBAudioscrobblerUser *user;
-		GPtrArray *top_artists;
+	RBAudioscrobblerUser *user;
+	GPtrArray *top_artists;
 
-		user = RB_AUDIOSCROBBLER_USER (user_data);
-		top_artists = parse_top_artists (user, msg->response_body->data);
+	user = RB_AUDIOSCROBBLER_USER (user_data);
+	top_artists = parse_top_artists (user, msg->response_body->data);
 
-		if (top_artists != NULL) {
-			rb_debug ("top artists request was successful");
+	if (top_artists != NULL) {
+		rb_debug ("top artists request was successful");
 
-			if (user->priv->top_artists != NULL) {
-				g_ptr_array_unref (user->priv->top_artists);
-			}
-			user->priv->top_artists = top_artists;
-
-			save_response_to_cache (user, "top_artists", msg->response_body->data);
-
-			g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_ARTISTS_UPDATED],
-			               0, user->priv->top_artists);
-		} else {
-			rb_debug ("invalid response from top artists request");
+		if (user->priv->top_artists != NULL) {
+			g_ptr_array_unref (user->priv->top_artists);
 		}
+		user->priv->top_artists = top_artists;
+
+		save_response_to_cache (user, "top_artists", msg->response_body->data);
+
+		g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_ARTISTS_UPDATED],
+		               0, user->priv->top_artists);
 	} else {
-		rb_debug ("top artists request responded with error");
+		rb_debug ("invalid response from top artists request");
 	}
 }
 
@@ -1222,19 +1218,23 @@ parse_top_artists (RBAudioscrobblerUser *user, const char *data)
 	parser = json_parser_new ();
 	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
 		JsonObject *root_object;
-		JsonObject *top_artists_object;
-
 		root_object = json_node_get_object (json_parser_get_root (parser));
-		top_artists_object = json_object_get_object_member (root_object, "artists");
 
-		if (json_object_has_member (top_artists_object, "artist") == TRUE) {
-			JsonArray *artist_array;
+		if (json_object_has_member (root_object, "artists")) {
+			JsonObject *top_artists_object;
+			top_artists_object = json_object_get_object_member (root_object, "artists");
 
-			artist_array = json_object_get_array_member (top_artists_object, "artist");
-			top_artists = parse_artist_array (user, artist_array);
+			if (json_object_has_member (top_artists_object, "artist") == TRUE) {
+				JsonArray *artist_array;
+
+				artist_array = json_object_get_array_member (top_artists_object, "artist");
+				top_artists = parse_artist_array (user, artist_array);
+			}
+		} else {
+			rb_debug ("error parsing top artists response: no artists object exists");
 		}
 	} else {
-		rb_debug ("error parsing top artists response");
+		rb_debug ("error parsing top artists response: empty or invalid response");
 	}
 
 	g_object_unref (parser);
@@ -1311,30 +1311,26 @@ recommended_artists_response_cb (SoupSession *session,
                                  SoupMessage *msg,
                                  gpointer user_data)
 {
-	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
-		RBAudioscrobblerUser *user;
-		GPtrArray *recommended_artists;
+	RBAudioscrobblerUser *user;
+	GPtrArray *recommended_artists;
 
-		user = RB_AUDIOSCROBBLER_USER (user_data);
-		recommended_artists = parse_recommended_artists (user, msg->response_body->data);
+	user = RB_AUDIOSCROBBLER_USER (user_data);
+	recommended_artists = parse_recommended_artists (user, msg->response_body->data);
 
-		if (recommended_artists != NULL) {
-			rb_debug ("recommended artists request was successful");
+	if (recommended_artists != NULL) {
+		rb_debug ("recommended artists request was successful");
 
-			if (user->priv->recommended_artists != NULL) {
-				g_ptr_array_unref (user->priv->recommended_artists);
-			}
-			user->priv->recommended_artists = recommended_artists;
-
-			save_response_to_cache (user, "recommended_artists", msg->response_body->data);
-
-			g_signal_emit (user, rb_audioscrobbler_user_signals[RECOMMENDED_ARTISTS_UPDATED],
-			               0, user->priv->recommended_artists);
-		} else {
-			rb_debug ("invalid response from recommended artists request");
+		if (user->priv->recommended_artists != NULL) {
+			g_ptr_array_unref (user->priv->recommended_artists);
 		}
+		user->priv->recommended_artists = recommended_artists;
+
+		save_response_to_cache (user, "recommended_artists", msg->response_body->data);
+
+		g_signal_emit (user, rb_audioscrobbler_user_signals[RECOMMENDED_ARTISTS_UPDATED],
+		               0, user->priv->recommended_artists);
 	} else {
-		rb_debug ("recommended artists request responded with error");
+		rb_debug ("invalid response from recommended artists request");
 	}
 }
 
@@ -1349,14 +1345,9 @@ parse_recommended_artists (RBAudioscrobblerUser *user, const char *data)
 	parser = json_parser_new ();
 	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
 		JsonObject *root_object;
-
 		root_object = json_node_get_object (json_parser_get_root (parser));
 
-		if (json_object_has_member (root_object, "error")) {
-			/* probably bad authentication. Unlike with scrobbling or radio playback,
-			 * this is not a problem: we'll just live with no recommendations */
-			rb_debug ("user.getRecommendedArtists failed due to bad authentication");
-		} else {
+		if (json_object_has_member (root_object, "recommendations")) {
 			JsonObject *recommended_artists_object;
 			recommended_artists_object = json_object_get_object_member (root_object, "recommendations");
 
@@ -1366,9 +1357,12 @@ parse_recommended_artists (RBAudioscrobblerUser *user, const char *data)
 				artist_array = json_object_get_array_member (recommended_artists_object, "artist");
 				recommended_artists = parse_artist_array (user, artist_array);
 			}
+		} else {
+			rb_debug ("error parsing recommended artists response: no recommendations object exists");
+			rb_debug ("probably due to authentication error");
 		}
 	} else {
-		rb_debug ("error parsing recommended artists response");
+		rb_debug ("error parsing recommended artists response: empty or invalid response");
 	}
 
 	g_object_unref (parser);
