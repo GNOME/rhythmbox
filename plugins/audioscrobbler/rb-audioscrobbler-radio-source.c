@@ -26,6 +26,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
  */
 
+#include "config.h"
 #include <string.h>
 #include <unistd.h>
 #include <libsoup/soup.h>
@@ -33,6 +34,10 @@
 #include <json-glib/json-glib.h>
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
+
+#ifdef WITH_GNOME_KEYRING
+#include <gnome-keyring-1/gnome-keyring.h>
+#endif
 
 #include <totem-pl-parser.h>
 
@@ -129,8 +134,11 @@ struct _RBAudioscrobblerRadioSourcePrivate
 
 	SoupSession *soup_session;
 
-	GtkWidget *info_bar;
-	GtkWidget *info_bar_label;
+	GtkWidget *error_info_bar;
+	GtkWidget *error_info_bar_label;
+
+	GtkWidget *password_info_bar;
+	GtkWidget *password_info_bar_entry;
 
 	RBEntryView *track_view;
 	RhythmDBQueryModel *track_model;
@@ -198,6 +206,14 @@ static void old_api_tune_response_cb (SoupSession *session,
                                       SoupMessage *msg,
                                       gpointer user_data);
 static void old_api_fetch_playlist (RBAudioscrobblerRadioSource *source);
+
+/* info bar related things */
+static void display_error_info_bar (RBAudioscrobblerRadioSource *source,
+                                    const char *message);
+static void display_password_info_bar (RBAudioscrobblerRadioSource *source);
+static void password_info_bar_response_cb (GtkInfoBar *info_bar,
+                                           int response_id,
+                                           RBAudioscrobblerRadioSource *source);
 
 /* action callbacks */
 static void rename_station_action_cb (GtkAction *action,
@@ -386,7 +402,9 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	RBShell *shell;
 	RhythmDB *db;
 	GtkWidget *main_vbox;
-	GtkWidget *info_bar_content_area;
+	GtkWidget *error_info_bar_content_area;
+	GtkWidget *password_info_bar_label;
+	GtkWidget *password_info_bar_content_area;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_radio_source_parent_class, constructed, object);
 
@@ -398,11 +416,29 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	gtk_widget_show (main_vbox);
 	gtk_container_add (GTK_CONTAINER (source), main_vbox);
 
-	source->priv->info_bar = gtk_info_bar_new ();
-	source->priv->info_bar_label = gtk_label_new ("");
-	info_bar_content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (source->priv->info_bar));
-	gtk_container_add (GTK_CONTAINER (info_bar_content_area), source->priv->info_bar_label);
-	gtk_box_pack_start (GTK_BOX (main_vbox), source->priv->info_bar, FALSE, FALSE, 0);
+	/* error info bar */
+	source->priv->error_info_bar = gtk_info_bar_new ();
+	source->priv->error_info_bar_label = gtk_label_new ("");
+	error_info_bar_content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (source->priv->error_info_bar));
+	gtk_container_add (GTK_CONTAINER (error_info_bar_content_area), source->priv->error_info_bar_label);
+	gtk_box_pack_start (GTK_BOX (main_vbox), source->priv->error_info_bar, FALSE, FALSE, 0);
+
+	/* password info bar */
+	source->priv->password_info_bar = gtk_info_bar_new ();
+	password_info_bar_label = gtk_label_new (_("You must enter your password to listen to this station"));
+	password_info_bar_content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (source->priv->password_info_bar));
+	gtk_container_add (GTK_CONTAINER (password_info_bar_content_area), password_info_bar_label);
+	source->priv->password_info_bar_entry = gtk_entry_new ();
+	gtk_entry_set_visibility (GTK_ENTRY (source->priv->password_info_bar_entry), FALSE);
+	gtk_info_bar_add_action_widget (GTK_INFO_BAR (source->priv->password_info_bar),
+	                                source->priv->password_info_bar_entry,
+	                                GTK_RESPONSE_NONE);
+	gtk_info_bar_add_button (GTK_INFO_BAR (source->priv->password_info_bar), GTK_STOCK_OK, GTK_RESPONSE_OK);
+	g_signal_connect (source->priv->password_info_bar,
+	                  "response",
+	                  G_CALLBACK (password_info_bar_response_cb),
+	                  source);
+	gtk_box_pack_start (GTK_BOX (main_vbox), source->priv->password_info_bar, FALSE, FALSE, 0);
 
 	/* entry view */
 	source->priv->track_view = rb_entry_view_new (db, rb_shell_get_player (shell), NULL, FALSE, FALSE);
@@ -637,7 +673,8 @@ tune (RBAudioscrobblerRadioSource *source)
 	}
 
 	source->priv->is_busy = TRUE;
-	gtk_widget_hide (source->priv->info_bar);
+	gtk_widget_hide (source->priv->error_info_bar);
+	gtk_widget_hide (source->priv->password_info_bar);
 
 	sig_arg = g_strdup_printf ("api_key%smethodradio.tunesk%sstation%s%s",
 	                           rb_audioscrobbler_service_get_api_key (source->priv->service),
@@ -691,9 +728,7 @@ tune_response_cb (SoupSession *session,
 
 	if (msg->response_body->data == NULL) {
 		rb_debug ("no response from tune request");
-		gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), _("Error tuning station: no response"));
-		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->info_bar), GTK_MESSAGE_WARNING);
-		gtk_widget_show_all (source->priv->info_bar);
+		display_error_info_bar (source, _("Error tuning station: no response"));
 		source->priv->is_busy = FALSE;
 
 	} else if (json_parser_load_from_data (parser, msg->response_body->data, msg->response_body->length, NULL)) {
@@ -742,9 +777,7 @@ tune_response_cb (SoupSession *session,
 					error_message = g_strdup_printf ("Error tuning station: %i - %s", code, message);
 				}
 
-				gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), error_message);
-				gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->info_bar), GTK_MESSAGE_WARNING);
-				gtk_widget_show_all (source->priv->info_bar);
+				display_error_info_bar (source, error_message);
 
 				g_free (error_message);
 
@@ -753,9 +786,7 @@ tune_response_cb (SoupSession *session,
 		}
 	} else {
 		rb_debug ("invalid response from tune request: %s", msg->response_body->data);
-		gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), _("Error tuning station: invalid response"));
-		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->info_bar), GTK_MESSAGE_WARNING);
-		gtk_widget_show_all (source->priv->info_bar);
+		display_error_info_bar(source, _("Error tuning station: invalid response"));
 		source->priv->is_busy = FALSE;
 	}
 }
@@ -966,17 +997,6 @@ xspf_entry_parsed (TotemPlParser *parser,
 	g_object_unref (db);
 }
 
-void
-rb_audioscrobbler_radio_source_set_old_api_password (RBAudioscrobblerRadioSource *source,
-                                                     const char *password)
-{
-	g_free (source->priv->old_api_password);
-	source->priv->old_api_password = g_strdup (password);
-
-	g_free (source->priv->old_api_session_id);
-	source->priv->old_api_session_id = NULL;
-}
-
 static void
 old_api_shake_hands (RBAudioscrobblerRadioSource *source)
 {
@@ -1002,8 +1022,30 @@ old_api_shake_hands (RBAudioscrobblerRadioSource *source)
 		g_free (password_hash);
 		g_free (msg_url);
 	} else {
-		rb_debug ("cannot shake hands: no old api password is set");
-		source->priv->is_busy = FALSE;
+#ifdef WITH_GNOME_KEYRING
+		GnomeKeyringResult result;
+		char *password;
+
+		rb_debug ("attempting to retrieve password from keyring");
+		result = gnome_keyring_find_password_sync (GNOME_KEYRING_NETWORK_PASSWORD,
+		                                           &password,
+		                                           "user", source->priv->username,
+		                                           "server", rb_audioscrobbler_service_get_name (source->priv->service),
+		                                           NULL);
+
+		if (result == GNOME_KEYRING_RESULT_OK) {
+			source->priv->old_api_password = g_strdup (password);
+			rb_debug ("password found. shaking hands");
+			old_api_shake_hands (source);
+		} else {
+			rb_debug ("no password found");
+#endif
+			rb_debug ("cannot shake hands. asking user for password");
+			display_password_info_bar (source);
+			source->priv->is_busy = FALSE;
+#ifdef WITH_GNOME_KEYRING
+		}
+#endif
 	}
 }
 
@@ -1020,6 +1062,7 @@ old_api_handshake_response_cb (SoupSession *session,
 		g_free (source->priv->old_api_session_id);
 		source->priv->old_api_session_id = NULL;
 		rb_debug ("handshake failed: no response");
+		display_error_info_bar (source, _("Error tuning station: no response"));
 	} else {
 		char **pieces;
 		int i;
@@ -1034,7 +1077,11 @@ old_api_handshake_response_cb (SoupSession *session,
 				if (strcmp (values[1], "FAILED") == 0) {
 					g_free (source->priv->old_api_session_id);
 					source->priv->old_api_session_id = NULL;
-					rb_debug ("handshake failed");
+
+					rb_debug ("handshake failed: probably bad authentication. asking user for new password");
+					g_free (source->priv->old_api_password);
+					source->priv->old_api_password = NULL;
+					display_password_info_bar (source);
 				} else {
 					g_free (source->priv->old_api_session_id);
 					source->priv->old_api_session_id = g_strdup (values[1]);
@@ -1131,9 +1178,7 @@ old_api_tune_response_cb (SoupSession *session,
 				rb_debug ("old api tune request responded with error: %s", pieces[i]);
 
 				error_message = g_strdup_printf (_("Error tuning station: %s"), values[1]);
-				gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), error_message);
-				gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->info_bar), GTK_MESSAGE_WARNING);
-				gtk_widget_show_all (source->priv->info_bar);
+
 
 				g_free (error_message);
 
@@ -1147,9 +1192,7 @@ old_api_tune_response_cb (SoupSession *session,
 		g_strfreev (pieces);
 	} else {
 		rb_debug ("no response from old api tune request");
-		gtk_label_set_label (GTK_LABEL (source->priv->info_bar_label), _("Error tuning station: no response"));
-		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->info_bar), GTK_MESSAGE_WARNING);
-		gtk_widget_show_all (source->priv->info_bar);
+		display_error_info_bar (source, _("Error tuning station: no response"));
 		source->priv->is_busy = FALSE;
 	}
 }
@@ -1175,6 +1218,55 @@ old_api_fetch_playlist (RBAudioscrobblerRadioSource *source)
 		                    source);
 
 	g_free (msg_url);
+}
+
+static void
+display_error_info_bar (RBAudioscrobblerRadioSource *source,
+                        const char *message)
+{
+	gtk_label_set_label (GTK_LABEL (source->priv->error_info_bar_label), message);
+	gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->error_info_bar), GTK_MESSAGE_WARNING);
+	gtk_widget_show_all (source->priv->error_info_bar);
+}
+
+static void
+display_password_info_bar (RBAudioscrobblerRadioSource *source)
+{
+	gtk_widget_show_all (source->priv->password_info_bar);
+}
+
+static void
+password_info_bar_response_cb (GtkInfoBar *info_bar,
+                               int response_id,
+                               RBAudioscrobblerRadioSource *source)
+{
+	gtk_widget_hide (source->priv->password_info_bar);
+
+	g_free (source->priv->old_api_password);
+	source->priv->old_api_password = g_strdup (gtk_entry_get_text (GTK_ENTRY (source->priv->password_info_bar_entry)));
+
+#ifdef WITH_GNOME_KEYRING
+	/* save the new password */
+	char *password_desc;
+
+	password_desc = g_strdup_printf (_("Password for streaming %s radio using the deprecated API"),
+	                                 rb_audioscrobbler_service_get_name (source->priv->service));
+
+	rb_debug ("saving password to keyring");
+	gnome_keyring_store_password_sync (GNOME_KEYRING_NETWORK_PASSWORD,
+	                                   GNOME_KEYRING_DEFAULT,
+	                                   password_desc,
+	                                   source->priv->old_api_password,
+	                                   "user", source->priv->username,
+	                                   "server", rb_audioscrobbler_service_get_name (source->priv->service),
+	                                   NULL);
+
+	g_free (password_desc);
+#endif
+
+	gtk_entry_set_text (GTK_ENTRY (source->priv->password_info_bar_entry), "");
+
+	old_api_shake_hands (source);
 }
 
 static void
