@@ -58,21 +58,21 @@ G_DEFINE_TYPE (RBSyncStateUI, rb_sync_state_ui, GTK_TYPE_VBOX)
 
 
 static char *
-value_formatter (gdouble percent, gpointer data)
+value_formatter (gdouble percent, RBSyncBarData *bar)
 {
-	gsize total_size = GPOINTER_TO_SIZE (data);
-	return g_format_size_for_display (percent * total_size);
+	return g_format_size_for_display (percent * bar->capacity);
 }
 
 void
 rb_sync_state_ui_create_bar (RBSyncBarData *bar, guint64 capacity, GtkWidget *label)
 {
 	bar->widget = rb_segmented_bar_new ();
+	bar->capacity = capacity;
 	g_object_set (bar->widget, "show-labels", TRUE, NULL);
 
 	rb_segmented_bar_set_value_formatter (RB_SEGMENTED_BAR (bar->widget),
-					      value_formatter,
-					      GSIZE_TO_POINTER (capacity));
+					      (RBSegmentedBarValueFormatter) value_formatter,
+					      bar);
 
 	bar->music_segment = rb_segmented_bar_add_segment (RB_SEGMENTED_BAR (bar->widget),_("Music"), 0.0, 0.2, 0.4, 0.65, 1.0);
 	bar->podcast_segment = rb_segmented_bar_add_segment (RB_SEGMENTED_BAR (bar->widget), _("Podcasts"), 0.0, 0.96, 0.47, 0.0, 1.0);
@@ -98,30 +98,28 @@ rb_sync_state_ui_update_volume_usage (RBSyncBarData *bar, RBSyncState *state)
 {
 	RBMediaPlayerSource *source;
 	double fraction;
-	guint64 capacity;
 	guint64 total_other;
 	guint64 free_space;
 
 	g_object_get (state, "source", &source, NULL);
-	capacity = rb_media_player_source_get_capacity (source);
 	free_space = rb_media_player_source_get_free_space (source);
 	g_object_unref (source);
 
-	total_other = capacity - (free_space + state->total_music_size + state->total_podcast_size);
+	total_other = bar->capacity - (free_space + state->total_music_size + state->total_podcast_size);
 
-	fraction = (double)state->total_music_size/(double)capacity;
+	fraction = (double)state->total_music_size/(double)bar->capacity;
 	rb_segmented_bar_update_segment (RB_SEGMENTED_BAR (bar->widget),
 					 bar->music_segment,
 					 fraction);
-	fraction = (double)state->total_podcast_size/(double)capacity;
+	fraction = (double)state->total_podcast_size/(double)bar->capacity;
 	rb_segmented_bar_update_segment (RB_SEGMENTED_BAR (bar->widget),
 					 bar->podcast_segment,
 					 fraction);
-	fraction = (double)total_other/(double)capacity;
+	fraction = (double)total_other/(double)bar->capacity;
 	rb_segmented_bar_update_segment (RB_SEGMENTED_BAR (bar->widget),
 					 bar->other_segment,
 					 fraction);
-	fraction = (double)free_space/(double)capacity;
+	fraction = (double)free_space/(double)bar->capacity;
 	rb_segmented_bar_update_segment (RB_SEGMENTED_BAR (bar->widget),
 					 bar->free_segment,
 					 fraction);
@@ -137,29 +135,27 @@ update_sync_after_bar (RBSyncBarData *bar, RBSyncState *state)
 	double other_fraction;
 	double free_fraction;
 	guint64 total_other_size;
-	guint64 device_capacity;
 
 	g_object_get (state,
 		      "source", &source,
 		      "sync-settings", &settings,
 		      NULL);
-	device_capacity = rb_media_player_source_get_capacity (source);
 
 	if (rb_sync_settings_has_enabled_groups (settings, SYNC_CATEGORY_MUSIC) ||
 	    rb_sync_settings_sync_category (settings, SYNC_CATEGORY_MUSIC)) {
-		music_fraction = (double)state->sync_music_size / (double)device_capacity;
+		music_fraction = (double)state->sync_music_size / (double)bar->capacity;
 	} else {
-		music_fraction = (double)state->total_music_size / (double)device_capacity;
+		music_fraction = (double)state->total_music_size / (double)bar->capacity;
 	}
 	if (rb_sync_settings_has_enabled_groups (settings, SYNC_CATEGORY_PODCAST) ||
 	    rb_sync_settings_sync_category (settings, SYNC_CATEGORY_PODCAST)) {
-		podcast_fraction = (double)state->sync_podcast_size / (double)device_capacity;
+		podcast_fraction = (double)state->sync_podcast_size / (double)bar->capacity;
 	} else {
-		podcast_fraction = (double)state->total_podcast_size / (double)device_capacity;
+		podcast_fraction = (double)state->total_podcast_size / (double)bar->capacity;
 	}
 
-	total_other_size = device_capacity - (rb_media_player_source_get_free_space (source) + state->total_music_size + state->total_podcast_size);
-	other_fraction = (double)total_other_size / (double)device_capacity;
+	total_other_size = bar->capacity - (rb_media_player_source_get_free_space (source) + state->total_music_size + state->total_podcast_size);
+	other_fraction = (double)total_other_size / (double)bar->capacity;
 
 	free_fraction = 1.0 - (music_fraction + podcast_fraction + other_fraction);
 	if (free_fraction < 0.0) {

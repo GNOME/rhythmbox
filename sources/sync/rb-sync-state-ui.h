@@ -45,6 +45,7 @@ struct _RBSyncBarData
 	guint podcast_segment;
 	guint other_segment;
 	guint free_segment;
+	guint64 capacity;
 };
 
 void	rb_sync_state_ui_create_bar (RBSyncBarData *bar, guint64 capacity, GtkWidget *label);
