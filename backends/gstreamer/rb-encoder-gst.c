@@ -421,7 +421,7 @@ start_pipeline (RBEncoderGst *encoder, GError **error)
 	return (result != GST_STATE_CHANGE_FAILURE);
 }
 
-static const char *GST_ENCODING_PROFILE = "audioresample ! audioconvert ! %s";
+static const char *GST_ENCODING_PROFILE = "audioconvert ! audioresample ! %s";
 
 static GstElement*
 add_encoding_pipeline (RBEncoderGst *encoder,
