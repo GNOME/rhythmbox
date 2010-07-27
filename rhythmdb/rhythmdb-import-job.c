@@ -371,7 +371,9 @@ rhythmdb_import_job_get_total (RhythmDBImportJob *job)
  * rhythmdb_import_job_get_imported:
  * @job: the #RhythmDBImportJob
  *
- * Return value: the number of files processed so far 
+ * Returns the number of files processed by the import job so far.
+ *
+ * Return value: file count
  */
 int
 rhythmdb_import_job_get_imported (RhythmDBImportJob *job)
@@ -383,7 +385,9 @@ rhythmdb_import_job_get_imported (RhythmDBImportJob *job)
  * rhythmdb_import_job_scan_complete:
  * @job: the #RhythmDBImportJob
  *
- * Return value: TRUE if the directory scan is complete
+ * Returns whether the directory scan phase of the import job is complete.
+ *
+ * Return value: TRUE if complete
  */
 gboolean
 rhythmdb_import_job_scan_complete (RhythmDBImportJob *job)
@@ -395,7 +399,9 @@ rhythmdb_import_job_scan_complete (RhythmDBImportJob *job)
  * rhythmdb_import_job_complete:
  * @job: the #RhythmDBImportJob
  *
- * Return value: TRUE if the import job is complete.
+ * Returns whether the import job is complete.
+ *
+ * Return value: TRUE if complete.
  */
 gboolean
 rhythmdb_import_job_complete (RhythmDBImportJob *job)
