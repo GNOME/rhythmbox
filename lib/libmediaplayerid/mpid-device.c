@@ -26,6 +26,24 @@
 #include "mediaplayerid.h"
 #include "mpid-private.h"
 
+/**
+ * SECTION:mediaplayerid
+ * @short_description: Media player device information library
+ *
+ * MPID provides access to device information, such as device and vendor names,
+ * supported formats, and audio folder locations, for USB mass storage media
+ * player devices.  It queries the operating system (udev or HAL) and reads
+ * override files from the device filesystem and provides a simple set of
+ * properties.
+ */
+
+/**
+ * MPIDDevice:
+ *
+ * An #MPIDDevice stores a set of information for a particular attached device,
+ * identified by either a mount point (e.g. /media/device) or a device node
+ * (e.g. /dev/sdb).
+ */
 
 enum
 {
@@ -310,6 +328,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 	object_class->set_property = mpid_device_set_property;
 
 	/* install properties */
+	/**
+	 * MPIDDevice:input-path
+	 *
+	 * Either the device node path or the mount point path for the device.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_INPUT_PATH,
 					 g_param_spec_string ("input-path",
@@ -317,6 +340,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      "Input path (either a device path or a mount point)",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * MPIDDevice::error
+	 *
+	 * MPID error code resulting from device detection (see #MPIDError)
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_ERROR,
 					 g_param_spec_enum ("error",
@@ -325,6 +353,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							    MPID_TYPE_ERROR,
 							    MPID_ERROR_NONE,
 							    G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::source
+	 *
+	 * The information source used to provide device information (see #MPIDSource)
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SOURCE,
 					 g_param_spec_enum ("source",
@@ -333,6 +366,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							    MPID_TYPE_SOURCE,
 							    MPID_SOURCE_NONE,
 							    G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::model
+	 *
+	 * The device model name
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_MODEL,
 					 g_param_spec_string ("model",
@@ -340,6 +378,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      "device model name",
 							      NULL,
 							      G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::vendor
+	 *
+	 * The device vendor name
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_VENDOR,
 					 g_param_spec_string ("vendor",
@@ -347,6 +390,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      "device vendor name",
 							      NULL,
 							      G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::fs-uuid
+	 *
+	 * The device filesystem UUID
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_FS_UUID,
 					 g_param_spec_string ("fs-uuid",
@@ -354,6 +402,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      "device filesystem UUID",
 							      NULL,
 							      G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::serial
+	 *
+	 * The device serial ID
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_SERIAL,
 					 g_param_spec_string ("serial",
@@ -361,6 +414,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      "device serial ID",
 							      NULL,
 							      G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::drive-type
+	 *
+	 * The device drive type
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_DRIVE_TYPE,
 					 g_param_spec_string ("drive-type",
@@ -368,6 +426,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      "drive type",
 							      NULL,
 							      G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::requires-eject
+	 *
+	 * If %TRUE, the device must be ejected rather than unmounted
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_REQUIRES_EJECT,
 					 g_param_spec_boolean ("requires-eject",
@@ -375,6 +438,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							       "flag indicating whether the device requires ejection",
 							       FALSE,
 							       G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::access-protocols
+	 *
+	 * Names of access protocols that can be used to access the device contents
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_ACCESS_PROTOCOLS,
 					 g_param_spec_boxed ("access-protocols",
@@ -382,6 +450,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							     "names of protocols supported by the device",
 							     G_TYPE_STRV,
 							     G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::output-formats
+	 *
+	 * A set of MIME types that the device can play
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_OUTPUT_FORMATS,
 					 g_param_spec_boxed ("output-formats",
@@ -389,6 +462,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							     "MIME types playable by the device",
 							     G_TYPE_STRV,
 							     G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::input-formats
+	 *
+	 * A set of MIME types that the device can record
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_INPUT_FORMATS,
 					 g_param_spec_boxed ("input-formats",
@@ -396,6 +474,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							     "MIME types recorded by the device",
 							     G_TYPE_STRV,
 							     G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::playlist-formats
+	 *
+	 * A set of playlist format MIME types suppored by the device
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLAYLIST_FORMATS,
 					 g_param_spec_boxed ("playlist-formats",
@@ -403,6 +486,12 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							     "playlist MIME supported by the device",
 							     G_TYPE_STRV,
 							     G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::playlist-path
+	 *
+	 * Path to playlist files on the device.  May include '%File' to indicate a directory
+	 * containing any number of playlist files.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLAYLIST_PATH,
 					 g_param_spec_string ("playlist-path",
@@ -410,6 +499,12 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      "playlist path",
 							      NULL,
 							      G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::audio-folders
+	 *
+	 * A set of folders (relative to the root of the device) containing audio
+	 * folders.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_AUDIO_FOLDERS,
 					 g_param_spec_boxed ("audio-folders",
@@ -417,6 +512,11 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							     "names of folders in which audio files are stored on the device",
 							     G_TYPE_STRV,
 							     G_PARAM_READABLE));
+	/**
+	 * MPIDDevice::folder-depth
+	 *
+	 * The folder nesting level supported by the device.  -1 indicates there is no limit.
+	 */
 	g_object_class_install_property (object_class,
 					 PROP_FOLDER_DEPTH,
 					 g_param_spec_int ("folder-depth",
@@ -426,10 +526,17 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							   G_PARAM_READABLE));
 }
 
+/**
+ * mpid_device_new:
+ * @path: the input path (either device node path or mount point)
+ *
+ * Creates a new #MPIDDevice and reads device information for the specified
+ * device node path or mount point path.
+ *
+ * Return value: new #MPIDDevice instance
+ */
 MPIDDevice *
 mpid_device_new (const char *path)
 {
 	return g_object_new (MPID_TYPE_DEVICE, "input-path", path, NULL);
 }
-
-

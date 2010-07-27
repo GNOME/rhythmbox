@@ -718,11 +718,6 @@ rhythmdb_is_busy
 rhythmdb_compute_status_normal
 rhythmdb_entry_register_type
 rhythmdb_entry_type_get_by_name
-rhythmdb_entry_song_get_type
-rhythmdb_entry_podcast_post_get_type
-rhythmdb_entry_podcast_feed_get_type
-rhythmdb_entry_import_error_get_type
-rhythmdb_entry_ignore_get_type
 rhythmdb_get_property_type
 rhythmdb_entry_ref
 rhythmdb_entry_unref
@@ -757,6 +752,11 @@ rhythmdb_get_type
 RhythmDBPrivate
 rhythmdb_emit_entry_added
 rhythmdb_emit_entry_deleted
+rhythmdb_entry_song_get_type
+rhythmdb_entry_podcast_post_get_type
+rhythmdb_entry_podcast_feed_get_type
+rhythmdb_entry_import_error_get_type
+rhythmdb_entry_ignore_get_type
 </SECTION>
 
 <SECTION>
@@ -1573,4 +1573,26 @@ RB_MEDIA_PLAYER_SOURCE_CLASS
 RB_IS_MEDIA_PLAYER_SOURCE
 RB_IS_MEDIA_PLAYER_SOURCE_CLASS
 RB_MEDIA_PLAYER_SOURCE_GET_CLASS
+</SECTION>
+
+<FILE>mediaplayerid</FILE>
+<TITLE>Media player ID</TITLE>
+MPIDDevice
+MPIDError
+MPIDSource
+mpid_device_new
+mpid_enable_debug
+<SUBSECTION Standard>
+MPID_DEVICE
+MPID_DEVICE_CLASS
+MPID_DEVICE_GET_CLASS
+MPID_IS_DEVICE
+MPID_IS_DEVICE_CLASS
+MPID_TYPE_DEVICE
+MPID_TYPE_ERROR
+MPID_TYPE_SOURCE
+mpid_device_get_type
+mpid_error_get_type
+mpid_source_get_type
+MPIDDeviceClass
 </SECTION>

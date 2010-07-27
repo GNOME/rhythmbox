@@ -65,11 +65,13 @@ typedef struct _MPIDDeviceClass MPIDDeviceClass;
 
 struct _MPIDDeviceClass
 {
+	/*< private >*/
 	GObjectClass parent_class;
 };
 
 struct _MPIDDevice
 {
+	/*< private >*/
 	GObject parent;
 
 	char *input_path;
