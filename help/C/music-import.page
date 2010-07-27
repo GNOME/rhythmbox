@@ -9,6 +9,7 @@
     <revision pkgversion="3.0" version="0.1" date="2010-05-17" status="draft"/>
     <revision pkgversion="3.0" version="0.2" date="2010-05-25" status="draft"/>
     <revision pkgversion="3.0" version="0.3" date="2010-07-19" status="draft"/>
+    <revision pkgversion="3.0" version="0.4" date="2010-07-27" status="draft"/>
     <credit type="author">
       <name>Milo Casagrande</name>
       <email>milo@ubuntu.com</email>
@@ -22,26 +23,47 @@
 
   <title>Import music</title>
   <p>
-    <app>Rhythmbox</app> can automatically import your music collection stored
-    in your personal <file style="directory">Music</file> folder.
+    You can import music into <app>Rhythmbox</app> from different sources:
   </p>
-  <p>
-    To manually import songs, you can:
-  </p>
-  <list type="none">
+  <list>
     <item>
       <p>
-        <link xref="#import-music-single-song">Import a single song</link>
+        <link xref="#import-from-hard-drive">From your hard drive</link>.
       </p>
+    </item>
+    <item>
       <p>
-        <link xref="#import-music-folder">Import a songs folder</link>
+        From an external device (portable music player, USB key, external hard disk).
       </p>
+    </item>
+    <item>
       <p>
-        <link xref="#import-music-copy">Copy songs from a CD</link>
+        From a shared folder on your network.
+      </p>
+    </item>
+    <item>
+      <p>
+        <link xref="#import-music-cd">From a CD</link>.
       </p>
     </item>
   </list>
   
+  <p>
+    <app>Rhythmbox</app> can also <link xref="#auto-import">import songs automatically</link>
+    from a predefined local folder.
+  </p>
+  
+  <p>
+    When you import songs into your library, they are not copied into a particular
+    folder on your hard drive: only the location of your songs is stored.
+    If you import songs from an external device and you remove it, the songs will not
+    be available anymore.
+  </p>
+  <p>
+    The only exception to this is when you copy music from a CD: by default the
+    songs are copied into your personal <file style="directory">Music</file> folder.
+  </p>
+
   <note style="tip">
     <p>
       You can add new songs by dragging and dropping them from anywhere on
@@ -49,13 +71,53 @@
     </p>
   </note>
   
-  <note>
+  <note style="tip">
     <p>
-      Note about RB that it doesn't store your songs, but only where they are!
-      Useful for removeable devices!
+      To better organize your music collection, you can consider using only
+      one folder on your hard drive where to store your songs.
     </p>
   </note>
   
+  <section id="auto-import">
+    <title>Automatically import music</title>
+    <p>
+      You can automatically import music stored on your hard drive. <app>Rhythmbox</app>
+      can periodically check a predefined folder for the presence of new songs,
+      and import them into your library.
+    </p>
+    <p>
+      The default folder is your personal <file style="directory">Music</file> folder.
+    </p>
+    <p>
+      To enable this functionality, or to change the default folder:
+    </p>
+    <steps>
+      <item>
+        <p>
+          Choose <guiseq><gui style="menu">Edit</gui><gui style="menuitem">Preferences</gui></guiseq>.          
+        </p>
+      </item>
+      <item>
+        <p>
+          Select the <gui style="tab">Music</gui> tab.
+        </p>
+      </item>
+      <item>
+        <p>
+          To enable the automatically import feature, select <gui style="checkbox">Watch my library for new files</gui>.
+        </p>
+        <p>
+          To change the default folder where to look for newly added songs,
+          click <gui style="button">Browse</gui>, select the new folder, and
+          click <gui style="button">Open</gui>.
+        </p>
+      </item>
+    </steps>
+  </section>
+  
+  <section id="import-from-hard-drive">
+    <title>Import music from your hard drive</title>
+    
   <section id="import-music-single-song">
     <title>Import a single song</title>
       <steps>
@@ -66,7 +128,7 @@
         </item>
         <item>
           <p>
-            Select the song file to import, and click <gui style="button">Open</gui>.
+            Select the song to import, and click <gui style="button">Open</gui>.
           </p>
         </item>
       </steps>
@@ -88,7 +150,9 @@
       </steps>
   </section>
   
-  <section id="import-music-copy">
+  </section>
+  
+  <section id="import-music-cd">
     <title>Copy songs from a CD</title>
     <steps>
       <item>
