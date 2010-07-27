@@ -1505,7 +1505,7 @@ process_tag (const GstTagList *list, const gchar *tag, RBXFadeStream *stream)
 	GValue value = {0,};
 
 	/* process embedded images */
-	if (!strcmp (tag, GST_TAG_IMAGE) || !strcmp (tag, GST_TAG_PREVIEW_IMAGE)) {
+	if (!g_strcmp0 (tag, GST_TAG_IMAGE) || !g_strcmp0 (tag, GST_TAG_PREVIEW_IMAGE)) {
 		GdkPixbuf *pixbuf;
 		pixbuf = rb_gst_process_embedded_image (list, tag);
 		if (pixbuf != NULL) {
