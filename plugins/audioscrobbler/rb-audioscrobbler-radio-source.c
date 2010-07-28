@@ -152,6 +152,7 @@ struct _RBAudioscrobblerRadioSourcePrivate
 
 	guint emit_coverart_id;
 
+	guint ui_merge_id;
 	GtkActionGroup *action_group;
 
 	/* used when streaming radio using old api */
@@ -405,6 +406,9 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	GtkWidget *error_info_bar_content_area;
 	GtkWidget *password_info_bar_label;
 	GtkWidget *password_info_bar_content_area;
+	RBPlugin *plugin;
+	GtkUIManager *ui_manager;
+	char *ui_file;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_radio_source_parent_class, constructed, object);
 
@@ -473,6 +477,11 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 				 G_CALLBACK (extra_metadata_gather_cb),
 				 source, 0);
 
+	/* merge ui */
+	g_object_get (source, "plugin", &plugin, "ui-manager", &ui_manager, NULL);
+	ui_file = rb_plugin_find_file (plugin, "audioscrobbler-radio-ui.xml");
+	source->priv->ui_merge_id = gtk_ui_manager_add_ui_from_file (ui_manager, ui_file, NULL);
+
 	/* actions */
 	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 								       "AudioscrobblerRadioActions",
@@ -487,6 +496,9 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 
 	g_object_unref (shell);
 	g_object_unref (db);
+	g_object_unref (plugin);
+	g_object_unref (ui_manager);
+	g_free (ui_file);
 }
 
 static void
@@ -513,6 +525,14 @@ rb_audioscrobbler_radio_source_dispose (GObject *object)
 	if (source->priv->play_order != NULL) {
 		g_object_unref (source->priv->play_order);
 		source->priv->play_order = NULL;
+	}
+
+	if (source->priv->ui_merge_id != 0) {
+		GtkUIManager *ui_manager;
+		g_object_get (source, "ui-manager", &ui_manager, NULL);
+		gtk_ui_manager_remove_ui (ui_manager, source->priv->ui_merge_id);
+		source->priv->ui_merge_id = 0;
+		g_object_unref (ui_manager);
 	}
 
 	G_OBJECT_CLASS (rb_audioscrobbler_radio_source_parent_class)->dispose (object);
