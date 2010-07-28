@@ -297,19 +297,13 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
   pix_rect.width -= xpad * 2;
   pix_rect.height -= ypad * 2;
 
-  if (gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect))
-    gdk_draw_pixbuf (window,
-		     NULL,
-		     cellpixbuf->pixbuf,
-		     /* pixbuf 0, 0 is at pix_rect.x, pix_rect.y */
-		     draw_rect.x - pix_rect.x,
-		     draw_rect.y - pix_rect.y,
-		     draw_rect.x,
-		     draw_rect.y,
-		     draw_rect.width,
-		     draw_rect.height,
-		     GDK_RGB_DITHER_NORMAL,
-		     0, 0);
+  if (gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect)) {
+    cairo_t *cr = gdk_cairo_create (window);
+    gdk_cairo_set_source_pixbuf (cr, cellpixbuf->pixbuf, pix_rect.x, pix_rect.y);
+    gdk_cairo_rectangle (cr, &draw_rect);
+    cairo_paint (cr);
+    cairo_destroy (cr);
+  }
 }
 
 static gboolean
