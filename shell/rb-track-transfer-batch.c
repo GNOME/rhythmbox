@@ -385,9 +385,8 @@ encoder_overwrite_cb (RBEncoder *encoder, GFile *file, RBTrackTransferBatch *bat
 static gboolean
 start_next (RBTrackTransferBatch *batch)
 {
-	GList *n;
-	char *media_type;
-	char *extension;
+	char *media_type = NULL;
+	char *extension = NULL;
 
 	if (batch->priv->cancelled == TRUE) {
 		return FALSE;
@@ -418,6 +417,7 @@ start_next (RBTrackTransferBatch *batch)
 		guint64 filesize;
 		gulong duration;
 		double fraction;
+		GList *n;
 
 		n = batch->priv->entries;
 		batch->priv->entries = g_list_remove_link (batch->priv->entries, n);
@@ -441,6 +441,8 @@ start_next (RBTrackTransferBatch *batch)
 			fraction = 1.0 / ((double)count);
 		}
 
+		g_free (media_type);
+		g_free (extension);
 		media_type = NULL;
 		extension = NULL;
 		if (rb_encoder_get_media_type (batch->priv->current_encoder,
@@ -469,38 +471,27 @@ start_next (RBTrackTransferBatch *batch)
 			batch->priv->total_fraction += fraction;
 			continue;
 		}
-		g_free (extension);
 
-		g_signal_emit (batch, signals[TRACK_STARTED], 0,
-			       entry,
-			       batch->priv->current_dest_uri);
-
-		if (rb_encoder_encode (batch->priv->current_encoder,
-				       entry,
-				       batch->priv->current_dest_uri,
-				       media_type) == FALSE) {
-			/* need to report this? */
-			rb_debug ("unable to transfer %s to %s",
-				  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
-				  batch->priv->current_dest_uri);
-
-			g_free (media_type);
-			rhythmdb_entry_unref (entry);
-			batch->priv->total_fraction += fraction;
-			continue;
-		}
-
-		g_free (media_type);
 		batch->priv->current = entry;
 		batch->priv->current_entry_fraction = fraction;
 		break;
 	}
 
-	/* need to clean up encoder here? */
 	if (batch->priv->current == NULL) {
 		g_object_unref (batch->priv->current_encoder);
 		batch->priv->current_encoder = NULL;
+	} else {
+		g_signal_emit (batch, signals[TRACK_STARTED], 0,
+			       batch->priv->current,
+			       batch->priv->current_dest_uri);
+
+		rb_encoder_encode (batch->priv->current_encoder,
+				   batch->priv->current,
+				   batch->priv->current_dest_uri,
+				   media_type);
 	}
+	g_free (media_type);
+	g_free (extension);
 
 	return TRUE;
 }

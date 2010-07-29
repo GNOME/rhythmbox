@@ -71,7 +71,7 @@ struct _RBEncoderIface
 	GTypeInterface g_iface;
 
 	/* vtable */
-	gboolean	(*encode)	(RBEncoder *encoder,
+	void		(*encode)	(RBEncoder *encoder,
 					 RhythmDBEntry *entry,
 					 const char *dest,
 					 const char *dest_media_type);
@@ -112,7 +112,7 @@ RBEncoderFactory *rb_encoder_factory_get (void);
 RBEncoder*	rb_encoder_new		(void);
 GType 		rb_encoder_get_type 	(void);
 
-gboolean	rb_encoder_encode	(RBEncoder *encoder,
+void		rb_encoder_encode	(RBEncoder *encoder,
 					 RhythmDBEntry *entry,
 					 const char *dest,
 					 const char *dest_media_type);

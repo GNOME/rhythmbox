@@ -232,12 +232,10 @@ rb_encoder_factory_get ()
  * the current media type of the entry.  The caller should use rb_encoder_get_media_type
  * to select a destination media type.
  *
- * Encoding takes places asynchronously.  If the return value is TRUE, the caller
- * should wait for a 'completed' signal to indicate that it has finished.
- *
- * Return value: TRUE if encoding has started
+ * Encoding and error reporting takes places asynchronously.  The caller should wait
+ * for the 'completed' signal which indicates it has either completed or failed.
  */
-gboolean
+void
 rb_encoder_encode (RBEncoder *encoder,
 		   RhythmDBEntry *entry,
 		   const char *dest,
@@ -245,7 +243,7 @@ rb_encoder_encode (RBEncoder *encoder,
 {
 	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
 
-	return iface->encode (encoder, entry, dest, dest_media_type);
+	iface->encode (encoder, entry, dest, dest_media_type);
 }
 
 /**

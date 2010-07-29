@@ -79,10 +79,10 @@ G_DEFINE_TYPE_WITH_CODE(RBEncoderGst, rb_encoder_gst, G_TYPE_OBJECT,
 					      rb_encoder_init))
 #define RB_ENCODER_GST_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_ENCODER_GST, RBEncoderGstPrivate))
 
-static gboolean rb_encoder_gst_encode (RBEncoder *encoder,
-				       RhythmDBEntry *entry,
-				       const char *dest,
-				       const char *dest_media_type);
+static void rb_encoder_gst_encode (RBEncoder *encoder,
+				   RhythmDBEntry *entry,
+				   const char *dest,
+				   const char *dest_media_type);
 static void rb_encoder_gst_cancel (RBEncoder *encoder);
 static gboolean rb_encoder_gst_get_media_type (RBEncoder *encoder,
 					       RhythmDBEntry *entry,
@@ -238,8 +238,10 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 
 	g_return_if_fail (encoder->priv->completion_emitted == FALSE);
 
-	if (encoder->priv->progress_id != 0)
+	if (encoder->priv->progress_id != 0) {
 		g_source_remove (encoder->priv->progress_id);
+		encoder->priv->progress_id = 0;
+	}
 
 	/* emit an error if no audio pad has been found and it wasn't due to an
 	 * error */
@@ -254,6 +256,7 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 
 		set_error (encoder, error);
 		g_error_free (error);
+		error = NULL;
 	}
 
 	/* find the size of the output file, assuming we can get at it with gio */
@@ -393,19 +396,18 @@ progress_timeout_cb (RBEncoderGst *encoder)
 	return TRUE;
 }
 
-static gboolean
-start_pipeline (RBEncoderGst *encoder, GError **error)
+static void
+start_pipeline (RBEncoderGst *encoder)
 {
 	GstStateChangeReturn result;
 	GstBus *bus;
 
-	g_return_val_if_fail (encoder->priv->pipeline != NULL, FALSE);
+	g_assert (encoder->priv->pipeline != NULL);
 
 	bus = gst_pipeline_get_bus (GST_PIPELINE (encoder->priv->pipeline));
 	gst_bus_add_watch (bus, bus_watch_cb, encoder);
 
 	result = gst_element_set_state (encoder->priv->pipeline, GST_STATE_PLAYING);
-
 	if (result != GST_STATE_CHANGE_FAILURE) {
 		/* start reporting progress */
 		if (encoder->priv->total_length > 0) {
@@ -414,11 +416,7 @@ start_pipeline (RBEncoderGst *encoder, GError **error)
 		} else {
 			_rb_encoder_emit_progress (RB_ENCODER (encoder), -1);
 		}
-	} else {
-		rb_debug ("encoder pipeline refused to start");
 	}
-
-	return (result != GST_STATE_CHANGE_FAILURE);
 }
 
 static const char *GST_ENCODING_PROFILE = "audioconvert ! audioresample ! %s";
@@ -433,13 +431,21 @@ add_encoding_pipeline (RBEncoderGst *encoder,
 	char *tmp;
 
 	queue = gst_element_factory_make ("queue2", NULL);
-	if (queue == NULL)
+	if (queue == NULL) {
+		g_set_error (error,
+			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
+			     "Could not create queue2 element");
 		return NULL;
+	}
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), queue);
 
 	queue2 = gst_element_factory_make ("queue2", NULL);
-	if (queue2 == NULL)
+	if (queue2 == NULL) {
+		g_set_error (error,
+			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
+			     "Could not create queue2 element");
 		return NULL;
+	}
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), queue2);
 
 	/* Nice big buffers... */
@@ -464,7 +470,9 @@ add_encoding_pipeline (RBEncoderGst *encoder,
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), encoding_bin);
 
 	if (gst_element_link_many (queue, encoding_bin, queue2, NULL) == FALSE) {
-		rb_debug ("unable to link encoding bin with queues");
+		g_set_error (error,
+			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
+			     "Could not link encoding bin to queues");
 		return NULL;
 	}
 
@@ -912,8 +920,10 @@ create_pipeline_and_source (RBEncoderGst *encoder,
 
 	uri = rhythmdb_entry_get_playback_uri (entry);
 	if (uri == NULL) {
-		rb_debug ("didn't get a playback URI for entry %s",
-			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+		g_set_error (error,
+			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
+			     "Didn't get a playback URI for entry %s",
+			     rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 		return NULL;
 	}
 
@@ -921,7 +931,7 @@ create_pipeline_and_source (RBEncoderGst *encoder,
 	if (src == NULL) {
 		g_set_error (error,
 			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
-			     "could not create source element for '%s'", uri);
+			     "Could not create source element for '%s'", uri);
 		g_free (uri);
 		return NULL;
 	}
@@ -954,9 +964,7 @@ copy_track (RBEncoderGst *encoder,
 	if (!attach_output_pipeline (encoder, src, dest, error))
 		return FALSE;
 
-	if (!start_pipeline (encoder, error))
-		return FALSE;
-
+	start_pipeline (encoder);
 	return TRUE;
 }
 
@@ -996,6 +1004,10 @@ transcode_track (RBEncoderGst *encoder,
 
 	if (gst_element_link (src, decoder) == FALSE) {
 		rb_debug ("unable to link source element to decodebin");
+		g_set_error (error,
+			     RB_ENCODER_ERROR,
+			     RB_ENCODER_ERROR_INTERNAL,
+			     "Unable to link source element to decodebin");
 		goto error;
 	}
 
@@ -1007,9 +1019,8 @@ transcode_track (RBEncoderGst *encoder,
 		goto error;
 	if (!add_tags_from_entry (encoder, entry, error))
 		goto error;
-	if (!start_pipeline (encoder, error))
-		goto error;
 
+	start_pipeline (encoder);
 	return TRUE;
 error:
 	if (profile)
@@ -1023,12 +1034,11 @@ rb_encoder_gst_cancel (RBEncoder *encoder)
 {
 	RBEncoderGstPrivate *priv = RB_ENCODER_GST (encoder)->priv;
 
-	if (priv->pipeline == NULL)
-		return;
-
-	gst_element_set_state (priv->pipeline, GST_STATE_NULL);
-	g_object_unref (priv->pipeline);
-	priv->pipeline = NULL;
+	if (priv->pipeline != NULL) {
+		gst_element_set_state (priv->pipeline, GST_STATE_NULL);
+		g_object_unref (priv->pipeline);
+		priv->pipeline = NULL;
+	}
 
 	if (priv->outstream != NULL) {
 		GError *error = NULL;
@@ -1055,67 +1065,65 @@ rb_encoder_gst_cancel (RBEncoder *encoder)
 }
 
 static gboolean
-rb_encoder_gst_encode (RBEncoder *encoder,
+cancel_idle (RBEncoder *encoder)
+{
+	rb_encoder_gst_cancel (encoder);
+	g_object_unref (encoder);
+	return FALSE;
+}
+
+static void
+rb_encoder_gst_encode (RBEncoder *bencoder,
 		       RhythmDBEntry *entry,
 		       const char *dest,
 		       const char *dest_media_type)
 {
-	RBEncoderGstPrivate *priv = RB_ENCODER_GST (encoder)->priv;
+	RBEncoderGst *encoder = RB_ENCODER_GST (bencoder);
 	const char *entry_media_type;
-	gboolean result;
 	GError *error = NULL;
+	gboolean result;
 
-	g_return_val_if_fail (priv->pipeline == NULL, FALSE);
-	g_return_val_if_fail (dest_media_type != NULL, FALSE);
+	g_return_if_fail (encoder->priv->pipeline == NULL);
+	g_return_if_fail (dest_media_type != NULL);
 
 	entry_media_type = get_entry_media_type (entry);
 
 	if (rb_uri_create_parent_dirs (dest, &error) == FALSE) {
-		RBEncoderGst *gencoder = RB_ENCODER_GST (encoder);
 		error = g_error_new_literal (RB_ENCODER_ERROR,
 					     RB_ENCODER_ERROR_FILE_ACCESS,
 					     error->message);		/* I guess */
 
-		set_error (gencoder, error);
-		_rb_encoder_emit_completed (encoder, 0, NULL, gencoder->priv->error);
+		set_error (encoder, error);
 		g_error_free (error);
-		return FALSE;
+		g_idle_add ((GSourceFunc) cancel_idle, g_object_ref (encoder));
+		return;
 	}
 
-	g_free (priv->dest_mediatype);
-	g_free (priv->dest_uri);
-	priv->dest_uri = g_strdup (dest);
+	g_free (encoder->priv->dest_mediatype);
+	g_free (encoder->priv->dest_uri);
+	encoder->priv->dest_uri = g_strdup (dest);
 
 	/* if destination and source media types are the same, copy it */
 	if (g_strcmp0 (entry_media_type, dest_media_type) == 0) {
 		rb_debug ("source file already has required media type %s, copying rather than transcoding", dest_media_type);
-		priv->total_length = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
-		priv->position_format = GST_FORMAT_BYTES;
+		encoder->priv->total_length = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
+		encoder->priv->position_format = GST_FORMAT_BYTES;
 
 		result = copy_track (RB_ENCODER_GST (encoder), entry, dest, &error);
-		priv->dest_mediatype = g_strdup (entry_media_type);
+		encoder->priv->dest_mediatype = g_strdup (entry_media_type);
 	} else {
-		priv->total_length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
-		priv->position_format = GST_FORMAT_TIME;
-		priv->dest_mediatype = g_strdup (dest_media_type);
+		encoder->priv->total_length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
+		encoder->priv->position_format = GST_FORMAT_TIME;
+		encoder->priv->dest_mediatype = g_strdup (dest_media_type);
 
 		result = transcode_track (RB_ENCODER_GST (encoder), entry, dest, &error);
 	}
 
-	if (error) {
-		RBEncoderGst *enc = RB_ENCODER_GST (encoder);
-
-		set_error (enc, error);
+	if (result == FALSE) {
+		set_error (encoder, error);
 		g_error_free (error);
-		if (enc->priv->pipeline == NULL) {
-			rb_encoder_gst_emit_completed (enc);
-		} else {
-			/* this will unref the pipeline and call emit_completed */
-			rb_encoder_gst_cancel (encoder);
-		}
+		g_idle_add ((GSourceFunc) cancel_idle, g_object_ref (encoder));
 	}
-
-	return result;
 }
 
 static gboolean
