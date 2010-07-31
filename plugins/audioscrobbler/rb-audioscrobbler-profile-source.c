@@ -580,13 +580,11 @@ init_actions (RBAudioscrobblerProfileSource *source)
 	RBPlugin *plugin;
 	GtkUIManager *ui_manager;
 	char *group_name;
+	RhythmDBEntry *playing;
 
 	g_object_get (source, "shell", &shell, "plugin", &plugin, "ui-manager", &ui_manager, NULL);
 	ui_file = rb_plugin_find_file (plugin, "audioscrobbler-profile-ui.xml");
 	source->priv->ui_merge_id = gtk_ui_manager_add_ui_from_file (ui_manager, ui_file, NULL);
-
-	g_object_unref (plugin);
-	g_object_unref (ui_manager);
 
 	source->priv->profile_action_group = _rb_source_register_action_group (RB_SOURCE (source),
 	                                                                       "AudioscrobblerProfileActions",
@@ -596,8 +594,6 @@ init_actions (RBAudioscrobblerProfileSource *source)
 					     G_OBJECT (shell),
 					     profile_actions,
 					     G_N_ELEMENTS (profile_actions));
-
-	g_object_unref (shell);
 
 	/* Unfortunately we can't use the usual trick of declaring a static array of GtkActionEntry,
 	 * and simply using _rb_source_register_action_group with that array.
@@ -623,6 +619,20 @@ init_actions (RBAudioscrobblerProfileSource *source)
 	                                                                       service_actions,
 	                                                                       G_N_ELEMENTS (service_actions),
 	                                                                       source);
+	/* disable the love and ban actions if there is no playing entry */
+	playing = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+	if (playing == NULL) {
+		GtkAction *love = gtk_action_group_get_action (source->priv->service_action_group, source->priv->love_action_name);
+		GtkAction *ban = gtk_action_group_get_action (source->priv->service_action_group, source->priv->ban_action_name);
+		gtk_action_set_sensitive (love, FALSE);
+		gtk_action_set_sensitive (ban, FALSE);
+		rhythmdb_entry_unref (playing);
+	}
+
+	g_free (ui_file);
+	g_object_unref (shell);
+	g_object_unref (plugin);
+	g_object_unref (ui_manager);
 	g_free (group_name);
 }
 
@@ -846,20 +856,24 @@ scrobbler_statistics_changed_cb (RBAudioscrobbler *audioscrobbler,
 	g_free (submit_count_text);
 }
 
-/* re-enabled the love and ban GtkActions when a new song is played */
 static void
 playing_song_changed_cb (RBShellPlayer *player,
                          RhythmDBEntry *entry,
                          RBAudioscrobblerProfileSource *source)
 {
-	GtkAction *action;
+	GtkAction *love;
+	GtkAction *ban;
 
-	/* re-enable love/ban */
-	action = gtk_action_group_get_action (source->priv->service_action_group, source->priv->love_action_name);
-	gtk_action_set_sensitive (action, TRUE);
-
-	action = gtk_action_group_get_action (source->priv->service_action_group, source->priv->ban_action_name);
-	gtk_action_set_sensitive (action, TRUE);
+	/* enable or disable love/ban */
+	love = gtk_action_group_get_action (source->priv->service_action_group, source->priv->love_action_name);
+	ban = gtk_action_group_get_action (source->priv->service_action_group, source->priv->ban_action_name);
+	if (entry == NULL) {
+		gtk_action_set_sensitive (love, FALSE);
+		gtk_action_set_sensitive (ban, FALSE);
+	} else {
+		gtk_action_set_sensitive (love, TRUE);
+		gtk_action_set_sensitive (ban, TRUE);
+	}
 }
 
 static void
