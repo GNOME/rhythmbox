@@ -486,7 +486,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 								       "AudioscrobblerRadioActions",
 								       NULL, 0,
-								       shell);
+								       source);
 	_rb_action_group_add_source_actions (source->priv->action_group,
 					     G_OBJECT (shell),
 					     rb_audioscrobbler_radio_source_actions,
@@ -525,14 +525,6 @@ rb_audioscrobbler_radio_source_dispose (GObject *object)
 	if (source->priv->play_order != NULL) {
 		g_object_unref (source->priv->play_order);
 		source->priv->play_order = NULL;
-	}
-
-	if (source->priv->ui_merge_id != 0) {
-		GtkUIManager *ui_manager;
-		g_object_get (source, "ui-manager", &ui_manager, NULL);
-		gtk_ui_manager_remove_ui (ui_manager, source->priv->ui_merge_id);
-		source->priv->ui_merge_id = 0;
-		g_object_unref (ui_manager);
 	}
 
 	G_OBJECT_CLASS (rb_audioscrobbler_radio_source_parent_class)->dispose (object);
@@ -1465,6 +1457,7 @@ impl_delete_thyself (RBSource *asource)
 {
 	RBAudioscrobblerRadioSource *source;
 	RBShell *shell;
+	GtkUIManager *ui_manager;
 	RhythmDB *db;
 	GtkTreeIter iter;
 	gboolean loop;
@@ -1473,8 +1466,11 @@ impl_delete_thyself (RBSource *asource)
 
 	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (asource);
 
-	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (source, "shell", &shell, "ui-manager", &ui_manager, NULL);
 	g_object_get (shell, "db", &db, NULL);
+
+	/* unmerge ui */
+	gtk_ui_manager_remove_ui (ui_manager, source->priv->ui_merge_id);
 
 	/* Ensure playing entry isn't deleted twice */
 	source->priv->playing_entry = NULL;
@@ -1494,5 +1490,6 @@ impl_delete_thyself (RBSource *asource)
 	rhythmdb_commit (db);
 
 	g_object_unref (shell);
+	g_object_unref (ui_manager);
 	g_object_unref (db);
 }

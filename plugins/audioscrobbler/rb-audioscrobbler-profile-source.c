@@ -46,6 +46,7 @@
 #include "rb-util.h"
 
 #define CONF_AUDIOSCROBBLER_ENABLE_SCROBBLING CONF_PLUGINS_PREFIX "/audioscrobbler/%s/scrobbling_enabled"
+#define AUDIOSCROBBLER_PROFILE_SOURCE_POPUP_PATH "/AudioscrobblerProfileSourcePopup"
 #define LIST_ITEM_IMAGE_SIZE 34
 
 struct _RBAudioscrobblerProfileSourcePrivate {
@@ -103,7 +104,9 @@ struct _RBAudioscrobblerProfileSourcePrivate {
 	GHashTable *button_to_popup_menu_map;
 	GHashTable *popup_menu_to_data_map;
 
-	GtkActionGroup *action_group;
+	guint ui_merge_id;
+	GtkActionGroup *profile_action_group;
+	GtkActionGroup *service_action_group;
 	char *love_action_name;
 	char *ban_action_name;
 };
@@ -163,6 +166,7 @@ static void playing_song_changed_cb (RBShellPlayer *player,
 /* GtkAction callbacks */
 static void love_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source);
 static void ban_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source);
+static void refresh_profile_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source);
 
 /* radio station creation/deletion */
 void station_creator_button_clicked_cb (GtkButton *button, RBAudioscrobblerProfileSource *source);
@@ -219,12 +223,21 @@ static void list_item_listen_top_fans_activated_cb (GtkMenuItem *menuitem,
 
 /* RBSource implementations */
 static GList *impl_get_ui_actions (RBSource *asource);
+static gboolean impl_show_popup (RBSource *asource);
 static void impl_delete_thyself (RBSource *asource);
 
 enum {
 	PROP_0,
 	PROP_SERVICE
 };
+
+static GtkActionEntry profile_actions [] =
+{
+	{ "AudioscrobblerProfileRefresh", NULL, N_("Refresh Profile"), NULL,
+	  N_("Refresh your Profile"),
+	  G_CALLBACK (refresh_profile_action_cb) }
+};
+
 
 G_DEFINE_TYPE (RBAudioscrobblerProfileSource, rb_audioscrobbler_profile_source, RB_TYPE_SOURCE)
 
@@ -282,6 +295,7 @@ rb_audioscrobbler_profile_source_class_init (RBAudioscrobblerProfileSourceClass 
 
 	source_class = RB_SOURCE_CLASS (klass);
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
+	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
 
 	g_object_class_install_property (object_class,
@@ -561,33 +575,54 @@ init_profile_ui (RBAudioscrobblerProfileSource *source)
 static void
 init_actions (RBAudioscrobblerProfileSource *source)
 {
+	char *ui_file;
+	RBShell *shell;
+	RBPlugin *plugin;
+	GtkUIManager *ui_manager;
+	char *group_name;
+
+	g_object_get (source, "shell", &shell, "plugin", &plugin, "ui-manager", &ui_manager, NULL);
+	ui_file = rb_plugin_find_file (plugin, "audioscrobbler-profile-ui.xml");
+	source->priv->ui_merge_id = gtk_ui_manager_add_ui_from_file (ui_manager, ui_file, NULL);
+
+	g_object_unref (plugin);
+	g_object_unref (ui_manager);
+
+	source->priv->profile_action_group = _rb_source_register_action_group (RB_SOURCE (source),
+	                                                                       "AudioscrobblerProfileActions",
+	                                                                       NULL, 0,
+	                                                                       source);
+	_rb_action_group_add_source_actions (source->priv->profile_action_group,
+					     G_OBJECT (shell),
+					     profile_actions,
+					     G_N_ELEMENTS (profile_actions));
+
+	g_object_unref (shell);
+
 	/* Unfortunately we can't use the usual trick of declaring a static array of GtkActionEntry,
 	 * and simply using _rb_source_register_action_group with that array.
 	 * This is because each instance of this source needs its own love and ban actions
 	 * so tracks can be loved/banned differently for different audioscrobbler services.
 	 */
-
-	char *group_name;
-
 	group_name = g_strdup_printf ("%sActions", rb_audioscrobbler_service_get_name (source->priv->service));
 	source->priv->love_action_name = g_strdup_printf ("%sLoveTrack", rb_audioscrobbler_service_get_name (source->priv->service));
 	source->priv->ban_action_name = g_strdup_printf ("%sBanTrack", rb_audioscrobbler_service_get_name (source->priv->service));
 
-	GtkActionEntry actions [] =
+	GtkActionEntry service_actions [] =
 	{
 		{ source->priv->love_action_name, "emblem-favorite", N_("Love"), NULL,
 		  N_("Mark this song as loved"),
 		  G_CALLBACK (love_track_action_cb) },
 		{ source->priv->ban_action_name, GTK_STOCK_CANCEL, N_("Ban"), NULL,
 		  N_("Ban the current track from being played again"),
-		  G_CALLBACK (ban_track_action_cb) },
+		  G_CALLBACK (ban_track_action_cb) }
 	};
 
-	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
-								       group_name,
-								       actions,
-								       G_N_ELEMENTS (actions),
-								       source);
+	source->priv->service_action_group = _rb_source_register_action_group (RB_SOURCE (source),
+	                                                                       group_name,
+	                                                                       service_actions,
+	                                                                       G_N_ELEMENTS (service_actions),
+	                                                                       source);
 	g_free (group_name);
 }
 
@@ -820,10 +855,10 @@ playing_song_changed_cb (RBShellPlayer *player,
 	GtkAction *action;
 
 	/* re-enable love/ban */
-	action = gtk_action_group_get_action (source->priv->action_group, source->priv->love_action_name);
+	action = gtk_action_group_get_action (source->priv->service_action_group, source->priv->love_action_name);
 	gtk_action_set_sensitive (action, TRUE);
 
-	action = gtk_action_group_get_action (source->priv->action_group, source->priv->ban_action_name);
+	action = gtk_action_group_get_action (source->priv->service_action_group, source->priv->ban_action_name);
 	gtk_action_set_sensitive (action, TRUE);
 }
 
@@ -847,7 +882,7 @@ love_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source)
 
 	/* disable love/ban */
 	gtk_action_set_sensitive (action, FALSE);
-	ban_action = gtk_action_group_get_action (source->priv->action_group, source->priv->ban_action_name);
+	ban_action = gtk_action_group_get_action (source->priv->service_action_group, source->priv->ban_action_name);
 	gtk_action_set_sensitive (ban_action, FALSE);
 
 	g_object_unref (shell);
@@ -874,6 +909,12 @@ ban_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source)
 	rb_shell_player_do_next (RB_SHELL_PLAYER (rb_shell_get_player (shell)), NULL);
 
 	g_object_unref (shell);
+}
+
+static void
+refresh_profile_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source)
+{
+	rb_audioscrobbler_user_update (source->priv->user);
 }
 
 void
@@ -1629,6 +1670,13 @@ impl_get_ui_actions (RBSource *asource)
 	return actions;
 }
 
+static gboolean
+impl_show_popup (RBSource *asource)
+{
+	_rb_source_show_popup (asource, AUDIOSCROBBLER_PROFILE_SOURCE_POPUP_PATH);
+	return TRUE;
+}
+
 static void
 impl_delete_thyself (RBSource *asource)
 {
@@ -1645,7 +1693,8 @@ impl_delete_thyself (RBSource *asource)
 	}
 
 	g_object_get (source, "ui-manager", &ui_manager, NULL);
-	gtk_ui_manager_remove_action_group (ui_manager, source->priv->action_group);
+	gtk_ui_manager_remove_ui (ui_manager, source->priv->ui_merge_id);
+	gtk_ui_manager_remove_action_group (ui_manager, source->priv->service_action_group);
 
 	g_object_unref (ui_manager);
 }
