@@ -543,7 +543,7 @@ name_acquired_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *
 {
 	GError *error = NULL;
 	GDBusNodeInfo *nodeinfo;
-	const GDBusInterfaceInfo *ifaceinfo;
+	GDBusInterfaceInfo *ifaceinfo;
 
 	plugin->connection = g_object_ref (connection);
 
