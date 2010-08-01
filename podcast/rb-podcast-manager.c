@@ -703,6 +703,7 @@ read_file_cb (GFile *source,
 	src_info = g_file_input_stream_query_info (data->in_stream,
 	                                           G_FILE_ATTRIBUTE_STANDARD_SIZE ","
 	                                           G_FILE_ATTRIBUTE_STANDARD_COPY_NAME ","
+	                                           G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME ","
 	                                           G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME,
 	                                           NULL,
 	                                           &error);
@@ -717,6 +718,7 @@ read_file_cb (GFile *source,
 		g_file_query_info_async (data->source,
 		                         G_FILE_ATTRIBUTE_STANDARD_SIZE ","
 		                         G_FILE_ATTRIBUTE_STANDARD_COPY_NAME ","
+	                                 G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME ","
 		                         G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME,
 		                         G_FILE_QUERY_INFO_NONE,
 		                         0,
