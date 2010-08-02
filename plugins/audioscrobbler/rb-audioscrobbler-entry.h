@@ -31,6 +31,7 @@
 G_BEGIN_DECLS
 
 #include "rhythmdb.h"
+#include "rb-audioscrobbler-service.h"
 
 #define EXTRA_URI_ENCODE_CHARS	"&+"
 
@@ -64,7 +65,7 @@ void	     			rb_audioscrobbler_entry_free (AudioscrobblerEntry *entry);
 void          			rb_audioscrobbler_encoded_entry_free (AudioscrobblerEncodedEntry *entry);
 AudioscrobblerEncodedEntry *	rb_audioscrobbler_entry_encode (AudioscrobblerEntry *entry);
 
-AudioscrobblerEntry *		rb_audioscrobbler_entry_create (RhythmDBEntry *rb_entry);
+AudioscrobblerEntry *		rb_audioscrobbler_entry_create (RhythmDBEntry *rb_entry, RBAudioscrobblerService *service);
 
 AudioscrobblerEntry *		rb_audioscrobbler_entry_load_from_string (const char *string);
 void				rb_audioscrobbler_entry_save_to_string (GString *string, AudioscrobblerEntry *entry);

@@ -41,6 +41,7 @@
 #include <libsoup/soup.h>
 
 #include "rb-audioscrobbler-entry.h"
+#include "rb-audioscrobbler-radio-track-entry.h"
 
 
 void
@@ -83,7 +84,7 @@ rb_audioscrobbler_encoded_entry_free (AudioscrobblerEncodedEntry *entry)
 
 
 AudioscrobblerEntry *
-rb_audioscrobbler_entry_create (RhythmDBEntry *rb_entry)
+rb_audioscrobbler_entry_create (RhythmDBEntry *rb_entry, RBAudioscrobblerService *service)
 {
 	AudioscrobblerEntry *as_entry = g_new0 (AudioscrobblerEntry, 1);
 
@@ -103,14 +104,27 @@ rb_audioscrobbler_entry_create (RhythmDBEntry *rb_entry)
 		as_entry->mbid = g_strdup ("");
 	}
 
-	/*
-	 * TODO: identify the source type.  we just use 'P' for everything for now.
-	 * should use 'R' for iradio, 'P' for everything else except last.fm.
-	 * for last.fm, we need to extract the recommendation key from the db entry's
-	 * extra data (see RBLastfmTrackEntryData in rb-lastfm-source.c) and include
-	 * that in the source info here.
+	/* identify the source type. Currently we use:
+	 * L for an audioscrobbler-provided radio track when scrobbling to its own service
+	 * E for an audioscrobbler-provided radio track when scrobbling to a different service
+	 * P for everything else
+	 * TODO: Use R or E in some cases instead of P
 	 */
-	as_entry->source = g_strdup ("P");
+	if (rhythmdb_entry_get_entry_type (rb_entry) == RHYTHMDB_ENTRY_TYPE_AUDIOSCROBBLER_RADIO_TRACK) {
+		RBAudioscrobblerRadioTrackData *track_data;
+		track_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (rb_entry, RBAudioscrobblerRadioTrackData);
+
+		/* only use L if we have an auth code,
+		 * and the track is from the correct service (ie not for a Libre.fm track scrobbling to Last.fm)
+		 */
+		if (track_data->track_auth != NULL && track_data->service == service) {
+			as_entry->source = g_strdup_printf ("L%s", track_data->track_auth);
+		} else {
+			as_entry->source = g_strdup ("E");
+		}
+	} else {
+		as_entry->source = g_strdup ("P");
+	}
 
 	return as_entry;
 }

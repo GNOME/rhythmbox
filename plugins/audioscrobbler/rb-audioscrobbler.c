@@ -696,7 +696,7 @@ rb_audioscrobbler_offline_play_notify_cb (RhythmDB *db,
 	if (rb_audioscrobbler_is_queueable (rb_entry)) {
 		AudioscrobblerEntry *as_entry;
 		
-		as_entry = rb_audioscrobbler_entry_create (rb_entry);
+		as_entry = rb_audioscrobbler_entry_create (rb_entry, audioscrobbler->priv->service);
 		as_entry->play_time = g_value_get_ulong (metadata);
 		rb_audioscrobbler_add_to_queue (audioscrobbler, as_entry);
 	}
@@ -1085,7 +1085,7 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 		/* even if it's the same song, it's being played again from
 		 * the start so we can queue it again.
 		 */
-		as_entry = rb_audioscrobbler_entry_create (entry);
+		as_entry = rb_audioscrobbler_entry_create (entry, audioscrobbler->priv->service);
 		as_entry->play_time = time (NULL);
 		audioscrobbler->priv->currently_playing = as_entry;
 		audioscrobbler->priv->now_playing_updated = FALSE;

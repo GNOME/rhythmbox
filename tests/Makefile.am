@@ -36,8 +36,9 @@ test_rb_lib_SOURCES = \
 	$(test_utils)
 
 test_audioscrobbler_SOURCES = \
-	test-audioscrobbler.c					\
-	$(top_srcdir)/plugins/audioscrobbler/rb-audioscrobbler-entry.c \
+	test-audioscrobbler.c								\
+	$(top_srcdir)/plugins/audioscrobbler/rb-audioscrobbler-entry.c			\
+	$(top_srcdir)/plugins/audioscrobbler/rb-audioscrobbler-radio-track-entry.c	\
 	$(test_utils)
 
 test_widgets_SOURCES = \

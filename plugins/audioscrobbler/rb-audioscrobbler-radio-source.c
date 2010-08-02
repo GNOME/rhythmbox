@@ -42,6 +42,7 @@
 #include <totem-pl-parser.h>
 
 #include "rb-audioscrobbler-radio-source.h"
+#include "rb-audioscrobbler-radio-track-entry.h"
 #include "rb-lastfm-play-order.h"
 #include "rb-debug.h"
 #include "rb-sourcelist.h"
@@ -101,25 +102,6 @@ const char *
 rb_audioscrobbler_radio_type_get_default_name (RBAudioscrobblerRadioType type)
 {
 	return radio_names[type];
-}
-
-/* entry data stuff */
-typedef struct
-{
-	char *image_url;
-	char *track_auth;
-	char *download_url;
-} RBAudioscrobblerRadioTrackEntryData;
-
-static void
-destroy_track_data (RhythmDBEntry *entry, gpointer meh)
-{
-	RBAudioscrobblerRadioTrackEntryData *data;
-
-	data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBAudioscrobblerRadioTrackEntryData);
-	g_free (data->image_url);
-	g_free (data->track_auth);
-	g_free (data->download_url);
 }
 
 /* source declarations */
@@ -277,26 +259,17 @@ rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfileSource *parent,
 	RBShell *shell;
 	RBPlugin *plugin;
 	RhythmDB *db;
-	RhythmDBEntryType track_entry_type;
 
 	g_object_get (parent, "shell", &shell, "plugin", &plugin, NULL);
 	g_object_get (shell, "db", &db, NULL);
 
-	track_entry_type = rhythmdb_entry_type_get_by_name (db, "audioscrobbler-radio-track");
-	if (track_entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		track_entry_type = rhythmdb_entry_register_type (db, "audioscrobbler-radio-track");
-		track_entry_type->save_to_disk = FALSE;
-		track_entry_type->category = RHYTHMDB_ENTRY_NORMAL;
-
-		track_entry_type->entry_type_data_size = sizeof (RBAudioscrobblerRadioTrackEntryData);
-		track_entry_type->pre_entry_destroy = destroy_track_data;
-	}
+	rb_audioscrobbler_radio_track_register_entry_type (db);
 
 	source = g_object_new (RB_TYPE_AUDIOSCROBBLER_RADIO_SOURCE,
 	                       "shell", shell,
 	                       "plugin", plugin,
 	                       "name", station_name,
-	                       "entry-type", track_entry_type,
+	                       "entry-type", RHYTHMDB_ENTRY_TYPE_AUDIOSCROBBLER_RADIO_TRACK,
 	                       "parent", parent,
 	                       "service", service,
                                "username", username,
@@ -935,7 +908,7 @@ xspf_entry_parsed (TotemPlParser *parser,
 	RhythmDB *db;
 
 	RhythmDBEntry *entry;
-	RBAudioscrobblerRadioTrackEntryData *track_data;
+	RBAudioscrobblerRadioTrackData *track_data;
 	const char *value;
 	GValue v = {0,};
 	int i;
@@ -959,7 +932,8 @@ xspf_entry_parsed (TotemPlParser *parser,
 	} else {
 		rb_debug ("track entry %s already exists", uri);
 	}
-	track_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioscrobblerRadioTrackEntryData);
+	track_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioscrobblerRadioTrackData);
+	track_data->service = source->priv->service;
 
 	/* straightforward string copying */
 	for (i = 0; i < G_N_ELEMENTS (field_mapping); i++) {
@@ -1306,7 +1280,7 @@ delete_station_action_cb (GtkAction *action, RBAudioscrobblerRadioSource *source
 static const char *
 get_image_url_for_entry (RBAudioscrobblerRadioSource *source, RhythmDBEntry *entry)
 {
-	RBAudioscrobblerRadioTrackEntryData *data;
+	RBAudioscrobblerRadioTrackData *data;
 	RhythmDBEntryType entry_type;
 
 	if (entry == NULL) {
@@ -1319,7 +1293,7 @@ get_image_url_for_entry (RBAudioscrobblerRadioSource *source, RhythmDBEntry *ent
 		return NULL;
 	}
 
-	data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBAudioscrobblerRadioTrackEntryData);
+	data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBAudioscrobblerRadioTrackData);
 	return data->image_url;
 }
 
