@@ -265,7 +265,7 @@ rb_gvalue_compare (GValue *a, GValue *b)
  * @a: left hand side
  * @b: right hand size
  *
- * Compares two #GTimeval structures for sorting.
+ * Compares two #GTimeVal structures for sorting.
  *
  * Return value: -1 if @a < @b, 0 if @a == @b, 1 if @a > @b
  */

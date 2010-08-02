@@ -267,7 +267,7 @@ rb_missing_files_source_get_property (GObject *object,
  * it would be trivial to make it use any source type
  * that did file access checks for its contents.
  * 
- * Return value: the #RBMissingFiles source
+ * Return value: the #RBMissingFilesSource
  */
 RBSource *
 rb_missing_files_source_new (RBShell *shell,

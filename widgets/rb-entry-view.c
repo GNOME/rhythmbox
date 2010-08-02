@@ -68,6 +68,8 @@
  * @RB_ENTRY_VIEW_COL_FIRST_SEEN: the first seen (imported) column
  * @RB_ENTRY_VIEW_COL_LAST_SEEN: the last seen column
  * @RB_ENTRY_VIEW_COL_LOCATION: the location column
+ * @RB_ENTRY_VIEW_COL_BPM: the BPM column
+ * @RB_ENTRY_VIEW_COL_COMMENT: the comment column
  * @RB_ENTRY_VIEW_COL_ERROR: the error column
  *
  * Predefined column types to use in #RBEntryView<!-- -->s.  Use
@@ -1296,7 +1298,7 @@ rb_entry_view_get_sorting_order (RBEntryView *view,
  * rb_entry_view_set_sorting_order:
  * @view: a #RBEntryView
  * @column_name: name of the column to sort on
- * @sort_order: order to sort in, as a #GtkSortOrder
+ * @sort_order: order to sort in, as a #GtkSortType
  *
  * Sets the sort order for the entry view.
  */

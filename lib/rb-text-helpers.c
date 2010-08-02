@@ -156,7 +156,7 @@ rb_text_common_direction (const char *first, ...)
  *
  * 1. Caller supplies the base direction of the result in base_dir.
  *
- * 2. Insert either %LRM or %RLM at the beginning of the string to set
+ * 2. Insert either LRM or RLM at the beginning of the string to set
  *    its base direction, according to base_dir.
  *
  * 3. Find the direction of each string using pango.
@@ -165,7 +165,7 @@ rb_text_common_direction (const char *first, ...)
  *    just insert them in.
  *
  * 5. For strings that have the opposite direction than the base one,
- *    insert them surrounded with embedding codes %RLE/%LRE .. %PDF.
+ *    insert them surrounded with embedding codes RLE/LRE .. PDF.
  *
  * Return value: a new string containing the result.
  */

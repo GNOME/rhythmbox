@@ -26,7 +26,7 @@
  *
  */
 
-/**
+/*
  * SECTION:rb-podcast-source
  * @short_description: source displaying podcast feeds and episodes
  *
@@ -818,7 +818,7 @@ rb_podcast_source_get_property (GObject *object,
 	}
 }
 
-/**
+/*
  * rb_podcast_source_new:
  * @shell: the #RBShell instance
  *
@@ -1271,7 +1271,7 @@ posts_view_drag_data_received_cb (GtkWidget *widget,
 	impl_receive_drag (RB_SOURCE (source), selection_data);
 }
 
-/**
+/*
  * rb_podcast_source_add_feed:
  * @source: the #RBPodcastSource
  * @uri: the new feed to add

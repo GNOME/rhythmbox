@@ -33,6 +33,21 @@
 #include "rb-player-gst-xfade.h"
 #include "rb-marshal.h"
 
+/**
+ * RBPlayerPlayType:
+ * @RB_PLAYER_PLAY_REPLACE: Replace the existing stream
+ * @RB_PLAYER_PLAY_AFTER_EOS: Start the new stream after the current stream ends
+ * @RB_PLAYER_PLAY_CROSSFADE: Crossfade between the existing stream and the new stream
+ */
+
+/**
+ * RBPlayerError:
+ * @RB_PLAYER_ERROR_NO_AUDIO: Audio playback not available
+ * @RB_PLAYER_ERROR_GENERAL: Nonspecific error
+ * @RB_PLAYER_ERROR_INTERNAL: Internal error
+ * @RB_PLAYER_ERROR_NOT_FOUND: The resource could not be found
+ */
+
 /* Signals */
 enum {
 	EOS,

@@ -3987,7 +3987,7 @@ rhythmdb_entry_count (RhythmDB *db)
 
 /**
  * rhythmdb_entry_foreach_by_type:
- * @db: a #RhythmdB.
+ * @db: a #RhythmDB.
  * @entry_type: the type of entry to retrieve
  * @func: the function to call with each entry
  * @data: user data to pass to the function.
@@ -4608,25 +4608,25 @@ rhythmdb_compute_status_normal (gint n_songs,
 /**
  * rhythmdb_register_entry_type:
  * @db: the #RhythmDB
- * @etype: the new entry type to register
+ * @entry_type: the new entry type to register
  *
  * Registers a new entry type.  An entry type must be registered before
  * any entries can be created for it.
  */
 void
-rhythmdb_register_entry_type (RhythmDB *db, RhythmDBEntryType *etype)
+rhythmdb_register_entry_type (RhythmDB *db, RhythmDBEntryType *entry_type)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 	char *name = NULL;
 
-	g_object_get (etype, "name", &name, NULL);
+	g_object_get (entry_type, "name", &name, NULL);
 	g_assert (name != NULL);
 	g_mutex_lock (db->priv->entry_type_map_mutex);
-	g_hash_table_insert (db->priv->entry_type_map, name, g_object_ref (etype));
+	g_hash_table_insert (db->priv->entry_type_map, name, g_object_ref (entry_type));
 	g_mutex_unlock (db->priv->entry_type_map_mutex);
 
 	if (klass->impl_entry_type_registered)
-		klass->impl_entry_type_registered (db, etype);
+		klass->impl_entry_type_registered (db, entry_type);
 }
 
 /**

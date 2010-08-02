@@ -32,7 +32,7 @@
  * @short_description: holds the Rhythmbox main window and everything else
  *
  * RBShell is the main application class in Rhythmbox.  It creates and holds
- * references to the other main objects (#RBShellPlayer, #RhythmDB, #RBSourcelist),
+ * references to the other main objects (#RBShellPlayer, #RhythmDB, #RBSourceList),
  * constructs the main window UI, and provides the basic DBus interface.
  */
 
@@ -675,13 +675,13 @@ rb_shell_class_init (RBShellClass *klass)
 	/**
 	 * RBShell:sourcelist:
 	 *
-	 * The #RBSourcelist instance
+	 * The #RBSourceList instance
 	 */
 	g_object_class_install_property (object_class,
 					 PROP_SOURCELIST,
 					 g_param_spec_object ("sourcelist",
 							      "sourcelist",
-							      "RBSourcelist",
+							      "RBSourceList",
 							      RB_TYPE_SOURCELIST,
 							      G_PARAM_READABLE));
 

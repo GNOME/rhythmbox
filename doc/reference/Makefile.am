@@ -28,6 +28,9 @@ HFILE_GLOB=$(top_srcdir)/lib/*.h
 CFILE_GLOB=$(top_srcdir)/lib/*.c
 
 # Header files to ignore when scanning.
+# - imported code
+# - generated code
+# - plugins (no API there)
 IGNORE_HFILES= \
 	config.h \
 	eel-gconf-extensions.h \
@@ -46,14 +49,34 @@ IGNORE_HFILES= \
 	rb-shell-player-glue.h \
 	rb-shell-player-binding.h \
 	rb-playlist-manager-glue.h \
+	rb-play-order-linear.h \
+	rb-play-order-linear-loop.h \
+	rb-play-order-queue.h \
+	rb-play-order-random-by-age-and-rating.h \
+	rb-play-order-random-by-age.h \
+	rb-play-order-random-by-rating.h \
+	rb-play-order-random-equal-weights.h \
+	rb-play-order-shuffle.h \
 	\
 	npapi.h \
 	npruntime.h \
 	npupp.h \
+	rb-feed-podcast-properties-dialog.h \
+	rb-podcast-manager.h \
+	rb-podcast-parse.h \
+	rb-podcast-properties-dialog.h \
+	rb-podcast-source.h \
 	\
 	gossip-cell-renderer-expander.h \
 	rb-query-creator-private.h \
 	\
+	rb-playlist-xml.h \
+	rb-sync-settings.h \
+	rb-sync-settings-ui.h \
+	rb-sync-state.h \
+	rb-sync-state-ui.h \
+	\
+	rb-audiocd-source.h \
 	sj-error.h \
 	sj-metadata-getter.h \
 	sj-metadata-gvfs.h \
@@ -61,7 +84,45 @@ IGNORE_HFILES= \
 	sj-metadata-musicbrainz.h \
 	sj-metadata-musicbrainz3.h \
 	sj-metadata.h \
-	sj-structures.h
+	sj-structures.h \
+	rb-audioscrobbler-entry.h \
+	rb-lastfm-play-order.h \
+	rb-audioscrobbler.h \
+	rb-lastfm-source.h \
+	rb-recorder.h \
+	rb-playlist-source-recorder.h \
+	rb-daap-record.h \
+	rb-rhythmdb-query-model-dmap-db-adapter.h \
+	rb-dmap-container-db-adapter.h \
+	rb-daap-dialog.h \
+	rb-rhythmdb-dmap-db-adapter.h \
+	rb-daap-glue.h \
+	rb-daap-src.h \
+	rb-daap-plugin.h \
+	rb-daap-source.h \
+	rb-daap-sharing.h \
+	rb-daap-record-factory.h \
+	rb-daap-container-record.h \
+	rb-fm-radio-source.h \
+	rb-radio-tuner.h \
+	rb-psp-source.h \
+	rb-generic-player-source.h \
+	rb-generic-player-playlist-source.h \
+	rb-nokia770-source.h \
+	rb-ipod-static-playlist-source.h \
+	rb-ipod-source.h \
+	rb-ipod-helpers.h \
+	rb-ipod-db.h \
+	rb-station-properties-dialog.h \
+	rb-iradio-source-search.h \
+	rb-iradio-source.h \
+	rb-mtp-thread.h \
+	rb-mtp-source.h \
+	rb-static-icon-plugin.h \
+	rb-tray-icon-gtk.h \
+	rb-vis-widget.h
+
+
 
 
 

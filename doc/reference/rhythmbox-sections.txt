@@ -225,7 +225,6 @@ RBStatusbar
 RBStatusbarClass
 rb_statusbar_new
 rb_statusbar_set_source
-rb_statusbar_set_progress
 <SUBSECTION Standard>
 RB_STATUSBAR
 RB_IS_STATUSBAR
@@ -533,6 +532,7 @@ RB_TYPE_SOURCE_EOF_TYPE
 <TITLE>RBPlayer</TITLE>
 RBPlayer
 RBPlayerIface
+RBPlayerPlayType
 RBPlayerError
 rb_player_new
 rb_player_open
@@ -632,19 +632,7 @@ RhythmDBQueryModelPrivate
 <TITLE>RhythmDB</TITLE>
 RhythmDB
 RhythmDBEntry
-RhythmDBEntryActionFunc
-RhythmDBEntryStringFunc
-RhythmDBEntryCanSyncFunc
-RhythmDBEntrySyncFunc
-RhythmDBEntryCategory
-RhythmDBEntryType
 RhythmDBQuery
-RHYTHMDB_ENTRY_TYPE_SONG
-RHYTHMDB_ENTRY_TYPE_PODCAST_POST
-RHYTHMDB_ENTRY_TYPE_PODCAST_FEED
-RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR
-RHYTHMDB_ENTRY_TYPE_IGNORE
-RHYTHMDB_ENTRY_TYPE_INVALID
 RhythmDBQueryType
 RhythmDBPropType
 RHYTHMDB_PROP_STREAM_SONG_TITLE
@@ -659,7 +647,7 @@ rhythmdb_entry_get_boolean
 rhythmdb_entry_get_uint64
 rhythmdb_entry_get_ulong
 rhythmdb_entry_get_double
-rhythmdb_entry_get_pointer
+rhythmdb_entry_get_object
 rhythmdb_entry_get_entry_type
 RhythmDBError
 rhythmdb_new
@@ -669,14 +657,12 @@ rhythmdb_save
 rhythmdb_save_async
 rhythmdb_start_action_thread
 rhythmdb_commit
-rhythmdb_entry_is_editable
 rhythmdb_entry_new
 rhythmdb_entry_example_new
 rhythmdb_add_uri
 rhythmdb_add_uri_with_types
 rhythmdb_entry_get
 rhythmdb_entry_set
-rhythmdb_entry_get_playback_uri
 rhythmdb_entry_get_type_data
 RHYTHMDB_ENTRY_GET_TYPE_DATA
 rhythmdb_entry_delete
@@ -716,7 +702,7 @@ rhythmdb_entry_gather_metadata
 rhythmdb_emit_entry_extra_metadata_notify
 rhythmdb_is_busy
 rhythmdb_compute_status_normal
-rhythmdb_entry_register_type
+rhythmdb_register_entry_type
 rhythmdb_entry_type_get_by_name
 rhythmdb_get_property_type
 rhythmdb_entry_ref
@@ -752,11 +738,29 @@ rhythmdb_get_type
 RhythmDBPrivate
 rhythmdb_emit_entry_added
 rhythmdb_emit_entry_deleted
-rhythmdb_entry_song_get_type
-rhythmdb_entry_podcast_post_get_type
-rhythmdb_entry_podcast_feed_get_type
-rhythmdb_entry_import_error_get_type
-rhythmdb_entry_ignore_get_type
+</SECTION>
+
+<SECTION>
+<FILE>rhythmdb-entry-type</FILE>
+<TITLE>RhythmDBEntryType</TITLE>
+RhythmDBEntryCategory
+RhythmDBEntryType
+RhythmDBEntryTypeClass
+rhythmdb_entry_type_get_name
+rhythmdb_entry_get_playback_uri
+rhythmdb_entry_created
+rhythmdb_entry_pre_destroy
+rhythmdb_entry_can_sync_metadata
+rhythmdb_entry_sync_metadata
+<SUBSECTION Standard>
+RHYTHMDB_ENTRY_TYPE_SONG
+RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR
+RHYTHMDB_ENTRY_TYPE_IGNORE
+rhythmdb_get_song_entry_type
+rhythmdb_get_error_entry_type
+rhythmdb_get_ignore_entry_type
+RhythmDBEntryTypePrivate
+rhythmdb_entry_type_get_type
 </SECTION>
 
 <SECTION>
@@ -1528,8 +1532,8 @@ RBTrackTransferBatch
 RBTrackTransferBatchClass
 rb_track_transfer_batch_new
 rb_track_transfer_batch_add
-rb_track_transfer_batch_start
-rb_track_transfer_batch_next
+rb_track_transfer_batch_check_media_types
+rb_track_transfer_batch_cancel
 <SUBSECTION Standard>
 rb_track_transfer_batch_get_type
 RB_TYPE_TRACK_TRANSFER_BATCH

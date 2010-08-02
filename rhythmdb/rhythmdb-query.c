@@ -706,7 +706,7 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 	return query;
 }
 
-/**
+/*
  * This is used to "process" queries, before using them. It is mainly used to two things:
  *
  * 1) performing expensive data transformations once per query, rather than
@@ -714,7 +714,7 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
  *
  * 2) defining criteria in terms of other lower-level ones that the db backend
  *    actually implements. e.g. RHYTHMDB_QUERY_YEAR_*
- **/
+ */
 
 /**
  * rhythmdb_query_preprocess:

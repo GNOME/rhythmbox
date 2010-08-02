@@ -822,7 +822,7 @@ rb_browser_source_get_paned_key (RBBrowserSource *source)
 
 /**
  * rb_browser_source_has_drop_support:
- * @source: a #RBBrowser
+ * @source: a #RBBrowserSource
  *
  * This is a virtual method that should be implemented by subclasses.  It returns %TRUE
  * if drag and drop target support for the source should be activated.

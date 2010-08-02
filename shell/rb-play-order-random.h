@@ -58,9 +58,14 @@ struct _RBRandomPlayOrderClass
 	RBPlayOrderClass parent_class;
 
 	/**
+	 * get_entry_weight:
+	 * @rorder: the play order
+	 * @db: the #RhythmDB
+	 * @entry: the #RhythmDBEntry to weight
+	 *
 	 * This method should return a weight for the given @entry.
 	 *
-	 * The @db will be locked when this method is called.
+	 * Return value: weighting for @entry
 	 */
 	double (*get_entry_weight) (RBRandomPlayOrder *rorder, RhythmDB *db, RhythmDBEntry *entry);
 };

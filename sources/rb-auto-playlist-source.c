@@ -860,7 +860,7 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
  * @limit_type: returns the playlist limit type
  * @limit_value: returns the playlist limit value
  * @sort_key: returns the playlist sorting key
- * @sort_order: returns the playlist sorting direction (as a GtkSortOrder)
+ * @sort_order: returns the playlist sorting direction (as a #GtkSortType)
  *
  * Extracts the current query, playlist limit, and sorting settings for the playlist.
  */

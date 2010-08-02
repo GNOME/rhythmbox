@@ -781,7 +781,7 @@ rb_library_source_format_changed_cb (GtkWidget *widget, RBLibrarySource *source)
 	layout_example_label_update (source);
 }
 
-/**
+/*
  * Perform magic on a path to make it safe.
  *
  * This will always replace '/' with '-', and optionally make the file name
@@ -1125,7 +1125,7 @@ rb_library_source_layout_filename_changed (GConfClient *client,
 	layout_example_label_update (source);
 }
 
-/**
+/*
  * Build the absolute filename for the specified track.
  *
  * The base path is the extern variable 'base_path', the format to use

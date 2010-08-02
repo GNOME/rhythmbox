@@ -185,7 +185,7 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 	/**
 	 * RBPropertyView:property-model:
 	 *
-	 * The #RhythmDBProperyModel backing the view.
+	 * The #RhythmDBPropertyModel backing the view.
 	 */
 	g_object_class_install_property (object_class,
 					 PROP_MODEL,

@@ -43,7 +43,7 @@
 
 
 
-/**
+/*
  * SECTION:rb-tray-icon
  * @short_description: Notification area icon
  *
