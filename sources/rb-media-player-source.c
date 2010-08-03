@@ -66,7 +66,6 @@ typedef struct {
 
 	/* sync state */
 	RBSyncState *sync_state;
-	GList *sync_add_remaining;
 
 } RBMediaPlayerSourcePrivate;
 
@@ -88,19 +87,6 @@ static void rb_media_player_source_get_property (GObject *object,
 					 GParamSpec *pspec);
 static void rb_media_player_source_constructed (GObject *object);
 
-static gboolean rb_media_player_source_track_added (RBRemovableMediaSource *source,
-						    RhythmDBEntry *entry,
-						    const char *uri,
-						    guint64 dest_size,
-						    const char *mimetype);
-static gboolean rb_media_player_source_track_add_error (RBRemovableMediaSource *source,
-							RhythmDBEntry *entry,
-							const char *uri,
-							GError *error);
-
-static gboolean sync_idle_cb_update_sync (RBMediaPlayerSource *source);
-
-static void track_add_done (RBMediaPlayerSource *source, RhythmDBEntry *entry);
 static void sync_cmd (GtkAction *action, RBSource *source);
 static gboolean sync_idle_delete_entries (RBMediaPlayerSource *source);
 
@@ -144,16 +130,12 @@ static void
 rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
 
 	object_class->dispose = rb_media_player_source_dispose;
 
 	object_class->set_property = rb_media_player_source_set_property;
 	object_class->get_property = rb_media_player_source_get_property;
 	object_class->constructed = rb_media_player_source_constructed;
-
-	rms_class->impl_track_added = rb_media_player_source_track_added;
-	rms_class->impl_track_add_error = rb_media_player_source_track_add_error;
 
 	klass->impl_get_entries = NULL;
 	klass->impl_get_capacity = NULL;
@@ -240,27 +222,6 @@ rb_media_player_source_constructed (GObject *object)
 	g_object_unref (shell);
 
 	priv->sync_action = gtk_action_group_get_action (action_group, "MediaPlayerSourceSync");
-}
-
-static gboolean
-rb_media_player_source_track_added (RBRemovableMediaSource *source,
-				    RhythmDBEntry *entry,
-				    const char *uri,
-				    guint64 dest_size,
-				    const char *mimetype)
-{
-	track_add_done (RB_MEDIA_PLAYER_SOURCE (source), entry);
-	return TRUE;
-}
-
-static gboolean
-rb_media_player_source_track_add_error (RBRemovableMediaSource *source,
-					RhythmDBEntry *entry,
-					const char *uri,
-					GError *error)
-{
-	track_add_done (RB_MEDIA_PLAYER_SOURCE (source), entry);
-	return TRUE;
 }
 
 /* must be called once device information is available via source properties */
@@ -547,24 +508,20 @@ sync_idle_cb_playlists (RBMediaPlayerSource *source)
 }
 
 static void
-track_add_done (RBMediaPlayerSource *source, RhythmDBEntry *entry)
+transfer_batch_complete_cb (RBTrackTransferBatch *batch, RBMediaPlayerSource *source)
 {
-	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
-	GList *l;
-	/* remove the entry from the set of transfers we're waiting for;
-	 * if the set is now empty, trigger the next sync stage.
-	 */
-
-	l = g_list_find (priv->sync_add_remaining, entry);
-	if (l != NULL) {
-		priv->sync_add_remaining = g_list_remove_link (priv->sync_add_remaining, l);
-		if (priv->sync_add_remaining == NULL) {
-			rb_debug ("finished transferring files to the device");
-			g_idle_add ((GSourceFunc) sync_idle_cb_playlists, source);
-		}
-		rhythmdb_entry_unref (entry);
-	}
+	rb_debug ("finished transferring files to the device");
+	g_idle_add ((GSourceFunc) sync_idle_cb_playlists, source);
 }
+
+static void
+transfer_batch_cancelled_cb (RBTrackTransferBatch *batch, RBMediaPlayerSource *source)
+{
+	/* don't try to update playlists, just clean up */
+	rb_debug ("sync file transfer to the device was cancelled");
+	g_idle_add ((GSourceFunc) sync_idle_cb_cleanup, source);
+}
+
 
 static void
 sync_delete_done_cb (RBMediaPlayerSource *source, gpointer dontcare)
@@ -574,11 +531,17 @@ sync_delete_done_cb (RBMediaPlayerSource *source, gpointer dontcare)
 
 	/* Transfer needed tracks and podcasts from itinerary to device */
 	if (priv->sync_state->sync_add_count != 0) {
+		RBTrackTransferBatch *batch;
 
 		rb_debug ("transferring %d files to media player", priv->sync_state->sync_add_count);
-		priv->sync_add_remaining = g_list_copy (priv->sync_state->sync_to_add);
-		g_list_foreach (priv->sync_add_remaining, (GFunc) rhythmdb_entry_ref, NULL);
-		rb_source_paste (RB_SOURCE (source), priv->sync_add_remaining);
+		batch = rb_source_paste (RB_SOURCE (source), priv->sync_state->sync_to_add);
+		if (batch != NULL) {
+			g_signal_connect_object (batch, "complete", G_CALLBACK (transfer_batch_complete_cb), source, 0);
+			g_signal_connect_object (batch, "cancelled", G_CALLBACK (transfer_batch_cancelled_cb), source, 0);
+		} else {
+			rb_debug ("weird, transfer was apparently synchronous");
+			g_idle_add ((GSourceFunc) sync_idle_cb_playlists, source);
+		}
 	} else {
 		rb_debug ("no files to transfer to the device");
 		g_idle_add ((GSourceFunc) sync_idle_cb_playlists, source);

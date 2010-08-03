@@ -1127,9 +1127,6 @@ impl_track_added (RBRemovableMediaSource *source,
 		g_idle_add ((GSourceFunc) request_album_art_idle, artdata);
 	}
 	queue_free_space_update (RB_MTP_SOURCE (source));
-
-	/* chain up to parent class for sync */
-	RB_REMOVABLE_MEDIA_SOURCE_CLASS (rb_mtp_source_parent_class)->impl_track_added (source, entry, dest, filesize, mimetype);
 	return FALSE;
 }
 
@@ -1149,8 +1146,6 @@ impl_track_add_error (RBRemovableMediaSource *source,
 		rb_debug ("track-add-error called, but can't find a track for dest URI %s", dest);
 	}
 
-	/* chain up to parent class for sync */
-	RB_REMOVABLE_MEDIA_SOURCE_CLASS (rb_mtp_source_parent_class)->impl_track_add_error (source, entry, dest, error);
 	return TRUE;
 }
 

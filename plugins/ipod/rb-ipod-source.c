@@ -1485,9 +1485,6 @@ impl_track_added (RBRemovableMediaSource *source,
 
 	g_object_unref (db);
 
-	/* chain up to parent class for sync */
-	RB_REMOVABLE_MEDIA_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_track_added (source, entry, dest, filesize, mimetype);
-
 	return FALSE;
 }
 
