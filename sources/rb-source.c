@@ -1139,14 +1139,22 @@ rb_source_copy (RBSource *source)
  * @entries: a list of #RhythmDBEntry objects to paste in
  *
  * Adds a list of entries previously cut or copied from another
- * source.
+ * source.  If the entries are not of the type used by the source,
+ * the entries will be copied and possibly converted into an acceptable format.
+ * This can be used for transfers to and from devices and network shares.
+ *
+ * If the transfer is performed using an #RBTrackTransferBatch, the batch object
+ * is returned so the caller can monitor the transfer progress.  The caller does not
+ * own a reference on the batch object.
+ *
+ * Return value: the #RBTrackTransferBatch used to perform the transfer (if any)
  */
-void
+RBTrackTransferBatch *
 rb_source_paste (RBSource *source, GList *entries)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
-	klass->impl_paste (source, entries);
+	return klass->impl_paste (source, entries);
 }
 
 /**

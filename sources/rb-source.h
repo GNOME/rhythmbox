@@ -35,6 +35,7 @@
 #include <sources/rb-source-search.h>
 #include <widgets/rb-entry-view.h>
 #include <shell/rb-shell-preferences.h>
+#include <shell/rb-track-transfer-batch.h>
 #include <rhythmdb/rhythmdb-import-job.h>
 
 G_BEGIN_DECLS
@@ -116,7 +117,7 @@ struct _RBSourceClass
 
 	GList *		(*impl_cut)		(RBSource *source);
 	GList *		(*impl_copy)		(RBSource *source);
-	void		(*impl_paste)		(RBSource *source, GList *entries);
+	RBTrackTransferBatch *(*impl_paste)	(RBSource *source, GList *entries);
 	void		(*impl_delete)		(RBSource *source);
 	void		(*impl_add_to_queue)	(RBSource *source, RBSource *queue);
 	void		(*impl_move_to_trash)	(RBSource *source);
@@ -185,7 +186,7 @@ gboolean	rb_source_can_show_properties	(RBSource *source);
 
 GList *		rb_source_cut			(RBSource *source);
 GList *		rb_source_copy			(RBSource *source);
-void		rb_source_paste			(RBSource *source, GList *entries);
+RBTrackTransferBatch *rb_source_paste			(RBSource *source, GList *entries);
 void		rb_source_delete		(RBSource *source);
 void		rb_source_add_to_queue		(RBSource *source, RBSource *queue);
 void		rb_source_move_to_trash		(RBSource *source);

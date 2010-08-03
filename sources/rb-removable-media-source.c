@@ -85,7 +85,7 @@ static void rb_removable_media_source_get_property (GObject *object,
 			                  GParamSpec *pspec);
 
 static void impl_delete_thyself (RBSource *source);
-static void impl_paste (RBSource *source, GList *entries);
+static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
 static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
 static gboolean impl_should_paste (RBRemovableMediaSource *source,
 				   RhythmDBEntry *entry);
@@ -385,7 +385,7 @@ track_done_cb (RBTrackTransferBatch *batch,
 	}
 }
 
-static void
+static RBTrackTransferBatch *
 impl_paste (RBSource *bsource, GList *entries)
 {
 	RBRemovableMediaSource *source = RB_REMOVABLE_MEDIA_SOURCE (bsource);
@@ -405,7 +405,7 @@ impl_paste (RBSource *bsource, GList *entries)
 	g_object_unref (shell);
 
 	mime_types = rb_removable_media_source_get_mime_types (source);
-	batch = rb_track_transfer_batch_new (mime_types, NULL, NULL, RB_SOURCE (source));
+	batch = rb_track_transfer_batch_new (mime_types, NULL, NULL, G_OBJECT (source));
 	rb_list_deep_free (mime_types);
 
 	g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), source, 0);
@@ -442,8 +442,10 @@ impl_paste (RBSource *bsource, GList *entries)
 		rb_track_transfer_queue_start_batch (xferq, batch);
 	} else {
 		g_object_unref (batch);
+		batch = NULL;
 	}
 	g_object_unref (xferq);
+	return batch;
 }
 
 static guint

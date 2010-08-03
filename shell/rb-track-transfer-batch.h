@@ -29,7 +29,6 @@
 #define __RB_TRACK_TRANSFER_BATCH_H
 
 #include <rhythmdb/rhythmdb.h>
-#include <sources/rb-source.h>
 
 G_BEGIN_DECLS
 
@@ -85,8 +84,8 @@ GType			rb_track_transfer_batch_get_type	(void);
 
 RBTrackTransferBatch *	rb_track_transfer_batch_new		(GList *media_type_list,
 								 const char * const *media_types,
-								 RBSource *source,
-								 RBSource *destination);
+								 GObject *source,
+								 GObject *destination);
 void			rb_track_transfer_batch_add		(RBTrackTransferBatch *batch,
 								 RhythmDBEntry *entry);
 

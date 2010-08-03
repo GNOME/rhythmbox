@@ -30,6 +30,7 @@
 
 #include <glib/gi18n.h>
 
+#include "rb-source.h"
 #include "rb-track-transfer-batch.h"
 #include "rb-track-transfer-queue.h"
 #include "rb-encoder.h"
@@ -121,8 +122,8 @@ G_DEFINE_TYPE (RBTrackTransferBatch, rb_track_transfer_batch, G_TYPE_OBJECT)
 RBTrackTransferBatch *
 rb_track_transfer_batch_new (GList *media_types,
 			     const char * const *media_types_strv,
-			     RBSource *source,
-			     RBSource *destination)
+			     GObject *source,
+			     GObject *destination)
 {
 	GObject *obj;
 

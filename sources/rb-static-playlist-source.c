@@ -73,7 +73,7 @@ static void rb_static_playlist_source_get_property (GObject *object,
 
 /* source methods */
 static GList * impl_cut (RBSource *source);
-static void impl_paste (RBSource *asource, GList *entries);
+static RBTrackTransferBatch *impl_paste (RBSource *asource, GList *entries);
 static void impl_delete (RBSource *source);
 static void impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_browser_toggled (RBSource *source, gboolean enabled);
@@ -482,13 +482,15 @@ impl_cut (RBSource *asource)
 	return sel;
 }
 
-static void
+static RBTrackTransferBatch *
 impl_paste (RBSource *asource, GList *entries)
 {
 	RBStaticPlaylistSource *source = RB_STATIC_PLAYLIST_SOURCE (asource);
 
 	for (; entries; entries = g_list_next (entries))
 		rb_static_playlist_source_add_entry (source, entries->data, -1);
+
+	return NULL;
 }
 
 static void

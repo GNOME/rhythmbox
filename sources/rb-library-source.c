@@ -82,7 +82,7 @@ static char *impl_get_browser_key (RBSource *source);
 static char *impl_get_paned_key (RBBrowserSource *source);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_can_paste (RBSource *asource);
-static void impl_paste (RBSource *source, GList *entries);
+static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
 static guint impl_want_uri (RBSource *source, const char *uri);
 static gboolean impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre);
 static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
@@ -1279,7 +1279,7 @@ track_done_cb (RBTrackTransferBatch *batch,
 	}
 }
 
-static void
+static RBTrackTransferBatch *
 impl_paste (RBSource *asource, GList *entries)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
@@ -1293,7 +1293,7 @@ impl_paste (RBSource *asource, GList *entries)
 
 	if (impl_can_paste (asource) == FALSE) {
 		g_warning ("RBLibrarySource impl_paste called when gconf keys unset");
-		return;
+		return NULL;
 	}
 
 	sl = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
@@ -1305,7 +1305,7 @@ impl_paste (RBSource *asource, GList *entries)
 	g_object_get (shell, "track-transfer-queue", &xferq, NULL);
 	g_object_unref (shell);
 
-	batch = rb_track_transfer_batch_new (NULL, NULL, NULL, RB_SOURCE (source));
+	batch = rb_track_transfer_batch_new (NULL, NULL, NULL, G_OBJECT (source));
 	g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), source, 0);
 	g_signal_connect_object (batch, "track-done", G_CALLBACK (track_done_cb), source, 0);
 
@@ -1338,9 +1338,11 @@ impl_paste (RBSource *asource, GList *entries)
 		rb_track_transfer_queue_start_batch (xferq, batch);
 	} else {
 		g_object_unref (batch);
+		batch = NULL;
 	}
 
 	g_object_unref (xferq);
+	return batch;
 }
 
 static guint
