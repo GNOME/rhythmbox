@@ -26,24 +26,40 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
  */
 
-#ifndef __RB_AUDIOSCROBBLER_RADIO_TRACK_ENTRY_H
-#define __RB_AUDIOSCROBBLER_RADIO_TRACK_ENTRY_H
+#include "rb-audioscrobbler-radio-track-entry-type.h"
 
-#include "rhythmdb.h"
-#include "rb-audioscrobbler-service.h"
+static RhythmDBEntryType *radio_track_entry_type = NULL;
 
-#define RHYTHMDB_ENTRY_TYPE_AUDIOSCROBBLER_RADIO_TRACK (rhythmdb_entry_audioscrobbler_radio_track_get_type ())
-
-typedef struct
+static void
+track_data_destroy (RhythmDBEntryType *entry_type, RhythmDBEntry *entry)
 {
-	char *image_url;
-	char *track_auth;
-	char *download_url;
-	RBAudioscrobblerService *service;
-} RBAudioscrobblerRadioTrackData;
+	RBAudioscrobblerRadioTrackData *data;
+	data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioscrobblerRadioTrackData);
 
-void rb_audioscrobbler_radio_track_register_entry_type (RhythmDB *db);
+	g_free (data->image_url);
+	g_free (data->track_auth);
+	g_free (data->download_url);
+}
 
-RhythmDBEntryType rhythmdb_entry_audioscrobbler_radio_track_get_type (void);
+RhythmDBEntryType *
+rb_audioscrobbler_radio_track_get_entry_type (void)
+{
+	return radio_track_entry_type;
+}
 
-#endif /* #ifndef __RB_AUDIOSCROBBLER_RADIO_TRACK_ENTRY_H */
+void
+rb_audioscrobbler_radio_track_register_entry_type (RhythmDB *db)
+{
+	g_assert (radio_track_entry_type == NULL);
+
+	radio_track_entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+	                                       "db", db,
+	                                       "name", "audioscrobbler-radio-track",
+	                                       "save-to-disk", FALSE,
+	                                       "category", RHYTHMDB_ENTRY_NORMAL,
+	                                       "type-data-size", sizeof (RBAudioscrobblerRadioTrackData),
+	                                       NULL);
+
+	radio_track_entry_type->destroy_entry = track_data_destroy;
+	rhythmdb_register_entry_type (db, radio_track_entry_type);
+}

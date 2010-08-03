@@ -266,7 +266,6 @@ rb_audioscrobbler_profile_source_new (RBShell *shell, RBPlugin *plugin, RBAudios
 	                                  "plugin", plugin,
 	                                  "name", name,
 	                                  "source-group", RB_SOURCE_GROUP_LIBRARY,
-	                                  "entry-type", RHYTHMDB_ENTRY_TYPE_INVALID,
 	                                  "icon", icon_pixbuf,
 	                                  "service", service,
 	                                  NULL));

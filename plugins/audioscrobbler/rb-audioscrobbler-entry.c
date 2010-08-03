@@ -41,7 +41,7 @@
 #include <libsoup/soup.h>
 
 #include "rb-audioscrobbler-entry.h"
-#include "rb-audioscrobbler-radio-track-entry.h"
+#include "rb-audioscrobbler-radio-track-entry-type.h"
 
 
 void

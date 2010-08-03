@@ -42,7 +42,7 @@
 #include <totem-pl-parser.h>
 
 #include "rb-audioscrobbler-radio-source.h"
-#include "rb-audioscrobbler-radio-track-entry.h"
+#include "rb-audioscrobbler-radio-track-entry-type.h"
 #include "rb-lastfm-play-order.h"
 #include "rb-debug.h"
 #include "rb-sourcelist.h"
@@ -263,7 +263,9 @@ rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfileSource *parent,
 	g_object_get (parent, "shell", &shell, "plugin", &plugin, NULL);
 	g_object_get (shell, "db", &db, NULL);
 
-	rb_audioscrobbler_radio_track_register_entry_type (db);
+	if (RHYTHMDB_ENTRY_TYPE_AUDIOSCROBBLER_RADIO_TRACK == NULL) {
+		rb_audioscrobbler_radio_track_register_entry_type (db);
+	}
 
 	source = g_object_new (RB_TYPE_AUDIOSCROBBLER_RADIO_SOURCE,
 	                       "shell", shell,
@@ -904,7 +906,7 @@ xspf_entry_parsed (TotemPlParser *parser,
                    RBAudioscrobblerRadioSource *source)
 {
 	RBShell *shell;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
 
 	RhythmDBEntry *entry;
@@ -1281,7 +1283,7 @@ static const char *
 get_image_url_for_entry (RBAudioscrobblerRadioSource *source, RhythmDBEntry *entry)
 {
 	RBAudioscrobblerRadioTrackData *data;
-	RhythmDBEntryType entry_type;
+	RhythmDBEntryType *entry_type;
 
 	if (entry == NULL) {
 		return NULL;
