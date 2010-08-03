@@ -328,10 +328,10 @@
   )
 )
 
-(define-method get_pointer
+(define-method get_object_
   (of-object "RhythmDBEntry")
-  (c-name "rhythmdb_entry_get_pointer")
-  (return-type "gpointer")
+  (c-name "rhythmdb_entry_get_object")
+  (return-type "GObject*")
   (parameters
     '("RhythmDBPropType" "propid")
   )
@@ -371,6 +371,12 @@
   (parameters
     '("RhythmDBPropType" "propid")
   )
+)
+
+(define-method get_entry_type
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_get_entry_type")
+  (return-type "RhythmDBEntryType*")
 )
 
 (define-function rhythmdb_get_type
