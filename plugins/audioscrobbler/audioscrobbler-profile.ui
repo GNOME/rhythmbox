@@ -435,53 +435,50 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLayout" id="layout1">
+                  <object class="GtkTable" id="recent_tracks_table">
                     <property name="visible">True</property>
-                    <property name="width">0</property>
-                    <property name="height">0</property>
-                    <signal name="size_allocate" handler="list_layout_size_allocate_cb"/>
+                    <property name="n_rows">3</property>
+                    <property name="n_columns">3</property>
+                    <property name="homogeneous">True</property>
+                    <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
                     <child>
-                      <object class="GtkTable" id="recent_tracks_table">
-                        <property name="visible">True</property>
-                        <property name="n_rows">3</property>
-                        <property name="n_columns">3</property>
-                        <property name="homogeneous">True</property>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                      </object>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
               </object>
               <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
                 <property name="position">2</property>
               </packing>
             </child>
@@ -516,53 +513,50 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLayout" id="layout2">
+                  <object class="GtkTable" id="top_artists_table">
                     <property name="visible">True</property>
-                    <property name="width">0</property>
-                    <property name="height">0</property>
-                    <signal name="size_allocate" handler="list_layout_size_allocate_cb"/>
+                    <property name="n_rows">3</property>
+                    <property name="n_columns">3</property>
+                    <property name="homogeneous">True</property>
+                    <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
                     <child>
-                      <object class="GtkTable" id="top_artists_table">
-                        <property name="visible">True</property>
-                        <property name="n_rows">3</property>
-                        <property name="n_columns">3</property>
-                        <property name="homogeneous">True</property>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                      </object>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
               </object>
               <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
                 <property name="position">3</property>
               </packing>
             </child>
@@ -597,45 +591,38 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLayout" id="layout3">
+                  <object class="GtkTable" id="recommended_artists_table">
                     <property name="visible">True</property>
-                    <property name="width">0</property>
-                    <property name="height">0</property>
-                    <signal name="size_allocate" handler="list_layout_size_allocate_cb"/>
+                    <property name="n_rows">3</property>
+                    <property name="n_columns">3</property>
+                    <property name="homogeneous">True</property>
+                    <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
                     <child>
-                      <object class="GtkTable" id="recommended_artists_table">
-                        <property name="visible">True</property>
-                        <property name="n_rows">3</property>
-                        <property name="n_columns">3</property>
-                        <property name="homogeneous">True</property>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                      </object>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                   </object>
                   <packing>
@@ -644,6 +631,8 @@
                 </child>
               </object>
               <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
                 <property name="position">4</property>
               </packing>
             </child>
@@ -678,45 +667,38 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLayout" id="layout4">
+                  <object class="GtkTable" id="top_tracks_table">
                     <property name="visible">True</property>
-                    <property name="width">0</property>
-                    <property name="height">0</property>
-                    <signal name="size_allocate" handler="list_layout_size_allocate_cb"/>
+                    <property name="n_rows">3</property>
+                    <property name="n_columns">3</property>
+                    <property name="homogeneous">True</property>
+                    <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
                     <child>
-                      <object class="GtkTable" id="top_tracks_table">
-                        <property name="visible">True</property>
-                        <property name="n_rows">3</property>
-                        <property name="n_columns">3</property>
-                        <property name="homogeneous">True</property>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                      </object>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                   </object>
                   <packing>
@@ -725,6 +707,8 @@
                 </child>
               </object>
               <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
                 <property name="position">5</property>
               </packing>
             </child>
@@ -759,45 +743,38 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLayout" id="layout5">
+                  <object class="GtkTable" id="loved_tracks_table">
                     <property name="visible">True</property>
-                    <property name="width">0</property>
-                    <property name="height">0</property>
-                    <signal name="size_allocate" handler="list_layout_size_allocate_cb"/>
+                    <property name="n_rows">3</property>
+                    <property name="n_columns">3</property>
+                    <property name="homogeneous">True</property>
+                    <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
                     <child>
-                      <object class="GtkTable" id="loved_tracks_table">
-                        <property name="visible">True</property>
-                        <property name="n_rows">3</property>
-                        <property name="n_columns">3</property>
-                        <property name="homogeneous">True</property>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                      </object>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                   </object>
                   <packing>
@@ -806,6 +783,8 @@
                 </child>
               </object>
               <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
                 <property name="position">6</property>
               </packing>
             </child>

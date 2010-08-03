@@ -207,10 +207,10 @@ static GtkWidget *create_list_button (RBAudioscrobblerProfileSource *source,
                                       RBAudioscrobblerUserData *data);
 static GtkWidget *create_popup_menu (RBAudioscrobblerProfileSource *source,
                                      RBAudioscrobblerUserData *data);
-static void list_table_pack_start (GtkTable *list_table, GtkWidget *item);
-void list_layout_size_allocate_cb (GtkWidget *layout,
-                                   GtkAllocation *allocation,
-                                   gpointer user_data);
+static void list_table_pack_start (GtkTable *list_table, GtkWidget *child);
+void list_table_size_allocate_cb (GtkWidget *layout,
+                                  GtkAllocation *allocation,
+                                  gpointer user_data);
 
 /* callbacks from data list buttons and related popup menus */
 static void list_item_clicked_cb (GtkButton *button, RBAudioscrobblerProfileSource *source);
@@ -1472,51 +1472,48 @@ create_popup_menu (RBAudioscrobblerProfileSource *source,
 	return menu;
 }
 
-/* packs a button into a GtkTable, from right to left then top to bottom */
+/* packs a widget into a GtkTable, from right to left then top to bottom */
 static void
-list_table_pack_start (GtkTable *list_table, GtkWidget *item)
+list_table_pack_start (GtkTable *list_table, GtkWidget *child)
 {
 	int num_columns;
-	int num_rows;
-	int i;
+	int num_children;
 
-	g_object_get (list_table, "n-columns", &num_columns, "n-rows", &num_rows, NULL);
-	i = g_list_length (gtk_container_get_children (GTK_CONTAINER (list_table)));
+	g_object_get (list_table, "n-columns", &num_columns, NULL);
+	num_children = g_list_length (gtk_container_get_children (GTK_CONTAINER (list_table)));
 
 	gtk_table_attach_defaults (list_table,
-	                           item,
-	                           i % num_columns, i % num_columns + 1,
-	                           i / num_columns, i / num_columns + 1);
+	                           child,
+	                           num_children % num_columns, num_children % num_columns + 1,
+	                           num_children / num_columns, num_children / num_columns + 1);
 }
 
-/* allocates the correct amount of size for a table containing a list of buttons */
+/* resizes a GtkTable for a particular size allocation */
 void
-list_layout_size_allocate_cb (GtkWidget *layout,
-                                                               GtkAllocation *allocation,
-                                                               gpointer user_data)
+list_table_size_allocate_cb (GtkWidget *table,
+                             GtkAllocation *allocation,
+                             gpointer user_data)
 {
-	GtkWidget *table = gtk_container_get_children (GTK_CONTAINER (layout))->data;
-	GList *buttons = gtk_container_get_children (GTK_CONTAINER (table));
-	int num_buttons;
+	GList *children = gtk_container_get_children (GTK_CONTAINER (table));
+	int num_children;
+	int child_width;
 	GList *i;
-	int button_width;
 	int current_num_columns;
-	int new_num_columns;
 	int spacing;
-	GtkRequisition table_requisition;
+	int new_num_columns;
 
-	num_buttons = g_list_length (buttons);
-	if (num_buttons == 0)
+	num_children = g_list_length (children);
+	if (num_children == 0)
 		return;
 
-	/* find the desired width of the widest button */
-	button_width = 1;
-	for (i = buttons; i != NULL; i = i->next) {
-		GtkRequisition button_requisition;
+	/* find the desired width of the widest child */
+	child_width = 1;
+	for (i = children; i != NULL; i = i->next) {
+		GtkRequisition child_requisition;
 
-		gtk_widget_get_requisition (i->data, &button_requisition);
-		if (button_requisition.width > button_width) {
-			button_width = button_requisition.width;
+		gtk_widget_get_requisition (i->data, &child_requisition);
+		if (child_requisition.width > child_width) {
+			child_width = child_requisition.width;
 		}
 	}
 
@@ -1524,19 +1521,19 @@ list_layout_size_allocate_cb (GtkWidget *layout,
 
 	/* calculate the number of colums there should be */
 	spacing = gtk_table_get_default_col_spacing (GTK_TABLE (table));
-	new_num_columns = allocation->width / (button_width + spacing);
+	new_num_columns = allocation->width / (child_width + spacing);
 	if (new_num_columns == 0) {
 		new_num_columns = 1;
 	}
 
-	/* if there's a change in the number of columns we need to move buttons around */
+	/* if there's a change in the number of columns we need to move children around */
 	if (new_num_columns != current_num_columns) {
 		int new_num_rows;
 
-		new_num_rows = (double)ceil ((double)num_buttons / (double)new_num_columns);
+		new_num_rows = (double)ceil ((double)num_children / (double)new_num_columns);
 
-		/* remove each button from the table, reffing it first so that it is not destroyed */
-		for (i = buttons; i != NULL; i = i->next) {
+		/* remove each child from the table, reffing it first so that it is not destroyed */
+		for (i = children; i != NULL; i = i->next) {
 			g_object_ref (i->data);
 			gtk_container_remove (GTK_CONTAINER (table), i->data);
 		}
@@ -1547,20 +1544,16 @@ list_layout_size_allocate_cb (GtkWidget *layout,
 		/* don't know why, but g_table_resize doesn't always update these properties properly */
 		g_object_set (table, "n-columns", new_num_columns, "n-rows", new_num_rows, NULL);
 
-		/* re-attach each button to the table */
-		for (i = g_list_last (buttons); i != NULL; i = i->prev) {
+		/* re-attach each child to the table */
+		for (i = g_list_last (children); i != NULL; i = i->prev) {
 
-			list_table_pack_start (GTK_TABLE (table),
-			                                                        i->data);
+			list_table_pack_start (GTK_TABLE (table), i->data);
 			g_object_unref (i->data);
 		}
 	}
 
-	/* set size requests */
-	gtk_widget_get_requisition (table, &table_requisition);
-	gtk_widget_set_size_request (table, allocation->width, table_requisition.height);
-	gtk_widget_set_size_request (layout, 0, table_requisition.height);
-	gtk_layout_set_size (GTK_LAYOUT (layout), allocation->width, table_requisition.height);
+	/* ensure the table is the correct size */
+	gtk_widget_set_size_request (table, 0, -1);
 }
 
 /* popup the appropriate menu */
