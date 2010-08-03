@@ -60,7 +60,8 @@ enum
 	PROP_DESTINATION,
 	PROP_TOTAL_ENTRIES,
 	PROP_DONE_ENTRIES,
-	PROP_PROGRESS
+	PROP_PROGRESS,
+	PROP_ENTRY_LIST
 };
 
 static void	rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass);
@@ -580,6 +581,18 @@ impl_get_property (GObject *object,
 			g_value_set_double (value, p);
 		}
 		break;
+	case PROP_ENTRY_LIST:
+		{
+			GList *l;
+			l = g_list_copy (batch->priv->entries);
+			if (batch->priv->current != NULL) {
+				l = g_list_append (l, batch->priv->current);
+			}
+			l = g_list_concat (l, g_list_copy (batch->priv->done_entries));
+			g_list_foreach (l, (GFunc) rhythmdb_entry_ref, NULL);
+			g_value_set_pointer (value, l);
+		}
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -715,6 +728,18 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 							      "Fraction of the batch that has been transferred",
 							      0.0, 1.0, 0.0,
 							      G_PARAM_READABLE));
+
+	/**
+	 * RBTrackTransferBatch:entry-list
+	 *
+	 * A list of all entries in the batch.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_ENTRY_LIST,
+					 g_param_spec_pointer ("entry-list",
+							       "entry list",
+							       "list of all entries in the batch",
+							       G_PARAM_READABLE));
 
 	/**
 	 * RBTrackTransferBatch::started:
