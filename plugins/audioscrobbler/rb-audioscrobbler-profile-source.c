@@ -38,6 +38,7 @@
 #include "rb-audioscrobbler-account.h"
 #include "rb-audioscrobbler-user.h"
 #include "rb-audioscrobbler-radio-source.h"
+#include "rb-audioscrobbler-radio-track-entry-type.h"
 #include "rb-debug.h"
 #include "rb-builder-helpers.h"
 #include "rb-file-helpers.h"
@@ -109,6 +110,7 @@ struct _RBAudioscrobblerProfileSourcePrivate {
 	GtkActionGroup *service_action_group;
 	char *love_action_name;
 	char *ban_action_name;
+	char *download_action_name;
 };
 
 #define RB_AUDIOSCROBBLER_PROFILE_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_PROFILE_SOURCE, RBAudioscrobblerProfileSourcePrivate))
@@ -162,10 +164,13 @@ static void scrobbler_statistics_changed_cb (RBAudioscrobbler *audioscrobbler,
 static void playing_song_changed_cb (RBShellPlayer *player,
                                      RhythmDBEntry *entry,
                                      RBAudioscrobblerProfileSource *source);
+static void update_service_actions_sensitivity (RBAudioscrobblerProfileSource *source);
 
 /* GtkAction callbacks */
 static void love_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source);
 static void ban_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source);
+static void download_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source);
+static void download_track_batch_complete_cb (RBTrackTransferBatch *batch, RBAudioscrobblerProfileSource *source);
 static void refresh_profile_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source);
 
 /* radio station creation/deletion */
@@ -450,6 +455,7 @@ rb_audioscrobbler_profile_source_finalize (GObject *object)
 
 	g_free (source->priv->love_action_name);
 	g_free (source->priv->ban_action_name);
+	g_free (source->priv->download_action_name);
 
 	G_OBJECT_CLASS (rb_audioscrobbler_profile_source_parent_class)->finalize (object);
 }
@@ -579,7 +585,6 @@ init_actions (RBAudioscrobblerProfileSource *source)
 	RBPlugin *plugin;
 	GtkUIManager *ui_manager;
 	char *group_name;
-	RhythmDBEntry *playing;
 
 	g_object_get (source, "shell", &shell, "plugin", &plugin, "ui-manager", &ui_manager, NULL);
 	ui_file = rb_plugin_find_file (plugin, "audioscrobbler-profile-ui.xml");
@@ -602,6 +607,7 @@ init_actions (RBAudioscrobblerProfileSource *source)
 	group_name = g_strdup_printf ("%sActions", rb_audioscrobbler_service_get_name (source->priv->service));
 	source->priv->love_action_name = g_strdup_printf ("%sLoveTrack", rb_audioscrobbler_service_get_name (source->priv->service));
 	source->priv->ban_action_name = g_strdup_printf ("%sBanTrack", rb_audioscrobbler_service_get_name (source->priv->service));
+	source->priv->download_action_name = g_strdup_printf ("%sDownloadTrack", rb_audioscrobbler_service_get_name (source->priv->service));
 
 	GtkActionEntry service_actions [] =
 	{
@@ -610,7 +616,10 @@ init_actions (RBAudioscrobblerProfileSource *source)
 		  G_CALLBACK (love_track_action_cb) },
 		{ source->priv->ban_action_name, GTK_STOCK_CANCEL, N_("Ban"), NULL,
 		  N_("Ban the current track from being played again"),
-		  G_CALLBACK (ban_track_action_cb) }
+		  G_CALLBACK (ban_track_action_cb) },
+		{ source->priv->download_action_name, GTK_STOCK_SAVE, N_("Download"), NULL,
+		  N_("Download the currently playing track"),
+		  G_CALLBACK (download_track_action_cb) }
 	};
 
 	source->priv->service_action_group = _rb_source_register_action_group (RB_SOURCE (source),
@@ -618,15 +627,7 @@ init_actions (RBAudioscrobblerProfileSource *source)
 	                                                                       service_actions,
 	                                                                       G_N_ELEMENTS (service_actions),
 	                                                                       source);
-	/* disable the love and ban actions if there is no playing entry */
-	playing = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
-	if (playing == NULL) {
-		GtkAction *love = gtk_action_group_get_action (source->priv->service_action_group, source->priv->love_action_name);
-		GtkAction *ban = gtk_action_group_get_action (source->priv->service_action_group, source->priv->ban_action_name);
-		gtk_action_set_sensitive (love, FALSE);
-		gtk_action_set_sensitive (ban, FALSE);
-		rhythmdb_entry_unref (playing);
-	}
+	update_service_actions_sensitivity (source);
 
 	g_free (ui_file);
 	g_object_unref (shell);
@@ -860,18 +861,51 @@ playing_song_changed_cb (RBShellPlayer *player,
                          RhythmDBEntry *entry,
                          RBAudioscrobblerProfileSource *source)
 {
+	update_service_actions_sensitivity (source);
+}
+
+static void
+update_service_actions_sensitivity (RBAudioscrobblerProfileSource *source)
+{
+	RBShell *shell;
+	RhythmDBEntry *playing;
 	GtkAction *love;
 	GtkAction *ban;
+	GtkAction *download;
 
-	/* enable or disable love/ban */
+	g_object_get (source, "shell", &shell, NULL);
+	playing = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+
+	/* enable love/ban if an entry is playing */
 	love = gtk_action_group_get_action (source->priv->service_action_group, source->priv->love_action_name);
 	ban = gtk_action_group_get_action (source->priv->service_action_group, source->priv->ban_action_name);
-	if (entry == NULL) {
+	if (playing == NULL) {
 		gtk_action_set_sensitive (love, FALSE);
 		gtk_action_set_sensitive (ban, FALSE);
 	} else {
 		gtk_action_set_sensitive (love, TRUE);
 		gtk_action_set_sensitive (ban, TRUE);
+	}
+
+	/* enable download if the playing entry is a radio track from this service which provides a download url */
+	download = gtk_action_group_get_action (source->priv->service_action_group, source->priv->download_action_name);
+	if (playing != NULL &&
+	    rhythmdb_entry_get_entry_type (playing) == RHYTHMDB_ENTRY_TYPE_AUDIOSCROBBLER_RADIO_TRACK) {
+		RBAudioscrobblerRadioTrackData *data;
+		data = RHYTHMDB_ENTRY_GET_TYPE_DATA (playing, RBAudioscrobblerRadioTrackData);
+
+		if (data->service == source->priv->service && data->download_url != NULL) {
+			gtk_action_set_sensitive (download, TRUE);
+		} else {
+			gtk_action_set_sensitive (download, FALSE);
+		}
+	} else {
+		gtk_action_set_sensitive (download, FALSE);
+	}
+
+	g_object_unref (shell);
+	if (playing != NULL) {
+		rhythmdb_entry_unref (playing);
 	}
 }
 
@@ -879,18 +913,17 @@ static void
 love_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source)
 {
 	RBShell *shell;
-	RhythmDBEntry *entry;
+	RhythmDBEntry *playing;
 	GtkAction *ban_action;
 
 	g_object_get (source, "shell", &shell, NULL);
+	playing = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
 
-	entry = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
-
-	if (entry != NULL) {
+	if (playing != NULL) {
 		rb_audioscrobbler_user_love_track (source->priv->user,
-			                           rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
-			                           rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
-		rhythmdb_entry_unref (entry);
+			                           rhythmdb_entry_get_string (playing, RHYTHMDB_PROP_TITLE),
+			                           rhythmdb_entry_get_string (playing, RHYTHMDB_PROP_ARTIST));
+		rhythmdb_entry_unref (playing);
 	}
 
 	/* disable love/ban */
@@ -905,23 +938,123 @@ static void
 ban_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source)
 {
 	RBShell *shell;
-	RhythmDBEntry *entry;
+	RhythmDBEntry *playing;
 
 	g_object_get (source, "shell", &shell, NULL);
+	playing = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
 
-	entry = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
-
-	if (entry != NULL) {
+	if (playing != NULL) {
 		rb_audioscrobbler_user_ban_track (source->priv->user,
-			                          rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
-			                          rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
-		rhythmdb_entry_unref (entry);
+			                          rhythmdb_entry_get_string (playing, RHYTHMDB_PROP_TITLE),
+			                          rhythmdb_entry_get_string (playing, RHYTHMDB_PROP_ARTIST));
+		rhythmdb_entry_unref (playing);
 	}
 
 	/* skip to next track */
 	rb_shell_player_do_next (RB_SHELL_PLAYER (rb_shell_get_player (shell)), NULL);
 
 	g_object_unref (shell);
+}
+
+static void
+download_track_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source)
+{
+	RBShell *shell;
+	RhythmDBEntry *playing;
+
+	/* disable the action */
+	gtk_action_set_sensitive (action, FALSE);
+
+	g_object_get (source, "shell", &shell, NULL);
+	playing = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+
+	if (playing != NULL &&
+	    rhythmdb_entry_get_entry_type (playing) == RHYTHMDB_ENTRY_TYPE_AUDIOSCROBBLER_RADIO_TRACK) {
+		RBAudioscrobblerRadioTrackData *data;
+		data = RHYTHMDB_ENTRY_GET_TYPE_DATA (playing, RBAudioscrobblerRadioTrackData);
+
+		if (data->download_url != NULL) {
+			RhythmDB *db;
+			RBSource *library;
+			RhythmDBEntry *download;
+			GValue val = { 0, };
+			RBTrackTransferBatch *batch;
+
+			/* we need the library source to paste into */
+			g_object_get (shell, "db", &db, "library-source", &library, NULL);
+
+			/* create a new entry to paste */
+			download = rhythmdb_entry_new (db,
+			                               RHYTHMDB_ENTRY_TYPE_AUDIOSCROBBLER_RADIO_TRACK, /* not really, but it needs a type */
+			                               data->download_url);
+
+			g_value_init (&val, G_TYPE_STRING);
+			g_value_set_string (&val, rhythmdb_entry_get_string (playing, RHYTHMDB_PROP_TITLE));
+			rhythmdb_entry_set (db, download, RHYTHMDB_PROP_TITLE, &val);
+			g_value_unset (&val);
+			g_value_init (&val, G_TYPE_STRING);
+			g_value_set_string (&val, rhythmdb_entry_get_string (playing, RHYTHMDB_PROP_ARTIST));
+			rhythmdb_entry_set (db, download, RHYTHMDB_PROP_ARTIST, &val);
+			g_value_unset (&val);
+			g_value_init (&val, G_TYPE_STRING);
+			g_value_set_string (&val, rhythmdb_entry_get_string (playing, RHYTHMDB_PROP_ALBUM));
+			rhythmdb_entry_set (db, download, RHYTHMDB_PROP_ALBUM, &val);
+			g_value_unset (&val);
+
+			rb_debug ("downloading track from %s", data->download_url);
+			batch = rb_source_paste (library, g_list_append (NULL, download));
+
+			if (batch == NULL) {
+				/* delete the entry we just created */
+				rhythmdb_entry_delete (db, download);
+				rhythmdb_entry_unref (download);
+			} else {
+				/* connect a callback to delete the entry when transfer is done */
+				g_signal_connect_object (batch,
+				                         "complete",
+				                         G_CALLBACK (download_track_batch_complete_cb),
+				                         source,
+				                         0);
+			}
+
+			g_object_unref (db);
+			g_object_unref (library);
+		} else {
+			rb_debug ("cannot download: no download url");
+		}
+		rhythmdb_entry_unref (playing);
+	} else {
+		rb_debug ("cannot download: playing entry is not an audioscrobbler radio track");
+	}
+
+	g_object_unref (shell);
+}
+
+static void
+download_track_batch_complete_cb (RBTrackTransferBatch *batch,
+                                  RBAudioscrobblerProfileSource *source)
+{
+	GList *entries;
+	RBShell *shell;
+	RhythmDB *db;
+	GList *i;
+
+	g_object_get (batch, "entry-list", &entries, NULL);
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &db, NULL);
+
+	/* delete the entries which were transfered.
+	 * need to call unref twice as g_object_get will have reffed them
+	 */
+	for (i = entries; i != NULL; i = i->next) {
+		rhythmdb_entry_delete (db, i->data);
+		rhythmdb_entry_unref (i->data);
+		rhythmdb_entry_unref (i->data);
+	}
+
+	g_list_free (entries);
+	g_object_unref (shell);
+	g_object_unref (db);
 }
 
 static void
@@ -1672,6 +1805,7 @@ impl_get_ui_actions (RBSource *asource)
 
 	actions = g_list_append (actions, g_strdup (source->priv->love_action_name));
 	actions = g_list_append (actions, g_strdup (source->priv->ban_action_name));
+	actions = g_list_append (actions, g_strdup (source->priv->download_action_name));
 
 	return actions;
 }
