@@ -1542,6 +1542,11 @@ create_list_button (RBAudioscrobblerProfileSource *source,
 		          G_CALLBACK (list_item_clicked_cb),
 		          source);
 
+	/* this must be called, otherwise the buttons' size requests will be
+	 * incorrect and the allocation of the tables will not work at all.
+	 */
+	gtk_widget_show_all (button);
+
 	return button;
 }
 
@@ -1604,20 +1609,32 @@ create_popup_menu (RBAudioscrobblerProfileSource *source,
 	return menu;
 }
 
-/* packs a widget into a GtkTable, from right to left then top to bottom */
+/* packs a widget into a GtkTable, from left to right then top to bottom */
 static void
 list_table_pack_start (GtkTable *list_table, GtkWidget *child)
 {
-	int num_columns;
+	GList *children;
 	int num_children;
+	int num_columns;
+	GtkRequisition req;
 
+	children = gtk_container_get_children (GTK_CONTAINER (list_table));
+	num_children = g_list_length (children);
 	g_object_get (list_table, "n-columns", &num_columns, NULL);
-	num_children = g_list_length (gtk_container_get_children (GTK_CONTAINER (list_table)));
 
-	gtk_table_attach_defaults (list_table,
-	                           child,
-	                           num_children % num_columns, num_children % num_columns + 1,
-	                           num_children / num_columns, num_children / num_columns + 1);
+	gtk_table_attach (list_table,
+	                  child,
+	                  num_children % num_columns, num_children % num_columns + 1,
+	                  num_children / num_columns, num_children / num_columns + 1,
+	                  GTK_FILL | GTK_EXPAND, GTK_FILL,
+	                  0, 0);
+
+	/* Make sure the button has an up to date size request,
+	 * otherwise the table allocation will not work
+	 */
+	gtk_widget_size_request (child, &req);
+
+	g_list_free (children);
 }
 
 /* resizes a GtkTable for a particular size allocation */
@@ -1626,7 +1643,7 @@ list_table_size_allocate_cb (GtkWidget *table,
                              GtkAllocation *allocation,
                              gpointer user_data)
 {
-	GList *children = gtk_container_get_children (GTK_CONTAINER (table));
+	GList *children;
 	int num_children;
 	int child_width;
 	GList *i;
@@ -1634,6 +1651,7 @@ list_table_size_allocate_cb (GtkWidget *table,
 	int spacing;
 	int new_num_columns;
 
+	children = gtk_container_get_children (GTK_CONTAINER (table));
 	num_children = g_list_length (children);
 	if (num_children == 0)
 		return;
@@ -1643,7 +1661,7 @@ list_table_size_allocate_cb (GtkWidget *table,
 	for (i = children; i != NULL; i = i->next) {
 		GtkRequisition child_requisition;
 
-		gtk_widget_get_requisition (i->data, &child_requisition);
+		gtk_widget_size_request (i->data, &child_requisition);
 		if (child_requisition.width > child_width) {
 			child_width = child_requisition.width;
 		}
@@ -1651,7 +1669,7 @@ list_table_size_allocate_cb (GtkWidget *table,
 
 	g_object_get (table, "n-columns", &current_num_columns, NULL);
 
-	/* calculate the number of colums there should be */
+	/* calculate the number of columns there should be */
 	spacing = gtk_table_get_default_col_spacing (GTK_TABLE (table));
 	new_num_columns = allocation->width / (child_width + spacing);
 	if (new_num_columns == 0) {
@@ -1662,7 +1680,7 @@ list_table_size_allocate_cb (GtkWidget *table,
 	if (new_num_columns != current_num_columns) {
 		int new_num_rows;
 
-		new_num_rows = (double)ceil ((double)num_children / (double)new_num_columns);
+		new_num_rows = (int)ceil ((double)num_children / (double)new_num_columns);
 
 		/* remove each child from the table, reffing it first so that it is not destroyed */
 		for (i = children; i != NULL; i = i->next) {
@@ -1673,7 +1691,13 @@ list_table_size_allocate_cb (GtkWidget *table,
 		/* resize the table */
 		gtk_table_resize (GTK_TABLE (table), new_num_columns, new_num_rows);
 
-		/* don't know why, but g_table_resize doesn't always update these properties properly */
+		/* Don't know why, but g_table_resize doesn't always update these properties properly.
+		 * Looking at gtktable.c this is even stranger, as setting either of these properties
+		 * will simply call gtk_table_resize which should then set the values.
+		 * Perhaps worthwhile looking into in the future, but this works for now.
+		 * Possibly useful to note that AppResizer in libslab stores its own value for the number of columns
+		 * instead of using the table's n-columns property, perhaps as a workaround to this.
+		 * So does Banshee's TileView, which appears to be a C# port of libslab's code */
 		g_object_set (table, "n-columns", new_num_columns, "n-rows", new_num_rows, NULL);
 
 		/* re-attach each child to the table */
@@ -1686,6 +1710,8 @@ list_table_size_allocate_cb (GtkWidget *table,
 
 	/* ensure the table is the correct size */
 	gtk_widget_set_size_request (table, 0, -1);
+
+	g_list_free (children);
 }
 
 /* popup the appropriate menu */
