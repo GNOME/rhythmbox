@@ -58,7 +58,10 @@ gtkbuilderdir = $(plugindir)
 gtkbuilder_DATA = audioscrobbler-profile.ui
 
 uixmldir = $(plugindir)
-uixml_DATA = audioscrobbler-radio-ui.xml
+uixml_DATA =						\
+	audioscrobbler-profile-ui.xml			\
+	audioscrobbler-radio-ui.xml
+
 
 plugin_in_files = audioscrobbler.rb-plugin.in
 
