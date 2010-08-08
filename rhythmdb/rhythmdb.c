@@ -2086,43 +2086,6 @@ set_props_from_metadata (RhythmDB *db,
 					  "");
 }
 
-static gboolean
-is_ghost_entry (RhythmDBEntry *entry)
-{
-	GTimeVal time;
-	gulong last_seen;
-	gulong grace_period;
-	GError *error;
-	GConfClient *client;
-
-	client = gconf_client_get_default ();
-	if (client == NULL) {
-		return FALSE;
-	}
-	error = NULL;
-	grace_period = gconf_client_get_int (client, CONF_GRACE_PERIOD,
-					     &error);
-	g_object_unref (G_OBJECT (client));
-	if (error != NULL) {
-		g_error_free (error);
-		return FALSE;
-	}
-
-	/* This is a bit silly, but I prefer to make sure we won't
-	 * overflow in the following calculations
-	 */
-	if ((grace_period <= 0) || (grace_period > 20000)) {
-		return FALSE;
-	}
-
-	/* Convert from days to seconds */
-	grace_period = grace_period * 60 * 60 * 24;
-	g_get_current_time (&time);
-	last_seen = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_LAST_SEEN);
-
-	return (last_seen + grace_period < time.tv_sec);
-}
-
 static void
 rhythmdb_process_stat_event (RhythmDB *db,
 			     RhythmDBEvent *event)
@@ -2143,18 +2106,12 @@ rhythmdb_process_stat_event (RhythmDB *db,
 	 */
 	if (event->error) {
 		if (entry != NULL) {
-			if (!is_ghost_entry (entry)) {
-				rhythmdb_entry_set_visibility (db, entry, FALSE);
-			} else {
-				rb_debug ("error accessing %s: %s", rb_refstring_get (event->real_uri),
-					  event->error->message);
-				rhythmdb_entry_delete (db, entry);
-			}
+			rb_debug ("error accessing %s: %s",
+				  rb_refstring_get (event->real_uri),
+				  event->error->message);
+			rhythmdb_entry_update_availability (entry, RHYTHMDB_ENTRY_AVAIL_NOT_FOUND);
 			rhythmdb_commit (db);
-		} else {
-			/* erm.. */
 		}
-
 		return;
 	}
 
@@ -2167,8 +2124,6 @@ rhythmdb_process_stat_event (RhythmDB *db,
 	case G_FILE_TYPE_UNKNOWN:
 	case G_FILE_TYPE_REGULAR:
 		if (entry != NULL) {
-			GValue val = {0, };
-			GTimeVal time;
 			guint64 new_mtime;
 			guint64 new_size;
 
@@ -2179,18 +2134,7 @@ rhythmdb_process_stat_event (RhythmDB *db,
 			if (entry->type == event->ignore_type)
 				rb_debug ("ignoring %p", entry);
 
-			rhythmdb_entry_set_visibility (db, entry, TRUE);
-
-			/* Update last seen time. It will also be updated
-			 * upon saving and when a volume is unmounted.
-			 */
-			g_get_current_time (&time);
-			g_value_init (&val, G_TYPE_ULONG);
-			g_value_set_ulong (&val, time.tv_sec);
-			rhythmdb_entry_set_internal (db, entry, TRUE,
-						     RHYTHMDB_PROP_LAST_SEEN,
-						     &val);
-			g_value_unset (&val);
+			rhythmdb_entry_update_availability (entry, RHYTHMDB_ENTRY_AVAIL_CHECKED);
 
 			/* compare modification time and size to the values in the database.
 			 * if either has changed, we'll re-read the file.
@@ -2505,13 +2449,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 		set_props_from_metadata (db, entry, event->file_info, event->metadata);
 	}
 
-	/* we've seen this entry */
-	rhythmdb_entry_set_visibility (db, entry, TRUE);
-
-	g_value_init (&value, G_TYPE_ULONG);
-	g_value_set_ulong (&value, time.tv_sec);
-	rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_LAST_SEEN, &value);
-	g_value_unset (&value);
+	rhythmdb_entry_update_availability (entry, RHYTHMDB_ENTRY_AVAIL_CHECKED);
 
 	/* Remember the mount point of the volume the song is on */
 	rhythmdb_entry_set_mount_point (db, entry, rb_refstring_get (event->real_uri));

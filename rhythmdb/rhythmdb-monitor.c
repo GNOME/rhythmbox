@@ -418,7 +418,7 @@ typedef struct
 {
 	RhythmDB *db;
 	RBRefString *mount_point;
-	gboolean mounted;
+	RhythmDBEntryAvailability avail;
 } MountCtxt;
 
 static void
@@ -426,48 +426,26 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 				   MountCtxt *ctxt)
 {
 	RBRefString *mount_point;
-	const char *location;
 
 	mount_point = rhythmdb_entry_get_refstring (entry, RHYTHMDB_PROP_MOUNTPOINT);
 	if (mount_point == NULL || !rb_refstring_equal (mount_point, ctxt->mount_point)) {
 		return;
 	}
-	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 
-	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
-		if (ctxt->mounted) {
-			rb_debug ("queueing stat for entry %s (mounted)", location);
+	rhythmdb_entry_update_availability (entry, ctxt->avail);
+	rhythmdb_commit (ctxt->db);
 
-			/* make files visible immediately,
-			 * then hide any that turn out to be missing.
-			 */
-			rhythmdb_entry_set_visibility (ctxt->db, entry, TRUE);
+	/* check local files when mounted */
+	if (ctxt->avail == RHYTHMDB_ENTRY_AVAIL_MOUNTED) {
+		const char *location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		if (rb_uri_is_local (location)) {
 			rhythmdb_add_uri_with_types (ctxt->db,
 						     location,
 						     RHYTHMDB_ENTRY_TYPE_SONG,
 						     RHYTHMDB_ENTRY_TYPE_IGNORE,
 						     RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
-		} else {
-			GTimeVal time;
-			GValue val = {0, };
-
-			rb_debug ("hiding entry %s (unmounted)", location);
-
-			g_get_current_time (&time);
-			g_value_init (&val, G_TYPE_ULONG);
-			g_value_set_ulong (&val, time.tv_sec);
-			rhythmdb_entry_set_internal (ctxt->db, entry, FALSE,
-						     RHYTHMDB_PROP_LAST_SEEN, &val);
-			g_value_unset (&val);
-
-			rhythmdb_entry_set_visibility (ctxt->db, entry, FALSE);
 		}
-	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
-		/* delete import errors for files on unmounted volumes */
-		if (ctxt->mounted == FALSE) {
-			rb_debug ("removing import error for %s (unmounted)", location);
-			rhythmdb_entry_delete (ctxt->db, entry);
-		}
+
 	}
 }
 
@@ -488,7 +466,7 @@ rhythmdb_mount_added_cb (GVolumeMonitor *monitor,
 	g_free (mp);
 
 	ctxt.db = db;
-	ctxt.mounted = TRUE;
+	ctxt.avail = RHYTHMDB_ENTRY_AVAIL_MOUNTED;
 	rb_debug ("volume %s mounted", rb_refstring_get (ctxt.mount_point));
 	rhythmdb_entry_foreach_by_type (db,
 					RHYTHMDB_ENTRY_TYPE_SONG,
@@ -519,7 +497,7 @@ rhythmdb_mount_removed_cb (GVolumeMonitor *monitor,
 	g_free (mp);
 
 	ctxt.db = db;
-	ctxt.mounted = FALSE;
+	ctxt.avail = RHYTHMDB_ENTRY_AVAIL_UNMOUNTED;
 	rb_debug ("volume %s unmounted", rb_refstring_get (ctxt.mount_point));
 	rhythmdb_entry_foreach_by_type (db,
 					RHYTHMDB_ENTRY_TYPE_SONG,
