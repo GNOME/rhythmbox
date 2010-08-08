@@ -1680,16 +1680,6 @@ rb_shell_player_set_entry_playback_error (RBShellPlayer *player,
 }
 
 static gboolean
-do_next_idle (RBShellPlayer *player)
-{
-	/* use the EOS callback, so that EOF_SOURCE_ conditions are handled properly */
-	rb_shell_player_handle_eos (NULL, NULL, FALSE, player);
-	player->priv->do_next_idle_id = 0;
-
-	return FALSE;
-}
-
-static gboolean
 rb_shell_player_set_playing_entry (RBShellPlayer *player,
 				   RhythmDBEntry *entry,
 				   gboolean out_of_order,
@@ -3393,6 +3383,33 @@ rb_shell_player_sync_with_selected_source (RBShellPlayer *player)
 	}
 }
 
+static gboolean
+do_next_idle (RBShellPlayer *player)
+{
+	/* use the EOS callback, so that EOF_SOURCE_ conditions are handled properly */
+	rb_shell_player_handle_eos (NULL, NULL, FALSE, player);
+	player->priv->do_next_idle_id = 0;
+
+	return FALSE;
+}
+
+static gboolean
+do_next_not_found_idle (RBShellPlayer *player)
+{
+	RhythmDBEntry *entry;
+	entry = rb_shell_player_get_playing_entry (player);
+
+	do_next_idle (player);
+
+	if (entry != NULL) {
+		rhythmdb_entry_update_availability (entry, RHYTHMDB_ENTRY_AVAIL_NOT_FOUND);
+		rhythmdb_commit (player->priv->db);
+		rhythmdb_entry_unref (entry);
+	}
+
+	return FALSE;
+}
+
 static void
 rb_shell_player_error (RBShellPlayer *player,
 		       gboolean async,
@@ -3412,7 +3429,17 @@ rb_shell_player_error (RBShellPlayer *player,
 	if (entry && async)
 		rb_shell_player_set_entry_playback_error (player, entry, err->message);
 
-	if (err->code == RB_PLAYER_ERROR_NO_AUDIO) {
+	if (entry == NULL) {
+		do_next = TRUE;
+	} else if (err->domain == RB_PLAYER_ERROR && err->code == RB_PLAYER_ERROR_NOT_FOUND) {
+		/* process not found errors after we've started the next track */
+		if (player->priv->do_next_idle_id != 0) {
+			g_source_remove (player->priv->do_next_idle_id);
+		}
+		player->priv->do_next_idle_id = g_idle_add ((GSourceFunc)do_next_not_found_idle, player);
+		do_next = FALSE;
+	} else if (err->domain == RB_PLAYER_ERROR && err->code == RB_PLAYER_ERROR_NO_AUDIO) {
+
 		/* stream has completely ended */
 		rb_shell_player_stop (player);
 		do_next = FALSE;
