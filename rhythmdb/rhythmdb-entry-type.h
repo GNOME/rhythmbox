@@ -40,11 +40,22 @@ G_BEGIN_DECLS
 GType rhythmdb_entry_category_get_type (void);
 #define RHYTHMDB_TYPE_ENTRY_CATEGORY (rhythmdb_entry_category_get_type ())
 typedef enum {
-	RHYTHMDB_ENTRY_NORMAL,		/* anything that doesn't match the other categories */
-	RHYTHMDB_ENTRY_STREAM,		/* endless streams (eg shoutcast) */
-	RHYTHMDB_ENTRY_CONTAINER,	/* things that point to other entries (eg podcast feeds) */
-	RHYTHMDB_ENTRY_VIRTUAL		/* import errors, ignored files */
+	RHYTHMDB_ENTRY_NORMAL,
+	RHYTHMDB_ENTRY_STREAM,
+	RHYTHMDB_ENTRY_CONTAINER,
+	RHYTHMDB_ENTRY_VIRTUAL
 } RhythmDBEntryCategory;
+
+/* entry availability events */
+
+GType rhythmdb_entry_availability_get_type (void);
+#define RHYTHMDB_TYPE_ENTRY_AVAILABILITY (rhythmdb_entry_availability_get_type ())
+typedef enum {
+	RHYTHMDB_ENTRY_AVAIL_CHECKED,
+	RHYTHMDB_ENTRY_AVAIL_MOUNTED,
+	RHYTHMDB_ENTRY_AVAIL_UNMOUNTED,
+	RHYTHMDB_ENTRY_AVAIL_NOT_FOUND
+} RhythmDBEntryAvailability;
 
 /* entry type */
 
@@ -71,6 +82,7 @@ struct _RhythmDBEntryType {
 	void		(*destroy_entry) (RhythmDBEntryType *etype, RhythmDBEntry *entry);
 
 	char *		(*get_playback_uri) (RhythmDBEntryType *etype, RhythmDBEntry *entry);
+	void		(*update_availability) (RhythmDBEntryType *etype, RhythmDBEntry *entry, RhythmDBEntryAvailability avail);
 
 	gboolean	(*can_sync_metadata) (RhythmDBEntryType *etype, RhythmDBEntry *entry);
 	void		(*sync_metadata) (RhythmDBEntryType *etype, RhythmDBEntry *entry, GSList *changes, GError **error);
@@ -86,6 +98,7 @@ struct _RhythmDBEntryTypeClass {
 	void		(*destroy_entry) (RhythmDBEntryType *etype, RhythmDBEntry *entry);
 
 	char *		(*get_playback_uri) (RhythmDBEntryType *etype, RhythmDBEntry *entry);
+	void		(*update_availability) (RhythmDBEntryType *etype, RhythmDBEntry *entry, RhythmDBEntryAvailability avail);
 
 	gboolean	(*can_sync_metadata) (RhythmDBEntryType *etype, RhythmDBEntry *entry);
 	void		(*sync_metadata) (RhythmDBEntryType *etype, RhythmDBEntry *entry, GSList *changes, GError **error);
@@ -96,6 +109,7 @@ GType		rhythmdb_entry_type_get_type (void);
 const char *	rhythmdb_entry_type_get_name (RhythmDBEntryType *etype);
 
 char *		rhythmdb_entry_get_playback_uri (RhythmDBEntry *entry);
+void		rhythmdb_entry_update_availability (RhythmDBEntry *entry, RhythmDBEntryAvailability avail);
 void 		rhythmdb_entry_created (RhythmDBEntry *entry);
 void 		rhythmdb_entry_pre_destroy (RhythmDBEntry *entry);
 gboolean 	rhythmdb_entry_can_sync_metadata (RhythmDBEntry *entry);

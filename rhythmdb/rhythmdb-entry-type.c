@@ -65,6 +65,11 @@ G_DEFINE_TYPE (RhythmDBEntryType, rhythmdb_entry_type, G_TYPE_OBJECT)
  * This is the base class for database entry type classes, which provide
  * some aspects of the behaviour of database entry types.  There are different
  * entry types for songs, radio streams, podcast feeds and episodes, and so on.
+ *
+ * Plugins written in Python or Vala can create new entry types by subclassing
+ * and overriding any methods required.  Plugins written in C can create a new
+ * instance of the RhythmDBEntryType base class and use its function pointer
+ * members rather than subclassing.
  */
 
 /**
@@ -102,6 +107,28 @@ rhythmdb_entry_get_playback_uri (RhythmDBEntry *entry)
 		return (klass->get_playback_uri) (etype, entry);
 	} else {
 		return rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
+	}
+}
+
+/**
+ * rhythmdb_entry_update_availability:
+ * @entry: a #RhythmDBEntry
+ * @avail: an availability event
+ *
+ * Updates @entry to reflect its new availability.
+ */
+void
+rhythmdb_entry_update_availability (RhythmDBEntry *entry, RhythmDBEntryAvailability avail)
+{
+	RhythmDBEntryType *etype = rhythmdb_entry_get_entry_type (entry);
+	RhythmDBEntryTypeClass *klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
+
+	if (etype->update_availability) {
+		(etype->update_availability) (etype, entry, avail);
+	} else if (klass->get_playback_uri) {
+		(klass->update_availability) (etype, entry, avail);
+	} else {
+		/* do nothing? */
 	}
 }
 
@@ -363,6 +390,17 @@ rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass)
 
 #define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
 
+/**
+ * RhythmDBEntryCategory:
+ * @RHYTHMDB_ENTRY_NORMAL: Normal files on disk
+ * @RHYTHMDB_ENTRY_STREAM: Endless streams (eg shoutcast)
+ * @RHYTHMDB_ENTRY_CONTAINER: Containers for other entries (eg podcast feeds)
+ * @RHYTHMDB_ENTRY_VIRTUAL: Things Rhythmbox shouldn't normally deal with
+ *
+ * Categories used to group entry types.  These are used in a few places to control
+ * handling of entries.
+ */
+
 GType
 rhythmdb_entry_category_get_type (void)
 {
@@ -380,6 +418,38 @@ rhythmdb_entry_category_get_type (void)
 		};
 
 		etype = g_enum_register_static ("RhythmDBEntryCategory", values);
+	}
+
+	return etype;
+}
+
+/**
+ * RhythmDBEntryAvailability:
+ * @RHYTHMDB_ENTRY_AVAIL_CHECKED: File was checked and found present
+ * @RHYTHMDB_ENTRY_AVAIL_MOUNTED: Filesystem holding the file was mounted
+ * @RHYTHMDB_ENTRY_AVAIL_UNMOUNTED: Filesystem holding the file was unmounted
+ * @RHYTHMDB_ENTRY_AVAIL_NOT_FOUND: File was checked or played and could not be found
+ *
+ * Various events that can result in changes to the entry's availability.
+ */
+
+GType
+rhythmdb_entry_availability_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)
+	{
+		static const GEnumValue values[] =
+		{
+			ENUM_ENTRY (RHYTHMDB_ENTRY_AVAIL_CHECKED, "checked"),
+			ENUM_ENTRY (RHYTHMDB_ENTRY_AVAIL_MOUNTED, "mounted"),
+			ENUM_ENTRY (RHYTHMDB_ENTRY_AVAIL_UNMOUNTED, "unmounted"),
+			ENUM_ENTRY (RHYTHMDB_ENTRY_AVAIL_NOT_FOUND, "not-found"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RhythmDBEntryAvailability", values);
 	}
 
 	return etype;
