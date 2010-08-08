@@ -1653,6 +1653,9 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 							 code,
 							 error->message);
 			stream->emitted_error = TRUE;
+			if (stream->emitted_playing == FALSE) {
+				_rb_player_emit_playing_stream (RB_PLAYER (player), stream->stream_data);
+			}
 			_rb_player_emit_error (RB_PLAYER (player), stream->stream_data, sig_error);
 		}
 
