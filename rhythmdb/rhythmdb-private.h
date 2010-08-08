@@ -137,6 +137,7 @@ struct _RhythmDBPrivate
 
 	GList *stat_list;
 	GList *outstanding_stats;
+	GHashTable *stat_mounts;
 	GMutex *stat_mutex;
 	gboolean stat_thread_running;
 	int stat_thread_count;
@@ -237,6 +238,7 @@ void rhythmdb_finalize_monitoring (RhythmDB *db);
 void rhythmdb_stop_monitoring (RhythmDB *db);
 void rhythmdb_start_monitoring (RhythmDB *db);
 void rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error);
+GList *rhythmdb_get_active_mounts (RhythmDB *db);
 
 /* from rhythmdb-query.c */
 GPtrArray *rhythmdb_query_parse_valist (RhythmDB *db, va_list args);

@@ -510,3 +510,26 @@ rhythmdb_mount_removed_cb (GVolumeMonitor *monitor,
 	rhythmdb_commit (db);
 	rb_refstring_unref (ctxt.mount_point);
 }
+
+GList *
+rhythmdb_get_active_mounts (RhythmDB *db)
+{
+	GList *mounts;
+	GList *mountpoints = NULL;
+	GList *i;
+
+	mounts = g_volume_monitor_get_mounts (db->priv->volume_monitor);
+	for (i = mounts; i != NULL; i = i->next) {
+		GFile *root;
+		char *mountpoint;
+		GMount *mount = i->data;
+
+		root = g_mount_get_root (mount);
+		mountpoint = g_file_get_uri (root);
+		mountpoints = g_list_prepend (mountpoints, mountpoint);
+		g_object_unref (root);
+	}
+
+	rb_list_destroy_free (mounts, (GDestroyNotify) g_object_unref);
+	return mountpoints;
+}

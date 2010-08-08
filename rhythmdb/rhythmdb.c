@@ -731,6 +731,10 @@ rhythmdb_init (RhythmDB *db)
 	rb_podcast_register_entry_types (db);
 
  	db->priv->stat_mutex = g_mutex_new ();
+	db->priv->stat_mounts = g_hash_table_new_full (g_str_hash,
+						       g_str_equal,
+						       (GDestroyNotify) g_free,
+						       NULL);
 
 	db->priv->change_mutex = g_mutex_new ();
 
@@ -804,23 +808,6 @@ rhythmdb_ignore_media_type (const char *media_type)
 }
 
 typedef struct {
-	RhythmDBEvent *event;
-	GMutex *mutex;
-	GCond *cond;
-	GError **error;
-} RhythmDBStatThreadMountData;
-
-static void
-stat_thread_mount_done_cb (GObject *source, GAsyncResult *result, RhythmDBStatThreadMountData *data)
-{
-	g_mutex_lock (data->mutex);
-	g_file_mount_enclosing_volume_finish (G_FILE (source), result, data->error);
-
-	g_cond_signal (data->cond);
-	g_mutex_unlock (data->mutex);
-}
-
-typedef struct {
 	RhythmDB *db;
 	GList *stat_list;
 } RhythmDBStatThreadData;
@@ -862,63 +849,9 @@ stat_thread_main (RhythmDBStatThreadData *data)
 						      data->db->priv->exiting,
 						      &error);
 		if (error != NULL) {
-			if (g_error_matches (error,
-					     G_IO_ERROR,
-					     G_IO_ERROR_NOT_MOUNTED)) {
-				GMountOperation *mount_op = NULL;
+			event->error = make_access_failed_error (rb_refstring_get (event->uri), error);
+			g_clear_error (&error);
 
-				rb_debug ("got not-mounted error for %s", rb_refstring_get (event->uri));
-
-				/* check if we've tried and failed to mount this location before */
-
-				g_signal_emit (event->db, rhythmdb_signals[CREATE_MOUNT_OP], 0, &mount_op);
-				if (mount_op != NULL) {
-					RhythmDBStatThreadMountData mount_data;
-
-					mount_data.event = event;
-					mount_data.cond = g_cond_new ();
-					mount_data.mutex = g_mutex_new ();
-					mount_data.error = &error;
-
-					g_mutex_lock (mount_data.mutex);
-
-					g_file_mount_enclosing_volume (file,
-								       G_MOUNT_MOUNT_NONE,
-								       mount_op,
-								       data->db->priv->exiting,
-								       (GAsyncReadyCallback) stat_thread_mount_done_cb,
-								       &mount_data);
-					g_clear_error (&error);
-
-					/* wait for the mount to complete.  the callback occurs on the main
-					 * thread (not this thread), so we can just block until it is called.
-					 */
-					g_cond_wait (mount_data.cond, mount_data.mutex);
-					g_mutex_unlock (mount_data.mutex);
-
-					g_mutex_free (mount_data.mutex);
-					g_cond_free (mount_data.cond);
-
-					if (error == NULL) {
-						rb_debug ("mount op successful, retrying stat");
-						event->file_info = g_file_query_info (file,
-										      G_FILE_ATTRIBUTE_TIME_MODIFIED,
-										      G_FILE_QUERY_INFO_NONE,
-										      data->db->priv->exiting,
-										      &error);
-					}
-				} else {
-					rb_debug ("but couldn't create a mount op.");
-				}
-			}
-
-			if (error != NULL) {
-				event->error = make_access_failed_error (rb_refstring_get (event->uri), error);
-				g_clear_error (&error);
-			}
-		}
-
-		if (event->error != NULL) {
 			if (event->file_info != NULL) {
 				g_object_unref (event->file_info);
 				event->file_info = NULL;
@@ -953,9 +886,49 @@ stat_thread_main (RhythmDBStatThreadData *data)
 void
 rhythmdb_start_action_thread (RhythmDB *db)
 {
+	GHashTableIter iter;
+	gpointer key, value;
+	GList *mounts;
+
 	g_mutex_lock (db->priv->stat_mutex);
 	db->priv->action_thread_running = TRUE;
 	rhythmdb_thread_create (db, NULL, (GThreadFunc) action_thread_main, db);
+
+	/* process entries on mountpoints */
+	mounts = rhythmdb_get_active_mounts (db);
+	g_hash_table_iter_init (&iter, db->priv->stat_mounts);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		const char *mountpoint = (const char *)key;
+
+		/* is this mountpoint mounted? */
+		if (rb_string_list_contains (mounts, mountpoint)) {
+			/* if it's a local mount, stat all entries on it;
+			 * otherwise assume they're still there
+			 */
+			if (rb_uri_is_local (mountpoint)) {
+				GList *i;
+				for (i = value; i != NULL; i = i->next) {
+					RhythmDBEntry *entry = i->data;
+					rhythmdb_add_to_stat_list (db,
+								   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
+								   entry,
+								   NULL,
+								   RHYTHMDB_ENTRY_TYPE_IGNORE,
+								   RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+				}
+			}
+		} else {
+			/* hide all entries on the mount */
+			GList *i;
+			for (i = value; i != NULL; i = i->next) {
+				RhythmDBEntry *entry = i->data;
+				rhythmdb_entry_set_visibility (db, entry, FALSE);
+			}
+			rhythmdb_commit (db);
+		}
+
+		rb_list_destroy_free (value, (GDestroyNotify) rhythmdb_entry_unref);
+	}
 
 	if (db->priv->stat_list != NULL) {
 		RhythmDBStatThreadData *data;
@@ -967,6 +940,8 @@ rhythmdb_start_action_thread (RhythmDB *db)
 		db->priv->stat_thread_running = TRUE;
 		rhythmdb_thread_create (db, NULL, (GThreadFunc) stat_thread_main, data);
 	}
+
+	g_hash_table_destroy (db->priv->stat_mounts);
 
 	g_mutex_unlock (db->priv->stat_mutex);
 }
@@ -1423,28 +1398,39 @@ process_added_entries_cb (RhythmDBEntry *entry,
 		if (uri == NULL)
 			return TRUE;
 
-		/* something to think about: only do the stat if the mountpoint is
-		 * NULL.  other things are likely to be removable disks and network
-		 * shares, where getting file info for a large number of files is going
-		 * to be slow.  on the other hand, we'd want to mount those on startup
-		 * rather than on first access, which may not be predictable.  hmm..
-		 *
-		 * we'd probably have to improve handling of the particular 'file not found'
-		 * playback error, though.  or perhaps stat immediately before playback?
-		 * what about crawling the filesystem to find new files?
-		 *
-		 * further: this should only be done for entries loaded from the database file,
-		 * not for newly added entries.  cripes.
-		 *
+		/*
 		 * hmm, do we really need to take the stat mutex to check if the action thread is running?
 		 * maybe it should be atomicised?
 		 */
+		/*
+		 * current plan:
+		 * - only stat things with mountpoint == NULL here
+		 * - collect other mountpoints
+		 * just before starting action/stat threads:
+		 * - find remote mountpoints that aren't mounted, try to mount them
+		 * - for local mountpoints that are mounted, add to stat list
+		 * - for everything else, hide entries on those mountpoints
+		 */
 		g_mutex_lock (db->priv->stat_mutex);
 		if (db->priv->action_thread_running == FALSE) {
-			rhythmdb_add_to_stat_list (db, uri, entry,
-						   RHYTHMDB_ENTRY_TYPE_SONG,
-						   RHYTHMDB_ENTRY_TYPE_IGNORE,
-						   RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+			const char *mountpoint;
+			mountpoint = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+			if (mountpoint == NULL) {
+				/* entry is on a core filesystem, always check it */
+				rhythmdb_add_to_stat_list (db, uri, entry,
+							   RHYTHMDB_ENTRY_TYPE_SONG,
+							   RHYTHMDB_ENTRY_TYPE_IGNORE,
+							   RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+			} else {
+				/* entry is on a device or remote mount, decide what to do
+				 * once we've finished loading the database.
+				 */
+				GList *entries;
+				entries = g_hash_table_lookup (db->priv->stat_mounts,
+							       mountpoint);
+				entries = g_list_prepend (entries, rhythmdb_entry_ref (entry));
+				g_hash_table_insert (db->priv->stat_mounts, g_strdup (mountpoint), entries);
+			}
 		}
 		g_mutex_unlock (db->priv->stat_mutex);
 	}
@@ -2571,13 +2557,11 @@ rhythmdb_execute_stat_mount_ready_cb (GObject *source, GAsyncResult *result, Rhy
 	g_file_mount_enclosing_volume_finish (G_FILE (source), result, &error);
 	if (error != NULL) {
 		event->error = make_access_failed_error (rb_refstring_get (event->real_uri), error);
-		g_print ("not doing file info query; error %s\n", error->message);
 		g_error_free (error);
 
 		g_object_unref (event->file_info);
 		event->file_info = NULL;
 	} else {
-		g_print ("retrying file info query after mount completed\n");
 		rhythmdb_file_info_query (event->db, G_FILE (source), event);
 	}
 
@@ -2616,7 +2600,6 @@ rhythmdb_execute_stat (RhythmDB *db,
 
 			g_signal_emit (G_OBJECT (event->db), rhythmdb_signals[CREATE_MOUNT_OP], 0, &mount_op);
 			if (mount_op != NULL) {
-				g_print ("created mount op %p\n", mount_op);
 				g_file_mount_enclosing_volume (file,
 							       G_MOUNT_MOUNT_NONE,
 							       mount_op,
