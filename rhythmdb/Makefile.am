@@ -23,6 +23,7 @@ rhythmdbinclude_HEADERS =				\
 	rhythmdb-query-model.h				\
 	rhythmdb-query-results.h			\
 	rhythmdb-import-job.h				\
+	rhythmdb-entry.h				\
 	rhythmdb-entry-type.h
 
 librhythmdb_la_SOURCES =				\
