@@ -1161,7 +1161,11 @@ rb_shell_new (gboolean no_registration,
 static GMountOperation *
 rb_shell_create_mount_op_cb (RhythmDB *db, RBShell *shell)
 {
-	return gtk_mount_operation_new (GTK_WINDOW (shell->priv->window));
+	/* we don't want the operation to be modal, so we don't associate it with the window. */
+	GMountOperation *op = gtk_mount_operation_new (NULL);
+	gtk_mount_operation_set_screen (GTK_MOUNT_OPERATION (op),
+					gtk_window_get_screen (GTK_WINDOW (shell->priv->window)));
+	return op;
 }
 
 static void
