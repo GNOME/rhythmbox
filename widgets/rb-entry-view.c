@@ -215,6 +215,7 @@ struct RBEntryViewPrivate
 	GtkTreeViewColumn *sorting_column;
 	gint sorting_order;
 	char *sorting_column_name;
+	RhythmDBPropType type_ahead_propid;
 
 	gboolean have_selection, have_complete_selection;
 
@@ -265,6 +266,7 @@ type_ahead_search_func (GtkTreeModel *model,
 			GtkTreeIter *iter,
 			gpointer search_data)
 {
+	RBEntryView *view = RB_ENTRY_VIEW (search_data);
 	RhythmDBEntry *entry;
 	gchar *folded;
 	const gchar *entry_folded;
@@ -272,7 +274,7 @@ type_ahead_search_func (GtkTreeModel *model,
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 	folded = rb_search_fold (key);
-	entry_folded = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE_FOLDED);
+	entry_folded = rb_refstring_get_folded (rhythmdb_entry_get_refstring (entry, view->priv->type_ahead_propid));
 	rhythmdb_entry_unref (entry);
 
 	if (entry_folded == NULL || folded == NULL)
@@ -557,6 +559,7 @@ rb_entry_view_init (RBEntryView *view)
 	view->priv->propid_column_map = g_hash_table_new (NULL, NULL);
 	view->priv->column_sort_data_map = g_hash_table_new_full (NULL, NULL, NULL, g_free);
 	view->priv->column_key_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	view->priv->type_ahead_propid = RHYTHMDB_PROP_TITLE;
 }
 
 static void
@@ -1163,6 +1166,8 @@ rb_entry_view_sync_sorting (RBEntryView *view)
 	GtkTreeViewColumn *column;
 	gint direction;
 	char *column_name;
+	RhythmDBPropType type_ahead_propid;
+	GList *renderers;
 
 	direction = GTK_SORT_ASCENDING;
 	column_name = NULL;
@@ -1188,6 +1193,15 @@ rb_entry_view_sync_sorting (RBEntryView *view)
 	view->priv->sorting_column = column;
 	gtk_tree_view_column_set_sort_indicator (column, TRUE);
 	gtk_tree_view_column_set_sort_order (column, direction);
+
+	/* set the property id to use for the typeahead search */
+	renderers = gtk_cell_layout_get_cells (GTK_CELL_LAYOUT (column));
+	type_ahead_propid = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (renderers->data), CELL_PROPID_ITEM));
+	g_list_free (renderers);
+	if (type_ahead_propid != 0 && rhythmdb_get_property_type (view->priv->db, type_ahead_propid) == G_TYPE_STRING)
+		view->priv->type_ahead_propid = type_ahead_propid;
+	else
+		view->priv->type_ahead_propid = RHYTHMDB_PROP_TITLE;
 
 	rb_debug ("emitting sort order changed");
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SORT_ORDER_CHANGED], 0);
@@ -1864,7 +1878,7 @@ rb_entry_view_constructed (GObject *object)
 
 	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (view->priv->treeview),
 					     type_ahead_search_func,
-					     NULL, NULL);
+					     view, NULL);
 
 	g_signal_connect_object (view->priv->treeview,
 			         "button_press_event",
