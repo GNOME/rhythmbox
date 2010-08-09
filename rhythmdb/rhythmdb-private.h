@@ -137,7 +137,8 @@ struct _RhythmDBPrivate
 
 	GList *stat_list;
 	GList *outstanding_stats;
-	GHashTable *stat_mounts;
+	GList *active_mounts;
+	GList *mount_list;
 	GMutex *stat_mutex;
 	gboolean stat_thread_running;
 	int stat_thread_count;

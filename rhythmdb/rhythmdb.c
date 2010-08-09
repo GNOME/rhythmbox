@@ -293,6 +293,8 @@ static void rhythmdb_add_to_stat_list (RhythmDB *db,
 				       RhythmDBEntryType *error_type);
 static void free_entry_changes (GSList *entry_changes);
 
+static void perform_next_mount (RhythmDB *db);
+
 enum
 {
 	PROP_0,
@@ -731,10 +733,6 @@ rhythmdb_init (RhythmDB *db)
 	rb_podcast_register_entry_types (db);
 
  	db->priv->stat_mutex = g_mutex_new ();
-	db->priv->stat_mounts = g_hash_table_new_full (g_str_hash,
-						       g_str_equal,
-						       (GDestroyNotify) g_free,
-						       NULL);
 
 	db->priv->change_mutex = g_mutex_new ();
 
@@ -877,6 +875,52 @@ stat_thread_main (RhythmDBStatThreadData *data)
 	return NULL;
 }
 
+static void
+perform_next_mount_cb (GObject *file, GAsyncResult *res, RhythmDB *db)
+{
+	GError *error = NULL;
+
+	g_file_mount_enclosing_volume_finish (G_FILE (file), res, &error);
+	if (error != NULL) {
+		char *uri;
+
+		uri = g_file_get_uri (G_FILE (file));
+		rb_debug ("Unable to mount %s: %s", uri, error->message);
+		g_free (uri);
+		g_clear_error (&error);
+	}
+	g_object_unref (file);
+
+	perform_next_mount (db);
+}
+
+static void
+perform_next_mount (RhythmDB *db)
+{
+	GList *l;
+	char *mountpoint;
+	GMountOperation *mount_op = NULL;
+
+	if (db->priv->mount_list == NULL) {
+		rb_debug ("finished mounting");
+		return;
+	}
+
+	l = db->priv->mount_list;
+	db->priv->mount_list = db->priv->mount_list->next;
+	mountpoint = l->data;
+	g_list_free1 (l);
+
+	rb_debug ("mounting %s", (char *)mountpoint);
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[CREATE_MOUNT_OP], 0, &mount_op);
+	g_file_mount_enclosing_volume (g_file_new_for_uri (mountpoint),
+				       G_MOUNT_MOUNT_NONE,
+				       mount_op,
+				       db->priv->exiting,
+				       (GAsyncReadyCallback) perform_next_mount_cb,
+				       db);
+}
+
 /**
  * rhythmdb_start_action_thread:
  * @db: the #RhythmDB
@@ -886,49 +930,9 @@ stat_thread_main (RhythmDBStatThreadData *data)
 void
 rhythmdb_start_action_thread (RhythmDB *db)
 {
-	GHashTableIter iter;
-	gpointer key, value;
-	GList *mounts;
-
 	g_mutex_lock (db->priv->stat_mutex);
 	db->priv->action_thread_running = TRUE;
 	rhythmdb_thread_create (db, NULL, (GThreadFunc) action_thread_main, db);
-
-	/* process entries on mountpoints */
-	mounts = rhythmdb_get_active_mounts (db);
-	g_hash_table_iter_init (&iter, db->priv->stat_mounts);
-	while (g_hash_table_iter_next (&iter, &key, &value)) {
-		const char *mountpoint = (const char *)key;
-
-		/* is this mountpoint mounted? */
-		if (rb_string_list_contains (mounts, mountpoint)) {
-			/* if it's a local mount, stat all entries on it;
-			 * otherwise assume they're still there
-			 */
-			if (rb_uri_is_local (mountpoint)) {
-				GList *i;
-				for (i = value; i != NULL; i = i->next) {
-					RhythmDBEntry *entry = i->data;
-					rhythmdb_add_to_stat_list (db,
-								   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
-								   entry,
-								   NULL,
-								   RHYTHMDB_ENTRY_TYPE_IGNORE,
-								   RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
-				}
-			}
-		} else {
-			/* hide all entries on the mount */
-			GList *i;
-			for (i = value; i != NULL; i = i->next) {
-				RhythmDBEntry *entry = i->data;
-				rhythmdb_entry_set_visibility (db, entry, FALSE);
-			}
-			rhythmdb_commit (db);
-		}
-
-		rb_list_destroy_free (value, (GDestroyNotify) rhythmdb_entry_unref);
-	}
 
 	if (db->priv->stat_list != NULL) {
 		RhythmDBStatThreadData *data;
@@ -941,7 +945,7 @@ rhythmdb_start_action_thread (RhythmDB *db)
 		rhythmdb_thread_create (db, NULL, (GThreadFunc) stat_thread_main, data);
 	}
 
-	g_hash_table_destroy (db->priv->stat_mounts);
+	perform_next_mount (db);
 
 	g_mutex_unlock (db->priv->stat_mutex);
 }
@@ -1414,6 +1418,7 @@ process_added_entries_cb (RhythmDBEntry *entry,
 		g_mutex_lock (db->priv->stat_mutex);
 		if (db->priv->action_thread_running == FALSE) {
 			const char *mountpoint;
+
 			mountpoint = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
 			if (mountpoint == NULL) {
 				/* entry is on a core filesystem, always check it */
@@ -1421,15 +1426,25 @@ process_added_entries_cb (RhythmDBEntry *entry,
 							   RHYTHMDB_ENTRY_TYPE_SONG,
 							   RHYTHMDB_ENTRY_TYPE_IGNORE,
 							   RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+			} else if (rb_string_list_contains (db->priv->active_mounts, mountpoint)) {
+				/* mountpoint is mounted - check the file if it's local */
+				if (rb_uri_is_local (mountpoint)) {
+					rhythmdb_add_to_stat_list (db,
+								   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
+								   entry,
+								   NULL,
+								   RHYTHMDB_ENTRY_TYPE_IGNORE,
+								   RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+				} else {
+					rhythmdb_entry_update_availability (entry, RHYTHMDB_ENTRY_AVAIL_MOUNTED);
+				}
 			} else {
-				/* entry is on a device or remote mount, decide what to do
-				 * once we've finished loading the database.
-				 */
-				GList *entries;
-				entries = g_hash_table_lookup (db->priv->stat_mounts,
-							       mountpoint);
-				entries = g_list_prepend (entries, rhythmdb_entry_ref (entry));
-				g_hash_table_insert (db->priv->stat_mounts, g_strdup (mountpoint), entries);
+				/* mountpoint is not mounted */
+				rhythmdb_entry_update_availability (entry, RHYTHMDB_ENTRY_AVAIL_UNMOUNTED);
+
+				if (rb_string_list_contains (db->priv->mount_list, mountpoint) == FALSE) {
+					db->priv->mount_list = g_list_prepend (db->priv->mount_list, g_strdup (mountpoint));
+				}
 			}
 		}
 		g_mutex_unlock (db->priv->stat_mutex);
@@ -3046,6 +3061,8 @@ rhythmdb_load_thread_main (RhythmDB *db)
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 	GError *error = NULL;
 
+	db->priv->active_mounts = rhythmdb_get_active_mounts (db);
+
 	rb_profile_start ("loading db");
 	g_mutex_lock (db->priv->saving_mutex);
 	if (klass->impl_load (db, db->priv->exiting, &error) == FALSE) {
@@ -3057,6 +3074,9 @@ rhythmdb_load_thread_main (RhythmDB *db)
 		}
 	}
 	g_mutex_unlock (db->priv->saving_mutex);
+
+	rb_list_deep_free (db->priv->active_mounts);
+	db->priv->active_mounts = NULL;
 
 	g_object_ref (db);
 	g_timeout_add_seconds (10, (GSourceFunc) rhythmdb_sync_library_idle, db);
