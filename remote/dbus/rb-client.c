@@ -62,6 +62,9 @@ static gboolean enqueue = FALSE;
 
 static gboolean clear_queue = FALSE;
 
+static gchar *select_source = NULL;
+static gchar *activate_source = NULL;
+static gchar *play_source = NULL;
 static gchar *play_uri = NULL;
 static gboolean print_playing = FALSE;
 static gchar *print_playing_format = NULL;
@@ -101,6 +104,9 @@ static GOptionEntry args[] = {
 
 	{ "print-playing", 0, 0, G_OPTION_ARG_NONE, &print_playing, N_("Print the title and artist of the playing song"), NULL },
 	{ "print-playing-format", 0, 0, G_OPTION_ARG_STRING, &print_playing_format, N_("Print formatted details of the song"), NULL },
+	{ "select-source", 0, 0, G_OPTION_ARG_STRING, &select_source, N_("Select the source matching the specified URI"), N_("Source to select")},
+	{ "activate-source", 0, 0, G_OPTION_ARG_STRING, &activate_source, N_("Activate the source matching the specified URI"), N_("Source to activate")},
+	{ "play-source", 0, 0, G_OPTION_ARG_STRING, &play_source, N_("Play from the source matching the specified URI"), N_("Source to play from")},
 
 	{ "set-volume", 0, 0, G_OPTION_ARG_DOUBLE, &set_volume, N_("Set the playback volume"), NULL },
 	{ "volume-up", 0, 0, G_OPTION_ARG_NONE, &volume_up, N_("Increase the playback volume"), NULL },
@@ -715,6 +721,18 @@ main (int argc, char **argv)
 			g_free (fileuri);
 			g_object_unref (file);
 		}
+	}
+
+	/* select/activate/play source */
+	if (select_source) {
+		org_gnome_Rhythmbox_Shell_activate_source (shell_proxy, select_source, 0, &error);
+		annoy (&error);
+	} else if (activate_source) {
+		org_gnome_Rhythmbox_Shell_activate_source (shell_proxy, activate_source, 1, &error);
+		annoy (&error);
+	} else if (play_source) {
+		org_gnome_Rhythmbox_Shell_activate_source (shell_proxy, play_source, 2, &error);
+		annoy (&error);
 	}
 
 	/* play uri */
