@@ -438,6 +438,7 @@
                   <object class="GtkTable" id="recent_tracks_table">
                     <property name="visible">True</property>
                     <property name="homogeneous">True</property>
+                    <signal name="realize" handler="list_table_realize_cb"/>
                     <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
                     <child>
                       <placeholder/>
@@ -490,6 +491,7 @@
                   <object class="GtkTable" id="top_artists_table">
                     <property name="visible">True</property>
                     <property name="homogeneous">True</property>
+                    <signal name="realize" handler="list_table_realize_cb"/>
                     <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
                     <child>
                       <placeholder/>
@@ -542,6 +544,7 @@
                   <object class="GtkTable" id="recommended_artists_table">
                     <property name="visible">True</property>
                     <property name="homogeneous">True</property>
+                    <signal name="realize" handler="list_table_realize_cb"/>
                     <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
                     <child>
                       <placeholder/>
@@ -592,6 +595,7 @@
                   <object class="GtkTable" id="top_tracks_table">
                     <property name="visible">True</property>
                     <property name="homogeneous">True</property>
+                    <signal name="realize" handler="list_table_realize_cb"/>
                     <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
                     <child>
                       <placeholder/>
@@ -642,6 +646,7 @@
                   <object class="GtkTable" id="loved_tracks_table">
                     <property name="visible">True</property>
                     <property name="homogeneous">True</property>
+                    <signal name="realize" handler="list_table_realize_cb"/>
                     <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
                     <child>
                       <placeholder/>

@@ -213,6 +213,8 @@ static GtkWidget *create_list_button (RBAudioscrobblerProfileSource *source,
 static GtkWidget *create_popup_menu (RBAudioscrobblerProfileSource *source,
                                      RBAudioscrobblerUserData *data);
 static void list_table_pack_start (GtkTable *list_table, GtkWidget *child);
+void list_table_realize_cb (GtkWidget *table,
+                            gpointer user_data);
 void list_table_size_allocate_cb (GtkWidget *layout,
                                   GtkAllocation *allocation,
                                   gpointer user_data);
@@ -1444,6 +1446,10 @@ set_user_list (RBAudioscrobblerProfileSource *source,
 	}
 
 	if (list_data != NULL) {
+		if (gtk_widget_get_realized (list_table) == FALSE) {
+			rb_debug ("table has not been realized yet. it will need resized later");
+		}
+
 		/* add a new button for each item in the list */
 		for (i = 0; i < list_data->len; i++) {
 			RBAudioscrobblerUserData *data;
@@ -1542,11 +1548,6 @@ create_list_button (RBAudioscrobblerProfileSource *source,
 		          G_CALLBACK (list_item_clicked_cb),
 		          source);
 
-	/* this must be called, otherwise the buttons' size requests will be
-	 * incorrect and the allocation of the tables will not work at all.
-	 */
-	gtk_widget_show_all (button);
-
 	return button;
 }
 
@@ -1616,7 +1617,6 @@ list_table_pack_start (GtkTable *list_table, GtkWidget *child)
 	GList *children;
 	int num_children;
 	int num_columns;
-	GtkRequisition req;
 
 	children = gtk_container_get_children (GTK_CONTAINER (list_table));
 	num_children = g_list_length (children);
@@ -1629,12 +1629,15 @@ list_table_pack_start (GtkTable *list_table, GtkWidget *child)
 	                  GTK_FILL | GTK_EXPAND, GTK_FILL,
 	                  0, 0);
 
-	/* Make sure the button has an up to date size request,
-	 * otherwise the table allocation will not work
-	 */
-	gtk_widget_size_request (child, &req);
-
 	g_list_free (children);
+}
+
+void
+list_table_realize_cb (GtkWidget *table,
+                       gpointer user_data)
+{
+	rb_debug ("table has been realized. queueing resize");
+	gtk_widget_queue_resize (table);
 }
 
 /* resizes a GtkTable for a particular size allocation */
@@ -1708,7 +1711,7 @@ list_table_size_allocate_cb (GtkWidget *table,
 		}
 	}
 
-	/* ensure the table is the correct size */
+	/* ensure the table will shrink to the correct size */
 	gtk_widget_set_size_request (table, 0, -1);
 
 	g_list_free (children);
