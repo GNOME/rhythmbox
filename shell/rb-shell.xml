@@ -9,6 +9,12 @@
       <arg type="b"/>
     </method>
 
+    <method name="activateSource">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_activate_source_by_uri"/>
+      <arg type="s" name="uri"/>
+      <arg type="u" name="play"/> <!-- 0 = only select, 1 = play if not already playing, 2 = play -->
+    </method>
+
     <method name="getPlayer">
       <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_get_player_path"/>
       <arg type="o" direction="out">

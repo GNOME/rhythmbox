@@ -144,6 +144,11 @@ gboolean	rb_shell_clear_queue (RBShell *shell,
 gboolean	rb_shell_quit (RBShell *shell,
 			       GError **error);
 
+gboolean	rb_shell_activate_source_by_uri (RBShell *shell,
+						 const char *source_uri,
+						 guint play,
+						 GError **error);
+
 void            rb_shell_notify_custom  (RBShell *shell,
 					 guint timeout,
 					 const char *primary,

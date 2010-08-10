@@ -137,8 +137,10 @@ static void rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 static void source_activated_cb (RBSourceList *sourcelist,
 				 RBSource *source,
 				 RBShell *shell);
-static void rb_shell_activate_source (RBShell *shell,
-				      RBSource *source);
+static gboolean rb_shell_activate_source (RBShell *shell,
+					  RBSource *source,
+					  guint play,
+					  GError **error);
 static void rb_shell_db_save_error_cb (RhythmDB *db,
 				       const char *uri, const GError *error,
 				       RBShell *shell);
@@ -1895,12 +1897,13 @@ source_activated_cb (RBSourceList *sourcelist,
 {
 	rb_debug ("source activated");
 
-	rb_shell_activate_source (shell, source);
+	rb_shell_activate_source (shell, source, 2, NULL);
 }
 
-static void
-rb_shell_activate_source (RBShell *shell, RBSource *source)
+static gboolean
+rb_shell_activate_source (RBShell *shell, RBSource *source, guint play, GError **error)
 {
+	RhythmDBEntry *entry;
 	/* FIXME
 	 *
 	 * this doesn't work correctly yet, but it's still an improvement on the
@@ -1910,11 +1913,27 @@ rb_shell_activate_source (RBShell *shell, RBSource *source)
 	 * doesn't start the new one.
 	 */
 
-	/* Select the new one, and start it playing */
+	/* Select the new one, and optionally start it playing */
 	rb_shell_select_source (shell, source);
-	rb_shell_player_set_playing_source (shell->priv->player_shell, source);
-	/* Ignore error from here */
-	rb_shell_player_playpause (shell->priv->player_shell, FALSE, NULL);
+
+	switch (play) {
+	case 0:
+		return TRUE;
+
+	case 1:
+		entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
+		if (entry != NULL) {
+			rhythmdb_entry_unref (entry);
+			return TRUE;
+		}
+		/* fall through */
+	case 2:
+		rb_shell_player_set_playing_source (shell->priv->player_shell, source);
+		return rb_shell_player_playpause (shell->priv->player_shell, FALSE, error);
+
+	default:
+		return FALSE;
+	}
 }
 
 static void
@@ -3323,7 +3342,9 @@ rb_shell_load_uri (RBShell *shell,
 		if (playlist_source != NULL) {
 			char *name;
 
-			rb_shell_activate_source (shell, playlist_source);
+			if (rb_shell_activate_source (shell, playlist_source, 2, error) == FALSE) {
+				return FALSE;
+			}
 
 			g_object_get (playlist_source, "name", &name, NULL);
 			rb_debug ("Activated source '%s' for uri %s", name, uri);
@@ -3518,6 +3539,56 @@ rb_shell_present (RBShell *shell,
 	rb_profile_end ("presenting shell");
 
 	return TRUE;
+}
+
+/**
+ * rb_shell_activate_source_by_uri:
+ * @shell: the #RBShell
+ * @source_uri: URI for the source to activate
+ * @play: 0: select source, 1: play source if not playing, 2: play source
+ * @error: returns error information
+ *
+ * Searches for a source matching @source_uri and if found, selects it,
+ * and depending on the value of @play, may start playing from it.
+ * Device-based sources will match the device node or mount point URI.
+ * Other types of sources may have their own URI scheme or format.
+ * This is part of the DBus interface.
+ *
+ * Return value: %TRUE if successful
+ */
+gboolean
+rb_shell_activate_source_by_uri (RBShell *shell,
+				 const char *source_uri,
+				 guint play,
+				 GError **error)
+{
+	GList *t;
+	GFile *f;
+	char *uri;
+
+	/* ensure the argument is actually a URI */
+	f = g_file_new_for_commandline_arg (source_uri);
+	uri = g_file_get_uri (f);
+	g_object_unref (f);
+
+	for (t = shell->priv->sources; t != NULL; t = t->next) {
+		RBSource *source;
+
+		source = (RBSource *)t->data;
+		if (rb_source_uri_is_source (source, uri)) {
+			rb_debug ("found source for uri %s", uri);
+			g_free (uri);
+			return rb_shell_activate_source (shell, source, play, error);
+		}
+	}
+
+	g_set_error (error,
+		     RB_SHELL_ERROR,
+		     RB_SHELL_ERROR_NO_SOURCE_FOR_URI,
+		     _("No registered source matches URI %s"),
+		     uri);
+	g_free (uri);
+	return FALSE;
 }
 
 /**
