@@ -115,6 +115,9 @@ static GOptionEntry args[] = {
 	{ NULL }
 };
 
+static gboolean db_load_complete = FALSE;
+static gboolean scan_finished = FALSE;
+
 static gboolean
 annoy (GError **error)
 {
@@ -397,6 +400,8 @@ create_rb_shell_proxies (DBusGConnection *bus, DBusGProxy **shell_proxy, DBusGPr
 		*shell_proxy = NULL;
 		return ((*error)->code == DBUS_GERROR_NAME_HAS_NO_OWNER);
 	}
+	dbus_g_proxy_add_signal (sp, "removableMediaScanFinished", G_TYPE_INVALID);
+	dbus_g_proxy_add_signal (sp, "databaseLoadComplete", G_TYPE_INVALID);
 
 	rb_debug ("creating player proxy");
 	*player_proxy = dbus_g_proxy_new_from_proxy (sp,
@@ -518,6 +523,36 @@ rate_song (DBusGProxy *shell_proxy, DBusGProxy *player_proxy, gdouble song_ratin
 	g_free (playing_uri);
 }
 
+static void
+maybe_unblock (GMainLoop *loop)
+{
+	if (db_load_complete && scan_finished) {
+		/* FIXME - we're not really ready to accept playback control just yet.
+		 * the library (at least) needs to populate itself with the database contents,
+		 * which takes some non-zero amount of time.  this hack makes things work
+		 * somewhat reliably.
+		 */
+		g_usleep (G_USEC_PER_SEC);
+		g_main_loop_quit (loop);
+	}
+}
+
+static void
+scan_finished_cb (DBusGProxy *proxy, GMainLoop *loop)
+{
+	rb_debug ("removable media scan finished");
+	scan_finished = TRUE;
+	maybe_unblock (loop);
+}
+
+static void
+db_load_complete_cb (DBusGProxy *proxy, GMainLoop *loop)
+{
+	rb_debug ("database load complete");
+	db_load_complete = TRUE;
+	maybe_unblock (loop);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -573,6 +608,7 @@ main (int argc, char **argv)
 	}
 	if (shell_proxy == NULL) {
 		DBusGProxy *bus_proxy;
+		GMainLoop *loop;
 		guint start_service_reply;
 
 		if (no_start) {
@@ -602,6 +638,13 @@ main (int argc, char **argv)
 			exit (1);
 		}
 		g_clear_error (&error);
+
+		/* wait for it to load enough state to be useful */
+		rb_debug ("waiting for database load and removable media scan to finish");
+		loop = g_main_loop_new (NULL, FALSE);
+		dbus_g_proxy_connect_signal (shell_proxy, "removableMediaScanFinished", G_CALLBACK (scan_finished_cb), loop, NULL);
+		dbus_g_proxy_connect_signal (shell_proxy, "databaseLoadComplete", G_CALLBACK (db_load_complete_cb), loop, NULL);
+		g_main_loop_run (loop);
 	}
 
 	/* don't present if we're doing something else */
