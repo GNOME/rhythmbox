@@ -4,7 +4,7 @@ SUBDIRS = ui icons
 @INTLTOOL_DESKTOP_RULE@
 
 Multimediadir = $(datadir)/applications
-Multimedia_in_files = rhythmbox.desktop.in
+Multimedia_in_files = rhythmbox.desktop.in rhythmbox-device.desktop.in
 Multimedia_DATA = $(Multimedia_in_files:.desktop.in=.desktop)
 
 schemadir = @GCONF_SCHEMA_FILE_DIR@
@@ -48,6 +48,13 @@ EXTRA_DIST = $(service_in_files)    \
 	     $(schema_DATA)	    \
 	     $(man_MANS)            \
 	     $(playlists_in_files)  \
-	     rhythmbox.desktop.in.in
+	     rhythmbox.desktop.in.in \
+	     rhythmbox-device.desktop.in.in
 
-CLEANFILES = rhythmbox.desktop org.gnome.Rhythmbox.service playlists.xml rhythmbox.desktop.in
+CLEANFILES = 					\
+	rhythmbox.desktop			\
+	rhythmbox-device.desktop		\
+	org.gnome.Rhythmbox.service		\
+	playlists.xml				\
+	rhythmbox.desktop.in			\
+	rhythmbox-device.desktop.in

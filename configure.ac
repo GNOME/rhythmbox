@@ -829,6 +829,7 @@ podcast/Makefile
 shell/Makefile
 data/Makefile
 data/rhythmbox.desktop.in
+data/rhythmbox-device.desktop.in
 data/ui/Makefile
 data/icons/Makefile
 data/icons/hicolor/Makefile
