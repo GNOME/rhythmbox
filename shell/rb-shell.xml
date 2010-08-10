@@ -61,6 +61,9 @@
       <arg type="b" name="visibility"/>
     </signal>
 
+    <signal name="removableMediaScanFinished"/>
+    <signal name="databaseLoadComplete"/>
+
     <!-- Until a version of dbus with bug #7057 fixed is widely available,
          this does more harm than good.  -->
     <!-- <property name="visibility" type="b" access="readwrite"/> -->
