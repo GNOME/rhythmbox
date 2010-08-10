@@ -283,6 +283,7 @@ enum
 	REMOVABLE_MEDIA_SCAN_FINISHED,
 	NOTIFY_PLAYING_ENTRY,
 	NOTIFY_CUSTOM,
+	DATABASE_LOAD_COMPLETE,
 	LAST_SIGNAL
 };
 
@@ -853,6 +854,23 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_TYPE_NONE,
 			      5,
 			      G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN);
+	/**
+	 * RBShell::database-load-complete:
+	 * @shell: the #RBShell
+	 *
+	 * Emitted when the database has been loaded.  This is intended to allow
+	 * DBus clients that start a new instance of the application to wait until
+	 * a reasonable amount of state has been loaded before making further requests.
+	 */
+	rb_shell_signals[DATABASE_LOAD_COMPLETE] =
+		g_signal_new ("database-load-complete",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellClass, database_load_complete),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 
 	g_type_class_add_private (klass, sizeof (RBShellPrivate));
 }
@@ -2612,6 +2630,8 @@ idle_handle_load_complete (RBShell *shell)
 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
 	shell->priv->load_complete = TRUE;
 	shell->priv->save_playlist_id = g_timeout_add_seconds (10, (GSourceFunc) idle_save_playlist_manager, shell);
+
+	g_signal_emit (shell, rb_shell_signals[DATABASE_LOAD_COMPLETE], 0);
 
 	rhythmdb_start_action_thread (shell->priv->db);
 
