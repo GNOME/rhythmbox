@@ -92,7 +92,7 @@ static char **remaining_args    = NULL;
 
 static gboolean load_uri_args (const char **args, GFunc handler, gpointer user_data);
 static void dbus_load_uri (const char *filename, DBusGProxy *proxy);
-static void removable_media_scan_finished (RBShell *shell, gpointer data);
+static void database_load_complete (RBShell *shell, gpointer data);
 static void local_load_uri (const char *filename, RBShell *shell);
 
 static void main_shell_weak_ref_cb (gpointer data, GObject *objptr);
@@ -295,8 +295,8 @@ main (int argc, char **argv)
 			dbus_g_connection_register_g_object (session_bus, path, obj);
 
 			g_signal_connect (G_OBJECT (rb_shell),
-					  "removable_media_scan_finished",
-					  G_CALLBACK (removable_media_scan_finished),
+					  "database-load-complete",
+					  G_CALLBACK (database_load_complete),
 					  NULL);
 		}
 	} else if (!no_registration && session_bus != NULL) {
@@ -420,7 +420,7 @@ main_shell_weak_ref_cb (gpointer data, GObject *objptr)
 }
 
 static void
-removable_media_scan_finished (RBShell *shell, gpointer data)
+database_load_complete (RBShell *shell, gpointer data)
 {
 	load_uri_args ((const char **) remaining_args, (GFunc) local_load_uri, shell);
 }
