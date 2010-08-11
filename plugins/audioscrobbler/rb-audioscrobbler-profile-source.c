@@ -767,6 +767,9 @@ login_status_change_cb (RBAudioscrobblerAccount *account,
 		gtk_widget_hide_all (source->priv->login_bar);
 	}
 	if (show_profile == TRUE) {
+		gtk_label_set_label (GTK_LABEL (source->priv->username_label),
+			             username);
+		gtk_widget_show (source->priv->username_label);
 		gtk_widget_show (source->priv->profile_window);
 	} else {
 		gtk_widget_hide (source->priv->profile_window);
@@ -1335,21 +1338,29 @@ user_info_updated_cb (RBAudioscrobblerUser *user,
 
 		gtk_label_set_label (GTK_LABEL (source->priv->username_label),
 			             data->user_info.username);
+		gtk_widget_show (source->priv->username_label);
 
 		playcount_text = g_strdup_printf (_("%s plays"), data->user_info.playcount);
 		gtk_label_set_label (GTK_LABEL (source->priv->playcount_label),
 		                     playcount_text);
+		g_free (playcount_text);
+		gtk_widget_show (source->priv->playcount_label);
 
 		gtk_link_button_set_uri (GTK_LINK_BUTTON (source->priv->view_profile_link),
 		                         data->url);
+		gtk_widget_show (source->priv->view_profile_link);
 
-		gtk_image_set_from_pixbuf (GTK_IMAGE (source->priv->profile_image), data->image);
-
-		gtk_widget_show_all (source->priv->user_info_area);
-
-		g_free (playcount_text);
+		if (data->image != NULL) {
+			gtk_image_set_from_pixbuf (GTK_IMAGE (source->priv->profile_image), data->image);
+			/* show the parent because the image is packed in a viewport so it has a shadow */
+			gtk_widget_show (gtk_widget_get_parent (source->priv->profile_image));
+		} else {
+			gtk_widget_hide (gtk_widget_get_parent (source->priv->profile_image));
+		}
 	} else {
-		gtk_widget_hide_all (source->priv->user_info_area);
+		gtk_widget_hide (source->priv->playcount_label);
+		gtk_widget_hide (source->priv->view_profile_link);
+		gtk_widget_hide (gtk_widget_get_parent (source->priv->profile_image));
 	}
 }
 
