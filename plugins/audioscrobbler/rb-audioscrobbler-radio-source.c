@@ -761,7 +761,7 @@ tune_response_cb (SoupSession *session,
 					error_message = g_strdup (_("Not enough content to play station"));
 				} else {
 					/* Other error */
-					error_message = g_strdup_printf ("Error tuning station: %i - %s", code, message);
+					error_message = g_strdup_printf (_("Error tuning station: %i - %s"), code, message);
 				}
 
 				display_error_info_bar (source, error_message);
