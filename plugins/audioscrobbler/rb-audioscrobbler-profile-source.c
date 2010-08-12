@@ -1467,11 +1467,13 @@ set_user_list (RBAudioscrobblerProfileSource *source,
 		max_image_width = 0;
 		for (i = 0; i < list_data->len; i++) {
 			RBAudioscrobblerUserData *data;
-			int width;
 
 			data = g_ptr_array_index (list_data, i);
-			width = gdk_pixbuf_get_width (data->image);
-			max_image_width = MAX (max_image_width, width);
+			if (data->image != NULL) {
+				int width = gdk_pixbuf_get_width (data->image);
+				max_image_width = MAX (max_image_width, width);
+			}
+
 		}
 
 		/* add a new button for each item in the list */
