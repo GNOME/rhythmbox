@@ -27,19 +27,19 @@
 
 #include "config.h"
 
-#include "rb-lastfm-play-order.h"
+#include "rb-audioscrobbler-play-order.h"
 #include "rb-debug.h"
 
-static void rb_lastfm_play_order_class_init (RBLastfmPlayOrderClass *klass);
+static void rb_audioscrobbler_play_order_class_init (RBAudioscrobblerPlayOrderClass *klass);
 
-G_DEFINE_TYPE (RBLastfmPlayOrder, rb_lastfm_play_order, RB_TYPE_PLAY_ORDER)
+G_DEFINE_TYPE (RBAudioscrobblerPlayOrder, rb_audioscrobbler_play_order, RB_TYPE_PLAY_ORDER)
 
 RBPlayOrder *
-rb_lastfm_play_order_new (RBShellPlayer *player)
+rb_audioscrobbler_play_order_new (RBShellPlayer *player)
 {
-	RBLastfmPlayOrder *lorder;
+	RBAudioscrobblerPlayOrder *lorder;
 
-	lorder = g_object_new (RB_TYPE_LASTFM_PLAY_ORDER,
+	lorder = g_object_new (RB_TYPE_AUDIOSCROBBLER_PLAY_ORDER,
 			       "player", player,
 			       NULL);
 
@@ -47,13 +47,13 @@ rb_lastfm_play_order_new (RBShellPlayer *player)
 }
 
 static RhythmDBEntry *
-rb_lastfm_play_order_get_next (RBPlayOrder *porder)
+rb_audioscrobbler_play_order_get_next (RBPlayOrder *porder)
 {
 	RhythmDBQueryModel *model;
 	RhythmDBEntry *entry;
 
 	g_return_val_if_fail (porder != NULL, NULL);
-	g_return_val_if_fail (RB_IS_LASTFM_PLAY_ORDER (porder), NULL);
+	g_return_val_if_fail (RB_IS_AUDIOSCROBBLER_PLAY_ORDER (porder), NULL);
 
 	model = rb_play_order_get_query_model (porder);
 	if (model == NULL)
@@ -74,22 +74,22 @@ rb_lastfm_play_order_get_next (RBPlayOrder *porder)
 }
 
 static RhythmDBEntry *
-rb_lastfm_play_order_get_previous (RBPlayOrder *porder)
+rb_audioscrobbler_play_order_get_previous (RBPlayOrder *porder)
 {
 	/* can never go back */
 	return NULL;
 }
 
 static void
-rb_lastfm_play_order_init (RBLastfmPlayOrder *porder)
+rb_audioscrobbler_play_order_init (RBAudioscrobblerPlayOrder *porder)
 {
 }
 
 static void
-rb_lastfm_play_order_class_init (RBLastfmPlayOrderClass *klass)
+rb_audioscrobbler_play_order_class_init (RBAudioscrobblerPlayOrderClass *klass)
 {
 	RBPlayOrderClass *porder = RB_PLAY_ORDER_CLASS (klass);
-	porder->get_next = rb_lastfm_play_order_get_next;
-	porder->get_previous = rb_lastfm_play_order_get_previous;
+	porder->get_next = rb_audioscrobbler_play_order_get_next;
+	porder->get_previous = rb_audioscrobbler_play_order_get_previous;
 }
 

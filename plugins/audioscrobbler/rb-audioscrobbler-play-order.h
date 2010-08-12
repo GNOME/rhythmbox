@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef __RB_LASTFM_PLAY_ORDER_H
-#define __RB_LASTFM_PLAY_ORDER_H
+#ifndef __RB_AUDIOSCROBBLER_PLAY_ORDER_H
+#define __RB_AUDIOSCROBBLER_PLAY_ORDER_H
 
 #include "rb-play-order.h"
 
@@ -34,27 +34,27 @@
 
 G_BEGIN_DECLS
 
-#define RB_TYPE_LASTFM_PLAY_ORDER         (rb_lastfm_play_order_get_type ())
-#define RB_LASTFM_PLAY_ORDER(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LASTFM_PLAY_ORDER, RBLastfmPlayOrder))
-#define RB_LASTFM_PLAY_ORDER_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST ((k), RB_TYPE_LASTFM_PLAY_ORDER, RBLastfmPlayOrderClass))
-#define RB_IS_LASTFM_PLAY_ORDER(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_LASTFM_PLAY_ORDER))
-#define RB_IS_LASTFM_PLAY_ORDER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_LASTFM_PLAY_ORDER))
-#define RB_LASTFM_PLAY_ORDER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_LASTFM_PLAY_ORDER, RBLastfmPlayOrderClass))
+#define RB_TYPE_AUDIOSCROBBLER_PLAY_ORDER         (rb_audioscrobbler_play_order_get_type ())
+#define RB_AUDIOSCROBBLER_PLAY_ORDER(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_AUDIOSCROBBLER_PLAY_ORDER, RBAudioscrobblerPlayOrder))
+#define RB_AUDIOSCROBBLER_PLAY_ORDER_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST ((k), RB_TYPE_AUDIOSCROBBLER_PLAY_ORDER, RBAudioscrobblerPlayOrderClass))
+#define RB_IS_AUDIOSCROBBLER_PLAY_ORDER(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_AUDIOSCROBBLER_PLAY_ORDER))
+#define RB_IS_AUDIOSCROBBLER_PLAY_ORDER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_AUDIOSCROBBLER_PLAY_ORDER))
+#define RB_AUDIOSCROBBLER_PLAY_ORDER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_AUDIOSCROBBLER_PLAY_ORDER, RBAudioscrobblerPlayOrderClass))
 
 typedef struct
 {
 	RBPlayOrder parent;
-} RBLastfmPlayOrder;
+} RBAudioscrobblerPlayOrder;
 
 typedef struct
 {
 	RBPlayOrderClass parent_class;
-} RBLastfmPlayOrderClass;
+} RBAudioscrobblerPlayOrderClass;
 
-GType			rb_lastfm_play_order_get_type	(void);
+GType			rb_audioscrobbler_play_order_get_type	(void);
 
-RBPlayOrder *		rb_lastfm_play_order_new	(RBShellPlayer *player);
+RBPlayOrder *		rb_audioscrobbler_play_order_new	(RBShellPlayer *player);
 
 G_END_DECLS
 
-#endif /* __RB_LASTFM_PLAY_ORDER_H */
+#endif /* __RB_AUDIOSCROBBLER_PLAY_ORDER_H */

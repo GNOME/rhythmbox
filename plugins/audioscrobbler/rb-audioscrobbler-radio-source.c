@@ -43,7 +43,7 @@
 
 #include "rb-audioscrobbler-radio-source.h"
 #include "rb-audioscrobbler-radio-track-entry-type.h"
-#include "rb-lastfm-play-order.h"
+#include "rb-audioscrobbler-play-order.h"
 #include "rb-debug.h"
 #include "rb-sourcelist.h"
 #include "rb-util.h"
@@ -436,7 +436,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	g_object_set (source, "query-model", source->priv->track_model, NULL);
 
 	/* play order */
-	source->priv->play_order = rb_lastfm_play_order_new (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+	source->priv->play_order = rb_audioscrobbler_play_order_new (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
 
 	/* signals */
 	g_signal_connect_object (rb_shell_get_player (shell),

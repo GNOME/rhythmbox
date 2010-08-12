@@ -21,8 +21,8 @@ libaudioscrobbler_la_SOURCES = \
 	rb-audioscrobbler-radio-source.h		\
 	rb-audioscrobbler-radio-track-entry-type.h	\
 	rb-audioscrobbler-radio-track-entry-type.c	\
-	rb-lastfm-play-order.c				\
-	rb-lastfm-play-order.h
+	rb-audioscrobbler-play-order.c			\
+	rb-audioscrobbler-play-order.h
 
 libaudioscrobbler_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libaudioscrobbler_la_LIBTOOLFLAGS = --tag=disable-static
