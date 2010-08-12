@@ -722,12 +722,13 @@ tune_response_cb (SoupSession *session,
 		JsonObject *root_object;
 		root_object = json_node_get_object (json_parser_get_root (parser));
 
-		if (json_object_has_member (root_object, "station")) {
-			JsonObject *station_object;
-
-			station_object = json_object_get_object_member (root_object, "station");
-			/* TODO: do something fun with this information */
-
+		/* Noticed on 2010-08-12 that Last.fm now responds with a "{ status:ok }"
+		 * instead of providing a "station" object with various properties.
+		 * Checking for a "station" or "status" member ensures compatibility with
+		 * both Last.fm and Libre.fm.
+		 */
+		if (json_object_has_member (root_object, "station") ||
+		    strcmp (json_object_get_string_member (root_object, "status"), "ok") == 0) {
 			rb_debug ("tune request was successful");
 
 			/* get the playlist */
@@ -770,6 +771,10 @@ tune_response_cb (SoupSession *session,
 
 				source->priv->is_busy = FALSE;
 			}
+		} else {
+			rb_debug ("unexpected response from tune request: %s", msg->response_body->data);
+			display_error_info_bar(source, _("Error tuning station: unexpected response"));
+			source->priv->is_busy = FALSE;
 		}
 	} else {
 		rb_debug ("invalid response from tune request: %s", msg->response_body->data);
