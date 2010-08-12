@@ -40,7 +40,7 @@
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 
-#define SESSION_SETTINGS_FILE "audioscrobbler_sessions"
+#define SESSION_SETTINGS_FILE "sessions"
 #define SESSION_KEY_REQUEST_TIMEOUT 5
 
 struct _RBAudioscrobblerAccountPrivate
@@ -322,7 +322,7 @@ load_session_settings (RBAudioscrobblerAccount *account)
 		return;
 	}
 
-	file_path = g_build_filename (rb_data_dir, SESSION_SETTINGS_FILE, NULL);
+	file_path = g_build_filename (rb_data_dir, "audioscrobbler", SESSION_SETTINGS_FILE, NULL);
 	key_file = g_key_file_new ();
 	g_key_file_load_from_file (key_file, file_path, G_KEY_FILE_NONE, NULL);
 
@@ -378,7 +378,7 @@ save_session_settings (RBAudioscrobblerAccount *account)
 		return;
 	}
 
-	file_path = g_build_filename (rb_data_dir, SESSION_SETTINGS_FILE, NULL);
+	file_path = g_build_filename (rb_data_dir, "audioscrobbler", SESSION_SETTINGS_FILE, NULL);
 	key_file = g_key_file_new ();
 	/* load existing file contents. errors wont matter, just means file doesn't exist yet */
 	g_key_file_load_from_file (key_file, file_path, G_KEY_FILE_KEEP_COMMENTS, NULL);
