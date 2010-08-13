@@ -728,7 +728,7 @@ tune_response_cb (SoupSession *session,
 		 * both Last.fm and Libre.fm.
 		 */
 		if (json_object_has_member (root_object, "station") ||
-		    strcmp (json_object_get_string_member (root_object, "status"), "ok") == 0) {
+		    json_object_has_member (root_object, "status")) {
 			rb_debug ("tune request was successful");
 
 			/* get the playlist */
