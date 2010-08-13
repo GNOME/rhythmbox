@@ -38,9 +38,11 @@
 
 #include <lib/rb-util.h>
 #include <lib/rb-debug.h>
+#include <lib/eggdesktopfile.h>
 #include <shell/rb-plugin.h>
 #include <shell/rb-shell.h>
 #include <shell/rb-shell-player.h>
+#include <backends/rb-player.h>
 
 #define RB_TYPE_MPRIS_PLUGIN		(rb_mpris_plugin_get_type ())
 #define RB_MPRIS_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_MPRIS_PLUGIN, RBMprisPlugin))
@@ -49,23 +51,30 @@
 #define RB_IS_MPRIS_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_MPRIS_PLUGIN))
 #define RB_MPRIS_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_MPRIS_PLUGIN, RBMprisPluginClass))
 
+#define ENTRY_OBJECT_PATH_PREFIX 	"/org/mpris/MediaPlayer2/Track/"
+
 #include "mpris-spec.h"
 
 typedef struct
 {
 	RBPlugin parent;
 
-	guint name_own_id;
-
 	GDBusConnection *connection;
+	GDBusNodeInfo *node_info;
+	guint name_own_id;
 	guint root_id;
-	guint tracklist_id;
 	guint player_id;
 
 	RBShell *shell;
 	RBShellPlayer *player;
 	RhythmDB *db;
+	GtkAction *next_action;
+	GtkAction *prev_action;
 
+	GHashTable *player_property_changes;
+	guint player_property_emit_id;
+
+	gint64 last_elapsed;
 } RBMprisPlugin;
 
 typedef struct
@@ -86,7 +95,70 @@ rb_mpris_plugin_init (RBMprisPlugin *plugin)
 {
 }
 
-/* MPRIS root object */
+/* property change stuff */
+
+static gboolean
+emit_player_properties_idle (RBMprisPlugin *plugin)
+{
+	GError *error = NULL;
+	GVariantBuilder *properties;
+	GVariant *parameters;
+	const char *invalidated[] = { NULL };
+	gpointer propname, propvalue;
+	GHashTableIter iter;
+
+	/* build property changes */
+	properties = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+	g_hash_table_iter_init (&iter, plugin->player_property_changes);
+	while (g_hash_table_iter_next (&iter, &propname, &propvalue)) {
+		g_variant_builder_add (properties,
+				       "{sv}",
+				       propname,
+				       propvalue);
+	}
+	g_hash_table_destroy (plugin->player_property_changes);
+	plugin->player_property_changes = NULL;
+
+	/* build set of invalidated properties (not supported yet) */
+
+	parameters = g_variant_new ("(sa{sv}^as)",
+				    MPRIS_PLAYER_INTERFACE,
+				    properties,
+				    invalidated);
+	g_variant_builder_unref (properties);
+	g_dbus_connection_emit_signal (plugin->connection,
+				       NULL,
+				       MPRIS_OBJECT_NAME,
+				       MPRIS_PLAYER_INTERFACE,
+				       "PropertiesChanged",
+				       parameters,
+				       &error);
+	if (error != NULL) {
+		g_warning ("Unable to send MPRIS property changes: %s",
+			   error->message);
+		g_clear_error (&error);
+	}
+
+	plugin->player_property_emit_id = 0;
+	return FALSE;
+}
+
+static void
+add_player_property_change (RBMprisPlugin *plugin,
+			    const char *property,
+			    GVariant *value)
+{
+	if (plugin->player_property_changes == NULL) {
+		plugin->player_property_changes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	}
+	g_hash_table_insert (plugin->player_property_changes, g_strdup (property), value);
+
+	if (plugin->player_property_emit_id == 0) {
+		plugin->player_property_emit_id = g_idle_add ((GSourceFunc)emit_player_properties_idle, plugin);
+	}
+}
+
+/* MPRIS root interface */
 
 static void
 handle_root_method_call (GDBusConnection *connection,
@@ -98,54 +170,109 @@ handle_root_method_call (GDBusConnection *connection,
 			 GDBusMethodInvocation *invocation,
 			 RBMprisPlugin *plugin)
 {
-	if (g_strcmp0 (object_path, "/") != 0 ||
-	    g_strcmp0 (interface_name, mpris_iface_name) != 0) {
-		rb_debug ("?!");
+	if (g_strcmp0 (object_path, MPRIS_OBJECT_NAME) != 0 ||
+	    g_strcmp0 (interface_name, MPRIS_ROOT_INTERFACE) != 0) {
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
 		return;
 	}
 
-	if (g_strcmp0 (method_name, "Identity") == 0) {
-		g_dbus_method_invocation_return_value (invocation,
-						       g_variant_new ("(s)", "Rhythmbox " VERSION));
+	if (g_strcmp0 (method_name, "Raise") == 0) {
+		rb_shell_present (plugin->shell, GDK_CURRENT_TIME, NULL);
+		g_dbus_method_invocation_return_value (invocation, NULL);
 	} else if (g_strcmp0 (method_name, "Quit") == 0) {
 		rb_shell_quit (plugin->shell, NULL);
 		g_dbus_method_invocation_return_value (invocation, NULL);
-	} else if (g_strcmp0 (method_name, "MprisVersion") == 0) {
-		g_dbus_method_invocation_return_value (invocation, g_variant_new ("((qq))", 1, 0));	/* what is the version number, anyway? */
 	}
+
+	g_dbus_method_invocation_return_error (invocation,
+					       G_DBUS_ERROR,
+					       G_DBUS_ERROR_NOT_SUPPORTED,
+					       "Method %s.%s not supported",
+					       interface_name,
+					       method_name);
+}
+
+static GVariant *
+get_root_property (GDBusConnection *connection,
+		   const char *sender,
+		   const char *object_path,
+		   const char *interface_name,
+		   const char *property_name,
+		   GError **error,
+		   RBMprisPlugin *plugin)
+{
+	if (g_strcmp0 (object_path, MPRIS_OBJECT_NAME) != 0 ||
+	    g_strcmp0 (interface_name, MPRIS_ROOT_INTERFACE) != 0) {
+		g_set_error (error,
+			     G_DBUS_ERROR,
+			     G_DBUS_ERROR_NOT_SUPPORTED,
+			     "Property %s.%s not supported",
+			     interface_name,
+			     property_name);
+		return NULL;
+	}
+
+	if (g_strcmp0 (property_name, "CanQuit") == 0) {
+		return g_variant_new_boolean (TRUE);
+	} else if (g_strcmp0 (property_name, "CanRaise") == 0) {
+		return g_variant_new_boolean (TRUE);
+	} else if (g_strcmp0 (property_name, "HasTrackList") == 0) {
+		return g_variant_new_boolean (FALSE);
+	} else if (g_strcmp0 (property_name, "Identity") == 0) {
+		EggDesktopFile *desktop_file;
+		desktop_file = egg_get_desktop_file ();
+		return g_variant_new_string (egg_desktop_file_get_name (desktop_file));
+	} else if (g_strcmp0 (property_name, "DesktopEntry") == 0) {
+		EggDesktopFile *desktop_file;
+		GVariant *v = NULL;
+		char *path;
+
+		desktop_file = egg_get_desktop_file ();
+		path = g_filename_from_uri (egg_desktop_file_get_source (desktop_file), NULL, error);
+		if (path != NULL) {
+			v = g_variant_new_string (path);
+			g_free (path);
+		} else {
+			g_warning ("Unable to return desktop file path to MPRIS client: %s", (*error)->message);
+		}
+
+		return v;
+	} else if (g_strcmp0 (property_name, "SupportedUriSchemes") == 0) {
+		/* not planning to support this seriously */
+		const char *fake_supported_schemes[] = {
+			"file", "http", "cdda", "smb", "sftp", NULL
+		};
+		return g_variant_new_strv (fake_supported_schemes, -1);
+	} else if (g_strcmp0 (property_name, "SupportedMimeTypes") == 0) {
+		/* nor this */
+		const char *fake_supported_mimetypes[] = {
+			"application/ogg", "audio/x-vorbis+ogg", "audio/x-flac", "audio/mpeg", NULL
+		};
+		return g_variant_new_strv (fake_supported_mimetypes, -1);
+	}
+
+	g_set_error (error,
+		     G_DBUS_ERROR,
+		     G_DBUS_ERROR_NOT_SUPPORTED,
+		     "Property %s.%s not supported",
+		     interface_name,
+		     property_name);
+	return NULL;
 }
 
 static const GDBusInterfaceVTable root_vtable =
 {
 	(GDBusInterfaceMethodCallFunc) handle_root_method_call,
-	NULL,
+	(GDBusInterfaceGetPropertyFunc) get_root_property,
 	NULL
 };
 
-/* MPRIS tracklist object (not implemented) */
-
-static void
-handle_tracklist_call (GDBusConnection *connection,
-		       const char *sender,
-		       const char *object_path,
-		       const char *interface_name,
-		       const char *method_name,
-		       GVariant *parameters,
-		       GDBusMethodInvocation *invocation,
-		       RBMprisPlugin *plugin)
-{
-	/* do nothing */
-}
-
-static const GDBusInterfaceVTable tracklist_vtable =
-{
-	(GDBusInterfaceMethodCallFunc) handle_tracklist_call,
-	NULL,
-	NULL
-};
-
-
-/* MPRIS player object */
+/* MPRIS player interface */
 
 static void
 handle_result (GDBusMethodInvocation *invocation, gboolean ret, GError *error)
@@ -255,6 +382,15 @@ build_track_metadata (RBMprisPlugin *plugin,
 		      RhythmDBEntry *entry)
 {
 	GValue *md;
+	char *trackid_str;
+
+	trackid_str = g_strdup_printf(ENTRY_OBJECT_PATH_PREFIX "%lu",
+				      rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID));
+	g_variant_builder_add (builder,
+			       "{sv}",
+			       "trackid",
+			       g_variant_new ("s", trackid_str));
+	g_free (trackid_str);
 
 	add_string_property (builder, entry, RHYTHMDB_PROP_LOCATION, "location");
 	add_string_property_2 (builder, plugin->db, entry, RHYTHMDB_PROP_TITLE, "title", RHYTHMDB_PROP_STREAM_SONG_TITLE);
@@ -262,6 +398,7 @@ build_track_metadata (RBMprisPlugin *plugin,
 	add_string_property_2 (builder, plugin->db, entry, RHYTHMDB_PROP_ALBUM, "album", RHYTHMDB_PROP_STREAM_SONG_ALBUM);
 	add_string_property (builder, entry, RHYTHMDB_PROP_GENRE, "genre");
 	add_string_property (builder, entry, RHYTHMDB_PROP_COMMENT, "comment");
+	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_ARTIST, "album-artist");	/* extension */
 
 	add_string_property (builder, entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, "mb track id");
 	add_string_property (builder, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, "mb album id");
@@ -270,6 +407,7 @@ build_track_metadata (RBMprisPlugin *plugin,
 
 	add_string_property (builder, entry, RHYTHMDB_PROP_ARTIST_SORTNAME, "mb artist sort name");
 	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_SORTNAME, "mb album sort name");	/* extension */
+	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, "mb album artist sort name");	/* extension */
 
 	add_ulong_property (builder, entry, RHYTHMDB_PROP_DURATION, "time");
 	add_ulong_property (builder, entry, RHYTHMDB_PROP_BITRATE, "audio-bitrate");
@@ -280,6 +418,7 @@ build_track_metadata (RBMprisPlugin *plugin,
 	add_ulong_string_property (builder, entry, RHYTHMDB_PROP_DISC_NUMBER, "discnumber");	/* extension */
 
 	add_double_property (builder, entry, RHYTHMDB_PROP_RATING, "rating");
+	add_double_property (builder, entry, RHYTHMDB_PROP_BPM, "bpm");				/* extension */
 
 	md = rhythmdb_entry_request_extra_metadata (plugin->db, entry, RHYTHMDB_PROP_COVER_ART_URI);
 	if (md != NULL) {
@@ -292,44 +431,6 @@ build_track_metadata (RBMprisPlugin *plugin,
 		g_value_unset (md);
 		g_free (md);
 	}
-}
-
-static GVariant *
-get_player_state (RBMprisPlugin *plugin, GError **error)
-{
-	RhythmDBEntry *entry;
-	int playback_state;
-	gboolean random;
-	gboolean repeat;
-	gboolean loop;
-
-	entry = rb_shell_player_get_playing_entry (plugin->player);
-	if (entry != NULL) {
-		gboolean playing;
-
-		rhythmdb_entry_unref (entry);
-		playing = FALSE;
-		if (rb_shell_player_get_playing (plugin->player, &playing, error) == FALSE) {
-			return NULL;
-		}
-
-		if (playing) {
-			playback_state = 0;
-		} else {
-			playback_state = 1;
-		}
-	} else {
-		playback_state = 2;
-	}
-
-	random = FALSE;
-	loop = FALSE;
-	rb_shell_player_get_playback_state (plugin->player, &random, &loop);
-
-	/* repeat is not supported */
-	repeat = FALSE;
-
-	return g_variant_new ("((iiii))", playback_state, random, repeat, loop);
 }
 
 static void
@@ -345,267 +446,535 @@ handle_player_method_call (GDBusConnection *connection,
 {
 	GError *error = NULL;
 	gboolean ret;
-	if (g_strcmp0 (object_path, "/Player") != 0 ||
-	    g_strcmp0 (interface_name, mpris_iface_name) != 0) {
-		rb_debug ("?!");
+	if (g_strcmp0 (object_path, MPRIS_OBJECT_NAME) != 0 ||
+	    g_strcmp0 (interface_name, MPRIS_PLAYER_INTERFACE) != 0) {
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
 		return;
 	}
 
 	if (g_strcmp0 (method_name, "Next") == 0) {
 		ret = rb_shell_player_do_next (plugin->player, &error);
 		handle_result (invocation, ret, error);
-	} else if (g_strcmp0 (method_name, "Prev") == 0) {
+	} else if (g_strcmp0 (method_name, "Previous") == 0) {
 		ret = rb_shell_player_do_previous (plugin->player, &error);
 		handle_result (invocation, ret, error);
-	} else if ((g_strcmp0 (method_name, "Pause") == 0)
-		  || (g_strcmp0 (method_name, "PlayPause") == 0)) {
+	} else if (g_strcmp0 (method_name, "Pause") == 0) {
+		ret = rb_shell_player_pause (plugin->player, &error);
+		handle_result (invocation, ret, error);
+	} else if (g_strcmp0 (method_name, "PlayPause") == 0) {
 		ret = rb_shell_player_playpause (plugin->player, TRUE, &error);
 		handle_result (invocation, ret, error);
 	} else if (g_strcmp0 (method_name, "Stop") == 0) {
 		rb_shell_player_stop (plugin->player);
 		handle_result (invocation, TRUE, NULL);
 	} else if (g_strcmp0 (method_name, "Play") == 0) {
-		gboolean playing;
-		g_object_get (plugin->player, "playing", &playing, NULL);
-		if (playing) {
-			ret = rb_shell_player_set_playing_time (plugin->player, 0, &error);
-		} else {
-			ret = rb_shell_player_playpause (plugin->player, TRUE, &error);
-		}
+		ret = rb_shell_player_play (plugin->player, &error);
 		handle_result (invocation, ret, error);
-	} else if (g_strcmp0 (method_name, "Repeat") == 0) {
-		/* not actually supported */
-	} else if (g_strcmp0 (method_name, "GetStatus") == 0) {
-		GVariant *state;
+	} else if (g_strcmp0 (method_name, "Seek") == 0) {
+		gint64 offset;
+		g_variant_get (parameters, "(x)", &offset);
+		rb_shell_player_seek (plugin->player, offset / G_USEC_PER_SEC);
+		g_dbus_method_invocation_return_value (invocation, NULL);
+	} else if (g_strcmp0 (method_name, "SetPositionSet") == 0) {
+		RhythmDBEntry *playing_entry;
+		RhythmDBEntry *client_entry;
+		gint64 position;
+		const char *client_entry_path;
 
-		state = get_player_state (plugin, &error);
-		if (state == NULL) {
-			handle_result (invocation, FALSE, error);
-		} else {
-			g_dbus_method_invocation_return_value (invocation, state);
+		playing_entry = rb_shell_player_get_playing_entry (plugin->player);
+		if (playing_entry == NULL) {
+			/* not playing, so we can't seek */
+			g_dbus_method_invocation_return_value (invocation, NULL);
+			return;
 		}
 
-	} else if (g_strcmp0 (method_name, "GetCaps") == 0) {
-		/* values here are:
-		 * CAN_GO_NEXT: 1
-		 * CAN_GO_PREV: 2
-		 * CAN_PAUSE: 4
-		 * CAN_PLAY: 8
-		 * CAN_SEEK: 16
-		 * CAN_PROVIDE_METADATA: 32
-		 * CAN_HAS_TRACKLIST: 64
-		 */
-		g_dbus_method_invocation_return_value (invocation,
-						       g_variant_new ("i", 63));
-	} else if (g_strcmp0 (method_name, "GetMetadata") == 0) {
+		g_variant_get (parameters, "(&ox)", &client_entry_path, &position);
+
+		if (g_str_has_prefix (client_entry_path, ENTRY_OBJECT_PATH_PREFIX) == FALSE) {
+			/* this can't possibly be the current playing track, so ignore it */
+			g_dbus_method_invocation_return_value (invocation, NULL);
+			rhythmdb_entry_unref (playing_entry);
+			return;
+		}
+
+		client_entry_path += strlen (ENTRY_OBJECT_PATH_PREFIX);
+		client_entry = rhythmdb_entry_lookup_from_string (plugin->db, client_entry_path, TRUE);
+		if (client_entry == NULL) {
+			/* ignore it */
+			g_dbus_method_invocation_return_value (invocation, NULL);
+			rhythmdb_entry_unref (playing_entry);
+			return;
+		}
+
+		if (playing_entry != client_entry) {
+			/* client got the wrong entry, ignore it */
+			g_dbus_method_invocation_return_value (invocation, NULL);
+			rhythmdb_entry_unref (playing_entry);
+			rhythmdb_entry_unref (client_entry);
+			return;
+		}
+		rhythmdb_entry_unref (playing_entry);
+		rhythmdb_entry_unref (client_entry);
+
+		ret = rb_shell_player_set_playing_time (plugin->player, position / G_USEC_PER_SEC, &error);
+		handle_result (invocation, ret, error);
+	} else if (g_strcmp0 (method_name, "OpenUri") == 0) {
+		const char *uri;
+		g_variant_get (parameters, "(&s)", &uri);
+		ret = rb_shell_load_uri (plugin->shell, uri, TRUE, &error);
+		handle_result (invocation, ret, error);
+	}
+
+	g_dbus_method_invocation_return_error (invocation,
+					       G_DBUS_ERROR,
+					       G_DBUS_ERROR_NOT_SUPPORTED,
+					       "Method %s.%s not supported",
+					       interface_name,
+					       method_name);
+}
+
+static GVariant *
+get_playback_status (RBMprisPlugin *plugin)
+{
+	RhythmDBEntry *entry;
+
+	entry = rb_shell_player_get_playing_entry (plugin->player);
+	if (entry == NULL) {
+		return g_variant_new_string ("Stopped");
+	} else {
+		GVariant *v;
+		gboolean playing;
+		if (rb_shell_player_get_playing (plugin->player, &playing, NULL)) {
+			if (playing) {
+				v = g_variant_new_string ("Playing");
+			} else {
+				v = g_variant_new_string ("Paused");
+			}
+		} else {
+			v = NULL;
+		}
+		rhythmdb_entry_unref (entry);
+		return v;
+	}
+}
+
+static GVariant *
+get_loop_status (RBMprisPlugin *plugin)
+{
+	gboolean loop = FALSE;
+	rb_shell_player_get_playback_state (plugin->player, NULL, &loop);
+	if (loop) {
+		return g_variant_new_string ("Playlist");
+	} else {
+		return g_variant_new_string ("None");
+	}
+}
+
+static GVariant *
+get_shuffle (RBMprisPlugin *plugin)
+{
+	gboolean random = FALSE;
+
+	rb_shell_player_get_playback_state (plugin->player, &random, NULL);
+	return g_variant_new_boolean (random);
+}
+
+static GVariant *
+get_volume (RBMprisPlugin *plugin)
+{
+	gdouble vol;
+	if (rb_shell_player_get_volume (plugin->player, &vol, NULL)) {
+		return g_variant_new_double (vol);
+	} else {
+		return NULL;
+	}
+}
+
+static GVariant *
+get_can_pause (RBMprisPlugin *plugin)
+{
+	RBSource *source;
+	source = rb_shell_player_get_playing_source (plugin->player);
+	if (source != NULL) {
+		return g_variant_new_boolean (rb_source_can_pause (source));
+	} else {
+		return g_variant_new_boolean (TRUE);
+	}
+}
+
+static GVariant *
+get_can_seek (RBMprisPlugin *plugin)
+{
+	RBPlayer *player;
+	GVariant *v;
+
+	g_object_get (plugin->player, "player", &player, NULL);
+	if (player != NULL) {
+		v = g_variant_new_boolean (rb_player_seekable (player));
+		g_object_unref (player);
+	} else {
+		v = g_variant_new_boolean (FALSE);
+	}
+	return v;
+}
+
+static GVariant *
+get_player_property (GDBusConnection *connection,
+		     const char *sender,
+		     const char *object_path,
+		     const char *interface_name,
+		     const char *property_name,
+		     GError **error,
+		     RBMprisPlugin *plugin)
+{
+	gboolean ret;
+
+	if (g_strcmp0 (object_path, MPRIS_OBJECT_NAME) != 0 ||
+	    g_strcmp0 (interface_name, MPRIS_PLAYER_INTERFACE) != 0) {
+		g_set_error (error,
+			     G_DBUS_ERROR,
+			     G_DBUS_ERROR_NOT_SUPPORTED,
+			     "Property %s.%s not supported",
+			     interface_name,
+			     property_name);
+		return NULL;
+	}
+
+	if (g_strcmp0 (property_name, "PlaybackStatus") == 0) {
+		return get_playback_status (plugin);
+	} else if (g_strcmp0 (property_name, "LoopStatus") == 0) {
+		return get_loop_status (plugin);
+	} else if (g_strcmp0 (property_name, "Rate") == 0) {
+		return g_variant_new_double (1.0);
+	} else if (g_strcmp0 (property_name, "Shuffle") == 0) {
+		return get_shuffle (plugin);
+	} else if (g_strcmp0 (property_name, "Metadata") == 0) {
 		RhythmDBEntry *entry;
 		GVariantBuilder *builder;
+		GVariant *v;
 
-		builder = g_variant_builder_new (G_VARIANT_TYPE_ARRAY);
-
+		builder = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
 		entry = rb_shell_player_get_playing_entry (plugin->player);
 		if (entry != NULL) {
 			build_track_metadata (plugin, builder, entry);
-		} else {
-			g_variant_builder_add (builder,
-					       "{sv}",
-					       "location",
-					       g_variant_new ("s", ""));
+			rhythmdb_entry_unref (entry);
 		}
 
-		g_dbus_method_invocation_return_value (invocation,
-						       g_variant_new ("(a{sv})", builder));
-	} else if (g_strcmp0 (method_name, "VolumeGet") == 0) {
-		gdouble v;
-		ret = rb_shell_player_get_volume (plugin->player, &v, &error);
-		if (ret == FALSE) {
-			handle_result (invocation, ret, error);
-		} else {
-			int iv;
-			iv = (int)(v * 100.0);
-			g_dbus_method_invocation_return_value (invocation,
-							       g_variant_new ("(i)", iv));
-		}
-	} else if (g_strcmp0 (method_name, "VolumeSet") == 0) {
-		int iv;
-		gdouble v;
-		g_variant_get (parameters, "(i)", &iv);
-		v = ((gdouble)iv / 100.0);
-		ret = rb_shell_player_set_volume (plugin->player, v, &error);
-		handle_result (invocation, ret, error);
-
-	} else if (g_strcmp0 (method_name, "PositionGet") == 0) {
+		v = g_variant_builder_end (builder);
+		g_variant_builder_unref (builder);
+		return v;
+	} else if (g_strcmp0 (property_name, "Volume") == 0) {
+		return get_volume (plugin);
+	} else if (g_strcmp0 (property_name, "Position") == 0) {
 		guint t;
-		ret = rb_shell_player_get_playing_time (plugin->player, &t, &error);
-		if (ret == FALSE) {
-			handle_result (invocation, ret, error);
+		ret = rb_shell_player_get_playing_time (plugin->player, &t, error);
+		if (ret) {
+			return g_variant_new_int64 (t * G_USEC_PER_SEC);
 		} else {
-			g_dbus_method_invocation_return_value (invocation,
-							       g_variant_new ("(i)", t * 1000));
+			return NULL;
 		}
-	} else if (g_strcmp0 (method_name, "PositionSet") == 0) {
-		guint t;
-		g_variant_get (parameters, "(i)", &t);
-		ret = rb_shell_player_set_playing_time (plugin->player, t, &error);
-		handle_result (invocation, ret, error);
+	} else if (g_strcmp0 (property_name, "MinimumRate") == 0) {
+		return g_variant_new_double (1.0);
+	} else if (g_strcmp0 (property_name, "MaximumRate") == 0) {
+		return g_variant_new_double (1.0);
+	} else if (g_strcmp0 (property_name, "CanGoNext") == 0) {
+		return g_variant_new_boolean (gtk_action_get_sensitive (plugin->next_action));
+	} else if (g_strcmp0 (property_name, "CanGoPrevious") == 0) {
+		return g_variant_new_boolean (gtk_action_get_sensitive (plugin->prev_action));
+	} else if (g_strcmp0 (property_name, "CanPlay") == 0) {
+		/* uh.. under what conditions can we not play?  nothing in the source? */
+		return g_variant_new_boolean (TRUE);
+	} else if (g_strcmp0 (property_name, "CanPause") == 0) {
+		return get_can_pause (plugin);
+	} else if (g_strcmp0 (property_name, "CanSeek") == 0) {
+		return get_can_seek (plugin);
+	} else if (g_strcmp0 (property_name, "CanControl") == 0) {
+		return g_variant_new_boolean (TRUE);
 	}
+
+	g_set_error (error,
+		     G_DBUS_ERROR,
+		     G_DBUS_ERROR_NOT_SUPPORTED,
+		     "Property %s.%s not supported",
+		     interface_name,
+		     property_name);
+	return NULL;
+}
+
+static gboolean
+set_player_property (GDBusConnection *connection,
+		     const char *sender,
+		     const char *object_path,
+		     const char *interface_name,
+		     const char *property_name,
+		     GVariant *value,
+		     GError **error,
+		     RBMprisPlugin *plugin)
+{
+	if (g_strcmp0 (object_path, MPRIS_OBJECT_NAME) != 0 ||
+	    g_strcmp0 (interface_name, MPRIS_PLAYER_INTERFACE) != 0) {
+		g_set_error (error,
+			     G_DBUS_ERROR,
+			     G_DBUS_ERROR_NOT_SUPPORTED,
+			     "%s:%s not supported",
+			     object_path,
+			     interface_name);
+		return FALSE;
+	}
+
+	if (g_strcmp0 (property_name, "LoopStatus") == 0) {
+		gboolean shuffle;
+		gboolean repeat;
+		const char *status;
+
+		rb_shell_player_get_playback_state (plugin->player, &shuffle, &repeat);
+
+		status = g_variant_get_string (value, NULL);
+		if (g_strcmp0 (status, "None") == 0) {
+			repeat = FALSE;
+		} else if (g_strcmp0 (status, "Playlist") == 0) {
+			repeat = TRUE;
+		} else {
+			repeat = FALSE;
+		}
+		rb_shell_player_set_playback_state (plugin->player, shuffle, repeat);
+		return TRUE;
+	} else if (g_strcmp0 (property_name, "Rate") == 0) {
+		/* not supported */
+		g_set_error (error, G_DBUS_ERROR, G_DBUS_ERROR_NOT_SUPPORTED, "Can't modify playback rate");
+		return FALSE;
+	} else if (g_strcmp0 (property_name, "Shuffle") == 0) {
+		gboolean shuffle;
+		gboolean repeat;
+
+		rb_shell_player_get_playback_state (plugin->player, &shuffle, &repeat);
+		shuffle = g_variant_get_boolean (value);
+		rb_shell_player_set_playback_state (plugin->player, shuffle, repeat);
+		return TRUE;
+	} else if (g_strcmp0 (property_name, "Volume") == 0) {
+		rb_shell_player_set_volume (plugin->player, g_variant_get_double (value), error);
+		return TRUE;
+	}
+
+	g_set_error (error,
+		     G_DBUS_ERROR,
+		     G_DBUS_ERROR_NOT_SUPPORTED,
+		     "Property %s.%s not supported",
+		     interface_name,
+		     property_name);
+	return FALSE;
 }
 
 static const GDBusInterfaceVTable player_vtable =
 {
 	(GDBusInterfaceMethodCallFunc) handle_player_method_call,
-	NULL,
-	NULL
+	(GDBusInterfaceGetPropertyFunc) get_player_property,
+	(GDBusInterfaceSetPropertyFunc) set_player_property,
 };
-
-/* MPRIS signals */
-
-static void
-emit_status_change (RBMprisPlugin *plugin)
-{
-	GError *error = NULL;
-	GVariant *state;
-	state = get_player_state (plugin, &error);
-	if (state == NULL) {
-		g_warning ("Unable to emit MPRIS StatusChange signal: %s", error->message);
-		g_error_free (error);
-		return;
-	}
-
-	g_dbus_connection_emit_signal (plugin->connection,
-				       NULL,
-				       "/Player",
-				       mpris_iface_name,
-				       "StatusChange",
-				       state,
-				       &error);
-	if (error != NULL) {
-		g_warning ("Unable to emit MPRIS StatusChange signal: %s", error->message);
-		g_error_free (error);
-	}
-}
 
 static void
 play_order_changed_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
 {
-	emit_status_change (plugin);
+	rb_debug ("emitting LoopStatus and Shuffle change");
+	add_player_property_change (plugin, "LoopStatus", get_loop_status (plugin));
+	add_player_property_change (plugin, "Shuffle", get_shuffle (plugin));
+}
+
+static void
+volume_changed_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
+{
+	rb_debug ("emitting Volume change");
+	add_player_property_change (plugin, "Volume", get_volume (plugin));
 }
 
 static void
 playing_changed_cb (RBShellPlayer *player, gboolean playing, RBMprisPlugin *plugin)
 {
-	emit_status_change (plugin);
+	rb_debug ("emitting PlaybackStatus change");
+	add_player_property_change (plugin, "PlaybackStatus", get_playback_status (plugin));
 }
 
 static void
-emit_track_change (RBMprisPlugin *plugin, RhythmDBEntry *entry)
+metadata_changed (RBMprisPlugin *plugin, RhythmDBEntry *entry)
 {
-	GError *error = NULL;
 	GVariantBuilder *builder;
-	if (entry == NULL) {
-		return;
-	}
 
-	builder = g_variant_builder_new (G_VARIANT_TYPE_ARRAY);
-	build_track_metadata (plugin, builder, entry);
-
-	g_dbus_connection_emit_signal (plugin->connection,
-				       NULL,
-				       "/Player",
-				       mpris_iface_name,
-				       "TrackChange",
-				       g_variant_new ("(a{sv})", builder),
-				       &error);
-	if (error != NULL) {
-		g_warning ("Unable to emit MPRIS TrackChange signal: %s", error->message);
-		g_error_free (error);
+	builder = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+	if (entry != NULL) {
+		build_track_metadata (plugin, builder, entry);
 	}
+	add_player_property_change (plugin, "Metadata", g_variant_builder_end (builder));
+	g_variant_builder_unref (builder);
 }
 
 static void
 playing_entry_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBMprisPlugin *plugin)
 {
-	rb_debug ("emitting track change due to playing entry change");
-	emit_track_change (plugin, entry);
+	rb_debug ("emitting Metadata and CanSeek changed");
+	plugin->last_elapsed = 0;
+	metadata_changed (plugin, entry);
+	add_player_property_change (plugin, "CanSeek", get_can_seek (plugin));
 }
 
 static void
 entry_extra_metadata_notify_cb (RhythmDB *db, RhythmDBEntry *entry, const char *field, GValue *metadata, RBMprisPlugin *plugin)
 {
-	if (entry == rb_shell_player_get_playing_entry (plugin->player)) {
-		rb_debug ("emitting track change due to extra metadata field %s", field);
-		emit_track_change (plugin, entry);
+	RhythmDBEntry *playing_entry = rb_shell_player_get_playing_entry (plugin->player);
+	if (entry == playing_entry) {
+		rb_debug ("emitting Metadata change due to extra metadata field %s", field);
+		metadata_changed (plugin, entry);
+	}
+	if (playing_entry != NULL) {
+		rhythmdb_entry_unref (playing_entry);
 	}
 }
+
+static void
+entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry, GValueArray *changes, RBMprisPlugin *plugin)
+{
+	RhythmDBEntry *playing_entry = rb_shell_player_get_playing_entry (plugin->player);
+	if (playing_entry == NULL) {
+		return;
+	}
+	if (playing_entry == entry) {
+		int i;
+		gboolean emit = FALSE;
+
+		/* make sure there's an interesting property change in there */
+		for (i = 0; i < changes->n_values; i++) {
+			RhythmDBEntryChange *change = g_value_get_boxed (g_value_array_get_nth (changes, i));
+			switch (change->prop) {
+				/* probably not complete */
+				case RHYTHMDB_PROP_MOUNTPOINT:
+				case RHYTHMDB_PROP_MTIME:
+				case RHYTHMDB_PROP_FIRST_SEEN:
+				case RHYTHMDB_PROP_LAST_SEEN:
+				case RHYTHMDB_PROP_LAST_PLAYED:
+				case RHYTHMDB_PROP_MIMETYPE:
+				case RHYTHMDB_PROP_PLAYBACK_ERROR:
+					break;
+
+				default:
+					emit = TRUE;
+					break;
+			}
+		}
+
+		if (emit) {
+			rb_debug ("emitting Metadata change due to property changes");
+			metadata_changed (plugin, playing_entry);
+		}
+	}
+	rhythmdb_entry_unref (playing_entry);
+}
+
+static void
+playing_source_changed_cb (RBShellPlayer *player,
+			   RBSource *source,
+			   RBMprisPlugin *plugin)
+{
+	rb_debug ("emitting CanPause change");
+	add_player_property_change (plugin, "CanPause", get_can_pause (plugin));
+}
+
+static void
+next_action_sensitive_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
+{
+	GVariant *v;
+	rb_debug ("emitting CanGoNext change");
+	v = g_variant_new_boolean (gtk_action_get_sensitive (plugin->next_action));
+	add_player_property_change (plugin, "CanGoNext", v);
+}
+
+static void
+prev_action_sensitive_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
+{
+	GVariant *v;
+	rb_debug ("emitting CanGoPrevious change");
+	v = g_variant_new_boolean (gtk_action_get_sensitive (plugin->prev_action));
+	add_player_property_change (plugin, "CanGoPrevious", v);
+}
+
+static void
+elapsed_nano_changed_cb (RBShellPlayer *player, gint64 elapsed, RBMprisPlugin *plugin)
+{
+	GError *error = NULL;
+
+	/* interpret any change in the elapsed time other than an
+	 * increase of less than one second as a seek.  this includes
+	 * the seek back that we do after pausing (with crossfading),
+	 * which we intentionally report as a seek to help clients get
+	 * their time displays right.
+	 */
+	if (elapsed >= plugin->last_elapsed &&
+	    (elapsed - plugin->last_elapsed < (G_USEC_PER_SEC * 1000))) {
+		plugin->last_elapsed = elapsed;
+		return;
+	}
+
+	rb_debug ("emitting Seeked; new time %" G_GINT64_FORMAT, elapsed/1000);
+	g_dbus_connection_emit_signal (plugin->connection,
+				       NULL,
+				       MPRIS_OBJECT_NAME,
+				       MPRIS_PLAYER_INTERFACE,
+				       "Seeked",
+				       g_variant_new ("(x)", elapsed / 1000),
+				       &error);
+	if (error != NULL) {
+		g_warning ("Unable to set MPRIS Seeked signal: %s", error->message);
+		g_clear_error (&error);
+	}
+	plugin->last_elapsed = elapsed;
+}
+
+
 
 static void
 name_acquired_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *plugin)
 {
 	GError *error = NULL;
-	GDBusNodeInfo *nodeinfo;
 	GDBusInterfaceInfo *ifaceinfo;
+	GtkUIManager *ui_manager;
 
 	plugin->connection = g_object_ref (connection);
 
-	/* register root object */
-	nodeinfo = g_dbus_node_info_new_for_xml (mpris_root_spec, &error);
+	/* parse introspection data */
+	plugin->node_info = g_dbus_node_info_new_for_xml (mpris_introspection_xml, &error);
 	if (error != NULL) {
-		g_warning ("Unable to read MPRIS root object specificiation: %s", error->message);
-		g_assert_not_reached ();
+		g_error ("Unable to read MPRIS root object specificiation: %s", error->message);
 		return;
 	}
-	ifaceinfo = g_dbus_node_info_lookup_interface (nodeinfo, mpris_iface_name);
 
+	/* register root interface */
+	ifaceinfo = g_dbus_node_info_lookup_interface (plugin->node_info, MPRIS_ROOT_INTERFACE);
 	plugin->root_id = g_dbus_connection_register_object (plugin->connection,
-							     "/",
+							     MPRIS_OBJECT_NAME,
 							     ifaceinfo,
 							     &root_vtable,
 							     plugin,
 							     NULL,
 							     &error);
 	if (error != NULL) {
-		g_warning ("unable to register MPRIS root object: %s", error->message);
+		g_warning ("unable to register MPRIS root interface: %s", error->message);
 		g_error_free (error);
 	}
 
-	/* register fake tracklist object */
-	nodeinfo = g_dbus_node_info_new_for_xml (mpris_tracklist_spec, &error);
-	if (error != NULL) {
-		g_warning ("Unable to read MPRIS tracklist object specificiation: %s", error->message);
-		g_assert_not_reached ();
-		return;
-	}
-	ifaceinfo = g_dbus_node_info_lookup_interface (nodeinfo, mpris_iface_name);
-
-	plugin->tracklist_id = g_dbus_connection_register_object (plugin->connection,
-								  "/TrackList",
-								  ifaceinfo,
-								  &tracklist_vtable,
-								  plugin,
-								  NULL,
-								  &error);
-	if (error != NULL) {
-		g_warning ("unable to register MPRIS tracklist object: %s", error->message);
-		g_error_free (error);
-	}
-
-	/* register player object */
-	nodeinfo = g_dbus_node_info_new_for_xml (mpris_player_spec, &error);
-	if (error != NULL) {
-		g_warning ("Unable to read MPRIS player object specificiation: %s", error->message);
-		g_assert_not_reached ();
-		return;
-	}
-	ifaceinfo = g_dbus_node_info_lookup_interface (nodeinfo, mpris_iface_name);
+	/* register player interface */
+	ifaceinfo = g_dbus_node_info_lookup_interface (plugin->node_info, MPRIS_PLAYER_INTERFACE);
 	plugin->player_id = g_dbus_connection_register_object (plugin->connection,
-							       "/Player",
+							       MPRIS_OBJECT_NAME,
 							       ifaceinfo,
 							       &player_vtable,
 							       plugin,
 							       NULL,
 							       &error);
 	if (error != NULL) {
-		g_warning ("Unable to register MPRIS player object: %s", error->message);
+		g_warning ("Unable to register MPRIS player interface: %s", error->message);
 		g_error_free (error);
 	}
 
@@ -613,6 +982,10 @@ name_acquired_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *
 	g_signal_connect_object (plugin->player,
 				 "notify::play-order",
 				 G_CALLBACK (play_order_changed_cb),
+				 plugin, 0);
+	g_signal_connect_object (plugin->player,
+				 "notify::volume",
+				 G_CALLBACK (volume_changed_cb),
 				 plugin, 0);
 	g_signal_connect_object (plugin->player,
 				 "playing-changed",
@@ -626,6 +999,38 @@ name_acquired_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *
 				 "entry-extra-metadata-notify",
 				 G_CALLBACK (entry_extra_metadata_notify_cb),
 				 plugin, 0);
+	g_signal_connect_object (plugin->db,
+				 "entry-changed",
+				 G_CALLBACK (entry_changed_cb),
+				 plugin, 0);
+	g_signal_connect_object (plugin->player,
+				 "playing-source-changed",
+				 G_CALLBACK (playing_source_changed_cb),
+				 plugin, 0);
+	g_signal_connect_object (plugin->player,
+				 "elapsed-nano-changed",
+				 G_CALLBACK (elapsed_nano_changed_cb),
+				 plugin, 0);
+
+	/*
+	 * This is a pretty awful hack.  The shell player should expose this
+	 * information as properties, and we should bind those to the actions
+	 * elsewhere.
+	 */
+
+	g_object_get (plugin->shell, "ui-manager", &ui_manager, NULL);
+	plugin->next_action = gtk_ui_manager_get_action (ui_manager, "/MenuBar/ControlMenu/ControlNextMenu");
+	plugin->prev_action = gtk_ui_manager_get_action (ui_manager, "/MenuBar/ControlMenu/ControlPreviousMenu");
+	g_object_unref (ui_manager);
+
+	g_signal_connect_object (plugin->next_action,
+				 "notify::sensitive",
+				 G_CALLBACK (next_action_sensitive_cb),
+				 plugin, 0);
+	g_signal_connect_object (plugin->prev_action,
+				 "notify::sensitive",
+				 G_CALLBACK (prev_action_sensitive_cb),
+				 plugin, 0);
 }
 
 static void
@@ -634,10 +1039,6 @@ name_lost_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *plug
 	if (plugin->root_id != 0) {
 		g_dbus_connection_unregister_object (plugin->connection, plugin->root_id);
 		plugin->root_id = 0;
-	}
-	if (plugin->tracklist_id != 0) {
-		g_dbus_connection_unregister_object (plugin->connection, plugin->tracklist_id);
-		plugin->tracklist_id = 0;
 	}
 	if (plugin->player_id != 0) {
 		g_dbus_connection_unregister_object (plugin->connection, plugin->player_id);
@@ -668,7 +1069,7 @@ impl_activate (RBPlugin *bplugin,
 	plugin->shell = g_object_ref (shell);
 
 	plugin->name_own_id = g_bus_own_name (G_BUS_TYPE_SESSION,
-					      "org.mpris.rhythmbox",
+					      MPRIS_BUS_NAME_PREFIX ".rhythmbox",
 					      G_BUS_NAME_OWNER_FLAGS_NONE,
 					      NULL,
 					      (GBusNameAcquiredCallback) name_acquired_cb,
