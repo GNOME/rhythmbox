@@ -1804,8 +1804,12 @@ rb_shell_player_get_playback_state (RBShellPlayer *player,
 	return FALSE;
 
 found:
-	*shuffle = i > 0;
-	*repeat = j > 0;
+	if (shuffle != NULL) {
+		*shuffle = i > 0;
+	}
+	if (repeat != NULL) {
+		*repeat = j > 0;
+	}
 	g_free (play_order);
 	return TRUE;
 }
