@@ -3191,7 +3191,7 @@ rb_shell_add_uri (RBShell *shell,
 		return FALSE;
 	}
 
-	rb_source_add_uri (source, uri, title, genre);
+	rb_source_add_uri (source, uri, title, genre, NULL, NULL, NULL);
 	return TRUE;
 }
 
@@ -3300,7 +3300,7 @@ rb_shell_load_uri (RBShell *shell,
 		if (result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
 			if (data.can_use_playlist && data.playlist_source) {
 				rb_debug ("adding playlist %s to source", uri);
-				rb_source_add_uri (data.playlist_source, uri, NULL, NULL);
+				rb_source_add_uri (data.playlist_source, uri, NULL, NULL, NULL, NULL, NULL);
 
 				/* FIXME: We need some way to determine whether the URI as
 				 * given will appear in the db, or whether something else will.

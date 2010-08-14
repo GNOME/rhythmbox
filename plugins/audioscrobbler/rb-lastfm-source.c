@@ -159,7 +159,13 @@ static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static void impl_activate (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
 static guint impl_want_uri (RBSource *source, const char *uri);
-static gboolean impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre);
+static gboolean impl_add_uri (RBSource *source,
+			      const char *uri,
+			      const char *title,
+			      const char *genre,
+			      RBSourceAddCallback callback,
+			      gpointer data,
+			      GDestroyNotify destroy_data);
 static RBSourceEOFType impl_handle_eos (RBSource *asource);
 
 static void rb_lastfm_source_new_station (const char *uri, const char *title, RBLastfmSource *source);
@@ -1397,17 +1403,25 @@ impl_want_uri (RBSource *source, const char *uri)
 }
 
 static gboolean
-impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre)
+impl_add_uri (RBSource *source,
+	      const char *uri,
+	      const char *title,
+	      const char *genre,
+	      RBSourceAddCallback callback,
+	      gpointer data,
+	      GDestroyNotify destroy_data)
 {
 	char *name;
+	gboolean ret = FALSE;
 
-	if (strstr (uri, "lastfm://") == NULL)
-		return FALSE;
+	if (strstr (uri, "lastfm://") != NULL) {
+		name = rb_lastfm_source_title_from_uri (uri);
+		rb_lastfm_source_new_station (uri, name, RB_LASTFM_SOURCE (source));
+	}
 
-	name = rb_lastfm_source_title_from_uri (uri);
-
-	rb_lastfm_source_new_station (uri, name, RB_LASTFM_SOURCE (source));
-	return TRUE;
+	callback (source, uri, data);
+	destroy_data (data);
+	return ret;
 }
 
 static RBSourceEOFType

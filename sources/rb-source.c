@@ -1387,6 +1387,9 @@ rb_source_uri_is_source (RBSource *source, const char *uri)
  * @uri: a URI to add
  * @title: theoretically, the title of the entity the URI points to
  * @genre: theoretically, the genre of the entity the URI points to
+ * @callback: a callback function to call when complete
+ * @data: data to pass to the callback
+ * @destroy_data: function to call to destroy the callback data
  *
  * Adds an entry corresponding to the URI to the source.  The
  * @title and @genre parameters are not really used.
@@ -1394,11 +1397,17 @@ rb_source_uri_is_source (RBSource *source, const char *uri)
  * Return value: TRUE if the URI was successfully added to the source
  */
 gboolean
-rb_source_add_uri (RBSource *source, const char *uri, const char *title, const char *genre)
+rb_source_add_uri (RBSource *source,
+		   const char *uri,
+		   const char *title,
+		   const char *genre,
+		   RBSourceAddCallback callback,
+		   gpointer data,
+		   GDestroyNotify destroy_data)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 	if (klass->impl_add_uri)
-		return klass->impl_add_uri (source, uri, title, genre);
+		return klass->impl_add_uri (source, uri, title, genre, callback, data, destroy_data);
 	return FALSE;
 }
 

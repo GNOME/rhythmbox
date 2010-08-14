@@ -255,7 +255,13 @@ static void impl_get_status				(RBSource *source,
 							 char **progress_text,
 							 float *progress);
 static guint impl_want_uri				(RBSource *source, const char *uri);
-static gboolean impl_add_uri				(RBSource *source, const char *uri, const char *title, const char *genre);
+static gboolean impl_add_uri				(RBSource *source,
+							 const char *uri,
+							 const char *title,
+							 const char *genre,
+							 RBSourceAddCallback callback,
+							 gpointer data,
+							 GDestroyNotify destroy_data);
 static char *impl_get_delete_action			(RBSource *source);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
@@ -2066,10 +2072,18 @@ impl_want_uri (RBSource *source, const char *uri)
 }
 
 static gboolean
-impl_add_uri (RBSource *asource, const char *uri, const char *title, const char *genre)
+impl_add_uri (RBSource *asource,
+	      const char *uri,
+	      const char *title,
+	      const char *genre,
+	      RBSourceAddCallback callback,
+	      gpointer data,
+	      GDestroyNotify destroy_data)
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
 	rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr, uri, FALSE);
+	callback (asource, uri, data);
+	destroy_data (data);
 	return TRUE;
 }
 

@@ -1205,6 +1205,9 @@
     '("const-char*" "uri")
     '("const-char*" "title")
     '("const-char*" "genre")
+    '("RBSourceAddCallback" "callback")
+    '("gpointer" "data")
+    '("GDestroyNotify" "destroy_data")
   )
 )
 
@@ -1410,6 +1413,9 @@
     '("const-char*" "uri")
     '("const-char*" "title" (null-ok))
     '("const-char*" "genre" (null-ok))
+    '("RBSourceAddCallback" "callback")
+    '("gpointer" "data")
+    '("GDestroyNotify" "destroy_data")
   )
 )
 

@@ -106,7 +106,13 @@ static void impl_song_properties (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
 static GList *impl_get_ui_actions (RBSource *source);
 static guint impl_want_uri (RBSource *source, const char *uri);
-static gboolean impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre);
+static gboolean impl_add_uri (RBSource *source,
+			      const char *uri,
+			      const char *title,
+			      const char *genre,
+			      RBSourceAddCallback callback,
+			      gpointer data,
+			      GDestroyNotify destroy_data);
 
 static void rb_iradio_source_do_query (RBIRadioSource *source);
 
@@ -651,7 +657,13 @@ impl_want_uri (RBSource *source, const char *uri)
 }
 
 static gboolean
-impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre)
+impl_add_uri (RBSource *source,
+	      const char *uri,
+	      const char *title,
+	      const char *genre,
+	      RBSourceAddCallback callback,
+	      gpointer data,
+	      GDestroyNotify destroy_data)
 {
 	if (rb_uri_is_local (uri)) {
 		rb_iradio_source_add_from_playlist (RB_IRADIO_SOURCE (source), uri);
@@ -659,6 +671,8 @@ impl_add_uri (RBSource *source, const char *uri, const char *title, const char *
 		rb_iradio_source_add_station (RB_IRADIO_SOURCE (source),
 					      uri, title, genre);
 	}
+	callback (source, uri, data);
+	destroy_data (data);
 	return TRUE;
 }
 

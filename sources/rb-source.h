@@ -76,6 +76,7 @@ GType rb_source_search_type_get_type (void);
 
 typedef gboolean (*RBSourceFeatureFunc) (RBSource *source);
 typedef const char * (*RBSourceStringFunc) (RBSource *source);
+typedef void (*RBSourceAddCallback) (RBSource *source, const char *uri, gpointer data);
 
 struct _RBSource
 {
@@ -126,7 +127,13 @@ struct _RBSourceClass
 
 	gboolean	(*impl_try_playlist)	(RBSource *source);
 	guint		(*impl_want_uri)	(RBSource *source, const char *uri);
-	gboolean	(*impl_add_uri)		(RBSource *source, const char *uri, const char *title, const char *genre);
+	gboolean	(*impl_add_uri)		(RBSource *source,
+						 const char *uri,
+						 const char *title,
+						 const char *genre,
+						 RBSourceAddCallback callback,
+						 gpointer data,
+						 GDestroyNotify destroy_data);
 	gboolean	(*impl_uri_is_source)	(RBSource *source, const char *uri);
 
 	gboolean	(*impl_can_pause)	(RBSource *source);
@@ -196,7 +203,13 @@ void		rb_source_song_properties	(RBSource *source);
 gboolean	rb_source_try_playlist		(RBSource *source);
 guint		rb_source_want_uri		(RBSource *source, const char *uri);
 gboolean	rb_source_uri_is_source		(RBSource *source, const char *uri);
-gboolean	rb_source_add_uri		(RBSource *source, const char *uri, const char *title, const char *genre);
+gboolean	rb_source_add_uri		(RBSource *source,
+						 const char *uri,
+						 const char *title,
+						 const char *genre,
+						 RBSourceAddCallback callback,
+						 gpointer data,
+						 GDestroyNotify destroy_data);
 
 gboolean	rb_source_can_pause		(RBSource *source);
 RBSourceEOFType	rb_source_handle_eos		(RBSource *source);

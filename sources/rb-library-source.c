@@ -84,7 +84,13 @@ static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_can_paste (RBSource *asource);
 static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
 static guint impl_want_uri (RBSource *source, const char *uri);
-static gboolean impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre);
+static gboolean impl_add_uri (RBSource *source,
+			      const char *uri,
+			      const char *title,
+			      const char *genre,
+			      RBSourceAddCallback callback,
+			      gpointer data,
+			      GDestroyNotify destroy_data);
 static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 
 static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
@@ -1424,8 +1430,39 @@ maybe_create_import_job (RBLibrarySource *source)
 	return job;
 }
 
+struct ImportJobCallbackData {
+	char *uri;
+	RBSource *source;
+	RBSourceAddCallback callback;
+	gpointer data;
+	GDestroyNotify destroy_data;
+};
+
+static void
+import_job_callback_destroy (struct ImportJobCallbackData *data)
+{
+	if (data->destroy_data != NULL) {
+		data->destroy_data (data->data);
+	}
+	g_object_unref (data->source);
+	g_free (data->uri);
+	g_free (data);
+}
+
+static void
+import_job_callback_cb (RhythmDBImportJob *job, int total, struct ImportJobCallbackData *data)
+{
+	data->callback (data->source, data->uri, data->data);
+}
+
 static gboolean
-impl_add_uri (RBSource *asource, const char *uri, const char *title, const char *genre)
+impl_add_uri (RBSource *asource,
+	      const char *uri,
+	      const char *title,
+	      const char *genre,
+	      RBSourceAddCallback callback,
+	      gpointer data,
+	      GDestroyNotify destroy_data)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	RhythmDBImportJob *job;
@@ -1434,6 +1471,18 @@ impl_add_uri (RBSource *asource, const char *uri, const char *title, const char 
 
 	rb_debug ("adding uri %s to library", uri);
 	rhythmdb_import_job_add_uri (job, uri);
+
+	if (callback != NULL) {
+		struct ImportJobCallbackData *cbdata;
+
+		cbdata = g_new0 (struct ImportJobCallbackData, 1);
+		cbdata->uri = g_strdup (uri);
+		cbdata->source = g_object_ref (source);
+		cbdata->callback = callback;
+		cbdata->data = data;
+		cbdata->destroy_data = destroy_data;
+		g_signal_connect_data (job, "complete", G_CALLBACK (import_job_callback_cb), cbdata, (GClosureNotify) import_job_callback_destroy, 0);
+	}
 	return TRUE;
 }
 
