@@ -3468,6 +3468,25 @@ rb_shell_add_to_queue (RBShell *shell,
 		       const gchar *uri,
 		       GError **error)
 {
+	RhythmDBEntry *entry;
+
+	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+	if (entry == NULL) {
+		RBSource *source;
+		source = rb_shell_guess_source_for_uri (shell, uri);
+		if (source != NULL) {
+			rb_source_add_uri (source, uri, NULL, NULL, NULL, NULL, NULL);
+		} else {
+			g_set_error (error,
+				     RB_SHELL_ERROR,
+				     RB_SHELL_ERROR_NO_SOURCE_FOR_URI,
+				     _("No registered source can handle URI %s"),
+				     uri);
+			return FALSE;
+		}
+	} else {
+		rhythmdb_entry_unref (entry);
+	}
 	rb_static_playlist_source_add_location (RB_STATIC_PLAYLIST_SOURCE (shell->priv->queue_source),
 						uri, -1);
 	return TRUE;
