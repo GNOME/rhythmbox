@@ -3215,7 +3215,6 @@ shell_load_uri_done (RBSource *source, const char *uri, RBShell *shell)
 	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
 	if (entry) {
 		rb_shell_play_entry (shell, entry);
-		rhythmdb_entry_unref (entry);
 	} else {
 		rb_debug ("unable to find entry for uri %s", uri);
 	}
@@ -3361,7 +3360,6 @@ rb_shell_load_uri (RBShell *shell,
 
 		if (entry) {
 			rb_shell_play_entry (shell, entry);
-			rhythmdb_entry_unref (entry);
 		}
 	}
 
@@ -3484,8 +3482,6 @@ rb_shell_add_to_queue (RBShell *shell,
 				     uri);
 			return FALSE;
 		}
-	} else {
-		rhythmdb_entry_unref (entry);
 	}
 	rb_static_playlist_source_add_location (RB_STATIC_PLAYLIST_SOURCE (shell->priv->queue_source),
 						uri, -1);

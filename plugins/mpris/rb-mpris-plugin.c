@@ -515,11 +515,9 @@ handle_player_method_call (GDBusConnection *connection,
 			/* client got the wrong entry, ignore it */
 			g_dbus_method_invocation_return_value (invocation, NULL);
 			rhythmdb_entry_unref (playing_entry);
-			rhythmdb_entry_unref (client_entry);
 			return;
 		}
 		rhythmdb_entry_unref (playing_entry);
-		rhythmdb_entry_unref (client_entry);
 
 		ret = rb_shell_player_set_playing_time (plugin->player, position / G_USEC_PER_SEC, &error);
 		handle_result (invocation, ret, error);
