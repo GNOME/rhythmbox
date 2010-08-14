@@ -144,9 +144,6 @@ static gboolean rb_shell_activate_source (RBShell *shell,
 static void rb_shell_db_save_error_cb (RhythmDB *db,
 				       const char *uri, const GError *error,
 				       RBShell *shell);
-static void rb_shell_db_entry_added_cb (RhythmDB *db,
-					RhythmDBEntry *entry,
-					RBShell *shell);
 
 static void rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
@@ -334,7 +331,6 @@ struct _RBShellPrivate
 	char *playlists_file;
 
 	RhythmDB *db;
-	char *pending_entry;
 
 	RBShellPlayer *player_shell;
 	RBShellClipboard *clipboard_shell;
@@ -1608,8 +1604,6 @@ rb_shell_constructed (GObject *object)
 
 	g_signal_connect_object (G_OBJECT (shell->priv->db), "save-error",
 				 G_CALLBACK (rb_shell_db_save_error_cb), shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->db), "entry-added",
-				 G_CALLBACK (rb_shell_db_entry_added_cb), shell, 0);
 
 	construct_sources (shell);
 
@@ -1944,26 +1938,6 @@ rb_shell_db_save_error_cb (RhythmDB *db,
 	rb_error_dialog (GTK_WINDOW (shell->priv->window),
 			 _("Error while saving song information"),
 			 "%s", error->message);
-}
-
-static void
-rb_shell_db_entry_added_cb (RhythmDB *db,
-			    RhythmDBEntry *entry,
-			    RBShell *shell)
-{
-	const char *loc;
-
-	if (shell->priv->pending_entry == NULL)
-		return;
-
-	loc = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-	rb_debug ("got entry added for %s", loc);
-	if (strcmp (loc, shell->priv->pending_entry) == 0) {
-		rb_shell_play_entry (shell, entry);
-
-		g_free (shell->priv->pending_entry);
-		shell->priv->pending_entry = NULL;
-	}
 }
 
 /**
@@ -3233,6 +3207,20 @@ handle_playlist_entry_cb (TotemPlParser *playlist,
 	}
 }
 
+static void
+shell_load_uri_done (RBSource *source, const char *uri, RBShell *shell)
+{
+	RhythmDBEntry *entry;
+
+	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+	if (entry) {
+		rb_shell_play_entry (shell, entry);
+		rhythmdb_entry_unref (entry);
+	} else {
+		rb_debug ("unable to find entry for uri %s", uri);
+	}
+}
+
 /**
  * rb_shell_load_uri:
  * @shell: the #RBShell
@@ -3259,10 +3247,7 @@ rb_shell_load_uri (RBShell *shell,
 		   GError **error)
 {
 	RhythmDBEntry *entry;
-	RBSource *playlist_source;
-
-	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
-	playlist_source = NULL;
+	RBSource *entry_source;
 
 	/* If the URI points to a Podcast, pass it on to
 	 * the Podcast source */
@@ -3271,6 +3256,9 @@ rb_shell_load_uri (RBShell *shell,
 		rb_shell_select_source (shell, RB_SOURCE (shell->priv->podcast_source));
 		return TRUE;
 	}
+
+	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+	entry_source = NULL;
 
 	if (entry == NULL) {
 		TotemPlParser *parser;
@@ -3316,54 +3304,64 @@ rb_shell_load_uri (RBShell *shell,
 								     uri, error))
 					return FALSE;
 			}
-		} else if ((result == TOTEM_PL_PARSER_RESULT_IGNORED && rb_uri_is_local (uri))
-			   || result == TOTEM_PL_PARSER_RESULT_UNHANDLED) {
-			/* That happens for directories and unhandled schemes, such as CDDA */
-			playlist_source = rb_shell_guess_source_for_uri (shell, uri);
-			if (playlist_source == NULL || rb_source_uri_is_source (playlist_source, uri) == FALSE) {
-				rb_debug ("%s doesn't have a source, adding", uri);
-				if (!rb_shell_add_uri (shell, uri, NULL, NULL, error))
-					return FALSE;
-			}
 		} else {
-			rb_debug ("%s didn't parse as a playlist", uri);
-			if (!rb_shell_add_uri (shell, uri, NULL, NULL, error))
-				return FALSE;
+			RBSource *source;
+
+			source = rb_shell_guess_source_for_uri (shell, uri);
+			if (source != NULL) {
+				char *name;
+				g_object_get (source, "name", &name, NULL);
+				if (rb_source_uri_is_source (source, uri)) {
+					rb_debug ("%s identifies source %s", uri, name);
+					entry_source = source;
+				} else if (play) {
+					rb_debug ("adding %s to source %s, will play it when it shows up", uri, name);
+					rb_source_add_uri (source, uri, NULL, NULL, (RBSourceAddCallback) shell_load_uri_done, g_object_ref (shell), g_object_unref);
+					play = FALSE;
+				} else {
+					rb_debug ("just adding %s to source %s", uri, name);
+					rb_source_add_uri (source, uri, NULL, NULL, NULL, NULL, NULL);
+				}
+				g_free (name);
+			} else {
+				rb_debug ("couldn't find a source for %s, trying to add it anyway", uri);
+				if (!rb_shell_add_uri (shell, uri, NULL, NULL, error)) {
+					rb_debug ("couldn't do it: %s", (*error)->message);
+					return FALSE;
+				}
+			}
 		}
 
 		if (data.source_is_entry != FALSE) {
-			playlist_source = data.playlist_source;
+			entry_source = data.playlist_source;
 		} else if (data.playlist_source != NULL) {
 			g_object_unref (data.playlist_source);
 		}
 	}
 
 	if (play) {
-		if (playlist_source != NULL) {
+		if (entry_source != NULL) {
 			char *name;
+			int play_type = 0;
+			if (entry == NULL) {
+				/* we don't have a specific entry to play, so just play something */
+				play_type = 2;
+			}
 
-			if (rb_shell_activate_source (shell, playlist_source, 2, error) == FALSE) {
+			if (rb_shell_activate_source (shell, entry_source, play_type, error) == FALSE) {
 				return FALSE;
 			}
 
-			g_object_get (playlist_source, "name", &name, NULL);
+			g_object_get (entry_source, "name", &name, NULL);
 			rb_debug ("Activated source '%s' for uri %s", name, uri);
 			g_free (name);
 
 			return TRUE;
 		}
 
-		if (entry == NULL)
-			entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
-
 		if (entry) {
 			rb_shell_play_entry (shell, entry);
-		} else {
-			/* wait for the entry to be added, and then play it */
-			if (shell->priv->pending_entry)
-				g_free (shell->priv->pending_entry);
-
-			shell->priv->pending_entry = g_strdup (uri);
+			rhythmdb_entry_unref (entry);
 		}
 	}
 
