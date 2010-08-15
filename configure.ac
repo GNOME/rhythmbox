@@ -593,6 +593,9 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 
 	dnl enable GSEAL if gtk is new enough
 	PKG_CHECK_EXISTS(gtk+-2.0 >= 2.20.0, [CFLAGS="$CFLAGS -DGSEAL_ENABLE"], [])
+
+	dnl disable deprecated stuff
+	CFLAGS="$CFLAGS $DISABLE_DEPRECATED"
 else
 	AC_MSG_RESULT(no)
 fi
