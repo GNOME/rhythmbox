@@ -86,14 +86,29 @@ rb_audioscrobbler_radio_type_get_url (RBAudioscrobblerRadioType type)
 	return radio_urls[type];
 }
 
+/* Translators: I have chosen these names for the radio stations based upon
+ * what last.fm's website uses or what I thought to be sensible.
+ */
 static const char* radio_names[] = {
+
+	/* Translators: station is built from artists similar to the artist %s */
 	N_("%s Radio"),
+	/* Translators: station is built from the artist %s's top fans */
 	N_("%s Fan Radio"),
+	/* Translators: station is built from the library of the user %s */
 	N_("%s's Library"),
+	/* Translators: station is built from the "neighbourhood" of the user %s.
+	 * Last.fm uses "neighbourhood" to mean other users with similar music tastes */
 	N_("%s's Neighbourhood"),
+	/* Translators: station is built from the tracks which have been "loved" by the user %s */
 	N_("%s's Loved Tracks"),
+	/* Translators: station is built from the tracks which are recommended to the user %s */
 	N_("%s's Recommended Radio"),
+	/* Translators: station is built from the tracks which have been "tagged" with %s.
+	 * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
+	 * but nationalities, record labels, decades and very random words are also commmon */
 	N_("%s Tag Radio"),
+	/* Translators: station is built from the library of the group %s */
 	N_("%s Group Radio"),
 	NULL
 };
@@ -755,6 +770,9 @@ tune_response_cb (SoupSession *session,
 					error_message = g_strdup (_("Invalid station URL"));
 				} else if (code == 12) {
 					/* Subscriber only station */
+					/* Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+					 * This message indicates that to listen to this radio station the user needs to be
+					 * a paying subscriber to the service. */
 					error_message = g_strdup_printf (_("This station is only available to %s subscribers"),
 							                 rb_audioscrobbler_service_get_name (source->priv->service));
 				} else if (code == 20) {

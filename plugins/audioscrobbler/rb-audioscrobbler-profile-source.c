@@ -1595,6 +1595,9 @@ create_popup_menu (RBAudioscrobblerProfileSource *source,
 		GtkWidget *view_url_item;
 		char *item_text;
 
+		/* Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+		 * This is the label for menu item which when activated will take the user to the
+		 * artist/track's page on the service's website. */
 		item_text = g_strdup_printf (_("_View on %s"),
 		                             rb_audioscrobbler_service_get_name (source->priv->service));
 		view_url_item = gtk_menu_item_new_with_mnemonic (item_text);
