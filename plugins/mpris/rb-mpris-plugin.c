@@ -129,7 +129,7 @@ emit_player_properties_idle (RBMprisPlugin *plugin)
 	g_dbus_connection_emit_signal (plugin->connection,
 				       NULL,
 				       MPRIS_OBJECT_NAME,
-				       MPRIS_PLAYER_INTERFACE,
+				       "org.freedesktop.DBus.Properties",
 				       "PropertiesChanged",
 				       parameters,
 				       &error);
