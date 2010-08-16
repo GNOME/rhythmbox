@@ -285,17 +285,31 @@ handle_result (GDBusMethodInvocation *invocation, gboolean ret, GError *error)
 	}
 }
 
+static GVariant *
+variant_for_metadata (const char *value, gboolean as_list)
+{
+	if (as_list) {
+		const char *strv[] = {
+			value, NULL
+		};
+		return g_variant_new_strv (strv, -1);
+	} else {
+		return g_variant_new_string (value);
+	}
+}
+
 static void
 add_string_property (GVariantBuilder *builder,
 		     RhythmDBEntry *entry,
 		     RhythmDBPropType prop,
-		     const char *name)
+		     const char *name,
+		     gboolean as_list)
 {
-	rb_debug ("adding %s = %s", name, rhythmdb_entry_get_string (entry, prop));
-	g_variant_builder_add (builder,
-			       "{sv}",
-			       name,
-			       g_variant_new ("s", rhythmdb_entry_get_string (entry, prop)));
+	const char *value = rhythmdb_entry_get_string (entry, prop);
+	if (value != NULL && value[0] != '\0') {
+		rb_debug ("adding %s = %s", name, value);
+		g_variant_builder_add (builder, "{sv}", name, variant_for_metadata (value, as_list));
+	}
 }
 
 static void
@@ -304,7 +318,8 @@ add_string_property_2 (GVariantBuilder *builder,
 		       RhythmDBEntry *entry,
 		       RhythmDBPropType prop,
 		       const char *name,
-		       const char *extra_field_name)
+		       const char *extra_field_name,
+		       gboolean as_list)
 {
 	GValue *v;
 	const char *value;
@@ -316,64 +331,127 @@ add_string_property_2 (GVariantBuilder *builder,
 		value = rhythmdb_entry_get_string (entry, prop);
 	}
 
-	rb_debug ("adding %s = %s", name, value);
-	g_variant_builder_add (builder, "{sv}", name, g_variant_new ("s", value));
+	if (value != NULL && value[0] != '\0') {
+		rb_debug ("adding %s = %s", name, value);
+		g_variant_builder_add (builder, "{sv}", name, variant_for_metadata (value, as_list));
+	}
 
 	if (v != NULL) {
 		g_value_unset (v);
 		g_free (v);
 	}
-
 }
 
 static void
 add_ulong_property (GVariantBuilder *builder,
 		    RhythmDBEntry *entry,
 		    RhythmDBPropType prop,
-		    const char *name)
+		    const char *name,
+		    int scale,
+		    gboolean zero_is_valid)
 {
 	ulong v;
 	v = rhythmdb_entry_get_ulong (entry, prop);
-	rb_debug ("adding %s = %lu", name, v);
-	g_variant_builder_add (builder,
-			       "{sv}",
-			       name,
-			       g_variant_new ("u", v));
+	if (zero_is_valid || v != 0) {
+		rb_debug ("adding %s = %lu", name, v);
+		g_variant_builder_add (builder,
+				       "{sv}",
+				       name,
+				       g_variant_new_int32 (v * scale));
+	}
 }
 
 static void
-add_ulong_string_property (GVariantBuilder *builder,
-			   RhythmDBEntry *entry,
-			   RhythmDBPropType prop,
-			   const char *name)
+add_ulong_property_as_int64 (GVariantBuilder *builder,
+			     RhythmDBEntry *entry,
+			     RhythmDBPropType prop,
+			     const char *name,
+			     gint64 scale)
 {
-	ulong v;
-	char *str;
-
+	gint64 v;
 	v = rhythmdb_entry_get_ulong (entry, prop);
-	rb_debug ("adding %s = %lu", name, v);
-
-	str = g_strdup_printf ("%lu", v);
+	rb_debug ("adding %s = %lu", name, v * scale);
 	g_variant_builder_add (builder,
 			       "{sv}",
 			       name,
-			       g_variant_new ("s", str));
-	g_free (str);
+			       g_variant_new_int64 (v * scale));
 }
 
 static void
 add_double_property (GVariantBuilder *builder,
 		     RhythmDBEntry *entry,
 		     RhythmDBPropType prop,
-		     const char *name)
+		     const char *name,
+		     gdouble scale)
 {
-	int v;
-	v = (int)rhythmdb_entry_get_double (entry, prop);
-	rb_debug ("adding %s = %i", name, v);
+	gdouble v;
+	v = rhythmdb_entry_get_double (entry, prop);
+	rb_debug ("adding %s = %f", name, v * scale);
 	g_variant_builder_add (builder,
 			       "{sv}",
 			       name,
-			       g_variant_new ("i", v));
+			       g_variant_new_double (v * scale));
+}
+
+static void
+add_double_property_as_int (GVariantBuilder *builder,
+			    RhythmDBEntry *entry,
+			    RhythmDBPropType prop,
+			    const char *name,
+			    gdouble scale,
+			    gboolean zero_is_valid)
+{
+	int v;
+	v = (int)(rhythmdb_entry_get_double (entry, prop) * scale);
+	if (zero_is_valid || v != 0) {
+		rb_debug ("adding %s = %d", name, v);
+		g_variant_builder_add (builder,
+				       "{sv}",
+				       name,
+				       g_variant_new_int32 (v));
+	}
+}
+
+static void
+add_year_date_property (GVariantBuilder *builder,
+			RhythmDBEntry *entry,
+			RhythmDBPropType prop,
+			const char *name)
+{
+	gulong year = rhythmdb_entry_get_ulong (entry, prop);
+
+	if (year != 0) {
+		char *iso8601;
+		iso8601 = g_strdup_printf ("%4d-%02d-%02dT%02d:%02d:%02dZ",
+					   (int)year, 1, 1, 0, 0, 0);
+
+		g_variant_builder_add (builder,
+				       "{sv}",
+				       name,
+				       g_variant_new_string (iso8601));
+		g_free (iso8601);
+	}
+}
+
+static void
+add_time_t_date_property (GVariantBuilder *builder,
+			  RhythmDBEntry *entry,
+			  RhythmDBPropType prop,
+			  const char *name)
+{
+	GTimeVal tv;
+
+	tv.tv_sec = rhythmdb_entry_get_ulong (entry, prop);
+	tv.tv_usec = 0;
+
+	if (tv.tv_sec != 0) {
+		char *iso8601 = g_time_val_to_iso8601 (&tv);
+		g_variant_builder_add (builder,
+				       "{sv}",
+				       name,
+				       g_variant_new_string (iso8601));
+		g_free (iso8601);
+	}
 }
 
 static void
@@ -388,49 +466,54 @@ build_track_metadata (RBMprisPlugin *plugin,
 				      rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID));
 	g_variant_builder_add (builder,
 			       "{sv}",
-			       "trackid",
+			       "mpris:trackid",
 			       g_variant_new ("s", trackid_str));
 	g_free (trackid_str);
 
-	add_string_property (builder, entry, RHYTHMDB_PROP_LOCATION, "location");
-	add_string_property_2 (builder, plugin->db, entry, RHYTHMDB_PROP_TITLE, "title", RHYTHMDB_PROP_STREAM_SONG_TITLE);
-	add_string_property_2 (builder, plugin->db, entry, RHYTHMDB_PROP_ARTIST, "artist", RHYTHMDB_PROP_STREAM_SONG_ARTIST);
-	add_string_property_2 (builder, plugin->db, entry, RHYTHMDB_PROP_ALBUM, "album", RHYTHMDB_PROP_STREAM_SONG_ALBUM);
-	add_string_property (builder, entry, RHYTHMDB_PROP_GENRE, "genre");
-	add_string_property (builder, entry, RHYTHMDB_PROP_COMMENT, "comment");
-	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_ARTIST, "album-artist");	/* extension */
+	add_string_property (builder, entry, RHYTHMDB_PROP_LOCATION, "xesam:url", FALSE);
+	add_string_property_2 (builder, plugin->db, entry, RHYTHMDB_PROP_TITLE, "xesam:title", RHYTHMDB_PROP_STREAM_SONG_TITLE, FALSE);
+	add_string_property_2 (builder, plugin->db, entry, RHYTHMDB_PROP_ARTIST, "xesam:artist", RHYTHMDB_PROP_STREAM_SONG_ARTIST, TRUE);
+	add_string_property_2 (builder, plugin->db, entry, RHYTHMDB_PROP_ALBUM, "xesam:album", RHYTHMDB_PROP_STREAM_SONG_ALBUM, FALSE);
+	add_string_property (builder, entry, RHYTHMDB_PROP_GENRE, "xesam:genre", TRUE);
+	add_string_property (builder, entry, RHYTHMDB_PROP_COMMENT, "xesam:comment", TRUE);
+	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_ARTIST, "xesam:albumArtist", TRUE);
 
-	add_string_property (builder, entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, "mb track id");
-	add_string_property (builder, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, "mb album id");
-	add_string_property (builder, entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, "mb artist id");
-	add_string_property (builder, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, "mb album artist id");
+	add_string_property (builder, entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, "xesam:musicBrainzTrackID", TRUE);
+	add_string_property (builder, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, "xesam:musicBrainzAlbumID", TRUE);
+	add_string_property (builder, entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, "xesam:musicBrainzArtistID", TRUE);
+	add_string_property (builder, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, "xesam:musicBrainzAlbumArtistID", TRUE);
 
-	add_string_property (builder, entry, RHYTHMDB_PROP_ARTIST_SORTNAME, "mb artist sort name");
-	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_SORTNAME, "mb album sort name");	/* extension */
-	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, "mb album artist sort name");	/* extension */
+	/* would be nice to have mpris: names for these. */
+	add_string_property (builder, entry, RHYTHMDB_PROP_ARTIST_SORTNAME, "rhythmbox:artistSortname", FALSE);
+	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_SORTNAME, "rhythmbox:albumSortname", FALSE);
+	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, "rhythmbox:albumArtistSortname", FALSE);
 
-	add_ulong_property (builder, entry, RHYTHMDB_PROP_DURATION, "time");
-	add_ulong_property (builder, entry, RHYTHMDB_PROP_BITRATE, "audio-bitrate");
-	add_ulong_property (builder, entry, RHYTHMDB_PROP_YEAR, "year");
-	/* missing: date */
+	add_ulong_property (builder, entry, RHYTHMDB_PROP_BITRATE, "xesam:audioBitrate", 1024, FALSE);	/* scale to bits per second */
 
-	add_ulong_string_property (builder, entry, RHYTHMDB_PROP_TRACK_NUMBER, "tracknumber");
-	add_ulong_string_property (builder, entry, RHYTHMDB_PROP_DISC_NUMBER, "discnumber");	/* extension */
+	add_year_date_property (builder, entry, RHYTHMDB_PROP_YEAR, "xesam:contentCreated");
+	add_time_t_date_property (builder, entry, RHYTHMDB_PROP_LAST_PLAYED, "xesam:lastUsed");
 
-	add_double_property (builder, entry, RHYTHMDB_PROP_RATING, "rating");
-	add_double_property (builder, entry, RHYTHMDB_PROP_BPM, "bpm");				/* extension */
+	add_ulong_property_as_int64 (builder, entry, RHYTHMDB_PROP_DURATION, "mpris:length", G_USEC_PER_SEC);
+	add_ulong_property (builder, entry, RHYTHMDB_PROP_TRACK_NUMBER, "xesam:trackNumber", 1, TRUE);
+	add_ulong_property (builder, entry, RHYTHMDB_PROP_DISC_NUMBER, "xesam:discNumber", 1, FALSE);
+	add_ulong_property (builder, entry, RHYTHMDB_PROP_PLAY_COUNT, "xesam:useCount", 1, TRUE);
+
+	add_double_property (builder, entry, RHYTHMDB_PROP_RATING, "xesam:userRating", 0.2);	/* scale to 0..1 */
+	add_double_property_as_int (builder, entry, RHYTHMDB_PROP_BPM, "xesam:audioBPM", 1.0, FALSE);
 
 	md = rhythmdb_entry_request_extra_metadata (plugin->db, entry, RHYTHMDB_PROP_COVER_ART_URI);
 	if (md != NULL) {
 		const char *uri;
 		uri = g_value_get_string (md);
 		if (uri != NULL && uri[0] != '\0') {
-			g_variant_builder_add (builder, "{sv}", "arturl", g_variant_new ("s", uri));
+			g_variant_builder_add (builder, "{sv}", "mpris:artUrl", g_variant_new ("s", uri));
 		}
 
 		g_value_unset (md);
 		g_free (md);
 	}
+
+	/* maybe do lyrics? */
 }
 
 static void
