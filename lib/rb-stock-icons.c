@@ -48,8 +48,7 @@ typedef struct {
 } RBInlineIconData;
 
 const char RB_APP_ICON[] = "rhythmbox";
-const char RB_STOCK_TRAY_ICON_PLAYING[] = "rhythmbox";
-const char RB_STOCK_TRAY_ICON_NOT_PLAYING[] = "rhythmbox-notplaying";
+const char RB_STOCK_TRAY_ICON[] = "rhythmbox";
 const char RB_STOCK_SET_STAR[] = "rhythmbox-set-star";
 const char RB_STOCK_UNSET_STAR[] = "rhythmbox-unset-star";
 const char RB_STOCK_NO_STAR[] = "rhythmbox-no-star";

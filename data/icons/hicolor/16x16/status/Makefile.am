@@ -5,13 +5,11 @@ context = status
 iconsdir = $(themedir)/$(size)/$(context)
 
 icons_DATA = \
-	rhythmbox-notplaying.png	\
 	rhythmbox-set-star.png		\
 	rhythmbox-unset-star.png	\
 	rhythmbox-no-star.png
 
-noinst_DATA = \
-	rhythmbox-notplaying.svg
+noinst_DATA =
 
 EXTRA_DIST = \
 	$(icons_DATA)	\

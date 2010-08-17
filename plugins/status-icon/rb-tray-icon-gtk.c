@@ -77,9 +77,6 @@ static void rb_tray_icon_button_press_event_cb (GtkStatusIcon *status_icon,
 static void rb_tray_icon_scroll_event_cb (GtkStatusIcon *status_icon,
 					  GdkEventScroll *event,
 					  RBTrayIcon *tray);
-static void rb_tray_icon_playing_changed_cb (RBShellPlayer *player,
-					     gboolean playing,
-					     RBTrayIcon *tray);
 
 struct _RBTrayIconPrivate
 {
@@ -150,7 +147,7 @@ rb_tray_icon_init (RBTrayIcon *tray)
 
 	tray->priv = G_TYPE_INSTANCE_GET_PRIVATE ((tray), RB_TYPE_TRAY_ICON, RBTrayIconPrivate);
 
-	tray->priv->icon = gtk_status_icon_new_from_icon_name (RB_STOCK_TRAY_ICON_NOT_PLAYING);
+	tray->priv->icon = gtk_status_icon_new_from_icon_name (RB_STOCK_TRAY_ICON);
 	gtk_status_icon_set_visible (tray->priv->icon, FALSE);
 	gtk_status_icon_set_title (GTK_STATUS_ICON (tray->priv->icon), _("Rhythmbox"));
 
@@ -171,11 +168,6 @@ rb_tray_icon_constructed (GObject *object)
 
 	RB_CHAIN_GOBJECT_METHOD (rb_tray_icon_parent_class, constructed, object);
 	tray = RB_TRAY_ICON (object);
-
-	g_signal_connect_object (tray->priv->shell_player,
-				 "playing-changed",
-				 G_CALLBACK (rb_tray_icon_playing_changed_cb),
-				 tray, 0);
 
 	gtk_status_icon_set_has_tooltip (tray->priv->icon, TRUE);
 	g_signal_connect_object (tray->priv->icon, "query-tooltip",
@@ -201,15 +193,6 @@ rb_tray_icon_dispose (GObject *object)
 	}
 
 	G_OBJECT_CLASS (rb_tray_icon_parent_class)->dispose (object);
-}
-
-static void
-rb_tray_icon_playing_changed_cb (RBShellPlayer *player, gboolean playing, RBTrayIcon *tray)
-{
-	const char *icon_name;
-
-	icon_name = playing ? RB_STOCK_TRAY_ICON_PLAYING : RB_STOCK_TRAY_ICON_NOT_PLAYING;
-	gtk_status_icon_set_from_icon_name (tray->priv->icon, icon_name);
 }
 
 static void
