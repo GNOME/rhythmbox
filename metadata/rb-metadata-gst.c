@@ -1075,6 +1075,7 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 
 	if (md->priv->error) {
 		g_propagate_error (error, md->priv->error);
+		md->priv->error = NULL;
 		goto out_error;
 	}
 	if (stream != NULL) {
