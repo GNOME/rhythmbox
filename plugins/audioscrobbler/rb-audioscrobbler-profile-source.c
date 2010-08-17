@@ -726,7 +726,7 @@ login_status_change_cb (RBAudioscrobblerAccount *account,
 		show_login_bar = TRUE;
 		show_profile = FALSE;
 		label_text = g_strdup (_("You are not currently logged in."));
-		button_text = g_strdup (_("Login"));
+		button_text = g_strdup (_("Log in"));
 		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->login_bar), GTK_MESSAGE_INFO);
 		break;
 	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN:
@@ -744,14 +744,14 @@ login_status_change_cb (RBAudioscrobblerAccount *account,
 		show_login_bar = TRUE;
 		show_profile = FALSE;
 		label_text = g_strdup (_("Authentication error. Please try logging in again."));
-		button_text = g_strdup (_("Login"));
+		button_text = g_strdup (_("Log in"));
 		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->login_bar), GTK_MESSAGE_WARNING);
 		break;
 	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_CONNECTION_ERROR:
 		show_login_bar = TRUE;
 		show_profile = FALSE;
 		label_text = g_strdup (_("Connection error. Please try logging in again."));
-		button_text = g_strdup (_("Login"));
+		button_text = g_strdup (_("Log in"));
 		gtk_info_bar_set_message_type (GTK_INFO_BAR (source->priv->login_bar), GTK_MESSAGE_WARNING);
 		break;
 	default:
