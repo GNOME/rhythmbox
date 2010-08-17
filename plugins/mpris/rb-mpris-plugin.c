@@ -563,7 +563,7 @@ handle_player_method_call (GDBusConnection *connection,
 		g_variant_get (parameters, "(x)", &offset);
 		rb_shell_player_seek (plugin->player, offset / G_USEC_PER_SEC);
 		g_dbus_method_invocation_return_value (invocation, NULL);
-	} else if (g_strcmp0 (method_name, "SetPositionSet") == 0) {
+	} else if (g_strcmp0 (method_name, "SetPosition") == 0) {
 		RhythmDBEntry *playing_entry;
 		RhythmDBEntry *client_entry;
 		gint64 position;
