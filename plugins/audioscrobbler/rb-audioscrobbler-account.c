@@ -38,7 +38,9 @@
 #include "rb-builder-helpers.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
+#include "rb-preferences.h"
 #include "rb-util.h"
+#include "eel-gconf-extensions.h"
 
 #define SESSION_SETTINGS_FILE "sessions"
 #define SESSION_KEY_REQUEST_TIMEOUT 5
@@ -392,6 +394,14 @@ save_session_settings (RBAudioscrobblerAccount *account)
 		g_key_file_set_string (key_file, service_name, "session_key", account->priv->session_key);
 	} else {
 		g_key_file_remove_group (key_file, service_name, NULL);
+	}
+
+	/* If Last.fm, set the username in gconf to allow other plugins,
+	 * such as cover art and context pane, to make use of it.
+	 */
+	if (strcmp (service_name, "Last.fm") == 0) {
+		eel_gconf_set_string (CONF_AUDIOSCROBBLER_USERNAME,
+		                      account->priv->username != NULL ? account->priv->username : "");
 	}
 
 	g_free (service_name);
