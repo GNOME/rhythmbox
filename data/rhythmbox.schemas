@@ -800,25 +800,27 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/audioscrobbler/password</key>
-        <applyto>/apps/rhythmbox/audioscrobbler/password</applyto>
+        <key>/schemas/apps/rhythmbox/plugins/audioscrobbler/service/enabled</key>
+        <applyto>/apps/rhythmbox/plugins/audioscrobbler/Last.fm/enabled</applyto>
+        <applyto>/apps/rhythmbox/plugins/audioscrobbler/Libre.fm/enabled</applyto>
         <owner>rhythmbox</owner>
-        <type>string</type>
-        <default></default>
+        <type>bool</type>
+        <default>TRUE</default>
         <locale name="C">
-	<short>Password for Last.fm</short>
-	<long>Password for Last.fm</long>
+	<short>True if the audioscrobbler service should be used</short>
+	<long>True if the audioscrobbler service should be used. Last.fm could be true and Libre.fm false, for example.</long>
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/audioscrobbler/scrobbler_url</key>
-        <applyto>/apps/rhythmbox/audioscrobbler/scrobbler_url</applyto>
+        <key>/schemas/apps/rhythmbox/plugins/audioscrobbler/service/scrobbling_enabled</key>
+        <applyto>/apps/rhythmbox/plugins/audioscrobbler/Last.fm/scrobbling_enabled</applyto>
+        <applyto>/apps/rhythmbox/plugins/audioscrobbler/Libre.fm/scrobbling_enabled</applyto>
         <owner>rhythmbox</owner>
-        <type>string</type>
-        <default>http://post.audioscrobbler.com/</default>
+        <type>bool</type>
+        <default>TRUE</default>
         <locale name="C">
-	<short>URL for last.fm-style track submission</short>
-	<long>URL for last.fm-style track submission.  This can be used to direct track submission to an alternate service such as libre.fm.</long>
+	<short>True if played songs should be submitted to the audioscrobbler service</short>
+	<long>True if played songs should be submitted to the audioscrobbler service</long>
         </locale>
       </schema>
       <schema>

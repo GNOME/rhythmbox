@@ -274,8 +274,6 @@ lastfm_enabled_changed_cb (GConfClient *client,
 	} else if (enabled == FALSE && plugin->lastfm_source != NULL) {
 		rb_source_delete_thyself (plugin->lastfm_source);
 		plugin->lastfm_source = NULL;
-	} else {
-		g_assert_not_reached ();
 	}
 }
 

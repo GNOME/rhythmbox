@@ -55,7 +55,9 @@ INCLUDES = 						\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 gtkbuilderdir = $(plugindir)
-gtkbuilder_DATA = audioscrobbler-profile.ui
+gtkbuilder_DATA =					\
+	audioscrobbler-preferences.ui			\
+	audioscrobbler-profile.ui
 
 uixmldir = $(plugindir)
 uixml_DATA =						\
