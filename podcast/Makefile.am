@@ -2,6 +2,7 @@ noinst_LTLIBRARIES = librbpodcast.la librbpodcast_parse.la
 
 podcastincludedir = $(includedir)/rhythmbox/podcast
 podcastinclude_HEADERS =				\
+	rb-podcast-entry-types.h			\
 	rb-podcast-parse.h				\
 	rb-podcast-manager.h
 
