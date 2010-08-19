@@ -187,14 +187,14 @@ handle_root_method_call (GDBusConnection *connection,
 	} else if (g_strcmp0 (method_name, "Quit") == 0) {
 		rb_shell_quit (plugin->shell, NULL);
 		g_dbus_method_invocation_return_value (invocation, NULL);
+	} else {
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
 	}
-
-	g_dbus_method_invocation_return_error (invocation,
-					       G_DBUS_ERROR,
-					       G_DBUS_ERROR_NOT_SUPPORTED,
-					       "Method %s.%s not supported",
-					       interface_name,
-					       method_name);
 }
 
 static GVariant *
@@ -609,14 +609,14 @@ handle_player_method_call (GDBusConnection *connection,
 		g_variant_get (parameters, "(&s)", &uri);
 		ret = rb_shell_load_uri (plugin->shell, uri, TRUE, &error);
 		handle_result (invocation, ret, error);
+	} else {
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
 	}
-
-	g_dbus_method_invocation_return_error (invocation,
-					       G_DBUS_ERROR,
-					       G_DBUS_ERROR_NOT_SUPPORTED,
-					       "Method %s.%s not supported",
-					       interface_name,
-					       method_name);
 }
 
 static GVariant *
