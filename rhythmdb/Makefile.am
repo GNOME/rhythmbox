@@ -21,6 +21,7 @@ rhythmdbinclude_HEADERS =				\
 	rhythmdb.h					\
 	rhythmdb-property-model.h			\
 	rhythmdb-query-model.h				\
+	rhythmdb-query-result-list.h			\
 	rhythmdb-query-results.h			\
 	rhythmdb-import-job.h				\
 	rhythmdb-entry.h				\
@@ -35,6 +36,7 @@ librhythmdb_la_SOURCES =				\
 	rhythmdb-query.c				\
 	rhythmdb-property-model.c			\
 	rhythmdb-query-model.c				\
+	rhythmdb-query-result-list.c			\
 	rhythmdb-query-results.c			\
 	rhythmdb-import-job.c				\
 	rhythmdb-entry-type.c				\
