@@ -845,7 +845,6 @@ data/icons/hicolor/22x22/Makefile
 data/icons/hicolor/22x22/actions/Makefile
 data/icons/hicolor/22x22/apps/Makefile
 data/icons/hicolor/22x22/places/Makefile
-data/icons/hicolor/22x22/status/Makefile
 data/icons/hicolor/24x24/Makefile
 data/icons/hicolor/24x24/apps/Makefile
 data/icons/hicolor/24x24/places/Makefile
@@ -853,7 +852,6 @@ data/icons/hicolor/32x32/Makefile
 data/icons/hicolor/32x32/actions/Makefile
 data/icons/hicolor/32x32/apps/Makefile
 data/icons/hicolor/32x32/places/Makefile
-data/icons/hicolor/32x32/status/Makefile
 data/icons/hicolor/48x48/Makefile
 data/icons/hicolor/48x48/apps/Makefile
 data/icons/hicolor/256x256/Makefile
@@ -862,7 +860,6 @@ data/icons/hicolor/scalable/Makefile
 data/icons/hicolor/scalable/actions/Makefile
 data/icons/hicolor/scalable/apps/Makefile
 data/icons/hicolor/scalable/places/Makefile
-data/icons/hicolor/scalable/status/Makefile
 data/icons/src/Makefile
 sources/Makefile
 sources/sync/Makefile
