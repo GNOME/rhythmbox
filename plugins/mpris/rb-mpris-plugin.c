@@ -370,7 +370,7 @@ add_ulong_property_as_int64 (GVariantBuilder *builder,
 {
 	gint64 v;
 	v = rhythmdb_entry_get_ulong (entry, prop);
-	rb_debug ("adding %s = %lu", name, v * scale);
+	rb_debug ("adding %s = %lld", name, v * scale);
 	g_variant_builder_add (builder,
 			       "{sv}",
 			       name,
