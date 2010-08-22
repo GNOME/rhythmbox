@@ -335,8 +335,6 @@ void		rhythmdb_entry_get	(RhythmDB *db, RhythmDBEntry *entry, RhythmDBPropType p
 void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, const GValue *value);
 
-char *		rhythmdb_entry_get_playback_uri	(RhythmDBEntry *entry);
-
 gboolean	rhythmdb_entry_is_lossless (RhythmDBEntry *entry);
 
 gpointer	rhythmdb_entry_get_type_data (RhythmDBEntry *entry, guint expected_size);
