@@ -976,6 +976,17 @@ rb_shell_get_property (GObject *object,
 		g_value_set_object (value, shell->priv->window);
 		break;
 	case PROP_PREFS:
+		/* create the preferences window the first time we need it */
+		if (shell->priv->prefs == NULL) {
+			GtkWidget *content;
+
+			shell->priv->prefs = rb_shell_preferences_new (shell->priv->sources);
+
+			gtk_window_set_transient_for (GTK_WINDOW (shell->priv->prefs),
+						      GTK_WINDOW (shell->priv->window));
+			content = gtk_dialog_get_content_area (GTK_DIALOG (shell->priv->prefs));
+			gtk_widget_show_all (content);
+		}
 		g_value_set_object (value, shell->priv->prefs);
 		break;
 	case PROP_QUEUE_SOURCE:
@@ -2424,15 +2435,12 @@ static void
 rb_shell_cmd_preferences (GtkAction *action,
 		          RBShell *shell)
 {
-	if (shell->priv->prefs == NULL) {
-		shell->priv->prefs = rb_shell_preferences_new (shell->priv->sources);
+	RBShellPreferences *prefs;
 
-		gtk_window_set_transient_for (GTK_WINDOW (shell->priv->prefs),
-					      GTK_WINDOW (shell->priv->window));
-		gtk_widget_show_all (shell->priv->prefs);
-	}
+	g_object_get (shell, "prefs", &prefs, NULL);
 
-	gtk_window_present (GTK_WINDOW (shell->priv->prefs));
+	gtk_window_present (GTK_WINDOW (prefs));
+	g_object_unref (prefs);
 }
 
 static gboolean

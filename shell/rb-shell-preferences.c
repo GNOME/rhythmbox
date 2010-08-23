@@ -61,6 +61,7 @@
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-preferences.h"
+#include "rb-shell.h"
 
 static void rb_shell_preferences_class_init (RBShellPreferencesClass *klass);
 static void rb_shell_preferences_init (RBShellPreferences *shell_preferences);
@@ -117,10 +118,12 @@ struct RBShellPreferencesPrivate
 	GtkWidget *quality_check;
 	GtkWidget *year_check;
 	GtkWidget *location_check;
+	GtkWidget *general_prefs_plugin_box;
 
 	GtkWidget *xfade_backend_check;
 	GtkWidget *transition_duration;
 	GtkWidget *network_buffer_size;
+	GtkWidget *playback_prefs_plugin_box;
 
 	GSList *browser_views_group;
 
@@ -267,6 +270,11 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	eel_gconf_notification_add (CONF_UI_DIR,
 				    (GConfClientNotifyFunc) rb_shell_preferences_ui_pref_changed,
 				    shell_preferences);
+
+	/* box for stuff added by plugins */
+	shell_preferences->priv->general_prefs_plugin_box =
+		GTK_WIDGET (gtk_builder_get_object (builder, "plugin_box"));
+
 	g_object_unref (builder);
 
 	/* playback preferences */
@@ -282,6 +290,8 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		GTK_WIDGET (gtk_builder_get_object (builder, "duration"));
 	shell_preferences->priv->network_buffer_size =
 		GTK_WIDGET (gtk_builder_get_object (builder, "network_buffer_size"));
+	shell_preferences->priv->playback_prefs_plugin_box =
+		GTK_WIDGET (gtk_builder_get_object (builder, "plugin_box"));
 
 	g_signal_connect_object (shell_preferences->priv->xfade_backend_check,
 				 "toggled",
@@ -693,3 +703,59 @@ rb_shell_preferences_network_buffer_size_cb (GtkRange *range,
 	eel_gconf_set_integer (CONF_PLAYER_NETWORK_BUFFER_SIZE, (int)v);
 }
 
+static GtkWidget *
+get_box_for_location (RBShellPreferences *prefs, RBShellPrefsUILocation location)
+{
+	switch (location) {
+	case RB_SHELL_PREFS_UI_LOCATION_GENERAL:
+		return prefs->priv->general_prefs_plugin_box;
+	case RB_SHELL_PREFS_UI_LOCATION_PLAYBACK:
+		return prefs->priv->playback_prefs_plugin_box;
+	default:
+		g_assert_not_reached();
+	}
+}
+
+void
+rb_shell_preferences_add_widget (RBShellPreferences *prefs,
+				 GtkWidget *widget,
+				 RBShellPrefsUILocation location,
+				 gboolean expand,
+				 gboolean fill)
+{
+	GtkWidget *box;
+
+	box = get_box_for_location (prefs, location);
+	gtk_box_pack_start (GTK_BOX (box), widget, expand, fill, 0);
+}
+
+void
+rb_shell_preferences_remove_widget (RBShellPreferences *prefs,
+				    GtkWidget *widget,
+				    RBShellPrefsUILocation location)
+{
+	GtkWidget *box;
+
+	box = get_box_for_location (prefs, location);
+	gtk_container_remove (GTK_CONTAINER (box), widget);
+}
+
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rb_shell_prefs_ui_location_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_SHELL_PREFS_UI_LOCATION_GENERAL, "general"),
+			ENUM_ENTRY (RB_SHELL_PREFS_UI_LOCATION_PLAYBACK, "playback"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBShellPrefsUILocation", values);
+	}
+
+	return etype;
+}

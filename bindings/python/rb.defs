@@ -200,6 +200,13 @@
   (gtype-id "RB_TYPE_RATING")
 )
 
+(define-object ShellPreferences
+  (in-module "RB")
+  (parent "GtkDialog")
+  (c-name "RBShellPreferences")
+  (gtype-id "RB_TYPE_SHELL_PREFERENCES")
+)
+
 ;; Enumerations and flags ...
 
 (define-enum ShellPlayerError
@@ -318,6 +325,16 @@
     '("main-top" "RB_SHELL_UI_LOCATION_MAIN_TOP")
     '("main-bottom" "RB_SHELL_UI_LOCATION_MAIN_BOTTOM")
     '("main-notebook" "RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK")
+  )
+)
+
+(define-enum ShellPrefsUILocation
+  (in-module "RB")
+  (c-name "RBShellPrefsUILocation")
+  (gtype-id "RB_TYPE_SHELL_PREFS_UI_LOCATION")
+  (values
+    '("general" "RB_SHELL_PREFS_UI_LOCATION_GENERAL")
+    '("playback" "RB_SHELL_PREFS_UI_LOCATION_PLAYBACK")
   )
 )
 
@@ -3056,4 +3073,43 @@
   (c-name "rb_rating_new")
   (is-constructor-of "RBRating")
   (return-type "RBRating*")
+)
+
+;; From rb-shell-preferences.h
+
+(define-function shell_preferences_get_type
+  (c-name "rb_shell_preferences_get_type")
+  (return-type "GType")
+)
+
+(define-method append_page
+  (of-object "RBShellPreferences")
+  (c-name "rb_shell_preferences_append_page")
+  (return-type "none")
+  (parameters
+    '("const-char*" "name")
+    '("GtkWidget*" "widget")
+  )
+)
+
+(define-method add_widget
+  (of-object "RBShellPreferences")
+  (c-name "rb_shell_preferences_add_widget")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("RBShellPrefsUILocation" "location")
+    '("gboolean" "expand")
+    '("gboolean" "fill")
+  )
+)
+
+(define-method remove_widget
+  (of-object "RBShellPreferences")
+  (c-name "rb_shell_preferences_remove_widget")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("RBShellPrefsUILocation" "location")
+  )
 )

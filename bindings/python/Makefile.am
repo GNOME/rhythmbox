@@ -69,6 +69,7 @@ RB_BINDING_HEADERS_SRCDIR_IN = \
 	shell/rb-removable-media-manager.h	\
 	shell/rb-shell.h			\
 	shell/rb-shell-player.h			\
+	shell/rb-shell-preferences.h		\
 	shell/rb-track-transfer-batch.h		\
 	shell/rb-track-transfer-queue.h		\
 	sources/rb-source.h			\

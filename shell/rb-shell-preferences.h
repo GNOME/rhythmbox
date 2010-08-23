@@ -33,6 +33,15 @@
 
 G_BEGIN_DECLS
 
+typedef enum
+{
+	RB_SHELL_PREFS_UI_LOCATION_GENERAL,
+	RB_SHELL_PREFS_UI_LOCATION_PLAYBACK
+} RBShellPrefsUILocation;
+
+GType rb_shell_prefs_ui_location_get_type (void);
+#define RB_TYPE_SHELL_PREFS_UI_LOCATION	(rb_shell_prefs_ui_location_get_type())
+
 #define RB_TYPE_SHELL_PREFERENCES         (rb_shell_preferences_get_type ())
 #define RB_SHELL_PREFERENCES(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SHELL_PREFERENCES, RBShellPreferences))
 #define RB_SHELL_PREFERENCES_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_SHELL_PREFERENCES, RBShellPreferencesClass))
@@ -62,6 +71,14 @@ GtkWidget	*rb_shell_preferences_new		(GList *views);
 void		rb_shell_preferences_append_page	(RBShellPreferences *prefs,
 							 const char *name,
 							 GtkWidget *widget);
+void		rb_shell_preferences_add_widget		(RBShellPreferences *prefs,
+							 GtkWidget *widget,
+							 RBShellPrefsUILocation location,
+							 gboolean expand,
+							 gboolean fill);
+void		rb_shell_preferences_remove_widget	(RBShellPreferences *prefs,
+							 GtkWidget *widget,
+							 RBShellPrefsUILocation location);
 
 G_END_DECLS
 
