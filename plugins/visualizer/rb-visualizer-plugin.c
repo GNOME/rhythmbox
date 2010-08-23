@@ -1078,6 +1078,27 @@ resize_vis_window (RBVisualizerPlugin *plugin, int quality, gboolean resize_down
 }
 
 static void
+rb_visualizer_plugin_button_press_cb (GtkWidget *vis_widget,
+					GdkEventButton *event,
+					RBVisualizerPlugin *pi)
+{
+	/* toggle fullscreen mode when double clicked */
+	if (event->type == GDK_2BUTTON_PRESS || event->type == GDK_3BUTTON_PRESS) {
+		if (pi->mode == EMBEDDED) {
+			rb_debug ("set fullscreen");
+			update_window (pi,
+				       FULLSCREEN,
+				       eel_gconf_get_integer (CONF_VIS_SCREEN),
+				       eel_gconf_get_integer (CONF_VIS_MONITOR));
+		} else {
+			rb_debug ("set embedded");
+			update_window (pi, EMBEDDED, -1, -1);
+		}
+		enable_visualization (pi);
+	}
+}
+
+static void
 update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int monitor)
 {
 	gboolean need_vis_widget;
@@ -1170,6 +1191,10 @@ update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int 
 		g_signal_connect_object (plugin->vis_widget,
 					 "notify::window-xid",
 					 G_CALLBACK (rb_visualizer_plugin_window_id_notify_cb),
+					 plugin, 0);
+		g_signal_connect_object (plugin->vis_widget,
+					 "button_press_event",
+					 G_CALLBACK (rb_visualizer_plugin_button_press_cb),
 					 plugin, 0);
 		gtk_box_pack_start (GTK_BOX (plugin->vis_box), plugin->vis_widget, TRUE, TRUE, 0 /* 6? */);
 	}
