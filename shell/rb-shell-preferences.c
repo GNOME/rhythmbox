@@ -716,6 +716,18 @@ get_box_for_location (RBShellPreferences *prefs, RBShellPrefsUILocation location
 	}
 }
 
+/**
+ * rb_shell_preferences_add_widget:
+ * @shell: the #RBShellPreferences
+ * @widget: the #GtkWidget to insert into the preferences window
+ * @location: the location at which to insert the widget
+ * @expand: whether the widget should be given extra space
+ * @fill: whether the widget should fill all space allocated to it
+ *
+ * Adds a widget to the preferences window.  See #gtk_box_pack_start for
+ * details on how the expand and fill parameters work.  This function can be
+ * used to add widgets to the 'general' and 'playback' pages.
+ */
 void
 rb_shell_preferences_add_widget (RBShellPreferences *prefs,
 				 GtkWidget *widget,
@@ -729,6 +741,14 @@ rb_shell_preferences_add_widget (RBShellPreferences *prefs,
 	gtk_box_pack_start (GTK_BOX (box), widget, expand, fill, 0);
 }
 
+/**
+ * rb_shell_preferences_remove_widget:
+ * @shell: the #RBShellPreferences
+ * @widget: the #GtkWidget to remove from the preferences window
+ * @location: the UI location to which the widget was originally added
+ *
+ * Removes a widget added with #rb_shell_preferences_add_widget from the preferences window.
+ */
 void
 rb_shell_preferences_remove_widget (RBShellPreferences *prefs,
 				    GtkWidget *widget,
@@ -742,6 +762,13 @@ rb_shell_preferences_remove_widget (RBShellPreferences *prefs,
 
 #define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
 
+/**
+ * RBShellPrefsUILocation:
+ * @RB_SHELL_PREFS_UI_LOCATION_GENERAL: The "general" preferences page
+ * @RB_SHELL_PREFS_UI_LOCATION_PLAYBACK: THe "playback" preferences page
+ *
+ * Locations available for adding new widgets to the preferences dialog.
+ */
 GType
 rb_shell_prefs_ui_location_get_type (void)
 {
