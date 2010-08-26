@@ -137,7 +137,7 @@ class IMStatusPlugin (rb.Plugin):
     self.current_title  = db.entry_get (self.current_entry, rhythmdb.PROP_TITLE)
     self.current_album  = db.entry_get (self.current_entry, rhythmdb.PROP_ALBUM)
 
-    if self.current_entry.get_entry_type().category == rhythmdb.ENTRY_STREAM:
+    if self.current_entry.get_entry_type().props.category == rhythmdb.ENTRY_STREAM:
       if not self.current_artist:
         self.current_artist = db.entry_request_extra_metadata (self.current_entry, STREAM_SONG_ARTIST)
       if not self.current_title:
