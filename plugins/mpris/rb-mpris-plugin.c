@@ -370,7 +370,7 @@ add_ulong_property_as_int64 (GVariantBuilder *builder,
 {
 	gint64 v;
 	v = rhythmdb_entry_get_ulong (entry, prop);
-	rb_debug ("adding %s = %lld", name, v * scale);
+	rb_debug ("adding %s = %" G_GINT64_FORMAT, name, v * scale);
 	g_variant_builder_add (builder,
 			       "{sv}",
 			       name,
@@ -1166,6 +1166,16 @@ impl_deactivate	(RBPlugin *bplugin,
 	RBMprisPlugin *plugin;
 
 	plugin = RB_MPRIS_PLUGIN (bplugin);
+
+	if (plugin->player_property_emit_id != 0) {
+		g_source_remove (plugin->player_property_emit_id);
+		plugin->player_property_emit_id = 0;
+	}
+	if (plugin->player_property_changes != NULL) {
+		g_hash_table_destroy (plugin->player_property_changes);
+		plugin->player_property_changes = NULL;
+	}
+
 	if (plugin->player != NULL) {
 		g_object_unref (plugin->player);
 		plugin->player = NULL;
