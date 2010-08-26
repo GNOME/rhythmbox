@@ -3,7 +3,7 @@
   <playlist type="automatic" limit-count="0" limit-size="0" limit-time="0" sort-key="FirstSeen" sort-direction="1">
     <_name>Recently Added</_name>
     <conjunction>
-      <equals prop="type">0</equals>
+      <equals prop="type">song</equals>
       <subquery>
         <conjunction>
           <current-time-within prop="first-seen">604800</current-time-within>
@@ -14,7 +14,7 @@
   <playlist type="automatic" limit-count="0" limit-size="0" limit-time="0" sort-key="LastPlayed" sort-direction="1">
     <_name>Recently Played</_name>
     <conjunction>
-      <equals prop="type">0</equals>
+      <equals prop="type">song</equals>
       <subquery>
         <conjunction>
           <current-time-within prop="last-played">604800</current-time-within>
@@ -25,7 +25,7 @@
   <playlist type="automatic" limit-count="0" limit-size="0" limit-time="0" sort-key="Rating" sort-direction="1">
     <_name>My Top Rated</_name>
     <conjunction>
-      <equals prop="type">0</equals>
+      <equals prop="type">song</equals>
       <subquery>
         <conjunction>
           <greater prop="rating">4.000000</greater>
