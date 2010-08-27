@@ -671,8 +671,12 @@ impl_add_uri (RBSource *source,
 		rb_iradio_source_add_station (RB_IRADIO_SOURCE (source),
 					      uri, title, genre);
 	}
-	callback (source, uri, data);
-	destroy_data (data);
+	if (callback != NULL) {
+		callback (source, uri, data);
+		if (destroy_data != NULL) {
+			destroy_data (data);
+		}
+	}
 	return TRUE;
 }
 

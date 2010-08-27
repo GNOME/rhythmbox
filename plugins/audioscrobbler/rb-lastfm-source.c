@@ -1419,8 +1419,12 @@ impl_add_uri (RBSource *source,
 		rb_lastfm_source_new_station (uri, name, RB_LASTFM_SOURCE (source));
 	}
 
-	callback (source, uri, data);
-	destroy_data (data);
+	if (callback != NULL) {
+		callback (source, uri, data);
+		if (destroy_data != NULL) {
+			destroy_data (data);
+		}
+	}
 	return ret;
 }
 
