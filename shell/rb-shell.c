@@ -3893,3 +3893,23 @@ rb_shell_ui_location_get_type (void)
 
 	return etype;
 }
+
+GType
+rb_shell_error_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0) {
+		static const GEnumValue values[] = {
+			ENUM_ENTRY(RB_SHELL_ERROR_NO_SUCH_URI, "no-such-uri"),
+			ENUM_ENTRY(RB_SHELL_ERROR_NO_SUCH_PROPERTY, "no-such-property"),
+			ENUM_ENTRY(RB_SHELL_ERROR_IMMUTABLE_PROPERTY, "immutable-property"),
+			ENUM_ENTRY(RB_SHELL_ERROR_INVALID_PROPERTY_TYPE, "invalid-property-type"),
+			ENUM_ENTRY(RB_SHELL_ERROR_NO_SOURCE_FOR_URI, "no-source-for-uri"),
+			{ 0, 0, 0 }
+		};
+		etype = g_enum_register_static ("RBShellErrorType", values);
+	}
+
+	return etype;
+}

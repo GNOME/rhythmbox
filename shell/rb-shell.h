@@ -42,18 +42,20 @@ G_BEGIN_DECLS
 #define RB_IS_SHELL_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_SHELL))
 #define RB_SHELL_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SHELL, RBShellClass))
 
-enum
+typedef enum
 {
 	RB_SHELL_ERROR_NO_SUCH_URI,
 	RB_SHELL_ERROR_NO_SUCH_PROPERTY,
 	RB_SHELL_ERROR_IMMUTABLE_PROPERTY,
 	RB_SHELL_ERROR_INVALID_PROPERTY_TYPE,
 	RB_SHELL_ERROR_NO_SOURCE_FOR_URI
-};
+} RBShellError;
 
 #define RB_SHELL_ERROR rb_shell_error_quark ()
 
 GQuark rb_shell_error_quark (void);
+GType rb_shell_error_get_type (void);
+#define RB_TYPE_SHELL_ERROR (rb_shell_error_get_type ())
 
 typedef enum
 {
