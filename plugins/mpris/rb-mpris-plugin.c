@@ -1018,16 +1018,44 @@ elapsed_nano_changed_cb (RBShellPlayer *player, gint64 elapsed, RBMprisPlugin *p
 static void
 name_acquired_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *plugin)
 {
-	GError *error = NULL;
-	GDBusInterfaceInfo *ifaceinfo;
-	GtkUIManager *ui_manager;
+	rb_debug ("successfully acquired dbus name %s", name);
+}
 
-	plugin->connection = g_object_ref (connection);
+static void
+name_lost_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *plugin)
+{
+	rb_debug ("lost dbus name %s", name);
+}
+
+static void
+impl_activate (RBPlugin *bplugin,
+	       RBShell *shell)
+{
+	RBMprisPlugin *plugin;
+	GtkUIManager *ui_manager;
+	GDBusInterfaceInfo *ifaceinfo;
+	GError *error = NULL;
+
+	rb_debug ("activating MPRIS plugin");
+
+	plugin = RB_MPRIS_PLUGIN (bplugin);
+	g_object_get (shell,
+		      "shell-player", &plugin->player,
+		      "ui-manager", &ui_manager,
+		      "db", &plugin->db,
+		      NULL);
+	plugin->shell = g_object_ref (shell);
+
+	plugin->connection = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
+	if (error != NULL) {
+		g_warning ("Unable to connect to D-Bus session bus: %s", error->message);
+		return;
+	}
 
 	/* parse introspection data */
 	plugin->node_info = g_dbus_node_info_new_for_xml (mpris_introspection_xml, &error);
 	if (error != NULL) {
-		g_error ("Unable to read MPRIS root object specificiation: %s", error->message);
+		g_warning ("Unable to read MPRIS interface specificiation: %s", error->message);
 		return;
 	}
 
@@ -1099,10 +1127,8 @@ name_acquired_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *
 	 * elsewhere.
 	 */
 
-	g_object_get (plugin->shell, "ui-manager", &ui_manager, NULL);
 	plugin->next_action = gtk_ui_manager_get_action (ui_manager, "/MenuBar/ControlMenu/ControlNextMenu");
 	plugin->prev_action = gtk_ui_manager_get_action (ui_manager, "/MenuBar/ControlMenu/ControlPreviousMenu");
-	g_object_unref (ui_manager);
 
 	g_signal_connect_object (plugin->next_action,
 				 "notify::sensitive",
@@ -1112,42 +1138,7 @@ name_acquired_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *
 				 "notify::sensitive",
 				 G_CALLBACK (prev_action_sensitive_cb),
 				 plugin, 0);
-}
-
-static void
-name_lost_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *plugin)
-{
-	if (plugin->root_id != 0) {
-		g_dbus_connection_unregister_object (plugin->connection, plugin->root_id);
-		plugin->root_id = 0;
-	}
-	if (plugin->player_id != 0) {
-		g_dbus_connection_unregister_object (plugin->connection, plugin->player_id);
-		plugin->player_id = 0;
-	}
-
-	/* probably remove signal handlers? */
-
-	if (plugin->connection != NULL) {
-		g_object_unref (plugin->connection);
-		plugin->connection = NULL;
-	}
-}
-
-static void
-impl_activate (RBPlugin *bplugin,
-	       RBShell *shell)
-{
-	RBMprisPlugin *plugin;
-
-	rb_debug ("activating MPRIS plugin");
-
-	plugin = RB_MPRIS_PLUGIN (bplugin);
-	g_object_get (shell,
-		      "shell-player", &plugin->player,
-		      "db", &plugin->db,
-		      NULL);
-	plugin->shell = g_object_ref (shell);
+	g_object_unref (ui_manager);
 
 	plugin->name_own_id = g_bus_own_name (G_BUS_TYPE_SESSION,
 					      MPRIS_BUS_NAME_PREFIX ".rhythmbox",
@@ -1167,6 +1158,16 @@ impl_deactivate	(RBPlugin *bplugin,
 
 	plugin = RB_MPRIS_PLUGIN (bplugin);
 
+	if (plugin->root_id != 0) {
+		g_dbus_connection_unregister_object (plugin->connection, plugin->root_id);
+		plugin->root_id = 0;
+	}
+	if (plugin->player_id != 0) {
+		g_dbus_connection_unregister_object (plugin->connection, plugin->player_id);
+		plugin->player_id = 0;
+	}
+
+	/* probably remove signal handlers? */
 	if (plugin->player_property_emit_id != 0) {
 		g_source_remove (plugin->player_property_emit_id);
 		plugin->player_property_emit_id = 0;
@@ -1192,6 +1193,11 @@ impl_deactivate	(RBPlugin *bplugin,
 	if (plugin->name_own_id > 0) {
 		g_bus_unown_name (plugin->name_own_id);
 		plugin->name_own_id = 0;
+	}
+
+	if (plugin->connection != NULL) {
+		g_object_unref (plugin->connection);
+		plugin->connection = NULL;
 	}
 }
 
