@@ -479,7 +479,7 @@ infobar_response_cb (GtkInfoBar *infobar, gint response, RBImportErrorsSource *s
 		bits = g_strsplit (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_COMMENT), "\n", 0);
 
 		for (j = 0; bits[j] != NULL; j++) {
-			if (rb_str_in_strv (bits[j], details) == FALSE) {
+			if (rb_str_in_strv (bits[j], (const char **)details) == FALSE) {
 				details = g_realloc (details, sizeof (char *) * i+2);
 				details[i++] = g_strdup (bits[j]);
 				details[i] = NULL;

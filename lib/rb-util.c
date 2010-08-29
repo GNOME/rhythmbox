@@ -1162,7 +1162,7 @@ rb_value_free (GValue *val)
  * Return value: %TRUE if found
  */
 gboolean
-rb_str_in_strv (const char *needle, char **haystack)
+rb_str_in_strv (const char *needle, const char **haystack)
 {
 	int i;
 

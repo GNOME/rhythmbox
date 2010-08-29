@@ -72,7 +72,7 @@ void rb_list_deep_free (GList *list);
 void rb_list_destroy_free (GList *list, GDestroyNotify destroyer);
 void rb_slist_deep_free (GSList *list);
 
-gboolean rb_str_in_strv (const char *needle, char **haystack);
+gboolean rb_str_in_strv (const char *needle, const char **haystack);
 
 GList* rb_collate_hash_table_keys (GHashTable *table);
 GList* rb_collate_hash_table_values (GHashTable *table);
