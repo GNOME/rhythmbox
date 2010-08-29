@@ -586,6 +586,7 @@ parse_track_array (RBAudioscrobblerUser *user, JsonArray *track_array)
 		JsonObject *track_object;
 		JsonObject *artist_object;
 		RBAudioscrobblerUserData *track;
+		char *image_path;
 
 		track_object = json_array_get_object_element (track_array, i);
 
@@ -605,8 +606,10 @@ parse_track_array (RBAudioscrobblerUser *user, JsonArray *track_array)
 
 		track->url = g_strdup (json_object_get_string_member (track_object, "url"));
 
-		track->image = gdk_pixbuf_new_from_file_at_size (calculate_cached_image_path (user, track),
-		                                                 LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+		image_path = calculate_cached_image_path (user, track);
+		track->image = gdk_pixbuf_new_from_file_at_size (image_path,
+		                                                 LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE,
+		                                                 NULL);
 		if (track->image == NULL && json_object_has_member (track_object, "image") == TRUE) {
 			JsonArray *image_array;
 			JsonObject *image_object;
@@ -617,6 +620,8 @@ parse_track_array (RBAudioscrobblerUser *user, JsonArray *track_array)
 		}
 
 		g_ptr_array_add (tracks, track);
+
+		g_free (image_path);
 	}
 
 	return tracks;
@@ -633,6 +638,7 @@ parse_artist_array (RBAudioscrobblerUser *user, JsonArray *artist_array)
 	for (i = 0; i < json_array_get_length (artist_array); i++) {
 		JsonObject *artist_object;
 		RBAudioscrobblerUserData *artist;
+		char *image_path;
 
 		artist_object = json_array_get_object_element (artist_array, i);
 
@@ -641,8 +647,10 @@ parse_artist_array (RBAudioscrobblerUser *user, JsonArray *artist_array)
 		artist->artist.name = g_strdup (json_object_get_string_member (artist_object, "name"));
 		artist->url = g_strdup (json_object_get_string_member (artist_object, "url"));
 
-		artist->image = gdk_pixbuf_new_from_file_at_size (calculate_cached_image_path (user, artist),
-		                                                  LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+		image_path = calculate_cached_image_path (user, artist);
+		artist->image = gdk_pixbuf_new_from_file_at_size (image_path,
+		                                                  LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE,
+		                                                  NULL);
 		if (artist->image == NULL && json_object_has_member (artist_object, "image") == TRUE) {
 			JsonArray *image_array;
 			JsonObject *image_object;
@@ -653,6 +661,8 @@ parse_artist_array (RBAudioscrobblerUser *user, JsonArray *artist_array)
 		}
 
 		g_ptr_array_add (artists, artist);
+
+		g_free (image_path);
 	}
 
 	return artists;
@@ -753,6 +763,7 @@ parse_user_info (RBAudioscrobblerUser *user, const char *data)
 		if (json_object_has_member (root_object, "user")) {
 			JsonObject *user_object;
 			user_object = json_object_get_object_member (root_object, "user");
+			char *image_path;
 
 			user_info = g_slice_new0 (RBAudioscrobblerUserData);
 			user_info->type = RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO;
@@ -760,7 +771,8 @@ parse_user_info (RBAudioscrobblerUser *user, const char *data)
 			user_info->user_info.playcount = g_strdup (json_object_get_string_member (user_object, "playcount"));
 			user_info->url = g_strdup (json_object_get_string_member (user_object, "url"));
 
-			user_info->image = gdk_pixbuf_new_from_file_at_size (calculate_cached_image_path (user, user_info),
+			image_path = calculate_cached_image_path (user, user_info);
+			user_info->image = gdk_pixbuf_new_from_file_at_size (image_path,
 					                                     USER_PROFILE_IMAGE_SIZE, -1, NULL);
 			if (user_info->image == NULL && json_object_has_member (user_object, "image") == TRUE) {
 				JsonArray *image_array;
@@ -770,6 +782,8 @@ parse_user_info (RBAudioscrobblerUser *user, const char *data)
 				image_object = json_array_get_object_element (image_array, 2);
 				download_image (user, json_object_get_string_member (image_object, "#text"), user_info);
 			}
+
+			g_free (image_path);
 		} else {
 			rb_debug ("error parsing user info response: no user object exists");
 		}
