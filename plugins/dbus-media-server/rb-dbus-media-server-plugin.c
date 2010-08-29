@@ -43,12 +43,12 @@
 #include <shell/rb-shell.h>
 #include <shell/rb-shell-player.h>
 
-#define RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN		(rb_dbus_media_server_plugin_get_type ())
+#define RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN	(rb_dbus_media_server_plugin_get_type ())
 #define RB_DBUS_MEDIA_SERVER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBMediaServer2Plugin))
 #define RB_DBUS_MEDIA_SERVER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBMediaServer2PluginClass))
-#define RB_IS_DBUS_MEDIA_SERVER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN))
+#define RB_IS_DBUS_MEDIA_SERVER_PLUGIN(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN))
 #define RB_IS_DBUS_MEDIA_SERVER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN))
-#define RB_DBUS_MEDIA_SERVER_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBMediaServer2PluginClass))
+#define RB_DBUS_MEDIA_SERVER_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBMediaServer2PluginClass))
 
 #include "dbus-media-server-spec.h"
 
@@ -57,7 +57,6 @@
 #define RB_MEDIASERVER2_PREFIX		"/org/gnome/UPnP/MediaServer2/"
 #define RB_MEDIASERVER2_ROOT		RB_MEDIASERVER2_PREFIX "Rhythmbox"
 #define RB_MEDIASERVER2_LIBRARY		RB_MEDIASERVER2_PREFIX "Library"
-#define RB_MEDIASERVER2_PODCAST		RB_MEDIASERVER2_PREFIX "Podcast"
 #define RB_MEDIASERVER2_ENTRY_SUBTREE	RB_MEDIASERVER2_PREFIX "Entry"
 #define RB_MEDIASERVER2_ENTRY_PREFIX	RB_MEDIASERVER2_ENTRY_SUBTREE "/"
 
@@ -230,7 +229,8 @@ get_entry_property_value (RhythmDBEntry *entry, const char *property_name)
 	} else if (g_strcmp0 (property_name, "Path") == 0) {
 		char *path;
 
-		path = g_strdup_printf (RB_MEDIASERVER2_ENTRY_PREFIX "%lu", rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID));
+		path = g_strdup_printf (RB_MEDIASERVER2_ENTRY_PREFIX "%lu",
+					rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID));
 		v = g_variant_new_string (path);
 		g_free (path);
 		return v;
@@ -246,8 +246,13 @@ get_entry_property_value (RhythmDBEntry *entry, const char *property_name)
 		return v;
 
 	} else if (g_strcmp0 (property_name, "MIMEType") == 0) {
-		/* FIXME handle crap like application/x-id3 */
-		return g_variant_new_string (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE));
+		const char *media_type;
+		/* ugh */
+		media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
+		if (g_strcmp0 (media_type, "application/x-id3") == 0) {
+			media_type = "audio/mpeg";
+		}
+		return g_variant_new_string (media_type);
 	} else if (g_strcmp0 (property_name, "Size") == 0) {
 		return g_variant_new_int64 (rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE));
 	} else if (g_strcmp0 (property_name, "Artist") == 0) {
@@ -363,6 +368,25 @@ static GDBusSubtreeVTable entry_subtree_vtable =
 
 /* containers in general */
 
+static void
+emit_updated (GDBusConnection *connection, const char *path)
+{
+	GError *error = NULL;
+	g_dbus_connection_emit_signal (connection,
+				       NULL,
+				       path,
+				       MEDIA_SERVER2_CONTAINER_IFACE_NAME,
+				       "Updated",
+				       NULL,
+				       &error);
+	if (error != NULL) {
+		g_warning ("Unable to emit Updated signal for MediaServer2 container %s: %s",
+			   path,
+			   error->message);
+		g_clear_error (&error);
+	}
+}
+
 static gboolean
 emit_container_updated_cb (RBMediaServer2Plugin *plugin)
 {
@@ -372,16 +396,16 @@ emit_container_updated_cb (RBMediaServer2Plugin *plugin)
 	for (l = plugin->sources; l != NULL; l = l->next) {
 		SourceRegistrationData *source_data = l->data;
 		if (source_data->updated) {
-			g_dbus_connection_emit_signal (plugin->connection, NULL, source_data->dbus_path, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "Updated", NULL, NULL);
+			emit_updated (plugin->connection, source_data->dbus_path);
 			source_data->updated = FALSE;
 		}
 	}
 
-	/* subtrees */
+	/* .. subtrees .. */
 
 	/* root */
 	if (plugin->root_updated) {
-		g_dbus_connection_emit_signal (plugin->connection, NULL, RB_MEDIASERVER2_ROOT, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "Updated", NULL, NULL);
+		emit_updated (plugin->connection, RB_MEDIASERVER2_ROOT);
 		plugin->root_updated = FALSE;
 	}
 
@@ -593,7 +617,13 @@ count_sources_by_parent (RBMediaServer2Plugin *plugin, const char *parent_dbus_p
 }
 
 static void
-list_sources_by_parent (RBMediaServer2Plugin *plugin, GVariantBuilder *list, const char *parent_dbus_path, guint *list_offset, guint *list_count, guint list_max, const char **filter)
+list_sources_by_parent (RBMediaServer2Plugin *plugin,
+			GVariantBuilder *list,
+			const char *parent_dbus_path,
+			guint *list_offset,
+			guint *list_count,
+			guint list_max,
+			const char **filter)
 {
 	GList *l;
 	for (l = plugin->sources; l != NULL; l = l->next) {
@@ -657,6 +687,8 @@ source_updated (SourceRegistrationData *source_data, gboolean count_changed)
 	}
 }
 
+/* signal handlers for source container updates */
+
 static void
 row_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, SourceRegistrationData *source_data)
 {
@@ -670,7 +702,11 @@ row_deleted_cb (GtkTreeModel *model, GtkTreePath *path, SourceRegistrationData *
 }
 
 static void
-entry_prop_changed_cb (RhythmDBQueryModel *model, RhythmDBPropType prop, const GValue *old, const GValue *new_value, SourceRegistrationData *source_data)
+entry_prop_changed_cb (RhythmDBQueryModel *model,
+		       RhythmDBPropType prop,
+		       const GValue *old,
+		       const GValue *new_value,
+		       SourceRegistrationData *source_data)
 {
 	if (entry_property_maps (prop)) {
 		source_updated (source_data, FALSE);
@@ -694,7 +730,7 @@ connect_query_model_signals (SourceRegistrationData *source_data)
 }
 
 static void
-update_base_query_model (RBSource *source, GParamSpec *pspec, SourceRegistrationData *source_data)
+base_query_model_updated_cb (RBSource *source, GParamSpec *pspec, SourceRegistrationData *source_data)
 {
 	if (source_data->base_query_model != NULL) {
 		disconnect_query_model_signals (source_data);
@@ -707,10 +743,20 @@ update_base_query_model (RBSource *source, GParamSpec *pspec, SourceRegistration
 	source_updated (source_data, TRUE);
 }
 
+static void
+name_updated_cb (RBSource *source, GParamSpec *pspec, SourceRegistrationData *source_data)
+{
+	source_updated (source_data, FALSE);
+}
+
 
 
 static void
-register_source_container (RBMediaServer2Plugin *plugin, RBSource *source, const char *dbus_path, const char *parent_dbus_path, gboolean subtree)
+register_source_container (RBMediaServer2Plugin *plugin,
+			   RBSource *source,
+			   const char *dbus_path,
+			   const char *parent_dbus_path,
+			   gboolean subtree)
 {
 	SourceRegistrationData *source_data;
 
@@ -718,7 +764,7 @@ register_source_container (RBMediaServer2Plugin *plugin, RBSource *source, const
 	source_data->source = g_object_ref (source);
 	source_data->dbus_path = g_strdup (dbus_path);
 	source_data->parent_dbus_path = g_strdup (parent_dbus_path);
-	source_data->plugin = plugin;		/* this doesn't need a reference */
+	source_data->plugin = plugin;
 
 	if (subtree == FALSE) {
 		GDBusInterfaceInfo *container_iface;
@@ -729,14 +775,14 @@ register_source_container (RBMediaServer2Plugin *plugin, RBSource *source, const
 
 	g_object_get (source, "base-query-model", &source_data->base_query_model, NULL);
 	connect_query_model_signals (source_data);
-	g_signal_connect (source, "notify::base-query-model", G_CALLBACK (update_base_query_model), source_data);
+	g_signal_connect (source, "notify::base-query-model", G_CALLBACK (base_query_model_updated_cb), source_data);
+	g_signal_connect (source, "notify::name", G_CALLBACK (name_updated_cb), source_data);
 
 	/* add to registration list */
 	plugin->sources = g_list_append (plugin->sources, source_data);
 
-	/* emit 'updated' signal on parent container (hm, only do this when not activating?) (maybe use an idle handler?) */
+	/* emit 'updated' signal on parent container */
 	g_dbus_connection_emit_signal (plugin->connection, NULL, parent_dbus_path, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "Updated", NULL, NULL);
-	/* (do we care if this fails?) */
 }
 
 static void
@@ -756,18 +802,17 @@ unregister_source_container (RBMediaServer2Plugin *plugin, RBSource *source, gbo
 
 	/* remove signal handlers */
 	disconnect_query_model_signals (source_data);
-	g_signal_handlers_disconnect_by_func (source, G_CALLBACK (update_base_query_model), source_data);
+	g_signal_handlers_disconnect_by_func (source, G_CALLBACK (base_query_model_updated_cb), source_data);
+	g_signal_handlers_disconnect_by_func (source, G_CALLBACK (name_updated_cb), source_data);
 
 	if (deactivating == FALSE) {
 		/* remove from registration list */
 		plugin->sources = g_list_remove (plugin->sources, source_data);
 
-		/* emit 'updated' signal on parent container (maybe use idle handler?) */
+		/* emit 'updated' signal on parent container */
 		g_dbus_connection_emit_signal (plugin->connection, NULL, source_data->parent_dbus_path, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "Updated", NULL, NULL);
 
 		destroy_registration_data (source_data);
-	} else {
-		/* source data is cleaned up in a second pass through the list */
 	}
 }
 
@@ -876,8 +921,7 @@ static const GDBusInterfaceVTable root_vtable =
 	NULL
 };
 
-
-
+/* plugin */
 
 static void
 name_acquired_cb (GDBusConnection *connection, const char *name, RBMediaServer2Plugin *plugin)
@@ -927,7 +971,7 @@ impl_activate (RBPlugin *bplugin,
 	/* register root */
 	register_object (plugin, &root_vtable, container_iface, RB_MEDIASERVER2_ROOT, G_OBJECT (plugin), plugin->root_reg_id);
 
-	/* register fixed sources (library, podcasts, .. iradio?) */
+	/* register fixed sources (library, podcasts, etc.) */
 	g_object_get (shell, "library-source", &source, NULL);
 	register_source_container (plugin, source, RB_MEDIASERVER2_LIBRARY, RB_MEDIASERVER2_ROOT, FALSE);
 	g_object_unref (source);
@@ -981,7 +1025,7 @@ impl_deactivate	(RBPlugin *bplugin,
 	rb_list_destroy_free (plugin->sources, (GDestroyNotify) destroy_registration_data);
 	plugin->sources = NULL;
 
-	/* unregister subtrees somehow */
+	/* .. unregister subtrees .. */
 
 	if (plugin->entry_reg_id != 0) {
 		g_dbus_connection_unregister_subtree (plugin->connection, plugin->entry_reg_id);
