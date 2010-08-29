@@ -280,8 +280,17 @@ handle_result (GDBusMethodInvocation *invocation, gboolean ret, GError *error)
 	if (ret) {
 		g_dbus_method_invocation_return_value (invocation, NULL);
 	} else {
-		g_dbus_method_invocation_return_gerror (invocation, error);
-		g_error_free (error);
+		if (error != NULL) {
+			rb_debug ("returning error: %s", error->message);
+			g_dbus_method_invocation_return_gerror (invocation, error);
+			g_error_free (error);
+		} else {
+			rb_debug ("returning unknown error");
+			g_dbus_method_invocation_return_error_literal (invocation,
+								       G_DBUS_ERROR,
+								       G_DBUS_ERROR_FAILED,
+								       "Unknown error");
+		}
 	}
 }
 
