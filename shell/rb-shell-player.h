@@ -120,7 +120,9 @@ gboolean		rb_shell_player_get_playing_time(RBShellPlayer *player,
 gboolean		rb_shell_player_set_playing_time(RBShellPlayer *player,
                                                          guint time,
                                                          GError **error);
-void			rb_shell_player_seek		(RBShellPlayer *player, glong offset);
+gboolean		rb_shell_player_seek		(RBShellPlayer *player,
+							 gint32 offset,
+							 GError **error);
 long			rb_shell_player_get_playing_song_duration (RBShellPlayer *player);
 
 gboolean		rb_shell_player_get_playing	(RBShellPlayer *player,

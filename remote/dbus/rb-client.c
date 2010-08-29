@@ -50,6 +50,7 @@ static gboolean hide = FALSE;
 
 static gboolean next = FALSE;
 static gboolean previous = FALSE;
+static gint32 seek = 0;
 
 static gboolean notify = FALSE;
 
@@ -90,6 +91,7 @@ static GOptionEntry args[] = {
 
 	{ "next", 0, 0, G_OPTION_ARG_NONE, &next, N_("Jump to next song"), NULL },
 	{ "previous", 0, 0, G_OPTION_ARG_NONE, &previous, N_("Jump to previous song"), NULL },
+	{ "seek", 0, 0, G_OPTION_ARG_INT64, &seek, N_("Seek in current track"), NULL },
 
 	{ "notify", 0, 0, G_OPTION_ARG_NONE, &notify, N_("Show notification of the playing song"), NULL },
 
@@ -654,7 +656,7 @@ main (int argc, char **argv)
 	}
 
 	/* don't present if we're doing something else */
-	if (next || previous ||
+	if (next || previous || (seek != 0) ||
 	    clear_queue ||
 	    play_uri || other_stuff ||
 	    play || do_pause || play_pause || stop ||
@@ -689,6 +691,13 @@ main (int argc, char **argv)
 	} else if (previous) {
 		rb_debug ("previous track");
 		org_gnome_Rhythmbox_Player_previous (player_proxy, &error);
+		annoy (&error);
+	}
+
+	/* seek in track */
+	if (seek != 0) {
+		rb_debug ("seek");
+		org_gnome_Rhythmbox_Player_seek (player_proxy, seek, &error);
 		annoy (&error);
 	}
 

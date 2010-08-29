@@ -129,9 +129,9 @@ media_player_key_pressed (DBusGProxy *proxy,
 			rb_shell_player_set_playback_state (plugin->shell_player, !shuffle, repeat);
 		}
 	} else if (strcmp (key, "FastForward") == 0) {
-		rb_shell_player_seek (plugin->shell_player, FFWD_OFFSET);
+		rb_shell_player_seek (plugin->shell_player, FFWD_OFFSET, NULL);
 	} else if (strcmp (key, "Rewind") == 0) {
-		rb_shell_player_seek (plugin->shell_player, -RWD_OFFSET);
+		rb_shell_player_seek (plugin->shell_player, -RWD_OFFSET, NULL);
 	}
 }
 

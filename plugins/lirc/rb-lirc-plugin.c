@@ -163,9 +163,9 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 		} else if (strcmp (str, RB_IR_COMMAND_PREVIOUS) == 0) {
 			rb_shell_player_do_previous (plugin->shell_player, NULL);
 		} else if (strcmp (str, RB_IR_COMMAND_SEEK_FORWARD) == 0) {
-			rb_shell_player_seek (plugin->shell_player, FFWD_OFFSET);
+			rb_shell_player_seek (plugin->shell_player, FFWD_OFFSET, NULL);
 		} else if (strcmp (str, RB_IR_COMMAND_SEEK_BACKWARD) == 0) {
-			rb_shell_player_seek (plugin->shell_player, -RWD_OFFSET);
+			rb_shell_player_seek (plugin->shell_player, -RWD_OFFSET, NULL);
 		} else if (strcmp (str, RB_IR_COMMAND_VOLUME_UP) == 0) {
 			rb_shell_player_set_volume_relative (plugin->shell_player, 0.1, NULL);
 		} else if (strcmp (str, RB_IR_COMMAND_VOLUME_DOWN) == 0) {

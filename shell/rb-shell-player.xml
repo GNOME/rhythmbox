@@ -16,6 +16,11 @@
       <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_do_next"/>
     </method>
 
+    <method name="seek">
+      <annotation name="org.freedestop.DBus.GLib.CSymbol" value="rb_shell_player_seek"/>
+      <arg type="u" name="offset" direction="in"/>
+    </method>
+
     <method name="getPlaying">
       <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_get_playing"/>
       <arg type="b" name="playing" direction="out"/>

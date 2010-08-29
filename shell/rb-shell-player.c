@@ -3333,20 +3333,33 @@ rb_shell_player_set_playing_time (RBShellPlayer *player,
  * rb_shell_player_seek:
  * @player: the #RBShellPlayer
  * @offset: relative seek target (in seconds)
+ * @error: returns error information
  *
- * Seeks forwards or backwards in the current playing song.
- * Does not return error information.
+ * Seeks forwards or backwards in the current playing
+ * song. Fails if the current song is not seekable.
+ *
+ * Return value: %TRUE if successful
  */
-void
-rb_shell_player_seek (RBShellPlayer *player, glong offset)
+gboolean
+rb_shell_player_seek (RBShellPlayer *player,
+		      gint32 offset,
+		      GError **error)
 {
-	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
+	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), FALSE);
 
 	if (rb_player_seekable (player->priv->mmplayer)) {
-		gint64 t = rb_player_get_time (player->priv->mmplayer);
-		if (t < 0)
-			t = 0;
-		rb_player_set_time (player->priv->mmplayer, t + (offset * RB_PLAYER_SECOND));
+		gint64 target_time = rb_player_get_time (player->priv->mmplayer) +
+			(((gint64)offset) * RB_PLAYER_SECOND);
+		if (target_time < 0)
+			target_time = 0;
+		rb_player_set_time (player->priv->mmplayer, target_time);
+		return TRUE;
+	} else {
+		g_set_error (error,
+			     RB_SHELL_PLAYER_ERROR,
+			     RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE,
+			     _("Current song is not seekable"));
+		return FALSE;
 	}
 }
 
