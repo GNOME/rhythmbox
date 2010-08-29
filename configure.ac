@@ -901,6 +901,7 @@ plugins/sendto/Makefile
 plugins/replaygain/Makefile
 plugins/replaygain/replaygain/Makefile
 plugins/mpris/Makefile
+plugins/dbus-media-server/Makefile
 bindings/Makefile
 bindings/python/Makefile
 bindings/vala/Makefile

@@ -59,6 +59,8 @@ SUBDIRS += fmradio
 endif
 
 if USE_GDBUS
-SUBDIRS += mpris
+SUBDIRS += 						\
+	dbus-media-server				\
+	mpris
 endif
 

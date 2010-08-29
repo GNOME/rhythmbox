@@ -1658,5 +1658,27 @@
 	<long>True if the MPRIS plugin is hidden.</long>
 	</locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/dbus-media-server/active</key>
+        <applyto>/apps/rhythmbox/plugins/dbus-media-server/active</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the MediaServer2 plugin is enabled.</short>
+	<long>True if the MediaServer2 plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/dbus-media-server/hidden</key>
+        <applyto>/apps/rhythmbox/plugins/dbus-media-server/hidden</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the MediaServer2 plugin is hidden.</short>
+	<long>True if the MediaServer2 plugin is hidden.</long>
+	</locale>
+      </schema>
     </schemalist>
 </gconfschemafile>
