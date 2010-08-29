@@ -1641,6 +1641,10 @@ rb_shell_player_play (RBShellPlayer *player,
 
 	if (player->priv->current_playing_source == NULL) {
 		rb_debug ("current playing source is NULL");
+		g_set_error (error,
+			     RB_SHELL_PLAYER_ERROR,
+			     RB_SHELL_PLAYER_ERROR_NOT_PLAYING,
+			     "Current playing source is NULL");
 		return FALSE;
 	}
 
