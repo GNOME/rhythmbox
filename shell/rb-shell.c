@@ -3123,7 +3123,7 @@ rb_shell_guess_source_for_uri (RBShell *shell,
 		s = rb_source_want_uri (source, uri);
 		if (s > strength) {
 			gchar *name;
-			
+
 			g_object_get (source, "name", &name, NULL);
 			rb_debug ("source %s returned strength %u for uri %s",
 				  name, s, uri);
@@ -3179,6 +3179,8 @@ rb_shell_add_uri (RBShell *shell,
 
 typedef struct {
 	RBShell *shell;
+	char *uri;
+	gboolean play;
 	RBSource *playlist_source;
 	gboolean can_use_playlist;
 	gboolean source_is_entry;
@@ -3212,6 +3214,7 @@ handle_playlist_entry_cb (TotemPlParser *playlist,
 		g_object_unref (data->playlist_source);
 		data->playlist_source = NULL;
 		data->can_use_playlist = FALSE;
+		data->source_is_entry = FALSE;
 	}
 }
 
@@ -3226,6 +3229,117 @@ shell_load_uri_done (RBSource *source, const char *uri, RBShell *shell)
 	} else {
 		rb_debug ("unable to find entry for uri %s", uri);
 	}
+}
+
+static void
+load_uri_finish (RBShell *shell, RBSource *entry_source, RhythmDBEntry *entry, gboolean play)
+{
+	if (play == FALSE) {
+		rb_debug ("didn't want to do anything anyway");
+	} else if (entry != NULL) {
+		rb_debug ("found an entry to play");
+		rb_shell_play_entry (shell, entry);
+	} else if (entry_source != NULL) {
+		char *name;
+		GError *error = NULL;
+
+		g_object_get (entry_source, "name", &name, NULL);
+		/* play type 2: we don't have an entry to play, so just play something */
+		if (rb_shell_activate_source (shell, entry_source, 2, &error) == FALSE) {
+			rb_debug ("couldn't activate source %s: %s", name, error->message);
+			g_clear_error (&error);
+		} else {
+			rb_debug ("activated source '%s'", name);
+		}
+		g_free (name);
+	} else {
+		rb_debug ("couldn't do anything");
+	}
+}
+
+static void
+load_uri_parser_finished_cb (GObject *parser, GAsyncResult *res, PlaylistParseData *data)
+{
+	TotemPlParserResult result;
+	RBSource *entry_source = NULL;
+	GError *error = NULL;
+
+	result = totem_pl_parser_parse_finish (TOTEM_PL_PARSER (parser), res, &error);
+	g_object_unref (parser);
+
+	if (error != NULL) {
+		rb_debug ("parsing %s as a playlist failed: %s", data->uri, error->message);
+		g_clear_error (&error);
+	} else if (result == TOTEM_PL_PARSER_RESULT_UNHANDLED) {
+		rb_debug ("%s unhandled", data->uri);
+	} else if (result == TOTEM_PL_PARSER_RESULT_IGNORED) {
+		rb_debug ("%s ignored", data->uri);
+	}
+
+	if (result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
+
+		if (data->can_use_playlist && data->playlist_source) {
+			rb_debug ("adding playlist %s to source", data->uri);
+			rb_source_add_uri (data->playlist_source, data->uri, NULL, NULL, NULL, NULL, NULL);
+
+			/* FIXME: We need some way to determine whether the URI as
+			 * given will appear in the db, or whether something else will.
+			 * This hack assumes we'll never add local playlists to the db
+			 * directly.
+			 */
+			if (rb_uri_is_local (data->uri) && (data->source_is_entry == FALSE)) {
+				data->play = FALSE;
+			}
+
+			if (data->source_is_entry != FALSE) {
+				entry_source = data->playlist_source;
+			}
+		} else {
+			rb_debug ("adding %s as a static playlist", data->uri);
+			if (!rb_playlist_manager_parse_file (data->shell->priv->playlist_manager,
+							     data->uri,
+							     &error)) {
+				rb_debug ("unable to parse %s as a static playlist: %s", data->uri, error->message);
+				g_clear_error (&error);
+			}
+			data->play = FALSE;		/* maybe we should play the new playlist? */
+		}
+	} else {
+		RBSource *source;
+
+		source = rb_shell_guess_source_for_uri (data->shell, data->uri);
+		if (source != NULL) {
+			char *name;
+			g_object_get (source, "name", &name, NULL);
+			if (rb_source_uri_is_source (source, data->uri)) {
+				rb_debug ("%s identifies source %s", data->uri, name);
+				entry_source = source;
+			} else if (data->play) {
+				rb_debug ("adding %s to source %s, will play it when it shows up", data->uri, name);
+				rb_source_add_uri (source, data->uri, NULL, NULL, (RBSourceAddCallback) shell_load_uri_done, g_object_ref (data->shell), g_object_unref);
+				data->play = FALSE;
+			} else {
+				rb_debug ("just adding %s to source %s", data->uri, name);
+				rb_source_add_uri (source, data->uri, NULL, NULL, NULL, NULL, NULL);
+			}
+			g_free (name);
+		} else {
+			rb_debug ("couldn't find a source for %s, trying to add it anyway", data->uri);
+			if (!rb_shell_add_uri (data->shell, data->uri, NULL, NULL, &error)) {
+				rb_debug ("couldn't do it: %s", error->message);
+				g_clear_error (&error);
+			}
+		}
+	}
+
+	load_uri_finish (data->shell, entry_source, NULL, data->play);
+
+	if (data->playlist_source != NULL) {
+		g_object_unref (data->playlist_source);
+	}
+	g_object_unref (data->shell);
+	g_free (data->uri);
+	g_free (data);
 }
 
 /**
@@ -3254,7 +3368,6 @@ rb_shell_load_uri (RBShell *shell,
 		   GError **error)
 {
 	RhythmDBEntry *entry;
-	RBSource *entry_source;
 
 	/* If the URI points to a Podcast, pass it on to
 	 * the Podcast source */
@@ -3265,110 +3378,37 @@ rb_shell_load_uri (RBShell *shell,
 	}
 
 	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
-	entry_source = NULL;
 
 	if (entry == NULL) {
 		TotemPlParser *parser;
-		TotemPlParserResult result;
-		PlaylistParseData data;
+		PlaylistParseData *data;
 
-		data.shell = shell;
-		data.can_use_playlist = TRUE;
-		data.source_is_entry = FALSE;
-		data.playlist_source = NULL;
+		data = g_new0 (PlaylistParseData, 1);
+		data->shell = g_object_ref (shell);
+		data->uri = g_strdup (uri);
+		data->play = play;
+		data->can_use_playlist = TRUE;
+		data->source_is_entry = FALSE;
+		data->playlist_source = NULL;
 
 		rb_debug ("adding uri %s, play %d", uri, play);
 		parser = totem_pl_parser_new ();
 
-		g_signal_connect_data (G_OBJECT (parser), "entry-parsed",
+		g_signal_connect_data (parser, "entry-parsed",
 				       G_CALLBACK (handle_playlist_entry_cb),
 				       &data, NULL, 0);
 
 		totem_pl_parser_add_ignored_mimetype (parser, "x-directory/normal");
 		totem_pl_parser_add_ignored_mimetype (parser, "inode/directory");
 		totem_pl_parser_add_ignored_scheme (parser, "cdda");
-		g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
-
-		result = totem_pl_parser_parse (parser, uri, FALSE);
-		g_object_unref (parser);
-
-		if (result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
-			if (data.can_use_playlist && data.playlist_source) {
-				rb_debug ("adding playlist %s to source", uri);
-				rb_source_add_uri (data.playlist_source, uri, NULL, NULL, NULL, NULL, NULL);
-
-				/* FIXME: We need some way to determine whether the URI as
-				 * given will appear in the db, or whether something else will.
-				 * This hack assumes we'll never add local playlists to the db
-				 * directly.
-				 */
-				if (rb_uri_is_local (uri) && (data.source_is_entry == FALSE)) {
-					play = FALSE;
-				}
-			} else {
-				rb_debug ("adding %s as a static playlist", uri);
-				if (!rb_playlist_manager_parse_file (shell->priv->playlist_manager,
-								     uri, error))
-					return FALSE;
-			}
-		} else {
-			RBSource *source;
-
-			source = rb_shell_guess_source_for_uri (shell, uri);
-			if (source != NULL) {
-				char *name;
-				g_object_get (source, "name", &name, NULL);
-				if (rb_source_uri_is_source (source, uri)) {
-					rb_debug ("%s identifies source %s", uri, name);
-					entry_source = source;
-				} else if (play) {
-					rb_debug ("adding %s to source %s, will play it when it shows up", uri, name);
-					rb_source_add_uri (source, uri, NULL, NULL, (RBSourceAddCallback) shell_load_uri_done, g_object_ref (shell), g_object_unref);
-					play = FALSE;
-				} else {
-					rb_debug ("just adding %s to source %s", uri, name);
-					rb_source_add_uri (source, uri, NULL, NULL, NULL, NULL, NULL);
-				}
-				g_free (name);
-			} else {
-				rb_debug ("couldn't find a source for %s, trying to add it anyway", uri);
-				if (!rb_shell_add_uri (shell, uri, NULL, NULL, error)) {
-					rb_debug ("couldn't do it: %s", (*error)->message);
-					return FALSE;
-				}
-			}
+		g_object_set (parser, "recurse", FALSE, NULL);
+		if (rb_debug_matches ("totem_pl_parser_parse_async", "totem-pl-parser.c")) {
+			g_object_set (parser, "debug", TRUE, NULL);
 		}
 
-		if (data.source_is_entry != FALSE) {
-			entry_source = data.playlist_source;
-		} else if (data.playlist_source != NULL) {
-			g_object_unref (data.playlist_source);
-		}
-	}
-
-	if (play) {
-		if (entry_source != NULL) {
-			char *name;
-			int play_type = 0;
-			if (entry == NULL) {
-				/* we don't have a specific entry to play, so just play something */
-				play_type = 2;
-			}
-
-			if (rb_shell_activate_source (shell, entry_source, play_type, error) == FALSE) {
-				return FALSE;
-			}
-
-			g_object_get (entry_source, "name", &name, NULL);
-			rb_debug ("Activated source '%s' for uri %s", name, uri);
-			g_free (name);
-
-			return TRUE;
-		}
-
-		if (entry) {
-			rb_shell_play_entry (shell, entry);
-		}
+		totem_pl_parser_parse_async (parser, uri, FALSE, NULL, (GAsyncReadyCallback)load_uri_parser_finished_cb, data);
+	} else {
+		load_uri_finish (shell, NULL, entry, play);
 	}
 
 	return TRUE;
