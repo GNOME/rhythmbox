@@ -1,3 +1,90 @@
+Overview of changes in Rhythmbox 0.13.1  "So Tired"
+===================================================
+
+* Support for MPRIS version 2
+* RhythmDBEntryType converted to a GObject to improve binding sanity
+* Improved handling of files on unmounted devices and network shares
+  - Only attempts to check files on core filesystems and mounted local
+    devices
+  - Doesn't check files on network shares, relying on playback error
+    reporting to identify missing files
+* New less annoying method of handling invocation for media player devices
+* rhythmbox-client now waits long enough to control a newly started instance
+* More reliably imports and plays files specified on the command line
+  (opening a file with nautilus will now do something useful most of the time)
+* Use the current sorting column for typeahead searching
+* Extended (static) vala bindings
+* Initial implementation of the Rygel MediaServer2 D-Bus specification
+
+Bugs fixed:
+
+329984 - Type-ahead should work for any visible column
+482813 - rhythmbox-client --enqueue doesn't work if uri not in library
+488308 - blocks for 25s after volume key press sometimes
+498582 - rhythmbox-client --enqueue won't cope with equals sign
+544154 - RB to realize unmounted remote libraries
+581076 - expansion of Vala bindings coverage
+609542 - Signal for announcing end of "startup" phase i.e. scanning sources
+623024 - Sync mp3 songs with MTP device failed
+623153 - Different pop-up menu layout in playlists creation
+623667 - Album Art not working - MTP
+623992 - Compile errors in rhythmbox 0.13
+624646 - New Default Rhythmbox Radio Stations
+624895 - Rhythmbox fails to compile with libdmapsharing 2.0, DAAP plugin fails to enable.
+625103 - gst encoder must strdup media_type
+625105 - Sync state UI cannot show media disk usage >4GB on 32-bit OS
+625124 - Improve RBEncoder and RBTrackTransferBatch error handling
+625130 - Change encoding filter order
+625375 - Crash in process_tag at rb-player-gst.c line 204
+626608 - Add support for seek in rhythmbox-client
+626986 - Please fix escaping of UTF-chars in ui file
+627050 - metadata crawler aborts when files are modified
+627396 - Switch to full-screen or leave full-screen visualization by double clicking the visualization canvas
+627949 - IM Status plugin crashing with AttributeError: 'rhythmdb.EntryType' object has no attribute 'category'
+627951 - crash on closing with g_hash_table_iter_init
+628076 - Rhythmbox crashes on startup
+628254 - segfault: trying to change properties of a song
+
+Code contributors:
+
+Andrea Del Signore
+Bastien Nocera
+Brian Cameron
+Daniel Hams
+Gabor Kelemen
+Jonathan Matthew
+Karl Ljungkvist
+Philipp Kerling
+Scott J. Goldman
+Wladimir Leuschner
+Zeeshan Ali (Khattak)
+
+
+New and updated translations:
+
+- cs, courtesy of Marek Černocký
+- de, courtesy of Mario Blättermann
+- en_GB, courtesy of Bruce Cowan
+- eo, courtesy of Kristjan SCHMIDT
+- es, courtesy of Jorge González
+- et, courtesy of Mattias Põldaru
+- fr, courtesy of Claude Paroz
+- gl, courtesy of Fran Dieguez
+- hu, courtesy of Gabor Kelemen
+- ja, courtesy of Kiyotaka NISHIBORI
+- nb, courtesy of Kjartan Maraas
+- nn, courtesy of Åsmund Skjæveland
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Djavan Fagundes
+- pt, courtesy of Filipe Gomes
+- ru, courtesy of Yuri Myasoedov
+- sl, courtesy of Andrej Žnidaršič
+- sr, courtesy of Милош Поповић
+- sr@latin, courtesy of Miloš Popović
+- sv, courtesy of Daniel Nylander
+- zh_CN, courtesy of YunQiang Su
+
+
 Overview of changes in Rhythmbox 0.13.0  "Albatross"
 ====================================================
 
