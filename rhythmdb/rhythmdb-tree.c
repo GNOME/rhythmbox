@@ -517,7 +517,6 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 			rb_debug ("pre-Date entry found, causing re-read");
 			ctx->entry->mtime = 0;
 		}
-#if 0
 		if (ctx->entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
 			RhythmDBPodcastFields *podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (ctx->entry, RhythmDBPodcastFields);
 			/* Handle upgrades from 0.9.2.
@@ -542,7 +541,6 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 				ctx->entry->mountpoint = tmp;
 			}
 		}
-#endif
 		if (ctx->entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
 			/* Since we now care about mountpoints for all local entries, not just
 			 * those on things that actually get mounted and unmounted, we need to
@@ -578,7 +576,6 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 					rhythmdb_commit (RHYTHMDB (ctx->db));
 					ctx->batch_count = 0;
 				}
-#if 0
 			} else if (ctx->entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST &&
 				   entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
 				rb_debug ("found song entry with duplicate location for Podcast post %s. merging metadata",
@@ -602,7 +599,6 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 					rhythmdb_commit (RHYTHMDB (ctx->db));
 					ctx->batch_count = 0;
 				}
-#endif
 			} else {
 				rb_debug ("found entry with duplicate location %s. merging metadata",
 					  rb_refstring_get (ctx->entry->location));
