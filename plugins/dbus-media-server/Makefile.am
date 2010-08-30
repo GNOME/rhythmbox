@@ -5,7 +5,7 @@ plugin_LTLIBRARIES = libdbus-media-server.la
 
 libdbus_media_server_la_SOURCES = \
 	rb-dbus-media-server-plugin.c			\
-	dbus-media-player-spec.h			\
+	dbus-media-server-spec.h			\
 	$(NULL)
 
 libdbus_media_server_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
