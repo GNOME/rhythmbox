@@ -732,6 +732,19 @@ add_mtp_track_to_db (RBMtpSource *source,
 					       &value);
 		g_value_unset (&value);
 	}
+	/* Set release date */
+	if (track->date != NULL && track->date[0] != '\0') {
+		GTimeVal tv;
+		if (g_time_val_from_iso8601 (track->date, &tv)) {
+			GDate d;
+			GValue value = {0, };
+			g_value_init (&value, G_TYPE_ULONG);
+			g_date_set_time_val (&d, &tv);
+			g_value_set_ulong (&value, g_date_get_julian (&d));
+			rhythmdb_entry_set (RHYTHMDB (db), entry, RHYTHMDB_PROP_DATE, &value);
+			g_value_unset (&value);
+		}
+	}
 
 	/* Set title */
 	entry_set_string_prop (RHYTHMDB (db), entry, RHYTHMDB_PROP_TITLE, track->title);
@@ -968,7 +981,7 @@ mtp_tracklist_cb (LIBMTP_track_t *tracks, RBMtpSource *source)
 static char *
 gdate_to_char (GDate* date)
 {
-	return g_strdup_printf ("%04i%02i%02iT0000.0",
+	return g_strdup_printf ("%04i%02i%02iT000000.0",
 				g_date_get_year (date),
 				g_date_get_month (date),
 				g_date_get_day (date));
