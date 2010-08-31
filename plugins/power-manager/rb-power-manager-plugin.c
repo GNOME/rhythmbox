@@ -195,7 +195,7 @@ inhibit (RBGPMPlugin *plugin)
 				 G_TYPE_STRING, "rhythmbox",
 				 G_TYPE_UINT, xid,
 				 G_TYPE_STRING, _("Playing"),
-				 G_TYPE_UINT, 8, /* flags */
+				 G_TYPE_UINT, 4, /* flags */
 				 G_TYPE_INVALID);
 
 	return FALSE;
