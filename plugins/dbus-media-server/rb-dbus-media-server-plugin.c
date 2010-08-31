@@ -887,6 +887,9 @@ get_root_property (GDBusConnection *connection,
 			return g_variant_new_string (object_path);
 		} else if (g_strcmp0 (property_name, "DisplayName") == 0) {
 			char *share_name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
+			if (share_name == NULL || share_name[0] == '\0') {
+				share_name = g_strdup ("@REALNAME@'s Rhythmbox on @HOSTNAME@");
+			}
 			v = g_variant_new_string (share_name);
 			g_free (share_name);
 			return v;
