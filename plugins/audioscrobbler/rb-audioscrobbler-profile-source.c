@@ -56,6 +56,7 @@ struct _RBAudioscrobblerProfileSourcePrivate {
 
 	/* Used to request the user's profile data */
 	RBAudioscrobblerUser *user;
+	guint update_timeout_id;
 
 	/* List of radio stations owned by this source */
 	GList *radio_sources;
@@ -183,6 +184,9 @@ static void radio_station_name_changed_cb (RBAudioscrobblerRadioSource *radio,
                                            GParamSpec *spec,
                                            RBAudioscrobblerProfileSource *source);
 
+/* periodically attempts tp update the profile data */
+static gboolean update_timeout_cb (RBAudioscrobblerProfileSource *source);
+
 /* callbacks from user profile data requests */
 static void user_info_updated_cb (RBAudioscrobblerUser *user,
                                   RBAudioscrobblerUserData *info,
@@ -229,6 +233,8 @@ static void list_item_listen_top_fans_activated_cb (GtkMenuItem *menuitem,
                                                     RBAudioscrobblerProfileSource *source);
 
 /* RBSource implementations */
+static void impl_activate (RBSource *asource);
+static void impl_deactivate (RBSource *asource);
 static GList *impl_get_ui_actions (RBSource *asource);
 static gboolean impl_show_popup (RBSource *asource);
 static void impl_delete_thyself (RBSource *asource);
@@ -300,6 +306,8 @@ rb_audioscrobbler_profile_source_class_init (RBAudioscrobblerProfileSourceClass 
 	object_class->set_property = rb_audioscrobbler_profile_source_set_property;
 
 	source_class = RB_SOURCE_CLASS (klass);
+	source_class->impl_activate = impl_activate;
+	source_class->impl_deactivate = impl_deactivate;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
@@ -1328,6 +1336,14 @@ rb_audioscrobbler_profile_source_remove_radio_station (RBAudioscrobblerProfileSo
 	}
 }
 
+static gboolean
+update_timeout_cb (RBAudioscrobblerProfileSource *source)
+{
+	rb_audioscrobbler_user_update (source->priv->user);
+
+	return TRUE;
+}
+
 static void
 user_info_updated_cb (RBAudioscrobblerUser *user,
                       RBAudioscrobblerUserData *data,
@@ -1857,6 +1873,27 @@ list_item_listen_top_fans_activated_cb (GtkMenuItem *menuitem,
 	g_free (radio_name);
 	g_object_unref (shell);
 	g_object_unref (sourcelist);
+}
+
+static void
+impl_activate (RBSource *asource)
+{
+	RBAudioscrobblerProfileSource *source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (asource);
+
+	/* attempt to update now and again every 5 minutes */
+	rb_audioscrobbler_user_update (source->priv->user);
+	source->priv->update_timeout_id = g_timeout_add_seconds (300,
+	                                                         (GSourceFunc) update_timeout_cb,
+	                                                         source);
+}
+
+static void
+impl_deactivate (RBSource *asource)
+{
+	RBAudioscrobblerProfileSource *source = RB_AUDIOSCROBBLER_PROFILE_SOURCE (asource);
+
+	g_source_remove (source->priv->update_timeout_id);
+	source->priv->update_timeout_id = 0;
 }
 
 static GList *
