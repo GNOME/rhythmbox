@@ -39,6 +39,13 @@
 #define USER_PROFILE_IMAGE_SIZE 126
 #define LIST_ITEM_IMAGE_SIZE 34
 
+#define USER_INFO_LIFETIME 86400             /* 24 hours */
+#define RECENT_TRACKS_LIFETIME 3600          /* 1 hour */
+#define TOP_TRACKS_LIFETIME 86400            /* 24 hours */
+#define LOVED_TRACKS_LIFETIME 86400          /* 24 hours */
+#define TOP_ARTISTS_LIFETIME 86400           /* 24 hours */
+#define RECOMMENDED_ARTISTS_LIFETIME 86400   /* 24 hours */
+
 static RBAudioscrobblerUserData *
 rb_audioscrobbler_user_data_copy (RBAudioscrobblerUserData *data)
 {
@@ -145,9 +152,13 @@ static void load_from_cache (RBAudioscrobblerUser *user);
 
 static char * calculate_cached_response_path (RBAudioscrobblerUser *user,
                                               const char *request_name);
+static gboolean is_cached_response_expired (RBAudioscrobblerUser *user,
+                                            const char *request_name,
+                                            long lifetime);
 static void save_response_to_cache (RBAudioscrobblerUser *user,
                                     const char *request_name,
                                     const char *data);
+
 static GPtrArray * parse_track_array (RBAudioscrobblerUser *user, JsonArray *track_array);
 static GPtrArray * parse_artist_array (RBAudioscrobblerUser *user, JsonArray *track_array);
 
@@ -478,12 +489,49 @@ void
 rb_audioscrobbler_user_update (RBAudioscrobblerUser *user)
 {
 	if (user->priv->username != NULL) {
-		request_user_info (user);
-		request_recent_tracks (user, 15);
-		request_top_tracks (user, 15);
-		request_loved_tracks (user, 15);
-		request_top_artists (user, 15);
-		request_recommended_artists (user, 15);
+		/* update if cached data is no longer valid */
+		if (is_cached_response_expired (user, "user_info", USER_INFO_LIFETIME)) {
+			rb_debug ("cached user info response is expired, updating");
+			request_user_info (user);
+		} else {
+			rb_debug ("cached user info response is still valid, not updating");
+		}
+
+		if (is_cached_response_expired (user, "recent_tracks", RECENT_TRACKS_LIFETIME)) {
+			rb_debug ("cached recent tracks response is expired, updating");
+			request_recent_tracks (user, 15);
+		} else {
+			rb_debug ("cached recent tracks response is still valid, not updating");
+		}
+
+		if (is_cached_response_expired (user, "top_tracks", TOP_TRACKS_LIFETIME)) {
+			rb_debug ("cached top tracks response is expired, updating");
+			request_top_tracks (user, 15);
+		} else {
+			rb_debug ("cached top tracks response is still valid, not updating");
+		}
+
+		if (is_cached_response_expired (user, "loved_tracks", LOVED_TRACKS_LIFETIME)) {
+			rb_debug ("cached loved tracks response is expired, updating");
+			request_loved_tracks (user, 15);
+		} else {
+			rb_debug ("cached loved tracks response is still valid, not updating");
+		}
+
+		if (is_cached_response_expired (user, "top_artists", TOP_ARTISTS_LIFETIME)) {
+			rb_debug ("cached top artists response is expired, updating");
+			request_top_artists (user, 15);
+		} else {
+			rb_debug ("cached top artists is still valid, not updating");
+		}
+
+		if (is_cached_response_expired (user, "recommended_artists", RECOMMENDED_ARTISTS_LIFETIME)) {
+			rb_debug ("cached recommended artists response is expired, updating");
+			request_recommended_artists (user, 15);
+		} else {
+			rb_debug ("cached recommended artists response is still valid, not updating");
+		}
+
 	}
 }
 
@@ -545,6 +593,40 @@ calculate_cached_response_path (RBAudioscrobblerUser *user, const char *request_
 	                         user->priv->username,
 	                         request_name,
 	                         NULL);
+}
+
+static gboolean
+is_cached_response_expired (RBAudioscrobblerUser *user,
+                            const char *request_name,
+                            long lifetime)
+{
+	char *response_path;
+	GFile *file;
+	GFileInfo *info;
+
+	response_path = calculate_cached_response_path (user, request_name);
+	file = g_file_new_for_path (response_path);
+	info = g_file_query_info (file,
+	                          G_FILE_ATTRIBUTE_TIME_MODIFIED,
+	                          G_FILE_QUERY_INFO_NONE,
+	                          NULL,
+	                          NULL);
+	g_free (response_path);
+	g_object_unref (file);
+
+	if (info == NULL) {
+		return TRUE;
+	} else {
+		GTimeVal now;
+		GTimeVal modified;
+
+		g_get_current_time (&now);
+		g_file_info_get_modification_time (info, &modified);
+
+		g_object_unref (info);
+
+		return now.tv_sec - modified.tv_sec > lifetime;
+	}
 }
 
 static void
