@@ -145,26 +145,59 @@ id3_tagger (GstElement *pipeline, GstElement *link_to, GstTagList *tags)
 {
 	GstElement *demux = NULL;
 	GstElement *mux = NULL;
+	GstPad *link_src = NULL;
+	GstStructure *link_type;
 
-	/* TODO use new id3tag element here; not sure what name it'll end up with though */
-	demux = gst_element_factory_make ("id3demux", NULL);
+	/* TODO use new id3tag element here once it's in gst-plugins-good */
 	mux = gst_element_factory_make ("id3v2mux", NULL);
-	if (demux == NULL || mux == NULL)
-		goto error;
+	if (mux == NULL) {
+		return NULL;
+	}
 
-	gst_bin_add_many (GST_BIN (pipeline), demux, mux, NULL);
-	if (!gst_element_link (link_to, demux))
+	/* if the input stream doesn't contain id3 tags already, we can just link the
+	 * tag writer to it and we're done.
+	 */
+	link_src = gst_element_get_static_pad (link_to, "src");
+	if (link_src == NULL) {
+		rb_debug ("couldn't get src pad to link to?");
 		goto error;
+	}
 
-	g_signal_connect (demux, "pad-added", (GCallback)id3_pad_added_cb, mux);
-	gst_element_set_state (demux, GST_STATE_PAUSED);
+	link_type = gst_caps_get_structure (GST_PAD_CAPS (link_src), 0);
+	if (gst_structure_has_name (link_type, "application/x-id3") == FALSE) {
+		rb_debug ("input file has no tags, plugging id3 muxer directly");
+		gst_bin_add (GST_BIN (pipeline), mux);
+		if (!gst_element_link (link_to, mux)) {
+			gst_bin_remove (GST_BIN (pipeline), mux);
+			goto error;
+		}
+	} else {
+		rb_debug ("input file already has tags, using id3demux first");
+		demux = gst_element_factory_make ("id3demux", NULL);
+		if (demux == NULL)
+			goto error;
+
+		gst_bin_add_many (GST_BIN (pipeline), demux, mux, NULL);
+		if (!gst_element_link (link_to, demux)) {
+			gst_bin_remove_many (GST_BIN (pipeline), demux, mux, NULL);
+			goto error;
+		}
+
+		g_signal_connect (demux, "pad-added", (GCallback)id3_pad_added_cb, mux);
+		gst_element_set_state (demux, GST_STATE_PAUSED);
+	}
+
 	gst_element_set_state (mux, GST_STATE_PAUSED);
-
 	gst_tag_setter_merge_tags (GST_TAG_SETTER (mux), tags, GST_TAG_MERGE_REPLACE_ALL);
 	return mux;
 
 error:
-	g_object_unref (demux);
+	if (link_src != NULL) {
+		gst_object_unref (link_src);
+	}
+	if (demux != NULL) {
+		g_object_unref (demux);
+	}
 	g_object_unref (mux);
 	return NULL;
 }
@@ -1029,7 +1062,7 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 	source = gst_element_make_from_uri (GST_URI_SRC, uri, "urisrc");
 	if (source == NULL) {
 		plugin_name = "urisrc";
-		goto missing_plugin;	
+		goto missing_plugin;
 	}
 	gst_bin_add (GST_BIN (pipeline), source);
 
