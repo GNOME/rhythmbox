@@ -138,11 +138,12 @@ rb_encoder_gst_class_init (RBEncoderGstClass *klass)
 							 NULL,
 							 (GDestroyNotify)gst_caps_unref);
 
-	/* AAC */
+	/* M4A/AAC */
 	caps = gst_caps_new_simple ("audio/mpeg",
 				    "mpegversion", G_TYPE_INT, 4,
 				    NULL);
 	g_hash_table_insert (klass->media_caps_table, "audio/aac", caps);
+	g_hash_table_insert (klass->media_caps_table, "audio/x-m4a", caps);
 
 	/* MP3 */
 	caps = gst_caps_new_simple ("audio/mpeg",
@@ -159,6 +160,13 @@ rb_encoder_gst_class_init (RBEncoderGstClass *klass)
 	/* FLAC */
 	caps = gst_caps_new_simple ("audio/x-flac", NULL);
 	g_hash_table_insert (klass->media_caps_table, "audio/flac", caps);
+
+	/* create the media type -> extension fallback mapping table */
+	klass->media_extension_table = g_hash_table_new (g_str_hash, g_str_equal);
+	g_hash_table_insert (klass->media_extension_table, "audio/mpeg", "mp3");
+	g_hash_table_insert (klass->media_extension_table, "audio/x-vorbis", "ogg");
+	g_hash_table_insert (klass->media_extension_table, "audio/x-flac", "flac");
+	g_hash_table_insert (klass->media_extension_table, "audio/x-m4a", "m4a");
 }
 
 static void
@@ -1126,6 +1134,26 @@ rb_encoder_gst_encode (RBEncoder *bencoder,
 	}
 }
 
+static char *
+get_extension_for_media_type (RBEncoder *encoder, const char *media_type)
+{
+	char *ext;
+	GMAudioProfile *profile;
+
+	profile = get_profile_from_media_type (RB_ENCODER_GST (encoder), media_type);
+	if (profile) {
+		ext = g_strdup (gm_audio_profile_get_extension (profile));
+		rb_debug ("got extension %s from profile", ext);
+		g_object_unref (profile);
+	} else {
+		GHashTable *map = RB_ENCODER_GST_GET_CLASS (encoder)->media_extension_table;
+		ext = g_strdup (g_hash_table_lookup (map, media_type));
+		rb_debug ("got extension %s from fallback extension map", ext);
+	}
+
+	return ext;
+}
+
 static gboolean
 rb_encoder_gst_get_media_type (RBEncoder *encoder,
 			       RhythmDBEntry *entry,
@@ -1160,6 +1188,9 @@ rb_encoder_gst_get_media_type (RBEncoder *encoder,
 				/* ugh */
 				return FALSE;
 			}
+			rb_debug ("selected preferred media type %s (extension %s)",
+				  mt,
+				  gm_audio_profile_get_extension (profile));
 			if (media_type != NULL)
 				*media_type = g_strdup (mt);
 			if (extension != NULL)
@@ -1167,6 +1198,9 @@ rb_encoder_gst_get_media_type (RBEncoder *encoder,
 		} else {
 			if (media_type != NULL)
 				*media_type = g_strdup (src_media_type);
+
+			if (extension != NULL)
+				*extension = get_extension_for_media_type (encoder, src_media_type);
 		}
 		return TRUE;
 	}
@@ -1176,12 +1210,8 @@ rb_encoder_gst_get_media_type (RBEncoder *encoder,
 		rb_debug ("found source media type %s in destination type list", src_media_type);
 		if (media_type != NULL)
 			*media_type = g_strdup (src_media_type);
-		profile = get_profile_from_media_type (RB_ENCODER_GST (encoder), src_media_type);
-		if (profile) {
-			if (extension != NULL)
-				*extension = g_strdup (gm_audio_profile_get_extension (profile));
-			g_object_unref (profile);
-		}
+		if (extension != NULL)
+			*extension = get_extension_for_media_type (encoder, src_media_type);
 		return TRUE;
 	}
 
@@ -1195,7 +1225,9 @@ rb_encoder_gst_get_media_type (RBEncoder *encoder,
 		mt = (const char *)l->data;
 		profile = get_profile_from_media_type (RB_ENCODER_GST (encoder), mt);
 		if (profile) {
-			rb_debug ("selected destination media type %s", mt);
+			rb_debug ("selected destination media type %s (extension %s)",
+				  mt,
+				  gm_audio_profile_get_extension (profile));
 			if (extension != NULL)
 				*extension = g_strdup (gm_audio_profile_get_extension (profile));
 
