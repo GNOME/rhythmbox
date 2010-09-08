@@ -674,9 +674,10 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 	g_object_set (sourcelist->priv->treeview,
 		      "headers-visible", FALSE,
 		      "reorderable", TRUE,
+		      "enable-search", TRUE,
+		      "search-column", RB_SOURCELIST_MODEL_COLUMN_NAME,
 		      NULL);
 
-	gtk_tree_view_set_enable_search (GTK_TREE_VIEW (sourcelist->priv->treeview), FALSE);
 	rb_sourcelist_model_set_dnd_targets (RB_SOURCELIST_MODEL (sourcelist->priv->filter_model),
 					     GTK_TREE_VIEW (sourcelist->priv->treeview));
 
