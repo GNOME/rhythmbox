@@ -315,21 +315,32 @@ rb_cell_renderer_pixbuf_activate (GtkCellRenderer *cell,
 				  GdkRectangle *cell_area,
 				  GtkCellRendererState flags)
 {
-	int mouse_x, mouse_y, icon_width;
-	RBCellRendererPixbuf *cellpixbuf = (RBCellRendererPixbuf *) cell;
+  int mouse_x, mouse_y;
+  RBCellRendererPixbuf *cellpixbuf = (RBCellRendererPixbuf *) cell;
 
-	g_return_val_if_fail (RB_IS_CELL_RENDERER_PIXBUF (cellpixbuf), FALSE);
+  g_return_val_if_fail (RB_IS_CELL_RENDERER_PIXBUF (cellpixbuf), FALSE);
 
-	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_width, NULL);
-	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
-	gtk_tree_view_convert_widget_to_bin_window_coords (GTK_TREE_VIEW (widget),
-							   mouse_x, mouse_y,
-							   &mouse_x, &mouse_y);
+  if (event == NULL) {
+    return FALSE;
+  }
+  /* only handle mouse events */
+  switch (event->type) {
+    case GDK_BUTTON_PRESS:
+    case GDK_BUTTON_RELEASE:
+      break;
+    default:
+      return FALSE;
+  }
 
-	/* ensure the user clicks within the good cell */
-	if (mouse_x - cell_area->x >= 0
-	    && mouse_x - cell_area->x <= cell_area->width) {
-		g_signal_emit (G_OBJECT (cellpixbuf), rb_cell_renderer_pixbuf_signals [PIXBUF_CLICKED], 0, path);
-	}
-	return TRUE;
+  gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
+  gtk_tree_view_convert_widget_to_bin_window_coords (GTK_TREE_VIEW (widget),
+						     mouse_x, mouse_y,
+						     &mouse_x, &mouse_y);
+
+  /* ensure the user clicks within the good cell */
+  if (mouse_x - cell_area->x >= 0
+      && mouse_x - cell_area->x <= cell_area->width) {
+    g_signal_emit (G_OBJECT (cellpixbuf), rb_cell_renderer_pixbuf_signals [PIXBUF_CLICKED], 0, path);
+  }
+  return TRUE;
 }
