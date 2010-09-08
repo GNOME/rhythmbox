@@ -45,6 +45,7 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
         rb.Plugin.__init__(self)
         self.coherence = None
         self.config = gconf.client_get_default()
+        self.entry_type = None
 
         if self.config.get(gconf_keys['dmc_active']) is None:
             # key not yet found represented by "None"
