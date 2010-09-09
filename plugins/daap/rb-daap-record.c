@@ -38,6 +38,7 @@
 struct RBDAAPRecordPrivate {
 	guint64 filesize;
 	char *location;
+	int mediakind;
 	char *format;	 /* Format, possibly after transcoding. */
 	char *real_format;
 	char *title;
@@ -66,6 +67,7 @@ enum {
 	PROP_ALBUM,
 	PROP_ARTIST,
 	PROP_GENRE,
+	PROP_MEDIAKIND,
 	PROP_FORMAT,
 	PROP_DURATION,
 	PROP_TRACK,
@@ -110,6 +112,9 @@ rb_daap_record_set_property (GObject *object,
 		case PROP_GENRE:
 			g_free (record->priv->genre);
 			record->priv->genre = g_value_dup_string (value);
+			break;
+		case PROP_MEDIAKIND:
+			record->priv->mediakind = g_value_get_int (value);
 			break;
 		case PROP_FORMAT:
 			g_free (record->priv->format);
@@ -186,6 +191,9 @@ rb_daap_record_get_property (GObject *object,
 			break;
 		case PROP_GENRE:
 			g_value_set_string (value, record->priv->genre);
+			break;
+		case PROP_MEDIAKIND:
+			g_value_set_int (value, record->priv->mediakind);
 			break;
 		case PROP_FORMAT:
 			g_value_set_string (value, record->priv->format);
@@ -282,6 +290,7 @@ rb_daap_record_class_init (RBDAAPRecordClass *klass)
 	g_object_class_override_property (gobject_class, PROP_ALBUM, "daap.songalbum");
 	g_object_class_override_property (gobject_class, PROP_ARTIST, "daap.songartist");
 	g_object_class_override_property (gobject_class, PROP_GENRE, "daap.songgenre");
+	g_object_class_override_property (gobject_class, PROP_MEDIAKIND, "mediakind");
 	g_object_class_override_property (gobject_class, PROP_FORMAT, "format");
 	g_object_class_override_property (gobject_class, PROP_RATING, "rating");
 	g_object_class_override_property (gobject_class, PROP_FILESIZE, "filesize");
@@ -380,6 +389,7 @@ RBDAAPRecord *rb_daap_record_new (RhythmDBEntry *entry)
 		} else {
 			ext++;
 		}
+		record->priv->mediakind = DMAP_MEDIA_KIND_MUSIC;
 		record->priv->real_format = g_strdup (ext);
 		record->priv->format = g_strdup (record->priv->real_format);
 
