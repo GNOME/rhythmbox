@@ -95,6 +95,7 @@ void rb_audioscrobbler_user_set_authentication_details (RBAudioscrobblerUser *us
                                                         const char *session_key);
 
 void rb_audioscrobbler_user_update (RBAudioscrobblerUser *user);
+void rb_audioscrobbler_user_force_update (RBAudioscrobblerUser *user);
 
 void rb_audioscrobbler_user_love_track (RBAudioscrobblerUser *user,
                                         const char *title,

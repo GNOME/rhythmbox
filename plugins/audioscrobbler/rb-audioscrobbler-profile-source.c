@@ -1073,7 +1073,7 @@ download_track_batch_complete_cb (RBTrackTransferBatch *batch,
 static void
 refresh_profile_action_cb (GtkAction *action, RBAudioscrobblerProfileSource *source)
 {
-	rb_audioscrobbler_user_update (source->priv->user);
+	rb_audioscrobbler_user_force_update (source->priv->user);
 }
 
 void

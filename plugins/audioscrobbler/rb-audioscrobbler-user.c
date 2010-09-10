@@ -535,6 +535,20 @@ rb_audioscrobbler_user_update (RBAudioscrobblerUser *user)
 	}
 }
 
+void
+rb_audioscrobbler_user_force_update (RBAudioscrobblerUser *user)
+{
+	if (user->priv->username != NULL) {
+		rb_debug ("forcing update of user data");
+		request_user_info (user);
+		request_recent_tracks (user, 15);
+		request_top_tracks (user, 15);
+		request_loved_tracks (user, 15);
+		request_top_artists (user, 15);
+		request_recommended_artists (user, 15);
+	}
+}
+
 static void
 load_from_cache (RBAudioscrobblerUser *user)
 {
