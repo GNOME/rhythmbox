@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-09-11 16:49+0000\n"
+"POT-Creation-Date: 2010-09-23 15:56+0000\n"
 "PO-Revision-Date: 2010-09-12 02:09+0900\n"
 "Last-Translator: Kiyotaka NISHIBORI <ml.nishibori.kiyotaka@gmail.com>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
@@ -682,10 +682,10 @@ msgstr "%Y年%B%d日"
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:128
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:132
 #: ../plugins/audiocd/rb-audiocd-source.c:514
-#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
-#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:478
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:482
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:590
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:594
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:119
 #: ../plugins/generic-player/rb-generic-player-source.c:1021
 #: ../plugins/ipod/rb-ipod-source.c:409
@@ -724,7 +724,7 @@ msgstr "%s を %s へ移動できません: %s"
 #: ../lib/rb-file-helpers.c:432
 #, c-format
 msgid "Too many symlinks"
-msgstr "シンボリック・リンクが多すぎます"
+msgstr "シンボリックリンクが多すぎます"
 
 #: ../lib/rb-file-helpers.c:1235
 #, c-format
@@ -1033,7 +1033,7 @@ msgid "Cannot read CD: %s"
 msgstr "CD を読み込めません: %s"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:712
+#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:1
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -1041,24 +1041,43 @@ msgstr "Last.fm"
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
 msgstr "楽曲の情報を Last.fm に報告して Last.fm のラジオ番組を再生します"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:1
-msgid "Account Login"
-msgstr "アカウント"
+#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
+msgid "Libre.fm"
+msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:2
+#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:3
+msgid "Which Audioscrobbler services do you wish to use?"
+msgstr ""
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:1
+#, fuzzy
+msgid "Create Station"
+msgstr "ラジオ局の削除"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:2
+#, fuzzy
+msgid "Create a Radio Station"
+msgstr "新しい FM ラジオ局を作成します"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:3
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:818
 msgid "Disabled"
 msgstr "無効"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:3
-msgid "Join the Rhythmbox group"
-msgstr "Rhythmbox グループに参加する"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:4
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:4
 msgid "Last submission time:"
 msgstr "最後に登録した日時:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:965
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:5
+msgid "Logout"
+msgstr ""
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:6
+#, fuzzy
+msgid "Loved Tracks"
+msgstr "お気に入りのトラック"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:7
 #: ../plugins/iradio/rb-station-properties-dialog.c:499
 #: ../rhythmdb/rhythmdb.c:3585 ../widgets/rb-entry-view.c:1035
 #: ../widgets/rb-entry-view.c:1647 ../widgets/rb-entry-view.c:1660
@@ -1066,285 +1085,348 @@ msgstr "最後に登録した日時:"
 msgid "Never"
 msgstr "未"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:6
-msgid "New to Last.fm?"
-msgstr "Last.fm の利用は初めてですか?"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:7
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 msgid "Queued tracks:"
 msgstr "キューに登録したトラック数:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:8
-msgid "Sign up for an account"
-msgstr "このアカウントで登録する"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
+#, fuzzy
+msgid "Recently Listened Tracks"
+msgstr "おすすめトラック"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:9
-msgid "Statistics"
-msgstr "統計"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:10
+#, fuzzy
+msgid "Recommendations"
+msgstr "おすすめトラック"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:10
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:11
 msgid "Status:"
 msgstr "状態:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:11
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:12
+#, fuzzy
+msgid "Submission statistics"
+msgstr "統計"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:13
+msgid "Submit listening data"
+msgstr ""
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:14
+#, fuzzy
+msgid "Top Artists"
+msgstr "アーティスト"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:15
+#, fuzzy
+msgid "Top Tracks"
+msgstr "トラック:"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:16
 msgid "Tracks submitted:"
 msgstr "登録したトラック数:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:12
-msgid "_Password:"
-msgstr "パスワード(_P):"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:17
+msgid "Type:"
+msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:13
-msgid "_Username:"
-msgstr "ユーザ名(_U):"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:18
+msgid "View your profile"
+msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:211
-msgid "Last.fm Preferences"
-msgstr "Last.fm の設定"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:988
-msgid "OK"
-msgstr "OK"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:991
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1782
-msgid "Logging in"
-msgstr "ログイン中"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:994
-msgid "Request failed"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:249
+#, fuzzy
+msgid "Refresh Profile"
 msgstr "ログイン要求が失敗しました"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:997
-msgid "Incorrect username or password"
-msgstr "ユーザ名かパスワードが間違っています"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:250
+msgid "Refresh your Profile"
+msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1000
-msgid "Clock is not set correctly"
-msgstr "時計が正しく設定されていません"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:624
+msgid "Love"
+msgstr "お気に入り"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1003
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:882
-msgid "This version of Rhythmbox has been banned from Last.fm."
-msgstr "このバージョンの Rhythmbox が Last.fm からバンされています"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:625
+msgid "Mark this song as loved"
+msgstr "お気に入りに登録します"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1006
-msgid "Track submission failed too many times"
-msgstr "トラックの登録に複数回失敗しました"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:627
+msgid "Ban"
+msgstr "拒否"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
-msgid "Similar Artists radio"
-msgstr "似てるアーティスト・ラジオ"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:628
+msgid "Ban the current track from being played again"
+msgstr "現在のトラックを再び再生されることがないようにします"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1269
-#, c-format
-msgid "Artists similar to %s"
-msgstr "%s に似たアーティスト"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:630
+#, fuzzy
+msgid "Download"
+msgstr "ダウンロードが完了しました"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
-msgid "Tag radio"
-msgstr "タグ・ラジオ"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:631
+#, fuzzy
+msgid "Download the currently playing track"
+msgstr "現在、何も再生していません"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
-#, c-format
-msgid "Tracks tagged with %s"
-msgstr "タグ %s が付いたトラック"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:736
+#, fuzzy
+msgid "You are not currently logged in."
+msgstr "現在、何も再生していません"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-msgid "Artist Fan radio"
-msgstr "アーティスト・ファンのラジオ"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:737
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:755
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:762
+#, fuzzy
+msgid "Log in"
+msgstr "ログイン中"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1271
-#, c-format
-msgid "Artists liked by fans of %s"
-msgstr "%s のファンに好まれるアーティスト"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:743
+msgid "Waiting for authentication..."
+msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
-msgid "Group radio"
-msgstr "グループ・ラジオ"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:744
+#, fuzzy
+msgid "Cancel"
+msgstr "キャンセル(_C)"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
-#, c-format
-msgid "Tracks liked by the %s group"
-msgstr "%s というグループに好まれるトラック"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:754
+msgid "Authentication error. Please try logging in again."
+msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:199
-msgid "Neighbour radio"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:761
+msgid "Connection error. Please try logging in again."
+msgstr ""
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1176
+#, fuzzy
+msgid "My Library"
+msgstr "ライブラリ"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1184
+#, fuzzy
+msgid "My Recommendations"
+msgstr "おすすめトラック"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1192
+#, fuzzy
+msgid "My Neighbourhood"
 msgstr "近くのラジオ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:199
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1279
-#, c-format
-msgid "%s's Neighbour Radio"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1359
+#, fuzzy, c-format
+msgid "%s plays"
+msgstr "%s さんのプレイリスト"
+
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This is the label for menu item which when activated will take the user to the
+#. * artist/track's page on the service's website.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1617
+#, fuzzy, c-format
+msgid "_View on %s"
+msgstr "表示(_V)"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:54
+#, fuzzy
+msgid "Similar to Artist:"
+msgstr "似てるアーティスト・ラジオ"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:55
+#, fuzzy
+msgid "Top Fans of Artist:"
+msgstr "アーティストへ寄付する(_D)"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:56
+#, fuzzy
+msgid "Library of User:"
+msgstr "ライブラリ"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:57
+msgid "Neighbourhood of User:"
+msgstr ""
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:58
+#, fuzzy
+msgid "Tracks Loved by User:"
+msgstr "%s というグループに好まれるトラック"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:59
+msgid "Recommendations for User:"
+msgstr ""
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:60
+#, fuzzy
+msgid "Tracks Tagged with:"
+msgstr "タグ %s が付いたトラック"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:61
+msgid "Listended by Group:"
+msgstr ""
+
+#. Translators: station is built from artists similar to the artist %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:95
+#, fuzzy, c-format
+msgid "%s Radio"
+msgstr "ラジオ"
+
+#. Translators: station is built from the artist %s's top fans
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:97
+#, fuzzy, c-format
+msgid "%s Fan Radio"
+msgstr "%s さんの %s ラジオ"
+
+#. Translators: station is built from the library of the user %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:99
+#, fuzzy, c-format
+msgid "%s's Library"
+msgstr "ライブラリ"
+
+#. Translators: station is built from the "neighbourhood" of the user %s.
+#. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:102
+#, fuzzy, c-format
+msgid "%s's Neighbourhood"
 msgstr "%s さんの近くのラジオ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:200
-msgid "Personal radio"
-msgstr "個人的なラジオ"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:200
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1283
-#, c-format
-msgid "%s's Personal Radio"
-msgstr "%s さんの個人的なラジオ"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:201
-msgid "Loved tracks"
-msgstr "お気に入りのトラック"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:201
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1285
+#. Translators: station is built from the tracks which have been "loved" by the user %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:104
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr "%s さんのお気に入りのトラック"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:202
-msgid "Recommended tracks"
-msgstr "おすすめトラック"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:202
-#, c-format
-msgid "Tracks recommended to %s"
-msgstr "%s さんにおすすめのトラック"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:203
-msgid "Playlist"
-msgstr "プレイリスト"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:203
-#, c-format
-msgid "%s's playlist"
-msgstr "%s さんのプレイリスト"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
-msgid "Love"
-msgstr "お気に入り"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
-msgid "Mark this song as loved"
-msgstr "お気に入りに登録します"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
-msgid "Ban"
-msgstr "拒否"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
-msgid "Ban the current track from being played again"
-msgstr "現在のトラックを再び再生されることがないようにします"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
-msgid "Delete Station"
-msgstr "ラジオ局の削除"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
-msgid "Delete the selected station"
-msgstr "選択したラジオ局を削除します"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:295
-msgid "Download song"
-msgstr "楽曲のダウンロード"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:296
-msgid "Download this song"
-msgstr "この楽曲をダウンロードします"
-
-#. awful
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:499
-msgid "Enter the item to build a Last.fm station out of:"
-msgstr "次の Last.fm 局を構築するアイテムを入力してください:"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:502
-msgid "Add"
-msgstr "追加する"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:853
-msgid "Account Settings"
-msgstr "アカウントの設定"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:878
-msgid ""
-"Account details are needed before you can connect.  Check your settings."
-msgstr ""
-"Last.fm に接続するにはアカウントの設定が必要です。まずは設定を確認してくださ"
-"い。"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:886
-msgid "Unable to connect"
-msgstr "接続できません"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1260
-#, c-format
-msgid "Global Tag %s"
-msgstr "グローバルなタグ %s"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1281
-#, c-format
-msgid "%s's Recommended Radio: %s percent"
+#. Translators: station is built from the tracks which are recommended to the user %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:106
+#, fuzzy, c-format
+msgid "%s's Recommended Radio"
 msgstr "%s さんが推奨するラジオ: %s パーセント"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1287
-#, c-format
-msgid "%s's Playlist"
-msgstr "%s さんのプレイリスト"
+#. Translators: station is built from the tracks which have been "tagged" with %s.
+#. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
+#. * but nationalities, record labels, decades and very random words are also commmon
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:110
+#, fuzzy, c-format
+msgid "%s Tag Radio"
+msgstr "タグ・ラジオ"
 
-#. Translators: variables are 1: user name, 2: tag name; for user tag radio
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1293
-#, c-format
-msgid "%s's %s Radio"
-msgstr "%s さんの %s ラジオ"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1297
+#. Translators: station is built from the library of the group %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:112
 #, c-format
 msgid "%s Group Radio"
 msgstr "%s というグループ・ラジオ"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1752
-msgid "Neighbour Radio"
-msgstr "近くのラジオ"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:255
+#, fuzzy
+msgid "_Rename Station"
+msgstr "iPod の名前の変更"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1760
-msgid "Personal Radio"
-msgstr "個人的なラジオ"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:256
+#, fuzzy
+msgid "Rename station"
+msgstr "iPod の名前の変更"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1850
-msgid "Server did not respond"
-msgstr "サーバからの応答がありませんでした"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:258
+#, fuzzy
+msgid "_Delete Station"
+msgstr "ラジオ局の削除"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1918
-msgid "There is not enough content available to play this station."
-msgstr "このラジオ局のコンテンツが不十分のため利用できません。"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:259
+#, fuzzy
+msgid "Delete station"
+msgstr "ラジオ局の削除"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1923
-msgid "This station is available to subscribers only."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:422
+msgid "You must enter your password to listen to this station"
+msgstr ""
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:733
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1076
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1206
+msgid "Error tuning station: no response"
+msgstr ""
+
+#. Invalid station url
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:770
+#, fuzzy
+msgid "Invalid station URL"
+msgstr "URL が間違っています"
+
+#. Subscriber only station
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This message indicates that to listen to this radio station the user needs to be
+#. * a paying subscriber to the service.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:776
+#, fuzzy, c-format
+msgid "This station is only available to %s subscribers"
 msgstr "このラジオ局は会員専用です。"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1930
-msgid ""
-"The streaming system is offline for maintenance, please try again later."
-msgstr ""
-"メンテナンスのためストリーミング・システムがオフラインになっています (あとで"
-"もう一度試してみてください)。"
+#. Not enough content
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:780
+#, fuzzy
+msgid "Not enough content to play station"
+msgstr "このラジオ局のコンテンツが不十分のため利用できません。"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1969
-msgid "Changing station"
+#. Other error
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:783
+#, c-format
+msgid "Error tuning station: %i - %s"
+msgstr ""
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:794
+msgid "Error tuning station: unexpected response"
+msgstr ""
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:799
+msgid "Error tuning station: invalid response"
+msgstr ""
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1191
+#, fuzzy, c-format
+msgid "Error tuning station: %s"
 msgstr "ラジオ局を変更しています"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2190
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2200
-msgid "Retrieving playlist"
-msgstr "プレイリストを取得しています"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1263
+#, c-format
+msgid "Password for streaming %s radio using the deprecated API"
+msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2294
-msgid "Banning song"
-msgstr "楽曲を無視しています"
+#. We could be calling either radio.tune or radio.getPlaylist methods.
+#. * "Tuning station" seems like a user friendly message to display for both cases.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1426
+#, fuzzy
+msgid "Tuning station"
+msgstr "ラジオ局を変更しています"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2312
-msgid "Adding song to your Loved tracks"
-msgstr "楽曲をお気に入りに追加しています"
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:499
+msgid "OK"
+msgstr "OK"
 
-#. and maybe some more
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:502
+msgid "Logging in"
+msgstr "ログイン中"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:505
+msgid "Request failed"
+msgstr "ログイン要求が失敗しました"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:508
+#, fuzzy
+msgid "Authentication error"
+msgstr "D-BUS の接続エラーです"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:511
+msgid "Clock is not set correctly"
+msgstr "時計が正しく設定されていません"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
+#, fuzzy
+msgid "This version of Rhythmbox has been banned."
+msgstr "このバージョンの Rhythmbox が Last.fm からバンされています"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:517
+msgid "Track submission failed too many times"
+msgstr "トラックの登録に複数回失敗しました"
+
 #: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:1
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:1
 msgid "Audio CD Recorder"
@@ -5554,6 +5636,111 @@ msgstr "このデスクトップ"
 #: ../widgets/rb-song-info.c:1263
 msgid "Unknown location"
 msgstr "不明な場所"
+
+#~ msgid "Account Login"
+#~ msgstr "アカウント"
+
+#~ msgid "Join the Rhythmbox group"
+#~ msgstr "Rhythmbox グループに参加する"
+
+#~ msgid "New to Last.fm?"
+#~ msgstr "Last.fm の利用は初めてですか?"
+
+#~ msgid "Sign up for an account"
+#~ msgstr "このアカウントで登録する"
+
+#~ msgid "_Password:"
+#~ msgstr "パスワード(_P):"
+
+#~ msgid "_Username:"
+#~ msgstr "ユーザ名(_U):"
+
+#~ msgid "Last.fm Preferences"
+#~ msgstr "Last.fm の設定"
+
+#~ msgid "Incorrect username or password"
+#~ msgstr "ユーザ名かパスワードが間違っています"
+
+#~ msgid "Artists similar to %s"
+#~ msgstr "%s に似たアーティスト"
+
+#~ msgid "Artist Fan radio"
+#~ msgstr "アーティスト・ファンのラジオ"
+
+#~ msgid "Artists liked by fans of %s"
+#~ msgstr "%s のファンに好まれるアーティスト"
+
+#~ msgid "Group radio"
+#~ msgstr "グループ・ラジオ"
+
+#~ msgid "Personal radio"
+#~ msgstr "個人的なラジオ"
+
+#~ msgid "%s's Personal Radio"
+#~ msgstr "%s さんの個人的なラジオ"
+
+#~ msgid "Tracks recommended to %s"
+#~ msgstr "%s さんにおすすめのトラック"
+
+#~ msgid "Playlist"
+#~ msgstr "プレイリスト"
+
+#~ msgid "Delete the selected station"
+#~ msgstr "選択したラジオ局を削除します"
+
+#~ msgid "Download song"
+#~ msgstr "楽曲のダウンロード"
+
+#~ msgid "Download this song"
+#~ msgstr "この楽曲をダウンロードします"
+
+#~ msgid "Enter the item to build a Last.fm station out of:"
+#~ msgstr "次の Last.fm 局を構築するアイテムを入力してください:"
+
+#~ msgid "Add"
+#~ msgstr "追加する"
+
+#~ msgid "Account Settings"
+#~ msgstr "アカウントの設定"
+
+#~ msgid ""
+#~ "Account details are needed before you can connect.  Check your settings."
+#~ msgstr ""
+#~ "Last.fm に接続するにはアカウントの設定が必要です。まずは設定を確認してくだ"
+#~ "さい。"
+
+#~ msgid "Unable to connect"
+#~ msgstr "接続できません"
+
+#~ msgid "Global Tag %s"
+#~ msgstr "グローバルなタグ %s"
+
+#~ msgid "%s's Playlist"
+#~ msgstr "%s さんのプレイリスト"
+
+#~ msgid "Neighbour Radio"
+#~ msgstr "近くのラジオ"
+
+#~ msgid "Personal Radio"
+#~ msgstr "個人的なラジオ"
+
+#~ msgid "Server did not respond"
+#~ msgstr "サーバからの応答がありませんでした"
+
+#~ msgid ""
+#~ "The streaming system is offline for maintenance, please try again later."
+#~ msgstr ""
+#~ "メンテナンスのためストリーミング・システムがオフラインになっています (あと"
+#~ "でもう一度試してみてください)。"
+
+#~ msgid "Retrieving playlist"
+#~ msgstr "プレイリストを取得しています"
+
+#~ msgid "Banning song"
+#~ msgstr "楽曲を無視しています"
+
+#~ msgid "Adding song to your Loved tracks"
+#~ msgstr "楽曲をお気に入りに追加しています"
 
 #~ msgid "Do you want to overwrite the file \"%s\"?"
 #~ msgstr "\"%s\" というファイルを上書きしますか?"
