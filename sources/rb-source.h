@@ -127,7 +127,7 @@ struct _RBSourceClass
 
 	gboolean	(*impl_try_playlist)	(RBSource *source);
 	guint		(*impl_want_uri)	(RBSource *source, const char *uri);
-	gboolean	(*impl_add_uri)		(RBSource *source,
+	void		(*impl_add_uri)		(RBSource *source,
 						 const char *uri,
 						 const char *title,
 						 const char *genre,
@@ -203,7 +203,7 @@ void		rb_source_song_properties	(RBSource *source);
 gboolean	rb_source_try_playlist		(RBSource *source);
 guint		rb_source_want_uri		(RBSource *source, const char *uri);
 gboolean	rb_source_uri_is_source		(RBSource *source, const char *uri);
-gboolean	rb_source_add_uri		(RBSource *source,
+void		rb_source_add_uri		(RBSource *source,
 						 const char *uri,
 						 const char *title,
 						 const char *genre,

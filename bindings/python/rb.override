@@ -1724,8 +1724,6 @@ _wrap_RBSource__proxy_do_impl_add_uri(RBSource *self, const char*uri, const char
     PyObject *py_uri = NULL;
     PyObject *py_title;
     PyObject *py_genre;
-    gboolean retval;
-    PyObject *py_main_retval;
     PyObject *py_retval;
     PyObject *py_args;
     PyObject *py_method;
@@ -1736,7 +1734,7 @@ _wrap_RBSource__proxy_do_impl_add_uri(RBSource *self, const char*uri, const char
         if (PyErr_Occurred())
             PyErr_Print();
         pyg_gil_state_release(__py_state);
-        return FALSE;
+        return;
     }
     if (uri)
         py_uri = PyString_FromString(uri);
@@ -1745,7 +1743,7 @@ _wrap_RBSource__proxy_do_impl_add_uri(RBSource *self, const char*uri, const char
             PyErr_Print();
         Py_DECREF(py_self);
         pyg_gil_state_release(__py_state);
-        return FALSE;
+        return;
     }
     if (title)
         py_title = PyString_FromString(title);
@@ -1772,30 +1770,9 @@ _wrap_RBSource__proxy_do_impl_add_uri(RBSource *self, const char*uri, const char
         Py_DECREF(py_args);
         Py_DECREF(py_self);
         pyg_gil_state_release(__py_state);
-        return FALSE;
+        return;
     }
     py_retval = PyObject_CallObject(py_method, py_args);
-    if (!py_retval) {
-        if (PyErr_Occurred())
-            PyErr_Print();
-        Py_XDECREF(py_retval);
-        Py_DECREF(py_method);
-        Py_DECREF(py_args);
-        Py_DECREF(py_self);
-        pyg_gil_state_release(__py_state);
-        return FALSE;
-    }
-    py_retval = Py_BuildValue("(N)", py_retval);
-    if (!PyArg_ParseTuple(py_retval, "O", &py_main_retval)) {
-        if (PyErr_Occurred())
-            PyErr_Print();
-        Py_XDECREF(py_retval);
-        Py_DECREF(py_method);
-        Py_DECREF(py_args);
-        Py_DECREF(py_self);
-        pyg_gil_state_release(__py_state);
-        return FALSE;
-    }
     if (callback) {
 	callback (self, uri, data);
 	if (destroy_data) {
@@ -1803,13 +1780,11 @@ _wrap_RBSource__proxy_do_impl_add_uri(RBSource *self, const char*uri, const char
 	}
     }
 
-    retval = PyObject_IsTrue(py_main_retval)? TRUE : FALSE;
-
+    if (PyErr_Occurred())
+	PyErr_Print();
     Py_XDECREF(py_retval);
     Py_DECREF(py_method);
     Py_DECREF(py_args);
     Py_DECREF(py_self);
     pyg_gil_state_release(__py_state);
-  
-    return retval;
 }

@@ -106,13 +106,13 @@ static void impl_song_properties (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
 static GList *impl_get_ui_actions (RBSource *source);
 static guint impl_want_uri (RBSource *source, const char *uri);
-static gboolean impl_add_uri (RBSource *source,
-			      const char *uri,
-			      const char *title,
-			      const char *genre,
-			      RBSourceAddCallback callback,
-			      gpointer data,
-			      GDestroyNotify destroy_data);
+static void impl_add_uri (RBSource *source,
+			  const char *uri,
+			  const char *title,
+			  const char *genre,
+			  RBSourceAddCallback callback,
+			  gpointer data,
+			  GDestroyNotify destroy_data);
 
 static void rb_iradio_source_do_query (RBIRadioSource *source);
 
@@ -656,7 +656,7 @@ impl_want_uri (RBSource *source, const char *uri)
 	return 0;
 }
 
-static gboolean
+static void
 impl_add_uri (RBSource *source,
 	      const char *uri,
 	      const char *title,
@@ -677,7 +677,6 @@ impl_add_uri (RBSource *source,
 			destroy_data (data);
 		}
 	}
-	return TRUE;
 }
 
 static void

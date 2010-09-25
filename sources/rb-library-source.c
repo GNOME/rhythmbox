@@ -84,13 +84,13 @@ static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_can_paste (RBSource *asource);
 static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
 static guint impl_want_uri (RBSource *source, const char *uri);
-static gboolean impl_add_uri (RBSource *source,
-			      const char *uri,
-			      const char *title,
-			      const char *genre,
-			      RBSourceAddCallback callback,
-			      gpointer data,
-			      GDestroyNotify destroy_data);
+static void impl_add_uri (RBSource *source,
+			  const char *uri,
+			  const char *title,
+			  const char *genre,
+			  RBSourceAddCallback callback,
+			  gpointer data,
+			  GDestroyNotify destroy_data);
 static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 
 static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
@@ -1455,7 +1455,7 @@ import_job_callback_cb (RhythmDBImportJob *job, int total, struct ImportJobCallb
 	data->callback (data->source, data->uri, data->data);
 }
 
-static gboolean
+static void
 impl_add_uri (RBSource *asource,
 	      const char *uri,
 	      const char *title,
@@ -1483,7 +1483,6 @@ impl_add_uri (RBSource *asource,
 		cbdata->destroy_data = destroy_data;
 		g_signal_connect_data (job, "complete", G_CALLBACK (import_job_callback_cb), cbdata, (GClosureNotify) import_job_callback_destroy, 0);
 	}
-	return TRUE;
 }
 
 static void

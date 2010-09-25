@@ -255,7 +255,7 @@ static void impl_get_status				(RBSource *source,
 							 char **progress_text,
 							 float *progress);
 static guint impl_want_uri				(RBSource *source, const char *uri);
-static gboolean impl_add_uri				(RBSource *source,
+static void impl_add_uri				(RBSource *source,
 							 const char *uri,
 							 const char *title,
 							 const char *genre,
@@ -2071,7 +2071,7 @@ impl_want_uri (RBSource *source, const char *uri)
 	return 0;
 }
 
-static gboolean
+static void
 impl_add_uri (RBSource *asource,
 	      const char *uri,
 	      const char *title,
@@ -2082,9 +2082,12 @@ impl_add_uri (RBSource *asource,
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
 	rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr, uri, FALSE);
-	callback (asource, uri, data);
-	destroy_data (data);
-	return TRUE;
+	if (callback != NULL) {
+		callback (asource, uri, data);
+		if (destroy_data != NULL) {
+			destroy_data (data);
+		}
+	}
 }
 
 static void

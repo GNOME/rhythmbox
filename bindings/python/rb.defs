@@ -1426,7 +1426,7 @@
 
 (define-virtual impl_add_uri
   (of-object "RBSource")
-  (return-type "gboolean")
+  (return-type "none")
   (parameters
     '("const-char*" "uri")
     '("const-char*" "title" (null-ok))

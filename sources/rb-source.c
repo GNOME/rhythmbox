@@ -1393,10 +1393,8 @@ rb_source_uri_is_source (RBSource *source, const char *uri)
  *
  * Adds an entry corresponding to the URI to the source.  The
  * @title and @genre parameters are not really used.
- *
- * Return value: TRUE if the URI was successfully added to the source
  */
-gboolean
+void
 rb_source_add_uri (RBSource *source,
 		   const char *uri,
 		   const char *title,
@@ -1407,8 +1405,7 @@ rb_source_add_uri (RBSource *source,
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 	if (klass->impl_add_uri)
-		return klass->impl_add_uri (source, uri, title, genre, callback, data, destroy_data);
-	return FALSE;
+		klass->impl_add_uri (source, uri, title, genre, callback, data, destroy_data);
 }
 
 /**
