@@ -1714,3 +1714,102 @@ _wrap_RBSource__proxy_do_impl_search(RBSource *self, RBSourceSearch*search, cons
     Py_DECREF(py_self);
     pyg_gil_state_release(__py_state);
 }
+%%
+override RBSource__proxy_do_impl_add_uri
+static gboolean
+_wrap_RBSource__proxy_do_impl_add_uri(RBSource *self, const char*uri, const char*title, const char*genre, RBSourceAddCallback callback, gpointer data, GDestroyNotify destroy_data)
+{
+    PyGILState_STATE __py_state;
+    PyObject *py_self;
+    PyObject *py_uri = NULL;
+    PyObject *py_title;
+    PyObject *py_genre;
+    gboolean retval;
+    PyObject *py_main_retval;
+    PyObject *py_retval;
+    PyObject *py_args;
+    PyObject *py_method;
+    
+    __py_state = pyg_gil_state_ensure();
+    py_self = pygobject_new((GObject *) self);
+    if (!py_self) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        pyg_gil_state_release(__py_state);
+        return FALSE;
+    }
+    if (uri)
+        py_uri = PyString_FromString(uri);
+    if (!py_uri) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return FALSE;
+    }
+    if (title)
+        py_title = PyString_FromString(title);
+    else {
+        Py_INCREF(Py_None);
+        py_title = Py_None;
+    }
+    if (genre)
+        py_genre = PyString_FromString(genre);
+    else {
+        Py_INCREF(Py_None);
+        py_genre = Py_None;
+    }
+    
+    py_args = PyTuple_New(3);
+    PyTuple_SET_ITEM(py_args, 0, py_uri);
+    PyTuple_SET_ITEM(py_args, 1, py_title);
+    PyTuple_SET_ITEM(py_args, 2, py_genre);
+    
+    py_method = PyObject_GetAttrString(py_self, "do_impl_add_uri");
+    if (!py_method) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_args);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return FALSE;
+    }
+    py_retval = PyObject_CallObject(py_method, py_args);
+    if (!py_retval) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_XDECREF(py_retval);
+        Py_DECREF(py_method);
+        Py_DECREF(py_args);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return FALSE;
+    }
+    py_retval = Py_BuildValue("(N)", py_retval);
+    if (!PyArg_ParseTuple(py_retval, "O", &py_main_retval)) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_XDECREF(py_retval);
+        Py_DECREF(py_method);
+        Py_DECREF(py_args);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return FALSE;
+    }
+    if (callback) {
+	callback (self, uri, data);
+	if (destroy_data) {
+	    destroy_data (data);
+	}
+    }
+
+    retval = PyObject_IsTrue(py_main_retval)? TRUE : FALSE;
+
+    Py_XDECREF(py_retval);
+    Py_DECREF(py_method);
+    Py_DECREF(py_args);
+    Py_DECREF(py_self);
+    pyg_gil_state_release(__py_state);
+  
+    return retval;
+}
