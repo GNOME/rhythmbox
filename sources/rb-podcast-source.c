@@ -1171,7 +1171,8 @@ construct_query_from_selection (RBPodcastSource *source)
 					       RHYTHMDB_QUERY_END);
 			if (g_list_next (l))
 				rhythmdb_query_append (source->priv->db, subquery,
-						       RHYTHMDB_QUERY_DISJUNCTION);
+						       RHYTHMDB_QUERY_DISJUNCTION,
+						       RHYTHMDB_QUERY_END);
 		}
 
 		rhythmdb_query_append (source->priv->db, query,
