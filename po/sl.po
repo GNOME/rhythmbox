@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-08-31 12:55+0000\n"
-"PO-Revision-Date: 2010-08-31 18:34+0100\n"
+"POT-Creation-Date: 2010-09-23 17:34+0000\n"
+"PO-Revision-Date: 2010-09-24 21:43+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 "X-Poedit-Language: Slovenian\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:703
+#: ../backends/gstreamer/rb-encoder-gst.c:711
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Elementa korita GStreamer za pisanje v %s ni mogoče ustvariti"
@@ -702,10 +702,10 @@ msgstr "%d. %b. %Y"
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:128
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:132
 #: ../plugins/audiocd/rb-audiocd-source.c:514
-#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
-#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:478
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:482
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:590
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:594
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:119
 #: ../plugins/generic-player/rb-generic-player-source.c:1021
 #: ../plugins/ipod/rb-ipod-source.c:409
@@ -808,49 +808,49 @@ msgstr "Notranja težava Gstramerja; pošljite poročilo o hrošču"
 msgid "D-BUS communication error"
 msgstr "Napaka D-BUS komunikacije"
 
-#: ../metadata/rb-metadata-gst.c:551
-#: ../metadata/rb-metadata-gst.c:1120
+#: ../metadata/rb-metadata-gst.c:584
+#: ../metadata/rb-metadata-gst.c:1153
 #: ../plugins/cd-recorder/rb-recorder-gst.c:505
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Ustvarjanje predmeta %s je spodletelo; preverite svojo namestitev"
 
-#: ../metadata/rb-metadata-gst.c:748
+#: ../metadata/rb-metadata-gst.c:781
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Ustvarjanje predmeta vira je spodletelo; preverite svojo namestitev"
 
-#: ../metadata/rb-metadata-gst.c:810
+#: ../metadata/rb-metadata-gst.c:843
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Napaka GStreamer: sprememba stanja je spodletela"
 
-#: ../metadata/rb-metadata-gst.c:861
+#: ../metadata/rb-metadata-gst.c:894
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "MIME vrste datoteke ni mogoče določiti"
 
-#: ../metadata/rb-metadata-gst.c:965
+#: ../metadata/rb-metadata-gst.c:998
 #, c-format
 msgid "Unable to identify file type"
 msgstr "Ni mogoče določiti vrste datoteke"
 
-#: ../metadata/rb-metadata-gst.c:978
+#: ../metadata/rb-metadata-gst.c:1011
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Nepodprta vrsta datoteke: %s"
 
-#: ../metadata/rb-metadata-gst.c:988
+#: ../metadata/rb-metadata-gst.c:1021
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "Predmetov zapisovanja oznake ni mogoče ustvariti"
 
-#: ../metadata/rb-metadata-gst.c:1071
+#: ../metadata/rb-metadata-gst.c:1104
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Zakasnitev med nastavljanjem cevovoda na NULL"
 
-#: ../metadata/rb-metadata-gst.c:1096
+#: ../metadata/rb-metadata-gst.c:1129
 #, c-format
 msgid "File corrupted during write"
 msgstr "Med pisanjem se je datoteka pokvarila"
@@ -909,7 +909,7 @@ msgstr "_Nadaljuj"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:150
 msgid "_Extract to Library"
-msgstr "_Razširi v knjižnico"
+msgstr "_Pretvori v knjižnico"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:151
 msgid "Copy tracks to the library"
@@ -1058,7 +1058,7 @@ msgid "Cannot read CD: %s"
 msgstr "CD-ja ni mogoče prebrati: %s"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:712
+#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:1
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -1066,24 +1066,40 @@ msgstr "Last.fm"
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
 msgstr "Pošlje podatke skladbe na Last.fm in predvaja radijske pretoke Last.fm"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:1
-msgid "Account Login"
-msgstr "Prijava v račun"
+#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
+msgid "Libre.fm"
+msgstr "Libre.fm"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:2
+#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:3
+msgid "Which Audioscrobbler services do you wish to use?"
+msgstr "Katere storitve pošiljanja podatkov o poslušanosti skladb želite uporabiti?"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:1
+msgid "Create Station"
+msgstr "Ustvari postajo"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:2
+msgid "Create a Radio Station"
+msgstr "Ustvari radijsko postajo"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:3
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:818
 msgid "Disabled"
 msgstr "Onemogočeno"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:3
-msgid "Join the Rhythmbox group"
-msgstr "Pridruži se skupini Rhythmbox"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:4
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:4
 msgid "Last submission time:"
 msgstr "Čas zadnjega pošiljanja:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:965
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:5
+msgid "Logout"
+msgstr "Odjava"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:6
+msgid "Loved Tracks"
+msgstr "Všečne skladbe"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:7
 #: ../plugins/iradio/rb-station-properties-dialog.c:499
 #: ../rhythmdb/rhythmdb.c:3585
 #: ../widgets/rb-entry-view.c:1035
@@ -1093,279 +1109,320 @@ msgstr "Čas zadnjega pošiljanja:"
 msgid "Never"
 msgstr "Nikoli"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:6
-msgid "New to Last.fm?"
-msgstr "Novi v Last.fm?"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:7
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 msgid "Queued tracks:"
 msgstr "Skladbe v čakalni vrsti:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:8
-msgid "Sign up for an account"
-msgstr "Vpis za račun"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
+msgid "Recently Listened Tracks"
+msgstr "Nedavno poslušane skladbe"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:9
-msgid "Statistics"
-msgstr "Statistika"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:10
+msgid "Recommendations"
+msgstr "Priporočila"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:10
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:11
 msgid "Status:"
 msgstr "Stanje:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:11
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:12
+msgid "Submission statistics"
+msgstr "Statistika pošiljanja"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:13
+msgid "Submit listening data"
+msgstr "Pošiljanje podatkov o poslušanju"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:14
+msgid "Top Artists"
+msgstr "Najboljši izvajalci"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:15
+msgid "Top Tracks"
+msgstr "Najboljše skladbe"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:16
 msgid "Tracks submitted:"
 msgstr "Poslane skladbe:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:12
-msgid "_Password:"
-msgstr "_Geslo:"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:17
+msgid "Type:"
+msgstr "Vrsta:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:13
-msgid "_Username:"
-msgstr "_Uporabniško ime:"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:18
+msgid "View your profile"
+msgstr "Oglejte si svoj profil"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:211
-msgid "Last.fm Preferences"
-msgstr "Možnosti Last.fm"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:249
+msgid "Refresh Profile"
+msgstr "Osveži profil"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:988
-msgid "OK"
-msgstr "V redu"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:250
+msgid "Refresh your Profile"
+msgstr "Osveži vaš profil"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:991
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1782
-msgid "Logging in"
-msgstr "Prijavljanje"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:624
+msgid "Love"
+msgstr "Skladba mi je všeč"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:994
-msgid "Request failed"
-msgstr "Zahteva je spodletela"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:625
+msgid "Mark this song as loved"
+msgstr "Označi skladbo kot všečno"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:997
-msgid "Incorrect username or password"
-msgstr "Nepravilno uporabniško ime ali geslo"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:627
+msgid "Ban"
+msgstr "Izloči"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1000
-msgid "Clock is not set correctly"
-msgstr "Ura ni pravilno nastavljena"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:628
+msgid "Ban the current track from being played again"
+msgstr "Izloči trenutno skladbo iz nadaljnjega predvajanja"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1003
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:882
-msgid "This version of Rhythmbox has been banned from Last.fm."
-msgstr "Ta različica Rhythembox je bila izobčena z Last.fm"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:630
+msgid "Download"
+msgstr "Prejmi"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1006
-msgid "Track submission failed too many times"
-msgstr "Pošiljanje skladbe je prevečkrat spodletelo"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:631
+msgid "Download the currently playing track"
+msgstr "Prejme trenutno predvajano skladbo"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
-msgid "Similar Artists radio"
-msgstr "Radio podobnih izvajalcev"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:736
+msgid "You are not currently logged in."
+msgstr "Trenutno niste prijavljeni."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1269
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:737
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:755
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:762
+msgid "Log in"
+msgstr "Prijava"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:743
+msgid "Waiting for authentication..."
+msgstr "Čakanje na overitev ..."
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:744
+msgid "Cancel"
+msgstr "Prekliči"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:754
+msgid "Authentication error. Please try logging in again."
+msgstr "Napaka overitve. Poskusite se znova prijaviti."
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:761
+msgid "Connection error. Please try logging in again."
+msgstr "Napaka povezave. Poskusite se znova prijaviti."
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1176
+msgid "My Library"
+msgstr "Moja knjižnica"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1184
+msgid "My Recommendations"
+msgstr "Moja priporočila"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1192
+msgid "My Neighbourhood"
+msgstr "Moja soseščina"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1359
 #, c-format
-msgid "Artists similar to %s"
-msgstr "Izvajalci podobni %s"
+msgid "%s plays"
+msgstr "%s se predvaja"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
-msgid "Tag radio"
-msgstr "Označi radio"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This is the label for menu item which when activated will take the user to the
+#. * artist/track's page on the service's website.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1617
 #, c-format
-msgid "Tracks tagged with %s"
-msgstr "Skladbe označene z %s"
+msgid "_View on %s"
+msgstr "_Ogled na %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-msgid "Artist Fan radio"
-msgstr "Radio oboževalca izvajalca"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:54
+msgid "Similar to Artist:"
+msgstr "Podobno izvajalcu:"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1271
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:55
+msgid "Top Fans of Artist:"
+msgstr "Največji oboževalci izvajalca:"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:56
+msgid "Library of User:"
+msgstr "Knjižnica uporabnika:"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:57
+msgid "Neighbourhood of User:"
+msgstr "Soseščina uporabnika:"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:58
+msgid "Tracks Loved by User:"
+msgstr "Skladbe, ki jih uporabnik obožuje:"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:59
+msgid "Recommendations for User:"
+msgstr "Priporočila za  uporabnika:"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:60
+msgid "Tracks Tagged with:"
+msgstr "Skladbe označene z:"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:61
+msgid "Listended by Group:"
+msgstr "Posluša skupina:"
+
+#. Translators: station is built from artists similar to the artist %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:95
 #, c-format
-msgid "Artists liked by fans of %s"
-msgstr "Izvajalci, ki so všeč oboževalcem %s"
+msgid "%s Radio"
+msgstr "Radio %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
-msgid "Group radio"
-msgstr "Skupinski radio"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
+#. Translators: station is built from the artist %s's top fans
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:97
 #, c-format
-msgid "Tracks liked by the %s group"
-msgstr "Skladbe, ki so všeč skupini %s"
+msgid "%s Fan Radio"
+msgstr "Radio oboževalca izvajalca %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:199
-msgid "Neighbour radio"
-msgstr "Sosedski radio"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:199
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1279
+#. Translators: station is built from the library of the user %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:99
 #, c-format
-msgid "%s's Neighbour Radio"
-msgstr "Sosedski radio %s"
+msgid "%s's Library"
+msgstr "Knjižnica osebe %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:200
-msgid "Personal radio"
-msgstr "Osebni radio"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:200
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1283
+#. Translators: station is built from the "neighbourhood" of the user %s.
+#. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:102
 #, c-format
-msgid "%s's Personal Radio"
-msgstr "Osebni radio %s"
+msgid "%s's Neighbourhood"
+msgstr "Soseščina osebe %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:201
-msgid "Loved tracks"
-msgstr "Všečne skladbe"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:201
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1285
+#. Translators: station is built from the tracks which have been "loved" by the user %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:104
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr "Skladbe, ki so všeč %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:202
-msgid "Recommended tracks"
-msgstr "Priporočene skladbe"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:202
+#. Translators: station is built from the tracks which are recommended to the user %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:106
 #, c-format
-msgid "Tracks recommended to %s"
-msgstr "Skladbe priporočene %s"
+msgid "%s's Recommended Radio"
+msgstr "Radio priporočil %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:203
-msgid "Playlist"
-msgstr "Seznam predvajanja"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:203
+#. Translators: station is built from the tracks which have been "tagged" with %s.
+#. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
+#. * but nationalities, record labels, decades and very random words are also commmon
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:110
 #, c-format
-msgid "%s's playlist"
-msgstr "Seznam predvajanja osebe %s"
+msgid "%s Tag Radio"
+msgstr "Radio oznak %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
-msgid "Love"
-msgstr "Skladba mi je všeč"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
-msgid "Mark this song as loved"
-msgstr "Označi skladbo kot všečno"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
-msgid "Ban"
-msgstr "Izloči"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
-msgid "Ban the current track from being played again"
-msgstr "Izloči trenutno skladbo iz nadaljnjega predvajanja"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
-msgid "Delete Station"
-msgstr "Izbris postaje"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
-msgid "Delete the selected station"
-msgstr "Izbris izbrane postaje"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:295
-msgid "Download song"
-msgstr "Prejmi skladbo"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:296
-msgid "Download this song"
-msgstr "Prejemanje te skladbe"
-
-#. awful
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:499
-msgid "Enter the item to build a Last.fm station out of:"
-msgstr "Vnos predmeta iz katerega naj bo izgrajena postaja Last.fm:"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:502
-msgid "Add"
-msgstr "Dodaj"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:853
-msgid "Account Settings"
-msgstr "Nastavitve računa"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:878
-msgid "Account details are needed before you can connect.  Check your settings."
-msgstr "Pred povezavo je treba vnesti podatke računa. Preverite svoje nastavitve."
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:886
-msgid "Unable to connect"
-msgstr "Ni se mogoče povezati"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1260
-#, c-format
-msgid "Global Tag %s"
-msgstr "Splošna oznaka %s"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1281
-#, c-format
-msgid "%s's Recommended Radio: %s percent"
-msgstr "Radio priporoča %s: %s odstotkov"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1287
-#, c-format
-msgid "%s's Playlist"
-msgstr "Seznam predvajanja osebe %s"
-
-#. Translators: variables are 1: user name, 2: tag name; for user tag radio
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1293
-#, c-format
-msgid "%s's %s Radio"
-msgstr "Radio osebe %s - %s "
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1297
+#. Translators: station is built from the library of the group %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:112
 #, c-format
 msgid "%s Group Radio"
 msgstr "Radio skupine %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1752
-msgid "Neighbour Radio"
-msgstr "Sosedski radio"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:255
+msgid "_Rename Station"
+msgstr "_Preimenuj postajo"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1760
-msgid "Personal Radio"
-msgstr "Osebni radio"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:256
+msgid "Rename station"
+msgstr "Preimenovanje postaje"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1850
-msgid "Server did not respond"
-msgstr "Strežnik se ni odzval"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:258
+msgid "_Delete Station"
+msgstr "_Izbriši postajo"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1918
-msgid "There is not enough content available to play this station."
-msgstr "Za predvajanje te postaje ni na voljo dovolj vsebine."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:259
+msgid "Delete station"
+msgstr "Izbris postaje"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1923
-msgid "This station is available to subscribers only."
-msgstr "Ta postaja je na voljo le naročnikom."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:422
+msgid "You must enter your password to listen to this station"
+msgstr "Za poslušanje te postaje morate vnesti svoje geslo"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1930
-msgid "The streaming system is offline for maintenance, please try again later."
-msgstr "Sistem pretakanja ni povezan zaradi vzdrževanja. Poskusite kasneje."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:733
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1076
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1206
+msgid "Error tuning station: no response"
+msgstr "Napaka med uravnavanjem na postajo: brez odziva"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1969
-msgid "Changing station"
-msgstr "Spreminjanje postaje"
+#. Invalid station url
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:770
+msgid "Invalid station URL"
+msgstr "Neveljaven URL postaje"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2190
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2200
-msgid "Retrieving playlist"
-msgstr "Pridobivanje seznama predvajanja"
+#. Subscriber only station
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This message indicates that to listen to this radio station the user needs to be
+#. * a paying subscriber to the service.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:776
+#, c-format
+msgid "This station is only available to %s subscribers"
+msgstr "Ta postaja je na voljo le naročnikom %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2294
-msgid "Banning song"
-msgstr "Izločitev skladbe"
+#. Not enough content
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:780
+msgid "Not enough content to play station"
+msgstr "Ni dovolj vsebine za predvajanje postaje"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2312
-msgid "Adding song to your Loved tracks"
-msgstr "Dodaj skladbo med všečne skladbe"
+#. Other error
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:783
+#, c-format
+msgid "Error tuning station: %i - %s"
+msgstr "Napaka med uravnavanjem na radijsko postajo: %i - %s"
 
-#. and maybe some more
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:794
+msgid "Error tuning station: unexpected response"
+msgstr "Napaka med uravnavanjem na postajo: nepričakovan odziv"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:799
+msgid "Error tuning station: invalid response"
+msgstr "Napaka med uravnavanjem na postajo: neveljaven odziv"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1191
+#, c-format
+msgid "Error tuning station: %s"
+msgstr "Napaka med naravnavanjem na radijski postajo: %s"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1263
+#, c-format
+msgid "Password for streaming %s radio using the deprecated API"
+msgstr "Geslo za pretakanje radija %s z uporabo zastarelega API-ja"
+
+#. We could be calling either radio.tune or radio.getPlaylist methods.
+#. * "Tuning station" seems like a user friendly message to display for both cases.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1426
+msgid "Tuning station"
+msgstr "Naravnavanje na radijsko postajo"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:499
+msgid "OK"
+msgstr "V redu"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:502
+msgid "Logging in"
+msgstr "Prijavljanje"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:505
+msgid "Request failed"
+msgstr "Zahteva je spodletela"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:508
+msgid "Authentication error"
+msgstr "Napaka overitve"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:511
+msgid "Clock is not set correctly"
+msgstr "Ura ni pravilno nastavljena"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
+msgid "This version of Rhythmbox has been banned."
+msgstr "Ta različica Rhythembox je bila izobčena"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:517
+msgid "Track submission failed too many times"
+msgstr "Pošiljanje skladbe je prevečkrat spodletelo"
+
 #: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:1
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:1
 msgid "Audio CD Recorder"
@@ -4988,7 +5045,7 @@ msgstr "Naprave"
 msgid "Shared"
 msgstr "Souporaba"
 
-#: ../sources/rb-sourcelist.c:703
+#: ../sources/rb-sourcelist.c:704
 msgid "S_ource"
 msgstr "_Vir"
 
@@ -5492,6 +5549,75 @@ msgstr "Na namizju"
 msgid "Unknown location"
 msgstr "Neznano mesto"
 
+#~ msgid "Account Login"
+#~ msgstr "Prijava v račun"
+#~ msgid "Join the Rhythmbox group"
+#~ msgstr "Pridruži se skupini Rhythmbox"
+#~ msgid "New to Last.fm?"
+#~ msgstr "Novi v Last.fm?"
+#~ msgid "Sign up for an account"
+#~ msgstr "Vpis za račun"
+#~ msgid "_Password:"
+#~ msgstr "_Geslo:"
+#~ msgid "_Username:"
+#~ msgstr "_Uporabniško ime:"
+#~ msgid "Last.fm Preferences"
+#~ msgstr "Možnosti Last.fm"
+#~ msgid "Incorrect username or password"
+#~ msgstr "Nepravilno uporabniško ime ali geslo"
+#~ msgid "Artists similar to %s"
+#~ msgstr "Izvajalci podobni %s"
+#~ msgid "Artist Fan radio"
+#~ msgstr "Radio oboževalca izvajalca"
+#~ msgid "Artists liked by fans of %s"
+#~ msgstr "Izvajalci, ki so všeč oboževalcem %s"
+#~ msgid "Group radio"
+#~ msgstr "Skupinski radio"
+#~ msgid "Personal radio"
+#~ msgstr "Osebni radio"
+#~ msgid "%s's Personal Radio"
+#~ msgstr "Osebni radio %s"
+#~ msgid "Tracks recommended to %s"
+#~ msgstr "Skladbe priporočene %s"
+#~ msgid "Playlist"
+#~ msgstr "Seznam predvajanja"
+#~ msgid "Delete the selected station"
+#~ msgstr "Izbris izbrane postaje"
+#~ msgid "Download song"
+#~ msgstr "Prejmi skladbo"
+#~ msgid "Download this song"
+#~ msgstr "Prejemanje te skladbe"
+#~ msgid "Enter the item to build a Last.fm station out of:"
+#~ msgstr "Vnos predmeta iz katerega naj bo izgrajena postaja Last.fm:"
+#~ msgid "Add"
+#~ msgstr "Dodaj"
+#~ msgid "Account Settings"
+#~ msgstr "Nastavitve računa"
+#~ msgid ""
+#~ "Account details are needed before you can connect.  Check your settings."
+#~ msgstr ""
+#~ "Pred povezavo je treba vnesti podatke računa. Preverite svoje nastavitve."
+#~ msgid "Unable to connect"
+#~ msgstr "Ni se mogoče povezati"
+#~ msgid "Global Tag %s"
+#~ msgstr "Splošna oznaka %s"
+#~ msgid "%s's Playlist"
+#~ msgstr "Seznam predvajanja osebe %s"
+#~ msgid "Neighbour Radio"
+#~ msgstr "Sosedski radio"
+#~ msgid "Personal Radio"
+#~ msgstr "Osebni radio"
+#~ msgid "Server did not respond"
+#~ msgstr "Strežnik se ni odzval"
+#~ msgid ""
+#~ "The streaming system is offline for maintenance, please try again later."
+#~ msgstr "Sistem pretakanja ni povezan zaradi vzdrževanja. Poskusite kasneje."
+#~ msgid "Retrieving playlist"
+#~ msgstr "Pridobivanje seznama predvajanja"
+#~ msgid "Banning song"
+#~ msgstr "Izločitev skladbe"
+#~ msgid "Adding song to your Loved tracks"
+#~ msgstr "Dodaj skladbo med všečne skladbe"
 #~ msgid "Failed to start playback of %s"
 #~ msgstr "Zagon predvajanja %s je spodletel"
 #~ msgid " "
