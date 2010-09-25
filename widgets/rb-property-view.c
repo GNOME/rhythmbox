@@ -230,7 +230,9 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 	 * @view: the #RBPropertyView
 	 * @name: the property value that has been selected
 	 *
-	 * Emitted when an individual property value becomes selected.
+	 * Emitted when an individual property value becomes selected.  This is only
+	 * emitted for single-selection property views.  For multiple-selection views,
+	 * use the properties-selected signal.
 	 */
 	rb_property_view_signals[PROPERTY_SELECTED] =
 		g_signal_new ("property-selected",
@@ -248,7 +250,9 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 	 * @view: the #RBPropertyView
 	 * @properties: a list containing the selected property values
 	 *
-	 * Emitted when the set of selected property values changes.
+	 * Emitted when the set of selected property values changes.  This is only
+	 * emitted for multiple selection property views.  For single-selection views,
+	 * use the property-selected signal.
 	 */
 	rb_property_view_signals[PROPERTIES_SELECTED] =
 		g_signal_new ("properties-selected",
