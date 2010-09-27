@@ -169,37 +169,39 @@ static void
 grab_mmkey (int key_code,
 	    GdkWindow *root)
 {
+	Display *display;
 	gdk_error_trap_push ();
 
-	XGrabKey (GDK_DISPLAY (), key_code,
+	display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+	XGrabKey (display, key_code,
 		  0,
 		  GDK_WINDOW_XID (root), True,
 		  GrabModeAsync, GrabModeAsync);
-	XGrabKey (GDK_DISPLAY (), key_code,
+	XGrabKey (display, key_code,
 		  Mod2Mask,
 		  GDK_WINDOW_XID (root), True,
 		  GrabModeAsync, GrabModeAsync);
-	XGrabKey (GDK_DISPLAY (), key_code,
+	XGrabKey (display, key_code,
 		  Mod5Mask,
 		  GDK_WINDOW_XID (root), True,
 		  GrabModeAsync, GrabModeAsync);
-	XGrabKey (GDK_DISPLAY (), key_code,
+	XGrabKey (display, key_code,
 		  LockMask,
 		  GDK_WINDOW_XID (root), True,
 		  GrabModeAsync, GrabModeAsync);
-	XGrabKey (GDK_DISPLAY (), key_code,
+	XGrabKey (display, key_code,
 		  Mod2Mask | Mod5Mask,
 		  GDK_WINDOW_XID (root), True,
 		  GrabModeAsync, GrabModeAsync);
-	XGrabKey (GDK_DISPLAY (), key_code,
+	XGrabKey (display, key_code,
 		  Mod2Mask | LockMask,
 		  GDK_WINDOW_XID (root), True,
 		  GrabModeAsync, GrabModeAsync);
-	XGrabKey (GDK_DISPLAY (), key_code,
+	XGrabKey (display, key_code,
 		  Mod5Mask | LockMask,
 		  GDK_WINDOW_XID (root), True,
 		  GrabModeAsync, GrabModeAsync);
-	XGrabKey (GDK_DISPLAY (), key_code,
+	XGrabKey (display, key_code,
 		  Mod2Mask | Mod5Mask | LockMask,
 		  GDK_WINDOW_XID (root), True,
 		  GrabModeAsync, GrabModeAsync);
@@ -214,16 +216,18 @@ static void
 ungrab_mmkey (int key_code,
 	      GdkWindow *root)
 {
+	Display *display;
 	gdk_error_trap_push ();
 
-	XUngrabKey (GDK_DISPLAY (), key_code, 0, GDK_WINDOW_XID (root));
-	XUngrabKey (GDK_DISPLAY (), key_code, Mod2Mask, GDK_WINDOW_XID (root));
-	XUngrabKey (GDK_DISPLAY (), key_code, Mod5Mask, GDK_WINDOW_XID (root));
-	XUngrabKey (GDK_DISPLAY (), key_code, LockMask, GDK_WINDOW_XID (root));
-	XUngrabKey (GDK_DISPLAY (), key_code, Mod2Mask | Mod5Mask, GDK_WINDOW_XID (root));
-	XUngrabKey (GDK_DISPLAY (), key_code, Mod2Mask | LockMask, GDK_WINDOW_XID (root));
-	XUngrabKey (GDK_DISPLAY (), key_code, Mod5Mask | LockMask, GDK_WINDOW_XID (root));
-	XUngrabKey (GDK_DISPLAY (), key_code, Mod2Mask | Mod5Mask | LockMask, GDK_WINDOW_XID (root));
+	display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+	XUngrabKey (display, key_code, 0, GDK_WINDOW_XID (root));
+	XUngrabKey (display, key_code, Mod2Mask, GDK_WINDOW_XID (root));
+	XUngrabKey (display, key_code, Mod5Mask, GDK_WINDOW_XID (root));
+	XUngrabKey (display, key_code, LockMask, GDK_WINDOW_XID (root));
+	XUngrabKey (display, key_code, Mod2Mask | Mod5Mask, GDK_WINDOW_XID (root));
+	XUngrabKey (display, key_code, Mod2Mask | LockMask, GDK_WINDOW_XID (root));
+	XUngrabKey (display, key_code, Mod5Mask | LockMask, GDK_WINDOW_XID (root));
+	XUngrabKey (display, key_code, Mod2Mask | Mod5Mask | LockMask, GDK_WINDOW_XID (root));
 
 	gdk_flush ();
         if (gdk_error_trap_pop ()) {
@@ -239,6 +243,7 @@ filter_mmkeys (GdkXEvent *xevent,
 {
 	XEvent *xev;
 	XKeyEvent *key;
+	Display *display;
 	RBShellPlayer *player;
 	xev = (XEvent *) xevent;
 	if (xev->type != KeyPress) {
@@ -248,20 +253,21 @@ filter_mmkeys (GdkXEvent *xevent,
 	key = (XKeyEvent *) xevent;
 
 	player = (RBShellPlayer *)data;
+	display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
 
-	if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPlay) == key->keycode) {
+	if (XKeysymToKeycode (display, XF86XK_AudioPlay) == key->keycode) {
 		rb_shell_player_playpause (player, FALSE, NULL);
 		return GDK_FILTER_REMOVE;
-	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPause) == key->keycode) {
+	} else if (XKeysymToKeycode (display, XF86XK_AudioPause) == key->keycode) {
 		rb_shell_player_pause (player, NULL);
 		return GDK_FILTER_REMOVE;
-	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioStop) == key->keycode) {
+	} else if (XKeysymToKeycode (display, XF86XK_AudioStop) == key->keycode) {
 		rb_shell_player_stop (player);
 		return GDK_FILTER_REMOVE;
-	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPrev) == key->keycode) {
+	} else if (XKeysymToKeycode (display, XF86XK_AudioPrev) == key->keycode) {
 		rb_shell_player_do_previous (player, NULL);
 		return GDK_FILTER_REMOVE;
-	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioNext) == key->keycode) {
+	} else if (XKeysymToKeycode (display, XF86XK_AudioNext) == key->keycode) {
 		rb_shell_player_do_next (player, NULL);
 		return GDK_FILTER_REMOVE;
 	} else {
@@ -278,13 +284,12 @@ mmkeys_grab (RBMMKeysPlugin *plugin, gboolean grab)
 	GdkWindow *root;
 	guint i, j;
 
-	keycodes[0] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPlay);
-	keycodes[1] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioStop);
-	keycodes[2] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPrev);
-	keycodes[3] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioNext);
-	keycodes[4] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPause);
-
 	display = gdk_display_get_default ();
+	keycodes[0] = XKeysymToKeycode (GDK_DISPLAY_XDISPLAY (display), XF86XK_AudioPlay);
+	keycodes[1] = XKeysymToKeycode (GDK_DISPLAY_XDISPLAY (display), XF86XK_AudioStop);
+	keycodes[2] = XKeysymToKeycode (GDK_DISPLAY_XDISPLAY (display), XF86XK_AudioPrev);
+	keycodes[3] = XKeysymToKeycode (GDK_DISPLAY_XDISPLAY (display), XF86XK_AudioNext);
+	keycodes[4] = XKeysymToKeycode (GDK_DISPLAY_XDISPLAY (display), XF86XK_AudioPause);
 
 	for (i = 0; i < gdk_display_get_n_screens (display); i++) {
 		screen = gdk_display_get_screen (display, i);
