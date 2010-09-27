@@ -152,10 +152,8 @@ static void
 rb_sourcelist_model_class_init (RBSourceListModelClass *class)
 {
 	GObjectClass   *o_class;
-	GtkObjectClass *object_class;
 
 	o_class = (GObjectClass *) class;
-	object_class = (GtkObjectClass *) class;
 
 	o_class->finalize = rb_sourcelist_model_finalize;
 
@@ -170,7 +168,7 @@ rb_sourcelist_model_class_init (RBSourceListModelClass *class)
 	 */
 	rb_sourcelist_model_signals[DROP_RECEIVED] =
 		g_signal_new ("drop_received",
-			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_OBJECT_CLASS_TYPE (class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBSourceListModelClass, drop_received),
 			      NULL, NULL,
