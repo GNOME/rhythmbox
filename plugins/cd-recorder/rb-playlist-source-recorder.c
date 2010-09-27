@@ -1121,7 +1121,6 @@ rb_playlist_source_recorder_constructed (GObject *object)
         source->priv = RB_PLAYLIST_SOURCE_RECORDER_GET_PRIVATE (source);
 
         gtk_window_set_resizable (GTK_WINDOW (source), FALSE);
-        gtk_dialog_set_has_separator (GTK_DIALOG (source), FALSE);
         source->priv->cancel_button =  gtk_dialog_add_button (GTK_DIALOG (source),
                                                               GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 

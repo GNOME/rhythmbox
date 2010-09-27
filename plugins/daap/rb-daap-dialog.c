@@ -59,7 +59,6 @@ rb_daap_collision_dialog_new_run (GtkWindow  *parent,
 					      GTK_RESPONSE_OK,
 					      NULL);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
-	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 
 	hbox = gtk_hbox_new (FALSE, 6);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 12);

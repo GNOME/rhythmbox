@@ -430,7 +430,6 @@ rb_library_source_edit_profile_clicked_cb (GtkButton *button, RBLibrarySource *s
 
 	dialog = gm_audio_profiles_edit_new (eel_gconf_client_get_global (),
 					     GTK_WINDOW (source->priv->shell_prefs));
-	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 	gtk_widget_show_all (dialog);
 	gtk_dialog_run (GTK_DIALOG (dialog));
 }

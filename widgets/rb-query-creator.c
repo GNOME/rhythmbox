@@ -216,7 +216,6 @@ rb_query_creator_constructed (GObject *object)
 
 	gtk_container_set_border_width (GTK_CONTAINER (creator), 5);
 	gtk_box_set_spacing (GTK_BOX (content_area), 2);
-	gtk_dialog_set_has_separator (GTK_DIALOG (creator), FALSE);
 
 	builder = rb_builder_load ("create-playlist.ui", creator);
 

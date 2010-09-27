@@ -118,7 +118,6 @@ rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 	gtk_window_set_default_size (GTK_WINDOW (dialog), 600, 400);
 	content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
 
-	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
 	gtk_box_set_spacing (GTK_BOX (content_area), 2);
 

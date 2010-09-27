@@ -334,7 +334,6 @@ rb_alert_dialog_new (GtkWindow     *parent,
 	content = gtk_dialog_get_content_area (dialog);
 	gtk_box_set_spacing (GTK_BOX (content), 14);
 	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
-	gtk_dialog_set_has_separator (dialog, FALSE);
 
 	/* Make sure we don't get a window title.
          * HIG says that alert dialogs should not have window title
