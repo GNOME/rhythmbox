@@ -240,8 +240,7 @@ typedef struct _RbIpodDelayedPlaylistOp RbIpodDelayedPlaylistOp;
 struct _RbIpodDelayedAction {
 	RbIpodDelayedActionType type;
 	union {
-		char *name;
-		Itdb_Playlist *playlist;
+		gchar *name;
 		Itdb_Track *track;
 		RbIpodDelayedSetThumbnail thumbnail_data;
 		RbIpodDelayedPlaylistOp playlist_op;
@@ -271,7 +270,7 @@ rb_ipod_free_delayed_action (RbIpodDelayedAction *action)
 		/* Do nothing */
 		break;
 	case RB_IPOD_ACTION_RENAME_PLAYLIST:
-		g_free (action->name);
+		g_free (action->playlist_op.data);
 		break;
 	case RB_IPOD_ACTION_REMOVE_TRACK:
 		/* Do nothing */
@@ -582,9 +581,9 @@ rb_ipod_db_process_delayed_actions (RbIpodDb *ipod_db)
 			break;
 		case RB_IPOD_ACTION_RENAME_PLAYLIST:
 			rb_debug ("IPOD_ACTION_RENAME_PLAYLIST");
-			rb_ipod_db_rename_playlist_internal (ipod_db, 
-							     action->playlist,
-							     action->name);
+			rb_ipod_db_rename_playlist_internal (ipod_db,
+							     action->playlist_op.playlist,
+							     (const char *)action->playlist_op.data);
 			break;
 		case RB_IPOD_ACTION_ADD_TO_PLAYLIST:
 			rb_debug ("IPOD_ACTION_ADD_TO_PLAYLIST");
@@ -674,10 +673,11 @@ rb_ipod_db_queue_rename_playlist (RbIpodDb *ipod_db,
 	
 	g_assert (priv->read_only);
 	rb_debug ("Queueing rename playlist action since the iPod database is currently read-only");
+        g_print ("playlist queueing: %p %p %s\n", playlist, playlist->name, playlist->name);
 	action = g_new0 (RbIpodDelayedAction, 1);
 	action->type = RB_IPOD_ACTION_RENAME_PLAYLIST;
-	action->playlist = playlist;
-	action->name = g_strdup (name);
+	action->playlist_op.playlist = playlist;
+	action->playlist_op.data = g_strdup (name);
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
