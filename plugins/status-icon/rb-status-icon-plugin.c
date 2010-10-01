@@ -59,7 +59,7 @@
 #define TRAY_ICON_DEFAULT_TOOLTIP _("Music Player")
 
 #define TOOLTIP_IMAGE_BORDER_WIDTH	1
-#define PLAYING_ENTRY_NOTIFY_TIME 	4
+#define PLAYING_ENTRY_NOTIFY_TIME	4
 
 #define CONF_PLUGIN_SETTINGS	"/apps/rhythmbox/plugins/status-icon"
 #define CONF_NOTIFICATION_MODE	CONF_PLUGIN_SETTINGS "/notification-mode"
@@ -383,7 +383,7 @@ do_notify (RBStatusIconPlugin *plugin,
 	if (notify_is_initted () == FALSE) {
 		GList *caps;
 
-		if (notify_init ("rhythmbox") == FALSE) {
+		if (notify_init ("Rhythmbox") == FALSE) {
 			g_warning ("libnotify initialization failed");
 			return;
 		}
