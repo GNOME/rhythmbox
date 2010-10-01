@@ -233,7 +233,7 @@ typedef struct _RbIpodDelayedSetThumbnail RbIpodDelayedSetThumbnail;
 
 struct _RbIpodDelayedPlaylistOp {
 	Itdb_Playlist *playlist;
-	Itdb_Track *track;
+	void *data;
 };
 typedef struct _RbIpodDelayedPlaylistOp RbIpodDelayedPlaylistOp;
 
@@ -590,13 +590,13 @@ rb_ipod_db_process_delayed_actions (RbIpodDb *ipod_db)
 			rb_debug ("IPOD_ACTION_ADD_TO_PLAYLIST");
 			rb_ipod_db_add_to_playlist_internal (ipod_db, 
 							     action->playlist_op.playlist,
-							     action->playlist_op.track);
+							     (Itdb_Track *)action->playlist_op.data);
 			break;
 		case RB_IPOD_ACTION_REMOVE_FROM_PLAYLIST:
 			rb_debug ("IPOD_ACTION_REMOVE_FROM_PLAYLIST");
 			rb_ipod_db_remove_from_playlist_internal (ipod_db, 
 								  action->playlist_op.playlist,
-								  action->playlist_op.track);
+								  (Itdb_Track *)action->playlist_op.data);
 			break;
 		}
 		rb_ipod_free_delayed_action (action);
@@ -708,7 +708,7 @@ rb_ipod_db_queue_add_to_playlist (RbIpodDb *ipod_db,
 	action = g_new0 (RbIpodDelayedAction, 1);
 	action->type = RB_IPOD_ACTION_ADD_TO_PLAYLIST;
 	action->playlist_op.playlist = playlist;
-	action->playlist_op.track = track;
+	action->playlist_op.data = track;
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
@@ -725,7 +725,7 @@ rb_ipod_db_queue_remove_from_playlist (RbIpodDb *ipod_db,
 	action = g_new0 (RbIpodDelayedAction, 1);
 	action->type = RB_IPOD_ACTION_REMOVE_FROM_PLAYLIST;
 	action->playlist_op.playlist = playlist;
-	action->playlist_op.track = track;
+	action->playlist_op.data = track;
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
