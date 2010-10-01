@@ -833,7 +833,6 @@ static gboolean
 impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GError **error)
 {
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
-	gboolean result;
 
 	g_return_val_if_fail (mp->priv->playbin != NULL, FALSE);
 
@@ -846,7 +845,6 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 	} else if (mp->priv->current_track_finishing) {
 		rb_debug ("current track finishing -> just setting URI on playbin");
 		g_object_set (mp->priv->playbin, "uri", mp->priv->uri, NULL);
-		result = TRUE;
 
 		mp->priv->playbin_stream_changing = TRUE;
 
@@ -866,7 +864,6 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 				g_signal_emit (player,
 					       signals[REUSE_STREAM], 0,
 					       mp->priv->uri, mp->priv->prev_uri, mp->priv->playbin);
-				result = TRUE;
 				track_change_done (mp, *error);
 			}
 		}
@@ -879,7 +876,7 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 
 	}
 
-	return result;
+	return TRUE;
 }
 
 static void
