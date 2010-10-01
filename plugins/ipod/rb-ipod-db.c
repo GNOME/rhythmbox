@@ -573,12 +573,12 @@ rb_ipod_db_process_delayed_actions (RbIpodDb *ipod_db)
 		case RB_IPOD_ACTION_ADD_PLAYLIST:
 			rb_debug ("IPOD_ACTION_ADD_PLAYLIST");
 			rb_ipod_db_add_playlist_internal (ipod_db, 
-							  action->playlist);
+							  action->playlist_op.playlist);
 			break;
 		case RB_IPOD_ACTION_REMOVE_PLAYLIST:
 			rb_debug ("IPOD_ACTION_REMOVE_PLAYLIST");
 			rb_ipod_db_remove_playlist_internal (ipod_db, 
-							     action->playlist);
+							     action->playlist_op.playlist);
 			break;
 		case RB_IPOD_ACTION_RENAME_PLAYLIST:
 			rb_debug ("IPOD_ACTION_RENAME_PLAYLIST");
@@ -645,7 +645,7 @@ rb_ipod_db_queue_add_playlist (RbIpodDb *ipod_db,
 	rb_debug ("Queueing add playlist action since the iPod database is currently read-only");
 	action = g_new0 (RbIpodDelayedAction, 1);
 	action->type = RB_IPOD_ACTION_ADD_PLAYLIST;
-	action->playlist = playlist;
+	action->playlist_op.playlist = playlist;
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
@@ -660,7 +660,7 @@ rb_ipod_db_queue_remove_playlist (RbIpodDb *ipod_db,
 	rb_debug ("Queueing remove playlist action since the iPod database is currently read-only");
 	action = g_new0 (RbIpodDelayedAction, 1);
 	action->type = RB_IPOD_ACTION_REMOVE_PLAYLIST;
-	action->playlist = playlist;
+	action->playlist_op.playlist = playlist;
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
