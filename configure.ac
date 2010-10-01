@@ -793,7 +793,7 @@ AC_ARG_ENABLE(daap,
                              [Disable DAAP support]),,
               enable_daap=auto)
 if test "x$enable_daap" != "xno"; then
-	PKG_CHECK_MODULES(DMAPSHARING, libdmapsharing-2.0 >= 2.0.3,
+	PKG_CHECK_MODULES(DMAPSHARING, libdmapsharing-2.2 >= 2.1.6,
 			  have_libdmapsharing=yes,
 			  have_libdmapsharing=no)
 	if test "x$have_libdmapsharing" = "xno" -a "x$enable_daap" = "xyes"; then

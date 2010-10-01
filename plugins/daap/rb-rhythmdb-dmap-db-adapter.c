@@ -158,9 +158,9 @@ rb_rhythmdb_dmap_db_adapter_add (DMAPDb *db, DMAPRecord *record)
                      "filesize", &filesize,
 		     "format", &format,
                      "title", &title,
-                     "daap.songalbum", &album,
-                     "daap.songartist", &artist,
-                     "daap.songgenre", &genre,
+                     "songalbum", &album,
+                     "songartist", &artist,
+                     "songgenre", &genre,
 		      NULL);
 
 	entry = rhythmdb_entry_new (priv->db, priv->entry_type, uri);

@@ -287,9 +287,9 @@ rb_daap_record_class_init (RBDAAPRecordClass *klass)
 
 	g_object_class_override_property (gobject_class, PROP_LOCATION, "location");
 	g_object_class_override_property (gobject_class, PROP_TITLE, "title");
-	g_object_class_override_property (gobject_class, PROP_ALBUM, "daap.songalbum");
-	g_object_class_override_property (gobject_class, PROP_ARTIST, "daap.songartist");
-	g_object_class_override_property (gobject_class, PROP_GENRE, "daap.songgenre");
+	g_object_class_override_property (gobject_class, PROP_ALBUM, "songalbum");
+	g_object_class_override_property (gobject_class, PROP_ARTIST, "songartist");
+	g_object_class_override_property (gobject_class, PROP_GENRE, "songgenre");
 	g_object_class_override_property (gobject_class, PROP_MEDIAKIND, "mediakind");
 	g_object_class_override_property (gobject_class, PROP_FORMAT, "format");
 	g_object_class_override_property (gobject_class, PROP_RATING, "rating");
