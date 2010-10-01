@@ -120,6 +120,7 @@ struct _RBStatusIconPluginPrivate
 #ifdef HAVE_NOTIFY
 	NotifyNotification *notification;
 	gboolean notify_supports_actions;
+	gboolean notify_supports_icon_buttons;
 #endif
 
 	GtkWidget *config_dialog;
@@ -352,6 +353,24 @@ notification_next_cb (NotifyNotification *notification,
 }
 
 static void
+notification_pause_cb (NotifyNotification *notification,
+		       const char *action,
+		       RBStatusIconPlugin *plugin)
+{
+	rb_debug ("notification action: %s", action);
+	rb_shell_player_pause (plugin->priv->shell_player, NULL);
+}
+
+static void
+notification_previous_cb (NotifyNotification *notification,
+			  const char *action,
+			  RBStatusIconPlugin *plugin)
+{
+	rb_debug ("notification action: %s", action);
+	rb_shell_player_do_previous (plugin->priv->shell_player, NULL);
+}
+
+static void
 do_notify (RBStatusIconPlugin *plugin,
 	   guint timeout,
 	   const char *primary,
@@ -374,6 +393,11 @@ do_notify (RBStatusIconPlugin *plugin,
 		if (g_list_find_custom (caps, "actions", (GCompareFunc)g_strcmp0) != NULL) {
 			rb_debug ("notification server supports actions");
 			plugin->priv->notify_supports_actions = TRUE;
+
+			if (g_list_find_custom (caps, "x-gnome-icon-buttons", (GCompareFunc)g_strcmp0) != NULL) {
+				rb_debug ("notifiction server supports icon buttons");
+				plugin->priv->notify_supports_icon_buttons = TRUE;
+			}
 		} else {
 			rb_debug ("notification server does not support actions");
 		}
@@ -426,8 +450,23 @@ do_notify (RBStatusIconPlugin *plugin,
 
 	notify_notification_clear_actions (plugin->priv->notification);
 	if (show_action && plugin->priv->notify_supports_actions) {
+		if (plugin->priv->notify_supports_icon_buttons) {
+			notify_notification_add_action (plugin->priv->notification,
+							"media-skip-backward",
+							_("Previous"),
+							(NotifyActionCallback) notification_previous_cb,
+							plugin,
+							NULL);
+			notify_notification_add_action (plugin->priv->notification,
+							"media-playback-pause",
+							_("Pause"),
+							(NotifyActionCallback) notification_pause_cb,
+							plugin,
+							NULL);
+		}
+
 		notify_notification_add_action (plugin->priv->notification,
-						"media-next",
+						"media-skip-forward",
 						_("Next"),
 						(NotifyActionCallback) notification_next_cb,
 						plugin,
