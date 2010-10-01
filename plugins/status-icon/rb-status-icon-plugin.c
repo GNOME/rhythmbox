@@ -116,7 +116,7 @@ struct _RBStatusIconPluginPrivate
 	gboolean tooltips_suppressed;
 
 	/* notification data */
-	GdkPixbuf *notify_pixbuf;
+	gchar *notify_art_path;
 #ifdef HAVE_NOTIFY
 	NotifyNotification *notification;
 	gboolean notify_supports_actions;
@@ -356,10 +356,9 @@ do_notify (RBStatusIconPlugin *plugin,
 	   guint timeout,
 	   const char *primary,
 	   const char *secondary,
-	   GdkPixbuf *pixbuf,
+	   const char *image_uri,
 	   gboolean show_action)
 {
-	const char *icon_name;
 	GError *error = NULL;
 
 	if (notify_is_initted () == FALSE) {
@@ -389,13 +388,8 @@ do_notify (RBStatusIconPlugin *plugin,
 	if (secondary == NULL)
 		secondary = "";
 
-	if (pixbuf == NULL)
-		icon_name = RB_APP_ICON;
-	else
-		icon_name = NULL;
-
 	if (plugin->priv->notification == NULL) {
-		plugin->priv->notification = notify_notification_new (primary, secondary, icon_name, NULL);
+		plugin->priv->notification = notify_notification_new (primary, secondary, RB_APP_ICON, NULL);
 
 		g_signal_connect_object (plugin->priv->notification,
 					 "closed",
@@ -403,7 +397,7 @@ do_notify (RBStatusIconPlugin *plugin,
 					 plugin, 0);
 	} else {
 		notify_notification_clear_hints (plugin->priv->notification);
-		notify_notification_update (plugin->priv->notification, primary, secondary, icon_name);
+		notify_notification_update (plugin->priv->notification, primary, secondary, RB_APP_ICON);
 	}
 
 	switch (plugin->priv->icon_mode) {
@@ -423,9 +417,11 @@ do_notify (RBStatusIconPlugin *plugin,
 
 	notify_notification_set_timeout (plugin->priv->notification, timeout);
 
-	if (pixbuf != NULL) {
+	if (image_uri != NULL) {
 		notify_notification_clear_hints (plugin->priv->notification);
-		notify_notification_set_icon_from_pixbuf (plugin->priv->notification, pixbuf);
+		notify_notification_set_hint_string (plugin->priv->notification,
+						     "image_path",
+						     image_uri);
 	}
 
 	notify_notification_clear_actions (plugin->priv->notification);
@@ -505,18 +501,23 @@ notify_playing_entry (RBStatusIconPlugin *plugin, gboolean requested)
 		   PLAYING_ENTRY_NOTIFY_TIME * 1000,
 		   plugin->priv->current_title,
 		   plugin->priv->current_album_and_artist,
-		   plugin->priv->notify_pixbuf,
+		   plugin->priv->notify_art_path,
 		   TRUE);
 }
 
 static void
-notify_custom (RBStatusIconPlugin *plugin, guint timeout, const char *primary, const char *secondary, GdkPixbuf *pixbuf, gboolean requested)
+notify_custom (RBStatusIconPlugin *plugin,
+	       guint timeout,
+	       const char *primary,
+	       const char *secondary,
+	       const char *image_uri,
+	       gboolean requested)
 {
 	if (requested == FALSE && should_notify (plugin) == FALSE) {
 		return;
 	}
 
-	do_notify (plugin, timeout, primary, secondary, pixbuf, FALSE);
+	do_notify (plugin, timeout, primary, secondary, image_uri, FALSE);
 }
 
 static void
@@ -541,7 +542,7 @@ notify_playing_entry (RBStatusIconPlugin *plugin, gboolean requested)
 }
 
 static void
-notify_custom (RBStatusIconPlugin *plugin, guint timeout, const char *primary, const char *secondary, GdkPixbuf *pixbuf, gboolean requested)
+notify_custom (RBStatusIconPlugin *plugin, guint timeout, const char *primary, const char *secondary, const char *image_uri, gboolean requested)
 {
 }
 
@@ -559,9 +560,15 @@ shell_notify_playing_cb (RBShell *shell, gboolean requested, RBStatusIconPlugin 
 }
 
 static void
-shell_notify_custom_cb (RBShell *shell, guint timeout, const char *primary, const char *secondary, GdkPixbuf *pixbuf, gboolean requested, RBStatusIconPlugin *plugin)
+shell_notify_custom_cb (RBShell *shell,
+			guint timeout,
+			const char *primary,
+			const char *secondary,
+			const char *image_uri,
+			gboolean requested,
+			RBStatusIconPlugin *plugin)
 {
-	notify_custom (plugin, timeout, primary, secondary, pixbuf, requested);
+	notify_custom (plugin, timeout, primary, secondary, image_uri, requested);
 }
 
 /* tooltips */
@@ -700,8 +707,10 @@ update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 
 	g_free (plugin->priv->current_title);
 	g_free (plugin->priv->current_album_and_artist);
+	g_free (plugin->priv->notify_art_path);
 	plugin->priv->current_title = NULL;
 	plugin->priv->current_album_and_artist = NULL;
+	plugin->priv->notify_art_path = NULL;
 
 	if (entry == NULL)
 		return;
@@ -791,10 +800,6 @@ forget_pixbufs (RBStatusIconPlugin *plugin)
 		g_object_unref (plugin->priv->tooltip_pixbuf);
 		plugin->priv->tooltip_pixbuf = NULL;
 	}
-	if (plugin->priv->notify_pixbuf != NULL) {
-		g_object_unref (plugin->priv->notify_pixbuf);
-		plugin->priv->notify_pixbuf = NULL;
-	}
 }
 
 static void
@@ -827,14 +832,54 @@ is_playing_entry (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 }
 
 static void
+db_art_uri_metadata_cb (RhythmDB *db,
+			RhythmDBEntry *entry,
+			const char *field,
+			GValue *metadata,
+			RBStatusIconPlugin *plugin)
+{
+	guint time;
+
+	if (is_playing_entry (plugin, entry) == FALSE)
+		return;
+
+	if (G_VALUE_HOLDS (metadata, G_TYPE_STRING)) {
+		const char *uri = g_value_get_string (metadata);
+		if (g_str_has_prefix (uri, "file://")) {
+			char *path = g_filename_from_uri (uri, NULL, NULL);
+			if (g_strcmp0 (path, plugin->priv->notify_art_path) != 0) {
+				g_free (plugin->priv->notify_art_path);
+				plugin->priv->notify_art_path = path;
+			} else {
+				/* same art URI, ignore it */
+				g_free (path);
+				return;
+			}
+		} else {
+			/* unsupported art URI, ignore it */
+			return;
+		}
+	} else {
+		g_free (plugin->priv->notify_art_path);
+		plugin->priv->notify_art_path = NULL;
+	}
+
+	if (rb_shell_player_get_playing_time (plugin->priv->shell_player, &time, NULL)) {
+		if (time < PLAYING_ENTRY_NOTIFY_TIME) {
+			notify_playing_entry (plugin, FALSE);
+		}
+	} else {
+		notify_playing_entry (plugin, FALSE);
+	}
+}
+
+static void
 db_art_metadata_cb (RhythmDB *db,
 		    RhythmDBEntry *entry,
 		    const char *field,
 		    GValue *metadata,
 		    RBStatusIconPlugin *plugin)
 {
-	guint time;
-
 	if (is_playing_entry (plugin, entry) == FALSE)
 		return;
 
@@ -851,21 +896,10 @@ db_art_metadata_cb (RhythmDB *db,
 
 			scaled = rb_scale_pixbuf_to_size (pixbuf, GTK_ICON_SIZE_DIALOG);
 			plugin->priv->tooltip_pixbuf = create_tooltip_pixbuf (scaled);
-			plugin->priv->notify_pixbuf = scaled;
 		}
-
-		/* probably keep the full size thing for notifications?  hmm. */
 	}
 
 	rb_tray_icon_trigger_tooltip_query (plugin->priv->tray_icon);
-
-	if (rb_shell_player_get_playing_time (plugin->priv->shell_player, &time, NULL)) {
-		if (time < PLAYING_ENTRY_NOTIFY_TIME) {
-			notify_playing_entry (plugin, FALSE);
-		}
-	} else {
-		notify_playing_entry (plugin, FALSE);
-	}
 }
 
 static void
@@ -1305,6 +1339,8 @@ impl_activate (RBPlugin *bplugin,
 
 	g_signal_connect_object (plugin->priv->db, "entry_extra_metadata_notify::" RHYTHMDB_PROP_COVER_ART,
 				 G_CALLBACK (db_art_metadata_cb), plugin, 0);
+	g_signal_connect_object (plugin->priv->db, "entry_extra_metadata_notify::" RHYTHMDB_PROP_COVER_ART_URI,
+				 G_CALLBACK (db_art_uri_metadata_cb), plugin, 0);
 	g_signal_connect_object (plugin->priv->db, "entry_extra_metadata_notify::" RHYTHMDB_PROP_STREAM_SONG_TITLE,
 				 G_CALLBACK (db_stream_metadata_cb), plugin, 0);
 	g_signal_connect_object (plugin->priv->db, "entry_extra_metadata_notify::" RHYTHMDB_PROP_STREAM_SONG_ARTIST,
@@ -1396,6 +1432,7 @@ impl_deactivate	(RBPlugin *bplugin,
 
 	if (plugin->priv->db != NULL) {
 		g_signal_handlers_disconnect_by_func (plugin->priv->db, db_art_metadata_cb, plugin);
+		g_signal_handlers_disconnect_by_func (plugin->priv->db, db_art_uri_metadata_cb, plugin);
 		g_signal_handlers_disconnect_by_func (plugin->priv->db, db_stream_metadata_cb, plugin);
 
 		g_object_unref (plugin->priv->db);
@@ -1424,9 +1461,11 @@ impl_deactivate	(RBPlugin *bplugin,
 	g_free (plugin->priv->current_title);
 	g_free (plugin->priv->current_album_and_artist);
 	g_free (plugin->priv->tooltip_markup);
+	g_free (plugin->priv->notify_art_path);
 	plugin->priv->current_title = NULL;
 	plugin->priv->current_album_and_artist = NULL;
 	plugin->priv->tooltip_markup = NULL;
+	plugin->priv->notify_art_path = NULL;
 
 	forget_pixbufs (plugin);
 }

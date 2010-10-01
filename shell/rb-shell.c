@@ -3029,10 +3029,10 @@ rb_shell_notify_custom (RBShell *shell,
 			guint timeout,
 			const char *primary,
 			const char *secondary,
-			GdkPixbuf *pixbuf,
+			const char *image_uri,
 			gboolean requested)
 {
-	g_signal_emit (shell, rb_shell_signals[NOTIFY_CUSTOM], 0, timeout, primary, secondary, pixbuf, requested);
+	g_signal_emit (shell, rb_shell_signals[NOTIFY_CUSTOM], 0, timeout, primary, secondary, image_uri, requested);
 }
 
 /**
