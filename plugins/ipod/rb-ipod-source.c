@@ -470,6 +470,39 @@ playlist_track_added (GtkTreeModel *model, GtkTreePath *path,
 	rb_ipod_db_add_to_playlist (priv->ipod_db, ipod_pl, track);
 }
 
+static void playlist_source_model_connect_signals (RBIpodStaticPlaylistSource *playlist_source)
+{
+	RhythmDBQueryModel *model;
+
+	g_return_if_fail (RB_IS_IPOD_STATIC_PLAYLIST_SOURCE (playlist_source));
+
+	g_object_get (G_OBJECT (playlist_source),
+		      "base-query-model", &model, NULL);
+	g_signal_connect (model, "row-inserted",
+			  G_CALLBACK (playlist_track_added),
+			  playlist_source);
+	g_signal_connect (model, "entry-removed",
+			  G_CALLBACK (playlist_track_removed),
+			  playlist_source);
+	g_object_unref (model);
+}
+
+static void playlist_source_model_changed (GObject *obj, GParamSpec *pspec, gpointer old_model)
+{
+	RBIpodStaticPlaylistSource *playlist_source;
+
+	rb_debug ("base model changed for iPod playlist");
+
+	playlist_source = RB_IPOD_STATIC_PLAYLIST_SOURCE (obj);
+	g_signal_handlers_disconnect_by_func (G_OBJECT (old_model),
+					      G_CALLBACK (playlist_track_added),
+					      playlist_source);
+	g_signal_handlers_disconnect_by_func (G_OBJECT (old_model),
+					      G_CALLBACK (playlist_track_removed),
+					      playlist_source);
+	playlist_source_model_connect_signals (playlist_source);
+}
+
 static RBIpodStaticPlaylistSource *
 add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 {
@@ -516,13 +549,11 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 
 	g_object_get (G_OBJECT (playlist_source),
 		      "base-query-model", &model, NULL);
-	g_signal_connect (model, "row-inserted",
-			          G_CALLBACK (playlist_track_added),
-			          playlist_source);
-	g_signal_connect (model, "entry-removed",
-			          G_CALLBACK (playlist_track_removed),
-			          playlist_source);
+	g_signal_connect (playlist_source, "notify::base-query-model",
+			  G_CALLBACK (playlist_source_model_changed),
+			  playlist_source);
 	g_object_unref (model);
+	playlist_source_model_connect_signals (playlist_source);
 
 	if (itdb_playlist_is_podcasts(playlist))
 		priv->podcast_pl = playlist_source;
@@ -1786,6 +1817,7 @@ impl_delete_thyself (RBSource *source)
 			g_signal_handlers_disconnect_by_func (model,
 							      G_CALLBACK (playlist_track_removed),
 							      rb_playlist);
+
 			g_object_unref (model);
 			rb_source_delete_thyself (rb_playlist);
 		}
