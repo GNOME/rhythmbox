@@ -44,6 +44,7 @@ static gboolean debug = FALSE;
 
 static gboolean no_start = FALSE;
 static gboolean quit = FALSE;
+static gboolean check_running = FALSE;
 
 static gboolean no_present = FALSE;
 static gboolean hide = FALSE;
@@ -85,6 +86,7 @@ static GOptionEntry args[] = {
 
 	{ "no-start", 0, 0, G_OPTION_ARG_NONE, &no_start, N_("Don't start a new instance of Rhythmbox"), NULL },
 	{ "quit", 0, 0, G_OPTION_ARG_NONE, &quit, N_("Quit Rhythmbox"), NULL },
+	{ "check-running", 0, 0, G_OPTION_ARG_NONE, &check_running, N_("Check if Rhythmbox is already running"), NULL },
 
 	{ "no-present", 0, 0, G_OPTION_ARG_NONE, &no_present, N_("Don't present an existing Rhythmbox window"), NULL },
 	{ "hide", 0, 0, G_OPTION_ARG_NONE, &hide, N_("Hide the Rhythmbox window"), NULL },
@@ -602,6 +604,17 @@ main (int argc, char **argv)
 		exit (1);
 	}
 	g_clear_error (&error);
+
+	/* are we just checking if it's running? */
+	if (check_running) {
+		if (shell_proxy) {
+			rb_debug ("running instance found");
+			exit (0);
+		} else {
+			rb_debug ("no running instance found");
+			exit (2);
+		}
+	}
 
 	/* 1. activate or quit */
 	if (quit) {
