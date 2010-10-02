@@ -54,6 +54,7 @@
 #include "rb-playlist-manager.h"
 #include "rb-podcast-manager.h"
 #include "rb-podcast-entry-types.h"
+#include "rb-stock-icons.h"
 
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/ipod/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/ipod/show_browser"
@@ -502,6 +503,23 @@ static void playlist_source_model_changed (GObject *obj, GParamSpec *pspec, gpoi
 					      playlist_source);
 	playlist_source_model_connect_signals (playlist_source);
 }
+static void
+set_podcast_icon (RBIpodStaticPlaylistSource *source)
+{
+	GdkPixbuf *pixbuf;
+	gint       size;
+
+	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
+	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+					   RB_STOCK_PODCAST,
+					   size,
+					   0, NULL);
+
+	if (pixbuf != NULL) {
+	    rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
+	    g_object_unref (pixbuf);
+	}
+}
 
 static RBIpodStaticPlaylistSource *
 add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
@@ -555,8 +573,10 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	g_object_unref (model);
 	playlist_source_model_connect_signals (playlist_source);
 
-	if (itdb_playlist_is_podcasts(playlist))
+	if (itdb_playlist_is_podcasts(playlist)) {
 		priv->podcast_pl = playlist_source;
+		set_podcast_icon (playlist_source);
+	}
 	rb_shell_append_source (shell, RB_SOURCE (playlist_source), RB_SOURCE (source));
 	g_object_unref (shell);
 
