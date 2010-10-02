@@ -514,13 +514,15 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	playlist->userdata_destroy = g_object_unref;
 	playlist->userdata_duplicate = g_object_ref;
 
-	model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (playlist_source));
+	g_object_get (G_OBJECT (playlist_source),
+		      "base-query-model", &model, NULL);
 	g_signal_connect (model, "row-inserted",
 			          G_CALLBACK (playlist_track_added),
 			          playlist_source);
 	g_signal_connect (model, "entry-removed",
 			          G_CALLBACK (playlist_track_removed),
 			          playlist_source);
+	g_object_unref (model);
 
 	if (itdb_playlist_is_podcasts(playlist))
 		priv->podcast_pl = playlist_source;
@@ -1774,7 +1776,8 @@ impl_delete_thyself (RBSource *source)
 			RhythmDBQueryModel *model;
 
 			rb_playlist = RB_SOURCE (playlist->userdata);
-			model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (rb_playlist));
+			g_object_get (G_OBJECT (rb_playlist),
+				      "base-query-model", &model, NULL);
 
 			/* remove these to ensure they aren't called during source deletion */
 			g_signal_handlers_disconnect_by_func (model,
@@ -1783,6 +1786,7 @@ impl_delete_thyself (RBSource *source)
 			g_signal_handlers_disconnect_by_func (model,
 							      G_CALLBACK (playlist_track_removed),
 							      rb_playlist);
+			g_object_unref (model);
 			rb_source_delete_thyself (rb_playlist);
 		}
 	}
