@@ -29,10 +29,15 @@
 #include "config.h"
 
 #include <string.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include <glib/gi18n.h>
 #include <libmtp.h>
 #include <gst/gst.h>
+#include <gst/base/gstbasesrc.h>
 
 #include "rb-mtp-thread.h"
 #include "rb-debug.h"
@@ -49,26 +54,25 @@ typedef struct _RBMTPSrcClass RBMTPSrcClass;
 
 struct _RBMTPSrc
 {
-	GstBin parent;
+	GstBaseSrc parent;
 
 	RBMtpThread *device_thread;
 
 	char *track_uri;
 	uint32_t track_id;
 	char *tempfile;
-
-	GstElement *filesrc;
-	GstPad *ghostpad;
+	int fd;
+	guint64 read_position;
 
 	GError *download_error;
 	GMutex *download_mutex;
 	GCond *download_cond;
-	GstStateChangeReturn download_result;
+	gboolean download_done;
 };
 
 struct _RBMTPSrcClass
 {
-	GstBinClass parent_class;
+	GstBaseSrcClass parent_class;
 };
 
 enum
@@ -82,13 +86,6 @@ static GstStaticPadTemplate srctemplate = GST_STATIC_PAD_TEMPLATE ("src",
 	GST_PAD_SRC,
 	GST_PAD_ALWAYS,
 	GST_STATIC_CAPS_ANY);
-
-static GstElementDetails rb_mtp_src_details =
-GST_ELEMENT_DETAILS ("RB MTP Source",
-	"Source/File",
-	"Downloads and plays files from MTP devices",
-	"Jonathan Matthew <jonathan@d14n.org>");
-
 
 GType rb_mtp_src_get_type (void);
 static void rb_mtp_src_uri_handler_init (gpointer g_iface, gpointer iface_data);
@@ -106,7 +103,7 @@ _do_init (GType mtp_src_type)
 			&urihandler_info);
 }
 
-GST_BOILERPLATE_FULL (RBMTPSrc, rb_mtp_src, GstBin, GST_TYPE_BIN, _do_init);
+GST_BOILERPLATE_FULL (RBMTPSrc, rb_mtp_src, GstBaseSrc, GST_TYPE_BASE_SRC, _do_init);
 
 static void
 rb_mtp_src_base_init (gpointer g_class)
@@ -114,33 +111,18 @@ rb_mtp_src_base_init (gpointer g_class)
 	GstElementClass *element_class = GST_ELEMENT_CLASS (g_class);
 	gst_element_class_add_pad_template (element_class,
 		gst_static_pad_template_get (&srctemplate));
-	gst_element_class_set_details (element_class, &rb_mtp_src_details);
+	gst_element_class_set_details_simple (element_class,
+					      "RB MTP Source",
+					      "Source/File",
+					      "Downloads and plays files from MTP devices",
+					      "Jonathan Matthew <jonathan@d14n.org>");
 }
 
 static void
 rb_mtp_src_init (RBMTPSrc *src, RBMTPSrcClass *klass)
 {
-	GstPad *pad;
-
 	src->download_mutex = g_mutex_new ();
 	src->download_cond = g_cond_new ();
-
-	/* create actual source */
-	src->filesrc = gst_element_factory_make ("filesrc", NULL);
-	if (src->filesrc == NULL) {
-		g_warning ("couldn't create filesrc element");
-		return;
-	}
-
-	gst_bin_add (GST_BIN (src), src->filesrc);
-	gst_object_ref (src->filesrc);
-
-	/* create ghost pad */
-	pad = gst_element_get_pad (src->filesrc, "src");
-	src->ghostpad = gst_ghost_pad_new ("src", pad);
-	gst_element_add_pad (GST_ELEMENT (src), src->ghostpad);
-	gst_object_ref (src->ghostpad);
-	gst_object_unref (pad);
 }
 
 static gboolean
@@ -159,6 +141,80 @@ rb_mtp_src_set_uri (RBMTPSrc *src, const char *uri)
 	}
 	trackid = uri + strlen ("xrbmtp://");
 	src->track_id = strtoul (trackid, NULL, 0);
+
+	/* delete any existing file */
+	if (src->tempfile != NULL) {
+		rb_debug ("deleting tempfile %s", src->tempfile);
+		remove (src->tempfile);
+		g_free (src->tempfile);
+		src->tempfile = NULL;
+	}
+
+	return TRUE;
+}
+
+static GstFlowReturn
+rb_mtp_src_create (GstBaseSrc *basesrc, guint64 offset, guint length, GstBuffer **buffer)
+{
+	RBMTPSrc *src = RB_MTP_SRC (basesrc);
+	GstBuffer *buf;
+	int ret;
+
+	/* seek if required */
+	if (offset != src->read_position) {
+		off_t res;
+		res = lseek (src->fd, offset, SEEK_SET);
+		if (res < 0 || res != offset) {
+			GST_ELEMENT_ERROR (src, RESOURCE, READ, (NULL), GST_ERROR_SYSTEM);
+			return GST_FLOW_ERROR;
+		}
+
+		src->read_position = offset;
+	}
+
+	buf = gst_buffer_try_new_and_alloc (length);
+	if (buf == NULL && length > 0) {
+		GST_ERROR_OBJECT (src, "Failed to allocate %u bytes", length);
+		return GST_FLOW_ERROR;
+	}
+
+	if (length > 0) {
+		ret = read (src->fd, GST_BUFFER_DATA (buf), length);
+		if (ret < length) {
+			GST_ELEMENT_ERROR (src, RESOURCE, READ, (NULL), GST_ERROR_SYSTEM);
+			gst_buffer_unref (buf);
+			return GST_FLOW_ERROR;
+		}
+
+		length = ret;
+		GST_BUFFER_SIZE (buf) = length;
+		GST_BUFFER_OFFSET (buf) = offset;
+		GST_BUFFER_OFFSET_END (buf) = offset + length;
+
+		src->read_position += length;
+	}
+
+	*buffer = buf;
+	return GST_FLOW_OK;
+}
+
+static gboolean
+rb_mtp_src_is_seekable (GstBaseSrc *basesrc)
+{
+	return TRUE;
+}
+
+static gboolean
+rb_mtp_src_get_size (GstBaseSrc *basesrc, guint64 *size)
+{
+	RBMTPSrc *src = RB_MTP_SRC (basesrc);
+	struct stat stat_results;
+
+	if (fstat (src->fd, &stat_results) < 0) {
+		return FALSE;
+	}
+
+	*size = stat_results.st_size;
 	return TRUE;
 }
 
@@ -170,110 +226,93 @@ download_cb (LIBMTP_track_t *track, const char *filename, GError *error, RBMTPSr
 
 	if (filename == NULL) {
 		src->download_error = g_error_copy (error);
-		src->download_result = GST_STATE_CHANGE_FAILURE;
 	} else {
-		src->download_result = GST_STATE_CHANGE_SUCCESS;
 		src->tempfile = g_strdup (filename);
 	}
+	src->download_done = TRUE;
 
 	g_cond_signal (src->download_cond);
 	g_mutex_unlock (src->download_mutex);
 }
 
-static GstStateChangeReturn
-rb_mtp_src_get_file (RBMTPSrc *src)
+static gboolean
+rb_mtp_src_start (GstBaseSrc *basesrc)
 {
-	g_mutex_lock (src->download_mutex);
-	src->download_result = GST_STATE_CHANGE_ASYNC;
-	rb_mtp_thread_download_track (src->device_thread, src->track_id, "", (RBMtpDownloadCallback)download_cb, g_object_ref (src), g_object_unref);
+	RBMTPSrc *src = RB_MTP_SRC (basesrc);
 
-	while (src->download_result == GST_STATE_CHANGE_ASYNC) {
-		g_cond_wait (src->download_cond, src->download_mutex);
-	}
-	g_mutex_unlock (src->download_mutex);
-	rb_debug ("download completed, state change return %s", gst_element_state_change_return_get_name (src->download_result));
+	/* download the file, if we haven't already */
+	if (src->tempfile == NULL) {
+		g_mutex_lock (src->download_mutex);
+		src->download_done = FALSE;
+		rb_mtp_thread_download_track (src->device_thread,
+					      src->track_id,
+					      "",
+					      (RBMtpDownloadCallback)download_cb,
+					      g_object_ref (src),
+					      g_object_unref);
 
-	if (src->download_error) {
-		int code;
-		switch (src->download_error->code) {
-		case RB_MTP_THREAD_ERROR_NO_SPACE:
-			code = GST_RESOURCE_ERROR_NO_SPACE_LEFT;
-			break;
-
-		case RB_MTP_THREAD_ERROR_TEMPFILE:
-			code = GST_RESOURCE_ERROR_OPEN_WRITE;
-			break;
-
-		default:
-		case RB_MTP_THREAD_ERROR_GET_TRACK:
-			code = GST_RESOURCE_ERROR_READ;
-			break;
-
+		while (src->download_done == FALSE) {
+			g_cond_wait (src->download_cond, src->download_mutex);
 		}
+		g_mutex_unlock (src->download_mutex);
+		rb_debug ("download finished");
 
-		GST_WARNING_OBJECT (src, "error: %s", src->download_error->message);
-		gst_element_message_full (GST_ELEMENT (src),
-					  GST_MESSAGE_ERROR,
-					  GST_RESOURCE_ERROR, code,
-					  src->download_error->message, NULL,
-					  __FILE__, GST_FUNCTION, __LINE__);
-	} else if (src->download_result == GST_STATE_CHANGE_SUCCESS) {
-		g_object_set (src->filesrc, "location", src->tempfile, NULL);
-	}
-	return src->download_result;
-}
+		if (src->download_error) {
+			int code;
+			switch (src->download_error->code) {
+			case RB_MTP_THREAD_ERROR_NO_SPACE:
+				code = GST_RESOURCE_ERROR_NO_SPACE_LEFT;
+				break;
 
-static GstStateChangeReturn
-rb_mtp_src_close_tempfile (RBMTPSrc *src)
-{
-	if (src->tempfile != NULL) {
-		rb_debug ("deleting tempfile %s", src->tempfile);
-		remove (src->tempfile);
-		g_free (src->tempfile);
-		src->tempfile = NULL;
-	}
+			case RB_MTP_THREAD_ERROR_TEMPFILE:
+				code = GST_RESOURCE_ERROR_OPEN_WRITE;
+				break;
 
-	return GST_STATE_CHANGE_SUCCESS;
-}
+			default:
+			case RB_MTP_THREAD_ERROR_GET_TRACK:
+				code = GST_RESOURCE_ERROR_READ;
+				break;
 
-static GstStateChangeReturn
-rb_mtp_src_change_state (GstElement *element, GstStateChange transition)
-{
-	GstStateChangeReturn ret = GST_STATE_CHANGE_SUCCESS;
-	RBMTPSrc *src = RB_MTP_SRC (element);
+			}
 
-	switch (transition) {
-		case GST_STATE_CHANGE_NULL_TO_READY:
-			ret = rb_mtp_src_get_file (src);
-			if (ret != GST_STATE_CHANGE_SUCCESS)
-				return ret;
-			break;
-
-		case GST_STATE_CHANGE_READY_TO_PAUSED:
-			break;
-
-		case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
-			break;
-
-		default:
-			break;
+			GST_WARNING_OBJECT (src, "error: %s", src->download_error->message);
+			gst_element_message_full (GST_ELEMENT (src),
+						  GST_MESSAGE_ERROR,
+						  GST_RESOURCE_ERROR, code,
+						  src->download_error->message, NULL,
+						  __FILE__, GST_FUNCTION, __LINE__);
+			return FALSE;
+		}
 	}
 
-	ret = GST_ELEMENT_CLASS (parent_class)->change_state (element, transition);
-
-	switch (transition) {
-		case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
-			break;
-		case GST_STATE_CHANGE_PAUSED_TO_READY:
-			break;
-		case GST_STATE_CHANGE_READY_TO_NULL:
-			ret = rb_mtp_src_close_tempfile (src);
+	/* open file - maybe do this in create after waiting for it to finish downloading */
+	src->fd = open (src->tempfile, O_RDONLY, 0);
+	if (src->fd < 0) {
+		switch (errno) {
+		case ENOENT:
+			GST_ELEMENT_ERROR (src, RESOURCE, NOT_FOUND, (NULL),
+					   ("Could not find temporary file"));
 			break;
 		default:
-			break;
+			GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
+					   ("Could not open temporary file for reading"));
+		}
+		return FALSE;
 	}
 
-	return ret;
+	src->read_position = 0;
+
+	return TRUE;
+}
+
+static gboolean
+rb_mtp_src_stop (GstBaseSrc *basesrc)
+{
+	RBMTPSrc *src = RB_MTP_SRC (basesrc);
+	close (src->fd);
+	src->fd = 0;
+	src->read_position = 0;
+	return TRUE;
 }
 
 static void
@@ -318,16 +357,6 @@ rb_mtp_src_dispose (GObject *object)
 	RBMTPSrc *src;
 	src = RB_MTP_SRC (object);
 
-	if (src->ghostpad) {
-		gst_object_unref (src->ghostpad);
-		src->ghostpad = NULL;
-	}
-
-	if (src->filesrc) {
-		gst_object_unref (src->filesrc);
-		src->filesrc = NULL;
-	}
-
 	if (src->device_thread) {
 		g_object_unref (src->device_thread);
 		src->device_thread = NULL;
@@ -349,6 +378,13 @@ rb_mtp_src_finalize (GObject *object)
 		g_error_free (src->download_error);
 	}
 
+	if (src->tempfile != NULL) {
+		rb_debug ("deleting tempfile %s", src->tempfile);
+		remove (src->tempfile);
+		g_free (src->tempfile);
+		src->tempfile = NULL;
+	}
+
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
@@ -356,7 +392,7 @@ static void
 rb_mtp_src_class_init (RBMTPSrcClass *klass)
 {
 	GObjectClass *gobject_class;
-	GstElementClass *element_class;
+	GstBaseSrcClass *basesrc_class;
 
 	gobject_class = G_OBJECT_CLASS (klass);
 	gobject_class->dispose = rb_mtp_src_dispose;
@@ -364,8 +400,12 @@ rb_mtp_src_class_init (RBMTPSrcClass *klass)
 	gobject_class->set_property = rb_mtp_src_set_property;
 	gobject_class->get_property = rb_mtp_src_get_property;
 
-	element_class = GST_ELEMENT_CLASS (klass);
-	element_class->change_state = rb_mtp_src_change_state;
+	basesrc_class = GST_BASE_SRC_CLASS (klass);
+	basesrc_class->start = GST_DEBUG_FUNCPTR (rb_mtp_src_start);
+	basesrc_class->stop = GST_DEBUG_FUNCPTR (rb_mtp_src_stop);
+	basesrc_class->is_seekable = GST_DEBUG_FUNCPTR (rb_mtp_src_is_seekable);
+	basesrc_class->get_size = GST_DEBUG_FUNCPTR (rb_mtp_src_get_size);
+	basesrc_class->create = GST_DEBUG_FUNCPTR (rb_mtp_src_create);
 
 	g_object_class_install_property (gobject_class,
 					 PROP_URI,
