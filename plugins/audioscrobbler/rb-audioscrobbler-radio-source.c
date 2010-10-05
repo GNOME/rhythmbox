@@ -51,14 +51,38 @@
 
 /* radio type stuff */
 static const char* radio_types[] = {
+	/* Translators: describes a radio stream playing tracks similar to those by an artist.
+	 * Followed by a text entry box for the artist name.
+	 */
 	N_("Similar to Artist:"),
+	/* Translators: describes a radio stream playing tracks listened to by the top fans of
+	 * a particular artist.  Followed by a text entry box for the artist name.
+	 */
 	N_("Top Fans of Artist:"),
+	/* Translators: describes a radio stream playing tracks from the library of a particular
+	 * user.  Followed by a text entry box for the user name.
+	 */
 	N_("Library of User:"),
+	/* Translators: describes a radio stream playing tracks played by users similar to a
+	 * particular user.  Followed by a text entry box for the user name.
+	 */
 	N_("Neighbourhood of User:"),
+	/* Translators: describes a radio stream playing tracks that a particular user has marked
+	 * as loved.  Followed by a text entry box for the user name.
+	 */
 	N_("Tracks Loved by User:"),
+	/* Translators: describes a radio stream playing tracks recommended to a particular user.
+	 * Followed by a text entry box for the user name.
+	 */
 	N_("Recommendations for User:"),
+	/* Translators: describes a radio stream playing tracks tagged with a particular tag.
+	 * Followed by a text entry box for the tag.
+	 */
 	N_("Tracks Tagged with:"),
-	N_("Listended by Group:"),
+	/* Translators: describes a radio stream playing tracks often listened to by members of
+	 * a particular group. Followed by a text entry box for the group name.
+	 */
+	N_("Listened by Group:"),
 	NULL
 };
 
