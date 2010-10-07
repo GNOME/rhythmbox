@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-09-21 20:26+0000\n"
-"PO-Revision-Date: 2010-09-22 16:21+0200\n"
+"POT-Creation-Date: 2010-10-06 13:09+0000\n"
+"PO-Revision-Date: 2010-10-06 19:29+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -689,31 +689,31 @@ msgstr "%e. %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:594
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:119
 #: ../plugins/generic-player/rb-generic-player-source.c:1021
-#: ../plugins/ipod/rb-ipod-source.c:409
+#: ../plugins/ipod/rb-ipod-source.c:410
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:530
-#: ../plugins/iradio/rb-iradio-source.c:1107
-#: ../plugins/iradio/rb-station-properties-dialog.c:488
+#: ../plugins/iradio/rb-iradio-source.c:1106
+#: ../plugins/iradio/rb-station-properties-dialog.c:487
 #: ../plugins/lyrics/lyrics/__init__.py:81
 #: ../plugins/lyrics/lyrics/__init__.py:83
 #: ../plugins/mtpdevice/rb-mtp-source.c:642
 #: ../plugins/mtpdevice/rb-mtp-source.c:1133
 #: ../plugins/mtpdevice/rb-mtp-source.c:1522
-#: ../plugins/status-icon/rb-status-icon-plugin.c:782
-#: ../podcast/rb-feed-podcast-properties-dialog.c:341
+#: ../plugins/status-icon/rb-status-icon-plugin.c:830
+#: ../podcast/rb-feed-podcast-properties-dialog.c:340
 #: ../podcast/rb-podcast-manager.c:1911
-#: ../podcast/rb-podcast-properties-dialog.c:601
-#: ../podcast/rb-podcast-properties-dialog.c:696
-#: ../remote/dbus/rb-client.c:153 ../rhythmdb/rhythmdb-tree.c:1341
+#: ../podcast/rb-podcast-properties-dialog.c:600
+#: ../podcast/rb-podcast-properties-dialog.c:695
+#: ../remote/dbus/rb-client.c:155 ../rhythmdb/rhythmdb-tree.c:1341
 #: ../rhythmdb/rhythmdb-tree.c:1345 ../rhythmdb/rhythmdb-tree.c:1349
 #: ../rhythmdb/rhythmdb-tree.c:1353 ../rhythmdb/rhythmdb.c:2038
 #: ../rhythmdb/rhythmdb.c:2044 ../rhythmdb/rhythmdb.c:2059
-#: ../shell/rb-shell-player.c:1723 ../sources/rb-podcast-source.c:1665
+#: ../shell/rb-shell-player.c:1723 ../sources/rb-podcast-source.c:1666
 #: ../widgets/rb-entry-view.c:1087 ../widgets/rb-entry-view.c:1109
 #: ../widgets/rb-entry-view.c:1588 ../widgets/rb-entry-view.c:1600
-#: ../widgets/rb-entry-view.c:1612 ../widgets/rb-song-info.c:924
-#: ../widgets/rb-song-info.c:936 ../widgets/rb-song-info.c:1157
-#: ../widgets/rb-song-info.c:1496
+#: ../widgets/rb-entry-view.c:1612 ../widgets/rb-song-info.c:922
+#: ../widgets/rb-song-info.c:934 ../widgets/rb-song-info.c:1155
+#: ../widgets/rb-song-info.c:1494
 msgid "Unknown"
 msgstr "Neznámo"
 
@@ -733,13 +733,13 @@ msgid "Cannot get free space at %s: %s"
 msgstr "Nepodařilo se zjistit volné místo na %s: %s"
 
 #: ../lib/rb-util.c:698 ../plugins/context/tmpl/album-tmpl.html:20
-#: ../remote/dbus/rb-client.c:155
+#: ../remote/dbus/rb-client.c:157
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
 #: ../lib/rb-util.c:700 ../plugins/context/tmpl/album-tmpl.html:18
-#: ../remote/dbus/rb-client.c:157
+#: ../remote/dbus/rb-client.c:159
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -1074,10 +1074,10 @@ msgid "Loved Tracks"
 msgstr "Oblíbené stopy"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:7
-#: ../plugins/iradio/rb-station-properties-dialog.c:499
+#: ../plugins/iradio/rb-station-properties-dialog.c:498
 #: ../rhythmdb/rhythmdb.c:3585 ../widgets/rb-entry-view.c:1035
 #: ../widgets/rb-entry-view.c:1647 ../widgets/rb-entry-view.c:1660
-#: ../widgets/rb-song-info.c:1469
+#: ../widgets/rb-song-info.c:1467
 msgid "Never"
 msgstr "Nikdy"
 
@@ -1209,71 +1209,95 @@ msgstr "%s přehrává"
 msgid "_View on %s"
 msgstr "_Zobrazit na %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:54
+#. Translators: describes a radio stream playing tracks similar to those by an artist.
+#. * Followed by a text entry box for the artist name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:57
 msgid "Similar to Artist:"
 msgstr "Podobné umělci:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:55
+#. Translators: describes a radio stream playing tracks listened to by the top fans of
+#. * a particular artist.  Followed by a text entry box for the artist name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:61
 msgid "Top Fans of Artist:"
 msgstr "Největší fanoušci umělce:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:56
+#. Translators: describes a radio stream playing tracks from the library of a particular
+#. * user.  Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:65
 msgid "Library of User:"
 msgstr "Kolekce uživatele:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:57
+#. Translators: describes a radio stream playing tracks played by users similar to a
+#. * particular user.  Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:69
 msgid "Neighbourhood of User:"
 msgstr "Sousední stanice uživatele:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:58
+#. Translators: describes a radio stream playing tracks that a particular user has marked
+#. * as loved.  Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:73
 msgid "Tracks Loved by User:"
 msgstr "Stopy oblíbené uživatelem:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:59
+#. Translators: describes a radio stream playing tracks recommended to a particular user.
+#. * Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:77
 msgid "Recommendations for User:"
 msgstr "Doporučené stopy pro uživatele:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:60
+#. Translators: describes a radio stream playing tracks tagged with a particular tag.
+#. * Followed by a text entry box for the tag.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:81
 msgid "Tracks Tagged with:"
 msgstr "Stopy oštítkované s:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:61
-msgid "Listended by Group:"
+#. Translators: describes a radio stream playing tracks often listened to by members of
+#. * a particular group. Followed by a text entry box for the group name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:85
+msgid "Listened by Group:"
 msgstr "Posloucháno skupinou:"
 
 #. Translators: station is built from artists similar to the artist %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:95
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:119
 #, c-format
 msgid "%s Radio"
 msgstr "Rádio %s"
 
 #. Translators: station is built from the artist %s's top fans
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:97
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:121
 #, c-format
 msgid "%s Fan Radio"
 msgstr "Rádio fanoušků umělce %s"
 
 #. Translators: station is built from the library of the user %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:99
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:123
 #, c-format
 msgid "%s's Library"
 msgstr "Kolekce uživatele %s"
 
 #. Translators: station is built from the "neighbourhood" of the user %s.
 #. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:102
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:126
 #, c-format
 msgid "%s's Neighbourhood"
 msgstr "Sousední stanice uživatele %s"
 
 #. Translators: station is built from the tracks which have been "loved" by the user %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:104
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:128
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr "Oblíbené stopy %s"
 
 #. Translators: station is built from the tracks which are recommended to the user %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:106
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
 #, c-format
 msgid "%s's Recommended Radio"
 msgstr "Doporučené stopy uživatele %s"
@@ -1281,45 +1305,45 @@ msgstr "Doporučené stopy uživatele %s"
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
 #. * but nationalities, record labels, decades and very random words are also commmon
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:110
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
 #, c-format
 msgid "%s Tag Radio"
 msgstr "Rádio se štítky %s"
 
 #. Translators: station is built from the library of the group %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:112
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:136
 #, c-format
 msgid "%s Group Radio"
 msgstr "Rádio skupiny %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:255
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:279
 msgid "_Rename Station"
 msgstr "_Přejmenovat stanici"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:256
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:280
 msgid "Rename station"
 msgstr "Přejmenovat stanici"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:258
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:282
 msgid "_Delete Station"
 msgstr "_Smazat stanici"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:259
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:283
 msgid "Delete station"
 msgstr "Smazat stanici"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:422
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:446
 msgid "You must enter your password to listen to this station"
 msgstr "Abyste mohli poslouchat tuto stanici, je třeba zadat heslo"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:733
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1076
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1206
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:757
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1100
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1230
 msgid "Error tuning station: no response"
 msgstr "Chyba ladění stanice: neodpovídá"
 
 #. Invalid station url
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:770
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:794
 msgid "Invalid station URL"
 msgstr "Neplatná adresa URL stanice"
 
@@ -1327,36 +1351,36 @@ msgstr "Neplatná adresa URL stanice"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This message indicates that to listen to this radio station the user needs to be
 #. * a paying subscriber to the service.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:776
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:800
 #, c-format
 msgid "This station is only available to %s subscribers"
 msgstr "Tato stanice je dostupná pouze předplatitelům %s."
 
 #. Not enough content
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:780
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:804
 msgid "Not enough content to play station"
 msgstr "K přehrání stanice není k dispozici dostatek obsahu"
 
 #. Other error
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:783
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:807
 #, c-format
 msgid "Error tuning station: %i - %s"
 msgstr "Chyba ladění stanice: %i – %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:794
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:818
 msgid "Error tuning station: unexpected response"
 msgstr "Chyba ladění stanice: neočekávaná odpověď"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:799
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:823
 msgid "Error tuning station: invalid response"
 msgstr "Chyba ladění stanice: neplatná odpověď"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1191
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1215
 #, c-format
 msgid "Error tuning station: %s"
 msgstr "Chyba ladění stanice: %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1263
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1287
 #, c-format
 msgid "Password for streaming %s radio using the deprecated API"
 msgstr "Heslo pro proudově vysílané rádio %s používající zastaralé API"
@@ -1364,7 +1388,7 @@ msgstr "Heslo pro proudově vysílané rádio %s používající zastaralé API"
 #. We could be calling either radio.tune or radio.getPlaylist methods.
 #. * "Tuning station" seems like a user friendly message to display for both cases.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1426
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1450
 msgid "Tuning station"
 msgstr "Ladí se stanice"
 
@@ -1760,41 +1784,41 @@ msgstr "Zkusi_t jiné"
 msgid "_Erase Disc"
 msgstr "_Vymazat disk"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1145
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1144
 msgid "C_reate"
 msgstr "_Vytvořit"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1223
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1222
 #, c-format
 msgid "Failed to create the recorder: %s"
 msgstr "Nepodařilo se vytvořit vypalovačku: %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1345
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1344
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
 msgstr "Nepodařilo se odstranit dočasnou složku „%s“: %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1365
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1364
 msgid "Create Audio CD"
 msgstr "Vytvořit zvukové CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1383
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1382
 #, c-format
 msgid "Create audio CD from '%s'?"
 msgstr "Vytvořit zvukové CD z „%s“?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1429
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1447
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1428
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1446
 #, c-format
 msgid "Unable to build an audio track list."
 msgstr "Nepodařilo se sestavit seznam zvukových stop."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1457
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1456
 #, c-format
 msgid "This playlist is too long to write to an audio CD."
 msgstr "Tento seznam skladeb je příliš dlouhý k zápisu na zvukové CD."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1593
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1592
 #, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
@@ -1805,15 +1829,15 @@ msgstr ""
 "zvukového CD. Pokud je cílové médium větší než standardní zvukové CD, vložte "
 "jej prosím do mechaniky a zkuste to znovu."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1604
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1603
 msgid "Playlist too long"
 msgstr "Seznam skladeb je příliš dlouhý"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1644
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1643
 msgid "Could not find temporary space!"
 msgstr "Nepodařilo se najít dočasné místo!"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1645
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1644
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MB "
@@ -1988,7 +2012,7 @@ msgstr "<b>Sdílení</b>"
 msgid "Require _password:"
 msgstr "Vyžadovat _heslo:"
 
-#: ../plugins/daap/daap-prefs.ui.h:3 ../plugins/daap/rb-daap-dialog.c:82
+#: ../plugins/daap/daap-prefs.ui.h:3 ../plugins/daap/rb-daap-dialog.c:81
 msgid "Shared music _name:"
 msgstr "_Název sdílené hudby:"
 
@@ -2000,7 +2024,7 @@ msgstr "_Sdílet mou hudbu"
 msgid "Invalid share name"
 msgstr "Neplatný název sdílení"
 
-#: ../plugins/daap/rb-daap-dialog.c:74
+#: ../plugins/daap/rb-daap-dialog.c:73
 #, c-format
 msgid "The shared music name '%s' is already taken. Please choose another."
 msgstr "Název sdílené hudby „%s“ se již používá. Prosím, zvolte jiný."
@@ -2168,7 +2192,7 @@ msgid "Display device properties"
 msgstr "Zobrazit vlastnosti zařízení"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1310
-#: ../plugins/ipod/rb-ipod-source.c:1927
+#: ../plugins/ipod/rb-ipod-source.c:1985
 #: ../plugins/mtpdevice/rb-mtp-source.c:1616
 msgid "Advanced"
 msgstr "Pokročilé"
@@ -2328,14 +2352,14 @@ msgstr "_Odstranit"
 msgid "Delete playlist"
 msgstr "Odstranit seznam skladeb"
 
-#: ../plugins/ipod/rb-ipod-source.c:1436 ../sources/rb-podcast-source.c:840
+#: ../plugins/ipod/rb-ipod-source.c:1491 ../sources/rb-podcast-source.c:840
 #: ../sources/sync/rb-sync-settings-ui.c:262
 #: ../sources/sync/rb-sync-settings-ui.c:263
 #: ../sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
 msgstr "Podcasty"
 
-#: ../plugins/ipod/rb-ipod-source.c:1817
+#: ../plugins/ipod/rb-ipod-source.c:1875
 msgid "New playlist"
 msgstr "Nový seznam skladeb"
 
@@ -2535,35 +2559,35 @@ msgstr[0] "%d stanice"
 msgstr[1] "%d stanice"
 msgstr[2] "%d stanic"
 
-#: ../plugins/iradio/rb-iradio-source.c:1019
-#: ../plugins/iradio/rb-station-properties-dialog.c:402
+#: ../plugins/iradio/rb-iradio-source.c:1018
+#: ../plugins/iradio/rb-station-properties-dialog.c:401
 msgid "New Internet Radio Station"
 msgstr "Nová stanice internetového rádia"
 
-#: ../plugins/iradio/rb-iradio-source.c:1019
+#: ../plugins/iradio/rb-iradio-source.c:1018
 msgid "URL of internet radio station:"
 msgstr "URL stanice internetového rádia:"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:398
-#: ../podcast/rb-feed-podcast-properties-dialog.c:216
-#: ../podcast/rb-podcast-properties-dialog.c:486
-#: ../sources/rb-media-player-source.c:353 ../widgets/rb-song-info.c:1082
+#: ../plugins/iradio/rb-station-properties-dialog.c:397
+#: ../podcast/rb-feed-podcast-properties-dialog.c:215
+#: ../podcast/rb-podcast-properties-dialog.c:485
+#: ../sources/rb-media-player-source.c:353 ../widgets/rb-song-info.c:1080
 #, c-format
 msgid "%s Properties"
 msgstr "Vlastnosti %s"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../podcast/rb-podcast-properties-dialog.c:599
-#: ../widgets/rb-entry-view.c:1113 ../widgets/rb-song-info.c:1159
+#: ../plugins/iradio/rb-station-properties-dialog.c:489
+#: ../podcast/rb-podcast-properties-dialog.c:598
+#: ../widgets/rb-entry-view.c:1113 ../widgets/rb-song-info.c:1157
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kb/s"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:581
+#: ../plugins/iradio/rb-station-properties-dialog.c:580
 msgid "Unable to change station property"
 msgstr "Nelze změnit vlastnost stanice"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:581
+#: ../plugins/iradio/rb-station-properties-dialog.c:580
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
 msgstr "Nelze změnit URI stanice na %s, protože taková stanice již existuje"
@@ -3346,53 +3370,61 @@ msgstr "Odeslat vybrané stopy pomocí poštovního nebo komunikačního program
 msgid "Send tracks"
 msgstr "Odeslané stopy"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:141
+#: ../plugins/status-icon/rb-status-icon-plugin.c:142
 msgid "_Close"
 msgstr "_Zavřít"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:142
+#: ../plugins/status-icon/rb-status-icon-plugin.c:143
 msgid "Hide the music player window"
 msgstr "Skrýt okno přehrávače hudby"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:148
+#: ../plugins/status-icon/rb-status-icon-plugin.c:149
 msgid "_Show Music Player"
 msgstr "_Zobrazit přehrávač"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:149
+#: ../plugins/status-icon/rb-status-icon-plugin.c:150
 msgid "Choose music to play"
 msgstr "Vybrat hudbu k přehrání"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:151
+#: ../plugins/status-icon/rb-status-icon-plugin.c:152
 msgid "Show N_otifications"
 msgstr "Zobrazovat _upozornění"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:152
+#: ../plugins/status-icon/rb-status-icon-plugin.c:153
 msgid "Show notifications of song changes and other events"
 msgstr "Zobrazovat upozornění na změny skladeb a jiné události"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:435
+#: ../plugins/status-icon/rb-status-icon-plugin.c:456
+msgid "Previous"
+msgstr "Předchozí"
+
+#: ../plugins/status-icon/rb-status-icon-plugin.c:462
+msgid "Pause"
+msgstr "Pozastavit"
+
+#: ../plugins/status-icon/rb-status-icon-plugin.c:470
 msgid "Next"
 msgstr "Následující"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:586
-#: ../remote/dbus/rb-client.c:466 ../remote/dbus/rb-client.c:491
+#: ../plugins/status-icon/rb-status-icon-plugin.c:632
+#: ../remote/dbus/rb-client.c:468 ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "Nepřehrává se"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:589
+#: ../plugins/status-icon/rb-status-icon-plugin.c:635
 #, c-format
 msgid "Paused, %s"
 msgstr "Pozastaveno, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:654
+#: ../plugins/status-icon/rb-status-icon-plugin.c:700
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "od <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:656
+#: ../plugins/status-icon/rb-status-icon-plugin.c:702
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "z <i>%s</i>"
@@ -3633,137 +3665,141 @@ msgstr "Kanál neobsahuje žádné stáhnutelné položky"
 msgid "Unable to display requested URI"
 msgstr "Nelze zobrazit požadovanou adresu URI"
 
-#: ../podcast/rb-podcast-properties-dialog.c:549
+#: ../podcast/rb-podcast-properties-dialog.c:548
 msgid "Not Downloaded"
 msgstr "Nestaženo"
 
-#: ../remote/dbus/rb-client.c:86
+#: ../remote/dbus/rb-client.c:87
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Nespouštějte novou instanci Rhythmboxu"
 
-#: ../remote/dbus/rb-client.c:87 ../shell/main.c:120
+#: ../remote/dbus/rb-client.c:88 ../shell/main.c:120
 msgid "Quit Rhythmbox"
 msgstr "Ukončit Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:89
+msgid "Check if Rhythmbox is already running"
+msgstr "Zkontrolovat, zda Rhythmbox již neběží"
+
+#: ../remote/dbus/rb-client.c:91
 msgid "Don't present an existing Rhythmbox window"
 msgstr "Nezobrazovat existující okno Rhythmboxu"
 
-#: ../remote/dbus/rb-client.c:90
+#: ../remote/dbus/rb-client.c:92
 msgid "Hide the Rhythmbox window"
 msgstr "Skrýt okno Rhythmboxu"
 
-#: ../remote/dbus/rb-client.c:92
+#: ../remote/dbus/rb-client.c:94
 msgid "Jump to next song"
 msgstr "Přejít na následující skladbu"
 
-#: ../remote/dbus/rb-client.c:93
+#: ../remote/dbus/rb-client.c:95
 msgid "Jump to previous song"
 msgstr "Přejít na předchozí skladbu"
 
-#: ../remote/dbus/rb-client.c:94
+#: ../remote/dbus/rb-client.c:96
 msgid "Seek in current track"
 msgstr "Posunout se v rámci aktuální skladby"
 
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:98
 msgid "Show notification of the playing song"
 msgstr "Zobrazit upozornění na přehrávanou skladbu"
 
-#: ../remote/dbus/rb-client.c:98
+#: ../remote/dbus/rb-client.c:100
 msgid "Resume playback if currently paused"
 msgstr "Pokračovat v přehrávání, pokud je pozastaveno"
 
-#: ../remote/dbus/rb-client.c:99
+#: ../remote/dbus/rb-client.c:101
 msgid "Pause playback if currently playing"
 msgstr "Pozastavit přehrávání, pokud hraje"
 
-#: ../remote/dbus/rb-client.c:100
+#: ../remote/dbus/rb-client.c:102
 msgid "Toggle play/pause mode"
 msgstr "Přepnout mezi přehráváním a pozastavením"
 
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:105
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Přehrát zvolené URI, s případným importem, pokud je třeba"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:105
 msgid "URI to play"
 msgstr "URI k přehrávání"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:106
 msgid "Add specified tracks to the play queue"
 msgstr "Přidat vybrané skladby do fronty"
 
-#: ../remote/dbus/rb-client.c:105
+#: ../remote/dbus/rb-client.c:107
 msgid "Empty the play queue before adding new tracks"
 msgstr "Vyprázdnit frontu před přidáním nových stop"
 
-#: ../remote/dbus/rb-client.c:107
+#: ../remote/dbus/rb-client.c:109
 msgid "Print the title and artist of the playing song"
 msgstr "Vypsat název a umělce přehrávané skladby"
 
-#: ../remote/dbus/rb-client.c:108
+#: ../remote/dbus/rb-client.c:110
 msgid "Print formatted details of the song"
 msgstr "Vypsat formátované detaily skladby"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:111
 msgid "Select the source matching the specified URI"
 msgstr "Vybrat zdroj odpovídající zadané adrese URI"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:111
 msgid "Source to select"
 msgstr "Zdroj k výběru"
 
-#: ../remote/dbus/rb-client.c:110
+#: ../remote/dbus/rb-client.c:112
 msgid "Activate the source matching the specified URI"
 msgstr "Aktivovat zdroj odpovídající zadané adrese URI"
 
-#: ../remote/dbus/rb-client.c:110
+#: ../remote/dbus/rb-client.c:112
 msgid "Source to activate"
 msgstr "Zdroj k aktivaci"
 
-#: ../remote/dbus/rb-client.c:111
+#: ../remote/dbus/rb-client.c:113
 msgid "Play from the source matching the specified URI"
 msgstr "Přehrávat ze zdroje odpovídajícího zadané adrese URI"
 
-#: ../remote/dbus/rb-client.c:111
+#: ../remote/dbus/rb-client.c:113
 msgid "Source to play from"
 msgstr "Zdroj pro přehrávání"
 
-#: ../remote/dbus/rb-client.c:113
+#: ../remote/dbus/rb-client.c:115
 msgid "Set the playback volume"
 msgstr "Nastavit hlasitost přehrávání"
 
-#: ../remote/dbus/rb-client.c:114
+#: ../remote/dbus/rb-client.c:116
 msgid "Increase the playback volume"
 msgstr "Zvýšit hlasitost přehrávání"
 
-#: ../remote/dbus/rb-client.c:115
+#: ../remote/dbus/rb-client.c:117
 msgid "Decrease the playback volume"
 msgstr "Snížit hlasitost přehrávání"
 
-#: ../remote/dbus/rb-client.c:116
+#: ../remote/dbus/rb-client.c:118
 msgid "Print the current playback volume"
 msgstr "Vypsat aktuální hlasitost přehrávání"
 
-#: ../remote/dbus/rb-client.c:117
+#: ../remote/dbus/rb-client.c:119
 msgid "Mute playback"
 msgstr "Ztlumit přehrávání"
 
-#: ../remote/dbus/rb-client.c:118
+#: ../remote/dbus/rb-client.c:120
 msgid "Unmute playback"
 msgstr "Přehrávat nahlas"
 
-#: ../remote/dbus/rb-client.c:119
+#: ../remote/dbus/rb-client.c:121
 msgid "Set the rating of the current song"
 msgstr "Nastavit hodnocení současné skladby"
 
-#: ../remote/dbus/rb-client.c:804
+#: ../remote/dbus/rb-client.c:817
 #, c-format
 msgid "Playback is muted.\n"
 msgstr "Přehrávání je ztlumeno.\n"
 
-#: ../remote/dbus/rb-client.c:805
+#: ../remote/dbus/rb-client.c:818
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Hlasitost přehrávání je %f.\n"
@@ -4337,11 +4373,11 @@ msgstr "Nepodařilo se zobrazit nápovědu"
 msgid "Music Player Preferences"
 msgstr "Nastavení přehrávače hudby"
 
-#: ../shell/rb-shell-preferences.c:257
+#: ../shell/rb-shell-preferences.c:256
 msgid "General"
 msgstr "Obecné"
 
-#: ../shell/rb-shell-preferences.c:313
+#: ../shell/rb-shell-preferences.c:312
 msgid "Playback"
 msgstr "Přehrávání"
 
@@ -4572,35 +4608,35 @@ msgstr "Webová stránka Rhythmboxu"
 msgid "Configure Plugins"
 msgstr "Nastavit přídavné moduly"
 
-#: ../shell/rb-shell.c:2545
+#: ../shell/rb-shell.c:2544
 msgid "Import Folder into Library"
 msgstr "Importovat složku do kolekce"
 
-#: ../shell/rb-shell.c:2567
+#: ../shell/rb-shell.c:2566
 msgid "Import File into Library"
 msgstr "Importovat soubor do kolekce"
 
-#: ../shell/rb-shell.c:3171 ../shell/rb-shell.c:3529
+#: ../shell/rb-shell.c:3170 ../shell/rb-shell.c:3528
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Žádné registrované zdroje nemohou obsluhovat URI %s"
 
-#: ../shell/rb-shell.c:3649
+#: ../shell/rb-shell.c:3648
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Žádný registrovaný zdroj neodpovídá adrese URI %s"
 
-#: ../shell/rb-shell.c:3682 ../shell/rb-shell.c:3725
+#: ../shell/rb-shell.c:3681 ../shell/rb-shell.c:3724
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Neznámé URI skladby: %s"
 
-#: ../shell/rb-shell.c:3734
+#: ../shell/rb-shell.c:3733
 #, c-format
 msgid "Unknown property %s"
 msgstr "Neznámá vlastnost %s"
 
-#: ../shell/rb-shell.c:3748
+#: ../shell/rb-shell.c:3747
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Neplatný typ vlastnosti %s pro vlastnost %s"
@@ -4709,7 +4745,7 @@ msgid "Search titles"
 msgstr "Hledat názvy"
 
 #: ../sources/rb-removable-media-source.c:892
-#: ../sources/rb-library-source.c:1271 ../sources/rb-library-source.c:1275
+#: ../sources/rb-library-source.c:1270 ../sources/rb-library-source.c:1274
 msgid "Error transferring track"
 msgstr "Chyba při přenosu stopy"
 
@@ -4812,15 +4848,15 @@ msgstr "Stopa. Umělec – Název"
 msgid "Music"
 msgstr "Hudba"
 
-#: ../sources/rb-library-source.c:443
+#: ../sources/rb-library-source.c:442
 msgid "Choose Library Location"
 msgstr "Vyberte umístění kolekce"
 
-#: ../sources/rb-library-source.c:618
+#: ../sources/rb-library-source.c:617
 msgid "Multiple locations set"
 msgstr "Nastaveno několik umístění"
 
-#: ../sources/rb-library-source.c:1048
+#: ../sources/rb-library-source.c:1047
 msgid "Example Path:"
 msgstr "Příklad cesty:"
 
@@ -5009,15 +5045,15 @@ msgstr "Kanál"
 msgid "Status"
 msgstr "Stav"
 
-#: ../sources/rb-podcast-source.c:629 ../sources/rb-podcast-source.c:1490
+#: ../sources/rb-podcast-source.c:629 ../sources/rb-podcast-source.c:1491
 msgid "Downloaded"
 msgstr "Staženo"
 
-#: ../sources/rb-podcast-source.c:630 ../sources/rb-podcast-source.c:1498
+#: ../sources/rb-podcast-source.c:630 ../sources/rb-podcast-source.c:1499
 msgid "Waiting"
 msgstr "Čeká se"
 
-#: ../sources/rb-podcast-source.c:631 ../sources/rb-podcast-source.c:1494
+#: ../sources/rb-podcast-source.c:631 ../sources/rb-podcast-source.c:1495
 msgid "Failed"
 msgstr "Selhalo"
 
@@ -5043,11 +5079,11 @@ msgstr "Odstranit jen _epizodu"
 msgid "_Delete Episode And File"
 msgstr "_Odstranit epizodu a soubor"
 
-#: ../sources/rb-podcast-source.c:1383
+#: ../sources/rb-podcast-source.c:1384
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Odstranit kanál podcastu a stažené soubory?"
 
-#: ../sources/rb-podcast-source.c:1386
+#: ../sources/rb-podcast-source.c:1387
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -5057,15 +5093,15 @@ msgstr ""
 "ztraceny. Všimněte si, že můžete odstranit zvukový kanál, ale ponechat si "
 "stažené soubory, zvolením Odstranit jen kanál."
 
-#: ../sources/rb-podcast-source.c:1394
+#: ../sources/rb-podcast-source.c:1395
 msgid "Delete _Feed Only"
 msgstr "Odstranit jen _kanál"
 
-#: ../sources/rb-podcast-source.c:1401
+#: ../sources/rb-podcast-source.c:1402
 msgid "_Delete Feed And Files"
 msgstr "_Odstranit kanál a soubory"
 
-#: ../sources/rb-podcast-source.c:1609
+#: ../sources/rb-podcast-source.c:1610
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
@@ -5073,36 +5109,36 @@ msgstr[0] "%d kanál"
 msgstr[1] "Všechny %d kanály"
 msgstr[2] "Všech %d kanálů"
 
-#: ../sources/rb-podcast-source.c:1746
+#: ../sources/rb-podcast-source.c:1747
 msgid "Downloading podcast"
 msgstr "Stahuje se podcast"
 
-#: ../sources/rb-podcast-source.c:1761
+#: ../sources/rb-podcast-source.c:1762
 msgid "Finished downloading podcast"
 msgstr "Stahování podcastu bylo dokončeno"
 
-#: ../sources/rb-podcast-source.c:1776
+#: ../sources/rb-podcast-source.c:1777
 msgid "New updates available from"
 msgstr "Nové aktualizace jsou k dispozici od"
 
-#: ../sources/rb-podcast-source.c:1894
+#: ../sources/rb-podcast-source.c:1895
 msgid "Error in podcast"
 msgstr "Chyba v podcastu"
 
-#: ../sources/rb-podcast-source.c:1901
+#: ../sources/rb-podcast-source.c:1902
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Chcete i přesto přidat podcast?"
 
-#: ../sources/rb-podcast-source.c:2028
+#: ../sources/rb-podcast-source.c:2029
 msgid "New Podcast Feed"
 msgstr "Nový kanál podcastu"
 
-#: ../sources/rb-podcast-source.c:2028
+#: ../sources/rb-podcast-source.c:2029
 msgid "URL of podcast feed:"
 msgstr "URL kanálu podcastu:"
 
-#: ../sources/rb-podcast-source.c:2044
+#: ../sources/rb-podcast-source.c:2045
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -5110,7 +5146,7 @@ msgstr[0] "%d epizoda"
 msgstr[1] "%d epizody"
 msgstr[2] "%d epizod"
 
-#: ../sources/rb-podcast-source.c:2161
+#: ../sources/rb-podcast-source.c:2165
 msgid "Podcast Error"
 msgstr "Chyba podcastu"
 
@@ -5122,7 +5158,7 @@ msgstr[0] "%d skladba"
 msgstr[1] "%d skladby"
 msgstr[2] "%d skladeb"
 
-#: ../sources/rb-source.c:1968
+#: ../sources/rb-source.c:1965
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Importuje se (%d/%d)"
@@ -5143,7 +5179,7 @@ msgstr "Zařízení"
 msgid "Shared"
 msgstr "Sdíleno"
 
-#: ../sources/rb-sourcelist.c:704
+#: ../sources/rb-sourcelist.c:702
 msgid "S_ource"
 msgstr "_Zdroj"
 
@@ -5204,7 +5240,7 @@ msgid "The pixbuf to render."
 msgstr "Pixbuf pro vykreslení."
 
 #: ../widgets/rb-entry-view.c:1107 ../widgets/rb-entry-view.c:1613
-#: ../widgets/rb-song-info.c:1155
+#: ../widgets/rb-song-info.c:1153
 msgid "Lossless"
 msgstr "Bezeztrátový"
 
@@ -5268,7 +5304,7 @@ msgstr "Chyba při přehrávání"
 msgid "Not Playing"
 msgstr "Nepřehrává se"
 
-#: ../widgets/rb-property-view.c:631
+#: ../widgets/rb-property-view.c:635
 #, c-format
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
@@ -5276,7 +5312,7 @@ msgstr[0] "%d umělec (%d)"
 msgstr[1] "Všichni %d umělci (%d)"
 msgstr[2] "Všech %d umělců (%d)"
 
-#: ../widgets/rb-property-view.c:634
+#: ../widgets/rb-property-view.c:638
 #, c-format
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
@@ -5284,7 +5320,7 @@ msgstr[0] "%d album (%d)"
 msgstr[1] "Všechna %d alba (%d)"
 msgstr[2] "Všech %d alb (%d)"
 
-#: ../widgets/rb-property-view.c:637
+#: ../widgets/rb-property-view.c:641
 #, c-format
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
@@ -5292,7 +5328,7 @@ msgstr[0] "%d žánr (%d)"
 msgstr[1] "Všechny %d žánry (%d)"
 msgstr[2] "Všech %d žánrů (%d)"
 
-#: ../widgets/rb-property-view.c:640
+#: ../widgets/rb-property-view.c:644
 #, c-format
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
@@ -5300,7 +5336,7 @@ msgstr[0] "%d (%d)"
 msgstr[1] "%d (%d)"
 msgstr[2] "%d (%d)"
 
-#: ../widgets/rb-property-view.c:646
+#: ../widgets/rb-property-view.c:650
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
@@ -5621,23 +5657,23 @@ msgstr "_Hledat:"
 msgid "Clear the search text"
 msgstr "Vymazat hledaný text"
 
-#: ../widgets/rb-song-info.c:375
+#: ../widgets/rb-song-info.c:373
 msgid "Song Properties"
 msgstr "Vlastnosti skladby"
 
-#: ../widgets/rb-song-info.c:432
+#: ../widgets/rb-song-info.c:430
 msgid "Multiple Song Properties"
 msgstr "Vlastnosti více skladeb"
 
-#: ../widgets/rb-song-info.c:1218
+#: ../widgets/rb-song-info.c:1216
 msgid "Unknown file name"
 msgstr "Neznámý název souboru"
 
-#: ../widgets/rb-song-info.c:1240
+#: ../widgets/rb-song-info.c:1238
 msgid "On the desktop"
 msgstr "Na ploše"
 
-#: ../widgets/rb-song-info.c:1263
+#: ../widgets/rb-song-info.c:1261
 msgid "Unknown location"
 msgstr "Neznámé umístění"
 
