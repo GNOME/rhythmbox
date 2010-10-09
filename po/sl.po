@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-10-05 06:43+0000\n"
-"PO-Revision-Date: 2010-10-05 11:24+0100\n"
+"POT-Creation-Date: 2010-10-09 12:59+0000\n"
+"PO-Revision-Date: 2010-10-09 15:10+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);\n"
 "X-Poedit-Country: SLOVENIA\n"
 "X-Poedit-Language: Slovenian\n"
@@ -732,7 +732,7 @@ msgstr "%d. %b. %Y"
 #: ../rhythmdb/rhythmdb.c:2038
 #: ../rhythmdb/rhythmdb.c:2044
 #: ../rhythmdb/rhythmdb.c:2059
-#: ../shell/rb-shell-player.c:1723
+#: ../shell/rb-shell-player.c:1752
 #: ../sources/rb-podcast-source.c:1666
 #: ../widgets/rb-entry-view.c:1087
 #: ../widgets/rb-entry-view.c:1109
@@ -1237,71 +1237,95 @@ msgstr "%s se predvaja"
 msgid "_View on %s"
 msgstr "_Ogled na %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:54
+#. Translators: describes a radio stream playing tracks similar to those by an artist.
+#. * Followed by a text entry box for the artist name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:57
 msgid "Similar to Artist:"
 msgstr "Podobno izvajalcu:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:55
+#. Translators: describes a radio stream playing tracks listened to by the top fans of
+#. * a particular artist.  Followed by a text entry box for the artist name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:61
 msgid "Top Fans of Artist:"
 msgstr "Največji oboževalci izvajalca:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:56
+#. Translators: describes a radio stream playing tracks from the library of a particular
+#. * user.  Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:65
 msgid "Library of User:"
 msgstr "Knjižnica uporabnika:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:57
+#. Translators: describes a radio stream playing tracks played by users similar to a
+#. * particular user.  Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:69
 msgid "Neighbourhood of User:"
 msgstr "Soseščina uporabnika:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:58
+#. Translators: describes a radio stream playing tracks that a particular user has marked
+#. * as loved.  Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:73
 msgid "Tracks Loved by User:"
 msgstr "Skladbe, ki jih uporabnik obožuje:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:59
+#. Translators: describes a radio stream playing tracks recommended to a particular user.
+#. * Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:77
 msgid "Recommendations for User:"
 msgstr "Priporočila za  uporabnika:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:60
+#. Translators: describes a radio stream playing tracks tagged with a particular tag.
+#. * Followed by a text entry box for the tag.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:81
 msgid "Tracks Tagged with:"
 msgstr "Skladbe označene z:"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:61
-msgid "Listended by Group:"
+#. Translators: describes a radio stream playing tracks often listened to by members of
+#. * a particular group. Followed by a text entry box for the group name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:85
+msgid "Listened by Group:"
 msgstr "Posluša skupina:"
 
 #. Translators: station is built from artists similar to the artist %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:95
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:119
 #, c-format
 msgid "%s Radio"
 msgstr "Radio %s"
 
 #. Translators: station is built from the artist %s's top fans
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:97
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:121
 #, c-format
 msgid "%s Fan Radio"
 msgstr "Radio oboževalca izvajalca %s"
 
 #. Translators: station is built from the library of the user %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:99
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:123
 #, c-format
 msgid "%s's Library"
 msgstr "Knjižnica osebe %s"
 
 #. Translators: station is built from the "neighbourhood" of the user %s.
 #. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:102
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:126
 #, c-format
 msgid "%s's Neighbourhood"
 msgstr "Soseščina osebe %s"
 
 #. Translators: station is built from the tracks which have been "loved" by the user %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:104
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:128
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr "Skladbe, ki so všeč %s"
 
 #. Translators: station is built from the tracks which are recommended to the user %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:106
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
 #, c-format
 msgid "%s's Recommended Radio"
 msgstr "Radio priporočil %s"
@@ -1309,45 +1333,45 @@ msgstr "Radio priporočil %s"
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
 #. * but nationalities, record labels, decades and very random words are also commmon
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:110
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
 #, c-format
 msgid "%s Tag Radio"
 msgstr "Radio oznak %s"
 
 #. Translators: station is built from the library of the group %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:112
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:136
 #, c-format
 msgid "%s Group Radio"
 msgstr "Radio skupine %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:255
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:279
 msgid "_Rename Station"
 msgstr "_Preimenuj postajo"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:256
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:280
 msgid "Rename station"
 msgstr "Preimenovanje postaje"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:258
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:282
 msgid "_Delete Station"
 msgstr "_Izbriši postajo"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:259
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:283
 msgid "Delete station"
 msgstr "Izbris postaje"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:422
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:446
 msgid "You must enter your password to listen to this station"
 msgstr "Za poslušanje te postaje morate vnesti svoje geslo"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:733
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1076
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1206
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:757
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1100
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1230
 msgid "Error tuning station: no response"
 msgstr "Napaka med uravnavanjem na postajo: brez odziva"
 
 #. Invalid station url
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:770
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:794
 msgid "Invalid station URL"
 msgstr "Neveljaven URL postaje"
 
@@ -1355,36 +1379,36 @@ msgstr "Neveljaven URL postaje"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This message indicates that to listen to this radio station the user needs to be
 #. * a paying subscriber to the service.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:776
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:800
 #, c-format
 msgid "This station is only available to %s subscribers"
 msgstr "Ta postaja je na voljo le naročnikom %s"
 
 #. Not enough content
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:780
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:804
 msgid "Not enough content to play station"
 msgstr "Ni dovolj vsebine za predvajanje postaje"
 
 #. Other error
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:783
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:807
 #, c-format
 msgid "Error tuning station: %i - %s"
 msgstr "Napaka med uravnavanjem na radijsko postajo: %i - %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:794
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:818
 msgid "Error tuning station: unexpected response"
 msgstr "Napaka med uravnavanjem na postajo: nepričakovan odziv"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:799
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:823
 msgid "Error tuning station: invalid response"
 msgstr "Napaka med uravnavanjem na postajo: neveljaven odziv"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1191
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1215
 #, c-format
 msgid "Error tuning station: %s"
 msgstr "Napaka med naravnavanjem na radijski postajo: %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1263
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1287
 #, c-format
 msgid "Password for streaming %s radio using the deprecated API"
 msgstr "Geslo za pretakanje radija %s z uporabo zastarelega API-ja"
@@ -1392,7 +1416,7 @@ msgstr "Geslo za pretakanje radija %s z uporabo zastarelega API-ja"
 #. We could be calling either radio.tune or radio.getPlaylist methods.
 #. * "Tuning station" seems like a user friendly message to display for both cases.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1426
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1450
 msgid "Tuning station"
 msgstr "Naravnavanje na radijsko postajo"
 
@@ -4095,161 +4119,161 @@ msgstr "_Lastnosti"
 msgid "Show information on each selected song"
 msgstr "Prikaz podatkov o vsaki izbrani skladbi"
 
-#: ../shell/rb-shell-player.c:308
+#: ../shell/rb-shell-player.c:309
 msgid "Pre_vious"
 msgstr "Pre_dhodna"
 
-#: ../shell/rb-shell-player.c:309
+#: ../shell/rb-shell-player.c:310
 msgid "Start playing the previous song"
 msgstr "Predvajanje predhodne skladbe"
 
-#: ../shell/rb-shell-player.c:311
+#: ../shell/rb-shell-player.c:312
 msgid "_Next"
 msgstr "_Naslednja"
 
-#: ../shell/rb-shell-player.c:312
+#: ../shell/rb-shell-player.c:313
 msgid "Start playing the next song"
 msgstr "Predvajanje naslednje skladbe"
 
-#: ../shell/rb-shell-player.c:314
+#: ../shell/rb-shell-player.c:315
 msgid "_Increase Volume"
 msgstr "_Povečaj glasnost"
 
-#: ../shell/rb-shell-player.c:315
+#: ../shell/rb-shell-player.c:316
 msgid "Increase playback volume"
 msgstr "Povečanje glasnosti predvajanja"
 
-#: ../shell/rb-shell-player.c:317
+#: ../shell/rb-shell-player.c:318
 msgid "_Decrease Volume"
 msgstr "_Zmanjšaj glasnost"
 
-#: ../shell/rb-shell-player.c:318
+#: ../shell/rb-shell-player.c:319
 msgid "Decrease playback volume"
 msgstr "Zmanjšanje glasnosti predvajanja"
 
-#: ../shell/rb-shell-player.c:325
+#: ../shell/rb-shell-player.c:326
 msgid "_Play"
 msgstr "_Predvajaj"
 
-#: ../shell/rb-shell-player.c:326
-#: ../shell/rb-shell-player.c:3823
+#: ../shell/rb-shell-player.c:327
+#: ../shell/rb-shell-player.c:3859
 msgid "Start playback"
 msgstr "Začetek predvajanja"
 
-#: ../shell/rb-shell-player.c:328
+#: ../shell/rb-shell-player.c:329
 msgid "Sh_uffle"
 msgstr "P_remešaj"
 
-#: ../shell/rb-shell-player.c:329
+#: ../shell/rb-shell-player.c:330
 msgid "Play songs in a random order"
 msgstr "Predvajanje skladb v naključnem redu"
 
-#: ../shell/rb-shell-player.c:331
+#: ../shell/rb-shell-player.c:332
 msgid "_Repeat"
 msgstr "_Ponovi"
 
-#: ../shell/rb-shell-player.c:332
+#: ../shell/rb-shell-player.c:333
 msgid "Play first song again after all songs are played"
 msgstr "Po predvajanju vseh skladb ponovno predvaja prvo skladbo"
 
-#: ../shell/rb-shell-player.c:334
+#: ../shell/rb-shell-player.c:335
 msgid "_Song Position Slider"
 msgstr "Drsnik položaja _skladbe"
 
-#: ../shell/rb-shell-player.c:335
+#: ../shell/rb-shell-player.c:336
 msgid "Change the visibility of the song position slider"
 msgstr "Sprememba vidnosti drsnika položaja skladbe"
 
-#: ../shell/rb-shell-player.c:818
+#: ../shell/rb-shell-player.c:819
 msgid "Stream error"
 msgstr "Napaka pretoka"
 
-#: ../shell/rb-shell-player.c:819
+#: ../shell/rb-shell-player.c:820
 msgid "Unexpected end of stream!"
 msgstr "Nepričakovan konec pretoka!"
 
-#: ../shell/rb-shell-player.c:976
+#: ../shell/rb-shell-player.c:977
 msgid "Linear"
 msgstr "Zaporedno"
 
-#: ../shell/rb-shell-player.c:978
+#: ../shell/rb-shell-player.c:979
 msgid "Linear looping"
 msgstr "Zaporedno kroženje"
 
-#: ../shell/rb-shell-player.c:980
+#: ../shell/rb-shell-player.c:981
 msgid "Shuffle"
 msgstr "Mešanje"
 
-#: ../shell/rb-shell-player.c:982
+#: ../shell/rb-shell-player.c:983
 msgid "Random with equal weights"
 msgstr "Naključno z enakimi utežmi"
 
-#: ../shell/rb-shell-player.c:984
+#: ../shell/rb-shell-player.c:985
 msgid "Random by time since last play"
 msgstr "Naključno po času od zadnjega predvajanja"
 
-#: ../shell/rb-shell-player.c:986
+#: ../shell/rb-shell-player.c:987
 msgid "Random by rating"
 msgstr "Naključno po oceni"
 
-#: ../shell/rb-shell-player.c:988
+#: ../shell/rb-shell-player.c:989
 msgid "Random by time since last play and rating"
 msgstr "Naključno po času od zadnjega predvajanja in oceni"
 
-#: ../shell/rb-shell-player.c:990
+#: ../shell/rb-shell-player.c:991
 msgid "Linear, removing entries once played"
 msgstr "Zaporedno, odstrani vnose po predvajanju"
 
-#: ../shell/rb-shell-player.c:1000
+#: ../shell/rb-shell-player.c:1001
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Ustvarjanje predvajalnika je spodletelo: %s"
 
-#: ../shell/rb-shell-player.c:1551
+#: ../shell/rb-shell-player.c:1562
 #, c-format
 msgid "Playlist was empty"
 msgstr "Seznam predvajanja je bil prazen"
 
-#: ../shell/rb-shell-player.c:2034
+#: ../shell/rb-shell-player.c:2063
 #, c-format
 msgid "Not currently playing"
 msgstr "Trenutno ni predvajanja"
 
-#: ../shell/rb-shell-player.c:2092
+#: ../shell/rb-shell-player.c:2121
 #, c-format
 msgid "No previous song"
 msgstr "Ni predhodne skladbe"
 
-#: ../shell/rb-shell-player.c:2192
+#: ../shell/rb-shell-player.c:2221
 #, c-format
 msgid "No next song"
 msgstr "Ni naslednje skladbe"
 
-#: ../shell/rb-shell-player.c:2313
-#: ../shell/rb-shell-player.c:3473
+#: ../shell/rb-shell-player.c:2342
+#: ../shell/rb-shell-player.c:3509
 msgid "Couldn't start playback"
 msgstr "Predvajanja ni mogoče začeti"
 
-#: ../shell/rb-shell-player.c:3185
+#: ../shell/rb-shell-player.c:3214
 msgid "Couldn't stop playback"
 msgstr "Predvajanja ni mogoče zaustaviti"
 
-#: ../shell/rb-shell-player.c:3295
+#: ../shell/rb-shell-player.c:3331
 #, c-format
 msgid "Playback position not available"
 msgstr "Položaj predvajanja ni dostopen"
 
-#: ../shell/rb-shell-player.c:3327
-#: ../shell/rb-shell-player.c:3361
+#: ../shell/rb-shell-player.c:3363
+#: ../shell/rb-shell-player.c:3397
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Po trenutni skladbi ni mogoče iskati"
 
-#: ../shell/rb-shell-player.c:3818
+#: ../shell/rb-shell-player.c:3854
 msgid "Pause playback"
 msgstr "Premor predvajanja"
 
-#: ../shell/rb-shell-player.c:3820
+#: ../shell/rb-shell-player.c:3856
 msgid "Stop playback"
 msgstr "Zaustavitev predvajanja"
 
