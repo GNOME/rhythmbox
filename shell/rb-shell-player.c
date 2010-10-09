@@ -255,6 +255,7 @@ struct RBShellPlayerPrivate
 	RBPlayOrder *queue_play_order;
 
 	GQueue *playlist_urls;
+	GCancellable *parser_cancellable;
 
 	RBHeader *header_widget;
 	RBStatusbar *statusbar_widget;
@@ -1514,16 +1515,21 @@ typedef struct {
 	char *location;
 	RhythmDBEntry *entry;
 	RBPlayerPlayType play_type;
+	GCancellable *cancellable;
 } OpenLocationThreadData;
 
 static void
 playlist_entry_cb (TotemPlParser *playlist,
 		   const char *uri,
 		   GHashTable *metadata,
-		   RBShellPlayer *player)
+		   OpenLocationThreadData *data)
 {
-	rb_debug ("adding stream url %s", uri);
-	g_queue_push_tail (player->priv->playlist_urls, g_strdup (uri));
+	if (g_cancellable_is_cancelled (data->cancellable)) {
+		rb_debug ("playlist parser cancelled");
+	} else {
+		rb_debug ("adding stream url %s (%p)", uri, playlist);
+		g_queue_push_tail (data->player->priv->playlist_urls, g_strdup (uri));
+	}
 }
 
 static gpointer
@@ -1534,9 +1540,9 @@ open_location_thread (OpenLocationThreadData *data)
 
 	playlist = totem_pl_parser_new ();
 
-	g_signal_connect_data (G_OBJECT (playlist), "entry-parsed",
+	g_signal_connect_data (playlist, "entry-parsed",
 			       G_CALLBACK (playlist_entry_cb),
-			       data->player, NULL, 0);
+			       data, NULL, 0);
 
 	totem_pl_parser_add_ignored_mimetype (playlist, "x-directory/normal");
 	totem_pl_parser_add_ignored_mimetype (playlist, "inode/directory");
@@ -1544,7 +1550,12 @@ open_location_thread (OpenLocationThreadData *data)
 	playlist_result = totem_pl_parser_parse (playlist, data->location, FALSE);
 	g_object_unref (playlist);
 
-	if (playlist_result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
+	if (g_cancellable_is_cancelled (data->cancellable)) {
+		playlist_result = TOTEM_PL_PARSER_RESULT_CANCELLED;
+	}
+
+	switch (playlist_result) {
+	case TOTEM_PL_PARSER_RESULT_SUCCESS:
 		if (g_queue_is_empty (data->player->priv->playlist_urls)) {
 			GError *error = g_error_new (RB_SHELL_PLAYER_ERROR,
 						     RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST,
@@ -1557,16 +1568,24 @@ open_location_thread (OpenLocationThreadData *data)
 			char *location;
 
 			location = g_queue_pop_head (data->player->priv->playlist_urls);
-			rb_debug ("playing first stream url %s", data->location);
+			rb_debug ("playing first stream url %s", location);
 			rb_shell_player_open_playlist_url (data->player, location, data->entry, data->play_type);
 			g_free (location);
 		}
-	} else {
+		break;
+
+	case TOTEM_PL_PARSER_RESULT_CANCELLED:
+		rb_debug ("playlist parser was cancelled");
+		break;
+
+	default:
 		/* if we can't parse it as a playlist, just try playing it */
 		rb_debug ("playlist parser failed, playing %s directly", data->location);
 		rb_shell_player_open_playlist_url (data->player, data->location, data->entry, data->play_type);
+		break;
 	}
 
+	g_object_unref (data->cancellable);
 	g_free (data);
 	return NULL;
 }
@@ -1611,6 +1630,11 @@ rb_shell_player_open_location (RBShellPlayer *player,
 		else
 			data->location = g_strconcat ("http://", location, NULL);
 
+		if (player->priv->parser_cancellable == NULL) {
+			player->priv->parser_cancellable = g_cancellable_new ();
+		}
+		data->cancellable = g_object_ref (player->priv->parser_cancellable);
+
 		g_thread_create ((GThreadFunc)open_location_thread, data, FALSE, NULL);
 	} else {
 		rhythmdb_entry_ref (entry);
@@ -1650,6 +1674,11 @@ rb_shell_player_play (RBShellPlayer *player,
 
 	if (rb_player_playing (player->priv->mmplayer))
 		return TRUE;
+
+	if (player->priv->parser_cancellable != NULL) {
+		rb_debug ("currently parsing a playlist");
+		return TRUE;
+	}
 
 	/* we're obviously not playing anything, so crossfading is irrelevant */
 	if (!rb_player_play (player->priv->mmplayer, RB_PLAYER_PLAY_REPLACE, 0.0f, error)) {
@@ -3185,6 +3214,13 @@ rb_shell_player_stop (RBShellPlayer *player)
 				 _("Couldn't stop playback"),
 				 "%s", error->message);
 		g_error_free (error);
+	}
+
+	if (player->priv->parser_cancellable != NULL) {
+		rb_debug ("cancelling playlist parser");
+		g_cancellable_cancel (player->priv->parser_cancellable);
+		g_object_unref (player->priv->parser_cancellable);
+		player->priv->parser_cancellable = NULL;
 	}
 
 	if (player->priv->playing_entry != NULL) {
