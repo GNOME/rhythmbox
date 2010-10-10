@@ -91,6 +91,9 @@
 #include "rb-song-info.h"
 #include "rb-marshal.h"
 #include "rb-missing-plugins.h"
+#include "rb-podcast-manager.h"
+#include "rb-podcast-main-source.h"
+#include "rb-podcast-entry-types.h"
 
 #include "eggsmclient.h"
 
@@ -339,6 +342,7 @@ struct _RBShellPrivate
 	RBPlaylistManager *playlist_manager;
 	RBRemovableMediaManager *removable_media_manager;
 	RBTrackTransferQueue *track_transfer_queue;
+	RBPodcastManager *podcast_manager;
 
 	RBLibrarySource *library_source;
 	RBPodcastSource *podcast_source;
@@ -1124,6 +1128,9 @@ rb_shell_finalize (GObject *object)
 	g_object_unref (shell->priv->removable_media_manager);
 	g_object_unref (shell->priv->track_transfer_queue);
 
+	rb_debug ("unreffing podcast manager");
+	g_object_unref (shell->priv->podcast_manager);
+
 	rb_debug ("unreffing clipboard shell");
 	g_object_unref (shell->priv->clipboard_shell);
 
@@ -1271,6 +1278,7 @@ construct_widgets (RBShell *shell)
 
 	rb_debug ("shell: initializing shell services");
 
+	shell->priv->podcast_manager = rb_podcast_manager_new (shell->priv->db);
 	shell->priv->track_transfer_queue = rb_track_transfer_queue_new (shell);
 	shell->priv->ui_manager = gtk_ui_manager_new ();
 	shell->priv->source_ui_merge_id = gtk_ui_manager_new_merge_id (shell->priv->ui_manager);
@@ -1422,7 +1430,7 @@ construct_sources (RBShell *shell)
 
 	shell->priv->library_source = RB_LIBRARY_SOURCE (rb_library_source_new (shell));
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->library_source), NULL);
-	shell->priv->podcast_source = RB_PODCAST_SOURCE (rb_podcast_source_new (shell));
+	shell->priv->podcast_source = RB_PODCAST_SOURCE (rb_podcast_main_source_new (shell, shell->priv->podcast_manager));
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->podcast_source), NULL);
 	shell->priv->missing_files_source = rb_missing_files_source_new (shell, shell->priv->library_source);
 	rb_shell_append_source (shell, shell->priv->missing_files_source, NULL);
@@ -1431,6 +1439,8 @@ construct_sources (RBShell *shell)
 									 RHYTHMDB_ENTRY_TYPE_SONG,
 									 RHYTHMDB_ENTRY_TYPE_IGNORE);
 	rb_shell_append_source (shell, shell->priv->import_errors_source, NULL);
+
+	rb_podcast_main_source_add_subsources (RB_PODCAST_MAIN_SOURCE (shell->priv->podcast_source));
 
 	/* Find the playlist name if none supplied */
 	if (shell->priv->playlists_file) {
@@ -2610,7 +2620,7 @@ rb_shell_quit (RBShell *shell,
 
 	rb_plugins_engine_shutdown ();
 
-	rb_podcast_source_shutdown (shell->priv->podcast_source);
+	rb_podcast_manager_shutdown (shell->priv->podcast_manager);
 
 	rb_shell_shutdown (shell);
 	rb_shell_sync_state (shell);
@@ -3371,7 +3381,7 @@ rb_shell_load_uri (RBShell *shell,
 	/* If the URI points to a Podcast, pass it on to
 	 * the Podcast source */
 	if (rb_uri_could_be_podcast (uri, NULL)) {
-		rb_podcast_source_add_feed (shell->priv->podcast_source, uri);
+		rb_podcast_manager_subscribe_feed (shell->priv->podcast_manager, uri, FALSE);
 		rb_shell_select_source (shell, RB_SOURCE (shell->priv->podcast_source));
 		return TRUE;
 	}

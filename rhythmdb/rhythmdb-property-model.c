@@ -1380,6 +1380,7 @@ rhythmdb_property_model_enable_drag (RhythmDBPropertyModel *model,
 		n_elements = G_N_ELEMENTS (targets_artist);
 		break;
 	case RHYTHMDB_PROP_LOCATION:
+	case RHYTHMDB_PROP_SUBTITLE:		/* more or less */
 		targets = targets_location;
 		n_elements = G_N_ELEMENTS (targets_location);
 		break;

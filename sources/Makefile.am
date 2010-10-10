@@ -32,8 +32,6 @@ libsources_la_SOURCES = 		\
 	rb-browser-source.c		\
 	rb-library-source.c		\
 	rb-library-source.h		\
-	rb-podcast-source.c		\
-	rb-podcast-source.h		\
 	rb-removable-media-source.c	\
 	rb-media-player-source.c	\
 	rb-playlist-source.c            \
@@ -58,8 +56,8 @@ INCLUDES =						\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/metadata 			\
 	-I$(top_srcdir)/widgets 			\
-	-I$(top_srcdir)/podcast				\
 	-I$(top_srcdir)/shell				\
+	-I$(top_srcdir)/podcast				\
 	-I$(top_srcdir)/sources/sync			\
 	-I$(top_srcdir)/backends			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\

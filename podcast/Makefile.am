@@ -17,6 +17,10 @@ librbpodcast_la_SOURCES =				\
 	rb-feed-podcast-properties-dialog.h		\
 	rb-podcast-properties-dialog.c			\
 	rb-podcast-properties-dialog.h			\
+	rb-podcast-main-source.c			\
+	rb-podcast-main-source.h			\
+	rb-podcast-source.c				\
+	rb-podcast-source.h				\
 	rb-podcast-parse.c				\
 	rb-podcast-manager.c				\
 	rb-podcast-entry-types.c
@@ -39,7 +43,7 @@ AM_CFLAGS =						\
 	-I$(top_srcdir)/widgets				\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/metadata			\
-	-I$(top_srcdir)/library				\
+	-I$(top_srcdir)/sources				\
 	-I$(top_builddir)/lib 				\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(WEBKIT_CFLAGS)				\

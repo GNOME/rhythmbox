@@ -459,15 +459,24 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd,
 	if ((status < RHYTHMDB_PODCAST_STATUS_COMPLETE) ||
 	    (status == RHYTHMDB_PODCAST_STATUS_WAITING)) {
 		RBPodcastManagerInfo *data;
-		if (status < RHYTHMDB_PODCAST_STATUS_COMPLETE) {
-			GValue status_val = { 0, };
-			g_value_init (&status_val, G_TYPE_ULONG);
-			g_value_set_ulong (&status_val, RHYTHMDB_PODCAST_STATUS_WAITING);
-			rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &status_val);
-			g_value_unset (&status_val);
+		GValue val = { 0, };
+		GTimeVal now;
 
-			rhythmdb_commit (pd->priv->db);
+		if (status < RHYTHMDB_PODCAST_STATUS_COMPLETE) {
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_WAITING);
+			rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
+			g_value_unset (&val);
 		}
+
+		/* set last seen time so it shows up in the 'new downloads' subsource */
+		g_value_init (&val, G_TYPE_ULONG);
+		g_get_current_time (&now);
+		g_value_set_ulong (&val, now.tv_sec);
+		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_LAST_SEEN, &val);
+		g_value_unset (&val);
+		rhythmdb_commit (pd->priv->db);
+
 		rb_debug ("Adding podcast episode %s to download list", get_remote_location (entry));
 
 		data = g_new0 (RBPodcastManagerInfo, 1);

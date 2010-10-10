@@ -29,6 +29,7 @@
 #define __RB_PODCAST_SOURCE_H
 
 #include <shell/rb-shell.h>
+#include <podcast/rb-podcast-manager.h>
 #include <sources/rb-source.h>
 
 G_BEGIN_DECLS
@@ -43,7 +44,7 @@ G_BEGIN_DECLS
 typedef struct _RBPodcastSource RBPodcastSource;
 typedef struct _RBPodcastSourceClass RBPodcastSourceClass;
 
-typedef struct RBPodcastSourcePrivate RBPodcastSourcePrivate;
+typedef struct _RBPodcastSourcePrivate RBPodcastSourcePrivate;
 
 struct _RBPodcastSource
 {
@@ -58,9 +59,12 @@ struct _RBPodcastSourceClass
 };
 
 GType		rb_podcast_source_get_type	(void);
-RBSource *	rb_podcast_source_new		(RBShell *shell);
-void 		rb_podcast_source_add_feed	(RBPodcastSource *source, const gchar *uri);
-void 		rb_podcast_source_shutdown	(RBPodcastSource *source);
+
+RBSource 	*rb_podcast_source_new		(RBShell *shell,
+						 RBPodcastManager *podcast_manager,
+						 RhythmDBQuery *base_query,
+						 const char *name,
+						 const char *icon_name);
 
 G_END_DECLS
 
