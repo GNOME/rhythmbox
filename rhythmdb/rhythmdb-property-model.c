@@ -436,6 +436,7 @@ rhythmdb_property_model_set_property (GObject *object,
 			append_sort_property (model, RHYTHMDB_PROP_ALBUM);
 			break;
 		case RHYTHMDB_PROP_SUBTITLE:
+			append_sort_property (model, RHYTHMDB_PROP_ALBUM);
 			append_sort_property (model, RHYTHMDB_PROP_SUBTITLE);
 			break;
 		case RHYTHMDB_PROP_TITLE:
