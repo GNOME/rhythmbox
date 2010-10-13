@@ -2036,13 +2036,23 @@ get_mount_point	(RBiPodSource *source)
 static guint64
 impl_get_capacity (RBMediaPlayerSource *source)
 {
-	return rb_ipod_helpers_get_capacity (get_mount_point (RB_IPOD_SOURCE (source)));
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	if (priv->ipod_db) {
+		return rb_ipod_helpers_get_capacity (get_mount_point (RB_IPOD_SOURCE (source)));
+	} else {
+		return 0;
+	}
 }
 
 static guint64
 impl_get_free_space (RBMediaPlayerSource *source)
 {
-	return rb_ipod_helpers_get_free_space (get_mount_point (RB_IPOD_SOURCE (source)));
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	if (priv->ipod_db) {
+		return rb_ipod_helpers_get_free_space (get_mount_point (RB_IPOD_SOURCE (source)));
+	} else {
+		return 0;
+	}
 }
 
 static void
