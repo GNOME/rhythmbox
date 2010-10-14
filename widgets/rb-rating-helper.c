@@ -161,10 +161,10 @@ gboolean
 rb_rating_render_stars (GtkWidget *widget,
 			GdkWindow *window,
 			RBRatingPixbufs *pixbufs,
-			gulong x,
-			gulong y,
-			gulong x_offset,
-			gulong y_offset,
+			int x,
+			int y,
+			int x_offset,
+			int y_offset,
 			gdouble rating,
 			gboolean selected)
 {
