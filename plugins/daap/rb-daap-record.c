@@ -292,7 +292,6 @@ rb_daap_record_init (RBDAAPRecord *record)
         record->priv->mtime		= 0;
         record->priv->disc		= 0;
         record->priv->bitrate		= 0;
-        record->priv->albumid		= 0;
         record->priv->has_video		= FALSE;
 }
 
