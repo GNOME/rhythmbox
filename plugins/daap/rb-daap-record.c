@@ -272,6 +272,28 @@ static void
 rb_daap_record_init (RBDAAPRecord *record)
 {
 	record->priv = RB_DAAP_RECORD_GET_PRIVATE (record);
+	
+        record->priv->location		= NULL;
+        record->priv->format		= NULL;
+        record->priv->real_format	= NULL;
+        record->priv->title		= NULL;
+        record->priv->album		= NULL;
+        record->priv->artist		= NULL;
+        record->priv->genre		= NULL;
+        record->priv->sort_artist	= NULL;
+        record->priv->sort_album	= NULL;
+	record->priv->filesize		= 0;
+        record->priv->mediakind		= 0;
+        record->priv->rating		= 0;
+        record->priv->duration		= 0;
+        record->priv->track		= 0;
+        record->priv->year		= 0;
+        record->priv->firstseen		= 0;
+        record->priv->mtime		= 0;
+        record->priv->disc		= 0;
+        record->priv->bitrate		= 0;
+        record->priv->albumid		= 0;
+        record->priv->has_video		= FALSE;
 }
 
 static void
