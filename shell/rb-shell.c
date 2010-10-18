@@ -3405,7 +3405,7 @@ rb_shell_load_uri (RBShell *shell,
 
 		g_signal_connect_data (parser, "entry-parsed",
 				       G_CALLBACK (handle_playlist_entry_cb),
-				       &data, NULL, 0);
+				       data, NULL, 0);
 
 		totem_pl_parser_add_ignored_mimetype (parser, "x-directory/normal");
 		totem_pl_parser_add_ignored_mimetype (parser, "inode/directory");
