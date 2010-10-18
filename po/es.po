@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-10-10 14:00+0000\n"
-"PO-Revision-Date: 2010-10-10 22:48+0200\n"
+"POT-Creation-Date: 2010-10-18 11:31+0000\n"
+"PO-Revision-Date: 2010-10-19 00:36+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -2011,18 +2011,47 @@ msgid "Share music and play shared music on your local network"
 msgstr "Compartir música y reproducir la música compartida en tu red local"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
+#| msgid "<b>Content</b>"
+msgid "<b>Add Remote</b>"
+msgstr "<b>Añadir mando a distancia</b>"
+
+#: ../plugins/daap/daap-prefs.ui.h:2
 msgid "<b>Sharing</b>"
 msgstr "<b>Compartición</b>"
 
-#: ../plugins/daap/daap-prefs.ui.h:2
+#: ../plugins/daap/daap-prefs.ui.h:3
+#| msgid ""
+#| "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
+#| "expiration date listed.</span>"
+msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
+msgstr "<span foreground=\"red\">No se pudo emparejar el este remoto.</span>"
+
+#: ../plugins/daap/daap-prefs.ui.h:4
+msgid "Forget known Remotes"
+msgstr "Olvidar mandos a distancia conocidos"
+
+#: ../plugins/daap/daap-prefs.ui.h:5
+#| msgid "Library of User:"
+msgid "Library _name:"
+msgstr "_Nombre de la biblioteca:"
+
+#: ../plugins/daap/daap-prefs.ui.h:6
+msgid "Please enter the passcode displayed on your device."
+msgstr "Introduzca la contraseña mostrada en su dispositivo."
+
+#: ../plugins/daap/daap-prefs.ui.h:7
 msgid "Require _password:"
 msgstr "Requerir _contraseña:"
 
-#: ../plugins/daap/daap-prefs.ui.h:3 ../plugins/daap/rb-daap-dialog.c:81
-msgid "Shared music _name:"
-msgstr "_Nombre de música compartida:"
+#: ../plugins/daap/daap-prefs.ui.h:8
+msgid "You can now control Rhythmbox through your Remote"
+msgstr "Puede controlar Rhythmbox a través de su dispositivo mando a distancia"
 
-#: ../plugins/daap/daap-prefs.ui.h:4
+#: ../plugins/daap/daap-prefs.ui.h:9
+msgid "_Look for touch Remotes"
+msgstr "_Buscar mandos a distancia táctiles"
+
+#: ../plugins/daap/daap-prefs.ui.h:10
 msgid "_Share my music"
 msgstr "_Compartir mi música"
 
@@ -2035,31 +2064,35 @@ msgstr "Nombre de compartición inválido"
 msgid "The shared music name '%s' is already taken. Please choose another."
 msgstr "El nombre de música compartida «%s» ya está usándose. Elija otro."
 
-#: ../plugins/daap/rb-daap-plugin.c:129
+#: ../plugins/daap/rb-daap-dialog.c:81
+msgid "Shared music _name:"
+msgstr "_Nombre de música compartida:"
+
+#: ../plugins/daap/rb-daap-plugin.c:139
 msgid "Connect to _DAAP share..."
 msgstr "Conectar con una compartición _DAAP…"
 
-#: ../plugins/daap/rb-daap-plugin.c:130
+#: ../plugins/daap/rb-daap-plugin.c:140
 msgid "Connect to a new DAAP share"
 msgstr "Conectar a una compartición DAAP nueva"
 
-#: ../plugins/daap/rb-daap-plugin.c:136
+#: ../plugins/daap/rb-daap-plugin.c:146
 msgid "_Disconnect"
 msgstr "_Desconectar"
 
-#: ../plugins/daap/rb-daap-plugin.c:137
+#: ../plugins/daap/rb-daap-plugin.c:147
 msgid "Disconnect from DAAP share"
 msgstr "Desconectar de una compartición DAAP"
 
-#: ../plugins/daap/rb-daap-plugin.c:680
+#: ../plugins/daap/rb-daap-plugin.c:742
 msgid "New DAAP share"
 msgstr "Compartición DAAP nueva"
 
-#: ../plugins/daap/rb-daap-plugin.c:680
+#: ../plugins/daap/rb-daap-plugin.c:742
 msgid "Host:port of DAAP share:"
 msgstr "Equipo:puerto de la compartición DAAP:"
 
-#: ../plugins/daap/rb-daap-plugin.c:902
+#: ../plugins/daap/rb-daap-plugin.c:996
 msgid "DAAP Music Sharing Preferences"
 msgstr "DAAP preferencias de música compartida"
 
@@ -2084,6 +2117,20 @@ msgstr "Obteniendo canciones de la compartición de música"
 #: ../plugins/daap/rb-daap-source.c:571
 msgid "Could not connect to shared music"
 msgstr "No se ha podido conectar a la música compartida"
+
+#: ../plugins/daap/rb-dacp-source.c:295
+#| msgid "Remove"
+msgid "Remotes"
+msgstr "Mandos a distancia"
+
+#: ../plugins/daap/rb-dacp-source.c:417
+#| msgid "Connecting"
+msgid "Connecting..."
+msgstr "Conectando…"
+
+#: ../plugins/daap/rb-dacp-source.c:419
+msgid "Could not pair with this Remote."
+msgstr "No se pudo emparejar con este mando a distancia."
 
 #: ../plugins/dbus-media-server/dbus-media-server.rb-plugin.in.h:1
 msgid "MediaServer2 D-Bus interface"
@@ -3610,12 +3657,10 @@ msgid "Visualization"
 msgstr "Visualización"
 
 #: ../podcast/rb-podcast-main-source.c:117
-#| msgid "Episodes"
 msgid "New Episodes"
 msgstr "Episodios nuevos"
 
 #: ../podcast/rb-podcast-main-source.c:135
-#| msgid "Download"
 msgid "New Downloads"
 msgstr "Nuevas descargas"
 
@@ -3773,7 +3818,7 @@ msgid "Update all feeds"
 msgstr "Actualizar todos los proveedores"
 
 #: ../podcast/rb-podcast-source.c:140
-#: ../rhythmdb/rhythmdb-property-model.c:495
+#: ../rhythmdb/rhythmdb-property-model.c:496
 #: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:166
 #: ../sources/rb-static-playlist-source.c:124
 msgid "All"
@@ -5869,13 +5914,6 @@ msgstr "Dirección desconocida"
 #~ msgid "Purchase this album from Magnatune"
 #~ msgstr "Comprar este álbum en Magnatune"
 
-#~ msgid ""
-#~ "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
-#~ "expiration date listed.</span>"
-#~ msgstr ""
-#~ "<span weight=\"bold\" foreground=\"red\">Su tarjeta de crédito ha pasado "
-#~ "la fecha de caducidad.</span>"
-
 #~ msgid "C_redit Card:"
 #~ msgstr "Tarjeta de _crédito:"
 
@@ -5969,9 +6007,6 @@ msgstr "Dirección desconocida"
 
 #~ msgid "Password Required"
 #~ msgstr "Se requiere una contraseña"
-
-#~ msgid "<b>Content</b>"
-#~ msgstr "<b>Contenido</b>"
 
 #~ msgid "Number of Playlists:"
 #~ msgstr "Número de listas de reproducción:"
