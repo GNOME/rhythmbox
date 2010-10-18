@@ -409,7 +409,7 @@ RBDAAPRecord *rb_daap_record_new (RhythmDBEntry *entry)
 						(entry, RHYTHMDB_PROP_ALBUM);
 
 		/* Since we don't support album id's on Rhythmbox, "emulate" it */
-		record->priv->albumid  = (gint64) rhythmdb_entry_get_refstring
+		record->priv->albumid  = (gintptr) rhythmdb_entry_get_refstring
 						(entry, RHYTHMDB_PROP_ALBUM);
 
 		record->priv->genre    = rhythmdb_entry_dup_string
