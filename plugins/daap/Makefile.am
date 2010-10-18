@@ -22,6 +22,10 @@ libdaap_la_SOURCES = \
 	rb-dmap-container-db-adapter.h		  \
 	rb-daap-dialog.c			  \
 	rb-daap-dialog.h			  \
+	rb-dacp-source.c			  \
+	rb-dacp-source.h			  \
+	rb-dacp-player.c			  \
+	rb-dacp-player.h			  \
 	rb-rhythmdb-dmap-db-adapter.c             \
 	rb-rhythmdb-dmap-db-adapter.h             \
 	rb-rhythmdb-query-model-dmap-db-adapter.c \
@@ -83,10 +87,12 @@ BUILT_SOURCES =							\
 
 plugin_DATA = 			\
 	$(BUILT_SOURCES)	\
+	$(top_srcdir)/plugins/daap/remote-icon.png		\
 	$(NULL)
 
 EXTRA_DIST = 			\
 	$(gtkbuilder_DATA)	\
+	$(top_srcdir)/plugins/daap/remote-icon.png		\
 	$(uixml_DATA)		\
 	$(plugin_in_files)	\
 	$(NULL)

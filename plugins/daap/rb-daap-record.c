@@ -38,7 +38,6 @@
 struct RBDAAPRecordPrivate {
 	guint64 filesize;
 	char *location;
-	int mediakind;
 	char *format;	 /* Format, possibly after transcoding. */
 	char *real_format;
 	char *title;
@@ -46,6 +45,7 @@ struct RBDAAPRecordPrivate {
 	char *artist;
 	char *genre;
 	gboolean has_video;
+	gint mediakind;
 	gint rating;
 	int duration;
 	int track;
@@ -56,6 +56,7 @@ struct RBDAAPRecordPrivate {
 	int bitrate;
 	char *sort_artist;
 	char *sort_album;
+	gint64 albumid;
 };
 
 enum {
@@ -79,7 +80,8 @@ enum {
 	PROP_HAS_VIDEO,
 	PROP_REAL_FORMAT,
 	PROP_ARTIST_SORT_NAME,
-	PROP_ALBUM_SORT_NAME
+	PROP_ALBUM_SORT_NAME,
+	PROP_ALBUM_ID
 };
 
 static void rb_daap_record_finalize (GObject *object);
@@ -104,6 +106,9 @@ rb_daap_record_set_property (GObject *object,
 		case PROP_ALBUM:
 			g_free (record->priv->album);
 			record->priv->album = g_value_dup_string (value);
+			break;
+		case PROP_ALBUM_ID:
+			record->priv->albumid = g_value_get_int64 (value);
 			break;
 		case PROP_ARTIST:
 			g_free (record->priv->artist);
@@ -185,6 +190,9 @@ rb_daap_record_get_property (GObject *object,
 			break;
 		case PROP_ALBUM:
 			g_value_set_string (value, record->priv->album);
+			break;
+		case PROP_ALBUM_ID:
+			g_value_set_int64 (value, record->priv->albumid);
 			break;
 		case PROP_ARTIST:
 			g_value_set_string (value, record->priv->artist);
@@ -272,7 +280,7 @@ static void
 rb_daap_record_init (RBDAAPRecord *record)
 {
 	record->priv = RB_DAAP_RECORD_GET_PRIVATE (record);
-	
+
         record->priv->location		= NULL;
         record->priv->format		= NULL;
         record->priv->real_format	= NULL;
@@ -302,9 +310,9 @@ rb_daap_record_class_init (RBDAAPRecordClass *klass)
 
 	g_type_class_add_private (klass, sizeof (RBDAAPRecordPrivate));
 
-	gobject_class->set_property = rb_daap_record_set_property;	
-	gobject_class->get_property = rb_daap_record_get_property;	
-	gobject_class->finalize     = rb_daap_record_finalize;	
+	gobject_class->set_property = rb_daap_record_set_property;
+	gobject_class->get_property = rb_daap_record_get_property;
+	gobject_class->finalize     = rb_daap_record_finalize;
 
 	g_object_class_override_property (gobject_class, PROP_LOCATION, "location");
 	g_object_class_override_property (gobject_class, PROP_TITLE, "title");
@@ -325,6 +333,7 @@ rb_daap_record_class_init (RBDAAPRecordClass *klass)
 	g_object_class_override_property (gobject_class, PROP_HAS_VIDEO, "has-video");
 	g_object_class_override_property (gobject_class, PROP_ARTIST_SORT_NAME, "sort_artist");
 	g_object_class_override_property (gobject_class, PROP_ALBUM_SORT_NAME, "sort_album");
+	g_object_class_override_property (gobject_class, PROP_ALBUM_ID, "songalbumid");
 
 	g_object_class_install_property (gobject_class, PROP_REAL_FORMAT,
 	                        g_param_spec_string ("real-format",
@@ -353,7 +362,7 @@ rb_daap_record_dmap_iface_init (gpointer iface, gpointer data)
 	g_assert (G_TYPE_FROM_INTERFACE (dmap_record) == TYPE_DMAP_RECORD);
 }
 
-G_DEFINE_TYPE_WITH_CODE (RBDAAPRecord, rb_daap_record, G_TYPE_OBJECT, 
+G_DEFINE_TYPE_WITH_CODE (RBDAAPRecord, rb_daap_record, G_TYPE_OBJECT,
 			 G_IMPLEMENT_INTERFACE (TYPE_DAAP_RECORD, rb_daap_record_daap_iface_init)
 			 G_IMPLEMENT_INTERFACE (TYPE_DMAP_RECORD, rb_daap_record_dmap_iface_init))
 
@@ -384,7 +393,7 @@ RBDAAPRecord *rb_daap_record_new (RhythmDBEntry *entry)
 	if (entry) {
 		gchar *ext;
 
-		record->priv->filesize = rhythmdb_entry_get_uint64 
+		record->priv->filesize = rhythmdb_entry_get_uint64
 						(entry, RHYTHMDB_PROP_FILE_SIZE);
 
 		record->priv->location = rhythmdb_entry_dup_string
@@ -397,6 +406,10 @@ RBDAAPRecord *rb_daap_record_new (RhythmDBEntry *entry)
 						(entry, RHYTHMDB_PROP_ARTIST);
 
 		record->priv->album    = rhythmdb_entry_dup_string
+						(entry, RHYTHMDB_PROP_ALBUM);
+
+		/* Since we don't support album id's on Rhythmbox, "emulate" it */
+		record->priv->albumid  = (gint64) rhythmdb_entry_get_refstring
 						(entry, RHYTHMDB_PROP_ALBUM);
 
 		record->priv->genre    = rhythmdb_entry_dup_string
@@ -413,6 +426,9 @@ RBDAAPRecord *rb_daap_record_new (RhythmDBEntry *entry)
 		record->priv->mediakind = DMAP_MEDIA_KIND_MUSIC;
 		record->priv->real_format = g_strdup (ext);
 		record->priv->format = g_strdup (record->priv->real_format);
+
+		/* Only support songs */
+		record->priv->mediakind = 1;
 
 		record->priv->track    = rhythmdb_entry_get_ulong
 						(entry, RHYTHMDB_PROP_TRACK_NUMBER);
