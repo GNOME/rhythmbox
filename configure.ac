@@ -925,6 +925,7 @@ plugins/replaygain/Makefile
 plugins/replaygain/replaygain/Makefile
 plugins/mpris/Makefile
 plugins/dbus-media-server/Makefile
+plugins/rbzeitgeist/Makefile
 bindings/Makefile
 bindings/python/Makefile
 bindings/vala/Makefile

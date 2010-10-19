@@ -25,6 +25,7 @@ SUBDIRS += 						\
 	context						\
 	sendto						\
 	replaygain					\
+	rbzeitgeist					\
 	rb
 endif
 
