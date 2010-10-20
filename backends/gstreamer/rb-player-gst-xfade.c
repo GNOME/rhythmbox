@@ -1264,6 +1264,16 @@ post_eos_seek_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	g_mutex_unlock (stream->lock);
 }
 
+/*
+ * called when a src pad for a stream is blocked during reuse.
+ * we don't need to do anything here.
+ */
+static void
+unlink_reuse_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
+{
+	rb_debug ("stream %s pad blocked during reuse", stream->uri);
+}
+
 static void
 unlink_reuse_relink (RBPlayerGstXFade *player, RBXFadeStream *stream)
 {
@@ -1291,6 +1301,15 @@ unlink_reuse_relink (RBPlayerGstXFade *player, RBXFadeStream *stream)
 	stream->emitted_playing = FALSE;
 
 	g_mutex_unlock (stream->lock);
+
+	/* block the src pad so we don't get not-linked errors if it pushes a buffer
+	 * before we get around to relinking
+	 */
+	gst_pad_set_blocked_async (stream->src_pad,
+				   TRUE,
+				   (GstPadBlockCallback) unlink_reuse_blocked_cb,
+				   stream);
+	stream->src_blocked = TRUE;
 
 	reuse_stream (stream);
 	if (link_and_unblock_stream (stream, &error) == FALSE) {
