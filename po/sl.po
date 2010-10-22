@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-10-14 02:06+0000\n"
-"PO-Revision-Date: 2010-10-15 19:35+0100\n"
+"POT-Creation-Date: 2010-10-21 00:59+0000\n"
+"PO-Revision-Date: 2010-10-22 15:04+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: \n"
@@ -27,7 +27,7 @@ msgstr "Elementa korita GStreamer za pisanje v %s ni mogoče ustvariti"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:506
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2726
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2745
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Odpiranje izhodne naprave je spodletelo: %s"
@@ -49,32 +49,32 @@ msgid "Failed to start new stream"
 msgstr "Zaganjanje novega pretoka je spodletelo"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2651
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2670
 #, c-format
 msgid "Failed to open output device"
 msgstr "Odpiranje izhodne naprave je spodletelo"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3002
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3073
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3021
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3092
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Ustvarjanje elementa GStreamer je spodletelo; preverite svojo namestitev"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3013
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3032
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Ustvarjanje predmeta zvočnega izhoda je spodletelo; preverite svojo namestitev"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3047
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3089
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3115
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3124
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3133
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3066
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3108
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3134
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3143
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3152
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Povezovanje cevovoda GStreamer je spodletelo; preverite svojo namestitev"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3228
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3247
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Ustvarjanje cevovoda Gstreamer za predvajanje %s je spodletelo"
@@ -2016,19 +2016,42 @@ msgid "Share music and play shared music on your local network"
 msgstr "Souporaba in predvajanje souporabe glasbe na krajevnem omrežju"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
+msgid "<b>Add Remote</b>"
+msgstr "<b>Dodaj daljinski upravljalnik</b>"
+
+#: ../plugins/daap/daap-prefs.ui.h:2
 msgid "<b>Sharing</b>"
 msgstr "<b>Souporaba</b>"
 
-#: ../plugins/daap/daap-prefs.ui.h:2
+#: ../plugins/daap/daap-prefs.ui.h:3
+msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
+msgstr "<span foreground=\"red\">Ni mogoče pariti s tem daljincem.</span>"
+
+#: ../plugins/daap/daap-prefs.ui.h:4
+msgid "Forget known Remotes"
+msgstr "Pozabi znane daljinske upravljalnike"
+
+#: ../plugins/daap/daap-prefs.ui.h:5
+msgid "Library _name:"
+msgstr "Ime :knjižnice:"
+
+#: ../plugins/daap/daap-prefs.ui.h:6
+msgid "Please enter the passcode displayed on your device."
+msgstr "Vnesite kodo gesla, prikazano na vaši napravi."
+
+#: ../plugins/daap/daap-prefs.ui.h:7
 msgid "Require _password:"
 msgstr "_Zahtevaj geslo:"
 
-#: ../plugins/daap/daap-prefs.ui.h:3
-#: ../plugins/daap/rb-daap-dialog.c:81
-msgid "Shared music _name:"
-msgstr "_Ime souporabe glasbe:"
+#: ../plugins/daap/daap-prefs.ui.h:8
+msgid "You can now control Rhythmbox through your Remote"
+msgstr "Sedaj lahko Ryhthmbox nadzirate z daljinskim upravljalnikom"
 
-#: ../plugins/daap/daap-prefs.ui.h:4
+#: ../plugins/daap/daap-prefs.ui.h:9
+msgid "_Look for touch Remotes"
+msgstr "_Išči daljinske upravljalnike na dotik"
+
+#: ../plugins/daap/daap-prefs.ui.h:10
 msgid "_Share my music"
 msgstr "_Souporaba moje glasbe"
 
@@ -2041,31 +2064,35 @@ msgstr "Neveljavno ime souporabe"
 msgid "The shared music name '%s' is already taken. Please choose another."
 msgstr "Ime souporabe glasbe '%s' je že zasedeno. Izberite drugega."
 
-#: ../plugins/daap/rb-daap-plugin.c:129
+#: ../plugins/daap/rb-daap-dialog.c:81
+msgid "Shared music _name:"
+msgstr "_Ime souporabe glasbe:"
+
+#: ../plugins/daap/rb-daap-plugin.c:139
 msgid "Connect to _DAAP share..."
 msgstr "Povezava s souporabo _DAAP ..."
 
-#: ../plugins/daap/rb-daap-plugin.c:130
+#: ../plugins/daap/rb-daap-plugin.c:140
 msgid "Connect to a new DAAP share"
 msgstr "Povezava z novo souporabo DAAP"
 
-#: ../plugins/daap/rb-daap-plugin.c:136
+#: ../plugins/daap/rb-daap-plugin.c:146
 msgid "_Disconnect"
 msgstr "_Prekini povezavo"
 
-#: ../plugins/daap/rb-daap-plugin.c:137
+#: ../plugins/daap/rb-daap-plugin.c:147
 msgid "Disconnect from DAAP share"
 msgstr "Prekine povezavo s souporabo DAAP"
 
-#: ../plugins/daap/rb-daap-plugin.c:680
+#: ../plugins/daap/rb-daap-plugin.c:742
 msgid "New DAAP share"
 msgstr "Nova souporaba DAAP"
 
-#: ../plugins/daap/rb-daap-plugin.c:680
+#: ../plugins/daap/rb-daap-plugin.c:742
 msgid "Host:port of DAAP share:"
 msgstr "Gostitelj:vrata souporabe DAAP:"
 
-#: ../plugins/daap/rb-daap-plugin.c:902
+#: ../plugins/daap/rb-daap-plugin.c:996
 msgid "DAAP Music Sharing Preferences"
 msgstr "Nastavitve souporabe glasbe DAAP"
 
@@ -2090,6 +2117,18 @@ msgstr "Pridobivanje skladb iz souporabe glase"
 #: ../plugins/daap/rb-daap-source.c:571
 msgid "Could not connect to shared music"
 msgstr "S souporabo glasbe se ni mogoče povezati "
+
+#: ../plugins/daap/rb-dacp-source.c:295
+msgid "Remotes"
+msgstr "Daljinski upravljalniki"
+
+#: ../plugins/daap/rb-dacp-source.c:417
+msgid "Connecting..."
+msgstr "Povezovanje ..."
+
+#: ../plugins/daap/rb-dacp-source.c:419
+msgid "Could not pair with this Remote."
+msgstr "Ni mogoče pariti s tem daljinskim upravljalnikom."
 
 #: ../plugins/dbus-media-server/dbus-media-server.rb-plugin.in.h:1
 msgid "MediaServer2 D-Bus interface"
@@ -3182,6 +3221,14 @@ msgid "Python Console"
 msgstr "Konzola python"
 
 #. sys.excepthook = _excepthandler
+#: ../plugins/rbzeitgeist/rbzeitgeist.rb-plugin.in.h:1
+msgid "Inform Zeitgeist about your activity"
+msgstr "Obveščajte Zeitgeist o svoji dejavnosti"
+
+#: ../plugins/rbzeitgeist/rbzeitgeist.rb-plugin.in.h:2
+msgid "Zeitgeist"
+msgstr "Zeitgeist"
+
 #: ../plugins/replaygain/replaygain.rb-plugin.in.h:1
 msgid "ReplayGain"
 msgstr "Pridobitev glasnosti"
@@ -5707,12 +5754,6 @@ msgstr "Neznano mesto"
 #~ msgstr "Nakup albuma iz Magnatune"
 #~ msgid "Visit Magnatune at "
 #~ msgstr "Obiščite Magnatune na"
-#~ msgid ""
-#~ "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
-#~ "expiration date listed.</span>"
-#~ msgstr ""
-#~ "<span weight=\"bold\" foreground=\"red\">Vaša kreditna kartica je "
-#~ "presegla naveden datum veljavnosti.</span>"
 #~ msgid "C_redit Card:"
 #~ msgstr "K_reditna kartica:"
 #~ msgid "Default _amount to pay:"
@@ -5774,8 +5815,6 @@ msgstr "Neznano mesto"
 #~ msgstr "Odstranitev izbora"
 #~ msgid "Password Required"
 #~ msgstr "Zahtevano geslo"
-#~ msgid "<b>Content</b>"
-#~ msgstr "<b>Vsebina</b>"
 #~ msgid "Number of Playlists:"
 #~ msgstr "Število seznamov predvajanja:"
 #~ msgid "Number of Tracks:"
