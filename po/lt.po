@@ -1,41 +1,41 @@
 # translation of rhythmbox to Lithuanian
 # Lithuanian translation of rhythmbox.
-# Copyright (C) 2004-2010 Free Software Foundation, Inc.
+# Copyright © 2004-2010 Free Software Foundation, Inc.
 # This file is distributed under the same license as the rhythmbox package.
-# Žygimantas Beručka <zygis@gnome.org>, 2004-2009, 2010.
+# Žygimantas Beručka <zygis@gnome.org>, 2004-2010.
 # Justina Klingaitė <justina.klingaite@gmail.com>, 2005.
 # Gintautas Miliauskas <gintas@akl.lt>, 2007, 2008, 2009.
 # Aurimas Černius <aurisc4@gmail.com>, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-06-25 11:54+0000\n"
-"PO-Revision-Date: 2010-06-25 15:54+0300\n"
-"Last-Translator: Aurimas Černius <aurisc4@gmail.com>\n"
-"Language-Team: Lietuvių <gnome-lt@lists.akl.lt>\n"
+"Report-Msgid-Bugs-To: "
+"http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
+"POT-Creation-Date: 2010-10-24 08:51+0000\n"
+"PO-Revision-Date: 2010-10-24 18:51+0200\n"
+"Last-Translator: Žygimantas Beručka <zygis@gnome.org>\n"
+"Language-Team: Lithuanian\n"
+"Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: UTF-8\n"
-"Language: lt\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%"
 "100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Virtaal 0.5.2\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:694
+#: ../backends/gstreamer/rb-encoder-gst.c:711
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Nepavyko sukurti GStreamer sink elemento rašymui į %s"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:512
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2729
+#: ../backends/gstreamer/rb-player-gst.c:506
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2745
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Nepavyko atverti išvesties įrenginio: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:653
+#: ../backends/gstreamer/rb-player-gst.c:647
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr "Nepavyko sukurti playbin2 elemento; patikrinkite GStreamer įdiegimą"
@@ -52,32 +52,32 @@ msgid "Failed to start new stream"
 msgstr "Nepavyko paleisti naujo srauto"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2654
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2670
 #, c-format
 msgid "Failed to open output device"
 msgstr "Nepavyko atverti išvesties įrenginio"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3005
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3076
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3021
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3092
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Nepavyko sukurti GStreamer elemento; patikrinkite įdiegimą"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3016
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3032
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Nepavyko sukurti garso išvesties elemento; patikrinkite įdiegimą"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3050
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3092
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3118
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3127
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3136
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3066
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3108
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3134
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3143
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3152
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Nepavyko susieti GStreamer konvejerio; patikrinkite įdiegimą"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3231
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3247
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Nepavyko sukurti GStreamer konvejerio %s atkūrimui"
@@ -118,7 +118,7 @@ msgstr "dainos"
 msgid "A_lbum"
 msgstr "A_lbumas"
 
-#: ../data/ui/general-prefs.ui.h:2 ../widgets/rb-entry-view.c:1683
+#: ../data/ui/general-prefs.ui.h:2 ../widgets/rb-entry-view.c:1699
 msgid "BPM"
 msgstr "BPM"
 
@@ -237,7 +237,7 @@ msgstr "_Naršyti..."
 
 #: ../data/ui/library-prefs.ui.h:6 ../shell/rb-playlist-manager.c:188
 msgid "_Edit..."
-msgstr "K_eisti..."
+msgstr "_Taisa..."
 
 #: ../data/ui/library-prefs.ui.h:7
 msgid "_File name:"
@@ -245,7 +245,7 @@ msgstr "_Failo pavadinimas:"
 
 #: ../data/ui/library-prefs.ui.h:8
 msgid "_Music files are placed in:"
-msgstr "_Muzikos failai įrašyti:"
+msgstr "_Muzikos failai yra:"
 
 #: ../data/ui/library-prefs.ui.h:9
 msgid "_Preferred format:"
@@ -277,14 +277,13 @@ msgstr "<b>Tomo naudojimas</b>"
 #: ../data/ui/podcast-properties.ui.h:1 ../data/ui/song-info-multiple.ui.h:5
 #: ../data/ui/song-info.ui.h:6 ../plugins/iradio/station-properties.ui.h:1
 msgid "Basic"
-msgstr "Baziniai"
+msgstr "Pagrindinės"
 
 #: ../data/ui/media-player-properties.ui.h:7
 msgid "Media Player Properties"
 msgstr "Muzikos grotuvo savybės"
 
 #: ../data/ui/media-player-properties.ui.h:8
-#: ../sources/rb-media-player-source.c:108
 msgid "Sync"
 msgstr "Sinchronizuoti"
 
@@ -546,22 +545,26 @@ msgid "Recently Played"
 msgstr "Neseniai klausyta"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
+#: ../data/rhythmbox-device.desktop.in.in.h:1
 #: ../plugins/status-icon/rb-status-icon-plugin.c:59
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1511 ../shell/rb-shell.c:1220
-#: ../shell/rb-shell.c:2196
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1536 ../shell/rb-shell.c:1258
+#: ../shell/rb-shell.c:2232
 msgid "Music Player"
 msgstr "Muzikos grotuvas"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
+#: ../data/rhythmbox-device.desktop.in.in.h:2
 msgid "Play and organize your music collection"
 msgstr "Valdykite ir klausykitės savo muzikos kolekcijos"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
-#: ../plugins/status-icon/rb-tray-icon-gtk.c:155
+#: ../data/rhythmbox-device.desktop.in.in.h:3
+#: ../plugins/status-icon/rb-tray-icon-gtk.c:152
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
 #: ../data/rhythmbox.desktop.in.in.h:4
+#: ../data/rhythmbox-device.desktop.in.in.h:4
 msgid "Rhythmbox Music Player"
 msgstr "Muzikos grotuvas „Rhythmbox“"
 
@@ -673,38 +676,38 @@ msgstr "%Y %b %d"
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:100
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:128
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:132
-#: ../plugins/audiocd/rb-audiocd-source.c:492
-#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
-#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:475
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:479
+#: ../plugins/audiocd/rb-audiocd-source.c:514
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:590
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:594
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:119
-#: ../plugins/generic-player/rb-generic-player-source.c:1005
-#: ../plugins/ipod/rb-ipod-source.c:404
+#: ../plugins/generic-player/rb-generic-player-source.c:1021
+#: ../plugins/ipod/rb-ipod-source.c:410
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
-#: ../plugins/iradio/rb-iradio-source.c:520
-#: ../plugins/iradio/rb-iradio-source.c:1085
-#: ../plugins/iradio/rb-station-properties-dialog.c:488
+#: ../plugins/iradio/rb-iradio-source.c:530
+#: ../plugins/iradio/rb-iradio-source.c:1106
+#: ../plugins/iradio/rb-station-properties-dialog.c:487
 #: ../plugins/lyrics/lyrics/__init__.py:81
 #: ../plugins/lyrics/lyrics/__init__.py:83
-#: ../plugins/mtpdevice/rb-mtp-source.c:640
-#: ../plugins/mtpdevice/rb-mtp-source.c:1118
-#: ../plugins/mtpdevice/rb-mtp-source.c:1514
-#: ../plugins/status-icon/rb-status-icon-plugin.c:782
-#: ../podcast/rb-feed-podcast-properties-dialog.c:341
-#: ../podcast/rb-podcast-manager.c:1908
-#: ../podcast/rb-podcast-properties-dialog.c:601
-#: ../podcast/rb-podcast-properties-dialog.c:696
-#: ../remote/dbus/rb-client.c:142 ../rhythmdb/rhythmdb-tree.c:1339
-#: ../rhythmdb/rhythmdb-tree.c:1343 ../rhythmdb/rhythmdb-tree.c:1347
-#: ../rhythmdb/rhythmdb-tree.c:1351 ../rhythmdb/rhythmdb.c:2059
-#: ../rhythmdb/rhythmdb.c:2065 ../rhythmdb/rhythmdb.c:2080
-#: ../shell/rb-shell-player.c:1729 ../sources/rb-podcast-source.c:1658
-#: ../widgets/rb-entry-view.c:1082 ../widgets/rb-entry-view.c:1104
-#: ../widgets/rb-entry-view.c:1572 ../widgets/rb-entry-view.c:1584
-#: ../widgets/rb-entry-view.c:1596 ../widgets/rb-song-info.c:925
-#: ../widgets/rb-song-info.c:937 ../widgets/rb-song-info.c:1158
-#: ../widgets/rb-song-info.c:1497
+#: ../plugins/mtpdevice/rb-mtp-source.c:642
+#: ../plugins/mtpdevice/rb-mtp-source.c:1133
+#: ../plugins/mtpdevice/rb-mtp-source.c:1522
+#: ../plugins/status-icon/rb-status-icon-plugin.c:830
+#: ../podcast/rb-feed-podcast-properties-dialog.c:340
+#: ../podcast/rb-podcast-manager.c:1920
+#: ../podcast/rb-podcast-properties-dialog.c:600
+#: ../podcast/rb-podcast-properties-dialog.c:695
+#: ../podcast/rb-podcast-source.c:765 ../remote/dbus/rb-client.c:155
+#: ../rhythmdb/rhythmdb-tree.c:1341 ../rhythmdb/rhythmdb-tree.c:1345
+#: ../rhythmdb/rhythmdb-tree.c:1349 ../rhythmdb/rhythmdb-tree.c:1353
+#: ../rhythmdb/rhythmdb.c:2038 ../rhythmdb/rhythmdb.c:2044
+#: ../rhythmdb/rhythmdb.c:2059 ../shell/rb-shell-player.c:1752
+#: ../widgets/rb-entry-view.c:1087 ../widgets/rb-entry-view.c:1109
+#: ../widgets/rb-entry-view.c:1588 ../widgets/rb-entry-view.c:1600
+#: ../widgets/rb-entry-view.c:1612 ../widgets/rb-song-info.c:922
+#: ../widgets/rb-song-info.c:934 ../widgets/rb-song-info.c:1155
+#: ../widgets/rb-song-info.c:1494
 msgid "Unknown"
 msgstr "Nežinomas"
 
@@ -724,13 +727,13 @@ msgid "Cannot get free space at %s: %s"
 msgstr "Nepavyko gauti %s laisvos vietos: %s"
 
 #: ../lib/rb-util.c:698 ../plugins/context/tmpl/album-tmpl.html:20
-#: ../remote/dbus/rb-client.c:144
+#: ../remote/dbus/rb-client.c:157
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
 #: ../lib/rb-util.c:700 ../plugins/context/tmpl/album-tmpl.html:18
-#: ../remote/dbus/rb-client.c:146
+#: ../remote/dbus/rb-client.c:159
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -769,48 +772,48 @@ msgstr "Vidinė GStreamer klaida; praneškite apie ją"
 msgid "D-BUS communication error"
 msgstr "D-BUS komunikacijos klaida"
 
-#: ../metadata/rb-metadata-gst.c:551 ../metadata/rb-metadata-gst.c:1119
+#: ../metadata/rb-metadata-gst.c:584 ../metadata/rb-metadata-gst.c:1153
 #: ../plugins/cd-recorder/rb-recorder-gst.c:505
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Nepavyko sukurti %s elemento; patikrinkite įdiegimą"
 
-#: ../metadata/rb-metadata-gst.c:748
+#: ../metadata/rb-metadata-gst.c:781
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Nepavyko sukurti šaltinio elemento; patikrinkite įdiegimą"
 
-#: ../metadata/rb-metadata-gst.c:810
+#: ../metadata/rb-metadata-gst.c:843
 #, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "GStreamer klaida: nepavyko pakeisti būsenos"
 
-#: ../metadata/rb-metadata-gst.c:861
+#: ../metadata/rb-metadata-gst.c:894
 #, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "Nepavyko atpažinti failo MIME tipo"
 
-#: ../metadata/rb-metadata-gst.c:965
+#: ../metadata/rb-metadata-gst.c:998
 #, c-format
 msgid "Unable to identify file type"
 msgstr "Nepavyko atpažinti failo tipo"
 
-#: ../metadata/rb-metadata-gst.c:978
+#: ../metadata/rb-metadata-gst.c:1011
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Pateiktas failo tipas: %s"
 
-#: ../metadata/rb-metadata-gst.c:988
+#: ../metadata/rb-metadata-gst.c:1021
 #, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "Nepavyko sukurti žymų rašymo elementų"
 
-#: ../metadata/rb-metadata-gst.c:1071
+#: ../metadata/rb-metadata-gst.c:1104
 #, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Baigėsi laiko limitas nustatant konvejerį į NULL"
 
-#: ../metadata/rb-metadata-gst.c:1095
+#: ../metadata/rb-metadata-gst.c:1129
 #, c-format
 msgid "File corrupted during write"
 msgstr "Failas rašymo metu sugadintas"
@@ -889,67 +892,67 @@ msgstr "Įkelti albumo informaciją iš naujo"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../plugins/audiocd/rb-audiocd-source.c:288
+#: ../plugins/audiocd/rb-audiocd-source.c:306
 msgid "Extract"
 msgstr "Įrašyti"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:330
+#: ../plugins/audiocd/rb-audiocd-source.c:349
 msgid "Select tracks to be extracted"
 msgstr "Pažymėkite įrašytinus takelius"
 
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:361
+#: ../plugins/audiocd/rb-audiocd-source.c:380
 msgid "S_ubmit Album"
 msgstr "_Siųsti albumą"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:362
+#: ../plugins/audiocd/rb-audiocd-source.c:381
 msgid "Hide"
 msgstr "Slėpti"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:364
+#: ../plugins/audiocd/rb-audiocd-source.c:383
 msgid "Could not find this album on MusicBrainz."
 msgstr "Nepavyko rasti šio albumo MusicBrainz duombazėje."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:365
+#: ../plugins/audiocd/rb-audiocd-source.c:384
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Galite papildyti MusicBrainz duomenų bazę pridėdami šį albumą."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:498
+#: ../plugins/audiocd/rb-audiocd-source.c:520
 msgid "<Invalid unicode>"
 msgstr "<Klaidingas unikodas>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:542
+#: ../plugins/audiocd/rb-audiocd-source.c:564
 #, c-format
 msgid "Track %u"
 msgstr "Takelis %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:605
-#: ../plugins/audiocd/rb-audiocd-source.c:613
-#: ../plugins/audiocd/rb-audiocd-source.c:1005
+#: ../plugins/audiocd/rb-audiocd-source.c:627
+#: ../plugins/audiocd/rb-audiocd-source.c:635
+#: ../plugins/audiocd/rb-audiocd-source.c:1027
 msgid "Couldn't load Audio CD"
 msgstr "Nepavyko įkelti garso CD"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:606
+#: ../plugins/audiocd/rb-audiocd-source.c:628
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox nepavyko gauti prieigos prie CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:614
+#: ../plugins/audiocd/rb-audiocd-source.c:636
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmox nepavyko perskaityti CD informacijos."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:715
-#: ../sources/rb-library-source.c:151 ../widgets/rb-entry-view.c:1518
+#: ../plugins/audiocd/rb-audiocd-source.c:737
+#: ../sources/rb-library-source.c:157 ../widgets/rb-entry-view.c:1534
 msgid "Title"
 msgstr "Pavadinimas"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:722
+#: ../plugins/audiocd/rb-audiocd-source.c:744
 #: ../plugins/context/context/ArtistTab.py:52
-#: ../sources/rb-library-source.c:142 ../widgets/rb-entry-view.c:1528
+#: ../sources/rb-library-source.c:148 ../widgets/rb-entry-view.c:1544
 #: ../widgets/rb-library-browser.c:141
 msgid "Artist"
 msgstr "Atlikėjas"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1006
+#: ../plugins/audiocd/rb-audiocd-source.c:1028
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox nepavyko gauti priėjimo prie CD įrenginio."
 
@@ -1021,7 +1024,7 @@ msgid "Cannot read CD: %s"
 msgstr "Nepavyko perskaityti CD: %s"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:703
+#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:1
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -1029,308 +1032,385 @@ msgstr "Last.fm"
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
 msgstr "Skelbia dainų informaciją Last.fm ir leidžia klausyti Last.fm radijo"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:1
-msgid "Account Login"
-msgstr "Paskyros prisijungimas"
+#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
+msgid "Libre.fm"
+msgstr "Libre.fm"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:2
+#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:3
+msgid "Which Audioscrobbler services do you wish to use?"
+msgstr "Kuriomis Audioscrobbler paslaugomis norite naudotis?"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:1
+msgid "Create Station"
+msgstr "Sukurti stotį"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:2
+msgid "Create a Radio Station"
+msgstr "Sukurti radijo stotį"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:3
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:818
 msgid "Disabled"
 msgstr "Išjungta"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:3
-msgid "Join the Rhythmbox group"
-msgstr "Prisijungti prie Rhythmbox grupės"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:4
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:4
 msgid "Last submission time:"
 msgstr "Paskutinės publikacijos laikas:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:962
-#: ../plugins/iradio/rb-station-properties-dialog.c:499
-#: ../rhythmdb/rhythmdb.c:3666 ../widgets/rb-entry-view.c:1030
-#: ../widgets/rb-entry-view.c:1631 ../widgets/rb-entry-view.c:1644
-#: ../widgets/rb-song-info.c:1470
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:5
+msgid "Logout"
+msgstr "Atsijungti"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:6
+msgid "Loved Tracks"
+msgstr "Mėgiami takeliai"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:7
+#: ../plugins/iradio/rb-station-properties-dialog.c:498
+#: ../rhythmdb/rhythmdb.c:3585 ../widgets/rb-entry-view.c:1035
+#: ../widgets/rb-entry-view.c:1647 ../widgets/rb-entry-view.c:1660
+#: ../widgets/rb-song-info.c:1467
 msgid "Never"
 msgstr "Niekada"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:6
-msgid "New to Last.fm?"
-msgstr "Last.fm jums naujiena?"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:7
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 msgid "Queued tracks:"
 msgstr "Takeliai eilėje:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:8
-msgid "Sign up for an account"
-msgstr "Prisiregistruokite"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
+msgid "Recently Listened Tracks"
+msgstr "Neseniai klausyti takeliai"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:9
-msgid "Statistics"
-msgstr "Statistika"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:10
+msgid "Recommendations"
+msgstr "Rekomendacijos"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:10
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:11
 msgid "Status:"
 msgstr "Būsena:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:11
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:12
+msgid "Submission statistics"
+msgstr "Pateikimo statistika"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:13
+msgid "Submit listening data"
+msgstr "Pateikti klausymo duomenis"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:14
+msgid "Top Artists"
+msgstr "Mėgiamiausi atlikėjai"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:15
+msgid "Top Tracks"
+msgstr "Mėgiamiausi takeliai"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:16
 msgid "Tracks submitted:"
 msgstr "Publikuoti takeliai:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:12
-msgid "_Password:"
-msgstr "_Slaptažodis:"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:17
+msgid "Type:"
+msgstr "Tipas:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:13
-msgid "_Username:"
-msgstr "_Naudotojo vardas:"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:18
+msgid "View your profile"
+msgstr "Rodyti jūsų profilį"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:211
-msgid "Last.fm Preferences"
-msgstr "Last.fm nustatymai"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:249
+msgid "Refresh Profile"
+msgstr "Atnaujinti profilį"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:985
-msgid "OK"
-msgstr "Gerai"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:250
+msgid "Refresh your Profile"
+msgstr "Atnaujinti jūsų profilį"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:988
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1761
-msgid "Logging in"
-msgstr "Jungiamasi"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:991
-msgid "Request failed"
-msgstr "Užklausa nepavyko"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:994
-msgid "Incorrect username or password"
-msgstr "Neteisingas naudotojo vardas ar slaptažodis"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:997
-msgid "Clock is not set correctly"
-msgstr "Laikrodis nustatytas neteisingai"
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1000
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:873
-msgid "This version of Rhythmbox has been banned from Last.fm."
-msgstr "Šią Rhythmbox versiją Last.fm užblokavo."
-
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1003
-msgid "Track submission failed too many times"
-msgstr "Publikuoti takelių nepavyko per daug kartų"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:190
-msgid "Similar Artists radio"
-msgstr "Panašių atlikėjų radijas"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:190
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1260
-#, c-format
-msgid "Artists similar to %s"
-msgstr "Atlikėjai, panašūs į %s"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:191
-msgid "Tag radio"
-msgstr "Žymų radijas"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:191
-#, c-format
-msgid "Tracks tagged with %s"
-msgstr "Takeliai su žyma %s"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:192
-msgid "Artist Fan radio"
-msgstr "Atlikėjo fanų radijas"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:192
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1262
-#, c-format
-msgid "Artists liked by fans of %s"
-msgstr "Atlikėjai, mėgstami %s fanų"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:193
-msgid "Group radio"
-msgstr "Grupės radijas"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:193
-#, c-format
-msgid "Tracks liked by the %s group"
-msgstr "Takeliai, mėgstami grupės %s"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
-msgid "Neighbour radio"
-msgstr "Kaimynų radijas"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:194
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1270
-#, c-format
-msgid "%s's Neighbour Radio"
-msgstr "%s kaimynų radijas"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
-msgid "Personal radio"
-msgstr "Asmeninis radijas"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1274
-#, c-format
-msgid "%s's Personal Radio"
-msgstr "%s asmeninis radijas"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
-msgid "Loved tracks"
-msgstr "Mėgiami kūriniai"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1276
-#, c-format
-msgid "%s's Loved Tracks"
-msgstr "%s: mėgiami kūriniai"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-msgid "Recommended tracks"
-msgstr "Rekomenduojami kūriniai"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-#, c-format
-msgid "Tracks recommended to %s"
-msgstr "Kūriniai, rekomenduojami %s"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
-msgid "Playlist"
-msgstr "Grojaraštis"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
-#, c-format
-msgid "%s's playlist"
-msgstr "%s grojaraštis"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:282
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:624
 msgid "Love"
 msgstr "Patinka"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:283
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:625
 msgid "Mark this song as loved"
 msgstr "Pažymėti šį kūrinį kaip mėgiamą"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:285
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:627
 msgid "Ban"
 msgstr "Blokuoti"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:628
 msgid "Ban the current track from being played again"
 msgstr "Užblokuoti šią dainą, kad jos daugiau negrotų"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:288
-msgid "Delete Station"
-msgstr "Ištrinti stotį"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:630
+msgid "Download"
+msgstr "Atsiųsti"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
-msgid "Delete the selected station"
-msgstr "Ištrinti pasirinktąją stotį"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:631
+msgid "Download the currently playing track"
+msgstr "Atsiųsti šiuo metu grojamą takelį"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:291
-msgid "Download song"
-msgstr "Atsisiųsti dainą"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:736
+msgid "You are not currently logged in."
+msgstr "Šiuo metu esate neprisijungę."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
-msgid "Download this song"
-msgstr "Atsisiųsti šią dainą"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:737
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:755
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:762
+msgid "Log in"
+msgstr "Prisijungti"
 
-#. awful
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:495
-msgid "Enter the item to build a Last.fm station out of:"
-msgstr "Įveskite elementą, iš kurio sukurti Last.fm stotį:"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:743
+msgid "Waiting for authentication..."
+msgstr "Laukiama tapatybės patvirtinimo..."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:498
-msgid "Add"
-msgstr "Pridėti"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:744
+msgid "Cancel"
+msgstr "Atšaukti"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:844
-msgid "Account Settings"
-msgstr "Paskyros parametrai"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:754
+msgid "Authentication error. Please try logging in again."
+msgstr "Tapatybės patvirtinimo klaida. Pamėginkite prisijungti iš naujo."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:869
-msgid ""
-"Account details are needed before you can connect.  Check your settings."
-msgstr ""
-"Norint prisijungti reikia nurodyti paskyros informaciją. Patikrinkite "
-"parametrus."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:761
+msgid "Connection error. Please try logging in again."
+msgstr "Ryšio klaida. Pamėginkite prisijungti iš naujo."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:877
-msgid "Unable to connect"
-msgstr "Nepavyko prisijungti"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1176
+msgid "My Library"
+msgstr "Mano fonoteka"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1251
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1184
+msgid "My Recommendations"
+msgstr "Mano rekomendacijos"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1192
+msgid "My Neighbourhood"
+msgstr "Mano kaimynai"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1359
 #, c-format
-msgid "Global Tag %s"
-msgstr "Visuotinė žyma %s"
+msgid "%s plays"
+msgstr "%s groja"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1272
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This is the label for menu item which when activated will take the user to the
+#. * artist/track's page on the service's website.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1617
 #, c-format
-msgid "%s's Recommended Radio: %s percent"
-msgstr "%s rekomenduojamas radijas: %s procentų"
+msgid "_View on %s"
+msgstr "_Rodyti %s svetainėje"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1278
+#. Translators: describes a radio stream playing tracks similar to those by an artist.
+#. * Followed by a text entry box for the artist name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:57
+msgid "Similar to Artist:"
+msgstr "Panašu į atlikėją:"
+
+#. Translators: describes a radio stream playing tracks listened to by the top fans of
+#. * a particular artist.  Followed by a text entry box for the artist name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:61
+msgid "Top Fans of Artist:"
+msgstr "Didžiausi atlikėjo gerbėjai:"
+
+#. Translators: describes a radio stream playing tracks from the library of a particular
+#. * user.  Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:65
+msgid "Library of User:"
+msgstr "Naudotojo fonoteka:"
+
+#. Translators: describes a radio stream playing tracks played by users similar to a
+#. * particular user.  Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:69
+msgid "Neighbourhood of User:"
+msgstr "Naudotojo kaimynai:"
+
+#. Translators: describes a radio stream playing tracks that a particular user has marked
+#. * as loved.  Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:73
+msgid "Tracks Loved by User:"
+msgstr "Naudotojo mėgiami takeliai:"
+
+#. Translators: describes a radio stream playing tracks recommended to a particular user.
+#. * Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:77
+msgid "Recommendations for User:"
+msgstr "Rekomendacijos naudotojui:"
+
+#. Translators: describes a radio stream playing tracks tagged with a particular tag.
+#. * Followed by a text entry box for the tag.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:81
+msgid "Tracks Tagged with:"
+msgstr "Takeliai su žyma:"
+
+#. Translators: describes a radio stream playing tracks often listened to by members of
+#. * a particular group. Followed by a text entry box for the group name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:85
+msgid "Listened by Group:"
+msgstr "Klausoma grupės:"
+
+#. Translators: station is built from artists similar to the artist %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:119
 #, c-format
-msgid "%s's Playlist"
-msgstr "%s grojaraštis"
+msgid "%s Radio"
+msgstr "%s radijas"
 
-#. Translators: variables are 1: user name, 2: tag name; for user tag radio
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1284
+#. Translators: station is built from the artist %s's top fans
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:121
 #, c-format
-msgid "%s's %s Radio"
-msgstr "%s %s radijas"
+msgid "%s Fan Radio"
+msgstr "%s gerbėjų radijas"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1288
+#. Translators: station is built from the library of the user %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:123
+#, c-format
+msgid "%s's Library"
+msgstr "%s fonoteka"
+
+#. Translators: station is built from the "neighbourhood" of the user %s.
+#. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:126
+#, c-format
+msgid "%s's Neighbourhood"
+msgstr "%s kaimynai"
+
+#. Translators: station is built from the tracks which have been "loved" by the user %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:128
+#, c-format
+msgid "%s's Loved Tracks"
+msgstr "%s mėgstami kūriniai"
+
+#. Translators: station is built from the tracks which are recommended to the user %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
+#, c-format
+msgid "%s's Recommended Radio"
+msgstr "%s rekomenduojamas radijas"
+
+#. Translators: station is built from the tracks which have been "tagged" with %s.
+#. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
+#. * but nationalities, record labels, decades and very random words are also commmon
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
+#, c-format
+msgid "%s Tag Radio"
+msgstr "%s žymos radijas"
+
+#. Translators: station is built from the library of the group %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:136
 #, c-format
 msgid "%s Group Radio"
 msgstr "%s grupės radijas"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1731
-msgid "Neighbour Radio"
-msgstr "Kaimynų radijas"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:279
+msgid "_Rename Station"
+msgstr "Pe_rvadinti stotį"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1739
-msgid "Personal Radio"
-msgstr "Asmeninis radijas"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:280
+msgid "Rename station"
+msgstr "Pervadinti stotį"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1829
-msgid "Server did not respond"
-msgstr "Serveris neatsakė"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:282
+msgid "_Delete Station"
+msgstr "Iš_trinti stotį"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1897
-msgid "There is not enough content available to play this station."
-msgstr "Klausytis šios stoties negalima, nes joje nepakanka dainų."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:283
+msgid "Delete station"
+msgstr "Ištrinti stotį"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1902
-msgid "This station is available to subscribers only."
-msgstr "Ši stotis prieinama tik prenumeratoriams."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:446
+msgid "You must enter your password to listen to this station"
+msgstr "Turite įvesti savo slaptažodį, jei norite klausytis šios stoties"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1909
-msgid ""
-"The streaming system is offline for maintenance, please try again later."
-msgstr "Transliavimo sistema išjungta priežiūros darbams, bandykite vėliau."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:757
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1100
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1230
+msgid "Error tuning station: no response"
+msgstr "Klaida nustatant stotį: nėra atsako"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1948
-msgid "Changing station"
-msgstr "Keičiama stotis"
+#. Invalid station url
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:794
+msgid "Invalid station URL"
+msgstr "Netinkamas stoties URL"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2169
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2179
-msgid "Retrieving playlist"
-msgstr "Gaunamas grojaraštis"
+#. Subscriber only station
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This message indicates that to listen to this radio station the user needs to be
+#. * a paying subscriber to the service.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:800
+#, c-format
+msgid "This station is only available to %s subscribers"
+msgstr "Ši stotis prieinama tik %s prenumeratoriams"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2273
-msgid "Banning song"
-msgstr "Blokuojama daina"
+#. Not enough content
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:804
+msgid "Not enough content to play station"
+msgstr "Nepakanka turinio stočiai transliuoti"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2291
-msgid "Adding song to your Loved tracks"
-msgstr "Daina pridedama prie jums patinkančių takelių"
+#. Other error
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:807
+#, c-format
+msgid "Error tuning station: %i - %s"
+msgstr "Klaida nustatant stotį: %i – %s"
 
-#. and maybe some more
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:818
+msgid "Error tuning station: unexpected response"
+msgstr "Klaida nustatant stotį: netikėtas atsakas"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:823
+msgid "Error tuning station: invalid response"
+msgstr "Klaida nustatant stotį: netinkamas atsakas"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1215
+#, c-format
+msgid "Error tuning station: %s"
+msgstr "Klaida nustatant stotį: %s"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1287
+#, c-format
+msgid "Password for streaming %s radio using the deprecated API"
+msgstr "Slaptažodis %s radijui transliuoti naudojant pasenusį API"
+
+#. We could be calling either radio.tune or radio.getPlaylist methods.
+#. * "Tuning station" seems like a user friendly message to display for both cases.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1450
+msgid "Tuning station"
+msgstr "Nustatoma stotis"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:499
+msgid "OK"
+msgstr "Gerai"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:502
+msgid "Logging in"
+msgstr "Jungiamasi"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:505
+msgid "Request failed"
+msgstr "Užklausa nepavyko"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:508
+msgid "Authentication error"
+msgstr "Tapatybės patvirtinimo klaida"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:511
+msgid "Clock is not set correctly"
+msgstr "Laikrodis nustatytas neteisingai"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
+msgid "This version of Rhythmbox has been banned."
+msgstr "Ši Rhythmbox versija yra užblokuota."
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:517
+msgid "Track submission failed too many times"
+msgstr "Publikuoti takelių nepavyko per daug kartų"
+
 #: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:1
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:1
 msgid "Audio CD Recorder"
@@ -1694,41 +1774,41 @@ msgstr "_Bandyti kitą"
 msgid "_Erase Disc"
 msgstr "Išt_rinti diską"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1145
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1144
 msgid "C_reate"
 msgstr "Suku_rti"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1223
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1222
 #, c-format
 msgid "Failed to create the recorder: %s"
 msgstr "Nepavyko sukurti rašytuvo: %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1345
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1344
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
 msgstr "Nepavyko pašalinti laikino aplanko „%s“: %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1365
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1364
 msgid "Create Audio CD"
 msgstr "Sukurti garso CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1383
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1382
 #, c-format
 msgid "Create audio CD from '%s'?"
 msgstr "Sukurti garso CD iš „%s“?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1429
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1447
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1428
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1446
 #, c-format
 msgid "Unable to build an audio track list."
 msgstr "Nepavyko sudaryti garso takelių sąrašo."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1457
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1456
 #, c-format
 msgid "This playlist is too long to write to an audio CD."
 msgstr "Šis grojaraštis per ilgas, kad jį būtų galima įrašyti į garso CD."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1593
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1592
 #, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
@@ -1739,15 +1819,15 @@ msgstr ""
 "Jeigu įdėtas diskas yra talpesnis negu standartinis garso CD, įdėkite jį į "
 "įrenginį ir bandykite dar kartą."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1604
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1603
 msgid "Playlist too long"
 msgstr "Grojaraštis per ilgas"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1644
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1643
 msgid "Could not find temporary space!"
 msgstr "Nepakanka laikinos vietos!"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1645
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1644
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MB "
@@ -1766,7 +1846,7 @@ msgstr "Parinktys"
 
 #: ../plugins/cd-recorder/recorder.ui.h:3
 msgid "Progress"
-msgstr "Pažanga"
+msgstr "Eiga"
 
 #: ../plugins/cd-recorder/recorder.ui.h:4
 msgid "Write _speed:"
@@ -1914,18 +1994,45 @@ msgid "Share music and play shared music on your local network"
 msgstr "Viešinkite muziką vietiniame tinkle ir jos iš ten klausykitės"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
+msgid "<b>Add Remote</b>"
+msgstr "<b>Pridėti nuotolinio valdymo prietaisą</b>"
+
+#: ../plugins/daap/daap-prefs.ui.h:2
 msgid "<b>Sharing</b>"
 msgstr "<b>Viešinimas</b>"
 
-#: ../plugins/daap/daap-prefs.ui.h:2
+#: ../plugins/daap/daap-prefs.ui.h:3
+msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
+msgstr ""
+"<span foreground=\"red\">Nepavyko susijungti su šiuo nuotolinio valdymo "
+"prietaisu.</span>"
+
+#: ../plugins/daap/daap-prefs.ui.h:4
+msgid "Forget known Remotes"
+msgstr "Pamiršti žinomus nuotolinio valdymo prietaisus"
+
+#: ../plugins/daap/daap-prefs.ui.h:5
+msgid "Library _name:"
+msgstr "Fonotekos _pavadinimas:"
+
+#: ../plugins/daap/daap-prefs.ui.h:6
+msgid "Please enter the passcode displayed on your device."
+msgstr "Įveskite savo prietaise rodomą prieigos kodą."
+
+#: ../plugins/daap/daap-prefs.ui.h:7
 msgid "Require _password:"
 msgstr "Reikalingas _slaptažodis:"
 
-#: ../plugins/daap/daap-prefs.ui.h:3 ../plugins/daap/rb-daap-dialog.c:82
-msgid "Shared music _name:"
-msgstr "Viešinamos muzikos _pavadinimas:"
+#: ../plugins/daap/daap-prefs.ui.h:8
+msgid "You can now control Rhythmbox through your Remote"
+msgstr ""
+"Dabar galite valdyti Rhythmbox naudodamiesi nuotolinio valdymo įrenginiu"
 
-#: ../plugins/daap/daap-prefs.ui.h:4
+#: ../plugins/daap/daap-prefs.ui.h:9
+msgid "_Look for touch Remotes"
+msgstr "_Ieškoti jutiklinių nuotolinio valdymo prietaisų"
+
+#: ../plugins/daap/daap-prefs.ui.h:10
 msgid "_Share my music"
 msgstr "_Viešinti mano muziką"
 
@@ -1933,36 +2040,40 @@ msgstr "_Viešinti mano muziką"
 msgid "Invalid share name"
 msgstr "Netinkamas viešinio pavadinimas"
 
-#: ../plugins/daap/rb-daap-dialog.c:74
+#: ../plugins/daap/rb-daap-dialog.c:73
 #, c-format
 msgid "The shared music name '%s' is already taken. Please choose another."
 msgstr "Viešinamos muzikos pavadinimas „%s“ jau užimtas. Pasirinkite kitą."
 
-#: ../plugins/daap/rb-daap-plugin.c:129
+#: ../plugins/daap/rb-daap-dialog.c:81
+msgid "Shared music _name:"
+msgstr "Viešinamos muzikos _pavadinimas:"
+
+#: ../plugins/daap/rb-daap-plugin.c:139
 msgid "Connect to _DAAP share..."
 msgstr "Prisijungti prie _DAAP viešinio..."
 
-#: ../plugins/daap/rb-daap-plugin.c:130
+#: ../plugins/daap/rb-daap-plugin.c:140
 msgid "Connect to a new DAAP share"
 msgstr "Prisijungti prie naujo DAAP viešinio"
 
-#: ../plugins/daap/rb-daap-plugin.c:136
+#: ../plugins/daap/rb-daap-plugin.c:146
 msgid "_Disconnect"
 msgstr "_Atsijungti"
 
-#: ../plugins/daap/rb-daap-plugin.c:137
+#: ../plugins/daap/rb-daap-plugin.c:147
 msgid "Disconnect from DAAP share"
 msgstr "Atsijungti nuo DAAP viešinio"
 
-#: ../plugins/daap/rb-daap-plugin.c:680
+#: ../plugins/daap/rb-daap-plugin.c:742
 msgid "New DAAP share"
 msgstr "Naujas DAAP viešinys"
 
-#: ../plugins/daap/rb-daap-plugin.c:680
+#: ../plugins/daap/rb-daap-plugin.c:742
 msgid "Host:port of DAAP share:"
 msgstr "DAAP viešinio kompiuteris:prievadas:"
 
-#: ../plugins/daap/rb-daap-plugin.c:902
+#: ../plugins/daap/rb-daap-plugin.c:996
 msgid "DAAP Music Sharing Preferences"
 msgstr "DAAP muzikos viešinimo nustatymai"
 
@@ -1971,55 +2082,76 @@ msgstr "DAAP muzikos viešinimo nustatymai"
 msgid "%s's Music"
 msgstr "%s muzika"
 
-#: ../plugins/daap/rb-daap-source.c:354
+#: ../plugins/daap/rb-daap-source.c:371
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr "Norint prisijungti prie muzikos viešinio „%s“ reikia slaptažodžio"
 
-#: ../plugins/daap/rb-daap-source.c:460
+#: ../plugins/daap/rb-daap-source.c:477
 msgid "Connecting to music share"
-msgstr "Jungiamasi prie muziko viešinio"
+msgstr "Jungiamasi prie muzikos viešinio"
 
-#: ../plugins/daap/rb-daap-source.c:467
+#: ../plugins/daap/rb-daap-source.c:484
 msgid "Retrieving songs from music share"
 msgstr "Gaunamos dainos iš muzikos viešinio"
 
-#: ../plugins/daap/rb-daap-source.c:554
+#: ../plugins/daap/rb-daap-source.c:571
 msgid "Could not connect to shared music"
 msgstr "Nepavyko prisijungti prie viešinamos muzikos"
 
+#: ../plugins/daap/rb-dacp-source.c:295
+msgid "Remotes"
+msgstr "Nuotolinio valdymo prietaisai"
+
+#: ../plugins/daap/rb-dacp-source.c:417
+msgid "Connecting..."
+msgstr "Jungiamasi..."
+
+#: ../plugins/daap/rb-dacp-source.c:419
+msgid "Could not pair with this Remote."
+msgstr "Nepavyko susijungti su šiuo nuotolinio valdymo prietaisu."
+
+#: ../plugins/dbus-media-server/dbus-media-server.rb-plugin.in.h:1
+msgid "MediaServer2 D-Bus interface"
+msgstr "MediaServer2 D-Bus sąsaja"
+
+#: ../plugins/dbus-media-server/dbus-media-server.rb-plugin.in.h:2
+msgid ""
+"Provides an implementation of the MediaServer2 D-Bus interface specification"
+msgstr "Suteikia MediaServer2 D-Bus sąsajos specifikacijos realizaciją"
+
 #: ../plugins/fmradio/fmradio.rb-plugin.in.h:1
-#: ../plugins/fmradio/rb-fm-radio-source.c:197
+#: ../plugins/fmradio/rb-fm-radio-source.c:207
 msgid "FM Radio"
 msgstr "FM radijas"
 
 #: ../plugins/fmradio/fmradio.rb-plugin.in.h:2
 msgid "Support for FM radio broadcasting services"
-msgstr "FM radijo transliavimo paslaugų palaikymas"
+msgstr "FM radijo transliavimo paslaugos"
 
-#: ../plugins/fmradio/rb-fm-radio-source.c:86
+#: ../plugins/fmradio/rb-fm-radio-source.c:85
 msgid "New FM R_adio Station"
 msgstr "Nauja FM r_adijo stotis"
 
-#: ../plugins/fmradio/rb-fm-radio-source.c:87
+#: ../plugins/fmradio/rb-fm-radio-source.c:86
 msgid "Create a new FM Radio station"
 msgstr "Sukurti naują FM radijo stotį"
 
-#: ../plugins/fmradio/rb-fm-radio-source.c:341
+#: ../plugins/fmradio/rb-fm-radio-source.c:345
 msgid "New FM Radio Station"
 msgstr "Nauja FM radijo stotis"
 
-#: ../plugins/fmradio/rb-fm-radio-source.c:342
+#: ../plugins/fmradio/rb-fm-radio-source.c:346
 msgid "Frequency of radio station"
 msgstr "Radijo stoties dažnis"
 
 #: ../plugins/generic-player/generic-player.rb-plugin.in.h:1
 msgid "Portable Players"
-msgstr "Nešiojami grotuvai"
+msgstr "Nešiojamieji grotuvai"
 
 #: ../plugins/generic-player/generic-player.rb-plugin.in.h:2
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
-msgstr "Bendrų garso grotuvų (taip pat PSP ir Nokia 770) palaikymas"
+msgstr "Bendrųjų garso grotuvų (taip pat PSP ir Nokia 770) palaikymas"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:1
 #: ../plugins/ipod/ipod-info.ui.h:1 ../plugins/mtpdevice/mtp-info.ui.h:1
@@ -2029,12 +2161,12 @@ msgstr "<b>Sistema</b>"
 #: ../plugins/generic-player/generic-player-info.ui.h:2
 #: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
 msgid "Audio formats:"
-msgstr "Garso _formatas:"
+msgstr "Garso formatai:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:3
 #: ../plugins/mtpdevice/mtp-info.ui.h:3
 msgid "Device _name:"
-msgstr "Įrenginio pavadinimas:"
+msgstr "Įrenginio _pavadinimas:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:4
 #: ../plugins/mtpdevice/mtp-info.ui.h:5
@@ -2080,8 +2212,8 @@ msgstr "Ištrinti šį grojaraštį"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:101
 #: ../plugins/ipod/rb-ipod-plugin.c:106
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:125 ../shell/rb-shell-clipboard.c:190
-#: ../sources/rb-podcast-source.c:314
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:125 ../podcast/rb-podcast-source.c:124
+#: ../shell/rb-shell-clipboard.c:190
 msgid "_Properties"
 msgstr "_Savybės"
 
@@ -2090,9 +2222,9 @@ msgstr "_Savybės"
 msgid "Display device properties"
 msgstr "Rodyti įrenginio ypatybes"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:1294
-#: ../plugins/ipod/rb-ipod-source.c:1931
-#: ../plugins/mtpdevice/rb-mtp-source.c:1608
+#: ../plugins/generic-player/rb-generic-player-source.c:1310
+#: ../plugins/ipod/rb-ipod-source.c:1985
+#: ../plugins/mtpdevice/rb-mtp-source.c:1616
 msgid "Advanced"
 msgstr "Tikslesnės"
 
@@ -2250,14 +2382,15 @@ msgstr "Iš_trinti"
 msgid "Delete playlist"
 msgstr "Ištrinti grojaraštį"
 
-#: ../plugins/ipod/rb-ipod-source.c:1437 ../sources/rb-podcast-source.c:833
-#: ../sources/sync/rb-sync-settings-ui.c:261
+#: ../plugins/ipod/rb-ipod-source.c:1491
+#: ../podcast/rb-podcast-main-source.c:71
 #: ../sources/sync/rb-sync-settings-ui.c:262
+#: ../sources/sync/rb-sync-settings-ui.c:263
 #: ../sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
 msgstr "Tinklalaidės"
 
-#: ../plugins/ipod/rb-ipod-source.c:1821
+#: ../plugins/ipod/rb-ipod-source.c:1875
 msgid "New playlist"
 msgstr "Naujas grojaraštis"
 
@@ -2348,7 +2481,7 @@ msgstr "Jamendo yra vienintelė platforma, sujungianti kartu:"
 msgid ""
 "Jamendo users can discover and share albums, but also review them or start a "
 "discussion on the forums.\n"
-"Albums are democratically rated based on the visitors&#x2019; reviews.\n"
+"Albums are democratically rated based on the visitors’ reviews.\n"
 "If they fancy an artist they can support him by making a donation."
 msgstr ""
 "Jamendo naudotojai gali ne tik atrasti albumus ir jais dalintis, tačiau ir "
@@ -2400,20 +2533,20 @@ msgstr ""
 msgid "Jamendo"
 msgstr "Jamendo"
 
-#: ../plugins/jamendo/jamendo/__init__.py:90
+#: ../plugins/jamendo/jamendo/__init__.py:94
 msgid "_Download Album"
 msgstr "_Atsiųsti albumą"
 
-#: ../plugins/jamendo/jamendo/__init__.py:91
+#: ../plugins/jamendo/jamendo/__init__.py:95
 msgid "Download this album using BitTorrent"
 msgstr "Atsisiųsti šį albumą naudojant BitTorrent"
 
 #. Add Button for Donate
-#: ../plugins/jamendo/jamendo/__init__.py:98
+#: ../plugins/jamendo/jamendo/__init__.py:102
 msgid "_Donate to Artist"
 msgstr "_Paaukoti atlikėjui"
 
-#: ../plugins/jamendo/jamendo/__init__.py:99
+#: ../plugins/jamendo/jamendo/__init__.py:103
 msgid "Donate Money to this Artist"
 msgstr "Paaukoti šiam atlikėjui pinigų"
 
@@ -2431,31 +2564,31 @@ msgstr "Klaida ieškant p2plink albumui %s svetainėje jamendo.com"
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Klaida ieškant atlikėjo %s svetainėje jamendo.com"
 
-#: ../plugins/iradio/rb-iradio-source.c:170
+#: ../plugins/iradio/rb-iradio-source.c:176
 msgid "New Internet _Radio Station..."
 msgstr "Nauja interneto _radijo stotis..."
 
-#: ../plugins/iradio/rb-iradio-source.c:171
+#: ../plugins/iradio/rb-iradio-source.c:177
 msgid "Create a new Internet Radio station"
 msgstr "Sukurti naują interneto radijo stotį"
 
 #. Translators: this is the toolbar button label for
 #. New Internet Radio Station action.
-#: ../plugins/iradio/rb-iradio-source.c:309
+#: ../plugins/iradio/rb-iradio-source.c:315
 msgctxt "Radio"
 msgid "New"
 msgstr "Nauja"
 
-#: ../plugins/iradio/rb-iradio-source.c:351 ../widgets/rb-entry-view.c:1548
+#: ../plugins/iradio/rb-iradio-source.c:357 ../widgets/rb-entry-view.c:1564
 #: ../widgets/rb-library-browser.c:140
 msgid "Genre"
 msgstr "Žanras"
 
-#: ../plugins/iradio/rb-iradio-source.c:445
+#: ../plugins/iradio/rb-iradio-source.c:455
 msgid "Radio"
 msgstr "Radijas"
 
-#: ../plugins/iradio/rb-iradio-source.c:584
+#: ../plugins/iradio/rb-iradio-source.c:594
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -2463,35 +2596,35 @@ msgstr[0] "%d stotis"
 msgstr[1] "%d stotys"
 msgstr[2] "%d stočių"
 
-#: ../plugins/iradio/rb-iradio-source.c:997
-#: ../plugins/iradio/rb-station-properties-dialog.c:402
+#: ../plugins/iradio/rb-iradio-source.c:1018
+#: ../plugins/iradio/rb-station-properties-dialog.c:401
 msgid "New Internet Radio Station"
 msgstr "Nauja interneto radijo stotis"
 
-#: ../plugins/iradio/rb-iradio-source.c:997
+#: ../plugins/iradio/rb-iradio-source.c:1018
 msgid "URL of internet radio station:"
 msgstr "Interneto radijo stoties URL:"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:398
-#: ../podcast/rb-feed-podcast-properties-dialog.c:216
-#: ../podcast/rb-podcast-properties-dialog.c:486
-#: ../sources/rb-media-player-source.c:392 ../widgets/rb-song-info.c:1083
+#: ../plugins/iradio/rb-station-properties-dialog.c:397
+#: ../podcast/rb-feed-podcast-properties-dialog.c:215
+#: ../podcast/rb-podcast-properties-dialog.c:485
+#: ../sources/rb-media-player-source.c:353 ../widgets/rb-song-info.c:1080
 #, c-format
 msgid "%s Properties"
 msgstr "%s savybės"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../podcast/rb-podcast-properties-dialog.c:599
-#: ../widgets/rb-entry-view.c:1108 ../widgets/rb-song-info.c:1160
+#: ../plugins/iradio/rb-station-properties-dialog.c:489
+#: ../podcast/rb-podcast-properties-dialog.c:598
+#: ../widgets/rb-entry-view.c:1113 ../widgets/rb-song-info.c:1157
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:581
+#: ../plugins/iradio/rb-station-properties-dialog.c:580
 msgid "Unable to change station property"
 msgstr "Nepavyko pakeisti stoties savybės"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:581
+#: ../plugins/iradio/rb-station-properties-dialog.c:580
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
 msgstr "Nepavyko pakeisti stoties URI į %s, nes ta stotis jau egzistuoja"
@@ -2520,7 +2653,7 @@ msgid "_Save"
 msgstr "Į_rašyti"
 
 #: ../plugins/lyrics/lyrics/__init__.py:216
-#: ../plugins/lyrics/lyrics/__init__.py:229 ../shell/rb-shell.c:392
+#: ../plugins/lyrics/lyrics/__init__.py:229 ../shell/rb-shell.c:395
 msgid "_Edit"
 msgstr "_Keisti"
 
@@ -2988,7 +3121,7 @@ msgstr ""
 "%s"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:462
-#: ../widgets/rb-entry-view.c:1692
+#: ../widgets/rb-entry-view.c:1708
 msgid "Error"
 msgstr "Klaida"
 
@@ -3011,36 +3144,36 @@ msgstr "Atsiųsta"
 msgid "All Magnatune downloads have been completed."
 msgstr "Visi Magnatune siuntimai baigti."
 
-#: ../plugins/magnatune/magnatune/__init__.py:111
+#: ../plugins/magnatune/magnatune/__init__.py:116
 msgid "Download Album"
 msgstr "Atsiųsti albumą"
 
-#: ../plugins/magnatune/magnatune/__init__.py:112
+#: ../plugins/magnatune/magnatune/__init__.py:117
 msgid "Download this album from Magnatune"
 msgstr "Atsisiųsti šį albumą iš Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:116
+#: ../plugins/magnatune/magnatune/__init__.py:121
 msgid "Artist Information"
 msgstr "Atlikėjo informacija"
 
-#: ../plugins/magnatune/magnatune/__init__.py:117
+#: ../plugins/magnatune/magnatune/__init__.py:122
 msgid "Get information about this artist"
 msgstr "Gauti informaciją apie šį atlikėją"
 
-#: ../plugins/magnatune/magnatune/__init__.py:121
+#: ../plugins/magnatune/magnatune/__init__.py:126
 msgid "Cancel Downloads"
 msgstr "Nutraukti atsiuntimą"
 
-#: ../plugins/magnatune/magnatune/__init__.py:122
+#: ../plugins/magnatune/magnatune/__init__.py:127
 msgid "Stop downloading purchased albums"
 msgstr "Sustabdyti nusipirktų albumų atsiuntimą"
 
-#: ../plugins/magnatune/magnatune/__init__.py:251
-#: ../plugins/magnatune/magnatune/__init__.py:254
+#: ../plugins/magnatune/magnatune/__init__.py:256
+#: ../plugins/magnatune/magnatune/__init__.py:259
 msgid "Couldn't store account information"
 msgstr "Nepavyko įrašyti paskyros informacijos"
 
-#: ../plugins/magnatune/magnatune/__init__.py:252
+#: ../plugins/magnatune/magnatune/__init__.py:257
 msgid ""
 "There was a problem accessing the keyring. Check the debug output for more "
 "information."
@@ -3065,7 +3198,7 @@ msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "MTP įrenginių palaikymas (rodyti turinį, perkelti, groti iš įrenginio)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:157
-#: ../plugins/mtpdevice/rb-mtp-thread.c:543
+#: ../plugins/mtpdevice/rb-mtp-thread.c:545
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Nepavyko atverti laikinojo failo: %s"
@@ -3074,41 +3207,41 @@ msgstr "Nepavyko atverti laikinojo failo: %s"
 msgid "Rename MTP-device"
 msgstr "Pervadinti MTP įrenginį"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:854
-#: ../plugins/mtpdevice/rb-mtp-thread.c:851
+#: ../plugins/mtpdevice/rb-mtp-source.c:869
+#: ../plugins/mtpdevice/rb-mtp-thread.c:854
 msgid "Media player device error"
 msgstr "Muzikos grotuvo įrenginio klaida"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:858
+#: ../plugins/mtpdevice/rb-mtp-source.c:873
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Nepavyko atverti įrenginio %s %s"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:902
+#: ../plugins/mtpdevice/rb-mtp-source.c:917
 msgid "Digital Audio Player"
 msgstr "Skaitmeninis garso grotuvas"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:498
-#: ../plugins/mtpdevice/rb-mtp-thread.c:556
-#: ../plugins/mtpdevice/rb-mtp-thread.c:574
+#: ../plugins/mtpdevice/rb-mtp-thread.c:500
+#: ../plugins/mtpdevice/rb-mtp-thread.c:558
+#: ../plugins/mtpdevice/rb-mtp-thread.c:576
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr "Nepavyko nukopijuoti failo iš MTP įrenginio: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:519
+#: ../plugins/mtpdevice/rb-mtp-thread.c:521
 #, c-format
 msgid "Not enough space in %s"
 msgstr "Nepakanka vietos įrenginyje %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:600
+#: ../plugins/mtpdevice/rb-mtp-thread.c:602
 #, c-format
 msgid "No space left on MTP device"
 msgstr "Neliko vietos MTP įrenginyje"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:603
+#: ../plugins/mtpdevice/rb-mtp-thread.c:605
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "Nepavyko nusiųsti failo į MTP įrenginį: %s"
@@ -3166,6 +3299,14 @@ msgid "Python Console"
 msgstr "Python konsolė"
 
 #. sys.excepthook = _excepthandler
+#: ../plugins/rbzeitgeist/rbzeitgeist.rb-plugin.in.h:1
+msgid "Inform Zeitgeist about your activity"
+msgstr "Pranešti Zeitgeist apie jūsų veiklą"
+
+#: ../plugins/rbzeitgeist/rbzeitgeist.rb-plugin.in.h:2
+msgid "Zeitgeist"
+msgstr "Zeitgeist"
+
 #: ../plugins/replaygain/replaygain.rb-plugin.in.h:1
 msgid "ReplayGain"
 msgstr "ReplayGain"
@@ -3273,53 +3414,61 @@ msgstr "Siųsti pažymėtus takelius el. paštu ar tikralaike žinute"
 msgid "Send tracks"
 msgstr "Siųsti takelius"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:141
+#: ../plugins/status-icon/rb-status-icon-plugin.c:142
 msgid "_Close"
 msgstr "_Užverti"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:142
+#: ../plugins/status-icon/rb-status-icon-plugin.c:143
 msgid "Hide the music player window"
 msgstr "Paslėpti muzikos grotuvo langą"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:148
+#: ../plugins/status-icon/rb-status-icon-plugin.c:149
 msgid "_Show Music Player"
 msgstr "_Rodyti muzikos grotuvą"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:149
+#: ../plugins/status-icon/rb-status-icon-plugin.c:150
 msgid "Choose music to play"
-msgstr "Pasirinkite grotiną muziką"
+msgstr "Pasirinkite muziką, kurios norite klausytis"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:151
+#: ../plugins/status-icon/rb-status-icon-plugin.c:152
 msgid "Show N_otifications"
 msgstr "Rodyti _pranešimus"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:152
+#: ../plugins/status-icon/rb-status-icon-plugin.c:153
 msgid "Show notifications of song changes and other events"
-msgstr "Rodyti dainų pasikeitimo bei kitų įvykių pranešimus"
+msgstr "Rodyti pranešimus apie dainų pasikeitimą ir kitus įvykius"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:435
+#: ../plugins/status-icon/rb-status-icon-plugin.c:456
+msgid "Previous"
+msgstr "Ankstesnis"
+
+#: ../plugins/status-icon/rb-status-icon-plugin.c:462
+msgid "Pause"
+msgstr "Pauzė"
+
+#: ../plugins/status-icon/rb-status-icon-plugin.c:470
 msgid "Next"
 msgstr "Kita"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:586
-#: ../remote/dbus/rb-client.c:453 ../remote/dbus/rb-client.c:478
+#: ../plugins/status-icon/rb-status-icon-plugin.c:632
+#: ../remote/dbus/rb-client.c:468 ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "Negroja"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:589
+#: ../plugins/status-icon/rb-status-icon-plugin.c:635
 #, c-format
 msgid "Paused, %s"
 msgstr "Pauzė, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:654
+#: ../plugins/status-icon/rb-status-icon-plugin.c:700
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "atliekama <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:656
+#: ../plugins/status-icon/rb-status-icon-plugin.c:702
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "iš <i>%s</i>"
@@ -3438,11 +3587,11 @@ msgstr "Nepavyko susieti naujo vaizdo efekto su GStreamer konvejeriu"
 msgid "Unable to start visualization"
 msgstr "Nepavyko paleisti vaizdo efekto"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1377
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1402
 msgid "Enable visual effects?"
 msgstr "Įjungti vaizdo efektus?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1379
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1404
 msgid ""
 "It seems you are running Rhythmbox remotely.\n"
 "Are you sure you want to enable the visual effects?"
@@ -3450,7 +3599,7 @@ msgstr ""
 "Atrodo, kad naudojate nutolusį Rhythmbox.\n"
 "Ar tikrai norite įjungti vaizdo efektus?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1713
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1738
 msgid "Music Player Visualization"
 msgstr "Muzikos grotuvo vaizdo efektai"
 
@@ -3482,30 +3631,59 @@ msgstr "Rodo vaizdo efektus"
 msgid "Visualization"
 msgstr "Vaizdo efektas"
 
-#: ../podcast/rb-podcast-manager.c:824
-msgid "Error creating podcast download directory"
-msgstr "Klaida kuriant tinklalaidžių parsiuntimų aplanką"
+#: ../podcast/rb-podcast-main-source.c:117
+msgid "New Episodes"
+msgstr "Nauji epizodai"
 
-#: ../podcast/rb-podcast-manager.c:825
+#: ../podcast/rb-podcast-main-source.c:135
+msgid "New Downloads"
+msgstr "Nauji atsiuntimai"
+
+#: ../podcast/rb-podcast-main-source.c:156
+msgid "Downloading podcast"
+msgstr "Atsiunčiama tinklalaidė"
+
+#: ../podcast/rb-podcast-main-source.c:173
+msgid "Finished downloading podcast"
+msgstr "Tinklalaidė atsiųsta"
+
+#: ../podcast/rb-podcast-main-source.c:190
+msgid "New updates available from"
+msgstr "Čia yra prieinami atnaujinimai"
+
+#: ../podcast/rb-podcast-main-source.c:214
+msgid "Error in podcast"
+msgstr "Tinklalaidės klaida"
+
+#: ../podcast/rb-podcast-main-source.c:221
+#, c-format
+msgid "%s. Would you like to add the podcast feed anyway?"
+msgstr "%s. Ar vis tiek norite pridėti tinklalaidžių kanalą?"
+
+#: ../podcast/rb-podcast-manager.c:836
+msgid "Error creating podcast download directory"
+msgstr "Klaida kuriant tinklalaidžių atsiuntimų aplanką"
+
+#: ../podcast/rb-podcast-manager.c:837
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
-msgstr "Nepavyko sukurti parsiuntimo aplanko %s: %s"
+msgstr "Nepavyko sukurti atsiuntimo aplanko %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:950
+#: ../podcast/rb-podcast-manager.c:962
 msgid "Invalid URL"
 msgstr "Netinkamas URL"
 
-#: ../podcast/rb-podcast-manager.c:951
+#: ../podcast/rb-podcast-manager.c:963
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL „%s“ yra netinkamas, patikrinkite jį."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:961
+#: ../podcast/rb-podcast-manager.c:973
 msgid "URL already added"
 msgstr "URL jau pridėtas"
 
-#: ../podcast/rb-podcast-manager.c:962
+#: ../podcast/rb-podcast-manager.c:974
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3514,7 +3692,7 @@ msgstr ""
 "URL „%s“ jau pridėtas kaip radijo stotis. Jei tai tinklalaidžių kanalas, "
 "pašalinkite šią radijo stotį."
 
-#: ../podcast/rb-podcast-manager.c:1030
+#: ../podcast/rb-podcast-manager.c:1042
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3525,11 +3703,11 @@ msgstr ""
 "kanalas gali būti sugadintas. Ar norite, kad Rhythmbox vis tiek pabandytų jį "
 "naudoti?"
 
-#: ../podcast/rb-podcast-manager.c:1168
+#: ../podcast/rb-podcast-manager.c:1180
 msgid "Podcast"
 msgstr "Tinklalaidės"
 
-#: ../podcast/rb-podcast-manager.c:2091
+#: ../podcast/rb-podcast-manager.c:2103
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Pridedant šią tinklalaidę iškilo klaida: %s. Patikrinkite šį URL: %s"
@@ -3558,119 +3736,335 @@ msgstr "Sklaidos kanale nėra atsiųstinų elementų"
 msgid "Unable to display requested URI"
 msgstr "Nepavyko parodyti prašomo URI"
 
-#: ../podcast/rb-podcast-properties-dialog.c:549
+#: ../podcast/rb-podcast-properties-dialog.c:548
 msgid "Not Downloaded"
 msgstr "Neatsiųsta"
 
-#: ../remote/dbus/rb-client.c:82
+#: ../podcast/rb-podcast-source.c:115
+msgid "_New Podcast Feed..."
+msgstr "_Naujas tinklalaidžių kanalas..."
+
+#: ../podcast/rb-podcast-source.c:116
+msgid "Subscribe to a new Podcast Feed"
+msgstr "Užsisakyti naują tinklalaidžių kanalą"
+
+#: ../podcast/rb-podcast-source.c:118
+msgid "Download _Episode"
+msgstr "Atsisiųsti _epizodą"
+
+#: ../podcast/rb-podcast-source.c:119
+msgid "Download Podcast Episode"
+msgstr "Atsisiųsti tinklalaidės epizodą"
+
+#: ../podcast/rb-podcast-source.c:121
+msgid "_Cancel Download"
+msgstr "_Nutraukti atsiuntimą"
+
+#: ../podcast/rb-podcast-source.c:122
+msgid "Cancel Episode Download"
+msgstr "Nutraukti epizodo atsiuntimą"
+
+#: ../podcast/rb-podcast-source.c:125
+msgid "Episode Properties"
+msgstr "Epizodo savybės"
+
+#: ../podcast/rb-podcast-source.c:127
+msgid "_Update Podcast Feed"
+msgstr "_Atnaujinti tinklalaidžių kanalą"
+
+#: ../podcast/rb-podcast-source.c:128
+msgid "Update Feed"
+msgstr "Atnaujinti kanalą"
+
+#: ../podcast/rb-podcast-source.c:130
+msgid "_Delete Podcast Feed"
+msgstr "_Ištrinti tinklalaidžių kanalą"
+
+#: ../podcast/rb-podcast-source.c:131
+msgid "Delete Feed"
+msgstr "Ištrinti kanalą"
+
+#: ../podcast/rb-podcast-source.c:133
+msgid "_Update All Feeds"
+msgstr "_Atnaujinti visus kanalus"
+
+#: ../podcast/rb-podcast-source.c:134
+msgid "Update all feeds"
+msgstr "Atnaujinti visus kanalus"
+
+#: ../podcast/rb-podcast-source.c:140
+#: ../rhythmdb/rhythmdb-property-model.c:496
+#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:166
+#: ../sources/rb-static-playlist-source.c:124
+msgid "All"
+msgstr "Visi"
+
+#: ../podcast/rb-podcast-source.c:140 ../sources/rb-auto-playlist-source.c:104
+#: ../sources/rb-browser-source.c:166
+#: ../sources/rb-static-playlist-source.c:124
+msgid "Search all fields"
+msgstr "Rodyti visus laukelius"
+
+#: ../podcast/rb-podcast-source.c:141
+msgid "Feeds"
+msgstr "Kanalai"
+
+#: ../podcast/rb-podcast-source.c:141
+msgid "Search podcast feeds"
+msgstr "Ieškoti tinklalaidžių kanalų"
+
+#: ../podcast/rb-podcast-source.c:142
+msgid "Episodes"
+msgstr "Epizodai"
+
+#: ../podcast/rb-podcast-source.c:142
+msgid "Search podcast episodes"
+msgstr "Ieškoti tinklalaidžių epizodų"
+
+#: ../podcast/rb-podcast-source.c:392
+msgid "New Podcast Feed"
+msgstr "Naujas tinklalaidžių kanalas"
+
+#: ../podcast/rb-podcast-source.c:392
+msgid "URL of podcast feed:"
+msgstr "Tinklalaidžių kanalo URL:"
+
+#: ../podcast/rb-podcast-source.c:488
+msgid "Delete the podcast feed and downloaded files?"
+msgstr "Ištrinti tinklalaidžių kanalą ir atsiųstus failus?"
+
+#: ../podcast/rb-podcast-source.c:491
+msgid ""
+"If you choose to delete the feed and files, they will be permanently lost.  "
+"Please note that you can delete the feed but keep the downloaded files by "
+"choosing to delete the feed only."
+msgstr ""
+"Jeigu pasirinksite ištrinti kanalus ir failus, jie bus negrįžtamai prarasti. "
+"Turėkite omenyje, kad galite ištrinti kanalą, bet atsiųstus failus "
+"pasilikti, Jums tereikia pasirinkti ištrinti tik kanalą."
+
+#: ../podcast/rb-podcast-source.c:499
+msgid "Delete _Feed Only"
+msgstr "Ištrinti tik _kanalą"
+
+#: ../podcast/rb-podcast-source.c:506
+msgid "_Delete Feed And Files"
+msgstr "_Ištrinti kanalą ir failus"
+
+#: ../podcast/rb-podcast-source.c:594 ../podcast/rb-podcast-source.c:1427
+msgid "Downloaded"
+msgstr "Atsiųsti"
+
+#: ../podcast/rb-podcast-source.c:598 ../podcast/rb-podcast-source.c:1429
+msgid "Failed"
+msgstr "Nepavyko"
+
+#: ../podcast/rb-podcast-source.c:602 ../podcast/rb-podcast-source.c:1428
+msgid "Waiting"
+msgstr "Laukiama"
+
+#: ../podcast/rb-podcast-source.c:709
+#, c-format
+msgid "%d feed"
+msgid_plural "All %d feeds"
+msgstr[0] "%d kanalas"
+msgstr[1] "Visi %d kanalai"
+msgstr[2] "Visi %d kanalų"
+
+#: ../podcast/rb-podcast-source.c:946
+msgid "Podcast Error"
+msgstr "Tinklalaidės klaida"
+
+#: ../podcast/rb-podcast-source.c:1069
+msgid "Delete the podcast episode and downloaded file?"
+msgstr "Ištrinti tinklalaidės epizodą ir atsiųstą failą?"
+
+#: ../podcast/rb-podcast-source.c:1072
+msgid ""
+"If you choose to delete the episode and file, they will be permanently "
+"lost.  Please note that you can delete the episode but keep the downloaded "
+"file by choosing to delete the episode only."
+msgstr ""
+"Jei parinksite ištrinti šį epizodą ir failą, jie bus visam laikui prarasti. "
+"Turėkite omenyje, kad galite ištrinti šį epizodą, bet atsiųstą failą galite "
+"pasilikti, tereikia pasirinkti ištrinti tik patį epizodą."
+
+#: ../podcast/rb-podcast-source.c:1080
+msgid "Delete _Episode Only"
+msgstr "Ištrinti tik _epizodą"
+
+#: ../podcast/rb-podcast-source.c:1086
+msgid "_Delete Episode And File"
+msgstr "_Ištrinti epizodą ir failą"
+
+#: ../podcast/rb-podcast-source.c:1234
+#, c-format
+msgid "%d episode"
+msgid_plural "%d episodes"
+msgstr[0] "%d epizodas"
+msgstr[1] "%d epizodai"
+msgstr[2] "%d epizodų"
+
+#. Translators: this is the toolbar button label
+#. for New Podcast Feed action.
+#: ../podcast/rb-podcast-source.c:1324
+msgctxt "Podcast"
+msgid "New"
+msgstr "Naujas"
+
+#. Translators: this is the toolbar button label
+#. for Update All Feeds action.
+#: ../podcast/rb-podcast-source.c:1330
+msgid "Update"
+msgstr "Atnaujinti"
+
+#: ../podcast/rb-podcast-source.c:1373 ../podcast/rb-podcast-source.c:1384
+msgid "Date"
+msgstr "Data"
+
+#: ../podcast/rb-podcast-source.c:1406 ../podcast/rb-podcast-source.c:1466
+#: ../podcast/rb-podcast-source.c:1514
+msgid "Feed"
+msgstr "Kanalas"
+
+#: ../podcast/rb-podcast-source.c:1426 ../podcast/rb-podcast-source.c:1444
+msgid "Status"
+msgstr "Būsena"
+
+#: ../remote/dbus/rb-client.c:87
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Nepaleisti dar vienos Rhythmbox kopijos"
 
-#: ../remote/dbus/rb-client.c:83 ../shell/main.c:120
+#: ../remote/dbus/rb-client.c:88 ../shell/main.c:120
 msgid "Quit Rhythmbox"
 msgstr "Išeiti iš Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:85
+#: ../remote/dbus/rb-client.c:89
+msgid "Check if Rhythmbox is already running"
+msgstr "Patikrinti, ar Rhythmbox jau veikia"
+
+#: ../remote/dbus/rb-client.c:91
 msgid "Don't present an existing Rhythmbox window"
 msgstr "Neparodyti egzistuojančio Rhythmbox lango"
 
-#: ../remote/dbus/rb-client.c:86
+#: ../remote/dbus/rb-client.c:92
 msgid "Hide the Rhythmbox window"
 msgstr "Paslėpti Rhythmbox langą"
 
-#: ../remote/dbus/rb-client.c:88
+#: ../remote/dbus/rb-client.c:94
 msgid "Jump to next song"
 msgstr "Peršokti prie kitos dainos"
 
-#: ../remote/dbus/rb-client.c:89
+#: ../remote/dbus/rb-client.c:95
 msgid "Jump to previous song"
 msgstr "Peršokti prie ankstesnės dainos"
 
-#: ../remote/dbus/rb-client.c:91
+#: ../remote/dbus/rb-client.c:96
+msgid "Seek in current track"
+msgstr "Ieškoti dabartiniame takelyje"
+
+#: ../remote/dbus/rb-client.c:98
 msgid "Show notification of the playing song"
 msgstr "Rodyti pranešimą apie grojamą dainą"
 
-#: ../remote/dbus/rb-client.c:93
+#: ../remote/dbus/rb-client.c:100
 msgid "Resume playback if currently paused"
 msgstr "Tęsti grojimą, jei jis sustabdytas"
 
-#: ../remote/dbus/rb-client.c:94
+#: ../remote/dbus/rb-client.c:101
 msgid "Pause playback if currently playing"
 msgstr "Pristabdyti grojimą, jei dabar grojama"
 
-#: ../remote/dbus/rb-client.c:95
+#: ../remote/dbus/rb-client.c:102
 msgid "Toggle play/pause mode"
 msgstr "Perjungti grojimo / pauzės veikseną"
 
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
-#: ../remote/dbus/rb-client.c:98
+#: ../remote/dbus/rb-client.c:105
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Groti nurodytą URI, jei reikia, importuojant"
 
-#: ../remote/dbus/rb-client.c:98
+#: ../remote/dbus/rb-client.c:105
 msgid "URI to play"
 msgstr "Grotinas URI"
 
-#: ../remote/dbus/rb-client.c:99
+#: ../remote/dbus/rb-client.c:106
 msgid "Add specified tracks to the play queue"
 msgstr "Įdėti nurodytas dainas į grojimo eilę"
 
-#: ../remote/dbus/rb-client.c:100
+#: ../remote/dbus/rb-client.c:107
 msgid "Empty the play queue before adding new tracks"
 msgstr "Prieš įdedant naujus takelius išvalyti grojimo eilę"
 
-#: ../remote/dbus/rb-client.c:102
+#: ../remote/dbus/rb-client.c:109
 msgid "Print the title and artist of the playing song"
 msgstr "Rodyti grojamos dainos pavadinimą ir atlikėją"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:110
 msgid "Print formatted details of the song"
 msgstr "Rodyti suformuotą dainos informaciją"
 
-#: ../remote/dbus/rb-client.c:105
+#: ../remote/dbus/rb-client.c:111
+msgid "Select the source matching the specified URI"
+msgstr "Pasirinkti šaltinį, atitinkantį nurodytą URI"
+
+#: ../remote/dbus/rb-client.c:111
+msgid "Source to select"
+msgstr "Pasirinkti šaltinį"
+
+#: ../remote/dbus/rb-client.c:112
+msgid "Activate the source matching the specified URI"
+msgstr "Suaktyvinti šaltinį, atitinkantį nurodytą URI"
+
+#: ../remote/dbus/rb-client.c:112
+msgid "Source to activate"
+msgstr "Suaktyvintinas šaltinis"
+
+#: ../remote/dbus/rb-client.c:113
+msgid "Play from the source matching the specified URI"
+msgstr "Groti iš šaltinio, atitinkančio nurodytą URI"
+
+#: ../remote/dbus/rb-client.c:113
+msgid "Source to play from"
+msgstr "Šaltinis, iš kurio groti"
+
+#: ../remote/dbus/rb-client.c:115
 msgid "Set the playback volume"
 msgstr "Nustatyti grojimo garsumą"
 
-#: ../remote/dbus/rb-client.c:106
+#: ../remote/dbus/rb-client.c:116
 msgid "Increase the playback volume"
 msgstr "Padidinti grojimo garsumą"
 
-#: ../remote/dbus/rb-client.c:107
+#: ../remote/dbus/rb-client.c:117
 msgid "Decrease the playback volume"
 msgstr "Sumažinti grojimo garsumą"
 
-#: ../remote/dbus/rb-client.c:108
+#: ../remote/dbus/rb-client.c:118
 msgid "Print the current playback volume"
 msgstr "Rodyti dabartinį grojimo garsumą"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:119
 msgid "Mute playback"
 msgstr "Nutildyti grojimą"
 
-#: ../remote/dbus/rb-client.c:110
+#: ../remote/dbus/rb-client.c:120
 msgid "Unmute playback"
 msgstr "Įjungti grojimo garsą"
 
-#: ../remote/dbus/rb-client.c:111
+#: ../remote/dbus/rb-client.c:121
 msgid "Set the rating of the current song"
 msgstr "Nustatyti dabartinės dainos įvertinimą"
 
-#: ../remote/dbus/rb-client.c:734
+#: ../remote/dbus/rb-client.c:817
 #, c-format
 msgid "Playback is muted.\n"
 msgstr "Grojimas nutildytas.\n"
 
-#: ../remote/dbus/rb-client.c:735
+#: ../remote/dbus/rb-client.c:818
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Grojimo garsumas yra %f.\n"
-
-#: ../rhythmdb/rhythmdb-property-model.c:495
-#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:166
-#: ../sources/rb-podcast-source.c:330
-#: ../sources/rb-static-playlist-source.c:124
-msgid "All"
-msgstr "Visi"
 
 #: ../rhythmdb/rhythmdb-tree.c:411
 #, c-format
@@ -3681,7 +4075,7 @@ msgstr ""
 "Ši duomenų bazė buvo sukurta naujesnės Rhythmbox versijos. Esama Rhythmbox "
 "versija negali perskaityti šios duomenų bazės."
 
-#: ../rhythmdb/rhythmdb.c:782
+#: ../rhythmdb/rhythmdb.c:786
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Nepavyko pasiekti %s: %s"
@@ -3691,7 +4085,7 @@ msgstr "Nepavyko pasiekti %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1807
+#: ../rhythmdb/rhythmdb.c:1815
 msgid "The Beatles"
 msgstr "Foje"
 
@@ -3699,7 +4093,7 @@ msgstr "Foje"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1813
+#: ../rhythmdb/rhythmdb.c:1821
 msgid "Help!"
 msgstr "Kitoks pasaulis"
 
@@ -3707,37 +4101,37 @@ msgstr "Kitoks pasaulis"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1819
+#: ../rhythmdb/rhythmdb.c:1827
 msgid "Ticket To Ride"
 msgstr "Laužo šviesa"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2355
+#: ../rhythmdb/rhythmdb.c:2278
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Norint klausytis šio failo, reikia papildomų GStreamer įskepių: %s"
 
-#: ../rhythmdb/rhythmdb.c:2387
+#: ../rhythmdb/rhythmdb.c:2310
 msgid "invalid unicode in error message"
 msgstr "netinkamas unikodas klaidos pranešime"
 
-#: ../rhythmdb/rhythmdb.c:2453
+#: ../rhythmdb/rhythmdb.c:2376
 #, c-format
 msgid "Empty file"
 msgstr "Tuščias failas"
 
-#: ../rhythmdb/rhythmdb.c:3135
+#: ../rhythmdb/rhythmdb.c:3049
 msgid "Could not load the music database:"
 msgstr "Nepavyko įkelti muzikos duomenų bazės:"
 
-#: ../rhythmdb/rhythmdb.c:4543
+#: ../rhythmdb/rhythmdb.c:4440
 #, c-format
 msgid "Checking (%d/%d)"
 msgstr "Tikrinama (%d/%d)"
 
-#: ../rhythmdb/rhythmdb.c:4588
+#: ../rhythmdb/rhythmdb.c:4485
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3745,7 +4139,7 @@ msgstr[0] "%ld minutė"
 msgstr[1] "%ld minutės"
 msgstr[2] "%ld minučių"
 
-#: ../rhythmdb/rhythmdb.c:4589
+#: ../rhythmdb/rhythmdb.c:4486
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3753,7 +4147,7 @@ msgstr[0] "%ld valanda"
 msgstr[1] "%ld valandos"
 msgstr[2] "%ld valandų"
 
-#: ../rhythmdb/rhythmdb.c:4590
+#: ../rhythmdb/rhythmdb.c:4487
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3762,7 +4156,7 @@ msgstr[1] "%ld dienos"
 msgstr[2] "%ld dienų"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4596
+#: ../rhythmdb/rhythmdb.c:4493
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s ir %s"
@@ -3770,8 +4164,8 @@ msgstr "%s, %s ir %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4602 ../rhythmdb/rhythmdb.c:4610
-#: ../rhythmdb/rhythmdb.c:4621
+#: ../rhythmdb/rhythmdb.c:4499 ../rhythmdb/rhythmdb.c:4507
+#: ../rhythmdb/rhythmdb.c:4518
 #, c-format
 msgid "%s and %s"
 msgstr "%s ir %s"
@@ -3958,7 +4352,7 @@ msgstr "Įskiepio klaida"
 #: ../shell/rb-plugins-engine.c:556
 #, c-format
 msgid "Unable to activate plugin %s"
-msgstr "Nepavyko aktyvuoti įskiepio %s"
+msgstr "Nepavyko suaktyvinti įskiepio %s"
 
 #: ../shell/rb-removable-media-manager.c:150
 msgid "_Eject"
@@ -4068,343 +4462,344 @@ msgstr "_Savybės"
 msgid "Show information on each selected song"
 msgstr "Rodyti kiekvienos pasirinktos dainos informaciją"
 
-#: ../shell/rb-shell-player.c:308
+#: ../shell/rb-shell-player.c:309
 msgid "Pre_vious"
 msgstr "_Ankstesnė"
 
-#: ../shell/rb-shell-player.c:309
+#: ../shell/rb-shell-player.c:310
 msgid "Start playing the previous song"
 msgstr "Groti ankstesnę dainą"
 
-#: ../shell/rb-shell-player.c:311
+#: ../shell/rb-shell-player.c:312
 msgid "_Next"
 msgstr "_Kita"
 
-#: ../shell/rb-shell-player.c:312
+#: ../shell/rb-shell-player.c:313
 msgid "Start playing the next song"
 msgstr "Groti kitą dainą"
 
-#: ../shell/rb-shell-player.c:314
+#: ../shell/rb-shell-player.c:315
 msgid "_Increase Volume"
 msgstr "_Padidinti garsumą"
 
-#: ../shell/rb-shell-player.c:315
+#: ../shell/rb-shell-player.c:316
 msgid "Increase playback volume"
 msgstr "Padidinti grojimo garsumą"
 
-#: ../shell/rb-shell-player.c:317
+#: ../shell/rb-shell-player.c:318
 msgid "_Decrease Volume"
 msgstr "_Sumažinti garsumą"
 
-#: ../shell/rb-shell-player.c:318
+#: ../shell/rb-shell-player.c:319
 msgid "Decrease playback volume"
 msgstr "Sumažinti grojimo garsumą"
 
-#: ../shell/rb-shell-player.c:325
+#: ../shell/rb-shell-player.c:326
 msgid "_Play"
 msgstr "_Groti"
 
-#: ../shell/rb-shell-player.c:326 ../shell/rb-shell-player.c:3775
+#: ../shell/rb-shell-player.c:327 ../shell/rb-shell-player.c:3859
 msgid "Start playback"
 msgstr "Pradėti grojimą"
 
-#: ../shell/rb-shell-player.c:328
+#: ../shell/rb-shell-player.c:329
 msgid "Sh_uffle"
 msgstr "Maiš_yti"
 
-#: ../shell/rb-shell-player.c:329
+#: ../shell/rb-shell-player.c:330
 msgid "Play songs in a random order"
 msgstr "Groti dainas atsitiktine tvarka"
 
-#: ../shell/rb-shell-player.c:331
+#: ../shell/rb-shell-player.c:332
 msgid "_Repeat"
 msgstr "Kart_oti"
 
-#: ../shell/rb-shell-player.c:332
+#: ../shell/rb-shell-player.c:333
 msgid "Play first song again after all songs are played"
 msgstr "Pagrojus visas dainas, pradėti grojaraštį iš pradžių"
 
-#: ../shell/rb-shell-player.c:334
+#: ../shell/rb-shell-player.c:335
 msgid "_Song Position Slider"
 msgstr "_Dainos pozicijos slankiklis"
 
-#: ../shell/rb-shell-player.c:335
+#: ../shell/rb-shell-player.c:336
 msgid "Change the visibility of the song position slider"
 msgstr "Keisti dainos pozicijos slankiklio matomumą"
 
-#: ../shell/rb-shell-player.c:818
+#: ../shell/rb-shell-player.c:819
 msgid "Stream error"
 msgstr "Srauto klaida"
 
-#: ../shell/rb-shell-player.c:819
+#: ../shell/rb-shell-player.c:820
 msgid "Unexpected end of stream!"
 msgstr "Netikėta srauto pabaiga!"
 
-#: ../shell/rb-shell-player.c:976
+#: ../shell/rb-shell-player.c:977
 msgid "Linear"
 msgstr "Linijinis"
 
-#: ../shell/rb-shell-player.c:978
+#: ../shell/rb-shell-player.c:979
 msgid "Linear looping"
 msgstr "Linijinis ciklas"
 
-#: ../shell/rb-shell-player.c:980
+#: ../shell/rb-shell-player.c:981
 msgid "Shuffle"
 msgstr "Maišyti"
 
-#: ../shell/rb-shell-player.c:982
+#: ../shell/rb-shell-player.c:983
 msgid "Random with equal weights"
 msgstr "Atsitiktiniai su vienodu svoriu"
 
-#: ../shell/rb-shell-player.c:984
+#: ../shell/rb-shell-player.c:985
 msgid "Random by time since last play"
 msgstr "Atsitiktinai pagal laiką nuo paskutinio grojimo"
 
-#: ../shell/rb-shell-player.c:986
+#: ../shell/rb-shell-player.c:987
 msgid "Random by rating"
 msgstr "Atsitiktinai pagal įvertinimą"
 
-#: ../shell/rb-shell-player.c:988
+#: ../shell/rb-shell-player.c:989
 msgid "Random by time since last play and rating"
 msgstr "Atsitiktinai pagal įvertinimą ir laiką nuo paskutinio grojimo"
 
-#: ../shell/rb-shell-player.c:990
+#: ../shell/rb-shell-player.c:991
 msgid "Linear, removing entries once played"
 msgstr "Linijinis, šalinant klausytas dainas"
 
-#: ../shell/rb-shell-player.c:1000
+#: ../shell/rb-shell-player.c:1001
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Nepavyko sukurti grotuvo: %s"
 
-#: ../shell/rb-shell-player.c:1551
+#: ../shell/rb-shell-player.c:1562
 #, c-format
 msgid "Playlist was empty"
 msgstr "Grojaraštis buvo tuščias"
 
-#: ../shell/rb-shell-player.c:2036
+#: ../shell/rb-shell-player.c:2063
 #, c-format
 msgid "Not currently playing"
 msgstr "Šiuo metu negroja"
 
-#: ../shell/rb-shell-player.c:2094
+#: ../shell/rb-shell-player.c:2121
 #, c-format
 msgid "No previous song"
 msgstr "Nėra ankstesnės dainos"
 
-#: ../shell/rb-shell-player.c:2194
+#: ../shell/rb-shell-player.c:2221
 #, c-format
 msgid "No next song"
 msgstr "Nėra kitos dainos"
 
-#: ../shell/rb-shell-player.c:2315 ../shell/rb-shell-player.c:3425
+#: ../shell/rb-shell-player.c:2342 ../shell/rb-shell-player.c:3509
 msgid "Couldn't start playback"
 msgstr "Nepavyko paleisti grojimo"
 
-#: ../shell/rb-shell-player.c:3187
+#: ../shell/rb-shell-player.c:3214
 msgid "Couldn't stop playback"
 msgstr "Nepavyko sustabdyti grojimo"
 
-#: ../shell/rb-shell-player.c:3297
+#: ../shell/rb-shell-player.c:3331
 #, c-format
 msgid "Playback position not available"
 msgstr "Grojimo pozicija neprieinama"
 
-#: ../shell/rb-shell-player.c:3329
+#: ../shell/rb-shell-player.c:3363 ../shell/rb-shell-player.c:3397
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Šios dainos prasukti negalima"
 
-#: ../shell/rb-shell-player.c:3770
+#: ../shell/rb-shell-player.c:3854
 msgid "Pause playback"
 msgstr "Pristabdyti grojimą"
 
-#: ../shell/rb-shell-player.c:3772
+#: ../shell/rb-shell-player.c:3856
 msgid "Stop playback"
 msgstr "Sustabdyti grojimą"
 
-#: ../shell/rb-shell-preferences.c:159 ../shell/rb-shell.c:2402
+#: ../shell/rb-shell-preferences.c:162 ../shell/rb-shell.c:2438
 msgid "Couldn't display help"
 msgstr "Nepavyko parodyti žinyno"
 
-#: ../shell/rb-shell-preferences.c:195
+#: ../shell/rb-shell-preferences.c:198
 msgid "Music Player Preferences"
 msgstr "Muzikos grotuvo nustatymai"
 
-#: ../shell/rb-shell-preferences.c:254
+#: ../shell/rb-shell-preferences.c:256
 msgid "General"
 msgstr "Pagrindiniai"
 
-#: ../shell/rb-shell-preferences.c:303
+#: ../shell/rb-shell-preferences.c:312
 msgid "Playback"
 msgstr "Grojimas"
 
-#: ../shell/rb-shell.c:391
+#: ../shell/rb-shell.c:394
 msgid "_Music"
 msgstr "_Muzika"
 
-#: ../shell/rb-shell.c:393
+#: ../shell/rb-shell.c:396
 msgid "_View"
 msgstr "_Rodymas"
 
-#: ../shell/rb-shell.c:394
+#: ../shell/rb-shell.c:397
 msgid "_Control"
 msgstr "_Valdymas"
 
-#: ../shell/rb-shell.c:395
+#: ../shell/rb-shell.c:398
 msgid "_Tools"
 msgstr "Įr_ankiai"
 
-#: ../shell/rb-shell.c:396
+#: ../shell/rb-shell.c:399
 msgid "_Help"
 msgstr "_Žinynas"
 
-#: ../shell/rb-shell.c:398
+#: ../shell/rb-shell.c:401
 msgid "_Import Folder..."
 msgstr "_Importuoti aplanką..."
 
-#: ../shell/rb-shell.c:399
+#: ../shell/rb-shell.c:402
 msgid "Choose folder to be added to the Library"
 msgstr "Pasirinkite aplanką, įtrauktiną į fonoteką"
 
-#: ../shell/rb-shell.c:401
+#: ../shell/rb-shell.c:404
 msgid "Import _File..."
 msgstr "Importuoti _failą..."
 
-#: ../shell/rb-shell.c:402
+#: ../shell/rb-shell.c:405
 msgid "Choose file to be added to the Library"
 msgstr "Pasirinkite failą, kurį norite įtraukti į fonoteką"
 
-#: ../shell/rb-shell.c:404
+#: ../shell/rb-shell.c:407
 msgid "_About"
 msgstr "_Apie"
 
-#: ../shell/rb-shell.c:405
+#: ../shell/rb-shell.c:408
 msgid "Show information about the music player"
 msgstr "Rodyti informaciją apie muzikos grotuvą"
 
-#: ../shell/rb-shell.c:407
+#: ../shell/rb-shell.c:410
 msgid "_Contents"
 msgstr "_Turinys"
 
-#: ../shell/rb-shell.c:408
+#: ../shell/rb-shell.c:411
 msgid "Display music player help"
 msgstr "Rodyti muzikos grotuvo žinyną"
 
-#: ../shell/rb-shell.c:410
+#: ../shell/rb-shell.c:413
 msgid "_Quit"
 msgstr "Iš_eiti"
 
-#: ../shell/rb-shell.c:411
+#: ../shell/rb-shell.c:414
 msgid "Quit the music player"
 msgstr "Išeiti iš muzikos grotuvo"
 
-#: ../shell/rb-shell.c:413
+#: ../shell/rb-shell.c:416
 msgid "Prefere_nces"
 msgstr "_Nustatymai"
 
-#: ../shell/rb-shell.c:414
+#: ../shell/rb-shell.c:417
 msgid "Edit music player preferences"
 msgstr "Keisti muzikos grotuvo nustatymus"
 
-#: ../shell/rb-shell.c:416
+#: ../shell/rb-shell.c:419
 msgid "Plu_gins"
 msgstr "Įs_kiepiai"
 
-#: ../shell/rb-shell.c:417
+#: ../shell/rb-shell.c:420
 msgid "Change and configure plugins"
 msgstr "Keisti ir konfigūruoti įskiepius"
 
-#: ../shell/rb-shell.c:419
+#: ../shell/rb-shell.c:422
 msgid "Show _All Tracks"
 msgstr "Rodyti _visus takelius"
 
-#: ../shell/rb-shell.c:420
+#: ../shell/rb-shell.c:423
 msgid "Show all tracks in this music source"
 msgstr "Rodyti visus takelius, esančius šiame muzikos šaltinyje"
 
-#: ../shell/rb-shell.c:422
+#: ../shell/rb-shell.c:425
 msgid "_Jump to Playing Song"
 msgstr "_Peršokti į grojamą dainą"
 
-#: ../shell/rb-shell.c:423
+#: ../shell/rb-shell.c:426
 msgid "Scroll the view to the currently playing song"
 msgstr "Slinkti vaizdą iki dabar grojamos dainos"
 
-#: ../shell/rb-shell.c:430
+#: ../shell/rb-shell.c:433
 msgid "Side _Pane"
 msgstr "Šoninis p_olangis"
 
-#: ../shell/rb-shell.c:431
+#: ../shell/rb-shell.c:434
 msgid "Change the visibility of the side pane"
 msgstr "Keisti šoninio polangio matomumą"
 
-#: ../shell/rb-shell.c:433
+#: ../shell/rb-shell.c:436
 msgid "T_oolbar"
 msgstr "Į_rankinė"
 
-#: ../shell/rb-shell.c:434
+#: ../shell/rb-shell.c:437
 msgid "Change the visibility of the toolbar"
 msgstr "Pakeisti įrankių juostos matomumą"
 
-#: ../shell/rb-shell.c:436
+#: ../shell/rb-shell.c:439
 msgid "_Small Display"
-msgstr "_Mažas ekranas"
+msgstr "_Mažas rodinys"
 
-#: ../shell/rb-shell.c:437
+#: ../shell/rb-shell.c:440
 msgid "Make the main window smaller"
 msgstr "Sumažinti pagrindinį langą"
 
-#: ../shell/rb-shell.c:439
+#: ../shell/rb-shell.c:442
 msgid "Party _Mode"
 msgstr "_Vakarėlio veiksena"
 
-#: ../shell/rb-shell.c:440
+#: ../shell/rb-shell.c:443
 msgid "Change the status of the party mode"
 msgstr "Pakeisti vakarėlio veiksenos būseną"
 
-#: ../shell/rb-shell.c:442
+#: ../shell/rb-shell.c:445
 msgid "Play _Queue as Side Pane"
 msgstr "Grojimo _eilė kaip šoninis polangis"
 
-#: ../shell/rb-shell.c:443
+#: ../shell/rb-shell.c:446
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Nurodo ar eilė matoma kaip šaltinis ar kaip šoninis skydelis"
 
-#: ../shell/rb-shell.c:445
+#: ../shell/rb-shell.c:448
 msgid "S_tatusbar"
 msgstr "_Būsenos juosta"
 
-#: ../shell/rb-shell.c:446
+#: ../shell/rb-shell.c:449
 msgid "Change the visibility of the statusbar"
 msgstr "Pakeisti būsenos juostos matomumą"
 
-#: ../shell/rb-shell.c:1183 ../shell/rb-shell.c:1411
+#: ../shell/rb-shell.c:1221 ../shell/rb-shell.c:1452
 msgid "Unable to move user data files"
 msgstr "Nepavyko perkelti naudotojo duomenų failų"
 
-#: ../shell/rb-shell.c:1498
+#: ../shell/rb-shell.c:1539
 msgid "Change the music volume"
 msgstr "Keisti muzikos garsumą"
 
-#: ../shell/rb-shell.c:1904
+#: ../shell/rb-shell.c:1960
 msgid "Error while saving song information"
-msgstr "Klaida saugant dainos informaciją"
+msgstr "Klaida įrašant dainos informaciją"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2216
+#: ../shell/rb-shell.c:2252
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pauzė)"
 
-#: ../shell/rb-shell.c:2320
+#: ../shell/rb-shell.c:2356
 msgid "translator-credits"
 msgstr ""
 "Žygimantas Beručka <zygis@gnome.org>,\n"
+"Aurimas Černius <aurisc4@gmail.com>,\n"
 "Gintautas Miliauskas <gintautas@miliauskas.lt>,\n"
 "Justina Klingaitė <justina.klingaite@gmail.com>"
 
-#: ../shell/rb-shell.c:2323
+#: ../shell/rb-shell.c:2359
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -4412,11 +4807,11 @@ msgid ""
 "(at your option) any later version.\n"
 msgstr ""
 "Rhythmbox yra laisva programinė įranga; galite ją platinti ir/ar\n"
-"modifikuoti GNU bendrosios viešosios licencijos sąlygomis, kurios\n"
-"paskelbtos Laisvosios programinės įrangos fondo; 2-osios arba\n"
-"(Jūsų pasirinkimu) bet kurios vėlesnės licencijos versijos sąlygomis.\n"
+"modifikuoti GNU Bendrosios viešosios licencijos sąlygomis, paskelbtomis\n"
+"Free Software Foundation organizacijos; 2-osios arba\n"
+"(savo nuožiūra) bet kurios vėlesnės licencijos versijos sąlygomis.\n"
 
-#: ../shell/rb-shell.c:2327
+#: ../shell/rb-shell.c:2363
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -4426,66 +4821,71 @@ msgstr ""
 "Rhythmbox yra platinama tikintis, kad jis bus naudingaa, bet\n"
 "BE JOKIŲ GARANTIJŲ; netgi be numanomų PARDAVIMO arba TINKAMUMO\n"
 "TAM TIKRAM TIKSLUI garantijų. Dėl išsamesnės informacijos\n"
-"žiūrėkite GNU bendrąją viešąją licenciją.\n"
+"žiūrėkite GNU Bendrąją viešąją licenciją.\n"
 
-#: ../shell/rb-shell.c:2331
+#: ../shell/rb-shell.c:2367
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 msgstr ""
-"Jūs turėjote gauti GNU bendrosios viešosios licencijos kopiją kartu su\n"
+"Jūs turėjote gauti GNU Bendrosios viešosios licencijos kopiją kartu su\n"
 "Rhythmbox; jeigu negavote, rašykite Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2338
+#: ../shell/rb-shell.c:2374
 msgid "Maintainers:"
 msgstr "Prižiūrėtojai:"
 
-#: ../shell/rb-shell.c:2341
+#: ../shell/rb-shell.c:2377
 msgid "Former Maintainers:"
 msgstr "Ankstesnieji prižiūrėtojai:"
 
-#: ../shell/rb-shell.c:2344
+#: ../shell/rb-shell.c:2380
 msgid "Contributors:"
 msgstr "Bendraautoriai:"
 
-#: ../shell/rb-shell.c:2346
+#: ../shell/rb-shell.c:2382
 msgid "Music management and playback software for GNOME."
-msgstr "Muzikos tvarkymo ir grojimo programa skirta GNOME."
+msgstr "Muzikos tvarkymo ir grojimo programa, skirta GNOME darbo aplinkai."
 
-#: ../shell/rb-shell.c:2355
+#: ../shell/rb-shell.c:2391
 msgid "Rhythmbox Website"
 msgstr "Rhythmbox tinklalapis"
 
-#: ../shell/rb-shell.c:2450
+#: ../shell/rb-shell.c:2483
 msgid "Configure Plugins"
 msgstr "Konfigūruoti įskiepius"
 
-#: ../shell/rb-shell.c:2522
+#: ../shell/rb-shell.c:2554
 msgid "Import Folder into Library"
 msgstr "Įtraukti aplanką į fonoteką"
 
-#: ../shell/rb-shell.c:2544
+#: ../shell/rb-shell.c:2576
 msgid "Import File into Library"
 msgstr "Įtraukti failą į fonoteką"
 
-#: ../shell/rb-shell.c:3146
+#: ../shell/rb-shell.c:3180 ../shell/rb-shell.c:3538
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Joks registruotas šaltinis negali apdoroti URI %s"
 
-#: ../shell/rb-shell.c:3526 ../shell/rb-shell.c:3569
+#: ../shell/rb-shell.c:3658
+#, c-format
+msgid "No registered source matches URI %s"
+msgstr "Joks registruotas šaltinis neatitinka URI %s"
+
+#: ../shell/rb-shell.c:3691 ../shell/rb-shell.c:3734
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Nežinomas dainos URI: %s"
 
-#: ../shell/rb-shell.c:3578
+#: ../shell/rb-shell.c:3743
 #, c-format
 msgid "Unknown property %s"
 msgstr "Nežinoma savybė %s"
 
-#: ../shell/rb-shell.c:3592
+#: ../shell/rb-shell.c:3757
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Nežinomas savybės tipas %s savybei %s"
@@ -4530,10 +4930,10 @@ msgstr "Nepavyko perkelti takelių"
 #: ../shell/rb-track-transfer-queue.c:369
 msgid ""
 "None of the tracks to be transferred are in a format supported by the target "
-"device, and no encoders are available  for the supported formats."
+"device, and no encoders are available for the supported formats."
 msgstr ""
-"Nė vienas iš perkeltinų failų nėra įrenginio palaikomo formato, taip pat nėra "
-"enkoderių palaikomiems formatams."
+"Nė vieno iš perkeltinų takelių formato nepalaiko paskirties įrenginys, taip "
+"pat nėra ir enkoderių, kurie galėtų perkoduoti į palaikomą formatą."
 
 #: ../shell/rb-track-transfer-queue.c:386
 #, c-format
@@ -4541,8 +4941,8 @@ msgid ""
 "%d of the %d files to be transferred are not in a format supported by the "
 "target device, and no encoders are available for the supported formats."
 msgstr ""
-"%d iš %d perkeltinų failų nėra įrenginio palaikomo formato, taip pat nėra "
-"enkoderių palaikomiems formatams."
+"%d iš %d perkeltinų takelių formato nepalaiko paskirties įrenginys, taip pat "
+"nėra ir enkoderių, kurie galėtų perkoduoti į palaikomą formatą."
 
 #: ../shell/rb-track-transfer-queue.c:395
 msgid "Unable to transfer all tracks. Do you want to continue?"
@@ -4561,12 +4961,6 @@ msgstr "Perkeliamas %d takelis iš %d (%.0f%%)"
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Perkeliamas %d takelis iš %d"
-
-#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:166
-#: ../sources/rb-podcast-source.c:330
-#: ../sources/rb-static-playlist-source.c:124
-msgid "Search all fields"
-msgstr "Rodyti visus laukelius"
 
 #: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:167
 #: ../sources/rb-static-playlist-source.c:125
@@ -4594,7 +4988,7 @@ msgid "Search titles"
 msgstr "Ieškoti pavadinimų"
 
 #: ../sources/rb-removable-media-source.c:892
-#: ../sources/rb-library-source.c:1268 ../sources/rb-library-source.c:1272
+#: ../sources/rb-library-source.c:1270 ../sources/rb-library-source.c:1274
 msgid "Error transferring track"
 msgstr "Klaida perkeliant takelį"
 
@@ -4651,67 +5045,71 @@ msgstr[0] "%d importavimo klaida"
 msgstr[1] "%d importavimo klaidos"
 msgstr[2] "%d importavimo klaidų"
 
-#: ../sources/rb-library-source.c:138
+#: ../sources/rb-library-source.c:144
 msgid "Artist/Artist - Album"
 msgstr "Atlikėjas/Atlikėjas - Albumas"
 
-#: ../sources/rb-library-source.c:139
+#: ../sources/rb-library-source.c:145
 msgid "Artist/Album"
 msgstr "Atlikėjas/Albumas"
 
-#: ../sources/rb-library-source.c:140
+#: ../sources/rb-library-source.c:146
 msgid "Artist - Album"
 msgstr "Atlikėjas - Albumas"
 
-#: ../sources/rb-library-source.c:141 ../widgets/rb-entry-view.c:1538
+#: ../sources/rb-library-source.c:147 ../widgets/rb-entry-view.c:1554
 #: ../widgets/rb-library-browser.c:142
 msgid "Album"
 msgstr "Albumas"
 
-#: ../sources/rb-library-source.c:147
+#: ../sources/rb-library-source.c:153
 msgid "Number - Title"
 msgstr "Numeris - Pavadinimas"
 
-#: ../sources/rb-library-source.c:148
+#: ../sources/rb-library-source.c:154
 msgid "Artist - Title"
 msgstr "Atlikėjas - Pavadinimas"
 
-#: ../sources/rb-library-source.c:149
+#: ../sources/rb-library-source.c:155
 msgid "Artist - Number - Title"
 msgstr "Atlikėjas - Numeris - Pavadinimas"
 
-#: ../sources/rb-library-source.c:150
+#: ../sources/rb-library-source.c:156
 msgid "Artist (Album) - Number - Title"
 msgstr "Atlikėjas (Albumas) - Numeris - Pavadinimas"
 
-#: ../sources/rb-library-source.c:152
+#: ../sources/rb-library-source.c:158
 msgid "Number. Artist - Title"
 msgstr "Numeris. Atlikėjas - Pavadinimas"
 
-#: ../sources/rb-library-source.c:406
-#: ../sources/sync/rb-sync-settings-ui.c:215
+#: ../sources/rb-library-source.c:409
 #: ../sources/sync/rb-sync-settings-ui.c:216
+#: ../sources/sync/rb-sync-settings-ui.c:217
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "Muzika"
 
-#: ../sources/rb-library-source.c:440
+#: ../sources/rb-library-source.c:442
 msgid "Choose Library Location"
 msgstr "Pasirinkite fonotekos vietą"
 
-#: ../sources/rb-library-source.c:615
+#: ../sources/rb-library-source.c:617
 msgid "Multiple locations set"
 msgstr "Nurodyta keletas vietų"
 
-#: ../sources/rb-library-source.c:1045
+#: ../sources/rb-library-source.c:1047
 msgid "Example Path:"
 msgstr "Pavyzdinis kelias:"
 
-#: ../sources/rb-media-player-source.c:109
+#: ../sources/rb-media-player-source.c:94
+msgid "Sync with Library"
+msgstr "Sinchronizuoti su fonoteka"
+
+#: ../sources/rb-media-player-source.c:95
 msgid "Synchronize media player with the library"
 msgstr "Sinchronizuoti grotuvą su biblioteka"
 
-#: ../sources/rb-media-player-source.c:624
+#: ../sources/rb-media-player-source.c:587
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
@@ -4719,7 +5117,7 @@ msgstr ""
 "Nepasirinkote jokios muzikos, grojaraščio ar tinklalaidės, perkeltinos į šį "
 "įrenginį."
 
-#: ../sources/rb-media-player-source.c:628
+#: ../sources/rb-media-player-source.c:591
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
@@ -4727,16 +5125,16 @@ msgstr ""
 "Įrenginyje nėra pakankamai laisvos vietos norint perkelti pasirinktą muziką, "
 "grojaraščius ir tinklalaides."
 
-#: ../sources/rb-media-player-source.c:679
+#: ../sources/rb-media-player-source.c:642
 #, c-format
 msgid "%s Sync Settings"
 msgstr "%s parametrų sinchronizavimas"
 
-#: ../sources/rb-media-player-source.c:684
+#: ../sources/rb-media-player-source.c:647
 msgid "Sync with the device"
 msgstr "Sinchronizuoti su įrenginiu"
 
-#: ../sources/rb-media-player-source.c:686
+#: ../sources/rb-media-player-source.c:649
 msgid "Don't sync"
 msgstr "Nesinchronizuoti"
 
@@ -4794,205 +5192,6 @@ msgstr "Pašalinti iš grojaraščio"
 msgid "Remove each selected song from the playlist"
 msgstr "Pašalinti kiekvieną pasirinktą dainą iš grojaraščio"
 
-#: ../sources/rb-podcast-source.c:304
-msgid "_New Podcast Feed..."
-msgstr "_Naujas tinklalaidžių kanalas..."
-
-#: ../sources/rb-podcast-source.c:305
-msgid "Subscribe to a new Podcast Feed"
-msgstr "Užsisakyti naują tinklalaidžių kanalą"
-
-#: ../sources/rb-podcast-source.c:308
-msgid "Download _Episode"
-msgstr "Atsisiųsti _epizodą"
-
-#: ../sources/rb-podcast-source.c:309
-msgid "Download Podcast Episode"
-msgstr "Atsisiųsti tinklalaidės epizodą"
-
-#: ../sources/rb-podcast-source.c:311
-msgid "_Cancel Download"
-msgstr "_Nutraukti atsiuntimą"
-
-#: ../sources/rb-podcast-source.c:312
-msgid "Cancel Episode Download"
-msgstr "Nutraukti epizodo atsiuntimą"
-
-#: ../sources/rb-podcast-source.c:315
-msgid "Episode Properties"
-msgstr "Epizodo savybės"
-
-#: ../sources/rb-podcast-source.c:317
-msgid "_Update Podcast Feed"
-msgstr "_Atnaujinti tinklalaidžių kanalą"
-
-#: ../sources/rb-podcast-source.c:318
-msgid "Update Feed"
-msgstr "Atnaujinti kanalą"
-
-#: ../sources/rb-podcast-source.c:320
-msgid "_Delete Podcast Feed"
-msgstr "_Ištrinti tinklalaidžių kanalą"
-
-#: ../sources/rb-podcast-source.c:321
-msgid "Delete Feed"
-msgstr "Ištrinti kanalą"
-
-#: ../sources/rb-podcast-source.c:323
-msgid "_Update All Feeds"
-msgstr "_Atnaujinti visus kanalus"
-
-#: ../sources/rb-podcast-source.c:324
-msgid "Update all feeds"
-msgstr "Atnaujinti visus kanalus"
-
-#: ../sources/rb-podcast-source.c:331
-msgid "Feeds"
-msgstr "Kanalai"
-
-#: ../sources/rb-podcast-source.c:331
-msgid "Search podcast feeds"
-msgstr "Ieškoti tinklalaidžių kanalų"
-
-#: ../sources/rb-podcast-source.c:332
-msgid "Episodes"
-msgstr "Epizodai"
-
-#: ../sources/rb-podcast-source.c:332
-msgid "Search podcast episodes"
-msgstr "Ieškoti tinklalaidžių epizodų"
-
-#. Translators: this is the toolbar button label
-#. for New Podcast Feed action.
-#: ../sources/rb-podcast-source.c:520
-msgctxt "Podcast"
-msgid "New"
-msgstr "Naujas"
-
-#. Translators: this is the toolbar button label
-#. for Update All Feeds action.
-#: ../sources/rb-podcast-source.c:526
-msgid "Update"
-msgstr "Atnaujinti"
-
-#: ../sources/rb-podcast-source.c:570 ../sources/rb-podcast-source.c:581
-msgid "Date"
-msgstr "Data"
-
-#: ../sources/rb-podcast-source.c:602 ../sources/rb-podcast-source.c:670
-#: ../sources/rb-podcast-source.c:724
-msgid "Feed"
-msgstr "Kanalas"
-
-#: ../sources/rb-podcast-source.c:621 ../sources/rb-podcast-source.c:639
-msgid "Status"
-msgstr "Būsena"
-
-#: ../sources/rb-podcast-source.c:622 ../sources/rb-podcast-source.c:1483
-msgid "Downloaded"
-msgstr "Atsiųsti"
-
-#: ../sources/rb-podcast-source.c:623 ../sources/rb-podcast-source.c:1491
-msgid "Waiting"
-msgstr "Laukiama"
-
-#: ../sources/rb-podcast-source.c:624 ../sources/rb-podcast-source.c:1487
-msgid "Failed"
-msgstr "Nepavyko"
-
-#: ../sources/rb-podcast-source.c:909
-msgid "Delete the podcast episode and downloaded file?"
-msgstr "Ištrinti tinklalaidės epizodą ir atsiųstą failą?"
-
-#: ../sources/rb-podcast-source.c:912
-msgid ""
-"If you choose to delete the episode and file, they will be permanently "
-"lost.  Please note that you can delete the episode but keep the downloaded "
-"file by choosing to delete the episode only."
-msgstr ""
-"Jei parinksite ištrinti šį epizodą ir failą, jie bus visam laikui prarasti. "
-"Turėkite omenyje, kad galite ištrinti šį epizodą, bet atsiųstą failą galite "
-"pasilikti, tereikia pasirinkti ištrinti tik patį epizodą."
-
-#: ../sources/rb-podcast-source.c:920
-msgid "Delete _Episode Only"
-msgstr "Ištrinti tik _epizodą"
-
-#: ../sources/rb-podcast-source.c:926
-msgid "_Delete Episode And File"
-msgstr "_Ištrinti epizodą ir failą"
-
-#: ../sources/rb-podcast-source.c:1376
-msgid "Delete the podcast feed and downloaded files?"
-msgstr "Ištrinti tinklalaidžių kanalą ir atsiųstus failus?"
-
-#: ../sources/rb-podcast-source.c:1379
-msgid ""
-"If you choose to delete the feed and files, they will be permanently lost.  "
-"Please note that you can delete the feed but keep the downloaded files by "
-"choosing to delete the feed only."
-msgstr ""
-"Jeigu pasirinksite ištrinti kanalus ir failus, jie bus negrįžtamai prarasti. "
-"Turėkite omenyje, kad galite ištrinti kanalą, bet atsiųstus failus "
-"pasilikti, Jums tereikia pasirinkti ištrinti tik kanalą."
-
-#: ../sources/rb-podcast-source.c:1387
-msgid "Delete _Feed Only"
-msgstr "Ištrinti tik _kanalą"
-
-#: ../sources/rb-podcast-source.c:1394
-msgid "_Delete Feed And Files"
-msgstr "_Ištrinti kanalą ir failus"
-
-#: ../sources/rb-podcast-source.c:1602
-#, c-format
-msgid "%d feed"
-msgid_plural "All %d feeds"
-msgstr[0] "%d kanalas"
-msgstr[1] "Visi %d kanalai"
-msgstr[2] "Visi %d kanalų"
-
-#: ../sources/rb-podcast-source.c:1739
-msgid "Downloading podcast"
-msgstr "Atsiunčiama tinklalaidė"
-
-#: ../sources/rb-podcast-source.c:1754
-msgid "Finished downloading podcast"
-msgstr "Tinklalaidė atsiųsta"
-
-#: ../sources/rb-podcast-source.c:1769
-msgid "New updates available from"
-msgstr "Čia yra prieinami atnaujinimai"
-
-#: ../sources/rb-podcast-source.c:1887
-msgid "Error in podcast"
-msgstr "Tinklalaidės klaida"
-
-#: ../sources/rb-podcast-source.c:1894
-#, c-format
-msgid "%s. Would you like to add the podcast feed anyway?"
-msgstr "%s. Ar vis tiek norite pridėti tinklalaidžių kanalą?"
-
-#: ../sources/rb-podcast-source.c:2021
-msgid "New Podcast Feed"
-msgstr "Naujas tinklalaidžių kanalas"
-
-#: ../sources/rb-podcast-source.c:2021
-msgid "URL of podcast feed:"
-msgstr "Tinklalaidžių kanalo URL:"
-
-#: ../sources/rb-podcast-source.c:2037
-#, c-format
-msgid "%d episode"
-msgid_plural "%d episodes"
-msgstr[0] "%d epizodas"
-msgstr[1] "%d epizodai"
-msgstr[2] "%d epizodų"
-
-#: ../sources/rb-podcast-source.c:2146
-msgid "Podcast Error"
-msgstr "Tinklalaidės klaida"
-
 #: ../sources/rb-source.c:724
 #, c-format
 msgid "%d song"
@@ -5001,7 +5200,7 @@ msgstr[0] "%d daina"
 msgstr[1] "%d dainos"
 msgstr[2] "%d dainų"
 
-#: ../sources/rb-source.c:1950
+#: ../sources/rb-source.c:1965
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Importuojama (%d/%d)"
@@ -5022,7 +5221,7 @@ msgstr "Įrenginiai"
 msgid "Shared"
 msgstr "Bendra"
 
-#: ../sources/rb-sourcelist.c:703
+#: ../sources/rb-sourcelist.c:702
 msgid "S_ource"
 msgstr "Š_altinis"
 
@@ -5034,7 +5233,7 @@ msgstr "Jungiamasi"
 msgid "Buffering"
 msgstr "Buferiuojama"
 
-#: ../sources/sync/rb-sync-settings-ui.c:227
+#: ../sources/sync/rb-sync-settings-ui.c:228
 msgid "All Music"
 msgstr "Visa muzika"
 
@@ -5082,64 +5281,64 @@ msgstr "Pixbuf objektas"
 msgid "The pixbuf to render."
 msgstr "Atvaizduotinas pixbuf."
 
-#: ../widgets/rb-entry-view.c:1102 ../widgets/rb-entry-view.c:1597
-#: ../widgets/rb-song-info.c:1156
+#: ../widgets/rb-entry-view.c:1107 ../widgets/rb-entry-view.c:1613
+#: ../widgets/rb-song-info.c:1153
 msgid "Lossless"
 msgstr "Nenuostolingas"
 
-#: ../widgets/rb-entry-view.c:1507
+#: ../widgets/rb-entry-view.c:1523
 msgid "Track"
 msgstr "Takelis"
 
-#: ../widgets/rb-entry-view.c:1558
+#: ../widgets/rb-entry-view.c:1574
 msgid "Comment"
 msgstr "Komentaras"
 
-#: ../widgets/rb-entry-view.c:1568
+#: ../widgets/rb-entry-view.c:1584
 msgid "Time"
 msgstr "Laikas"
 
-#: ../widgets/rb-entry-view.c:1580
+#: ../widgets/rb-entry-view.c:1596
 msgid "Year"
 msgstr "Metai"
 
-#: ../widgets/rb-entry-view.c:1592
+#: ../widgets/rb-entry-view.c:1608
 msgid "Quality"
 msgstr "Kokybė"
 
-#: ../widgets/rb-entry-view.c:1595
+#: ../widgets/rb-entry-view.c:1611
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1606
+#: ../widgets/rb-entry-view.c:1622
 msgid "Rating"
 msgstr "Įvertinimas"
 
-#: ../widgets/rb-entry-view.c:1628
+#: ../widgets/rb-entry-view.c:1644
 msgid "Play Count"
 msgstr "Perklausų skaičius"
 
-#: ../widgets/rb-entry-view.c:1640
+#: ../widgets/rb-entry-view.c:1656
 msgid "Last Played"
 msgstr "Vėliausiai grota"
 
-#: ../widgets/rb-entry-view.c:1652
+#: ../widgets/rb-entry-view.c:1668
 msgid "Date Added"
 msgstr "Pridėjimo data"
 
-#: ../widgets/rb-entry-view.c:1663
+#: ../widgets/rb-entry-view.c:1679
 msgid "Last Seen"
 msgstr "Vėliausiai matyta"
 
-#: ../widgets/rb-entry-view.c:1674
+#: ../widgets/rb-entry-view.c:1690
 msgid "Location"
 msgstr "Vieta"
 
-#: ../widgets/rb-entry-view.c:1942
+#: ../widgets/rb-entry-view.c:1958
 msgid "Now Playing"
 msgstr "Dabar grojama"
 
-#: ../widgets/rb-entry-view.c:2003
+#: ../widgets/rb-entry-view.c:2019
 msgid "Playback Error"
 msgstr "Grojimo klaida"
 
@@ -5147,7 +5346,7 @@ msgstr "Grojimo klaida"
 msgid "Not Playing"
 msgstr "Negrojama"
 
-#: ../widgets/rb-property-view.c:631
+#: ../widgets/rb-property-view.c:635
 #, c-format
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
@@ -5155,7 +5354,7 @@ msgstr[0] "%d atlikėjas (%d)"
 msgstr[1] "Visi %d atlikėjai (%d)"
 msgstr[2] "Visi %d atlikėjų (%d)"
 
-#: ../widgets/rb-property-view.c:634
+#: ../widgets/rb-property-view.c:638
 #, c-format
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
@@ -5163,7 +5362,7 @@ msgstr[0] "%d albumas (%d)"
 msgstr[1] "Visi %d albumai (%d)"
 msgstr[2] "Visi %d albumų (%d)"
 
-#: ../widgets/rb-property-view.c:637
+#: ../widgets/rb-property-view.c:641
 #, c-format
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
@@ -5171,7 +5370,7 @@ msgstr[0] "%d žanras (%d)"
 msgstr[1] "Visi %d žanrai (%d)"
 msgstr[2] "Visi %d žanrų (%d)"
 
-#: ../widgets/rb-property-view.c:640
+#: ../widgets/rb-property-view.c:644
 #, c-format
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
@@ -5179,7 +5378,7 @@ msgstr[0] "Visas %d (%d)"
 msgstr[1] "Visi %d (%d)"
 msgstr[2] "Visi %d (%d)"
 
-#: ../widgets/rb-property-view.c:646
+#: ../widgets/rb-property-view.c:650
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
@@ -5479,11 +5678,11 @@ msgstr "Sukurti automatinį grojaraštį"
 msgid "Edit Automatic Playlist"
 msgstr "Taisyti automatinį grojaraštį"
 
-#: ../widgets/rb-rating-helper.c:311
+#: ../widgets/rb-rating-helper.c:309
 msgid "No Stars"
 msgstr "Be žvaigždučių"
 
-#: ../widgets/rb-rating-helper.c:313
+#: ../widgets/rb-rating-helper.c:311
 #, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
@@ -5500,25 +5699,128 @@ msgstr "I_eškoti:"
 msgid "Clear the search text"
 msgstr "Išvalyti paieškos tekstą"
 
-#: ../widgets/rb-song-info.c:375
+#: ../widgets/rb-song-info.c:373
 msgid "Song Properties"
 msgstr "Dainos savybės"
 
-#: ../widgets/rb-song-info.c:432
+#: ../widgets/rb-song-info.c:430
 msgid "Multiple Song Properties"
 msgstr "Kelių dainų savybės"
 
-#: ../widgets/rb-song-info.c:1219
+#: ../widgets/rb-song-info.c:1216
 msgid "Unknown file name"
 msgstr "Nežinomas failo pavadinimas"
 
-#: ../widgets/rb-song-info.c:1241
+#: ../widgets/rb-song-info.c:1238
 msgid "On the desktop"
 msgstr "Darbastalyje"
 
-#: ../widgets/rb-song-info.c:1264
+#: ../widgets/rb-song-info.c:1261
 msgid "Unknown location"
 msgstr "Nežinoma vieta"
+
+#~ msgid "Account Login"
+#~ msgstr "Paskyros prisijungimas"
+
+#~ msgid "Join the Rhythmbox group"
+#~ msgstr "Prisijungti prie Rhythmbox grupės"
+
+#~ msgid "New to Last.fm?"
+#~ msgstr "Last.fm jums naujiena?"
+
+#~ msgid "Sign up for an account"
+#~ msgstr "Prisiregistruokite"
+
+#~ msgid "_Password:"
+#~ msgstr "_Slaptažodis:"
+
+#~ msgid "_Username:"
+#~ msgstr "_Naudotojo vardas:"
+
+#~ msgid "Last.fm Preferences"
+#~ msgstr "Last.fm nustatymai"
+
+#~ msgid "Incorrect username or password"
+#~ msgstr "Neteisingas naudotojo vardas ar slaptažodis"
+
+#~ msgid "Artists similar to %s"
+#~ msgstr "Atlikėjai, panašūs į %s"
+
+#~ msgid "Artist Fan radio"
+#~ msgstr "Atlikėjo fanų radijas"
+
+#~ msgid "Artists liked by fans of %s"
+#~ msgstr "Atlikėjai, mėgstami %s fanų"
+
+#~ msgid "Group radio"
+#~ msgstr "Grupės radijas"
+
+#~ msgid "Personal radio"
+#~ msgstr "Asmeninis radijas"
+
+#~ msgid "%s's Personal Radio"
+#~ msgstr "%s asmeninis radijas"
+
+#~ msgid "Tracks recommended to %s"
+#~ msgstr "Kūriniai, rekomenduojami %s"
+
+#~ msgid "Playlist"
+#~ msgstr "Grojaraštis"
+
+#~ msgid "Delete the selected station"
+#~ msgstr "Ištrinti pasirinktąją stotį"
+
+#~ msgid "Download song"
+#~ msgstr "Atsisiųsti dainą"
+
+#~ msgid "Download this song"
+#~ msgstr "Atsisiųsti šią dainą"
+
+#~ msgid "Enter the item to build a Last.fm station out of:"
+#~ msgstr "Įveskite elementą, iš kurio sukurti Last.fm stotį:"
+
+#~ msgid "Add"
+#~ msgstr "Pridėti"
+
+#~ msgid "Account Settings"
+#~ msgstr "Paskyros parametrai"
+
+#~ msgid ""
+#~ "Account details are needed before you can connect.  Check your settings."
+#~ msgstr ""
+#~ "Norint prisijungti reikia nurodyti paskyros informaciją. Patikrinkite "
+#~ "parametrus."
+
+#~ msgid "Unable to connect"
+#~ msgstr "Nepavyko prisijungti"
+
+#~ msgid "Global Tag %s"
+#~ msgstr "Visuotinė žyma %s"
+
+#~ msgid "%s's Playlist"
+#~ msgstr "%s grojaraštis"
+
+#~ msgid "Neighbour Radio"
+#~ msgstr "Kaimynų radijas"
+
+#~ msgid "Personal Radio"
+#~ msgstr "Asmeninis radijas"
+
+#~ msgid "Server did not respond"
+#~ msgstr "Serveris neatsakė"
+
+#~ msgid ""
+#~ "The streaming system is offline for maintenance, please try again later."
+#~ msgstr "Transliavimo sistema išjungta priežiūros darbams, bandykite vėliau."
+
+#~ msgid "Retrieving playlist"
+#~ msgstr "Gaunamas grojaraštis"
+
+#~ msgid "Banning song"
+#~ msgstr "Blokuojama daina"
+
+#~ msgid "Adding song to your Loved tracks"
+#~ msgstr "Daina pridedama prie jums patinkančių takelių"
 
 #~ msgid "Do you want to overwrite the file \"%s\"?"
 #~ msgstr "Ar norite perrašyti failą „%s“?"
@@ -5585,13 +5887,6 @@ msgstr "Nežinoma vieta"
 
 #~ msgid "iPod Properties"
 #~ msgstr "iPod ypatybės"
-
-#~ msgid ""
-#~ "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
-#~ "expiration date listed.</span>"
-#~ msgstr ""
-#~ "<span weight=\"bold\" foreground=\"red\">Jūsų kreditinė kortelė yra "
-#~ "senesnė negu nurodyta galiojimo pabaigos datoje.</span>"
 
 #~ msgid "C_redit Card:"
 #~ msgstr "K_reditinė kortelė:"
@@ -5684,9 +5979,6 @@ msgstr "Nežinoma vieta"
 
 #~ msgid "Connection to %s:%d refused."
 #~ msgstr "Prisijungimas prie %s:%d atmestas."
-
-#~ msgid "<b>Content</b>"
-#~ msgstr "<b>Turinys</b>"
 
 #~ msgid "Number of Playlists:"
 #~ msgstr "Grojaraščių skaičius:"
