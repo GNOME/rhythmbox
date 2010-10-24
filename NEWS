@@ -1,3 +1,71 @@
+Overview of changes in Rhythmbox 0.13.2  "Dagger"
+=================================================
+
+* Much improved Last.fm (and Libre.fm) plugin (Jamie Nicol's GSoC project)
+* Support for DACP (iTunes remote) (Alexandre Rosenfeld's GSoC project)
+* Zeitgeist plugin (developed by Markus Korn, Laszlo Pandy and Michal Hruby)
+* New podcast sub-sources showing newly posted and recently downloaded episodes
+* Slightly improved tntegration with the GNOME Shell message tray
+* Various fixes for iPod support (Christophe Fergeau, Ben Walsh)
+
+Bugs fixed:
+
+341462 - Make current podcast downloads more visible
+345957 - View last.fm profile
+381679 - Add "record to profile" toggle to the last.fm plugin
+589886 - Crash when selecting multiple podcast feeds
+591841 - Crash processing playlist files from command line
+592428 - Allow the user to select Libre.fm as their audioscrobbler service
+601152 - can't really create playlists on iPod
+604170 - Unable to change the order of files in an iPOD playlist
+612156 - crash when stopping radio stream before playlist parsing has finished
+618619 - Crash while getting properties from ipod shuffle
+623200 - Add previous and play actions to notifications, and use id's that correspond to named icons
+625030 - Use XSPF format for the default iRadio playlist
+625054 - Rhythmbox transfers music to my generic MP3 player without file extensions
+625214 - DACP Support in Rhythmbox
+628254 - metadata helper crashes when tagging MP3 files that don't already have tags
+628330 - rhythmbox still uses pkg-config to find vala
+628791 - crash showing ipod properties if the ipod database can't be read
+628794 - Rhythmbox can not share to iTunes 10 using DAAP
+629038 - coherence plugin breakage
+630689 - drop GtkObject use
+631008 - Zeitgeist plugin
+631191 - GStreamer MTP source element stopped working
+631218 - don't open (some) iframes in podcast descriptions in new browser windows
+631355 - Typo in string: "Listended"
+631698 - Rhythmbox stars (ratings) not updated properly when scrolling up in the playlist
+631817 - rhythmbox hangs when starting playing next audio cd track
+632119 - Add WSUM 91.7FM (University of Wisconsin) to iRadio-Initial.pls
+632475 - ipod "Remove from playlist" was completely removing from iPod
+632655 - URL updates for Internet Radio stations
+633531 - Rhythmbox can't load Cover-Art from musicbrainz
+
+Translation updates:
+- bg, courtesy of Krasimir Chonov
+- ca@valencia, courtesy of Joan Duran
+- cs, courtesy of Marek Černocký
+- da, courtesy of Ask Hjorth Larsen
+- de, courtesy of Christian Kirbach
+- el, courtesy of Michael Kotsarinis
+- es, courtesy of Jorge González
+- et, courtesy of Mattias Põldaru
+- gl, courtesy of Fran Diéguez
+- hu, courtesy of Gabor Kelemen
+- it, courtesy of Luca Ferretti
+- ja, courtesy of Hiroyuki Sekihara
+- ja, courtesy of Takayuki KUSANO
+- lt, courtesy of Žygimantas Beručka
+- nb, courtesy of Kjartan Maraas
+- nl, courtesy of Redmar
+- pa, courtesy of A S Alam
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Djavan Fagundes
+- ru, courtesy of Yuri Myasoedov
+- sl, courtesy of Andrej Žnidaršič
+- sv, courtesy of Daniel Nylander
+
+
 Overview of changes in Rhythmbox 0.13.1  "So Tired"
 ===================================================
 
