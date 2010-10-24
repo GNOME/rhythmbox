@@ -27,8 +27,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-11 19:35+0200\n"
-"PO-Revision-Date: 2010-09-11 19:14+0200\n"
+"POT-Creation-Date: 2010-10-24 17:08+0200\n"
+"PO-Revision-Date: 2010-10-07 00:19+0200\n"
 "Last-Translator: Ask Hjorth Larsen\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "MIME-Version: 1.0\n"
@@ -43,7 +43,7 @@ msgstr "Kunne ikke oprette GStreamer-kanal til skrivning i %s"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:506
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2726
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2745
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Kunne ikke åbne for uddata-enheden: %s"
@@ -66,32 +66,32 @@ msgid "Failed to start new stream"
 msgstr "Kunne ikke starte ny strøm"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2651
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2670
 #, c-format
 msgid "Failed to open output device"
 msgstr "Kunne ikke åbne for uddata-enheden"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3002
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3073
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3021
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3092
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Kunne ikke oprette GStreamer-element; kontrollér din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3013
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3032
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Kunne ikke oprette lyduddata-element; kontrollér din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3047
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3089
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3115
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3124
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3133
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3066
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3108
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3134
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3143
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3152
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Kunne ikke lænke til GStreamer-rørledning; kontrollér din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3228
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3247
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Kunne ikke oprette GStreamer-rørledning til afspilning af %s"
@@ -561,8 +561,8 @@ msgstr "Afspillet for nyligt"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1
 #: ../plugins/status-icon/rb-status-icon-plugin.c:59
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1536 ../shell/rb-shell.c:1251
-#: ../shell/rb-shell.c:2222
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1536 ../shell/rb-shell.c:1258
+#: ../shell/rb-shell.c:2232
 msgid "Music Player"
 msgstr "Musikafspiller"
 
@@ -691,37 +691,37 @@ msgstr "%d. %b %Y"
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:128
 #: ../plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py:132
 #: ../plugins/audiocd/rb-audiocd-source.c:514
-#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:94
-#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:101
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:478
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:482
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
+#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:590
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:594
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:119
 #: ../plugins/generic-player/rb-generic-player-source.c:1021
-#: ../plugins/ipod/rb-ipod-source.c:409
+#: ../plugins/ipod/rb-ipod-source.c:410
 #: ../plugins/jamendo/jamendo/JamendoSaxHandler.py:67
 #: ../plugins/iradio/rb-iradio-source.c:530
-#: ../plugins/iradio/rb-iradio-source.c:1107
-#: ../plugins/iradio/rb-station-properties-dialog.c:488
+#: ../plugins/iradio/rb-iradio-source.c:1106
+#: ../plugins/iradio/rb-station-properties-dialog.c:487
 #: ../plugins/lyrics/lyrics/__init__.py:81
 #: ../plugins/lyrics/lyrics/__init__.py:83
 #: ../plugins/mtpdevice/rb-mtp-source.c:642
 #: ../plugins/mtpdevice/rb-mtp-source.c:1133
 #: ../plugins/mtpdevice/rb-mtp-source.c:1522
-#: ../plugins/status-icon/rb-status-icon-plugin.c:782
-#: ../podcast/rb-feed-podcast-properties-dialog.c:341
-#: ../podcast/rb-podcast-manager.c:1911
-#: ../podcast/rb-podcast-properties-dialog.c:601
-#: ../podcast/rb-podcast-properties-dialog.c:696
-#: ../remote/dbus/rb-client.c:153 ../rhythmdb/rhythmdb-tree.c:1341
-#: ../rhythmdb/rhythmdb-tree.c:1345 ../rhythmdb/rhythmdb-tree.c:1349
-#: ../rhythmdb/rhythmdb-tree.c:1353 ../rhythmdb/rhythmdb.c:2038
-#: ../rhythmdb/rhythmdb.c:2044 ../rhythmdb/rhythmdb.c:2059
-#: ../shell/rb-shell-player.c:1723 ../sources/rb-podcast-source.c:1665
+#: ../plugins/status-icon/rb-status-icon-plugin.c:830
+#: ../podcast/rb-feed-podcast-properties-dialog.c:340
+#: ../podcast/rb-podcast-manager.c:1920
+#: ../podcast/rb-podcast-properties-dialog.c:600
+#: ../podcast/rb-podcast-properties-dialog.c:695
+#: ../podcast/rb-podcast-source.c:765 ../remote/dbus/rb-client.c:155
+#: ../rhythmdb/rhythmdb-tree.c:1341 ../rhythmdb/rhythmdb-tree.c:1345
+#: ../rhythmdb/rhythmdb-tree.c:1349 ../rhythmdb/rhythmdb-tree.c:1353
+#: ../rhythmdb/rhythmdb.c:2038 ../rhythmdb/rhythmdb.c:2044
+#: ../rhythmdb/rhythmdb.c:2059 ../shell/rb-shell-player.c:1752
 #: ../widgets/rb-entry-view.c:1087 ../widgets/rb-entry-view.c:1109
 #: ../widgets/rb-entry-view.c:1588 ../widgets/rb-entry-view.c:1600
-#: ../widgets/rb-entry-view.c:1612 ../widgets/rb-song-info.c:924
-#: ../widgets/rb-song-info.c:936 ../widgets/rb-song-info.c:1157
-#: ../widgets/rb-song-info.c:1496
+#: ../widgets/rb-entry-view.c:1612 ../widgets/rb-song-info.c:922
+#: ../widgets/rb-song-info.c:934 ../widgets/rb-song-info.c:1155
+#: ../widgets/rb-song-info.c:1494
 msgid "Unknown"
 msgstr "Ukendt"
 
@@ -741,13 +741,13 @@ msgid "Cannot get free space at %s: %s"
 msgstr "Kunne ikke bestemme mængden af fri plads på %s: %s"
 
 #: ../lib/rb-util.c:698 ../plugins/context/tmpl/album-tmpl.html:20
-#: ../remote/dbus/rb-client.c:155
+#: ../remote/dbus/rb-client.c:157
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
 #: ../lib/rb-util.c:700 ../plugins/context/tmpl/album-tmpl.html:18
-#: ../remote/dbus/rb-client.c:157
+#: ../remote/dbus/rb-client.c:159
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -1038,7 +1038,7 @@ msgid "Cannot read CD: %s"
 msgstr "Kan ikke læse cd: %s"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:712
+#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:1
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -1047,309 +1047,388 @@ msgid "Submits song information to Last.fm and plays Last.fm radio streams"
 msgstr ""
 "Indsender sanginformation til Last.fm og afspiller Last.fm radiostrømme"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:1
-msgid "Account Login"
-msgstr "Konto logind"
+#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
+msgid "Libre.fm"
+msgstr "Libre.fm"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:2
+#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:3
+msgid "Which Audioscrobbler services do you wish to use?"
+msgstr "Hvilke Audioscrobbler-tjenester ønsker du at bruge?"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:1
+msgid "Create Station"
+msgstr "Opret station"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:2
+msgid "Create a Radio Station"
+msgstr "Opret en ny radiostation"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:3
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:818
 msgid "Disabled"
 msgstr "Deaktiveret"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:3
-msgid "Join the Rhythmbox group"
-msgstr "Slut dig til Rhythmbox-gruppen"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:4
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:4
 msgid "Last submission time:"
 msgstr "Sidste indsendelsestid:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:5
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:965
-#: ../plugins/iradio/rb-station-properties-dialog.c:499
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:5
+msgid "Logout"
+msgstr "Log ud"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:6
+msgid "Loved Tracks"
+msgstr "Foretrukne spor"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:7
+#: ../plugins/iradio/rb-station-properties-dialog.c:498
 #: ../rhythmdb/rhythmdb.c:3585 ../widgets/rb-entry-view.c:1035
 #: ../widgets/rb-entry-view.c:1647 ../widgets/rb-entry-view.c:1660
-#: ../widgets/rb-song-info.c:1469
+#: ../widgets/rb-song-info.c:1467
 msgid "Never"
 msgstr "Aldrig"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:6
-msgid "New to Last.fm?"
-msgstr "Ny til Last.fm?"
-
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:7
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 msgid "Queued tracks:"
 msgstr "Spor i kø:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:8
-msgid "Sign up for an account"
-msgstr "Opret en konto"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
+msgid "Recently Listened Tracks"
+msgstr "Senest hørte spor"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:9
-msgid "Statistics"
-msgstr "Statistikker"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:10
+msgid "Recommendations"
+msgstr "Anbefalinger"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:10
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:11
 msgid "Status:"
 msgstr "Status:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:11
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:12
+msgid "Submission statistics"
+msgstr "Indsendelsesstatistik"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:13
+msgid "Submit listening data"
+msgstr "Indsend lyttedata"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:14
+msgid "Top Artists"
+msgstr "Topkunstnere"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:15
+msgid "Top Tracks"
+msgstr "Topspor"
+
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:16
 msgid "Tracks submitted:"
 msgstr "Spor indsendt:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:12
-msgid "_Password:"
-msgstr "_Adgangskode:"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:17
+msgid "Type:"
+msgstr "Type:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:13
-msgid "_Username:"
-msgstr "_Brugernavn:"
+#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:18
+msgid "View your profile"
+msgstr "Vis din profil"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:211
-msgid "Last.fm Preferences"
-msgstr "Last.fm-indstillinger"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:249
+msgid "Refresh Profile"
+msgstr "Opdatér profil"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:988
-msgid "OK"
-msgstr "O.k."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:250
+msgid "Refresh your Profile"
+msgstr "Opdatér din profil"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:991
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1782
-msgid "Logging in"
-msgstr "Logger ind"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:624
+msgid "Love"
+msgstr "Foretræk"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:994
-msgid "Request failed"
-msgstr "Forespørgsel mislykkedes"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:625
+msgid "Mark this song as loved"
+msgstr "Markér denne sang som foretrukken"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:997
-msgid "Incorrect username or password"
-msgstr "Forkert brugernavn elleradgangskode"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:627
+msgid "Ban"
+msgstr "Forbyd"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1000
-msgid "Clock is not set correctly"
-msgstr "Uret er ikke indstillet korrekt"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:628
+msgid "Ban the current track from being played again"
+msgstr "Forbyd det nuværende spor, så det ikke bliver spillet igen"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1003
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:882
-msgid "This version of Rhythmbox has been banned from Last.fm."
-msgstr "Denne version af Rhythmbox har fået forbud fra Last.fm."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:630
+msgid "Download"
+msgstr "Hent"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1006
-msgid "Track submission failed too many times"
-msgstr "Sporindsendelse mislykkedes for mange gange"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:631
+msgid "Download the currently playing track"
+msgstr "Hent sporet, der nu afspilles"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
-msgid "Similar Artists radio"
-msgstr "Radio for lignende kunstnere"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:736
+msgid "You are not currently logged in."
+msgstr "Du er ikke logget ind i øjeblikket."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:195
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1269
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:737
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:755
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:762
+msgid "Log in"
+msgstr "Log ind"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:743
+msgid "Waiting for authentication..."
+msgstr "Venter på godkendelse..."
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:744
+msgid "Cancel"
+msgstr "Annullér"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:754
+msgid "Authentication error. Please try logging in again."
+msgstr "Godkendelsesfejl. Prøv venligst at logge ind igen."
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:761
+msgid "Connection error. Please try logging in again."
+msgstr "Forbindelsesfejl. Prøv venligst at logge ind igen."
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1176
+msgid "My Library"
+msgstr "Min samling"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1184
+msgid "My Recommendations"
+msgstr "Mine anbefalinger"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1192
+msgid "My Neighbourhood"
+msgstr "Mit nabolag"
+
+# Den her kunne også være '%s afspilles nu', men kildekoden bruger noget med 'playcount', så det er antallet af afspilninger
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1359
 #, c-format
-msgid "Artists similar to %s"
-msgstr "Kunstner magen til %s"
+msgid "%s plays"
+msgstr "%s afspilninger"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
-msgid "Tag radio"
-msgstr "Mærke-radio"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:196
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This is the label for menu item which when activated will take the user to the
+#. * artist/track's page on the service's website.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-source.c:1617
 #, c-format
-msgid "Tracks tagged with %s"
-msgstr "Spor mærket med %s"
+msgid "_View on %s"
+msgstr "_Vis med %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-msgid "Artist Fan radio"
-msgstr "Kunstner fanradio"
+#. Translators: describes a radio stream playing tracks similar to those by an artist.
+#. * Followed by a text entry box for the artist name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:57
+msgid "Similar to Artist:"
+msgstr "Minder om kunstneren:"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:197
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1271
+#. Translators: describes a radio stream playing tracks listened to by the top fans of
+#. * a particular artist.  Followed by a text entry box for the artist name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:61
+msgid "Top Fans of Artist:"
+msgstr "Topfans for kunstner:"
+
+#. Translators: describes a radio stream playing tracks from the library of a particular
+#. * user.  Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:65
+msgid "Library of User:"
+msgstr "Samling for bruger:"
+
+#. Translators: describes a radio stream playing tracks played by users similar to a
+#. * particular user.  Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:69
+msgid "Neighbourhood of User:"
+msgstr "Nabolag for bruger:"
+
+#. Translators: describes a radio stream playing tracks that a particular user has marked
+#. * as loved.  Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:73
+msgid "Tracks Loved by User:"
+msgstr "Favoritspor for bruger:"
+
+#. Translators: describes a radio stream playing tracks recommended to a particular user.
+#. * Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:77
+msgid "Recommendations for User:"
+msgstr "Anbefalinger for bruger:"
+
+#. Translators: describes a radio stream playing tracks tagged with a particular tag.
+#. * Followed by a text entry box for the tag.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:81
+msgid "Tracks Tagged with:"
+msgstr "Spor mærket med:"
+
+# XXX wth.  https://bugzilla.gnome.org/show_bug.cgi?id=631355
+#. Translators: describes a radio stream playing tracks often listened to by members of
+#. * a particular group. Followed by a text entry box for the group name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:85
+#, fuzzy
+msgid "Listened by Group:"
+msgstr "Lyttet til af gruppe:"
+
+#. Translators: station is built from artists similar to the artist %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:119
 #, c-format
-msgid "Artists liked by fans of %s"
-msgstr "Kunstnere som fans af %s synes om"
+msgid "%s Radio"
+msgstr "%ss radio"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
-msgid "Group radio"
-msgstr "Gruppe-radio"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:198
+#. Translators: station is built from the artist %s's top fans
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:121
 #, c-format
-msgid "Tracks liked by the %s group"
-msgstr "Spor som %s-gruppen synes om"
+msgid "%s Fan Radio"
+msgstr "%ss fanradio"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:199
-msgid "Neighbour radio"
-msgstr "Nabo-radio"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:199
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1279
+#. Translators: station is built from the library of the user %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:123
 #, c-format
-msgid "%s's Neighbour Radio"
-msgstr "%ss nabo-radio"
+msgid "%s's Library"
+msgstr "%ss samling"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:200
-msgid "Personal radio"
-msgstr "Personlig radio"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:200
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1283
+#. Translators: station is built from the "neighbourhood" of the user %s.
+#. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:126
 #, c-format
-msgid "%s's Personal Radio"
-msgstr "%ss personlige radio"
+msgid "%s's Neighbourhood"
+msgstr "%ss nabolag"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:201
-msgid "Loved tracks"
-msgstr "Foretrukne spor"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:201
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1285
+#. Translators: station is built from the tracks which have been "loved" by the user %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:128
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr "%ss foretrukne spor"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:202
-msgid "Recommended tracks"
-msgstr "Anbefalede spor"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:202
+#. Translators: station is built from the tracks which are recommended to the user %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
 #, c-format
-msgid "Tracks recommended to %s"
-msgstr "Spor anbefalet til %s"
+msgid "%s's Recommended Radio"
+msgstr "%ss anbefalede radio"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:203
-msgid "Playlist"
-msgstr "Afspilningsliste"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:203
+#. Translators: station is built from the tracks which have been "tagged" with %s.
+#. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
+#. * but nationalities, record labels, decades and very random words are also commmon
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
 #, c-format
-msgid "%s's playlist"
-msgstr "%ss afspilningsliste"
+msgid "%s Tag Radio"
+msgstr "%s-mærke-radio"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:286
-msgid "Love"
-msgstr "Foretræk"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:287
-msgid "Mark this song as loved"
-msgstr "Markér denne sang som foretrukken"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:289
-msgid "Ban"
-msgstr "Forbyd"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:290
-msgid "Ban the current track from being played again"
-msgstr "Forbyd det nuværende spor, så det ikke bliver spillet igen"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:292
-msgid "Delete Station"
-msgstr "Slet station"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:293
-msgid "Delete the selected station"
-msgstr "Slet den valgte station"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:295
-msgid "Download song"
-msgstr "Hent sang"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:296
-msgid "Download this song"
-msgstr "Hent denne sang"
-
-#. awful
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:499
-msgid "Enter the item to build a Last.fm station out of:"
-msgstr "Indtast punktet for opbygning af Last.fm-station:"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:502
-msgid "Add"
-msgstr "Tilføj"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:853
-msgid "Account Settings"
-msgstr "Kontoindstillinger"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:878
-msgid ""
-"Account details are needed before you can connect.  Check your settings."
-msgstr ""
-"Kontooplysninger er påkrævet før du kan forbinde.  Kontrollér dine "
-"indstillinger."
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:886
-msgid "Unable to connect"
-msgstr "Kunne ikke oprette forbindelse"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1260
-#, c-format
-msgid "Global Tag %s"
-msgstr "Globalt mærke %s"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1281
-#, c-format
-msgid "%s's Recommended Radio: %s percent"
-msgstr "%ss anbefalede radio: %s procent"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1287
-#, c-format
-msgid "%s's Playlist"
-msgstr "%ss afspilningsliste"
-
-#. Translators: variables are 1: user name, 2: tag name; for user tag radio
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1293
-#, c-format
-msgid "%s's %s Radio"
-msgstr "%ss %s radio"
-
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1297
+#. Translators: station is built from the library of the group %s
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:136
 #, c-format
 msgid "%s Group Radio"
-msgstr "%s Gruppe-radio"
+msgstr "%s-gruppe-radio"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1752
-msgid "Neighbour Radio"
-msgstr "Nabo-radio"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:279
+msgid "_Rename Station"
+msgstr "_Omdøb station"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1760
-msgid "Personal Radio"
-msgstr "Personlig radio"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:280
+msgid "Rename station"
+msgstr "Omdøb station"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1850
-msgid "Server did not respond"
-msgstr "Serveren svarede ikke"
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:282
+msgid "_Delete Station"
+msgstr "_Slet station"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1918
-msgid "There is not enough content available to play this station."
-msgstr ""
-"Der er ikke nok tilgængeligt indhold til, at kunne spille denne station."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:283
+msgid "Delete station"
+msgstr "Slet station"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1923
-msgid "This station is available to subscribers only."
-msgstr "Denne station er kun tilgængelig for abonnenter."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:446
+msgid "You must enter your password to listen to this station"
+msgstr "Du skal indtaste din adgangskode for at kunne lytte til denne station"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1930
-msgid ""
-"The streaming system is offline for maintenance, please try again later."
-msgstr "Strømningssystemet er afkoblet pga. vedligeholdelse, prøv igen senere."
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:757
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1100
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1230
+msgid "Error tuning station: no response"
+msgstr "Fejl ved tuning til station: intet svar"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1969
-msgid "Changing station"
-msgstr "Skifter station"
+#. Invalid station url
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:794
+msgid "Invalid station URL"
+msgstr "Ugyldig stationsadresse"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2190
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2200
-msgid "Retrieving playlist"
-msgstr "Henter afspilningsliste"
+#. Subscriber only station
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This message indicates that to listen to this radio station the user needs to be
+#. * a paying subscriber to the service.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:800
+#, c-format
+msgid "This station is only available to %s subscribers"
+msgstr "Denne station er kun tilgængelig for abonnenter på %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2294
-msgid "Banning song"
-msgstr "Forbyder sang"
+#. Not enough content
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:804
+msgid "Not enough content to play station"
+msgstr "Utilstrækkeligt indhold til at kunne afspille stationen"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:2312
-msgid "Adding song to your Loved tracks"
-msgstr "Tilføjer sang til dine foretrukne spor"
+#. Other error
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:807
+#, c-format
+msgid "Error tuning station: %i - %s"
+msgstr "Fejl ved tuning til station: %i - %s"
 
-#. and maybe some more
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:818
+msgid "Error tuning station: unexpected response"
+msgstr "Fejl ved tuning til station: uventet svar"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:823
+msgid "Error tuning station: invalid response"
+msgstr "Fejl ved tuning til station: ugyldigt svar"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1215
+#, c-format
+msgid "Error tuning station: %s"
+msgstr "Fejl ved tuning til station: %s"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1287
+#, c-format
+msgid "Password for streaming %s radio using the deprecated API"
+msgstr "Adgangskode til at streame %s-radio ved brug af afskrevet API"
+
+#. We could be calling either radio.tune or radio.getPlaylist methods.
+#. * "Tuning station" seems like a user friendly message to display for both cases.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1450
+msgid "Tuning station"
+msgstr "Tuner til station"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:499
+msgid "OK"
+msgstr "O.k."
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:502
+msgid "Logging in"
+msgstr "Logger ind"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:505
+msgid "Request failed"
+msgstr "Forespørgsel mislykkedes"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:508
+msgid "Authentication error"
+msgstr "Godkendelsesfejl"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:511
+msgid "Clock is not set correctly"
+msgstr "Uret er ikke indstillet korrekt"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
+msgid "This version of Rhythmbox has been banned."
+msgstr "Denne version af Rhythmbox har fået forbud."
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:517
+msgid "Track submission failed too many times"
+msgstr "Sporindsendelse mislykkedes for mange gange"
+
 #: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:1
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.in.h:1
 msgid "Audio CD Recorder"
@@ -1709,41 +1788,41 @@ msgstr "_Prøv en anden"
 msgid "_Erase Disc"
 msgstr "_Slet disk"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1145
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1144
 msgid "C_reate"
 msgstr "_Opret"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1223
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1222
 #, c-format
 msgid "Failed to create the recorder: %s"
 msgstr "Kunne ikke oprette brænderen: %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1345
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1344
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
 msgstr "Kunne ikke fjerne midlertidig mappe \"%s\": %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1365
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1364
 msgid "Create Audio CD"
 msgstr "Opret lyd-cd"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1383
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1382
 #, c-format
 msgid "Create audio CD from '%s'?"
 msgstr "Opret lyd-cd fra \"%s\"?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1429
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1447
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1428
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1446
 #, c-format
 msgid "Unable to build an audio track list."
 msgstr "Kan ikke oprette en lydsporsliste."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1457
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1456
 #, c-format
 msgid "This playlist is too long to write to an audio CD."
 msgstr "Denne afspilningsliste er for lang til at blive skrevet på en lyd-cd."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1593
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1592
 #, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
@@ -1754,15 +1833,15 @@ msgstr ""
 "standard lyd-cd.  Hvis destinationsmediet er større end en standard lyd-cd, "
 "så indsæt det i drevet og prøv igen."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1604
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1603
 msgid "Playlist too long"
 msgstr "Afspilningsliste for lang"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1644
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1643
 msgid "Could not find temporary space!"
 msgstr "Kunne ikke finde midlertidig plads!"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1645
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1644
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MB "
@@ -1932,18 +2011,47 @@ msgid "Share music and play shared music on your local network"
 msgstr "Del musik og afspil delt musik over dit lokale netværk"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
+#, fuzzy
+msgid "<b>Add Remote</b>"
+msgstr "<b>Indhold</b>"
+
+#: ../plugins/daap/daap-prefs.ui.h:2
 msgid "<b>Sharing</b>"
 msgstr "<b>Deling</b>"
 
-#: ../plugins/daap/daap-prefs.ui.h:2
+#: ../plugins/daap/daap-prefs.ui.h:3
+#, fuzzy
+msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
+msgstr ""
+"<span weight=\"bold\" foreground=\"red\">Dit kreditkort har overskredet "
+"udløbsdatoen.</span>"
+
+#: ../plugins/daap/daap-prefs.ui.h:4
+msgid "Forget known Remotes"
+msgstr ""
+
+#: ../plugins/daap/daap-prefs.ui.h:5
+#, fuzzy
+msgid "Library _name:"
+msgstr "Samling for bruger:"
+
+#: ../plugins/daap/daap-prefs.ui.h:6
+msgid "Please enter the passcode displayed on your device."
+msgstr ""
+
+#: ../plugins/daap/daap-prefs.ui.h:7
 msgid "Require _password:"
 msgstr "Kræv _adgangskode:"
 
-#: ../plugins/daap/daap-prefs.ui.h:3 ../plugins/daap/rb-daap-dialog.c:82
-msgid "Shared music _name:"
-msgstr "Delt musik_navn:"
+#: ../plugins/daap/daap-prefs.ui.h:8
+msgid "You can now control Rhythmbox through your Remote"
+msgstr ""
 
-#: ../plugins/daap/daap-prefs.ui.h:4
+#: ../plugins/daap/daap-prefs.ui.h:9
+msgid "_Look for touch Remotes"
+msgstr ""
+
+#: ../plugins/daap/daap-prefs.ui.h:10
 msgid "_Share my music"
 msgstr "_Del min musik"
 
@@ -1951,36 +2059,40 @@ msgstr "_Del min musik"
 msgid "Invalid share name"
 msgstr "Ugyldigt delingsnavn"
 
-#: ../plugins/daap/rb-daap-dialog.c:74
+#: ../plugins/daap/rb-daap-dialog.c:73
 #, c-format
 msgid "The shared music name '%s' is already taken. Please choose another."
 msgstr "Det delte musiknavn \"%s\" er allerede brugt. Vælg venligst et andet."
 
-#: ../plugins/daap/rb-daap-plugin.c:129
+#: ../plugins/daap/rb-daap-dialog.c:81
+msgid "Shared music _name:"
+msgstr "Delt musik_navn:"
+
+#: ../plugins/daap/rb-daap-plugin.c:139
 msgid "Connect to _DAAP share..."
 msgstr "Forbind til _DAAP-deling..."
 
-#: ../plugins/daap/rb-daap-plugin.c:130
+#: ../plugins/daap/rb-daap-plugin.c:140
 msgid "Connect to a new DAAP share"
 msgstr "Forbind til en ny DAAP-deling"
 
-#: ../plugins/daap/rb-daap-plugin.c:136
+#: ../plugins/daap/rb-daap-plugin.c:146
 msgid "_Disconnect"
 msgstr "_Afbryd"
 
-#: ../plugins/daap/rb-daap-plugin.c:137
+#: ../plugins/daap/rb-daap-plugin.c:147
 msgid "Disconnect from DAAP share"
 msgstr "Afbryd fra DAAP-deling"
 
-#: ../plugins/daap/rb-daap-plugin.c:680
+#: ../plugins/daap/rb-daap-plugin.c:742
 msgid "New DAAP share"
 msgstr "Ny DAAP-deling"
 
-#: ../plugins/daap/rb-daap-plugin.c:680
+#: ../plugins/daap/rb-daap-plugin.c:742
 msgid "Host:port of DAAP share:"
 msgstr "Vært:port af DAAP-deling:"
 
-#: ../plugins/daap/rb-daap-plugin.c:902
+#: ../plugins/daap/rb-daap-plugin.c:996
 msgid "DAAP Music Sharing Preferences"
 msgstr "DAAP musikdelingsindstillinger"
 
@@ -2005,6 +2117,20 @@ msgstr "Modtager sange fra musikdeling"
 #: ../plugins/daap/rb-daap-source.c:571
 msgid "Could not connect to shared music"
 msgstr "Kunne ikke forbinde til musikdeling"
+
+#: ../plugins/daap/rb-dacp-source.c:295
+#, fuzzy
+msgid "Remotes"
+msgstr "Fjern"
+
+#: ../plugins/daap/rb-dacp-source.c:417
+#, fuzzy
+msgid "Connecting..."
+msgstr "Forbinder"
+
+#: ../plugins/daap/rb-dacp-source.c:419
+msgid "Could not pair with this Remote."
+msgstr ""
 
 #: ../plugins/dbus-media-server/dbus-media-server.rb-plugin.in.h:1
 msgid "MediaServer2 D-Bus interface"
@@ -2107,8 +2233,8 @@ msgstr "Slet denne afspilningsliste"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:101
 #: ../plugins/ipod/rb-ipod-plugin.c:106
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:125 ../shell/rb-shell-clipboard.c:190
-#: ../sources/rb-podcast-source.c:321
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:125 ../podcast/rb-podcast-source.c:124
+#: ../shell/rb-shell-clipboard.c:190
 msgid "_Properties"
 msgstr "_Egenskaber"
 
@@ -2118,7 +2244,7 @@ msgid "Display device properties"
 msgstr "Vis enhedsegenskaber"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1310
-#: ../plugins/ipod/rb-ipod-source.c:1927
+#: ../plugins/ipod/rb-ipod-source.c:1985
 #: ../plugins/mtpdevice/rb-mtp-source.c:1616
 msgid "Advanced"
 msgstr "Avanceret"
@@ -2278,14 +2404,15 @@ msgstr "_Slet"
 msgid "Delete playlist"
 msgstr "Slet afspilningsliste"
 
-#: ../plugins/ipod/rb-ipod-source.c:1436 ../sources/rb-podcast-source.c:840
+#: ../plugins/ipod/rb-ipod-source.c:1491
+#: ../podcast/rb-podcast-main-source.c:71
 #: ../sources/sync/rb-sync-settings-ui.c:262
 #: ../sources/sync/rb-sync-settings-ui.c:263
 #: ../sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../plugins/ipod/rb-ipod-source.c:1817
+#: ../plugins/ipod/rb-ipod-source.c:1875
 msgid "New playlist"
 msgstr "Ny afspilningsliste"
 
@@ -2490,35 +2617,35 @@ msgid_plural "%d stations"
 msgstr[0] "%d station"
 msgstr[1] "%d stationer"
 
-#: ../plugins/iradio/rb-iradio-source.c:1019
-#: ../plugins/iradio/rb-station-properties-dialog.c:402
+#: ../plugins/iradio/rb-iradio-source.c:1018
+#: ../plugins/iradio/rb-station-properties-dialog.c:401
 msgid "New Internet Radio Station"
 msgstr "Ny internet-radiostation"
 
-#: ../plugins/iradio/rb-iradio-source.c:1019
+#: ../plugins/iradio/rb-iradio-source.c:1018
 msgid "URL of internet radio station:"
 msgstr "Adresse på internet-radiostation:"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:398
-#: ../podcast/rb-feed-podcast-properties-dialog.c:216
-#: ../podcast/rb-podcast-properties-dialog.c:486
-#: ../sources/rb-media-player-source.c:353 ../widgets/rb-song-info.c:1082
+#: ../plugins/iradio/rb-station-properties-dialog.c:397
+#: ../podcast/rb-feed-podcast-properties-dialog.c:215
+#: ../podcast/rb-podcast-properties-dialog.c:485
+#: ../sources/rb-media-player-source.c:353 ../widgets/rb-song-info.c:1080
 #, c-format
 msgid "%s Properties"
 msgstr "%s egenskaber"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../podcast/rb-podcast-properties-dialog.c:599
-#: ../widgets/rb-entry-view.c:1113 ../widgets/rb-song-info.c:1159
+#: ../plugins/iradio/rb-station-properties-dialog.c:489
+#: ../podcast/rb-podcast-properties-dialog.c:598
+#: ../widgets/rb-entry-view.c:1113 ../widgets/rb-song-info.c:1157
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:581
+#: ../plugins/iradio/rb-station-properties-dialog.c:580
 msgid "Unable to change station property"
 msgstr "Ikke i stand til at ændre stationsejerskab"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:581
+#: ../plugins/iradio/rb-station-properties-dialog.c:580
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
 msgstr ""
@@ -2548,7 +2675,7 @@ msgid "_Save"
 msgstr "_Gem"
 
 #: ../plugins/lyrics/lyrics/__init__.py:216
-#: ../plugins/lyrics/lyrics/__init__.py:229 ../shell/rb-shell.c:391
+#: ../plugins/lyrics/lyrics/__init__.py:229 ../shell/rb-shell.c:395
 msgid "_Edit"
 msgstr "_Redigér"
 
@@ -3196,6 +3323,14 @@ msgid "Python Console"
 msgstr "Pythonkonsol"
 
 #. sys.excepthook = _excepthandler
+#: ../plugins/rbzeitgeist/rbzeitgeist.rb-plugin.in.h:1
+msgid "Inform Zeitgeist about your activity"
+msgstr ""
+
+#: ../plugins/rbzeitgeist/rbzeitgeist.rb-plugin.in.h:2
+msgid "Zeitgeist"
+msgstr ""
+
 #: ../plugins/replaygain/replaygain.rb-plugin.in.h:1
 msgid "ReplayGain"
 msgstr "ReplayGain"
@@ -3303,53 +3438,61 @@ msgstr "Send valgte spor med e-post eller samtaleprogram"
 msgid "Send tracks"
 msgstr "Send spor"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:141
+#: ../plugins/status-icon/rb-status-icon-plugin.c:142
 msgid "_Close"
 msgstr "_Luk"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:142
+#: ../plugins/status-icon/rb-status-icon-plugin.c:143
 msgid "Hide the music player window"
 msgstr "Skjul musikafspillervinduet"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:148
+#: ../plugins/status-icon/rb-status-icon-plugin.c:149
 msgid "_Show Music Player"
 msgstr "_Vis musikafspiller"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:149
+#: ../plugins/status-icon/rb-status-icon-plugin.c:150
 msgid "Choose music to play"
 msgstr "Vælg musik til afspilning"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:151
+#: ../plugins/status-icon/rb-status-icon-plugin.c:152
 msgid "Show N_otifications"
 msgstr "Vis _påmindelser"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:152
+#: ../plugins/status-icon/rb-status-icon-plugin.c:153
 msgid "Show notifications of song changes and other events"
 msgstr "Vis påmindelser ved sangskift og andre hændelser"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:435
+#: ../plugins/status-icon/rb-status-icon-plugin.c:456
+msgid "Previous"
+msgstr "Forrige"
+
+#: ../plugins/status-icon/rb-status-icon-plugin.c:462
+msgid "Pause"
+msgstr "Pause"
+
+#: ../plugins/status-icon/rb-status-icon-plugin.c:470
 msgid "Next"
 msgstr "Næste"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:586
-#: ../remote/dbus/rb-client.c:466 ../remote/dbus/rb-client.c:491
+#: ../plugins/status-icon/rb-status-icon-plugin.c:632
+#: ../remote/dbus/rb-client.c:468 ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "Afspiller ikke"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:589
+#: ../plugins/status-icon/rb-status-icon-plugin.c:635
 #, c-format
 msgid "Paused, %s"
 msgstr "Pauset, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:654
+#: ../plugins/status-icon/rb-status-icon-plugin.c:700
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "af <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:656
+#: ../plugins/status-icon/rb-status-icon-plugin.c:702
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "fra <i>%s</i>"
@@ -3512,30 +3655,61 @@ msgstr "Viser visualiseringer"
 msgid "Visualization"
 msgstr "Visualisering"
 
-#: ../podcast/rb-podcast-manager.c:827
+#: ../podcast/rb-podcast-main-source.c:117
+#, fuzzy
+msgid "New Episodes"
+msgstr "Episoder"
+
+#: ../podcast/rb-podcast-main-source.c:135
+#, fuzzy
+msgid "New Downloads"
+msgstr "Hent"
+
+#: ../podcast/rb-podcast-main-source.c:156
+msgid "Downloading podcast"
+msgstr "Henter podcast"
+
+#: ../podcast/rb-podcast-main-source.c:173
+msgid "Finished downloading podcast"
+msgstr "Færdig med at hente podcast"
+
+#: ../podcast/rb-podcast-main-source.c:190
+msgid "New updates available from"
+msgstr "Nye opdateringer tilgængelig fra"
+
+#: ../podcast/rb-podcast-main-source.c:214
+msgid "Error in podcast"
+msgstr "Fejl i podcast"
+
+#: ../podcast/rb-podcast-main-source.c:221
+#, c-format
+msgid "%s. Would you like to add the podcast feed anyway?"
+msgstr "%s. Vil du tilføje podcast-kilden alligevel?"
+
+#: ../podcast/rb-podcast-manager.c:836
 msgid "Error creating podcast download directory"
 msgstr "Fejl ved oprettelse af podcast-overførsels mappe"
 
-#: ../podcast/rb-podcast-manager.c:828
+#: ../podcast/rb-podcast-manager.c:837
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Kunne ikke oprette overførselsmappen for %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:953
+#: ../podcast/rb-podcast-manager.c:962
 msgid "Invalid URL"
 msgstr "Ugyldig adresse"
 
-#: ../podcast/rb-podcast-manager.c:954
+#: ../podcast/rb-podcast-manager.c:963
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "Adressen \"%s\" er ikke gyldig, vær venlig at kontrollere den."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:964
+#: ../podcast/rb-podcast-manager.c:973
 msgid "URL already added"
 msgstr "Adresse allerede tilføjet"
 
-#: ../podcast/rb-podcast-manager.c:965
+#: ../podcast/rb-podcast-manager.c:974
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3544,7 +3718,7 @@ msgstr ""
 "Adressen \"%s\" er allerede blevet tilføjet som en radiostation. Hvis det er "
 "en podcast-kilde, så fjern venligst radiostationen."
 
-#: ../podcast/rb-podcast-manager.c:1033
+#: ../podcast/rb-podcast-manager.c:1042
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3555,11 +3729,11 @@ msgstr ""
 "forkert adresse, eller kilden kan være ødelagt. Skal Rhythmbox at forsøge at "
 "bruge den alligevel?"
 
-#: ../podcast/rb-podcast-manager.c:1171
+#: ../podcast/rb-podcast-manager.c:1180
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2094
+#: ../podcast/rb-podcast-manager.c:2103
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -3590,147 +3764,333 @@ msgstr "Kilden indeholder ingen elementer, som er mulige at hente"
 msgid "Unable to display requested URI"
 msgstr "Kan ikke vise den forespurgte URI"
 
-#: ../podcast/rb-podcast-properties-dialog.c:549
+#: ../podcast/rb-podcast-properties-dialog.c:548
 msgid "Not Downloaded"
 msgstr "Ikke hentet"
 
-#: ../remote/dbus/rb-client.c:86
+#: ../podcast/rb-podcast-source.c:115
+msgid "_New Podcast Feed..."
+msgstr "_Ny podcast-kilde..."
+
+#: ../podcast/rb-podcast-source.c:116
+msgid "Subscribe to a new Podcast Feed"
+msgstr "Abonner på en ny podcast-kilde"
+
+#: ../podcast/rb-podcast-source.c:118
+msgid "Download _Episode"
+msgstr "Hent _episode"
+
+#: ../podcast/rb-podcast-source.c:119
+msgid "Download Podcast Episode"
+msgstr "Hent podcast-episode"
+
+#: ../podcast/rb-podcast-source.c:121
+msgid "_Cancel Download"
+msgstr "_Annullér hentning"
+
+#: ../podcast/rb-podcast-source.c:122
+msgid "Cancel Episode Download"
+msgstr "Afbryd episodehentning"
+
+#: ../podcast/rb-podcast-source.c:125
+msgid "Episode Properties"
+msgstr "Episode-egenskaber"
+
+#: ../podcast/rb-podcast-source.c:127
+msgid "_Update Podcast Feed"
+msgstr "_Opdatér podcast-kilde"
+
+#: ../podcast/rb-podcast-source.c:128
+msgid "Update Feed"
+msgstr "Opdatér kilde"
+
+#: ../podcast/rb-podcast-source.c:130
+msgid "_Delete Podcast Feed"
+msgstr "_Slet podcast-kilde"
+
+#: ../podcast/rb-podcast-source.c:131
+msgid "Delete Feed"
+msgstr "Slet kilde"
+
+#: ../podcast/rb-podcast-source.c:133
+msgid "_Update All Feeds"
+msgstr "_Opdatér alle kilder"
+
+#: ../podcast/rb-podcast-source.c:134
+msgid "Update all feeds"
+msgstr "Opdatér alle kilder"
+
+#: ../podcast/rb-podcast-source.c:140
+#: ../rhythmdb/rhythmdb-property-model.c:496
+#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:166
+#: ../sources/rb-static-playlist-source.c:124
+msgid "All"
+msgstr "Alle"
+
+#: ../podcast/rb-podcast-source.c:140 ../sources/rb-auto-playlist-source.c:104
+#: ../sources/rb-browser-source.c:166
+#: ../sources/rb-static-playlist-source.c:124
+msgid "Search all fields"
+msgstr "Søg alle felter"
+
+#: ../podcast/rb-podcast-source.c:141
+msgid "Feeds"
+msgstr "Kilder"
+
+#: ../podcast/rb-podcast-source.c:141
+msgid "Search podcast feeds"
+msgstr "Søg podcast-kilder"
+
+#: ../podcast/rb-podcast-source.c:142
+msgid "Episodes"
+msgstr "Episoder"
+
+#: ../podcast/rb-podcast-source.c:142
+msgid "Search podcast episodes"
+msgstr "Søg podcast-episoder"
+
+#: ../podcast/rb-podcast-source.c:392
+msgid "New Podcast Feed"
+msgstr "Ny podcast-kilde"
+
+#: ../podcast/rb-podcast-source.c:392
+msgid "URL of podcast feed:"
+msgstr "Adresse på podcast-kilde:"
+
+#: ../podcast/rb-podcast-source.c:488
+msgid "Delete the podcast feed and downloaded files?"
+msgstr "Slet podcast-kilden og hentede filer?"
+
+#: ../podcast/rb-podcast-source.c:491
+msgid ""
+"If you choose to delete the feed and files, they will be permanently lost.  "
+"Please note that you can delete the feed but keep the downloaded files by "
+"choosing to delete the feed only."
+msgstr ""
+"Hvis du vælger at slette kilden og filerne, vil de være permanent mistet. "
+"Vær opmærksom på. at du kan slette kilden og samtidigt beholde de hentede "
+"filer ved at vælge kun at slette kilden."
+
+#: ../podcast/rb-podcast-source.c:499
+msgid "Delete _Feed Only"
+msgstr "_Slet kun kilde"
+
+#: ../podcast/rb-podcast-source.c:506
+msgid "_Delete Feed And Files"
+msgstr "_Slet kilde og filer"
+
+#: ../podcast/rb-podcast-source.c:594 ../podcast/rb-podcast-source.c:1427
+msgid "Downloaded"
+msgstr "Hentet"
+
+#: ../podcast/rb-podcast-source.c:598 ../podcast/rb-podcast-source.c:1429
+msgid "Failed"
+msgstr "Fejlede"
+
+#: ../podcast/rb-podcast-source.c:602 ../podcast/rb-podcast-source.c:1428
+msgid "Waiting"
+msgstr "Venter"
+
+#: ../podcast/rb-podcast-source.c:709
+#, c-format
+msgid "%d feed"
+msgid_plural "All %d feeds"
+msgstr[0] "%d kilde"
+msgstr[1] "Alle %d kilder"
+
+#: ../podcast/rb-podcast-source.c:946
+msgid "Podcast Error"
+msgstr "Podcast-fejl"
+
+#: ../podcast/rb-podcast-source.c:1069
+msgid "Delete the podcast episode and downloaded file?"
+msgstr "Slet podcast-episode og hentet fil?"
+
+#: ../podcast/rb-podcast-source.c:1072
+msgid ""
+"If you choose to delete the episode and file, they will be permanently "
+"lost.  Please note that you can delete the episode but keep the downloaded "
+"file by choosing to delete the episode only."
+msgstr ""
+"Hvis du vælger at slette episoden og filen vil de blive permanent slettet. "
+"Vær opmærksom på, at du kan slette episoderne og samtidigt beholde den "
+"hentede fil ved at vælge kun at slette episoden."
+
+#: ../podcast/rb-podcast-source.c:1080
+msgid "Delete _Episode Only"
+msgstr "Slet kun _episode"
+
+#: ../podcast/rb-podcast-source.c:1086
+msgid "_Delete Episode And File"
+msgstr "_Slet episode og fil"
+
+#: ../podcast/rb-podcast-source.c:1234
+#, c-format
+msgid "%d episode"
+msgid_plural "%d episodes"
+msgstr[0] "%d episode"
+msgstr[1] "%d episoder"
+
+#. Translators: this is the toolbar button label
+#. for New Podcast Feed action.
+#: ../podcast/rb-podcast-source.c:1324
+msgctxt "Podcast"
+msgid "New"
+msgstr "Ny"
+
+#. Translators: this is the toolbar button label
+#. for Update All Feeds action.
+#: ../podcast/rb-podcast-source.c:1330
+msgid "Update"
+msgstr "Opdatér"
+
+#: ../podcast/rb-podcast-source.c:1373 ../podcast/rb-podcast-source.c:1384
+msgid "Date"
+msgstr "Dato"
+
+#: ../podcast/rb-podcast-source.c:1406 ../podcast/rb-podcast-source.c:1466
+#: ../podcast/rb-podcast-source.c:1514
+msgid "Feed"
+msgstr "Kilde"
+
+#: ../podcast/rb-podcast-source.c:1426 ../podcast/rb-podcast-source.c:1444
+msgid "Status"
+msgstr "Status"
+
+#: ../remote/dbus/rb-client.c:87
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Start ikke en ny instans af Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:87 ../shell/main.c:120
+#: ../remote/dbus/rb-client.c:88 ../shell/main.c:120
 msgid "Quit Rhythmbox"
 msgstr "Afslut Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:89
+msgid "Check if Rhythmbox is already running"
+msgstr "Kontrollér om Rhythmbox allerede kører"
+
+#: ../remote/dbus/rb-client.c:91
 msgid "Don't present an existing Rhythmbox window"
 msgstr "Præsentér ikke et eksisterende Rhythmbox-vindue"
 
-#: ../remote/dbus/rb-client.c:90
+#: ../remote/dbus/rb-client.c:92
 msgid "Hide the Rhythmbox window"
 msgstr "Skjul Rhythmbox-vinduet"
 
-#: ../remote/dbus/rb-client.c:92
+#: ../remote/dbus/rb-client.c:94
 msgid "Jump to next song"
 msgstr "Spring til næste sang"
 
-#: ../remote/dbus/rb-client.c:93
+#: ../remote/dbus/rb-client.c:95
 msgid "Jump to previous song"
 msgstr "Spring til forrige sang"
 
-#: ../remote/dbus/rb-client.c:94
+#: ../remote/dbus/rb-client.c:96
 msgid "Seek in current track"
 msgstr "Søg i nuværende spor"
 
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:98
 msgid "Show notification of the playing song"
 msgstr "Vis påmindelse om afspillende sang"
 
-#: ../remote/dbus/rb-client.c:98
+#: ../remote/dbus/rb-client.c:100
 msgid "Resume playback if currently paused"
 msgstr "Genoptag afspilning hvis pauset"
 
-#: ../remote/dbus/rb-client.c:99
+#: ../remote/dbus/rb-client.c:101
 msgid "Pause playback if currently playing"
 msgstr "Pause afspilning hvis afspiller"
 
-#: ../remote/dbus/rb-client.c:100
+#: ../remote/dbus/rb-client.c:102
 msgid "Toggle play/pause mode"
 msgstr "Slå afspil/pause til og fra"
 
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:105
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Afspil en specifik adresse, importer den om nødvendigt"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:105
 msgid "URI to play"
 msgstr "Adresse til afspilning"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:106
 msgid "Add specified tracks to the play queue"
 msgstr "Tilføj specifikke spor til afspilningslisten"
 
-#: ../remote/dbus/rb-client.c:105
+#: ../remote/dbus/rb-client.c:107
 msgid "Empty the play queue before adding new tracks"
 msgstr "Tøm afspilningslisten før tilføjelse af nye spor"
 
-#: ../remote/dbus/rb-client.c:107
+#: ../remote/dbus/rb-client.c:109
 msgid "Print the title and artist of the playing song"
 msgstr "Udskriv titel og kunstner for den nuværende sang"
 
-#: ../remote/dbus/rb-client.c:108
+#: ../remote/dbus/rb-client.c:110
 msgid "Print formatted details of the song"
 msgstr "Udskriv formaterede detaljer om sangen"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:111
 msgid "Select the source matching the specified URI"
 msgstr "Vælg kilden, der matcher den angivne URI"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:111
 msgid "Source to select"
 msgstr "Kilde der skal vælges"
 
-#: ../remote/dbus/rb-client.c:110
+#: ../remote/dbus/rb-client.c:112
 msgid "Activate the source matching the specified URI"
 msgstr "Aktivér kilden, der matcher den angivne URI"
 
-#: ../remote/dbus/rb-client.c:110
+#: ../remote/dbus/rb-client.c:112
 msgid "Source to activate"
 msgstr "Kilde der skal aktiveres"
 
-#: ../remote/dbus/rb-client.c:111
+#: ../remote/dbus/rb-client.c:113
 msgid "Play from the source matching the specified URI"
 msgstr "Afspil fra kilden, der matcher den angivne URI"
 
-#: ../remote/dbus/rb-client.c:111
+#: ../remote/dbus/rb-client.c:113
 msgid "Source to play from"
 msgstr "Kilde der skal afspilles fra"
 
-#: ../remote/dbus/rb-client.c:113
+#: ../remote/dbus/rb-client.c:115
 msgid "Set the playback volume"
 msgstr "Bestem afspilningslydstyrken"
 
-#: ../remote/dbus/rb-client.c:114
+#: ../remote/dbus/rb-client.c:116
 msgid "Increase the playback volume"
 msgstr "Hæv afspilningslydstyrken"
 
-#: ../remote/dbus/rb-client.c:115
+#: ../remote/dbus/rb-client.c:117
 msgid "Decrease the playback volume"
 msgstr "Sænk afspilningslydstyrken"
 
-#: ../remote/dbus/rb-client.c:116
+#: ../remote/dbus/rb-client.c:118
 msgid "Print the current playback volume"
 msgstr "Vis den nuværende afspilningslydstyrke"
 
-#: ../remote/dbus/rb-client.c:117
+#: ../remote/dbus/rb-client.c:119
 msgid "Mute playback"
 msgstr "Afspilning uden lyd"
 
-#: ../remote/dbus/rb-client.c:118
+#: ../remote/dbus/rb-client.c:120
 msgid "Unmute playback"
 msgstr "Afspilning med lyd"
 
-#: ../remote/dbus/rb-client.c:119
+#: ../remote/dbus/rb-client.c:121
 msgid "Set the rating of the current song"
 msgstr "Angiv vurderingen af den aktuelle sang"
 
-#: ../remote/dbus/rb-client.c:804
+#: ../remote/dbus/rb-client.c:817
 #, c-format
 msgid "Playback is muted.\n"
 msgstr "Afspilning uden lyd.\n"
 
-#: ../remote/dbus/rb-client.c:805
+#: ../remote/dbus/rb-client.c:818
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Afspilningslydstyke er %f.\n"
-
-#: ../rhythmdb/rhythmdb-property-model.c:495
-#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:166
-#: ../sources/rb-podcast-source.c:337
-#: ../sources/rb-static-playlist-source.c:124
-msgid "All"
-msgstr "Alle"
 
 #: ../rhythmdb/rhythmdb-tree.c:411
 #, c-format
@@ -4128,162 +4488,162 @@ msgstr "_Egenskaber"
 msgid "Show information on each selected song"
 msgstr "Vis information om hver valgt sang"
 
-#: ../shell/rb-shell-player.c:308
+#: ../shell/rb-shell-player.c:309
 msgid "Pre_vious"
 msgstr "Fo_rrige"
 
-#: ../shell/rb-shell-player.c:309
+#: ../shell/rb-shell-player.c:310
 msgid "Start playing the previous song"
 msgstr "Start afspilning af forrige sang"
 
-#: ../shell/rb-shell-player.c:311
+#: ../shell/rb-shell-player.c:312
 msgid "_Next"
 msgstr "_Næste"
 
-#: ../shell/rb-shell-player.c:312
+#: ../shell/rb-shell-player.c:313
 msgid "Start playing the next song"
 msgstr "Start afspilning af næste sang"
 
-#: ../shell/rb-shell-player.c:314
+#: ../shell/rb-shell-player.c:315
 msgid "_Increase Volume"
 msgstr "_Hæv lydstyrke"
 
-#: ../shell/rb-shell-player.c:315
+#: ../shell/rb-shell-player.c:316
 msgid "Increase playback volume"
 msgstr "Hæv afspilningslydstyrke"
 
-#: ../shell/rb-shell-player.c:317
+#: ../shell/rb-shell-player.c:318
 msgid "_Decrease Volume"
 msgstr "_Sænk lydstyrke"
 
-#: ../shell/rb-shell-player.c:318
+#: ../shell/rb-shell-player.c:319
 msgid "Decrease playback volume"
 msgstr "Sænk afspilningslydstyrke"
 
-#: ../shell/rb-shell-player.c:325
+#: ../shell/rb-shell-player.c:326
 msgid "_Play"
 msgstr "Afs_pil"
 
-#: ../shell/rb-shell-player.c:326 ../shell/rb-shell-player.c:3823
+#: ../shell/rb-shell-player.c:327 ../shell/rb-shell-player.c:3859
 msgid "Start playback"
 msgstr "Start afspilning"
 
-#: ../shell/rb-shell-player.c:328
+#: ../shell/rb-shell-player.c:329
 msgid "Sh_uffle"
 msgstr "Vælg _tilfældig sang"
 
-#: ../shell/rb-shell-player.c:329
+#: ../shell/rb-shell-player.c:330
 msgid "Play songs in a random order"
 msgstr "Spil sange i tilfældig rækkefølge"
 
-#: ../shell/rb-shell-player.c:331
+#: ../shell/rb-shell-player.c:332
 msgid "_Repeat"
 msgstr "_Gentag"
 
-#: ../shell/rb-shell-player.c:332
+#: ../shell/rb-shell-player.c:333
 msgid "Play first song again after all songs are played"
 msgstr "Spil første sang igen efter alle sange er blevet afspillet"
 
-#: ../shell/rb-shell-player.c:334
+#: ../shell/rb-shell-player.c:335
 msgid "_Song Position Slider"
 msgstr "_Sangpositionsskyder"
 
-#: ../shell/rb-shell-player.c:335
+#: ../shell/rb-shell-player.c:336
 msgid "Change the visibility of the song position slider"
 msgstr "Ændr synligheden af sangpositionsskyderen"
 
-#: ../shell/rb-shell-player.c:818
+#: ../shell/rb-shell-player.c:819
 msgid "Stream error"
 msgstr "Strømfejl"
 
-#: ../shell/rb-shell-player.c:819
+#: ../shell/rb-shell-player.c:820
 msgid "Unexpected end of stream!"
 msgstr "Uventet afslutning på strøm!"
 
-#: ../shell/rb-shell-player.c:976
+#: ../shell/rb-shell-player.c:977
 msgid "Linear"
 msgstr "Lineær"
 
-#: ../shell/rb-shell-player.c:978
+#: ../shell/rb-shell-player.c:979
 msgid "Linear looping"
 msgstr "Lineær løkke"
 
-#: ../shell/rb-shell-player.c:980
+#: ../shell/rb-shell-player.c:981
 msgid "Shuffle"
 msgstr "Tilfældig"
 
-#: ../shell/rb-shell-player.c:982
+#: ../shell/rb-shell-player.c:983
 msgid "Random with equal weights"
 msgstr "Tilfældigt med lige vægtninger"
 
-#: ../shell/rb-shell-player.c:984
+#: ../shell/rb-shell-player.c:985
 msgid "Random by time since last play"
 msgstr "Tilfældigt efter tid siden sidste afspilning"
 
-#: ../shell/rb-shell-player.c:986
+#: ../shell/rb-shell-player.c:987
 msgid "Random by rating"
 msgstr "Tilfældigt efter vurdering"
 
-#: ../shell/rb-shell-player.c:988
+#: ../shell/rb-shell-player.c:989
 msgid "Random by time since last play and rating"
 msgstr "Tilfældigt efter sidste tidspunkt afspillet og vurdering"
 
-#: ../shell/rb-shell-player.c:990
+#: ../shell/rb-shell-player.c:991
 msgid "Linear, removing entries once played"
 msgstr "Lineær, fjerner sange efter afspilning"
 
-#: ../shell/rb-shell-player.c:1000
+#: ../shell/rb-shell-player.c:1001
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Kunne ikke oprette afspiller: %s"
 
-#: ../shell/rb-shell-player.c:1551
+#: ../shell/rb-shell-player.c:1562
 #, c-format
 msgid "Playlist was empty"
 msgstr "Afspilningsliste var tom"
 
-#: ../shell/rb-shell-player.c:2034
+#: ../shell/rb-shell-player.c:2063
 #, c-format
 msgid "Not currently playing"
 msgstr "Afspiller ikke"
 
-#: ../shell/rb-shell-player.c:2092
+#: ../shell/rb-shell-player.c:2121
 #, c-format
 msgid "No previous song"
 msgstr "Ingen forrige sang"
 
-#: ../shell/rb-shell-player.c:2192
+#: ../shell/rb-shell-player.c:2221
 #, c-format
 msgid "No next song"
 msgstr "Ingen næste sang"
 
-#: ../shell/rb-shell-player.c:2313 ../shell/rb-shell-player.c:3473
+#: ../shell/rb-shell-player.c:2342 ../shell/rb-shell-player.c:3509
 msgid "Couldn't start playback"
 msgstr "Kunne ikke starte afspilning"
 
-#: ../shell/rb-shell-player.c:3185
+#: ../shell/rb-shell-player.c:3214
 msgid "Couldn't stop playback"
 msgstr "Kunne ikke stoppe afspilning"
 
-#: ../shell/rb-shell-player.c:3295
+#: ../shell/rb-shell-player.c:3331
 #, c-format
 msgid "Playback position not available"
 msgstr "Afspilningsposition ikke tilgængelig"
 
-#: ../shell/rb-shell-player.c:3327 ../shell/rb-shell-player.c:3361
+#: ../shell/rb-shell-player.c:3363 ../shell/rb-shell-player.c:3397
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Nuværende sang er ikke søgebar"
 
-#: ../shell/rb-shell-player.c:3818
+#: ../shell/rb-shell-player.c:3854
 msgid "Pause playback"
 msgstr "Pause"
 
-#: ../shell/rb-shell-player.c:3820
+#: ../shell/rb-shell-player.c:3856
 msgid "Stop playback"
 msgstr "Stop afspilning"
 
-#: ../shell/rb-shell-preferences.c:162 ../shell/rb-shell.c:2428
+#: ../shell/rb-shell-preferences.c:162 ../shell/rb-shell.c:2438
 msgid "Couldn't display help"
 msgstr "Kunne ikke vise hjælp"
 
@@ -4291,173 +4651,173 @@ msgstr "Kunne ikke vise hjælp"
 msgid "Music Player Preferences"
 msgstr "Indstillinger for musikafspilleren"
 
-#: ../shell/rb-shell-preferences.c:257
+#: ../shell/rb-shell-preferences.c:256
 msgid "General"
 msgstr "Generel"
 
-#: ../shell/rb-shell-preferences.c:313
+#: ../shell/rb-shell-preferences.c:312
 msgid "Playback"
 msgstr "Afspilning"
 
-#: ../shell/rb-shell.c:390
+#: ../shell/rb-shell.c:394
 msgid "_Music"
 msgstr "_Musik"
 
-#: ../shell/rb-shell.c:392
+#: ../shell/rb-shell.c:396
 msgid "_View"
 msgstr "_Vis"
 
-#: ../shell/rb-shell.c:393
+#: ../shell/rb-shell.c:397
 msgid "_Control"
 msgstr "_Betjening"
 
-#: ../shell/rb-shell.c:394
+#: ../shell/rb-shell.c:398
 msgid "_Tools"
 msgstr "_Værktøj"
 
-#: ../shell/rb-shell.c:395
+#: ../shell/rb-shell.c:399
 msgid "_Help"
 msgstr "_Hjælp"
 
-#: ../shell/rb-shell.c:397
+#: ../shell/rb-shell.c:401
 msgid "_Import Folder..."
 msgstr "_Importér mappe..."
 
-#: ../shell/rb-shell.c:398
+#: ../shell/rb-shell.c:402
 msgid "Choose folder to be added to the Library"
 msgstr "Vælg mappe der skal tilføjes til samlingen"
 
-#: ../shell/rb-shell.c:400
+#: ../shell/rb-shell.c:404
 msgid "Import _File..."
 msgstr "Importér _fil..."
 
-#: ../shell/rb-shell.c:401
+#: ../shell/rb-shell.c:405
 msgid "Choose file to be added to the Library"
 msgstr "Vælg fil der skal tilføjes til samlingen"
 
-#: ../shell/rb-shell.c:403
+#: ../shell/rb-shell.c:407
 msgid "_About"
 msgstr "_Om"
 
-#: ../shell/rb-shell.c:404
+#: ../shell/rb-shell.c:408
 msgid "Show information about the music player"
 msgstr "Vis information om musikafspilleren"
 
-#: ../shell/rb-shell.c:406
+#: ../shell/rb-shell.c:410
 msgid "_Contents"
 msgstr "_Indhold"
 
-#: ../shell/rb-shell.c:407
+#: ../shell/rb-shell.c:411
 msgid "Display music player help"
 msgstr "Vis hjælp til musikafspilleren"
 
-#: ../shell/rb-shell.c:409
+#: ../shell/rb-shell.c:413
 msgid "_Quit"
 msgstr "Afsl_ut"
 
-#: ../shell/rb-shell.c:410
+#: ../shell/rb-shell.c:414
 msgid "Quit the music player"
 msgstr "Afslut musikafspilleren"
 
-#: ../shell/rb-shell.c:412
+#: ../shell/rb-shell.c:416
 msgid "Prefere_nces"
 msgstr "Indstilli_nger"
 
-#: ../shell/rb-shell.c:413
+#: ../shell/rb-shell.c:417
 msgid "Edit music player preferences"
 msgstr "Ændr indstillinger for musikafspilleren"
 
-#: ../shell/rb-shell.c:415
+#: ../shell/rb-shell.c:419
 msgid "Plu_gins"
 msgstr "Mod_uler"
 
-#: ../shell/rb-shell.c:416
+#: ../shell/rb-shell.c:420
 msgid "Change and configure plugins"
 msgstr "Ændr og konfigurér moduler"
 
-#: ../shell/rb-shell.c:418
+#: ../shell/rb-shell.c:422
 msgid "Show _All Tracks"
 msgstr "Vis _alle spor"
 
-#: ../shell/rb-shell.c:419
+#: ../shell/rb-shell.c:423
 msgid "Show all tracks in this music source"
 msgstr "Vis alle spor i denne musikkilde"
 
-#: ../shell/rb-shell.c:421
+#: ../shell/rb-shell.c:425
 msgid "_Jump to Playing Song"
 msgstr "Sp_ring til afspillende sang"
 
-#: ../shell/rb-shell.c:422
+#: ../shell/rb-shell.c:426
 msgid "Scroll the view to the currently playing song"
 msgstr "Rul visningen til den nuværende sang"
 
-#: ../shell/rb-shell.c:429
+#: ../shell/rb-shell.c:433
 msgid "Side _Pane"
 msgstr "Side_rude"
 
-#: ../shell/rb-shell.c:430
+#: ../shell/rb-shell.c:434
 msgid "Change the visibility of the side pane"
 msgstr "Ændr synligheden af sideruden"
 
-#: ../shell/rb-shell.c:432
+#: ../shell/rb-shell.c:436
 msgid "T_oolbar"
 msgstr "_Værktøjslinje"
 
-#: ../shell/rb-shell.c:433
+#: ../shell/rb-shell.c:437
 msgid "Change the visibility of the toolbar"
 msgstr "Ændr synligheden af værktøjslinjen"
 
-#: ../shell/rb-shell.c:435
+#: ../shell/rb-shell.c:439
 msgid "_Small Display"
 msgstr "_Lille vindue"
 
-#: ../shell/rb-shell.c:436
+#: ../shell/rb-shell.c:440
 msgid "Make the main window smaller"
 msgstr "Gør hovedvinduet mindre"
 
-#: ../shell/rb-shell.c:438
+#: ../shell/rb-shell.c:442
 msgid "Party _Mode"
 msgstr "_Festtilstand"
 
-#: ../shell/rb-shell.c:439
+#: ../shell/rb-shell.c:443
 msgid "Change the status of the party mode"
 msgstr "Ændr status af festtilstanden"
 
-#: ../shell/rb-shell.c:441
+#: ../shell/rb-shell.c:445
 msgid "Play _Queue as Side Pane"
 msgstr "Afspilnings_kø i siderude"
 
-#: ../shell/rb-shell.c:442
+#: ../shell/rb-shell.c:446
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Bestem om køen er synlig som en kilde eller en sidebjælke"
 
-#: ../shell/rb-shell.c:444
+#: ../shell/rb-shell.c:448
 msgid "S_tatusbar"
 msgstr "_Statuslinje"
 
-#: ../shell/rb-shell.c:445
+#: ../shell/rb-shell.c:449
 msgid "Change the visibility of the statusbar"
 msgstr "Ændr synligheden af statuslinjen"
 
-#: ../shell/rb-shell.c:1214 ../shell/rb-shell.c:1442
+#: ../shell/rb-shell.c:1221 ../shell/rb-shell.c:1452
 msgid "Unable to move user data files"
 msgstr "Kunne ikke flytte bruger-datafilerne"
 
-#: ../shell/rb-shell.c:1529
+#: ../shell/rb-shell.c:1539
 msgid "Change the music volume"
 msgstr "Ændr musiklydstyrken"
 
-#: ../shell/rb-shell.c:1950
+#: ../shell/rb-shell.c:1960
 msgid "Error while saving song information"
 msgstr "Fejl ved skrivning af sanginformation"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2242
+#: ../shell/rb-shell.c:2252
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pause)"
 
-#: ../shell/rb-shell.c:2346
+#: ../shell/rb-shell.c:2356
 msgid "translator-credits"
 msgstr ""
 "Kenneth Christiansen\n"
@@ -4472,7 +4832,7 @@ msgstr ""
 "Dansk-gruppen <dansk@dansk-gruppen.dk>\n"
 "Mere info: http://www.dansk-gruppen.dk"
 
-#: ../shell/rb-shell.c:2349
+#: ../shell/rb-shell.c:2359
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -4484,7 +4844,7 @@ msgstr ""
 "Foundation; enten version 2 af licensen, eller (selvvalgt) hvilken som\n"
 "helst efterfølgende version.\n"
 
-#: ../shell/rb-shell.c:2353
+#: ../shell/rb-shell.c:2363
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -4496,7 +4856,7 @@ msgstr ""
 "eller EGNETHED TIL NOGEN SPECIEL OPGAVE. Se GNU General Public License\n"
 "for nærmere detaljer.\n"
 
-#: ../shell/rb-shell.c:2357
+#: ../shell/rb-shell.c:2367
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -4507,59 +4867,59 @@ msgstr ""
 "Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2364
+#: ../shell/rb-shell.c:2374
 msgid "Maintainers:"
 msgstr "Vedligeholdere:"
 
-#: ../shell/rb-shell.c:2367
+#: ../shell/rb-shell.c:2377
 msgid "Former Maintainers:"
 msgstr "Tidligere vedligeholdere:"
 
-#: ../shell/rb-shell.c:2370
+#: ../shell/rb-shell.c:2380
 msgid "Contributors:"
 msgstr "Bidragydere:"
 
-#: ../shell/rb-shell.c:2372
+#: ../shell/rb-shell.c:2382
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhåndterings- og afspilningsprogram til GNOME."
 
-#: ../shell/rb-shell.c:2381
+#: ../shell/rb-shell.c:2391
 msgid "Rhythmbox Website"
 msgstr "Rhythmbox hjemmeside"
 
-#: ../shell/rb-shell.c:2473
+#: ../shell/rb-shell.c:2483
 msgid "Configure Plugins"
 msgstr "Konfigurér moduler"
 
-#: ../shell/rb-shell.c:2545
+#: ../shell/rb-shell.c:2554
 msgid "Import Folder into Library"
 msgstr "Indlæs mappe til musiksamling"
 
-#: ../shell/rb-shell.c:2567
+#: ../shell/rb-shell.c:2576
 msgid "Import File into Library"
 msgstr "Importér fil til musiksamling"
 
-#: ../shell/rb-shell.c:3171 ../shell/rb-shell.c:3529
+#: ../shell/rb-shell.c:3180 ../shell/rb-shell.c:3538
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ingen registreret kilde kan håndtere URI'en %s"
 
-#: ../shell/rb-shell.c:3649
+#: ../shell/rb-shell.c:3658
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Ingen registreret kilde matcher URI'en %s"
 
-#: ../shell/rb-shell.c:3682 ../shell/rb-shell.c:3725
+#: ../shell/rb-shell.c:3691 ../shell/rb-shell.c:3734
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Ukendt sangadresse: %s"
 
-#: ../shell/rb-shell.c:3734
+#: ../shell/rb-shell.c:3743
 #, c-format
 msgid "Unknown property %s"
 msgstr "Ukendt ejerskab %s"
 
-#: ../shell/rb-shell.c:3748
+#: ../shell/rb-shell.c:3757
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Ugyldig egenskabstype %s for egenskab %s"
@@ -4637,12 +4997,6 @@ msgstr "Overfører spor %d ud af %d (%.0f%%)"
 msgid "Transferring track %d out of %d"
 msgstr "Overfører spor %d ud af %d"
 
-#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:166
-#: ../sources/rb-podcast-source.c:337
-#: ../sources/rb-static-playlist-source.c:124
-msgid "Search all fields"
-msgstr "Søg alle felter"
-
 #: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:167
 #: ../sources/rb-static-playlist-source.c:125
 msgid "Artists"
@@ -4669,7 +5023,7 @@ msgid "Search titles"
 msgstr "Søg titler"
 
 #: ../sources/rb-removable-media-source.c:892
-#: ../sources/rb-library-source.c:1271 ../sources/rb-library-source.c:1275
+#: ../sources/rb-library-source.c:1270 ../sources/rb-library-source.c:1274
 msgid "Error transferring track"
 msgstr "Fejl i overførsel af spor"
 
@@ -4771,15 +5125,15 @@ msgstr "Nummer. Kunstner - Titel"
 msgid "Music"
 msgstr "Musik"
 
-#: ../sources/rb-library-source.c:443
+#: ../sources/rb-library-source.c:442
 msgid "Choose Library Location"
 msgstr "Vælg samlingsplacering"
 
-#: ../sources/rb-library-source.c:618
+#: ../sources/rb-library-source.c:617
 msgid "Multiple locations set"
 msgstr "Flere placeringer valgt"
 
-#: ../sources/rb-library-source.c:1048
+#: ../sources/rb-library-source.c:1047
 msgid "Example Path:"
 msgstr "Eksempelsti:"
 
@@ -4873,203 +5227,6 @@ msgstr "Fjern fra afspilningsliste"
 msgid "Remove each selected song from the playlist"
 msgstr "Fjern alle valgte sange fra afspilningslisten"
 
-#: ../sources/rb-podcast-source.c:311
-msgid "_New Podcast Feed..."
-msgstr "_Ny podcast-kilde..."
-
-#: ../sources/rb-podcast-source.c:312
-msgid "Subscribe to a new Podcast Feed"
-msgstr "Abonner på en ny podcast-kilde"
-
-#: ../sources/rb-podcast-source.c:315
-msgid "Download _Episode"
-msgstr "Hent _episode"
-
-#: ../sources/rb-podcast-source.c:316
-msgid "Download Podcast Episode"
-msgstr "Hent podcast-episode"
-
-#: ../sources/rb-podcast-source.c:318
-msgid "_Cancel Download"
-msgstr "_Annullér hentning"
-
-#: ../sources/rb-podcast-source.c:319
-msgid "Cancel Episode Download"
-msgstr "Afbryd episodehentning"
-
-#: ../sources/rb-podcast-source.c:322
-msgid "Episode Properties"
-msgstr "Episode-egenskaber"
-
-#: ../sources/rb-podcast-source.c:324
-msgid "_Update Podcast Feed"
-msgstr "_Opdatér podcast-kilde"
-
-#: ../sources/rb-podcast-source.c:325
-msgid "Update Feed"
-msgstr "Opdatér kilde"
-
-#: ../sources/rb-podcast-source.c:327
-msgid "_Delete Podcast Feed"
-msgstr "_Slet podcast-kilde"
-
-#: ../sources/rb-podcast-source.c:328
-msgid "Delete Feed"
-msgstr "Slet kilde"
-
-#: ../sources/rb-podcast-source.c:330
-msgid "_Update All Feeds"
-msgstr "_Opdatér alle kilder"
-
-#: ../sources/rb-podcast-source.c:331
-msgid "Update all feeds"
-msgstr "Opdatér alle kilder"
-
-#: ../sources/rb-podcast-source.c:338
-msgid "Feeds"
-msgstr "Kilder"
-
-#: ../sources/rb-podcast-source.c:338
-msgid "Search podcast feeds"
-msgstr "Søg podcast-kilder"
-
-#: ../sources/rb-podcast-source.c:339
-msgid "Episodes"
-msgstr "Episoder"
-
-#: ../sources/rb-podcast-source.c:339
-msgid "Search podcast episodes"
-msgstr "Søg podcast-episoder"
-
-#. Translators: this is the toolbar button label
-#. for New Podcast Feed action.
-#: ../sources/rb-podcast-source.c:527
-msgctxt "Podcast"
-msgid "New"
-msgstr "Ny"
-
-#. Translators: this is the toolbar button label
-#. for Update All Feeds action.
-#: ../sources/rb-podcast-source.c:533
-msgid "Update"
-msgstr "Opdatér"
-
-#: ../sources/rb-podcast-source.c:577 ../sources/rb-podcast-source.c:588
-msgid "Date"
-msgstr "Dato"
-
-#: ../sources/rb-podcast-source.c:609 ../sources/rb-podcast-source.c:677
-#: ../sources/rb-podcast-source.c:731
-msgid "Feed"
-msgstr "Kilde"
-
-#: ../sources/rb-podcast-source.c:628 ../sources/rb-podcast-source.c:646
-msgid "Status"
-msgstr "Status"
-
-#: ../sources/rb-podcast-source.c:629 ../sources/rb-podcast-source.c:1490
-msgid "Downloaded"
-msgstr "Hentet"
-
-#: ../sources/rb-podcast-source.c:630 ../sources/rb-podcast-source.c:1498
-msgid "Waiting"
-msgstr "Venter"
-
-#: ../sources/rb-podcast-source.c:631 ../sources/rb-podcast-source.c:1494
-msgid "Failed"
-msgstr "Fejlede"
-
-#: ../sources/rb-podcast-source.c:916
-msgid "Delete the podcast episode and downloaded file?"
-msgstr "Slet podcast-episode og hentet fil?"
-
-#: ../sources/rb-podcast-source.c:919
-msgid ""
-"If you choose to delete the episode and file, they will be permanently "
-"lost.  Please note that you can delete the episode but keep the downloaded "
-"file by choosing to delete the episode only."
-msgstr ""
-"Hvis du vælger at slette episoden og filen vil de blive permanent slettet. "
-"Vær opmærksom på, at du kan slette episoderne og samtidigt beholde den "
-"hentede fil ved at vælge kun at slette episoden."
-
-#: ../sources/rb-podcast-source.c:927
-msgid "Delete _Episode Only"
-msgstr "Slet kun _episode"
-
-#: ../sources/rb-podcast-source.c:933
-msgid "_Delete Episode And File"
-msgstr "_Slet episode og fil"
-
-#: ../sources/rb-podcast-source.c:1383
-msgid "Delete the podcast feed and downloaded files?"
-msgstr "Slet podcast-kilden og hentede filer?"
-
-#: ../sources/rb-podcast-source.c:1386
-msgid ""
-"If you choose to delete the feed and files, they will be permanently lost.  "
-"Please note that you can delete the feed but keep the downloaded files by "
-"choosing to delete the feed only."
-msgstr ""
-"Hvis du vælger at slette kilden og filerne, vil de være permanent mistet. "
-"Vær opmærksom på. at du kan slette kilden og samtidigt beholde de hentede "
-"filer ved at vælge kun at slette kilden."
-
-#: ../sources/rb-podcast-source.c:1394
-msgid "Delete _Feed Only"
-msgstr "_Slet kun kilde"
-
-#: ../sources/rb-podcast-source.c:1401
-msgid "_Delete Feed And Files"
-msgstr "_Slet kilde og filer"
-
-#: ../sources/rb-podcast-source.c:1609
-#, c-format
-msgid "%d feed"
-msgid_plural "All %d feeds"
-msgstr[0] "%d kilde"
-msgstr[1] "Alle %d kilder"
-
-#: ../sources/rb-podcast-source.c:1746
-msgid "Downloading podcast"
-msgstr "Henter podcast"
-
-#: ../sources/rb-podcast-source.c:1761
-msgid "Finished downloading podcast"
-msgstr "Færdig med at hente podcast"
-
-#: ../sources/rb-podcast-source.c:1776
-msgid "New updates available from"
-msgstr "Nye opdateringer tilgængelig fra"
-
-#: ../sources/rb-podcast-source.c:1894
-msgid "Error in podcast"
-msgstr "Fejl i podcast"
-
-#: ../sources/rb-podcast-source.c:1901
-#, c-format
-msgid "%s. Would you like to add the podcast feed anyway?"
-msgstr "%s. Vil du tilføje podcast-kilden alligevel?"
-
-#: ../sources/rb-podcast-source.c:2028
-msgid "New Podcast Feed"
-msgstr "Ny podcast-kilde"
-
-#: ../sources/rb-podcast-source.c:2028
-msgid "URL of podcast feed:"
-msgstr "Adresse på podcast-kilde:"
-
-#: ../sources/rb-podcast-source.c:2044
-#, c-format
-msgid "%d episode"
-msgid_plural "%d episodes"
-msgstr[0] "%d episode"
-msgstr[1] "%d episoder"
-
-#: ../sources/rb-podcast-source.c:2161
-msgid "Podcast Error"
-msgstr "Podcast-fejl"
-
 #: ../sources/rb-source.c:724
 #, c-format
 msgid "%d song"
@@ -5077,7 +5234,7 @@ msgid_plural "%d songs"
 msgstr[0] "%d sang"
 msgstr[1] "%d sange"
 
-#: ../sources/rb-source.c:1968
+#: ../sources/rb-source.c:1965
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Importerer (%d/%d)"
@@ -5098,7 +5255,7 @@ msgstr "Enheder"
 msgid "Shared"
 msgstr "Delt"
 
-#: ../sources/rb-sourcelist.c:704
+#: ../sources/rb-sourcelist.c:702
 msgid "S_ource"
 msgstr "_Kilde"
 
@@ -5161,7 +5318,7 @@ msgid "The pixbuf to render."
 msgstr "Pixbuffen som skal vises."
 
 #: ../widgets/rb-entry-view.c:1107 ../widgets/rb-entry-view.c:1613
-#: ../widgets/rb-song-info.c:1155
+#: ../widgets/rb-song-info.c:1153
 msgid "Lossless"
 msgstr "Tabsfri"
 
@@ -5225,35 +5382,35 @@ msgstr "Afspilningsfejl"
 msgid "Not Playing"
 msgstr "Spiller ikke"
 
-#: ../widgets/rb-property-view.c:631
+#: ../widgets/rb-property-view.c:635
 #, c-format
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
 msgstr[0] "%d kunstner (%d)"
 msgstr[1] "Alle %d kunstnere (%d)"
 
-#: ../widgets/rb-property-view.c:634
+#: ../widgets/rb-property-view.c:638
 #, c-format
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
 msgstr[0] "%d album (%d)"
 msgstr[1] "Alle %d album (%d)"
 
-#: ../widgets/rb-property-view.c:637
+#: ../widgets/rb-property-view.c:641
 #, c-format
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
 msgstr[0] "%d genre (%d)"
 msgstr[1] "Alle %d genrer (%d)"
 
-#: ../widgets/rb-property-view.c:640
+#: ../widgets/rb-property-view.c:644
 #, c-format
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
 msgstr[0] "%d (%d)"
 msgstr[1] "Alle %d (%d)"
 
-#: ../widgets/rb-property-view.c:646
+#: ../widgets/rb-property-view.c:650
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
@@ -5573,25 +5730,129 @@ msgstr "_Søg:"
 msgid "Clear the search text"
 msgstr "Ryd søgeteksten"
 
-#: ../widgets/rb-song-info.c:375
+#: ../widgets/rb-song-info.c:373
 msgid "Song Properties"
 msgstr "Sangegenskaber"
 
-#: ../widgets/rb-song-info.c:432
+#: ../widgets/rb-song-info.c:430
 msgid "Multiple Song Properties"
 msgstr "Egenskaber for flere sange"
 
-#: ../widgets/rb-song-info.c:1218
+#: ../widgets/rb-song-info.c:1216
 msgid "Unknown file name"
 msgstr "Ukendt filnavn"
 
-#: ../widgets/rb-song-info.c:1240
+#: ../widgets/rb-song-info.c:1238
 msgid "On the desktop"
 msgstr "På skrivebordet"
 
-#: ../widgets/rb-song-info.c:1263
+#: ../widgets/rb-song-info.c:1261
 msgid "Unknown location"
 msgstr "Ukendt placering"
+
+#~ msgid "Account Login"
+#~ msgstr "Konto logind"
+
+#~ msgid "Join the Rhythmbox group"
+#~ msgstr "Slut dig til Rhythmbox-gruppen"
+
+#~ msgid "New to Last.fm?"
+#~ msgstr "Ny til Last.fm?"
+
+#~ msgid "Sign up for an account"
+#~ msgstr "Opret en konto"
+
+#~ msgid "_Password:"
+#~ msgstr "_Adgangskode:"
+
+#~ msgid "_Username:"
+#~ msgstr "_Brugernavn:"
+
+#~ msgid "Last.fm Preferences"
+#~ msgstr "Last.fm-indstillinger"
+
+#~ msgid "Incorrect username or password"
+#~ msgstr "Forkert brugernavn elleradgangskode"
+
+#~ msgid "Artists similar to %s"
+#~ msgstr "Kunstner magen til %s"
+
+#~ msgid "Artist Fan radio"
+#~ msgstr "Kunstner fanradio"
+
+#~ msgid "Artists liked by fans of %s"
+#~ msgstr "Kunstnere som fans af %s synes om"
+
+#~ msgid "Group radio"
+#~ msgstr "Gruppe-radio"
+
+#~ msgid "Personal radio"
+#~ msgstr "Personlig radio"
+
+#~ msgid "%s's Personal Radio"
+#~ msgstr "%ss personlige radio"
+
+#~ msgid "Tracks recommended to %s"
+#~ msgstr "Spor anbefalet til %s"
+
+#~ msgid "Playlist"
+#~ msgstr "Afspilningsliste"
+
+#~ msgid "Delete the selected station"
+#~ msgstr "Slet den valgte station"
+
+#~ msgid "Download song"
+#~ msgstr "Hent sang"
+
+#~ msgid "Download this song"
+#~ msgstr "Hent denne sang"
+
+#~ msgid "Enter the item to build a Last.fm station out of:"
+#~ msgstr "Indtast punktet for opbygning af Last.fm-station:"
+
+#~ msgid "Add"
+#~ msgstr "Tilføj"
+
+#~ msgid "Account Settings"
+#~ msgstr "Kontoindstillinger"
+
+#~ msgid ""
+#~ "Account details are needed before you can connect.  Check your settings."
+#~ msgstr ""
+#~ "Kontooplysninger er påkrævet før du kan forbinde.  Kontrollér dine "
+#~ "indstillinger."
+
+#~ msgid "Unable to connect"
+#~ msgstr "Kunne ikke oprette forbindelse"
+
+#~ msgid "Global Tag %s"
+#~ msgstr "Globalt mærke %s"
+
+#~ msgid "%s's Playlist"
+#~ msgstr "%ss afspilningsliste"
+
+#~ msgid "Neighbour Radio"
+#~ msgstr "Nabo-radio"
+
+#~ msgid "Personal Radio"
+#~ msgstr "Personlig radio"
+
+#~ msgid "Server did not respond"
+#~ msgstr "Serveren svarede ikke"
+
+#~ msgid ""
+#~ "The streaming system is offline for maintenance, please try again later."
+#~ msgstr ""
+#~ "Strømningssystemet er afkoblet pga. vedligeholdelse, prøv igen senere."
+
+#~ msgid "Retrieving playlist"
+#~ msgstr "Henter afspilningsliste"
+
+#~ msgid "Banning song"
+#~ msgstr "Forbyder sang"
+
+#~ msgid "Adding song to your Loved tracks"
+#~ msgstr "Tilføjer sang til dine foretrukne spor"
 
 #~ msgid "Do you want to overwrite the file \"%s\"?"
 #~ msgstr "Vil du overskrive filen \"%s\"?"
@@ -5656,9 +5917,6 @@ msgstr "Ukendt placering"
 #~ msgid "Connection to %s:%d refused."
 #~ msgstr "Forbindelse til %s:%d nægtet."
 
-#~ msgid "<b>Content</b>"
-#~ msgstr "<b>Indhold</b>"
-
 #~ msgid "Number of Playlists:"
 #~ msgstr "Antal afspilningslister:"
 
@@ -5667,13 +5925,6 @@ msgstr "Ukendt placering"
 
 #~ msgid "iPod Properties"
 #~ msgstr "iPod-egenskaber"
-
-#~ msgid ""
-#~ "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
-#~ "expiration date listed.</span>"
-#~ msgstr ""
-#~ "<span weight=\"bold\" foreground=\"red\">Dit kreditkort har overskredet "
-#~ "udløbsdatoen.</span>"
 
 #~ msgid "C_redit Card:"
 #~ msgstr "K_reditkort:"
@@ -6296,9 +6547,6 @@ msgstr "Ukendt placering"
 #~ msgid "Properties for the current song"
 #~ msgstr "Egenskaber for nuværende sang"
 
-#~ msgid "Whether Rhythmbox is currently playing"
-#~ msgstr "Om Rhythmbox spiller i øjeblikket"
-
 #~ msgid "What play order to use"
 #~ msgstr "Hvilken spillerækkefølge der skal bruges"
 
@@ -6347,9 +6595,6 @@ msgstr "Ukendt placering"
 
 #~ msgid "Mute or unmute playback"
 #~ msgstr "Slå lyden til eller fra"
-
-#~ msgid "_Pause"
-#~ msgstr "_Pause"
 
 #~ msgid "New _Internet Radio Station"
 #~ msgstr "Ny _internet-radiostation"
@@ -6404,9 +6649,6 @@ msgstr "Ukendt placering"
 
 #~ msgid "Could not open \"%s\" file for writing.\n"
 #~ msgstr "Kunne ikke åbne \"%s\" filen for skrivning.\n"
-
-#~ msgid "Error renaming '%s' to '%s' (%s).\n"
-#~ msgstr "Fejl ved omdøbning af '%s' til '%s' (%s).\n"
 
 #~ msgid "Error reading file \"%s\".\n"
 #~ msgstr "Fejl ved læsning af fil \"%s\".\n"
@@ -6516,9 +6758,6 @@ msgstr "Ukendt placering"
 
 #~ msgid "Xine backend not yet implemented"
 #~ msgstr "Xine backend ikke implementeret endnu"
-
-#~ msgid "Error creating audio CD"
-#~ msgstr "Fejl ved oprettelse af lyd-cd"
 
 #~ msgid "%.0f%% complete"
 #~ msgstr "%.0f%% fuldført"
