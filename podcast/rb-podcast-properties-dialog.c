@@ -135,6 +135,15 @@ static const char *html_clues[] = {
 	"&#8",
 	"&#x"
 };
+
+/* list of URI prefixes for things we ignore when handling navigation requests.
+ * some podcast descriptions include facebook 'like' buttons as iframes, which otherwise
+ * show up as external web browser windows.
+ */
+static const char *ignore_uris[] = {
+	"http://www.facebook.com/plugins/like.php?"
+};
+
 #endif
 
 static void
@@ -169,8 +178,18 @@ navigation_requested_cb (WebKitWebView *web_view,
 {
 	const char *uri;
 	GError *error = NULL;
+	int i;
 
 	uri = webkit_network_request_get_uri (request);
+
+	/* ignore some obnoxious social networking stuff */
+	for (i = 0; i < G_N_ELEMENTS (ignore_uris); i++) {
+		if (g_str_has_prefix (uri, ignore_uris[i])) {
+			rb_debug ("ignoring external URI %s", uri);
+			return WEBKIT_NAVIGATION_RESPONSE_IGNORE;
+		}
+	}
+
 	gtk_show_uri (gtk_widget_get_screen (GTK_WIDGET (dialog)), uri, GDK_CURRENT_TIME, &error);
 	if (error != NULL) {
 		rb_error_dialog (NULL, _("Unable to display requested URI"), "%s", error->message);
