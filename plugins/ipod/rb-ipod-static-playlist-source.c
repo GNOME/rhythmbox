@@ -57,6 +57,7 @@ typedef struct
 	RbIpodDb	*ipod_db;
 	Itdb_Playlist	*itdb_playlist;
 	RBiPodSource	*ipod_source;
+	gboolean	was_reordered;
 } RBIpodStaticPlaylistSourcePrivate;
 
 RB_PLUGIN_DEFINE_TYPE(RBIpodStaticPlaylistSource,
@@ -69,7 +70,8 @@ enum {
 	PROP_0,
 	PROP_IPOD_SOURCE,
 	PROP_IPOD_DB,
-	PROP_ITDB_PLAYLIST
+	PROP_ITDB_PLAYLIST,
+	PROP_WAS_REORDERED
 };
 
 
@@ -113,6 +115,13 @@ rb_ipod_static_playlist_source_class_init (RBIpodStaticPlaylistSourceClass *klas
 							      "itdb-playlist",
 							      "itdb-playlist",
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_WAS_REORDERED,
+					 g_param_spec_pointer ("was-reordered",
+							       "was-reordered",
+							       "was-reordered",
+							       G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBIpodStaticPlaylistSourcePrivate));
 }
@@ -196,6 +205,9 @@ rb_ipod_static_playlist_source_set_property (GObject *object,
 	case PROP_ITDB_PLAYLIST:
 		priv->itdb_playlist = g_value_get_pointer (value);
 		break;
+	case PROP_WAS_REORDERED:
+		priv->was_reordered = g_value_get_boolean (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -220,6 +232,9 @@ rb_ipod_static_playlist_source_get_property (GObject *object,
 	case PROP_ITDB_PLAYLIST:
 		g_value_set_pointer (value, priv->itdb_playlist);
 		break;
+	case PROP_WAS_REORDERED:
+		g_value_set_boolean (value, priv->was_reordered);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -241,6 +256,22 @@ rb_ipod_static_playlist_source_get_ipod_source (RBIpodStaticPlaylistSource *play
 	RBIpodStaticPlaylistSourcePrivate *priv = IPOD_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (playlist);
 
 	return priv->ipod_source;
+}
+
+gboolean
+rb_ipod_static_playlist_source_get_was_reordered (RBIpodStaticPlaylistSource *playlist)
+{
+	RBIpodStaticPlaylistSourcePrivate *priv = IPOD_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (playlist);
+
+	return priv->was_reordered;
+}
+
+void
+rb_ipod_static_playlist_source_set_was_reordered (RBIpodStaticPlaylistSource *playlist, gboolean was_reordered)
+{
+	RBIpodStaticPlaylistSourcePrivate *priv = IPOD_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (playlist);
+
+	priv->was_reordered = was_reordered;
 }
 
 static gboolean

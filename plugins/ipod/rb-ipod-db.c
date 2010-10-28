@@ -118,6 +118,13 @@ G_DEFINE_TYPE (RbIpodDb, rb_ipod_db, G_TYPE_OBJECT)
 
 #define IPOD_DB_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IPOD_DB, RbIpodDbPrivate))
 
+enum {
+	BEFORE_SAVE,
+	LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL];
+
 static void
 rb_itdb_save (RbIpodDb *ipod_db, GError **error)
 {
@@ -208,6 +215,22 @@ rb_ipod_db_class_init (RbIpodDbClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->dispose = rb_ipod_db_dispose;
+
+	/**
+	 * RbIpodDb::before-save
+	 * @db: the #RbIpodDb
+	 *
+	 * Emitted before iPod database write to disk.
+	 */
+	signals[BEFORE_SAVE] =
+		g_signal_new ("before-save",
+			      RB_TYPE_IPOD_DB,
+			      G_SIGNAL_RUN_FIRST,
+			      0,
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 
 	g_type_class_add_private (klass, sizeof (RbIpodDbPrivate));
 }
@@ -846,6 +869,12 @@ save_timeout_cb (RbIpodDb *ipod_db)
 		g_warning ("Database is read-only, not saving");
 		return TRUE;
 	}
+
+	/* Tell everyone about the save */
+	g_signal_emit (G_OBJECT (ipod_db),
+		       signals[BEFORE_SAVE],
+		       0);
+
 	rb_debug ("Starting iPod database save");
 	rb_debug ("Switching iPod database to read-only");
 	priv->read_only = TRUE;

@@ -56,6 +56,8 @@ RBIpodStaticPlaylistSource *	rb_ipod_static_playlist_source_new (RBShell *shell,
 
 Itdb_Playlist* rb_ipod_static_playlist_source_get_itdb_playlist (RBIpodStaticPlaylistSource *playlist);
 RBiPodSource* rb_ipod_static_playlist_source_get_ipod_source (RBIpodStaticPlaylistSource *playlist);
+gboolean rb_ipod_static_playlist_source_get_was_reordered (RBIpodStaticPlaylistSource *playlist);
+void rb_ipod_static_playlist_source_set_was_reordered (RBIpodStaticPlaylistSource *playlist, gboolean was_reordered);
 
 G_END_DECLS
 
