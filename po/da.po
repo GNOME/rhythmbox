@@ -27,8 +27,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-24 17:08+0200\n"
-"PO-Revision-Date: 2010-10-07 00:19+0200\n"
+"POT-Creation-Date: 2010-10-29 00:12+0200\n"
+"PO-Revision-Date: 2010-10-24 22:26+0200\n"
 "Last-Translator: Ask Hjorth Larsen\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "MIME-Version: 1.0\n"
@@ -710,8 +710,8 @@ msgstr "%d. %b %Y"
 #: ../plugins/status-icon/rb-status-icon-plugin.c:830
 #: ../podcast/rb-feed-podcast-properties-dialog.c:340
 #: ../podcast/rb-podcast-manager.c:1920
-#: ../podcast/rb-podcast-properties-dialog.c:600
-#: ../podcast/rb-podcast-properties-dialog.c:695
+#: ../podcast/rb-podcast-properties-dialog.c:619
+#: ../podcast/rb-podcast-properties-dialog.c:714
 #: ../podcast/rb-podcast-source.c:765 ../remote/dbus/rb-client.c:155
 #: ../rhythmdb/rhythmdb-tree.c:1341 ../rhythmdb/rhythmdb-tree.c:1345
 #: ../rhythmdb/rhythmdb-tree.c:1349 ../rhythmdb/rhythmdb-tree.c:1353
@@ -1265,12 +1265,10 @@ msgstr "Anbefalinger for bruger:"
 msgid "Tracks Tagged with:"
 msgstr "Spor mærket med:"
 
-# XXX wth.  https://bugzilla.gnome.org/show_bug.cgi?id=631355
 #. Translators: describes a radio stream playing tracks often listened to by members of
 #. * a particular group. Followed by a text entry box for the group name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:85
-#, fuzzy
 msgid "Listened by Group:"
 msgstr "Lyttet til af gruppe:"
 
@@ -2011,33 +2009,30 @@ msgid "Share music and play shared music on your local network"
 msgstr "Del musik og afspil delt musik over dit lokale netværk"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
-#, fuzzy
 msgid "<b>Add Remote</b>"
-msgstr "<b>Indhold</b>"
+msgstr "<b>Tilføj fjernbetjening</b>"
 
 #: ../plugins/daap/daap-prefs.ui.h:2
 msgid "<b>Sharing</b>"
 msgstr "<b>Deling</b>"
 
 #: ../plugins/daap/daap-prefs.ui.h:3
-#, fuzzy
 msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
 msgstr ""
-"<span weight=\"bold\" foreground=\"red\">Dit kreditkort har overskredet "
-"udløbsdatoen.</span>"
+"<span foreground=\"red\">Kunne ikke danne par med denne fjernbetjening.</"
+"span>"
 
 #: ../plugins/daap/daap-prefs.ui.h:4
 msgid "Forget known Remotes"
-msgstr ""
+msgstr "Glem kendte fjernbetjeninger"
 
 #: ../plugins/daap/daap-prefs.ui.h:5
-#, fuzzy
 msgid "Library _name:"
-msgstr "Samling for bruger:"
+msgstr "_Navn på samling:"
 
 #: ../plugins/daap/daap-prefs.ui.h:6
 msgid "Please enter the passcode displayed on your device."
-msgstr ""
+msgstr "Indtast venligst adgangskoden, der vises på din enhed."
 
 #: ../plugins/daap/daap-prefs.ui.h:7
 msgid "Require _password:"
@@ -2045,11 +2040,11 @@ msgstr "Kræv _adgangskode:"
 
 #: ../plugins/daap/daap-prefs.ui.h:8
 msgid "You can now control Rhythmbox through your Remote"
-msgstr ""
+msgstr "Du kan nu styre Rhythmbox ved hjælp af din fjernbetjening"
 
 #: ../plugins/daap/daap-prefs.ui.h:9
 msgid "_Look for touch Remotes"
-msgstr ""
+msgstr "_Kig efter touch-fjernbetjeninger"
 
 #: ../plugins/daap/daap-prefs.ui.h:10
 msgid "_Share my music"
@@ -2119,18 +2114,16 @@ msgid "Could not connect to shared music"
 msgstr "Kunne ikke forbinde til musikdeling"
 
 #: ../plugins/daap/rb-dacp-source.c:295
-#, fuzzy
 msgid "Remotes"
-msgstr "Fjern"
+msgstr "Fjernbetjeninger"
 
 #: ../plugins/daap/rb-dacp-source.c:417
-#, fuzzy
 msgid "Connecting..."
-msgstr "Forbinder"
+msgstr "Forbinder..."
 
 #: ../plugins/daap/rb-dacp-source.c:419
 msgid "Could not pair with this Remote."
-msgstr ""
+msgstr "Kunne ikke danne par med denne fjernbetjening."
 
 #: ../plugins/dbus-media-server/dbus-media-server.rb-plugin.in.h:1
 msgid "MediaServer2 D-Bus interface"
@@ -2628,14 +2621,14 @@ msgstr "Adresse på internet-radiostation:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:397
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:485
+#: ../podcast/rb-podcast-properties-dialog.c:504
 #: ../sources/rb-media-player-source.c:353 ../widgets/rb-song-info.c:1080
 #, c-format
 msgid "%s Properties"
 msgstr "%s egenskaber"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
-#: ../podcast/rb-podcast-properties-dialog.c:598
+#: ../podcast/rb-podcast-properties-dialog.c:617
 #: ../widgets/rb-entry-view.c:1113 ../widgets/rb-song-info.c:1157
 #, c-format
 msgid "%lu kbps"
@@ -3325,11 +3318,11 @@ msgstr "Pythonkonsol"
 #. sys.excepthook = _excepthandler
 #: ../plugins/rbzeitgeist/rbzeitgeist.rb-plugin.in.h:1
 msgid "Inform Zeitgeist about your activity"
-msgstr ""
+msgstr "Fortæl Zeitgeist om din aktivitet"
 
 #: ../plugins/rbzeitgeist/rbzeitgeist.rb-plugin.in.h:2
 msgid "Zeitgeist"
-msgstr ""
+msgstr "Zeitgeist"
 
 #: ../plugins/replaygain/replaygain.rb-plugin.in.h:1
 msgid "ReplayGain"
@@ -3656,14 +3649,13 @@ msgid "Visualization"
 msgstr "Visualisering"
 
 #: ../podcast/rb-podcast-main-source.c:117
-#, fuzzy
 msgid "New Episodes"
-msgstr "Episoder"
+msgstr "Nye episoder"
 
+# Nye hentede filer?  Kunne også være 'Nye filer der kan hentes'
 #: ../podcast/rb-podcast-main-source.c:135
-#, fuzzy
 msgid "New Downloads"
-msgstr "Hent"
+msgstr "Nye downloads"
 
 #: ../podcast/rb-podcast-main-source.c:156
 msgid "Downloading podcast"
@@ -3760,11 +3752,11 @@ msgstr "Kunne ikke fortolke kildeindholdet"
 msgid "The feed does not contain any downloadable items"
 msgstr "Kilden indeholder ingen elementer, som er mulige at hente"
 
-#: ../podcast/rb-podcast-properties-dialog.c:176
+#: ../podcast/rb-podcast-properties-dialog.c:195
 msgid "Unable to display requested URI"
 msgstr "Kan ikke vise den forespurgte URI"
 
-#: ../podcast/rb-podcast-properties-dialog.c:548
+#: ../podcast/rb-podcast-properties-dialog.c:567
 msgid "Not Downloaded"
 msgstr "Ikke hentet"
 
