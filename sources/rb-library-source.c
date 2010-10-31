@@ -68,6 +68,7 @@
 #include "rb-auto-playlist-source.h"
 #include "rb-encoder.h"
 #include "rb-missing-plugins.h"
+#include "gseal-gtk-compat.h"
 
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);
@@ -504,7 +505,7 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 
 	tmp = gtk_builder_get_object (builder, "layout_path_menu_box");
 	label = gtk_builder_get_object (builder, "layout_path_menu_label");
-	source->priv->layout_path_menu = gtk_combo_box_new_text ();
+	source->priv->layout_path_menu = gtk_combo_box_text_new ();
 	gtk_box_pack_start (GTK_BOX (tmp), source->priv->layout_path_menu, TRUE, TRUE, 0);
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->layout_path_menu);
 	g_signal_connect (G_OBJECT (source->priv->layout_path_menu),
@@ -512,13 +513,13 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 			  G_CALLBACK (rb_library_source_path_changed_cb),
 			  asource);
 	for (i = 0; i < num_library_layout_paths; i++) {
-		gtk_combo_box_append_text (GTK_COMBO_BOX (source->priv->layout_path_menu),
-					   _(library_layout_paths[i].title));
+		gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (source->priv->layout_path_menu),
+						_(library_layout_paths[i].title));
 	}
 
 	tmp = gtk_builder_get_object (builder, "layout_filename_menu_box");
 	label = gtk_builder_get_object (builder, "layout_filename_menu_label");
-	source->priv->layout_filename_menu = gtk_combo_box_new_text ();
+	source->priv->layout_filename_menu = gtk_combo_box_text_new ();
 	gtk_box_pack_start (GTK_BOX (tmp), source->priv->layout_filename_menu, TRUE, TRUE, 0);
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->layout_filename_menu);
 	g_signal_connect (G_OBJECT (source->priv->layout_filename_menu),
@@ -526,8 +527,8 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 			  G_CALLBACK (rb_library_source_filename_changed_cb),
 			  asource);
 	for (i = 0; i < num_library_layout_filenames; i++) {
-		gtk_combo_box_append_text (GTK_COMBO_BOX (source->priv->layout_filename_menu),
-					   _(library_layout_filenames[i].title));
+		gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (source->priv->layout_filename_menu),
+						_(library_layout_filenames[i].title));
 	}
 
 	tmp = gtk_builder_get_object (builder, "edit_profile_button");

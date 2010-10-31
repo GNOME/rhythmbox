@@ -1011,7 +1011,7 @@ set_icon_geometry  (GdkWindow *window,
 
 	XChangeProperty (dpy,
 			 GDK_WINDOW_XID (window),
-			 gdk_x11_get_xatom_by_name_for_display (gdk_drawable_get_display (window),
+			 gdk_x11_get_xatom_by_name_for_display (gdk_window_get_display (window),
 								"_NET_WM_ICON_GEOMETRY"),
 			 XA_CARDINAL, 32, PropModeReplace,
 			 (guchar *)&data, 4);

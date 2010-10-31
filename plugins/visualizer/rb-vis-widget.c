@@ -136,7 +136,7 @@ rb_vis_widget_expose_event (GtkWidget *widget,
 	if (rbvw->window_xid != GDK_WINDOW_XWINDOW (window)) {
 		rbvw->window_xid = GDK_WINDOW_XWINDOW (window);
 
-		gdk_display_sync (gdk_drawable_get_display (GDK_DRAWABLE (window)));
+		gdk_display_sync (gdk_window_get_display (window));
 
 		rb_debug ("got new window ID %lu", rbvw->window_xid);
 		g_object_notify (G_OBJECT (rbvw), "window-xid");

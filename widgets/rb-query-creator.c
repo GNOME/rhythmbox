@@ -41,6 +41,7 @@
 #include "rb-preferences.h"
 #include "rb-builder-helpers.h"
 #include "rb-util.h"
+#include "gseal-gtk-compat.h"
 
 static void rb_query_creator_class_init (RBQueryCreatorClass *klass);
 static void rb_query_creator_constructed (GObject *object);
@@ -914,9 +915,9 @@ create_property_option_menu (RBQueryCreator *creator,
 	GtkWidget *combo;
 	int i;
 
-	combo = gtk_combo_box_new_text ();
+	combo = gtk_combo_box_text_new ();
 	for (i = 0; i < length; i++) {
-		gtk_combo_box_append_text (GTK_COMBO_BOX (combo), g_dpgettext2 (NULL, "query-criteria", options[i].name));
+		gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), g_dpgettext2 (NULL, "query-criteria", options[i].name));
 	}
 
 	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
@@ -936,9 +937,9 @@ create_criteria_option_menu (const RBQueryCreatorCriteriaOption *options,
 	GtkWidget *combo;
 	int i;
 
-	combo = gtk_combo_box_new_text ();
+	combo = gtk_combo_box_text_new ();
 	for (i = 0; i < length; i++) {
-		gtk_combo_box_append_text (GTK_COMBO_BOX (combo), _(options[i].name));
+		gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), _(options[i].name));
 	}
 	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
 

@@ -35,6 +35,7 @@
 #include "rhythmdb.h"
 #include "rb-query-creator-private.h"
 #include "rb-rating.h"
+#include "gseal-gtk-compat.h"
 
 const RBQueryCreatorPropertyType string_property_type;
 const RBQueryCreatorPropertyType escaped_string_property_type;
@@ -543,9 +544,9 @@ create_time_unit_option_menu (const RBQueryCreatorTimeUnitOption *options,
 	GtkWidget *combo;
 	int i;
 
-	combo = gtk_combo_box_new_text ();
+	combo = gtk_combo_box_text_new ();
 	for (i = 0; i < length; i++) {
-		gtk_combo_box_append_text (GTK_COMBO_BOX (combo), _(options[i].name));
+		gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), _(options[i].name));
 	}
 	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
 

@@ -1450,15 +1450,15 @@ disable_visualization (RBVisualizerPlugin *pi, gboolean set_action)
 
 	switch (pi->mode) {
 	case EMBEDDED:
-		gtk_widget_hide_all (pi->vis_box);
+		gtk_widget_hide (pi->vis_box);
 		rb_shell_notebook_set_page (pi->shell, NULL);
 		break;
 	case FULLSCREEN:
 		gtk_window_unfullscreen (GTK_WINDOW (pi->vis_window));
-		gtk_widget_hide_all (pi->vis_window);
+		gtk_widget_hide (pi->vis_window);
 		break;
 	case EXTERNAL_WINDOW:
-		gtk_widget_hide_all (pi->vis_window);
+		gtk_widget_hide (pi->vis_window);
 		break;
 	case DESKTOP_WINDOW:
 		gtk_widget_hide (pi->vis_box);

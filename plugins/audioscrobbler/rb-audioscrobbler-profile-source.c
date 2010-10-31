@@ -45,6 +45,7 @@
 #include "rb-preferences.h"
 #include "rb-sourcelist.h"
 #include "rb-util.h"
+#include "gseal-gtk-compat.h"
 
 #define CONF_AUDIOSCROBBLER_ENABLE_SCROBBLING CONF_PLUGINS_PREFIX "/audioscrobbler/%s/scrobbling_enabled"
 #define AUDIOSCROBBLER_PROFILE_SOURCE_POPUP_PATH "/AudioscrobblerProfileSourcePopup"
@@ -553,11 +554,11 @@ init_profile_ui (RBAudioscrobblerProfileSource *source)
 	/* station creator */
 	source->priv->station_creator_arg_entry = GTK_WIDGET (gtk_builder_get_object (builder, "station_creator_arg_entry"));
 	combo_container = GTK_WIDGET (gtk_builder_get_object (builder, "station_creator_combo_container"));
-	source->priv->station_creator_type_combo = gtk_combo_box_new_text ();
+	source->priv->station_creator_type_combo = gtk_combo_box_text_new ();
 	gtk_container_add (GTK_CONTAINER (combo_container), source->priv->station_creator_type_combo);
 	for (i = 0; i < RB_AUDIOSCROBBLER_RADIO_TYPE_LAST; i++) {
-		gtk_combo_box_append_text (GTK_COMBO_BOX (source->priv->station_creator_type_combo),
-		                           rb_audioscrobbler_radio_type_get_text (i));
+		gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (source->priv->station_creator_type_combo),
+						rb_audioscrobbler_radio_type_get_text (i));
 	}
 	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->station_creator_type_combo), 0);
 	gtk_widget_show (source->priv->station_creator_type_combo);
@@ -772,7 +773,7 @@ login_status_change_cb (RBAudioscrobblerAccount *account,
 	if (show_login_bar == TRUE) {
 		gtk_widget_show_all (source->priv->login_bar);
 	} else {
-		gtk_widget_hide_all (source->priv->login_bar);
+		gtk_widget_hide (source->priv->login_bar);
 	}
 	if (show_profile == TRUE) {
 		gtk_label_set_label (GTK_LABEL (source->priv->username_label),
@@ -1390,7 +1391,7 @@ recent_tracks_updated_cb (RBAudioscrobblerUser *user,
 	if (recent_tracks != NULL && recent_tracks->len != 0) {
 		gtk_widget_show_all (source->priv->recent_tracks_area);
 	} else {
-		gtk_widget_hide_all (source->priv->recent_tracks_area);
+		gtk_widget_hide (source->priv->recent_tracks_area);
 	}
 }
 
@@ -1404,7 +1405,7 @@ top_tracks_updated_cb (RBAudioscrobblerUser *user,
 	if (top_tracks != NULL && top_tracks->len != 0) {
 		gtk_widget_show_all (source->priv->top_tracks_area);
 	} else {
-		gtk_widget_hide_all (source->priv->top_tracks_area);
+		gtk_widget_hide (source->priv->top_tracks_area);
 	}
 }
 
@@ -1418,7 +1419,7 @@ loved_tracks_updated_cb (RBAudioscrobblerUser *user,
 	if (loved_tracks != NULL && loved_tracks->len != 0) {
 		gtk_widget_show_all (source->priv->loved_tracks_area);
 	} else {
-		gtk_widget_hide_all (source->priv->loved_tracks_area);
+		gtk_widget_hide (source->priv->loved_tracks_area);
 	}
 }
 
@@ -1432,7 +1433,7 @@ top_artists_updated_cb (RBAudioscrobblerUser *user,
 	if (top_artists != NULL && top_artists->len != 0) {
 		gtk_widget_show_all (source->priv->top_artists_area);
 	} else {
-		gtk_widget_hide_all (source->priv->top_artists_area);
+		gtk_widget_hide (source->priv->top_artists_area);
 	}
 }
 
@@ -1446,7 +1447,7 @@ recommended_artists_updated_cb (RBAudioscrobblerUser *user,
 	if (recommended_artists != NULL && recommended_artists->len != 0) {
 		gtk_widget_show_all (source->priv->recommended_artists_area);
 	} else {
-		gtk_widget_hide_all (source->priv->recommended_artists_area);
+		gtk_widget_hide (source->priv->recommended_artists_area);
 	}
 }
 

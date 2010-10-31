@@ -372,7 +372,8 @@ rb_rating_expose (GtkWidget *widget,
 	rating = RB_RATING (widget);
 
 	window = gtk_widget_get_window (widget);
-	gdk_drawable_get_size (window, &width, &height);
+	width = gdk_window_get_width (window);
+	height = gdk_window_get_height (window);
 
 	gtk_widget_style_get (widget, "focus-line-width", &focus_width, NULL);
 	if (gtk_widget_has_focus (widget)) {
