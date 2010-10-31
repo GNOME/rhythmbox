@@ -1,4 +1,4 @@
-vapidir = $(VAPIDIR)
+vapidir = $(datadir)/vala/vapi
 
 vapi_VAPI = 			\
 	rb.vapi			\

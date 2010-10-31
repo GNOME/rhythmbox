@@ -746,15 +746,14 @@ AC_ARG_ENABLE([vala],
 	[enable_vala=autodetect have_vala=yes])
 AC_MSG_RESULT([$enable_vala])
 if test "x$enable_vala" = "xyes"; then
-	PKG_CHECK_MODULES(VALA, vala-1.0 >= $VALA_REQS, with_vala=yes,
-		          with_vala=no)
-	if test "x$with_vala" = "xyes"; then
-		VALAC="`pkg-config --variable=prefix vala-1.0`/bin/valac"
-		VAPIDIR="`pkg-config --variable=vapidir vala-1.0`"
-		AC_SUBST([VALAC])
-		AC_SUBST([VAPIDIR])
-	elif test "x$enable_vala" = "xyes"; then
-		AC_MSG_ERROR([Vala plugin support explicitly requested, but not found])
+	AM_PROG_VALAC([$VALA_REQS])
+	if test "x$VALAC" = "x"; then
+		if test "x$enable_vala" = "xyes"; then
+			AC_MSG_ERROR([Vala plugin support explicitly requested, but not found])
+		fi
+		with_vala=no
+	else
+		with_vala=yes
 	fi
 fi
 AM_CONDITIONAL(ENABLE_VALA, test "x$with_vala" = "xyes")
