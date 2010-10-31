@@ -33,6 +33,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <libsoup/soup.h>
 
 #include "rb-uri-dialog.h"
 #include "rb-builder-helpers.h"
@@ -62,6 +63,9 @@ static void rb_uri_dialog_get_property (GObject *object,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *pspec);
+static void rb_uri_dialog_clipboard_yank_url (GtkClipboard *clipboard,
+					      const char *text,
+					      gpointer data);
 
 struct RBURIDialogPrivate
 {
@@ -173,6 +177,16 @@ rb_uri_dialog_init (RBURIDialog *dialog)
 				 G_CALLBACK (rb_uri_dialog_text_changed),
 				 dialog, 0);
 
+	/* if we can get a url from the clipboard, populate the entry with that,
+	 * since there's a good chance that's what the user wants to do anyway.
+	 */
+	gtk_clipboard_request_text (gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
+				    rb_uri_dialog_clipboard_yank_url,
+				    dialog);
+	gtk_clipboard_request_text (gtk_clipboard_get(GDK_SELECTION_PRIMARY),
+				    rb_uri_dialog_clipboard_yank_url,
+				    dialog);
+
 	/* default focus */
 	gtk_widget_grab_focus (dialog->priv->url);
 
@@ -272,3 +286,24 @@ rb_uri_dialog_text_changed (GtkEditable *buffer,
 	gtk_widget_set_sensitive (dialog->priv->okbutton, has_text);
 }
 
+static void
+rb_uri_dialog_clipboard_yank_url (GtkClipboard *clipboard, const char *text, gpointer data)
+{
+	RBURIDialog *dialog = RB_URI_DIALOG (data);
+	SoupURI *uri;
+
+	if (text == NULL) {
+		return;
+	}
+
+	uri = soup_uri_new (text);
+	if (SOUP_URI_VALID_FOR_HTTP (uri)) {
+		gtk_entry_set_text (GTK_ENTRY (dialog->priv->url),
+				    soup_uri_to_string (uri, FALSE));
+		gtk_editable_select_region (GTK_EDITABLE (dialog->priv->url), 0, -1);
+	}
+
+	if (uri != NULL) {
+		soup_uri_free (uri);
+	}
+}
