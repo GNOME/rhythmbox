@@ -98,6 +98,9 @@ class MusicBrainzCoverArtSearch (object):
 	def search_next (self):
 		return False
 
+	def get_result_meta (self, search_results):
+		return (None, None)
+
 	def get_result_pixbuf (self, search_results):
 		return None
 
