@@ -66,12 +66,13 @@ static void rb_audiocd_source_constructed (GObject *object);
 static void impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 static void impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 
-static gboolean impl_show_popup (RBSource *source);
+static gboolean impl_show_popup (RBDisplayPage *page);
+static void impl_delete_thyself (RBDisplayPage *page);
+static GList* impl_get_ui_actions (RBDisplayPage *page);
+
+
 static guint impl_want_uri (RBSource *source, const char *uri);
 static gboolean impl_uri_is_source (RBSource *source, const char *uri);
-
-static void impl_delete_thyself (RBSource *source);
-static GList* impl_get_ui_actions (RBSource *source);
 
 static void impl_pack_paned (RBBrowserSource *source, GtkWidget *paned);
 
@@ -174,6 +175,7 @@ static void
 rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
@@ -183,15 +185,16 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	object_class->set_property = impl_set_property;
 	object_class->get_property = impl_get_property;
 
+	page_class->show_popup = impl_show_popup;
+	page_class->delete_thyself = impl_delete_thyself;
+	page_class->get_ui_actions = impl_get_ui_actions;
+
 	/* don't bother showing the browser/search bits */
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 
-	source_class->impl_show_popup = impl_show_popup;
-	source_class->impl_delete_thyself = impl_delete_thyself;
-	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_uri_is_source = impl_uri_is_source;
 	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;	/* shouldn't need this. */
 	source_class->impl_want_uri = impl_want_uri;
@@ -290,13 +293,13 @@ rb_audiocd_source_constructed (GObject *object)
 	g_object_set (G_OBJECT (source), "name", "Unknown Audio", NULL);
 
 	g_object_get (source, "shell", &shell, NULL);
-	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
-							       "AudioCdActions",
-							       NULL, 0, NULL);
-	_rb_action_group_add_source_actions (priv->action_group,
-					     G_OBJECT (shell),
-					     rb_audiocd_source_actions,
-					     G_N_ELEMENTS (rb_audiocd_source_actions));
+	priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
+								     "AudioCdActions",
+								     NULL, 0, NULL);
+	_rb_action_group_add_display_page_actions (priv->action_group,
+						   G_OBJECT (shell),
+						   rb_audiocd_source_actions,
+						   G_N_ELEMENTS (rb_audiocd_source_actions));
 	g_object_unref (shell);
 
 	action = gtk_action_group_get_action (priv->action_group,
@@ -452,7 +455,6 @@ rb_audiocd_source_new (RBPlugin *plugin,
 			       "volume", volume,
 			       "shell", shell,
 			       "sorting-key", NULL,
-			       "source-group", RB_SOURCE_GROUP_DEVICES,
 			       "plugin", plugin,
 			       NULL);
 
@@ -1054,19 +1056,18 @@ error_out:
 }
 
 static void
-impl_delete_thyself (RBSource *source)
+impl_delete_thyself (RBDisplayPage *page)
 {
 	RhythmDB *db;
 	RhythmDBEntryType *entry_type;
 
 	rb_debug ("audio cd ejected");
 
-	/* cancel the loading of metadata */
-	rb_audiocd_load_metadata_cancel (RB_AUDIOCD_SOURCE (source));
+	rb_audiocd_load_metadata_cancel (RB_AUDIOCD_SOURCE (page));
 
-	db = get_db_for_source (RB_AUDIOCD_SOURCE (source));
+	db = get_db_for_source (RB_AUDIOCD_SOURCE (page));
 
-	g_object_get (source, "entry-type", &entry_type, NULL);
+	g_object_get (page, "entry-type", &entry_type, NULL);
 	rhythmdb_entry_delete_by_type (db, entry_type);
 	g_object_unref (entry_type);
 
@@ -1099,14 +1100,14 @@ rb_audiocd_is_mount_audiocd (GMount *mount)
 }
 
 static gboolean
-impl_show_popup (RBSource *source)
+impl_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (RB_SOURCE (source), "/AudioCdSourcePopup");
+	_rb_display_page_show_popup (page, "/AudioCdSourcePopup");
 	return TRUE;
 }
 
 static GList *
-impl_get_ui_actions (RBSource *source)
+impl_get_ui_actions (RBDisplayPage *page)
 {
 	GList *actions = NULL;
 

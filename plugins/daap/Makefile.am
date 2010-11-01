@@ -22,8 +22,8 @@ libdaap_la_SOURCES = \
 	rb-dmap-container-db-adapter.h		  \
 	rb-daap-dialog.c			  \
 	rb-daap-dialog.h			  \
-	rb-dacp-source.c			  \
-	rb-dacp-source.h			  \
+	rb-dacp-pairing-page.c			  \
+	rb-dacp-pairing-page.h			  \
 	rb-dacp-player.c			  \
 	rb-dacp-player.h			  \
 	rb-rhythmdb-dmap-db-adapter.c             \

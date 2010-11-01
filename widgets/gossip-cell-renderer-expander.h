@@ -49,8 +49,13 @@ struct _GossipCellRendererExpanderClass {
   void (*_gtk_reserved4) (void);
 };
 
-GType            gossip_cell_renderer_expander_get_type (void) G_GNUC_CONST;
-GtkCellRenderer *gossip_cell_renderer_expander_new      (void);
+GType            gossip_cell_renderer_expander_get_type 	(void) G_GNUC_CONST;
+GtkCellRenderer *gossip_cell_renderer_expander_new      	(void);
+
+void		 gossip_cell_renderer_expander_start_animation  (GossipCellRendererExpander *expander,
+								 GtkTreeView *widget,
+								 GtkTreePath *path,
+								 gboolean expanding);
 
 G_END_DECLS
 

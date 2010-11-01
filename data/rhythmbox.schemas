@@ -1704,5 +1704,60 @@
 	<long>True if the Zeitgeist plugin is hidden.</long>
 	</locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/page-groups/devices</key>
+        <applyto>/apps/rhythmbox/ui/page-groups/devices</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the Devices page group is collapsed.</short>
+        <long>True if the Devices page group is collapsed.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/page-groups/library</key>
+        <applyto>/apps/rhythmbox/ui/page-groups/library</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the Library page group is collapsed.</short>
+        <long>True if the Library page group is collapsed.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/page-groups/playlists</key>
+        <applyto>/apps/rhythmbox/ui/page-groups/playlists</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the Playlists page group is collapsed.</short>
+        <long>True if the Playlists page group is collapsed.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/page-groups/shared</key>
+        <applyto>/apps/rhythmbox/ui/page-groups/shared</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the Shared page group is collapsed.</short>
+        <long>True if the Shared page group is collapsed.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/page-groups/stores</key>
+        <applyto>/apps/rhythmbox/ui/page-groups/stores</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the Stores page group is collapsed.</short>
+        <long>True if the Stores page group is collapsed.</long>
+	</locale>
+      </schema>
     </schemalist>
 </gconfschemafile>

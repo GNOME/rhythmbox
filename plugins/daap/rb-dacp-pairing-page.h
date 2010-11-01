@@ -1,5 +1,5 @@
 /*
- *  Header for DACP (iTunes Remote) source object
+ *  Header for DACP (iTunes Remote) pairing page object
  *
  *  Copyright (C) 2010 Alexandre Rosenfeld <alexandre.rosenfeld@gmail.com>
  *
@@ -27,11 +27,11 @@
  *
  */
 
-#ifndef __RB_DACP_SOURCE_H
-#define __RB_DACP_SOURCE_H
+#ifndef __RB_DACP_PAIRING_PAGE_H
+#define __RB_DACP_PAIRING_PAGE_H
 
 #include "rb-shell.h"
-#include "rb-source.h"
+#include "rb-display-page.h"
 #include "rb-plugin.h"
 
 #include <libdmapsharing/dmap.h>
@@ -42,38 +42,38 @@ G_BEGIN_DECLS
 #define CONF_DACP_PREFIX  	CONF_PREFIX "/plugins/daap"
 #define CONF_KNOWN_REMOTES 	CONF_DACP_PREFIX "/known_remotes"
 
-#define RB_TYPE_DACP_SOURCE         (rb_dacp_source_get_type ())
-#define RB_DACP_SOURCE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DACP_SOURCE, RBDACPSource))
-#define RB_DACP_SOURCE_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_DACP_SOURCE, RBDACPSourceClass))
-#define RB_IS_DACP_SOURCE(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_DACP_SOURCE))
-#define RB_IS_DACP_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_DACP_SOURCE))
-#define RB_DACP_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_DACP_SOURCE, RBDACPSourceClass))
+#define RB_TYPE_DACP_PAIRING_PAGE         (rb_dacp_pairing_page_get_type ())
+#define RB_DACP_PAIRING_PAGE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DACP_PAIRING_PAGE, RBDACPPairingPage))
+#define RB_DACP_PAIRING_PAGE_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_DACP_PAIRING_PAGE, RBDACPPairingPageClass))
+#define RB_IS_DACP_PAIRING_PAGE(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_DACP_PAIRING_PAGE))
+#define RB_IS_DACP_PAIRING_PAGE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_DACP_PAIRING_PAGE))
+#define RB_DACP_PAIRING_PAGE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_DACP_PAIRING_PAGE, RBDACPPairingPageClass))
 
-typedef struct RBDACPSourcePrivate RBDACPSourcePrivate;
-
-typedef struct {
-	RBSource parent;
-
-	RBDACPSourcePrivate *priv;
-} RBDACPSource;
+typedef struct RBDACPPairingPagePrivate RBDACPPairingPagePrivate;
 
 typedef struct {
-	RBSourceClass parent;
-} RBDACPSourceClass;
+	RBDisplayPage parent;
 
-GType 		rb_dacp_source_get_type 	(void);
+	RBDACPPairingPagePrivate *priv;
+} RBDACPPairingPage;
 
-RBDACPSource* rb_dacp_source_new 		(RBPlugin *plugin,
+typedef struct {
+	RBDisplayPageClass parent;
+} RBDACPPairingPageClass;
+
+GType 		rb_dacp_pairing_page_get_type 	(void);
+
+RBDACPPairingPage *rb_dacp_pairing_page_new 	(RBPlugin *plugin,
 						 RBShell *shell,
 						 DACPShare *dacp_share,
 						 const char *display_name,
 						 const char *service_name);
 
-void           rb_dacp_source_remote_found     (RBDACPSource *source);
-void           rb_dacp_source_remote_lost      (RBDACPSource *source);
+void           rb_dacp_pairing_page_remote_found (RBDACPPairingPage *page);
+void           rb_dacp_pairing_page_remote_lost (RBDACPPairingPage *page);
 
 DACPShare     *rb_daap_create_dacp_share       (RBPlugin *plugin);
 
 G_END_DECLS
 
-#endif /* __RB_DACP_SOURCE_H */
+#endif /* __RB_DACP_PAIRING_PAGE_H */

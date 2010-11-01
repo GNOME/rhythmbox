@@ -35,6 +35,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "rb-source.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -42,7 +43,6 @@
 #include "rb-source.h"
 #include "rb-util.h"
 #include "rb-static-playlist-source.h"
-#include "rb-source-group.h"
 #include "rb-plugin.h"
 #include "rb-play-order.h"
 
@@ -59,6 +59,8 @@ static void rb_source_get_property (GObject *object,
 					GValue *value,
 					GParamSpec *pspec);
 
+static void default_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
+static void default_activate (RBDisplayPage *page);
 static char * default_get_browser_key (RBSource *source);
 static GList *default_get_property_views (RBSource *source);
 static gboolean default_can_rename (RBSource *source);
@@ -66,15 +68,9 @@ static GList *default_copy (RBSource *source);
 static void default_reset_filters (RBSource *source);
 static gboolean default_try_playlist (RBSource *source);
 static RBSourceEOFType default_handle_eos (RBSource *source);
-static gboolean default_show_popup  (RBSource *source);
-static void default_delete_thyself (RBSource *source);
 static RBEntryView *default_get_entry_view (RBSource *source);
-static void default_activate (RBSource *source);
-static void default_deactivate (RBSource *source);
 static void default_add_to_queue (RBSource *source, RBSource *queue);
-static void default_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 static void default_move_to_trash (RBSource *source);
-static GList * default_get_ui_actions (RBSource *source);
 static GList * default_get_search_actions (RBSource *source);
 static char *default_get_delete_action (RBSource *source);
 
@@ -85,8 +81,8 @@ static void rb_source_row_inserted_cb (GtkTreeModel *model,
 				       GtkTreePath *path,
 				       GtkTreeIter *iter,
 				       RBSource *source);
-G_DEFINE_ABSTRACT_TYPE (RBSource, rb_source, GTK_TYPE_HBOX)
-#define RB_SOURCE_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_SOURCE, RBSourcePrivate))
+
+G_DEFINE_ABSTRACT_TYPE (RBSource, rb_source, RB_TYPE_DISPLAY_PAGE)
 
 /**
  * SECTION:rb-source
@@ -110,36 +106,20 @@ G_DEFINE_ABSTRACT_TYPE (RBSource, rb_source, GTK_TYPE_HBOX)
 
 struct _RBSourcePrivate
 {
-	char *name;
-
-	RBShell *shell;
-	gboolean visible;
 	RhythmDBQueryModel *query_model;
-	GdkPixbuf *pixbuf;
 	guint hidden_when_empty : 1;
 	guint update_visibility_id;
 	guint update_status_id;
 	RhythmDBEntryType *entry_type;
-	RBSourceGroup *source_group;
-	RBPlugin *plugin;
 	RBSourceSearchType search_type;
-
-	gboolean deleted;
 };
 
 enum
 {
 	PROP_0,
-	PROP_NAME,
-	PROP_ICON,
-	PROP_SHELL,
-	PROP_UI_MANAGER,
-	PROP_VISIBLE,
 	PROP_QUERY_MODEL,
 	PROP_HIDDEN_WHEN_EMPTY,
-	PROP_SOURCE_GROUP,
 	PROP_ENTRY_TYPE,
-	PROP_PLUGIN,
 	PROP_BASE_QUERY_MODEL,
 	PROP_PLAY_ORDER,
 	PROP_SEARCH_TYPE
@@ -147,9 +127,7 @@ enum
 
 enum
 {
-	STATUS_CHANGED,
 	FILTER_CHANGED,
-	DELETED,
 	LAST_SIGNAL
 };
 
@@ -159,12 +137,15 @@ static void
 rb_source_class_init (RBSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 
 	object_class->dispose = rb_source_dispose;
 	object_class->finalize = rb_source_finalize;
-
 	object_class->set_property = rb_source_set_property;
 	object_class->get_property = rb_source_get_property;
+
+	page_class->activate = default_activate;
+	page_class->get_status = default_get_status;
 
 	klass->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_get_browser_key = default_get_browser_key;
@@ -182,88 +163,11 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_copy = default_copy;
 	klass->impl_reset_filters = default_reset_filters;
 	klass->impl_handle_eos = default_handle_eos;
-	klass->impl_get_config_widget = NULL;
-	klass->impl_receive_drag = NULL;
-	klass->impl_show_popup = default_show_popup;
-	klass->impl_delete_thyself = default_delete_thyself;
-	klass->impl_activate = default_activate;
-	klass->impl_deactivate = default_deactivate;
 	klass->impl_try_playlist = default_try_playlist;
 	klass->impl_add_to_queue = default_add_to_queue;
-	klass->impl_get_status = default_get_status;
-	klass->impl_get_ui_actions = default_get_ui_actions;
 	klass->impl_get_search_actions = default_get_search_actions;
 	klass->impl_get_delete_action = default_get_delete_action;
 	klass->impl_move_to_trash = default_move_to_trash;
-
-	/**
-	 * RBSource:name:
-	 *
-	 * Source name as displayed in the source list
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_NAME,
-					 g_param_spec_string ("name",
-							      "UI name",
-							      "Interface name",
-							      NULL,
-							      G_PARAM_READWRITE));
-	/**
-	 * RBSource:icon:
-	 *
-	 * Icon to display in the source list
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_ICON,
-					 g_param_spec_object ("icon",
-							      "Icon",
-							      "Source Icon",
-							      GDK_TYPE_PIXBUF,
-							      G_PARAM_READWRITE));
-
-	/**
-	 * RBSource:shell:
-	 *
-	 * The rhythmbox shell object
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_SHELL,
-					 g_param_spec_object ("shell",
-							       "RBShell",
-							       "RBShell object",
-							      RB_TYPE_SHELL,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	/**
-	 * RBSource:ui-manager:
-	 *
-	 * The Gtk UIManager object
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_UI_MANAGER,
-					 g_param_spec_object ("ui-manager",
-							       "GtkUIManager",
-							       "GtkUIManager object",
-							      GTK_TYPE_UI_MANAGER,
-							      G_PARAM_READABLE));
-
-	/**
-	 * RBSource:visibility:
-	 *
-	 * If FALSE, the source will not be displayed in the source list
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_VISIBLE,
-					 /* FIXME: This property could probably
-					  * be named better, there's already
-					  * a GtkWidget 'visible' property,
-					  * since RBSource derives from
-					  * GtkWidget, this can be confusing
-					  */
-					 g_param_spec_boolean ("visibility",
-							       "visibility",
-							       "Whether the source should be displayed in the source list",
-							       TRUE,
-							       G_PARAM_READWRITE));
 
 	/**
 	 * RBSource:hidden-when-empty:
@@ -294,18 +198,6 @@ rb_source_class_init (RBSourceClass *klass)
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READWRITE));
 	/**
-	 * RBSource:source-group:
-	 *
-	 * Source group in which to display the source
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_SOURCE_GROUP,
-					 g_param_spec_boxed ("source-group",
-							     "Source group",
-							     "Source group",
-							     RB_TYPE_SOURCE_GROUP,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	/**
 	 * RBSource:entry-type:
 	 *
 	 * Entry type for entries in this source.
@@ -317,18 +209,6 @@ rb_source_class_init (RBSourceClass *klass)
 							      "Type of the entries which should be displayed by this source",
 							      RHYTHMDB_TYPE_ENTRY_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	/**
-	 * RBSource:plugin:
-	 *
-	 * The plugin that created this source.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_PLUGIN,
-					 g_param_spec_object ("plugin",
-							      "RBPlugin",
-							      "RBPlugin instance for the plugin that created the source",
-							      RB_TYPE_PLUGIN,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 	/**
 	 * RBSource:base-query-model:
 	 *
@@ -371,38 +251,6 @@ rb_source_class_init (RBSourceClass *klass)
 							    RB_SOURCE_SEARCH_NONE,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 	/**
-	 * RBSource::deleted:
-	 * @source: the #RBSource
-	 *
-	 * Emitted when the source is being deleted.
-	 */
-	rb_source_signals[DELETED] =
-		g_signal_new ("deleted",
-			      RB_TYPE_SOURCE,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBSourceClass, deleted),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
-
-	/**
-	 * RBSource::status-changed:
-	 * @source: the #RBSource
-	 *
-	 * Emitted when the source's status changes.
-	 */
-	rb_source_signals[STATUS_CHANGED] =
-		g_signal_new ("status_changed",
-			      RB_TYPE_SOURCE,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBSourceClass, status_changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
-
-	/**
 	 * RBSource::filter-changed:
 	 * @source: the #RBSource
 	 *
@@ -426,31 +274,26 @@ rb_source_class_init (RBSourceClass *klass)
 static void
 rb_source_init (RBSource *source)
 {
-	RB_SOURCE_GET_PRIVATE (source)->visible = TRUE;
+	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source, RB_TYPE_SOURCE, RBSourcePrivate);
 }
 
 static void
 rb_source_dispose (GObject *object)
 {
 	RBSource *source;
-	RBSourcePrivate *priv;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_SOURCE (object));
 
 	source = RB_SOURCE (object);
-	priv = RB_SOURCE_GET_PRIVATE (source);
-	g_return_if_fail (priv != NULL);
 
-	rb_debug ("Disposing source %p: '%s'", source, priv->name);
-
-	if (priv->update_visibility_id != 0) {
-		g_source_remove (priv->update_visibility_id);
-		priv->update_visibility_id = 0;
+	if (source->priv->update_visibility_id != 0) {
+		g_source_remove (source->priv->update_visibility_id);
+		source->priv->update_visibility_id = 0;
 	}
-	if (priv->update_status_id != 0) {
-		g_source_remove (priv->update_status_id);
-		priv->update_status_id = 0;
+	if (source->priv->update_status_id != 0) {
+		g_source_remove (source->priv->update_status_id);
+		source->priv->update_status_id = 0;
 	}
 
 	G_OBJECT_CLASS (rb_source_parent_class)->dispose (object);
@@ -460,74 +303,33 @@ static void
 rb_source_finalize (GObject *object)
 {
 	RBSource *source;
-	RBSourcePrivate *priv;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_SOURCE (object));
 
 	source = RB_SOURCE (object);
-	priv = RB_SOURCE_GET_PRIVATE (source);
-	g_return_if_fail (priv != NULL);
 
-	rb_debug ("Finalizing source %p: '%s'", source, priv->name);
-
-	if (priv->query_model != NULL) {
-		rb_debug ("Unreffing model %p count: %d", priv->query_model, G_OBJECT (priv->query_model)->ref_count);
-		g_object_unref (priv->query_model);
+	if (source->priv->query_model != NULL) {
+		rb_debug ("Unreffing model %p count: %d",
+			  source->priv->query_model,
+			  G_OBJECT (source->priv->query_model)->ref_count);
+		g_object_unref (source->priv->query_model);
 	}
-
-	if (priv->pixbuf != NULL) {
-		g_object_unref (priv->pixbuf);
-	}
-
-	g_free (priv->name);
 
 	G_OBJECT_CLASS (rb_source_parent_class)->finalize (object);
-}
-
-/**
- * rb_source_set_pixbuf:
- * @source: a #RBSource
- * @pixbuf: new GdkPixbuf for the source
- *
- * Sets the pixbuf for the source.
- */
-void
-rb_source_set_pixbuf (RBSource  *source,
-		      GdkPixbuf *pixbuf)
-{
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-
-	g_return_if_fail (RB_IS_SOURCE (source));
-
-	if (priv->pixbuf != NULL) {
-		g_object_unref (priv->pixbuf);
-	}
-
-	priv->pixbuf = pixbuf;
-
-	if (priv->pixbuf != NULL) {
-		g_object_ref (priv->pixbuf);
-	}
 }
 
 static gboolean
 update_visibility_idle (RBSource *source)
 {
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-	gboolean visibility;
+	gint count;
 
 	GDK_THREADS_ENTER ();
 
-	gint count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (priv->query_model), NULL);
+	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source->priv->query_model), NULL);
+	g_object_set (source, "visibility", (count > 0), NULL);
 
-	visibility = (count > 0);
-
-	if (visibility != priv->visible) {
-		g_object_set (G_OBJECT (source), "visibility", visibility, NULL);
-	}
-
-	priv->update_visibility_id = 0;
+	source->priv->update_visibility_id = 0;
 	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
@@ -535,12 +337,10 @@ update_visibility_idle (RBSource *source)
 static void
 queue_update_visibility (RBSource *source)
 {
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-
-	if (priv->update_visibility_id != 0) {
-		g_source_remove (priv->update_visibility_id);
+	if (source->priv->update_visibility_id != 0) {
+		g_source_remove (source->priv->update_visibility_id);
 	}
-	priv->update_visibility_id = g_idle_add ((GSourceFunc) update_visibility_idle, source);
+	source->priv->update_visibility_id = g_idle_add ((GSourceFunc) update_visibility_idle, source);
 }
 
 /**
@@ -555,12 +355,10 @@ void
 rb_source_set_hidden_when_empty (RBSource *source,
 				 gboolean  hidden)
 {
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-
 	g_return_if_fail (RB_IS_SOURCE (source));
 
-	if (priv->hidden_when_empty != hidden) {
-		priv->hidden_when_empty = hidden;
+	if (source->priv->hidden_when_empty != hidden) {
+		source->priv->hidden_when_empty = hidden;
 		queue_update_visibility (source);
 	}
 }
@@ -569,25 +367,23 @@ static void
 rb_source_set_query_model_internal (RBSource *source,
 				    RhythmDBQueryModel *model)
 {
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-
-	if (priv->query_model == model) {
+	if (source->priv->query_model == model) {
 		return;
 	}
 
-	if (priv->query_model != NULL) {
-		g_signal_handlers_disconnect_by_func (priv->query_model,
+	if (source->priv->query_model != NULL) {
+		g_signal_handlers_disconnect_by_func (source->priv->query_model,
 						      G_CALLBACK (rb_source_post_entry_deleted_cb),
 						      source);
-		g_signal_handlers_disconnect_by_func (priv->query_model,
+		g_signal_handlers_disconnect_by_func (source->priv->query_model,
 						      G_CALLBACK (rb_source_row_inserted_cb),
 						      source);
-		g_object_unref (priv->query_model);
+		g_object_unref (source->priv->query_model);
 	}
 
-	priv->query_model = model;
-	if (priv->query_model != NULL) {
-		g_object_ref (priv->query_model);
+	source->priv->query_model = model;
+	if (source->priv->query_model != NULL) {
+		g_object_ref (source->priv->query_model);
 		g_signal_connect_object (model, "post-entry-delete",
 					 G_CALLBACK (rb_source_post_entry_deleted_cb),
 					 source, 0);
@@ -596,8 +392,7 @@ rb_source_set_query_model_internal (RBSource *source,
 					 source, 0);
 	}
 
-	/* g_object_notify (G_OBJECT (source), "query-model"); */
-	rb_source_notify_status_changed (source);
+	_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 }
 
 static void
@@ -606,43 +401,20 @@ rb_source_set_property (GObject *object,
 			const GValue *value,
 			GParamSpec *pspec)
 {
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (object);
 	RBSource *source = RB_SOURCE (object);
 
 	switch (prop_id) {
-	case PROP_NAME:
-		g_free (priv->name);
-		priv->name = g_strdup (g_value_get_string (value));
-		break;
-	case PROP_ICON:
-		rb_source_set_pixbuf (source, g_value_get_object (value));
-		break;
-	case PROP_SHELL:
-		priv->shell = g_value_get_object (value);
-		break;
-	case PROP_VISIBLE:
-		priv->visible = g_value_get_boolean (value);
-		rb_debug ("Setting %s visibility to %u",
-			  priv->name,
-			  priv->visible);
-		break;
 	case PROP_HIDDEN_WHEN_EMPTY:
 		rb_source_set_hidden_when_empty (source, g_value_get_boolean (value));
 		break;
 	case PROP_QUERY_MODEL:
 		rb_source_set_query_model_internal (source, g_value_get_object (value));
 		break;
-	case PROP_SOURCE_GROUP:
-		priv->source_group = g_value_get_boxed (value);
-		break;
 	case PROP_ENTRY_TYPE:
-		priv->entry_type = g_value_get_object (value);
-		break;
-	case PROP_PLUGIN:
-		priv->plugin = g_value_get_object (value);
+		source->priv->entry_type = g_value_get_object (value);
 		break;
 	case PROP_SEARCH_TYPE:
-		priv->search_type = g_value_get_enum (value);
+		source->priv->search_type = g_value_get_enum (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -656,54 +428,26 @@ rb_source_get_property (GObject *object,
 			GValue *value,
 			GParamSpec *pspec)
 {
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (object);
+	RBSource *source = RB_SOURCE (object);
 
 	switch (prop_id) {
-	case PROP_NAME:
-		g_value_set_string (value, priv->name);
-		break;
-	case PROP_ICON:
-		g_value_set_object (value, priv->pixbuf);
-		break;
-	case PROP_SHELL:
-		g_value_set_object (value, priv->shell);
-		break;
-	case PROP_VISIBLE:
-		g_value_set_boolean (value, priv->visible);
-		break;
-	case PROP_UI_MANAGER:
-	{
-		GtkUIManager *manager;
-		g_object_get (priv->shell,
-			      "ui-manager", &manager,
-			      NULL);
-		g_value_set_object (value, manager);
-		g_object_unref (manager);
-		break;
-	}
 	case PROP_QUERY_MODEL:
-		g_value_set_object (value, priv->query_model);
-		break;
-	case PROP_SOURCE_GROUP:
-		g_value_set_boxed (value, priv->source_group);
+		g_value_set_object (value, source->priv->query_model);
 		break;
 	case PROP_ENTRY_TYPE:
-		g_value_set_object (value, priv->entry_type);
-		break;
-	case PROP_PLUGIN:
-		g_value_set_object (value, priv->plugin);
+		g_value_set_object (value, source->priv->entry_type);
 		break;
 	case PROP_BASE_QUERY_MODEL:
 		/* unless the subclass overrides it, just assume the
 		 * current query model is the base model.
 		 */
-		g_value_set_object (value, priv->query_model);
+		g_value_set_object (value, source->priv->query_model);
 		break;
 	case PROP_PLAY_ORDER:
 		g_value_set_object (value, NULL);		/* ? */
 		break;
 	case PROP_SEARCH_TYPE:
-		g_value_set_enum (value, priv->search_type);
+		g_value_set_enum (value, source->priv->search_type);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -712,50 +456,39 @@ rb_source_get_property (GObject *object,
 }
 
 static void
-default_get_status (RBSource *source,
+default_activate (RBDisplayPage *page)
+{
+	RBShell *shell;
+
+	g_object_get (page, "shell", &shell, NULL);
+	rb_shell_activate_source (shell,
+				  RB_SOURCE (page),
+				  RB_SHELL_ACTIVATION_ALWAYS_PLAY,
+				  NULL);
+}
+
+static void
+default_get_status (RBDisplayPage *page,
 		    char **text,
 		    char **progress_text,
 		    float *progress)
 {
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-
+	RBSource *source = RB_SOURCE (page);
 	/* hack to get these strings marked for translation */
 	if (0) {
 		ngettext ("%d song", "%d songs", 0);
 	}
 
-	if (priv->query_model) {
-		*text = rhythmdb_query_model_compute_status_normal (priv->query_model,
+	if (source->priv->query_model) {
+		*text = rhythmdb_query_model_compute_status_normal (source->priv->query_model,
 								    "%d song",
 								    "%d songs");
-		if (rhythmdb_query_model_has_pending_changes (priv->query_model))
+		if (rhythmdb_query_model_has_pending_changes (source->priv->query_model)) {
 			*progress = -1.0f;
+		}
 	} else {
 		*text = g_strdup ("");
 	}
-}
-
-/**
- * rb_source_get_status:
- * @source: a #RBSource
- * @text: holds the returned status text (allocated)
- * @progress_text: holds the returned text for the progress bar (allocated)
- * @progress: holds the progress value
- *
- * Retrieves the details to display in the status bar for the source.
- * If the progress value returned is less than zero, the progress bar
- * will pulse.  If the progress value is greater than or equal to 1,
- * the progress bar will be hidden.
- **/
-void
-rb_source_get_status (RBSource *source,
-		      char **text,
-		      char **progress_text,
-		      float *progress)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	klass->impl_get_status (source, text, progress_text, progress);
 }
 
 static char *
@@ -811,19 +544,6 @@ rb_source_browser_toggled (RBSource *source,
 
 	if (klass->impl_browser_toggled != NULL)
 		klass->impl_browser_toggled (source, enabled);
-}
-
-/**
- * rb_source_notify_status_changed:
- * @source: a #RBSource
- *
- * Source implementations call this when their status bar information
- * changes.
- */
-void
-rb_source_notify_status_changed (RBSource *source)
-{
-	g_signal_emit (G_OBJECT (source), rb_source_signals[STATUS_CHANGED], 0);
 }
 
 /**
@@ -923,6 +643,19 @@ default_can_rename (RBSource *source)
 	return FALSE;
 }
 
+static gboolean
+is_party_mode (RBSource *source)
+{
+	gboolean result = FALSE;
+	RBShell *shell;
+
+	g_object_get (source, "shell", &shell, NULL);
+	result = rb_shell_get_party_mode (shell);
+	g_object_unref (shell);
+
+	return result;
+}
+
 /**
  * rb_source_can_rename:
  * @source: a #RBSource.
@@ -935,13 +668,12 @@ gboolean
 rb_source_can_rename (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
 
-	if (rb_shell_get_party_mode (priv->shell)) {
+	if (is_party_mode (source)) {
 		return FALSE;
+	} else {
+		return klass->impl_can_rename (source);
 	}
-
-	return klass->impl_can_rename (source);
 }
 
 /**
@@ -964,34 +696,10 @@ rb_source_search (RBSource *source,
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 	g_assert (new_text != NULL);
 
-	/* several sources don't have a search ability */
 	if (klass->impl_search != NULL)
 		klass->impl_search (source, search, cur_text, new_text);
 }
 
-/**
- * rb_source_get_config_widget:
- * @source: a #RBSource
- * @prefs: the #RBShellPreferences object
- *
- * Source implementations can use this to return an optional
- * configuration widget. The widget will be displayed in a 
- * page in the preferences dialog.
- *
- * Return value: configuration widget
- */
-GtkWidget *
-rb_source_get_config_widget (RBSource *source,
-			     RBShellPreferences *prefs)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	if (klass->impl_get_config_widget) {
-		return klass->impl_get_config_widget (source, prefs);
-	} else {
-		return NULL;
-	}
-}
 
 /**
  * rb_source_can_cut:
@@ -1039,13 +747,11 @@ gboolean
 rb_source_can_delete (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-
-	if (rb_shell_get_party_mode (priv->shell)) {
+	if (is_party_mode (source)) {
 		return FALSE;
+	} else {
+		return klass->impl_can_delete (source);
 	}
-
-	return klass->impl_can_delete (source);
 }
 
 /**
@@ -1061,13 +767,11 @@ gboolean
 rb_source_can_move_to_trash (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-
-	if (rb_shell_get_party_mode (priv->shell)) {
+	if (is_party_mode (source)) {
 		return FALSE;
+	} else {
+		return klass->impl_can_move_to_trash (source);
 	}
-
-	return klass->impl_can_move_to_trash (source);
 }
 
 /**
@@ -1234,9 +938,8 @@ default_move_to_trash (RBSource *source)
 	GList *sel, *tem;
 	RBEntryView *entry_view;
 	RhythmDB *db;
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
 
-	g_object_get (priv->shell, "db", &db, NULL);
+	g_object_get (source->priv->query_model, "db", &db, NULL);
 
 	sel = NULL;
 	entry_view = rb_source_get_entry_view (source);
@@ -1454,174 +1157,10 @@ rb_source_handle_eos (RBSource *source)
 	return klass->impl_handle_eos (source);
 }
 
-/**
- * rb_source_receive_drag:
- * @source: a #RBSource
- * @data: the selection data
- *
- * This is called when the user drags something to the source.
- * Depending on the drag data type, the data might be a list of
- * #RhythmDBEntry objects, a list of URIs, or a list of album
- * or artist or genre names.
- *
- * Return value: TRUE if the source accepted the drag data
- */
-gboolean
-rb_source_receive_drag (RBSource *source,
-			GtkSelectionData *data)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	if (klass->impl_receive_drag)
-		return klass->impl_receive_drag (source, data);
-	else
-		return FALSE;
-}
-
-/**
- * _rb_source_show_popup:
- * @source: a #RBSource
- * @ui_path: UI path to the popup to show
- *
- * Source implementations can use this as a shortcut to
- * display a popup that has been loaded into the UI manager.
- */
-void
-_rb_source_show_popup (RBSource *source, const char *ui_path)
-{
-	GtkUIManager *uimanager;
-
-	g_object_get (RB_SOURCE_GET_PRIVATE (source)->shell,
-		      "ui-manager", &uimanager, NULL);
-	rb_gtk_action_popup_menu (uimanager, ui_path);
-	g_object_unref (uimanager);
-
-}
-
-static gboolean
-default_show_popup  (RBSource *source)
-{
-	return FALSE;
-}
-
-/**
- * rb_source_show_popup:
- * @source: a #RBSource
- *
- * Called when the user performs an action (such as right-clicking)
- * that should result in a popup menu being displayed for the source.
- *
- * Return value: TRUE if the source managed to display a popup
- */
-gboolean
-rb_source_show_popup (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_show_popup (source);
-}
-
-static void
-default_delete_thyself (RBSource *source)
-{
-}
-
-/**
- * rb_source_delete_thyself:
- * @source: a #RBSource
- *
- * This is called when the source should delete itself.
- * The 'deleted' signal will be emitted, which removes the source
- * from the source list.  This will not actually dispose of the
- * source object, so reference counting must still be handled
- * correctly.
- */
-void
-rb_source_delete_thyself (RBSource *source)
-{
-	RBSourceClass *klass;
-	RBSourcePrivate *priv;
-
-	g_return_if_fail (source != NULL);
-	priv = RB_SOURCE_GET_PRIVATE (source);
-	if (priv->deleted) {
-		rb_debug ("source has already been deleted");
-		return;
-	}
-	priv->deleted = TRUE;
-
-	klass = RB_SOURCE_GET_CLASS (source);
-	klass->impl_delete_thyself (source);
-	g_signal_emit (G_OBJECT (source), rb_source_signals[DELETED], 0);
-}
-
 static RBEntryView*
 default_get_entry_view (RBSource *source)
 {
 	return NULL;
-}
-
-static void
-default_activate (RBSource *source)
-{
-	return;
-}
-
-static void
-default_deactivate (RBSource *source)
-{
-	return;
-}
-
-/**
- * rb_source_activate:
- * @source: a #RBSource
- *
- * Called when the source is selected in the source list.
- */
-void
-rb_source_activate (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	klass->impl_activate (source);
-}
-
-/**
- * rb_source_deactivate:
- * @source: a #RBSource
- *
- * Called when the source is deselected in the source list.
- */
-void
-rb_source_deactivate (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	klass->impl_deactivate (source);
-}
-
-static GList *
-default_get_ui_actions (RBSource *source)
-{
-	return NULL;
-}
-
-/**
- * rb_source_get_ui_actions:
- * @source: a #RBSource
- *
- * Returns a list of UI action names.  Items for
- * these actions will be added to the toolbar.
- *
- * Return value: list of action names
- */
-GList *
-rb_source_get_ui_actions (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_get_ui_actions (source);
 }
 
 static GList *
@@ -1675,14 +1214,12 @@ rb_source_get_delete_action (RBSource *source)
 static gboolean
 _update_status_idle (RBSource *source)
 {
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+	_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 
-	rb_source_notify_status_changed (source);
-
-	if (priv->hidden_when_empty)
+	if (source->priv->hidden_when_empty)
 		update_visibility_idle (source);
 
-	priv->update_status_id = 0;
+	source->priv->update_status_id = 0;
 	return FALSE;
 }
 
@@ -1692,10 +1229,8 @@ rb_source_row_inserted_cb (GtkTreeModel *model,
 			   GtkTreeIter *iter,
 			   RBSource *source)
 {
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-
-	if (priv->update_status_id == 0)
-		priv->update_status_id = g_idle_add ((GSourceFunc)_update_status_idle, source);
+	if (source->priv->update_status_id == 0)
+		source->priv->update_status_id = g_idle_add ((GSourceFunc)_update_status_idle, source);
 }
 
 static void
@@ -1703,10 +1238,8 @@ rb_source_post_entry_deleted_cb (GtkTreeModel *model,
 				 RhythmDBEntry *entry,
 				 RBSource *source)
 {
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-
-	if (priv->update_status_id == 0)
-		priv->update_status_id = g_idle_add ((GSourceFunc)_update_status_idle, source);
+	if (source->priv->update_status_id == 0)
+		source->priv->update_status_id = g_idle_add ((GSourceFunc)_update_status_idle, source);
 }
 
 static void
@@ -1758,163 +1291,6 @@ rb_source_gather_selected_properties (RBSource *source,
 			      &tem);
 	g_hash_table_destroy (selected_set);
 	return tem;
-}
-
-static GtkActionGroup *
-find_action_group (GtkUIManager *uimanager, const char *group_name)
-{
-	GList *actiongroups;
-	GList *i;
-	actiongroups = gtk_ui_manager_get_action_groups (uimanager);
-
-	/* Don't create the action group if it's already registered */
-	for (i = actiongroups; i != NULL; i = i->next) {
-		const char *name;
-
-		name = gtk_action_group_get_name (GTK_ACTION_GROUP (i->data));
-		if (name != NULL && strcmp (name, group_name) == 0) {
-			return GTK_ACTION_GROUP (i->data);
-		}
-	}
-
-	return NULL;
-}
-
-/**
- * _rb_source_register_action_group:
- * @source: a #RBSource
- * @group_name: action group name
- * @actions: array of GtkActionEntry structures for the action group
- * @num_actions: number of actions in the @actions array
- * @user_data: user data to use for action signal handlers
- *
- * Creates and registers a GtkActionGroup for the source.
- *
- * Return value: the created action group
- */
-GtkActionGroup *
-_rb_source_register_action_group (RBSource *source,
-				  const char *group_name,
-				  GtkActionEntry *actions,
-				  int num_actions,
-				  gpointer user_data)
-{
-	GtkUIManager *uimanager;
-	GtkActionGroup *group;
-
-	g_return_val_if_fail (group_name != NULL, NULL);
-
-	g_object_get (source, "ui-manager", &uimanager, NULL);
-	group = find_action_group (uimanager, group_name);
-	if (group == NULL) {
-		group = gtk_action_group_new (group_name);
-		gtk_action_group_set_translation_domain (group,
-							 GETTEXT_PACKAGE);
-		if (actions != NULL) {
-			gtk_action_group_add_actions (group,
-						      actions, num_actions,
-						      user_data);
-		}
-		gtk_ui_manager_insert_action_group (uimanager, group, 0);
-	} else {
-		g_object_ref (group);
-	}
-	g_object_unref (uimanager);
-
-	return group;
-}
-
-typedef void (*SourceActionCallback) (GtkAction *action, RBSource *source);
-
-typedef struct {
-	SourceActionCallback callback;
-	/*RBShell *shell;*/
-	gpointer shell;
-} SourceActionData;
-
-static void
-source_action_data_destroy (SourceActionData *data)
-{
-	if (data->shell != NULL) {
-		g_object_remove_weak_pointer (G_OBJECT (data->shell), &data->shell);
-	}
-	g_slice_free (SourceActionData, data);
-}
-
-static void
-source_action_cb (GtkAction *action, SourceActionData *data)
-{
-	RBSource *source;
-
-	if (data->shell == NULL) {
-		return;
-	}
-
-	/* get current source */
-	g_object_get (G_OBJECT (data->shell), "selected-source", &source, NULL);
-	if (source != NULL) {
-		data->callback (action, source);
-		g_object_unref (source);
-	}
-}
-
-/**
- * _rb_action_group_add_source_actions:
- * @group: a #GtkActionGroup
- * @shell: the #RBShell
- * @actions: array of GtkActionEntry structures for the action group
- * @num_actions: number of actions in the @actions array
- *
- * Adds actions to an action group where the action callback is
- * called with the current selected source.  This can safely be called
- * multiple times on the same action group.
- */
-void
-_rb_action_group_add_source_actions (GtkActionGroup *group,
-				     GObject *shell,
-				     GtkActionEntry *actions,
-				     int num_actions)
-{
-	int i;
-	for (i = 0; i < num_actions; i++) {
-		GtkAction *action;
-		const char *label;
-		const char *tooltip;
-		SourceActionData *source_action_data;
-
-		if (gtk_action_group_get_action (group, actions[i].name) != NULL) {
-			/* action was already added */
-			continue;
-		}
-
-		label = gtk_action_group_translate_string (group, actions[i].label);
-		tooltip = gtk_action_group_translate_string (group, actions[i].tooltip);
-
-		action = gtk_action_new (actions[i].name, label, tooltip, NULL);
-		if (actions[i].stock_id != NULL) {
-			g_object_set (action, "stock-id", actions[i].stock_id, NULL);
-			if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (),
-						     actions[i].stock_id)) {
-				g_object_set (action, "icon-name", actions[i].stock_id, NULL);
-			}
-		}
-
-		if (actions[i].callback) {
-			GClosure *closure;
-			source_action_data = g_slice_new0 (SourceActionData);
-			source_action_data->callback = (SourceActionCallback) actions[i].callback;
-			source_action_data->shell = shell;
-			g_object_add_weak_pointer (shell, &source_action_data->shell);
-
-			closure = g_cclosure_new (G_CALLBACK (source_action_cb),
-						  source_action_data,
-						  (GClosureNotify) source_action_data_destroy);
-			g_signal_connect_closure (action, "activate", closure, FALSE);
-		}
-
-		gtk_action_group_add_action_with_accel (group, action, actions[i].accelerator);
-		g_object_unref (action);
-	}
 }
 
 /**
@@ -2007,4 +1383,3 @@ rb_source_search_type_get_type (void)
 
 	return etype;
 }
-

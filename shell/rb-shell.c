@@ -32,7 +32,7 @@
  * @short_description: holds the Rhythmbox main window and everything else
  *
  * RBShell is the main application class in Rhythmbox.  It creates and holds
- * references to the other main objects (#RBShellPlayer, #RhythmDB, #RBSourceList),
+ * references to the other main objects (#RBShellPlayer, #RhythmDB, #RBDisplayPageTree),
  * constructs the main window UI, and provides the basic DBus interface.
  */
 
@@ -62,7 +62,8 @@
 #error "no database specified. configure broken?"
 #endif
 #include "rb-stock-icons.h"
-#include "rb-sourcelist.h"
+#include "rb-display-page-tree.h"
+#include "rb-display-page-group.h"
 #include "rb-file-helpers.h"
 #include "rb-source.h"
 #include "rb-playlist-manager.h"
@@ -87,7 +88,7 @@
 #include "rb-plugins-engine.h"
 #include "rb-plugin-manager.h"
 #include "rb-util.h"
-#include "rb-sourcelist-model.h"
+#include "rb-display-page-model.h"
 #include "rb-song-info.h"
 #include "rb-marshal.h"
 #include "rb-missing-plugins.h"
@@ -127,23 +128,16 @@ static gboolean rb_shell_key_press_event_cb (GtkWidget *win,
 static void rb_shell_sync_window_state (RBShell *shell, gboolean dont_maximise);
 static void rb_shell_sync_paned (RBShell *shell);
 static void rb_shell_sync_party_mode (RBShell *shell);
-static void rb_shell_select_source (RBShell *shell, RBSource *source);
-static void source_selected_cb (RBSourceList *sourcelist,
-				RBSource *source,
-				RBShell *shell);
+static void rb_shell_select_page (RBShell *shell, RBDisplayPage *display_page);
+static void display_page_selected_cb (RBDisplayPageTree *display_page_tree,
+				      RBDisplayPage *page,
+				      RBShell *shell);
 static void rb_shell_playing_source_changed_cb (RBShellPlayer *player,
 						RBSource *source,
 						RBShell *shell);
 static void rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 					    GParamSpec *arg,
 					    RBShell *shell);
-static void source_activated_cb (RBSourceList *sourcelist,
-				 RBSource *source,
-				 RBShell *shell);
-static gboolean rb_shell_activate_source (RBShell *shell,
-					  RBSource *source,
-					  guint play,
-					  GError **error);
 static void rb_shell_db_save_error_cb (RhythmDB *db,
 				       const char *uri, const GError *error,
 				       RBShell *shell);
@@ -151,7 +145,7 @@ static void rb_shell_db_save_error_cb (RhythmDB *db,
 static void rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_medium_added_cb (RBRemovableMediaManager *mgr, RBSource *source, RBShell *shell);
-static void rb_shell_source_deleted_cb (RBSource *source, RBShell *shell);
+static void rb_shell_display_page_deleted_cb (RBDisplayPage *page, RBShell *shell);
 static void rb_shell_set_window_title (RBShell *shell, const char *window_title);
 static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 					             const char *window_title,
@@ -178,7 +172,7 @@ static void rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source
 						RhythmDBEntry *entry);
 static void rb_shell_play_entry (RBShell *shell, RhythmDBEntry *entry);
 static void rb_shell_cmd_view_all (GtkAction *action,
- 				   RBShell *shell);
+				   RBShell *shell);
 static void rb_shell_view_sidepane_changed_cb (GtkAction *action,
 						 RBShell *shell);
 static void rb_shell_view_toolbar_changed_cb (GtkAction *action,
@@ -212,13 +206,10 @@ static void smalldisplay_changed_cb (GConfClient *client,
 				     guint cnxn_id,
 				     GConfEntry *entry,
 				     RBShell *shell);
-static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
-					 RBSource *source,
-					 GtkSelectionData *data,
-					 RBShell *shell);
-static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
-					RBSource *target,
-					RBShell *shell);
+static void display_page_tree_drag_received_cb (RBDisplayPageTree *display_page_tree,
+						RBDisplayPage *page,
+						GtkSelectionData *data,
+						RBShell *shell);
 
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
@@ -245,7 +236,7 @@ enum
 	PROP_DRY_RUN,
 	PROP_RHYTHMDB_FILE,
 	PROP_PLAYLISTS_FILE,
-	PROP_SELECTED_SOURCE,
+	PROP_SELECTED_PAGE,
 	PROP_DB,
 	PROP_UI_MANAGER,
 	PROP_CLIPBOARD,
@@ -257,8 +248,8 @@ enum
 	PROP_QUEUE_SOURCE,
 	PROP_PROXY_CONFIG,
 	PROP_LIBRARY_SOURCE,
-	PROP_SOURCELIST_MODEL,
-	PROP_SOURCELIST,
+	PROP_DISPLAY_PAGE_MODEL,
+	PROP_DISPLAY_PAGE_TREE,
 	PROP_SOURCE_HEADER,
 	PROP_VISIBILITY,
 	PROP_TRACK_TRANSFER_QUEUE,
@@ -305,7 +296,7 @@ struct _RBShellPrivate
 	GtkWidget *main_vbox;
 	GtkWidget *paned;
 	GtkWidget *right_paned;
-	GtkWidget *sourcelist;
+	RBDisplayPageTree *display_page_tree;
 	GtkWidget *notebook;
 	GtkWidget *queue_paned;
 	GtkWidget *queue_sidebar;
@@ -316,8 +307,9 @@ struct _RBShellPrivate
 	GtkBox *bottom_container;
 	guint right_sidebar_widget_count;
 
-	GList *sources;
-	GHashTable *sources_hash;
+	RBDisplayPageModel *display_page_model;
+	GList *sources;				/* kill? */
+	GHashTable *sources_hash;		/* kill? */
 
 	guint async_state_save_id;
 	guint save_playlist_id;
@@ -350,7 +342,7 @@ struct _RBShellPrivate
 	RBSource *missing_files_source;
 	RBSource *import_errors_source;
 
-	RBSource *selected_source;
+	RBDisplayPage *selected_page;
 
 	GtkWidget *prefs;
 	GtkWidget *plugins;
@@ -384,7 +376,7 @@ struct _RBShellPrivate
 	gint window_y;
 	gint paned_position;
 	gint right_paned_position;
-	gint sourcelist_height;
+	gint display_page_tree_height;
 };
 
 #define RB_SHELL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL, RBShellPrivate))
@@ -523,24 +515,24 @@ rb_shell_class_init (RBShellClass *klass)
 	 */
 	g_object_class_install_property (object_class,
 					 PROP_PLAYLISTS_FILE,
-					 g_param_spec_string ("playlists-file", 
-							      "playlists-file", 
-							      "The playlists file to use", 
+					 g_param_spec_string ("playlists-file",
+							      "playlists-file",
+							      "The playlists file to use",
 							      "playlists.xml",
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 
 	/**
-	 * RBShell:selected-source:
+	 * RBShell:selected-page:
 	 *
-	 * The currently selected source object
+	 * The currently selected display page
 	 */
 	g_object_class_install_property (object_class,
-					 PROP_SELECTED_SOURCE,
-					 g_param_spec_object ("selected-source",
-							      "selected-source",
-							      "Source which is currently selected",
-							      RB_TYPE_SOURCE,
+					 PROP_SELECTED_PAGE,
+					 g_param_spec_object ("selected-page",
+							      "selected-page",
+							      "Display page which is currently selected",
+							      RB_TYPE_DISPLAY_PAGE,
 							      G_PARAM_READABLE));
 	/**
 	 * RBShell:db:
@@ -574,7 +566,7 @@ rb_shell_class_init (RBShellClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_CLIPBOARD,
 					 g_param_spec_object ("clipboard",
-						 	      "RBShellClipboard",
+							      "RBShellClipboard",
 							      "RBShellClipboard object",
 							      RB_TYPE_SHELL_CLIPBOARD,
 							      G_PARAM_READABLE));
@@ -586,7 +578,7 @@ rb_shell_class_init (RBShellClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_PLAYLIST_MANAGER,
 					 g_param_spec_object ("playlist-manager",
-						 	      "RBPlaylistManager",
+							      "RBPlaylistManager",
 							      "RBPlaylistManager object",
 							      RB_TYPE_PLAYLIST_MANAGER,
 							      G_PARAM_READABLE));
@@ -598,7 +590,7 @@ rb_shell_class_init (RBShellClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_SHELL_PLAYER,
 					 g_param_spec_object ("shell-player",
-						 	      "RBShellPlayer",
+							      "RBShellPlayer",
 							      "RBShellPlayer object",
 							      RB_TYPE_SHELL_PLAYER,
 							      G_PARAM_READABLE));
@@ -610,7 +602,7 @@ rb_shell_class_init (RBShellClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_REMOVABLE_MEDIA_MANAGER,
 					 g_param_spec_object ("removable-media-manager",
-						 	      "RBRemovableMediaManager",
+							      "RBRemovableMediaManager",
 							      "RBRemovableMediaManager object",
 							      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
 							      G_PARAM_READABLE));
@@ -663,29 +655,29 @@ rb_shell_class_init (RBShellClass *klass)
 							      RB_TYPE_LIBRARY_SOURCE,
 							      G_PARAM_READABLE));
 	/**
-	 * RBShell:sourcelist-model:
+	 * RBShell:display-page-model:
 	 *
-	 * The tree model underlying the source list.
+	 * The model underlying the display page tree
 	 */
 	g_object_class_install_property (object_class,
-					 PROP_SOURCELIST_MODEL,
-					 g_param_spec_object ("sourcelist-model",
-							      "sourcelist-model",
-							      "RBSourcelistModel",
-							      RB_TYPE_SOURCELIST_MODEL,
+					 PROP_DISPLAY_PAGE_MODEL,
+					 g_param_spec_object ("display-page-model",
+							      "display-page-model",
+							      "RBDisplayPageModel",
+							      RB_TYPE_DISPLAY_PAGE_MODEL,
 							      G_PARAM_READABLE));
 
 	/**
-	 * RBShell:sourcelist:
+	 * RBShell:display-page-tree:
 	 *
-	 * The #RBSourceList instance
+	 * The #RBDisplayPageTree instance
 	 */
 	g_object_class_install_property (object_class,
-					 PROP_SOURCELIST,
-					 g_param_spec_object ("sourcelist",
-							      "sourcelist",
-							      "RBSourceList",
-							      RB_TYPE_SOURCELIST,
+					 PROP_DISPLAY_PAGE_TREE,
+					 g_param_spec_object ("display-page-tree",
+							      "display-page-tree",
+							      "RBDisplayPageTree",
+							      RB_TYPE_DISPLAY_PAGE_TREE,
 							      G_PARAM_READABLE));
 
 	/**
@@ -973,8 +965,8 @@ rb_shell_get_property (GObject *object,
 	case PROP_REMOVABLE_MEDIA_MANAGER:
 		g_value_set_object (value, shell->priv->removable_media_manager);
 		break;
-	case PROP_SELECTED_SOURCE:
-		g_value_set_object (value, shell->priv->selected_source);
+	case PROP_SELECTED_PAGE:
+		g_value_set_object (value, shell->priv->selected_page);
 		break;
 	case PROP_WINDOW:
 		g_value_set_object (value, shell->priv->window);
@@ -996,21 +988,15 @@ rb_shell_get_property (GObject *object,
 	case PROP_QUEUE_SOURCE:
 		g_value_set_object (value, shell->priv->queue_source);
 		break;
- 	case PROP_LIBRARY_SOURCE:
- 		g_value_set_object (value, shell->priv->library_source);
- 		break;
- 	case PROP_SOURCELIST_MODEL:
-		{
-			GtkTreeModel *model = NULL;
-
-			g_object_get (shell->priv->sourcelist, "model", &model, NULL);
- 			g_value_set_object (value, model);
-			g_object_unref (model);
-		}
- 		break;
- 	case PROP_SOURCELIST:
- 		g_value_set_object (value, shell->priv->sourcelist);
- 		break;
+	case PROP_LIBRARY_SOURCE:
+		g_value_set_object (value, shell->priv->library_source);
+		break;
+	case PROP_DISPLAY_PAGE_MODEL:
+		g_value_set_object (value, shell->priv->display_page_model);
+		break;
+	case PROP_DISPLAY_PAGE_TREE:
+		g_value_set_object (value, shell->priv->display_page_tree);
+		break;
 	case PROP_VISIBILITY:
 		g_value_set_boolean (value, rb_shell_get_visibility (shell));
 		break;
@@ -1043,7 +1029,7 @@ rb_shell_sync_state (RBShell *shell)
 	}
 
 	rb_debug ("saving playlists");
-	rb_playlist_manager_save_playlists (shell->priv->playlist_manager, 
+	rb_playlist_manager_save_playlists (shell->priv->playlist_manager,
 					    TRUE);
 
 	rb_debug ("saving db");
@@ -1062,10 +1048,10 @@ idle_save_rhythmdb (RBShell *shell)
 }
 
 static gboolean
-idle_save_playlist_manager (RBShell *shell) 
+idle_save_playlist_manager (RBShell *shell)
 {
 	GDK_THREADS_ENTER ();
-	rb_playlist_manager_save_playlists (shell->priv->playlist_manager, 
+	rb_playlist_manager_save_playlists (shell->priv->playlist_manager,
 					    FALSE);
 	GDK_THREADS_LEAVE ();
 
@@ -1186,7 +1172,7 @@ rb_shell_new (gboolean no_registration,
 	return g_object_new (RB_TYPE_SHELL,
 			  "no-registration", no_registration,
 			  "no-update", no_update,
-			  "dry-run", dry_run, "rhythmdb-file", rhythmdb, 
+			  "dry-run", dry_run, "rhythmdb-file", rhythmdb,
 			  "playlists-file", playlists,
 			  "autostarted", autostarted,
 			  NULL);
@@ -1232,9 +1218,9 @@ construct_db (RBShell *shell)
 	g_free (pathname);
 
 	if (shell->priv->dry_run)
-		g_object_set (G_OBJECT (shell->priv->db), "dry-run", TRUE, NULL);
+		g_object_set (shell->priv->db, "dry-run", TRUE, NULL);
 	if (shell->priv->no_update)
-		g_object_set (G_OBJECT (shell->priv->db), "no-update", TRUE, NULL);
+		g_object_set (shell->priv->db, "no-update", TRUE, NULL);
 
 	g_signal_connect_object (G_OBJECT (shell->priv->db), "load-complete",
 				 G_CALLBACK (rb_shell_load_complete_cb), shell,
@@ -1305,14 +1291,12 @@ construct_widgets (RBShell *shell)
 							   shell->priv->actiongroup);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->source_header));
 
-	shell->priv->sourcelist = rb_sourcelist_new (shell);
-	gtk_widget_show_all (shell->priv->sourcelist);
-	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist), "drop_received",
-				 G_CALLBACK (sourcelist_drag_received_cb), shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist), "source_activated",
-				 G_CALLBACK (source_activated_cb), shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist), "show_popup",
-				 G_CALLBACK (rb_shell_show_popup_cb), shell, 0);
+	shell->priv->display_page_tree = rb_display_page_tree_new (shell);
+	gtk_widget_show_all (GTK_WIDGET (shell->priv->display_page_tree));
+	g_signal_connect_object (shell->priv->display_page_tree, "drop-received",
+				 G_CALLBACK (display_page_tree_drag_received_cb), shell, 0);
+	g_object_get (shell->priv->display_page_tree, "model", &shell->priv->display_page_model, NULL);
+	rb_display_page_group_add_core_groups (G_OBJECT (shell), shell->priv->display_page_model);
 
 	shell->priv->statusbar = rb_statusbar_new (shell->priv->db,
 						   shell->priv->ui_manager,
@@ -1320,22 +1304,22 @@ construct_widgets (RBShell *shell)
 	g_object_set (shell->priv->player_shell, "statusbar", shell->priv->statusbar, NULL);
 	gtk_widget_show (GTK_WIDGET (shell->priv->statusbar));
 
-	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist), "selected",
-				 G_CALLBACK (source_selected_cb), shell, 0);
+	g_signal_connect_object (shell->priv->display_page_tree, "selected",
+				 G_CALLBACK (display_page_selected_cb), shell, 0);
 
 	shell->priv->notebook = gtk_notebook_new ();
 	gtk_widget_show (shell->priv->notebook);
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
-	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist),
+	g_signal_connect_object (shell->priv->display_page_tree,
 				 "size-allocate",
 				 G_CALLBACK (paned_size_allocate_cb),
 				 shell, 0);
 
 	shell->priv->queue_source = RB_PLAYLIST_SOURCE (rb_play_queue_source_new (shell));
-	g_object_set (G_OBJECT(shell->priv->player_shell), "queue-source", shell->priv->queue_source, NULL);
-	g_object_set (G_OBJECT(shell->priv->clipboard_shell), "queue-source", shell->priv->queue_source, NULL);
-	rb_shell_append_source (shell, RB_SOURCE (shell->priv->queue_source), NULL);
+	g_object_set (shell->priv->player_shell, "queue-source", shell->priv->queue_source, NULL);
+	g_object_set (shell->priv->clipboard_shell, "queue-source", shell->priv->queue_source, NULL);
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (shell->priv->queue_source), RB_DISPLAY_PAGE_GROUP_LIBRARY);
 	g_object_get (shell->priv->queue_source, "sidebar", &shell->priv->queue_sidebar, NULL);
 	gtk_widget_show_all (shell->priv->queue_sidebar);
 	gtk_widget_set_no_show_all (shell->priv->queue_sidebar, TRUE);
@@ -1360,13 +1344,13 @@ construct_widgets (RBShell *shell)
 
 		shell->priv->queue_paned = gtk_vpaned_new ();
 		gtk_paned_pack1 (GTK_PANED (shell->priv->queue_paned),
-				 shell->priv->sourcelist,
+				 GTK_WIDGET (shell->priv->display_page_tree),
 				 FALSE, TRUE);
 		gtk_paned_pack2 (GTK_PANED (shell->priv->queue_paned),
 				 shell->priv->queue_sidebar,
 				 TRUE, TRUE);
 		gtk_container_child_set (GTK_CONTAINER (shell->priv->queue_paned),
-					 GTK_WIDGET (shell->priv->sourcelist),
+					 GTK_WIDGET (shell->priv->display_page_tree),
 					 "resize", FALSE,
 					 NULL);
 
@@ -1407,7 +1391,7 @@ construct_widgets (RBShell *shell)
 
 	shell->priv->main_vbox = gtk_vbox_new (FALSE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (shell->priv->main_vbox), 0);
- 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 6);
+	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 6);
 	gtk_widget_show (GTK_WIDGET (shell->priv->player_shell));
 
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->top_container), FALSE, TRUE, 0);
@@ -1423,22 +1407,26 @@ construct_widgets (RBShell *shell)
 static void
 construct_sources (RBShell *shell)
 {
+	RBDisplayPage *page_group;
 	GError *error = NULL;
 	char *pathname;
 
 	rb_profile_start ("constructing sources");
 
+	page_group = RB_DISPLAY_PAGE_GROUP_LIBRARY;
 	shell->priv->library_source = RB_LIBRARY_SOURCE (rb_library_source_new (shell));
-	rb_shell_append_source (shell, RB_SOURCE (shell->priv->library_source), NULL);
 	shell->priv->podcast_source = RB_PODCAST_SOURCE (rb_podcast_main_source_new (shell, shell->priv->podcast_manager));
-	rb_shell_append_source (shell, RB_SOURCE (shell->priv->podcast_source), NULL);
 	shell->priv->missing_files_source = rb_missing_files_source_new (shell, shell->priv->library_source);
-	rb_shell_append_source (shell, shell->priv->missing_files_source, NULL);
+
 	shell->priv->import_errors_source = rb_import_errors_source_new (shell,
 									 RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR,
 									 RHYTHMDB_ENTRY_TYPE_SONG,
 									 RHYTHMDB_ENTRY_TYPE_IGNORE);
-	rb_shell_append_source (shell, shell->priv->import_errors_source, NULL);
+
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source), page_group);
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (shell->priv->podcast_source), page_group);
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (shell->priv->missing_files_source), page_group);
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (shell->priv->import_errors_source), page_group);
 
 	rb_podcast_main_source_add_subsources (RB_PODCAST_MAIN_SOURCE (shell->priv->podcast_source));
 
@@ -1458,7 +1446,9 @@ construct_sources (RBShell *shell)
 	/* Initialize playlist manager */
 	rb_debug ("shell: creating playlist manager");
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell,
-								 RB_SOURCELIST (shell->priv->sourcelist), pathname);
+								 shell->priv->display_page_model,
+								 shell->priv->display_page_tree,
+								 pathname);
 
 	g_object_set (shell->priv->clipboard_shell,
 		      "playlist-manager", shell->priv->playlist_manager,
@@ -1487,8 +1477,8 @@ construct_load_ui (RBShell *shell)
 {
 	GtkWidget *menubar;
 	GtkWidget *toolbar;
- 	GtkWidget *hbox;
- 	GtkToolItem *tool_item;
+	GtkWidget *hbox;
+	GtkToolItem *tool_item;
 	GError *error = NULL;
 
 	rb_debug ("shell: loading ui");
@@ -1581,7 +1571,6 @@ rb_shell_constructed (GObject *object)
 					     shell);
 
 	construct_db (shell);
-	rb_source_group_init ();
 
 	/* initialize shell services */
 	construct_widgets (shell);
@@ -1616,7 +1605,7 @@ rb_shell_constructed (GObject *object)
 	shell->priv->window_y = eel_gconf_get_integer (CONF_STATE_WINDOW_Y_POSITION);
 	shell->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
 	shell->priv->right_paned_position = eel_gconf_get_integer (CONF_STATE_RIGHT_PANED_POSITION);
-	shell->priv->sourcelist_height = eel_gconf_get_integer (CONF_STATE_SOURCELIST_HEIGHT);
+	shell->priv->display_page_tree_height = eel_gconf_get_integer (CONF_STATE_SOURCELIST_HEIGHT);
 	shell->priv->statusbar_hidden = eel_gconf_get_boolean (CONF_UI_STATUSBAR_HIDDEN);
 
 	rb_debug ("shell: syncing with gconf");
@@ -1635,9 +1624,15 @@ rb_shell_constructed (GObject *object)
 	rb_shell_sync_party_mode (shell);
 	rb_shell_sync_toolbar_state (shell);
 
-	rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
+	rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
 
 	rb_plugins_engine_init (shell);
+
+	/* by now we've added the built in sources and any sources from plugins,
+	 * so we can consider the fixed page groups loaded
+	 */
+	rb_display_page_group_loaded (RB_DISPLAY_PAGE_GROUP (RB_DISPLAY_PAGE_GROUP_LIBRARY));
+	rb_display_page_group_loaded (RB_DISPLAY_PAGE_GROUP (RB_DISPLAY_PAGE_GROUP_STORES));
 
 	rb_missing_plugins_init (GTK_WINDOW (shell->priv->window));
 
@@ -1897,25 +1892,15 @@ rb_shell_sync_window_state (RBShell *shell,
 }
 
 static void
-source_selected_cb (RBSourceList *sourcelist,
-		    RBSource *source,
-		    RBShell *shell)
+display_page_selected_cb (RBDisplayPageTree *display_page_tree,
+			  RBDisplayPage *page,
+			  RBShell *shell)
 {
-	rb_debug ("source selected");
-	rb_shell_select_source (shell, source);
+	rb_debug ("page selected");
+	rb_shell_select_page (shell, page);
 }
 
-static void
-source_activated_cb (RBSourceList *sourcelist,
-		     RBSource *source,
-		     RBShell *shell)
-{
-	rb_debug ("source activated");
-
-	rb_shell_activate_source (shell, source, 2, NULL);
-}
-
-static gboolean
+gboolean
 rb_shell_activate_source (RBShell *shell, RBSource *source, guint play, GError **error)
 {
 	RhythmDBEntry *entry;
@@ -1929,20 +1914,20 @@ rb_shell_activate_source (RBShell *shell, RBSource *source, guint play, GError *
 	 */
 
 	/* Select the new one, and optionally start it playing */
-	rb_shell_select_source (shell, source);
+	rb_shell_select_page (shell, RB_DISPLAY_PAGE (source));
 
 	switch (play) {
-	case 0:
+	case RB_SHELL_ACTIVATION_SELECT:
 		return TRUE;
 
-	case 1:
+	case RB_SHELL_ACTIVATION_PLAY:
 		entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
 		if (entry != NULL) {
 			rhythmdb_entry_unref (entry);
 			return TRUE;
 		}
 		/* fall through */
-	case 2:
+	case RB_SHELL_ACTIVATION_ALWAYS_PLAY:
 		rb_shell_player_set_playing_source (shell->priv->player_shell, source);
 		return rb_shell_player_playpause (shell->priv->player_shell, FALSE, error);
 
@@ -1954,7 +1939,7 @@ rb_shell_activate_source (RBShell *shell, RBSource *source, guint play, GError *
 static void
 rb_shell_db_save_error_cb (RhythmDB *db,
 			   const char *uri, const GError *error,
-		  	   RBShell *shell)
+			   RBShell *shell)
 {
 	rb_error_dialog (GTK_WINDOW (shell->priv->window),
 			 _("Error while saving song information"),
@@ -2003,32 +1988,29 @@ rb_shell_register_entry_type_for_source (RBShell *shell,
 }
 
 /**
- * rb_shell_append_source:
+ * rb_shell_append_display_page:
  * @shell: the #RBShell
- * @source: the new #RBSource
- * @parent: the parent source for the new source (optional)
+ * @page: the new #RBDisplayPage
+ * @parent: the parent page for the new page (optional)
  *
- * Registers a new source with the shell.  All sources must be
- * registered.
+ * Adds a new display page to the shell.
  */
 void
-rb_shell_append_source (RBShell *shell,
-			RBSource *source,
-			RBSource *parent)
+rb_shell_append_display_page (RBShell *shell, RBDisplayPage *page, RBDisplayPage *parent)
 {
-	shell->priv->sources
-		= g_list_append (shell->priv->sources, source);
+	if (RB_IS_SOURCE (page)) {
+		shell->priv->sources = g_list_append (shell->priv->sources, RB_SOURCE (page));
+	}
 
-	g_signal_connect_object (G_OBJECT (source), "deleted",
-				 G_CALLBACK (rb_shell_source_deleted_cb), shell, 0);
+	g_signal_connect_object (G_OBJECT (page), "deleted",
+				 G_CALLBACK (rb_shell_display_page_deleted_cb), shell, 0);
 
 	gtk_notebook_append_page (GTK_NOTEBOOK (shell->priv->notebook),
-				  GTK_WIDGET (source),
+				  GTK_WIDGET (page),
 				  gtk_label_new (""));
-	gtk_widget_show (GTK_WIDGET (source));
+	gtk_widget_show (GTK_WIDGET (page));
 
-	rb_sourcelist_append (RB_SOURCELIST (shell->priv->sourcelist),
-			      source, parent);
+	rb_display_page_model_add_page (shell->priv->display_page_model, page, parent);
 }
 
 static void
@@ -2036,7 +2018,7 @@ rb_shell_playlist_added_cb (RBPlaylistManager *mgr,
 			    RBSource *source,
 			    RBShell *shell)
 {
-	rb_shell_append_source (shell, source, NULL);
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (source), RB_DISPLAY_PAGE_GROUP_PLAYLISTS);
 }
 
 static void
@@ -2056,43 +2038,46 @@ rb_shell_medium_added_cb (RBRemovableMediaManager *mgr,
 			  RBSource *source,
 			  RBShell *shell)
 {
-	rb_shell_append_source (shell, source, NULL);
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (source), RB_DISPLAY_PAGE_GROUP_DEVICES);
 }
 
 static void
-rb_shell_source_deleted_cb (RBSource *source,
-			    RBShell *shell)
+rb_shell_display_page_deleted_cb (RBDisplayPage *page, RBShell *shell)
 {
-	RhythmDBEntryType *entry_type;
 
-	rb_debug ("source deleted");
+	rb_debug ("display page deleted");
 
-	/* remove from the map if the source owns the type */
-	g_object_get (source, "entry-type", &entry_type, NULL);
-	if (rb_shell_get_source_by_entry_type (shell, entry_type) == source) {
-		g_hash_table_remove (shell->priv->sources_hash, entry_type);
+	if (RB_IS_SOURCE (page)) {
+		RhythmDBEntryType *entry_type;
+		RBSource *source = RB_SOURCE (page);
+
+		/* remove from the map if the source owns the type */
+		g_object_get (source, "entry-type", &entry_type, NULL);
+		if (rb_shell_get_source_by_entry_type (shell, entry_type) == source) {
+			g_hash_table_remove (shell->priv->sources_hash, entry_type);
+		}
+		g_object_unref (entry_type);
+
+		if (source == rb_shell_player_get_playing_source (shell->priv->player_shell) ||
+		    source == rb_shell_player_get_active_source (shell->priv->player_shell)) {
+			rb_shell_player_stop (shell->priv->player_shell);
+		}
+
+		shell->priv->sources = g_list_remove (shell->priv->sources, source);
 	}
-	g_object_unref (entry_type);
 
-
-	if (source == rb_shell_player_get_playing_source (shell->priv->player_shell) ||
-	    source == rb_shell_player_get_active_source (shell->priv->player_shell)) {
-		rb_shell_player_stop (shell->priv->player_shell);
-	}
-	if (source == shell->priv->selected_source) {
-		if (source != RB_SOURCE (shell->priv->library_source))
-			rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
-		else
-			rb_shell_select_source (shell, NULL);
+	if (page == shell->priv->selected_page) {
+		if (page != RB_DISPLAY_PAGE (shell->priv->library_source)) {
+			rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
+		} else {
+			rb_shell_select_page (shell, NULL);
+		}
 	}
 
-	shell->priv->sources = g_list_remove (shell->priv->sources, source);
-
-	rb_sourcelist_remove (RB_SOURCELIST (shell->priv->sourcelist), source);
-
+	rb_display_page_model_remove_page (shell->priv->display_page_model, page);
 	gtk_notebook_remove_page (GTK_NOTEBOOK (shell->priv->notebook),
 				  gtk_notebook_page_num (GTK_NOTEBOOK (shell->priv->notebook),
-							 GTK_WIDGET (source)));
+							 GTK_WIDGET (page)));
 }
 
 static void
@@ -2101,22 +2086,23 @@ rb_shell_playing_source_changed_cb (RBShellPlayer *player,
 				    RBShell *shell)
 {
 	rb_debug ("playing source changed");
-	if (source != RB_SOURCE (shell->priv->queue_source))
-		rb_sourcelist_set_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
-						  source);
+	if (source != RB_SOURCE (shell->priv->queue_source)) {
+		rb_display_page_model_set_playing_source (shell->priv->display_page_model, RB_DISPLAY_PAGE (source));
+	}
 }
 
 static void
 rb_shell_playing_from_queue_cb (RBShellPlayer *player,
-			 	GParamSpec *param,
+				GParamSpec *param,
 				RBShell *shell)
 {
 	gboolean from_queue;
 
 	g_object_get (player, "playing-from-queue", &from_queue, NULL);
 	if (!shell->priv->queue_as_sidebar) {
-		rb_sourcelist_set_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
-						  rb_shell_player_get_playing_source (shell->priv->player_shell));
+		RBSource *source;
+		source = rb_shell_player_get_playing_source (shell->priv->player_shell);
+		rb_display_page_model_set_playing_source (shell->priv->display_page_model, RB_DISPLAY_PAGE (source));
 	} else {
 		RBSource *source;
 		RhythmDBEntry *entry;
@@ -2144,8 +2130,8 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 		}
 		rhythmdb_entry_unref (entry);
 
-		rb_sourcelist_set_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
-						  rb_shell_player_get_active_source (shell->priv->player_shell));
+		source = rb_shell_player_get_active_source (shell->priv->player_shell);
+		rb_display_page_model_set_playing_source (shell->priv->display_page_model, RB_DISPLAY_PAGE (source));
 	}
 }
 
@@ -2163,51 +2149,61 @@ merge_source_ui_cb (const char *action,
 }
 
 static void
-rb_shell_select_source (RBShell *shell,
-			RBSource *source)
+rb_shell_select_page (RBShell *shell, RBDisplayPage *page)
 {
 	GList *actions;
+	int pagenum;
 
-	if (shell->priv->selected_source == source)
+	if (shell->priv->selected_page == page)
 		return;
 
-	rb_debug ("selecting source %p", source);
+	rb_debug ("selecting page %p", page);
 
-	if (shell->priv->selected_source) {
-		rb_source_deactivate (shell->priv->selected_source);
+	if (shell->priv->selected_page) {
+		rb_display_page_deselected (shell->priv->selected_page);
 		gtk_ui_manager_remove_ui (shell->priv->ui_manager, shell->priv->source_ui_merge_id);
 	}
 
-	shell->priv->selected_source = source;
-	rb_source_activate (shell->priv->selected_source);
+	shell->priv->selected_page = page;
+	rb_display_page_selected (shell->priv->selected_page);
 
-	/* show source */
-	gtk_notebook_set_current_page (GTK_NOTEBOOK (shell->priv->notebook),
-				       gtk_notebook_page_num (GTK_NOTEBOOK (shell->priv->notebook), GTK_WIDGET (source)));
+	/* show page */
+	pagenum = gtk_notebook_page_num (GTK_NOTEBOOK (shell->priv->notebook),
+					 GTK_WIDGET (page));
+	gtk_notebook_set_current_page (GTK_NOTEBOOK (shell->priv->notebook), pagenum);
 
-	g_signal_handlers_block_by_func (G_OBJECT (shell->priv->sourcelist),
-					 G_CALLBACK (source_selected_cb),
+	g_signal_handlers_block_by_func (shell->priv->display_page_tree,
+					 G_CALLBACK (display_page_selected_cb),
 					 shell);
-	rb_sourcelist_select (RB_SOURCELIST (shell->priv->sourcelist),
-			      source);
-	g_signal_handlers_unblock_by_func (G_OBJECT (shell->priv->sourcelist),
-					   G_CALLBACK (source_selected_cb),
+	rb_display_page_tree_select (shell->priv->display_page_tree, page);
+	g_signal_handlers_unblock_by_func (shell->priv->display_page_tree,
+					   G_CALLBACK (display_page_selected_cb),
 					   shell);
 
 	/* update services */
-	rb_shell_clipboard_set_source (shell->priv->clipboard_shell, source);
-	rb_shell_player_set_selected_source (shell->priv->player_shell, source);
-	rb_source_header_set_source (shell->priv->source_header, source);
-	rb_statusbar_set_source (shell->priv->statusbar, source);
-	g_object_set (G_OBJECT (shell->priv->playlist_manager), "source", source, NULL);
-	g_object_set (G_OBJECT (shell->priv->removable_media_manager), "source", source, NULL);
+	if (RB_IS_SOURCE (page)) {
+		RBSource *source = RB_SOURCE (page);
+		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, source);
+		rb_shell_player_set_selected_source (shell->priv->player_shell, source);
+		rb_source_header_set_source (shell->priv->source_header, source);
+		g_object_set (shell->priv->playlist_manager, "source", source, NULL);
+		g_object_set (shell->priv->removable_media_manager, "source", source, NULL);
+	} else {
+		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, NULL);
+		rb_shell_player_set_selected_source (shell->priv->player_shell, NULL);	/* ? */
+		rb_source_header_set_source (shell->priv->source_header, NULL);
 
-	/* merge the source-specific UI */
-	actions = rb_source_get_ui_actions (source);
+		/* clear playlist-manager:source? */
+		/* clear removable-media-manager:source? */
+	}
+	rb_statusbar_set_page (shell->priv->statusbar, page);
+
+	/* merge the page-specific UI */
+	actions = rb_display_page_get_ui_actions (page);
 	g_list_foreach (actions, (GFunc)merge_source_ui_cb, shell);
 	rb_list_deep_free (actions);
 
-	g_object_notify (G_OBJECT (shell), "selected-source");
+	g_object_notify (G_OBJECT (shell), "selected-page");
 }
 
 static void
@@ -2311,9 +2307,9 @@ rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
 	eel_gconf_set_boolean (CONF_UI_QUEUE_AS_SIDEBAR, shell->priv->queue_as_sidebar);
 
 	if (shell->priv->queue_as_sidebar &&
-	    shell->priv->selected_source == RB_SOURCE (shell->priv->queue_source)) {
+	    shell->priv->selected_page == RB_DISPLAY_PAGE (shell->priv->queue_source)) {
 		/* queue no longer exists as a source, so change to the library */
-		rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
+		rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
 	}
 
 	rb_shell_playing_from_queue_cb (shell->priv->player_shell, NULL, shell);
@@ -2487,7 +2483,7 @@ rb_shell_cmd_plugins (GtkAction *action,
 								    GTK_RESPONSE_CLOSE,
 								    NULL);
 		content_area = gtk_dialog_get_content_area (GTK_DIALOG (shell->priv->plugins));
-	    	gtk_container_set_border_width (GTK_CONTAINER (shell->priv->plugins), 5);
+		gtk_container_set_border_width (GTK_CONTAINER (shell->priv->plugins), 5);
 		gtk_box_set_spacing (GTK_BOX (content_area), 2);
 
 		g_signal_connect_object (G_OBJECT (shell->priv->plugins),
@@ -2638,6 +2634,7 @@ idle_handle_load_complete (RBShell *shell)
 	rb_debug ("load complete");
 
 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
+	rb_display_page_group_loaded (RB_DISPLAY_PAGE_GROUP (RB_DISPLAY_PAGE_GROUP_PLAYLISTS));
 	shell->priv->load_complete = TRUE;
 	shell->priv->save_playlist_id = g_timeout_add_seconds (10, (GSourceFunc) idle_save_playlist_manager, shell);
 
@@ -2683,7 +2680,7 @@ rb_shell_sync_pane_visibility (RBShell *shell)
 	GtkAction *action;
 
 	if (shell->priv->queue_source != NULL) {
-		g_object_set (G_OBJECT (shell->priv->queue_source), "visibility", !shell->priv->queue_as_sidebar, NULL);
+		g_object_set (shell->priv->queue_source, "visibility", !shell->priv->queue_as_sidebar, NULL);
 	}
 
 	if (shell->priv->queue_as_sidebar) {
@@ -2774,18 +2771,19 @@ rb_shell_sync_party_mode (RBShell *shell)
 
 	/* disable/enable quit action */
 	action = gtk_action_group_get_action (shell->priv->actiongroup, "MusicQuit");
-	g_object_set (G_OBJECT (action), "sensitive", !shell->priv->party_mode, NULL);
+	g_object_set (action, "sensitive", !shell->priv->party_mode, NULL);
 	action = gtk_action_group_get_action (shell->priv->actiongroup, "ViewSmallDisplay");
-	g_object_set (G_OBJECT (action), "sensitive", !shell->priv->party_mode, NULL);
+	g_object_set (action, "sensitive", !shell->priv->party_mode, NULL);
 
 	/* show/hide queue as sidebar ? */
 
 	g_object_set (shell->priv->player_shell, "queue-only", shell->priv->party_mode, NULL);
 
 	/* Set playlist manager source to the current source to update properties */
-	if (shell->priv->selected_source) {
-		g_object_set (G_OBJECT (shell->priv->playlist_manager), "source", shell->priv->selected_source, NULL);
-		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, shell->priv->selected_source);
+	if (shell->priv->selected_page && RB_IS_SOURCE (shell->priv->selected_page)) {
+		RBSource *source = RB_SOURCE (shell->priv->selected_page);
+		g_object_set (shell->priv->playlist_manager, "source", source, NULL);
+		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, source);
 	}
 
 	gtk_window_set_keep_above (GTK_WINDOW (shell->priv->window), shell->priv->party_mode);
@@ -2823,21 +2821,21 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
 
 	if (shell->priv->window_small) {
-		g_object_set (G_OBJECT (action), "sensitive", FALSE, NULL);
-		g_object_set (G_OBJECT (queue_action), "sensitive", FALSE, NULL);
-		g_object_set (G_OBJECT (party_mode_action), "sensitive", FALSE, NULL);
-		g_object_set (G_OBJECT (jump_to_playing_action), "sensitive", FALSE, NULL);
+		g_object_set (action, "sensitive", FALSE, NULL);
+		g_object_set (queue_action, "sensitive", FALSE, NULL);
+		g_object_set (party_mode_action, "sensitive", FALSE, NULL);
+		g_object_set (jump_to_playing_action, "sensitive", FALSE, NULL);
 
 		gtk_widget_hide (GTK_WIDGET (shell->priv->paned));
 	} else {
 		RhythmDBEntry *playing;
 
-		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
-		g_object_set (G_OBJECT (queue_action), "sensitive", TRUE, NULL);
-		g_object_set (G_OBJECT (party_mode_action), "sensitive", TRUE, NULL);
+		g_object_set (action, "sensitive", TRUE, NULL);
+		g_object_set (queue_action, "sensitive", TRUE, NULL);
+		g_object_set (party_mode_action, "sensitive", TRUE, NULL);
 
 		playing = rb_shell_player_get_playing_entry (shell->priv->player_shell);
-		g_object_set (G_OBJECT (jump_to_playing_action), "sensitive", playing != NULL, NULL);
+		g_object_set (jump_to_playing_action, "sensitive", playing != NULL, NULL);
 		if (playing)
 			rhythmdb_entry_unref (playing);
 
@@ -2908,7 +2906,7 @@ rb_shell_sync_paned (RBShell *shell)
 	gtk_paned_set_position (GTK_PANED (shell->priv->paned),
 				shell->priv->paned_position);
 	gtk_paned_set_position (GTK_PANED (shell->priv->queue_paned),
-				shell->priv->sourcelist_height);
+				shell->priv->display_page_tree_height);
 }
 
 static void
@@ -2929,24 +2927,26 @@ sidebar_paned_size_allocate_cb (GtkWidget *widget,
 				GtkAllocation *allocation,
 				RBShell *shell)
 {
-	shell->priv->sourcelist_height = gtk_paned_get_position (GTK_PANED (shell->priv->queue_paned));
-	rb_debug ("sidebar paned position %d", shell->priv->sourcelist_height);
-	eel_gconf_set_integer (CONF_STATE_SOURCELIST_HEIGHT, shell->priv->sourcelist_height);
+	shell->priv->display_page_tree_height = gtk_paned_get_position (GTK_PANED (shell->priv->queue_paned));
+	rb_debug ("sidebar paned position %d", shell->priv->display_page_tree_height);
+	eel_gconf_set_integer (CONF_STATE_SOURCELIST_HEIGHT, shell->priv->display_page_tree_height);
 }
 
 static void
-sourcelist_drag_received_cb (RBSourceList *sourcelist,
-			     RBSource *source,
-			     GtkSelectionData *data,
-			     RBShell *shell)
+display_page_tree_drag_received_cb (RBDisplayPageTree *display_page_tree,
+				    RBDisplayPage *page,
+				    GtkSelectionData *data,
+				    RBShell *shell)
 {
-        if (source == NULL) {
+        if (page == NULL) {
+		RBSource *source;
 		source = rb_playlist_manager_new_playlist_from_selection_data (shell->priv->playlist_manager,
 									       data);
+		page = RB_DISPLAY_PAGE (source);
         }
 
-        if (source != NULL) {
-                rb_source_receive_drag (source, data);
+        if (page != NULL) {
+                rb_display_page_receive_drag (page, data);
         }
 
 }
@@ -2964,9 +2964,10 @@ static void
 rb_shell_cmd_view_all (GtkAction *action,
 		       RBShell *shell)
 {
+	RBSource *source = RB_SOURCE (shell->priv->selected_page);
 	rb_debug ("view all");
 
-	rb_source_reset_filters (shell->priv->selected_source);
+	rb_source_reset_filters (source);
 	rb_source_header_clear_search (shell->priv->source_header);
 	rb_source_header_focus_search_box (shell->priv->source_header);
 }
@@ -2991,7 +2992,7 @@ rb_shell_jump_to_entry_with_source (RBShell *shell,
 		return;
 
 	songs = rb_source_get_entry_view (source);
-	rb_shell_select_source (shell, source);
+	rb_shell_select_page (shell, RB_DISPLAY_PAGE (source));
 
 	if (songs != NULL) {
 		rb_entry_view_scroll_to_entry (songs, entry);
@@ -3022,15 +3023,6 @@ rb_shell_jump_to_current (RBShell *shell)
 
 	rb_shell_jump_to_entry_with_source (shell, source, playing);
 	rhythmdb_entry_unref (playing);
-}
-
-static gboolean
-rb_shell_show_popup_cb (RBSourceList *sourcelist,
-			RBSource *target,
-			RBShell *shell)
-{
-	rb_debug ("popup");
-	return rb_source_show_popup (target);
 }
 
 void
@@ -3253,8 +3245,7 @@ load_uri_finish (RBShell *shell, RBSource *entry_source, RhythmDBEntry *entry, g
 		GError *error = NULL;
 
 		g_object_get (entry_source, "name", &name, NULL);
-		/* play type 2: we don't have an entry to play, so just play something */
-		if (rb_shell_activate_source (shell, entry_source, 2, &error) == FALSE) {
+		if (rb_shell_activate_source (shell, entry_source, RB_SHELL_ACTIVATION_ALWAYS_PLAY, &error) == FALSE) {
 			rb_debug ("couldn't activate source %s: %s", name, error->message);
 			g_clear_error (&error);
 		} else {
@@ -3382,7 +3373,7 @@ rb_shell_load_uri (RBShell *shell,
 	 * the Podcast source */
 	if (rb_uri_could_be_podcast (uri, NULL)) {
 		rb_podcast_manager_subscribe_feed (shell->priv->podcast_manager, uri, FALSE);
-		rb_shell_select_source (shell, RB_SOURCE (shell->priv->podcast_source));
+		rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->podcast_source));
 		return TRUE;
 	}
 
@@ -3835,11 +3826,6 @@ rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation locati
 	GtkBox *box;
 
 	switch (location) {
-	case RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK:
-		gtk_notebook_append_page (GTK_NOTEBOOK (shell->priv->notebook),
-					  widget,
-					  gtk_label_new (""));
-		break;
 	case RB_SHELL_UI_LOCATION_RIGHT_SIDEBAR:
 		if (!shell->priv->right_sidebar_widget_count)
 			gtk_widget_show (GTK_WIDGET (shell->priv->right_sidebar_container));
@@ -3865,16 +3851,8 @@ void
 rb_shell_remove_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location)
 {
 	GtkBox *box;
-	gint page_num;
 
 	switch (location) {
-	case RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK:
-		page_num = gtk_notebook_page_num (GTK_NOTEBOOK (shell->priv->notebook),
-						  widget);
-		g_return_if_fail (page_num != -1);
-		gtk_notebook_remove_page (GTK_NOTEBOOK (shell->priv->notebook),
-					  page_num);
-		break;
 	case RB_SHELL_UI_LOCATION_RIGHT_SIDEBAR:
 		shell->priv->right_sidebar_widget_count--;
 		if (!shell->priv->right_sidebar_widget_count)
@@ -3888,39 +3866,27 @@ rb_shell_remove_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation loc
 	}
 }
 
-/**
- * rb_shell_notebook_set_page:
- * @shell: the #RBShell
- * @widget: #GtkWidget for the page to display
- *
- * Changes the visible page in the main window notebook widget.  Use this to
- * display widgets added to the #RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK location.
- */
-void
-rb_shell_notebook_set_page (RBShell *shell, GtkWidget *widget)
-{
-	gint page = 0;
-
-	/* if no widget specified, use the selected source */
-	if (widget == NULL && shell->priv->selected_source)
-		widget = GTK_WIDGET (shell->priv->selected_source);
-
-	if (widget)
-		page = gtk_notebook_page_num (GTK_NOTEBOOK (shell->priv->notebook), widget);
-
-	if (RB_IS_SOURCE (widget)) {
-		rb_source_header_set_source (shell->priv->source_header, RB_SOURCE (widget));
-		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, RB_SOURCE (widget));
-	} else {
-		rb_source_header_set_source (shell->priv->source_header, NULL);
-		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, NULL);
-	}
-
-	gtk_notebook_set_current_page (GTK_NOTEBOOK (shell->priv->notebook), page);
-}
-
 /* This should really be standard. */
 #define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rb_shell_activation_type_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_SHELL_ACTIVATION_SELECT, "select"),
+			ENUM_ENTRY (RB_SHELL_ACTIVATION_PLAY, "play"),
+			ENUM_ENTRY (RB_SHELL_ACTIVATION_ALWAYS_PLAY, "always-play"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBShellActivationType", values);
+	}
+
+	return etype;
+}
 
 GType
 rb_shell_ui_location_get_type (void)
@@ -3933,7 +3899,6 @@ rb_shell_ui_location_get_type (void)
 			ENUM_ENTRY (RB_SHELL_UI_LOCATION_RIGHT_SIDEBAR, "right-sidebar"),
 			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_TOP, "main-top"),
 			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_BOTTOM, "main-bottom"),
-			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK, "main-notebook"),
 			{ 0, 0, 0 }
 		};
 

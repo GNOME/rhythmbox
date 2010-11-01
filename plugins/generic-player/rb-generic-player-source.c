@@ -69,12 +69,13 @@ static void impl_get_property (GObject *object,
 
 static void load_songs (RBGenericPlayerSource *source);
 
-static gboolean impl_show_popup (RBSource *source);
-static void impl_delete_thyself (RBSource *source);
+static gboolean impl_show_popup (RBDisplayPage *page);
+static void impl_delete_thyself (RBDisplayPage *page);
+static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
+
 static gboolean impl_can_paste (RBSource *source);
 static gboolean impl_can_delete (RBSource *source);
 static void impl_delete (RBSource *source);
-static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 
 static GList* impl_get_mime_types (RBRemovableMediaSource *source);
 static char* impl_build_dest_uri (RBRemovableMediaSource *source,
@@ -138,6 +139,7 @@ static void
 rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBMediaPlayerSourceClass *mps_class = RB_MEDIA_PLAYER_SOURCE_CLASS (klass);
 	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
@@ -148,13 +150,14 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	object_class->dispose = impl_dispose;
 	object_class->finalize = impl_finalize;
 
-	source_class->impl_show_popup = impl_show_popup;
-	source_class->impl_delete_thyself = impl_delete_thyself;
+	page_class->show_popup = impl_show_popup;
+	page_class->delete_thyself = impl_delete_thyself;
+	page_class->get_status = impl_get_status;
+
 	source_class->impl_can_delete = impl_can_delete;
 	source_class->impl_delete = impl_delete;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_paste = impl_can_paste;
-	source_class->impl_get_status = impl_get_status;
 
 	mps_class->impl_get_entries = impl_get_entries;
 	mps_class->impl_get_capacity = impl_get_capacity;
@@ -418,7 +421,6 @@ rb_generic_player_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, M
 							 "error-entry-type", error_type,
 							 "mount", mount,
 							 "shell", shell,
-							 "source-group", RB_SOURCE_GROUP_DEVICES,
 							 "device-info", device_info,
 							 NULL));
 
@@ -428,28 +430,28 @@ rb_generic_player_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, M
 }
 
 static void
-impl_delete_thyself (RBSource *source)
+impl_delete_thyself (RBDisplayPage *page)
 {
 	GList *pl;
 	GList *p;
-	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (page);
 
 	/* take a copy of the list first, as playlist_deleted_cb modifies priv->playlists */
 	pl = g_list_copy (priv->playlists);
 	for (p = pl; p != NULL; p = p->next) {
-		RBSource *playlist = RB_SOURCE (p->data);
-		rb_source_delete_thyself (playlist);
+		RBDisplayPage *playlist_page = RB_DISPLAY_PAGE (p->data);
+		rb_display_page_delete_thyself (playlist_page);
 	}
 	g_list_free (priv->playlists);
 	g_list_free (pl);
 	priv->playlists = NULL;
 
 	if (priv->import_errors != NULL) {
-		rb_source_delete_thyself (priv->import_errors);
+		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (priv->import_errors));
 		priv->import_errors = NULL;
 	}
 
-	RB_SOURCE_CLASS (rb_generic_player_source_parent_class)->impl_delete_thyself (source);
+	RB_DISPLAY_PAGE_CLASS (rb_generic_player_source_parent_class)->delete_thyself (page);
 }
 
 static void
@@ -462,7 +464,7 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 	GDK_THREADS_ENTER ();
 	
 	g_object_get (source, "shell", &shell, NULL);
-	rb_shell_append_source (shell, priv->import_errors, RB_SOURCE (source));
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (priv->import_errors), RB_DISPLAY_PAGE (source));
 	g_object_unref (shell);
 
 	if (klass->impl_load_playlists)
@@ -471,7 +473,7 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 	g_object_unref (priv->import_job);
 	priv->import_job = NULL;
 	
-	rb_source_notify_status_changed (RB_SOURCE (source));
+	_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 
 	GDK_THREADS_LEAVE ();
 }
@@ -479,7 +481,7 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 static void
 import_status_changed_cb (RhythmDBImportJob *job, int total, int imported, RBGenericPlayerSource *source)
 {
-	rb_source_notify_status_changed (RB_SOURCE (source));
+	_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 }
 
 static void
@@ -577,23 +579,23 @@ rb_generic_player_is_mount_player (GMount *mount, MPIDDevice *device_info)
 }
 
 static gboolean
-impl_show_popup (RBSource *source)
+impl_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (RB_SOURCE (source), "/GenericPlayerSourcePopup");
+	_rb_display_page_show_popup (page, "/GenericPlayerSourcePopup");
 	return TRUE;
 }
 
 static void
-impl_get_status (RBSource *source, char **text, char **progress_text, float *progress)
+impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress)
 {
-	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (page);
 
 	/* get default status text first */
-	RB_SOURCE_CLASS (rb_generic_player_source_parent_class)->impl_get_status (source, text, progress_text, progress);
+	RB_DISPLAY_PAGE_CLASS (rb_generic_player_source_parent_class)->get_status (page, text, progress_text, progress);
 
 	/* override with bits of import status */
 	if (priv->import_job != NULL) {
-		_rb_source_set_import_status (source, priv->import_job, progress_text, progress);
+		_rb_source_set_import_status (RB_SOURCE (page), priv->import_job, progress_text, progress);
 	}
 }
 
@@ -623,7 +625,7 @@ rb_generic_player_source_add_playlist (RBGenericPlayerSource *source,
 
 	g_signal_connect_object (playlist, "deleted", G_CALLBACK (playlist_deleted_cb), source, 0);
 
-	rb_shell_append_source (shell, playlist, RB_SOURCE (source));
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (playlist), RB_DISPLAY_PAGE (source));
 }
 
 
@@ -1386,7 +1388,7 @@ impl_remove_playlists (RBMediaPlayerSource *source)
 	for (t = playlists; t != NULL; t = t->next) {
 		RBGenericPlayerPlaylistSource *p = RB_GENERIC_PLAYER_PLAYLIST_SOURCE (t->data);
 		rb_generic_player_playlist_delete_from_player (p);
-		rb_source_delete_thyself (RB_SOURCE (p));
+		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (p));
 	}
 
 	g_list_free (playlists);

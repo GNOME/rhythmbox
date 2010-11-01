@@ -81,8 +81,8 @@ static char *impl_get_browser_key (RBSource *source);
 static char *impl_get_paned_key (RBBrowserSource *source);
 
 static void impl_delete (RBSource *asource);
-static gboolean impl_show_popup (RBSource *source);
-static GList* impl_get_ui_actions (RBSource *source);
+static gboolean impl_show_popup (RBDisplayPage *page);
+static GList* impl_get_ui_actions (RBDisplayPage *page);
 
 static GList * impl_get_mime_types (RBRemovableMediaSource *source);
 static gboolean impl_track_added (RBRemovableMediaSource *source,
@@ -182,6 +182,7 @@ static void
 rb_mtp_source_class_init (RBMtpSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
@@ -193,6 +194,9 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	object_class->set_property = rb_mtp_source_set_property;
 	object_class->get_property = rb_mtp_source_get_property;
 
+	page_class->show_popup = impl_show_popup;
+	page_class->get_ui_actions = impl_get_ui_actions;
+
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_browser_key = impl_get_browser_key;
 
@@ -202,9 +206,6 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
-
-	source_class->impl_show_popup = impl_show_popup;
-	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_delete = impl_delete;
 
 	browser_source_class->impl_get_paned_key = impl_get_paned_key;
@@ -391,7 +392,7 @@ rb_mtp_source_constructed (GObject *object)
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
 	pixbuf = gtk_icon_theme_load_icon (theme, "multimedia-player", size, 0, NULL);
 
-	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
+	g_object_set (source, "pixbuf", pixbuf, NULL);
 	g_object_unref (pixbuf);
 
 	if (priv->album_art_supported) {
@@ -589,7 +590,6 @@ rb_mtp_source_new (RBShell *shell,
 					      "shell", shell,
 					      "visibility", TRUE,
 					      "volume", NULL,
-					      "source-group", RB_SOURCE_GROUP_DEVICES,
 					      "raw-device", device,
 #if defined(HAVE_GUDEV)
 					      "udev-device", udev_device,
@@ -873,7 +873,7 @@ device_open_failed_idle (RBMtpSource *source)
 			 _("Unable to open the %s %s device"),
 			 priv->raw_device.device_entry.vendor,
 			 priv->raw_device.device_entry.product);
-	rb_source_delete_thyself (RB_SOURCE (source));
+	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 	g_object_unref (source);
 	return FALSE;
 }
@@ -881,7 +881,7 @@ device_open_failed_idle (RBMtpSource *source)
 static gboolean
 device_open_ignore_idle (DeviceOpenedData *data)
 {
-	rb_source_delete_thyself (RB_SOURCE (data->source));
+	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (data->source));
 	g_object_unref (data->source);
 	free (data->types);
 	g_free (data->name);
@@ -1032,14 +1032,14 @@ impl_delete (RBSource *source)
 }
 
 static gboolean
-impl_show_popup (RBSource *source)
+impl_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (RB_SOURCE (source), "/MTPSourcePopup");
+	_rb_display_page_show_popup (page, "/MTPSourcePopup");
 	return TRUE;
 }
 
 static GList *
-impl_get_ui_actions (RBSource *source)
+impl_get_ui_actions (RBDisplayPage *page)
 {
 	GList *actions = NULL;
 
@@ -1698,7 +1698,7 @@ impl_can_eject (RBRemovableMediaSource *source)
 static void
 impl_eject (RBRemovableMediaSource *source)
 {
-	rb_source_delete_thyself (RB_SOURCE (source));
+	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 }
 
 #if defined(HAVE_GUDEV)

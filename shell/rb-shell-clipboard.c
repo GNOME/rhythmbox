@@ -52,7 +52,7 @@
 #include "rb-shell-clipboard.h"
 #include "rb-playlist-manager.h"
 #include "rb-play-queue-source.h"
-#include "rb-sourcelist-model.h"
+#include "rb-display-page-model.h"
 #include "rhythmdb.h"
 #include "rb-debug.h"
 #include "rb-stock-icons.h"
@@ -953,20 +953,20 @@ add_playlist_to_menu (GtkTreeModel *model,
 {
 	RhythmDBEntryType *entry_type;
 	RhythmDBEntryType *source_entry_type;
-	RBSource *source = NULL;
+	RBDisplayPage *page = NULL;
 	char *action_name;
 	GtkAction *action;
 	int i;
 
 	gtk_tree_model_get (GTK_TREE_MODEL (model), iter,
-			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
+			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page, -1);
 
-	if (source == NULL) {
+	if (page == NULL) {
 		return FALSE;
 	}
 
-	if (!RB_IS_STATIC_PLAYLIST_SOURCE (source)) {
-		g_object_unref (source);
+	if (RB_IS_STATIC_PLAYLIST_SOURCE (page) == FALSE) {
+		g_object_unref (page);
 		return FALSE;
 	}
 
@@ -975,36 +975,36 @@ add_playlist_to_menu (GtkTreeModel *model,
 	 * the song to the device first), surely?
 	 */
 	g_object_get (clipboard->priv->source, "entry-type", &entry_type, NULL);
-	g_object_get (source, "entry-type", &source_entry_type, NULL);
+	g_object_get (page, "entry-type", &source_entry_type, NULL);
 	if (source_entry_type != entry_type) {
-		g_object_unref (source);
+		g_object_unref (page);
 		g_object_unref (entry_type);
 		g_object_unref (source_entry_type);
 		return FALSE;
 	}
 
-	action_name = generate_action_name (RB_STATIC_PLAYLIST_SOURCE (source), clipboard);
+	action_name = generate_action_name (RB_STATIC_PLAYLIST_SOURCE (page), clipboard);
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, action_name);
 	if (action == NULL) {
 		char *name;
 
-		g_object_get (source, "name", &name, NULL);
+		g_object_get (page, "name", &name, NULL);
 		action = gtk_action_new (action_name, name, NULL, NULL);
 		gtk_action_group_add_action (clipboard->priv->actiongroup, action);
 		g_free (name);
 
-		g_object_set_data (G_OBJECT (action), "playlist-source", source);
-		g_signal_connect_object (G_OBJECT (action),
+		g_object_set_data (G_OBJECT (action), "playlist-source", page);
+		g_signal_connect_object (action,
 					 "activate", G_CALLBACK (rb_shell_clipboard_playlist_add_cb),
 					 clipboard, 0);
 
-		g_signal_connect_object (source,
+		g_signal_connect_object (page,
 					 "deleted", G_CALLBACK (rb_shell_clipboard_playlist_deleted_cb),
 					 clipboard, 0);
-		g_signal_connect_object (source,
+		g_signal_connect_object (page,
 					 "notify::name", G_CALLBACK (rb_shell_clipboard_playlist_renamed_cb),
 					 clipboard, 0);
-		g_signal_connect_object (source,
+		g_signal_connect_object (page,
 					 "notify::visibility", G_CALLBACK (rb_shell_clipboard_playlist_visible_cb),
 					 clipboard, 0);
 	}
@@ -1019,7 +1019,7 @@ add_playlist_to_menu (GtkTreeModel *model,
 	g_object_unref (source_entry_type);
 	g_object_unref (entry_type);
 	g_free (action_name);
-	g_object_unref (source);
+	g_object_unref (page);
 
 	return FALSE;
 }
@@ -1028,7 +1028,6 @@ static void
 rebuild_playlist_menu (RBShellClipboard *clipboard)
 {
 	GtkTreeModel *model = NULL;
-	GObject *sourcelist = NULL;
 
 	if (clipboard->priv->source == NULL)
 		return;
@@ -1044,12 +1043,7 @@ rebuild_playlist_menu (RBShellClipboard *clipboard)
 	}
 
 	if (clipboard->priv->playlist_manager != NULL) {
-		g_object_get (clipboard->priv->playlist_manager, "sourcelist", &sourcelist, NULL);
-	}
-
-	if (sourcelist != NULL) {
-		g_object_get (sourcelist, "model", &model, NULL);
-		g_object_unref (sourcelist);
+		g_object_get (clipboard->priv->playlist_manager, "display-page-model", &model, NULL);
 	}
 
 	if (model != NULL) {

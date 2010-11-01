@@ -88,7 +88,7 @@ static void rb_playlist_source_get_property (GObject *object,
 static char *impl_get_browser_key (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_song_properties (RBSource *source);
-static gboolean impl_show_popup (RBSource *source);
+static gboolean impl_show_popup (RBDisplayPage *page);
 
 static void rb_playlist_source_songs_show_popup_cb (RBEntryView *view,
 						    gboolean over_entry,
@@ -171,14 +171,16 @@ static void
 rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	object_class->dispose = rb_playlist_source_dispose;
 	object_class->finalize = rb_playlist_source_finalize;
 	object_class->constructed = rb_playlist_source_constructed;
-
 	object_class->set_property = rb_playlist_source_set_property;
 	object_class->get_property = rb_playlist_source_get_property;
+
+	page_class->show_popup = impl_show_popup;
 
 	source_class->impl_get_browser_key = impl_get_browser_key;
 	source_class->impl_get_entry_view = impl_get_entry_view;
@@ -189,7 +191,6 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_delete_action = impl_get_delete_action;
 
 	klass->impl_show_entry_view_popup = default_show_entry_view_popup;
@@ -298,14 +299,14 @@ rb_playlist_source_constructed (GObject *object)
 	rb_playlist_source_set_db (source, db);
 	g_object_unref (db);
 
-	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
-								       "PlaylistActions",
-								       NULL, 0,
-								       shell);
-	_rb_action_group_add_source_actions (source->priv->action_group,
-					     G_OBJECT (shell),
-					     rb_playlist_source_actions,
-					     G_N_ELEMENTS (rb_playlist_source_actions));
+	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
+									     "PlaylistActions",
+									     NULL, 0,
+									     shell);
+	_rb_action_group_add_display_page_actions (source->priv->action_group,
+						   G_OBJECT (shell),
+						   rb_playlist_source_actions,
+						   G_N_ELEMENTS (rb_playlist_source_actions));
 
 	g_object_unref (shell);
 
@@ -492,8 +493,9 @@ default_show_entry_view_popup (RBPlaylistSource *source,
 			       RBEntryView *view,
 			       gboolean over_entry)
 {
-	if (over_entry)
-		_rb_source_show_popup (RB_SOURCE (source), PLAYLIST_SOURCE_SONGS_POPUP_PATH);
+	if (over_entry) {
+		_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), PLAYLIST_SOURCE_SONGS_POPUP_PATH);
+	}
 }
 
 static void
@@ -536,9 +538,9 @@ impl_song_properties (RBSource *asource)
 }
 
 static gboolean
-impl_show_popup (RBSource *asource)
+impl_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (asource, PLAYLIST_SOURCE_POPUP_PATH);
+	_rb_display_page_show_popup (page, PLAYLIST_SOURCE_POPUP_PATH);
 	return TRUE;
 }
 
@@ -563,7 +565,7 @@ rb_playlist_source_drop_cb (GtkWidget *widget,
 	if (target == GDK_NONE)
 		return;
 
-	rb_source_receive_drag (RB_SOURCE (source), data);
+	rb_display_page_receive_drag (RB_DISPLAY_PAGE (source), data);
 
 	gtk_drag_finish (context, TRUE, FALSE, time);
 }

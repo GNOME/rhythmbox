@@ -1142,7 +1142,7 @@ rb_shell_player_set_source_internal (RBShellPlayer *player,
 		RBSource *source = player->priv->selected_source;
 		if (source == RB_SOURCE (player->priv->queue_source)) {
 			source = NULL;
-		} else {
+		} else if (source != NULL) {
 			g_object_get (source, "play-order", &porder, NULL);
 		}
 
@@ -1419,11 +1419,9 @@ rb_shell_player_set_selected_source (RBShellPlayer *player,
 				     RBSource *source)
 {
 	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
-	g_return_if_fail (RB_IS_SOURCE (source));
+	g_return_if_fail (source == NULL || RB_IS_SOURCE (source));
 
-	g_object_set (G_OBJECT (player),
-		      "source", source,
-		      NULL);
+	g_object_set (player, "source", source, NULL);
 }
 
 /**
@@ -3063,8 +3061,11 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
         not_small = !eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ViewJumpToPlaying");
-	g_object_set (action,
-		      "sensitive", entry != NULL && not_small, NULL);
+	g_object_set (action, "sensitive", entry != NULL && not_small, NULL);
+
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ControlPlay");
+	g_object_set (action, "sensitive", entry != NULL || source != NULL, NULL);
 
 	if (source != NULL) {
 		view = rb_source_get_entry_view (source);
@@ -3112,12 +3113,14 @@ actually_set_playing_source (RBShellPlayer *player,
 		if (source == NULL)
 			source = player->priv->selected_source;
 
-		g_object_get (source, "play-order", &porder, NULL);
-		if (porder == NULL)
-			porder = g_object_ref (player->priv->play_order);
+		if (source != NULL) {
+			g_object_get (source, "play-order", &porder, NULL);
+			if (porder == NULL)
+				porder = g_object_ref (player->priv->play_order);
 
-		rb_play_order_playing_source_changed (porder, source);
-		g_object_unref (porder);
+			rb_play_order_playing_source_changed (porder, source);
+			g_object_unref (porder);
+		}
 	}
 
 	rb_shell_player_play_order_update_cb (player->priv->play_order,

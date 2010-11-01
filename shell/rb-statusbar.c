@@ -47,15 +47,15 @@
  * The status bar is displayed at the bottom of the main window.  It consists of some
  * status text and a progress bar.
  *
- * The status text usually comes from the selected source, and typically shows the number
+ * The status text usually comes from the selected page, and typically shows the number
  * of songs, the total duration and the total file size.  When a menu is open, however, 
  * the status text shows the description of the currently selected menu item.
  *
- * The progress bar shows progress information from a variety of sources.  The source that
- * is currently selected in the source list can provide progress information, such as buffering
- * feedback, track transfer status, or progress for updating a song catalog.  If the source
- * does not provide status information and the database is busy (loading the database from disk,
- * processing a query, etc.) the progress bar will be pulsed periodically.
+ * The progress bar shows progress information from a variety of sources.  The page that
+ * is currently selected in the display page tree can provide progress information, such as
+ * buffering feedback, track transfer status, or progress for updating a song catalog.
+ * If the page does not provide status information and the database is busy (loading the
+ * database from disk, processing a query, etc.) the progress bar will be pulsed periodically.
  */
 
 #define EPSILON		(0.00001)
@@ -75,7 +75,7 @@ static void rb_statusbar_get_property (GObject *object,
 
 static gboolean poll_status (RBStatusbar *status);
 static void rb_statusbar_sync_status (RBStatusbar *status);
-static void rb_statusbar_source_status_changed_cb (RBSource *source,
+static void rb_statusbar_page_status_changed_cb (RBDisplayPage *page,
 						   RBStatusbar *statusbar);
 static void rb_statusbar_transfer_progress_cb (RBTrackTransferQueue *queue,
 					       int done,
@@ -86,7 +86,7 @@ static void rb_statusbar_transfer_progress_cb (RBTrackTransferQueue *queue,
 
 struct RBStatusbarPrivate
 {
-        RBSource *selected_source;
+        RBDisplayPage *selected_page;
 	RBTrackTransferQueue *transfer_queue;
 
         RhythmDB *db;
@@ -103,7 +103,7 @@ enum
         PROP_0,
         PROP_DB,
         PROP_UI_MANAGER,
-        PROP_SOURCE,
+        PROP_PAGE,
 	PROP_TRANSFER_QUEUE
 };
 
@@ -133,16 +133,16 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
                                                               RHYTHMDB_TYPE,
                                                               G_PARAM_READWRITE));
 	/**
-	 * RBStatusbar:source:
+	 * RBStatusbar:page:
 	 *
-	 * The currently selected #RBSource
+	 * The currently selected #RBDisplayPage
 	 */
         g_object_class_install_property (object_class,
-                                         PROP_SOURCE,
-                                         g_param_spec_object ("source",
-                                                              "RBSource",
-                                                              "RBSource object",
-                                                              RB_TYPE_SOURCE,
+                                         PROP_PAGE,
+                                         g_param_spec_object ("page",
+                                                              "RBDisplayPage",
+                                                              "RBDisplayPage object",
+                                                              RB_TYPE_DISPLAY_PAGE,
                                                               G_PARAM_READWRITE));
 	/**
 	 * RBStatusbar:ui-manager:
@@ -219,9 +219,9 @@ rb_statusbar_dispose (GObject *object)
 		statusbar->priv->ui_manager = NULL;
 	}
 
-	if (statusbar->priv->selected_source != NULL) {
-		g_object_unref (statusbar->priv->selected_source);
-		statusbar->priv->selected_source = NULL;
+	if (statusbar->priv->selected_page != NULL) {
+		g_object_unref (statusbar->priv->selected_page);
+		statusbar->priv->selected_page = NULL;
 	}
 
 	if (statusbar->priv->transfer_queue != NULL) {
@@ -329,22 +329,21 @@ rb_statusbar_set_property (GObject *object,
                 statusbar->priv->status_poll_id
                         = g_idle_add ((GSourceFunc) poll_status, statusbar);
                 break;
-        case PROP_SOURCE:
-                if (statusbar->priv->selected_source != NULL) {
-			g_signal_handlers_disconnect_by_func (G_OBJECT (statusbar->priv->selected_source),
-							      G_CALLBACK (rb_statusbar_source_status_changed_cb),
+        case PROP_PAGE:
+                if (statusbar->priv->selected_page != NULL) {
+			g_signal_handlers_disconnect_by_func (G_OBJECT (statusbar->priv->selected_page),
+							      G_CALLBACK (rb_statusbar_page_status_changed_cb),
 							      statusbar);
-			g_object_unref (statusbar->priv->selected_source);
+			g_object_unref (statusbar->priv->selected_page);
                 }
 
-                statusbar->priv->selected_source = g_value_get_object (value);
-                rb_debug ("selected source %p", statusbar->priv->selected_source);
-		g_object_ref (statusbar->priv->selected_source);
+                statusbar->priv->selected_page = g_value_dup_object (value);
+                rb_debug ("selected page %p", statusbar->priv->selected_page);
 
-                if (statusbar->priv->selected_source != NULL) {
-			g_signal_connect_object (G_OBJECT (statusbar->priv->selected_source),
+                if (statusbar->priv->selected_page != NULL) {
+			g_signal_connect_object (G_OBJECT (statusbar->priv->selected_page),
 						 "status-changed",
-						 G_CALLBACK (rb_statusbar_source_status_changed_cb),
+						 G_CALLBACK (rb_statusbar_page_status_changed_cb),
 						 statusbar, 0);
                 }
 		rb_statusbar_sync_status (statusbar);
@@ -393,8 +392,8 @@ rb_statusbar_get_property (GObject *object,
         case PROP_DB:
                 g_value_set_object (value, statusbar->priv->db);
                 break;
-        case PROP_SOURCE:
-                g_value_set_object (value, statusbar->priv->selected_source);
+        case PROP_PAGE:
+                g_value_set_object (value, statusbar->priv->selected_page);
                 break;
         case PROP_UI_MANAGER:
                 g_value_set_object (value, statusbar->priv->ui_manager);
@@ -409,21 +408,19 @@ rb_statusbar_get_property (GObject *object,
 }
 
 /**
- * rb_statusbar_set_source:
+ * rb_statusbar_set_page:
  * @statusbar: the #RBStatusbar
- * @source: the new selected #RBSource
+ * @page: the new selected #RBDisplayPage
  *
- * Updates the status bar for a newly selected source.
+ * Updates the status bar for a newly selected page.
  */
 void
-rb_statusbar_set_source (RBStatusbar *statusbar, RBSource *source)
+rb_statusbar_set_page (RBStatusbar *statusbar, RBDisplayPage *page)
 {
         g_return_if_fail (RB_IS_STATUSBAR (statusbar));
-        g_return_if_fail (RB_IS_SOURCE (source));
+        g_return_if_fail (RB_IS_DISPLAY_PAGE (page));
 
-        g_object_set (G_OBJECT (statusbar),
-                      "source", source,
-                      NULL);
+        g_object_set (statusbar, "page", page, NULL);
 }
 
 static gboolean
@@ -450,9 +447,9 @@ rb_statusbar_sync_status (RBStatusbar *status)
 
         /*
          * Behaviour of status bar:
-	 * - use source's status text
-	 * - use source's progress value and text, unless transfer queue provides something
-	 * - if no source progress value or transfer progress value and library is busy,
+	 * - use page's status text
+	 * - use page's progress value and text, unless transfer queue provides something
+	 * - if no page progress value or transfer progress value and library is busy,
 	 *    pulse the progress bar
          */
         
@@ -465,9 +462,9 @@ rb_statusbar_sync_status (RBStatusbar *status)
 		changed = TRUE;
         }
 
-	/* get source details */
-        if (status->priv->selected_source) {
-		rb_source_get_status (status->priv->selected_source, &status_text, &progress_text, &progress);
+	/* get page details */
+        if (status->priv->selected_page) {
+		rb_display_page_get_status (status->priv->selected_page, &status_text, &progress_text, &progress);
 		rb_debug ("updating status with: '%s', '%s', %f",
 			status_text ? status_text : "", progress_text ? progress_text : "", progress);
 	}
@@ -544,7 +541,7 @@ add_status_poll (RBStatusbar *statusbar)
 }
 
 static void
-rb_statusbar_source_status_changed_cb (RBSource *source, RBStatusbar *statusbar)
+rb_statusbar_page_status_changed_cb (RBDisplayPage *page, RBStatusbar *statusbar)
 {
 	rb_debug ("source status changed");
 	add_status_poll (statusbar);

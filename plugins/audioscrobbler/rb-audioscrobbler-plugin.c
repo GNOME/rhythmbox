@@ -35,13 +35,15 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <lib/eel-gconf-extensions.h>
+#include <lib/rb-builder-helpers.h>
+#include <lib/rb-debug.h>
+#include <sources/rb-display-page-group.h>
+#include <shell/rb-plugin.h>
+#include <shell/rb-shell.h>
+
 #include "rb-audioscrobbler-service.h"
-#include "rb-audioscrobbler-profile-source.h"
-#include "rb-plugin.h"
-#include "rb-builder-helpers.h"
-#include "rb-debug.h"
-#include "rb-shell.h"
-#include "eel-gconf-extensions.h"
+#include "rb-audioscrobbler-profile-page.h"
 
 
 #define RB_TYPE_AUDIOSCROBBLER_PLUGIN		(rb_audioscrobbler_plugin_get_type ())
@@ -65,12 +67,12 @@ typedef struct
 	/* Last.fm */
 	GtkWidget *lastfm_enabled_check;
 	guint lastfm_enabled_notification_id;
-	RBSource *lastfm_source;
+	RBDisplayPage *lastfm_page;
 
 	/* Libre.fm */
 	GtkWidget *librefm_enabled_check;
 	guint librefm_enabled_notification_id;
-	RBSource *librefm_source;
+	RBDisplayPage *librefm_page;
 } RBAudioscrobblerPlugin;
 
 typedef struct
@@ -152,9 +154,9 @@ impl_activate (RBPlugin *bplugin,
 	if (eel_gconf_get_boolean (CONF_LASTFM_ENABLED) == TRUE) {
 		RBAudioscrobblerService *lastfm;
 		lastfm = rb_audioscrobbler_service_new_lastfm ();
-		plugin->lastfm_source = rb_audioscrobbler_profile_source_new (plugin->shell,
-		                                                              RB_PLUGIN (plugin),
-		                                                              lastfm);
+		plugin->lastfm_page = rb_audioscrobbler_profile_page_new (plugin->shell,
+									  RB_PLUGIN (plugin),
+									  lastfm);
 		g_object_unref (lastfm);
 	}
 
@@ -167,9 +169,9 @@ impl_activate (RBPlugin *bplugin,
 	if (eel_gconf_get_boolean (CONF_LIBREFM_ENABLED) == TRUE) {
 		RBAudioscrobblerService *librefm;
 		librefm = rb_audioscrobbler_service_new_librefm ();
-		plugin->librefm_source = rb_audioscrobbler_profile_source_new (plugin->shell,
-		                                                               RB_PLUGIN (plugin),
-		                                                               librefm);
+		plugin->librefm_page = rb_audioscrobbler_profile_page_new (plugin->shell,
+		                                                           RB_PLUGIN (plugin),
+		                                                           librefm);
 		g_object_unref (librefm);
 	}
 }
@@ -185,14 +187,14 @@ impl_deactivate	(RBPlugin *bplugin,
 		plugin->config_dialog = NULL;
 	}
 
-	if (plugin->lastfm_source != NULL) {
-		rb_source_delete_thyself (plugin->lastfm_source);
-		plugin->lastfm_source = NULL;
+	if (plugin->lastfm_page != NULL) {
+		rb_display_page_delete_thyself (plugin->lastfm_page);
+		plugin->lastfm_page = NULL;
 	}
 
-	if (plugin->librefm_source != NULL) {
-		rb_source_delete_thyself (plugin->librefm_source);
-		plugin->librefm_source = NULL;
+	if (plugin->librefm_page != NULL) {
+		rb_display_page_delete_thyself (plugin->librefm_page);
+		plugin->librefm_page = NULL;
 	}
 }
 
@@ -264,16 +266,16 @@ lastfm_enabled_changed_cb (GConfClient *client,
 
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plugin->lastfm_enabled_check),
 	                              enabled);
-	if (enabled == TRUE && plugin->lastfm_source == NULL) {
+	if (enabled == TRUE && plugin->lastfm_page == NULL) {
 		RBAudioscrobblerService *lastfm;
 		lastfm = rb_audioscrobbler_service_new_lastfm ();
-		plugin->lastfm_source = rb_audioscrobbler_profile_source_new (plugin->shell,
-		                                                              RB_PLUGIN (plugin),
-		                                                              lastfm);
+		plugin->lastfm_page = rb_audioscrobbler_profile_page_new (plugin->shell,
+		                                                          RB_PLUGIN (plugin),
+		                                                          lastfm);
 		g_object_unref (lastfm);
-	} else if (enabled == FALSE && plugin->lastfm_source != NULL) {
-		rb_source_delete_thyself (plugin->lastfm_source);
-		plugin->lastfm_source = NULL;
+	} else if (enabled == FALSE && plugin->lastfm_page != NULL) {
+		rb_display_page_delete_thyself (plugin->lastfm_page);
+		plugin->lastfm_page = NULL;
 	}
 }
 
@@ -297,16 +299,16 @@ librefm_enabled_changed_cb (GConfClient *client,
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plugin->librefm_enabled_check),
 	                              enabled);
 
-	if (enabled == TRUE && plugin->librefm_source == NULL) {
+	if (enabled == TRUE && plugin->librefm_page == NULL) {
 		RBAudioscrobblerService *librefm;
 
 		librefm = rb_audioscrobbler_service_new_librefm ();
-		plugin->librefm_source = rb_audioscrobbler_profile_source_new (plugin->shell,
-		                                                               RB_PLUGIN (plugin),
-		                                                               librefm);
+		plugin->librefm_page = rb_audioscrobbler_profile_page_new (plugin->shell,
+		                                                           RB_PLUGIN (plugin),
+		                                                           librefm);
 		g_object_unref (librefm);
-	} else if (enabled == FALSE && plugin->librefm_source != NULL) {
-		rb_source_delete_thyself (plugin->librefm_source);
-		plugin->librefm_source = NULL;
+	} else if (enabled == FALSE && plugin->librefm_page != NULL) {
+		rb_display_page_delete_thyself (plugin->librefm_page);
+		plugin->librefm_page = NULL;
 	}
 }

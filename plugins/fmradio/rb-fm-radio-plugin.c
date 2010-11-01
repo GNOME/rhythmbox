@@ -36,6 +36,7 @@
 
 #include "rb-fm-radio-source.h"
 #include "rb-radio-tuner.h"
+#include "rb-display-page-group.h"
 
 #define RB_TYPE_FM_RADIO_PLUGIN         (rb_fm_radio_plugin_get_type ())
 #define RB_FM_RADIO_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_FM_RADIO_PLUGIN, RBFMRadioPlugin))
@@ -94,7 +95,7 @@ impl_activate (RBPlugin *plugin, RBShell *shell)
 	rb_radio_tuner_set_mute (tuner, TRUE);
 	rb_radio_tuner_update (tuner);
 	pi->source = rb_fm_radio_source_new (shell, tuner);
-	rb_shell_append_source (shell, pi->source, NULL);
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (pi->source), RB_DISPLAY_PAGE_GROUP_LIBRARY);	/* devices? */
 	g_object_unref (tuner);
 
 	filename = rb_plugin_find_file (plugin, "fmradio-ui.xml");
@@ -118,7 +119,7 @@ impl_deactivate (RBPlugin *plugin, RBShell *shell)
 	GtkUIManager *uimanager;
 
 	if (pi->source) {
-		rb_source_delete_thyself (pi->source);
+		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (pi->source));
 		pi->source = NULL;
 	}
 

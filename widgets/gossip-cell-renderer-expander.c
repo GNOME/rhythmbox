@@ -417,17 +417,30 @@ animation_timeout (gpointer data)
 	return retval;
 }
 
-static void
+void
 gossip_cell_renderer_expander_start_animation (GossipCellRendererExpander *expander,
 					       GtkTreeView                *tree_view,
 					       GtkTreePath                *path,
-					       gboolean                    expanding,
-					       GdkRectangle               *background_area)
+					       gboolean                    expanding)
 {
 	GossipCellRendererExpanderPriv *priv;
+	GtkSettings                    *settings;
+	gboolean                        animate;
+
+	settings = gtk_widget_get_settings (GTK_WIDGET (tree_view));
+	if (g_object_class_find_property (G_OBJECT_GET_CLASS (settings), "gtk-enable-animations")) {
+		g_object_get (settings,
+			      "gtk-enable-animations", &animate,
+			      NULL);
+	} else {
+		animate = FALSE;
+	}
+
+	if (animate == FALSE) {
+		return;
+	}
 
 	priv = GET_PRIV (expander);
-
 	if (expanding) {
 		priv->animation_style = GTK_EXPANDER_SEMI_COLLAPSED;
 	} else {
@@ -435,6 +448,11 @@ gossip_cell_renderer_expander_start_animation (GossipCellRendererExpander *expan
 	}
 
 	invalidate_node (tree_view, path);
+
+	if (priv->animation_timeout != 0) {
+		g_source_remove (priv->animation_timeout);
+		gtk_tree_row_reference_free (priv->animation_node);
+	}
 
 	priv->animation_expanding = expanding;
 	priv->animation_view = tree_view;
@@ -454,8 +472,6 @@ gossip_cell_renderer_expander_activate (GtkCellRenderer      *cell,
 	GossipCellRendererExpander     *expander;
 	GossipCellRendererExpanderPriv *priv;
 	GtkTreePath                    *path;
-	GtkSettings                    *settings;
-	gboolean                        animate;
 	gboolean                        expanding;
 	gboolean                        in_cell;
 	int                             mouse_x;
@@ -483,6 +499,7 @@ gossip_cell_renderer_expander_activate (GtkCellRenderer      *cell,
 	}
 
 	if (! in_cell) {
+		gtk_tree_path_free (path);
 		return FALSE;
 	}
 
@@ -493,15 +510,6 @@ gossip_cell_renderer_expander_activate (GtkCellRenderer      *cell,
 	}
 #endif
 
-	settings = gtk_widget_get_settings (GTK_WIDGET (widget));
-	if (g_object_class_find_property (G_OBJECT_GET_CLASS (settings), "gtk-enable-animations")) {
-		g_object_get (settings,
-			      "gtk-enable-animations", &animate,
-			      NULL);
-	} else {
-		animate = FALSE;
-	}
-
 	if (gtk_tree_view_row_expanded (GTK_TREE_VIEW (widget), path)) {
 		gtk_tree_view_collapse_row (GTK_TREE_VIEW (widget), path);
 		expanding = FALSE;
@@ -510,14 +518,10 @@ gossip_cell_renderer_expander_activate (GtkCellRenderer      *cell,
 		expanding = TRUE;
 	}
 
-	if (animate) {
-		gossip_cell_renderer_expander_start_animation (expander,
-							       GTK_TREE_VIEW (widget),
-							       path,
-							       expanding,
-							       background_area);
-	}
-
+	gossip_cell_renderer_expander_start_animation (expander,
+						       GTK_TREE_VIEW (widget),
+						       path,
+						       expanding);
 	gtk_tree_path_free (path);
 
 	return TRUE;

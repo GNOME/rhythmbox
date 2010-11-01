@@ -8,10 +8,11 @@ sourceincludedir = $(includedir)/rhythmbox/sources
 sourceinclude_HEADERS = 		\
 	rb-source.h			\
 	rb-streaming-source.h		\
-	rb-source-group.h		\
 	rb-source-search.h		\
-	rb-sourcelist.h			\
-	rb-sourcelist-model.h		\
+	rb-display-page.h		\
+	rb-display-page-group.h		\
+	rb-display-page-tree.h		\
+	rb-display-page-model.h		\
 	rb-browser-source.h		\
 	rb-removable-media-source.h	\
 	rb-media-player-source.h	\
@@ -25,10 +26,11 @@ libsources_la_SOURCES = 		\
 	$(sourceinclude_HEADERS)	\
 	rb-source.c 			\
 	rb-streaming-source.c		\
-	rb-source-group.c		\
 	rb-source-search.c		\
-	rb-sourcelist.c			\
-	rb-sourcelist-model.c		\
+	rb-display-page.c		\
+	rb-display-page-group.c		\
+	rb-display-page-tree.c		\
+	rb-display-page-model.c		\
 	rb-browser-source.c		\
 	rb-library-source.c		\
 	rb-library-source.h		\

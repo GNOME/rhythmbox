@@ -323,14 +323,14 @@ rb_browser_source_songs_show_popup_cb (RBEntryView *view,
 
 		klass->impl_show_entry_popup (source);
 	} else {
-		rb_source_show_popup (RB_SOURCE (source));
+		rb_display_page_show_popup (RB_DISPLAY_PAGE (source));
 	}
 }
 
 static void
 default_show_entry_popup (RBBrowserSource *source)
 {
-	_rb_source_show_popup (RB_SOURCE (source), "/BrowserSourceViewPopup");
+	_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), "/BrowserSourceViewPopup");
 }
 
 static void
@@ -355,13 +355,13 @@ rb_browser_source_constructed (GObject *object)
 	g_object_get (shell, "db", &source->priv->db, NULL);
 	shell_player = rb_shell_get_player (shell);
 
-	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
-								       "BrowserSourceActions",
-								       NULL, 0, NULL);
-	_rb_action_group_add_source_actions (source->priv->action_group,
-					     G_OBJECT (shell),
-					     rb_browser_source_actions,
-					     G_N_ELEMENTS (rb_browser_source_actions));
+	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
+									     "BrowserSourceActions",
+									     NULL, 0, NULL);
+	_rb_action_group_add_display_page_actions (source->priv->action_group,
+						   G_OBJECT (shell),
+						   rb_browser_source_actions,
+						   G_N_ELEMENTS (rb_browser_source_actions));
 
 	/* only add the actions if we haven't already */
 	if (gtk_action_group_get_action (source->priv->action_group,
@@ -846,7 +846,7 @@ songs_view_drag_data_received_cb (GtkWidget *widget,
 				  RBBrowserSource *source)
 {
 	rb_debug ("data dropped on the library source song view");
-	rb_source_receive_drag (RB_SOURCE (source), selection_data);
+	rb_display_page_receive_drag (RB_DISPLAY_PAGE (source), selection_data);
 }
 
 static void

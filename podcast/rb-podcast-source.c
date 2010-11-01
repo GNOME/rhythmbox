@@ -204,7 +204,7 @@ podcast_posts_show_popup_cb (RBEntryView *view,
 	if (G_OBJECT (source) == NULL) {
 		return;
 	} else if (!over_entry) {
-		_rb_source_show_popup (RB_SOURCE (source), "/PodcastSourcePopup");
+		_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), "/PodcastSourcePopup");
 	} else {
 		GtkAction* action;
 		GList *lst;
@@ -236,7 +236,7 @@ podcast_posts_show_popup_cb (RBEntryView *view,
 		action = gtk_action_group_get_action (source->priv->action_group, "PodcastSrcCancelDownload");
 		gtk_action_set_sensitive (action, cancellable);
 
-		_rb_source_show_popup (RB_SOURCE (source), "/PodcastViewPopup");
+		_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), "/PodcastViewPopup");
 	}
 }
 
@@ -268,7 +268,7 @@ podcast_feeds_show_popup_cb (RBPropertyView *view,
 			gtk_action_set_visible (act_delete, FALSE);
 		}
 
-		_rb_source_show_popup (RB_SOURCE (source), "/PodcastFeedViewPopup");
+		_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), "/PodcastFeedViewPopup");
 	}
 }
 
@@ -371,7 +371,7 @@ posts_view_drag_data_received_cb (GtkWidget *widget,
 				  guint time,
 				  RBPodcastSource *source)
 {
-	rb_source_receive_drag (RB_SOURCE (source), selection_data);
+	rb_display_page_receive_drag (RB_DISPLAY_PAGE (source), selection_data);
 }
 
 static void
@@ -966,7 +966,6 @@ rb_podcast_source_new (RBShell *shell,
 					  "name", name,
 					  "shell", shell,
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
-					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  "search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					  "podcast-manager", podcast_manager,
 					  "base-query", base_query,
@@ -983,7 +982,7 @@ rb_podcast_source_new (RBShell *shell,
 						   0, NULL);
 
 		if (pixbuf != NULL) {
-			rb_source_set_pixbuf (source, pixbuf);
+			g_object_set (source, "pixbuf", pixbuf, NULL);
 			g_object_unref (pixbuf);
 		}
 	}
@@ -1147,7 +1146,7 @@ impl_get_search_actions (RBSource *source)
 }
 
 static GList *
-impl_get_ui_actions (RBSource *source)
+impl_get_ui_actions (RBDisplayPage *page)
 {
 	GList *actions = NULL;
 
@@ -1165,10 +1164,10 @@ impl_handle_eos (RBSource *asource)
 
 
 static gboolean
-impl_receive_drag (RBSource *asource, GtkSelectionData *selection_data)
+impl_receive_drag (RBDisplayPage *page, GtkSelectionData *selection_data)
 {
 	GList *list, *i;
-	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
+	RBPodcastSource *source = RB_PODCAST_SOURCE (page);
 
 	list = rb_uri_list_parse ((const char *) gtk_selection_data_get_data (selection_data));
 
@@ -1209,9 +1208,9 @@ impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, co
 }
 
 static gboolean
-impl_show_popup (RBSource *source)
+impl_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (RB_SOURCE (source), "/PodcastSourcePopup");
+	_rb_display_page_show_popup (page, "/PodcastSourcePopup");
 	return TRUE;
 }
 
@@ -1225,7 +1224,7 @@ impl_song_properties (RBSource *asource)
 }
 
 static void
-impl_get_status (RBSource *source, char **text, char **progress_text, float *progress)
+impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress)
 {
 	RhythmDBQueryModel *query_model;
 
@@ -1234,7 +1233,7 @@ impl_get_status (RBSource *source, char **text, char **progress_text, float *pro
 		ngettext ("%d episode", "%d episodes", 0);
 	}
 
-	g_object_get (source, "query-model", &query_model, NULL);
+	g_object_get (page, "query-model", &query_model, NULL);
 	if (query_model != NULL) {
 		*text = rhythmdb_query_model_compute_status_normal (query_model,
 								    "%d episode",
@@ -1307,15 +1306,15 @@ impl_constructed (GObject *object)
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "db", &source->priv->db, NULL);
 
-	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
-								       "PodcastActions",
-								       NULL, 0,
-								       source);
+	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
+									     "PodcastActions",
+									     NULL, 0,
+									     source);
 
-	_rb_action_group_add_source_actions (source->priv->action_group,
-					     G_OBJECT (shell),
-					     rb_podcast_source_actions,
-					     G_N_ELEMENTS (rb_podcast_source_actions));
+	_rb_action_group_add_display_page_actions (source->priv->action_group,
+						   G_OBJECT (shell),
+						   rb_podcast_source_actions,
+						   G_N_ELEMENTS (rb_podcast_source_actions));
 
 	action = gtk_action_group_get_action (source->priv->action_group,
 					      "MusicNewPodcast");
@@ -1656,6 +1655,7 @@ static void
 rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	object_class->dispose = impl_dispose;
@@ -1663,6 +1663,11 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	object_class->constructed = impl_constructed;
 	object_class->set_property = impl_set_property;
 	object_class->get_property = impl_get_property;
+
+	page_class->get_status = impl_get_status;
+	page_class->receive_drag = impl_receive_drag;
+	page_class->get_ui_actions = impl_get_ui_actions;
+	page_class->show_popup = impl_show_popup;
 
 	source_class->impl_add_to_queue = impl_add_to_queue;
 	source_class->impl_can_add_to_queue = impl_can_add_to_queue;
@@ -1674,13 +1679,9 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_get_search_actions = impl_get_search_actions;
-	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_handle_eos = impl_handle_eos;
-	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_search = impl_search;
-	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_get_status = impl_get_status;
 	source_class->impl_get_delete_action = impl_get_delete_action;
 
 	g_object_class_install_property (object_class,

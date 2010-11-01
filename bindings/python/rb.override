@@ -16,6 +16,10 @@ headers
 #include "rb-browser-source.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-dialog.h"
+#include "rb-display-page.h"
+#include "rb-display-page-group.h"
+#include "rb-display-page-model.h"
+#include "rb-display-page-tree.h"
 #include "rb-entry-view.h"
 #include "rb-file-helpers.h"
 #include "rb-library-browser.h"
@@ -36,8 +40,6 @@ headers
 #include "rb-source.h"
 #include "rb-source-search.h"
 #include "rb-source-search-basic.h"
-#include "rb-sourcelist.h"
-#include "rb-sourcelist-model.h"
 #include "rb-static-playlist-source.h"
 #include "rb-streaming-source.h"
 #include "rb-track-transfer-batch.h"
@@ -227,14 +229,14 @@ _wrap_rb_source_get_search_actions(PyGObject *self)
     return py_list;
 }
 %%
-override rb_source_get_ui_actions noargs
+override rb_display_page_get_ui_actions noargs
 static PyObject *
-_wrap_rb_source_get_ui_actions(PyGObject *self)
+_wrap_rb_display_page_get_ui_actions(PyGObject *self)
 {
     GList *list;
     PyObject *py_list;
 
-    list = rb_source_get_ui_actions (RB_SOURCE(self->obj));
+    list = rb_display_page_get_ui_actions (RB_DISPLAY_PAGE(self->obj));
     py_list = _helper_wrap_string_glist (list);
     rb_list_deep_free (list);
 
@@ -641,9 +643,9 @@ _wrap_RBSource__proxy_do_impl_get_property_views (RBSource *self)
 	return ret;
 }
 %%
-override RBSource__do_impl_get_ui_actions
+override RBDisplayPage__do_get_ui_actions
 static PyObject *
-_wrap_RBSource__do_impl_get_ui_actions(PyObject *cls, PyObject *args, PyObject *kwargs)
+_wrap_RBDisplayPage__do_get_ui_actions(PyObject *cls, PyObject *args, PyObject *kwargs)
 {
 	gpointer klass;
 	static char *kwlist[] = { "self", NULL };
@@ -651,13 +653,13 @@ _wrap_RBSource__do_impl_get_ui_actions(PyObject *cls, PyObject *args, PyObject *
 	GList *ret;
 	PyObject *py_ret;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBSource.impl_get_ui_actions", kwlist, &PyRBSource_Type, &self))
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBDisplayPage.get_ui_actions", kwlist, &PyRBDisplayPage_Type, &self))
 		return NULL;
 	klass = g_type_class_ref(pyg_type_from_object(cls));
-	if (RB_SOURCE_CLASS(klass)->impl_get_ui_actions)
-		ret = RB_SOURCE_CLASS(klass)->impl_get_ui_actions(RB_SOURCE(self->obj));
+	if (RB_DISPLAY_PAGE_CLASS(klass)->get_ui_actions)
+		ret = RB_DISPLAY_PAGE_CLASS(klass)->get_ui_actions(RB_DISPLAY_PAGE(self->obj));
 	else {
-		PyErr_SetString(PyExc_NotImplementedError, "virtual method RBSource.impl_get_ui_actions not implemented");
+		PyErr_SetString(PyExc_NotImplementedError, "virtual method RBDisplayPage.get_ui_actions not implemented");
 		g_type_class_unref(klass);
 		return NULL;
 	}
@@ -667,9 +669,9 @@ _wrap_RBSource__do_impl_get_ui_actions(PyObject *cls, PyObject *args, PyObject *
 	return py_ret;
 }
 %%
-override RBSource__proxy_do_impl_get_ui_actions
+override RBDisplayPage__proxy_do_get_ui_actions
 static GList *
-_wrap_RBSource__proxy_do_impl_get_ui_actions (RBSource *self)
+_wrap_RBDisplayPage__proxy_do_get_ui_actions (RBDisplayPage *self)
 {
 	PyGILState_STATE __py_state;
 	PyObject *py_self;
@@ -686,7 +688,7 @@ _wrap_RBSource__proxy_do_impl_get_ui_actions (RBSource *self)
 		return NULL;
 	}
 
-	py_method = PyObject_GetAttrString(py_self, "do_impl_get_ui_actions");
+	py_method = PyObject_GetAttrString(py_self, "do_get_ui_actions");
 	if (!py_method) {
 		if (PyErr_Occurred())
 			PyErr_Print();
@@ -985,16 +987,16 @@ _wrap_rb_library_browser_set_selection(PyGObject *self, PyObject *args, PyObject
 }
 
 %%
-override rb_source_get_status noargs
+override rb_display_page_get_status noargs
 static PyObject *
-_wrap_rb_source_get_status(PyGObject *self)
+_wrap_rb_display_page_get_status(PyGObject *self)
 {
     char *status_text = NULL;
     char *progress_text = NULL;
     float progress = 0.0f;
     PyObject *tuple;
 
-    rb_source_get_status (RB_SOURCE (self->obj), &status_text, &progress_text, &progress);
+    rb_display_page_get_status (RB_DISPLAY_PAGE (self->obj), &status_text, &progress_text, &progress);
     tuple = Py_BuildValue ("ssf", status_text, progress_text, progress);
     g_free (status_text);
     g_free (progress_text);
@@ -1002,9 +1004,9 @@ _wrap_rb_source_get_status(PyGObject *self)
 }
 
 %%
-override RBSource__proxy_do_impl_get_status
+override RBDisplayPage__proxy_do_get_status
 static void
-_wrap_RBSource__proxy_do_impl_get_status(RBSource *self, char **status_text, char **progress_text, float *progress)
+_wrap_RBDisplayPage__proxy_do_get_status(RBDisplayPage *self, char **status_text, char **progress_text, float *progress)
 {
     PyGILState_STATE __py_state;
     PyObject *py_self;
@@ -1021,7 +1023,7 @@ _wrap_RBSource__proxy_do_impl_get_status(RBSource *self, char **status_text, cha
         return;
     }
 
-    py_method = PyObject_GetAttrString(py_self, "do_impl_get_status");
+    py_method = PyObject_GetAttrString(py_self, "do_get_status");
     if (!py_method) {
         if (PyErr_Occurred())
             PyErr_Print();
@@ -1066,9 +1068,9 @@ _wrap_RBSource__proxy_do_impl_get_status(RBSource *self, char **status_text, cha
 }
 
 %%
-override RBSource__do_impl_get_status
+override RBDisplayPage__do_get_status
 static PyObject *
-_wrap_RBSource__do_impl_get_status(PyObject *cls, PyObject *args, PyObject *kwargs)
+_wrap_RBDisplayPage__do_get_status(PyObject *cls, PyObject *args, PyObject *kwargs)
 {
     gpointer klass;
     static char *kwlist[] = { "self", NULL };
@@ -1078,14 +1080,14 @@ _wrap_RBSource__do_impl_get_status(PyObject *cls, PyObject *args, PyObject *kwar
     char *progress_text = NULL;
     float progress = 0.0f;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBSource.impl_get_status", kwlist, &PyRBSource_Type, &self))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBDisplayPage.get_status", kwlist, &PyRBDisplayPage_Type, &self))
 	return NULL;
 
     klass = g_type_class_ref(pyg_type_from_object(cls));
-    if (RB_SOURCE_CLASS(klass)->impl_get_status) {
-	RB_SOURCE_CLASS(klass)->impl_get_status(RB_SOURCE(self->obj), &status_text, &progress_text, &progress);
+    if (RB_DISPLAY_PAGE_CLASS(klass)->get_status) {
+	RB_DISPLAY_PAGE_CLASS(klass)->get_status(RB_DISPLAY_PAGE(self->obj), &status_text, &progress_text, &progress);
     } else {
-	PyErr_SetString(PyExc_NotImplementedError, "virtual method RBSource.impl_get_status not implemented");
+	PyErr_SetString(PyExc_NotImplementedError, "virtual method RBDisplayPage.get_status not implemented");
 	g_type_class_unref(klass);
 	return NULL;
     }

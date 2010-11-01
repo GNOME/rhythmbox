@@ -436,7 +436,6 @@ rb_generic_player_playlist_source_new (RBShell *shell,
 					  "shell", shell,
 					  "is-local", FALSE,
 					  "entry-type", entry_type,
-					  "source-group", RB_SOURCE_GROUP_DEVICES,
 					  "player-source", player_source,
 					  "playlist-path", playlist_file,
 					  "device-root", device_root,
@@ -550,9 +549,9 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 }
 
 static gboolean
-impl_show_popup (RBSource *source)
+impl_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (source, "/GenericPlayerPlaylistSourcePopup");
+	_rb_display_page_show_popup (page, "/GenericPlayerPlaylistSourcePopup");
 	return TRUE;
 }
 
@@ -560,6 +559,7 @@ static void
 rb_generic_player_playlist_source_class_init (RBGenericPlayerPlaylistSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
@@ -568,7 +568,8 @@ rb_generic_player_playlist_source_class_init (RBGenericPlayerPlaylistSourceClass
 	object_class->get_property = impl_get_property;
 	object_class->set_property = impl_set_property;
 
-	source_class->impl_show_popup = impl_show_popup;
+	page_class->show_popup = impl_show_popup;
+
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_to_xml;

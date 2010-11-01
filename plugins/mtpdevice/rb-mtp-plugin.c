@@ -49,7 +49,7 @@
 #endif
 
 #include "rb-source.h"
-#include "rb-sourcelist.h"
+#include "rb-display-page-tree.h"
 #include "rb-mtp-source.h"
 #include "rb-plugin.h"
 #include "rb-debug.h"
@@ -187,10 +187,10 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 	plugin->action_group = gtk_action_group_new ("MTPActions");
 	gtk_action_group_set_translation_domain (plugin->action_group,
 						 GETTEXT_PACKAGE);
-	_rb_action_group_add_source_actions (plugin->action_group,
-					     G_OBJECT (plugin->shell),
-					     rb_mtp_plugin_actions,
-					     G_N_ELEMENTS (rb_mtp_plugin_actions));
+	_rb_action_group_add_display_page_actions (plugin->action_group,
+						   G_OBJECT (plugin->shell),
+						   rb_mtp_plugin_actions,
+						   G_N_ELEMENTS (rb_mtp_plugin_actions));
 	gtk_ui_manager_insert_action_group (uimanager, plugin->action_group, 0);
 	file = rb_plugin_find_file (bplugin, "mtp-ui.xml");
 	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, file, NULL);
@@ -256,7 +256,7 @@ impl_deactivate (RBPlugin *bplugin, RBShell *shell)
 	gtk_ui_manager_remove_ui (uimanager, plugin->ui_merge_id);
 	gtk_ui_manager_remove_action_group (uimanager, plugin->action_group);
 
-	g_list_foreach (plugin->mtp_sources, (GFunc)rb_source_delete_thyself, NULL);
+	g_list_foreach (plugin->mtp_sources, (GFunc)rb_display_page_delete_thyself, NULL);
 	g_list_free (plugin->mtp_sources);
 	plugin->mtp_sources = NULL;
 
@@ -288,16 +288,16 @@ static void
 rb_mtp_plugin_rename (GtkAction *action, RBSource *source)
 {
 	RBShell *shell;
-	RBSourceList *sourcelist;
+	RBDisplayPageTree *page_tree;
 
 	g_return_if_fail (RB_IS_MTP_SOURCE (source));
 
 	g_object_get (source, "shell", &shell, NULL);
-	g_object_get (shell, "sourcelist", &sourcelist, NULL);
+	g_object_get (shell, "display-page-tree", &page_tree, NULL);
 
-	rb_sourcelist_edit_source_name (sourcelist, source);
+	rb_display_page_tree_edit_source_name (page_tree, source);
 
-	g_object_unref (sourcelist);
+	g_object_unref (page_tree);
 	g_object_unref (shell);
 }
 
@@ -421,7 +421,7 @@ rb_mtp_plugin_maybe_add_source (RBMtpPlugin *plugin, const char *udi, LIBMTP_raw
 			rb_debug ("device matched, creating a source");
 			source = RB_SOURCE (rb_mtp_source_new (plugin->shell, RB_PLUGIN (plugin), udi, &raw_devices[i]));
 
-			rb_shell_append_source (plugin->shell, source, NULL);
+			rb_shell_append_source (plugin->shell, source, RB_DISPLAY_PAGE_GROUP_DEVICES);
 			plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
 			g_signal_connect_object (source,
 						"deleted", G_CALLBACK (source_deleted_cb),

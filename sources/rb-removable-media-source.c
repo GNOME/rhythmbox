@@ -84,9 +84,9 @@ static void rb_removable_media_source_get_property (GObject *object,
 			                  GValue *value,
 			                  GParamSpec *pspec);
 
-static void impl_delete_thyself (RBSource *source);
+static void impl_delete_thyself (RBDisplayPage *page);
 static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
-static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
+static gboolean impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data);
 static gboolean impl_should_paste (RBRemovableMediaSource *source,
 				   RhythmDBEntry *entry);
 static guint impl_want_uri (RBSource *source, const char *uri);
@@ -115,6 +115,7 @@ static void
 rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
@@ -123,17 +124,16 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	object_class->set_property = rb_removable_media_source_set_property;
 	object_class->get_property = rb_removable_media_source_get_property;
 
-	source_class->impl_delete_thyself = impl_delete_thyself;
+	page_class->receive_drag = impl_receive_drag;
+	page_class->delete_thyself = impl_delete_thyself;
+
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
   	source_class->impl_paste = impl_paste;
-  	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_delete = NULL;
-	source_class->impl_get_config_widget = NULL;
-	source_class->impl_show_popup = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_uri_is_source = impl_uri_is_source;
 	source_class->impl_get_delete_action = impl_get_delete_action;
@@ -240,8 +240,8 @@ rb_removable_media_source_constructed (GObject *object)
 		pixbuf = NULL;
 	}
 
-	rb_source_set_pixbuf (RB_SOURCE (object), pixbuf);
 	if (pixbuf != NULL) {
+		g_object_set (object, "pixbuf", pixbuf, NULL);
 		g_object_unref (pixbuf);
 	}
 	if (mount != NULL) {
@@ -322,17 +322,17 @@ rb_removable_media_source_get_property (GObject *object,
 }
 
 static void
-impl_delete_thyself (RBSource *source)
+impl_delete_thyself (RBDisplayPage *page)
 {
 	RhythmDB *db;
 	RBShell *shell;
 	RhythmDBEntryType *entry_type;
 
-	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (page, "shell", &shell, NULL);
 	g_object_get (shell, "db", &db, NULL);
 	g_object_unref (shell);
 
-	g_object_get (source, "entry-type", &entry_type, NULL);
+	g_object_get (page, "entry-type", &entry_type, NULL);
 	rb_debug ("deleting all entries of type '%s'", rhythmdb_entry_type_get_name (entry_type));
 	rhythmdb_entry_delete_by_type (db, entry_type);
 	g_object_unref (entry_type);
@@ -533,7 +533,7 @@ get_db_for_source (RBSource *source)
 }
 
 static gboolean
-impl_receive_drag (RBSource *asource, GtkSelectionData *data)
+impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data)
 {
 	GList *entries;
 	RhythmDB *db;
@@ -541,7 +541,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 
 	entries = NULL;
 	type = gdk_atom_name (gtk_selection_data_get_data_type (data));
-        db = get_db_for_source (asource);
+        db = get_db_for_source (RB_SOURCE (page));
 
 	if (strcmp (type, "text/uri-list") == 0) {
 		GList *list;
@@ -595,9 +595,10 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	g_free (type);
 
 	if (entries) {
+		RBSource *source = RB_SOURCE (page);
 		entries = g_list_reverse (entries);
-		if (rb_source_can_paste (asource))
-			rb_source_paste (asource, entries);
+		if (rb_source_can_paste (source))
+			rb_source_paste (source, entries);
 		g_list_free (entries);
 	}
 

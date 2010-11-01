@@ -22,9 +22,24 @@
   (gtype-id "RB_TYPE_SHELL_PLAYER")
 )
 
-(define-object Source
+(define-object DisplayPage
   (in-module "RB")
   (parent "GtkHBox")
+  (c-name "RBDisplayPage")
+  (gtype-id "RB_TYPE_DISPLAY_PAGE")
+)
+
+(define-object DisplayPageGroup
+  (in-module "RB")
+  (parent "GObject")
+  (c-name "RBDisplayPageGroup")
+  (gtype-id "RB_TYPE_DISPLAY_PAGE_GROUP")
+)
+
+
+(define-object Source
+  (in-module "RB")
+  (parent "RBDisplayPage")
   (c-name "RBSource")
   (gtype-id "RB_TYPE_SOURCE")
 )
@@ -78,20 +93,20 @@
   (gtype-id "RB_TYPE_REMOVABLE_MEDIA_MANAGER")
 )
 
-(define-object SourceList
+(define-object DisplayPageTree
   (in-module "RB")
   (parent "GtkScrolledWindow")
-  (c-name "RBSourceList")
-  (gtype-id "RB_TYPE_SOURCELIST")
+  (c-name "RBDisplayPageTree")
+  (gtype-id "RB_TYPE_DISPLAY_PAGE_TREE")
 )
 
-(define-object SourceListModel
+(define-object DisplayPageModel
   (in-module "RB")
   (parent "GtkTreeModelFilter")
   (interface "RBTreeDragSource")
   (interface "RBTreeDragDest")
-  (c-name "RBSourceListModel")
-  (gtype-id "RB_TYPE_SOURCELIST_MODEL")
+  (c-name "RBDisplayPageModel")
+  (gtype-id "RB_TYPE_DISPLAY_PAGE_MODEL")
 )
 
 (define-object EntryView
@@ -301,17 +316,13 @@
   )
 )
 
-(define-enum SourceListModelColumn
+(define-enum DisplayPageModelColumn
   (in-module "RB")
-  (c-name "RBSourceListModelColumn")
-  (gtype-id "RB_TYPE_SOURCELIST_MODEL_COLUMN")
+  (c-name "RBDisplayPageModelColumn")
+  (gtype-id "RB_TYPE_DISPLAY_PAGE_MODEL_COLUMN")
   (values
     '("column-playing" "RB_SOURCELIST_MODEL_COLUMN_PLAYING")
-    '("column-pixbuf" "RB_SOURCELIST_MODEL_COLUMN_PIXBUF")
-    '("column-name" "RB_SOURCELIST_MODEL_COLUMN_NAME")
-    '("column-source" "RB_SOURCELIST_MODEL_COLUMN_SOURCE")
-    '("column-attributes" "RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES")
-    '("column-visibility" "RB_SOURCELIST_MODEL_COLUMN_VISIBILITY")
+    '("column-pixbuf" "RB_SOURCELIST_MODEL_COLUMN_PAGE")
   )
 )
 
@@ -324,7 +335,6 @@
     '("right-sidebar" "RB_SHELL_UI_LOCATION_RIGHT_SIDEBAR")
     '("main-top" "RB_SHELL_UI_LOCATION_MAIN_TOP")
     '("main-bottom" "RB_SHELL_UI_LOCATION_MAIN_BOTTOM")
-    '("main-notebook" "RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK")
   )
 )
 
@@ -578,13 +588,13 @@
   (return-type "gboolean")
 )
 
-(define-method append_source
+(define-method append_display_page
   (of-object "RBShell")
-  (c-name "rb_shell_append_source")
+  (c-name "rb_shell_append_display_page")
   (return-type "none")
   (parameters
-    '("RBSource*" "source")
-    '("RBSource*" "parent" (null-ok) (default "NULL"))
+    '("RBDisplayPage*" "page")
+    '("RBDisplayPage*" "parent" (null-ok) (default "NULL"))
   )
 )
 
@@ -594,6 +604,28 @@
   (return-type "RBSource*")
   (parameters
     '("RhythmDBEntryType*" "type")
+  )
+)
+
+(define-method add_widget
+  (of-object "RBShell")
+  (c-name "rb_shell_add_widget")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("RBShellUILocation" "location")
+    '("gboolean" "expand" (default "FALSE"))
+    '("gboolean" "fill" (default "TRUE"))
+  )
+)
+
+(define-method remove_widget
+  (of-object "RBShell")
+  (c-name "rb_shell_remove_widget")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("RBShellUILocation" "location")
   )
 )
 
@@ -874,48 +906,161 @@
 
 
 
-;; From ../../sources/rb-source-group.h
+;; From ../../sources/rb-display-page-group.h
 
-(define-enum SourceGroupCategory
+(define-enum DisplayPageGroupCategory
   (in-module "RB")
-  (c-name "RBSourceGroupCategory")
-  (gtype-id "RB_TYPE_SOURCE_GROUP_CATEGORY")
+  (c-name "RBDisplayPageGroupCategory")
+  (gtype-id "RB_TYPE_DISPLAY_PAGE_GROUP_CATEGORY")
   (values
-    '("fixed" "RB_SOURCE_GROUP_CATEGORY_FIXED")
-    '("persistent" "RB_SOURCE_GROUP_CATEGORY_PERSISTENT")
-    '("removable" "RB_SOURCE_GROUP_CATEGORY_REMOVABLE")
-    '("transient" "RB_SOURCE_GROUP_CATEGORY_TRANSIENT")
+    '("fixed" "RB_DISPLAY_PAGE_GROUP_CATEGORY_FIXED")
+    '("persistent" "RB_DISPLAY_PAGE_GROUP_CATEGORY_PERSISTENT")
+    '("removable" "RB_DISPLAY_PAGE_GROUP_CATEGORY_REMOVABLE")
+    '("transient" "RB_DISPLAY_PAGE_GROUP_CATEGORY_TRANSIENT")
   )
 )
 
-(define-boxed SourceGroup
-  (in-module "RB")
-  (c-name "RBSourceGroup")
-  (gtype-id "RB_TYPE_SOURCE_GROUP")
-  (fields
-    '("char*" "name" (access readwrite))
-    '("char*" "display_name" (access readwrite))
-    '("RBSourceGroupCategory" "category" (access readwrite))
-  )
-)
-
-(define-function rb_source_group_get_by_name
-  (c-name "rb_source_group_get_by_name")
-  (return-type "RBSourceGroup*")
+(define-function rb_display_page_group_get_by_id
+  (c-name "rb_display_page_group_get_by_id")
+  (return-type "RBDisplayPageGroup*")
   (parameters
-    '("const-char*" "name")
+    '("const-char*" "id")
   )
 )
 
-(define-function rb_source_group_register
-  (c-name "rb_source_group_register")
-  (return-type "RBSourceGroup*")
+;; From ../../sources/rb-display-page.h
+
+(define-function rb_display_page_type
+  (c-name "rb_display_page_get_type")
+  (return-type "GType")
+)
+
+(define-method notify_status_changed
+  (of-object "RBDisplayPage")
+  (c-name "_rb_display_page_notify_status_changed")
+  (return-type "none")
+)
+
+(define-method get_status
+  (of-object "RBDisplayPage")
+  (c-name "rb_display_page_get_status")
+  (return-type "none")
   (parameters
-    '("const-char*" "name")
-    '("const-char*" "display_name")
-    '("RBSourceGroupCategory" "category")
+    '("char **" "text")
+    '("char **" "progress_text")
+    '("float *" "progress")
   )
 )
+
+(define-method receive_drag
+  (of-object "RBDisplayPage")
+  (c-name "rb_display_page_receive_drag")
+  (return-type "gboolean")
+  (parameters
+    '("GtkSelectionData*" "data")
+  )
+)
+
+(define-method show_popup
+  (of-object "RBDisplayPage")
+  (c-name "rb_display_page_show_popup")
+  (return-type "gboolean")
+)
+
+(define-method delete_thyself
+  (of-object "RBDisplayPage")
+  (c-name "rb_display_page_delete_thyself")
+  (return-type "none")
+)
+
+(define-method selectable
+  (of-object "RBDisplayPage")
+  (c-name "rb_display_page_selectable")
+  (return-type "gboolean")
+)
+
+(define-method selected
+  (of-object "RBDisplayPage")
+  (c-name "rb_display_page_selected")
+  (return-type "none")
+)
+
+(define-method deselected
+  (of-object "RBDisplayPage")
+  (c-name "rb_display_page_deselected")
+  (return-type "none")
+)
+
+(define-method activate
+  (of-object "RBDisplayPage")
+  (c-name "rb_display_page_activate")
+  (return-type "none")
+)
+
+(define-method get_ui_actions
+  (of-object "RBDisplayPage")
+  (c-name "rb_display_page_get_ui_actions")
+  (return-type "GList*")
+)
+
+(define-method show_page_popup
+  (of-object "RBDisplayPage")
+  (c-name "_rb_display_page_show_popup")
+  (return-type "none")
+  (parameters
+    '("const-char*" "ui_path")
+  )
+)
+
+
+(define-virtual get_status
+  (of-object "RBDisplayPage")
+  (return-type "none")
+  (parameters
+    '("char **" "text")
+    '("char **" "progress_text")
+    '("float *" "progress")
+  )
+)
+
+(define-virtual receive_drag
+  (of-object "RBDisplayPage")
+  (return-type "gboolean")
+  (parameters
+    '("GtkSelectionData*" "selection")
+  )
+)
+
+(define-virtual show_popup
+  (of-object "RBDisplayPage")
+  (return-type "gboolean")
+)
+
+(define-virtual delete_thyself
+  (of-object "RBDisplayPage")
+  (return-type "none")
+)
+
+(define-virtual selected
+  (of-object "RBDisplayPage")
+  (return-type "none")
+)
+
+(define-virtual deselected
+  (of-object "RBDisplayPage")
+  (return-type "none")
+)
+
+(define-virtual activate
+  (of-object "RBDisplayPage")
+  (return-type "none")
+)
+
+(define-virtual get_ui_actions
+  (of-object "RBDisplayPage")
+  (return-type "GList*")
+)
+
 
 ;; From ../../sources/rb-source.h
 
@@ -943,12 +1088,6 @@
   (return-type "none")
 )
 
-(define-method notify_status_changed
-  (of-object "RBSource")
-  (c-name "rb_source_notify_status_changed")
-  (return-type "none")
-)
-
 (define-method update_play_statistics
   (of-object "RBSource")
   (c-name "rb_source_update_play_statistics")
@@ -956,26 +1095,6 @@
   (parameters
     '("RhythmDB*" "db")
     '("RhythmDBEntry*" "entry")
-  )
-)
-
-(define-method set_pixbuf
-  (of-object "RBSource")
-  (c-name "rb_source_set_pixbuf")
-  (return-type "none")
-  (parameters
-    '("GdkPixbuf*" "pixbuf")
-  )
-)
-
-(define-method get_status
-  (of-object "RBSource")
-  (c-name "rb_source_get_status")
-  (return-type "none")
-  (parameters
-    '("char **" "text")
-    '("char **" "progress_text")
-    '("float *" "progress")
   )
 )
 
@@ -1137,45 +1256,6 @@
   (return-type "RBSourceEOFType")
 )
 
-(define-method receive_drag
-  (of-object "RBSource")
-  (c-name "rb_source_receive_drag")
-  (return-type "gboolean")
-  (parameters
-    '("GtkSelectionData*" "data")
-  )
-)
-
-(define-method show_popup
-  (of-object "RBSource")
-  (c-name "rb_source_show_popup")
-  (return-type "gboolean")
-)
-
-(define-method delete_thyself
-  (of-object "RBSource")
-  (c-name "rb_source_delete_thyself")
-  (return-type "none")
-)
-
-(define-method activate
-  (of-object "RBSource")
-  (c-name "rb_source_activate")
-  (return-type "none")
-)
-
-(define-method deactivate
-  (of-object "RBSource")
-  (c-name "rb_source_deactivate")
-  (return-type "none")
-)
-
-(define-method get_ui_actions
-  (of-object "RBSource")
-  (c-name "rb_source_get_ui_actions")
-  (return-type "GList*")
-)
-
 (define-method get_search_actions
   (of-object "RBSource")
   (c-name "rb_source_get_search_actions")
@@ -1197,15 +1277,7 @@
   )
 )
 
-(define-method show_source_popup
-  (of-object "RBSource")
-  (c-name "_rb_source_show_popup")
-  (return-type "none")
-  (parameters
-    '("const-char*" "ui_path")
-  )
-)
-
+;; ??
 (define-method want_uri
   (of-object "RBSource")
   (c-name "rb_source_want_uri")
@@ -1226,16 +1298,6 @@
     '("RBSourceAddCallback" "callback")
     '("gpointer" "data")
     '("GDestroyNotify" "destroy_data")
-  )
-)
-
-(define-virtual impl_get_status
-  (of-object "RBSource")
-  (return-type "none")
-  (parameters
-    '("char **" "text")
-    '("char **" "progress_text")
-    '("float *" "progress")
   )
 )
 
@@ -1373,39 +1435,6 @@
   (return-type "RBSourceEOFType")
 )
 
-(define-virtual impl_receive_drag
-  (of-object "RBSource")
-  (return-type "gboolean")
-  (parameters
-    '("GtkSelectionData*" "selection")
-  )
-)
-
-(define-virtual impl_show_popup
-  (of-object "RBSource")
-  (return-type "gboolean")
-)
-
-(define-virtual impl_delete_thyself
-  (of-object "RBSource")
-  (return-type "none")
-)
-
-(define-virtual impl_activate
-  (of-object "RBSource")
-  (return-type "none")
-)
-
-(define-virtual impl_deactivate
-  (of-object "RBSource")
-  (return-type "none")
-)
-
-(define-virtual impl_get_ui_actions
-  (of-object "RBSource")
-  (return-type "GList*")
-)
-
 (define-virtual impl_get_search_actions
   (of-object "RBSource")
   (return-type "GList*")
@@ -1437,85 +1466,26 @@
   )
 )
 
-;; From ../../sources/rb-sourcelist.h
+;; From ../../sources/rb-display-page-tree.h
 
-(define-function rb_sourcelist_get_type
-  (c-name "rb_sourcelist_get_type")
+(define-function rb_display_page_tree_get_type
+  (c-name "rb_display_page_tree_get_type")
   (return-type "GType")
 )
 
-(define-function sourcelist_new
+(define-function display_page_tree_new
   (in-module "rb")
-  (c-name "rb_sourcelist_new")
-  (is-constructor-of "RBSourceList")
+  (c-name "rb_display_page_tree_new")
+  (is-constructor-of "RBDisplayPageTree")
   (return-type "GtkWidget*")
   (properties
     '("shell")
   )
 )
 
-(define-method append
-  (of-object "RBSourceList")
-  (c-name "rb_sourcelist_append")
-  (return-type "none")
-  (parameters
-    '("RBSource*" "source")
-    '("RBSource*" "parent")
-  )
-)
-
-(define-method add_widget
-  (of-object "RBShell")
-  (c-name "rb_shell_add_widget")
-  (return-type "none")
-  (parameters
-    '("GtkWidget*" "widget")
-    '("RBShellUILocation" "location")
-    '("gboolean" "expand" (default "FALSE"))
-    '("gboolean" "fill" (default "TRUE"))
-  )
-)
-
-(define-method remove_widget
-  (of-object "RBShell")
-  (c-name "rb_shell_remove_widget")
-  (return-type "none")
-  (parameters
-    '("GtkWidget*" "widget")
-    '("RBShellUILocation" "location")
-  )
-)
-
-(define-method notebook_set_page
-  (of-object "RBShell")
-  (c-name "rb_shell_notebook_set_page")
-  (return-type "none")
-  (parameters
-    '("GtkWidget*" "widget" (null-ok))
-  )
-)
-
-(define-method set_playing_source
-  (of-object "RBSourceList")
-  (c-name "rb_sourcelist_set_playing_source")
-  (return-type "none")
-  (parameters
-    '("RBSource*" "source")
-  )
-)
-
 (define-method edit_source_name
-  (of-object "RBSourceList")
-  (c-name "rb_sourcelist_edit_source_name")
-  (return-type "none")
-  (parameters
-    '("RBSource*" "source")
-  )
-)
-
-(define-method remove
-  (of-object "RBSourceList")
-  (c-name "rb_sourcelist_remove")
+  (of-object "RBDisplayPageTree")
+  (c-name "rb_display_page_tree_edit_source_name")
   (return-type "none")
   (parameters
     '("RBSource*" "source")
@@ -1523,11 +1493,71 @@
 )
 
 (define-method select
-  (of-object "RBSourceList")
-  (c-name "rb_sourcelist_select")
+  (of-object "RBDisplayPageTree")
+  (c-name "rb_display_page_tree_select")
   (return-type "none")
   (parameters
-    '("RBSource*" "source")
+    '("RBDisplayPage*" "page")
+  )
+)
+
+;; From rb-display-page-model.h
+
+(define-function rb_display_page_model_get_type
+  (c-name "rb_display_page_model_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_display_page_model_new
+  (c-name "rb_display_page_model_new")
+  (is-constructor-of "RBDisplayPageModel")
+  (return-type "RBDisplayPageModel*")
+)
+
+(define-method set_playing_source
+  (of-object "RBDisplayPageModel")
+  (c-name "rb_display_page_model_set_playing_source")
+  (return-type "none")
+  (parameters
+    '("RBDisplayPage*" "source")
+  )
+)
+
+(define-method add_page
+  (of-object "RBDisplayPageModel")
+  (c-name "rb_display_page_model_add_page")
+  (return-type "none")
+  (parameters
+    '("RBDisplayPage*" "page")
+    '("RBDisplayPage*" "parent")
+  )
+)
+
+(define-method remove_page
+  (of-object "RBDisplayPageModel")
+  (c-name "rb_display_page_model_remove_page")
+  (return-type "none")
+  (parameters
+    '("RBDisplayPage*" "page")
+  )
+)
+
+(define-method find_page
+  (of-object "RBDisplayPageModel")
+  (c-name "rb_display_page_model_find_page")
+  (return-type "gboolean")
+  (parameters
+    '("RBDisplayPage*" "page")
+    '("GtkTreeIter*" "iter")
+  )
+)
+
+(define-method set_dnd_targets
+  (of-object "RBDisplayPageModel")
+  (c-name "rb_display_page_model_set_dnd_targets")
+  (return-type "none")
+  (parameters
+    '("GtkTreeView*" "treeview")
   )
 )
 
@@ -2419,29 +2449,6 @@
     '("gint" "index")
   )
 )
-
-;; From rb-sourcelist-model.h
-
-(define-function rb_sourcelist_model_get_type
-  (c-name "rb_sourcelist_model_get_type")
-  (return-type "GType")
-)
-
-(define-function rb_sourcelist_model_new
-  (c-name "rb_sourcelist_model_new")
-  (is-constructor-of "RBSourceListModel")
-  (return-type "GtkTreeModel*")
-)
-
-(define-method set_dnd_targets
-  (of-object "RBSourceListModel")
-  (c-name "rb_sourcelist_model_set_dnd_targets")
-  (return-type "none")
-  (parameters
-    '("GtkTreeView*" "treeview")
-  )
-)
-
 
 ;; From ../../backends/rb-player.h
 

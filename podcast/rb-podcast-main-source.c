@@ -71,7 +71,6 @@ rb_podcast_main_source_new (RBShell *shell, RBPodcastManager *podcast_manager)
 					  "name", _("Podcasts"),
 					  "shell", shell,
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
-					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  "search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					  "podcast-manager", podcast_manager,
 					  "base-query", base_query,
@@ -118,7 +117,7 @@ rb_podcast_main_source_add_subsources (RBPodcastMainSource *source)
 						   RB_STOCK_AUTO_PLAYLIST);
 	rhythmdb_query_free (query);
 	rb_source_set_hidden_when_empty (podcast_subsource, TRUE);
-	rb_shell_append_source (shell, podcast_subsource, RB_SOURCE (source));
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (podcast_subsource), RB_DISPLAY_PAGE (source));
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
@@ -136,7 +135,7 @@ rb_podcast_main_source_add_subsources (RBPodcastMainSource *source)
 						   RB_STOCK_AUTO_PLAYLIST);
 	rhythmdb_query_free (query);
 	rb_source_set_hidden_when_empty (podcast_subsource, TRUE);
-	rb_shell_append_source (shell, podcast_subsource, RB_SOURCE (source));
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (podcast_subsource), RB_DISPLAY_PAGE (source));
 
 	g_object_unref (db);
 	g_object_unref (shell);
@@ -258,9 +257,9 @@ rb_podcast_main_source_cb_interval_changed_cb (GtkComboBox *box, gpointer cb_dat
 }
 
 static GtkWidget *
-impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
+impl_get_config_widget (RBDisplayPage *page, RBShellPreferences *prefs)
 {
-	RBPodcastMainSource *source = RB_PODCAST_MAIN_SOURCE (asource);
+	RBPodcastMainSource *source = RB_PODCAST_MAIN_SOURCE (page);
 	RBPodcastManager *podcast_mgr;
 	GtkBuilder *builder;
 	GtkWidget *cb_update_interval;
@@ -378,7 +377,7 @@ impl_constructed (GObject *object)
 					   0, NULL);
 
 	if (pixbuf != NULL) {
-		rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
+		g_object_set (source, "pixbuf", pixbuf, NULL);
 		g_object_unref (pixbuf);
 	}
 }
@@ -409,12 +408,14 @@ static void
 rb_podcast_main_source_class_init (RBPodcastMainSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	object_class->dispose = impl_dispose;
 	object_class->constructed = impl_constructed;
 
-	source_class->impl_get_config_widget = impl_get_config_widget;
+	page_class->get_config_widget = impl_get_config_widget;
+
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
 	

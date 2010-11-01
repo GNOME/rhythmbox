@@ -369,7 +369,7 @@ _delete_cb (GVolume         *volume,
 	 * while iterating it.
 	 */
 	g_signal_handlers_block_by_func (source, rb_audiocd_plugin_source_deleted, plugin);
-	rb_source_delete_thyself (source);
+	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 }
 
 static void

@@ -30,7 +30,7 @@
 #define __RB_AUDIOSCROBBLER_RADIO_SOURCE_H
 
 #include "rb-streaming-source.h"
-#include "rb-audioscrobbler-profile-source.h"
+#include "rb-audioscrobbler-profile-page.h"
 #include "rb-audioscrobbler-service.h"
 #include "rb-audioscrobbler-account.h"
 
@@ -76,7 +76,7 @@ typedef struct
 } RBAudioscrobblerRadioSourceClass;
 
 GType rb_audioscrobbler_radio_source_get_type (void);
-RBSource *rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfileSource *parent,
+RBSource *rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfilePage *parent,
                                               RBAudioscrobblerService *service,
                                               const char *username,
                                               const char *session_key,

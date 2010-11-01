@@ -63,8 +63,8 @@ static void playing_entry_changed (RBShellPlayer *player, RhythmDBEntry *entry,
 				   RBFMRadioSource *self);
 
 static void         impl_delete         (RBSource *source);
-static gboolean     impl_show_popup     (RBSource *source);
-static GList       *impl_get_ui_actions (RBSource *source);
+static gboolean     impl_show_popup     (RBDisplayPage *page);
+static GList       *impl_get_ui_actions (RBDisplayPage *page);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 
 
@@ -93,20 +93,22 @@ static void
 rb_fm_radio_source_class_init (RBFMRadioSourceClass *class)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (class);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (class);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (class);
 
 	object_class->constructed = rb_fm_radio_source_constructed;
 	object_class->dispose = rb_fm_radio_source_dispose;
 
-	g_type_class_add_private (class, sizeof (RBFMRadioSourcePrivate));
+	page_class->show_popup = impl_show_popup;
+	page_class->get_ui_actions = impl_get_ui_actions;
 
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_delete = impl_delete;
-	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_entry_view = impl_get_entry_view;
-	source_class->impl_get_ui_actions = impl_get_ui_actions;
+
+	g_type_class_add_private (class, sizeof (RBFMRadioSourcePrivate));
 }
 
 static void
@@ -135,8 +137,8 @@ rb_fm_radio_source_constructed (GObject *object)
 		      NULL);
 	g_object_unref (shell);
 
-	self->priv->action_group = _rb_source_register_action_group (
-		RB_SOURCE (self),
+	self->priv->action_group = _rb_display_page_register_action_group (
+		RB_DISPLAY_PAGE (self),
 		"FMRadioActions",
 		rb_fm_radio_source_actions,
 		G_N_ELEMENTS (rb_fm_radio_source_actions),
@@ -280,9 +282,9 @@ rb_fm_radio_source_songs_view_show_popup (RBEntryView *view,
 		return;
 
 	if (over_entry)
-		_rb_source_show_popup (RB_SOURCE (self), "/FMRadioViewPopup");
+		_rb_display_page_show_popup (RB_DISPLAY_PAGE (self), "/FMRadioViewPopup");
 	else
-		_rb_source_show_popup (RB_SOURCE (self), "/FMRadioSourcePopup");
+		_rb_display_page_show_popup (RB_DISPLAY_PAGE (self), "/FMRadioSourcePopup");
 }
 
 void
@@ -410,14 +412,14 @@ impl_delete (RBSource *source)
 }
 
 static gboolean
-impl_show_popup (RBSource *source)
+impl_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (source, "/FMRadioSourcePopup");
+	_rb_display_page_show_popup (page, "/FMRadioSourcePopup");
 	return TRUE;
 }
 
 static GList *
-impl_get_ui_actions (RBSource *source)
+impl_get_ui_actions (RBDisplayPage *page)
 {
 	return g_list_prepend (NULL, g_strdup ("MusicNewFMRadioStation"));
 }

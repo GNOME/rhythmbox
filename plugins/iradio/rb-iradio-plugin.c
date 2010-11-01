@@ -44,6 +44,7 @@
 #include "rb-dialog.h"
 #include "rb-iradio-source.h"
 #include "rb-file-helpers.h"
+#include "rb-display-page-group.h"
 
 
 #define RB_TYPE_IRADIO_PLUGIN		(rb_iradio_plugin_get_type ())
@@ -103,7 +104,7 @@ impl_activate (RBPlugin *plugin,
 	char *filename;
 
 	pi->source = rb_iradio_source_new (shell, plugin);
-	rb_shell_append_source (shell, pi->source, NULL);
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (pi->source), RB_DISPLAY_PAGE_GROUP_LIBRARY);
 
 	g_object_get (shell, "ui-manager", &uimanager, NULL);
 	filename = rb_plugin_find_file (plugin, "iradio-ui.xml");
@@ -130,7 +131,7 @@ impl_deactivate	(RBPlugin *plugin,
 	gtk_ui_manager_remove_ui (uimanager, pi->ui_merge_id);
 	g_object_unref (uimanager);
 
-	rb_source_delete_thyself (pi->source);
+	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (pi->source));
 	pi->source = NULL;
 }
 

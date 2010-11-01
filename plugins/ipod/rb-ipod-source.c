@@ -66,11 +66,12 @@ static void rb_ipod_source_dispose (GObject *object);
 static char *impl_get_browser_key (RBSource *source);
 static char *impl_get_paned_key (RBBrowserSource *source);
 
-static gboolean impl_show_popup (RBSource *source);
 static void impl_delete (RBSource *asource);
 static void rb_ipod_load_songs (RBiPodSource *source);
-static void impl_delete_thyself (RBSource *source);
-static GList* impl_get_ui_actions (RBSource *source);
+
+static gboolean impl_show_popup (RBDisplayPage *page);
+static void impl_delete_thyself (RBDisplayPage *page);
+static GList* impl_get_ui_actions (RBDisplayPage *page);
 
 static GList * impl_get_mime_types (RBRemovableMediaSource *source);
 static gboolean impl_track_added (RBRemovableMediaSource *source,
@@ -161,6 +162,7 @@ static void
 rb_ipod_source_class_init (RBiPodSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBMediaPlayerSourceClass *mps_class = RB_MEDIA_PLAYER_SOURCE_CLASS (klass);
 	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
@@ -172,13 +174,14 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	object_class->set_property = rb_ipod_source_set_property;
 	object_class->get_property = rb_ipod_source_get_property;
 
+	page_class->delete_thyself = impl_delete_thyself;
+	page_class->show_popup = impl_show_popup;
+	page_class->get_ui_actions = impl_get_ui_actions;
+
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_browser_key  = impl_get_browser_key;
-	source_class->impl_show_popup = impl_show_popup;
-	source_class->impl_delete_thyself = impl_delete_thyself;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
 
@@ -390,7 +393,6 @@ rb_ipod_source_new (RBPlugin *plugin,
 					       "entry-type", entry_type,
 					       "mount", mount,
 					       "shell", shell,
-					       "source-group", RB_SOURCE_GROUP_DEVICES,
 					       "device-info", device_info,
 					       NULL));
 
@@ -610,8 +612,8 @@ set_podcast_icon (RBIpodStaticPlaylistSource *source)
 					   0, NULL);
 
 	if (pixbuf != NULL) {
-	    rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
-	    g_object_unref (pixbuf);
+		g_object_set (source, "pixbuf", pixbuf, NULL);
+		g_object_unref (pixbuf);
 	}
 }
 
@@ -674,7 +676,7 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 		priv->podcast_pl = playlist_source;
 		set_podcast_icon (playlist_source);
 	}
-	rb_shell_append_source (shell, RB_SOURCE (playlist_source), RB_SOURCE (source));
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (playlist_source), RB_DISPLAY_PAGE (source));
 	g_object_unref (shell);
 
 	return playlist_source;
@@ -1217,7 +1219,7 @@ rb_ipod_load_songs (RBiPodSource *source)
 }
 
 static GList*
-impl_get_ui_actions (RBSource *source)
+impl_get_ui_actions (RBDisplayPage *page)
 {
 	GList *actions = NULL;
 
@@ -1240,9 +1242,9 @@ impl_get_paned_key (RBBrowserSource *source)
 }
 
 static gboolean
-impl_show_popup (RBSource *source)
+impl_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (RB_SOURCE (source), "/iPodSourcePopup");
+	_rb_display_page_show_popup (page, "/iPodSourcePopup");
 	return TRUE;
 }
 
@@ -1374,8 +1376,7 @@ impl_remove_playlists (RBMediaPlayerSource *source)
 		    !playlist->is_spl) {
 
 			/* destroy the playlist source */
-			RBSource *rb_playlist = RB_SOURCE (playlist->userdata);
-			rb_source_delete_thyself (rb_playlist);
+			rb_display_page_delete_thyself (RB_DISPLAY_PAGE (playlist->userdata));
 
 			/* remove playlist from ipod */
 			rb_ipod_db_remove_playlist (priv->ipod_db, playlist);
@@ -1898,21 +1899,21 @@ ipod_path_from_unix_path (const gchar *mount_point, const gchar *unix_path)
 }
 
 static void
-impl_delete_thyself (RBSource *source)
+impl_delete_thyself (RBDisplayPage *page)
 {
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (page);
 	RhythmDB *db;
 	GList *p;
 
-        if (priv->ipod_db == NULL) {
-            RB_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_delete_thyself (source);
-            return;
-        }
+	if (priv->ipod_db == NULL) {
+		RB_DISPLAY_PAGE_CLASS (rb_ipod_source_parent_class)->delete_thyself (page);
+		return;
+	}
 
-	db = get_db_for_source (RB_IPOD_SOURCE (source));
+	db = get_db_for_source (RB_IPOD_SOURCE (page));
 	g_signal_handlers_disconnect_by_func (db,
 					      G_CALLBACK (rb_ipod_song_artwork_add_cb),
-					      RB_IPOD_SOURCE (source));
+					      RB_IPOD_SOURCE (page));
 	g_object_unref (db);
 
 	for (p = rb_ipod_db_get_playlists (priv->ipod_db);
@@ -1932,14 +1933,14 @@ impl_delete_thyself (RBSource *source)
 								  RB_IPOD_STATIC_PLAYLIST_SOURCE (rb_playlist));
 
 			g_object_unref (model);
-			rb_source_delete_thyself (rb_playlist);
+			rb_display_page_delete_thyself (RB_DISPLAY_PAGE (rb_playlist));
 		}
 	}
 
 	g_object_unref (G_OBJECT (priv->ipod_db));
 	priv->ipod_db = NULL;
 
-	RB_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_delete_thyself (source);
+	RB_DISPLAY_PAGE_CLASS (rb_ipod_source_parent_class)->delete_thyself (page);
 }
 
 static GList *
@@ -1978,7 +1979,7 @@ rb_ipod_source_remove_playlist (RBiPodSource *ipod_source,
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod_source);
 	RBIpodStaticPlaylistSource *playlist_source = RB_IPOD_STATIC_PLAYLIST_SOURCE (source);
 
-	rb_source_delete_thyself (source);
+	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 	rb_ipod_db_remove_playlist (priv->ipod_db, rb_ipod_static_playlist_source_get_itdb_playlist (playlist_source));
 }
 

@@ -48,9 +48,9 @@
 #include "rb-generic-player-playlist-source.h"
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
-#include "rb-sourcelist.h"
 #include "rb-nokia770-source.h"
 #include "rb-psp-source.h"
+#include "rb-display-page-tree.h"
 
 
 #define RB_TYPE_GENERIC_PLAYER_PLUGIN		(rb_generic_player_plugin_get_type ())
@@ -147,8 +147,8 @@ static void
 rb_generic_player_plugin_new_playlist (GtkAction *action, RBSource *source)
 {
 	RBShell *shell;
-	RBSourceList *sourcelist;
 	RBSource *playlist;
+	RBDisplayPageTree *page_tree;
 	RhythmDBEntryType *entry_type;
 
 	g_return_if_fail (RB_IS_GENERIC_PLAYER_SOURCE (source));
@@ -164,9 +164,9 @@ rb_generic_player_plugin_new_playlist (GtkAction *action, RBSource *source)
 					       shell,
 					       playlist);
 
-	g_object_get (shell, "sourcelist", &sourcelist, NULL);
-	rb_sourcelist_edit_source_name (sourcelist, playlist);
-	g_object_unref (sourcelist);
+	g_object_get (shell, "display-page-tree", &page_tree, NULL);
+	rb_display_page_tree_edit_source_name (page_tree, playlist);
+	g_object_unref (page_tree);
 
 	g_object_unref (shell);
 }
@@ -177,7 +177,7 @@ rb_generic_player_plugin_delete_playlist (GtkAction *action, RBSource *source)
 	g_return_if_fail (RB_IS_GENERIC_PLAYER_PLAYLIST_SOURCE (source));
 
 	rb_generic_player_playlist_delete_from_player (RB_GENERIC_PLAYER_PLAYLIST_SOURCE (source));
-	rb_source_delete_thyself (source);
+	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 }
 
 static RBSource *
@@ -196,10 +196,10 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 		plugin->actions = gtk_action_group_new ("GenericPlayerActions");
 		gtk_action_group_set_translation_domain (plugin->actions, GETTEXT_PACKAGE);
 
-		_rb_action_group_add_source_actions (plugin->actions,
-						     G_OBJECT (plugin->shell),
-						     rb_generic_player_plugin_actions,
-						     G_N_ELEMENTS (rb_generic_player_plugin_actions));
+		_rb_action_group_add_display_page_actions (plugin->actions,
+							   G_OBJECT (plugin->shell),
+							   rb_generic_player_plugin_actions,
+							   G_N_ELEMENTS (rb_generic_player_plugin_actions));
 	}
 
 	if (source) {
@@ -273,7 +273,7 @@ impl_deactivate	(RBPlugin *bplugin,
 
 	g_signal_handlers_disconnect_by_func (G_OBJECT (rmm), create_source_cb, plugin);
 
-	g_list_foreach (plugin->player_sources, (GFunc)rb_source_delete_thyself, NULL);
+	g_list_foreach (plugin->player_sources, (GFunc)rb_display_page_delete_thyself, NULL);
 	g_list_free (plugin->player_sources);
 	plugin->player_sources = NULL;
 

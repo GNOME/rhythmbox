@@ -120,10 +120,10 @@ rb_media_player_source_init_actions (RBShell *shell)
 	gtk_ui_manager_insert_action_group (uimanager, action_group, 0);
 	g_object_unref (uimanager);
 
-	_rb_action_group_add_source_actions (action_group,
-					     G_OBJECT (shell),
-					     rb_media_player_source_actions,
-					     G_N_ELEMENTS (rb_media_player_source_actions));
+	_rb_action_group_add_display_page_actions (action_group,
+						   G_OBJECT (shell),
+						   rb_media_player_source_actions,
+						   G_N_ELEMENTS (rb_media_player_source_actions));
 }
 
 static void

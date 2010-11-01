@@ -45,8 +45,8 @@ static void rb_ipod_static_playlist_source_get_property (GObject *object,
 			                  GValue *value,
 			                  GParamSpec *pspec);
 
-static gboolean impl_show_popup (RBSource *source);
-static void impl_delete_thyself (RBSource *source);
+static gboolean impl_show_popup (RBDisplayPage *page);
+static void impl_delete_thyself (RBDisplayPage *page);
 
 static void source_name_changed_cb (RBIpodStaticPlaylistSource *source,
 				    GParamSpec *spec,
@@ -79,6 +79,7 @@ static void
 rb_ipod_static_playlist_source_class_init (RBIpodStaticPlaylistSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	object_class->constructed = rb_ipod_static_playlist_source_constructed;
@@ -86,8 +87,9 @@ rb_ipod_static_playlist_source_class_init (RBIpodStaticPlaylistSourceClass *klas
 	object_class->get_property = rb_ipod_static_playlist_source_get_property;
 	object_class->set_property = rb_ipod_static_playlist_source_set_property;
 
-	source_class->impl_show_popup = impl_show_popup;
-	source_class->impl_delete_thyself = impl_delete_thyself;
+	page_class->show_popup = impl_show_popup;
+	page_class->delete_thyself = impl_delete_thyself;
+
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 
@@ -146,9 +148,9 @@ rb_ipod_static_playlist_source_dispose (GObject *object)
 }
 
 static void
-impl_delete_thyself (RBSource *source)
+impl_delete_thyself (RBDisplayPage *page)
 {
-	RBIpodStaticPlaylistSourcePrivate *priv = IPOD_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	RBIpodStaticPlaylistSourcePrivate *priv = IPOD_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (page);
 
 	if (priv->ipod_source) {
 		g_object_unref (priv->ipod_source);
@@ -159,7 +161,7 @@ impl_delete_thyself (RBSource *source)
 		priv->ipod_db = NULL;
 	}
 	
-	RB_SOURCE_CLASS (rb_ipod_static_playlist_source_parent_class)->impl_delete_thyself (source);
+	RB_DISPLAY_PAGE_CLASS (rb_ipod_static_playlist_source_parent_class)->delete_thyself (page);
 }
 
 RBIpodStaticPlaylistSource *
@@ -275,9 +277,9 @@ rb_ipod_static_playlist_source_set_was_reordered (RBIpodStaticPlaylistSource *pl
 }
 
 static gboolean
-impl_show_popup (RBSource *source)
+impl_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (RB_SOURCE (source), "/iPodPlaylistSourcePopup");
+	_rb_display_page_show_popup (page, "/iPodPlaylistSourcePopup");
 	return TRUE;
 }
 

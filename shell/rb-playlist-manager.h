@@ -29,7 +29,9 @@
 #define __RB_PLAYLIST_MANAGER_H
 
 #include <sources/rb-source.h>
-#include <sources/rb-sourcelist.h>
+#include <sources/rb-display-page-model.h>
+#include <sources/rb-display-page-tree.h>
+#include <shell/rb-shell.h>
 #include <rhythmdb/rhythmdb.h>
 
 G_BEGIN_DECLS
@@ -86,7 +88,8 @@ typedef enum
 GType			rb_playlist_manager_get_type	(void);
 
 RBPlaylistManager *	rb_playlist_manager_new		(RBShell *shell,
-						 	 RBSourceList *sourcelist,
+							 RBDisplayPageModel *page_model,
+							 RBDisplayPageTree *page_tree,
 							 const char *playlists_file);
 
 void			rb_playlist_manager_shutdown	(RBPlaylistManager *mgr);

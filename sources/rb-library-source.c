@@ -76,12 +76,13 @@ static void rb_library_source_constructed (GObject *object);
 static void rb_library_source_dispose (GObject *object);
 static void rb_library_source_finalize (GObject *object);
 
-/* RBSource implementations */
-static gboolean impl_show_popup (RBSource *source);
-static GtkWidget *impl_get_config_widget (RBSource *source, RBShellPreferences *prefs);
+static gboolean impl_show_popup (RBDisplayPage *source);
+static GtkWidget *impl_get_config_widget (RBDisplayPage *source, RBShellPreferences *prefs);
+static gboolean impl_receive_drag (RBDisplayPage *source, GtkSelectionData *data);
+static void impl_get_status (RBDisplayPage *source, char **text, char **progress_text, float *progress);
+
 static char *impl_get_browser_key (RBSource *source);
 static char *impl_get_paned_key (RBBrowserSource *source);
-static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_can_paste (RBSource *asource);
 static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
 static guint impl_want_uri (RBSource *source, const char *uri);
@@ -92,7 +93,6 @@ static void impl_add_uri (RBSource *source,
 			  RBSourceAddCallback callback,
 			  gpointer data,
 			  GDestroyNotify destroy_data);
-static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 
 static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
@@ -194,6 +194,7 @@ static void
 rb_library_source_class_init (RBLibrarySourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
@@ -201,16 +202,17 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	object_class->finalize = rb_library_source_finalize;
 	object_class->constructed = rb_library_source_constructed;
 
-	source_class->impl_show_popup = impl_show_popup;
-	source_class->impl_get_config_widget = impl_get_config_widget;
+	page_class->show_popup = impl_show_popup;
+	page_class->get_config_widget = impl_get_config_widget;
+	page_class->receive_drag = impl_receive_drag;
+	page_class->get_status = impl_get_status;
+
 	source_class->impl_get_browser_key = impl_get_browser_key;
-	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) impl_can_paste;
 	source_class->impl_paste = impl_paste;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
-	source_class->impl_get_status = impl_get_status;
 
 	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_true_function;
@@ -409,10 +411,9 @@ rb_library_source_new (RBShell *shell)
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
 					  "name", _("Music"),
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
-					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  "sorting-key", CONF_STATE_LIBRARY_SORTING,
 					  "shell", shell,
-					  "icon", icon,
+					  "pixbuf", icon,
 					  "populate", FALSE,		/* wait until the database is loaded */
 					  NULL));
 	if (icon != NULL) {
@@ -464,7 +465,7 @@ rb_library_source_location_button_clicked_cb (GtkButton *button, RBLibrarySource
 }
 
 static GtkWidget *
-impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
+impl_get_config_widget (RBDisplayPage *asource, RBShellPreferences *prefs)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GtkBuilder *builder;
@@ -475,7 +476,7 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	if (source->priv->config_widget)
 		return source->priv->config_widget;
 
-	g_object_ref (G_OBJECT (prefs));
+	g_object_ref (prefs);
 	source->priv->shell_prefs = prefs;
 
 	builder = rb_builder_load ("library-prefs.ui", source);
@@ -700,7 +701,7 @@ impl_get_paned_key (RBBrowserSource *status)
 }
 
 static gboolean
-impl_receive_drag (RBSource *asource, GtkSelectionData *data)
+impl_receive_drag (RBDisplayPage *asource, GtkSelectionData *data)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GList *list, *i;
@@ -734,8 +735,8 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 
 	if (entries) {
 		entries = g_list_reverse (entries);
-		if (rb_source_can_paste (asource))
-			rb_source_paste (asource, entries);
+		if (rb_source_can_paste (RB_SOURCE (asource)))
+			rb_source_paste (RB_SOURCE (asource), entries);
 		g_list_free (entries);
 	}
 
@@ -744,9 +745,9 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 }
 
 static gboolean
-impl_show_popup (RBSource *source)
+impl_show_popup (RBDisplayPage *source)
 {
-	_rb_source_show_popup (source, "/LibrarySourcePopup");
+	_rb_display_page_show_popup (source, "/LibrarySourcePopup");
 	return TRUE;
 }
 
@@ -1366,7 +1367,7 @@ import_job_status_changed_cb (RhythmDBImportJob *job, int total, int imported, R
 {
 	RhythmDBImportJob *head = RHYTHMDB_IMPORT_JOB (source->priv->import_jobs->data);
 	if (job == head) {		/* it was inevitable */
-		rb_source_notify_status_changed (RB_SOURCE (source));
+		_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 	}
 }
 
@@ -1521,13 +1522,13 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	rhythmdb_query_free (query);
 	g_free (sort_column);
 
-	g_object_get (library_source, "icon", &icon, NULL);
-	g_object_set (source, "icon", icon, NULL);
+	g_object_get (library_source, "pixbuf", &icon, NULL);
+	g_object_set (source, "pixbuf", icon, NULL);
 	if (icon != NULL) {
 		g_object_unref (icon);
 	}
 
-	rb_shell_append_source (shell, source, RB_SOURCE (library_source));
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (source), RB_DISPLAY_PAGE (library_source));
 	library_source->priv->child_sources = g_list_prepend (library_source->priv->child_sources, source);
 
 	g_object_unref (entry_type);
@@ -1543,7 +1544,7 @@ rb_library_source_sync_child_sources (RBLibrarySource *source)
 	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 
 	/* FIXME: don't delete and re-create sources that are still there */
-	g_list_foreach (source->priv->child_sources, (GFunc)rb_source_delete_thyself, NULL);
+	g_list_foreach (source->priv->child_sources, (GFunc)rb_display_page_delete_thyself, NULL);
 	g_list_free (source->priv->child_sources);
 	source->priv->child_sources = NULL;
 
@@ -1553,13 +1554,13 @@ rb_library_source_sync_child_sources (RBLibrarySource *source)
 }
 
 static void
-impl_get_status (RBSource *source, char **text, char **progress_text, float *progress)
+impl_get_status (RBDisplayPage *source, char **text, char **progress_text, float *progress)
 {
-	RB_SOURCE_CLASS (rb_library_source_parent_class)->impl_get_status (source, text, progress_text, progress);
+	RB_DISPLAY_PAGE_CLASS (rb_library_source_parent_class)->get_status (source, text, progress_text, progress);
 	RBLibrarySource *lsource = RB_LIBRARY_SOURCE (source);
 
 	if (lsource->priv->import_jobs != NULL) {
 		RhythmDBImportJob *job = RHYTHMDB_IMPORT_JOB (lsource->priv->import_jobs->data);
-		_rb_source_set_import_status (source, job, progress_text, progress);
+		_rb_source_set_import_status (RB_SOURCE (source), job, progress_text, progress);
 	}
 }

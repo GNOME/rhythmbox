@@ -1125,7 +1125,7 @@ update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int 
 					      plugin->vis_box);
 
 			if (plugin->mode != mode) {
-				rb_shell_notebook_set_page (plugin->shell, NULL);
+				/*rb_shell_notebook_set_page (plugin->shell, NULL);*/
 			}
 			break;
 
@@ -1423,7 +1423,7 @@ enable_visualization (RBVisualizerPlugin *pi)
 	case EMBEDDED:
 		gtk_widget_show_all (pi->vis_shell);
 		gtk_widget_hide (pi->vis_window);
-		rb_shell_notebook_set_page (pi->shell, pi->vis_shell);
+		/*rb_shell_notebook_set_page (pi->shell, pi->vis_shell);*/
 		break;
 	case FULLSCREEN:
 		gtk_widget_hide (pi->vis_shell);
@@ -1451,7 +1451,7 @@ disable_visualization (RBVisualizerPlugin *pi, gboolean set_action)
 	switch (pi->mode) {
 	case EMBEDDED:
 		gtk_widget_hide (pi->vis_box);
-		rb_shell_notebook_set_page (pi->shell, NULL);
+		/*rb_shell_notebook_set_page (pi->shell, NULL);*/
 		break;
 	case FULLSCREEN:
 		gtk_window_unfullscreen (GTK_WINDOW (pi->vis_window));
@@ -1727,7 +1727,7 @@ impl_activate (RBPlugin *plugin,
 
 	if (pi->vis_shell == NULL) {
 		pi->vis_shell = gtk_vbox_new (FALSE, 0);
-		rb_shell_add_widget (pi->shell, pi->vis_shell, RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK, FALSE, TRUE);
+		/* rb_shell_add_widget (pi->shell, pi->vis_shell, RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK, FALSE, TRUE); */
 	}
 
 	if (pi->vis_window == NULL) {
@@ -1778,7 +1778,7 @@ impl_activate (RBPlugin *plugin,
 
 	pi->selected_source_notify_id =
 		g_signal_connect_object (pi->shell,
-					 "notify::selected-source",
+					 "notify::selected-page",
 					 G_CALLBACK (rb_visualizer_plugin_source_selected_cb),
 					 pi, 0);
 	pi->shell_visibility_change_id =

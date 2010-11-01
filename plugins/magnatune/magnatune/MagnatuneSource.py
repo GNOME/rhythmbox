@@ -32,7 +32,7 @@ from BuyAlbumHandler import BuyAlbumHandler, MagnatunePurchaseError
 import os
 import gobject, gio
 import gtk
-import gnome, gconf
+import gconf
 import gnomekeyring as keyring
 import xml
 import urllib
@@ -103,7 +103,7 @@ class MagnatuneSource(rb.BrowserSource):
 	def do_impl_show_entry_popup(self):
 		self.show_source_popup("/MagnatuneSourceViewPopup")
 
-	def do_impl_get_status(self):
+	def do_get_status(self):
 		if self.__updating:
 			complete, total = self.__load_progress
 			if total > 0:
@@ -122,12 +122,12 @@ class MagnatuneSource(rb.BrowserSource):
 			qm = self.get_property("query-model")
 			return (qm.compute_status_normal("%d song", "%d songs"), None, 2.0)
 
-	def do_impl_get_ui_actions(self):
+	def do_get_ui_actions(self):
 		return ["MagnatuneDownloadAlbum",
 			"MagnatuneArtistInfo",
 			"MagnatuneCancelDownload"]
 
-	def do_impl_activate(self):
+	def do_selected(self):
 		if not self.__activated:
 			shell = self.get_property('shell')
 			self.__db = shell.get_property('db')
@@ -146,7 +146,7 @@ class MagnatuneSource(rb.BrowserSource):
 
 			self.get_entry_view().set_sorting_type(self.__client.get_string("/apps/rhythmbox/plugins/magnatune/sorting"))
 
-		rb.BrowserSource.do_impl_activate(self)
+		rb.BrowserSource.do_selected(self)
 
 	def do_impl_get_browser_key(self):
 		return "/apps/rhythmbox/plugins/magnatune/show_browser"
@@ -163,7 +163,7 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__paned_box.pack_start(paned)
 
 
-	def do_impl_delete_thyself(self):
+	def do_delete_thyself(self):
 		if self.__update_id != 0:
 			gobject.source_remove(self.__update_id)
 			self.__update_id = 0

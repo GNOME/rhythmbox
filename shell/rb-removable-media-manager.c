@@ -570,7 +570,7 @@ uevent_cb (GUdevClient *client, const char *action, GUdevDevice *device, RBRemov
 		source = g_hash_table_lookup (priv->device_mapping, &devnum);
 		if (source) {
 			rb_debug ("removing the source created for this device");
-			rb_source_delete_thyself (source);
+			rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 		}
 	}
 }
@@ -679,7 +679,7 @@ rb_removable_media_manager_remove_volume (RBRemovableMediaManager *mgr, GVolume 
 	rb_debug ("volume removed");
 	source = g_hash_table_lookup (priv->volume_mapping, volume);
 	if (source) {
-		rb_source_delete_thyself (RB_SOURCE (source));
+		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 	}
 }
 
@@ -756,7 +756,7 @@ rb_removable_media_manager_remove_mount (RBRemovableMediaManager *mgr, GMount *m
 	rb_debug ("mount removed");
 	source = g_hash_table_lookup (priv->mount_mapping, mount);
 	if (source) {
-		rb_source_delete_thyself (RB_SOURCE (source));
+		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 	}
 }
 

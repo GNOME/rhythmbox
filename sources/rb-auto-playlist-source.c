@@ -75,8 +75,8 @@ static void rb_auto_playlist_source_get_property (GObject *object,
 						  GParamSpec *pspec);
 
 /* source methods */
-static gboolean impl_show_popup (RBSource *source);
-static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
+static gboolean impl_show_popup (RBDisplayPage *page);
+static gboolean impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data);
 static void impl_search (RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_reset_filters (RBSource *asource);
 static void impl_browser_toggled (RBSource *source, gboolean enabled);
@@ -147,6 +147,7 @@ static void
 rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
@@ -156,10 +157,11 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 	object_class->set_property = rb_auto_playlist_source_set_property;
 	object_class->get_property = rb_auto_playlist_source_get_property;
 
+	page_class->show_popup = impl_show_popup;
+	page_class->receive_drag = impl_receive_drag;
+
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_receive_drag = impl_receive_drag;
-	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_browser_toggled = impl_browser_toggled;
 	source_class->impl_search = impl_search;
@@ -187,13 +189,11 @@ rb_auto_playlist_source_init (RBAutoPlaylistSource *source)
 			g_object_add_weak_pointer (playlist_pixbuf,
 						   (gpointer *) &playlist_pixbuf);
 
-			rb_source_set_pixbuf (RB_SOURCE (source), playlist_pixbuf);
-
-			/* drop the initial reference to the icon */
+			g_object_set (source, "pixbuf", playlist_pixbuf, NULL);
 			g_object_unref (playlist_pixbuf);
 		}
 	} else {
-		rb_source_set_pixbuf (RB_SOURCE (source), playlist_pixbuf);
+		g_object_set (source, "pixbuf", playlist_pixbuf, NULL);
 	}
 
 }
@@ -272,10 +272,10 @@ rb_auto_playlist_source_constructed (GObject *object)
 				 source, 0);
 
 	g_object_get (source, "shell", &shell, NULL);
-	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
-							       "AutoPlaylistActions",
-							       NULL, 0,
-							       shell);
+	priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
+								     "AutoPlaylistActions",
+								     NULL, 0,
+								     shell);
 	if (gtk_action_group_get_action (priv->action_group,
 					 rb_auto_playlist_source_radio_actions[0].name) == NULL) {
 		gtk_action_group_add_radio_actions (priv->action_group,
@@ -323,7 +323,6 @@ rb_auto_playlist_source_new (RBShell *shell, const char *name, gboolean local)
 					"shell", shell,
 					"is-local", local,
 					"entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
-					"source-group", RB_SOURCE_GROUP_PLAYLISTS,
 					"search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					NULL));
 }
@@ -465,9 +464,9 @@ rb_auto_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
 }
 
 static gboolean
-impl_show_popup (RBSource *source)
+impl_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (source, AUTO_PLAYLIST_SOURCE_POPUP_PATH);
+	_rb_display_page_show_popup (page, AUTO_PLAYLIST_SOURCE_POPUP_PATH);
 	return TRUE;
 }
 
@@ -566,9 +565,9 @@ impl_browser_toggled (RBSource *source, gboolean enabled)
 }
 
 static gboolean
-impl_receive_drag (RBSource *asource, GtkSelectionData *data)
+impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data)
 {
-	RBAutoPlaylistSource *source = RB_AUTO_PLAYLIST_SOURCE (asource);
+	RBAutoPlaylistSource *source = RB_AUTO_PLAYLIST_SOURCE (page);
 
 	GdkAtom type;
 	GPtrArray *subquery = NULL;
@@ -587,7 +586,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	names = g_strsplit ((char *) gtk_selection_data_get_data (data), "\r\n", 0);
 	propid = rb_auto_playlist_source_drag_atom_to_prop (type);
 
-	g_object_get (asource, "db", &db, NULL);
+	g_object_get (page, "db", &db, NULL);
 
 	for (i = 0; names[i]; i++) {
 		if (subquery == NULL) {

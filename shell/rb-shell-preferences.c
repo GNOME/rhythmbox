@@ -358,14 +358,14 @@ rb_shell_preferences_append_page (RBShellPreferences *prefs,
 static void
 rb_shell_preferences_append_view_page (RBShellPreferences *prefs,
 				       const char *name,
-				       RBSource *source)
+				       RBDisplayPage *page)
 {
 	GtkWidget *widget;
 
 	g_return_if_fail (RB_IS_SHELL_PREFERENCES (prefs));
-	g_return_if_fail (RB_IS_SOURCE (source));
+	g_return_if_fail (RB_IS_DISPLAY_PAGE (page));
 
-	widget = rb_source_get_config_widget (source, prefs);
+	widget = rb_display_page_get_config_widget (page, prefs);
 	if (!widget)
 		return;
 
@@ -396,14 +396,14 @@ rb_shell_preferences_new (GList *views)
 		char *name = NULL;
 		g_object_get (views->data, "name", &name, NULL);
 		if (name == NULL) {
-			g_warning ("Source %p of type %s has no name",
+			g_warning ("Page %p of type %s has no name",
 				   views->data,
 				   G_OBJECT_TYPE_NAME (views->data));
 			continue;
 		}
 		rb_shell_preferences_append_view_page (shell_preferences,
 						       name,
-						       RB_SOURCE (views->data));
+						       RB_DISPLAY_PAGE (views->data));
 		g_free (name);
 	}
 

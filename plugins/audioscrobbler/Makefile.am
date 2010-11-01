@@ -7,8 +7,8 @@ libaudioscrobbler_la_SOURCES = \
 	rb-audioscrobbler-plugin.c			\
 	rb-audioscrobbler-entry.h			\
 	rb-audioscrobbler-entry.c			\
-	rb-audioscrobbler-profile-source.h		\
-	rb-audioscrobbler-profile-source.c		\
+	rb-audioscrobbler-profile-page.h		\
+	rb-audioscrobbler-profile-page.c		\
 	rb-audioscrobbler-account.h			\
 	rb-audioscrobbler-account.c			\
 	rb-audioscrobbler-service.h			\

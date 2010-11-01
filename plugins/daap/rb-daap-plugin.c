@@ -51,8 +51,9 @@
 #include "rb-daap-source.h"
 #include "rb-daap-sharing.h"
 #include "rb-daap-src.h"
-#include "rb-dacp-source.h"
+#include "rb-dacp-pairing-page.h"
 #include "rb-uri-dialog.h"
+#include "rb-display-page-group.h"
 
 #include <libdmapsharing/dmap.h>
 
@@ -301,10 +302,10 @@ impl_activate (RBPlugin *bplugin,
 	gtk_action_group_add_actions (plugin->priv->daap_action_group,
 				      rb_daap_plugin_actions, G_N_ELEMENTS (rb_daap_plugin_actions),
 				      plugin);
-	_rb_action_group_add_source_actions (plugin->priv->daap_action_group,
-					     G_OBJECT (shell),
-					     rb_daap_source_actions,
-					     G_N_ELEMENTS (rb_daap_source_actions));
+	_rb_action_group_add_display_page_actions (plugin->priv->daap_action_group,
+						   G_OBJECT (shell),
+						   rb_daap_source_actions,
+						   G_N_ELEMENTS (rb_daap_source_actions));
 	gtk_ui_manager_insert_action_group (uimanager, plugin->priv->daap_action_group, 0);
 
 	/* add UI */
@@ -534,7 +535,7 @@ mdns_service_added (DMAPMdnsBrowser *browser,
 	if (source == NULL) {
 		source = rb_daap_source_new (plugin->priv->shell, RB_PLUGIN (plugin), service->service_name, service->name, service->host, service->port, service->password_protected);
 		g_hash_table_insert (plugin->priv->source_lookup, g_strdup (service->service_name), source);
-		rb_shell_append_source (plugin->priv->shell, source, NULL);
+		rb_shell_append_display_page (plugin->priv->shell, RB_DISPLAY_PAGE (source), RB_DISPLAY_PAGE_GROUP_SHARED);
 	} else {
 		g_object_set (G_OBJECT (source),
 			      "name", service->name,
@@ -575,7 +576,7 @@ remove_source (RBSource *source)
 	rb_debug ("Removing DAAP source: %s", service_name);
 
 	rb_daap_source_disconnect (RB_DAAP_SOURCE (source));
-	rb_source_delete_thyself (source);
+	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 
 	g_free (service_name);
 }

@@ -78,7 +78,7 @@ static void impl_delete (RBSource *source);
 static void impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_browser_toggled (RBSource *source, gboolean enabled);
 static void impl_reset_filters (RBSource *asource);
-static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
+static gboolean impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data);
 static GList *impl_get_search_actions (RBSource *source);
 static guint impl_want_uri (RBSource *source, const char *uri);
 
@@ -160,6 +160,7 @@ static void
 rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
@@ -169,13 +170,14 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	object_class->set_property = rb_static_playlist_source_set_property;
 	object_class->get_property = rb_static_playlist_source_get_property;
 
+	page_class->receive_drag = impl_receive_drag;
+
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_cut = impl_cut;
 	source_class->impl_paste = impl_paste;
 	source_class->impl_delete = impl_delete;
-	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_search = impl_search;
 	source_class->impl_reset_filters = impl_reset_filters;
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
@@ -207,13 +209,13 @@ rb_static_playlist_source_init (RBStaticPlaylistSource *source)
 			g_object_add_weak_pointer (playlist_pixbuf,
 					   (gpointer *) &playlist_pixbuf);
 
-			rb_source_set_pixbuf (RB_SOURCE (source), playlist_pixbuf);
+			g_object_set (source, "pixbuf", playlist_pixbuf, NULL);
 
 			/* drop the initial reference to the icon */
 			g_object_unref (playlist_pixbuf);
 		}
 	} else {
-		rb_source_set_pixbuf (RB_SOURCE (source), playlist_pixbuf);
+		g_object_set (source, "pixbuf", playlist_pixbuf, NULL);
 	}
 }
 
@@ -297,10 +299,10 @@ rb_static_playlist_source_constructed (GObject *object)
 	priv->paned = gtk_vpaned_new ();
 
 	g_object_get (source, "shell", &shell, NULL);
-	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
-							       "StaticPlaylistActions",
-							       NULL, 0,
-							       shell);
+	priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
+								     "StaticPlaylistActions",
+								     NULL, 0,
+								     shell);
 	if (gtk_action_group_get_action (priv->action_group,
 					 rb_static_playlist_source_radio_actions[0].name) == NULL) {
 		gtk_action_group_add_radio_actions (priv->action_group,
@@ -381,7 +383,6 @@ rb_static_playlist_source_new (RBShell *shell, const char *name, const char *sor
 					"shell", shell,
 					"is-local", local,
 					"entry-type", entry_type,
-					"source-group", RB_SOURCE_GROUP_PLAYLISTS,
 					"search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					NULL));
 }
@@ -635,11 +636,11 @@ rb_static_playlist_source_browser_changed_cb (RBLibraryBrowser *browser,
 }
 
 static gboolean
-impl_receive_drag (RBSource *asource, GtkSelectionData *data)
+impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data)
 {
 	GdkAtom type;
 	GList *list;
-	RBStaticPlaylistSource *source = RB_STATIC_PLAYLIST_SOURCE (asource);
+	RBStaticPlaylistSource *source = RB_STATIC_PLAYLIST_SOURCE (page);
 
 	type = gtk_selection_data_get_data_type (data);
 

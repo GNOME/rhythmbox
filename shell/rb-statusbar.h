@@ -27,7 +27,7 @@
 
 #include <gtk/gtk.h>
 
-#include <sources/rb-source.h>
+#include <sources/rb-display-page.h>
 #include <rhythmdb/rhythmdb.h>
 #include <shell/rb-track-transfer-queue.h>
 
@@ -66,8 +66,8 @@ RBStatusbar *		rb_statusbar_new	(RhythmDB *db,
 						 GtkUIManager *ui_manager,
 						 RBTrackTransferQueue *transfer_queue);
 
-void			rb_statusbar_set_source	(RBStatusbar *statusbar,
-						 RBSource *source);
+void			rb_statusbar_set_page	(RBStatusbar *statusbar,
+						 RBDisplayPage *page);
 
 G_END_DECLS
 

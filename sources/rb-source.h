@@ -31,7 +31,7 @@
 
 #include <gtk/gtk.h>
 
-#include <sources/rb-source-group.h>
+#include <sources/rb-display-page.h>
 #include <sources/rb-source-search.h>
 #include <widgets/rb-entry-view.h>
 #include <shell/rb-shell-preferences.h>
@@ -80,21 +80,18 @@ typedef void (*RBSourceAddCallback) (RBSource *source, const char *uri, gpointer
 
 struct _RBSource
 {
-	GtkHBox parent;
+	RBDisplayPage parent;
+	RBSourcePrivate *priv;
 };
 
 struct _RBSourceClass
 {
-	GtkHBoxClass parent;
+	RBDisplayPageClass parent;
 
 	/* signals */
-	void (*status_changed)	(RBSource *source);
 	void (*filter_changed)	(RBSource *source);
-	void (*deleted)		(RBSource *source);
-	void (*artistalbum_changed)	(RBSource *source);
 
 	/* methods */
-	void		(*impl_get_status)	(RBSource *source, char **text, char **progress_text, float *progress);
 
 	gboolean	(*impl_can_browse)	(RBSource *source);
 	char *		(*impl_get_browser_key)	(RBSource *source);
@@ -107,7 +104,6 @@ struct _RBSourceClass
 
 	void		(*impl_search)		(RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 	void		(*impl_reset_filters)	(RBSource *source);
-	GtkWidget *	(*impl_get_config_widget)(RBSource *source, RBShellPreferences *prefs);
 
 	gboolean	(*impl_can_cut)		(RBSource *source);
 	gboolean	(*impl_can_delete)	(RBSource *source);
@@ -140,13 +136,8 @@ struct _RBSourceClass
 	RBSourceEOFType	(*impl_handle_eos)	(RBSource *source);
 
 	gboolean	(*impl_have_url)	(RBSource *source);
-	gboolean	(*impl_receive_drag)	(RBSource *source, GtkSelectionData *data);
-	gboolean	(*impl_show_popup)	(RBSource *source);
 
 	void		(*impl_delete_thyself)	(RBSource *source);
-	void		(*impl_activate)	(RBSource *source);
-	void		(*impl_deactivate)	(RBSource *source);
-	GList *		(*impl_get_ui_actions)	(RBSource *source);
 	GList *		(*impl_get_search_actions) (RBSource *source);
 	char *		(*impl_get_delete_action) (RBSource *source);
 };
@@ -155,14 +146,10 @@ GType		rb_source_get_type		(void);
 
 void		rb_source_notify_filter_changed	(RBSource *source);
 
-void		rb_source_notify_status_changed (RBSource *source);
-
 void		rb_source_update_play_statistics(RBSource *source, RhythmDB *db,
 						 RhythmDBEntry *entry);
 
 /* general interface */
-void	        rb_source_set_pixbuf		(RBSource *source, GdkPixbuf *pixbuf);
-void	        rb_source_get_status		(RBSource *source, char **text, char **progress_text, float *progress);
 
 gboolean	rb_source_can_browse		(RBSource *source);
 char *		rb_source_get_browser_key	(RBSource *source);
@@ -180,8 +167,6 @@ void		rb_source_search		(RBSource *source,
 						 const char *new_text);
 
 void		rb_source_reset_filters		(RBSource *source);
-
-GtkWidget *	rb_source_get_config_widget	(RBSource *source, RBShellPreferences *prefs);
 
 gboolean	rb_source_can_cut		(RBSource *source);
 gboolean	rb_source_can_delete		(RBSource *source);
@@ -214,16 +199,6 @@ void		rb_source_add_uri		(RBSource *source,
 gboolean	rb_source_can_pause		(RBSource *source);
 RBSourceEOFType	rb_source_handle_eos		(RBSource *source);
 
-gboolean	rb_source_receive_drag		(RBSource *source, GtkSelectionData *data);
-
-gboolean	rb_source_show_popup		(RBSource *source);
-
-void		rb_source_delete_thyself	(RBSource *source);
-
-void		rb_source_activate		(RBSource *source);
-void		rb_source_deactivate		(RBSource *source);
-
-GList *		rb_source_get_ui_actions	(RBSource *source);
 GList *		rb_source_get_search_actions	(RBSource *source);
 char *		rb_source_get_delete_action	(RBSource *source);
 
@@ -233,17 +208,6 @@ void            rb_source_set_hidden_when_empty (RBSource *source,
                                                  gboolean  hidden);
 
 /* Protected methods, should only be used by objects inheriting from RBSource */
-void            _rb_source_show_popup           (RBSource *source,
-						 const char *ui_path);
-GtkActionGroup *_rb_source_register_action_group (RBSource *source,
-						  const char *group_name,
-						  GtkActionEntry *actions,
-						  int num_actions,
-						  gpointer user_data);
-void		_rb_action_group_add_source_actions (GtkActionGroup *group,
-						     GObject *shell,
-						     GtkActionEntry *actions,
-						     int num_actions);
 
 gboolean	_rb_source_check_entry_type	(RBSource *source,
 						 RhythmDBEntry *entry);

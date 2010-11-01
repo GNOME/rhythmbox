@@ -41,7 +41,6 @@
 #include "rb-ipod-helpers.h"
 #include "rb-removable-media-manager.h"
 #include "rb-media-player-source.h"
-#include "rb-sourcelist.h"
 #include "rb-source.h"
 #include "rb-ipod-source.h"
 #include "rb-ipod-static-playlist-source.h"
@@ -51,6 +50,7 @@
 #include "rb-util.h"
 #include "rb-shell.h"
 #include "rb-stock-icons.h"
+#include "rb-display-page-tree.h"
 
 
 #define RB_TYPE_IPOD_PLUGIN		(rb_ipod_plugin_get_type ())
@@ -173,10 +173,10 @@ impl_activate (RBPlugin *bplugin,
 	plugin->action_group = gtk_action_group_new ("iPodActions");
 	gtk_action_group_set_translation_domain (plugin->action_group,
 						 GETTEXT_PACKAGE);
-	_rb_action_group_add_source_actions (plugin->action_group,
-					     G_OBJECT (shell),
-					     rb_ipod_plugin_actions,
-					     G_N_ELEMENTS (rb_ipod_plugin_actions));
+	_rb_action_group_add_display_page_actions (plugin->action_group,
+						   G_OBJECT (shell),
+						   rb_ipod_plugin_actions,
+						   G_N_ELEMENTS (rb_ipod_plugin_actions));
 	gtk_ui_manager_insert_action_group (uimanager, plugin->action_group, 0);
 	file = rb_plugin_find_file (bplugin, "ipod-ui.xml");
 	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
@@ -216,7 +216,7 @@ impl_deactivate	(RBPlugin *bplugin,
 
 	g_signal_handlers_disconnect_by_func (G_OBJECT (rmm), create_source_cb, plugin);
 
-	g_list_foreach (plugin->ipod_sources, (GFunc)rb_source_delete_thyself, NULL);
+	g_list_foreach (plugin->ipod_sources, (GFunc)rb_display_page_delete_thyself, NULL);
 	g_list_free (plugin->ipod_sources);
 	plugin->ipod_sources = NULL;
 
@@ -273,7 +273,7 @@ rb_ipod_plugin_cmd_properties (GtkAction *action, RBSource *source)
 static void
 rb_ipod_plugin_cmd_rename (GtkAction *action, RBSource *source)
 {
-	RBSourceList *sourcelist = NULL;
+	RBDisplayPageTree *page_tree = NULL;
 	RBShell *shell;
 
 	g_return_if_fail (RB_IS_IPOD_SOURCE (source));
@@ -285,28 +285,28 @@ rb_ipod_plugin_cmd_rename (GtkAction *action, RBSource *source)
 	 */
 
 	g_object_get (source, "shell", &shell, NULL);
-	g_object_get (shell, "sourcelist", &sourcelist, NULL);
+	g_object_get (shell, "display-page-tree", &page_tree, NULL);
 
-	rb_sourcelist_edit_source_name (sourcelist, source);
+	rb_display_page_tree_edit_source_name (page_tree, source);
 	/* Once editing is done, notify::name will be fired on the source, and
 	 * we'll catch that in our rename callback
 	 */
-	g_object_unref (sourcelist);
+	g_object_unref (page_tree);
 	g_object_unref (shell);
 }
 
 static void
 rb_ipod_plugin_cmd_playlist_rename (GtkAction *action, RBSource *source)
 {
-	RBSourceList *sourcelist = NULL;
+	RBDisplayPageTree *page_tree = NULL;
 	RBShell *shell;
 
 	g_return_if_fail (RB_IS_IPOD_STATIC_PLAYLIST_SOURCE (source));
 
 	g_object_get (source, "shell", &shell, NULL);
-	g_object_get (shell, "sourcelist", &sourcelist, NULL);
-	rb_sourcelist_edit_source_name (sourcelist, source);
-	g_object_unref (sourcelist);
+	g_object_get (shell, "display-page-tree", &page_tree, NULL);
+	rb_display_page_tree_edit_source_name (page_tree, source);
+	g_object_unref (page_tree);
 	g_object_unref (shell);
 }
 

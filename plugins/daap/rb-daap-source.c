@@ -52,6 +52,7 @@
 #include "rb-daap-src.h"
 #include "rb-daap-record-factory.h"
 #include "rb-rhythmdb-dmap-db-adapter.h"
+#include "rb-display-page.h"
 
 #include "rb-daap-dialog.h"
 #include "rb-daap-plugin.h"
@@ -69,12 +70,13 @@ static void rb_daap_source_get_property  (GObject *object,
 					  guint prop_id,
 					  GValue *value,
 				 	  GParamSpec *pspec);
-static void rb_daap_source_activate (RBSource *source);
 
-static gboolean rb_daap_source_show_popup (RBSource *source);
+static void rb_daap_source_selected (RBDisplayPage *page);
+static gboolean rb_daap_source_show_popup (RBDisplayPage *page);
+static void rb_daap_source_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
+
 static char * rb_daap_source_get_browser_key (RBSource *source);
 static char * rb_daap_source_get_paned_key (RBBrowserSource *source);
-static void rb_daap_source_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 
 #define CONF_STATE_SORTING CONF_PREFIX "/state/daap/sorting"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/daap/paned_position"
@@ -151,6 +153,7 @@ static void
 rb_daap_source_class_init (RBDAAPSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
@@ -159,17 +162,14 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	object_class->get_property = rb_daap_source_get_property;
 	object_class->set_property = rb_daap_source_set_property;
 
-	source_class->impl_activate = rb_daap_source_activate;
+	page_class->selected = rb_daap_source_selected;
+	page_class->get_status = rb_daap_source_get_status;
+	page_class->show_popup = rb_daap_source_show_popup;
+
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_paste = NULL;
-	source_class->impl_receive_drag = NULL;
-	source_class->impl_delete = NULL;
-	source_class->impl_show_popup = rb_daap_source_show_popup;
-	source_class->impl_get_config_widget = NULL;
 	source_class->impl_get_browser_key = rb_daap_source_get_browser_key;
-	source_class->impl_get_status = rb_daap_source_get_status;
 
 	browser_source_class->impl_get_paned_key = rb_daap_source_get_paned_key;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
@@ -314,12 +314,11 @@ rb_daap_source_new (RBShell *shell,
 					  "host", host,
 					  "port", port,
 					  "entry-type", entry_type,
-					  "icon", icon,
+					  "pixbuf", icon,
 					  "shell", shell,
 					  "visibility", TRUE,
 					  "sorting-key", CONF_STATE_SORTING,
 					  "password-protected", password_protected,
-					  "source-group", RB_SOURCE_GROUP_SHARED,
 					  "plugin", RB_PLUGIN (plugin),
 					  NULL));
 
@@ -491,7 +490,7 @@ connection_connecting_cb (DMAPConnection       *connection,
 
 	source->priv->connection_progress = progress;
 
-	rb_source_notify_status_changed (RB_SOURCE (source));
+	_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 
 	is_connected = dmap_connection_is_connected (DMAP_CONNECTION (connection));
 
@@ -528,7 +527,7 @@ connection_disconnected_cb (DMAPConnection   *connection,
 		icon = rb_daap_plugin_get_icon (RB_DAAP_PLUGIN (plugin),
 						source->priv->password_protected,
 						FALSE);
-		g_object_set (source, "icon", icon, NULL);
+		g_object_set (source, "pixbuf", icon, NULL);
 		if (icon != NULL) {
 			g_object_unref (icon);
 		}
@@ -597,7 +596,7 @@ rb_daap_source_connection_cb (DMAPConnection   *connection,
 
 		g_list_foreach (playlist->uris, (GFunc)_add_location_to_playlist, playlist_source);
 
-		rb_shell_append_source (shell, playlist_source, RB_SOURCE (daap_source));
+		rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (playlist_source), RB_DISPLAY_PAGE (daap_source));
 		daap_source->priv->playlist_sources = g_slist_prepend (daap_source->priv->playlist_sources, playlist_source);
 	}
 
@@ -606,9 +605,9 @@ rb_daap_source_connection_cb (DMAPConnection   *connection,
 }
 
 static void
-rb_daap_source_activate (RBSource *source)
+rb_daap_source_selected (RBDisplayPage *page)
 {
-	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
+	RBDAAPSource *daap_source = RB_DAAP_SOURCE (page);
 	RBShell *shell = NULL;
 	DMAPRecordFactory *factory;
 	RhythmDB *rdb = NULL;
@@ -631,11 +630,11 @@ rb_daap_source_activate (RBSource *source)
 	factory = DMAP_RECORD_FACTORY (rb_daap_record_factory_new ());
 
 	daap_source->priv->connection = dmap_connection_new (name,
-								daap_source->priv->host,
-								daap_source->priv->port,
-								daap_source->priv->password_protected,
-								db,
-								factory);
+							     daap_source->priv->host,
+							     daap_source->priv->port,
+							     daap_source->priv->password_protected,
+							     db,
+							     factory);
 	g_object_unref (entry_type);
 	g_object_add_weak_pointer (G_OBJECT (daap_source->priv->connection), (gpointer *)&daap_source->priv->connection);
 
@@ -644,22 +643,22 @@ rb_daap_source_activate (RBSource *source)
         g_signal_connect (daap_source->priv->connection,
 			  "authenticate",
                           G_CALLBACK (connection_auth_cb),
-			  source);
+			  page);
         g_signal_connect (daap_source->priv->connection,
 			  "connecting",
                           G_CALLBACK (connection_connecting_cb),
-			  source);
+			  page);
         g_signal_connect (daap_source->priv->connection,
 			  "disconnected",
                           G_CALLBACK (connection_disconnected_cb),
-			  source);
+			  page);
 
 	dmap_connection_connect (DMAP_CONNECTION (daap_source->priv->connection),
-				    (DMAPConnectionCallback) rb_daap_source_connection_cb,
-				    source);
+				 (DMAPConnectionCallback) rb_daap_source_connection_cb,
+				 page);
 
-	g_object_unref (G_OBJECT (rdb));
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (rdb);
+	g_object_unref (shell);
 }
 
 static void
@@ -712,7 +711,7 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 		rb_debug ("destroying DAAP playlist %s", name);
 		g_free (name);
 
-		rb_source_delete_thyself (playlist_source);
+		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (playlist_source));
 	}
 
 	g_slist_free (daap_source->priv->playlist_sources);
@@ -744,9 +743,9 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 }
 
 static gboolean
-rb_daap_source_show_popup (RBSource *source)
+rb_daap_source_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (RB_SOURCE (source), "/DAAPSourcePopup");
+	_rb_display_page_show_popup (page, "/DAAPSourcePopup");
 	return TRUE;
 }
 
@@ -775,12 +774,12 @@ rb_daap_source_get_paned_key (RBBrowserSource *source)
 }
 
 static void
-rb_daap_source_get_status (RBSource *source,
-			   char    **text,
-			   char    **progress_text,
-			   float    *progress)
+rb_daap_source_get_status (RBDisplayPage *page,
+			   char **text,
+			   char **progress_text,
+			   float *progress)
 {
-	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
+	RBDAAPSource *daap_source = RB_DAAP_SOURCE (page);
 
 	if (daap_source->priv->connection_status != NULL) {
 		if (text != NULL) {
@@ -794,6 +793,5 @@ rb_daap_source_get_status (RBSource *source,
 		return;
 	}
 
-	RB_SOURCE_CLASS (rb_daap_source_parent_class)->impl_get_status (source, text, progress_text, progress);
+	RB_DISPLAY_PAGE_CLASS (rb_daap_source_parent_class)->get_status (page, text, progress_text, progress);
 }
-

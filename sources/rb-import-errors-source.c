@@ -46,7 +46,7 @@ static void impl_set_property (GObject *object, guint prop_id, const GValue *val
 
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_delete (RBSource *source);
-static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
+static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 
 static void rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
 							 gboolean over_entry,
@@ -108,12 +108,15 @@ static void
 rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	object_class->dispose = rb_import_errors_source_dispose;
 	object_class->constructed = rb_import_errors_source_constructed;
 	object_class->get_property = impl_get_property;
 	object_class->set_property = impl_set_property;
+
+	page_class->get_status = impl_get_status;
 
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_get_entry_view = impl_get_entry_view;
@@ -129,8 +132,6 @@ rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 
 	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
-
-	source_class->impl_get_status = impl_get_status;
 
 	g_object_class_install_property (object_class,
 					 PROP_NORMAL_ENTRY_TYPE,
@@ -163,7 +164,7 @@ rb_import_errors_source_init (RBImportErrorsSource *source)
 					   "dialog-error",
 					   size,
 					   0, NULL);
-	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
+	g_object_set (source, "pixbuf", pixbuf, NULL);
 	if (pixbuf != NULL) {
 		g_object_unref (pixbuf);
 	}
@@ -351,7 +352,6 @@ rb_import_errors_source_new (RBShell *shell,
 					  "shell", shell,
 					  "visibility", FALSE,
 					  "hidden-when-empty", TRUE,
-					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  "entry-type", entry_type,
 					  "normal-entry-type", normal_entry_type,
 					  "ignore-entry-type", ignore_entry_type,
@@ -376,12 +376,12 @@ impl_delete (RBSource *asource)
 }
 
 static void
-impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress)
+impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress)
 {
 	RhythmDBQueryModel *model;
 	gint count;
 
-	g_object_get (asource, "query-model", &model, NULL);
+	g_object_get (page, "query-model", &model, NULL);
 	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 	g_object_unref (model);
 
@@ -394,7 +394,7 @@ rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
 					     gboolean over_entry,
 					     RBImportErrorsSource *source)
 {
-	_rb_source_show_popup (RB_SOURCE (source), "/ImportErrorsViewPopup");
+	_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), "/ImportErrorsViewPopup");
 }
 
 static void

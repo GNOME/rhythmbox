@@ -44,6 +44,16 @@ G_BEGIN_DECLS
 
 typedef enum
 {
+	RB_SHELL_ACTIVATION_SELECT = 0,
+	RB_SHELL_ACTIVATION_PLAY = 1,
+	RB_SHELL_ACTIVATION_ALWAYS_PLAY = 2
+} RBShellActivationType;
+
+GType rb_shell_activation_type_get_type (void);
+#define RB_TYPE_SHELL_ACTIVATION_TYPE (rb_shell_activation_type_get_type ())
+
+typedef enum
+{
 	RB_SHELL_ERROR_NO_SUCH_URI,
 	RB_SHELL_ERROR_NO_SUCH_PROPERTY,
 	RB_SHELL_ERROR_IMMUTABLE_PROPERTY,
@@ -62,8 +72,7 @@ typedef enum
 	RB_SHELL_UI_LOCATION_SIDEBAR,
 	RB_SHELL_UI_LOCATION_RIGHT_SIDEBAR,
 	RB_SHELL_UI_LOCATION_MAIN_TOP,
-	RB_SHELL_UI_LOCATION_MAIN_BOTTOM,
-	RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK
+	RB_SHELL_UI_LOCATION_MAIN_BOTTOM
 } RBShellUILocation;
 
 GType rb_shell_ui_location_get_type (void);
@@ -150,6 +159,10 @@ gboolean	rb_shell_activate_source_by_uri (RBShell *shell,
 						 const char *source_uri,
 						 guint play,
 						 GError **error);
+gboolean	rb_shell_activate_source (RBShell *shell,
+					  RBSource *source,
+					  guint play,
+					  GError **error);
 
 void            rb_shell_notify_custom  (RBShell *shell,
 					 guint timeout,
@@ -169,11 +182,10 @@ RBSource * rb_shell_get_source_by_entry_type (RBShell *shell,
 
 gboolean        rb_shell_get_party_mode (RBShell *shell);
 
-void rb_shell_append_source (RBShell *shell, RBSource *source, RBSource *parent);
+void 		rb_shell_append_display_page (RBShell *shell, RBDisplayPage *page, RBDisplayPage *parent);
 
 void 		rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location, gboolean expand, gboolean fill);
 void 		rb_shell_remove_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location);
-void		rb_shell_notebook_set_page (RBShell *shell, GtkWidget *widget);
 
 G_END_DECLS
 

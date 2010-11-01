@@ -112,7 +112,6 @@ rb_nokia770_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDev
 						   "entry-type", entry_type,
 						   "mount", mount,
 						   "shell", shell,
-						   "source-group", RB_SOURCE_GROUP_DEVICES,
 						   "device-info", device_info,
 						   NULL));
 

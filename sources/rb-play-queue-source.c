@@ -82,8 +82,8 @@ static void rb_play_queue_source_cmd_clear (GtkAction *action,
 					    RBPlayQueueSource *source);
 static void rb_play_queue_source_cmd_shuffle (GtkAction *action,
 					      RBPlayQueueSource *source);
-static GList *impl_get_ui_actions (RBSource *source);
-static gboolean impl_show_popup (RBSource *asource);
+static GList *impl_get_ui_actions (RBDisplayPage *page);
+static gboolean impl_show_popup (RBDisplayPage *page);
 
 #define PLAY_QUEUE_SOURCE_SONGS_POPUP_PATH "/QueuePlaylistViewPopup"
 #define PLAY_QUEUE_SOURCE_SIDEBAR_POPUP_PATH "/QueueSidebarViewPopup"
@@ -160,6 +160,7 @@ static void
 rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
@@ -168,11 +169,12 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 	object_class->finalize = rb_play_queue_source_finalize;
 	object_class->dispose  = rb_play_queue_source_dispose;
 
+	page_class->get_ui_actions = impl_get_ui_actions;
+	page_class->show_popup = impl_show_popup;
+
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_get_ui_actions = impl_get_ui_actions;
-	source_class->impl_show_popup = impl_show_popup;
 
 	playlist_class->impl_show_entry_view_popup = impl_show_entry_view_popup;
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
@@ -231,11 +233,11 @@ rb_play_queue_source_constructed (GObject *object)
 
 	priv->queue_play_order = rb_queue_play_order_new (RB_SHELL_PLAYER (shell_player));
 
-	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
-							       "PlayQueueActions",
-							       rb_play_queue_source_actions,
-							       G_N_ELEMENTS (rb_play_queue_source_actions),
-							       source);
+	priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
+								     "PlayQueueActions",
+								     rb_play_queue_source_actions,
+								     G_N_ELEMENTS (rb_play_queue_source_actions),
+								     source);
 	action = gtk_action_group_get_action (priv->action_group,
 					      "ClearQueue");
 	/* Translators: this is the toolbutton label for Clear Queue action */
@@ -318,7 +320,6 @@ rb_play_queue_source_new (RBShell *shell)
 					"shell", shell,
 					"is-local", TRUE,
 					"entry-type", NULL,
-					"source-group", RB_SOURCE_GROUP_LIBRARY,
 					NULL));
 }
 
@@ -400,7 +401,7 @@ impl_show_entry_view_popup (RBPlaylistSource *source,
 		popup = PLAY_QUEUE_SOURCE_SIDEBAR_POPUP_PATH;
 	else if (!over_entry)
 		return;
-	_rb_source_show_popup (RB_SOURCE (source), popup);
+	_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), popup);
 }
 
 static void
@@ -504,14 +505,14 @@ rb_play_queue_source_cmd_shuffle (GtkAction *action,
 }
 
 static gboolean
-impl_show_popup (RBSource *asource)
+impl_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (asource, PLAY_QUEUE_SOURCE_POPUP_PATH);
+	_rb_display_page_show_popup (page, PLAY_QUEUE_SOURCE_POPUP_PATH);
 	return TRUE;
 }
 
 static GList *
-impl_get_ui_actions (RBSource *source)
+impl_get_ui_actions (RBDisplayPage *page)
 {
 	GList *actions = NULL;
 

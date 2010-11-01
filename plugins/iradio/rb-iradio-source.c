@@ -96,15 +96,17 @@ static void genre_selection_reset_cb (RBPropertyView *propview, RBIRadioSource *
 static void rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view, RBIRadioSource *source);
 static char *guess_uri_scheme (const char *uri);
 
+/* page methods */
+static gboolean impl_show_popup (RBDisplayPage *page);
+static GList *impl_get_ui_actions (RBDisplayPage *page);
+static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
+
 /* source methods */
-static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 static char *impl_get_browser_key (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_search (RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_delete (RBSource *source);
 static void impl_song_properties (RBSource *source);
-static gboolean impl_show_popup (RBSource *source);
-static GList *impl_get_ui_actions (RBSource *source);
 static guint impl_want_uri (RBSource *source, const char *uri);
 static void impl_add_uri (RBSource *source,
 			  const char *uri,
@@ -189,6 +191,7 @@ static void
 rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	object_class->dispose = rb_iradio_source_dispose;
@@ -197,6 +200,10 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	object_class->set_property = rb_iradio_source_set_property;
 	object_class->get_property = rb_iradio_source_get_property;
 
+	page_class->show_popup = impl_show_popup;
+	page_class->get_status  = impl_get_status;
+	page_class->get_ui_actions = impl_get_ui_actions;
+
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -204,10 +211,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_delete = impl_delete;
 	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_get_entry_view = impl_get_entry_view;
-	source_class->impl_get_status  = impl_get_status;
-	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_search = impl_search;
-	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
@@ -232,7 +236,7 @@ rb_iradio_source_init (RBIRadioSource *source)
 					   IRADIO_SOURCE_ICON,
 					   size,
 					   0, NULL);
-	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
+	g_object_set (source, "pixbuf", pixbuf, NULL);
 	if (pixbuf != NULL) {
 		g_object_unref (pixbuf);
 	}
@@ -302,11 +306,11 @@ rb_iradio_source_constructed (GObject *object)
 		      NULL);
 	g_object_unref (shell);
 
-	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
-								       "IRadioActions",
-								       rb_iradio_source_actions,
-								       G_N_ELEMENTS (rb_iradio_source_actions),
-								       source);
+	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
+									     "IRadioActions",
+									     rb_iradio_source_actions,
+									     G_N_ELEMENTS (rb_iradio_source_actions),
+									     source);
 
 	action = gtk_action_group_get_action (source->priv->action_group,
                                               "MusicNewInternetRadioStation");
@@ -455,7 +459,6 @@ rb_iradio_source_new (RBShell *shell, RBPlugin *plugin)
 					  "name", _("Radio"),
 					  "shell", shell,
 					  "entry-type", entry_type,
-					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  "plugin", plugin,
 					  "search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					  NULL));
@@ -578,16 +581,16 @@ impl_get_entry_view (RBSource *asource)
 }
 
 static void
-impl_get_status (RBSource *asource,
+impl_get_status (RBDisplayPage *page,
 		 char **text,
 		 char **progress_text,
 		 float *progress)
 {
 	RhythmDBQueryModel *model;
 	guint num_entries;
-	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
+	RBIRadioSource *source = RB_IRADIO_SOURCE (page);
 
-	g_object_get (asource, "query-model", &model, NULL);
+	g_object_get (source, "query-model", &model, NULL);
 	num_entries = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 	g_object_unref (model);
 
@@ -729,9 +732,9 @@ rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
 	}
 
 	if (over_entry)
-		_rb_source_show_popup (RB_SOURCE (source), "/IRadioViewPopup");
+		_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), "/IRadioViewPopup");
 	else
-		_rb_source_show_popup (RB_SOURCE (source), "/IRadioSourcePopup");
+		_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), "/IRadioSourcePopup");
 }
 
 static void
@@ -983,14 +986,14 @@ stations_view_drag_data_received_cb (GtkWidget *widget,
 }
 
 static gboolean
-impl_show_popup (RBSource *source)
+impl_show_popup (RBDisplayPage *page)
 {
-	_rb_source_show_popup (RB_SOURCE (source), "/IRadioSourcePopup");
+	_rb_display_page_show_popup (page, "/IRadioSourcePopup");
 	return TRUE;
 }
 
 static GList*
-impl_get_ui_actions (RBSource *source)
+impl_get_ui_actions (RBDisplayPage *page)
 {
 	GList *actions = NULL;
 

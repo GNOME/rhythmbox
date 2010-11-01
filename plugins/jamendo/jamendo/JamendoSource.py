@@ -110,11 +110,11 @@ class JamendoSource(rb.BrowserSource):
 	def do_impl_show_entry_popup(self):
 		self.show_source_popup ("/JamendoSourceViewPopup")
 
-	def do_impl_get_ui_actions(self):
+	def do_get_ui_actions(self):
 		return ["JamendoDownloadAlbum","JamendoDonateArtist"]
 
 
-	def do_impl_get_status(self):
+	def do_get_status(self):
 		if self.__updating:
 			if self.__load_total_size > 0:
 				progress = min (float(self.__load_current_size) / self.__load_total_size, 1.0)
@@ -125,7 +125,7 @@ class JamendoSource(rb.BrowserSource):
 			qm = self.get_property("query-model")
 			return (qm.compute_status_normal("%d song", "%d songs"), None, 2.0)
 
-	def do_impl_activate(self):
+	def do_selected(self):
 		if not self.__activated:
 			shell = self.get_property('shell')
 			self.__db = shell.get_property('db')
@@ -143,9 +143,9 @@ class JamendoSource(rb.BrowserSource):
 				sort_key = "Artist,ascending"
 			self.get_entry_view().set_sorting_type(sort_key)
 
-		rb.BrowserSource.do_impl_activate (self)
+		rb.BrowserSource.do_selected (self)
 
-	def do_impl_delete_thyself(self):
+	def do_delete_thyself(self):
 		if self.__update_id != 0:
 			gobject.source_remove (self.__update_id)
 			self.__update_id = 0

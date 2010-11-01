@@ -50,8 +50,6 @@
 #include "rb-static-playlist-source.h"
 #include "rb-auto-playlist-source.h"
 #include "rb-play-queue-source.h"
-#include "rb-sourcelist.h"
-#include "rb-sourcelist-model.h"
 #include "rb-query-creator.h"
 #include "totem-pl-parser.h"
 
@@ -108,12 +106,11 @@ struct RBPlaylistManagerPrivate
 
 	char *playlists_file;
 
-	RBSourceList *sourcelist;
+	RBDisplayPageModel *page_model;
+	RBDisplayPageTree *display_page_tree;
 
 	GtkActionGroup *actiongroup;
 	GtkUIManager *uimanager;
-
-	GtkWindow *window;
 
 	RBStaticPlaylistSource *loading_playlist;
 
@@ -128,7 +125,8 @@ enum
 	PROP_PLAYLIST_NAME,
 	PROP_SHELL,
 	PROP_SOURCE,
-	PROP_SOURCELIST,
+	PROP_DISPLAY_PAGE_MODEL,
+	PROP_DISPLAY_PAGE_TREE,
 };
 
 enum
@@ -238,11 +236,18 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 							      G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
-					 PROP_SOURCELIST,
-					 g_param_spec_object ("sourcelist",
-							      "RBSourceList",
-							      "RBSourceList",
-							      RB_TYPE_SOURCELIST,
+					 PROP_DISPLAY_PAGE_MODEL,
+					 g_param_spec_object ("display-page-model",
+							      "RBDisplayPageModel",
+							      "RBDisplayPageModel",
+							      RB_TYPE_DISPLAY_PAGE_MODEL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_DISPLAY_PAGE_TREE,
+					 g_param_spec_object ("display-page-tree",
+							      "RBDisplayPageTree",
+							      "RBDisplayPageTree",
+							      RB_TYPE_DISPLAY_PAGE_TREE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
 	 * RBPlaylistManager::playlist-added:
@@ -367,9 +372,14 @@ rb_playlist_manager_dispose (GObject *object)
 		mgr->priv->uimanager = NULL;
 	}
 
-	if (mgr->priv->sourcelist != NULL) {
-		g_object_unref (mgr->priv->sourcelist);
-		mgr->priv->sourcelist = NULL;
+	if (mgr->priv->page_model != NULL) {
+		g_object_unref (mgr->priv->page_model);
+		mgr->priv->page_model = NULL;
+	}
+
+	if (mgr->priv->display_page_tree != NULL) {
+		g_object_unref (mgr->priv->display_page_tree);
+		mgr->priv->display_page_tree = NULL;
 	}
 
 	if (mgr->priv->selected_source != NULL) {
@@ -527,10 +537,11 @@ rb_playlist_manager_set_property (GObject *object,
 	case PROP_SHELL:
 		rb_playlist_manager_set_shell_internal (mgr, g_value_get_object (value));
 		break;
-	case PROP_SOURCELIST:
-		mgr->priv->sourcelist = g_value_get_object (value);
-		g_object_ref (mgr->priv->sourcelist);
-		mgr->priv->window = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (mgr->priv->sourcelist)));
+	case PROP_DISPLAY_PAGE_MODEL:
+		mgr->priv->page_model = g_value_dup_object (value);
+		break;
+	case PROP_DISPLAY_PAGE_TREE:
+		mgr->priv->display_page_tree = g_value_dup_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -556,8 +567,11 @@ rb_playlist_manager_get_property (GObject *object,
 	case PROP_SHELL:
 		g_value_set_object (value, mgr->priv->shell);
 		break;
-	case PROP_SOURCELIST:
-		g_value_set_object (value, mgr->priv->sourcelist);
+	case PROP_DISPLAY_PAGE_MODEL:
+		g_value_set_object (value, mgr->priv->page_model);
+		break;
+	case PROP_DISPLAY_PAGE_TREE:
+		g_value_set_object (value, mgr->priv->display_page_tree);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -568,7 +582,8 @@ rb_playlist_manager_get_property (GObject *object,
 /**
  * rb_playlist_manager_new:
  * @shell: the #RBShell
- * @sourcelist: the #RBSourceList
+ * @page_model: the #RBDisplayPageModel
+ * @page_tree: the #RBDisplayPageTree
  * @playlists_file: the full path to the playlist file to load
  *
  * Creates the #RBPlaylistManager instance
@@ -577,12 +592,14 @@ rb_playlist_manager_get_property (GObject *object,
  */
 RBPlaylistManager *
 rb_playlist_manager_new (RBShell *shell,
-			 RBSourceList *sourcelist,
+			 RBDisplayPageModel *page_model,
+			 RBDisplayPageTree *page_tree,
 			 const char *playlists_file)
 {
 	return g_object_new (RB_TYPE_PLAYLIST_MANAGER,
 			     "shell", shell,
-			     "sourcelist", sourcelist,
+			     "display-page-model", page_model,
+			     "display-page-tree", page_tree,
 			     "playlists_file", playlists_file,
 			     NULL);
 }
@@ -797,37 +814,35 @@ _is_dirty_playlist (GtkTreeModel *model,
 		    GtkTreeIter *iter,
 		    gboolean *dirty)
 {
-	RBSource *source;
+	RBDisplayPage *page;
 	gboolean local;
 	gboolean ret;
 
 	gtk_tree_model_get (model,
 			    iter,
-			    RB_SOURCELIST_MODEL_COLUMN_SOURCE,
-			    &source,
+			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE,
+			    &page,
 			    -1);
-	if (source == NULL) {
+	if (page == NULL) {
 		return FALSE;
 	}
-	if (RB_IS_PLAYLIST_SOURCE (source) == FALSE) {
-		g_object_unref (source);
+	if (RB_IS_PLAYLIST_SOURCE (page) == FALSE) {
+		g_object_unref (page);
 		return FALSE;
 	}
 
-	g_object_get (source,
-		      "is-local", &local,
-		      NULL);
 	ret = FALSE;
+	g_object_get (page, "is-local", &local, NULL);
 	if (local) {
 		gboolean pdirty;
 
-		g_object_get (source, "dirty", &pdirty, NULL);
+		g_object_get (page, "dirty", &pdirty, NULL);
 		if (pdirty) {
 			*dirty = TRUE;
 			ret = TRUE;
 		}
 	}
-	g_object_unref (source);
+	g_object_unref (page);
 
 	return ret;
 }
@@ -837,14 +852,10 @@ static gboolean
 rb_playlist_manager_is_dirty (RBPlaylistManager *mgr)
 {
 	gboolean dirty = FALSE;
-	GtkTreeModel *fmodel;
-	GtkTreeModel *model;
 
-	g_object_get (mgr->priv->sourcelist, "model", &fmodel, NULL);
-	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
-	g_object_unref (fmodel);
-
-	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc) _is_dirty_playlist, &dirty);
+	gtk_tree_model_foreach (GTK_TREE_MODEL (mgr->priv->page_model),
+				(GtkTreeModelForeachFunc) _is_dirty_playlist,
+				&dirty);
 
 	if (!dirty)
 		dirty = g_atomic_int_get (&mgr->priv->dirty);
@@ -895,27 +906,27 @@ save_playlist_cb (GtkTreeModel *model,
 		  GtkTreeIter  *iter,
 		  xmlNodePtr    root)
 {
-	RBSource *source;
+	RBDisplayPage *page;
 	gboolean  local;
 
 	gtk_tree_model_get (model,
 			    iter,
-			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
+			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
 			    -1);
-	if (source == NULL) {
+	if (page == NULL) {
 		goto out;
 	}
-	if (RB_IS_PLAYLIST_SOURCE (source) == FALSE) {
+	if (RB_IS_PLAYLIST_SOURCE (page) == FALSE) {
 		goto out;
 	}
 
-	g_object_get (source, "is-local", &local, NULL);
+	g_object_get (page, "is-local", &local, NULL);
 	if (local) {
-		rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (source), root);
+		rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (page), root);
 	}
  out:
-	if (source != NULL) {
-		g_object_unref (source);
+	if (page != NULL) {
+		g_object_unref (page);
 	}
 
 	return FALSE;
@@ -939,8 +950,6 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 {
 	xmlNodePtr root;
 	struct RBPlaylistManagerSaveData *data;
-	GtkTreeModel *fmodel;
-	GtkTreeModel *model;
 
 	if (!force && !rb_playlist_manager_is_dirty (mgr)) {
 		/* playlists already in sync, so don't bother */
@@ -960,11 +969,9 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	root = xmlNewDocNode (data->doc, NULL, RB_PLAYLIST_MGR_PL, NULL);
 	xmlDocSetRootElement (data->doc, root);
 
-	g_object_get (mgr->priv->sourcelist, "model", &fmodel, NULL);
-	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
-	g_object_unref (fmodel);
-
-	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)save_playlist_cb, root);
+	gtk_tree_model_foreach (GTK_TREE_MODEL (mgr->priv->page_model),
+				(GtkTreeModelForeachFunc)save_playlist_cb,
+				root);
 
 	/* mark clean here.  if the save fails, we'll mark it dirty again */
 	rb_playlist_manager_set_dirty (data->mgr, FALSE);
@@ -1005,7 +1012,7 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 							  RHYTHMDB_ENTRY_TYPE_SONG);
 
 	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
-	rb_sourcelist_edit_source_name (mgr->priv->sourcelist, playlist);
+	rb_display_page_tree_edit_source_name (mgr->priv->display_page_tree, playlist);
 	rb_playlist_manager_set_dirty (mgr, TRUE);
 
 	g_signal_emit (mgr, rb_playlist_manager_signals[PLAYLIST_CREATED], 0,
@@ -1348,7 +1355,8 @@ rb_playlist_manager_cmd_rename_playlist (GtkAction *action,
 {
 	rb_debug ("Renaming playlist %p", mgr->priv->selected_source);
 
-	rb_sourcelist_edit_source_name (mgr->priv->sourcelist, mgr->priv->selected_source);
+	rb_display_page_tree_edit_source_name (mgr->priv->display_page_tree,
+					       mgr->priv->selected_source);
 	rb_playlist_manager_set_dirty (mgr, TRUE);
 }
 
@@ -1358,7 +1366,7 @@ rb_playlist_manager_cmd_delete_playlist (GtkAction *action,
 {
 	rb_debug ("Deleting playlist %p", mgr->priv->selected_source);
 
-	rb_source_delete_thyself (mgr->priv->selected_source);
+	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (mgr->priv->selected_source));
 	rb_playlist_manager_set_dirty (mgr, TRUE);
 }
 
@@ -1396,6 +1404,7 @@ static void
 rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 				       RBPlaylistManager *mgr)
 {
+	GtkWindow *window;
 	GtkWidget *dialog;
 	GtkFileFilter *filter;
 	GtkFileFilter *filter_all;
@@ -1411,9 +1420,10 @@ rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 	gtk_file_filter_set_name (filter_all, _("All Files"));
 	gtk_file_filter_add_pattern (filter_all, "*");
 
+	g_object_get (mgr->priv->shell, "window", &window, NULL);
 
 	dialog = rb_file_chooser_new (_("Load Playlist"),
-				      GTK_WINDOW (mgr->priv->window),
+				      window,
 				      GTK_FILE_CHOOSER_ACTION_OPEN,
 				      FALSE);
 	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
@@ -1422,6 +1432,8 @@ rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 
 	g_signal_connect_object (dialog, "response",
 				 G_CALLBACK (load_playlist_response_cb), mgr, 0);
+
+	g_object_unref (window);
 }
 
 static void
@@ -1614,23 +1626,22 @@ list_playlists_cb (GtkTreeModel *model,
 		   GtkTreeIter  *iter,
 		   GList **playlists)
 {
-	RBSource *source;
+	RBDisplayPage *page;
 	gboolean  local;
 
 	gtk_tree_model_get (model,
 			    iter,
-			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
+			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
 			    -1);
-	if (source != NULL) {
-		if (RB_IS_PLAYLIST_SOURCE (source) && !RB_IS_PLAY_QUEUE_SOURCE (source)) {
-			
-			g_object_get (source, "is-local", &local, NULL);
+	if (page != NULL) {
+		if (RB_IS_PLAYLIST_SOURCE (page) && !RB_IS_PLAY_QUEUE_SOURCE (page)) {
+			g_object_get (page, "is-local", &local, NULL);
 			if (local) {
-				*playlists = g_list_prepend (*playlists, source);
+				*playlists = g_list_prepend (*playlists, RB_SOURCE (page));
 			}
 		}
-		
-		g_object_unref (source);
+
+		g_object_unref (page);
 	}
 
 	return FALSE;
@@ -1649,14 +1660,10 @@ GList *
 rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 {
 	GList *playlists = NULL;
-	GtkTreeModel *fmodel;
-	GtkTreeModel *model;
 
-	g_object_get (mgr->priv->sourcelist, "model", &fmodel, NULL);
-	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
-	g_object_unref (fmodel);
-
-	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)list_playlists_cb, &playlists);
+	gtk_tree_model_foreach (GTK_TREE_MODEL (mgr->priv->page_model),
+				(GtkTreeModelForeachFunc)list_playlists_cb,
+				&playlists);
 	return g_list_reverse (playlists);
 }
 
@@ -1679,7 +1686,7 @@ rb_playlist_manager_get_playlist_names (RBPlaylistManager *mgr,
 	GList *pl;
 	GList *t;
 	int i;
-	
+
 	pl = rb_playlist_manager_get_playlists (mgr);
 	*playlists = g_new0 (char *, g_list_length (pl) + 1);
 	if (!*playlists)
@@ -1708,24 +1715,24 @@ find_playlist_by_name_cb (GtkTreeModel *model,
 			  GtkTreeIter  *iter,
 			  FindPlaylistData *data)
 {
-	RBSource *source;
+	RBDisplayPage *page;
 
 	gtk_tree_model_get (model,
 			    iter,
-			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
+			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
 			    -1);
-	if (source != NULL) {
-		if (RB_IS_PLAYLIST_SOURCE (source) && !RB_IS_PLAY_QUEUE_SOURCE (source)) {
+	if (page != NULL) {
+		if (RB_IS_PLAYLIST_SOURCE (page) && !RB_IS_PLAY_QUEUE_SOURCE (page)) {
 			char *name;
-			
-			g_object_get (source, "name", &name, NULL);
+
+			g_object_get (page, "name", &name, NULL);
 			if (strcmp (name, data->name) == 0) {
-				data->source = source;
+				data->source = RB_SOURCE (page);
 			}
 			g_free (name);
 		}
-		
-		g_object_unref (source);
+
+		g_object_unref (page);
 	}
 
 	return (data->source != NULL);
@@ -1735,18 +1742,14 @@ static RBSource *
 _get_playlist_by_name (RBPlaylistManager *mgr,
 		       const char *name)
 {
-	GtkTreeModel *fmodel;
-	GtkTreeModel *model;
 	FindPlaylistData d;
-
-	g_object_get (mgr->priv->sourcelist, "model", &fmodel, NULL);
-	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
-	g_object_unref (fmodel);
 
 	d.name = name;
 	d.source = NULL;
 
-	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)find_playlist_by_name_cb, &d);
+	gtk_tree_model_foreach (GTK_TREE_MODEL (mgr->priv->page_model),
+				(GtkTreeModelForeachFunc)find_playlist_by_name_cb,
+				&d);
 	return d.source;
 }
 
@@ -1805,7 +1808,7 @@ rb_playlist_manager_delete_playlist (RBPlaylistManager *mgr,
 			     name);
 		return FALSE;
 	}
-	rb_source_delete_thyself (playlist);
+	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (playlist));
 	rb_playlist_manager_set_dirty (mgr, TRUE);
 	return TRUE;
 }
