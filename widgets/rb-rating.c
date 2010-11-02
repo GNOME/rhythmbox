@@ -372,7 +372,7 @@ rb_rating_expose (GtkWidget *widget,
 	rating = RB_RATING (widget);
 
 	window = gtk_widget_get_window (widget);
-#if GTK_CHECK_VERSION(2, 24, 0)
+#if GTK_CHECK_VERSION(2, 23, 0)
 	width = gdk_window_get_width (window);
 	height = gdk_window_get_height (window);
 #else
