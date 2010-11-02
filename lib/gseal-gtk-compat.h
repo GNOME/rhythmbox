@@ -26,8 +26,9 @@ G_BEGIN_DECLS
 
 #if !GTK_CHECK_VERSION (2, 23, 0)
 #define gtk_combo_box_text_new					gtk_combo_box_new_text
-#define gtk_combo_box_text_append_text(box,text)		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT (box), text)
+#define gtk_combo_box_text_append_text(box,text)		gtk_combo_box_append_text(GTK_COMBO_BOX (box), text)
 #define gdk_window_get_display(window)				gdk_drawable_get_display(GDK_DRAWABLE (window))
+#define GTK_COMBO_BOX_TEXT(widget)				GTK_COMBO_BOX(widget)
 #endif
 
 #if !GTK_CHECK_VERSION (2, 21, 1)
