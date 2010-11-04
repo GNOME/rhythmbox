@@ -252,20 +252,19 @@ class CoherencePlugin(rb.Plugin, log.Loggable):
             return
 
         db = self.shell.props.db
-        group = rb.rb_source_group_get_by_name("shared")
+        group = rb.rb_display_page_group_get_by_id ("shared")
 
         from UpnpSource import UpnpSource
         source = gobject.new (UpnpSource,
                     shell=self.shell,
                     entry_type=self.entry_type,
-                    source_group=group,
                     plugin=self,
                     client=client,
                     udn=udn)
 
         self.sources[udn] = source
 
-        self.shell.append_source (source, None)
+        self.shell.append_display_page (source, group)
 
     def create_configure_dialog(self, dialog=None):
         if dialog is None:

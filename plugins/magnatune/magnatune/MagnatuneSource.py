@@ -146,8 +146,6 @@ class MagnatuneSource(rb.BrowserSource):
 
 			self.get_entry_view().set_sorting_type(self.__client.get_string("/apps/rhythmbox/plugins/magnatune/sorting"))
 
-		rb.BrowserSource.do_selected(self)
-
 	def do_impl_get_browser_key(self):
 		return "/apps/rhythmbox/plugins/magnatune/show_browser"
 
@@ -181,8 +179,6 @@ class MagnatuneSource(rb.BrowserSource):
 			self.__catalogue_check = None
 
 		self.__client.set_string("/apps/rhythmbox/plugins/magnatune/sorting", self.get_entry_view().get_sorting_type())
-
-		rb.BrowserSource.do_impl_delete_thyself(self)
 
 	#
 	# methods for use by plugin and UI

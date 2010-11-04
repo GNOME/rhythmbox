@@ -98,16 +98,15 @@ class Magnatune(rb.Plugin):
 		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
 		icon = rb.try_load_icon(theme, "magnatune", width, 0)
 
-		group = rb.rb_source_group_get_by_name("stores")
+		group = rb.rb_display_page_group_get_by_id ("stores")
 		self.source = gobject.new(MagnatuneSource,
 					  shell=shell,
 					  entry_type=self.entry_type,
-					  source_group=group,
-					  icon=icon,
+					  pixbuf=icon,
 					  plugin=self)
 
 		shell.register_entry_type_for_source(self.source, self.entry_type)
-		shell.append_source(self.source, None) # Add the source to the list
+		shell.append_display_page(self.source, group)
 
 		manager = shell.get_player().get_property('ui-manager')
 		# Add the popup menu actions

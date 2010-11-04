@@ -143,7 +143,6 @@ class JamendoSource(rb.BrowserSource):
 				sort_key = "Artist,ascending"
 			self.get_entry_view().set_sorting_type(sort_key)
 
-		rb.BrowserSource.do_selected (self)
 
 	def do_delete_thyself(self):
 		if self.__update_id != 0:
@@ -163,7 +162,6 @@ class JamendoSource(rb.BrowserSource):
 			self.__catalogue_check = None
 
 		gconf.client_get_default().set_string(JamendoConfigureDialog.gconf_keys['sorting'], self.get_entry_view().get_sorting_type())
-		rb.BrowserSource.do_impl_delete_thyself (self)
 
 
 	#
