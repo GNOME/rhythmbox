@@ -151,9 +151,8 @@ rb_display_page_delete_thyself (RBDisplayPage *page)
 	page->priv->deleted = TRUE;
 
 	klass = RB_DISPLAY_PAGE_GET_CLASS (page);
-	if (klass->delete_thyself) {
-		klass->delete_thyself (page);
-	}
+	klass->delete_thyself (page);
+
 	g_signal_emit (G_OBJECT (page), signals[DELETED], 0);
 }
 
@@ -547,6 +546,11 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 }
 
 static void
+impl_delete_thyself (RBDisplayPage *page)
+{
+}
+
+static void
 impl_dispose (GObject *object)
 {
 	RBDisplayPage *page;
@@ -598,6 +602,8 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
 
 	object_class->set_property = impl_set_property;
 	object_class->get_property = impl_get_property;
+
+	klass->delete_thyself = impl_delete_thyself;
 
 	/**
 	 * RBDisplayPage:shell:
