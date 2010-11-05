@@ -564,8 +564,8 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 	-Wcast-align -Wall \
 	-Werror -std=gnu89"
 
-	if echo "$CFLAGS" | grep -e '-O[1-9]'; then
-	   WARN_CFLAGS="-Wuninitialized $WARN_CFLAGS"
+	if echo "$CFLAGS" | grep -q -- '-O' && echo "$CFLAGS" | grep -q -v -- '-O0'; then
+		WARN_CFLAGS="-Wuninitialized $WARN_CFLAGS"
 	fi
 
 	for option in $WARN_CFLAGS; do
