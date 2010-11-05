@@ -457,7 +457,6 @@ emit_show_popup (GtkTreeView *treeview,
 {
 	GtkTreeIter iter;
 	RBDisplayPage *page;
-	gboolean ret;
 
 	if (!gtk_tree_selection_get_selected (gtk_tree_view_get_selection (treeview),
 					      NULL, &iter))
@@ -474,7 +473,7 @@ emit_show_popup (GtkTreeView *treeview,
 
 	rb_display_page_show_popup (page);
 	g_object_unref (page);
-	return ret;
+	return TRUE;
 }
 
 static gboolean
