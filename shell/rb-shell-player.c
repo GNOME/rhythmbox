@@ -1635,6 +1635,11 @@ rb_shell_player_open_location (RBShellPlayer *player,
 
 		g_thread_create ((GThreadFunc)open_location_thread, data, FALSE, NULL);
 	} else {
+		if (player->priv->parser_cancellable != NULL) {
+			g_object_unref (player->priv->parser_cancellable);
+			player->priv->parser_cancellable = NULL;
+		}
+
 		rhythmdb_entry_ref (entry);
 		ret = ret && rb_player_open (player->priv->mmplayer, location, entry, (GDestroyNotify) rhythmdb_entry_unref, error);
 
