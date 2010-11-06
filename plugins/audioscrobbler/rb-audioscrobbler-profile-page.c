@@ -165,7 +165,7 @@ static void scrobbler_statistics_changed_cb (RBAudioscrobbler *audioscrobbler,
 static void playing_song_changed_cb (RBShellPlayer *player,
                                      RhythmDBEntry *entry,
                                      RBAudioscrobblerProfilePage *page);
-static void update_service_actions_sensitivity (RBAudioscrobblerProfilePage *page);
+static void update_service_actions_sensitivity (RBAudioscrobblerProfilePage *page, RhythmDBEntry *entry);
 
 /* GtkAction callbacks */
 static void love_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page);
@@ -591,8 +591,10 @@ init_actions (RBAudioscrobblerProfilePage *page)
 {
 	char *ui_file;
 	RBShell *shell;
+	RBShellPlayer *player;
 	RBPlugin *plugin;
 	GtkUIManager *ui_manager;
+	RhythmDBEntry *entry;
 	char *group_name;
 
 	g_object_get (page, "shell", &shell, "plugin", &plugin, "ui-manager", &ui_manager, NULL);
@@ -636,7 +638,13 @@ init_actions (RBAudioscrobblerProfilePage *page)
 										   service_actions,
 										   G_N_ELEMENTS (service_actions),
 										   page);
-	update_service_actions_sensitivity (page);
+	g_object_get (shell, "shell-player", &player, NULL);
+	entry = rb_shell_player_get_playing_entry (player);
+	update_service_actions_sensitivity (page, entry);
+	if (entry != NULL) {
+		rhythmdb_entry_unref (entry);
+	}
+	g_object_unref (player);
 
 	g_free (ui_file);
 	g_object_unref (shell);
@@ -873,25 +881,20 @@ playing_song_changed_cb (RBShellPlayer *player,
                          RhythmDBEntry *entry,
                          RBAudioscrobblerProfilePage *page)
 {
-	update_service_actions_sensitivity (page);
+	update_service_actions_sensitivity (page, entry);
 }
 
 static void
-update_service_actions_sensitivity (RBAudioscrobblerProfilePage *page)
+update_service_actions_sensitivity (RBAudioscrobblerProfilePage *page, RhythmDBEntry *entry)
 {
-	RBShell *shell;
-	RhythmDBEntry *playing;
 	GtkAction *love;
 	GtkAction *ban;
 	GtkAction *download;
 
-	g_object_get (page, "shell", &shell, NULL);
-	playing = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
-
 	/* enable love/ban if an entry is playing */
 	love = gtk_action_group_get_action (page->priv->service_action_group, page->priv->love_action_name);
 	ban = gtk_action_group_get_action (page->priv->service_action_group, page->priv->ban_action_name);
-	if (playing == NULL) {
+	if (entry == NULL) {
 		gtk_action_set_sensitive (love, FALSE);
 		gtk_action_set_sensitive (ban, FALSE);
 	} else {
@@ -901,10 +904,10 @@ update_service_actions_sensitivity (RBAudioscrobblerProfilePage *page)
 
 	/* enable download if the playing entry is a radio track from this service which provides a download url */
 	download = gtk_action_group_get_action (page->priv->service_action_group, page->priv->download_action_name);
-	if (playing != NULL &&
-	    rhythmdb_entry_get_entry_type (playing) == RHYTHMDB_ENTRY_TYPE_AUDIOSCROBBLER_RADIO_TRACK) {
+	if (entry != NULL &&
+	    rhythmdb_entry_get_entry_type (entry) == RHYTHMDB_ENTRY_TYPE_AUDIOSCROBBLER_RADIO_TRACK) {
 		RBAudioscrobblerRadioTrackData *data;
-		data = RHYTHMDB_ENTRY_GET_TYPE_DATA (playing, RBAudioscrobblerRadioTrackData);
+		data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioscrobblerRadioTrackData);
 
 		if (data->service == page->priv->service && data->download_url != NULL) {
 			gtk_action_set_sensitive (download, TRUE);
@@ -914,12 +917,8 @@ update_service_actions_sensitivity (RBAudioscrobblerProfilePage *page)
 	} else {
 		gtk_action_set_sensitive (download, FALSE);
 	}
-
-	g_object_unref (shell);
-	if (playing != NULL) {
-		rhythmdb_entry_unref (playing);
-	}
 }
+
 static void
 love_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
 {
