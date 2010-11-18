@@ -326,7 +326,9 @@ rb_tray_icon_is_embedded (RBTrayIcon *tray)
 void
 rb_tray_icon_attach_notification (RBTrayIcon *tray, NotifyNotification *notification)
 {
+#if LIBNOTIFY_VERSION_MINOR < 7
 	notify_notification_attach_to_status_icon (notification, tray->priv->icon);
+#endif
 }
 #endif
 
