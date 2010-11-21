@@ -42,6 +42,9 @@
 #include <shell/rb-plugin.h>
 #include <shell/rb-shell.h>
 #include <shell/rb-shell-player.h>
+#include <sources/rb-display-page-model.h>
+#include <sources/rb-playlist-source.h>
+#include <sources/rb-removable-media-source.h>
 
 #define RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN	(rb_dbus_media_server_plugin_get_type ())
 #define RB_DBUS_MEDIA_SERVER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBMediaServer2Plugin))
@@ -57,6 +60,8 @@
 #define RB_MEDIASERVER2_PREFIX		"/org/gnome/UPnP/MediaServer2/"
 #define RB_MEDIASERVER2_ROOT		RB_MEDIASERVER2_PREFIX "Rhythmbox"
 #define RB_MEDIASERVER2_LIBRARY		RB_MEDIASERVER2_PREFIX "Library"
+#define RB_MEDIASERVER2_PLAYLISTS	RB_MEDIASERVER2_PREFIX "Playlists"
+#define RB_MEDIASERVER2_DEVICES		RB_MEDIASERVER2_PREFIX "Devices"
 #define RB_MEDIASERVER2_ENTRY_SUBTREE	RB_MEDIASERVER2_PREFIX "Entry"
 #define RB_MEDIASERVER2_ENTRY_PREFIX	RB_MEDIASERVER2_ENTRY_SUBTREE "/"
 
@@ -76,17 +81,32 @@ typedef struct
 
 	guint emit_updated_id;
 
-	/* source registrations */
+	/* source and category registrations */
 	GList *sources;
+	GList *categories;
 
 	RBShell *shell;
 	RhythmDB *db;
+	RBDisplayPageModel *display_page_model;
 } RBMediaServer2Plugin;
 
 typedef struct
 {
 	RBPluginClass parent_class;
 } RBMediaServer2PluginClass;
+
+typedef struct
+{
+	char *name;
+	guint dbus_reg_id[2];
+	gboolean updated;
+	char *dbus_path;
+	char *parent_dbus_path;
+
+	gboolean (*match_source) (RBSource *source);
+
+	RBMediaServer2Plugin *plugin;
+} CategoryRegistrationData;
 
 typedef struct
 {
@@ -103,6 +123,11 @@ typedef struct
 
 G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
 GType	rb_dbus_media_server_plugin_get_type		(void) G_GNUC_CONST;
+
+static void unregister_source_container (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data, gboolean deactivating);
+static void emit_source_property_updates (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data);
+static void emit_category_container_property_updates (RBMediaServer2Plugin *plugin, CategoryRegistrationData *category_data);
+static void emit_root_property_updates (RBMediaServer2Plugin *plugin);
 
 RB_PLUGIN_REGISTER(RBMediaServer2Plugin, rb_dbus_media_server_plugin)
 
@@ -392,23 +417,35 @@ emit_container_updated_cb (RBMediaServer2Plugin *plugin)
 {
 	GList *l;
 
+	rb_debug ("emitting updates");
 	/* source containers */
 	for (l = plugin->sources; l != NULL; l = l->next) {
 		SourceRegistrationData *source_data = l->data;
 		if (source_data->updated) {
+			emit_source_property_updates (plugin, source_data);
 			emit_updated (plugin->connection, source_data->dbus_path);
 			source_data->updated = FALSE;
 		}
 	}
 
-	/* .. subtrees .. */
+	/* source categories */
+	for (l = plugin->categories; l != NULL; l = l->next) {
+		CategoryRegistrationData *category_data = l->data;
+		if (category_data->updated) {
+			emit_category_container_property_updates (plugin, category_data);
+			emit_updated (plugin->connection, category_data->dbus_path);
+			category_data->updated = FALSE;
+		}
+	}
 
 	/* root */
 	if (plugin->root_updated) {
+		emit_root_property_updates (plugin);
 		emit_updated (plugin->connection, RB_MEDIASERVER2_ROOT);
 		plugin->root_updated = FALSE;
 	}
 
+	rb_debug ("done emitting updates");
 	plugin->emit_updated_id = 0;
 	return FALSE;
 }
@@ -549,6 +586,48 @@ get_source_property (GDBusConnection *connection,
 	return NULL;
 }
 
+static void
+add_source_property (RBMediaServer2Plugin *plugin, GVariantBuilder *properties, const char *iface, const char *property, SourceRegistrationData *source_data)
+{
+	GVariant *v;
+	v = get_source_property (plugin->connection, NULL, source_data->dbus_path, iface, property, NULL, source_data);
+	g_variant_builder_add (properties, "{sv}", property, v);
+}
+
+static void
+emit_source_property_updates (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data)
+{
+	GError *error = NULL;
+	const char *invalidated[] = { NULL };
+	GVariantBuilder *properties;
+	GVariant *parameters;
+
+	rb_debug ("updating properties for source %s", source_data->dbus_path);
+	properties = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+	add_source_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ItemCount", source_data);
+	add_source_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ChildCount", source_data);
+	add_source_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ContainerCount", source_data);
+
+	parameters = g_variant_new ("(sa{sv}^as)",
+				    MEDIA_SERVER2_CONTAINER_IFACE_NAME,
+				    properties,
+				    invalidated);
+	g_variant_builder_unref (properties);
+	g_dbus_connection_emit_signal (plugin->connection,
+				       NULL,
+				       source_data->dbus_path,
+				       "org.freedesktop.DBus.Properties",
+				       "PropertiesChanged",
+				       parameters,
+				       &error);
+	if (error != NULL) {
+		g_warning ("Unable to send property changes for MediaServer2 container %s: %s",
+			   source_data->dbus_path,
+			   error->message);
+		g_clear_error (&error);
+	}
+}
+
 static const GDBusInterfaceVTable source_vtable =
 {
 	(GDBusInterfaceMethodCallFunc) source_method_call,
@@ -677,8 +756,17 @@ source_updated (SourceRegistrationData *source_data, gboolean count_changed)
 	source_data->updated = TRUE;
 
 	if (count_changed) {
-		/* find parent updated flag; for now it's always the root */
-		source_data->plugin->root_updated = TRUE;
+		GList *l;
+		for (l = source_data->plugin->categories; l != NULL; l = l->next) {
+			CategoryRegistrationData *category_data = l->data;
+			if (g_strcmp0 (source_data->parent_dbus_path, category_data->dbus_path) == 0) {
+				category_data->updated = TRUE;
+				break;
+			}
+		}
+		if (l == NULL) {
+			source_data->plugin->root_updated = TRUE;
+		}
 	}
 
 	if (source_data->plugin->emit_updated_id == 0) {
@@ -749,16 +837,27 @@ name_updated_cb (RBSource *source, GParamSpec *pspec, SourceRegistrationData *so
 	source_updated (source_data, FALSE);
 }
 
+static void
+source_deleted_cb (RBSource *source, RBMediaServer2Plugin *plugin)
+{
+	SourceRegistrationData *source_data;
+
+	source_data = find_registration_data (plugin, source);
+	if (source_data != NULL) {
+		rb_debug ("source for container %s deleted", source_data->dbus_path);
+		unregister_source_container (plugin, source_data, FALSE);
+	}
+}
 
 
 static void
 register_source_container (RBMediaServer2Plugin *plugin,
 			   RBSource *source,
 			   const char *dbus_path,
-			   const char *parent_dbus_path,
-			   gboolean subtree)
+			   const char *parent_dbus_path)
 {
 	SourceRegistrationData *source_data;
+	GDBusInterfaceInfo *container_iface;
 
 	source_data = g_new0 (SourceRegistrationData, 1);
 	source_data->source = g_object_ref (source);
@@ -766,17 +865,14 @@ register_source_container (RBMediaServer2Plugin *plugin,
 	source_data->parent_dbus_path = g_strdup (parent_dbus_path);
 	source_data->plugin = plugin;
 
-	if (subtree == FALSE) {
-		GDBusInterfaceInfo *container_iface;
-
-		container_iface = g_dbus_node_info_lookup_interface (plugin->node_info, MEDIA_SERVER2_CONTAINER_IFACE_NAME);
-		register_object (plugin, &source_vtable, container_iface, dbus_path, source_data, source_data->dbus_reg_id);
-	}
+	container_iface = g_dbus_node_info_lookup_interface (plugin->node_info, MEDIA_SERVER2_CONTAINER_IFACE_NAME);
+	register_object (plugin, &source_vtable, container_iface, dbus_path, source_data, source_data->dbus_reg_id);
 
 	g_object_get (source, "base-query-model", &source_data->base_query_model, NULL);
 	connect_query_model_signals (source_data);
 	g_signal_connect (source, "notify::base-query-model", G_CALLBACK (base_query_model_updated_cb), source_data);
 	g_signal_connect (source, "notify::name", G_CALLBACK (name_updated_cb), source_data);
+	g_signal_connect (source, "deleted", G_CALLBACK (source_deleted_cb), plugin);
 
 	/* add to registration list */
 	plugin->sources = g_list_append (plugin->sources, source_data);
@@ -786,36 +882,306 @@ register_source_container (RBMediaServer2Plugin *plugin,
 }
 
 static void
-unregister_source_container (RBMediaServer2Plugin *plugin, RBSource *source, gboolean deactivating)
+unregister_source_container (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data, gboolean deactivating)
 {
-	SourceRegistrationData *source_data;
-
-	/* find registration data */
-	source_data = find_registration_data (plugin, source);
-	if (source_data == NULL) {
-		rb_debug ("tried to unregister a source that isn't registered");
-		return;
-	}
-
 	/* if object registration ids exist, unregister the object */
 	unregister_object (plugin, source_data->dbus_reg_id);
 
 	/* remove signal handlers */
 	disconnect_query_model_signals (source_data);
-	g_signal_handlers_disconnect_by_func (source, G_CALLBACK (base_query_model_updated_cb), source_data);
-	g_signal_handlers_disconnect_by_func (source, G_CALLBACK (name_updated_cb), source_data);
+	g_signal_handlers_disconnect_by_func (source_data->source, G_CALLBACK (base_query_model_updated_cb), source_data);
+	g_signal_handlers_disconnect_by_func (source_data->source, G_CALLBACK (name_updated_cb), source_data);
 
 	if (deactivating == FALSE) {
 		/* remove from registration list */
 		plugin->sources = g_list_remove (plugin->sources, source_data);
 
 		/* emit 'updated' signal on parent container */
-		g_dbus_connection_emit_signal (plugin->connection, NULL, source_data->parent_dbus_path, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "Updated", NULL, NULL);
-
+		source_updated (source_data, FALSE);
 		destroy_registration_data (source_data);
 	}
 }
 
+/* source category containers */
+
+static void
+add_category_container (GVariantBuilder *list, CategoryRegistrationData *data, const char **filter)
+{
+	GVariantBuilder *i;
+	int source_count;
+	gboolean all_props;
+
+	i = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+	all_props = rb_str_in_strv ("*", filter);
+
+	source_count = count_sources_by_parent (data->plugin, data->dbus_path);
+
+	if (all_props || rb_str_in_strv ("Parent", filter)) {
+		g_variant_builder_add (i, "{sv}", "Parent", g_variant_new_object_path (data->parent_dbus_path));
+	}
+	if (all_props || rb_str_in_strv ("Type", filter)) {
+		g_variant_builder_add (i, "{sv}", "Type", g_variant_new_string ("container"));
+	}
+	if (all_props || rb_str_in_strv ("Path", filter)) {
+		g_variant_builder_add (i, "{sv}", "Path", g_variant_new_string (data->dbus_path));
+	}
+	if (all_props || rb_str_in_strv ("DisplayName", filter)) {
+		g_variant_builder_add (i, "{sv}", "DisplayName", g_variant_new_string (data->name));
+	}
+	if (all_props || rb_str_in_strv ("ChildCount", filter)) {
+		g_variant_builder_add (i, "{sv}", "ChildCount", g_variant_new_uint32 (source_count));
+	}
+	if (all_props || rb_str_in_strv ("ItemCount", filter)) {
+		g_variant_builder_add (i, "{sv}", "ItemCount", g_variant_new_uint32 (0));
+	}
+	if (all_props || rb_str_in_strv ("ContainerCount", filter)) {
+		g_variant_builder_add (i, "{sv}", "ContainerCount", g_variant_new_uint32 (source_count));
+	}
+	if (all_props || rb_str_in_strv ("Searchable", filter)) {
+		g_variant_builder_add (i, "{sv}", "Searchable", g_variant_new_boolean (FALSE));
+	}
+
+	g_variant_builder_add (list, "a{sv}", i);
+}
+
+static void
+list_categories_by_parent (RBMediaServer2Plugin *plugin,
+			   GVariantBuilder *list,
+			   const char *parent_dbus_path,
+			   guint *list_offset,
+			   guint *list_count,
+			   guint list_max,
+			   const char **filter)
+{
+	GList *l;
+	for (l = plugin->categories; l != NULL; l = l->next) {
+		CategoryRegistrationData *category_data;
+		if (list_max > 0 && (*list_count) == list_max) {
+			break;
+		}
+
+		category_data = l->data;
+		if (g_strcmp0 (category_data->parent_dbus_path, parent_dbus_path) != 0) {
+			continue;
+		}
+
+		if ((*list_offset) > 0) {
+			(*list_offset)--;
+			continue;
+		}
+
+		add_category_container (list, category_data, filter);
+		(*list_count)++;
+	}
+}
+
+static int
+count_categories_by_parent (RBMediaServer2Plugin *plugin, const char *parent_dbus_path)
+{
+	GList *l;
+	int count = 0;
+	for (l = plugin->categories; l != NULL; l = l->next) {
+		CategoryRegistrationData *category_data;
+		category_data = l->data;
+		if (g_strcmp0 (category_data->parent_dbus_path, parent_dbus_path) == 0) {
+			count++;
+		}
+	}
+	return count;
+}
+
+
+static void
+category_container_method_call (GDBusConnection *connection,
+				const char *sender,
+				const char *object_path,
+				const char *interface_name,
+				const char *method_name,
+				GVariant *parameters,
+				GDBusMethodInvocation *invocation,
+				CategoryRegistrationData *data)
+{
+	if (g_strcmp0 (interface_name, MEDIA_SERVER2_CONTAINER_IFACE_NAME) == 0) {
+		guint list_offset;
+		guint list_max;
+		guint list_count = 0;
+		const char **filter;
+		GVariantBuilder *list;
+
+		if (g_strcmp0 (method_name, "ListChildren") == 0 ||
+		    g_strcmp0 (method_name, "ListContainers") == 0) {
+			g_variant_get (parameters, "(uu^as)", &list_offset, &list_max, &filter);
+			rb_debug ("listing containers (%s) - offset %d, max %d", method_name, list_offset, list_max);
+
+			list = g_variant_builder_new (G_VARIANT_TYPE ("aa{sv}"));
+			list_sources_by_parent (data->plugin, list, object_path, &list_offset, &list_count, list_max, filter);
+			rb_debug ("returned %d containers", list_count);
+
+			g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+			g_strfreev ((char **)filter);
+		} else if (g_strcmp0 (method_name, "ListItems") == 0) {
+			rb_debug ("listing items");
+			g_variant_get (parameters, "(uu^as)", &list_offset, &list_max, &filter);
+			list = g_variant_builder_new (G_VARIANT_TYPE ("aa{sv}"));
+			g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+			g_strfreev ((char **)filter);
+		} else if (g_strcmp0 (method_name, "SearchObjects") == 0) {
+			rb_debug ("search not supported");
+			g_dbus_method_invocation_return_value (invocation, NULL);
+		}
+	} else {
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
+	}
+}
+
+static GVariant *
+get_category_container_property (GDBusConnection *connection,
+				 const char *sender,
+				 const char *object_path,
+				 const char *interface_name,
+				 const char *property_name,
+				 GError **error,
+				 CategoryRegistrationData *data)
+{
+	int count;
+	if (g_strcmp0 (interface_name, MEDIA_SERVER2_OBJECT_IFACE_NAME) == 0) {
+		if (g_strcmp0 (property_name, "Parent") == 0) {
+			return g_variant_new_object_path (data->parent_dbus_path);
+		} else if (g_strcmp0 (property_name, "Type") == 0) {
+			return g_variant_new_string ("container");
+		} else if (g_strcmp0 (property_name, "Path") == 0) {
+			return g_variant_new_string (object_path);
+		} else if (g_strcmp0 (property_name, "DisplayName") == 0) {
+			return g_variant_new_string (data->name);
+		}
+	} else if (g_strcmp0 (interface_name, MEDIA_SERVER2_CONTAINER_IFACE_NAME) == 0) {
+		if (g_strcmp0 (property_name, "ChildCount") == 0 ||
+		    g_strcmp0 (property_name, "ContainerCount") == 0) {
+			count = count_sources_by_parent (data->plugin, object_path);
+			rb_debug ("child/container count %d", count);
+			return g_variant_new_uint32 (count);
+		} else if (g_strcmp0 (property_name, "ItemCount") == 0) {
+			return g_variant_new_uint32 (0);
+		} else if (g_strcmp0 (property_name, "Searchable") == 0) {
+			return g_variant_new_boolean (FALSE);
+		}
+	}
+	g_set_error (error,
+		     G_DBUS_ERROR,
+		     G_DBUS_ERROR_NOT_SUPPORTED,
+		     "Property %s.%s not supported",
+		     interface_name,
+		     property_name);
+	return NULL;
+}
+
+static void
+add_category_container_property (RBMediaServer2Plugin *plugin, GVariantBuilder *properties, const char *iface, const char *property, CategoryRegistrationData *category_data)
+{
+	GVariant *v;
+	v = get_category_container_property (plugin->connection, NULL, category_data->dbus_path, iface, property, NULL, category_data);
+	g_variant_builder_add (properties, "{sv}", property, v);
+}
+
+static void
+emit_category_container_property_updates (RBMediaServer2Plugin *plugin, CategoryRegistrationData *category_data)
+{
+	GError *error = NULL;
+	const char *invalidated[] = { NULL };
+	GVariantBuilder *properties;
+	GVariant *parameters;
+
+	rb_debug ("updating properties for category %s", category_data->dbus_path);
+	properties = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+	add_category_container_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ItemCount", category_data);
+	add_category_container_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ChildCount", category_data);
+	add_category_container_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ContainerCount", category_data);
+
+	parameters = g_variant_new ("(sa{sv}^as)",
+				    MEDIA_SERVER2_CONTAINER_IFACE_NAME,
+				    properties,
+				    invalidated);
+	g_variant_builder_unref (properties);
+	g_dbus_connection_emit_signal (plugin->connection,
+				       NULL,
+				       category_data->dbus_path,
+				       "org.freedesktop.DBus.Properties",
+				       "PropertiesChanged",
+				       parameters,
+				       &error);
+	if (error != NULL) {
+		g_warning ("Unable to send property changes for MediaServer2 container %s: %s",
+			   category_data->dbus_path,
+			   error->message);
+		g_clear_error (&error);
+	}
+}
+
+
+static const GDBusInterfaceVTable category_container_vtable =
+{
+	(GDBusInterfaceMethodCallFunc) category_container_method_call,
+	(GDBusInterfaceGetPropertyFunc) get_category_container_property,
+	NULL
+};
+
+static void
+register_category_container (RBMediaServer2Plugin *plugin,
+			     const char *name,
+			     const char *dbus_path,
+			     const char *parent_dbus_path,
+			     gboolean (*match_source) (RBSource *source))
+{
+	CategoryRegistrationData *category_data;
+	GDBusInterfaceInfo *container_iface;
+
+	category_data = g_new0 (CategoryRegistrationData, 1);
+	category_data->name = g_strdup (name);
+	category_data->dbus_path = g_strdup (dbus_path);
+	category_data->parent_dbus_path = g_strdup (parent_dbus_path);
+	category_data->plugin = plugin;
+	category_data->match_source = match_source;
+
+	container_iface = g_dbus_node_info_lookup_interface (plugin->node_info, MEDIA_SERVER2_CONTAINER_IFACE_NAME);
+	register_object (plugin, &category_container_vtable, container_iface, dbus_path, category_data, category_data->dbus_reg_id);
+
+	/* add to registration list */
+	plugin->categories = g_list_append (plugin->categories, category_data);
+
+	/* emit 'updated' signal on parent container */
+	g_dbus_connection_emit_signal (plugin->connection, NULL, parent_dbus_path, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "Updated", NULL, NULL);
+}
+
+static void
+destroy_category_data (CategoryRegistrationData *category_data)
+{
+	g_free (category_data->name);
+	g_free (category_data->dbus_path);
+	g_free (category_data->parent_dbus_path);
+	g_free (category_data);
+}
+
+static void
+unregister_category_container (RBMediaServer2Plugin *plugin, CategoryRegistrationData *category_data, gboolean deactivating)
+{
+	/* if object registration ids exist, unregister the object */
+	unregister_object (plugin, category_data->dbus_reg_id);
+
+	if (deactivating == FALSE) {
+		/* remove from registration list */
+		plugin->categories = g_list_remove (plugin->categories, category_data);
+
+		/* emit 'updated' signal on parent container */
+		g_dbus_connection_emit_signal (plugin->connection, NULL, category_data->parent_dbus_path, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "Updated", NULL, NULL);
+
+		destroy_category_data (category_data);
+	}
+}
 
 /* root container */
 
@@ -842,8 +1208,8 @@ root_method_call (GDBusConnection *connection,
 			g_variant_get (parameters, "(uu^as)", &list_offset, &list_max, &filter);
 
 			list = g_variant_builder_new (G_VARIANT_TYPE ("aa{sv}"));
-			/* add subtrees, when such things exist */
 			list_sources_by_parent (plugin, list, object_path, &list_offset, &list_count, list_max, filter);
+			list_categories_by_parent (plugin, list, object_path, &list_offset, &list_count, list_max, filter);
 
 			g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
 			g_strfreev ((char **)filter);
@@ -898,7 +1264,7 @@ get_root_property (GDBusConnection *connection,
 		if (g_strcmp0 (property_name, "ChildCount") == 0 ||
 		    g_strcmp0 (property_name, "ContainerCount") == 0) {
 			count = count_sources_by_parent (plugin, object_path);
-			/* include subtrees */
+			count += count_categories_by_parent (plugin, object_path);
 			return g_variant_new_uint32 (count);
 		} else if (g_strcmp0 (property_name, "ItemCount") == 0) {
 			return g_variant_new_uint32 (0);
@@ -917,12 +1283,110 @@ get_root_property (GDBusConnection *connection,
 	return NULL;
 }
 
+static void
+add_root_property (RBMediaServer2Plugin *plugin, GVariantBuilder *properties, const char *iface, const char *property)
+{
+	GVariant *v;
+	v = get_root_property (plugin->connection, NULL, RB_MEDIASERVER2_ROOT, iface, property, NULL, plugin);
+	g_variant_builder_add (properties, "{sv}", property, v);
+}
+
+static void
+emit_root_property_updates (RBMediaServer2Plugin *plugin)
+{
+	GError *error = NULL;
+	const char *invalidated[] = { NULL };
+	GVariantBuilder *properties;
+	GVariant *parameters;
+
+
+	properties = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+	add_root_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ItemCount");
+	add_root_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ChildCount");
+	add_root_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ContainerCount");
+
+	parameters = g_variant_new ("(sa{sv}^as)",
+				    MEDIA_SERVER2_CONTAINER_IFACE_NAME,
+				    properties,
+				    invalidated);
+	g_variant_builder_unref (properties);
+	g_dbus_connection_emit_signal (plugin->connection,
+				       NULL,
+				       RB_MEDIASERVER2_ROOT,
+				       "org.freedesktop.DBus.Properties",
+				       "PropertiesChanged",
+				       parameters,
+				       &error);
+	if (error != NULL) {
+		g_warning ("Unable to send property changes for MediaServer2 root container: %s",
+			   error->message);
+		g_clear_error (&error);
+	}
+}
+
 static const GDBusInterfaceVTable root_vtable =
 {
 	(GDBusInterfaceMethodCallFunc) root_method_call,
 	(GDBusInterfaceGetPropertyFunc) get_root_property,
 	NULL
 };
+
+/* source watching */
+
+static gboolean
+is_shareable_playlist (RBSource *source)
+{
+	gboolean is_local;
+
+	if (RB_IS_PLAYLIST_SOURCE (source) == FALSE) {
+		return FALSE;
+	}
+
+	g_object_get (source, "is-local", &is_local, NULL);
+	return is_local;
+}
+
+/*
+ * exposing a device source over dbus only makes sense once it's fully populated.
+ * we don't currently have a way to determine that, so we don't share devices yet.
+ */
+/*
+static gboolean
+is_shareable_device (RBSource *source)
+{
+	return RB_IS_REMOVABLE_MEDIA_SOURCE (source);
+}
+*/
+
+static void
+display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBMediaServer2Plugin *plugin)
+{
+	RBDisplayPage *page;
+	GList *l;
+
+	gtk_tree_model_get (model, iter,
+			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
+			    -1);
+	if (RB_IS_SOURCE (page)) {
+		RBSource *source = RB_SOURCE (page);
+		/* figure out if this is a source can publish */
+		for (l = plugin->categories; l != NULL; l = l->next) {
+			CategoryRegistrationData *category_data = l->data;
+
+			if (category_data->match_source (source)) {
+				char *dbus_path;
+				dbus_path = g_strdup_printf ("%s/%" G_GINTPTR_FORMAT,
+							     category_data->dbus_path,
+							     (gintptr) source);
+				rb_debug ("adding new source %s to category %s", dbus_path, category_data->name);
+				register_source_container (plugin, source, dbus_path, category_data->dbus_path);
+				g_free (dbus_path);
+			}
+		}
+	}
+
+	g_object_unref (page);
+}
 
 /* plugin */
 
@@ -951,7 +1415,10 @@ impl_activate (RBPlugin *bplugin,
 	rb_debug ("activating DBus MediaServer2 plugin");
 
 	plugin = RB_DBUS_MEDIA_SERVER_PLUGIN (bplugin);
-	g_object_get (shell, "db", &plugin->db, NULL);
+	g_object_get (shell,
+		      "db", &plugin->db,
+		      "display-page-model", &plugin->display_page_model,
+		      NULL);
 	plugin->shell = g_object_ref (shell);
 
 	plugin->node_info = g_dbus_node_info_new_for_xml (media_server2_spec, &error);
@@ -976,10 +1443,17 @@ impl_activate (RBPlugin *bplugin,
 
 	/* register fixed sources (library, podcasts, etc.) */
 	g_object_get (shell, "library-source", &source, NULL);
-	register_source_container (plugin, source, RB_MEDIASERVER2_LIBRARY, RB_MEDIASERVER2_ROOT, FALSE);
+	register_source_container (plugin, source, RB_MEDIASERVER2_LIBRARY, RB_MEDIASERVER2_ROOT);
 	g_object_unref (source);
 
-	/* register source subtrees - playlists, devices */
+	/* watch for user-creatable sources (playlists, devices) */
+	g_signal_connect_object (plugin->display_page_model, "row-inserted", G_CALLBACK (display_page_inserted_cb), plugin, 0);
+	gtk_tree_model_foreach (GTK_TREE_MODEL (plugin->display_page_model),
+				(GtkTreeModelForeachFunc) display_page_inserted_cb,
+				plugin);
+	register_category_container (plugin, _("Playlists"), RB_MEDIASERVER2_PLAYLISTS, RB_MEDIASERVER2_ROOT, is_shareable_playlist);
+	/* see comments above */
+	/* register_category_container (plugin, _("Devices"), RB_MEDIASERVER2_DEVICES, RB_MEDIASERVER2_ROOT, is_shareable_device); */
 
 	/* register entry subtree */
 	plugin->entry_reg_id = g_dbus_connection_register_subtree (plugin->connection,
@@ -1028,11 +1502,23 @@ impl_deactivate	(RBPlugin *bplugin,
 	rb_list_destroy_free (plugin->sources, (GDestroyNotify) destroy_registration_data);
 	plugin->sources = NULL;
 
-	/* .. unregister subtrees .. */
+	for (l = plugin->categories; l != NULL; l = l->next) {
+		unregister_category_container (plugin, l->data, TRUE);
+	}
+	rb_list_destroy_free (plugin->categories, (GDestroyNotify) destroy_category_data);
+	plugin->categories = NULL;
 
 	if (plugin->entry_reg_id != 0) {
 		g_dbus_connection_unregister_subtree (plugin->connection, plugin->entry_reg_id);
 		plugin->entry_reg_id = 0;
+	}
+
+	if (plugin->display_page_model != NULL) {
+		g_signal_handlers_disconnect_by_func (plugin->display_page_model,
+						      display_page_inserted_cb,
+						      plugin);
+		g_object_unref (plugin->display_page_model);
+		plugin->display_page_model = NULL;
 	}
 
 	if (plugin->shell != NULL) {
