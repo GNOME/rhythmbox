@@ -434,8 +434,11 @@ missing_plugins_retry_cb (gpointer instance, gboolean installed, RBImportErrorsS
 		return;
 	}
 
-	g_object_get (source, "entry-type", &error_entry_type, NULL);
+	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->missing_plugin_model), &iter) == FALSE) {
+		return;
+	}
 
+	g_object_get (source, "entry-type", &error_entry_type, NULL);
 	do {
 		RhythmDBEntry *entry;
 
