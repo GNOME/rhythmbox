@@ -807,6 +807,12 @@ tune_response_cb (SoupSession *session,
 				} else if (code == 20) {
 					/* Not enough content */
 					error_message = g_strdup (_("Not enough content to play station"));
+				} else if (code == 27) {
+					/* Deprecated station */
+					/* Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+					 * This message indicates that the service has deprecated this type of station. */
+					error_message = g_strdup_printf (_("%s no longer supports this type of station"),
+							                 rb_audioscrobbler_service_get_name (source->priv->service));
 				} else {
 					/* Other error */
 					error_message = g_strdup_printf (_("Error tuning station: %i - %s"), code, message);
