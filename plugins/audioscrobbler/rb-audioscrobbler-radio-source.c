@@ -75,6 +75,11 @@ static const char* radio_types[] = {
 	 * Followed by a text entry box for the user name.
 	 */
 	N_("Recommendations for User:"),
+	/* Translators: a type of station named "Mix Radio" by Last.fm.
+	 * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for a description of it.
+	 * Followed by a text entry box for the user name.
+	 */
+	N_("Mix Radio for User:"),
 	/* Translators: describes a radio stream playing tracks tagged with a particular tag.
 	 * Followed by a text entry box for the tag.
 	 */
@@ -99,6 +104,7 @@ static const char* radio_urls[] = {
 	"lastfm://user/%s/neighbours",
 	"lastfm://user/%s/loved",
 	"lastfm://user/%s/recommended",
+	"lastfm://user/%s/mix",
 	"lastfm://globaltags/%s",
 	"lastfm://group/%s",
 	NULL
@@ -128,6 +134,9 @@ static const char* radio_names[] = {
 	N_("%s's Loved Tracks"),
 	/* Translators: station is built from the tracks which are recommended to the user %s */
 	N_("%s's Recommended Radio"),
+	/* Translators: station is the "Mix Radio" for the user %s.
+	 * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for description. */
+	N_("%s's Mix Radio"),
 	/* Translators: station is built from the tracks which have been "tagged" with %s.
 	 * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
 	 * but nationalities, record labels, decades and very random words are also commmon */
