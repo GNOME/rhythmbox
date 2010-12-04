@@ -52,6 +52,7 @@ INCLUDES = 						\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(JSON_GLIB_CFLAGS)				\
 	$(RHYTHMBOX_CFLAGS)				\
+	$(GNOME_KEYRING_CFLAGS)				\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 gtkbuilderdir = $(plugindir)

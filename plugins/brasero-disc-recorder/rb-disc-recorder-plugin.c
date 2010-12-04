@@ -40,8 +40,8 @@
 #include <glib-object.h>
 #include <glib/gstdio.h>
 #include <gdk/gdkx.h>
-#include <brasero/brasero-media.h>
-#include <brasero/brasero-medium-monitor.h>
+#include <brasero-media.h>
+#include <brasero-medium-monitor.h>
 
 #include <libxml/xmlerror.h>
 #include <libxml/xmlwriter.h>

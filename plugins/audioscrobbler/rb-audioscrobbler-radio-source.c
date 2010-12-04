@@ -36,7 +36,7 @@
 #include <glib/gstdio.h>
 
 #ifdef WITH_GNOME_KEYRING
-#include <gnome-keyring-1/gnome-keyring.h>
+#include <gnome-keyring.h>
 #endif
 
 #include <totem-pl-parser.h>
