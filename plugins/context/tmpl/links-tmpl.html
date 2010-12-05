@@ -1,0 +1,30 @@
+<%page args="error, artist, album, art_links, alb_links, images, stylesheet" />
+<html>
+<head>
+  <meta http-equiv="content-type" content="text-html; charset=utf-8">
+  <link rel="stylesheet" href="${stylesheet}" type="text/css" />
+  <style type="text/css">
+    img { padding: 0 5px 0 5px }
+    ul { list-style-type: none }
+  </style>
+</head>
+<body>
+%if error is None:
+<h1>${ _("Links for %s:") % ("<em>" + artist + "</em>")}</h1>
+<ul>
+%for k, v in art_links.items() :
+    <li><img src="${images}${k}16x16.png" /><a href="${v}">${k}</a></li>
+%endfor
+</ul>
+<h1>${ _("Links for %s:") % ("<em>" + album + "</em>")}</h1>
+<ul>
+%for k, v in alb_links.items() :
+    <li><img src="${images}${k}16x16.png" /><a href="${v}">${k}</a></li>
+%endfor
+</ul>
+%else:
+<h1>${ _("Unable to get links") }</h1>
+<p class="error">${error | h}</p>
+%endif
+</body>
+</html>

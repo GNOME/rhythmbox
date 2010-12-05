@@ -33,6 +33,7 @@ import os
 import ArtistTab as at
 import AlbumTab as abt
 import LyricsTab as lt
+import LinksTab as lit
 
 context_ui = """
 <ui>
@@ -161,6 +162,9 @@ class ContextView (gobject.GObject):
         self.ds['lyrics']   = lt.LyricsDataSource (self.db)
         self.view['lyrics'] = lt.LyricsView (self.shell, self.plugin, self.webview, self.ds['lyrics'])
         self.tab['lyrics']  = lt.LyricsTab (self.shell, self.buttons, self.ds['lyrics'], self.view['lyrics'])
+        self.ds['links']   = lit.LinksDataSource (self.db)
+        self.view['links'] = lit.LinksView (self.shell, self.plugin, self.webview)
+        self.tab['links']  = lit.LinksTab (self.shell, self.buttons, self.ds['links'], self.view['links'])
 
     def load_top_five (self, ds):
         top_tracks = ds.get_top_tracks ()
