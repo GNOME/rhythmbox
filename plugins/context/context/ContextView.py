@@ -25,7 +25,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import rb, rhythmdb
-import gtk, gobject
+import gtk, gobject, gio
 import pango
 import webkit
 import os
@@ -207,7 +207,12 @@ class ContextView (gobject.GObject):
         # open HTTP URIs externally.  this isn't a web browser.
         if request.get_uri().startswith('http'):
             print "opening uri %s" % request.get_uri()
-            gtk.show_uri(self.shell.props.window.get_screen(), request.get_uri(), gtk.gdk.CURRENT_TIME)
+            appinfo = gio.app_info_get_default_for_uri_scheme("http")
+            try:
+                appinfo.launch_uris((request.get_uri(),))
+            except Exception, e:
+                print "failed: %s" % str(e)
+
             return 1        # WEBKIT_NAVIGATION_RESPONSE_IGNORE
         else:
             return 0        # WEBKIT_NAVIGATION_RESPONSE_ACCEPT
