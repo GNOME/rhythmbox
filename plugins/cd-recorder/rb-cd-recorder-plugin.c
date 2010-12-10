@@ -65,7 +65,7 @@ typedef struct
 	GtkActionGroup *action_group;
 	guint           ui_merge_id;
 
-	RBSource       *selected_source;
+	RBDisplayPage  *selected_page;
 	guint           enabled : 1;
 } RBCdRecorderPlugin;
 
@@ -212,8 +212,8 @@ static void
 cmd_burn_source (GtkAction          *action,
 		 RBCdRecorderPlugin *pi)
 {
-	if (pi->selected_source != NULL) {
-		source_burn (pi, pi->selected_source);
+	if (pi->selected_page != NULL && RB_IS_SOURCE (pi->selected_page)) {
+		source_burn (pi, RB_SOURCE (pi->selected_page));
 	}
 }
 
@@ -221,12 +221,12 @@ static void
 cmd_duplicate_cd (GtkAction          *action,
 		  RBCdRecorderPlugin *pi)
 {
-	if (pi->selected_source != NULL) {
+	if (pi->selected_page != NULL) {
 		GVolume *volume;
 		char *device_path, *cmd;
 		GError *error = NULL;
 
-		g_object_get (G_OBJECT (pi->selected_source), "volume", &volume, NULL);
+		g_object_get (pi->selected_page, "volume", &volume, NULL);
 		device_path = g_volume_get_identifier (volume,
 						       G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 		g_object_unref (volume);
@@ -237,7 +237,7 @@ cmd_duplicate_cd (GtkAction          *action,
 			GtkWidget *dialog;
 			GtkWidget *toplevel;
 
-			toplevel = gtk_widget_get_toplevel (GTK_WIDGET (pi->selected_source));
+			toplevel = gtk_widget_get_toplevel (GTK_WIDGET (pi->selected_page));
 
 			dialog = gtk_message_dialog_new_with_markup (GTK_WINDOW (toplevel),
 								     GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -307,25 +307,25 @@ update_source (RBCdRecorderPlugin *pi,
 {
 	GtkAction *burn_action, *copy_action;
 	gboolean   playlist_active, is_audiocd_active;
-	RBSource  *selected_source;
-	const char *source_type;
+	RBDisplayPage *selected_page;
+	const char *page_type;
 
-	if (pi->selected_source != NULL) {
+	if (pi->selected_page != NULL) {
 		RhythmDBQueryModel *model;
 
-		g_object_get (G_OBJECT (pi->selected_source), "query-model", &model, NULL);
+		g_object_get (pi->selected_page, "query-model", &model, NULL);
 		g_signal_handlers_disconnect_by_func (model, playlist_row_inserted_cb, pi);
 		g_signal_handlers_disconnect_by_func (model, playlist_entries_changed, pi);
 		g_object_unref (model);
 	}
 
-	g_object_get (G_OBJECT (shell), "selected-source", &selected_source, NULL);
+	g_object_get (G_OBJECT (shell), "selected-page", &selected_page, NULL);
 
 	/* for now restrict to playlist sources */
-	playlist_active = RB_IS_PLAYLIST_SOURCE (selected_source);
+	playlist_active = RB_IS_PLAYLIST_SOURCE (selected_page);
 
-	source_type = G_OBJECT_TYPE_NAME (selected_source);
-	is_audiocd_active = g_str_equal (source_type, "RBAudioCdSource");
+	page_type = G_OBJECT_TYPE_NAME (selected_page);
+	is_audiocd_active = g_str_equal (page_type, "RBAudioCdSource");
 
 	burn_action = gtk_action_group_get_action (pi->action_group,
 						   "MusicPlaylistBurnPlaylist");
@@ -335,7 +335,7 @@ update_source (RBCdRecorderPlugin *pi,
 	if (pi->enabled && playlist_active && rb_recorder_enabled ()) {
 		RhythmDBQueryModel *model;
 
-		g_object_get (G_OBJECT (selected_source), "query-model", &model, NULL);
+		g_object_get (selected_page, "query-model", &model, NULL);
 		/* monitor for changes, to enable/disable the burn menu item */
 		g_signal_connect_object (G_OBJECT (model),
 					 "row_inserted",
@@ -359,10 +359,10 @@ update_source (RBCdRecorderPlugin *pi,
 		gtk_action_set_visible (copy_action, FALSE);
 	}
 
-	if (pi->selected_source != NULL) {
-		g_object_unref (pi->selected_source);
+	if (pi->selected_page != NULL) {
+		g_object_unref (pi->selected_page);
 	}
-	pi->selected_source = selected_source;
+	pi->selected_page = selected_page;
 }
 
 static void
@@ -471,8 +471,8 @@ impl_deactivate	(RBPlugin *plugin,
 
 	update_source (pi, shell);
 
-	if (pi->selected_source) {
-		pi->selected_source = NULL;
+	if (pi->selected_page) {
+		pi->selected_page = NULL;
 	}
 
 	g_signal_handlers_disconnect_by_func (shell, shell_selected_source_notify_cb, pi);
