@@ -93,7 +93,7 @@ class Jamendo(rb.Plugin):
 		action = gtk.Action('JamendoDownloadAlbum', _('_Download Album'),
 				_("Download this album using BitTorrent"),
 				'gtk-save')
-		action.connect('activate', lambda a: shell.get_property("selected-source").download_album())
+		action.connect('activate', lambda a: shell.get_property("selected-page").download_album())
 		self.action_group = gtk.ActionGroup('JamendoPluginActions')
 		self.action_group.add_action(action)
 		
@@ -101,7 +101,7 @@ class Jamendo(rb.Plugin):
 		action = gtk.Action('JamendoDonateArtist', _('_Donate to Artist'),
 				_("Donate Money to this Artist"),
 				'gtk-jump-to')
-		action.connect('activate', lambda a: shell.get_property("selected-source").launch_donate())
+		action.connect('activate', lambda a: shell.get_property("selected-page").launch_donate())
 		self.action_group.add_action(action)
 
 		manager.insert_action_group(self.action_group, 0)

@@ -115,17 +115,17 @@ class Magnatune(rb.Plugin):
 		action = gtk.Action('MagnatuneDownloadAlbum', _('Download Album'),
 				_("Download this album from Magnatune"),
 				'gtk-save')
-		action.connect('activate', lambda a: self.shell.get_property("selected-source").download_album())
+		action.connect('activate', lambda a: self.shell.get_property("selected-page").download_album())
 		self.action_group.add_action(action)
 		action = gtk.Action('MagnatuneArtistInfo', _('Artist Information'),
 				_("Get information about this artist"),
 				'gtk-info')
-		action.connect('activate', lambda a: self.shell.get_property("selected-source").display_artist_info())
+		action.connect('activate', lambda a: self.shell.get_property("selected-page").display_artist_info())
 		self.action_group.add_action(action)
 		action = gtk.Action('MagnatuneCancelDownload', _('Cancel Downloads'),
 				_("Stop downloading purchased albums"),
 				'gtk-stop')
-		action.connect('activate', lambda a: self.shell.get_property("selected-source").cancel_downloads())
+		action.connect('activate', lambda a: self.shell.get_property("selected-page").cancel_downloads())
 		action.set_sensitive(False)
 		self.action_group.add_action(action)
 
