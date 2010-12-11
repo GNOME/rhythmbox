@@ -235,7 +235,17 @@ get_root_property (GDBusConnection *connection,
 		desktop_file = egg_get_desktop_file ();
 		path = g_filename_from_uri (egg_desktop_file_get_source (desktop_file), NULL, error);
 		if (path != NULL) {
-			v = g_variant_new_string (path);
+			char *basename;
+			char *ext;
+
+			basename = g_filename_display_basename (path);
+			ext = g_utf8_strrchr (basename, -1, '.');
+			if (ext != NULL) {
+				*ext = '\0';
+			}
+
+			v = g_variant_new_string (basename);
+			g_free (basename);
 			g_free (path);
 		} else {
 			g_warning ("Unable to return desktop file path to MPRIS client: %s", (*error)->message);
