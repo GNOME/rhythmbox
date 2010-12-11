@@ -19,4 +19,4 @@ DOC_FIGURES = \
 	figures/rb-window.png			\
 	figures/rb-window-small.png
 
-DOC_LINGUAS = cs da de es el fr it ja oc pt ro ru sl sv uk zh_CN
+DOC_LINGUAS = cs da de es el fr gl it ja oc pt ro ru sl sv uk zh_CN
