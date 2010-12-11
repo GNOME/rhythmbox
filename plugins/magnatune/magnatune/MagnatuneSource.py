@@ -488,7 +488,7 @@ class MagnatuneSource(rb.BrowserSource):
 				if success:
 					width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
 					icon = rb.try_load_icon(gtk.icon_theme_get_default(), "magnatune", width, 0)
-					shell.notify_custom(4000, _("Finished Downloading"), _("All Magnatune downloads have been completed."), icon, True)
+					shell.notify_custom(4000, _("Finished Downloading"), _("All Magnatune downloads have been completed."))
 
 			self.__notify_status_changed()
 
