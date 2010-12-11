@@ -833,7 +833,7 @@ rb_shell_class_init (RBShellClass *klass)
 	 * @timeout: length of time (in seconds) to display the notification
 	 * @primary: main notification text
 	 * @secondary: secondary notification text
-	 * @pixbuf: an image to include in the notification (optional)
+	 * @image_uri: URI for an image to include in the notification (optional)
 	 * @requested: if %TRUE, the notification was triggered by an explicit user action
 	 *
 	 * Emitted when a custom notification should be displayed to the user.
@@ -844,10 +844,10 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,
 			      NULL, NULL,
-			      rb_marshal_VOID__UINT_STRING_STRING_OBJECT_BOOLEAN,
+			      rb_marshal_VOID__UINT_STRING_STRING_STRING_BOOLEAN,
 			      G_TYPE_NONE,
 			      5,
-			      G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_BOOLEAN);
+			      G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
 	/**
 	 * RBShell::database-load-complete:
 	 * @shell: the #RBShell

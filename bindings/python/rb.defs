@@ -557,8 +557,8 @@
     '("guint" "timeout")
     '("const-char*" "primary")
     '("const-char*" "secondary")
-    '("GdkPixbuf*" "pixbuf")
-    '("gboolean" "requested")
+    '("const-char*" "image_uri" (optional) (default "NULL"))
+    '("gboolean" "requested" (optional) (default "FALSE"))
   )
 )
 
