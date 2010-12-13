@@ -15,15 +15,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-21 21:44+0100\n"
-"PO-Revision-Date: 2010-11-19 12:53+0100\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=rhythmbox&component=general\n"
+"POT-Creation-Date: 2010-12-11 01:36+0000\n"
+"PO-Revision-Date: 2010-12-05 14:21+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
-"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: cs\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:711
@@ -1250,99 +1251,114 @@ msgstr "Stopy oblíbené uživatelem:"
 msgid "Recommendations for User:"
 msgstr "Doporučené stopy pro uživatele:"
 
+#. Translators: a type of station named "Mix Radio" by Last.fm.
+#. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for a description of it.
+#. * Followed by a text entry box for the user name.
+#.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:82
+msgid "Mix Radio for User:"
+msgstr "Mix Radio pro uživatele:"
+
 #. Translators: describes a radio stream playing tracks tagged with a particular tag.
 #. * Followed by a text entry box for the tag.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:81
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:86
 msgid "Tracks Tagged with:"
 msgstr "Stopy oštítkované s:"
 
 #. Translators: describes a radio stream playing tracks often listened to by members of
 #. * a particular group. Followed by a text entry box for the group name.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:85
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:90
 msgid "Listened by Group:"
 msgstr "Posloucháno skupinou:"
 
 #. Translators: station is built from artists similar to the artist %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:119
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:125
 #, c-format
 msgid "%s Radio"
 msgstr "Rádio %s"
 
 #. Translators: station is built from the artist %s's top fans
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:121
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:127
 #, c-format
 msgid "%s Fan Radio"
 msgstr "Rádio fanoušků umělce %s"
 
 #. Translators: station is built from the library of the user %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:123
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:129
 #, c-format
 msgid "%s's Library"
 msgstr "Kolekce uživatele %s"
 
 #. Translators: station is built from the "neighbourhood" of the user %s.
 #. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:126
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:132
 #, c-format
 msgid "%s's Neighbourhood"
 msgstr "Sousední stanice uživatele %s"
 
 #. Translators: station is built from the tracks which have been "loved" by the user %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:128
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr "Oblíbené stopy %s"
 
 #. Translators: station is built from the tracks which are recommended to the user %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:136
 #, c-format
 msgid "%s's Recommended Radio"
 msgstr "Doporučené stopy uživatele %s"
 
+#. Translators: station is the "Mix Radio" for the user %s.
+#. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for description.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:139
+#, c-format
+msgid "%s's Mix Radio"
+msgstr "Mix Rádio uživatele %s"
+
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
 #. * but nationalities, record labels, decades and very random words are also commmon
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:143
 #, c-format
 msgid "%s Tag Radio"
 msgstr "Rádio se štítky %s"
 
 #. Translators: station is built from the library of the group %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:136
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:145
 #, c-format
 msgid "%s Group Radio"
 msgstr "Rádio skupiny %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:281
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:290
 msgid "_Rename Station"
 msgstr "_Přejmenovat stanici"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:282
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:291
 msgid "Rename station"
 msgstr "Přejmenovat stanici"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:284
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:293
 msgid "_Delete Station"
 msgstr "_Smazat stanici"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:285
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:294
 msgid "Delete station"
 msgstr "Smazat stanici"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:451
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:460
 msgid "You must enter your password to listen to this station"
 msgstr "Abyste mohli poslouchat tuto stanici, je třeba zadat heslo"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:762
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1105
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1235
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:771
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1120
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1250
 msgid "Error tuning station: no response"
 msgstr "Chyba ladění stanice: neodpovídá"
 
 #. Invalid station url
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:799
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:808
 msgid "Invalid station URL"
 msgstr "Neplatná adresa URL stanice"
 
@@ -1350,36 +1366,44 @@ msgstr "Neplatná adresa URL stanice"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This message indicates that to listen to this radio station the user needs to be
 #. * a paying subscriber to the service.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:805
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:814
 #, c-format
 msgid "This station is only available to %s subscribers"
 msgstr "Tato stanice je dostupná pouze předplatitelům %s."
 
 #. Not enough content
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:809
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:818
 msgid "Not enough content to play station"
 msgstr "K přehrání stanice není k dispozici dostatek obsahu"
 
+#. Deprecated station
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This message indicates that the service has deprecated this type of station.
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:823
+#, c-format
+msgid "%s no longer supports this type of station"
+msgstr "%s již nadále nepodporuje tento typ stanice"
+
 #. Other error
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:812
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:827
 #, c-format
 msgid "Error tuning station: %i - %s"
 msgstr "Chyba ladění stanice: %i – %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:823
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:838
 msgid "Error tuning station: unexpected response"
 msgstr "Chyba ladění stanice: neočekávaná odpověď"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:828
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:843
 msgid "Error tuning station: invalid response"
 msgstr "Chyba ladění stanice: neplatná odpověď"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1220
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1235
 #, c-format
 msgid "Error tuning station: %s"
 msgstr "Chyba ladění stanice: %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1292
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1307
 #, c-format
 msgid "Password for streaming %s radio using the deprecated API"
 msgstr "Heslo pro proudově vysílané rádio %s používající zastaralé API"
@@ -1387,7 +1411,7 @@ msgstr "Heslo pro proudově vysílané rádio %s používající zastaralé API"
 #. We could be calling either radio.tune or radio.getPlaylist methods.
 #. * "Tuning station" seems like a user friendly message to display for both cases.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1455
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1470
 msgid "Tuning station"
 msgstr "Ladí se stanice"
 
@@ -1908,21 +1932,21 @@ msgid "Loading biography for %s"
 msgstr "Načítá se biografie umělce %s"
 
 #. Add button to toggle visibility of pane
-#: ../plugins/context/context/ContextView.py:89
+#: ../plugins/context/context/ContextView.py:90
 msgid "Toggle Conte_xt Pane"
 msgstr "Přepnout konte_xtový panel"
 
-#: ../plugins/context/context/ContextView.py:90
+#: ../plugins/context/context/ContextView.py:91
 msgid "Change the visibility of the context pane"
 msgstr "Změnit viditelnost kontextového panelu"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
-#: ../plugins/context/context/ContextView.py:197
+#: ../plugins/context/context/ContextView.py:201
 #, python-format
 msgid "Top songs by %s"
 msgstr "Nejlepší skladby od %s"
 
-#: ../plugins/context/context/ContextView.py:227
+#: ../plugins/context/context/ContextView.py:236
 msgid "Nothing Playing"
 msgstr "Nic se nepřehrává"
 
@@ -3140,11 +3164,11 @@ msgstr ""
 "Text chyby je:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:489
 msgid "Finished Downloading"
 msgstr "Stahování dokončeno"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:489
 msgid "All Magnatune downloads have been completed."
 msgstr "Všechna stahování z Magnatune byla dokončena."
 
@@ -5734,5 +5758,3 @@ msgstr "Na ploše"
 msgid "Unknown location"
 msgstr "Neznámé umístění"
 
-#~ msgid "S_ource"
-#~ msgstr "_Zdroj"
