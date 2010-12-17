@@ -9,6 +9,10 @@
 #include "rb-cut-and-paste-code.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
+#include "rb-display-page-group.h"
+#include "rb-display-page-model.h"
+#include "rb-display-page-tree.h"
+#include "rb-display-page.h"
 #include "rb-encoder.h"
 #include "rb-entry-view.h"
 #include "rb-file-helpers.h"
@@ -47,12 +51,9 @@
 #include "rb-shell-preferences.h"
 #include "rb-song-info.h"
 #include "rb-source.h"
-#include "rb-source-group.h"
 #include "rb-source-header.h"
 #include "rb-source-search.h"
 #include "rb-source-search-basic.h"
-#include "rb-sourcelist.h"
-#include "rb-sourcelist-model.h"
 #include "rb-static-playlist-source.h"
 #include "rb-statusbar.h"
 #include "rb-stock-icons.h"
@@ -75,6 +76,10 @@ rb_auto_playlist_source_get_type
 rb_browser_source_get_type
 rb_cell_renderer_pixbuf_get_type
 rb_cell_renderer_rating_get_type
+rb_display_page_get_type
+rb_display_page_group_get_type
+rb_display_page_model_get_type
+rb_display_page_tree_get_type
 rb_encoder_get_type
 rb_entry_view_column_get_type
 rb_entry_view_get_type
@@ -114,14 +119,9 @@ rb_shell_ui_location_get_type
 rb_song_info_get_type
 rb_source_eof_type_get_type
 rb_source_get_type
-rb_source_group_category_get_type
-rb_source_group_get_type
 rb_source_header_get_type
 rb_source_search_get_type
 rb_source_search_basic_get_type
-rb_sourcelist_get_type
-rb_sourcelist_model_column_get_type
-rb_sourcelist_model_get_type
 rb_static_playlist_source_get_type
 rb_statusbar_get_type
 rb_streaming_source_get_type
