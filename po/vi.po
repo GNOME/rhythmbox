@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rhythmbox Gnome HEAD\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-06-03 23:56+1000\n"
-"PO-Revision-Date: 2009-06-04 21:37+1000\n"
+"PO-Revision-Date: 2010-12-19 17:50+0700\n"
 "Last-Translator: Phạm Thành Long <lngt@ngonngu.net>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -36,7 +36,7 @@ msgstr "Lỗi tạo yếu tố playbin2; hãy kiểm tra lại bản cài đặt
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2755
 #, c-format
 msgid "Failed to open output device: %s"
-msgstr "Lỗi tạo thiết bị ra: %s"
+msgstr "Lỗi mở thiết bị xuất: %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:625
 #, c-format
@@ -58,7 +58,7 @@ msgstr "Lỗi khởi tạo luồng mới"
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2681
 #, c-format
 msgid "Failed to open output device"
-msgstr "Lỗi tạo thiết bị ra"
+msgstr "Lỗi tạo mở ngõ ra của thiết bị"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3011
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3093
@@ -116,7 +116,7 @@ msgstr "Phút"
 
 #: ../data/ui/create-playlist.ui.h:7
 msgid "_Limit to: "
-msgstr "_Hạn chế: "
+msgstr "_Giới hạn: "
 
 #: ../data/ui/create-playlist.ui.h:8
 msgid "_When sorted by:"
@@ -153,7 +153,7 @@ msgstr "_Thể loại, nghệ sĩ và tập nhạc"
 
 #: ../data/ui/general-prefs.ui.h:7
 msgid "Icons only"
-msgstr "Chỉ hình"
+msgstr "Chỉ biểu tượng"
 
 #: ../data/ui/general-prefs.ui.h:8
 msgid "Lo_cation"
@@ -205,11 +205,11 @@ msgstr "T_hể loại và nghệ sĩ"
 
 #: ../data/ui/general-prefs.ui.h:20
 msgid "_Last played"
-msgstr "_Phát lần cuối"
+msgstr "Lần nghe _cuối"
 
 #: ../data/ui/general-prefs.ui.h:21
 msgid "_Play count"
-msgstr "_Số lần phát"
+msgstr "Số _lần nghe"
 
 #: ../data/ui/general-prefs.ui.h:22
 msgid "_Quality"
@@ -217,7 +217,7 @@ msgstr "_Chất lượng"
 
 #: ../data/ui/general-prefs.ui.h:23
 msgid "_Rating"
-msgstr "Đánh _giá"
+msgstr "_Bình chọn"
 
 #: ../data/ui/general-prefs.ui.h:24
 msgid "_Year"
@@ -245,7 +245,7 @@ msgstr "_Duyệt..."
 
 #: ../data/ui/library-prefs.ui.h:6 ../shell/rb-playlist-manager.c:190
 msgid "_Edit..."
-msgstr "_Sửa..."
+msgstr "_Hiệu chỉnh..."
 
 #: ../data/ui/library-prefs.ui.h:7
 msgid "_File name:"
@@ -281,11 +281,11 @@ msgstr "Kích thước vùng đệm mạng (kB)"
 
 #: ../data/ui/playback-prefs.ui.h:5
 msgid "Player Backend"
-msgstr ""
+msgstr "Trình nền phát"
 
 #: ../data/ui/playback-prefs.ui.h:6
 msgid "_Use crossfading backend (requires restart)"
-msgstr "_Dùng backend chuyển tiếp (cần khởi chạy lại)"
+msgstr "_Dùng trình nền chuyển tiếp (cần khởi chạy lại)"
 
 #: ../data/ui/playlist-save.ui.h:1
 msgid "<b>Playlist format</b>"
@@ -313,7 +313,7 @@ msgstr "Cấ_u hình..."
 
 #: ../data/ui/plugins.ui.h:3 ../data/ui/podcast-feed-properties.ui.h:4
 msgid "Copyright:"
-msgstr "Tác quyền:"
+msgstr "Bản quyền:"
 
 #: ../data/ui/plugins.ui.h:4 ../data/ui/podcast-feed-properties.ui.h:5
 #: ../data/ui/podcast-properties.ui.h:5
@@ -343,7 +343,7 @@ msgstr "Ngôn ngữ:"
 
 #: ../data/ui/podcast-feed-properties.ui.h:8
 msgid "Last episode:"
-msgstr "Tình tiết cuối:"
+msgstr "Chương cuối:"
 
 #: ../data/ui/podcast-feed-properties.ui.h:9
 msgid "Last updated:"
@@ -361,11 +361,11 @@ msgstr "Tiêu đề:"
 
 #: ../data/ui/podcast-prefs.ui.h:1
 msgid "<b>Download Manager</b>"
-msgstr "<b>Bộ quản lí tải về</b>"
+msgstr "<b>Bộ Quản lý Tải về</b>"
 
 #: ../data/ui/podcast-prefs.ui.h:2
 msgid "Check for _new episodes:"
-msgstr "Kiểm tra tì_nh tiết mới:"
+msgstr "Kiểm tra chương mớ_i:"
 
 #: ../data/ui/podcast-prefs.ui.h:3
 msgid "Every day"
@@ -415,12 +415,12 @@ msgstr "Nguồn:"
 #: ../data/ui/podcast-properties.ui.h:10 ../data/ui/song-info.ui.h:9
 #: ../plugins/iradio/station-properties.ui.h:6
 msgid "Last played:"
-msgstr "Lần phát cuối:"
+msgstr "Lần nghe cuối:"
 
 #: ../data/ui/podcast-properties.ui.h:11 ../data/ui/song-info.ui.h:11
 #: ../plugins/iradio/station-properties.ui.h:7
 msgid "Play count:"
-msgstr "Số lần phát:"
+msgstr "Số lần nghe:"
 
 #: ../data/ui/podcast-properties.ui.h:14 ../data/ui/song-info-multiple.ui.h:5
 #: ../data/ui/song-info.ui.h:16 ../plugins/iradio/station-properties.ui.h:9
@@ -437,7 +437,7 @@ msgstr "Nghệ _sĩ:"
 
 #: ../data/ui/song-info-multiple.ui.h:3 ../data/ui/song-info.ui.h:14
 msgid "_Disc number:"
-msgstr "_Số hiệu đĩa:"
+msgstr "Mã _số đĩa:"
 
 #: ../data/ui/song-info-multiple.ui.h:4 ../data/ui/song-info.ui.h:15
 #: ../plugins/iradio/station-properties.ui.h:8
@@ -475,7 +475,7 @@ msgstr "_Tựa:"
 
 #: ../data/ui/song-info.ui.h:18
 msgid "_Track number:"
-msgstr "Số _rãnh:"
+msgstr "Số _bài:"
 
 #: ../data/playlists.xml.in.h:1
 msgid "My Top Rated"
@@ -499,7 +499,7 @@ msgstr "Bộ phát nhạc"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 msgid "Play and organize your music collection"
-msgstr "Phát nhạc và tổ chức các tập nhạc của bạn."
+msgstr "Phát nhạc và tổ chức các tập nhạc"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
@@ -738,7 +738,7 @@ msgstr "Tập tin chứa một luồng kiểu %s, loại không thể giải mã
 #: ../plugins/cd-recorder/rb-recorder-gst.c:507
 #, c-format
 msgid "Failed to create %s element; check your installation"
-msgstr "Lỗi tạo yếu tố %s; hãy kiểm tra lại bản cài đặt"
+msgstr "Lỗi tạo phần tử %s; hãy kiểm tra lại bản cài đặt"
 
 #: ../metadata/rb-metadata-gst.c:1055
 #, c-format
@@ -827,13 +827,13 @@ msgstr "<unicode không hợp lệ>"
 #: ../plugins/audiocd/rb-audiocd-source.c:266
 #, c-format
 msgid "Track %u"
-msgstr "Rãnh %u"
+msgstr "Bài %u"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:326
 #: ../plugins/audiocd/rb-audiocd-source.c:334
 #: ../plugins/audiocd/rb-audiocd-source.c:675
 msgid "Couldn't load Audio CD"
-msgstr "Không thể nạp CD Nhạc"
+msgstr "Không thể nạp CD Âm thanh"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:327
 msgid "Rhythmbox couldn't access the CD."
@@ -848,7 +848,7 @@ msgstr "Rhythmbox không thể đọc thông tin về đĩa CD."
 #: ../widgets/rb-query-creator-properties.c:75
 #: ../widgets/rb-query-creator-properties.c:105
 msgid "Title"
-msgstr "Tiêu đề"
+msgstr "Tựa đề"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:444
 #: ../sources/rb-library-source.c:141 ../widgets/rb-entry-view.c:1438
@@ -886,7 +886,7 @@ msgstr "Nghệ sĩ lạ"
 #: ../plugins/audiocd/sj-metadata-gvfs.c:129
 #, c-format
 msgid "Track %d"
-msgstr "Rãnh %d"
+msgstr "Bài %d"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:150
 #, c-format
@@ -964,7 +964,7 @@ msgstr "Lần gửi sau cùng:"
 #: ../widgets/rb-entry-view.c:1531 ../widgets/rb-entry-view.c:1544
 #: ../widgets/rb-song-info.c:1345
 msgid "Never"
-msgstr "Chưa bao giờ"
+msgstr "Không bao giờ"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:7
 msgid "New to Last.fm?"
@@ -972,7 +972,7 @@ msgstr "Lần đầu dùng Last.fm?"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:8
 msgid "Queued tracks:"
-msgstr "Các rãnh đang đợi:"
+msgstr "Bài đang đợi:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:9
 msgid "Sign up for an account"
@@ -988,7 +988,7 @@ msgstr "Trạng thái:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:12
 msgid "Tracks submitted:"
-msgstr "Rãnh đã gửi:"
+msgstr "Bài đã gửi:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.ui.h:13
 msgid "_Password:"
@@ -1030,7 +1030,7 @@ msgstr "Phiên bản này của Rhythmbox đã bị Last.fm cấm."
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1051
 msgid "Track submission failed too many times"
-msgstr "Lỗi gửi rãnh quá nhiều lần"
+msgstr "Lỗi gửi bài hát quá nhiều lần"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:192
 msgid "Similar Artists radio"
@@ -1092,22 +1092,22 @@ msgstr "Đài cá nhân của %s"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:198
 msgid "Loved tracks"
-msgstr "Rãnh yêu thích"
+msgstr "Bài yêu thích"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:198
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1306
 #, c-format
 msgid "%s's Loved Tracks"
-msgstr "Rãnh yêu thích của %s"
+msgstr "Bài yêu thích của %s"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:199
 msgid "Recommended tracks"
-msgstr "Rãnh gợi ý"
+msgstr "Bài nên nghe"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:199
 #, c-format
 msgid "Tracks recommended to %s"
-msgstr "Rãnh được gợi ý cho %s"
+msgstr "Bài hát được gợi ý cho %s"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:285
 msgid "Love"
@@ -1157,7 +1157,8 @@ msgstr "Thiết lập tài khoản"
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:899
 msgid ""
 "Account details are needed before you can connect.  Check your settings."
-msgstr "Cầnchi tiết tài khoản để kết nối. Vui lòng kiểm tra thiết lập của bạn."
+msgstr ""
+"Cần chi tiết tài khoản để kết nối. Vui lòng kiểm tra thiết lập của bạn."
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:907
 msgid "Unable to connect"
@@ -1229,7 +1230,7 @@ msgstr "Đang cấm bài nhạc"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:2343
 msgid "Adding song to your Loved tracks"
-msgstr "Thêm bài nhạc vào danh sách rãnh yêu thích"
+msgstr "Thêm bài nhạc vào danh sách bài yêu thích"
 
 #. and maybe some more
 #: ../plugins/brasero-disc-recorder/cd-recorder.rb-plugin.in.h:1
@@ -1244,12 +1245,12 @@ msgstr "Thu CD nhạc từ danh mục phát và sao CD nhạc"
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:98
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:89
 msgid "_Create Audio CD..."
-msgstr "Tạo đĩa _CD nhạc..."
+msgstr "Tạo đĩa _CD âm thanh..."
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:99
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:90
 msgid "Create an audio CD from playlist"
-msgstr "Tạo đĩa CD Nhạc từ danh mục nhạc"
+msgstr "Tạo đĩa CD âm thanh từ danh mục nhạc"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:101
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:92
@@ -1273,7 +1274,7 @@ msgstr "Rhythmbox không thể thu đĩa này"
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:228
 #, c-format
 msgid "Unable to build an audio track list"
-msgstr "Không thể tạo danh sách rãnh âm thanh"
+msgstr "Không thể tạo danh mục nhạc"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:239
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:431
@@ -1311,7 +1312,7 @@ msgstr "Hỗ trợ khả năng thu đĩa CD nhạc từ danh mục nhạc"
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:193
 msgid "Unable to create audio CD"
-msgstr "Không thể tạo đĩa CD Nhạc"
+msgstr "Không thể tạo đĩa CD âm thanh"
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:246
 msgid "Could not duplicate disc"
@@ -1338,7 +1339,7 @@ msgstr "Không thể lấy tình trạng từ ống dẫn đang xử lí"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:601
 msgid "Could not get current track position"
-msgstr "Không thể lấy vị trí rãnh hiện tại"
+msgstr "Không thể lấy vị trí bài hiện tại"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:649
 #, c-format
@@ -1379,7 +1380,7 @@ msgstr "Không thể xác định thời lượng cho tập tin: %s"
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1212
 #, c-format
 msgid "Could not determine audio track durations."
-msgstr "Không thể xác định thời lượng rãnh."
+msgstr "Không thể xác định độ dài bài."
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1254
 #, c-format
@@ -1396,7 +1397,7 @@ msgstr "Gặp lỗi khi ghi vào đĩa CD"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:279
 msgid "Maximum possible"
-msgstr "Tối đa có thể"
+msgstr "Càng nhiều càng tốt"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:346
 #, c-format
@@ -1451,19 +1452,19 @@ msgstr "Còn lại khoảng %s"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:513
 msgid "Writing audio to CD"
-msgstr "Đang ghi nhạc vào CD"
+msgstr "Đang ghi âm thanh vào CD"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:529
 msgid "Finished creating audio CD."
-msgstr "Đã tạo xong CD nhạc"
+msgstr "Mới tạo xong đĩa CD âm thanh"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:547
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
 msgstr ""
-"Đã tạo xong đĩa CD Nhạc.\n"
-"Tạo thêm một bản sao?"
+"Mới tạo xong đĩa CD âm thanh.\n"
+"Tạo tiếp chứ?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:549
 msgid "Writing failed.  Try again?"
@@ -1499,11 +1500,11 @@ msgstr "Thô_i"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:809
 msgid "_Interrupt"
-msgstr "_Dừng"
+msgstr "_Ngắt"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:831
 msgid "Could not create audio CD"
-msgstr "Không thể tạo đĩa CD Nhạc"
+msgstr "Không thể tạo đĩa CD âm thanh"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:853
 msgid "Please make sure another application is not using the drive."
@@ -1548,7 +1549,7 @@ msgstr "Tải lại một đĩa CD trắng"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:917
 msgid "Converting audio tracks"
-msgstr "Đang chuyển đổi rãnh âm thanh..."
+msgstr "Đang chuyển đổi bài nhạc..."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:920
 msgid "Preparing to write CD"
@@ -1603,7 +1604,7 @@ msgstr "Không thể gỡ bỏ thư mục tạm '%s': %s"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1365
 msgid "Create Audio CD"
-msgstr "Tạo đĩa CD Nhạc"
+msgstr "Tạo đĩa CD âm thanh"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1383
 #, c-format
@@ -1614,12 +1615,12 @@ msgstr "Tạo đĩa CD nhạc từ '%s' không?"
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1447
 #, c-format
 msgid "Unable to build an audio track list."
-msgstr "Không thể tạo danh sách rãnh âm thanh."
+msgstr "Không thể tạo danh mục nhạc."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1457
 #, c-format
 msgid "This playlist is too long to write to an audio CD."
-msgstr "Danh mục nhạc này quá dài nên không thể ghi vào CD Nhạc."
+msgstr "Danh mục nhạc này quá dài nên không thể ghi vào CD âm thanh."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1593
 #, c-format
@@ -1715,7 +1716,7 @@ msgstr "Tên chia sẻ không hợp lệ"
 #: ../plugins/daap/rb-daap-dialog.c:74
 #, c-format
 msgid "The shared music name '%s' is already taken. Please choose another."
-msgstr "Tên chia sẻ nhạc '%s' đã được chọn. Hãy chọn tên khác."
+msgstr "Tên chia sẻ nhạc \"%s\" đã được chọn. Vui lòng chọn tên khác."
 
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:237
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:280
@@ -1850,7 +1851,7 @@ msgstr "Máy nghe nhạc di động"
 
 #: ../plugins/generic-player/generic-player.rb-plugin.in.h:2
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
-msgstr "Hỗ trợ các thiết bị nhạc số phổ quát (và PSP, Nokia 770)"
+msgstr "Hỗ trợ các thiết bị nhạc số chung (và cả PSP, Nokia 770)"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:98
 #: ../shell/rb-playlist-manager.c:1150 ../shell/rb-playlist-manager.c:1193
@@ -1967,7 +1968,7 @@ msgstr "Số danh mục nhạc:"
 
 #: ../plugins/ipod/ipod-info.ui.h:12
 msgid "Number of Tracks:"
-msgstr "Số rãnh:"
+msgstr "Số bài:"
 
 #: ../plugins/ipod/ipod-info.ui.h:13
 msgid "Serial Number:"
@@ -2056,7 +2057,7 @@ msgstr "Thay đổi tên của danh mục nhạc"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:116 ../shell/rb-playlist-manager.c:187
 msgid "_Delete"
-msgstr "_Xoá bỏ"
+msgstr "_Xóa"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:117 ../shell/rb-playlist-manager.c:188
 msgid "Delete playlist"
@@ -2251,7 +2252,7 @@ msgstr "Đài phát thanh Internet _mới..."
 
 #: ../plugins/iradio/rb-iradio-source.c:174
 msgid "Create a new Internet Radio station"
-msgstr "Tạo trạm phát Internet mới"
+msgstr "Tạo đài phát thanh Internet mới"
 
 #. Translators: this is the toolbar button label for
 #. New Internet Radio Station action.
@@ -2280,11 +2281,11 @@ msgstr[0] "%d trạm"
 #: ../plugins/iradio/rb-iradio-source.c:1003
 #: ../plugins/iradio/rb-station-properties-dialog.c:405
 msgid "New Internet Radio Station"
-msgstr "Trạm phát Internet mới"
+msgstr "Trạm phát thanh Internet mới"
 
 #: ../plugins/iradio/rb-iradio-source.c:1003
 msgid "URL of internet radio station:"
-msgstr "URL của trạm phát Internet mạng:"
+msgstr "URL của trạm phát thanh Internet:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:401
 #: ../podcast/rb-feed-podcast-properties-dialog.c:212
@@ -2311,7 +2312,7 @@ msgstr "Không thể thay đổi URI của trạm sang %s, vì trạm đó đã 
 
 #: ../plugins/iradio/station-properties.ui.h:5
 msgid "L_ocation:"
-msgstr "Đị_a điểm:"
+msgstr "Đị_a chỉ:"
 
 #: ../plugins/lirc/lirc.rb-plugin.in.h:1
 msgid "Control Rhythmbox using an infrared remote control"
@@ -2333,7 +2334,7 @@ msgstr "_Lưu"
 #: ../plugins/lyrics/lyrics/__init__.py:182
 #: ../plugins/lyrics/lyrics/__init__.py:195 ../shell/rb-shell.c:388
 msgid "_Edit"
-msgstr "_Sửa"
+msgstr "_Hiệu chỉnh"
 
 #: ../plugins/lyrics/lyrics/__init__.py:197
 msgid "_Search again"
@@ -3136,7 +3137,7 @@ msgstr "Biểu tượng trạng thái"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:2
 msgid "Status icon and notification popups"
-msgstr ""
+msgstr "Biểu tượng trạng thái và thông báo xổ ra"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:1
 msgid "Always shown"
@@ -3148,11 +3149,11 @@ msgstr "Luôn nhìn thấy"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:3
 msgid "Never shown"
-msgstr "Chưa bao giờ hiện"
+msgstr "Không bao giờ hiện"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:4
 msgid "Never visible"
-msgstr "Chưa bao giờ hiện"
+msgstr "Không bao giờ hiện"
 
 #: ../plugins/status-icon/status-icon-preferences.ui.h:5
 msgid "Owns the main window"
@@ -3180,7 +3181,7 @@ msgstr "Biểu tượng _Trạng thái:"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:229
 msgid "_Visualization"
-msgstr "_Hiệu ứng trực quan"
+msgstr "_Hiệu ứng thị giác"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:230
 msgid "Start or stop visualization"
@@ -3221,7 +3222,7 @@ msgstr "Cửa sổ"
 #: ../plugins/visualizer/rb-visualizer-plugin.c:726
 #, c-format
 msgid "Unable to start video output"
-msgstr "Không thể khởi động đầu phát hình"
+msgstr "Không thể khởi động ngõ xuất hình ảnh"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:761
 #, c-format
@@ -3346,7 +3347,7 @@ msgstr "Không thể phân tích nội dung nguồn"
 #: ../podcast/rb-podcast-parse.c:239
 #, c-format
 msgid "The feed does not contain any downloadable items"
-msgstr "Nguồn không chứ gì có thể lấy về"
+msgstr "Nguồn không chứa mục nào có thể tải về"
 
 #: ../podcast/rb-podcast-properties-dialog.c:431
 msgid "Not Downloaded"
@@ -3370,11 +3371,11 @@ msgstr "Ẩn cửa sổ Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:87
 msgid "Jump to next song"
-msgstr "Nhảy tới bài kế tiếp"
+msgstr "Tới bài kế tiếp"
 
 #: ../remote/dbus/rb-client.c:88
 msgid "Jump to previous song"
-msgstr "Nhảy về bài trước đó"
+msgstr "Về bài trước đó"
 
 #: ../remote/dbus/rb-client.c:90
 msgid "Show notification of the playing song"
@@ -3382,7 +3383,7 @@ msgstr "Hiện thông báo về bài nhạc đang phát"
 
 #: ../remote/dbus/rb-client.c:92
 msgid "Resume playback if currently paused"
-msgstr "Tiếp tục phát lại nếu đã tạm dừng"
+msgstr "Tiếp tục phát nếu đang tạm dừng"
 
 #: ../remote/dbus/rb-client.c:93
 msgid "Pause playback if currently playing"
@@ -3403,11 +3404,11 @@ msgstr "URI cần phát"
 
 #: ../remote/dbus/rb-client.c:98
 msgid "Add specified tracks to the play queue"
-msgstr "Thêm các rãnh được chọn vào hàng đợi phát"
+msgstr "Thêm các bài được chọn vào hàng đợi phát"
 
 #: ../remote/dbus/rb-client.c:99
 msgid "Empty the play queue before adding new tracks"
-msgstr "Xoá hàng đợi phát trước khi tham rãnh mới"
+msgstr "Xoá hàng đợi phát trước khi thêm bài mới"
 
 #: ../remote/dbus/rb-client.c:101
 msgid "Print the title and artist of the playing song"
@@ -3435,16 +3436,16 @@ msgstr "In âm lượng phát lại hiện thời"
 
 #: ../remote/dbus/rb-client.c:108
 msgid "Mute playback"
-msgstr "Tắt phát tiếng"
+msgstr "Tắt phát âm thanh"
 
 #: ../remote/dbus/rb-client.c:109
 msgid "Unmute playback"
-msgstr "Thôi tắt phát tiếng"
+msgstr "Thôi tắt phát âm thanh"
 
 #: ../remote/dbus/rb-client.c:706
 #, c-format
 msgid "Playback is muted.\n"
-msgstr "Phát tiếng bị cấm.\n"
+msgstr "Tắt phát âm thanh.\n"
 
 #: ../remote/dbus/rb-client.c:707
 #, c-format
@@ -3633,11 +3634,11 @@ msgstr "Thay đổi danh mục nhạc tự động này"
 
 #: ../shell/rb-playlist-manager.c:193
 msgid "_Queue All Tracks"
-msgstr "_Xếp hàng mọi rãnh"
+msgstr "Đưa _mọi bài vào hàng đợi"
 
 #: ../shell/rb-playlist-manager.c:194
 msgid "Add all tracks in this playlist to the queue"
-msgstr "Thêm các rãnh trong danh mục nhạc này vào hàng đợi"
+msgstr "Thêm mọi bài trong danh mục nhạc này vào hàng đợi"
 
 #: ../shell/rb-playlist-manager.c:196
 msgid "_Shuffle Playlist"
@@ -3645,7 +3646,7 @@ msgstr "_Xáo trộn danh mục nhạc"
 
 #: ../shell/rb-playlist-manager.c:197
 msgid "Shuffle the tracks in this playlist"
-msgstr "Xáo trộn các rãnh trong danh mục nhạc này"
+msgstr "Xáo trộn các bài trong danh mục nhạc này"
 
 #: ../shell/rb-playlist-manager.c:200
 msgid "Save the play queue to a file"
@@ -3713,7 +3714,7 @@ msgstr "_Trích cho vào thư viện"
 
 #: ../shell/rb-removable-media-manager.c:154
 msgid "Copy all tracks to the library"
-msgstr "Chép mọi rãnh vào thư viện"
+msgstr "Chép mọi bài vào thư viện"
 
 #: ../shell/rb-removable-media-manager.c:156
 msgid "_Scan Removable Media"
@@ -3739,7 +3740,7 @@ msgstr "Không thể bỏ gắn kết"
 
 #: ../shell/rb-removable-media-manager.c:963
 msgid "Error transferring track"
-msgstr "Gặp lỗi khi truyền rãnh"
+msgstr "Gặp lỗi khi truyền bài"
 
 #: ../shell/rb-shell-clipboard.c:152
 msgid "Select _All"
@@ -3783,7 +3784,7 @@ msgstr "Dán vùng chọn"
 
 #: ../shell/rb-shell-clipboard.c:167
 msgid "_Remove"
-msgstr "_Gỡ bỏ"
+msgstr "_Loại bỏ"
 
 #: ../shell/rb-shell-clipboard.c:168 ../shell/rb-shell-clipboard.c:182
 msgid "Remove selection"
@@ -3863,7 +3864,7 @@ msgstr "_Phát"
 
 #: ../shell/rb-shell-player.c:336 ../shell/rb-shell-player.c:3755
 msgid "Start playback"
-msgstr "Phát lại"
+msgstr "Bắt đầu phát"
 
 #: ../shell/rb-shell-player.c:338
 msgid "Sh_uffle"
@@ -3895,7 +3896,7 @@ msgstr "Lỗi luồng"
 
 #: ../shell/rb-shell-player.c:798
 msgid "Unexpected end of stream!"
-msgstr "Gặp kết thúc luồng bất ngờ!"
+msgstr "Luồng hết bất thường!"
 
 #: ../shell/rb-shell-player.c:928
 msgid "Linear"
@@ -4070,11 +4071,11 @@ msgstr "Chuyển đổi và cấu hình bổ sung"
 
 #: ../shell/rb-shell.c:415
 msgid "Show _All Tracks"
-msgstr "Hiện _mọi rãnh"
+msgstr "Hiện _mọi bài"
 
 #: ../shell/rb-shell.c:416
 msgid "Show all tracks in this music source"
-msgstr "Hiển thị mọi rãnh trong nguồn nhạc này"
+msgstr "Hiện mọi bài trong nguồn nhạc này"
 
 #: ../shell/rb-shell.c:418
 msgid "_Jump to Playing Song"
@@ -4106,7 +4107,7 @@ msgstr "_Hiển thị nhỏ"
 
 #: ../shell/rb-shell.c:433
 msgid "Make the main window smaller"
-msgstr "Thu nhỏ cửa sổ chính"
+msgstr "Thu nhỏ cửa sổ"
 
 #: ../shell/rb-shell.c:435
 msgid "Party _Mode"
@@ -4138,7 +4139,7 @@ msgstr "Không thể di chuyển tập tin dữ liệu người dùng"
 
 #: ../shell/rb-shell.c:1290
 msgid "Change the music volume"
-msgstr "Thay đổi âm lượng nhạc"
+msgstr "Thay đổi âm lượng"
 
 #: ../shell/rb-shell.c:1696
 msgid "Error while saving song information"
@@ -4147,12 +4148,12 @@ msgstr "Gặp lỗi khi lưu thông tin bài nhạc"
 #: ../shell/rb-shell.c:1801
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
-msgstr "Đang truyền rãnh %d trên %d (%.0f%%)..."
+msgstr "Đang truyền bài %d trên %d (%.0f%%)..."
 
 #: ../shell/rb-shell.c:1804
 #, c-format
 msgid "Transferring track %d out of %d"
-msgstr "Đang truyền rãnh %d trên %d..."
+msgstr "Đang truyền bài %d trên %d..."
 
 #. Translators: %s is the song name
 #: ../shell/rb-shell.c:2004
@@ -4204,11 +4205,11 @@ msgstr ""
 
 #: ../shell/rb-shell.c:2126
 msgid "Maintainers:"
-msgstr "Người bảo trì:"
+msgstr "Người quản lý:"
 
 #: ../shell/rb-shell.c:2129
 msgid "Former Maintainers:"
-msgstr "Người bảo trì trước đây:"
+msgstr "Người quản lý trước đây:"
 
 #: ../shell/rb-shell.c:2132
 msgid "Contributors:"
@@ -4308,7 +4309,7 @@ msgstr "Tìm kiếm tiêu đề"
 
 #: ../sources/rb-browser-source.c:160
 msgid "Browse This _Genre"
-msgstr "Duyệt theo thể _loại này"
+msgstr "Duyệt thể _loại này"
 
 #: ../sources/rb-browser-source.c:161
 msgid "Set the browser to view only this genre"
@@ -4316,7 +4317,7 @@ msgstr "Điều chỉnh bộ duyệt chỉ hiện thể loại này"
 
 #: ../sources/rb-browser-source.c:163
 msgid "Browse This _Artist"
-msgstr "Duyệt theo nghệ _sĩ này"
+msgstr "Duyệt nghệ _sĩ này"
 
 #: ../sources/rb-browser-source.c:164
 msgid "Set the browser to view only this artist"
@@ -4324,7 +4325,7 @@ msgstr "Điều chỉnh bộ duyệt chỉ hiện nghệ sĩ này"
 
 #: ../sources/rb-browser-source.c:166
 msgid "Browse This A_lbum"
-msgstr "Duyệt theo _tập nhạc này"
+msgstr "Duyệt tập _nhạc này"
 
 #: ../sources/rb-browser-source.c:167
 msgid "Set the browser to view only this album"
@@ -4342,15 +4343,15 @@ msgstr[0] "%d lỗi nhập"
 
 #: ../sources/rb-library-source.c:137
 msgid "Artist/Artist - Album"
-msgstr "Nghệ sĩ/Nghệ sĩ — Tập"
+msgstr "Nghệ sĩ/Nghệ sĩ — Tập nhạc"
 
 #: ../sources/rb-library-source.c:138
 msgid "Artist/Album"
-msgstr "Nghệ sĩ/Tập"
+msgstr "Nghệ sĩ/Tập nhạc"
 
 #: ../sources/rb-library-source.c:139
 msgid "Artist - Album"
-msgstr "Nghệ sĩ — Tập"
+msgstr "Nghệ sĩ — Tập nhạc"
 
 #: ../sources/rb-library-source.c:140 ../widgets/rb-entry-view.c:1448
 #: ../widgets/rb-library-browser.c:144
@@ -4419,7 +4420,7 @@ msgstr "Xáo trộn hàng đợi"
 
 #: ../sources/rb-play-queue-source.c:119
 msgid "Shuffle the tracks in the play queue"
-msgstr "Xáo trộn các rãnh trong hàng đợi phát"
+msgstr "Xáo trộn bài trong hàng đợi phát"
 
 #. Translators: this is the toolbutton label for Clear Queue action
 #: ../sources/rb-play-queue-source.c:241
@@ -4453,7 +4454,7 @@ msgstr "Lấy Tình tiết _về"
 
 #: ../sources/rb-podcast-source.c:312
 msgid "Download Podcast Episode"
-msgstr "Lấy tình tiết Podcast về"
+msgstr "Tải chương Podcast về"
 
 #: ../sources/rb-podcast-source.c:314
 msgid "_Cancel Download"
@@ -4461,11 +4462,11 @@ msgstr "Thô_i tải về"
 
 #: ../sources/rb-podcast-source.c:315
 msgid "Cancel Episode Download"
-msgstr "Thôi tải tình tiết về"
+msgstr "Thôi tải chương về"
 
 #: ../sources/rb-podcast-source.c:318
 msgid "Episode Properties"
-msgstr "Thuộc tính tình tiết"
+msgstr "Thuộc tính chương"
 
 #: ../sources/rb-podcast-source.c:320
 msgid "_Update Podcast Feed"
@@ -4679,7 +4680,7 @@ msgstr "Không mất mát"
 
 #: ../widgets/rb-entry-view.c:1417
 msgid "Track"
-msgstr "Rãnh"
+msgstr "Bài"
 
 #: ../widgets/rb-entry-view.c:1468
 msgid "Time"
@@ -4774,7 +4775,7 @@ msgstr "Đường dẫn"
 #: ../widgets/rb-query-creator-properties.c:84
 #: ../widgets/rb-query-creator-properties.c:110
 msgid "Track Number"
-msgstr "Số rãnh"
+msgstr "Số bài"
 
 #: ../widgets/rb-query-creator-properties.c:85
 msgid "Disc Number"
@@ -4806,7 +4807,7 @@ msgstr "Theo thứ tự chữ cá_i ngược"
 
 #: ../widgets/rb-query-creator-properties.c:106
 msgid "W_ith more highly rated tracks first"
-msgstr "Những rãnh đánh g_iá cao ở trước"
+msgstr "Những bài đánh giá cao ở t_rước"
 
 #: ../widgets/rb-query-creator-properties.c:107
 msgid "W_ith more often played songs first"
@@ -4814,11 +4815,11 @@ msgstr "Những bà_i thường nghe ở trước"
 
 #: ../widgets/rb-query-creator-properties.c:108
 msgid "W_ith newer tracks first"
-msgstr "Rãnh mớ_i hơn ở trước"
+msgstr "Bài _mới ở trước"
 
 #: ../widgets/rb-query-creator-properties.c:109
 msgid "W_ith longer tracks first"
-msgstr "Rãnh dà_i hơn ở trước"
+msgstr "Bài _dài ở trước"
 
 #: ../widgets/rb-query-creator-properties.c:110
 msgid "_In decreasing order"
@@ -4826,11 +4827,11 @@ msgstr "Theo thứ tự g_iảm dần"
 
 #: ../widgets/rb-query-creator-properties.c:111
 msgid "W_ith more recently played tracks first"
-msgstr "Rãnh được ngh_e gần đây ở trước"
+msgstr "Bài mới ngh_e ở trước"
 
 #: ../widgets/rb-query-creator-properties.c:112
 msgid "W_ith more recently added tracks first"
-msgstr "Rãnh được thêm _vào gần đây ở trước"
+msgstr "Bài mới t_hêm ở trước"
 
 #: ../widgets/rb-query-creator-properties.c:125
 msgid "contains"
@@ -4959,571 +4960,1051 @@ msgstr "Trên màn hình nền"
 msgid "Unknown location"
 msgstr "Địa điểm lạ"
 
-#~ msgid "Unknown playback error"
-#~ msgstr "Lỗi phát lại không xác định"
+msgid "Unknown playback error"
+msgstr "Lỗi phát lại không xác định"
+
+msgid ""
+"Default\n"
+"-\n"
+"Text below icons\n"
+"Text beside icons\n"
+"Icons only\n"
+"Text only"
+msgstr ""
+"Mặc định\n"
+"-\n"
+"Nhãn dưới biểu tượng\n"
+"Nhãn ở cạnh biểu tượng\n"
+"Chỉ biểu tượng\n"
+"Chỉ nhãn"
+
+msgid "    "
+msgstr "    "
+
+msgid "Rhythmbox Plugins"
+msgstr "Bổ sung Rhythmbox"
+
+msgid ""
+"Every hour\n"
+"Every day\n"
+"Every week\n"
+"Manually"
+msgstr ""
+"Mỗi giờ\n"
+"Hàng ngày\n"
+"Hàng tuần\n"
+"Thủ công"
+
+msgid "*"
+msgstr "*"
+
+msgid "Enter the _location (URI) of the file you would like to add:"
+msgstr "Nhập địa điểm (_URI) của tập tin cần thêm:"
+
+msgid "Open from URI"
+msgstr "Mở từ URI"
+
+msgid "Incorrect password"
+msgstr "Mật khẩu sai"
+
+msgid "Handshake failed"
+msgstr "Kết nối thất bại"
+
+msgid "Client update required"
+msgstr "Cần cập nhật máy khách"
+
+msgid "Track submission failed"
+msgstr "Gửi bài thất bại"
+
+msgid "Queue is too long"
+msgstr "Hàng đợi nhạc quá dài"
+
+msgid "Minimize to the tray when closing the main window"
+msgstr "Thu nhỏ vào khay khi đóng cửa sổ"
+
+msgid "Minimize to tray"
+msgstr "Thu nhỏ vào khay"
+
+msgid "Your Name:"
+msgstr "Tên bạn:"
+
+msgid "radio|New"
+msgstr "Mới"
+
+msgid ""
+"$5 US\n"
+"$6 US\n"
+"$7 US\n"
+"$8 US (typical)\n"
+"$9 US\n"
+"$10 US (better than average)\n"
+"$11 US\n"
+"$12 US (generous)\n"
+"$13 US\n"
+"$14 US\n"
+"$15 US (very generous)\n"
+"$16 US\n"
+"$17 US\n"
+"$18 US (we love you)"
+msgstr ""
+"$5 US\n"
+"$6 US\n"
+"$7 US\n"
+"$8 US (bình thường)\n"
+"$9 US\n"
+"$10 US (hơn trung bình)\n"
+"$11 US\n"
+"$12 US (hào phóng)\n"
+"$13 US\n"
+"$14 US\n"
+"$15 US (rất hào phóng)\n"
+"$16 US\n"
+"$17 US\n"
+"$18 US (chúng tôi yêu bạn)"
+
+msgid ""
+"01\n"
+"02\n"
+"03\n"
+"04\n"
+"05\n"
+"06\n"
+"07\n"
+"08\n"
+"09\n"
+"10\n"
+"11\n"
+"12"
+msgstr ""
+"01\n"
+"02\n"
+"03\n"
+"04\n"
+"05\n"
+"06\n"
+"07\n"
+"08\n"
+"09\n"
+"10\n"
+"11\n"
+"12"
+
+msgid ""
+"Ogg Vorbis\n"
+"FLAC\n"
+"WAV\n"
+"VBR MP3\n"
+"128K MP3"
+msgstr ""
+"Ogg Vorbis\n"
+"FLAC\n"
+"WAV\n"
+"VBR MP3\n"
+"128K MP3"
+
+msgid ""
+"$5\n"
+"$6\n"
+"$7\n"
+"$8 (typical)\n"
+"$9\n"
+"$10 (better than average)\n"
+"$11\n"
+"$12 (generous)\n"
+"$13\n"
+"$14\n"
+"$15 (VERY generous!)\n"
+"$16\n"
+"$17\n"
+"$18 (We love you!)"
+msgstr ""
+"$5\n"
+"$6\n"
+"$7\n"
+"$8 (bình thường)\n"
+"$9\n"
+"$10 (tốt hơn trung bình)\n"
+"$11\n"
+"$12 (hào phóng)\n"
+"$13\n"
+"$14\n"
+"$15 (RẤT hào phóng!)\n"
+"$16\n"
+"$17\n"
+"$18 (Chúng tôi yêu bạn!)"
+
+msgid ""
+"January (01)\n"
+"February (02)\n"
+"March (03)\n"
+"April (04)\n"
+"May (05)\n"
+"June (06)\n"
+"July (07)\n"
+"August (08)\n"
+"September (09)\n"
+"October (10)\n"
+"November (11)\n"
+"December (12)"
+msgstr ""
+"Tháng một (01)\n"
+"Tháng hai (02)\n"
+"Tháng ba (03)\n"
+"Tháng tư (04)\n"
+"Tháng năm (05)\n"
+"Tháng sáu (06)\n"
+"Tháng bảy (07)\n"
+"Tháng tám (08)\n"
+"Tháng chín (09)\n"
+"Tháng mười (10)\n"
+"Tháng mười một (11)\n"
+"Tháng mười hai (12)"
+
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+msgid "podcast|New"
+msgstr "Mới"
+
+msgid "%u kbps"
+msgstr "%u kbps"
+
+msgid "Cannot create MusicBrainz client"
+msgstr "Không thể tạo ứng dụng khách MusicBrainz"
+
+msgid ""
+"MusicBrainz metadata object is not valid. This is bad, check your console "
+"for errors."
+msgstr ""
+"Đối tượng siêu dữ liệu MusicBrainz không hợp lệ. Đây là lỗi nghiệm trọng. "
+"Vui lòng kiểm tra nội dung bàn giao tiếp để tìm lỗi."
+
+msgid "Check Last.fm server status at"
+msgstr "Kiểm tra trạng thái máy phục vụ Last.fm tại"
+
+msgid "Find out about Last.fm at "
+msgstr "Tìm hiểu về Last.fm tại "
+
+msgid "Last.fm Profile"
+msgstr "Hồ sơ Last.fm"
+
+msgid "http://last.fm"
+msgstr "http://last.fm"
+
+msgid "http://last.fm/forum/21713/_/51596"
+msgstr "http://last.fm/forum/21713/_/51596"
+
+msgid "http://last.fm/group/Rhythmbox"
+msgstr "http://last.fm/group/Rhythmbox"
+
+msgid "Audioscrobbler preferences"
+msgstr "Cấu hình Audioscrobbler"
+
+msgid "Skip the current track"
+msgstr "Bỏ qua bài này"
+
+msgid "Ban Song"
+msgstr "Cấm bài này"
+
+msgid "No such artist.  Check your spelling"
+msgstr "Không có nghệ sĩ này. Vui lòng kiểm tra chính tả"
+
+msgid "The server marked you as banned"
+msgstr "Máy chú đã cấm bạn"
+
+msgid "Marking song loved..."
+msgstr "Đang đánh dấu yêu thích bài nhạc..."
+
+msgid "Skipping song..."
+msgstr "Đang bỏ qua bài nhạc..."
+
+msgid "Could not determine media type because CD drive is busy"
+msgstr "Không thể xác định kiểu vật chứa vì ổ đĩa CD đang bận"
+
+msgid "Couldn't open media"
+msgstr "Không thể mở vật chứa"
+
+msgid "Unknown Media"
+msgstr "Vật chứa lạ"
+
+msgid "Commercial CD or Audio CD"
+msgstr "Đĩa CD quảng cáo hoặc CD nhạc"
+
+msgid "CD-R"
+msgstr "Đĩa CD-R"
+
+msgid "CD-RW"
+msgstr "Đĩa CD-RW"
+
+msgid "DVD"
+msgstr "Đĩa DVD"
+
+msgid "DVD-R, or DVD-RAM"
+msgstr "Đĩa DVD-R hoặc DVD-RAM"
+
+msgid "DVD-RW"
+msgstr "Đĩa DVD-RW"
+
+msgid "DVD-RAM"
+msgstr "Đĩa DVD-RAM"
+
+msgid "DVD+R"
+msgstr "Đĩa DVD+R"
+
+msgid "DVD+RW"
+msgstr "Đĩa DVD+RW"
+
+msgid "Broken media type"
+msgstr "Kiểu vật chứa bị hỏng"
+
+msgid "Error initializing Howl for publishing"
+msgstr "Gặp lỗi khi sơ khởi Howl để xuất bản"
+
+msgid "The howl MDNS service is not running"
+msgstr "Dịch vụ MDNS Howl đã dừng"
+
+msgid "Couldn't monitor %s: %s"
+msgstr "Không thể theo dõi %s: %s"
+
+msgid "<invalid filename>"
+msgstr "<tên tập tin không hợp lệ>"
+
+msgid "Plu_gins..."
+msgstr "Phầ_n bổ sung..."
+
+msgid "Add Location"
+msgstr "Thêm địa điểm"
+
+msgid "Volume"
+msgstr "Âm lượng"
+
+msgid "+"
+msgstr "+"
+
+msgid "Volume Down"
+msgstr "Giảm âm"
+
+msgid ""
+"Rhythmbox manages all of your music in a central music \"library\", so you "
+"can easily view, search, and organize it.\n"
+"In order to use this feature, you need to tell Rhythmbox where to find your "
+"music.  You may choose to skip this step; instead, you can add music to your "
+"library at any point later.\n"
+"Please choose one of the options below:"
+msgstr ""
+"Rhythmbox quản lí mọi bài nhạc của bạn trong một thư viện âm nhạc trung tâm, "
+"giúp bạn có thể dễ dàng xem, tìm, tổ chức nó.\n"
+"Để dùng tính năng này, bạn cần cho Rhythmbox biết nơi lưu các bài nhạc của "
+"bạn. Bạn có thể chọn bỏ qua bước này; bạn có thể thêm nhạc vào thư viện sau "
+"đó.\n"
+"Vui lòng chọn một trong những tuỳ chọn sau:"
+
+msgid "_Enter location:"
+msgstr "_Gõ địa điểm:"
+
+msgid "_Path:"
+msgstr "Đường _dẫn:"
+
+msgid "_Skip this step"
+msgstr "_Bỏ qua bước này:"
+
+msgid "Could not access source pad"
+msgstr "Không thể truy cập tập giấy nguồn"
+
+msgid "Couldn't initialize scheduler.  Did you run gst-register?"
+msgstr ""
+"Không thể khởi động bộ định thời. Bạn đã chạy tiến trình 'gst-"
+"register' (đăng ký với GST) chưa?"
+
+msgid "Lyrics provided by leoslyrics.com"
+msgstr "Lời nhạc được cung cấp bởi leoslyrics.com"
+
+msgid ""
+"Magnatune is an online record label that is not evil. Some of their key "
+"attributes are:\n"
+"\n"
+"    * Free listening of all songs\n"
+"    * All albums and artists hand-picked\n"
+"    * Very simple user interface, quick to play music\n"
+"    * Radio stations and \"genre mix\" playlists allow background listening "
+"- can do work while listening to our music\n"
+"    * No need to \"register\" to listen or buy\n"
+"    * Smaller selection means easier to find good music\n"
+"    * Wide variety of genres, can fit any mood\n"
+"    * Our genres are hard to find in record stores and not on radio (though "
+"do appear on college radio)\n"
+"    * Downloads and CDs are both available (no other site on the internet "
+"sells both)\n"
+"    * Perfect quality downloads (CD copy) are available when you download "
+"(not inferior quality sound)\n"
+"    * No copy protection on the music (DRM) which allows playing music on "
+"any device (unlike iTunes/MSN/etc)\n"
+"    * Extensive biographical info about each musician, and artist photo -- "
+"feel a strong connection to the artist\n"
+"    * Full color, high quality cover art PDF available for most albums - "
+"easy to print\n"
+"    * Variable pricing scheme means you can pay as little as $5 for an album "
+"if you choose\n"
+"    * 50% of payment goes to artist (makes buyer feel good: they're helping "
+"the world)\n"
+"    * Not venture-capital backed big business\n"
+"    * Not part of the \"evil\" major label machine - for those that hate the "
+"music biz and want to help topple it\n"
+"    * Founder/owner runs it -- support a small business\n"
+"    * Low pressure environment - nothing flashing, no audio ads while "
+"listening to albums\n"
+"    * Music selection is unique to Magnatune, unlike most on-line stores "
+"that have more-or-less the same (gigantic) selection\n"
+"\n"
+"You can find more information at http://www.magnatune.com/"
+msgstr ""
+"Magnatune là hãng đĩa trực tuyến không \"xấu xa\". Một vài đặc điểm chính "
+"là:\n"
+"\n"
+"    * Nghe miễn phí mọi bài nhạc\n"
+"    * Mọi tập nhạc và nghệ sĩ đều được lựa chọn thủ công\n"
+"    * Giao diện người dùng rất đơn giản, dễ dàng nghe nhạc\n"
+"    * Trạm Radio và danh mục nhạc \"genre mix\" cho phép nghe nền -- có thể "
+"vừa làm việc vừa nghe nhạc\n"
+"    * Không cần phải \"đăng kí\" để nghe hoặc mua\n"
+"    * Lựa chọn nhỏ hơn nghĩa là dễ tìm ra nhạc hay hơn\n"
+"    * Đa dạng thể loại, thích hợp mọi trạng thái\n"
+"    * Các thể loại của chúng tôi rất khó tìm trên các quầy nhạc và không có "
+"trên radio\n"
+"      (mặc dù chúng có xuất hiện trong radio đại học)\n"
+"    * Có thể chọn tải về hoặc CD (không ở đâu trên Internet bán cả hai "
+"cách)\n"
+"    * Chất lượng tải về tuyệt hảo (bản sao CD) (chất lượng âm thanh không "
+"kém đi)\n"
+"    * Không có chống sao chép (DRM), do đó có thể chơi trên mọi thiết bị "
+"(không như iTunes/MSN/...)\n"
+"    * Thông tin tiểu sử chi tiết về các nghệ sĩ, ảnh nghệ sĩ -- cảm nhận mối "
+"liên kết chặt chẽ với nghệ sĩ\n"
+"    * Ảnh bìa màu trung thực chất lượng cao dạng PDF cho hầu hết các tập "
+"nhạc -- dễ dàng in ấn\n"
+"    * Mô hình giá biến động cho phép bạn chỉ cần trả 5$ cho một tập nhạc nếu "
+"bạn chọn\n"
+"    * Trả 50% cho nghệ sĩ (làm cho người mua hài lòng: họ đang giúp thế "
+"giới)\n"
+"    * Không kinh doanh tư bản mạo hiểm\n"
+"    * Không thuộc bộ máy âm nhạc \"xấu xa\" -- cho những ai ghét ngành kinh "
+"doanh nhạc và muốn giúp lật đổ nó\n"
+"    * Người sáng lập/sở hữu điều hành -- hỗ trợ doanh nghiệp nhỏ\n"
+"    * Môi trường áp lực thấp -- không ngắt quãng, quảng cáo dạng âm thanh "
+"khi nghe nhạc\n"
+"    * Việc chọn nhạc là duy nhất ở Magnatune, không giống hầu hết các cửa "
+"hàng nhạc trực tuyến khác ít nhiều có cùng lựa chọn (khổng lồ)\n"
+"\n"
+"Bạn có thể tìm hiểu thêm thông tin tại http://www.magnatune.com/"
+
+msgid "Expiry _year:"
+msgstr "Năm _hết hạn:"
+
+msgid "Leave Fullscreen"
+msgstr "Thoát khỏi toàn màn hình"
+
+msgid "Welcome to Rhythmbox"
+msgstr "Chào mừng bạn đến với RhythmBox"
+
+msgid ""
+"Rhythmbox is the GNOME music player that lets you do everything: play your "
+"music files, listen to Internet Radio, import music from CDs, and much "
+"more.\n"
+"\n"
+"This assistant will help you get started by asking you some simple questions."
+msgstr ""
+"Rhythmbox là Bộ phát nhạc GNOME, cho phép bạn làm mọi thứ: phát nhạc, nghe "
+"radio trực tuyến, nhập nhạc từ đĩa CD, và còn nhiều nữa.\n"
+"\n"
+"Trình hỗ trợ này sẽ giúp bạn bắt đầu bằng cách hỏi bạn vài câu hỏi đơn giản."
+
+msgid "Music library setup"
+msgstr "Thiết lập Thư viện Nhạc"
+
+msgid "Finish"
+msgstr "Xong"
+
+msgid ""
+"You are now ready to start Rhythmbox.\n"
+"\n"
+"Remember that you may add music to the library using \"Music\" then \"Import "
+"Folder\", or by importing it from CDs."
+msgstr ""
+"Bạn đã sẵn sàng khởi chạy Rhythmbox.\n"
+"\n"
+"Hãy nhớ rằng bạn có thể thêm nhạc vào thư viện dùng \"Nhạc\" và sau đó "
+"\"Nhập thư mục\", hoặc nhập từ đĩa CD."
+
+msgid "Load folder into Library"
+msgstr "Tải thư mục vào thư viện"
+
+msgid "All %d (%d)"
+msgstr "Tất cả %d (%d)"
+
+msgid "Artists like by fans of %s"
+msgstr "Nghệ sĩ được yêu thích bởi fan hâm mộ %s"
+
+msgid "(US Dollars)"
+msgstr "(Đô-la Mỹ)"
+
+msgid "Don't store credit card information"
+msgstr "Đừng lưu thông tin thẻ tín dụng"
+
+msgid "%Y-%m-%d %H:%M"
+msgstr "%d-%m-%Y %H:%M"
+
+msgid ""
+"%s\n"
+"%s"
+msgstr ""
+"%s\n"
+"%s"
+
+msgid "by %s"
+msgstr "bởi %s"
+
+msgid "_Disc Number:"
+msgstr "_Số đĩa:"
+
+msgid "Art Display"
+msgstr "Ảnh bìa"
+
+msgid "Displays art for the playing track"
+msgstr "Hiện ảnh bìa khi nghe nhạc"
+
+msgid "Support for audio CDs"
+msgstr "Hỗ trợ đĩa CD nhạc"
+
+msgid "Last.fm Profile "
+msgstr "Hồ sơ Last.fm "
+
+msgid "Submits songs to last.fm"
+msgstr "Gửi bài nhạc lên last.fm"
+
+msgid ""
+"Adds iPod support to Rhythmbox so that it can show an iPod content, and play "
+"from there"
+msgstr ""
+"Thêm hỗ trợ iPod vào Rhythmbox để có thể xem nội dung iPod và nghe nhạc từ đó"
+
+msgid "iPod support"
+msgstr "Hỗ trợ iPod"
+
+msgid " doesn't do much"
+msgstr " không làm gì nhiều"
+
+msgid "Does a whole lot of not much"
+msgstr "Làm đủ thứ nhưng không nhiều"
+
+msgid "by %s from %s"
+msgstr "bởi %s từ %s"
+
+msgid "_Feed"
+msgstr "_Nguồn"
+
+msgid "_Title"
+msgstr "_Tựa"
+
+msgid "Art_ist"
+msgstr "Nghệ _sĩ"
+
+msgid "_Album"
+msgstr "Tậ_p nhạc"
+
+msgid "Tim_e"
+msgstr "Thờ_i lượng"
+
+msgid "_Play Count"
+msgstr "Số lần _phát"
+
+msgid "_Last Played"
+msgstr "_Lần phát cuối"
+
+msgid "_Date Added"
+msgstr "Ngà_y thêm"
+
+msgid "L_ocation"
+msgstr "Đị_a điểm"
+
+#~ msgid "<b>Volume usage</b>"
+#~ msgstr "<b>Âm lượng sử dụng</b>"
+
+#~ msgid "Media Player Properties"
+#~ msgstr "Thuộc tính trình phát phương tiện"
+
+#~ msgid "Albu_m sort order:"
+#~ msgstr "Thứ tự sắp xếm tập _nhạc"
+
+#~ msgid "Sorting"
+#~ msgstr "Sắp xếp"
+
+#~ msgid "_Artist sort order:"
+#~ msgstr "Thứ tự sắp xếp nghệ _sĩ:"
+
+#~ msgid "Unable to identify file type"
+#~ msgstr "Không thể xác định dạng tập tin"
+
+#~ msgid "Image provided by Last.fm"
+#~ msgstr "Ảnh cung cấm bởi Last.fm"
+
+#~ msgid "A_lbum:"
+#~ msgstr "Tập _nhạc:"
+
+#~ msgid "Artist s_ort order:"
+#~ msgstr "Thứ tự sắp xếp ng_hệ sĩ:"
+
+#~ msgid "_Disc:"
+#~ msgstr "Đĩ_a:"
+
+#~ msgid "Copy tracks to the library"
+#~ msgstr "Chép các bài nhạc vào thư viện"
+
+#~ msgid "Reload"
+#~ msgstr "Nạp lại"
+
+#~ msgid "Reload Album Information"
+#~ msgstr "Nạp lại thông tin tập nhạc"
+
+#~ msgid "Select tracks to be extracted"
+#~ msgstr "Chọn bản nhạc để trích"
+
+#~ msgid "S_ubmit Album"
+#~ msgstr "Gửi tập nhạc"
+
+#~ msgid "Hide"
+#~ msgstr "Ẩn"
+
+#~ msgid "Could not find this album on MusicBrainz."
+#~ msgstr "Không thể tìm thấy Anbom từ MusicBrainz"
+
+#~ msgid "You can improve the MusicBrainz database by adding this album."
+#~ msgstr ""
+#~ "Để cải tiến cơ sở dữ liệu của MusicBrainz, bạn thêm tập nhạc này nhé."
+
+#~ msgid "Playlist"
+#~ msgstr "Danh sách phát"
+
+#~ msgid "%s's playlist"
+#~ msgstr "Danh sách phát của %s"
+
+#~ msgid "No writable drives found"
+#~ msgstr "Không tìm thấy ổ đĩa có thể ghi nào"
+
+#~ msgid "Could not determine audio track durations"
+#~ msgstr "Không thể xác định độ dài của bản nhạc"
+
+#~ msgid "Context Pane"
+#~ msgstr "Khung ngữ cảnh"
+
+#~ msgid "Show information related to the currently playing artist and song."
+#~ msgstr "Hiện thông tin liên quan đến bài hát và nghệ sĩ đang phát."
+
+#~ msgid "Loading top albums for %s"
+#~ msgstr "Đang tải những tập nhạc đầu bảng của %s"
+
+#~ msgid "Loading biography for %s"
+#~ msgstr "Đang tải tiểu sử của %s"
+
+#~ msgid "Toggle Conte_xt Pane"
+#~ msgstr "Bật _khung ngữ cảnh"
+
+#~ msgid "Change the visibility of the context pane"
+#~ msgstr "Thay đổi khả năng nhìn thấy của khung ngữ cảnh"
+
+#~ msgid "Top songs by %s"
+#~ msgstr "Những bài hát đầu bảng của %s"
+
+#~ msgid "Nothing Playing"
+#~ msgstr "Không phát gì hết"
 
 #~ msgid ""
-#~ "Default\n"
-#~ "-\n"
-#~ "Text below icons\n"
-#~ "Text beside icons\n"
-#~ "Icons only\n"
-#~ "Text only"
+#~ "This information is only available to last.fm users. Please enter your "
+#~ "account details in the last.fm plugin configuration."
 #~ msgstr ""
-#~ "Mặc định\n"
-#~ "-\n"
-#~ "Nhãn dưới biểu tượng\n"
-#~ "Nhãn ở cạnh biểu tượng\n"
-#~ "Chỉ biểu tượng\n"
-#~ "Chỉ nhãn"
+#~ "Thông tin này hiện chỉ sẵn có cho người dùng last.fm. Hãy nhập thông tin "
+#~ "chi tiết tài khoản của bạn trong cấu hình phần bổ sung last.fm"
 
-#~ msgid "    "
-#~ msgstr "    "
+#~ msgid "Loading lyrics for %s by %s"
+#~ msgstr "Đang tải lời nhạc cho %s của %s"
 
-#~ msgid "Rhythmbox Plugins"
-#~ msgstr "Bổ sung Rhythmbox"
+#~ msgid "Lyrics not found"
+#~ msgstr "Không tìm thấy lời bài hát"
+
+#~ msgid "Hide all tracks"
+#~ msgstr "Ẩn tất cả các bài hát"
+
+#~ msgid "Show all tracks"
+#~ msgstr "Hiện tất cả bài hát"
+
+#~ msgid "Top albums by %s"
+#~ msgstr "Tập nhạc đầu bảng của %s"
+
+#~ msgid "%s (%d tracks)"
+#~ msgstr "%s (%d bài)"
+
+#~ msgid "Track list not available"
+#~ msgstr "Danh sách bài hát không có sẵn"
+
+#~ msgid "Unable to retrieve album information:"
+#~ msgstr "Không thể lấy thông tin tập nhạc:"
+
+#~ msgid "No information available"
+#~ msgstr "Không thấy thông tin cần tìm"
+
+#~ msgid "Read more"
+#~ msgstr "Đọc thêm"
+
+#~ msgid "Read less"
+#~ msgstr "Đọc ít lại"
+
+#~ msgid "Unable to retrieve artist information:"
+#~ msgstr "Không thể lấy thông tin nghệ"
+
+#~ msgid "Audio formats:"
+#~ msgstr "Định dạng âm thanh"
+
+#~ msgid "Device _name:"
+#~ msgstr "Tê_n thiết bị:"
+
+#~ msgid "Manufacturer:"
+#~ msgstr "Hãng sản xuất :"
+
+#~ msgid "Playlists:"
+#~ msgstr "Danh sách phát:"
+
+#~ msgid "Serial number:"
+#~ msgstr "Số sản xuất:"
+
+#~ msgid "Tracks:"
+#~ msgstr "Bản:"
+
+#~ msgid "Display device properties"
+#~ msgstr "Thuộc tính thiết bị hiển thị"
 
 #~ msgid ""
-#~ "Every hour\n"
-#~ "Every day\n"
-#~ "Every week\n"
-#~ "Manually"
+#~ "Updates IM status according to the current song (works with Empathy, "
+#~ "Gossip, and Pidgin)"
 #~ msgstr ""
-#~ "Mỗi giờ\n"
-#~ "Hàng ngày\n"
-#~ "Hàng tuần\n"
-#~ "Thủ công"
+#~ "Cập nhật trạng thái nhắn tin nhanh phụ thuộc vào bài hát đang phát (chạy "
+#~ "với Empathy, Gossip, và Pidgin)"
 
-#~ msgid "*"
-#~ msgstr "*"
+#~ msgid "Database version:"
+#~ msgstr "Phiên bản cơ sở dữ liệu:"
 
-#~ msgid "Enter the _location (URI) of the file you would like to add:"
-#~ msgstr "Nhập địa điểm (_URI) của tập tin cần thêm:"
+#~ msgid "Device node:"
+#~ msgstr "Thiết bị:"
 
-#~ msgid "Open from URI"
-#~ msgstr "Mở từ URI"
+#~ msgid "Firmware version:"
+#~ msgstr "Phiên bản phần mềm nhúng:"
 
-#~ msgid "Incorrect password"
-#~ msgstr "Mật khẩu sai"
+#~ msgid "Mount point:"
+#~ msgstr "Điểm lắp:"
 
-#~ msgid "Handshake failed"
-#~ msgstr "Kết nối thất bại"
+#~ msgid "Podcasts:"
+#~ msgstr "Podcasts:"
 
-#~ msgid "Client update required"
-#~ msgstr "Cần cập nhật máy khách"
+#~ msgid "iPod _name:"
+#~ msgstr "Tên iPod:"
 
-#~ msgid "Track submission failed"
-#~ msgstr "Gửi rãnh thất bại"
+#~ msgid "Lyrc (lyrc.com.ar)"
+#~ msgstr "Lyrc (lyrc.com.ar)"
 
-#~ msgid "Queue is too long"
-#~ msgstr "Hàng đợi nhạc quá dài"
+#~ msgid "Astraweb (www.astraweb.com)"
+#~ msgstr "Astraweb (www.astraweb.com)"
 
-#~ msgid "Minimize to the tray when closing the main window"
-#~ msgstr "Thu nhỏ vào khay khi đóng cửa sổ"
+#~ msgid "Leo's Lyrics (www.leoslyrics.com)"
+#~ msgstr "Leo's Lyrics (www.leoslyrics.com)"
 
-#~ msgid "Minimize to tray"
-#~ msgstr "Thu nhỏ vào khay"
+#~ msgid "WinampCN (www.winampcn.com)"
+#~ msgstr "WinampCN (www.winampcn.com)"
 
-#~ msgid "Your Name:"
-#~ msgstr "Tên bạn:"
+#~ msgid "TerraBrasil (terra.com.br)"
+#~ msgstr "TerraBrasil (terra.com.br)"
 
-#~ msgid "radio|New"
-#~ msgstr "Mới"
+#~ msgid "Get an account at "
+#~ msgstr "Tạo tài khoản tại "
+
+#~ msgid "I don't have a Magnatune account"
+#~ msgstr "Thôi không có một tài khoản Magnatune"
+
+#~ msgid "I have a download account"
+#~ msgstr "Tôi có một tài khoản để tải"
+
+#~ msgid "I have a streaming account"
+#~ msgstr "Tôi có một tài khoảng phát luồng"
+
+#~ msgid "Password:"
+#~ msgstr "Mật khẩu:"
+
+#~ msgid "Username:"
+#~ msgstr "Tên đăng nhập:"
 
 #~ msgid ""
-#~ "$5 US\n"
-#~ "$6 US\n"
-#~ "$7 US\n"
-#~ "$8 US (typical)\n"
-#~ "$9 US\n"
-#~ "$10 US (better than average)\n"
-#~ "$11 US\n"
-#~ "$12 US (generous)\n"
-#~ "$13 US\n"
-#~ "$14 US\n"
-#~ "$15 US (very generous)\n"
-#~ "$16 US\n"
-#~ "$17 US\n"
-#~ "$18 US (we love you)"
+#~ "Your account details have changed. Changes will be applied the next time "
+#~ "you start Rhythmbox."
 #~ msgstr ""
-#~ "$5 US\n"
-#~ "$6 US\n"
-#~ "$7 US\n"
-#~ "$8 US (bình thường)\n"
-#~ "$9 US\n"
-#~ "$10 US (hơn trung bình)\n"
-#~ "$11 US\n"
-#~ "$12 US (hào phóng)\n"
-#~ "$13 US\n"
-#~ "$14 US\n"
-#~ "$15 US (rất hào phóng)\n"
-#~ "$16 US\n"
-#~ "$17 US\n"
-#~ "$18 US (chúng tôi yêu bạn)"
+#~ "Thông tin chi tiết tài khoản của bạn đã thay đổi. Thay đổi sẽ được áp "
+#~ "dụng vào lần tiếp theo bạn khởi động Rhythmbox."
+
+#~ msgid "http://magnatune.com/compare_plans"
+#~ msgstr "http://magnatune.com/compare_plans"
+
+#~ msgid "Couldn't get account details"
+#~ msgstr "Không thể lấy thông tin tài khoản"
+
+#~ msgid "Download Error"
+#~ msgstr "Khỗi khi tải xuống"
 
 #~ msgid ""
-#~ "01\n"
-#~ "02\n"
-#~ "03\n"
-#~ "04\n"
-#~ "05\n"
-#~ "06\n"
-#~ "07\n"
-#~ "08\n"
-#~ "09\n"
-#~ "10\n"
-#~ "11\n"
-#~ "12"
-#~ msgstr ""
-#~ "01\n"
-#~ "02\n"
-#~ "03\n"
-#~ "04\n"
-#~ "05\n"
-#~ "06\n"
-#~ "07\n"
-#~ "08\n"
-#~ "09\n"
-#~ "10\n"
-#~ "11\n"
-#~ "12"
-
-#~ msgid ""
-#~ "Ogg Vorbis\n"
-#~ "FLAC\n"
-#~ "WAV\n"
-#~ "VBR MP3\n"
-#~ "128K MP3"
-#~ msgstr ""
-#~ "Ogg Vorbis\n"
-#~ "FLAC\n"
-#~ "WAV\n"
-#~ "VBR MP3\n"
-#~ "128K MP3"
-
-#~ msgid ""
-#~ "$5\n"
-#~ "$6\n"
-#~ "$7\n"
-#~ "$8 (typical)\n"
-#~ "$9\n"
-#~ "$10 (better than average)\n"
-#~ "$11\n"
-#~ "$12 (generous)\n"
-#~ "$13\n"
-#~ "$14\n"
-#~ "$15 (VERY generous!)\n"
-#~ "$16\n"
-#~ "$17\n"
-#~ "$18 (We love you!)"
-#~ msgstr ""
-#~ "$5\n"
-#~ "$6\n"
-#~ "$7\n"
-#~ "$8 (bình thường)\n"
-#~ "$9\n"
-#~ "$10 (tốt hơn trung bình)\n"
-#~ "$11\n"
-#~ "$12 (hào phóng)\n"
-#~ "$13\n"
-#~ "$14\n"
-#~ "$15 (RẤT hào phóng!)\n"
-#~ "$16\n"
-#~ "$17\n"
-#~ "$18 (Chúng tôi yêu bạn!)"
-
-#~ msgid ""
-#~ "January (01)\n"
-#~ "February (02)\n"
-#~ "March (03)\n"
-#~ "April (04)\n"
-#~ "May (05)\n"
-#~ "June (06)\n"
-#~ "July (07)\n"
-#~ "August (08)\n"
-#~ "September (09)\n"
-#~ "October (10)\n"
-#~ "November (11)\n"
-#~ "December (12)"
-#~ msgstr ""
-#~ "Tháng một (01)\n"
-#~ "Tháng hai (02)\n"
-#~ "Tháng ba (03)\n"
-#~ "Tháng tư (04)\n"
-#~ "Tháng năm (05)\n"
-#~ "Tháng sáu (06)\n"
-#~ "Tháng bảy (07)\n"
-#~ "Tháng tám (08)\n"
-#~ "Tháng chín (09)\n"
-#~ "Tháng mười (10)\n"
-#~ "Tháng mười một (11)\n"
-#~ "Tháng mười hai (12)"
-
-#~ msgid "Rhythmbox"
-#~ msgstr "Rhythmbox"
-
-#~ msgid "podcast|New"
-#~ msgstr "Mới"
-
-#~ msgid "%u kbps"
-#~ msgstr "%u kbps"
-
-#~ msgid "Cannot create MusicBrainz client"
-#~ msgstr "Không thể tạo ứng dụng khách MusicBrainz"
-
-#~ msgid ""
-#~ "MusicBrainz metadata object is not valid. This is bad, check your console "
-#~ "for errors."
-#~ msgstr ""
-#~ "Đối tượng siêu dữ liệu MusicBrainz không hợp lệ. Đây là lỗi nghiệm trọng. "
-#~ "Vui lòng kiểm tra nội dung bàn giao tiếp để tìm lỗi."
-
-#~ msgid "Check Last.fm server status at"
-#~ msgstr "Kiểm tra trạng thái máy phục vụ Last.fm tại"
-
-#~ msgid "Find out about Last.fm at "
-#~ msgstr "Tìm hiểu về Last.fm tại "
-
-#~ msgid "Last.fm Profile"
-#~ msgstr "Hồ sơ Last.fm"
-
-#~ msgid "http://last.fm"
-#~ msgstr "http://last.fm"
-
-#~ msgid "http://last.fm/forum/21713/_/51596"
-#~ msgstr "http://last.fm/forum/21713/_/51596"
-
-#~ msgid "http://last.fm/group/Rhythmbox"
-#~ msgstr "http://last.fm/group/Rhythmbox"
-
-#~ msgid "Audioscrobbler preferences"
-#~ msgstr "Cấu hình Audioscrobbler"
-
-#~ msgid "Skip the current track"
-#~ msgstr "Bỏ qua bài này"
-
-#~ msgid "Ban Song"
-#~ msgstr "Cấm bài này"
-
-#~ msgid "No such artist.  Check your spelling"
-#~ msgstr "Không có nghệ sĩ này. Vui lòng kiểm tra chính tả"
-
-#~ msgid "The server marked you as banned"
-#~ msgstr "Máy chú đã cấm bạn"
-
-#~ msgid "Marking song loved..."
-#~ msgstr "Đang đánh dấu yêu thích bài nhạc..."
-
-#~ msgid "Skipping song..."
-#~ msgstr "Đang bỏ qua bài nhạc..."
-
-#~ msgid "Could not determine media type because CD drive is busy"
-#~ msgstr "Không thể xác định kiểu vật chứa vì ổ đĩa CD đang bận"
-
-#~ msgid "Couldn't open media"
-#~ msgstr "Không thể mở vật chứa"
-
-#~ msgid "Unknown Media"
-#~ msgstr "Vật chứa lạ"
-
-#~ msgid "Commercial CD or Audio CD"
-#~ msgstr "Đĩa CD quảng cáo hoặc CD nhạc"
-
-#~ msgid "CD-R"
-#~ msgstr "Đĩa CD-R"
-
-#~ msgid "CD-RW"
-#~ msgstr "Đĩa CD-RW"
-
-#~ msgid "DVD"
-#~ msgstr "Đĩa DVD"
-
-#~ msgid "DVD-R, or DVD-RAM"
-#~ msgstr "Đĩa DVD-R hoặc DVD-RAM"
-
-#~ msgid "DVD-RW"
-#~ msgstr "Đĩa DVD-RW"
-
-#~ msgid "DVD-RAM"
-#~ msgstr "Đĩa DVD-RAM"
-
-#~ msgid "DVD+R"
-#~ msgstr "Đĩa DVD+R"
-
-#~ msgid "DVD+RW"
-#~ msgstr "Đĩa DVD+RW"
-
-#~ msgid "Broken media type"
-#~ msgstr "Kiểu vật chứa bị hỏng"
-
-#~ msgid "Error initializing Howl for publishing"
-#~ msgstr "Gặp lỗi khi sơ khởi Howl để xuất bản"
-
-#~ msgid "The howl MDNS service is not running"
-#~ msgstr "Dịch vụ MDNS Howl đã dừng"
-
-#~ msgid "Couldn't monitor %s: %s"
-#~ msgstr "Không thể theo dõi %s: %s"
-
-#~ msgid "<invalid filename>"
-#~ msgstr "<tên tập tin không hợp lệ>"
-
-#~ msgid "Plu_gins..."
-#~ msgstr "Phầ_n bổ sung..."
-
-#~ msgid "Add Location"
-#~ msgstr "Thêm địa điểm"
-
-#~ msgid "Volume"
-#~ msgstr "Âm lượng"
-
-#~ msgid "+"
-#~ msgstr "+"
-
-#~ msgid "Volume Down"
-#~ msgstr "Giảm âm"
-
-#~ msgid ""
-#~ "Rhythmbox manages all of your music in a central music \"library\", so "
-#~ "you can easily view, search, and organize it.\n"
-#~ "In order to use this feature, you need to tell Rhythmbox where to find "
-#~ "your music.  You may choose to skip this step; instead, you can add music "
-#~ "to your library at any point later.\n"
-#~ "Please choose one of the options below:"
-#~ msgstr ""
-#~ "Rhythmbox quản lí mọi bài nhạc của bạn trong một thư viện âm nhạc trung "
-#~ "tâm, giúp bạn có thể dễ dàng xem, tìm, tổ chức nó.\n"
-#~ "Để dùng tính năng này, bạn cần cho Rhythmbox biết nơi lưu các bài nhạc "
-#~ "của bạn. Bạn có thể chọn bỏ qua bước này; bạn có thể thêm nhạc vào thư "
-#~ "viện sau đó.\n"
-#~ "Vui lòng chọn một trong những tuỳ chọn sau:"
-
-#~ msgid "_Enter location:"
-#~ msgstr "_Gõ địa điểm:"
-
-#~ msgid "_Path:"
-#~ msgstr "Đường _dẫn:"
-
-#~ msgid "_Skip this step"
-#~ msgstr "_Bỏ qua bước này:"
-
-#~ msgid "Could not access source pad"
-#~ msgstr "Không thể truy cập tập giấy nguồn"
-
-#~ msgid "Couldn't initialize scheduler.  Did you run gst-register?"
-#~ msgstr ""
-#~ "Không thể khởi động bộ định thời. Bạn đã chạy tiến trình 'gst-"
-#~ "register' (đăng ký với GST) chưa?"
-
-#~ msgid "Lyrics provided by leoslyrics.com"
-#~ msgstr "Lời nhạc được cung cấp bởi leoslyrics.com"
-
-#~ msgid ""
-#~ "Magnatune is an online record label that is not evil. Some of their key "
-#~ "attributes are:\n"
-#~ "\n"
-#~ "    * Free listening of all songs\n"
-#~ "    * All albums and artists hand-picked\n"
-#~ "    * Very simple user interface, quick to play music\n"
-#~ "    * Radio stations and \"genre mix\" playlists allow background "
-#~ "listening - can do work while listening to our music\n"
-#~ "    * No need to \"register\" to listen or buy\n"
-#~ "    * Smaller selection means easier to find good music\n"
-#~ "    * Wide variety of genres, can fit any mood\n"
-#~ "    * Our genres are hard to find in record stores and not on radio "
-#~ "(though do appear on college radio)\n"
-#~ "    * Downloads and CDs are both available (no other site on the internet "
-#~ "sells both)\n"
-#~ "    * Perfect quality downloads (CD copy) are available when you download "
-#~ "(not inferior quality sound)\n"
-#~ "    * No copy protection on the music (DRM) which allows playing music on "
-#~ "any device (unlike iTunes/MSN/etc)\n"
-#~ "    * Extensive biographical info about each musician, and artist photo "
-#~ "-- feel a strong connection to the artist\n"
-#~ "    * Full color, high quality cover art PDF available for most albums - "
-#~ "easy to print\n"
-#~ "    * Variable pricing scheme means you can pay as little as $5 for an "
-#~ "album if you choose\n"
-#~ "    * 50% of payment goes to artist (makes buyer feel good: they're "
-#~ "helping the world)\n"
-#~ "    * Not venture-capital backed big business\n"
-#~ "    * Not part of the \"evil\" major label machine - for those that hate "
-#~ "the music biz and want to help topple it\n"
-#~ "    * Founder/owner runs it -- support a small business\n"
-#~ "    * Low pressure environment - nothing flashing, no audio ads while "
-#~ "listening to albums\n"
-#~ "    * Music selection is unique to Magnatune, unlike most on-line stores "
-#~ "that have more-or-less the same (gigantic) selection\n"
-#~ "\n"
-#~ "You can find more information at http://www.magnatune.com/"
-#~ msgstr ""
-#~ "Magnatune là hãng đĩa trực tuyến không \"xấu xa\". Một vài đặc điểm chính "
-#~ "là:\n"
-#~ "\n"
-#~ "    * Nghe miễn phí mọi bài nhạc\n"
-#~ "    * Mọi tập nhạc và nghệ sĩ đều được lựa chọn thủ công\n"
-#~ "    * Giao diện người dùng rất đơn giản, dễ dàng nghe nhạc\n"
-#~ "    * Trạm Radio và danh mục nhạc \"genre mix\" cho phép nghe nền -- có "
-#~ "thể vừa làm việc vừa nghe nhạc\n"
-#~ "    * Không cần phải \"đăng kí\" để nghe hoặc mua\n"
-#~ "    * Lựa chọn nhỏ hơn nghĩa là dễ tìm ra nhạc hay hơn\n"
-#~ "    * Đa dạng thể loại, thích hợp mọi trạng thái\n"
-#~ "    * Các thể loại của chúng tôi rất khó tìm trên các quầy nhạc và không "
-#~ "có trên radio\n"
-#~ "      (mặc dù chúng có xuất hiện trong radio đại học)\n"
-#~ "    * Có thể chọn tải về hoặc CD (không ở đâu trên Internet bán cả hai "
-#~ "cách)\n"
-#~ "    * Chất lượng tải về tuyệt hảo (bản sao CD) (chất lượng âm thanh không "
-#~ "kém đi)\n"
-#~ "    * Không có chống sao chép (DRM), do đó có thể chơi trên mọi thiết bị "
-#~ "(không như iTunes/MSN/...)\n"
-#~ "    * Thông tin tiểu sử chi tiết về các nghệ sĩ, ảnh nghệ sĩ -- cảm nhận "
-#~ "mối liên kết chặt chẽ với nghệ sĩ\n"
-#~ "    * Ảnh bìa màu trung thực chất lượng cao dạng PDF cho hầu hết các tập "
-#~ "nhạc -- dễ dàng in ấn\n"
-#~ "    * Mô hình giá biến động cho phép bạn chỉ cần trả 5$ cho một tập nhạc "
-#~ "nếu bạn chọn\n"
-#~ "    * Trả 50% cho nghệ sĩ (làm cho người mua hài lòng: họ đang giúp thế "
-#~ "giới)\n"
-#~ "    * Không kinh doanh tư bản mạo hiểm\n"
-#~ "    * Không thuộc bộ máy âm nhạc \"xấu xa\" -- cho những ai ghét ngành "
-#~ "kinh doanh nhạc và muốn giúp lật đổ nó\n"
-#~ "    * Người sáng lập/sở hữu điều hành -- hỗ trợ doanh nghiệp nhỏ\n"
-#~ "    * Môi trường áp lực thấp -- không ngắt quãng, quảng cáo dạng âm thanh "
-#~ "khi nghe nhạc\n"
-#~ "    * Việc chọn nhạc là duy nhất ở Magnatune, không giống hầu hết các cửa "
-#~ "hàng nhạc trực tuyến khác ít nhiều có cùng lựa chọn (khổng lồ)\n"
-#~ "\n"
-#~ "Bạn có thể tìm hiểu thêm thông tin tại http://www.magnatune.com/"
-
-#~ msgid "Expiry _year:"
-#~ msgstr "Năm _hết hạn:"
-
-#~ msgid "Leave Fullscreen"
-#~ msgstr "Thoát khỏi toàn màn hình"
-
-#~ msgid "Welcome to Rhythmbox"
-#~ msgstr "Chào mừng bạn đến với RhythmBox"
-
-#~ msgid ""
-#~ "Rhythmbox is the GNOME music player that lets you do everything: play "
-#~ "your music files, listen to Internet Radio, import music from CDs, and "
-#~ "much more.\n"
-#~ "\n"
-#~ "This assistant will help you get started by asking you some simple "
-#~ "questions."
-#~ msgstr ""
-#~ "Rhythmbox là Bộ phát nhạc GNOME, cho phép bạn làm mọi thứ: phát nhạc, "
-#~ "nghe radio trực tuyến, nhập nhạc từ đĩa CD, và còn nhiều nữa.\n"
-#~ "\n"
-#~ "Trình hỗ trợ này sẽ giúp bạn bắt đầu bằng cách hỏi bạn vài câu hỏi đơn "
-#~ "giản."
-
-#~ msgid "Music library setup"
-#~ msgstr "Thiết lập Thư viện Nhạc"
-
-#~ msgid "Finish"
-#~ msgstr "Xong"
-
-#~ msgid ""
-#~ "You are now ready to start Rhythmbox.\n"
-#~ "\n"
-#~ "Remember that you may add music to the library using \"Music\" then "
-#~ "\"Import Folder\", or by importing it from CDs."
-#~ msgstr ""
-#~ "Bạn đã sẵn sàng khởi chạy Rhythmbox.\n"
-#~ "\n"
-#~ "Hãy nhớ rằng bạn có thể thêm nhạc vào thư viện dùng \"Nhạc\" và sau đó "
-#~ "\"Nhập thư mục\", hoặc nhập từ đĩa CD."
-
-#~ msgid "Load folder into Library"
-#~ msgstr "Tải thư mục vào thư viện"
-
-#~ msgid "All %d (%d)"
-#~ msgstr "Tất cả %d (%d)"
-
-#~ msgid "Artists like by fans of %s"
-#~ msgstr "Nghệ sĩ được yêu thích bởi fan hâm mộ %s"
-
-#~ msgid "(US Dollars)"
-#~ msgstr "(Đô-la Mỹ)"
-
-#~ msgid "Don't store credit card information"
-#~ msgstr "Đừng lưu thông tin thẻ tín dụng"
-
-#~ msgid "%Y-%m-%d %H:%M"
-#~ msgstr "%d-%m-%Y %H:%M"
-
-#~ msgid ""
-#~ "%s\n"
+#~ "An error occurred while trying to authorize the download.\n"
+#~ "The Magnatune server returned:\n"
 #~ "%s"
 #~ msgstr ""
-#~ "%s\n"
+#~ "Một lỗi đã xảy ra khi cố gấng xác thực việc tải xuống.\n"
+#~ "Máy phục vụ Magnatune trở lại:\n"
 #~ "%s"
 
-#~ msgid "by %s"
-#~ msgstr "bởi %s"
+#~ msgid ""
+#~ "An error occurred while trying to download the album.\n"
+#~ "The error text is:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Một lỗi đã xảy ra khi cố gắng tải tập nhạc.\n"
+#~ "Nội dung lỗi là:\n"
+#~ "%s"
 
-#~ msgid "_Disc Number:"
-#~ msgstr "_Số đĩa:"
+#~ msgid "Finished Downloading"
+#~ msgstr "Đã hoàn thành việc tải"
 
-#~ msgid "Art Display"
-#~ msgstr "Ảnh bìa"
+#~ msgid "All Magnatune downloads have been completed."
+#~ msgstr "Tất cả việc tải từ Magnatune đã hoàn tất."
 
-#~ msgid "Displays art for the playing track"
-#~ msgstr "Hiện ảnh bìa khi nghe nhạc"
+#~ msgid "Download Album"
+#~ msgstr "Tải tập nhạc"
 
-#~ msgid "Support for audio CDs"
-#~ msgstr "Hỗ trợ đĩa CD nhạc"
+#~ msgid "Download this album from Magnatune"
+#~ msgstr "Tải tập nhạc này từ Magnatune"
 
-#~ msgid "Last.fm Profile "
-#~ msgstr "Hồ sơ Last.fm "
-
-#~ msgid "Submits songs to last.fm"
-#~ msgstr "Gửi bài nhạc lên last.fm"
+#~ msgid "Couldn't store account information"
+#~ msgstr "Không thể lưu thông tin tài khoản"
 
 #~ msgid ""
-#~ "Adds iPod support to Rhythmbox so that it can show an iPod content, and "
-#~ "play from there"
+#~ "There was a problem accessing the keyring. Check the debug output for "
+#~ "more information."
 #~ msgstr ""
-#~ "Thêm hỗ trợ iPod vào Rhythmbox để có thể xem nội dung iPod và nghe nhạc "
-#~ "từ đó"
+#~ "Có một vấn đề khi truy cập vòng khoá. Hãy kiểm tra thông tin bẫy lỗi."
 
-#~ msgid "iPod support"
-#~ msgstr "Hỗ trợ iPod"
+#~ msgid "Unable to open the %s %s device"
+#~ msgstr "Không thể mở thiết bị %s %s"
 
-#~ msgid " doesn't do much"
-#~ msgstr " không làm gì nhiều"
+#~ msgid "Unable to send file to MTP device: %s"
+#~ msgstr "Không thể gửi tập tin tới thiết bị MTP: %s"
 
-#~ msgid "Does a whole lot of not much"
-#~ msgstr "Làm đủ thứ nhưng không nhiều"
+#~ msgid "ReplayGain"
+#~ msgstr "ReplayGain"
 
-#~ msgid "by %s from %s"
-#~ msgstr "bởi %s từ %s"
+#~ msgid "Use ReplayGain to provide a consistent playback volume"
+#~ msgstr "Sử dụng ReplayGain để cung cấp âm thanh phát nhạc cố định"
 
-#~ msgid "_Feed"
-#~ msgstr "_Nguồn"
+#~ msgid "Album (ideal loudness for all tracks)"
+#~ msgstr "Tập nhạc (Âm lượng lớn lý tưởng cho mọi bản nhạc)"
 
-#~ msgid "_Title"
-#~ msgstr "_Tựa"
+#~ msgid "Learn more about ReplayGain at replaygain.org"
+#~ msgstr "Tìm hiểu thêm về ReplayGain tại replaygain.org"
 
-#~ msgid "Art_ist"
-#~ msgstr "Nghệ _sĩ"
+#~ msgid "Radio (equal loudness for all tracks)"
+#~ msgstr "Đài phát thanh (âm thanh bằng nhau cho mọi bản nhạc)"
 
-#~ msgid "_Album"
-#~ msgstr "Tậ_p nhạc"
+#~ msgid "ReplayGain _mode:"
+#~ msgstr "_Chế độ ReplayGain:"
 
-#~ msgid "Tim_e"
-#~ msgstr "Thờ_i lượng"
+#~ msgid "ReplayGain preferences"
+#~ msgstr "Tuỳ chỉnh ReplayGain"
 
-#~ msgid "_Play Count"
-#~ msgstr "Số lần _phát"
+#~ msgid "_Apply compression to prevent clipping"
+#~ msgstr "Á_p dụng nén để tránh sự cắt xén"
 
-#~ msgid "_Last Played"
-#~ msgstr "_Lần phát cuối"
+#~ msgid "_Pre-amp:"
+#~ msgstr "_Pre-amp:"
 
-#~ msgid "_Date Added"
-#~ msgstr "Ngà_y thêm"
+#~ msgid "-15.0 dB"
+#~ msgstr "-15.0 dB"
 
-#~ msgid "L_ocation"
-#~ msgstr "Đị_a điểm"
+#~ msgid "0.0 dB"
+#~ msgstr "0.0 dB"
+
+#~ msgid "15.0 dB"
+#~ msgstr "15.0 dB"
+
+#~ msgid ""
+#~ "The GStreamer elements required for ReplayGain processing are not "
+#~ "available. The missing elements are: %s"
+#~ msgstr ""
+#~ "Không có các thành phần GStreamer cần thiết cho việc xử lý ReplayGain. "
+#~ "Thành phần còn thiết là: %s"
+
+#~ msgid "ReplayGain GStreamer plugins not available"
+#~ msgstr "Phần bổ sung GStreamer ReplayGain hiện không có sẵn"
+
+#~ msgid "Send to..."
+#~ msgstr "Gửi đến..."
+
+#~ msgid "Send files by mail, instant message..."
+#~ msgstr "Gửi tập tin đính kèm theo thư, tin nhắn..."
+
+#~ msgid "Send selected tracks by email or instant message"
+#~ msgstr "Gửi bản nhạc đã chọn bằng thư điện tử hay nhắn tin nhanh"
+
+#~ msgid "Send tracks"
+#~ msgstr "Gửi bản nhạc"
+
+#~ msgid "Change song"
+#~ msgstr "Đổi bài nhạc"
+
+#~ msgid "Change volume"
+#~ msgstr "Đổi âm lượng"
+
+#~ msgid "_Mouse wheel:"
+#~ msgstr "Nút _cuộn chuột"
+
+#~ msgid "_Notifications:"
+#~ msgstr "_Thông báo:"
+
+#~ msgid "_Status icon:"
+#~ msgstr "Biểu tượng t_rạng thái:"
+
+#~ msgid "Set the rating of the current song"
+#~ msgstr "Thiết lập chấm điểm cho bài hát hiện tại"
+
+#~ msgid "Additional GStreamer plugins are required to play this file: %s"
+#~ msgstr "Phần bổ sung GStreamer khác cần thiết để phát tập tin này: %s"
+
+#~ msgid "Delete each selected item"
+#~ msgstr "Xoá từng mục được chọn"
+
+#~ msgid "Remove each selected item from the library"
+#~ msgstr "Gỡ bỏ từng mục được chọn ra khỏi thư viện"
+
+#~ msgid "Move each selected item to the trash"
+#~ msgstr "Di chuyển từng mục được chọn vào sọt rác"
+
+#~ msgid "Add each selected song to a new playlist"
+#~ msgstr "Thêm vào mỗi bài hát được chọn vào một danh sách phát mới"
+
+#~ msgid "Add each selected song to the play queue"
+#~ msgstr "Thêm vào mỗi bài hát được chọn vào hàng đợi phát"
+
+#~ msgid "Remove each selected item from the play queue"
+#~ msgstr "Gỡ bỏ từng mục được chọn ra khỏi hàng đợi phát"
+
+#~ msgid "Show information on each selected song"
+#~ msgstr "Xem thông tin của mỗi bài hát được chọn"
+
+#~ msgid "Pause playback"
+#~ msgstr "Tạm dừng phát lại"
+
+#~ msgid "Remove From Playlist"
+#~ msgstr "Gỡ gỏi danh sách phát"
+
+#~ msgid "Remove each selected song from the playlist"
+#~ msgstr "Gỡ từng bài hát được chọn ra khỏi danh sách phát"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Title"
+#~ msgstr "Tựa"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Artist"
+#~ msgstr "Nghệ sĩ"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Album"
+#~ msgstr "Tập nhạc"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Genre"
+#~ msgstr "Thể loại"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Year"
+#~ msgstr "Năm"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Rating"
+#~ msgstr "Đánh giá"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Path"
+#~ msgstr "Đường dẫn"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Play Count"
+#~ msgstr "Số lần phát"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Track Number"
+#~ msgstr "Số thứ tự"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Disc Number"
+#~ msgstr "Đĩa số"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Bitrate"
+#~ msgstr "Tỷ lệ bit"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Duration"
+#~ msgstr "Thời lượng"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Time of Last Play"
+#~ msgstr "Lần phát cuối"
+
+#~ msgctxt "query-criteria"
+#~ msgid "Time Added to Library"
+#~ msgstr "Thời điểm thêm vào thư viện"
+
+#~ msgctxt "query-sort"
+#~ msgid "Artist"
+#~ msgstr "Nghệ sĩ"
+
+#~ msgctxt "query-sort"
+#~ msgid "Album"
+#~ msgstr "Tập nhạc"
+
+#~ msgctxt "query-sort"
+#~ msgid "Genre"
+#~ msgstr "Thể loại"
+
+#~ msgctxt "query-sort"
+#~ msgid "Title"
+#~ msgstr "Tựa"
+
+#~ msgctxt "query-sort"
+#~ msgid "Rating"
+#~ msgstr "Đánh giá"
+
+#~ msgctxt "query-sort"
+#~ msgid "Play Count"
+#~ msgstr "Số lần phát"
+
+#~ msgctxt "query-sort"
+#~ msgid "Year"
+#~ msgstr "Năm"
+
+#~ msgctxt "query-sort"
+#~ msgid "Duration"
+#~ msgstr "Thời lượng"
+
+#~ msgctxt "query-sort"
+#~ msgid "Track Number"
+#~ msgstr "Số thứ tự"
+
+#~ msgctxt "query-sort"
+#~ msgid "Last Played"
+#~ msgstr "Lần nghe cuối"
+
+#~ msgctxt "query-sort"
+#~ msgid "Date Added"
+#~ msgstr "Ngày thêm"
