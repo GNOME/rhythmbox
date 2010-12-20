@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-10-17 10:25+0000\n"
+"POT-Creation-Date: 2010-12-17 22:54+0000\n"
 "PO-Revision-Date: 2010-10-18 13:47+0300\n"
 "Last-Translator: Mattias Põldaru <mahfiaz gmail com>\n"
 "Language-Team: Estonian <gnome-et@linux.ee>\n"
@@ -895,6 +895,14 @@ msgstr "Kasutaja lemmiklood:"
 msgid "Recommendations for User:"
 msgstr "Soovitused kasutajale:"
 
+#. Translators: a type of station named "Mix Radio" by Last.fm.
+#. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for a description of it.
+#. * Followed by a text entry box for the user name.
+#.
+#, fuzzy
+msgid "Mix Radio for User:"
+msgstr "Soovitused kasutajale:"
+
 #. Translators: describes a radio stream playing tracks tagged with a particular tag.
 #. * Followed by a text entry box for the tag.
 #.
@@ -937,6 +945,12 @@ msgstr "Lemmiklood (%s)"
 #, c-format
 msgid "%s's Recommended Radio"
 msgstr "Kasutaja %s soovitusraadio"
+
+#. Translators: station is the "Mix Radio" for the user %s.
+#. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for description.
+#, fuzzy, c-format
+msgid "%s's Mix Radio"
+msgstr "Esitaja %s raadio"
 
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
@@ -983,6 +997,13 @@ msgstr "See jaam on saadaval ainult %s tellijatele."
 #. Not enough content
 msgid "Not enough content to play station"
 msgstr "Selle jaama mängimiseks pole piisavalt laule"
+
+#. Deprecated station
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This message indicates that the service has deprecated this type of station.
+#, c-format
+msgid "%s no longer supports this type of station"
+msgstr ""
 
 #. Other error
 #, c-format
@@ -1472,14 +1493,34 @@ msgstr "DAAP muusika jagamine"
 msgid "Share music and play shared music on your local network"
 msgstr "Muusikat jagamine ja kuulamine üle kohtvõrgu"
 
+#, fuzzy
+msgid "<b>Add Remote</b>"
+msgstr "<b>Süsteem</b>"
+
 msgid "<b>Sharing</b>"
 msgstr "<b>Jagamine</b>"
+
+msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
+msgstr ""
+
+msgid "Forget known Remotes"
+msgstr ""
+
+#, fuzzy
+msgid "Library _name:"
+msgstr "Kasutaja muusikakogu:"
+
+msgid "Please enter the passcode displayed on your device."
+msgstr ""
 
 msgid "Require _password:"
 msgstr "Nõutakse _parooli:"
 
-msgid "Shared music _name:"
-msgstr "Jagatud muusika _nimi:"
+msgid "You can now control Rhythmbox through your Remote"
+msgstr ""
+
+msgid "_Look for touch Remotes"
+msgstr ""
 
 msgid "_Share my music"
 msgstr "_Minu muusika on jagamisel"
@@ -1490,6 +1531,9 @@ msgstr "Vigane jagamise nimi"
 #, c-format
 msgid "The shared music name '%s' is already taken. Please choose another."
 msgstr "Jagatud muusika nimi '%s' on juba võetud. Vali uus nimi."
+
+msgid "Shared music _name:"
+msgstr "Jagatud muusika _nimi:"
 
 msgid "Connect to _DAAP share..."
 msgstr "Ühendu _DAAP-i jagaja otsa..."
@@ -1528,6 +1572,17 @@ msgstr "Jagatud laulude loendi hankimine"
 
 msgid "Could not connect to shared music"
 msgstr "Jagatud muusikaga ei suudetud ühenduda"
+
+#, fuzzy
+msgid "Connecting..."
+msgstr "Ühendumine"
+
+msgid "Could not pair with this Remote."
+msgstr ""
+
+#, fuzzy
+msgid "Remotes"
+msgstr "Eemalda"
 
 msgid "MediaServer2 D-Bus interface"
 msgstr "MediaServer2 D-Bus liides"
@@ -2432,6 +2487,12 @@ msgid "Python Console"
 msgstr "Pythoni konsool"
 
 #. sys.excepthook = _excepthandler
+msgid "Inform Zeitgeist about your activity"
+msgstr ""
+
+msgid "Zeitgeist"
+msgstr ""
+
 msgid "ReplayGain"
 msgstr "ReplayGain"
 
@@ -2535,6 +2596,10 @@ msgstr "Eelmine"
 
 msgid "Pause"
 msgstr "Paus"
+
+#, fuzzy
+msgid "Play"
+msgstr "_Mängi"
 
 msgid "Next"
 msgstr "Järgmine"
@@ -3724,15 +3789,6 @@ msgstr "Pealkirjad"
 msgid "Search titles"
 msgstr "Pealkirjade otsimine"
 
-msgid "Error transferring track"
-msgstr "Viga pala edastamisel"
-
-msgid "Unable to eject"
-msgstr "Ei suudetud väljastada"
-
-msgid "Unable to unmount"
-msgstr "Ei suudetud lahti haakida"
-
 msgid "Browse This _Genre"
 msgstr "Sirvi seda _žanrit"
 
@@ -3750,6 +3806,18 @@ msgstr "Sirvi seda a_lbumit"
 
 msgid "Set the browser to view only this album"
 msgstr "Sirvija näitab ainult seda albumit"
+
+msgid "Library"
+msgstr "Fonoteek"
+
+msgid "Stores"
+msgstr "Kaubamajad"
+
+msgid "Devices"
+msgstr "Seadmed"
+
+msgid "Shared"
+msgstr "Jagatud"
 
 #. set up info bar for triggering codec installation
 msgid "Install Plugins"
@@ -3805,6 +3873,9 @@ msgstr "Määratud mitu asukohta"
 
 msgid "Example Path:"
 msgstr "Näidisasukoht:"
+
+msgid "Error transferring track"
+msgstr "Viga pala edastamisel"
 
 msgid "Sync with Library"
 msgstr "Fonoteegiga sünkroniseerimine"
@@ -3876,6 +3947,12 @@ msgstr "Eemalda esitusnimekirjast"
 msgid "Remove each selected song from the playlist"
 msgstr "Kõigi valitud laulude eemaldamine esitusnimekirjast"
 
+msgid "Unable to eject"
+msgstr "Ei suudetud väljastada"
+
+msgid "Unable to unmount"
+msgstr "Ei suudetud lahti haakida"
+
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -3885,21 +3962,6 @@ msgstr[1] "%d lugu"
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Importimine (%d/%d)"
-
-msgid "Library"
-msgstr "Fonoteek"
-
-msgid "Stores"
-msgstr "Kaubamajad"
-
-msgid "Devices"
-msgstr "Seadmed"
-
-msgid "Shared"
-msgstr "Jagatud"
-
-msgid "S_ource"
-msgstr "Allika_s"
 
 msgid "Connecting"
 msgstr "Ühendumine"
@@ -4278,6 +4340,9 @@ msgstr "Töölaual"
 
 msgid "Unknown location"
 msgstr "Tundmatu asukoht"
+
+#~ msgid "S_ource"
+#~ msgstr "Allika_s"
 
 #~ msgid "Account Login"
 #~ msgstr "Kontosse sisselogimine"
