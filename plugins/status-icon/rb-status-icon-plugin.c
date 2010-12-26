@@ -803,6 +803,7 @@ update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 	char *album = NULL;
 	char *title = NULL;
 	GString *secondary;
+	gboolean playing = FALSE;
 
 	const char *artist_template = NULL;
 	const char *album_template = NULL;
@@ -886,11 +887,21 @@ update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 		g_free (escaped);
 	}
 
-	if (title != NULL)
-		plugin->priv->current_title = title;
-	else
+	if (title == NULL) {
 		/* Translators: unknown track title */
-		plugin->priv->current_title = g_strdup (_("Unknown"));
+		title = g_strdup (_("Unknown"));
+	}
+
+	rb_shell_player_get_playing (plugin->priv->shell_player, &playing, NULL);
+	if (playing) {
+		plugin->priv->current_title = title;
+	} else {
+		/* Translators: this is used in notification bubble text to indicate that
+		 * playback is currently paused.  %s is the song title.
+		 */
+		plugin->priv->current_title = g_strdup_printf (_("(Paused) %s"), title);
+		g_free (title);
+	}
 
 	plugin->priv->current_album_and_artist = g_string_free (secondary, FALSE);
 }
@@ -1017,16 +1028,23 @@ db_stream_metadata_cb (RhythmDB *db,
 	update_current_playing_data (plugin, entry);
 }
 
-#if 0
 static void
 playing_changed_cb (RBShellPlayer *player,
 		    gboolean playing,
 		    RBStatusIconPlugin *plugin)
 {
-	/* need a "don't display a bubble/banner if we aren't already" hint here */
-	notify_playing_entry (plugin, FALSE);
+	RhythmDBEntry *entry;
+
+	entry = rb_shell_player_get_playing_entry (plugin->priv->shell_player);
+	if (entry != NULL) {
+		update_current_playing_data (plugin, entry);
+		rhythmdb_entry_unref (entry);
+	}
+
+	if (plugin->priv->notify_supports_persistence) {
+		notify_playing_entry (plugin, FALSE);
+	}
 }
-#endif
 
 static void
 elapsed_changed_cb (RBShellPlayer *player,
@@ -1483,7 +1501,7 @@ impl_activate (RBPlugin *bplugin,
 	g_signal_connect_object (plugin->priv->shell, "notify-custom", G_CALLBACK (shell_notify_custom_cb), plugin, 0);
 
 	g_signal_connect_object (plugin->priv->shell_player, "playing-song-changed", G_CALLBACK (playing_entry_changed_cb), plugin, 0);
-	/*g_signal_connect_object (plugin->priv->shell_player, "playing-changed", G_CALLBACK (playing_changed_cb), plugin, 0);*/
+	g_signal_connect_object (plugin->priv->shell_player, "playing-changed", G_CALLBACK (playing_changed_cb), plugin, 0);
 	g_signal_connect_object (plugin->priv->shell_player, "elapsed-changed", G_CALLBACK (elapsed_changed_cb), plugin, 0);
 
 	g_signal_connect_object (plugin->priv->db, "entry_extra_metadata_notify::" RHYTHMDB_PROP_COVER_ART,
