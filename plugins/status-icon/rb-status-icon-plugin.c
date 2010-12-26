@@ -95,7 +95,7 @@ struct _RBStatusIconPluginPrivate
 		ICON_WITH_NOTIFY,
 		ICON_ALWAYS,
 		ICON_OWNS_WINDOW
-	} icon_mode;
+	} icon_mode, conf_icon_mode;
 	enum {
 		NOTIFY_NEVER = 0,
 		NOTIFY_HIDDEN,
@@ -1278,22 +1278,58 @@ maybe_upgrade_preferences (RBStatusIconPlugin *plugin)
 	}
 }
 
+static int
+override_status_icon_config (int mode)
+{
+#if GLIB_CHECK_VERSION(2, 26, 0)
+	GDBusConnection *bus;
+	GVariant *result;
+
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	if (bus == NULL) {
+		return mode;
+	}
+
+	result = g_dbus_connection_call_sync (bus,
+					      "org.freedesktop.DBus",
+					      "/org/freedesktop/DBus",
+					      "org.freedesktop.DBus",
+					      "GetNameOwner",
+					      g_variant_new ("(s)", "org.gnome.Shell"),
+					      G_VARIANT_TYPE ("(s)"),
+					      G_DBUS_CALL_FLAGS_NONE,
+					      -1,
+					      NULL,
+					      NULL);
+	if (result != NULL) {
+		rb_debug ("disabling status icon as GNOME Shell is running");
+		mode = ICON_NEVER;
+
+		g_variant_unref (result);
+	}
+	g_object_unref (bus);
+#endif
+	return mode;
+}
+
 static void
 config_notify_cb (GConfClient *client, guint connection_id, GConfEntry *entry, RBStatusIconPlugin *plugin)
 {
 	if (g_str_equal (gconf_entry_get_key (entry), CONF_STATUS_ICON_MODE)) {
 
-		plugin->priv->icon_mode = gconf_value_get_int (gconf_entry_get_value (entry));
-		rb_debug ("icon mode changed to %d", plugin->priv->icon_mode);
+		plugin->priv->conf_icon_mode = gconf_value_get_int (gconf_entry_get_value (entry));
+		rb_debug ("icon mode changed to %d", plugin->priv->conf_icon_mode);
 
 		update_status_icon_visibility (plugin, FALSE);	/* maybe should remember if we're notifying.. */
 		sync_actions (plugin);
 
 		if (plugin->priv->icon_combo != NULL) {
 			plugin->priv->syncing_config_widgets = TRUE;
-			gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->icon_combo), plugin->priv->icon_mode);
+			gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->icon_combo), plugin->priv->conf_icon_mode);
 			plugin->priv->syncing_config_widgets = FALSE;
 		}
+
+		plugin->priv->icon_mode = override_status_icon_config (plugin->priv->conf_icon_mode);
 
 	} else if (g_str_equal (gconf_entry_get_key (entry), CONF_NOTIFICATION_MODE)) {
 		plugin->priv->notify_mode = gconf_value_get_int (gconf_entry_get_value (entry));
@@ -1369,7 +1405,7 @@ impl_get_config_widget (RBPlugin *bplugin)
 				 G_CALLBACK (mouse_wheel_config_changed_cb),
 				 plugin, 0);
 	gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->notify_combo), plugin->priv->notify_mode);
-	gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->icon_combo), plugin->priv->icon_mode);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->icon_combo), plugin->priv->conf_icon_mode);
 	gtk_combo_box_set_active (GTK_COMBO_BOX (plugin->priv->wheel_combo), plugin->priv->wheel_mode);
 
 	g_object_unref (builder);
@@ -1451,7 +1487,8 @@ impl_activate (RBPlugin *bplugin,
 
 	maybe_upgrade_preferences (plugin);
 
-	plugin->priv->icon_mode = eel_gconf_get_integer (CONF_STATUS_ICON_MODE);
+	plugin->priv->conf_icon_mode = eel_gconf_get_integer (CONF_STATUS_ICON_MODE);
+	plugin->priv->icon_mode = override_status_icon_config (plugin->priv->conf_icon_mode);
 	plugin->priv->notify_mode = eel_gconf_get_integer (CONF_NOTIFICATION_MODE);
 	plugin->priv->wheel_mode = eel_gconf_get_integer (CONF_MOUSE_WHEEL_MODE);
 
