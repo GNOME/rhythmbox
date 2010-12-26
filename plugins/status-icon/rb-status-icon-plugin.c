@@ -347,6 +347,10 @@ notification_closed_cb (NotifyNotification *notification,
 	rb_tray_icon_trigger_tooltip_query (plugin->priv->tray_icon);
 
 	update_status_icon_visibility (plugin, FALSE);
+
+	if (notification != plugin->priv->notification) {
+		g_object_unref (notification);
+	}
 }
 
 static void
@@ -382,9 +386,10 @@ do_notify (RBStatusIconPlugin *plugin,
 	   const char *primary,
 	   const char *secondary,
 	   const char *image_uri,
-	   gboolean show_action)
+	   gboolean playback)
 {
 	GError *error = NULL;
+	NotifyNotification *notification;
 
 	if (notify_is_initted () == FALSE) {
 		GList *caps;
@@ -426,17 +431,26 @@ do_notify (RBStatusIconPlugin *plugin,
 	if (secondary == NULL)
 		secondary = "";
 
-	if (plugin->priv->notification == NULL) {
+	if (playback) {
+		notification = plugin->priv->notification;
+	} else {
+		notification = NULL;
+	}
+
+	if (notification == NULL) {
 #if LIBNOTIFY_VERSION_MINOR >= 7
-		plugin->priv->notification = notify_notification_new (primary, secondary, RB_APP_ICON);
+		notification = notify_notification_new (primary, secondary, RB_APP_ICON);
 #else
-		plugin->priv->notification = notify_notification_new (primary, secondary, RB_APP_ICON, NULL);
+		notification = notify_notification_new (primary, secondary, RB_APP_ICON, NULL);
 #endif
 
-		g_signal_connect_object (plugin->priv->notification,
+		g_signal_connect_object (notification,
 					 "closed",
 					 G_CALLBACK (notification_closed_cb),
 					 plugin, 0);
+		if (playback) {
+			plugin->priv->notification = notification;
+		}
 	} else {
 		notify_notification_clear_hints (plugin->priv->notification);
 		notify_notification_update (plugin->priv->notification, primary, secondary, RB_APP_ICON);
@@ -450,52 +464,52 @@ do_notify (RBStatusIconPlugin *plugin,
 	case ICON_ALWAYS:
 	case ICON_OWNS_WINDOW:
 		rb_tray_icon_attach_notification (plugin->priv->tray_icon,
-						  plugin->priv->notification);
+						  notification);
 		break;
 
 	default:
 		g_assert_not_reached ();
 	}
 
-	notify_notification_set_timeout (plugin->priv->notification, timeout);
+	notify_notification_set_timeout (notification, timeout);
 
 	if (image_uri != NULL) {
-		notify_notification_clear_hints (plugin->priv->notification);
-		notify_notification_set_hint_string (plugin->priv->notification,
+		notify_notification_clear_hints (notification);
+		notify_notification_set_hint_string (notification,
 						     "image_path",
 						     image_uri);
 	}
 
-	notify_notification_clear_actions (plugin->priv->notification);
-	if (show_action && plugin->priv->notify_supports_actions) {
+	notify_notification_clear_actions (notification);
+	if (playback && plugin->priv->notify_supports_actions) {
 		if (plugin->priv->notify_supports_icon_buttons) {
 			gboolean playing = FALSE;
 			rb_shell_player_get_playing (plugin->priv->shell_player, &playing, NULL);
 
-			notify_notification_add_action (plugin->priv->notification,
+			notify_notification_add_action (notification,
 							"media-skip-backward",
 							_("Previous"),
 							(NotifyActionCallback) notification_previous_cb,
 							plugin,
 							NULL);
-			notify_notification_add_action (plugin->priv->notification,
+			notify_notification_add_action (notification,
 							playing ? "media-playback-pause" : "media-playback-start",
 							playing ? _("Pause") : _("Play"),
 							(NotifyActionCallback) notification_playpause_cb,
 							plugin,
 							NULL);
 #if (LIBNOTIFY_VERSION_MINOR >= 7)
-			notify_notification_set_hint (plugin->priv->notification,
+			notify_notification_set_hint (notification,
 						      "action-icons",
 						      g_variant_new_boolean (TRUE));
 #else
-			notify_notification_set_hint_byte (plugin->priv->notification,
+			notify_notification_set_hint_byte (notification,
 							   "action-icons",
 							   1);
 #endif
 		}
 
-		notify_notification_add_action (plugin->priv->notification,
+		notify_notification_add_action (notification,
 						"media-skip-forward",
 						_("Next"),
 						(NotifyActionCallback) notification_next_cb,
@@ -504,18 +518,25 @@ do_notify (RBStatusIconPlugin *plugin,
 	}
 
 	if (plugin->priv->notify_supports_persistence) {
+		const char *hint;
+
+		if (playback) {
+			hint = "resident";
+		} else {
+			hint = "transient";
+		}
 #if (LIBNOTIFY_VERSION_MINOR >= 7)
-		notify_notification_set_hint (plugin->priv->notification,
-					      "resident",
+		notify_notification_set_hint (notification,
+					      hint,
 					      g_variant_new_boolean (TRUE));
 #else
-		notify_notification_set_hint_byte (plugin->priv->notification,
-						   "resident",
+		notify_notification_set_hint_byte (notification,
+						   hint,
 						   1);
 #endif
 	}
 
-	if (notify_notification_show (plugin->priv->notification, &error) == FALSE) {
+	if (notify_notification_show (notification, &error) == FALSE) {
 		g_warning ("Failed to send notification (%s): %s", primary, error->message);
 		g_error_free (error);
 		update_status_icon_visibility (plugin, FALSE);
