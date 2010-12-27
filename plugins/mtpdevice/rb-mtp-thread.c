@@ -685,11 +685,12 @@ task_thread (RBMtpThread *thread)
 {
 	RBMtpThreadTask *task;
 	gboolean quit = FALSE;
+	GAsyncQueue *queue = g_async_queue_ref (thread->queue);
 
 	rb_debug ("MTP device worker thread starting");
 	while (quit == FALSE) {
 
-		task = g_async_queue_pop (thread->queue);
+		task = g_async_queue_pop (queue);
 		quit = run_task (thread, task);
 		destroy_task (task);
 	}
@@ -697,9 +698,10 @@ task_thread (RBMtpThread *thread)
 	rb_debug ("MTP device worker thread exiting");
 	
 	/* clean up any queued tasks */
-	while ((task = g_async_queue_try_pop (thread->queue)) != NULL)
+	while ((task = g_async_queue_try_pop (queue)) != NULL)
 		destroy_task (task);
 
+	g_async_queue_unref (queue);
 	return NULL;
 }
 
@@ -871,11 +873,15 @@ impl_finalize (GObject *object)
 	RBMtpThread *thread = RB_MTP_THREAD (object);
 	RBMtpThreadTask *task;
 
-	rb_debug ("joining MTP worker thread");
+	rb_debug ("killing MTP worker thread");
 	task = create_task (CLOSE_DEVICE);
 	queue_task (thread, task);
-	g_thread_join (thread->thread);
-	rb_debug ("MTP worker thread exited");
+	if (thread->thread != g_thread_self ()) {
+		g_thread_join (thread->thread);
+		rb_debug ("MTP worker thread exited");
+	} else {
+		rb_debug ("we're on the MTP worker thread..");
+	}
 
 	g_async_queue_unref (thread->queue);
 
