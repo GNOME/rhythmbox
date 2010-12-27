@@ -285,7 +285,6 @@ write_album_to_device (RBMtpThread *thread, LIBMTP_album_t *album, gboolean new_
 {
 	if (new_album) {
 		if (LIBMTP_Create_New_Album (thread->device, album) != 0) {
-			LIBMTP_destroy_album_t (album);
 			rb_debug ("LIBMTP_Create_New_Album failed..");
 			rb_mtp_thread_report_errors (thread, FALSE);
 		}
