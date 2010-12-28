@@ -522,11 +522,13 @@ source_method_call (GDBusConnection *connection,
 			} while (gtk_tree_model_iter_next (model, &iter));
 		}
 		g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+		g_variant_builder_unref (list);
 
 		g_strfreev (filter);
 	} else if (g_strcmp0 (method_name, "ListContainers") == 0) {
 		list = g_variant_builder_new (G_VARIANT_TYPE ("aa{sv}"));
 		g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+		g_variant_builder_unref (list);
 	} else if (g_strcmp0 (method_name, "SearchObjects") == 0) {
 		g_dbus_method_invocation_return_value (invocation, NULL);
 	} else {
@@ -838,11 +840,11 @@ name_updated_cb (RBSource *source, GParamSpec *pspec, SourceRegistrationData *so
 }
 
 static void
-source_deleted_cb (RBSource *source, RBMediaServer2Plugin *plugin)
+source_deleted_cb (RBDisplayPage *page, RBMediaServer2Plugin *plugin)
 {
 	SourceRegistrationData *source_data;
 
-	source_data = find_registration_data (plugin, source);
+	source_data = find_registration_data (plugin, RB_SOURCE (page));
 	if (source_data != NULL) {
 		rb_debug ("source for container %s deleted", source_data->dbus_path);
 		unregister_source_container (plugin, source_data, FALSE);
@@ -1018,12 +1020,14 @@ category_container_method_call (GDBusConnection *connection,
 			rb_debug ("returned %d containers", list_count);
 
 			g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+			g_variant_builder_unref (list);
 			g_strfreev ((char **)filter);
 		} else if (g_strcmp0 (method_name, "ListItems") == 0) {
 			rb_debug ("listing items");
 			g_variant_get (parameters, "(uu^as)", &list_offset, &list_max, &filter);
 			list = g_variant_builder_new (G_VARIANT_TYPE ("aa{sv}"));
 			g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+			g_variant_builder_unref (list);
 			g_strfreev ((char **)filter);
 		} else if (g_strcmp0 (method_name, "SearchObjects") == 0) {
 			rb_debug ("search not supported");
@@ -1212,12 +1216,14 @@ root_method_call (GDBusConnection *connection,
 			list_categories_by_parent (plugin, list, object_path, &list_offset, &list_count, list_max, filter);
 
 			g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+			g_variant_builder_unref (list);
 			g_strfreev ((char **)filter);
 		} else if (g_strcmp0 (method_name, "ListItems") == 0) {
 			rb_debug ("listing items");
 			g_variant_get (parameters, "(uu^as)", &list_offset, &list_max, &filter);
 			list = g_variant_builder_new (G_VARIANT_TYPE ("aa{sv}"));
 			g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+			g_variant_builder_unref (list);
 			g_strfreev ((char **)filter);
 		} else if (g_strcmp0 (method_name, "SearchObjects") == 0) {
 			rb_debug ("search not supported");
@@ -1358,7 +1364,7 @@ is_shareable_device (RBSource *source)
 }
 */
 
-static void
+static gboolean
 display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBMediaServer2Plugin *plugin)
 {
 	RBDisplayPage *page;
@@ -1386,6 +1392,7 @@ display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *i
 	}
 
 	g_object_unref (page);
+	return FALSE;
 }
 
 /* plugin */
