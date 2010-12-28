@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-12-11 01:36+0000\n"
-"PO-Revision-Date: 2010-12-05 14:21+0100\n"
+"POT-Creation-Date: 2010-12-27 22:10+0000\n"
+"PO-Revision-Date: 2010-12-28 00:40+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -699,7 +699,7 @@ msgstr "%e. %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:642
 #: ../plugins/mtpdevice/rb-mtp-source.c:1133
 #: ../plugins/mtpdevice/rb-mtp-source.c:1522
-#: ../plugins/status-icon/rb-status-icon-plugin.c:872
+#: ../plugins/status-icon/rb-status-icon-plugin.c:892
 #: ../podcast/rb-feed-podcast-properties-dialog.c:340
 #: ../podcast/rb-podcast-manager.c:1920
 #: ../podcast/rb-podcast-properties-dialog.c:619
@@ -3228,7 +3228,7 @@ msgstr ""
 "zařízení)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:157
-#: ../plugins/mtpdevice/rb-mtp-thread.c:545
+#: ../plugins/mtpdevice/rb-mtp-thread.c:544
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Nelze otevřít dočasný soubor: %s"
@@ -3238,7 +3238,7 @@ msgid "Rename MTP-device"
 msgstr "Přejmenovat zařízení MTP"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:869
-#: ../plugins/mtpdevice/rb-mtp-thread.c:854
+#: ../plugins/mtpdevice/rb-mtp-thread.c:855
 msgid "Media player device error"
 msgstr "Chyba zařízení na přehrávání médii"
 
@@ -3254,24 +3254,24 @@ msgstr "Nelze otevřít zařízení %s %s"
 msgid "Digital Audio Player"
 msgstr "Digitální hudební přehrávač"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:500
-#: ../plugins/mtpdevice/rb-mtp-thread.c:558
-#: ../plugins/mtpdevice/rb-mtp-thread.c:576
+#: ../plugins/mtpdevice/rb-mtp-thread.c:499
+#: ../plugins/mtpdevice/rb-mtp-thread.c:557
+#: ../plugins/mtpdevice/rb-mtp-thread.c:575
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr "Nelze zkopírovat soubor ze zařízení MTP: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:521
+#: ../plugins/mtpdevice/rb-mtp-thread.c:520
 #, c-format
 msgid "Not enough space in %s"
 msgstr "Nedostatek místa na zařízení %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:602
+#: ../plugins/mtpdevice/rb-mtp-thread.c:601
 #, c-format
 msgid "No space left on MTP device"
 msgstr "Na zařízen MTP není žádné volné místo"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:605
+#: ../plugins/mtpdevice/rb-mtp-thread.c:604
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "Nelze odeslat soubor do zařízen MTP: %s"
@@ -3467,44 +3467,52 @@ msgstr "Zobrazovat _upozornění"
 msgid "Show notifications of song changes and other events"
 msgstr "Zobrazovat upozornění na změny skladeb a jiné události"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:477
+#: ../plugins/status-icon/rb-status-icon-plugin.c:491
 msgid "Previous"
 msgstr "Předchozí"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:483
+#: ../plugins/status-icon/rb-status-icon-plugin.c:497
 msgid "Pause"
 msgstr "Pozastavit"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:483
+#: ../plugins/status-icon/rb-status-icon-plugin.c:497
 msgid "Play"
 msgstr "Přehrávat"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:500
+#: ../plugins/status-icon/rb-status-icon-plugin.c:514
 msgid "Next"
 msgstr "Následující"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:674
+#: ../plugins/status-icon/rb-status-icon-plugin.c:695
 #: ../remote/dbus/rb-client.c:468 ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "Nepřehrává se"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:677
+#: ../plugins/status-icon/rb-status-icon-plugin.c:698
 #, c-format
 msgid "Paused, %s"
 msgstr "Pozastaveno, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:742
+#: ../plugins/status-icon/rb-status-icon-plugin.c:763
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "od <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:744
+#: ../plugins/status-icon/rb-status-icon-plugin.c:765
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "z <i>%s</i>"
+
+#. Translators: this is used in notification bubble text to indicate that
+#. * playback is currently paused.  %s is the song title.
+#.
+#: ../plugins/status-icon/rb-status-icon-plugin.c:902
+#, c-format
+msgid "(Paused) %s"
+msgstr "(Pozastaveno) %s"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:1
 msgid "Status Icon"
