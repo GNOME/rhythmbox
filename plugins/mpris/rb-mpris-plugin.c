@@ -43,6 +43,7 @@
 #include <shell/rb-shell.h>
 #include <shell/rb-shell-player.h>
 #include <backends/rb-player.h>
+#include <sources/rb-playlist-source.h>
 
 #define RB_TYPE_MPRIS_PLUGIN		(rb_mpris_plugin_get_type ())
 #define RB_MPRIS_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_MPRIS_PLUGIN, RBMprisPlugin))
@@ -52,6 +53,8 @@
 #define RB_MPRIS_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_MPRIS_PLUGIN, RBMprisPluginClass))
 
 #define ENTRY_OBJECT_PATH_PREFIX 	"/org/mpris/MediaPlayer2/Track/"
+
+#define MPRIS_PLAYLIST_ID_ITEM		"rb-mpris-playlist-id"
 
 #include "mpris-spec.h"
 
@@ -64,15 +67,20 @@ typedef struct
 	guint name_own_id;
 	guint root_id;
 	guint player_id;
+	guint playlists_id;
 
 	RBShell *shell;
 	RBShellPlayer *player;
 	RhythmDB *db;
+	RBDisplayPageModel *page_model;
 	GtkAction *next_action;
 	GtkAction *prev_action;
 
+	int playlist_count;
+
 	GHashTable *player_property_changes;
-	guint player_property_emit_id;
+	GHashTable *playlist_property_changes;
+	guint property_emit_id;
 
 	gint64 last_elapsed;
 } RBMprisPlugin;
@@ -97,35 +105,38 @@ rb_mpris_plugin_init (RBMprisPlugin *plugin)
 
 /* property change stuff */
 
-static gboolean
-emit_player_properties_idle (RBMprisPlugin *plugin)
+static void
+emit_property_changes (RBMprisPlugin *plugin, GHashTable *changes, const char *interface)
 {
 	GError *error = NULL;
 	GVariantBuilder *properties;
+	GVariantBuilder *invalidated;
 	GVariant *parameters;
-	const char *invalidated[] = { NULL };
 	gpointer propname, propvalue;
 	GHashTableIter iter;
 
 	/* build property changes */
 	properties = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
-	g_hash_table_iter_init (&iter, plugin->player_property_changes);
+	invalidated = g_variant_builder_new (G_VARIANT_TYPE ("as"));
+	g_hash_table_iter_init (&iter, changes);
 	while (g_hash_table_iter_next (&iter, &propname, &propvalue)) {
-		g_variant_builder_add (properties,
-				       "{sv}",
-				       propname,
-				       propvalue);
+		if (propvalue != NULL) {
+			g_variant_builder_add (properties,
+					       "{sv}",
+					       propname,
+					       propvalue);
+		} else {
+			g_variant_builder_add (invalidated, "s", propname);
+		}
+
 	}
-	g_hash_table_destroy (plugin->player_property_changes);
-	plugin->player_property_changes = NULL;
 
-	/* build set of invalidated properties (not supported yet) */
-
-	parameters = g_variant_new ("(sa{sv}^as)",
-				    MPRIS_PLAYER_INTERFACE,
+	parameters = g_variant_new ("(sa{sv}as)",
+				    interface,
 				    properties,
 				    invalidated);
 	g_variant_builder_unref (properties);
+	g_variant_builder_unref (invalidated);
 	g_dbus_connection_emit_signal (plugin->connection,
 				       NULL,
 				       MPRIS_OBJECT_NAME,
@@ -134,12 +145,29 @@ emit_player_properties_idle (RBMprisPlugin *plugin)
 				       parameters,
 				       &error);
 	if (error != NULL) {
-		g_warning ("Unable to send MPRIS property changes: %s",
-			   error->message);
+		g_warning ("Unable to send MPRIS property changes for %s: %s",
+			   interface, error->message);
 		g_clear_error (&error);
 	}
 
-	plugin->player_property_emit_id = 0;
+}
+
+static gboolean
+emit_properties_idle (RBMprisPlugin *plugin)
+{
+	if (plugin->player_property_changes != NULL) {
+		emit_property_changes (plugin, plugin->player_property_changes, MPRIS_PLAYER_INTERFACE);
+		g_hash_table_destroy (plugin->player_property_changes);
+		plugin->player_property_changes = NULL;
+	}
+
+	if (plugin->playlist_property_changes != NULL) {
+		emit_property_changes (plugin, plugin->playlist_property_changes, MPRIS_PLAYLISTS_INTERFACE);
+		g_hash_table_destroy (plugin->playlist_property_changes);
+		plugin->playlist_property_changes = NULL;
+	}
+
+	plugin->property_emit_id = 0;
 	return FALSE;
 }
 
@@ -153,8 +181,23 @@ add_player_property_change (RBMprisPlugin *plugin,
 	}
 	g_hash_table_insert (plugin->player_property_changes, g_strdup (property), value);
 
-	if (plugin->player_property_emit_id == 0) {
-		plugin->player_property_emit_id = g_idle_add ((GSourceFunc)emit_player_properties_idle, plugin);
+	if (plugin->property_emit_id == 0) {
+		plugin->property_emit_id = g_idle_add ((GSourceFunc)emit_properties_idle, plugin);
+	}
+}
+
+static void
+add_playlist_property_change (RBMprisPlugin *plugin,
+			      const char *property,
+			      GVariant *value)
+{
+	if (plugin->playlist_property_changes == NULL) {
+		plugin->playlist_property_changes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	}
+	g_hash_table_insert (plugin->playlist_property_changes, g_strdup (property), value);
+
+	if (plugin->property_emit_id == 0) {
+		plugin->property_emit_id = g_idle_add ((GSourceFunc)emit_properties_idle, plugin);
 	}
 }
 
@@ -877,6 +920,231 @@ static const GDBusInterfaceVTable player_vtable =
 	(GDBusInterfaceSetPropertyFunc) set_player_property,
 };
 
+static GVariant *
+get_maybe_playlist_value (RBMprisPlugin *plugin, RBSource *source)
+{
+	GVariant *maybe_playlist = NULL;
+	gboolean valid = FALSE;
+
+	if (source != NULL) {
+		const char *id;
+
+		id = g_object_get_data (G_OBJECT (source), MPRIS_PLAYLIST_ID_ITEM);
+		if (id != NULL) {
+			char *name;
+			g_object_get (source, "name", &name, NULL);
+			maybe_playlist = g_variant_new ("(b(oss))", TRUE, id, name, "");
+			valid = TRUE;
+			g_free (name);
+		}
+	}
+
+	if (maybe_playlist == NULL) {
+		maybe_playlist = g_variant_new ("(b(oss))", FALSE, "/", "", "");
+	}
+
+	return maybe_playlist;
+}
+
+typedef struct {
+	RBMprisPlugin *plugin;
+	const char *playlist_id;
+} ActivateSourceData;
+
+static gboolean
+activate_source_by_id (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, ActivateSourceData *data)
+{
+	RBDisplayPage *page;
+	const char *id;
+
+	gtk_tree_model_get (model, iter,
+			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
+			    -1);
+	id = g_object_get_data (G_OBJECT (page), MPRIS_PLAYLIST_ID_ITEM);
+	if (g_strcmp0 (data->playlist_id, id) == 0) {
+		rb_shell_activate_source (data->plugin->shell, RB_SOURCE (page), RB_SHELL_ACTIVATION_ALWAYS_PLAY, NULL);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+static gboolean
+get_playlist_list (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, GList **playlists)
+{
+	RBDisplayPage *page;
+	const char *id;
+
+	gtk_tree_model_get (model, iter,
+			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
+			    -1);
+	id = g_object_get_data (G_OBJECT (page), MPRIS_PLAYLIST_ID_ITEM);
+	if (id != NULL) {
+		*playlists = g_list_prepend (*playlists, RB_SOURCE (page));
+	}
+
+	return FALSE;
+}
+
+
+static void
+handle_playlists_method_call (GDBusConnection *connection,
+			      const char *sender,
+			      const char *object_path,
+			      const char *interface_name,
+			      const char *method_name,
+			      GVariant *parameters,
+			      GDBusMethodInvocation *invocation,
+			      RBMprisPlugin *plugin)
+
+{
+	if (g_strcmp0 (object_path, MPRIS_OBJECT_NAME) != 0 ||
+	    g_strcmp0 (interface_name, MPRIS_PLAYLISTS_INTERFACE) != 0) {
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
+		return;
+	}
+
+	if (g_strcmp0 (method_name, "ActivatePlaylist") == 0) {
+		ActivateSourceData data;
+
+		data.plugin = plugin;
+		g_variant_get (parameters, "(&o)", &data.playlist_id);
+		gtk_tree_model_foreach (GTK_TREE_MODEL (plugin->page_model),
+					(GtkTreeModelForeachFunc) activate_source_by_id,
+					&data);
+		g_dbus_method_invocation_return_value (invocation, NULL);
+
+	} else if (g_strcmp0 (method_name, "GetPlaylists") == 0) {
+		guint index;
+		guint max_count;
+		const char *order;
+		gboolean reverse;
+		GVariantBuilder *builder;
+		GList *playlists = NULL;
+		GList *l;
+
+		g_variant_get (parameters, "(uu&sb)", &index, &max_count, &order, &reverse);
+		gtk_tree_model_foreach (GTK_TREE_MODEL (plugin->page_model),
+					(GtkTreeModelForeachFunc) get_playlist_list,
+					&playlists);
+
+		/* list is already in reverse order, reverse it again if we want normal order */
+		if (reverse == FALSE) {
+			playlists = g_list_reverse (playlists);
+		}
+
+		builder = g_variant_builder_new (G_VARIANT_TYPE ("a(oss)"));
+		for (l = playlists; l != NULL; l = l->next) {
+			RBSource *source;
+			const char *id;
+			char *name;
+
+			if (index > 0) {
+				index--;
+				continue;
+			}
+
+			source = l->data;
+			id = g_object_get_data (G_OBJECT (source), MPRIS_PLAYLIST_ID_ITEM);
+			g_object_get (source, "name", &name, NULL);
+			g_variant_builder_add (builder, "(oss)", id, name, "");
+			g_free (name);
+
+			if (max_count > 0) {
+				max_count--;
+				if (max_count == 0) {
+					break;
+				}
+			}
+		}
+
+		g_list_free (playlists);
+		g_dbus_method_invocation_return_value (invocation, g_variant_new ("(a(oss))", builder));
+		g_variant_builder_unref (builder);
+	} else {
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
+	}
+}
+
+static GVariant *
+get_playlists_property (GDBusConnection *connection,
+			const char *sender,
+			const char *object_path,
+			const char *interface_name,
+			const char *property_name,
+			GError **error,
+			RBMprisPlugin *plugin)
+{
+	if (g_strcmp0 (object_path, MPRIS_OBJECT_NAME) != 0 ||
+	    g_strcmp0 (interface_name, MPRIS_PLAYLISTS_INTERFACE) != 0) {
+		g_set_error (error,
+			     G_DBUS_ERROR,
+			     G_DBUS_ERROR_NOT_SUPPORTED,
+			     "Property %s.%s not supported",
+			     interface_name,
+			     property_name);
+		return NULL;
+	}
+
+	if (g_strcmp0 (property_name, "PlaylistCount") == 0) {
+		return g_variant_new_uint32 (plugin->playlist_count);
+	} else if (g_strcmp0 (property_name, "Orderings") == 0) {
+		const char *orderings[] = {
+			"Alphabetical", NULL
+		};
+		return g_variant_new_strv (orderings, -1);
+	} else if (g_strcmp0 (property_name, "ActivePlaylist") == 0) {
+		RBSource *source;
+
+		source = rb_shell_player_get_playing_source (plugin->player);
+		return get_maybe_playlist_value (plugin, source);
+	}
+
+	g_set_error (error,
+		     G_DBUS_ERROR,
+		     G_DBUS_ERROR_NOT_SUPPORTED,
+		     "Property %s.%s not supported",
+		     interface_name,
+		     property_name);
+	return NULL;
+}
+
+static gboolean
+set_playlists_property (GDBusConnection *connection,
+			const char *sender,
+			const char *object_path,
+			const char *interface_name,
+			const char *property_name,
+			GVariant *value,
+			GError **error,
+			RBMprisPlugin *plugin)
+{
+	/* no writeable properties on this interface */
+	g_set_error (error,
+		     G_DBUS_ERROR,
+		     G_DBUS_ERROR_NOT_SUPPORTED,
+		     "Property %s.%s not supported",
+		     interface_name,
+		     property_name);
+	return FALSE;
+}
+
+static const GDBusInterfaceVTable playlists_vtable =
+{
+	(GDBusInterfaceMethodCallFunc) handle_playlists_method_call,
+	(GDBusInterfaceGetPropertyFunc) get_playlists_property,
+	(GDBusInterfaceSetPropertyFunc) set_playlists_property
+};
+
 static void
 play_order_changed_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
 {
@@ -980,6 +1248,9 @@ playing_source_changed_cb (RBShellPlayer *player,
 {
 	rb_debug ("emitting CanPause change");
 	add_player_property_change (plugin, "CanPause", get_can_pause (plugin));
+
+	rb_debug ("emitting ActivePlaylist change");
+	add_playlist_property_change (plugin, "ActivePlaylist", get_maybe_playlist_value (plugin, source));
 }
 
 static void
@@ -1032,6 +1303,42 @@ elapsed_nano_changed_cb (RBShellPlayer *player, gint64 elapsed, RBMprisPlugin *p
 	plugin->last_elapsed = elapsed;
 }
 
+static void
+source_deleted_cb (RBDisplayPage *page, RBMprisPlugin *plugin)
+{
+	plugin->playlist_count--;
+	rb_debug ("playlist deleted");
+	add_playlist_property_change (plugin, "PlaylistCount", g_variant_new_uint32 (plugin->playlist_count));
+}
+
+static gboolean
+display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBMprisPlugin *plugin)
+{
+	RBDisplayPage *page;
+
+	gtk_tree_model_get (model, iter,
+			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
+			    -1);
+	if (RB_IS_PLAYLIST_SOURCE (page)) {
+		gboolean is_local;
+
+		g_object_get (page, "is-local", &is_local, NULL);
+		if (is_local) {
+			char *id;
+
+			id = g_strdup_printf ("/org/gnome/Rhythmbox/Playlist/%p", page);
+			g_object_set_data_full (G_OBJECT (page), MPRIS_PLAYLIST_ID_ITEM, id, g_free);
+
+			plugin->playlist_count++;
+			rb_debug ("new playlist %s", id);
+			add_playlist_property_change (plugin, "PlaylistCount", g_variant_new_uint32 (plugin->playlist_count));
+
+			g_signal_connect_object (page, "deleted", G_CALLBACK (source_deleted_cb), plugin, 0);
+		}
+	}
+
+	return FALSE;
+}
 
 
 static void
@@ -1062,6 +1369,7 @@ impl_activate (RBPlugin *bplugin,
 		      "shell-player", &plugin->player,
 		      "ui-manager", &ui_manager,
 		      "db", &plugin->db,
+		      "display-page-model", &plugin->page_model,
 		      NULL);
 	plugin->shell = g_object_ref (shell);
 
@@ -1106,6 +1414,20 @@ impl_activate (RBPlugin *bplugin,
 		g_error_free (error);
 	}
 
+	/* register playlists interface */
+	ifaceinfo = g_dbus_node_info_lookup_interface (plugin->node_info, MPRIS_PLAYLISTS_INTERFACE);
+	plugin->playlists_id = g_dbus_connection_register_object (plugin->connection,
+								  MPRIS_OBJECT_NAME,
+								  ifaceinfo,
+								  &playlists_vtable,
+								  plugin,
+								  NULL,
+								  &error);
+	if (error != NULL) {
+		g_warning ("Unable to register MPRIS playlists interface: %s", error->message);
+		g_error_free (error);
+	}
+
 	/* connect signal handlers for stuff */
 	g_signal_connect_object (plugin->player,
 				 "notify::play-order",
@@ -1139,6 +1461,13 @@ impl_activate (RBPlugin *bplugin,
 				 "elapsed-nano-changed",
 				 G_CALLBACK (elapsed_nano_changed_cb),
 				 plugin, 0);
+	g_signal_connect_object (plugin->page_model,
+				 "row-inserted",
+				 G_CALLBACK (display_page_inserted_cb),
+				 plugin, 0);
+	gtk_tree_model_foreach (GTK_TREE_MODEL (plugin->page_model),
+				(GtkTreeModelForeachFunc) display_page_inserted_cb,
+				plugin);
 
 	/*
 	 * This is a pretty awful hack.  The shell player should expose this
@@ -1185,15 +1514,23 @@ impl_deactivate	(RBPlugin *bplugin,
 		g_dbus_connection_unregister_object (plugin->connection, plugin->player_id);
 		plugin->player_id = 0;
 	}
+	if (plugin->playlists_id != 0) {
+		g_dbus_connection_unregister_object (plugin->connection, plugin->playlists_id);
+		plugin->playlists_id = 0;
+	}
 
 	/* probably remove signal handlers? */
-	if (plugin->player_property_emit_id != 0) {
-		g_source_remove (plugin->player_property_emit_id);
-		plugin->player_property_emit_id = 0;
+	if (plugin->property_emit_id != 0) {
+		g_source_remove (plugin->property_emit_id);
+		plugin->property_emit_id = 0;
 	}
 	if (plugin->player_property_changes != NULL) {
 		g_hash_table_destroy (plugin->player_property_changes);
 		plugin->player_property_changes = NULL;
+	}
+	if (plugin->playlist_property_changes != NULL) {
+		g_hash_table_destroy (plugin->playlist_property_changes);
+		plugin->playlist_property_changes = NULL;
 	}
 
 	if (plugin->player != NULL) {
@@ -1207,6 +1544,10 @@ impl_deactivate	(RBPlugin *bplugin,
 	if (plugin->db != NULL) {
 		g_object_unref (plugin->db);
 		plugin->db = NULL;
+	}
+	if (plugin->page_model != NULL) {
+		g_object_unref (plugin->page_model);
+		plugin->page_model = NULL;
 	}
 
 	if (plugin->name_own_id > 0) {

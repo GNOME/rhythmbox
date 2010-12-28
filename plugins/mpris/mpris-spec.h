@@ -4,6 +4,7 @@
 #define MPRIS_ROOT_INTERFACE "org.mpris.MediaPlayer2"
 #define MPRIS_PLAYER_INTERFACE "org.mpris.MediaPlayer2.Player"
 #define MPRIS_TRACKLIST_INTERFACE "org.mpris.MediaPlayer2.TrackList"
+#define MPRIS_PLAYLISTS_INTERFACE "org.mpris.MediaPlayer2.Playlists"
 
 const char *mpris_introspection_xml =
 	"<node>"
@@ -87,5 +88,20 @@ const char *mpris_introspection_xml =
 	"    </signal>"
 	"    <property name='Tracks' type='ao' access='read'/>"
 	"    <property name='CanEditTracks' type='b' access='read'/>"
+	"  </interface>"
+	"  <interface name='org.mpris.MediaPlayer2.Playlists'>"
+	"    <method name='ActivatePlaylist'>"
+	"      <arg direction='in' name='PlaylistId' type='o'/>"
+	"    </method>"
+	"    <method name='GetPlaylists'>"
+	"      <arg direction='in' name='Index' type='u'/>"
+	"      <arg direction='in' name='MaxCount' type='u'/>"
+	"      <arg direction='in' name='Order' type='s'/>"
+	"      <arg direction='in' name='ReverseOrder' type='b'/>"
+	"      <arg direction='out' type='a(oss)'/>"
+	"    </method>"
+	"    <property name='PlaylistCount' type='u' access='read'/>"
+	"    <property name='Orderings' type='as' access='read'/>"
+	"    <property name='ActivePlaylist' type='(b(oss))' access='read'/>"
 	"  </interface>"
 	"</node>";
