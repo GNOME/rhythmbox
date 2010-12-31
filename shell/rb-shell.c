@@ -2964,12 +2964,14 @@ static void
 rb_shell_cmd_view_all (GtkAction *action,
 		       RBShell *shell)
 {
-	RBSource *source = RB_SOURCE (shell->priv->selected_page);
-	rb_debug ("view all");
+	if (RB_IS_SOURCE (shell->priv->selected_page)) {
+		RBSource *source = RB_SOURCE (shell->priv->selected_page);
+		rb_debug ("view all");
 
-	rb_source_reset_filters (source);
-	rb_source_header_clear_search (shell->priv->source_header);
-	rb_source_header_focus_search_box (shell->priv->source_header);
+		rb_source_reset_filters (source);
+		rb_source_header_clear_search (shell->priv->source_header);
+		rb_source_header_focus_search_box (shell->priv->source_header);
+	}
 }
 
 static void
