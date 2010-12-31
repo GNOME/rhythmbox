@@ -124,6 +124,7 @@ struct _RBStatusIconPluginPrivate
 	gboolean notify_supports_icon_buttons;
 	gboolean notify_supports_persistence;
 #endif
+	gboolean is_gnome_shell;
 
 	GtkWidget *config_dialog;
 	GtkWidget *notify_combo;
@@ -380,6 +381,44 @@ notification_previous_cb (NotifyNotification *notification,
 	rb_shell_player_do_previous (plugin->priv->shell_player, NULL);
 }
 
+static gboolean
+init_notify (RBStatusIconPlugin *plugin)
+{
+	if (notify_is_initted ()) {
+		return TRUE;
+	}
+	GList *caps;
+
+	if (notify_init ("Rhythmbox") == FALSE) {
+		g_warning ("libnotify initialization failed");
+		return FALSE;
+	}
+
+	/* ask the notification server if it supports actions */
+	caps = notify_get_server_caps ();
+	if (g_list_find_custom (caps, "actions", (GCompareFunc)g_strcmp0) != NULL) {
+		rb_debug ("notification server supports actions");
+		plugin->priv->notify_supports_actions = TRUE;
+
+		if ((g_list_find_custom (caps, "x-gnome-icon-buttons", (GCompareFunc)g_strcmp0) != NULL) ||
+		    (g_list_find_custom (caps, "action-icons", (GCompareFunc)g_strcmp0) != NULL)) {
+			rb_debug ("notifiction server supports icon buttons");
+			plugin->priv->notify_supports_icon_buttons = TRUE;
+		}
+	} else {
+		rb_debug ("notification server does not support actions");
+	}
+	if (g_list_find_custom (caps, "persistence", (GCompareFunc)g_strcmp0) != NULL) {
+		rb_debug ("notification server supports persistence");
+		plugin->priv->notify_supports_persistence = TRUE;
+	} else {
+		rb_debug ("notification server does not support persistence");
+	}
+
+	rb_list_deep_free (caps);
+	return TRUE;
+}
+
 static void
 do_notify (RBStatusIconPlugin *plugin,
 	   guint timeout,
@@ -391,36 +430,8 @@ do_notify (RBStatusIconPlugin *plugin,
 	GError *error = NULL;
 	NotifyNotification *notification;
 
-	if (notify_is_initted () == FALSE) {
-		GList *caps;
-
-		if (notify_init ("Rhythmbox") == FALSE) {
-			g_warning ("libnotify initialization failed");
-			return;
-		}
-
-		/* ask the notification server if it supports actions */
-		caps = notify_get_server_caps ();
-		if (g_list_find_custom (caps, "actions", (GCompareFunc)g_strcmp0) != NULL) {
-			rb_debug ("notification server supports actions");
-			plugin->priv->notify_supports_actions = TRUE;
-
-			if ((g_list_find_custom (caps, "x-gnome-icon-buttons", (GCompareFunc)g_strcmp0) != NULL) ||
-			    (g_list_find_custom (caps, "action-icons", (GCompareFunc)g_strcmp0) != NULL)) {
-				rb_debug ("notifiction server supports icon buttons");
-				plugin->priv->notify_supports_icon_buttons = TRUE;
-			}
-		} else {
-			rb_debug ("notification server does not support actions");
-		}
-		if (g_list_find_custom (caps, "persistence", (GCompareFunc)g_strcmp0) != NULL) {
-			rb_debug ("notification server supports persistence");
-			plugin->priv->notify_supports_persistence = TRUE;
-		} else {
-			rb_debug ("notification server does not support persistence");
-		}
-
-		rb_list_deep_free (caps);
+	if (init_notify (plugin) == FALSE) {
+		return;
 	}
 
 	update_status_icon_visibility (plugin, TRUE);
@@ -815,8 +826,11 @@ update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 	plugin->priv->current_album_and_artist = NULL;
 	plugin->priv->notify_art_path = NULL;
 
-	if (entry == NULL)
+	if (entry == NULL) {
+		plugin->priv->current_title = g_strdup (_("Not Playing"));
+		plugin->priv->current_album_and_artist = g_strdup ("");
 		return;
+	}
 
 	secondary = g_string_sized_new (100);
 
@@ -1317,40 +1331,6 @@ maybe_upgrade_preferences (RBStatusIconPlugin *plugin)
 	}
 }
 
-static int
-override_status_icon_config (int mode)
-{
-#if GLIB_CHECK_VERSION(2, 26, 0)
-	GDBusConnection *bus;
-	GVariant *result;
-
-	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
-	if (bus == NULL) {
-		return mode;
-	}
-
-	result = g_dbus_connection_call_sync (bus,
-					      "org.freedesktop.DBus",
-					      "/org/freedesktop/DBus",
-					      "org.freedesktop.DBus",
-					      "GetNameOwner",
-					      g_variant_new ("(s)", "org.gnome.Shell"),
-					      G_VARIANT_TYPE ("(s)"),
-					      G_DBUS_CALL_FLAGS_NONE,
-					      -1,
-					      NULL,
-					      NULL);
-	if (result != NULL) {
-		rb_debug ("disabling status icon as GNOME Shell is running");
-		mode = ICON_NEVER;
-
-		g_variant_unref (result);
-	}
-	g_object_unref (bus);
-#endif
-	return mode;
-}
-
 static void
 config_notify_cb (GConfClient *client, guint connection_id, GConfEntry *entry, RBStatusIconPlugin *plugin)
 {
@@ -1368,7 +1348,10 @@ config_notify_cb (GConfClient *client, guint connection_id, GConfEntry *entry, R
 			plugin->priv->syncing_config_widgets = FALSE;
 		}
 
-		plugin->priv->icon_mode = override_status_icon_config (plugin->priv->conf_icon_mode);
+		plugin->priv->icon_mode = plugin->priv->conf_icon_mode;
+		if (plugin->priv->is_gnome_shell) {
+			plugin->priv->icon_mode = ICON_NEVER;
+		}
 
 	} else if (g_str_equal (gconf_entry_get_key (entry), CONF_NOTIFICATION_MODE)) {
 		plugin->priv->notify_mode = gconf_value_get_int (gconf_entry_get_value (entry));
@@ -1460,6 +1443,9 @@ impl_activate (RBPlugin *bplugin,
 	RhythmDBEntry *entry;
 	GtkWindow *window;
 	char *uifile;
+#if GLIB_CHECK_VERSION(2, 26, 0)
+	GDBusConnection *bus;
+#endif
 
 	rb_debug ("activating status icon plugin");
 
@@ -1494,6 +1480,38 @@ impl_activate (RBPlugin *bplugin,
 		g_free (uifile);
 	}
 
+	/* are we running in GNOME Shell? */
+#if GLIB_CHECK_VERSION(2, 26, 0)
+
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	if (bus != NULL) {
+		GVariant *result;
+		result = g_dbus_connection_call_sync (bus,
+						      "org.freedesktop.DBus",
+						      "/org/freedesktop/DBus",
+						      "org.freedesktop.DBus",
+						      "GetNameOwner",
+						      g_variant_new ("(s)", "org.gnome.Shell"),
+						      G_VARIANT_TYPE ("(s)"),
+						      G_DBUS_CALL_FLAGS_NONE,
+						      -1,
+						      NULL,
+						      NULL);
+		if (result != NULL) {
+			rb_debug ("GNOME Shell is running");
+			plugin->priv->is_gnome_shell = TRUE;
+			g_variant_unref (result);
+		} else {
+			rb_debug ("GNOME Shell isn't running");
+			plugin->priv->is_gnome_shell = FALSE;
+		}
+		g_object_unref (bus);
+	}
+#else
+	rb_debug ("Unable to check if GNOME Shell is running");
+	plugin->priv->is_gnome_shell = FALSE;
+#endif
+
 	/* connect various things */
 	g_signal_connect_object (plugin->priv->shell, "visibility-changed", G_CALLBACK (visibility_changed_cb), plugin, 0);
 	g_signal_connect_object (plugin->priv->shell, "visibility-changing", G_CALLBACK (visibility_changing_cb), plugin, G_CONNECT_AFTER);
@@ -1527,7 +1545,10 @@ impl_activate (RBPlugin *bplugin,
 	maybe_upgrade_preferences (plugin);
 
 	plugin->priv->conf_icon_mode = eel_gconf_get_integer (CONF_STATUS_ICON_MODE);
-	plugin->priv->icon_mode = override_status_icon_config (plugin->priv->conf_icon_mode);
+	plugin->priv->icon_mode = plugin->priv->conf_icon_mode;
+	if (plugin->priv->is_gnome_shell) {
+		plugin->priv->icon_mode = ICON_NEVER;
+	}
 	plugin->priv->notify_mode = eel_gconf_get_integer (CONF_NOTIFICATION_MODE);
 	plugin->priv->wheel_mode = eel_gconf_get_integer (CONF_MOUSE_WHEEL_MODE);
 
@@ -1540,8 +1561,19 @@ impl_activate (RBPlugin *bplugin,
 	if (entry != NULL) {
 		update_current_playing_data (plugin, entry);
 		rhythmdb_entry_unref (entry);
+	} else {
+		/* display the (generic) app name rather than "Not Playing" for
+		 * the initial notification
+		 */
+		plugin->priv->current_title = g_strdup (_("Music Player"));
+		plugin->priv->current_album_and_artist = g_strdup ("");
 	}
 	update_tooltip (plugin);
+
+	/* for GNOME Shell, create a resident notification immediately */
+	if (plugin->priv->is_gnome_shell) {
+		notify_playing_entry (plugin, FALSE);
+	}
 
 	g_object_unref (ui_manager);
 	g_object_unref (window);
