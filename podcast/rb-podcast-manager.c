@@ -506,6 +506,22 @@ rb_podcast_manager_entry_downloaded (RhythmDBEntry *entry)
 	return (status != RHYTHMDB_PODCAST_STATUS_ERROR && file_name != NULL);
 }
 
+gboolean
+rb_podcast_manager_entry_in_download_queue (RBPodcastManager *pd, RhythmDBEntry *entry)
+{
+	RBPodcastManagerInfo *info;
+	GList *l;
+
+	for (l = pd->priv->download_list; l != NULL; l = l->next) {
+		info = l->data;
+		if (info->entry == entry) {
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
 void
 rb_podcast_manager_start_sync (RBPodcastManager *pd)
 {
@@ -1437,10 +1453,12 @@ download_progress (RBPodcastManagerInfo *data, guint64 downloaded, guint64 total
 			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_FILE_SIZE, &val);
 			g_value_unset (&val);
 
-			g_value_init (&val, G_TYPE_ULONG);
-			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_COMPLETE);
-			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
-			g_value_unset (&val);
+			if (total == 0 || downloaded >= total) {
+				g_value_init (&val, G_TYPE_ULONG);
+				g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_COMPLETE);
+				rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
+				g_value_unset (&val);
+			}
 
 			rb_podcast_manager_save_metadata (data->pd,
 							  data->entry);

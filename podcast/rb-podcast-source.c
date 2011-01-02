@@ -217,12 +217,11 @@ podcast_posts_show_popup_cb (RBEntryView *view,
 			RhythmDBEntry *entry = (RhythmDBEntry*) lst->data;
 			gulong status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
 
-			if ((status > 0 && status < RHYTHMDB_PODCAST_STATUS_COMPLETE) ||
-			    status == RHYTHMDB_PODCAST_STATUS_WAITING)
+			if (rb_podcast_manager_entry_in_download_queue (source->priv->podcast_mgr, entry)) {
 				cancellable = TRUE;
-			else if (status == RHYTHMDB_PODCAST_STATUS_PAUSED ||
-				 status == RHYTHMDB_PODCAST_STATUS_ERROR)
-				 downloadable = TRUE;
+			} else if (status != RHYTHMDB_PODCAST_STATUS_COMPLETE) {
+				downloadable = TRUE;
+			}
 
 			lst = lst->next;
 		}
