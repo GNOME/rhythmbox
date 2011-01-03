@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-12-02 17:48+0000\n"
-"PO-Revision-Date: 2010-12-03 13:53+0100\n"
+"POT-Creation-Date: 2010-12-31 07:25+0000\n"
+"PO-Revision-Date: 2010-12-31 15:03+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: \n"
@@ -568,9 +568,13 @@ msgstr "Nedavno dodano"
 msgid "Recently Played"
 msgstr "Nedavno predvajano"
 
+#. display the (generic) app name rather than "Not Playing" for
+#. * the initial notification
+#.
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1
 #: ../plugins/status-icon/rb-status-icon-plugin.c:59
+#: ../plugins/status-icon/rb-status-icon-plugin.c:1568
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1536
 #: ../shell/rb-shell.c:1244
 #: ../shell/rb-shell.c:2228
@@ -719,7 +723,7 @@ msgstr "%d. %b. %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:642
 #: ../plugins/mtpdevice/rb-mtp-source.c:1133
 #: ../plugins/mtpdevice/rb-mtp-source.c:1522
-#: ../plugins/status-icon/rb-status-icon-plugin.c:872
+#: ../plugins/status-icon/rb-status-icon-plugin.c:906
 #: ../podcast/rb-feed-podcast-properties-dialog.c:340
 #: ../podcast/rb-podcast-manager.c:1920
 #: ../podcast/rb-podcast-properties-dialog.c:619
@@ -1947,21 +1951,21 @@ msgid "Loading biography for %s"
 msgstr "Nalaganje biografije %s"
 
 #. Add button to toggle visibility of pane
-#: ../plugins/context/context/ContextView.py:89
+#: ../plugins/context/context/ContextView.py:90
 msgid "Toggle Conte_xt Pane"
 msgstr "Preklop vse_binskega pladnja"
 
-#: ../plugins/context/context/ContextView.py:90
+#: ../plugins/context/context/ContextView.py:91
 msgid "Change the visibility of the context pane"
 msgstr "Sprememba vidnosti vsebinskega pladnja"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
-#: ../plugins/context/context/ContextView.py:197
+#: ../plugins/context/context/ContextView.py:201
 #, python-format
 msgid "Top songs by %s"
 msgstr "Najboljše skladbe od %s"
 
-#: ../plugins/context/context/ContextView.py:227
+#: ../plugins/context/context/ContextView.py:236
 msgid "Nothing Playing"
 msgstr "Ni predvajanja"
 
@@ -3092,11 +3096,11 @@ msgstr ""
 "Besedilo napake je:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:489
 msgid "Finished Downloading"
 msgstr "Prejemanje je končano"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:491
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:489
 msgid "All Magnatune downloads have been completed."
 msgstr "Vsi prejemi Magnatune so bili končani."
 
@@ -3150,7 +3154,7 @@ msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "Podpora za naprave MTP (prikaz vsebine, prenos in predvajanje z naprave)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:157
-#: ../plugins/mtpdevice/rb-mtp-thread.c:545
+#: ../plugins/mtpdevice/rb-mtp-thread.c:544
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Začasne datoteke ni mogoče odpreti: %s"
@@ -3160,7 +3164,7 @@ msgid "Rename MTP-device"
 msgstr "Preimenuj napravo MTP"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:869
-#: ../plugins/mtpdevice/rb-mtp-thread.c:854
+#: ../plugins/mtpdevice/rb-mtp-thread.c:855
 msgid "Media player device error"
 msgstr "Napaka naprave večpredstavnostnega predvajalnika"
 
@@ -3176,24 +3180,24 @@ msgstr "Naprave %s %s ni mogoče odpreti"
 msgid "Digital Audio Player"
 msgstr "Digitalni zvočni predvajalnik"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:500
-#: ../plugins/mtpdevice/rb-mtp-thread.c:558
-#: ../plugins/mtpdevice/rb-mtp-thread.c:576
+#: ../plugins/mtpdevice/rb-mtp-thread.c:499
+#: ../plugins/mtpdevice/rb-mtp-thread.c:557
+#: ../plugins/mtpdevice/rb-mtp-thread.c:575
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr "Datoteke ni mogoče kopirati z naprave MTP: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:521
+#: ../plugins/mtpdevice/rb-mtp-thread.c:520
 #, c-format
 msgid "Not enough space in %s"
 msgstr "Na %s ni dovolj prostora"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:602
+#: ../plugins/mtpdevice/rb-mtp-thread.c:601
 #, c-format
 msgid "No space left on MTP device"
 msgstr "Na napravi MTP ni več prostora"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:605
+#: ../plugins/mtpdevice/rb-mtp-thread.c:604
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "Datoteke ni mogoče poslati na napravo MTP: %s"
@@ -3355,69 +3359,82 @@ msgstr "Pošiljanje izbranih skladb preko elektronske pošte ali hipnega sporoč
 msgid "Send tracks"
 msgstr "Pošlji skladbe"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:144
+#: ../plugins/status-icon/rb-status-icon-plugin.c:145
 msgid "_Close"
 msgstr "_Zapri"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:145
+#: ../plugins/status-icon/rb-status-icon-plugin.c:146
 msgid "Hide the music player window"
 msgstr "Skrije okno predvajalnika glasbe"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:151
+#: ../plugins/status-icon/rb-status-icon-plugin.c:152
 msgid "_Show Music Player"
 msgstr "P_rikaži predvajalnik glasbe"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:152
+#: ../plugins/status-icon/rb-status-icon-plugin.c:153
 msgid "Choose music to play"
 msgstr "Izbor glasbe za predvajanje"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:154
+#: ../plugins/status-icon/rb-status-icon-plugin.c:155
 msgid "Show N_otifications"
 msgstr "Pokaži o_bvestila"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:155
+#: ../plugins/status-icon/rb-status-icon-plugin.c:156
 msgid "Show notifications of song changes and other events"
 msgstr "Pokaže obvestila sprememb skladb in drugih dogodkov"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:477
+#: ../plugins/status-icon/rb-status-icon-plugin.c:502
 msgid "Previous"
 msgstr "Predhodno"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:483
+#: ../plugins/status-icon/rb-status-icon-plugin.c:508
 msgid "Pause"
 msgstr "Premor"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:483
+#: ../plugins/status-icon/rb-status-icon-plugin.c:508
 msgid "Play"
 msgstr "Predvajaj"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:500
+#: ../plugins/status-icon/rb-status-icon-plugin.c:525
 msgid "Next"
 msgstr "Naslednja"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:674
+#: ../plugins/status-icon/rb-status-icon-plugin.c:706
 #: ../remote/dbus/rb-client.c:468
 #: ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "Ni predvajanja"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:677
+#: ../plugins/status-icon/rb-status-icon-plugin.c:709
 #, c-format
 msgid "Paused, %s"
 msgstr "V premoru, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:742
+#: ../plugins/status-icon/rb-status-icon-plugin.c:774
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "od <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:744
+#: ../plugins/status-icon/rb-status-icon-plugin.c:776
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "iz <i>%s</i>"
+
+#: ../plugins/status-icon/rb-status-icon-plugin.c:830
+#: ../widgets/rb-header.c:550
+msgid "Not Playing"
+msgstr "Ni predvajanja"
+
+#. Translators: this is used in notification bubble text to indicate that
+#. * playback is currently paused.  %s is the song title.
+#.
+#: ../plugins/status-icon/rb-status-icon-plugin.c:916
+#, c-format
+msgid "(Paused) %s"
+msgstr "(V premoru) %s"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:1
 msgid "Status Icon"
@@ -5281,10 +5298,6 @@ msgstr "Se predvaja"
 #: ../widgets/rb-entry-view.c:2019
 msgid "Playback Error"
 msgstr "Napaka predvajanja"
-
-#: ../widgets/rb-header.c:550
-msgid "Not Playing"
-msgstr "Ni predvajanja"
 
 #: ../widgets/rb-property-view.c:635
 #, c-format
