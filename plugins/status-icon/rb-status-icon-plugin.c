@@ -563,6 +563,10 @@ should_notify (RBStatusIconPlugin *plugin)
 {
 	gboolean visible;
 
+	if (plugin->priv->is_gnome_shell) {
+		return TRUE;
+	}
+
 	switch (plugin->priv->icon_mode) {
 	case ICON_NEVER:
 	case ICON_WITH_NOTIFY:
