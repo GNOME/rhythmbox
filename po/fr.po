@@ -2,7 +2,6 @@
 # Copyright (C) 2002-2010 Free Software Foundation, Inc.
 # This file is distributed under the same license as the rhythmbox package.
 #
-#
 # Baptiste Mille-Mathias <bmm80@free.fr>, 2002-2005.
 # Christophe Merlet <redfox@redfoxcenter.org>, 2002-2006.
 # Christophe Fergeau <teuf@users.sourceforge.net>, 2002, 2008.
@@ -19,13 +18,14 @@
 # Laurent POMAREDE <laurent.pomarede@gmail.com>, 2008.
 # Pierre-Luc Beaudoin <pierre-luc@pierlux.com>, 2010.
 # Bruno Brouard <annoa.b@gmail.com>, 2010.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-12-27 22:10+0000\n"
-"PO-Revision-Date: 2010-11-24 19:54+0100\n"
+"POT-Creation-Date: 2011-01-08 08:09+0000\n"
+"PO-Revision-Date: 2011-01-08 13:50+0100\n"
 "Last-Translator: Bruno Brouard <annoa.b@gmail.com>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -562,9 +562,13 @@ msgstr "Récemment ajouté"
 msgid "Recently Played"
 msgstr "Récemment lu"
 
+#. display the (generic) app name rather than "Not Playing" for
+#. * the initial notification
+#.
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1
 #: ../plugins/status-icon/rb-status-icon-plugin.c:59
+#: ../plugins/status-icon/rb-status-icon-plugin.c:1568
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1536 ../shell/rb-shell.c:1244
 #: ../shell/rb-shell.c:2228
 msgid "Music Player"
@@ -714,12 +718,12 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:642
 #: ../plugins/mtpdevice/rb-mtp-source.c:1133
 #: ../plugins/mtpdevice/rb-mtp-source.c:1522
-#: ../plugins/status-icon/rb-status-icon-plugin.c:892
+#: ../plugins/status-icon/rb-status-icon-plugin.c:906
 #: ../podcast/rb-feed-podcast-properties-dialog.c:340
-#: ../podcast/rb-podcast-manager.c:1920
+#: ../podcast/rb-podcast-manager.c:1938
 #: ../podcast/rb-podcast-properties-dialog.c:619
 #: ../podcast/rb-podcast-properties-dialog.c:714
-#: ../podcast/rb-podcast-source.c:765 ../remote/dbus/rb-client.c:155
+#: ../podcast/rb-podcast-source.c:764 ../remote/dbus/rb-client.c:155
 #: ../rhythmdb/rhythmdb-tree.c:1341 ../rhythmdb/rhythmdb-tree.c:1345
 #: ../rhythmdb/rhythmdb-tree.c:1349 ../rhythmdb/rhythmdb-tree.c:1353
 #: ../rhythmdb/rhythmdb.c:2038 ../rhythmdb/rhythmdb.c:2044
@@ -1984,6 +1988,14 @@ msgstr ""
 "Indiquez les détails de votre compte last.fm dans la configuration du "
 "greffon."
 
+#: ../plugins/context/context/LinksTab.py:53
+msgid "Links"
+msgstr "Liens"
+
+#: ../plugins/context/context/LinksTab.py:181
+msgid "No artist specified."
+msgstr "Aucun artiste indiqué."
+
 #: ../plugins/context/context/LyricsTab.py:48
 #: ../plugins/lyrics/lyrics/__init__.py:249
 #: ../plugins/lyrics/lyrics/__init__.py:334
@@ -2181,6 +2193,11 @@ msgid ""
 "Provides an implementation of the MediaServer2 D-Bus interface specification"
 msgstr ""
 "Apporte une implémentation de la spécification d'interface D-Bus MediaServer2"
+
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1461
+#: ../shell/rb-playlist-manager.c:1414 ../sources/rb-display-page-group.c:92
+msgid "Playlists"
+msgstr "Listes de lecture"
 
 #: ../plugins/fmradio/fmradio.rb-plugin.in.h:1
 #: ../plugins/fmradio/rb-fm-radio-source.c:209
@@ -3501,74 +3518,79 @@ msgstr ""
 msgid "Send tracks"
 msgstr "Envoi de morceaux"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:144
+#: ../plugins/status-icon/rb-status-icon-plugin.c:145
 msgid "_Close"
 msgstr "_Fermer"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:145
+#: ../plugins/status-icon/rb-status-icon-plugin.c:146
 msgid "Hide the music player window"
 msgstr "Cache la fenêtre du lecteur de musique"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:151
+#: ../plugins/status-icon/rb-status-icon-plugin.c:152
 msgid "_Show Music Player"
 msgstr "A_fficher le lecteur de musique"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:152
+#: ../plugins/status-icon/rb-status-icon-plugin.c:153
 msgid "Choose music to play"
 msgstr "Choisit la musique à jouer"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:154
+#: ../plugins/status-icon/rb-status-icon-plugin.c:155
 msgid "Show N_otifications"
 msgstr "Afficher les _notifications"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:155
+#: ../plugins/status-icon/rb-status-icon-plugin.c:156
 msgid "Show notifications of song changes and other events"
 msgstr ""
 "Affiche les notifications de changements de morceaux et les autres événements"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:491
+#: ../plugins/status-icon/rb-status-icon-plugin.c:502
 msgid "Previous"
 msgstr "Précédent"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:497
+#: ../plugins/status-icon/rb-status-icon-plugin.c:508
 msgid "Pause"
 msgstr "Pause"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:497
+#: ../plugins/status-icon/rb-status-icon-plugin.c:508
 msgid "Play"
 msgstr "Lire"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:514
+#: ../plugins/status-icon/rb-status-icon-plugin.c:525
 msgid "Next"
 msgstr "Suivant"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:695
+#: ../plugins/status-icon/rb-status-icon-plugin.c:706
 #: ../remote/dbus/rb-client.c:468 ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "Pas de lecture en cours"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:698
+#: ../plugins/status-icon/rb-status-icon-plugin.c:709
 #, c-format
 msgid "Paused, %s"
 msgstr "En pause, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:763
+#: ../plugins/status-icon/rb-status-icon-plugin.c:774
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "par <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:765
+#: ../plugins/status-icon/rb-status-icon-plugin.c:776
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "sur l'album <i>%s</i>"
 
+#: ../plugins/status-icon/rb-status-icon-plugin.c:830
+#: ../widgets/rb-header.c:550
+msgid "Not Playing"
+msgstr "Pas de lecture"
+
 #. Translators: this is used in notification bubble text to indicate that
 #. * playback is currently paused.  %s is the song title.
 #.
-#: ../plugins/status-icon/rb-status-icon-plugin.c:902
+#: ../plugins/status-icon/rb-status-icon-plugin.c:916
 #, c-format
 msgid "(Paused) %s"
 msgstr "%s (en pause)"
@@ -3765,31 +3787,31 @@ msgstr "Erreur dans le podcast"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Voulez-vous tout de même ajouter le flux podcast ?"
 
-#: ../podcast/rb-podcast-manager.c:836
+#: ../podcast/rb-podcast-manager.c:852
 msgid "Error creating podcast download directory"
 msgstr ""
 "Erreur lors de la création du répertoire de téléchargement des podcasts"
 
-#: ../podcast/rb-podcast-manager.c:837
+#: ../podcast/rb-podcast-manager.c:853
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Impossible de créer le répertoire de téléchargement pour %s : %s"
 
-#: ../podcast/rb-podcast-manager.c:962
+#: ../podcast/rb-podcast-manager.c:978
 msgid "Invalid URL"
 msgstr "URL non valide"
 
-#: ../podcast/rb-podcast-manager.c:963
+#: ../podcast/rb-podcast-manager.c:979
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "L'URL « %s » n'est pas valide, veuillez la vérifier."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:973
+#: ../podcast/rb-podcast-manager.c:989
 msgid "URL already added"
 msgstr "URL déjà ajoutée"
 
-#: ../podcast/rb-podcast-manager.c:974
+#: ../podcast/rb-podcast-manager.c:990
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3798,7 +3820,7 @@ msgstr ""
 "L'URL « %s » a déjà été ajoutée comme station radio. Si c'est un flux "
 "podcast, veuillez supprimer la station de radio."
 
-#: ../podcast/rb-podcast-manager.c:1042
+#: ../podcast/rb-podcast-manager.c:1058
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3809,11 +3831,11 @@ msgstr ""
 "l'URL soit incorrecte ou que le flux ne soit pas valide. Voulez-vous que "
 "Rhythmbox essaie quand même de l'utiliser ?"
 
-#: ../podcast/rb-podcast-manager.c:1180
+#: ../podcast/rb-podcast-manager.c:1196
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2103
+#: ../podcast/rb-podcast-manager.c:2121
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -3929,19 +3951,19 @@ msgstr "Épisodes"
 msgid "Search podcast episodes"
 msgstr "Rechercher les épisodes du podcast"
 
-#: ../podcast/rb-podcast-source.c:392
+#: ../podcast/rb-podcast-source.c:391
 msgid "New Podcast Feed"
 msgstr "Nouveau flux podcast"
 
-#: ../podcast/rb-podcast-source.c:392
+#: ../podcast/rb-podcast-source.c:391
 msgid "URL of podcast feed:"
 msgstr "URL du flux du podcast :"
 
-#: ../podcast/rb-podcast-source.c:488
+#: ../podcast/rb-podcast-source.c:487
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Supprimer le flux podcast et les fichiers téléchargés ?"
 
-#: ../podcast/rb-podcast-source.c:491
+#: ../podcast/rb-podcast-source.c:490
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -3952,42 +3974,42 @@ msgstr ""
 "conserver les fichiers téléchargés en choisissant de supprimer uniquement le "
 "flux."
 
-#: ../podcast/rb-podcast-source.c:499
+#: ../podcast/rb-podcast-source.c:498
 msgid "Delete _Feed Only"
 msgstr "Supprimer le _flux uniquement"
 
-#: ../podcast/rb-podcast-source.c:506
+#: ../podcast/rb-podcast-source.c:505
 msgid "_Delete Feed And Files"
 msgstr "_Supprimer le flux et les fichiers"
 
-#: ../podcast/rb-podcast-source.c:594 ../podcast/rb-podcast-source.c:1426
+#: ../podcast/rb-podcast-source.c:593 ../podcast/rb-podcast-source.c:1425
 msgid "Downloaded"
 msgstr "Téléchargé"
 
-#: ../podcast/rb-podcast-source.c:598 ../podcast/rb-podcast-source.c:1428
+#: ../podcast/rb-podcast-source.c:597 ../podcast/rb-podcast-source.c:1427
 msgid "Failed"
 msgstr "Échoué"
 
-#: ../podcast/rb-podcast-source.c:602 ../podcast/rb-podcast-source.c:1427
+#: ../podcast/rb-podcast-source.c:601 ../podcast/rb-podcast-source.c:1426
 msgid "Waiting"
 msgstr "En attente"
 
-#: ../podcast/rb-podcast-source.c:709
+#: ../podcast/rb-podcast-source.c:708
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
 msgstr[0] "Le flux"
 msgstr[1] "Tous les %d flux"
 
-#: ../podcast/rb-podcast-source.c:946
+#: ../podcast/rb-podcast-source.c:945
 msgid "Podcast Error"
 msgstr "Erreur de podcast"
 
-#: ../podcast/rb-podcast-source.c:1068
+#: ../podcast/rb-podcast-source.c:1067
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Supprimer l'épisode de podcast et le fichier téléchargé ?"
 
-#: ../podcast/rb-podcast-source.c:1071
+#: ../podcast/rb-podcast-source.c:1070
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -3997,15 +4019,15 @@ msgstr ""
 "définitivement perdus. Notez que vous pouvez supprimer l'épisode mais garder "
 "le fichier téléchargé en choisissant de supprimer uniquement l'épisode."
 
-#: ../podcast/rb-podcast-source.c:1079
+#: ../podcast/rb-podcast-source.c:1078
 msgid "Delete _Episode Only"
 msgstr "Supprimer uniquement l'_épisode"
 
-#: ../podcast/rb-podcast-source.c:1085
+#: ../podcast/rb-podcast-source.c:1084
 msgid "_Delete Episode And File"
 msgstr "_Supprimer l'épisode et le fichier"
 
-#: ../podcast/rb-podcast-source.c:1233
+#: ../podcast/rb-podcast-source.c:1232
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -4014,27 +4036,27 @@ msgstr[1] "%d épisodes"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
-#: ../podcast/rb-podcast-source.c:1323
+#: ../podcast/rb-podcast-source.c:1322
 msgctxt "Podcast"
 msgid "New"
 msgstr "Nouveau"
 
 #. Translators: this is the toolbar button label
 #. for Update All Feeds action.
-#: ../podcast/rb-podcast-source.c:1329
+#: ../podcast/rb-podcast-source.c:1328
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: ../podcast/rb-podcast-source.c:1372 ../podcast/rb-podcast-source.c:1383
+#: ../podcast/rb-podcast-source.c:1371 ../podcast/rb-podcast-source.c:1382
 msgid "Date"
 msgstr "Date"
 
-#: ../podcast/rb-podcast-source.c:1405 ../podcast/rb-podcast-source.c:1465
-#: ../podcast/rb-podcast-source.c:1513
+#: ../podcast/rb-podcast-source.c:1404 ../podcast/rb-podcast-source.c:1464
+#: ../podcast/rb-podcast-source.c:1512
 msgid "Feed"
 msgstr "Flux"
 
-#: ../podcast/rb-podcast-source.c:1425 ../podcast/rb-podcast-source.c:1443
+#: ../podcast/rb-podcast-source.c:1424 ../podcast/rb-podcast-source.c:1442
 msgid "Status"
 msgstr "État"
 
@@ -4409,10 +4431,6 @@ msgstr "Liste de lecture sans titre"
 #: ../shell/rb-playlist-manager.c:1394
 msgid "Couldn't read playlist"
 msgstr "Impossible de lire la liste de lecture"
-
-#: ../shell/rb-playlist-manager.c:1414 ../sources/rb-display-page-group.c:92
-msgid "Playlists"
-msgstr "Listes de lecture"
 
 #: ../shell/rb-playlist-manager.c:1420
 msgid "All Files"
@@ -4990,27 +5008,27 @@ msgstr "Importe un dossier dans la bibliothèque"
 msgid "Import File into Library"
 msgstr "Importe un fichier dans la bibliothèque"
 
-#: ../shell/rb-shell.c:3172 ../shell/rb-shell.c:3529
+#: ../shell/rb-shell.c:3174 ../shell/rb-shell.c:3531
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Aucune source enregistrée ne peut prendre en charge l'URI %s"
 
-#: ../shell/rb-shell.c:3649
+#: ../shell/rb-shell.c:3651
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Aucune source enregistrée ne correspond à l'URI %s"
 
-#: ../shell/rb-shell.c:3682 ../shell/rb-shell.c:3725
+#: ../shell/rb-shell.c:3684 ../shell/rb-shell.c:3727
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI du morceau inconnu : %s"
 
-#: ../shell/rb-shell.c:3734
+#: ../shell/rb-shell.c:3736
 #, c-format
 msgid "Unknown property %s"
 msgstr "Propriété %s inconnue"
 
-#: ../shell/rb-shell.c:3748
+#: ../shell/rb-shell.c:3750
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Type de propriété %s non valide pour la propriété %s"
@@ -5466,10 +5484,6 @@ msgstr "En cours de lecture"
 #: ../widgets/rb-entry-view.c:2019
 msgid "Playback Error"
 msgstr "Erreur de lecture"
-
-#: ../widgets/rb-header.c:550
-msgid "Not Playing"
-msgstr "Pas de lecture"
 
 #: ../widgets/rb-property-view.c:635
 #, c-format
