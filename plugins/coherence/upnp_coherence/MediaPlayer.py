@@ -424,7 +424,21 @@ class RhythmboxPlayer(log.Loggable):
         self.current_connection_id = None
         self.server.connection_manager_server.set_variable(0, 'SinkProtocolInfo',
                             ['rhythmbox:%s:audio/mpeg:*' % self.server.coherence.hostname,
-                             'http-get:*:audio/mpeg:*'],
+                             'http-get:*:audio/mpeg:*',
+                             'rhythmbox:%s:application/ogg:*' % self.server.coherence.hostname,
+                             'http-get:*:application/ogg:*',
+                             'rhythmbox:%s:audio/ogg:*' % self.server.coherence.hostname,
+                             'http-get:*:audio/ogg:*',
+                             'rhythmbox:%s:audio/x-flac:*' % self.server.coherence.hostname,
+                             'http-get:*:audio/x-flac:*',
+                             'rhythmbox:%s:audio/flac:*' % self.server.coherence.hostname,
+                             'http-get:*:audio/flac:*',
+                             'rhythmbox:%s:audio/x-wav:*' % self.server.coherence.hostname,
+                             'http-get:*:audio/x-wav:*',
+                             'rhythmbox:%s:audio/L16;rate=44100;channels=2:*' % self.server.coherence.hostname,
+                             'http-get:*:audio/L16;rate=44100;channels=2:*',
+                             'rhythmbox:%s:audio/x-m4a:*' % self.server.coherence.hostname,
+                             'http-get:*:audio/x-m4a:*'],
                             default=True)
         self.server.av_transport_server.set_variable(0, 'TransportState', 'NO_MEDIA_PRESENT', default=True)
         self.server.av_transport_server.set_variable(0, 'TransportStatus', 'OK', default=True)
