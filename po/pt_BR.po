@@ -25,9 +25,9 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-12-13 13:51+0000\n"
-"PO-Revision-Date: 2010-12-16 04:58-0300\n"
-"Last-Translator: Sérgio Cipolla <secipolla@gmail.com>\n"
+"POT-Creation-Date: 2011-01-09 07:58+0000\n"
+"PO-Revision-Date: 2011-01-10 09:50-0300\n"
+"Last-Translator: Mateus Zenaide <matzenh@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -563,9 +563,13 @@ msgstr "Adicionado recentemente"
 msgid "Recently Played"
 msgstr "Reproduzido recentemente"
 
+#. display the (generic) app name rather than "Not Playing" for
+#. * the initial notification
+#.
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1
 #: ../plugins/status-icon/rb-status-icon-plugin.c:59
+#: ../plugins/status-icon/rb-status-icon-plugin.c:1572
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1536 ../shell/rb-shell.c:1244
 #: ../shell/rb-shell.c:2228
 msgid "Music Player"
@@ -714,12 +718,12 @@ msgstr "%d de %b de %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:642
 #: ../plugins/mtpdevice/rb-mtp-source.c:1133
 #: ../plugins/mtpdevice/rb-mtp-source.c:1522
-#: ../plugins/status-icon/rb-status-icon-plugin.c:872
+#: ../plugins/status-icon/rb-status-icon-plugin.c:910
 #: ../podcast/rb-feed-podcast-properties-dialog.c:340
-#: ../podcast/rb-podcast-manager.c:1920
+#: ../podcast/rb-podcast-manager.c:1938
 #: ../podcast/rb-podcast-properties-dialog.c:619
 #: ../podcast/rb-podcast-properties-dialog.c:714
-#: ../podcast/rb-podcast-source.c:765 ../remote/dbus/rb-client.c:155
+#: ../podcast/rb-podcast-source.c:764 ../remote/dbus/rb-client.c:155
 #: ../rhythmdb/rhythmdb-tree.c:1341 ../rhythmdb/rhythmdb-tree.c:1345
 #: ../rhythmdb/rhythmdb-tree.c:1349 ../rhythmdb/rhythmdb-tree.c:1353
 #: ../rhythmdb/rhythmdb.c:2038 ../rhythmdb/rhythmdb.c:2044
@@ -1980,6 +1984,14 @@ msgstr ""
 "Esta informação somente está disponível para usuários do last.fm. Por favor, "
 "adicione detalhes da sua conta na configuração do plugin do last.fm."
 
+#: ../plugins/context/context/LinksTab.py:53
+msgid "Links"
+msgstr "Links"
+
+#: ../plugins/context/context/LinksTab.py:181
+msgid "No artist specified."
+msgstr "Nenhum artista especificado."
+
 #: ../plugins/context/context/LyricsTab.py:48
 #: ../plugins/lyrics/lyrics/__init__.py:249
 #: ../plugins/lyrics/lyrics/__init__.py:334
@@ -2175,6 +2187,11 @@ msgid ""
 "Provides an implementation of the MediaServer2 D-Bus interface specification"
 msgstr ""
 "Provê uma implementação da especificação da interface  D-Bus MediaServer2"
+
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1461
+#: ../shell/rb-playlist-manager.c:1414 ../sources/rb-display-page-group.c:92
+msgid "Playlists"
+msgstr "Listas de reprodução"
 
 #: ../plugins/fmradio/fmradio.rb-plugin.in.h:1
 #: ../plugins/fmradio/rb-fm-radio-source.c:209
@@ -3268,7 +3285,7 @@ msgstr ""
 "do dispositivo)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:157
-#: ../plugins/mtpdevice/rb-mtp-thread.c:545
+#: ../plugins/mtpdevice/rb-mtp-thread.c:544
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Não foi possível abrir o arquivo temporário: %s"
@@ -3278,7 +3295,7 @@ msgid "Rename MTP-device"
 msgstr "Renomear dispositivo MTP"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:869
-#: ../plugins/mtpdevice/rb-mtp-thread.c:854
+#: ../plugins/mtpdevice/rb-mtp-thread.c:855
 msgid "Media player device error"
 msgstr "Erro de dispositivo reprodutor de mídia"
 
@@ -3294,24 +3311,24 @@ msgstr "Não foi possível abrir o dispositivo %s %s"
 msgid "Digital Audio Player"
 msgstr "Reprodutor de áudio digital"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:500
-#: ../plugins/mtpdevice/rb-mtp-thread.c:558
-#: ../plugins/mtpdevice/rb-mtp-thread.c:576
+#: ../plugins/mtpdevice/rb-mtp-thread.c:499
+#: ../plugins/mtpdevice/rb-mtp-thread.c:557
+#: ../plugins/mtpdevice/rb-mtp-thread.c:575
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr "Falha ao copiar arquivo do dispositivo MTP: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:521
+#: ../plugins/mtpdevice/rb-mtp-thread.c:520
 #, c-format
 msgid "Not enough space in %s"
 msgstr "Sem espaço suficiente em %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:602
+#: ../plugins/mtpdevice/rb-mtp-thread.c:601
 #, c-format
 msgid "No space left on MTP device"
 msgstr "Sem espaço no dispositivo MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:605
+#: ../plugins/mtpdevice/rb-mtp-thread.c:604
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "Falha ao enviar arquivo ao dispositivo MTP: %s"
@@ -3485,68 +3502,81 @@ msgstr "Envia as faixas selecionadas por e-mail ou mensagem instantânea"
 msgid "Send tracks"
 msgstr "Enviar faixas"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:144
+#: ../plugins/status-icon/rb-status-icon-plugin.c:145
 msgid "_Close"
 msgstr "_Fechar"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:145
+#: ../plugins/status-icon/rb-status-icon-plugin.c:146
 msgid "Hide the music player window"
 msgstr "Ocultar a janela do reprodutor de músicas"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:151
+#: ../plugins/status-icon/rb-status-icon-plugin.c:152
 msgid "_Show Music Player"
 msgstr "_Mostrar o reprodutor de músicas"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:152
+#: ../plugins/status-icon/rb-status-icon-plugin.c:153
 msgid "Choose music to play"
 msgstr "Escolha a música para reproduzir"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:154
+#: ../plugins/status-icon/rb-status-icon-plugin.c:155
 msgid "Show N_otifications"
 msgstr "Mostrar _notificações"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:155
+#: ../plugins/status-icon/rb-status-icon-plugin.c:156
 msgid "Show notifications of song changes and other events"
 msgstr "Notificar alterações de músicas e outros eventos"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:477
+#: ../plugins/status-icon/rb-status-icon-plugin.c:502
 msgid "Previous"
 msgstr "Anterior"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:483
+#: ../plugins/status-icon/rb-status-icon-plugin.c:508
 msgid "Pause"
 msgstr "Pausar"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:483
+#: ../plugins/status-icon/rb-status-icon-plugin.c:508
 msgid "Play"
 msgstr "Reproduzir"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:500
+#: ../plugins/status-icon/rb-status-icon-plugin.c:525
 msgid "Next"
 msgstr "Próxima"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:674
+#: ../plugins/status-icon/rb-status-icon-plugin.c:710
 #: ../remote/dbus/rb-client.c:468 ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "Nenhuma reprodução"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:677
+#: ../plugins/status-icon/rb-status-icon-plugin.c:713
 #, c-format
 msgid "Paused, %s"
 msgstr "Pausado, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:742
+#: ../plugins/status-icon/rb-status-icon-plugin.c:778
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "por <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:744
+#: ../plugins/status-icon/rb-status-icon-plugin.c:780
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
+
+#: ../plugins/status-icon/rb-status-icon-plugin.c:834
+#: ../widgets/rb-header.c:550
+msgid "Not Playing"
+msgstr "Nenhuma reprodução"
+
+#. Translators: this is used in notification bubble text to indicate that
+#. * playback is currently paused.  %s is the song title.
+#.
+#: ../plugins/status-icon/rb-status-icon-plugin.c:920
+#, c-format
+msgid "(Paused) %s"
+msgstr "(Pausado) %s"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:1
 msgid "Status Icon"
@@ -3736,30 +3766,30 @@ msgstr "Erro no podcast"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Você gostaria de adicionar a fonte do podcast mesmo assim?"
 
-#: ../podcast/rb-podcast-manager.c:836
+#: ../podcast/rb-podcast-manager.c:852
 msgid "Error creating podcast download directory"
 msgstr "Erro ao criar o diretório de downloads de podcast"
 
-#: ../podcast/rb-podcast-manager.c:837
+#: ../podcast/rb-podcast-manager.c:853
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Falha ao criar o diretório de download para %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:962
+#: ../podcast/rb-podcast-manager.c:978
 msgid "Invalid URL"
 msgstr "URL inválido"
 
-#: ../podcast/rb-podcast-manager.c:963
+#: ../podcast/rb-podcast-manager.c:979
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "O URL \"%s\" não é válido, por favor verifique-o."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:973
+#: ../podcast/rb-podcast-manager.c:989
 msgid "URL already added"
 msgstr "URL já adicionado"
 
-#: ../podcast/rb-podcast-manager.c:974
+#: ../podcast/rb-podcast-manager.c:990
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3768,7 +3798,7 @@ msgstr ""
 "O URL \"%s\" já foi adicionado como uma estação de rádio. Se isso é uma "
 "fonte (\"feed\") de podcast, por favor remova a estação de rádio."
 
-#: ../podcast/rb-podcast-manager.c:1042
+#: ../podcast/rb-podcast-manager.c:1058
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3779,11 +3809,11 @@ msgstr ""
 "erro no URL ou a fonte pode estar defeituosa. Você gostaria que o Rhythmbox "
 "tentasse usá-la mesmo assim?"
 
-#: ../podcast/rb-podcast-manager.c:1180
+#: ../podcast/rb-podcast-manager.c:1196
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2103
+#: ../podcast/rb-podcast-manager.c:2121
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -3899,19 +3929,19 @@ msgstr "Episódios"
 msgid "Search podcast episodes"
 msgstr "Pesquisa episódios de podcast"
 
-#: ../podcast/rb-podcast-source.c:392
+#: ../podcast/rb-podcast-source.c:391
 msgid "New Podcast Feed"
 msgstr "Nova fonte de podcast"
 
-#: ../podcast/rb-podcast-source.c:392
+#: ../podcast/rb-podcast-source.c:391
 msgid "URL of podcast feed:"
 msgstr "URL da fonte do podcast:"
 
-#: ../podcast/rb-podcast-source.c:488
+#: ../podcast/rb-podcast-source.c:487
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Excluir a fonte (\"feed\") de podcast e os arquivos baixados?"
 
-#: ../podcast/rb-podcast-source.c:491
+#: ../podcast/rb-podcast-source.c:490
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -3921,42 +3951,42 @@ msgstr ""
 "perdidos permanentemente. Por favor, note que você pode excluir a fonte mas "
 "manter os arquivos baixados, escolhendo excluir apenas a fonte."
 
-#: ../podcast/rb-podcast-source.c:499
+#: ../podcast/rb-podcast-source.c:498
 msgid "Delete _Feed Only"
 msgstr "Excluir somente a _fonte"
 
-#: ../podcast/rb-podcast-source.c:506
+#: ../podcast/rb-podcast-source.c:505
 msgid "_Delete Feed And Files"
 msgstr "_Excluir a fonte e os arquivos"
 
-#: ../podcast/rb-podcast-source.c:594 ../podcast/rb-podcast-source.c:1426
+#: ../podcast/rb-podcast-source.c:593 ../podcast/rb-podcast-source.c:1425
 msgid "Downloaded"
 msgstr "Baixado"
 
-#: ../podcast/rb-podcast-source.c:598 ../podcast/rb-podcast-source.c:1428
+#: ../podcast/rb-podcast-source.c:597 ../podcast/rb-podcast-source.c:1427
 msgid "Failed"
 msgstr "Falhou"
 
-#: ../podcast/rb-podcast-source.c:602 ../podcast/rb-podcast-source.c:1427
+#: ../podcast/rb-podcast-source.c:601 ../podcast/rb-podcast-source.c:1426
 msgid "Waiting"
 msgstr "Esperando"
 
-#: ../podcast/rb-podcast-source.c:709
+#: ../podcast/rb-podcast-source.c:708
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
 msgstr[0] "%d fonte"
 msgstr[1] "Todas %d fontes"
 
-#: ../podcast/rb-podcast-source.c:946
+#: ../podcast/rb-podcast-source.c:945
 msgid "Podcast Error"
 msgstr "Erro no podcast"
 
-#: ../podcast/rb-podcast-source.c:1068
+#: ../podcast/rb-podcast-source.c:1067
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Excluir o episódio do podcast e o arquivo baixado?"
 
-#: ../podcast/rb-podcast-source.c:1071
+#: ../podcast/rb-podcast-source.c:1070
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -3966,15 +3996,15 @@ msgstr ""
 "perdidos. Note que você pode excluir o episódio mas manter o arquivo "
 "baixado, escolhendo excluir apenas o episódio."
 
-#: ../podcast/rb-podcast-source.c:1079
+#: ../podcast/rb-podcast-source.c:1078
 msgid "Delete _Episode Only"
 msgstr "Excluir apenas o _episódio"
 
-#: ../podcast/rb-podcast-source.c:1085
+#: ../podcast/rb-podcast-source.c:1084
 msgid "_Delete Episode And File"
 msgstr "E_xcluir o episódio e o arquivo"
 
-#: ../podcast/rb-podcast-source.c:1233
+#: ../podcast/rb-podcast-source.c:1232
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -3983,27 +4013,27 @@ msgstr[1] "%d episódios"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
-#: ../podcast/rb-podcast-source.c:1323
+#: ../podcast/rb-podcast-source.c:1322
 msgctxt "Podcast"
 msgid "New"
 msgstr "Novo"
 
 #. Translators: this is the toolbar button label
 #. for Update All Feeds action.
-#: ../podcast/rb-podcast-source.c:1329
+#: ../podcast/rb-podcast-source.c:1328
 msgid "Update"
 msgstr "Atualizar"
 
-#: ../podcast/rb-podcast-source.c:1372 ../podcast/rb-podcast-source.c:1383
+#: ../podcast/rb-podcast-source.c:1371 ../podcast/rb-podcast-source.c:1382
 msgid "Date"
 msgstr "Data"
 
-#: ../podcast/rb-podcast-source.c:1405 ../podcast/rb-podcast-source.c:1465
-#: ../podcast/rb-podcast-source.c:1513
+#: ../podcast/rb-podcast-source.c:1404 ../podcast/rb-podcast-source.c:1464
+#: ../podcast/rb-podcast-source.c:1512
 msgid "Feed"
 msgstr "Fonte"
 
-#: ../podcast/rb-podcast-source.c:1425 ../podcast/rb-podcast-source.c:1443
+#: ../podcast/rb-podcast-source.c:1424 ../podcast/rb-podcast-source.c:1442
 msgid "Status"
 msgstr "Status"
 
@@ -4377,10 +4407,6 @@ msgstr "Lista de reprodução sem título"
 #: ../shell/rb-playlist-manager.c:1394
 msgid "Couldn't read playlist"
 msgstr "Não foi possível ler a lista de reprodução"
-
-#: ../shell/rb-playlist-manager.c:1414 ../sources/rb-display-page-group.c:92
-msgid "Playlists"
-msgstr "Listas de reprodução"
 
 #: ../shell/rb-playlist-manager.c:1420
 msgid "All Files"
@@ -4960,27 +4986,27 @@ msgstr "Importar a pasta para a biblioteca"
 msgid "Import File into Library"
 msgstr "Importar arquivo para a biblioteca"
 
-#: ../shell/rb-shell.c:3172 ../shell/rb-shell.c:3529
+#: ../shell/rb-shell.c:3174 ../shell/rb-shell.c:3531
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Nenhuma fonte registrada pode lidar com o URI %s"
 
-#: ../shell/rb-shell.c:3649
+#: ../shell/rb-shell.c:3651
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Nenhuma fonte registrada corresponde ao URI %s"
 
-#: ../shell/rb-shell.c:3682 ../shell/rb-shell.c:3725
+#: ../shell/rb-shell.c:3684 ../shell/rb-shell.c:3727
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI de música desconhecido: %s"
 
-#: ../shell/rb-shell.c:3734
+#: ../shell/rb-shell.c:3736
 #, c-format
 msgid "Unknown property %s"
 msgstr "Propriedade %s desconhecida"
 
-#: ../shell/rb-shell.c:3748
+#: ../shell/rb-shell.c:3750
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Tipo de propriedade %s inválida para a propriedade %s"
@@ -5433,10 +5459,6 @@ msgstr "Reproduzindo"
 #: ../widgets/rb-entry-view.c:2019
 msgid "Playback Error"
 msgstr "Erro de reprodução"
-
-#: ../widgets/rb-header.c:550
-msgid "Not Playing"
-msgstr "Nenhuma reprodução"
 
 #: ../widgets/rb-property-view.c:635
 #, c-format
