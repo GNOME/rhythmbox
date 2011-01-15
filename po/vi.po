@@ -1,6 +1,6 @@
 # Vietnamese translation for Rhythmbox.
 # Copyright © 2007 Gnome i18n Project for Vietnamese.
-# Nguyễn Thái Ngọc Duy <pclouds@vnlinux.org>, 2002-2004, 2005, 2007.
+# Nguyễn Thái Ngọc Duy <pclouds@vnlinux.org>, 2002-2004, 2005, 2007, 2011.
 # Clytie Siddall <clytie@riverland.net.au>, 2005-2006.
 #
 msgid ""
@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
 "POT-Creation-Date: 2011-01-08 08:09+0000\n"
-"PO-Revision-Date: 2010-12-19 17:50+0700\n"
+"PO-Revision-Date: 2011-01-15 10:25+0700\n"
 "Last-Translator: Phạm Thành Long <lngt@ngonngu.net>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -114,7 +114,7 @@ msgstr "_Tập nhạc"
 
 #: ../data/ui/general-prefs.ui.h:2 ../widgets/rb-entry-view.c:1699
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ../data/ui/general-prefs.ui.h:3
 msgid "Browser Views"
@@ -122,7 +122,7 @@ msgstr "Khung duyệt"
 
 #: ../data/ui/general-prefs.ui.h:4
 msgid "C_omment"
-msgstr ""
+msgstr "_Ghi chú"
 
 #: ../data/ui/general-prefs.ui.h:5
 msgid "Da_te added"
@@ -253,16 +253,14 @@ msgid "<b>Information</b>"
 msgstr "<b>Thông tin</b>"
 
 #: ../data/ui/media-player-properties.ui.h:2 ../data/ui/sync-dialog.ui.h:1
-#, fuzzy
 #| msgid "<b>Search engines</b>"
 msgid "<b>Sync Preferences</b>"
-msgstr "<b>Máy tìm kiếm</b>"
+msgstr "Tuỳ thích đồng bộ"
 
 #: ../data/ui/media-player-properties.ui.h:3 ../data/ui/sync-dialog.ui.h:2
-#, fuzzy
 #| msgid "<b>Search engines</b>"
 msgid "<b>Sync Preview</b>"
-msgstr "<b>Máy tìm kiếm</b>"
+msgstr "<b>Xem thử đồng bộ</b>"
 
 #. Translators: This refers to the usage of media space
 #: ../data/ui/media-player-properties.ui.h:5
@@ -282,7 +280,7 @@ msgstr "Thuộc tính trình phát phương tiện"
 
 #: ../data/ui/media-player-properties.ui.h:8
 msgid "Sync"
-msgstr ""
+msgstr "Đồng bộ"
 
 #: ../data/ui/playback-prefs.ui.h:1
 msgid "Crossfade Duration (Seconds)"
@@ -438,19 +436,16 @@ msgid "Albu_m sort order:"
 msgstr "Thứ tự sắp xếm tập _nhạc"
 
 #: ../data/ui/song-info-multiple.ui.h:2 ../data/ui/song-info.ui.h:2
-#, fuzzy
 #| msgid "_Album:"
 msgid "Albu_m:"
 msgstr "_Tập nhạc:"
 
 #: ../data/ui/song-info-multiple.ui.h:3 ../data/ui/song-info.ui.h:3
-#, fuzzy
 #| msgid "_Artist sort order:"
 msgid "Album a_rtist sort order:"
 msgstr "Thứ tự sắp xếp nghệ _sĩ:"
 
 #: ../data/ui/song-info-multiple.ui.h:4 ../data/ui/song-info.ui.h:4
-#, fuzzy
 #| msgid "_Artist:"
 msgid "Album a_rtist:"
 msgstr "Nghệ _sĩ:"
@@ -485,7 +480,7 @@ msgstr "_Năm:"
 
 #: ../data/ui/song-info.ui.h:5
 msgid "BPM:"
-msgstr ""
+msgstr "BPM:"
 
 #: ../data/ui/song-info.ui.h:8
 msgid "Date added:"
@@ -508,16 +503,14 @@ msgid "Location:"
 msgstr "Địa điểm:"
 
 #: ../data/ui/song-info.ui.h:18
-#, fuzzy
 #| msgid "Track _number"
 msgid "Track _number:"
-msgstr "Số rã_nh"
+msgstr "Số rã_nh:"
 
 #: ../data/ui/song-info.ui.h:21
-#, fuzzy
 #| msgid "_Contents"
 msgid "_Comment:"
-msgstr "_Nội dung"
+msgstr "_Nội dung:"
 
 #: ../data/ui/song-info.ui.h:25 ../plugins/iradio/station-properties.ui.h:10
 msgid "_Title:"
@@ -525,23 +518,21 @@ msgstr "_Tựa:"
 
 #: ../data/ui/sync-state.ui.h:1
 msgid "Added files:"
-msgstr ""
+msgstr "Tập tin đã thêm:"
 
 #: ../data/ui/sync-state.ui.h:2
 msgid "Contents after sync"
-msgstr ""
+msgstr "Nội dung sau đồng bộ"
 
 #: ../data/ui/sync-state.ui.h:3
-#, fuzzy
 #| msgid "_Contents"
 msgid "Current contents"
-msgstr "_Nội dung"
+msgstr "Nội dung hiện tại"
 
 #: ../data/ui/sync-state.ui.h:4
-#, fuzzy
 #| msgid "Read less"
 msgid "Removed files:"
-msgstr "Đọc ít lại"
+msgstr "Tập tin đã loại bỏ:"
 
 #: ../data/playlists.xml.in.h:1
 msgid "My Top Rated"
@@ -1048,23 +1039,21 @@ msgstr "Gửi thông tin nhạc lên Last.fm và phát đài Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
 msgid "Libre.fm"
-msgstr ""
+msgstr "Libre.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:3
 msgid "Which Audioscrobbler services do you wish to use?"
-msgstr ""
+msgstr "Bạn muốn dùng dịch vụ Audioscrobbler nào?"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:1
-#, fuzzy
 #| msgid "Delete Station"
 msgid "Create Station"
-msgstr "Xoá trạm"
+msgstr "Tạo đài"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:2
-#, fuzzy
 #| msgid "Create a new FM Radio station"
 msgid "Create a Radio Station"
-msgstr "Tạo trạm phát FM mới"
+msgstr "Tạo đài radio"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:3
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:825
@@ -1077,10 +1066,9 @@ msgstr "Lần gửi sau cùng:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:5
 msgid "Logout"
-msgstr ""
+msgstr "Đăng xuất"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:6
-#, fuzzy
 #| msgid "Loved tracks"
 msgid "Loved Tracks"
 msgstr "Bài yêu thích"
@@ -1098,42 +1086,37 @@ msgid "Queued tracks:"
 msgstr "Bài đang đợi:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
-#, fuzzy
 #| msgid "Recommended tracks"
 msgid "Recently Listened Tracks"
-msgstr "Bài nên nghe"
+msgstr "Bài mới nghe"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:10
-#, fuzzy
 #| msgid "Recommended tracks"
 msgid "Recommendations"
-msgstr "Bài nên nghe"
+msgstr "Khuyến khích"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:11
 msgid "Status:"
 msgstr "Trạng thái:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:12
-#, fuzzy
 #| msgid "Statistics"
 msgid "Submission statistics"
-msgstr "Thống kê"
+msgstr "Thống kê gửi"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:13
 msgid "Submit listening data"
-msgstr ""
+msgstr "Gửi thông tin nghe"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:14
-#, fuzzy
 #| msgid "Artists"
 msgid "Top Artists"
-msgstr "Nghệ sĩ"
+msgstr "Nghệ sĩ dẫn đầu"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:15
-#, fuzzy
 #| msgid "Tracks:"
 msgid "Top Tracks"
-msgstr "Bản:"
+msgstr "Bài dẫn đầu:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:16
 msgid "Tracks submitted:"
@@ -1141,21 +1124,20 @@ msgstr "Bài đã gửi:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:17
 msgid "Type:"
-msgstr ""
+msgstr "Loại:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:18
 msgid "View your profile"
-msgstr ""
+msgstr "Xem hồ sơ của mình"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:250
-#, fuzzy
 #| msgid "Request failed"
 msgid "Refresh Profile"
-msgstr "Yêu cầu thất bại"
+msgstr "Nạp lại hồ sơ"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:251
 msgid "Refresh your Profile"
-msgstr ""
+msgstr "Nạp lại hồ sơ"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:625
 msgid "Love"
@@ -1174,131 +1156,119 @@ msgid "Ban the current track from being played again"
 msgstr "Cấm bài hiện thời để khỏi nghe lại lần nữa"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:631
-#, fuzzy
 #| msgid "Downloaded"
 msgid "Download"
-msgstr "Đã tải về"
+msgstr "Tải về"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:632
-#, fuzzy
 #| msgid "Not currently playing"
 msgid "Download the currently playing track"
-msgstr "Không phát"
+msgstr "Tải bài đang nghe về"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:743
-#, fuzzy
 #| msgid "Not currently playing"
 msgid "You are not currently logged in."
-msgstr "Không phát"
+msgstr "Bạn chưa đăng nhập."
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:744
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:762
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:769
-#, fuzzy
 #| msgid "Logging in"
 msgid "Log in"
-msgstr "Đang đăng nhập"
+msgstr "Đăng nhập"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:750
 msgid "Waiting for authentication..."
-msgstr ""
+msgstr "Chờ xác thực..."
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:751
-#, fuzzy
 #| msgid "_Cancel"
 msgid "Cancel"
-msgstr "Thô_i"
+msgstr "Thôi"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:761
 msgid "Authentication error. Please try logging in again."
-msgstr ""
+msgstr "Lỗi xác thực. Vui lòng đăng nhập lại."
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:768
 msgid "Connection error. Please try logging in again."
-msgstr ""
+msgstr "Lỗi kết nối. Vui lòng đăng nhập lại."
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1173
-#, fuzzy
 #| msgid "Library"
 msgid "My Library"
 msgstr "Thư viện"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1181
-#, fuzzy
 #| msgid "Recommended tracks"
 msgid "My Recommendations"
 msgstr "Bài nên nghe"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1189
-#, fuzzy
 #| msgid "Neighbour radio"
 msgid "My Neighbourhood"
 msgstr "Đài láng giềng"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1356
-#, fuzzy, c-format
+#, c-format
 #| msgid "%s's playlist"
 msgid "%s plays"
-msgstr "Danh sách phát của %s"
+msgstr "%s lần nghe"
 
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1614
-#, fuzzy, c-format
+#, c-format
 #| msgid "_View"
 msgid "_View on %s"
-msgstr "_Xem"
+msgstr "_Xem trên %s"
 
 #. Translators: describes a radio stream playing tracks similar to those by an artist.
 #. * Followed by a text entry box for the artist name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:57
-#, fuzzy
 #| msgid "Similar Artists radio"
 msgid "Similar to Artist:"
-msgstr "Đài phát nghệ sĩ tương tự"
+msgstr "Nghệ sĩ tương tự:"
 
 #. Translators: describes a radio stream playing tracks listened to by the top fans of
 #. * a particular artist.  Followed by a text entry box for the artist name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:61
-#, fuzzy
 #| msgid "_Donate to Artist"
 msgid "Top Fans of Artist:"
-msgstr "Ủ_ng hộ tiền cho nghệ sĩ"
+msgstr "Những người _hâm mộ nghệ sĩ nhất:"
 
 #. Translators: describes a radio stream playing tracks from the library of a particular
 #. * user.  Followed by a text entry box for the user name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:65
-#, fuzzy
 #| msgid "Library"
 msgid "Library of User:"
-msgstr "Thư viện"
+msgstr "Thư viện của người dùng:"
 
 #. Translators: describes a radio stream playing tracks played by users similar to a
 #. * particular user.  Followed by a text entry box for the user name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:69
 msgid "Neighbourhood of User:"
-msgstr ""
+msgstr "Hàng xóm của người dùng:"
 
 #. Translators: describes a radio stream playing tracks that a particular user has marked
 #. * as loved.  Followed by a text entry box for the user name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:73
-#, fuzzy
 #| msgid "Tracks liked by the %s group"
 msgid "Tracks Loved by User:"
-msgstr "Bài được yêu thích bởi nhóm %s"
+msgstr "Bài được yêu thích bởi người dùng:"
 
 #. Translators: describes a radio stream playing tracks recommended to a particular user.
 #. * Followed by a text entry box for the user name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:77
 msgid "Recommendations for User:"
-msgstr ""
+msgstr "Khuyến khích nghe cho người dùng:"
 
 #. Translators: a type of station named "Mix Radio" by Last.fm.
 #. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for a description of it.
@@ -1306,52 +1276,51 @@ msgstr ""
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:82
 msgid "Mix Radio for User:"
-msgstr ""
+msgstr "Radio tổng hợp cho người dùng:"
 
 #. Translators: describes a radio stream playing tracks tagged with a particular tag.
 #. * Followed by a text entry box for the tag.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:86
-#, fuzzy
 #| msgid "Tracks tagged with %s"
 msgid "Tracks Tagged with:"
-msgstr "Bài được đánh thẻ %s"
+msgstr "Bài được đánh thẻ:"
 
 #. Translators: describes a radio stream playing tracks often listened to by members of
 #. * a particular group. Followed by a text entry box for the group name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:90
 msgid "Listened by Group:"
-msgstr ""
+msgstr "Nghe bởi nhóm:"
 
 #. Translators: station is built from artists similar to the artist %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:125
-#, fuzzy, c-format
+#, c-format
 #| msgid "Radio"
 msgid "%s Radio"
-msgstr "Đài phát thanh"
+msgstr "Đài %s"
 
 #. Translators: station is built from the artist %s's top fans
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:127
-#, fuzzy, c-format
+#, c-format
 #| msgid "%s's %s Radio"
 msgid "%s Fan Radio"
-msgstr "Đài %2$s của %1$s"
+msgstr "Đài của hâm mộ %s"
 
 #. Translators: station is built from the library of the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:129
-#, fuzzy, c-format
+#, c-format
 #| msgid "Library"
 msgid "%s's Library"
-msgstr "Thư viện"
+msgstr "Thư viện của %s"
 
 #. Translators: station is built from the "neighbourhood" of the user %s.
 #. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:132
-#, fuzzy, c-format
+#, c-format
 #| msgid "%s's Neighbour Radio"
 msgid "%s's Neighbourhood"
-msgstr "Đài láng giềng của %s"
+msgstr "Láng giềng của %s"
 
 #. Translators: station is built from the tracks which have been "loved" by the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
@@ -1361,27 +1330,27 @@ msgstr "Bài yêu thích của %s"
 
 #. Translators: station is built from the tracks which are recommended to the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:136
-#, fuzzy, c-format
+#, c-format
 #| msgid "%s's Recommended Radio: %s percent"
 msgid "%s's Recommended Radio"
-msgstr "Đài đề nghị của %s: %s phần trăm"
+msgstr "Đài đề nghị của %s"
 
 #. Translators: station is the "Mix Radio" for the user %s.
 #. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for description.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:139
-#, fuzzy, c-format
+#, c-format
 #| msgid "%s's %s Radio"
 msgid "%s's Mix Radio"
-msgstr "Đài %2$s của %1$s"
+msgstr "Đài tổng hợp của %s"
 
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
 #. * but nationalities, record labels, decades and very random words are also commmon
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:143
-#, fuzzy, c-format
+#, c-format
 #| msgid "Tag radio"
 msgid "%s Tag Radio"
-msgstr "Đài phát theo thẻ"
+msgstr "Đài thẻ %s"
 
 #. Translators: station is built from the library of the group %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:145
@@ -1390,62 +1359,56 @@ msgid "%s Group Radio"
 msgstr "Đài nhóm %s"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:290
-#, fuzzy
 #| msgid "Rename iPod"
 msgid "_Rename Station"
-msgstr "Đổi tên iPod"
+msgstr "Đổ_i tên đài"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:291
-#, fuzzy
 #| msgid "Rename iPod"
 msgid "Rename station"
-msgstr "Đổi tên iPod"
+msgstr "Đổi tên đài"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:293
-#, fuzzy
 #| msgid "Delete Station"
 msgid "_Delete Station"
-msgstr "Xoá trạm"
+msgstr "_Xoá đài"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:294
-#, fuzzy
 #| msgid "Delete Station"
 msgid "Delete station"
-msgstr "Xoá trạm"
+msgstr "Xoá đài"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:460
 msgid "You must enter your password to listen to this station"
-msgstr ""
+msgstr "Bạn phải nhập mật khẩu để nghe đài này"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:771
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1120
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1250
 msgid "Error tuning station: no response"
-msgstr ""
+msgstr "Lỗi chỉnh đài: không có phản hồi"
 
 #. Invalid station url
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:808
-#, fuzzy
 #| msgid "Invalid URL"
 msgid "Invalid station URL"
-msgstr "URL không hợp lệ"
+msgstr "URL đài không hợp lệ"
 
 #. Subscriber only station
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This message indicates that to listen to this radio station the user needs to be
 #. * a paying subscriber to the service.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:814
-#, fuzzy, c-format
+#, c-format
 #| msgid "This station is available to subscribers only."
 msgid "This station is only available to %s subscribers"
-msgstr "Trạm chỉ dành cho tài khoản trả tiền."
+msgstr "Đài chỉ dành cho tài khoản trả tiền %s"
 
 #. Not enough content
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:818
-#, fuzzy
 #| msgid "There is not enough content available to play this station."
 msgid "Not enough content to play station"
-msgstr "Không đủ nội dung để phát trạm này."
+msgstr "Không đủ nội dung để phát đài này"
 
 #. Deprecated station
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
@@ -1453,41 +1416,40 @@ msgstr "Không đủ nội dung để phát trạm này."
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:823
 #, c-format
 msgid "%s no longer supports this type of station"
-msgstr ""
+msgstr "%s không còn hỗ trợ dạng đài này nữa"
 
 #. Other error
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:827
 #, c-format
 msgid "Error tuning station: %i - %s"
-msgstr ""
+msgstr "Lỗi chỉnh đài: %i - %s"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:838
 msgid "Error tuning station: unexpected response"
-msgstr ""
+msgstr "Lỗi chỉnh đài: phản hồi không mong đợi"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:843
 msgid "Error tuning station: invalid response"
-msgstr ""
+msgstr "Lỗi chỉnh đài: phản hồi không hợp lệ"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1235
-#, fuzzy, c-format
+#, c-format
 #| msgid "Changing station"
 msgid "Error tuning station: %s"
-msgstr "Đang đổi trạm"
+msgstr "Lỗi chỉnh đài: %s"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1307
 #, c-format
 msgid "Password for streaming %s radio using the deprecated API"
-msgstr ""
+msgstr "Mật khẩu để phát đài %s dùng API đã lỗi thời"
 
 #. We could be calling either radio.tune or radio.getPlaylist methods.
 #. * "Tuning station" seems like a user friendly message to display for both cases.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1470
-#, fuzzy
 #| msgid "Changing station"
 msgid "Tuning station"
-msgstr "Đang đổi trạm"
+msgstr "Chỉnh đài"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:499
 msgid "OK"
@@ -1502,20 +1464,18 @@ msgid "Request failed"
 msgstr "Yêu cầu thất bại"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:508
-#, fuzzy
 #| msgid "D-BUS communication error"
 msgid "Authentication error"
-msgstr "Lỗi liên lạc D-BUS"
+msgstr "Lỗi xác thực"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:511
 msgid "Clock is not set correctly"
 msgstr "Đồng hồ không đúng"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
-#, fuzzy
 #| msgid "This version of Rhythmbox has been banned from Last.fm."
 msgid "This version of Rhythmbox has been banned."
-msgstr "Phiên bản này của Rhythmbox đã bị Last.fm cấm."
+msgstr "Phiên bản này của Rhythmbox đã bị cấm."
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:517
 msgid "Track submission failed too many times"
@@ -2030,11 +1990,11 @@ msgstr ""
 
 #: ../plugins/context/context/LinksTab.py:53
 msgid "Links"
-msgstr ""
+msgstr "Liên kết"
 
 #: ../plugins/context/context/LinksTab.py:181
 msgid "No artist specified."
-msgstr ""
+msgstr "Chưa xác định nghệ sĩ."
 
 #: ../plugins/context/context/LyricsTab.py:48
 #: ../plugins/lyrics/lyrics/__init__.py:249
@@ -2104,38 +2064,34 @@ msgid "Share music and play shared music on your local network"
 msgstr "Chia sẻ nhạc và nghe nhạc từ xa trên mạng cục bộ"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
-#, fuzzy
 #| msgid "<b>Content</b>"
 msgid "<b>Add Remote</b>"
-msgstr "<b>Nội dung</b>"
+msgstr "<b>Thêm điều khiển từ xa</b>"
 
 #: ../plugins/daap/daap-prefs.ui.h:2
 msgid "<b>Sharing</b>"
 msgstr "<b>Chia sẻ</b>"
 
 #: ../plugins/daap/daap-prefs.ui.h:3
-#, fuzzy
 #| msgid ""
 #| "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
 #| "expiration date listed.</span>"
 msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
 msgstr ""
-"<span weight=\"bold\" foreground=\"red\">Thẻ tín dụng của bạn đã quá hạn.</"
-"span>"
+"<span foreground=\"red\">Không thể kết nối điều khiển từ xa này.</span>"
 
 #: ../plugins/daap/daap-prefs.ui.h:4
 msgid "Forget known Remotes"
-msgstr ""
+msgstr "Quên điều khiển từ xa đã biết"
 
 #: ../plugins/daap/daap-prefs.ui.h:5
-#, fuzzy
 #| msgid "Library"
 msgid "Library _name:"
-msgstr "Thư viện"
+msgstr "_Tên thư viện:"
 
 #: ../plugins/daap/daap-prefs.ui.h:6
 msgid "Please enter the passcode displayed on your device."
-msgstr ""
+msgstr "Vui lòng nhập mật khẩu hiện trên thiết bị của bạn."
 
 #: ../plugins/daap/daap-prefs.ui.h:7
 msgid "Require _password:"
@@ -2143,7 +2099,7 @@ msgstr "Cần _mật khẩu:"
 
 #: ../plugins/daap/daap-prefs.ui.h:8
 msgid "You can now control Rhythmbox through your Remote"
-msgstr ""
+msgstr "Bạn có thể điều khiển Rhythmbox từ xa"
 
 #: ../plugins/daap/daap-prefs.ui.h:9
 msgid "_Look for touch Remotes"
@@ -2217,29 +2173,27 @@ msgid "Could not connect to shared music"
 msgstr "Không thể kết nối đến chia sẻ nhạc"
 
 #: ../plugins/daap/rb-dacp-pairing-page.c:405
-#, fuzzy
 #| msgid "Connecting"
 msgid "Connecting..."
 msgstr "Đang kết nối..."
 
 #: ../plugins/daap/rb-dacp-pairing-page.c:407
 msgid "Could not pair with this Remote."
-msgstr ""
+msgstr "Không thể kết nối điều khiển từ xa này."
 
 #: ../plugins/daap/rb-dacp-pairing-page.c:608
-#, fuzzy
 #| msgid "Remove"
 msgid "Remotes"
-msgstr "Gỡ bỏ"
+msgstr "Điều khiển từ xa"
 
 #: ../plugins/dbus-media-server/dbus-media-server.rb-plugin.in.h:1
 msgid "MediaServer2 D-Bus interface"
-msgstr ""
+msgstr "Giao tiếp D-Bus MediaServer2"
 
 #: ../plugins/dbus-media-server/dbus-media-server.rb-plugin.in.h:2
 msgid ""
 "Provides an implementation of the MediaServer2 D-Bus interface specification"
-msgstr ""
+msgstr "Cung cấp cài đặt cho đặc tả giao tiếp D-Bus MediaServer2"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1461
 #: ../shell/rb-playlist-manager.c:1414 ../sources/rb-display-page-group.c:92
@@ -2257,19 +2211,19 @@ msgstr "Hỗ trợ dịch vụ phát đài FM"
 
 #: ../plugins/fmradio/rb-fm-radio-source.c:85
 msgid "New FM R_adio Station"
-msgstr "Trạm phát sóng _FM mới"
+msgstr "Đài radio _FM mới"
 
 #: ../plugins/fmradio/rb-fm-radio-source.c:86
 msgid "Create a new FM Radio station"
-msgstr "Tạo trạm phát FM mới"
+msgstr "Tạo đài radio FM mới"
 
 #: ../plugins/fmradio/rb-fm-radio-source.c:347
 msgid "New FM Radio Station"
-msgstr "Trạm phát FM mới"
+msgstr "Đài radio FM mới"
 
 #: ../plugins/fmradio/rb-fm-radio-source.c:348
 msgid "Frequency of radio station"
-msgstr "Tần số trạm radio"
+msgstr "Tần số đài radio"
 
 #: ../plugins/generic-player/generic-player.rb-plugin.in.h:1
 msgid "Portable Players"
@@ -2605,7 +2559,6 @@ msgid "Jamendo is the only platform that joins together :"
 msgstr "Jamendo là hệ thống duy nhất kết hợp:"
 
 #: ../plugins/jamendo/jamendo-loading.ui.h:11
-#, fuzzy
 #| msgid ""
 #| "Jamendo users can discover and share albums, but also review them or "
 #| "start a discussion on the forums.\n"
@@ -2619,8 +2572,7 @@ msgid ""
 msgstr ""
 "Người dùng Jamendo có thể khám phá và chia sẻ các tập nhạc, viết đánh giá "
 "hoặc thảo luận trên các diễn đàn.\n"
-"Các tập nhạc được đánh giá dân chủ dựa trên tỉ lệ đánh giá của thính "
-"giả&#x2019.\n"
+"Các tập nhạc được đánh giá dân chủ dựa trên tỉ lệ đánh giá của thính giả.\n"
 "Nếu họ hâm mộ nghệ sĩ nào đó, họ có thể hỗ trợ nghệ sĩ này bằng đóng góp tài "
 "chính."
 
@@ -2722,16 +2674,16 @@ msgstr "Đài phát thanh"
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
-msgstr[0] "%d trạm"
+msgstr[0] "%d đài"
 
 #: ../plugins/iradio/rb-iradio-source.c:1021
 #: ../plugins/iradio/rb-station-properties-dialog.c:401
 msgid "New Internet Radio Station"
-msgstr "Trạm phát thanh Internet mới"
+msgstr "Đài phát Internet mới"
 
 #: ../plugins/iradio/rb-iradio-source.c:1021
 msgid "URL of internet radio station:"
-msgstr "URL của trạm phát thanh Internet:"
+msgstr "URL của đài phát Internet:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:397
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
@@ -2750,12 +2702,12 @@ msgstr "%lu kbps"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:580
 msgid "Unable to change station property"
-msgstr "Không thể thay đổi thuộc tính trạm"
+msgstr "Không thể thay đổi thuộc tính đài"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:580
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
-msgstr "Không thể thay đổi URI của trạm sang %s, vì trạm đó đã có rồi"
+msgstr "Không thể thay đổi URI của đài sang %s, đài đó đã có rồi"
 
 #: ../plugins/iradio/station-properties.ui.h:5
 msgid "L_ocation:"
@@ -2825,10 +2777,9 @@ msgid "TerraBrasil (terra.com.br)"
 msgstr "TerraBrasil (terra.com.br)"
 
 #: ../plugins/lyrics/lyrics/LyricsSites.py:41
-#, fuzzy
 #| msgid "Leo's Lyrics (www.leoslyrics.com)"
 msgid "Dark Lyrics (darklyrics.com)"
-msgstr "Leo's Lyrics (www.leoslyrics.com)"
+msgstr "Dark Lyrics (darklyrics.com)"
 
 #: ../plugins/lyrics/lyrics.rb-plugin.in.h:1
 msgid "Fetch song lyrics from the Internet"
@@ -3361,10 +3312,10 @@ msgid "Not enough space in %s"
 msgstr "Không đủ chỗ trong %s"
 
 #: ../plugins/mtpdevice/rb-mtp-thread.c:601
-#, fuzzy, c-format
+#, c-format
 #| msgid "Unable to send file to MTP device: %s"
 msgid "No space left on MTP device"
-msgstr "Không thể gửi tập tin tới thiết bị MTP: %s"
+msgstr "Không còn chỗ trên thiết bị MTP"
 
 #: ../plugins/mtpdevice/rb-mtp-thread.c:604
 #, c-format
@@ -3425,11 +3376,11 @@ msgstr "Bàn giao tiếp Python"
 #. sys.excepthook = _excepthandler
 #: ../plugins/rbzeitgeist/rbzeitgeist.rb-plugin.in.h:1
 msgid "Inform Zeitgeist about your activity"
-msgstr ""
+msgstr "Thông báo hoạt động của bạn cho Zeitgeist"
 
 #: ../plugins/rbzeitgeist/rbzeitgeist.rb-plugin.in.h:2
 msgid "Zeitgeist"
-msgstr ""
+msgstr "Zeitgeist"
 
 #: ../plugins/replaygain/replaygain.rb-plugin.in.h:1
 msgid "ReplayGain"
@@ -3563,22 +3514,19 @@ msgid "Show notifications of song changes and other events"
 msgstr "Hiển thị thông báo các thay đổi bài nhạc và sự kiện khác"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:502
-#, fuzzy
 #| msgid "Pre_vious"
 msgid "Previous"
-msgstr "T_rước"
+msgstr "Trước"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:508
-#, fuzzy
 #| msgid "_Paste"
 msgid "Pause"
-msgstr "_Dán"
+msgstr "Tạm dừng"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:508
-#, fuzzy
 #| msgid "_Play"
 msgid "Play"
-msgstr "_Phát"
+msgstr "Phát"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:525
 msgid "Next"
@@ -3616,10 +3564,10 @@ msgstr "Không phát"
 #. * playback is currently paused.  %s is the song title.
 #.
 #: ../plugins/status-icon/rb-status-icon-plugin.c:916
-#, fuzzy, c-format
+#, c-format
 #| msgid "Paused, %s"
 msgid "(Paused) %s"
-msgstr "Tạm ngừng, %s"
+msgstr "(Tạm ngừng) %s"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:1
 msgid "Status Icon"
@@ -3780,16 +3728,14 @@ msgid "Visualization"
 msgstr "Hiệu ứng thị giác"
 
 #: ../podcast/rb-podcast-main-source.c:116
-#, fuzzy
 #| msgid "Episodes"
 msgid "New Episodes"
-msgstr "Tình tiết"
+msgstr "Tình tiết mới"
 
 #: ../podcast/rb-podcast-main-source.c:134
-#, fuzzy
 #| msgid "Cancel Downloads"
 msgid "New Downloads"
-msgstr "Thôi tải về"
+msgstr "Tải về mới"
 
 #: ../podcast/rb-podcast-main-source.c:155
 msgid "Downloading podcast"
@@ -3842,7 +3788,7 @@ msgid ""
 "podcast feed, please remove the radio station."
 msgstr ""
 "URL \"%s\" đã được thêm dạng đài phát thanh. Nếu đây là nguồn Podcast, vui "
-"lòng gỡ bỏ Trạm phát này."
+"lòng gỡ bỏ đài phát này."
 
 #: ../podcast/rb-podcast-manager.c:1058
 #, c-format
@@ -3886,7 +3832,7 @@ msgstr "Nguồn không chứa mục nào có thể tải về"
 
 #: ../podcast/rb-podcast-properties-dialog.c:195
 msgid "Unable to display requested URI"
-msgstr ""
+msgstr "Không thể hiển thị URI theo yêu cầu"
 
 #: ../podcast/rb-podcast-properties-dialog.c:567
 msgid "Not Downloaded"
@@ -4089,7 +4035,7 @@ msgstr "Thoát khỏi Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:89
 msgid "Check if Rhythmbox is already running"
-msgstr ""
+msgstr "Kiểm tra xem Rhythmbox có chạy chưa"
 
 #: ../remote/dbus/rb-client.c:91
 msgid "Don't present an existing Rhythmbox window"
@@ -4108,10 +4054,9 @@ msgid "Jump to previous song"
 msgstr "Về bài trước đó"
 
 #: ../remote/dbus/rb-client.c:96
-#, fuzzy
 #| msgid "Skip the current track"
 msgid "Seek in current track"
-msgstr "Bỏ qua bài này"
+msgstr "Di chuyển trong bài này"
 
 #: ../remote/dbus/rb-client.c:98
 msgid "Show notification of the playing song"
@@ -4155,34 +4100,31 @@ msgid "Print formatted details of the song"
 msgstr "Hiển thị chi tiết đã định dạng về bài nhạc"
 
 #: ../remote/dbus/rb-client.c:111
-#, fuzzy
 #| msgid "Enable debug output matching a specified string"
 msgid "Select the source matching the specified URI"
-msgstr "Bật kết xuất gỡ lỗi khớp với chuỗi đã chỉ định"
+msgstr "Chọn nguồn khớp với URI đã cho"
 
 #: ../remote/dbus/rb-client.c:111
-#, fuzzy
 #| msgid "Cut selection"
 msgid "Source to select"
-msgstr "Cắt vùng chọn"
+msgstr "Nguồn cần chọn"
 
 #: ../remote/dbus/rb-client.c:112
-#, fuzzy
 #| msgid "Enable debug output matching a specified string"
 msgid "Activate the source matching the specified URI"
-msgstr "Bật kết xuất gỡ lỗi khớp với chuỗi đã chỉ định"
+msgstr "Kích hoạt khớp nguồn với URI đã cho"
 
 #: ../remote/dbus/rb-client.c:112
 msgid "Source to activate"
-msgstr ""
+msgstr "Nguồn cần kích hoạt"
 
 #: ../remote/dbus/rb-client.c:113
 msgid "Play from the source matching the specified URI"
-msgstr ""
+msgstr "Phát từ nguồn khớp với URL đã cho"
 
 #: ../remote/dbus/rb-client.c:113
 msgid "Source to play from"
-msgstr ""
+msgstr "Nguồn cần phát"
 
 #: ../remote/dbus/rb-client.c:115
 msgid "Set the playback volume"
@@ -4283,10 +4225,10 @@ msgid "Could not load the music database:"
 msgstr "Không thể nạp cơ sở dữ liệu âm nhạc:"
 
 #: ../rhythmdb/rhythmdb.c:4440
-#, fuzzy, c-format
+#, c-format
 #| msgid "Importing (%d/%d)"
 msgid "Checking (%d/%d)"
-msgstr "Đang nhập (%d/%d)"
+msgstr "Đang kiểm tra (%d/%d)"
 
 #: ../rhythmdb/rhythmdb.c:4485
 #, c-format
@@ -5018,10 +4960,10 @@ msgid "No registered source can handle URI %s"
 msgstr "Không có nguồn đã đăng kí có khả năng quản lí URI %s"
 
 #: ../shell/rb-shell.c:3651
-#, fuzzy, c-format
+#, c-format
 #| msgid "No registered source can handle URI %s"
 msgid "No registered source matches URI %s"
-msgstr "Không có nguồn đã đăng kí có khả năng quản lí URI %s"
+msgstr "Không có nguồn đã đăng kí khớp URI %s"
 
 #: ../shell/rb-shell.c:3684 ../shell/rb-shell.c:3727
 #, c-format
@@ -5053,39 +4995,38 @@ msgstr "Lọc hiển thị nhạc theo thể loại, nghệ sĩ, tập nhạc, h
 #: ../shell/rb-track-transfer-queue.c:129
 #, c-format
 msgid "The file \"%s\" already exists. Do you want to replace it?"
-msgstr ""
+msgstr "Đã có tập tin \"%s\". Bạn có muốn thay thế nó không?"
 
 #: ../shell/rb-track-transfer-queue.c:143
 msgid "_Skip"
-msgstr ""
+msgstr "_Bỏ qua"
 
 #: ../shell/rb-track-transfer-queue.c:144
-#, fuzzy
 #| msgid "_Rename"
 msgid "_Replace"
-msgstr "Đổi _tên"
+msgstr "_Thay thế"
 
 #: ../shell/rb-track-transfer-queue.c:145
 msgid "S_kip All"
-msgstr ""
+msgstr "Bỏ qua _hết"
 
 #: ../shell/rb-track-transfer-queue.c:146
-#, fuzzy
 #| msgid "Select _All"
 msgid "Replace _All"
-msgstr "Chọn _hết"
+msgstr "Thay thế _hết"
 
 #: ../shell/rb-track-transfer-queue.c:368
-#, fuzzy
 #| msgid "Error transferring track"
 msgid "Unable to transfer tracks"
-msgstr "Gặp lỗi khi truyền bài"
+msgstr "Không thể truyền bài"
 
 #: ../shell/rb-track-transfer-queue.c:369
 msgid ""
 "None of the tracks to be transferred are in a format supported by the target "
 "device, and no encoders are available for the supported formats."
 msgstr ""
+"Không có bài nào được truyền nằm trong danh sách các định dạng hỗ trợ ở "
+"thiết bị đích, và không có bộ đổi phù hợp cho những dạng thức này."
 
 #: ../shell/rb-track-transfer-queue.c:386
 #, c-format
@@ -5093,13 +5034,14 @@ msgid ""
 "%d of the %d files to be transferred are not in a format supported by the "
 "target device, and no encoders are available for the supported formats."
 msgstr ""
+"%d trên %d tập tin được truyền không nằm trong danh sách các định dạng hỗ "
+"trợ ở thiết bị đích, và không có bộ đổi phù hợp cho những dạng thức này."
 
 #: ../shell/rb-track-transfer-queue.c:395
 msgid "Unable to transfer all tracks. Do you want to continue?"
-msgstr ""
+msgstr "Không thể truyền hết mọi bài. Bạn muốn tiếp tục chứ?"
 
 #: ../shell/rb-track-transfer-queue.c:403
-#, fuzzy
 #| msgid "_Continue"
 msgid "C_ontinue"
 msgstr "_Tiếp tục"
@@ -5181,16 +5123,14 @@ msgstr "Chia sẻ"
 
 #. set up info bar for triggering codec installation
 #: ../sources/rb-import-errors-source.c:241
-#, fuzzy
 #| msgid "Sample Plugin"
 msgid "Install Plugins"
-msgstr "Phần bổ sung mẫu"
+msgstr "Cài đặt phần bổ sung"
 
 #: ../sources/rb-import-errors-source.c:247
-#, fuzzy
 #| msgid "Additional GStreamer plugins are required to play this file: %s"
 msgid "Additional GStreamer plugins are required to play some of these files."
-msgstr "Phần bổ sung GStreamer khác cần thiết để phát tập tin này: %s"
+msgstr "Cần phần bổ sung GStreamer khác để phát tập tin này."
 
 #: ../sources/rb-import-errors-source.c:351
 msgid "Import Errors"
@@ -5264,40 +5204,41 @@ msgid "Error transferring track"
 msgstr "Gặp lỗi khi truyền bài"
 
 #: ../sources/rb-media-player-source.c:94
-#, fuzzy
 #| msgid "_Extract to Library"
 msgid "Sync with Library"
-msgstr "_Trích cho vào thư viện"
+msgstr "Đồ_ng bộ với thư viện"
 
 #: ../sources/rb-media-player-source.c:95
 msgid "Synchronize media player with the library"
-msgstr ""
+msgstr "Đồng bộ máy phát nhạc với thư viện"
 
 #: ../sources/rb-media-player-source.c:587
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
 msgstr ""
+"Bạn chưa chọn nhạc, danh mục phát hoặc podcast để truyền sang thiết bị."
 
 #: ../sources/rb-media-player-source.c:591
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
 msgstr ""
+"Không đủ chỗ chứa trên thiết bị để truyền nhạc, danh mục nhạc hoặc podcast."
 
 #: ../sources/rb-media-player-source.c:642
-#, fuzzy, c-format
+#, c-format
 #| msgid "Account Settings"
 msgid "%s Sync Settings"
-msgstr "Thiết lập tài khoản"
+msgstr "Thiết lập đồng bộ %s"
 
 #: ../sources/rb-media-player-source.c:647
 msgid "Sync with the device"
-msgstr ""
+msgstr "Đồng bộ với thiết bị"
 
 #: ../sources/rb-media-player-source.c:649
 msgid "Don't sync"
-msgstr ""
+msgstr "Không đồng bộ"
 
 #: ../sources/rb-missing-files-source.c:282
 msgid "Missing Files"
@@ -5379,50 +5320,47 @@ msgid "Buffering"
 msgstr "Đang lưu tạm vào bộ đệm"
 
 #: ../sources/sync/rb-sync-settings-ui.c:228
-#, fuzzy
 #| msgid "Music"
 msgid "All Music"
-msgstr "Nhạc"
+msgstr "Toàn bộ nhạc"
 
 #: ../sources/sync/rb-sync-state-ui.c:79
-#, fuzzy
 #| msgid "after"
 msgid "Other"
-msgstr "sau"
+msgstr "Khác"
 
 #: ../sources/sync/rb-sync-state-ui.c:80
-#, fuzzy
 #| msgid "Disable"
 msgid "Available"
-msgstr "Tắt"
+msgstr "Sẵn sàng"
 
 #: ../widgets/rb-alert-dialog.c:87
 msgid "Image/label border"
-msgstr ""
+msgstr "Viền ảnh/nhãn"
 
 #: ../widgets/rb-alert-dialog.c:88
 msgid "Width of border around the label and image in the alert dialog"
-msgstr ""
+msgstr "Độ rộng đường viền chung quanh nhãn hoặc ảnh cho hộp thoại báo động"
 
 #: ../widgets/rb-alert-dialog.c:97
 msgid "Alert Type"
-msgstr ""
+msgstr "Loại báo động"
 
 #: ../widgets/rb-alert-dialog.c:98
 msgid "The type of alert"
-msgstr ""
+msgstr "Loại báo động"
 
 #: ../widgets/rb-alert-dialog.c:106
 msgid "Alert Buttons"
-msgstr ""
+msgstr "Nút báo động"
 
 #: ../widgets/rb-alert-dialog.c:107
 msgid "The buttons shown in the alert dialog"
-msgstr ""
+msgstr "Nút hiện trong hộp thoại báo động"
 
 #: ../widgets/rb-alert-dialog.c:172
 msgid "Show more _details"
-msgstr ""
+msgstr "Hiện _chi tiết"
 
 #: ../widgets/rb-cell-renderer-pixbuf.c:118
 msgid "Pixbuf Object"
@@ -5442,10 +5380,9 @@ msgid "Track"
 msgstr "Bài"
 
 #: ../widgets/rb-entry-view.c:1574
-#, fuzzy
 #| msgid "_Contents"
 msgid "Comment"
-msgstr "_Nội dung"
+msgstr "Ghi chú"
 
 #: ../widgets/rb-entry-view.c:1584
 msgid "Time"
@@ -5540,7 +5477,6 @@ msgid "Album"
 msgstr "Tập nhạc"
 
 #: ../widgets/rb-query-creator-properties.c:81
-#, fuzzy
 #| msgid "Artist"
 msgctxt "query-criteria"
 msgid "Album Artist"
@@ -5567,11 +5503,10 @@ msgid "Path"
 msgstr "Đường dẫn"
 
 #: ../widgets/rb-query-creator-properties.c:86
-#, fuzzy
 #| msgid "_Contents"
 msgctxt "query-criteria"
 msgid "Comment"
-msgstr "_Nội dung"
+msgstr "Ghi chú"
 
 #: ../widgets/rb-query-creator-properties.c:88
 msgctxt "query-criteria"
@@ -5601,7 +5536,7 @@ msgstr "Thời lượng"
 #: ../widgets/rb-query-creator-properties.c:94
 msgctxt "query-criteria"
 msgid "Beats Per Minute"
-msgstr ""
+msgstr "Nhịp mỗi phút"
 
 #: ../widgets/rb-query-creator-properties.c:95
 msgctxt "query-criteria"
@@ -5633,7 +5568,6 @@ msgid "Album"
 msgstr "Tập nhạc"
 
 #: ../widgets/rb-query-creator-properties.c:109
-#, fuzzy
 #| msgid "Artist"
 msgctxt "query-sort"
 msgid "Album Artist"
@@ -5713,22 +5647,20 @@ msgid "W_ith more recently added tracks first"
 msgstr "Bài mới t_hêm ở trước"
 
 #: ../widgets/rb-query-creator-properties.c:119
-#, fuzzy
 #| msgid "_Contents"
 msgctxt "query-sort"
 msgid "Comment"
-msgstr "_Nội dung"
+msgstr "Ghi chú"
 
 #: ../widgets/rb-query-creator-properties.c:120
 msgctxt "query-sort"
 msgid "Beats Per Minute"
-msgstr ""
+msgstr "Nhịp mỗi phút"
 
 #: ../widgets/rb-query-creator-properties.c:120
-#, fuzzy
 #| msgid "W_ith newer tracks first"
 msgid "W_ith faster tempo tracks first"
-msgstr "Bài _mới ở trước"
+msgstr "Bà_i nhanh hơn đứng trước"
 
 #: ../widgets/rb-query-creator-properties.c:133
 msgid "contains"
@@ -5746,7 +5678,7 @@ msgstr "bằng"
 #: ../widgets/rb-query-creator-properties.c:136
 #: ../widgets/rb-query-creator-properties.c:166
 msgid "not equal to"
-msgstr ""
+msgstr "không bằng"
 
 #: ../widgets/rb-query-creator-properties.c:137
 msgid "starts with"
@@ -5772,10 +5704,9 @@ msgstr "trong"
 
 #. Translators: this matches songs before 1-Jan-YEAR or after 31-Dec-YEAR
 #: ../widgets/rb-query-creator-properties.c:180
-#, fuzzy
 #| msgid "Sorting"
 msgid "not in"
-msgstr "Sắp xếp"
+msgstr "không có trong"
 
 #. Translators: this matches songs after 31-Dec-YEAR
 #: ../widgets/rb-query-creator-properties.c:182
