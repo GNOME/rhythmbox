@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2010-12-31 07:25+0000\n"
-"PO-Revision-Date: 2010-12-31 15:03+0100\n"
+"POT-Creation-Date: 2011-01-15 03:28+0000\n"
+"PO-Revision-Date: 2011-01-15 12:42+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: \n"
@@ -574,7 +574,7 @@ msgstr "Nedavno predvajano"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1
 #: ../plugins/status-icon/rb-status-icon-plugin.c:59
-#: ../plugins/status-icon/rb-status-icon-plugin.c:1568
+#: ../plugins/status-icon/rb-status-icon-plugin.c:1572
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1536
 #: ../shell/rb-shell.c:1244
 #: ../shell/rb-shell.c:2228
@@ -723,12 +723,12 @@ msgstr "%d. %b. %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:642
 #: ../plugins/mtpdevice/rb-mtp-source.c:1133
 #: ../plugins/mtpdevice/rb-mtp-source.c:1522
-#: ../plugins/status-icon/rb-status-icon-plugin.c:906
+#: ../plugins/status-icon/rb-status-icon-plugin.c:910
 #: ../podcast/rb-feed-podcast-properties-dialog.c:340
-#: ../podcast/rb-podcast-manager.c:1920
+#: ../podcast/rb-podcast-manager.c:1938
 #: ../podcast/rb-podcast-properties-dialog.c:619
 #: ../podcast/rb-podcast-properties-dialog.c:714
-#: ../podcast/rb-podcast-source.c:765
+#: ../podcast/rb-podcast-source.c:764
 #: ../remote/dbus/rb-client.c:155
 #: ../rhythmdb/rhythmdb-tree.c:1341
 #: ../rhythmdb/rhythmdb-tree.c:1345
@@ -1975,6 +1975,14 @@ msgstr "Ni predvajanja"
 msgid "This information is only available to last.fm users. Please enter your account details in the last.fm plugin configuration."
 msgstr "Ti podatki so dostopni samo uporabnikom last.fm. Vnesite podrobnosti računa v nastavitev vstavka last.fm."
 
+#: ../plugins/context/context/LinksTab.py:53
+msgid "Links"
+msgstr "Povezave"
+
+#: ../plugins/context/context/LinksTab.py:181
+msgid "No artist specified."
+msgstr "Izvajalec ni določen."
+
 #: ../plugins/context/context/LyricsTab.py:48
 #: ../plugins/lyrics/lyrics/__init__.py:249
 #: ../plugins/lyrics/lyrics/__init__.py:334
@@ -2164,6 +2172,12 @@ msgstr "Vmesnik D-Bus MediaServer2 "
 #: ../plugins/dbus-media-server/dbus-media-server.rb-plugin.in.h:2
 msgid "Provides an implementation of the MediaServer2 D-Bus interface specification"
 msgstr "Zagotovi podprtje določila vmesnika D-Bus MediaServer2"
+
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1461
+#: ../shell/rb-playlist-manager.c:1414
+#: ../sources/rb-display-page-group.c:92
+msgid "Playlists"
+msgstr "Seznami predvajanja"
 
 #: ../plugins/fmradio/fmradio.rb-plugin.in.h:1
 #: ../plugins/fmradio/rb-fm-radio-source.c:209
@@ -3399,31 +3413,31 @@ msgstr "Predvajaj"
 msgid "Next"
 msgstr "Naslednja"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:706
+#: ../plugins/status-icon/rb-status-icon-plugin.c:710
 #: ../remote/dbus/rb-client.c:468
 #: ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "Ni predvajanja"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:709
+#: ../plugins/status-icon/rb-status-icon-plugin.c:713
 #, c-format
 msgid "Paused, %s"
 msgstr "V premoru, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:774
+#: ../plugins/status-icon/rb-status-icon-plugin.c:778
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "od <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:776
+#: ../plugins/status-icon/rb-status-icon-plugin.c:780
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "iz <i>%s</i>"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:830
+#: ../plugins/status-icon/rb-status-icon-plugin.c:834
 #: ../widgets/rb-header.c:550
 msgid "Not Playing"
 msgstr "Ni predvajanja"
@@ -3431,7 +3445,7 @@ msgstr "Ni predvajanja"
 #. Translators: this is used in notification bubble text to indicate that
 #. * playback is currently paused.  %s is the song title.
 #.
-#: ../plugins/status-icon/rb-status-icon-plugin.c:916
+#: ../plugins/status-icon/rb-status-icon-plugin.c:920
 #, c-format
 msgid "(Paused) %s"
 msgstr "(V premoru) %s"
@@ -3623,44 +3637,44 @@ msgstr "Napaka v podcastu"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Ali bi vseeno radi dodali vir podcasta?"
 
-#: ../podcast/rb-podcast-manager.c:836
+#: ../podcast/rb-podcast-manager.c:852
 msgid "Error creating podcast download directory"
 msgstr "Napaka med ustvarjanjem mape prejemanja podcastov"
 
-#: ../podcast/rb-podcast-manager.c:837
+#: ../podcast/rb-podcast-manager.c:853
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Mape prejemanj za %s ni mogoče ustvariti: %s"
 
-#: ../podcast/rb-podcast-manager.c:962
+#: ../podcast/rb-podcast-manager.c:978
 msgid "Invalid URL"
 msgstr "Neveljaven URL"
 
-#: ../podcast/rb-podcast-manager.c:963
+#: ../podcast/rb-podcast-manager.c:979
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL \"%s\" ni veljaven, preverite ga."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:973
+#: ../podcast/rb-podcast-manager.c:989
 msgid "URL already added"
 msgstr "URL je bil že dodan"
 
-#: ../podcast/rb-podcast-manager.c:974
+#: ../podcast/rb-podcast-manager.c:990
 #, c-format
 msgid "The URL \"%s\" has already been added as a radio station. If this is a podcast feed, please remove the radio station."
 msgstr "URL \"%s\" je bil že dodan kot radijska postaja. V primeru da je to vir podcasta, odstranite radijsko postajo."
 
-#: ../podcast/rb-podcast-manager.c:1042
+#: ../podcast/rb-podcast-manager.c:1058
 #, c-format
 msgid "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, or the feed may be broken. Would you like Rhythmbox to attempt to use it anyway?"
 msgstr "Kaže da URL '%s' ni vir podcasta. Morda je URL napačen, ali pa je vir pokvarjen. Ali ga naj Rhythmbox vseeno poskusi uporabiti?"
 
-#: ../podcast/rb-podcast-manager.c:1180
+#: ../podcast/rb-podcast-manager.c:1196
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2103
+#: ../podcast/rb-podcast-manager.c:2121
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Med dodajanjem podcasta %s je prišlo do težave. Preverite URL: %s"
@@ -3776,46 +3790,46 @@ msgstr "Epizode"
 msgid "Search podcast episodes"
 msgstr "Išči epizode podcasta"
 
-#: ../podcast/rb-podcast-source.c:392
+#: ../podcast/rb-podcast-source.c:391
 msgid "New Podcast Feed"
 msgstr "Nov vir podcasta"
 
-#: ../podcast/rb-podcast-source.c:392
+#: ../podcast/rb-podcast-source.c:391
 msgid "URL of podcast feed:"
 msgstr "URL vira podcasta:"
 
-#: ../podcast/rb-podcast-source.c:488
+#: ../podcast/rb-podcast-source.c:487
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Izbris vira podcasta in prejetih datotek?"
 
-#: ../podcast/rb-podcast-source.c:491
+#: ../podcast/rb-podcast-source.c:490
 msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
 msgstr "V primeru da izbrišete vir in datoteke, bodo trajno izgubljeni. Vir lahko izbrišete in obdržite prejete datoteke, če za izbris izberete le vir."
 
-#: ../podcast/rb-podcast-source.c:499
+#: ../podcast/rb-podcast-source.c:498
 msgid "Delete _Feed Only"
 msgstr "Izbriši le _vir"
 
-#: ../podcast/rb-podcast-source.c:506
+#: ../podcast/rb-podcast-source.c:505
 msgid "_Delete Feed And Files"
 msgstr "_Izbriši vir in datoteke"
 
-#: ../podcast/rb-podcast-source.c:594
-#: ../podcast/rb-podcast-source.c:1426
+#: ../podcast/rb-podcast-source.c:593
+#: ../podcast/rb-podcast-source.c:1425
 msgid "Downloaded"
 msgstr "Prejeto"
 
-#: ../podcast/rb-podcast-source.c:598
-#: ../podcast/rb-podcast-source.c:1428
+#: ../podcast/rb-podcast-source.c:597
+#: ../podcast/rb-podcast-source.c:1427
 msgid "Failed"
 msgstr "Spodletelo"
 
-#: ../podcast/rb-podcast-source.c:602
-#: ../podcast/rb-podcast-source.c:1427
+#: ../podcast/rb-podcast-source.c:601
+#: ../podcast/rb-podcast-source.c:1426
 msgid "Waiting"
 msgstr "Čakanje"
 
-#: ../podcast/rb-podcast-source.c:709
+#: ../podcast/rb-podcast-source.c:708
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
@@ -3824,27 +3838,27 @@ msgstr[1] "%d vir"
 msgstr[2] "Oba %d vira"
 msgstr[3] "Vsi %d viri"
 
-#: ../podcast/rb-podcast-source.c:946
+#: ../podcast/rb-podcast-source.c:945
 msgid "Podcast Error"
 msgstr "Napaka podcasta"
 
-#: ../podcast/rb-podcast-source.c:1068
+#: ../podcast/rb-podcast-source.c:1067
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Izbris epizode podcasta in prejete datoteke?"
 
-#: ../podcast/rb-podcast-source.c:1071
+#: ../podcast/rb-podcast-source.c:1070
 msgid "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the episode but keep the downloaded file by choosing to delete the episode only."
 msgstr "V primeru da izbrišete epizodo in datoteko, bosta trajno izgubljeni. Epizodo lahko izbrišete in obdržite prejeto datoteko, če za izbris izberete le epizodo."
 
-#: ../podcast/rb-podcast-source.c:1079
+#: ../podcast/rb-podcast-source.c:1078
 msgid "Delete _Episode Only"
 msgstr "Izbriši le _epizodo"
 
-#: ../podcast/rb-podcast-source.c:1085
+#: ../podcast/rb-podcast-source.c:1084
 msgid "_Delete Episode And File"
 msgstr "_Izbriši epizodo in datoteko"
 
-#: ../podcast/rb-podcast-source.c:1233
+#: ../podcast/rb-podcast-source.c:1232
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -3855,30 +3869,30 @@ msgstr[3] "%d epizode"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
-#: ../podcast/rb-podcast-source.c:1323
+#: ../podcast/rb-podcast-source.c:1322
 msgctxt "Podcast"
 msgid "New"
 msgstr "Novo"
 
 #. Translators: this is the toolbar button label
 #. for Update All Feeds action.
-#: ../podcast/rb-podcast-source.c:1329
+#: ../podcast/rb-podcast-source.c:1328
 msgid "Update"
 msgstr "Posodobi"
 
-#: ../podcast/rb-podcast-source.c:1372
-#: ../podcast/rb-podcast-source.c:1383
+#: ../podcast/rb-podcast-source.c:1371
+#: ../podcast/rb-podcast-source.c:1382
 msgid "Date"
 msgstr "Datum"
 
-#: ../podcast/rb-podcast-source.c:1405
-#: ../podcast/rb-podcast-source.c:1465
-#: ../podcast/rb-podcast-source.c:1513
+#: ../podcast/rb-podcast-source.c:1404
+#: ../podcast/rb-podcast-source.c:1464
+#: ../podcast/rb-podcast-source.c:1512
 msgid "Feed"
 msgstr "Vir"
 
-#: ../podcast/rb-podcast-source.c:1425
-#: ../podcast/rb-podcast-source.c:1443
+#: ../podcast/rb-podcast-source.c:1424
+#: ../podcast/rb-podcast-source.c:1442
 msgid "Status"
 msgstr "Stanje"
 
@@ -4252,11 +4266,6 @@ msgstr "Seznam predvajanja brez naslova"
 #: ../shell/rb-playlist-manager.c:1394
 msgid "Couldn't read playlist"
 msgstr "Seznama predvajanja ni mogoče brati"
-
-#: ../shell/rb-playlist-manager.c:1414
-#: ../sources/rb-display-page-group.c:92
-msgid "Playlists"
-msgstr "Seznami predvajanja"
 
 #: ../shell/rb-playlist-manager.c:1420
 msgid "All Files"
@@ -4826,29 +4835,29 @@ msgstr "Uvoz mape v knjižnico"
 msgid "Import File into Library"
 msgstr "Uvoz datoteke v knjižnico"
 
-#: ../shell/rb-shell.c:3172
-#: ../shell/rb-shell.c:3529
+#: ../shell/rb-shell.c:3174
+#: ../shell/rb-shell.c:3531
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Noben vpisan vir ne more upravljati z URI-jem %s"
 
-#: ../shell/rb-shell.c:3649
+#: ../shell/rb-shell.c:3651
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Noben vpisan vir se ne sklada z URI-jem %s"
 
-#: ../shell/rb-shell.c:3682
-#: ../shell/rb-shell.c:3725
+#: ../shell/rb-shell.c:3684
+#: ../shell/rb-shell.c:3727
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Neznan URI skladbe: %s"
 
-#: ../shell/rb-shell.c:3734
+#: ../shell/rb-shell.c:3736
 #, c-format
 msgid "Unknown property %s"
 msgstr "Neznana lastnost %s"
 
-#: ../shell/rb-shell.c:3748
+#: ../shell/rb-shell.c:3750
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Neveljavna vrsta lastnosti %s za lastnost %s"
