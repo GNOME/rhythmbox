@@ -139,9 +139,9 @@ rb_dmap_container_db_adapter_class_init (RBDMAPContainerDbAdapterClass *klass)
 static void
 rb_dmap_container_db_adapter_interface_init (gpointer iface, gpointer data)
 {
-	DMAPContainerDbInterface *dmap_db = iface;
+	DMAPContainerDbIface *dmap_db = iface;
 
-	g_assert (G_TYPE_FROM_INTERFACE (dmap_db) == TYPE_DMAP_CONTAINER_DB);
+	g_assert (G_TYPE_FROM_INTERFACE (dmap_db) == DMAP_TYPE_CONTAINER_DB);
 
 	dmap_db->lookup_by_id = rb_dmap_container_db_adapter_lookup_by_id;
 	dmap_db->foreach = rb_dmap_container_db_adapter_foreach;
@@ -149,7 +149,7 @@ rb_dmap_container_db_adapter_interface_init (gpointer iface, gpointer data)
 }
 
 G_DEFINE_TYPE_WITH_CODE (RBDMAPContainerDbAdapter, rb_dmap_container_db_adapter, G_TYPE_OBJECT, 
-			 G_IMPLEMENT_INTERFACE (TYPE_DMAP_CONTAINER_DB, rb_dmap_container_db_adapter_interface_init))
+			 G_IMPLEMENT_INTERFACE (DMAP_TYPE_CONTAINER_DB, rb_dmap_container_db_adapter_interface_init))
 
 static void
 assign_id (RBPlaylistManager *mgr,

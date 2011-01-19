@@ -649,7 +649,7 @@ rb_daap_source_selected (RBDisplayPage *page)
 
 	factory = DMAP_RECORD_FACTORY (rb_daap_record_factory_new ());
 
-	daap_source->priv->connection = dmap_connection_new (name,
+	daap_source->priv->connection = daap_connection_new (name,
 							     daap_source->priv->host,
 							     daap_source->priv->port,
 							     daap_source->priv->password_protected,

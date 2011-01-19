@@ -58,7 +58,7 @@ static void playing_song_changed (RBShellPlayer *shell_player, RhythmDBEntry *en
 static void elapsed_changed (RBShellPlayer *shell_player, guint elapsed, RBDACPPlayer *player);
 
 static DAAPRecord *rb_dacp_player_now_playing_record  (DACPPlayer *player);
-static gchar *rb_dacp_player_now_playing_artwork (DACPPlayer *player, guint width, guint height);
+static const guchar *rb_dacp_player_now_playing_artwork (DACPPlayer *player, guint width, guint height);
 static void rb_dacp_player_play_pause          (DACPPlayer *player);
 static void rb_dacp_player_pause               (DACPPlayer *player);
 static void rb_dacp_player_next_item           (DACPPlayer *player);
@@ -86,9 +86,9 @@ static guint signals[LAST_SIGNAL] = { 0 };
 static void
 rb_dacp_player_iface_init (gpointer iface, gpointer data)
 {
-	DACPPlayerInterface *dacp_player = iface;
+	DACPPlayerIface *dacp_player = iface;
 
-	g_assert (G_TYPE_FROM_INTERFACE (dacp_player) == TYPE_DACP_PLAYER);
+	g_assert (G_TYPE_FROM_INTERFACE (dacp_player) == DACP_TYPE_PLAYER);
 
 	dacp_player->now_playing_record  = rb_dacp_player_now_playing_record;
 	dacp_player->now_playing_artwork = rb_dacp_player_now_playing_artwork;
@@ -102,7 +102,7 @@ rb_dacp_player_iface_init (gpointer iface, gpointer data)
 }
 
 G_DEFINE_TYPE_WITH_CODE (RBDACPPlayer, rb_dacp_player, G_TYPE_OBJECT,
-                         G_IMPLEMENT_INTERFACE (TYPE_DACP_PLAYER, rb_dacp_player_iface_init))
+                         G_IMPLEMENT_INTERFACE (DACP_TYPE_PLAYER, rb_dacp_player_iface_init))
 
 static void
 rb_dacp_player_init (RBDACPPlayer *object)
@@ -291,7 +291,7 @@ rb_dacp_player_now_playing_record (DACPPlayer *player)
 	}
 }
 
-static gchar *
+static const guchar *
 rb_dacp_player_now_playing_artwork (DACPPlayer *player, guint width, guint height)
 {
 	return NULL;

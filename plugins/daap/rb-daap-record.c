@@ -346,9 +346,9 @@ rb_daap_record_class_init (RBDAAPRecordClass *klass)
 static void
 rb_daap_record_daap_iface_init (gpointer iface, gpointer data)
 {
-	DAAPRecordInterface *daap_record = iface;
+	DAAPRecordIface *daap_record = iface;
 
-	g_assert (G_TYPE_FROM_INTERFACE (daap_record) == TYPE_DAAP_RECORD);
+	g_assert (G_TYPE_FROM_INTERFACE (daap_record) == DAAP_TYPE_RECORD);
 
 	daap_record->itunes_compat = rb_daap_record_itunes_compat;
 	daap_record->read = rb_daap_record_read;
@@ -357,14 +357,14 @@ rb_daap_record_daap_iface_init (gpointer iface, gpointer data)
 static void
 rb_daap_record_dmap_iface_init (gpointer iface, gpointer data)
 {
-	DMAPRecordInterface *dmap_record = iface;
+	DMAPRecordIface *dmap_record = iface;
 
-	g_assert (G_TYPE_FROM_INTERFACE (dmap_record) == TYPE_DMAP_RECORD);
+	g_assert (G_TYPE_FROM_INTERFACE (dmap_record) == DMAP_TYPE_RECORD);
 }
 
 G_DEFINE_TYPE_WITH_CODE (RBDAAPRecord, rb_daap_record, G_TYPE_OBJECT,
-			 G_IMPLEMENT_INTERFACE (TYPE_DAAP_RECORD, rb_daap_record_daap_iface_init)
-			 G_IMPLEMENT_INTERFACE (TYPE_DMAP_RECORD, rb_daap_record_dmap_iface_init))
+			 G_IMPLEMENT_INTERFACE (DAAP_TYPE_RECORD, rb_daap_record_daap_iface_init)
+			 G_IMPLEMENT_INTERFACE (DMAP_TYPE_RECORD, rb_daap_record_dmap_iface_init))
 
 static void rb_daap_record_finalize (GObject *object)
 {
