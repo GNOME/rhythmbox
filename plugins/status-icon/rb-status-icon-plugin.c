@@ -122,8 +122,8 @@ struct _RBStatusIconPluginPrivate
 	NotifyNotification *notification;
 	gboolean notify_supports_actions;
 	gboolean notify_supports_icon_buttons;
-	gboolean notify_supports_persistence;
 #endif
+	gboolean notify_supports_persistence;
 	gboolean is_gnome_shell;
 
 	GtkWidget *config_dialog;
