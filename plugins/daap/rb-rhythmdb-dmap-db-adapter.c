@@ -61,7 +61,7 @@ rb_rhythmdb_dmap_db_adapter_lookup_by_id (const DMAPDb *db, guint id)
 static void
 foreach_adapter (RhythmDBEntry *entry, gpointer data)
 {
-	ulong id;
+	gulong id;
 	DMAPRecord *record;
 	ForeachAdapterData *foreach_adapter_data;
 	

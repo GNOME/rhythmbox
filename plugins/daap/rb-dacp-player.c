@@ -210,13 +210,13 @@ rb_dacp_player_set_property (GObject *object,
 
 	gboolean shuffle;
 	gboolean repeat;
-	ulong playing_time;
+	gulong playing_time;
 	gdouble volume;
 
 	switch (prop_id) {
 		case PROP_PLAYING_TIME:
 			playing_time = g_value_get_ulong (value);
-			rb_shell_player_set_playing_time (player->priv->shell_player, (ulong) ceil (playing_time / 1000), NULL);
+			rb_shell_player_set_playing_time (player->priv->shell_player, (gulong) ceil (playing_time / 1000), NULL);
 			break;
 		case PROP_SHUFFLE_STATE:
 			rb_shell_player_get_playback_state (player->priv->shell_player, &shuffle, &repeat);

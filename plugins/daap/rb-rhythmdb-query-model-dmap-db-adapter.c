@@ -58,7 +58,7 @@ foreach_adapter (GtkTreeModel *model,
 		 GtkTreeIter *iter,
 		 gpointer data)
 {
-	ulong id;
+	gulong id;
 	DMAPRecord *record;
 	RhythmDBEntry *entry;
 	ForeachAdapterData *foreach_adapter_data;

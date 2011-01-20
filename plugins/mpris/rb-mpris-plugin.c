@@ -412,7 +412,7 @@ add_ulong_property (GVariantBuilder *builder,
 		    int scale,
 		    gboolean zero_is_valid)
 {
-	ulong v;
+	gulong v;
 	v = rhythmdb_entry_get_ulong (entry, prop);
 	if (zero_is_valid || v != 0) {
 		rb_debug ("adding %s = %lu", name, v);
