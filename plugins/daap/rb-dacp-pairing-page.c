@@ -572,6 +572,7 @@ find_dacp_page (RBShell *shell, const gchar *service_name)
 	FindPage find_page;
 
 	find_page.name = service_name;
+	find_page.page = NULL;
 
 	g_object_get (shell, "display-page-model", &page_model, NULL);
 
