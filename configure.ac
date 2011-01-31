@@ -49,7 +49,6 @@ LIBNOTIFY_REQS=0.4.1
 LIBGPOD_REQS=0.6
 MUSICBRAINZ_REQS=2.1.0
 MUSICBRAINZ3_REQS=3.0.2
-NCB_MIN_REQS=2.21.6
 BRASERO_MIN_REQS=0.9.1
 TOTEM_PLPARSER_REQS=2.32.1
 VALA_REQS=0.1.0
@@ -422,22 +421,6 @@ if test "x$have_libbrasero_media" = "xyes"; then
 fi
 AM_CONDITIONAL(HAVE_LIBBRASERO_MEDIA, test x$have_libbrasero_media = xyes)
 AC_SUBST(HAVE_LIBBRASERO_MEDIA)
-
-dnl libnautilus-burn support
-have_libnautilus_burn=no
-AC_ARG_WITH(libnautilus-burn,
-	    AC_HELP_STRING([--with-libnautilus-burn],
-	    		   [Build with libnautilus-burn support]),,
-	    with_libnautilus_burn=auto)
-if test x"$have_libbrasero_media" = "xno" -a x"$with_libnautilus_burn" != "xno"; then
-    PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_MIN_REQS], have_libnautilus_burn=yes, have_libnautilus_burn=no)
-fi
-if test "x$have_libnautilus_burn" = "xyes"; then
-    AC_DEFINE([HAVE_NAUTILUS_BURN], 1, [Have nautilus-burn])
-fi
-AM_CONDITIONAL(HAVE_NAUTILUS_BURN, test x$have_libnautilus_burn = xyes)
-AC_SUBST(HAVE_NAUTILUS_BURN)
-
 
 AC_SUBST(CFLAGS)
 AC_SUBST(LDFLAGS)
@@ -891,7 +874,6 @@ plugins/audiocd/Makefile
 plugins/coherence/Makefile
 plugins/coherence/upnp_coherence/Makefile
 plugins/audioscrobbler/Makefile
-plugins/cd-recorder/Makefile
 plugins/brasero-disc-recorder/Makefile
 plugins/daap/Makefile
 plugins/fmradio/Makefile
@@ -977,9 +959,7 @@ else
 	AC_MSG_NOTICE([   MTP integration disabled])
 fi
 if test x"$have_libbrasero_media" != xno; then
-	AC_MSG_NOTICE([** CD burning support enabled (using Brasero)])
-elif test x"$have_libnautilus_burn" != xno; then
-	AC_MSG_NOTICE([** CD burning support enabled (using nautilus-cd-burner)])
+	AC_MSG_NOTICE([** CD burning support enabled])
 else
 	AC_MSG_NOTICE([   CD burning support disabled])
 fi

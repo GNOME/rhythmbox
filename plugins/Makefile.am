@@ -40,11 +40,7 @@ endif
 
 if HAVE_LIBBRASERO_MEDIA
 SUBDIRS += brasero-disc-recorder
-else
-if HAVE_NAUTILUS_BURN
-SUBDIRS += cd-recorder
-endif # HAVE_NAUTILUS_BURN
-endif # HAVE_LIBBRASERO_MEDIA
+endif
 
 if USE_LIBDMAPSHARING
 SUBDIRS += daap
