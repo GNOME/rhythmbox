@@ -197,7 +197,7 @@ rb_string_value_map_peek (RBStringValueMap *map,
  * Extracts and returns the underlying hash table from the map,
  * and creates a new empty map.
  *
- * Return value: #GHashTable from the map
+ * Return value: (transfer full): #GHashTable from the map
  */
 GHashTable*
 rb_string_value_map_steal_hashtable (RBStringValueMap *map)

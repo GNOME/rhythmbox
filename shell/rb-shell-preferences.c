@@ -374,7 +374,7 @@ rb_shell_preferences_append_view_page (RBShellPreferences *prefs,
 
 /**
  * rb_shell_preferences_new:
- * @views: list of #RBSource objects to check for preferences pages
+ * @views: (element-type RB.Source) (transfer none): list of sources to check for preferences pages
  *
  * Creates the #RBShellPreferences instance, populating it with the
  * preferences pages for the sources in the list.
@@ -717,7 +717,7 @@ get_box_for_location (RBShellPreferences *prefs, RBShellPrefsUILocation location
 
 /**
  * rb_shell_preferences_add_widget:
- * @shell: the #RBShellPreferences
+ * @prefs: the #RBShellPreferences
  * @widget: the #GtkWidget to insert into the preferences window
  * @location: the location at which to insert the widget
  * @expand: whether the widget should be given extra space
@@ -742,7 +742,7 @@ rb_shell_preferences_add_widget (RBShellPreferences *prefs,
 
 /**
  * rb_shell_preferences_remove_widget:
- * @shell: the #RBShellPreferences
+ * @prefs: the #RBShellPreferences
  * @widget: the #GtkWidget to remove from the preferences window
  * @location: the UI location to which the widget was originally added
  *

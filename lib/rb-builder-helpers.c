@@ -51,7 +51,7 @@
  * relative to the shared data directory, or its 'ui' or 'art'
  * subdirectories.
  *
- * Return value: #GtkBuilder object built from the file
+ * Return value: (transfer full): #GtkBuilder object built from the file
  */
 GtkBuilder *
 rb_builder_load (const char *file, gpointer user_data)

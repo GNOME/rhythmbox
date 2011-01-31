@@ -665,7 +665,7 @@ rb_removable_media_source_build_dest_uri (RBRemovableMediaSource *source,
  * for Ogg Vorbis, "audio/x-flac" for FLAC, and "audio/x-aac" for
  * MP4/AAC.
  *
- * Return value: list of media types
+ * Return value: (element-type utf8) (transfer full): list of media types
  */
 GList *
 rb_removable_media_source_get_mime_types (RBRemovableMediaSource *source)
@@ -686,7 +686,7 @@ rb_removable_media_source_get_mime_types (RBRemovableMediaSource *source)
  * the formats supported by the device.  The list and the strings
  * it holds must be freed by the caller.
  *
- * Return value: list of descriptions.
+ * Return value: (element-type utf8) (transfer full): list of descriptions.
  */
 GList *
 rb_removable_media_source_get_format_descriptions (RBRemovableMediaSource *source)
@@ -1043,3 +1043,22 @@ rb_removable_media_source_eject (RBRemovableMediaSource *source)
 	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
 	klass->impl_eject (source);
 }
+
+/* annotations for methods */
+
+/**
+ * impl_build_dest_uri:
+ * @source: the source
+ * @entry: entry to build URI for
+ * @mimetype: destination media type
+ * @extension: extension for destination media type
+ *
+ * Return value: (transfer full): destination URI for the entry
+ */
+
+/**
+ * impl_get_mime_types:
+ * @source: the source
+ *
+ * Return value: (element-type utf8) (transfer full): list of media types
+ */

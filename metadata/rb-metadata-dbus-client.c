@@ -615,8 +615,10 @@ rb_metadata_has_missing_plugins (RBMetaData *md)
 /**
  * rb_metadata_get_missing_plugins:
  * @md: a #RBMetaData
- * @missing_plugins: returns machine-readable missing plugin information
- * @plugin_descriptions: returns human-readable missing plugin descriptions
+ * @missing_plugins: (out) (array zero-terminated=1): returns machine-readable
+ * missing plugin information
+ * @plugin_descriptions: (out) (array zero-terminated=1): returns human-readable
+ * missing plugin descriptions
  *
  * This function returns the information used to request automatic
  * installation of media framework plugins required to decode the target URI.
@@ -643,7 +645,7 @@ rb_metadata_get_missing_plugins (RBMetaData *md,
  * rb_metadata_get:
  * @md: a #RBMetaData
  * @field: the #RBMetaDataField to retrieve
- * @val: returns the field value
+ * @val: (out caller-allocates) (transfer full): returns the field value
  *
  * Retrieves the value of a metadata field extracted from the target URI.
  * If the target URI contained no value for the field, returns FALSE.
@@ -670,7 +672,7 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field, GValue *ret)
  * rb_metadata_set:
  * @md: a #RBMetaData
  * @field: the #RBMetaDataField to set
- * @val: the vaule to set
+ * @val: the value to set
  *
  * Sets a metadata field value.  The value is only stored inside the
  * #RBMetaData object until rb_metadata_save is called.
@@ -742,8 +744,8 @@ rb_metadata_can_save (RBMetaData *md, const char *mimetype)
  * Constructs a list of the media types for which the metadata backend
  * implements tag saving.
  *
- * Return value: a NULL-terminated array of media type strings.  Use g_strfreev
- *  to free it.
+ * Return value: (transfer full) (array zero-terminated=1): a NULL-terminated
+ * array of media type strings.  Use g_strfreev to free it.
  */
 char **
 rb_metadata_get_saveable_types (RBMetaData *md)

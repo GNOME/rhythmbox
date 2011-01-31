@@ -315,8 +315,8 @@ rb_play_order_get_property (GObject *object,
  *
  * Only for use by #RBPlayOrder subclasses.
  *
- * Returns: #RBShellPlayer instance
- **/
+ * Returns: (transfer none): #RBShellPlayer instance
+ */
 RBShellPlayer *
 rb_play_order_get_player (RBPlayOrder *porder)
 {
@@ -331,7 +331,7 @@ rb_play_order_get_player (RBPlayOrder *porder)
  *
  * Only for use by #RBPlayOrder subclasses.
  *
- * Returns: the playing #RBSource instance.
+ * Returns: (transfer none): the playing #RBSource instance.
  **/
 RBSource *
 rb_play_order_get_source (RBPlayOrder *porder)
@@ -347,7 +347,7 @@ rb_play_order_get_source (RBPlayOrder *porder)
  *
  * Only for use by #RBPlayOrder subclasses.
  *
- * Returns: the #RhythmDB instance.
+ * Returns: (transfer none): the #RhythmDB instance.
  **/
 RhythmDB *
 rb_play_order_get_db (RBPlayOrder *porder)
@@ -363,7 +363,7 @@ rb_play_order_get_db (RBPlayOrder *porder)
  *
  * Only for use by #RBPlayOrder subclasses.
  *
- * Returns: the active #RhythmDBQueryModel for the playing source.
+ * Returns: (transfer none): the active #RhythmDBQueryModel for the playing source.
  */
 RhythmDBQueryModel *
 rb_play_order_get_query_model (RBPlayOrder *porder)
@@ -392,7 +392,7 @@ rb_play_order_player_is_playing (RBPlayOrder *porder)
 /**
  * rb_play_order_set_playing_entry:
  * @porder: #RBPlayOrder instance
- * @entry: The new playing entry (or NULL for none)
+ * @entry: (transfer none) (allow-none): The new playing entry (or NULL for none)
  *
  * Sets the playing entry in the play order.
  **/
@@ -411,7 +411,7 @@ rb_play_order_set_playing_entry (RBPlayOrder *porder,
  *
  * Returns the current playing entry in the play order.
  *
- * Returns: playing entry
+ * Returns: (transfer full) playing entry
  */
 RhythmDBEntry *
 rb_play_order_get_playing_entry (RBPlayOrder *porder)
@@ -752,7 +752,7 @@ rb_play_order_has_next (RBPlayOrder *porder)
  *
  * Returns the next entry in the play order, or the first if not currently playing.
  *
- * Returns: next entry to play
+ * Returns: (transfer full): next entry to play
  */
 RhythmDBEntry *
 rb_play_order_get_next (RBPlayOrder *porder)
@@ -812,7 +812,7 @@ rb_play_order_has_previous (RBPlayOrder *porder)
  *
  * Returns the previous entry in the play order, or NULL if not currently playing.
  *
- * Return value: previous entry
+ * Return value: (transfer full): previous entry
  */
 RhythmDBEntry *
 rb_play_order_get_previous (RBPlayOrder *porder)
@@ -896,3 +896,19 @@ rb_play_order_update_have_next_previous (RBPlayOrder *porder)
 		porder->priv->have_previous = have_previous;
 	}
 }
+
+/* annotations for methods */
+
+/**
+ * get_next:
+ * @porder: the play order
+ *
+ * Return value: (transfer full): the next entry
+ */
+
+/**
+ * get_previous:
+ * @porder: the play order
+ *
+ * Return value: (transfer full): the previous entry
+ */

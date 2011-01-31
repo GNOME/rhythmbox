@@ -603,7 +603,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 	 *
 	 * Emitted to request creation of a #GMountOperation to use to mount a volume.
 	 *
-	 * Return value: a #GMountOperation (usually actually a #GtkMountOperation)
+	 * Returns: (transfer full): a #GMountOperation (usually actually a #GtkMountOperation)
 	 */
 	rhythmdb_signals[CREATE_MOUNT_OP] =
 		g_signal_new ("create-mount-op",
@@ -1698,7 +1698,7 @@ rhythmdb_entry_allocate (RhythmDB *db,
  * Callers should use the RHYTHMDB_ENTRY_GET_TYPE_DATA macro for
  * a slightly more friendly interface to this functionality.
  *
- * Return value: type-specific data pointer
+ * Return value: (transfer none): type-specific data pointer
  */
 gpointer
 rhythmdb_entry_get_type_data (RhythmDBEntry *entry,
@@ -3895,7 +3895,7 @@ rhythmdb_entry_lookup_from_string (RhythmDB *db,
 /**
  * rhythmdb_entry_foreach:
  * @db: a #RhythmDB.
- * @func: the function to call with each entry.
+ * @func: (scope call): the function to call with each entry.
  * @data: user data to pass to the function.
  *
  * Calls the given function for each of the entries in the database.
@@ -3930,7 +3930,7 @@ rhythmdb_entry_count (RhythmDB *db)
  * rhythmdb_entry_foreach_by_type:
  * @db: a #RhythmDB.
  * @entry_type: the type of entry to retrieve
- * @func: the function to call with each entry
+ * @func: (scope call): the function to call with each entry
  * @data: user data to pass to the function.
  *
  * Calls the given function for each of the entries in the database
@@ -4325,7 +4325,7 @@ rhythmdb_emit_entry_extra_metadata_notify (RhythmDB *db,
 }
 
 /**
- * rhythmdb_entry_extra_gather:
+ * rhythmdb_entry_gather_metadata:
  * @db: a #RhythmDB
  * @entry: a #RhythmDBEntry
  *
@@ -4335,8 +4335,8 @@ rhythmdb_emit_entry_extra_metadata_notify (RhythmDB *db,
  * provide extra metadata should connect to the "entry_extra_metadata_gather"
  * signal.
  *
- * Returns: a RBStringValueMap containing metadata for the entry.  This must be freed
- * using g_object_unref.
+ * Returns: (transfer full): a RBStringValueMap containing metadata for the entry.
+ * This must be freed using g_object_unref.
  */
 RBStringValueMap *
 rhythmdb_entry_gather_metadata (RhythmDB *db,
@@ -4428,19 +4428,19 @@ rhythmdb_is_busy (RhythmDB *db)
  * rhythmdb_get_progress_info:
  * @db: a #RhythmDB.
  * @text: used to return progress text
- * @fraction: used to return progress fraction
+ * @progress: used to return progress fraction
  *
  * Provides progress information for rhythmdb operations, if any are running.
  */
 void
-rhythmdb_get_progress_info (RhythmDB *db, char **text, float *fraction)
+rhythmdb_get_progress_info (RhythmDB *db, char **text, float *progress)
 {
 	if (db->priv->stat_thread_running && db->priv->stat_thread_count > 0) {
 		g_free (*text);
 		*text = g_strdup_printf (_("Checking (%d/%d)"),
 					 db->priv->stat_thread_done,
 					 db->priv->stat_thread_count);
-		*fraction = ((float)db->priv->stat_thread_done /
+		*progress = ((float)db->priv->stat_thread_done /
 			     (float)db->priv->stat_thread_count);
 	}
 }
@@ -4596,7 +4596,7 @@ rhythmdb_entry_type_foreach (RhythmDB *db,
  * Locates a #RhythmDBEntryType by name. Returns NULL if no entry
  * type is registered with the specified name.
  *
- * Returns: the #RhythmDBEntryType
+ * Returns: (transfer none): the #RhythmDBEntryType
  */
 RhythmDBEntryType *
 rhythmdb_entry_type_get_by_name (RhythmDB *db,
@@ -4999,7 +4999,7 @@ rhythmdb_entry_get_uint64 (RhythmDBEntry *entry,
  * entry type properties, to check that entries are of the same type,
  * and to call entry type methods.
  *
- * Return value: the #RhythmDBEntryType for @entry
+ * Return value: (transfer none): the #RhythmDBEntryType for @entry
  */
 RhythmDBEntryType *
 rhythmdb_entry_get_entry_type (RhythmDBEntry *entry)
@@ -5016,7 +5016,7 @@ rhythmdb_entry_get_entry_type (RhythmDBEntry *entry)
  *
  * Returns the value of an object property of @entry.
  *
- * Return value: property value
+ * Return value: (transfer none): property value
  */
 GObject *
 rhythmdb_entry_get_object (RhythmDBEntry *entry,
@@ -5217,11 +5217,10 @@ rhythmdb_entry_keyword_has	(RhythmDB *db,
  *
  * Gets the list ofkeywords that have been added to an entry.
  *
- * Returns: the list of keywords that have been added to the entry.
- *          The caller is responsible for unref'ing the RBRefStrings and
- *          freeing the list with g_list_free.
+ * Returns: (element-type RBRefString) (transfer full): the list of keywords
+ *          that have been added to the entry.
  */
-GList* /*<RBRefString>*/
+GList*
 rhythmdb_entry_keywords_get	(RhythmDB *db,
 				 RhythmDBEntry *entry)
 {

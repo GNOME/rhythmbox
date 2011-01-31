@@ -227,7 +227,7 @@ rb_display_page_activate (RBDisplayPage *page)
  * configuration widget. The widget will be displayed in a
  * page in the preferences dialog.
  *
- * Return value: configuration widget
+ * Return value: (transfer none): configuration widget
  */
 GtkWidget *
 rb_display_page_get_config_widget (RBDisplayPage *page,
@@ -249,7 +249,7 @@ rb_display_page_get_config_widget (RBDisplayPage *page,
  * Returns a list of UI action names.  Items for
  * these actions will be added to the toolbar.
  *
- * Return value: list of action names
+ * Return value: (element-type utf8) (transfer full): list of action names
  */
 GList *
 rb_display_page_get_ui_actions (RBDisplayPage *page)
@@ -265,9 +265,9 @@ rb_display_page_get_ui_actions (RBDisplayPage *page)
 /**
  * rb_display_page_get_status:
  * @page: a #RBDisplayPage
- * @text: holds the returned status text (allocated)
- * @progress_text: holds the returned text for the progress bar (allocated)
- * @progress: holds the progress value
+ * @text: (inout) (allow-none) (transfer full): holds the returned status text
+ * @progress_text: (inout) (allow-none) (transfer full): holds the returned text for the progress bar
+ * @progress: (inout) (allow-none): holds the progress value
  *
  * Retrieves the details to display in the status bar for the page.
  * If the progress value returned is less than zero, the progress bar
@@ -722,3 +722,28 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
 
 	g_type_class_add_private (object_class, sizeof (RBDisplayPagePrivate));
 }
+
+/* introspection annotations for vmethods */
+
+/**
+ * impl_get_status:
+ * @source: a #RBSource
+ * @text: (inout) (allow-none) (transfer full): holds the returned status text
+ * @progress_text: (inout) (allow-none) (transfer full): holds the returned text for the progress bar
+ * @progress: (inout): holds the progress value
+ */
+
+/**
+ * impl_get_config_widget:
+ * @source: a #RBSource
+ * @prefs: a #RBShellPreferences
+ *
+ * Return value: (transfer none): configuration widget
+ */
+
+/**
+ * impl_get_ui_actions:
+ * @source: a #RBSource
+ *
+ * Return value: (element-type utf8) (transfer full): list of action names
+ */

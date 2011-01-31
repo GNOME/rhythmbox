@@ -108,7 +108,7 @@ G_DEFINE_TYPE (RBTrackTransferBatch, rb_track_transfer_batch, G_TYPE_OBJECT)
 /**
  * rb_track_transfer_batch_new:
  * @media_types: array containing media type strings describing allowable output formats
- * @media_type_list: GList containing media type strings.
+ * @media_type_list: (element-type utf8): GList containing media type strings.
  * @source: the #RBSource from which the entries are to be transferred
  * @destination: the #RBSource to which the entries are to be transferred
  *

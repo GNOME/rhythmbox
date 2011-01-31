@@ -203,8 +203,8 @@ impl_handle_eos (RBSource *asource)
 /**
  * rb_streaming_source_get_progress:
  * @source: a #RBStreamingSource
- * @text: returns buffering status text
- * @progress: returns buffering progress fraction
+ * @text: (out callee-allocates) (transfer full): returns buffering status text
+ * @progress: (out callee-allocates): returns buffering progress fraction
  *
  * Provides status text and progress fraction suitable for use in
  * a streaming source's @rb_source_get_status method.

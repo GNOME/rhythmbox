@@ -234,6 +234,8 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 	 * corresponding #RBSource.  The first signal handler that returns a
 	 * source wins.  Plugins should only use this signal if there will be
 	 * no #GVolume or #GMount created for the device.
+	 *
+	 * Return value: (transfer full): a source for the device, or NULL
 	 */
 	rb_removable_media_manager_signals[CREATE_SOURCE_DEVICE] =
 		g_signal_new ("create-source-device",
@@ -254,6 +256,8 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 	 * a source wins.  A plugin should only use this signal if it
 	 * doesn't require the volume to be mounted.  If the volume must be
 	 * mounted to be useful, use the create-source-mount signal instead.
+	 *
+	 * Return value: (transfer full): a source for the volume, or NULL
 	 */
 	rb_removable_media_manager_signals[CREATE_SOURCE_VOLUME] =
 		g_signal_new ("create-source-volume",
@@ -275,6 +279,8 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 	 * corresponding #RBSource.  The first signal handler that returns
 	 * a source wins.  If a source was created for the #GVolume
 	 * for a mount, then this signal will not be emitted.
+	 *
+	 * Return value: (transfer full): a source for the mount, or NULL
 	 */
 	rb_removable_media_manager_signals[CREATE_SOURCE_MOUNT] =
 		g_signal_new ("create-source-mount",

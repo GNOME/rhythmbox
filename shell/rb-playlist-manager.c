@@ -742,7 +742,7 @@ append_new_playlist_source (RBPlaylistManager *mgr, RBPlaylistSource *source)
 }
 
 /**
- * rb_playlist_manager_load_playlists
+ * rb_playlist_manager_load_playlists:
  * @mgr: the #RBPlaylistManager
  *
  * Loads the user's playlists, or if the playlist file does not exists,
@@ -933,7 +933,7 @@ save_playlist_cb (GtkTreeModel *model,
 }
 
 /**
- * rb_playlist_manager_save_playlists
+ * rb_playlist_manager_save_playlists:
  * @mgr: the #RBPlaylistManager
  * @force: if TRUE, save playlists synchronously and unconditionally
  *
@@ -985,15 +985,15 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 }
 
 /**
- * rb_playlist_manager_new_playlist
+ * rb_playlist_manager_new_playlist:
  * @mgr: the #RBPlaylistManager
  * @suggested_name: optional name to use for the new playlist
  * @automatic: if TRUE, create an auto playlist
  *
  * Creates a new playlist and adds it to the source list.
  *
- * Return value: the new playlist object.
- **/
+ * Return value: (transfer none): the new playlist object.
+ */
 RBSource *
 rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 				  const char *suggested_name,
@@ -1122,7 +1122,7 @@ create_name_from_selection_data (RBPlaylistManager *mgr,
 }
 
 /**
- * rb_playlist_manager_new_playlist_from_selection_data
+ * rb_playlist_manager_new_playlist_from_selection_data:
  * @mgr: the #RBPlaylistManager
  * @data: the #GtkSelectionData from which to create a playlist
  *
@@ -1130,7 +1130,7 @@ create_name_from_selection_data (RBPlaylistManager *mgr,
  * Used to implement playlist creation through drag and drop
  * to the source list.
  *
- * Return value: the new playlist.
+ * Return value: (transfer none): the new playlist.
  **/
 RBSource *
 rb_playlist_manager_new_playlist_from_selection_data (RBPlaylistManager *mgr,
@@ -1649,12 +1649,12 @@ list_playlists_cb (GtkTreeModel *model,
 
 
 /**
- * rb_playlist_manager_get_playlists
+ * rb_playlist_manager_get_playlists:
  * @mgr: the #RBPlaylistManager
  *
  * Returns a #GList containing all local playlist source objects.
  *
- * Return value: list of playlists
+ * Return value: (element-type RB.Source) (transfer container): list of playlists
  **/
 GList *
 rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
@@ -1668,9 +1668,9 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 }
 
 /**
- * rb_playlist_manager_get_playlist_names
+ * rb_playlist_manager_get_playlist_names:
  * @mgr: the #RBPlaylistManager
- * @playlists: holds the array of playlist names on reutrn
+ * @playlists: (out callee-allocates) (transfer full): holds the array of playlist names on reutrn
  * @error: holds a #GError on return on failure
  *
  * Allocates and returns an array containing the names of all local
@@ -1754,7 +1754,7 @@ _get_playlist_by_name (RBPlaylistManager *mgr,
 }
 
 /**
- * rb_playlist_manager_create_static_playlist
+ * rb_playlist_manager_create_static_playlist:
  * @mgr: the #RBPlaylistManager
  * @name: name of the new playlist
  * @error: holds a #GError on return on failure
@@ -1784,7 +1784,7 @@ rb_playlist_manager_create_static_playlist (RBPlaylistManager *mgr,
 }
 
 /**
- * rb_playlist_manager_delete_playlist
+ * rb_playlist_manager_delete_playlist:
  * @mgr: the #RBPlaylistManager
  * @name: name of the playlist to delete
  * @error: holds a #GError on return on failure
@@ -1814,7 +1814,7 @@ rb_playlist_manager_delete_playlist (RBPlaylistManager *mgr,
 }
 
 /**
- * rb_playlist_manager_add_to_playlist
+ * rb_playlist_manager_add_to_playlist:
  * @mgr: the #RBPlaylistManager
  * @name: name of the playlist to add to
  * @uri: URI of the entry to add to the playlist
@@ -1854,7 +1854,7 @@ rb_playlist_manager_add_to_playlist (RBPlaylistManager *mgr,
 }
 
 /**
- * rb_playlist_manager_remove_from_playlist
+ * rb_playlist_manager_remove_from_playlist:
  * @mgr: the #RBPlaylistManager
  * @name: name of the playlist to remove from
  * @uri: URI of the entry to remove from the playlist
@@ -1896,7 +1896,7 @@ rb_playlist_manager_remove_from_playlist (RBPlaylistManager *mgr,
 }
 
 /**
- * rb_playlist_manager_export_playlist
+ * rb_playlist_manager_export_playlist:
  * @mgr: the #RBPlaylistManager
  * @name: name of the playlist to export
  * @uri: playlist save location

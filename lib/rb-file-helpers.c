@@ -838,7 +838,7 @@ _uri_handle_recurse (GFile *dir,
  * rb_uri_handle_recursively:
  * @uri: URI to visit
  * @cancel: an optional #GCancellable to allow cancellation
- * @func: Callback function
+ * @func: (scope call): Callback function
  * @user_data: Data for callback function
  *
  * Calls @func for each file found under the directory identified by @uri.
@@ -1384,7 +1384,7 @@ rb_uri_create_parent_dirs (const char *uri, GError **error)
  * the nearest extant ancestor of the specified file, which may be
  * the file itself if it exists.
  * 
- * Return value: #GFile for the nearest extant ancestor
+ * Return value: (transfer full): #GFile for the nearest extant ancestor
  */
 GFile *
 rb_file_find_extant_parent (GFile *file)

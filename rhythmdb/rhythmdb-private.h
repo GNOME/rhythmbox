@@ -64,7 +64,7 @@ enum {
 	RHYTHMDB_ENTRY_PRIVATE_FLAG_BASE = 65536,
 };
 
-struct RhythmDBEntry_ {
+struct _RhythmDBEntry {
 	/* internal bits */
 	guint flags;
 	volatile gint refcount;

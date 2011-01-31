@@ -116,7 +116,7 @@ rb_error_dialog (GtkWindow *parent,
  * After creating the dialog, the caller should connect a handler to its 
  * 'response' signal to process the user's selected files or folders.
  *
- * Return value: the file chooser #GtkWidget
+ * Return value: (transfer full): the file chooser #GtkWidget
  */
 GtkWidget *
 rb_file_chooser_new (const char *title,

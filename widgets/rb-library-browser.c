@@ -514,7 +514,7 @@ construct_query_cb (RhythmDBPropType type,
  *
  * Constructs a #RhythmDBQuery from the current selections in the browser.
  *
- * Return value: a #RhythmDBQuery constructed from the current selection.
+ * Return value: (transfer full): a #RhythmDBQuery constructed from the current selection.
  */
 RhythmDBQuery *
 rb_library_browser_construct_query (RBLibraryBrowser *widget)
@@ -754,7 +754,7 @@ destroy_idle_rebuild_model (RBLibraryBrowserRebuildData *data)
  * rb_library_browser_set_selection:
  * @widget: a #RBLibraryBrowser
  * @type: the property for which to set the selection
- * @selection: a list of strings to select
+ * @selection: (element-type utf8) (transfer none): a list of strings to select
  *
  * Replaces any current selection for the specified property.
  */
@@ -814,8 +814,8 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget,
  *
  * Retrieves the property view widgets from the browser.
  *
- * Return value: a GList containing the #RBPropertyView widgets
- *  in the browser.
+ * Return value: (element-type RBPropertyView) (transfer container): a #GList
+ * containing the #RBPropertyView widgets in the browser.
  */
 GList*
 rb_library_browser_get_property_views (RBLibraryBrowser *widget)
@@ -833,7 +833,7 @@ rb_library_browser_get_property_views (RBLibraryBrowser *widget)
  * Retrieves the property view widget for the specified property,
  * if there is one.
  *
- * Return value: #RBPropertyView widget, or NULL
+ * Return value: (transfer none): #RBPropertyView widget, or NULL
  */
 RBPropertyView *
 rb_library_browser_get_property_view (RBLibraryBrowser *widget,
@@ -849,7 +849,7 @@ rb_library_browser_get_property_view (RBLibraryBrowser *widget,
 /**
  * rb_library_browser_set_model:
  * @widget: a #RBLibraryBrowser
- * @model: the new input #RhythmDBQueryModel
+ * @model: (transfer none): the new input #RhythmDBQueryModel
  * @query_pending: if TRUE, the caller promises to run a
  *  query to populate the input query model.
  *

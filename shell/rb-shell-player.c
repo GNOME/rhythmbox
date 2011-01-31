@@ -1433,7 +1433,7 @@ rb_shell_player_set_selected_source (RBShellPlayer *player,
  * #rb_shell_player_get_active_source when the current song came
  * from the play queue.
  *
- * Return value: the current playing #RBSource
+ * Return value: (transfer none): the current playing #RBSource
  */
 RBSource *
 rb_shell_player_get_playing_source (RBShellPlayer *player)
@@ -1448,7 +1448,7 @@ rb_shell_player_get_playing_source (RBShellPlayer *player)
  * Retrieves the active source.  This is the source that the user
  * selected for playback.
  *
- * Return value: the active #RBSource
+ * Return value: (transfer none): the active #RBSource
  */
 RBSource *
 rb_shell_player_get_active_source (RBShellPlayer *player)
@@ -1486,7 +1486,7 @@ rb_shell_player_new (RhythmDB *db,
  * nothing is playing.  The caller must unref the entry
  * (using #rhythmdb_entry_unref) when it is no longer needed.
  *
- * Return value: the currently playing #RhythmDBEntry, or NULL
+ * Return value: (transfer full) (allow-none): the currently playing #RhythmDBEntry, or NULL
  */
 RhythmDBEntry *
 rb_shell_player_get_playing_entry (RBShellPlayer *player)
@@ -1810,8 +1810,8 @@ gconf_play_order_changed (GConfClient *client,
 /**
  * rb_shell_player_get_playback_state:
  * @player: the #RBShellPlayer
- * @shuffle: returns the current shuffle setting
- * @repeat: returns the current repeat setting
+ * @shuffle: (out): returns the current shuffle setting
+ * @repeat: (out): returns the current repeat setting
  *
  * Retrieves the current state of the shuffle and repeat settings.
  *
@@ -2590,7 +2590,7 @@ rb_shell_player_set_volume_relative (RBShellPlayer *player,
 /**
  * rb_shell_player_get_volume:
  * @player: the #RBShellPlayer
- * @volume: returns the volume level
+ * @volume: (out): returns the volume level
  * @error: returns error information
  *
  * Returns the current volume level
@@ -2638,7 +2638,7 @@ rb_shell_player_set_mute (RBShellPlayer *player,
 /**
  * rb_shell_player_get_mute:
  * @player: the #RBShellPlayer
- * @mute: returns the current mute setting
+ * @mute: (out): returns the current mute setting
  * @error: returns error information
  *
  * Returns %TRUE if currently muted
@@ -3272,7 +3272,7 @@ rb_shell_player_pause (RBShellPlayer *player,
 /**
  * rb_shell_player_get_playing:
  * @player: a #RBShellPlayer
- * @playing: playback state return
+ * @playing: (out): playback state return
  * @error: error return
  *
  * Reports whether playback is occuring by setting #playing.
@@ -3310,7 +3310,7 @@ rb_shell_player_get_playing_time_string (RBShellPlayer *player)
 /**
  * rb_shell_player_get_playing_time:
  * @player: the #RBShellPlayer
- * @time: returns the current playback position
+ * @time: (out): returns the current playback position
  * @error: returns error information
  *
  * Retrieves the current playback position.  Fails if
@@ -3792,7 +3792,7 @@ player_image_cb (RBPlayer *player,
 /**
  * rb_shell_player_get_playing_path:
  * @player: the #RBShellPlayer
- * @path: returns the URI of the current playing entry
+ * @path: (out callee-allocates) (transfer full): returns the URI of the current playing entry
  * @error: returns error information
  *
  * Retrieves the URI of the current playing entry.  The

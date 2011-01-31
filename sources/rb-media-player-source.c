@@ -269,25 +269,39 @@ rb_media_player_source_get_free_space (RBMediaPlayerSource *source)
 	return klass->impl_get_free_space (source);
 }
 
+/**
+ * rb_media_player_source_get_entries:
+ * @source: the #RBMediaPlayerSource
+ * @category: the sync category name
+ * @entries: (element-type utf8 RB.RhythmDBEntry): map to hold the entries
+ */
 void
 rb_media_player_source_get_entries (RBMediaPlayerSource *source,
 				    const char *category,
-				    GHashTable *map)
+				    GHashTable *entries)
 {
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
-	klass->impl_get_entries (source, category, map);
+	klass->impl_get_entries (source, category, entries);
 }
 
+/**
+ * rb_media_player_source_delete_entries:
+ * @source: the #RBMediaPlayerSource
+ * @entries: (element-type RB.RhythmDBEntry) (transfer full): list of entries to delete
+ * @callback: callback to call on completion
+ * @user_data: (closure) (scope notified): data for callback
+ * @destroy_data: callback to free the callback data
+ */
 void
 rb_media_player_source_delete_entries	(RBMediaPlayerSource *source,
 					 GList *entries,
 					 RBMediaPlayerSourceDeleteCallback callback,
-					 gpointer callback_data,
+					 gpointer user_data,
 					 GDestroyNotify destroy_data)
 {
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
 
-	klass->impl_delete_entries (source, entries, callback, callback_data, destroy_data);
+	klass->impl_delete_entries (source, entries, callback, user_data, destroy_data);
 }
 
 static void
@@ -747,3 +761,21 @@ sync_cmd (GtkAction *action, RBSource *source)
 {
 	rb_media_player_source_sync (RB_MEDIA_PLAYER_SOURCE (source));
 }
+
+/* annotations for methods */
+
+/**
+ * impl_delete_entries:
+ * @source: the source
+ * @entries: (element-type RB.RhythmDBEntry) (transfer full): list of entries to delete
+ * @callback: callback to call on completion
+ * @data: (closure) (scope notified): callback data
+ * @destroy_data: callback to free callback data
+ */
+
+/**
+ * impl_add_playlist:
+ * @source: the source
+ * @name: new playlist name
+ * @entries: (element-type RB.RhythmDBEntry) (transfer full): list of entries to add
+ */

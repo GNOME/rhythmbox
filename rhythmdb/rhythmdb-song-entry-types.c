@@ -194,7 +194,7 @@ import_error_update_availability (RhythmDBEntryType *entry_type,
  *
  * Returns the #RhythmDBEntryType for normal songs.
  *
- * Return value: (transfer none): the entry type for normal songs
+ * Returns: (transfer none): the entry type for normal songs
  */
 RhythmDBEntryType *
 rhythmdb_get_song_entry_type (void)

@@ -98,7 +98,7 @@ struct _RBPlayerIface
 
 	gboolean	(*seekable)		(RBPlayer *player);
 	void		(*set_time)		(RBPlayer *player,
-						 gint64 time);
+						 gint64 newtime);
 	gint64		(*get_time)		(RBPlayer *player);
 	gboolean	(*multiple_open)	(RBPlayer *player);
 

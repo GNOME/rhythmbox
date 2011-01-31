@@ -604,7 +604,7 @@ rb_source_update_play_statistics (RBSource *source,
  *
  * Returns the entry view widget for the source.
  *
- * Return value: the #RBEntryView instance for the source
+ * Return value: (transfer none): the #RBEntryView instance for the source
  */
 RBEntryView *
 rb_source_get_entry_view (RBSource *source)
@@ -627,7 +627,7 @@ default_get_property_views (RBSource *source)
  * Returns a list containing the #RBPropertyView instances for the
  * source, if any.
  *
- * Return value:  list of property views
+ * Return value: (element-type RB.PropertyView) (transfer container): list of property views
  */
 GList *
 rb_source_get_property_views (RBSource *source)
@@ -679,8 +679,8 @@ rb_source_can_rename (RBSource *source)
 /**
  * rb_source_search:
  * @source: a #RBSource
- * @search: the active #RBSourceSearch instance (may be NULL)
- * @cur_text: the current search text (may be NULL)
+ * @search: (allow-none): the active #RBSourceSearch instance
+ * @cur_text: (allow-none): the current search text
  * @new_text: the new search text
  *
  * Updates the source with new search text.  The source
@@ -798,8 +798,8 @@ rb_source_can_copy (RBSource *source)
  * Removes the currently selected entries from the source and
  * returns them so they can be pasted into another source.
  *
- * Return value: a list of #RhythmDBEntry objects cut from
- * the source.
+ * Return value: (element-type RB.RhythmDBEntry) (transfer full): entries cut
+ * from the source.
  */
 GList *
 rb_source_cut (RBSource *source)
@@ -826,8 +826,8 @@ default_copy (RBSource *source)
  *
  * Copies the selected entries to the clipboard.
  *
- * Return value: a list containing the currently selected entries from
- * the source.
+ * Return value: (element-type RB.RhythmDBEntry) (transfer full): a list containing
+ * the currently selected entries from the source.
  */
 GList *
 rb_source_copy (RBSource *source)
@@ -840,7 +840,7 @@ rb_source_copy (RBSource *source)
 /**
  * rb_source_paste:
  * @source: a #RBSource
- * @entries: a list of #RhythmDBEntry objects to paste in
+ * @entries: (element-type RB.RhythmDBEntry): a list of #RhythmDBEntry objects to paste in
  *
  * Adds a list of entries previously cut or copied from another
  * source.  If the entries are not of the type used by the source,
@@ -851,7 +851,7 @@ rb_source_copy (RBSource *source)
  * is returned so the caller can monitor the transfer progress.  The caller does not
  * own a reference on the batch object.
  *
- * Return value: the #RBTrackTransferBatch used to perform the transfer (if any)
+ * Return value: (transfer none): the #RBTrackTransferBatch used to perform the transfer (if any)
  */
 RBTrackTransferBatch *
 rb_source_paste (RBSource *source, GList *entries)
@@ -1178,7 +1178,7 @@ default_get_search_actions (RBSource *source)
  * must identify the selected search action when constructing
  * a database query for searching
  *
- * Return value: list of search actions
+ * Return value: (element-type utf8) (transfer full): list of search actions
  */
 GList *
 rb_source_get_search_actions (RBSource *source)
@@ -1260,7 +1260,7 @@ rb_source_gather_hash_keys (char *key,
  * This is used to implement the 'browse this artist' (etc.)
  * actions.
  *
- * Return value: list of property values
+ * Return value: (element-type utf8) (transfer full): list of property values
  */
 GList *
 rb_source_gather_selected_properties (RBSource *source,
@@ -1383,3 +1383,46 @@ rb_source_search_type_get_type (void)
 
 	return etype;
 }
+
+/* introspection annotations for vmethods */
+
+/**
+ * impl_get_entry_view:
+ * @source: a #RBSource
+ *
+ * Return value: (transfer none): the RBEntryView for the source
+ */
+
+/**
+ * impl_get_property_views:
+ * @source: a #RBSource
+ *
+ * Return value: (element-type RB.PropertyView) (transfer container): list of property views
+ */
+
+/**
+ * impl_cut:
+ * @source: a #RBSource
+ *
+ * Return value: (element-type RB.RhythmDBEntry) (transfer full): list of entries
+ */
+
+/**
+ * impl_copy:
+ * @source: a #RBSource
+ *
+ * Return value: (element-type RB.RhythmDBEntry) (transfer full): list of entries
+ */
+
+/**
+ * impl_paste:
+ * @source: a #RBSource
+ * @entries: (element-type RB.RhythmDBEntry) (transfer none): list of entries to paste
+ */
+
+/**
+ * impl_get_search_actions:
+ * @source: a #RBSource
+ *
+ * Return value: (element-type utf8) (transfer full): list of action names
+ */

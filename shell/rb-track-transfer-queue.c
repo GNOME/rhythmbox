@@ -547,7 +547,7 @@ find_batches (RBTrackTransferBatch *batch, struct FindBatchData *data)
  * found in the queue, so waiting for the @RBTrackTransferBatch::complete signal
  * on the last one is sufficient to wait for them all to finish.
  *
- * Return value: #GList of #RBTrackTransferBatch objects, not referenced
+ * Return value: (element-type RBTrackTransferBatch) (transfer container): #GList of #RBTrackTransferBatch objects, not referenced
  */
 GList *
 rb_track_transfer_queue_find_batch_by_source (RBTrackTransferQueue *queue, RBSource *source)

@@ -1954,7 +1954,7 @@ rb_shell_db_save_error_cb (RhythmDB *db,
  * Looks up and returns the source that owns entries of the specified
  * type.
  *
- * Return value: source instance, if any
+ * Return value: (transfer none): source instance, if any
  */
 RBSource *
 rb_shell_get_source_by_entry_type (RBShell *shell,
@@ -1991,7 +1991,7 @@ rb_shell_register_entry_type_for_source (RBShell *shell,
  * rb_shell_append_display_page:
  * @shell: the #RBShell
  * @page: the new #RBDisplayPage
- * @parent: the parent page for the new page (optional)
+ * @parent: (allow-none): the parent page for the new page
  *
  * Adds a new display page to the shell.
  */
@@ -3108,7 +3108,7 @@ rb_shell_session_init (RBShell *shell)
  * This iterates through all sources, calling #rb_source_want_uri,
  * returning the source that returns the highest value.
  *
- * Return value: the most appropriate #RBSource for the uri
+ * Return value: (transfer none): the most appropriate #RBSource for the uri
  */
 RBSource *
 rb_shell_guess_source_for_uri (RBShell *shell,
@@ -3436,7 +3436,7 @@ rb_shell_get_party_mode (RBShell *shell)
  *
  * Returns the #RBShellPlayer object
  *
- * Return value: the #RBShellPlayer object
+ * Return value: (transfer none): the #RBShellPlayer object
  */
 GObject *
 rb_shell_get_player (RBShell *shell)
@@ -3464,7 +3464,7 @@ rb_shell_get_player_path (RBShell *shell)
  *
  * Returns the #RBPlaylistManager object
  *
- * Return value: the #RBPlaylistManager object
+ * Return value: (transfer none): the #RBPlaylistManager object
  */
 GObject *
 rb_shell_get_playlist_manager (RBShell *shell)
@@ -3492,7 +3492,7 @@ rb_shell_get_playlist_manager_path (RBShell *shell)
  *
  * Returns the main #GtkUIManager object
  *
- * Return value: the main #GtkUIManager object
+ * Return value: (transfer none): the main #GtkUIManager object
  */
 GObject *
 rb_shell_get_ui_manager (RBShell *shell)
@@ -3658,7 +3658,7 @@ rb_shell_activate_source_by_uri (RBShell *shell,
  * rb_shell_get_song_properties:
  * @shell: the #RBShell
  * @uri: the URI to query
- * @properties: returns the properties of the specified URI
+ * @properties: (out callee-allocates) (element-type utf8 GObject.Value) returns the properties of the specified URI
  * @error: returns error information
  *
  * Gathers and returns all metadata (including extra metadata such as album

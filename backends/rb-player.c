@@ -576,7 +576,7 @@ rb_player_multiple_open (RBPlayer *player)
  *
  * Creates a new player object.
  *
- * Return value: new player object.
+ * Return value: (transfer full): new player object.
  */
 RBPlayer*
 rb_player_new (gboolean want_crossfade, GError **error)

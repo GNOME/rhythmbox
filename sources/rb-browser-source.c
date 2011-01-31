@@ -807,7 +807,7 @@ impl_browser_toggled (RBSource *asource, gboolean disclosed)
  * Retrieves the GConf key that stores the height of the browser pane for the source.
  * This is a virtual method that should be implemented by subclasses.
  *
- * Return value: allocated string containing the GConf key name
+ * Return value: (transfer full): allocated string containing the GConf key name
  */
 char *
 rb_browser_source_get_paned_key (RBBrowserSource *source)
@@ -948,4 +948,3 @@ default_pack_paned (RBBrowserSource *source, GtkWidget *paned)
 	gtk_box_pack_start (GTK_BOX (box), paned, TRUE, TRUE, 0);
 	gtk_container_add (GTK_CONTAINER (source), box);
 }
-

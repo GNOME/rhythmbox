@@ -797,7 +797,7 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 /**
  * rb_auto_playlist_source_set_query:
  * @source: the #RBAutoPlaylistSource
- * @query: the new database query
+ * @query: (transfer none): the new database query
  * @limit_type: the playlist limit type
  * @limit_value: the playlist limit value
  * @sort_key: the sorting key
@@ -855,11 +855,11 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 /**
  * rb_auto_playlist_source_get_query:
  * @source: the #RBAutoPlaylistSource
- * @query: returns the database query for the playlist
- * @limit_type: returns the playlist limit type
- * @limit_value: returns the playlist limit value
- * @sort_key: returns the playlist sorting key
- * @sort_order: returns the playlist sorting direction (as a #GtkSortType)
+ * @query: (out caller-allocates) (transfer full): returns the database query for the playlist
+ * @limit_type: (out callee-allocates): returns the playlist limit type
+ * @limit_value: (out callee-allocates): returns the playlist limit value
+ * @sort_key: (out callee-allocates) (transfer full): returns the playlist sorting key
+ * @sort_order: (out callee-allocates): returns the playlist sorting direction (as a #GtkSortType)
  *
  * Extracts the current query, playlist limit, and sorting settings for the playlist.
  */

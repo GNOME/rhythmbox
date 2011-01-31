@@ -108,7 +108,7 @@ rb_display_page_group_add_core_groups (GObject *shell, RBDisplayPageModel *page_
  * Locates a page group by name.  If the page group has not been registered yet,
  * returns NULL instead.
  *
- * Return value: existing page group, or NULL.
+ * Return value: (transfer none): existing page group, or NULL.
  */
 RBDisplayPageGroup *
 rb_display_page_group_get_by_id (const char *id)

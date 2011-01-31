@@ -136,7 +136,7 @@ rb_history_class_init (RBHistoryClass *klass)
 /**
  * rb_history_new:
  * @truncate_on_play: Whether rb_history_set_playing() should truncate the history
- * @destroyer: function to call when removing an entry from the history
+ * @destroyer: (scope async): function to call when removing an entry from the history
  * @destroy_userdata: data to pass to @destroyer
  *
  * Creates a new history instance.
@@ -238,7 +238,7 @@ rb_history_get_property (GObject *object,
 /**
  * rb_history_set_destroy_notify:
  * @hist: a #RBHistory
- * @destroyer: function to call when removing an entry from the history
+ * @destroyer: (scope async): function to call when removing an entry from the history
  * @destroy_userdata: data to pass to @destroyer
  *
  * Sets a new function to call when removing entries from the history.
@@ -306,7 +306,7 @@ rb_history_length (RBHistory *hist)
  *
  * Returns the first entry in the history.
  *
- * Return value: first entry
+ * Return value: (transfer none): first entry
  */
 RhythmDBEntry *
 rb_history_first (RBHistory *hist)
@@ -324,7 +324,7 @@ rb_history_first (RBHistory *hist)
  *
  * Returns the #RhythmDBEntry before the current position.
  *
- * Return value: previous entry
+ * Return value: (transfer none): previous entry
  */
 RhythmDBEntry *
 rb_history_previous (RBHistory *hist)
@@ -343,7 +343,7 @@ rb_history_previous (RBHistory *hist)
  *
  * Returns the current #RhythmDBEntry, or NULL if there is no current position
  *
- * Return value: current entry or NULL
+ * Return value: (transfer none): current entry or NULL
  */
 RhythmDBEntry *
 rb_history_current (RBHistory *hist)
@@ -359,7 +359,7 @@ rb_history_current (RBHistory *hist)
  *
  * Returns the #RhythmDBEntry after the current position
  *
- * Return value: next entry
+ * Return value: (transfer none): next entry
  */
 RhythmDBEntry *
 rb_history_next (RBHistory *hist)
@@ -377,7 +377,7 @@ rb_history_next (RBHistory *hist)
  *
  * Returns the last #RhythmDBEntry in the history
  *
- * Return value: last entry
+ * Return value: (transfer none): last entry
  */
 RhythmDBEntry *
 rb_history_last (RBHistory *hist)
@@ -667,7 +667,7 @@ rb_history_clear (RBHistory *hist)
  * The caller does not own any references on the entries in the returned array.
  * Takes O(Nlog(N)) time.
  *
- * Return value: a copy of the history list
+ * Return value: (element-type RB.RhythmDBEntry) (transfer container): a copy of the history list
  */
 GPtrArray *
 rb_history_dump (RBHistory *hist)

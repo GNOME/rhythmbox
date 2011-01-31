@@ -47,17 +47,17 @@ G_BEGIN_DECLS
 #define RB_IS_ENCODER_FACTORY_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_ENCODER_FACTORY))
 #define RB_ENCODER_FACTORY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_ENCODER_FACTORY, RBEncoderFactoryClass))
 
-enum
+typedef enum
 {
 	RB_ENCODER_ERROR_FORMAT_UNSUPPORTED,
 	RB_ENCODER_ERROR_INTERNAL,
 	RB_ENCODER_ERROR_FILE_ACCESS,
 	RB_ENCODER_ERROR_OUT_OF_SPACE,
 	RB_ENCODER_ERROR_DEST_READ_ONLY
-};
+} RBEncoderError;
 
 GType rb_encoder_error_get_type (void);
-#define RB_TYPE_ENCODER_ERROR	(rb_encoer_error_get_type())
+#define RB_TYPE_ENCODER_ERROR	(rb_encoder_error_get_type())
 #define RB_ENCODER_ERROR rb_encoder_error_quark ()
 GQuark rb_encoder_error_quark (void);
 

@@ -1217,7 +1217,7 @@ rb_entry_view_sync_sorting (RBEntryView *view)
  * This consists of a column name and an order ('ascending' or 'descending')
  * separated by a comma.
  *
- * Return value: sort order description (must be freed)
+ * Return value: (transfer full): sort order description
  */
 char *
 rb_entry_view_get_sorting_type (RBEntryView *view)
@@ -1287,8 +1287,8 @@ rb_entry_view_set_sorting_type (RBEntryView *view,
 /**
  * rb_entry_view_get_sorting_order:
  * @view: a #RBEntryView
- * @column_name: returns the sort column name
- * @sort_order: returns the sort ordering as a #GtkSortType value
+ * @column_name: (out callee-allocates) (allow-none) (transfer full): returns the sort column name
+ * @sort_order: (out) (allow-none) returns the sort ordering as a #GtkSortType value
  *
  * Retrieves the sort settings for the view.
  */
@@ -1365,7 +1365,7 @@ rb_entry_view_column_clicked_cb (GtkTreeViewColumn *column, RBEntryView *view)
  * Retrieves a predefined column from the entry view.  This can be used
  * to insert additional cell renderers into the column.
  *
- * Return value: a #GtkTreeViewColumn instance, or NULL
+ * Return value: (transfer none): a #GtkTreeViewColumn instance, or NULL
  */
 GtkTreeViewColumn *
 rb_entry_view_get_column (RBEntryView *view, RBEntryViewColumn coltype)
@@ -1766,11 +1766,11 @@ rb_entry_view_append_column (RBEntryView *view,
 /**
  * rb_entry_view_append_column_custom:
  * @view: a #RBEntryView
- * @column: a #GtkTreeViewColumn to append
+ * @column: (transfer full): a #GtkTreeViewColumn to append
  * @title: title for the column (translated)
  * @key: sort key for the column (not translated)
  * @sort_func: comparison function to use for sorting on the column
- * @data: data to pass to the sort function
+ * @data: (closure) (scope notified): data to pass to the sort function
  * @data_destroy: function to use to destroy the sort data
  *
  * Appends a custom column to the entry view.  
@@ -1790,11 +1790,11 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 /**
  * rb_entry_view_insert_column_custom:
  * @view: a #RBEntryView
- * @column: a #GtkTreeViewColumn to append
+ * @column: (transfer full): a #GtkTreeViewColumn to append
  * @title: title for the column (translated)
  * @key: sort key for the column (not translated)
  * @sort_func: comparison function to use for sorting on the column
- * @data: data to pass to the sort function
+ * @data: (closure) (scope notified): data to pass to the sort function
  * @data_destroy: function to use to destroy the sort data
  * @position: position at which to insert the column (-1 to insert at the end)
  *
@@ -2079,8 +2079,8 @@ harvest_entries (GtkTreeModel *model,
  *
  * Gathers the selected entries from the view.
  *
- * Return value: a #GList of selected entries in the view
- *  (must be freed and the entries unreffed)
+ * Return value: (element-type RhythmDBEntry) (transfer full): a #GList of
+ * selected entries in the view.
  */
 GList *
 rb_entry_view_get_selected_entries (RBEntryView *view)
@@ -2624,7 +2624,7 @@ rb_entry_view_emit_row_changed (RBEntryView *view,
  * @view: a #RBEntryView
  * @column: the column to set the width for
  * @renderer: a temporary cell renderer to use
- * @strings: a NULL-terminated array of strings that will be displayed in the column
+ * @strings: (array zero-terminated=1): a NULL-terminated array of strings that will be displayed in the column
  *
  * Helper function for calling @rb_set_tree_view_column_fixed_width on
  * a column.  This is important for performance reasons, as having the

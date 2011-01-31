@@ -1010,7 +1010,7 @@ rb_playlist_source_set_query_model (RBPlaylistSource *source,
  * Returns the #RhythmDB instance.  The caller must not
  * unref the object once finished with it.
  *
- * Return value: the #RhythmDB instance
+ * Return value: (transfer none): the #RhythmDB instance
  */
 RhythmDB *
 rb_playlist_source_get_db (RBPlaylistSource *source)
@@ -1027,7 +1027,7 @@ rb_playlist_source_get_db (RBPlaylistSource *source)
  * Returns the current #RhythmDBQueryModel for the playlist.
  * The caller must not unref the object once finished with it.
  *
- * Return value: the current #RhythmDBQueryModel
+ * Return value: (transfer none): the current #RhythmDBQueryModel
  */
 RhythmDBQueryModel *
 rb_playlist_source_get_query_model (RBPlaylistSource *source)

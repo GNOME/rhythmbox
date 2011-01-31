@@ -859,6 +859,14 @@ GtkWidget *rb_segmented_bar_new (void)
 	return g_object_new (RB_TYPE_SEGMENTED_BAR, NULL);
 }
 
+/**
+ * rb_segmented_bar_set_value_formatter:
+ * @bar: a #RBSegmentedBar
+ * @formatter: (scope async): the formatter function to use
+ * @data: data to pass to the formatter
+ *
+ * Sets a value formatter function to use for the bar.
+ */
 void rb_segmented_bar_set_value_formatter (RBSegmentedBar *bar,
 					   RBSegmentedBarValueFormatter formatter,
 					   gpointer data)

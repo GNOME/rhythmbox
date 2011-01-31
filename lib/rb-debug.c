@@ -220,7 +220,7 @@ rb_debug_init_match (const char *match)
  * this debug output code that will produce the same debug output
  * settings.
  *
- * Return value: debug output arguments, must be freed with #g_strfreev()
+ * Return value: (transfer full): debug output arguments, must be freed with #g_strfreev()
  */
 char **
 rb_debug_get_args (void)
@@ -280,7 +280,7 @@ struct RBProfiler
 };
 
 /**
- * rb_profiler_new:
+ * rb_profiler_new: (skip):
  * @name: profiler name
  *
  * Creates a new profiler instance.  This can be used to
@@ -306,7 +306,7 @@ rb_profiler_new (const char *name)
 }
 
 /**
- * rb_profiler_dump:
+ * rb_profiler_dump: (skip):
  * @profiler: profiler instance
  *
  * Produces debug output for the profiler instance,
@@ -330,7 +330,7 @@ rb_profiler_dump (RBProfiler *profiler)
 }
 
 /**
- * rb_profiler_reset:
+ * rb_profiler_reset: (skip):
  * @profiler: profiler instance
  *
  * Resets the elapsed time for the profiler
@@ -347,7 +347,7 @@ rb_profiler_reset (RBProfiler *profiler)
 }
 
 /**
- * rb_profiler_free:
+ * rb_profiler_free: (skip):
  * @profiler: profiler instance to destroy
  *
  * Frees the memory associated with a profiler instance.

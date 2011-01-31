@@ -63,7 +63,8 @@
  *
  * Creates a copy of a query.
  *
- * Return value: a copy of the passed query. It must be freed with rhythmdb_query_free()
+ * Return value: (transfer full): a copy of the passed query.
+ * It must be freed with rhythmdb_query_free()
  **/
 GPtrArray *
 rhythmdb_query_copy (GPtrArray *array)
@@ -205,7 +206,8 @@ rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
  * 	b) that have "cat" in their title, or
  * 	c) have a rating of at least 2.5, and a play count of at most 10
  *
- * Returns: a the newly created query. It must be freed with rhythmdb_query_free()
+ * Returns: (transfer full): a the newly created query.
+ * It must be freed with rhythmdb_query_free()
  **/
 GPtrArray *
 rhythmdb_query_parse (RhythmDB *db, ...)
@@ -593,7 +595,7 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
  *
  * Converts a serialized query back into a @GPtrArray query.
  *
- * Return value: deserialized query.
+ * Return value: (transfer full): deserialized query.
  */
 GPtrArray *
 rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
@@ -861,7 +863,7 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
  * @db: the #RhythmDB
  * @query: the query to append to
  * @propid: property ID to match
- * @items: #GList of values to match against
+ * @items: (element-type GObject.Value): #GList of values to match against
  *
  * Appends a set of criteria to a query to match against any of the values
  * listed in @items.

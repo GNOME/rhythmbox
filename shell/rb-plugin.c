@@ -224,7 +224,7 @@ rb_plugin_is_configurable (RBPlugin *plugin)
  * the dialog instance the first time it is created and just return it
  * thereafter.
  *
- * Return value: configuration widget for @plugin
+ * Return value: (transfer none): configuration widget for @plugin
  */
 GtkWidget *
 rb_plugin_create_configure_dialog (RBPlugin *plugin)
@@ -244,7 +244,7 @@ rb_plugin_create_configure_dialog (RBPlugin *plugin)
  *
  * Returns a list containing the paths to search for plugins.
  *
- * Return value: #GList of paths, must be freed by caller
+ * Return value: (element-type utf8) (transfer full): list of paths.
  */
 GList *
 rb_get_plugin_paths (void)

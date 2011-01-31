@@ -208,7 +208,7 @@ rb_encoder_get_type (void)
  *
  * Returns the #RBEncoderFactory instance.
  *
- * Return value: the #RBEncoderFactory
+ * Return value: (transfer none): the #RBEncoderFactory
  */
 RBEncoderFactory *
 rb_encoder_factory_get ()
@@ -266,9 +266,9 @@ rb_encoder_cancel (RBEncoder *encoder)
  * rb_encoder_get_media_type:
  * @encoder: a #RBEncoder
  * @entry: the source #RhythmDBEntry
- * @dest_media_types: a #GList of media type strings in order of preference
- * @media_type: returns the selected media type, if any
- * @extension: returns the file extension associated with the selected media type, if any
+ * @dest_media_types: (element-type utf8): media type strings in order of preference
+ * @media_type: (out callee-allocates) (allow-none): returns the selected media type, if any
+ * @extension: (out callee-allocates) (allow-none): returns the file extension associated with the selected media type, if any
  *
  * Identifies the first media type in the list that the encoder can actually encode to.
  * The file extension (eg. '.mp3' for audio/mpeg) associated with the selected type is
@@ -292,7 +292,7 @@ rb_encoder_get_media_type (RBEncoder *encoder,
  * rb_encoder_get_missing_plugins:
  * @encoder: a #RBEncoder
  * @media_type: the media type required
- * @details: returns plugin installer detail strings
+ * @details: (out callee-allocates): returns plugin installer detail strings
  *
  * Retrieves the plugin installer detail strings for any missing plugins
  * required to encode the specified media type.
@@ -313,7 +313,7 @@ rb_encoder_get_missing_plugins (RBEncoder *encoder,
  *
  * Creates a new #RBEncoder instance.
  *
- * Return value: the new #RBEncoder
+ * Return value: (transfer full): the new #RBEncoder
  */
 RBEncoder*
 rb_encoder_new (void)

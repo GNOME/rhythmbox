@@ -71,14 +71,13 @@ struct _RBPluginClass
 	GObjectClass parent_class;
 
 	/* Virtual public methods */
+	void (*activate) (RBPlugin *plugin, RBShell *shell);
+	void (*deactivate) (RBPlugin *plugin, RBShell *shell);
 
-	RBPluginActivationFunc		activate;
-	RBPluginActivationFunc		deactivate;
-	RBPluginWidgetFunc		create_configure_dialog;
-
+	GtkWidget* (*create_configure_dialog) (RBPlugin *plugin);
 	/* Plugins should not override this, it's handled automatically by
 	   the RbPluginClass */
-	RBPluginBooleanFunc		is_configurable;
+	gboolean (*is_configurable) (RBPlugin *plugin);
 };
 
 /*

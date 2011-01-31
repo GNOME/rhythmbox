@@ -546,7 +546,7 @@ update_group_visibility_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter 
 
 /**
  * rb_display_page_model_set_dnd_targets:
- * @sourcelist: the #RBDisplayPageModel
+ * @page_model: the #RBDisplayPageModel
  * @treeview: the sourcel ist #GtkTreeView
  *
  * Sets up the drag and drop targets for the display page tree.

@@ -32,8 +32,8 @@
 
 G_BEGIN_DECLS
 
-struct RhythmDBEntry_;
-typedef struct RhythmDBEntry_ RhythmDBEntry;
+struct _RhythmDBEntry;
+typedef struct _RhythmDBEntry RhythmDBEntry;
 GType rhythmdb_entry_get_type (void);
 
 #define RHYTHMDB_TYPE_ENTRY      (rhythmdb_entry_get_type ())

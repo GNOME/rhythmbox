@@ -522,7 +522,7 @@ rb_query_creator_new_from_query (RhythmDB *db,
  *
  * Extracts a child widget from a #GtkBox.
  *
- * Return value: child widget from the box
+ * Return value: (transfer none): child widget from the box
  */
 GtkWidget *
 get_box_widget_at_pos (GtkBox *box, guint pos)
@@ -566,7 +566,7 @@ get_entry_for_property (RBQueryCreator *creator,
  *
  * Constructs a database query that represents the criteria in the query creator.
  *
- * Return value: database query array
+ * Return value: (transfer full): database query array
  */
 GPtrArray *
 rb_query_creator_get_query (RBQueryCreator *creator)
@@ -630,8 +630,8 @@ rb_query_creator_get_query (RBQueryCreator *creator)
 /**
  * rb_query_creator_get_limit:
  * @creator: #RBQueryCreator instance
- * @type: used to return the limit type
- * @limit: used to return the limit value
+ * @type: (out): used to return the limit type
+ * @limit: (out): used to return the limit value
  *
  * Retrieves the limit type and value from the query creator.
  * The limit value is returned as the first element in a
@@ -686,8 +686,8 @@ rb_query_creator_get_limit (RBQueryCreator *creator,
 /**
  * rb_query_creator_get_sort_order:
  * @creator: #RBQueryCreator instance
- * @sort_key: returns the sort key name
- * @sort_direction: returns the sort direction
+ * @sort_key: (out) (allow-none): returns the sort key name
+ * @sort_direction: (out) (allow-none): returns the sort direction
  *
  * Retrieves the sort settings from the query creator.
  * The sort direction is returned as a #GtkSortType value.

@@ -829,7 +829,7 @@ rb_static_playlist_source_add_location (RBStaticPlaylistSource *source,
 /**
  * rb_static_playlist_source_add_locations:
  * @source: an #RBStaticPlaylistSource
- * @locations: a #GList of strings to add
+ * @locations: (element-type utf8) (transfer none): URI strings to add
  *
  * Adds the locations specified in @locations to the playlist.
  * See @rb_static_playlist_source_add_location for details.

@@ -102,7 +102,7 @@ rb_source_search_is_subset (RBSourceSearch *search, const char *current, const c
  *
  * Creates a #RhythmDBQuery from the user's search text.
  *
- * Return value: #RhythmDBQuery for the source to use
+ * Return value: (transfer full): #RhythmDBQuery for the source to use
  */
 RhythmDBQuery *
 rb_source_search_create_query (RBSourceSearch *search, RhythmDB *db, const char *search_text)
@@ -121,7 +121,7 @@ rb_source_search_create_query (RBSourceSearch *search, RhythmDB *db, const char 
  *
  * Creates a basic search query.
  *
- * Return value: the #RhythmDBQuery for the search text and property, or NULL
+ * Return value: (transfer full): the #RhythmDBQuery for the search text and property, or NULL
  *   if no search text is specified.
  */
 RhythmDBQuery *
@@ -161,7 +161,7 @@ rb_source_search_action_attach (RBSourceSearch *search, GObject *action)
  * Returns the #RBSourceSearch associated with the
  * specified UI action.
  *
- * Return value: associated #RBSourceSearch
+ * Return value: (transfer none): associated #RBSourceSearch
  */
 RBSourceSearch *
 rb_source_search_get_from_action (GObject *action)

@@ -527,7 +527,7 @@ rb_property_view_reset (RBPropertyView *view)
  * 
  * Returns the #RhythmDBPropertyModel backing the view; no reference is taken
  *
- * Return value: property model
+ * Return value: (transfer none): property model
  */
 RhythmDBPropertyModel *
 rb_property_view_get_model (RBPropertyView *view)
@@ -744,7 +744,7 @@ rb_property_view_row_activated_cb (GtkTreeView *treeview,
 /**
  * rb_property_view_set_selection:
  * @view: a #RBPropertyView
- * @vals: the values to be selected
+ * @vals: (element-type utf8): the values to be selected
  *
  * Replaces the selection in the property view.  All values in the list
  * that are present in the view will be selected, and the view will be
@@ -789,7 +789,7 @@ rb_property_view_set_selection (RBPropertyView *view,
  * Returns a #GList containing the selected property values.  The list must
  * be freed by the caller.
  *
- * Return value: list of selected values
+ * Return value: (element-type utf8) (transfer full): list of selected values
  */
 GList *
 rb_property_view_get_selection (RBPropertyView *view)

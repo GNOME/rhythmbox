@@ -54,7 +54,7 @@ mpid_error_get_type (void)
 			{ 0, 0, 0 }
 		};
 
-		etype = g_enum_register_static ("MPIDErrorType", values);
+		etype = g_enum_register_static ("MPIDError", values);
 	}
 
 	return etype;
