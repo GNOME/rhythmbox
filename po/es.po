@@ -10,17 +10,17 @@
 # maria <maria.majadas@hispalinux.es>, 2006, 2007.
 # Francisco Javier F. Serrador <serrador@tecknolabs.com>, 2004, 2005, 2006.
 # Claudio Saavedra <csaavedra@alumnos.utalca.cl>, 2007.
-# Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008, 2010, 2011.
 # Daniel Mustieles <daniel.mustieles@gmail.com>, 2011.
+# Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008, 2010, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2011-01-08 11:31+0000\n"
-"PO-Revision-Date: 2011-01-26 10:04+0100\n"
-"Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
+"POT-Creation-Date: 2011-01-26 19:15+0000\n"
+"PO-Revision-Date: 2011-01-31 19:02+0100\n"
+"Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -562,7 +562,7 @@ msgstr "Reproducidos recientemente"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1
 #: ../plugins/status-icon/rb-status-icon-plugin.c:59
-#: ../plugins/status-icon/rb-status-icon-plugin.c:1568
+#: ../plugins/status-icon/rb-status-icon-plugin.c:1572
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1536 ../shell/rb-shell.c:1244
 #: ../shell/rb-shell.c:2228
 msgid "Music Player"
@@ -710,7 +710,7 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:642
 #: ../plugins/mtpdevice/rb-mtp-source.c:1133
 #: ../plugins/mtpdevice/rb-mtp-source.c:1522
-#: ../plugins/status-icon/rb-status-icon-plugin.c:906
+#: ../plugins/status-icon/rb-status-icon-plugin.c:910
 #: ../podcast/rb-feed-podcast-properties-dialog.c:340
 #: ../podcast/rb-podcast-manager.c:1938
 #: ../podcast/rb-podcast-properties-dialog.c:619
@@ -2072,7 +2072,7 @@ msgstr "Introduzca la contraseña mostrada en su dispositivo."
 
 #: ../plugins/daap/daap-prefs.ui.h:7
 msgid "Require _password:"
-msgstr "Requerir _contraseña:"
+msgstr "Requerir contrase_ña:"
 
 #: ../plugins/daap/daap-prefs.ui.h:8
 msgid "You can now control Rhythmbox through your Remote"
@@ -2084,7 +2084,7 @@ msgstr "_Buscar mandos a distancia táctiles"
 
 #: ../plugins/daap/daap-prefs.ui.h:10
 msgid "_Share my music"
-msgstr "_Compartir mi música"
+msgstr "Compartir mi _música"
 
 #: ../plugins/daap/rb-daap-dialog.c:55
 msgid "Invalid share name"
@@ -2157,7 +2157,7 @@ msgstr "Conectando…"
 msgid "Could not pair with this Remote."
 msgstr "No se pudo emparejar con este mando a distancia."
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:608
+#: ../plugins/daap/rb-dacp-pairing-page.c:609
 msgid "Remotes"
 msgstr "Mandos a distancia"
 
@@ -2271,13 +2271,13 @@ msgstr "Borrar esta lista de reproducción"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:101
 #: ../plugins/ipod/rb-ipod-plugin.c:106
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:125 ../podcast/rb-podcast-source.c:124
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:126 ../podcast/rb-podcast-source.c:124
 #: ../shell/rb-shell-clipboard.c:190
 msgid "_Properties"
 msgstr "_Propiedades"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:102
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:126
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:127
 msgid "Display device properties"
 msgstr "Mostrar las propiedades del dispositivo"
 
@@ -2409,7 +2409,7 @@ msgid "Unable to initialize new iPod"
 msgstr "No se pudo inicializar el nuevo iPod"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:103 ../plugins/ipod/rb-ipod-plugin.c:112
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:122 ../shell/rb-playlist-manager.c:180
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:123 ../shell/rb-playlist-manager.c:180
 msgid "_Rename"
 msgstr "_Renombrar"
 
@@ -3269,7 +3269,7 @@ msgstr ""
 msgid "Unable to open temporary file: %s"
 msgstr "No se puede abrir el archivo temporal: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:123
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:124
 msgid "Rename MTP-device"
 msgstr "Renombrar el dispositivo MTP"
 
@@ -3521,30 +3521,30 @@ msgstr "Reproducir"
 msgid "Next"
 msgstr "Siguiente"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:706
+#: ../plugins/status-icon/rb-status-icon-plugin.c:710
 #: ../remote/dbus/rb-client.c:468 ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "No se está reproduciendo nada"
 
 #. Translators: the %s is the elapsed and total time
-#: ../plugins/status-icon/rb-status-icon-plugin.c:709
+#: ../plugins/status-icon/rb-status-icon-plugin.c:713
 #, c-format
 msgid "Paused, %s"
 msgstr "Pausado, %s"
 
 #. Translators: by Artist
-#: ../plugins/status-icon/rb-status-icon-plugin.c:774
+#: ../plugins/status-icon/rb-status-icon-plugin.c:778
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "por <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/status-icon/rb-status-icon-plugin.c:776
+#: ../plugins/status-icon/rb-status-icon-plugin.c:780
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:830
+#: ../plugins/status-icon/rb-status-icon-plugin.c:834
 #: ../widgets/rb-header.c:550
 msgid "Not Playing"
 msgstr "No se reproduce nada"
@@ -3552,7 +3552,7 @@ msgstr "No se reproduce nada"
 #. Translators: this is used in notification bubble text to indicate that
 #. * playback is currently paused.  %s is the song title.
 #.
-#: ../plugins/status-icon/rb-status-icon-plugin.c:916
+#: ../plugins/status-icon/rb-status-icon-plugin.c:920
 #, c-format
 msgid "(Paused) %s"
 msgstr "%s (Pausado)"
@@ -3783,8 +3783,8 @@ msgid ""
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
 msgstr ""
-"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el URL, "
-"o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
+"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el "
+"URL, o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
 "todas formas?"
 
 #: ../podcast/rb-podcast-manager.c:1196
