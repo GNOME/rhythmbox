@@ -1,8 +1,4 @@
-SUBDIRS = 
-
-if ENABLE_PYTHON
-SUBDIRS += python
-endif
+SUBDIRS =
 
 if ENABLE_VALA
 SUBDIRS += vala
