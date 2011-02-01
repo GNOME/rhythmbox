@@ -9,6 +9,3 @@ plugin_PYTHON = 			\
 	CoverArtDatabase.py		\
 	MusicBrainzCoverArtSearch.py	\
 	__init__.py
-
-# the amazon cover art search no longer works
-EXTRA_DIST = AmazonCoverArtSearch.py
