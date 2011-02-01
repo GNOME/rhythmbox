@@ -162,14 +162,14 @@ rhythmbox_LDADD = 					\
 	librhythmbox-core.la				\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(RHYTHMBOX_LIBS)				\
-	$(DBUS_LIBS)
+	$(DBUS_LIBS)					\
+	$(INTROSPECTION_LIBS)
 
 rhythmbox_LDFLAGS = -export-dynamic -no-undefined
 
 if ENABLE_PYTHON
 rhythmbox_LDADD += $(PYTHON_LIBS)
 endif
-
 
 BUILT_SOURCES += $(tab_files)
 

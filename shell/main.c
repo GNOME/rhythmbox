@@ -60,6 +60,8 @@
 #include <libgda/libgda.h>
 #endif
 
+#include <gobject-introspection-1.0/girepository.h>
+
 #include "rb-refstring.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
@@ -178,6 +180,10 @@ main (int argc, char **argv)
 	else
 		rb_debug_init (debug);
 	rb_debug ("initializing Rhythmbox %s", VERSION);
+
+#if defined(USE_UNINSTALLED_DIRS)
+	g_irepository_prepend_search_path (SHARE_UNINSTALLED_BUILDDIR "/../bindings/gi");
+#endif
 
 	/* TODO: kill this function */
 	rb_threads_init ();

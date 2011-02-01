@@ -30,6 +30,9 @@ dnl XXXX hack to kill off all the libtool tags ...
 dnl it isn't like we are using C++ or Fortran.
 m4_define([_LT_AC_TAGCONFIG],[])
 
+GOBJECT_INTROSPECTION_REQS=0.10.0
+GOBJECT_INTROSPECTION_REQUIRE([$GOBJECT_INTROSPECTION_REQS])
+
 IT_PROG_INTLTOOL([0.35.0])
 
 AC_ISC_POSIX
@@ -92,6 +95,7 @@ PKG_CHECK_MODULES(RB_CLIENT, glib-2.0 >= $GLIB_REQS gio-2.0 >= $GLIB_REQS gio-un
 
 dnl  note: gio-unix-2.0 is here for libmediaplayerid
 PKG_CHECK_MODULES(RHYTHMBOX,				\
+		  gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_REQS \
 		  gtk+-3.0 >= $GTK_REQS			\
 		  gdk-pixbuf-2.0 >= $GDK_PIXBUF_REQS	\
 		  glib-2.0 >= $GLIB_REQS		\
@@ -546,6 +550,8 @@ else
 	set_more_warnings=no
 fi
 ])
+RHYTHMBOX_CFLAGS_NOWARN=$RHYTHMBOX_CFLAGS
+AC_SUBST(RHYTHMBOX_CFLAGS_NOWARN)
 AC_MSG_CHECKING(for more warnings, including -Werror)
 if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 	AC_MSG_RESULT(yes)
@@ -930,6 +936,7 @@ plugins/dbus-media-server/Makefile
 plugins/rbzeitgeist/Makefile
 bindings/Makefile
 bindings/vala/Makefile
+bindings/gi/Makefile
 help/Makefile
 po/Makefile.in
 tests/Makefile

@@ -1,4 +1,4 @@
-SUBDIRS =
+SUBDIRS = gi
 
 if ENABLE_VALA
 SUBDIRS += vala
