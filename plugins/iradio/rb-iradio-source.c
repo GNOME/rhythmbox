@@ -61,6 +61,9 @@
 #define IRADIO_SOURCE_ICON  "library-internet-radio"
 #define IRADIO_NEW_STATION_ICON "internet-radio-new"
 
+typedef struct _RhythmDBEntryType RBIRadioEntryType;
+typedef struct _RhythmDBEntryTypeClass RBIRadioEntryTypeClass;
+
 static void rb_iradio_source_class_init (RBIRadioSourceClass *klass);
 static void rb_iradio_source_init (RBIRadioSource *source);
 static void rb_iradio_source_constructed (GObject *object);
@@ -95,6 +98,11 @@ static void genre_selected_cb (RBPropertyView *propview, const char *name,
 static void genre_selection_reset_cb (RBPropertyView *propview, RBIRadioSource *iradio_source);
 static void rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view, RBIRadioSource *source);
 static char *guess_uri_scheme (const char *uri);
+
+/* entry type */
+static void rb_iradio_entry_type_class_init (RBIRadioEntryTypeClass *klass);
+static void rb_iradio_entry_type_init (RBIRadioEntryType *etype);
+GType rb_iradio_entry_type_get_type (void);
 
 /* page methods */
 static gboolean impl_show_popup (RBDisplayPage *page);
@@ -185,7 +193,22 @@ static const GtkTargetEntry stations_view_drag_types[] = {
 	{  "_NETSCAPE_URL", 0, 1 },
 };
 
-G_DEFINE_TYPE (RBIRadioSource, rb_iradio_source, RB_TYPE_STREAMING_SOURCE)
+G_DEFINE_TYPE (RBIRadioSource, rb_iradio_source, RB_TYPE_STREAMING_SOURCE);
+
+G_DEFINE_TYPE (RBIRadioEntryType, rb_iradio_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+
+static void
+rb_iradio_entry_type_class_init (RBIRadioEntryTypeClass *klass)
+{
+	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
+	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
+	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+}
+
+static void
+rb_iradio_entry_type_init (RBIRadioEntryType *etype)
+{
+}
 
 static void
 rb_iradio_source_class_init (RBIRadioSourceClass *klass)
@@ -449,8 +472,6 @@ rb_iradio_source_new (RBShell *shell, RBPlugin *plugin)
 					   "save-to-disk", TRUE,
 					   "category", RHYTHMDB_ENTRY_STREAM,
 					   NULL);
-		entry_type->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
-		entry_type->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
 		rhythmdb_register_entry_type (db, entry_type);
 	}
 	g_object_unref (db);

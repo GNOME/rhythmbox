@@ -28,6 +28,15 @@
 
 #include "rb-audioscrobbler-radio-track-entry-type.h"
 
+typedef struct _RhythmDBEntryType RBAudioscrobblerRadioEntryType;
+typedef struct _RhythmDBEntryTypeClass RBAudioscrobblerRadioEntryTypeClass;
+
+static void rb_audioscrobbler_radio_entry_type_class_init (RBAudioscrobblerRadioEntryTypeClass *klass);
+static void rb_audioscrobbler_radio_entry_type_init (RBAudioscrobblerRadioEntryType *etype);
+GType rb_audioscrobbler_radio_entry_type_get_type (void);
+
+G_DEFINE_TYPE (RBAudioscrobblerRadioEntryType, rb_audioscrobbler_radio_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+
 static RhythmDBEntryType *radio_track_entry_type = NULL;
 
 static void
@@ -41,6 +50,18 @@ track_data_destroy (RhythmDBEntryType *entry_type, RhythmDBEntry *entry)
 	g_free (data->download_url);
 }
 
+static void
+rb_audioscrobbler_radio_entry_type_class_init (RBAudioscrobblerRadioEntryTypeClass *klass)
+{
+	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
+	etype_class->destroy_entry = track_data_destroy;
+}
+
+static void
+rb_audioscrobbler_radio_entry_type_init (RBAudioscrobblerRadioEntryType *etype)
+{
+}
+
 RhythmDBEntryType *
 rb_audioscrobbler_radio_track_get_entry_type (void)
 {
@@ -52,7 +73,7 @@ rb_audioscrobbler_radio_track_register_entry_type (RhythmDB *db)
 {
 	g_assert (radio_track_entry_type == NULL);
 
-	radio_track_entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+	radio_track_entry_type = g_object_new (rb_audioscrobbler_radio_entry_type_get_type (),
 	                                       "db", db,
 	                                       "name", "audioscrobbler-radio-track",
 	                                       "save-to-disk", FALSE,
@@ -60,6 +81,5 @@ rb_audioscrobbler_radio_track_register_entry_type (RhythmDB *db)
 	                                       "type-data-size", sizeof (RBAudioscrobblerRadioTrackData),
 	                                       NULL);
 
-	radio_track_entry_type->destroy_entry = track_data_destroy;
 	rhythmdb_register_entry_type (db, radio_track_entry_type);
 }

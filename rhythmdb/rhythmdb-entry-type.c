@@ -101,9 +101,7 @@ rhythmdb_entry_get_playback_uri (RhythmDBEntry *entry)
 	RhythmDBEntryType *etype = rhythmdb_entry_get_entry_type (entry);
 	RhythmDBEntryTypeClass *klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
 
-	if (etype->get_playback_uri) {
-		return (etype->get_playback_uri) (etype, entry);
-	} else if (klass->get_playback_uri) {
+	if (klass->get_playback_uri) {
 		return (klass->get_playback_uri) (etype, entry);
 	} else {
 		return rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
@@ -123,9 +121,7 @@ rhythmdb_entry_update_availability (RhythmDBEntry *entry, RhythmDBEntryAvailabil
 	RhythmDBEntryType *etype = rhythmdb_entry_get_entry_type (entry);
 	RhythmDBEntryTypeClass *klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
 
-	if (etype->update_availability) {
-		(etype->update_availability) (etype, entry, avail);
-	} else if (klass->get_playback_uri) {
+	if (klass->get_playback_uri) {
 		(klass->update_availability) (etype, entry, avail);
 	} else {
 		/* do nothing? */
@@ -147,9 +143,7 @@ rhythmdb_entry_created (RhythmDBEntry *entry)
 	etype = rhythmdb_entry_get_entry_type (entry);
 	klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
 
-	if (etype->entry_created) {
-		etype->entry_created (etype, entry);
-	} else if (klass->entry_created) {
+	if (klass->entry_created) {
 		klass->entry_created (etype, entry);
 	}
 }
@@ -165,9 +159,7 @@ rhythmdb_entry_pre_destroy (RhythmDBEntry *entry)
 {
 	RhythmDBEntryType *etype = rhythmdb_entry_get_entry_type (entry);
 	RhythmDBEntryTypeClass *klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
-	if (etype->destroy_entry) {
-		etype->destroy_entry (etype, entry);
-	} else if (klass->destroy_entry) {
+	if (klass->destroy_entry) {
 		klass->destroy_entry (etype, entry);
 	}
 }
@@ -187,9 +179,7 @@ rhythmdb_entry_can_sync_metadata (RhythmDBEntry *entry)
 {
 	RhythmDBEntryType *etype = rhythmdb_entry_get_entry_type (entry);
 	RhythmDBEntryTypeClass *klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
-	if (etype->can_sync_metadata) {
-		return etype->can_sync_metadata (etype, entry);
-	} else if (klass->can_sync_metadata) {
+	if (klass->can_sync_metadata) {
 		return klass->can_sync_metadata (etype, entry);
 	} else {
 		return FALSE;
@@ -209,9 +199,7 @@ rhythmdb_entry_sync_metadata (RhythmDBEntry *entry, GSList *changes, GError **er
 {
 	RhythmDBEntryType *etype = rhythmdb_entry_get_entry_type (entry);
 	RhythmDBEntryTypeClass *klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
-	if (etype->sync_metadata) {
-		etype->sync_metadata (etype, entry, changes, error);
-	} else if (klass->sync_metadata) {
+	if (klass->sync_metadata) {
 		klass->sync_metadata (etype, entry, changes, error);
 	} else {
 		/* default implementation? */

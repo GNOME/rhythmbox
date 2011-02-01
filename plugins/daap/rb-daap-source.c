@@ -61,6 +61,9 @@
 
 #include <libdmapsharing/dmap.h>
 
+typedef struct _RhythmDBEntryType RBDAAPEntryType;
+typedef struct _RhythmDBEntryTypeClass RBDAAPEntryTypeClass;
+
 static void rb_daap_source_dispose (GObject *object);
 static void rb_daap_source_set_property  (GObject *object,
 					  guint prop_id,
@@ -77,6 +80,10 @@ static void rb_daap_source_get_status (RBDisplayPage *page, char **text, char **
 
 static char * rb_daap_source_get_browser_key (RBSource *source);
 static char * rb_daap_source_get_paned_key (RBBrowserSource *source);
+
+static void rb_daap_entry_type_class_init (RBDAAPEntryTypeClass *klass);
+static void rb_daap_entry_type_init (RBDAAPEntryType *etype);
+GType rb_daap_entry_type_get_type (void);
 
 #define CONF_STATE_SORTING CONF_PREFIX "/state/daap/sorting"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/daap/paned_position"
@@ -112,7 +119,9 @@ enum {
 	PROP_PASSWORD_PROTECTED
 };
 
-G_DEFINE_TYPE (RBDAAPSource, rb_daap_source, RB_TYPE_BROWSER_SOURCE)
+G_DEFINE_TYPE (RBDAAPSource, rb_daap_source, RB_TYPE_BROWSER_SOURCE);
+
+G_DEFINE_TYPE (RBDAAPEntryType, rb_daap_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
 
 static char *
 rb_daap_entry_type_get_playback_uri (RhythmDBEntryType *etype, RhythmDBEntry *entry)
@@ -125,6 +134,18 @@ rb_daap_entry_type_get_playback_uri (RhythmDBEntryType *etype, RhythmDBEntry *en
 	}
 
 	return g_strdup (location);
+}
+
+static void
+rb_daap_entry_type_class_init (RBDAAPEntryTypeClass *klass)
+{
+	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
+	etype_class->get_playback_uri = rb_daap_entry_type_get_playback_uri;
+}
+
+static void
+rb_daap_entry_type_init (RBDAAPEntryType *etype)
+{
 }
 
 static void
@@ -296,13 +317,12 @@ rb_daap_source_new (RBShell *shell,
 	g_object_get (shell, "db", &db, NULL);
 	entry_type_name = g_strdup_printf ("daap:%s:%s:%s", service_name, name, host);
 
-	entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+	entry_type = g_object_new (rb_daap_entry_type_get_type (),
 				   "db", db,
 				   "name", entry_type_name,
 				   "save-to-disk", FALSE,
 				   "category", RHYTHMDB_ENTRY_NORMAL,
 				   NULL);
-	entry_type->get_playback_uri = rb_daap_entry_type_get_playback_uri;
 	rhythmdb_register_entry_type (db, entry_type);
 	g_object_unref (db);
 	g_free (entry_type_name);

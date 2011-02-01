@@ -133,7 +133,7 @@ gboolean waiting_db, finalised_db;
 void
 test_rhythmdb_setup (void)
 {
-	RhythmDBEntryType *entry_type;
+	RhythmDBEntryTypeClass *etype_class;
 
 	init_once (TRUE);
 
@@ -142,13 +142,13 @@ test_rhythmdb_setup (void)
 	rhythmdb_start_action_thread (db);
 
 	/* allow songs and ignored entries to be synced to for the tests */
-	entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
-	entry_type->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc)rb_true_function;
-	entry_type->sync_metadata = (RhythmDBEntryTypeSyncFunc)rb_null_function;
+	etype_class = RHYTHMDB_ENTRY_TYPE_GET_CLASS (RHYTHMDB_ENTRY_TYPE_SONG);
+	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc)rb_true_function;
+	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc)rb_null_function;
 
-	entry_type = RHYTHMDB_ENTRY_TYPE_IGNORE;
-	entry_type->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc)rb_true_function;
-	entry_type->sync_metadata = (RhythmDBEntryTypeSyncFunc)rb_null_function;
+	etype_class = RHYTHMDB_ENTRY_TYPE_GET_CLASS (RHYTHMDB_ENTRY_TYPE_IGNORE);
+	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc)rb_true_function;
+	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc)rb_null_function;
 }
 
 void

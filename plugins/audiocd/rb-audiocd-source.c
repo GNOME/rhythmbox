@@ -143,6 +143,16 @@ typedef struct
 RB_PLUGIN_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
 #define AUDIOCD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOCD_SOURCE, RBAudioCdSourcePrivate))
 
+/* entry type */
+typedef struct _RhythmDBEntryType RBAudioCdEntryType;
+typedef struct _RhythmDBEntryTypeClass RBAudioCdEntryTypeClass;
+
+static void rb_audiocd_entry_type_class_init (RBAudioCdEntryTypeClass *klass);
+static void rb_audiocd_entry_type_init (RBAudioCdEntryType *etype);
+GType rb_audiocd_entry_type_get_type (void);
+
+G_DEFINE_TYPE (RBAudioCdEntryType, rb_audiocd_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+
 #ifdef HAVE_SJ_METADATA_GETTER
 static AlbumDetails* multiple_album_dialog (GList *albums, RBAudioCdSource *source);
 #endif
@@ -157,6 +167,19 @@ static GtkActionEntry rb_audiocd_source_actions[] = {
 	G_CALLBACK (reload_metadata_cmd) },
 #endif
 };
+
+static void
+rb_audiocd_entry_type_class_init (RBAudioCdEntryTypeClass *klass)
+{
+	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
+	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
+	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+}
+
+static void
+rb_audiocd_entry_type_init (RBAudioCdEntryType *etype)
+{
+}
 
 static RhythmDB *
 get_db_for_source (RBAudioCdSource *source)
@@ -437,15 +460,13 @@ rb_audiocd_source_new (RBPlugin *plugin,
 	g_free (path);
 
 	g_object_get (shell, "db", &db, NULL);
-	entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+	entry_type = g_object_new (rb_audiocd_entry_type_get_type (),
 				   "db", db,
 				   "name", name,
 				   "save-to-disk", FALSE,
 				   "category", RHYTHMDB_ENTRY_NORMAL,
 				   "type-data-size", sizeof(RBAudioCDEntryData),
 				   NULL);
-	entry_type->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
-	entry_type->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
 	rhythmdb_register_entry_type (db, entry_type);
 	g_object_unref (db);
 	g_free (name);

@@ -43,6 +43,9 @@
 #include "rb-fm-radio-source.h"
 #include "rb-radio-tuner.h"
 
+typedef struct _RhythmDBEntryType RBFMRadioEntryType;
+typedef struct _RhythmDBEntryTypeClass RBFMRadioEntryTypeClass;
+
 static void     rb_fm_radio_source_class_init  (RBFMRadioSourceClass *class);
 static void     rb_fm_radio_source_init        (RBFMRadioSource *self);
 static void	rb_fm_radio_source_constructed (GObject *object);
@@ -67,6 +70,9 @@ static gboolean     impl_show_popup     (RBDisplayPage *page);
 static GList       *impl_get_ui_actions (RBDisplayPage *page);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 
+static void rb_fm_radio_entry_type_class_init (RBFMRadioEntryTypeClass *klass);
+static void rb_fm_radio_entry_type_init (RBFMRadioEntryType *etype);
+GType rb_fm_radio_entry_type_get_type (void);
 
 struct _RBFMRadioSourcePrivate {
 	RhythmDB *db;
@@ -88,6 +94,28 @@ static GtkActionEntry rb_fm_radio_source_actions[] = {
 };
 
 RB_PLUGIN_DEFINE_TYPE (RBFMRadioSource, rb_fm_radio_source, RB_TYPE_SOURCE);
+
+G_DEFINE_TYPE (RBFMRadioEntryType, rb_fm_radio_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+
+static char *
+rb_fm_radio_source_get_playback_uri (RhythmDBEntryType *etype, RhythmDBEntry *entry)
+{
+	return g_strdup("xrbsilence:///");
+}
+
+static void
+rb_fm_radio_entry_type_class_init (RBFMRadioEntryTypeClass *klass)
+{
+	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
+	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
+	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+	etype_class->get_playback_uri = rb_fm_radio_source_get_playback_uri;
+}
+
+static void
+rb_fm_radio_entry_type_init (RBFMRadioEntryType *etype)
+{
+}
 
 static void
 rb_fm_radio_source_class_init (RBFMRadioSourceClass *class)
@@ -177,12 +205,6 @@ rb_fm_radio_source_constructed (GObject *object)
 				 self, 0);
 }
 
-static char *
-rb_fm_radio_source_get_playback_uri (RhythmDBEntryType *etype, RhythmDBEntry *entry)
-{
-	return g_strdup("xrbsilence:///");
-}
-
 RBSource *
 rb_fm_radio_source_new (RBShell *shell, RBRadioTuner *tuner)
 {
@@ -194,14 +216,11 @@ rb_fm_radio_source_new (RBShell *shell, RBRadioTuner *tuner)
 
 	entry_type = rhythmdb_entry_type_get_by_name (db, "fmradio-station");
 	if (entry_type == NULL) {
-		entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+		entry_type = g_object_new (rb_fm_radio_entry_type_get_type (),
 					   "db", db,
 					   "name", "fmradio-station",
 					   "save-to-disk", TRUE,
 					   NULL);
-		entry_type->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
-		entry_type->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
-		entry_type->get_playback_uri = rb_fm_radio_source_get_playback_uri;
 		rhythmdb_register_entry_type (db, entry_type);
 	}
 

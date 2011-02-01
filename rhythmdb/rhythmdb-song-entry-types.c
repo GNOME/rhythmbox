@@ -40,6 +40,33 @@ static RhythmDBEntryType *song_entry_type = NULL;
 static RhythmDBEntryType *error_entry_type = NULL;
 static RhythmDBEntryType *ignore_entry_type = NULL;
 
+
+typedef struct _RhythmDBEntryType RhythmDBSongEntryType;
+typedef struct _RhythmDBEntryTypeClass RhythmDBSongEntryTypeClass;
+
+static void rhythmdb_song_entry_type_class_init (RhythmDBSongEntryTypeClass *klass);
+static void rhythmdb_song_entry_type_init (RhythmDBSongEntryType *etype);
+GType rhythmdb_song_entry_type_get_type (void);
+G_DEFINE_TYPE (RhythmDBSongEntryType, rhythmdb_song_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+
+
+typedef struct _RhythmDBEntryType RhythmDBErrorEntryType;
+typedef struct _RhythmDBEntryTypeClass RhythmDBErrorEntryTypeClass;
+
+static void rhythmdb_error_entry_type_class_init (RhythmDBErrorEntryTypeClass *klass);
+static void rhythmdb_error_entry_type_init (RhythmDBErrorEntryType *etype);
+GType rhythmdb_error_entry_type_get_type (void);
+G_DEFINE_TYPE (RhythmDBErrorEntryType, rhythmdb_error_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+
+
+typedef struct _RhythmDBEntryType RhythmDBIgnoreEntryType;
+typedef struct _RhythmDBEntryTypeClass RhythmDBIgnoreEntryTypeClass;
+
+static void rhythmdb_ignore_entry_type_class_init (RhythmDBIgnoreEntryTypeClass *klass);
+static void rhythmdb_ignore_entry_type_init (RhythmDBIgnoreEntryType *etype);
+GType rhythmdb_ignore_entry_type_get_type (void);
+G_DEFINE_TYPE (RhythmDBIgnoreEntryType, rhythmdb_ignore_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+
 static void
 update_entry_last_seen (RhythmDB *db, RhythmDBEntry *entry)
 {
@@ -229,6 +256,51 @@ rhythmdb_get_error_entry_type (void)
 }
 
 
+static void
+rhythmdb_song_entry_type_class_init (RhythmDBSongEntryTypeClass *klass)
+{
+	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
+
+	etype_class->can_sync_metadata = song_can_sync_metadata;
+	etype_class->sync_metadata = song_sync_metadata;
+	etype_class->update_availability = song_update_availability;
+}
+
+static void
+rhythmdb_song_entry_type_init (RhythmDBSongEntryType *etype)
+{
+}
+
+static void
+rhythmdb_error_entry_type_class_init (RhythmDBErrorEntryTypeClass *klass)
+{
+	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
+
+	etype_class->get_playback_uri = (RhythmDBEntryTypeStringFunc) rb_null_function;
+	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
+	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+	etype_class->update_availability = import_error_update_availability;
+}
+
+static void
+rhythmdb_error_entry_type_init (RhythmDBErrorEntryType *etype)
+{
+}
+
+static void
+rhythmdb_ignore_entry_type_class_init (RhythmDBIgnoreEntryTypeClass *klass)
+{
+	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
+
+	etype_class->get_playback_uri = (RhythmDBEntryTypeStringFunc) rb_null_function;
+	etype_class->update_availability = song_update_availability;
+}
+
+static void
+rhythmdb_ignore_entry_type_init (RhythmDBIgnoreEntryType *etype)
+{
+}
+
 
 void
 rhythmdb_register_song_entry_types (RhythmDB *db)
@@ -237,34 +309,25 @@ rhythmdb_register_song_entry_types (RhythmDB *db)
 	g_assert (error_entry_type == NULL);
 	g_assert (ignore_entry_type == NULL);
 
-	song_entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+	song_entry_type = g_object_new (rhythmdb_song_entry_type_get_type (),
 					"db", db,
 					"name", "song",
 					"save-to-disk", TRUE,
 					"has-playlists", TRUE,
 					NULL);
-	song_entry_type->can_sync_metadata = song_can_sync_metadata;
-	song_entry_type->sync_metadata = song_sync_metadata;
-	song_entry_type->update_availability = song_update_availability;
 
-	ignore_entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+	ignore_entry_type = g_object_new (rhythmdb_ignore_entry_type_get_type (),
 					  "db", db,
 					  "name", "ignore",
 					  "save-to-disk", TRUE,
 					  "category", RHYTHMDB_ENTRY_VIRTUAL,
 					  NULL);
-	ignore_entry_type->get_playback_uri = (RhythmDBEntryTypeStringFunc) rb_null_function;
-	ignore_entry_type->update_availability = song_update_availability;
 
-	error_entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+	error_entry_type = g_object_new (rhythmdb_error_entry_type_get_type (),
 					 "db", db,
 					 "name", "import-error",
 					 "category", RHYTHMDB_ENTRY_VIRTUAL,
 					 NULL);
-	error_entry_type->get_playback_uri = (RhythmDBEntryTypeStringFunc) rb_null_function;
-	error_entry_type->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
-	error_entry_type->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
-	error_entry_type->update_availability = import_error_update_availability;
 
 	rhythmdb_register_entry_type (db, song_entry_type);
 	rhythmdb_register_entry_type (db, error_entry_type);

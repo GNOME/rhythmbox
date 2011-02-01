@@ -36,6 +36,28 @@
 static RhythmDBEntryType *podcast_post_entry_type = NULL;
 static RhythmDBEntryType *podcast_feed_entry_type = NULL;
 
+/* podcast post entry type class */
+
+typedef struct _RhythmDBEntryType RBPodcastPostEntryType;
+typedef struct _RhythmDBEntryTypeClass RBPodcastPostEntryTypeClass;
+
+static void rb_podcast_post_entry_type_class_init (RBPodcastPostEntryTypeClass *klass);
+static void rb_podcast_post_entry_type_init (RBPodcastPostEntryType *etype);
+GType rb_podcast_post_entry_type_get_type (void);
+
+G_DEFINE_TYPE (RBPodcastPostEntryType, rb_podcast_post_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+
+/* podcast feed entry type class */
+
+typedef struct _RhythmDBEntryType RBPodcastFeedEntryType;
+typedef struct _RhythmDBEntryTypeClass RBPodcastFeedEntryTypeClass;
+
+static void rb_podcast_feed_entry_type_class_init (RBPodcastFeedEntryTypeClass *klass);
+static void rb_podcast_feed_entry_type_init (RBPodcastFeedEntryType *etype);
+GType rb_podcast_feed_entry_type_get_type (void);
+
+G_DEFINE_TYPE (RBPodcastFeedEntryType, rb_podcast_feed_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+
 static char *
 podcast_get_playback_uri (RhythmDBEntryType *entry_type, RhythmDBEntry *entry)
 {
@@ -84,6 +106,23 @@ rb_podcast_get_post_entry_type (void)
 	return podcast_post_entry_type;
 }
 
+static void
+rb_podcast_post_entry_type_class_init (RBPodcastPostEntryTypeClass *klass)
+{
+	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
+
+	etype_class->entry_created = podcast_post_create;
+	etype_class->destroy_entry = podcast_data_destroy;
+	etype_class->get_playback_uri = podcast_get_playback_uri;
+	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
+	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+}
+
+static void
+rb_podcast_post_entry_type_init (RBPodcastPostEntryType *etype)
+{
+}
+
 /**
  * rhythmdb_get_ignore_entry_type:
  *
@@ -97,6 +136,22 @@ rb_podcast_get_feed_entry_type (void)
 	return podcast_feed_entry_type;
 }
 
+static void
+rb_podcast_feed_entry_type_class_init (RBPodcastFeedEntryTypeClass *klass)
+{
+	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
+
+	etype_class->entry_created = podcast_post_create;
+	etype_class->destroy_entry = podcast_data_destroy;
+	etype_class->get_playback_uri = (RhythmDBEntryTypeStringFunc) rb_null_function;
+	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
+	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+}
+
+static void
+rb_podcast_feed_entry_type_init (RBPodcastFeedEntryType *etype)
+{
+}
 
 
 void
@@ -105,31 +160,21 @@ rb_podcast_register_entry_types (RhythmDB *db)
 	g_assert (podcast_post_entry_type == NULL);
 	g_assert (podcast_feed_entry_type == NULL);
 
-	podcast_post_entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+	podcast_post_entry_type = g_object_new (rb_podcast_post_entry_type_get_type (),
 						"db", db,
 						"name", "podcast-post",
 						"save-to-disk", TRUE,
 						"category", RHYTHMDB_ENTRY_NORMAL,
 						"type-data-size", sizeof (RhythmDBPodcastFields),
 						NULL);
-	podcast_post_entry_type->entry_created = podcast_post_create;
-	podcast_post_entry_type->destroy_entry = podcast_data_destroy;
-	podcast_post_entry_type->get_playback_uri = podcast_get_playback_uri;
-	podcast_post_entry_type->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
-	podcast_post_entry_type->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
 	rhythmdb_register_entry_type (db, podcast_post_entry_type);
 
-	podcast_feed_entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+	podcast_feed_entry_type = g_object_new (rb_podcast_feed_entry_type_get_type (),
 						"db", db,
 						"name", "podcast-feed",
 						"save-to-disk", TRUE,
 						"category", RHYTHMDB_ENTRY_CONTAINER,
 						"type-data-size", sizeof (RhythmDBPodcastFields),
 						NULL);
-	podcast_feed_entry_type->entry_created = podcast_post_create;
-	podcast_feed_entry_type->destroy_entry = podcast_data_destroy;
-	podcast_feed_entry_type->get_playback_uri = (RhythmDBEntryTypeStringFunc) rb_null_function;
-	podcast_feed_entry_type->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
-	podcast_feed_entry_type->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
 	rhythmdb_register_entry_type (db, podcast_feed_entry_type);
 }

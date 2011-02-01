@@ -77,16 +77,6 @@ typedef void (*RhythmDBEntryTypeSyncFunc) (RhythmDBEntryType *entry_type, Rhythm
 struct _RhythmDBEntryType {
 	GObject parent;
 
-	/* function pointers for C users */
-	void		(*entry_created) (RhythmDBEntryType *etype, RhythmDBEntry *entry);
-	void		(*destroy_entry) (RhythmDBEntryType *etype, RhythmDBEntry *entry);
-
-	char *		(*get_playback_uri) (RhythmDBEntryType *etype, RhythmDBEntry *entry);
-	void		(*update_availability) (RhythmDBEntryType *etype, RhythmDBEntry *entry, RhythmDBEntryAvailability avail);
-
-	gboolean	(*can_sync_metadata) (RhythmDBEntryType *etype, RhythmDBEntry *entry);
-	void		(*sync_metadata) (RhythmDBEntryType *etype, RhythmDBEntry *entry, GSList *changes, GError **error);
-
 	RhythmDBEntryTypePrivate *priv;
 };
 
