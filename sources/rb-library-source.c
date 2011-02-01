@@ -54,8 +54,8 @@
 
 #include "rb-track-transfer-batch.h"
 #include "rb-track-transfer-queue.h"
-#include <profiles/gnome-media-profiles.h>
-#include <profiles/audio-profile-choose.h>
+#include <libgnome-media-profiles/gnome-media-profiles.h>
+#include <libgnome-media-profiles/audio-profile-choose.h>
 
 #include "rhythmdb.h"
 #include "rb-debug.h"
@@ -68,7 +68,6 @@
 #include "rb-auto-playlist-source.h"
 #include "rb-encoder.h"
 #include "rb-missing-plugins.h"
-#include "gseal-gtk-compat.h"
 
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);

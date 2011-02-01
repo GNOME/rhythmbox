@@ -39,12 +39,9 @@
 #define MINIMUM_HEIGHT 26
 
 static void rb_segmented_bar_finalize (GObject *object);
-static void rb_segmented_bar_size_request (GtkWidget *widget,
-					   GtkRequisition *requisition);
 static void rb_segmented_bar_size_allocate(GtkWidget *widget,
 					   GtkAllocation *allocation);
-static gboolean rb_segmented_bar_expose (GtkWidget *widget,
-					 GdkEventExpose *event);
+static gboolean rb_segmented_bar_draw (GtkWidget *widget, cairo_t *context);
 static void rb_segmented_bar_get_property (GObject *object, guint param_id,
 					   GValue *value, GParamSpec *pspec);
 static void rb_segmented_bar_set_property (GObject *object, guint param_id,
@@ -52,6 +49,12 @@ static void rb_segmented_bar_set_property (GObject *object, guint param_id,
 
 static gchar *rb_segmented_bar_default_value_formatter (gdouble percent,
 						       	gpointer data);
+static void rb_segmented_bar_get_preferred_height (GtkWidget *widget,
+						   int *minimum_height,
+						   int *natural_height);
+static void rb_segmented_bar_get_preferred_width (GtkWidget *widget,
+						  int *minimum_width,
+						  int *natural_width);
 
 static void compute_layout_size (RBSegmentedBar *bar);
 
@@ -153,8 +156,9 @@ rb_segmented_bar_class_init (RBSegmentedBarClass *klass)
 	object_class->get_property = rb_segmented_bar_get_property;
 	object_class->set_property = rb_segmented_bar_set_property;
 
-	widget_class->expose_event = rb_segmented_bar_expose;
-	widget_class->size_request = rb_segmented_bar_size_request;
+	widget_class->draw = rb_segmented_bar_draw;
+	widget_class->get_preferred_height = rb_segmented_bar_get_preferred_height;
+	widget_class->get_preferred_width = rb_segmented_bar_get_preferred_width;
 	widget_class->size_allocate = rb_segmented_bar_size_allocate;
 	widget_class->get_accessible = rb_segmented_bar_get_accessible;
 
@@ -271,29 +275,45 @@ rb_segmented_bar_default_value_formatter (gdouble percent,
 }
 
 static void
-rb_segmented_bar_size_request (GtkWidget *widget,
-			       GtkRequisition *requisition)
+rb_segmented_bar_get_preferred_height (GtkWidget *widget, int *minimum_height, int *natural_height)
 {
 	RBSegmentedBarPrivate *priv;
-	int real_height;
+	int height;
 
-	g_return_if_fail (requisition != NULL);
+
+	priv = RB_SEGMENTED_BAR_GET_PRIVATE (RB_SEGMENTED_BAR (widget));
+	if (priv->reflect) {
+		height = MINIMUM_HEIGHT * 1.75;
+	} else {
+		height = MINIMUM_HEIGHT;
+	}
+
+	if (priv->show_labels) {
+		compute_layout_size (RB_SEGMENTED_BAR (widget));
+		height = MAX (MINIMUM_HEIGHT + priv->bar_label_spacing + priv->layout_height, height);
+	}
+
+	if (minimum_height)
+		*minimum_height = height;
+	if (natural_height)
+		*natural_height = height;
+}
+
+static void
+rb_segmented_bar_get_preferred_width (GtkWidget *widget, int *minimum_width, int *natural_width)
+{
+	RBSegmentedBarPrivate *priv;
+	int width;
 
 	priv = RB_SEGMENTED_BAR_GET_PRIVATE (RB_SEGMENTED_BAR (widget));
 
-	if (priv->reflect) {
-		real_height = MINIMUM_HEIGHT*1.75;
-	} else {
-		real_height = MINIMUM_HEIGHT;
-	}
-	if (priv->show_labels) {
-		compute_layout_size (RB_SEGMENTED_BAR (widget));
-		requisition->height = MAX (MINIMUM_HEIGHT + priv->bar_label_spacing + priv->layout_height,
-						 real_height);
-	} else {
-		requisition->height = real_height;
-	}
-	requisition->width = MAX (priv->layout_width, 200);
+	compute_layout_size (RB_SEGMENTED_BAR (widget));
+	width = MAX (priv->layout_width, 200);
+
+	if (minimum_width)
+		*minimum_width = width;
+	if (natural_width)
+		*natural_width = width;
 }
 
 static PangoLayout *create_adapt_layout (GtkWidget *widget, PangoLayout *layout,
@@ -660,10 +680,9 @@ static void rb_segmented_bar_render_labels (RBSegmentedBar *bar,
 					    cairo_t *context)
 {
 	RBSegmentedBarPrivate *priv;
-	GtkStyle *style;
 	PangoLayout *layout;
 	Color text_color;
-	GdkColor *gdk_color;
+	GdkRGBA gdk_color;
 	gboolean ltr = TRUE;
 	int x = 0;
 	GList *it;
@@ -673,17 +692,18 @@ static void rb_segmented_bar_render_labels (RBSegmentedBar *bar,
 	if (priv->segments == NULL) {
 		return;
 	}
-	style = gtk_widget_get_style (GTK_WIDGET (bar));
-	gdk_color = &style->fg[gtk_widget_get_state (GTK_WIDGET (bar))];
+	gtk_style_context_get_color (gtk_widget_get_style_context (GTK_WIDGET (bar)),
+				     gtk_widget_get_state (GTK_WIDGET (bar)),
+				     &gdk_color);
 
 	if (gtk_widget_get_direction (GTK_WIDGET (bar)) == GTK_TEXT_DIR_RTL) {
 		ltr = FALSE;
 		x = priv->layout_width;
 	}
 
-	text_color.red = gdk_color->red / 65535.0;
-	text_color.green = gdk_color->green / 65535.0;
-	text_color.blue = gdk_color->blue / 65535.0;
+	text_color.red = gdk_color.red;
+	text_color.green = gdk_color.green;
+	text_color.blue = gdk_color.blue;
 	text_color.alpha = 1.0;
 	layout = NULL;
 	for (it = priv->segments; it != NULL; it = it->next) {
@@ -758,25 +778,23 @@ static void rb_segmented_bar_render_labels (RBSegmentedBar *bar,
 }
 
 static gboolean
-rb_segmented_bar_expose (GtkWidget *widget,
-			 GdkEventExpose *event)
+rb_segmented_bar_draw (GtkWidget *widget, cairo_t *context)
 {
 	RBSegmentedBar *bar;
 	RBSegmentedBarPrivate *priv;
 	GtkAllocation allocation;
-	cairo_t *context;
 	cairo_pattern_t *bar_pattern;
 
 	g_return_val_if_fail (RB_IS_SEGMENTED_BAR (widget), FALSE);
+	/* what?
 	if (gtk_widget_is_drawable (widget) == FALSE) {
 		return FALSE;
 	}
+	*/
 
 	bar = RB_SEGMENTED_BAR (widget);
 	priv = RB_SEGMENTED_BAR_GET_PRIVATE (bar);
 
-	context = gdk_cairo_create (GDK_DRAWABLE (gtk_widget_get_window (widget)));
-	
 	if (priv->reflect) {
 		cairo_push_group (context);
 	}
@@ -849,7 +867,6 @@ rb_segmented_bar_expose (GtkWidget *widget,
 		rb_segmented_bar_render_labels (bar, context);
 	}
 	cairo_pattern_destroy (bar_pattern);
-	cairo_destroy (context);
 
 	return TRUE;
 }

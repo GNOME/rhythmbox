@@ -44,8 +44,6 @@
 #include "rb-auto-playlist-source.h"
 #include "rb-static-playlist-source.h"
 
-#include "gseal-gtk-compat.h"
-
 /**
  * SECTION:rb-display-page-model
  * @short_description: models backing the display page tree

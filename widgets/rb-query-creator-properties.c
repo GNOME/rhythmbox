@@ -35,7 +35,6 @@
 #include "rhythmdb.h"
 #include "rb-query-creator-private.h"
 #include "rb-rating.h"
-#include "gseal-gtk-compat.h"
 
 const RBQueryCreatorPropertyType string_property_type;
 const RBQueryCreatorPropertyType escaped_string_property_type;

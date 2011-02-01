@@ -33,7 +33,6 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#include "gseal-gtk-compat.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-rating-helper.h"
 #include "rb-stock-icons.h"
@@ -143,7 +142,7 @@ rb_rating_pixbufs_new (void)
 /**
  * rb_rating_render_stars:
  * @widget: a #GtkWidget to render on behalf of
- * @window: the #GdkWindow being rendered to
+ * @cr: cairo context to render into
  * @pixbufs: a #RBRatingPixbufs structure
  * @x: source X coordinate within the rating pixbufs (usually 0)
  * @y: source Y coordinate within the rating pixbufs (usually 0)
@@ -159,7 +158,7 @@ rb_rating_pixbufs_new (void)
  */
 gboolean
 rb_rating_render_stars (GtkWidget *widget,
-			GdkWindow *window,
+			cairo_t *cr,
 			RBRatingPixbufs *pixbufs,
 			int x,
 			int y,
@@ -170,22 +169,19 @@ rb_rating_render_stars (GtkWidget *widget,
 {
 	int i, icon_width;
 	gboolean rtl;
-	cairo_t *cr;
 
 	g_return_val_if_fail (widget != NULL, FALSE);
-	g_return_val_if_fail (window != NULL, FALSE);
 	g_return_val_if_fail (pixbufs != NULL, FALSE);
 
 	rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_width, NULL);
 
-	cr = gdk_cairo_create (window);
 	for (i = 0; i < RB_RATING_MAX_SCORE; i++) {
 		GdkPixbuf *buf;
 		GtkStateType state;
-		GtkStyle *style;
 		gint star_offset;
 		int offset;
+		GdkRGBA color;
 
 		if (selected == TRUE) {
 			offset = 0;
@@ -212,11 +208,11 @@ rb_rating_render_stars (GtkWidget *widget,
 			return FALSE;
 		}
 
-		style = gtk_widget_get_style (widget);
+		gtk_style_context_get_color (gtk_widget_get_style_context (widget), state, &color);
 		buf = eel_create_colorized_pixbuf (buf,
-						   (style->text[state].red + offset) >> 8,
-						   (style->text[state].green + offset) >> 8,
-						   (style->text[state].blue + offset) >> 8);
+						   ((guint16)(color.red * G_MAXUINT16) + offset) >> 8,
+						   ((guint16)(color.green * G_MAXUINT16) + offset) >> 8,
+						   ((guint16)(color.blue * G_MAXUINT16) + offset) >> 8);
 		if (buf == NULL) {
 			return FALSE;
 		}
@@ -231,7 +227,6 @@ rb_rating_render_stars (GtkWidget *widget,
 		cairo_paint (cr);
 		g_object_unref (buf);
 	}
-	cairo_destroy (cr);
 
 	return TRUE;
 }

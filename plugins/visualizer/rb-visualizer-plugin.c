@@ -81,7 +81,6 @@
 #include <dbus/dbus-glib.h>
 
 #include "rb-vis-widget.h"
-#include "gseal-gtk-compat.h"
 
 /* preferences */
 #define CONF_VIS_PREFIX  CONF_PREFIX "/plugins/visualizer"
@@ -815,7 +814,7 @@ actually_hide_controls (RBVisualizerPlugin *plugin)
 
 			cursor = gdk_cursor_new (GDK_BLANK_CURSOR);
 			gdk_window_set_cursor (window, cursor);
-			gdk_cursor_unref (cursor);
+			g_object_unref (cursor);
 		}
 		/* fall through */
 	case EMBEDDED:
@@ -916,7 +915,7 @@ rb_visualizer_plugin_key_release_cb (GtkWidget *vis_widget,
 				     GdkEventKey *event,
 				     RBVisualizerPlugin *plugin)
 {
-	if (event->keyval != GDK_Escape)
+	if (event->keyval != GDK_KEY_Escape)
 		return FALSE;
 
 	switch (plugin->mode) {
@@ -976,22 +975,22 @@ static void
 vis_window_size_request_cb (GtkWidget *widget, GtkRequisition *req, RBVisualizerPlugin *plugin)
 {
 	int quality;
+	int control_width;
 	float ratio;
-	GtkRequisition control_req;
 
 	rb_debug ("handling size-request for vis window");
 
 	quality = eel_gconf_get_integer (CONF_VIS_QUALITY);
 
-	gtk_widget_size_request (plugin->control_widget, &control_req);
+	gtk_widget_get_preferred_width (plugin->control_widget, &control_width, NULL);
 
 	req->width = vis_quality[quality].width;
 	req->height = vis_quality[quality].height;
 	ratio = ((float)vis_quality[quality].height) / ((float)vis_quality[quality].width);
 
-	if ((req->width < control_req.width) || (req->height < (control_req.width * ratio))) {
-		req->width = control_req.width;
-		req->height = control_req.width * ratio;
+	if ((req->width < control_width) || (req->height < (control_width * ratio))) {
+		req->width = control_width;
+		req->height = control_width * ratio;
 	}
 
 	g_signal_handler_disconnect (plugin->vis_window, plugin->vis_window_size_request_id);
@@ -1003,7 +1002,7 @@ resize_vis_window (RBVisualizerPlugin *plugin, int quality, gboolean resize_down
 {
 	int width;
 	int height;
-	GtkRequisition req;
+	int control_width;
 	float ratio;
 	gboolean update = FALSE;
 
@@ -1030,7 +1029,7 @@ resize_vis_window (RBVisualizerPlugin *plugin, int quality, gboolean resize_down
 	ratio = ((float)vis_quality[quality].height) / ((float)vis_quality[quality].width);
 
 	gtk_window_get_size (GTK_WINDOW (plugin->vis_window), &width, &height);
-	gtk_widget_size_request (plugin->control_widget, &req);
+	gtk_widget_get_preferred_width (plugin->control_widget, &control_width, NULL);
 
 	if (width < vis_quality[quality].width && height < vis_quality[quality].height) {
 		rb_debug ("resizing output window: [%d,%d] < [%d,%d]",
@@ -1056,15 +1055,15 @@ resize_vis_window (RBVisualizerPlugin *plugin, int quality, gboolean resize_down
 		}
 	}
 
-	if (width < req.width) {
-		rb_debug ("resizing output window %d < %d", width, req.width);
-		width = req.width;
+	if (width < control_width) {
+		rb_debug ("resizing output window %d < %d", width, control_width);
+		width = control_width;
 		update = TRUE;
 	}
-	if (height < (req.width * ratio)) {
+	if (height < (control_width * ratio)) {
 		rb_debug ("resizing output window: %d < %d (ratio %f)",
-			  height, (int)(req.width * ratio), ratio);
-		height = (int)(req.width * ratio);
+			  height, (int)(control_width * ratio), ratio);
+		height = (int)(control_width * ratio);
 		update = TRUE;
 	}
 
@@ -1116,7 +1115,7 @@ update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int 
 	} else {
 		if (plugin->xoverlay != NULL) {
 			gst_x_overlay_set_xwindow_id (plugin->xoverlay,
-						      GDK_WINDOW_XWINDOW (plugin->fake_window));
+						      GDK_WINDOW_XID (plugin->fake_window));
 		}
 
 		switch (plugin->mode) {
@@ -1246,7 +1245,7 @@ update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int 
 		if (plugin->remote_window == 0) {
 			gdk_screen = get_screen (plugin, screen);
 			root_window = gdk_screen_get_root_window (gdk_screen);
-			plugin->remote_window = GDK_WINDOW_XWINDOW (root_window);
+			plugin->remote_window = GDK_WINDOW_XID (root_window);
 			rb_debug ("got root window id %lu", plugin->remote_window);
 		}
 

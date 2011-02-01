@@ -265,22 +265,36 @@ rb_search_entry_set_text (RBSearchEntry *entry, const char *text)
 static void
 rb_search_entry_check_style (RBSearchEntry *entry)
 {
-	static const GdkColor bg_colour = { 0, 0xf7f7, 0xf7f7, 0xbebe }; /* yellow-ish */
-	static const GdkColor fg_colour = { 0, 0, 0, 0 }; /* black. */
+	static const GdkRGBA fallback_bg_color = { 0.9686, 0.9686, 0.7451, 1.0}; /* yellow-ish */
+	static const GdkRGBA fallback_fg_color = { 0, 0, 0, 1.0 }; /* black. */
+	GdkRGBA bg_color = {0,};
+	GdkRGBA fg_color = {0,};
 	const gchar* text;
 
 	if (entry->priv->is_a11y_theme)
 		return;
 
+	/* allow user style to override the colors */
+	if (gtk_style_context_lookup_color (gtk_widget_get_style_context (GTK_WIDGET (entry)),
+					    "rb-search-active-bg",
+					    &bg_color) == FALSE) {
+		bg_color = fallback_bg_color;
+	}
+	if (gtk_style_context_lookup_color (gtk_widget_get_style_context (GTK_WIDGET (entry)),
+					    "rb-search-active-fg",
+					    &fg_color) == FALSE) {
+		fg_color = fallback_fg_color;
+	}
+
 	text = gtk_entry_get_text (GTK_ENTRY (entry->priv->entry));
 	if (text && *text) {
-		gtk_widget_modify_text (entry->priv->entry, GTK_STATE_NORMAL, &fg_colour);
-		gtk_widget_modify_base (entry->priv->entry, GTK_STATE_NORMAL, &bg_colour);
-		gtk_widget_modify_cursor (entry->priv->entry, &fg_colour, &fg_colour);
+		gtk_widget_override_color (entry->priv->entry, GTK_STATE_NORMAL, &fg_color);
+		gtk_widget_override_background_color (entry->priv->entry, GTK_STATE_NORMAL, &bg_color);
+		gtk_widget_override_cursor (entry->priv->entry, &fg_color, &fg_color);
 	} else {
-		gtk_widget_modify_text (entry->priv->entry, GTK_STATE_NORMAL, NULL);
-		gtk_widget_modify_base (entry->priv->entry, GTK_STATE_NORMAL, NULL);
-		gtk_widget_modify_cursor (entry->priv->entry, NULL, NULL);
+		gtk_widget_override_color (entry->priv->entry, GTK_STATE_NORMAL, NULL);
+		gtk_widget_override_background_color (entry->priv->entry, GTK_STATE_NORMAL, NULL);
+		gtk_widget_override_cursor (entry->priv->entry, NULL, NULL);
 	}
 
 	gtk_widget_queue_draw (GTK_WIDGET (entry));

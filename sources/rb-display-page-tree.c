@@ -147,33 +147,32 @@ set_cell_background (RBDisplayPageTree  *display_page_tree,
 		     gboolean            is_group,
 		     gboolean            is_active)
 {
-	GdkColor  color;
-	GtkStyle *style;
+	GdkRGBA color;
 
 	g_return_if_fail (display_page_tree != NULL);
 	g_return_if_fail (cell != NULL);
 
-	style = gtk_widget_get_style (GTK_WIDGET (display_page_tree));
+	gtk_style_context_get_color (gtk_widget_get_style_context (GTK_WIDGET (display_page_tree)),
+				     GTK_STATE_SELECTED,
+				     &color);
 
 	if (!is_group) {
 		if (is_active) {
-			color = style->bg[GTK_STATE_SELECTED];
-
 			/* Here we take the current theme colour and add it to
 			 * the colour for white and average the two. This
 			 * gives a colour which is inline with the theme but
 			 * slightly whiter.
 			 */
-			color.red = (color.red + (style->white).red) / 2;
-			color.green = (color.green + (style->white).green) / 2;
-			color.blue = (color.blue + (style->white).blue) / 2;
+			color.red = (color.red + 1.0) / 2;
+			color.green = (color.green + 1.0) / 2;
+			color.blue = (color.blue + 1.0) / 2;
 
 			g_object_set (cell,
-				      "cell-background-gdk", &color,
+				      "cell-background-rgba", &color,
 				      NULL);
 		} else {
 			g_object_set (cell,
-				      "cell-background-gdk", NULL,
+				      "cell-background-rgba", NULL,
 				      NULL);
 		}
 	} else {
@@ -526,7 +525,7 @@ key_release_cb (GtkTreeView *treeview,
 	gboolean res;
 
 	/* F2 = rename playlist */
-	if (event->keyval != GDK_F2) {
+	if (event->keyval != GDK_KEY_F2) {
 		return FALSE;
 	}
 
@@ -652,7 +651,6 @@ rb_display_page_tree_toggle_expanded (RBDisplayPageTree *display_page_tree,
 {
 	GtkTreeIter iter;
 	GtkTreePath *path;
-	gboolean expanding;
 
 	g_assert (rb_display_page_model_find_page (display_page_tree->priv->page_model,
 						   page,
@@ -662,16 +660,19 @@ rb_display_page_tree_toggle_expanded (RBDisplayPageTree *display_page_tree,
 	if (gtk_tree_view_row_expanded (GTK_TREE_VIEW (display_page_tree->priv->treeview), path)) {
 		rb_debug ("collapsing page %p", page);
 		gtk_tree_view_collapse_row (GTK_TREE_VIEW (display_page_tree->priv->treeview), path);
-		expanding = FALSE;
+		g_object_set (display_page_tree->priv->expander_renderer,
+			      "expander-style",
+			      GTK_EXPANDER_COLLAPSED,
+			      NULL);
 	} else {
 		rb_debug ("expanding page %p", page);
 		gtk_tree_view_expand_row (GTK_TREE_VIEW (display_page_tree->priv->treeview), path, FALSE);
-		expanding = TRUE;
+		g_object_set (display_page_tree->priv->expander_renderer,
+			      "expander-style",
+			      GTK_EXPANDER_EXPANDED,
+			      NULL);
 	}
-	gossip_cell_renderer_expander_start_animation (GOSSIP_CELL_RENDERER_EXPANDER (display_page_tree->priv->expander_renderer),
-						       GTK_TREE_VIEW (display_page_tree->priv->treeview),
-						       path,
-						       expanding);
+
 	gtk_tree_path_free (path);
 }
 

@@ -31,6 +31,7 @@
 
 #include <check.h>
 #include <gtk/gtk.h>
+#include <locale.h>
 #include "test-utils.h"
 #include "rb-file-helpers.h"
 #include "rb-util.h"
@@ -123,7 +124,7 @@ main (int argc, char **argv)
 	rb_profile_start ("rb-file-helpers test suite");
 	g_thread_init (NULL);
 	rb_threads_init ();
-	gtk_set_locale ();
+	setlocale (LC_ALL, NULL);
 	rb_debug_init (TRUE);
 	rb_file_helpers_init (TRUE);
 

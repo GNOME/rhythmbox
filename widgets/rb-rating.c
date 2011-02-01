@@ -37,8 +37,6 @@
 #include "rb-stock-icons.h"
 #include "rb-cut-and-paste-code.h"
 
-#include "gseal-gtk-compat.h"
-
 /* Offset at the beggining of the widget */
 #define X_OFFSET 0
 
@@ -57,15 +55,14 @@ static void rb_rating_set_property (GObject *object,
 				    const GValue *value,
 				    GParamSpec *pspec);
 static void rb_rating_realize (GtkWidget *widget);
-static void rb_rating_size_request (GtkWidget *widget,
-				    GtkRequisition *requisition);
-static gboolean rb_rating_expose (GtkWidget *widget,
-				  GdkEventExpose *event);
+static gboolean rb_rating_draw (GtkWidget *widget, cairo_t *cr);
 static gboolean rb_rating_focus (GtkWidget *widget, GtkDirectionType direction);
 static gboolean rb_rating_set_rating_cb (RBRating *rating, gdouble score);
 static gboolean rb_rating_adjust_rating_cb (RBRating *rating, gdouble adjust);
 static gboolean rb_rating_button_press_cb (GtkWidget *widget,
 					   GdkEventButton *event);
+static void rb_rating_get_preferred_width (GtkWidget *widget, int *minimum_width, int *natural_width);
+static void rb_rating_get_preferred_height (GtkWidget *widget, int *minimum_height, int *natural_height);
 
 struct _RBRatingPrivate
 {
@@ -114,8 +111,9 @@ rb_rating_class_init (RBRatingClass *klass)
 	object_class->set_property = rb_rating_set_property;
 
 	widget_class->realize = rb_rating_realize;
-	widget_class->expose_event = rb_rating_expose;
-	widget_class->size_request = rb_rating_size_request;
+	widget_class->draw = rb_rating_draw;
+	widget_class->get_preferred_width = rb_rating_get_preferred_width;
+	widget_class->get_preferred_height = rb_rating_get_preferred_height;
 	widget_class->button_press_event = rb_rating_button_press_cb;
 	widget_class->focus = rb_rating_focus;
 
@@ -184,19 +182,19 @@ rb_rating_class_init (RBRatingClass *klass)
 			      G_TYPE_DOUBLE);
 
 	binding_set = gtk_binding_set_by_class (klass);
-	gtk_binding_entry_add_signal (binding_set, GDK_Home, 0, "set-rating", 1, G_TYPE_DOUBLE, 0.0);
-	gtk_binding_entry_add_signal (binding_set, GDK_End, 0, "set-rating", 1, G_TYPE_DOUBLE, (double)RB_RATING_MAX_SCORE);
+	gtk_binding_entry_add_signal (binding_set, GDK_KEY_Home, 0, "set-rating", 1, G_TYPE_DOUBLE, 0.0);
+	gtk_binding_entry_add_signal (binding_set, GDK_KEY_End, 0, "set-rating", 1, G_TYPE_DOUBLE, (double)RB_RATING_MAX_SCORE);
 
-	gtk_binding_entry_add_signal (binding_set, GDK_equal, 0, "adjust-rating", 1, G_TYPE_DOUBLE, 1.0);
-	gtk_binding_entry_add_signal (binding_set, GDK_plus, 0, "adjust-rating", 1, G_TYPE_DOUBLE, 1.0);
-	gtk_binding_entry_add_signal (binding_set, GDK_KP_Add, 0, "adjust-rating", 1, G_TYPE_DOUBLE, 1.0);
-	gtk_binding_entry_add_signal (binding_set, GDK_Right, 0, "adjust-rating", 1, G_TYPE_DOUBLE, 1.0);
-	gtk_binding_entry_add_signal (binding_set, GDK_KP_Right, 0, "adjust-rating", 1, G_TYPE_DOUBLE, 1.0);
+	gtk_binding_entry_add_signal (binding_set, GDK_KEY_equal, 0, "adjust-rating", 1, G_TYPE_DOUBLE, 1.0);
+	gtk_binding_entry_add_signal (binding_set, GDK_KEY_plus, 0, "adjust-rating", 1, G_TYPE_DOUBLE, 1.0);
+	gtk_binding_entry_add_signal (binding_set, GDK_KEY_KP_Add, 0, "adjust-rating", 1, G_TYPE_DOUBLE, 1.0);
+	gtk_binding_entry_add_signal (binding_set, GDK_KEY_Right, 0, "adjust-rating", 1, G_TYPE_DOUBLE, 1.0);
+	gtk_binding_entry_add_signal (binding_set, GDK_KEY_KP_Right, 0, "adjust-rating", 1, G_TYPE_DOUBLE, 1.0);
 	
-	gtk_binding_entry_add_signal (binding_set, GDK_minus, 0, "adjust-rating", 1, G_TYPE_DOUBLE, -1.0);
-	gtk_binding_entry_add_signal (binding_set, GDK_KP_Subtract, 0, "adjust-rating", 1, G_TYPE_DOUBLE, -1.0);
-	gtk_binding_entry_add_signal (binding_set, GDK_Left, 0, "adjust-rating", 1, G_TYPE_DOUBLE, -1.0);
-	gtk_binding_entry_add_signal (binding_set, GDK_KP_Left, 0, "adjust-rating", 1, G_TYPE_DOUBLE, -1.0);
+	gtk_binding_entry_add_signal (binding_set, GDK_KEY_minus, 0, "adjust-rating", 1, G_TYPE_DOUBLE, -1.0);
+	gtk_binding_entry_add_signal (binding_set, GDK_KEY_KP_Subtract, 0, "adjust-rating", 1, G_TYPE_DOUBLE, -1.0);
+	gtk_binding_entry_add_signal (binding_set, GDK_KEY_Left, 0, "adjust-rating", 1, G_TYPE_DOUBLE, -1.0);
+	gtk_binding_entry_add_signal (binding_set, GDK_KEY_KP_Left, 0, "adjust-rating", 1, G_TYPE_DOUBLE, -1.0);
 	
 	g_type_class_add_private (klass, sizeof (RBRatingPrivate));
 }
@@ -210,6 +208,9 @@ rb_rating_init (RBRating *rating)
 	rating->priv->pixbufs = rb_rating_pixbufs_new ();
 	
 	rb_rating_set_accessible_name (GTK_WIDGET (rating), 0.0);
+
+	gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (rating)),
+				     GTK_STYLE_CLASS_ENTRY);
 }
 
 static void
@@ -304,7 +305,6 @@ static void
 rb_rating_realize (GtkWidget *widget)
 {
 	GtkAllocation allocation;
-	GtkStyle *style;
 	GdkWindowAttr attributes;
 	GdkWindow *window;
 	int attributes_mask;
@@ -321,81 +321,93 @@ rb_rating_realize (GtkWidget *widget)
 	attributes.window_type = GDK_WINDOW_CHILD;
 	attributes.event_mask = gtk_widget_get_events (widget) | GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_FOCUS_CHANGE_MASK;
 	attributes.visual = gtk_widget_get_visual (widget);
-	attributes.colormap = gtk_widget_get_colormap (widget);
 
-	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
 	window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
 	gtk_widget_set_window (widget, window);
 	gdk_window_set_user_data (window, widget);
 
 	gtk_widget_set_can_focus (widget, TRUE);
-
-	style = gtk_style_attach (gtk_widget_get_style (widget), window);
-	gtk_widget_set_style (widget, style);
-	gtk_style_set_background (style, window, GTK_STATE_ACTIVE);
 }
 
 static void
-rb_rating_size_request (GtkWidget *widget,
-			GtkRequisition *requisition)
+rb_rating_get_preferred_width (GtkWidget *widget, int *minimum_width, int *natural_width)
 {
 	int icon_size;
-
-	g_return_if_fail (requisition != NULL);
+	int width;
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
 
-	requisition->width = RB_RATING_MAX_SCORE * icon_size + X_OFFSET;
-	requisition->height = icon_size + Y_OFFSET * 2;
+	width = RB_RATING_MAX_SCORE * icon_size + X_OFFSET;
+	if (minimum_width != NULL)
+		*minimum_width = width;
+	if (natural_width != NULL)
+		*natural_width = width;
+}
+
+static void
+rb_rating_get_preferred_height (GtkWidget *widget, int *minimum_height, int *natural_height)
+{
+	int icon_size;
+	int height;
+	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
+
+	height = icon_size + Y_OFFSET * 2;
+	if (minimum_height != NULL)
+		*minimum_height = height;
+	if (natural_height != NULL)
+		*natural_height = height;
 }
 
 static gboolean
-rb_rating_expose (GtkWidget *widget,
-		  GdkEventExpose *event)
+rb_rating_draw (GtkWidget *widget, cairo_t *cr)
 {
-	GdkWindow *window;
 	gboolean ret;
+	GdkWindow *window;
 	RBRating *rating;
 	int x = 0;
 	int y = 0;
 	int width;
 	int height;
-	int focus_width;
 
 	g_return_val_if_fail (RB_IS_RATING (widget), FALSE);
-	if (!gtk_widget_is_drawable (widget)) {
-		return FALSE;
-	}
 
 	ret = FALSE;
 	rating = RB_RATING (widget);
 
 	window = gtk_widget_get_window (widget);
-#if GTK_CHECK_VERSION(2, 23, 0)
 	width = gdk_window_get_width (window);
 	height = gdk_window_get_height (window);
-#else
-	gdk_drawable_get_size (GDK_DRAWABLE (window), &width, &height);
-#endif
 
-	gtk_widget_style_get (widget, "focus-line-width", &focus_width, NULL);
+	gtk_render_background (gtk_widget_get_style_context (widget),
+			       cr,
+			       x, y,
+			       width, height);
+	gtk_render_frame (gtk_widget_get_style_context (widget),
+			  cr,
+			  x, y,
+			  width, height);
+
 	if (gtk_widget_has_focus (widget)) {
+		int focus_width;
+		gtk_widget_style_get (widget, "focus-line-width", &focus_width, NULL);
+
 		x += focus_width;
 		y += focus_width;
 		width -= 2 * focus_width;
 		height -= 2 * focus_width;
-	}
 
-	gtk_paint_flat_box (gtk_widget_get_style (widget), window,
-			    GTK_STATE_NORMAL, GTK_SHADOW_IN,
-			    NULL, widget, "entry_bg", x, y,
-			    width, height);
+		gtk_render_focus (gtk_widget_get_style_context (widget),
+				  cr,
+				  x, y,
+				  width, height);
+	}
 
 	/* draw the stars */
 	if (rating->priv->pixbufs != NULL) {
 		ret = rb_rating_render_stars (widget,
-					      window,
+					      cr,
 					      rating->priv->pixbufs,
 					      0, 0,
 					      X_OFFSET, Y_OFFSET,

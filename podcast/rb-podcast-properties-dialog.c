@@ -216,18 +216,21 @@ static void
 set_webkit_font_from_gtk_style (WebKitWebView *view)
 {
 	WebKitWebSettings *settings;
-	GtkStyle *style;
+	const PangoFontDescription *font_desc;
+	GtkStyleContext *style;
 	int font_size;
 	const char *font_family;
 
-	style = gtk_widget_get_style (GTK_WIDGET (view));
+	style = gtk_widget_get_style_context (GTK_WIDGET (view));
 	settings = webkit_web_view_get_settings (view);
 
-	font_size = pango_font_description_get_size (style->font_desc);
-	if (pango_font_description_get_size_is_absolute (style->font_desc) == FALSE)
+	font_desc = gtk_style_context_get_font (gtk_widget_get_style_context (GTK_WIDGET (view)),
+						GTK_STATE_FLAG_ACTIVE);
+	font_size = pango_font_description_get_size (font_desc);
+	if (pango_font_description_get_size_is_absolute (font_desc) == FALSE)
 		font_size /= PANGO_SCALE;
 
-	font_family = pango_font_description_get_family (style->font_desc);
+	font_family = pango_font_description_get_family (font_desc);
 
 	rb_debug ("setting font settings: %s / %d", font_family, font_size);
 	g_object_set (settings,

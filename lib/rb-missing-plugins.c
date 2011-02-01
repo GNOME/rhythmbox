@@ -26,7 +26,6 @@
 #include "rb-missing-plugins.h"
 
 #include "rb-debug.h"
-#include "gseal-gtk-compat.h"
 
 #include <gst/pbutils/pbutils.h>
 #include <gst/pbutils/install-plugins.h>
@@ -216,7 +215,7 @@ rb_missing_plugins_install (const char **details, gboolean ignore_blacklist, GCl
 	if (parent_window != NULL && gtk_widget_get_realized (GTK_WIDGET (parent_window))) {
 #ifdef GDK_WINDOWING_X11
 		gulong xid = 0;
-		xid = gdk_x11_drawable_get_xid (gtk_widget_get_window (GTK_WIDGET (parent_window)));
+		xid = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (parent_window)));
 		gst_install_plugins_context_set_xid (install_ctx, xid);
 #endif
 	}

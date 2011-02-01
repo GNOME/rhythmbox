@@ -18,22 +18,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/* To do:
- *  - should probably cancel animation if model changes
- *  - need to handle case where node-in-animation is removed
- *  - it only handles a single animation at a time; but I guess users
- *    aren't fast enough to trigger two or more animations at once anyway :P
- *    (could guard for this by just cancelling the "old" animation, and
- *     start the new one).
- */
-
 #include "config.h"
 
 #include <gtk/gtk.h>
 
 #include "gossip-cell-renderer-expander.h"
-
-#include "gseal-gtk-compat.h"
 
 #define GET_PRIV(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GOSSIP_TYPE_CELL_RENDERER_EXPANDER, GossipCellRendererExpanderPriv))
 
@@ -50,24 +39,23 @@ static void     gossip_cell_renderer_expander_set_property (GObject             
 static void     gossip_cell_renderer_expander_finalize     (GObject                         *object);
 static void     gossip_cell_renderer_expander_get_size     (GtkCellRenderer                 *cell,
 							    GtkWidget                       *widget,
-							    GdkRectangle                    *cell_area,
+							    const GdkRectangle              *cell_area,
 							    gint                            *x_offset,
 							    gint                            *y_offset,
 							    gint                            *width,
 							    gint                            *height);
 static void     gossip_cell_renderer_expander_render       (GtkCellRenderer                 *cell,
-							    GdkWindow                       *window,
+							    cairo_t			    *cr,
 							    GtkWidget                       *widget,
-							    GdkRectangle                    *background_area,
-							    GdkRectangle                    *cell_area,
-							    GdkRectangle                    *expose_area,
+							    const GdkRectangle              *background_area,
+							    const GdkRectangle              *cell_area,
 							    GtkCellRendererState             flags);
 static gboolean gossip_cell_renderer_expander_activate     (GtkCellRenderer                 *cell,
 							    GdkEvent                        *event,
 							    GtkWidget                       *widget,
 							    const gchar                     *path,
-							    GdkRectangle                    *background_area,
-							    GdkRectangle                    *cell_area,
+							    const GdkRectangle              *background_area,
+							    const GdkRectangle              *cell_area,
 							    GtkCellRendererState             flags);
 
 /* Properties */
@@ -81,17 +69,10 @@ enum {
 typedef struct _GossipCellRendererExpanderPriv GossipCellRendererExpanderPriv;
 
 struct _GossipCellRendererExpanderPriv {
-	GtkExpanderStyle     expander_style;
+	GtkStateFlags        style_flags;
 	gint                 expander_size;
 
-	GtkTreeView         *animation_view;
-	GtkTreeRowReference *animation_node;
-	GtkExpanderStyle     animation_style;
-	guint                animation_timeout;
-	GdkRectangle         animation_area;
-
 	guint                activatable : 1;
-	guint                animation_expanding : 1;
 };
 
 G_DEFINE_TYPE (GossipCellRendererExpander, gossip_cell_renderer_expander, GTK_TYPE_CELL_RENDERER)
@@ -103,10 +84,9 @@ gossip_cell_renderer_expander_init (GossipCellRendererExpander *expander)
 
 	priv = GET_PRIV (expander);
 
-	priv->expander_style = GTK_EXPANDER_COLLAPSED;
+	priv->style_flags = 0;
 	priv->expander_size = 12;
 	priv->activatable = TRUE;
-	priv->animation_node = NULL;
 
 	gtk_cell_renderer_set_padding (GTK_CELL_RENDERER (expander), 2, 2);
 	g_object_set (expander,
@@ -176,7 +156,7 @@ gossip_cell_renderer_expander_get_property (GObject    *object,
 
 	switch (param_id) {
 	case PROP_EXPANDER_STYLE:
-		g_value_set_enum (value, priv->expander_style);
+		g_value_set_enum (value, priv->style_flags & GTK_STATE_FLAG_ACTIVE ? GTK_EXPANDER_EXPANDED : GTK_EXPANDER_COLLAPSED);
 		break;
 
 	case PROP_EXPANDER_SIZE:
@@ -207,7 +187,11 @@ gossip_cell_renderer_expander_set_property (GObject      *object,
 
 	switch (param_id) {
 	case PROP_EXPANDER_STYLE:
-		priv->expander_style = g_value_get_enum (value);
+		if (g_value_get_enum (value) == GTK_EXPANDER_EXPANDED) {
+			priv->style_flags |= GTK_STATE_FLAG_ACTIVE;
+		} else {
+			priv->style_flags &= ~(GTK_STATE_FLAG_ACTIVE);
+		}
 		break;
 
 	case PROP_EXPANDER_SIZE:
@@ -231,15 +215,6 @@ gossip_cell_renderer_expander_finalize (GObject *object)
 
 	priv = GET_PRIV (object);
 
-	if (priv->animation_timeout) {
-		g_source_remove (priv->animation_timeout);
-		priv->animation_timeout = 0;
-	}
-
-	if (priv->animation_node) {
-		gtk_tree_row_reference_free (priv->animation_node);
-	}
-
 	(* G_OBJECT_CLASS (gossip_cell_renderer_expander_parent_class)->finalize) (object);
 }
 
@@ -249,10 +224,11 @@ gossip_cell_renderer_expander_new (void)
 	return g_object_new (GOSSIP_TYPE_CELL_RENDERER_EXPANDER, NULL);
 }
 
+/* XXX implement preferred height/width/h-f-w/w-f-h */
 static void
 gossip_cell_renderer_expander_get_size (GtkCellRenderer *cell,
 					GtkWidget       *widget,
-					GdkRectangle    *cell_area,
+					const GdkRectangle *cell_area,
 					gint            *x_offset,
 					gint            *y_offset,
 					gint            *width,
@@ -297,167 +273,35 @@ gossip_cell_renderer_expander_get_size (GtkCellRenderer *cell,
 
 static void
 gossip_cell_renderer_expander_render (GtkCellRenderer      *cell,
-				      GdkWindow            *window,
+				      cairo_t              *cr,
 				      GtkWidget            *widget,
-				      GdkRectangle         *background_area,
-				      GdkRectangle         *cell_area,
-				      GdkRectangle         *expose_area,
+				      const GdkRectangle   *background_area,
+				      const GdkRectangle   *cell_area,
 				      GtkCellRendererState  flags)
 {
 	GossipCellRendererExpander     *expander;
 	GossipCellRendererExpanderPriv *priv;
-	GtkExpanderStyle                expander_style;
+	GtkStyleContext                *style_context;
 	gint                            x_offset, y_offset;
 	gint                            xpad, ypad;
 
 	expander = (GossipCellRendererExpander*) cell;
 	priv = GET_PRIV (expander);
 
-	if (priv->animation_node) {
-		GtkTreePath *path;
-		GdkRectangle rect;
-
-		/* Not sure if I like this ... */
-		path = gtk_tree_row_reference_get_path (priv->animation_node);
-		gtk_tree_view_get_background_area (priv->animation_view, path,
-						   NULL, &rect);
-		gtk_tree_path_free (path);
-
-		if (background_area->y == rect.y)
-			expander_style = priv->animation_style;
-		else
-			expander_style = priv->expander_style;
-	} else
-		expander_style = priv->expander_style;
-
 	gossip_cell_renderer_expander_get_size (cell, widget, cell_area,
 						&x_offset, &y_offset,
 						NULL, NULL);
 	gtk_cell_renderer_get_padding (cell, &xpad, &ypad);
 
-	gtk_paint_expander (gtk_widget_get_style (widget),
-			    window,
-			    GTK_STATE_NORMAL,
-			    expose_area,
-			    widget,
-			    "treeview",
-			    cell_area->x + x_offset + xpad + priv->expander_size / 2,
-			    cell_area->y + y_offset + ypad + priv->expander_size / 2,
-			    expander_style);
-}
+	style_context = gtk_widget_get_style_context (widget);
+	gtk_style_context_set_state (style_context, priv->style_flags);
 
-static void
-invalidate_node (GtkTreeView *tree_view,
-		 GtkTreePath *path)
-{
-       GtkAllocation  allocation;
-       GdkWindow     *bin_window;
-       GdkRectangle   rect;
-
-       bin_window = gtk_tree_view_get_bin_window (tree_view);
-
-       gtk_tree_view_get_background_area (tree_view, path, NULL, &rect);
-       gtk_widget_get_allocation (GTK_WIDGET (tree_view), &allocation);
-
-       rect.x = 0;
-       rect.width = allocation.width;
-
-       gdk_window_invalidate_rect (bin_window, &rect, TRUE);
-}
-
-static gboolean
-do_animation (GossipCellRendererExpander *expander)
-{
-	GossipCellRendererExpanderPriv *priv;
-	GtkTreePath                    *path;
-	gboolean                        done = FALSE;
-
-	priv = GET_PRIV (expander);
-
-	if (priv->animation_expanding) {
-		if (priv->animation_style == GTK_EXPANDER_SEMI_COLLAPSED)
-			priv->animation_style = GTK_EXPANDER_SEMI_EXPANDED;
-		else if (priv->animation_style == GTK_EXPANDER_SEMI_EXPANDED) {
-			priv->animation_style = GTK_EXPANDER_EXPANDED;
-			done = TRUE;
-		}
-	} else {
-		if (priv->animation_style == GTK_EXPANDER_SEMI_EXPANDED)
-			priv->animation_style = GTK_EXPANDER_SEMI_COLLAPSED;
-		else if (priv->animation_style == GTK_EXPANDER_SEMI_COLLAPSED) {
-			priv->animation_style = GTK_EXPANDER_COLLAPSED;
-			done = TRUE;
-		}
-	}
-
-	path = gtk_tree_row_reference_get_path (priv->animation_node);
-	invalidate_node (priv->animation_view, path);
-	gtk_tree_path_free (path);
-
-	if (done) {
-		gtk_tree_row_reference_free (priv->animation_node);
-		priv->animation_node = NULL;
-		priv->animation_timeout = 0;
-	}
-
-	return !done;
-}
-
-static gboolean
-animation_timeout (gpointer data)
-{
-	gboolean retval;
-
-	GDK_THREADS_ENTER ();
-
-	retval = do_animation (data);
-
-	GDK_THREADS_LEAVE ();
-
-	return retval;
-}
-
-void
-gossip_cell_renderer_expander_start_animation (GossipCellRendererExpander *expander,
-					       GtkTreeView                *tree_view,
-					       GtkTreePath                *path,
-					       gboolean                    expanding)
-{
-	GossipCellRendererExpanderPriv *priv;
-	GtkSettings                    *settings;
-	gboolean                        animate;
-
-	settings = gtk_widget_get_settings (GTK_WIDGET (tree_view));
-	if (g_object_class_find_property (G_OBJECT_GET_CLASS (settings), "gtk-enable-animations")) {
-		g_object_get (settings,
-			      "gtk-enable-animations", &animate,
-			      NULL);
-	} else {
-		animate = FALSE;
-	}
-
-	if (animate == FALSE) {
-		return;
-	}
-
-	priv = GET_PRIV (expander);
-	if (expanding) {
-		priv->animation_style = GTK_EXPANDER_SEMI_COLLAPSED;
-	} else {
-		priv->animation_style = GTK_EXPANDER_SEMI_EXPANDED;
-	}
-
-	invalidate_node (tree_view, path);
-
-	if (priv->animation_timeout != 0) {
-		g_source_remove (priv->animation_timeout);
-		gtk_tree_row_reference_free (priv->animation_node);
-	}
-
-	priv->animation_expanding = expanding;
-	priv->animation_view = tree_view;
-	priv->animation_node = gtk_tree_row_reference_new (gtk_tree_view_get_model (tree_view), path);
-	priv->animation_timeout = g_timeout_add (50, animation_timeout, expander);
+	gtk_render_expander (gtk_widget_get_style_context (widget),
+			     cr,
+			     cell_area->x + x_offset + xpad,
+			     cell_area->y + y_offset + ypad,
+			     priv->expander_size,
+			     priv->expander_size);
 }
 
 static gboolean
@@ -465,14 +309,13 @@ gossip_cell_renderer_expander_activate (GtkCellRenderer      *cell,
 					GdkEvent             *event,
 					GtkWidget            *widget,
 					const gchar          *path_string,
-					GdkRectangle         *background_area,
-					GdkRectangle         *cell_area,
+					const GdkRectangle   *background_area,
+					const GdkRectangle   *cell_area,
 					GtkCellRendererState  flags)
 {
 	GossipCellRendererExpander     *expander;
 	GossipCellRendererExpanderPriv *priv;
 	GtkTreePath                    *path;
-	gboolean                        expanding;
 	gboolean                        in_cell;
 	int                             mouse_x;
 	int                             mouse_y;
@@ -503,25 +346,14 @@ gossip_cell_renderer_expander_activate (GtkCellRenderer      *cell,
 		return FALSE;
 	}
 
-#if 0
-	if (gtk_tree_path_get_depth (path) > 1) {
-		gtk_tree_path_free (path);
-		return TRUE;
-	}
-#endif
-
 	if (gtk_tree_view_row_expanded (GTK_TREE_VIEW (widget), path)) {
 		gtk_tree_view_collapse_row (GTK_TREE_VIEW (widget), path);
-		expanding = FALSE;
+		priv->style_flags &= ~(GTK_STATE_FLAG_ACTIVE);
 	} else {
 		gtk_tree_view_expand_row (GTK_TREE_VIEW (widget), path, FALSE);
-		expanding = TRUE;
+		priv->style_flags |= ~(GTK_STATE_FLAG_ACTIVE);
 	}
 
-	gossip_cell_renderer_expander_start_animation (expander,
-						       GTK_TREE_VIEW (widget),
-						       path,
-						       expanding);
 	gtk_tree_path_free (path);
 
 	return TRUE;

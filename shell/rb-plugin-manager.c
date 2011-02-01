@@ -43,8 +43,6 @@
 #include "rb-debug.h"
 #include "rb-builder-helpers.h"
 
-#include "gseal-gtk-compat.h"
-
 enum
 {
 	ACTIVE_COLUMN,

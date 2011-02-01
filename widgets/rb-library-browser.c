@@ -35,7 +35,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "gseal-gtk-compat.h"
 #include "rb-library-browser.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"

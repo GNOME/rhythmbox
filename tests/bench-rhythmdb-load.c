@@ -31,6 +31,7 @@
 
 #include <gtk/gtk.h>
 #include <string.h>
+#include <locale.h>
 
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
@@ -100,7 +101,7 @@ main (int argc, char **argv)
 
 	g_thread_init (NULL);
 	rb_threads_init ();
-	gtk_set_locale ();
+	setlocale (LC_ALL, NULL);
 	gtk_init (&argc, &argv);
 	rb_debug_init (FALSE);
 	rb_refstring_system_init ();

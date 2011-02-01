@@ -29,7 +29,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "gseal-gtk-compat.h"
 #include "rb-cell-renderer-rating.h"
 #include "rb-marshal.h"
 #include "rb-rating-helper.h"
@@ -46,24 +45,23 @@ static void rb_cell_renderer_rating_init (RBCellRendererRating *celltext);
 static void rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class);
 static void rb_cell_renderer_rating_get_size  (GtkCellRenderer *cell,
 					       GtkWidget *widget,
-					       GdkRectangle *rectangle,
+					       const GdkRectangle *rectangle,
 					       gint *x_offset,
 					       gint *y_offset,
 					       gint *width,
 					       gint *height);
 static void rb_cell_renderer_rating_render (GtkCellRenderer *cell,
-					    GdkWindow *window,
+					    cairo_t *cr,
 					    GtkWidget *widget,
-					    GdkRectangle *background_area,
-					    GdkRectangle *cell_area,
-					    GdkRectangle *expose_area,
+					    const GdkRectangle *background_area,
+					    const GdkRectangle *cell_area,
 					    GtkCellRendererState flags);
 static gboolean rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
 					          GdkEvent *event,
 					          GtkWidget *widget,
 					          const gchar *path,
-					          GdkRectangle *background_area,
-					          GdkRectangle *cell_area,
+					          const GdkRectangle *background_area,
+					          const GdkRectangle *cell_area,
 					          GtkCellRendererState flags);
 static void rb_cell_renderer_rating_finalize (GObject *object);
 
@@ -231,10 +229,11 @@ rb_cell_renderer_rating_new ()
 	return GTK_CELL_RENDERER (g_object_new (rb_cell_renderer_rating_get_type (), NULL, NULL));
 }
 
+/* XXX implement get_preferred_height/width/height_for_width/width_for_height */
 static void
 rb_cell_renderer_rating_get_size (GtkCellRenderer *cell,
 				  GtkWidget *widget,
-				  GdkRectangle *cell_area,
+				  const GdkRectangle *cell_area,
 				  gint *x_offset,
 				  gint *y_offset,
 				  gint *width,
@@ -262,11 +261,10 @@ rb_cell_renderer_rating_get_size (GtkCellRenderer *cell,
 
 static void
 rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
-				GdkWindow *window,
+				cairo_t *cr,
 				GtkWidget *widget,
-				GdkRectangle *background_area,
-				GdkRectangle *cell_area,
-				GdkRectangle *expose_area,
+				const GdkRectangle *background_area,
+				const GdkRectangle *cell_area,
 				GtkCellRendererState flags)
 
 {
@@ -295,7 +293,7 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 
 	selected = (flags & GTK_CELL_RENDERER_SELECTED);
 
-	rb_rating_render_stars (widget, window, cell_class->priv->pixbufs,
+	rb_rating_render_stars (widget, cr, cell_class->priv->pixbufs,
 				draw_rect.x - pix_rect.x,
 				draw_rect.y - pix_rect.y,
 				draw_rect.x, draw_rect.y,
@@ -307,8 +305,8 @@ rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
 				  GdkEvent *event,
 				  GtkWidget *widget,
 				  const gchar *path,
-				  GdkRectangle *background_area,
-				  GdkRectangle *cell_area,
+				  const GdkRectangle *background_area,
+				  const GdkRectangle *cell_area,
 				  GtkCellRendererState flags)
 {
 	int mouse_x, mouse_y;

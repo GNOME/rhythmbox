@@ -41,7 +41,6 @@
 #include "rb-preferences.h"
 #include "rb-builder-helpers.h"
 #include "rb-util.h"
-#include "gseal-gtk-compat.h"
 
 static void rb_query_creator_class_init (RBQueryCreatorClass *klass);
 static void rb_query_creator_constructed (GObject *object);

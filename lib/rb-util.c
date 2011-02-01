@@ -356,7 +356,7 @@ rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size)
 			return NULL;
 		}
 		
-		pixbuf = gtk_widget_render_icon (image, stock_id, size, NULL);
+		pixbuf = gtk_widget_render_icon_pixbuf (image, stock_id, size);
 		g_assert (pixbuf != NULL);
 		
 		
@@ -1198,16 +1198,16 @@ rb_set_tree_view_column_fixed_width (GtkWidget  *treeview,
 	int i = 0;
 
 	while (strings[i] != NULL) {
-		gint width;
+		GtkRequisition natural_size;
 		g_object_set (renderer, "text", strings[i], NULL);
-		gtk_cell_renderer_get_size (renderer,
-					    GTK_WIDGET (treeview),
-					    NULL,
-					    NULL, NULL,
-					    &width, NULL);
+		/* XXX should we use minimum size instead? */
+		gtk_cell_renderer_get_preferred_size (renderer,
+						      GTK_WIDGET (treeview),
+						      NULL,
+						      &natural_size);
 
-		if (width > max_width)
-			max_width = width;
+		if (natural_size.width > max_width)
+			max_width = natural_size.width;
 
 		i++;
 	}

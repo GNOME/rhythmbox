@@ -272,7 +272,7 @@ impl_constructed (GObject *object)
 
 		entry_name = g_strdup_printf ("passcode_entry%d", i + 1);
 		page->priv->entries[i] = GTK_WIDGET (gtk_builder_get_object (page->priv->builder, entry_name));
-		gtk_widget_modify_font (page->priv->entries[i], font);
+		gtk_widget_override_font (page->priv->entries[i], font);
 		g_signal_connect_object (page->priv->entries[i],
 		                         "insert-text",
 		                         G_CALLBACK (entry_insert_text_cb),

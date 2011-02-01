@@ -40,25 +40,31 @@ m4_ifdef([LT_OUTPUT], [LT_OUTPUT])
 AC_C_BIGENDIAN
 AC_CHECK_SIZEOF(long)
 
+GTK_REQS=2.91.4
+
 DBUS_MIN_REQS=0.35
 GST_0_10_REQS=0.10.20
-GTK_REQS=2.18.0
+GDK_PIXBUF_REQS=2.18.0
 GLIB_REQS=2.18.0
-GNOME_MEDIA_PROFILES_REQS=2.8
-LIBNOTIFY_REQS=0.4.1
 LIBGPOD_REQS=0.6
 MUSICBRAINZ_REQS=2.1.0
 MUSICBRAINZ3_REQS=3.0.2
-BRASERO_MIN_REQS=0.9.1
 TOTEM_PLPARSER_REQS=2.32.1
-VALA_REQS=0.1.0
+VALA_REQS=0.9.4
 AVAHI_REQS=0.6
 LIBSOUP_REQS=2.26.0
 GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
 PYGOBJECT_REQUIRED=2.15.4
-WEBKIT_MIN_REQS=1.1.17
 GLIB_GDBUS_REQS=2.25.12
+
+GNOME_MEDIA_PROFILES_REQS=2.91.0
+LIBNOTIFY_REQS=0.5.1
+BRASERO_MIN_REQS=2.31.5
+WEBKIT_MIN_REQS=1.3.9
+
+
+
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
@@ -86,11 +92,12 @@ PKG_CHECK_MODULES(RB_CLIENT, glib-2.0 >= $GLIB_REQS gio-2.0 >= $GLIB_REQS gio-un
 
 dnl  note: gio-unix-2.0 is here for libmediaplayerid
 PKG_CHECK_MODULES(RHYTHMBOX,				\
-		  gtk+-2.0 >= $GTK_REQS			\
+		  gtk+-3.0 >= $GTK_REQS			\
+		  gdk-pixbuf-2.0 >= $GDK_PIXBUF_REQS	\
 		  glib-2.0 >= $GLIB_REQS		\
 		  gio-2.0 >= $GLIB_REQS			\
 		  gio-unix-2.0 >= $GLIB_REQS		\
-		  gnome-media-profiles >= $GNOME_MEDIA_PROFILES_REQS \
+		  libgnome-media-profiles-3.0 >= $GNOME_MEDIA_PROFILES_REQS \
 		  libsoup-2.4 >= $LIBSOUP_REQS		\
 		  libsoup-gnome-2.4 >= $LIBSOUP_REQS)
 
@@ -409,12 +416,16 @@ fi
 
 dnl libbrasero-media support
 have_libbrasero_media=no
-AC_ARG_WITH(libbrasero-media,
+AC_ARG_WITH(libbrasero-media3,
 	    AC_HELP_STRING([--with-libbrasero-media],
 	    		   [Build with libbrasero-media support]),,
 	    with_libbrasero_media=auto)
 if test x"$with_libbrasero_media" != "xno"; then
-    PKG_CHECK_MODULES(LIBBRASERO_MEDIA, [libbrasero-media >= $BRASERO_MIN_REQS] gtk+-x11-2.0, have_libbrasero_media=yes, have_libbrasero_media=no)
+    PKG_CHECK_MODULES(LIBBRASERO_MEDIA, [
+	libbrasero-media3 >= $BRASERO_MIN_REQS	\
+	gtk+-x11-3.0],
+	have_libbrasero_media=yes,
+	have_libbrasero_media=no)
 fi
 if test "x$have_libbrasero_media" = "xyes"; then
     AC_DEFINE([HAVE_LIBBRASERO_MEDIA], 1, [Have libbrasero-media])
@@ -492,12 +503,13 @@ fi
 AM_CONDITIONAL(WITH_LIRC, test x"$with_lirc" = xyes)
 
 dnl WebKit
+have_webkit=no
 AC_ARG_WITH(webkit,
 	    AC_HELP_STRING([--with-webkit],
 			   [Use WebKit to display HTML]),,
-	    with_webkit_gtk=auto)
-if test "x$with_webkit_gtk" != xno; then
-	PKG_CHECK_MODULES(WEBKIT, [webkit-1.0 >= $WEBKIT_MIN_REQS], have_webkit=yes, have_webkit=no)
+	    with_webkit=auto)
+if test "x$with_webkit" != xno; then
+	PKG_CHECK_MODULES(WEBKIT, [webkitgtk-3.0 >= $WEBKIT_MIN_REQS], have_webkit=yes, have_webkit=no)
 	if test "x$have_webkit" = "xno" -a "x$with_webkit" = "xyes"; then
 		AC_MSG_ERROR([WebKit support explicitly requested, but WebKit could not be found])
 	fi
@@ -733,15 +745,19 @@ AC_ARG_ENABLE([vala],
 	[enable_vala=$enableval have_vala=$enableval],
 	[enable_vala=autodetect have_vala=yes])
 AC_MSG_RESULT([$enable_vala])
+with_vala=no
 if test "x$enable_vala" = "xyes"; then
 	AM_PROG_VALAC([$VALA_REQS])
-	if test "x$VALAC" = "x"; then
-		if test "x$enable_vala" = "xyes"; then
-			AC_MSG_ERROR([Vala plugin support explicitly requested, but not found])
-		fi
-		with_vala=no
-	else
+	if test "x$VALAC" != "x"; then
+		VAPIDIR=$datadir/vala/vapi
+		# what?
+		VAPIGEN=vapigen
+		AC_SUBST([VALAC])
+		AC_SUBST([VAPIDIR])
+		AC_SUBST([VAPIGEN])
 		with_vala=yes
+	elif test "x$enable_vala" = "xyes"; then
+		AC_MSG_ERROR([Vala plugin support explicitly requested, but not found])
 	fi
 fi
 AM_CONDITIONAL(ENABLE_VALA, test "x$with_vala" = "xyes")
@@ -976,6 +992,11 @@ if test x"$have_libnotify" = xyes; then
 	AC_MSG_NOTICE([** libnotify support is enabled])
 else
 	AC_MSG_NOTICE([   libnotify support is disabled])
+fi
+if test x"$have_webkit" = xyes; then
+	AC_MSG_NOTICE([** WebKit support is enabled])
+else
+	AC_MSG_NOTICE([   WebKit support is disabled])
 fi
 if test x"$use_gudev" = xyes; then
 	AC_MSG_NOTICE([** GUdev support enabled])

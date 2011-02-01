@@ -37,7 +37,6 @@ IGNORE_HFILES= \
 	eggdesktopfile.h \
 	eggsmclient-private.h \
 	eggsmclient.h \
-	gseal-gtk-compat.h \
 	md5.h \
 	mkdtemp.h \
 	rb-cut-and-paste-code.h \

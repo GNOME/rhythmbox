@@ -52,7 +52,6 @@
 #include "rb-stock-icons.h"
 #include "eel-gconf-extensions.h"
 #include "rb-builder-helpers.h"
-#include "gseal-gtk-compat.h"
 
 #include "rb-tray-icon-gtk.h"
 
@@ -1111,7 +1110,7 @@ set_icon_geometry  (GdkWindow *window,
 		    int        height)
 {
 	gulong data[4];
-	Display *dpy = gdk_x11_drawable_get_xdisplay (window);
+	Display *dpy = GDK_WINDOW_XDISPLAY (window);
 
 	data[0] = x;
 	data[1] = y;

@@ -35,7 +35,7 @@
 #include <gst/gst.h>
 #include <gst/tag/tag.h>
 #include <string.h>
-#include <profiles/gnome-media-profiles.h>
+#include <libgnome-media-profiles/gnome-media-profiles.h>
 #include <gtk/gtk.h>
 #include <gio/gio.h>
 #include <gst/pbutils/missing-plugins.h>

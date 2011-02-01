@@ -32,7 +32,6 @@
 #include <math.h>
 
 #include <lib/eel-gconf-extensions.h>
-#include <lib/gseal-gtk-compat.h>
 #include <lib/rb-debug.h>
 #include <lib/rb-builder-helpers.h>
 #include <lib/rb-file-helpers.h>
@@ -1708,11 +1707,11 @@ list_table_size_allocate_cb (GtkWidget *table,
 	/* find the desired width of the widest child */
 	child_width = 1;
 	for (i = children; i != NULL; i = i->next) {
-		GtkRequisition child_requisition;
+		int min_width;
 
-		gtk_widget_size_request (i->data, &child_requisition);
-		if (child_requisition.width > child_width) {
-			child_width = child_requisition.width;
+		gtk_widget_get_preferred_width (i->data, &min_width, NULL);
+		if (min_width > child_width) {
+			child_width = min_width;
 		}
 	}
 

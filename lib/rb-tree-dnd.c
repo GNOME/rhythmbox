@@ -25,8 +25,6 @@
 
 #include "rb-debug.h"
 
-#include "gseal-gtk-compat.h"
-
 #define RB_TREE_DND_STRING "RbTreeDndString"
 /* must be the same value as in gtk_tree_view.c */
 #define SCROLL_EDGE_SIZE 15
@@ -502,7 +500,7 @@ scroll_row_timeout (gpointer data)
 		}
 	}
 
-	vadj = gtk_tree_view_get_vadjustment (tree_view);
+	vadj = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (tree_view));
 	vadj_value = gtk_adjustment_get_value (vadj);
 	value = CLAMP (vadj_value + offset,
 		       gtk_adjustment_get_lower (vadj),

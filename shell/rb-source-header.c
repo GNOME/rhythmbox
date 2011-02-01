@@ -156,21 +156,21 @@ G_DEFINE_TYPE (RBSourceHeader, rb_source_header, GTK_TYPE_TABLE)
 static inline void
 force_no_shadow (GtkWidget *widget)
 {
-        gboolean first_time = TRUE;
+	static GtkCssProvider *provider = NULL;
+	if (provider == NULL) {
+		const char *style =
+			"GtkToolbar {\n"
+			"	-GtkToolbar-shadow-type: none\n"
+			"}";
 
-        if (first_time) {
-                gtk_rc_parse_string ("\n"
-                                     "   style \"search-toolbar-style\"\n"
-                                     "   {\n"
-                                     "      GtkToolbar::shadow-type=GTK_SHADOW_NONE\n"
-                                     "   }\n"
-                                     "\n"
-                                     "    widget \"*.search-toolbar\" style \"search-toolbar-style\"\n"
-                                     "\n");
-                first_time = FALSE;
-        }
+		provider = gtk_css_provider_new ();
+		gtk_css_provider_load_from_data (provider, style, -1, NULL);
+	}
 
-        gtk_widget_set_name (widget, "search-toolbar");
+	/*
+	gtk_style_context_add_provider (gtk_widget_get_style_context (widget),
+					GTK_STYLE_PROVIDER (provider),
+					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION); */
 }
 
 static void

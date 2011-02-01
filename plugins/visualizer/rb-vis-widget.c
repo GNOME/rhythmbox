@@ -40,8 +40,6 @@
 #include "rb-vis-widget.h"
 #include "rb-debug.h"
 
-#include "gseal-gtk-compat.h"
-
 enum
 {
 	PROP_0,
@@ -64,7 +62,6 @@ static void
 rb_vis_widget_realize (GtkWidget *widget)
 {
 	GtkAllocation  allocation;
-	GtkStyle      *style;
 	GdkWindowAttr  attributes;
 	GdkWindow     *window;
 	gint           attributes_mask;
@@ -79,20 +76,15 @@ rb_vis_widget_realize (GtkWidget *widget)
 	attributes.height = allocation.height;
 	attributes.wclass = GDK_INPUT_OUTPUT;
 	attributes.visual = gtk_widget_get_visual (widget);
-	attributes.colormap = gtk_widget_get_colormap (widget);
 	attributes.event_mask = gtk_widget_get_events (widget);
 	attributes.event_mask |= GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK;
-	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
 	window = gdk_window_new (gtk_widget_get_parent_window (widget),
 				 &attributes, attributes_mask);
 	gtk_widget_set_window (widget, window);
 	gdk_window_set_user_data (window, widget);
 	gdk_window_show (window);
-
-	style = gtk_style_attach (gtk_widget_get_style (widget), window);
-	gtk_widget_set_style (widget, style);
-	gtk_style_set_background (style, window, GTK_STATE_NORMAL);
 
 	gtk_widget_set_realized (widget, TRUE);
 }
@@ -125,16 +117,15 @@ rb_vis_widget_size_allocate (GtkWidget *widget,
 }
 
 static gboolean
-rb_vis_widget_expose_event (GtkWidget *widget,
-			    GdkEventExpose *event)
+rb_vis_widget_draw (GtkWidget *widget, cairo_t *cr)
 {
 	GdkWindow   *window;
 	RBVisWidget *rbvw = RB_VIS_WIDGET (widget);
 
 	window = gtk_widget_get_window (widget);
 
-	if (rbvw->window_xid != GDK_WINDOW_XWINDOW (window)) {
-		rbvw->window_xid = GDK_WINDOW_XWINDOW (window);
+	if (rbvw->window_xid != GDK_WINDOW_XID (window)) {
+		rbvw->window_xid = GDK_WINDOW_XID (window);
 
 		gdk_display_sync (gdk_window_get_display (window));
 
@@ -239,7 +230,7 @@ rb_vis_widget_class_init (RBVisWidgetClass *klass)
 
 	widget_class->size_allocate = rb_vis_widget_size_allocate;
 	widget_class->realize = rb_vis_widget_realize;
-	widget_class->expose_event = rb_vis_widget_expose_event;
+	widget_class->draw = rb_vis_widget_draw;
 	widget_class->hide = rb_vis_widget_hide;
 	widget_class->show = rb_vis_widget_show;
 

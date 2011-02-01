@@ -52,7 +52,6 @@
 #include <X11/XF86keysym.h>
 #endif /* HAVE_MMKEYS */
 
-#include "gseal-gtk-compat.h"
 #include "rb-shell.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -1477,7 +1476,6 @@ construct_load_ui (RBShell *shell)
 {
 	GtkWidget *menubar;
 	GtkWidget *toolbar;
-	GtkWidget *hbox;
 	GtkToolItem *tool_item;
 	GError *error = NULL;
 
@@ -1497,12 +1495,10 @@ construct_load_ui (RBShell *shell)
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), menubar, FALSE, FALSE, 0);
 	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), menubar, 0);
 
-	hbox = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), hbox, FALSE, FALSE, 0);
-	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), hbox, 1);
-
 	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
-	gtk_box_pack_start (GTK_BOX (hbox), toolbar, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), toolbar, FALSE, FALSE, 0);
+	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), toolbar, 1);
+	gtk_widget_show (toolbar);
 
 	shell->priv->volume_button = gtk_volume_button_new ();
 	g_signal_connect (shell->priv->volume_button, "value-changed",
@@ -1522,8 +1518,6 @@ construct_load_ui (RBShell *shell)
 	gtk_container_add (GTK_CONTAINER (tool_item), shell->priv->volume_button);
 	gtk_widget_show_all (GTK_WIDGET (tool_item));
 	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), tool_item, -1);
-
-	gtk_widget_show (hbox);
 
 	gtk_widget_set_tooltip_text (shell->priv->volume_button,
 				     _("Change the music volume"));
@@ -1691,8 +1685,6 @@ rb_shell_window_state_cb (GtkWidget *widget,
 	if (event->changed_mask & GDK_WINDOW_STATE_MAXIMIZED) {
 		gboolean maximised = ((event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED) != 0);
 
-		gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (shell->priv->statusbar),
-						   !maximised);
 		if (!shell->priv->window_small) {
 			shell->priv->window_maximised = maximised;
 			eel_gconf_set_boolean (CONF_STATE_WINDOW_MAXIMIZED,

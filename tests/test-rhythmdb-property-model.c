@@ -29,6 +29,7 @@
 
 #include <check.h>
 #include <gtk/gtk.h>
+#include <locale.h>
 #include "test-utils.h"
 #include "rhythmdb-query-model.h"
 #include "rhythmdb-property-model.h"
@@ -700,7 +701,7 @@ main (int argc, char **argv)
 
 	g_thread_init (NULL);
 	rb_threads_init ();
-	gtk_set_locale ();
+	setlocale (LC_ALL, NULL);
 	rb_debug_init (TRUE);
 	rb_refstring_system_init ();
 	rb_file_helpers_init (TRUE);

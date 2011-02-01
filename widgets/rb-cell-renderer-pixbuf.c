@@ -26,7 +26,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "gseal-gtk-compat.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cut-and-paste-code.h"
 
@@ -42,24 +41,23 @@ static void rb_cell_renderer_pixbuf_init       (RBCellRendererPixbuf      *cellt
 static void rb_cell_renderer_pixbuf_class_init (RBCellRendererPixbufClass *class);
 static void rb_cell_renderer_pixbuf_get_size   (GtkCellRenderer            *cell,
 						GtkWidget                  *widget,
-						GdkRectangle               *rectangle,
+						const GdkRectangle         *rectangle,
 						gint                       *x_offset,
 						gint                       *y_offset,
 						gint                       *width,
 						gint                       *height);
 static void rb_cell_renderer_pixbuf_render     (GtkCellRenderer            *cell,
-						GdkWindow                  *window,
+						cairo_t			   *cr,
 						GtkWidget                  *widget,
-						GdkRectangle               *background_area,
-						GdkRectangle               *cell_area,
-						GdkRectangle               *expose_area,
+						const GdkRectangle         *background_area,
+						const GdkRectangle         *cell_area,
 						guint                       flags);
 static gboolean rb_cell_renderer_pixbuf_activate (GtkCellRenderer     *cell,
 						  GdkEvent            *event,
 						  GtkWidget           *widget,
 						  const gchar         *path,
-						  GdkRectangle        *background_area,
-						  GdkRectangle        *cell_area,
+						  const GdkRectangle  *background_area,
+						  const GdkRectangle  *cell_area,
 						  GtkCellRendererState flags);
 
 enum {
@@ -198,10 +196,11 @@ rb_cell_renderer_pixbuf_new (void)
   return GTK_CELL_RENDERER (g_object_new (rb_cell_renderer_pixbuf_get_type (), NULL, NULL));
 }
 
+/* XXX implement get_preferred_width/height/height_for_width/width_for_height */
 static void
 rb_cell_renderer_pixbuf_get_size (GtkCellRenderer *cell,
 				  GtkWidget       *widget,
-				  GdkRectangle    *cell_area,
+				  const GdkRectangle *cell_area,
 				  gint            *x_offset,
 				  gint            *y_offset,
 				  gint            *width,
@@ -253,11 +252,10 @@ rb_cell_renderer_pixbuf_get_size (GtkCellRenderer *cell,
 
 static void
 rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
-				GdkWindow          *window,
+				cairo_t            *cr,
 				GtkWidget          *widget,
-				GdkRectangle       *background_area,
-				GdkRectangle       *cell_area,
-				GdkRectangle       *expose_area,
+				const GdkRectangle *background_area,
+				const GdkRectangle *cell_area,
 				guint               flags)
 
 {
@@ -298,11 +296,9 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
   pix_rect.height -= ypad * 2;
 
   if (gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect)) {
-    cairo_t *cr = gdk_cairo_create (window);
     gdk_cairo_set_source_pixbuf (cr, cellpixbuf->pixbuf, pix_rect.x, pix_rect.y);
     gdk_cairo_rectangle (cr, &draw_rect);
     cairo_paint (cr);
-    cairo_destroy (cr);
   }
 }
 
@@ -311,8 +307,8 @@ rb_cell_renderer_pixbuf_activate (GtkCellRenderer *cell,
 				  GdkEvent *event,
 				  GtkWidget *widget,
 				  const gchar *path,
-				  GdkRectangle *background_area,
-				  GdkRectangle *cell_area,
+				  const GdkRectangle *background_area,
+				  const GdkRectangle *cell_area,
 				  GtkCellRendererState flags)
 {
   int mouse_x, mouse_y;

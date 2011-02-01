@@ -278,20 +278,21 @@ rb_audiocd_source_dispose (GObject *object)
 static inline void
 force_no_spacing (GtkWidget *widget)
 {
-	static gboolean first_time = TRUE;
-	if (first_time) {
-		gtk_rc_parse_string ("\n"
-				     "   style \"audiocd-extract-header-style\"\n"
-				     "   {\n"
-				     "      GtkCheckButton::indicator-spacing=0\n"
-				     "   }\n"
-				     "\n"
-				     "   widget \"*.audiocd-extract-header\" style \"audiocd-extract-header-style\"\n"
-				     "\n");
-		first_time = FALSE;
+	static GtkCssProvider *provider = NULL;
+
+	if (provider == NULL) {
+		const char *style =
+			"GtkCheckButton {\n"
+			"	-GtkCheckButton-indicator-spacing: 0\n"
+			"}\n";
+
+		provider = gtk_css_provider_new ();
+		gtk_css_provider_load_from_data (provider, style, -1, NULL);
 	}
 
-	gtk_widget_set_name (widget, "audiocd-extract-header");
+	gtk_style_context_add_provider (gtk_widget_get_style_context (widget),
+					GTK_STYLE_PROVIDER (provider),
+					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
 static void
@@ -366,7 +367,7 @@ rb_audiocd_source_constructed (GObject *object)
 	g_signal_connect_object (renderer, "toggled", G_CALLBACK (extract_toggled_cb), source, 0);
 
 	/* set column width */
-	gtk_cell_renderer_get_size (renderer, GTK_WIDGET (entry_view), NULL, NULL, NULL, &toggle_width, NULL);
+	gtk_cell_renderer_get_preferred_width (renderer, GTK_WIDGET (entry_view), NULL, &toggle_width);
 	gtk_tree_view_column_set_sizing (extract, GTK_TREE_VIEW_COLUMN_FIXED);
 	gtk_tree_view_column_set_fixed_width (extract, toggle_width + 10);
 

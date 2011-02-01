@@ -369,7 +369,7 @@ rb_fm_radio_source_cmd_new_station (GtkAction *action, RBFMRadioSource *self)
 				 G_CALLBACK (new_station_location_added),
 				 self, 0);
 	gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_object_destroy (GTK_OBJECT (dialog));
+	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 static void
