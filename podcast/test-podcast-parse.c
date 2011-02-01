@@ -38,7 +38,7 @@
 
 static gboolean debug = FALSE;
 
-void rb_debug_real (const char *func,
+void rb_debug_realf (const char *func,
 		    const char *file,
 		    int line,
 		    gboolean newline,
@@ -46,11 +46,11 @@ void rb_debug_real (const char *func,
 
 /* For the benefit of the podcast parsing code */
 void
-rb_debug_real (const char *func,
-	       const char *file,
-	       int line,
-	       gboolean newline,
-	       const char *format, ...)
+rb_debug_realf (const char *func,
+		const char *file,
+		int line,
+		gboolean newline,
+		const char *format, ...)
 {
 	va_list args;
 	char buffer[1025];

@@ -90,8 +90,40 @@ rb_debug_matches (const char *func,
  * include one.
  */
 
+static void
+_rb_debug_print (const char *func, const char *file, const int line, gboolean newline, const char *buffer)
+{
+	char str_time[255];
+	time_t the_time;
+
+	time (&the_time);
+	strftime (str_time, 254, "%H:%M:%S", localtime (&the_time));
+
+	g_printerr (newline ? "(%s) [%p] [%s] %s:%d: %s\n" : "(%s) [%p] [%s] %s:%d: %s",
+		    str_time, g_thread_self (), func, file, line, buffer);
+}
+
 /**
  * rb_debug_real:
+ * @func: function name
+ * @file: file name
+ * @line: line number
+ * @newline: if TRUE, add a newline to the output
+ * @message: the debug message
+ *
+ * If the debug output settings match the function or file names,
+ * the debug message will be formatted and written to standard error.
+ */
+void
+rb_debug_real (const char *func, const char *file, const int line, gboolean newline, const char *message)
+{
+	if (rb_debug_matches (func, file)) {
+		_rb_debug_print (func, file, line, newline, message);
+	}
+}
+
+/**
+ * rb_debug_realf:
  * @func: function name
  * @file: file name
  * @line: line number
@@ -103,16 +135,14 @@ rb_debug_matches (const char *func,
  * the debug message will be formatted and written to standard error.
  */
 void
-rb_debug_real (const char *func,
-	       const char *file,
-	       const int line,
-	       gboolean newline,
-	       const char *format, ...)
+rb_debug_realf (const char *func,
+		const char *file,
+		const int line,
+		gboolean newline,
+		const char *format, ...)
 {
 	va_list args;
 	char buffer[1025];
-	char str_time[255];
-	time_t the_time;
 
 	if (!rb_debug_matches (func, file))
 		return;
@@ -123,11 +153,7 @@ rb_debug_real (const char *func,
 
 	va_end (args);
 
-	time (&the_time);
-	strftime (str_time, 254, "%H:%M:%S", localtime (&the_time));
-
-	g_printerr (newline ? "(%s) [%p] [%s] %s:%d: %s\n" : "(%s) [%p] [%s] %s:%d: %s",
-		    str_time, g_thread_self (), func, file, line, buffer);
+	_rb_debug_print (func, file, line, newline, buffer);
 }
 
 /**
