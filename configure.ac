@@ -690,34 +690,27 @@ if test "x$have_python" != "xno"; then
 	AC_SUBST([PYTHON_CFLAGS])
 	AC_SUBST([PYTHON_EXTRA_LIBS])
 
-	PYGTK_REQUIRED=2.8.0
 	GST_PYTHON_REQUIRED=0.10.1
-
-	PKG_CHECK_MODULES([PYGTK], [
-		pygtk-2.0 >= $PYGTK_REQUIRED] \
+	PKG_CHECK_MODULES([PYGOBJECT], [
 		gst-python-0.10 >= $GST_PYTHON_REQUIRED
-		pygobject-2.0 >= $PYGOBJECT_REQUIRED,
+		pygobject-2.0 >= $PYGOBJECT_REQUIRED],
 		[],
 		[
 		have_python=no
 		if test "x$enable_python" = "xyes"; then
-			AC_MSG_ERROR([$PYGTK_PKG_ERRORS])
+			AC_MSG_ERROR([$PYGOBJECT_PKG_ERRORS])
 		elif test "x$enable_python" = "xautodetect"; then
 			enable_python=no
-			AC_MSG_WARN([$PYGTK_PKG_ERRORS])
+			AC_MSG_WARN([$PYGOBJECT_PKG_ERRORS])
 			AC_MSG_WARN([Disabling python support])
 		fi
 		])
 
-	AC_SUBST([PYGTK_CFLAGS])
-	AC_SUBST([PYGTK_LIBS])
+	AC_SUBST([PYGOBJECT_CFLAGS])
+	AC_SUBST([PYGOBJECT_LIBS])
 fi
 
 if test "x$have_python" != "xno"; then
-	AC_MSG_CHECKING([for pygtk defs])
-	PYGTK_DEFSDIR=`$PKG_CONFIG --variable=defsdir pygtk-2.0`
-	AC_MSG_RESULT([$PYGTK_DEFSDIR])
-
 	AC_MSG_CHECKING([for gst-python defs])
 	GST_PYTHON_DEFSDIR=`$PKG_CONFIG --variable=defsdir gst-python-0.10`
 	AC_MSG_RESULT([$GST_PYTHON_DEFSDIR])
@@ -730,7 +723,6 @@ if test "x$have_python" != "xno"; then
 	PYGOBJECT_H2DEF="$PYTHON `$PKG_CONFIG --variable=codegendir pygobject-2.0`/h2def.py"
 	AC_MSG_RESULT([$PYGOBJECT_H2DEF])
 
-	AC_SUBST([PYGTK_DEFSDIR])
 	AC_SUBST([GST_PYTHON_DEFSDIR])
 	AC_SUBST([PYGOBJECT_CODEGEN])
 	AC_SUBST([PYGOBJECT_H2DEF])

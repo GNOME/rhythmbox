@@ -139,9 +139,9 @@ librhythmbox_core_la_SOURCES +=				\
 	rb-python-plugin.h				\
 	rb-python-plugin.c
 
-INCLUDES += $(PYGTK_CFLAGS)  $(PYTHON_CFLAGS)
+INCLUDES += $(PYGOBJECT_CFLAGS) $(PYTHON_CFLAGS)
 
-librhythmbox_core_la_LIBADD += $(PYTHON_LIBS) $(top_builddir)/bindings/python/rb.la
+librhythmbox_core_la_LIBADD += $(PYTHON_LIBS)
 endif
 
 rb-shell-glue.h: rb-shell.xml Makefile

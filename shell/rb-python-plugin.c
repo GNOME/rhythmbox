@@ -73,28 +73,29 @@ call_python_method (RBPythonObject *object,
 static gboolean
 check_py_object_is_gtk_widget (PyObject *py_obj)
 {
-	static PyTypeObject *_PyGtkWidget_Type = NULL;
+	PyObject *pygtype, *pytype;
+	gboolean ret;
 
-	if (_PyGtkWidget_Type == NULL)
-	{
-		PyObject *module;
-
-		if ((module = PyImport_ImportModule ("gtk")))
-		{
-			PyObject *moddict = PyModule_GetDict (module);
-			_PyGtkWidget_Type = (PyTypeObject *) PyDict_GetItemString (moddict, "Widget");
-		}
-
-		if (_PyGtkWidget_Type == NULL)
-		{
-			PyErr_SetString(PyExc_TypeError, "could not find python gtk widget type");
-			PyErr_Print();
-
-			return FALSE;
-		}
+	pygtype = pyg_type_wrapper_new (GTK_TYPE_WIDGET);
+	pytype = PyObject_GetAttrString (pygtype, "pytype");
+	if (pytype == NULL) {
+		g_warning ("Unable to create python wrapper type for GtkWidget");
+		return FALSE;
 	}
 
-	return PyObject_TypeCheck (py_obj, _PyGtkWidget_Type) ? TRUE : FALSE;
+	ret = FALSE;
+	switch (PyObject_IsInstance (py_obj, pytype)) {
+	case 1:
+		ret = TRUE;
+		break;
+	case -1:
+		PyErr_Print ();
+	case 0:
+		break;
+	}
+
+	Py_DECREF (pygtype);
+	return ret;
 }
 
 static void

@@ -33,7 +33,6 @@
 /* pyconfig.h usually defines _XOPEN_SOURCE */
 #undef _XOPEN_SOURCE
 #define NO_IMPORT_PYGOBJECT
-#define NO_IMPORT_PYGTK
 #include <pygobject.h>
 #include "rb-python-module.h"
 

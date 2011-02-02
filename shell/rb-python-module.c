@@ -35,7 +35,6 @@
 #endif
 
 #include <pygobject.h>
-#include <pygtk/pygtk.h>
 
 #include <signal.h>
 
@@ -71,36 +70,17 @@ enum
 	PROP_MODULE
 };
 
-/* Exported by pyrhythmdb module */
-void pyrhythmdb_register_classes (PyObject *d);
-void pyrhythmdb_add_constants (PyObject *module, const gchar *strip_prefix);
-extern PyMethodDef pyrhythmdb_functions[];
-
-/* Exported by pyrb module */
-void pyrb_register_classes (PyObject *d);
-void pyrb_add_constants (PyObject *module, const gchar *strip_prefix);
-extern PyMethodDef pyrb_functions[];
-
-/* We retreive this to check for correct class hierarchy */
-static PyTypeObject *PyRBPlugin_Type;
-
 static gboolean python_init_successful;
 
 G_DEFINE_TYPE (RBPythonModule, rb_python_module, G_TYPE_TYPE_MODULE);
 
-static void
-actually_init_pygtk (void)
-{
-	init_pygtk ();
-}
-
 void
 rb_python_module_init_python (void)
 {
-	PyObject *pygtk, *mdict, *require;
-	PyObject *rb, *rhythmdb, *gtk, *pygtk_version, *pygtk_required_version;
+	PyObject *mdict;
 	PyObject *gettext, *install, *gettext_args;
 	PyObject *sys_path;
+	PyObject *gi;
 	struct sigaction old_sigint;
 	gint res;
 	char *argv[] = { "rb", "rhythmdb", NULL };
@@ -139,23 +119,6 @@ rb_python_module_init_python (void)
 
 	PySys_SetArgv (1, argv);
 
-	/* pygtk.require("2.0") */
-	pygtk = PyImport_ImportModule ("pygtk");
-	if (pygtk == NULL) {
-		g_warning ("Could not import pygtk");
-		PyErr_Print();
-		return;
-	}
-
-	mdict = PyModule_GetDict (pygtk);
-	require = PyDict_GetItemString (mdict, "require");
-	PyObject_CallObject (require, Py_BuildValue ("(S)", PyString_FromString ("2.0")));
-	if (PyErr_Occurred ()) {
-		g_warning ("pygtk.require(2.0) failed");
-		PyErr_Print();
-		return;
-	}
-
 	/* import gobject */
 	if (pygobject_init (2, 16, 0) == NULL) {
 		g_warning ("Could not initialize pygobject");
@@ -166,47 +129,7 @@ rb_python_module_init_python (void)
 	/* disable pyg* log hooks, since ours is more interesting */
 	pyg_disable_warning_redirections ();
 
-	/* import gtk */
-	actually_init_pygtk ();
-	if (PyErr_Occurred ()) {
-		g_warning ("Could not initialize pygtk");
-		PyErr_Print();
-		return;
-	}
-
 	pyg_enable_threads ();
-
-	gtk = PyImport_ImportModule ("gtk");
-	if (gtk == NULL) {
-		g_warning ("Could not import gtk");
-		PyErr_Print();
-		return;
-	}
-
-	mdict = PyModule_GetDict (gtk);
-	pygtk_version = PyDict_GetItemString (mdict, "pygtk_version");
-	pygtk_required_version = Py_BuildValue ("(iii)", 2, 8, 0);
-	if (PyObject_Compare (pygtk_version, pygtk_required_version) == -1) {
-		g_warning("PyGTK %s required, but %s found.",
-				  PyString_AsString (PyObject_Repr (pygtk_required_version)),
-				  PyString_AsString (PyObject_Repr (pygtk_version)));
-		Py_DECREF (pygtk_required_version);
-		return;
-	}
-	Py_DECREF (pygtk_required_version);
-
-	/* import rhythmdb */
-	rhythmdb = Py_InitModule ("rhythmdb", pyrhythmdb_functions);
-	mdict = PyModule_GetDict (rhythmdb);
-
-	pyrhythmdb_register_classes (mdict);
-	if (PyErr_Occurred ()) {
-		g_warning ("unable to register rhythmdb classes");
-		PyErr_Print();
-		return;
-	}
-
-	pyrhythmdb_add_constants (rhythmdb, "RHYTHMDB_");
 
 	/* import rb */
 	paths = rb_get_plugin_paths ();
@@ -223,44 +146,11 @@ rb_python_module_init_python (void)
 		paths = g_list_delete_link (paths, paths);
 	}
 
-	rb = PyImport_ImportModule ("rb");
-
-	if (rb == NULL) {
-		g_warning ("could not import python module 'rb'");
-		PyErr_Print ();
-		return;
-	}
-
-	/* add pyrb_functions */
-	for (res = 0; pyrb_functions[res].ml_name != NULL; res++) {
-		PyObject *func;
-
-		func = PyCFunction_New (&pyrb_functions[res], rb);
-		if (func == NULL) {
-			g_warning ("unable to create object for function '%s'", pyrb_functions[res].ml_name);
-			PyErr_Print ();
-			return;
-		}
-		if (PyModule_AddObject (rb, pyrb_functions[res].ml_name, func) < 0) {
-			g_warning ("unable to insert function '%s' in 'rb' module", pyrb_functions[res].ml_name);
-			PyErr_Print ();
-			return;
-		}
-	}
-	mdict = PyModule_GetDict (rb);
-
-	pyrb_register_classes (mdict);
-	if (PyErr_Occurred ()) {
-		g_warning ("unable to register rb classes");
+	/* import gi */
+	gi = PyImport_ImportModule ("gi");
+	if (gi == NULL) {
+		g_warning ("Could not import gi");
 		PyErr_Print();
-		return;
-	}
-	pyrb_add_constants (rb, "RB_");
-
-	/* Retreive the Python type for rb.Plugin */
-	PyRBPlugin_Type = (PyTypeObject *) PyDict_GetItemString (mdict, "Plugin");
-	if (PyRBPlugin_Type == NULL) {
-		PyErr_Print ();
 		return;
 	}
 
@@ -287,6 +177,7 @@ rb_python_module_load (GTypeModule *gmodule)
 	RBPythonModulePrivate *priv = RB_PYTHON_MODULE_GET_PRIVATE (gmodule);
 	PyObject *main_module, *main_locals, *locals, *key, *value;
 	PyObject *module, *fromlist;
+	PyObject *pygtype, *pytype;
 	Py_ssize_t pos = 0;
 
 	main_module = PyImport_AddModule ("__main__");
@@ -320,20 +211,34 @@ rb_python_module_load (GTypeModule *gmodule)
 		return FALSE;
 	}
 
+	pygtype = pyg_type_wrapper_new (RB_TYPE_PLUGIN);
+	pytype = PyObject_GetAttrString (pygtype, "pytype");
+	if (pytype == NULL) {
+		g_warning ("Unable to create python wrapper type for RBPlugin");
+		return FALSE;
+	}
+
 	locals = PyModule_GetDict (module);
 	while (PyDict_Next (locals, &pos, &key, &value))
 	{
 		if (!PyType_Check(value))
 			continue;
 
-		if (PyObject_IsSubclass (value, (PyObject*) PyRBPlugin_Type))
-		{
+		switch (PyObject_IsSubclass (value, pytype)) {
+		case 1:
 			priv->type = rb_python_object_get_type (gmodule, value);
+			Py_DECREF (pygtype);
 			return TRUE;
+		case 0:
+			continue;
+		case -1:
+			PyErr_Print ();
+			continue;
 		}
 	}
 
-	rb_debug ("failed to find any rb.Plugin-derived classes in python plugin");
+	rb_debug ("failed to find any RBPlugin-derived classes in python plugin");
+	Py_DECREF (pygtype);
 
 	return FALSE;
 }
@@ -372,8 +277,10 @@ rb_python_module_new_object (RBPythonModule *module)
 	RBPythonObject *object;
 	PyGILState_STATE state;
 
-	if (priv->type == 0)
+	if (priv->type == 0) {
+		g_warning ("Can't create an instance, we don't have a type");
 		return NULL;
+	}
 
 	state = pyg_gil_state_ensure ();
 	rb_debug ("Creating object of type %s", g_type_name (priv->type));
