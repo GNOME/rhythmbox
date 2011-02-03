@@ -420,16 +420,17 @@ fi
 
 dnl libbrasero-media support
 have_libbrasero_media=no
-AC_ARG_WITH(libbrasero-media3,
-	    AC_HELP_STRING([--with-libbrasero-media],
+AC_ARG_WITH(brasero,
+	    AC_HELP_STRING([--with-brasero],
 	    		   [Build with libbrasero-media support]),,
 	    with_libbrasero_media=auto)
 if test x"$with_libbrasero_media" != "xno"; then
-    PKG_CHECK_MODULES(LIBBRASERO_MEDIA, [
-	libbrasero-media3 >= $BRASERO_MIN_REQS	\
-	gtk+-x11-3.0],
+    PKG_CHECK_MODULES(LIBBRASERO_MEDIA,
+	libbrasero-media3 >= $BRASERO_MIN_REQS,
 	have_libbrasero_media=yes,
 	have_libbrasero_media=no)
+    AC_SUBST(LIBBRASERO_MEDIA_CFLAGS)
+    AC_SUBST(LIBBRASERO_MEDIA_LIBS)
 fi
 if test "x$have_libbrasero_media" = "xyes"; then
     AC_DEFINE([HAVE_LIBBRASERO_MEDIA], 1, [Have libbrasero-media])
