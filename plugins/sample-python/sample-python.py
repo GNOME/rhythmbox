@@ -1,10 +1,12 @@
-import rhythmdb, rb
-import gobject, gtk
 
-class SamplePython(rb.Plugin):
+import gobject
+import rb
+from gi.repository import RB
+
+class SamplePython(RB.Plugin):
 
 	def __init__(self):
-		rb.Plugin.__init__(self)
+		RB.Plugin.__init__(self)
 			
 	def activate(self, shell):
 		print "activating sample python plugin"
@@ -20,8 +22,8 @@ class SamplePython(rb.Plugin):
 		self.source = None
 
 
-class PythonSource(rb.Source):
+class PythonSource(RB.Source):
 	def __init__(self):
-		rb.Source.__init__(self)
+		RB.Source.__init__(self)
 		
 gobject.type_register(PythonSource)
