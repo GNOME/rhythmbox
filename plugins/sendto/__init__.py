@@ -24,9 +24,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rb
-import gtk
 import glib
+import rb
+from gi.repository import Gtk
+from gi.repository import RB
 
 ui_definition = """
 <ui>
@@ -43,18 +44,19 @@ ui_definition = """
     </popup>
 </ui>"""
 
-class SendToPlugin (rb.Plugin):
+class SendToPlugin (RB.Plugin):
     def __init__(self):
-        rb.Plugin.__init__(self)
+        RB.Plugin.__init__(self)
 
     def activate(self, shell):
-        self.__action = gtk.Action('SendTo', _('Send to...'),
-                                _('Send files by mail, instant message...'), '')
+        self.__action = Gtk.Action(name='SendTo', label=_('Send to...'),
+                                tooltip=_('Send files by mail, instant message...'),
+                                stock_id='')
         self.__action.connect('activate', self.send_to, shell)
 
-        self.__action_group = gtk.ActionGroup('SendToActionGroup')
+        self.__action_group = Gtk.ActionGroup(name='SendToActionGroup')
         self.__action_group.add_action(self.__action)
-        shell.get_ui_manager().insert_action_group(self.__action_group)
+        shell.get_ui_manager().insert_action_group(self.__action_group, -1)
 
         self.__ui_id = shell.get_ui_manager().add_ui_from_string(ui_definition)
 
@@ -67,7 +69,10 @@ class SendToPlugin (rb.Plugin):
         del self.__action
 
     def send_to(self, action, shell):
-        entries = shell.props.selected_source.get_entry_view().get_selected_entries()
+        page = shell.props.selected_page
+        if not hasattr(page, "get_entry_view"):
+            return
 
+        entries = page.get_entry_view().get_selected_entries()
         cmdline = ['nautilus-sendto'] + [entry.get_playback_uri() for entry in entries]
-	glib.spawn_async(argv=cmdline, flags=glib.SPAWN_SEARCH_PATH)
+        glib.spawn_async(argv=cmdline, flags=glib.SPAWN_SEARCH_PATH)
