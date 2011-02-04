@@ -29,8 +29,10 @@
 import sys
 import os.path
 import os
+import time
+import thread
 
-import gtk
+from gi.repository import RB
 
 # rb classes
 from Loader import Loader
@@ -38,12 +40,6 @@ from Loader import ChunkLoader
 from Loader import UpdateCheck
 from Coroutine import Coroutine
 from URLCache import URLCache
-
-#def _excepthandler (exc_class, exc_inst, trace):
-#	import sys
-#	# print out stuff ignoring our debug redirect
-#	sys.__excepthook__ (exc_class, exc_inst, trace)
-
 
 def try_load_icon(theme, icon, size, flags):
 	try:
@@ -69,10 +65,9 @@ class _rbdebugfile:
 	def __init__(self, fn):
 		self.fn = fn
 
-	def write(self, str):
-		if str == '\n':
+	def write(self, data):
+		if data == '\n':
 			return
-		import rb
 		fr = sys._getframe(1)
 
 		co = fr.f_code
@@ -90,7 +85,8 @@ class _rbdebugfile:
 		if fr.f_locals.has_key('self'):
 			methodname = '%s.%s' % (fr.f_locals['self'].__class__.__name__, methodname)
 
-		rb._debug (methodname, filename, co.co_firstlineno + fr.f_lineno,  True, str)
+		ln = co.co_firstlineno + fr.f_lineno
+		RB.debug_real (methodname, filename, ln, True, str(data))
 
 	def close(self):         pass
 	def flush(self):         pass
@@ -105,5 +101,3 @@ class _rbdebugfile:
 	truncate = tell
 
 sys.stdout = _rbdebugfile(sys.stdout.fileno())
-#sys.excepthook = _excepthandler
-

@@ -30,6 +30,7 @@ import time
 import errno
 
 import rb
+from gi.repository import RB
 
 SECS_PER_DAY = 86400
 
@@ -49,7 +50,7 @@ class URLCache(object):
         if path.startswith("/"):
             self.path = path
         else:
-            self.path = os.path.join(rb.user_cache_dir(), path)
+            self.path = os.path.join(RB.user_cache_dir(), path)
 
         self.refresh = refresh
         self.discard = discard

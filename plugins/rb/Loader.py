@@ -25,20 +25,21 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import gobject
-import gtk
+import gi
+from gi.repository import Gdk
 import sys
 import gio
 
 def callback_with_gdk_lock(callback, data, args):
-	gtk.gdk.threads_enter()
+	Gdk.threads_enter()
 	try:
 		v = callback(data, *args)
-		gtk.gdk.threads_leave()
+		Gdk.threads_leave()
 		return v
 	except Exception, e:
 		print "Exception caught in loader callback: %s" % str(e)
 		sys.excepthook(*sys.exc_info())
-		gtk.gdk.threads_leave()
+		Gdk.threads_leave()
 
 
 class Loader(object):
@@ -76,13 +77,14 @@ class ChunkLoader(object):
 		return self.callback(result, self.total, *self.args)
 
 	def _callback_gdk(self, result):
-		gtk.gdk.threads_enter()
+		Gdk.threads_enter()
 		try:
 			v = self._callback(result)
-			gtk.gdk.threads_leave()
+			Gdk.threads_leave()
 			return v
 		except Exception, e:
-			gtk.gdk.threads_leave()
+			Gdk.threads_leave()
+			sys.excepthook(*sys.exc_info())
 			raise e
 
 	def _error_idle_cb(self, error):
