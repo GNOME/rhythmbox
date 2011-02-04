@@ -25,7 +25,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rhythmdb, rb
+import rb
+from gi.repository import RB
+
 try:
   import dbus
   use_gossip = True
@@ -57,9 +59,9 @@ PURPLE_BUS_NAME = 'im.pidgin.purple.PurpleService'
 PURPLE_OBJ_PATH = '/im/pidgin/purple/PurpleObject'
 PURPLE_IFACE_NAME = 'im.pidgin.purple.PurpleInterface'
 
-class IMStatusPlugin (rb.Plugin):
+class IMStatusPlugin (RB.Plugin):
   def __init__ (self):
-    rb.Plugin.__init__ (self)
+    RB.Plugin.__init__ (self)
 
   def activate (self, shell):
     self.shell = shell
@@ -133,11 +135,11 @@ class IMStatusPlugin (rb.Plugin):
 
   def set_status_from_entry (self):
     db = self.shell.get_property ("db")
-    self.current_artist = db.entry_get (self.current_entry, rhythmdb.PROP_ARTIST)
-    self.current_title  = db.entry_get (self.current_entry, rhythmdb.PROP_TITLE)
-    self.current_album  = db.entry_get (self.current_entry, rhythmdb.PROP_ALBUM)
+    self.current_artist = self.current_entry.get_string(RB.RhythmDBPropType.ARTIST)
+    self.current_title = self.current_entry.get_string(RB.RhythmDBPropType.TITLE)
+    self.current_album = self.current_entry.get_string(RB.RhythmDBPropType.ALBUM)
 
-    if self.current_entry.get_entry_type().props.category == rhythmdb.ENTRY_STREAM:
+    if self.current_entry.get_entry_type().props.category == RB.RhythmDBEntryCategory.STREAM:
       if not self.current_artist:
         self.current_artist = db.entry_request_extra_metadata (self.current_entry, STREAM_SONG_ARTIST)
       if not self.current_title:
