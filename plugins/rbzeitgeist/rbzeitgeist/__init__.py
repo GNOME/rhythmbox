@@ -25,10 +25,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rb
-import rhythmdb
 import gobject
 import time
+
+from gi.repository import RB
 
 from zeitgeist.client import ZeitgeistClient
 from zeitgeist.datamodel import Event, Subject, Interpretation, Manifestation
@@ -39,10 +39,10 @@ except RuntimeError, e:
     print "Unable to connect to Zeitgeist, won't send events. Reason: '%s'" %e
     IFACE = None
 
-class ZeitgeistPlugin(rb.Plugin):
+class ZeitgeistPlugin(RB.Plugin):
 
     def __init__(self):
-        rb.Plugin.__init__(self)
+        RB.Plugin.__init__(self)
 
     def activate(self, shell):
         print "LOADING Zeitgeist plugin ......"
@@ -65,11 +65,11 @@ class ZeitgeistPlugin(rb.Plugin):
     @staticmethod
     def get_song_info(db, entry):
         song = {
-            "album": db.entry_get(entry, rhythmdb.PROP_ALBUM),
-            "artist": db.entry_get(entry, rhythmdb.PROP_ARTIST),
-            "title":  db.entry_get(entry, rhythmdb.PROP_TITLE),
-            "location": db.entry_get(entry, rhythmdb.PROP_LOCATION),
-            "mimetype": db.entry_get(entry, rhythmdb.PROP_MIMETYPE),
+            "album": entry.get_string(RB.RhythmDBPropType.PROP_ALBUM),
+            "artist": entry.get_string(RB.RhythmDBPropType.PROP_ARTIST),
+            "title":  entry.get_string(RB.RhythmDBPropType.PROP_TITLE),
+            "location": entry.get_string(RB.RhythmDBPropType.PROP_LOCATION),
+            "mimetype": entry.get_string(RB.RhythmDBPropType.PROP_MIMETYPE),
         }
         return song
 
