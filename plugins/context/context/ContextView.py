@@ -24,16 +24,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rb, rhythmdb
-import gtk, gobject, gio
-import pango
-import webkit
+import gobject, gio
 import os
 
 import ArtistTab as at
 import AlbumTab as abt
 import LyricsTab as lt
 import LinksTab as lit
+
+import rb
+from gi.repository import Gtk, Gdk, Pango
+from gi.repository import RB
+from gi.repository import WebKit
 
 context_ui = """
 <ui>
@@ -90,7 +92,7 @@ class ContextView (gobject.GObject):
         self.action = ('ToggleContextView','gtk-info', _('Toggle Conte_xt Pane'),
                         None, _('Change the visibility of the context pane'),
                         self.toggle_visibility, True)
-        self.action_group = gtk.ActionGroup('ContextPluginActions')
+        self.action_group = Gtk.ActionGroup(name='ContextPluginActions')
         self.action_group.add_toggle_actions([self.action])
         uim = self.shell.get_ui_manager()
         uim.insert_action_group (self.action_group, 0)
@@ -108,7 +110,7 @@ class ContextView (gobject.GObject):
         self.top_five = None
         self.tab = None
         if self.visible:
-            shell.remove_widget (self.vbox, rb.SHELL_UI_LOCATION_RIGHT_SIDEBAR)
+            shell.remove_widget (self.vbox, RB.ShellUILocation.RIGHT_SIDEBAR)
             self.visible = False
         uim = shell.get_ui_manager ()
         uim.remove_ui (self.ui_id)
@@ -135,10 +137,10 @@ class ContextView (gobject.GObject):
 
     def toggle_visibility (self, action):
         if not self.visible:
-            self.shell.add_widget (self.vbox, rb.SHELL_UI_LOCATION_RIGHT_SIDEBAR, expand=True)
+            self.shell.add_widget (self.vbox, RB.ShellUILocation.RIGHT_SIDEBAR, expand=True)
             self.visible = True
         else:
-            self.shell.remove_widget (self.vbox, rb.SHELL_UI_LOCATION_RIGHT_SIDEBAR)
+            self.shell.remove_widget (self.vbox, RB.ShellUILocation.RIGHT_SIDEBAR)
             self.visible = False
 
     def change_tab (self, tab, newtab):
@@ -175,10 +177,12 @@ class ContextView (gobject.GObject):
                 self.top_five_list.append(["%d. " % (i+1), ""])
         else:
             num_tracks = len(top_tracks)
+            ## empty liststore
+            self.top_five_list.clear()
             for i in range (0, 5):
                 if i >= num_tracks : track = ""
                 else : track = top_tracks[i]
-                self.top_five_list[(i,)] = ("%d. " % (i+1), track)
+                self.top_five_list.append(["%d. " % (i+1), str(track)])
 
     def playing_changed_cb (self, playing, user_data):
         # this sometimes happens on a streaming thread, so we need to
@@ -193,7 +197,7 @@ class ContextView (gobject.GObject):
         if playing_entry is None:
             return
 
-        playing_artist = self.db.entry_get (playing_entry, rhythmdb.PROP_ARTIST)
+        playing_artist = playing_entry.get_string(RB.RhythmDBPropType.ARTIST)
 
         if self.current_artist != playing_artist:
             self.current_artist = playing_artist.replace ('&', '&amp;')
@@ -221,36 +225,38 @@ class ContextView (gobject.GObject):
         self.apply_font_settings()
 
     def apply_font_settings(self):
-        style = self.webview.style
+        # FIXME apply font style
+        # style = self.webview.style
+        return
 
         font_size = style.font_desc.get_size()
         if style.font_desc.get_size_is_absolute() is False:
-            font_size /= pango.SCALE
+            font_size /= Pango.SCALE
         self.websettings.props.default_font_size = font_size
         self.websettings.props.default_font_family = style.font_desc.get_family()
         print "web view font settings: %s, %d" % (style.font_desc.get_family(), font_size)
 
     def init_gui(self):
-        self.vbox = gtk.VBox()
-        self.frame = gtk.Frame()
-        self.label = gtk.Label(_('Nothing Playing'))
-        self.frame.set_shadow_type(gtk.SHADOW_IN)
+        self.vbox = Gtk.VBox()
+        self.frame = Gtk.Frame()
+        self.label = Gtk.Label(_('Nothing Playing'))
+        self.frame.set_shadow_type(Gtk.ShadowType.IN)
         self.frame.set_label_align(0.0,0.0)
         self.frame.set_label_widget(self.label)
         self.label.set_use_markup(True)
         self.label.set_padding(0,4)
 
         #----- set up top 5 tree view -----#
-        self.top_five_list = gtk.ListStore (gobject.TYPE_STRING, gobject.TYPE_STRING)
-        self.top_five_view = gtk.TreeView(self.top_five_list)
+        self.top_five_list = Gtk.ListStore (gobject.TYPE_STRING, gobject.TYPE_STRING)
+        self.top_five_view = Gtk.TreeView.new_with_model(self.top_five_list)
 
-        self.top_five_tvc1 = gtk.TreeViewColumn()
-        self.top_five_tvc2 = gtk.TreeViewColumn()
+        self.top_five_tvc1 = Gtk.TreeViewColumn()
+        self.top_five_tvc2 = Gtk.TreeViewColumn()
 
         self.top_five_view.append_column(self.top_five_tvc1)
         self.top_five_view.append_column(self.top_five_tvc2)
 
-        self.crt = gtk.CellRendererText()
+        self.crt = Gtk.CellRendererText()
 
         self.top_five_tvc1.pack_start(self.crt, True)
         self.top_five_tvc2.pack_start(self.crt, True)
@@ -262,30 +268,29 @@ class ContextView (gobject.GObject):
         self.frame.add (self.top_five_view)
 
         #---- set up webkit pane -----#
-        self.webview = webkit.WebView()
+        self.webview = WebKit.WebView()
         self.webview.connect("navigation-requested", self.navigation_request_cb)
-        self.scroll = gtk.ScrolledWindow()
-        self.scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-        self.scroll.set_shadow_type(gtk.SHADOW_IN)
+        self.scroll = Gtk.ScrolledWindow()
+        self.scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.scroll.set_shadow_type(Gtk.ShadowType.IN)
         self.scroll.add (self.webview)
 
         # set up webkit settings to match gtk font settings
-        self.websettings = webkit.WebSettings()
+        self.websettings = WebKit.WebSettings()
         self.webview.set_settings(self.websettings)
         self.apply_font_settings()
         self.webview.connect("style-set", self.style_set_cb)
 
         #----- set up button group -----#
-        self.vbox2 = gtk.VBox()
-        self.buttons = gtk.HBox()
+        self.vbox2 = Gtk.VBox()
+        self.buttons = Gtk.HBox()
 
         #---- pack everything into side pane ----#
-        self.vbox.pack_start  (self.frame, expand = False)
-        self.vbox2.pack_start (self.buttons, expand = False)
-        self.vbox2.pack_start (self.scroll, expand = True)
-        self.vbox.pack_start  (self.vbox2, expand = True)
+        self.vbox.pack_start  (self.frame, False, True, 0)
+        self.vbox2.pack_start (self.buttons, False, True, 0)
+        self.vbox2.pack_start (self.scroll, True, True, 0)
+        self.vbox.pack_start  (self.vbox2, True, True, 0)
 
         self.vbox.show_all()
         self.vbox.set_size_request(200, -1)
-        self.shell.add_widget (self.vbox, rb.SHELL_UI_LOCATION_RIGHT_SIDEBAR, expand=True)
-
+        self.shell.add_widget (self.vbox, RB.ShellUILocation.RIGHT_SIDEBAR, True, True)

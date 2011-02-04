@@ -24,16 +24,20 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rb, rhythmdb
-import gtk, gobject
+import gobject
 import re, os
 import cgi
 import urllib
 import xml.dom.minidom as dom
+
+from mako.template import Template
+
+import rb
 import LastFM
 
-import webkit
-from mako.template import Template
+from gi.repository import WebKit
+from gi.repository import Gtk
+from gi.repository import RB
     
 class ArtistTab (gobject.GObject):
     
@@ -49,18 +53,18 @@ class ArtistTab (gobject.GObject):
         self.db         = shell.get_property ('db') 
         self.buttons    = buttons
 
-        self.button     = gtk.ToggleButton (_("Artist"))
+        self.button     = Gtk.ToggleButton (label=_("Artist"))
         self.datasource = ds
         self.view       = view
         self.artist     = None
         self.active     = False
 
         self.button.show()
-        self.button.set_relief( gtk.RELIEF_NONE ) 
+        self.button.set_relief (Gtk.ReliefStyle.NONE)
         self.button.set_focus_on_click(False)
         self.button.connect ('clicked', 
             lambda button : self.emit('switch-tab', 'artist'))
-        buttons.pack_start (self.button, True, True)
+        buttons.pack_start (self.button, True, True, 0)
 
     def activate (self):
         print "activating Artist Tab"
@@ -78,7 +82,7 @@ class ArtistTab (gobject.GObject):
         if entry is None:
             print "Nothing playing"
             return None
-        artist = self.db.entry_get (entry, rhythmdb.PROP_ARTIST)
+        artist = entry.get_string (RB.RhythmDBPropType.ARTIST)
 
         if self.active and self.artist != artist:
             self.datasource.fetch_artist_data (artist)

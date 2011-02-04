@@ -24,8 +24,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import gobject
-import gconf
+from gi.repository import GConf
 
 # utility things for dealing with last.fm
 
@@ -41,9 +40,8 @@ NO_ACCOUNT_ERROR = _("This information is only available to last.fm users. Pleas
 USERNAME_GCONF_KEY = "/apps/rhythmbox/audioscrobbler/username"
 
 def user_has_account():
-    username = gconf.client_get_default().get_string(USERNAME_GCONF_KEY)
+    username = GConf.Client.get_default().get_string(USERNAME_GCONF_KEY)
     return (username is not None and username != "")
 
 def datasource_link(path):
     return "<a href='http://last.fm/'><img src='%s/img/lastfm.png'></a>" % path
-

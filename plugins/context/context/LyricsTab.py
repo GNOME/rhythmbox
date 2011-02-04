@@ -24,12 +24,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rb, rhythmdb
-import gtk, gobject
+import gobject
 import urllib
 import re, os
 import cgi
 from mako.template import Template
+
+import rb
+from gi.repository import Gtk
+from gi.repository import RB
 
 class LyricsTab (gobject.GObject):
     
@@ -45,16 +48,16 @@ class LyricsTab (gobject.GObject):
         self.db         = shell.get_property ('db') 
         self.toolbar    = toolbar
 
-        self.button     = gtk.ToggleButton (_("Lyrics"))
+        self.button     = Gtk.ToggleButton (label=_("Lyrics"))
         self.datasource = ds
         self.view       = view
         
         self.button.show()
-        self.button.set_relief( gtk.RELIEF_NONE ) 
+        self.button.set_relief (Gtk.ReliefStyle.NONE)
         self.button.set_focus_on_click(False)
         self.button.connect ('clicked', 
             lambda button: self.emit('switch-tab', 'lyrics'))
-        toolbar.pack_start (self.button, True, True)
+        toolbar.pack_start (self.button, True, True, 0)
 
     def activate (self):
         print "activating Lyrics Tab"
@@ -131,7 +134,7 @@ class LyricsView (gobject.GObject):
 class LyricsDataSource (gobject.GObject):
     
     __gsignals__ = {
-        'lyrics-ready' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (rhythmdb.Entry, gobject.TYPE_STRING,)),
+        'lyrics-ready' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (RB.RhythmDBEntry, gobject.TYPE_STRING,)),
     }
 
     def __init__ (self, db):
@@ -151,8 +154,8 @@ class LyricsDataSource (gobject.GObject):
             self.emit ('lyrics-ready', self.entry, lyrics)
 
     def get_title (self):
-        return self.db.entry_get(self.entry, rhythmdb.PROP_TITLE)
+        return self.entry.get_string (RB.RhythmDBPropType.TITLE)
 
     def get_artist (self):
-        return self.db.entry_get(self.entry, rhythmdb.PROP_ARTIST)
+        return self.entry.get_string (RB.RhythmDBPropType.ARTIST)
 

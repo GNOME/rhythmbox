@@ -26,12 +26,13 @@
 
 # vim:shiftwidth=4:softtabstop=4:expandtab
 
-import rb, rhythmdb
 import ContextView as cv
 
-class ContextPlugin(rb.Plugin):
+from gi.repository import RB
+
+class ContextPlugin(RB.Plugin):
     def __init__ (self):
-        rb.Plugin.__init__ (self)
+        RB.Plugin.__init__ (self)
 
     def activate (self, shell):
         self.context_view = cv.ContextView (shell, self)

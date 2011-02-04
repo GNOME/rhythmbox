@@ -24,15 +24,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rhythmdb
-import gtk, gobject
+import gobject
 import os
 import cgi
 import urllib
 
+from gi.repository import Gtk
+from gi.repository import RB
+from gi.repository import WebKit
+
 from gettext import gettext as _
 
-import webkit
 from mako.template import Template
 
 
@@ -50,18 +52,18 @@ class LinksTab (gobject.GObject):
         self.db         = shell.get_property ('db')
         self.buttons    = buttons
 
-        self.button     = gtk.ToggleButton (_("Links"))
+        self.button     = Gtk.ToggleButton (label=_("Links"))
         self.datasource = ds
         self.view       = view
         self.artist     = None
         self.album      = None
 
         self.button.show()
-        self.button.set_relief( gtk.RELIEF_NONE )
+        self.button.set_relief(Gtk.ReliefStyle.NONE)
         self.button.set_focus_on_click(False)
         self.button.connect ('clicked',
             lambda button : self.emit('switch-tab', 'links'))
-        buttons.pack_start (self.button, True, True)
+        buttons.pack_start (self.button, True, True, 0)
 
     def activate (self):
         print "activating Links Tab"
@@ -77,8 +79,8 @@ class LinksTab (gobject.GObject):
         if entry is None:
             return None
 
-        artist = self.db.entry_get (entry, rhythmdb.PROP_ARTIST)
-        album = self.db.entry_get (entry, rhythmdb.PROP_ALBUM)
+        artist = entry.get_string (RB.RhythmDBPropType.ARTIST)
+        album = entry.get_string (RB.RhythmDBPropType.ALBUM)
         self.artist = artist
         self.album = album
 
