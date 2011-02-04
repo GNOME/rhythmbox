@@ -26,9 +26,10 @@
 #
 
 import gobject
-import gtk
-import gconf
-import rhythmdb, rb
+import rb
+from gi.repository import Gtk
+from gi.repository import GConf
+from gi.repository import RB
 
 GCONF_DIR = '/apps/rhythmbox/plugins/replaygain'
 
@@ -46,21 +47,21 @@ REPLAYGAIN_MODE_ALBUM = 1
 # to apply for tracks that aren't tagged
 AVERAGE_GAIN_SAMPLES = 10
 
-class ReplayGainConfigDialog(gtk.Dialog):
+class ReplayGainConfigDialog(Gtk.Dialog):
 	def __init__(self, plugin):
-		gtk.Dialog.__init__(self)
+		Gtk.Dialog.__init__(self)
 		self.set_border_width(12)
 
-		self.gconf = gconf.client_get_default()
+		self.gconf = GConf.Client.get_default()
 
 		ui_file = plugin.find_file("replaygain-prefs.ui")
-		self.builder = gtk.Builder()
+		self.builder = Gtk.Builder()
 		self.builder.add_from_file(ui_file)
 
 		content = self.builder.get_object("replaygain-prefs")
 		self.get_content_area().add(content)
 
-		self.add_action_widget(gtk.Button(stock=gtk.STOCK_CLOSE), 0)
+		self.add_action_widget(Gtk.Button(stock=Gtk.STOCK_CLOSE), 0)
 		self.show_all()
 
 		label = self.builder.get_object("headerlabel")
@@ -75,9 +76,9 @@ class ReplayGainConfigDialog(gtk.Dialog):
 		preamp.set_value(self.gconf.get_float(GCONF_KEYS['preamp']))
 		preamp.connect("value-changed", self.preamp_changed_cb)
 
-		preamp.add_mark(-15.0, gtk.POS_BOTTOM, _("-15.0 dB"))
-		preamp.add_mark(0.0, gtk.POS_BOTTOM, _("0.0 dB"))
-		preamp.add_mark(15.0, gtk.POS_BOTTOM, _("15.0 dB"))
+		preamp.add_mark(-15.0, Gtk.PositionType.BOTTOM, _("-15.0 dB"))
+		preamp.add_mark(0.0, Gtk.PositionType.BOTTOM, _("0.0 dB"))
+		preamp.add_mark(15.0, Gtk.PositionType.BOTTOM, _("15.0 dB"))
 
 		limiter = self.builder.get_object("limiter")
 		limiter.set_active(self.gconf.get_bool(GCONF_KEYS['limiter']))

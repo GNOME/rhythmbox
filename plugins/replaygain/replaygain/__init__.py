@@ -26,14 +26,15 @@
 #
 
 import rb
+from gi.repository import RB
 
 from config import ReplayGainConfigDialog
 from player import ReplayGainPlayer
 
-class ReplayGainPlugin(rb.Plugin):
+class ReplayGainPlugin(RB.Plugin):
 
 	def __init__ (self):
-		rb.Plugin.__init__ (self)
+		RB.Plugin.__init__ (self)
 		self.config_dialog = None
 
 	def activate (self, shell):

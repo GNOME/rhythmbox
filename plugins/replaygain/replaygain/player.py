@@ -25,11 +25,12 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 #
 
-import gtk
-import gconf
-import gst
 import gobject
-import rhythmdb, rb
+import gst
+
+import rb
+from gi.repository import GConf
+from gi.repository import RB
 
 import config
 
@@ -46,15 +47,15 @@ class ReplayGainPlayer(object):
 
 		if len(missing) > 0:
 			msg = _("The GStreamer elements required for ReplayGain processing are not available. The missing elements are: %s") % ", ".join(missing)
-			rb.error_dialog(shell.props.window, _("ReplayGain GStreamer plugins not available"), msg)
+			RB.error_dialog(shell.props.window, _("ReplayGain GStreamer plugins not available"), msg)
 			raise Exception(msg)
 
 		self.shell_player = shell.props.shell_player
 		self.player = self.shell_player.props.player
-		self.gconf = gconf.client_get_default()
+		self.gconf = GConf.Client.get_default()
 
-		self.gconf.add_dir(config.GCONF_DIR, preload=False)
-		self.gconf.notify_add(config.GCONF_KEYS['limiter'], self.limiter_changed_cb)
+		self.gconf.add_dir(config.GCONF_DIR, GConf.ClientPreloadType.PRELOAD_NONE)
+		self.gconf.notify_add(config.GCONF_KEYS['limiter'], self.limiter_changed_cb, None)
 
 		self.previous_gain = []
 		self.fallback_gain = 0.0
