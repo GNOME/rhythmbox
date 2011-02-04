@@ -37,10 +37,9 @@ import sys
 import re
 import traceback
 import gobject
-import gtk
-import pango
-import gconf
-import rhythmdb, rb
+
+from gi.repository import Gtk, Gdk, Pango, GConf
+from gi.repository import RB
 
 try:
 	import rpdb2
@@ -61,26 +60,26 @@ ui_str = """
 </ui>
 """
 
-class PythonConsolePlugin(rb.Plugin):
+class PythonConsolePlugin(RB.Plugin):
 	def __init__(self):
-		rb.Plugin.__init__(self)
+		RB.Plugin.__init__(self)
 		self.window = None
 			
 	def activate(self, shell):
 		data = dict()
 		manager = shell.get_player().get_property('ui-manager')
 		
-		data['action_group'] = gtk.ActionGroup('PythonConsolePluginActions')
+		data['action_group'] = Gtk.ActionGroup(name='PythonConsolePluginActions')
 
-		action = gtk.Action('PythonConsole', _('_Python Console'),
-		                    _("Show Rhythmbox's python console"),
-		                    'gnome-mime-text-x-python')
+		action = Gtk.Action(name='PythonConsole', label=_('_Python Console'),
+		                    tooltip=_("Show Rhythmbox's python console"),
+		                    stock_id='gnome-mime-text-x-python')
 		action.connect('activate', self.show_console, shell)
 		data['action_group'].add_action(action)
 
-		action = gtk.Action('PythonDebugger', _('Python Debugger'),
-				    _("Enable remote python debugging with rpdb2"),
-				    None)
+		action = Gtk.Action(name='PythonDebugger', label=_('Python Debugger'),
+				    tooltip=_("Enable remote python debugging with rpdb2"),
+				    stock_id=None)
 		if have_rpdb2:
 			action.connect('activate', self.enable_debugging, shell)
 		else:
@@ -109,8 +108,7 @@ class PythonConsolePlugin(rb.Plugin):
 	def show_console(self, action, shell):
 		if not self.window:
 			ns = {'__builtins__' : __builtins__, 
-			      'rb' : rb,
-			      'rhythmdb' : rhythmdb,
+			      'RB' : RB,
 			      'shell' : shell}
 			console = PythonConsole(namespace = ns, 
 			                        destroy_cb = self.destroy_console)
@@ -120,7 +118,7 @@ class PythonConsolePlugin(rb.Plugin):
 			             'through the \'shell\' variable :') +  
 			             '\\n%s" % shell', False)
 	
-			self.window = gtk.Window()
+			self.window = Gtk.Window()
 			self.window.set_title('Rhythmbox Python Console')
 			self.window.add(console)
 			self.window.connect('destroy', self.destroy_console)
@@ -131,9 +129,9 @@ class PythonConsolePlugin(rb.Plugin):
 
 	def enable_debugging(self, action, shell):
 		msg = _("After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in GConf, it will use the default password ('rhythmbox').")
-		dialog = gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO, gtk.BUTTONS_OK_CANCEL, msg)
-		if dialog.run() == gtk.RESPONSE_OK:
-			gconfclient = gconf.client_get_default()
+		dialog = Gtk.MessageDialog(None, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK_CANCEL, msg)
+		if dialog.run() == Gtk.RESPONSE_OK:
+			gconfclient = GConf.Client.get_default()
 			password = gconfclient.get_string('/apps/rhythmbox/plugins/pythonconsole/rpdb2_password') or "rhythmbox"
 			def start_debugger(password):
 				rpdb2.start_embedded_debugger(password)
@@ -146,16 +144,23 @@ class PythonConsolePlugin(rb.Plugin):
 		self.window.destroy()
 		self.window = None
 
-class PythonConsole(gtk.ScrolledWindow):
-	def __init__(self, namespace = {}, destroy_cb = None):
-		gtk.ScrolledWindow.__init__(self)
+class PythonConsole(Gtk.ScrolledWindow):
 
-		self.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC);
-		self.set_shadow_type(gtk.SHADOW_IN)
-		self.view = gtk.TextView()
-		self.view.modify_font(pango.FontDescription('Monospace'))
+	def get_end_iter(self):
+		return self.view.get_buffer().get_end_iter()
+
+	def get_iter_at_mark(self, mark):
+		return self.view.get_buffer().get_iter_at_mark(mark)
+
+	def __init__(self, namespace = {}, destroy_cb = None):
+		Gtk.ScrolledWindow.__init__(self)
+
+		self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
+		self.set_shadow_type(Gtk.ShadowType.IN)
+		self.view = Gtk.TextView()
+		self.view.modify_font(Pango.font_description_from_string('Monospace'))
 		self.view.set_editable(True)
-		self.view.set_wrap_mode(gtk.WRAP_WORD_CHAR)
+		self.view.set_wrap_mode(Gtk.WrapMode.CHAR)
 		self.add(self.view)
 		self.view.show()
 
@@ -174,9 +179,9 @@ class PythonConsole(gtk.ScrolledWindow):
 		self.block_command = False
 
 		# Init first line
-		buffer.create_mark("input-line", buffer.get_end_iter(), True)
-		buffer.insert(buffer.get_end_iter(), ">>> ")
-		buffer.create_mark("input", buffer.get_end_iter(), True)
+		buffer.create_mark("input-line", self.get_end_iter(), True)
+		buffer.insert(self.get_end_iter(), ">>> ")
+		buffer.create_mark("input", self.get_end_iter(), True)
 
 		# Init history
 		self.history = ['']
@@ -194,52 +199,52 @@ class PythonConsole(gtk.ScrolledWindow):
 		
  		
 	def __key_press_event_cb(self, view, event):
-		if event.keyval == gtk.keysyms.d and \
-		   event.state == gtk.gdk.CONTROL_MASK:
+		if event.key.keyval == Gdk.KEY_D and \
+		   event.key.state == Gdk.ModifierType.CONTROL_MASK:
 			self.destroy()
 		
-		elif event.keyval == gtk.keysyms.Return and \
-		     event.state == gtk.gdk.CONTROL_MASK:
+		elif event.key.keyval == Gdk.KEY_Return and \
+		     event.key.state == Gdk.ModifierType.CONTROL_MASK:
 			# Get the command
 			buffer = view.get_buffer()
 			inp_mark = buffer.get_mark("input")
-			inp = buffer.get_iter_at_mark(inp_mark)
-			cur = buffer.get_end_iter()
-			line = buffer.get_text(inp, cur)
+			inp = self.get_iter_at_mark(inp_mark)
+			cur = self.get_end_iter()
+			line = buffer.get_text(inp, cur, True)
 			self.current_command = self.current_command + line + "\n"
 			self.history_add(line)
 
 			# Prepare the new line
-			cur = buffer.get_end_iter()
+			cur = self.get_end_iter()
 			buffer.insert(cur, "\n... ")
-			cur = buffer.get_end_iter()
+			cur = self.get_end_iter()
 			buffer.move_mark(inp_mark, cur)
 			
 			# Keep indentation of precendent line
 			spaces = re.match(self.__spaces_pattern, line)
 			if spaces is not None:
 				buffer.insert(cur, line[spaces.start() : spaces.end()])
-				cur = buffer.get_end_iter()
+				cur = self.get_end_iter()
 				
 			buffer.place_cursor(cur)
 			gobject.idle_add(self.scroll_to_end)
 			return True
 		
-		elif event.keyval == gtk.keysyms.Return:
+		elif event.key.keyval == Gdk.KEY_Return:
 			# Get the marks
 			buffer = view.get_buffer()
 			lin_mark = buffer.get_mark("input-line")
 			inp_mark = buffer.get_mark("input")
 
 			# Get the command line
-			inp = buffer.get_iter_at_mark(inp_mark)
-			cur = buffer.get_end_iter()
-			line = buffer.get_text(inp, cur)
+			inp = self.get_iter_at_mark(inp_mark)
+			cur = self.get_end_iter()
+			line = buffer.get_text(inp, cur, True)
 			self.current_command = self.current_command + line + "\n"
 			self.history_add(line)
 
 			# Make the line blue
-			lin = buffer.get_iter_at_mark(lin_mark)
+			lin = self.get_iter_at_mark(lin_mark)
 			buffer.apply_tag(self.command, lin, cur)
 			buffer.insert(cur, "\n")
 			
@@ -260,70 +265,70 @@ class PythonConsole(gtk.ScrolledWindow):
 				com_mark = ">>> "
 
 			# Prepare the new line
-			cur = buffer.get_end_iter()
+			cur = self.get_end_iter()
 			buffer.move_mark(lin_mark, cur)
 			buffer.insert(cur, com_mark)
-			cur = buffer.get_end_iter()
+			cur = self.get_end_iter()
 			buffer.move_mark(inp_mark, cur)
 			buffer.place_cursor(cur)
 			gobject.idle_add(self.scroll_to_end)
 			return True
 
-		elif event.keyval == gtk.keysyms.KP_Down or \
-		     event.keyval == gtk.keysyms.Down:
+		elif event.key.keyval == Gdk.KEY_KP_Down or \
+		     event.key.keyval == Gdk.KEY_Down:
 			# Next entry from history
 			view.emit_stop_by_name("key_press_event")
 			self.history_down()
 			gobject.idle_add(self.scroll_to_end)
 			return True
 
-		elif event.keyval == gtk.keysyms.KP_Up or \
-		     event.keyval == gtk.keysyms.Up:
+		elif event.key.keyval == Gdk.KEY_KP_Up or \
+		     event.key.keyval == Gdk.KEY_Up:
 			# Previous entry from history
 			view.emit_stop_by_name("key_press_event")
 			self.history_up()
 			gobject.idle_add(self.scroll_to_end)
 			return True
 
-		elif event.keyval == gtk.keysyms.KP_Left or \
-		     event.keyval == gtk.keysyms.Left or \
-		     event.keyval == gtk.keysyms.BackSpace:
+		elif event.key.keyval == Gdk.KEY_KP_Left or \
+		     event.key.keyval == Gdk.KEY_Left or \
+		     event.key.keyval == Gdk.KEY_BackSpace:
 			buffer = view.get_buffer()
-			inp = buffer.get_iter_at_mark(buffer.get_mark("input"))
-			cur = buffer.get_iter_at_mark(buffer.get_insert())
+			inp = self.get_iter_at_mark(buffer.get_mark("input"))
+			cur = self.get_iter_at_mark(buffer.get_insert())
 			return inp.compare(cur) == 0
 
-		elif event.keyval == gtk.keysyms.Home:
+		elif event.key.keyval == Gdk.KEY_Home:
 			# Go to the begin of the command instead of the begin of
 			# the line
 			buffer = view.get_buffer()
-			inp = buffer.get_iter_at_mark(buffer.get_mark("input"))
-			if event.state == gtk.gdk.SHIFT_MASK:
+			inp = self.get_iter_at_mark(buffer.get_mark("input"))
+			if event.key.state == Gdk.ModifierType.SHIFT_MASK:
 				buffer.move_mark_by_name("insert", inp)
 			else:
 				buffer.place_cursor(inp)
 			return True
 		
 	def __mark_set_cb(self, buffer, iter, name):
-		input = buffer.get_iter_at_mark(buffer.get_mark("input"))
-		pos   = buffer.get_iter_at_mark(buffer.get_insert())
+		input = self.get_iter_at_mark(buffer.get_mark("input"))
+		pos   = self.get_iter_at_mark(buffer.get_insert())
 		self.view.set_editable(pos.compare(input) != -1)
 
 	def get_command_line(self):
 		buffer = self.view.get_buffer()
-		inp = buffer.get_iter_at_mark(buffer.get_mark("input"))
-		cur = buffer.get_end_iter()
-		return buffer.get_text(inp, cur)
+		inp = self.get_iter_at_mark(buffer.get_mark("input"))
+		cur = self.get_end_iter()
+		return buffer.get_text(inp, cur, True)
 	
 	def set_command_line(self, command):
 		buffer = self.view.get_buffer()
 		mark = buffer.get_mark("input")
-		inp = buffer.get_iter_at_mark(mark)
-		cur = buffer.get_end_iter()
+		inp = self.get_iter_at_mark(mark)
+		cur = self.get_end_iter()
 		buffer.delete(inp, cur)
 		buffer.insert(inp, command)
-		buffer.select_range(buffer.get_iter_at_mark(mark),
-		                    buffer.get_end_iter())
+		buffer.select_range(self.get_iter_at_mark(mark),
+		                    self.get_end_iter())
 		self.view.grab_focus()
 	
 	def history_add(self, line):
@@ -345,23 +350,29 @@ class PythonConsole(gtk.ScrolledWindow):
 			self.set_command_line(self.history[self.history_pos])
 	
 	def scroll_to_end(self):
-		iter = self.view.get_buffer().get_end_iter()
-		self.view.scroll_to_iter(iter, 0.0)
+		iter = self.get_end_iter()
+		self.view.scroll_to_iter(iter, 0.0, False, 0.5, 0.5)
 		return False
 
 	def write(self, text, tag = None):
 		buffer = self.view.get_buffer()
 		if tag is None:
-			buffer.insert(buffer.get_end_iter(), text)
+			buffer.insert(self.get_end_iter(), text)
 		else:
-			buffer.insert_with_tags(buffer.get_end_iter(), text, tag)
+			iter = self.get_end_iter()
+			offset = iter.get_offset()
+			buffer.insert(iter, text)
+
+			start_iter = Gtk.TextIter()
+			start_iter = buffer.get_iter_at_offset(offset)
+			buffer.apply_tag(tag, start_iter, self.get_end_iter())
 		gobject.idle_add(self.scroll_to_end)
  	
  	def eval(self, command, display_command = False):
 		buffer = self.view.get_buffer()
 		lin = buffer.get_mark("input-line")
-		buffer.delete(buffer.get_iter_at_mark(lin),
-		              buffer.get_end_iter())
+		buffer.delete(self.get_iter_at_mark(lin),
+			      self.get_end_iter())
  
 		if isinstance(command, list) or isinstance(command, tuple):
  			for c in command:
@@ -373,12 +384,12 @@ class PythonConsole(gtk.ScrolledWindow):
 	 			self.write(">>> " + c + "\n", self.command)
 			self.__run(command) 
 
-		cur = buffer.get_end_iter()
+		cur = self.get_end_iter()
 		buffer.move_mark_by_name("input-line", cur)
 		buffer.insert(cur, ">>> ")
-		cur = buffer.get_end_iter()
+		cur = self.get_end_iter()
 		buffer.move_mark_by_name("input", cur)
-		self.view.scroll_to_iter(buffer.get_end_iter(), 0.0)
+		self.view.scroll_to_iter(self.get_end_iter(), 0.0, False, 0.5, 0.5)
 	
  	def __run(self, command):
 		sys.stdout, self.stdout = self.stdout, sys.stdout
@@ -396,9 +407,10 @@ class PythonConsole(gtk.ScrolledWindow):
 				self.destroy()
 			else:
 				traceback.print_exc()
+		finally:
+			sys.stdout, self.stdout = self.stdout, sys.stdout
+			sys.stderr, self.stderr = self.stderr, sys.stderr
 
-		sys.stdout, self.stdout = self.stdout, sys.stdout
-		sys.stderr, self.stderr = self.stderr, sys.stderr
 
 	def destroy(self):
 		if self.destroy_cb is not None:
