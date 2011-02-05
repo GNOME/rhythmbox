@@ -36,7 +36,6 @@ static void     gossip_cell_renderer_expander_set_property (GObject             
 							    guint                            param_id,
 							    const GValue                    *value,
 							    GParamSpec                      *pspec);
-static void     gossip_cell_renderer_expander_finalize     (GObject                         *object);
 static void     gossip_cell_renderer_expander_get_size     (GtkCellRenderer                 *cell,
 							    GtkWidget                       *widget,
 							    const GdkRectangle              *cell_area,
@@ -102,8 +101,6 @@ gossip_cell_renderer_expander_class_init (GossipCellRendererExpanderClass *klass
 
 	object_class  = G_OBJECT_CLASS (klass);
 	cell_class = GTK_CELL_RENDERER_CLASS (klass);
-
-	object_class->finalize = gossip_cell_renderer_expander_finalize;
 
 	object_class->get_property = gossip_cell_renderer_expander_get_property;
 	object_class->set_property = gossip_cell_renderer_expander_set_property;
@@ -206,16 +203,6 @@ gossip_cell_renderer_expander_set_property (GObject      *object,
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
 		break;
 	}
-}
-
-static void
-gossip_cell_renderer_expander_finalize (GObject *object)
-{
-	GossipCellRendererExpanderPriv *priv;
-
-	priv = GET_PRIV (object);
-
-	(* G_OBJECT_CLASS (gossip_cell_renderer_expander_parent_class)->finalize) (object);
 }
 
 GtkCellRenderer *
