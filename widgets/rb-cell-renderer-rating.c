@@ -63,7 +63,6 @@ static gboolean rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
 					          const GdkRectangle *background_area,
 					          const GdkRectangle *cell_area,
 					          GtkCellRendererState flags);
-static void rb_cell_renderer_rating_finalize (GObject *object);
 
 struct RBCellRendererRatingPrivate
 {
@@ -123,8 +122,6 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 	GObjectClass *object_class = G_OBJECT_CLASS (class);
 	GtkCellRendererClass *cell_class = GTK_CELL_RENDERER_CLASS (class);
 
-	object_class->finalize = rb_cell_renderer_rating_finalize;
-
 	object_class->get_property = rb_cell_renderer_rating_get_property;
 	object_class->set_property = rb_cell_renderer_rating_set_property;
 
@@ -164,16 +161,6 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 			      G_TYPE_DOUBLE);
 
 	g_type_class_add_private (class, sizeof (RBCellRendererRatingPrivate));
-}
-
-static void
-rb_cell_renderer_rating_finalize (GObject *object)
-{
-	RBCellRendererRating *cellrating;
-
-	cellrating = RB_CELL_RENDERER_RATING (object);
-
-	G_OBJECT_CLASS (rb_cell_renderer_rating_parent_class)->finalize (object);
 }
 
 static void
