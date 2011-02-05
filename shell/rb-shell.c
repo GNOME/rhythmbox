@@ -2797,7 +2797,6 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 	GtkAction *queue_action;
 	GtkAction *party_mode_action;
 	GtkAction *jump_to_playing_action;
-	GtkWidget *toolbar;
 
 	rb_shell_sync_window_state (shell, FALSE);
 
@@ -2809,8 +2808,6 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 							 "ViewPartyMode");
 	jump_to_playing_action = gtk_action_group_get_action (shell->priv->actiongroup,
 							      "ViewJumpToPlaying");
-
-	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
 
 	if (shell->priv->window_small) {
 		g_object_set (action, "sensitive", FALSE, NULL);
