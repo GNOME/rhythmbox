@@ -687,7 +687,6 @@ rb_tree_dnd_drag_motion_cb (GtkWidget        *widget,
 {
 	GtkTreeView *tree_view;
 	GtkTreePath *path = NULL;
-	GtkTreeModel *model;
 	GtkTreeViewDropPosition pos;
 	RbTreeDndData *priv_data;
 	GdkDragAction action;
@@ -695,7 +694,6 @@ rb_tree_dnd_drag_motion_cb (GtkWidget        *widget,
 	rb_debug ("drag and drop motion: (%i,%i)", x, y);
 
   	tree_view = GTK_TREE_VIEW (widget);
-	model = gtk_tree_view_get_model (tree_view);
 
 	priv_data = g_object_get_data (G_OBJECT (widget), RB_TREE_DND_STRING);
 
