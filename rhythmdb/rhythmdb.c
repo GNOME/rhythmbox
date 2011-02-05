@@ -2879,7 +2879,6 @@ action_thread_main (RhythmDB *db)
 			{
 				GError *error = NULL;
 				RhythmDBEntry *entry;
-				RhythmDBEntryType *entry_type;
 
 				if (db->priv->dry_run) {
 					rb_debug ("dry run is enabled, not syncing metadata");
@@ -2890,7 +2889,6 @@ action_thread_main (RhythmDB *db)
 				if (!entry)
 					break;
 
-				entry_type = rhythmdb_entry_get_entry_type (entry);
 				rhythmdb_entry_sync_metadata (entry, action->data.changes, &error);
 
 				if (error != NULL) {
