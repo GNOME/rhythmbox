@@ -423,8 +423,8 @@ have_libbrasero_media=no
 AC_ARG_WITH(brasero,
 	    AC_HELP_STRING([--with-brasero],
 	    		   [Build with libbrasero-media support]),,
-	    with_libbrasero_media=auto)
-if test x"$with_libbrasero_media" != "xno"; then
+	    with_brasero=auto)
+if test x"$with_brasero" != "xno"; then
     PKG_CHECK_MODULES(LIBBRASERO_MEDIA,
 	libbrasero-media3 >= $BRASERO_MIN_REQS,
 	have_libbrasero_media=yes,
