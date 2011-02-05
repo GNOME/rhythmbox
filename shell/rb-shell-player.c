@@ -3042,7 +3042,6 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	GtkAction *action;
 	RBSource *source;
 	gboolean not_small;
-	gboolean playing_from_queue;
 	RBEntryView *view;
 	int entry_view_state;
 	RhythmDBEntry *entry;
@@ -3058,8 +3057,6 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	}
 
 	source = (entry == NULL) ? player->priv->selected_source : player->priv->current_playing_source;
-
-	playing_from_queue = (source == RB_SOURCE (player->priv->queue_source));
 
 	rb_debug ("syncing with source %p", source);
 
