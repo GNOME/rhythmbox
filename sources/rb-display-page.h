@@ -96,7 +96,7 @@ void		rb_display_page_delete_thyself		(RBDisplayPage *page);
 
 /* things for display page implementations */
 
-void		_rb_display_page_notify_status_changed	(RBDisplayPage *page);
+void		rb_display_page_notify_status_changed	(RBDisplayPage *page);
 void		_rb_display_page_show_popup		(RBDisplayPage *page, const char *ui_path);
 
 GtkActionGroup *_rb_display_page_register_action_group	(RBDisplayPage *page,

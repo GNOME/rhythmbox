@@ -510,7 +510,7 @@ connection_connecting_cb (DMAPConnection       *connection,
 
 	source->priv->connection_progress = progress;
 
-	_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 
 	is_connected = dmap_connection_is_connected (DMAP_CONNECTION (connection));
 

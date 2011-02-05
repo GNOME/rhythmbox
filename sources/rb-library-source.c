@@ -1363,7 +1363,7 @@ import_job_status_changed_cb (RhythmDBImportJob *job, int total, int imported, R
 {
 	RhythmDBImportJob *head = RHYTHMDB_IMPORT_JOB (source->priv->import_jobs->data);
 	if (job == head) {		/* it was inevitable */
-		_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+		rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 	}
 }
 

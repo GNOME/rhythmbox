@@ -462,7 +462,7 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 	g_object_unref (priv->import_job);
 	priv->import_job = NULL;
 	
-	_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 
 	GDK_THREADS_LEAVE ();
 }
@@ -470,7 +470,7 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 static void
 import_status_changed_cb (RhythmDBImportJob *job, int total, int imported, RBGenericPlayerSource *source)
 {
-	_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 }
 
 static void

@@ -287,14 +287,14 @@ rb_display_page_get_status (RBDisplayPage *page,
 }
 
 /**
- * _rb_display_page_notify_status_changed:
+ * rb_display_page_notify_status_changed:
  * @page: a #RBDisplayPage
  *
  * Page implementations call this when their status bar information
  * changes.
  */
 void
-_rb_display_page_notify_status_changed (RBDisplayPage *page)
+rb_display_page_notify_status_changed (RBDisplayPage *page)
 {
 	g_signal_emit (G_OBJECT (page), signals[STATUS_CHANGED], 0);
 }

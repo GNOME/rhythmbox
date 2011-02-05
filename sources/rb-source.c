@@ -392,7 +392,7 @@ rb_source_set_query_model_internal (RBSource *source,
 					 source, 0);
 	}
 
-	_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 }
 
 static void
@@ -1214,7 +1214,7 @@ rb_source_get_delete_action (RBSource *source)
 static gboolean
 _update_status_idle (RBSource *source)
 {
-	_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 
 	if (source->priv->hidden_when_empty)
 		update_visibility_idle (source);

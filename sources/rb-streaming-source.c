@@ -234,7 +234,7 @@ buffering_cb (GObject *backend, gpointer whatever, guint progress, RBStreamingSo
 
 	GDK_THREADS_ENTER ();
 	source->priv->buffering = progress;
-	_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 	GDK_THREADS_LEAVE ();
 }
 
@@ -485,7 +485,7 @@ playing_entry_changed_cb (RBShellPlayer *player,
 						     source->priv->buffering_id);
 			source->priv->buffering_id = 0;
 
-			_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+			rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 		}
 	} else {
 		rb_debug ("playing new stream; resetting buffering");
@@ -499,7 +499,7 @@ playing_entry_changed_cb (RBShellPlayer *player,
 		source->priv->buffering = -1;
 
 		source->priv->playing_stream = rhythmdb_entry_ref (entry);
-		_rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+		rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 	}
 
 	g_object_unref (backend);
