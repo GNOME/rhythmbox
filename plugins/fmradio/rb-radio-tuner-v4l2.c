@@ -39,6 +39,7 @@
 
 #include <glib.h>
 
+#include "rb-debug.h"
 #include "rb-plugin.h"
 #include "rb-radio-tuner.h"
 
@@ -189,6 +190,8 @@ rb_radio_tuner_update (RBRadioTuner *self)
 		self->frequency = (double)frequency.frequency
 			/ self->priv->freq_mul;
 	}
+
+	rb_debug ("Tuner %s", has_changed ? "has changed" : "has not changed");
 
 #if 0
 	if (has_changed) {
