@@ -584,11 +584,10 @@ rhythmdb_property_model_row_inserted_cb (GtkTreeModel *model,
 					 RhythmDBPropertyModel *propmodel)
 {
 	RhythmDBEntry *entry;
-	RhythmDBPropertyModelEntry *prop;
 
 	entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model), iter);
 
-	prop = rhythmdb_property_model_insert (propmodel, entry);
+	rhythmdb_property_model_insert (propmodel, entry);
 	rhythmdb_property_model_sync (propmodel);
 
 	rhythmdb_entry_unref (entry);
@@ -863,6 +862,7 @@ rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 	prop = g_sequence_get (ptr);
 	rb_debug ("deleting \"%s\": refcount: %d", propstr, prop->refcount);
 	if (g_atomic_int_dec_and_test (&prop->refcount) == FALSE) {
+		g_assert (ret == FALSE);
 		path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
 		gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
 		gtk_tree_path_free (path);
