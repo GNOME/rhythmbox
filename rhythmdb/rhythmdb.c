@@ -4464,7 +4464,7 @@ rhythmdb_compute_status_normal (gint n_songs,
 				const char *singular,
 				const char *plural)
 {
-	long days, hours, minutes, seconds;
+	long days, hours, minutes;
 	char *songcount = NULL;
 	char *time = NULL;
 	char *size_str = NULL;
@@ -4478,7 +4478,6 @@ rhythmdb_compute_status_normal (gint n_songs,
 	days    = duration / (60 * 60 * 24);
 	hours   = (duration / (60 * 60)) - (days * 24);
 	minutes = (duration / 60) - ((days * 24 * 60) + (hours * 60));
-	seconds = duration % 60;
 
 	minutefmt = ngettext ("%ld minute", "%ld minutes", minutes);
 	hourfmt = ngettext ("%ld hour", "%ld hours", hours);
