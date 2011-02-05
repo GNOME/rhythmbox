@@ -300,14 +300,12 @@ gossip_cell_renderer_expander_activate (GtkCellRenderer      *cell,
 					const GdkRectangle   *cell_area,
 					GtkCellRendererState  flags)
 {
-	GossipCellRendererExpander     *expander;
 	GossipCellRendererExpanderPriv *priv;
 	GtkTreePath                    *path;
 	gboolean                        in_cell;
 	int                             mouse_x;
 	int                             mouse_y;
 
-	expander = GOSSIP_CELL_RENDERER_EXPANDER (cell);
 	priv = GET_PRIV (cell);
 
 	if (!GTK_IS_TREE_VIEW (widget) || !priv->activatable)
