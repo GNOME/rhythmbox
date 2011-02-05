@@ -1414,7 +1414,6 @@ impl_activate (RBPlugin *bplugin,
 	       RBShell *shell)
 {
 	RBMediaServer2Plugin *plugin;
-	GDBusInterfaceInfo *item_iface;
 	GDBusInterfaceInfo *container_iface;
 	RBSource *source;
 	GError *error = NULL;
@@ -1443,7 +1442,6 @@ impl_activate (RBPlugin *bplugin,
 	}
 
 	container_iface = g_dbus_node_info_lookup_interface (plugin->node_info, MEDIA_SERVER2_CONTAINER_IFACE_NAME);
-	item_iface = g_dbus_node_info_lookup_interface (plugin->node_info, MEDIA_SERVER2_ITEM_IFACE_NAME);
 
 	/* register root */
 	register_object (plugin, &root_vtable, container_iface, RB_MEDIASERVER2_ROOT, G_OBJECT (plugin), plugin->root_reg_id);
