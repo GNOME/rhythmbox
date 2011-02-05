@@ -391,11 +391,9 @@ static gboolean
 match_page_to_iter (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, DisplayPageIter *dpi)
 {
 	RBDisplayPage *target = NULL;
-	gboolean res;
 
 	gtk_tree_model_get (model, iter, RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &target, -1);
 
-	res = FALSE;
 	if (target == dpi->page) {
 		dpi->iter = *iter;
 		dpi->found = TRUE;
