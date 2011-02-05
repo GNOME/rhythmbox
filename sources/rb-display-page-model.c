@@ -774,17 +774,6 @@ rb_display_page_model_init (RBDisplayPageModel *model)
 }
 
 static void
-rb_display_page_model_finalize (GObject *object)
-{
-	RBDisplayPageModel *model;
-
-	g_return_if_fail (RB_IS_DISPLAY_PAGE_MODEL (object));
-	model = RB_DISPLAY_PAGE_MODEL (object);
-
-	G_OBJECT_CLASS (rb_display_page_model_parent_class)->finalize (object);
-}
-
-static void
 rb_display_page_model_drag_dest_init (RbTreeDragDestIface *iface)
 {
 	iface->rb_drag_data_received = rb_display_page_model_drag_data_received;
@@ -807,7 +796,6 @@ rb_display_page_model_class_init (RBDisplayPageModelClass *klass)
 	GObjectClass   *object_class;
 
 	object_class = G_OBJECT_CLASS (klass);
-	object_class->finalize = rb_display_page_model_finalize;
 
 	/**
 	 * RBDisplayPageModel::drop-received:
