@@ -62,7 +62,6 @@
 static void rb_play_order_class_init (RBPlayOrderClass *klass);
 static void rb_play_order_init (RBPlayOrder *porder);
 static void rb_play_order_dispose (GObject *object);
-static void rb_play_order_finalize (GObject *object);
 static void rb_play_order_set_property (GObject *object,
 					guint prop_id,
 					const GValue *value,
@@ -126,7 +125,6 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->dispose = rb_play_order_dispose;
-	object_class->finalize = rb_play_order_finalize;
 	object_class->set_property = rb_play_order_set_property;
 	object_class->get_property = rb_play_order_get_property;
 
@@ -221,19 +219,6 @@ rb_play_order_dispose (GObject *object)
 	}
 
 	G_OBJECT_CLASS (rb_play_order_parent_class)->dispose (object);
-}
-
-static void
-rb_play_order_finalize (GObject *object)
-{
-	RBPlayOrder *porder;
-
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_PLAY_ORDER (object));
-
-	porder = RB_PLAY_ORDER (object);
-
-	G_OBJECT_CLASS (rb_play_order_parent_class)->finalize (object);
 }
 
 static void
