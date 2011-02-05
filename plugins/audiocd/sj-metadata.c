@@ -199,10 +199,9 @@ sj_metadata_helper_check_media (const char *cdrom, GError **error)
     return FALSE;
   }
 #else
-  TotemDiscMediaType type;
   GError *totem_error = NULL;
 
-  type = totem_cd_detect_type (cdrom, &totem_error);
+  totem_cd_detect_type (cdrom, &totem_error);
 
   if (totem_error != NULL) {
     g_set_error (error, SJ_ERROR, SJ_ERROR_CD_NO_MEDIA, _("Cannot read CD: %s"), totem_error->message);
