@@ -924,7 +924,6 @@ static GVariant *
 get_maybe_playlist_value (RBMprisPlugin *plugin, RBSource *source)
 {
 	GVariant *maybe_playlist = NULL;
-	gboolean valid = FALSE;
 
 	if (source != NULL) {
 		const char *id;
@@ -934,7 +933,6 @@ get_maybe_playlist_value (RBMprisPlugin *plugin, RBSource *source)
 			char *name;
 			g_object_get (source, "name", &name, NULL);
 			maybe_playlist = g_variant_new ("(b(oss))", TRUE, id, name, "");
-			valid = TRUE;
 			g_free (name);
 		}
 	}
