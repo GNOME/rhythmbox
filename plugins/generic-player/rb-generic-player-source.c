@@ -57,7 +57,6 @@
 
 static void impl_constructed (GObject *object);
 static void impl_dispose (GObject *object);
-static void impl_finalize (GObject *object);
 static void impl_set_property (GObject *object,
 			       guint prop_id,
 			       const GValue *value,
@@ -148,7 +147,6 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	object_class->get_property = impl_get_property;
 	object_class->constructed = impl_constructed;
 	object_class->dispose = impl_dispose;
-	object_class->finalize = impl_finalize;
 
 	page_class->show_popup = impl_show_popup;
 	page_class->delete_thyself = impl_delete_thyself;
@@ -352,15 +350,6 @@ impl_dispose (GObject *object)
 	}
 
 	G_OBJECT_CLASS (rb_generic_player_source_parent_class)->dispose (object);
-}
-
-static void
-impl_finalize (GObject *object)
-{
-	RBGenericPlayerSourcePrivate *priv;
-
-	g_return_if_fail (RB_IS_GENERIC_PLAYER_SOURCE (object));
-	priv = GET_PRIVATE (object);
 }
 
 RBRemovableMediaSource *
