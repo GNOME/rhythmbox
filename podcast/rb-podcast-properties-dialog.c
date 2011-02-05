@@ -224,7 +224,7 @@ set_webkit_font_from_gtk_style (WebKitWebView *view)
 	style = gtk_widget_get_style_context (GTK_WIDGET (view));
 	settings = webkit_web_view_get_settings (view);
 
-	font_desc = gtk_style_context_get_font (gtk_widget_get_style_context (GTK_WIDGET (view)),
+	font_desc = gtk_style_context_get_font (style,
 						GTK_STATE_FLAG_ACTIVE);
 	font_size = pango_font_description_get_size (font_desc);
 	if (pango_font_description_get_size_is_absolute (font_desc) == FALSE)
