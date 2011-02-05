@@ -25,10 +25,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rhythmdb
-import gnomekeyring as keyring
 import xml.sax, xml.sax.handler
 import datetime, re, urllib
+
+import rb
+from gi.repository import RB
 
 class TrackListHandler(xml.sax.handler.ContentHandler):
 	def __init__(self, db, entry_type, sku_dict, home_dict, art_dict, account_type, username, password):
@@ -65,10 +66,12 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 				if self.__account_type != 'none':
 					trackurl = self.fix_trackurl(trackurl)
 
+				trackurl = str(trackurl)
+
 				# add the track to the source
 				entry = self.__db.entry_lookup_by_location (trackurl)
 				if entry == None:
-					entry = self.__db.entry_new(self.__entry_type, trackurl)
+					entry = RB.RhythmDBEntry.new(self.__db, self.__entry_type, trackurl)
 
 				# if year is not set, use launch date instead
 				try:
@@ -88,13 +91,13 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 				except ValueError:
 					duration = 0
 
-				self.__db.set(entry, rhythmdb.PROP_ARTIST, self.__track['artist'])
-				self.__db.set(entry, rhythmdb.PROP_ALBUM, self.__track['albumname'])
-				self.__db.set(entry, rhythmdb.PROP_TITLE, self.__track['trackname'])
-				self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, tracknum)
-				self.__db.set(entry, rhythmdb.PROP_DATE, date)
-				self.__db.set(entry, rhythmdb.PROP_GENRE, self.__track['magnatunegenres'])
-				self.__db.set(entry, rhythmdb.PROP_DURATION, duration)
+				self.__db.entry_set(entry, RB.RhythmDBPropType.ARTIST, str(self.__track['artist']))
+				self.__db.entry_set(entry, RB.RhythmDBPropType.ALBUM, str(self.__track['albumname']))
+				self.__db.entry_set(entry, RB.RhythmDBPropType.TITLE, str(self.__track['trackname']))
+				self.__db.entry_set(entry, RB.RhythmDBPropType.GENRE, str(self.__track['magnatunegenres']))
+				self.__db.entry_set(entry, RB.RhythmDBPropType.TRACK_NUMBER, long(tracknum))
+				self.__db.entry_set(entry, RB.RhythmDBPropType.DATE, long(date))
+				self.__db.entry_set(entry, RB.RhythmDBPropType.DURATION, long(duration))
 
 				key = str(trackurl)
 				sku = intern(str(self.__track['albumsku']))
@@ -104,6 +107,8 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 
 				self.__db.commit()
 			except Exception,e: # This happens on duplicate uris being added
+				import sys
+				sys.excepthook(*sys.exc_info())
 				print "Couldn't add %s - %s" % (self.__track['artist'], self.__track['trackname']), e
 
 			self.__track = {}

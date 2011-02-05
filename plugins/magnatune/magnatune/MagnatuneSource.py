@@ -25,21 +25,22 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rb, rhythmdb
-from TrackListHandler import TrackListHandler
-from BuyAlbumHandler import BuyAlbumHandler, MagnatunePurchaseError
-
 import os
 import gobject, gio
-import gtk
-import gconf
-import gnomekeyring as keyring
 import xml
 import urllib
 import urlparse
 import threading
 import zipfile
+import gnomekeyring as keyring
 
+import rb
+from gi.repository import RB
+from gi.repository import Gtk, GConf
+# XXX use GnomeKeyring when introspection is available
+
+from TrackListHandler import TrackListHandler
+from BuyAlbumHandler import BuyAlbumHandler, MagnatunePurchaseError
 
 magnatune_partner_id = "rhythmbox"
 
@@ -48,27 +49,27 @@ magnatune_song_info_uri = gio.File(uri="http://magnatune.com/info/song_info_xml.
 magnatune_buy_album_uri = "https://magnatune.com/buy/choose?"
 magnatune_api_download_uri = "http://%s:%s@download.magnatune.com/buy/membership_free_dl_xml?"
 
-magnatune_in_progress_dir = gio.File(path=rb.user_data_dir()).resolve_relative_path('magnatune')
-magnatune_cache_dir = gio.File(path=rb.user_cache_dir()).resolve_relative_path('magnatune')
+magnatune_in_progress_dir = gio.File(path=RB.user_data_dir()).resolve_relative_path('magnatune')
+magnatune_cache_dir = gio.File(path=RB.user_cache_dir()).resolve_relative_path('magnatune')
 
 magnatune_song_info = os.path.join(magnatune_cache_dir.get_path(), 'song_info.xml')
 magnatune_song_info_temp = os.path.join(magnatune_cache_dir.get_path(), 'song_info.zip.tmp')
 
 
-class MagnatuneSource(rb.BrowserSource):
+class MagnatuneSource(RB.BrowserSource):
 	__gproperties__ = {
-		'plugin': (rb.Plugin, 'plugin', 'plugin', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
+		'plugin': (RB.Plugin, 'plugin', 'plugin', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
 	}
 
-	__client = gconf.client_get_default()
+	__client = GConf.Client.get_default()
 
 
 	def __init__(self):
-		rb.BrowserSource.__init__(self, name=_("Magnatune"))
+		RB.BrowserSource.__init__(self, name=_("Magnatune"))
 
 		# source state
 		self.__activated = False
-		self.__db = None # rhythmdb
+		self.__db = None
 		self.__notify_id = 0 # gobject.idle_add id for status notifications
 		self.__info_screen = None # the loading screen
 
@@ -103,7 +104,7 @@ class MagnatuneSource(rb.BrowserSource):
 	def do_impl_show_entry_popup(self):
 		self.show_source_popup("/MagnatuneSourceViewPopup")
 
-	def do_get_status(self):
+	def do_get_status(self, status, progress_text, progress):
 		if self.__updating:
 			complete, total = self.__load_progress
 			if total > 0:
@@ -156,9 +157,9 @@ class MagnatuneSource(rb.BrowserSource):
 		return False
 
 	def do_impl_pack_paned(self, paned):
-		self.__paned_box = gtk.VBox(False, 5)
-		self.pack_start(self.__paned_box)
-		self.__paned_box.pack_start(paned)
+		self.__paned_box = Gtk.VBox(homogeneous=False, spacing=5)
+		self.pack_start(self.__paned_box, True, True, 0)
+		self.__paned_box.pack_start(paned, True, True, 0)
 
 
 	def do_delete_thyself(self):
@@ -180,6 +181,8 @@ class MagnatuneSource(rb.BrowserSource):
 
 		self.__client.set_string("/apps/rhythmbox/plugins/magnatune/sorting", self.get_entry_view().get_sorting_type())
 
+		RB.BrowserSource.do_delete_thyself(self)
+
 	#
 	# methods for use by plugin and UI
 	#
@@ -190,10 +193,10 @@ class MagnatuneSource(rb.BrowserSource):
 		urls = set([])
 
 		for tr in tracks:
-			sku = self.__sku_dict[self.__db.entry_get(tr, rhythmdb.PROP_LOCATION)]
+			sku = self.__sku_dict[self.__db.entry_get_string(tr, RB.RhythmDBPropType.LOCATION)]
 			url = self.__home_dict[sku]
 			if url not in urls:
-				gtk.show_uri(screen, url, gtk.gdk.CURRENT_TIME)
+				Gtk.show_uri(screen, url, Gdk.CURRENT_TIME)
 				urls.add(url)
 
 	def purchase_redirect(self):
@@ -202,10 +205,10 @@ class MagnatuneSource(rb.BrowserSource):
 		urls = set([])
 
 		for tr in tracks:
-			sku = self.__sku_dict[self.__db.entry_get(tr, rhythmdb.PROP_LOCATION)]
+			sku = self.__sku_dict[self.__db.entry_get_string(tr, RB.RhythmDBPropType.LOCATION)]
 			url = magnatune_buy_album_uri + urllib.urlencode({ 'sku': sku, 'ref': magnatune_partner_id })
 			if url not in urls:
-				gtk.show_uri(screen, url, gtk.gdk.CURRENT_TIME)
+				Gtk.show_uri(screen, url, Gdk.CURRENT_TIME)
 				urls.add(url)
 
 	def download_album(self):
@@ -215,9 +218,10 @@ class MagnatuneSource(rb.BrowserSource):
 			return
 
 		try:
-			library_location = self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0] # Just use the first library location
+			# Just use the first library location
+			library_location = rb.get_gconf_string_list("/apps/rhythmbox/library_locations")[0];
 		except IndexError, e:
-			rb.error_dialog(title = _("Couldn't purchase album"),
+			RB.error_dialog(title = _("Couldn't purchase album"),
 				        message = _("You must have a library location set to purchase an album."))
 			return
 
@@ -225,7 +229,7 @@ class MagnatuneSource(rb.BrowserSource):
 		skus = []
 
 		for track in tracks:
-			sku = self.__sku_dict[self.__db.entry_get(track, rhythmdb.PROP_LOCATION)]
+			sku = self.__sku_dict[self.__db.entry_get_string(track, RB.RhythmDBPropType.LOCATION)]
 			if sku in skus:
 				continue
 			skus.append(sku)
@@ -268,7 +272,7 @@ class MagnatuneSource(rb.BrowserSource):
 				catalog = open(magnatune_song_info, 'w')
 				filename = find_song_info(catalog_zip)
 				if filename is None:
-					rb.error_dialog(title=_("Unable to load catalog"),
+					RB.error_dialog(title=_("Unable to load catalog"),
 							message=_("Rhythmbox could not understand the Magnatune catalog, please file a bug."))
 					return
 				catalog.write(catalog_zip.read(filename))
@@ -306,7 +310,7 @@ class MagnatuneSource(rb.BrowserSource):
 				if account_type == 'none':
 					pass
 				elif result is not None or len(items) == 0:
-					rb.error_dialog(title = _("Couldn't get account details"),
+					RB.error_dialog(title = _("Couldn't get account details"),
 							message = str(result))
 					return
 				else:
@@ -350,6 +354,9 @@ class MagnatuneSource(rb.BrowserSource):
 					result = result.replace("\x19", "'")
 					result = result.replace("\x13", "-")
 
+					# argh.
+					result = result.replace("Rock & Roll", "Rock &amp; Roll")
+
 					try:
 						parser.feed(result)
 					except xml.sax.SAXParseException, e:
@@ -377,10 +384,10 @@ class MagnatuneSource(rb.BrowserSource):
 	def __show_loading_screen(self, show):
 		if self.__info_screen is None:
 			# load the builder stuff
-			builder = gtk.Builder()
+			builder = Gtk.Builder()
 			builder.add_from_file(self.__plugin.find_file("magnatune-loading.ui"))
 			self.__info_screen = builder.get_object("magnatune_loading_scrolledwindow")
-			self.pack_start(self.__info_screen)
+			self.pack_start(self.__info_screen, True, True, 0)
 			self.get_entry_view().set_no_show_all(True)
 			self.__info_screen.set_no_show_all(True)
 
@@ -403,7 +410,7 @@ class MagnatuneSource(rb.BrowserSource):
 	def __auth_download(self, sku): # http://magnatune.com/info/api
 		def got_items(result, items):
 			if result is not None or len(items) == 0:
-				rb.error_dialog(title = _("Couldn't get account details"),
+				RB.error_dialog(title = _("Couldn't get account details"),
 				                message = str(result))
 				return
 
@@ -452,10 +459,10 @@ class MagnatuneSource(rb.BrowserSource):
 				self.__download_album(gio.File(audio_dl_uri), sku)
 
 			except MagnatunePurchaseError, e:
-				rb.error_dialog(title = _("Download Error"),
+				RB.error_dialog(title = _("Download Error"),
 						message = _("An error occurred while trying to authorize the download.\nThe Magnatune server returned:\n%s") % str(e))
 			except Exception, e:
-				rb.error_dialog(title = _("Error"),
+				RB.error_dialog(title = _("Error"),
 						message = _("An error occurred while trying to download the album.\nThe error text is:\n%s") % str(e))
 
 
@@ -492,14 +499,14 @@ class MagnatuneSource(rb.BrowserSource):
 
 		def unzip_album():
 			# just use the first library location
-			library_location = gio.File(uri=self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0])
+			library_location = gio.File(uri=rb.get_gconf_string_list("/apps/rhythmbox/library_locations")[0]);
 
 			album = zipfile.ZipFile(dest.get_path())
 			for track in album.namelist():
 				track_uri = library_location.resolve_relative_path(track).get_uri()
 
-				track_uri = rb.sanitize_uri_for_filesystem(track_uri)
-				rb.uri_create_parent_dirs(track_uri)
+				track_uri = RB.sanitize_uri_for_filesystem(track_uri)
+				RB.uri_create_parent_dirs(track_uri)
 
 				track_out = gio.File(uri=track_uri).create()
 				if track_out is not None:
@@ -560,7 +567,7 @@ class MagnatuneSource(rb.BrowserSource):
 		gobject.idle_add(self.emit_cover_art_uri, entry)
 
 	def emit_cover_art_uri(self, entry):
-		sku = self.__sku_dict[self.__db.entry_get(entry, rhythmdb.PROP_LOCATION)]
+		sku = self.__sku_dict[self.__db.entry_get_string(entry, RB.RhythmDBPropType.LOCATION)]
 		url = self.__art_dict[sku]
 		self.__db.emit_entry_extra_metadata_notify(entry, 'rb:coverArt-uri', url)
 		return False
@@ -576,7 +583,7 @@ class MagnatuneSource(rb.BrowserSource):
 			os.mkdir(magnatune_cache_path, 0700)
 
 		# move song info to cache dir
-		old_magnatune_dir = os.path.join(rb.dot_dir(), 'magnatune')
+		old_magnatune_dir = os.path.join(RB.dot_dir(), 'magnatune')
 		if os.path.exists(old_magnatune_dir) is False:
 			print "old magnatune directory does not exist"
 			return
@@ -597,4 +604,3 @@ class MagnatuneSource(rb.BrowserSource):
 
 
 gobject.type_register(MagnatuneSource)
-

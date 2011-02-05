@@ -25,11 +25,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rhythmdb, rb
 import gobject
-import gtk
-import gconf, gnome
-import gnomekeyring as keyring
 
 import urllib
 import zipfile
@@ -37,6 +33,12 @@ import sys, os.path
 import xml
 import datetime
 import string
+import gnomekeyring as keyring
+
+import rb
+from gi.repository import RB
+from gi.repository import GConf, Gtk
+# XXX use GnomeKeyring when available
 
 from MagnatuneSource import MagnatuneSource
 
@@ -57,15 +59,18 @@ popup_ui = """
 </ui>
 """
 
-class MagnatuneEntryType(rhythmdb.EntryType):
+class MagnatuneEntryType(RB.RhythmDBEntryType):
 	def __init__(self):
-		rhythmdb.EntryType.__init__(self, name='magnatune')
+		RB.RhythmDBEntryType.__init__(self, name='magnatune')
 
 	def can_sync_metadata(self, entry):
 		return True
 
-class Magnatune(rb.Plugin):
-	client = gconf.client_get_default()
+	def sync_metadata(self, entry, changes):
+		return
+
+class Magnatune(RB.Plugin):
+	client = GConf.Client.get_default()
 
 	format_list = ['ogg', 'flac', 'wav', 'mp3-vbr', 'mp3-cbr']
 
@@ -83,7 +88,7 @@ class Magnatune(rb.Plugin):
 	#
 
 	def __init__(self):
-		rb.Plugin.__init__(self)
+		RB.Plugin.__init__(self)
 
 	def activate(self, shell):
 		self.shell = shell # so the source can update the progress bar
@@ -92,13 +97,13 @@ class Magnatune(rb.Plugin):
 		self.entry_type = MagnatuneEntryType()
 		self.db.register_entry_type(self.entry_type)
 
-		theme = gtk.icon_theme_get_default()
+		theme = Gtk.IconTheme.get_default()
 		rb.append_plugin_source_path(theme, "/icons")
 
-		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
+		what, width, height = Gtk.icon_size_lookup(Gtk.IconSize.LARGE_TOOLBAR)
 		icon = rb.try_load_icon(theme, "magnatune", width, 0)
 
-		group = rb.rb_display_page_group_get_by_id ("stores")
+		group = RB.DisplayPageGroup.get_by_id ("stores")
 		self.source = gobject.new(MagnatuneSource,
 					  shell=shell,
 					  entry_type=self.entry_type,
@@ -110,21 +115,21 @@ class Magnatune(rb.Plugin):
 
 		manager = shell.get_player().get_property('ui-manager')
 		# Add the popup menu actions
-		self.action_group = gtk.ActionGroup('MagnatunePluginActions')
+		self.action_group = Gtk.ActionGroup(name='MagnatunePluginActions')
 
-		action = gtk.Action('MagnatuneDownloadAlbum', _('Download Album'),
-				_("Download this album from Magnatune"),
-				'gtk-save')
+		action = Gtk.Action(name='MagnatuneDownloadAlbum', label=_('Download Album'),
+				tooltip=_("Download this album from Magnatune"),
+				stock_id='gtk-save')
 		action.connect('activate', lambda a: self.shell.get_property("selected-page").download_album())
 		self.action_group.add_action(action)
-		action = gtk.Action('MagnatuneArtistInfo', _('Artist Information'),
-				_("Get information about this artist"),
-				'gtk-info')
+		action = Gtk.Action(name='MagnatuneArtistInfo', label=_('Artist Information'),
+				tooltip=_("Get information about this artist"),
+				stock_id='gtk-info')
 		action.connect('activate', lambda a: self.shell.get_property("selected-page").display_artist_info())
 		self.action_group.add_action(action)
-		action = gtk.Action('MagnatuneCancelDownload', _('Cancel Downloads'),
-				_("Stop downloading purchased albums"),
-				'gtk-stop')
+		action = Gtk.Action(name='MagnatuneCancelDownload', label=_('Cancel Downloads'),
+				tooltip=_("Stop downloading purchased albums"),
+				stock_id='gtk-stop')
 		action.connect('activate', lambda a: self.shell.get_property("selected-page").cancel_downloads())
 		action.set_sensitive(False)
 		self.action_group.add_action(action)
@@ -252,10 +257,10 @@ class Magnatune(rb.Plugin):
 						# The async version is not in the python bindings, grr...
 						keyring.item_set_info_sync(None, keyring_data['id'], keyring_data['item'])
 					else:
-						rb.error_dialog(title = _("Couldn't store account information"),
+						RB.error_dialog(title = _("Couldn't store account information"),
 						                message = _("There was a problem accessing the keyring. Check the debug output for more information."))
 				except Exception, e:
-					rb.error_dialog(title = _("Couldn't store account information"),
+					RB.error_dialog(title = _("Couldn't store account information"),
 					                message = str(e))
 				dialog.hide()
 
@@ -268,10 +273,9 @@ class Magnatune(rb.Plugin):
 				"rb_magnatune_password_changed_cb" : account_details_changed
 			}
 
-			builder = gtk.Builder()
+			builder = Gtk.Builder()
 			builder.add_from_file(self.find_file("magnatune-prefs.ui"))
 
-			# FIXME this bit should be in builder too  (what?)
 			dialog = builder.get_object('preferences_dialog')
 
 			# Set the names of the radio buttons so we can tell which one has been clicked
