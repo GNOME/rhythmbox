@@ -782,12 +782,7 @@ append_row (RBQueryCreator *creator)
 	GtkWidget *entry;
 	GtkWidget *remove_button;
 	GtkBox *hbox;
-	GList *rows;
-	guint len;
 	gboolean constrain;
-
-	rows = priv->rows;
-	len = g_list_length (rows);
 
 	hbox = GTK_BOX (gtk_hbox_new (FALSE, 5));
 	gtk_box_pack_start (GTK_BOX (priv->vbox), GTK_WIDGET (hbox), TRUE, TRUE, 0);
