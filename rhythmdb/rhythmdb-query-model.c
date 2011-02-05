@@ -3206,12 +3206,10 @@ rhythmdb_query_model_date_sort_func (RhythmDBEntry *a,
 
 {
 	gulong a_val, b_val;
-	gint ret;
 
 	a_val = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_DATE);
 	b_val = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_DATE);
 
-	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
 	if (a_val > b_val)
 		return 1;
 	else if (a_val < b_val)
