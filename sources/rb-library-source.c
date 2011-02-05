@@ -1288,7 +1288,6 @@ impl_paste (RBSource *asource, GList *entries)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	RBTrackTransferQueue *xferq;
 	GList *l;
-	GSList *sl;
 	RBShell *shell;
 	RhythmDBEntryType *source_entry_type;
 	RBTrackTransferBatch *batch;
@@ -1298,8 +1297,6 @@ impl_paste (RBSource *asource, GList *entries)
 		g_warning ("RBLibrarySource impl_paste called when gconf keys unset");
 		return NULL;
 	}
-
-	sl = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 
 	g_object_get (source,
 		      "shell", &shell,
