@@ -717,7 +717,7 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source,
 static xmlChar *
 xml_get_and_trim_names (xmlNodePtr node)
 {
-	xmlNodePtr cur, keep = NULL;
+	xmlNodePtr cur;
 	xmlChar *keep_lang = NULL;
 	xmlChar *value;
 	int j, keep_pri = INT_MAX;
@@ -754,7 +754,6 @@ xml_get_and_trim_names (xmlNodePtr node)
 
 				keep_lang = cur_lang;
 				keep_pri = cur_pri;
-				keep = cur;
 			} else {
 				if (cur_lang)
 					xmlFree (cur_lang);
