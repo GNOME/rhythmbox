@@ -25,14 +25,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
-#
-# TODO:
-# - check that the lyrics returned even remotely match the request?
 
 import os, re
-import gtk
-import gconf
-import rhythmdb, rb
+
+import rb
+from gi.repository import Gtk, GConf
+from gi.repository import RB
 
 import LyricsParse
 from LyricsConfigureDialog import LyricsConfigureDialog
@@ -56,21 +54,20 @@ gconf_keys = {	'engines' : '/apps/rhythmbox/plugins/lyrics/engines',
 		'folder': '/apps/rhythmbox/plugins/lyrics/folder'
 	     }
 
-
 def create_lyrics_view():
-	tview = gtk.TextView()
-	tview.set_wrap_mode(gtk.WRAP_WORD)
+	tview = Gtk.TextView()
+	tview.set_wrap_mode(Gtk.WrapMode.WORD)
 	tview.set_editable(False)
 	tview.set_left_margin(6)
 
 	tview.set_size_request (0, 0)
-	sw = gtk.ScrolledWindow()
+	sw = Gtk.ScrolledWindow()
 	sw.add(tview)
-	sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-	sw.set_shadow_type(gtk.SHADOW_IN)
+	sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+	sw.set_shadow_type(Gtk.ShadowType.IN)
 
-	vbox = gtk.VBox(spacing=12)
-	vbox.pack_start(sw, expand=True)
+	vbox = Gtk.VBox(spacing=12)
+	vbox.pack_start(sw, True, True, 0)
 	
 	return (vbox, tview.get_buffer(), tview)
 
@@ -108,8 +105,8 @@ def get_artist_and_title(db, entry):
 	if stream_song_title is not None:
 		(artist, title) = extract_artist_and_title(stream_song_title)
 	else:
-		artist = db.entry_get(entry, rhythmdb.PROP_ARTIST)
-		title = db.entry_get(entry, rhythmdb.PROP_TITLE)
+		artist = entry.get_string(RB.RhythmDBPropType.ARTIST)
+		title = entry.get_string(RB.RhythmDBPropType.TITLE)
 	return (artist, title)
 
 def extract_artist_and_title(stream_song_title):
@@ -128,9 +125,9 @@ def extract_artist_and_title(stream_song_title):
 	return (artist, title)
 	
 def build_cache_path(artist, title):
-	folder = gconf.client_get_default().get_string(gconf_keys['folder'])
+	folder = GConf.Client.get_default().get_string(gconf_keys['folder'])
 	if folder is None or folder == "":
-		folder = os.path.join(rb.user_cache_dir(), "lyrics")
+		folder = os.path.join(RB.user_cache_dir(), "lyrics")
 
 	lyrics_folder = os.path.expanduser (folder)
 	if not os.path.exists (lyrics_folder):
@@ -226,23 +223,23 @@ class LyricPane(object):
 			self.get_lyrics()
 	   
 
-		self.edit = gtk.ToggleButton(_("_Edit"))
+		self.edit = Gtk.ToggleButton(label=_("_Edit"))
 		self.edit.connect('toggled', edit_callback)
-		self.discard = gtk.Button(_("_Search again"))
+		self.discard = Gtk.Button(label=_("_Search again"))
 		self.discard.connect('clicked', discard_callback)
-		self.clear = gtk.Button(stock=gtk.STOCK_CLEAR)
+		self.clear = Gtk.Button.new_from_stock(Gtk.STOCK_CLEAR)
 		self.clear.connect('clicked', clear_callback)
-		self.hbox = gtk.HButtonBox()
+		self.hbox = Gtk.HButtonBox()
 		self.hbox.set_spacing (6)
-		self.hbox.set_layout(gtk.BUTTONBOX_END)
+		self.hbox.set_layout(Gtk.ButtonBoxStyle.END)
 		self.hbox.add(self.edit)
 		self.hbox.add(self.clear)
 		self.hbox.add(self.discard)
-		self.hbox.set_child_secondary (self.clear, is_secondary=True)
+		self.hbox.set_child_secondary (self.clear, True)
 
 		(self.view, self.buffer, self.tview) = create_lyrics_view()
 
-		self.view.pack_start(self.hbox, expand=False, fill=False, padding=6)
+		self.view.pack_start(self.hbox, False, False, 6)
 		self.view.set_spacing(2)
 	
 		self.view.show_all()
@@ -280,33 +277,33 @@ class LyricPane(object):
 		self.get_lyrics()
 
 	def __got_lyrics(self, text):
-		self.buffer.set_text(text)
+		self.buffer.set_text(str(text), -1)
 
 	def get_lyrics(self):
 		if self.entry is None:
 			return
 
-		self.buffer.set_text(_("Searching for lyrics..."));
+		self.buffer.set_text(_("Searching for lyrics..."), -1);
 		lyrics_grabber = LyricGrabber(self.db, self.entry)
 		lyrics_grabber.search_lyrics(self.__got_lyrics)
 
 
-class LyricWindow (gtk.Window):
+class LyricWindow (Gtk.Window):
 
 	def __init__(self, shell):
-		gtk.Window.__init__(self)
+		Gtk.Window.__init__(self)
 		self.shell = shell
 		self.set_border_width(12)
 
-		close = gtk.Button(stock=gtk.STOCK_CLOSE)
+		close = Gtk.Button.new_from_stock(Gtk.STOCK_CLOSE)
 		close.connect('clicked', lambda w: self.destroy())
 	
 		(lyrics_view, buffer, tview) = create_lyrics_view()
 		self.buffer = buffer
-		bbox = gtk.HButtonBox()
-		bbox.set_layout(gtk.BUTTONBOX_END)
-		bbox.pack_start(close)
-		lyrics_view.pack_start(bbox, expand=False)
+		bbox = Gtk.HButtonBox()
+		bbox.set_layout(Gtk.ButtonBoxStyle.END)
+		bbox.pack_start(close, True, True, 0)
+		lyrics_view.pack_start(bbox, False, False, 0)
 
 		sp = shell.get_player ()
 		self.ppc_id = sp.connect('playing-song-property-changed', self.playing_property_changed)
@@ -318,7 +315,7 @@ class LyricWindow (gtk.Window):
 	def destroy(self):
 		sp = self.shell.get_player ()
 		sp.disconnect (self.ppc_id)
-		gtk.Window.destroy(self)
+		Gtk.Window.destroy(self)
 
 	def playing_property_changed(self, player, uri, prop, old_val, new_val):
 		if (prop == STREAM_SONG_TITLE):
@@ -326,7 +323,7 @@ class LyricWindow (gtk.Window):
 
 	
 	def __got_lyrics(self, text):
-		self.buffer.set_text (text)
+		self.buffer.set_text (text, -1)
 
 	def update_song_lyrics(self, entry):
 		db = self.shell.props.db
@@ -336,20 +333,20 @@ class LyricWindow (gtk.Window):
 		lyrics_grabber.search_lyrics(self.__got_lyrics)
 
 
-class LyricsDisplayPlugin(rb.Plugin):
+class LyricsDisplayPlugin(RB.Plugin):
 
 	def __init__ (self):
-		rb.Plugin.__init__ (self)
+		RB.Plugin.__init__ (self)
 		self.window = None
 
 	def activate (self, shell):
 		self.shell = shell
-		self.action = gtk.Action ('ViewSongLyrics', _('Song L_yrics'),
-					  _('Display lyrics for the playing song'),
-					  'rb-song-lyrics')
+		self.action = Gtk.Action (name='ViewSongLyrics', label=_('Song L_yrics'),
+					  tooltip=_('Display lyrics for the playing song'),
+					  stock_id='rb-song-lyrics')
 		self.activate_id = self.action.connect ('activate', self.show_song_lyrics, shell)
 		
-		self.action_group = gtk.ActionGroup ('SongLyricsPluginActions')
+		self.action_group = Gtk.ActionGroup (name='SongLyricsPluginActions')
 		self.action_group.add_action_with_accel (self.action, "<control>L")
 		
 		uim = shell.get_ui_manager ()
@@ -386,10 +383,9 @@ class LyricsDisplayPlugin(rb.Plugin):
 			self.window.destroy ()
 			self.window = None
 
-	def create_configure_dialog(self, dialog=None):
-		if not dialog:
-			builder_file = self.find_file("lyrics-prefs.ui")
-			dialog = LyricsConfigureDialog (builder_file, gconf_keys).get_dialog()
+	def create_configure_dialog(self):
+		builder_file = self.find_file("lyrics-prefs.ui")
+		dialog = LyricsConfigureDialog (builder_file, gconf_keys).get_dialog()
 		dialog.present()
 		return dialog
 

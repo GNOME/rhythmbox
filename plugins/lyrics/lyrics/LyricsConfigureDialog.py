@@ -27,18 +27,20 @@
 
 from LyricsSites import lyrics_sites
 
-import gobject, gtk
-import gconf
+import gobject
 from os import system, path
+
+import rb
+from gi.repository import Gtk, GConf
 
 class LyricsConfigureDialog (object):
 	def __init__(self, builder_file, gconf_keys):
-		self.gconf = gconf.client_get_default()
+		self.gconf = GConf.Client.get_default()
 		self.gconf_keys = gconf_keys
 
-		builder = gtk.Builder()
+		builder = Gtk.Builder()
 		builder.add_from_file(builder_file)
-			
+
 		self.dialog = builder.get_object("preferences_dialog")
 
 		self.choose_button = builder.get_object("choose_button")
@@ -58,18 +60,18 @@ class LyricsConfigureDialog (object):
 		self.site_checks = {}
 		for s in lyrics_sites:
 			site_id = s['id']
-			checkbutton = gtk.CheckButton(label = s['name'])
+			checkbutton = Gtk.CheckButton(label = s['name'])
 			checkbutton.set_active(s['id'] in engines)
 			self.site_checks[site_id] = checkbutton
-			site_box.pack_start(checkbutton)
+			site_box.pack_start(checkbutton, True, True, 0)
 
 		site_box.show_all()
 
 	def dialog_response(self, dialog, response):
-		if response == gtk.RESPONSE_OK:
+		if response == Gtk.ResponseType.OK:
 			self.set_values()
 			self.dialog.hide()
-		elif response == gtk.RESPONSE_CANCEL or response == gtk.RESPONSE_DELETE_EVENT:
+		elif response == Gtk.ResponseType.CANCEL or response == Gtk.ResponseType.DELETE_EVENT:
 			self.dialog.hide()
 		else:
 			print "unexpected response type"
@@ -88,23 +90,24 @@ class LyricsConfigureDialog (object):
 		if len(self.path_display.get_text()) is not 0:
 			self.folder = self.path_display.get_text()
 
-		self.gconf.set_list(self.gconf_keys['engines'], gconf.VALUE_STRING, engines)
+		# XXX can't set gconf string lists; doesn't matter, none of the sites work anyway
+		# self.gconf.set_list(self.gconf_keys['engines'], GConf.ValueType.STRING, engines)
 		self.gconf.set_string(self.gconf_keys['folder'], self.folder)
 
 	def choose_callback(self, widget):
 		def response_handler(widget, response):
-			if response == gtk.RESPONSE_OK:
+			if response == Gtk.ResponseType.OK:
 				path = self.chooser.get_filename()
 				self.chooser.destroy()
 				self.path_display.set_text(path)
 			else:
 				self.chooser.destroy()
 
-		buttons = (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE,
-				gtk.STOCK_OK, gtk.RESPONSE_OK)
-		self.chooser = gtk.FileChooserDialog(title=_("Choose lyrics folder..."),
+		buttons = (Gtk.STOCK_CLOSE, Gtk.ResponseTypeCLOSE,
+				Gtk.STOCK_OK, Gtk.ResponseType.OK)
+		self.chooser = Gtk.FileChooserDialog(title=_("Choose lyrics folder..."),
 					parent=None,
-					action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
+					action=Gtk.FileChooserAction.SELECT_FOLDER,
 					buttons=buttons)
 		self.chooser.connect("response", response_handler)
 		self.chooser.set_modal(True)
@@ -116,15 +119,12 @@ class LyricsConfigureDialog (object):
 	
 	def get_prefs (self):
 		try:
-			engines = gconf.client_get_default().get_list(self.gconf_keys['engines'], gconf.VALUE_STRING)
-			if engines is None:
-				engines = []
+			engines = rb.get_gconf_string_list(self.gconf_keys['engines'])
 		except gobject.GError, e:
 			print e
 			engines = []
-		folder = gconf.client_get_default().get_string(self.gconf_keys['folder'])
+		folder = GConf.Client.get_default().get_string(self.gconf_keys['folder'])
 
 		print "lyric engines: " + str (engines)
 		print "lyric folder: " + folder
 		return (engines, folder)
-

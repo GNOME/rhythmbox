@@ -24,12 +24,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-
 import urllib
 import re
 import gobject
-import gconf
+
 import rb
+from gi.repository import GConf
 
 from LyricsSites import lyrics_sites
 
@@ -39,9 +39,7 @@ class Parser (object):
 		self.artist = artist
 
 		try:
-			self.engines = gconf.client_get_default().get_list(gconf_keys['engines'], gconf.VALUE_STRING)
-			if self.engines is None:
-				self.engines = []
+			self.engines = rb.get_gconf_string_list(gconf_keys['engines'])
 		except gobject.GError, e:
 			print e
 			self.engines = []
@@ -68,5 +66,3 @@ class Parser (object):
 
 	def get_lyrics(self, callback, *data):
 		rb.Coroutine (self.searcher, callback, *data).begin ()
-
-

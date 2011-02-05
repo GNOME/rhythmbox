@@ -33,6 +33,7 @@ import time
 import thread
 
 from gi.repository import RB
+from gi.repository import GConf
 
 # rb classes
 from Loader import Loader
@@ -59,6 +60,21 @@ def append_plugin_source_path(theme, iconpath):
 		plugindir = dir[:dir.rfind(os.sep)]
 		icondir = plugindir + iconpath
 		theme.append_search_path(icondir)
+
+
+def get_gconf_string_list(key):
+	gconf = GConf.Client().get_default()
+	l = gconf.get_without_default(key)
+	if l is None or \
+	    l.type != GConf.ValueType.LIST or \
+	    l.get_list_type() != GConf.ValueType.STRING:
+		return []
+	sl = []
+	for e in l.get_list():
+		sl.append(e.get_string())
+
+	return sl
+
 
 
 class _rbdebugfile:
