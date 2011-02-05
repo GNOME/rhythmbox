@@ -163,13 +163,11 @@ cursor_changed_cb (GtkTreeSelection *selection,
 		   gpointer     data)
 {
 	RBPluginManager *pm = data;
-	GtkTreeView *view;
 	RBPluginInfo *info;
 	char *string;
 	GdkPixbuf *icon;
 	const gchar **authors;
 
-	view = gtk_tree_selection_get_tree_view (selection);
 	info = plugin_manager_get_selected_plugin (pm);
 	if (info == NULL) {
 		return;
