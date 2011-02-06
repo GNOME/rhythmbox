@@ -1,6 +1,6 @@
-# -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*- 
+# -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
 #
-# Copyright (C) 2006 - Gareth Murphy, Martin Szulecki, 
+# Copyright (C) 2006 - Gareth Murphy, Martin Szulecki,
 # Ed Catmur <ed@catmur.co.uk>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 # you may extend this exception to your version of the code, but you are not
 # obligated to do so. If you do not wish to do so, delete this exception
 # statement from your version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -25,12 +25,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rhythmdb, rb
 import os
-import gtk
-import gio
 import itertools
 import gobject
+import gi
+import gio
+
+import rb
+from gi.repository import GdkPixbuf
+from gi.repository import RB
 
 from PodcastCoverArtSearch import PodcastCoverArtSearch
 from MusicBrainzCoverArtSearch import MusicBrainzCoverArtSearch
@@ -44,14 +47,16 @@ ART_SEARCHES_LOCAL = [LocalCoverArtSearch, EmbeddedCoverArtSearch]
 ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, LastFMCoverArtSearch, MusicBrainzCoverArtSearch]
 OLD_ART_FOLDER = '~/.gnome2/rhythmbox/covers'
 
-ART_FOLDER = os.path.join(rb.user_cache_dir(), 'covers')
+ART_FOLDER = os.path.join(RB.user_cache_dir(), 'covers')
 ART_CACHE_EXTENSION_JPG = 'jpg'
 ART_CACHE_EXTENSION_PNG = 'png'
 ART_CACHE_EXTENSION_META = 'rb-meta'
 ART_CACHE_FORMAT_JPG = 'jpeg'
 ART_CACHE_FORMAT_PNG = 'png'
-ART_CACHE_SETTINGS_JPG = {"quality": "100"}
-ART_CACHE_SETTINGS_PNG = {"compression": "9"}
+ART_CACHE_SETTINGS_NAMES_JPG = ["quality"]
+ART_CACHE_SETTINGS_VALUES_JPG = ["100"]
+ART_CACHE_SETTINGS_NAMES_PNG = ["compression"]
+ART_CACHE_SETTINGS_VALUES_PNG = ["9"]
 
 class TicketSystem:
 	def __init__ (self):
@@ -108,10 +113,10 @@ class TicketSystem:
 			return False
 
 def get_search_props(db, entry):
-	artist = db.entry_get(entry, rhythmdb.PROP_ALBUM_ARTIST)
+	artist = entry.get_string(RB.RhythmDBPropType.ALBUM_ARTIST)
 	if artist == "":
-		artist = db.entry_get(entry, rhythmdb.PROP_ARTIST)
-	album = db.entry_get(entry, rhythmdb.PROP_ALBUM)
+		artist = entry.get_string(RB.RhythmDBPropType.ARTIST)
+	album = entry.get_string(RB.RhythmDBPropType.ALBUM)
 	return (artist, album)
 
 
@@ -134,7 +139,7 @@ class CoverArtDatabase (object):
 
 		artist = artist.replace('/', '-')
 		album = album.replace('/', '-')
-		return art_folder + '/%s - %s.%s' % (artist, album, extension)	
+		return art_folder + '/%s - %s.%s' % (artist, album, extension)
 
 	def engines (self, blist):
 		for Engine in ART_SEARCHES_LOCAL:
@@ -142,7 +147,7 @@ class CoverArtDatabase (object):
 		for Engine in ART_SEARCHES_REMOTE:
 			if Engine.__name__ not in blist:
 				yield Engine (), Engine.__name__, True
-	
+
 	def set_pixbuf_from_uri (self, db, entry, uri, callback):
 		def loader_cb (data):
 			self.set_pixbuf (db, entry, self.image_data_load (data), callback)
@@ -172,18 +177,20 @@ class CoverArtDatabase (object):
 		if pixbuf.get_has_alpha():
 			art_location = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_PNG)
 			art_cache_format = ART_CACHE_FORMAT_PNG
-			art_cache_settings = ART_CACHE_SETTINGS_PNG
+			art_cache_settings_names = ART_CACHE_SETTINGS_NAMES_PNG
+			art_cache_settings_values = ART_CACHE_SETTINGS_VALUES_PNG
 		else:
 			art_location = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION_JPG)
 			art_cache_format = ART_CACHE_FORMAT_JPG
-			art_cache_settings = ART_CACHE_SETTINGS_JPG
+			art_cache_settings_names = ART_CACHE_SETTINGS_NAMES_JPG
+			art_cache_settings_values = ART_CACHE_SETTINGS_VALUES_JPG
 		self.ticket.purge (entry)
-		pixbuf.save (art_location, art_cache_format, art_cache_settings)
+		pixbuf.savev (art_location, art_cache_format, art_cache_settings_names, art_cache_settings_values)
 		return "file://" + pathname2url(art_location)
 
 	def cancel_get_pixbuf (self, entry):
 		self.ticket.purge (entry)
-  
+
 	def get_pixbuf (self, db, entry, is_playing, callback):
 		if entry is None:
 			callback (entry, None, None, None, None)
@@ -214,7 +221,7 @@ class CoverArtDatabase (object):
 		# Check local cache
 		if art_location:
 			self.ticket.purge (entry)
-			pixbuf = gtk.gdk.pixbuf_new_from_file (art_location)
+			pixbuf = GdkPixbuf.Pixbuf.new_from_file (art_location)
 			(tooltip_image, tooltip_text) = self.read_meta_file (art_location_meta)
 			art_location_url = "file://" + pathname2url(art_location)
 			callback (entry, pixbuf, art_location_url, tooltip_image, tooltip_text)
@@ -230,14 +237,15 @@ class CoverArtDatabase (object):
 		match_entry = self.ticket.find(entry, find_same_search, db)
 		if match_entry is not None:
 			print "entry %s matches existing search for %s" % (
-				 db.entry_get (entry, rhythmdb.PROP_LOCATION),
-				 db.entry_get (match_entry, rhythmdb.PROP_LOCATION))
+				 entry.get_string(RB.RhythmDBPropType.LOCATION),
+				 match_entry.get_string(RB.RhythmDBPropType.LOCATION))
 			self.same_search.setdefault (match_entry, []).append(entry)
 			return
 
 		blist = self.read_blist (blist_location)
 		ticket = self.ticket.get (entry)
 		for engine, engine_name, engine_remote in self.engines (blist):
+			print "trying %s" % engine_name
 			plexer.clear ()
 			engine.search (db, entry, is_playing, plexer.send ())
 			while True:
@@ -250,20 +258,20 @@ class CoverArtDatabase (object):
 					if self.ticket.release (entry, ticket):
 						if should_save:
 							if pixbuf.get_has_alpha ():
-								pixbuf.save (art_location_png, ART_CACHE_FORMAT_PNG, ART_CACHE_SETTINGS_PNG)
+								pixbuf.savev (art_location_png, ART_CACHE_FORMAT_PNG, ART_CACHE_SETTINGS_NAMES_PNG, ART_CACHE_SETTINGS_VALUES_PNG)
 								uri = "file://" + pathname2url(art_location_png)
 							else:
-								pixbuf.save (art_location_jpg, ART_CACHE_FORMAT_JPG, ART_CACHE_SETTINGS_JPG)
+								pixbuf.savev (art_location_jpg, ART_CACHE_FORMAT_JPG, ART_CACHE_SETTINGS_NAMES_JPG, ART_CACHE_SETTINGS_VALUES_JPG)
 								uri = "file://" + pathname2url(art_location_jpg)
 
 							self.write_meta_file (art_location_meta, tooltip_image, tooltip_text)
 						else:
 							uri = engine_uri
 
-						print "found image for %s" % (db.entry_get(entry, rhythmdb.PROP_LOCATION))
+						print "found image for %s" % (entry.get_string(RB.RhythmDBPropType.LOCATION))
 						callback (entry, pixbuf, uri, tooltip_image, tooltip_text)
 						for m in self.same_search.pop(entry, []):
-							print "and for same search %s" % (db.entry_get(m, rhythmdb.PROP_LOCATION))
+							print "and for same search %s" % (m.get_string(RB.RhythmDBPropType.LOCATION))
 							callback (m, pixbuf, uri, tooltip_image, tooltip_text)
 
 					self.write_blist (blist_location, blist)
@@ -308,10 +316,10 @@ class CoverArtDatabase (object):
 				return
 
 		if self.ticket.forget (entry, ticket):
-			print "didn't find image for %s" % (db.entry_get(entry, rhythmdb.PROP_LOCATION))
+			print "didn't find image for %s" % (entry.get_string(RB.RhythmDBPropType.LOCATION))
 			callback (entry, None, None, None, None)
 			for m in self.same_search.pop (entry, []):
-				print "or for same search %s" % (db.entry_get(m, rhythmdb.PROP_LOCATION))
+				print "or for same search %s" % (m.get_string(RB.RhythmDBPropType.LOCATION))
 				callback (m, None, None, None, None)
 
 		self.write_blist (blist_location, blist)
@@ -348,12 +356,15 @@ class CoverArtDatabase (object):
 		elif os.path.exists (blist_location):
 			os.unlink (blist_location)
 
-	def image_data_load (self, data):
+	def image_data_load(self, data):
 		if data and len (data) >= 1000:
-			pbl = gtk.gdk.PixbufLoader ()
 			try:
-				if pbl.write (data) and pbl.close ():
-					return pbl.get_pixbuf ()
-			except gobject.GError:
+				l = GdkPixbuf.PixbufLoader()
+				l.write(data)
+				l.close()
+				return l.get_pixbuf()
+			except gobject.GError, e:
+				print "error reading image: %s" % str(e)
 				pass
+
 		return None

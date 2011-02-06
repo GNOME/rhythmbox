@@ -27,10 +27,10 @@
 import urllib
 import xml.dom.minidom as dom
 import re
-import gconf
 
 import rb
-import rhythmdb
+from gi.repository import GConf
+from gi.repository import RB
 
 # this API key belongs to jonathan@d14n.org
 # and was generated specifically for this use
@@ -54,7 +54,7 @@ DISC_NUMBER_REGEXS = (
 USERNAME_GCONF_KEY = "/apps/rhythmbox/audioscrobbler/username"
 
 def user_has_account():
-    username = gconf.client_get_default().get_string(USERNAME_GCONF_KEY)
+    username = GConf.Client.get_default().get_string(USERNAME_GCONF_KEY)
     return (username is not None and username != "")
 
 class LastFMCoverArtSearch (object):
@@ -122,17 +122,17 @@ class LastFMCoverArtSearch (object):
 			callback (self, entry, None, *args)
 			return
 
-		artist = db.entry_get (entry, rhythmdb.PROP_ALBUM_ARTIST)
+		artist = entry.get_string(RB.RhythmDBPropType.ALBUM_ARTIST)
 		if artist == "":
-			artist = db.entry_get (entry, rhythmdb.PROP_ARTIST)
+			artist = entry.get_string (RB.RhythmDBPropType.ARTIST)
 		if artist == _("Unknown"):
 			artist = ""
 
-		album = db.entry_get (entry, rhythmdb.PROP_ALBUM)
+		album = entry.get_string (RB.RhythmDBPropType.ALBUM)
 		if album == _("Unknown"):
 			album = ""
 
-		album_mbid = db.entry_get (entry, rhythmdb.PROP_MUSICBRAINZ_ALBUMID)
+		album_mbid = entry.get_string (RB.RhythmDBPropType.MB_ALBUMID)
 		if (artist, album, album_mbid) == ("", "", ""):
 			print "can't search: no artist, album, or album ID"
 			callback (self, entry, None, *args)
@@ -161,5 +161,3 @@ class LastFMCoverArtSearch (object):
 
 	def get_best_match_urls (self, search_results):
 		return search_results
-
-

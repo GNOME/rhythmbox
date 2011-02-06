@@ -28,7 +28,7 @@ import urllib
 import xml.dom.minidom as dom
 
 import rb
-import rhythmdb
+from gi.repository import RB
 
 # musicbrainz URLs
 MUSICBRAINZ_RELEASE_URL = "http://musicbrainz.org/ws/1/release/%s?type=xml"
@@ -74,7 +74,7 @@ class MusicBrainzCoverArtSearch (object):
 		self.entry = entry
 
 		# if we've got an album ID, we can get the album info directly
-		album_id = db.entry_get(entry, rhythmdb.PROP_MUSICBRAINZ_ALBUMID)
+		album_id = entry.get_string(RB.RhythmDBPropType.MB_ALBUMID)
 		if album_id != "":
 			# these sometimes look like full URLs, sometimes not
 			if album_id.startswith(MUSICBRAINZ_RELEASE_PREFIX):

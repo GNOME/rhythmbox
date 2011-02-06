@@ -24,11 +24,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rhythmdb
-
 import gst
 import gobject
-import gtk
+
+import rb
+from gi.repository import GdkPixbuf
+from gi.repository import RB
 
 class EmbeddedCoverArtSearch (object):
 	def __init__ (self):
@@ -42,7 +43,7 @@ class EmbeddedCoverArtSearch (object):
 
 			print "got image tag %s" % tag
 			try:
-				loader = gtk.gdk.PixbufLoader()
+				loader = GdkPixbuf.PixbufLoader()
 				if loader.write(taglist[tag]) and loader.close():
 					print "successfully extracted pixbuf"
 					self.got_pixbuf = True
@@ -86,7 +87,7 @@ class EmbeddedCoverArtSearch (object):
 			return
 
 		# only search local files
-		uri = db.entry_get(entry, rhythmdb.PROP_LOCATION)
+		uri = entry.get_string(RB.RhythmDBPropType.LOCATION)
 		if uri.startswith("file://") is False:
 			print "not checking for embedded cover art in non-local entry %s" % uri
 			on_search_completed (self, entry, None, *args)

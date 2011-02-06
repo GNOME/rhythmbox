@@ -26,10 +26,11 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import os
-import rhythmdb
-import rb
 import gobject
 import gio
+import gi
+
+from gi.repository import RB
 
 IMAGE_NAMES = ["cover", "album", "albumart", ".folder", "folder"]
 ITEMS_PER_NOTIFICATION = 10
@@ -49,10 +50,10 @@ def shared_prefix_length (a, b):
 	return l
 
 def get_search_props(db, entry):
-	artist = db.entry_get(entry, rhythmdb.PROP_ALBUM_ARTIST)
+	artist = entry.get_string(RB.RhythmDBPropType.ALBUM_ARTIST)
 	if artist == "":
-		artist = db.entry_get(entry, rhythmdb.PROP_ARTIST)
-	album = db.entry_get(entry, rhythmdb.PROP_ALBUM)
+		artist = entry.get_string(RB.RhythmDBPropType.ARTIST)
+	album = entry.get_string(RB.RhythmDBPropType.ALBUM)
 	return (artist, album)
 
 
@@ -212,4 +213,3 @@ class LocalCoverArtSearch:
 			enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, callback = self._save_dir_cb, user_data=(db, entry, parent, pixbuf))
 		except Exception, e:
 			print "unable to scan directory %s: %s" % (parent.get_uri(), e)
-

@@ -24,13 +24,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rhythmdb, rb
-import gtk, gobject
+import gobject
 import gio
+import gi
+
 from warnings import warn
 
 from CoverArtDatabase import CoverArtDatabase
 
+import rb
+from gi.repository import Gtk, Gdk, GdkPixbuf
+from gi.repository import RB
 
 FADE_STEPS = 10
 FADE_TOTAL_TIME = 1000
@@ -41,7 +45,7 @@ THROBBER = 'process-working'
 ASPECT_RATIO_MIN = 0.9
 ASPECT_RATIO_MAX = 1.1
 
-def merge_pixbufs (old_pb, new_pb, reserve_pb, step, width, height, mode=gtk.gdk.INTERP_BILINEAR):
+def merge_pixbufs (old_pb, new_pb, reserve_pb, step, width, height, mode=GdkPixbuf.InterpType.BILINEAR):
 	if width <= 1 and height <= 1:
 		return None
 	if old_pb is None:
@@ -62,6 +66,7 @@ def merge_pixbufs (old_pb, new_pb, reserve_pb, step, width, height, mode=gtk.gdk
 	return ret
 
 def merge_with_background (pixbuf, bgcolor, pad_if_not_near_square):
+
 	if pixbuf is None:
 		return pixbuf
 	has_alpha = pixbuf.get_has_alpha ()
@@ -74,24 +79,22 @@ def merge_with_background (pixbuf, bgcolor, pad_if_not_near_square):
 		if not has_alpha:
 			return pixbuf
 		rw, rh, left, top = width, height, 0, 0
-	ret = gtk.gdk.Pixbuf (gtk.gdk.COLORSPACE_RGB, False, 8, rw, rh)
-	ret.fill (((bgcolor.red & 0xff00) << 16) | ((bgcolor.green & 0xff00) << 8) | (bgcolor.blue & 0xff00) | 0xff)
+	ret = GdkPixbuf.Pixbuf.new (GdkPixbuf.Colorspace.RGB, False, 8, rw, rh)
+	ret.fill ((int(bgcolor.red * 255) << 24) | (int(bgcolor.green * 255) << 16) | (int(bgcolor.blue * 255) << 8) | int(bgcolor.alpha * 255))
 	if has_alpha:
-		pixbuf.composite (ret, left, top, width, height, left, top, 1.0, 1.0, gtk.gdk.INTERP_NEAREST, 255)
+		pixbuf.composite (ret, left, top, width, height, left, top, 1.0, 1.0, GdkPixbuf.InterpType.NEAREST, 255)
 	else:
 		pixbuf.copy_area (0, 0, width, height, ret, left, top)
 	return ret
 
-class FadingImage (gtk.Misc):
+class FadingImage (Gtk.Misc):
 	__gsignals__ = {
-		'size-allocate': 'override',
 		'get-max-size' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_INT, ())
 	}
 	def __init__ (self, missing_image):
-		gobject.GObject.__init__ (self)
+		Gtk.Misc.__init__(self)
 		self.sc_id = self.connect('screen-changed', self.screen_changed)
-		self.ex_id = self.connect ('expose-event', self.expose)
-		self.sr_id = self.connect ('size-request', self.size_request)
+		self.sa_id = self.connect('size-allocate', self.size_allocate_cb)
 		self.resize_id, self.fade_id, self.anim_id = 0, 0, 0
 		self.missing_image, self.size = missing_image, 100
 		self.screen_changed (self, None)
@@ -101,8 +104,8 @@ class FadingImage (gtk.Misc):
 		self.anim, self.anim_frames, self.anim_size = None, None, 0
 
 	def disconnect_handlers (self):
-		for id in self.sc_id, self.ex_id, self.sr_id:
-			self.disconnect(id)
+		self.disconnect(self.sc_id)
+		self.disconnect(self.sa_id)
 		self.icon_theme.disconnect(self.tc_id)
 		for id in self.resize_id, self.fade_id, self.anim_id:
 			if id != 0:
@@ -111,16 +114,16 @@ class FadingImage (gtk.Misc):
 	def screen_changed (self, widget, old_screen):
 		if old_screen:
 			self.icon_theme.disconnect (self.tc_id)
-		self.icon_theme = gtk.icon_theme_get_for_screen (self.get_screen ())
+		self.icon_theme = Gtk.IconTheme.get_for_screen (self.get_screen ())
 		self.tc_id = self.icon_theme.connect ('changed', self.theme_changed)
 		self.theme_changed (self.icon_theme)
 
 	def reload_anim_frames (self):
 		icon_info = self.icon_theme.lookup_icon (THROBBER, -1, 0)
 		size = icon_info.get_base_size ()
-		icon = gtk.gdk.pixbuf_new_from_file (icon_info.get_filename ())
+		icon = GdkPixbuf.Pixbuf.new_from_file (icon_info.get_filename ())
 		self.anim_frames = [ # along, then down
-				icon.subpixbuf (x * size, y * size, size, size)
+				icon.new_subpixbuf (x * size, y * size, size, size)
 				for y in range (int (icon.props.height / size))
 				for x in range (int (icon.props.width / size))]
 		self.anim_size = size
@@ -139,28 +142,29 @@ class FadingImage (gtk.Misc):
 			missing_pixbuf = self.icon_theme.load_icon (ART_MISSING_ICON, self.size, 0)
 		except:
 			try:
-				missing_pixbuf = gtk.gdk.pixbuf_new_from_file_at_size (self.missing_image, self.size, self.size)
+				missing_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size (self.missing_image, self.size, self.size)
 			except Exception, e:
 				warn ("Missing artwork icon not found: %s" % e, Warning)
 				return
-		self.missing_pixbuf = merge_with_background (missing_pixbuf, self.style.bg[gtk.STATE_NORMAL], False)
 
-	def do_size_allocate (self, allocation):
-		old_width = self.allocation.width
-		self.allocation = allocation
+		bgcolor = self.get_style_context().get_background_color(Gtk.StateType.NORMAL)
+		self.missing_pixbuf = merge_with_background (missing_pixbuf, bgcolor, False)
+
+	def size_allocate_cb (self, widget, allocation):
+		#old_width = self.get_allocated_width()
 
 		if self.resize_id == 0:
 			self.resize_id = gobject.idle_add (self.after_resize)
 
-		if old_width != allocation.width:
-			max_size = self.emit ('get-max-size')
-			self.size = min (allocation.width, max_size)
-			self.queue_resize ()
-		
-		elif self.window is not None:
-			self.window.move_resize (allocation.x, allocation.y, allocation.width, allocation.height)
-			self.queue_draw ()
-			self.window.process_updates (True)
+		#if old_width != allocation.width:
+		# XXX possibly use adjust_size_allocation instead?
+		max_size = self.emit ('get-max-size')
+		self.size = min (self.get_allocated_width (), max_size)
+		self.queue_resize ()
+		#elif self.get_window() is not None:
+		#	self.get_window().move_resize (allocation.x, allocation.y, allocation.width, allocation.height)
+		#	self.queue_draw ()
+		#	self.get_window().process_updates (True)
 
 	def after_resize (self):
 		self.reload_util_pixbufs ()
@@ -169,44 +173,51 @@ class FadingImage (gtk.Misc):
 		self.queue_draw ()
 		return False
 
-	def size_request (self, widget, requisition):
-		requisition.width, requisition.height = -1, self.size
+	def do_get_preferred_height(self):
+		return (self.size, self.size)
 
-	def expose (self, widget, event):
+	def do_draw (self, cr):
 		if not self.ensure_merged_pixbuf ():
 			return False
 
 		if self.merged_pixbuf.props.width != self.size:
-			draw_pb = self.merged_pixbuf.scale_simple (self.size, self.size, gtk.gdk.INTERP_NEAREST)
+			draw_pb = self.merged_pixbuf.scale_simple (self.size, self.size, GdkPixbuf.InterpType.NEAREST)
 		else:
 			draw_pb = self.merged_pixbuf
 
 		# center the image if we're wider than we are tall
-		x, y, w, h = event.area
-		pad = (self.allocation.width - self.size) / 2
+		pad = (self.get_allocation().width - self.size) / 2
 
-		left = max (x, pad)
-		right = min (x + w, pad + self.size)
-		top = y
-		bottom = min (y + h, self.size)
+		left = pad
+		right = pad + self.size
+		top = 0
+		bottom = self.size
 		if right > left and bottom > top:
-			event.window.draw_pixbuf (None, draw_pb, left-pad, top, left, top, right - left, bottom - top)
+			Gdk.cairo_set_source_pixbuf(cr, draw_pb, pad, 0)
+			cr.rectangle(left, top, right - left, bottom - top)
+			cr.fill()
 
 		if self.anim:
 			x, y, w, h = self.anim_rect ()
-			event.window.draw_pixbuf (None, self.anim, max (0, -x), max (0, -y), max (0, x), max (0, y), w, h)
+			Gdk.cairo_set_source_pixbuf(cr, self.anim, max(0, x), max(0, y))
+			cr.rectangle(max(0, x), max(0, y), w, h)
+			cr.fill()
+
 		return False
 
 	def anim_rect (self):
-		return gtk.gdk.Rectangle (
-				(self.allocation.width - self.anim_size) / 2,
-				(self.allocation.height - self.anim_size) / 2,
-				min (self.anim_size, self.allocation.width),
-				min (self.anim_size, self.allocation.height))
+		alloc_width = self.get_allocated_width()
+		alloc_height = self.get_allocated_height()
+		return ((alloc_width - self.anim_size) / 2,
+			(alloc_height - self.anim_size) / 2,
+			min (self.anim_size, alloc_width),
+			min (self.anim_size, alloc_height))
 
 	def ensure_merged_pixbuf (self):
 		if self.merged_pixbuf is None:
-			self.merged_pixbuf = merge_pixbufs (self.old_pixbuf, self.new_pixbuf, self.missing_pixbuf, self.fade_step, self.allocation.width, self.allocation.height)
+			alloc_width = self.get_allocated_width()
+			alloc_height = self.get_allocated_height()
+			self.merged_pixbuf = merge_pixbufs (self.old_pixbuf, self.new_pixbuf, self.missing_pixbuf, self.fade_step, alloc_width, alloc_height)
 		return self.merged_pixbuf
 
 	def render_overlay (self):
@@ -214,7 +225,7 @@ class FadingImage (gtk.Misc):
 		if ret and self.anim:
 			if ret is self.missing_pixbuf: ret = ret.copy ()
 			x, y, w, h = self.anim_rect ()
-			self.anim.composite (ret, max (x, 0), max (y, 0), w, h, x, y, 1, 1, gtk.gdk.INTERP_BILINEAR, 255)
+			self.anim.composite (ret, max (x, 0), max (y, 0), w, h, x, y, 1, 1, GdkPixbuf.InterpType.BILINEAR, 255)
 		return ret
 
 	def fade_art (self, first_time):
@@ -240,11 +251,13 @@ class FadingImage (gtk.Misc):
 		return True
 
 	def set_current_art (self, pixbuf, working):
-		if self.props.visible and self.parent.allocation.width > 1:
+		if self.props.visible and self.get_allocated_width() > 1:
 			self.old_pixbuf = self.render_overlay ()
 		else:
 			self.old_pixbuf = None	# don't fade
-		self.new_pixbuf = merge_with_background (pixbuf, self.style.bg[gtk.STATE_NORMAL], True)
+
+		bgcolor = self.get_style_context().get_background_color(Gtk.StateType.NORMAL)
+		self.new_pixbuf = merge_with_background (pixbuf, bgcolor, True)
 		self.merged_pixbuf = None
 		self.fade_step = 0.0
 		self.anim = None
@@ -259,13 +272,14 @@ class FadingImage (gtk.Misc):
 			gobject.source_remove (self.anim_id)
 			self.anim_id = 0
 		self.queue_resize ()
+
 gobject.type_register (FadingImage)
 
 
 class ArtDisplayWidget (FadingImage):
 	__gsignals__ = {
-			'pixbuf-dropped' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (rhythmdb.Entry, gtk.gdk.Pixbuf)),
-			'uri-dropped' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (rhythmdb.Entry, gobject.TYPE_STRING))
+			'pixbuf-dropped' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (RB.RhythmDBEntry, GdkPixbuf.Pixbuf)),
+			'uri-dropped' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (RB.RhythmDBEntry, gobject.TYPE_STRING))
 			}
 
 	def __init__ (self, missing_image):
@@ -282,27 +296,30 @@ class ArtDisplayWidget (FadingImage):
  		super (ArtDisplayWidget, self).disconnect_handlers ()
 		self.disconnect (self.ddg_id)
 		self.disconnect (self.ddr_id)
-	
-	def update_dnd_targets (self):
-		targets = None
-		if self.current_entry:
-			targets = gtk.target_list_add_image_targets (targets)
-			targets = gtk.target_list_add_uri_targets (targets)
-			targets = gtk.target_list_add_text_targets (targets)
-		if targets:
-			self.drag_dest_set (gtk.DEST_DEFAULT_ALL, targets, gtk.gdk.ACTION_COPY)
-		else:
-			self.drag_dest_unset ()
 
-		targets = None
-		if self.current_pixbuf:
-			targets = gtk.target_list_add_image_targets (targets, writable=True)
-		if self.current_uri:
-			targets = gtk.target_list_add_uri_targets (targets)
-		if targets:
-			self.drag_source_set (gtk.gdk.BUTTON1_MASK, targets, gtk.gdk.ACTION_COPY)
+	def update_dnd_targets (self):
+		# XXX not working yet
+		return
+
+		if self.current_entry:
+			targets = Gtk.TargetList()
+			targets.add_image_targets (0, False)
+			targets.add_uri_targets(0)
+			targets.add_text_targets(0)
+			Gtk.drag_dest_set (self, Gtk.DestDefaults.ALL, targets.list, Gdk.DragAction.COPY)
 		else:
-			self.drag_source_unset ()
+			Gtk.drag_dest_unset (self)
+
+		targets = Gtk.TargetList()
+		if self.current_pixbuf:
+			targets.add_image_targets(0, True)
+		if self.current_uri:
+			targets.add_uri_targets(0)
+		if targets:
+			Gtk.drag_source_set (self, Gdk.ModifierType.BUTTON1_MASK, targets.list, Gdk.DragAction.COPY)
+			pass
+		else:
+			Gtk.drag_source_unset (self)
 
 	def query_tooltip (self, widget, x, y, keyboard_mode, tooltip):
 		if (self.tooltip_image, self.tooltip_text) != (None, None):
@@ -351,9 +368,9 @@ class ArtDisplayWidget (FadingImage):
 gobject.type_register (ArtDisplayWidget)
 
 
-class ArtDisplayPlugin (rb.Plugin):
+class ArtDisplayPlugin (RB.Plugin):
 	def __init__ (self):
-		rb.Plugin.__init__ (self)
+		RB.Plugin.__init__ (self)
 
 	def activate (self, shell):
 		self.shell = shell
@@ -376,9 +393,9 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.art_widget.connect ('uri-dropped', self.on_set_uri)
 		self.art_widget.connect ('get-max-size', self.get_max_art_size)
 		self.art_widget.connect ('button-press-event', self.on_button_press)
-		self.art_container = gtk.VBox ()
-		self.art_container.pack_start (self.art_widget, padding=6)
-		shell.add_widget (self.art_container, rb.SHELL_UI_LOCATION_SIDEBAR)
+		self.art_container = Gtk.VBox ()
+		self.art_container.pack_start (self.art_widget, True, True, 6)
+		shell.add_widget (self.art_container, RB.ShellUILocation.SIDEBAR, False, True)
 		self.art_db = CoverArtDatabase ()
 		self.current_entry, self.current_pixbuf = None, None
 		self.playing_entry_changed (sp, sp.get_playing_entry ())
@@ -396,7 +413,7 @@ class ArtDisplayPlugin (rb.Plugin):
 			db.disconnect (id)
 		self.db_cb_ids = ()
 
-		shell.remove_widget (self.art_container, rb.SHELL_UI_LOCATION_SIDEBAR)
+		shell.remove_widget (self.art_container, RB.ShellUILocation.SIDEBAR)
 		self.art_widget.disconnect_handlers ()
 		self.art_widget = None
 		self.art_db = None
@@ -427,10 +444,10 @@ class ArtDisplayPlugin (rb.Plugin):
 			if tooltip_image is None:
 				pb = None
 			elif tooltip_image.startswith("/"):
-				pb = gtk.gdk.pixbuf_new_from_file(tooltip_image)
+				pb = GdkPixbuf.Pixbuf.new_from_file(tooltip_image)
 			else:
 				f = self.find_file(tooltip_image)
-				pb = gtk.gdk.pixbuf_new_from_file(f)
+				pb = GdkPixbuf.Pixbuf.new_from_file(f)
 			self.art_widget.set (entry, pixbuf, uri, pb, tooltip_text, False)
 
 		if pixbuf:
@@ -461,7 +478,7 @@ class ArtDisplayPlugin (rb.Plugin):
 	def cover_art_notify (self, db, entry, field, metadata):
 		if entry != self.current_entry:
 			return
-		if not isinstance (metadata, gtk.gdk.Pixbuf):
+		if not isinstance (metadata, GdkPixbuf.Pixbuf):
 			return
 		self.art_db.cancel_get_pixbuf (entry)
 		if self.current_pixbuf == metadata:
@@ -488,11 +505,11 @@ class ArtDisplayPlugin (rb.Plugin):
 			return
 
 		uri = str (metadata)
-		def loader_cb (data):
+		def loader_cb_busted (data):
 			if data and len (data) >= 1000:
-				pbl = gtk.gdk.PixbufLoader ()
+				pbl = GdkPixbuf.PixbufLoader ()
 				try:
-					if pbl.write (data) and pbl.close ():
+					if pbl.write (data, len(data)) and pbl.close ():
 						pixbuf = pbl.get_pixbuf ()
 						if pixbuf:
 							self.art_db.cancel_get_pixbuf (entry)
@@ -500,9 +517,24 @@ class ArtDisplayPlugin (rb.Plugin):
 				except GError:
 					pass
 
+		def loader_cb (data):
+			if data and len(data) >= 1000:
+				l = GdkPixbuf.PixbufLoader()
+				l.write(data)
+				l.close()
+				pixbuf = l.get_pixbuf()
+			else:
+				pixbuf = None
+
+			self.art_db.cancel_get_pixbuf (entry)
+			self.on_get_pixbuf_completed (entry, pixbuf, uri, None, None)
+
 		print "got cover art URI notification: %s" % (uri)
+
+		# TODO use GdkPixbuf.new_from_stream_async()
 		l = rb.Loader()
 		l.get_url (uri, loader_cb)
+
 
 	def cover_art_uri_request (self, db, entry):
 		if entry == self.current_entry:
@@ -529,11 +561,13 @@ class ArtDisplayPlugin (rb.Plugin):
 	def on_button_press (self, widget, event):
 		# on double clicks, open the cover image (if there is one) in the default
 		# image viewer
-		if event.type != gtk.gdk._2BUTTON_PRESS or event.button != 1:
+
+		doubleclick = Gdk.EventType._2BUTTON_PRESS
+		if event.type != doubleclick or event.button != 1:
 			return
 
 		if self.art_widget.current_uri is None:
 			return
 
 		f = gio.File(self.art_widget.current_uri)
-		gtk.show_uri(self.shell.props.window.get_screen(), f.get_uri(), event.time)
+		Gtk.show_uri(self.shell.props.window.get_screen(), f.get_uri(), event.time)
