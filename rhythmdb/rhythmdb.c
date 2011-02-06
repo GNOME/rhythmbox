@@ -3294,10 +3294,24 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 	gboolean handled;
 	RhythmDBPodcastFields *podcast = NULL;
+	GValue conv_value = {0,};
 	GValue old_value = {0,};
 	gboolean nop;
 
 	g_return_if_fail (entry != NULL);
+
+	/* convert the value if necessary */
+	if (G_VALUE_TYPE (value) != rhythmdb_get_property_type (db, propid)) {
+		g_value_init (&conv_value, rhythmdb_get_property_type (db, propid));
+		if (g_value_transform (value, &conv_value) == FALSE) {
+			g_warning ("Unable to convert new value for property %s from %s to %s",
+				   rhythmdb_nice_elt_name_from_propid (db, propid),
+				   g_type_name (G_VALUE_TYPE (value)),
+				   g_type_name (rhythmdb_get_property_type (db, propid)));
+			g_assert_not_reached ();
+		}
+		value = &conv_value;
+	}
 
 	/* compare the value with what's already there */
 	g_value_init (&old_value, G_VALUE_TYPE (value));
@@ -3337,8 +3351,12 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 	}
 	g_value_unset (&old_value);
 
-	if (nop)
+	if (nop) {
+		if (value == &conv_value) {
+			g_value_unset (&conv_value);
+		}
 		return;
+	}
 
 	handled = klass->impl_entry_set (db, entry, propid, value);
 
@@ -3554,6 +3572,10 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 			g_assert_not_reached ();
 			break;
 		}
+	}
+
+	if (value == &conv_value) {
+		g_value_unset (&conv_value);
 	}
 
 	/* set the dirty state */
