@@ -647,12 +647,7 @@ AC_ARG_ENABLE([python],
 	AS_HELP_STRING([--enable-python],[Enable python support]),
 	[enable_python=$enableval have_python=$enableval],
 	[enable_python=autodetect have_python=yes])
-if test "x$enable_python" = "xyes"; then
-	AC_MSG_ERROR([Python plugin support is temporarily disabled])
-fi
-enable_python=no
-have_python=no
-AC_MSG_RESULT([no, Python plugin support is temporarily disabled])
+AC_MSG_RESULT([$have_python])
 
 if test "x$have_python" != "xyes"; then
 	if test "x$enable_python" = "xyes"; then
