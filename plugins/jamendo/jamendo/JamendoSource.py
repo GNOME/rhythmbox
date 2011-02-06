@@ -21,17 +21,18 @@
 # Parts from "Magnatune Rhythmbox plugin" (stolen from rhythmbox's MagnatuneSource.py)
 #     Copyright (C), 2006 Adam Zimmerman <adam_zimmerman@sfu.ca>
 
-import rb, rhythmdb
-from JamendoSaxHandler import JamendoSaxHandler
-import JamendoConfigureDialog
-
 import os
 import gobject
-import gtk
-import gnome, gconf
 import xml
 import gzip
 import datetime
+
+import rb
+from gi.repository import Gtk, Gdk, GConf
+from gi.repository import RB
+
+from JamendoSaxHandler import JamendoSaxHandler
+import JamendoConfigureDialog
 
 # URIs
 
@@ -52,14 +53,14 @@ ogg3_uri = "http://api.jamendo.com/get2/bittorrent/file/plain/?type=archive&clas
 artwork_url = "http://api.jamendo.com/get2/image/album/redirect/?id=%s&imagesize=200"
 artist_url = "http://www.jamendo.com/get/artist/id/album/page/plain/"
 
-class JamendoSource(rb.BrowserSource):
+class JamendoSource(RB.BrowserSource):
 	__gproperties__ = {
-		'plugin': (rb.Plugin, 'plugin', 'plugin', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
+		'plugin': (RB.Plugin, 'plugin', 'plugin', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
 	}
 
 	def __init__(self):
 
-		rb.BrowserSource.__init__(self, name=_("Jamendo"))
+		RB.BrowserSource.__init__(self, name=_("Jamendo"))
 
 		# catalogue stuff
 		self.__db = None
@@ -76,7 +77,7 @@ class JamendoSource(rb.BrowserSource):
 		self.__catalogue_loader = None
 		self.__catalogue_check = None
 
-		self.__jamendo_dir = rb.find_user_cache_file("jamendo")
+		self.__jamendo_dir = RB.find_user_cache_file("jamendo")
 		if os.path.exists(self.__jamendo_dir) is False:
 			os.makedirs(self.__jamendo_dir, 0700)
 
@@ -99,9 +100,9 @@ class JamendoSource(rb.BrowserSource):
 		return False
 
 	def do_impl_pack_paned (self, paned):
-		self.__paned_box = gtk.VBox(False, 5)
-		self.pack_start(self.__paned_box)
-		self.__paned_box.pack_start(paned)
+		self.__paned_box = Gtk.VBox(homogeneous=False, spacing=5)
+		self.pack_start(self.__paned_box, True, True, 0)
+		self.__paned_box.pack_start(paned, True, True, 0)
 
 	#
 	# RBSource methods
@@ -114,7 +115,7 @@ class JamendoSource(rb.BrowserSource):
 		return ["JamendoDownloadAlbum","JamendoDonateArtist"]
 
 
-	def do_get_status(self):
+	def do_get_status(self, status, progress_text, progress):
 		if self.__updating:
 			if self.__load_total_size > 0:
 				progress = min (float(self.__load_current_size) / self.__load_total_size, 1.0)
@@ -138,7 +139,7 @@ class JamendoSource(rb.BrowserSource):
 			self.__update_id = gobject.timeout_add_seconds(6 * 60 * 60, self.__update_catalogue)
 			self.__update_catalogue()
 
-			sort_key = gconf.client_get_default().get_string(JamendoConfigureDialog.gconf_keys['sorting'])
+			sort_key = GConf.Client.get_default().get_string(JamendoConfigureDialog.gconf_keys['sorting'])
 			if not sort_key:
 				sort_key = "Artist,ascending"
 			self.get_entry_view().set_sorting_type(sort_key)
@@ -161,7 +162,7 @@ class JamendoSource(rb.BrowserSource):
 			self.__catalogue_check.cancel()
 			self.__catalogue_check = None
 
-		gconf.client_get_default().set_string(JamendoConfigureDialog.gconf_keys['sorting'], self.get_entry_view().get_sorting_type())
+		GConf.Client.get_default().set_string(JamendoConfigureDialog.gconf_keys['sorting'], self.get_entry_view().get_sorting_type())
 
 
 	#
@@ -256,11 +257,11 @@ class JamendoSource(rb.BrowserSource):
 	def __show_loading_screen(self, show):
 		if self.__info_screen is None:
 			# load the builder stuff
-			builder = gtk.Builder()
+			builder = Gtk.Builder()
 			builder.add_from_file(self.__plugin.find_file("jamendo-loading.ui"))
 
 			self.__info_screen = builder.get_object("jamendo_loading_scrolledwindow")
-			self.pack_start(self.__info_screen)
+			self.pack_start(self.__info_screen, True, True, 0)
 			self.get_entry_view().set_no_show_all (True)
 			self.__info_screen.set_no_show_all (True)
 
@@ -281,7 +282,7 @@ class JamendoSource(rb.BrowserSource):
 	# Download album
 	def download_album (self):
 		tracks = self.get_entry_view().get_selected_entries()
-		format = gconf.client_get_default().get_string(JamendoConfigureDialog.gconf_keys['format'])
+		format = GConf.Client.get_default().get_string(JamendoConfigureDialog.gconf_keys['format'])
 		if not format or format not in JamendoConfigureDialog.format_list:
 			format = 'ogg3'
 
@@ -289,7 +290,7 @@ class JamendoSource(rb.BrowserSource):
 		#without any track selected
 		if len(tracks) == 1:
 			track = tracks[0]
-			albumid = self.__db.entry_get(track, rhythmdb.PROP_MUSICBRAINZ_ALBUMID)
+			albumid = track.get_string(RB.RhythmDBPropType.MB_ALBUMID)
 
 			formats = {}
 			formats["mp32"] = mp32_uri + albumid
@@ -302,10 +303,10 @@ class JamendoSource(rb.BrowserSource):
 	def __download_p2plink (self, result, albumid):
 		if result is None:
 			emsg = _("Error looking up p2plink for album %s on jamendo.com") % (albumid)
-			gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, emsg).run()
+			Gtk.MessageDialog(None, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, emsg).run()
 			return
 
-		gtk.show_uri(self.props.shell.props.window.get_screen(), result, gtk.gdk.CURRENT_TIME)
+		Gtk.show_uri(self.props.shell.props.window.get_screen(), result, Gdk.CURRENT_TIME)
 
 	# Donate to Artist
 	def launch_donate (self):
@@ -316,8 +317,8 @@ class JamendoSource(rb.BrowserSource):
 		if len(tracks) == 1:
 			track = tracks[0]
 			# The Album ID can be used to lookup the artist, and issue a clean redirect.
-			albumid = self.__db.entry_get(track, rhythmdb.PROP_MUSICBRAINZ_ALBUMID)
-			artist = self.__db.entry_get(track, rhythmdb.PROP_ARTIST)
+			albumid = track.get_string(RB.RhythmDBPropType.MB_ALBUMID)
+			artist = track.get_string(RB.RhythmDBPropType.ARTIST)
 			url = artist_url + albumid.__str__() + "/"
 
 			l = rb.Loader()
@@ -326,9 +327,9 @@ class JamendoSource(rb.BrowserSource):
 	def __open_donate (self, result, artist):
 		if result is None:
 			emsg = _("Error looking up artist %s on jamendo.com") % (artist)
-			gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, emsg).run()
+			Gtk.MessageDialog(None, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, emsg).run()
 			return
-		gtk.show_uri(self.props.shell.props.window.get_screen(), result + "donate/", gtk.gdk.CURRENT_TIME)
+		Gtk.show_uri(self.props.shell.props.window.get_screen(), result + "donate/", Gdk.CURRENT_TIME)
 
 	def playing_entry_changed (self, entry):
 		if not self.__db or not entry:
@@ -340,12 +341,11 @@ class JamendoSource(rb.BrowserSource):
 		gobject.idle_add(self.emit_cover_art_uri, entry)
 
 	def emit_cover_art_uri (self, entry):
-		stream = self.__db.entry_get (entry, rhythmdb.PROP_LOCATION)
-		albumid = self.__db.entry_get (entry, rhythmdb.PROP_MUSICBRAINZ_ALBUMID)
+		stream = self.__db.entry_get_string (entry, RB.RhythmDBPropType.LOCATION)
+		albumid = self.__db.entry_get_string (entry, RB.RhythmDBPropType.MB_ALBUMID)
 		url = artwork_url % albumid
 
 		self.__db.emit_entry_extra_metadata_notify (entry, "rb:coverArt-uri", str(url))
 		return False
 
 gobject.type_register(JamendoSource)
-

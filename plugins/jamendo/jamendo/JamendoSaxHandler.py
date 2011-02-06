@@ -18,15 +18,21 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-import rhythmdb
 import xml.sax, xml.sax.handler
 import datetime
+import codecs
+
+import rb
+from gi.repository import RB
 
 data = {"artist" : ["name"],
         "album" : ["name","id","releasedate","id3genre"],
         "track" : ["name","id","numalbum","duration","id3genre"]}
         
 stream_url = "http://api.jamendo.com/get2/stream/track/redirect/?id=%s&streamencoding=mp31"
+
+def utf8ise(s):
+	return codecs.utf_8_encode(s)[0]
 
 class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def __init__(self,db,entry_type):
@@ -73,18 +79,18 @@ class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 			
 			entry = self.__db.entry_lookup_by_location (track_url)
 			if entry == None:
-				entry = self.__db.entry_new(self.__entry_type, track_url)
-			self.__db.set(entry, rhythmdb.PROP_ARTIST, self.__data["artist"]["name"])
-			self.__db.set(entry, rhythmdb.PROP_ALBUM, self.__data["album"]["name"])
-			self.__db.set(entry, rhythmdb.PROP_TITLE, self.__data["track"]["name"])
-			self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, int(self.__data["track"]["numalbum"]))
-			self.__db.set(entry, rhythmdb.PROP_DATE, date)
-			self.__db.set(entry, rhythmdb.PROP_GENRE, albumgenre)
-			self.__db.set(entry, rhythmdb.PROP_DURATION, duration)
+				entry = RB.RhythmDBEntry.new(self.__db, self.__entry_type, track_url)
+			self.__db.entry_set(entry, RB.RhythmDBPropType.ARTIST, utf8ise(self.__data["artist"]["name"]))
+			self.__db.entry_set(entry, RB.RhythmDBPropType.ALBUM, utf8ise(self.__data["album"]["name"]))
+			self.__db.entry_set(entry, RB.RhythmDBPropType.TITLE, utf8ise(self.__data["track"]["name"]))
+			self.__db.entry_set(entry, RB.RhythmDBPropType.TRACK_NUMBER, int(self.__data["track"]["numalbum"]))
+			self.__db.entry_set(entry, RB.RhythmDBPropType.DATE, date)
+			self.__db.entry_set(entry, RB.RhythmDBPropType.GENRE, albumgenre)
+			self.__db.entry_set(entry, RB.RhythmDBPropType.DURATION, duration)
 
 			# slight misuse, but this is far more efficient than having a python dict
 			# containing this data.
-			self.__db.set(entry, rhythmdb.PROP_MUSICBRAINZ_ALBUMID, self.__data["album"]["id"])
+			self.__db.entry_set(entry, RB.RhythmDBPropType.MB_ALBUMID, utf8ise(self.__data["album"]["id"]))
 			
 			if self.__num_tracks % 1000 == 0:
 				self.__db.commit()

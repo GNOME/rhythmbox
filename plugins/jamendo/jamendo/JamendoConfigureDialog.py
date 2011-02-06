@@ -19,8 +19,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import gobject
-import gtk
-import gconf, gnome
+
+import rb
+from gi.repository import Gtk, GConf
 
 gconf_keys = {	'format' : '/apps/rhythmbox/plugins/jamendo/format',
 		'sorting': '/apps/rhythmbox/plugins/jamendo/sorting'
@@ -29,9 +30,9 @@ format_list = ['ogg3', 'mp32']
 
 class JamendoConfigureDialog (object):
 	def __init__(self, builder_file):
-		self.gconf = gconf.client_get_default()
+		self.gconf = GConf.Client.get_default()
 
-		builder = gtk.Builder()
+		builder = Gtk.Builder()
 		builder.add_from_file(builder_file)
 
 		self.dialog = builder.get_object('preferences_dialog')

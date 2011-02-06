@@ -29,12 +29,14 @@
 # Parts from "Magnatune Rhythmbox plugin" (stolen from rhythmbox's __init__.py)
 #     Copyright (C), 2006 Adam Zimmerman <adam_zimmerman@sfu.ca>
 
-import rhythmdb, rb
 import gobject
-import gtk
 
 from JamendoSource import JamendoSource
 from JamendoConfigureDialog import JamendoConfigureDialog
+
+import rb
+from gi.repository import Gtk
+from gi.repository import RB
 
 popup_ui = """
 <ui>
@@ -52,20 +54,23 @@ popup_ui = """
 </ui>
 """
 
-class JamendoEntryType(rhythmdb.EntryType):
+class JamendoEntryType(RB.RhythmDBEntryType):
 	def __init__(self):
-		rhythmdb.EntryType.__init__(self, name='jamendo')
+		RB.RhythmDBEntryType.__init__(self, name="jamendo")
 
-	def can_sync_metadata(self, entry):
+	def do_can_sync_metadata(self, entry):
 		return True
 
-class Jamendo(rb.Plugin):
+	def do_sync_metadata(self, entry, changes):
+		return
+
+class Jamendo(RB.Plugin):
 	#
 	# Core methods
 	#
 
 	def __init__(self):
-		rb.Plugin.__init__(self)
+		RB.Plugin.__init__(self)
 
 	def activate(self, shell):
 		self.db = shell.get_property("db")
@@ -73,13 +78,13 @@ class Jamendo(rb.Plugin):
 		self.entry_type = JamendoEntryType()
 		self.db.register_entry_type(self.entry_type)
 
-		theme = gtk.icon_theme_get_default()
+		theme = Gtk.IconTheme.get_default()
 		rb.append_plugin_source_path(theme, "/icons/")
 
-		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
+		what, width, height = Gtk.icon_size_lookup(Gtk.IconSize.LARGE_TOOLBAR)
 		icon = rb.try_load_icon(theme, "jamendo", width, 0)
 
-		group = rb.rb_display_page_group_get_by_id ("stores")
+		group = RB.DisplayPageGroup.get_by_id ("stores")
 		self.source = gobject.new (JamendoSource,
 					   shell=shell,
 					   entry_type=self.entry_type,
@@ -90,17 +95,17 @@ class Jamendo(rb.Plugin):
 
 		# Add button
 		manager = shell.get_player().get_property('ui-manager')
-		action = gtk.Action('JamendoDownloadAlbum', _('_Download Album'),
-				_("Download this album using BitTorrent"),
-				'gtk-save')
+		action = Gtk.Action(name='JamendoDownloadAlbum', label=_('_Download Album'),
+				tooltip=_("Download this album using BitTorrent"),
+				stock_id='gtk-save')
 		action.connect('activate', lambda a: shell.get_property("selected-page").download_album())
-		self.action_group = gtk.ActionGroup('JamendoPluginActions')
+		self.action_group = Gtk.ActionGroup('JamendoPluginActions')
 		self.action_group.add_action(action)
 		
 		# Add Button for Donate
-		action = gtk.Action('JamendoDonateArtist', _('_Donate to Artist'),
-				_("Donate Money to this Artist"),
-				'gtk-jump-to')
+		action = Gtk.Action(name='JamendoDonateArtist', label=_('_Donate to Artist'),
+				tooltip=_("Donate Money to this Artist"),
+				stock_id='gtk-jump-to')
 		action.connect('activate', lambda a: shell.get_property("selected-page").launch_donate())
 		self.action_group.add_action(action)
 
@@ -135,4 +140,3 @@ class Jamendo(rb.Plugin):
 
 	def playing_entry_changed (self, sp, entry):
 		self.source.playing_entry_changed (entry)
-
