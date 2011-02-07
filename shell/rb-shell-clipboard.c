@@ -978,8 +978,10 @@ add_playlist_to_menu (GtkTreeModel *model,
 	g_object_get (page, "entry-type", &source_entry_type, NULL);
 	if (source_entry_type != entry_type) {
 		g_object_unref (page);
-		g_object_unref (entry_type);
-		g_object_unref (source_entry_type);
+		if (entry_type)
+			g_object_unref (entry_type);
+		if (source_entry_type)
+			g_object_unref (source_entry_type);
 		return FALSE;
 	}
 
