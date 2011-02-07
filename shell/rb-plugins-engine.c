@@ -148,6 +148,12 @@ rb_plugins_engine_load (const gchar *file)
 				     NULL);
 	if (str) {
 		info->location = str;
+
+		/* FIXME:
+		 * Blacklist a few plugins that we know not to work,
+		 * and cause crashes */
+		if (g_str_equal (str, "upnp_coherence"))
+			goto error;
 	} else {
 		g_warning ("Could not find 'Module' in %s", file);
 		goto error;
