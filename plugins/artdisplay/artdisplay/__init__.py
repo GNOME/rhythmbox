@@ -96,7 +96,8 @@ class FadingImage (Gtk.Misc):
 		self.sc_id = self.connect('screen-changed', self.screen_changed)
 		self.sa_id = self.connect('size-allocate', self.size_allocate_cb)
 		self.resize_id, self.fade_id, self.anim_id = 0, 0, 0
-		self.missing_image, self.size = missing_image, 100
+		self.missing_image = missing_image
+		self.size = 100
 		self.screen_changed (self, None)
 		self.old_pixbuf, self.new_pixbuf = None, None
 		self.merged_pixbuf, self.missing_pixbuf = None, None
@@ -151,20 +152,11 @@ class FadingImage (Gtk.Misc):
 		self.missing_pixbuf = merge_with_background (missing_pixbuf, bgcolor, False)
 
 	def size_allocate_cb (self, widget, allocation):
-		#old_width = self.get_allocated_width()
-
 		if self.resize_id == 0:
 			self.resize_id = gobject.idle_add (self.after_resize)
 
-		#if old_width != allocation.width:
-		# XXX possibly use adjust_size_allocation instead?
 		max_size = self.emit ('get-max-size')
 		self.size = min (self.get_allocated_width (), max_size)
-		self.queue_resize ()
-		#elif self.get_window() is not None:
-		#	self.get_window().move_resize (allocation.x, allocation.y, allocation.width, allocation.height)
-		#	self.queue_draw ()
-		#	self.get_window().process_updates (True)
 
 	def after_resize (self):
 		self.reload_util_pixbufs ()
@@ -173,8 +165,17 @@ class FadingImage (Gtk.Misc):
 		self.queue_draw ()
 		return False
 
-	def do_get_preferred_height(self):
-		return (self.size, self.size)
+	def do_get_request_mode(self):
+		return Gtk.SizeRequestMode.HEIGHT_FOR_WIDTH
+
+	def do_get_preferred_width(self):
+		# maybe set minimum width here?
+		return (0, 0)
+
+	def do_get_preferred_height_for_width(self, width):
+		max_size = self.emit ('get-max-size')
+		size = min(self.get_allocated_width(), max_size)
+		return (size, size)
 
 	def do_draw (self, cr):
 		if not self.ensure_merged_pixbuf ():
