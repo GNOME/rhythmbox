@@ -2,6 +2,7 @@
 
 # Copyright © 2009 Markus Korn <thekorn@gmx.de>
 # Copyright © 2010 Laszlo Pandy <laszlok2@gmail.com>
+# Copyright © 2011 Michal Hruby <michal.mhr@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,8 +26,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import gobject
 import time
+import gobject
+import gio
 
 from gi.repository import RB
 
@@ -45,7 +47,7 @@ class ZeitgeistPlugin(RB.Plugin):
         RB.Plugin.__init__(self)
 
     def activate(self, shell):
-        print "LOADING Zeitgeist plugin ......"
+        print "Loading Zeitgeist plugin..."
         if IFACE is not None:
             shell_player = shell.get_player()
             self.__psc_id = shell_player.connect("playing-song-changed", self.playing_song_changed)
@@ -58,18 +60,18 @@ class ZeitgeistPlugin(RB.Plugin):
             self._shell = shell
 
             if IFACE.get_version() >= [0, 3, 2, 999]:
-                IFACE.register_data_source("5463", "Rhythmbox", "Play and organize your music collection",
-                                            [Event.new_for_values(actor="application://rhythmbox.desktop")]
-                                            )
+                IFACE.register_data_source("org.gnome.Rhythmbox,dataprovider", "Rhythmbox", "Play and organize your music collection",
+                                           [Event.new_for_values(actor="application://rhythmbox.desktop")])
 
     @staticmethod
     def get_song_info(db, entry):
+        # we don't want the PROP_MIMETYPE, as it doesn't contain mimetype
+        # of the audio file itself
         song = {
             "album": entry.get_string(RB.RhythmDBPropType.PROP_ALBUM),
             "artist": entry.get_string(RB.RhythmDBPropType.PROP_ARTIST),
             "title":  entry.get_string(RB.RhythmDBPropType.PROP_TITLE),
-            "location": entry.get_string(RB.RhythmDBPropType.PROP_LOCATION),
-            "mimetype": entry.get_string(RB.RhythmDBPropType.PROP_MIMETYPE),
+            "location": entry.get_playback_uri(),
         }
         return song
 
@@ -116,26 +118,36 @@ class ZeitgeistPlugin(RB.Plugin):
         else:
             manifest = Manifestation.SCHEDULED_ACTIVITY
 
-        subject = Subject.new_for_values(
-            uri=song["location"],
-            interpretation=unicode(Interpretation.AUDIO),
-            manifestation=unicode(Manifestation.FILE_DATA_OBJECT),
-            #~ origin="", #TBD
-            mimetype=song["mimetype"],
-            text=" - ".join([song["title"], song["artist"], song["album"]])
-        )
-        event = Event.new_for_values(
-            timestamp=int(time.time()*1000),
-            interpretation=unicode(event_type),
-            manifestation=unicode(manifest),
-            actor="application://rhythmbox.desktop",
-            subjects=[subject,]
-        )
-        #print event
-        IFACE.insert_event(event)
+        def file_info_complete(obj, res, user_data = None):
+            try:
+                fi = obj.query_info_finish(res)
+            except:
+                return
+
+            uri_mimetype = fi.get_content_type()
+
+            subject = Subject.new_for_values(
+                uri=song["location"],
+                interpretation=unicode(Interpretation.AUDIO),
+                manifestation=unicode(Manifestation.FILE_DATA_OBJECT),
+                origin=song["location"].rpartition("/")[0],
+                mimetype=uri_mimetype,
+                text=" - ".join([song["title"], song["artist"], song["album"]])
+            )
+            event = Event.new_for_values(
+                timestamp=int(time.time()*1000),
+                interpretation=unicode(event_type),
+                manifestation=unicode(manifest),
+                actor="application://rhythmbox.desktop",
+                subjects=[subject,]
+            )
+            IFACE.insert_event(event)
+
+        f = gio.File(song["location"])
+        f.query_info_async(gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE, file_info_complete)
 
     def deactivate(self, shell):
-        print "UNLOADING Zeitgeist plugin ......."
+        print "Unloading Zeitgeist plugin..."
         if IFACE is not None:
             shell_player = shell.get_player()
             shell_player.disconnect(self.__psc_id)
