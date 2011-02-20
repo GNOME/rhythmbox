@@ -107,6 +107,7 @@ RBShell *	rb_shell_new		(gboolean no_registration,
 					 gboolean no_update,
 					 gboolean dry_run,
 					 gboolean autostarted,
+					 gboolean disable_plugins,
 					 char *rhythmdb,
 					 char *playlists);
 

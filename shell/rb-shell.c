@@ -252,7 +252,8 @@ enum
 	PROP_SOURCE_HEADER,
 	PROP_VISIBILITY,
 	PROP_TRACK_TRANSFER_QUEUE,
-	PROP_AUTOSTARTED
+	PROP_AUTOSTARTED,
+	PROP_DISABLE_PLUGINS
 };
 
 /* prefs */
@@ -321,6 +322,7 @@ struct _RBShellPrivate
 	gboolean no_update;
 	gboolean dry_run;
 	gboolean autostarted;
+	gboolean disable_plugins;
 	char *rhythmdb_file;
 	char *playlists_file;
 
@@ -730,6 +732,19 @@ rb_shell_class_init (RBShellClass *klass)
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	/**
+	 * RBShell:disable-plugins:
+	 *
+	 * If %TRUE, disable plugins
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_DISABLE_PLUGINS,
+					 g_param_spec_boolean ("disable-plugins",
+							       "disable-plugins",
+							       "Whether or not to disable plugins",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	/**
 	 * RBShell::visibility-changed:
 	 * @shell: the #RBShell
 	 * @visibile: new visibility
@@ -915,6 +930,9 @@ rb_shell_set_property (GObject *object,
 	case PROP_AUTOSTARTED:
 		shell->priv->autostarted = g_value_get_boolean (value);
 		break;
+	case PROP_DISABLE_PLUGINS:
+		shell->priv->disable_plugins = g_value_get_boolean (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1007,6 +1025,9 @@ rb_shell_get_property (GObject *object,
 		break;
 	case PROP_AUTOSTARTED:
 		g_value_set_boolean (value, shell->priv->autostarted);
+		break;
+	case PROP_DISABLE_PLUGINS:
+		g_value_set_boolean (value, shell->priv->disable_plugins);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1152,6 +1173,7 @@ rb_shell_finalize (GObject *object)
  * @no_update: if %TRUE, don't update the database file
  * @dry_run: if %TRUE, don't write back file metadata changes
  * @autostarted: %TRUE if autostarted by the session manager
+ * @disable_plugins: %TRUE if the plugins should be disabled
  * @rhythmdb: path to the database file
  * @playlists: path to the playlist file
  *
@@ -1165,6 +1187,7 @@ rb_shell_new (gboolean no_registration,
 	      gboolean no_update,
 	      gboolean dry_run,
 	      gboolean autostarted,
+	      gboolean disable_plugins,
 	      char *rhythmdb,
 	      char *playlists)
 {
@@ -1174,6 +1197,7 @@ rb_shell_new (gboolean no_registration,
 			  "dry-run", dry_run, "rhythmdb-file", rhythmdb,
 			  "playlists-file", playlists,
 			  "autostarted", autostarted,
+			  "disable-plugins", disable_plugins,
 			  NULL);
 }
 
@@ -1620,7 +1644,8 @@ rb_shell_constructed (GObject *object)
 
 	rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
 
-	rb_plugins_engine_init (shell);
+	if (!shell->priv->disable_plugins)
+		rb_plugins_engine_init (shell);
 
 	/* by now we've added the built in sources and any sources from plugins,
 	 * so we can consider the fixed page groups loaded

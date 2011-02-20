@@ -87,6 +87,7 @@ static gboolean quit            = FALSE;
 static gboolean no_registration = FALSE;
 static gboolean no_update	= FALSE;
 static gboolean dry_run		= FALSE;
+static gboolean disable_plugins  = FALSE;
 static char *rhythmdb_file	= NULL;
 static char *playlists_file	= NULL;
 static char **remaining_args    = NULL;
@@ -116,6 +117,7 @@ main (int argc, char **argv)
 		{ "no-update",	       0, 0, G_OPTION_ARG_NONE,         &no_update,       N_("Do not update the library with file changes"), NULL },
 		{ "no-registration", 'n', 0, G_OPTION_ARG_NONE,         &no_registration, N_("Do not register the shell"), NULL },
 		{ "dry-run",	       0, 0, G_OPTION_ARG_NONE,         &dry_run,         N_("Don't save any data permanently (implies --no-registration)"), NULL },
+		{ "disable-plugins",   0, 0, G_OPTION_ARG_NONE,         &disable_plugins, N_("Disable loading of plugins"), NULL },
 		{ "rhythmdb-file",     0, 0, G_OPTION_ARG_STRING,       &rhythmdb_file,   N_("Path for database file to use"), NULL },
 		{ "playlists-file",    0, 0, G_OPTION_ARG_STRING,       &playlists_file,   N_("Path for playlists file to use"), NULL },
 		{ "quit",	     'q', 0, G_OPTION_ARG_NONE,         &quit,            N_("Quit Rhythmbox"), NULL },
@@ -278,7 +280,7 @@ main (int argc, char **argv)
 
 		g_setenv ("PULSE_PROP_media.role", "music", TRUE);
 
-		rb_shell = rb_shell_new (no_registration, no_update, dry_run, autostarted, rhythmdb_file, playlists_file);
+		rb_shell = rb_shell_new (no_registration, no_update, dry_run, autostarted, disable_plugins, rhythmdb_file, playlists_file);
 		g_object_weak_ref (G_OBJECT (rb_shell), main_shell_weak_ref_cb, NULL);
 		if (!no_registration && session_bus != NULL) {
 			GObject *obj;
