@@ -48,7 +48,7 @@ GTK_REQS=2.91.4
 DBUS_MIN_REQS=0.35
 GST_0_10_REQS=0.10.20
 GDK_PIXBUF_REQS=2.18.0
-GLIB_REQS=2.18.0
+GLIB_REQS=2.26.0
 LIBGPOD_REQS=0.6
 MUSICBRAINZ_REQS=2.1.0
 MUSICBRAINZ3_REQS=3.0.2
@@ -59,7 +59,6 @@ LIBSOUP_REQS=2.26.0
 GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
 PYGOBJECT_REQUIRED=2.15.4
-GLIB_GDBUS_REQS=2.25.12
 
 GNOME_MEDIA_PROFILES_REQS=2.91.0
 LIBNOTIFY_REQS=0.5.1
@@ -113,10 +112,6 @@ else
        AC_MSG_ERROR([totem playlist parsing library has Podcast parsing disabled])
    fi
 fi
-
-dnl check for GDBus
-PKG_CHECK_EXISTS(glib-2.0 >= $GLIB_GDBUS_REQS, [have_gdbus=yes], [have_gdbus=no])
-AM_CONDITIONAL(USE_GDBUS, test x"$have_gdbus" = xyes)
 
 dnl gudev
 AC_ARG_WITH(gudev,

@@ -1,8 +1,10 @@
 SUBDIRS = 						\
 	audiocd						\
+	dbus-media-server				\
 	generic-player					\
 	iradio						\
 	mmkeys						\
+	mpris						\
 	power-manager					\
 	sample						\
 	status-icon					\
@@ -52,12 +54,6 @@ endif
 
 if ENABLE_FM_RADIO
 SUBDIRS += fmradio
-endif
-
-if USE_GDBUS
-SUBDIRS += 						\
-	dbus-media-server				\
-	mpris
 endif
 
 if ENABLE_LASTFM
