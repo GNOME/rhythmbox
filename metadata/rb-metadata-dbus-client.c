@@ -51,7 +51,6 @@
  * @short_description: metadata reader and writer interface
  *
  * Provides a simple synchronous interface for metadata extraction and updating.
- *
  */
 
 #include <config.h>
@@ -61,10 +60,8 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 
-#include <dbus/dbus.h>
-#include <dbus/dbus-glib.h>
-#include <dbus/dbus-glib-lowlevel.h>
 #include <glib/gi18n.h>
+#include <gio/gio.h>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -78,7 +75,7 @@ static void rb_metadata_init (RBMetaData *md);
 static void rb_metadata_finalize (GObject *object);
 
 static gboolean tried_env_address = FALSE;
-static DBusConnection *dbus_connection = NULL;
+static GDBusConnection *dbus_connection = NULL;
 static GPid metadata_child = 0;
 static int metadata_stdout = -1;
 static GMainContext *main_context = NULL;
@@ -147,13 +144,13 @@ static void
 kill_metadata_service (void)
 {
 	if (dbus_connection) {
-		if (dbus_connection_get_is_connected (dbus_connection)) {
+		if (g_dbus_connection_is_closed (dbus_connection) == FALSE) {
 			rb_debug ("closing dbus connection");
-			dbus_connection_close (dbus_connection);
+			g_dbus_connection_close_sync (dbus_connection, NULL, NULL);
 		} else {
 			rb_debug ("dbus connection already closed");
 		}
-		dbus_connection_unref (dbus_connection);
+		g_object_unref (dbus_connection);
 		dbus_connection = NULL;
 	}
 
@@ -174,47 +171,44 @@ kill_metadata_service (void)
 static gboolean
 ping_metadata_service (GError **error)
 {
-	DBusMessage *message, *response;
-	DBusError dbus_error = {0,};
+	GDBusMessage *message;
+	GDBusMessage *response;
 
-	if (!dbus_connection_get_is_connected (dbus_connection))
+	if (g_dbus_connection_is_closed (dbus_connection))
 		return FALSE;
 
-	message = dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
-						RB_METADATA_DBUS_OBJECT_PATH,
-						RB_METADATA_DBUS_INTERFACE,
-						"ping");
-	if (!message) {
-		return FALSE;
-	}
-	response = dbus_connection_send_with_reply_and_block (dbus_connection,
-							      message,
-							      RB_METADATA_DBUS_TIMEOUT,
-							      &dbus_error);
-	dbus_message_unref (message);
-	if (dbus_error_is_set (&dbus_error)) {
-		/* ignore 'no reply': just means the service is dead */
-		if (strcmp (dbus_error.name, DBUS_ERROR_NO_REPLY)) {
-			dbus_set_g_error (error, &dbus_error);
+	message = g_dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
+						  RB_METADATA_DBUS_OBJECT_PATH,
+						  RB_METADATA_DBUS_INTERFACE,
+						  "ping");
+	response = g_dbus_connection_send_message_with_reply_sync (dbus_connection,
+								   message,
+								   G_DBUS_MESSAGE_FLAGS_NONE,
+								   RB_METADATA_DBUS_TIMEOUT,
+								   NULL,
+								   NULL,
+								   error);
+	g_object_unref (message);
+
+	if (*error != NULL) {
+		/* ignore 'no reply', just means the service is dead */
+		if ((*error)->domain == G_DBUS_ERROR && (*error)->code == G_DBUS_ERROR_NO_REPLY) {
+			g_clear_error (error);
 		}
-		dbus_error_free (&dbus_error);
 		return FALSE;
 	}
-	dbus_message_unref (response);
+	g_object_unref (response);
 	return TRUE;
 }
 
 static gboolean
 start_metadata_service (GError **error)
 {
-	DBusError dbus_error = {0,};
-	DBusMessage *message;
-	DBusMessage *response;
-	DBusMessageIter iter;
 	GIOChannel *stdout_channel;
 	GIOStatus status;
 	gchar *dbus_address = NULL;
 	char *saveable_type_list;
+	GVariant *response_body;
 
 	if (dbus_connection) {
 		if (ping_metadata_service (error))
@@ -298,18 +292,18 @@ start_metadata_service (GError **error)
 		rb_debug ("Got metadata helper D-BUS address %s", dbus_address);
 	}
 
-	dbus_connection = dbus_connection_open_private (dbus_address, &dbus_error);
+	dbus_connection = g_dbus_connection_new_for_address_sync (dbus_address,
+								  G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT,
+								  NULL,
+								  NULL,
+								  error);
 	g_free (dbus_address);
-	if (!dbus_connection) {
+	if (*error != NULL) {
 		kill_metadata_service ();
-
-		dbus_set_g_error (error, &dbus_error);
-		dbus_error_free (&dbus_error);
 		return FALSE;
 	}
-	dbus_connection_set_exit_on_disconnect (dbus_connection, FALSE);
 
-	dbus_connection_setup_with_g_main (dbus_connection, main_context);
+	g_dbus_connection_set_exit_on_close (dbus_connection, FALSE);
 
 	rb_debug ("Metadata process %d started", metadata_child);
 
@@ -318,37 +312,23 @@ start_metadata_service (GError **error)
 		g_strfreev (saveable_types);
 	}
 
-	message = dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
-						RB_METADATA_DBUS_OBJECT_PATH,
-						RB_METADATA_DBUS_INTERFACE,
-						"getSaveableTypes");
-	if (!message) {
-		/* what now? */
-		rb_debug ("unable to query metadata helper for saveable types");
+	response_body = g_dbus_connection_call_sync (dbus_connection,
+						     RB_METADATA_DBUS_NAME,
+						     RB_METADATA_DBUS_OBJECT_PATH,
+						     RB_METADATA_DBUS_INTERFACE,
+						     "getSaveableTypes",
+						     NULL,
+						     NULL,
+						     G_DBUS_CALL_FLAGS_NONE,
+						     RB_METADATA_DBUS_TIMEOUT,
+						     NULL,
+						     error);
+	if (response_body == NULL) {
+		rb_debug ("saveable type query failed: %s", (*error)->message);
 		return FALSE;
 	}
 
-	rb_debug ("sending metadata saveable types query");
-	response = dbus_connection_send_with_reply_and_block (dbus_connection,
-							      message,
-							      RB_METADATA_DBUS_TIMEOUT,
-							      &dbus_error);
-
-	if (!response) {
-		rb_debug ("saveable type query failed");
-		return FALSE;
-	}
-
-	if (!dbus_message_iter_init (response, &iter)) {
-		rb_debug ("couldn't read saveable type query response");
-		return FALSE;
-	}
-
-	if (!rb_metadata_dbus_get_strv (&iter, &saveable_types)) {
-		rb_debug ("couldn't get saveable type data from response message");
-		return FALSE;
-	}
-
+	g_variant_get (response_body, "(^as)", &saveable_types);
 	if (saveable_types != NULL) {
 		saveable_type_list = g_strjoinv (", ", saveable_types);
 		rb_debug ("saveable types from metadata helper: %s", saveable_type_list);
@@ -356,54 +336,9 @@ start_metadata_service (GError **error)
 	} else {
 		rb_debug ("unable to save metadata for any file types");
 	}
+	g_variant_unref (response_body);
 
-	if (message)
-		dbus_message_unref (message);
-	if (response)
-		dbus_message_unref (response);
 	return TRUE;
-}
-
-static void
-handle_dbus_error (RBMetaData *md, DBusError *dbus_error, GError **error)
-{
-	/*
-	 * If the error is 'no reply within the specified time',
-	 * then we assume that either the metadata process died, or
-	 * it's stuck in a loop and needs to be killed.
-	 */
-	if (strcmp (dbus_error->name, DBUS_ERROR_NO_REPLY) == 0) {
-		kill_metadata_service ();
-
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_INTERNAL,
-			     _("Internal GStreamer problem; file a bug"));
-	} else {
-		dbus_set_g_error (error, dbus_error);
-		dbus_error_free (dbus_error);
-	}
-}
-
-static void
-read_error_from_message (RBMetaData *md, DBusMessageIter *iter, GError **error)
-{
-	guint32 error_code;
-	gchar *error_message;
-
-	if (!rb_metadata_dbus_get_uint32 (iter, &error_code) ||
-	    !rb_metadata_dbus_get_string (iter, &error_message)) {
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_INTERNAL,
-			     _("D-BUS communication error"));
-		return;
-	}
-
-	g_set_error (error, RB_METADATA_ERROR,
-		     error_code,
-		     "%s", error_message);
-	g_free (error_message);
 }
 
 /**
@@ -416,6 +351,9 @@ read_error_from_message (RBMetaData *md, DBusMessageIter *iter, GError **error)
 void
 rb_metadata_reset (RBMetaData *md)
 {
+	g_free (md->priv->mimetype);
+	md->priv->mimetype = NULL;
+
 	if (md->priv->metadata)
 		g_hash_table_destroy (md->priv->metadata);
 	md->priv->metadata = g_hash_table_new_full (g_direct_hash,
@@ -440,140 +378,97 @@ rb_metadata_load (RBMetaData *md,
 		  const char *uri,
 		  GError **error)
 {
-	DBusMessage *message = NULL;
-	DBusMessage *response = NULL;
-	DBusMessageIter iter;
-	DBusError dbus_error = {0,};
-	gboolean ok;
+	GVariant *response;
 	GError *fake_error = NULL;
-	GError *dbus_gerror;
-
-	dbus_gerror = g_error_new (RB_METADATA_ERROR,
-				   RB_METADATA_ERROR_INTERNAL,
-				   _("D-BUS communication error"));
 
 	if (error == NULL)
 		error = &fake_error;
 
-	g_free (md->priv->mimetype);
-	md->priv->mimetype = NULL;
-
+	rb_metadata_reset (md);
 	if (uri == NULL)
 		return;
-
-	rb_metadata_reset (md);
-
 	g_static_mutex_lock (&conn_mutex);
 
 	start_metadata_service (error);
 
 	if (*error == NULL) {
-		message = dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
+		rb_debug ("sending metadata load request: %s", uri);
+		response = g_dbus_connection_call_sync (dbus_connection,
+							RB_METADATA_DBUS_NAME,
 							RB_METADATA_DBUS_OBJECT_PATH,
 							RB_METADATA_DBUS_INTERFACE,
-							"load");
-		if (!message) {
-			g_propagate_error (error, dbus_gerror);
-		} else if (!dbus_message_append_args (message, DBUS_TYPE_STRING, &uri, DBUS_TYPE_INVALID)) {
-			g_propagate_error (error, dbus_gerror);
-		}
+							"load",
+							g_variant_new ("(s)", uri),
+							NULL, /* complicated return type */
+							G_DBUS_CALL_FLAGS_NONE,
+							RB_METADATA_DBUS_TIMEOUT,
+							NULL,
+							error);
 	}
 
 	if (*error == NULL) {
-		rb_debug ("sending metadata load request");
-		response = dbus_connection_send_with_reply_and_block (dbus_connection,
-								      message,
-								      RB_METADATA_DBUS_TIMEOUT,
-								      &dbus_error);
+		GVariantIter *metadata;
+		gboolean ok = FALSE;
+		int error_code;
+		char *error_string = NULL;
 
-		if (!response)
-			handle_dbus_error (md, &dbus_error, error);
-	}
+		g_variant_get (response,
+			       "(^as^asbbbsbisa{iv})",
+			       &md->priv->missing_plugins,
+			       &md->priv->plugin_descriptions,
+			       &md->priv->has_audio,
+			       &md->priv->has_video,
+			       &md->priv->has_other_data,
+			       &md->priv->mimetype,
+			       &ok,
+			       &error_code,
+			       &error_string,
+			       &metadata);
 
-	if (*error == NULL) {
-		if (!dbus_message_iter_init (response, &iter)) {
-			g_propagate_error (error, dbus_gerror);
-			rb_debug ("couldn't read response message");
-		}
-	}
-	
-	if (*error == NULL) {
-		if (!rb_metadata_dbus_get_strv (&iter, &md->priv->missing_plugins)) {
-			g_propagate_error (error, dbus_gerror);
-			rb_debug ("couldn't get missing plugin data from response message");
-		}
-	}
+		if (ok) {
+			guint32 key;
+			GVariant *value;
 
-	if (*error == NULL) {
-		if (!rb_metadata_dbus_get_strv (&iter, &md->priv->plugin_descriptions)) {
-			g_propagate_error (error, dbus_gerror);
-			rb_debug ("couldn't get missing plugin descriptions from response message");
-		}
-	}
+			while (g_variant_iter_next (metadata, "{iv}", &key, &value)) {
+				GValue *val = g_slice_new0 (GValue);
 
-	/* if we're missing some plugins, we'll need to make sure the
-	 * metadata helper rereads the registry before the next load.
-	 * the easiest way to do this is to kill it.
-	 */
-	if (*error == NULL && md->priv->missing_plugins != NULL) {
-		rb_debug ("missing plugins; killing metadata service to force registry reload");
-		kill_metadata_service ();
-	}
+				switch (rb_metadata_get_field_type (key)) {
+				case G_TYPE_STRING:
+					g_value_init (val, G_TYPE_STRING);
+					g_value_set_string (val, g_variant_get_string (value, NULL));
+					break;
+				case G_TYPE_ULONG:
+					g_value_init (val, G_TYPE_ULONG);
+					g_value_set_ulong (val, g_variant_get_uint32 (value));
+					break;
+				case G_TYPE_DOUBLE:
+					g_value_init (val, G_TYPE_DOUBLE);
+					g_value_set_double (val, g_variant_get_double (value));
+					break;
+				default:
+					g_assert_not_reached ();
+					break;
+				}
+				g_hash_table_insert (md->priv->metadata, GINT_TO_POINTER (key), val);
+				g_variant_unref (value);
+			}
 
-	if (*error == NULL) {
-		if (!rb_metadata_dbus_get_boolean (&iter, &md->priv->has_audio)) {
-			g_propagate_error (error, dbus_gerror);
-			rb_debug ("couldn't get has-audio flag from response message");
 		} else {
-			rb_debug ("has audio: %d", md->priv->has_audio);
+			g_set_error (error, RB_METADATA_ERROR,
+				     error_code,
+				     "%s", error_string);
+		}
+		g_variant_iter_free (metadata);
+
+		/* if we're missing some plugins, we'll need to make sure the
+		 * metadata helper rereads the registry before the next load.
+		 * the easiest way to do this is to kill it.
+		 */
+		if (*error == NULL && g_strv_length (md->priv->missing_plugins) > 0) {
+			rb_debug ("missing plugins; killing metadata service to force registry reload");
+			kill_metadata_service ();
 		}
 	}
-
-	if (*error == NULL) {
-		if (!rb_metadata_dbus_get_boolean (&iter, &md->priv->has_video)) {
-			g_propagate_error (error, dbus_gerror);
-			rb_debug ("couldn't get has-video flag from response message");
-		} else {
-			rb_debug ("has video: %d", md->priv->has_video);
-		}
-	}
-
-	if (*error == NULL) {
-		if (!rb_metadata_dbus_get_boolean (&iter, &md->priv->has_other_data)) {
-			g_propagate_error (error, dbus_gerror);
-			rb_debug ("couldn't get has-other-data flag from response message");
-		} else {
-			rb_debug ("has other data: %d", md->priv->has_other_data);
-		}
-	}
-
-	if (*error == NULL) {
-		if (!rb_metadata_dbus_get_string (&iter, &md->priv->mimetype)) {
-			g_propagate_error (error, dbus_gerror);
-		} else {
-			rb_debug ("got mimetype: %s", md->priv->mimetype);
-		}
-	}
-
-	if (*error == NULL) {
-		if (!rb_metadata_dbus_get_boolean (&iter, &ok)) {
-			g_propagate_error (error, dbus_gerror);
-			rb_debug ("couldn't get success flag from response message");
-		} else if (ok == FALSE) {
-			read_error_from_message (md, &iter, error);
-		}
-	}
-
-	if (*error == NULL) {
-		rb_metadata_dbus_read_from_message (md, md->priv->metadata, &iter);
-	}
-
-	if (message)
-		dbus_message_unref (message);
-	if (response)
-		dbus_message_unref (response);
-	if (*error != dbus_gerror)
-		g_error_free (dbus_gerror);
 	if (fake_error)
 		g_error_free (fake_error);
 
@@ -609,7 +504,8 @@ rb_metadata_get_mime (RBMetaData *md)
 gboolean
 rb_metadata_has_missing_plugins (RBMetaData *md)
 {
-	return (md->priv->missing_plugins != NULL);
+	return (md->priv->missing_plugins != NULL &&
+	        g_strv_length (md->priv->missing_plugins) > 0);
 }
 
 /**
@@ -765,11 +661,8 @@ rb_metadata_get_saveable_types (RBMetaData *md)
 void
 rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 {
+	GVariant *response;
 	GError *fake_error = NULL;
-	DBusMessage *message = NULL;
-	DBusMessage *response = NULL;
-	DBusError dbus_error = {0,};
-	DBusMessageIter iter;
 
 	if (error == NULL)
 		error = &fake_error;
@@ -779,53 +672,36 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 	start_metadata_service (error);
 
 	if (*error == NULL) {
-		message = dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
+		response = g_dbus_connection_call_sync (dbus_connection,
+							RB_METADATA_DBUS_NAME,
 							RB_METADATA_DBUS_OBJECT_PATH,
 							RB_METADATA_DBUS_INTERFACE,
-							"save");
-		if (!message) {
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_INTERNAL,
-				     _("D-BUS communication error"));
-		}
+							"save",
+							g_variant_new ("(sa{iv})",
+								       uri,
+								       rb_metadata_dbus_get_variant_builder (md)),
+							NULL,
+							G_DBUS_CALL_FLAGS_NONE,
+							RB_METADATA_SAVE_DBUS_TIMEOUT,
+							NULL,
+							error);
 	}
 
 	if (*error == NULL) {
-		dbus_message_iter_init_append (message, &iter);
-		if (!dbus_message_iter_append_basic (&iter, DBUS_TYPE_STRING, &uri)) {
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_INTERNAL,
-				     _("D-BUS communication error"));
+		gboolean ok = TRUE;
+		int error_code;
+		const char *error_message;
+
+		g_variant_get (response, "(bis)", &ok, &error_code, &error_message);
+		if (ok == FALSE) {
+			g_set_error (error, RB_METADATA_ERROR,
+				     error_code,
+				     "%s", error_message);
 		}
-	}
-	if (*error == NULL) {
-		if (!rb_metadata_dbus_add_to_message (md, &iter)) {
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_INTERNAL,
-				     _("D-BUS communication error"));
-		}
+
+		g_variant_unref (response);
 	}
 
-	if (*error == NULL) {
-		response = dbus_connection_send_with_reply_and_block (dbus_connection,
-								      message,
-								      RB_METADATA_SAVE_DBUS_TIMEOUT,
-								      &dbus_error);
-		if (!response) {
-			handle_dbus_error (md, &dbus_error, error);
-		} else if (dbus_message_iter_init (response, &iter)) {
-			/* if there's any return data at all, it'll be an error */
-			read_error_from_message (md, &iter, error);
-		}
-	}
-
-	if (message)
-		dbus_message_unref (message);
-	if (response)
-		dbus_message_unref (response);
 	if (fake_error)
 		g_error_free (fake_error);
 

@@ -165,7 +165,6 @@ int main(int argc, char **argv)
 		rb_debug_init (TRUE);
 	}
 
-
 	loop = g_main_loop_new (NULL, FALSE);
 	md = rb_metadata_new ();
 	while (argv[1] != NULL) {

@@ -36,268 +36,71 @@
 #include "rb-metadata-dbus.h"
 #include "rb-debug.h"
 
-static gboolean
-_get_basic_checked (DBusMessageIter *iter, gpointer value, int type)
+const char *rb_metadata_iface_xml = "				\
+<node>								\
+  <interface name='org.gnome.Rhythmbox.Metadata'>		\
+    <method name='ping'>					\
+      <arg direction='out' type='b' name='ok'/>			\
+    </method>							\
+    <method name='load'>					\
+      <arg direction='in' type='s' name='uri'/>			\
+      <arg direction='out' type='as' name='missingPlugins'/>	\
+      <arg direction='out' type='as' name='pluginDescriptions'/> \
+      <arg direction='out' type='b' name='hasAudio'/>		\
+      <arg direction='out' type='b' name='hasVideo'/>		\
+      <arg direction='out' type='b' name='hasOtherData'/>	\
+      <arg direction='out' type='s' name='mimeType'/>		\
+      <arg direction='out' type='b' name='ok'/>			\
+      <arg direction='out' type='i' name='errorCode'/>		\
+      <arg direction='out' type='s' name='errorString'/>	\
+      <arg direction='out' type='a{iv}' name='metadata'/>	\
+    </method>							\
+    <method name='getSaveableTypes'>				\
+      <arg direction='out' type='as' name='types'/>		\
+    </method>							\
+    <method name='save'>					\
+      <arg direction='in' type='s' name='uri'/>			\
+      <arg direction='in' type='a{iv}' name='metadata'/>	\
+      <arg direction='out' type='b' name='ok'/>			\
+      <arg direction='out' type='i' name='errorCode'/>		\
+      <arg direction='out' type='s' name='errorString'/>	\
+    </method>							\
+  </interface>							\
+</node>";
+
+GVariantBuilder *
+rb_metadata_dbus_get_variant_builder (RBMetaData *md)
 {
-	if (dbus_message_iter_get_arg_type (iter) != type) {
-		rb_debug ("Expected D-BUS type '%c', got '%c'",
-			  type, dbus_message_iter_get_arg_type (iter));
-		return FALSE;
-	}
-	dbus_message_iter_get_basic (iter, value);
-	dbus_message_iter_next (iter);
-	return TRUE;
-}
-
-gboolean
-rb_metadata_dbus_get_boolean (DBusMessageIter *iter, gboolean *value)
-{
-	return _get_basic_checked (iter, value, DBUS_TYPE_BOOLEAN);
-}
-
-gboolean
-rb_metadata_dbus_get_uint32 (DBusMessageIter *iter, guint32 *value)
-{
-	return _get_basic_checked (iter, value, DBUS_TYPE_UINT32);
-}
-
-gboolean
-rb_metadata_dbus_get_string (DBusMessageIter *iter, gchar **value)
-{
-	gchar *msg_value;
-	if (!_get_basic_checked (iter, &msg_value, DBUS_TYPE_STRING))
-		return FALSE;
-	*value = g_strdup (msg_value);
-	return TRUE;
-}
-
-gboolean
-rb_metadata_dbus_get_strv (DBusMessageIter *iter, char ***strv)
-{
-	guint32 count;
-	guint32 i;
-
-	/* strv is stored as a count followed by that many strings */
-	if (rb_metadata_dbus_get_uint32 (iter, &count) == FALSE) {
-		return FALSE;
-	}
-
-	if (count == 0) {
-		*strv = NULL;
-		return TRUE;
-	}
-
-	*strv = g_new0 (char *, count+1);
-	for (i = 0; i < count; i++) {
-		if (rb_metadata_dbus_get_string (iter, (*strv)+i) == FALSE) {
-			return FALSE;
-		}
-	}
-	return TRUE;
-}
-
-gboolean
-rb_metadata_dbus_add_strv (DBusMessageIter *iter, char **strv)
-{
-	guint32 count;
-	guint32 i;
-
-	if (strv == NULL) {
-		count = 0;
-	} else {
-		count = g_strv_length ((char **)strv);
-	}
-
-	if (!dbus_message_iter_append_basic (iter, DBUS_TYPE_UINT32, &count)) {
-		return FALSE;
-	}
-
-	for (i=0; i < count; i++) {
-		if (!dbus_message_iter_append_basic (iter, DBUS_TYPE_STRING, &strv[i])) {
-			return FALSE;
-		}
-	}
-	return TRUE;
-}
-
-gboolean
-rb_metadata_dbus_add_to_message (RBMetaData *md, DBusMessageIter *iter)
-{
-	DBusMessageIter a_iter;
+	GVariantBuilder *b;
 	RBMetaDataField field;
-	const char *etype =
-		DBUS_DICT_ENTRY_BEGIN_CHAR_AS_STRING
-			DBUS_TYPE_UINT32_AS_STRING DBUS_TYPE_VARIANT_AS_STRING
-		DBUS_DICT_ENTRY_END_CHAR_AS_STRING;
-	rb_debug ("opening container type %s", etype);
-	if (!dbus_message_iter_open_container (iter, DBUS_TYPE_ARRAY, etype, &a_iter)) {
-		return FALSE;
-	}
+	int count = 0;
 
+	b = g_variant_builder_new (G_VARIANT_TYPE_ARRAY);
 	for (field = RB_METADATA_FIELD_TITLE; field < RB_METADATA_FIELD_LAST; field++) {
-		GType vtype = rb_metadata_get_field_type (field);
 		GValue v = {0,};
-		DBusMessageIter d_iter;
-		DBusMessageIter v_iter;
-		const char *v_sig = NULL;
+		GVariant *value;
 
 		if (!rb_metadata_get (md, field, &v))
 			continue;
 
-		if (!dbus_message_iter_open_container (&a_iter, DBUS_TYPE_DICT_ENTRY, NULL, &d_iter)) {
-			return FALSE;
-		}
-
-		if (!dbus_message_iter_append_basic (&d_iter, DBUS_TYPE_UINT32, &field)) {
-			return FALSE;
-		}
-
-		switch (vtype) {
-		case G_TYPE_ULONG:
-			v_sig = DBUS_TYPE_UINT32_AS_STRING;
-			break;
-		case G_TYPE_DOUBLE:
-			v_sig = DBUS_TYPE_DOUBLE_AS_STRING;
-			break;
-		case G_TYPE_STRING:
-			v_sig = DBUS_TYPE_STRING_AS_STRING;
-			break;
-		}
-		if (!dbus_message_iter_open_container (&d_iter, DBUS_TYPE_VARIANT, v_sig, &v_iter)) {
-			return FALSE;
-		}
-
-		/* not exactly stolen from dbus-gvalue.c */
-		switch (vtype) {
-		case G_TYPE_ULONG:
-			{
-				dbus_uint32_t n = g_value_get_ulong (&v);
-				if (!dbus_message_iter_append_basic (&v_iter, DBUS_TYPE_UINT32, &n)) {
-					return FALSE;
-				}
-				break;
-			}
-
-		case G_TYPE_DOUBLE:
-			{
-				double n = g_value_get_double (&v);
-				if (!dbus_message_iter_append_basic (&v_iter, DBUS_TYPE_DOUBLE, &n)) {
-					return FALSE;
-				}
-				break;
-			}
-
-		case G_TYPE_STRING:
-			{
-				const char *s = g_value_get_string (&v);
-				if (!s)
-					s = "";
-				if (!dbus_message_iter_append_basic (&v_iter, DBUS_TYPE_STRING, &s)) {
-					return FALSE;
-				}
-				break;
-			}
-
-		default:
+		if (G_VALUE_HOLDS_STRING (&v)) {
+			value = g_variant_new_string (g_value_get_string (&v));
+		} else if (G_VALUE_HOLDS_ULONG (&v)) {
+			value = g_variant_new_uint32 (g_value_get_ulong (&v));
+		} else if (G_VALUE_HOLDS_DOUBLE (&v)) {
+			value = g_variant_new_double (g_value_get_double (&v));
+		} else {
 			g_assert_not_reached ();
-			break;
 		}
-
 		g_value_unset (&v);
-		if (!dbus_message_iter_close_container (&d_iter, &v_iter)) {
-			return FALSE;
-		}
 
-		if (!dbus_message_iter_close_container (&a_iter, &d_iter)) {
-			return FALSE;
-		}
+		g_variant_builder_add (b, "{iv}", field, value);
+		count++;
 	}
 
-	if (!dbus_message_iter_close_container (iter, &a_iter)) {
-		return FALSE;
+	if (count == 0) {
+		g_variant_builder_add (b, "{iv}", RB_METADATA_FIELD_TRACK_NUMBER, g_variant_new_uint32 (0));
 	}
 
-	return TRUE;
-}
-
-gboolean
-rb_metadata_dbus_read_from_message (RBMetaData *md, GHashTable *metadata, DBusMessageIter *iter)
-{
-	DBusMessageIter a_iter;
-	int current_type;
-
-	if (dbus_message_iter_get_arg_type (iter) != DBUS_TYPE_ARRAY) {
-		rb_debug ("Expected D-BUS array, got type '%c'",
-			  dbus_message_iter_get_arg_type (iter));
-		return FALSE;
-	}
-
-	dbus_message_iter_recurse (iter, &a_iter);
-
-	current_type = dbus_message_iter_get_arg_type (&a_iter);
-	if (current_type != DBUS_TYPE_INVALID && current_type != DBUS_TYPE_DICT_ENTRY) {
-		rb_debug ("Expected D-BUS dict entry, got type '%c'", (guchar) current_type);
-		return FALSE;
-	}
-
-	while (current_type != DBUS_TYPE_INVALID) {
-		DBusMessageIter e_iter;
-		DBusMessageIter v_iter;
-		RBMetaDataField field;
-		GValue *val;
-
-		dbus_message_iter_recurse (&a_iter, &e_iter);
-
-		if (!rb_metadata_dbus_get_uint32 (&e_iter, &field)) {
-			return FALSE;
-		}
-
-		if (dbus_message_iter_get_arg_type (&e_iter) != DBUS_TYPE_VARIANT) {
-			rb_debug ("Expected D-BUS variant type for value; got type '%c'",
-				  dbus_message_iter_get_arg_type (&e_iter));
-			return FALSE;
-		}
-
-		dbus_message_iter_recurse (&e_iter, &v_iter);
-		val = g_slice_new0 (GValue);
-		switch (dbus_message_iter_get_arg_type (&v_iter)) {
-		case DBUS_TYPE_UINT32:
-			{
-				dbus_uint32_t n;
-				dbus_message_iter_get_basic (&v_iter, &n);
-				g_value_init (val, G_TYPE_ULONG);
-				g_value_set_ulong (val, n);
-				break;
-			}
-
-		case DBUS_TYPE_DOUBLE:
-			{
-				double n;
-				dbus_message_iter_get_basic (&v_iter, &n);
-				g_value_init (val, G_TYPE_DOUBLE);
-				g_value_set_double (val, n);
-				break;
-			}
-
-		case DBUS_TYPE_STRING:
-			{
-				const gchar *n;
-				dbus_message_iter_get_basic (&v_iter, &n);
-				g_value_init (val, G_TYPE_STRING);
-				g_value_set_string (val, n);
-				break;
-			}
-
-		default:
-			g_assert_not_reached ();
-			break;
-		}
-
-		g_hash_table_insert (metadata, GINT_TO_POINTER (field), val);
-
-		dbus_message_iter_next (&a_iter);
-		current_type = dbus_message_iter_get_arg_type (&a_iter);
-	}
-
-	return TRUE;
+	return b;
 }

@@ -32,13 +32,11 @@
 #ifndef __RB_METADATA_DBUS_H
 #define __RB_METADATA_DBUS_H
 
-#include <dbus/dbus.h>
-
 G_BEGIN_DECLS
 
-#define RB_METADATA_DBUS_NAME		"org.gnome.rhythmbox.Metadata"
-#define RB_METADATA_DBUS_OBJECT_PATH	"/org/gnome/rhythmbox/MetadataService"
-#define RB_METADATA_DBUS_INTERFACE	"org.gnome.rhythmbox.Metadata"
+#define RB_METADATA_DBUS_NAME		"org.gnome.Rhythmbox.Metadata"
+#define RB_METADATA_DBUS_OBJECT_PATH	"/org/gnome/Rhythmbox/MetadataService"
+#define RB_METADATA_DBUS_INTERFACE	"org.gnome.Rhythmbox.Metadata"
 
 /* Timeouts in milliseconds.  If a metadata operation takes longer than this,
  * the metadata process will be killed and the operation will fail.  We use a
@@ -48,23 +46,9 @@ G_BEGIN_DECLS
 #define RB_METADATA_DBUS_TIMEOUT	(15000)
 #define RB_METADATA_SAVE_DBUS_TIMEOUT	(120000)
 
-gboolean	rb_metadata_dbus_get_boolean (DBusMessageIter *iter,
-					      gboolean *value);
-gboolean	rb_metadata_dbus_get_uint32 (DBusMessageIter *iter,
-					     guint32 *value);
-gboolean	rb_metadata_dbus_get_string (DBusMessageIter *iter,
-					     gchar **value);
-gboolean	rb_metadata_dbus_get_strv (DBusMessageIter *iter,
-					   char ***strv);
+const char *rb_metadata_iface_xml;
 
-gboolean	rb_metadata_dbus_add_strv (DBusMessageIter *iter,
-					   char **strv);
-
-gboolean	rb_metadata_dbus_add_to_message (RBMetaData *md,
-						 DBusMessageIter *iter);
-gboolean	rb_metadata_dbus_read_from_message (RBMetaData *md,
-						    GHashTable *metadata,
-						    DBusMessageIter *iter);
+GVariantBuilder *rb_metadata_dbus_get_variant_builder (RBMetaData *md);
 
 G_END_DECLS
 

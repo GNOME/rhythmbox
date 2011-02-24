@@ -36,10 +36,7 @@
 
 #include <glib/gi18n.h>
 #include <gst/gst.h>
-
-#include <dbus/dbus.h>
-#include <dbus/dbus-glib.h>
-#include <dbus/dbus-glib-lowlevel.h>
+#include <gio/gio.h>
 
 #include "rb-metadata.h"
 #include "rb-metadata-dbus.h"
@@ -50,277 +47,121 @@
 #define ATTENTION_SPAN		30
 
 typedef struct {
-	DBusServer *server;
-	DBusConnection *connection;
+	GDBusServer *server;
+	GDBusConnection *connection;
+	GDBusNodeInfo *node_info;
 	GMainLoop *loop;
 	time_t last_active;
 	RBMetaData *metadata;
 	gboolean external;
 } ServiceData;
 
-static gboolean
-append_error (DBusMessageIter *iter,
-	      gint error_type,
-	      const char *message)
-{
-	if (!dbus_message_iter_append_basic (iter, DBUS_TYPE_UINT32, &error_type) ||
-	    !dbus_message_iter_append_basic (iter, DBUS_TYPE_STRING, &message)) {
-		rb_debug ("couldn't append error data");
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
-static DBusHandlerResult
-send_error (DBusConnection *connection,
-	    DBusMessage *request,
-	    gint error_type,
-	    const char *message)
-{
-	DBusMessage *reply = dbus_message_new_method_return (request);
-	DBusMessageIter iter;
-
-	if (!message) {
-		message = "";
-		rb_debug ("attempting to return error with no message");
-	} else {
-		rb_debug ("attempting to return error: %s", message);
-	}
-
-	dbus_message_iter_init_append (reply, &iter);
-	if (append_error (&iter, error_type, message) == FALSE) {
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	dbus_connection_send (connection, reply, NULL);
-	dbus_message_unref (reply);
-	return DBUS_HANDLER_RESULT_HANDLED;
-}
-
-static DBusHandlerResult
-rb_metadata_dbus_load (DBusConnection *connection,
-		       DBusMessage *message,
+static void
+rb_metadata_dbus_load (GVariant *parameters,
+		       GDBusMethodInvocation *invocation,
 		       ServiceData *svc)
 {
-	char *uri;
-	DBusMessageIter iter;
-	DBusMessage *reply;
+	const char *uri;
 	GError *error = NULL;
-	gboolean ok;
-	const char *mimetype = NULL;
+	GVariant *response;
+	const char *nothing[] = { NULL };
 	char **missing_plugins = NULL;
 	char **plugin_descriptions = NULL;
-	gboolean has_audio;
-	gboolean has_video;
-	gboolean has_other_data;
+	const char *mediatype;
 
-	if (!dbus_message_iter_init (message, &iter)) {
-		return DBUS_HANDLER_RESULT_NEED_MEMORY;
-	}
-
-	if (!rb_metadata_dbus_get_string (&iter, &uri)) {
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
+	g_variant_get (parameters, "(&s)", &uri);
 
 	rb_debug ("loading metadata from %s", uri);
 	rb_metadata_load (svc->metadata, uri, &error);
-	rb_debug ("metadata load finished (type %s)", rb_metadata_get_mime (svc->metadata));
-	g_free (uri);
-
-	/* construct reply */
-	reply = dbus_message_new_method_return (message);
-	if (!reply) {
-		rb_debug ("out of memory creating return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-	
-	dbus_message_iter_init_append (reply, &iter);
+	mediatype = rb_metadata_get_mime (svc->metadata);
+	rb_debug ("metadata load finished (type %s)", mediatype);
 
 	rb_metadata_get_missing_plugins (svc->metadata, &missing_plugins, &plugin_descriptions);
-	if (!rb_metadata_dbus_add_strv (&iter, missing_plugins)) {
-		rb_debug ("out of memory adding data to return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-	if (!rb_metadata_dbus_add_strv (&iter, plugin_descriptions)) {
-		rb_debug ("out of memory adding data to return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
 
-	mimetype = rb_metadata_get_mime (svc->metadata);
-	if (mimetype == NULL) {
-		mimetype = "";
-	}
-	has_audio = rb_metadata_has_audio (svc->metadata);
-	has_video = rb_metadata_has_video (svc->metadata);
-	has_other_data = rb_metadata_has_other_data (svc->metadata);
+	response = g_variant_new ("(^as^asbbbsbisa{iv})",
+				  missing_plugins ? missing_plugins : (char **)nothing,
+				  plugin_descriptions ? plugin_descriptions : (char **)nothing,
+				  rb_metadata_has_audio (svc->metadata),
+				  rb_metadata_has_video (svc->metadata),
+				  rb_metadata_has_other_data (svc->metadata),
+				  mediatype ? mediatype : "",
+				  (error == NULL),
+				  (error != NULL ? error->code : 0),
+				  (error != NULL ? error->message : ""),
+				  rb_metadata_dbus_get_variant_builder (svc->metadata));
+	g_strfreev (missing_plugins);
+	g_strfreev (plugin_descriptions);
 
-	if (!dbus_message_iter_append_basic (&iter, DBUS_TYPE_BOOLEAN, &has_audio) ||
-	    !dbus_message_iter_append_basic (&iter, DBUS_TYPE_BOOLEAN, &has_video) ||
-	    !dbus_message_iter_append_basic (&iter, DBUS_TYPE_BOOLEAN, &has_other_data) ||
-	    !dbus_message_iter_append_basic (&iter, DBUS_TYPE_STRING, &mimetype)) {
-		rb_debug ("out of memory adding data to return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	ok = (error == NULL);
-	if (!dbus_message_iter_append_basic (&iter, DBUS_TYPE_BOOLEAN, &ok)) {
-		rb_debug ("out of memory adding error flag to return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	if (error != NULL) {
-		rb_debug ("metadata error: %s", error->message);
-		if (append_error (&iter, error->code, error->message) == FALSE) {
-			rb_debug ("out of memory adding error details to return message");
-			return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-		}
-	}
-
-	if (!rb_metadata_dbus_add_to_message (svc->metadata, &iter)) {
-		rb_debug ("unable to add metadata to return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	if (!dbus_connection_send (connection, reply, NULL)) {
-		rb_debug ("failed to send return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	dbus_message_unref (reply);
-	return DBUS_HANDLER_RESULT_HANDLED;
+	g_dbus_method_invocation_return_value (invocation, response);
 }
 
-static DBusHandlerResult
-rb_metadata_dbus_get_saveable_types (DBusConnection *connection,
-				     DBusMessage *message,
+static void
+rb_metadata_dbus_get_saveable_types (GVariant *parameters,
+				     GDBusMethodInvocation *invocation,
 				     ServiceData *svc)
 {
-	DBusMessageIter iter;
-	DBusMessage *reply;
 	char **saveable_types;
 
-	/* construct reply */
-	reply = dbus_message_new_method_return (message);
-	if (!reply) {
-		rb_debug ("out of memory creating return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	dbus_message_iter_init_append (reply, &iter);
-
 	saveable_types = rb_metadata_get_saveable_types (svc->metadata);
-
-	if (!rb_metadata_dbus_add_strv (&iter, saveable_types)) {
-		rb_debug ("out of memory adding saveable types to return message");
-		g_strfreev (saveable_types);
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
+	g_dbus_method_invocation_return_value (invocation, g_variant_new ("(^as)", saveable_types));
 	g_strfreev (saveable_types);
-
-	if (!dbus_connection_send (connection, reply, NULL)) {
-		rb_debug ("failed to send return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	dbus_message_unref (reply);
-
-	return DBUS_HANDLER_RESULT_HANDLED;
 }
 
-static gboolean
-_set_metadata (gpointer key, GValue *data, RBMetaData *metadata)
-{
-	RBMetaDataField field = GPOINTER_TO_INT (key);
-	rb_metadata_set (metadata, field, data);
-	return TRUE;
-}
-
-static DBusHandlerResult
-rb_metadata_dbus_save (DBusConnection *connection,
-		       DBusMessage *message,
+static void
+rb_metadata_dbus_save (GVariant *parameters,
+		       GDBusMethodInvocation *invocation,
 		       ServiceData *svc)
 {
-	char *uri;
-	DBusMessageIter iter;
-	DBusMessage *reply;
-	GHashTable *data;
+	const char *uri;
 	GError *error = NULL;
+	GVariantIter *metadata;
+	RBMetaDataField key;
+	GVariant *value;
 
-	/* get URI and metadata from message */
-	if (!dbus_message_iter_init (message, &iter)) {
-		return DBUS_HANDLER_RESULT_NEED_MEMORY;
-	}
-	if (!rb_metadata_dbus_get_string (&iter, &uri)) {
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
+	g_variant_get (parameters, "(&sa{iv})", &uri, &metadata);
 
-	data = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)rb_value_free);
-	if (!rb_metadata_dbus_read_from_message (svc->metadata,
-						 data,
-						 &iter)) {
-		/* make translatable? */
-		g_free (uri);
-		return send_error (connection, message,
-				   RB_METADATA_ERROR_INTERNAL,
-				   "Unable to read metadata from message");
-	}
-
-	/* pass to real metadata instance, and save it */
+	/* pass metadata to real metadata instance */
 	rb_metadata_reset (svc->metadata);
-	g_hash_table_foreach_remove (data, (GHRFunc) _set_metadata, svc->metadata);
-	g_hash_table_destroy (data);
+	while (g_variant_iter_next (metadata, "{iv}", &key, &value)) {
+		GValue val = {0,};
+
+		switch (rb_metadata_get_field_type (key)) {
+		case G_TYPE_STRING:
+			g_value_init (&val, G_TYPE_STRING);
+			g_value_set_string (&val, g_variant_get_string (value, NULL));
+			break;
+		case G_TYPE_ULONG:
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, g_variant_get_uint32 (value));
+			break;
+		case G_TYPE_DOUBLE:
+			g_value_init (&val, G_TYPE_DOUBLE);
+			g_value_set_double (&val, g_variant_get_double (value));
+			break;
+		default:
+			g_assert_not_reached ();
+			break;
+		}
+		rb_metadata_set (svc->metadata, key, &val);
+		g_variant_unref (value);
+		g_value_unset (&val);
+	}
 
 	rb_metadata_save (svc->metadata, uri, &error);
-	g_free (uri);
-
-	if (error) {
-		DBusHandlerResult r;
-		rb_debug ("metadata error: %s", error->message);
-
-		r = send_error (connection, message, error->code, error->message);
-		g_clear_error (&error);
-		return r;
-	}
-
-	reply = dbus_message_new_method_return (message);
-	if (!reply) {
-		rb_debug ("out of memory creating return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	if (!dbus_connection_send (connection, reply, NULL)) {
-		rb_debug ("failed to send return message");
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	dbus_message_unref (reply);
-
-	return DBUS_HANDLER_RESULT_HANDLED;
+	g_dbus_method_invocation_return_value (invocation,
+					       g_variant_new ("(bis)",
+							      (error == NULL),
+							      (error != NULL ? error->code : 0),
+							      (error != NULL ? error->message : "")));
 }
 
-static DBusHandlerResult
-rb_metadata_dbus_ping (DBusConnection *connection,
-		       DBusMessage *message,
+static void
+rb_metadata_dbus_ping (GVariant *parameters,
+		       GDBusMethodInvocation *invocation,
 		       ServiceData *svc)
 {
-	gboolean ok = TRUE;
-
 	rb_debug ("ping");
-
-	DBusMessage *reply = dbus_message_new_method_return (message);
-	if (!message)
-		return DBUS_HANDLER_RESULT_NEED_MEMORY;
-
-	if (!dbus_message_append_args (reply,
-				       DBUS_TYPE_BOOLEAN, &ok,
-				       DBUS_TYPE_INVALID)) {
-		return DBUS_HANDLER_RESULT_NEED_MEMORY;
-	}
-
-	dbus_connection_send (connection, reply, NULL);
-	dbus_message_unref (reply);
-	return DBUS_HANDLER_RESULT_HANDLED;
+	g_dbus_method_invocation_return_value (invocation, g_variant_new ("(b)", TRUE));
 }
 
 static gboolean
@@ -340,46 +181,48 @@ electromagnetic_shotgun (gpointer data)
 }
 
 static void
-_unregister_handler (DBusConnection *connection, void *data)
+handle_method_call (GDBusConnection *connection,
+		    const char *sender,
+		    const char *object_path,
+		    const char *interface_name,
+		    const char *method_name,
+		    GVariant *parameters,
+		    GDBusMethodInvocation *invocation,
+		    ServiceData *svc)
 {
-	/* nothing? */
+	rb_debug ("handling metadata service message: %s.%s", interface_name, method_name);
+	if (g_strcmp0 (method_name, "ping") == 0) {
+		rb_metadata_dbus_ping (parameters, invocation, svc);
+	} else if (g_strcmp0 (method_name, "load") == 0) {
+		rb_metadata_dbus_load (parameters, invocation, svc);
+	} else if (g_strcmp0 (method_name, "getSaveableTypes") == 0) {
+		rb_metadata_dbus_get_saveable_types (parameters, invocation, svc);
+	} else if (g_strcmp0 (method_name, "save") == 0) {
+		rb_metadata_dbus_save (parameters, invocation, svc);
+	}
+	svc->last_active = time (NULL);
 }
 
-static DBusHandlerResult
-_handle_message (DBusConnection *connection, DBusMessage *message, void *data)
+static const GDBusInterfaceVTable metadata_vtable = {
+	(GDBusInterfaceMethodCallFunc) handle_method_call,
+	NULL,
+	NULL
+};
+
+static void
+connection_closed_cb (GDBusConnection *connection, ServiceData *svc)
 {
-	ServiceData *svc = (ServiceData *)data;
-	DBusHandlerResult result;
-	rb_debug ("handling metadata service message: %s", dbus_message_get_member (message));
-
-	if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "load")) {
-		result = rb_metadata_dbus_load (connection, message, svc);
-	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "getSaveableTypes")) {
-		result = rb_metadata_dbus_get_saveable_types (connection, message, svc);
-	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "save")) {
-		result = rb_metadata_dbus_save (connection, message, svc);
-	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "ping")) {
-		result = rb_metadata_dbus_ping (connection, message, svc);
-	} else {
-		result = DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-	svc->last_active = time (NULL);
-	return result;
+	rb_debug ("client connection closed");
+	g_assert (connection == svc->connection);
+	svc->connection = NULL;
 }
 
 static void
-_new_connection (DBusServer *server,
-		 DBusConnection *connection,
-		 void *data)
+new_connection_cb (GDBusServer *server,
+		   GDBusConnection *connection,
+		   ServiceData *svc)
 {
-	ServiceData *svc = (ServiceData *)data;
-	DBusObjectPathVTable vt = {
-		_unregister_handler,
-		_handle_message,
-		NULL, NULL, NULL, NULL
-	};
-
+	GError *error = NULL;
 	rb_debug ("new connection to metadata service");
 
 	/* don't allow more than one connection at a time */
@@ -387,16 +230,22 @@ _new_connection (DBusServer *server,
 		rb_debug ("metadata service already has a client.  go away.");
 		return;
 	}
+	g_dbus_connection_register_object (connection,
+					   RB_METADATA_DBUS_OBJECT_PATH,
+					   g_dbus_node_info_lookup_interface (svc->node_info, RB_METADATA_DBUS_INTERFACE),
+					   &metadata_vtable,
+					   svc,
+					   NULL,
+					   &error);
+	if (error != NULL) {
+		rb_debug ("unable to register metadata object: %s", error->message);
+		g_clear_error (&error);
+	} else {
+		svc->connection = g_object_ref (connection);
+		g_signal_connect (connection, "closed", G_CALLBACK (connection_closed_cb), svc);
 
-	dbus_connection_register_object_path (connection,
-					      RB_METADATA_DBUS_OBJECT_PATH,
-					      &vt,
-					      svc);
-	dbus_connection_ref (connection);
-	dbus_connection_setup_with_g_main (connection,
-					   g_main_loop_get_context (svc->loop));
-	if (!svc->external)
-		dbus_connection_set_exit_on_disconnect (connection, TRUE);
+		g_dbus_connection_set_exit_on_close (connection, (svc->external == FALSE));
+	}
 }
 
 static int
@@ -473,8 +322,9 @@ int
 main (int argc, char **argv)
 {
 	ServiceData svc = {0,};
-	DBusError dbus_error = {0,};
+	GError *error = NULL;
 	const char *address = NULL;
+	char *guid;
 
 #ifdef ENABLE_NLS
 	/* initialize i18n */
@@ -516,49 +366,57 @@ main (int argc, char **argv)
 
 	rb_debug ("initializing metadata service; pid = %d; address = %s", getpid (), address);
 	svc.metadata = rb_metadata_new ();
+	svc.loop = g_main_loop_new (NULL, TRUE);
 
-	/* set up D-BUS server */
-	svc.server = dbus_server_listen (address, &dbus_error);
-	if (!svc.server) {
-		rb_debug ("D-BUS server init failed: %s", dbus_error.message);
+	/* create the server */
+	guid = g_dbus_generate_guid ();
+	svc.server = g_dbus_server_new_sync (address,
+					     G_DBUS_SERVER_FLAGS_NONE,
+					     guid,
+					     NULL,
+					     NULL,
+					     &error);
+	g_free (guid);
+	if (error != NULL) {
+		g_warning ("D-Bus server init failed: %s", error->message);
 		return -1;
 	}
 
-	dbus_server_set_new_connection_function (svc.server,
-						 _new_connection,
-						 (gpointer) &svc,
-						 NULL);
+	/* set up interface info */
+	svc.node_info = g_dbus_node_info_new_for_xml (rb_metadata_iface_xml, &error);
+	if (error != NULL) {
+		g_warning ("D-Bus server init failed: %s", error->message);
+		return -1;
+	}
+
+	g_signal_connect (svc.server, "new-connection", G_CALLBACK (new_connection_cb), &svc);
+	g_dbus_server_start (svc.server);
 
 	/* write the server address back to the parent process */
 	{
-		char *addr;
-		addr = dbus_server_get_address (svc.server);
+		const char *addr;
+		addr = g_dbus_server_get_client_address (svc.server);
 		rb_debug ("D-BUS server listening on address %s", addr);
 		printf ("%s\n", addr);
 		fflush (stdout);
-		free (addr);
 	}
 
 	/* run main loop until we get bored */
-	svc.loop = g_main_loop_new (NULL, TRUE);
-	dbus_server_setup_with_g_main (svc.server,
-				       g_main_loop_get_context (svc.loop));
-
 	if (!svc.external)
 		g_timeout_add_seconds (ATTENTION_SPAN / 2, (GSourceFunc) electromagnetic_shotgun, &svc);
 
 	g_main_loop_run (svc.loop);
 
 	if (svc.connection) {
-		dbus_connection_close (svc.connection);
-		dbus_connection_unref (svc.connection);
+		g_dbus_connection_close_sync (svc.connection, NULL, NULL);
+		g_object_unref (svc.connection);
 	}
 
 	g_object_unref (svc.metadata);
 	g_main_loop_unref (svc.loop);
 
-	dbus_server_disconnect (svc.server);
-	dbus_server_unref (svc.server);
+	g_dbus_server_stop (svc.server);
+	g_object_unref (svc.server);
 	gst_deinit ();
 
 	return 0;

@@ -11,7 +11,7 @@ INCLUDES = 						\
 
 INSTALLED_METADATA_HELPER=`echo rhythmbox-metadata | sed '$(transform)'`
 
-INCLUDES += $(DBUS_CFLAGS)				\
+INCLUDES +=						\
 	-DLIBEXEC_DIR=\"$(libexecdir)\"			\
 	-DINSTALLED_METADATA_HELPER=\"$(INSTALLED_METADATA_HELPER)\"
 
@@ -32,7 +32,6 @@ librbmetadata_la_SOURCES =				\
 	rb-metadata-dbus-client.c
 
 librbmetadata_la_LIBADD = 				\
-	$(DBUS_LIBS)					\
 	$(RHYTHMBOX_LIBS)
 
 # service
@@ -56,8 +55,7 @@ rhythmbox_metadata_LDADD = 				\
 	librbmetadatasvc.la				\
 	$(top_builddir)/lib/librb.la			\
 	$(RHYTHMBOX_LIBS)				\
-	-lgstpbutils-0.10				\
-	$(DBUS_LIBS)
+	-lgstpbutils-0.10
 
 # test program?
 noinst_PROGRAMS = test-metadata
@@ -68,8 +66,6 @@ test_metadata_LDADD =					\
 	librbmetadata.la				\
 	$(top_builddir)/lib/librb.la			\
 	$(RHYTHMBOX_LIBS)				\
-	-lgstpbutils-0.10				\
-	$(DBUS_LIBS)
+	-lgstpbutils-0.10
 
 librbmetadata_la_LDFLAGS = -export-dynamic
-
