@@ -2129,8 +2129,15 @@ rhythmdb_process_stat_event (RhythmDB *db,
 			guint64 new_size;
 
 			/* update the existing entry, as long as the entry type matches */
-			if ((event->entry_type != NULL) && (entry->type != event->entry_type))
+			if ((event->entry_type != NULL) && (entry->type != event->entry_type)) {
+				if (event->entry_type == RHYTHMDB_ENTRY_TYPE_SONG &&
+				    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
+					rb_debug ("Ignoring stat event for '%s', it's already loaded as a podcast",
+						  rb_refstring_get (event->real_uri));
+					break;
+				}
 				g_warning ("attempt to use same location in multiple entry types");
+			}
 
 			if (entry->type == event->ignore_type)
 				rb_debug ("ignoring %p", entry);
