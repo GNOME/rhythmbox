@@ -1008,18 +1008,22 @@ remove_playcount_file (RBiPodSource *source)
         RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
         char *itunesdb_dir;
         char *playcounts_file;
-        int result;
+        int result = -1;
 	const char *mountpoint;
 
 	mountpoint = rb_ipod_db_get_mount_path (priv->ipod_db);
         itunesdb_dir = itdb_get_itunes_dir (mountpoint);
         playcounts_file = itdb_get_path (itunesdb_dir, "Play Counts");
-        result = g_unlink (playcounts_file);
+        if (playcounts_file != NULL)
+		result = g_unlink (playcounts_file);
         if (result == 0) {
                 rb_debug ("iPod Play Counts file successfully deleted");
         } else {
-                rb_debug ("Failed to remove iPod Play Counts file: %s",
-                          strerror (errno));
+		if (playcounts_file != NULL)
+			rb_debug ("Failed to remove iPod Play Counts file: %s",
+				  strerror (errno));
+		else
+			rb_debug ("Failed to remove non-existant iPod Play Counts file");
         }
         g_free (itunesdb_dir);
         g_free (playcounts_file);
