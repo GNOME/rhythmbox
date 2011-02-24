@@ -976,7 +976,7 @@ add_playlist_to_menu (GtkTreeModel *model,
 	 */
 	g_object_get (clipboard->priv->source, "entry-type", &entry_type, NULL);
 	g_object_get (page, "entry-type", &source_entry_type, NULL);
-	if (source_entry_type != entry_type) {
+	if (source_entry_type != entry_type || source_entry_type == NULL) {
 		g_object_unref (page);
 		if (entry_type)
 			g_object_unref (entry_type);
