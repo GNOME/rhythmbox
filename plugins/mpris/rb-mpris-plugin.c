@@ -177,7 +177,7 @@ add_player_property_change (RBMprisPlugin *plugin,
 			    GVariant *value)
 {
 	if (plugin->player_property_changes == NULL) {
-		plugin->player_property_changes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_variant_unref);
+		plugin->player_property_changes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_variant_unref);
 	}
 	g_hash_table_insert (plugin->player_property_changes, g_strdup (property), g_variant_ref_sink (value));
 
@@ -192,7 +192,7 @@ add_playlist_property_change (RBMprisPlugin *plugin,
 			      GVariant *value)
 {
 	if (plugin->playlist_property_changes == NULL) {
-		plugin->playlist_property_changes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_variant_unref);
+		plugin->playlist_property_changes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_variant_unref);
 	}
 	g_hash_table_insert (plugin->playlist_property_changes, g_strdup (property), g_variant_ref_sink (value));
 
