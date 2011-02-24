@@ -60,6 +60,8 @@ INCLUDES =						\
 librbwidgets_la_LDFLAGS = -export-dynamic
 librbwidgets_la_LIBADD = $(NOTIFY_LIBS)
 
-noinst_PROGRAMS = test-rb-segmented-bar
+noinst_PROGRAMS = test-rb-segmented-bar test-uri-dialog
 test_rb_segmented_bar_SOURCES = test-rb-segmented-bar.c
 test_rb_segmented_bar_LDADD = librbwidgets.la $(RHYTHMBOX_LIBS)
+test_uri_dialog_SOURCES = test-uri-dialog.c
+test_uri_dialog_LDADD = librbwidgets.la $(top_builddir)/lib/librb.la $(RHYTHMBOX_LIBS)
