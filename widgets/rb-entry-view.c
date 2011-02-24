@@ -205,10 +205,6 @@ struct RBEntryViewPrivate
 	gboolean is_drag_source;
 	gboolean is_drag_dest;
 
-	GdkPixbuf *playing_pixbuf;
-	GdkPixbuf *paused_pixbuf;
-	GdkPixbuf *error_pixbuf;
-
 	char *sorting_key;
 	guint sorting_gconf_notification_id;
 	GtkTreeViewColumn *sorting_column;
@@ -533,27 +529,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 static void
 rb_entry_view_init (RBEntryView *view)
 {
-	GtkIconTheme *icon_theme;
-
 	view->priv = RB_ENTRY_VIEW_GET_PRIVATE (view);
-
-	icon_theme = gtk_icon_theme_get_default ();
-
-	view->priv->playing_pixbuf = gtk_icon_theme_load_icon (icon_theme,
-                                   			       "media-playback-start",
-                                   			       16,
-                                   			       0,
-                                   			       NULL);
-	view->priv->paused_pixbuf = gtk_icon_theme_load_icon (icon_theme,
-                                   			      "media-playback-pause",
-                                   			      16,
-                                   			      0,
-                                   			      NULL);
-	view->priv->error_pixbuf = gtk_icon_theme_load_icon (icon_theme,
-                                   			     "dialog-error",
-                                   			     16,
-                                   			     0,
-                                   			     NULL);
 
 	view->priv->propid_column_map = g_hash_table_new (NULL, NULL);
 	view->priv->column_sort_data_map = g_hash_table_new_full (NULL, NULL, NULL, g_free);
@@ -586,21 +562,6 @@ rb_entry_view_dispose (GObject *object)
 	if (view->priv->selection_changed_id > 0) {
 		g_source_remove (view->priv->selection_changed_id);
 		view->priv->selection_changed_id = 0;
-	}
-
-	if (view->priv->playing_pixbuf != NULL) {
-		g_object_unref (view->priv->playing_pixbuf);
-		view->priv->playing_pixbuf = NULL;
-	}
-
-	if (view->priv->paused_pixbuf != NULL) {
-		g_object_unref (view->priv->paused_pixbuf);
-		view->priv->paused_pixbuf = NULL;
-	}
-
-	if (view->priv->error_pixbuf != NULL) {
-		g_object_unref (view->priv->error_pixbuf);
-		view->priv->error_pixbuf = NULL;
 	}
 
 	if (view->priv->playing_model != NULL) {
@@ -917,7 +878,7 @@ rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column,
 				      RBEntryView *view)
 {
 	RhythmDBEntry *entry;
-	GdkPixbuf *pixbuf = NULL;
+	const char *name = NULL;
 
 	entry = rhythmdb_query_model_iter_to_entry (view->priv->model, iter);
 
@@ -928,22 +889,22 @@ rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column,
 	if (entry == view->priv->playing_entry) {
 		switch (view->priv->playing_state) {
 		case RB_ENTRY_VIEW_PLAYING:
-			pixbuf = view->priv->playing_pixbuf;
+			name = "media-playback-start-symbolic";
 			break;
 		case RB_ENTRY_VIEW_PAUSED:
-			pixbuf = view->priv->paused_pixbuf;
+			name = "media-playback-pause-symbolic";
 			break;
 		default:
-			pixbuf = NULL;
+			name = NULL;
 			break;
 		}
 	}
 
-	if (pixbuf == NULL && rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR)) {
-		pixbuf = view->priv->error_pixbuf;
+	if (name == NULL && rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR)) {
+		name = "dialog-error-symbolic";
 	}
 
-	g_object_set (renderer, "pixbuf", pixbuf, NULL);
+	g_object_set (renderer, "icon-name", name, NULL);
 
 	rhythmdb_entry_unref (entry);
 }
@@ -1932,6 +1893,7 @@ rb_entry_view_constructed (GObject *object)
 		/* Playing icon column */
 		column = GTK_TREE_VIEW_COLUMN (gtk_tree_view_column_new ());
 		renderer = rb_cell_renderer_pixbuf_new ();
+		g_object_set (renderer, "stock-size", GTK_ICON_SIZE_MENU, NULL);
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
 		gtk_tree_view_column_set_cell_data_func (column, renderer,
 							 (GtkTreeCellDataFunc)
