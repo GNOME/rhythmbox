@@ -40,14 +40,12 @@ typedef struct _RBCellRendererPixbufClass RBCellRendererPixbufClass;
 
 struct _RBCellRendererPixbuf
 {
-  GtkCellRenderer parent;
-
-  GdkPixbuf *pixbuf;
+  GtkCellRendererPixbuf parent;
 };
 
 struct _RBCellRendererPixbufClass
 {
-  GtkCellRendererClass parent_class;
+  GtkCellRendererPixbufClass parent_class;
 
   void (*pixbuf_clicked) (RBCellRendererPixbuf *renderer, GtkTreePath *path);
 };
