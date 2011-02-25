@@ -98,6 +98,9 @@ rb_metadata_dbus_get_variant_builder (RBMetaData *md)
 		count++;
 	}
 
+	/* make sure there's at least one entry in the map so we can
+	 * build the response message.
+	 */
 	if (count == 0) {
 		g_variant_builder_add (b, "{iv}", RB_METADATA_FIELD_TRACK_NUMBER, g_variant_new_uint32 (0));
 	}
