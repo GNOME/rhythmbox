@@ -34,12 +34,11 @@
 #endif
 
 #include <string.h> /* For strlen */
-#include <dbus/dbus-glib.h>
 #include <glib/gi18n-lib.h>
 #include <gmodule.h>
 #include <gtk/gtk.h>
+#include <gio/gio.h>
 #include <glib.h>
-#include <glib-object.h>
 
 #include "rb-util.h"
 #include "rb-plugin.h"
@@ -72,7 +71,7 @@ typedef struct
 	} grab_type;
 	RBShell *shell;
 	RBShellPlayer *shell_player;
-	DBusGProxy *proxy;
+	GDBusProxy *proxy;
 } RBMMKeysPlugin;
 
 typedef struct
@@ -85,8 +84,6 @@ G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
 GType	rb_mmkeys_plugin_get_type		(void) G_GNUC_CONST;
 
 RB_PLUGIN_REGISTER(RBMMKeysPlugin, rb_mmkeys_plugin)
-#define RB_MMKEYS_PLUGIN_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_MMKEYS_PLUGIN, RBMMKeysPluginPrivate))
-
 
 static void
 rb_mmkeys_plugin_init (RBMMKeysPlugin *plugin)
@@ -95,16 +92,29 @@ rb_mmkeys_plugin_init (RBMMKeysPlugin *plugin)
 }
 
 static void
-media_player_key_pressed (DBusGProxy *proxy,
-			  const gchar *application,
-			  const gchar *key,
+media_player_key_pressed (GDBusProxy *proxy,
+			  const char *sender,
+			  const char *signal,
+			  GVariant *parameters,
 			  RBMMKeysPlugin *plugin)
 {
+	char *key;
+	char *application;
+
+	if (g_strcmp0 (signal, "MediaPlayerKeyPressed") != 0) {
+		rb_debug ("got unexpected signal '%s' from media player keys", signal);
+		return;
+	}
+
+	g_variant_get (parameters, "(ss)", &application, &key);
+
 	rb_debug ("got media key '%s' for application '%s'",
 		  key, application);
 
-	if (strcmp (application, "Rhythmbox"))
+	if (strcmp (application, "Rhythmbox")) {
+		rb_debug ("got media player key signal for unexpected application '%s'", application);
 		return;
+	}
 
 	if (strcmp (key, "Play") == 0) {
 		rb_shell_player_playpause (plugin->shell_player, FALSE, NULL);
@@ -133,15 +143,23 @@ media_player_key_pressed (DBusGProxy *proxy,
 	} else if (strcmp (key, "Rewind") == 0) {
 		rb_shell_player_seek (plugin->shell_player, -RWD_OFFSET, NULL);
 	}
+
+	g_free (key);
+	g_free (application);
 }
 
 static void
-grab_call_notify (DBusGProxy *proxy, DBusGProxyCall *call, RBMMKeysPlugin *plugin)
+grab_call_complete (GObject *proxy, GAsyncResult *res, RBMMKeysPlugin *plugin)
 {
 	GError *error = NULL;
-	if (dbus_g_proxy_end_call (proxy, call, &error, G_TYPE_INVALID) == FALSE) {
+	GVariant *result;
+
+	result = g_dbus_proxy_call_finish (G_DBUS_PROXY (proxy), res, &error);
+	if (error != NULL) {
 		g_warning ("Unable to grab media player keys: %s", error->message);
-		g_error_free (error);
+		g_clear_error (&error);
+	} else {
+		g_variant_unref (result);
 	}
 }
 
@@ -152,14 +170,14 @@ window_focus_cb (GtkWidget *window,
 {
 	rb_debug ("window got focus, re-grabbing media keys");
 
-	dbus_g_proxy_begin_call (plugin->proxy,
-				 "GrabMediaPlayerKeys",
-				 (DBusGProxyCallNotify) grab_call_notify,
-				 g_object_ref (plugin),
-				 (GDestroyNotify) g_object_unref,
-				 G_TYPE_STRING, "Rhythmbox",
-				 G_TYPE_UINT, 0,
-				 G_TYPE_INVALID);
+	g_dbus_proxy_call (plugin->proxy,
+			   "GrabMediaPlayerKeys",
+			   g_variant_new ("(su)", "Rhythmbox", 0),
+			   G_DBUS_CALL_FLAGS_NONE,
+			   -1,
+			   NULL,
+			   (GAsyncReadyCallback) grab_call_complete,
+			   plugin);
 	return FALSE;
 }
 
@@ -319,44 +337,40 @@ mmkeys_grab (RBMMKeysPlugin *plugin, gboolean grab)
 #endif
 
 static void
-first_call_notify (DBusGProxy *proxy, DBusGProxyCall *call, RBMMKeysPlugin *plugin)
+first_call_complete (GObject *proxy, GAsyncResult *res, RBMMKeysPlugin *plugin)
 {
+	GVariant *result;
 	GError *error = NULL;
+	GtkWindow *window;
 
-	if (dbus_g_proxy_end_call (proxy, call, &error, G_TYPE_INVALID) == FALSE) {
+	result = g_dbus_proxy_call_finish (G_DBUS_PROXY (proxy), res, &error);
+	if (error != NULL) {
 		g_warning ("Unable to grab media player keys: %s", error->message);
-		g_error_free (error);
-	} else {
-		GtkWindow *window;
-
-		rb_debug ("created dbus proxy for org.gnome.SettingsDaemon.MediaKeys; grabbing keys");
-		dbus_g_object_register_marshaller (rb_marshal_VOID__STRING_STRING,
-				G_TYPE_NONE, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INVALID);
-
-		dbus_g_proxy_add_signal (plugin->proxy,
-					 "MediaPlayerKeyPressed",
-					 G_TYPE_STRING,G_TYPE_STRING,G_TYPE_INVALID);
-
-		dbus_g_proxy_connect_signal (plugin->proxy,
-					     "MediaPlayerKeyPressed",
-					     G_CALLBACK (media_player_key_pressed),
-					     plugin, NULL);
-
-		/* re-grab keys when the main window gains focus */
-		g_object_get (plugin->shell, "window", &window, NULL);
-		g_signal_connect_object (window, "focus-in-event",
-					 G_CALLBACK (window_focus_cb),
-					 plugin, 0);
-		g_object_unref (window);
+		g_clear_error (&error);
+		return;
 	}
+
+	rb_debug ("grabbed media player keys");
+
+	g_signal_connect_object (plugin->proxy, "g-signal", G_CALLBACK (media_player_key_pressed), plugin, 0);
+
+	/* re-grab keys when the main window gains focus */
+	g_object_get (plugin->shell, "window", &window, NULL);
+	g_signal_connect_object (window, "focus-in-event",
+				 G_CALLBACK (window_focus_cb),
+				 plugin, 0);
+	g_object_unref (window);
+
+	g_variant_unref (result);
 }
 
 static void
 impl_activate (RBPlugin *bplugin,
 	       RBShell *shell)
 {
-	DBusGConnection *bus;
+	GDBusConnection *bus;
 	RBMMKeysPlugin *plugin;
+	GError *error = NULL;
 
 	rb_debug ("activating media player keys plugin");
 
@@ -366,31 +380,35 @@ impl_activate (RBPlugin *bplugin,
 		      NULL);
 	plugin->shell = g_object_ref (shell);
 
-	bus = dbus_g_bus_get (DBUS_BUS_SESSION, NULL);
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
 	if (plugin->grab_type == NONE && bus != NULL) {
 		GError *error = NULL;
 
-		plugin->proxy = dbus_g_proxy_new_for_name_owner (bus,
-								 "org.gnome.SettingsDaemon",
-								 "/org/gnome/SettingsDaemon/MediaKeys",
-								 "org.gnome.SettingsDaemon.MediaKeys",
-								 &error);
-		if (plugin->proxy == NULL) {
+		plugin->proxy = g_dbus_proxy_new_sync (bus,
+						       G_DBUS_PROXY_FLAGS_NONE,
+						       NULL,
+						       "org.gnome.SettingsDaemon",
+						       "/org/gnome/SettingsDaemon/MediaKeys",
+						       "org.gnome.SettingsDaemon.MediaKeys",
+						       NULL,
+						       &error);
+		if (error != NULL) {
 			g_warning ("Unable to grab media player keys: %s", error->message);
-			g_error_free (error);
+			g_clear_error (&error);
 		} else {
-			dbus_g_proxy_begin_call (plugin->proxy,
-						 "GrabMediaPlayerKeys",
-						 (DBusGProxyCallNotify)first_call_notify,
-						 g_object_ref (plugin),
-						 (GDestroyNotify) g_object_unref,
-						 G_TYPE_STRING, "Rhythmbox",
-						 G_TYPE_UINT, 0,
-						 G_TYPE_INVALID);
+			g_dbus_proxy_call (plugin->proxy,
+					   "GrabMediaPlayerKeys",
+					   g_variant_new ("(su)", "Rhythmbox", 0),
+					   G_DBUS_CALL_FLAGS_NONE,
+					   -1,
+					   NULL,
+					   (GAsyncReadyCallback) first_call_complete,
+					   plugin);
 			plugin->grab_type = SETTINGS_DAEMON;
 		}
 	} else {
-		rb_debug ("couldn't get dbus session bus");
+		g_warning ("couldn't get dbus session bus: %s", error->message);
+		g_clear_error (&error);
 	}
 
 #ifdef HAVE_MMKEYS
@@ -403,12 +421,17 @@ impl_activate (RBPlugin *bplugin,
 }
 
 static void
-final_call_notify (DBusGProxy *proxy, DBusGProxyCall *call, gpointer nothing)
+final_call_complete (GObject *proxy, GAsyncResult *res, gpointer nothing)
 {
 	GError *error = NULL;
-	if (dbus_g_proxy_end_call (proxy, call, &error, G_TYPE_INVALID) == FALSE) {
+	GVariant *result;
+
+	result = g_dbus_proxy_call_finish (G_DBUS_PROXY (proxy), res, &error);
+	if (error != NULL) {
 		g_warning ("Unable to release media player keys: %s", error->message);
-		g_error_free (error);
+		g_clear_error (&error);
+	} else {
+		g_variant_unref (result);
 	}
 }
 
@@ -430,13 +453,14 @@ impl_deactivate	(RBPlugin *bplugin,
 
 	if (plugin->proxy != NULL) {
 		if (plugin->grab_type == SETTINGS_DAEMON) {
-			dbus_g_proxy_begin_call (plugin->proxy,
-						 "ReleaseMediaPlayerKeys",
-						 (DBusGProxyCallNotify) final_call_notify,
-						 NULL,
-						 NULL,
-						 G_TYPE_STRING, "Rhythmbox",
-						 G_TYPE_INVALID);
+			g_dbus_proxy_call (plugin->proxy,
+					   "ReleaseMediaPlayerKeys",
+					   g_variant_new ("(s)", "Rhythmbox"),
+					   G_DBUS_CALL_FLAGS_NONE,
+					   -1,
+					   NULL,
+					   (GAsyncReadyCallback) final_call_complete,
+					   NULL);
 			plugin->grab_type = NONE;
 		}
 

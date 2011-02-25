@@ -12,7 +12,6 @@ libmmkeys_la_LIBTOOLFLAGS = --tag=disable-static
 
 libmmkeys_la_LIBADD =					\
 	$(top_builddir)/shell/librhythmbox-core.la	\
-	$(DBUS_LIBS)					\
 	$(NULL)
 
 INCLUDES = 						\
@@ -31,7 +30,6 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(DBUS_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE			\
 	$(NULL)
 
