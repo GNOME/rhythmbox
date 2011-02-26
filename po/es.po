@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2011-02-24 17:24+0000\n"
-"PO-Revision-Date: 2011-02-25 10:49+0100\n"
+"POT-Creation-Date: 2011-02-26 10:24+0000\n"
+"PO-Revision-Date: 2011-02-26 12:25+0100\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -556,15 +556,9 @@ msgstr "Añadidos recientemente"
 msgid "Recently Played"
 msgstr "Reproducidos recientemente"
 
-#. display the (generic) app name rather than "Not Playing" for
-#. * the initial notification
-#.
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1
-#: ../plugins/status-icon/rb-status-icon-plugin.c:58
-#: ../plugins/status-icon/rb-status-icon-plugin.c:1571
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1535 ../shell/rb-shell.c:1267
-#: ../shell/rb-shell.c:2245
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1535
 msgid "Music Player"
 msgstr "Reproductor de música"
 
@@ -573,9 +567,15 @@ msgstr "Reproductor de música"
 msgid "Play and organize your music collection"
 msgstr "Organice y reproduzca su colección de música"
 
+#. display the app name rather than "Not Playing" for
+#. * the initial notification
+#.
 #: ../data/rhythmbox.desktop.in.in.h:3
 #: ../data/rhythmbox-device.desktop.in.in.h:3
-#: ../plugins/status-icon/rb-tray-icon-gtk.c:152
+#: ../plugins/status-icon/rb-status-icon-plugin.c:58
+#: ../plugins/status-icon/rb-status-icon-plugin.c:1560
+#: ../plugins/status-icon/rb-tray-icon-gtk.c:152 ../shell/rb-shell.c:1267
+#: ../shell/rb-shell.c:2245
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -708,7 +708,7 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:642
 #: ../plugins/mtpdevice/rb-mtp-source.c:1133
 #: ../plugins/mtpdevice/rb-mtp-source.c:1522
-#: ../plugins/status-icon/rb-status-icon-plugin.c:909
+#: ../plugins/status-icon/rb-status-icon-plugin.c:908
 #: ../podcast/rb-feed-podcast-properties-dialog.c:340
 #: ../podcast/rb-podcast-manager.c:1938
 #: ../podcast/rb-podcast-properties-dialog.c:622
@@ -772,20 +772,6 @@ msgstr "%d:%02d de %d:%02d"
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d de %d:%02d:%02d"
-
-#: ../metadata/rb-metadata-dbus-client.c:381
-#, c-format
-msgid "Internal GStreamer problem; file a bug"
-msgstr "Problema interno de GStreamer, archive un error"
-
-#: ../metadata/rb-metadata-dbus-client.c:399
-#: ../metadata/rb-metadata-dbus-client.c:453
-#: ../metadata/rb-metadata-dbus-client.c:790
-#: ../metadata/rb-metadata-dbus-client.c:800
-#: ../metadata/rb-metadata-dbus-client.c:808
-#, c-format
-msgid "D-BUS communication error"
-msgstr "Error de comunicación de D-BUS"
 
 #: ../metadata/rb-metadata-gst.c:584 ../metadata/rb-metadata-gst.c:1153
 #, c-format
@@ -1084,7 +1070,7 @@ msgstr "Pistas favoritas"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:7
 #: ../plugins/iradio/rb-station-properties-dialog.c:498
-#: ../rhythmdb/rhythmdb.c:3605 ../widgets/rb-entry-view.c:995
+#: ../rhythmdb/rhythmdb.c:3612 ../widgets/rb-entry-view.c:995
 #: ../widgets/rb-entry-view.c:1607 ../widgets/rb-entry-view.c:1620
 #: ../widgets/rb-song-info.c:1467
 msgid "Never"
@@ -1576,15 +1562,17 @@ msgstr "Mejores canciones de %s"
 msgid "Nothing Playing"
 msgstr "No se está reproduciendo nada"
 
-#. this isn't particularly well worded; maybe that's a sign that it's too ugly
-#. maybe we could provide a form to fill in?
-#: ../plugins/context/context/LastFM.py:38
+#: ../plugins/context/context/LastFM.py:36
+#| msgid ""
+#| "This information is only available to last.fm users. Please enter your "
+#| "account details in the last.fm plugin configuration."
 msgid ""
-"This information is only available to last.fm users. Please enter your "
-"account details in the last.fm plugin configuration."
+"This information is only available to Last.fm users. Ensure the Last.fm "
+"plugin is enabled, select Last.fm in the side pane, and log in."
 msgstr ""
-"Esta información sólo está disponible para usuarios de last.fm. Introduzca "
-"los detalles de su cuenta en la configuración del complemento de last.fm."
+"Esta información sólo está disponible para usuarios de Last.fm. Asegúrese de "
+"que el complemento «Last.fm» está activado, seleccione Last.fm en el panel "
+"lateral e inicie sesión."
 
 #: ../plugins/context/context/LinksTab.py:55
 msgid "Links"
@@ -2936,7 +2924,7 @@ msgstr ""
 msgid "Power Manager"
 msgstr "Gestor de energía"
 
-#: ../plugins/power-manager/rb-power-manager-plugin.c:197
+#: ../plugins/power-manager/rb-power-manager-plugin.c:177
 msgid "Playing"
 msgstr "Reproduciendo"
 
@@ -3100,12 +3088,14 @@ msgid "_Close"
 msgstr "_Cerrar"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:145
-msgid "Hide the music player window"
-msgstr "Ocultar la ventana del reproductor de música"
+#: ../remote/dbus/rb-client.c:92
+msgid "Hide the Rhythmbox window"
+msgstr "Ocultar la ventana de Rhythmbox"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:151
-msgid "_Show Music Player"
-msgstr "_Mostrar el reproductor de música"
+#| msgid "Rhythmbox"
+msgid "_Show Rhythmbox"
+msgstr "Mo_strar Rhythmbox"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:152
 msgid "Choose music to play"
@@ -3158,18 +3148,10 @@ msgstr "por <i>%s</i>"
 msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:833
+#: ../plugins/status-icon/rb-status-icon-plugin.c:832
 #: ../widgets/rb-header.c:550
 msgid "Not Playing"
 msgstr "No se reproduce nada"
-
-#. Translators: this is used in notification bubble text to indicate that
-#. * playback is currently paused.  %s is the song title.
-#.
-#: ../plugins/status-icon/rb-status-icon-plugin.c:919
-#, c-format
-msgid "(Paused) %s"
-msgstr "%s (Pausado)"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:1
 msgid "Status Icon"
@@ -3397,8 +3379,8 @@ msgid ""
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
 msgstr ""
-"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el URL, "
-"o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
+"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el "
+"URL, o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
 "todas formas?"
 
 #: ../podcast/rb-podcast-manager.c:1196
@@ -3631,7 +3613,7 @@ msgstr "Estado"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "No iniciar una instancia nueva de Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:88 ../shell/main.c:123
+#: ../remote/dbus/rb-client.c:88 ../shell/main.c:123 ../shell/rb-shell.c:407
 msgid "Quit Rhythmbox"
 msgstr "Salir de Rhythmbox"
 
@@ -3642,10 +3624,6 @@ msgstr "Comprobar si Rhythmbox ya se está ejecutando"
 #: ../remote/dbus/rb-client.c:91
 msgid "Don't present an existing Rhythmbox window"
 msgstr "No presentar una ventana de Rhythmbox existente"
-
-#: ../remote/dbus/rb-client.c:92
-msgid "Hide the Rhythmbox window"
-msgstr "Ocultar la ventana de Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:94
 msgid "Jump to next song"
@@ -3804,46 +3782,46 @@ msgstr "Walk of life"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2278
+#: ../rhythmdb/rhythmdb.c:2285
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 "Para poder reproducir este archivo se necesitan complementos adicionales de "
 "GStreamer: %s"
 
-#: ../rhythmdb/rhythmdb.c:2310
+#: ../rhythmdb/rhythmdb.c:2317
 msgid "invalid unicode in error message"
 msgstr "Unicode inválido en el mensaje de error"
 
-#: ../rhythmdb/rhythmdb.c:2376
+#: ../rhythmdb/rhythmdb.c:2383
 #, c-format
 msgid "Empty file"
 msgstr "Archivo vacío"
 
-#: ../rhythmdb/rhythmdb.c:3047
+#: ../rhythmdb/rhythmdb.c:3054
 msgid "Could not load the music database:"
 msgstr "No se pudo cargar la base de datos de la música:"
 
-#: ../rhythmdb/rhythmdb.c:4460
+#: ../rhythmdb/rhythmdb.c:4467
 #, c-format
 msgid "Checking (%d/%d)"
 msgstr "Comprobando (%d/%d)"
 
-#: ../rhythmdb/rhythmdb.c:4504
+#: ../rhythmdb/rhythmdb.c:4511
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minutos"
 
-#: ../rhythmdb/rhythmdb.c:4505
+#: ../rhythmdb/rhythmdb.c:4512
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hora"
 msgstr[1] "%ld horas"
 
-#: ../rhythmdb/rhythmdb.c:4506
+#: ../rhythmdb/rhythmdb.c:4513
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3851,7 +3829,7 @@ msgstr[0] "%ld día"
 msgstr[1] "%ld días"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4512
+#: ../rhythmdb/rhythmdb.c:4519
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s y %s"
@@ -3859,8 +3837,8 @@ msgstr "%s, %s y %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4518 ../rhythmdb/rhythmdb.c:4526
-#: ../rhythmdb/rhythmdb.c:4537
+#: ../rhythmdb/rhythmdb.c:4525 ../rhythmdb/rhythmdb.c:4533
+#: ../rhythmdb/rhythmdb.c:4544
 #, c-format
 msgid "%s and %s"
 msgstr "%s y %s"
@@ -4321,8 +4299,9 @@ msgid "Couldn't display help"
 msgstr "No se ha podido mostrar la ayuda"
 
 #: ../shell/rb-shell-preferences.c:198
-msgid "Music Player Preferences"
-msgstr "Preferencias del reproductor de música"
+#| msgid "Jamendo Preferences"
+msgid "Rhythmbox Preferences"
+msgstr "Preferencias de Rhythmbox"
 
 #: ../shell/rb-shell-preferences.c:256
 msgid "General"
@@ -4373,32 +4352,31 @@ msgid "_About"
 msgstr "Acerca _de"
 
 #: ../shell/rb-shell.c:401
-msgid "Show information about the music player"
-msgstr "Mostrar información sobre el reproductor de música"
+#| msgid "Show information about the music player"
+msgid "Show information about Rhythmbox"
+msgstr "Mostrar información acerca de Rhythmbox"
 
 #: ../shell/rb-shell.c:403
 msgid "_Contents"
 msgstr "Índ_ice"
 
 #: ../shell/rb-shell.c:404
-msgid "Display music player help"
-msgstr "Mostrar la ayuda del reproductor de música"
+#| msgid "Quit Rhythmbox"
+msgid "Display Rhythmbox help"
+msgstr "Mostrar la ayuda de Rhythmbox"
 
 #: ../shell/rb-shell.c:406
 msgid "_Quit"
 msgstr "_Salir"
-
-#: ../shell/rb-shell.c:407
-msgid "Quit the music player"
-msgstr "Salir del reproductor de música"
 
 #: ../shell/rb-shell.c:409
 msgid "Prefere_nces"
 msgstr "Prefere_ncias"
 
 #: ../shell/rb-shell.c:410
-msgid "Edit music player preferences"
-msgstr "Editar las preferencias del reproductor de música"
+#| msgid "Edit music player preferences"
+msgid "Edit Rhythmbox preferences"
+msgstr "Editar las preferencias de Rhythmbox"
 
 #: ../shell/rb-shell.c:412
 msgid "Plu_gins"
@@ -5407,6 +5385,30 @@ msgstr "En el escritorio"
 #: ../widgets/rb-song-info.c:1261
 msgid "Unknown location"
 msgstr "Dirección desconocida"
+
+#~ msgid "Internal GStreamer problem; file a bug"
+#~ msgstr "Problema interno de GStreamer, archive un error"
+
+#~ msgid "D-BUS communication error"
+#~ msgstr "Error de comunicación de D-BUS"
+
+#~ msgid "Hide the music player window"
+#~ msgstr "Ocultar la ventana del reproductor de música"
+
+#~ msgid "_Show Music Player"
+#~ msgstr "_Mostrar el reproductor de música"
+
+#~ msgid "(Paused) %s"
+#~ msgstr "%s (Pausado)"
+
+#~ msgid "Music Player Preferences"
+#~ msgstr "Preferencias del reproductor de música"
+
+#~ msgid "Display music player help"
+#~ msgstr "Mostrar la ayuda del reproductor de música"
+
+#~ msgid "Quit the music player"
+#~ msgstr "Salir del reproductor de música"
 
 #~ msgid "Support for recording audio CDs from playlists"
 #~ msgstr "Soporte para grabar un CD de sonido desde listas de reproducción"
