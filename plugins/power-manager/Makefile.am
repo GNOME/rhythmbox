@@ -27,7 +27,6 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(DBUS_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 plugin_in_files = power-manager.rb-plugin.in
@@ -40,4 +39,3 @@ EXTRA_DIST = $(plugin_in_files)
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)
-

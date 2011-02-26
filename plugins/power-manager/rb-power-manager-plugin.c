@@ -34,8 +34,8 @@
 #include <config.h>
 
 #include <glib/gi18n.h>
-#include <dbus/dbus-glib.h>
 #include <gdk/gdkx.h>
+#include <gio/gio.h>
 
 #include "rb-plugin.h"
 #include "rb-debug.h"
@@ -51,8 +51,7 @@ typedef struct
 {
 	RBPlugin parent;
 
-	DBusGConnection *bus;
-	DBusGProxy *proxy;
+	GDBusProxy *proxy;
 	guint32 cookie;
 	gint handler_id;
 	gint timeout_id;
@@ -94,21 +93,13 @@ ignore_error (GError *error)
 		return TRUE;
 
 	/* ignore 'no such service' type errors */
-	if (error->domain == DBUS_GERROR) {
-		if (error->code == DBUS_GERROR_NAME_HAS_NO_OWNER ||
-		    error->code == DBUS_GERROR_SERVICE_UNKNOWN)
+	if (error->domain == G_DBUS_ERROR) {
+		if (error->code == G_DBUS_ERROR_NAME_HAS_NO_OWNER ||
+		    error->code == G_DBUS_ERROR_SERVICE_UNKNOWN)
 			return TRUE;
 	}
 
 	return FALSE;
-}
-
-static void
-proxy_destroy_cb (DBusGProxy *proxy,
-		  RBGPMPlugin *plugin)
-{
-	rb_debug ("dbus proxy destroyed");
-	plugin->proxy = NULL;
 }
 
 static gboolean
@@ -120,12 +111,14 @@ create_dbus_proxy (RBGPMPlugin *plugin)
 		return TRUE;
 	}
 
-	/* try new name first */
-	plugin->proxy = dbus_g_proxy_new_for_name_owner (plugin->bus,
-						   "org.gnome.SessionManager",
-						   "/org/gnome/SessionManager",
-						   "org.gnome.SessionManager",
-						   &error);
+	plugin->proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
+						       G_DBUS_PROXY_FLAGS_NONE,
+						       NULL,
+						       "org.gnome.SessionManager",
+						       "/org/gnome/SessionManager",
+						       "org.gnome.SessionManager",
+						       NULL,
+						       &error);
 	if (error != NULL && ignore_error (error) == FALSE) {
 		g_warning ("Failed to create dbus proxy for org.gnome.SessionManager: %s",
 			   error->message);
@@ -133,48 +126,39 @@ create_dbus_proxy (RBGPMPlugin *plugin)
 		return FALSE;
 	}
 
-	g_signal_connect_object (plugin->proxy,
-				 "destroy",
-				 G_CALLBACK (proxy_destroy_cb),
-				 plugin, 0);
 	return TRUE;
 }
 
 static void
-inhibit_cb (DBusGProxy *proxy,
-	    DBusGProxyCall *call_id,
-	    RBGPMPlugin *plugin)
+inhibit_done (GObject *proxy, GAsyncResult *res, RBGPMPlugin *plugin)
 {
 	GError *error = NULL;
+	GVariant *result;
 
-	dbus_g_proxy_end_call (proxy,
-			       call_id,
-			       &error,
-			       G_TYPE_UINT, &plugin->cookie,
-			       G_TYPE_INVALID);
+	result = g_dbus_proxy_call_finish (G_DBUS_PROXY (proxy), res, &error);
 	if (error != NULL) {
 		if (!ignore_error (error)) {
-			g_warning ("Failed to invoke %s.Inhibit: %s",
-				   dbus_g_proxy_get_interface (proxy),
-				   error->message);
+			g_warning ("Unable to inhibit session suspend: %s", error->message);
 		} else {
-			rb_debug ("inhibit failed: %s", error->message);
+			rb_debug ("unable to inhibit: %s", error->message);
 		}
-		g_error_free (error);
+		g_clear_error (&error);
 	} else {
-		rb_debug ("got cookie %u", plugin->cookie);
+		g_variant_get (result, "(u)", &plugin->cookie);
+		rb_debug ("inhibited, got cookie %u", plugin->cookie);
 	}
 
-	g_object_unref (plugin);
+	g_variant_unref (result);
 }
 
 static gboolean
 inhibit (RBGPMPlugin *plugin)
 {
 	GtkWindow *window;
-	plugin->timeout_id = 0;
 	gulong xid = 0;
+	GError *error = NULL;
 
+	plugin->timeout_id = 0;
 	if (plugin->cookie != 0) {
 		rb_debug ("Was going to inhibit gnome-session, but we already have done");
 		return FALSE;
@@ -188,45 +172,40 @@ inhibit (RBGPMPlugin *plugin)
 	g_object_ref (plugin);
 	g_object_get (plugin->shell, "window", &window, NULL);
 	xid = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (window)));
-	dbus_g_proxy_begin_call (plugin->proxy, "Inhibit",
-				 (DBusGProxyCallNotify) inhibit_cb,
-				 plugin,
-				 NULL,
-				 G_TYPE_STRING, "rhythmbox",
-				 G_TYPE_UINT, xid,
-				 G_TYPE_STRING, _("Playing"),
-				 G_TYPE_UINT, 4, /* flags */
-				 G_TYPE_INVALID);
+	g_dbus_proxy_call (plugin->proxy,
+			   "Inhibit",
+			   g_variant_new ("(susu)", "rhythmbox", xid, _("Playing"), 4),
+			   G_DBUS_CALL_FLAGS_NONE,
+			   -1,
+			   NULL,
+			   (GAsyncReadyCallback) inhibit_done,
+			   plugin);
+	if (error != NULL) {
+		g_warning ("Unable to inhibit session suspend: %s", error->message);
+		g_clear_error (&error);
+	}
 
 	return FALSE;
 }
 
 static void
-uninhibit_cb (DBusGProxy *proxy,
-	      DBusGProxyCall *call_id,
-	      RBGPMPlugin *plugin)
+uninhibit_done (GObject *proxy, GAsyncResult *res, RBGPMPlugin *plugin)
 {
 	GError *error = NULL;
+	GVariant *result;
 
-	dbus_g_proxy_end_call (proxy,
-			       call_id,
-			       &error,
-			       G_TYPE_INVALID);
+	result = g_dbus_proxy_call_finish (G_DBUS_PROXY (proxy), res, &error);
 	if (error != NULL) {
 		if (!ignore_error (error)) {
-			g_warning ("Failed to invoke %s.Inhibit: %s",
-				   dbus_g_proxy_get_interface (proxy),
-				   error->message);
+			g_warning ("Failed to uninhibit session suspend: %s", error->message);
 		} else {
-			rb_debug ("uninhibit failed: %s", error->message);
+			rb_debug ("failed to uninhibit: %s", error->message);
 		}
-		g_error_free (error);
+		g_clear_error (&error);
 	} else {
 		rb_debug ("uninhibited");
 		plugin->cookie = 0;
 	}
-
-	g_object_unref (plugin);
 }
 
 static gboolean
@@ -244,13 +223,14 @@ uninhibit (RBGPMPlugin *plugin)
 	}
 
 	rb_debug ("uninhibiting; cookie = %u", plugin->cookie);
-	g_object_ref (plugin);
-	dbus_g_proxy_begin_call (plugin->proxy, "Uninhibit",
-				 (DBusGProxyCallNotify) uninhibit_cb,
-				 plugin,
-				 NULL,
-				 G_TYPE_UINT, plugin->cookie,
-				 G_TYPE_INVALID);
+	g_dbus_proxy_call (plugin->proxy,
+			   "Uninhibit",
+			   g_variant_new ("(u)", plugin->cookie),
+			   G_DBUS_CALL_FLAGS_NONE,
+			   -1,
+			   NULL,
+			   (GAsyncReadyCallback) uninhibit_done,
+			   plugin);
 	return FALSE;
 }
 
@@ -275,18 +255,12 @@ impl_activate (RBPlugin *rbplugin,
 	       RBShell *shell)
 {
 	RBGPMPlugin *plugin;
-	GError *error = NULL;
 	GObject *shell_player;
 	gboolean playing;
 
 	plugin = RB_GPM_PLUGIN (rbplugin);
 
 	plugin->shell = g_object_ref (shell);
-	plugin->bus = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
-	if (plugin->bus == NULL) {
-		g_warning ("Couldn't connect to system bus: %s", (error) ? error->message : "(null)");
-		return;
-	}
 
 	g_object_get (shell, "shell-player", &shell_player, NULL);
 
@@ -337,4 +311,3 @@ impl_deactivate (RBPlugin *rbplugin,
 		plugin->proxy = NULL;
 	}
 }
-
