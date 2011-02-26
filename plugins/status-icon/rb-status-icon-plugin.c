@@ -55,7 +55,7 @@
 
 #include "rb-tray-icon-gtk.h"
 
-#define TRAY_ICON_DEFAULT_TOOLTIP _("Music Player")
+#define TRAY_ICON_DEFAULT_TOOLTIP _("Rhythmbox")
 
 #define TOOLTIP_IMAGE_BORDER_WIDTH	1
 #define PLAYING_ENTRY_NOTIFY_TIME	4
@@ -142,13 +142,13 @@ RB_PLUGIN_REGISTER(RBStatusIconPlugin, rb_status_icon_plugin)
 static GtkActionEntry rb_status_icon_plugin_actions [] =
 {
 	{ "MusicClose", GTK_STOCK_CLOSE, N_("_Close"), "<control>W",
-	  N_("Hide the music player window"),
+	  N_("Hide the Rhythmbox window"),
 	  G_CALLBACK (toggle_window_cmd) }
 };
 
 static GtkToggleActionEntry rb_status_icon_plugin_toggle_entries [] =
 {
-	{ "TrayShowWindow", NULL, N_("_Show Music Player"), NULL,
+	{ "TrayShowWindow", NULL, N_("_Show Rhythmbox"), NULL,
 	  N_("Choose music to play"),
 	  G_CALLBACK (show_window_cmd) },
 	{ "TrayShowNotifications", NULL, N_("Show N_otifications"), NULL,
@@ -1554,10 +1554,10 @@ impl_activate (RBPlugin *bplugin,
 		update_current_playing_data (plugin, entry);
 		rhythmdb_entry_unref (entry);
 	} else {
-		/* display the (generic) app name rather than "Not Playing" for
+		/* display the app name rather than "Not Playing" for
 		 * the initial notification
 		 */
-		plugin->priv->current_title = g_strdup (_("Music Player"));
+		plugin->priv->current_title = g_strdup (_("Rhythmbox"));
 		plugin->priv->current_album_and_artist = g_strdup ("");
 	}
 	update_tooltip (plugin);

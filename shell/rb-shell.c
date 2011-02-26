@@ -398,16 +398,16 @@ static GtkActionEntry rb_shell_actions [] =
 	  N_("Choose file to be added to the Library"),
 	  G_CALLBACK (rb_shell_cmd_add_file_to_library) },
 	{ "HelpAbout", GTK_STOCK_ABOUT, N_("_About"), NULL,
-	  N_("Show information about the music player"),
+	  N_("Show information about Rhythmbox"),
 	  G_CALLBACK (rb_shell_cmd_about) },
 	{ "HelpContents", GTK_STOCK_HELP, N_("_Contents"), "F1",
-	  N_("Display music player help"),
+	  N_("Display Rhythmbox help"),
 	  G_CALLBACK (rb_shell_cmd_contents) },
 	{ "MusicQuit", GTK_STOCK_QUIT, N_("_Quit"), "<control>Q",
-	  N_("Quit the music player"),
+	  N_("Quit Rhythmbox"),
 	  G_CALLBACK (rb_shell_cmd_quit) },
 	{ "EditPreferences", GTK_STOCK_PREFERENCES, N_("Prefere_nces"), NULL,
-	  N_("Edit music player preferences"),
+	  N_("Edit Rhythmbox preferences"),
 	  G_CALLBACK (rb_shell_cmd_preferences) },
 	{ "EditPlugins", NULL, N_("Plu_gins"), NULL,
 	  N_("Change and configure plugins"),
@@ -1264,7 +1264,7 @@ construct_widgets (RBShell *shell)
 
 	/* initialize UI */
 	win = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
-	gtk_window_set_title (win, _("Music Player"));
+	gtk_window_set_title (win, _("Rhythmbox"));
 
 	shell->priv->window = GTK_WIDGET (win);
 	shell->priv->iconified = FALSE;
@@ -2242,7 +2242,7 @@ rb_shell_set_window_title (RBShell *shell,
 		shell->priv->cached_title = NULL;
 
 		gtk_window_set_title (GTK_WINDOW (shell->priv->window),
-				      _("Music Player"));
+				      _("Rhythmbox"));
 	}
 	else {
 		gboolean playing;
