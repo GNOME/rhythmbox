@@ -146,9 +146,9 @@ inhibit_done (GObject *proxy, GAsyncResult *res, RBGPMPlugin *plugin)
 	} else {
 		g_variant_get (result, "(u)", &plugin->cookie);
 		rb_debug ("inhibited, got cookie %u", plugin->cookie);
-	}
 
-	g_variant_unref (result);
+		g_variant_unref (result);
+	}
 }
 
 static gboolean
@@ -205,6 +205,8 @@ uninhibit_done (GObject *proxy, GAsyncResult *res, RBGPMPlugin *plugin)
 	} else {
 		rb_debug ("uninhibited");
 		plugin->cookie = 0;
+
+		g_variant_unref (result);
 	}
 }
 
