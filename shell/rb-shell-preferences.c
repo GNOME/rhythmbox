@@ -195,7 +195,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	gtk_dialog_set_default_response (GTK_DIALOG (shell_preferences),
 					 GTK_RESPONSE_CLOSE);
 
-	gtk_window_set_title (GTK_WINDOW (shell_preferences), _("Music Player Preferences"));
+	gtk_window_set_title (GTK_WINDOW (shell_preferences), _("Rhythmbox Preferences"));
 	gtk_window_set_resizable (GTK_WINDOW (shell_preferences), FALSE);
 
 	shell_preferences->priv->notebook = GTK_WIDGET (gtk_notebook_new ());
