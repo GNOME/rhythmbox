@@ -817,7 +817,6 @@ update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 	char *album = NULL;
 	char *title = NULL;
 	GString *secondary;
-	gboolean playing = FALSE;
 
 	const char *artist_template = NULL;
 	const char *album_template = NULL;
@@ -909,17 +908,7 @@ update_current_playing_data (RBStatusIconPlugin *plugin, RhythmDBEntry *entry)
 		title = g_strdup (_("Unknown"));
 	}
 
-	rb_shell_player_get_playing (plugin->priv->shell_player, &playing, NULL);
-	if (playing) {
-		plugin->priv->current_title = title;
-	} else {
-		/* Translators: this is used in notification bubble text to indicate that
-		 * playback is currently paused.  %s is the song title.
-		 */
-		plugin->priv->current_title = g_strdup_printf (_("(Paused) %s"), title);
-		g_free (title);
-	}
-
+	plugin->priv->current_title = title;
 	plugin->priv->current_album_and_artist = g_string_free (secondary, FALSE);
 }
 
