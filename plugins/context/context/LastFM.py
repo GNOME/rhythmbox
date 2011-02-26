@@ -33,9 +33,7 @@ URL_PREFIX = 'http://ws.audioscrobbler.com/2.0/?method='
 # this is probably john iacona's key
 API_KEY = '27151108bfce62e12c1f6341437e0e83'
 
-# this isn't particularly well worded; maybe that's a sign that it's too ugly
-# maybe we could provide a form to fill in?
-NO_ACCOUNT_ERROR = _("This information is only available to last.fm users. Please enter your account details in the last.fm plugin configuration.")
+NO_ACCOUNT_ERROR = _("This information is only available to Last.fm users. Ensure the Last.fm plugin is enabled, select Last.fm in the side pane, and log in.")
 
 USERNAME_GCONF_KEY = "/apps/rhythmbox/audioscrobbler/username"
 
