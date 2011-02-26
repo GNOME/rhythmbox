@@ -317,16 +317,30 @@ source_deleted_cb (RBMtpSource *source, RBMtpPlugin *plugin)
 	plugin->mtp_sources = g_list_remove (plugin->mtp_sources, source);
 }
 
+static int
+get_property_as_int (GUdevDevice *device, const char *property, int base)
+{
+	const char *strvalue;
+
+	strvalue = g_udev_device_get_property (device, property);
+	if (strvalue == NULL) {
+		return 0;
+	}
+
+	return strtol (strvalue, NULL, base);
+}
+
 static RBSource *
 create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMtpPlugin *plugin)
 {
-	GUdevDeviceNumber device_number;
 	GUdevDevice *device = G_UDEV_DEVICE (device_obj);
-	int i;
-	int num_raw_devices;
-	const char *devnum_str;
+	LIBMTP_device_entry_t *device_list;
+	int numdevs;
+	int vendor;
+	int model;
+	int busnum;
 	int devnum;
-	LIBMTP_raw_device_t *raw_devices;
+	int i;
 
 	/* check subsystem == usb? */
 	if (g_strcmp0 (g_udev_device_get_subsystem (device), "usb") != 0) {
@@ -340,47 +354,40 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMt
 		return NULL;
 	}
 
-	device_number = g_udev_device_get_device_number (device);
-	if (device_number == 0) {
-		rb_debug ("can't get udev device number for device %s", g_udev_device_get_name (device));
+	/* get device info */
+	vendor = get_property_as_int (device, "ID_VENDOR_ID", 16);
+	model = get_property_as_int (device, "ID_MODEL_ID", 16);
+	busnum = get_property_as_int (device, "BUSNUM", 10);
+	devnum = get_property_as_int (device, "DEVNUM", 10);
+	if (vendor == 0 || model == 0) {
+		rb_debug ("couldn't get vendor or model ID for device (%x:%x)", vendor, model);
 		return NULL;
 	}
-	/* fun thing: usb device numbers are zero padded, which causes strtol to
-	 * interpret them as octal if you don't specify a base.
-	 */
-	devnum_str = g_udev_device_get_property (device, "DEVNUM");
-	if (devnum_str == NULL) {
-		rb_debug ("device %s doesn't have a USB device number", g_udev_device_get_name (device));
-		return NULL;
-	}
-	devnum = strtol (devnum_str, NULL, 10);
 
-	rb_debug ("trying to match device %"G_GINT64_MODIFIER"x (usb device %d) against detected mtp devices",
-		  (guint64)device_number, devnum);
-
-	/* see what devices libmtp can find */
-	if (LIBMTP_Detect_Raw_Devices (&raw_devices, &num_raw_devices) == 0) {
-		for (i = 0; i < num_raw_devices; i++) {
+	rb_debug ("matching device %x:%x against libmtp device list", vendor, model);
+	LIBMTP_Get_Supported_Devices_List(&device_list, &numdevs);
+	for (i = 0; i < numdevs; i++) {
+		if (device_list[i].vendor_id == vendor &&
+		    device_list[i].product_id == model) {
+			LIBMTP_raw_device_t rawdevice;
 			RBSource *source;
 
-			rb_debug ("detected mtp device: device number %d", raw_devices[i].devnum);
-			if (devnum != raw_devices[i].devnum) {
-				rb_debug ("device number mismatches: %d vs %d", devnum, raw_devices[i].devnum);
-				continue;
-			}
+			rb_debug ("found libmtp device list entry (model: %s, vendor: %s)",
+				  device_list[i].vendor, device_list[i].product);
 
-			rb_debug ("device matched, creating a source");
-			source = rb_mtp_source_new (plugin->shell, RB_PLUGIN (plugin), device, &raw_devices[i]);
+			rawdevice.device_entry = device_list[i];
+			rawdevice.bus_location = busnum;
+			rawdevice.devnum = devnum;
+
+			source = rb_mtp_source_new (plugin->shell, RB_PLUGIN (plugin), device, &rawdevice);
 
 			plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
 			g_signal_connect_object (G_OBJECT (source),
 						"deleted", G_CALLBACK (source_deleted_cb),
 						plugin, 0);
-			free (raw_devices);
 			return source;
 		}
 	}
-	free (raw_devices);
 
 	rb_debug ("device didn't match anything");
 	return NULL;
