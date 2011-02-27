@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&component=general\n"
-"POT-Creation-Date: 2011-02-24 17:24+0000\n"
-"PO-Revision-Date: 2011-02-24 18:32+0100\n"
+"POT-Creation-Date: 2011-02-26 10:24+0000\n"
+"PO-Revision-Date: 2011-02-27 11:56+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -550,15 +550,9 @@ msgstr "Nedávno přidané"
 msgid "Recently Played"
 msgstr "Nedávno přehrané"
 
-#. display the (generic) app name rather than "Not Playing" for
-#. * the initial notification
-#.
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1
-#: ../plugins/status-icon/rb-status-icon-plugin.c:58
-#: ../plugins/status-icon/rb-status-icon-plugin.c:1571
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1535 ../shell/rb-shell.c:1267
-#: ../shell/rb-shell.c:2245
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1535
 msgid "Music Player"
 msgstr "Přehrávač hudby"
 
@@ -567,9 +561,15 @@ msgstr "Přehrávač hudby"
 msgid "Play and organize your music collection"
 msgstr "Přehrávat a organizovat vaši hudební kolekce"
 
+#. display the app name rather than "Not Playing" for
+#. * the initial notification
+#.
 #: ../data/rhythmbox.desktop.in.in.h:3
 #: ../data/rhythmbox-device.desktop.in.in.h:3
-#: ../plugins/status-icon/rb-tray-icon-gtk.c:152
+#: ../plugins/status-icon/rb-status-icon-plugin.c:58
+#: ../plugins/status-icon/rb-status-icon-plugin.c:1560
+#: ../plugins/status-icon/rb-tray-icon-gtk.c:152 ../shell/rb-shell.c:1267
+#: ../shell/rb-shell.c:2245
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -701,7 +701,7 @@ msgstr "%e. %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:642
 #: ../plugins/mtpdevice/rb-mtp-source.c:1133
 #: ../plugins/mtpdevice/rb-mtp-source.c:1522
-#: ../plugins/status-icon/rb-status-icon-plugin.c:909
+#: ../plugins/status-icon/rb-status-icon-plugin.c:908
 #: ../podcast/rb-feed-podcast-properties-dialog.c:340
 #: ../podcast/rb-podcast-manager.c:1938
 #: ../podcast/rb-podcast-properties-dialog.c:622
@@ -765,20 +765,6 @@ msgstr "%d:%02d z %d:%02d"
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d z %d:%02d:%02d"
-
-#: ../metadata/rb-metadata-dbus-client.c:381
-#, c-format
-msgid "Internal GStreamer problem; file a bug"
-msgstr "Interní problém GStreameru; ohlašte chybu"
-
-#: ../metadata/rb-metadata-dbus-client.c:399
-#: ../metadata/rb-metadata-dbus-client.c:453
-#: ../metadata/rb-metadata-dbus-client.c:790
-#: ../metadata/rb-metadata-dbus-client.c:800
-#: ../metadata/rb-metadata-dbus-client.c:808
-#, c-format
-msgid "D-BUS communication error"
-msgstr "Chyba při komunikaci přes D-BUS"
 
 #: ../metadata/rb-metadata-gst.c:584 ../metadata/rb-metadata-gst.c:1153
 #, c-format
@@ -1076,7 +1062,7 @@ msgstr "Oblíbené stopy"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:7
 #: ../plugins/iradio/rb-station-properties-dialog.c:498
-#: ../rhythmdb/rhythmdb.c:3605 ../widgets/rb-entry-view.c:995
+#: ../rhythmdb/rhythmdb.c:3612 ../widgets/rb-entry-view.c:995
 #: ../widgets/rb-entry-view.c:1607 ../widgets/rb-entry-view.c:1620
 #: ../widgets/rb-song-info.c:1467
 msgid "Never"
@@ -1567,15 +1553,17 @@ msgstr "Nejlepší skladby od %s"
 msgid "Nothing Playing"
 msgstr "Nic se nepřehrává"
 
-#. this isn't particularly well worded; maybe that's a sign that it's too ugly
-#. maybe we could provide a form to fill in?
-#: ../plugins/context/context/LastFM.py:38
+#: ../plugins/context/context/LastFM.py:36
+#| msgid ""
+#| "This information is only available to last.fm users. Please enter your "
+#| "account details in the last.fm plugin configuration."
 msgid ""
-"This information is only available to last.fm users. Please enter your "
-"account details in the last.fm plugin configuration."
+"This information is only available to Last.fm users. Ensure the Last.fm "
+"plugin is enabled, select Last.fm in the side pane, and log in."
 msgstr ""
-"Tato informace je dostupná pouze pro uživatele last.fm. Vyplňte prosím údaje "
-"o svém účtu v nastavení zásuvného modulu last.fm."
+"Tato informace je dostupná pouze pro uživatele last.fm. Ujistěte se, že je "
+"povolen zásuvný modul Last.fm, vyberte jej v postranním panelu a přihlaste "
+"se."
 
 #: ../plugins/context/context/LinksTab.py:55
 msgid "Links"
@@ -2914,7 +2902,7 @@ msgstr "Zabraňuje Správě napájení v uspání počítače během přehrává
 msgid "Power Manager"
 msgstr "Správa napájení"
 
-#: ../plugins/power-manager/rb-power-manager-plugin.c:197
+#: ../plugins/power-manager/rb-power-manager-plugin.c:177
 msgid "Playing"
 msgstr "Přehrává se"
 
@@ -3077,12 +3065,14 @@ msgid "_Close"
 msgstr "_Zavřít"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:145
-msgid "Hide the music player window"
-msgstr "Skrýt okno přehrávače hudby"
+#: ../remote/dbus/rb-client.c:92
+msgid "Hide the Rhythmbox window"
+msgstr "Skrýt okno Rhythmboxu"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:151
-msgid "_Show Music Player"
-msgstr "_Zobrazit přehrávač"
+#| msgid "Rhythmbox"
+msgid "_Show Rhythmbox"
+msgstr "_Zobrazit Rhythmbox"
 
 #: ../plugins/status-icon/rb-status-icon-plugin.c:152
 msgid "Choose music to play"
@@ -3135,18 +3125,10 @@ msgstr "od <i>%s</i>"
 msgid "from <i>%s</i>"
 msgstr "z <i>%s</i>"
 
-#: ../plugins/status-icon/rb-status-icon-plugin.c:833
+#: ../plugins/status-icon/rb-status-icon-plugin.c:832
 #: ../widgets/rb-header.c:550
 msgid "Not Playing"
 msgstr "Nepřehrává se"
-
-#. Translators: this is used in notification bubble text to indicate that
-#. * playback is currently paused.  %s is the song title.
-#.
-#: ../plugins/status-icon/rb-status-icon-plugin.c:919
-#, c-format
-msgid "(Paused) %s"
-msgstr "(Pozastaveno) %s"
 
 #: ../plugins/status-icon/status-icon.rb-plugin.in.h:1
 msgid "Status Icon"
@@ -3612,7 +3594,7 @@ msgstr "Stav"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Nespouštějte novou instanci Rhythmboxu"
 
-#: ../remote/dbus/rb-client.c:88 ../shell/main.c:123
+#: ../remote/dbus/rb-client.c:88 ../shell/main.c:123 ../shell/rb-shell.c:407
 msgid "Quit Rhythmbox"
 msgstr "Ukončit Rhythmbox"
 
@@ -3623,10 +3605,6 @@ msgstr "Zkontrolovat, zda Rhythmbox již neběží"
 #: ../remote/dbus/rb-client.c:91
 msgid "Don't present an existing Rhythmbox window"
 msgstr "Nezobrazovat existující okno Rhythmboxu"
-
-#: ../remote/dbus/rb-client.c:92
-msgid "Hide the Rhythmbox window"
-msgstr "Skrýt okno Rhythmboxu"
 
 #: ../remote/dbus/rb-client.c:94
 msgid "Jump to next song"
@@ -3785,32 +3763,32 @@ msgstr "Kdepak, ty ptáčku, hnízdo máš"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2278
+#: ../rhythmdb/rhythmdb.c:2285
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 "K přehrávání tohoto souboru jsou zapotřebí dodatečné zásuvné moduly "
 "GStreamer: %s"
 
-#: ../rhythmdb/rhythmdb.c:2310
+#: ../rhythmdb/rhythmdb.c:2317
 msgid "invalid unicode in error message"
 msgstr "neplatné Unicode v chybové zprávě"
 
-#: ../rhythmdb/rhythmdb.c:2376
+#: ../rhythmdb/rhythmdb.c:2383
 #, c-format
 msgid "Empty file"
 msgstr "Prázdný soubor"
 
-#: ../rhythmdb/rhythmdb.c:3047
+#: ../rhythmdb/rhythmdb.c:3054
 msgid "Could not load the music database:"
 msgstr "Nepodařilo se načíst hudební databázi:"
 
-#: ../rhythmdb/rhythmdb.c:4460
+#: ../rhythmdb/rhythmdb.c:4467
 #, c-format
 msgid "Checking (%d/%d)"
 msgstr "Kontroluje se (%d/%d)"
 
-#: ../rhythmdb/rhythmdb.c:4504
+#: ../rhythmdb/rhythmdb.c:4511
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3818,7 +3796,7 @@ msgstr[0] "%ld minuta"
 msgstr[1] "%ld minuty"
 msgstr[2] "%ld minut"
 
-#: ../rhythmdb/rhythmdb.c:4505
+#: ../rhythmdb/rhythmdb.c:4512
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3826,7 +3804,7 @@ msgstr[0] "%ld hodina"
 msgstr[1] "%ld hodiny"
 msgstr[2] "%ld hodin"
 
-#: ../rhythmdb/rhythmdb.c:4506
+#: ../rhythmdb/rhythmdb.c:4513
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3835,7 +3813,7 @@ msgstr[1] "%ld dny"
 msgstr[2] "%ld dnů"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4512
+#: ../rhythmdb/rhythmdb.c:4519
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s a %s"
@@ -3843,8 +3821,8 @@ msgstr "%s, %s a %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4518 ../rhythmdb/rhythmdb.c:4526
-#: ../rhythmdb/rhythmdb.c:4537
+#: ../rhythmdb/rhythmdb.c:4525 ../rhythmdb/rhythmdb.c:4533
+#: ../rhythmdb/rhythmdb.c:4544
 #, c-format
 msgid "%s and %s"
 msgstr "%s a %s"
@@ -4302,8 +4280,9 @@ msgid "Couldn't display help"
 msgstr "Nepodařilo se zobrazit nápovědu"
 
 #: ../shell/rb-shell-preferences.c:198
-msgid "Music Player Preferences"
-msgstr "Nastavení přehrávače hudby"
+#| msgid "Jamendo Preferences"
+msgid "Rhythmbox Preferences"
+msgstr "Předvolby Rhythmbox"
 
 #: ../shell/rb-shell-preferences.c:256
 msgid "General"
@@ -4354,32 +4333,31 @@ msgid "_About"
 msgstr "O _aplikaci"
 
 #: ../shell/rb-shell.c:401
-msgid "Show information about the music player"
-msgstr "Zobrazit informace o přehrávači hudby"
+#| msgid "Show information about the music player"
+msgid "Show information about Rhythmbox"
+msgstr "Zobrazit informace o aplikaci Rhythmbox"
 
 #: ../shell/rb-shell.c:403
 msgid "_Contents"
 msgstr "_Obsah"
 
 #: ../shell/rb-shell.c:404
-msgid "Display music player help"
-msgstr "Zobrazit nápovědu přehrávače hudby"
+#| msgid "Quit Rhythmbox"
+msgid "Display Rhythmbox help"
+msgstr "Zobrazit nápovědu aplikace Rhythmbox"
 
 #: ../shell/rb-shell.c:406
 msgid "_Quit"
 msgstr "U_končit"
-
-#: ../shell/rb-shell.c:407
-msgid "Quit the music player"
-msgstr "Ukončit přehrávač hudby"
 
 #: ../shell/rb-shell.c:409
 msgid "Prefere_nces"
 msgstr "_Nastavení"
 
 #: ../shell/rb-shell.c:410
-msgid "Edit music player preferences"
-msgstr "Upravit předvolby přehrávače hudby"
+#| msgid "Edit music player preferences"
+msgid "Edit Rhythmbox preferences"
+msgstr "Upravit předvolby aplikace Rhythmbox"
 
 #: ../shell/rb-shell.c:412
 msgid "Plu_gins"
@@ -5393,6 +5371,30 @@ msgstr "Na ploše"
 #: ../widgets/rb-song-info.c:1261
 msgid "Unknown location"
 msgstr "Neznámé umístění"
+
+#~ msgid "Internal GStreamer problem; file a bug"
+#~ msgstr "Interní problém GStreameru; ohlašte chybu"
+
+#~ msgid "D-BUS communication error"
+#~ msgstr "Chyba při komunikaci přes D-BUS"
+
+#~ msgid "Hide the music player window"
+#~ msgstr "Skrýt okno přehrávače hudby"
+
+#~ msgid "_Show Music Player"
+#~ msgstr "_Zobrazit přehrávač"
+
+#~ msgid "(Paused) %s"
+#~ msgstr "(Pozastaveno) %s"
+
+#~ msgid "Music Player Preferences"
+#~ msgstr "Nastavení přehrávače hudby"
+
+#~ msgid "Display music player help"
+#~ msgstr "Zobrazit nápovědu přehrávače hudby"
+
+#~ msgid "Quit the music player"
+#~ msgstr "Ukončit přehrávač hudby"
 
 #~ msgid "Support for recording audio CDs from playlists"
 #~ msgstr "Podpora pro vypalování zvukových CD ze seznamů skladeb"
