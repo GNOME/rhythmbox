@@ -768,6 +768,8 @@ rhythmdb_init (RhythmDB *db)
 		eel_gconf_notification_add (CONF_MONITOR_LIBRARY,
 					   (GConfClientNotifyFunc)rhythmdb_monitor_library_changed_cb,
 					   db);
+
+	rhythmdb_dbus_register (db);
 }
 
 static GError *
@@ -1074,6 +1076,7 @@ rhythmdb_dispose (GObject *object)
 	g_return_if_fail (db->priv != NULL);
 
 	rhythmdb_dispose_monitoring (db);
+	rhythmdb_dbus_unregister (db);
 
 	if (db->priv->event_queue_watch_id != 0) {
 		g_source_remove (db->priv->event_queue_watch_id);

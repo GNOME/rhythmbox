@@ -2731,7 +2731,6 @@ rhythmdb_tree_entry_type_registered (RhythmDB *db,
 	/* ugh, this sucks, maybe store the name as a refstring in the object? */
 	g_object_get (entry_type, "name", &name, NULL);
 	rs_name = rb_refstring_find (name);
-	g_free (name);
 
 	if (rs_name)
 		entries = g_hash_table_lookup (rdb->priv->unknown_entry_types, rs_name);
@@ -2739,8 +2738,10 @@ rhythmdb_tree_entry_type_registered (RhythmDB *db,
 		g_mutex_unlock (RHYTHMDB_TREE(rdb)->priv->entries_lock);
 		rb_refstring_unref (rs_name);
 		rb_debug ("no entries of newly registered type %s loaded from db", name);
+		g_free (name);
 		return;
 	}
+	g_free (name);
 
 	for (e = entries; e != NULL; e = e->next) {
 		RhythmDBUnknownEntry *data;

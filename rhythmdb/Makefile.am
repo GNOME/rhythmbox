@@ -40,7 +40,8 @@ librhythmdb_la_SOURCES =				\
 	rhythmdb-query-results.c			\
 	rhythmdb-import-job.c				\
 	rhythmdb-entry-type.c				\
-	rhythmdb-song-entry-types.c
+	rhythmdb-song-entry-types.c			\
+	rhythmdb-dbus.c
 
 
 if USE_TREEDB

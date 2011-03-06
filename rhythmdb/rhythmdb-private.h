@@ -188,6 +188,8 @@ struct _RhythmDBPrivate
 	GMutex *entry_type_mutex;
 
 	gint next_entry_id;
+
+	guint dbus_object_id;
 };
 
 typedef struct
@@ -247,6 +249,10 @@ void       rhythmdb_read_encoded_property (RhythmDB *db, const char *data, Rhyth
 
 /* from rhythmdb-song-entry-types.c */
 void       rhythmdb_register_song_entry_types (RhythmDB *db);
+
+/* from rhythmdb-dbus.c */
+void rhythmdb_dbus_register (RhythmDB *db);
+void rhythmdb_dbus_unregister (RhythmDB *db);
 
 G_END_DECLS
 
