@@ -78,8 +78,6 @@
 
 #define VISUALIZATION_ICON_NAME	"visualization"
 
-#include <dbus/dbus-glib.h>
-
 #include "rb-vis-widget.h"
 
 /* preferences */
@@ -102,8 +100,6 @@
 #define RB_VISUALIZER_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_VISUALIZER_PLUGIN, RBVisualizerPluginClass))
 
 #define HIDE_CONTROLS_TIMEOUT	5 * 1000
-
-#define VISUALIZER_DBUS_PATH	"/org/gnome/Rhythmbox/Visualizer"
 
 /* playbin2 flag(s) */
 #define PLAYBIN2_FLAG_VIS	0x08
@@ -195,10 +191,6 @@ typedef struct
 	GtkWidget *song_info_label;
 	GtkWidget *play_button;
 	gboolean syncing_play;
-
-	gboolean dbus_interface_registered;
-	gboolean plugin_enabled;
-
 } RBVisualizerPlugin;
 
 typedef struct
@@ -218,11 +210,6 @@ static void create_controls (RBVisualizerPlugin *pi);
 static void enable_visualization (RBVisualizerPlugin *pi);
 static gboolean disable_visualization (RBVisualizerPlugin *pi, gboolean set_action);
 static void update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int monitor);
-
-gboolean rb_visualizer_start_remote (RBVisualizerPlugin *plugin, unsigned long window_id, GError **error);
-gboolean rb_visualizer_stop_remote (RBVisualizerPlugin *plugin, GError **error);
-
-#include "rb-visualizer-glue.h"
 
 static GtkToggleActionEntry rb_visualizer_plugin_toggle_actions [] =
 {
@@ -1800,23 +1787,6 @@ impl_activate (RBPlugin *plugin,
 					 "window-title-changed",
 					 G_CALLBACK (rb_visualizer_plugin_window_title_change_cb),
 					 pi, 0);
-
-	/* add dbus interface */
-	if (pi->dbus_interface_registered == FALSE) {
-		DBusGConnection *conn;
-		GError *error = NULL;
-
-		conn = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
-		if (conn != NULL) {
-			dbus_g_object_type_install_info (RB_TYPE_VISUALIZER_PLUGIN,
-							 &dbus_glib_rb_visualizer_object_info);
-			dbus_g_connection_register_g_object (conn,
-							     VISUALIZER_DBUS_PATH,
-							     G_OBJECT (plugin));
-			pi->dbus_interface_registered = TRUE;
-		}
-	}
-	pi->plugin_enabled = TRUE;
 }
 
 static void
@@ -1840,10 +1810,6 @@ impl_deactivate	(RBPlugin *plugin,
 		g_object_unref (pi->action_group);
 		pi->action_group = NULL;
 	}
-
-	/* can't remove the dbus interface.  it only goes away when the
-	 * plugin object does, which is when the process exits.
-	 */
 
 	g_object_unref (uim);
 
@@ -1887,8 +1853,6 @@ impl_deactivate	(RBPlugin *plugin,
 	if (pi->shell != NULL) {
 		pi->shell = NULL;
 	}
-
-	pi->plugin_enabled = FALSE;
 }
 
 /* play controls (prev|play|next + song info (+ maybe seek bar) */
@@ -2369,29 +2333,4 @@ rb_visualizer_plugin_class_init (RBVisualizerPluginClass *klass)
 
 	plugin_class->activate = impl_activate;
 	plugin_class->deactivate = impl_deactivate;
-}
-
-gboolean
-rb_visualizer_start_remote (RBVisualizerPlugin *plugin, unsigned long window_id, GError **error)
-{
-	/* don't do anything is plugin is disabled */
-	if (plugin->plugin_enabled == FALSE)
-		return TRUE;
-
-	/* this might not work properly - might need a new visualizer mode */
-	plugin->remote_window = window_id;
-	update_window (plugin, DESKTOP_WINDOW, -1, -1);
-	return TRUE;
-}
-
-gboolean
-rb_visualizer_stop_remote (RBVisualizerPlugin *plugin, GError **error)
-{
-	/* don't do anything is plugin is disabled */
-	if (plugin->plugin_enabled == FALSE)
-		return TRUE;
-
-	plugin->remote_window = 0;
-	update_window (plugin, EMBEDDED, -1, -1);
-	return TRUE;
 }

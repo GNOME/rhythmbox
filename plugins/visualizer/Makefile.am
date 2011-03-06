@@ -14,7 +14,6 @@ libvisualizer_la_LIBTOOLFLAGS = --tag=disable-static
 libvisualizer_la_LIBADD = 				\
 	$(top_builddir)/shell/librhythmbox-core.la	\
 	-lgstinterfaces-0.10				\
-	$(DBUS_LIBS)					\
 	$(RHYTHMBOX_LIBS)
 
 INCLUDES = 						\
@@ -39,7 +38,6 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	-DPLUGIN_SRC_DIR=\""$(ROOT_UNINSTALLED_DIR)/plugins/visualizer"\" \
 	$(RHYTHMBOX_CFLAGS)				\
-	$(DBUS_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 gtkbuilderdir = $(plugindir)
@@ -81,12 +79,4 @@ CLEANFILES = 			\
 DISTCLEANFILES =		\
 	$(BUILT_SOURCES)	\
 	$(NULL)
-
-rb-visualizer-glue.h: rb-visualizer.xml Makefile
-	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_visualizer --mode=glib-server --output=$@ $<
-
-BUILT_SOURCES += rb-visualizer-glue.h
-EXTRA_DIST += rb-visualizer.xml
-
-libvisualizer_la_LIBADD += $(DBUS_LIBS)
 
