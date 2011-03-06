@@ -550,6 +550,15 @@ build_track_metadata (RBMprisPlugin *plugin,
 	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_SORTNAME, "rhythmbox:albumSortname", FALSE);
 	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, "rhythmbox:albumArtistSortname", FALSE);
 
+	/* if we have a streaming song title, provide the stream name too */
+	md = rhythmdb_entry_request_extra_metadata (plugin->db, entry, RHYTHMDB_PROP_STREAM_SONG_TITLE);
+	if (md != NULL) {
+		add_string_property (builder, entry, RHYTHMDB_PROP_TITLE, "rhythmbox:streamTitle", FALSE);
+
+		g_value_unset (md);
+		g_free (md);
+	}
+
 	add_ulong_property (builder, entry, RHYTHMDB_PROP_BITRATE, "xesam:audioBitrate", 1024, FALSE);	/* scale to bits per second */
 
 	add_year_date_property (builder, entry, RHYTHMDB_PROP_YEAR, "xesam:contentCreated");
