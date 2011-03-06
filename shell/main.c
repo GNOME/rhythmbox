@@ -283,17 +283,8 @@ main (int argc, char **argv)
 		rb_shell = rb_shell_new (no_registration, no_update, dry_run, autostarted, disable_plugins, rhythmdb_file, playlists_file);
 		g_object_weak_ref (G_OBJECT (rb_shell), main_shell_weak_ref_cb, NULL);
 		if (!no_registration && session_bus != NULL) {
-			GObject *obj;
-			const char *path;
-
 			dbus_g_object_type_install_info (RB_TYPE_SHELL, &dbus_glib_rb_shell_object_info);
 			dbus_g_connection_register_g_object (session_bus, "/org/gnome/Rhythmbox/Shell", G_OBJECT (rb_shell));
-
-			/* register player object */
-			dbus_g_object_type_install_info (RB_TYPE_SHELL_PLAYER, &dbus_glib_rb_shell_player_object_info);
-			obj = rb_shell_get_player (rb_shell);
-			path = rb_shell_get_player_path (rb_shell);
-			dbus_g_connection_register_g_object (session_bus, path, obj);
 
 			g_signal_connect (G_OBJECT (rb_shell),
 					  "database-load-complete",
