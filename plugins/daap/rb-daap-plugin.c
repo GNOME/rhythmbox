@@ -32,12 +32,11 @@
 #endif
 
 #include <string.h>
+#include <glib.h>
 #include <glib/gi18n-lib.h>
 #include <gmodule.h>
 #include <gtk/gtk.h>
-#include <glib.h>
-#include <glib-object.h>
-#include <dbus/dbus-glib.h>
+#include <gio/gio.h>
 
 #include <libsoup/soup.h>
 
@@ -63,6 +62,22 @@
 #define CONF_ENABLE_REMOTE	CONF_DAAP_PREFIX "/enable_remote"
 
 #define DAAP_DBUS_PATH	"/org/gnome/Rhythmbox/DAAP"
+#define DAAP_DBUS_IFACE "org.gnome.Rhythmbox.DAAP"
+
+static const char *rb_daap_dbus_iface =
+"<node>"
+"  <interface name='org.gnome.Rhythmbox.DAAP'>"
+"    <method name='AddDAAPSource'>"
+"     <arg type='s' name='service_name'/>"
+"      <arg type='s' name='host'/>"
+"      <arg type='u' name='port'/>"
+"    </method>"
+"    <method name='RemoveDAAPSource'>"
+"      <arg type='s' name='service_name'/>"
+"    </method>"
+"  </interface>"
+"</node>";
+
 
 struct RBDaapPluginPrivate
 {
@@ -72,7 +87,6 @@ struct RBDaapPluginPrivate
 	GtkWidget *preferences;
 	gboolean sharing;
 	gboolean shutdown;
-	gboolean dbus_intf_added;
 
 	GtkActionGroup *daap_action_group;
 	guint daap_ui_merge_id;
@@ -88,6 +102,9 @@ struct RBDaapPluginPrivate
 
 	GdkPixbuf *daap_share_pixbuf;
 	GdkPixbuf *daap_share_locked_pixbuf;
+
+	GDBusConnection *bus;
+	guint dbus_intf_id;
 };
 
 enum
@@ -129,9 +146,8 @@ static void libdmapsharing_debug (const char *domain,
 				  const char *message,
 				  gpointer data);
 
-gboolean rb_daap_add_source (RBDaapPlugin *plugin, gchar *service_name, gchar *host, unsigned int port, GError **error);
-gboolean rb_daap_remove_source (RBDaapPlugin *plugin, gchar *service_name, GError **error);
-#include "rb-daap-glue.h"
+static void register_daap_dbus_iface (RBDaapPlugin *plugin);
+static void unregister_daap_dbus_iface (RBDaapPlugin *plugin);
 
 RB_PLUGIN_REGISTER(RBDaapPlugin, rb_daap_plugin)
 
@@ -207,6 +223,11 @@ rb_daap_plugin_dispose (GObject *object)
 		plugin->priv->builder = NULL;
 	}
 
+	if (plugin->priv->bus) {
+		g_object_unref (plugin->priv->bus);
+		plugin->priv->bus = NULL;
+	}
+
 	G_OBJECT_CLASS (rb_daap_plugin_parent_class)->dispose (object);
 }
 
@@ -244,8 +265,6 @@ impl_activate (RBPlugin *bplugin,
 	GConfClient *client = eel_gconf_client_get_global ();
 	GtkUIManager *uimanager = NULL;
 	char *uifile;
-	DBusGConnection *conn;
-	GError *error = NULL;
 
 	plugin->priv->shutdown = FALSE;
 	plugin->priv->shell = g_object_ref (shell);
@@ -329,21 +348,7 @@ impl_activate (RBPlugin *bplugin,
 	if (plugin->priv->sharing)
 		rb_daap_sharing_init (shell);
 
-	/*
-	 * Add dbus interface
-	 */
-	if (plugin->priv->dbus_intf_added == FALSE) {
-		conn = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
-		if (conn != NULL) {
-			dbus_g_object_type_install_info (RB_TYPE_DAAP_PLUGIN,
-							 &dbus_glib_rb_daap_object_info);
-			dbus_g_connection_register_g_object (conn, DAAP_DBUS_PATH,
-							     G_OBJECT (bplugin));
-			plugin->priv->dbus_intf_added = TRUE;
-		}
-		else
-			rb_debug ("No session D-Bus. DAAP interface on D-Bus disabled.");
-	}
+	register_daap_dbus_iface (plugin);
 }
 
 static void
@@ -355,6 +360,7 @@ impl_deactivate	(RBPlugin *bplugin,
 
 	rb_debug ("Shutting down DAAP plugin");
 
+	unregister_daap_dbus_iface (plugin);
 	plugin->priv->shutdown = TRUE;
 
 	if (plugin->priv->sharing)
@@ -724,6 +730,7 @@ new_daap_share_location_added_cb (RBURIDialog *dialog,
 	rb_debug ("adding manually specified DAAP share at %s", location);
 	service.name = (char *) location;
 	service.host = (char *) location;
+	service.service_name = service.name;
 	service.port = port;
 	service.password_protected = FALSE;
 	mdns_service_added (NULL,
@@ -1015,35 +1022,110 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 	return plugin->priv->preferences;
 }
 
-gboolean
-rb_daap_add_source (RBDaapPlugin *plugin, gchar *service_name, gchar *host, unsigned int port, GError **error)
+/* DAAP DBus interface */
+
+static void
+daap_dbus_method_call (GDBusConnection *connection,
+		       const char *sender,
+		       const char *object_path,
+		       const char *interface_name,
+		       const char *method_name,
+		       GVariant *parameters,
+		       GDBusMethodInvocation *invocation,
+		       RBDaapPlugin *plugin)
 {
-	DMAPMdnsBrowserService service;
+	if (plugin->priv->shutdown) {
+		rb_debug ("ignoring %s call", method_name);
+		return;
+	}
 
-	if (plugin->priv->shutdown)
-		return FALSE;
+	if (g_strcmp0 (method_name, "AddDAAPSource") == 0) {
+		DMAPMdnsBrowserService service = {0,};
+		g_variant_get (parameters, "(&s&su)", &service.name, &service.host, &service.port);
+		service.password_protected = FALSE;
+		service.service_name = service.name;
 
-	rb_debug ("Add DAAP source %s (%s:%d)", service_name, host, port);
+		rb_debug ("adding DAAP source %s (%s:%d)", service.name, service.host, service.port);
+		mdns_service_added (NULL, &service, plugin);
 
-	rb_debug ("adding manually specified DAAP share at %s", service_name);
-	service.name = service_name;
-	service.host = host;
-	service.port = port;
-	service.password_protected = FALSE;
-	mdns_service_added (NULL,
-			    &service,
-			    plugin);
+		g_dbus_method_invocation_return_value (invocation, NULL);
 
-	return TRUE;
+	} else if (g_strcmp0 (method_name, "RemoveDAAPSource") == 0) {
+		const char *service_name;
+
+		g_variant_get (parameters, "(&s)", &service_name);
+		rb_debug ("removing DAAP source %s", service_name);
+		mdns_service_removed (plugin->priv->mdns_browser, service_name, plugin);
+
+		g_dbus_method_invocation_return_value (invocation, NULL);
+	}
 }
 
-gboolean
-rb_daap_remove_source (RBDaapPlugin *plugin, gchar *service_name, GError **error)
+static const GDBusInterfaceVTable daap_dbus_vtable = {
+	(GDBusInterfaceMethodCallFunc) daap_dbus_method_call,
+	NULL,
+	NULL
+};
+
+static void
+register_daap_dbus_iface (RBDaapPlugin *plugin)
 {
-	if (plugin->priv->shutdown)
-		return FALSE;
-	rb_debug ("Remove DAAP source %s", service_name);
-	mdns_service_removed (plugin->priv->mdns_browser, service_name, plugin);
-	return TRUE;
+	GError *error = NULL;
+	GDBusNodeInfo *node_info;
+	GDBusInterfaceInfo *iface_info;
+
+	if (plugin->priv->dbus_intf_id != 0) {
+		rb_debug ("DAAP DBus interface already registered");
+		return;
+	}
+
+	if (plugin->priv->bus == NULL) {
+		plugin->priv->bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
+		if (plugin->priv->bus == NULL) {
+			rb_debug ("Unable to register DAAP DBus interface: %s", error->message);
+			g_clear_error (&error);
+			return;
+		}
+	}
+
+	node_info = g_dbus_node_info_new_for_xml (rb_daap_dbus_iface, &error);
+	if (error != NULL) {
+		rb_debug ("Unable to parse DAAP DBus spec: %s", error->message);
+		g_clear_error (&error);
+		return;
+	}
+
+	iface_info = g_dbus_node_info_lookup_interface (node_info, DAAP_DBUS_IFACE);
+	plugin->priv->dbus_intf_id =
+		g_dbus_connection_register_object (plugin->priv->bus,
+						   DAAP_DBUS_PATH,
+						   iface_info,
+						   &daap_dbus_vtable,
+						   g_object_ref (plugin),
+						   g_object_unref,
+						   &error);
+	if (error != NULL) {
+		rb_debug ("Unable to register DAAP DBus interface: %s", error->message);
+		g_clear_error (&error);
+	}
+
+	g_dbus_node_info_unref (node_info);
+}
+
+static void
+unregister_daap_dbus_iface (RBDaapPlugin *plugin)
+{
+	if (plugin->priv->dbus_intf_id == 0) {
+		rb_debug ("DAAP DBus interface not registered");
+		return;
+	}
+
+	if (plugin->priv->bus == NULL) {
+		rb_debug ("no bus connection");
+		return;
+	}
+
+	g_dbus_connection_unregister_object (plugin->priv->bus, plugin->priv->dbus_intf_id);
+	plugin->priv->dbus_intf_id = 0;
 }
 
