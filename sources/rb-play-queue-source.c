@@ -30,6 +30,7 @@
 
 #include <libxml/tree.h>
 #include <glib/gi18n.h>
+#include <gio/gio.h>
 #include <gtk/gtk.h>
 
 #include "rb-play-queue-source.h"
@@ -52,6 +53,21 @@
  * the usual horizontal space allowed for the side bar.
  */
 
+static const char *RB_PLAY_QUEUE_DBUS_PATH = "/org/gnome/Rhythmbox/PlayQueue";
+static const char *RB_PLAY_QUEUE_IFACE_NAME = "org.gnome.Rhythmbox.PlayQueue";
+
+static const char *rb_play_queue_dbus_spec =
+"<node>"
+"  <interface name='org.gnome.Rhythmbox.PlayQueue'>"
+"    <method name='AddToQueue'>"
+"      <arg type='s' name='uri'/>"
+"    </method>"
+"    <method name='RemoveFromQueue'>"
+"      <arg type='s' name='uri'/>"
+"    </method>"
+"    <method name='ClearQueue'/>"
+"  </interface>"
+"</node>";
 
 static void rb_play_queue_source_constructed (GObject *object);
 static void rb_play_queue_source_get_property (GObject *object,
@@ -85,6 +101,15 @@ static void rb_play_queue_source_cmd_shuffle (GtkAction *action,
 static GList *impl_get_ui_actions (RBDisplayPage *page);
 static gboolean impl_show_popup (RBDisplayPage *page);
 
+static void rb_play_queue_dbus_method_call (GDBusConnection *connection,
+					    const char *sender,
+					    const char *object_path,
+					    const char *interface_name,
+					    const char *method_name,
+					    GVariant *parameters,
+					    GDBusMethodInvocation *invocation,
+					    RBPlayQueueSource *source);
+
 #define PLAY_QUEUE_SOURCE_SONGS_POPUP_PATH "/QueuePlaylistViewPopup"
 #define PLAY_QUEUE_SOURCE_SIDEBAR_POPUP_PATH "/QueueSidebarViewPopup"
 #define PLAY_QUEUE_SOURCE_POPUP_PATH "/QueueSourcePopup"
@@ -97,6 +122,9 @@ struct _RBPlayQueueSourcePrivate
 	GtkTreeViewColumn *sidebar_column;
 	GtkActionGroup *action_group;
 	RBPlayOrder *queue_play_order;
+
+	guint dbus_object_id;
+	GDBusConnection *bus;
 };
 
 enum
@@ -117,6 +145,12 @@ static GtkActionEntry rb_play_queue_source_actions [] =
 	{ "ShuffleQueue", GNOME_MEDIA_SHUFFLE, N_("Shuffle Queue"), NULL,
 	  N_("Shuffle the tracks in the play queue"),
 	  G_CALLBACK (rb_play_queue_source_cmd_shuffle) }
+};
+
+static const GDBusInterfaceVTable play_queue_vtable = {
+	(GDBusInterfaceMethodCallFunc) rb_play_queue_dbus_method_call,
+	NULL,
+	NULL
 };
 
 static void
@@ -143,6 +177,14 @@ rb_play_queue_source_dispose (GObject *object)
 	if (priv->queue_play_order != NULL) {
 		g_object_unref (priv->queue_play_order);
 		priv->queue_play_order = NULL;
+	}
+
+	if (priv->bus != NULL) {
+		if (priv->dbus_object_id) {
+			g_dbus_connection_unregister_object (priv->bus, priv->dbus_object_id);
+			priv->dbus_object_id = 0;
+		}
+		g_object_unref (priv->bus);
 	}
 
 	G_OBJECT_CLASS (rb_play_queue_source_parent_class)->dispose (object);
@@ -280,6 +322,32 @@ rb_play_queue_source_constructed (GObject *object)
 				 source, 0);
 
 	rb_play_queue_source_update_count (source, GTK_TREE_MODEL (model), 0);
+
+	/* register dbus interface */
+	priv->bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	if (priv->bus) {
+		GDBusNodeInfo *node_info;
+		GError *error = NULL;
+
+		node_info = g_dbus_node_info_new_for_xml (rb_play_queue_dbus_spec, &error);
+		if (error != NULL) {
+			g_warning ("Unable to parse playlist manager dbus spec: %s", error->message);
+			g_clear_error (&error);
+			return;
+		}
+
+		priv->dbus_object_id = g_dbus_connection_register_object (priv->bus,
+									  RB_PLAY_QUEUE_DBUS_PATH,
+									  g_dbus_node_info_lookup_interface (node_info, RB_PLAY_QUEUE_IFACE_NAME),
+									  &play_queue_vtable,
+									  source,
+									  NULL,
+									  &error);
+		if (error != NULL) {
+			g_warning ("Unable to register play queue dbus object: %s", error->message);
+			g_clear_error (&error);
+		}
+	}
 }
 
 static void
@@ -520,3 +588,76 @@ impl_get_ui_actions (RBDisplayPage *page)
 	return actions;
 }
 
+static void
+rb_play_queue_dbus_method_call (GDBusConnection *connection,
+				const char *sender,
+				const char *object_path,
+				const char *interface_name,
+				const char *method_name,
+				GVariant *parameters,
+				GDBusMethodInvocation *invocation,
+				RBPlayQueueSource *source)
+{
+	RhythmDBEntry *entry;
+	RhythmDB *db;
+	const char *uri;
+
+	if (g_strcmp0 (interface_name, RB_PLAY_QUEUE_IFACE_NAME) != 0) {
+		rb_debug ("method call on unexpected interface %s", interface_name);
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
+		return;
+	}
+
+	if (g_strcmp0 (method_name, "AddToQueue") == 0) {
+		g_variant_get (parameters, "(&s)", &uri);
+
+		db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
+		entry = rhythmdb_entry_lookup_by_location (db, uri);
+		if (entry == NULL) {
+			RBSource *urisource;
+			RBShell *shell;
+
+			g_object_get (source, "shell", &shell, NULL);
+			urisource = rb_shell_guess_source_for_uri (shell, uri);
+			g_object_unref (shell);
+
+			if (urisource != NULL) {
+				rb_source_add_uri (urisource, uri, NULL, NULL, NULL, NULL, NULL);
+			} else {
+				g_dbus_method_invocation_return_error (invocation,
+								       RB_SHELL_ERROR,
+								       RB_SHELL_ERROR_NO_SOURCE_FOR_URI,
+								       _("No registered source can handle URI %s"),
+								       uri);
+				return;
+			}
+		}
+		rb_static_playlist_source_add_location (RB_STATIC_PLAYLIST_SOURCE (source),
+							uri, -1);
+
+		g_dbus_method_invocation_return_value (invocation, NULL);
+	} else if (g_strcmp0 (method_name, "RemoveFromQueue") == 0) {
+		g_variant_get (parameters, "(&s)", &uri);
+
+		if (rb_playlist_source_location_in_map (RB_PLAYLIST_SOURCE (source), uri)) {
+			rb_static_playlist_source_remove_location (RB_STATIC_PLAYLIST_SOURCE (source), uri);
+		}
+
+		g_dbus_method_invocation_return_value (invocation, NULL);
+	} else if (g_strcmp0 (method_name, "ClearQueue") == 0) {
+		rb_play_queue_source_clear_queue (RB_PLAY_QUEUE_SOURCE (source));
+		g_dbus_method_invocation_return_value (invocation, NULL);
+	} else {
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
+	}
+}
