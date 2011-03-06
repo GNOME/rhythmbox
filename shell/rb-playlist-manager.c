@@ -65,18 +65,42 @@
 #define RB_PLAYLIST_MGR_VERSION (xmlChar *) "1.0"
 #define RB_PLAYLIST_MGR_PL (xmlChar *) "rhythmdb-playlists"
 
+#define RB_PLAYLIST_MANAGER_IFACE_NAME "org.gnome.Rhythmbox.PlaylistManager"
+#define RB_PLAYLIST_MANAGER_DBUS_PATH "/org/gnome/Rhythmbox/PlaylistManager"
+
+static const char *rb_playlist_manager_dbus_spec =
+"<node>"
+"  <interface name='org.gnome.Rhythmbox.PlaylistManager'>"
+"    <method name='getPlaylists'>"
+"      <arg type='as' direction='out'/>"
+"    </method>"
+"    <method name='createPlaylist'>"
+"      <arg type='s' name='name'/>"
+"    </method>"
+"    <method name='deletePlaylist'>"
+"      <arg type='s' name='name'/>"
+"    </method>"
+"    <method name='addToPlaylist'>"
+"      <arg type='s' name='playlist'/>"
+"      <arg type='s' name='uri'/>"
+"    </method>"
+"    <method name='removeFromPlaylist'>"
+"      <arg type='s' name='playlist'/>"
+"      <arg type='s' name='uri'/>"
+"    </method>"
+"    <method name='exportPlaylist'>"
+"      <arg type='s' name='playlist'/>"
+"      <arg type='s' name='uri'/>"
+"      <arg type='b' name='mp3_format'/>"
+"    </method>"
+"    <method name='importPlaylist'>"
+"      <arg type='s' name='uri'/>"
+"    </method>"
+"  </interface>"
+"</node>";
+
 static void rb_playlist_manager_class_init (RBPlaylistManagerClass *klass);
 static void rb_playlist_manager_init (RBPlaylistManager *mgr);
-static void rb_playlist_manager_dispose (GObject *object);
-static void rb_playlist_manager_finalize (GObject *object);
-static void rb_playlist_manager_set_property (GObject *object,
-					      guint prop_id,
-					      const GValue *value,
-					      GParamSpec *pspec);
-static void rb_playlist_manager_get_property (GObject *object,
-					      guint prop_id,
-					      GValue *value,
-					      GParamSpec *pspec);
 static void rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 						   RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_save_playlist (GtkAction *action,
@@ -200,137 +224,6 @@ static guint rb_playlist_manager_n_actions = G_N_ELEMENTS (rb_playlist_manager_a
 
 G_DEFINE_TYPE (RBPlaylistManager, rb_playlist_manager, G_TYPE_OBJECT)
 
-static void
-rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	object_class->dispose = rb_playlist_manager_dispose;
-	object_class->finalize = rb_playlist_manager_finalize;
-
-	object_class->set_property = rb_playlist_manager_set_property;
-	object_class->get_property = rb_playlist_manager_get_property;
-
-	g_object_class_install_property (object_class,
-					 PROP_PLAYLIST_NAME,
-                                         g_param_spec_string ("playlists_file",
-                                                              "name",
-                                                              "playlists file",
-                                                              NULL,
-                                                              G_PARAM_READWRITE));
-
-	g_object_class_install_property (object_class,
-					 PROP_SOURCE,
-					 g_param_spec_object ("source",
-							      "RBSource",
-							      "RBSource object",
-							      RB_TYPE_SOURCE,
-							      G_PARAM_READWRITE));
-
-	g_object_class_install_property (object_class,
-					 PROP_SHELL,
-					 g_param_spec_object ("shell",
-							      "RBShell",
-							      "RBShell object",
-							      RB_TYPE_SHELL,
-							      G_PARAM_READWRITE));
-
-	g_object_class_install_property (object_class,
-					 PROP_DISPLAY_PAGE_MODEL,
-					 g_param_spec_object ("display-page-model",
-							      "RBDisplayPageModel",
-							      "RBDisplayPageModel",
-							      RB_TYPE_DISPLAY_PAGE_MODEL,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
-					 PROP_DISPLAY_PAGE_TREE,
-					 g_param_spec_object ("display-page-tree",
-							      "RBDisplayPageTree",
-							      "RBDisplayPageTree",
-							      RB_TYPE_DISPLAY_PAGE_TREE,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	/**
-	 * RBPlaylistManager::playlist-added:
-	 * @manager: the #RBPlaylistManager
-	 * @source: the new #RBSource
-	 *
-	 * Emitted when a playlist is added, including when being loaded
-	 * from the user's playlist file.
-	 */
-	rb_playlist_manager_signals[PLAYLIST_ADDED] =
-		g_signal_new ("playlist_added",
-			      RB_TYPE_PLAYLIST_MANAGER,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlaylistManagerClass, playlist_added),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
-			      G_TYPE_NONE,
-			      1, G_TYPE_OBJECT);
-
-	/**
-	 * RBPlaylistManager::playlist-created:
-	 * @manager: the #RBPlaylistManager
-	 * @source: the newly created playlist #RBSource
-	 *
-	 * Emitted when a new playlist is created.
-	 */
-	rb_playlist_manager_signals[PLAYLIST_CREATED] =
-		g_signal_new ("playlist_created",
-			      RB_TYPE_PLAYLIST_MANAGER,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlaylistManagerClass, playlist_created),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
-			      G_TYPE_NONE,
-			      1, G_TYPE_OBJECT);
-
-	/**
-	 * RBPlaylistManager::load-start:
-	 * @manager: the #RBPlaylistManager
-	 *
-	 * Emitted when the playlist manager starts loading the user's
-	 * playlist file.
-	 */
-	rb_playlist_manager_signals[PLAYLIST_LOAD_START] =
-		g_signal_new ("load_start",
-			      RB_TYPE_PLAYLIST_MANAGER,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlaylistManagerClass, load_start),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0, G_TYPE_NONE);
-	/**
-	 * RBPlaylistManager::load-finish
-	 * @manager: the #RBPlaylistManager
-	 *
-	 * Emitted when the playlist manager finishes loading the user's
-	 * playlist file.
-	 */
-	rb_playlist_manager_signals[PLAYLIST_LOAD_FINISH] =
-		g_signal_new ("load_finish",
-			      RB_TYPE_PLAYLIST_MANAGER,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlaylistManagerClass, load_finish),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0, G_TYPE_NONE);
-
-	g_type_class_add_private (klass, sizeof (RBPlaylistManagerPrivate));
-}
-
-static void
-rb_playlist_manager_init (RBPlaylistManager *mgr)
-{
-	mgr->priv = G_TYPE_INSTANCE_GET_PRIVATE (mgr,
-						 RB_TYPE_PLAYLIST_MANAGER,
-						 RBPlaylistManagerPrivate);
-
-	mgr->priv->saving_mutex = g_mutex_new ();
-	mgr->priv->dirty = 0;
-	mgr->priv->saving = 0;
-}
 
 /**
  * rb_playlist_manager_shutdown:
@@ -346,237 +239,6 @@ rb_playlist_manager_shutdown (RBPlaylistManager *mgr)
 
 	g_mutex_lock (mgr->priv->saving_mutex);
 	g_mutex_unlock (mgr->priv->saving_mutex);
-}
-
-static void
-rb_playlist_manager_dispose (GObject *object)
-{
-	RBPlaylistManager *mgr;
-
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_PLAYLIST_MANAGER (object));
-
-	rb_debug ("Disposing playlist manager");
-
-	mgr = RB_PLAYLIST_MANAGER (object);
-
-	g_return_if_fail (mgr->priv != NULL);
-
-	if (mgr->priv->db != NULL) {
-		g_object_unref (mgr->priv->db);
-		mgr->priv->db = NULL;
-	}
-
-	if (mgr->priv->uimanager != NULL) {
-		g_object_unref (mgr->priv->uimanager);
-		mgr->priv->uimanager = NULL;
-	}
-
-	if (mgr->priv->page_model != NULL) {
-		g_object_unref (mgr->priv->page_model);
-		mgr->priv->page_model = NULL;
-	}
-
-	if (mgr->priv->display_page_tree != NULL) {
-		g_object_unref (mgr->priv->display_page_tree);
-		mgr->priv->display_page_tree = NULL;
-	}
-
-	if (mgr->priv->selected_source != NULL) {
-		g_object_unref (mgr->priv->selected_source);
-		mgr->priv->selected_source = NULL;
-	}
-
-	G_OBJECT_CLASS (rb_playlist_manager_parent_class)->dispose (object);
-}
-
-static void
-rb_playlist_manager_finalize (GObject *object)
-{
-	RBPlaylistManager *mgr;
-
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_PLAYLIST_MANAGER (object));
-
-	rb_debug ("Finalizing playlist manager");
-
-	mgr = RB_PLAYLIST_MANAGER (object);
-
-	g_return_if_fail (mgr->priv != NULL);
-
-	g_mutex_free (mgr->priv->saving_mutex);
-
-	g_free (mgr->priv->playlists_file);
-
-	G_OBJECT_CLASS (rb_playlist_manager_parent_class)->finalize (object);
-}
-
-static void
-rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr,
-				   GtkUIManager *uimanager)
-{
-	if (mgr->priv->uimanager != NULL) {
-		if (mgr->priv->actiongroup != NULL) {
-			gtk_ui_manager_remove_action_group (mgr->priv->uimanager,
-							    mgr->priv->actiongroup);
-		}
-		g_object_unref (mgr->priv->uimanager);
-	}
-
-	mgr->priv->uimanager = uimanager;
-
-	if (mgr->priv->actiongroup == NULL) {
-		mgr->priv->actiongroup = gtk_action_group_new ("PlaylistManagerActions");
-		gtk_action_group_set_translation_domain (mgr->priv->actiongroup,
-							 GETTEXT_PACKAGE);
-		gtk_action_group_add_actions (mgr->priv->actiongroup,
-					      rb_playlist_manager_actions,
-					      rb_playlist_manager_n_actions,
-					      mgr);
-	}
-
-	gtk_ui_manager_insert_action_group (mgr->priv->uimanager,
-					    mgr->priv->actiongroup,
-					    0);
-}
-
-static void
-rb_playlist_manager_set_source (RBPlaylistManager *mgr,
-				RBSource *source)
-{
-	gboolean playlist_active;
-	gboolean playlist_local = FALSE;
-	gboolean party_mode;
-	gboolean can_save;
-	gboolean can_delete;
-	gboolean can_edit;
-	gboolean can_rename;
-	gboolean can_shuffle;
-	GtkAction *action;
-
-	party_mode = rb_shell_get_party_mode (mgr->priv->shell);
-
-	if (mgr->priv->selected_source != NULL) {
-		g_object_unref (mgr->priv->selected_source);
-	}
-	mgr->priv->selected_source = g_object_ref (source);
-
-	playlist_active = RB_IS_PLAYLIST_SOURCE (mgr->priv->selected_source);
-	if (playlist_active) {
-		g_object_get (mgr->priv->selected_source, "is-local", &playlist_local, NULL);
-	}
-
-	can_save = playlist_local && !party_mode;
-	action = gtk_action_group_get_action (mgr->priv->actiongroup,
-					      "MusicPlaylistSavePlaylist");
-	gtk_action_set_visible (action, can_save);
-
-	can_delete = (playlist_local && !party_mode &&
-		      !RB_IS_PLAY_QUEUE_SOURCE (mgr->priv->selected_source));
-	action = gtk_action_group_get_action (mgr->priv->actiongroup,
-					      "MusicPlaylistDeletePlaylist");
-	gtk_action_set_visible (action, can_delete);
-
-	can_edit = (playlist_local && RB_IS_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source) &&
-		    !party_mode);
-	action = gtk_action_group_get_action (mgr->priv->actiongroup,
-					      "EditAutomaticPlaylist");
-	gtk_action_set_visible (action, can_edit);
-
-	can_rename = playlist_local && rb_source_can_rename (mgr->priv->selected_source);
-	action = gtk_action_group_get_action (mgr->priv->actiongroup,
-					      "MusicPlaylistRenamePlaylist");
-	gtk_action_set_visible (action, can_rename);
-
-	can_shuffle = RB_IS_STATIC_PLAYLIST_SOURCE (mgr->priv->selected_source);
-	action = gtk_action_group_get_action (mgr->priv->actiongroup,
-					      "ShufflePlaylist");
-	gtk_action_set_sensitive (action, can_shuffle);
-}
-
-static void
-rb_playlist_manager_set_shell_internal (RBPlaylistManager *mgr,
-					RBShell           *shell)
-{
-	GtkUIManager *uimanager = NULL;
-	RhythmDB     *db = NULL;
-
-	if (mgr->priv->db != NULL) {
-		g_object_unref (mgr->priv->db);
-	}
-
-	mgr->priv->shell = shell;
-
-	if (mgr->priv->shell != NULL) {
-		g_object_get (mgr->priv->shell,
-			      "ui-manager", &uimanager,
-			      "db", &db,
-			      NULL);
-	}
-
-	mgr->priv->db = db;
-	rb_playlist_manager_set_uimanager (mgr, uimanager);
-}
-
-static void
-rb_playlist_manager_set_property (GObject *object,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *pspec)
-{
-	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (object);
-
-	switch (prop_id) {
-	case PROP_PLAYLIST_NAME:
-		g_free (mgr->priv->playlists_file);
-		mgr->priv->playlists_file = g_strdup (g_value_get_string (value));
-                break;
-	case PROP_SOURCE:
-		rb_playlist_manager_set_source (mgr, g_value_get_object (value));
-		break;
-	case PROP_SHELL:
-		rb_playlist_manager_set_shell_internal (mgr, g_value_get_object (value));
-		break;
-	case PROP_DISPLAY_PAGE_MODEL:
-		mgr->priv->page_model = g_value_dup_object (value);
-		break;
-	case PROP_DISPLAY_PAGE_TREE:
-		mgr->priv->display_page_tree = g_value_dup_object (value);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
-static void
-rb_playlist_manager_get_property (GObject *object,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *pspec)
-{
-	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (object);
-
-	switch (prop_id) {
-        case PROP_PLAYLIST_NAME:
-                g_value_set_string (value, mgr->priv->playlists_file);
-                break;
-	case PROP_SOURCE:
-		g_value_set_object (value, mgr->priv->selected_source);
-		break;
-	case PROP_SHELL:
-		g_value_set_object (value, mgr->priv->shell);
-		break;
-	case PROP_DISPLAY_PAGE_MODEL:
-		g_value_set_object (value, mgr->priv->page_model);
-		break;
-	case PROP_DISPLAY_PAGE_TREE:
-		g_value_set_object (value, mgr->priv->display_page_tree);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
 }
 
 /**
@@ -1929,4 +1591,500 @@ rb_playlist_manager_export_playlist (RBPlaylistManager *mgr,
 					  uri,
 					  m3u_format);
 	return TRUE;
+}
+
+static void
+playlist_manager_method_call (GDBusConnection *connection,
+			      const char *sender,
+			      const char *object_path,
+			      const char *interface_name,
+			      const char *method_name,
+			      GVariant *parameters,
+			      GDBusMethodInvocation *invocation,
+			      RBPlaylistManager *mgr)
+{
+	GError *error = NULL;
+	const char *name;
+	const char *uri;
+
+	if (g_strcmp0 (interface_name, RB_PLAYLIST_MANAGER_IFACE_NAME) != 0) {
+		rb_debug ("method call on unexpected interface %s", interface_name);
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
+		return;
+	}
+
+	if (g_strcmp0 (method_name, "getPlaylists") == 0) {
+		char **names;
+
+		rb_playlist_manager_get_playlist_names (mgr, &names, NULL);
+		g_dbus_method_invocation_return_value (invocation,
+						       g_variant_new_strv ((const char * const *)names, -1));
+		g_strfreev (names);
+	} else if (g_strcmp0 (method_name, "createPlaylist") == 0) {
+		g_variant_get (parameters, "(&s)", &name);
+		if (rb_playlist_manager_create_static_playlist (mgr, name, &error)) {
+			g_dbus_method_invocation_return_value (invocation, NULL);
+		} else {
+			g_dbus_method_invocation_return_gerror (invocation, error);
+			g_clear_error (&error);
+		}
+	} else if (g_strcmp0 (method_name, "deletePlaylist") == 0) {
+		g_variant_get (parameters, "(&s)", &name);
+		if (rb_playlist_manager_delete_playlist (mgr, name, &error)) {
+			g_dbus_method_invocation_return_value (invocation, NULL);
+		} else {
+			g_dbus_method_invocation_return_gerror (invocation, error);
+			g_clear_error (&error);
+		}
+	} else if (g_strcmp0 (method_name, "addToPlaylist") == 0) {
+		g_variant_get (parameters, "(ss)", &name, &uri);
+		if (rb_playlist_manager_add_to_playlist (mgr, name, uri, &error)) {
+			g_dbus_method_invocation_return_value (invocation, NULL);
+		} else {
+			g_dbus_method_invocation_return_gerror (invocation, error);
+			g_clear_error (&error);
+		}
+	} else if (g_strcmp0 (method_name, "removeFromPlaylist") == 0) {
+		g_variant_get (parameters, "(ss)", &name, &uri);
+		if (rb_playlist_manager_remove_from_playlist (mgr, name, uri, &error)) {
+			g_dbus_method_invocation_return_value (invocation, NULL);
+		} else {
+			g_dbus_method_invocation_return_gerror (invocation, error);
+			g_clear_error (&error);
+		}
+	} else if (g_strcmp0 (method_name, "exportPlaylist") == 0) {
+		gboolean m3u_format;
+		g_variant_get (parameters, "(ssb)", &name, &uri, &m3u_format);
+		if (rb_playlist_manager_export_playlist (mgr, name, uri, m3u_format, &error)) {
+			g_dbus_method_invocation_return_value (invocation, NULL);
+		} else {
+			g_dbus_method_invocation_return_gerror (invocation, error);
+			g_clear_error (&error);
+		}
+	} else if (g_strcmp0 (method_name, "importPlaylist") == 0) {
+		g_variant_get (parameters, "(s)", &uri);
+		if (rb_playlist_manager_parse_file (mgr, uri, &error)) {
+			g_dbus_method_invocation_return_value (invocation, NULL);
+		} else {
+			g_dbus_method_invocation_return_gerror (invocation, error);
+			g_clear_error (&error);
+		}
+	} else {
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
+	}
+}
+
+static const GDBusInterfaceVTable playlist_manager_vtable = {
+	(GDBusInterfaceMethodCallFunc) playlist_manager_method_call,
+	NULL,
+	NULL
+};
+
+static void
+rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr,
+				   GtkUIManager *uimanager)
+{
+	if (mgr->priv->uimanager != NULL) {
+		if (mgr->priv->actiongroup != NULL) {
+			gtk_ui_manager_remove_action_group (mgr->priv->uimanager,
+							    mgr->priv->actiongroup);
+		}
+		g_object_unref (mgr->priv->uimanager);
+	}
+
+	mgr->priv->uimanager = uimanager;
+
+	if (mgr->priv->actiongroup == NULL) {
+		mgr->priv->actiongroup = gtk_action_group_new ("PlaylistManagerActions");
+		gtk_action_group_set_translation_domain (mgr->priv->actiongroup,
+							 GETTEXT_PACKAGE);
+		gtk_action_group_add_actions (mgr->priv->actiongroup,
+					      rb_playlist_manager_actions,
+					      rb_playlist_manager_n_actions,
+					      mgr);
+	}
+
+	gtk_ui_manager_insert_action_group (mgr->priv->uimanager,
+					    mgr->priv->actiongroup,
+					    0);
+}
+
+static void
+rb_playlist_manager_set_source (RBPlaylistManager *mgr,
+				RBSource *source)
+{
+	gboolean playlist_active;
+	gboolean playlist_local = FALSE;
+	gboolean party_mode;
+	gboolean can_save;
+	gboolean can_delete;
+	gboolean can_edit;
+	gboolean can_rename;
+	gboolean can_shuffle;
+	GtkAction *action;
+
+	party_mode = rb_shell_get_party_mode (mgr->priv->shell);
+
+	if (mgr->priv->selected_source != NULL) {
+		g_object_unref (mgr->priv->selected_source);
+	}
+	mgr->priv->selected_source = g_object_ref (source);
+
+	playlist_active = RB_IS_PLAYLIST_SOURCE (mgr->priv->selected_source);
+	if (playlist_active) {
+		g_object_get (mgr->priv->selected_source, "is-local", &playlist_local, NULL);
+	}
+
+	can_save = playlist_local && !party_mode;
+	action = gtk_action_group_get_action (mgr->priv->actiongroup,
+					      "MusicPlaylistSavePlaylist");
+	gtk_action_set_visible (action, can_save);
+
+	can_delete = (playlist_local && !party_mode &&
+		      !RB_IS_PLAY_QUEUE_SOURCE (mgr->priv->selected_source));
+	action = gtk_action_group_get_action (mgr->priv->actiongroup,
+					      "MusicPlaylistDeletePlaylist");
+	gtk_action_set_visible (action, can_delete);
+
+	can_edit = (playlist_local && RB_IS_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source) &&
+		    !party_mode);
+	action = gtk_action_group_get_action (mgr->priv->actiongroup,
+					      "EditAutomaticPlaylist");
+	gtk_action_set_visible (action, can_edit);
+
+	can_rename = playlist_local && rb_source_can_rename (mgr->priv->selected_source);
+	action = gtk_action_group_get_action (mgr->priv->actiongroup,
+					      "MusicPlaylistRenamePlaylist");
+	gtk_action_set_visible (action, can_rename);
+
+	can_shuffle = RB_IS_STATIC_PLAYLIST_SOURCE (mgr->priv->selected_source);
+	action = gtk_action_group_get_action (mgr->priv->actiongroup,
+					      "ShufflePlaylist");
+	gtk_action_set_sensitive (action, can_shuffle);
+}
+
+static void
+rb_playlist_manager_set_shell_internal (RBPlaylistManager *mgr,
+					RBShell           *shell)
+{
+	GtkUIManager *uimanager = NULL;
+	RhythmDB     *db = NULL;
+
+	if (mgr->priv->db != NULL) {
+		g_object_unref (mgr->priv->db);
+	}
+
+	mgr->priv->shell = shell;
+
+	if (mgr->priv->shell != NULL) {
+		g_object_get (mgr->priv->shell,
+			      "ui-manager", &uimanager,
+			      "db", &db,
+			      NULL);
+	}
+
+	mgr->priv->db = db;
+	rb_playlist_manager_set_uimanager (mgr, uimanager);
+}
+
+static void
+rb_playlist_manager_set_property (GObject *object,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *pspec)
+{
+	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (object);
+
+	switch (prop_id) {
+	case PROP_PLAYLIST_NAME:
+		g_free (mgr->priv->playlists_file);
+		mgr->priv->playlists_file = g_strdup (g_value_get_string (value));
+                break;
+	case PROP_SOURCE:
+		rb_playlist_manager_set_source (mgr, g_value_get_object (value));
+		break;
+	case PROP_SHELL:
+		rb_playlist_manager_set_shell_internal (mgr, g_value_get_object (value));
+		break;
+	case PROP_DISPLAY_PAGE_MODEL:
+		mgr->priv->page_model = g_value_dup_object (value);
+		break;
+	case PROP_DISPLAY_PAGE_TREE:
+		mgr->priv->display_page_tree = g_value_dup_object (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_playlist_manager_get_property (GObject *object,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *pspec)
+{
+	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (object);
+
+	switch (prop_id) {
+        case PROP_PLAYLIST_NAME:
+                g_value_set_string (value, mgr->priv->playlists_file);
+                break;
+	case PROP_SOURCE:
+		g_value_set_object (value, mgr->priv->selected_source);
+		break;
+	case PROP_SHELL:
+		g_value_set_object (value, mgr->priv->shell);
+		break;
+	case PROP_DISPLAY_PAGE_MODEL:
+		g_value_set_object (value, mgr->priv->page_model);
+		break;
+	case PROP_DISPLAY_PAGE_TREE:
+		g_value_set_object (value, mgr->priv->display_page_tree);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_playlist_manager_constructed (GObject *object)
+{
+	GDBusConnection *bus;
+	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (object);
+
+	RB_CHAIN_GOBJECT_METHOD(rb_playlist_manager_parent_class, constructed, G_OBJECT (mgr));
+
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	if (bus) {
+		GDBusNodeInfo *node_info;
+		GError *error = NULL;
+
+		node_info = g_dbus_node_info_new_for_xml (rb_playlist_manager_dbus_spec, &error);
+		if (error != NULL) {
+			g_warning ("Unable to parse playlist manager dbus spec: %s", error->message);
+			g_clear_error (&error);
+			return;
+		}
+
+		g_dbus_connection_register_object (bus,
+						   RB_PLAYLIST_MANAGER_DBUS_PATH,
+						   g_dbus_node_info_lookup_interface (node_info, RB_PLAYLIST_MANAGER_IFACE_NAME),
+						   &playlist_manager_vtable,
+						   g_object_ref (mgr),
+						   g_object_unref,
+						   &error);
+		if (error != NULL) {
+			g_warning ("Unable to register playlist manager dbus object: %s", error->message);
+			g_clear_error (&error);
+		}
+	}
+}
+
+static void
+rb_playlist_manager_init (RBPlaylistManager *mgr)
+{
+	mgr->priv = G_TYPE_INSTANCE_GET_PRIVATE (mgr,
+						 RB_TYPE_PLAYLIST_MANAGER,
+						 RBPlaylistManagerPrivate);
+
+	mgr->priv->saving_mutex = g_mutex_new ();
+	mgr->priv->dirty = 0;
+	mgr->priv->saving = 0;
+}
+
+static void
+rb_playlist_manager_dispose (GObject *object)
+{
+	RBPlaylistManager *mgr;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_PLAYLIST_MANAGER (object));
+
+	rb_debug ("Disposing playlist manager");
+
+	mgr = RB_PLAYLIST_MANAGER (object);
+
+	g_return_if_fail (mgr->priv != NULL);
+
+	if (mgr->priv->db != NULL) {
+		g_object_unref (mgr->priv->db);
+		mgr->priv->db = NULL;
+	}
+
+	if (mgr->priv->uimanager != NULL) {
+		g_object_unref (mgr->priv->uimanager);
+		mgr->priv->uimanager = NULL;
+	}
+
+	if (mgr->priv->page_model != NULL) {
+		g_object_unref (mgr->priv->page_model);
+		mgr->priv->page_model = NULL;
+	}
+
+	if (mgr->priv->display_page_tree != NULL) {
+		g_object_unref (mgr->priv->display_page_tree);
+		mgr->priv->display_page_tree = NULL;
+	}
+
+	if (mgr->priv->selected_source != NULL) {
+		g_object_unref (mgr->priv->selected_source);
+		mgr->priv->selected_source = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_playlist_manager_parent_class)->dispose (object);
+}
+
+static void
+rb_playlist_manager_finalize (GObject *object)
+{
+	RBPlaylistManager *mgr;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_PLAYLIST_MANAGER (object));
+
+	rb_debug ("Finalizing playlist manager");
+
+	mgr = RB_PLAYLIST_MANAGER (object);
+
+	g_return_if_fail (mgr->priv != NULL);
+
+	g_mutex_free (mgr->priv->saving_mutex);
+
+	g_free (mgr->priv->playlists_file);
+
+	G_OBJECT_CLASS (rb_playlist_manager_parent_class)->finalize (object);
+}
+
+
+static void
+rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->constructed = rb_playlist_manager_constructed;
+	object_class->dispose = rb_playlist_manager_dispose;
+	object_class->finalize = rb_playlist_manager_finalize;
+
+	object_class->set_property = rb_playlist_manager_set_property;
+	object_class->get_property = rb_playlist_manager_get_property;
+
+	g_object_class_install_property (object_class,
+					 PROP_PLAYLIST_NAME,
+                                         g_param_spec_string ("playlists_file",
+                                                              "name",
+                                                              "playlists file",
+                                                              NULL,
+                                                              G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class,
+					 PROP_SOURCE,
+					 g_param_spec_object ("source",
+							      "RBSource",
+							      "RBSource object",
+							      RB_TYPE_SOURCE,
+							      G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class,
+					 PROP_SHELL,
+					 g_param_spec_object ("shell",
+							      "RBShell",
+							      "RBShell object",
+							      RB_TYPE_SHELL,
+							      G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class,
+					 PROP_DISPLAY_PAGE_MODEL,
+					 g_param_spec_object ("display-page-model",
+							      "RBDisplayPageModel",
+							      "RBDisplayPageModel",
+							      RB_TYPE_DISPLAY_PAGE_MODEL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_DISPLAY_PAGE_TREE,
+					 g_param_spec_object ("display-page-tree",
+							      "RBDisplayPageTree",
+							      "RBDisplayPageTree",
+							      RB_TYPE_DISPLAY_PAGE_TREE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBPlaylistManager::playlist-added:
+	 * @manager: the #RBPlaylistManager
+	 * @source: the new #RBSource
+	 *
+	 * Emitted when a playlist is added, including when being loaded
+	 * from the user's playlist file.
+	 */
+	rb_playlist_manager_signals[PLAYLIST_ADDED] =
+		g_signal_new ("playlist_added",
+			      RB_TYPE_PLAYLIST_MANAGER,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlaylistManagerClass, playlist_added),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE,
+			      1, G_TYPE_OBJECT);
+
+	/**
+	 * RBPlaylistManager::playlist-created:
+	 * @manager: the #RBPlaylistManager
+	 * @source: the newly created playlist #RBSource
+	 *
+	 * Emitted when a new playlist is created.
+	 */
+	rb_playlist_manager_signals[PLAYLIST_CREATED] =
+		g_signal_new ("playlist_created",
+			      RB_TYPE_PLAYLIST_MANAGER,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlaylistManagerClass, playlist_created),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE,
+			      1, G_TYPE_OBJECT);
+
+	/**
+	 * RBPlaylistManager::load-start:
+	 * @manager: the #RBPlaylistManager
+	 *
+	 * Emitted when the playlist manager starts loading the user's
+	 * playlist file.
+	 */
+	rb_playlist_manager_signals[PLAYLIST_LOAD_START] =
+		g_signal_new ("load_start",
+			      RB_TYPE_PLAYLIST_MANAGER,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlaylistManagerClass, load_start),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0, G_TYPE_NONE);
+	/**
+	 * RBPlaylistManager::load-finish
+	 * @manager: the #RBPlaylistManager
+	 *
+	 * Emitted when the playlist manager finishes loading the user's
+	 * playlist file.
+	 */
+	rb_playlist_manager_signals[PLAYLIST_LOAD_FINISH] =
+		g_signal_new ("load_finish",
+			      RB_TYPE_PLAYLIST_MANAGER,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlaylistManagerClass, load_finish),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0, G_TYPE_NONE);
+
+	g_type_class_add_private (klass, sizeof (RBPlaylistManagerPrivate));
 }

@@ -295,12 +295,6 @@ main (int argc, char **argv)
 			path = rb_shell_get_player_path (rb_shell);
 			dbus_g_connection_register_g_object (session_bus, path, obj);
 
-			/* register playlist manager object */
-			dbus_g_object_type_install_info (RB_TYPE_PLAYLIST_MANAGER, &dbus_glib_rb_playlist_manager_object_info);
-			obj = rb_shell_get_playlist_manager (rb_shell);
-			path = rb_shell_get_playlist_manager_path (rb_shell);
-			dbus_g_connection_register_g_object (session_bus, path, obj);
-
 			g_signal_connect (G_OBJECT (rb_shell),
 					  "database-load-complete",
 					  G_CALLBACK (database_load_complete),

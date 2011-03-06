@@ -148,15 +148,13 @@ rb-shell-glue.h: rb-shell.xml Makefile
 	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell --mode=glib-server --output=$@ $<
 rb-shell-player-glue.h: rb-shell-player.xml Makefile
 	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell_player --mode=glib-server --output=$@ $<
-rb-playlist-manager-glue.h: rb-playlist-manager.xml Makefile
-	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_playlist_manager --mode=glib-server --output=$@ $<
 rb-shell-binding.h: rb-shell.xml Makefile
 	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell --mode=glib-client --output=$@ $<
 rb-shell-player-binding.h: rb-shell-player.xml Makefile
 	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell --mode=glib-client --output=$@ $<
 
-BUILT_SOURCES += rb-shell-glue.h rb-shell-binding.h rb-shell-player-glue.h rb-shell-player-binding.h rb-playlist-manager-glue.h
-EXTRA_DIST += rb-shell.xml rb-shell-player.xml rb-playlist-manager.xml
+BUILT_SOURCES += rb-shell-glue.h rb-shell-binding.h rb-shell-player-glue.h rb-shell-player-binding.h
+EXTRA_DIST += rb-shell.xml rb-shell-player.xml
 
 rhythmbox_LDADD = 					\
 	librhythmbox-core.la				\
