@@ -76,9 +76,7 @@
 
 #include <dbus/dbus-glib.h>
 #include "rb-shell-glue.h"
-#include "rb-shell-player-glue.h"
 #include "rb-playlist-manager.h"
-#include "rb-playlist-manager-glue.h"
 
 
 static gboolean debug           = FALSE;

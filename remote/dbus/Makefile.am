@@ -1,4 +1,5 @@
-bin_PROGRAMS = rhythmbox-client
+bin_PROGRAMS =
+# rhythmbox-client
 rhythmbox_client_SOURCES = rb-client.c
 rhythmbox_client_LDADD =				\
 	$(top_builddir)/lib/librb.la			\
@@ -19,5 +20,5 @@ INCLUDES = 						\
 	$(DBUS_CFLAGS)					\
 	-D_XOPEN_SOURCE -D__EXTENSIONS__ -D_BSD_SOURCE
 
-EXTRA_DIST = rb-print-playing.py rb-set-rating.py
+EXTRA_DIST = rb-client.c rb-print-playing.py rb-set-rating.py
 
