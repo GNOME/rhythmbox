@@ -432,7 +432,17 @@ rb_ipod_helpers_is_ipod (GMount *mount, MPIDDevice *device_info)
 			gchar *device_dir;
 
 			if (g_file_has_uri_scheme (root, "afc") != FALSE) {
-				result = TRUE;
+				gchar *uri;
+				uri = g_file_get_uri (root);
+				/* afc://<40 chars>:stuff */
+				g_assert (strlen (uri) >= 46);
+				if (uri[6 + 40] == ':' &&
+				    uri[6 + 40 + 1] != '1') {
+					result = FALSE;
+				} else {
+					result = TRUE;
+				}
+				g_free (uri);
 			} else {
 				gchar *mount_point;
 				mount_point = g_file_get_path (root);
