@@ -49,8 +49,6 @@
 #include "rb-builder-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"
-#include "rb-preferences.h"
-#include "eel-gconf-extensions.h"
 #include "rb-source.h"
 #include "rb-shell.h"
 #include "rb-file-helpers.h"

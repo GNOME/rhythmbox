@@ -37,8 +37,7 @@
 #include <gio/gio.h>
 #include <gtk/gtk.h>
 
-#include "rb-preferences.h"
-#include "eel-gconf-extensions.h"
+#include "rb-podcast-settings.h"
 #include "rb-podcast-manager.h"
 #include "rb-podcast-entry-types.h"
 #include "rb-file-helpers.h"
@@ -52,23 +51,10 @@
 #include "rb-util.h"
 #include "rb-missing-plugins.h"
 
-#define CONF_STATE_PODCAST_PREFIX		CONF_PREFIX "/state/podcast"
-#define CONF_STATE_PODCAST_DOWNLOAD_DIR		CONF_STATE_PODCAST_PREFIX "/download_prefix"
-#define CONF_STATE_PODCAST_DOWNLOAD_INTERVAL	CONF_STATE_PODCAST_PREFIX "/download_interval"
-#define CONF_STATE_PODCAST_DOWNLOAD_NEXT_TIME	CONF_STATE_PODCAST_PREFIX "/download_next_time"
-
 enum
 {
 	PROP_0,
 	PROP_DB
-};
-
-enum
-{
-	UPDATE_EVERY_HOUR,
-	UPDATE_EVERY_DAY,
-	UPDATE_EVERY_WEEK,
-	UPDATE_MANUALLY
 };
 
 enum
@@ -123,11 +109,12 @@ struct RBPodcastManagerPrivate
 	RhythmDB *db;
 	GList *download_list;
 	RBPodcastManagerInfo *active_download;
-	guint next_time;
 	guint source_sync;
-	guint update_interval_notify_id;
 	guint next_file_id;
 	gboolean shutdown;
+
+	GSettings *settings;
+	GFile *timestamp_file;
 };
 
 #define RB_PODCAST_MANAGER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PODCAST_MANAGER, RBPodcastManagerPrivate))
@@ -158,11 +145,7 @@ static void download_file_info_cb			(GFile *source,
 static void download_podcast				(GFileInfo *src_info,
 							 RBPodcastManagerInfo *data);
 static void rb_podcast_manager_abort_download		(RBPodcastManagerInfo *data);
-static gboolean rb_podcast_manager_sync_head_cb 	(gpointer data);
-static gboolean rb_podcast_manager_head_query_cb 	(GtkTreeModel *query_model,
-						   	 GtkTreePath *path,
-							 GtkTreeIter *iter,
-						   	 RBPodcastManager *data);
+static gboolean rb_podcast_manager_update_feeds_cb 	(gpointer data);
 static void rb_podcast_manager_save_metadata		(RBPodcastManager *pd,
 						  	 RhythmDBEntry *entry);
 static void rb_podcast_manager_db_entry_added_cb 	(RBPodcastManager *pd,
@@ -175,17 +158,16 @@ static gboolean rb_podcast_manager_handle_feed_error	(RBPodcastManager *mgr,
 							 gboolean emit);
 
 static gpointer rb_podcast_manager_thread_parse_feed	(RBPodcastThreadInfo *info);
+static void podcast_settings_changed_cb			(GSettings *settings,
+							 const char *key,
+							 RBPodcastManager *mgr);
 
 /* internal functions */
 static void download_info_free				(RBPodcastManagerInfo *data);
 static gpointer podcast_download_thread			(RBPodcastManagerInfo *data);
 static gboolean end_job					(RBPodcastManagerInfo *data);
 static void cancel_job					(RBPodcastManagerInfo *pd);
-static void rb_podcast_manager_update_synctime		(RBPodcastManager *pd);
-static void rb_podcast_manager_config_changed		(GConfClient* client,
-                                        		 guint cnxn_id,
-				                         GConfEntry *entry,
-							 gpointer user_data);
+static void rb_podcast_manager_start_update_timer 	(RBPodcastManager *pd);
 
 G_DEFINE_TYPE (RBPodcastManager, rb_podcast_manager, G_TYPE_OBJECT)
 
@@ -276,17 +258,36 @@ rb_podcast_manager_init (RBPodcastManager *pd)
 
 	pd->priv->source_sync = 0;
 	pd->priv->db = NULL;
-	eel_gconf_monitor_add (CONF_STATE_PODCAST_PREFIX);
+
 }
 
 static void
 rb_podcast_manager_constructed (GObject *object)
 {
 	RBPodcastManager *pd = RB_PODCAST_MANAGER (object);
+	GFileOutputStream *st;
+	char *ts_file_path;
+
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_manager_parent_class, constructed, object);
-	pd->priv->update_interval_notify_id = eel_gconf_notification_add (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL,
-	                    			       			  rb_podcast_manager_config_changed,
-	                            		       			  pd);
+
+	pd->priv->settings = g_settings_new (PODCAST_SETTINGS_SCHEMA);
+	g_signal_connect_object (pd->priv->settings,
+				 "changed",
+				 G_CALLBACK (podcast_settings_changed_cb),
+				 pd, 0);
+
+	ts_file_path = g_build_filename (rb_user_data_dir (), "podcast-timestamp", NULL);
+	pd->priv->timestamp_file = g_file_new_for_path (ts_file_path);
+	g_free (ts_file_path);
+
+	/* create it if it doesn't exist */
+	st = g_file_create (pd->priv->timestamp_file, G_FILE_CREATE_NONE, NULL, NULL);
+	if (st != NULL) {
+		g_output_stream_close (G_OUTPUT_STREAM (st), NULL, NULL);
+		g_object_unref (st);
+	}
+
+	rb_podcast_manager_start_update_timer (pd);
 }
 
 static void
@@ -299,8 +300,6 @@ rb_podcast_manager_dispose (GObject *object)
 	pd = RB_PODCAST_MANAGER (object);
 	g_return_if_fail (pd->priv != NULL);
 
-	eel_gconf_monitor_remove (CONF_STATE_PODCAST_PREFIX);
-
 	if (pd->priv->next_file_id != 0) {
 		g_source_remove (pd->priv->next_file_id);
 		pd->priv->next_file_id = 0;
@@ -311,14 +310,19 @@ rb_podcast_manager_dispose (GObject *object)
 		pd->priv->source_sync = 0;
 	}
 
-	if (pd->priv->update_interval_notify_id != 0) {
-		eel_gconf_notification_remove (pd->priv->update_interval_notify_id);
-		pd->priv->update_interval_notify_id = 0;
-	}
-
 	if (pd->priv->db != NULL) {
 		g_object_unref (pd->priv->db);
 		pd->priv->db = NULL;
+	}
+
+	if (pd->priv->settings != NULL) {
+		g_object_unref (pd->priv->settings);
+		pd->priv->settings = NULL;
+	}
+
+	if (pd->priv->timestamp_file != NULL) {
+		g_object_unref (pd->priv->timestamp_file);
+		pd->priv->timestamp_file = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_podcast_manager_parent_class)->dispose (object);
@@ -522,78 +526,76 @@ rb_podcast_manager_entry_in_download_queue (RBPodcastManager *pd, RhythmDBEntry 
 	return FALSE;
 }
 
-void
-rb_podcast_manager_start_sync (RBPodcastManager *pd)
+static void
+rb_podcast_manager_start_update_timer (RBPodcastManager *pd)
 {
-	gint next_time;
+	guint64 last_time;
+	guint64 interval_sec;
+	guint64 now;
+	GFileInfo *fi;
+	RBPodcastInterval interval;
 
 	g_return_if_fail (RB_IS_PODCAST_MANAGER (pd));
 
-	if (pd->priv->next_time > 0) {
-		next_time = pd->priv->next_time;
+	if (pd->priv->source_sync != 0) {
+		g_source_remove (pd->priv->source_sync);
+		pd->priv->source_sync = 0;
+	}
+
+	interval = g_settings_get_enum (pd->priv->settings,
+					PODCAST_DOWNLOAD_INTERVAL);
+	if (interval == PODCAST_INTERVAL_MANUAL) {
+		rb_debug ("periodic podcast updates disabled");
+		return;
+	}
+
+	/* get last update time */
+	fi = g_file_query_info (pd->priv->timestamp_file,
+				G_FILE_ATTRIBUTE_TIME_MODIFIED,
+				G_FILE_QUERY_INFO_NONE,
+				NULL,
+				NULL);
+	if (fi != NULL) {
+		last_time = g_file_info_get_attribute_uint64 (fi, G_FILE_ATTRIBUTE_TIME_MODIFIED);
 	} else {
-		next_time = eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_NEXT_TIME);
+		last_time = 0;
 	}
 
-	if (next_time > 0) {
-		if (pd->priv->source_sync != 0) {
-			g_source_remove (pd->priv->source_sync);
-			pd->priv->source_sync = 0;
-		}
-		next_time = next_time - ((int)time (NULL));
-		if (next_time <= 0) {
-			rb_podcast_manager_update_feeds (pd);
-			pd->priv->next_time = 0;
-			rb_podcast_manager_update_synctime (pd);
-			return;
-		}
-		pd->priv->source_sync = g_timeout_add_seconds (next_time, (GSourceFunc) rb_podcast_manager_sync_head_cb, pd);
+	switch (interval) {
+	case PODCAST_INTERVAL_HOURLY:
+		interval_sec = 3600;
+		break;
+	case PODCAST_INTERVAL_DAILY:
+		interval_sec = (3600 * 24);
+		break;
+	case PODCAST_INTERVAL_WEEKLY:
+		interval_sec = (3600 * 24 * 7);
+		break;
+	default:
+		g_assert_not_reached ();
+		return;
 	}
 
-}
+	/* wait until next update time */
+	now = time (NULL);
+	rb_debug ("last periodic update at %" G_GUINT64_FORMAT ", interval %" G_GUINT64_FORMAT ", time is now %" G_GUINT64_FORMAT,
+		  last_time, interval_sec, now);
 
-static gboolean
-rb_podcast_manager_sync_head_cb (gpointer data)
-{
-	RBPodcastManager *pd = RB_PODCAST_MANAGER (data);
-
-	g_assert (rb_is_main_thread ());
-
-	GDK_THREADS_ENTER ();
-
-	rb_podcast_manager_update_feeds (pd);
-	pd->priv->source_sync = 0;
-	pd->priv->next_time = 0;
-	rb_podcast_manager_update_synctime (RB_PODCAST_MANAGER (data));
-	GDK_THREADS_LEAVE ();
-	return FALSE;
-}
-
-void
-rb_podcast_manager_update_feeds (RBPodcastManager *pd)
-{
-	GtkTreeModel *query_model;
-
-	g_return_if_fail (RB_IS_PODCAST_MANAGER (pd));
-
-	query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (pd->priv->db));
-
-	rhythmdb_do_full_query (pd->priv->db,
-				RHYTHMDB_QUERY_RESULTS (query_model),
-                                RHYTHMDB_QUERY_PROP_EQUALS,
-                                RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
-                                RHYTHMDB_QUERY_END);
-
- 	gtk_tree_model_foreach (query_model,
-		                (GtkTreeModelForeachFunc) rb_podcast_manager_head_query_cb,
-                                pd);
-
-	g_object_unref (query_model);
+	if (last_time + interval_sec < now) {
+		rb_debug ("periodic update should already have happened");
+		pd->priv->source_sync = g_idle_add ((GSourceFunc) rb_podcast_manager_update_feeds_cb,
+						    pd);
+	} else {
+		rb_debug ("next periodic update in %" G_GUINT64_FORMAT " seconds", (last_time + interval_sec) - now);
+		pd->priv->source_sync = g_timeout_add_seconds ((last_time + interval_sec) - now,
+							       (GSourceFunc) rb_podcast_manager_update_feeds_cb,
+							       pd);
+	}
 }
 
 static gboolean
 rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
- 	   			  GtkTreePath *path,
+				  GtkTreePath *path,
 				  GtkTreeIter *iter,
 				  RBPodcastManager *manager)
 {
@@ -611,6 +613,52 @@ rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
 	rhythmdb_entry_unref (entry);
 
         return FALSE;
+}
+
+void
+rb_podcast_manager_update_feeds (RBPodcastManager *pd)
+{
+	GtkTreeModel *query_model;
+
+	query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (pd->priv->db));
+
+	rhythmdb_do_full_query (pd->priv->db,
+				RHYTHMDB_QUERY_RESULTS (query_model),
+                                RHYTHMDB_QUERY_PROP_EQUALS,
+                                RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
+                                RHYTHMDB_QUERY_END);
+
+ 	gtk_tree_model_foreach (query_model,
+		                (GtkTreeModelForeachFunc) rb_podcast_manager_head_query_cb,
+                                pd);
+
+	g_object_unref (query_model);
+}
+
+static gboolean
+rb_podcast_manager_update_feeds_cb (gpointer data)
+{
+	RBPodcastManager *pd = RB_PODCAST_MANAGER (data);
+
+	g_assert (rb_is_main_thread ());
+
+	GDK_THREADS_ENTER ();
+
+	pd->priv->source_sync = 0;
+
+	g_file_set_attribute_uint64 (pd->priv->timestamp_file,
+				     G_FILE_ATTRIBUTE_TIME_MODIFIED,
+				     (guint64) time (NULL),
+				     G_FILE_QUERY_INFO_NONE,
+				     NULL,
+				     NULL);
+
+	rb_podcast_manager_update_feeds (pd);
+
+	rb_podcast_manager_start_update_timer (pd);
+
+	GDK_THREADS_LEAVE ();
+	return FALSE;
 }
 
 static void
@@ -843,7 +891,7 @@ download_podcast (GFileInfo *src_info, RBPodcastManagerInfo *data)
 
 	sane_local_file_uri = rb_sanitize_uri_for_filesystem (local_file_uri);
 	g_free (local_file_uri);
-	
+
 	rb_debug ("download URI: %s", sane_local_file_uri);
 
 	if (rb_uri_create_parent_dirs (sane_local_file_uri, &error) == FALSE) {
@@ -862,7 +910,7 @@ download_podcast (GFileInfo *src_info, RBPodcastManagerInfo *data)
 	if (g_file_query_exists (data->destination, NULL)) {
 		GFileInfo *dest_info;
 		guint64 local_size;
-	
+
 		dest_info = g_file_query_info (data->destination,
 					       G_FILE_ATTRIBUTE_STANDARD_SIZE,
 					       G_FILE_QUERY_INFO_NONE,
@@ -1557,7 +1605,7 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 			return NULL;
 		}
 	}
-	
+
 	/* loop, copying from input stream to output stream */
 	while (TRUE) {
 		char *p;
@@ -1787,43 +1835,11 @@ rb_podcast_manager_cancel_download (RBPodcastManager *pd, RhythmDBEntry *entry)
 }
 
 static void
-rb_podcast_manager_update_synctime (RBPodcastManager *pd)
+podcast_settings_changed_cb (GSettings *settings, const char *key, RBPodcastManager *mgr)
 {
-	gint value;
-	gint index = eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL);
-
-	switch (index)
-	{
-	case UPDATE_EVERY_HOUR:
-		value = time (NULL) + 3600;
-		break;
-	case UPDATE_EVERY_DAY:
-		value = time (NULL) + (3600 * 24);
-		break;
-	case UPDATE_EVERY_WEEK:
-		value = time (NULL) + (3600 * 24 * 7);
-		break;
-	case UPDATE_MANUALLY:
-		value = 0;
-		break;
-	default:
-		g_warning ("unknown download-inteval");
-		value = 0;
-	};
-
-	eel_gconf_set_integer (CONF_STATE_PODCAST_DOWNLOAD_NEXT_TIME, value);
-	eel_gconf_suggest_sync ();
-	pd->priv->next_time = value;
-	rb_podcast_manager_start_sync (pd);
-}
-
-static void
-rb_podcast_manager_config_changed (GConfClient* client,
-				   guint cnxn_id,
-				   GConfEntry *entry,
-				   gpointer user_data)
-{
-	rb_podcast_manager_update_synctime (RB_PODCAST_MANAGER (user_data));
+	if (g_strcmp0 (key, PODCAST_DOWNLOAD_INTERVAL) == 0) {
+		rb_podcast_manager_start_update_timer (mgr);
+	}
 }
 
 /* this bit really wants to die */
@@ -1977,7 +1993,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	new_last_post = last_post;
 
 	updated = FALSE;
-	download_last = (eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL) != UPDATE_MANUALLY);
+	download_last = (g_settings_get_enum (pd->priv->settings, PODCAST_DOWNLOAD_INTERVAL) != PODCAST_INTERVAL_MANUAL);
 	for (lst_songs = data->posts; lst_songs != NULL; lst_songs = g_list_next (lst_songs)) {
 		RBPodcastItem *item = (RBPodcastItem *) lst_songs->data;
 		RhythmDBEntry *post_entry;
@@ -2149,11 +2165,10 @@ rb_podcast_manager_shutdown (RBPodcastManager *pd)
 char *
 rb_podcast_manager_get_podcast_dir (RBPodcastManager *pd)
 {
-	char *conf_dir_uri = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
+	char *conf_dir_uri = g_settings_get_string (pd->priv->settings, PODCAST_DOWNLOAD_DIR_KEY);
 
 	/* if we don't have a download directory yet, use the music dir,
 	 * or the home dir if we can't find that.
-	 * if the download directory is a path, rather than a URI, convert it.
 	 */
 	if (conf_dir_uri == NULL || (strcmp (conf_dir_uri, "") == 0)) {
 		const char *conf_dir_name;
@@ -2163,14 +2178,7 @@ rb_podcast_manager_get_podcast_dir (RBPodcastManager *pd)
 			conf_dir_name = g_get_home_dir ();
 
 		conf_dir_uri = g_filename_to_uri (conf_dir_name, NULL, NULL);
-		eel_gconf_set_string (CONF_STATE_PODCAST_DOWNLOAD_DIR, conf_dir_uri);
-	} else if (conf_dir_uri[0] == '/') {
-		char *path = conf_dir_uri;
-
-		conf_dir_uri = g_filename_to_uri (path, NULL, NULL);
-		rb_debug ("converted podcast download dir %s to URI %s", path, conf_dir_uri);
-		eel_gconf_set_string (CONF_STATE_PODCAST_DOWNLOAD_DIR, conf_dir_uri);
-		g_free (path);
+		g_settings_set_string (pd->priv->settings, PODCAST_DOWNLOAD_DIR_KEY, conf_dir_uri);
 	}
 
 	return conf_dir_uri;

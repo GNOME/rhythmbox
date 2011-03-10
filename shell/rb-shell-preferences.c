@@ -59,80 +59,83 @@
 #include "rb-builder-helpers.h"
 #include "rb-dialog.h"
 #include "rb-debug.h"
-#include "eel-gconf-extensions.h"
-#include "rb-preferences.h"
 #include "rb-shell.h"
+#include "rb-util.h"
 
 static void rb_shell_preferences_class_init (RBShellPreferencesClass *klass);
 static void rb_shell_preferences_init (RBShellPreferences *shell_preferences);
-static void rb_shell_preferences_finalize (GObject *object);
+static void impl_finalize (GObject *object);
+static void impl_dispose (GObject *object);
 static gboolean rb_shell_preferences_window_delete_cb (GtkWidget *window,
 				                       GdkEventAny *event,
 				                       RBShellPreferences *shell_preferences);
 static void rb_shell_preferences_response_cb (GtkDialog *dialog,
 				              int response_id,
 				              RBShellPreferences *shell_preferences);
-static void rb_shell_preferences_ui_pref_changed (GConfClient *client,
-						  guint cnxn_id,
-						  GConfEntry *entry,
-						  RBShellPreferences *shell_preferences);
-static void rb_shell_preferences_sync (RBShellPreferences *shell_preferences);
 
 void rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 						   RBShellPreferences *shell_preferences);
 void rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
 						      RBShellPreferences *shell_preferences);
-static void rb_shell_preferences_toolbar_style_cb (GtkComboBox *box,
-						   RBShellPreferences *preferences);
-static void rb_shell_preferences_player_backend_cb (GtkToggleButton *button,
-						    RBShellPreferences *preferences);
-static void rb_shell_preferences_transition_duration_cb (GtkRange *range,
-							 RBShellPreferences *preferences);
-static void rb_shell_preferences_network_buffer_size_cb (GtkRange *range,
-							 RBShellPreferences *preferences);
-static void update_playback_prefs_sensitivity (RBShellPreferences *preferences);
+static gboolean toolbar_style_get_map (GValue *value, GVariant *variant, gpointer data);
+static GVariant *toolbar_style_set_map (const GValue *value, const GVariantType *variant_type, gpointer data);
+
+static void column_check_toggled_cb (GtkWidget *widget, RBShellPreferences *preferences);
+
+static void player_settings_changed_cb (GSettings *settings, const char *key, RBShellPreferences *preferences);
+static void source_settings_changed_cb (GSettings *settings, const char *key, RBShellPreferences *preferences);
+static void transition_time_changed_cb (GtkRange *range, RBShellPreferences *preferences);
 
 enum
 {
 	PROP_0,
 };
 
-const char *styles[] = { "desktop_default", "both", "both_horiz", "icon", "text" };
+#define COLUMN_CHECK_PROP_NAME	"rb-column-prop-name"
+
+struct {
+	const char *widget;
+	RhythmDBPropType prop;
+} column_checks[] = {
+	{ "track_check",	RHYTHMDB_PROP_TRACK_NUMBER },
+	{ "artist_check",	RHYTHMDB_PROP_ARTIST },
+	{ "album_check",	RHYTHMDB_PROP_ALBUM },
+	{ "year_check",		RHYTHMDB_PROP_DATE },
+	{ "last_played_check",	RHYTHMDB_PROP_LAST_PLAYED },
+	{ "genre_check",	RHYTHMDB_PROP_GENRE },
+	{ "first_seen_check",	RHYTHMDB_PROP_FIRST_SEEN },
+	{ "play_count_check",	RHYTHMDB_PROP_PLAY_COUNT },
+	{ "comment_check",	RHYTHMDB_PROP_COMMENT },
+	{ "bpm_check",		RHYTHMDB_PROP_BPM },
+	{ "rating_check",	RHYTHMDB_PROP_RATING },
+	{ "duration_check",	RHYTHMDB_PROP_DURATION },
+	{ "location_check",	RHYTHMDB_PROP_LOCATION },
+	{ "quality_check",	RHYTHMDB_PROP_BITRATE }
+};
+
 
 struct RBShellPreferencesPrivate
 {
 	GtkWidget *notebook;
 
-	GtkWidget *config_widget;
-	GtkWidget *artist_check;
-	GtkWidget *album_check;
-	GtkWidget *genre_check;
-	GtkWidget *comment_check;
-	GtkWidget *duration_check;
-	GtkWidget *track_check;
-	GtkWidget *rating_check;
-	GtkWidget *play_count_check;
-	GtkWidget *last_played_check;
-	GtkWidget *first_seen_check;
-	GtkWidget *bpm_check;
-	GtkWidget *quality_check;
-	GtkWidget *year_check;
-	GtkWidget *location_check;
+	GHashTable *column_checks;
 	GtkWidget *general_prefs_plugin_box;
 
 	GtkWidget *xfade_backend_check;
 	GtkWidget *transition_duration;
-	GtkWidget *network_buffer_size;
 	GtkWidget *playback_prefs_plugin_box;
 
 	GSList *browser_views_group;
 
 	GtkWidget *toolbar_style_menu;
 
-	gboolean loading;
+	gboolean applying_settings;
+
+	GSettings *main_settings;
+	GSettings *source_settings;
+	GSettings *player_settings;
 };
 
-#define RB_SHELL_PREFERENCES_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL_PREFERENCES, RBShellPreferencesPrivate))
 
 G_DEFINE_TYPE (RBShellPreferences, rb_shell_preferences, GTK_TYPE_DIALOG)
 
@@ -141,7 +144,8 @@ rb_shell_preferences_class_init (RBShellPreferencesClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->finalize = rb_shell_preferences_finalize;
+	object_class->finalize = impl_finalize;
+	object_class->dispose = impl_dispose;
 
 	g_type_class_add_private (klass, sizeof (RBShellPreferencesPrivate));
 }
@@ -172,8 +176,11 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	GtkWidget *tmp;
 	GtkWidget *content_area;
 	GtkBuilder *builder;
+	int i;
 
-	shell_preferences->priv = RB_SHELL_PREFERENCES_GET_PRIVATE (shell_preferences);
+	shell_preferences->priv = G_TYPE_INSTANCE_GET_PRIVATE (shell_preferences,
+							       RB_TYPE_SHELL_PREFERENCES,
+							       RBShellPreferencesPrivate);
 
 	g_signal_connect_object (shell_preferences,
 				 "delete_event",
@@ -202,46 +209,34 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	gtk_container_set_border_width (GTK_CONTAINER (shell_preferences->priv->notebook), 5);
 
 	content_area = gtk_dialog_get_content_area (GTK_DIALOG (shell_preferences));
-
 	gtk_container_add (GTK_CONTAINER (content_area),
 			   shell_preferences->priv->notebook);
 
 	gtk_container_set_border_width (GTK_CONTAINER (shell_preferences), 5);
 	gtk_box_set_spacing (GTK_BOX (content_area), 2);
 
+	shell_preferences->priv->source_settings = g_settings_new ("org.gnome.rhythmbox.sources");
+
 	builder = rb_builder_load ("general-prefs.ui", shell_preferences);
 
 	rb_builder_boldify_label (builder, "visible_columns_label");
 
 	/* Columns */
-	shell_preferences->priv->artist_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "artist_check"));
-	shell_preferences->priv->album_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "album_check"));
-	shell_preferences->priv->genre_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "genre_check"));
-	shell_preferences->priv->comment_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "comment_check"));
-	shell_preferences->priv->duration_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "duration_check"));
-	shell_preferences->priv->track_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "track_check"));
-	shell_preferences->priv->rating_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "rating_check"));
-	shell_preferences->priv->play_count_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "play_count_check"));
-	shell_preferences->priv->last_played_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "last_played_check"));
-	shell_preferences->priv->quality_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "quality_check"));
-	shell_preferences->priv->bpm_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "bpm_check"));
-	shell_preferences->priv->year_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "year_check"));
-	shell_preferences->priv->first_seen_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "first_seen_check"));
-	shell_preferences->priv->location_check =
-		GTK_WIDGET (gtk_builder_get_object (builder, "location_check"));
+	shell_preferences->priv->column_checks = g_hash_table_new (g_str_hash, g_str_equal);
+	for (i = 0; i < G_N_ELEMENTS (column_checks); i++) {
+		GtkWidget *widget;
+		const char *name;
+
+		widget = GTK_WIDGET (gtk_builder_get_object (builder, column_checks[i].widget));
+		/* XXX kind of nasty, we know rhythmdb_nice_elt_name_from_propid doesn't actually use the db */
+		name = (const char *)rhythmdb_nice_elt_name_from_propid (NULL, column_checks[i].prop);
+		g_assert (name != NULL);
+
+		g_signal_connect_object (widget, "toggled", G_CALLBACK (column_check_toggled_cb), shell_preferences, 0);
+		g_object_set_data (G_OBJECT (widget), COLUMN_CHECK_PROP_NAME, (gpointer)name);
+
+		g_hash_table_insert (shell_preferences->priv->column_checks, (gpointer)name, widget);
+	}
 
 	/* browser options */
 	rb_builder_boldify_label (builder, "browser_views_label");
@@ -255,6 +250,17 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 				  GTK_WIDGET (gtk_builder_get_object (builder, "general_vbox")),
 				  gtk_label_new (_("General")));
 
+	g_signal_connect_object (shell_preferences->priv->source_settings,
+				 "changed",
+				 G_CALLBACK (source_settings_changed_cb),
+				 shell_preferences, 0);
+	source_settings_changed_cb (shell_preferences->priv->source_settings,
+				    "visible-columns",
+				    shell_preferences);
+	source_settings_changed_cb (shell_preferences->priv->source_settings,
+				    "browser-views",
+				    shell_preferences);
+
 	/* toolbar button style */
 	rb_builder_boldify_label (builder, "toolbar_style_label");
 	shell_preferences->priv->toolbar_style_menu =
@@ -262,74 +268,99 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	gtk_combo_box_set_row_separator_func (GTK_COMBO_BOX (shell_preferences->priv->toolbar_style_menu),
 					      rb_combo_box_hyphen_separator_func,
 					      NULL, NULL);
-	g_signal_connect_object (G_OBJECT (shell_preferences->priv->toolbar_style_menu),
-				 "changed", G_CALLBACK (rb_shell_preferences_toolbar_style_cb),
-				 shell_preferences, 0);
 
-	eel_gconf_notification_add (CONF_UI_DIR,
-				    (GConfClientNotifyFunc) rb_shell_preferences_ui_pref_changed,
-				    shell_preferences);
+	shell_preferences->priv->main_settings = g_settings_new ("org.gnome.rhythmbox");
+
+	g_settings_bind_with_mapping (shell_preferences->priv->main_settings, "toolbar-style",
+				      shell_preferences->priv->toolbar_style_menu, "active",
+				      G_SETTINGS_BIND_DEFAULT,
+				      (GSettingsBindGetMapping) toolbar_style_get_map,
+				      (GSettingsBindSetMapping) toolbar_style_set_map,
+				      NULL, NULL);
 
 	/* box for stuff added by plugins */
 	shell_preferences->priv->general_prefs_plugin_box =
 		GTK_WIDGET (gtk_builder_get_object (builder, "plugin_box"));
 
 	g_object_unref (builder);
-
-	/* playback preferences */
 	builder = rb_builder_load ("playback-prefs.ui", shell_preferences);
 
+	/* playback preferences */
 	rb_builder_boldify_label (builder, "backend_label");
 	rb_builder_boldify_label (builder, "duration_label");
-	rb_builder_boldify_label (builder, "buffer_size_label");
 
 	shell_preferences->priv->xfade_backend_check =
 		GTK_WIDGET (gtk_builder_get_object (builder, "use_xfade_backend"));
 	shell_preferences->priv->transition_duration =
 		GTK_WIDGET (gtk_builder_get_object (builder, "duration"));
-	shell_preferences->priv->network_buffer_size =
-		GTK_WIDGET (gtk_builder_get_object (builder, "network_buffer_size"));
 	shell_preferences->priv->playback_prefs_plugin_box =
 		GTK_WIDGET (gtk_builder_get_object (builder, "plugin_box"));
 
-	g_signal_connect_object (shell_preferences->priv->xfade_backend_check,
-				 "toggled",
-				 G_CALLBACK (rb_shell_preferences_player_backend_cb),
-				 shell_preferences, 0);
 
-	g_signal_connect_object (shell_preferences->priv->transition_duration,
-				 "value-changed",
-				 G_CALLBACK (rb_shell_preferences_transition_duration_cb),
+	shell_preferences->priv->player_settings = g_settings_new ("org.gnome.rhythmbox.player");
+	g_signal_connect_object (shell_preferences->priv->player_settings,
+				 "changed",
+				 G_CALLBACK (player_settings_changed_cb),
 				 shell_preferences, 0);
+	player_settings_changed_cb (shell_preferences->priv->player_settings,
+				    "transition-time",
+				    shell_preferences);
 
-	g_signal_connect_object (shell_preferences->priv->network_buffer_size,
+
+	g_settings_bind (shell_preferences->priv->player_settings,
+			 "use-xfade-backend",
+			 shell_preferences->priv->xfade_backend_check,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
+
+	/* unfortunately the GtkRange value can't be bound to a GSettings key.. */
+	g_settings_bind (shell_preferences->priv->player_settings,
+			 "use-xfade-backend",
+			 shell_preferences->priv->transition_duration,
+			 "sensitive",
+			 G_SETTINGS_BIND_GET | G_SETTINGS_BIND_SET | G_SETTINGS_BIND_NO_SENSITIVITY);
+
+	g_signal_connect_object (gtk_builder_get_object (builder, "duration"),
 				 "value-changed",
-				 G_CALLBACK (rb_shell_preferences_network_buffer_size_cb),
+				 G_CALLBACK (transition_time_changed_cb),
 				 shell_preferences, 0);
 
 	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook),
 				  GTK_WIDGET (gtk_builder_get_object (builder, "playback_prefs_box")),
 				  gtk_label_new (_("Playback")));
 	g_object_unref (builder);
-
-	eel_gconf_notification_add (CONF_PLAYER_DIR,
-				    (GConfClientNotifyFunc) rb_shell_preferences_ui_pref_changed,
-				    shell_preferences);
-
-	rb_shell_preferences_sync (shell_preferences);
 }
 
 static void
-rb_shell_preferences_finalize (GObject *object)
+impl_dispose (GObject *object)
 {
-	RBShellPreferences *shell_preferences;
+	RBShellPreferences *shell_preferences = RB_SHELL_PREFERENCES (object);
 
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_SHELL_PREFERENCES (object));
+	if (shell_preferences->priv->main_settings != NULL) {
+		g_object_unref (shell_preferences->priv->main_settings);
+		shell_preferences->priv->main_settings = NULL;
+	}
 
-	shell_preferences = RB_SHELL_PREFERENCES (object);
+	if (shell_preferences->priv->source_settings != NULL) {
+		g_object_unref (shell_preferences->priv->source_settings);
+		shell_preferences->priv->source_settings = NULL;
+	}
 
-	g_return_if_fail (shell_preferences->priv != NULL);
+	if (shell_preferences->priv->player_settings != NULL) {
+		rb_settings_delayed_sync (shell_preferences->priv->player_settings, NULL, NULL, NULL);
+		g_object_unref (shell_preferences->priv->player_settings);
+		shell_preferences->priv->player_settings = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_shell_preferences_parent_class)->dispose (object);
+}
+
+static void
+impl_finalize (GObject *object)
+{
+	/*RBShellPreferences *shell_preferences = RB_SHELL_PREFERENCES (object);*/
+
+	/* anything to do here? */
 
 	G_OBJECT_CLASS (rb_shell_preferences_parent_class)->finalize (object);
 }
@@ -430,214 +461,67 @@ rb_shell_preferences_response_cb (GtkDialog *dialog,
 }
 
 static void
-rb_shell_preferences_ui_pref_changed (GConfClient *client,
-				      guint cnxn_id,
-				      GConfEntry *entry,
-				      RBShellPreferences *shell_preferences)
+column_check_toggled_cb (GtkWidget *widget, RBShellPreferences *preferences)
 {
-	if (shell_preferences->priv->loading == TRUE)
-		return;
+	const char *prop_name;
+	const char *column;
+	GVariantBuilder *b;
+	GVariantIter *iter;
+	GVariant *v;
 
-	rb_shell_preferences_sync (shell_preferences);
-}
+	prop_name = (const char *)g_object_get_data (G_OBJECT (widget), COLUMN_CHECK_PROP_NAME);
+	g_assert (prop_name);
 
-/**
- * rb_shell_preferences_column_check_changed_cb:
- * @butt: the #GtkCheckButton that was changed
- * @shell_preferences: the #RBShellPreferences instance
- *
- * Signal handler used for the checkboxes used to configure the set of visible columns.
- * This updates the GConf key that contains the list of visible columns.
- */
-void
-rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
-					      RBShellPreferences *shell_preferences)
-{
-	GString *newcolumns = g_string_new ("");
-	char *currentcols = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
-	char **colnames = currentcols ? g_strsplit (currentcols, ",", 0) : NULL;
-	char *colname = NULL;
-	int i;
+	v = g_settings_get_value (preferences->priv->source_settings, "visible-columns");
 
-	if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->artist_check))
-		colname = "RHYTHMDB_PROP_ARTIST";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->album_check))
-		colname = "RHYTHMDB_PROP_ALBUM";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->genre_check))
-		colname = "RHYTHMDB_PROP_GENRE";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->comment_check))
-		colname = "RHYTHMDB_PROP_COMMENT";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->duration_check))
-		colname = "RHYTHMDB_PROP_DURATION";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->track_check))
-		colname = "RHYTHMDB_PROP_TRACK_NUMBER";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->rating_check))
-		colname = "RHYTHMDB_PROP_RATING";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->play_count_check))
-		colname = "RHYTHMDB_PROP_PLAY_COUNT";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->last_played_check))
-		colname = "RHYTHMDB_PROP_LAST_PLAYED";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->year_check))
-		colname = "RHYTHMDB_PROP_DATE";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->bpm_check))
-		colname = "RHYTHMDB_PROP_BPM";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->quality_check))
-		colname = "RHYTHMDB_PROP_BITRATE";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->first_seen_check))
-		colname = "RHYTHMDB_PROP_FIRST_SEEN";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->location_check))
-		colname = "RHYTHMDB_PROP_LOCATION";
-	else
-		g_assert_not_reached ();
-
-	rb_debug ("\"%s\" changed, current cols are \"%s\"", colname, currentcols);
-
-	/* Append this if we want it */
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (butt))) {
-		g_string_append (newcolumns, colname);
-		g_string_append (newcolumns, ",");
-	}
-
-	/* Append everything else */
-	for (i = 0; colnames != NULL && colnames[i] != NULL; i++) {
-		if (strcmp (colnames[i], colname)) {
-			g_string_append (newcolumns, colnames[i]);
-			if (colnames[i+1] != NULL)
-				g_string_append (newcolumns, ",");
+	/* remove from current column list */
+	b = g_variant_builder_new (G_VARIANT_TYPE ("as"));
+	iter = g_variant_iter_new (v);
+	while (g_variant_iter_loop (iter, "s", &column)) {
+		if (g_strcmp0 (column, prop_name) != 0) {
+			g_variant_builder_add (b, "s", column);
 		}
 	}
+	g_variant_unref (v);
 
-	eel_gconf_set_string (CONF_UI_COLUMNS_SETUP, newcolumns->str);
-	g_string_free (newcolumns, TRUE);
-}
-
-static void
-rb_shell_preferences_sync_column_button (RBShellPreferences *preferences,
-					 GtkWidget *button,
-					 const char *columns,
-					 const char *propid)
-{
-	g_signal_handlers_block_by_func (G_OBJECT (button),
-					 rb_shell_preferences_column_check_changed_cb,
-					 preferences);
-
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button),
-				      strstr (columns, propid) != NULL);
-
-	g_signal_handlers_unblock_by_func (G_OBJECT (button),
-					   rb_shell_preferences_column_check_changed_cb,
-					   preferences);
-}
-
-static void
-rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
-{
-	char *columns;
-	GSList  *l;
-	gint view, i;
-	gboolean b;
-	float duration;
-	int buffer_size;
-
-	shell_preferences->priv->loading = TRUE;
-
-	rb_debug ("syncing prefs");
-
-	columns = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
-	if (columns != NULL)
-	{
-		rb_shell_preferences_sync_column_button (shell_preferences,
-			       				 shell_preferences->priv->artist_check,
-							 columns, "RHYTHMDB_PROP_ARTIST");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-			       				 shell_preferences->priv->album_check,
-							 columns, "RHYTHMDB_PROP_ALBUM");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-			       				 shell_preferences->priv->genre_check,
-							 columns, "RHYTHMDB_PROP_GENRE");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-							 shell_preferences->priv->comment_check,
-							 columns, "RHYTHMDB_PROP_COMMENT");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-			       				 shell_preferences->priv->duration_check,
-							 columns, "RHYTHMDB_PROP_DURATION");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-			       				 shell_preferences->priv->track_check,
-							 columns, "RHYTHMDB_PROP_TRACK_NUMBER");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-			       				 shell_preferences->priv->rating_check,
-							 columns, "RHYTHMDB_PROP_RATING");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-			       				 shell_preferences->priv->play_count_check,
-							 columns, "RHYTHMDB_PROP_PLAY_COUNT");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-			       				 shell_preferences->priv->last_played_check,
-							 columns, "RHYTHMDB_PROP_LAST_PLAYED");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-			       				 shell_preferences->priv->year_check,
-							 columns, "RHYTHMDB_PROP_DATE");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-			       				 shell_preferences->priv->first_seen_check,
-							 columns, "RHYTHMDB_PROP_FIRST_SEEN");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-							 shell_preferences->priv->quality_check,
-							 columns, "RHYTHMDB_PROP_BITRATE");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-							 shell_preferences->priv->bpm_check,
-							 columns, "RHYTHMDB_PROP_BPM");
-		rb_shell_preferences_sync_column_button (shell_preferences,
-			       				 shell_preferences->priv->location_check,
-							 columns, "RHYTHMDB_PROP_LOCATION");
+	/* if enabled, add it */
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget))) {
+		g_variant_builder_add (b, "s", prop_name);
 	}
 
-	g_free (columns);
+	v = g_variant_builder_end (b);
 
-	view = eel_gconf_get_integer (CONF_UI_BROWSER_VIEWS);
-	for (l = shell_preferences->priv->browser_views_group, i = 0; l != NULL; l = g_slist_next (l), i++)
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (l->data), (i == view));
+	g_settings_set_value (preferences->priv->source_settings, "visible-columns", v);
 
-	/* toolbar style */
-	g_signal_handlers_block_by_func (G_OBJECT (shell_preferences->priv->toolbar_style_menu),
-					 G_CALLBACK (rb_shell_preferences_toolbar_style_cb),
-					 shell_preferences);
-
-	view = eel_gconf_get_integer (CONF_UI_TOOLBAR_STYLE);
-	/* skip the separator row */
-	if (view >= 1)
-		view++;
-	gtk_combo_box_set_active (GTK_COMBO_BOX (shell_preferences->priv->toolbar_style_menu), view);
-
-	g_signal_handlers_unblock_by_func (G_OBJECT (shell_preferences->priv->toolbar_style_menu),
-					   G_CALLBACK (rb_shell_preferences_toolbar_style_cb),
-					   shell_preferences);
-
-	/* player preferences */
-	b = eel_gconf_get_boolean (CONF_PLAYER_USE_XFADE_BACKEND);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->xfade_backend_check), b);
-
-	duration = eel_gconf_get_float (CONF_PLAYER_TRANSITION_TIME);
-	gtk_range_set_value (GTK_RANGE (shell_preferences->priv->transition_duration), duration);
-
-	buffer_size = eel_gconf_get_integer (CONF_PLAYER_NETWORK_BUFFER_SIZE);
-	gtk_range_set_value (GTK_RANGE (shell_preferences->priv->network_buffer_size), buffer_size);
-
-	update_playback_prefs_sensitivity (shell_preferences);
-
-	shell_preferences->priv->loading = FALSE;
+	g_variant_unref (v);
+	g_variant_builder_unref (b);
 }
 
-static void
-rb_shell_preferences_toolbar_style_cb (GtkComboBox *box, RBShellPreferences *preferences)
+static GVariant *
+toolbar_style_set_map (const GValue *value,
+		       const GVariantType *expected_type,
+		       gpointer data)
 {
-	int selection;
+	int index = g_value_get_int (value);
 
-	selection = gtk_combo_box_get_active (box);
+	/* ignore the separator row */
+	if (index >= 1)
+		index--;
+
+	return g_variant_new_int32 (index);
+}
+
+static gboolean
+toolbar_style_get_map (GValue *value, GVariant *variant, gpointer data)
+{
+	int index = g_variant_get_int32 (variant);
 
 	/* skip the separator row */
-	if (selection >= 1)
-		selection--;
+	if (index >= 1)
+		index++;
 
-	eel_gconf_set_integer (CONF_UI_TOOLBAR_STYLE, selection);
+	g_value_set_int (value, index);
+	return TRUE;
 }
 
 /**
@@ -654,52 +538,71 @@ rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
 {
 	int index;
 
-	if (shell_preferences->priv->loading)
+	if (shell_preferences->priv->applying_settings)
 		return;
 
 	index = g_slist_index (shell_preferences->priv->browser_views_group, widget);
 
-	eel_gconf_set_integer (CONF_UI_BROWSER_VIEWS, index);
+	g_settings_set_enum (shell_preferences->priv->source_settings, "browser-views", index);
 }
 
 static void
-update_playback_prefs_sensitivity (RBShellPreferences *preferences)
+source_settings_changed_cb (GSettings *settings, const char *key, RBShellPreferences *preferences)
 {
-	gboolean backend;
+	if (g_strcmp0 (key, "browser-views") == 0) {
+		int view;
+		GtkWidget *widget;
 
-	backend = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (preferences->priv->xfade_backend_check));
+		view = g_settings_get_enum (preferences->priv->source_settings, "browser-views");
+		widget = GTK_WIDGET (g_slist_nth_data (preferences->priv->browser_views_group, view));
+		preferences->priv->applying_settings = TRUE;
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), TRUE);
+		preferences->priv->applying_settings = FALSE;
 
-	gtk_widget_set_sensitive (preferences->priv->transition_duration, backend);
+	} else if (g_strcmp0 (key, "visible-columns") == 0) {
+		char **columns;
+		GHashTableIter iter;
+		gpointer name_ptr;
+		gpointer widget_ptr;
+
+		columns = g_settings_get_strv (preferences->priv->source_settings, "visible-columns");
+
+		g_hash_table_iter_init (&iter, preferences->priv->column_checks);
+		while (g_hash_table_iter_next (&iter, &name_ptr, &widget_ptr)) {
+			gboolean enabled;
+
+			enabled = rb_str_in_strv (name_ptr, (const char **)columns);
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget_ptr), enabled);
+		}
+
+		g_strfreev (columns);
+	}
 }
 
 static void
-rb_shell_preferences_player_backend_cb (GtkToggleButton *button,
-					RBShellPreferences *preferences)
+player_settings_changed_cb (GSettings *settings, const char *key, RBShellPreferences *preferences)
 {
-	update_playback_prefs_sensitivity (preferences);
-
-	eel_gconf_set_boolean (CONF_PLAYER_USE_XFADE_BACKEND,
-			       gtk_toggle_button_get_active (button));
+	if (g_strcmp0 (key, "transition-time") == 0) {
+		gtk_range_set_value (GTK_RANGE (preferences->priv->transition_duration),
+				     g_settings_get_double (settings, key));
+	}
 }
 
 static void
-rb_shell_preferences_transition_duration_cb (GtkRange *range,
-					     RBShellPreferences *preferences)
+sync_transition_time (GSettings *settings, GtkRange *range)
 {
-	gdouble v;
-
-	v = gtk_range_get_value (range);
-	eel_gconf_set_float (CONF_PLAYER_TRANSITION_TIME, (float)v);
+	g_settings_set_double (settings,
+			       "transition-time",
+			       gtk_range_get_value (range));
 }
 
 static void
-rb_shell_preferences_network_buffer_size_cb (GtkRange *range,
-					     RBShellPreferences *preferences)
+transition_time_changed_cb (GtkRange *range, RBShellPreferences *preferences)
 {
-	gdouble v;
-
-	v = gtk_range_get_value (range);
-	eel_gconf_set_integer (CONF_PLAYER_NETWORK_BUFFER_SIZE, (int)v);
+	rb_settings_delayed_sync (preferences->priv->player_settings,
+				  (RBDelayedSyncFunc) sync_transition_time,
+				  g_object_ref (range),
+				  g_object_unref);
 }
 
 static GtkWidget *

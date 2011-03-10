@@ -19,6 +19,7 @@ librbpodcast_la_SOURCES =				\
 	rb-podcast-properties-dialog.h			\
 	rb-podcast-main-source.c			\
 	rb-podcast-main-source.h			\
+	rb-podcast-settings.h				\
 	rb-podcast-source.c				\
 	rb-podcast-source.h				\
 	rb-podcast-parse.c				\

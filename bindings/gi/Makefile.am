@@ -23,7 +23,6 @@ rb_introspection_sources = \
 		lib/rb-debug.c \
 		lib/rb-file-helpers.h \
 		lib/rb-file-helpers.c \
-		lib/rb-preferences.h \
 		lib/rb-stock-icons.h \
 		lib/rb-stock-icons.c \
 		lib/rb-string-value-map.h \

@@ -285,7 +285,7 @@ rb_play_queue_source_constructed (GObject *object)
 	/* Translators: this is the toolbutton label for Clear Queue action */
 	g_object_set (G_OBJECT (action), "short-label", _("Clear"), NULL);
 
-	priv->sidebar = rb_entry_view_new (db, shell_player, NULL, TRUE, TRUE);
+	priv->sidebar = rb_entry_view_new (db, shell_player, TRUE, TRUE);
 	g_object_unref (shell_player);
 
 	g_object_set (G_OBJECT (priv->sidebar), "vscrollbar-policy", GTK_POLICY_AUTOMATIC, NULL);

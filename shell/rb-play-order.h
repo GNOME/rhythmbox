@@ -37,7 +37,7 @@
  * defined here.
  *
  * When you add a new play order, remember to update the long description of
- * the state/play_order key in data/rhythmbox.schemas and to add the
+ * the state/play_order key in data/org.gnome.rhythmbox.gschema.xml and to add the
  * appropriate code to rb_play_order_new().
  */
 

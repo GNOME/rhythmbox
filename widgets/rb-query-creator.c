@@ -38,7 +38,6 @@
 #include "rb-query-creator-private.h"
 #include "rb-dialog.h"
 #include "rb-debug.h"
-#include "rb-preferences.h"
 #include "rb-builder-helpers.h"
 #include "rb-util.h"
 

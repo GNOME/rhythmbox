@@ -38,9 +38,7 @@
 #include "rb-stock-icons.h"
 #include "rb-header.h"
 #include "rb-debug.h"
-#include "rb-preferences.h"
 #include "rb-shell-player.h"
-#include "eel-gconf-extensions.h"
 #include "rb-util.h"
 #include "rhythmdb.h"
 #include "rb-player.h"
@@ -71,8 +69,6 @@ static void rb_header_get_property (GObject *object,
 				    guint prop_id,
 				    GValue *value,
 				    GParamSpec *pspec);
-static void rb_header_set_show_timeline (RBHeader *header,
-			                 gboolean show);
 static void rb_header_update_elapsed (RBHeader *header);
 static void apply_slider_position (RBHeader *header);
 static gboolean slider_press_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *header);
@@ -96,7 +92,7 @@ struct RBHeaderPrivate
 
 	GtkWidget *timeline;
 	GtkWidget *scaleline;
-	gboolean scaleline_shown;
+	gboolean show_remaining;
 
 	GtkWidget *scale;
 	GtkAdjustment *adjustment;
@@ -117,7 +113,9 @@ enum
 	PROP_DB,
 	PROP_SHELL_PLAYER,
 	PROP_SEEKABLE,
-	PROP_SLIDER_DRAGGING
+	PROP_SLIDER_DRAGGING,
+	PROP_SHOW_REMAINING,
+	PROP_SHOW_POSITION_SLIDER
 };
 
 #define TITLE_FORMAT  "<big><b>%s</b></big>"
@@ -190,6 +188,32 @@ rb_header_class_init (RBHeaderClass *klass)
 							       "slider dragging",
 							       FALSE,
 							       G_PARAM_READABLE));
+	/**
+	 * RBHeader:show-remaining:
+	 *
+	 * Whether to show remaining time (as opposed to elapsed time) in the numeric
+	 * time display.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SHOW_REMAINING,
+					 g_param_spec_boolean ("show-remaining",
+							       "show remaining",
+							       "whether to show remaining or elapsed time",
+							       FALSE,
+							       G_PARAM_READWRITE));
+
+	/**
+	 * RBHeader:show-position-slider:
+	 *
+	 * Whether to show the playback position slider.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SHOW_POSITION_SLIDER,
+					 g_param_spec_boolean ("show-position-slider",
+							       "show position slider",
+							       "whether to show the playback position slider",
+							       TRUE,
+							       G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBHeaderPrivate));
 }
@@ -243,7 +267,6 @@ rb_header_init (RBHeader *header)
 	/* row for the position slider */
 	header->priv->scaleline = gtk_hbox_new (FALSE, 3);
 	gtk_box_pack_start (GTK_BOX (vbox), header->priv->scaleline, FALSE, FALSE, 0);
-	header->priv->scaleline_shown = FALSE;
 
 	header->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 10.0, 1.0, 10.0, 0.0));
 	header->priv->scale = gtk_hscale_new (header->priv->adjustment);
@@ -341,6 +364,13 @@ rb_header_set_property (GObject *object,
 	case PROP_SEEKABLE:
 		header->priv->seekable = g_value_get_boolean (value);
 		break;
+	case PROP_SHOW_REMAINING:
+		header->priv->show_remaining = g_value_get_boolean (value);
+		rb_header_update_elapsed (header);
+		break;
+	case PROP_SHOW_POSITION_SLIDER:
+		gtk_widget_set_visible (header->priv->scaleline, g_value_get_boolean (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -367,6 +397,12 @@ rb_header_get_property (GObject *object,
 		break;
 	case PROP_SLIDER_DRAGGING:
 		g_value_set_boolean (value, header->priv->slider_dragging);
+		break;
+	case PROP_SHOW_REMAINING:
+		g_value_set_boolean (value, header->priv->show_remaining);
+		break;
+	case PROP_SHOW_POSITION_SLIDER:
+		g_value_set_boolean (value, gtk_widget_get_visible (header->priv->scaleline));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -538,7 +574,7 @@ rb_header_sync (RBHeader *header)
 		gtk_label_set_markup (GTK_LABEL (header->priv->song), label_text);
 		g_free (label_text);
 
-		rb_header_set_show_timeline (header, have_duration && header->priv->seekable);
+		gtk_widget_set_sensitive (header->priv->scaleline, have_duration && header->priv->seekable);
 		if (have_duration)
 			rb_header_sync_time (header);
 
@@ -551,7 +587,7 @@ rb_header_sync (RBHeader *header)
 		gtk_label_set_markup (GTK_LABEL (header->priv->song), label_text);
 		g_free (label_text);
 
-		rb_header_set_show_timeline (header, FALSE);
+		gtk_widget_set_sensitive (header->priv->scaleline, FALSE);
 
 		header->priv->slider_locked = TRUE;
 		gtk_adjustment_set_value (header->priv->adjustment, 0.0);
@@ -560,38 +596,6 @@ rb_header_sync (RBHeader *header)
 
 		gtk_label_set_text (GTK_LABEL (header->priv->elapsed), "");
 	}
-}
-
-/**
- * rb_header_set_show_position_slider:
- * @header: the #RBHeader
- * @show: whether the position slider should be shown
- *
- * Sets the visibility of the position slider.  This is not currently
- * used properly.
- */
-void
-rb_header_set_show_position_slider (RBHeader *header,
-				    gboolean show)
-{
-	if (header->priv->scaleline_shown == show)
-		return;
-
-	header->priv->scaleline_shown = show;
-
-	if (show) {
-		gtk_widget_show_all (GTK_WIDGET (header->priv->scaleline));
-		rb_header_sync_time (header);
-	} else {
-		gtk_widget_hide (GTK_WIDGET (header->priv->scaleline));
-	}
-}
-
-static void
-rb_header_set_show_timeline (RBHeader *header,
-			     gboolean show)
-{
-	gtk_widget_set_sensitive (header->priv->scaleline, show);
 }
 
 /**
@@ -787,7 +791,7 @@ rb_header_update_elapsed (RBHeader *header)
 
 		elapsed_text = rb_make_elapsed_time_string (seconds,
 							    header->priv->duration,
-							    !eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY));
+							    header->priv->show_remaining);
 		gtk_label_set_text (GTK_LABEL (header->priv->elapsed), elapsed_text);
 		g_free (elapsed_text);
 	} else {

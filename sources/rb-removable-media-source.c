@@ -45,7 +45,6 @@
 #include <gtk/gtk.h>
 
 #include "rhythmdb.h"
-#include "eel-gconf-extensions.h"
 #include "rb-removable-media-source.h"
 #include "rb-removable-media-manager.h"
 #include "rb-encoder.h"
@@ -138,7 +137,6 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	source_class->impl_uri_is_source = impl_uri_is_source;
 	source_class->impl_get_delete_action = impl_get_delete_action;
 
-	browser_source_class->impl_get_paned_key = NULL;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 
 	klass->impl_should_paste = impl_should_paste;

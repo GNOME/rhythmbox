@@ -33,7 +33,6 @@ CFILE_GLOB=$(top_srcdir)/lib/*.c
 # - plugins (no API there)
 IGNORE_HFILES= \
 	config.h \
-	eel-gconf-extensions.h \
 	eggdesktopfile.h \
 	eggsmclient-private.h \
 	eggsmclient.h \

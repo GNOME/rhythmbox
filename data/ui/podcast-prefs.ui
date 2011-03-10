@@ -1,27 +1,7 @@
 <?xml version="1.0"?>
 <interface>
-  <!-- interface-requires gtk+ 2.12 -->
+  <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy toplevel-contextual -->
-  <object class="GtkListStore" id="model1">
-    <columns>
-      <!-- column-name gchararray -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Every hour</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Every day</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Every week</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Manually</col>
-      </row>
-    </data>
-  </object>
   <object class="GtkVBox" id="podcast_vbox">
     <property name="visible">True</property>
     <property name="border_width">12</property>
@@ -36,8 +16,10 @@
           <object class="GtkLabel" id="download_manager_label">
             <property name="visible">True</property>
             <property name="xalign">0</property>
-            <property name="label" translatable="yes">&lt;b&gt;Download Manager&lt;/b&gt;</property>
-            <property name="use_markup">True</property>
+            <property name="label" translatable="yes">Podcast Downloads</property>
+            <attributes>
+              <attribute name="weight" value="bold"/>
+            </attributes>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -99,7 +81,7 @@
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">Check for _new episodes:</property>
                         <property name="use_underline">True</property>
-                        <property name="mnemonic_widget">cb_update_interval</property>
+                        <property name="mnemonic_widget">update_interval</property>
                       </object>
                       <packing>
                         <property name="top_attach">1</property>
@@ -109,9 +91,9 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBox" id="cb_update_interval">
+                      <object class="GtkComboBox" id="update_interval">
                         <property name="visible">True</property>
-                        <property name="model">model1</property>
+                        <property name="model">interval-values</property>
                         <child>
                           <object class="GtkCellRendererText" id="renderer1"/>
                           <attributes>
@@ -172,5 +154,31 @@
         <property name="position">0</property>
       </packing>
     </child>
+  </object>
+  <object class="GtkListStore" id="interval-values">
+    <columns>
+      <!-- column-name display -->
+      <column type="gchararray"/>
+      <!-- column-name setting -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Every hour</col>
+        <col id="1" translatable="no">hourly</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Every day</col>
+        <col id="1" translatable="no">daily</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Every week</col>
+        <col id="1" translatable="no">weekly</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Manually</col>
+        <col id="1" translatable="no">manual</col>
+      </row>
+    </data>
   </object>
 </interface>

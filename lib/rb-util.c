@@ -1250,3 +1250,57 @@ rb_scale_pixbuf_to_size (GdkPixbuf *pixbuf, GtkIconSize size)
 
 	return gdk_pixbuf_scale_simple (pixbuf, d_width, d_height, GDK_INTERP_BILINEAR);
 }
+
+#define DELAYED_SYNC_ITEM "rb-delayed-sync"
+#define DELAYED_SYNC_FUNC_ITEM "rb-delayed-sync-func"
+#define DELAYED_SYNC_DATA_ITEM "rb-delayed-sync-data"
+
+
+static gboolean
+do_delayed_apply (GSettings *settings)
+{
+	gpointer data;
+	RBDelayedSyncFunc sync_func;
+
+	data = g_object_get_data (G_OBJECT (settings), DELAYED_SYNC_DATA_ITEM);
+	sync_func = g_object_get_data (G_OBJECT (settings), DELAYED_SYNC_FUNC_ITEM);
+	if (sync_func != NULL) {
+		GDK_THREADS_ENTER ();
+		sync_func (settings, data);
+		GDK_THREADS_LEAVE ();
+	}
+
+	g_object_set_data (G_OBJECT (settings), DELAYED_SYNC_ITEM, GUINT_TO_POINTER (0));
+	g_object_set_data (G_OBJECT (settings), DELAYED_SYNC_FUNC_ITEM, NULL);
+	g_object_set_data (G_OBJECT (settings), DELAYED_SYNC_DATA_ITEM, NULL);
+	return FALSE;
+}
+
+static void
+remove_delayed_sync (gpointer data)
+{
+	g_source_remove (GPOINTER_TO_UINT (data));
+}
+
+/**
+ * rb_settings_delayed_sync:
+ * @settings: #GSettings instance
+ * @sync_func: (allow-none): function to call
+ * @data: (allow-none): data to pass to @func
+ * @destroy: (allow-none): function to use to free @data
+ *
+ * Synchronizes settings in the @settings instance after 500ms has elapsed
+ * with no further changes.
+ */
+void
+rb_settings_delayed_sync (GSettings *settings, RBDelayedSyncFunc sync_func, gpointer data, GDestroyNotify destroy)
+{
+	if (sync_func == NULL) {
+		do_delayed_apply (settings);
+	} else {
+		guint id = g_timeout_add (500, (GSourceFunc) do_delayed_apply, settings);
+		g_object_set_data_full (G_OBJECT (settings), DELAYED_SYNC_ITEM, GUINT_TO_POINTER (id), remove_delayed_sync);
+		g_object_set_data (G_OBJECT (settings), DELAYED_SYNC_FUNC_ITEM, sync_func);
+		g_object_set_data_full (G_OBJECT (settings), DELAYED_SYNC_DATA_ITEM, data, destroy);
+	}
+}

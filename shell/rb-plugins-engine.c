@@ -38,9 +38,7 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 
-#include "eel-gconf-extensions.h"
 #include "rb-file-helpers.h"
-#include "rb-preferences.h"
 #include "rb-util.h"
 #include "rb-plugin.h"
 #include "rb-debug.h"
@@ -87,20 +85,13 @@ struct _RBPluginInfo
 };
 
 static void rb_plugin_info_free (RBPluginInfo *info);
-static void rb_plugins_engine_plugin_active_cb (GConfClient *client,
-						guint cnxn_id,
-						GConfEntry *entry,
-						RBPluginInfo *info);
-static void rb_plugins_engine_plugin_visible_cb (GConfClient *client,
-						 guint cnxn_id,
-						 GConfEntry *entry,
-						 RBPluginInfo *info);
 static gboolean rb_plugins_engine_activate_plugin_real (RBPluginInfo *info,
 							RBShell *shell);
 static void rb_plugins_engine_deactivate_plugin_real (RBPluginInfo *info,
 						      RBShell *shell);
 
 static GHashTable *rb_plugins = NULL;
+static GSettings *rb_plugin_settings = NULL;
 guint garbage_collect_id = 0;
 RBShell *rb_plugins_shell = NULL;
 
@@ -264,9 +255,10 @@ rb_plugins_engine_load_cb (GFile *file, gboolean dir, gpointer userdata)
 {
 	char *plugin_path;
 	RBPluginInfo *info;
-	char *key_name;
 	gboolean activate;
 	const char *sep;
+	char **active_plugins;
+	char **hidden_plugins;
 
 	plugin_path = g_file_get_path (file);
 
@@ -304,19 +296,13 @@ rb_plugins_engine_load_cb (GFile *file, gboolean dir, gpointer userdata)
 	g_hash_table_insert (rb_plugins, info->location, info);
 	rb_debug ("Plugin %s loaded", info->name);
 
-	key_name = g_strdup_printf (CONF_PLUGIN_ACTIVE_KEY, info->location);
-	info->active_notification_id = eel_gconf_notification_add (key_name,
-								   (GConfClientNotifyFunc)rb_plugins_engine_plugin_active_cb,
-								   info);
-	activate = eel_gconf_get_boolean (key_name);
-	g_free (key_name);
+	active_plugins = g_settings_get_strv (rb_plugin_settings, "active-plugins");
+	activate = rb_str_in_strv (info->location, (const char **)active_plugins);
+	g_strfreev (active_plugins);
 
-	key_name = g_strdup_printf (CONF_PLUGIN_HIDDEN_KEY, info->location);
-	info->visible_notification_id = eel_gconf_notification_add (key_name,
-								    (GConfClientNotifyFunc)rb_plugins_engine_plugin_visible_cb,
-								    info);
-	info->visible = !eel_gconf_get_boolean (key_name);
-	g_free (key_name);
+	hidden_plugins = g_settings_get_strv (rb_plugin_settings, "hidden-plugins");
+	info->visible = (rb_str_in_strv (info->location, (const char **)hidden_plugins) == FALSE);
+	g_strfreev (hidden_plugins);
 
 	if (activate)
 		rb_plugins_engine_activate_plugin (info);
@@ -372,6 +358,8 @@ rb_plugins_engine_init (RBShell *shell)
 
 	rb_plugins = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)rb_plugin_info_free);
 
+	rb_plugin_settings = g_settings_new ("org.gnome.rhythmbox.plugins");
+
 	rb_plugins_shell = shell;
 	g_object_ref (G_OBJECT (rb_plugins_shell));
 #ifdef ENABLE_PYTHON
@@ -409,9 +397,6 @@ rb_plugin_info_free (RBPluginInfo *info)
 		/* info->module must not be unref since it is not possible to finalize
 		 * a type module */
 	}
-
-	eel_gconf_notification_remove (info->active_notification_id);
-	eel_gconf_notification_remove (info->visible_notification_id);
 
 	g_free (info->file);
 	g_free (info->location);
@@ -534,6 +519,39 @@ rb_plugins_engine_activate_plugin_real (RBPluginInfo *info, RBShell *shell)
 	return res;
 }
 
+static void
+modify_active_plugin_list (RBPluginInfo *info, gboolean add)
+{
+	GVariant *active;
+	GVariantIter *iter;
+	GVariantBuilder *builder;
+	const char *name;
+	gboolean present = FALSE;
+
+	builder = g_variant_builder_new (G_VARIANT_TYPE ("as"));
+
+	active = g_settings_get_value (rb_plugin_settings, "active-plugins");
+	iter = g_variant_iter_new (active);
+	while (g_variant_iter_loop (iter, "s", &name)) {
+		if (g_strcmp0 (info->location, name) == 0) {
+			present = TRUE;
+		}
+
+		if (add || g_strcmp0 (info->location, name) != 0) {
+			g_variant_builder_add (builder, "s", name);
+		}
+	}
+	g_variant_iter_free (iter);
+
+	if (add && (present == FALSE)) {
+		g_variant_builder_add (builder, "s", info->location);
+	}
+
+	g_settings_set_value (rb_plugin_settings, "active-plugins", g_variant_builder_end (builder));
+	g_variant_builder_unref (builder);
+	g_variant_unref (active);
+}
+
 gboolean
 rb_plugins_engine_activate_plugin (RBPluginInfo *info)
 {
@@ -547,17 +565,14 @@ rb_plugins_engine_activate_plugin (RBPluginInfo *info)
 	ret = rb_plugins_engine_activate_plugin_real (info, rb_plugins_shell);
 
 	if (info->visible != FALSE || ret != FALSE) {
-		char *key_name;
-
-		key_name = g_strdup_printf (CONF_PLUGIN_ACTIVE_KEY, info->location);
-		eel_gconf_set_boolean (key_name, ret);
-		g_free (key_name);
+		modify_active_plugin_list (info, FALSE);
 	}
         info->active = ret;
 
-        if (ret != FALSE)
+        if (ret != FALSE) {
+		modify_active_plugin_list (info, TRUE);
                 return TRUE;
-
+	}
 
 	rb_error_dialog (NULL, _("Plugin Error"), _("Unable to activate plugin %s"), info->name);
 
@@ -573,8 +588,6 @@ rb_plugins_engine_deactivate_plugin_real (RBPluginInfo *info, RBShell *shell)
 gboolean
 rb_plugins_engine_deactivate_plugin (RBPluginInfo *info)
 {
-	char *key_name;
-
 	g_return_val_if_fail (info != NULL, FALSE);
 
 	if (!info->active)
@@ -585,10 +598,7 @@ rb_plugins_engine_deactivate_plugin (RBPluginInfo *info)
 	/* Update plugin state */
 	info->active = FALSE;
 
-	key_name = g_strdup_printf (CONF_PLUGIN_ACTIVE_KEY, info->location);
-	eel_gconf_set_boolean (key_name, FALSE);
-	g_free (key_name);
-
+	modify_active_plugin_list (info, FALSE);
 	return TRUE;
 }
 
@@ -648,28 +658,6 @@ rb_plugins_engine_configure_plugin (RBPluginInfo *info,
 	gtk_window_group_add_window (wg,
 				     GTK_WINDOW (conf_dlg));
 	gtk_widget_show (conf_dlg);
-}
-
-static void
-rb_plugins_engine_plugin_active_cb (GConfClient *client,
-				    guint cnxn_id,
-				    GConfEntry *entry,
-				    RBPluginInfo *info)
-{
-	if (gconf_value_get_bool (entry->value)) {
-		rb_plugins_engine_activate_plugin (info);
-	} else {
-		rb_plugins_engine_deactivate_plugin (info);
-	}
-}
-
-static void
-rb_plugins_engine_plugin_visible_cb (GConfClient *client,
-				     guint cnxn_id,
-				     GConfEntry *entry,
-				     RBPluginInfo *info)
-{
-	info->visible = !gconf_value_get_bool (entry->value);
 }
 
 const gchar *

@@ -59,7 +59,6 @@ struct _RBBrowserSourceClass
 	RBSourceClass parent;
 
 	void		(*impl_pack_paned)		(RBBrowserSource *source, GtkWidget *paned);
-	char *		(*impl_get_paned_key)		(RBBrowserSource *source);
 	gboolean	(*impl_has_drop_support)	(RBBrowserSource *source);
 	void		(*impl_show_entry_popup)	(RBBrowserSource *source);
 };
@@ -69,7 +68,6 @@ typedef char*		(*RBBrowserSourceStringFunc)	(RBBrowserSource *source);
 
 GType		rb_browser_source_get_type		(void);
 
-char *		rb_browser_source_get_paned_key		(RBBrowserSource *source);
 gboolean	rb_browser_source_has_drop_support	(RBBrowserSource *source);
 
 G_END_DECLS

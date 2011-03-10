@@ -42,6 +42,7 @@
 #include <gtk/gtk.h>
 
 #include "rb-podcast-source.h"
+#include "rb-podcast-settings.h"
 #include "rb-podcast-entry-types.h"
 
 #include "rhythmdb.h"
@@ -52,21 +53,19 @@
 #include "rb-property-view.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
-#include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-uri-dialog.h"
 #include "rb-podcast-properties-dialog.h"
 #include "rb-feed-podcast-properties-dialog.h"
 #include "rb-playlist-manager.h"
 #include "rb-debug.h"
-#include "eel-gconf-extensions.h"
 #include "rb-podcast-manager.h"
 #include "rb-static-playlist-source.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-source-search-basic.h"
 #include "rb-cell-renderer-pixbuf.h"
 
-static void podcast_cmd_new_podcast	 	(GtkAction *action,
+static void podcast_cmd_new_podcast		(GtkAction *action,
 						 RBPodcastSource *source);
 static void podcast_cmd_download_post		(GtkAction *action,
 						 RBPodcastSource *source);
@@ -80,11 +79,6 @@ static void podcast_cmd_update_all		(GtkAction *action,
 						 RBPodcastSource *source);
 static void podcast_cmd_properties_feed		(GtkAction *action,
 						 RBPodcastSource *source);
-
-#define CONF_STATE_PODCAST_PREFIX		CONF_PREFIX "/state/podcast"
-#define CONF_STATE_PANED_POSITION 		CONF_STATE_PODCAST_PREFIX "/paned_position"
-#define CONF_STATE_PODCAST_SORTING_POSTS	CONF_STATE_PODCAST_PREFIX "/sorting_posts"
-#define CONF_STATE_SHOW_BROWSER   		CONF_STATE_PODCAST_PREFIX "/show_browser"
 
 struct _RBPodcastSourcePrivate
 {
@@ -153,48 +147,19 @@ enum
 {
 	PROP_0,
 	PROP_PODCAST_MANAGER,
-	PROP_BASE_QUERY
+	PROP_BASE_QUERY,
+	PROP_SHOW_BROWSER
 };
 
 G_DEFINE_TYPE (RBPodcastSource, rb_podcast_source, RB_TYPE_SOURCE)
 
 static void
-paned_size_allocate_cb (GtkWidget *widget,
-			GtkAllocation *allocation,
-		        RBPodcastSource *source)
-{
-	rb_debug ("paned size allocate");
-	eel_gconf_set_integer (CONF_STATE_PANED_POSITION,
-			       gtk_paned_get_position (GTK_PANED (source->priv->paned)));
-}
-
-static void
-rb_podcast_source_state_prefs_sync (RBPodcastSource *source)
-{
-	rb_debug ("syncing state");
-	gtk_paned_set_position (GTK_PANED (source->priv->paned),
-				eel_gconf_get_integer (CONF_STATE_PANED_POSITION));
-	g_object_set (source->priv->feeds,
-		      "visible", eel_gconf_get_boolean (CONF_STATE_SHOW_BROWSER),
-		      NULL);
-}
-
-static void
-podcast_pref_change_cb (GConfClient *client,
-			guint cnxn_id,
-			GConfEntry *entry,
-			RBPodcastSource *source)
-{
-	rb_debug ("state prefs changed");
-	rb_podcast_source_state_prefs_sync (source);
-}
-
-static void
-podcast_posts_view_sort_order_changed_cb (RBEntryView *view,
+podcast_posts_view_sort_order_changed_cb (GObject *object,
+					  GParamSpec *pspec,
 					  RBPodcastSource *source)
 {
 	rb_debug ("sort order changed");
-	rb_entry_view_resort_model (view);
+	rb_entry_view_resort_model (RB_ENTRY_VIEW (object));
 }
 
 static void
@@ -953,6 +918,15 @@ podcast_error_pixbuf_clicked_cb (RBCellRendererPixbuf *renderer,
 	gtk_tree_path_free (path);
 }
 
+static void
+settings_changed_cb (GSettings *settings, const char *key, RBPodcastSource *source)
+{
+	if (g_strcmp0 (key, PODCAST_PANED_POSITION) == 0) {
+		gtk_paned_set_position (GTK_PANED (source->priv->paned),
+					g_settings_get_int (settings, key));
+	}
+}
+
 RBSource *
 rb_podcast_source_new (RBShell *shell,
 		       RBPodcastManager *podcast_manager,
@@ -961,6 +935,9 @@ rb_podcast_source_new (RBShell *shell,
 		       const char *icon_name)
 {
 	RBSource *source;
+	GSettings *settings;
+
+	settings = g_settings_new (PODCAST_SETTINGS_SCHEMA);
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_PODCAST_SOURCE,
 					  "name", name,
@@ -969,7 +946,9 @@ rb_podcast_source_new (RBShell *shell,
 					  "search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					  "podcast-manager", podcast_manager,
 					  "base-query", base_query,
+					  "settings", g_settings_get_child (settings, "source"),
 					  NULL));
+	g_object_unref (settings);
 
 	if (icon_name != NULL) {
 		GdkPixbuf *pixbuf;
@@ -1119,13 +1098,6 @@ impl_delete (RBSource *asource)
 	rhythmdb_commit (source->priv->db);
 }
 
-static char *
-impl_get_browser_key (RBSource *asource)
-{
-	return g_strdup (CONF_STATE_SHOW_BROWSER);
-}
-
-
 static RBEntryView *
 impl_get_entry_view (RBSource *asource)
 {
@@ -1178,7 +1150,7 @@ impl_receive_drag (RBDisplayPage *page, GtkSelectionData *selection_data)
 		if ((uri != NULL) && (!rhythmdb_entry_lookup_by_location (source->priv->db, uri))) {
 			rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr, uri, FALSE);
 		}
-		
+
 		if (gtk_selection_data_get_data_type (selection_data) == gdk_atom_intern ("_NETSCAPE_URL", FALSE)) {
 			i = i->next;
 		}
@@ -1266,6 +1238,9 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 	case PROP_BASE_QUERY:
 		source->priv->base_query = rhythmdb_query_copy (g_value_get_pointer (value));
 		break;
+	case PROP_SHOW_BROWSER:
+		gtk_widget_set_visible (GTK_WIDGET (source->priv->feeds), g_value_get_boolean (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
 		break;
@@ -1284,6 +1259,9 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 	case PROP_BASE_QUERY:
 		g_value_set_pointer (value, source->priv->base_query);
 		break;
+	case PROP_SHOW_BROWSER:
+		g_value_set_boolean (value, gtk_widget_get_visible (GTK_WIDGET (source->priv->feeds)));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
 		break;
@@ -1300,6 +1278,8 @@ impl_constructed (GObject *object)
 	RBShellPlayer *shell_player;
 	RhythmDBQueryModel *query_model;
 	GtkAction *action;
+	GSettings *settings;
+	int position;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_source_parent_class, constructed, object);
 	source = RB_PODCAST_SOURCE (object);
@@ -1354,7 +1334,6 @@ impl_constructed (GObject *object)
 	/* set up posts view */
 	source->priv->posts = rb_entry_view_new (source->priv->db,
 						 G_OBJECT (shell_player),
-						 CONF_STATE_PODCAST_SORTING_POSTS,
 						 TRUE, FALSE);
 	g_object_unref (shell_player);
 
@@ -1450,13 +1429,8 @@ impl_constructed (GObject *object)
 					    0, NULL);
 
 	g_signal_connect_object (source->priv->posts,
-				 "sort-order-changed",
+				 "notify::sort-order",
 				 G_CALLBACK (podcast_posts_view_sort_order_changed_cb),
-				 source, 0);
-
-	g_signal_connect_object (source->priv->posts,
-				 "size_allocate",
-				 G_CALLBACK (paned_size_allocate_cb),
 				 source, 0);
 
 	g_signal_connect_object (source->priv->posts,
@@ -1563,13 +1537,21 @@ impl_constructed (GObject *object)
 
 	gtk_box_pack_start (GTK_BOX (source->priv->vbox), source->priv->paned, TRUE, TRUE, 0);
 
-	/* different prefix for each source? */
-	source->priv->prefs_notify_id = eel_gconf_notification_add (CONF_STATE_PODCAST_PREFIX,
-								    (GConfClientNotifyFunc) podcast_pref_change_cb,
-								    source);
-
 	gtk_widget_show_all (GTK_WIDGET (source));
-	rb_podcast_source_state_prefs_sync (source);
+
+	g_object_get (source, "settings", &settings, NULL);
+
+	g_signal_connect_object (settings, "changed", G_CALLBACK (settings_changed_cb), source, 0);
+
+	position = g_settings_get_int (settings, PODCAST_PANED_POSITION);
+	gtk_paned_set_position (GTK_PANED (source->priv->paned), position);
+
+	rb_source_bind_settings (RB_SOURCE (source),
+				 GTK_WIDGET (source->priv->posts),
+				 source->priv->paned,
+				 GTK_WIDGET (source->priv->feeds));
+
+	g_object_unref (settings);
 
 	rb_podcast_source_do_query (source);
 }
@@ -1605,11 +1587,6 @@ impl_dispose (GObject *object)
 	if (source->priv->error_pixbuf != NULL) {
 		g_object_unref (source->priv->error_pixbuf);
 		source->priv->error_pixbuf = NULL;
-	}
-
-	if (source->priv->prefs_notify_id != 0) {
-		eel_gconf_notification_remove (source->priv->prefs_notify_id);
-		source->priv->prefs_notify_id = 0;
 	}
 
 	G_OBJECT_CLASS (rb_podcast_source_parent_class)->dispose (object);
@@ -1681,7 +1658,6 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
-	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_get_search_actions = impl_get_search_actions;
 	source_class->impl_handle_eos = impl_handle_eos;
@@ -1702,6 +1678,8 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 							       "Base query",
 							       "Base query for the source",
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+
+	g_object_class_override_property (object_class, PROP_SHOW_BROWSER, "show-browser");
 
 	g_type_class_add_private (klass, sizeof (RBPodcastSourcePrivate));
 }

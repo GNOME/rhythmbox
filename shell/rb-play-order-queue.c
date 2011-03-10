@@ -30,8 +30,6 @@
 #include "rb-play-order-queue.h"
 
 #include "rb-debug.h"
-#include "rb-preferences.h"
-#include "eel-gconf-extensions.h"
 
 static void rb_queue_play_order_class_init (RBQueuePlayOrderClass *klass);
 

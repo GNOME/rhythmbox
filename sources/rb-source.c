@@ -61,7 +61,6 @@ static void rb_source_get_property (GObject *object,
 
 static void default_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 static void default_activate (RBDisplayPage *page);
-static char * default_get_browser_key (RBSource *source);
 static GList *default_get_property_views (RBSource *source);
 static gboolean default_can_rename (RBSource *source);
 static GList *default_copy (RBSource *source);
@@ -112,6 +111,8 @@ struct _RBSourcePrivate
 	guint update_status_id;
 	RhythmDBEntryType *entry_type;
 	RBSourceSearchType search_type;
+
+	GSettings *settings;
 };
 
 enum
@@ -122,7 +123,9 @@ enum
 	PROP_ENTRY_TYPE,
 	PROP_BASE_QUERY_MODEL,
 	PROP_PLAY_ORDER,
-	PROP_SEARCH_TYPE
+	PROP_SEARCH_TYPE,
+	PROP_SETTINGS,
+	PROP_SHOW_BROWSER
 };
 
 enum
@@ -148,8 +151,6 @@ rb_source_class_init (RBSourceClass *klass)
 	page_class->get_status = default_get_status;
 
 	klass->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
-	klass->impl_get_browser_key = default_get_browser_key;
-	klass->impl_browser_toggled = NULL;
 	klass->impl_get_property_views = default_get_property_views;
 	klass->impl_can_rename = default_can_rename;
 	klass->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
@@ -251,6 +252,32 @@ rb_source_class_init (RBSourceClass *klass)
 							    RB_SOURCE_SEARCH_NONE,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 	/**
+	 * RBSource:settings:
+	 *
+	 * The #GSettings instance storing settings for the source.  The instance must
+	 * have a schema of org.gnome.Rhythmbox.Source.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SETTINGS,
+					 g_param_spec_object ("settings",
+							      "settings",
+							      "GSettings instance",
+							      G_TYPE_SETTINGS,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBSource:show-browser:
+	 *
+	 * Whether the browser widget for the source (if any) should be displayed.
+	 * This should be overridden in sources that include a browser widget.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SHOW_BROWSER,
+					 g_param_spec_boolean ("show-browser",
+							       "show browser",
+							       "whether the browser widget should be shown",
+							       TRUE,
+							       G_PARAM_READWRITE));
+	/**
 	 * RBSource::filter-changed:
 	 * @source: the #RBSource
 	 *
@@ -294,6 +321,10 @@ rb_source_dispose (GObject *object)
 	if (source->priv->update_status_id != 0) {
 		g_source_remove (source->priv->update_status_id);
 		source->priv->update_status_id = 0;
+	}
+	if (source->priv->settings != NULL) {
+		g_object_unref (source->priv->settings);
+		source->priv->settings = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_source_parent_class)->dispose (object);
@@ -416,6 +447,12 @@ rb_source_set_property (GObject *object,
 	case PROP_SEARCH_TYPE:
 		source->priv->search_type = g_value_get_enum (value);
 		break;
+	case PROP_SETTINGS:
+		source->priv->settings = g_value_dup_object (value);
+		break;
+	case PROP_SHOW_BROWSER:
+		/* not connected to anything here */
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -448,6 +485,12 @@ rb_source_get_property (GObject *object,
 		break;
 	case PROP_SEARCH_TYPE:
 		g_value_set_enum (value, source->priv->search_type);
+		break;
+	case PROP_SETTINGS:
+		g_value_set_object (value, source->priv->settings);
+		break;
+	case PROP_SHOW_BROWSER:
+		g_value_set_boolean (value, FALSE);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -491,28 +534,6 @@ default_get_status (RBDisplayPage *page,
 	}
 }
 
-static char *
-default_get_browser_key (RBSource *source)
-{
-	return NULL;
-}
-
-/**
- * rb_source_get_browser_key:
- * @source: a #RBSource
- *
- * Gets the GConf key controlling browser visibility
- *
- * Return value: the GConf key name (allocated)
- */
-char *
-rb_source_get_browser_key (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_get_browser_key (source);
-}
-
 /**
  * rb_source_can_browse:
  * @source: a #RBSource
@@ -527,23 +548,6 @@ rb_source_can_browse (RBSource *source)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	return klass->impl_can_browse (source);
-}
-
-/**
- * rb_source_browser_toggled:
- * @source: a #RBSource
- * @enabled: TRUE if the browser should be visible
- *
- * Called when the visibility of the browser changes.
- */
-void
-rb_source_browser_toggled (RBSource *source,
-			   gboolean enabled)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	if (klass->impl_browser_toggled != NULL)
-		klass->impl_browser_toggled (source, enabled);
 }
 
 /**
@@ -1340,6 +1344,121 @@ _rb_source_set_import_status (RBSource *source, RhythmDBImportJob *job, char **p
 	g_free (*progress_text);
 	*progress_text = g_strdup_printf (_("Importing (%d/%d)"), imported, total);
 	*progress = ((float)imported / (float)total);
+}
+
+static gboolean
+sort_order_get_mapping (GValue *value, GVariant *variant, gpointer data)
+{
+	const char *column;
+	gboolean sort_type;
+	char *str;
+
+	g_variant_get (variant, "(&sb)", &column, &sort_type);
+	str = g_strdup_printf ("%s,%s", column, sort_type ? "ascending" : "descending");
+	g_value_take_string (value, str);
+	return TRUE;
+}
+
+static GVariant *
+sort_order_set_mapping (const GValue *value, const GVariantType *expected_type, gpointer data)
+{
+	gboolean sort_type;
+	GVariant *var;
+	char **strs;
+
+	strs = g_strsplit (g_value_get_string (value), ",", 0);
+	if (!strcmp ("ascending", strs[1])) {
+		sort_type = TRUE;
+	} else if (!strcmp ("descending", strs[1])) {
+		sort_type = FALSE;
+	} else {
+		g_warning ("atttempting to sort in unknown direction");
+		sort_type = TRUE;
+	}
+
+	var = g_variant_new ("(sb)", strs[0], sort_type);
+	g_strfreev (strs);
+	return var;
+}
+
+static void
+sync_paned_position (GSettings *settings, GObject *paned)
+{
+	int pos;
+	g_object_get (paned, "position", &pos, NULL);
+
+	if (pos != g_settings_get_int (settings, "paned-position")) {
+		g_settings_set_int (settings, "paned-position", pos);
+	}
+}
+
+static void
+paned_position_changed_cb (GObject *paned, GParamSpec *pspec, GSettings *settings)
+{
+	rb_settings_delayed_sync (settings,
+				  (RBDelayedSyncFunc) sync_paned_position,
+				  g_object_ref (paned),
+				  g_object_unref);
+}
+
+/**
+ * rb_source_bind_settings:
+ * @source: the #RBSource
+ * @entry_view: (allow-none): the #RBEntryView for the source
+ * @paned: (allow-none): the #GtkPaned containing the entry view and the browser
+ * @browser: (allow-none):  the browser (typically a #RBLibraryBrowser) for the source
+ *
+ * Binds the source's #GSettings instance to the given widgets.  Should be called
+ * from the source's constructed method.
+ *
+ * If the browser widget has a browser-views property, it will be bound to the
+ * browser-views settings key.
+ */
+void
+rb_source_bind_settings (RBSource *source, GtkWidget *entry_view, GtkWidget *paned, GtkWidget *browser)
+{
+	char *name;
+	GSettings *common_settings;
+
+	common_settings = g_settings_new ("org.gnome.rhythmbox.sources");
+	g_object_get (source, "name", &name, NULL);
+
+	if (entry_view != NULL) {
+		rb_debug ("binding entry view sort order for %s", name);
+		if (source->priv->settings) {
+			g_settings_bind_with_mapping (source->priv->settings, "sorting", entry_view, "sort-order",
+						      G_SETTINGS_BIND_GET | G_SETTINGS_BIND_SET | G_SETTINGS_BIND_NO_SENSITIVITY,
+						      (GSettingsBindGetMapping) sort_order_get_mapping,
+						      (GSettingsBindSetMapping) sort_order_set_mapping,
+						      NULL, NULL);
+		}
+
+		g_settings_bind (common_settings, "visible-columns",
+				 entry_view, "visible-columns",
+				 G_SETTINGS_BIND_DEFAULT);
+	}
+
+	if (paned != NULL && source->priv->settings != NULL) {
+		rb_debug ("binding paned position for %s", name);
+		/* can't use a normal binding here, as we want to delay writing to the
+		 * setting while the separator is being dragged.
+		 */
+		g_settings_bind (source->priv->settings, "paned-position", paned, "position", G_SETTINGS_BIND_GET);
+		g_signal_connect_object (paned, "notify::position", G_CALLBACK (paned_position_changed_cb), source->priv->settings, 0);
+	}
+
+	if (browser) {
+		rb_debug ("binding show-browser for %s", name);
+		if (source->priv->settings) {
+			g_settings_bind (source->priv->settings, "show-browser", source, "show-browser", G_SETTINGS_BIND_DEFAULT);
+		}
+
+		if (g_object_class_find_property (G_OBJECT_GET_CLASS (browser), "browser-views")) {
+			g_settings_bind (common_settings, "browser-views", browser, "browser-views", G_SETTINGS_BIND_DEFAULT);
+		}
+	}
+
+	g_free (name);
 }
 
 /* This should really be standard. */

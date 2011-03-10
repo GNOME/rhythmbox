@@ -69,14 +69,12 @@
 #include "rb-file-helpers.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-dialog.h"
-#include "rb-preferences.h"
 #include "rb-debug.h"
 #include "rb-player.h"
 #include "rb-header.h"
 #include "totem-pl-parser.h"
 #include "rb-metadata.h"
 #include "rb-library-source.h"
-#include "eel-gconf-extensions.h"
 #include "rb-util.h"
 #include "rb-play-order.h"
 #include "rb-statusbar.h"
@@ -129,8 +127,6 @@ static void rb_shell_player_shuffle_changed_cb (GtkAction *action,
 						RBShellPlayer *player);
 static void rb_shell_player_repeat_changed_cb (GtkAction *action,
 					       RBShellPlayer *player);
-static void rb_shell_player_view_song_position_slider_changed_cb (GtkAction *action,
-								  RBShellPlayer *player);
 static void rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 							 RBSource *source,
 							 gboolean sync_entry_view);
@@ -155,8 +151,6 @@ static void playing_stream_cb (RBPlayer *player, RhythmDBEntry *entry, RBShellPl
 static void player_image_cb (RBPlayer *player, RhythmDBEntry *entry, GdkPixbuf *image, RBShellPlayer *shell_player);
 static void rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err);
 
-static void rb_shell_player_set_play_order (RBShellPlayer *player,
-					    const gchar *new_val);
 static void rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 						  gboolean has_next,
 						  gboolean has_previous,
@@ -164,17 +158,11 @@ static void rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 
 static void rb_shell_player_sync_play_order (RBShellPlayer *player);
 static void rb_shell_player_sync_control_state (RBShellPlayer *player);
-static void rb_shell_player_sync_song_position_slider_visibility (RBShellPlayer *player);
 static void rb_shell_player_sync_buttons (RBShellPlayer *player);
 
-static void gconf_play_order_changed (GConfClient *client,guint cnxn_id,
-				      GConfEntry *entry, RBShellPlayer *player);
-static void gconf_song_position_slider_visibility_changed (GConfClient *client, guint cnxn_id,
-							   GConfEntry *entry, RBShellPlayer *player);
-static void gconf_track_transition_time_changed (GConfClient *client, guint cnxn_id,
-						 GConfEntry *entry, RBShellPlayer *player);
-static void gconf_network_buffer_size_changed (GConfClient *client, guint cnxn_id,
-					       GConfEntry *entry, RBShellPlayer *player);
+static void player_settings_changed_cb (GSettings *settings,
+					const char *key,
+					RBShellPlayer *player);
 static void rb_shell_player_playing_changed_cb (RBShellPlayer *player,
 						GParamSpec *arg1,
 						gpointer user_data);
@@ -202,7 +190,7 @@ static void rb_shell_player_volume_changed_cb (RBPlayer *player,
 
 
 typedef struct {
-	/** Value of the state/play-order gconf key */
+	/** Value of the state/play-order setting */
 	char *name;
 	/** Contents of the play order dropdown; should be gettext()ed before use. */
 	char *description;
@@ -215,8 +203,6 @@ typedef struct {
 static void _play_order_description_free (RBPlayOrderDescription *order);
 
 static RBPlayOrder* rb_play_order_new (RBShellPlayer *player, const char* porder_name);
-
-#define CONF_STATE		CONF_PREFIX "/state"
 
 /* number of nanoseconds before the end of a track to start prerolling the next */
 #define PREROLL_TIME		RB_PLAYER_SECOND
@@ -260,10 +246,8 @@ struct RBShellPlayerPrivate
 	RBHeader *header_widget;
 	RBStatusbar *statusbar_widget;
 
-	guint gconf_play_order_id;
-	guint gconf_song_position_slider_visibility_id;
-	guint gconf_track_transition_time_id;
-	guint gconf_network_buffer_size_id;
+	GSettings *settings;
+	GSettings *ui_settings;
 
 	gboolean mute;
 	float volume;
@@ -289,6 +273,7 @@ enum
 	PROP_QUEUE_ONLY,
 	PROP_PLAYING_FROM_QUEUE,
 	PROP_PLAYER,
+	PROP_MUTE
 };
 
 enum
@@ -334,7 +319,7 @@ static GtkToggleActionEntry rb_shell_player_toggle_entries [] =
 	  G_CALLBACK (rb_shell_player_repeat_changed_cb) },
 	{ "ViewSongPositionSlider", NULL, N_("_Song Position Slider"), NULL,
 	  N_("Change the visibility of the song position slider"),
-	  G_CALLBACK (rb_shell_player_view_song_position_slider_changed_cb), TRUE },
+	  NULL, TRUE },
 };
 static guint rb_shell_player_n_toggle_entries = G_N_ELEMENTS (rb_shell_player_toggle_entries);
 
@@ -507,6 +492,18 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      "RBStatusbar object",
 							      RB_TYPE_STATUSBAR,
 							      G_PARAM_READWRITE));
+	/**
+	 * RBShellPlayer:mute:
+	 *
+	 * Whether playback is currently muted.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_MUTE,
+					 g_param_spec_boolean ("mute",
+							       "mute",
+							       "Whether playback is muted",
+							       FALSE,
+							       G_PARAM_READWRITE));
 
 	/**
 	 * RBShellPlayer::window-title-changed:
@@ -672,14 +669,6 @@ rb_shell_player_constructed (GObject *object)
 
 	player = RB_SHELL_PLAYER (object);
 
-	player->priv->header_widget = rb_header_new (player, player->priv->db);
-	gtk_widget_show (GTK_WIDGET (player->priv->header_widget));
-	gtk_box_pack_start (GTK_BOX (player), GTK_WIDGET (player->priv->header_widget), TRUE, TRUE, 0);
-	g_signal_connect_object (player->priv->header_widget,
-				 "notify::slider-dragging",
-				 G_CALLBACK (rb_shell_player_slider_dragging_cb),
-				 player, 0);
-
 	gtk_action_group_add_actions (player->priv->actiongroup,
 				      rb_shell_player_actions,
 				      rb_shell_player_n_actions,
@@ -688,6 +677,25 @@ rb_shell_player_constructed (GObject *object)
 					     rb_shell_player_toggle_entries,
 					     rb_shell_player_n_toggle_entries,
 					     player);
+
+	player_settings_changed_cb (player->priv->settings, "transition-time", player);
+	player_settings_changed_cb (player->priv->settings, "play-order", player);
+
+	player->priv->header_widget = rb_header_new (player, player->priv->db);
+	gtk_widget_show (GTK_WIDGET (player->priv->header_widget));
+	gtk_box_pack_start (GTK_BOX (player), GTK_WIDGET (player->priv->header_widget), TRUE, TRUE, 0);
+	g_signal_connect_object (player->priv->header_widget,
+				 "notify::slider-dragging",
+				 G_CALLBACK (rb_shell_player_slider_dragging_cb),
+				 player, 0);
+	g_settings_bind (player->priv->ui_settings, "show-song-position-slider",
+			 player->priv->header_widget, "show-position-slider",
+			 G_SETTINGS_BIND_INVERT_BOOLEAN | G_SETTINGS_BIND_NO_SENSITIVITY);
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ViewSongPositionSlider");
+	g_settings_bind (player->priv->ui_settings, "show-song-position-slider",
+			 action, "active",
+			 G_SETTINGS_BIND_INVERT_BOOLEAN | G_SETTINGS_BIND_NO_SENSITIVITY);
 
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlPlay");
@@ -699,8 +707,6 @@ rb_shell_player_constructed (GObject *object)
 	rb_shell_player_sync_control_state (player);
 	rb_shell_player_sync_volume (player, FALSE, TRUE);
 	player->priv->syncing_state = FALSE;
-
-	rb_shell_player_sync_song_position_slider_visibility (player);
 
 	g_signal_connect (player,
 			  "notify::playing",
@@ -972,6 +978,13 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	player->priv = RB_SHELL_PLAYER_GET_PRIVATE (player);
 
+	player->priv->settings = g_settings_new ("org.gnome.rhythmbox.player");
+	player->priv->ui_settings = g_settings_new ("org.gnome.rhythmbox");
+	g_signal_connect_object (player->priv->settings,
+				 "changed",
+				 G_CALLBACK (player_settings_changed_cb),
+				 player, 0);
+
 	player->priv->play_orders = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)_play_order_description_free);
 	
 	rb_shell_player_add_play_order (player, "linear", N_("Linear"),
@@ -991,7 +1004,7 @@ rb_shell_player_init (RBShellPlayer *player)
 	rb_shell_player_add_play_order (player, "queue", N_("Linear, removing entries once played"),
 					RB_TYPE_QUEUE_PLAY_ORDER, TRUE);
 
-	player->priv->mmplayer = rb_player_new (eel_gconf_get_boolean (CONF_PLAYER_USE_XFADE_BACKEND),
+	player->priv->mmplayer = rb_player_new (g_settings_get_boolean (player->priv->settings, "use-xfade-backend"),
 					        &error);
 	if (error != NULL) {
 		GtkWidget *dialog;
@@ -1055,31 +1068,10 @@ rb_shell_player_init (RBShellPlayer *player)
 		g_object_unref (monitor);	/* hmm */
 	}
 
-	player->priv->gconf_play_order_id =
-		eel_gconf_notification_add (CONF_STATE_PLAY_ORDER,
-					    (GConfClientNotifyFunc)gconf_play_order_changed,
-					    player);
-
-	player->priv->volume = eel_gconf_get_float (CONF_STATE_VOLUME);
-
-	player->priv->track_transition_time = eel_gconf_get_float (CONF_PLAYER_TRANSITION_TIME) * RB_PLAYER_SECOND;
-	player->priv->gconf_track_transition_time_id =
-		eel_gconf_notification_add (CONF_PLAYER_TRANSITION_TIME,
-					    (GConfClientNotifyFunc) gconf_track_transition_time_changed,
-					    player);
-	player->priv->gconf_network_buffer_size_id =
-		eel_gconf_notification_add (CONF_PLAYER_NETWORK_BUFFER_SIZE,
-					    (GConfClientNotifyFunc) gconf_network_buffer_size_changed,
-					    player);
-	gconf_network_buffer_size_changed (NULL, 0, NULL, player);
+	player->priv->volume = g_settings_get_double (player->priv->settings, "volume");
 
 	g_signal_connect (player, "notify::playing",
 			  G_CALLBACK (reemit_playing_signal), NULL);
-
-	player->priv->gconf_song_position_slider_visibility_id =
-		eel_gconf_notification_add (CONF_UI_SONG_POSITION_SLIDER_HIDDEN,
-					    (GConfClientNotifyFunc) gconf_song_position_slider_visibility_changed,
-					    player);
 }
 
 static void
@@ -1242,9 +1234,19 @@ rb_shell_player_dispose (GObject *object)
 
 	g_return_if_fail (player->priv != NULL);
 
-	if (player->priv->gconf_play_order_id != 0) {
-		eel_gconf_notification_remove (player->priv->gconf_play_order_id);
-		player->priv->gconf_play_order_id = 0;
+	if (player->priv->ui_settings != NULL) {
+		g_object_unref (player->priv->ui_settings);
+		player->priv->ui_settings = NULL;
+	}
+
+	if (player->priv->settings != NULL) {
+		/* hm, is this really the place to do this? */
+		g_settings_set_double (player->priv->settings,
+				       "volume",
+				       player->priv->volume);
+
+		g_object_unref (player->priv->settings);
+		player->priv->settings = NULL;
 	}
 
 	if (player->priv->mmplayer != NULL) {
@@ -1289,8 +1291,6 @@ rb_shell_player_finalize (GObject *object)
 
 	g_hash_table_destroy (player->priv->play_orders);
 	
-	eel_gconf_set_float (CONF_STATE_VOLUME, player->priv->volume);
-
 	G_OBJECT_CLASS (rb_shell_player_parent_class)->finalize (object);
 }
 
@@ -1316,8 +1316,9 @@ rb_shell_player_set_property (GObject *object,
 		player->priv->actiongroup = g_value_get_object (value);
 		break;
 	case PROP_PLAY_ORDER:
-		eel_gconf_set_string (CONF_STATE_PLAY_ORDER,
-				      g_value_get_string (value));
+		g_settings_set_string (player->priv->settings,
+				       "play-order",
+				       g_value_get_string (value));
 		break;
 	case PROP_VOLUME:
 		player->priv->volume = g_value_get_float (value);
@@ -1332,6 +1333,9 @@ rb_shell_player_set_property (GObject *object,
 	case PROP_QUEUE_ONLY:
 		player->priv->queue_only = g_value_get_boolean (value);
 		break;
+	case PROP_MUTE:
+		player->priv->mute = g_value_get_boolean (value);
+		rb_shell_player_sync_volume (player, FALSE, TRUE);
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1361,8 +1365,9 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	case PROP_PLAY_ORDER:
 	{
-		char *play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
-		if (!play_order)
+		char *play_order = g_settings_get_string (player->priv->settings,
+							  "play-order");
+		if (play_order == NULL)
 			play_order = g_strdup ("linear");
 		g_value_take_string (value, play_order);
 		break;
@@ -1390,6 +1395,9 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	case PROP_PLAYER:
 		g_value_set_object (value, player->priv->mmplayer);
+		break;
+	case PROP_MUTE:
+		g_value_set_boolean (value, player->priv->mute);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1793,18 +1801,22 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 }
 
 static void
-gconf_play_order_changed (GConfClient *client,
-			  guint cnxn_id,
-			  GConfEntry *entry,
-			  RBShellPlayer *player)
+player_settings_changed_cb (GSettings *settings, const char *key, RBShellPlayer *player)
 {
-	rb_debug ("gconf play order changed");
-	player->priv->syncing_state = TRUE;
-	rb_shell_player_sync_play_order (player);
-	rb_shell_player_sync_buttons (player);
-	rb_shell_player_sync_control_state (player);
-	g_object_notify (G_OBJECT (player), "play-order");
-	player->priv->syncing_state = FALSE;
+	if (g_strcmp0 (key, "play-order") == 0) {
+		rb_debug ("play order setting changed");
+		player->priv->syncing_state = TRUE;
+		rb_shell_player_sync_play_order (player);
+		rb_shell_player_sync_buttons (player);
+		rb_shell_player_sync_control_state (player);
+		g_object_notify (G_OBJECT (player), "play-order");
+		player->priv->syncing_state = FALSE;
+	} else if (g_strcmp0 (key, "transition-time") == 0) {
+		double newtime;
+		rb_debug ("track transition time changed");
+		newtime = g_settings_get_double (player->priv->settings, "transition-time");
+		player->priv->track_transition_time = newtime * RB_PLAYER_SECOND;
+	}
 }
 
 /**
@@ -1825,12 +1837,7 @@ rb_shell_player_get_playback_state (RBShellPlayer *player,
 	int i, j;
 	char *play_order;
 
-	play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
-	if (!play_order) {
-		g_warning (CONF_STATE_PLAY_ORDER " gconf key not found!");
-		return FALSE;
-	}
-
+	play_order = g_settings_get_string (player->priv->settings, "play-order");
 	for (i = 0; i < G_N_ELEMENTS(state_to_play_order); i++)
 		for (j = 0; j < G_N_ELEMENTS(state_to_play_order[0]); j++)
 			if (!strcmp (play_order, state_to_play_order[i][j]))
@@ -1850,20 +1857,6 @@ found:
 	return TRUE;
 }
 
-static void
-rb_shell_player_set_play_order (RBShellPlayer *player,
-				const gchar *new_val)
-{
-	char *old_val;
-
-	g_object_get (player, "play-order", &old_val, NULL);
-	if (strcmp (old_val, new_val) != 0) {
-		/* The notify signal will be emitted by the gconf notifier */
-		eel_gconf_set_string (CONF_STATE_PLAY_ORDER, new_val);
-	}
-	g_free (old_val);
-}
-
 /**
  * rb_shell_player_set_playback_state:
  * @player: the #RBShellPlayer
@@ -1878,7 +1871,7 @@ rb_shell_player_set_playback_state (RBShellPlayer *player,
 				    gboolean repeat)
 {
 	const char *neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
-	rb_shell_player_set_play_order (player, neworder);
+	g_settings_set_string (player->priv->settings, "play-order", neworder);
 }
 
 static void
@@ -1888,12 +1881,7 @@ rb_shell_player_sync_play_order (RBShellPlayer *player)
 	RhythmDBEntry *playing_entry = NULL;
 	RBSource *source;
 
-	new_play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
-	if (new_play_order == NULL) {
-		g_warning (CONF_STATE_PLAY_ORDER " gconf key not found!");
-		new_play_order = g_strdup ("linear");
-	}
-
+	new_play_order = g_settings_get_string (player->priv->settings, "play-order");
 	if (player->priv->play_order != NULL) {
 		playing_entry = rb_play_order_get_playing_entry (player->priv->play_order);
 		g_signal_handlers_disconnect_by_func (player->priv->play_order,
@@ -1967,23 +1955,6 @@ rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlNext");
 	g_object_set (action, "sensitive", have_next, NULL);
-}
-
-static void
-rb_shell_player_sync_song_position_slider_visibility (RBShellPlayer *player)
-{
-	gboolean visible;
-	GtkAction *action;
-
-	visible = !eel_gconf_get_boolean (CONF_UI_SONG_POSITION_SLIDER_HIDDEN);
-
-	rb_header_set_show_position_slider (player->priv->header_widget,
-					    visible);
-
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ViewSongPositionSlider");
-	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
-				      visible);
 }
 
 /**
@@ -2521,8 +2492,9 @@ rb_shell_player_sync_volume (RBShellPlayer *player,
 				      player->priv->mute ? 0.0 : player->priv->volume);
 	}
 
-	eel_gconf_set_float (CONF_STATE_VOLUME, player->priv->volume);
-
+	g_settings_set_double (player->priv->settings,
+			       "volume",
+			       player->priv->volume);
 
 	entry = rb_shell_player_get_playing_entry (player);
 	if (entry != NULL) {
@@ -2531,19 +2503,6 @@ rb_shell_player_sync_volume (RBShellPlayer *player,
 
 	if (notify)
 		g_object_notify (G_OBJECT (player), "volume");
-}
-
-/**
- * rb_shell_player_toggle_mute:
- * @player: the #RBShellPlayer
- *
- * Toggles the mute setting on the player.
- */
-void
-rb_shell_player_toggle_mute (RBShellPlayer *player)
-{
-	player->priv->mute = !player->priv->mute;
-	rb_shell_player_sync_volume (player, FALSE, TRUE);
 }
 
 /**
@@ -2655,16 +2614,6 @@ rb_shell_player_get_mute (RBShellPlayer *player,
 }
 
 static void
-gconf_song_position_slider_visibility_changed (GConfClient *client,
-					       guint cnxn_id,
-					       GConfEntry *entry,
-					       RBShellPlayer *player)
-{
-	rb_debug ("song position slider visibility visibility changed");
-	rb_shell_player_sync_song_position_slider_visibility (player);
-}
-
-static void
 rb_shell_player_shuffle_changed_cb (GtkAction *action,
 				    RBShellPlayer *player)
 {
@@ -2681,7 +2630,7 @@ rb_shell_player_shuffle_changed_cb (GtkAction *action,
 
 	shuffle = !shuffle;
 	neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
-	rb_shell_player_set_play_order (player, neworder);
+	g_settings_set_string (player->priv->settings, "play-order", neworder);
 }
 
 static void
@@ -2700,15 +2649,7 @@ rb_shell_player_repeat_changed_cb (GtkAction *action,
 
 	repeat = !repeat;
 	neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
-	rb_shell_player_set_play_order (player, neworder);
-}
-
-static void
-rb_shell_player_view_song_position_slider_changed_cb (GtkAction *action,
-						      RBShellPlayer *player)
-{
-	eel_gconf_set_boolean (CONF_UI_SONG_POSITION_SLIDER_HIDDEN,
-			       !gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
+	g_settings_set_string (player->priv->settings, "play-order", neworder);
 }
 
 static void
@@ -3060,7 +3001,7 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 
 	rb_debug ("syncing with source %p", source);
 
-        not_small = !eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+        not_small = !g_settings_get_boolean (player->priv->ui_settings, "small-display");
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ViewJumpToPlaying");
 	g_object_set (action, "sensitive", entry != NULL && not_small, NULL);
@@ -3299,9 +3240,11 @@ rb_shell_player_get_playing (RBShellPlayer *player,
 char *
 rb_shell_player_get_playing_time_string (RBShellPlayer *player)
 {
+	gboolean elapsed;
+	elapsed = g_settings_get_boolean (player->priv->ui_settings, "time-display");
 	return rb_make_elapsed_time_string (player->priv->elapsed,
 					    rb_shell_player_get_playing_song_duration (player),
-					    !eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY));
+					    elapsed);
 }
 
 /**
@@ -3905,39 +3848,6 @@ rb_shell_player_error_get_type (void)
 }
 
 static void
-gconf_track_transition_time_changed (GConfClient *client,
-				     guint cnxn_id,
-				     GConfEntry *entry,
-				     RBShellPlayer *player)
-{
-	rb_debug ("track transition time changed");
-	player->priv->track_transition_time = eel_gconf_get_float (CONF_PLAYER_TRANSITION_TIME) * RB_PLAYER_SECOND;
-}
-
-static void
-gconf_network_buffer_size_changed (GConfClient *client,
-				   guint cnxn_id,
-				   GConfEntry *entry,
-				   RBShellPlayer *player)
-{
-	guint buffer_size;
-
-	if (player->priv->mmplayer == NULL
-	    || (g_object_class_find_property (G_OBJECT_GET_CLASS (player->priv->mmplayer),
-			    		      "buffer-size") == NULL)) {
-		return;
-	}
-
-	rb_debug ("network buffer size changed");
-	buffer_size = eel_gconf_get_integer (CONF_PLAYER_NETWORK_BUFFER_SIZE);
-	if (buffer_size < 64)
-		buffer_size = 64;
-
-	g_object_set (player->priv->mmplayer, "buffer-size", buffer_size, NULL);
-}
-
-
-static void
 _play_order_description_free (RBPlayOrderDescription *order)
 {
 	g_free (order->name);
@@ -3968,7 +3878,7 @@ rb_play_order_new (RBShellPlayer *player, const char* porder_name)
 	order = g_hash_table_lookup (player->priv->play_orders, porder_name);
 
 	if (order == NULL) {
-		g_warning ("Unknown value \"%s\" in GConf key \"" CONF_STATE_PLAY_ORDER
+		g_warning ("Unknown value \"%s\" in GSettings key \"play-order"
 				"\". Using %s play order.", porder_name, DEFAULT_PLAY_ORDER);
 		order = g_hash_table_lookup (player->priv->play_orders, DEFAULT_PLAY_ORDER);
 	}

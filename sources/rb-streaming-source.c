@@ -47,7 +47,6 @@
 #include "rhythmdb-query-model.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
-#include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-debug.h"
 #include "rb-shell.h"

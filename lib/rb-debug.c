@@ -227,6 +227,7 @@ rb_debug_init_match (const char *match)
 		"libgconf-scm",
 		"libgnomevfs",
 		"librsvg",
+		"libnotify",
 		"GLib-GIO",
 	};
 

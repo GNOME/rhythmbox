@@ -38,7 +38,6 @@
 #include "rb-library-browser.h"
 #include "rb-util.h"
 #include "rb-debug.h"
-#include "eel-gconf-extensions.h"
 #include "rb-stock-icons.h"
 #include "rb-playlist-xml.h"
 #include "rb-source-search-basic.h"
@@ -79,14 +78,14 @@ static gboolean impl_show_popup (RBDisplayPage *page);
 static gboolean impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data);
 static void impl_search (RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_reset_filters (RBSource *asource);
-static void impl_browser_toggled (RBSource *source, gboolean enabled);
 static GList *impl_get_search_actions (RBSource *source);
 
 /* playlist methods */
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
 				       xmlNodePtr node);
 
-static void rb_auto_playlist_source_songs_sort_order_changed_cb (RBEntryView *view,
+static void rb_auto_playlist_source_songs_sort_order_changed_cb (GObject *object,
+								 GParamSpec *pspec,
 								 RBAutoPlaylistSource *source);
 static void rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source,
 					      gboolean subset);
@@ -110,7 +109,8 @@ static GtkRadioActionEntry rb_auto_playlist_source_radio_actions [] =
 enum
 {
 	PROP_0,
-	PROP_BASE_QUERY_MODEL
+	PROP_BASE_QUERY_MODEL,
+	PROP_SHOW_BROWSER
 };
 
 #define AUTO_PLAYLIST_SOURCE_POPUP_PATH "/AutoPlaylistSourcePopup"
@@ -130,7 +130,6 @@ struct _RBAutoPlaylistSourcePrivate
 
 	GtkWidget *paned;
 	RBLibraryBrowser *browser;
-	gboolean browser_shown;
 
 	RBSourceSearch *default_search;
 	RhythmDBQuery *search_query;
@@ -163,13 +162,15 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_browser_toggled = impl_browser_toggled;
 	source_class->impl_search = impl_search;
 	source_class->impl_reset_filters = impl_reset_filters;
 	source_class->impl_get_property_views = impl_get_property_views;
 	source_class->impl_get_search_actions = impl_get_search_actions;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
+
+	g_object_class_override_property (object_class, PROP_BASE_QUERY_MODEL, "base-query-model");
+	g_object_class_override_property (object_class, PROP_SHOW_BROWSER, "show-browser");
 
 	g_type_class_add_private (klass, sizeof (RBAutoPlaylistSourcePrivate));
 }
@@ -267,7 +268,7 @@ rb_auto_playlist_source_constructed (GObject *object)
 				 source, 0);
 
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
-	g_signal_connect_object (G_OBJECT (songs), "sort-order-changed",
+	g_signal_connect_object (songs, "notify::sort-order",
 				 G_CALLBACK (rb_auto_playlist_source_songs_sort_order_changed_cb),
 				 source, 0);
 
@@ -297,6 +298,8 @@ rb_auto_playlist_source_constructed (GObject *object)
 	gtk_container_remove (GTK_CONTAINER (source), GTK_WIDGET (songs));
 	gtk_paned_pack2 (GTK_PANED (priv->paned), GTK_WIDGET (songs), TRUE, FALSE);
 	gtk_container_add (GTK_CONTAINER (source), priv->paned);
+
+	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (songs), priv->paned, GTK_WIDGET (priv->browser));
 	g_object_unref (songs);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
@@ -333,9 +336,15 @@ rb_auto_playlist_source_set_property (GObject *object,
 				      const GValue *value,
 				      GParamSpec *pspec)
 {
-	/*RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (source);*/
+	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (object);
 
 	switch (prop_id) {
+	case PROP_SHOW_BROWSER:
+		if (g_value_get_boolean (value))
+			gtk_widget_show (GTK_WIDGET (priv->browser));
+		else
+			gtk_widget_hide (GTK_WIDGET (priv->browser));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -353,6 +362,9 @@ rb_auto_playlist_source_get_property (GObject *object,
 	switch (prop_id) {
 	case PROP_BASE_QUERY_MODEL:
 		g_value_set_object (value, priv->cached_all_query);
+		break;
+	case PROP_SHOW_BROWSER:
+		g_value_set_boolean (value, gtk_widget_get_visible (GTK_WIDGET (priv->browser)));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -549,19 +561,6 @@ rb_auto_playlist_source_drag_atom_to_prop (GdkAtom smasher)
 		g_assert_not_reached ();
 		return 0;
 	}
-}
-
-static void
-impl_browser_toggled (RBSource *source, gboolean enabled)
-{
-	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (source);
-
-	priv->browser_shown = enabled;
-
-	if (enabled)
-		gtk_widget_show (GTK_WIDGET (priv->browser));
-	else
-		gtk_widget_hide (GTK_WIDGET (priv->browser));
 }
 
 static gboolean
@@ -887,7 +886,7 @@ rb_auto_playlist_source_get_query (RBAutoPlaylistSource *source,
 }
 
 static void
-rb_auto_playlist_source_songs_sort_order_changed_cb (RBEntryView *view, RBAutoPlaylistSource *source)
+rb_auto_playlist_source_songs_sort_order_changed_cb (GObject *object, GParamSpec *pspec, RBAutoPlaylistSource *source)
 {
 	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 
@@ -896,7 +895,7 @@ rb_auto_playlist_source_songs_sort_order_changed_cb (RBEntryView *view, RBAutoPl
 		return;
 	rb_debug ("sort order changed");
 
-	rb_entry_view_resort_model (view);
+	rb_entry_view_resort_model (RB_ENTRY_VIEW (object));
 }
 
 static void

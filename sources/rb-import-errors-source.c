@@ -210,7 +210,7 @@ rb_import_errors_source_constructed (GObject *object)
 
 	/* set up entry view */
 	source->priv->view = rb_entry_view_new (source->priv->db, shell_player,
-						NULL, FALSE, FALSE);
+						FALSE, FALSE);
 	g_object_unref (shell_player);
 
 	rb_entry_view_set_model (source->priv->view, model);

@@ -33,7 +33,6 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
-#include <gconf/gconf-client.h>
 #include <gio/gio.h>
 
 #include "rb-debug.h"
@@ -42,8 +41,6 @@
 #include "rhythmdb-private.h"
 #include "rhythmdb-query-result-list.h"
 #include "rb-file-helpers.h"
-#include "rb-preferences.h"
-#include "eel-gconf-extensions.h"
 
 #if !GLIB_CHECK_VERSION(2,24,0)
 #define G_FILE_MONITOR_SEND_MOVED	0
@@ -160,15 +157,14 @@ monitor_entry_file (RhythmDBEntry *entry, RhythmDB *db)
 {
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
 		const char *loc;
-		GSList *l;
+		int i;
 
 		loc = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 
 		/* don't add add monitor if it's in the library path */
-		for (l = db->priv->library_locations; l != NULL; l = g_slist_next (l)) {
-			if (g_str_has_prefix (loc, (const char*)l->data))
+		for (i = 0; db->priv->library_locations[i] != NULL; i++) {
+			if (g_str_has_prefix (loc, db->priv->library_locations[i]))
 				return;
-				
 		}
 		rhythmdb_monitor_uri_path (db, loc, NULL);
 	}
@@ -263,8 +259,12 @@ rhythmdb_start_monitoring (RhythmDB *db)
 	g_thread_create ((GThreadFunc)_monitor_entry_thread, g_object_ref (db), FALSE, NULL);
 
 	/* monitor all library locations */
-	if (db->priv->library_locations)
-		g_slist_foreach (db->priv->library_locations, (GFunc) monitor_library_directory, db);
+	if (db->priv->library_locations) {
+		int i;
+		for (i = 0; db->priv->library_locations[i] != NULL; i++) {
+			monitor_library_directory (db->priv->library_locations[i], db);
+		}
+	}
 }
 
 static void
@@ -305,18 +305,18 @@ rhythmdb_directory_change_cb (GFileMonitor *monitor,
 	switch (event_type) {
         case G_FILE_MONITOR_EVENT_CREATED:
 		{
-			GSList *cur;
 			gboolean in_library = FALSE;
+			int i;
 
-			if (!eel_gconf_get_boolean (CONF_MONITOR_LIBRARY))
+			if (!g_settings_get_boolean (db->priv->settings, "monitor-library"))
 				break;
 
 			if (rb_uri_is_hidden (canon_uri))
 				break;
 
 			/* ignore new files outside of the library locations */
-			for (cur = db->priv->library_locations; cur != NULL; cur = g_slist_next (cur)) {
-				if (g_str_has_prefix (canon_uri, cur->data)) {
+			for (i = 0; db->priv->library_locations[i] != NULL; i++) {
+				if (g_str_has_prefix (canon_uri, db->priv->library_locations[i])) {
 					in_library = TRUE;
 					break;
 				}

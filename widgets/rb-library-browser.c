@@ -36,8 +36,6 @@
 #include <gtk/gtk.h>
 
 #include "rb-library-browser.h"
-#include "rb-preferences.h"
-#include "eel-gconf-extensions.h"
 #include "rhythmdb-property-model.h"
 #include "rhythmdb-query-model.h"
 #include "rb-property-view.h"
@@ -65,10 +63,6 @@ static void view_selection_reset_cb (RBPropertyView *view,
 				     RBLibraryBrowser *widget);
 
 static void update_browser_views_visibility (RBLibraryBrowser *widget);
-static void rb_library_browser_views_changed (GConfClient *client,
-					      guint cnxn_id,
-					      GConfEntry *entry,
-					      RBLibraryBrowser *widget);
 
 typedef struct _RBLibraryBrowserRebuildData RBLibraryBrowserRebuildData;
 
@@ -112,8 +106,8 @@ typedef struct
 	RhythmDBQueryModel *input_model;
 	RhythmDBQueryModel *output_model;
 
-	guint browser_view_notify_id;
 	GSList *browser_views_group;
+	char *browser_views;
 
 	GHashTable *property_views;
 	GHashTable *selections;
@@ -127,7 +121,8 @@ enum
 	PROP_DB,
 	PROP_INPUT_MODEL,
 	PROP_OUTPUT_MODEL,
-	PROP_ENTRY_TYPE
+	PROP_ENTRY_TYPE,
+	PROP_BROWSER_VIEWS
 };
 
 typedef struct {
@@ -211,6 +206,18 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 							      "Type of entry to display in this browser",
 							      RHYTHMDB_TYPE_ENTRY_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBLibraryBrowser:browser-views:
+	 *
+	 * The set of browsers to display.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_BROWSER_VIEWS,
+					 g_param_spec_string ("browser-views",
+							      "browser views",
+							      "browser view selection",
+							      "artists-albums",
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
 	g_type_class_add_private (klass, sizeof (RBLibraryBrowserPrivate));
 }
@@ -261,9 +268,6 @@ rb_library_browser_constructed (GObject *object)
 	}
 
 	update_browser_views_visibility (browser);
-	priv->browser_view_notify_id =
-		eel_gconf_notification_add (CONF_UI_BROWSER_VIEWS,
-				(GConfClientNotifyFunc) rb_library_browser_views_changed, browser);
 }
 
 static void
@@ -271,11 +275,6 @@ rb_library_browser_dispose (GObject *object)
 {
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (object);
 	
-	if (priv->browser_view_notify_id != 0) {
-		eel_gconf_notification_remove (priv->browser_view_notify_id);
-		priv->browser_view_notify_id = 0;
-	}
-
 	if (priv->rebuild_data != NULL) {
 		/* this looks a bit odd, but removing the idle handler cleans up the
 		 * data too.
@@ -310,6 +309,7 @@ rb_library_browser_finalize (GObject *object)
 
 	g_hash_table_destroy (priv->property_views);
 	g_hash_table_destroy (priv->selections);
+	g_free (priv->browser_views);
 
 	G_OBJECT_CLASS (rb_library_browser_parent_class)->finalize (object);
 }
@@ -335,6 +335,11 @@ rb_library_browser_set_property (GObject *object,
 		break;
 	case PROP_ENTRY_TYPE:
 		priv->entry_type = g_value_get_object (value);
+		break;
+	case PROP_BROWSER_VIEWS:
+		g_free (priv->browser_views);
+		priv->browser_views = g_value_dup_string (value);
+		update_browser_views_visibility (RB_LIBRARY_BROWSER (object));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -362,6 +367,9 @@ rb_library_browser_get_property (GObject *object,
 		break;
 	case PROP_ENTRY_TYPE:
 		g_value_set_object (value, priv->entry_type);
+		break;
+	case PROP_BROWSER_VIEWS:
+		g_value_set_string (value, priv->browser_views);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -418,27 +426,14 @@ update_browser_views_visibility (RBLibraryBrowser *widget)
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
 	GList *properties = NULL;
 
-	{
-		int views = eel_gconf_get_integer (CONF_UI_BROWSER_VIEWS);
-
-		if (views == 0 || views == 2)
-			properties = g_list_prepend (properties, (gpointer)RHYTHMDB_PROP_ALBUM);
-		properties = g_list_prepend (properties, (gpointer)RHYTHMDB_PROP_ARTIST);
-		if (views == 1 || views == 2)
-			properties = g_list_prepend (properties, (gpointer)RHYTHMDB_PROP_GENRE);
-	}
+	if (strstr (priv->browser_views, "albums") != NULL)
+		properties = g_list_prepend (properties, (gpointer)RHYTHMDB_PROP_ALBUM);
+	properties = g_list_prepend (properties, (gpointer)RHYTHMDB_PROP_ARTIST);
+	if (strstr (priv->browser_views, "genres") != NULL)
+		properties = g_list_prepend (properties, (gpointer)RHYTHMDB_PROP_GENRE);
 
 	g_hash_table_foreach (priv->property_views, (GHFunc)update_browser_property_visibilty, properties);
 	g_list_free (properties);
-}
-
-static void
-rb_library_browser_views_changed (GConfClient *client,
-			          guint cnxn_id,
-			          GConfEntry *entry,
-			          RBLibraryBrowser *widget)
-{
-	update_browser_views_visibility (widget);
 }
 
 static void

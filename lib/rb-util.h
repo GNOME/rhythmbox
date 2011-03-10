@@ -30,6 +30,7 @@
 
 #include <stdarg.h>
 #include <glib.h>
+#include <gio/gio.h>
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
@@ -101,6 +102,10 @@ void rb_set_tree_view_column_fixed_width (GtkWidget *treeview,
 
 GdkPixbuf *rb_scale_pixbuf_to_size (GdkPixbuf *pixbuf,
 				    GtkIconSize size);
+
+typedef void (*RBDelayedSyncFunc)(GSettings *settings, gpointer data);
+
+void rb_settings_delayed_sync (GSettings *settings, RBDelayedSyncFunc sync_func, gpointer data, GDestroyNotify destroy);
 
 G_END_DECLS
 

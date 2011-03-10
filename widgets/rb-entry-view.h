@@ -99,7 +99,6 @@ struct _RBEntryViewClass
 
 	void (*have_selection_changed) (RBEntryView *view, gboolean have_selection);
 	void (*selection_changed)       (RBEntryView *view);
-	void (*sort_order_changed)     (RBEntryView *view);
 
 	void (*show_popup)             (RBEntryView *view, gboolean over_entry);
 };
@@ -108,7 +107,6 @@ GType		rb_entry_view_get_type			(void);
 
 RBEntryView *	rb_entry_view_new			(RhythmDB *db,
                                                          GObject *shell_player,
-							 const char *sort_key,
                                                          gboolean is_drag_source,
 							 gboolean is_drag_dest);
 

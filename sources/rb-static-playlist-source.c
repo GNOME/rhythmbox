@@ -76,7 +76,6 @@ static GList * impl_cut (RBSource *source);
 static RBTrackTransferBatch *impl_paste (RBSource *asource, GList *entries);
 static void impl_delete (RBSource *source);
 static void impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, const char *new_text);
-static void impl_browser_toggled (RBSource *source, gboolean enabled);
 static void impl_reset_filters (RBSource *asource);
 static gboolean impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data);
 static GList *impl_get_search_actions (RBSource *source);
@@ -130,7 +129,8 @@ static GtkRadioActionEntry rb_static_playlist_source_radio_actions [] =
 enum
 {
 	PROP_0,
-	PROP_BASE_QUERY_MODEL
+	PROP_BASE_QUERY_MODEL,
+	PROP_SHOW_BROWSER
 };
 
 G_DEFINE_TYPE (RBStaticPlaylistSource, rb_static_playlist_source, RB_TYPE_PLAYLIST_SOURCE)
@@ -181,7 +181,6 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	source_class->impl_search = impl_search;
 	source_class->impl_reset_filters = impl_reset_filters;
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_browser_toggled = impl_browser_toggled;
 	source_class->impl_get_property_views = impl_get_property_views;
 	source_class->impl_get_search_actions = impl_get_search_actions;
 	source_class->impl_want_uri = impl_want_uri;
@@ -191,6 +190,9 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	g_object_class_override_property (object_class,
 					  PROP_BASE_QUERY_MODEL,
 					  "base-query-model");
+	g_object_class_override_property (object_class,
+					  PROP_SHOW_BROWSER,
+					  "show-browser");
 
 	g_type_class_add_private (klass, sizeof (RBStaticPlaylistSourcePrivate));
 }
@@ -340,6 +342,8 @@ rb_static_playlist_source_constructed (GObject *object)
 	gtk_container_remove (GTK_CONTAINER (source), GTK_WIDGET (songs));
 	gtk_paned_pack2 (GTK_PANED (priv->paned), GTK_WIDGET (songs), TRUE, FALSE);
 	gtk_container_add (GTK_CONTAINER (source), priv->paned);
+
+	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (songs), priv->paned, GTK_WIDGET (priv->browser));
 	g_object_unref (songs);
 
 	/* watch these to find out when things are dropped into the entry view */
@@ -360,7 +364,7 @@ rb_static_playlist_source_constructed (GObject *object)
  * rb_static_playlist_source_new:
  * @shell: the #RBShell
  * @name: the playlist name
- * @sorting_name: the sorting name for the playlist (GConf key friendly)
+ * @settings_name: the settings name for the playlist (GSettings path friendly)
  * @local: if %TRUE, the playlist is local to the library
  * @entry_type: type of database entries that can be added to the playlist.
  *
@@ -369,17 +373,25 @@ rb_static_playlist_source_constructed (GObject *object)
  * Return value: new playlist.
  */
 RBSource *
-rb_static_playlist_source_new (RBShell *shell, const char *name, const char *sorting_name, gboolean local, RhythmDBEntryType *entry_type)
+rb_static_playlist_source_new (RBShell *shell, const char *name, const char *settings_name, gboolean local, RhythmDBEntryType *entry_type)
 {
+	GSettings *settings;
+
 	if (name == NULL)
 		name = "";
 
-	if (sorting_name == NULL)
-		sorting_name = "";
+	if (settings_name != NULL) {
+		char *path;
+		path = g_strdup_printf ("/org/gnome/rhythmbox/playlist/%s/", settings_name);
+		settings = g_settings_new_with_path ("org.gnome.rhythmbox.source", path);
+		g_free (path);
+	} else {
+		settings = NULL;
+	}
 
 	return RB_SOURCE (g_object_new (RB_TYPE_STATIC_PLAYLIST_SOURCE,
 					"name", name,
-					"sorting-name", sorting_name,
+					"settings", settings,
 					"shell", shell,
 					"is-local", local,
 					"entry-type", entry_type,
@@ -393,9 +405,15 @@ rb_static_playlist_source_set_property (GObject *object,
 					const GValue *value,
 					GParamSpec *pspec)
 {
-	/*RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (object);*/
+	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (object);
 
 	switch (prop_id) {
+	case PROP_SHOW_BROWSER:
+		if (g_value_get_boolean (value))
+			gtk_widget_show (GTK_WIDGET (priv->browser));
+		else
+			gtk_widget_hide (GTK_WIDGET (priv->browser));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -413,6 +431,9 @@ rb_static_playlist_source_get_property (GObject *object,
 	switch (prop_id) {
 	case PROP_BASE_QUERY_MODEL:
 		g_value_set_object (value, priv->base_model);
+		break;
+	case PROP_SHOW_BROWSER:
+		g_value_set_boolean (value, gtk_widget_get_visible (GTK_WIDGET (priv->browser)));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -562,19 +583,6 @@ impl_get_property_views (RBSource *source)
 
 	ret =  rb_library_browser_get_property_views (priv->browser);
 	return ret;
-}
-
-static void
-impl_browser_toggled (RBSource *source, gboolean enabled)
-{
-	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
-
-	priv->browser_shown = enabled;
-
-	if (enabled)
-		gtk_widget_show (GTK_WIDGET (priv->browser));
-	else
-		gtk_widget_hide (GTK_WIDGET (priv->browser));
 }
 
 static GPtrArray *
@@ -791,7 +799,7 @@ _add_location_cb (GFile *file,
 		rb_static_playlist_source_add_location_internal (source, uri, -1);
 		g_free (uri);
 	}
-	return TRUE;	
+	return TRUE;
 }
 
 /**

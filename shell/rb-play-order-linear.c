@@ -30,8 +30,6 @@
 #include "rb-play-order-linear.h"
 
 #include "rb-debug.h"
-#include "rb-preferences.h"
-#include "eel-gconf-extensions.h"
 
 static void rb_linear_play_order_class_init (RBLinearPlayOrderClass *klass);
 

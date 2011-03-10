@@ -31,18 +31,14 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 
+#include "rb-podcast-settings.h"
 #include "rb-podcast-main-source.h"
 #include "rb-podcast-entry-types.h"
 #include "rb-shell.h"
-#include "eel-gconf-extensions.h"
 #include "rb-builder-helpers.h"
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 #include "rb-stock-icons.h"
-
-#define CONF_STATE_PODCAST_PREFIX		CONF_PREFIX "/state/podcast"
-#define CONF_STATE_PODCAST_DOWNLOAD_INTERVAL	CONF_STATE_PODCAST_PREFIX "/download_interval"
-#define CONF_STATE_PODCAST_DOWNLOAD_DIR		CONF_STATE_PODCAST_PREFIX "/download_prefix"
 
 struct _RBPodcastMainSourcePrivate
 {
@@ -58,6 +54,7 @@ rb_podcast_main_source_new (RBShell *shell, RBPodcastManager *podcast_manager)
 	RBSource *source;
 	RhythmDBQuery *base_query;
 	RhythmDB *db;
+	GSettings *settings;
 
 	g_object_get (shell, "db", &db, NULL);
 	base_query = rhythmdb_query_parse (db,
@@ -67,6 +64,8 @@ rb_podcast_main_source_new (RBShell *shell, RBPodcastManager *podcast_manager)
 					   RHYTHMDB_QUERY_END);
 	g_object_unref (db);
 
+	settings = g_settings_new (PODCAST_SETTINGS_SCHEMA);
+
 	source = RB_SOURCE (g_object_new (RB_TYPE_PODCAST_MAIN_SOURCE,
 					  "name", _("Podcasts"),
 					  "shell", shell,
@@ -74,7 +73,9 @@ rb_podcast_main_source_new (RBShell *shell, RBPodcastManager *podcast_manager)
 					  "search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					  "podcast-manager", podcast_manager,
 					  "base-query", base_query,
+					  "settings", g_settings_get_child (settings, "source"),
 					  NULL));
+	g_object_unref (settings);
 
 	rhythmdb_query_free (base_query);
 
@@ -233,27 +234,18 @@ feed_error_cb (RBPodcastManager *pd,
 }
 
 static void
-rb_podcast_main_source_btn_file_change_cb (GtkFileChooserButton *widget, const char *key)
+rb_podcast_main_source_btn_file_change_cb (GtkFileChooserButton *widget, RBPodcastSource *source)
 {
+	GSettings *settings;
 	char *uri;
-	
+
+	settings = g_settings_new (PODCAST_SETTINGS_SCHEMA);
+
 	uri = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (widget));
-	eel_gconf_set_string (key, uri);
+	g_settings_set_string (settings, PODCAST_DOWNLOAD_DIR_KEY, uri);
 	g_free (uri);
-}
 
-static void
-rb_podcast_main_source_cb_interval_changed_cb (GtkComboBox *box, gpointer cb_data)
-{
-	RBPodcastManager *podcast_mgr;
-
-	guint index = gtk_combo_box_get_active (box);
-	eel_gconf_set_integer (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL,
-			       index);
-
-	g_object_get (cb_data, "podcast-manager", &podcast_mgr, NULL);
-	rb_podcast_manager_start_sync (podcast_mgr);
-	g_object_unref (podcast_mgr);
+	g_object_unref (settings);
 }
 
 static GtkWidget *
@@ -262,8 +254,9 @@ impl_get_config_widget (RBDisplayPage *page, RBShellPreferences *prefs)
 	RBPodcastMainSource *source = RB_PODCAST_MAIN_SOURCE (page);
 	RBPodcastManager *podcast_mgr;
 	GtkBuilder *builder;
-	GtkWidget *cb_update_interval;
+	GtkWidget *update_interval;
 	GtkWidget *btn_file;
+	GSettings *settings;
 	char *download_dir;
 
 	if (source->priv->config_widget)
@@ -277,26 +270,29 @@ impl_get_config_widget (RBDisplayPage *page, RBShellPreferences *prefs)
 					      rb_music_dir (),
 					      NULL);
 
-	g_object_get (source, "podcast-manager", &podcast_mgr, NULL);
+	g_object_get (source,
+		      "podcast-manager", &podcast_mgr,
+		      NULL);
 	download_dir = rb_podcast_manager_get_podcast_dir (podcast_mgr);
-	g_object_unref (podcast_mgr);
 
 	gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (btn_file),
 						 download_dir);
+	g_object_unref (podcast_mgr);
 	g_free (download_dir);
 
-	g_signal_connect (btn_file,
-			  "selection-changed",
-			  G_CALLBACK (rb_podcast_main_source_btn_file_change_cb),
-			  CONF_STATE_PODCAST_DOWNLOAD_DIR);
+	g_signal_connect_object (btn_file,
+				 "selection-changed",
+				 G_CALLBACK (rb_podcast_main_source_btn_file_change_cb),
+				 source, 0);
 
-	cb_update_interval = GTK_WIDGET (gtk_builder_get_object (builder, "cb_update_interval"));
-	gtk_combo_box_set_active (GTK_COMBO_BOX (cb_update_interval),
-				  eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL));
-	g_signal_connect (cb_update_interval,
-			  "changed",
-			  G_CALLBACK (rb_podcast_main_source_cb_interval_changed_cb),
-			  source);
+	update_interval = GTK_WIDGET (gtk_builder_get_object (builder, "update_interval"));
+	g_object_set (update_interval, "id-column", 1, NULL);
+
+	settings = g_settings_new (PODCAST_SETTINGS_SCHEMA);
+	g_settings_bind (settings, PODCAST_DOWNLOAD_INTERVAL,
+			 update_interval, "active-id",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_object_unref (settings);
 
 	return source->priv->config_widget;
 }
@@ -344,31 +340,31 @@ impl_constructed (GObject *object)
 	RBPodcastManager *podcast_mgr;
 	GdkPixbuf *pixbuf;
 	gint size;
-	
+
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_main_source_parent_class, constructed, object);
 	source = RB_PODCAST_MAIN_SOURCE (object);
 
 	g_object_get (source, "podcast-manager", &podcast_mgr, NULL);
 
 	g_signal_connect_object (podcast_mgr,
-	 		        "start_download",
-			  	G_CALLBACK (start_download_cb),
-			  	source, 0);
+			        "start_download",
+				G_CALLBACK (start_download_cb),
+				source, 0);
 
 	g_signal_connect_object (podcast_mgr,
-			  	"finish_download",
-			  	G_CALLBACK (finish_download_cb),
-			  	source, 0);
+				"finish_download",
+				G_CALLBACK (finish_download_cb),
+				source, 0);
 
 	g_signal_connect_object (podcast_mgr,
-			  	"feed_updates_available",
- 			  	G_CALLBACK (feed_updates_available_cb),
-			  	source, 0);
+				"feed_updates_available",
+				G_CALLBACK (feed_updates_available_cb),
+				source, 0);
 
 	g_signal_connect_object (podcast_mgr,
-			  	 "process_error",
-			 	 G_CALLBACK (feed_error_cb),
-			  	 source, 0);
+				 "process_error",
+				 G_CALLBACK (feed_error_cb),
+				 source, 0);
 
 	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
 	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
@@ -418,6 +414,6 @@ rb_podcast_main_source_class_init (RBPodcastMainSourceClass *klass)
 
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
-	
+
 	g_type_class_add_private (klass, sizeof (RBPodcastMainSourcePrivate));
 }

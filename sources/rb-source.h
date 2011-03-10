@@ -94,8 +94,6 @@ struct _RBSourceClass
 	/* methods */
 
 	gboolean	(*impl_can_browse)	(RBSource *source);
-	char *		(*impl_get_browser_key)	(RBSource *source);
-	void		(*impl_browser_toggled)	(RBSource *source, gboolean enabled);
 
 	RBEntryView *	(*impl_get_entry_view)	(RBSource *source);
 	GList *		(*impl_get_property_views)	(RBSource *source);
@@ -152,8 +150,6 @@ void		rb_source_update_play_statistics(RBSource *source, RhythmDB *db,
 /* general interface */
 
 gboolean	rb_source_can_browse		(RBSource *source);
-char *		rb_source_get_browser_key	(RBSource *source);
-void		rb_source_browser_toggled	(RBSource *source, gboolean enabled);
 
 RBEntryView *	rb_source_get_entry_view	(RBSource *source);
 
@@ -216,6 +212,10 @@ void		_rb_source_set_import_status	(RBSource *source,
 						 RhythmDBImportJob *job,
 						 char **progress_text,
 						 float *progress);
+void		rb_source_bind_settings		(RBSource *source,
+						 GtkWidget *entry_view,
+						 GtkWidget *paned,
+						 GtkWidget *browser);
 
 G_END_DECLS
 

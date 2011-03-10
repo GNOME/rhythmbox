@@ -477,8 +477,6 @@ rb_source_update_play_statistics
 rb_source_set_pixbuf
 rb_source_get_status
 rb_source_can_browse
-rb_source_get_browser_key
-rb_source_browser_toggled
 rb_source_get_entry_view
 rb_source_get_property_views
 rb_source_can_rename
@@ -992,23 +990,6 @@ rb_stock_icons_shutdown
 </SECTION>
 
 <SECTION>
-<FILE>rb-preferences</FILE>
-CONF_PREFIX
-CONF_FIRST_TIME
-CONF_GRACE_PERIOD
-CONF_UI_DIR
-CONF_UI_STATUSBAR_HIDDEN
-CONF_UI_SMALL_DISPLAY
-CONF_UI_OBSOLETE_COLUMNS_SETUP
-CONF_UI_COLUMNS_SETUP
-CONF_UI_TIME_DISPLAY
-CONF_UI_BROWSER_VIEWS
-CONF_STATE_PLAY_ORDER
-CONF_STATE_VOLUME
-CONF_STATE_BURN_DEVICE
-</SECTION>
-
-<SECTION>
 <FILE>rb-file-helpers</FILE>
 rb_file
 rb_user_data_dir
@@ -1461,7 +1442,6 @@ RB_MISSING_FILES_SOURCE_GET_CLASS
 <TITLE>RBBrowserSource</TITLE>
 RBBrowserSource
 RBBrowserSourceClass
-rb_browser_source_get_paned_key
 rb_browser_source_has_drop_support
 <SUBSECTION Standard>
 RBBrowserSourcePrivate

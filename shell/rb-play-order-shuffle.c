@@ -35,7 +35,6 @@
 #include "rb-history.h"
 #include "rb-debug.h"
 #include "rb-util.h"
-#include "eel-gconf-extensions.h"
 
 static void rb_shuffle_play_order_class_init (RBShufflePlayOrderClass *klass);
 static void rb_shuffle_play_order_init (RBShufflePlayOrder *sorder);

@@ -52,7 +52,7 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="use_xfade_backend">
-                <property name="label" translatable="yes">_Use crossfading backend (requires restart)</property>
+                <property name="label" translatable="yes">_Crossfade between tracks</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
@@ -131,61 +131,6 @@
       </packing>
     </child>
     <child>
-      <object class="GtkVBox" id="vbox6">
-        <property name="visible">True</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">6</property>
-        <child>
-          <object class="GtkLabel" id="buffer_size_label">
-            <property name="visible">True</property>
-            <property name="xalign">0</property>
-            <property name="label" translatable="yes">Network Buffer Size (kB)</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkHBox" id="hbox3">
-            <property name="visible">True</property>
-            <child>
-              <object class="GtkLabel" id="label4">
-                <property name="visible">True</property>
-                <property name="label">    </property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkHScale" id="network_buffer_size">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="adjustment">adjustment2</property>
-                <property name="digits">0</property>
-              </object>
-              <packing>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="position">2</property>
-      </packing>
-    </child>
-    <child>
       <object class="GtkVBox" id="plugin_box">
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
@@ -194,7 +139,7 @@
         </child>
       </object>
       <packing>
-        <property name="position">3</property>
+        <property name="position">2</property>
       </packing>
     </child>
   </object>

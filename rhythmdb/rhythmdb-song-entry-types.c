@@ -28,11 +28,8 @@
 
 #include "config.h"
 
-#include <gconf/gconf-client.h>
-
 #include "rhythmdb-entry-type.h"
 #include "rhythmdb-private.h"
-#include "rb-preferences.h"
 #include "rb-util.h"
 #include "rb-debug.h"
 
@@ -87,16 +84,9 @@ check_entry_grace_period (RhythmDB *db, RhythmDBEntry *entry)
 	gulong last_seen;
 	gulong grace_period;
 	GError *error;
-	GConfClient *client;
 
-	client = gconf_client_get_default ();
-	if (client == NULL) {
-		return FALSE;
-	}
 	error = NULL;
-	grace_period = gconf_client_get_int (client, CONF_GRACE_PERIOD,
-					     &error);
-	g_object_unref (G_OBJECT (client));
+	grace_period = g_settings_get_int (db->priv->settings, "grace-period");
 	if (error != NULL) {
 		g_error_free (error);
 		return FALSE;

@@ -33,15 +33,14 @@
 #include <string.h>
 
 #include <glib/gi18n.h>
+#include <gio/gio.h>
 #include <gtk/gtk.h>
 
 #include "rb-source-header.h"
 #include "rb-stock-icons.h"
-#include "rb-preferences.h"
 #include "rb-search-entry.h"
 #include "rb-debug.h"
 #include "rb-entry-view.h"
-#include "eel-gconf-extensions.h"
 #include "rb-util.h"
 #include "rb-marshal.h"
 
@@ -81,6 +80,9 @@ static void rb_source_header_search_activate_cb (RBSearchEntry *search,
 						 RBSourceHeader *header);
 static void rb_source_header_view_browser_changed_cb (GtkAction *action,
 						      RBSourceHeader *header);
+static void rb_source_header_source_browser_changed_cb (GObject *source,
+							GParamSpec *pspec,
+							RBSourceHeader *header);
 static void rb_source_header_source_weak_destroy_cb (RBSourceHeader *header, RBSource *source);
 static void search_action_changed_cb (GtkRadioAction *action,
 				      GtkRadioAction *current,
@@ -88,7 +90,6 @@ static void search_action_changed_cb (GtkRadioAction *action,
 static void rb_source_header_refresh_search_bar (RBSourceHeader *header);
 
 typedef struct {
-	gboolean 	disclosed;
 	char     	*search_text;
 	GtkRadioAction  *search_action;
 } SourceState;
@@ -115,17 +116,13 @@ struct RBSourceHeaderPrivate
 	GtkWidget *search_bar;
 	GtkRadioAction *search_group_head;
 
-	guint browser_notify_id;
-	guint search_notify_id;
 	RBSourceSearchType search_type;
-	gboolean have_browser;
-	gboolean disclosed;
-	char *browser_key;
 
 	GHashTable *source_states;
+
+	GSettings *settings;
 };
 
-#define RB_SOURCE_HEADER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SOURCE_HEADER, RBSourceHeaderPrivate))
 
 enum
 {
@@ -294,7 +291,9 @@ rb_source_header_init (RBSourceHeader *header)
 	GtkWidget *align;
 	GtkEventBox *ebox;
 
-	header->priv = RB_SOURCE_HEADER_GET_PRIVATE (header);
+	header->priv = G_TYPE_INSTANCE_GET_PRIVATE (header, RB_TYPE_SOURCE_HEADER, RBSourceHeaderPrivate);
+
+	header->priv->settings = g_settings_new ("org.gnome.rhythmbox");
 
 	gtk_table_set_col_spacings (GTK_TABLE (header), 5);
 	gtk_table_resize (GTK_TABLE (header), 1, 3);
@@ -360,6 +359,11 @@ rb_source_header_dispose (GObject *object)
 		header->priv->search_group_head = NULL;
 	}
 
+	if (header->priv->settings != NULL) {
+		g_object_unref (header->priv->settings);
+		header->priv->settings = NULL;
+	}
+
 	G_OBJECT_CLASS (rb_source_header_parent_class)->dispose (object);
 }
 
@@ -379,8 +383,6 @@ rb_source_header_finalize (GObject *object)
 			      (GHFunc) rb_source_header_source_weak_unref,
 			      header);
 	g_hash_table_destroy (header->priv->source_states);
-
-	g_free (header->priv->browser_key);
 
 	G_OBJECT_CLASS (rb_source_header_parent_class)->finalize (object);
 }
@@ -492,8 +494,11 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 				      RBSource *source)
 {
 	if (header->priv->selected_source != NULL) {
-		g_signal_handlers_disconnect_by_func (G_OBJECT (header->priv->selected_source),
+		g_signal_handlers_disconnect_by_func (header->priv->selected_source,
 						      G_CALLBACK (rb_source_header_filter_changed_cb),
+						      header);
+		g_signal_handlers_disconnect_by_func (header->priv->selected_source,
+						      G_CALLBACK (rb_source_header_source_browser_changed_cb),
 						      header);
 	}
 
@@ -503,56 +508,39 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 	if (header->priv->selected_source != NULL) {
 		SourceState *source_state;
 		char        *text;
-		gboolean    disclosed;
 
 		source_state = g_hash_table_lookup (header->priv->source_states,
 						    header->priv->selected_source);
 
 		if (source_state) {
 			text = g_strdup (source_state->search_text);
-			disclosed = source_state->disclosed;
 		} else {
 			text = NULL;
-			disclosed = FALSE;
 		}
-
-		g_free (header->priv->browser_key);
-		header->priv->browser_key = rb_source_get_browser_key (header->priv->selected_source);
 
 		rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search), text);
 		g_signal_connect_object (G_OBJECT (header->priv->selected_source),
 					 "filter_changed",
 					 G_CALLBACK (rb_source_header_filter_changed_cb),
 					 header, 0);
+		g_signal_connect_object (header->priv->selected_source,
+					 "notify::show-browser",
+					 G_CALLBACK (rb_source_header_source_browser_changed_cb),
+					 header, 0);
 
 		g_object_get (header->priv->selected_source, "search-type", &header->priv->search_type, NULL);
 		gtk_widget_set_sensitive (GTK_WIDGET (header->priv->search),
 					  (header->priv->search_type != RB_SOURCE_SEARCH_NONE));
-		header->priv->have_browser = rb_source_can_browse (header->priv->selected_source);
 
-		if (!header->priv->have_browser) {
-			header->priv->disclosed = FALSE;
-		} else if (header->priv->browser_key) {
-			header->priv->disclosed = eel_gconf_get_boolean (header->priv->browser_key);
-		} else {
-			/* restore the previous state of the source*/
-			header->priv->disclosed = disclosed;
-		}
-
-		if (!header->priv->have_browser && (header->priv->search_type == RB_SOURCE_SEARCH_NONE)) {
-			gtk_widget_hide (GTK_WIDGET (header));
-		} else {
+		if (rb_source_can_browse (header->priv->selected_source) ||
+		    (header->priv->search_type != RB_SOURCE_SEARCH_NONE)) {
 			gtk_widget_show (GTK_WIDGET (header));
+		} else {
+			gtk_widget_hide (GTK_WIDGET (header));
 		}
-
 	} else {
 		/* no selected source -> hide source header */
 		gtk_widget_hide (GTK_WIDGET (header));
-		header->priv->have_browser = FALSE;
-		header->priv->disclosed = FALSE;
-
-		g_free (header->priv->browser_key);
-		header->priv->browser_key = NULL;
 	}
 
 	rb_source_header_refresh_search_bar (header);
@@ -725,7 +713,7 @@ rb_source_state_sync (RBSourceHeader *header,
 	}
 
 	if (set_disclosure) {
-		state->disclosed = disclosed;
+		g_object_set (header->priv->selected_source, "show-browser", disclosed, NULL);
 	}
 
 	if (set_search) {
@@ -833,21 +821,22 @@ static void
 rb_source_header_view_browser_changed_cb (GtkAction *action,
 					  RBSourceHeader *header)
 {
-	rb_debug ("got view browser toggle");
-	header->priv->disclosed = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
+	/* hmm, maybe use GBinding for this? */
 
-	if (header->priv->browser_key) {
-		eel_gconf_set_boolean (header->priv->browser_key,
-				       header->priv->disclosed);
-	} else {
-		rb_source_state_sync (header,
-				      FALSE, NULL,
-				      FALSE, NULL,
-				      TRUE, header->priv->disclosed);
+	rb_debug ("got view browser toggle");
+	if (header->priv->selected_source != NULL) {
+		gboolean active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
+		g_object_set (header->priv->selected_source, "show-browser", active, NULL);
 	}
 
-	rb_debug ("got view browser toggle");
+	/* shouldn't need this, we'll do it when the source emits notify::show-browser */
+	/*rb_source_header_sync_control_state (header);*/
+}
 
+static void
+rb_source_header_source_browser_changed_cb (GObject *source, GParamSpec *pspec, RBSourceHeader *header)
+{
+	rb_debug ("source show-browser property changed");
 	rb_source_header_sync_control_state (header);
 }
 
@@ -864,26 +853,28 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 	GtkAction *viewbrowser_action;
 	GtkAction *viewstatusbar_action;
 	GtkAction *viewall_action;
-	gboolean not_small = !eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+	gboolean show_browser = FALSE;
+	gboolean small_mode = g_settings_get_boolean (header->priv->settings, "small-display");
 
-	viewbrowser_action = gtk_action_group_get_action (header->priv->actiongroup,
-							  "ViewBrowser");
-	g_object_set (G_OBJECT (viewbrowser_action), "sensitive",
-		      header->priv->have_browser && not_small, NULL);
-	viewstatusbar_action = gtk_action_group_get_action (header->priv->actiongroup,
-							    "ViewStatusbar");
-	g_object_set (G_OBJECT (viewstatusbar_action), "sensitive",
-		      not_small, NULL);
-	viewall_action = gtk_action_group_get_action (header->priv->actiongroup,
-						      "ViewAll");
-	g_object_set (G_OBJECT (viewall_action), "sensitive",
-		      (header->priv->have_browser || (header->priv->search_type != RB_SOURCE_SEARCH_NONE)) && not_small, NULL);
+	viewbrowser_action = gtk_action_group_get_action (header->priv->actiongroup, "ViewBrowser");
+	viewstatusbar_action = gtk_action_group_get_action (header->priv->actiongroup, "ViewStatusbar");
+	viewall_action = gtk_action_group_get_action (header->priv->actiongroup, "ViewAll");
 
-	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (viewbrowser_action),
-				      header->priv->disclosed);
+	g_object_set (viewstatusbar_action, "sensitive", (small_mode == FALSE), NULL);
+	if (small_mode || (header->priv->selected_source == NULL)) {
+		g_object_set (viewbrowser_action, "sensitive", FALSE, NULL);
+		g_object_set (viewall_action, "sensitive", FALSE, NULL);
+	} else if (header->priv->selected_source) {
+		gboolean have_browser = rb_source_can_browse (header->priv->selected_source);
 
-	if (header->priv->selected_source)
-		rb_source_browser_toggled (header->priv->selected_source, header->priv->disclosed);
+		if (have_browser) {
+			g_object_get (header->priv->selected_source, "show-browser", &show_browser, NULL);
+		}
+		g_object_set (viewbrowser_action, "sensitive", have_browser, NULL);
+		g_object_set (viewall_action, "sensitive", have_browser || (header->priv->search_type != RB_SOURCE_SEARCH_NONE), NULL);
+	}
+
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (viewbrowser_action), show_browser);
 }
 
 static void

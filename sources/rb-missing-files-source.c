@@ -72,7 +72,8 @@ static void impl_get_status (RBDisplayPage *page, char **text, char **progress_t
 static void rb_missing_files_source_songs_show_popup_cb (RBEntryView *view,
 							 gboolean over_entry,
 							 RBMissingFilesSource *source);
-static void rb_missing_files_source_songs_sort_order_changed_cb (RBEntryView *view,
+static void rb_missing_files_source_songs_sort_order_changed_cb (GObject *object,
+								 GParamSpec *pspec,
 								 RBMissingFilesSource *source);
 
 #define MISSING_FILES_SOURCE_SONGS_POPUP_PATH "/MissingFilesViewPopup"
@@ -181,7 +182,7 @@ rb_missing_files_source_constructed (GObject *object)
 
 	/* set up entry view */
 	source->priv->view = rb_entry_view_new (source->priv->db, shell_player,
-						NULL, FALSE, FALSE);
+						FALSE, FALSE);
 	g_object_unref (shell_player);
 
 	rb_entry_view_set_model (source->priv->view, model);
@@ -199,7 +200,7 @@ rb_missing_files_source_constructed (GObject *object)
 	gtk_container_add (GTK_CONTAINER (source), GTK_WIDGET (source->priv->view));
 	g_signal_connect_object (source->priv->view, "show_popup",
 				 G_CALLBACK (rb_missing_files_source_songs_show_popup_cb), source, 0);
-	g_signal_connect_object (source->priv->view, "sort-order-changed",
+	g_signal_connect_object (source->priv->view, "notify::sort-order",
 				 G_CALLBACK (rb_missing_files_source_songs_sort_order_changed_cb), source, 0);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
@@ -333,10 +334,11 @@ impl_delete (RBSource *asource)
 }
 
 static void
-rb_missing_files_source_songs_sort_order_changed_cb (RBEntryView *view,
+rb_missing_files_source_songs_sort_order_changed_cb (GObject *object,
+						     GParamSpec *pspec,
 						     RBMissingFilesSource *source)
 {
-	rb_entry_view_resort_model (view);
+	rb_entry_view_resort_model (RB_ENTRY_VIEW (object));
 }
 
 static void

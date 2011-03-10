@@ -142,8 +142,6 @@ gboolean                rb_shell_player_get_playback_state(RBShellPlayer *player
 
 RhythmDBEntry *         rb_shell_player_get_playing_entry (RBShellPlayer *player);
 
-void			rb_shell_player_toggle_mute	(RBShellPlayer *player);
-
 gboolean		rb_shell_player_set_volume	(RBShellPlayer *player,
 							 gdouble volume,
 							 GError **error);

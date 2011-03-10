@@ -36,7 +36,6 @@
 
 #include "rb-shell-player.h"
 #include "rb-debug.h"
-#include "rb-preferences.h"
 #include "rb-marshal.h"
 
 /**

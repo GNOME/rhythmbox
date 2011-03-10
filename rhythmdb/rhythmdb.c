@@ -54,7 +54,6 @@
 #include <gio/gio.h>
 #include <gobject/gvaluecollector.h>
 #include <gdk/gdk.h>
-#include <gconf/gconf-client.h>
 
 
 #include "rb-marshal.h"
@@ -62,8 +61,6 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-cut-and-paste-code.h"
-#include "rb-preferences.h"
-#include "eel-gconf-extensions.h"
 #include "rhythmdb-private.h"
 #include "rhythmdb-property-model.h"
 #include "rb-dialog.h"
@@ -268,10 +265,7 @@ static void rhythmdb_entry_set_mount_point (RhythmDB *db,
  					    const gchar *realuri);
 
 static gboolean rhythmdb_idle_save (RhythmDB *db);
-static void library_location_changed_cb (GConfClient *client,
-					  guint cnxn_id,
-					  GConfEntry *entry,
-					  RhythmDB *db);
+static void db_settings_changed_cb (GSettings *settings, const char *key, RhythmDB *db);
 static void rhythmdb_sync_library_location (RhythmDB *db);
 static void rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
 					  guint propid);
@@ -280,10 +274,6 @@ static gboolean rhythmdb_entry_extra_metadata_accumulator (GSignalInvocationHint
 							   const GValue *handler_return,
 							   gpointer data);
 
-static void rhythmdb_monitor_library_changed_cb (GConfClient *client,
-						 guint cnxn_id,
-						 GConfEntry *entry,
-						 RhythmDB *db);
 static void rhythmdb_event_free (RhythmDB *db, RhythmDBEvent *event);
 static void rhythmdb_add_to_stat_list (RhythmDB *db,
 				       const char *uri,
@@ -694,6 +684,9 @@ rhythmdb_init (RhythmDB *db)
 
 	db->priv = RHYTHMDB_GET_PRIVATE (db);
 
+	db->priv->settings = g_settings_new ("org.gnome.rhythmbox.rhythmdb");
+	g_signal_connect_object (db->priv->settings, "changed", G_CALLBACK (db_settings_changed_cb), db, 0);
+
 	db->priv->action_queue = g_async_queue_new ();
 	db->priv->event_queue = g_async_queue_new ();
 	db->priv->delayed_write_queue = g_async_queue_new ();
@@ -763,11 +756,6 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->next_entry_id = 1;
 
 	rhythmdb_init_monitoring (db);
-
-	db->priv->monitor_notify_id = 
-		eel_gconf_notification_add (CONF_MONITOR_LIBRARY,
-					   (GConfClientNotifyFunc)rhythmdb_monitor_library_changed_cb,
-					   db);
 
 	rhythmdb_dbus_register (db);
 }
@@ -1028,14 +1016,8 @@ rhythmdb_shutdown (RhythmDB *db)
 	action->type = RHYTHMDB_ACTION_QUIT;
 	g_async_queue_push (db->priv->action_queue, action);
 
-	eel_gconf_notification_remove (db->priv->library_location_notify_id);
-	db->priv->library_location_notify_id = 0;
-	g_slist_foreach (db->priv->library_locations, (GFunc) g_free, NULL);
-	g_slist_free (db->priv->library_locations);
+	g_strfreev (db->priv->library_locations);
 	db->priv->library_locations = NULL;
-
-	eel_gconf_notification_remove (db->priv->monitor_notify_id);
-	db->priv->monitor_notify_id = 0;
 
 	/* abort all async io operations */
 	g_mutex_lock (db->priv->stat_mutex);
@@ -1059,7 +1041,6 @@ rhythmdb_shutdown (RhythmDB *db)
 	while ((action = g_async_queue_try_pop (db->priv->action_queue)) != NULL) {
 		rhythmdb_action_free (db, action);
 	}
-
 }
 
 static void
@@ -1107,6 +1088,11 @@ rhythmdb_dispose (GObject *object)
 	if (db->priv->exiting != NULL) {
 		g_object_unref (db->priv->exiting);
 		db->priv->exiting = NULL;
+	}
+
+	if (db->priv->settings != NULL) {
+		g_object_unref (db->priv->settings);
+		db->priv->settings = NULL;
 	}
 
 	G_OBJECT_CLASS (rhythmdb_parent_class)->dispose (object);
@@ -2346,6 +2332,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	RhythmDBEntry *entry;
 	GValue value = {0,};
 	GTimeVal time;
+	gboolean monitor;
 
 	if (event->entry_type == NULL)
 		event->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
@@ -2467,7 +2454,8 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 
 	/* monitor the file for changes */
 	/* FIXME: watch for errors */
-	if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY) && event->entry_type == RHYTHMDB_ENTRY_TYPE_SONG)
+	monitor = g_settings_get_boolean (db->priv->settings, "monitor-library");
+	if (monitor && event->entry_type == RHYTHMDB_ENTRY_TYPE_SONG)
 		rhythmdb_monitor_uri_path (db, rb_refstring_get (entry->location), NULL);
 
 	rhythmdb_commit_internal (db, FALSE, g_thread_self ());
@@ -4703,50 +4691,29 @@ rhythmdb_idle_save (RhythmDB *db)
 static void
 rhythmdb_sync_library_location (RhythmDB *db)
 {
-	gboolean reload = (db->priv->library_locations != NULL);
-
-	if (db->priv->library_location_notify_id == 0) {
-		db->priv->library_location_notify_id =
-			eel_gconf_notification_add (CONF_LIBRARY_LOCATION,
-						    (GConfClientNotifyFunc) library_location_changed_cb,
-						    db);
-	}
-
-	if (reload) {
+	if (db->priv->library_locations != NULL &&
+	    g_strv_length (db->priv->library_locations) > 0) {
 		rb_debug ("ending monitor of old library directories");
 
 		rhythmdb_stop_monitoring (db);
 
-		g_slist_foreach (db->priv->library_locations, (GFunc) g_free, NULL);
-		g_slist_free (db->priv->library_locations);
-		db->priv->library_locations = NULL;
+		g_strfreev (db->priv->library_locations);
 	}
 
-	if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY)) {
+	if (g_settings_get_boolean (db->priv->settings, "monitor-library")) {
 		rb_debug ("starting library monitoring");
-		db->priv->library_locations = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
+		db->priv->library_locations = g_settings_get_strv (db->priv->settings, "locations");
 
 		rhythmdb_start_monitoring (db);
 	}
 }
 
-static
-void rhythmdb_monitor_library_changed_cb (GConfClient *client,
-					  guint cnxn_id,
-					  GConfEntry *entry,
-					  RhythmDB *db)
-{
-	rb_debug ("'watch library' key changed");
-	rhythmdb_sync_library_location (db);
-}
-
 static void
-library_location_changed_cb (GConfClient *client,
-			     guint cnxn_id,
-			     GConfEntry *entry,
-			     RhythmDB *db)
+db_settings_changed_cb (GSettings *settings, const char *key, RhythmDB *db)
 {
-	rhythmdb_sync_library_location (db);
+	if (g_strcmp0 (key, "locations") == 0 || g_strcmp0 (key, "monitor-library") == 0) {
+		rhythmdb_sync_library_location (db);
+	}
 }
 
 char *

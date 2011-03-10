@@ -31,7 +31,6 @@
 
 #include "rb-debug.h"
 #include "rb-util.h"
-#include "eel-gconf-extensions.h"
 
 static void rb_linear_play_order_loop_class_init (RBLinearPlayOrderLoopClass *klass);
 

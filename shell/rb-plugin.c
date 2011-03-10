@@ -46,7 +46,6 @@
 #include "rb-util.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
-#include "eel-gconf-extensions.h"
 
 G_DEFINE_TYPE (RBPlugin, rb_plugin, G_TYPE_OBJECT)
 #define RB_PLUGIN_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLUGIN, RBPluginPrivate))
@@ -249,19 +248,16 @@ rb_plugin_create_configure_dialog (RBPlugin *plugin)
 GList *
 rb_get_plugin_paths (void)
 {
-	GList *paths;
+	GSettings *settings;
+	GList *paths = NULL;
 	char  *path;
 
-	paths = NULL;
-
-	if (!eel_gconf_get_boolean (CONF_PLUGIN_DISABLE_USER)) {
-		/* deprecated path, should be removed some time in the future */
-		path = g_build_filename (rb_dot_dir (), "plugins", NULL);
-		paths = g_list_prepend (paths, path);
-
+	settings = g_settings_new ("org.gnome.rhythmbox.plugins");
+	if (g_settings_get_boolean (settings, "no-user-plugins") == FALSE) {
 		path = g_build_filename (rb_user_data_dir (), "plugins", NULL);
 		paths = g_list_prepend (paths, path);
 	}
+	g_object_unref (settings);
 
 #ifdef USE_UNINSTALLED_DIRS
 	path = g_build_filename (UNINSTALLED_PLUGINS_LOCATION, NULL);

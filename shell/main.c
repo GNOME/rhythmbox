@@ -69,8 +69,6 @@
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-util.h"
-#include "eel-gconf-extensions.h"
-#include "rb-util.h"
 #include "eggdesktopfile.h"
 #include "eggsmclient.h"
 
@@ -131,6 +129,8 @@ main (int argc, char **argv)
 
 #ifdef USE_UNINSTALLED_DIRS
 	desktop_file_path = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "rhythmbox.desktop", NULL);
+
+	g_setenv ("GSETTINGS_SCHEMA_DIR", SHARE_UNINSTALLED_BUILDDIR, TRUE);
 #else
 	desktop_file_path = g_build_filename (DATADIR, "applications", "rhythmbox.desktop", NULL);
 #endif

@@ -42,14 +42,6 @@
  * minimum width set.  Otherwise, the tree view must measure the contents of each
  * row to assign sizes, which is very slow for large track lists.  All the predefined
  * column types handle this correctly.
- *
- * The set of visible columns is controlled by a (single) GConf key, which
- * contains a comma-delimited list of property names for which the associated
- * columns are visible.  The entry view object tracks this automatically.
- *
- * If a GConf key for sorting is provided when constructing the entry view,
- * it is watched and updated.  The sort settings consist of a column name
- * and an order (ascending or descending).
  */
 
 /**
@@ -87,6 +79,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <gio/gio.h>
 #include <glib.h>
 
 #include "rb-tree-dnd.h"
@@ -99,8 +92,6 @@
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
 #include "rb-stock-icons.h"
-#include "rb-preferences.h"
-#include "eel-gconf-extensions.h"
 #include "rb-shell-player.h"
 #include "rb-cut-and-paste-code.h"
 
@@ -155,14 +146,6 @@ static void rb_entry_view_rows_reordered_cb (GtkTreeModel *model,
 					     gint *order,
 					     RBEntryView *view);
 static void rb_entry_view_sync_columns_visible (RBEntryView *view);
-static void rb_entry_view_columns_config_changed_cb (GConfClient* client,
-						    guint cnxn_id,
-						    GConfEntry *entry,
-						    gpointer user_data);
-static void rb_entry_view_sort_key_changed_cb (GConfClient* client,
-					       guint cnxn_id,
-					       GConfEntry *entry,
-					       gpointer user_data);
 static void rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 				   const char *path,
 				   double rating,
@@ -206,22 +189,20 @@ struct RBEntryViewPrivate
 	gboolean is_drag_dest;
 
 	char *sorting_key;
-	guint sorting_gconf_notification_id;
 	GtkTreeViewColumn *sorting_column;
 	gint sorting_order;
 	char *sorting_column_name;
 	RhythmDBPropType type_ahead_propid;
+	char **visible_columns;
 
 	gboolean have_selection, have_complete_selection;
 
 	GHashTable *column_key_map;
 
-	guint gconf_notification_id;
 	GHashTable *propid_column_map;
 	GHashTable *column_sort_data_map;
 };
 
-#define RB_ENTRY_VIEW_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_ENTRY_VIEW, RBEntryViewPrivate))
 
 enum
 {
@@ -232,7 +213,6 @@ enum
 	ENTRY_ACTIVATED,
 	SHOW_POPUP,
 	HAVE_SEL_CHANGED,
-	SORT_ORDER_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -242,10 +222,11 @@ enum
 	PROP_DB,
 	PROP_SHELL_PLAYER,
 	PROP_MODEL,
-	PROP_SORTING_KEY,
+	PROP_SORT_ORDER,
 	PROP_IS_DRAG_SOURCE,
 	PROP_IS_DRAG_DEST,
-	PROP_PLAYING_STATE
+	PROP_PLAYING_STATE,
+	PROP_VISIBLE_COLUMNS
 };
 
 G_DEFINE_TYPE (RBEntryView, rb_entry_view, GTK_TYPE_SCROLLED_WINDOW)
@@ -333,16 +314,16 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READWRITE));
 	/**
-	 * RBEntryView:sort-key:
+	 * RBEntryView:sort-order:
 	 *
-	 * The GConf key that controls the sort order for the view
+	 * The sort order for the track listing.
 	 */
 	g_object_class_install_property (object_class,
-					 PROP_SORTING_KEY,
-					 g_param_spec_string ("sort-key",
-							      "sorting key",
-							      "sorting key",
-							      "",
+					 PROP_SORT_ORDER,
+					 g_param_spec_string ("sort-order",
+							      "sorting order",
+							      "sorting order",
+							      NULL,
 							      G_PARAM_READWRITE));
 	/**
 	 * RBEntryView:is-drag-source:
@@ -383,6 +364,18 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							   RB_ENTRY_VIEW_PAUSED,
 							   RB_ENTRY_VIEW_NOT_PLAYING,
 							   G_PARAM_READWRITE));
+	/**
+	 * RBEntryView:visible-columns:
+	 *
+	 * An array containing the names of the visible columns.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_VISIBLE_COLUMNS,
+					 g_param_spec_boxed ("visible-columns",
+							     "visible columns",
+							     "visible columns",
+							     G_TYPE_STRV,
+							     G_PARAM_READWRITE));
 	/**
 	 * RBEntryView::entry-added
 	 * @view: the #RBEntryView
@@ -505,21 +498,6 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
-	/**
-	 * RBEntryView::sort-order-changed:
-	 * @view: the #RBEntryView
-	 *
-	 * Emitted when the user changes the sort order for the view
-	 */
-	rb_entry_view_signals[SORT_ORDER_CHANGED] =
-		g_signal_new ("sort-order-changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBEntryViewClass, sort_order_changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
 
 	g_type_class_add_private (klass, sizeof (RBEntryViewPrivate));
 
@@ -529,7 +507,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 static void
 rb_entry_view_init (RBEntryView *view)
 {
-	view->priv = RB_ENTRY_VIEW_GET_PRIVATE (view);
+	view->priv = G_TYPE_INSTANCE_GET_PRIVATE (view, RB_TYPE_ENTRY_VIEW, RBEntryViewPrivate);
 
 	view->priv->propid_column_map = g_hash_table_new (NULL, NULL);
 	view->priv->column_sort_data_map = g_hash_table_new_full (NULL, NULL, NULL, g_free);
@@ -548,16 +526,6 @@ rb_entry_view_dispose (GObject *object)
 	view = RB_ENTRY_VIEW (object);
 
 	g_return_if_fail (view->priv != NULL);
-
-	if (view->priv->gconf_notification_id > 0) {
-		eel_gconf_notification_remove (view->priv->gconf_notification_id);
-		view->priv->gconf_notification_id = 0;
-	}
-
-	if (view->priv->sorting_gconf_notification_id > 0) {
-		eel_gconf_notification_remove (view->priv->sorting_gconf_notification_id);
-		view->priv->sorting_gconf_notification_id = 0;
-	}
 
 	if (view->priv->selection_changed_id > 0) {
 		g_source_remove (view->priv->selection_changed_id);
@@ -601,7 +569,6 @@ rb_entry_view_finalize (GObject *object)
 	g_hash_table_destroy (view->priv->column_sort_data_map);
 	g_hash_table_destroy (view->priv->column_key_map);
 
-	g_free (view->priv->sorting_key);
 	g_free (view->priv->sorting_column_name);
 
 	G_OBJECT_CLASS (rb_entry_view_parent_class)->finalize (object);
@@ -699,7 +666,6 @@ rb_entry_view_set_property (GObject *object,
 			    const GValue *value,
 			    GParamSpec *pspec)
 {
-	char *old_sorting_key;
 	RBEntryView *view = RB_ENTRY_VIEW (object);
 
 	switch (prop_id) {
@@ -709,43 +675,8 @@ rb_entry_view_set_property (GObject *object,
 	case PROP_SHELL_PLAYER:
 		rb_entry_view_set_shell_player_internal (view, g_value_get_object (value));
 		break;
-	case PROP_SORTING_KEY:
-		/* Remove notification on old key, if any. */
-		if (view->priv->sorting_key) {
-			eel_gconf_notification_remove (view->priv->sorting_gconf_notification_id);
-			view->priv->sorting_gconf_notification_id = 0;
-		}
-
-		old_sorting_key = view->priv->sorting_key;
-		view->priv->sorting_key = g_value_dup_string (value);
-
-		if (view->priv->sorting_key && view->priv->sorting_key[0] != '\0') {
-			char *new_sorting_type;
-
-			/* Set up notification on the new key. */
-			view->priv->sorting_gconf_notification_id =
-				eel_gconf_notification_add (view->priv->sorting_key,
-							    rb_entry_view_sort_key_changed_cb,
-							    view);
-
-			rb_entry_view_set_columns_clickable (view, TRUE);
-
-			/* If there was already a sorting key, assume this is a rename. */
-			if (old_sorting_key && old_sorting_key[0] != '\0') {
-				/* Propagate existing sort order into the new GConf key. */
-				eel_gconf_set_string (view->priv->sorting_key,
-						      rb_entry_view_get_sorting_type (view));
-
-				eel_gconf_unset (old_sorting_key);
-			}
-
-			/* Synchronise UI sorting order with the new key. */
-			new_sorting_type = eel_gconf_get_string (view->priv->sorting_key);
-			rb_entry_view_set_sorting_type (view, new_sorting_type);
-			g_free (new_sorting_type);
-		}
-
-		g_free (old_sorting_key);
+	case PROP_SORT_ORDER:
+		rb_entry_view_set_sorting_type (view, g_value_get_string (value));
 		break;
 	case PROP_MODEL:
 		rb_entry_view_set_model_internal (view, g_value_get_object (value));
@@ -763,6 +694,11 @@ rb_entry_view_set_property (GObject *object,
 		if (view->priv->playing_entry != NULL) {
 			rb_entry_view_emit_row_changed (view, view->priv->playing_entry);
 		}
+		break;
+	case PROP_VISIBLE_COLUMNS:
+		g_strfreev (view->priv->visible_columns);
+		view->priv->visible_columns = g_value_dup_boxed (value);
+		rb_entry_view_sync_columns_visible (view);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -785,8 +721,8 @@ rb_entry_view_get_property (GObject *object,
 	case PROP_SHELL_PLAYER:
 		g_value_set_object (value, view->priv->shell_player);
 		break;
-	case PROP_SORTING_KEY:
-		g_value_set_string (value, view->priv->sorting_key);
+	case PROP_SORT_ORDER:
+		g_value_take_string (value, rb_entry_view_get_sorting_type (view));
 		break;
 	case PROP_MODEL:
 		g_value_set_object (value, view->priv->model);
@@ -800,6 +736,9 @@ rb_entry_view_get_property (GObject *object,
 	case PROP_PLAYING_STATE:
 		g_value_set_int (value, view->priv->playing_state);
 		break;
+	case PROP_VISIBLE_COLUMNS:
+		g_value_set_boxed (value, view->priv->visible_columns);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -810,7 +749,6 @@ rb_entry_view_get_property (GObject *object,
  * rb_entry_view_new:
  * @db: the #RhythmDB instance
  * @shell_player: the #RBShellPlayer instance
- * @sort_key: the GConf key controlling the sort order for the view
  * @is_drag_source: if TRUE, the view should act as a drag and drop data source
  * @is_drag_dest: if TRUE, the view should act as a drag and drop destination
  *
@@ -826,7 +764,6 @@ rb_entry_view_get_property (GObject *object,
 RBEntryView *
 rb_entry_view_new (RhythmDB *db,
 		   GObject *shell_player,
-		   const char *sort_key,
 		   gboolean is_drag_source,
 		   gboolean is_drag_dest)
 {
@@ -840,7 +777,6 @@ rb_entry_view_new (RhythmDB *db,
 					   "shadow_type", GTK_SHADOW_IN,
 					   "db", db,
 					   "shell-player", RB_SHELL_PLAYER (shell_player),
-					   "sort-key", sort_key,
 					   "is-drag-source", is_drag_source,
 					   "is-drag-dest", is_drag_dest,
 					   NULL));
@@ -1139,6 +1075,7 @@ rb_entry_view_sync_sorting (RBEntryView *view)
 
 	column = g_hash_table_lookup (view->priv->column_key_map, column_name);
 	if (column == NULL) {
+		rb_debug ("couldn't find column %s", column_name);
 		g_free (column_name);
 		return;
 	}
@@ -1164,7 +1101,7 @@ rb_entry_view_sync_sorting (RBEntryView *view)
 		view->priv->type_ahead_propid = RHYTHMDB_PROP_TITLE;
 
 	rb_debug ("emitting sort order changed");
-	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SORT_ORDER_CHANGED], 0);
+	g_object_notify (G_OBJECT (view), "sort-order");
 
 	g_free (column_name);
 }
@@ -1311,10 +1248,6 @@ rb_entry_view_column_clicked_cb (GtkTreeViewColumn *column, RBEntryView *view)
 		sort_order = GTK_SORT_ASCENDING;
 
 	rb_entry_view_set_sorting_order (view, clicked_column, sort_order);
-
-	/* update the sort order in GConf */
-	if (view->priv->sorting_key)
-		eel_gconf_set_string (view->priv->sorting_key, rb_entry_view_get_sorting_type(view));
 }
 
 /**
@@ -1919,11 +1852,6 @@ rb_entry_view_constructed (GObject *object)
 					     _("Now Playing"));
 	}
 
-	view->priv->gconf_notification_id =
-		eel_gconf_notification_add (CONF_UI_COLUMNS_SETUP,
-					    rb_entry_view_columns_config_changed_cb,
-					    view);
-
 	{
 		RhythmDBQueryModel *query_model;
 		query_model = rhythmdb_query_model_new_empty (view->priv->db);
@@ -2452,47 +2380,6 @@ rb_entry_view_enable_drag_source (RBEntryView *view,
 }
 
 static void
-rb_entry_view_sort_key_changed_cb (GConfClient* client,
-				   guint cnxn_id,
-				   GConfEntry *entry,
-				   gpointer user_data)
-{
-	RBEntryView *view = user_data;
-
-	g_return_if_fail (RB_IS_ENTRY_VIEW (view));
-
-	rb_entry_view_set_sorting_type (view, eel_gconf_get_string (view->priv->sorting_key));
-}
-
-static void
-rb_entry_view_columns_config_changed_cb (GConfClient* client,
-					guint cnxn_id,
-					GConfEntry *entry,
-					gpointer user_data)
-{
-	RBEntryView *view = user_data;
-
-	g_return_if_fail (RB_IS_ENTRY_VIEW (view));
-
-	rb_entry_view_sync_columns_visible (view);
-}
-
-static gint
-propid_from_name (const char *name)
-{
-	GEnumClass *prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP_TYPE);
-	GEnumValue *ev;
-	int ret;
-
-	ev = g_enum_get_value_by_name (prop_class, name);
-	if (ev)
-		ret = ev->value;
-	else
-		ret = -1;
-	return ret;
-}
-
-static void
 set_column_visibility (guint propid,
 		       GtkTreeViewColumn *column,
 		       GList *visible_props)
@@ -2511,29 +2398,23 @@ set_column_visibility (guint propid,
 static void
 rb_entry_view_sync_columns_visible (RBEntryView *view)
 {
-	char **items;
 	GList *visible_properties = NULL;
-	char *config = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
 
 	g_return_if_fail (view != NULL);
-	g_return_if_fail (config != NULL);
 
-	items = g_strsplit (config, ",", 0);
-	if (items != NULL) {
+	if (view->priv->visible_columns != NULL) {
 		int i;
-		for (i = 0; items[i] != NULL && *(items[i]); i++) {
-			int value = propid_from_name (items[i]);
+		for (i = 0; view->priv->visible_columns[i] != NULL && *(view->priv->visible_columns[i]); i++) {
+			int value = rhythmdb_propid_from_nice_elt_name (view->priv->db, (const xmlChar *)view->priv->visible_columns[i]);
+			rb_debug ("visible columns: %s => %d\n", view->priv->visible_columns[i], value);
 
 			if ((value >= 0) && (value < RHYTHMDB_NUM_PROPERTIES))
 				visible_properties = g_list_prepend (visible_properties, GINT_TO_POINTER (value));
 		}
-		g_strfreev (items);
 	}
 
 	g_hash_table_foreach (view->priv->propid_column_map, (GHFunc) set_column_visibility, visible_properties);
-
 	g_list_free (visible_properties);
-	g_free (config);
 }
 
 /**

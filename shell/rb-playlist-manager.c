@@ -58,7 +58,6 @@
 #include "rb-dialog.h"
 #include "rhythmdb.h"
 #include "rb-stock-icons.h"
-#include "eel-gconf-extensions.h"
 #include "rb-builder-helpers.h"
 #include "rb-util.h"
 

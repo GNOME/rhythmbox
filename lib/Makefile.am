@@ -14,7 +14,6 @@ rbinclude_HEADERS =					\
 	rb-builder-helpers.h				\
 	rb-debug.h					\
 	rb-file-helpers.h				\
-	rb-preferences.h				\
 	rb-stock-icons.h				\
 	rb-string-value-map.h				\
 	rb-util.h
@@ -23,8 +22,6 @@ librb_la_SOURCES =					\
 	$(MKDTEMP_FILES)				\
 	$(rbinclude_HEADERS)				\
 	rb-debug.c					\
-	eel-gconf-extensions.c				\
-	eel-gconf-extensions.h				\
 	eggdesktopfile.c				\
 	eggdesktopfile.h				\
 	eggsmclient.c					\

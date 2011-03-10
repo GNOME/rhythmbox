@@ -38,7 +38,6 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
-#include "eel-gconf-extensions.h"
 #include "rb-display-page-group.h"
 #include "rb-display-page-tree.h"
 #include "rb-display-page-model.h"
@@ -87,6 +86,8 @@ struct _RBDisplayPageTreePrivate
 	GList *expand_rows;
 	GtkTreeRowReference *expand_select_row;
 	guint expand_rows_id;
+
+	GSettings *settings;
 };
 
 
@@ -109,36 +110,58 @@ static guint signals[LAST_SIGNAL] = { 0 };
 G_DEFINE_TYPE (RBDisplayPageTree, rb_display_page_tree, GTK_TYPE_SCROLLED_WINDOW)
 
 
-static char *
-expander_state_gconf_key (RBDisplayPageGroup *group)
-{
-	char *id;
-	char *gconf_key;
-
-	g_object_get (group, "id", &id, NULL);
-	gconf_key = g_strconcat (CONF_UI_DIR "/page-groups/", id, NULL);
-	g_free (id);
-
-	return gconf_key;
-}
-
 static gboolean
-retrieve_expander_state (RBDisplayPageGroup *group)
+retrieve_expander_state (RBDisplayPageTree *display_page_tree, RBDisplayPageGroup *group)
 {
-	gboolean state;
-	char *gconf_key = expander_state_gconf_key (group);
-	state = eel_gconf_get_boolean (gconf_key);
-	g_free (gconf_key);
+	char **groups;
+	char *id;
+	gboolean collapsed;
 
-	return (state == FALSE);
+	groups = g_settings_get_strv (display_page_tree->priv->settings, "collapsed-groups");
+	g_object_get (group, "id", &id, NULL);
+	collapsed = rb_str_in_strv (id, (const char **)groups);
+	g_free (id);
+	g_strfreev (groups);
+
+	return (collapsed == FALSE);
 }
 
 static void
-store_expander_state (RBDisplayPageGroup *group, gboolean expanded)
+store_expander_state (RBDisplayPageTree *display_page_tree, RBDisplayPageGroup *group, gboolean expanded)
 {
-	char *gconf_key = expander_state_gconf_key (group);
-	eel_gconf_set_boolean (gconf_key, (expanded == FALSE));
-	g_free (gconf_key);
+	char **newgroups = NULL;
+	char **groups;
+	char *id;
+	int num;
+	int i;
+	int p;
+
+	groups = g_settings_get_strv (display_page_tree->priv->settings, "collapsed-groups");
+	g_object_get (group, "id", &id, NULL);
+
+	num = g_strv_length (groups);
+	p = 0;
+	if (rb_str_in_strv (id, (const char **)groups) && expanded) {
+		newgroups = g_new0(char *, num);
+		for (i = 0; i < num; i++) {
+			if (g_strcmp0 (groups[i], id) != 0) {
+				newgroups[p++] = g_strdup (groups[i]);
+			}
+		}
+	} else if (expanded == FALSE) {
+		newgroups = g_new0(char *, num + 2);
+		for (i = 0; i < num; i++) {
+			newgroups[i] = g_strdup (groups[i]);
+		}
+		newgroups[i] = g_strdup (id);
+	}
+
+	if (newgroups != NULL) {
+		g_settings_set_strv (display_page_tree->priv->settings, "collapsed-groups", (const char * const *)newgroups);
+		g_strfreev (newgroups);
+	}
+	g_strfreev (groups);
+	g_free (id);
 }
 
 static void
@@ -350,7 +373,7 @@ update_expanded_state (RBDisplayPageTree *display_page_tree,
 			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
 			    -1);
 	if (RB_IS_DISPLAY_PAGE_GROUP (page)) {
-		store_expander_state (RB_DISPLAY_PAGE_GROUP (page), expanded);
+		store_expander_state (display_page_tree, RB_DISPLAY_PAGE_GROUP (page), expanded);
 	}
 }
 
@@ -434,7 +457,7 @@ model_row_inserted_cb (GtkTreeModel *model,
 					    -1);
 			g_object_get (page, "loaded", &loaded, "category", &category, NULL);
 			if (category == RB_DISPLAY_PAGE_GROUP_CATEGORY_TRANSIENT || loaded == FALSE) {
-				expand = retrieve_expander_state (RB_DISPLAY_PAGE_GROUP (page));
+				expand = retrieve_expander_state (display_page_tree, RB_DISPLAY_PAGE_GROUP (page));
 			}
 		}
 	}
@@ -870,6 +893,8 @@ impl_constructed (GObject *object)
 	display_page_tree = RB_DISPLAY_PAGE_TREE (object);
 
 	gtk_container_add (GTK_CONTAINER (display_page_tree), display_page_tree->priv->treeview);
+
+	display_page_tree->priv->settings = g_settings_new ("org.gnome.rhythmbox.display-page-tree");
 }
 
 static void

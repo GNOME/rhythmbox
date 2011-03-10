@@ -35,7 +35,6 @@
 #include <lib/rb-builder-helpers.h>
 #include <lib/rb-debug.h>
 #include <lib/rb-file-helpers.h>
-#include <lib/rb-preferences.h>
 #include <lib/rb-stock-icons.h>
 #include <lib/rb-util.h>
 #include <lib/libmediaplayerid/mediaplayerid.h>

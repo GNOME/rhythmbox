@@ -41,8 +41,6 @@
 #include <gst/pbutils/missing-plugins.h>
 
 #include "rhythmdb.h"
-#include "eel-gconf-extensions.h"
-#include "rb-preferences.h"
 #include "rb-encoder.h"
 #include "rb-encoder-gst.h"
 #include "rb-debug.h"
@@ -1194,7 +1192,8 @@ rb_encoder_gst_get_media_type (RBEncoder *encoder,
 	 */
 	if (dest_media_types == NULL) {
 		if (g_str_has_prefix (src_media_type, "audio/x-raw")) {
-			const char *profile_name = eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT);
+			/* hopefully encodebin stuff will land before i need to replace this with something gsettings wise */
+			const char *profile_name = "cdlossy"; /* eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT); */
 			const char *mt;
 			profile = gm_audio_profile_lookup (profile_name);
 
