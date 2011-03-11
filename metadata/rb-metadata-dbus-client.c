@@ -527,7 +527,7 @@ rb_metadata_get_missing_plugins (RBMetaData *md,
 				 char ***missing_plugins,
 				 char ***plugin_descriptions)
 {
-	if (md->priv->missing_plugins == NULL) {
+	if (rb_metadata_has_missing_plugins (md) == FALSE) {
 		return FALSE;
 	}
 
