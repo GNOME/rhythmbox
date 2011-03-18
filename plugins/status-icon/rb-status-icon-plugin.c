@@ -1616,6 +1616,7 @@ impl_deactivate	(RBPlugin *bplugin,
 	/* disconnect signal handlers used to update the icon */
 	if (plugin->priv->shell_player != NULL) {
 		g_signal_handlers_disconnect_by_func (plugin->priv->shell_player, playing_entry_changed_cb, plugin);
+		g_signal_handlers_disconnect_by_func (plugin->priv->shell_player, playing_changed_cb, plugin);
 		g_signal_handlers_disconnect_by_func (plugin->priv->shell_player, elapsed_changed_cb, plugin);
 
 		g_object_unref (plugin->priv->shell_player);
