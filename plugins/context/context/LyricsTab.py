@@ -143,7 +143,7 @@ class LyricsDataSource (gobject.GObject):
         self.db.connect ('entry-extra-metadata-notify::rb:lyrics', self.lyrics_notify)
 
     def lyrics_notify (self, db, entry, field, metadata):
-        if entry == self.entry:
+        if rb.entry_equal(db, entry, self.entry):
             self.emit ('lyrics-ready', self.entry, metadata)
 
     def fetch_lyrics (self, entry):
