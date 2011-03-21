@@ -199,12 +199,12 @@ class PythonConsole(Gtk.ScrolledWindow):
 		
  		
 	def __key_press_event_cb(self, view, event):
-		if event.key.keyval == Gdk.KEY_D and \
-		   event.key.state == Gdk.ModifierType.CONTROL_MASK:
+		if event.keyval == Gdk.KEY_D and \
+		   event.state == Gdk.ModifierType.CONTROL_MASK:
 			self.destroy()
 		
-		elif event.key.keyval == Gdk.KEY_Return and \
-		     event.key.state == Gdk.ModifierType.CONTROL_MASK:
+		elif event.keyval == Gdk.KEY_Return and \
+		     event.state == Gdk.ModifierType.CONTROL_MASK:
 			# Get the command
 			buffer = view.get_buffer()
 			inp_mark = buffer.get_mark("input")
@@ -230,7 +230,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 			gobject.idle_add(self.scroll_to_end)
 			return True
 		
-		elif event.key.keyval == Gdk.KEY_Return:
+		elif event.keyval == Gdk.KEY_Return:
 			# Get the marks
 			buffer = view.get_buffer()
 			lin_mark = buffer.get_mark("input-line")
@@ -274,36 +274,36 @@ class PythonConsole(Gtk.ScrolledWindow):
 			gobject.idle_add(self.scroll_to_end)
 			return True
 
-		elif event.key.keyval == Gdk.KEY_KP_Down or \
-		     event.key.keyval == Gdk.KEY_Down:
+		elif event.keyval == Gdk.KEY_KP_Down or \
+		     event.keyval == Gdk.KEY_Down:
 			# Next entry from history
 			view.emit_stop_by_name("key_press_event")
 			self.history_down()
 			gobject.idle_add(self.scroll_to_end)
 			return True
 
-		elif event.key.keyval == Gdk.KEY_KP_Up or \
-		     event.key.keyval == Gdk.KEY_Up:
+		elif event.keyval == Gdk.KEY_KP_Up or \
+		     event.keyval == Gdk.KEY_Up:
 			# Previous entry from history
 			view.emit_stop_by_name("key_press_event")
 			self.history_up()
 			gobject.idle_add(self.scroll_to_end)
 			return True
 
-		elif event.key.keyval == Gdk.KEY_KP_Left or \
-		     event.key.keyval == Gdk.KEY_Left or \
-		     event.key.keyval == Gdk.KEY_BackSpace:
+		elif event.keyval == Gdk.KEY_KP_Left or \
+		     event.keyval == Gdk.KEY_Left or \
+		     event.keyval == Gdk.KEY_BackSpace:
 			buffer = view.get_buffer()
 			inp = self.get_iter_at_mark(buffer.get_mark("input"))
 			cur = self.get_iter_at_mark(buffer.get_insert())
 			return inp.compare(cur) == 0
 
-		elif event.key.keyval == Gdk.KEY_Home:
+		elif event.keyval == Gdk.KEY_Home:
 			# Go to the begin of the command instead of the begin of
 			# the line
 			buffer = view.get_buffer()
 			inp = self.get_iter_at_mark(buffer.get_mark("input"))
-			if event.key.state == Gdk.ModifierType.SHIFT_MASK:
+			if event.state == Gdk.ModifierType.SHIFT_MASK:
 				buffer.move_mark_by_name("insert", inp)
 			else:
 				buffer.place_cursor(inp)
