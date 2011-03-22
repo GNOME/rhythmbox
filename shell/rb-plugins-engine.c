@@ -633,6 +633,10 @@ rb_plugins_engine_configure_plugin (RBPluginInfo *info,
 	g_return_if_fail (conf_dlg != NULL);
 	gtk_window_set_transient_for (GTK_WINDOW (conf_dlg),
 				      parent);
+	gtk_window_set_modal (GTK_WINDOW (conf_dlg), TRUE);
+
+	if (!gtk_widget_get_mapped (conf_dlg))
+		gtk_window_set_type_hint (GTK_WINDOW (conf_dlg), GDK_WINDOW_TYPE_HINT_DIALOG);
 
 	wg = gtk_window_get_group (parent);
 	if (wg == NULL)
@@ -643,8 +647,6 @@ rb_plugins_engine_configure_plugin (RBPluginInfo *info,
 
 	gtk_window_group_add_window (wg,
 				     GTK_WINDOW (conf_dlg));
-
-	gtk_window_set_modal (GTK_WINDOW (conf_dlg), TRUE);
 	gtk_widget_show (conf_dlg);
 }
 
