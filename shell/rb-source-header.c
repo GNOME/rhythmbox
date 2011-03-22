@@ -160,17 +160,17 @@ force_no_shadow (GtkWidget *widget)
 	if (provider == NULL) {
 		const char *style =
 			"GtkToolbar {\n"
-			"	-GtkToolbar-shadow-type: none\n"
+			"	-GtkToolbar-shadow-type: none;\n"
+			"       border-style: none;\n"
 			"}";
 
 		provider = gtk_css_provider_new ();
 		gtk_css_provider_load_from_data (provider, style, -1, NULL);
-	}
 
-	/*
-	gtk_style_context_add_provider (gtk_widget_get_style_context (widget),
-					GTK_STYLE_PROVIDER (provider),
-					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION); */
+		gtk_style_context_add_provider (gtk_widget_get_style_context (widget),
+						GTK_STYLE_PROVIDER (provider),
+						GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	}
 }
 
 static void
