@@ -1520,6 +1520,8 @@ construct_load_ui (RBShell *shell)
 	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), menubar, 0);
 
 	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
+	gtk_style_context_add_class (gtk_widget_get_style_context (toolbar),
+				     GTK_STYLE_CLASS_PRIMARY_TOOLBAR);
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), toolbar, FALSE, FALSE, 0);
 	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), toolbar, 1);
 	gtk_widget_show (toolbar);
