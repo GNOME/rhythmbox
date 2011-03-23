@@ -35,8 +35,6 @@ import thread
 from gi.repository import RB
 from gi.repository import GConf
 
-import rhythmdb
-
 # rb classes
 from Loader import Loader
 from Loader import ChunkLoader
@@ -63,12 +61,12 @@ def append_plugin_source_path(theme, iconpath):
 		icondir = plugindir + iconpath
 		theme.append_search_path(icondir)
 
-def entry_equal(db, a, b):
+def entry_equal(a, b):
 	if (a is None and b is None):
 		return True
 	if (a is None or b is None):
 		return False
-	return db.entry_get(a, rhythmdb.PROP_LOCATION) == db.entry_get(b, rhythmdb.PROP_LOCATION)
+	return a.get_string(RB.RhythmDBPropType.LOCATION) == b.get_string(RB.RhythmDBPropType.LOCATION)
 
 def get_gconf_string_list(key):
 	gconf = GConf.Client().get_default()

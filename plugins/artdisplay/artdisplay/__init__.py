@@ -426,8 +426,7 @@ class ArtDisplayPlugin (RB.Plugin):
 		self.set_entry(entry)
 
 	def set_entry (self, entry):
-		db = self.shell.get_property ("db")
-		if rb.entry_equal(db, entry, self.current_entry):
+		if rb.entry_equal(entry, self.current_entry):
 			return
 
 		self.art_widget.set (entry, None, None, None, None, True)
@@ -435,12 +434,12 @@ class ArtDisplayPlugin (RB.Plugin):
 		# Intitates search in the database (which checks art cache, internet etc.)
 		self.current_entry = entry
 		self.current_pixbuf = None
+		db = self.shell.get_property ("db")
 		self.art_db.get_pixbuf(db, entry, True, self.on_get_pixbuf_completed)
 
 	def on_get_pixbuf_completed(self, entry, pixbuf, uri, tooltip_image, tooltip_text):
 		# Set the pixbuf for the entry returned from the art db
-		db = self.shell.get_property ("db")
-		if rb.entry_equal(db, entry, self.current_entry):
+		if rb.entry_equal(entry, self.current_entry):
 			self.current_pixbuf = pixbuf
 
 			if tooltip_image is None:
@@ -456,6 +455,7 @@ class ArtDisplayPlugin (RB.Plugin):
 			# This might be from a playing-changed signal,
 			# in which case consumers won't be ready yet.
 			def idle_emit_art():
+				db = self.shell.get_property ("db")
 				db.emit_entry_extra_metadata_notify (entry, "rb:coverArt", pixbuf)
 				if uri:
 					self.emitting_uri_notify = True
@@ -470,7 +470,7 @@ class ArtDisplayPlugin (RB.Plugin):
 			a[0] = pixbuf
 			self.on_get_pixbuf_completed(entry, pixbuf, uri, tooltip_image, tooltip_text)
 
-		playing = rb.entry_equal(db, entry, self.current_entry)
+		playing = rb.entry_equal(entry, self.current_entry)
 		self.art_db.get_pixbuf(db, entry, playing, callback)
 
 		# If callback was called synchronously we can return a pixmap
@@ -538,11 +538,11 @@ class ArtDisplayPlugin (RB.Plugin):
 
 
 	def cover_art_uri_request (self, db, entry):
-		if rb.entry_equal(db, entry, self.current_entry):
+		if rb.entry_equal(entry, self.current_entry):
 			return self.art_widget.current_uri
 
 	def cover_art_uri_gather (self, db, entry, metadata):
-		if rb.entry_equal(db, entry, self.current_entry) and self.art_widget.current_uri:
+		if rb.entry_equal(entry, self.current_entry) and self.art_widget.current_uri:
 			metadata ['rb:coverArt-uri'] = self.art_widget.current_uri
 
 	def on_set_pixbuf (self, widget, entry, pixbuf):

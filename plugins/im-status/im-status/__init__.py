@@ -120,8 +120,7 @@ class IMStatusPlugin (RB.Plugin):
       self.set_status ()
 
   def set_entry (self, entry):
-    db = self.shell.get_property ("db")
-    if rb.entry_equal(db, entry, self.current_entry):
+    if rb.entry_equal(entry, self.current_entry):
       return
 
     if self.current_entry == None:
