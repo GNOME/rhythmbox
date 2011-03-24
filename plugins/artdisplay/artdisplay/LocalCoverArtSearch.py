@@ -27,10 +27,11 @@
 
 import os
 import gobject
-import gio
+import glib
 import gi
 
 from gi.repository import RB
+from gi.repository import Gio
 
 IMAGE_NAMES = ["cover", "album", "albumart", ".folder", "folder"]
 ITEMS_PER_NOTIFICATION = 10
@@ -78,24 +79,28 @@ class LocalCoverArtSearch:
 				if ct is not None and ct.startswith("image/") and readable:
 					results.append(f.get_name())
 
-			fileenum.next_files_async(ITEMS_PER_NOTIFICATION, callback = self._enum_dir_cb, user_data=(results, on_search_completed_cb, entry, args))
+			fileenum.next_files_async(ITEMS_PER_NOTIFICATION, glib.PRIORITY_DEFAULT, None, self._enum_dir_cb, (results, on_search_completed_cb, entry, args))
 		except Exception, e:
 			print "okay, probably done: %s" % e
+			import sys
+			sys.excepthook(*sys.exc_info())
 			on_search_completed_cb(self, entry, results, *args)
 
 
 	def _enum_children_cb(self, parent, result, (on_search_completed_cb, entry, args)):
 		try:
 			enumfiles = parent.enumerate_children_finish(result)
-			enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, callback = self._enum_dir_cb, user_data=([], on_search_completed_cb, entry, args))
+			enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, glib.PRIORITY_DEFAULT, None, self._enum_dir_cb, ([], on_search_completed_cb, entry, args))
 		except Exception, e:
 			print "okay, probably done: %s" % e
+			import sys
+			sys.excepthook(*sys.exc_info())
 			on_search_completed_cb(self, entry, [], *args)
 
 
 	def search (self, db, entry, is_playing, on_search_completed_cb, *args):
 
-		self.file = gio.File(entry.get_playback_uri())
+		self.file = Gio.file_new_for_uri(entry.get_playback_uri())
 		if self.file.get_uri_scheme() in IGNORED_SCHEMES:
 			print 'not searching for local art for %s' % (self.file.get_uri())
 			on_search_completed_cb (self, entry, [], *args)
@@ -105,7 +110,7 @@ class LocalCoverArtSearch:
 
 		print 'searching for local art for %s' % (self.file.get_uri())
 		parent = self.file.get_parent()
-		enumfiles = parent.enumerate_children_async(attributes="standard::content-type,access::can-read,standard::name", callback = self._enum_children_cb, user_data=(on_search_completed_cb, entry, args))
+		enumfiles = parent.enumerate_children_async("standard::content-type,access::can-read,standard::name", 0, 0, None, self._enum_children_cb, (on_search_completed_cb, entry, args))
 
 	def search_next (self):
 		return False
@@ -162,7 +167,7 @@ class LocalCoverArtSearch:
 
 		file.replace_async(replace_cb, user_data=pixbuf())
 
-	def _save_dir_cb (self, enum, result, (db, entry, dir, pixbuf)):
+	def _save_dir_cb (self, enum, result, (db, entry, parent, pixbuf)):
 		artist, album = get_search_props(db, entry)
 
 		try:
@@ -179,7 +184,7 @@ class LocalCoverArtSearch:
 				if ct.startswith("image/") or ct.startswith("x-directory/"):
 					continue
 
-				uri = dir.resolve_relative_path(f.get_name()).get_uri()
+				uri = parent.resolve_relative_path(f.get_name()).get_uri()
 				u_entry = db.entry_lookup_by_location (uri)
 				if u_entry:
 					u_artist, u_album = get_search_props(db, u_entry)
@@ -191,17 +196,24 @@ class LocalCoverArtSearch:
 				print "Not saving local art; encountered unknown file (%s)" % uri
 				enum.close()
 				return
-	
-			enum.next_files_async(ITEMS_PER_NOTIFICATION, callback = self._save_dir_cb, user_data=(db, entry, dir, pixbuf))
+
+			enum.next_files_async(ITEMS_PER_NOTIFICATION, glib.PRIORITY_DEFAULT, None, self._save_dir_cb, (db, entry, parent, pixbuf))
 		except Exception, e:
 			print "Error reading \"%s\": %s" % (dir, e)
+
+	def _save_enum_children_cb (self, parent, result, (db, entry, pixbuf)):
+		try:
+			enum = parent.enumerate_children_finish(result)
+			enum.next_files_async(ITEMS_PER_NOTIFICATION, glib.PRIORITY_DEFAULT, None, self._save_dir_cb, (db, entry, parent, pixbuf))
+		except Exception, e:
+			return
 
 	def save_pixbuf (self, db, entry, pixbuf):
 		uri = entry.get_playback_uri()
 		if uri is None or uri == '':
 			return
 
-		f = gio.File(uri)
+		f = Gio.file_new_for_uri(uri)
 		if f.get_uri_scheme() in IGNORED_SCHEMES:
 			print "not saving local art for %s" % uri
 			return
@@ -209,7 +221,6 @@ class LocalCoverArtSearch:
 		print 'checking whether to save local art for %s' % uri
 		parent = f.get_parent()
 		try:
-			enumfiles = parent.enumerate_children(attributes="standard::fast-content-type,access::can-read,standard::name")
-			enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, callback = self._save_dir_cb, user_data=(db, entry, parent, pixbuf))
+			parent.enumerate_children_async("standard::content-type,access::can-read,standard::name", Gio.FileQueryInfoFlags.NONE, glib.PRIORITY_DEFAULT, None, self._save_enum_children_cb, (db, entry, pixbuf))
 		except Exception, e:
 			print "unable to scan directory %s: %s" % (parent.get_uri(), e)

@@ -28,9 +28,9 @@
 
 import time
 import gobject
-import gio
 
 from gi.repository import RB
+from gi.repository import Gio
 
 from zeitgeist.client import ZeitgeistClient
 from zeitgeist.datamodel import Event, Subject, Interpretation, Manifestation
@@ -118,7 +118,7 @@ class ZeitgeistPlugin(RB.Plugin):
         else:
             manifest = Manifestation.SCHEDULED_ACTIVITY
 
-        def file_info_complete(obj, res, user_data = None):
+        def file_info_complete(obj, res, user_data):
             try:
                 fi = obj.query_info_finish(res)
             except:
@@ -143,8 +143,8 @@ class ZeitgeistPlugin(RB.Plugin):
             )
             IFACE.insert_event(event)
 
-        f = gio.File(song["location"])
-        f.query_info_async(gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE, file_info_complete)
+        f = Gio.file_new_for_uri(song["location"])
+        f.query_info_async(Gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE, Gio.FileQueryInfoFlags.NONE, glib.PRIORITY_DEFAULT, None, file_info_complete)
 
     def deactivate(self, shell):
         print "Unloading Zeitgeist plugin..."

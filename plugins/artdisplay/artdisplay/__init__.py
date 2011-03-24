@@ -25,7 +25,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import gobject
-import gio
 import gi
 
 from warnings import warn
@@ -33,7 +32,7 @@ from warnings import warn
 from CoverArtDatabase import CoverArtDatabase
 
 import rb
-from gi.repository import Gtk, Gdk, GdkPixbuf
+from gi.repository import Gtk, Gdk, GdkPixbuf, Gio
 from gi.repository import RB
 
 FADE_STEPS = 10
@@ -570,5 +569,5 @@ class ArtDisplayPlugin (RB.Plugin):
 		if self.art_widget.current_uri is None:
 			return
 
-		f = gio.File(self.art_widget.current_uri)
+		f = Gio.file_new_for_uri(self.art_widget.current_uri)
 		Gtk.show_uri(self.shell.props.window.get_screen(), f.get_uri(), event.time)

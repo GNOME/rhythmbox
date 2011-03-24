@@ -29,7 +29,6 @@ import os
 import itertools
 import gobject
 import gi
-import gio
 
 import rb
 from gi.repository import GdkPixbuf
@@ -365,6 +364,8 @@ class CoverArtDatabase (object):
 				return l.get_pixbuf()
 			except gobject.GError, e:
 				print "error reading image: %s" % str(e)
+				import sys
+				sys.excepthook(*sys.exc_info())
 				pass
 
 		return None

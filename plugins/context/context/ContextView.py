@@ -24,7 +24,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import gobject, gio
+import gobject
 import os
 
 import ArtistTab as at
@@ -33,7 +33,7 @@ import LyricsTab as lt
 import LinksTab as lit
 
 import rb
-from gi.repository import Gtk, Gdk, Pango
+from gi.repository import Gtk, Gdk, Pango, Gio
 from gi.repository import RB
 from gi.repository import WebKit
 
@@ -211,11 +211,7 @@ class ContextView (gobject.GObject):
         # open HTTP URIs externally.  this isn't a web browser.
         if request.get_uri().startswith('http'):
             print "opening uri %s" % request.get_uri()
-            appinfo = gio.app_info_get_default_for_uri_scheme("http")
-            try:
-                appinfo.launch_uris((request.get_uri(),))
-            except Exception, e:
-                print "failed: %s" % str(e)
+	    Gtk.show_uri(self.shell.props.window.get_screen(), request.get_uri(), Gdk.CURRENT_TIME)
 
             return 1        # WEBKIT_NAVIGATION_RESPONSE_IGNORE
         else:

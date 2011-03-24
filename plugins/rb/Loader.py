@@ -25,10 +25,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import gobject
-import gi
-from gi.repository import Gdk
+from gi.repository import Gdk, Gio
 import sys
-import gio
 
 def callback_with_gdk_lock(callback, data, args):
 	Gdk.threads_enter()
@@ -37,21 +35,23 @@ def callback_with_gdk_lock(callback, data, args):
 		Gdk.threads_leave()
 		return v
 	except Exception, e:
-		print "Exception caught in loader callback: %s" % str(e)
 		sys.excepthook(*sys.exc_info())
 		Gdk.threads_leave()
 
 
 class Loader(object):
 	def __init__ (self):
-		self._cancel = gio.Cancellable()
+		self._cancel = Gio.Cancellable()
 
-	def _contents_cb (self, file, result):
+	def _contents_cb (self, file, result, data):
 		try:
-			(contents, length, etag) = file.load_contents_finish(result)
-			callback_with_gdk_lock(self.callback, contents, self.args)
+			(ok, contents, etag) = file.load_contents_finish(result)
+			if ok:
+				callback_with_gdk_lock(self.callback, contents, self.args)
+			else:
+				callback_with_gdk_lock(self.callback, None, self.args)
 		except Exception, e:
-			# somehow check if we just got cancelled
+			sys.excepthook(*sys.exc_info())
 			callback_with_gdk_lock(self.callback, None, self.args)
 
 	def get_url (self, url, callback, *args):
@@ -59,10 +59,10 @@ class Loader(object):
 		self.callback = callback
 		self.args = args
 		try:
-			file = gio.File(url)
-			file.load_contents_async(callback = self._contents_cb, cancellable=self._cancel)
+			file = Gio.file_new_for_uri(url)
+			file.load_contents_async(self._cancel, self._contents_cb, None)
 		except Exception, e:
-			print "error getting contents of %s: %s" % (url, e)
+			sys.excepthook(*sys.exc_info())
 			callback(None, *args)
 
 	def cancel (self):
@@ -71,7 +71,7 @@ class Loader(object):
 
 class ChunkLoader(object):
 	def __init__ (self):
-		self._cancel = gio.Cancellable()
+		self._cancel = Gio.Cancellable()
 
 	def _callback(self, result):
 		return self.callback(result, self.total, *self.args)
@@ -91,48 +91,49 @@ class ChunkLoader(object):
 		self._callback_gdk(error)
 		return False
 
-	def _read_idle_cb(self, (stream, data)):
-		if (self._callback_gdk(data) is not False) and data:
-			stream.read_async (self.chunksize, self._read_cb, cancellable=self._cancel)
-		else:
-			# finished or cancelled by callback
-			stream.close()
-
-		return False
-
 	def _read_cb(self, stream, result):
 		try:
 			data = stream.read_finish(result)
-		except gio.Error, e:
-			print "error reading file %s: %s" % (self.uri, e.message)
+		except Exception, e:
+			print "error reading file %s" % (self.uri)
+			sys.excepthook(*sys.exc_info())
 			stream.close()
 			gobject.idle_add(self._error_idle_cb, e)
-		
-		# this is mostly here to hack around bug 575781
-		gobject.idle_add(self._read_idle_cb, (stream, data))
+
+		if (self._callback_gdk(data) is not False) and data:
+			stream.read_async (self.chunksize, glib.PRIORITY_DEFAULT, self._cancel, self._read_cb, None)
+		else:
+			# finished or cancelled by callback
+			stream.close()
 
 
 	def _open_cb(self, file, result):
 		try:
 			stream = file.read_finish(result)
-		except gio.Error, e:
-			print "error reading file %s: %s" % (self.uri, e.message)
+		except Exception, e:
+			print "error reading file %s" % (self.uri)
+			sys.excepthook(*sys.exc_info())
 			self._callback_gdk(e)
-		
-		stream.read_async(self.chunksize, self._read_cb, cancellable=self._cancel)
+
+		stream.read_async(self.chunksize, glib.PRIORITY_DEFAULT, self._cancel, self._read_cb, None)
 
 	def _info_cb(self, file, result):
 		try:
 			info = file.query_info_finish(result)
-			self.total = info.get_attribute_uint64(gio.FILE_ATTRIBUTE_STANDARD_SIZE)
+			self.total = info.get_attribute_uint64(Gio.FILE_ATTRIBUTE_STANDARD_SIZE)
 
-			file.read_async(self._open_cb, cancellable=self._cancel)
-		except gio.Error, e:
-			print "error checking size of source file %s: %s" % (self.uri, e.message)
+			file.read_async(glib.PRIORITY_DEFAULT, self._cancel, self._open_cb, None)
+		except Exception, e:
+			print "error checking size of source file %s" % (self.uri)
+			sys.excepthook(*sys.exc_info())
 			self._callback_gdk(e)
 
 
 	def get_url_chunks (self, uri, chunksize, want_size, callback, *args):
+		# this can't possibly work yet, we need to get annotations and
+		# other stuff for g_input_stream_read_async right first.
+		raise Exception("rb.ChunkLoader not implemented yet")
+
 		try:
 			self.uri = uri
 			self.chunksize = chunksize
@@ -142,10 +143,10 @@ class ChunkLoader(object):
 
 			file = gio.File(uri)
 			if want_size:
-				file.query_info_async(self._info_cb, gio.FILE_ATTRIBUTE_STANDARD_SIZE, cancellable=self._cancel)
+				file.query_info_async(Gio.FILE_ATTRIBUTE_STANDARD_SIZE, Gio.FileQueryInfoFlags.NONE, glib.PRIORITY_DEFAULT, self._cancel, self._info_cb, None)
 			else:
-				file.read_async(self._open_cb, cancellable=self._cancel)
-		except gio.Error, e:
+				file.read_async(glib.PRIORITY_DEFAULT, self._cancel, self._open_cb, None)
+		except Exception, e:
 			print "error reading file %s: %s" % (uri, e.message)
 			self._callback(e)
 
@@ -155,16 +156,15 @@ class ChunkLoader(object):
 
 class UpdateCheck(object):
 	def __init__ (self):
-		self._cancel = gio.Cancellable()
+		self._cancel = Gio.Cancellable()
 
-	def _file_info_cb (self, file, result):
+	def _file_info_cb (self, file, result, data):
 		try:
 			rfi = file.query_info_finish(result)
-
-			remote_mod = rfi.get_attribute_uint64(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
+			remote_mod = rfi.get_attribute_uint64(Gio.FILE_ATTRIBUTE_TIME_MODIFIED)
 			callback_with_gdk_lock(self.callback, remote_mod != self.local_mod, self.args)
 		except Exception, e:
-			print "error checking for update: %s" % e
+			sys.excepthook(*sys.exc_info())
 			callback_with_gdk_lock(self.callback, False, self.args)
 
 	def check_for_update (self, local, remote, callback, *args):
@@ -174,14 +174,14 @@ class UpdateCheck(object):
 		self.args = args
 
 		try:
-			lf = gio.File(local)
-			lfi = lf.query_info(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
-			self.local_mod = lfi.get_attribute_uint64(gio.FILE_ATTRIBUTE_TIME_MODIFIED)
+			lf = Gio.file_new_for_commandline_arg(local)
+			lfi = lf.query_info(Gio.FILE_ATTRIBUTE_TIME_MODIFIED, Gio.FileQueryInfoFlags.NONE, None)
+			self.local_mod = lfi.get_attribute_uint64(Gio.FILE_ATTRIBUTE_TIME_MODIFIED)
 
-			rf = gio.File(remote)
-			rf.query_info_async(self._file_info_cb, gio.FILE_ATTRIBUTE_TIME_MODIFIED, cancellable=self._cancel)
+			rf = Gio.file_new_for_uri(remote)
+			rf.query_info_async(Gio.FILE_ATTRIBUTE_TIME_MODIFIED, Gio.FileQueryInfoFlags.NONE, glib.PRIORITY_DEFAULT, self._cancel, self._file_info_cb, None)
 		except Exception, e:
-			print "error checking for update: %s" % e
+			sys.excepthook(*sys.exc_info())
 			self.callback(True, *self.args)
 
 	def cancel (self):
