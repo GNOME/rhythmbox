@@ -2,9 +2,15 @@
 #
 # This file is distributed under the same license as the rhythmbox package.
 #
+# Kees van den Broek <kvdb@NOSPAMkvdb.net>, 2003.
+# Reinout van Schouwen <reinout@cs.vu.nl>, 2003, 2007.
+# Daniel van Eeden <daniel_e@dds.nl>, 2004.
+# Tino Meinen <a.t.meinen@chello.nl>, 2004, 2005, 2006, 2007, 2008, 2010.
+# Sander Pientka <cumulus0007@gmail.com>, 2010, 2011.
+# Hannie Dumoleyn <hannie@ubuntu-nl.org>, 2011.
+# Wouter Bolsterlee <wbolster@gnome.org>, 2011.
 #
-#
-# Vergeet jezelf niet toe te voegen aan translator-credits
+# Vergeet jezelf niet toe te voegen aan translator-credits!
 #
 # De sneltoetsen zijn onmogelijk helemaal juist te krijgen voor zowel het
 # voorkeurenvenster als in het algemene hoofdvenster.
@@ -25,23 +31,16 @@
 # side pane     zijpaneel
 # song          nummer/muzieknummer
 # visualisation beeldeffecten
-# Strings met "Remote" nog niet vertaald omdat er nog onduidelijkheid over bestaat.
 #
-# Kees van den Broek <kvdb@NOSPAMkvdb.net>, 2003.
-# Reinout van Schouwen <reinout@cs.vu.nl>, 2003, 2007.
-# Daniel van Eeden <daniel_e@dds.nl>, 2004.
-# Tino Meinen <a.t.meinen@chello.nl>, 2004, 2005, 2006, 2007, 2008, 2010.
-# Sander Pientka <cumulus0007@gmail.com>, 2010, 2011.
-# Hannie Dumoleyn <hannie@ubuntu-nl.org>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-03-19 23:26+0000\n"
-"PO-Revision-Date: 2011-03-20 10:24+0100\n"
-"Last-Translator: Hannie Dumoleyn <hannie@ubuntu-nl.org>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-03-24 19:59+0100\n"
+"PO-Revision-Date: 2011-03-24 19:57+0100\n"
+"Last-Translator: Wouter Bolsterlee <wbolster@gnome.org>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -614,7 +613,7 @@ msgstr "Uw muziekcollectie beluisteren en beheren"
 #: ../plugins/status-icon/rb-status-icon-plugin.c:58
 #: ../plugins/status-icon/rb-status-icon-plugin.c:1560
 #: ../plugins/status-icon/rb-tray-icon-gtk.c:152 ../shell/rb-shell.c:1267
-#: ../shell/rb-shell.c:2245
+#: ../shell/rb-shell.c:2247
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -1740,11 +1739,11 @@ msgstr "<b>Delen</b>"
 
 #: ../plugins/daap/daap-prefs.ui.h:3
 msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
-msgstr ""
+msgstr "<span foreground=\"red\">Kon niet met deze Remote koppelen.</span>"
 
 #: ../plugins/daap/daap-prefs.ui.h:4
 msgid "Forget known Remotes"
-msgstr ""
+msgstr "Bekende Remotes vergeten"
 
 #: ../plugins/daap/daap-prefs.ui.h:5
 msgid "Library _name:"
@@ -1760,11 +1759,11 @@ msgstr "_Wachtwoord vragen:"
 
 #: ../plugins/daap/daap-prefs.ui.h:8
 msgid "You can now control Rhythmbox through your Remote"
-msgstr ""
+msgstr "Rhythmbox is nu ook met een Remote te bedienen"
 
 #: ../plugins/daap/daap-prefs.ui.h:9
 msgid "_Look for touch Remotes"
-msgstr ""
+msgstr "_Zoeken naar Remotes"
 
 # [aanvinkoptie]
 #: ../plugins/daap/daap-prefs.ui.h:10
@@ -1844,11 +1843,11 @@ msgstr "Verbinden…"
 
 #: ../plugins/daap/rb-dacp-pairing-page.c:407
 msgid "Could not pair with this Remote."
-msgstr ""
+msgstr "Kon niet met deze Remote koppelen."
 
 #: ../plugins/daap/rb-dacp-pairing-page.c:609
 msgid "Remotes"
-msgstr ""
+msgstr "Remotes"
 
 #: ../plugins/dbus-media-server/dbus-media-server.rb-plugin.in.h:1
 msgid "MediaServer2 D-Bus interface"
@@ -4462,7 +4461,7 @@ msgstr "Afspelen pauzeren"
 msgid "Stop playback"
 msgstr "Afspelen stoppen"
 
-#: ../shell/rb-shell-preferences.c:162 ../shell/rb-shell.c:2451
+#: ../shell/rb-shell-preferences.c:162 ../shell/rb-shell.c:2453
 msgid "Couldn't display help"
 msgstr "Kon hulptekst niet weergeven"
 
@@ -4630,28 +4629,30 @@ msgstr "Kon gebruikersgegevensbestanden niet verplaatsen"
 
 # tooltip
 # muziek harder of zachter zetten/Geluidsvolume aanpassen
-#: ../shell/rb-shell.c:1547
+#: ../shell/rb-shell.c:1549
 msgid "Change the music volume"
 msgstr "Muziek harder of zachter zetten"
 
 # bij/tijdens
-#: ../shell/rb-shell.c:1962
+#: ../shell/rb-shell.c:1964
 msgid "Error while saving song information"
 msgstr "Fout bij het opslaan van de informatie over het nummer"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2265
+#: ../shell/rb-shell.c:2267
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (gepauzeerd)"
 
-#: ../shell/rb-shell.c:2369
+#: ../shell/rb-shell.c:2371
 msgid "translator-credits"
 msgstr ""
 "Tino Meinen\n"
 "Kees van den Broek\n"
 "Reinout van Schouwen\n"
 "Daniel van Eeden\n"
+"Hannie Dumoleyn\n"
+"Wouter Bolsterlee\n"
 "\n"
 "Kijk voor meer informatie op http://nl.gnome.org/\n"
 "\n"
@@ -4678,7 +4679,7 @@ msgstr ""
 "  sbashi https://launchpad.net/~shierbashi\n"
 "  translax https://launchpad.net/~gravlax"
 
-#: ../shell/rb-shell.c:2372
+#: ../shell/rb-shell.c:2374
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -4690,7 +4691,7 @@ msgstr ""
 "die gepubliceerd is door de Free Software Foundation; ofwel versie 2\n"
 "van de licentie, of (zo u wilt) een latere versie.\n"
 
-#: ../shell/rb-shell.c:2376
+#: ../shell/rb-shell.c:2378
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -4702,7 +4703,7 @@ msgstr ""
 "van VERKOOPBAARHEID, of GESCHIKTHEID VOOR EEN BEPAALD DOEL.\n"
 "Zie de GNU General Public License voor meer informatie.\n"
 
-#: ../shell/rb-shell.c:2380
+#: ../shell/rb-shell.c:2382
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -4713,63 +4714,63 @@ msgstr ""
 "Free Software Foundation, Inc., 51 Franklin St. Fifth Floor,\n"
 "Boston, MA 02110-1301 USA\n"
 
-#: ../shell/rb-shell.c:2387
+#: ../shell/rb-shell.c:2389
 msgid "Maintainers:"
 msgstr "Ontwikkelaars:"
 
-#: ../shell/rb-shell.c:2390
+#: ../shell/rb-shell.c:2392
 msgid "Former Maintainers:"
 msgstr "Ex-ontwikkelaars:"
 
-#: ../shell/rb-shell.c:2393
+#: ../shell/rb-shell.c:2395
 msgid "Contributors:"
 msgstr "Bijdragen van:"
 
 # Een muziekbeheer en -afspeelprogramma voor Gnome.
-#: ../shell/rb-shell.c:2395
+#: ../shell/rb-shell.c:2397
 msgid "Music management and playback software for GNOME."
 msgstr "Een muziekbeheerprogramma en jukebox voor Gnome."
 
-#: ../shell/rb-shell.c:2404
+#: ../shell/rb-shell.c:2406
 msgid "Rhythmbox Website"
 msgstr "Rhythmbox website"
 
-#: ../shell/rb-shell.c:2496
+#: ../shell/rb-shell.c:2498
 msgid "Configure Plugins"
 msgstr "Plugins configureren"
 
 # laden/importeren
-#: ../shell/rb-shell.c:2567
+#: ../shell/rb-shell.c:2569
 msgid "Import Folder into Library"
 msgstr "Map importeren in collectie"
 
 # laden/importeren
-#: ../shell/rb-shell.c:2589
+#: ../shell/rb-shell.c:2591
 msgid "Import File into Library"
 msgstr "Bestand importeren in collectie"
 
-#: ../shell/rb-shell.c:3188 ../shell/rb-shell.c:3545
+#: ../shell/rb-shell.c:3190 ../shell/rb-shell.c:3547
 #: ../sources/rb-play-queue-source.c:635
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Geen bron kan met URI %s omgaan"
 
-#: ../shell/rb-shell.c:3665
+#: ../shell/rb-shell.c:3667
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "URI %s komt niet overeen met enige geregistreerde bron"
 
-#: ../shell/rb-shell.c:3698 ../shell/rb-shell.c:3741
+#: ../shell/rb-shell.c:3700 ../shell/rb-shell.c:3743
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Onbekend nummer URI: %s"
 
-#: ../shell/rb-shell.c:3750
+#: ../shell/rb-shell.c:3752
 #, c-format
 msgid "Unknown property %s"
 msgstr "Onbekende eigenschap %s"
 
-#: ../shell/rb-shell.c:3764
+#: ../shell/rb-shell.c:3766
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Ongeldig type %s voor eigenschap %s"
