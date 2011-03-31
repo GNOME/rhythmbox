@@ -47,6 +47,7 @@
 struct _RBDACPPlayerPrivate {
 	RBShell *shell;
 	RBShellPlayer *shell_player;
+	RBSource *play_queue;
 };
 
 static void rb_dacp_player_get_property (GObject *object, guint prop_id,
@@ -260,7 +261,11 @@ rb_dacp_player_new (RBShell *shell)
 	player = RB_DACP_PLAYER (g_object_new (RB_TYPE_DACP_PLAYER, NULL));
 
 	player->priv->shell = g_object_ref (shell);
-	player->priv->shell_player = g_object_ref (rb_shell_get_player (shell));
+	g_object_get (shell,
+		      "shell-player", &player->priv->shell_player,
+		      "queue-source", &player->priv->play_queue,
+		      NULL);
+
 	g_signal_connect_object (player->priv->shell_player,
 	                         "playing-song-changed",
 	                         G_CALLBACK (playing_song_changed),
@@ -324,7 +329,9 @@ rb_dacp_player_prev_item (DACPPlayer *player)
 static void
 rb_dacp_player_cue_clear (DACPPlayer *player)
 {
-	rb_shell_clear_queue (RB_DACP_PLAYER (player)->priv->shell, NULL);
+	RBDACPPlayer *rbplayer;
+	rbplayer = RB_DACP_PLAYER (player);
+	rb_play_queue_source_clear_queue (RB_PLAY_QUEUE_SOURCE (rbplayer->priv->play_queue));
 }
 
 static void
@@ -335,9 +342,13 @@ rb_dacp_player_cue_play (DACPPlayer *player, GList *records, guint index)
 
 	for (record = records; record; record = record->next) {
 		gchar *location;
+		RBDACPPlayer *rbplayer;
 
-		g_object_get (G_OBJECT (record->data), "location", &location, NULL);
-		rb_shell_add_to_queue (RB_DACP_PLAYER (player)->priv->shell, location, NULL);
+		g_object_get (record->data, "location", &location, NULL);
+		rbplayer = RB_DACP_PLAYER (player);
+		rb_static_playlist_source_add_location (RB_STATIC_PLAYLIST_SOURCE (rbplayer->priv->play_queue),
+							location,
+							-1);
 
 		if (current == index) {
 			RhythmDB *db;
