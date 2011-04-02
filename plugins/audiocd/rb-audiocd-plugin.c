@@ -325,7 +325,7 @@ impl_activate (RBPlugin *plugin,
 	 * in source elements, and when changing between tracks on the same CD, just seek
 	 * between them, rather than closing and reopening the device.
 	 */
-	shell_player = rb_shell_get_player (shell);
+	g_object_get (shell, "shell-player", &shell_player, NULL);
 	g_object_get (shell_player, "player", &player_backend, NULL);
 	if (player_backend) {
 		GObjectClass *klass = G_OBJECT_GET_CLASS (player_backend);
@@ -346,6 +346,7 @@ impl_activate (RBPlugin *plugin,
 						 plugin, 0);
 		}
 	}
+	g_object_unref (shell_player);
 
 	/* encoder hooks: specify the device and set the paranoia level (if available) on
 	 * source elements.

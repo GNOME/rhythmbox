@@ -429,6 +429,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 {
 	RBAudioscrobblerRadioSource *source;
 	RBShell *shell;
+	RBShellPlayer *shell_player;
 	RhythmDB *db;
 	GtkWidget *main_vbox;
 	GtkWidget *error_info_bar_content_area;
@@ -442,7 +443,10 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 
 	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (object);
 	g_object_get (source, "shell", &shell, NULL);
-	g_object_get (shell, "db", &db, NULL);
+	g_object_get (shell,
+		      "db", &db,
+		      "shell-player", &shell_player,
+		      NULL);
 
 	main_vbox = gtk_vbox_new (FALSE, 4);
 	gtk_widget_show (main_vbox);
@@ -473,7 +477,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	gtk_box_pack_start (GTK_BOX (main_vbox), source->priv->password_info_bar, FALSE, FALSE, 0);
 
 	/* entry view */
-	source->priv->track_view = rb_entry_view_new (db, rb_shell_get_player (shell), NULL, FALSE, FALSE);
+	source->priv->track_view = rb_entry_view_new (db, G_OBJECT (shell_player), NULL, FALSE, FALSE);
 	rb_entry_view_append_column (source->priv->track_view, RB_ENTRY_VIEW_COL_TITLE, TRUE);
 	rb_entry_view_append_column (source->priv->track_view, RB_ENTRY_VIEW_COL_ARTIST, FALSE);
 	rb_entry_view_append_column (source->priv->track_view, RB_ENTRY_VIEW_COL_ALBUM, FALSE);
@@ -489,10 +493,10 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	g_object_set (source, "query-model", source->priv->track_model, NULL);
 
 	/* play order */
-	source->priv->play_order = rb_audioscrobbler_play_order_new (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+	source->priv->play_order = rb_audioscrobbler_play_order_new (shell_player);
 
 	/* signals */
-	g_signal_connect_object (rb_shell_get_player (shell),
+	g_signal_connect_object (shell_player,
 				 "playing-song-changed",
 				 G_CALLBACK (playing_song_changed_cb),
 				 source, 0);
@@ -523,6 +527,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (source), RB_DISPLAY_PAGE (source->priv->parent));
 
 	g_object_unref (shell);
+	g_object_unref (shell_player);
 	g_object_unref (db);
 	g_object_unref (plugin);
 	g_object_unref (ui_manager);
@@ -1410,16 +1415,20 @@ static gboolean
 emit_coverart_uri_cb (RBAudioscrobblerRadioSource *source)
 {
 	RBShell *shell;
+	RBShellPlayer *shell_player;
 	RhythmDB *db;
 	RhythmDBEntry *entry;
 	const char *image_url;
 
 	g_object_get (source, "shell", &shell, NULL);
-	g_object_get (shell, "db", &db, NULL);
+	g_object_get (shell,
+		      "db", &db,
+		      "shell-player", &shell_player,
+		      NULL);
 
 	source->priv->emit_coverart_id = 0;
 
-	entry = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+	entry = rb_shell_player_get_playing_entry (shell_player);
 	image_url = get_image_url_for_entry (source, entry);
 	if (image_url != NULL) {
 		GValue v = {0,};
@@ -1432,6 +1441,7 @@ emit_coverart_uri_cb (RBAudioscrobblerRadioSource *source)
 		g_value_unset (&v);
 	}
 
+	g_object_unref (shell_player);
 	g_object_unref (shell);
 	g_object_unref (db);
 

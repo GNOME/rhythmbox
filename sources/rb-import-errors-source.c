@@ -190,8 +190,10 @@ rb_import_errors_source_constructed (GObject *object)
 		      "shell", &shell,
 		      "entry-type", &entry_type,
 		      NULL);
-	g_object_get (shell, "db", &source->priv->db, NULL);
-	shell_player = rb_shell_get_player (shell);
+	g_object_get (shell,
+		      "db", &source->priv->db,
+		      "shell-player", &shell_player,
+		      NULL);
 	g_object_unref (shell);
 
 	/* construct real query */
@@ -209,6 +211,7 @@ rb_import_errors_source_constructed (GObject *object)
 	/* set up entry view */
 	source->priv->view = rb_entry_view_new (source->priv->db, shell_player,
 						NULL, FALSE, FALSE);
+	g_object_unref (shell_player);
 
 	rb_entry_view_set_model (source->priv->view, model);
 

@@ -211,10 +211,13 @@ itinerary_insert_some_playlists (RBSyncState *state,
 {
 	GList *list_iter;
 	GList *playlists;
+	RBPlaylistManager *playlist_manager;
 	RBShell *shell;
 
 	g_object_get (state->priv->source, "shell", &shell, NULL);
-	playlists = rb_playlist_manager_get_playlists ((RBPlaylistManager *) rb_shell_get_playlist_manager (shell));
+	g_object_get (shell, "playlist-manager", &playlist_manager, NULL);
+	playlists = rb_playlist_manager_get_playlists (playlist_manager);
+	g_object_unref (playlist_manager);
 	g_object_unref (shell);
 
 	for (list_iter = playlists; list_iter; list_iter = list_iter->next) {

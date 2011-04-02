@@ -270,7 +270,7 @@ rb_play_queue_source_constructed (GObject *object)
 	db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
 
 	g_object_get (source, "shell", &shell, NULL);
-	shell_player = rb_shell_get_player (shell);
+	g_object_get (shell, "shell-player", &shell_player, NULL);
 	g_object_unref (shell);
 
 	priv->queue_play_order = rb_queue_play_order_new (RB_SHELL_PLAYER (shell_player));
@@ -286,6 +286,7 @@ rb_play_queue_source_constructed (GObject *object)
 	g_object_set (G_OBJECT (action), "short-label", _("Clear"), NULL);
 
 	priv->sidebar = rb_entry_view_new (db, shell_player, NULL, TRUE, TRUE);
+	g_object_unref (shell_player);
 
 	g_object_set (G_OBJECT (priv->sidebar), "vscrollbar-policy", GTK_POLICY_AUTOMATIC, NULL);
 

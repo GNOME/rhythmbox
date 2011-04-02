@@ -339,6 +339,7 @@ rb_audioscrobbler_profile_page_constructed (GObject *object)
 {
 	RBAudioscrobblerProfilePage *page;
 	RBShell *shell;
+	RBShellPlayer *shell_player;
 	char *scrobbling_enabled_conf_key;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_profile_page_parent_class, constructed, object);
@@ -348,10 +349,12 @@ rb_audioscrobbler_profile_page_constructed (GObject *object)
 
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (page), RB_DISPLAY_PAGE_GROUP_LIBRARY);
 
-	g_signal_connect_object (rb_shell_get_player (shell),
+	g_object_get (shell, "shell-player", &shell_player, NULL);
+	g_signal_connect_object (shell_player,
 				 "playing-song-changed",
 				 G_CALLBACK (playing_song_changed_cb),
 				 page, 0);
+	g_object_unref (shell_player);
 
 	/* create the UI */
 	page->priv->main_vbox = gtk_vbox_new (FALSE, 4);
@@ -712,10 +715,12 @@ login_status_change_cb (RBAudioscrobblerAccount *account,
 	if (status == RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN &&
 	    eel_gconf_get_boolean (scrobbling_enabled_conf_key)) {
 		RBShell *shell;
+		RBShellPlayer *shell_player;
 		g_object_get (page, "shell", &shell, NULL);
+		g_object_get (shell, "shell-player", &shell_player, NULL);
 		page->priv->audioscrobbler =
 			rb_audioscrobbler_new (page->priv->service,
-				               RB_SHELL_PLAYER (rb_shell_get_player (shell)),
+				               shell_player,
                                                rb_audioscrobbler_account_get_username (page->priv->account),
 			                       rb_audioscrobbler_account_get_session_key (page->priv->account));
 		g_signal_connect (page->priv->audioscrobbler,
@@ -727,6 +732,7 @@ login_status_change_cb (RBAudioscrobblerAccount *account,
 			          G_CALLBACK (scrobbler_statistics_changed_cb),
 			          page);
 		rb_audioscrobbler_statistics_changed (page->priv->audioscrobbler);
+		g_object_unref (shell_player);
 		g_object_unref (shell);
 	}
 
@@ -828,10 +834,12 @@ scrobbling_enabled_changed_cb (GConfClient *client,
 		                     _("Disabled"));
 	} else if (page->priv->audioscrobbler == NULL && enabled == TRUE) {
 		RBShell *shell;
+		RBShellPlayer *shell_player;
 		g_object_get (page, "shell", &shell, NULL);
+		g_object_get (shell, "shell-player", &shell_player, NULL);
 		page->priv->audioscrobbler =
 			rb_audioscrobbler_new (page->priv->service,
-				               RB_SHELL_PLAYER (rb_shell_get_player (shell)),
+				               shell_player,
                                                rb_audioscrobbler_account_get_username (page->priv->account),
 			                       rb_audioscrobbler_account_get_session_key (page->priv->account));
 		g_signal_connect (page->priv->audioscrobbler,
@@ -843,6 +851,7 @@ scrobbling_enabled_changed_cb (GConfClient *client,
 			          G_CALLBACK (scrobbler_statistics_changed_cb),
 			          page);
 		rb_audioscrobbler_statistics_changed (page->priv->audioscrobbler);
+		g_object_unref (shell_player);
 		g_object_unref (shell);
 	}
 }
@@ -926,11 +935,13 @@ static void
 love_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
 {
 	RBShell *shell;
+	RBShellPlayer *shell_player;
 	RhythmDBEntry *playing;
 	GtkAction *ban_action;
 
 	g_object_get (page, "shell", &shell, NULL);
-	playing = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+	g_object_get (shell, "shell-player", &shell_player, NULL);
+	playing = rb_shell_player_get_playing_entry (shell_player);
 
 	if (playing != NULL) {
 		rb_audioscrobbler_user_love_track (page->priv->user,
@@ -944,6 +955,7 @@ love_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
 	ban_action = gtk_action_group_get_action (page->priv->service_action_group, page->priv->ban_action_name);
 	gtk_action_set_sensitive (ban_action, FALSE);
 
+	g_object_unref (shell_player);
 	g_object_unref (shell);
 }
 
@@ -951,10 +963,12 @@ static void
 ban_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
 {
 	RBShell *shell;
+	RBShellPlayer *shell_player;
 	RhythmDBEntry *playing;
 
 	g_object_get (page, "shell", &shell, NULL);
-	playing = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+	g_object_get (shell, "shell-player", &shell_player, NULL);
+	playing = rb_shell_player_get_playing_entry (shell_player);
 
 	if (playing != NULL) {
 		rb_audioscrobbler_user_ban_track (page->priv->user,
@@ -964,8 +978,9 @@ ban_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
 	}
 
 	/* skip to next track */
-	rb_shell_player_do_next (RB_SHELL_PLAYER (rb_shell_get_player (shell)), NULL);
+	rb_shell_player_do_next (shell_player, NULL);
 
+	g_object_unref (shell_player);
 	g_object_unref (shell);
 }
 
@@ -973,13 +988,15 @@ static void
 download_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
 {
 	RBShell *shell;
+	RBShellPlayer *shell_player;
 	RhythmDBEntry *playing;
 
 	/* disable the action */
 	gtk_action_set_sensitive (action, FALSE);
 
 	g_object_get (page, "shell", &shell, NULL);
-	playing = rb_shell_player_get_playing_entry (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+	g_object_get (shell, "shell-player", &shell_player, NULL);
+	playing = rb_shell_player_get_playing_entry (shell_player);
 
 	if (playing != NULL &&
 	    rhythmdb_entry_get_entry_type (playing) == RHYTHMDB_ENTRY_TYPE_AUDIOSCROBBLER_RADIO_TRACK) {
@@ -1040,6 +1057,7 @@ download_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
 		rb_debug ("cannot download: playing entry is not an audioscrobbler radio track");
 	}
 
+	g_object_unref (shell_player);
 	g_object_unref (shell);
 }
 

@@ -46,6 +46,7 @@
 
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
+#include "rb-shell-player.h"
 #include "rb-stock-icons.h"
 #include "rb-entry-view.h"
 #include "rb-property-view.h"
@@ -1296,6 +1297,7 @@ impl_constructed (GObject *object)
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer;
 	RBShell *shell;
+	RBShellPlayer *shell_player;
 	RhythmDBQueryModel *query_model;
 	GtkAction *action;
 
@@ -1303,7 +1305,10 @@ impl_constructed (GObject *object)
 	source = RB_PODCAST_SOURCE (object);
 
 	g_object_get (source, "shell", &shell, NULL);
-	g_object_get (shell, "db", &source->priv->db, NULL);
+	g_object_get (shell,
+		      "db", &source->priv->db,
+		      "shell-player", &shell_player,
+		      NULL);
 
 	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
 									     "PodcastActions",
@@ -1348,9 +1353,10 @@ impl_constructed (GObject *object)
 
 	/* set up posts view */
 	source->priv->posts = rb_entry_view_new (source->priv->db,
-						 rb_shell_get_player (shell),
+						 G_OBJECT (shell_player),
 						 CONF_STATE_PODCAST_SORTING_POSTS,
 						 TRUE, FALSE);
+	g_object_unref (shell_player);
 
 	g_signal_connect_object (source->priv->posts,
 				 "entry-activated",

@@ -294,8 +294,10 @@ rb_playlist_source_constructed (GObject *object)
 	source = RB_PLAYLIST_SOURCE (object);
 
 	g_object_get (source, "shell", &shell, NULL);
-	g_object_get (shell, "db", &db, NULL);
-	shell_player = rb_shell_get_player (shell);
+	g_object_get (shell,
+		      "db", &db,
+		      "shell-player", &shell_player,
+		      NULL);
 	rb_playlist_source_set_db (source, db);
 	g_object_unref (db);
 
@@ -320,6 +322,7 @@ rb_playlist_source_constructed (GObject *object)
 						 shell_player,
 					 	 sorting_key, TRUE, TRUE);
 	g_free (sorting_key);
+	g_object_unref (shell_player);
 
 	g_signal_connect_object (source->priv->songs,
 				 "sort-order-changed",

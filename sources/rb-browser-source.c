@@ -352,8 +352,10 @@ rb_browser_source_constructed (GObject *object)
 		      "shell", &shell,
 		      "entry-type", &entry_type,
 		      NULL);
-	g_object_get (shell, "db", &source->priv->db, NULL);
-	shell_player = rb_shell_get_player (shell);
+	g_object_get (shell,
+		      "db", &source->priv->db,
+		      "shell-player", &shell_player,
+		      NULL);
 
 	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
 									     "BrowserSourceActions",
@@ -482,6 +484,7 @@ rb_browser_source_constructed (GObject *object)
 	rb_browser_source_populate (source);
 
 	g_object_unref (entry_type);
+	g_object_unref (shell_player);
 }
 
 static void

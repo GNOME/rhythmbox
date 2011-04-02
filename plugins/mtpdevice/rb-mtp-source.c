@@ -367,8 +367,9 @@ rb_mtp_source_constructed (GObject *object)
 
 	/* the source element needs our cooperation */
 	g_object_get (source, "shell", &shell, NULL);
-	shell_player = RB_SHELL_PLAYER (rb_shell_get_player (shell));
+	g_object_get (shell, "shell-player", &shell_player, NULL);
 	g_object_get (shell_player, "player", &player_backend, NULL);
+	g_object_unref (shell_player);
 
 	g_signal_connect_object (player_backend,
 				 "prepare-source",
