@@ -436,6 +436,7 @@ rb_audiocd_source_constructed (GObject *object)
 		g_signal_connect_object (priv->year_entry, "focus-out-event", G_CALLBACK (update_year_cb), source, 0);
 		g_signal_connect_object (priv->disc_number_entry, "focus-out-event", G_CALLBACK (update_disc_number_cb), source, 0);
 
+		gtk_widget_set_vexpand (table, FALSE);
 		gtk_box_pack_start (GTK_BOX (priv->box), table, FALSE, FALSE, 0);
 		gtk_box_reorder_child (GTK_BOX (priv->box), table, 0);
 		g_object_unref (builder);
