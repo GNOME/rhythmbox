@@ -62,6 +62,7 @@ struct _RBEncoderGstPrivate {
 	gint decoded_pads;
 
 	gboolean completion_emitted;
+	gboolean cancelled;
 
 	GstFormat position_format;
 	gint64 total_length;
@@ -665,7 +666,7 @@ attach_output_pipeline (RBEncoderGst *encoder,
 	 */
 	rb_debug ("attempting to open output file %s", dest);
 	file = g_file_new_for_uri (dest);
-	
+
 	sink = gst_element_factory_make ("giostreamsink", NULL);
 	if (sink != NULL) {
 		stream = g_file_create (file, G_FILE_CREATE_NONE, NULL, &local_error);
@@ -1069,6 +1070,12 @@ rb_encoder_gst_cancel (RBEncoder *encoder)
 		g_object_unref (f);
 	}
 
+	if (priv->error == NULL) {
+		/* should never be displayed to the user anyway */
+		priv->error = g_error_new (G_IO_ERROR, G_IO_ERROR_CANCELLED, " ");
+	}
+
+	priv->cancelled = TRUE;
 	rb_encoder_gst_emit_completed (RB_ENCODER_GST (encoder));
 }
 
@@ -1111,27 +1118,35 @@ rb_encoder_gst_encode (RBEncoder *bencoder,
 	g_free (encoder->priv->dest_uri);
 	encoder->priv->dest_uri = g_strdup (dest);
 
+	/* keep ourselves alive in case we get cancelled by a signal handler */
+	g_object_ref (encoder);
+
 	/* if destination and source media types are the same, copy it */
 	if (g_strcmp0 (entry_media_type, dest_media_type) == 0) {
 		rb_debug ("source file already has required media type %s, copying rather than transcoding", dest_media_type);
 		encoder->priv->total_length = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
 		encoder->priv->position_format = GST_FORMAT_BYTES;
 
-		result = copy_track (RB_ENCODER_GST (encoder), entry, dest, &error);
+		result = copy_track (encoder, entry, dest, &error);
 		encoder->priv->dest_mediatype = g_strdup (entry_media_type);
 	} else {
 		encoder->priv->total_length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 		encoder->priv->position_format = GST_FORMAT_TIME;
 		encoder->priv->dest_mediatype = g_strdup (dest_media_type);
 
-		result = transcode_track (RB_ENCODER_GST (encoder), entry, dest, &error);
+		result = transcode_track (encoder, entry, dest, &error);
 	}
 
-	if (result == FALSE) {
+	if (result == FALSE && encoder->priv->cancelled == FALSE) {
 		set_error (encoder, error);
-		g_error_free (error);
 		g_idle_add ((GSourceFunc) cancel_idle, g_object_ref (encoder));
 	}
+
+	if (error != NULL) {
+		g_error_free (error);
+	}
+
+	g_object_unref (encoder);
 }
 
 static char *
