@@ -916,7 +916,7 @@ save_playlist_cb (GtkTreeModel *model,
 	if (page == NULL) {
 		goto out;
 	}
-	if (RB_IS_PLAYLIST_SOURCE (page) == FALSE) {
+	if (RB_IS_PLAYLIST_SOURCE (page) == FALSE || RB_IS_PLAY_QUEUE_SOURCE (page)) {
 		goto out;
 	}
 
@@ -950,6 +950,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 {
 	xmlNodePtr root;
 	struct RBPlaylistManagerSaveData *data;
+	RBSource *queue_source;
 
 	if (!force && !rb_playlist_manager_is_dirty (mgr)) {
 		/* playlists already in sync, so don't bother */
@@ -972,6 +973,11 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	gtk_tree_model_foreach (GTK_TREE_MODEL (mgr->priv->page_model),
 				(GtkTreeModelForeachFunc)save_playlist_cb,
 				root);
+
+	/* also save the play queue */
+	g_object_get (mgr->priv->shell, "queue-source", &queue_source, NULL);
+	rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (queue_source), root);
+	g_object_unref (queue_source);
 
 	/* mark clean here.  if the save fails, we'll mark it dirty again */
 	rb_playlist_manager_set_dirty (data->mgr, FALSE);
