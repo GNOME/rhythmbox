@@ -63,8 +63,6 @@ G_DEFINE_TYPE_WITH_CODE(RBPlayerGst, rb_player_gst, G_TYPE_OBJECT,
 			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER_GST_TEE, rb_player_gst_tee_init)
 			)
 
-#define MAX_NETWORK_BUFFER_SIZE		(2048)
-
 #define RB_PLAYER_GST_TICK_HZ 5
 #define STATE_CHANGE_MESSAGE_TIMEOUT 5
 
@@ -72,8 +70,7 @@ enum
 {
 	PROP_0,
 	PROP_PLAYBIN,
-	PROP_BUS,
-	PROP_BUFFER_SIZE
+	PROP_BUS
 };
 
 enum
@@ -107,7 +104,6 @@ struct _RBPlayerGstPrivate
 	GstElement *playbin;
 	GstElement *audio_sink;
 	enum StateChangeAction state_change_action;
-	guint buffer_size;
 
 	gboolean playing;
 	gboolean buffering;
@@ -659,9 +655,6 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 				 "notify::source",
 				 G_CALLBACK (source_notify_cb),
 				 mp, 0);
-	if (mp->priv->buffer_size != 0) {
-		g_object_set (mp->priv->playbin, "buffer-size", mp->priv->buffer_size * 1024, NULL);
-	}
 
 	gst_bus_add_watch (gst_element_get_bus (mp->priv->playbin),
 			   (GstBusFunc) bus_cb,
@@ -671,26 +664,18 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 	g_object_notify (G_OBJECT (mp), "playbin");
 	g_object_notify (G_OBJECT (mp), "bus");
 
-	/* Use gconfaudiosink for audio if there's no audio sink yet */
+	/* Use gsettingsaudiosink for audio if there's no audio sink yet */
 	g_object_get (mp->priv->playbin, "audio-sink", &mp->priv->audio_sink, NULL);
 	if (mp->priv->audio_sink == NULL) {
-		mp->priv->audio_sink = gst_element_factory_make ("gconfaudiosink", NULL);
-		if (mp->priv->audio_sink == NULL) {
-			/* fall back to autoaudiosink */
-			rb_debug ("falling back to autoaudiosink");
-			mp->priv->audio_sink = gst_element_factory_make ("autoaudiosink", NULL);
-		} else {
-			rb_debug ("using gconfaudiosink");
-		}
+		const char *try_sinks[] = { "gsettingsaudiosink", "gconfaudiosink", "autoaudiosink" };
+		int i;
 
-		if (mp->priv->audio_sink != NULL) {
-			/* set the profile property on the gconfaudiosink to "music and movies" */
-			if (g_object_class_find_property (G_OBJECT_GET_CLASS (mp->priv->audio_sink), "profile")) {
-				rb_debug ("setting profile property on audio sink");
-				g_object_set (mp->priv->audio_sink, "profile", 1, NULL);
+		for (i = 0; i < G_N_ELEMENTS (try_sinks); i++) {
+			mp->priv->audio_sink = rb_player_gst_try_audio_sink (try_sinks[i], NULL);
+			if (mp->priv->audio_sink != NULL) {
+				g_object_set (mp->priv->playbin, "audio-sink", mp->priv->audio_sink, NULL);
+				break;
 			}
-
-			g_object_set (mp->priv->playbin, "audio-sink", mp->priv->audio_sink, NULL);
 		}
 	} else {
 		rb_debug ("existing audio sink found");
@@ -1092,9 +1077,6 @@ impl_get_property (GObject *object,
 			gst_object_unref (bus);
 		}
 		break;
-	case PROP_BUFFER_SIZE:
-		g_value_set_uint (value, mp->priv->buffer_size);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1107,16 +1089,9 @@ impl_set_property (GObject *object,
 		   const GValue *value,
 		   GParamSpec *pspec)
 {
-	RBPlayerGst *mp = RB_PLAYER_GST (object);
+	/*RBPlayerGst *mp = RB_PLAYER_GST (object);*/
 
 	switch (prop_id) {
-	case PROP_BUFFER_SIZE:
-		mp->priv->buffer_size = g_value_get_uint (value);
-		if (mp->priv->playbin != NULL) {
-			rb_debug ("setting buffer size on playbin: %d", mp->priv->buffer_size * 1024);
-			g_object_set (mp->priv->playbin, "buffer-size", mp->priv->buffer_size * 1024, NULL);
-		}
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1197,13 +1172,6 @@ rb_player_gst_class_init (RBPlayerGstClass *klass)
 							      "GStreamer message bus",
 							      GST_TYPE_BUS,
 							      G_PARAM_READABLE));
-	g_object_class_install_property (object_class,
-					 PROP_BUFFER_SIZE,
-					 g_param_spec_uint ("buffer-size",
-							    "buffer size",
-							    "Buffer size for network streams, in kB",
-							    64, MAX_NETWORK_BUFFER_SIZE, 128,
-							    G_PARAM_READWRITE));
 
 	signals[PREPARE_SOURCE] =
 		g_signal_new ("prepare-source",

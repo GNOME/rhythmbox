@@ -64,10 +64,11 @@ rb_player_gst_try_audio_sink (const char *plugin_name, const char *name)
 		GstStateChangeReturn ret;
 		GstBus *bus;
 
-		/* use the 'music and movies' profile for gconfaudiosink */
-		if (strcmp (plugin_name, "gconfaudiosink") == 0 &&
+		/* use the 'music and movies' profile for gconfaudiosink and gsettingsaudiosink */
+		if ((strcmp (plugin_name, "gconfaudiosink") == 0 ||
+		    strcmp (plugin_name, "gsettingsaudiosink") == 0) &&
 		    g_object_class_find_property (G_OBJECT_GET_CLASS (audio_sink), "profile")) {
-			rb_debug ("setting profile property on gconfaudiosink");
+			rb_debug ("setting profile property on %s", plugin_name);
 			g_object_set (audio_sink, "profile", 1, NULL);
 		}
 

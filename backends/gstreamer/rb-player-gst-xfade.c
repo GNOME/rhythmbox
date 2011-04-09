@@ -211,14 +211,11 @@ G_DEFINE_TYPE_WITH_CODE(RBPlayerGstXFade, rb_player_gst_xfade, G_TYPE_OBJECT,
 #define FADE_IN_DONE_MESSAGE	"rb-fade-in-done"
 #define STREAM_EOS_MESSAGE	"rb-stream-eos"
 
-#define MAX_NETWORK_BUFFER_SIZE		(2048)
-
 #define PAUSE_FADE_LENGTH	(GST_SECOND / 2)
 
 enum
 {
 	PROP_0,
-	PROP_BUFFER_SIZE,
 	PROP_BUS
 };
 
@@ -266,7 +263,6 @@ struct _RBPlayerGstXFadePrivate
 	int volume_changed;
 	int volume_applied;
 	float cur_volume;
-	guint buffer_size;	/* kB */
 
 	guint tick_timeout_id;
 
@@ -579,9 +575,6 @@ rb_player_gst_xfade_get_property (GObject *object,
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (object);
 
 	switch (prop_id) {
-	case PROP_BUFFER_SIZE:
-		g_value_set_uint (value, player->priv->buffer_size);
-		break;
 	case PROP_BUS:
 		if (player->priv->pipeline) {
 			GstBus *bus;
@@ -602,13 +595,9 @@ rb_player_gst_xfade_set_property (GObject *object,
 				  const GValue *value,
 				  GParamSpec *pspec)
 {
-	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (object);
+	/*RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (object);*/
 
 	switch (prop_id) {
-	case PROP_BUFFER_SIZE:
-		player->priv->buffer_size = g_value_get_uint (value);
-		/* try to adjust any playing streams? */
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -624,14 +613,6 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 	object_class->finalize = rb_player_gst_xfade_finalize;
 	object_class->set_property = rb_player_gst_xfade_set_property;
 	object_class->get_property = rb_player_gst_xfade_get_property;
-
-	g_object_class_install_property (object_class,
-					 PROP_BUFFER_SIZE,
-					 g_param_spec_uint ("buffer-size",
-							    "buffer size",
-							    "Buffer size for network streams, in kB",
-							    64, MAX_NETWORK_BUFFER_SIZE, 128,
-							    G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
 					 PROP_BUS,
@@ -2036,9 +2017,6 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	}
 	gst_object_ref (stream->decoder);
 	g_object_set (stream->decoder, "uri", uri, NULL);
-	if (player->priv->buffer_size != 0) {
-		g_object_set (stream->decoder, "buffer-size", player->priv->buffer_size * 1024, NULL);
-	}
 
 	/* connect uridecodebin to audioconvert when it creates its output pad */
 	g_signal_connect_object (stream->decoder,
@@ -2632,7 +2610,7 @@ stream_volume_changed (GObject *element, GParamSpec *pspec, RBPlayerGstXFade *pl
  * output sink + adder pipeline:
  *
  * outputcaps = audio/x-raw-int,channels=2,rate=44100,width=16,depth=16
- * outputbin = outputcaps ! volume ! filterbin ! audioconvert ! audioresample ! tee ! queue ! gconfaudiosink
+ * outputbin = outputcaps ! volume ! filterbin ! audioconvert ! audioresample ! tee ! queue ! audiosink
  * silencebin = audiotestsrc wave=silence ! outputcaps
  *
  * pipeline = silencebin ! adder ! outputbin
@@ -2956,6 +2934,7 @@ stop_sink (RBPlayerGstXFade *player)
 static gboolean
 create_sink (RBPlayerGstXFade *player, GError **error)
 {
+	const char *try_sinks[] = { "gsettingsaudiosink", "gconfaudiosink", "autoaudiosink" };
 	GstElement *audiotestsrc;
 	GstElement *audioconvert;
 	GstElement *audioresample;
@@ -2969,6 +2948,7 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 	GstPad *addersrcpad;
 	GstPadLinkReturn plr;
 	GList *l;
+	int i;
 
 	if (player->priv->sink_state != SINK_NULL)
 		return TRUE;
@@ -3022,16 +3002,18 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 		return FALSE;
 	}
 
-	player->priv->sink = rb_player_gst_try_audio_sink ("gconfaudiosink", NULL);
-	if (player->priv->sink == NULL) {
-		player->priv->sink = rb_player_gst_try_audio_sink ("autoaudiosink", NULL);
-		if (player->priv->sink == NULL) {
-			g_set_error (error,
-				     RB_PLAYER_ERROR,
-				     RB_PLAYER_ERROR_GENERAL,
-				     _("Failed to create audio output element; check your installation"));
-			return FALSE;
+	for (i = 0; i < G_N_ELEMENTS (try_sinks); i++) {
+		player->priv->sink = rb_player_gst_try_audio_sink (try_sinks[i], NULL);
+		if (player->priv->sink != NULL) {
+			break;
 		}
+	}
+	if (player->priv->sink == NULL) {
+		g_set_error (error,
+			     RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_GENERAL,
+			     _("Failed to create audio output element; check your installation"));
+		return FALSE;
 	}
 
 	g_object_set (player->priv->capsfilter, "caps", caps, NULL);
