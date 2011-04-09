@@ -906,7 +906,6 @@ plugins/jamendo/jamendo/Makefile
 plugins/generic-player/Makefile
 plugins/rb/Makefile
 plugins/power-manager/Makefile
-plugins/status-icon/Makefile
 plugins/mmkeys/Makefile
 plugins/context/Makefile
 plugins/context/context/Makefile
