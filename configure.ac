@@ -61,7 +61,7 @@ LIBMTP_REQS=0.3.0
 PYGOBJECT_REQUIRED=2.15.4
 
 GNOME_MEDIA_PROFILES_REQS=2.91.0
-LIBNOTIFY_REQS=0.5.1
+LIBNOTIFY_REQS=0.7.0
 BRASERO_MIN_REQS=2.31.5
 WEBKIT_MIN_REQS=1.3.9
 
@@ -915,6 +915,7 @@ plugins/replaygain/replaygain/Makefile
 plugins/mpris/Makefile
 plugins/dbus-media-server/Makefile
 plugins/rbzeitgeist/Makefile
+plugins/notification/Makefile
 bindings/Makefile
 bindings/vala/Makefile
 bindings/gi/Makefile

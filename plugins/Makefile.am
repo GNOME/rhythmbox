@@ -57,3 +57,7 @@ endif
 if ENABLE_LASTFM
 SUBDIRS += audioscrobbler
 endif
+
+if USE_NOTIFY
+SUBDIRS += notification
+endif
