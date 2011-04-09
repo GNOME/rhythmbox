@@ -49,7 +49,8 @@ EXTRA_DIST = $(service_in_files)    \
 	     $(man_MANS)            \
 	     $(playlists_in_files)  \
 	     rhythmbox.desktop.in.in \
-	     rhythmbox-device.desktop.in.in
+	     rhythmbox-device.desktop.in.in \
+	     org.gnome.rhythmbox.gschema.xml
 
 CLEANFILES = 					\
 	rhythmbox.desktop			\
