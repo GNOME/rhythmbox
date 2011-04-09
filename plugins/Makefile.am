@@ -7,8 +7,7 @@ SUBDIRS = 						\
 	mpris						\
 	power-manager					\
 	sample						\
-	status-icon					\
-	visualizer
+	status-icon
 
 if WITH_LIRC
 SUBDIRS += lirc
